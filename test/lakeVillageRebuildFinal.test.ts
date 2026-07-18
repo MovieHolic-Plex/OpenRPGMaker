@@ -76,7 +76,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "fill_region", {
         mapId: MAP_ID,
         rect: lake,
-        tileVocabId: BUILD_PALETTE_PRESETS.water,
+        material: "물",
         layer: "lower",
         shape: "circle",
       }),
@@ -281,19 +281,19 @@ describe("natural lake village (editor tools only)", () => {
     }
 
     // ── 5. 나무·소품 (물·모래·집 upper 점유 칸은 툴이 스킵) ──
-    // 비전 강제 그룹: 가로/세로 벤치, 집 앞 마당, 묘지, 탁자·과일박스 등
-    const CONIFER = BUILD_PALETTE_PRESETS.tree; // harness-combined-town-conifer-tree
-    const BROADLEAF = "harness-combined-town-broadleaf-tree-2x2";
-    const BENCH_H = "harness-combined-town-bench-horizontal";
-    const BENCH_V = "harness-combined-town-bench-vertical";
-    const FLOWERS = "harness-combined-town-flower-props";
-    const YARD = "harness-combined-town-house-yard-props";
-    const CEMETERY = "harness-combined-town-cemetery-props";
-    const TABLE_H = "harness-combined-town-table-horizontal";
-    const FRUIT = "harness-combined-town-fruit-box";
-    const WOOD_BOX = "harness-combined-town-wood-box";
-    const MAGIC = "harness-combined-town-magic-circle";
-    const FREE_CHAIR = "harness-combined-town-free-chairs";
+    // material 라벨 계약(그룹 id 금지): 가로/세로 벤치, 마당, 묘지, 탁자·과일박스 등
+    const CONIFER = "침엽수";
+    const BROADLEAF = "활엽수";
+    const BENCH_H = "벤치";
+    const BENCH_V = "세로 의자";
+    const FLOWERS = "꽃";
+    const YARD = "장작 더미";
+    const CEMETERY = "묘비";
+    const TABLE_H = "가로 탁자";
+    const FRUIT = "과일박스";
+    const WOOD_BOX = "나무 상자";
+    const MAGIC = "마법진";
+    const FREE_CHAIR = "의자";
 
     // 숲: minGap 0 + 좁은 영역에 많이 넣어 캐노피가 맞닿게.
     // (넓은 띠에 소수만 뿌리면 띄엄띄엄 보여 "숲 아님")
@@ -308,7 +308,7 @@ describe("natural lake village (editor tools only)", () => {
         runOk(ctx, "place_props", {
           mapId: MAP_ID,
           area,
-          propVocabId: CONIFER,
+          material: CONIFER,
           count: coniferCount,
           naturalness: 0.9,
           minGap: 0,
@@ -319,7 +319,7 @@ describe("natural lake village (editor tools only)", () => {
         runOk(ctx, "place_props", {
           mapId: MAP_ID,
           area,
-          propVocabId: BROADLEAF,
+          material: BROADLEAF,
           count: broadCount,
           naturalness: 0.88,
           minGap: 0,
@@ -332,7 +332,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 14, y: 14, w: 24, h: 24 },
-        propVocabId: CONIFER,
+        material: CONIFER,
         count: 14,
         naturalness: 0.65,
         minGap: 0,
@@ -355,7 +355,7 @@ describe("natural lake village (editor tools only)", () => {
         runOk(ctx, "place_props", {
           mapId: MAP_ID,
           area,
-          propVocabId: YARD,
+          material: YARD,
           count,
           naturalness: 0.4,
           minGap: 1,
@@ -369,7 +369,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 20, y: 36, w: 12, h: 6 },
-        propVocabId: BENCH_H,
+        material: BENCH_H,
         count: 3,
         naturalness: 0.35,
         minGap: 2,
@@ -380,7 +380,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 22, y: 36, w: 8, h: 6 },
-        propVocabId: BENCH_V,
+        material: BENCH_V,
         count: 2,
         naturalness: 0.3,
         minGap: 2,
@@ -391,7 +391,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 24, y: 36, w: 6, h: 4 },
-        propVocabId: TABLE_H,
+        material: TABLE_H,
         count: 1,
         naturalness: 0.2,
         minGap: 1,
@@ -402,7 +402,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 24, y: 36, w: 6, h: 4 },
-        propVocabId: FREE_CHAIR,
+        material: FREE_CHAIR,
         count: 2,
         naturalness: 0.3,
         minGap: 1,
@@ -413,7 +413,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 18, y: 36, w: 16, h: 8 },
-        propVocabId: FLOWERS,
+        material: FLOWERS,
         count: 8,
         naturalness: 0.55,
         minGap: 1,
@@ -424,7 +424,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 30, y: 36, w: 6, h: 4 },
-        propVocabId: FRUIT,
+        material: FRUIT,
         count: 1,
         naturalness: 0.25,
         minGap: 1,
@@ -435,7 +435,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 18, y: 37, w: 4, h: 4 },
-        propVocabId: WOOD_BOX,
+        material: WOOD_BOX,
         count: 2,
         naturalness: 0.3,
         minGap: 1,
@@ -448,7 +448,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 1, y: 46, w: 10, h: 5 },
-        propVocabId: CEMETERY,
+        material: CEMETERY,
         count: 5,
         naturalness: 0.45,
         minGap: 1,
@@ -460,7 +460,7 @@ describe("natural lake village (editor tools only)", () => {
       runOk(ctx, "place_props", {
         mapId: MAP_ID,
         area: { x: 12, y: 20, w: 4, h: 4 },
-        propVocabId: MAGIC,
+        material: MAGIC,
         count: 1,
         naturalness: 0.2,
         minGap: 0,

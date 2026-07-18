@@ -22,6 +22,10 @@ type DebugState = {
 };
 
 async function seedProject(page: Page): Promise<void> {
+  // Delete-key paths call window.confirm — auto-accept so the assertion is about deletion, not the dialog.
+  page.on("dialog", (dialog) => {
+    void dialog.accept();
+  });
   await seedProjectFromSupabaseCanonical(page, projectWithPlacedEvent());
 }
 

@@ -17,6 +17,7 @@ import type {
   Project,
 } from "@/project/types";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
+import { syncMonsterPartyFollowers } from "@/player/followers";
 
 export const MONSTER_PARTY_MAX = 6;
 
@@ -155,13 +156,19 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
   session.monsterInstances[instanceId] = hydrated;
   if (session.monsterParty.length < MONSTER_PARTY_MAX) {
     session.monsterParty.push(instanceId);
+    syncMonsterPartyFollowers(project, session);
     return { ok: true, instance: hydrated, location: "party" };
   }
   session.monsterBox.push(instanceId);
   return { ok: true, instance: hydrated, location: "box" };
 }
 
-export function moveMonster(session: PlaySession, instanceId: string, to: "party" | "box"): MoveMonsterResult {
+export function moveMonster(
+  session: PlaySession,
+  instanceId: string,
+  to: "party" | "box",
+  project?: Project
+): MoveMonsterResult {
   ensureMonsterSessionFields(session);
   if (!session.monsterInstances[instanceId]) return { ok: false, reason: "missingInstance" };
   const from: "party" | "box" | "none" = session.monsterParty.includes(instanceId)
@@ -176,6 +183,7 @@ export function moveMonster(session: PlaySession, instanceId: string, to: "party
   session.monsterBox = session.monsterBox.filter((id) => id !== instanceId);
   if (to === "party") session.monsterParty.push(instanceId);
   else session.monsterBox.push(instanceId);
+  if (project) syncMonsterPartyFollowers(project, session);
   return { ok: true, from, to };
 }
 
@@ -299,6 +307,8 @@ function rollIv(rng: Rng): number {
 function normalizeSpeciesGraphic(graphic: Partial<MonsterSpeciesGraphic> | undefined): MonsterSpeciesGraphic {
   return {
     monsterResourceId: cleanOptionalText(graphic?.monsterResourceId),
+    fieldCharsetId: cleanOptionalText(graphic?.fieldCharsetId),
+    fieldGraphic: graphic?.fieldGraphic?.sprite?.id ? graphic.fieldGraphic : undefined,
     graphicHue: clampInteger(graphic?.graphicHue ?? 0, 0, 360),
     transparent: graphic?.transparent === true,
     flying: graphic?.flying === true,
@@ -393,6 +403,17 @@ export function monsterBattleStatsForSpecies(
 /** 인스턴스의 전투 유효 스탯(종족+레벨+IV). 전투 배틀러 생성에 사용. */
 export function monsterBattleStats(project: Project, instance: MonsterInstance): MonsterBattleStats {
   return monsterBattleStatsForSpecies(monsterSpeciesById(project, instance.speciesId), instance.level, instance.ivs);
+}
+
+/**
+ * Compatibility helper for tests / tooling that want a single-stat scale probe.
+ * Prefer monsterBattleStatsForSpecies for real combat stats.
+ * Note: growthFactor is reserved for older linear probes; Pokemon-style formula ignores it.
+ */
+export function monsterStatAtLevel(base: number, iv: number, level: number, _growthFactor = 10): number {
+  const lv = clampInteger(level, 1, ACTOR_LEVEL_MAX);
+  // Mirror non-HP other-stat formula used by monsterBattleStatsForSpecies.
+  return Math.max(1, Math.floor((2 * base + iv) * lv / 100) + 5);
 }
 
 function monsterMaxHpFor(_project: Project, species: MonsterSpeciesRecord | undefined, instance: MonsterInstance): number {

@@ -59,17 +59,17 @@ describe("스킬 레지스트리", () => {
     }
   });
 
-  it("집 짓기 프롬프트는 크기/공정 순서를 정확히 지시한다(v3: build_wall→문/창→build_roof)", () => {
+  it("집 짓기 프롬프트는 현재 맵에 정확히 1채를 author_house로 지시한다", () => {
     const house = SYSTEM_SKILLS.find((skill) => skill.id === "build-house")!;
     const rect = house.buildPrompt!({ width: 12, height: 8, material: "wood", shape: "rect", where: "" }, CTX);
     expect(rect).toContain("12×8");
-    expect(rect).toContain("build_wall(mapId, rect{x,y,w,h}, material)");
-    expect(rect).toContain("벽 타일을 직접 칠해");
-    expect(rect).toContain("place_door");
-    expect(rect).toContain("build_roof");
-    expect(rect).toContain("공정 순서");
+    expect(rect).toContain("author_house");
+    expect(rect).toContain('kind:"single"');
+    expect(rect).toContain('mapId:"map_x"');
+    expect(rect).toContain("정확히 1채");
+    expect(rect).not.toMatch(/build_wall|place_door|place_window|build_roof|build_house_kit/);
     const lShape = house.buildPrompt!({ width: 10, height: 10, material: "plaster", shape: "l", where: "" }, CTX);
-    expect(lShape).toContain("직교 rect 2개");
+    expect(lShape).toContain("wings");
   });
 
   it("검증/마을/움직임 프롬프트에 핵심 프로토콜이 들어 있다", () => {
@@ -78,10 +78,11 @@ describe("스킬 레지스트리", () => {
     expect(audit).toContain("check_reachability");
     expect(audit).toContain("얼버무림 없이");
     const village = SYSTEM_SKILLS.find((skill) => skill.id === "build-village")!.buildPrompt!({ theme: "어촌", houses: 3, npcs: 2 }, CTX);
-    expect(village).toContain("단계");
-    expect(village).toContain("run_village_session");
-    expect(village).toContain("build_house_lots");
-    expect(village).toContain("place_props");
+    expect(village).toContain("author_village");
+    expect(village).toContain('target:{kind:"existing",mapId:"map_x"}');
+    expect(village).toContain("houseCount:3");
+    expect(village).toContain('countPolicy:"exact"');
+    expect(village).not.toMatch(/run_village_session|start_village_session|run_village_pipeline|build_village|build_house_lots/);
     expect(village).toContain("check_reachability");
     expect(village).toContain("자연스러움: 보통");
     const motion = SYSTEM_SKILLS.find((skill) => skill.id === "npc-motion")!.buildPrompt!({ brief: "주민 랜덤" }, CTX);

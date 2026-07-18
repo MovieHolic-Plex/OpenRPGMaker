@@ -4,6 +4,10 @@ import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
+import { snapshotProjectMaps, wipeAttemptMaps } from "@/editor/tools/villageBuilder";
+import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
+import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
+import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
 import { allTools } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
@@ -15,6 +19,8 @@ import type { MapTreeNode } from "@/project/types";
 interface VillageHouseData {
   readonly index: number;
   readonly kitId: string;
+  readonly stories: 1 | 2 | 3;
+  readonly templateId: string;
   readonly doorAt: { readonly x: number; readonly y: number };
   readonly front: { readonly x: number; readonly y: number };
   readonly ownerName: string;
@@ -111,6 +117,7 @@ describe("build_village", () => {
     expect(data.fencesEnabled).toBe(true);
     expect(data.fencedHouses).toBe(8);
     expect((data.fenceTiles ?? 0) > 0).toBe(true);
+    expect(data.fenceTiles ?? 0).toBeLessThanOrEqual(data.housesBuilt * 8);
     expect(data.pathStyle).toBe("sand");
     expect(data.decorEnabled).toBe(true);
     expect((data.decorPlaced ?? 0) > 0).toBe(true);
@@ -120,6 +127,77 @@ describe("build_village", () => {
     // 울타리 타일(상단 오버레이)이 실제 배치됐는지.
     const fenceTiles = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
     expect(map.upperTiles.some((tile) => fenceTiles.has(tile))).toBe(true);
+
+    const sand = new Set([424, 394, 454, 423, 425, 393, 395, 453, 455, 456]);
+    const dirt = new Set([421, 391, 451, 420, 422, 390, 392, 450, 452, 360, 362, 300]);
+    const road = new Set([...sand, ...dirt]);
+    const edgeHasRoad = (cells: readonly number[]) => cells.some((index) => road.has(map.lowerTiles[index] ?? -1));
+    expect(edgeHasRoad(Array.from({ length: map.width }, (_, x) => x))).toBe(true);
+    expect(edgeHasRoad(Array.from({ length: map.width }, (_, x) => (map.height - 1) * map.width + x))).toBe(true);
+    expect(edgeHasRoad(Array.from({ length: map.height }, (_, y) => y * map.width))).toBe(true);
+    expect(edgeHasRoad(Array.from({ length: map.height }, (_, y) => y * map.width + map.width - 1))).toBe(true);
+
+    expect(map.layoutPlan?.kind).toBe("village-harness-natural-v2");
+    const houseRegions = map.layoutPlan?.regions.filter((region) => region.role === "house") ?? [];
+    expect(houseRegions).toHaveLength(8);
+    expect(new Set(houseRegions.map((region) => region.shape)).size).toBeGreaterThanOrEqual(4);
+    expect(new Set(houseRegions.map((region) => region.kitId)).size).toBeGreaterThanOrEqual(3);
+    expect(houseRegions.filter((region) => region.tags?.some((tag) => tag === "2f" || tag === "3f"))).not.toHaveLength(0);
+
+    const windows = new Set([85, 87]);
+    let adjacentWindowPairs = 0;
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        const index = y * map.width + x;
+        if (!windows.has(map.upperTiles[index] ?? -1)) continue;
+        if (x + 1 < map.width && windows.has(map.upperTiles[index + 1] ?? -1)) adjacentWindowPairs += 1;
+        if (y + 1 < map.height && windows.has(map.upperTiles[index + map.width] ?? -1)) adjacentWindowPairs += 1;
+      }
+    }
+    expect(adjacentWindowPairs).toBe(0);
+
+    const villagers = map.events.filter((event) => event.id.startsWith("ev_village_"));
+    expect(villagers.every((event) => (event.schedule?.length ?? 0) >= 3)).toBe(true);
+    expect(new Set(villagers.flatMap((event) => event.schedule?.map((entry) => entry.activity) ?? [])).size).toBeGreaterThanOrEqual(6);
+    expect(new Set(villagers.map((event) => event.pages?.[0]?.movement.type)).size).toBe(2);
+    expect(map.upperTiles.some((tile) => tile === 260)).toBe(true);
+    expect(map.upperTiles.some((tile) => tile === 262)).toBe(true);
+
+    const evaluated = runTool(context, "evaluate_village_look", { mapId: data.mapId });
+    expect(evaluated.ok, evaluated.summary).toBe(true);
+    const natural = (evaluated.data as {
+      metrics: {
+        exitRoads: number;
+        adjacentWindowPairs: number;
+        orphanDoorTiles: number;
+        houseShapeKinds: number;
+        houseKitKinds: number;
+        multiStoryHouses: number;
+        scheduledNpcs: number;
+        npcActivityKinds: number;
+        npcMovementKinds: number;
+        treeKinds: number;
+        propTileKinds: number;
+        longestStraightRoadRun: number;
+        interiorTreeCells: number;
+      };
+    }).metrics;
+    expect(natural).toMatchObject({
+      exitRoads: 4,
+      adjacentWindowPairs: 0,
+      orphanDoorTiles: 0,
+      multiStoryHouses: expect.any(Number),
+      scheduledNpcs: 10,
+      npcMovementKinds: 2,
+      treeKinds: 2,
+    });
+    expect(natural.houseShapeKinds).toBeGreaterThanOrEqual(4);
+    expect(natural.houseKitKinds).toBeGreaterThanOrEqual(3);
+    expect(natural.multiStoryHouses).toBeGreaterThanOrEqual(1);
+    expect(natural.npcActivityKinds).toBeGreaterThanOrEqual(6);
+    expect(natural.propTileKinds).toBeGreaterThanOrEqual(6);
+    expect(natural.longestStraightRoadRun).toBeLessThanOrEqual(Math.floor(map.width * 0.5));
+    expect(natural.interiorTreeCells).toBeGreaterThanOrEqual(24);
   });
 
   it("pathStyle:dirt 로 흙길을 쓸 수 있다", () => {
@@ -399,23 +477,65 @@ describe("build_village", () => {
         "wait",
         "transfer",
       ]);
-      expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: house.interiorMapId, x: 6, y: 6 });
-
       const interior = context.project.maps[house.interiorMapId as string];
-      expect(interior.name).toBe(`${house.ownerName}의 집 내부`);
+      expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-      expect(interior.width).toBe(13);
-      expect(interior.height).toBe(10);
+      // villager-room-v1 규모: cottage-l 20×16, cottage 20×20, mansion 24×22
+      expect([20, 24]).toContain(interior.width);
+      expect([16, 20, 22]).toContain(interior.height);
+      expect(house.entry).toBeTruthy();
+      expect(house.exit).toBeTruthy();
+      expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({
+        kind: "transfer",
+        mapId: house.interiorMapId,
+        x: house.entry!.x,
+        y: house.entry!.y,
+      });
       const exit = interior.events.find((event) => event.id === house.exitEventId);
-      expect(exit?.x).toBe(6);
-      expect(exit?.y).toBe(7);
+      expect(exit?.x).toBe(house.exit!.x);
+      expect(exit?.y).toBe(house.exit!.y);
       expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
       expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId: data.mapId, x: house.front.x, y: house.front.y, fade: "black" }]);
-      expect(map.events.some((event) => event.x === house.front.x && event.y === house.front.y)).toBe(false);
+      // 문 이벤트는 front가 아니라 doorAt에만 둔다 (NPC 등은 front 가능)
+      expect(map.events.some((event) => event.id === house.doorEventId && event.x === house.front.x && event.y === house.front.y)).toBe(false);
     }
   });
 
-  it("interior:false면 내부 맵과 문 이벤트를 만들지 않는다", () => {
+  
+  it("대로·진입로가 집 footprint 내부를 침범하지 않는다", () => {
+    for (const seed of [1, 7, 42, 77]) {
+      const { context, data } = buildVillage(seed);
+      const map = context.project.maps[data.mapId];
+      const sand = new Set([424, 394, 454, 423, 425, 393, 395, 453, 455, 456]);
+      const dirt = new Set([421, 391, 451, 420, 422, 390, 392, 450, 452, 360, 362, 300]);
+      const road = new Set([...sand, ...dirt]);
+      for (const house of data.houses) {
+        // doorAt 주변 외곽은 길일 수 있으나, door 위 집 몸통(bbox 내부 비-문 칸)에 길이 있으면 안 된다.
+        // build data에 bbox가 없으므로 맵에서 문 주변 집 타일을 스캔: 문 위 2칸 이상 북쪽 벽 영역에서 road 금지.
+        const door = house.doorAt;
+        let roadHits = 0;
+        // 문 열 위쪽(집 내부 방향) 3x4 스캔 — 문 자체 제외
+        for (let dy = -4; dy <= -1; dy += 1) {
+          for (let dx = -2; dx <= 2; dx += 1) {
+            const x = door.x + dx;
+            const y = door.y + dy;
+            if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+            if (x === door.x && (y === door.y || y === door.y - 1)) continue; // 문 타일
+            const lower = map.lowerTiles[y * map.width + x] ?? -1;
+            const upper = map.upperTiles[y * map.width + x] ?? -1;
+            // 지붕/벽 upper가 있는 칸에 길이 있으면 침범
+            if (upper >= 0 && road.has(lower)) roadHits += 1;
+          }
+        }
+        expect(roadHits, `seed=${seed} house=${house.ownerName} door=(${door.x},${door.y})`).toBe(0);
+      }
+      // 문 연결은 유지
+      expect(data.doorsConnected).toBe(data.housesBuilt);
+      expect(data.roadComponents).toBe(1);
+    }
+  });
+
+it("interior:false면 내부 맵과 문 이벤트를 만들지 않는다", () => {
     const context: ToolContext = { project: createEmptyToolProject("외장만 마을") };
     const result = runTool(context, "build_village", { seed: 7, interior: false });
     expect(result.ok, result.summary).toBe(true);
@@ -519,3 +639,240 @@ function findTreeNode(node: MapTreeNode, mapId: string): MapTreeNode | null {
 function pointInRect(point: { readonly x: number; readonly y: number }, rect: { readonly x: number; readonly y: number; readonly w: number; readonly h: number }): boolean {
   return point.x >= rect.x && point.y >= rect.y && point.x < rect.x + rect.w && point.y < rect.y + rect.h;
 }
+
+
+describe("build_village housePlans contract", () => {
+  it("forces housePlans[0].templateId=l and owner/program onto interiors", () => {
+    const ctx = { project: createEmptyToolProject() };
+    const result = runTool(ctx, "build_village", {
+      name: "계약 마을",
+      width: 48,
+      height: 48,
+      seed: 77,
+      interior: true,
+      doorEvent: true,
+      fences: false,
+      decor: false,
+      housePlans: [
+        { kitId: "blue-stone", templateId: "l", ownerName: "촌장 로안", program: "manor", yard: ["mailbox"] },
+        { kitId: "amber-wood", yard: ["pot"] },
+        { kitId: "slate-wood", yard: ["jar"] },
+        { kitId: "bright-plaster", yard: ["flowers"] },
+      ],
+      npcs: [
+        { name: "다른사람", lines: ["인덱스 휴리스틱이면 이 이름이 쓰임"] },
+      ],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as {
+      houses?: Array<{ templateId?: string; kitId?: string; ownerName?: string; interiorMapId?: string; interiorScale?: string; interiorProgram?: string }>;
+    };
+    expect(data.houses?.[0]?.templateId).toBe("l");
+    expect(data.houses?.[0]?.kitId).toBe("blue-stone");
+    expect(data.houses?.[0]?.ownerName).toBe("촌장 로안");
+    expect(data.houses?.[0]?.interiorScale).toBe("cottage-l");
+    expect(data.houses?.[0]?.interiorProgram).toBe("manor");
+    const interiorId = data.houses?.[0]?.interiorMapId;
+    expect(interiorId).toBeTruthy();
+    const interior = ctx.project.maps[interiorId!];
+    expect(interior.width).toBe(20);
+    expect(interior.height).toBe(16);
+    expect(interior.name).toContain("촌장 로안");
+  });
+
+  it("hard-fails when forced templateId cannot place", () => {
+    const ctx = { project: createEmptyToolProject() };
+    // tiny map with 4 houses all forced to impossible template id
+    let threw = false;
+    try {
+      runTool(ctx, "build_village", {
+        name: "실패 마을",
+        width: 36,
+        height: 36,
+        seed: 1,
+        interior: false,
+        doorEvent: false,
+        fences: false,
+        decor: false,
+        housePlans: [
+          { kitId: "blue-stone", templateId: "no-such-template" },
+          { kitId: "blue-stone", templateId: "no-such-template" },
+          { kitId: "blue-stone", templateId: "no-such-template" },
+          { kitId: "blue-stone", templateId: "no-such-template" },
+        ],
+      });
+    } catch (error) {
+      threw = true;
+      expect(String(error)).toMatch(/templateId|house-template|배치 실패|invalid/i);
+    }
+    // ToolError may be returned as result.ok false depending on runner — accept either
+    if (!threw) {
+      const result = runTool(ctx, "build_village", {
+        name: "실패 마을2",
+        width: 36,
+        height: 36,
+        seed: 1,
+        interior: false,
+        doorEvent: false,
+        fences: false,
+        decor: false,
+        housePlans: [
+          { kitId: "blue-stone", templateId: "no-such-template" },
+          { kitId: "blue-stone", templateId: "no-such-template" },
+          { kitId: "blue-stone", templateId: "no-such-template" },
+          { kitId: "blue-stone", templateId: "no-such-template" },
+        ],
+      });
+      expect(result.ok).toBe(false);
+    }
+  });
+
+  it("파이프라인 재시도 정리가 기존 무관 맵을 보존한다 (스냅샷 와이프)", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject("보존 마을") };
+    const made = runTool(ctx, "create_map", { name: "기존 던전", width: 20, height: 15 });
+    expect(made.ok, made.summary).toBe(true);
+    const keepId = (made.data as { mapId: string }).mapId;
+    const keepStart = ctx.project.startMapId;
+
+    // 스냅샷 → 마을 시공(실내 포함) → 와이프: 시공분만 사라지고 기존 맵·시작점은 복원
+    const baseline = snapshotProjectMaps(ctx.project);
+    const built = runTool(ctx, "build_village", { seed: 7 });
+    expect(built.ok, built.summary).toBe(true);
+    expect(Object.keys(ctx.project.maps).length).toBeGreaterThan(baseline.mapIds.size);
+    wipeAttemptMaps(ctx.project, baseline);
+    expect(new Set(Object.keys(ctx.project.maps))).toEqual(new Set([...baseline.mapIds]));
+    expect(ctx.project.maps[keepId]).toBeTruthy();
+    expect(ctx.project.startMapId).toBe(keepStart);
+
+    // 통합: run_village_pipeline(maxAttempts 2)을 돌려도 기존 맵이 살아 있다
+    const result = runTool(ctx, "run_village_pipeline", {
+      maxAttempts: 2,
+      theme: "강가 어촌 장터",
+      pathStyle: "sand",
+      seed: 5,
+      houses: [
+        { kitId: "bright-plaster", yard: ["fruit_box"] },
+        { kitId: "blue-stone", yard: ["mailbox"] },
+        { kitId: "bright-plaster", yard: ["wood_box"] },
+        { kitId: "blue-stone", yard: ["sign"] },
+      ],
+      npcs: [{ name: "어부", lines: ["파도."] }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps[keepId]).toBeTruthy();
+    expect(ctx.project.maps[keepId]!.name).toBe("기존 던전");
+  });
+
+  it("강+호수 테마에서 집이 물 마스크 셀 위에 배치되지 않는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject("호수 강촌") };
+    const theme = "강과 호수가 있는 마을";
+    const result = runTool(ctx, "build_village", { theme, seed: 3 });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { mapId: string; housesBuilt: number };
+    const map = ctx.project.maps[data.mapId]!;
+    expect(data.housesBuilt).toBeGreaterThanOrEqual(4);
+
+    // 시공에 쓰인 것과 동일한 결정론 마스크를 재계산해 집 필지와 대조
+    const masks = buildTerrainConstraintMasks(map, inferRequirementsFromQuery(theme));
+    const houseRegions = (map.layoutPlan?.regions ?? []).filter((region) => region.role === "house");
+    expect(houseRegions.length).toBe(data.housesBuilt);
+    for (const region of houseRegions) {
+      for (let y = region.y; y < region.y + region.h; y += 1) {
+        for (let x = region.x; x < region.x + region.w; x += 1) {
+          const role = masks.roles[y * map.width + x];
+          expect(role === "water", `집(${region.x},${region.y})이 (${x},${y}) 물 셀 침범`).toBe(false);
+        }
+      }
+    }
+  });
+
+  it("길·울타리·나무가 지붕 용마루 행(bbox.y-1)을 침범하지 않는다", () => {
+    const sand = new Set<number>(CHIPSET_TILE_GROUPS.sandGround);
+    const fenceTiles = new Set<number>([378, 379, 380, 408, 409, 410, 438, 439]);
+    const treeTiles = new Set<number>([260, 261, 262, 263, 290, 291, 292, 293]);
+    for (const args of [
+      { theme: "강과 호수가 있는 마을", seed: 3 },
+      { seed: 7 },
+    ]) {
+      const ctx: ToolContext = { project: createEmptyToolProject(`용마루 ${args.seed}`) };
+      const result = runTool(ctx, "build_village", args);
+      expect(result.ok, result.summary).toBe(true);
+      const data = result.data as { mapId: string; ridgeInvaded: number };
+      expect(data.ridgeInvaded, `seed=${args.seed} 감사 ridgeInvaded`).toBe(0);
+      const map = ctx.project.maps[data.mapId]!;
+      const regions = (map.layoutPlan?.regions ?? []).filter((region) => region.role === "house");
+      expect(regions.length).toBeGreaterThan(0);
+      for (const region of regions) {
+        const y = region.y - 1;
+        if (y < 0) continue;
+        for (let x = region.x; x < region.x + region.w; x += 1) {
+          const i = y * map.width + x;
+          const lower = map.lowerTiles[i] ?? -1;
+          const upper = map.upperTiles[i] ?? -1;
+          expect(sand.has(lower), `seed=${args.seed} 용마루 행 (${x},${y}) 길 침범 lower=${lower}`).toBe(false);
+          expect(fenceTiles.has(upper), `seed=${args.seed} 용마루 행 (${x},${y}) 울타리 침범 upper=${upper}`).toBe(false);
+          expect(treeTiles.has(upper), `seed=${args.seed} 용마루 행 (${x},${y}) 나무 침범 upper=${upper}`).toBe(false);
+        }
+      }
+    }
+  });
+
+  it("pathStyle:stone 은 포석(129 블록) 오토타일로 성형된 돌길을 깔고 불변식을 지킨다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject("석조 마을") };
+    const result = runTool(ctx, "build_village", { seed: 5, pathStyle: "stone" });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as {
+      mapId: string;
+      housesBuilt: number;
+      doorsConnected: number;
+      roadComponents: number;
+      ridgeInvaded: number;
+    };
+    expect(data.doorsConnected).toBe(data.housesBuilt);
+    expect(data.roadComponents).toBe(1);
+    expect(data.ridgeInvaded).toBe(0);
+    const map = ctx.project.maps[data.mapId]!;
+    const cobble = new Set([129, 131, 159, 160, 161, 189, 190, 191, 219, 220, 221]);
+    const cobbleCells = map.lowerTiles.filter((tile) => cobble.has(tile)).length;
+    expect(cobbleCells, "포석 칸 수").toBeGreaterThanOrEqual(60);
+    // 오토타일 성형 검증 — 몸통(190)만이 아니라 가장자리/모서리 변형이 실제로 배치됨.
+    const edgeCells = map.lowerTiles.filter((tile) => cobble.has(tile) && tile !== 190).length;
+    expect(edgeCells, "포석 가장자리 성형").toBeGreaterThanOrEqual(20);
+    // 밴 타일 미사용
+    const banned = map.lowerTiles.filter((tile) => tile === 411 || tile === 412 || tile === 413 || tile === 443).length;
+    expect(banned, "밴 타일(411/412/413/443)").toBe(0);
+  });
+
+  it("길 시공 훅: bounds 밖으로 길이 새지 않는다 (침범 롤백 재시도)", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject("침범 훅") };
+    const bounds = { x: 10, y: 10, w: 40, h: 40 };
+    const result = runTool(ctx, "build_village", { seed: 7, width: 64, height: 64, bounds, interior: false });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { mapId: string };
+    const map = ctx.project.maps[data.mapId]!;
+    const roadTiles = new Set<number>([...CHIPSET_TILE_GROUPS.sandGround]);
+    let leaks = 0;
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (!roadTiles.has(map.lowerTiles[y * map.width + x] ?? -1)) continue;
+        if (x < bounds.x || y < bounds.y || x >= bounds.x + bounds.w || y >= bounds.y + bounds.h) leaks += 1;
+      }
+    }
+    expect(leaks, "bounds 밖 길 칸").toBe(0);
+  });
+
+  it("문이 0개인 맵은 layoutPlan 없이도 evaluate 구조 게이트에서 떨어진다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject("빈 평가") };
+    const made = runTool(ctx, "create_map", { name: "빈 맵", width: 30, height: 30 });
+    const mapId = (made.data as { mapId: string }).mapId;
+    const look = runTool(ctx, "evaluate_village_look", { mapId });
+    expect(look.ok, look.summary).toBe(true);
+    const report = look.data as { ok: boolean; issues: string[] };
+    expect(report.ok).toBe(false);
+    // F3: doorFronts 0 → 통과가 아니라 실패
+    expect(report.issues.some((issue) => issue.includes("문 앞 좌표"))).toBe(true);
+    // F2: layoutPlan.kind 없는 맵에도 타일 실측 검사(출구 길)가 실행된다
+    expect(report.issues.some((issue) => issue.includes("4방향"))).toBe(true);
+  });
+});
+

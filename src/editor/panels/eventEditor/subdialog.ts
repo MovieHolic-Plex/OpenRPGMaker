@@ -1,4 +1,5 @@
 import { clearChildren, el } from "@/util/dom";
+import { registerModal } from "@/editor/ui/modalStack";
 
 type EventSubdialogOptions = {
   readonly title: string;
@@ -18,15 +19,12 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
     attrs: { role: "dialog", "aria-modal": "true", "aria-label": options.title },
   });
   const body = el("div", { class: "event-subdialog-body" });
-  const close = () => backdrop.remove();
+  const close = registerModal(backdrop, () => backdrop.remove());
 
   windowEl.append(renderHeader(options, close), body);
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) close();
-  });
-  backdrop.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") close();
   });
 
   document.body.append(backdrop);

@@ -37,6 +37,10 @@ function branchCard(label: string, count: number, variant: "then" | "else" | "el
         class: "ecp-fork-branch-count",
         text: variant === "else-absent" ? "분기 없음" : `${count}개 명령`,
       }),
+      el("span", {
+        class: "ecp-fork-branch-hint",
+        text: variant === "then" ? "조건 참" : variant === "else" ? "조건 거짓" : "미사용",
+      }),
     ],
   });
 }

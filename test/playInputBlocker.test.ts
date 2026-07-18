@@ -9,6 +9,24 @@ describe("play pointer blocker", () => {
     expect(shouldBlockPlayPointerEvent({ type: "click" })).toBe(false);
   });
 
+  it("allows real mouse clicks on title menu options", () => {
+    const g = globalThis as { __rpgzzuForcePointerBlock?: boolean };
+    g.__rpgzzuForcePointerBlock = true;
+    try {
+      const option = {
+        closest(selector: string) {
+          return selector.includes("title-new-game") ? option : null;
+        },
+      };
+      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: option as EventTarget })).toBe(false);
+      expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: option as EventTarget })).toBe(false);
+      // 필드 클릭은 여전히 차단
+      expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: { closest: () => null } as unknown as EventTarget })).toBe(true);
+    } finally {
+      delete g.__rpgzzuForcePointerBlock;
+    }
+  });
+
   it("prevents dispatched mouse clicks from changing state but allows keyboard-synthetic clicks", () => {
     const root = new EventTarget() as HTMLElement;
     const cleanup = installPlayPointerBlocker(root);

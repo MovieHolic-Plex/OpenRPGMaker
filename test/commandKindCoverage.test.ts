@@ -65,6 +65,10 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   enterHeroName: { kind: "enterHeroName", actorId: "actor1", maxLength: 6, showInitialName: false },
   changeGold: { kind: "changeGold", op: "+=", amount: 10 },
   changeItem: { kind: "changeItem", itemId: "item1", op: "+=", amount: 1 },
+  craftRecipe: { kind: "craftRecipe", recipeId: "recipe1" },
+  applyItemUpgrade: { kind: "applyItemUpgrade", upgradeId: "upgrade1" },
+  equipTool: { kind: "equipTool", itemId: "item1" },
+  openChest: { kind: "openChest", chestId: "chest1" },
   changeFriendship: { kind: "changeFriendship", npcKey: "ev1", delta: 10 },
   getFriendship: { kind: "getFriendship", npcKey: "ev1", variableId: "var1" },
   changeParty: { kind: "changeParty", actorId: "actor1", action: "add" },
@@ -122,6 +126,22 @@ function buildMinimalConditions(ids: {
     season: { kind: "season", season: "spring" },
     npcActivity: { kind: "npcActivity", activity: "work" },
     friendshipAtLeast: { kind: "friendshipAtLeast", value: 10 },
+    battleResult: { kind: "battleResult", result: "victory" },
+    all: {
+      kind: "all",
+      conditions: [
+        { kind: "switch", switchId: ids.switchId, value: true },
+        { kind: "variable", variableId: ids.variableId, op: ">=", value: 0 },
+      ],
+    },
+    any: {
+      kind: "any",
+      conditions: [
+        { kind: "item", itemId: ids.itemId, present: true },
+        { kind: "gold", op: ">=", amount: 1 },
+      ],
+    },
+    not: { kind: "not", condition: { kind: "switch", switchId: ids.switchId, value: false } },
   };
 }
 
@@ -198,12 +218,10 @@ describe("condition 7종 — fork/페이지 조건 serialize→deserialize 왕�
     expect(switchId, "blank project에 switch가 있어야 함").toBeTruthy();
     expect(variableId, "blank project에 variable이 있어야 함").toBeTruthy();
 
-    const conditions = buildMinimalConditions({
-      switchId: switchId as string,
-      variableId: variableId as string,
-      actorId: actorId as string,
-      itemId: itemId as string,
-    });
+    if (!actorId || !itemId || !switchId || !variableId) {
+      throw new Error("blank project reference fixtures are incomplete");
+    }
+    const conditions = buildMinimalConditions({ switchId, variableId, actorId, itemId });
     const conditionList: Condition[] = CONDITION_KINDS.map((kind) => conditions[kind]);
 
     const forkCommands: Command[] = conditionList.map((condition, index) => ({
@@ -226,6 +244,7 @@ describe("condition 7종 — fork/페이지 조건 serialize→deserialize 왕�
 
     const testEvent: GameEvent = {
       id: "ev_condition_roundtrip",
+      characterId: "char_condition_roundtrip",
       x: 0,
       y: 0,
       trigger: { kind: "action" },
@@ -237,10 +256,8 @@ describe("condition 7종 — fork/페이지 조건 serialize→deserialize 왕�
     map.events = [...map.events, testEvent];
 
     const restored = deserialize(serialize(project));
-    const restoredEvent = restored.maps[project.startMapId].events.find(
-      (event) => event.id === "ev_condition_roundtrip"
-    );
-    expect(restoredEvent).toEqual(testEvent);
+    expect(restored).toEqual(project);
+    expect(deserialize(serialize(restored))).toEqual(restored);
   });
 });
 

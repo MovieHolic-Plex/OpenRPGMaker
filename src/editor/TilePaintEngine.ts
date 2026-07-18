@@ -7,6 +7,7 @@ import {
 } from "@/editor/actions";
 import type { TileStrokeCell } from "@/editor/tileActions";
 import { editorState } from "@/editor/editorState";
+import { revealPaletteTileFromMap } from "@/editor/panels/tilePalette";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -164,6 +165,8 @@ export class TilePaintEngine {
       layer: pick.layer,
       tool: "paint",
     });
+    // 전문가 모드: 우클릭 스포이트 후 팔레트 칩셋(하위/상위 레이어 시트)로 이동
+    revealPaletteTileFromMap(pick.tile);
   }
 
   pickTileAt(target: TilePickTarget): void {
@@ -186,6 +189,7 @@ export class TilePaintEngine {
       layer: target.layer,
       tool: "paint",
     });
+    revealPaletteTileFromMap(selectedTile);
   }
 }
 

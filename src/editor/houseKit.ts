@@ -6,14 +6,29 @@
 // 불변식(하네싱 규칙):
 // 1) 벽 = 상단 1행 + 중단 N행 + 하단 1행 나인슬라이스. 가로는 중앙 열만 반복.
 // 2) 지붕(하위) = 처마 1행 + 몸통 N행 (+ 파랑은 좌우 1칸 인셋된 최상행 1행).
-// 3) 마감은 전부 상위 레이어, "빈 칸에만" 얹는다(이웃 오브젝트 보존).
+// 3) 레이어 분배(2026-07-17 사용자 교정): 불투명 지붕 조각(몸통·처마·용마루 374·
+//    사선 트림 376/377·A자 꼭짓점)은 전부 "하위" — 지붕 몸체다. 상위에는 투명 캡
+//    (354-357/384-387, 뒤로 잔디가 비침)과 소품(굴뚝 326 등)만 "빈 칸에만" 얹는다.
 // 4) 세트 혼합 금지 — 벽·지붕은 키트로 페어 고정.
 
 import { TILE } from "@/project/defaults/constants";
 import { createHouseDoorEvent } from "@/editor/houseInteriors";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 
-export type HouseKitId = "blue-stone" | "bright-plaster";
+export type HouseKitId = "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall" | "aframe-stone";
+
+/** 모든 집 키트 id (툴 enum/검증 공용). */
+export const ALL_HOUSE_KIT_IDS = ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall", "aframe-stone"] as const satisfies readonly HouseKitId[];
+
+/**
+ * 랜덤 킷 믹스에 넣어도 되는 킷. aframe은 날개 높이가 폭에 종속(피라미드)이라
+ * 임의 템플릿에 배정하면 시공이 실패한다 — aframe-* 템플릿이 킷을 강제할 때만 쓴다.
+ */
+export const MIXABLE_HOUSE_KIT_IDS = ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] as const satisfies readonly HouseKitId[];
+
+export function isHouseKitId(value: unknown): value is HouseKitId {
+  return typeof value === "string" && (ALL_HOUSE_KIT_IDS as readonly string[]).includes(value);
+}
 
 interface WallNineSlice {
   readonly top: readonly [number, number, number];
@@ -44,12 +59,30 @@ interface BrightRoofKit {
   };
 }
 
+interface AframeRoofKit {
+  readonly kind: "aframe";
+  readonly body: number; // 404 — 피라미드 내부 채움 (하위)
+  readonly eave: number; // 405 — 최하행, 벽과 같은 폭 (하위)
+  readonly upper: {
+    readonly capL: number; // 354 — 좌사선 캡, 행마다 1칸씩 안으로
+    readonly capR: number; // 355
+    readonly apex: number; // 374 — 홀수 폭 꼭짓점 1칸
+    readonly trimCapL: number; // 384 — 처마 행 좌우 마감
+    readonly trimCapR: number; // 385
+  };
+}
+
 export interface HouseKit {
   readonly id: HouseKitId;
   readonly name: string;
   readonly windowTile: number;
   readonly wall: WallNineSlice;
-  readonly roof: BlueRoofKit | BrightRoofKit;
+  /**
+   * 하프팀버 기둥 열(2026-07-17 사용자 규약): 벽 내부 열을 every 간격으로 기둥
+   * 세로 3단(top/mid/bottom)으로 교체한다 — 기둥(196/226/256)과 회벽(16/46/76)의 반복.
+   */
+  readonly postColumn?: { readonly tiles: readonly [number, number, number]; readonly every: number };
+  readonly roof: BlueRoofKit | BrightRoofKit | AframeRoofKit;
 }
 
 export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
@@ -72,6 +105,50 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
       upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
     },
   },
+  "amber-wood": {
+    id: "amber-wood",
+    name: "밝은 오렌지 지붕 + 통나무 벽",
+    windowTile: 85,
+    wall: { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] },
+    roof: {
+      kind: "bright",
+      body: 404,
+      eave: 405,
+      upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
+    },
+  },
+  "slate-wood": {
+    id: "slate-wood",
+    name: "파랑 지붕 + 통나무 벽",
+    windowTile: 87,
+    wall: { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] },
+    roof: { kind: "blue", body: 406, rightEdge: 407, eave: 467, upper: { nw: 356, ne: 357, sw: 386, se: 387 } },
+  },
+  // 2026-07-17 사용자 규약 2차: 기둥 세로 3단(196/226/256)과 회벽 열(16/46/76)의 교대 반복.
+  // 조립 검증: scratchpad todo-evidence/timber-hall-C.png — 좌우 가장자리 기둥 + 내부 3칸 간격 기둥.
+  "timber-hall": {
+    id: "timber-hall",
+    name: "빨간 널지붕 + 목조 기둥 홀",
+    windowTile: 85,
+    wall: { top: [196, 16, 196], mid: [226, 46, 226], bottom: [256, 76, 256] },
+    postColumn: { tiles: [196, 226, 256], every: 3 },
+    roof: {
+      kind: "bright",
+      body: 404,
+      eave: 405,
+      upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
+    },
+  },
+  // 2026-07-17 이미지 #6(큰 삼각 빨간 지붕 + 회색 석벽): 사선 캡 354/355를 행마다
+  // 1칸씩 좁혀 쌓는 피라미드 지붕. 날개 높이 = 벽 밴드 + floor((폭-1)/2) + 1 로
+  // 폭에 종속 — 랜덤 믹스에서 제외(MIXABLE)하고 aframe-* 템플릿이 킷을 강제한다.
+  "aframe-stone": {
+    id: "aframe-stone",
+    name: "빨간 A자 지붕 + 석벽",
+    windowTile: 85,
+    wall: { top: [12, 13, 14], mid: [42, 43, 44], bottom: [72, 73, 74] },
+    roof: { kind: "aframe", body: 404, eave: 405, upper: { capL: 354, capR: 355, apex: 374, trimCapL: 384, trimCapR: 385 } },
+  },
 };
 
 export type HouseKitWindowsOption = { readonly spacing?: number } | false;
@@ -83,10 +160,12 @@ export interface RectHousePlan {
   /** 벽 폭(칸). 최소 3 — 좌/우 모서리 + 중앙 1칸. */
   readonly width: number;
   /** 층수. 벽 중단 행 수 = 2*stories - 1 (1층=1, 2층=3). */
-  readonly stories: 1 | 2;
+  readonly stories: 1 | 2 | 3;
   /** 지붕 몸통 행 수(≥1). 높은 지붕이 필요하면 늘린다. */
   readonly roofBodyRows: number;
   readonly kitId: HouseKitId;
+  /** 낮은 벽(창고/헛간): 벽을 상단+하단 2행만 — 중단 없음, 창 없음. stories 무시. */
+  readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
 }
@@ -99,13 +178,19 @@ export interface RectHouseStampResult {
   readonly height?: number;
 }
 
-export function rectHouseHeight(plan: Pick<RectHousePlan, "stories" | "roofBodyRows" | "kitId">): number {
-  const wallRows = 2 + wallMidRows(plan.stories);
+export function rectHouseHeight(
+  plan: Pick<RectHousePlan, "stories" | "roofBodyRows" | "kitId"> & Partial<Pick<RectHousePlan, "width" | "lowWall">>,
+): number {
+  const wallRows = plan.lowWall ? 2 : 2 + wallMidRows(plan.stories);
+  // aframe: 지붕 행수는 폭에 종속 — 피라미드 floor((폭-1)/2) + 처마 1행 (roofBodyRows 무시).
+  if (HOUSE_KITS[plan.kitId]?.roof.kind === "aframe" && typeof plan.width === "number") {
+    return Math.floor((plan.width - 1) / 2) + 1 + wallRows;
+  }
   // blue: 최상행 + 몸통 + 처마 / bright: 용마루(상위) 행 + 몸통 + 처마 — 총 행수는 동일 구조.
   return 1 + plan.roofBodyRows + 1 + wallRows;
 }
 
-function wallMidRows(stories: 1 | 2): number {
+function wallMidRows(stories: 1 | 2 | 3): number {
   return 2 * stories - 1;
 }
 
@@ -143,28 +228,39 @@ function placeWindowsOnWallRuns(
     if (run.x1 - run.x0 + 1 < 3) continue;
     for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) {
       if (doorAt && Math.abs(x - doorAt.x) <= 1) continue;
+      // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
+      const lowerTile = map.lowerTiles[run.y * map.width + x] ?? TILE.EMPTY;
+      if (kit.postColumn && (kit.postColumn.tiles as readonly number[]).includes(lowerTile)) continue;
       upperIfEmpty(map, x, run.y, kit.windowTile);
     }
   }
 }
 
-function wallMidRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width: number): WallRun[] {
+function wallWindowRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width: number): WallRun[] {
   const runs: WallRun[] = [];
   const cellKey = (x: number, y: number): number => y * width + x;
+  const eligible = new Set<number>();
   for (const [cell, role] of wallRole.entries()) {
     if (role !== 1) continue;
     const x = cell % width;
     const y = Math.floor(cell / width);
-    if (x > 0 && wallRole.get(cellKey(x - 1, y)) === 1) continue;
+    let midRowsAbove = 0;
+    while (wallRole.get(cellKey(x, y - midRowsAbove - 1)) === 1) midRowsAbove += 1;
+    if (midRowsAbove % 2 === 0) eligible.add(cell);
+  }
+  for (const cell of eligible) {
+    const x = cell % width;
+    const y = Math.floor(cell / width);
+    if (x > 0 && eligible.has(cellKey(x - 1, y))) continue;
     let x1 = x;
-    while (x1 + 1 < width && wallRole.get(cellKey(x1 + 1, y)) === 1) x1 += 1;
+    while (x1 + 1 < width && eligible.has(cellKey(x1 + 1, y))) x1 += 1;
     runs.push({ x0: x, x1, y });
   }
   return runs.sort((a, b) => a.y - b.y || a.x0 - b.x0);
 }
 
-function rectWallMidRuns(left: number, right: number, wallTopY: number, stories: 1 | 2): WallRun[] {
-  return Array.from({ length: wallMidRows(stories) }, (_, row) => ({ x0: left, x1: right, y: wallTopY + 1 + row }));
+function rectWallWindowRuns(left: number, right: number, wallTopY: number, stories: 1 | 2 | 3): WallRun[] {
+  return Array.from({ length: stories }, (_, floor) => ({ x0: left, x1: right, y: wallTopY + 1 + floor * 2 }));
 }
 
 // ── 임의 평면(ㄱ/ㄴ/ㄷ/ㅁ/O …) 일반화 ────────────────────────────────────────
@@ -184,6 +280,13 @@ export interface FootprintWing {
 export interface FootprintHousePlan {
   readonly wings: readonly FootprintWing[];
   readonly kitId: HouseKitId;
+  /**
+   * 층수. 벽 밴드 행 수 = 2 + (2*stories-1).
+   * 1층=벽3행(상·중·하), 2층=벽5행(상·중×3·하). 기본 1.
+   */
+  readonly stories?: 1 | 2 | 3;
+  /** 낮은 벽(창고/헛간): 벽 밴드를 상단+하단 2행만 — 중단 없음, 창 없음. stories 무시. */
+  readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
   /** 내부 맵으로 이어지는 문 이벤트. 도구 계층에서 내부 맵을 만든 뒤 주입한다. */
@@ -196,12 +299,22 @@ export interface FootprintHouseDoorEventPlan {
   readonly name?: string;
 }
 
-const WALL_BAND_ROWS = 3; // 하네싱 불변식: 벽 = 상단+중단+하단
-
 export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): RectHouseStampResult {
   const kit = HOUSE_KITS[plan.kitId];
   if (!kit) return { ok: false, reason: `알 수 없는 키트: ${plan.kitId}` };
   if (plan.wings.length === 0) return { ok: false, reason: "날개가 없습니다." };
+  const stories: 1 | 2 | 3 = plan.stories === 3 ? 3 : plan.stories === 2 ? 2 : 1;
+  // 벽 밴드: 상단1 + 중단(2*stories-1) + 하단1 — lowWall(헛간)은 상단+하단만.
+  const wallBandRows = plan.lowWall ? 2 : 2 + wallMidRows(stories);
+  // aframe: 피라미드 지오메트리 검증 — 단일 직사각 날개 + 높이 = 벽 밴드 + floor((폭-1)/2) + 1.
+  if (kit.roof.kind === "aframe") {
+    if (plan.wings.length !== 1) return { ok: false, reason: "A자 지붕 킷은 단일 직사각 날개만 지원합니다." };
+    const wing = plan.wings[0]!;
+    const required = wallBandRows + Math.floor((wing.w - 1) / 2) + 1;
+    if (wing.h !== required) {
+      return { ok: false, reason: `A자 지붕 날개는 h=${required}(벽 ${wallBandRows} + 지붕 ${required - wallBandRows})이어야 합니다 (현재 ${wing.h}).` };
+    }
+  }
 
   // 질량 집합 + 경계 검증.
   const mass = new Set<number>();
@@ -238,13 +351,16 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       while (inMass(x, y + 1)) y += 1;
       const bottom = y;
       const height = bottom - top + 1;
-      if (height < WALL_BAND_ROWS + 2) {
-        return { ok: false, reason: `열 x=${x}의 구간 높이(${height})가 최소 5(벽 3+지붕 2)보다 작습니다.` };
+      if (height < wallBandRows + 2) {
+        return { ok: false, reason: `열 x=${x}의 구간 높이(${height})가 최소 ${wallBandRows + 2}(벽 ${wallBandRows}+지붕 2)보다 작습니다.` };
       }
-      for (let wy = bottom - WALL_BAND_ROWS + 1; wy <= bottom; wy += 1) {
-        wallRole.set(key(x, wy), (wy - (bottom - WALL_BAND_ROWS + 1)) as 0 | 1 | 2);
+      // role: 0=상단, 마지막=하단, 중간=중단(창 배치 대상)
+      for (let wy = bottom - wallBandRows + 1; wy <= bottom; wy += 1) {
+        const offset = wy - (bottom - wallBandRows + 1);
+        const role: 0 | 1 | 2 = offset === 0 ? 0 : offset === wallBandRows - 1 ? 2 : 1;
+        wallRole.set(key(x, wy), role);
       }
-      for (let ry = top; ry <= bottom - WALL_BAND_ROWS; ry += 1) roof.add(key(x, ry));
+      for (let ry = top; ry <= bottom - wallBandRows; ry += 1) roof.add(key(x, ry));
       y = bottom + 1;
     }
   }
@@ -259,18 +375,46 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
   };
 
-  // ── 벽: 같은 행·같은 역할의 연속 런을 나인슬라이스로 ──
+  // ── 벽: 같은 행·같은 역할의 연속 런을 나인슬라이스로 (+하프팀버 기둥 열 교대) ──
   for (const [cell, role] of [...wallRole.entries()].sort((a, b) => a[0] - b[0])) {
     const x = cell % map.width;
     const y = Math.floor(cell / map.width);
     const slice = role === 0 ? kit.wall.top : role === 1 ? kit.wall.mid : kit.wall.bottom;
     const runStart = !wallRole.has(key(x - 1, y)) || wallRole.get(key(x - 1, y)) !== role;
     const runEnd = !wallRole.has(key(x + 1, y)) || wallRole.get(key(x + 1, y)) !== role;
-    lower(x, y, runStart ? slice[0] : runEnd ? slice[2] : slice[1]);
+    let tile = runStart ? slice[0] : runEnd ? slice[2] : slice[1];
+    if (!runStart && !runEnd && kit.postColumn) {
+      let runX0 = x;
+      while (wallRole.get(key(runX0 - 1, y)) === role) runX0 -= 1;
+      if ((x - runX0) % kit.postColumn.every === 0) tile = kit.postColumn.tiles[role as 0 | 1 | 2];
+    }
+    lower(x, y, tile);
   }
 
   // ── 지붕: 기준 집에서 추출한 국소 규칙 ──
-  for (const cell of roof) {
+  // aframe: 처마 위로 행마다 좌우 1칸씩 좁아지는 피라미드 — 사선 캡(354/355) 바깥은
+  // 잔디 그대로 남겨 삼각 실루엣을 만든다 (파랑 최상행 인셋 어깨와 같은 원리).
+  if (kit.roof.kind === "aframe") {
+    const wing = plan.wings[0]!;
+    const left = wing.x;
+    const right = wing.x + wing.w - 1;
+    const eaveY = wing.y + wing.h - wallBandRows - 1;
+    for (let x = left; x <= right; x += 1) lower(x, eaveY, kit.roof.eave);
+    upperIfEmpty(left, eaveY, kit.roof.upper.trimCapL);
+    upperIfEmpty(right, eaveY, kit.roof.upper.trimCapR);
+    for (let k = 1; k <= eaveY - wing.y; k += 1) {
+      const rowY = eaveY - k;
+      const capLX = left + k;
+      const capRX = right - k;
+      if (capLX === capRX) {
+        lower(capLX, rowY, kit.roof.upper.apex); // 꼭짓점 374는 불투명 — 하위 (2026-07-17 교정)
+        continue;
+      }
+      upperIfEmpty(capLX, rowY, kit.roof.upper.capL);
+      upperIfEmpty(capRX, rowY, kit.roof.upper.capR);
+      for (let x = capLX + 1; x < capRX; x += 1) lower(x, rowY, kit.roof.body);
+    }
+  } else for (const cell of roof) {
     const x = cell % map.width;
     const y = Math.floor(cell / map.width);
     const isEave = !inRoof(x, y + 1);
@@ -296,6 +440,12 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       continue;
     }
     // bright: 처마는 지지대로 안 치는 가장자리 판정(기준 08의 안쪽 트림 재현 조건).
+    // 2026-07-17 사용자 교정: 불투명 사선(용마루 374·트림 376/377)은 하위 레이어 —
+    // 상위는 투명 캡(354/355/384/385)과 소품(굴뚝 등)의 자리다.
+    const lowerIfInMap = (nx: number, ny: number, tile: number): void => {
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) return;
+      map.lowerTiles[key(nx, ny)] = tile;
+    };
     const eaveAt = (nx: number, ny: number): boolean => inRoof(nx, ny) && !inRoof(nx, ny + 1);
     const edgeL = !inRoof(x - 1, y) || eaveAt(x - 1, y);
     const edgeR = !inRoof(x + 1, y) || eaveAt(x + 1, y);
@@ -303,21 +453,21 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
       lower(x, y, kit.roof.eave);
       if (!inRoof(x - 1, y)) upperIfEmpty(x, y, kit.roof.upper.trimCapL);
       if (!inRoof(x + 1, y)) upperIfEmpty(x, y, kit.roof.upper.trimCapR);
-      if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridge);
+      if (isTop) lowerIfInMap(x, y - 1, kit.roof.upper.ridge);
       continue;
     }
     if (edgeL) {
-      upperIfEmpty(x, y, kit.roof.upper.trimL);
+      lower(x, y, kit.roof.upper.trimL);
       if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridgeCapL);
       continue;
     }
     if (edgeR) {
-      upperIfEmpty(x, y, kit.roof.upper.trimR);
+      lower(x, y, kit.roof.upper.trimR);
       if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridgeCapR);
       continue;
     }
     lower(x, y, kit.roof.body);
-    if (isTop) upperIfEmpty(x, y - 1, kit.roof.upper.ridge);
+    if (isTop) lowerIfInMap(x, y - 1, kit.roof.upper.ridge);
   }
 
   // 문 권장 위치: 건물 최남단(외부에 면한) 벽 하단 런 중 가장 긴 것의 중앙.
@@ -333,7 +483,7 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (!best || x1 - x > best.x1 - best.x0 || (x1 - x === best.x1 - best.x0 && y > best.y)) best = { x0: x, x1, y };
   }
   const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
-  placeWindowsOnWallRuns(map, kit, wallMidRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
+  placeWindowsOnWallRuns(map, kit, wallWindowRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
   if (doorAt && plan.doorEvent) {
     upsertEvent(map, createHouseDoorEvent({
       eventId: plan.doorEvent.eventId,
@@ -374,10 +524,13 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
     const index = y * map.width + x;
     if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
   };
-  // 나인슬라이스 한 행: 좌 모서리 + 중앙 반복 + 우 모서리.
-  const nineSliceRow = (y: number, [l, c, r]: readonly [number, number, number]): void => {
+  // 나인슬라이스 한 행: 좌 모서리 + 중앙 반복 + 우 모서리 (+하프팀버 기둥 열 교대).
+  const nineSliceRow = (y: number, [l, c, r]: readonly [number, number, number], postTile?: number): void => {
     lower(left, y, l);
-    for (let x = left + 1; x < right; x += 1) lower(x, y, c);
+    for (let x = left + 1; x < right; x += 1) {
+      const isPost = postTile !== undefined && kit.postColumn !== undefined && (x - left) % kit.postColumn.every === 0;
+      lower(x, y, isPost ? postTile : c);
+    }
     lower(right, y, r);
   };
 
@@ -400,34 +553,59 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
     upperIfEmpty(left, y, roof.upper.sw);
     upperIfEmpty(right, y, roof.upper.se);
     y += 1;
-  } else {
-    // 용마루(상위) 행: 몸통 폭 = 벽보다 좌우 1칸 인셋 → 용마루도 인셋 폭, 캡은 그 바깥.
-    for (let x = left + 1; x < right; x += 1) upperIfEmpty(x, y, roof.upper.ridge);
+  } else if (roof.kind === "bright") {
+    // 용마루 행: 몸통 폭 = 벽보다 좌우 1칸 인셋 → 용마루도 인셋 폭, 캡은 그 바깥.
+    // 2026-07-17 사용자 교정: 사선 지붕의 불투명 조각(용마루 374·트림 376/377)은 지붕
+    // "몸체"라서 하위 레이어 — 상위는 투명 캡(354/355/384/385)과 소품(굴뚝 등)의 자리다.
+    for (let x = left + 1; x < right; x += 1) lower(x, y, roof.upper.ridge);
     upperIfEmpty(left, y, roof.upper.ridgeCapL);
     upperIfEmpty(right, y, roof.upper.ridgeCapR);
     y += 1;
-    // 몸통행 ×N (인셋) + 좌우 바깥 열 수직 트림(상위).
+    // 몸통행 ×N (인셋) + 좌우 바깥 열 수직 트림(하위).
     for (let row = 0; row < plan.roofBodyRows; row += 1, y += 1) {
       for (let x = left + 1; x < right; x += 1) lower(x, y, roof.body);
-      upperIfEmpty(left, y, roof.upper.trimL);
-      upperIfEmpty(right, y, roof.upper.trimR);
+      lower(left, y, roof.upper.trimL);
+      lower(right, y, roof.upper.trimR);
     }
     // 처마행: 벽과 같은 폭(몸통보다 +1 오버행), 트림 하단 캡을 처마 위에 겹침.
     for (let x = left; x <= right; x += 1) lower(x, y, roof.eave);
     upperIfEmpty(left, y, roof.upper.trimCapL);
     upperIfEmpty(right, y, roof.upper.trimCapR);
     y += 1;
+  } else {
+    // aframe: 꼭짓점(374)부터 행마다 좌우 1칸씩 넓어지는 피라미드 — roofBodyRows 무시,
+    // 행수는 폭에 종속(floor((폭-1)/2)). 사선 캡 354/355 바깥은 잔디 그대로.
+    const pyramidRows = Math.floor((plan.width - 1) / 2);
+    for (let row = 0; row < pyramidRows; row += 1, y += 1) {
+      const inset = pyramidRows - row;
+      const capLX = left + inset;
+      const capRX = right - inset;
+      if (capLX === capRX) {
+        lower(capLX, y, roof.upper.apex); // 꼭짓점 374는 불투명 — 하위 (2026-07-17 교정)
+        continue;
+      }
+      upperIfEmpty(capLX, y, roof.upper.capL);
+      upperIfEmpty(capRX, y, roof.upper.capR);
+      for (let x = capLX + 1; x < capRX; x += 1) lower(x, y, roof.body);
+    }
+    for (let x = left; x <= right; x += 1) lower(x, y, roof.eave);
+    upperIfEmpty(left, y, roof.upper.trimCapL);
+    upperIfEmpty(right, y, roof.upper.trimCapR);
+    y += 1;
   }
 
-  // ── 벽(상단 1 + 중단 N + 하단 1) ──
+  // ── 벽(상단 1 + 중단 N + 하단 1 — lowWall은 상단+하단만) ──
   const wallTopY = y;
-  nineSliceRow(y, kit.wall.top);
+  nineSliceRow(y, kit.wall.top, kit.postColumn?.tiles[0]);
   y += 1;
-  for (let row = 0; row < wallMidRows(plan.stories); row += 1, y += 1) nineSliceRow(y, kit.wall.mid);
-  nineSliceRow(y, kit.wall.bottom);
+  const midRows = plan.lowWall ? 0 : wallMidRows(plan.stories);
+  for (let row = 0; row < midRows; row += 1, y += 1) nineSliceRow(y, kit.wall.mid, kit.postColumn?.tiles[1]);
+  nineSliceRow(y, kit.wall.bottom, kit.postColumn?.tiles[2]);
 
   const doorAt = { x: left + Math.floor(plan.width / 2), y };
-  placeWindowsOnWallRuns(map, kit, rectWallMidRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
+  if (!plan.lowWall) {
+    placeWindowsOnWallRuns(map, kit, rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
+  }
 
   return { ok: true, doorAt, height };
 }

@@ -1,28 +1,27 @@
 .rm-title-screen {
-  --rm2k3-title-sky-glow: rgba(255, 255, 255, 0.22);
-  --rm2k3-title-vignette: rgba(15, 77, 146, 0.12);
-  --rm2k3-title-window-hi: #356fd4;
-  --rm2k3-title-window: #123c9a;
-  --rm2k3-title-window-deep: #071e68;
-  --rm2k3-title-window-edge: #f5fbff;
-  --rm2k3-title-window-shadow: #061038;
-  --rm2k3-title-window-mid: #7da7ff;
-  --rm2k3-title-highlight: #397ddd;
-  --rm2k3-title-highlight-deep: #1b54bd;
-  --rm2k3-title-highlight-ring: rgba(255, 255, 255, 0.86);
+  --rm2k3-title-sky-glow: rgba(255, 255, 255, 0.12);
+  --rm2k3-title-vignette: rgba(0, 0, 0, 0.28);
+  --rm2k3-title-window-hi: #4a5a8a;
+  --rm2k3-title-window: #243058;
+  --rm2k3-title-window-deep: #121a34;
+  --rm2k3-title-window-edge: #e8eef8;
+  --rm2k3-title-window-shadow: #0a1020;
+  --rm2k3-title-window-mid: #8aa0c8;
+  --rm2k3-title-highlight: #3a5a9a;
+  --rm2k3-title-highlight-deep: #1e3468;
+  --rm2k3-title-highlight-ring: rgba(255, 255, 255, 0.55);
   --rm2k3-title-cursor: #ffffff;
-  --rm2k3-title-ornament: rgba(255, 251, 236, 0.96);
-  --rm2k3-title-ornament-shadow: rgba(13, 57, 136, 0.58);
+  --rm2k3-title-ornament: rgba(255, 245, 210, 0.9);
+  --rm2k3-title-ornament-shadow: rgba(0, 0, 0, 0.45);
   --rm2k3-title-text: #ffffff;
-  --rm2k3-title-shadow: #06185c;
-  /* fallback only when no Title image — avoid painting over RTP Title1 */
+  --rm2k3-title-shadow: #101828;
   background-color: #101820;
   background-position: center;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100% 100%;
   color: var(--rm2k3-title-text);
   font-family: var(--runtime-pixel-font);
-  image-rendering: auto;
+  image-rendering: pixelated;
   isolation: isolate;
   overflow: hidden;
 }
@@ -37,15 +36,15 @@
 }
 .rm-title-screen::before {
   background:
-    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.08), transparent 34%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.04), transparent 40%);
-  opacity: 0.55;
+    radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.05), transparent 30%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 42%);
+  opacity: 0.4;
 }
 .rm-title-screen::after {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.12), transparent 14%, transparent 86%, rgba(0, 0, 0, 0.12)),
-    linear-gradient(180deg, transparent 70%, rgba(0, 0, 0, 0.18));
-  opacity: 0.7;
+    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 12%, transparent 88%, rgba(0, 0, 0, 0.18)),
+    linear-gradient(180deg, transparent 72%, rgba(0, 0, 0, 0.28));
+  opacity: 0.55;
 }
 .rm-title-screen .rm-title-screen-title {
   color: var(--rm2k3-title-text);

@@ -1,5 +1,5 @@
 // 툴 파라미터 스키마의 프로바이더 호환 계약 (2026-07-08).
-// Gemini(OpenRouter 경유)는 function declaration 스키마를 엄격 검증한다:
+// Gemini(LLM 경유)는 function declaration 스키마를 엄격 검증한다:
 // - type 은 단일 문자열이어야 한다 (["boolean","object"] 같은 union 금지)
 // - properties 는 type:"object" 에서만 허용
 // - items 는 type:"array" 에서만 허용

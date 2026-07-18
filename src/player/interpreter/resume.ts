@@ -35,6 +35,17 @@ export function advanceResume(
       return "continue";
     }
     frame.pc += 1;
+  } else if (pending === "inn") {
+    const command = frame.commands[frame.pc];
+    if (
+      command?.kind === "inn" &&
+      command.branchOnNotEnoughGold === true &&
+      value === "notEnough" &&
+      pushFrame(state, command.notEnoughBranch ?? [])
+    ) {
+      return "continue";
+    }
+    frame.pc += 1;
   } else if (pending === "inputNumber") {
     const command = frame.commands[frame.pc];
     if (command?.kind === "inputNumber") {
@@ -54,6 +65,18 @@ export function advanceResume(
     const command = frame.commands[frame.pc];
     if (command?.kind === "inputWait" && command.variableId) {
       state.session.variables[command.variableId] = typeof value === "number" ? value : 0;
+    }
+    frame.pc += 1;
+  } else if (pending === "battleProcessing") {
+    const command = frame.commands[frame.pc];
+    if (command?.kind === "battleProcessing" && command.branchOnResult === true) {
+      const result = typeof value === "string" ? value : state.session.battleResult;
+      const branch =
+        result === "victory" ? command.victoryBranch
+          : result === "defeat" ? command.defeatBranch
+            : result === "escape" ? command.escapeBranch
+              : undefined;
+      if (branch?.length && pushFrame(state, branch)) return "continue";
     }
     frame.pc += 1;
   } else {

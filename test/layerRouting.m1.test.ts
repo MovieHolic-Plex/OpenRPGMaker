@@ -47,6 +47,34 @@ describe("레이어 독립성 — 한 레이어 편집이 다른 레이어를 �
     expect(lowerAt(map, 1, 1)).toBe(TILE.WATER);
     expect(upperAt(map, 1, 1)).toBe(TILE.FLOWERS);
   });
+  it("하위 지형 페인트는 기존 상위 오브젝트를 절대 덮지 않는다", () => {
+    const mapId = store.getCurrent().startMapId;
+    // 상위 장식 배치 후 같은 칸에 하위 지형(잔디/물)을 칠해도 upper 유지.
+    paintTile(mapId, "upper", 3, 3, TILE.FLOWERS);
+    paintTile(mapId, "lower", 3, 3, TILE.WATER);
+    paintTile(mapId, "lower", 3, 3, TILE.GRASS);
+
+    const map = currentMap();
+    expect(upperAt(map, 3, 3)).toBe(TILE.FLOWERS);
+    expect(lowerAt(map, 3, 3)).toBe(TILE.GRASS);
+  });
+
+  it("하위 지형 페인트가 이웃 상위 수관을 재작성하지 않는다", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map0 = currentMap();
+    // 기존 상위 오브젝트 배치 (나무 수관 등 비-꽃 오브젝트)
+    map0.upperTiles[2 * map0.width + 4] = 260;
+    map0.upperTiles[3 * map0.width + 4] = 87; // prop-like upper
+    store.replace(store.getCurrent());
+
+    const upperBeforeA = upperAt(currentMap(), 4, 2);
+    const upperBeforeB = upperAt(currentMap(), 4, 3);
+    paintTile(mapId, "lower", 4, 3, TILE.WATER);
+    paintTile(mapId, "lower", 4, 2, TILE.GRASS);
+
+    expect(upperAt(currentMap(), 4, 2)).toBe(upperBeforeA);
+    expect(upperAt(currentMap(), 4, 3)).toBe(upperBeforeB);
+  });
 
   it("upper를 지워도 lower는 그대로다", () => {
     const mapId = store.getCurrent().startMapId;

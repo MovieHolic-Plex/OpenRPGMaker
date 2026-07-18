@@ -22,8 +22,8 @@ export const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name:
   { id: "holy", name: "성" },
 ];
 
-const MAGENTA_CHROMA_KEY_RESOURCE_IDS = new Set<string>(["easyrpg-monster-hornet"]);
-
+// Always run magenta chroma-key on enemy previews. DB art is authored with #FF00FF key
+// (or postprocessed to pure magenta then alpha). Non-keyed assets without magenta are unchanged.
 export function enemyGraphicVisual(record: EnemyRecord): HTMLElement {
   const url = resolveAssetResourceUrl(record.monsterResourceId, { project: store.getCurrent() });
   const image = url
@@ -36,7 +36,7 @@ export function enemyGraphicVisual(record: EnemyRecord): HTMLElement {
     image.addEventListener("error", () => {
       image.replaceWith(el("span", { class: "db-enemy-empty-graphic", text: "(그래픽 없음)" }));
     }, { once: true });
-    if (record.monsterResourceId && MAGENTA_CHROMA_KEY_RESOURCE_IDS.has(record.monsterResourceId)) applyMagentaChromaKey(image);
+    applyMagentaChromaKey(image);
   }
   return el("div", { class: "db-enemy-graphic-stage", children: [image] });
 }

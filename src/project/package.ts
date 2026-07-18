@@ -1,4 +1,4 @@
-import { deserialize, serialize } from "@/project/io";
+import { deserialize, serializePretty } from "@/project/io";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 import {
@@ -49,7 +49,7 @@ export async function readProjectPackageEntryNames(file: Blob): Promise<readonly
 function createProjectPackageEntries(project: Project): readonly ZipEntry[] {
   const maps = Object.values(project.maps).sort((a, b) => a.id.localeCompare(b.id));
   return [
-    textEntry("project.json", serialize(project)),
+    textEntry("project.json", serializePretty(project)),
     jsonEntry("data/meta.json", project.meta),
     jsonEntry("data/database.json", project.database),
     jsonEntry("data/system.json", project.system),

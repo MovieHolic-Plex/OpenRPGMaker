@@ -1,7 +1,7 @@
 # RPG ZZU 적대적 UX/AX 리뷰 — AI 에이전트 실사용
 
 - 대상: http://localhost:9988 (프로덕션 dist, HEAD ff44a87)
-- 방법: Playwright headless 실사용 (chromium + swiftshader), 모델 google/gemini-3.5-flash (OpenRouter), autoApprove:false
+- 방법: Playwright headless 실사용 (chromium + swiftshader), 모델 google/gemini-3.5-flash (LLM), autoApprove:false
 - 드라이버/증거: `evidence/agent-ux-review/` (`s1-*` 온보딩, `s2/s3/s4-*` 본 여정, `s5-*` 적대 테스트, `s6-*` UI 프로브, `s7-*` 이벤트 동선, `s8-*` 되돌리기/거부/락)
 - 스크린샷은 전부 비전으로 직접 판독함. 콘솔 에러는 s1(프로젝트 로드 실패 2건) 외 AI 여정 전체에서 0건.
 - 소스 근거는 읽기 전용으로 확인: `/home/main/z-project/rpg-zzu-wt-6a` (파일:라인 인용)

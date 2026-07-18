@@ -47,8 +47,8 @@ test("modern event commands are discoverable and edited with guided controls", a
   const commandDialog = page.getByTestId("event-command-edit-dialog");
   await expect(commandDialog).toBeVisible();
   await expect(commandDialog).toContainText("카메라 제어");
-  await expect(commandDialog.locator("select").first()).toHaveValue("m2Command");
-  await expect(commandDialog.locator("select").first().locator("option:checked")).toHaveText("M2/현대 명령");
+  await expect(commandDialog.locator("select[data-command-kind-select='true']")).toHaveCount(0);
+  await expect(commandDialog).not.toContainText("M2/현대 명령");
   await expect(commandDialog.getByTestId("m2-command-mode-option-select")).toBeVisible();
   await expect(commandDialog.getByTestId("m2-command-target-option-select")).toBeVisible();
   await expect(commandDialog.getByTestId("m2-command-x-input")).toBeVisible();

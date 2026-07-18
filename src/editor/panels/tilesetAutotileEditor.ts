@@ -7,6 +7,7 @@ import {
   setAutotileVariant,
   updateAutotileGroup,
 } from "@/editor/tilesetActions";
+import { renderAutotileTemplateWizard } from "@/editor/panels/tilesetAutotileTemplateWizard";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import type { EdgeCornerTileSet } from "@/project/defaults/autotileEngine";
 import { AUTOTILE_DIR } from "@/project/defaults/autotileEngine";
@@ -17,6 +18,8 @@ import { el } from "@/util/dom";
 // 그룹 추가/삭제, 멤버 타일 지정, 16방향(4비트) 비트마스크→타일 매핑 편집 + 기본값 채우기.
 
 let groupDraftName = "";
+// 템플릿 위저드 접힘 상태 — "템플릿에서 만들기" 버튼으로 토글.
+let templateWizardOpen = false;
 
 // 기본값 채우기용 9분류 타일 초안(그룹별). EdgeCornerTileSet 는 readonly 이므로 가변 타입으로 보관.
 type FillDraft = Partial<Record<keyof EdgeCornerTileSet, number>>;
@@ -58,6 +61,7 @@ export function renderAutotileEditorPanel(tileset: TilesetDef, rerender: () => v
           text: "지형 타일을 이웃 연결에 따라 자동 변형합니다. 정의가 없으면 내장 흙길/모래 규칙을 사용합니다.",
         }),
         renderAddRow(tileset.id, rerender),
+        ...(templateWizardOpen ? [renderAutotileTemplateWizard(tileset, rerender)] : []),
         el("div", {
           class: "tileset-autotile-list",
           children: groups.length > 0
@@ -87,6 +91,18 @@ function renderAddRow(tilesetId: string, rerender: () => void): HTMLElement {
           click: () => {
             addAutotileGroup(tilesetId, groupDraftName);
             groupDraftName = "";
+            rerender();
+          },
+        },
+      }),
+      el("button", {
+        class: "tileset-db-small-button",
+        text: "템플릿에서 만들기",
+        attrs: { type: "button", title: "앵커 타일 번호 하나로 RM2K 3×4/3×3/3×2/애니 물 템플릿 그룹 생성" },
+        dataset: { testid: "autotile-template-open" },
+        on: {
+          click: () => {
+            templateWizardOpen = !templateWizardOpen;
             rerender();
           },
         },

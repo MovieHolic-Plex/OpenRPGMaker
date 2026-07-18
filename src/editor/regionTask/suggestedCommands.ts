@@ -12,6 +12,7 @@ export const SUGGESTED_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
   { id: "small-cottage", label: "🏠 오두막", instruction: "이 영역에 작은 오두막 한 채 지어줘", category: "구조물" },
   { id: "flower-scatter", label: "🌸 꽃밭", instruction: "여기 잔디밭에 꽃이랑 잡초를 자연스럽게 흩뿌려줘", category: "다듬기" },
   { id: "treasure-chest", label: "🎁 보물상자", instruction: "이 방에 보물상자를 하나 숨겨줘", category: "상호작용" },
+  { id: "storage-chest", label: "📦 보관 상자", instruction: "여기에 아이템을 넣고 뺄 수 있는 보관 상자를 배치해줘", category: "상호작용" },
   { id: "merchant-npc", label: "🧑‍🌾 상인", instruction: "이 자리에 잡화점 상인 NPC 하나 배치해줘", category: "NPC" },
   { id: "pasture-fence", label: "🐄 목장 울타리", instruction: "이 구역에 울타리를 둘러서 목장을 만들어줘", category: "구조물" },
   { id: "garden", label: "🌳 정원", instruction: "이 영역에 화단과 나무로 정원을 조성해줘", category: "구조물" },

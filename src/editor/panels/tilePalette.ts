@@ -9,20 +9,17 @@ import { setTerrainTag } from "@/editor/tilesetActions";
 import { TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
-import { renderTilePaletteClusters, type PaletteViewMode } from "@/editor/panels/tilePaletteClusters";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
-import { makeChipsetSheet } from "@/editor/panels/tilePaletteSheet";
+import { makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
 import { makeTilePaletteToolSection } from "@/editor/panels/tilePaletteToolbar";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
-import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { compatibleStampIdForTile, isAutoConnectCandidate } from "@/editor/tileStampBrushes";
+import { compatibleStampIdForTile } from "@/editor/tileStampBrushes";
 import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
-const PALETTE_VIEW_STORAGE_KEY = "rpg-zzu:palette-view";
 /** 작업 모드 탭: 칠하기 | 찾기 | 속성 */
 const PALETTE_WORK_TAB_KEY = "rpg-zzu:palette-work-tab";
 /** 구 advanced 플래그 — 있으면 find 탭으로 마이그레이션 */
@@ -57,6 +54,8 @@ let activeTileCategory: TileCategoryId = "recent";
 let tileSearchQuery = "";
 let showQuickTileNumbers = false;
 let activeWorkTab: PaletteWorkTab = "paint";
+/** 맵 우클릭 스포이트 후 팔레트 칩셋 셀로 스크롤 (전문가 모드). */
+let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
 const recentTiles: number[] = [];
 
@@ -146,6 +145,11 @@ export function renderTilePalette(container: HTMLElement): void {
 
   container.append(shell);
   if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
+  if (pendingRevealSelectedTile) {
+    pendingRevealSelectedTile = false;
+    const tile = state.selectedTile;
+    window.requestAnimationFrame(() => revealChipsetTileInPalette(tile));
+  }
 }
 
 function makeWorkTabBar(): HTMLElement {
@@ -234,33 +238,15 @@ function makePaintTabBody(input: {
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
 
-  const paletteView = readPaletteView();
-  const palette =
-    paletteView === "sheet"
-      ? makeChipsetSheet({
-          activePaletteStamp: state.activePaletteStamp,
-          layer: tileLayer,
-          onCreatePaletteStamp: setPaletteStampFromDrag,
-          onSelectTile: selectPaletteTile,
-          selectedTile: state.selectedTile,
-          tileset,
-        })
-      : renderTilePaletteClusters({
-          layer: tileLayer,
-          onSelectTile: selectPaletteTile,
-          selectedTile: state.selectedTile,
-          tileset,
-        });
+  // RM2003식 단일 팔레트 — 그룹/시트 보기 분리 없이 6열 고정, 오토타일은 대표 1칸 축약.
+  const palette = makeRm2kPalette({
+    layer: tileLayer,
+    onSelectTile: selectPaletteTile,
+    selectedTile: state.selectedTile,
+    tileset,
+  });
 
-  root.append(
-    makePaintTitleRow(
-      tileLayer,
-      paletteView,
-      tileset,
-      state.selectedTile,
-      state.activePaletteStamp,
-    ),
-  );
+  root.append(makePaintTitleRow(tileLayer));
   root.append(palette);
   return { root, palette };
 }
@@ -388,181 +374,18 @@ function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
 }
 
-function makePaintTitleRow(
-  layer: Exclude<Layer, "event">,
-  paletteView: PaletteViewMode,
-  tileset: TilesetDef,
-  selectedTile: number,
-  activePaletteStamp: PaletteStamp | null,
-): HTMLElement {
-  const row = el("div", { class: "tile-palette-title-row" });
-  row.append(
-    el("h3", {
-      class: "tile-palette-title",
-      text: layer === "upper" ? "타일 · 상위" : "타일 · 하위",
-    })
-  );
-  const controls = el("div", { class: "tile-palette-title-controls" });
-  controls.append(
-    el("div", {
-      class: "palette-view-segment",
-      attrs: { role: "group", "aria-label": "타일 팔레트 보기" },
-      children: [
-        makePaletteViewButton("cluster", "그룹", paletteView),
-        makePaletteViewButton("sheet", "시트", paletteView),
-      ],
-    }),
-  );
-  // 연결 Auto/Manual — 칠하기 탭에서도 바로 토글 (속성 탭에만 있으면 발견성 낮음)
-  const autoOn = editorState.get().autoConnectMode;
-  const candidate = selectedTile >= 0 && isAutoConnectCandidate(selectedTile, tileset);
-  controls.append(
-    el("button", {
-      class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
-      text: autoOn ? "Auto" : "Manual",
-      attrs: {
-        type: "button",
-        title: autoOn
-          ? "자동 연결 ON — 이웃 지형까지 재검사합니다. 클릭하면 Manual."
-          : "수동 배치 ON — 일반 타일은 그대로. 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다.",
-        "aria-pressed": String(autoOn),
-        "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
-      },
-      dataset: { testid: "auto-connect-mode-toggle-paint" },
-      on: {
-        click: () => {
-          editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
-          renderPalettePreservingViewport();
-        },
-      },
-    }),
-  );
-  if (candidate) {
-    controls.append(
-      el("span", {
-        class: "tile-brush-hint",
-        text: autoOn ? "이웃 성형" : "오토타일 항상 성형",
-        dataset: { testid: "auto-connect-mode-hint-paint" },
-      }),
-    );
-  }
-  // 좁은 패널에서 시트 까기 어려울 때 — 큰 팝아웃으로 고르기
-  controls.append(
-    el("button", {
-      class: "btn palette-sheet-expand",
-      text: "크게",
-      attrs: {
-        type: "button",
-        title: "타일 시트를 크게 열어 고르기",
-        "aria-label": "타일 시트 크게 보기",
-      },
-      dataset: { testid: "palette-sheet-expand" },
-      on: {
-        click: () => {
-          openChipsetSheetPopout({
-            layer,
-            tileset,
-            selectedTile,
-            activePaletteStamp,
-          });
-        },
-      },
-    }),
-  );
-  row.append(controls);
-  return row;
-}
-
-function openChipsetSheetPopout(args: {
-  readonly layer: Exclude<Layer, "event">;
-  readonly tileset: TilesetDef;
-  readonly selectedTile: number;
-  readonly activePaletteStamp: PaletteStamp | null;
-}): void {
-  if (typeof document === "undefined") return;
-  document.querySelector("[data-testid='chipset-sheet-popout']")?.remove();
-  document.querySelector("[data-testid='chipset-sheet-popout-backdrop']")?.remove();
-
-  const close = (): void => {
-    backdrop.remove();
-    popout.remove();
-  };
-
-  const backdrop = el("div", {
-    class: "chipset-sheet-popout-backdrop",
-    dataset: { testid: "chipset-sheet-popout-backdrop" },
-    on: { click: close },
-  });
-
-  const sheet = makeChipsetSheet({
-    activePaletteStamp: args.activePaletteStamp,
-    layer: args.layer,
-    onCreatePaletteStamp: setPaletteStampFromDrag,
-    onSelectTile: (index) => {
-      selectPaletteTile(index);
-      // 선택 후 팝아웃 유지 — 여러 타일 연속 고르기 편하게. 닫기는 ✕/바깥클릭
-    },
-    selectedTile: args.selectedTile,
-    tileset: args.tileset,
-  });
-
-  const popout = el("div", {
-    class: "chipset-sheet-popout",
-    attrs: { role: "dialog", "aria-label": "타일 시트 크게 보기" },
-    dataset: { testid: "chipset-sheet-popout" },
+function makePaintTitleRow(layer: Exclude<Layer, "event">): HTMLElement {
+  return el("div", {
+    class: "tile-palette-title-row",
     children: [
-      el("div", {
-        class: "chipset-sheet-popout-head",
-        children: [
-          el("h2", { text: args.layer === "upper" ? "타일 시트 · 상위" : "타일 시트 · 하위" }),
-          el("button", {
-            class: "btn",
-            text: "닫기",
-            attrs: { type: "button", "aria-label": "닫기" },
-            dataset: { testid: "chipset-sheet-popout-close" },
-            on: { click: close },
-          }),
-        ],
-      }),
-      el("div", {
-        class: "chipset-sheet-popout-body",
-        children: [sheet],
+      el("h3", {
+        class: "tile-palette-title",
+        text: layer === "upper" ? "타일 · 상위" : "타일 · 하위",
       }),
     ],
   });
-
-  document.body.append(backdrop, popout);
-  const onKey = (event: KeyboardEvent): void => {
-    if (event.key !== "Escape") return;
-    close();
-    document.removeEventListener("keydown", onKey);
-  };
-  document.addEventListener("keydown", onKey);
 }
 
-function makePaletteViewButton(view: PaletteViewMode, label: string, activeView: PaletteViewMode): HTMLButtonElement {
-  const active = view === activeView;
-  return el("button", {
-    class: "btn palette-view-button" + (active ? " active" : ""),
-    text: label,
-    attrs: {
-      "aria-label": `${label} 보기`,
-      "aria-pressed": String(active),
-      title: `${label} 보기`,
-    },
-    dataset: { testid: view === "cluster" ? "palette-view-cluster" : "palette-view-sheet" },
-    on: {
-      click: () => {
-        writePaletteStorage(PALETTE_VIEW_STORAGE_KEY, view);
-        renderPalettePreservingViewport();
-      },
-    },
-  });
-}
-
-function readPaletteView(): PaletteViewMode {
-  return readPaletteStorage(PALETTE_VIEW_STORAGE_KEY) === "sheet" ? "sheet" : "cluster";
-}
 
 function readWorkTab(): PaletteWorkTab {
   const stored = readPaletteStorage(PALETTE_WORK_TAB_KEY);
@@ -691,6 +514,47 @@ export function selectPaletteTile(index: number): void {
   });
 }
 
+
+/**
+ * 맵에서 스포이트한 타일을 전문가 모드 팔레트 칩셋 시트로 스크롤·하이라이트.
+ * 하위/상위 레이어는 editorState.layer 를 이미 맞춘 뒤 호출한다.
+ * 기본 모드에서는 무시(레일만 노출).
+ */
+export function revealPaletteTileFromMap(tile: number): void {
+  if (typeof document === "undefined") return;
+  if (getEditorUiMode() !== "expert") return;
+  if (tile < 0) return;
+  // 칠하기 탭에서 셀이 보이도록
+  activeWorkTab = "paint";
+  writePaletteStorage(PALETTE_WORK_TAB_KEY, "paint");
+  pendingRevealSelectedTile = true;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (root) renderTilePalette(root);
+  else {
+    window.requestAnimationFrame(() => {
+      const r = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+      if (r) renderTilePalette(r);
+    });
+  }
+}
+
+function revealChipsetTileInPalette(tile: number): void {
+  if (typeof document === "undefined") return;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (!root) return;
+  // 숨겨진 오토타일 변형(예: 흙길 몸통 421)은 대표 칸(360)으로 매핑해 하이라이트한다.
+  const tileset = currentTilesetForPalette();
+  const displayTile = tileset ? rm2kPaletteDisplayTile(tileset, tile) : tile;
+  const cell =
+    root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + displayTile + '"]') ??
+    root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + tile + '"]') ??
+    root.querySelector<HTMLElement>('[data-testid="quick-tile-' + tile + '"]');
+  if (!cell) return;
+  cell.scrollIntoView?.({ block: "center", inline: "nearest", behavior: "smooth" });
+  cell.classList.add("is-map-reveal");
+  window.setTimeout(() => cell.classList.remove("is-map-reveal"), 1400);
+}
+
 function preservePaletteViewport(action: () => void): void {
   if (typeof document === "undefined" || typeof window === "undefined") {
     action();
@@ -725,10 +589,8 @@ function readPaletteScroll(container: HTMLElement): PaletteScroll {
 }
 
 function paletteViewportElement(container: HTMLElement): HTMLElement | null {
-  return (
-    container.querySelector<HTMLElement>('[data-testid="tile-palette"]') ??
-    container.querySelector<HTMLElement>('[data-testid="tile-palette-clusters"]')
-  );
+  // 구 클러스터 팔레트(tile-palette-clusters)는 RM2K 팔레트로 대체·삭제됨 (2026-07-17).
+  return container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
 }
 
 function restorePaletteScroll(container: HTMLElement, palette: HTMLElement, scroll: PaletteScroll): void {
@@ -789,13 +651,3 @@ function makeTerrainEditor(tilesetId: string, selectedTile: number, terrain: num
   return row;
 }
 
-function setPaletteStampFromDrag(stamp: PaletteStamp): void {
-  editorState.set({
-    activePaletteStamp: stamp,
-    activeStampId: null,
-    activeStructureStampId: null,
-    paintShape: "pen",
-    tool: "paint",
-  });
-  renderPalettePreservingViewport();
-}

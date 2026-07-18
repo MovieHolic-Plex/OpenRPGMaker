@@ -21,8 +21,13 @@ import {
   renderEventLayerClickFeedback,
   type EventLayerClickFeedback,
 } from "@/editor/editSceneEventMarkers";
-import { eventLayerSwitchNotice, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
-import { renderHoverTilePreview } from "@/editor/editSceneHoverPreview";
+import {
+  buildEventMarkerTooltipModel,
+  eventLayerSwitchNotice,
+  renderEventMarkerTooltipElement,
+  shouldOfferEventLayerSwitch,
+} from "@/editor/eventMarkerUx";
+import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
@@ -139,6 +144,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
   private activeRegionTask: { readonly mapId: string; readonly region: RegionRect; readonly phase: "running" | "pending" } | null = null;
   private regionTaskBadge: HTMLElement | null = null;
+  private eventMarkerTooltipEl: HTMLElement | null = null;
+  private eventMarkerTooltipKey = "";
   private readonly handleRegionTaskStatus = (event: Event): void => {
     const detail = regionTaskStatusDetail(event);
     if (!detail) return;
@@ -273,9 +280,9 @@ export class EditScene extends PhaserRuntime.Scene {
     // 마우스 다운 → 드래그 중 계속 적용(페인트/충돌/지우개).
     this.input.on("pointerdown", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
-      this.updateHoverPreview(ptr);
       if (this.isRightClick(ptr)) {
         // 우클릭: 드래그 시작하면 영역 AI, 클릭만이면 스포이트(아래 pointerup).
+        this.updateHoverPreview(ptr);
         this.beginRightRegionGesture(ptr);
         return;
       }
@@ -285,6 +292,8 @@ export class EditScene extends PhaserRuntime.Scene {
       }
       if (this.tryOfferEventLayerSwitchFromPointer(ptr)) return;
       if (this.beginDragOperation(ptr)) return;
+      // 페인트 시작 전 호버(raw 팔레트 타일)를 지운다 — 성형된 결과와 겹쳐 깜빡이는 UX 방지.
+      this.suppressPaintHoverPreview();
       this.isPainting = true;
       this.lastPaintKey = "";
       // 이벤트 레이어: 눌린 칸에 이벤트가 있으면 드래그 이동 후보로 기록(클릭/더블클릭은 그대로).
@@ -323,6 +332,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.isPainting = false;
       this.lastPaintKey = "";
       this.stopPan();
+      // 스트로크 종료 후 호버 복원 (성형된 맵 타일 위에 raw 프리뷰 가능).
+      this.updateHoverPreview(ptr);
     });
     this.input.on("pointerout", () => {
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
@@ -523,6 +534,10 @@ export class EditScene extends PhaserRuntime.Scene {
     const { x, y } = this.pointerToTile(ptr);
     this.lastPointerTile = { x, y };
     this.updateEventMarkerTooltip(x, y);
+    if (!this.shouldRenderPaintHover()) {
+      this.hoverPreviewLayer?.removeAll(true);
+      return;
+    }
     this.renderHoverPreview(x, y);
   }
 
@@ -532,10 +547,26 @@ export class EditScene extends PhaserRuntime.Scene {
     this.hoverPreviewLayer?.removeAll(true);
   }
 
+  /** 페인트 스트로크 중 raw 호버만 제거 (포인터 좌표·툴팁 상태 유지). */
+  private suppressPaintHoverPreview(): void {
+    this.hoverPreviewLayer?.removeAll(true);
+  }
+
+  private shouldRenderPaintHover(): boolean {
+    return shouldShowPaintHoverPreview({
+      isPainting: this.isPainting,
+      dragActive: this.getDragOperationHandler().active(),
+    });
+  }
+
   private renderHoverPreview(centerX: number, centerY: number): void {
     const layer = this.hoverPreviewLayer;
     const mapId = this.mapId();
     if (!layer || !mapId) return;
+    if (!this.shouldRenderPaintHover()) {
+      layer.removeAll(true);
+      return;
+    }
     renderHoverTilePreview({ centerX, centerY, layer, mapId, scene: this });
   }
 
@@ -848,7 +879,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.renderEventLayerClickFeedback();
     this.renderAgentGhostPreview();
     this.publishMapViewport();
-    if (!mapChanged && this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    if (!mapChanged && this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.renderBuildPaletteOverlay();
   }
 
@@ -872,7 +903,7 @@ export class EditScene extends PhaserRuntime.Scene {
       mapId: mid,
       tileIndex: this.tileIndex,
     }, cells);
-    if (this.lastPointerTile) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.renderBuildPaletteOverlay();
     return stats;
   }
@@ -960,15 +991,79 @@ export class EditScene extends PhaserRuntime.Scene {
   private updateEventMarkerTooltip(x: number, y: number): void {
     const mapId = this.mapId();
     const canvas = this.game.canvas;
-    if (!mapId || !canvas) return;
+    if (!mapId || !canvas) {
+      this.clearEventMarkerTooltip();
+      return;
+    }
     const map = store.getCurrent().maps[mapId];
     const existing = map ? committedEvents(map.events).find((event) => event.x === x && event.y === y) : undefined;
-    canvas.title = existing ? eventMarkerTooltip(existing) : "";
+    if (!existing) {
+      this.clearEventMarkerTooltip();
+      return;
+    }
+
+    const model = buildEventMarkerTooltipModel(existing);
+    // Native title remains for accessibility / no-DOM fallbacks.
+    canvas.title = model.plainText;
+
+    const host = canvas.parentElement;
+    if (!host || typeof document === "undefined") return;
+
+    const key = `${mapId}:${existing.id}:${model.plainText}`;
+    if (!this.eventMarkerTooltipEl || !this.eventMarkerTooltipEl.isConnected || this.eventMarkerTooltipKey !== key) {
+      this.eventMarkerTooltipEl?.remove();
+      const tip = renderEventMarkerTooltipElement(model);
+      host.append(tip);
+      this.eventMarkerTooltipEl = tip;
+      this.eventMarkerTooltipKey = key;
+    }
+
+    this.positionEventMarkerTooltip(x, y);
   }
 
   private clearEventMarkerTooltip(): void {
     const canvas = this.game.canvas;
     if (canvas) canvas.title = "";
+    this.eventMarkerTooltipEl?.remove();
+    this.eventMarkerTooltipEl = null;
+    this.eventMarkerTooltipKey = "";
+  }
+
+  private positionEventMarkerTooltip(tileX: number, tileY: number): void {
+    const tip = this.eventMarkerTooltipEl;
+    const canvas = this.game.canvas;
+    const host = canvas?.parentElement;
+    if (!tip || !canvas || !host) return;
+
+    const camera = this.cameras.main;
+    const tileRect = tileRectToScreenRect(
+      { x: tileX, y: tileY, width: 1, height: 1 },
+      { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom },
+    );
+    const canvasRect = canvas.getBoundingClientRect();
+    const hostRect = host.getBoundingClientRect();
+    const tipRect = tip.getBoundingClientRect();
+    const tipWidth = Math.max(1, tipRect.width || tip.offsetWidth || 180);
+    const tipHeight = Math.max(1, tipRect.height || tip.offsetHeight || 72);
+    const hostWidth = Math.max(1, hostRect.width);
+    const hostHeight = Math.max(1, hostRect.height);
+
+    const canvasOffsetX = canvasRect.left - hostRect.left;
+    const canvasOffsetY = canvasRect.top - hostRect.top;
+    let left = canvasOffsetX + tileRect.x + tileRect.width + 10;
+    let top = canvasOffsetY + tileRect.y - 4;
+
+    if (left + tipWidth > hostWidth - 8) {
+      left = canvasOffsetX + tileRect.x - tipWidth - 10;
+    }
+    if (left < 8) left = 8;
+    if (top + tipHeight > hostHeight - 8) {
+      top = hostHeight - tipHeight - 8;
+    }
+    if (top < 8) top = 8;
+
+    tip.style.left = `${Math.round(left)}px`;
+    tip.style.top = `${Math.round(top)}px`;
   }
 
   private renderEventLayerClickFeedback(): void {

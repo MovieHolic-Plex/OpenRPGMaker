@@ -1,5 +1,10 @@
-import type { Command, EndingDef, M2CommandFields } from "@/project/types";
-import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, learnSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from "@/project/types";
+
+import { craftRecipe } from "@/project/craftRecipes";
+import { applyItemUpgrade } from "@/project/upgrades";
+import { setEquippedTool } from "@/project/toolActions";
+import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
+import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
 import { syncActorVitals } from "@/project/sessionVitals";
@@ -104,11 +109,15 @@ function executeM2Command(
   }
 
   if (entry.title === "Advanced Dialogue" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    // 레거시 m2-209: 문장 표시(text) 와 동일 경로로 통합. autoAdvance/emotion 전달.
     return pause("text", {
       kind: "text",
-      speaker: fieldString(command.fields, "speaker", ""),
+      speaker: fieldString(command.fields, "speaker", "") || undefined,
       body: fieldString(command.fields, "body", ""),
+      face: state.currentFace,
       settings: state.session.messageWindowSettings,
+      autoAdvance: fieldBoolean(command.fields, "autoAdvance", false),
+      emotion: fieldString(command.fields, "emotion", "neutral") || undefined,
     });
   }
 
@@ -263,7 +272,7 @@ function selectEnding(
 ): EndingDef | undefined {
   if (endingId) return endings.find((ending) => ending.id === endingId);
   return endings
-    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, state.currentEventId)))
+    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, resolveSocialHost(state) ?? state.currentEventId)))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 }
 
@@ -309,6 +318,8 @@ export function executeCommand(
         body: command.body,
         face: state.currentFace,
         settings: state.session.messageWindowSettings,
+        autoAdvance: command.autoAdvance === true,
+        emotion: command.emotion,
       });
     case "choices":
       return pause("choices", {
@@ -319,13 +330,15 @@ export function executeCommand(
         cancelBehavior: command.cancelBehavior,
       });
     case "fork": {
-      const branch = evalCondition(state.session, command.condition, state.currentEventId) ? command.then : command.else ?? [];
+      const branch = evalCondition(state.session, command.condition, resolveSocialHost(state) ?? state.currentEventId) ? command.then : command.else ?? [];
       if (pushFrame(state, branch)) return { kind: "continue" };
       return resumeNext(frame);
     }
-    case "setSwitch":
-      setSwitch(state.session, command.switchId, command.value);
+    case "setSwitch": {
+      const next = resolveSwitchValue(state.session, command.switchId, command.value);
+      setSwitch(state.session, command.switchId, next);
       return resumeNext(frame);
+    }
     case "setVariable":
       setVariable(
         state.session,
@@ -388,8 +401,13 @@ export function executeCommand(
       return { kind: "continue" };
     case "transfer":
       return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });
-    case "wait":
-      return pause("wait", { kind: "wait", ms: command.ms });
+    case "wait": {
+      const ms =
+        command.variableId && command.variableId.trim()
+          ? Math.max(0, Math.trunc(Number(state.session.variables[command.variableId] ?? 0) || 0))
+          : command.ms;
+      return pause("wait", { kind: "wait", ms });
+    }
     case "changeTile":
       return pause("changeTile", {
         kind: "changeTile",
@@ -420,6 +438,9 @@ export function executeCommand(
         canEscape: command.canEscape,
         canLose: command.canLose,
         battleFlow: command.battleFlow,
+        troopSource: command.troopSource,
+        troopVariableId: command.troopVariableId,
+        branchOnResult: command.branchOnResult,
       });
     case "showPicture":
       return pause("showPicture", {
@@ -457,7 +478,9 @@ export function executeCommand(
       return pause("shop", {
         kind: "shop",
         itemIds: command.itemIds,
-        items: state.project ? resolveShopStock(state.project, state.session, command) : undefined,
+        items: state.project
+          ? resolveShopStock(state.project, state.session, command, resolveCurrentGameEvent(state))
+          : undefined,
         allowSell: command.allowSell,
         quantityMode: command.quantityMode,
         shopType: command.shopType,
@@ -465,8 +488,19 @@ export function executeCommand(
         merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,
       });
+
     case "inn":
-      return pause("inn", { kind: "inn", price: command.price });
+      return pause("inn", {
+        kind: "inn",
+        price: command.price,
+        note: command.note,
+        question: command.question,
+        recoverMp: command.recoverMp,
+        advanceToMorning: command.advanceToMorning,
+        restDurationMs: command.restDurationMs,
+        wakeDurationMs: command.wakeDurationMs,
+        branchOnNotEnoughGold: command.branchOnNotEnoughGold,
+      });
     case "checkpointSave":
       saveCheckpoint(state);
       return resumeNext(frame);
@@ -490,7 +524,7 @@ export function executeCommand(
     case "callMapEvent":
       return callMapEvent(state, frame, command.eventId);
     case "learnSkill":
-      learnSkill(state.session, command.actorId, command.skillId);
+      changeActorSkill(state.session, command.actorId, command.skillId, command.action ?? "learn");
       return resumeNext(frame);
     case "changeExp":
       changeActorExperience(state.session, command);
@@ -527,17 +561,38 @@ export function executeCommand(
         currentName: actor?.name ?? "",
       });
     }
-    case "changeGold":
-      changeGold(state.session, command.op, command.amount);
+    case "changeGold": {
+      const amount = typeof command.amount === "number"
+        ? command.amount
+        : state.session.variables[command.amount.id] ?? 0;
+      changeGold(state.session, command.op, amount);
       return resumeNext(frame);
-    case "changeItem":
-      changeItem(state.session, command.itemId, command.op, command.amount);
+    }
+    case "changeItem": {
+      const amount = typeof command.amount === "number"
+        ? command.amount
+        : state.session.variables[command.amount.id] ?? 0;
+      changeItem(state.session, command.itemId, command.op, amount);
       return resumeNext(frame);
+    }
+    case "craftRecipe":
+      if (state.project) craftRecipe(state.project, state.session as PlaySession, command.recipeId);
+      return resumeNext(frame);
+    case "applyItemUpgrade":
+      if (state.project) applyItemUpgrade(state.project, state.session as PlaySession, command.upgradeId);
+      return resumeNext(frame);
+    case "equipTool":
+      setEquippedTool(state.session as PlaySession, command.itemId);
+      return resumeNext(frame);
+    case "openChest": {
+      const chestId = (command.chestId ?? "").trim() || resolveOpenChestId(state);
+      return pause("openChest", { kind: "openChest", chestId });
+    }
     case "changeFriendship":
-      changeFriendship(state.session, command.npcKey, command.delta, state.currentEventId);
+      changeFriendship(state.session, command.npcKey, command.delta, resolveSocialHost(state));
       return resumeNext(frame);
     case "getFriendship":
-      setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, state.currentEventId));
+      setVariable(state.session, command.variableId, "=", getFriendship(state.session, command.npcKey, resolveSocialHost(state)));
       return resumeNext(frame);
     case "changeParty":
       changeParty(state.session, command.actorId, command.action, state.project);
@@ -546,7 +601,8 @@ export function executeCommand(
       if (state.project) giveMonster(state.project, state.session as PlaySession, command);
       return resumeNext(frame);
     case "moveMonster":
-      moveMonster(state.session as PlaySession, command.instanceId, command.to);
+      if (state.project) moveMonster(state.session as PlaySession, command.instanceId, command.to, state.project);
+      else moveMonster(state.session as PlaySession, command.instanceId, command.to);
       return resumeNext(frame);
     case "evolveMonster": {
       const result = state.project
@@ -768,4 +824,41 @@ function removeEventId(fields: M2CommandFields, currentEventId: string | undefin
 
 function hasM2Field(fields: M2CommandFields, key: string): boolean {
   return Object.prototype.hasOwnProperty.call(fields, key) && fields[key] !== undefined;
+}
+function resolveOpenChestId(state: InterpreterState): string {
+  const event = resolveCurrentGameEvent(state);
+  const mapId = state.session.currentMapId;
+  if (event) {
+    const x = Math.trunc(Number(event.x) || 0);
+    const y = Math.trunc(Number(event.y) || 0);
+    return `chest_${mapId}_${x}_${y}`;
+  }
+  return `chest_${mapId}_0_0`;
+}
+
+function resolveSocialHost(state: InterpreterState): SocialHost | undefined {
+  const eventId = state.currentEventId;
+  if (!eventId || !state.project) return eventId ? { id: eventId } : undefined;
+  for (const map of Object.values(state.project.maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return { id: event.id, characterId: event.characterId };
+  }
+  // Spawned/runtime-only ids: no characterId available.
+  return { id: eventId };
+}
+
+function resolveCurrentGameEvent(state: InterpreterState): GameEvent | undefined {
+  const eventId = state.currentEventId;
+  if (!eventId || !state.project) return undefined;
+  for (const map of Object.values(state.project.maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return event;
+  }
+  return undefined;
+}
+
+function resolveSwitchValue(session: { switches: Record<string, boolean>; variables: Record<string, number> }, switchId: string, value: SwitchValue): boolean {
+  if (typeof value === "boolean") return value;
+  if (value === "toggle") return !getSwitch(session, switchId);
+  return (session.variables[value.id] ?? 0) !== 0;
 }

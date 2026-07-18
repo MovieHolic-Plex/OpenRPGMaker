@@ -31,14 +31,14 @@ describe("tile palette selection", () => {
     expect(editorState.get().layer).toBe("upper");
   });
 
-  it("keeps the current layer for opaque mixed-home tiles", () => {
+  it("switches to upper when tile home is upper (opaque prop 441)", () => {
     editorState.set({ layer: "lower" });
 
-    // 441(불투명 mixed 소품)은 양쪽 레이어 모두 허용 — 레이어를 바꾸지 않는다.
+    // 441은 홈 레이어 upper — 선택 시 상위로 전환한다.
     selectPaletteTile(441);
 
     expect(editorState.get().selectedTile).toBe(441);
-    expect(editorState.get().layer).toBe("lower");
+    expect(editorState.get().layer).toBe("upper");
   });
 
   it("switches to the upper layer when a transparent chip is selected", () => {

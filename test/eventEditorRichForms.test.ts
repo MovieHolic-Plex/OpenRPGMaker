@@ -39,7 +39,7 @@ describe("event editor rich forms", () => {
   let actorId: string;
 
   beforeEach(() => {
-    restoreDom = installFakeDom();
+    restoreDom = installFakeDom({ animationFrames: "manual" });
     project = createBlankProject();
     const item = project.database.items[0];
     const actor = project.database.actors[0];
@@ -73,15 +73,15 @@ describe("event editor rich forms", () => {
     // 선택 레코드 카드: 아이콘 + 이름 + 시작 보유 부제.
     const card = findByTestId(body, "change-item-select-card");
     expect(card?.textContent).toContain("회복약");
-    expect(card?.textContent).toContain("시작 보유 ×3");
+    expect(card?.textContent).toContain("시작 보유 x3");
     expect(card?.querySelector("img")?.attrs.src).toContain("potion-red");
 
     // 전/후 프리뷰: 시작 인벤토리 3 + 2 = 5.
     const preview = findByTestId(body, "change-item-preview");
     expect(preview?.dataset.before).toBe("3");
     expect(preview?.dataset.after).toBe("5");
-    expect(preview?.textContent).toContain("×3");
-    expect(preview?.textContent).toContain("×5");
+    expect(preview?.textContent).toContain("x3");
+    expect(preview?.textContent).toContain("x5");
     expect(preview?.textContent).toContain("시작 인벤토리 기준");
   });
 
@@ -121,7 +121,7 @@ describe("event editor rich forms", () => {
     const preview = findByTestId(body, "change-gold-preview");
     expect(preview?.dataset.before).toBe("100");
     expect(preview?.dataset.after).toBe("250");
-    expect(preview?.textContent).toContain("지금 100G");
+    expect(preview?.textContent).toContain("시작 상태 100G");
     expect(preview?.textContent).toContain("실행 후 250G");
     expect(preview?.textContent).toContain("시작 소지금 기준");
 
@@ -171,7 +171,8 @@ describe("event editor rich forms", () => {
     troop.enemyIds = [enemy.id];
     store.replace(project);
 
-    const body = renderBody(contextWithReplaceSpy(), {
+    const replaceCommand = vi.fn<CommandEditContext["actions"]["replaceCommand"]>();
+    const body = renderBody(contextWithReplaceSpy(replaceCommand), {
       kind: "battleProcessing",
       troopId: troop.id,
       canEscape: true,
@@ -180,8 +181,28 @@ describe("event editor rich forms", () => {
 
     expect(findByTestId(body, "battle-processing-troop-select")?.tagName).toBe("SELECT");
     expect(findByTestId(body, "battle-processing-troop-select-card")?.textContent).toContain("슬라임");
-    expect(findByTestId(body, "battle-processing-escape-checkbox")).not.toBeNull();
-    expect(findByTestId(body, "battle-processing-lose-checkbox")).not.toBeNull();
+    const escape = findByTestId(body, "battle-processing-escape-select");
+    const lose = findByTestId(body, "battle-processing-lose-select");
+    expect(escape?.tagName).toBe("SELECT");
+    expect(escape?.value).toBe("allow");
+    expect(lose?.tagName).toBe("SELECT");
+    expect(lose?.value).toBe("gameover");
+    if (!escape) throw new Error("missing battle-processing-escape-select");
+    escape.value = "deny";
+    escape.dispatchEvent(new Event("change"));
+    expect(replaceCommand).toHaveBeenCalledWith([2], {
+      kind: "battleProcessing",
+      troopId: troop.id,
+      canEscape: false,
+      canLose: false,
+      battleFlow: undefined,
+      troopSource: "fixed",
+      troopVariableId: undefined,
+      branchOnResult: false,
+      victoryBranch: undefined,
+      defeatBranch: undefined,
+      escapeBranch: undefined,
+    });
   });
 
   it("renders equipment icons in the Change Equipment picker card", () => {
@@ -200,9 +221,9 @@ describe("event editor rich forms", () => {
 
     expect(findByTestId(body, "change-equipment-actor-select")?.value).toBe(actorId);
     expect(findByTestId(body, "change-equipment-slot-select")?.tagName).toBe("SELECT");
-    const card = findByTestId(body, "change-equipment-equipment-select-card");
-    expect(card?.textContent).toContain("청동검");
-    expect(card?.querySelector("img")?.attrs.src).toContain("bronze-sword");
+    const selected = findByTestId(body, "change-equipment-selected");
+    expect(selected?.textContent).toContain("청동검");
+    expect(selected?.querySelector("img")?.attrs.src).toContain("bronze-sword");
   });
 
   it("renders Learn Skill with record picker cards while keeping the legacy select test ids", () => {
@@ -216,6 +237,8 @@ describe("event editor rich forms", () => {
     expect(findByTestId(body, "learn-skill-actor-select")?.value).toBe(actorId);
     expect(findByTestId(body, "learn-skill-skill-select")?.value).toBe(skill.id);
     expect(findByTestId(body, "learn-skill-skill-select-card")?.textContent).toContain("파이어");
+    expect(findByTestId(body, "event-command-learn-skill-form")).toBeTruthy();
+    expect(findByTestId(body, "learn-skill-action-select")).toBeTruthy();
   });
 
   it("flags out-of-bounds transfer destinations with a blocked passability badge", () => {
@@ -232,10 +255,19 @@ describe("event editor rich forms", () => {
     expect(badge?.textContent).toContain("통행 불가 타일!");
   });
 
-  it("omits the passability badge when the transfer target map is unknown", () => {
-    const body = renderBody(contextWithReplaceSpy(), { kind: "transfer", mapId: "", x: 0, y: 0 });
+  it("seeds an unknown transfer target to the active start map and shows passability", async () => {
+    const replaceCommand = vi.fn<CommandEditContext["actions"]["replaceCommand"]>();
+    const body = renderBody(contextWithReplaceSpy(replaceCommand), { kind: "transfer", mapId: "", x: 0, y: 0 });
+    const badge = findByTestId(body, "transfer-passability-badge");
 
-    expect(findByTestId(body, "transfer-command-summary")).not.toBeNull();
-    expect(findByTestId(body, "transfer-passability-badge")).toBeNull();
+    expect(findByTestId(body, "transfer-command-summary")?.textContent).toContain(project.maps[project.startMapId]?.name);
+    expect(badge?.dataset.passable).toBe("true");
+    await Promise.resolve();
+    expect(replaceCommand).toHaveBeenCalledWith([2], {
+      kind: "transfer",
+      mapId: project.startMapId,
+      x: 0,
+      y: 0,
+    });
   });
 });

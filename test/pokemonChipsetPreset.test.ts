@@ -100,24 +100,21 @@ describe("키큰 풀(DARK_GRASS) 시맨틱 — 통행 가능 유지", () => {
 });
 
 describe("헤드리스 장면 조립 — 잔디 맵 + 흙길 + 키큰풀 구역", () => {
-  it("프리셋 group id 로 fill_region 을 태워 잔디/흙길/키큰풀을 실제 배치한다", () => {
+  it("프리셋 material 라벨로 fill_region 을 태워 잔디/흙길/키큰풀을 실제 배치한다", () => {
     const ctx: ToolContext = { project: createBlankProject() };
-    const grassId = pokemonPresetRole("grass_field")!.groupIds[0];
-    const dirtId = pokemonPresetRole("dirt_route")!.groupIds[0];
-    const tallId = pokemonPresetRole("tall_grass")!.groupIds[0];
 
     // 1) 잔디 벌판으로 맵 전체 바닥을 깐다.
-    const grass = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 0, w: 20, h: 15 }, tileVocabId: grassId });
+    const grass = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 0, w: 20, h: 15 }, material: "잔디" });
     expect(grass.ok, grass.summary).toBe(true);
     // 번들 시드라 목업 확인 대기(soft) 경고가 붙지 않는다.
     expect((grass.diff?.warnings ?? []).some((w) => w.includes("목업 확인 대기")), "grass").toBe(false);
 
     // 2) 가로 흙길 루트(3칸 폭 — 가운데 줄은 오토타일 바디).
-    const dirt = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 7, w: 20, h: 3 }, tileVocabId: dirtId });
+    const dirt = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 7, w: 20, h: 3 }, material: "흙길" });
     expect(dirt.ok, dirt.summary).toBe(true);
 
     // 3) 키큰 풀 구역(인카운터 풀숲).
-    const tall = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 5, h: 3 }, tileVocabId: tallId });
+    const tall = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 5, h: 3 }, material: "키큰 풀" });
     expect(tall.ok, tall.summary).toBe(true);
     expect((tall.diff?.warnings ?? []).some((w) => w.includes("목업 확인 대기")), "tall").toBe(false);
 

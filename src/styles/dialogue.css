@@ -9,6 +9,10 @@
   --runtime-dialogue-panel-height: 27%;
   --runtime-choice-panel-height: 26%;
   --runtime-dialogue-face-size: 48px;
+  --runtime-dialogue-bust-height: min(46vh, 280px);
+  --runtime-dialogue-bust-width: min(42vw, 240px);
+  --runtime-dialogue-full-height: min(62vh, 420px);
+  --runtime-dialogue-full-width: min(36vw, 220px);
 }
 
 .dialogue-overlay {
@@ -48,6 +52,43 @@
   transform: none;
 }
 
+.dialogue-gold-window {
+  align-items: center;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  bottom: calc(100% + 4px);
+  color: var(--runtime-dialogue-text);
+  display: flex;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 92px;
+  padding: 2px 5px;
+  pointer-events: none;
+  position: absolute;
+  right: 6px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+}
+
+.dialogue-overlay.position-top .dialogue-gold-window {
+  bottom: auto;
+  top: calc(100% + 4px);
+}
+
+.dialogue-gold-label {
+  color: var(--runtime-dialogue-muted);
+}
+
+.dialogue-gold-value {
+  color: var(--runtime-dialogue-text);
+  font: inherit;
+}
+
 .dialogue-overlay.choices-active {
   align-items: stretch;
   gap: 0;
@@ -81,6 +122,10 @@
   pointer-events: auto;
   position: relative;
   width: 100%;
+}
+
+.dialogue-box.has-speaker {
+  overflow: visible;
 }
 
 .dialogue-box.transparent {
@@ -216,13 +261,40 @@
 }
 
 .dialogue-box .speaker {
-  color: var(--runtime-dialogue-muted);
+  color: var(--runtime-dialogue-text);
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-dialogue-font-size);
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 2px;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+}
+
+/* Fields of Mistria-style nameplate: floats on the message window rim. */
+.dialogue-box .speaker.speaker-nameplate {
+  position: absolute;
+  left: 8px;
+  top: -10px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 20px);
+  margin: 0;
+  padding: 1px 8px 2px;
+  border: 1px solid rgba(245, 251, 255, 0.9);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)),
+    rgba(12, 28, 84, 0.96);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(80, 130, 220, 0.35);
+  color: #f8fbff;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
 }
 
 .dialogue-content {
@@ -288,6 +360,63 @@
   overflow: hidden;
   text-align: center;
   width: var(--runtime-dialogue-face-size);
+}
+
+/* Large portrait (bust / full-body) above the message window. */
+.dialogue-overlay.has-bust-face {
+  overflow: visible;
+}
+
+.dialogue-box.has-bust-face,
+.dialogue-overlay.has-bust-face .dialogue-box {
+  overflow: visible;
+  position: relative;
+  z-index: 2;
+}
+
+.dialogue-face.dialogue-face-bust {
+  background-color: transparent;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 0;
+  bottom: calc(100% - 6px);
+  box-shadow: none;
+  height: var(--runtime-dialogue-bust-height);
+  image-rendering: pixelated;
+  left: 12px;
+  pointer-events: none;
+  position: absolute;
+  right: auto;
+  width: var(--runtime-dialogue-bust-width);
+  z-index: 3;
+}
+
+.dialogue-face.dialogue-face-full {
+  height: var(--runtime-dialogue-full-height);
+  width: var(--runtime-dialogue-full-width);
+}
+
+/* Position is relative to the message window, not the whole screen. */
+.dialogue-box.bust-left .dialogue-face.dialogue-face-bust,
+.dialogue-face.dialogue-face-side-left {
+  left: 12px;
+  right: auto;
+}
+
+.dialogue-box.bust-right .dialogue-face.dialogue-face-bust,
+.dialogue-overlay.bust-right .dialogue-face.dialogue-face-bust,
+.dialogue-face.dialogue-face-side-right {
+  left: auto;
+  right: 12px;
+}
+
+.dialogue-face.dialogue-face-bust.flipped {
+  transform: scaleX(-1);
+}
+
+.dialogue-content.has-bust {
+  grid-template-columns: minmax(0, 1fr) !important;
 }
 
 .dialogue-box .body {
@@ -400,7 +529,7 @@
   border: 2px solid rgba(245, 251, 255, 0.55);
   border-radius: 0;
   box-sizing: border-box;
-  color: rgba(244, 251, 255, 0.28);
+  color: transparent;
   display: inline-flex;
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-font-size-22);
@@ -411,6 +540,10 @@
   min-width: 22px;
   padding: 0 4px;
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.75);
+}
+
+.number-input-slot.empty {
+  color: transparent;
 }
 
 .number-input-slot.filled {

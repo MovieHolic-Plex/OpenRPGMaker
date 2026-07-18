@@ -80,21 +80,21 @@ test("loop5 certifies editor page, command, choice branch, cancel branch, and fo
   await screenshot(page, "007b-editor-choice-cancel-branch-visible.png");
   await screenshot(page, "007-editor-choice-five-and-cancel-branches.png");
 
+  // RM rhythm: fork dialog is condition + else flag only; branch bodies edit in main list.
   await openInlineEditor(page.getByTestId("event-command-fork"));
-  await setForkText(page, "then", 0, "THEN EDITED BY LOOP5");
-  await setForkText(page, "else", 0, "ELSE EDITED BY LOOP5");
-  await openInlineEditor(page.getByTestId("event-command-fork"));
-  await page.getByTestId("event-fork-branch-add-then").click();
-  await openInlineEditor(page.getByTestId("event-command-fork"));
-  await expect(page.getByTestId("event-fork-branch-item-then-1")).toBeVisible();
-  await setForkText(page, "then", 1, "THEN ADDED BY LOOP5");
-  await openInlineEditor(page.getByTestId("event-command-fork"));
-  await page.getByTestId("event-fork-branch-add-else").click();
-  await openInlineEditor(page.getByTestId("event-command-fork"));
-  await expect(page.getByTestId("event-fork-branch-item-else-1")).toBeVisible();
-  await setForkText(page, "else", 1, "ELSE ADDED BY LOOP5");
-  await openInlineEditor(page.getByTestId("event-command-fork"));
-  await page.getByTestId("event-fork-branch-else").scrollIntoViewIfNeeded();
+  await expect(page.getByTestId("event-condition-form")).toBeVisible();
+  await expect(page.getByTestId("event-fork-else-enabled")).toBeChecked();
+  await expect(page.getByTestId("event-fork-summary-then")).toContainText("2개 명령");
+  await expect(page.getByTestId("event-fork-summary-else")).toContainText("2개 명령");
+  await expect(page.getByTestId("event-fork-branch-add-then")).toHaveCount(0);
+  await screenshot(page, "008-editor-fork-condition-only-dialog.png");
+  await page.keyboard.press("Escape");
+
+  await editNestedForkText(page, "THEN ORIGINAL", "THEN EDITED BY LOOP5");
+  await editNestedForkText(page, "THEN SECOND", "THEN ADDED BY LOOP5");
+  await editNestedForkText(page, "ELSE ORIGINAL", "ELSE EDITED BY LOOP5");
+  await editNestedForkText(page, "ELSE SECOND", "ELSE ADDED BY LOOP5");
+  await page.getByTestId("event-command-fork").scrollIntoViewIfNeeded();
   await screenshot(page, "008-editor-fork-then-else-branches.png");
 
   await page.getByTestId("event-editor-apply").click();
@@ -150,6 +150,7 @@ test("loop5 certifies editor page, command, choice branch, cancel branch, and fo
       "007-editor-choice-five-and-cancel-branches.png",
       "007a-editor-choice-five-branch-visible.png",
       "007b-editor-choice-cancel-branch-visible.png",
+      "008-editor-fork-condition-only-dialog.png",
       "008-editor-fork-then-else-branches.png",
       "011-editor-structure-after-reload.png",
     ],
@@ -224,11 +225,24 @@ async function setChoiceOption(page: Page, index: number, value: string): Promis
   await dispatchChange(input);
 }
 
-async function setForkText(page: Page, branch: "then" | "else", index: number, value: string): Promise<void> {
-  await openInlineEditor(page.getByTestId("event-command-fork"));
-  const input = page.getByTestId(`event-fork-branch-text-${branch}-${index}`);
-  await input.fill(value);
-  await dispatchChange(input);
+async function editNestedForkText(page: Page, fromBody: string, toBody: string): Promise<void> {
+  const row = page.locator('[data-testid="event-command-text"]').filter({ hasText: fromBody }).first();
+  await openInlineEditor(row);
+  const body = row.getByTestId("event-command-text-body");
+  if (await body.count()) {
+    await body.fill(toBody);
+    await dispatchChange(body);
+  } else {
+    // fallback: double-click head already opened dialog form
+    const input = page.locator('textarea, input[type="text"]').filter({ hasText: fromBody }).first();
+    if (await input.count()) {
+      await input.fill(toBody);
+      await dispatchChange(input);
+    }
+  }
+  // close any open command edit dialog
+  const ok = page.getByTestId("event-command-edit-ok");
+  if (await ok.count()) await ok.click();
 }
 
 async function dispatchChange(locator: Locator): Promise<void> {
@@ -377,8 +391,14 @@ function structureCommands(): Command[] {
     {
       kind: "fork",
       condition: { kind: "switch", switchId: "sw_loop5", value: true },
-      then: [{ kind: "text", body: "THEN ORIGINAL" }],
-      else: [{ kind: "text", body: "ELSE ORIGINAL" }],
+      then: [
+        { kind: "text", body: "THEN ORIGINAL" },
+        { kind: "text", body: "THEN SECOND" },
+      ],
+      else: [
+        { kind: "text", body: "ELSE ORIGINAL" },
+        { kind: "text", body: "ELSE SECOND" },
+      ],
     },
   ];
 }

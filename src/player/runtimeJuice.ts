@@ -26,18 +26,21 @@ type RuntimeJuiceSpec = RuntimeJuiceLogEntry & {
 export type RuntimeJuiceOptions = {
   readonly event: RuntimeJuiceEvent;
   readonly target?: HTMLElement | null;
+  /** Optional SE override (e.g. titleScreen.sounds.cursor/confirm). */
+  readonly soundResourceId?: string;
 };
 
 const RUNTIME_JUICE_SPECS = {
-  "menu-back": { event: "menu-back", soundResourceId: "easyrpg-sound-cancel1", motionClass: "juice-menu-back", durationMs: 220 },
-  "menu-close": { event: "menu-close", soundResourceId: "easyrpg-sound-close1", motionClass: "juice-menu-close", durationMs: 240 },
-  "menu-confirm": { event: "menu-confirm", soundResourceId: "easyrpg-sound-decision1", motionClass: "juice-menu-confirm", durationMs: 240 },
-  "menu-invalid": { event: "menu-invalid", soundResourceId: "easyrpg-sound-buzzer1", motionClass: "juice-menu-invalid", durationMs: 180 },
-  "menu-open": { event: "menu-open", soundResourceId: "easyrpg-sound-chime2", motionClass: "juice-menu-open", durationMs: 240 },
-  "menu-select": { event: "menu-select", soundResourceId: "easyrpg-sound-cursor1", motionClass: "juice-menu-select", durationMs: 220 },
-  "title-confirm": { event: "title-confirm", soundResourceId: "easyrpg-sound-decision2", motionClass: "juice-title-confirm", durationMs: 260 },
-  "title-enter": { event: "title-enter", soundResourceId: "easyrpg-sound-chime1", motionClass: "juice-title-enter", durationMs: 260 },
-  "title-select": { event: "title-select", soundResourceId: "easyrpg-sound-cursor2", motionClass: "juice-title-select", durationMs: 220 },
+  // RM2k3-ish UI SFX: cursor/decision/cancel only — avoid long chimes on every open.
+  "menu-back": { event: "menu-back", soundResourceId: "easyrpg-sound-cancel1", motionClass: "juice-menu-back", durationMs: 160 },
+  "menu-close": { event: "menu-close", soundResourceId: "easyrpg-sound-cancel2", motionClass: "juice-menu-close", durationMs: 160 },
+  "menu-confirm": { event: "menu-confirm", soundResourceId: "easyrpg-sound-decision1", motionClass: "juice-menu-confirm", durationMs: 180 },
+  "menu-invalid": { event: "menu-invalid", soundResourceId: "easyrpg-sound-buzzer1", motionClass: "juice-menu-invalid", durationMs: 140 },
+  "menu-open": { event: "menu-open", soundResourceId: "easyrpg-sound-decision1", motionClass: "juice-menu-open", durationMs: 160 },
+  "menu-select": { event: "menu-select", soundResourceId: "easyrpg-sound-cursor1", motionClass: "juice-menu-select", durationMs: 120 },
+  "title-confirm": { event: "title-confirm", soundResourceId: "easyrpg-sound-decision1", motionClass: "juice-title-confirm", durationMs: 180 },
+  "title-enter": { event: "title-enter", soundResourceId: "easyrpg-sound-decision2", motionClass: "juice-title-enter", durationMs: 180 },
+  "title-select": { event: "title-select", soundResourceId: "easyrpg-sound-cursor1", motionClass: "juice-title-select", durationMs: 120 },
 } as const satisfies Record<RuntimeJuiceEvent, RuntimeJuiceSpec>;
 
 const RUNTIME_JUICE_CLASSES = Object.values(RUNTIME_JUICE_SPECS).map((spec) => spec.motionClass);
@@ -46,10 +49,18 @@ const DEFAULT_VOLUME = 0.35;
 
 export function emitRuntimeJuice(options: RuntimeJuiceOptions): RuntimeJuiceLogEntry {
   const spec = RUNTIME_JUICE_SPECS[options.event];
-  writeRuntimeJuiceLog(spec);
-  playRuntimeJuiceSound(spec.soundResourceId);
-  if (options.target) applyRuntimeJuiceMotion(options.target, spec);
-  return spec;
+  const override = options.soundResourceId?.trim();
+  const soundResourceId = override || spec.soundResourceId;
+  const entry: RuntimeJuiceLogEntry = {
+    event: spec.event,
+    soundResourceId,
+    motionClass: spec.motionClass,
+    durationMs: spec.durationMs,
+  };
+  writeRuntimeJuiceLog(entry);
+  playRuntimeJuiceSound(soundResourceId);
+  if (options.target) applyRuntimeJuiceMotion(options.target, { ...spec, soundResourceId });
+  return entry;
 }
 
 export function runtimeJuiceLog(): readonly RuntimeJuiceLogEntry[] {

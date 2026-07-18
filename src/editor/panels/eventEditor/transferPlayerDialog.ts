@@ -18,6 +18,10 @@ type TransferDraft = {
 type TransferPickerRequest = {
   readonly command: TransferCommand;
   readonly onApply: (command: TransferCommand) => void;
+  /** When true, omit nested dialog OK/Cancel (inline command editor already has them). */
+  readonly hideFooter?: boolean;
+  /** When true, live-apply draft changes (inline command editor). */
+  readonly liveApply?: boolean;
 };
 
 const DIRECTION_OPTIONS: readonly { value: TransferDirection; label: string }[] = [
@@ -51,7 +55,7 @@ export function openTransferPlayerDialog(request: TransferPickerRequest): void {
   });
 }
 
-function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest, close: () => void): void {
+export function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest, close: () => void): void {
   const project = store.getCurrent();
   const firstMapId = Object.keys(project.maps)[0] ?? "";
   const initialMapId = project.maps[request.command.mapId] ? request.command.mapId : firstMapId;
@@ -106,11 +110,23 @@ function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest,
     });
     rerenderFooter();
   };
+  const applyDraft = () => {
+    if (!request.liveApply) return;
+    request.onApply({
+      kind: "transfer",
+      mapId: draft.mapId,
+      x: draft.x,
+      y: draft.y,
+      direction: draft.direction,
+      fade: draft.fade,
+    });
+  };
   const rerenderFooter = () => {
     status.textContent = targetLabel(project, draft);
     for (const button of zoomControls.querySelectorAll("button")) {
       button.classList.toggle("active", button.textContent === zoomLabel(draft.zoom));
     }
+    applyDraft();
   };
 
   canvas.addEventListener("click", (event) => {
@@ -137,8 +153,9 @@ function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest,
   }
 
   preview.append(canvas);
+  if (request.hideFooter) body.classList.add("transfer-player-inline-host");
   body.append(
-    el("div", { class: "transfer-player-dialog", children: [
+    el("div", { class: "transfer-player-dialog" + (request.hideFooter ? " transfer-player-dialog-inline" : ""), children: [
       tree,
       preview,
       el("div", { class: "transfer-player-controls", children: [
@@ -154,29 +171,45 @@ function renderTransferPicker(body: HTMLElement, request: TransferPickerRequest,
       el("div", { class: "transfer-player-footer", children: [
         status,
         zoomControls,
-        el("button", {
-          class: "transfer-player-button",
-          text: "확인",
-          dataset: { testid: "transfer-player-ok" },
-          attrs: { type: "button" },
-          on: { click: () => {
-            request.onApply({ kind: "transfer", mapId: draft.mapId, x: draft.x, y: draft.y, direction: draft.direction, fade: draft.fade });
-            close();
-          } },
-        }),
-        el("button", {
-          class: "transfer-player-button",
-          text: "취소",
-          dataset: { testid: "transfer-player-cancel" },
-          attrs: { type: "button" },
-          on: { click: close },
-        }),
+        ...(request.hideFooter
+          ? [
+              el("button", {
+                class: "transfer-player-button",
+                text: "선택 완료",
+                dataset: { testid: "transfer-player-ok" },
+                attrs: { type: "button", title: "맵/좌표는 이미 반영됩니다" },
+                on: { click: () => { applyDraft(); } },
+              }),
+            ]
+          : [
+              el("button", {
+                class: "transfer-player-button",
+                text: "확인",
+                dataset: { testid: "transfer-player-ok" },
+                attrs: { type: "button" },
+                on: { click: () => {
+                  request.onApply({ kind: "transfer", mapId: draft.mapId, x: draft.x, y: draft.y, direction: draft.direction, fade: draft.fade });
+                  close();
+                } },
+              }),
+              el("button", {
+                class: "transfer-player-button",
+                text: "취소",
+                dataset: { testid: "transfer-player-cancel" },
+                attrs: { type: "button" },
+                on: { click: close },
+              }),
+            ]),
       ] }),
     ] })
   );
   // Layout must settle so preview.clientWidth/Height are non-zero before fit-to-box scale.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => rerenderAll());
+  const schedule =
+    typeof globalThis.requestAnimationFrame === "function"
+      ? (cb: () => void) => globalThis.requestAnimationFrame(cb)
+      : (cb: () => void) => globalThis.setTimeout(cb, 0);
+  schedule(() => {
+    schedule(() => rerenderAll());
   });
 }
 

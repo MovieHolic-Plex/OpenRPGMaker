@@ -4,6 +4,75 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Command } from "@/project/types";
 import { runCommandContract, roundtripCommands, CONTRACT_EVENT_ID } from "./harness";
+import { defineCommandContract } from "./defineCommandContract";
+
+describe("command contract definition", () => {
+  it("requires and preserves the four standardized cases", () => {
+    const noop = { name: "case", run: () => undefined };
+    const definition = defineCommandContract({
+      kind: "text",
+      happy: noop,
+      edge: noop,
+      roundtrip: noop,
+      pauseOrTermination: noop,
+    });
+
+    expect(Object.keys(definition).sort()).toEqual([
+      "edge",
+      "happy",
+      "kind",
+      "pauseOrTermination",
+      "roundtrip",
+    ]);
+  });
+});
+
+describe("contract summaries", () => {
+  it("returns sorted state entries and explicit owner handoffs", () => {
+    const result = runCommandContract([
+      { kind: "setSwitch", switchId: "zeta", value: true },
+      { kind: "setSwitch", switchId: "alpha", value: false },
+      { kind: "setVariable", variableId: "score", op: "=", value: 7 },
+      { kind: "text", body: "handoff" },
+      { kind: "battleProcessing", troopId: "troop_contract", canEscape: true, canLose: false },
+    ]);
+
+    expect(result.stateSummary).toEqual({
+      flags: [],
+      switches: [["alpha", false], ["zeta", true]],
+      variables: [["score", 7]],
+      timers: [],
+      inventory: [],
+      gold: 0,
+      partyActorIds: [],
+      position: { mapId: "map_blank_start", x: 10, y: 8 },
+      audioIds: [],
+      pictureIds: [],
+    });
+    expect(result.ownerHandoffs).toEqual([
+      { stepKind: "text", owner: "player" },
+      { stepKind: "battleProcessing", owner: "battle" },
+    ]);
+  });
+});
+
+describe("interpreter instruction budget", () => {
+  it("stops a non-pausing label/goto cycle at the configured command count", () => {
+    const result = runCommandContract(
+      [
+        { kind: "label", name: "cycle" },
+        { kind: "gotoLabel", name: "cycle" },
+      ],
+      { maxInstructions: 8 }
+    );
+
+    expect(result.pauses).toEqual([]);
+    expect(result.warnings).toContain(
+      "[interpreter:instruction-budget-exhausted] maxInstructions=8 executed=8"
+    );
+    expect(result.finished).toBe(false);
+  });
+});
 
 describe("commandContracts 하네스", () => {
   it("maxSteps 초과 시 무한루프로 판단하고 실패한다", () => {

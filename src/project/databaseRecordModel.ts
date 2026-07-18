@@ -12,12 +12,15 @@ import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
+  DEFAULT_DAYS_PER_SEASON,
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
+  MAX_DAYS_PER_SEASON,
+  MIN_DAYS_PER_SEASON,
   type TimeSystemConfig,
 } from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenSettings, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -86,6 +89,14 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
+    ...(Array.isArray(system.toolActions) ? { toolActions: system.toolActions } : {}),
+    ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
+    ...(Array.isArray(system.itemUpgrades) ? { itemUpgrades: system.itemUpgrades } : {}),
+    ...(Array.isArray(system.sellPrices) ? { sellPrices: system.sellPrices } : {}),
+    ...(() => {
+      const monsterCare = normalizeMonsterCare(system.monsterCare);
+      return monsterCare ? { monsterCare } : {};
+    })(),
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
   };
 }
@@ -97,11 +108,19 @@ export function normalizeTimeSystemConfig(config: Partial<TimeSystemConfig> | un
   const rawDayEndHour = clampInteger(config.dayEndHour ?? DEFAULT_DAY_END_HOUR, dayStartHour + 1, 48);
   const dayEndHour = rawDayEndHour <= dayStartHour ? DEFAULT_DAY_END_HOUR : rawDayEndHour;
   const onDayEnd = cleanOptionalId(config.onDayEnd);
+  const daysPerSeason = clampInteger(
+    typeof config.daysPerSeason === "number" && Number.isFinite(config.daysPerSeason)
+      ? config.daysPerSeason
+      : DEFAULT_DAYS_PER_SEASON,
+    MIN_DAYS_PER_SEASON,
+    MAX_DAYS_PER_SEASON
+  );
   return {
     enabled,
     minutesPerRealSecond: positiveNumber(config.minutesPerRealSecond, DEFAULT_TIME_MINUTES_PER_REAL_SECOND),
     dayStartHour,
     dayEndHour,
+    daysPerSeason,
     forceSleep: config.forceSleep === true,
     ...(onDayEnd ? { onDayEnd } : {}),
   };
@@ -133,21 +152,76 @@ function normalizeTitleScreenSettings(
   titleResourceId: string | undefined,
 ): TitleScreenSettings {
   const defaults = defaultTitleScreenSettings();
+  const menuVisibility = normalizeTitleScreenMenuVisibility(settings?.menuVisibility);
+  const sounds = normalizeTitleScreenSounds(settings?.sounds);
+  const layout = {
+    titleX: clampInteger(settings?.layout?.titleX ?? defaults.layout.titleX, 0, 320),
+    titleY: clampInteger(settings?.layout?.titleY ?? defaults.layout.titleY, 0, 240),
+    menuX: clampInteger(settings?.layout?.menuX ?? defaults.layout.menuX, 0, 320),
+    menuY: clampInteger(settings?.layout?.menuY ?? defaults.layout.menuY, 0, 240),
+  };
+  const titleGraphic = normalizeTitleScreenGraphic(settings?.titleGraphic, layout);
   return {
     title: textOrDefault(settings?.title, defaults.title),
     backgroundResourceId: cleanOptionalId(settings?.backgroundResourceId) ?? titleResourceId ?? defaults.backgroundResourceId,
-    layout: {
-      titleX: clampInteger(settings?.layout?.titleX ?? defaults.layout.titleX, 0, 320),
-      titleY: clampInteger(settings?.layout?.titleY ?? defaults.layout.titleY, 0, 240),
-      menuX: clampInteger(settings?.layout?.menuX ?? defaults.layout.menuX, 0, 320),
-      menuY: clampInteger(settings?.layout?.menuY ?? defaults.layout.menuY, 0, 240),
-    },
+    musicResourceId: cleanOptionalId(settings?.musicResourceId) ?? cleanOptionalId(defaults.musicResourceId),
+    layout,
     menuLabels: {
       newGame: textOrDefault(settings?.menuLabels?.newGame, defaults.menuLabels.newGame),
       continueGame: textOrDefault(settings?.menuLabels?.continueGame, defaults.menuLabels.continueGame),
       quit: textOrDefault(settings?.menuLabels?.quit, defaults.menuLabels.quit),
     },
+    menuVisibility,
+    ...(sounds ? { sounds } : {}),
+    ...(titleGraphic ? { titleGraphic } : {}),
+    showInputHint: settings?.showInputHint !== false,
   };
+}
+
+function normalizeTitleScreenMenuVisibility(
+  visibility: Partial<TitleScreenMenuVisibility> | undefined,
+): TitleScreenMenuVisibility {
+  return {
+    newGame: true,
+    continueGame: visibility?.continueGame !== false,
+    quit: visibility?.quit !== false,
+  };
+}
+
+function normalizeTitleScreenSounds(
+  sounds: Partial<TitleScreenSounds> | undefined,
+): TitleScreenSounds | undefined {
+  if (!sounds) return undefined;
+  const cursorSeResourceId = cleanOptionalId(sounds.cursorSeResourceId);
+  const confirmSeResourceId = cleanOptionalId(sounds.confirmSeResourceId);
+  const cancelSeResourceId = cleanOptionalId(sounds.cancelSeResourceId);
+  if (!cursorSeResourceId && !confirmSeResourceId && !cancelSeResourceId) return undefined;
+  return {
+    ...(cursorSeResourceId ? { cursorSeResourceId } : {}),
+    ...(confirmSeResourceId ? { confirmSeResourceId } : {}),
+    ...(cancelSeResourceId ? { cancelSeResourceId } : {}),
+  };
+}
+
+function normalizeTitleScreenGraphic(
+  graphic: Partial<TitleScreenGraphic> | undefined,
+  layoutDefaults: TitleScreenSettings["layout"],
+): TitleScreenGraphic | undefined {
+  if (!graphic) return undefined;
+  const mode = normalizeTitleScreenTitleMode(graphic.mode);
+  const resourceId = cleanOptionalId(graphic.resourceId);
+  if (mode === "text" && !resourceId) return undefined;
+  return {
+    mode,
+    ...(resourceId ? { resourceId } : {}),
+    x: clampInteger(graphic.x ?? layoutDefaults.titleX, 0, 320),
+    y: clampInteger(graphic.y ?? layoutDefaults.titleY, 0, 240),
+  };
+}
+
+function normalizeTitleScreenTitleMode(mode: unknown): TitleScreenTitleMode {
+  if (mode === "graphic" || mode === "both" || mode === "text") return mode;
+  return "text";
 }
 
 export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRecord, "id" | "name">): ClassRecord {
@@ -234,6 +308,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     equipmentProfile: normalizeItemEquipmentProfile(record.equipmentProfile),
     farmTool: isFarmTool(record.farmTool) ? record.farmTool : undefined,
     captureProfile: normalizeCaptureProfile(record.captureProfile),
+    careProfile: normalizeCareProfile(record.careProfile),
   };
 }
 
@@ -390,6 +465,47 @@ function normalizeCaptureProfile(profile: Partial<ItemCaptureProfile> | undefine
     ? Math.max(0.01, Math.min(100, profile.multiplier))
     : 1;
   return { multiplier };
+}
+
+function normalizeCareProfile(profile: Partial<ItemCareProfile> | undefined): ItemCareProfile | undefined {
+  if (!profile) return undefined;
+  if (profile.kind !== "feed" && profile.kind !== "toy") return undefined;
+  const friendshipDelta = typeof profile.friendshipDelta === "number" && Number.isFinite(profile.friendshipDelta)
+    ? Math.trunc(profile.friendshipDelta)
+    : 0;
+  const expDelta = typeof profile.expDelta === "number" && Number.isFinite(profile.expDelta)
+    ? Math.max(0, Math.trunc(profile.expDelta))
+    : undefined;
+  return {
+    kind: profile.kind,
+    friendshipDelta,
+    ...(expDelta !== undefined ? { expDelta } : {}),
+  };
+}
+
+function normalizeMonsterCare(config: Partial<MonsterCareConfig> | undefined): MonsterCareConfig | undefined {
+  if (!config) return undefined;
+  const stepsPerTickRaw = typeof config.stepsPerTick === "number" && Number.isFinite(config.stepsPerTick)
+    ? Math.trunc(config.stepsPerTick)
+    : 50;
+  return {
+    stepsPerTick: stepsPerTickRaw > 0 ? stepsPerTickRaw : 50,
+    walkFriendship: clampInteger(
+      typeof config.walkFriendship === "number" && Number.isFinite(config.walkFriendship) ? config.walkFriendship : 1,
+      0,
+      1000
+    ),
+    walkExp: clampInteger(
+      typeof config.walkExp === "number" && Number.isFinite(config.walkExp) ? config.walkExp : 1,
+      0,
+      999999
+    ),
+    dailyCareCap: clampInteger(
+      typeof config.dailyCareCap === "number" && Number.isFinite(config.dailyCareCap) ? config.dailyCareCap : 30,
+      0,
+      999999
+    ),
+  };
 }
 
 function normalizeItemEquipmentProfile(profile: Partial<ItemEquipmentProfile> | undefined): ItemEquipmentProfile {

@@ -18,6 +18,13 @@
 // Production path never uses regex/keyword heuristics to invent steps.
 // Fallback plan only if planner JSON parse/API fails on a long request.
 
+import {
+  NARRATIVE_HORROR_PLANNER_RULE,
+  detectNarrativeHorrorGenre,
+  plannerHintForNarrativeHorrorGenre,
+  requiredSuccessToolsForUserText,
+  templateToolInstruction,
+} from "./narrativeHorrorWorkPlan";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
@@ -102,11 +109,12 @@ Harness contract:
 6. Prefer 2–6 layers, 1–4 items each, max ~16 items. Each item = one coherent sprint.
 7. Every item needs:
    - title (short)
-   - instruction (concrete tools/numbers: build_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, …)
+   - instruction (concrete tools/numbers: build_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room, …)
    - doneWhen (acceptance: what must be true when this item is complete)
    - successTools (optional write tool names that auto-complete the item)
 8. Typical RPG content layers: meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
+${NARRATIVE_HORROR_PLANNER_RULE}
 
 JSON schema:
 {
@@ -405,8 +413,10 @@ export function formatWorkPlanForOrchestration(plan: WorkPlan): string {
     lines.push(`Remaining: ${s.remainingTitles.slice(0, 10).join(" → ")}`);
   }
   lines.push(
-    "When doneWhen is satisfied (or successTools write tools succeed), call complete_work_item. " +
-      "If blocked, call skip_work_item with a note. " +
+    "When this item's successTools write tools succeed, the harness may auto-complete; " +
+      "or call complete_work_item only after those tools succeeded this turn. " +
+      "If blocked (wrong tileset material, out of region, etc.), call skip_work_item with a note — " +
+      "do NOT complete a failed item by succeeding a different tool. " +
       "To restructure the remaining plan, call set_work_plan (full replacement). " +
       "Do not claim the full goal is finished while items remain."
   );
@@ -502,12 +512,12 @@ export function advanceWorkPlanFromTools(
   if (!current || current.status !== "in_progress") {
     return { completed: null, next: activateFirstPending(plan) };
   }
-  const tools = new Set(successfulWriteTools);
   const needed = current.successTools ?? [];
-  const hit =
-    needed.length === 0
-      ? successfulWriteTools.length > 0
-      : needed.some((name) => tools.has(name));
+  // successTools 없는 항목은 자동 완료 금지 — 아무 쓰기나 성공했다고 다음 단계로 넘어가 thrash 유발.
+  // (예: 탁자 place_props 실패 후 place_npc 성공으로 탁자 항목 자동 완료)
+  if (needed.length === 0) return { completed: null, next: current };
+  const tools = new Set(successfulWriteTools);
+  const hit = needed.some((name) => tools.has(name));
   if (!hit) return { completed: null, next: current };
 
   current.status = "done";
@@ -515,16 +525,50 @@ export function advanceWorkPlanFromTools(
   return { completed: current, next };
 }
 
-export function completeWorkItemById(plan: WorkPlan, itemId: string, note?: string): WorkItem | null {
+/**
+ * successTools가 있으면 그중 하나라도 이번 턴 쓰기 성공에 있어야 complete 허용.
+ * successTools가 비어 있으면 자유 complete(레거시 항목).
+ * force=true 는 skip 경로 대체용이 아니라 테스트/내부용 — 일반 complete_work_item 에서는 쓰지 않는다.
+ */
+export function canCompleteWorkItem(
+  item: WorkItem,
+  successfulWriteTools: readonly string[] | undefined,
+): { ok: true } | { ok: false; reason: string } {
+  const needed = item.successTools ?? [];
+  if (needed.length === 0) return { ok: true };
+  const tools = new Set(successfulWriteTools ?? []);
+  if (needed.some((name) => tools.has(name))) return { ok: true };
+  return {
+    ok: false,
+    reason:
+      `항목 '${item.title}' 완료 조건 미충족: successTools(${needed.join(", ")}) 성공 기록이 없습니다. ` +
+      `해당 툴로 성공하거나 skip_work_item으로 건너뛰세요.`,
+  };
+}
+
+export type CompleteWorkItemResult =
+  | { ok: true; item: WorkItem }
+  | { ok: false; reason: string; item?: WorkItem };
+
+export function completeWorkItemById(
+  plan: WorkPlan,
+  itemId: string,
+  note?: string,
+  options?: { successfulWriteTools?: readonly string[]; force?: boolean },
+): CompleteWorkItemResult {
   for (const layer of plan.layers) {
     const it = layer.items.find((i) => i.id === itemId);
     if (!it) continue;
+    if (!options?.force) {
+      const gate = canCompleteWorkItem(it, options?.successfulWriteTools);
+      if (!gate.ok) return { ok: false, reason: gate.reason, item: it };
+    }
     it.status = "done";
     if (note) it.note = note;
     if (plan.currentItemId === itemId) activateFirstPending(plan);
-    return it;
+    return { ok: true, item: it };
   }
-  return null;
+  return { ok: false, reason: `항목을 찾지 못했습니다: ${itemId}` };
 }
 
 export function skipWorkItemById(plan: WorkPlan, itemId: string, note?: string): WorkItem | null {
@@ -545,26 +589,41 @@ export function isWorkPlanComplete(plan: WorkPlan): boolean {
 
 /** Emergency fallback only when planner API/parse fails — single sprint wrapping the raw goal. */
 export function buildDefaultWorkPlan(goal: string, now = new Date()): WorkPlan {
+  const genre = detectNarrativeHorrorGenre(goal);
+  const genreTools = requiredSuccessToolsForUserText(goal);
+  const successTools =
+    genreTools.length > 0
+      ? [...genreTools]
+      : ["build_village", "create_map", "place_npc", "upsert_event", "script_cutscene_preset", "make_horror_loop", "make_gallery_room"];
+  const instruction =
+    genre != null
+      ? `${templateToolInstruction(genre)}
+
+요청: ${goal.slice(0, 600)}`
+      : goal.slice(0, 800);
   return workPlanFromOrchestratorDecision(
     {
       action: "new_plan",
       goal: goal.slice(0, 400),
-      plannerNote: "fallback template (planner parse/API failed)",
+      plannerNote:
+        genre != null
+          ? `fallback template (planner parse/API failed); ${plannerHintForNarrativeHorrorGenre(genre)}`
+          : "fallback template (planner parse/API failed)",
       layers: [
         {
           title: "실행",
           items: [
             {
-              title: "요청 처리",
-              instruction: goal.slice(0, 800),
+              title: genre != null ? `장르 템플릿: ${genre}` : "요청 처리",
+              instruction,
               doneWhen: "User request addressed with write tools where applicable",
-              successTools: ["build_village", "create_map", "place_npc", "upsert_event"],
+              successTools,
             },
           ],
         },
       ],
     },
-    now
+    now,
   );
 }
 

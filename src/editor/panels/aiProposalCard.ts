@@ -35,6 +35,7 @@ import {
   collectVocabSoftConfirms,
   markSoftVocabApprovalsOnProject,
   proposalAcceptButtonLabel,
+  proposalAcceptWithMaterialButtonLabel,
 } from "./aiProposalFusion";
 import {
   enforceProposalDependencies,
@@ -184,7 +185,7 @@ export interface ProposalHostApi {
   pendingProposalMessage: ProposalMessageState | null;
   lastAppliedProposalMessage: ProposalMessageState | null;
   renderProposal: (result: TurnResult, extraWarnings?: readonly string[], assistantBubble?: HTMLElement | null) => void;
-  acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean) => void;
+  acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean, approveMaterials?: boolean) => void;
   rejectProposal: () => void;
   applyMetadataKeepSession: (calls: readonly ProposedCall[]) => void;
   /** 이 호스트가 마지막으로 등록한 인라인 승인 actions가 여전히 현재 슬롯이면(CAS) 해제한다. */
@@ -230,7 +231,8 @@ export function createProposalHost(options: {
     calls: readonly ProposedCall[],
     selected: readonly boolean[],
     selectedCalls: readonly ProposedCall[],
-    hasEdits: boolean
+    hasEdits: boolean,
+    approveMaterials = false,
   ): void => {
     const session = controller.session;
     if (!session) return;
@@ -246,9 +248,11 @@ export function createProposalHost(options: {
     }
     const proposed = reassembled?.ok ? reassembled.project : session.getProposedProject();
 
-    // soft-confirm 재료 합의(origin:user) — 목업 수락과 동시에 다음 시공부터 바로 씀.
-    const softMarked = markSoftVocabApprovalsOnProject(proposed, calls, selected);
+    // soft-confirm 재료 합의는 옵션: approveMaterials=true 일 때만 origin:user.
     const softList = collectVocabSoftConfirms(calls, selected);
+    const softMarked = approveMaterials
+      ? markSoftVocabApprovalsOnProject(proposed, calls, selected)
+      : 0;
 
     // 배치 후 검증: 물 위 나무, 나무 짝, 지시 대비 나무 누락 등
     const lastUser = [...(controller.session?.getAuditEntries() ?? [])].reverse().find((entry) => entry.kind === "user");
@@ -313,7 +317,12 @@ export function createProposalHost(options: {
     onProposalSettled?.();
   };
 
-  const acceptProposal = (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits = false): void => {
+  const acceptProposal = (
+    calls: readonly ProposedCall[],
+    selectedState?: readonly boolean[],
+    hasEdits = false,
+    approveMaterials = false,
+  ): void => {
     clearInlineActionsIfMine();
     const session = controller.session;
     if (!session) return;
@@ -324,11 +333,11 @@ export function createProposalHost(options: {
     const decision = confirmRuleApproval(warnings);
     if (decision !== true) {
       void decision.then((confirmed) => {
-        if (confirmed) applyAcceptedProposal(calls, selected, selectedCalls, hasEdits);
+        if (confirmed) applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
       });
       return;
     }
-    applyAcceptedProposal(calls, selected, selectedCalls, hasEdits);
+    applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
   };
 
   const rejectProposal = (): void => {
@@ -501,12 +510,15 @@ export function createProposalHost(options: {
               class: "ai-proposal-soft-vocab",
               dataset: { testid: "ai-proposal-soft-vocab" },
               children: [
-                el("div", { class: "ai-proposal-soft-vocab-title", text: "이렇게 재료·배치를 쓸까요?" }),
+                el("div", { class: "ai-proposal-soft-vocab-title", text: "배치 초안 + 미합의 재료" }),
                 ...softConfirms.map((soft) => el("div", {
                   class: "ai-proposal-soft-vocab-row",
                   text: `${soft.name} (${soft.role}) · 타일 ${soft.tileIds.slice(0, 4).join(",")}${soft.tileIds.length > 4 ? "…" : ""}`,
                 })),
-                el("div", { class: "ai-proposal-soft-vocab-hint", text: "위 맵 미리보기를 보고 [이대로 적용]을 누르면 배치와 재료 합의가 함께 끝납니다." }),
+                el("div", {
+                  class: "ai-proposal-soft-vocab-hint",
+                  text: "[맵만 적용]은 배치만 반영합니다. [맵 적용 + 재료 합의]를 눌러야 재료가 origin:user로 영구 합의됩니다.",
+                }),
               ],
             })]
           : []),
@@ -526,7 +538,9 @@ export function createProposalHost(options: {
           children: [
             (acceptButton = el("button", {
               class: "ai-assistant-action ai-proposal-accept",
-              text: "이대로 적용",
+              text: softConfirms.length > 0
+                ? proposalAcceptButtonLabel(result.proposedCalls.length, result.proposedCalls.length)
+                : "맵만 적용",
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-accept" },
               on: {
@@ -534,10 +548,28 @@ export function createProposalHost(options: {
                   acceptProposal(
                     callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
                     selected,
-                    hasVocabularyEdits(vocabEditsByCall)
+                    hasVocabularyEdits(vocabEditsByCall),
+                    false,
                   ),
               },
             }) as HTMLButtonElement),
+            ...(softConfirms.length > 0
+              ? [el("button", {
+                  class: "ai-assistant-action ai-proposal-accept-materials",
+                  text: proposalAcceptWithMaterialButtonLabel(result.proposedCalls.length, result.proposedCalls.length),
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-proposal-accept-materials" },
+                  on: {
+                    click: () =>
+                      acceptProposal(
+                        callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
+                        selected,
+                        hasVocabularyEdits(vocabEditsByCall),
+                        true,
+                      ),
+                  },
+                })]
+              : []),
             (rejectButton = el("button", {
               class: "ai-assistant-action ai-proposal-reject",
               text: "거부(초안 폐기)",

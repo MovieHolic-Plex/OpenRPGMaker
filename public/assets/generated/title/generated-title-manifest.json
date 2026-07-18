@@ -1,0 +1,8 @@
+[
+  {
+    "id": "rpg-zzu-title-logo-crest",
+    "fileName": "title-logo-crest.png",
+    "sha256": "664d546666998a798cd352e9797d26484e8556ad3264ab67f22748be9f955f35",
+    "model": "google/gemini-2.5-flash-image"
+  }
+]

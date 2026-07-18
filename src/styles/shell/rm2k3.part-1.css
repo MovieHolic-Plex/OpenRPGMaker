@@ -621,6 +621,60 @@
   width: 11px;
 }
 
+/* ── RM2003식 단일 팔레트 (가로 6칸 고정) ───────────────────── */
+/* 열 수는 항상 6. 칸 크기는 시트 컨테이너 폭(cqi) 기준 — % 순환 참조 금지. */
+.chipset-sheet.rm2k-palette {
+  container-type: inline-size;
+}
+
+.chipset-grid.rm2k-palette-grid {
+  --rm2k-cols: 6;
+  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
+  box-sizing: border-box;
+  display: grid;
+  gap: 2px;
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  justify-content: start;
+  max-width: 100%;
+  min-width: 0;
+  padding: 2px;
+  width: max-content;
+}
+
+.chipset-grid.rm2k-palette-grid .chipset-tile {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
+
+
+.chipset-tile.rm2k-autotile {
+  position: relative;
+}
+
+.rm2k-autotile-badge {
+  align-items: center;
+  background: rgba(10, 36, 106, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 2px;
+  color: var(--text-inverse, #fff);
+  display: flex;
+  font-size: 7px;
+  font-weight: 700;
+  height: 10px;
+  justify-content: center;
+  left: 1px;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  top: 1px;
+  width: 10px;
+}
+
 .chipset-tile.range-selected {
   border-color: var(--accent);
   box-shadow:

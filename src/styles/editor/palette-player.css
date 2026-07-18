@@ -515,17 +515,42 @@
   pointer-events: none;
   /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
      너비를 제한하고 2줄까지만 보여준 뒤 자른다. */
-  max-width: min(520px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  white-space: normal;
+}
+.toast .toast-message {
+  flex: 1 1 auto;
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: normal;
 }
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+.toast.show.has-action {
+  /* 복구 버튼 클릭 가능 */
+  pointer-events: auto;
+}
+.toast .toast-action {
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  cursor: pointer;
+}
+.toast .toast-action:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
 }
 .toast.error {
   border-color: var(--danger);
@@ -566,4 +591,15 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--space-2);
+}
+
+
+/* 맵 우클릭 스포이트 → 팔레트 칩셋 셀 하이라이트 (전문가 모드) */
+.chipset-tile.is-map-reveal,
+[data-testid^="cluster-tile-"].is-map-reveal,
+[data-testid^="quick-tile-"].is-map-reveal {
+  outline: 2px solid var(--accent, #3bc9db);
+  box-shadow: 0 0 0 3px rgba(59, 201, 219, 0.45);
+  z-index: 2;
+  position: relative;
 }

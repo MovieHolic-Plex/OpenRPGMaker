@@ -248,8 +248,14 @@ function applySearch(context: SearchContext): void {
         range: state.activeRange,
       })
     : [];
+  const empty = results.length === 0;
+  context.resultsPane.classList.toggle("empty", empty);
+  if (empty) {
+    context.resultsPane.replaceChildren();
+    context.resultsPane.textContent = "검색어를 입력하거나 조건을 선택한 뒤 검색하세요.";
+    return;
+  }
   context.resultsPane.replaceChildren(...renderResults(results));
-  context.resultsPane.classList.toggle("empty", results.length === 0);
 }
 
 function renderResults(results: readonly ResultEntry[]): Node[] {

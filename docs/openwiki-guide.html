@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RPG ZZU · OpenWiki 사용 가이드</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #171b26;
+      --muted: #5a6274;
+      --paper: #f3efe6;
+      --card: #fffcf6;
+      --line: #d5ccba;
+      --teal: #0c7469;
+      --teal-deep: #08564f;
+      --teal-soft: #d5eee9;
+      --amber: #b86f0f;
+      --amber-soft: #f6e6c4;
+      --rose: #a13646;
+      --rose-soft: #f5d8de;
+      --blue: #2c5b98;
+      --blue-soft: #dce7f7;
+      --violet: #564392;
+      --violet-soft: #e5dff5;
+      --green: #2a7236;
+      --green-soft: #d7edd8;
+      --orange: #c45c12;
+      --orange-soft: #fbe0cf;
+      --slate: #3d4658;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans KR", system-ui, sans-serif;
+      --display: "Newsreader", "IBM Plex Sans KR", serif;
+      --shadow: 0 16px 44px rgba(23, 27, 38, 0.08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      line-height: 1.55;
+      background:
+        radial-gradient(1100px 480px at 8% -10%, #fff3d6 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #e4f1ee 0%, transparent 48%),
+        radial-gradient(700px 360px at 40% 100%, #ebe4f8 0%, transparent 42%),
+        var(--paper);
+    }
+    a { color: var(--teal-deep); text-underline-offset: 3px; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+    header.hero {
+      padding: 3rem 0 1.5rem;
+      border-bottom: 1px solid rgba(213,204,186,.75);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--teal-deep);
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+      box-shadow: 0 0 0 4px var(--teal-soft);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.12; letter-spacing: -.02em;
+      margin: .7rem 0 .85rem;
+    }
+    .lede { max-width: 72ch; color: var(--muted); font-size: 1.06rem; margin: 0 0 1.2rem; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip {
+      font-size: .8rem; color: var(--muted);
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 999px; padding: .32rem .7rem;
+    }
+    .chip b { color: var(--ink); }
+    nav.toc {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(243,239,230,.9);
+      border-bottom: 1px solid var(--line);
+    }
+    nav.toc .wrap {
+      display: flex; gap: .4rem; overflow-x: auto;
+      padding: .65rem 0; scrollbar-width: thin;
+    }
+    nav.toc a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: var(--slate);
+      font-size: .82rem; font-weight: 600;
+      padding: .4rem .7rem;
+      border-radius: 999px;
+      border: 1px solid transparent;
+    }
+    nav.toc a:hover {
+      background: var(--card);
+      border-color: var(--line);
+      color: var(--teal-deep);
+    }
+    main { padding: 2rem 0 4rem; }
+    section {
+      margin: 0 0 2.4rem;
+      scroll-margin-top: 4.5rem;
+    }
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+      margin: 0 0 .85rem;
+      letter-spacing: -.01em;
+    }
+    h3 {
+      font-size: 1.05rem;
+      margin: 0 0 .55rem;
+    }
+    p { margin: 0 0 .85rem; color: var(--ink); }
+    .muted { color: var(--muted); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.15rem 1.25rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .85rem;
+    }
+    @media (max-width: 960px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    .callout {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .85rem;
+      align-items: start;
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--line);
+      background: var(--card);
+    }
+    .callout .icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: grid; place-items: center;
+      font-size: 1.25rem;
+      background: var(--teal-soft);
+    }
+    .callout.warn { background: var(--amber-soft); border-color: #e5c98a; }
+    .callout.warn .icon { background: #f0d59a; }
+    .callout.danger { background: var(--rose-soft); border-color: #e4b4bd; }
+    .callout.danger .icon { background: #efc5cd; }
+    .callout.info { background: var(--blue-soft); border-color: #b9cdea; }
+    .callout.info .icon { background: #c9daf3; }
+    code, .path {
+      font-family: var(--mono);
+      font-size: .86em;
+      background: rgba(23,27,38,.05);
+      border: 1px solid rgba(23,27,38,.08);
+      border-radius: 6px;
+      padding: .08rem .35rem;
+    }
+    pre {
+      font-family: var(--mono);
+      font-size: .82rem;
+      line-height: 1.5;
+      background: #1a2030;
+      color: #e8edf7;
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      margin: .7rem 0 0;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    pre .c { color: #8b97ad; }
+    pre .k { color: #7dd3c0; }
+    pre .s { color: #f0c674; }
+    pre .f { color: #9ecbff; }
+    pre .d { color: #c3a6ff; }
+
+    /* Tree diagram */
+    .tree-shell {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 1rem;
+    }
+    @media (max-width: 960px) {
+      .tree-shell { grid-template-columns: 1fr; }
+    }
+    .tree {
+      font-family: var(--mono);
+      font-size: .8rem;
+      line-height: 1.65;
+      background: linear-gradient(180deg, #1b2233 0%, #151a27 100%);
+      color: #d7deec;
+      border-radius: 16px;
+      padding: 1.1rem 1.15rem;
+      overflow-x: auto;
+      box-shadow: var(--shadow);
+      border: 1px solid #2a3348;
+    }
+    .tree .root { color: #7dd3c0; font-weight: 600; }
+    .tree .folder { color: #9ecbff; }
+    .tree .file { color: #e8edf7; }
+    .tree .tag {
+      display: inline-block;
+      font-size: .68rem;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: .05rem .4rem;
+      margin-left: .35rem;
+      vertical-align: middle;
+      letter-spacing: .02em;
+    }
+    .tag-entry { background: #2a6f63; color: #d7fff6; }
+    .tag-core { background: #3a4f8a; color: #dce7ff; }
+    .tag-focus { background: #7a4d16; color: #ffe8c4; }
+    .tag-maint { background: #5a3d86; color: #efe4ff; }
+    .tag-big { background: #8a3040; color: #ffdbe2; }
+
+    /* Flow */
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .55rem;
+      align-items: stretch;
+    }
+    @media (max-width: 960px) {
+      .flow { grid-template-columns: 1fr; }
+    }
+    .flow-step {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .9rem .85rem;
+      min-height: 140px;
+      box-shadow: var(--shadow);
+    }
+    .flow-step .n {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-family: var(--mono);
+      font-size: .78rem; font-weight: 700;
+      color: white; background: var(--teal);
+      margin-bottom: .55rem;
+    }
+    .flow-step h3 { font-size: .95rem; margin: 0 0 .35rem; }
+    .flow-step p { font-size: .86rem; color: var(--muted); margin: 0; }
+    .flow-step::after {
+      content: "→";
+      position: absolute;
+      right: -.45rem; top: 50%;
+      transform: translate(50%, -50%);
+      color: var(--amber);
+      font-weight: 700;
+      font-size: 1.1rem;
+      z-index: 1;
+    }
+    .flow-step:last-child::after { content: none; }
+    @media (max-width: 960px) {
+      .flow-step::after {
+        content: "↓";
+        right: 50%; top: auto; bottom: -.55rem;
+        transform: translate(50%, 50%);
+      }
+    }
+
+    /* File cards */
+    .file-card {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: .45rem;
+    }
+    .file-card .badge {
+      align-self: flex-start;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      border-radius: 999px;
+      padding: .2rem .5rem;
+    }
+    .file-card h3 {
+      font-family: var(--mono);
+      font-size: .88rem;
+      margin: 0;
+      word-break: break-all;
+    }
+    .file-card p {
+      font-size: .9rem;
+      color: var(--muted);
+      margin: 0;
+      flex: 1;
+    }
+    .file-card .when {
+      font-size: .8rem;
+      color: var(--ink);
+      background: rgba(23,27,38,.04);
+      border-radius: 10px;
+      padding: .45rem .55rem;
+    }
+    .b-entry { background: var(--teal-soft); color: var(--teal-deep); }
+    .b-core { background: var(--blue-soft); color: var(--blue); }
+    .b-focus { background: var(--amber-soft); color: var(--amber); }
+    .b-maint { background: var(--violet-soft); color: var(--violet); }
+    .b-big { background: var(--rose-soft); color: var(--rose); }
+    .b-map { background: var(--green-soft); color: var(--green); }
+
+    /* Scenario */
+    .scenario {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 960px) {
+      .scenario { grid-template-columns: 1fr; }
+    }
+    .scenario .ask {
+      background: linear-gradient(160deg, #1f2a3d, #162033);
+      color: #e8edf7;
+      border-radius: 16px;
+      padding: 1.1rem 1.15rem;
+      box-shadow: var(--shadow);
+    }
+    .scenario .ask .label {
+      font-size: .75rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      color: #8fb8ad;
+      font-weight: 700;
+      margin-bottom: .45rem;
+    }
+    .scenario .ask h3 {
+      font-family: var(--display);
+      font-size: 1.25rem;
+      color: white;
+      margin: 0 0 .55rem;
+    }
+    .scenario .ask p { color: #b7c1d4; margin: 0; font-size: .92rem; }
+    .path-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: .55rem;
+    }
+    .path-list li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: .7rem;
+      align-items: start;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: .75rem .85rem;
+    }
+    .path-list .step-n {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--teal);
+      color: white;
+      display: grid; place-items: center;
+      font-size: .75rem; font-weight: 700;
+      font-family: var(--mono);
+    }
+    .path-list strong { display: block; font-size: .92rem; }
+    .path-list span { color: var(--muted); font-size: .84rem; }
+
+    /* Ownership map */
+    .own-map {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+    }
+    @media (max-width: 960px) {
+      .own-map { grid-template-columns: 1fr; }
+    }
+    .own {
+      border-radius: 16px;
+      padding: 1rem;
+      border: 1px solid var(--line);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .own .src {
+      font-family: var(--mono);
+      font-size: .82rem;
+      font-weight: 600;
+      margin-bottom: .35rem;
+    }
+    .own .wiki {
+      font-size: .8rem;
+      color: var(--teal-deep);
+      margin-bottom: .45rem;
+    }
+    .own p { font-size: .86rem; color: var(--muted); margin: 0; }
+
+    /* Loop diagram */
+    .loop {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .7rem;
+    }
+    @media (max-width: 960px) {
+      .loop { grid-template-columns: 1fr 1fr; }
+    }
+    .loop-box {
+      border-radius: 16px;
+      padding: 1rem;
+      min-height: 130px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+    .loop-box .phase {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      margin-bottom: .35rem;
+    }
+    .loop-box h3 { margin: 0 0 .35rem; font-size: .98rem; }
+    .loop-box p { margin: 0; font-size: .84rem; color: var(--muted); }
+    .loop-box.p1 { border-top: 4px solid var(--teal); }
+    .loop-box.p2 { border-top: 4px solid var(--blue); }
+    .loop-box.p3 { border-top: 4px solid var(--amber); }
+    .loop-box.p4 { border-top: 4px solid var(--rose); }
+    .loop-box.p1 .phase { color: var(--teal); }
+    .loop-box.p2 .phase { color: var(--blue); }
+    .loop-box.p3 .phase { color: var(--amber); }
+    .loop-box.p4 .phase { color: var(--rose); }
+
+    /* Compare */
+    .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 800px) {
+      .compare { grid-template-columns: 1fr; }
+    }
+    .yes, .no {
+      border-radius: 16px;
+      padding: 1.1rem;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .yes { background: linear-gradient(180deg, #f3faf4, var(--card)); }
+    .no { background: linear-gradient(180deg, #fbf3f4, var(--card)); }
+    .yes h3, .no h3 { margin: 0 0 .7rem; }
+    .yes ul, .no ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    .yes li, .no li { margin: .3rem 0; }
+
+    /* Commands */
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 800px) {
+      .cmd-grid { grid-template-columns: 1fr; }
+    }
+    .cmd {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .cmd h3 { margin: 0 0 .4rem; }
+    .cmd p { color: var(--muted); font-size: .9rem; margin: 0 0 .7rem; }
+
+    /* Visual metaphor */
+    .metaphor {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    @media (max-width: 960px) {
+      .metaphor { grid-template-columns: 1fr 1fr; }
+    }
+    .meta-card {
+      border-radius: 16px;
+      padding: 1rem;
+      background: var(--card);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    .meta-card .emoji {
+      width: 56px; height: 56px;
+      margin: 0 auto .55rem;
+      border-radius: 16px;
+      display: grid; place-items: center;
+      font-size: 1.55rem;
+    }
+    .meta-card h3 { margin: 0 0 .3rem; font-size: .98rem; }
+    .meta-card p { margin: 0; font-size: .84rem; color: var(--muted); }
+    .e1 { background: var(--teal-soft); }
+    .e2 { background: var(--blue-soft); }
+    .e3 { background: var(--amber-soft); }
+    .e4 { background: var(--violet-soft); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 1.4rem 0 2.5rem;
+      color: var(--muted);
+      font-size: .86rem;
+    }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: .45rem;
+      margin: .4rem 0 1rem;
+    }
+    .legend span {
+      font-size: .75rem;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: .2rem .55rem;
+      border: 1px solid var(--line);
+      background: var(--card);
+    }
+    .size-note {
+      font-family: var(--mono);
+      font-size: .75rem;
+      color: var(--muted);
+    }
+    .hl { background: linear-gradient(180deg, transparent 60%, #ffe7a8 60%); }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span> RPG ZZU · Agent Context Layer</div>
+      <h1>OpenWiki는<br />에이전트의 <span class="hl">작업 지도</span>다</h1>
+      <p class="lede">
+        이 프로젝트의 OpenWiki는 유저 매뉴얼이 아닙니다.
+        코딩 에이전트가 코드를 건드기기 전에 읽는
+        <b>프로젝트 전용 설명서 서랍</b>입니다.
+        파일 구조 · 읽는 순서 · 실제 활용 루프를 한 장에 정리합니다.
+      </p>
+      <div class="meta-row">
+        <span class="chip"><b>경로</b> openwiki/</span>
+        <span class="chip"><b>입구</b> AGENTS.md</span>
+        <span class="chip"><b>페이지</b> 12개</span>
+        <span class="chip"><b>갱신</b> npm run openwiki:cpen</span>
+        <span class="chip"><b>검증</b> npm run openwiki:verify</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#one-liner">한 줄 요약</a>
+      <a href="#metaphor">비유</a>
+      <a href="#tree">파일 구조</a>
+      <a href="#pages">페이지 카드</a>
+      <a href="#read-order">읽는 순서</a>
+      <a href="#scenarios">시나리오</a>
+      <a href="#ownership">코드 소유권</a>
+      <a href="#loop">작업 루프</a>
+      <a href="#maintain">유지보수</a>
+      <a href="#not">안 하는 것</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <!-- 1. One liner -->
+    <section id="one-liner">
+      <h2>1. 한 줄로 이해하기</h2>
+      <div class="callout info">
+        <div class="icon">🧭</div>
+        <div>
+          <h3>OpenWiki = “어디를 열고, 뭘 조심하고, 어떻게 검증할지” 알려주는 AI용 지도</h3>
+          <p class="muted" style="margin:0">
+            앱 기능이 아닙니다. 게임 도움말도 아닙니다.
+            <code>AGENTS.md</code>가 입구 안내판이고,
+            <code>openwiki/</code> 안의 마크다운이 구역별 작업 수칙입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Metaphor -->
+    <section id="metaphor">
+      <h2>2. 공장 비유로 보기</h2>
+      <div class="metaphor">
+        <div class="meta-card">
+          <div class="emoji e1">🪧</div>
+          <h3>AGENTS.md</h3>
+          <p>공장 입구 안내판<br />“들어가기 전 매뉴얼 읽어”</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji e2">🗺️</div>
+          <h3>PROJECT_WIKI.md</h3>
+          <p>전체 지도<br />구역 · 위험 · 읽기 순서</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji e3">📒</div>
+          <h3>세부 페이지</h3>
+          <p>구역별 작업 수칙<br />에디터 / 런타임 / 마을…</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji e4">🛠️</div>
+          <h3>cpen + verify</h3>
+          <p>지도 다시 그리기<br />+ 페이지 존재 검사</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Tree -->
+    <section id="tree">
+      <h2>3. 파일 구조</h2>
+      <p class="muted">레포 루트 기준으로 보면 OpenWiki는 이렇게 붙어 있습니다.</p>
+      <div class="legend">
+        <span class="tag tag-entry" style="border:0">ENTRY 입구</span>
+        <span class="tag tag-core" style="border:0">CORE 핵심</span>
+        <span class="tag tag-focus" style="border:0">FOCUS 영역별</span>
+        <span class="tag tag-big" style="border:0">HEAVY 대형</span>
+        <span class="tag tag-maint" style="border:0">MAINT 유지보수</span>
+      </div>
+      <div class="tree-shell">
+        <div class="tree">
+<pre style="margin:0;background:transparent;padding:0;box-shadow:none;color:inherit">
+<span class="root">rpg-zzu/</span>
+├── <span class="f">AGENTS.md</span> <span class="tag tag-entry">ENTRY</span>
+│     <span class="c">└ 에이전트 첫 지시: openwiki 먼저 읽어</span>
+│
+├── <span class="folder">openwiki/</span> <span class="tag tag-core">CORE</span>
+│   ├── <span class="file">PROJECT_WIKI.md</span> <span class="tag tag-entry">ENTRY</span>
+│   ├── <span class="file">quickstart.md</span> <span class="tag tag-core">CORE</span>
+│   ├── <span class="file">architecture.md</span> <span class="tag tag-core">CORE</span>
+│   ├── <span class="file">ai-workflow.md</span> <span class="tag tag-core">CORE</span>
+│   ├── <span class="file">editor-workflows.md</span> <span class="tag tag-big">HEAVY ~100KB</span>
+│   ├── <span class="file">runtime-and-data.md</span> <span class="tag tag-big">HEAVY ~58KB</span>
+│   ├── <span class="file">testing.md</span> <span class="tag tag-focus">FOCUS</span>
+│   ├── <span class="file">large-village-generation.md</span> <span class="tag tag-focus">FOCUS</span>
+│   ├── <span class="file">autotiles.md</span> <span class="tag tag-focus">FOCUS</span>
+│   ├── <span class="file">castle-map.md</span> <span class="tag tag-focus">FOCUS</span>
+│   ├── <span class="file">ai-tools-deprecation-roadmap.md</span> <span class="tag tag-focus">FOCUS</span>
+│   └── <span class="file">cpen-openwiki.md</span> <span class="tag tag-maint">MAINT</span>
+│
+├── <span class="folder">scripts/</span>
+│   ├── <span class="file">openwiki-cpen.mjs</span> <span class="tag tag-maint">MAINT</span>
+│   └── <span class="file">verify-openwiki-editor-wiki.mjs</span>
+│
+└── package.json
+      "openwiki:cpen" / "openwiki:verify"
+</pre>
+        </div>
+        <div class="card">
+          <h3>구조 읽는 법</h3>
+          <p><b>입구 2개</b> — 루트 <code>AGENTS.md</code> + <code>openwiki/PROJECT_WIKI.md</code>. 둘 다 “어디부터 읽지?”를 알려줍니다.</p>
+          <p><b>핵심 4장</b> — quickstart, architecture, ai-workflow, testing. 거의 모든 작업의 뼈대입니다.</p>
+          <p><b>대형 2장</b> — editor-workflows, runtime-and-data. 실무 디테일이 몰려 있습니다. 통째로 외우지 말고, 작업 영역에 맞는 섹션만 파세요.</p>
+          <p><b>포커스 페이지</b> — 마을 생성, 오토타일, 성 맵처럼 한 서브시스템 전용.</p>
+          <p style="margin:0"><b>유지보수</b> — cpen 래퍼와 verify 스크립트. 문서 자동 갱신/존재 검사용.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Page cards -->
+    <section id="pages">
+      <h2>4. 페이지별 역할 카드</h2>
+      <p class="muted">“이 파일은 언제 읽나?”를 기준으로 정리했습니다.</p>
+      <div class="grid-3" style="margin-bottom:1rem">
+        <article class="file-card">
+          <span class="badge b-entry">ENTRY</span>
+          <h3>PROJECT_WIKI.md</h3>
+          <p>AI 엔트리 포인트. 프로젝트 정체성, 소유 경계, 필수 읽기 순서, Supabase 강제 규칙.</p>
+          <div class="when">언제: 모든 코드 작업 시작 시 무조건</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-core">CORE</span>
+          <h3>quickstart.md</h3>
+          <p>레포 모양, npm 스크립트, src 폴더 지도, 처음 열어볼 파일.</p>
+          <div class="when">언제: 레포가 낯설 때 / 어디부터 볼지 모를 때</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-core">CORE</span>
+          <h3>architecture.md</h3>
+          <p>부트 흐름, 모드 전환, 모듈 소유권 경계.</p>
+          <div class="when">언제: 앱 구조/모드 전환/경계 넘는 리팩터</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-core">CORE</span>
+          <h3>ai-workflow.md</h3>
+          <p>에이전트 작업 전/중/후 규칙. 툴 아키텍처, WorkPlan, MCP, wiki 갱신.</p>
+          <div class="when">언제: AI/툴/하네스 손댈 때, 작업 루프 확인</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-big">HEAVY</span>
+          <h3>editor-workflows.md</h3>
+          <p class="size-note">~103 KB</p>
+          <p>맵 편집, 이벤트, DB, 리소스, 저장/임포트, 건축 키트, 타일 규칙의 에디터 실무 지도.</p>
+          <div class="when">언제: 에디터 UI · 맵 · 이벤트 · 타일 · 저장 UX</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-big">HEAVY</span>
+          <h3>runtime-and-data.md</h3>
+          <p class="size-note">~58 KB</p>
+          <p>플레이 모드, 인터프리터, 전투, 세션, 스키마, 마이그레이션, 영속화.</p>
+          <div class="when">언제: 플레이/세이브/스키마/런타임 커맨드</div>
+        </article>
+      </div>
+      <div class="grid-3">
+        <article class="file-card">
+          <span class="badge b-focus">FOCUS</span>
+          <h3>testing.md</h3>
+          <p>검증 계약. Vitest/Playwright/증거 남기는 법.</p>
+          <div class="when">언제: 테스트 전략 · 검증 커맨드 고를 때</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-map">FOCUS</span>
+          <h3>large-village-generation.md</h3>
+          <p>100×100 강/시장 마을 plan → build → road → QA 플로우.</p>
+          <div class="when">언제: 큰 마을 생성/하네스 작업</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-focus">FOCUS</span>
+          <h3>autotiles.md</h3>
+          <p>지형 오토타일, 템플릿 앵커, 물/애니 배선.</p>
+          <div class="when">언제: 흙길/모래/물/쿼터 합성</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-focus">FOCUS</span>
+          <h3>castle-map.md</h3>
+          <p>성/성채 맵 모듈 (<code>map_castle_keep</code> gold).</p>
+          <div class="when">언제: 성 키트/캐슬 하네스</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-focus">FOCUS</span>
+          <h3>ai-tools-deprecation-roadmap.md</h3>
+          <p>구형 AI 툴 폐기 로드맵.</p>
+          <div class="when">언제: deprecated 툴 건드릴 때</div>
+        </article>
+        <article class="file-card">
+          <span class="badge b-maint">MAINT</span>
+          <h3>cpen-openwiki.md</h3>
+          <p>CPEN 경유 wiki 갱신 방법, 예산, 비스트리밍 제약.</p>
+          <div class="when">언제: wiki 자동 재생성할 때</div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5. Read order -->
+    <section id="read-order">
+      <h2>5. 어떻게 읽나 (필수 순서)</h2>
+      <p class="muted">에이전트는 파일을 감으로 뒤지지 않습니다. 이 순서를 탑니다.</p>
+      <div class="flow">
+        <div class="flow-step">
+          <div class="n">1</div>
+          <h3>AGENTS.md</h3>
+          <p>루트 입구. “wiki 먼저 읽어” + Supabase 하드 룰 확인.</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">2</div>
+          <h3>PROJECT_WIKI</h3>
+          <p>전체 지도. 소유 경계와 어떤 세부 페이지로 갈지 결정.</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">3</div>
+          <h3>영역 페이지</h3>
+          <p>editor / runtime / village / architecture / testing 중 필요한 것만.</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">4</div>
+          <h3>소스 파일</h3>
+          <p>wiki가 지목한 실제 코드만 연다. 랜덤 탐색 금지.</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">5</div>
+          <h3>검증 계획</h3>
+          <p>어떤 테스트/브라우저 시나리오로 증명할지 정한 뒤 수정.</p>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top:1.1rem">
+        <div class="icon">📌</div>
+        <div>
+          <h3>핵심 원칙</h3>
+          <p style="margin:0" class="muted">
+            wiki가 소스와 충돌하면 <b>당장 고칠 때는 소스가 이긴다</b>.
+            고친 뒤에는 같은 작업 안에서 wiki를 맞춰서,
+            다음 에이전트가 또 헛발질하지 않게 한다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Scenarios -->
+    <section id="scenarios">
+      <h2>6. 실제 시나리오로 읽기</h2>
+
+      <div class="scenario" style="margin-bottom:1rem">
+        <div class="ask">
+          <div class="label">시나리오 A</div>
+          <h3>“이벤트 에디터 UI 고쳐”</h3>
+          <p>삭제 확인, 페이지 조건, 커맨드 미리보기 같은 에디터 표면 작업.</p>
+        </div>
+        <ul class="path-list">
+          <li>
+            <span class="step-n">1</span>
+            <div>
+              <strong>AGENTS.md → PROJECT_WIKI.md</strong>
+              <span>입구 + 에디터 영역 페이지 확인</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">2</span>
+            <div>
+              <strong>editor-workflows.md</strong>
+              <span>Event Authoring / 패널 / 검증 섹션</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">3</span>
+            <div>
+              <strong>소스</strong>
+              <span><code>src/editor/panels/*</code>, event marker UX, 관련 CSS</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">4</span>
+            <div>
+              <strong>검증</strong>
+              <span>testing.md → focused Vitest + Playwright 증거</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="scenario" style="margin-bottom:1rem">
+        <div class="ask">
+          <div class="label">시나리오 B</div>
+          <h3>“세이브 스키마 필드 추가”</h3>
+          <p>프로젝트 JSON 모양, 마이그레이션, 로드/세이브 계약이 걸린 작업.</p>
+        </div>
+        <ul class="path-list">
+          <li>
+            <span class="step-n">1</span>
+            <div>
+              <strong>PROJECT_WIKI.md</strong>
+              <span>소유권: <code>src/project</code> 가 정본</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">2</span>
+            <div>
+              <strong>runtime-and-data.md</strong>
+              <span>스키마 · migration · persistence 섹션</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">3</span>
+            <div>
+              <strong>소스</strong>
+              <span><code>src/project/*</code> defaults, store, migrations, tests</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">4</span>
+            <div>
+              <strong>검증</strong>
+              <span>load → migrate → save → play 경로 테스트. wiki도 같이 갱신</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="scenario">
+        <div class="ask">
+          <div class="label">시나리오 C</div>
+          <h3>“100×100 강 마을 만들어”</h3>
+          <p>콘텐츠 저작. 코드 수정만이 아니라 Supabase 저장이 완료 조건.</p>
+        </div>
+        <ul class="path-list">
+          <li>
+            <span class="step-n">1</span>
+            <div>
+              <strong>AGENTS.md 하드 룰</strong>
+              <span>DB 연결 확인. blank/fresh 세션만으로 끝내지 말 것</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">2</span>
+            <div>
+              <strong>large-village-generation.md</strong>
+              <span>plan → build → road → QA 순서</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">3</span>
+            <div>
+              <strong>editor-workflows + autotiles</strong>
+              <span>집 키트, 길, 소품, 오토타일 규칙 보강</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-n">4</span>
+            <div>
+              <strong>완료 조건</strong>
+              <span>Supabase upsert + project id 재로드 증명</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7. Ownership -->
+    <section id="ownership">
+      <h2>7. 코드 폴더 ↔ Wiki 매핑</h2>
+      <p class="muted">PROJECT_WIKI가 말하는 소유 경계를 한눈에.</p>
+      <div class="own-map">
+        <div class="own">
+          <div class="src">src/app</div>
+          <div class="wiki">architecture.md</div>
+          <p>부트, 모드 전환, Phaser 라이프사이클 조율</p>
+        </div>
+        <div class="own">
+          <div class="src">src/editor</div>
+          <div class="wiki">editor-workflows.md · large-village · castle-map</div>
+          <p>맵/이벤트/리소스 저작. 런타임 세션이 아니라 프로젝트 데이터 수정</p>
+        </div>
+        <div class="own">
+          <div class="src">src/player</div>
+          <div class="wiki">runtime-and-data.md</div>
+          <p>플레이 UI, 대화, 타이틀/로드, 씬 상호작용</p>
+        </div>
+        <div class="own">
+          <div class="src">src/battle</div>
+          <div class="wiki">runtime-and-data.md</div>
+          <p>전투 상태, 턴, 커맨드, 보상, 스냅샷</p>
+        </div>
+        <div class="own">
+          <div class="src">src/project</div>
+          <div class="wiki">runtime-and-data.md</div>
+          <p>스키마, 기본값, 마이그레이션, 로컬/원격 저장 경계</p>
+        </div>
+        <div class="own">
+          <div class="src">src/ai · test</div>
+          <div class="wiki">ai-workflow.md · testing.md</div>
+          <p>어시스턴트 루프, 툴, WorkPlan, 검증 계약</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Loop -->
+    <section id="loop">
+      <h2>8. 어떻게 활용하나 (작업 루프)</h2>
+      <div class="loop">
+        <div class="loop-box p1">
+          <div class="phase">Phase 1 · Before</div>
+          <h3>지도 읽기</h3>
+          <p>AGENTS → PROJECT_WIKI → 영역 페이지 → 지목된 소스. 검증 방법도 미리 고른다.</p>
+        </div>
+        <div class="loop-box p2">
+          <div class="phase">Phase 2 · During</div>
+          <h3>경계 안에서 수정</h3>
+          <p>소유 모듈 안에서 고친다. 스키마 건드리면 migration/fixture/save 경로까지 같이 본다.</p>
+        </div>
+        <div class="loop-box p3">
+          <div class="phase">Phase 3 · Sync</div>
+          <h3>Wiki 동기화</h3>
+          <p>구조·워크플로·위험 포인트가 바뀌면 같은 작업에서 해당 openwiki 페이지를 업데이트.</p>
+        </div>
+        <div class="loop-box p4">
+          <div class="phase">Phase 4 · After</div>
+          <h3>검증 + 보고</h3>
+          <p>가장 가벼운 테스트부터. UI는 브라우저 증거. 콘텐츠는 Supabase 재로드 증명.</p>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <h3>에이전트 체크리스트 (복붙용)</h3>
+<pre>
+<span class="c"># 작업 시작</span>
+[ ] AGENTS.md 읽음
+[ ] openwiki/PROJECT_WIKI.md 읽음
+[ ] 영역 페이지 1개 이상 읽음
+[ ] 손댈 소스 파일 이름을 wiki에서 확인함
+[ ] 검증 커맨드/시나리오를 미리 정함
+
+<span class="c"># 작업 중</span>
+[ ] 소유 경계 안에서 수정
+[ ] 스키마 변경 시 migration + load/save 경로 확인
+[ ] 콘텐츠 작업이면 remote persistence 켜진 경로 사용
+
+<span class="c"># 작업 끝</span>
+[ ] 관련 openwiki 페이지 갱신 (구조/규칙 변경 시)
+[ ] 최소 검증 실행
+[ ] 콘텐츠면 Supabase save + reload + project id 보고
+</pre>
+      </div>
+    </section>
+
+    <!-- 9. Maintain -->
+    <section id="maintain">
+      <h2>9. 유지보수 커맨드</h2>
+      <div class="cmd-grid">
+        <div class="cmd">
+          <h3>문서 자동 갱신</h3>
+          <p>글로벌 <code>openwiki</code> CLI를 CPEN 래퍼로 감싸 호출. 페이지 단위로 돌릴 것 (토큰 예산).</p>
+<pre>npm run openwiki:cpen
+
+<span class="c"># 필요 env</span>
+<span class="k">CPEN_API_KEY</span>=...
+<span class="k">OPENAI_BASE_URL</span>=https://cpenrouter.space/v1</pre>
+        </div>
+        <div class="cmd">
+          <h3>존재/엔트리 검증</h3>
+          <p>필수 페이지와 AI 입구가 있는지 검사. wiki-only 수정 후 최소 게이트.</p>
+<pre>npm run openwiki:verify
+
+<span class="c"># 구현</span>
+scripts/verify-openwiki-editor-wiki.mjs</pre>
+        </div>
+      </div>
+
+      <div class="callout warn" style="margin-top:1rem">
+        <div class="icon">⚠️</div>
+        <div>
+          <h3>이 프로젝트의 커스텀 포인트</h3>
+          <p style="margin:0" class="muted">
+            공식 langchain-ai/openwiki를 “그대로” 쓰는 게 아닙니다.
+            <code>scripts/openwiki-cpen.mjs</code>가 글로벌 CLI를 찾고,
+            non-stream 패치 + CPEN fetch 어댑터를 씌운 뒤 실행합니다.
+            페이지 레이아웃도 이 에디터 전용으로 커스텀되어 있습니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Not -->
+    <section id="not">
+      <h2>10. 하는 것 / 안 하는 것</h2>
+      <div class="compare">
+        <div class="yes">
+          <h3>✅ OpenWiki가 하는 일</h3>
+          <ul>
+            <li>에이전트 pre-edit 컨텍스트 제공</li>
+            <li>모듈 소유권·위험 포인트 안내</li>
+            <li>영역별 소스 파일 지도</li>
+            <li>검증 기대치 공유</li>
+            <li>구조 변경 시 다음 에이전트에게 지식 전달</li>
+          </ul>
+        </div>
+        <div class="no">
+          <h3>❌ OpenWiki가 아닌 것</h3>
+          <ul>
+            <li>플레이어용 게임 도움말 / 제품 UI</li>
+            <li>맵·이벤트 콘텐츠 정본 (정본은 Supabase)</li>
+            <li>blankProject / fixture만으로 끝내는 변명</li>
+            <li>API 키·실자격 증명 저장소</li>
+            <li>소스 대신 믿는 절대 진리 (충돌 시 소스가 이김)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout danger" style="margin-top:1rem">
+        <div class="icon">🚫</div>
+        <div>
+          <h3>콘텐츠 작업 함정</h3>
+          <p style="margin:0" class="muted">
+            <code>?blankProject=1</code> / <code>?freshProject=1</code> / 일부 dev-showcase는
+            <b>remotePersistenceEnabled = false</b> 입니다.
+            그 경로에서 저장 버튼을 눌러도 Supabase로 안 갑니다.
+            마을·맵·이벤트·데모 게임 작업은 <b>원격 저장 + 재로드 증명</b>까지가 완료입니다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary strip -->
+    <section>
+      <h2>한 장 요약</h2>
+      <div class="card">
+<pre>
+<span class="s">요청 들어옴</span>
+   │
+   ▼
+<span class="k">AGENTS.md</span> ──► <span class="k">openwiki/PROJECT_WIKI.md</span>
+   │
+   ▼
+영역 페이지 선택
+  · 에디터   → editor-workflows.md
+  · 런타임   → runtime-and-data.md
+  · 마을     → large-village-generation.md
+  · AI/툴    → ai-workflow.md
+  · 검증     → testing.md
+   │
+   ▼
+wiki가 지목한 <span class="f">src/...</span> 소스만 수정
+   │
+   ├─ 구조/규칙 바뀜? → 같은 작업에서 openwiki 갱신
+   ├─ UI? → 브라우저/Playwright 증거
+   └─ 콘텐츠? → Supabase save + reload + project id
+</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0 0 .35rem"><b>docs/openwiki-guide.html</b> · RPG ZZU OpenWiki 설명 페이지</p>
+      <p style="margin:0">
+        근거 문서:
+        <code>AGENTS.md</code>,
+        <code>openwiki/PROJECT_WIKI.md</code>,
+        <code>openwiki/quickstart.md</code>,
+        <code>openwiki/ai-workflow.md</code>,
+        <code>openwiki/cpen-openwiki.md</code>,
+        <code>scripts/openwiki-cpen.mjs</code>
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

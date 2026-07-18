@@ -417,6 +417,27 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   width: 100% !important;
 }
 
+/* 전문가 좌측 RM2003 팔레트: 가로 6칸 고정 */
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.rm2k-palette {
+  container-type: inline-size;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.rm2k-palette-grid {
+  --rm2k-cols: 6;
+  --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
+  grid-auto-rows: var(--chipset-cell);
+  grid-template-columns: repeat(6, var(--chipset-cell)) !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: max-content !important;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.rm2k-palette-grid .chipset-tile {
+  height: var(--chipset-cell);
+  min-width: 0;
+  width: var(--chipset-cell);
+}
+
 /* 시트 크게 보기 팝오버 */
 .chipset-sheet-popout-backdrop {
   background: rgba(6, 10, 20, 0.55);

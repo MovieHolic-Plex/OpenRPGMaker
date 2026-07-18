@@ -11,7 +11,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const API_KEY = (() => {
   try {
     const env = fs.readFileSync(path.join(__dirname, "..", ".env.local"), "utf8");
-    const m = env.match(/OPENROUTER_API_KEY=(.+)/);
+    const m = env.match(/VITE_LLM_API_KEY=(.+)/);
     return m ? m[1].trim() : "";
   } catch {
     return "";
@@ -87,7 +87,7 @@ const API_KEY = (() => {
     const p3 = await ctx3.newPage();
     await p3.addInitScript((key) => {
       localStorage.setItem("rpg-zzu:ai-config", JSON.stringify({
-        baseUrl: "https://openrouter.ai/api/v1", model: "google/gemini-3.1-flash-lite",
+        baseUrl: "https://example.invalid/v1", model: "google/gemini-3.1-flash-lite",
         apiKey: key, maxToolCalls: 30, maxTokens: 8192, reasoningEffort: "medium", autoApprove: false,
       }));
     }, API_KEY);
@@ -120,7 +120,7 @@ const API_KEY = (() => {
     await p3.screenshot({ path: path.join(OUT, "07-after-accept.png") });
     await ctx3.close();
   } else {
-    console.log("SKIP AI 하이라이트 QA — OPENROUTER_API_KEY 없음");
+    console.log("SKIP AI 하이라이트 QA — VITE_LLM_API_KEY 없음");
   }
 
   await browser.close();

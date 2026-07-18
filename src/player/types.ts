@@ -60,6 +60,7 @@ export type M2ActorRuntimeState = {
   classId?: string;
   damage?: number;
   faceset?: string;
+  faceIndex?: number;
   name?: string;
   nickname?: string;
   parameters?: number;
@@ -233,6 +234,8 @@ export type RuntimeFollowerLike = {
   readonly eventId?: string;
   readonly graphic: EventPageGraphic;
   readonly name: string;
+  readonly kind?: "actor" | "monster";
+  readonly monsterInstanceId?: string;
 };
 
 export type RuntimeFollowerTrailPointLike = {
@@ -258,6 +261,7 @@ export interface PlaySessionLike {
   audio?: Record<string, RuntimeAudioState>;
   pictures?: Record<string, RuntimePictureState>;
   actorSkillIds?: Record<ActorId, SkillId[]>;
+  actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience?: Record<string, number>;
   actorLevels?: Record<string, number>;
   actorEquipment?: Record<string, ActorInitialEquipment>;

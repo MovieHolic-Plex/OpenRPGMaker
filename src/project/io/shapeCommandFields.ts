@@ -57,6 +57,10 @@ function validateCommandShape(label: string, value: unknown): void {
       requireSelfSwitchKey(`${label}.key`, command.key);
       requireBoolean(`${label}.value`, command.value);
       return;
+    case "setSwitch":
+      requireString(`${label}.switchId`, command.switchId);
+      validateSwitchValue(`${label}.value`, command.value);
+      return;
     case "setVariable":
       requireString(`${label}.variableId`, command.variableId);
       requireString(`${label}.op`, command.op);
@@ -78,6 +82,18 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.npcKey !== undefined) requireString(`${label}.npcKey`, command.npcKey);
       requireString(`${label}.variableId`, command.variableId);
       return;
+    case "craftRecipe":
+      requireString(`${label}.recipeId`, command.recipeId);
+      return;
+    case "applyItemUpgrade":
+      requireString(`${label}.upgradeId`, command.upgradeId);
+      return;
+    case "equipTool":
+      if (command.itemId !== undefined) requireString(`${label}.itemId`, command.itemId);
+      return;
+    case "openChest":
+      if (command.chestId !== undefined) requireString(`${label}.chestId`, command.chestId);
+      return;
     case "setTime":
       requireNumber(`${label}.hour`, command.hour);
       if (command.minute !== undefined) requireNumber(`${label}.minute`, command.minute);
@@ -96,12 +112,64 @@ function validateCommandShape(label: string, value: unknown): void {
       requireNumber(`${label}.pattern`, command.pattern);
       return;
     case "changeExp":
+      requireString(`${label}.actorId`, command.actorId);
+      requireActorAmountOp(`${label}.op`, command.op);
+      validateVariableOperand(`${label}.amount`, command.amount);
+      return;
     case "changeLevel":
+      requireString(`${label}.actorId`, command.actorId);
+      requireActorAmountOp(`${label}.op`, command.op);
+      requireNumber(`${label}.amount`, command.amount);
+      return;
     case "changeActorHp":
     case "changeActorMp":
       requireString(`${label}.actorId`, command.actorId);
       requireActorAmountOp(`${label}.op`, command.op);
       requireNumber(`${label}.amount`, command.amount);
+      if (command.amountMode !== undefined && command.amountMode !== "flat" && command.amountMode !== "percent") {
+        throw new ProjectFormatError(`${label}.amountMode가 잘못되었습니다.`);
+      }
+      return;
+    case "changeGold":
+      requireString(`${label}.op`, command.op);
+      validateVariableOperand(`${label}.amount`, command.amount);
+      return;
+    case "changeItem":
+      requireString(`${label}.itemId`, command.itemId);
+      requireString(`${label}.op`, command.op);
+      validateVariableOperand(`${label}.amount`, command.amount);
+      return;
+    case "learnSkill":
+      requireString(`${label}.actorId`, command.actorId);
+      requireString(`${label}.skillId`, command.skillId);
+      if (command.action !== undefined) {
+        const action = requireString(`${label}.action`, command.action);
+        if (action !== "learn" && action !== "forget") {
+          throw new ProjectFormatError(`${label}.action가 잘못되었습니다.`);
+        }
+      }
+      return;
+    case "battleProcessing":
+      requireString(`${label}.troopId`, command.troopId);
+      requireBoolean(`${label}.canEscape`, command.canEscape);
+      requireBoolean(`${label}.canLose`, command.canLose);
+      if (command.battleFlow !== undefined) {
+        const flow = requireString(`${label}.battleFlow`, command.battleFlow);
+        if (flow !== "gauge" && flow !== "strict") {
+          throw new ProjectFormatError(`${label}.battleFlow가 잘못되었습니다.`);
+        }
+      }
+      if (command.troopSource !== undefined) {
+        const source = requireString(`${label}.troopSource`, command.troopSource);
+        if (source !== "fixed" && source !== "variable") {
+          throw new ProjectFormatError(`${label}.troopSource가 잘못되었습니다.`);
+        }
+      }
+      if (command.troopVariableId !== undefined) requireString(`${label}.troopVariableId`, command.troopVariableId);
+      if (command.branchOnResult !== undefined) requireBoolean(`${label}.branchOnResult`, command.branchOnResult);
+      if (command.victoryBranch !== undefined) validateCommandArray(`${label}.victoryBranch`, command.victoryBranch);
+      if (command.defeatBranch !== undefined) validateCommandArray(`${label}.defeatBranch`, command.defeatBranch);
+      if (command.escapeBranch !== undefined) validateCommandArray(`${label}.escapeBranch`, command.escapeBranch);
       return;
     case "promoteActor":
       requireString(`${label}.actorId`, command.actorId);
@@ -190,6 +258,17 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);
       if (command.branchOnTransaction !== undefined) requireBoolean(`${label}.branchOnTransaction`, command.branchOnTransaction);
       if (command.transactionBranch !== undefined) validateCommandArray(`${label}.transactionBranch`, command.transactionBranch);
+      return;
+    case "inn":
+      requireNumber(`${label}.price`, command.price);
+      if (command.note !== undefined) requireString(`${label}.note`, command.note);
+      if (command.question !== undefined) requireString(`${label}.question`, command.question);
+      if (command.recoverMp !== undefined) requireBoolean(`${label}.recoverMp`, command.recoverMp);
+      if (command.advanceToMorning !== undefined) requireBoolean(`${label}.advanceToMorning`, command.advanceToMorning);
+      if (command.restDurationMs !== undefined) requireNumber(`${label}.restDurationMs`, command.restDurationMs);
+      if (command.wakeDurationMs !== undefined) requireNumber(`${label}.wakeDurationMs`, command.wakeDurationMs);
+      if (command.branchOnNotEnoughGold !== undefined) requireBoolean(`${label}.branchOnNotEnoughGold`, command.branchOnNotEnoughGold);
+      if (command.notEnoughBranch !== undefined) validateCommandArray(`${label}.notEnoughBranch`, command.notEnoughBranch);
       return;
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
@@ -346,6 +425,22 @@ export function validateConditionShape(label: string, value: unknown): void {
       if (condition.npcKey !== undefined) requireString(`${label}.npcKey`, condition.npcKey);
       requireNumber(`${label}.value`, condition.value);
       return;
+    case "battleResult": {
+      const result = requireString(`${label}.result`, condition.result);
+      if (result === "victory" || result === "defeat" || result === "escape") return;
+      break;
+    }
+    case "all":
+    case "any": {
+      const children = requireArray(`${label}.conditions`, condition.conditions);
+      for (const [index, child] of children.entries()) {
+        validateConditionShape(`${label}.conditions[${index}]`, child);
+      }
+      return;
+    }
+    case "not":
+      validateConditionShape(`${label}.condition`, condition.condition);
+      return;
   }
   throw new ProjectFormatError(`${label}: 알 수 없는 condition kind: ${kind}`);
 }
@@ -456,6 +551,16 @@ function validateVariableOperand(label: string, value: unknown): void {
   const operand = requireRecord(label, value);
   if (requireString(`${label}.kind`, operand.kind) !== "var") {
     throw new ProjectFormatError(`${label}: 알 수 없는 변수 피연산자입니다.`);
+  }
+  requireString(`${label}.id`, operand.id);
+}
+
+function validateSwitchValue(label: string, value: unknown): void {
+  if (typeof value === "boolean") return;
+  if (value === "toggle") return;
+  const operand = requireRecord(label, value);
+  if (requireString(`${label}.kind`, operand.kind) !== "var") {
+    throw new ProjectFormatError(`${label}: 알 수 없는 스위치 값입니다.`);
   }
   requireString(`${label}.id`, operand.id);
 }

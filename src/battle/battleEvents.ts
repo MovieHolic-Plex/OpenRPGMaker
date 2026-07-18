@@ -16,6 +16,7 @@ export type BattleEventRuntimeState = {
   actorSkillIds?: Record<string, string[]>;
   actorExperience?: Record<string, number>;
   actorLevels?: Record<string, number>;
+  actorBattleCommands?: Record<string, string[]>;
   readonly timers?: Record<string, number>;
   readonly gameTime?: GameTime;
   readonly friendship?: Record<string, number>;
@@ -89,6 +90,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       actorSkillIds: { ...(options.state.actorSkillIds ?? {}) },
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
+      actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
     };
   }
 
@@ -188,9 +190,16 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "text":
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: [command.speaker, command.body].filter(Boolean).join(": ") });
         return false;
-      case "setSwitch":
-        options.state.switches[command.switchId] = command.value;
+      case "setSwitch": {
+        const raw = command.value;
+        const next = typeof raw === "boolean"
+          ? raw
+          : raw === "toggle"
+            ? !(options.state.switches[command.switchId] ?? false)
+            : (options.state.variables[raw.id] ?? 0) !== 0;
+        options.state.switches[command.switchId] = next;
         return false;
+      }
       case "setVariable":
         options.state.variables[command.variableId] = applyNumberOperation(
           options.state.variables[command.variableId] ?? 0,
@@ -200,7 +209,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return false;
       case "changeItem": {
         const current = options.state.inventory[command.itemId] ?? 0;
-        options.state.inventory[command.itemId] = Math.max(0, applyNumberOperation(current, command.op, command.amount));
+        const amount = typeof command.amount === "number"
+          ? command.amount
+          : options.state.variables[command.amount.id] ?? 0;
+        options.state.inventory[command.itemId] = Math.max(0, applyNumberOperation(current, command.op, amount));
         return false;
       }
       case "changeFriendship": {
@@ -233,10 +245,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return executeBattleEventCommands(page, commonEvent.commands, context, depth + 1);
       }
       case "changeActorHp":
-        changeActorVital(command.actorId, "hp", command.op, command.amount);
+        changeActorVital(command.actorId, "hp", command.op, command.amount, command.amountMode);
         return false;
       case "changeActorMp":
-        changeActorVital(command.actorId, "mp", command.op, command.amount);
+        changeActorVital(command.actorId, "mp", command.op, command.amount, command.amountMode);
         return false;
       case "recoverAll":
         for (const actor of resolveActorTargets(command.actorId)) {
@@ -246,18 +258,24 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return false;
       case "changeGold": {
         const current = options.state.gold ?? 0;
-        options.state.gold = Math.max(0, applyVitalOperation(current, command.op, command.amount));
+        const amount = typeof command.amount === "number"
+          ? command.amount
+          : options.state.variables[command.amount.id] ?? 0;
+        options.state.gold = Math.max(0, applyVitalOperation(current, command.op, amount));
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `gold→${options.state.gold}` });
         return false;
       }
       case "changeExp": {
         options.state.actorExperience ??= {};
+        const amount = typeof command.amount === "number"
+          ? command.amount
+          : options.state.variables[command.amount.id] ?? 0;
         for (const actor of resolveActorTargets(command.actorId)) {
           const id = actor.recordId;
           const current = options.state.actorExperience[id] ?? 0;
-          options.state.actorExperience[id] = Math.max(0, applyVitalOperation(current, command.op, command.amount));
+          options.state.actorExperience[id] = Math.max(0, applyVitalOperation(current, command.op, amount));
         }
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeExp ${command.actorId}` });
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeExp ${command.actorId || "party"}` });
         return false;
       }
       case "changeLevel": {
@@ -272,17 +290,24 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       }
       case "learnSkill": {
         options.state.actorSkillIds ??= {};
+        const action = command.action ?? "learn";
         const targets = resolveActorTargets(command.actorId);
         for (const actor of targets) {
           const id = actor.recordId;
           const known = new Set(options.state.actorSkillIds[id] ?? actor.skillIds);
+          if (action === "forget") {
+            known.delete(command.skillId);
+            options.state.actorSkillIds[id] = [...known];
+            actor.skillIds = actor.skillIds.filter((skillId) => skillId !== command.skillId);
+            continue;
+          }
           known.add(command.skillId);
           options.state.actorSkillIds[id] = [...known];
           if (!actor.skillIds.includes(command.skillId)) {
             actor.skillIds = [...actor.skillIds, command.skillId];
           }
         }
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `learnSkill ${command.skillId}` });
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `learnSkill ${action} ${command.skillId}` });
         return false;
       }
       case "changeParty": {
@@ -432,10 +457,18 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return options.actors.filter((actor) => actor.id === actorId || actor.recordId === actorId);
   }
 
-  function changeActorVital(actorId: string, kind: "hp" | "mp", op: "=" | "+=" | "-=", amount: number): void {
+  function changeActorVital(
+    actorId: string,
+    kind: "hp" | "mp",
+    op: "=" | "+=" | "-=",
+    amount: number,
+    amountMode?: "flat" | "percent"
+  ): void {
     for (const actor of resolveActorTargets(actorId)) {
       const max = kind === "hp" ? actor.maxHp : actor.maxMp;
-      actor[kind] = clampVital(applyVitalOperation(actor[kind], op, amount), max);
+      const raw = Math.trunc(amount);
+      const delta = amountMode === "percent" ? Math.trunc((Math.max(0, max) * raw) / 100) : raw;
+      actor[kind] = clampVital(applyVitalOperation(actor[kind], op, delta), max);
     }
   }
 

@@ -2,6 +2,7 @@
 // 기본 모드 첫 방문 코치마크 3점 — 레일 → 캔버스 → AI 패널.
 // 에디터에 온보딩 장치가 전무해 초보가 첫 화면에서 막히는 문제(기본 모드 UX 감사)의 최소 대응.
 // localStorage 플래그로 1회만 노출하고, 건너뛰기/완주/전문가 전환 모두 '본 것'으로 처리한다.
+import { shouldSuppressCoachMarksForWelcomeIntent } from "@/editor/aiBootIntent";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
@@ -176,6 +177,8 @@ export function maybeStartBasicCoachMarks(storage?: Storage | null): void {
   if (typeof document === "undefined" || !document.body) return;
   if (activeHost) return;
   if (getEditorUiMode() !== "basic") return;
+  // Welcome intent boots win the surface — do not start coach marks (and do not mark seen).
+  if (shouldSuppressCoachMarksForWelcomeIntent()) return;
   const store = resolveStorage(storage);
   if (alreadySeen(store)) return;
   renderStep(0, store);

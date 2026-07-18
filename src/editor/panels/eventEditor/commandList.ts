@@ -4,9 +4,14 @@ import {
   CHOICE_CANCEL_BRANCH_INDEX,
   FORK_ELSE_BRANCH_INDEX,
   FORK_THEN_BRANCH_INDEX,
+  LOOP_BODY_BRANCH_INDEX,
   PROMOTE_FAILURE_BRANCH_INDEX,
   PROMOTE_SUCCESS_BRANCH_INDEX,
   SHOP_TRANSACTION_BRANCH_INDEX,
+  INN_NOT_ENOUGH_BRANCH_INDEX,
+  BATTLE_VICTORY_BRANCH_INDEX,
+  BATTLE_DEFEAT_BRANCH_INDEX,
+  BATTLE_ESCAPE_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { openEventCommandEditDialog } from "./commandEditDialog";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
@@ -100,6 +105,10 @@ function renderCommandItem(
       commandCategory: categoryVisual.key,
     },
   });
+  if (cmd.kind === "m2Command" && (cmd.commandId === "m2-088-comment" || cmd.commandId.endsWith("-comment"))) {
+    item.dataset.commentColor = String(cmd.fields.color ?? "green");
+    item.classList.add("cmd-item-comment");
+  }
   item.dataset.renderKindString = String(cmd.kind);
   // 드래그는 핸들에서 시작하고 항목 전체를 드래그한다.
   item.draggable = false;
@@ -152,9 +161,10 @@ function renderCommandItem(
     openEditor();
   });
   head.addEventListener("keydown", (event) => {
-    if (!(event instanceof KeyboardEvent)) return;
+    // fakeDom 에는 KeyboardEvent 생성자가 없을 수 있다 — duck-type 으로 키 이벤트를 받는다.
+    if (!isKeyboardLike(event)) return;
     selectCommandLine(item);
-    handleCommandShortcut(event, { x: 0, y: 0, item, command: cmd, path, actions, openEditor });
+    handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor });
   });
   item.append(head);
   ensureTerminalRowHint(item, cmd);
@@ -319,7 +329,10 @@ function appendCommandChildren(
     return;
   }
   if (cmd.kind === "fork") {
-    host.append(renderMarkerLine(": 조건이 참일 때", depth, "fork"));
+    host.append(renderMarkerLine(": 참일 때", depth, "fork"));
+    if (cmd.then.length === 0) {
+      host.append(renderMarkerLine("  ◆ (비어 있음 — 여기에 명령 추가)", depth + 1, "fork"));
+    }
     cmd.then.forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -334,6 +347,9 @@ function appendCommandChildren(
     });
     if (cmd.else) {
       host.append(renderMarkerLine(": 그 외의 경우", depth, "fork"));
+      if (cmd.else.length === 0) {
+        host.append(renderMarkerLine("  ◆ (비어 있음 — 여기에 명령 추가)", depth + 1, "fork"));
+      }
       cmd.else.forEach((child, childIndex) => {
         renderCommandTree(
           host,
@@ -348,6 +364,23 @@ function appendCommandChildren(
       });
     }
     host.append(renderMarkerLine(": 분기 종료", depth, "fork"));
+    return;
+  }
+  if (cmd.kind === "loop") {
+    host.append(renderMarkerLine(": 반복 내용", depth, "fork"));
+    cmd.body.forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, LOOP_BODY_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 반복 종료", depth, "fork"));
     return;
   }
   if (cmd.kind === "shop" && cmd.branchOnTransaction) {
@@ -365,6 +398,64 @@ function appendCommandChildren(
       );
     });
     host.append(renderMarkerLine(": 상점 분기 종료", depth, "shop"));
+  }
+  if (cmd.kind === "inn" && cmd.branchOnNotEnoughGold) {
+    host.append(renderMarkerLine(": 골드가 부족할 때", depth, "shop"));
+    (cmd.notEnoughBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, INN_NOT_ENOUGH_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 여관 부족 분기 종료", depth, "shop"));
+  }
+  if (cmd.kind === "battleProcessing" && cmd.branchOnResult) {
+    host.append(renderMarkerLine(": 전투 승리", depth, "fork"));
+    (cmd.victoryBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, BATTLE_VICTORY_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 전투 패배", depth, "fork"));
+    (cmd.defeatBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, BATTLE_DEFEAT_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 전투 도망", depth, "fork"));
+    (cmd.escapeBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, BATTLE_ESCAPE_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options
+      );
+    });
+    host.append(renderMarkerLine(": 전투 결과 분기 종료", depth, "fork"));
   }
   if (cmd.kind === "promoteActor") {
     host.append(renderMarkerLine(": 승급 성공", depth, "fork"));
@@ -466,8 +557,17 @@ function commandActions(path: number[], actions: CommandListActions): HTMLElemen
     el("button", {
       text: "x",
       attrs: { title: "삭제", type: "button" },
-      on: { click: () => actions.deleteCommand(path) },
+      on: {
+        click: (event) => {
+          event.stopPropagation();
+          actions.deleteCommand(path);
+        },
+      },
     })
   );
   return wrap;
+}
+function isKeyboardLike(event: Event): event is KeyboardEvent {
+  if (typeof KeyboardEvent !== "undefined" && event instanceof KeyboardEvent) return true;
+  return typeof (event as KeyboardEvent).key === "string";
 }

@@ -103,11 +103,18 @@ export function paintTilesBulk(
   for (const edit of planned) {
     byKey.set(`${edit.layer}:${edit.x},${edit.y}`, edit);
   }
-  const edits = [...byKey.values()];
+  // 하위 레이어 지형 붓질은 상위 레이어 데이터를 절대 건드리지 않는다.
+  // hard 클러스터 확장이 upper companion 을 끼워 넣거나 repairTreePairs 가 수관을 덮어쓰는 경로를 차단.
+  const lowerTerrainOnly = strokes.every((stroke) => stroke.layer === "lower" && isLowerTerrainTile(tileset, stroke.tile));
+  const edits = lowerTerrainOnly
+    ? [...byKey.values()].filter((edit) => edit.layer === "lower")
+    : [...byKey.values()];
+  if (edits.length === 0) return;
 
   // Pre-check: any lower stroke that paints/overwrites an autotile trigger must reshape
   // even when UI Manual is on (RM brush contract). Dirty-cell expansion follows.
   const shapeAutotile = lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
+  const repairTrees = !lowerTerrainOnly && editsNeedTreePairRepair(edits);
 
   store.updateMap(mapId, (m) => {
     const lowerPoints: RoadPoint[] = [];
@@ -132,7 +139,7 @@ export function paintTilesBulk(
         previousTile: lowerPrevious,
       });
     }
-    repairTreePairsOnMap(m);
+    if (repairTrees) repairTreePairsOnMap(m);
   }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile) });
 }
 
@@ -401,7 +408,10 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
       nextTile: newTile,
       autoConnect: shapeAutotile,
     });
-    repairTreePairsOnMap(m);
+    // 하위 지형 채우기는 상위(수관 등)를 재작성하지 않는다.
+    if (targetLayer === "upper" || !isLowerTerrainTile(tileset, newTile)) {
+      repairTreePairsOnMap(m);
+    }
   }, {
     cells: changedTileCellsForEdit(mapId, fillPlan.layer, fillPlan.points, shapeAutotile),
   });
@@ -565,6 +575,25 @@ function collectTransferTargets(commands: readonly Command[], mapId: string, blo
         break;
     }
   }
+}
+
+
+/** 하위 레이어 지형 타일 — 나무/상위 전용 소품 제외. */
+function isLowerTerrainTile(tileset: TilesetDef | undefined, tile: number): boolean {
+  if (tile === TILE.EMPTY || tile < 0) return true;
+  if (isTreeTrunkTileId(tile) || isTreeCanopyTileId(tile)) return false;
+  if (!tileset) return true;
+  const home = tileLayerHome(tileset, tile);
+  return home === "lower" || home === "both";
+}
+
+/** 나무 수관 보정이 필요한 편집인지 — 상위/나무 타일 쓰기일 때만 true. */
+function editsNeedTreePairRepair(edits: readonly PlannedTileEdit[]): boolean {
+  return edits.some((edit) =>
+    edit.layer === "upper"
+    || isTreeTrunkTileId(edit.tile)
+    || isTreeCanopyTileId(edit.tile)
+  );
 }
 
 function effectiveLayer(tileset: TilesetDef | undefined, requestedLayer: TileLayer, tile: number): TileLayer {

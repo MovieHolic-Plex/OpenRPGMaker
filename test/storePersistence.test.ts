@@ -96,7 +96,7 @@ describe("Project store remote persistence", () => {
 
     expect(project.meta.title).toBe("새 프로젝트");
     expect(Object.keys(project.maps)).toHaveLength(1);
-    expect(project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title1");
+    expect(project.system.titleScreen?.backgroundResourceId).toBe("rpg-zzu-title-field");
     expect(saveResult).toEqual({ kind: "saved-local" });
     expect(setItem).not.toHaveBeenCalled();
     expect(fetchSpy).not.toHaveBeenCalled();
@@ -274,6 +274,7 @@ describe("Project store remote persistence", () => {
     });
 
     const flushPromise = store.flush();
+    // Paint again while save is still awaiting the network.
     store.updateMap(mapId, (map) => {
       map.lowerTiles[0] = secondTile;
     });

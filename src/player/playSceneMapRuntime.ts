@@ -23,8 +23,14 @@ import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { characterSpriteX, characterSpriteY, placeCharacterSprite } from "@/player/characterDepth";
-// upper 컨테이너 depth 는 PlayScene 생성 시 MAP_UPPER_LAYER_DEPTH 로 고정.
+import {
+  characterSpriteX,
+  characterSpriteY,
+  isAlwaysAboveCharacterUpperTile,
+  mapUpperTileDepth,
+  placeCharacterSprite,
+} from "@/player/characterDepth";
+// ★ 수관은 upperTileLayer(고정 250k). 솔리드 가구(×)는 root display list + y-sort.
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
@@ -44,7 +50,11 @@ import type { RuntimeEventSnapshot } from "@/player/runtimeDom";
 interface RenderedTileImage {
   setOrigin(x: number, y: number): void;
   setDepth(depth: number): void;
+  destroy?(removeFromDisplayList?: boolean): void;
 }
+
+/** root display list 에 올린 솔리드 upper 가구 — container removeAll 대상이 아니라 직접 destroy. */
+const rootYSortTiles = new WeakMap<object, RenderedTileImage[]>();
 
 interface RenderedEventSprite extends RenderedTileImage {
   readonly y: number;
@@ -65,16 +75,22 @@ interface RenderTilesSceneContext<
     removeAll(removeChildren?: boolean): void;
     add(image: TImage | TSprite | unknown): unknown;
   };
-  /** 없으면 tileLayer 로 폴백(레거시 테스트). 플레이 씬은 반드시 별도 고 depth 컨테이너. */
+  /**
+   * ★ 수관 등 always-above upper 전용. 솔리드 가구(×)는 root에 y-sort 로 올린다.
+   * 없으면 tileLayer 로 폴백(레거시 테스트).
+   */
   readonly upperTileLayer?: {
     removeAll(removeChildren?: boolean): void;
     add(image: TImage | TSprite | unknown): unknown;
   };
+  /** optional host identity for WeakMap tracking of root y-sort tiles */
+  readonly sceneHost?: object;
   readonly eventSprites: {
     values(): IterableIterator<TSprite>;
     clear(): void;
     set(eventId: string, marker: TSprite): unknown;
   };
+  readonly eventGraphicPatternOverrides?: Map<string, number>;
   readonly runtimeDom: Pick<
     PlaySceneContext["runtimeDom"],
     "clearEventMarkers" | "upsertEventMarker" | "syncMissingResourceError"
@@ -115,6 +131,7 @@ export function renderTiles<
 >(scene: RenderTilesSceneContext<TImage, TSprite>): void {
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);
+  clearRootYSortTiles(scene);
   for (const sprite of scene.eventSprites.values()) sprite.destroy();
   scene.eventSprites.clear();
   scene.runtimeDom.clearEventMarkers();
@@ -138,9 +155,71 @@ export function renderTiles<
 function tileTargetLayer<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
   layer: "lower" | "upper",
+  alwaysAboveCharacter = false,
 ): { add(image: TImage | TSprite | unknown): unknown } {
-  if (layer === "upper" && scene.upperTileLayer) return scene.upperTileLayer;
+  // ★ 수관만 고정 upper 컨테이너. 솔리드 upper 가구는 root(y-sort) — container 자식 depth 가 무시된다.
+  if (layer === "upper" && alwaysAboveCharacter && scene.upperTileLayer) return scene.upperTileLayer;
   return scene.tileLayer;
+}
+
+function applyTileDepth(
+  image: RenderedTileImage,
+  tileset: TilesetDef,
+  tile: number,
+  y: number,
+  layer: "lower" | "upper",
+): void {
+  if (layer !== "upper") {
+    // lower 컨테이너 안 정렬: 같은 셀 스택 순서를 안정화.
+    image.setDepth(y * 2);
+    return;
+  }
+  image.setDepth(mapUpperTileDepth(tileset, tile, y));
+}
+
+function rootYSortHost<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+): object {
+  return scene.sceneHost ?? scene;
+}
+
+function clearRootYSortTiles<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+): void {
+  const host = rootYSortHost(scene);
+  const tiles = rootYSortTiles.get(host);
+  if (!tiles) return;
+  for (const tile of tiles) tile.destroy?.(true);
+  rootYSortTiles.delete(host);
+}
+
+function trackRootYSortTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  image: TImage,
+): void {
+  const host = rootYSortHost(scene);
+  const tiles = rootYSortTiles.get(host) ?? [];
+  tiles.push(image);
+  rootYSortTiles.set(host, tiles);
+}
+
+function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  image: TImage,
+  tileset: TilesetDef,
+  tile: number,
+  y: number,
+  layer: "lower" | "upper",
+): void {
+  const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
+  image.setOrigin(0, 0);
+  applyTileDepth(image, tileset, tile, y, layer);
+  if (layer === "upper" && !alwaysAbove) {
+    // root display list — same-priority 캐릭터와 y-sort.
+    trackRootYSortTile(scene, image);
+    return;
+  }
+  tileTargetLayer(scene, layer, alwaysAbove).add(image);
 }
 
 function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -155,17 +234,16 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
   if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
-    renderLakeAutotile(scene, textureKey, x, y, layer);
+    renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
     return;
   }
   if (layer === "lower" && supportsChipsetQuarterComposition(tileset)) {
     const composition = chipsetQuarterComposition(scene.map, tileset, x, y);
     if (composition) {
-      renderTerrainQuarter(scene, textureKey, x, y, composition, layer);
+      renderTerrainQuarter(scene, tileset, textureKey, x, y, composition, layer);
       return;
     }
   }
-  const target = tileTargetLayer(scene, layer);
   // lower 투명 밑동: 잔디를 먼저 깔아 투명 픽셀이 검게 보이지 않게 한다.
   if (
     layer === "lower"
@@ -174,20 +252,19 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     && isTransparentChipsetTile(tile)
   ) {
     const grass = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${TILE.GRASS}`);
-    grass.setOrigin(0, 0);
-    target.add(grass);
+    placeMapTileImage(scene, grass, tileset, TILE.GRASS, y, layer);
   }
   const baseAnimationKey = isDefaultTilesetTexture(tileset) ? animationKeyForTile(tile) : null;
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
   const image = animationKey
     ? scene.add.sprite(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`).play(animationKey)
     : scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${tile}`);
-  image.setOrigin(0, 0);
-  target.add(image);
+  placeMapTileImage(scene, image, tileset, tile, y, layer);
 }
 
 function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
+  tileset: TilesetDef,
   textureKey: string,
   x: number,
   y: number,
@@ -199,14 +276,15 @@ function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends Re
     const image = animationKey
       ? scene.add.sprite(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName).play(animationKey)
       : scene.add.image(x * TILE_SIZE + part.offsetX, y * TILE_SIZE + part.offsetY, textureKey, frameName);
-    image.setOrigin(0, 0);
-    tileTargetLayer(scene, layer).add(image);
+    // 쿼터 소스는 맵 셀 좌표 기준 depth 를 공유한다.
+    placeMapTileImage(scene, image, tileset, part.tile, y, layer);
   }
 }
 
 // 모래/흙길 지형 쿼터 합성: 각 쿼터는 계산된 소스 타일의 같은 위치를 사용한다.
 function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
   scene: RenderTilesSceneContext<TImage, TSprite>,
+  tileset: TilesetDef,
   textureKey: string,
   x: number,
   y: number,
@@ -215,8 +293,7 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
 ): void {
   if (composition.underlayTile !== undefined) {
     const underlay = scene.add.image(x * TILE_SIZE, y * TILE_SIZE, textureKey, `tile_${composition.underlayTile}`);
-    underlay.setOrigin(0, 0);
-    tileTargetLayer(scene, layer).add(underlay);
+    placeMapTileImage(scene, underlay, tileset, composition.underlayTile, y, layer);
   }
   for (const part of composition.sources) {
     const image = scene.add.image(
@@ -225,8 +302,7 @@ function renderTerrainQuarter<TImage extends RenderedTileImage, TSprite extends 
       textureKey,
       `tile_${part.tile}_${part.quarter}`
     );
-    image.setOrigin(0, 0);
-    tileTargetLayer(scene, layer).add(image);
+    placeMapTileImage(scene, image, tileset, part.tile, y, layer);
   }
 }
 
@@ -249,9 +325,17 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     });
     const sprite = view.sprite;
     if (!sprite) continue;
-    const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, view.page?.graphic.pattern);
+    // Command-driven frame changes must survive refreshRuntimeSurfaces (wait/transfer mid-sequence).
+    const overrideFrame = scene.eventGraphicPatternOverrides?.get(event.id);
+    const authoredPattern = view.page?.graphic.pattern;
+    const pattern = overrideFrame ?? authoredPattern;
+    const spriteTexture = resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
-    const frame = eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
+    // Absolute override frames already encode direction/walk — do not re-idle remap.
+    const frame =
+      overrideFrame !== undefined
+        ? overrideFrame
+        : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     const marker = scene.add.sprite(
       characterSpriteX(view.x),
       characterSpriteY(view.y),
@@ -278,6 +362,7 @@ export function resetMapRuntime(scene: PlaySceneContext): void {
   scene.pageMoveRouteKeys.clear();
   scene.pageMoveRouteEventIds.clear();
   scene.commandMoveRouteEventIds.clear();
+  scene.eventGraphicPatternOverrides.clear();
   scene.autonomousNPCs.clear();
   scene.fieldSpawnState = null;
   for (const animation of scene.activeMapAnimations) animation.destroy(true);

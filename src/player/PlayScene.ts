@@ -84,6 +84,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   running = false;
   eventPositions: RuntimeEventPositions = {};
   eventSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
+  eventGraphicPatternOverrides: Map<string, number> = new Map();
   followerSprites: Map<string, Phaser.GameObjects.Sprite> = new Map();
   declare runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess> = new Map();

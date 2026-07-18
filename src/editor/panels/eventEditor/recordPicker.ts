@@ -1,6 +1,9 @@
 // 이벤트 명령 편집 폼용 리치 공용 컨트롤 (EV-2).
 // - recordPickerWithPreview: 기존 <select>(testid 불변)를 유지하면서 옆에
 //   선택 레코드 카드(아이콘 24px + 이름 + 부제)를 라이브 렌더.
+// - actorPicker: 주인공 전용 픽커(얼굴 아이콘 + 직업·레벨 부제).
+// - searchableRecordBrowser: 검색 + 아이콘 카드 그리드 + 선택 스트립.
+// - switchVariablePicker / databasePicker: 스위치·변수 검색 + 드롭다운 + ... 모달 피커.
 // - segmentedSelect: 연산(= / + / −) 등을 세그먼트 버튼으로 편집하되,
 //   기존 <select>는 시각적으로만 숨겨(측정 가능한 크기 유지) testid/change
 //   이벤트 호환을 그대로 보존한다(Playwright selectOption 호환).
@@ -8,8 +11,17 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { el } from "@/util/dom";
-import type { Project } from "@/project/types";
+import type { ActorRecord, Project } from "@/project/types";
 
+export {
+  databasePicker,
+  switchPicker,
+  switchVariablePicker,
+  variablePicker,
+  type SwitchVariableKind,
+  type SwitchVariablePickerHandle,
+  type SwitchVariablePickerOptions,
+} from "./switchVariablePicker";
 export type RecordPickerIcon =
   | { readonly kind: "image"; readonly url: string }
   // 시트(페이스셋 등)에서 한 칸만 잘라 보여주는 아이콘.
@@ -95,6 +107,337 @@ export function recordPickerWithPreview<T extends RecordPickerRecordLike>(
   const root = el("span", { class: "record-picker" });
   root.append(select, card);
   return { root, select, refreshCard };
+}
+
+/** 액터 카드 부제: 직업 이름(+ 초기 레벨). */
+export function actorSubtitle(project: Project, record: ActorRecord): string | null {
+  const className = project.database.classes.find((entry) => entry.id === record.classId)?.name;
+  const level = `Lv.${record.initialLevel}`;
+  return className ? `${className} · ${level}` : level;
+}
+
+/** 주인공 선택 공통 픽커 — 얼굴 아이콘 + 직업·레벨 부제. */
+export function actorPicker(options: {
+  readonly project: Project;
+  readonly selectedId: string;
+  readonly testid: string;
+  readonly placeholder?: string;
+  readonly onChange?: (id: string) => void;
+}): RecordPickerHandle {
+  return recordPickerWithPreview({
+    records: options.project.database.actors,
+    selectedId: options.selectedId,
+    placeholder: options.placeholder ?? "주인공 선택",
+    testid: options.testid,
+    onChange: options.onChange,
+    iconOf: (record) => facesetIconOf(options.project, record.faceResourceId),
+    subtitleOf: (record) => actorSubtitle(options.project, record),
+  });
+}
+
+export type SearchableRecordBrowserOptions<T extends RecordPickerRecordLike> = {
+  readonly records: readonly T[];
+  readonly selectedId: string;
+  readonly testidPrefix: string;
+  /** 숨김 native select testid (기본: `${testidPrefix}-select`). */
+  readonly selectTestId?: string;
+  /** 선택 스트립 안 레거시 카드 testid. */
+  readonly selectedCardAliasTestId?: string;
+  readonly label?: string;
+  readonly searchPlaceholder?: string;
+  readonly emptySelectionLabel?: string;
+  readonly emptySelectionMeta?: (records: readonly T[]) => string;
+  readonly noneCardLabel?: string;
+  readonly noneCardMeta?: string;
+  readonly clearLabel?: string;
+  /** false 면 그리드 안 '없음' 카드를 숨긴다(선택 스트립/해제 버튼만 사용). 기본 true. */
+  readonly includeNoneCard?: boolean;
+  readonly allowNone?: boolean;
+  readonly iconOf?: (record: T) => RecordPickerIcon | null;
+  readonly subtitleOf?: (record: T) => string | null;
+  readonly searchTextOf?: (record: T) => string;
+  readonly emptyCatalogText?: string;
+  readonly emptyFilterText?: string;
+  readonly onChange?: (id: string) => void;
+};
+
+export type SearchableRecordBrowserHandle<T extends RecordPickerRecordLike> = {
+  readonly root: HTMLElement;
+  readonly select: HTMLSelectElement;
+  readonly getSelectedId: () => string;
+  readonly setSelectedId: (id: string) => void;
+  readonly setRecords: (records: readonly T[]) => void;
+  readonly refresh: () => void;
+};
+
+/**
+ * 검색 가능한 아이콘 레코드 브라우저.
+ * 숨김 select 를 유지해 Playwright selectOption/testid 호환을 지킨다.
+ */
+export function searchableRecordBrowser<T extends RecordPickerRecordLike>(
+  options: SearchableRecordBrowserOptions<T>
+): SearchableRecordBrowserHandle<T> {
+  let records = [...options.records];
+  let selectedId = options.selectedId;
+  let filterQuery = "";
+  const allowNone = options.allowNone !== false;
+  const includeNoneCard = options.includeNoneCard !== false && allowNone;
+  const prefix = options.testidPrefix;
+  const selectTestId = options.selectTestId ?? `${prefix}-select`;
+  const emptySelectionLabel = options.emptySelectionLabel ?? "선택 없음";
+  const noneCardLabel = options.noneCardLabel ?? emptySelectionLabel;
+  const noneCardMeta = options.noneCardMeta ?? "비우기";
+  const clearLabel = options.clearLabel ?? "해제";
+  const emptyCatalogText = options.emptyCatalogText ?? "등록된 항목이 없습니다.";
+  const emptyFilterText = options.emptyFilterText ?? "검색 결과가 없습니다. 다른 키워드를 입력하세요.";
+
+  const select = el("select", {
+    class: "record-browser-hidden-select",
+    dataset: { testid: selectTestId },
+    attrs: { "aria-hidden": "true", tabindex: "-1" },
+  }) as HTMLSelectElement;
+
+  const searchInput = el("input", {
+    class: "commerce-command-input record-browser-search",
+    attrs: {
+      type: "search",
+      placeholder: options.searchPlaceholder ?? "이름 검색",
+      "aria-label": options.searchPlaceholder ?? "검색",
+      autocomplete: "off",
+    },
+    dataset: { testid: `${prefix}-search` },
+  }) as HTMLInputElement;
+
+  const filterMeta = el("span", {
+    class: "record-browser-filter-meta",
+    dataset: { testid: `${prefix}-filter-meta` },
+  });
+  const selectedStrip = el("div", {
+    class: "record-browser-selected",
+    dataset: { testid: `${prefix}-selected` },
+  });
+  const selectedCardAlias = options.selectedCardAliasTestId
+    ? (el("span", {
+        class: "record-browser-selected-card-alias",
+        dataset: { testid: options.selectedCardAliasTestId },
+      }) as HTMLElement)
+    : null;
+  const grid = el("div", {
+    class: "record-browser-grid",
+    dataset: { testid: `${prefix}-grid` },
+  });
+
+  const rebuildSelect = (preferredId: string): void => {
+    select.replaceChildren();
+    if (allowNone) select.append(el("option", { text: `(${emptySelectionLabel})`, attrs: { value: "" } }));
+    for (const [index, record] of records.entries()) {
+      select.append(
+        el("option", {
+          text: `${String(index + 1).padStart(4, "0")}: ${record.name}`,
+          attrs: { value: record.id },
+        })
+      );
+    }
+    const stillValid = preferredId && records.some((record) => record.id === preferredId);
+    if (stillValid) {
+      select.value = preferredId;
+      selectedId = preferredId;
+      return;
+    }
+    select.value = allowNone ? "" : (records[0]?.id ?? "");
+    selectedId = select.value;
+  };
+
+  const filteredRecords = (): readonly T[] => {
+    const query = filterQuery.trim().toLowerCase();
+    if (!query) return records;
+    return records.filter((record) => {
+      const haystack = (options.searchTextOf?.(record) ?? [record.name, record.id, options.subtitleOf?.(record) ?? ""].join(" ")).toLowerCase();
+      return haystack.includes(query);
+    });
+  };
+
+  const emitChange = (): void => {
+    options.onChange?.(selectedId);
+  };
+
+  const selectRecord = (nextId: string): void => {
+    const valid = nextId === "" ? allowNone : records.some((record) => record.id === nextId);
+    selectedId = valid ? nextId : allowNone ? "" : (records[0]?.id ?? "");
+    select.value = selectedId;
+    refresh();
+    emitChange();
+  };
+
+  const renderSelected = (): void => {
+    const record = records.find((entry) => entry.id === selectedId);
+    selectedStrip.replaceChildren();
+    selectedCardAlias?.replaceChildren();
+    if (!record) {
+      selectedStrip.classList.add("is-empty");
+      if (selectedCardAlias) selectedCardAlias.textContent = `(${emptySelectionLabel})`;
+      selectedStrip.append(
+        el("span", { class: "record-browser-card-icon empty", text: "×" }),
+        el("div", {
+          class: "record-browser-selected-copy",
+          children: [
+            el("strong", { text: emptySelectionLabel }),
+            el("span", {
+              text: options.emptySelectionMeta?.(records) ?? noneCardMeta,
+            }),
+            ...(selectedCardAlias ? [selectedCardAlias] : []),
+          ],
+        })
+      );
+      return;
+    }
+    selectedStrip.classList.remove("is-empty");
+    if (selectedCardAlias) selectedCardAlias.textContent = record.name;
+    const children: HTMLElement[] = [
+      recordIconElement(options.iconOf?.(record) ?? null, record.name),
+      el("div", {
+        class: "record-browser-selected-copy",
+        children: [
+          el("strong", { text: record.name }),
+          el("span", { text: options.subtitleOf?.(record) ?? "" }),
+          ...(selectedCardAlias ? [selectedCardAlias] : []),
+        ],
+      }),
+    ];
+    if (allowNone) {
+      children.push(
+        el("button", {
+          class: "btn small record-browser-clear-btn",
+          text: clearLabel,
+          attrs: { type: "button", title: clearLabel },
+          // 그리드 none 카드가 없을 때(e.g. equipment includeNoneCard:false) 해제 진입점 유지
+          dataset: { testid: includeNoneCard ? `${prefix}-clear` : `${prefix}-card-unequip` },
+          on: { click: () => selectRecord("") },
+        })
+      );
+    }
+    selectedStrip.append(...children);
+  };
+
+  const renderGrid = (): void => {
+    const filtered = filteredRecords();
+    filterMeta.textContent =
+      filterQuery.trim().length > 0
+        ? `${records.length}개 중 ${filtered.length}개`
+        : `${records.length}개`;
+
+    grid.replaceChildren();
+    if (includeNoneCard) {
+      grid.append(
+        el("button", {
+          class: "record-browser-card" + (selectedId === "" ? " is-active" : ""),
+          attrs: { type: "button" },
+          dataset: { testid: `${prefix}-card-unequip` },
+          on: { click: () => selectRecord("") },
+          children: [
+            el("span", { class: "record-browser-card-icon empty", text: "×" }),
+            el("div", {
+              class: "record-browser-card-copy",
+              children: [
+                el("strong", { text: noneCardLabel }),
+                el("span", { class: "record-browser-card-meta", text: noneCardMeta }),
+              ],
+            }),
+          ],
+        })
+      );
+    }
+
+    for (const record of filtered) {
+      const active = selectedId === record.id;
+      grid.append(
+        el("button", {
+          class: "record-browser-card" + (active ? " is-active" : ""),
+          attrs: { type: "button", title: record.name },
+          dataset: { testid: `${prefix}-card-${record.id}` },
+          on: { click: () => selectRecord(record.id) },
+          children: [
+            el("span", {
+              class: "record-browser-card-icon",
+              children: [recordIconElement(options.iconOf?.(record) ?? null, record.name)],
+            }),
+            el("div", {
+              class: "record-browser-card-copy",
+              children: [
+                el("strong", { text: record.name }),
+                el("span", {
+                  class: "record-browser-card-meta",
+                  text: options.subtitleOf?.(record) ?? "",
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+    }
+
+    if (filtered.length === 0) {
+      grid.append(
+        el("div", {
+          class: "record-browser-grid-empty",
+          text: records.length === 0 ? emptyCatalogText : emptyFilterText,
+        })
+      );
+    }
+  };
+
+  const refresh = (): void => {
+    renderSelected();
+    renderGrid();
+  };
+
+  select.addEventListener("change", () => {
+    selectedId = select.value;
+    refresh();
+    emitChange();
+  });
+  searchInput.addEventListener("input", () => {
+    filterQuery = searchInput.value;
+    renderGrid();
+  });
+
+  rebuildSelect(selectedId);
+  refresh();
+
+  const root = el("div", {
+    class: "record-browser",
+    dataset: { testid: `${prefix}-browser` },
+    children: [
+      el("div", {
+        class: "record-browser-head",
+        children: [
+          el("span", { class: "record-browser-label", text: options.label ?? "목록" }),
+          filterMeta,
+        ],
+      }),
+      searchInput,
+      selectedStrip,
+      grid,
+      select,
+    ],
+  });
+
+  return {
+    root,
+    select,
+    getSelectedId: () => selectedId,
+    setSelectedId: (id) => {
+      selectedId = id;
+      rebuildSelect(id);
+      refresh();
+    },
+    setRecords: (next) => {
+      records = [...next];
+      rebuildSelect(selectedId);
+      refresh();
+    },
+    refresh,
+  };
 }
 
 // 단순 이미지 아이콘 리졸버(아이템/장비 iconResourceId 등).

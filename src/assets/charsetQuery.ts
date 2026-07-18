@@ -230,6 +230,59 @@ export function resolveNpcGraphic(query: string): CharsetSemanticEntry | null {
   return queryNpcGraphics(query, 1)[0]?.entry ?? null;
 }
 
+export type NpcGraphicPickOptions = {
+  /** 맵에 이미 쓴 textureKey#characterIndex — 가능하면 피한다. */
+  readonly avoidKeys?: ReadonlySet<string>;
+  /** 안정 샘플링용 시드 (이름+좌표 등). 없으면 1등 고정. */
+  readonly seed?: string;
+  /** 시드 샘플 시 top-K 후보 (기본 8). */
+  readonly sampleTopK?: number;
+};
+
+export function charsetGraphicKey(entry: Pick<CharsetSemanticEntry, "textureKey" | "characterIndex">): string {
+  return `${entry.textureKey}#${entry.characterIndex}`;
+}
+
+function hashSeed(seed: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i += 1) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+/** 일반 주민 별칭 — 1등 고정이면 전부 people1#0으로 몰린다. */
+export function isGenericNpcGraphicQuery(query: string): boolean {
+  const n = normalizeQuery(query);
+  return n === "villager" || n === "npc" || n === "human" || n === "people"
+    || n === "사람" || n === "주민" || n === "마을 사람";
+}
+
+/**
+ * 맵 내 중복을 피하고, 일반 query(+seed)면 top-K에서 안정 샘플한다.
+ * 구체 역할(상인/기사…)은 1등 유지 + avoid만 적용.
+ */
+export function pickNpcGraphic(query: string, options: NpcGraphicPickOptions = {}): CharsetSemanticEntry | null {
+  const topK = Math.max(1, Math.min(24, options.sampleTopK ?? 8));
+  const poolLimit = Math.max(topK, 16);
+  let matches = queryNpcGraphics(query, poolLimit);
+  if (matches.length === 0) return null;
+
+  const avoid = options.avoidKeys;
+  if (avoid && avoid.size > 0) {
+    const filtered = matches.filter((m) => !avoid.has(charsetGraphicKey(m.entry)));
+    if (filtered.length > 0) matches = filtered;
+  }
+
+  const generic = isGenericNpcGraphicQuery(query);
+  if (!generic || !options.seed) return matches[0]!.entry;
+
+  const pool = matches.slice(0, Math.min(topK, matches.length));
+  const idx = hashSeed(options.seed) % pool.length;
+  return pool[idx]!.entry;
+}
+
 export function npcGraphicExampleLabels(limit = 12): string[] {
   return defaultNpcGraphics().slice(0, limit).map((match) => match.entry.label);
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // evals/run.mjs
-// 골든 태스크 evals 러너. .env.local의 OPENROUTER_API_KEY(및 BASE_URL/MODEL)를 로드해
+// 골든 태스크 evals 러너. .env.local의 VITE_LLM_API_KEY(및 BASE_URL/MODEL)를 로드해
 // 실제 LLM(google/gemini-3.1-flash-lite)로 상위 N개 태스크를 구동·채점한다.
 // 기존 소스(src/ai/assistantSession, src/evals) 재사용 — 채점 로직만 evals/에 둔다.
 //
@@ -34,8 +34,8 @@ loadEnvLocal();
 
 const taskCount = process.argv[2] ?? process.env.EVAL_TASKS ?? "4";
 
-if (!process.env.OPENROUTER_API_KEY) {
-  console.error("[evals] OPENROUTER_API_KEY가 없습니다(.env.local 확인). 스위트를 건너뜁니다.");
+if (!process.env.VITE_LLM_API_KEY) {
+  console.error("[evals] VITE_LLM_API_KEY가 없습니다(.env.local 확인). 스위트를 건너뜁니다.");
   process.exit(0);
 }
 

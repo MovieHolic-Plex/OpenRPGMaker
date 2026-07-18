@@ -107,6 +107,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   running: boolean;
   eventPositions: RuntimeEventPositions;
   eventSprites: Map<string, Phaser.GameObjects.Sprite>;
+  /** Runtime-only charset frame overrides from setEventGraphicPattern (cleared on map reset). */
+  eventGraphicPatternOverrides: Map<string, number>;
   followerSprites: Map<string, Phaser.GameObjects.Sprite>;
   runtimeDom: RuntimeDomOverlay;
   parallelProcesses: Map<string, ParallelProcess>;

@@ -75,6 +75,14 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeGold", op: "+=", amount: 10 };
     case "changeItem":
       return { kind: "changeItem", itemId: "", op: "+=", amount: 1 };
+    case "craftRecipe":
+      return { kind: "craftRecipe", recipeId: "" };
+    case "applyItemUpgrade":
+      return { kind: "applyItemUpgrade", upgradeId: "" };
+    case "equipTool":
+      return { kind: "equipTool", itemId: "" };
+    case "openChest":
+      return { kind: "openChest", chestId: "" };
     case "changeFriendship":
       return { kind: "changeFriendship", npcKey: "", delta: 20 };
     case "getFriendship":
@@ -132,7 +140,7 @@ export function newCommand(kind: Command["kind"]): Command {
         transactionBranch: [],
       };
     case "inn":
-      return { kind: "inn", price: 0 };
+      return { kind: "inn", price: 20 };
     case "checkpointSave":
       return { kind: "checkpointSave" };
     case "killPlayer":

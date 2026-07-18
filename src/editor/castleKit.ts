@@ -84,15 +84,18 @@ export function stampCastle(map: GameMap, options: CastleStampOptions): CastleSt
   const wantTower = options.roundTower !== false;
   const towerH = clampInt(options.roundTowerHeight ?? 7, 5, Math.min(12, area.h - 10));
 
-  // 외곽 프레임 (영역 안 1칸 여유 — 접근로용 남쪽 여백은 area에 포함)
+  // 남쪽 커튼 정면 벽 높이 — 금본 문법: 커튼은 "윗면 데크(성벽 위) + 정면 벽"의 2층 구조다.
+  const southFaceH = Math.max(2, Math.min(wallH, 4));
+
+  // 외곽 프레임 (영역 안 1칸 여유 — 남쪽은 정면 벽 + 접근로 3칸을 area에 포함)
   const margin = 1;
   const outer: Rect = {
     x: area.x + margin,
     y: area.y + margin,
     w: area.w - margin * 2,
-    h: area.h - margin * 2 - 3, // 남쪽 접근로 3칸
+    h: area.h - margin * 2 - 3 - southFaceH,
   };
-  if (outer.w < 22 || outer.h < 18) {
+  if (outer.w < 22 || outer.h < 14) {
     return { ok: false, reason: `외성 프레임이 너무 작습니다 (${outer.w}x${outer.h}) — area를 키우세요` };
   }
 
@@ -142,21 +145,22 @@ export function stampCastle(map: GameMap, options: CastleStampOptions): CastleSt
     Math.min(2, wallH),
   );
 
-  // 남쪽 커튼: 지붕 아래 벽, 문 비움. 지붕이 상단을 대체하므로 mid+bot 위주.
-  const southWallTop = outer.y + outer.h - roofBotH;
-  const southWallH = Math.max(2, wallH);
-  wallCells += paintWallFaceRow(map, outer.x, southWallTop, gateX - outer.x, southWallH, { skipTop: true });
+  // 남쪽 커튼 = 윗면 데크(outer 남변 3행, "성벽 위") + 그 아래 정면 벽(2026-07-17 교정:
+  // 예전엔 정면 벽이 데크를 덮어써서 남쪽 성벽에 '위'가 없었다 — 금본은 2층 구조).
+  const southDeckTop = outer.y + outer.h - roofBotH;
+  const southFaceY = outer.y + outer.h;
+  wallCells += paintWallFaceRow(map, outer.x, southFaceY, gateX - outer.x, southFaceH, { skipTop: true });
   wallCells += paintWallFaceRow(
     map,
     gateX + gateW,
-    southWallTop,
+    southFaceY,
     outer.x + outer.w - (gateX + gateW),
-    southWallH,
+    southFaceH,
     { skipTop: true },
   );
 
-  // 문 통로 잔디 확보 (지붕/벽이 겹쳤을 경우 정리)
-  for (let y = southWallTop; y < outer.y + outer.h; y += 1) {
+  // 문 통로 잔디 확보 — 남쪽 데크와 정면 벽을 관통한다.
+  for (let y = southDeckTop; y < southFaceY + southFaceH; y += 1) {
     for (let x = gateX; x < gateX + gateW; x += 1) {
       setLower(map, x, y, TILE.GRASS);
       setUpper(map, x, y, TILE.EMPTY);
@@ -167,7 +171,7 @@ export function stampCastle(map: GameMap, options: CastleStampOptions): CastleSt
     x: outer.x + sideW,
     y: keep.y + keep.h + 1,
     w: outer.w - sideW * 2,
-    h: Math.max(4, southWallTop - (keep.y + keep.h + 1) - 1),
+    h: Math.max(4, southDeckTop - (keep.y + keep.h + 1) - 1),
   };
 
   // 4) 원형 타워 (마당 왼쪽)
@@ -180,7 +184,7 @@ export function stampCastle(map: GameMap, options: CastleStampOptions): CastleSt
   }
 
   // 5) 남문 접근 잔디 정리 (길은 툴에서 paint_road)
-  for (let y = outer.y + outer.h; y < area.y + area.h; y += 1) {
+  for (let y = southFaceY + southFaceH; y < area.y + area.h; y += 1) {
     for (let x = gateX; x < gateX + gateW; x += 1) {
       setLower(map, x, y, TILE.GRASS);
     }
@@ -191,7 +195,7 @@ export function stampCastle(map: GameMap, options: CastleStampOptions): CastleSt
     outer,
     courtyard,
     keep,
-    gate: { x: gateX, y: southWallTop, w: gateW },
+    gate: { x: gateX, y: southDeckTop, w: gateW },
     roundTowerAt,
     stats: { roofCells, wallCells, towerCells },
   };

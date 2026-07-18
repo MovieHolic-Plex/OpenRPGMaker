@@ -70,9 +70,10 @@ type Listener = (s: EditorState) => void;
 class EditorStateStore {
   private state: EditorState = {
     currentMapId: null,
-    tool: "paint",
+    // Event authoring is the default edit surface (faster to open events for QA).
+    tool: "event",
     zoom: 2,
-    layer: "lower",
+    layer: "event",
     paintShape: "pen",
     selectedTile: 360,
     // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.

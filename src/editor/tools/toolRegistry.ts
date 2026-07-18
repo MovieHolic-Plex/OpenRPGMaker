@@ -15,6 +15,7 @@ import { HISTORY_TOOLS } from "./historyTools";
 import { HOUSE_KIT_TOOLS } from "./houseKitTools";
 import { HOUSE_LOT_TOOLS } from "./houseLotTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
+import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { MAP_TOOLS } from "./mapTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
@@ -117,6 +118,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
+  ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
@@ -194,7 +196,7 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     "paint_road", // 흙길/모래 8방 오토타일 — lay_path만 핀되면 AI가 길을 안 깔거나 비성형 경로로 감
     "lay_path",
     "tile_query",
-    "propose_tile_vocabulary",
+    // propose_tile_vocabulary: LLM 비노출(deprecated). 핀하지 않음.
     "tile_erase", // transform 가이드 대표 도구(regionIntentExposure) — clear_region 폐기 후 유일한 지우기 경로
   ])],
   ["event", new Set([
@@ -202,7 +204,7 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     // 영역 작업 quest-trigger/mood/door-transfer 가이드 대표 도구(2026-07-10 라이브 실측 수정) —
     // event 도메인 안에서도 EVENT_TOOLS/LIGHTING_TOOLS 뒤쪽 정의라 상한(40) 슬라이스에서 밀려
     // place_chest 등이 노출 안 되던 문제.
-    "place_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
+    "place_chest", "place_storage_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
   ])],
   ["map", new Set([
     "get_map_region", "show_map_region", "get_project_summary",

@@ -7,7 +7,9 @@ import { renderAdvancedConditions } from "./pageAdvancedConditions";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
 import {
   type PageConditionContext,
+  type SimpleConditionKind,
   type SwitchConditionParams,
+  defaultSimpleCondition,
   switchConditionAt,
   timerCondition,
   toggleSimpleCondition,
@@ -18,9 +20,37 @@ import {
 } from "./pageConditionModel";
 import type { EventPage, MapId } from "@/project/types";
 
-export function renderPageConditions(mapId: MapId, eventId: string, page: EventPage): HTMLElement[] {
+type AddableConditionKind =
+  | "variable"
+  | "item"
+  | "actor"
+  | "timer1"
+  | "timer2"
+  | "timePhase"
+  | "season"
+  | "npcActivity"
+  | "friendshipAtLeast";
+
+const CORE_ADD_KINDS: readonly { value: AddableConditionKind; label: string }[] = [
+  { value: "variable", label: "변수" },
+  { value: "item", label: "아이템" },
+  { value: "actor", label: "주인공" },
+];
+
+const LONG_TAIL_ADD_KINDS: readonly { value: AddableConditionKind; label: string }[] = [
+  { value: "timer1", label: "타이머 1" },
+  { value: "timer2", label: "타이머 2" },
+  { value: "timePhase", label: "시간대" },
+  { value: "season", label: "계절" },
+  { value: "npcActivity", label: "활동" },
+  { value: "friendshipAtLeast", label: "호감도" },
+];
+
+export function renderPageConditions(mapId: MapId, eventId: string, page: EventPage, event?: { characterId?: string }): HTMLElement[] {
   const context = { mapId, eventId, page };
-  return [
+  const hasCharacterId = Boolean(event?.characterId?.trim());
+  const rows: HTMLElement[] = [
+    // RM quick toggles: always keep switch slots 0/1 visible.
     conditionRow(
       "스위치",
       switchConditionInputs({ ...context, slot: 0, testPrefix: "event-page-switch-condition" }),
@@ -35,71 +65,190 @@ export function renderPageConditions(mapId: MapId, eventId: string, page: EventP
       "켜짐",
       (enabled) => toggleSwitchCondition({ ...context, slot: 1 }, enabled)
     ),
-    conditionRow(
-      "변수",
-      variableConditionInputs(context),
-      page.conditions.some((item) => item.kind === "variable"),
-      "이",
-      (enabled) => toggleSimpleCondition(context, "variable", enabled)
-    ),
-    conditionRow(
-      "아이템",
-      itemConditionInputs(context),
-      page.conditions.some((item) => item.kind === "item"),
-      "보유 중",
-      (enabled) => toggleSimpleCondition(context, "item", enabled)
-    ),
-    conditionRow(
-      "주인공",
-      actorConditionInputs(context),
-      page.conditions.some((item) => item.kind === "actor"),
-      "파티에 있음",
-      (enabled) => toggleSimpleCondition(context, "actor", enabled)
-    ),
-    conditionRow(
-      "타이머 1",
-      timerConditionInputs(context, "timer1"),
-      timerCondition(context, "timer1") !== undefined,
-      "이하",
-      (enabled) => toggleTimerCondition(context, "timer1", enabled)
-    ),
-    conditionRow(
-      "타이머 2",
-      timerConditionInputs(context, "timer2"),
-      timerCondition(context, "timer2") !== undefined,
-      "이하",
-      (enabled) => toggleTimerCondition(context, "timer2", enabled)
-    ),
-    conditionRow(
-      "시간대",
-      timePhaseConditionInputs(context),
-      page.conditions.some((item) => item.kind === "timePhase"),
-      "일 때",
-      (enabled) => toggleSimpleCondition(context, "timePhase", enabled)
-    ),
-    conditionRow(
-      "계절",
-      seasonConditionInputs(context),
-      page.conditions.some((item) => item.kind === "season"),
-      "일 때",
-      (enabled) => toggleSimpleCondition(context, "season", enabled)
-    ),
-    conditionRow(
-      "활동",
-      npcActivityConditionInputs(context),
-      page.conditions.some((item) => item.kind === "npcActivity"),
-      "일 때",
-      (enabled) => toggleSimpleCondition(context, "npcActivity", enabled)
-    ),
-    conditionRow(
-      "호감도",
-      friendshipConditionInputs(context),
-      page.conditions.some((item) => item.kind === "friendshipAtLeast"),
-      "이상",
-      (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled)
-    ),
-    renderAdvancedConditions(context),
   ];
+
+  if (page.conditions.some((item) => item.kind === "variable")) {
+    rows.push(
+      conditionRow(
+        "변수",
+        variableConditionInputs(context),
+        true,
+        "이",
+        (enabled) => toggleSimpleCondition(context, "variable", enabled)
+      )
+    );
+  }
+  if (page.conditions.some((item) => item.kind === "item")) {
+    rows.push(
+      conditionRow(
+        "아이템",
+        itemConditionInputs(context),
+        true,
+        "보유 중",
+        (enabled) => toggleSimpleCondition(context, "item", enabled)
+      )
+    );
+  }
+  if (page.conditions.some((item) => item.kind === "actor")) {
+    rows.push(
+      conditionRow(
+        "주인공",
+        actorConditionInputs(context),
+        true,
+        "파티에 있음",
+        (enabled) => toggleSimpleCondition(context, "actor", enabled)
+      )
+    );
+  }
+  if (timerCondition(context, "timer1") !== undefined) {
+    rows.push(
+      conditionRow(
+        "타이머 1",
+        timerConditionInputs(context, "timer1"),
+        true,
+        "이하",
+        (enabled) => toggleTimerCondition(context, "timer1", enabled)
+      )
+    );
+  }
+  if (timerCondition(context, "timer2") !== undefined) {
+    rows.push(
+      conditionRow(
+        "타이머 2",
+        timerConditionInputs(context, "timer2"),
+        true,
+        "이하",
+        (enabled) => toggleTimerCondition(context, "timer2", enabled)
+      )
+    );
+  }
+  if (page.conditions.some((item) => item.kind === "timePhase")) {
+    rows.push(
+      conditionRow(
+        "시간대",
+        timePhaseConditionInputs(context),
+        true,
+        "일 때",
+        (enabled) => toggleSimpleCondition(context, "timePhase", enabled)
+      )
+    );
+  }
+  if (page.conditions.some((item) => item.kind === "season")) {
+    rows.push(
+      conditionRow(
+        "계절",
+        seasonConditionInputs(context),
+        true,
+        "일 때",
+        (enabled) => toggleSimpleCondition(context, "season", enabled)
+      )
+    );
+  }
+  if (page.conditions.some((item) => item.kind === "npcActivity")) {
+    rows.push(
+      conditionRow(
+        "활동",
+        npcActivityConditionInputs(context),
+        true,
+        "일 때",
+        (enabled) => toggleSimpleCondition(context, "npcActivity", enabled)
+      )
+    );
+  }
+  if (hasCharacterId && page.conditions.some((item) => item.kind === "friendshipAtLeast")) {
+    rows.push(
+      conditionRow(
+        "호감도",
+        friendshipConditionInputs(context),
+        true,
+        "이상",
+        (enabled) => toggleSimpleCondition(context, "friendshipAtLeast", enabled)
+      )
+    );
+  }
+
+  rows.push(renderConditionAddToolbar(context, hasCharacterId));
+  rows.push(renderAdvancedConditions(context));
+  return rows;
+}
+
+function renderConditionAddToolbar(context: PageConditionContext, hasCharacterId: boolean): HTMLElement {
+  const available = availableAddKinds(context, hasCharacterId);
+  const kindSelect = el("select", {
+    dataset: { testid: "event-page-condition-add-kind" },
+  }) as HTMLSelectElement;
+  for (const option of available) {
+    kindSelect.append(el("option", { attrs: { value: option.value }, text: option.label }));
+  }
+  if (available.length === 0) {
+    kindSelect.append(el("option", { attrs: { value: "" }, text: "추가 가능 조건 없음" }));
+    kindSelect.disabled = true;
+  }
+
+  const addButton = el("button", {
+    class: "btn small",
+    text: "조건 추가",
+    attrs: available.length === 0 ? { type: "button", disabled: "true" } : { type: "button" },
+    dataset: { testid: "event-page-condition-add" },
+    on: {
+      click: () => {
+        const kind = kindSelect.value as AddableConditionKind;
+        if (!kind) return;
+        enableConditionKind(context, kind);
+      },
+    },
+  });
+
+  return el("div", {
+    class: "event-condition-add-toolbar",
+    dataset: { testid: "event-page-condition-add-toolbar" },
+    children: [
+      el("span", { class: "event-condition-label", text: "조건 추가" }),
+      kindSelect,
+      addButton,
+    ],
+  });
+}
+
+function availableAddKinds(
+  context: PageConditionContext,
+  hasCharacterId: boolean
+): readonly { value: AddableConditionKind; label: string }[] {
+  const page = context.page;
+  const options: { value: AddableConditionKind; label: string }[] = [];
+  for (const option of CORE_ADD_KINDS) {
+    if (!isConditionKindActive(page, option.value)) options.push(option);
+  }
+  for (const option of LONG_TAIL_ADD_KINDS) {
+    if (option.value === "friendshipAtLeast" && !hasCharacterId) continue;
+    if (!isConditionKindActive(page, option.value)) options.push(option);
+  }
+  return options;
+}
+
+function isConditionKindActive(page: EventPage, kind: AddableConditionKind): boolean {
+  if (kind === "timer1") {
+    return page.conditions.some((item) => item.kind === "timer" && item.timerId === "timer1");
+  }
+  if (kind === "timer2") {
+    return page.conditions.some((item) => item.kind === "timer" && item.timerId === "timer2");
+  }
+  return page.conditions.some((item) => item.kind === kind);
+}
+
+function enableConditionKind(context: PageConditionContext, kind: AddableConditionKind): void {
+  if (kind === "timer1") {
+    toggleTimerCondition(context, "timer1", true);
+    return;
+  }
+  if (kind === "timer2") {
+    toggleTimerCondition(context, "timer2", true);
+    return;
+  }
+  // Ensure default seed lands even if toggleSimpleCondition finds no first record.
+  const seeded = defaultSimpleCondition(kind as SimpleConditionKind);
+  if (!seeded) return;
+  toggleSimpleCondition(context, kind as SimpleConditionKind, true);
 }
 
 function conditionRow(

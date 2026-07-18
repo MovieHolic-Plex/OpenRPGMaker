@@ -390,13 +390,16 @@ async function expectFramedBottomDialogueWithFace(page: Page): Promise<void> {
 
 async function expectSpeakerInChatColumn(page: Page): Promise<void> {
   const dialogue = page.getByTestId("dialogue-box");
-  await expect(dialogue.locator(".dialogue-content .speaker")).toContainText("증거 NPC");
-  const speakerBox = await dialogue.locator(".dialogue-content .speaker").boundingBox();
+  const speaker = dialogue.getByTestId("dialogue-speaker");
+  await expect(speaker).toContainText("증거 NPC");
+  await expect(speaker).toHaveClass(/speaker-nameplate/);
+  const speakerBox = await speaker.boundingBox();
   const bodyBox = await dialogue.locator(".dialogue-content .body").boundingBox();
   const faceBox = await page.getByTestId("dialogue-face").boundingBox();
   if (!speakerBox || !bodyBox || !faceBox) throw new Error("missing dialogue layout bounds");
-  expect(speakerBox.x).toBeGreaterThan(faceBox.x + faceBox.width);
-  expect(speakerBox.y).toBeLessThanOrEqual(bodyBox.y);
+  // Nameplate sits on the message-window rim above the body text.
+  expect(speakerBox.y).toBeLessThanOrEqual(bodyBox.y + 2);
+  expect(speakerBox.x).toBeGreaterThanOrEqual(faceBox.x - 8);
 }
 
 async function expectFaceVisibleAndContained(page: Page): Promise<void> {

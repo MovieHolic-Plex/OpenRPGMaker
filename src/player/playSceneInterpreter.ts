@@ -12,6 +12,7 @@ import { resolveEventPage } from "@/project/io";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
 import type { Interpreter } from "@/player/interpreter";
 import { playInn, playShop } from "@/player/playSceneCommerce";
+import { playOpenChest } from "@/player/playSceneChest";
 import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import { showNameEntry } from "@/player/nameEntry/nameEntryOverlay";
 import { applyTimerStep } from "@/player/playSceneTimers";
@@ -35,7 +36,7 @@ import {
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
-import { isGiftableEvent, isGiftSystemEnabled } from "@/project/friendship";
+import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
 
 export type RunCommandsOptions = {
@@ -59,11 +60,11 @@ export async function runEvent(scene: PlaySceneContext, eventId: string): Promis
   const commands = page?.commands ?? event.commands;
   if (shouldOfferGiftMenu(event, page, store.getCurrent())) {
     const action = await showGiftMenu(scene, event, page?.name);
-    if (action === "talk") await runCommands(scene, commands, eventId);
+    if (action === "talk") await runTalkPath(scene, event, commands, eventId);
     if (action === "gift") await runGiftSelection(scene, event);
     return;
   }
-  await runCommands(scene, commands, eventId);
+  await runTalkPath(scene, event, commands, eventId);
 }
 
 async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEvent): Promise<void> {
@@ -82,9 +83,48 @@ async function runGiftSelection(scene: PlaySceneContext, event: CommandSourceEve
   }
 }
 
+async function runTalkPath(
+  scene: PlaySceneContext,
+  event: CommandSourceEvent,
+  commands: readonly Command[],
+  eventId: string
+): Promise<void> {
+  await runCommands(scene, commands, eventId);
+  // Action-scoped, once per interaction (not gift path; multi-text cannot re-fire).
+  if (!isTalkFriendshipEnabled(event)) return;
+  const page = resolveEventPage(event, scene.session);
+  const trigger = page?.trigger ?? event.trigger;
+  if (trigger.kind !== "action") return;
+  const result = trySocialTalk(scene.session, event);
+  if (!result.ok) return;
+  scene.syncRuntimeState();
+  const dialogue = dialogueUi(scene);
+  if (!dialogue) return;
+  const previousRunning = scene.running;
+  const previousInputEnabled = scene.inputEnabled;
+  scene.running = true;
+  scene.setInputEnabled(false);
+  try {
+    const feedback = formatFriendshipFeedback({ delta: result.delta, friendship: result.friendship });
+    await dialogue.showText({
+      speaker: event.pages?.[0]?.name,
+      body: feedback,
+      textContext: { session: scene.session, project: store.getCurrent() },
+      playerTileY: scene.tileY,
+      mapHeight: scene.map.height,
+    });
+  } finally {
+    scene.running = previousRunning;
+    scene.lastActionTargetKey = "";
+    scene.setInputEnabled(previousInputEnabled);
+    dialogue.hide();
+    scene.refreshRuntimeSurfaces();
+  }
+}
+
 function shouldOfferGiftMenu(event: CommandSourceEvent, page: RuntimeEventView["page"] | undefined, project: ReturnType<typeof store.getCurrent>): boolean {
   const trigger = page?.trigger ?? event.trigger;
-  return trigger.kind === "action" && isGiftSystemEnabled(project) && isGiftableEvent(event);
+  return trigger.kind === "action" && isGiftSystemEnabled(project) && isGiftableEvent(project, event);
 }
 
 type CommandSourceEvent = RuntimeEventView["event"];
@@ -228,6 +268,7 @@ async function consumeBlockingStep(
         textContext: { session: scene.session, project: store.getCurrent() },
         playerTileY: scene.tileY,
         mapHeight: scene.map.height,
+        autoAdvance: step.autoAdvance === true,
       });
       {
         const skipped = skipController.takeResult();
@@ -330,9 +371,11 @@ async function consumeBlockingStep(
     case "stopAllMovement":
       stopCommandMovement(scene);
       return resumeAfterSurface(scene, interpreter);
-    case "battleProcessing":
-      scene.session.battleResult = await scene.playBattle(step);
-      return resumeAfterSurface(scene, interpreter);
+    case "battleProcessing": {
+      const troopId = resolveBattleTroopId(scene, step);
+      scene.session.battleResult = await scene.playBattle({ ...step, troopId });
+      return resumeWithValue(scene, interpreter, scene.session.battleResult);
+    }
     case "showPicture":
       showPictureState(scene.session, step);
       scene.showRuntimeOverlay("picture-overlay", resourceDisplayName(step.resourceId, step.pictureId || step.resourceId));
@@ -393,11 +436,13 @@ async function consumeBlockingStep(
     case "removeEvent":
       removeRuntimeEvent(scene, step.eventId);
       return resumeAfterSurface(scene, interpreter);
+    case "openChest":
+      await playOpenChest(scene, { chestId: step.chestId });
+      return resumeAfterSurface(scene, interpreter);
     case "shop":
       return resumeWithValue(scene, interpreter, await playShop(scene, step));
     case "inn":
-      await playInn(scene, step);
-      return resumeAfterSurface(scene, interpreter);
+      return resumeWithValue(scene, interpreter, await playInn(scene, step));
     case "gameOver":
       scene.showGameOverScreen(step.message);
       return resumeInterpreter(interpreter);
@@ -424,6 +469,8 @@ function applyEventGraphicPatternStep(
 ): void {
   const eventId = step.eventId || currentEventId;
   if (!eventId) return;
+  // Persist across refreshRuntimeSurfaces so door open frames survive wait/transfer mid-sequence.
+  scene.eventGraphicPatternOverrides.set(eventId, step.pattern);
   scene.eventSprites.get(eventId)?.setFrame(step.pattern);
   scene.syncRuntimeState();
 }
@@ -537,7 +584,7 @@ function resumeWithChoice(
 function resumeWithValue(
   scene: PlaySceneContext,
   interpreter: Interpreter,
-  value: number | boolean
+  value: number | boolean | string
 ): StepResult {
   const result = interpreter.resume(value);
   scene.refreshRuntimeSurfaces();
@@ -576,4 +623,28 @@ function keyInputCodeFor(event: KeyboardEvent): number {
       if (/^[0-9]$/.test(event.key)) return 10 + parseInt(event.key, 10);
       return 0;
   }
+}
+
+function resolveBattleTroopId(
+  scene: PlaySceneContext,
+  step: Extract<StepResult, { kind: "battleProcessing" }>
+): string {
+  if (step.troopSource === "variable" && step.troopVariableId) {
+    const raw = scene.session.variables[step.troopVariableId];
+    if (typeof raw === "string" && raw.trim()) return raw.trim();
+    if (typeof raw === "number" && Number.isFinite(raw)) {
+      const asIndex = Math.trunc(raw);
+      const troops = store.getCurrent().database.troops;
+      const byIndex = troops[asIndex - 1] ?? troops[asIndex];
+      if (byIndex) return byIndex.id;
+      const byNumericId = troops.find((troop) => troop.id.endsWith(String(asIndex)) || troop.id === String(asIndex));
+      if (byNumericId) return byNumericId.id;
+    }
+    // 변수 값이 troop id 문자열이 아닐 수 있어 세션 변수 맵 외에 flags 를 보지 않는다.
+    const project = store.getCurrent();
+    // 일부 프로젝트는 변수에 troop id 문자열을 직접 넣지 않고 숫자 인덱스만 둔다.
+    // 위에서 못 찾으면 고정 troopId 로 폴백.
+    void project;
+  }
+  return step.troopId;
 }

@@ -1,7 +1,7 @@
 // 라이브 스모크: 맵 인터뷰(소크라테스식 타일 가르치기) 프로토콜 종단 검증.
 // 시나리오: 사람이 깐 맵(설명 없는 타일 포함) → 킥오프 → 모델이 분석+강조+[선택지] 질문
 //          → 사용자 답변 → set_tile_metadata(confirmedByUser)로 기록 → 다음 질문.
-// 실행: OPENROUTER_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/interviewSmoke.eval.ts`
+// 실행: VITE_LLM_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/interviewSmoke.eval.ts`
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { buildInterviewKickoff, parseQuickReplies } from "@/ai/interviewPrompt";
@@ -13,7 +13,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 const UNKNOWN_TILE = 264; // 어떤 메타데이터에도 없는 상위 레이어 타일(인터뷰 질문 대상).
 
 describe("live smoke — 맵 인터뷰", () => {
-  it.skipIf(!process.env.OPENROUTER_API_KEY)("질문→답변→사용자 확정 메타데이터 기록 루프가 돈다", async () => {
+  it.skipIf(!process.env.VITE_LLM_API_KEY)("질문→답변→사용자 확정 메타데이터 기록 루프가 돈다", async () => {
     // 사람이 깐 맵 흉내: 설명 없는 타일 클러스터가 있는 맵.
     const project = createBlankProject();
     const ctx = { project };
@@ -25,7 +25,7 @@ describe("live smoke — 맵 인터뷰", () => {
     }
 
     const session = new AssistantSession(ctx.project, {
-      config: { ...defaultAiConfig(), apiKey: process.env.OPENROUTER_API_KEY ?? "" },
+      config: { ...defaultAiConfig(), apiKey: process.env.VITE_LLM_API_KEY ?? "" },
     });
     const toolLog: string[] = [];
     const onEvent = (event: { type: string; name?: string; result?: { ok: boolean; summary: string } }): void => {

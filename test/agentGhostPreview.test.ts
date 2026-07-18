@@ -25,6 +25,31 @@ afterEach(() => {
 });
 
 describe("agent ghost preview area extraction", () => {
+  it("canonical house and nested village targets produce ghost bounds", () => {
+    // Given: one existing exterior map and canonical construction calls.
+    const project = projectWithMaps(blankMap("m1", 30, 24));
+
+    // When: the ghost layer summarizes canonical requests.
+    const house = summarizeAgentGhostPreviewForToolCall(project, "author_house", {
+      kind: "single", mapId: "m1", wings: [{ x: 3, y: 4, w: 8, h: 7 }],
+    });
+    const village = summarizeAgentGhostPreviewForToolCall(project, "author_village", {
+      target: { kind: "existing", mapId: "m1", bounds: { x: 2, y: 3, w: 20, h: 18 } },
+      houseCount: 6,
+      countPolicy: "exact",
+    });
+
+    // Then: both official front doors preview their exact target on the same map.
+    expect(house).toHaveLength(1);
+    expect(house[0]).toMatchObject({
+      mapId: "m1", toolName: "author_house", bounds: { x: 3, y: 4, width: 8, height: 7 },
+    });
+    expect(village).toHaveLength(1);
+    expect(village[0]).toMatchObject({
+      mapId: "m1", toolName: "author_village", bounds: { x: 2, y: 3, width: 20, height: 18 },
+    });
+  });
+
   it("paint_tiles rect 호출을 lower 페인트 영역으로 요약한다", () => {
     const project = projectWithMaps(blankMap("m1", 12, 10));
 

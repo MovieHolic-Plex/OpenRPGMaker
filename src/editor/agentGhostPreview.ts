@@ -241,6 +241,9 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "place_chest":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_chest", "보물상자 배치"));
       break;
+    case "place_storage_chest":
+      pushArea(pointArea(project, mapId, pointFromXY(args), "place_storage_chest", "보관 상자 배치"));
+      break;
     case "place_savepoint":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_savepoint", "세이브 포인트 배치"));
       break;

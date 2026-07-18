@@ -6,7 +6,7 @@
 - 팀장: Claude Fable 5 (명령·코드리뷰·감사·채점만 수행 — 구현 없음)
 - 건축: codex gpt-5.5 xhigh (gpt-5.5-codex는 계정 미지원 → gpt-5.5 별칭)
 - 도로: agy (Gemini 3.5 Flash)
-- NPC·대화: gjc / openrouter z-ai/glm-5.2
+- NPC·대화: gjc / llm-provider z-ai/glm-5.2
 
 ## v1 채점 9.0/10 (기준 8 통과 — 루프 1회 종료)
 - 하네싱·무결성 3/3: 자동 감사(audit-village.cjs) 위반 0 · 전 건물 build_house_kit 경유

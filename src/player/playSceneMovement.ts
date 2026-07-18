@@ -19,10 +19,12 @@ import type { EventAnimationType } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/player/followers";
+import { applyWalkCareTicks } from "@/project/monsterCare";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { interactWithFarmPlot } from "@/player/farming";
+import { tryChestInteraction } from "@/player/playSceneChest";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -100,6 +102,7 @@ function updatePlayerMovement(scene: PlaySceneContext, deltaMs: number): void {
     scene.session.x = scene.tileX;
     scene.session.y = scene.tileY;
     recordFollowerPlayerStep(scene.session, { x: scene.movingFrom.x, y: scene.movingFrom.y, direction: scene.facing });
+    applyWalkCareTicks(store.getCurrent(), scene.session, 1);
     scene.moving = false;
     scene.player.x = characterSpriteX(scene.tileX);
     scene.player.y = characterSpriteY(scene.tileY);
@@ -259,6 +262,7 @@ export function handleAction(scene: ActionEventSceneContext): void {
     void scene.runEvent(event.event.id);
     return;
   }
+  if (tryChestInteraction(scene, tx, ty)) return;
   if (tryFarmInteraction(scene, tx, ty)) return;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
@@ -270,6 +274,7 @@ export function handleAction(scene: ActionEventSceneContext): void {
     void scene.runEvent(underfoot.event.id);
     return;
   }
+  if (tryChestInteraction(scene, scene.tileX, scene.tileY)) return;
   void tryFarmInteraction(scene, scene.tileX, scene.tileY);
 }
 

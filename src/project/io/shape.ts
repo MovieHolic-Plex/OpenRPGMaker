@@ -8,6 +8,8 @@ import { normalizePalettePresetId } from "../tilesetPalette";
 import { assert, cloneJson, sanitize, type JsonRecord, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { repairProjectReferences, validateProjectReferences } from "./references";
 import { validateConditionShape } from "./shapeCommandFields";
+import { stampCharacterIdsForSocialEvents } from "../characterIdStamp";
+import { validateCharacters } from "./shapeCharacterFields";
 import {
   requirePosition,
   validateAssets,
@@ -73,6 +75,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   validateQuests(data.quests, new Set(Object.keys(maps)));
   validateTestPresets(data.testPresets, new Set(Object.keys(maps)));
   validateEndings(data.endings);
+  validateCharacters(data.characters);
   const mapTree = validateMapTree("mapTree", data.mapTree, new Set(Object.keys(maps)));
   const startMapId = requireString("startMapId", data.startMapId);
   assert(startMapId in maps, "startMapId가 maps에 없습니다.");
@@ -92,6 +95,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   migrateVillageInfoDocumentsToWorld(project);
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
+  stampCharacterIdsForSocialEvents(project);
   repairProjectReferences(project);
   validateProjectReferences(project);
   return project;

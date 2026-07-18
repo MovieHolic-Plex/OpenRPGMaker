@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RPG ZZU · 조건 분기: RM2003 리듬 × 모던 조건 엔진</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #171b26;
+      --muted: #5a6274;
+      --paper: #f3efe6;
+      --card: #fffcf6;
+      --line: #d5ccba;
+      --teal: #0c7469;
+      --teal-deep: #08564f;
+      --teal-soft: #d5eee9;
+      --amber: #b86f0f;
+      --amber-soft: #f6e6c4;
+      --rose: #a13646;
+      --rose-soft: #f5d8de;
+      --blue: #2c5b98;
+      --blue-soft: #dce7f7;
+      --violet: #564392;
+      --violet-soft: #e5dff5;
+      --green: #2a7236;
+      --green-soft: #d7edd8;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+      --sans: "IBM Plex Sans KR", system-ui, sans-serif;
+      --display: "Newsreader", "IBM Plex Sans KR", serif;
+      --shadow: 0 16px 44px rgba(23, 27, 38, 0.08);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      line-height: 1.55;
+      background:
+        radial-gradient(1100px 480px at 8% -10%, #fff3d6 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #e4f1ee 0%, transparent 48%),
+        radial-gradient(700px 360px at 40% 100%, #ebe4f8 0%, transparent 42%),
+        var(--paper);
+    }
+    a { color: var(--teal-deep); text-underline-offset: 3px; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+    header.hero {
+      padding: 3rem 0 1.5rem;
+      border-bottom: 1px solid rgba(213,204,186,.75);
+    }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--teal-deep);
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+      box-shadow: 0 0 0 4px var(--teal-soft);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.12; letter-spacing: -.02em;
+      margin: .7rem 0 .85rem;
+    }
+    .hl { background: linear-gradient(180deg, transparent 60%, #ffe7a8 60%); }
+    .lede { max-width: 74ch; color: var(--muted); font-size: 1.06rem; margin: 0 0 1.2rem; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip {
+      font-size: .8rem; color: var(--muted);
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 999px; padding: .32rem .7rem;
+    }
+    .chip b { color: var(--ink); }
+    nav.toc {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(243,239,230,.9);
+      border-bottom: 1px solid var(--line);
+    }
+    nav.toc .wrap {
+      display: flex; gap: .4rem; overflow-x: auto;
+      padding: .65rem 0; scrollbar-width: thin;
+    }
+    nav.toc a {
+      flex: 0 0 auto; text-decoration: none; color: #3d4658;
+      font-size: .82rem; font-weight: 600;
+      padding: .4rem .7rem; border-radius: 999px; border: 1px solid transparent;
+    }
+    nav.toc a:hover { background: var(--card); border-color: var(--line); color: var(--teal-deep); }
+    main { padding: 2rem 0 4rem; }
+    section { margin: 0 0 2.5rem; scroll-margin-top: 4.5rem; }
+    h2 {
+      font-family: var(--display);
+      font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+      margin: 0 0 .85rem; letter-spacing: -.01em;
+    }
+    h3 { font-size: 1.05rem; margin: 0 0 .55rem; }
+    p { margin: 0 0 .85rem; }
+    .muted { color: var(--muted); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.15rem 1.25rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .85rem;
+    }
+    @media (max-width: 960px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+    code, .path {
+      font-family: var(--mono);
+      font-size: .86em;
+      background: rgba(23,27,38,.05);
+      border: 1px solid rgba(23,27,38,.08);
+      border-radius: 6px;
+      padding: .08rem .35rem;
+    }
+    pre {
+      font-family: var(--mono);
+      font-size: .8rem;
+      line-height: 1.5;
+      background: #1a2030;
+      color: #e8edf7;
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      margin: .7rem 0 0;
+    }
+    pre .c { color: #8b97ad; }
+    pre .k { color: #7dd3c0; }
+    pre .s { color: #f0c674; }
+    pre .g { color: #9ecbff; }
+    pre .r { color: #ff9aa8; }
+
+    .axes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 800px) { .axes { grid-template-columns: 1fr; } }
+    .axis {
+      border-radius: 18px;
+      padding: 1.2rem;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      min-height: 180px;
+    }
+    .axis.a {
+      background: linear-gradient(160deg, #e8f6f3, var(--card));
+      border-top: 4px solid var(--teal);
+    }
+    .axis.b {
+      background: linear-gradient(160deg, #efe9fb, var(--card));
+      border-top: 4px solid var(--violet);
+    }
+    .axis .tag {
+      display: inline-block;
+      font-size: .72rem; font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase;
+      border-radius: 999px; padding: .2rem .55rem; margin-bottom: .55rem;
+    }
+    .axis.a .tag { background: var(--teal-soft); color: var(--teal-deep); }
+    .axis.b .tag { background: var(--violet-soft); color: var(--violet); }
+    .axis h3 { font-family: var(--display); font-size: 1.25rem; margin: 0 0 .4rem; }
+    .axis p { color: var(--muted); margin: 0; font-size: .92rem; }
+
+    /* Mock windows */
+    .mock-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 960px) { .mock-row { grid-template-columns: 1fr; } }
+    .mock {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid #2a3348;
+      box-shadow: var(--shadow);
+      background: #151a27;
+      color: #e8edf7;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+    .mock-titlebar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .55rem .8rem;
+      background: #1d2536;
+      border-bottom: 1px solid #2f3a52;
+      font-size: .78rem; font-weight: 700;
+      color: #9ec0ff;
+    }
+    .mock-body { padding: .85rem; flex: 1; }
+    .mock-caption {
+      font-size: .78rem; color: var(--muted);
+      margin-top: .55rem; text-align: center;
+    }
+    .rm-dialog {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: .7rem;
+      font-size: .78rem;
+    }
+    .rm-radios {
+      display: flex; flex-direction: column; gap: .28rem;
+      background: #0f1420; border-radius: 8px; padding: .55rem;
+      border: 1px solid #2f3a52;
+    }
+    .rm-radios label {
+      display: flex; align-items: center; gap: .35rem;
+      color: #c5cde0; cursor: default;
+    }
+    .rm-radios label.active { color: #7dd3c0; font-weight: 700; }
+    .rm-fields {
+      background: #0f1420; border-radius: 8px; padding: .7rem;
+      border: 1px solid #2f3a52;
+      display: flex; flex-direction: column; gap: .55rem;
+    }
+    .rm-field {
+      display: grid; grid-template-columns: 64px 1fr; gap: .4rem; align-items: center;
+    }
+    .rm-field span { color: #8b97ad; }
+    .rm-field .box {
+      background: #1a2233; border: 1px solid #3a4762; border-radius: 5px;
+      padding: .28rem .45rem; color: #e8edf7;
+    }
+    .rm-check {
+      display: flex; align-items: center; gap: .4rem;
+      color: #f0c674; font-weight: 600; margin-top: .2rem;
+    }
+    .rm-list {
+      font-family: var(--mono);
+      font-size: .72rem;
+      line-height: 1.55;
+      background: #0c101a;
+      border-radius: 8px;
+      padding: .7rem .75rem;
+      border: 1px solid #2f3a52;
+    }
+    .rm-list .indent { padding-left: 1.1rem; color: #c5cde0; }
+    .rm-list .marker { color: #7dd3c0; }
+    .rm-list .else { color: #ff9aa8; }
+    .rm-list .end { color: #8b97ad; }
+    .rm-list .cmd { color: #9ecbff; }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: .6rem;
+    }
+    @media (max-width: 960px) { .flow { grid-template-columns: 1fr 1fr; } }
+    .flow-step {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: .9rem;
+      box-shadow: var(--shadow);
+      min-height: 130px;
+    }
+    .flow-step .n {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-family: var(--mono); font-size: .75rem; font-weight: 700;
+      color: white; background: var(--teal); margin-bottom: .45rem;
+    }
+    .flow-step h3 { margin: 0 0 .3rem; font-size: .95rem; }
+    .flow-step p { margin: 0; font-size: .84rem; color: var(--muted); }
+    .flow-step::after {
+      content: "→";
+      position: absolute; right: -.4rem; top: 50%;
+      transform: translate(50%, -50%);
+      color: var(--amber); font-weight: 700; z-index: 1;
+    }
+    .flow-step:last-child::after { content: none; }
+    @media (max-width: 960px) {
+      .flow-step:nth-child(2)::after { content: none; }
+      .flow-step:nth-child(even)::after { content: none; }
+    }
+
+    .compare-table {
+      width: 100%; border-collapse: collapse;
+      background: var(--card); border-radius: 16px; overflow: hidden;
+      box-shadow: var(--shadow); border: 1px solid var(--line);
+      font-size: .9rem;
+    }
+    .compare-table th, .compare-table td {
+      padding: .75rem .85rem; text-align: left;
+      border-bottom: 1px solid var(--line); vertical-align: top;
+    }
+    .compare-table th {
+      background: #1a2030; color: #e8edf7; font-weight: 600; font-size: .82rem;
+    }
+    .compare-table tr:last-child td { border-bottom: 0; }
+    .compare-table .good { color: var(--green); font-weight: 600; }
+    .compare-table .bad { color: var(--rose); font-weight: 600; }
+    .compare-table .mid { color: var(--amber); font-weight: 600; }
+
+    .vocab {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .75rem;
+    }
+    @media (max-width: 960px) { .vocab { grid-template-columns: 1fr; } }
+    .vocab-card {
+      border-radius: 16px; padding: 1rem;
+      border: 1px solid var(--line); background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .vocab-card .ico {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: grid; place-items: center; font-size: 1.25rem; margin-bottom: .5rem;
+    }
+    .vocab-card h3 { margin: 0 0 .35rem; font-size: .98rem; }
+    .vocab-card ul {
+      margin: 0; padding-left: 1.05rem; color: var(--muted); font-size: .86rem;
+    }
+    .vocab-card li { margin: .2rem 0; }
+    .v1 .ico { background: var(--teal-soft); }
+    .v2 .ico { background: var(--blue-soft); }
+    .v3 .ico { background: var(--amber-soft); }
+    .v4 .ico { background: var(--violet-soft); }
+    .v5 .ico { background: var(--rose-soft); }
+    .v6 .ico { background: var(--green-soft); }
+
+    .tree-visual {
+      background: linear-gradient(180deg, #1b2233, #151a27);
+      color: #e8edf7;
+      border-radius: 16px;
+      padding: 1.1rem 1.2rem;
+      border: 1px solid #2a3348;
+      box-shadow: var(--shadow);
+      font-family: var(--mono);
+      font-size: .78rem;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .tree-visual .and { color: #f0c674; font-weight: 700; }
+    .tree-visual .or { color: #9ecbff; font-weight: 700; }
+    .tree-visual .not { color: #ff9aa8; font-weight: 700; }
+    .tree-visual .leaf { color: #7dd3c0; }
+    .tree-visual .dim { color: #8b97ad; }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: .5rem;
+      align-items: stretch;
+    }
+    @media (max-width: 960px) { .pipeline { grid-template-columns: 1fr; } }
+    .pipe {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: .8rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      position: relative;
+    }
+    .pipe .emoji {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: grid; place-items: center; margin: 0 auto .45rem;
+      font-size: 1.3rem;
+    }
+    .pipe h3 { margin: 0 0 .25rem; font-size: .88rem; }
+    .pipe p { margin: 0; font-size: .78rem; color: var(--muted); }
+    .pipe::after {
+      content: "→";
+      position: absolute; right: -.35rem; top: 50%;
+      transform: translate(50%, -50%);
+      color: var(--amber); font-weight: 700;
+    }
+    .pipe:last-child::after { content: none; }
+    @media (max-width: 960px) {
+      .pipe::after { content: "↓"; right: 50%; top: auto; bottom: -.45rem; transform: translate(50%, 50%); }
+    }
+    .e1 { background: var(--amber-soft); }
+    .e2 { background: var(--violet-soft); }
+    .e3 { background: var(--blue-soft); }
+    .e4 { background: var(--teal-soft); }
+    .e5 { background: var(--green-soft); }
+
+    .verdict {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 1rem;
+    }
+    @media (max-width: 900px) { .verdict { grid-template-columns: 1fr; } }
+    .do, .dont {
+      border-radius: 16px; padding: 1.1rem;
+      border: 1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .do { background: linear-gradient(180deg, #f3faf4, var(--card)); }
+    .dont { background: linear-gradient(180deg, #fbf3f4, var(--card)); }
+    .do h3, .dont h3 { margin: 0 0 .65rem; }
+    .do ul, .dont ul { margin: 0; padding-left: 1.1rem; color: var(--muted); font-size: .92rem; }
+    .do li, .dont li { margin: .3rem 0; }
+
+    .callout {
+      display: grid; grid-template-columns: auto 1fr; gap: .85rem;
+      align-items: start; border-radius: 16px; padding: 1rem 1.1rem;
+      border: 1px solid var(--line); background: var(--card);
+    }
+    .callout .icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: grid; place-items: center; font-size: 1.25rem;
+      background: var(--teal-soft);
+    }
+    .callout.info { background: var(--blue-soft); border-color: #b9cdea; }
+    .callout.info .icon { background: #c9daf3; }
+    .callout.warn { background: var(--amber-soft); border-color: #e5c98a; }
+    .callout.warn .icon { background: #f0d59a; }
+
+    .meta-card {
+      border-radius: 16px; padding: 1rem; text-align: center;
+      background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow);
+    }
+    .meta-card .emoji {
+      width: 52px; height: 52px; margin: 0 auto .5rem; border-radius: 14px;
+      display: grid; place-items: center; font-size: 1.45rem;
+    }
+    .meta-card h3 { margin: 0 0 .25rem; font-size: .95rem; }
+    .meta-card p { margin: 0; font-size: .82rem; color: var(--muted); }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 1.4rem 0 2.5rem;
+      color: var(--muted); font-size: .86rem;
+    }
+    .badge-now {
+      display: inline-block; font-size: .7rem; font-weight: 700;
+      background: var(--green-soft); color: var(--green);
+      border-radius: 999px; padding: .12rem .45rem; margin-left: .3rem;
+    }
+    .badge-next {
+      display: inline-block; font-size: .7rem; font-weight: 700;
+      background: var(--amber-soft); color: var(--amber);
+      border-radius: 999px; padding: .12rem .45rem; margin-left: .3rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span> RPG ZZU · Conditional Branch Design</div>
+      <h1>조건 분기,<br /><span class="hl">RM 리듬</span> × <span class="hl">모던 조건</span></h1>
+      <p class="lede">
+        “RM2003처럼 하면 조건이 빈약해지나?” — <b>아니다</b>.
+        편집 표면(어디서 고치나)과 조건 엔진(무엇을 걸 수 있나)은 다른 축이다.
+        모던 AI 편집기는 <b>리듬은 RM, 표현력은 확장</b>이 정답이다.
+      </p>
+      <div class="meta-row">
+        <span class="chip"><b>골격</b> 조건 창 / 본문 리스트</span>
+        <span class="chip"><b>엔진</b> Condition AST + 복합식</span>
+        <span class="chip"><b>AI</b> 자연어 → 구조화 조건</span>
+        <span class="chip"><b>레포</b> fork + Condition union</span>
+        <span class="chip"><b>상태</b> P0–P2 implemented</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#axes">두 축</a>
+      <a href="#rm">RM2003 원작</a>
+      <a href="#split">분리 원칙</a>
+      <a href="#now">지금 레포</a>
+      <a href="#modern">모던 확장</a>
+      <a href="#pipeline">AI 파이프라인</a>
+      <a href="#verdict">결론</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <!-- 1. Two axes -->
+    <section id="axes">
+      <h2>1. 먼저 축을 갈라라</h2>
+      <div class="axes">
+        <div class="axis a">
+          <span class="tag">Axis A · Editing surface</span>
+          <h3>어디서 편집하나?</h3>
+          <p>
+            조건 파라미터는 다이얼로그,<br />
+            then/else <b>명령 본문</b>은 메인 리스트 들여쓰기.<br />
+            → <b>RM2003 리듬이 정답</b>
+          </p>
+        </div>
+        <div class="axis b">
+          <span class="tag">Axis B · Condition engine</span>
+          <h3>무엇을 조건으로 걸 수 있나?</h3>
+          <p>
+            스위치만이 아니라 시간·호감·퀘스트·복합식·AI 컴파일.<br />
+            → <b>모던/AI로 마음껏 확장</b>
+          </p>
+        </div>
+      </div>
+      <div class="callout info" style="margin-top:1rem">
+        <div class="icon">🧭</div>
+        <div>
+          <h3>한 줄 공식</h3>
+          <p class="muted" style="margin:0">
+            <b>편집 리듬 = RM</b> &nbsp;·&nbsp; <b>조건 vocabulary = RM 초월</b> &nbsp;·&nbsp;
+            <b>AI = 구조화된 Condition AST 생성기</b>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. RM mock -->
+    <section id="rm">
+      <h2>2. RM2003은 이렇게 했다</h2>
+      <p class="muted">다이얼로그는 조건만. 본문은 리스트. 그게 전부다.</p>
+      <div class="mock-row">
+        <div>
+          <div class="mock">
+            <div class="mock-titlebar">
+              <span>Conditional Branch</span>
+              <span style="opacity:.6">×</span>
+            </div>
+            <div class="mock-body">
+              <div class="rm-dialog">
+                <div class="rm-radios">
+                  <label class="active">● 스위치</label>
+                  <label>○ 변수</label>
+                  <label>○ 타이머</label>
+                  <label>○ 돈</label>
+                  <label>○ 아이템</label>
+                  <label>○ 주인공</label>
+                  <label>○ 셀프 스위치</label>
+                  <label>○ …</label>
+                </div>
+                <div class="rm-fields">
+                  <div class="rm-field"><span>스위치</span><div class="box">0001: 문 열림</div></div>
+                  <div class="rm-field"><span>상태</span><div class="box">ON</div></div>
+                  <div class="rm-check">☑ 조건이 만족되지 않을 때 처리</div>
+                  <div style="display:flex;gap:.4rem;justify-content:flex-end;margin-top:.4rem">
+                    <div class="box" style="min-width:52px;text-align:center">확인</div>
+                    <div class="box" style="min-width:52px;text-align:center;opacity:.7">취소</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-caption">다이얼로그 = 조건 + else 여부만</div>
+        </div>
+        <div>
+          <div class="mock">
+            <div class="mock-titlebar">
+              <span>실행 내용 (명령 리스트)</span>
+              <span style="opacity:.6">RM2003</span>
+            </div>
+            <div class="mock-body">
+              <div class="rm-list">
+                <div><span class="marker">◆</span> <span class="cmd">조건 분기</span>: 스위치 [0001:문 열림] 이 ON</div>
+                <div class="indent"><span class="marker">◆</span> 문장 표시: 문이 열렸다</div>
+                <div class="indent"><span class="marker">◆</span></div>
+                <div><span class="else">: 그 외의 경우</span></div>
+                <div class="indent"><span class="marker">◆</span> 문장 표시: 잠겨 있다</div>
+                <div class="indent"><span class="marker">◆</span></div>
+                <div><span class="end">: 분기 종료</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="mock-caption">then/else 본문 = 메인 리스트 들여쓰기에서 편집</div>
+        </div>
+      </div>
+
+      <div class="flow" style="margin-top:1.2rem">
+        <div class="flow-step">
+          <div class="n">1</div>
+          <h3>조건 분기 추가</h3>
+          <p>명령 피커에서 Conditional Branch</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">2</div>
+          <h3>조건만 설정</h3>
+          <p>스위치/변수… + else 체크</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">3</div>
+          <h3>리스트에서 본문</h3>
+          <p>then/else 안에 평소처럼 명령 삽입</p>
+        </div>
+        <div class="flow-step">
+          <div class="n">4</div>
+          <h3>조건만 재편집</h3>
+          <p>다이얼로그 재오픈 = 조건 파라미터만</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Split principle -->
+    <section id="split">
+      <h2>3. 왜 이 분리가 강한가</h2>
+      <div class="grid-3">
+        <div class="meta-card">
+          <div class="emoji e1">📐</div>
+          <h3>한 창 한 책임</h3>
+          <p>조건 창은 조건만.<br />본문 창(리스트)은 시퀀스만.</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji e2">🧱</div>
+          <h3>중첩이 자연스럽다</h3>
+          <p>fork 안 fork, 선택지 안 fork.<br />리스트 들여쓰기가 스케일됨.</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji e3">🧠</div>
+          <h3>멘탈모델이 안정</h3>
+          <p>선택지와 같은 철학.<br />배우면 전 커맨드에 전이.</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji e4">🛠️</div>
+          <h3>본문 편집 도구 재사용</h3>
+          <p>복사/붙여넣기/드래그/단축키가<br />리스트 한곳에서 동작.</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji" style="background:var(--rose-soft)">💣</div>
+          <h3>미니 IDE 함정 회피</h3>
+          <p>다이얼로그 안 조잡한<br />then/else 에디터를 안 키움.</p>
+        </div>
+        <div class="meta-card">
+          <div class="emoji" style="background:var(--violet-soft)">🤖</div>
+          <h3>AI와도 잘 맞음</h3>
+          <p>AI는 조건 AST + 본문 커맨드를<br />분리 생성하면 됨.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Current repo -->
+    <section id="now">
+      <h2>4. 지금 이 레포 위치</h2>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th style="width:28%">항목</th>
+            <th>RM2003</th>
+            <th>rpg-zzu 현재</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>데이터 모델</b></td>
+            <td>IF / then / else 블록</td>
+            <td><code>fork</code> + <code>condition</code> + <code>then</code> + <code>else?</code></td>
+            <td class="good">정렬됨</td>
+          </tr>
+          <tr>
+            <td><b>단일 조건 종류</b></td>
+            <td>스위치·변수·아이템…</td>
+            <td>스위치·변수·셀프·배우·아이템·골드·타이머 + 시간대·계절·활동·호감</td>
+            <td class="good">이미 더 넓음</td>
+          </tr>
+          <tr>
+            <td><b>복합 조건</b></td>
+            <td>사실상 단일 / 중첩 IF</td>
+            <td>단일 Condition (AND/OR 그룹 없음)</td>
+            <td class="mid">확장 여지</td>
+          </tr>
+          <tr>
+            <td><b>조건 편집 UX</b></td>
+            <td>라디오 + 라벨 필드</td>
+            <td>라벨 필드 스택으로 개선 중</td>
+            <td class="mid">진행 중</td>
+          </tr>
+          <tr>
+            <td><b>본문 편집 위치</b></td>
+            <td>메인 리스트 들여쓰기</td>
+            <td>다이얼로그 미니 리스트 + 메인 리스트 공존</td>
+            <td class="bad">RM과 어긋남</td>
+          </tr>
+          <tr>
+            <td><b>else 생성</b></td>
+            <td>체크박스 한 개</td>
+            <td>버튼 “그 외 분기 추가”</td>
+            <td class="mid">의미는 같음</td>
+          </tr>
+          <tr>
+            <td><b>AI 조건 작성</b></td>
+            <td>없음</td>
+            <td>툴/내러티브 플래그는 일부, 자연어→AST는 약함</td>
+            <td class="mid">다음 단계</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn" style="margin-top:1rem">
+        <div class="icon">⚠️</div>
+        <div>
+          <h3> lagged 한 것 = 표현력이 아니라 표면</h3>
+          <p class="muted" style="margin:0">
+            Condition vocabulary는 이미 꽤 모던하다.
+            어색함의 본체는 <b>then/else 본문을 다이얼로그 안에 끌어둔 편집 표면</b>과
+            <b>복합식/AI 작성 레이어 부재</b>다.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Modern expansion -->
+    <section id="modern">
+      <h2>5. 모던 AI 편집기라면 조건을 어디까지</h2>
+      <p class="muted">확장할 것은 “다이얼로그 크기”가 아니라 “조건 엔진”이다.</p>
+
+      <div class="vocab">
+        <div class="vocab-card v1">
+          <div class="ico">🧩</div>
+          <h3>복합 조건<span class="badge-next">NEXT</span></h3>
+          <ul>
+            <li><code>all</code> / <code>any</code> / <code>not</code></li>
+            <li>중첩 그룹 트리</li>
+            <li>fork 중첩 대신 한 조건으로 표현</li>
+          </ul>
+        </div>
+        <div class="vocab-card v2">
+          <div class="ico">🗺️</div>
+          <h3>월드·시간<span class="badge-now">NOW</span></h3>
+          <ul>
+            <li>timePhase / season</li>
+            <li>맵·영역 (확장 후보)</li>
+            <li>낮밤 퀘스트 분기</li>
+          </ul>
+        </div>
+        <div class="vocab-card v3">
+          <div class="ico">❤️</div>
+          <h3>소셜·스토리<span class="badge-now">NOW</span></h3>
+          <ul>
+            <li>friendshipAtLeast</li>
+            <li>storyFlag / quest stage</li>
+            <li>npcActivity 스케줄</li>
+          </ul>
+        </div>
+        <div class="vocab-card v4">
+          <div class="ico">🎒</div>
+          <h3>인벤·파티</h3>
+          <ul>
+            <li>소지 여부 → 수량 비교</li>
+            <li>레벨/직업/장비 슬롯</li>
+            <li>골드 비교 (이미 있음)</li>
+          </ul>
+        </div>
+        <div class="vocab-card v5">
+          <div class="ico">🤖</div>
+          <h3>AI 작성<span class="badge-next">NEXT</span></h3>
+          <ul>
+            <li>자연어 → Condition AST</li>
+            <li>미선언 플래그 제안</li>
+            <li>빌더로 검수 후 커밋</li>
+          </ul>
+        </div>
+        <div class="vocab-card v6">
+          <div class="ico">🔎</div>
+          <h3>디버그 표면</h3>
+          <ul>
+            <li>현재 세션 TRUE/FALSE</li>
+            <li>실패 원인 한 줄</li>
+            <li>explain_event 와 연결</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 style="margin-top:1.4rem">복합 조건 트리 예시</h3>
+      <div class="tree-visual">
+<pre style="margin:0;background:transparent;padding:0;box-shadow:none">
+<span class="and">ALL</span>  <span class="dim">// 모두 참이어야 then</span>
+├─ <span class="leaf">switch</span>  0001:문 열림  == ON
+├─ <span class="leaf">timePhase</span>  night
+└─ <span class="or">ANY</span>
+   ├─ <span class="leaf">friendshipAtLeast</span>  민수 ≥ 100
+   └─ <span class="leaf">item</span>  낡은 열쇠  소지
+
+<span class="dim">자연어:</span> “문이 열렸고 밤이며, 민수 호감 100 이상이거나 낡은 열쇠가 있을 때”
+</pre>
+      </div>
+    </section>
+
+    <!-- 6. Pipeline -->
+    <section id="pipeline">
+      <h2>6. 올바른 모던 파이프라인</h2>
+      <div class="pipeline">
+        <div class="pipe">
+          <div class="emoji e1">💬</div>
+          <h3>자연어 / AI</h3>
+          <p>“밤이고 문 열림”</p>
+        </div>
+        <div class="pipe">
+          <div class="emoji e2">🧬</div>
+          <h3>Condition AST</h3>
+          <p>typed JSON 트리</p>
+        </div>
+        <div class="pipe">
+          <div class="emoji e3">🎛️</div>
+          <h3>조건 빌더</h3>
+          <p>라벨 필드로 검수</p>
+        </div>
+        <div class="pipe">
+          <div class="emoji e4">💾</div>
+          <h3>fork 저장</h3>
+          <p>condition + else?</p>
+        </div>
+        <div class="pipe">
+          <div class="emoji e5">📜</div>
+          <h3>리스트 본문</h3>
+          <p>then/else 명령</p>
+        </div>
+      </div>
+
+<pre style="margin-top:1rem">
+<span class="c">// 해서는 안 되는 모던화</span>
+다이얼로그 안에 then/else 미니 IDE 키우기
+AI가 뱉은 <span class="r">문자열 조건</span>을 스키마 없이 실행
+조건마다 완전 다른 자유 HTML 폼 난립
+
+<span class="c">// 해야 하는 모던화</span>
+<span class="k">자연어</span> → <span class="g">구조화 AST</span> → <span class="s">빌더 검수</span> → <span class="k">fork 저장</span>
+본문은 언제나 <span class="g">메인 명령 리스트</span>
+</pre>
+    </section>
+
+    <!-- 7. Verdict -->
+    <section id="verdict">
+      <h2>7. 결론 · 로드맵</h2>
+      <div class="verdict">
+        <div class="do">
+          <h3>✅ 이렇게 간다</h3>
+          <ul>
+            <li>다이얼로그 = <b>조건 빌더 + else 체크</b>만</li>
+            <li>then/else 본문 = <b>메인 리스트 들여쓰기</b></li>
+            <li>Condition 에 <b>all / any / not</b> 그룹 추가</li>
+            <li>의미 조건 유지·확장 (호감, 시간, 퀘스트, 플래그)</li>
+            <li>AI: 자연어 → AST → 빌더 검수</li>
+            <li>미리보기: 현재 세션 TRUE/FALSE + 실패 원인</li>
+          </ul>
+        </div>
+        <div class="dont">
+          <h3>❌ 이렇게 안 한다</h3>
+          <ul>
+            <li>조건을 늘리자고 본문 편집을 다이얼로그로 끌어오기</li>
+            <li>RM 조건 종류로 표현력 후퇴</li>
+            <li>문자열 조건 인터프리터</li>
+            <li>미니 리스트와 메인 리스트 이중 편집 유지</li>
+            <li>“모던 = 창이 크고 버튼이 많음”</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:1rem">
+        <h3>우선순위 제안</h3>
+<pre>
+<span class="s">P0</span>  fork 다이얼로그에서 then/else 본문 편집 제거 (요약/개수만)
+     else = 체크박스 “그 외 처리”
+     메인 리스트 마커 강화 (: 참일 때 / : 그 외 / : 분기 종료)
+
+<span class="s">P1</span>  Condition 그룹 (all/any/not) + 빌더 트리 UI
+     세션 평가 미리보기 TRUE/FALSE
+
+<span class="s">P2</span>  AI 자연어 → condition AST 툴
+     수량/퀘스트 stage/영역 조건 vocabulary 확장
+</pre>
+      </div>
+
+      <div class="callout" style="margin-top:1rem">
+        <div class="icon">🎯</div>
+        <div>
+          <h3>최종 한 줄</h3>
+          <p class="muted" style="margin:0">
+            모던 AI 편집기일수록 조건은 <b>더 다양</b>해야 한다.
+            다만 다양해지는 것은 <b>Condition 엔진</b>이지,
+            다이얼로그 안의 then/else 미니 편집기가 아니다.
+            <b>RM의 편집 리듬을 지키고, 조건 vocabulary만 미래로 밀어라.</b>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p style="margin:0 0 .35rem"><b>docs/fork-rm2003-vs-modern.html</b> · 조건 분기 설계 설명</p>
+      <p style="margin:0">
+        근거:
+        <code>src/project/types/events.ts</code> (Condition),
+        <code>commandBodyCore.ts</code> (forkBody),
+        <code>conditionForm.ts</code>,
+        <code>forkBranch.ts</code>,
+        RM2003 Conditional Branch 관례,
+        선택지(choices) 본문=리스트 패턴
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

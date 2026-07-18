@@ -17,7 +17,8 @@
   justify-content: center;
   left: 0;
   overflow: hidden;
-  padding: 4px 2px 16px;
+  /* Bottom room for the page-number overlay; keep enough height for a full 36×48 cell. */
+  padding: 2px 2px 18px;
   pointer-events: none;
   position: absolute;
   right: 0;
@@ -25,11 +26,13 @@
 }
 
 .event-page-tab-thumb .event-graphic-icon-preview {
+  /* Beat the shared .event-graphic-preview 48×64 rule so crop scale matches box size. */
   flex: none;
+  height: 48px !important;
   image-rendering: pixelated;
-  /* 48×64 (scale 2) 셀이 탭 면적을 거의 채우도록 */
-  max-height: 100%;
-  max-width: 100%;
+  max-height: none;
+  max-width: none;
+  width: 36px !important;
 }
 
 /* 그래픽 없음/미지원 → 탭 비율에 맞는 빈 칸 placeholder */

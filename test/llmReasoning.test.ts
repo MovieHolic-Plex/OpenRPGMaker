@@ -90,12 +90,10 @@ function installLocalStorage(value: unknown): void {
   });
 }
 
-describe("OpenRouter reasoning 요청", () => {
+describe("LLM reasoning 요청", () => {
   it("비-minimax 모델에서 reasoningEffort high면 요청 본문에 high를 넣는다", async () => {
     const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
-    const config = {
-      ...defaultAiConfig(),
-      apiKey: "sk-test",
+    const config = { ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", apiKey: "sk-test",
       model: "openai/gpt-4o",
       reasoningEffort: "high" as const,
     };
@@ -107,9 +105,7 @@ describe("OpenRouter reasoning 요청", () => {
 
   it("minimax + medium 설정은 요청 시 low로 캡한다(장문 추론 완화)", async () => {
     const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
-    const config = {
-      ...defaultAiConfig(),
-      apiKey: "sk-test",
+    const config = { ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", apiKey: "sk-test",
       model: "minimax/minimax-m3",
       reasoningEffort: "medium" as const,
     };
@@ -121,8 +117,7 @@ describe("OpenRouter reasoning 요청", () => {
 
   it("configForLiteModel은 reasoning을 off로 끈다", () => {
     const lite = configForLiteModel({
-      ...defaultAiConfig(),
-      model: "minimax/minimax-m3",
+      ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "minimax/minimax-m3",
       liteModel: "google/gemini-3.1-flash-lite",
       reasoningEffort: "high",
     });
@@ -131,9 +126,9 @@ describe("OpenRouter reasoning 요청", () => {
   });
 
   it("reasoningEffort가 off이면 요청 본문에 reasoning 키를 넣지 않는다", async () => {
-    // Given: reasoning을 끈 OpenRouter 설정.
+    // Given: reasoning을 끈 LLM 설정.
     const fetchMock = stubFetch(jsonResponse({ choices: [{ message: { content: "ok" } }] }));
-    const config = { ...defaultAiConfig(), apiKey: "sk-test", reasoningEffort: "off" as const };
+    const config = { ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", apiKey: "sk-test", reasoningEffort: "off" as const };
 
     // When: 실제 chatCompletion 경로로 요청한다.
     await chatCompletion(config, { messages: [{ role: "user", content: "hi" }] });
@@ -143,9 +138,9 @@ describe("OpenRouter reasoning 요청", () => {
   });
 });
 
-describe("OpenRouter reasoning 응답 파싱", () => {
+describe("LLM reasoning 응답 파싱", () => {
   it("비스트리밍 message.reasoning 문자열을 assistant 메시지에 보존한다", async () => {
-    // Given: OpenRouter 비스트리밍 응답에 reasoning이 있다.
+    // Given: LLM 비스트리밍 응답에 reasoning이 있다.
     stubFetch(jsonResponse({ choices: [{ message: { content: "hi", reasoning: "내가 생각한 것" } }] }));
 
     // When: 실제 chatCompletion 경로로 파싱한다.
@@ -207,5 +202,5 @@ describe("AI reasoning 설정 로드", () => {
 });
 
 function defaultAiConfigWithKey(): ReturnType<typeof defaultAiConfig> {
-  return { ...defaultAiConfig(), apiKey: "sk-test" };
+  return { ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", apiKey: "sk-test" };
 }

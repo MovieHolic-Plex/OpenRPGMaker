@@ -143,6 +143,15 @@ describe("team workflow UI", () => {
     expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
   });
 
+  it("auto-guests for deep-linked ?project= without showing login modal", () => {
+    (globalThis.window as unknown as { location?: { search: string } }).location = {
+      search: "?project=rpg-zzu-narrative-horror-demos",
+    };
+    openLoginModalIfNeeded();
+    expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
+    expect(storage.getItem(LAST_LOGIN_METHOD_KEY)).toBe("guest");
+  });
+
   it("switches OAuth to name-only mock flow and stores the selected provider", () => {
     openLoginModalIfNeeded();
     findByTestId(fakeBody(), "login-oauth-google")?.click();

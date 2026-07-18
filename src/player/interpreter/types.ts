@@ -19,7 +19,7 @@ import type { RuntimeCameraTarget } from "@/player/types";
 
 export type StepResult =
   | { kind: "done" }
-  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings }
+  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string }
   | {
       kind: "choices";
       prompt?: string;
@@ -56,7 +56,16 @@ export type StepResult =
     }
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
-  | { kind: "battleProcessing"; troopId: string; canEscape: boolean; canLose: boolean; battleFlow?: "gauge" | "strict" }
+  | {
+      kind: "battleProcessing";
+      troopId: string;
+      canEscape: boolean;
+      canLose: boolean;
+      battleFlow?: "gauge" | "strict";
+      troopSource?: "fixed" | "variable";
+      troopVariableId?: string;
+      branchOnResult?: boolean;
+    }
   | {
       kind: "showPicture";
       pictureId: string;
@@ -111,7 +120,17 @@ export type StepResult =
       merchantGold?: number;
       branchOnTransaction?: boolean;
     }
-  | { kind: "inn"; price: number }
+  | {
+      kind: "inn";
+      price: number;
+      note?: string;
+      question?: string;
+      recoverMp?: boolean;
+      advanceToMorning?: boolean;
+      restDurationMs?: number;
+      wakeDurationMs?: number;
+      branchOnNotEnoughGold?: boolean;
+    }
   | { kind: "gameOver"; message?: string }
   | { kind: "returnToTitle"; title?: string; message?: string };
 
@@ -139,6 +158,14 @@ export interface InterpreterState {
   // 루프 무한 반복 가드. 루프 본문이 한 번 완료될 때마다 증가.
   loopIterations?: number;
   maxLoopIterations: number;
+  instructionsExecuted: number;
+  maxInstructions: number;
+}
+
+export interface InterpreterOptions {
+  readonly maxLoopIterations?: number;
+  readonly maxInstructions?: number;
+  readonly currentEventId?: string;
 }
 
 export interface Interpreter {

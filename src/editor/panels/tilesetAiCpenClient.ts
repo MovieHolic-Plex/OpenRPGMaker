@@ -14,8 +14,8 @@ type ChatCompletionResponse = {
 };
 
 // CPEN 타일셋 매핑은 감독 모델 설정을 재사용하고, 아래 값은 폴백일 뿐이다.
-const DEFAULT_LLM_API_URL = "https://openrouter.ai/api/v1";
-const DEFAULT_LLM_MODEL = "minimax/minimax-m3";
+// baseUrl 폴백 없음 — loadAiConfig().baseUrl 또는 VITE_LLM_API_URL 필수.
+const DEFAULT_LLM_MODEL = "google/gemini-3.1-flash-lite";
 const MAX_INPUT_PER_1M = 0.1;
 const MAX_OUTPUT_TOKENS = 8192;
 const LOCAL_STORAGE_KEY = "rpg-zzu.llmApiKey";
@@ -27,6 +27,7 @@ export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Pr
   const apiKey = mainConfig.apiKey?.trim() || readApiKey();
   if (!apiKey) return "AI 설정이 아직 연결되지 않았습니다. 로컬 설정을 확인해 주세요.";
   const baseUrl = (mainConfig.baseUrl?.trim() || readApiUrl()).replace(/\/$/, "");
+  if (!baseUrl) return "AI 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.";
   const model = mainConfig.model?.trim() || DEFAULT_LLM_MODEL;
 
   try {
@@ -101,7 +102,7 @@ function readApiKey(): string {
 
 function readApiUrl(): string {
   const configured = import.meta.env.VITE_LLM_API_URL?.trim();
-  return configured ? configured.replace(/\/$/, "") : DEFAULT_LLM_API_URL;
+  return configured ? configured.replace(/\/$/, "") : "";
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {

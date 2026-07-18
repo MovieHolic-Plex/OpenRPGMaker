@@ -34,8 +34,8 @@ describe("RM2k3 wood floor edge passability", () => {
     expect(passageMarkForTile(ts, 223)).toBe("x");
     // 돌계단: 밟는 ○ 전방향 (고상 분리는 데크 edge)
     expect(ts.passability[112]).toEqual({ up: true, down: true, left: true, right: true });
-    expect(project.system.titleResourceId).toBe("easyrpg-title-title1");
-    expect(project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title1");
+    expect(project.system.titleResourceId).toBe("rpg-zzu-title-field");
+    expect(project.system.titleScreen?.backgroundResourceId).toBe("rpg-zzu-title-field");
   });
 });
 

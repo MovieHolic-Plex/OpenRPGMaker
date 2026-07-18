@@ -1,5 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { eventDisplayName, eventLayerSwitchNotice, eventMarkerTooltip, shouldOfferEventLayerSwitch } from "@/editor/eventMarkerUx";
+import {
+  buildEventListTooltipModel,
+  buildEventMarkerTooltipModel,
+  eventDisplayName,
+  eventLayerSwitchNotice,
+  eventMarkerTooltip,
+  renderEventListTooltipElement,
+  renderEventMarkerTooltipElement,
+  shouldOfferEventLayerSwitch,
+} from "@/editor/eventMarkerUx";
 import { editorState } from "@/editor/editorState";
 import {
   isMapEditLockTakeoverImmediate,
@@ -97,13 +106,77 @@ describe("UXC D13 이벤트 마커 편집 동선", () => {
     expect(shouldOfferEventLayerSwitch({ activeLayer: "lower", clickCount: 2, hasEvent: false })).toBe(false);
   });
 
-  it("이벤트 이름을 툴팁과 전환 안내 문구에 사용한다", () => {
+  it("이벤트 이름과 명령 요약을 툴팁에 담는다", () => {
     const event = namedEvent("장터 상인");
+    event.pages = event.pages.map((page) => ({
+      ...page,
+      commands: [
+        { kind: "text", body: "어서 오세요." },
+        { kind: "shop", itemIds: ["item_potion"], buyOnly: false },
+        { kind: "wait", ms: 500 },
+        { kind: "text", body: "또 오세요." },
+        { kind: "text", body: "추가 대사" },
+      ],
+    }));
 
     expect(eventDisplayName(event)).toBe("장터 상인");
-    expect(eventMarkerTooltip(event)).toBe("이벤트: 장터 상인 (4,5)");
+    const tip = eventMarkerTooltip(event);
+    expect(tip).toContain("장터 상인");
+    expect(tip).toContain("(4,5)");
+    expect(tip).toContain("결정키로 시작");
+    expect(tip).toContain("문장 표시");
+    expect(tip).toContain("어서 오세요.");
+    expect(tip).toContain("+1개 명령 더");
+
+    const model = buildEventMarkerTooltipModel(event);
+    expect(model.commands.length).toBe(4);
+    expect(model.moreCommandCount).toBe(1);
+
+    const el = renderEventMarkerTooltipElement(model);
+    expect(el.dataset.testid).toBe("event-marker-tooltip");
+    expect(el.textContent).toContain("장터 상인");
+    expect(el.textContent).toContain("결정키로 시작");
+    expect(el.textContent).toContain("어서 오세요.");
+
     expect(eventLayerSwitchNotice(event)).toContain("장터 상인");
     expect(eventLayerSwitchNotice(event)).toContain("이벤트 레이어로 전환");
+  });
+  it("맵 이벤트 목록 호버는 페이지·조건·명령을 더 자세히 담는다", () => {
+    const event = namedEvent("장터 상인");
+    event.characterId = "npc_market";
+    event.pages = [
+      {
+        ...event.pages[0]!,
+        name: "영업중",
+        conditions: [{ kind: "switch", switchId: "sw_open", value: true }],
+        commands: [
+          { kind: "text", body: "어서 오세요." },
+          { kind: "shop", itemIds: ["item_potion"] },
+        ],
+      },
+      {
+        ...event.pages[0]!,
+        id: "page_2",
+        name: "폐점",
+        conditions: [],
+        commands: [{ kind: "text", body: "오늘은 쉽니다." }],
+      },
+    ];
+
+    const model = buildEventListTooltipModel(event);
+    expect(model.title).toBe("폐점");
+    expect(model.characterId).toBe("npc_market");
+    expect(model.pages).toHaveLength(2);
+    expect(model.pages[0]?.conditions.some((line) => line.includes("스위치"))).toBe(true);
+    expect(model.pages[0]?.commands.some((line) => line.includes("어서 오세요."))).toBe(true);
+    expect(model.pages[1]?.commands.some((line) => line.includes("오늘은 쉽니다."))).toBe(true);
+
+    const el = renderEventListTooltipElement(model);
+    expect(el.dataset.testid).toBe("event-list-tooltip");
+    expect(el.className).toContain("event-list-tooltip");
+    expect(el.textContent).toContain("캐릭터 ID: npc_market");
+    expect(el.textContent).toContain("페이지 1 — 영업중");
+    expect(el.textContent).toContain("페이지 2 — 폐점");
   });
 });
 

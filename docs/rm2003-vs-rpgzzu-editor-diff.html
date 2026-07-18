@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RM2003 vs RPG ZZU · 에디터 표면 비교</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --font-sans: "IBM Plex Sans KR", "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+      --bg: #0b0d12;
+      --bg-elev: #121722;
+      --bg-soft: #171d2b;
+      --line: rgba(232, 238, 252, 0.12);
+      --text: #edf2ff;
+      --muted: #9aa8c7;
+      --accent: #f0c36a;
+      --danger: #ff7b7b;
+      --ok: #7ddea0;
+      --blue: #7eb0ff;
+      --violet: #c4a7ff;
+
+      --fs-body: 18px;
+      --lh-body: 1.85;
+      --ls-body: 0.03em;
+      --fs-lead: 22px;
+      --lh-lead: 1.7;
+      --ls-lead: 0.02em;
+      --fs-h1: clamp(2.4rem, 4vw, 3.6rem);
+      --lh-h1: 1.18;
+      --ls-h1: 0.04em;
+      --fs-h2: clamp(1.6rem, 2.4vw, 2.1rem);
+      --lh-h2: 1.3;
+      --ls-h2: 0.03em;
+      --fs-h3: 1.25rem;
+      --lh-h3: 1.35;
+      --ls-h3: 0.025em;
+      --fs-cap: 0.95rem;
+      --lh-cap: 1.65;
+      --ls-cap: 0.03em;
+      --fs-eyebrow: 0.78rem;
+      --ls-eyebrow: 0.14em;
+
+      --space-1: 0.35rem;
+      --space-2: 0.7rem;
+      --space-3: 1.15rem;
+      --space-4: 1.75rem;
+      --space-5: 2.5rem;
+      --space-6: 3.5rem;
+      --space-7: 5rem;
+      --space-8: 7rem;
+      --measure: 66ch;
+      --pad-inline: clamp(1.25rem, 4vw, 3rem);
+      --shot-radius: 14px;
+      --max: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: var(--fs-body);
+      line-height: var(--lh-body);
+      letter-spacing: var(--ls-body);
+      color: var(--text);
+      background:
+        radial-gradient(1000px 500px at 10% -10%, rgba(240, 195, 106, 0.08), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(90, 140, 255, 0.08), transparent 55%),
+        var(--bg);
+    }
+
+    a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+    code, .mono {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+      letter-spacing: 0;
+    }
+
+    .wrap {
+      width: min(var(--max), calc(100% - 2 * var(--pad-inline)));
+      margin-inline: auto;
+    }
+
+    .hero {
+      padding: var(--space-8) 0 var(--space-6);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: inline-flex;
+      gap: 0.55rem;
+      align-items: center;
+      margin: 0 0 var(--space-3);
+      color: var(--accent);
+      font-size: var(--fs-eyebrow);
+      letter-spacing: var(--ls-eyebrow);
+      line-height: 1.4;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    h1 {
+      margin: 0 0 var(--space-4);
+      font-size: var(--fs-h1);
+      line-height: var(--lh-h1);
+      letter-spacing: var(--ls-h1);
+      font-weight: 700;
+      max-width: 18ch;
+    }
+    .lead {
+      margin: 0 0 var(--space-5);
+      max-width: var(--measure);
+      font-size: var(--fs-lead);
+      line-height: var(--lh-lead);
+      letter-spacing: var(--ls-lead);
+      color: var(--muted);
+    }
+
+    .shot {
+      margin: 0 0 var(--space-5);
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: calc(var(--shot-radius) + 4px);
+      background: var(--bg-elev);
+      overflow: hidden;
+    }
+    .shot img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #000;
+      image-rendering: auto;
+    }
+    .shot.pixel img { image-rendering: pixelated; }
+    .shot figcaption {
+      padding: var(--space-3) var(--space-4) var(--space-4);
+      font-size: var(--fs-cap);
+      line-height: var(--lh-cap);
+      letter-spacing: var(--ls-cap);
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+    .shot figcaption strong {
+      display: inline-block;
+      margin-right: 0.45rem;
+      color: var(--text);
+      letter-spacing: 0.04em;
+    }
+    .shot--hero {
+      margin-top: var(--space-5);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .toc {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      background: rgba(11, 13, 18, 0.82);
+      border-bottom: 1px solid var(--line);
+    }
+    .toc ol {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      list-style: none;
+      margin: 0;
+      padding: var(--space-3) 0;
+    }
+    .toc a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+    }
+    .toc a:hover { color: var(--text); }
+
+    main { padding-bottom: var(--space-8); }
+    section {
+      padding: var(--space-7) 0;
+      border-bottom: 1px solid var(--line);
+    }
+    h2 {
+      margin: 0 0 var(--space-3);
+      font-size: var(--fs-h2);
+      line-height: var(--lh-h2);
+      letter-spacing: var(--ls-h2);
+      max-width: 22ch;
+    }
+    h3 {
+      margin: var(--space-5) 0 var(--space-2);
+      font-size: var(--fs-h3);
+      line-height: var(--lh-h3);
+      letter-spacing: var(--ls-h3);
+    }
+    p {
+      margin: 0 0 var(--space-3);
+      max-width: var(--measure);
+    }
+    ul, ol {
+      margin: 0 0 var(--space-4);
+      padding-left: 1.25rem;
+      max-width: var(--measure);
+    }
+    li { margin-bottom: 0.55rem; }
+    li::marker { color: var(--accent); }
+
+    .verdict {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-3);
+      margin: var(--space-5) 0;
+    }
+    .verdict article {
+      padding: var(--space-4);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, var(--bg-soft), var(--bg-elev));
+    }
+    .verdict .pin {
+      display: inline-flex;
+      width: 1.7rem;
+      height: 1.7rem;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-2);
+      border-radius: 999px;
+      background: rgba(240, 195, 106, 0.14);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0;
+    }
+    .verdict h3 {
+      margin: 0 0 var(--space-2);
+      font-size: 1.1rem;
+    }
+    .verdict p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.98rem;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    @media (max-width: 900px) {
+      .compare { grid-template-columns: 1fr; }
+    }
+    .compare .shot { margin-bottom: 0; }
+    .label-rm, .label-zzu {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: var(--space-2);
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .label-rm {
+      color: #ffd7a0;
+      background: rgba(255, 180, 80, 0.12);
+      border: 1px solid rgba(255, 180, 80, 0.25);
+    }
+    .label-zzu {
+      color: #b8d4ff;
+      background: rgba(120, 170, 255, 0.12);
+      border: 1px solid rgba(120, 170, 255, 0.25);
+    }
+
+    .callout {
+      margin: var(--space-4) 0;
+      padding: var(--space-4);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 14px 14px 0;
+      background: rgba(240, 195, 106, 0.06);
+      max-width: 72ch;
+    }
+    .callout.danger { border-left-color: var(--danger); background: rgba(255, 123, 123, 0.06); }
+    .callout.ok { border-left-color: var(--ok); background: rgba(125, 222, 160, 0.06); }
+    .callout.blue { border-left-color: var(--blue); background: rgba(126, 176, 255, 0.07); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-4) 0 var(--space-5);
+      font-size: 0.98rem;
+      line-height: 1.6;
+      letter-spacing: 0.02em;
+    }
+    th, td {
+      padding: 0.95rem 0.85rem;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+    }
+    td.ok { color: var(--ok); }
+    td.gap { color: var(--danger); }
+    td.partial { color: var(--accent); }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin: var(--space-3) 0 var(--space-4);
+    }
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.4rem 0.8rem;
+      color: var(--muted);
+      font-size: 0.86rem;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .chip strong { color: var(--text); font-weight: 600; }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+    @media (max-width: 980px) {
+      .grid-3 { grid-template-columns: 1fr; }
+    }
+    .grid-3 .shot { margin-bottom: 0; }
+
+    footer.site {
+      padding: var(--space-6) 0 var(--space-8);
+      color: var(--muted);
+      font-size: 0.95rem;
+      letter-spacing: 0.03em;
+      line-height: 1.7;
+    }
+
+    .evidence-req {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin: var(--space-4) 0 0;
+    }
+    .evidence-req span {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.4rem 0.8rem;
+      color: var(--muted);
+      font-size: 0.86rem;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+    }
+
+    .stack-shots {
+      display: grid;
+      gap: var(--space-4);
+      margin: var(--space-5) 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">HTML Explain · Live Screenshot Evidence · 2026-07-18</p>
+      <h1>RM2003 리듬 vs RPG ZZU 표면</h1>
+      <p class="lead">
+        텍스트 스펙이 아니라 <strong>실제 화면</strong>으로 본다. 왼쪽 클래식 Win32 메이커와
+        오른쪽 웹 기반 전문가 모드가 같은 작업을 어떻게 배치하는지 — 팔레트, 툴바, 맵 캔버스,
+        이벤트, DB, AI 독 — 을 스크린샷으로 고정한다.
+      </p>
+
+      <figure class="shot shot--hero">
+        <img src="../output/html/rm2003-diff/shots/00-hero-editor.png" alt="RPG ZZU expert mode full editor with AI side panel expanded" />
+        <figcaption>
+          <strong>NOW · RPG ZZU Expert</strong>
+          라이브 <code class="mono">http://127.0.0.1:9999/</code> 캡처.
+          좌 타일 팔레트 · 중 맵 캔버스 · 우 AI 사이드 독 · 상단 클래식 툴바.
+        </figcaption>
+      </figure>
+
+      <div class="evidence-req">
+        <span>live :9999 capture</span>
+        <span>official RM2003 product shots</span>
+        <span>side-by-side crops</span>
+        <span>keepalive daemon proof</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc" aria-label="목차">
+    <div class="wrap">
+      <ol>
+        <li><a href="#verdict">판정</a></li>
+        <li><a href="#shell">셸 레이아웃</a></li>
+        <li><a href="#palette">팔레트</a></li>
+        <li><a href="#toolbar">툴바</a></li>
+        <li><a href="#events-db">이벤트 · DB</a></li>
+        <li><a href="#ai">AI 독</a></li>
+        <li><a href="#matrix">패리티 매트릭스</a></li>
+        <li><a href="#daemon">9999 데몬</a></li>
+        <li><a href="#next">다음 액션</a></li>
+      </ol>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="verdict">
+      <h2>한 장 판정</h2>
+      <p>
+        RPG ZZU expert 모드는 RM2003의 <em>작업 리듬</em> — 좌 팔레트, 상단 도구, 중앙 맵,
+        모달형 DB/이벤트 — 을 의도적으로 따라간다. 동시에 웹 스택·다크 크롬·AI 사이드 독
+        때문에 “복제”가 아니라 “리메이크”로 읽힌다.
+      </p>
+
+      <div class="verdict">
+        <article>
+          <div class="pin">1</div>
+          <h3>레이아웃 골격</h3>
+          <p>좌 팔레트 · 중앙 맵 · 상단 툴바 골격은 이미 맞다. 3분할 클래식 워크스페이스.</p>
+        </article>
+        <article>
+          <div class="pin">2</div>
+          <h3>시각 언어</h3>
+          <p>RM은 Win32 밝은 그레이. ZZU는 다크 글래스. 픽셀 밀도·아이콘 메타포는 아직 다른 제품.</p>
+        </article>
+        <article>
+          <div class="pin">3</div>
+          <h3>AI 독은 순증분</h3>
+          <p>RM2003에 없는 우측 AI 패널. 확장 시 맵 폭을 먹는다 — 의도된 포크 포인트.</p>
+        </article>
+        <article>
+          <div class="pin">4</div>
+          <h3>데몬 정상</h3>
+          <p><code class="mono">dev:keep</code> + supervisor + hub <code class="mono">rpg-dev</code> 가 :9999 강제 서빙 중. HTTP 200.</p>
+        </article>
+      </div>
+
+      <div class="callout ok">
+        <strong>결론.</strong> “RM2003처럼 보이게”가 아니라 “RM2003처럼 손 놀리게”가 목표라면
+        현재 expert 셸은 골격 합격. 남는 갭은 팔레트 셀 밀도, 툴바 아이콘 메타포, DB 탭 밀도,
+        이벤트 커맨드 리스트 클래식 리듬이다.
+      </div>
+    </section>
+
+    <section id="shell">
+      <h2>셸 레이아웃 · 전체 화면</h2>
+      <p>
+        같은 “맵 편집 중” 상태를 나란히 둔다. RM2003은 밝은 MDI/다중 창, ZZU는 단일 브라우저 셸에
+        패널을 도킹한다.
+      </p>
+
+      <div class="compare">
+        <div>
+          <span class="label-rm">RM2003 · official</span>
+          <figure class="shot pixel">
+            <img src="../output/html/rm2003-diff/shots/rm-ss-01-map-editor.webp" alt="Official RPG Maker 2003 map editor screenshot" />
+            <figcaption>
+              <strong>THEN</strong>
+              좌 타일셋 트리 + 팔레트, 중앙 맵, 하단 맵 트리, 상단 메뉴/툴바.
+              Win32 그레이 · 다중 창 오버랩 가능.
+            </figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="label-zzu">RPG ZZU · live</span>
+          <figure class="shot">
+            <img src="../output/html/rm2003-diff/shots/00-hero-editor.png" alt="RPG ZZU expert editor full layout" />
+            <figcaption>
+              <strong>NOW</strong>
+              좌 팔레트 루트, 중앙 캔버스, 우 AI 독(확장), 상단 클래식 툴바 2행.
+              다크 크롬 · 단일 셸.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="compare">
+        <div>
+          <span class="label-rm">RM2003 · battle / DB chrome</span>
+          <figure class="shot pixel">
+            <img src="../output/html/rm2003-diff/shots/rm-tools-screenshot.webp" alt="RPG Maker 2003 battle test and database windows over map" />
+            <figcaption>
+              <strong>THEN</strong>
+              맵 위에 Battle Test / Database 모달이 겹친다. 탭 리본 + 리스트 + 속성 폼.
+            </figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="label-zzu">RPG ZZU · database modal</span>
+          <figure class="shot">
+            <img src="../output/html/rm2003-diff/shots/09-database-modal.png" alt="RPG ZZU database modal over expert editor" />
+            <figcaption>
+              <strong>NOW</strong>
+              풀스크린 모달 오버레이. 좌 카테고리 · 중 리스트 · 우 폼. 탭 구조는 유지, 시각은 모던.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <h3>읽히는 차이</h3>
+      <ul>
+        <li><strong>창 모델</strong> — RM: 여러 플로팅 윈도우. ZZU: 도킹 패널 + 모달.</li>
+        <li><strong>정보 밀도</strong> — RM 툴바/팔레트가 픽셀 단위로 빽빽. ZZU는 터치·가독 여유.</li>
+        <li><strong>맵 트리</strong> — RM 하단/좌측 트리 고정. ZZU는 모드/사이드 전환에 묶임.</li>
+      </ul>
+    </section>
+
+    <section id="palette">
+      <h2>타일 팔레트</h2>
+      <p>
+        맵 편집의 손 위치. RM2003은 A/B/C/D/E 칩셋 탭 + 조밀한 16px 그리드.
+        ZZU expert는 6열 그리드·레이어 칩·다크 셀 보더로 재해석한다.
+      </p>
+
+      <div class="compare">
+        <div>
+          <span class="label-zzu">palette root</span>
+          <figure class="shot">
+            <img src="../output/html/rm2003-diff/shots/01-palette-root.png" alt="RPG ZZU tile palette root panel" />
+            <figcaption>
+              <strong>ZZU 팔레트 루트</strong>
+              레이어(하층/상층/이벤트) · 칩셋 탭 · 검색/필터 영역 · 그리드 본문.
+            </figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="label-zzu">6-col grid crop</span>
+          <figure class="shot pixel">
+            <img src="../output/html/rm2003-diff/shots/02-palette-grid-6col.png" alt="RPG ZZU six-column tile palette grid crop" />
+            <figcaption>
+              <strong>6열 그리드 크롭</strong>
+              최근 패치 목표(6-col) 반영. 셀 간격·보더는 RM보다 넓어 보인다.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>갭.</strong> RM 팔레트는 “한 화면에 더 많은 타일”이 기본 감각이다.
+        ZZU가 6열을 맞춰도 셀 패딩·보더·배경 톤 때문에 체감 밀도는 낮다.
+        다음 웨이브: 셀 외곽 1px, 패딩 축소, A–E 탭 리본을 더 클래식하게.
+      </div>
+    </section>
+
+    <section id="toolbar">
+      <h2>툴바 · 도구 메타포</h2>
+      <p>
+        펜/사각/타원/채우기/선택, 하층·상층·이벤트 레이어, 확대 — RM 사용자가 손 기억으로 찾는 줄.
+      </p>
+
+      <figure class="shot">
+        <img src="../output/html/rm2003-diff/shots/05-classic-toolbar.png" alt="RPG ZZU classic toolbar row" />
+        <figcaption>
+          <strong>ZZU classic toolbar</strong>
+          메뉴 바 아래 아이콘 툴 스트립. 레이어 토글과 드로잉 도구가 한 줄에 모임.
+        </figcaption>
+      </figure>
+
+      <div class="chip-row">
+        <span class="chip"><strong>RM</strong> 16×16 아이콘 · 밝은 면</span>
+        <span class="chip"><strong>ZZU</strong> 벡터 아이콘 · 다크 면</span>
+        <span class="chip"><strong>공유</strong> 펜/사각/채우기/선택 개념</span>
+        <span class="chip"><strong>ZZU only</strong> 기본/전문가 모드 토글</span>
+      </div>
+
+      <div class="callout blue">
+        아이콘 세트만 클래식 메타포로 바꿔도 “RM 손맛”이 크게 올라간다.
+        기능 패리티보다 <em>인지 패리티</em> 이슈.
+      </div>
+    </section>
+
+    <section id="events-db">
+      <h2>이벤트 · 데이터베이스</h2>
+      <p>
+        RM2003의 핵심 저작 루프는 (1) 맵 위 이벤트 더블클릭 → 페이지/커맨드 리스트,
+        (2) 데이터베이스 탭 리본. ZZU도 같은 루프를 모달/패널로 제공한다.
+      </p>
+
+      <div class="compare">
+        <div>
+          <span class="label-zzu">event inspector</span>
+          <figure class="shot">
+            <img src="../output/html/rm2003-diff/shots/11-event-editor.png" alt="RPG ZZU event editor left inspector" />
+            <figcaption>
+              <strong>이벤트 인스펙터</strong>
+              페이지 탭, 그래픽, 트리거, 우선순위, 이동. 커맨드 리스트는 별도 영역.
+            </figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="label-rm">RM battle + DB</span>
+          <figure class="shot pixel">
+            <img src="../output/html/rm2003-diff/shots/rm-ss-02.webp" alt="RPG Maker 2003 database and battle layout collage" />
+            <figcaption>
+              <strong>RM 전투/DB 콜라주</strong>
+              Side-view ATB 레이아웃 선택과 시스템 탭 — 제품 홍보 샷이지만 탭 밀도 참고.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <figure class="shot">
+        <img src="../output/html/rm2003-diff/shots/09-database-modal.png" alt="RPG ZZU database modal full" />
+        <figcaption>
+          <strong>ZZU Database</strong>
+          액터/직업/스킬/아이템/적/시스템… 카테고리. 모달 폭이 넓어 폼 가독성은 우위, 탭 한 줄 밀도는 RM이 우위.
+        </figcaption>
+      </figure>
+
+      <h3>표면 갭</h3>
+      <ul>
+        <li>RM 이벤트 커맨드 창: 번호 매긴 리스트 + Insert/Change 리듬이 매우 고정적.</li>
+        <li>ZZU: 그룹/검색/AI 보조가 붙을 수 있어 파워 유저 경로가 갈라짐.</li>
+        <li>DB: 필드 커버리지는 계약(<code class="mono">docs/specs/rm2k3-fidelity-contract.md</code>) 기준 — UI 밀도와는 별개.</li>
+      </ul>
+    </section>
+
+    <section id="ai">
+      <h2>AI 사이드 독 — 순증분 축</h2>
+      <p>
+        RM2003에는 없는 축. expert 모드에서 우측 도킹. 접으면 맵이 넓어지고, 펼치면 코파일럿이 상주한다.
+      </p>
+
+      <div class="compare">
+        <div>
+          <span class="label-zzu">AI panel crop</span>
+          <figure class="shot">
+            <img src="../output/html/rm2003-diff/shots/08-ai-side-panel.png" alt="RPG ZZU AI side panel crop" />
+            <figcaption>
+              <strong>AI 독 크롭</strong>
+              채팅 · 컨텍스트 · 액션 제안. 맵/팔레트와 동시 시야.
+            </figcaption>
+          </figure>
+        </div>
+        <div>
+          <span class="label-zzu">expanded shell</span>
+          <figure class="shot">
+            <img src="../output/html/rm2003-diff/shots/00-hero-editor.png" alt="Full shell with AI expanded" />
+            <figcaption>
+              <strong>확장 시 셸</strong>
+              3열(팔레트|맵|AI). RM 클래식 2열 + 플로팅 창 모델과 가장 크게 갈라지는 지점.
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="callout">
+        피델리티 계약상 AI는 “금지”가 아니라 “추가 축”. 클래식 모드/접힘 기본값을 유지하면
+        RM 리듬을 해치지 않으면서 차별화 가능.
+      </div>
+    </section>
+
+    <section id="matrix">
+      <h2>표면 패리티 매트릭스</h2>
+      <p>스크린샷 기준의 <em>보이는</em> 패리티. 런타임/데이터 계약과 혼동하지 말 것.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>표면</th>
+            <th>RM2003</th>
+            <th>RPG ZZU Expert</th>
+            <th>판정</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>좌 타일 팔레트</td>
+            <td>칩셋 탭 + 조밀 그리드</td>
+            <td>레이어 칩 + 6열 그리드</td>
+            <td class="partial">부분 — 골격 OK, 밀도 부족</td>
+          </tr>
+          <tr>
+            <td>상단 드로잉 툴바</td>
+            <td>클래식 아이콘 스트립</td>
+            <td>클래식 툴바 행 존재</td>
+            <td class="partial">부분 — 메타포 재작업 여지</td>
+          </tr>
+          <tr>
+            <td>중앙 맵 캔버스</td>
+            <td>16px 타일, 스크롤/줌</td>
+            <td>타일 캔버스 + 그리드</td>
+            <td class="ok">골격 합격</td>
+          </tr>
+          <tr>
+            <td>레이어 하/상/이벤트</td>
+            <td>툴바 토글</td>
+            <td>팔레트·툴바 토글</td>
+            <td class="ok">개념 정렬</td>
+          </tr>
+          <tr>
+            <td>맵 트리</td>
+            <td>하단/좌 고정 트리</td>
+            <td>패널/모드 종속</td>
+            <td class="gap">갭 — 상주감 약함</td>
+          </tr>
+          <tr>
+            <td>이벤트 편집</td>
+            <td>페이지 + 커맨드 리스트 창</td>
+            <td>인스펙터 + 커맨드 UI</td>
+            <td class="partial">루프 유사, 리스트 리듬 다름</td>
+          </tr>
+          <tr>
+            <td>데이터베이스</td>
+            <td>탭 리본 다중 창</td>
+            <td>모달 3열</td>
+            <td class="partial">구조 유사, 밀도/탭 톤 다름</td>
+          </tr>
+          <tr>
+            <td>전투 테스트 창</td>
+            <td>맵 위 플로팅 테스트</td>
+            <td>플레이/배틀 런타임 경로</td>
+            <td class="partial">경로 다름 (계약상 허용)</td>
+          </tr>
+          <tr>
+            <td>AI 코파일럿</td>
+            <td>없음</td>
+            <td>우측 사이드 독</td>
+            <td class="ok">의도된 증분</td>
+          </tr>
+          <tr>
+            <td>기본/전문가 모드</td>
+            <td>단일 복잡 UI</td>
+            <td>모드 분기</td>
+            <td class="ok">ZZU 고유 — 온보딩 축</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout danger">
+        <strong>하지 말 것.</strong> 공식 에셋/이름 번들, <code class="mono">.lmu/.ldb/.lmt</code> 바이너리 호환 주장,
+        “완전 복제” 마케팅. 피델리티 계약의 legal guardrail 그대로.
+      </div>
+    </section>
+
+    <section id="daemon">
+      <h2>9999 강제 서빙 데몬</h2>
+      <p>
+        질문: “9999에 <code class="mono">npm run dev</code> 강제 서빙 모니터링 데몬 있냐?”
+        → <strong>있다. 그리고 현재 정상.</strong>
+      </p>
+
+      <div class="verdict">
+        <article>
+          <div class="pin">A</div>
+          <h3>npm scripts</h3>
+          <p>
+            <code class="mono">dev</code> → Vite <code class="mono">--port 9999 --strictPort</code><br />
+            <code class="mono">dev:keep</code> → <code class="mono">scripts/dev-keepalive.mjs</code><br />
+            <code class="mono">dev:keep:detached</code> → supervisor
+          </p>
+        </article>
+        <article>
+          <div class="pin">B</div>
+          <h3>동작</h3>
+          <p>
+            자식 exit 시 재시작, HTTP 헬스체크 실패 시 재시작, 포트 좀비 정리,
+            PID 싱글톤 락, <code class="mono">--detach</code> 로 셸 사망 생존.
+          </p>
+        </article>
+        <article>
+          <div class="pin">C</div>
+          <h3>지금 상태</h3>
+          <p>
+            keepalive PID <code class="mono">35536</code> · supervisor <code class="mono">8164</code> ·
+            hub <code class="mono">rpg-dev</code> ready · HTTP <strong>200</strong>.
+          </p>
+        </article>
+      </div>
+
+      <h3>로그 / PID 위치</h3>
+      <ul>
+        <li><code class="mono">output/dev/dev-keepalive.pid</code> · <code class="mono">dev-supervisor.pid</code></li>
+        <li><code class="mono">output/dev/dev-keepalive.log</code> · <code class="mono">dev-supervisor.log</code></li>
+        <li>hub 프로세스 이름: <code class="mono">rpg-dev</code> (Vite 직접, 또는 keepalive 하위)</li>
+      </ul>
+
+      <div class="callout ok">
+        방금 검증: <code class="mono">curl http://127.0.0.1:9999/</code> → <strong>200</strong>,
+        node PID 둘 다 tasklist 생존. 최근 로그는 HMR/CSS/배틀 모듈 reload — crash 루프 아님.
+      </div>
+
+      <h3>에러로 보였을 수 있는 것</h3>
+      <ul>
+        <li><code class="mono">--strictPort</code> 때문에 9999 점유 시 Vite가 바로 exit → keepalive가 다시 띄움.</li>
+        <li>PowerShell에서 <code class="mono">$r</code> 변수가 바깥 셸에 먹혀 헬스 스크립트가 파서 에러 — 서버 문제가 아님.</li>
+        <li>HMR page reload 폭주 시 브라우저 일시 빈 화면 → 새로고침으로 복구, 데몬은 유지.</li>
+      </ul>
+    </section>
+
+    <section id="next">
+      <h2>다음에 손댈 곳</h2>
+      <ol>
+        <li>
+          <strong>팔레트 밀도 패스</strong> — 셀 패딩/보더 1px, A–E 탭 리본 클래식화,
+          한 화면에 보이는 타일 수 RM 체감에 근접.
+        </li>
+        <li>
+          <strong>툴바 아이콘 메타포</strong> — 펜/사각/채우기/레이어를 RM 사용자가 0.5초 안에 찾게.
+        </li>
+        <li>
+          <strong>맵 트리 상주</strong> — expert 셸에서 접을 수 있어도 “항상 있는” 위치 고정.
+        </li>
+        <li>
+          <strong>이벤트 커맨드 리스트 리듬</strong> — 번호 리스트 + Insert/Change 키보드 루프 강화.
+        </li>
+        <li>
+          <strong>데몬은 유지</strong> — 에이전트 작업 시 <code class="mono">npm run dev:keep:detached</code>
+          또는 hub <code class="mono">rpg-dev</code> 를 표준으로.
+        </li>
+      </ol>
+
+      <div class="chip-row">
+        <span class="chip">evidence: <code class="mono">output/html/rm2003-diff/shots/</code></span>
+        <span class="chip">contract: <code class="mono">docs/specs/rm2k3-fidelity-contract.md</code></span>
+        <span class="chip">live: <code class="mono">http://127.0.0.1:9999/</code></span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p>
+        캡처 시각 기준 라이브 expert 에디터 + 공식/제품 RM2003 스크린샷.
+        바이너리 호환·공식 에셋 번들은 계약상 비목표.
+      </p>
+      <p class="mono">docs/rm2003-vs-rpgzzu-editor-diff.html</p>
+    </div>
+  </footer>
+</body>
+</html>

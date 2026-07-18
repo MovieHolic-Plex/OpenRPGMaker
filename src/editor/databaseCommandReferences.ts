@@ -113,6 +113,8 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
         collection === "items" &&
           (command.itemIds.includes(id) || (command.stock ?? []).some((entry) => entry.itemId === id))
       ) || commandListReferences(command.transactionBranch ?? [], collection, id);
+    case "inn":
+      return commandListReferences(command.notEnoughBranch ?? [], collection, id);
     case "promoteActor":
       return (collection === "actors" && command.actorId === id) ||
         (collection === "classes" && command.toClassId === id) ||
@@ -123,10 +125,12 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
         commandListReferences(command.successBranch ?? [], collection, id) ||
         commandListReferences(command.failureBranch ?? [], collection, id);
     case "learnSkill":
-      return (collection === "actors" && command.actorId === id) || (collection === "skills" && command.skillId === id);
+      return (collection === "actors" && Boolean(command.actorId) && command.actorId === id)
+        || (collection === "skills" && command.skillId === id);
     case "battleProcessing":
       return collection === "troops" && command.troopId === id;
     case "changeExp":
+      return collection === "actors" && Boolean(command.actorId) && command.actorId === id;
     case "changeLevel":
     case "changeActorHp":
     case "changeActorMp":
@@ -187,6 +191,8 @@ function commandResourceReferences(command: Command, resourceId: string): boolea
       return moveRouteResourceReferences(command.route.moves, resourceId);
     case "shop":
       return commandListResourceReferences(command.transactionBranch ?? [], resourceId);
+    case "inn":
+      return commandListResourceReferences(command.notEnoughBranch ?? [], resourceId);
     case "promoteActor":
       return commandListResourceReferences(command.successBranch ?? [], resourceId) || commandListResourceReferences(command.failureBranch ?? [], resourceId);
     case "evolveMonster":
@@ -217,6 +223,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
       return commandListReferencesSwitchVariable(command.body, kind, id);
     case "shop":
       return commandListReferencesSwitchVariable(command.transactionBranch ?? [], kind, id);
+    case "inn":
+      return commandListReferencesSwitchVariable(command.notEnoughBranch ?? [], kind, id);
     case "getFriendship":
       return kind === "variable" && command.variableId === id;
     case "promoteActor":
@@ -227,9 +235,14 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
     case "inputNumber":
       return kind === "variable" && command.variableId === id;
     case "setSwitch":
-      return kind === "switch" && command.switchId === id;
+      return (kind === "switch" && command.switchId === id)
+        || (kind === "variable" && typeof command.value === "object" && command.value !== null && command.value.kind === "var" && command.value.id === id);
     case "setVariable":
       return kind === "variable" && (command.variableId === id || (typeof command.value !== "number" && command.value.id === id));
+    case "changeGold":
+    case "changeItem":
+    case "changeExp":
+      return kind === "variable" && typeof command.amount !== "number" && command.amount.id === id;
     case "moveEvent":
       return command.route.moves.some((move) => move.kind === "setSwitch" && kind === "switch" && move.switchId === id);
     default:

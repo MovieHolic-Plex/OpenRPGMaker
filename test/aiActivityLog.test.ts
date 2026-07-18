@@ -8,6 +8,42 @@ import {
   recordAiActivityFromRegionLog,
   serializeAiActivityLogs,
 } from "@/ai/activityLog";
+import { constructionAuditFromResult } from "@/editor/construction/constructionAudit";
+import type { ConstructionOutcome } from "@/editor/construction/contracts";
+
+const failedConstruction = {
+  executionOk: false,
+  applied: false,
+  outcome: "failed",
+  requestedEntrypoint: "author_village",
+  canonicalRoute: "author_village",
+  selectedImplementation: "natural-village-builder",
+  routeChanges: [],
+  activityPersistence: "local",
+  projectPersistence: "failed",
+  target: { kind: "existing", mapId: "m1" },
+  counts: { requested: 8, actual: 0 },
+  diff: {
+    tilesChanged: 0,
+    eventsAdded: 0,
+    eventsModified: 0,
+    eventsRemoved: 0,
+    mapsAdded: 0,
+    mapsRemoved: 0,
+    dbRecordsChanged: 0,
+    tilesetsChanged: 0,
+    switchesAdded: 0,
+    variablesAdded: 0,
+    worldEntitiesAdded: 0,
+    worldEntitiesModified: 0,
+    palettePresetsAdded: 0,
+    palettePresetsModified: 0,
+    endingsChanged: 0,
+    sessionChanged: false,
+    systemChanged: false,
+  },
+  warnings: ["exact count rolled back"],
+} as const satisfies ConstructionOutcome;
 
 describe("ai activity log store", () => {
   beforeEach(() => {
@@ -98,5 +134,51 @@ describe("ai activity log store", () => {
     expect(saved.mapName).toBe("마을");
     expect(saved.toolCalls).toHaveLength(2);
     expect(getLatestAiActivityLog()?.id).toBe(saved.id);
+  });
+
+  it("round-trips failed construction calls without conflating activity and project persistence", async () => {
+    // Given: a failed canonical call represented in both the top-level call list and audit ledger.
+    const construction = constructionAuditFromResult({ resultData: { construction: failedConstruction } });
+    expect(construction).not.toBeNull();
+    await recordAiActivity({
+      channel: "chat",
+      instruction: "집 8채 마을을 정확히 지어줘",
+      result: { ok: false, applied: false, error: "exact count rolled back" },
+      toolCalls: [{
+        name: "author_village",
+        args: { target: { kind: "existing", mapId: "m1" }, houseCount: 8 },
+        ok: false,
+        summary: "exact count rolled back",
+        ...(construction === null ? {} : { construction }),
+      }],
+      audit: [{
+        kind: "tool",
+        name: "author_village",
+        args: { houseCount: 8 },
+        ok: false,
+        summary: "exact count rolled back",
+        ...(construction === null ? {} : { construction }),
+      }],
+    });
+    // When: the local activity export is serialized and parsed again.
+    const exported: unknown = JSON.parse(serializeAiActivityLogs(1));
+    // Then: the failed call remains present and project persistence is still explicitly failed.
+    expect(exported).toMatchObject([{
+      result: { ok: false, applied: false },
+      toolCalls: [{
+        name: "author_village",
+        ok: false,
+        construction: {
+          outcome: "failed",
+          activityPersistence: "local",
+          projectPersistence: "failed",
+        },
+      }],
+      audit: [{
+        kind: "tool",
+        ok: false,
+        construction: { outcome: "failed" },
+      }],
+    }]);
   });
 });

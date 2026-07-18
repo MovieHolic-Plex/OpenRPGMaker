@@ -760,9 +760,16 @@ function battleBlockerEvent(id: string, x: number, y: number, clearSwitchId: str
     page(`${id}_fight`, "전투", [], [
       ...spec.intro.map((body) => say(undefined, body)),
       { kind: "battleProcessing", troopId: spec.troopId, canEscape: true, canLose: false },
-      { kind: "setSwitch", switchId: clearSwitchId, value: true },
-      ...(spec.victoryCommands ?? []),
-      ...spec.victory.map((body) => say(undefined, body)),
+      {
+        kind: "fork",
+        condition: { kind: "battleResult", result: "victory" },
+        then: [
+          { kind: "setSwitch", switchId: clearSwitchId, value: true },
+          { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} },
+          ...(spec.victoryCommands ?? []),
+          ...spec.victory.map((body) => say(undefined, body)),
+        ],
+      },
     ], spec.graphic),
     page(`${id}_cleared`, "정리된 자리", [switchOn(clearSwitchId)], [], NO_GRAPHIC, PASSIVE, "below"),
   ]);

@@ -349,8 +349,9 @@
 .move-route-editor .move-route-main {
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(220px, 0.9fr) minmax(320px, 1.4fr);
-  min-height: 320px;
+  /* 좌: 목록+미리보기 / 우: 명령 버튼 — 항상 2열 고정 (명령 추가가 스크롤 아래로 밀리지 않게). */
+  grid-template-columns: minmax(240px, 0.85fr) minmax(360px, 1.35fr);
+  min-height: min(420px, 52vh);
   min-width: 0;
 }
 
@@ -367,11 +368,13 @@
 }
 
 .move-route-editor .move-route-list-panel {
-  grid-template-rows: auto minmax(120px, 1fr) auto auto;
+  /* 제목 / 목록 / 액션 / 제목 / 미리보기 / 숨김 요약 */
+  grid-template-rows: auto minmax(100px, 1fr) auto auto minmax(120px, auto) 0;
 }
 
 .move-route-editor .move-route-controls-panel {
   grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
 }
 
 .move-route-editor .move-route-panel-title {
@@ -459,6 +462,48 @@
   min-width: 0;
   overflow: auto;
   padding-right: 2px;
+}
+
+.move-route-editor .move-route-help {
+  color: var(--text-2, var(--text-muted));
+  font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.move-route-editor .move-route-parameters-details {
+  background: color-mix(in srgb, var(--bg-raised, #1a1f2c) 88%, transparent);
+  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  border-radius: 8px;
+  min-width: 0;
+  padding: 8px 10px;
+}
+
+.move-route-editor .move-route-parameters-details > summary {
+  color: var(--text-2, var(--text-muted));
+  cursor: pointer;
+  font: 650 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  list-style: none;
+  user-select: none;
+}
+
+.move-route-editor .move-route-parameters-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.move-route-editor .move-route-parameters-details[open] > summary {
+  margin-bottom: 8px;
+}
+
+.move-route-editor .move-route-parameters-hint {
+  color: var(--text-2, var(--text-muted));
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 6px 0 0;
+}
+
+.ecp-move-grid-caption {
+  color: var(--text-2, var(--text-muted));
+  font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 4px;
 }
 
 .move-route-editor .move-route-controls .move-route-add-command {

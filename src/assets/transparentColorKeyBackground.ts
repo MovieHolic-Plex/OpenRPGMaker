@@ -26,7 +26,7 @@ export function applyTransparentColorKeyBackground(target: HTMLElement, imagePat
     });
 }
 
-function transparentColorKeyDataUrl(imagePath: string): Promise<string> {
+export function transparentColorKeyDataUrl(imagePath: string): Promise<string> {
   const cached = transparentImageCache.get(imagePath);
   if (cached) return cached;
   const next = createTransparentColorKeyDataUrl(imagePath);

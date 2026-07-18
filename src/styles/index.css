@@ -17,6 +17,7 @@
 @import "./components/app-modal.css";
 @import "./shell/rm2k3.css";
 @import "./shell/editor-responsive-expert.css";
+@import "./shell/editor-welcome.css";
 @import "./editor/responsive-a.css";
 @import "./editor/inline-assist.css";
 @import "./runtime/battle.css";
@@ -43,6 +44,7 @@
 @import "./database/virtual-list.css";
 @import "./database/ai-bar.css";
 @import "./database/dock.css";
+@import "./database/title-workbench.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";
 @import "./editor/event-editor-rich-forms.css";
@@ -57,6 +59,8 @@
 @import "./editor/rule-audit.css";
 @import "./editor/region-task.css";
 @import "./editor/build-palette.css";
+@import "./editor/map-event-search.css";
+@import "./editor/event-marker-tooltip.css";
 
 /* ============================================================================
    전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md

@@ -1,5 +1,6 @@
 .runtime-shop-overlay,
 .runtime-gift-overlay,
+.runtime-chest-overlay,
 .runtime-commerce-overlay {
   pointer-events: auto;
   z-index: 45;
@@ -398,4 +399,105 @@
 
 .runtime-gift-item-count {
   color: var(--runtime-window-highlight);
+}
+
+/* ── 보관 상자: 소지품 ↔ 상자 입출고 ── */
+.runtime-chest-overlay {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(480px, calc(100% - 24px));
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-11);
+}
+
+.runtime-chest-window {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border);
+  border-radius: 0;
+  max-height: 260px;
+  overflow: hidden;
+}
+
+.runtime-chest-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+}
+
+.runtime-chest-status {
+  color: var(--runtime-window-highlight);
+  min-height: 1em;
+}
+
+.runtime-chest-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  min-height: 0;
+}
+
+.runtime-chest-column {
+  display: grid;
+  gap: 4px;
+  min-height: 0;
+}
+
+.runtime-chest-column-title {
+  color: var(--runtime-window-muted);
+  font-weight: 700;
+}
+
+.runtime-chest-list {
+  display: grid;
+  gap: 3px;
+  overflow-y: auto;
+  min-height: 72px;
+  max-height: 140px;
+}
+
+.runtime-chest-item,
+.runtime-chest-cancel {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--runtime-window-text);
+  font: 700 var(--runtime-font-size-11)/1 var(--runtime-pixel-font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.runtime-chest-item:hover,
+.runtime-chest-item.selected,
+.runtime-chest-cancel:hover {
+  background: var(--runtime-window-selected-bg);
+  border-color: rgba(245, 251, 255, 0.76);
+}
+
+.runtime-chest-item-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.runtime-chest-item-count {
+  color: var(--runtime-window-highlight);
+}
+
+.runtime-chest-empty {
+  color: var(--runtime-window-muted);
+  padding: 4px 6px;
 }

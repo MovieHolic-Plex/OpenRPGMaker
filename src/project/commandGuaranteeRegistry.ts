@@ -1,0 +1,252 @@
+import type { CommandKind } from "@/project/commandKindRegistry";
+
+export const COMMAND_CONTEXTS = ["map", "common", "troop"] as const;
+
+export type CommandContext = (typeof COMMAND_CONTEXTS)[number];
+export type CommandSupport = "full" | "partial" | "editorOnly";
+export type CommandStability = "experimental" | "stable" | "deprecated";
+export type CommandExecutionOwner = "interpreter" | "player" | "battle";
+export type CommandCompletionExpectation =
+  | "continue"
+  | "pause"
+  | "conditionalPause"
+  | "pauseThenTerminate"
+  | "terminalHandoff"
+  | "dynamic";
+export type CommandAuthoringSurface =
+  | "mainPicker"
+  | "quick"
+  | "nested"
+  | "common"
+  | "troop"
+  | "ai";
+export type CommandFamily =
+  | "dialogue"
+  | "controlFlow"
+  | "state"
+  | "time"
+  | "map"
+  | "battle"
+  | "actor"
+  | "economy"
+  | "social"
+  | "monster"
+  | "follower"
+  | "atmosphere"
+  | "media"
+  | "commerce"
+  | "system"
+  | "compatibility";
+
+export type CommandGuarantee = {
+  readonly family: CommandFamily;
+  readonly stability: CommandStability;
+  readonly contractVersion: number;
+  readonly supportByContext: Readonly<Record<CommandContext, CommandSupport>>;
+  readonly executionOwner: CommandExecutionOwner;
+  readonly completion: CommandCompletionExpectation;
+  readonly authoringSurfaces: readonly CommandAuthoringSurface[];
+  readonly replacementKind?: CommandKind;
+};
+
+type GuaranteeOverrides = {
+  readonly stability?: CommandStability;
+  readonly executionOwner?: CommandExecutionOwner;
+  readonly completion?: CommandCompletionExpectation;
+  readonly quick?: boolean;
+  readonly ai?: boolean;
+  readonly direct?: boolean;
+  readonly support?: Readonly<Partial<Record<CommandContext, CommandSupport>>>;
+};
+
+const defaultSupport = {
+  map: "full",
+  common: "full",
+  troop: "partial",
+} as const satisfies Record<CommandContext, CommandSupport>;
+
+function guarantee(family: CommandFamily, overrides: GuaranteeOverrides = {}): CommandGuarantee {
+  const supportByContext = {
+    ...defaultSupport,
+    ...overrides.support,
+  } satisfies Record<CommandContext, CommandSupport>;
+  const authoringSurfaces: CommandAuthoringSurface[] = ["nested"];
+  if (overrides.direct !== false) {
+    authoringSurfaces.push("mainPicker", "common", "troop");
+  }
+  if (overrides.quick === true) authoringSurfaces.push("quick");
+  if (overrides.ai !== false) authoringSurfaces.push("ai");
+  return {
+    family,
+    stability: overrides.stability ?? "stable",
+    contractVersion: 1,
+    supportByContext,
+    executionOwner: overrides.executionOwner ?? "interpreter",
+    completion: overrides.completion ?? "continue",
+    authoringSurfaces,
+  };
+}
+
+const playerPause = { executionOwner: "player", completion: "pause" } as const;
+const troopFull = { troop: "full" } as const;
+const scopedPartial = { map: "partial", common: "partial", troop: "partial" } as const;
+
+export const COMMAND_GUARANTEES = {
+  text: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
+  changeFace: guarantee("dialogue"),
+  choices: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
+  fork: guarantee("controlFlow", { quick: true, support: troopFull }),
+  wait: guarantee("controlFlow", playerPause),
+  inputWait: guarantee("dialogue", playerPause),
+  inputNumber: guarantee("dialogue", playerPause),
+  label: guarantee("controlFlow"),
+  gotoLabel: guarantee("controlFlow"),
+  loop: guarantee("controlFlow"),
+  breakLoop: guarantee("controlFlow"),
+  setSwitch: guarantee("state", { quick: true, support: troopFull }),
+  setVariable: guarantee("state", { quick: true, support: troopFull }),
+  timer: guarantee("time", { ...playerPause, quick: true }),
+  advanceTime: guarantee("time", { ...playerPause, direct: false, quick: true, support: scopedPartial }),
+  advanceCropGrowth: guarantee("time", { direct: false, quick: true, support: scopedPartial }),
+  setTime: guarantee("time", { ...playerPause, direct: false, support: scopedPartial }),
+  sleepUntilMorning: guarantee("time", { ...playerPause, direct: false, support: scopedPartial }),
+  transfer: guarantee("map", {
+    executionOwner: "player",
+    completion: "pauseThenTerminate",
+    quick: true,
+  }),
+  moveEvent: guarantee("map", { ...playerPause, quick: true }),
+  setEventGraphicPattern: guarantee("map", { ...playerPause, direct: false, support: scopedPartial }),
+  changeTile: guarantee("map", playerPause),
+  callCommonEvent: guarantee("controlFlow", { support: troopFull }),
+  callMapEvent: guarantee("controlFlow", { direct: false, support: scopedPartial }),
+  battleProcessing: guarantee("battle", {
+    executionOwner: "battle",
+    completion: "pause",
+    quick: true,
+  }),
+  learnSkill: guarantee("actor"),
+  changeExp: guarantee("actor"),
+  changeLevel: guarantee("actor"),
+  promoteActor: guarantee("actor", { direct: false, support: scopedPartial }),
+  changeEquipment: guarantee("actor"),
+  changeActorHp: guarantee("actor", { support: troopFull }),
+  changeActorMp: guarantee("actor", { support: troopFull }),
+  recoverAll: guarantee("actor", { support: troopFull }),
+  enterHeroName: guarantee("dialogue", playerPause),
+  changeGold: guarantee("economy", { quick: true }),
+  changeItem: guarantee("economy", { quick: true, support: troopFull }),
+  craftRecipe: guarantee("economy", { stability: "experimental", quick: true }),
+  applyItemUpgrade: guarantee("economy", { stability: "experimental", quick: true }),
+  equipTool: guarantee("economy", { stability: "experimental", quick: true }),
+  openChest: guarantee("commerce", {
+    ...playerPause,
+    stability: "experimental",
+    quick: true,
+  }),
+  changeFriendship: guarantee("social", { direct: false, quick: true, support: scopedPartial }),
+  getFriendship: guarantee("social", { direct: false, support: scopedPartial }),
+  changeParty: guarantee("actor", { quick: true }),
+  giveMonster: guarantee("monster", { direct: false, quick: true, support: scopedPartial }),
+  moveMonster: guarantee("monster", { direct: false, support: scopedPartial }),
+  evolveMonster: guarantee("monster", { direct: false, quick: true, support: scopedPartial }),
+  addFollower: guarantee("follower", { direct: false, quick: true, support: scopedPartial }),
+  removeFollower: guarantee("follower", { direct: false, support: scopedPartial }),
+  setLighting: guarantee("atmosphere", {
+    executionOwner: "player",
+    completion: "conditionalPause",
+    quick: true,
+  }),
+  addLight: guarantee("atmosphere"),
+  removeLight: guarantee("atmosphere"),
+  setWeather: guarantee("atmosphere", { ...playerPause, quick: true }),
+  showAnimation: guarantee("media", { ...playerPause, quick: true }),
+  showPicture: guarantee("media", { ...playerPause, quick: true }),
+  erasePicture: guarantee("media", playerPause),
+  playAudio: guarantee("media", { ...playerPause, quick: true }),
+  stopAudio: guarantee("media", playerPause),
+  cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
+  displayTextSettings: guarantee("dialogue"),
+  shop: guarantee("commerce", playerPause),
+  inn: guarantee("commerce", playerPause),
+  checkpointSave: guarantee("system", { direct: false, quick: true, support: scopedPartial }),
+  killPlayer: guarantee("system", {
+    executionOwner: "player",
+    completion: "terminalHandoff",
+    direct: false,
+    quick: true,
+    support: scopedPartial,
+  }),
+  triggerEnding: guarantee("system", {
+    executionOwner: "player",
+    completion: "terminalHandoff",
+    direct: false,
+    quick: true,
+    support: scopedPartial,
+  }),
+  gameOver: guarantee("system", {
+    executionOwner: "player",
+    completion: "terminalHandoff",
+    quick: true,
+  }),
+  ending: guarantee("system", {
+    executionOwner: "player",
+    completion: "terminalHandoff",
+    quick: true,
+  }),
+  returnToTitle: guarantee("system", {
+    executionOwner: "player",
+    completion: "terminalHandoff",
+  }),
+  setFlag: guarantee("compatibility", { direct: false, support: scopedPartial }),
+  setSelfSwitch: guarantee("state", { direct: false, support: scopedPartial }),
+  m2Command: guarantee("compatibility", {
+    ai: false,
+    executionOwner: "player",
+    completion: "dynamic",
+    support: { map: "partial", common: "partial", troop: "partial" },
+  }),
+} satisfies Record<CommandKind, CommandGuarantee>;
+
+export function commandGuarantee(kind: CommandKind): CommandGuarantee {
+  return COMMAND_GUARANTEES[kind];
+}
+
+export function commandGuaranteeIssues(
+  kind: CommandKind,
+  entry: CommandGuarantee
+): readonly string[] {
+  const issues: string[] = [];
+  if (!Number.isInteger(entry.contractVersion) || entry.contractVersion < 1) {
+    issues.push(`${kind}: contractVersion must be a positive integer`);
+  }
+  if (entry.stability === "deprecated") {
+    if (entry.authoringSurfaces.length > 0) issues.push(`${kind}: deprecated commands cannot be authored`);
+    if (!entry.replacementKind) issues.push(`${kind}: deprecated commands require replacementKind`);
+    return issues;
+  }
+  const surfaces = new Set(entry.authoringSurfaces);
+  const hasFullContext = COMMAND_CONTEXTS.some(
+    (context) => entry.supportByContext[context] === "full"
+  );
+  if (hasFullContext && entry.authoringSurfaces.length === 0) {
+    issues.push(`${kind}: full support requires an authoring surface`);
+  }
+  if (hasFullContext && !surfaces.has("nested")) {
+    issues.push(`${kind}: full support requires nested authoring`);
+  }
+  if (entry.stability === "stable") {
+    const requiredSurfaceByContext = {
+      map: "mainPicker",
+      common: "common",
+      troop: "troop",
+    } as const satisfies Record<CommandContext, CommandAuthoringSurface>;
+    for (const context of COMMAND_CONTEXTS) {
+      const requiredSurface = requiredSurfaceByContext[context];
+      if (entry.supportByContext[context] === "full" && !surfaces.has(requiredSurface)) {
+        issues.push(`${kind}: ${context} full support requires ${requiredSurface} authoring`);
+      }
+    }
+  }
+  return issues;
+}

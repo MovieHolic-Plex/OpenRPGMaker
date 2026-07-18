@@ -56,7 +56,7 @@ const GUARANTEED_TOOLS_BY_CATEGORY: Readonly<Record<RegionIntentCategory, readon
   structure: ["build_house_kit", "build_wall", "fill_region", "create_farm_plot"],
   "npc-shop": ["place_npc", "make_villager"],
   "door-transfer": ["create_transfer_pair", "place_door"],
-  "quest-trigger": ["place_chest", "place_savepoint"],
+  "quest-trigger": ["place_chest", "place_storage_chest", "place_savepoint"],
   "battle-trap": ["set_encounter_table", "make_hunting_ground"],
   mood: ["set_scene_mood", "set_lighting_volume", "place_props"],
   transform: ["mirror_region", "tile_erase"],

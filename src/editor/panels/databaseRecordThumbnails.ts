@@ -22,6 +22,7 @@ import type {
 } from "@/project/types";
 import { stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import { el } from "@/util/dom";
+import { applyMagentaChromaKey } from "@/editor/panels/chromaKey";
 
 const THUMB_SIZE = 32;
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
@@ -128,6 +129,8 @@ function imageThumbnail(resourceId: string | undefined, project: Project, alt: s
   const slot = baseSlot("db-list-thumb-image", alt);
   const image = el("img", { attrs: { alt, src: url } });
   image.addEventListener("error", () => markEmpty(slot), { once: true });
+  // Equipment icons + enemy battlers are authored with #FF00FF chroma key.
+  if (image instanceof HTMLImageElement) applyMagentaChromaKey(image);
   slot.append(image);
   return slot;
 }

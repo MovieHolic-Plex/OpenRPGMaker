@@ -73,6 +73,21 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
     expect(findByTestId(root, "event-flow-node-text")).not.toBeNull();
   });
 
+  it("renderEventScriptModernViews accepts mapId/eventId/page signature", () => {
+    const page = pageWith([{ kind: "text", body: "한 줄" }]);
+    const root = renderWithFakeDom(() =>
+      renderEventScriptModernViews("map_start", "ev_test", page)
+    );
+    expect(findByTestId(root, "event-script-live-preview")).not.toBeNull();
+    expect(findByTestId(root, "event-script-flowchart")).not.toBeNull();
+
+    const optionsRoot = renderWithFakeDom(() =>
+      renderEventScriptModernViews({ mapId: "map_start", eventId: "ev_test", page })
+    );
+    expect(findByTestId(optionsRoot, "event-script-live-preview")).not.toBeNull();
+    expect(findByTestId(optionsRoot, "event-script-flowchart")).not.toBeNull();
+  });
+
   it("플로우차트는 fork/choices 분기를 하위 컬럼으로 렌더한다", () => {
     const root = renderWithFakeDom(() =>
       renderEventScriptModernViews(

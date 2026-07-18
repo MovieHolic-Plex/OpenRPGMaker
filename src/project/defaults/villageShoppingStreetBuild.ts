@@ -90,7 +90,7 @@ export function buildVillageShoppingStreetProject(options: {
   // 상점 itemIds 검증용 — empty 툴 프로젝트는 items를 비우므로 기본 DB 복원
   project.database = defaultDatabase();
   project.meta = { ...project.meta, title: VILLAGE_SHOPPING_STREET_MAP_NAME };
-  // 타이틀 배경 명시 (테스트 플레이 시 easyrpg-title-title1)
+  // 타이틀 배경: 쯔꾸르풍 필드 타이틀(rpg-zzu-title-field)
   applyDefaultTitleScreen(project, VILLAGE_SHOPPING_STREET_MAP_NAME);
   ensureTilesetHarnesses(project);
 
@@ -483,7 +483,7 @@ function inside(map: GameMap, x: number, y: number): boolean {
   return x >= 0 && y >= 0 && x < map.width && y < map.height;
 }
 
-const DEFAULT_TITLE_RESOURCE_ID = "easyrpg-title-title1";
+const DEFAULT_TITLE_RESOURCE_ID = "rpg-zzu-title-field";
 
 function applyDefaultTitleScreen(project: Project, title: string): void {
   const base = defaultTitleScreenSettings();

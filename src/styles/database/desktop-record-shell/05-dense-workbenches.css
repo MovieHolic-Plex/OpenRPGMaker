@@ -1,14 +1,7 @@
 @media (min-width: 901px) {
   .database-modal-window:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,
@@ -23,15 +16,8 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-actors,
-    .rm2k3-record-classes,
-    .rm2k3-record-skills,
-    .rm2k3-record-items,
-    .rm2k3-record-equipment,
-    .rm2k3-record-enemies,
-    .rm2k3-record-troops,
-    .rm2k3-record-states,
-    .rm2k3-record-battleAnimations,
+    .rm2k3-record-workspace,
+    .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
     .db-system-form,

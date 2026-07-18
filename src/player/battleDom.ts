@@ -23,7 +23,7 @@ import {
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
-import { battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
+import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
 import {
   BATTLE_RESULT_HOLD_MS,
@@ -135,6 +135,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       root.classList.toggle("battle-hit-stop", active);
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
       else root.classList.remove("battle-hit-stop-critical");
+    },
+    onActionMotion(beat) {
+      applyActionMotion(field, beat);
     },
     onResultStage(stage) {
       resultRevealStage = stage;

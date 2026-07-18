@@ -99,7 +99,7 @@ describe("설정 자동 저장", () => {
     expect(stored.apiKey).toBe("sk-or-test-abc");
   });
 
-  it("감독 모델을 비우고 저장하면 기본값(minimax/minimax-m3)으로 저장된다", () => {
+  it("감독 모델을 비우고 저장하면 기본값(flash-lite)으로 저장된다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const model = findByTestId(modal, "ai-config-model");
@@ -109,8 +109,8 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(DEFAULT_MODEL).toBe("minimax/minimax-m3");
-    expect(loadAiConfig().model).toBe("minimax/minimax-m3");
+    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
+    expect(loadAiConfig().model).toBe("google/gemini-3.1-flash-lite");
     expect(loadAiConfig().liteModel).toBe(DEFAULT_LITE_MODEL);
   });
 
@@ -165,11 +165,11 @@ describe("설정 자동 저장", () => {
     const baseUrl = findByTestId(modal, "ai-config-baseurl");
     const save = findByTestId(modal, "ai-config-save");
     if (!baseUrl || !save) throw new Error("fields missing");
-    baseUrl.value = "https://openrouter.ai/api/v1";
+    baseUrl.value = "https://example.invalid/v1";
     save.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.baseUrl).toBe("https://openrouter.ai/api/v1");
+    expect(stored.baseUrl).toBe("https://example.invalid/v1");
   });
 });
 

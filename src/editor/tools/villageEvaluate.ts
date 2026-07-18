@@ -3,7 +3,7 @@
 // - 룩: 결정론 휴리스틱(광장 소품 밀도, 길 재질, 나무 분포, 상위 점유율)
 // 멀티모달 LLM은 같은 VillageLookReport 스키마를 채우면 된다(fixes로 피드백).
 
-import { DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
@@ -13,10 +13,15 @@ import type { VillagePlan } from "./villagePlan";
 
 const SAND = new Set(DEFAULT_SAND_AUTOTILE_GROUP.memberTileIds);
 const DIRT = new Set(DEFAULT_ROAD_AUTOTILE_GROUP.memberTileIds);
+// 포석(129 블록) — pathStyle:"stone" 정본. 411/412/413은 밴.
+const STONE = new Set<number>(DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds);
 const TREE_UPPER = new Set([260, 261, 262, 263, 289]);
 const TREE_LOWER = new Set([290, 291, 292, 293]);
 const FENCE = new Set([378, 379, 380, 408, 409, 410, 438, 439]);
 const YARD_PROPS = new Set([349, 350, 351, 352, 327, 328, 288, 348, 237, 202, 203, 320, 234, 235, 236]);
+const WINDOWS = new Set([85, 87]);
+const DOOR_TOP = 116;
+const DOOR_BOTTOM = 146;
 
 export type FixLayer = "plan" | "build" | "spec";
 
@@ -49,6 +54,21 @@ export interface VillageLookReport {
     readonly plazaPropCells: number;
     readonly reachableDoors: number;
     readonly doorTargets: number;
+    readonly exitRoads: number;
+    readonly adjacentWindowPairs: number;
+    readonly orphanDoorTiles: number;
+    readonly doorPairs: number;
+    readonly houseRegions: number;
+    readonly houseShapeKinds: number;
+    readonly houseKitKinds: number;
+    readonly multiStoryHouses: number;
+    readonly scheduledNpcs: number;
+    readonly npcActivityKinds: number;
+    readonly npcMovementKinds: number;
+    readonly treeKinds: number;
+    readonly propTileKinds: number;
+    readonly longestStraightRoadRun: number;
+    readonly interiorTreeCells: number;
   };
   /** 쿼리 상식 스펙 대비 충족 여부 */
   readonly requirementsMet?: readonly { readonly kind: string; readonly ok: boolean; readonly detail: string }[];
@@ -99,11 +119,121 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         to: "center",
       });
     }
+  } else {
+    // 문 앞 좌표 0개 = 집이 없거나 문 유실. 도달성 검증이 불가능한 상태는 통과가 아니라 실패다.
+    structureOk = false;
+    issues.push("문 앞 좌표가 0개 — 집이 없거나 문이 유실돼 도달성 검증이 불가능하다");
+    fixes.push({ layer: "build", action: "rebuild_settlement", hint: "build_village로 집을 재시공해 문 앞 좌표를 확보" });
   }
 
   // 룩 휴리스틱
   let lookScore = 0.55;
   let themeMatch: VillageLookReport["themeMatch"] = "ok";
+  let naturalQualityOk = true;
+  // 타일 실측 구조 검사 — builder가 쓴 layoutPlan.kind와 무관하게 항상 실행한다.
+  if (metrics.orphanDoorTiles > 0) {
+    structureOk = false;
+    issues.push(`짝이 없는 문 타일 ${metrics.orphanDoorTiles}칸`);
+    fixes.push({ layer: "build", action: "repair_house_doors", hint: "각 집에 116/146 문 한 쌍만 복구" });
+    lookScore -= 0.12;
+  }
+  if (metrics.exitRoads < 4) {
+    structureOk = false;
+    issues.push(`마을 밖으로 이어지는 길이 ${metrics.exitRoads}/4방향뿐이다`);
+    fixes.push({ layer: "build", action: "repair_exit_roads", hint: "layoutPlan roadAnchors 네 곳을 중앙 도로망에 연결" });
+    lookScore -= 0.12;
+  }
+  if (map.layoutPlan?.kind === "village-harness-natural-v2") {
+    const targetFromPlan = (name: string, fallback: number): number => {
+      const prefix = `${name}:`;
+      const tag = map.layoutPlan?.regions.flatMap((region) => region.tags ?? []).find((entry) => entry.startsWith(prefix));
+      const parsed = tag ? Number(tag.slice(prefix.length)) : Number.NaN;
+      return Number.isFinite(parsed) ? parsed : fallback;
+    };
+    const naturalIssue = (message: string, fix: VillageFix, penalty = 0.08): void => {
+      naturalQualityOk = false;
+      issues.push(message);
+      fixes.push(fix);
+      lookScore -= penalty;
+    };
+    if (metrics.adjacentWindowPairs > 0) {
+      naturalIssue(
+        `창문이 붙은 쌍 ${metrics.adjacentWindowPairs}곳 — 층/창 구분이 흐리다`,
+        { layer: "build", action: "separate_floor_windows", hint: "층마다 창 한 행, 층 사이 벽 한 행을 비움" },
+      );
+    }
+    const shapeTarget = targetFromPlan("shape-target", Math.min(4, metrics.houseRegions));
+    if (metrics.houseShapeKinds < shapeTarget) {
+      naturalIssue(
+        `집 형태가 단조롭다 (${metrics.houseShapeKinds}/${shapeTarget}종)`,
+        { layer: "plan", action: "vary_house_templates", hint: "rect/l/u와 다층 템플릿을 중복 전에 순환" },
+      );
+    }
+    const kitTarget = targetFromPlan("kit-target", Math.min(3, metrics.houseRegions));
+    if (metrics.houseKitKinds < kitTarget) {
+      naturalIssue(
+        `집 키트가 단조롭다 (${metrics.houseKitKinds}/${kitTarget}종)`,
+        { layer: "plan", action: "vary_house_kits", field: "kitMix", to: "mixed", hint: "서로 다른 키트를 먼저 배치" },
+      );
+    }
+    const multiStoryTarget = targetFromPlan("multistory-target", Number(map.width >= 46 && metrics.houseRegions >= 6));
+    if (metrics.multiStoryHouses < multiStoryTarget) {
+      naturalIssue(
+        "다층 집이 없어 지붕선과 스카이라인이 평평하다",
+        { layer: "build", action: "add_multistory_house", hint: "2층 또는 3층 템플릿을 최소 한 채 배치" },
+      );
+    }
+    const npcTarget = metrics.houseRegions + 2;
+    if (metrics.scheduledNpcs < npcTarget) {
+      naturalIssue(
+        `시간표가 있는 주민이 부족하다 (${metrics.scheduledNpcs}/${npcTarget})`,
+        { layer: "build", action: "assign_npc_schedules", hint: "아침 집·낮 일터·저녁 장터 3단계 일정 부여" },
+      );
+    }
+    if (metrics.scheduledNpcs >= 2 && metrics.npcMovementKinds < 2) {
+      naturalIssue(
+        "모든 주민의 이동 방식이 같다",
+        { layer: "build", action: "mix_npc_movement", hint: "고정 상인과 배회 주민을 함께 배치" },
+      );
+    }
+    if (metrics.npcActivityKinds < Math.min(6, metrics.scheduledNpcs)) {
+      naturalIssue(
+        `주민 활동이 단조롭다 (${metrics.npcActivityKinds}종)`,
+        { layer: "build", action: "diversify_npc_activities", hint: "농사·수리·배송·목공·장터·순찰 활동을 분산" },
+      );
+    }
+    if (metrics.treeKinds < 2) {
+      naturalIssue(
+        `수종이 ${metrics.treeKinds}종뿐이다`,
+        { layer: "build", action: "mix_tree_species", hint: "침엽수와 2×2 활엽수 군락을 함께 심기" },
+      );
+    }
+    if (metrics.propTileKinds < 6) {
+      naturalIssue(
+        `생활 소품 종류가 부족하다 (${metrics.propTileKinds}<6)`,
+        { layer: "build", action: "diversify_lived_in_props", hint: "꽃·벤치·상자·과일·탁자·표지판을 마당과 장터에 분산" },
+      );
+    }
+    const maxStraightRun = Math.max(14, Math.floor(Math.max(map.width, map.height) * 0.5));
+    if (metrics.longestStraightRoadRun > maxStraightRun) {
+      naturalIssue(
+        `도로 직선 구간이 너무 길다 (${metrics.longestStraightRoadRun}>${maxStraightRun})`,
+        { layer: "build", action: "meander_roads", hint: "출구 간선과 집 진입로를 짧은 계단형 곡선으로 분절" },
+      );
+    }
+    if (metrics.houseRegions > 0 && metrics.fenceCells > metrics.houseRegions * 8) {
+      naturalIssue(
+        `울타리가 필지를 과도하게 둘러싼다 (${metrics.fenceCells}칸)`,
+        { layer: "build", action: "fragment_fences", hint: "완전 폐쇄형 사각 울타리를 짧은 마당 경계 조각으로 교체" },
+      );
+    }
+    if (metrics.interiorTreeCells < Math.min(24, metrics.houseRegions * 3)) {
+      naturalIssue(
+        `마을 내부 수목이 부족하다 (${metrics.interiorTreeCells}칸)`,
+        { layer: "build", action: "scatter_inner_groves", hint: "테두리 띠 대신 내부 빈 공간에도 혼합 수목 군락을 산포" },
+      );
+    }
+  }
 
   if (plan?.pathStyle === "sand") {
     if (metrics.sandCells < Math.max(20, metrics.dirtCells)) {
@@ -249,7 +379,8 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     }
   }
 
-  if (plan?.fences !== false && metrics.fenceCells < 40) {
+  const minimumFenceCells = Math.min(24, Math.max(8, metrics.houseRegions * 2));
+  if (plan?.fences !== false && metrics.fenceCells < minimumFenceCells) {
     issues.push(`울타리가 거의 없음 (${metrics.fenceCells})`);
     fixes.push({ layer: "plan", action: "enable_fences", field: "fences", to: true, hint: "fences=true 재시공" });
     lookScore -= 0.08;
@@ -272,7 +403,7 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
   const reqFailed = requirementsMet.some((r) => !r.ok);
   const lookOk = (!reqFailed && issues.filter((i) => !i.includes("도달")).length === 0) || lookScore >= 0.62;
   // 구조 실패·필수 스펙 실패는 게이트 실패
-  const ok = structureOk && !reqFailed && lookOk && lookScore >= 0.55;
+  const ok = structureOk && naturalQualityOk && !reqFailed && lookOk && lookScore >= 0.55;
   const gate: VillageLookReport["gate"] = !structureOk && (!lookOk || reqFailed)
     ? "both"
     : !structureOk
@@ -359,6 +490,27 @@ export function countBroadleaf2x2(map: GameMap): number {
   return n;
 }
 
+/** 타일 실측 수역 카운트 — builder 랜드마크 게이트·평가가 공유하는 정본 측정 (자기신고 아님). */
+export function countWaterCells(map: GameMap): number {
+  let count = 0;
+  for (let i = 0; i < map.lowerTiles.length; i += 1) {
+    const lower = map.lowerTiles[i] ?? TILE.EMPTY;
+    if (isWaterChipsetTile(lower) || isLakeAutotileTile(lower) || lower === TILE.WATER) count += 1;
+  }
+  return count;
+}
+
+/** 타일 실측 나무 카운트 — collectMetrics의 treeCells와 동일 판정. */
+export function countTreeCells(map: GameMap): number {
+  let count = 0;
+  for (let i = 0; i < map.lowerTiles.length; i += 1) {
+    const lower = map.lowerTiles[i] ?? TILE.EMPTY;
+    const upper = map.upperTiles[i] ?? TILE.EMPTY;
+    if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) count += 1;
+  }
+  return count;
+}
+
 function collectMetrics(map: GameMap) {
   let upperOccupied = 0;
   let roadCells = 0;
@@ -366,18 +518,27 @@ function collectMetrics(map: GameMap) {
   let dirtCells = 0;
   let waterCells = 0;
   let treeCells = 0;
+  let interiorTreeCells = 0;
   let fenceCells = 0;
   let propCells = 0;
   let plazaPropCells = 0;
+  let adjacentWindowPairs = 0;
+  let orphanDoorTiles = 0;
+  let doorPairs = 0;
+  let hasConifer = false;
+  let hasBroadleaf = false;
+  const propTileIds = new Set<number>();
   const tree2x2Clusters = countBroadleaf2x2(map);
 
   const plazaX0 = Math.floor(map.width / 2) - 4;
   const plazaY0 = Math.floor(map.height / 2) - 3;
-  // 광장은 레이아웃에 따라 이동할 수 있어, 맵 중앙 대역 + 하단 대역 둘 다 센다.
-  const bands = [
-    { x0: plazaX0, y0: plazaY0, x1: plazaX0 + 8, y1: plazaY0 + 6 },
-    { x0: plazaX0, y0: Math.floor(map.height * 0.55), x1: plazaX0 + 8, y1: Math.floor(map.height * 0.55) + 6 },
-  ];
+  const plannedCommons = map.layoutPlan?.regions.filter((region) => region.role === "plaza" || region.role === "market") ?? [];
+  const bands = plannedCommons.length > 0
+    ? plannedCommons.map((region) => ({ x0: region.x, y0: region.y, x1: region.x + region.w, y1: region.y + region.h }))
+    : [
+        { x0: plazaX0, y0: plazaY0, x1: plazaX0 + 8, y1: plazaY0 + 6 },
+        { x0: plazaX0, y0: Math.floor(map.height * 0.55), x1: plazaX0 + 8, y1: Math.floor(map.height * 0.55) + 6 },
+      ];
 
   for (let y = 0; y < map.height; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
@@ -394,17 +555,42 @@ function collectMetrics(map: GameMap) {
       } else if (DIRT.has(lower)) {
         dirtCells += 1;
         roadCells += 1;
+      } else if (STONE.has(lower)) {
+        roadCells += 1;
       }
-      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) treeCells += 1;
+      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) {
+        treeCells += 1;
+        const edgeDistance = Math.min(x, y, map.width - 1 - x, map.height - 1 - y);
+        if (edgeDistance >= 5) interiorTreeCells += 1;
+      }
+      if (upper === 260 || upper === 261 || upper === 290 || upper === 291 || lower === 290 || lower === 291) hasConifer = true;
+      if (upper === 262 || upper === 263 || upper === 292 || upper === 293 || lower === 292 || lower === 293) hasBroadleaf = true;
       if (FENCE.has(upper)) fenceCells += 1;
       if (YARD_PROPS.has(upper)) {
         propCells += 1;
+        propTileIds.add(upper);
         for (const b of bands) {
           if (x >= b.x0 && x < b.x1 && y >= b.y0 && y < b.y1) plazaPropCells += 1;
         }
       }
+      if (WINDOWS.has(upper)) {
+        if (x + 1 < map.width && WINDOWS.has(map.upperTiles[i + 1] ?? TILE.EMPTY)) adjacentWindowPairs += 1;
+        if (y + 1 < map.height && WINDOWS.has(map.upperTiles[i + map.width] ?? TILE.EMPTY)) adjacentWindowPairs += 1;
+      }
+      if (lower === DOOR_BOTTOM) {
+        if (y > 0 && map.lowerTiles[i - map.width] === DOOR_TOP) doorPairs += 1;
+        else orphanDoorTiles += 1;
+      }
+      if (lower === DOOR_TOP && (y + 1 >= map.height || map.lowerTiles[i + map.width] !== DOOR_BOTTOM)) orphanDoorTiles += 1;
     }
   }
+  const houseRegions = map.layoutPlan?.regions.filter((region) => region.role === "house") ?? [];
+  const scheduledNpcs = map.events.filter((event) => (event.schedule?.length ?? 0) > 0);
+  const npcActivities = new Set(scheduledNpcs.flatMap((event) => event.schedule?.map((entry) => entry.activity).filter((activity): activity is string => Boolean(activity)) ?? []));
+  const npcMovements = new Set(scheduledNpcs.flatMap((event) => {
+    const movement = event.pages?.[0]?.movement.type;
+    return movement ? [movement] : [];
+  }));
   return {
     upperOccupied,
     roadCells,
@@ -416,7 +602,64 @@ function collectMetrics(map: GameMap) {
     fenceCells,
     propCells,
     plazaPropCells,
+    exitRoads: countRoadExits(map),
+    adjacentWindowPairs,
+    orphanDoorTiles,
+    doorPairs,
+    houseRegions: houseRegions.length,
+    houseShapeKinds: new Set(houseRegions.map((region) => region.shape).filter(Boolean)).size,
+    houseKitKinds: new Set(houseRegions.map((region) => region.kitId).filter(Boolean)).size,
+    multiStoryHouses: houseRegions.filter((region) => region.tags?.some((tag) => {
+      if (tag === "2f" || tag === "3f") return true;
+      return tag.startsWith("stories:") && Number(tag.slice("stories:".length)) > 1;
+    })).length,
+    scheduledNpcs: scheduledNpcs.length,
+    npcActivityKinds: npcActivities.size,
+    npcMovementKinds: npcMovements.size,
+    treeKinds: Number(hasConifer) + Number(hasBroadleaf),
+    propTileKinds: propTileIds.size,
+    longestStraightRoadRun: longestStraightRoadRun(map),
+    interiorTreeCells,
   };
+}
+
+function longestStraightRoadRun(map: GameMap): number {
+  const isRoad = (x: number, y: number): boolean => {
+    const tile = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
+    return SAND.has(tile) || DIRT.has(tile) || STONE.has(tile);
+  };
+  let longest = 0;
+  for (let y = 0; y < map.height; y += 1) {
+    let run = 0;
+    for (let x = 0; x < map.width; x += 1) {
+      run = isRoad(x, y) ? run + 1 : 0;
+      longest = Math.max(longest, run);
+    }
+  }
+  for (let x = 0; x < map.width; x += 1) {
+    let run = 0;
+    for (let y = 0; y < map.height; y += 1) {
+      run = isRoad(x, y) ? run + 1 : 0;
+      longest = Math.max(longest, run);
+    }
+  }
+  return longest;
+}
+
+function countRoadExits(map: GameMap): number {
+  const isRoad = (x: number, y: number): boolean => {
+    const lower = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
+    return SAND.has(lower) || DIRT.has(lower) || STONE.has(lower);
+  };
+  const anchors = map.layoutPlan?.roadAnchors;
+  if (anchors && anchors.length > 0) {
+    return anchors.filter((anchor) => anchor.x >= 0 && anchor.y >= 0 && anchor.x < map.width && anchor.y < map.height && isRoad(anchor.x, anchor.y)).length;
+  }
+  const north = Array.from({ length: map.width }, (_, x) => isRoad(x, 0)).some(Boolean);
+  const south = Array.from({ length: map.width }, (_, x) => isRoad(x, map.height - 1)).some(Boolean);
+  const west = Array.from({ length: map.height }, (_, y) => isRoad(0, y)).some(Boolean);
+  const east = Array.from({ length: map.height }, (_, y) => isRoad(map.width - 1, y)).some(Boolean);
+  return Number(north) + Number(south) + Number(west) + Number(east);
 }
 
 function inferDoorFronts(map: GameMap): { x: number; y: number }[] {
@@ -481,6 +724,21 @@ function emptyFail(message: string, attempt: number, maxAttempts: number): Villa
       plazaPropCells: 0,
       reachableDoors: 0,
       doorTargets: 0,
+      exitRoads: 0,
+      adjacentWindowPairs: 0,
+      orphanDoorTiles: 0,
+      doorPairs: 0,
+      houseRegions: 0,
+      houseShapeKinds: 0,
+      houseKitKinds: 0,
+      multiStoryHouses: 0,
+      scheduledNpcs: 0,
+      npcActivityKinds: 0,
+      npcMovementKinds: 0,
+      treeKinds: 0,
+      propTileKinds: 0,
+      longestStraightRoadRun: 0,
+      interiorTreeCells: 0,
     },
     attempt,
     maxAttempts,

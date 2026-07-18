@@ -42,6 +42,22 @@ describe("GameTime core", () => {
     expect(setGameTimeClock(time, 21, 30, system)).toMatchObject({ hour: 21, minute: 30 });
     expect(sleepGameTimeUntilMorning(time, system).time).toEqual({ minute: 0, hour: 6, day: 2, season: "spring", year: 1 });
   });
+  it("uses configurable daysPerSeason for calendar rollover", () => {
+    const system = resolveTimeSystem({ enabled: true, dayStartHour: 6, dayEndHour: 26, daysPerSeason: 7 })!;
+    expect(system.daysPerSeason).toBe(7);
+    const start = { minute: 0, hour: 6, day: 7, season: "spring" as const, year: 1 };
+    const next = sleepGameTimeUntilMorning(start, system).time;
+    expect(next).toEqual({ minute: 0, hour: 6, day: 1, season: "summer", year: 1 });
+    const short = advanceGameTime({ minute: 50, hour: 25, day: 7, season: "winter" as const, year: 1 }, 20, system);
+    expect(short.dayEnds).toBe(1);
+    expect(short.time).toMatchObject({ day: 1, season: "spring", year: 2, hour: 6 });
+  });
+
+  it("defaults daysPerSeason to 28 when omitted", () => {
+    const system = resolveTimeSystem({ enabled: true })!;
+    expect(system.daysPerSeason).toBe(28);
+  });
+
 });
 
 describe("GameTime session and save compatibility", () => {

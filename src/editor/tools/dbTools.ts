@@ -5,6 +5,7 @@
 // 모든 레코드는 기존 레코드와 병합한 뒤 normalize* 계열을 거쳐 id로 upsert한다.
 
 import { searchResources } from "@/assets/resourceSearch";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
@@ -854,25 +855,119 @@ const setSessionStart: ToolDefinition = {
 
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
-  description: "타이틀 화면 제목/메뉴 라벨을 설정한다.",
+  description: "타이틀 화면 제목/메뉴/표시/오디오 설정을 갱신한다. titleScreen이 없으면 생성한다.",
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       title: { type: "string" },
       menuLabels: { type: "object", description: "{ newGame, continueGame, quit }" },
+      menuVisibility: { type: "object", description: "{ newGame, continueGame, quit } — newGame always true" },
+      sounds: {
+        type: "object",
+        description: "{ cursorSeResourceId, confirmSeResourceId, cancelSeResourceId } nested merge",
+      },
+      titleGraphic: {
+        type: "object",
+        description: "{ mode: text|graphic|both, resourceId, x, y } nested merge",
+      },
+      layout: { type: "object", description: "{ titleX, titleY, menuX, menuY } nested merge" },
+      backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
+      musicResourceId: { type: "string" },
+      showInputHint: { type: "boolean" },
     },
     required: ["title"],
   },
   run(draft, args): ToolExecResult {
     const title = args.title as string;
     draft.meta = { ...draft.meta, title };
+    draft.system.titleScreen ??= defaultTitleScreenSettings();
     const current = draft.system.titleScreen;
-    if (current) {
-      current.title = title;
-      const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
-      if (labels) current.menuLabels = { ...current.menuLabels, ...labels };
+    current.title = title;
+
+    const labels = args.menuLabels as Partial<typeof current.menuLabels> | undefined;
+    if (labels) current.menuLabels = { ...current.menuLabels, ...labels };
+
+    const visibility = args.menuVisibility as Partial<{ newGame: boolean; continueGame: boolean; quit: boolean }> | undefined;
+    if (visibility) {
+      current.menuVisibility = {
+        newGame: true,
+        continueGame: visibility.continueGame === false ? false : visibility.continueGame === true ? true : current.menuVisibility?.continueGame !== false,
+        quit: visibility.quit === false ? false : visibility.quit === true ? true : current.menuVisibility?.quit !== false,
+      };
     }
+
+    if (typeof args.backgroundResourceId === "string") {
+      const background = args.backgroundResourceId.trim();
+      if (background) current.backgroundResourceId = background;
+      else delete current.backgroundResourceId;
+    }
+
+    if (typeof args.musicResourceId === "string") {
+      const music = args.musicResourceId.trim();
+      if (music) current.musicResourceId = music;
+      else delete current.musicResourceId;
+    }
+
+    if (typeof args.showInputHint === "boolean") {
+      current.showInputHint = args.showInputHint;
+    }
+
+    const layout = args.layout as Partial<typeof current.layout> | undefined;
+    if (layout && typeof layout === "object") {
+      current.layout = {
+        titleX: typeof layout.titleX === "number" && Number.isFinite(layout.titleX) ? Math.trunc(layout.titleX) : current.layout.titleX,
+        titleY: typeof layout.titleY === "number" && Number.isFinite(layout.titleY) ? Math.trunc(layout.titleY) : current.layout.titleY,
+        menuX: typeof layout.menuX === "number" && Number.isFinite(layout.menuX) ? Math.trunc(layout.menuX) : current.layout.menuX,
+        menuY: typeof layout.menuY === "number" && Number.isFinite(layout.menuY) ? Math.trunc(layout.menuY) : current.layout.menuY,
+      };
+    }
+
+    const sounds = args.sounds as Record<string, unknown> | undefined;
+    if (sounds && typeof sounds === "object" && !Array.isArray(sounds)) {
+      const next = { ...(current.sounds ?? {}) };
+      for (const key of ["cursorSeResourceId", "confirmSeResourceId", "cancelSeResourceId"] as const) {
+        if (!(key in sounds)) continue;
+        const value = sounds[key];
+        if (typeof value === "string" && value.trim()) next[key] = value.trim();
+        else delete next[key];
+      }
+      if (Object.keys(next).length === 0) delete current.sounds;
+      else current.sounds = next;
+    }
+
+    const graphic = args.titleGraphic as Record<string, unknown> | undefined;
+    if (graphic && typeof graphic === "object" && !Array.isArray(graphic)) {
+      const base = current.titleGraphic ?? {
+        mode: "text" as const,
+        x: current.layout.titleX,
+        y: current.layout.titleY,
+      };
+      const mode =
+        graphic.mode === "graphic" || graphic.mode === "both" || graphic.mode === "text"
+          ? graphic.mode
+          : base.mode;
+      const resourceId =
+        "resourceId" in graphic
+          ? typeof graphic.resourceId === "string" && graphic.resourceId.trim()
+            ? graphic.resourceId.trim()
+            : undefined
+          : base.resourceId;
+      const x =
+        typeof graphic.x === "number" && Number.isFinite(graphic.x) ? Math.trunc(graphic.x) : base.x;
+      const y =
+        typeof graphic.y === "number" && Number.isFinite(graphic.y) ? Math.trunc(graphic.y) : base.y;
+      if (mode === "text" && !resourceId) delete current.titleGraphic;
+      else {
+        current.titleGraphic = {
+          mode,
+          ...(resourceId ? { resourceId } : {}),
+          x,
+          y,
+        };
+      }
+    }
+
     return { summary: `타이틀 화면 제목 설정: "${title}"` };
   },
 };

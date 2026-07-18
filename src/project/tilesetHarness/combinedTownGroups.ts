@@ -74,7 +74,8 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     name: "잔디",
     role: "terrain",
     defaultLayer: "lower",
-    tileIds: [TILE.GRASS, 270, 271, 272, 273, 300, 301, 302, 330, 331, 332, 333],
+    // 273/333은 키큰 풀(243 블록)의 NW/SW 모서리 — 잔디 오분류 교정으로 제거 (2026-07-17).
+    tileIds: [TILE.GRASS, 270, 271, 272, 300, 301, 302, 330, 331, 332],
     description: "기본 잔디 지형입니다. 영역을 잔디로 채우거나 원상 복구할 때 사용합니다.",
     placementRules: "하위 레이어 면 채우기 전용. 균질 지형이라 이웃 연결 성형이 필요 없습니다.",
     confidence: "high",
@@ -91,7 +92,7 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
         { role: "top", tileIds: [TILE.GRASS] },
         { role: "topRight", tileIds: [TILE.GRASS] },
         { role: "left", tileIds: [TILE.GRASS] },
-        { role: "center", tileIds: [TILE.GRASS, 270, 271, 272, 273] },
+        { role: "center", tileIds: [TILE.GRASS, 270, 271, 272] },
         { role: "right", tileIds: [TILE.GRASS] },
         { role: "bottomLeft", tileIds: [TILE.GRASS] },
         { role: "bottom", tileIds: [TILE.GRASS] },
@@ -219,111 +220,9 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
   },
   lowerStackGroup("fence", "울타리", CHIPSET_TILE_GROUPS.fenceObjects, "울타리는 투명 소품이라 상위 레이어에 겹쳐 지면을 보존합니다. 길과 문 동선을 가리지 않게 끊어 배치합니다."),
   lowerStackGroup("windows", "창문", CHIPSET_TILE_GROUPS.houseWindowObjects, "창문은 벽 위에 겹치는 투명 소품입니다. 상위 레이어에 놓아 아래 벽을 보존합니다."),
-  lowerStackGroup("castle-windows", "성 창문", CHIPSET_TILE_GROUPS.castleWindowObjects, "성 창문: 28 열린창, 58 성 창, 88 깨진 창조각. 벽 위에 겹칩니다."),
-  // map_castle_keep(성채) 실측 금본 — 성 맵 조립 모듈 3종.
-  {
-    id: `${COMBINED_TOWN_HARNESS_PREFIX}castle-roof-deck`,
-    name: "성 지붕/여장 면",
-    role: "castle",
-    defaultLayer: "lower",
-    tileIds: [...CHIPSET_TILE_GROUPS.castleRoofDeckObjects],
-    description:
-      "성 지붕·여장 보루 면(3×4 블록). 모서리 18/20/108/110, 상·하변 19/109, 좌변 48|78, 채움 49|79|50|80. 외곽 성벽 위·본채 지붕·남쪽 커튼 위 테라스로 쓴다.",
-    placementRules:
-      "하위 solid. 직사각 면으로 깐다(최소 2×2, 권장 ≥3×3). 마당(잔디 통행 구역)에는 절대 깔지 않는다. 면 남쪽 가장자리 아래에 castle-wall-face(21/51/81)를 붙인다.",
-    confidence: "high",
-    source: "bundled-default",
-    passage: "solid",
-    repeatability: "repeat",
-    patternGrammar: {
-      axis: "both",
-      kind: "nine_slice_expandable",
-      minHeight: 2,
-      minWidth: 2,
-      parts: [
-        { role: "topLeft", tileIds: [18] },
-        { role: "top", tileIds: [19] },
-        { role: "topRight", tileIds: [20] },
-        { role: "left", tileIds: [48, 78] },
-        { role: "center", tileIds: [49, 79, 50, 80] },
-        { role: "right", tileIds: [50, 80] },
-        { role: "bottomLeft", tileIds: [108] },
-        { role: "bottom", tileIds: [109] },
-        { role: "bottomRight", tileIds: [110] },
-      ],
-      preserveCaps: true,
-      repeat: "center",
-    },
-  },
-  {
-    id: `${COMBINED_TOWN_HARNESS_PREFIX}castle-wall-face`,
-    name: "성벽 정면",
-    role: "castle",
-    defaultLayer: "lower",
-    tileIds: [...CHIPSET_TILE_GROUPS.castleWallFaceObjects],
-    description:
-      "성벽 정면 세로 띠: 상 21 + 중 51(무제한) + 하 81. 커튼월·본채 정면·모서리 보강에 사용. 남쪽 성문은 가로로 끊고 모래길을 통과시킨다.",
-    placementRules:
-      "하위 solid. 열 단위로 세로 배치 후 가로 반복. 최소 높이 2(21+81 또는 51+81), 권장 3(21/51/81). 지붕 면 남쪽 변 바로 아래 또는 독립 커튼월. 성문 폭 2~4칸은 비운다.",
-    confidence: "high",
-    source: "bundled-default",
-    passage: "solid",
-    repeatability: "repeat",
-    patternGrammar: {
-      axis: "vertical",
-      kind: "vertical_expandable",
-      minHeight: 2,
-      minWidth: 1,
-      parts: [
-        { role: "top", tileIds: [21] },
-        { role: "repeatBody", tileIds: [51] },
-        { role: "bottom", tileIds: [81] },
-      ],
-      preserveCaps: true,
-      repeat: "body",
-    },
-  },
-  {
-    id: `${COMBINED_TOWN_HARNESS_PREFIX}castle-round-tower`,
-    name: "원형 타워",
-    role: "castle",
-    defaultLayer: "mixed",
-    tileIds: [...CHIPSET_TILE_GROUPS.castleRoundTowerObjects],
-    description:
-      "원형 타워(2칸 폭): 캡 upper 24|25 → 목 lower 138|139 → 몸 140|141(세로 연장) / 창문 142|143 → 베이스 upper 54|55. 창문 행은 몸통 중간에 끼운다. 마당 안 랜드마크.",
-    placementRules:
-      "가로 2칸 페어 유지. 캡(24|25)·베이스(54|55) 상위(투명), 몸·목·창문(138–143) 하위 solid. 몸 140|141 세로 연장, 창문 142|143은 몸 중간 1행. 커튼월과 겹치지 않게 마당 쪽에 둔다.",
-    confidence: "high",
-    source: "bundled-default",
-    passage: "solid",
-    repeatability: "repeat",
-    patternGrammar: {
-      axis: "both",
-      kind: "vertical_expandable",
-      minHeight: 4,
-      minWidth: 2,
-      parts: [
-        { role: "topLeft", tileIds: [24] },
-        { role: "topRight", tileIds: [25] },
-        { role: "top", tileIds: [138, 139] },
-        { role: "repeatBody", tileIds: [140, 141] },
-        { role: "center", tileIds: [142, 143] },
-        { role: "bottomLeft", tileIds: [54] },
-        { role: "bottomRight", tileIds: [55] },
-      ],
-      preserveCaps: true,
-      repeat: "body",
-    },
-    rules: [
-      hardPairRule("r_round_tower_cap_h", 24, 25, "aLeftOfB", "원형 타워 캡 좌(24)는 우(25) 바로 왼쪽에 있어야 합니다."),
-      hardPairRule("r_round_tower_neck_h", 138, 139, "aLeftOfB", "원형 타워 목 좌(138)는 우(139) 바로 왼쪽에 있어야 합니다."),
-      hardPairRule("r_round_tower_body_h", 140, 141, "aLeftOfB", "원형 타워 몸 좌(140)는 우(141) 바로 왼쪽에 있어야 합니다."),
-      hardPairRule("r_round_tower_window_h", 142, 143, "aLeftOfB", "원형 타워 창문 좌(142)는 우(143) 바로 왼쪽에 있어야 합니다."),
-      hardPairRule("r_round_tower_base_h", 54, 55, "aLeftOfB", "원형 타워 베이스 좌(54)는 우(55) 바로 왼쪽에 있어야 합니다."),
-      hardPairRule("r_round_tower_cap_over_neck_l", 24, 138, "aAboveB", "원형 타워 캡 좌(24)는 목 좌(138) 바로 위에 있어야 합니다."),
-      hardPairRule("r_round_tower_cap_over_neck_r", 25, 139, "aAboveB", "원형 타워 캡 우(25)는 목 우(139) 바로 위에 있어야 합니다."),
-    ],
-  },
+  // 성 관련 조립 클러스터 4종(castle-windows/roof-deck/wall-face/round-tower)은 삭제
+  // (2026-07-17 사용자): 성 시공의 정본은 castleKit.stampCastle(금본 map_castle_keep) —
+  // 자유조립 클러스터 경로는 오조립만 낳았다. 성 타일 라벨/시맨틱은 chipsetMapping에 유지.
   lowerSolidGroup("doors", "문/입구", [...CHIPSET_TILE_GROUPS.houseEntranceObjects, ...CHIPSET_TILE_GROUPS.houseDoorObjects], "문은 1x2 세로 입구 기준으로 하위 레이어에 배치합니다."),
   {
     id: `${COMBINED_TOWN_HARNESS_PREFIX}wood-door`,
@@ -379,7 +278,14 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
   },
   lowerSolidGroup("roof-wall-boundary", "지붕-벽 경계", [404, 405, 406, 407, 434, 435, 436, 437, 464, 466, 467], "직선 지붕면과 벽 경계는 하위 레이어입니다. 사선 지붕만 상위에 겹칩니다."),
   verticalTreeGroup("conifer-tree", "침엽수", CONIFER_TOP, CONIFER_BOTTOM, "침엽수는 상단과 하단을 세로 2칸 원자로 배치합니다."),
-  verticalTreeGroup("dry-tree", "마른나무", DRY_TREE_TOP, DRY_TREE_BOTTOM, "마른나무는 상단과 하단을 세로 2칸 원자로 배치합니다."),
+  verticalTreeGroup(
+    "dry-tree",
+    "마른나무",
+    DRY_TREE_TOP,
+    DRY_TREE_BOTTOM,
+    "마른나무는 상단(261)을 세로로 여러 칸 이어 키를 키울 수 있고, 체인의 맨 아래는 하단(291)으로 끝납니다.",
+    { stackableTop: true },
+  ),
   broadleafTreeGroup(),
   mixedStackGroup("bush-props", "덤불", [BUSH_TILE], "덤불은 단독 배치 가능한 자연 소품입니다.", "solid", {
     rules: [
@@ -632,6 +538,23 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "passable",
   ),
   mixedStackGroup(
+    "barrel-prop",
+    "술통",
+    [...CHIPSET_TILE_GROUPS.barrelObjects],
+    "술통 177 + 오크통 207. 마당·작업장·장터 옆에 어울리는 단독 소품. 통행 불가(×).",
+    "solid",
+  ),
+  // 석상/돌기둥은 세로 2칸 페어 오브젝트 — 상단이 하단 바로 위에 와야 한다.
+  verticalTreeGroup("plaza-statue", "석상", 266, 296, "석상은 상단(266)+하단(296) 세로 2칸 원자로 광장·입구에 배치합니다."),
+  verticalTreeGroup("plaza-pillar", "돌기둥", 267, 297, "돌기둥은 상단(267)+하단(297) 세로 2칸 원자로 배치합니다."),
+  mixedStackGroup(
+    "village-well",
+    "우물",
+    [...CHIPSET_TILE_GROUPS.wellObjects],
+    "돌 우물(413, 위에서 본 모습). 마을 광장 근처에 하나 정도 단독 배치. 통행 불가(×).",
+    "solid",
+  ),
+  mixedStackGroup(
     "small-props",
     "마을 소품",
     [
@@ -650,6 +573,7 @@ export const COMBINED_TOWN_HARNESS_GROUPS: readonly CombinedTownHarnessGroup[] =
     "표지판·횃불·석상 등 잔여 소품 가방. 통행 불가(×). 꽃·사다리는 별 그룹.",
     "solid",
   ),
+  // 411/412/413/443: 용도 미확정 — 사용 금지(2026-07-16 사용자 밴). 그룹 미등록 상태 유지.
   // 헤드리스 플레이테스트로 검증된 통행성 함정 타일(핸드오프 0.4) — 겉보기와 달리 통행이 막히는 돌바닥.
   lowerSolidGroup("stone-floor-trap", "돌바닥", [TILE.FLOOR, 343], "겉보기엔 평평해 통행 가능해 보이지만 실측 결과 통행이 막히는 돌바닥입니다. 장식용 바닥 마감으로만 사용하세요."),
   // 검증된 통행 불가 성벽 계단/어두운 벽 타일.
@@ -716,7 +640,14 @@ function mixedStackGroup(
   return { id: `${COMBINED_TOWN_HARNESS_PREFIX}${id}`, name, role: "prop", defaultLayer: "mixed", tileIds, description: placementRules, placementRules, confidence: "high", source: "bundled-default", passage, repeatability: "fixed", stackable: true, ...extras };
 }
 
-function verticalTreeGroup(id: string, name: string, top: number, bottom: number, placementRules: string): CombinedTownHarnessGroup {
+function verticalTreeGroup(
+  id: string,
+  name: string,
+  top: number,
+  bottom: number,
+  placementRules: string,
+  opts: { readonly stackableTop?: boolean } = {},
+): CombinedTownHarnessGroup {
   return mixedStackGroup(id, name, [top, bottom], placementRules, "solid", {
     patternGrammar: {
       axis: "vertical",
@@ -734,8 +665,13 @@ function verticalTreeGroup(id: string, name: string, top: number, bottom: number
       {
         id: `r_${id.replace(/-/g, "_")}_above`,
         kind: "adjacency",
-        message: `${name} 상단(${top})은 하단(${bottom}) 바로 위에 있어야 합니다.`,
-        params: { a: top, b: bottom, relation: "aAboveB" },
+        message: opts.stackableTop
+          ? `${name} 상단(${top}) 아래에는 하단(${bottom}) 또는 상단(${top})이 이어져야 합니다.`
+          : `${name} 상단(${top})은 하단(${bottom}) 바로 위에 있어야 합니다.`,
+        // stackableTop: 상단 타일을 세로로 연속 배치 허용(체인 끝은 하단) — 마른나무 261 등.
+        params: opts.stackableTop
+          ? { a: top, b: bottom, bAlt: [top], relation: "aAboveB" }
+          : { a: top, b: bottom, relation: "aAboveB" },
         strength: "hard",
       },
     ],

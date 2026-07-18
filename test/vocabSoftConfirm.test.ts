@@ -51,7 +51,7 @@ describe("vocab soft-confirm", () => {
     const result = runTool(ctx, "place_props", {
       mapId: MAP_ID,
       area: { x: 2, y: 2, w: 10, h: 8 },
-      material: TREE,
+      material: "침엽수",
       count: 2,
       seed: 11,
     });
@@ -64,14 +64,14 @@ describe("vocab soft-confirm", () => {
 
     const call: ProposedCall = {
       name: "place_props",
-      args: { mapId: MAP_ID, material: TREE },
+      args: { mapId: MAP_ID, material: "침엽수" },
       summary: result.summary,
       result,
       destructive: false,
       requiresApproval: true,
     };
     expect(collectVocabSoftConfirms([call])).toHaveLength(1);
-    expect(proposalAcceptButtonLabel(1, 1)).toBe("이대로 적용");
+    expect(proposalAcceptButtonLabel(1, 1)).toBe("맵만 적용");
 
     const marked = markSoftVocabApprovalsOnProject(ctx.project, [call]);
     expect(marked).toBeGreaterThan(0);

@@ -1,14 +1,33 @@
 import { describe, expect, it } from "vitest";
-import { renderTitleScreen } from "@/player/titleScreen";
+import {
+  clampTitleMenuIndex,
+  listTitleMenuOptions,
+  renderTitleScreen,
+} from "@/player/titleScreen";
 import { createBlankProject } from "@/project/defaults";
+import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import type { TitleScreenSettings } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
+
+function fullVisibilitySettings(partial: Omit<TitleScreenSettings, "menuVisibility"> & {
+  readonly menuVisibility?: TitleScreenSettings["menuVisibility"];
+}): TitleScreenSettings {
+  return {
+    ...partial,
+    menuVisibility: partial.menuVisibility ?? {
+      newGame: true,
+      continueGame: true,
+      quit: true,
+    },
+  };
+}
 
 describe("title screen", () => {
   it("renders database-configured title text, menu labels, and positions", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
-      project.system.titleScreen = {
+      project.system.titleScreen = fullVisibilitySettings({
         title: "용사의 밤",
         backgroundResourceId: "rpg-zzu-title-blue",
         layout: {
@@ -22,7 +41,7 @@ describe("title screen", () => {
           continueGame: "이어하기",
           quit: "끝내기",
         },
-      };
+      });
 
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
@@ -40,7 +59,7 @@ describe("title screen", () => {
       expect(newGame?.textContent).toBe("처음부터");
       expect(continueGame?.textContent).toBe("이어하기");
       expect(quit?.textContent).toBe("끝내기");
-      expect(hint?.textContent).toBe("↑↓ 이동   Z/Enter 결정   X/Esc 취소");
+      expect(hint?.textContent).toBe("↑↓ 이동   Z/Enter·클릭 결정   X/Esc 취소");
       expect(newGame?.attrs["aria-current"]).toBe("true");
       expect(continueGame?.attrs["aria-current"]).toBeUndefined();
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
@@ -63,7 +82,7 @@ describe("title screen", () => {
     try {
       const project = createBlankProject();
       project.system.titleResourceId = "easyrpg-title-title2";
-      project.system.titleScreen = {
+      project.system.titleScreen = fullVisibilitySettings({
         title: "레거시 타이틀",
         layout: {
           titleX: 160,
@@ -76,7 +95,7 @@ describe("title screen", () => {
           continueGame: "계속",
           quit: "게임 중지",
         },
-      };
+      });
 
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
@@ -110,37 +129,176 @@ describe("title screen", () => {
       if (!(title instanceof FakeElement) || !(menu instanceof FakeElement)) {
         throw new Error("expected title screen children");
       }
-      expect(screen.style.backgroundImage).toContain("Title1.png");
+      expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
       expect(title.style.left).toBe("50%");
       expect(menu.style.left).toBe("50%");
-      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe("↑↓ 이동   Z/Enter 결정   X/Esc 취소");
+      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe("↑↓ 이동   Z/Enter·클릭 결정   X/Esc 취소");
     } finally {
       restoreDom();
     }
   });
 
-  it("does not wire mouse click handlers on title menu options", () => {
+  it("wires mouse click handlers on title menu options", () => {
     const restoreDom = installFakeDom();
     try {
-      let clicked = false;
+      let activated: string | null = null;
       const project = createBlankProject();
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => {
-            clicked = true;
+            activated = "new";
           },
           onContinue: () => {
-            clicked = true;
+            activated = "continue";
           },
           onQuit: () => {
-            clicked = true;
+            activated = "quit";
           },
         }),
       );
       const newGame = findByTestId(screen, "title-new-game");
       expect(String(newGame?.tagName ?? "").toLowerCase()).not.toBe("button");
       newGame?.dispatchEvent?.(new Event("click", { bubbles: true }));
-      expect(clicked).toBe(false);
+      expect(activated).toBe("new");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("lists visible options New→Continue→Quit with stable ids/testIds", () => {
+    const defaults = defaultTitleScreenSettings();
+    expect(listTitleMenuOptions(defaults).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+    expect(listTitleMenuOptions(defaults).map((option) => option.testId)).toEqual([
+      "title-new-game",
+      "title-load-game",
+      "title-quit-game",
+    ]);
+
+    const hideContinue = fullVisibilitySettings({
+      ...defaults,
+      menuVisibility: { newGame: true, continueGame: false, quit: true },
+    });
+    expect(listTitleMenuOptions(hideContinue).map((option) => option.id)).toEqual([
+      "newGame",
+      "quit",
+    ]);
+
+    const onlyNew = fullVisibilitySettings({
+      ...defaults,
+      menuVisibility: { newGame: true, continueGame: false, quit: false },
+    });
+    expect(listTitleMenuOptions(onlyNew)).toEqual([
+      { id: "newGame", testId: "title-new-game", label: defaults.menuLabels.newGame },
+    ]);
+  });
+
+  it("clamps title menu index into the visible range", () => {
+    expect(clampTitleMenuIndex(2, 2)).toBe(1);
+    expect(clampTitleMenuIndex(2, 1)).toBe(0);
+    expect(clampTitleMenuIndex(-3, 3)).toBe(0);
+    expect(clampTitleMenuIndex(0, 0)).toBe(0);
+  });
+
+  it("hides continue/quit options and input hint based on settings", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        menuVisibility: { newGame: true, continueGame: false, quit: true },
+        showInputHint: false,
+      });
+
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(
+          project,
+          {
+            onNewGame: () => undefined,
+            onContinue: () => undefined,
+            onQuit: () => undefined,
+          },
+          1,
+        ),
+      );
+
+      expect(findByTestId(screen, "title-new-game")).toBeTruthy();
+      expect(findByTestId(screen, "title-load-game")).toBeNull();
+      expect(findByTestId(screen, "title-quit-game")).toBeTruthy();
+      expect(findByTestId(screen, "title-input-hint")).toBeNull();
+      expect(findByTestId(screen, "title-quit-game")?.attrs["aria-current"]).toBe("true");
+      expect(findByTestId(screen, "title-selection-json")?.textContent).toBe(
+        JSON.stringify({ selectedIndex: 1 }),
+      );
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("clamps selected index to the last visible option when quit is hidden", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        menuVisibility: { newGame: true, continueGame: true, quit: false },
+      });
+
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(
+          project,
+          {
+            onNewGame: () => undefined,
+            onContinue: () => undefined,
+            onQuit: () => undefined,
+          },
+          2,
+        ),
+      );
+
+      expect(findByTestId(screen, "title-quit-game")).toBeNull();
+      expect(findByTestId(screen, "title-load-game")?.attrs["aria-current"]).toBe("true");
+      expect(findByTestId(screen, "title-selection-json")?.textContent).toBe(
+        JSON.stringify({ selectedIndex: 1 }),
+      );
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("renders title graphic logo without using applyTitleGraphic", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleResourceId = "easyrpg-title-title2";
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        title: "로고 타이틀",
+        titleGraphic: {
+          mode: "both",
+          resourceId: "easyrpg-title-title1",
+          x: 80,
+          y: 40,
+        },
+      });
+
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      expect(screen.textContent).toContain("로고 타이틀");
+      const logo = findByTestId(screen, "title-logo");
+      expect(logo).toBeTruthy();
+      expect(logo?.dataset.titleLogoResource).toBe("easyrpg-title-title1");
+      // Background stays on the title-screen node; logo uses its own resource.
+      expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
     } finally {
       restoreDom();
     }

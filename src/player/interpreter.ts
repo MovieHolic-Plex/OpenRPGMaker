@@ -5,6 +5,7 @@ import { advanceCompletedFrame, gotoLabel, topFrame } from "@/player/interpreter
 import type { PlaySessionLike } from "@/player/types";
 import type {
   Interpreter,
+  InterpreterOptions,
   InterpreterState,
   PendingStep,
   ResumeValue,
@@ -17,13 +18,15 @@ export function createInterpreter(
   commands: Command[],
   session: PlaySessionLike,
   project?: Project,
-  options?: { maxLoopIterations?: number; currentEventId?: string }
+  options?: InterpreterOptions
 ): Interpreter {
   const state: InterpreterState = {
     stack: [{ commands, pc: 0 }],
     session,
     maxStackDepth: 1000,
     maxLoopIterations: options?.maxLoopIterations ?? 100000,
+    maxInstructions: Math.max(1, Math.trunc(options?.maxInstructions ?? 100000)),
+    instructionsExecuted: 0,
     currentEventId: options?.currentEventId,
     project,
   };
@@ -46,6 +49,13 @@ export function createInterpreter(
 
       const command = frame.commands[frame.pc] ?? null;
       if (!command) return finish();
+      if (state.instructionsExecuted >= state.maxInstructions) {
+        console.warn(
+          `[interpreter:instruction-budget-exhausted] maxInstructions=${state.maxInstructions} executed=${state.instructionsExecuted}`
+        );
+        return finish();
+      }
+      state.instructionsExecuted += 1;
       const result = executeCommand(state, frame, command);
       switch (result.kind) {
         case "continue":

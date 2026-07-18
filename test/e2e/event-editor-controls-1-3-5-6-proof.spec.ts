@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { EventPage, Project } from "@/project/types";
 import { debugState, writeEvidenceJson } from "./eventEditorCertEvidence";
+import { expandEventMovementSection } from "./eventEditorExpandHelpers";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-controls-1-3-5-6";
@@ -49,6 +50,8 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount - 1);
   await editor.getByTestId("event-command-toolbar-undo").click();
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount);
+
+  await expandEventMovementSection(editor);
 
   const overlapForbidden = editor.getByTestId("event-page-overlap-forbidden");
   await expect(overlapForbidden).toBeEnabled();

@@ -17,6 +17,18 @@ import { openEventSubdialog } from "./subdialog";
 
 type CommandKind = Command["kind"];
 
+const PICKER_PAGE_TITLES: Record<1 | 2 | 3 | 4, string> = {
+  1: "빠른 저작",
+  2: "배우·전투",
+  3: "맵·연출",
+  4: "시스템·모던",
+};
+
+function pickerPageTitle(page: 1 | 2 | 3 | 4): string {
+  return PICKER_PAGE_TITLES[page];
+}
+
+
 type CommandEntry = {
   readonly label: string;
   readonly kind?: CommandKind;
@@ -106,6 +118,50 @@ const EXTRA_COMMAND_ENTRIES: readonly CommandEntry[] = [
     runtimeSupport: "runtime-full",
     page: 4,
   },
+  {
+    label: "제작",
+    kind: "craftRecipe",
+    commandId: "craftRecipe",
+    group: "모던 명령",
+    index: 211,
+    testId: "command-picker-add-craftRecipe",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 4,
+  },
+  {
+    label: "업그레이드",
+    kind: "applyItemUpgrade",
+    commandId: "applyItemUpgrade",
+    group: "모던 명령",
+    index: 212,
+    testId: "command-picker-add-applyItemUpgrade",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 4,
+  },
+  {
+    label: "도구 장착",
+    kind: "equipTool",
+    commandId: "equipTool",
+    group: "모던 명령",
+    index: 213,
+    testId: "command-picker-add-equipTool",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 4,
+  },
+  {
+    label: "보관 상자",
+    kind: "openChest",
+    commandId: "openChest",
+    group: "모던 명령",
+    index: 214,
+    testId: "command-picker-add-openChest",
+    selectable: true,
+    runtimeSupport: "runtime-full",
+    page: 4,
+  },
 ];
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
@@ -116,6 +172,17 @@ const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
     ...EXTRA_COMMAND_ENTRIES.filter((entry) => entry.page === page),
   ],
 }));
+
+export const EVENT_COMMAND_PICKER_NATIVE_KINDS: readonly CommandKind[] = [
+  ...new Set(
+    COMMAND_PAGES.flatMap((page) => page.entries)
+      .map((entry) => entry.kind)
+      .filter((kind): kind is CommandKind => kind !== undefined)
+  ),
+  ...(COMMAND_PAGES.some((page) => page.entries.some((entry) => entry.kind === undefined))
+    ? (["m2Command"] satisfies readonly CommandKind[])
+    : []),
+];
 
 function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
   return {
@@ -190,7 +257,7 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
           el("button", {
             class: "event-command-picker-tab",
             text: String(page.page),
-            attrs: { type: "button", role: "tab", "aria-selected": page.page === activePage ? "true" : "false" },
+            attrs: { type: "button", role: "tab", title: pickerPageTitle(page.page), "aria-label": `탭 ${page.page}: ${pickerPageTitle(page.page)}`, "aria-selected": page.page === activePage ? "true" : "false" },
             dataset: {
               testid: `event-command-picker-tab-${page.page}`,
               page: String(page.page),

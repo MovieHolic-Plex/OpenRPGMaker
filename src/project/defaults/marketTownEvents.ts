@@ -199,10 +199,17 @@ function createMonsterEvent(input: MonsterEventInput): GameEvent {
       [
         { kind: "text", speaker: input.name, body: input.intro },
         { kind: "battleProcessing", troopId: input.troopId, canEscape: true, canLose: false },
-        { kind: "setSwitch", switchId: input.defeatedSwitchId, value: true },
-        { kind: "setVariable", variableId: MARKET_QUEST.defeatedCount, op: "+=", value: 1 },
-        { kind: "changeGold", op: "+=", amount: 20 },
-        { kind: "text", speaker: input.name, body: "길목이 조용해졌다. 미라에게 보고하자." },
+        {
+          kind: "fork",
+          condition: { kind: "battleResult", result: "victory" },
+          then: [
+            { kind: "setSwitch", switchId: input.defeatedSwitchId, value: true },
+            { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} },
+            { kind: "setVariable", variableId: MARKET_QUEST.defeatedCount, op: "+=", value: 1 },
+            { kind: "changeGold", op: "+=", amount: 20 },
+            { kind: "text", speaker: input.name, body: "길목이 조용해졌다. 미라에게 보고하자." },
+          ],
+        },
       ]
     ),
     createPage(

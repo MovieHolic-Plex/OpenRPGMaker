@@ -75,4 +75,50 @@ describe("DB write tools", () => {
     expect(result.ok).toBe(false);
     expect(ctx.project.database.states.some((state) => state.id === "state_x")).toBe(false);
   });
+
+  it("set_title_screen creates titleScreen when missing and nested-merges sounds/titleGraphic", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    delete ctx.project.system.titleScreen;
+
+    const created = runTool(ctx, "set_title_screen", {
+      title: "신규 타이틀",
+      menuLabels: { quit: "닫기" },
+      sounds: { confirmSeResourceId: "easyrpg-sound-decision1" },
+      titleGraphic: { mode: "both", resourceId: "easyrpg-title-title1", x: 40, y: 20 },
+      showInputHint: false,
+    }, { dryRun: false });
+    expect(created.ok, JSON.stringify(created.issues)).toBe(true);
+    expect(ctx.project.system.titleScreen?.title).toBe("신규 타이틀");
+    expect(ctx.project.system.titleScreen?.menuLabels.quit).toBe("닫기");
+    expect(ctx.project.system.titleScreen?.menuLabels.newGame).toBeTruthy();
+    expect(ctx.project.system.titleScreen?.sounds).toEqual({ confirmSeResourceId: "easyrpg-sound-decision1" });
+    expect(ctx.project.system.titleScreen?.titleGraphic).toEqual({
+      mode: "both",
+      resourceId: "easyrpg-title-title1",
+      x: 40,
+      y: 20,
+    });
+    expect(ctx.project.system.titleScreen?.showInputHint).toBe(false);
+
+    const merged = runTool(ctx, "set_title_screen", {
+      title: "신규 타이틀",
+      sounds: { cursorSeResourceId: "easyrpg-sound-cursor1" },
+      titleGraphic: { y: 88 },
+      backgroundResourceId: "easyrpg-title-title2",
+    }, { dryRun: false });
+    expect(merged.ok, JSON.stringify(merged.issues)).toBe(true);
+    expect(ctx.project.system.titleScreen?.sounds).toEqual({
+      confirmSeResourceId: "easyrpg-sound-decision1",
+      cursorSeResourceId: "easyrpg-sound-cursor1",
+    });
+    expect(ctx.project.system.titleScreen?.titleGraphic).toEqual({
+      mode: "both",
+      resourceId: "easyrpg-title-title1",
+      x: 40,
+      y: 88,
+    });
+    expect(ctx.project.system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title2");
+    // background must not clear system.titleResourceId
+    expect(ctx.project.system.titleResourceId).toBeDefined();
+  });
 });

@@ -27,11 +27,16 @@ export function syncActorVitals(project: Project, vitals: Record<ActorId, ActorV
   vitals[actorId] = { hp: maxHp, mp: maxMp, maxHp, maxMp };
 }
 
-export function recoverPartyVitals(vitals: Record<ActorId, ActorVitals>, partyActorIds: readonly ActorId[]): void {
+export function recoverPartyVitals(
+  vitals: Record<ActorId, ActorVitals>,
+  partyActorIds: readonly ActorId[],
+  options: { readonly recoverMp?: boolean } = {},
+): void {
+  const recoverMp = options.recoverMp !== false;
   for (const actorId of partyActorIds) {
     const actor = vitals[actorId];
     if (!actor) continue;
     actor.hp = actor.maxHp;
-    actor.mp = actor.maxMp;
+    if (recoverMp) actor.mp = actor.maxMp;
   }
 }

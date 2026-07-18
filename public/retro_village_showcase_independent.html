@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro JRPG Village Showcase & Tileset Analyzer</title>
+    <!-- Google Fonts for Retro Aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset & Variables */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --tile-size: 32px; /* Scale of the JRPG map tiles, adjustable by slider */
+            --primary-gold: #d4af37;
+            --primary-gold-glow: rgba(212, 175, 55, 0.4);
+            --bg-dark: #0a0d12;
+            --bg-panel: #141923;
+            --bg-panel-border: #242f3d;
+            --text-light: #e2e8f0;
+            --text-muted: #8a99ad;
+            --water-blue: #3498db;
+            --accent-green: #2ecc71;
+            --accent-red: #e74c3c;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Share Tech Mono', monospace;
+            padding: 20px;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a2332 0%, #0a0d12 100%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-panel-border);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-gold);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--bg-panel);
+            border: 3px double var(--primary-gold);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            position: relative;
+        }
+
+        header h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.8rem;
+            color: var(--primary-gold);
+            text-shadow: 3px 3px 0px #000;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        .header-decor {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-gold);
+            border: 2px solid var(--bg-dark);
+        }
+        .decor-tl { top: -6px; left: -6px; }
+        .decor-tr { top: -6px; right: -6px; }
+        .decor-bl { bottom: -6px; left: -6px; }
+        .decor-br { bottom: -6px; right: -6px; }
+
+        /* Main Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1200px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Panel Common Styles */
+        .panel {
+            background: var(--bg-panel);
+            border: 2px solid var(--bg-panel-border);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .panel-gold-border {
+            border: 2px solid var(--primary-gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px var(--primary-gold-glow);
+        }
+
+        .panel-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            border-bottom: 2px dashed var(--bg-panel-border);
+            padding-bottom: 10px;
+        }
+
+        /* Left Side: Village Map Viewport */
+        .map-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .map-viewport-wrapper {
+            position: relative;
+            background-color: #05070a;
+            border: 4px solid #4a3621; /* Wood frame border */
+            box-shadow: 0 12px 36px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,0,0,0.8);
+            border-radius: 4px;
+            overflow: auto;
+            max-width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        /* The JRPG Map Grid */
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(24, var(--tile-size));
+            grid-template-rows: repeat(16, var(--tile-size));
+            width: calc(24 * var(--tile-size));
+            height: calc(16 * var(--tile-size));
+            position: relative;
+            image-rendering: pixelated;
+            user-select: none;
+        }
+
+        /* Map Tiles Layers */
+        .map-tile {
+            position: relative;
+            width: var(--tile-size);
+            height: var(--tile-size);
+        }
+
+        .tile-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("./assets/easyrpg-chipset-retro-house-transparent.png");
+            background-repeat: no-repeat;
+            background-size: calc(30 * var(--tile-size)) calc(16 * var(--tile-size));
+            background-position: calc(-1 * var(--col) * var(--tile-size)) calc(-1 * var(--row) * var(--tile-size));
+            pointer-events: none;
+        }
+
+        /* Animation Overrides */
+        /* Animated Water (Cycles Cols 0, 1, 2 of Row 1) */
+        @keyframes waterAnimation {
+            0%, 33.32% {
+                background-position: calc(-0 * var(--tile-size)) calc(-1 * var(--tile-size));
+            }
+            33.33%, 66.65% {
+                background-position: calc(-1 * var(--tile-size)) calc(-1 * var(--tile-size));
+            }
+            66.66%, 100% {
+                background-position: calc(-2 * var(--tile-size)) calc(-1 * var(--tile-size));
+            }
+        }
+        .anim-water {
+            animation: waterAnimation 0.9s steps(1) infinite;
+        }
+
+        /* Animated Waterfall (Cycles Col 3 of Rows 1, 2, 3) */
+        @keyframes waterfallAnimation {
+            0%, 33.32% {
+                background-position: calc(-3 * var(--tile-size)) calc(-1 * var(--tile-size));
+            }
+            33.33%, 66.65% {
+                background-position: calc(-3 * var(--tile-size)) calc(-2 * var(--tile-size));
+            }
+            66.66%, 100% {
+                background-position: calc(-3 * var(--tile-size)) calc(-3 * var(--tile-size));
+            }
+        }
+        .anim-waterfall {
+            animation: waterfallAnimation 0.6s steps(1) infinite;
+        }
+
+        /* Animated Campfire (Cycles Col 26 of Rows 10, 11) */
+        @keyframes campfireAnimation {
+            0%, 49.9% {
+                background-position: calc(-26 * var(--tile-size)) calc(-10 * var(--tile-size));
+            }
+            50%, 100% {
+                background-position: calc(-26 * var(--tile-size)) calc(-11 * var(--tile-size));
+            }
+        }
+        .anim-campfire {
+            animation: campfireAnimation 0.4s steps(1) infinite;
+        }
+
+        /* Player Character (SVG Knight) */
+        .player {
+            position: absolute;
+            width: var(--tile-size);
+            height: var(--tile-size);
+            left: calc(var(--player-x) * var(--tile-size));
+            top: calc(var(--player-y) * var(--tile-size));
+            transition: left 0.15s linear, top 0.15s linear;
+            z-index: 100;
+            image-rendering: pixelated;
+            background-size: contain;
+            background-repeat: no-repeat;
+            pointer-events: none;
+        }
+
+        /* Directional SVGs embedded via Data URI */
+        .player.dir-down {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' shape-rendering='crispEdges'><rect x='4' y='1' width='8' height='5' fill='%237f8c8d' /><rect x='5' y='2' width='6' height='3' fill='%2395a5a6' /><rect x='5' y='6' width='6' height='3' fill='%23f1c40f' /><rect x='6' y='7' width='1' height='1' fill='%232c3e50' /><rect x='9' y='7' width='1' height='1' fill='%232c3e50' /><rect x='3' y='9' width='10' height='5' fill='%232980b9' /><rect x='4' y='10' width='8' height='3' fill='%233498db' /><rect x='2' y='9' width='1' height='4' fill='%23e74c3c' /><rect x='13' y='8' width='1' height='6' fill='%23f1c40f' /><rect x='4' y='14' width='2' height='2' fill='%232c3e50' /><rect x='10' y='14' width='2' height='2' fill='%232c3e50' /></svg>");
+        }
+        .player.dir-up {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' shape-rendering='crispEdges'><rect x='4' y='1' width='8' height='8' fill='%237f8c8d' /><rect x='5' y='2' width='6' height='6' fill='%2395a5a6' /><rect x='3' y='9' width='10' height='5' fill='%23c0392b' /><rect x='4' y='10' width='8' height='3' fill='%23e74c3c' /><rect x='4' y='14' width='2' height='2' fill='%232c3e50' /><rect x='10' y='14' width='2' height='2' fill='%232c3e50' /></svg>");
+        }
+        .player.dir-left {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' shape-rendering='crispEdges'><rect x='5' y='1' width='6' height='5' fill='%237f8c8d' /><rect x='6' y='2' width='4' height='3' fill='%2395a5a6' /><rect x='3' y='6' width='4' height='3' fill='%23f1c40f' /><rect x='4' y='7' width='1' height='1' fill='%232c3e50' /><rect x='5' y='9' width='6' height='5' fill='%232980b9' /><rect x='6' y='10' width='4' height='3' fill='%233498db' /><rect x='11' y='9' width='1' height='4' fill='%23e74c3c' /><rect x='2' y='8' width='1' height='5' fill='%23f1c40f' /><rect x='5' y='14' width='2' height='2' fill='%232c3e50' /><rect x='9' y='14' width='2' height='2' fill='%232c3e50' /></svg>");
+        }
+        .player.dir-right {
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' shape-rendering='crispEdges'><rect x='5' y='1' width='6' height='5' fill='%237f8c8d' /><rect x='6' y='2' width='4' height='3' fill='%2395a5a6' /><rect x='9' y='6' width='4' height='3' fill='%23f1c40f' /><rect x='11' y='7' width='1' height='1' fill='%232c3e50' /><rect x='5' y='9' width='6' height='5' fill='%232980b9' /><rect x='6' y='10' width='4' height='3' fill='%233498db' /><rect x='4' y='9' width='1' height='4' fill='%23e74c3c' /><rect x='13' y='8' width='1' height='5' fill='%23f1c40f' /><rect x='5' y='14' width='2' height='2' fill='%232c3e50' /><rect x='9' y='14' width='2' height='2' fill='%232c3e50' /></svg>");
+        }
+
+        /* Floating interaction indicator (!) */
+        .interact-bubble {
+            position: absolute;
+            background-color: var(--accent-red);
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid #fff;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 110;
+            display: none;
+            box-shadow: 0 0 8px rgba(231, 76, 60, 0.8);
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { top: -12px; }
+            to { top: -18px; }
+        }
+
+        /* JRPG Dialogue Box */
+        .dialogue-box {
+            width: 100%;
+            background: #000;
+            border: 3px double #fff;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 95px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+        }
+
+        .speaker-badge {
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--bg-dark);
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+
+        .dialogue-text {
+            font-family: 'VT323', monospace;
+            font-size: 1.4rem;
+            line-height: 1.4;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .dialogue-arrow {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--primary-gold);
+            animation: blink 0.6s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        /* Map Controls Dashboard */
+        .controls-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            flex: 1;
+            min-width: 150px;
+            background: var(--bg-panel);
+            border: 1px solid var(--bg-panel-border);
+            border-radius: 6px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .control-input {
+            width: 100%;
+            accent-color: var(--primary-gold);
+        }
+
+        /* Touch / Mobile D-Pad Control Panel */
+        .dpad-container {
+            display: grid;
+            grid-template-areas: 
+                ". up ."
+                "left interact right"
+                ". down .";
+            gap: 8px;
+            width: 140px;
+            height: 110px;
+            margin: 0 auto;
+        }
+
+        .dpad-btn {
+            background: #1f2735;
+            border: 2px solid var(--bg-panel-border);
+            color: #fff;
+            font-weight: bold;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            transition: all 0.1s;
+        }
+
+        .dpad-btn:active {
+            background: var(--primary-gold);
+            color: #000;
+            border-color: #fff;
+            transform: scale(0.95);
+        }
+
+        .btn-up { grid-area: up; }
+        .btn-left { grid-area: left; }
+        .btn-down { grid-area: down; }
+        .btn-right { grid-area: right; }
+        .btn-interact { 
+            grid-area: interact;
+            background: var(--primary-gold);
+            color: #000;
+            font-size: 9px;
+            border-color: #fff;
+        }
+
+        /* Right Side: Tileset Analyzer */
+        .analyzer-wrapper {
+            position: relative;
+            border: 2px solid var(--bg-panel-border);
+            background: #000;
+            overflow: auto;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .tileset-image-container {
+            position: relative;
+            /* 480px width scaled to 2x = 960px */
+            width: 960px;
+            height: 512px;
+            background-image: url("./assets/easyrpg-chipset-retro-house-transparent.png");
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
+        }
+
+        /* Analyzer Selection/Hover Grid Overlay */
+        .analyzer-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(30, 32px); /* 30 columns of 32px (16px * 2) */
+            grid-template-rows: repeat(16, 32px);    /* 16 rows of 32px (16px * 2) */
+        }
+
+        .analyzer-cell {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            cursor: crosshair;
+            transition: background-color 0.1s;
+        }
+
+        .analyzer-cell:hover {
+            background-color: rgba(212, 175, 55, 0.35);
+            border: 1px solid var(--primary-gold);
+            outline: 2px solid #fff;
+            z-index: 10;
+        }
+
+        .analyzer-cell.selected {
+            background-color: rgba(46, 204, 113, 0.35);
+            border: 2px solid var(--accent-green);
+            outline: 2px solid #fff;
+            z-index: 9;
+        }
+
+        /* Tile Inspector details block */
+        .inspector-panel {
+            background: #0c1017;
+            border: 1px solid var(--bg-panel-border);
+            border-radius: 6px;
+            padding: 15px;
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tile-preview-box {
+            width: 80px;
+            height: 80px;
+            background: #000;
+            border: 2px solid var(--primary-gold);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tile-preview-image {
+            width: 96px; /* 16px * 6 = 96px zoom preview */
+            height: 96px;
+            background-image: url("./assets/easyrpg-chipset-retro-house-transparent.png");
+            background-repeat: no-repeat;
+            background-size: calc(30 * 96px) calc(16 * 96px); /* Scaled 6x */
+            background-position: calc(-1 * var(--col) * 96px) calc(-1 * var(--row) * 96px);
+            image-rendering: pixelated;
+        }
+
+        .inspector-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .inspector-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-gold);
+            margin-bottom: 2px;
+        }
+
+        .inspector-cat {
+            font-size: 0.75rem;
+            font-family: 'Press Start 2P', monospace;
+            background: var(--bg-panel-border);
+            color: var(--text-light);
+            padding: 2px 6px;
+            border-radius: 3px;
+            width: fit-content;
+        }
+
+        .inspector-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .meta-coord {
+            color: #5dade2;
+        }
+
+        .meta-css {
+            font-family: Consolas, monospace;
+            background: #151a24;
+            color: #e59866;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            user-select: all;
+            margin-top: 4px;
+        }
+
+        /* Detailed Classification Guides Tables */
+        .classification-container {
+            grid-column: span 2;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .classification-container {
+                grid-column: span 1;
+            }
+        }
+
+        .classification-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .class-card {
+            background: #0f141e;
+            border: 1px solid var(--bg-panel-border);
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .class-card-header {
+            font-weight: bold;
+            color: var(--primary-gold);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .class-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        .class-table th, .class-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid var(--bg-panel-border);
+        }
+
+        .class-table th {
+            color: var(--text-muted);
+            font-weight: normal;
+        }
+
+        .class-table tr:hover td {
+            background-color: rgba(255,255,255,0.02);
+            color: var(--primary-gold);
+        }
+
+        /* Guide Badges */
+        .tag-water { border-left: 3px solid #3498db; }
+        .tag-ground { border-left: 3px solid #2ecc71; }
+        .tag-wall { border-left: 3px solid #f39c12; }
+        .tag-roof { border-left: 3px solid #e74c3c; }
+        .tag-fence { border-left: 3px solid #9b59b6; }
+        .tag-furniture { border-left: 3px solid #1abc9c; }
+        .tag-ruins { border-left: 3px solid #95a5a6; }
+        .tag-scenery { border-left: 3px solid #27ae60; }
+        
+        .synth-status {
+            font-size: 0.8rem;
+            color: var(--accent-green);
+            font-weight: bold;
+            margin-top: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-decor decor-tl"></div>
+        <div class="header-decor decor-tr"></div>
+        <div class="header-decor decor-bl"></div>
+        <div class="header-decor decor-br"></div>
+        <h1>🏘️ JRPG RETRO VILLAGE 🏘️</h1>
+        <p>Interactive Map Engine & Independent Tileset Analyzer</p>
+    </header>
+
+    <div class="workspace">
+        
+        <!-- COLUMN 1: INTERACTIVE MAP & EXPLORATION -->
+        <div class="panel panel-gold-border map-section">
+            <div class="panel-title">
+                <span>🛡️ Village Map Viewport (Playable Demo)</span>
+            </div>
+
+            <!-- Viewport container -->
+            <div class="map-viewport-wrapper">
+                <div class="map-grid" id="map-grid">
+                    <!-- The player character (Knight) -->
+                    <div class="player dir-down" id="player" style="--player-x: 4; --player-y: 8;">
+                        <!-- Floating interactive prompt -->
+                        <div class="interact-bubble" id="interact-bubble">!</div>
+                    </div>
+                    <!-- Tiles will be dynamically injected here in Layer structure -->
+                </div>
+            </div>
+
+            <!-- Dialogue console -->
+            <div class="dialogue-box">
+                <div class="speaker-badge" id="speaker-badge">SYSTEM</div>
+                <div class="dialogue-text" id="dialogue-text">Welcome, adventurer! Use WASD or Arrow keys to walk around this retro JRPG village map. Stand in front of signs, doors, chests, graves, tents, and campfires and press SPACE or E to interact!</div>
+                <div class="dialogue-arrow"></div>
+            </div>
+
+            <!-- Map Options Panel -->
+            <div class="controls-row">
+                <div class="control-group">
+                    <span class="control-label">Tile Size Zoom</span>
+                    <input type="range" class="control-input" id="zoom-slider" min="16" max="64" value="32" step="8">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-top: 4px;">
+                        <span>16px</span>
+                        <span id="zoom-val">32px (2x)</span>
+                        <span>64px</span>
+                    </div>
+                </div>
+
+                <div class="control-group" style="flex: 0.8;">
+                    <span class="control-label">Retro Audio SFX</span>
+                    <button class="dpad-btn" id="sound-btn" style="height: 32px; width: 100%;">🔊 Enable Audio Synth</button>
+                    <span class="synth-status" id="synth-status">Retro Synth Initialized</span>
+                </div>
+
+                <div class="control-group" style="flex: 1.2;">
+                    <span class="control-label">Interactive Controls</span>
+                    <div class="dpad-container">
+                        <button class="dpad-btn btn-up" id="btn-up">▲</button>
+                        <button class="dpad-btn btn-left" id="btn-left">◀</button>
+                        <button class="dpad-btn btn-interact" id="btn-action">SPACE</button>
+                        <button class="dpad-btn btn-right" id="btn-right">▶</button>
+                        <button class="dpad-btn btn-down" id="btn-down">▼</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: INDEPENDENT TILESET ANALYZER -->
+        <div class="panel">
+            <div class="panel-title">
+                <span>🔍 Independent Chipset Analyzer</span>
+            </div>
+            
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; line-height: 1.4;">
+                Hover over the chipset to read the raw pixel locations, grid coordinates, and classifications. Click a tile to lock inspector details and copy its CSS sprite offset.
+            </p>
+
+            <div class="analyzer-wrapper">
+                <div class="tileset-image-container">
+                    <div class="analyzer-grid" id="analyzer-grid">
+                        <!-- 480 grid cells will be dynamically injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Inspector Panel -->
+            <div class="inspector-panel" id="inspector-panel">
+                <div class="tile-preview-box">
+                    <div class="tile-preview-image" id="inspector-preview" style="--col: 0; --row: 0;"></div>
+                </div>
+                <div class="inspector-details">
+                    <div class="inspector-title" id="inspector-name">Deep Ocean Surface</div>
+                    <div class="inspector-cat" id="inspector-category">WATER</div>
+                    <div class="inspector-meta" id="inspector-meta">
+                        Grid: <span class="meta-coord" id="inspector-grid-coord">Col 0, Row 0</span> | 
+                        Pixel Offset: <span class="meta-coord" id="inspector-pixel-offset">X: 0px, Y: 0px</span>
+                    </div>
+                    <div class="inspector-meta" id="inspector-desc" style="margin-top: 4px; font-size: 0.85rem; color: var(--text-light);">
+                        Standard deep water autotile, used for building large oceans, lakes, or deep channels.
+                    </div>
+                    <div class="meta-css" id="inspector-css">background-position: 0px 0px;</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLASSIFICATION SECTION -->
+        <div class="panel classification-container">
+            <div class="panel-title">
+                <span>📋 Visual Classification Guide & Coordinate Grid Directory</span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.4; margin-bottom: 15px;">
+                The EasyRPG/RPG Maker retro chipset is formatted into a <b>480x256 pixel grid</b> consisting of <b>30 columns</b> and <b>16 rows</b> of 16x16 pixel sprites. 
+                Below is the comprehensive visual classification directory established through direct visual inspection.
+            </p>
+
+            <div class="classification-grid">
+                
+                <!-- Water -->
+                <div class="class-card tag-water">
+                    <div class="class-card-header">
+                        <span>🌊 1. WATER & FLOWS</span>
+                        <span style="font-size: 0.75rem; color: var(--water-blue);">Col 0-5, Row 0-7</span>
+                    </div>
+                    <table class="class-table">
+                        <thead>
+                            <tr><th>Target Location</th><th>Visual Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Row 0, Cols 0-5</td><td>Shoreline borders, waves edge details</td></tr>
+                            <tr><td>Row 1-3, Cols 0-2</td><td>Animated shallow water (3 horizontal frames)</td></tr>
+                            <tr><td>Row 1-3, Cols 3-5</td><td>Vertical waterfall animation (3 frames)</td></tr>
+                            <tr><td>Row 4-7, Cols 0-5</td><td>Deep ocean / dark currents auto-tiles</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Ground & Paths -->
+                <div class="class-card tag-ground">
+                    <div class="class-card-header">
+                        <span>🌱 2. GROUND & PATHS</span>
+                        <span style="font-size: 0.75rem; color: var(--accent-green);">Col 6-11, Row 0-7 / Col 0-5, Row 8-15</span>
+                    </div>
+                    <table class="class-table">
+                        <thead>
+                            <tr><th>Target Location</th><th>Visual Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Cols 6-7, Row 0-2</td><td>Snow cover & cloud-top layer</td></tr>
+                            <tr><td>Cols 6-7, Row 3-5</td><td>Ploughed crop fields / furrow paths</td></tr>
+                            <tr><td>Cols 6-7, Row 6-7</td><td>Grey cobblestone roads [Solid: Col 6, Row 7]</td></tr>
+                            <tr><td>Cols 0-5, Row 8-11</td><td>Lush grass terrain [Solid: Col 2, Row 9]</td></tr>
+                            <tr><td>Cols 0-5, Row 12-13</td><td>Purple gravel paths [Solid: Col 2, Row 13]</td></tr>
+                            <tr><td>Cols 0-5, Row 14-15</td><td>Sandy shores / beaches [Solid: Col 2, Row 15]</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Walls -->
+                <div class="class-card tag-wall">
+                    <div class="class-card-header">
+                        <span>🏰 3. WALLS & FLOORS</span>
+                        <span style="font-size: 0.75rem; color: var(--primary-gold);">Col 12-23, Row 0-7</span>
+                    </div>
+                    <table class="class-table">
+                        <thead>
+                            <tr><th>Target Location</th><th>Visual Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Cols 12-14, Row 3-5</td><td>Log cabin rustic walls (vertical/horizontal logs)</td></tr>
+                            <tr><td>Cols 15-17, Row 0-2</td><td>Plaster walls with wood support beam patterns</td></tr>
+                            <tr><td>Cols 18-20, Row 0-2</td><td>Grey stone masonry walls & tower panels</td></tr>
+                            <tr><td>Cols 21-23, Row 0-2</td><td>Castle fortress ashlar brick walls</td></tr>
+                            <tr><td>Cols 18-20, Row 6-7</td><td>Horizontal wooden floor planks for interiors</td></tr>
+                            <tr><td>Cols 21-23, Row 6-7</td><td>Golden summoning circles / dungeon floors</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Roofs -->
+                <div class="class-card tag-roof">
+                    <div class="class-card-header">
+                        <span>🏠 4. ROOFS</span>
+                        <span style="font-size: 0.75rem; color: var(--accent-red);">Col 12-14, R0-2 / Col 18-23, R8-15</span>
+                    </div>
+                    <table class="class-table">
+                        <thead>
+                            <tr><th>Target Location</th><th>Visual Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Cols 12-14, Row 0-2</td><td>Brown cedar shingle roof slopes & ridges</td></tr>
+                            <tr><td>Cols 18-23, Row 8-11</td><td>Red terracotta clay roofs (slopes, peaks, base)</td></tr>
+                            <tr><td>Cols 18-23, Row 12-15</td><td>Blue slate tiles (slopes, center panels, peaks)</td></tr>
+                            <tr><td>Cols 12-17, Row 12-13</td><td>Yellow thatched straw roofs for village huts</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Furniture & Decor -->
+                <div class="class-card tag-furniture">
+                    <div class="class-card-header">
+                        <span>🪑 5. INTERIOR & ARCHES</span>
+                        <span style="font-size: 0.75rem; color: #1abc9c;">Col 24-29, Row 0-7</span>
+                    </div>
+                    <table class="class-table">
+                        <thead>
+                            <tr><th>Target Location</th><th>Visual Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Row 1, Cols 26-27</td><td>Wooden doors, drawers & dressers</td></tr>
+                            <tr><td>Row 1-2, Col 25</td><td>Burning fireplaces & tables</td></tr>
+                            <tr><td>Row 2, Cols 27-29</td><td>Food barrels & hanging red crest banners</td></tr>
+                            <tr><td>Row 3, Cols 24-26</td><td>Long feast tables, treasure chest, wall shield</td></tr>
+                            <tr><td>Row 4-5, Cols 24-25</td><td>Pillars, archways & dungeon portals</td></tr>
+                            <tr><td>Row 5, Cols 26-27</td><td>Church organs & wooden bookshelves</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Fences, Ruins & Scenery -->
+                <div class="class-card tag-ruins">
+                    <div class="class-card-header">
+                        <span>🪦 6. FLORA, FENCES & RUINS</span>
+                        <span style="font-size: 0.75rem; color: #95a5a6;">Col 24-29, Row 8-15</span>
+                    </div>
+                    <table class="class-table">
+                        <thead>
+                            <tr><th>Target Location</th><th>Visual Description</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Row 8, Cols 26-27</td><td>Green tree top (combine with Row 9 Col 26-27 base)</td></tr>
+                            <tr><td>Row 8-9, Cols 28-29</td><td>Dead tree trunk and branch details</td></tr>
+                            <tr><td>Row 10, Cols 24-27</td><td>Campfire pit, clay pot, ladder, cross gravestone</td></tr>
+                            <tr><td>Row 12-13, Cols 24-25</td><td>Rounded wooden fence structures</td></tr>
+                            <tr><td>Row 12-13, Cols 26-27</td><td>Pub sign, Inn sign, Sword shop & Shield shop signs</td></tr>
+                            <tr><td>Row 12-14, Col 28-29</td><td>Sacred runes large monolith / tombstone</td></tr>
+                            <tr><td>Row 14-15, Col 28-29</td><td>Traveler's canvas teepee/tent</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Engine -->
+    <script>
+        // --- 1. TILESET COORDINATES METADATA DICTIONARY ---
+        function getTileInfo(col, row) {
+            // Water & Shoreline
+            if (col >= 0 && col <= 5 && row >= 0 && row <= 7) {
+                if (row === 0) return { name: "Water Shoreline Border", category: "Water", desc: "Top edges of water bodies showing animated ripple walls." };
+                if (row === 1 && col <= 2) return { name: "Shallow Water Wave - Frame 1", category: "Water", desc: "First phase of the horizontal waves animation." };
+                if (row === 2 && col <= 2) return { name: "Shallow Water Wave - Frame 2", category: "Water", desc: "Second phase of the horizontal waves animation." };
+                if (row === 3 && col <= 2) return { name: "Shallow Water Wave - Frame 3", category: "Water", desc: "Third phase of the horizontal waves animation." };
+                if (col === 3 && row >= 1 && row <= 3) return { name: `Waterfall Flow - Frame ${row}`, category: "Water", desc: `Vertical waterfall stream - Animation frame ${row}.` };
+                return { name: "Deep Ocean / Water Abyss", category: "Water", desc: "Dark deep blue autotile, blocks player passage." };
+            }
+            
+            // Ground & Path Autotiles
+            if (col >= 6 && col <= 11 && row >= 0 && row <= 7) {
+                if (row <= 2 && col <= 7) return { name: "Snow Blanket Surface", category: "Ground", desc: "Soft white snow autotile." };
+                if (row <= 2 && col <= 9) return { name: "Pine Tree Canopies", category: "Scenery", desc: "Dense green forest overhead tree tops." };
+                if (row <= 2) return { name: "Shadowed Forest Canopy", category: "Scenery", desc: "Dark green tree tops for shadowed forest layouts." };
+                if (row >= 3 && row <= 5 && col <= 7) return { name: "Tilled Farm Soil", category: "Ground", desc: "Furrowed agricultural lines for crop growing." };
+                if (row >= 3 && row <= 5 && col <= 9) return { name: "Stone Road Border", category: "Ground", desc: "Cobblestone path edges." };
+                if (row >= 6 && col <= 7) return { name: "Village Cobblestone", category: "Ground", desc: "Solid stone road paving tile." };
+                return { name: "Dark Soil Pathway", category: "Ground", desc: "Weathered dark dirt trail autotiles." };
+            }
+
+            // House Walls & Roofs
+            if (col >= 12 && col <= 17 && row >= 0 && row <= 7) {
+                if (row <= 2 && col <= 14) return { name: "Brown Cedar Roof", category: "Roofs", desc: "Wooden shingle roof tiles." };
+                if (row <= 2) return { name: "Tudor Style Plaster Wall", category: "Walls", desc: "Beige plaster walls with structural timber framing." };
+                if (row >= 3 && row <= 5 && col <= 14) return { name: "Rustic Log wall", category: "Walls", desc: "Horizontal timber logs for cabins." };
+                if (row >= 3 && row <= 5) return { name: "Plaster Wall Beam Support", category: "Walls", desc: "Plaster walls showing vertical wood columns." };
+                return { name: "Interior Wooden Wall", category: "Walls", desc: "Polished wood vertical planks for interior wall layouts." };
+            }
+
+            // Castle Fortresses
+            if (col >= 18 && col <= 23 && row >= 0 && row <= 7) {
+                if (row <= 2 && col <= 20) return { name: "Grey Masonry Wall", category: "Walls", desc: "Finely laid block masonry for stone towers." };
+                if (row <= 2) return { name: "Fortress Slate Wall", category: "Walls", desc: "Heavy dark stone wall panels." };
+                if (row >= 3 && row <= 5 && col <= 20) return { name: "Dungeon Stone Vault", category: "Walls", desc: "Damp dungeon wall tiles." };
+                if (row >= 3 && row <= 5) return { name: "Chiseled Wall Base", category: "Walls", desc: "Masonry blocks matching wall foundations." };
+                if (row >= 6 && col <= 20) return { name: "Hardwood Floor Board", category: "Ground", desc: "Horizontal floor boards for castle interiors." };
+                if (col === 21 && row === 6) return { name: "Interior Iron Vent Grate", category: "Ground", desc: "Floor ventilation panels." };
+                if (col === 22 && row === 6) return { name: "Barrel Cargo Storage", category: "Furniture", desc: "Stack of food or item barrels." };
+                if (col === 23 && row === 6) return { name: "Gold Arcane Circle", category: "Ground", desc: "Magical summoning sigil etched on stone." };
+                return { name: "Stone Interior Floor", category: "Ground", desc: "Floor tiles for dungeons." };
+            }
+
+            // Upper Items (Interactive Furniture)
+            if (col >= 24 && col <= 29 && row >= 0 && row <= 7) {
+                if (row === 0 && col <= 26) return { name: "Cave Arch/Mouth", category: "Ruins", desc: "Black opening leading into caves." };
+                if (row === 0 && col === 27) return { name: "Small Tombstone", category: "Ruins", desc: "Simple stone grave marker." };
+                if (row === 0 && col === 28) return { name: "Stained Glass Arch", category: "Furniture", desc: "A colorful chapel window." };
+                if (row === 0 && col === 29) return { name: "Blue Glass Double Window", category: "Furniture", desc: "A standard pane window for outer house walls." };
+                if (row === 1 && col === 24) return { name: "Tall Stained Glass Panel", category: "Furniture", desc: "A tall religious stained glass window." };
+                if (row === 1 && col === 25) return { name: "Stone Fireplace (Lit)", category: "Furniture", desc: "Burning fireplace providing heat and light." };
+                if (row === 1 && col === 26) return { name: "Wooden Entrance Door", category: "Furniture", desc: "Standard wooden door panel." };
+                if (row === 1 && col === 27) return { name: "Bedroom Dresser", category: "Furniture", desc: "Drawer unit for storage." };
+                if (row === 1 && col === 28) return { name: "Tall Wardrobe / Shelf", category: "Furniture", desc: "Bookshelf or cupboard unit." };
+                if (row === 1 && col === 29) return { name: "Wooden Stool", category: "Furniture", desc: "Seat for bars or kitchen counters." };
+                if (row === 2 && col === 25) return { name: "Dining Table (Solid)", category: "Furniture", desc: "Heavy oak dining table." };
+                if (row === 2 && col === 26) return { name: "Wooden Dining Chair", category: "Furniture", desc: "High backed dining chair." };
+                if (row === 2 && col === 27) return { name: "Ale Barrel", category: "Furniture", desc: "Oak barrel for fermenting drinks." };
+                if (row === 2 && col >= 28) return { name: "Wall Flag Banner", category: "Furniture", desc: "Red royal tapestry hanging on castle walls." };
+                if (row === 3 && col === 25) return { name: "Locked Treasure Chest", category: "Furniture", desc: "A gold trimmed chest containing items." };
+                if (row === 3 && col === 26) return { name: "Guardian Crest Shield", category: "Furniture", desc: "A shield decoration mounted to walls." };
+                if (col >= 27 && row === 3) return { name: "Plank Wood Fence", category: "Fences", desc: "Wooden fence barrier." };
+                return { name: "Upper Decor Tile", category: "Furniture", desc: "Decorative items." };
+            }
+
+            // Bottom-Left Autotile Grounds
+            if (col >= 0 && col <= 5 && row >= 8 && row <= 15) {
+                if (row <= 11) return { name: "Lush Green Grass", category: "Ground", desc: "Green grass field, standard ground layout." };
+                if (row <= 13) return { name: "Purple Gravel / Shingles", category: "Ground", desc: "Coarse gravel pathway." };
+                return { name: "Beach Dunes Sand", category: "Ground", desc: "Soft beach sand terrain." };
+            }
+
+            // Bottom-Middle-Left Autotile Walls
+            if (col >= 6 && col <= 11 && row >= 8 && row <= 15) {
+                if (row <= 11) return { name: "Dark Castle Stonework", category: "Walls", desc: "Heavy slate brick walls." };
+                return { name: "Black Void / Pitfall", category: "Ground", desc: "Complete darkness indicating deep cliffs or pits." };
+            }
+
+            // Bottom-Middle-Right (Mixed Paths & Straw Roofs)
+            if (col >= 12 && col <= 17 && row >= 8 && row <= 15) {
+                if (row <= 11) return { name: "Flower Grass Path", category: "Ground", desc: "Gravel pathway detailed with weeds, rocks and wildflowers." };
+                if (row <= 13) return { name: "Straw Thatched Roof", category: "Roofs", desc: "Yellow straw roof panels for huts." };
+                if (row === 14) return { name: "Carved Stone Steps", category: "Ground", desc: "Stairs to climb heights." };
+                return { name: "Iron Grid Grating", category: "Fences", desc: "Iron gates and bars." };
+            }
+
+            // Bottom-Right (Red & Blue Slate Roofs)
+            if (col >= 18 && col <= 23 && row >= 8 && row <= 15) {
+                if (row <= 11) return { name: "Red Clay Roof Tiles", category: "Roofs", desc: "Terracotta tiled roof segments." };
+                return { name: "Blue Slate Roof Tiles", category: "Roofs", desc: "Premium blue tiled roof segments." };
+            }
+
+            // Bottom-Far-Right (Outdoor Scenery)
+            if (col >= 24 && col <= 29 && row >= 8 && row <= 15) {
+                if (row === 8 && col === 24) return { name: "Lit Candle / Torch", category: "Scenery", desc: "Small torch providing light." };
+                if (row === 8 && col === 25) return { name: "Wild Herb / Weed", category: "Scenery", desc: "Small green weed or medicinal herb." };
+                if (row === 8 && col <= 27) return { name: "Green Oak Tree - Leaves", category: "Scenery", desc: "Upper foliage of a village oak tree." };
+                if (row === 8 && col >= 28) return { name: "Dead Oak Tree - Branches", category: "Scenery", desc: "Barren branches of a dead tree." };
+                if (row === 9 && col === 24) return { name: "Hanging Wall Lantern", category: "Scenery", desc: "Lantern mounted to outer walls." };
+                if (row === 9 && col === 25) return { name: "Broken Column Segment", category: "Ruins", desc: "Debris from ancient structures." };
+                if (row === 9 && col <= 27) return { name: "Green Oak Tree - Trunk", category: "Scenery", desc: "Solid trunk base of an oak tree (collides)." };
+                if (row === 9 && col >= 28) return { name: "Stone Column Ruins", category: "Ruins", desc: "Stone pillars left behind by ruin structures." };
+                if (row === 10 && col === 24) return { name: "Campfire Firewood Logs", category: "Scenery", desc: "Logs stacked, ready to be lit." };
+                if (row === 10 && col === 25) return { name: "Clay Storage Jar", category: "Furniture", desc: "Earthenware jar containing grains or water." };
+                if (row === 10 && col === 26) return { name: "Wooden Ladder", category: "Scenery", desc: "Ladder allowing movement up vertical barriers." };
+                if (row === 10 && col === 27) return { name: "Sacred Stone Cross Grave", category: "Ruins", desc: "A cross shaped gravestone." };
+                if (row === 10 && col >= 28) return { name: "Wall Ivy Vines - Top", category: "Scenery", desc: "Green ivy leaves growing downwards." };
+                if (row === 11 && col === 24) return { name: "Potted Red Tulips", category: "Scenery", desc: "Clay flower pot containing red flowers." };
+                if (row === 11 && col === 25) return { name: "Golden Urn Vessel", category: "Furniture", desc: "Valuable container." };
+                if (row === 11 && col === 26) return { name: "Campfire (Burning Frame)", category: "Scenery", desc: "Flickering flames of an active campfire." };
+                if (row === 11 && col === 27) return { name: "Skeleton Skull Pile", category: "Ruins", desc: "Spooky remains." };
+                if (row === 11 && col >= 28) return { name: "Wall Ivy Vines - Hanging", category: "Scenery", desc: "Lush green climbing vines." };
+                if (row === 12 && col <= 25) return { name: "Rustic Fence - Top", category: "Fences", desc: "Decorative rounded wood fence post." };
+                if (row === 12 && col === 26) return { name: "Tavern Signboard (PUB)", category: "Scenery", desc: "Hanging sign displaying PUB." };
+                if (row === 12 && col === 27) return { name: "Traveler Signboard (INN)", category: "Scenery", desc: "Hanging sign displaying INN." };
+                if (row === 12 && col >= 28) return { name: "Monolith Rune Monument - Top", category: "Ruins", desc: "Top arch of a large grave marker." };
+                if (row === 13 && col <= 25) return { name: "Rustic Fence - Base", category: "Fences", desc: "Wood fence base post." };
+                if (row === 13 && col === 26) return { name: "Shop Signboard (Sword)", category: "Scenery", desc: "Hanging sign displaying a sword symbol." };
+                if (row === 13 && col === 27) return { name: "Shop Signboard (Shield)", category: "Scenery", desc: "Hanging sign displaying a shield symbol." };
+                if (row === 13 && col >= 28) return { name: "Monolith Rune Monument - Middle", category: "Ruins", desc: "Etched stone middle segment." };
+                if (row === 14 && col <= 25) return { name: "Arched Stone Window - Top", category: "Furniture", desc: "Stone alcove or window frame." };
+                if (row === 14 && col === 26) return { name: "Banner Shield Emblem (Blue)", category: "Furniture", desc: "Blue knight guild wall crest." };
+                if (row === 14 && col === 27) return { name: "Banner Shield Emblem (Red)", category: "Furniture", desc: "Red/gold royal wall crest." };
+                if (row === 14 && col >= 28) return { name: "Traveler Tent Canopy - Top", category: "Scenery", desc: "Top triangle of canvas tent." };
+                if (row === 15 && col <= 25) return { name: "Arched Stone Window - Base", category: "Furniture", desc: "Bottom of stone alcove." };
+                if (row === 15 && col === 26) return { name: "Banner Shield Emblem (Silver)", category: "Furniture", desc: "Silver guardian wall crest." };
+                if (row === 15 && col === 27) return { name: "Banner Shield Emblem (Gold)", category: "Furniture", desc: "Gold champion wall crest." };
+                if (row === 15 && col >= 28) return { name: "Traveler Tent Canopy - Base", category: "Scenery", desc: "Entrance flap of canvas tent." };
+            }
+            
+            return { name: `Chipset Block (${col}, ${row})`, category: "Scenery", desc: "Visual asset component." };
+        }
+
+
+        // --- 2. MAP MAKER ENGINE GRID DATA ---
+        const mapCols = 24;
+        const mapRows = 16;
+        const mapData = [];
+
+        // Build default grid map (filled with Grass [2,9])
+        for (let r = 0; r < mapRows; r++) {
+            const rowArr = [];
+            for (let c = 0; c < mapCols; c++) {
+                rowArr.push({
+                    ground: [2, 9],  // grass X=2, Y=9
+                    object: null,
+                    detail: null,
+                    animated: null,
+                    collision: false,
+                    interactive: null
+                });
+            }
+            mapData.push(rowArr);
+        }
+
+        // Programmatically draw Mountain Wall at the very top (Y=0, Y=1)
+        for (let c = 0; c < mapCols; c++) {
+            // Castle Stone wall [18, 1] as mountain rock wall
+            mapData[0][c].ground = [21, 1];
+            mapData[0][c].collision = true;
+            mapData[1][c].ground = [21, 2];
+            mapData[1][c].collision = true;
+        }
+
+        // Draw River Canal Y:0-15 in columns 8, 9
+        for (let r = 0; r < mapRows; r++) {
+            // Left shore
+            mapData[r][8].ground = [0, 1];
+            mapData[r][8].animated = 'water';
+            mapData[r][8].collision = true;
+            
+            // Right shore
+            mapData[r][9].ground = [0, 1];
+            mapData[r][9].animated = 'water';
+            mapData[r][9].collision = true;
+        }
+
+        // Add Waterfall at the top of the River (Y=0, Y=1)
+        mapData[0][8].ground = [3, 1];
+        mapData[0][8].animated = 'waterfall';
+        mapData[0][8].collision = true;
+        mapData[0][9].ground = [3, 1];
+        mapData[0][9].animated = 'waterfall';
+        mapData[0][9].collision = true;
+
+        mapData[1][8].ground = [3, 1];
+        mapData[1][8].animated = 'waterfall';
+        mapData[1][8].collision = true;
+        mapData[1][9].ground = [3, 1];
+        mapData[1][9].animated = 'waterfall';
+        mapData[1][9].collision = true;
+
+        // Draw Gravel Cobblestone paths [6, 7]
+        // Horizontal path leading from left cottage to right cottage
+        for (let c = 2; c < 22; c++) {
+            if (c !== 8 && c !== 9) {
+                mapData[7][c].ground = [6, 7];
+            }
+        }
+        // Vertical path branches
+        mapData[6][4].ground = [6, 7]; // To House 1 Door
+        mapData[6][14].ground = [6, 7]; // To House 2 Door
+        
+        for (let r = 8; r <= 11; r++) {
+            mapData[r][14].ground = [6, 7]; // To Cemetery Entrance
+        }
+        for (let c = 15; c <= 19; c++) {
+            mapData[11][c].ground = [6, 7]; // Path into cemetery gate
+        }
+
+        // Add Wooden Bridge spanning the River at Y=7
+        // Let's replace river tiles at (7,8) and (7,9) with wooden floor bridge
+        mapData[7][8] = { ground: [18, 6], object: null, detail: null, animated: null, collision: false };
+        mapData[7][9] = { ground: [18, 6], object: null, detail: null, animated: null, collision: false };
+        
+        // Wood fence posts as bridge railings (X=27, Y=3)
+        mapData[7][8].detail = [27, 3];
+        mapData[7][9].detail = [27, 3];
+        // Bridge corners
+        mapData[7][7].object = [28, 3];
+        mapData[7][7].collision = true;
+        mapData[7][10].object = [28, 3];
+        mapData[7][10].collision = true;
+
+        // --- HOUSE 1: WOOD CABIN (Left Side, X:2-5, Y:2-5) ---
+        // Y=2: Wood Roof Top
+        mapData[2][2].object = [12, 0]; mapData[2][2].collision = true;
+        mapData[2][3].object = [13, 0]; mapData[2][3].collision = true;
+        mapData[2][4].object = [13, 0]; mapData[2][4].collision = true;
+        mapData[2][5].object = [14, 0]; mapData[2][5].collision = true;
+        // Y=3: Wood Roof Base
+        mapData[3][2].object = [12, 1]; mapData[3][2].collision = true;
+        mapData[3][3].object = [13, 1]; mapData[3][3].collision = true;
+        mapData[3][4].object = [13, 1]; mapData[3][4].collision = true;
+        mapData[3][5].object = [14, 1]; mapData[3][5].collision = true;
+        // Y=4: Wood Wall Upper
+        mapData[4][2].object = [12, 4]; mapData[4][2].collision = true;
+        mapData[4][3].object = [12, 4]; mapData[4][3].detail = [29, 0]; mapData[4][3].collision = true; // window
+        mapData[4][4].object = [12, 4]; mapData[4][4].collision = true;
+        mapData[4][5].object = [12, 4]; mapData[4][5].detail = [29, 0]; mapData[4][5].collision = true; // window
+        // Y=5: Wood Wall Lower
+        mapData[5][2].object = [12, 5]; mapData[5][2].collision = true;
+        mapData[5][3].object = [12, 5]; mapData[5][3].collision = true;
+        mapData[5][4].object = [12, 5]; mapData[5][4].detail = [26, 1]; mapData[5][4].collision = true; // Door
+        mapData[5][4].interactive = { type: 'door', message: "🚪 The cabin door is locked. A sign reads: 'Gone foraging for mushrooms in the woods.'" };
+        mapData[5][5].object = [12, 5]; mapData[5][5].collision = true;
+
+        // Weapon Shop Sign next to House 1
+        mapData[5][6].object = [26, 13];
+        mapData[5][6].collision = true;
+        mapData[5][6].interactive = { type: 'sign', message: "⚔️ [WEAPONS & ORES] - 'CLOSED: Mining metals inside the cave. Do not enter without a shield!'" };
+
+
+        // --- HOUSE 2: PLASTER & BLUE SLATE COTTAGE (Right Side, X:12-16, Y:2-5) ---
+        // Y=2: Blue Roof Top
+        mapData[2][12].object = [18, 12]; mapData[2][12].collision = true;
+        mapData[2][13].object = [19, 12]; mapData[2][13].collision = true;
+        mapData[2][14].object = [19, 12]; mapData[2][14].collision = true;
+        mapData[2][15].object = [19, 12]; mapData[2][15].collision = true;
+        mapData[2][16].object = [20, 12]; mapData[2][16].collision = true;
+        // Y=3: Blue Roof Base
+        mapData[3][12].object = [18, 13]; mapData[3][12].collision = true;
+        mapData[3][13].object = [19, 13]; mapData[3][13].collision = true;
+        mapData[3][14].object = [19, 13]; mapData[3][14].collision = true;
+        mapData[3][15].object = [19, 13]; mapData[3][15].collision = true;
+        mapData[3][16].object = [20, 13]; mapData[3][16].collision = true;
+        // Y=4: Plaster Wall Upper
+        mapData[4][12].object = [15, 1]; mapData[4][12].collision = true;
+        mapData[4][13].object = [15, 1]; mapData[4][13].detail = [29, 0]; mapData[4][13].collision = true; // window
+        mapData[4][14].object = [15, 1]; mapData[4][14].collision = true;
+        mapData[4][15].object = [15, 1]; mapData[4][15].detail = [29, 0]; mapData[4][15].collision = true; // window
+        mapData[4][16].object = [15, 1]; mapData[4][16].collision = true;
+        // Y=5: Plaster Wall Lower
+        mapData[5][12].object = [15, 2]; mapData[5][12].collision = true;
+        mapData[5][13].object = [15, 2]; mapData[5][13].collision = true;
+        mapData[5][14].object = [15, 2]; mapData[5][14].detail = [26, 1]; mapData[5][14].collision = true; // Door
+        mapData[5][14].interactive = { type: 'door', message: "👴 Welcome to the Village Elder's estate! Elder: 'Greetings, Knight. Beware of the south-eastern crypt... the skeletons stir at night.'" };
+        mapData[5][15].object = [15, 2]; mapData[5][15].collision = true;
+        mapData[5][16].object = [15, 2]; mapData[5][16].collision = true;
+
+        // Inn Sign next to House 2
+        mapData[5][11].object = [27, 12];
+        mapData[5][11].collision = true;
+        mapData[5][11].interactive = { type: 'sign', message: "🛏️ [VILLAGE INN] - 'Hot stew & a feather bed: 5 Gold. Free recovery of HP and MP!'" };
+
+
+        // --- FOREST VEGETATION / TREES ---
+        // Let's place Green Trees (each is 2x2: top X=26,27 Y=8, bottom X=26,27 Y=9)
+        const placeTree = (tx, ty) => {
+            mapData[ty][tx].object = [26, 8];
+            mapData[ty][tx+1].object = [27, 8];
+            mapData[ty+1][tx].object = [26, 9]; mapData[ty+1][tx].collision = true;
+            mapData[ty+1][tx+1].object = [27, 9]; mapData[ty+1][tx+1].collision = true;
+        };
+
+        placeTree(1, 8);
+        placeTree(11, 2);
+        placeTree(18, 3);
+        placeTree(21, 7);
+
+        // --- CAMPSITE (Bottom-Left: X:2-6, Y:11-15) ---
+        // Teepee Tent at X:3 Y:12..13
+        mapData[12][3].object = [28, 14]; mapData[12][3].collision = true;
+        mapData[13][3].object = [28, 15]; mapData[13][3].collision = true;
+        mapData[13][3].interactive = { type: 'tent', message: "🏕️ Your travelers' tent. Inside, a bedroll and maps of deep dungeon ruins lie scattered." };
+        
+        // Animated Campfire at X:5 Y:13
+        mapData[13][5].ground = [2, 9]; // grass base
+        mapData[13][5].object = [26, 10]; // lit fire
+        mapData[13][5].animated = 'campfire';
+        mapData[13][5].collision = true;
+        mapData[13][5].interactive = { type: 'campfire', message: "🔥 A blazing campfire crackles and sparks. Resting here fills you with an inner warmth." };
+
+        // Barrel at X:2 Y:13
+        mapData[13][2].object = [27, 2]; mapData[13][2].collision = true;
+        mapData[13][2].interactive = { type: 'chest', message: "🛢️ An oak barrel containing clear, cool spring water." };
+
+        // Golden Chest at X:5 Y:11
+        mapData[11][5].object = [25, 3]; mapData[11][5].collision = true;
+        mapData[11][5].interactive = { type: 'chest', message: "🎁 [TREASURE CHEST] - You opened the developer's chest! Inside is a magical retro code: 'VITE-RPG-2026'. You feel accomplished!" };
+
+        // Wooden Stools around fire
+        mapData[13][4].detail = [29, 1]; mapData[13][4].collision = true;
+        mapData[13][6].detail = [29, 1]; mapData[13][6].collision = true;
+
+
+        // --- CEMETERY (Bottom-Right: X:18-23, Y:11-15) ---
+        // Fences enclosing cemetery
+        for (let c = 18; c <= 23; c++) {
+            if (c !== 19) { // Gate entrance at Col 19
+                mapData[11][c].object = [27, 3];
+                mapData[11][c].collision = true;
+            }
+        }
+        for (let r = 12; r <= 15; r++) {
+            mapData[r][18].object = [27, 3]; mapData[r][18].collision = true;
+            mapData[r][23].object = [27, 3]; mapData[r][23].collision = true;
+        }
+
+        // Inside cemetery details
+        // Grave Cross at X:19 Y:13
+        mapData[13][19].object = [27, 10]; mapData[13][19].collision = true;
+        mapData[13][19].interactive = { type: 'tombstone', message: "🪦 'Here lies Bob. Attempted a level 99 raid at level 5. Rest in Pixels.'" };
+        
+        // Small grave at X:21 Y:13
+        mapData[13][21].object = [27, 0]; mapData[13][21].collision = true;
+        mapData[13][21].interactive = { type: 'tombstone', message: "🪦 'In memory of Alice. She didn't save her game for 10 hours. A true tragedy.'" };
+
+        // Large Monolith Monument at X:22 Y:13-15
+        mapData[13][22].object = [28, 12]; mapData[13][22].collision = true;
+        mapData[14][22].object = [28, 13]; mapData[14][22].collision = true;
+        mapData[14][22].interactive = { type: 'tombstone', message: "🪦 [Runic Obelisk] - 'He who reads these ancient lines shall receive the blessing of retro programming. 100 EXP gained!'" };
+        mapData[15][22].object = [28, 14]; mapData[15][22].collision = true;
+
+        // Skeleton Bones Pile at X:20 Y:14
+        mapData[14][20].object = [27, 11]; mapData[14][20].collision = true;
+        mapData[14][20].interactive = { type: 'tombstone', message: "💀 A cluster of bleached skeleton bones. The air feels freezing cold near it..." };
+
+        // Dead tree in cemetery corner (X:22 Y:11-12)
+        mapData[11][22].detail = [28, 8];
+        mapData[12][22].object = [28, 9]; mapData[12][22].collision = true;
+
+
+        // --- 3. RENDERING THE VILLAGE MAP ---
+        const mapGridEl = document.getElementById('map-grid');
+        
+        function renderMap() {
+            // Remove any old tiles (keep player)
+            const tiles = mapGridEl.querySelectorAll('.map-tile');
+            tiles.forEach(t => t.remove());
+
+            for (let r = 0; r < mapRows; r++) {
+                for (let c = 0; c < mapCols; c++) {
+                    const tile = mapData[r][c];
+                    
+                    const tileDiv = document.createElement('div');
+                    tileDiv.className = 'map-tile';
+                    tileDiv.style.gridColumnStart = c + 1;
+                    tileDiv.style.gridRowStart = r + 1;
+
+                    // Layer 1: Ground
+                    if (tile.ground) {
+                        const groundLayer = document.createElement('div');
+                        groundLayer.className = 'tile-layer';
+                        if (tile.animated === 'water') {
+                            groundLayer.classList.add('anim-water');
+                        } else if (tile.animated === 'waterfall') {
+                            groundLayer.classList.add('anim-waterfall');
+                        } else {
+                            groundLayer.style.setProperty('--col', tile.ground[0]);
+                            groundLayer.style.setProperty('--row', tile.ground[1]);
+                        }
+                        tileDiv.appendChild(groundLayer);
+                    }
+
+                    // Layer 2: Structures / Objects
+                    if (tile.object) {
+                        const objectLayer = document.createElement('div');
+                        objectLayer.className = 'tile-layer';
+                        if (tile.animated === 'campfire') {
+                            objectLayer.classList.add('anim-campfire');
+                        } else {
+                            objectLayer.style.setProperty('--col', tile.object[0]);
+                            objectLayer.style.setProperty('--row', tile.object[1]);
+                        }
+                        tileDiv.appendChild(objectLayer);
+                    }
+
+                    // Layer 3: Overlays / Details
+                    if (tile.detail) {
+                        const detailLayer = document.createElement('div');
+                        detailLayer.className = 'tile-layer';
+                        detailLayer.style.setProperty('--col', tile.detail[0]);
+                        detailLayer.style.setProperty('--row', tile.detail[1]);
+                        tileDiv.appendChild(detailLayer);
+                    }
+
+                    mapGridEl.appendChild(tileDiv);
+                }
+            }
+        }
+
+
+        // --- 4. PLAYER MOVEMENT & GAME ENGINE ---
+        let playerX = 4;
+        let playerY = 8;
+        let playerDir = 'down';
+        
+        const playerEl = document.getElementById('player');
+        const interactBubble = document.getElementById('interact-bubble');
+
+        function updatePlayerPosition() {
+            playerEl.style.setProperty('--player-x', playerX);
+            playerEl.style.setProperty('--player-y', playerY);
+            playerEl.className = `player dir-${playerDir}`;
+            
+            // Check if facing interactive tile to toggle floating "!" bubble
+            const facing = getFacingCell();
+            if (facing && facing.cell && facing.cell.interactive) {
+                interactBubble.style.display = 'block';
+            } else {
+                interactBubble.style.display = 'none';
+            }
+        }
+
+        function getFacingCell() {
+            let tx = playerX;
+            let ty = playerY;
+            if (playerDir === 'up') ty--;
+            else if (playerDir === 'down') ty++;
+            else if (playerDir === 'left') tx--;
+            else if (playerDir === 'right') tx++;
+
+            if (tx >= 0 && tx < mapCols && ty >= 0 && ty < mapRows) {
+                return { x: tx, y: ty, cell: mapData[ty][tx] };
+            }
+            return null;
+        }
+
+        function tryMove(dx, dy, dirName) {
+            playerDir = dirName;
+            
+            const targetX = playerX + dx;
+            const targetY = playerY + dy;
+
+            // Boundaries check
+            if (targetX >= 0 && targetX < mapCols && targetY >= 0 && targetY < mapRows) {
+                const targetTile = mapData[targetY][targetX];
+                // Collision check
+                if (!targetTile.collision) {
+                    playerX = targetX;
+                    playerY = targetY;
+                    playSynthSound('move');
+                }
+            }
+            updatePlayerPosition();
+        }
+
+        function triggerInteract() {
+            const facing = getFacingCell();
+            if (facing && facing.cell && facing.cell.interactive) {
+                const item = facing.cell.interactive;
+                displayDialogMessage(item.message, item.type);
+                if (item.type === 'chest') {
+                    playSynthSound('open');
+                } else {
+                    playSynthSound('interact');
+                }
+            } else {
+                displayDialogMessage("Nothing interesting in that direction.", "system");
+            }
+        }
+
+        // Dialogue typing animation
+        let typeTimeout = null;
+        function displayDialogMessage(text, type) {
+            const textEl = document.getElementById('dialogue-text');
+            const badgeEl = document.getElementById('speaker-badge');
+
+            if (type === 'sign') badgeEl.innerText = '📜 SIGNPOST';
+            else if (type === 'door') badgeEl.innerText = '🚪 HOUSE DOOR';
+            else if (type === 'chest') badgeEl.innerText = '🎁 TREASURE';
+            else if (type === 'campfire') badgeEl.innerText = '🔥 CAMPFIRE';
+            else if (type === 'tombstone') badgeEl.innerText = '🪦 TOMBSTONE';
+            else if (type === 'tent') badgeEl.innerText = '⛺ TENT';
+            else badgeEl.innerText = '🛡️ SYSTEM';
+
+            if (typeTimeout) clearTimeout(typeTimeout);
+
+            textEl.innerText = "";
+            let i = 0;
+            function typeChar() {
+                if (i < text.length) {
+                    textEl.innerText += text.charAt(i);
+                    i++;
+                    typeTimeout = setTimeout(typeChar, 18);
+                }
+            }
+            typeChar();
+        }
+
+
+        // --- 5. KEYBOARD INPUTS ---
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            
+            // Prevent scrolling on arrow keys / space
+            if (["arrowup", "arrowdown", "arrowleft", "arrowright", " "].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            if (key === 'w' || e.key === 'ArrowUp') {
+                tryMove(0, -1, 'up');
+            } else if (key === 's' || e.key === 'ArrowDown') {
+                tryMove(0, 1, 'down');
+            } else if (key === 'a' || e.key === 'ArrowLeft') {
+                tryMove(-1, 0, 'left');
+            } else if (key === 'd' || e.key === 'ArrowRight') {
+                tryMove(1, 0, 'right');
+            } else if (e.key === ' ' || key === 'e') {
+                triggerInteract();
+            }
+        });
+
+        // Mobile D-Pad Event listeners
+        document.getElementById('btn-up').addEventListener('click', () => tryMove(0, -1, 'up'));
+        document.getElementById('btn-down').addEventListener('click', () => tryMove(0, 1, 'down'));
+        document.getElementById('btn-left').addEventListener('click', () => tryMove(-1, 0, 'left'));
+        document.getElementById('btn-right').addEventListener('click', () => tryMove(1, 0, 'right'));
+        document.getElementById('btn-action').addEventListener('click', () => triggerInteract());
+
+
+        // --- 6. RETRO SOUND SYNTH USING WEB AUDIO ---
+        let audioCtx = null;
+        let isAudioEnabled = false;
+        const soundBtn = document.getElementById('sound-btn');
+        const synthStatus = document.getElementById('synth-status');
+
+        soundBtn.addEventListener('click', () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                isAudioEnabled = true;
+                soundBtn.innerText = "🔊 Audio Synth Active";
+                soundBtn.style.background = "var(--accent-green)";
+                synthStatus.style.display = "block";
+                playSynthSound('open'); // play boot melody
+            }
+        });
+
+        function playSynthSound(type) {
+            if (!isAudioEnabled || !audioCtx) return;
+            
+            // Resume context if suspended
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            const now = audioCtx.currentTime;
+
+            if (type === 'move') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(70, now + 0.08);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'interact') {
+                // Short arpeggio C-E-G
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(261.63, now); // C4
+                osc.frequency.setValueAtTime(329.63, now + 0.05); // E4
+                osc.frequency.setValueAtTime(392.00, now + 0.1); // G4
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.22);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            } else if (type === 'open') {
+                // Happy chest melody
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.28);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.28);
+                osc.start(now);
+                osc.stop(now + 0.28);
+            }
+        }
+
+
+        // --- 7. ZOOM ENGINE CONTROLLER ---
+        const zoomSlider = document.getElementById('zoom-slider');
+        const zoomVal = document.getElementById('zoom-val');
+
+        zoomSlider.addEventListener('input', (e) => {
+            const size = e.target.value;
+            document.documentElement.style.setProperty('--tile-size', `${size}px`);
+            
+            let scaleString = "1x";
+            if (size === "32") scaleString = "2x";
+            if (size === "48") scaleString = "3x";
+            if (size === "64") scaleString = "4x";
+            
+            zoomVal.innerText = `${size}px (${scaleString})`;
+            updatePlayerPosition();
+        });
+
+
+        // --- 8. TILESET ANALYZER GRID GENERATION ---
+        const analyzerGridEl = document.getElementById('analyzer-grid');
+        const inspectorPreview = document.getElementById('inspector-preview');
+        const inspectorName = document.getElementById('inspector-name');
+        const inspectorCategory = document.getElementById('inspector-category');
+        const inspectorGridCoord = document.getElementById('inspector-grid-coord');
+        const inspectorPixelOffset = document.getElementById('inspector-pixel-offset');
+        const inspectorDesc = document.getElementById('inspector-desc');
+        const inspectorCss = document.getElementById('inspector-css');
+
+        let lockedCell = null;
+
+        // Generate 30 x 16 Cells
+        for (let r = 0; r < 16; r++) {
+            for (let c = 0; c < 30; c++) {
+                const cell = document.createElement('div');
+                cell.className = 'analyzer-cell';
+                cell.dataset.col = c;
+                cell.dataset.row = r;
+
+                cell.addEventListener('mouseenter', () => {
+                    if (!lockedCell) {
+                        updateInspector(c, r);
+                    }
+                });
+
+                cell.addEventListener('click', () => {
+                    // Remove previous selection
+                    const activeCells = analyzerGridEl.querySelectorAll('.analyzer-cell.selected');
+                    activeCells.forEach(el => el.classList.remove('selected'));
+                    
+                    if (lockedCell === cell) {
+                        lockedCell = null; // unlock
+                    } else {
+                        lockedCell = cell; // lock
+                        cell.classList.add('selected');
+                        updateInspector(c, r);
+                        playSynthSound('move');
+                    }
+                });
+
+                analyzerGridEl.appendChild(cell);
+            }
+        }
+
+        function updateInspector(col, row) {
+            // Update preview style variables
+            inspectorPreview.style.setProperty('--col', col);
+            inspectorPreview.style.setProperty('--row', row);
+
+            // Fetch metadata
+            const metadata = getTileInfo(col, row);
+            
+            // Calculate pixel positions (spritesheet tile size is 16px)
+            const pxX = col * 16;
+            const pxY = row * 16;
+
+            // Fill text fields
+            inspectorName.innerText = metadata.name;
+            inspectorCategory.innerText = metadata.category.toUpperCase();
+            inspectorCategory.className = `inspector-cat tag-${metadata.category.toLowerCase()}`;
+            inspectorGridCoord.innerText = `Col ${col}, Row ${row}`;
+            inspectorPixelOffset.innerText = `X: -${pxX}px, Y: -${pxY}px`;
+            inspectorDesc.innerText = metadata.desc;
+            inspectorCss.innerText = `background-position: -${pxX}px -${pxY}px; width: 16px; height: 16px;`;
+        }
+
+        // Initialize display
+        renderMap();
+        updatePlayerPosition();
+    </script>
+</body>
+</html>

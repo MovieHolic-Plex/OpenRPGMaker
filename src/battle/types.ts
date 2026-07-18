@@ -60,7 +60,7 @@ export interface BattleRuntimeOptions {
   // 없으면 레벨업 미리보기를 계산하지 않는다(세션 적립은 별도 파이프라인이 담당).
   readonly party?: BattlePartyProgress;
   // 전투 배경 리소스 override(주로 지형 battleBackgroundResourceId). 지정 시 최우선.
-  // 없으면 전투군 previewBackground → 시스템 battleSystem 순으로 사용.
+  // 없으면 전투군 previewBackground → 지형 → 기본 전장. System2 게이지 시트는 배경이 아님.
   readonly backdropResourceId?: string;
   // 현재 플레이 세션의 스위치/변수/인벤토리. 전투 이벤트 조건과 아이템 목록/소모의 기준.
   // 없으면 project.session(에디터 시작 상태)을 사용한다 — 에디터 전투 테스트 경로용.
@@ -82,6 +82,7 @@ export interface BattleSessionState {
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
+  readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
   readonly gameTime?: GameTime;
   readonly friendship?: Readonly<Record<string, number>>;
 }
@@ -105,6 +106,8 @@ export interface BattlePartyProgress {
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
   // 현재 파티 편성(changeParty/순서변경 반영). 없으면 project.session(에디터 시작 상태).
   readonly partyActorIds?: readonly string[];
+  // Change Battle Commands 세션 오버라이드. actorId → battleCommand ids.
+  readonly battleCommands?: Readonly<Record<string, readonly string[]>>;
   // 몬스터 전투 모드(옵션 A): 값이 있고 비어있지 않으면 영웅 대신 이 몬스터 파티로 전투한다.
   // 없거나 빈 배열이면 기존 액터 경로가 100% 유지된다(회귀 0).
   readonly monsterParty?: readonly MonsterInstance[];
@@ -254,6 +257,7 @@ export interface BattleEventStateSnapshot {
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
+  readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
 }
 
 export interface BattleSnapshot {

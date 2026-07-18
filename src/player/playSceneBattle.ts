@@ -63,6 +63,7 @@ export function playBattle(
       stateIds: scene.session.actorStateIds,
       partyActorIds: scene.session.partyActorIds,
       monsterParty: monsterPartyMode ? monsterParty : undefined,
+      battleCommands: scene.session.actorBattleCommands,
     },
     sessionState: {
       switches: scene.session.switches,
@@ -73,6 +74,7 @@ export function playBattle(
       actorSkillIds: scene.session.actorSkillIds,
       actorExperience: scene.session.actorExperience,
       actorLevels: scene.session.actorLevels,
+      actorBattleCommands: scene.session.actorBattleCommands,
       gameTime: scene.session.gameTime,
     },
     partyMonsters,

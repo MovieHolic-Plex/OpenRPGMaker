@@ -1,5 +1,6 @@
 import { emptyToUndefined, numberField, selectField, selectLiteral, textControl } from "@/editor/panels/databaseControls";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 export { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
 import {
@@ -96,7 +97,7 @@ export function renderBattleScreenTab(host: HTMLElement): void {
     rm2k3Fieldset("선택 적 그룹 미리보기", [
       readonlyValue("이름", selectedTroop?.name ?? "(없음)"),
       readonlyValue("멤버", String(selectedTroop?.members?.length ?? selectedTroop?.enemyIds.length ?? 0)),
-      readonlyValue("배경", selectedTroop?.previewBackgroundResourceId ?? project.system.battleSystemResourceId ?? "(미설정)"),
+      readonlyValue("배경", selectedTroop?.previewBackgroundResourceId ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID),
     ]),
     rm2k3Fieldset("적 그룹 목록", project.database.troops.slice(0, 8).map((troop, index) => {
       const memberCount = troop.members?.length ?? troop.enemyIds.length;
@@ -104,7 +105,7 @@ export function renderBattleScreenTab(host: HTMLElement): void {
     })),
     rm2k3Fieldset("RM2003 배치 규칙", [
       readonlyValue("적", "x/y/숨김 멤버는 적 그룹에서 편집"),
-      readonlyValue("배경", "적 그룹 배경 또는 시스템 전투 그래픽"),
+      readonlyValue("배경", "적 그룹 배경 → 지형 전투 배경 → 기본 전장 (System2 게이지 시트 제외)"),
       readonlyValue("배치 편집", "적 그룹 멤버 위치는 적 그룹에서 편집"),
     ]),
   );

@@ -1,5 +1,6 @@
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
+import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
@@ -230,6 +231,14 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       name: asset.name,
       imageWidth: 16,
       imageHeight: 16,
+      assetId: asset.id,
+    });
+  }
+  for (const asset of CC0_AUDIO_ASSETS) {
+    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    profiles.push({
+      kind: asset.kind,
+      name: asset.name,
       assetId: asset.id,
     });
   }

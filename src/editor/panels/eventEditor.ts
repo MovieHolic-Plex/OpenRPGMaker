@@ -1,4 +1,7 @@
 import { editorState } from "@/editor/editorState";
+import {
+  eventDisplayName as sharedEventDisplayName,
+} from "@/editor/eventMarkerUx";
 import { ensureEventPages } from "@/editor/eventPages";
 import { handleEditorDeleteKey } from "@/editor/hotkeys";
 import { committedEvents } from "@/project/eventDrafts";
@@ -6,11 +9,13 @@ import { store } from "@/project/store";
 import type { EventPageGraphic, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventGraphicIcon } from "./eventEditor/eventGraphicPreview";
+import { bindEventListRowHoverTooltip, hideEventListTooltip } from "./eventListHoverTooltip";
 import { openEventEditorModal } from "./eventEditor/modal";
 
 export { renderEventEditorInline } from "./eventEditor/inline";
 
 export function renderEventEditor(container: HTMLElement): void {
+  hideEventListTooltip();
   const section = el("div", {
     class: "panel-section event-editor event-editor-sidebar",
     on: {
@@ -83,9 +88,10 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
   for (const event of events) {
     const displayName = eventDisplayName(event);
     const icon = renderEventGraphicIcon(eventListGraphic(event));
+    // Custom hover panel already covers details — no native title/alt tooltip.
     const row = el("button", {
       class: "event-list-row" + (event.id === selectedEventId ? " active" : ""),
-      attrs: { type: "button", title: `${displayName} (${event.id}, ${event.x},${event.y})` },
+      attrs: { type: "button" },
       dataset: { testid: `event-list-row-${event.id}` },
       on: {
         click: () => selectEvent(event),
@@ -97,18 +103,14 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
       el("span", { class: "event-list-name", text: displayName }),
       el("span", { class: "event-list-meta", text: `${event.x},${event.y} · ${event.pages?.length ?? 0}p` })
     );
+    bindEventListRowHoverTooltip(row, event);
     list.append(row);
   }
   return list;
 }
 
 function eventDisplayName(event: GameEvent): string {
-  const pages = event.pages ?? [];
-  for (let index = pages.length - 1; index >= 0; index -= 1) {
-    const name = pages[index]?.name.trim();
-    if (name) return name;
-  }
-  return event.id;
+  return sharedEventDisplayName(event);
 }
 
 function eventListGraphic(event: GameEvent): EventPageGraphic {

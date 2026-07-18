@@ -82,10 +82,14 @@ function resourceProfileRow(profile: ResourceProfile): HTMLElement {
   ].filter(Boolean).join(" · ");
   const row = el("div", { class: "rm-profile-row", dataset: { testid: `resource-profile-${profile.kind}` }, text });
   const previewUrl = resolveAssetResourceUrl(profile.assetId, { project });
-  if (previewUrl && profile.kind !== "chipset") {
+  const isAudio = profile.kind === "music" || profile.kind === "sound";
+  if (previewUrl && profile.kind !== "chipset" && !isAudio) {
     const thumb = el("img", { attrs: { alt: `${profile.name} 미리보기`, src: previewUrl } }) as HTMLImageElement;
     thumb.className = "rm-profile-thumb";
     row.prepend(thumb);
+  }
+  if (isAudio) {
+    row.prepend(el("span", { class: "rm-profile-audio-badge", text: profile.kind === "music" ? "♪ BGM" : "♪ SE", attrs: { "aria-hidden": "true" } }));
   }
   if (profile.kind === "chipset") {
     row.append(makeResourcePreviewGrid(profile.imageWidth ?? 0, profile.imageHeight ?? 0, profile.tileWidth ?? 16));

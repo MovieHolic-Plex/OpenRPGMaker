@@ -6,6 +6,14 @@ import { previewStructureStampCells } from "@/editor/structureStampTools";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
+/** 페인트/드래그 중에는 팔레트 raw 호버를 그리지 않는다 — 성형 결과와 겹쳐 깜빡임이 난다. */
+export function shouldShowPaintHoverPreview(input: {
+  readonly isPainting: boolean;
+  readonly dragActive: boolean;
+}): boolean {
+  return !input.isPainting && !input.dragActive;
+}
+
 type HoverPreviewSpec = {
   readonly centerX: number;
   readonly centerY: number;

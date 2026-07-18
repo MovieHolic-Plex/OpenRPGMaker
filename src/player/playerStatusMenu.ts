@@ -15,6 +15,7 @@ import { el } from "@/util/dom";
 
 export {
   createPlayerStatusMenuSnapshot,
+  listStatusMenuCommandIds,
   STATUS_MENU_COMMAND_IDS,
   statusMenuCommandLabel,
 } from "@/player/playerStatusMenuModel";
@@ -128,6 +129,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "row":
     case "formation":
     case "quests":
+    case "relationships":
       actions.onCommand(command.id);
       return;
     default:

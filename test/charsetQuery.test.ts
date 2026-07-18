@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveNpcGraphic } from "@/assets/charsetQuery";
+import { charsetGraphicKey, pickNpcGraphic, resolveNpcGraphic } from "@/assets/charsetQuery";
 
 describe("charsetQuery", () => {
   it("할머니 질의를 elder+female 엔트리로 해석한다", () => {
@@ -27,5 +27,30 @@ describe("charsetQuery", () => {
 
   it("0점 질의는 null을 반환한다", () => {
     expect(resolveNpcGraphic("존재하지않는차셋질의xyz")).toBeNull();
+  });
+
+  it("generic villager with seed diversifies across top-K", () => {
+    const a = pickNpcGraphic("villager", { seed: "map:Alice:1,1" });
+    const b = pickNpcGraphic("villager", { seed: "map:Bob:2,2" });
+    expect(a).toBeTruthy();
+    expect(b).toBeTruthy();
+    // same seed is stable
+    expect(pickNpcGraphic("villager", { seed: "map:Alice:1,1" })?.characterIndex).toBe(a?.characterIndex);
+    expect(pickNpcGraphic("villager", { seed: "map:Alice:1,1" })?.textureKey).toBe(a?.textureKey);
+  });
+
+  it("avoidKeys skips already-used slots when alternatives exist", () => {
+    const first = pickNpcGraphic("villager", { seed: "fixed" })!;
+    const second = pickNpcGraphic("villager", {
+      seed: "fixed",
+      avoidKeys: new Set([charsetGraphicKey(first)]),
+    })!;
+    expect(charsetGraphicKey(second)).not.toBe(charsetGraphicKey(first));
+  });
+
+  it("specific role query keeps top match when not avoided", () => {
+    const elder = pickNpcGraphic("할머니");
+    expect(elder?.gender).toBe("female");
+    expect(elder?.age).toBe("elder");
   });
 });

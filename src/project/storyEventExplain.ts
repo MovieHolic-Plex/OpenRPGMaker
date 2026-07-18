@@ -235,6 +235,36 @@ function traceCondition(
         summary: `friendship:${condition.npcKey ?? event.id}=${actual} >= ${condition.value}`,
       };
     }
+    case "battleResult":
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        actual: session.battleResult,
+        expected: condition.result,
+        summary: `battleResult=${session.battleResult ?? "none"} expected ${condition.result}`,
+      };
+    case "all":
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        summary: `all(${condition.conditions.length}) => ${ok ? "true" : "false"}`,
+      };
+    case "any":
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        summary: `any(${condition.conditions.length}) => ${ok ? "true" : "false"}`,
+      };
+    case "not":
+      return {
+        index,
+        kind: condition.kind,
+        ok,
+        summary: `not => ${ok ? "true" : "false"}`,
+      };
   }
 }
 

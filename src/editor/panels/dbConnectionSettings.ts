@@ -13,6 +13,7 @@ import {
   type SupabaseProjectListItem,
 } from "@/project/supabaseProjectSync";
 import { markSupabaseRecoveredLocation } from "@/project/supabaseRecoveryLocation";
+import { syncProjectToUrl } from "@/project/projectUrl";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -258,6 +259,8 @@ function selectProjectId(form: HTMLFormElement, statusLine: HTMLElement, project
   const control = form.elements.namedItem("projectId");
   if (!(control instanceof HTMLInputElement)) return;
   control.value = project.projectId;
+  // 선택 즉시 주소창에 id/이름 반영 — 연결 전에도 공유 링크를 만들 수 있다.
+  syncProjectToUrl({ projectId: project.projectId, projectName: project.title });
   setStatusLine(statusLine, `프로젝트 선택됨: ${project.title} (${project.projectId})`);
 }
 
@@ -370,6 +373,8 @@ function saveConfigFromForm(
 ): void {
   const draft = configDraftFromForm(form);
   saveSupabaseProjectConfigDraft(draft);
+  // 연결 시도/저장 시에도 URL 파라미터를 맞춰 둔다 (name은 로드 후 store가 채움).
+  syncProjectToUrl({ projectId: draft.projectId || null, projectName: null });
   onRefresh();
   if (!notify) return;
   setStatusLine(statusLine, "DB 설정을 저장했습니다.");

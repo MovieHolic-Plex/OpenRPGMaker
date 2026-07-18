@@ -18,6 +18,7 @@ import type { AnyQuestDef } from "../quest/questDef";
 import type { ProjectWorld } from "../world/types";
 import type { WorldGraph } from "../worldGraph/types";
 import type {
+  CharacterProfile,
   CommandV1,
   CommonEvent,
   Condition,
@@ -283,6 +284,9 @@ export interface Project {
   endings?: EndingDef[];
   // 스위치/변수에 대한 서사 의미 레지스트리. 기존 상태 머신을 대체하지 않는다.
   storyFlags?: StoryFlagDef[];
+  // Optional identity package keyed by GameEvent.characterId. Opt-in; no migration.
+  // Gift/birthday resolution: event-local fields override profile defaults (see characterProfiles.ts).
+  characters?: Record<string, CharacterProfile>;
   mapTree: MapTreeNode;
   startMapId: MapId;
   startPos: { x: number; y: number };

@@ -1,7 +1,7 @@
 import { isSeason, type Season } from "@/project/gameTime";
 import type { CropGraphicStage, CropRecord, FarmTool } from "@/project/types";
 
-export const FARM_TOOLS = ["hoe", "wateringCan"] as const satisfies readonly FarmTool[];
+export const FARM_TOOLS = ["hoe", "wateringCan", "axe", "pickaxe"] as const satisfies readonly FarmTool[];
 
 export function isFarmTool(value: unknown): value is FarmTool {
   return typeof value === "string" && (FARM_TOOLS as readonly string[]).includes(value);

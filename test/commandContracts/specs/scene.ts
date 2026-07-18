@@ -1,0 +1,86 @@
+import { nativeManifestEntry } from "../specTypes";
+
+export const SCENE_SPECS = {
+  transfer: nativeManifestEntry("scene", {
+    kind: "transfer",
+    mapId: "map_contract",
+    x: 2,
+    y: 3,
+    direction: "retain",
+    fade: "black",
+  }),
+  moveEvent: nativeManifestEntry("scene", {
+    kind: "moveEvent",
+    eventId: "event_contract",
+    route: { moves: [], repeat: false },
+  }),
+  setEventGraphicPattern: nativeManifestEntry("scene", {
+    kind: "setEventGraphicPattern",
+    eventId: "event_contract",
+    pattern: 1,
+  }),
+  changeTile: nativeManifestEntry("scene", {
+    kind: "changeTile",
+    mapId: "map_contract",
+    layer: "lower",
+    x: 1,
+    y: 1,
+    tile: 1,
+  }),
+  battleProcessing: nativeManifestEntry("scene", {
+    kind: "battleProcessing",
+    troopId: "troop_contract",
+    canEscape: true,
+    canLose: false,
+  }),
+  openChest: nativeManifestEntry("scene", { kind: "openChest", chestId: "chest_contract" }),
+  setLighting: nativeManifestEntry("scene", {
+    kind: "setLighting",
+    ambient: 0.75,
+    color: "#102030",
+    transitionMs: 100,
+  }),
+  addLight: nativeManifestEntry("scene", {
+    kind: "addLight",
+    source: { id: "light_contract", at: "player", radius: 4, intensity: 1 },
+  }),
+  removeLight: nativeManifestEntry("scene", { kind: "removeLight", id: "light_contract" }),
+  setWeather: nativeManifestEntry("scene", {
+    kind: "setWeather",
+    weather: "rain",
+    intensity: 0.5,
+    transitionMs: 100,
+  }),
+  showAnimation: nativeManifestEntry("scene", {
+    kind: "showAnimation",
+    target: "player",
+    animationId: "animation_contract",
+    wait: false,
+  }),
+  showPicture: nativeManifestEntry("scene", {
+    kind: "showPicture",
+    pictureId: "picture_contract",
+    resourceId: "resource_contract",
+    x: 4,
+    y: 5,
+  }),
+  erasePicture: nativeManifestEntry("scene", { kind: "erasePicture", pictureId: "picture_contract" }),
+  playAudio: nativeManifestEntry("scene", {
+    kind: "playAudio",
+    resourceId: "resource_contract",
+    loop: false,
+  }),
+  stopAudio: nativeManifestEntry("scene", { kind: "stopAudio" }),
+  shop: nativeManifestEntry("scene", {
+    kind: "shop",
+    itemIds: ["item_contract"],
+    allowSell: true,
+    quantityMode: "single",
+    shopType: "normal",
+    messageType: "welcome",
+    merchantGold: 100,
+    branchOnTransaction: false,
+    transactionBranch: [],
+  }),
+  inn: nativeManifestEntry("scene", { kind: "inn", price: 20 }),
+} as const;

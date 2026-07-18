@@ -24,13 +24,14 @@ describe("friendship runtime", () => {
     expect(getFriendship(restored, "ev_farmer")).toBe(80);
   });
 
-  it("evaluates friendshipAtLeast with self-event fallback", () => {
+  it("evaluates friendshipAtLeast with characterId self host (not bare event id)", () => {
     const project = createBlankProject();
     const session = startSession(project);
-    changeFriendship(session, "ev_farmer", 120);
+    changeFriendship(session, "char_farmer", 120);
 
-    expect(evalCondition(session, { kind: "friendshipAtLeast", value: 100 }, "ev_farmer")).toBe(true);
-    expect(evalCondition(session, { kind: "friendshipAtLeast", npcKey: "ev_farmer", value: 140 })).toBe(false);
+    expect(evalCondition(session, { kind: "friendshipAtLeast", value: 100 }, { id: "ev_farmer", characterId: "char_farmer" })).toBe(true);
+    expect(evalCondition(session, { kind: "friendshipAtLeast", value: 100 }, { id: "ev_farmer" })).toBe(false);
+    expect(evalCondition(session, { kind: "friendshipAtLeast", npcKey: "char_farmer", value: 140 })).toBe(false);
   });
 });
 
@@ -66,6 +67,103 @@ describe("gift runtime", () => {
     expect(giveGiftToNpc(project, session, giftEvent("ev_farmer"), "item_strawberry")).toMatchObject({ ok: false, reason: "system-disabled" });
     expect(session.inventory.item_strawberry).toBe(2);
     expect(getFriendship(session, "ev_farmer")).toBe(0);
+  });
+});
+
+describe("birthday gift multiplier", () => {
+  it("doubles gift friendship delta on birthday season+day", () => {
+    const project = giftProject();
+    const session = startSession(project);
+    session.gameTime = { minute: 0, hour: 9, day: 14, season: "summer", year: 1 };
+    const event = giftEvent("ev_bday");
+    event.socialCalendar = { birthday: { season: "summer", day: 14 } };
+
+    expect(giveGiftToNpc(project, session, event, "item_strawberry")).toMatchObject({
+      ok: true,
+      rank: "loved",
+      delta: 160,
+      friendship: 160,
+    });
+  });
+
+  it("keeps base delta on non-birthday days and when gameTime is missing", () => {
+    const project = giftProject();
+    const event = giftEvent("ev_bday");
+    event.socialCalendar = { birthday: { season: "summer", day: 14 } };
+
+    const noTime = startSession(project);
+    noTime.gameTime = undefined;
+    expect(giveGiftToNpc(project, noTime, event, "item_strawberry")).toMatchObject({
+      ok: true,
+      delta: 80,
+      friendship: 80,
+    });
+
+    const otherDay = startSession(project);
+    otherDay.gameTime = { minute: 0, hour: 9, day: 15, season: "summer", year: 1 };
+    expect(giveGiftToNpc(project, otherDay, event, "item_strawberry")).toMatchObject({
+      ok: true,
+      delta: 80,
+      friendship: 80,
+    });
+  });
+});
+
+describe("social shop discount", () => {
+  it("lowers buy prices when merchant bond meets minFriendship", () => {
+    const project = giftProject();
+    const session = startSession(project);
+    changeFriendship(session, "char_merchant", 200);
+    const command: Extract<Command, { kind: "shop" }> = {
+      kind: "shop",
+      itemIds: ["item_spring_seed"],
+      stock: [{ itemId: "item_spring_seed", priceOverride: 100 }],
+    };
+    const merchant: GameEvent = {
+      ...giftEvent("ev_merchant"),
+      characterId: "char_merchant",
+      socialShop: { minFriendship: 100, priceMultiplier: 0.8 },
+    };
+
+    expect(resolveShopStock(project, session, command, merchant)).toEqual([
+      { itemId: "item_spring_seed", price: 80 },
+    ]);
+  });
+
+  it("does not discount without characterId or insufficient friendship", () => {
+    const project = giftProject();
+    const session = startSession(project);
+    changeFriendship(session, "char_merchant", 200);
+    const command: Extract<Command, { kind: "shop" }> = {
+      kind: "shop",
+      itemIds: ["item_spring_seed"],
+      stock: [{ itemId: "item_spring_seed", priceOverride: 100 }],
+    };
+
+    const noCharacter: GameEvent = {
+      id: "ev_merchant",
+      x: 1,
+      y: 1,
+      trigger: { kind: "action" },
+      commands: [],
+      socialShop: { minFriendship: 100, priceMultiplier: 0.5 },
+    };
+    expect(resolveShopStock(project, session, command, noCharacter)).toEqual([
+      { itemId: "item_spring_seed", price: 100 },
+    ]);
+
+    const lowBond: GameEvent = {
+      ...giftEvent("ev_merchant"),
+      characterId: "char_merchant",
+      socialShop: { minFriendship: 500, priceMultiplier: 0.5 },
+    };
+    expect(resolveShopStock(project, session, command, lowBond)).toEqual([
+      { itemId: "item_spring_seed", price: 100 },
+    ]);
+
+    expect(resolveShopStock(project, session, command)).toEqual([
+      { itemId: "item_spring_seed", price: 100 },
+    ]);
   });
 });
 
@@ -193,6 +291,7 @@ function giftProject(): Project {
 function giftEvent(id: string): GameEvent {
   return {
     id,
+    characterId: id,
     x: 1,
     y: 1,
     trigger: { kind: "action" },

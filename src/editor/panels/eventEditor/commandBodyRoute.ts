@@ -60,6 +60,11 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     dataset: { testid: "move-route-wait-checkbox" },
   });
   wait.checked = cmd.route.wait === true;
+  const skippable = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "move-route-skippable-checkbox" },
+  });
+  skippable.checked = cmd.route.skippable === true;
 
   const switchIdIn = el("input", {
     attrs: { type: "text", placeholder: "스위치 ID" },
@@ -134,7 +139,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     context.actions.replaceCommand(context.path, {
       kind: "moveEvent",
       eventId: resolvedEventId(),
-      route: { moves: [...moves], repeat: repeat.checked, wait: wait.checked },
+      route: { moves: [...moves], repeat: repeat.checked, wait: wait.checked, skippable: skippable.checked },
     });
   };
 
@@ -176,7 +181,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
       previewMoveRoute({
         kind: "moveEvent",
         eventId: resolvedEventId(),
-        route: { moves: [...moves], repeat: repeat.checked, wait: wait.checked },
+        route: { moves: [...moves], repeat: repeat.checked, wait: wait.checked, skippable: skippable.checked },
       })
     );
   };
@@ -266,6 +271,37 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     class: "move-route-option",
     children: [wait, el("span", { text: "완료까지 대기" })],
   });
+  const skippableLabel = el("label", {
+    class: "move-route-option",
+    dataset: { testid: "move-route-skippable-option" },
+    children: [skippable, el("span", { text: "막히면 건너뛰기" })],
+  });
+
+  // 매개변수는 스위치/그래픽/효과음/NPC이동 버튼에만 쓰이므로 접어 두고,
+  // 주 작업면(목록 + 명령 버튼 + 미리보기)을 먼저 보이게 한다.
+  const parametersPanel = el("details", {
+    class: "move-route-parameters-details",
+    dataset: { testid: "move-route-parameters-details" },
+    children: [
+      el("summary", { text: "매개변수 (스위치 · 그래픽 · 효과음 · NPC 맵 이동)" }),
+      el("div", {
+        class: "move-route-parameters",
+        children: [
+          labeledField("스위치", switchIdIn),
+          labeledField("그래픽", graphicIdIn),
+          labeledField("효과음", soundIdIn),
+          labeledField("NPC 맵", npcTargetMap),
+          labeledField("X", npcTargetX),
+          labeledField("Y", npcTargetY),
+          labeledField("방향", npcTargetDirection),
+        ],
+      }),
+      el("p", {
+        class: "move-route-parameters-hint",
+        text: "스위치 ON/OFF, 그래픽 변경, 효과음, NPC 맵 이동 버튼을 누를 때 위 값을 사용합니다.",
+      }),
+    ],
+  });
 
   wrap.append(
     el("div", {
@@ -279,20 +315,13 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
             eventIdIn,
           ],
         }),
-        el("div", { class: "move-route-options", children: [repeatLabel, waitLabel] }),
+        el("div", { class: "move-route-options", children: [repeatLabel, waitLabel, skippableLabel] }),
       ],
     }),
-    el("div", {
-      class: "move-route-parameters",
-      children: [
-        labeledField("스위치", switchIdIn),
-        labeledField("그래픽", graphicIdIn),
-        labeledField("효과음", soundIdIn),
-        labeledField("NPC 맵", npcTargetMap),
-        labeledField("X", npcTargetX),
-        labeledField("Y", npcTargetY),
-        labeledField("방향", npcTargetDirection),
-      ],
+    el("p", {
+      class: "move-route-help",
+      dataset: { testid: "move-route-help" },
+      text: "오른쪽 명령 버튼으로 경로를 쌓습니다. 왼쪽 목록에서 선택·삭제, 아래 격자에 궤적이 그려집니다. (RM2003 이동 경로와 동일한 명령 세트)",
     }),
     el("div", {
       class: "move-route-main",
@@ -302,12 +331,13 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
           children: [
             el("div", { class: "move-route-panel-title", text: "이동 명령" }),
             commandList,
-            previewHost,
-            summary,
             el("div", {
               class: "move-route-list-actions",
               children: [deleteButton, clearButton],
             }),
+            el("div", { class: "move-route-panel-title", text: "경로 미리보기" }),
+            previewHost,
+            summary,
           ],
         }),
         el("div", {
@@ -318,7 +348,8 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
           ],
         }),
       ],
-    })
+    }),
+    parametersPanel,
   );
 
   renderList();

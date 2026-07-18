@@ -109,8 +109,9 @@ export function actorBattlers(
       mind,
       agility,
       chargeRate: chargeRateFor(agility),
-      battleX: 248 + (index % 2) * 32,
-      battleY: 70 + index * 24,
+      // RM2k3 side-view: party stacks on the RIGHT, facing left into the field.
+      battleX: 252,
+      battleY: 70 + index * 36,
       gauge: 0,
       stateIds: [...(overrides?.stateIds?.[actorId] ?? [])],
       equipmentEffects: equipmentRuntimeEffects(project, actorEquipment),
@@ -201,8 +202,9 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
     const stats = monsterBattleStats(project, instance);
     const hp = monsterCurrentHp(project, instance);
     return {
+      // id is the DOM/runtime node key; recordId is the script/command key (instanceId).
       id: `mon:${instance.instanceId}`,
-      recordId: `mon:${instance.instanceId}` as ActorId,
+      recordId: instance.instanceId as ActorId,
       monsterInstanceId: instance.instanceId,
       speciesId: instance.speciesId,
       level: instance.level,
@@ -216,8 +218,9 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
       mind: stats.mind,
       agility: stats.agility,
       chargeRate: chargeRateFor(stats.agility),
-      battleX: 248 + (index % 2) * 32,
-      battleY: 70 + index * 24,
+      // RM2k3 side-view: monster party also stacks on the RIGHT.
+      battleX: 252,
+      battleY: 70 + index * 36,
       gauge: 0,
       stateIds: [],
       stateTurns: {},
@@ -228,16 +231,33 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
   });
 }
 
+/** Alias kept for tests/docs that still say monsterBattlers. */
+export const monsterBattlers = monsterPartyBattlers;
+
 export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
   const members = troop.members?.length
     ? troop.members
-    : (troop.enemyIds ?? []).map((enemyId, index) => ({ enemyId, x: 104 + index * 56, y: 96, hidden: false }));
+    : (troop.enemyIds ?? []).map((enemyId, index) => ({
+        enemyId,
+        // RM2k3 side-view: enemies form on the LEFT.
+        x: 84 + (index % 2) * 44,
+        y: 52 + index * 36,
+        hidden: false,
+      }));
   return members.map((member, index) => {
     const enemyId = member.enemyId;
     const enemy = project.database.enemies.find((record) => record.id === enemyId);
     if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
     const normalizedEnemy = normalizeEnemyRecord(enemy);
     const stats = normalizedEnemy.stats;
+    // Prefer authored troop coordinates, but recenter center-ish placements into
+    // a proper left-side RM2k3 formation so fights read as opposing lines.
+    const authoredX = member.x;
+    const authoredY = member.y;
+    const needsClassicFormation =
+      authoredX == null || authoredY == null || authoredX > 150;
+    const formationX = 84 + (index % 2) * 44;
+    const formationY = 52 + index * 36;
     return {
       id: `enemy-${index + 1}`,
       recordId: enemy.id,
@@ -252,8 +272,8 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       mind: stats.mind,
       agility: stats.agility,
       chargeRate: chargeRateFor(stats.agility),
-      battleX: member.x,
-      battleY: member.y,
+      battleX: needsClassicFormation ? formationX : authoredX,
+      battleY: needsClassicFormation ? formationY : authoredY,
       gauge: 0,
       stateIds: [],
       stateTurns: {},
