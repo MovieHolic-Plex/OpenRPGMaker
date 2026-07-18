@@ -253,36 +253,6 @@ button.btn:disabled {
   border-bottom: 1px solid var(--border-soft);
 }
 
-.tool-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-1);
-}
-.tool-grid .btn {
-  font-size: 12px;
-  padding: 7px var(--space-1);
-  text-align: center;
-}
-.tool-grid .btn.active {
-  background: var(--accent-muted);
-  border-color: var(--accent);
-  color: var(--text-1);
-  font-weight: 600;
-}
-.tool-command-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-1);
-  margin-top: var(--space-2);
-}
-.tool-command-row .icon-btn {
-  min-width: 0;
-  height: 28px;
-  padding: 0;
-  font-size: 16px;
-  line-height: 1;
-}
-
 .brush-control {
   align-items: center;
   display: grid;

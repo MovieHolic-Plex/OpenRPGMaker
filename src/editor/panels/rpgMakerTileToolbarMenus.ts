@@ -1,5 +1,6 @@
 import { EDITOR_BRUSH_SIZES } from "@/editor/editorState";
 import type { EditorState } from "@/editor/editorState";
+import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
 import { renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
 import { canPlaceStructureStampOnMap, STRUCTURE_STAMPS } from "@/editor/structureStampTools";
@@ -20,19 +21,19 @@ import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import type { GameMap, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
-type ToolbarMenuId = "inspector" | "brush" | "template" | "ruleAudit" | "history" | null;
+type ToolbarMenuId = "inspector" | "overflow" | "ruleAudit" | "history" | null;
 type OpenToolbarMenuId = Exclude<ToolbarMenuId, null>;
 type SvgToolbarMenuId = Exclude<OpenToolbarMenuId, "ruleAudit" | "history">;
 
 export type RpgMakerToolbarModel = {
   readonly state: EditorState;
-  readonly map: Pick<GameMap, "tilesetId">;
+  readonly map: Pick<GameMap, "id" | "tilesetId">;
   readonly tileset: TilesetDef;
   readonly rerender: () => void;
 };
 
 let openMenu: ToolbarMenuId = null;
-const TOOLBAR_MENU_ICONS = { brush: "brush", inspector: "inspector", template: "template" } as const satisfies Record<SvgToolbarMenuId, SvgIconName>;
+const TOOLBAR_MENU_ICONS = { inspector: "inspector", overflow: "more" } as const satisfies Record<SvgToolbarMenuId, SvgIconName>;
 
 export function makeInspectorDropdown(model: RpgMakerToolbarModel): HTMLElement {
   const { state, tileset } = model;
@@ -106,14 +107,34 @@ export function makeHistoryDropdown(model: RpgMakerToolbarModel): HTMLElement {
   return wrapper;
 }
 
-export function makeBrushDropdown(model: RpgMakerToolbarModel): HTMLElement {
-  const { state } = model;
-  const wrapper = makeToolbarMenuWrapper("brush-size-menu");
-  const active = openMenu === "brush";
-  wrapper.append(makeMenuToggle("brush", `브러시 ${state.brushSize}`, active, state.brushSize > 1, model.rerender));
+/**
+ * ⋯ 오버플로 메뉴 — 저빈도 컨트롤을 한 토글로 묶는다:
+ * 복사/붙여넣기(구 tool-command-row), 브러시 크기, 구조 템플릿.
+ * copy-button/paste-button/brush-size-N/structure-stamp-* testid는 그대로 승계.
+ */
+export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
+  const { state, map } = model;
+  const wrapper = makeToolbarMenuWrapper("toolbar-overflow-menu");
+  const active = openMenu === "overflow";
+  const highlighted = state.brushSize > 1 || state.activeStructureStampId !== null;
+  wrapper.append(makeMenuToggle("overflow", "더 보기", active, highlighted, model.rerender));
   if (!active) return wrapper;
 
-  const menu = el("div", { class: "rpg-maker-toolbar-dropdown rpg-maker-brush-dropdown", attrs: { role: "menu" }, dataset: { testid: "brush-size-dropdown" } });
+  const menu = el("div", { class: "rpg-maker-toolbar-dropdown rpg-maker-overflow-dropdown", attrs: { role: "menu" }, dataset: { testid: "toolbar-overflow-dropdown" } });
+  menu.append(makeOverflowSectionLabel("편집"));
+  menu.append(makeOptionItem("복사 (선택 영역)", false, false, () => {
+    void copySelection(map.id);
+    closeToolbarMenus();
+    model.rerender();
+  }, "copy-button"));
+  menu.append(makeOptionItem("붙여넣기", false, false, () => {
+    const target = state.selection ?? { x: 0, y: 0 };
+    void pasteClipboard(map.id, target.x, target.y);
+    closeToolbarMenus();
+    model.rerender();
+  }, "paste-button"));
+
+  menu.append(makeOverflowSectionLabel("브러시 크기"));
   for (const size of EDITOR_BRUSH_SIZES) {
     menu.append(makeOptionItem(`${size} x ${size}`, state.brushSize === size, false, () => {
       setRpgMakerBrushSize(size);
@@ -121,18 +142,19 @@ export function makeBrushDropdown(model: RpgMakerToolbarModel): HTMLElement {
       model.rerender();
     }, `brush-size-${size}`));
   }
+
+  menu.append(makeOverflowSectionLabel("템플릿"));
+  appendTemplateItems(menu, model);
   wrapper.append(menu);
   return wrapper;
 }
 
-export function makeTemplateDropdown(model: RpgMakerToolbarModel): HTMLElement {
-  const { state, map } = model;
-  const wrapper = makeToolbarMenuWrapper("structure-stamp-menu");
-  const active = openMenu === "template";
-  wrapper.append(makeMenuToggle("template", "템플릿", active, state.activeStructureStampId !== null, model.rerender));
-  if (!active) return wrapper;
+function makeOverflowSectionLabel(label: string): HTMLElement {
+  return el("div", { class: "rpg-maker-overflow-section", attrs: { "aria-hidden": "true" }, text: label });
+}
 
-  const menu = el("div", { class: "rpg-maker-template-dropdown", attrs: { role: "menu" }, dataset: { testid: "structure-stamp-dropdown" } });
+function appendTemplateItems(menu: HTMLElement, model: RpgMakerToolbarModel): void {
+  const { state, map } = model;
   for (const stamp of STRUCTURE_STAMPS) {
     const compatible = canPlaceStructureStampOnMap(map, stamp.id);
     const itemActive = compatible && state.activeStructureStampId === stamp.id;
@@ -162,8 +184,6 @@ export function makeTemplateDropdown(model: RpgMakerToolbarModel): HTMLElement {
     item.disabled = !compatible;
     menu.append(item);
   }
-  wrapper.append(menu);
-  return wrapper;
 }
 
 function makeInspectorSummary(selectedTile: number, tileset: TilesetDef, tileLayer: "lower" | "upper"): HTMLElement {
@@ -212,6 +232,7 @@ function makeMenuIcon(menu: OpenToolbarMenuId): Node {
 function menuToggleTestId(menu: OpenToolbarMenuId): string {
   if (menu === "ruleAudit") return "toolbar-toggle-ruleAudit";
   if (menu === "history") return "toolbar-toggle-history";
+  // inspector → rpg-maker-tool-inspector (기존 계약), overflow → rpg-maker-tool-overflow
   return `rpg-maker-tool-${menu}`;
 }
 

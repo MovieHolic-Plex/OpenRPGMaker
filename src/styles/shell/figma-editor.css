@@ -662,22 +662,6 @@
     padding: 0;
   }
 
-  .tool-grid {
-    display: grid;
-    gap: 6px;
-    /* 8×38 고정 그리드가 좁은 좌패널 가로 스크롤의 주범 */
-    grid-template-columns: repeat(auto-fill, minmax(34px, 1fr));
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .tool-grid .btn {
-    height: 34px;
-    min-width: 0;
-    padding: 0;
-    width: 100%;
-  }
-
   .left-panel-stack .field.compact-field {
     align-items: center;
     display: grid;
@@ -1662,10 +1646,35 @@
     min-width: 4px;
   }
 
+  /* 맵 모드 도구 그룹(스포이트·이동·통행·이벤트) — flex-wrap 시 한 덩어리로 줄바꿈 */
+  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar-modes {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 1px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-overflow-section {
+    color: var(--editor-text-soft);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 2px 0 0;
+    padding: 3px 4px 1px;
+    text-transform: uppercase;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-overflow-dropdown {
+    max-height: 320px;
+    min-width: 196px;
+    overflow-y: auto;
+  }
+
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-toolbar-menu {
     display: flex;
     flex: 0 0 auto;
-    position: relative;
+    /* static: 드롭다운이 (position:relative인) 툴바 전체를 기준으로 우하단에 열린다.
+       flex-wrap으로 토글이 2행 왼쪽에 떨어져도 패널 밖으로 잘리지 않는다. */
+    position: static;
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-toolbar-dropdown,
