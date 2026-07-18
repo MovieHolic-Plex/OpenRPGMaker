@@ -82,20 +82,13 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
 
 function shopIntentCard(): HTMLElement {
   return el("div", {
-    class: "shop-processing-intent",
-    dataset: { testid: "shop-intent-card" },
+    class: "shop-processing-intent shop-processing-intent-compact",
+    dataset: { testid: "shop-intent" },
     children: [
-      el("div", {
-        class: "shop-processing-intent-title",
-        text: "상점 처리 · 공용 거래 세션",
-      }),
-      el("p", {
-        class: "shop-processing-intent-body",
-        text: "플레이어와 아이템을 사고파는 UI를 엽니다. 먼저 판매 목록을 채우고, 오른쪽에서 구매/판매 규칙·상인 소지금·거래 후 분기를 정하세요.",
-      }),
+      el("div", { class: "shop-processing-intent-title", text: "상점 처리" }),
       el("div", {
         class: "shop-processing-intent-flow",
-        text: "대화 → 상점 처리 → (선택) 거래 후 분기",
+        text: "판매 목록 → 규칙(종류·소지금) → 미리보기",
       }),
     ],
   });
@@ -516,7 +509,7 @@ function normalizeDuration(value: number | undefined, fallback: number): number 
 
 function shopSettingsCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
   return el("div", {
-    class: "shop-processing-settings",
+    class: "shop-processing-settings shop-processing-settings-compact",
     children: [
       shopTypeGroup(context, command),
       shopQuantityModeGroup(context, command),
@@ -607,35 +600,50 @@ function shopStockSummary(command: ShopCommand): HTMLElement {
 }
 
 function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLElement {
-  const groupName = `shop-type-${context.path.join("-") || "root"}`;
-  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-type" });
-  fieldset.append(el("legend", { text: "상점 종류" }));
-  const segment = el("div", {
-    class: "shop-processing-segment",
-    attrs: { role: "radiogroup", "aria-label": "상점 종류" },
-  });
   const current = shopTypeValue(command);
+  const select = document.createElement("select");
+  select.className = "commerce-command-input shop-processing-type-select";
+  select.dataset.testid = "shop-type-select";
+  select.title = "상점 종류";
+  for (const option of SHOP_TYPE_OPTIONS) {
+    const opt = document.createElement("option");
+    opt.value = option.value;
+    opt.textContent = `${option.label} — ${option.hint}`;
+    opt.dataset.testid = `shop-type-${option.value}`;
+    if (option.value === current) opt.selected = true;
+    select.append(opt);
+  }
+  // e2e/구 UI 호환: 숨은 radio 유지 (shop-type-normal 등)
+  const legacy = el("div", {
+    class: "shop-processing-type-legacy",
+    attrs: { "aria-hidden": "true" },
+  });
   for (const option of SHOP_TYPE_OPTIONS) {
     const radio = document.createElement("input");
     radio.type = "radio";
-    radio.name = groupName;
+    radio.name = `shop-type-${context.path.join("-") || "root"}`;
     radio.value = option.value;
     radio.checked = current === option.value;
     radio.dataset.testid = `shop-type-${option.value}`;
     radio.className = "shop-processing-segment-input";
-    radio.addEventListener("change", () => {
-      if (!radio.checked) return;
-      context.actions.replaceCommand(context.path, withShopType(command, option.value));
-    });
-    const label = el("label", {
-      class: `shop-processing-segment-option${current === option.value ? " is-selected" : ""}`,
-      attrs: { title: option.hint },
-      children: [radio, el("span", { text: option.label })],
-    });
-    segment.append(label);
+    radio.tabIndex = -1;
+    legacy.append(radio);
   }
-  fieldset.append(segment);
-  return fieldset;
+  select.addEventListener("change", () => {
+    const next = SHOP_TYPE_OPTIONS.find((entry) => entry.value === select.value)?.value ?? "normal";
+    for (const radio of legacy.querySelectorAll<HTMLInputElement>("input[type=radio]")) {
+      radio.checked = radio.value === next;
+    }
+    context.actions.replaceCommand(context.path, withShopType(command, next));
+  });
+  return el("div", {
+    class: "commerce-command-field shop-processing-type-field",
+    children: [
+      el("label", { class: "commerce-command-title", text: "상점 종류" }),
+      select,
+      legacy,
+    ],
+  });
 }
 
 function shopBranchOption(context: CommandEditContext, command: ShopCommand): HTMLElement {

@@ -775,13 +775,14 @@
 }
 
 
-/* ---- P0 layout: list-first 2-column ---- */
-.shop-processing-v2.shop-processing-command-body { gap: 12px; }
+/* ---- P0 layout: list-first 2-column (compact) ---- */
+.shop-processing-v2.shop-processing-command-body { gap: 8px; }
 .shop-processing-layout {
   align-items: start;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1.55fr) minmax(240px, 0.9fr);
+  /* 목록이 주인공. 설정은 좁은 사이드. */
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 240px);
   min-width: 0;
   width: 100%;
 }
@@ -789,14 +790,20 @@
   .shop-processing-layout { grid-template-columns: minmax(0, 1fr); }
 }
 .shop-processing-main,
-.shop-processing-side { display: grid; gap: 10px; min-width: 0; }
+.shop-processing-side { display: grid; gap: 8px; min-width: 0; }
 .shop-processing-intent {
   background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
   border-radius: 8px;
   display: grid;
-  gap: 6px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 8px 10px;
+}
+.shop-processing-intent-compact {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
 }
 .shop-processing-intent-title {
   color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
@@ -818,7 +825,7 @@
   border-radius: 8px;
   color: #ffd0d6;
   font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  padding: 10px 12px;
+  padding: 8px 10px;
 }
 .shop-processing-presets {
   align-items: center;
@@ -832,10 +839,78 @@
   margin-right: 4px;
 }
 .shop-processing-preset-btn { white-space: nowrap; }
-.shop-processing-v2 .shop-processing-settings { grid-template-columns: minmax(0, 1fr); }
+.shop-processing-v2 .shop-processing-settings {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+}
 .shop-processing-v2 .shop-processing-settings .shop-processing-option,
 .shop-processing-v2 .shop-processing-settings .shop-processing-merchant-gold { grid-column: auto; }
-.shop-processing-v2 .shop-processing-segment { grid-template-columns: minmax(0, 1fr); }
+
+/* 상점 종류: 3단 세그먼트 버튼 대신 select 한 줄 */
+.shop-processing-type-field {
+  display: grid;
+  gap: 4px;
+}
+.shop-processing-type-select { width: 100%; }
+.shop-processing-type-legacy {
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 0;
+}
+.shop-processing-v2 .shop-processing-fieldset {
+  padding: 8px 10px 10px;
+}
+.shop-processing-v2 .commerce-command-hint {
+  font-size: 11px;
+  line-height: 1.35;
+}
+/* dual-list가 좁아지지 않게 최소 폭 확보 */
+.shop-processing-v2 .shop-processing-item-grid {
+  grid-template-columns: minmax(160px, 1fr) auto minmax(160px, 1fr);
+  min-height: 200px;
+}
+.shop-processing-v2 .shop-processing-item-list-shell {
+  min-height: 160px;
+}
+.shop-processing-v2 .shop-processing-item-list {
+  max-height: 240px;
+  min-height: 160px;
+}
+.shop-processing-v2 .shop-processing-item-controls {
+  min-width: 72px;
+}
+.shop-processing-v2 .shop-processing-move-button {
+  min-width: 64px;
+  padding: 5px 8px;
+}
+
+.event-command-edit-actions .shop-preview-toggle {
+  margin-right: auto;
+}
+
+/* 상점 미리보기 기본 접힘 — dual-list 폭 확보 */
+.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) {
+  grid-template-columns: minmax(0, 1fr);
+}
+.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) > .event-command-preview-panel {
+  display: none;
+}
+.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+}
+.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) > .event-command-preview-panel {
+  display: block;
+}
+
+.event-subdialog-window.wide:has(.shop-processing-command-body) {
+  width: min(860px, calc(100vw - 24px));
+  max-height: min(90vh, 800px);
+}
+.event-subdialog-window.wide:has(.event-command-edit-columns.is-shop-preview-open .shop-processing-command-body) {
+  width: min(980px, calc(100vw - 24px));
+}
 .shop-stock-editor {
   border-top: 1px solid var(--border-subtle, #2a2e38);
   display: grid;
