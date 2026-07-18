@@ -81,6 +81,22 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "battle-skin-mother-backdrop": "/assets/generated/battle-skins/mother-backdrop.png",
   "battle-skin-goldensun-backdrop": "/assets/generated/battle-skins/goldensun-backdrop.png",
   "battle-skin-demo-battler": "/assets/generated/battle-skins/demo-battler-alpha.png",
+  // Per-skin battler sprites (chroma-keyed #00FF00 -> alpha) — themed enemy + party (front/back).
+  "bskin-enemy-pokemon": "/assets/generated/battle-skins/sprites/enemy-pokemon.png",
+  "bskin-enemy-rm2003": "/assets/generated/battle-skins/sprites/enemy-rm2003.png",
+  "bskin-enemy-rm2000": "/assets/generated/battle-skins/sprites/enemy-rm2000.png",
+  "bskin-enemy-octopath": "/assets/generated/battle-skins/sprites/enemy-octopath.png",
+  "bskin-enemy-chrono": "/assets/generated/battle-skins/sprites/enemy-chrono.png",
+  "bskin-enemy-bravely": "/assets/generated/battle-skins/sprites/enemy-bravely.png",
+  "bskin-enemy-dragonquest": "/assets/generated/battle-skins/sprites/enemy-dragonquest.png",
+  "bskin-enemy-ff": "/assets/generated/battle-skins/sprites/enemy-ff.png",
+  "bskin-enemy-mother": "/assets/generated/battle-skins/sprites/enemy-mother.png",
+  "bskin-enemy-goldensun": "/assets/generated/battle-skins/sprites/enemy-goldensun.png",
+  "bskin-party-warrior-front": "/assets/generated/battle-skins/sprites/party-warrior-front.png",
+  "bskin-party-warrior-back": "/assets/generated/battle-skins/sprites/party-warrior-back.png",
+  "bskin-party-mage-front": "/assets/generated/battle-skins/sprites/party-mage-front.png",
+  "bskin-party-mage-back": "/assets/generated/battle-skins/sprites/party-mage-back.png",
+  "bskin-ally-creature-back": "/assets/generated/battle-skins/sprites/ally-creature-back.png",
   // Side-view battle field art (not EasyRPG sky panoramas).
   "generated-battle-reference-forest": "/generated/battle-reference-forest.png",
   // CSS 9-slice windowskin (EasyRPG System/*.png sheets are icon strips, not windowskins).
