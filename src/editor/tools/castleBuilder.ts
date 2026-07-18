@@ -2,7 +2,7 @@
 // 금본: map_castle_keep + openwiki/castle-map.md
 
 import { evaluateCastle, stampCastle, type Rect } from "@/editor/castleKit";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { EVENT_TOOLS } from "./eventTools";
 import { MAP_TOOLS } from "./mapTools";
@@ -22,10 +22,11 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
   {
     name: "build_castle",
     description:
-      "성채 맵을 모듈 문법으로 시공한다(권장 정공법). " +
-      "지붕/여장 면(18–110) + 성벽 정면(21/51*/81) + 원형 타워(24|25↑·138–143·54|55↑) + 남문 모래 접근로. " +
+      "성채 맵을 정본 문법으로 시공한다(권장 정공법, 2026-07-18 정본). " +
+      "커튼월 = 통행 데크(19/49/109) + 정면 2층(51/81, 타일 21 미사용) · 원형 타워는 벽선 매립(캡 24|25↑·창 교대·베이스 54|55↑, 밑 타일 보존) · " +
+      "남문 = 포석 회랑 + 대계단 111|112*|113 전 층 관통 · 배너 179+209 페어. " +
       "타일 ID를 직접 고르지 말 것. mapId 없으면 새 맵 생성. bounds로 기존 맵 일부에 시공 가능. " +
-      "마당은 잔디 통행 유지(지붕 타일 금지). 최소 영역 28×24, 기본 48×40.",
+      "마당은 잔디 통행 유지. 최소 영역 28×24, 기본 48×40. 평가에 정본 문법 린트 포함.",
     mode: "write",
     parameters: {
       type: "object",
@@ -46,10 +47,10 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
           },
           required: ["x", "y", "w", "h"],
         },
-        wallHeight: { type: "integer", description: "성벽 정면 높이(기본 3, 2~6)" },
-        gateWidth: { type: "integer", description: "남문 폭(기본 4, 2~8)" },
-        roundTower: { type: "boolean", description: "마당 원형 타워(기본 true)" },
-        roundTowerHeight: { type: "integer", description: "원형 타워 높이(기본 7, 5~12)" },
+        wallHeight: { type: "integer", description: "성벽 정면 높이(51×(n-1)+81, 기본 2 = 정본 2층, 2~4)" },
+        gateWidth: { type: "integer", description: "남문 대계단 폭(기본 8 = 정본 실측, 4~10)" },
+        roundTower: { type: "boolean", description: "성문 협곽 매립 타워(기본 true)" },
+        roundTowerHeight: { type: "integer", description: "(deprecated) 정본 타워 스택은 8행 고정 — 값 무시" },
         path: { type: "boolean", description: "남문 모래 접근로(기본 true)" },
         npcs: { type: "boolean", description: "문지기·성주 NPC(기본 true)" },
         seed: { type: "integer", description: "경로 자연도 시드(기본 4201)" },
@@ -70,13 +71,14 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
       ensureCombinedTown(draft, map, warnings);
 
       const area = resolveArea(map, args.bounds);
+      if (args.roundTowerHeight !== undefined) {
+        warnings.push("roundTowerHeight는 deprecated — 정본 타워 스택은 8행 고정이라 무시합니다.");
+      }
       const stamp = stampCastle(map, {
         area,
-        wallHeight: args.wallHeight === undefined ? undefined : integerArg(args, "wallHeight", 3, 2, 6),
-        gateWidth: args.gateWidth === undefined ? undefined : integerArg(args, "gateWidth", 4, 2, 8),
+        wallHeight: args.wallHeight === undefined ? undefined : integerArg(args, "wallHeight", 2, 2, 4),
+        gateWidth: args.gateWidth === undefined ? undefined : integerArg(args, "gateWidth", 8, 4, 10),
         roundTower: args.roundTower !== false,
-        roundTowerHeight:
-          args.roundTowerHeight === undefined ? undefined : integerArg(args, "roundTowerHeight", 7, 5, 12),
       });
       if (!stamp.ok) throw new ToolError(stamp.reason, { code: "castle-stamp-failed", mapId });
 
@@ -85,39 +87,26 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
       const evaluation = evaluateCastle(map, stamp);
       if (!evaluation.ok) warnings.push(...evaluation.issues.map((issue) => `평가: ${issue}`));
 
+      // 대계단 남단 아래 잔디 접근로에만 모래길 — 계단·회랑(정본 문법)은 덮지 않는다.
+      const stairBottomY = stamp.gate.y + stamp.faceH;
       if (pathEnabled) {
         try {
           const pathX = stamp.gate.x + Math.floor(stamp.gate.w / 2);
-          const outerBottom = stamp.outer.y + stamp.outer.h;
           const pathEndY = Math.min(map.height - 2, area.y + area.h - 2);
-          const yardY = Math.min(
-            stamp.courtyard.y + Math.floor(stamp.courtyard.h / 2),
-            stamp.gate.y - 1,
-          );
-          paintRoadTool.run(draft, {
-            mapId,
-            style: "sand",
-            naturalness: 0.12,
-            seed,
-            points: [
-              { x: pathX, y: pathEndY },
-              { x: pathX, y: outerBottom },
-              { x: pathX, y: stamp.gate.y },
-              { x: pathX, y: Math.max(stamp.courtyard.y + 1, yardY) },
-            ],
-          });
+          if (pathEndY > stairBottomY + 1) {
+            paintRoadTool.run(draft, {
+              mapId,
+              style: "sand",
+              naturalness: 0.12,
+              seed,
+              points: [
+                { x: pathX, y: pathEndY },
+                { x: pathX, y: stairBottomY + 1 },
+              ],
+            });
+          }
         } catch (err) {
           warnings.push(`모래 접근로 실패: ${err instanceof Error ? err.message : String(err)}`);
-        }
-      }
-
-      // 문 통로가 길로 덮여도 통과 가능 유지 — 모래는 passable
-      // 성문 바로 위 잔디 한 줄 정리
-      for (let x = stamp.gate.x; x < stamp.gate.x + stamp.gate.w; x += 1) {
-        const y = stamp.gate.y;
-        const t = map.lowerTiles[y * map.width + x]!;
-        if (t === CASTLE_WALL_BOT || t === CASTLE_WALL_MID || t === CASTLE_WALL_TOP) {
-          map.lowerTiles[y * map.width + x] = TILE.GRASS;
         }
       }
 
@@ -126,7 +115,7 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
           placeNpcTool.run(draft, {
             mapId,
             x: stamp.gate.x + Math.floor(stamp.gate.w / 2),
-            y: Math.min(map.height - 2, stamp.outer.y + stamp.outer.h + 1),
+            y: Math.min(map.height - 2, stairBottomY + 2),
             name: "문지기",
             graphic: { query: "warrior" },
             movement: "fixed",
@@ -177,11 +166,6 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
     },
   },
 ];
-
-// re-export tile constants used for gate cleanup without importing full kit cycle
-const CASTLE_WALL_TOP = 21;
-const CASTLE_WALL_MID = 51;
-const CASTLE_WALL_BOT = 81;
 
 function requireTool(tools: readonly ToolDefinition[], name: string): ToolDefinition {
   const tool = tools.find((candidate) => candidate.name === name);
