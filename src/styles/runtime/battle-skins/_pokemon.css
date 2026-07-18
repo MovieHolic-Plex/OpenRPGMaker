@@ -12,17 +12,7 @@
   background: #98d0d8;
 }
 
-/* QA r1(fidelity): 프론트뷰 — 오버월드 아군 스프라이트는 필드에 세우지 않는다. */
-.battle-scene[data-battle-skin="pokemon"] .battle-actor-group {
-  display: none !important;
-}
-
-/* QA r1(layout): 단일 적을 필드 좌중앙 상단 영역에 — 우측 파티 박스와 겹치지 않는 위치.
-   result 스텝의 승리 연출 좌표(!important)는 건드리지 않는다. */
-.battle-scene[data-battle-skin="pokemon"]:not([data-battle-director-step="result"]) .battle-enemy {
-  left: 34% !important;
-  top: 50% !important;
-}
+/* 포켓몬 문법: 내 몬스터 뒷모습(선두 1)은 JS placement가 좌하단에 세운다. 적 위치도 JS(우상). */
 
 /* QA r1(layout, 최우선): 파티 상태 박스를 우하단(HUD 바로 위)에 도킹하고
    높이를 제한 — 적 영역·적 정보 박스를 절대 덮지 않는다.

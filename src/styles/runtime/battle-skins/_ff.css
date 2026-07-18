@@ -12,27 +12,7 @@
   background: #101838;
 }
 
-/* QA r1(fidelity): 아군을 우측 세로 1열로 — 노드 좌표의 지그재그를 무시.
-   result 승리 연출 좌표(!important)는 유지. */
-.battle-scene[data-battle-skin="ff"]:not([data-battle-director-step="result"]) .battle-actor-group .battle-actor {
-  left: 84% !important;
-}
-
-.battle-scene[data-battle-skin="ff"]:not([data-battle-director-step="result"]) .battle-actor-group .battle-actor:nth-child(1) {
-  top: 20% !important;
-}
-
-.battle-scene[data-battle-skin="ff"]:not([data-battle-director-step="result"]) .battle-actor-group .battle-actor:nth-child(2) {
-  top: 40% !important;
-}
-
-.battle-scene[data-battle-skin="ff"]:not([data-battle-director-step="result"]) .battle-actor-group .battle-actor:nth-child(3) {
-  top: 60% !important;
-}
-
-.battle-scene[data-battle-skin="ff"]:not([data-battle-director-step="result"]) .battle-actor-group .battle-actor:nth-child(4) {
-  top: 80% !important;
-}
+/* 아군 우측 세로열은 JS placement가 좌표를 지정한다(nth-child !important 제거). */
 
 /* QA r1(fidelity): FF 화이트 베벨 + 파랑 그라데 창. */
 .battle-scene[data-battle-skin="ff"] .battle-party,

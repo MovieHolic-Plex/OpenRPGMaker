@@ -25,6 +25,10 @@ type SkinDiag = {
   enemies?: number;
   /** true = another element covers the field enemy's center (pointer blocked) — QA datum for Task 8 */
   enemyPointerBlocked?: boolean;
+  /** field size + rendered sprite rects (ground truth for battler placement tuning). */
+  field?: { w: number; h: number } | null;
+  partySprites?: { w: number; h: number; x: number; y: number }[];
+  enemySprite?: { w: number; h: number; x: number; y: number } | null;
 };
 
 /**
@@ -85,6 +89,10 @@ async function diag(page: Page): Promise<SkinDiag> {
       overflowY,
       clipped: overflowX > 2 || overflowY > 2,
       enemies: document.querySelectorAll(".battle-enemy").length,
+      field: (() => { const el = document.querySelector(".battle-field"); if (!el) return null; const r = el.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height) }; })(),
+      partySprites: [...document.querySelectorAll(".battle-actor .battle-skin-actor-image")].map((el) => { const r = el.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.left), y: Math.round(r.top) }; }),
+      enemySprite: (() => { const el = document.querySelector(".battle-enemy .battle-enemy-image"); if (!el) return null; const r = el.getBoundingClientRect(); return { w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.left), y: Math.round(r.top) }; })(),
+      partyImgCss: (() => { const el = document.querySelector<HTMLElement>(".battle-actor .battle-skin-actor-image"); if (!el) return "NO-SKIN-IMG"; const cs = getComputedStyle(el); const node = el.closest<HTMLElement>(".battle-actor"); return { cssW: cs.width, cssH: cs.height, cls: el.className, nodeTransform: node ? getComputedStyle(node).transform : "?", nodeScaleVar: node ? node.style.getPropertyValue("--battle-actor-scale") : "?" }; })(),
       enemyPointerBlocked: (() => {
         const enemy = document.querySelector<HTMLElement>(".battle-enemy");
         if (!enemy) return false;
