@@ -52,6 +52,13 @@
   white-space: nowrap;
 }
 
+/* QA r2(layout): 필드 하단 경계에 절반 잘려 보이던 적 HP 수치 행(.battle-enemy-hp-text)
+   — 게이지는 유지하고 수치만 비표시. rm2000 원작도 적 HP 수치를 노출하지 않으며,
+   rm2003 스킨과 동일한 처리. (블록 자체가 in-flow라 bottom 오프셋은 무효) */
+.battle-scene[data-battle-skin="rm2000"] .battle-enemy-hp-text {
+  display: none;
+}
+
 .battle-scene[data-battle-skin="rm2000"] .battle-message-window {
   align-content: start;
 }

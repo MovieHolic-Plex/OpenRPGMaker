@@ -71,6 +71,13 @@
   white-space: nowrap;
 }
 
+/* QA r2(layout): 필드 하단 경계에 절반 잘려 보이던 적 HP 수치 행(.battle-enemy-hp-text)
+   — 게이지는 유지하고 수치만 비표시. DQ 원작은 적 HP 수치를 노출하지 않는다.
+   (리뷰어가 승인한 적 중앙 배치를 건드리지 않는 최소 수정) */
+.battle-scene[data-battle-skin="dragonquest"] .battle-enemy-hp-text {
+  display: none;
+}
+
 .battle-scene[data-battle-skin="dragonquest"] .battle-message-window {
   align-content: start;
 }
