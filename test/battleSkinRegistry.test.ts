@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BATTLE_SKINS, getBattleSkin, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
@@ -37,6 +38,23 @@ describe("skin dataset wiring", () => {
     for (const v of [undefined, "classic", "pokemon", "mother", "zzz"]) {
       expect(resolveSkinId(v)).toMatch(/^[a-z0-9]+$/);
     }
+  });
+});
+
+describe("battle skin assets", () => {
+  it("모든 스킨은 DB에 등록된(해석 가능한) 기본 배경을 가진다", () => {
+    const ids = new Set(builtinGeneratedResourceIds());
+    for (const id of listBattleSkinIds()) {
+      const skin = getBattleSkin(id);
+      expect(skin.defaultBackdropResourceId, `${id} missing backdrop`).toBeTruthy();
+      expect(ids.has(skin.defaultBackdropResourceId!), `${id} backdrop not in DB feed`).toBe(true);
+      expect(resolveAssetResourceUrl(skin.defaultBackdropResourceId)).toMatch(/battle-skins\/.*\.png$/);
+    }
+  });
+
+  it("데모 배틀러(크로마키 처리본)가 DB에 등록되어 해석된다", () => {
+    expect(builtinGeneratedResourceIds()).toContain("battle-skin-demo-battler");
+    expect(resolveAssetResourceUrl("battle-skin-demo-battler")).toBe("/assets/generated/battle-skins/demo-battler-alpha.png");
   });
 });
 

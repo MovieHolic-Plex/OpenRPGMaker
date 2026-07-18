@@ -33,6 +33,17 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-item-potion-red-icon": "/assets/generated/rm2k3/potion-red-icon.png",
   "generated-item-potion-red-image": "/assets/generated/rm2k3/potion-red-image.png",
   "generated-troop-preview-slime": "/assets/generated/rm2k3/troop-preview-slime.png",
+  "battle-skin-pokemon-backdrop": "/assets/generated/battle-skins/pokemon-backdrop.png",
+  "battle-skin-rm2003-backdrop": "/assets/generated/battle-skins/rm2003-backdrop.png",
+  "battle-skin-rm2000-backdrop": "/assets/generated/battle-skins/rm2000-backdrop.png",
+  "battle-skin-octopath-backdrop": "/assets/generated/battle-skins/octopath-backdrop.png",
+  "battle-skin-chrono-backdrop": "/assets/generated/battle-skins/chrono-backdrop.png",
+  "battle-skin-bravely-backdrop": "/assets/generated/battle-skins/bravely-backdrop.png",
+  "battle-skin-dragonquest-backdrop": "/assets/generated/battle-skins/dragonquest-backdrop.png",
+  "battle-skin-ff-backdrop": "/assets/generated/battle-skins/ff-backdrop.png",
+  "battle-skin-mother-backdrop": "/assets/generated/battle-skins/mother-backdrop.png",
+  "battle-skin-goldensun-backdrop": "/assets/generated/battle-skins/goldensun-backdrop.png",
+  "battle-skin-demo-battler": "/assets/generated/battle-skins/demo-battler-alpha.png",
   // Side-view battle field art (not EasyRPG sky panoramas).
   "generated-battle-reference-forest": "/generated/battle-reference-forest.png",
   // CSS 9-slice windowskin (EasyRPG System/*.png sheets are icon strips, not windowskins).
