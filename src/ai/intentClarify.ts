@@ -60,6 +60,7 @@ const BOTH_MARKERS = ["둘 다", "내부까지", "안까지", "외장 집 +", "�
 const SKILL_MATCH_HINTS: Readonly<Record<string, readonly string[]>> = {
   "build-house": ["집 짓", "집짓", "야외 집", "외장", "build-house", "house kit"],
   "build-interior": ["실내", "인테리어", "방 시공", "build-interior", "interior"],
+  "build-dungeon": ["던전", "dungeon", "동굴", "용암 방", "얼음 동굴", "석재 홀"],
   "build-village": ["마을", "village"],
   "build-road": ["도로", "길 깔", "길 만들"],
   "place-npcs": ["npc", "주민"],
@@ -169,6 +170,12 @@ export function topSkillMatches(matches: readonly SkillTextMatch[], minScore = 3
  * - "집/건물 만들어"만 있고 표지 없으면 항상 되묻기(스킬 이름 매칭만으로 야외 추정 금지).
  * - 집 계열 요청인데 매칭 스킬이 0개이거나 build-house+build-interior가 동점이면 되묻기.
  */
+/** 던전 방 요청 표지 — 있으면 집/실내 되묻기 없이 dungeon-room-v1로 직행. */
+function requestMentionsDungeon(raw: string): boolean {
+  const n = normalize(raw);
+  return /던전|dungeon|동굴|미궁/u.test(n) || /용암\s*방|석재\s*홀/u.test(n);
+}
+
 export function resolveIntentClarification(
   text: string,
   options: IntentClarifyOptions = {},
@@ -180,6 +187,10 @@ export function resolveIntentClarification(
 
   const explicit = options.explicitSkillId?.trim() || null;
   if (explicit === "build-house" || explicit === "build-interior") return null;
+  if (explicit === "build-dungeon") return null;
+
+  // 던전(dungeon-room-v1) 요청은 집/실내 되묻기 대상이 아니다 — 전용 하네스로 직행.
+  if (requestMentionsDungeon(raw)) return null;
 
   const hasInterior = requestMentionsInterior(raw);
   const hasOutdoor = requestMentionsOutdoorHouse(raw);

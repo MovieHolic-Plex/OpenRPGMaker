@@ -51,10 +51,10 @@ afterEach(() => {
 });
 
 describe("스킬 레지스트리", () => {
-  it("시스템 스킬 16종이 등록되어 있다", () => {
-    expect(SYSTEM_SKILLS.length).toBe(16);
+  it("시스템 스킬 17종이 등록되어 있다", () => {
+    expect(SYSTEM_SKILLS.length).toBe(17);
     const ids = SYSTEM_SKILLS.map((skill) => skill.id);
-    for (const id of ["interview", "learn-structure", "cluster-edit", "range-classify", "unclassified-analysis", "demo-teach", "build-house", "map-audit", "build-village", "build-interior", "quest-builder", "build-road", "place-npcs", "npc-motion", "make-items", "battle-balance"]) {
+    for (const id of ["interview", "learn-structure", "cluster-edit", "range-classify", "unclassified-analysis", "demo-teach", "build-house", "map-audit", "build-village", "build-interior", "build-dungeon", "quest-builder", "build-road", "place-npcs", "npc-motion", "make-items", "battle-balance"]) {
       expect(ids, id).toContain(id);
     }
   });
