@@ -197,4 +197,161 @@ describe("Project store remote persistence", () => {
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(fetchSpy.mock.calls[0]?.[1]?.method ?? "GET").toBe("GET");
   });
+
+  it("skips remote flush when there are no unsaved changes", async () => {
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-house-template-gallery");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("window", {
+      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: {
+        getItem: () => null,
+        setItem: () => undefined,
+      },
+    });
+    const fetchSpy = vi.fn<typeof fetch>();
+    vi.stubGlobal("fetch", fetchSpy);
+    vi.resetModules();
+
+    const { store } = await import("@/project/store");
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    const result = await store.flush();
+
+    expect(result).toEqual({ kind: "saved" });
+    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(store.hasUnsavedChanges()).toBe(false);
+  });
+
+  it("keeps local map paint when remote save finishes with a stale snapshot", async () => {
+    vi.useFakeTimers();
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-paint-local-first");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("window", {
+      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: {
+        getItem: () => null,
+        setItem: () => undefined,
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>());
+    vi.resetModules();
+
+    type Project = import("@/project/types").Project;
+    const delaySave = async <T>(value: T): Promise<T> => {
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 50);
+      });
+      return value;
+    };
+    const saveFull = vi.fn(async (project: Project) => delaySave({ kind: "saved" as const, project }));
+    const saveMapPatch = vi.fn(async (input: { readonly project: Project; readonly baseProject: Project }) =>
+      delaySave({ kind: "saved" as const, project: input.project }),
+    );
+    vi.doMock("@/project/supabaseProjectSync", async () => {
+      const actual = await vi.importActual<typeof import("@/project/supabaseProjectSync")>(
+        "@/project/supabaseProjectSync",
+      );
+      return {
+        ...actual,
+        saveProjectToSupabase: saveFull,
+        saveProjectMapPatchToSupabase: saveMapPatch,
+      };
+    });
+
+    const { store } = await import("@/project/store");
+    const { createBlankProject } = await import("@/project/defaults");
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    store.replaceProject(project);
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    store._setPersistedBaselineForTest(null);
+
+    const firstTile = 7;
+    const secondTile = 9;
+    store.updateMap(mapId, (map) => {
+      map.lowerTiles[0] = firstTile;
+    });
+
+    const flushPromise = store.flush();
+    store.updateMap(mapId, (map) => {
+      map.lowerTiles[0] = secondTile;
+    });
+    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(50);
+    const result = await flushPromise;
+
+    expect(result.kind).toBe("saved");
+    expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(secondTile);
+    expect(saveFull).toHaveBeenCalledTimes(1);
+    expect(saveMapPatch).toHaveBeenCalledTimes(1);
+    const catchUp = saveMapPatch.mock.calls[0]?.[0] as { readonly project: Project } | undefined;
+    expect(catchUp?.project.maps[mapId]?.lowerTiles[0]).toBe(secondTile);
+    expect(store.hasUnsavedChanges()).toBe(false);
+  });
+
+  it("does not apply stale map-patch response over newer local paint", async () => {
+    vi.useFakeTimers();
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-paint-map-patch");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("window", {
+      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: {
+        getItem: () => null,
+        setItem: () => undefined,
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>());
+    vi.resetModules();
+
+    type Project = import("@/project/types").Project;
+    const saveMapPatch = vi.fn(async (input: {
+      readonly project: Project;
+      readonly baseProject: Project;
+    }) => {
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 50);
+      });
+      return { kind: "saved" as const, project: structuredClone(input.project) };
+    });
+    vi.doMock("@/project/supabaseProjectSync", async () => {
+      const actual = await vi.importActual<typeof import("@/project/supabaseProjectSync")>(
+        "@/project/supabaseProjectSync",
+      );
+      return {
+        ...actual,
+        saveProjectToSupabase: vi.fn(),
+        saveProjectMapPatchToSupabase: saveMapPatch,
+      };
+    });
+
+    const { store } = await import("@/project/store");
+    const { createBlankProject } = await import("@/project/defaults");
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    store.replaceProject(project);
+    store._setPersistenceStateForTest({ loaded: true, remotePersistenceEnabled: true, disabledReason: null });
+    store._setPersistedBaselineForTest(structuredClone(project));
+
+    store.updateMap(mapId, (map) => {
+      map.lowerTiles[0] = 11;
+    });
+    const flushPromise = store.flush();
+    store.updateMap(mapId, (map) => {
+      map.lowerTiles[0] = 22;
+    });
+    await vi.advanceTimersByTimeAsync(50);
+    await vi.advanceTimersByTimeAsync(50);
+    const result = await flushPromise;
+
+    expect(result.kind).toBe("saved");
+    expect(store.getCurrent().maps[mapId]?.lowerTiles[0]).toBe(22);
+    expect(saveMapPatch).toHaveBeenCalledTimes(2);
+    const secondPatch = saveMapPatch.mock.calls[1]?.[0] as {
+      readonly project: Project;
+    } | undefined;
+    expect(secondPatch?.project.maps[mapId]?.lowerTiles[0]).toBe(22);
+    expect(store.hasUnsavedChanges()).toBe(false);
+  });
 });

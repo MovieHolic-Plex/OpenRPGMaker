@@ -79,10 +79,13 @@ class ProjectStore {
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
   private persistedBaseline: Project | null = null;
+  private persistInFlight: Promise<ProjectFlushResult> | null = null;
   // 마지막 "실제 저장"(원격 업서트 또는 dev override 기록) 이후 변경이 있는가 —
   // beforeunload 미저장 경고(도그푸딩 결함 ⑧)의 근거. 저장이 스킵되는 모드(fresh/blank)
   // 에서는 flush가 saved-local을 돌려줘도 실제 기록이 없으므로 true로 남는다.
   private dirtySinceLastPersist = false;
+  /** Bumps on every local edit. Used so in-flight remote saves cannot rewind paint. */
+  private mutationGeneration = 0;
 
   constructor() {
     this.current = createBlankProject();
@@ -227,7 +230,7 @@ class ProjectStore {
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
     }
-    this.dirtySinceLastPersist = true;
+    this.markLocalMutation();
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
@@ -248,7 +251,7 @@ class ProjectStore {
     removeLegacySpriteReferences(draft);
     this.current = draft;
     syncEventDraftVaultFromProject(this.current);
-    this.dirtySinceLastPersist = true;
+    this.markLocalMutation();
     this.emit(change);
     this.scheduleAutoSave();
   }
@@ -275,7 +278,7 @@ class ProjectStore {
       },
     };
     syncEventDraftVaultFromProject(this.current);
-    this.dirtySinceLastPersist = true;
+    this.markLocalMutation();
     this.emit({ scope: "map", mapId, ...change });
     this.scheduleAutoSave();
   }
@@ -300,6 +303,12 @@ class ProjectStore {
     if (!this.remotePersistenceEnabled && this.remotePersistenceDisabledReason === null) {
       return { kind: "not-configured" };
     }
+    // Clean flush: skip network/serialize when nothing changed since last successful persist.
+    if (!this.dirtySinceLastPersist && this.autoSaveState.kind !== "error") {
+      if (this.remotePersistenceEnabled) return { kind: "saved" };
+      if (this.remotePersistenceDisabledReason === "dev-showcase") return { kind: "saved-local" };
+      return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
+    }
     return await this.saveCurrentWithAutoSaveState(true);
   }
 
@@ -307,7 +316,7 @@ class ProjectStore {
     clearEventDraftVault();
     persistEventDraftVaultNow();
     this.current = createBlankProject();
-    this.dirtySinceLastPersist = true;
+    this.markLocalMutation();
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
   }
@@ -322,10 +331,16 @@ class ProjectStore {
     if (!withVault.maps[mapId]?.events.some((entry) => entry.id === eventId)) return false;
     this.current = withVault;
     syncEventDraftVaultFromProject(this.current);
-    this.dirtySinceLastPersist = true;
+    this.markLocalMutation();
     this.emit({ scope: "map", mapId });
     this.scheduleAutoSave();
     return true;
+  }
+
+  /** Local edit counter — remote save responses must not clobber a newer generation. */
+  private markLocalMutation(): void {
+    this.mutationGeneration += 1;
+    this.dirtySinceLastPersist = true;
   }
 
   subscribe(listener: Listener): () => void {
@@ -377,16 +392,42 @@ class ProjectStore {
   }
 
   private async saveCurrentWithAutoSaveState(allowRetry: boolean): Promise<ProjectFlushResult> {
-    this.setAutoSaveState({ kind: "saving" });
-    try {
-      const result = await this.persistCurrent();
-      this.setAutoSaveState(autoSaveStateForFlushResult(result));
-      return result;
-    } catch (error) {
-      this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
-      if (allowRetry) this.scheduleAutoSaveRetry();
-      throw error;
+    // Coalesce concurrent flush calls onto one network round-trip, then re-run
+    // if the user painted more tiles while that round-trip was in flight.
+    if (this.persistInFlight) {
+      const inFlightResult = await this.persistInFlight;
+      if (this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
+        return await this.saveCurrentWithAutoSaveState(allowRetry);
+      }
+      return inFlightResult;
     }
+    this.setAutoSaveState({ kind: "saving" });
+    const run = (async (): Promise<ProjectFlushResult> => {
+      try {
+        // Local-first catch-up: if paint lands during a save RTT, persist again
+        // immediately instead of reporting "saved" while still dirty and waiting
+        // the full autosave debounce (tiles stay local; DB just lags one hop).
+        let result = await this.persistCurrent();
+        while (
+          this.dirtySinceLastPersist
+          && this.loaded
+          && this.remotePersistenceEnabled
+          && result.kind === "saved"
+        ) {
+          result = await this.persistCurrent();
+        }
+        this.setAutoSaveState(autoSaveStateForFlushResult(result));
+        return result;
+      } catch (error) {
+        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
+        if (allowRetry) this.scheduleAutoSaveRetry();
+        throw error;
+      } finally {
+        this.persistInFlight = null;
+      }
+    })();
+    this.persistInFlight = run;
+    return await run;
   }
 
   private async persistCurrent(): Promise<ProjectFlushResult> {
@@ -404,21 +445,27 @@ class ProjectStore {
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
-    // Working bodies of open drafts are included; only draft *metadata* is stripped.
-    const persistedProject = projectWithoutEventDrafts(this.current);
+    // Snapshot local state at submit time. Paint during await must win over the response.
+    const generationAtSubmit = this.mutationGeneration;
+    const submittedProject = projectWithoutEventDrafts(this.current);
     const result = this.persistedBaseline
-      ? await saveProjectMapPatchToSupabase({ project: persistedProject, baseProject: this.persistedBaseline })
-      : await saveProjectToSupabase(persistedProject);
+      ? await saveProjectMapPatchToSupabase({ project: submittedProject, baseProject: this.persistedBaseline })
+      : await saveProjectToSupabase(submittedProject);
     if (result.kind === "not-configured") return result;
     if (result.kind === "conflict") return result;
-    const savedProject = result.project ?? persistedProject;
+    const savedProject = result.project ?? submittedProject;
+    // Baseline tracks what the server accepted — not what the editor is showing.
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
-    this.dirtySinceLastPersist = false;
-    if (result.project) {
-      // Remote merge can drop draft metadata and race with live edits — reattach both.
-      this.current = preserveEventDraftsOnProject(result.project, this.current);
-      syncEventDraftVaultFromProject(this.current);
-      this.emit({ scope: "project" });
+    // Local-first: never replace live maps/project with the save response.
+    // Doing so rewound brush strokes that landed during the network RTT
+    // (user symptom: painted tiles pop back / cancel after a moment).
+    if (this.mutationGeneration === generationAtSubmit) {
+      this.dirtySinceLastPersist = false;
+    } else {
+      // Newer local edits exist. Keep dirty; saveCurrentWithAutoSaveState's
+      // immediate catch-up loop (or a concurrent flush waiter) persists them.
+      // Do not arm the 4s autosave debounce here — that left a "saved" gap.
+      this.dirtySinceLastPersist = true;
     }
     recordManualProjectCommitAfterSave(savedProject);
     this.refreshSupabaseResourceCache();
