@@ -1,7 +1,7 @@
 // build_castle — 성채 모듈(지붕면/성벽/원형타워) 결정론 시공.
 // 금본: map_castle_keep + openwiki/castle-map.md
 
-import { stampCastle, type Rect } from "@/editor/castleKit";
+import { evaluateCastle, stampCastle, type Rect } from "@/editor/castleKit";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { EVENT_TOOLS } from "./eventTools";
@@ -80,6 +80,11 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
       });
       if (!stamp.ok) throw new ToolError(stamp.reason, { code: "castle-stamp-failed", mapId });
 
+      // 품질 게이트: 순수 성 구조(문 개방·마당 도달성·시공량)를 평가. 모래길/NPC 전에 검사한다
+      // (모래길은 잔디를 덮지만 통행 가능, NPC는 이벤트라 타일 무관).
+      const evaluation = evaluateCastle(map, stamp);
+      if (!evaluation.ok) warnings.push(...evaluation.issues.map((issue) => `평가: ${issue}`));
+
       if (pathEnabled) {
         try {
           const pathX = stamp.gate.x + Math.floor(stamp.gate.w / 2);
@@ -154,7 +159,7 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
       return {
         summary:
           `${map.name} 성채 시공 — 지붕 ${stamp.stats.roofCells} / 성벽 ${stamp.stats.wallCells} / 타워 ${stamp.stats.towerCells} · ` +
-          `남문 x=${stamp.gate.x} w=${stamp.gate.w} · ${towerNote}` +
+          `남문 x=${stamp.gate.x} w=${stamp.gate.w} · ${towerNote} · 평가 ${evaluation.score}` +
           (warnings.length ? ` · 경고 ${warnings.length}` : ""),
         data: {
           mapId,
@@ -164,6 +169,7 @@ export const CASTLE_TOOLS: readonly ToolDefinition[] = [
           gate: stamp.gate,
           roundTowerAt: stamp.roundTowerAt,
           stats: stamp.stats,
+          evaluation,
           warnings,
         },
         warnings: warnings.length ? warnings : undefined,
