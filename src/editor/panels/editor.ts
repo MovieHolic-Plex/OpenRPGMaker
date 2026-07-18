@@ -21,6 +21,10 @@ import {
 } from "@/editor/mapEditLocks";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
+import {
+  installHarnessSuggestionController,
+  uninstallHarnessSuggestionController,
+} from "@/editor/harnessSuggestion/suggestionController";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
@@ -200,6 +204,8 @@ export function renderEditor(main: HTMLElement): void {
   });
   installSelectionChipHint();
   maybeStartBasicCoachMarks();
+  // 보이지 않는 하네스 §③ — 붓질 관찰 → 휴지기 조용한 제안 카드.
+  installHarnessSuggestionController();
 }
 
 /** Re-apply basic/expert density without tearing down Phaser or AI session. */
@@ -236,6 +242,7 @@ export function applyEditorUiModeLayout(): void {
 export function teardownEditor(): void {
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
+  uninstallHarnessSuggestionController();
 
   unsubStore?.();
   unsubAutoSave?.();

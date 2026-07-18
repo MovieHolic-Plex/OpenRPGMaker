@@ -120,6 +120,14 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     allowedHosts: true,
     open: false,
+    fs: {
+      // 워크트리에서 node_modules 를 정션(mklink /J)으로 쓰면 @fs 실경로가 원본 저장소의
+      // node_modules 로 풀린다 — 기본 allow(워크스페이스 루트)만으로는 403. 그 경로만 추가 허용.
+      allow: [
+        fileURLToPath(new URL("./", import.meta.url)),
+        fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url)),
+      ],
+    },
     watch: {
       ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
     },

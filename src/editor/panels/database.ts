@@ -17,6 +17,7 @@ import {
   renderElementsTab,
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
+import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { clearChildren, el } from "@/util/dom";
 
@@ -31,6 +32,7 @@ export type DatabaseTab =
   | "crops"
   | "elements"
   | "monsterSpecies"
+  | "structureKits"
   | "system"
   | "terms"
   | "terrain"
@@ -57,6 +59,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
   { id: "tilesets", label: "타일셋", testid: "db-tab-tilesets" },
+  { id: "structureKits", label: "스탬프", testid: "db-tab-structure-kits" },
   { id: "commonEvents", label: "공용 이벤트", testid: "db-tab-common-events" },
   { id: "system", label: "시스템", testid: "db-tab-system" },
   { id: "terms", label: "용어", testid: "db-tab-terms" },
@@ -83,6 +86,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "battleCommands",
   "terrain",
   "tilesets",
+  "structureKits",
   "commonEvents",
   "system",
   "terms",
@@ -220,6 +224,9 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       return;
     case "tilesets":
       renderTilesetsTab(body, rerender);
+      return;
+    case "structureKits":
+      renderStructureKitsTab(body, rerender);
       return;
     case "system":
       renderSystemTab(body, rerender);

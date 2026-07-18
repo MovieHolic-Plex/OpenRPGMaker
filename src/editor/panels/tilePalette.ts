@@ -9,6 +9,7 @@ import { setTerrainTag } from "@/editor/tilesetActions";
 import { TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
+import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -223,6 +224,14 @@ function makePaintTabBody(input: {
   });
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
+
+  // "내 스탬프" — 붓질에서 학습·등록된 구조 킷 선반(등록 전에는 렌더 안 됨).
+  const kitShelf = makeStructureKitShelf({
+    tileset,
+    activeKitId: state.activePaletteStamp?.kitId ?? null,
+    rerender: renderPalettePreservingViewport,
+  });
+  if (kitShelf) root.append(kitShelf);
 
   // RM2003식 단일 팔레트 — 그룹/시트 보기 분리 없이 6열 고정, 오토타일은 대표 1칸 축약.
   const palette = makeRm2kPalette({

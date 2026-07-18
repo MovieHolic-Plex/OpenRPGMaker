@@ -19,6 +19,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "build_house_lots",
   "build_village",
   "build_castle",
+  "stamp_structure_kit",
   "clear_region",
   "set_map_properties",
   "place_npc",

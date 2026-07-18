@@ -208,6 +208,26 @@ export interface TileGraft {
   sourceTile: number;
 }
 
+// "보이지 않는 하네스" 구조 킷(2026-07-19 v2 설계 §③④ 수직 슬라이스).
+// 유저의 반복 붓질에서 감지·등록된 반복 단면 패턴 — 팔레트 스탬프의 데이터 원본.
+// rows[r].tiles = 하위 레이어(단면 r행, 좌→우), rows[r].upperTiles = 상위 레이어(-1 = 비움).
+export interface StructureKitRow {
+  tiles: number[];
+  upperTiles?: number[];
+}
+
+export interface StructureKitDef {
+  id: string;
+  kind: "section";
+  name?: string;
+  // 반복 단위 크기 — rows.length === height, rows[*].tiles.length === width.
+  width: number;
+  height: number;
+  rows: StructureKitRow[];
+  learnedFrom: "user-paint";
+  createdAt?: string;
+}
+
 export interface TilesetDef {
   id: TilesetId;
   name: string;
@@ -235,6 +255,8 @@ export interface TilesetDef {
   // v3 시공 문법 프로파일(2026-07-07). 생략 시 "rm-type"(RM2003 combined_town 규약).
   // 프리미티브 전개는 프로파일 레지스트리(grammarProfiles.ts) 디스패치.
   grammarProfile?: string;
+  // 유저 붓질에서 학습된 구조 킷(조용한 제안 → [등록]). 직렬화 왕복에 안전하도록 optional.
+  structureKits?: StructureKitDef[];
 }
 
 // 이웃 판정 범위: 4방향(상하좌우) 또는 8방향(대각 포함).
