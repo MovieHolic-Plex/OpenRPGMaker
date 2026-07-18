@@ -1,0 +1,23 @@
+/* src/styles/runtime/battle-skins/_ff.css
+   sideview — 아군 우측 세로 열, 파란 창. */
+.battle-scene[data-battle-skin="ff"] {
+  --battle-window-bg: #101838;
+  --battle-window-edge: #5878c8;
+  --battle-text: #f4f8ff;
+  --battle-accent: #48c0f0;
+  --rm2k3-battle-text: #f4f8ff;
+  background: #101838;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-actor-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-party {
+  background: #101838;
+  border: 2px solid #5878c8;
+  border-image: none;
+}

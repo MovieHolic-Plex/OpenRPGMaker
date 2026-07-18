@@ -1,0 +1,19 @@
+/* src/styles/runtime/battle-skins/_bravely.css
+   sideview — 얇은 프레임 HUD + 따뜻한 양피지 톤. */
+.battle-scene[data-battle-skin="bravely"] {
+  --battle-window-bg: #141018;
+  --battle-window-edge: #b89a6a;
+  --battle-text: #f6efe2;
+  --battle-accent: #d8a24a;
+  --rm2k3-battle-text: #f6efe2;
+  background: #141018;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-party,
+.battle-scene[data-battle-skin="bravely"] .battle-command-panel,
+.battle-scene[data-battle-skin="bravely"] .battle-enemy-list-panel {
+  background: #141018;
+  border: 1px solid #b89a6a;
+  border-image: none;
+  color: #f6efe2;
+}

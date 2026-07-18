@@ -1,0 +1,15 @@
+/* src/styles/runtime/battle-skins/_rm2003.css
+   sideview — 기본 RM2k3 파란 창 유지, 최소 오버라이드. 아군은 우측 사이드뷰 존. */
+.battle-scene[data-battle-skin="rm2003"] {
+  --battle-window-bg: #1742a5;
+  --battle-window-edge: #315dc0;
+  --battle-text: #f8fbff;
+  --battle-accent: #ffd75a;
+  background: #1742a5;
+}
+
+.battle-scene[data-battle-skin="rm2003"] .battle-actor-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}

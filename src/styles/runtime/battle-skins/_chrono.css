@@ -1,0 +1,18 @@
+/* src/styles/runtime/battle-skins/_chrono.css
+   active — 커맨드 링 힌트(둥근 패널) + 시안 엣지. */
+.battle-scene[data-battle-skin="chrono"] {
+  --battle-window-bg: #0a1a3a;
+  --battle-window-edge: #2fa8ff;
+  --battle-text: #eaf6ff;
+  --battle-accent: #ffd24a;
+  --rm2k3-battle-text: #eaf6ff;
+  background: #0a1a3a;
+}
+
+.battle-scene[data-battle-skin="chrono"] .battle-command-panel {
+  background: #0a1a3a;
+  border: 1px solid #2fa8ff;
+  border-image: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+}

@@ -1,0 +1,43 @@
+/* src/styles/runtime/battle-skins/_mother.css
+   frontview — 아군 스프라이트 숨김, 사이키델릭 애니메이션 배경. */
+.battle-scene[data-battle-skin="mother"] {
+  --battle-window-bg: #101010;
+  --battle-window-edge: #f8f8f8;
+  --battle-text: #f8f8f8;
+  --battle-accent: #ff4fd8;
+  --rm2k3-battle-text: #f8f8f8;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #ff4fd8,
+    #4f8cff,
+    #4fffa0,
+    #ffe14f,
+    #ff4fd8
+  );
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-actor-group[data-hidden="true"] {
+  display: none;
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-backdrop {
+  animation: mother-swirl 16s linear infinite;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    #ff4fd8,
+    #4f8cff,
+    #4fffa0,
+    #ffe14f,
+    #ff4fd8
+  );
+}
+
+@keyframes mother-swirl {
+  from {
+    filter: hue-rotate(0deg);
+  }
+
+  to {
+    filter: hue-rotate(360deg);
+  }
+}

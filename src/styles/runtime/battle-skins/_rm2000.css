@@ -1,0 +1,20 @@
+/* src/styles/runtime/battle-skins/_rm2000.css
+   frontview — 아군 스프라이트 숨김, 적 그룹 중앙 정렬. */
+.battle-scene[data-battle-skin="rm2000"] {
+  --battle-window-bg: #101c48;
+  --battle-window-edge: #2a52a0;
+  --battle-text: #eef4ff;
+  --battle-accent: #ffcf3a;
+  --rm2k3-battle-text: #eef4ff;
+  background: #101c48;
+}
+
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-group[data-hidden="true"] {
+  display: none;
+}
+
+.battle-scene[data-battle-skin="rm2000"] .battle-enemy-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,31 @@
+/* src/styles/runtime/battle-skins/_pokemon.css
+   frontview — 아군 존 좌하단, 적 존 우상단, 박스형 파티 스테이터스. */
+.battle-scene[data-battle-skin="pokemon"] {
+  --battle-window-bg: #f8f8f8;
+  --battle-window-edge: #4858a0;
+  --battle-text: #282828;
+  --battle-accent: #f04030;
+  --rm2k3-battle-window-light: #f8f8f8;
+  --rm2k3-battle-text: #282828;
+  background: #98d0d8;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-actor-group {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-enemy-group {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-party {
+  background: #f8f8f8;
+  border: 2px solid #4858a0;
+  border-image: none;
+  border-radius: 8px;
+  color: #282828;
+}

@@ -1,0 +1,20 @@
+/* src/styles/runtime/battle-skins/_goldensun.css
+   sideview — 로우앵글 필드(perspective) + 앰버 악센트. */
+.battle-scene[data-battle-skin="goldensun"] {
+  --battle-window-bg: #0e1830;
+  --battle-window-edge: #e0a030;
+  --battle-text: #f4ecd8;
+  --battle-accent: #ffcf3a;
+  --rm2k3-battle-text: #f4ecd8;
+  background: #0e1830;
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-field {
+  transform: perspective(600px) rotateX(6deg);
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-party {
+  background: #0e1830;
+  border: 1px solid #e0a030;
+  border-image: none;
+}
