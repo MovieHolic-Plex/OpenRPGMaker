@@ -299,6 +299,10 @@ describe("page conditions working guarantee (all kinds)", () => {
     for (const id of ids) {
       expect(findByTestId(root, id), id).not.toBeNull();
     }
+    // 이 픽스처는 모든 간단 조건을 켠 상태 — 전부 active 여야 한다.
+    const activeRows = root.querySelectorAll('[data-condition-active="true"]');
+    expect(activeRows.length).toBeGreaterThan(0);
+    expect(root.querySelectorAll('[data-condition-active="false"]').length).toBe(0);
     expect(root.textContent).toContain("보유 중");
     expect(root.textContent).toContain("파티에 있음");
     expect(root.textContent).toContain("켜짐");

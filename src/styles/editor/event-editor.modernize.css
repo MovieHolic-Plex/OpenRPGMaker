@@ -54,21 +54,8 @@
   content: attr(data-glyph);
 }
 
-/* ---- [P1] 조건/선택지 분기 깊이 가이드 라인 ---- */
-
-.cmd-item[data-cmd-depth] > .cmd-head,
-.cmd-line-marker[data-cmd-depth] {
-  background-image: repeating-linear-gradient(
-    to right,
-    transparent 0,
-    transparent 15px,
-    color-mix(in srgb, var(--rm2k3-command-blue, #6f87c9) 26%, transparent) 15px,
-    color-mix(in srgb, var(--rm2k3-command-blue, #6f87c9) 26%, transparent) 16px
-  );
-  background-position: 6px 0;
-  background-repeat: no-repeat;
-  background-size: calc(var(--cmd-depth, 0) * 16px) 100%;
-}
+/* depth 가이드/레일은 event-editor.modern.css 스레드 레일이 SSOT.
+   여기서 약한 16px 밴드를 다시 그리면 parent/child 대비가 뭉개진다. */
 
 /* ---- [높음-1/중간-5] 커맨드 피커: 검색/아이콘/스티키 푸터/범례 ---- */
 
@@ -409,9 +396,10 @@
 
 /* ---- [중간-2] 정보 밀도: 좌측 조건 패널 압축 + 안 쓰는 조건 행 시각적 후퇴 ---- */
 
+.event-conditions-grid .event-condition-row[data-condition-active="false"],
 .event-conditions-grid .event-condition-row:has(> input[type="checkbox"]:not(:checked)),
 .event-conditions-grid label.event-condition-row:has(input[type="checkbox"]:not(:checked)) {
-  opacity: 0.62;
+  opacity: 0.78;
 }
 
 .event-editor-settings-column {

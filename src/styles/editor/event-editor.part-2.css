@@ -257,26 +257,12 @@
   min-height: 21px;
   min-width: 0;
   overflow: hidden;
-  padding: 0 6px 0 calc(6px + (var(--cmd-depth, 0) * 18px));
+  /* modern.css 스레드 레일(28px)과 동일 step — 이 파일이 먼저 로드돼도 깊이가 안 줄어들게. */
+  padding: 0 6px 0 calc(10px + (var(--cmd-depth, 0) * 28px));
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
-  /* 들여쓰기 인덴트 가이드: depth 개의 18px 밴드마다 1px 세로선을 그린다.
-     (RM2K3 의 ':' 컬럼 느낌 — 부모 분기의 프리픽스 열과 정렬)
-     zebra/선택 배경은 아래에서 background-color 만 갱신하므로 가이드는 항상 남는다. */
-  background-image: repeating-linear-gradient(
-    to right,
-    transparent 0,
-    transparent 5px,
-    var(--border-subtle) 5px,
-    var(--border-subtle) 6px,
-    transparent 6px,
-    transparent 18px
-  );
-  background-position: 6px 0;
-  background-repeat: no-repeat;
-  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
 }
 
 .event-contents-fieldset .cmd-empty-line {
@@ -390,6 +376,37 @@
   background: var(--control-bg);
   border-color: var(--border-default);
   color: var(--text-2);
+}
+
+/* 선택지 요약: 옵션 칩 + 취소 배지 (한 줄 뭉개짐 방지). */
+.event-contents-fieldset .cmd-summary-token.choice-option {
+  border: 1px solid color-mix(in srgb, var(--warning, #d9a441) 45%, var(--border-default));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning, #d9a441) 14%, transparent);
+  color: var(--warning, #d9a441);
+  flex: 0 1 auto;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  max-width: 14ch;
+  overflow: hidden;
+  padding: 0 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-contents-fieldset .cmd-summary-token.choice-cancel {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg, var(--bg-inset));
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  margin-left: 2px;
+  padding: 0 6px;
+  white-space: nowrap;
 }
 
 /* 아이템/장비 요약 아이콘 (16px 픽셀아트). */

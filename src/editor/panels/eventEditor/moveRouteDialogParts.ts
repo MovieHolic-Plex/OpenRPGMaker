@@ -1,5 +1,4 @@
 import { el } from "@/util/dom";
-import { store } from "@/project/store";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import {
   CHARSET_FRAME_HEIGHT,
@@ -12,6 +11,7 @@ import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKey
 import type { Dir, MapId, MoveCommand } from "@/project/types";
 import { databasePicker } from "./conditionForm";
 import type { MoveRouteCommandContext } from "./moveRouteCommandCatalog";
+import { mapSelectElement } from "./sharedPickers";
 
 export function renderTopBar(
   initialFrequency: number,
@@ -249,18 +249,12 @@ function updateGraphicChip(chip: HTMLElement, textureKey: string): void {
 }
 
 function mapSelect(label: string, value: MapId, onChange: (value: MapId) => void): HTMLElement {
-  const select = el("select", {
-    dataset: { testid: "event-page-move-route-npc-target-map" },
-    on: {
-      change: (event) => {
-        if (event.currentTarget instanceof HTMLSelectElement) onChange(event.currentTarget.value);
-      },
-    },
+  const select = mapSelectElement({
+    selectedId: value,
+    testid: "event-page-move-route-npc-target-map",
+    allowEmpty: false,
+    onChange: (mapId) => onChange(mapId),
   });
-  for (const map of Object.values(store.getCurrent().maps)) {
-    select.append(el("option", { attrs: { value: map.id }, text: map.name }));
-  }
-  select.value = value;
   return el("label", { children: [el("span", { text: label }), select] });
 }
 

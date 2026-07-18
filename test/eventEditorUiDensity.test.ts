@@ -176,4 +176,20 @@ describe("event editor UI density", () => {
     expect(movement?.querySelector('[data-testid="event-classic-trigger"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-classic-trigger"]')).toBeTruthy();
   });
+
+  it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
+    expandDetails(conditions);
+    const inactive = conditions?.querySelectorAll('[data-condition-active="false"]') ?? [];
+    expect(inactive.length).toBeGreaterThan(0);
+    for (const row of Array.from(inactive)) {
+      expect(row.classList.contains("disabled")).toBe(true);
+      const children = Array.from(row.children) as HTMLElement[];
+      expect(children.length).toBeGreaterThanOrEqual(3);
+      for (const child of children) {
+        expect(child.hidden || child.hasAttribute("hidden")).toBe(false);
+      }
+    }
+  });
 });

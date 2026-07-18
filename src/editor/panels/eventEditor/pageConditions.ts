@@ -256,20 +256,28 @@ function conditionRow(
   control: HTMLElement,
   checked: boolean,
   suffix: string,
-  onToggle: (enabled: boolean) => void
+  onToggle: (enabled: boolean) => void,
 ): HTMLElement {
   const enabled = el("input", {
     attrs: { type: "checkbox", "aria-label": `${label} 조건 사용` },
   }) as HTMLInputElement;
   enabled.checked = checked;
   enabled.addEventListener("change", () => onToggle(enabled.checked));
+  // 이전 RM 스타일: 비활성 행도 라벨·컨트롤 자리를 유지한다(접어 숨기지 않음).
   return el("div", {
-    class: "event-condition-row",
+    class: `event-condition-row${checked ? "" : " disabled"}`,
+    dataset: {
+      conditionActive: checked ? "true" : "false",
+      testid: `event-condition-row-${label}`,
+    },
     children: [
       enabled,
       el("span", { class: "event-condition-label", text: label }),
       control,
-      el("span", { class: "event-condition-suffix", text: suffix }),
+      el("span", {
+        class: "event-condition-suffix",
+        text: suffix,
+      }),
     ],
   });
 }

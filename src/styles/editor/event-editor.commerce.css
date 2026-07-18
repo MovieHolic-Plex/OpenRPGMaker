@@ -545,13 +545,133 @@
   padding-right: 2px;
 }
 
+/* ---- 상점 검색 / 재고 레이어 / 미리보기 토글 ---- */
+
+.shop-processing-search-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.shop-processing-search-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.shop-processing-item-search {
+  min-width: 0;
+  width: 100%;
+}
+
+.shop-processing-stock-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shop-processing-stock-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.shop-processing-stock-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.shop-processing-stock-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.shop-processing-season-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.shop-processing-season-chip {
+  align-items: center;
+  background: var(--bg-inset, #14161c);
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 999px;
+  color: var(--text-1, #e9ecf5);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 6px;
+  padding: 6px 10px;
+}
+
+.shop-processing-season-chip:has(input:checked) {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.18)) 90%, transparent);
+  border-color: var(--accent, #6ea8ff);
+}
+
+.shop-processing-season-chip input {
+  margin: 0;
+}
+
+.shop-processing-stock-price-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 160px) auto;
+}
+
+.shop-processing-layer-note {
+  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.1)) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 24%, transparent);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 8px 10px;
+}
+
+.shop-processing-layer-note strong {
+  color: var(--accent, #6ea8ff);
+  font: 700 11px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+.shop-processing-layer-note span {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-edit-actions .shop-preview-toggle {
+  margin-right: auto;
+}
+
+/* 상점 미리보기 기본 접힘 */
+.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-columns.shop-preview-collapsed:has(.shop-processing-command-body) > .event-command-preview-panel {
+  display: none;
+}
+
+.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) {
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+}
+
+.event-command-edit-columns.is-shop-preview-open:has(.shop-processing-command-body) > .event-command-preview-panel {
+  display: block;
+}
+
 .event-subdialog-window.wide:has(.shop-processing-command-body) {
-  width: min(860px, calc(100vw - 24px));
-  max-height: min(92vh, 780px);
+  width: min(760px, calc(100vw - 24px));
+  max-height: min(92vh, 820px);
+}
+
+.event-subdialog-window.wide:has(.event-command-edit-columns.is-shop-preview-open .shop-processing-command-body) {
+  width: min(920px, calc(100vw - 24px));
 }
 
 .event-subdialog-window.wide:has(.shop-processing-command-body) .event-subdialog-body {
-  max-height: min(calc(92vh - 56px), 720px);
+  max-height: min(calc(92vh - 56px), 760px);
   overflow: auto;
 }
 

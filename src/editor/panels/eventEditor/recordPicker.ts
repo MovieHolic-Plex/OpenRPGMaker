@@ -9,6 +9,13 @@
 //   이벤트 호환을 그대로 보존한다(Playwright selectOption 호환).
 // - amountStepper: 수량 인풋을 − / + 버튼으로 감싼 스테퍼.
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import {
+  CHARSET_FRAME_HEIGHT,
+  CHARSET_FRAME_WIDTH,
+  CHARSET_SHEET_COLUMNS,
+  CHARSET_SHEET_ROWS,
+  charsetFrameSource,
+} from "@/assets/easyrpgRtp";
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { el } from "@/util/dom";
 import type { ActorRecord, Project } from "@/project/types";
@@ -24,7 +31,8 @@ export {
 } from "./switchVariablePicker";
 export type RecordPickerIcon =
   | { readonly kind: "image"; readonly url: string }
-  // 시트(페이스셋 등)에서 한 칸만 잘라 보여주는 아이콘.
+  // 시트(페이스셋/캐릭셋 등)에서 한 칸만 잘라 보여주는 아이콘.
+  // 한 장에 여러 얼굴·오브젝트가 있어도 index(또는 rect)로 단일 셀만 표시한다.
   | {
       readonly kind: "sheet";
       readonly url: string;
@@ -32,6 +40,16 @@ export type RecordPickerIcon =
       readonly cellHeight: number;
       readonly columns: number;
       readonly index: number;
+      readonly sheetWidth: number;
+      readonly sheetHeight: number;
+    }
+  | {
+      readonly kind: "sheetRect";
+      readonly url: string;
+      readonly x: number;
+      readonly y: number;
+      readonly cellWidth: number;
+      readonly cellHeight: number;
       readonly sheetWidth: number;
       readonly sheetHeight: number;
     };
@@ -446,20 +464,52 @@ export function imageIconOf(project: Pick<Project, "assets">, resourceId: string
   return url === null ? null : { kind: "image", url };
 }
 
-// 페이스셋 첫 칸(얼굴 1)을 24px 로 잘라 쓰는 아이콘 리졸버(액터용).
-export function facesetIconOf(project: Pick<Project, "assets">, resourceId: string | undefined): RecordPickerIcon | null {
+// 페이스셋 한 칸(faceIndex 0..15)을 24px 로 잘라 쓰는 아이콘. 시트 전체 표시 금지.
+export function facesetIconOf(
+  project: Pick<Project, "assets">,
+  resourceId: string | undefined,
+  faceIndex = 0,
+): RecordPickerIcon | null {
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (url === null) return null;
   const slicing = RESOURCE_SLICING.faceset;
+  const maxIndex = slicing.columns * slicing.rows - 1;
+  const index = clampSheetIndex(faceIndex, maxIndex);
   return {
     kind: "sheet",
     url,
     cellWidth: slicing.cellWidth,
     cellHeight: slicing.cellHeight,
     columns: slicing.columns,
-    index: 0,
+    index,
     sheetWidth: slicing.sheetWidth,
     sheetHeight: slicing.sheetHeight,
+  };
+}
+
+// 캐릭셋 시트에서 characterIndex(0..7) 한 명의 idle-front 프레임만 크롭.
+// Object1/2 문·상자처럼 한 시트에 여러 오브젝트가 있어도 슬롯 하나만 보인다.
+export function charsetIconOf(
+  project: Pick<Project, "assets">,
+  resourceId: string | undefined,
+  characterIndex = 0,
+): RecordPickerIcon | null {
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  if (url === null) return null;
+  const source = charsetFrameSource({
+    characterIndex: clampSheetIndex(characterIndex, 7),
+    direction: "down",
+    pattern: 1,
+  });
+  return {
+    kind: "sheetRect",
+    url,
+    x: source.x,
+    y: source.y,
+    cellWidth: source.width,
+    cellHeight: source.height,
+    sheetWidth: CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH,
+    sheetHeight: CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT,
   };
 }
 
@@ -475,20 +525,31 @@ function renderRecordIcon(icon: RecordPickerIcon | null, name: string): HTMLElem
       attrs: { src: icon.url, alt: "", width: String(RICH_ICON_SIZE), height: String(RICH_ICON_SIZE) },
     });
   }
-  // 시트 크롭: 24px 로 축소한 background 포지셔닝.
+  // 시트 크롭: 한 셀만 보이도록 background-position. 전체 시트 축소 금지.
   const scale = RICH_ICON_SIZE / icon.cellWidth;
-  const col = icon.index % icon.columns;
-  const row = Math.floor(icon.index / icon.columns);
   const crop = el("span", {
     class: "rich-record-icon-crop",
     attrs: { role: "img", "aria-label": `${name} 아이콘` },
   });
   crop.style.setProperty("background-image", `url("${icon.url}")`);
   crop.style.setProperty("background-size", `${icon.sheetWidth * scale}px ${icon.sheetHeight * scale}px`);
-  crop.style.setProperty(
-    "background-position",
-    `-${col * icon.cellWidth * scale}px -${row * icon.cellHeight * scale}px`
-  );
+  if (icon.kind === "sheet") {
+    const col = icon.index % icon.columns;
+    const row = Math.floor(icon.index / icon.columns);
+    crop.style.setProperty(
+      "background-position",
+      `-${col * icon.cellWidth * scale}px -${row * icon.cellHeight * scale}px`,
+    );
+  } else {
+    crop.style.setProperty(
+      "background-position",
+      `-${icon.x * scale}px -${icon.y * scale}px`,
+    );
+  }
+  // 비정사각 셀(캐릭셋 24×32)도 24px 박스 안에서 잘리게 고정.
+  crop.style.setProperty("width", `${RICH_ICON_SIZE}px`);
+  crop.style.setProperty("height", `${RICH_ICON_SIZE}px`);
+  crop.style.setProperty("overflow", "hidden");
   return crop;
 }
 
@@ -496,6 +557,11 @@ function renderRecordIcon(icon: RecordPickerIcon | null, name: string): HTMLElem
 export function initialBadge(name: string): HTMLElement {
   const initial = Array.from(name.trim())[0] ?? "?";
   return el("span", { class: "rich-record-initial", text: initial, attrs: { "aria-hidden": "true" } });
+}
+
+function clampSheetIndex(value: number | undefined, max: number): number {
+  if (value === undefined || !Number.isFinite(value)) return 0;
+  return Math.min(max, Math.max(0, Math.trunc(value)));
 }
 
 export type SegmentOption<T extends string> = {

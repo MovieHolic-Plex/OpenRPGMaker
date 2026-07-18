@@ -1,9 +1,9 @@
 import { el } from "@/util/dom";
-import { numberedName } from "@/editor/panels/databaseDisplay";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, SELF_SWITCH_KEY_OPTIONS } from "./options";
 import { databasePicker } from "./switchVariablePicker";
+import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
 
 export { databasePicker, switchPicker, switchVariablePicker, variablePicker } from "./switchVariablePicker";
@@ -589,11 +589,11 @@ export function renderSelfSwitchCondition(
 }
 
 function actorPicker(currentId: ActorId, onChange: (id: ActorId) => void): HTMLElement {
-  return recordSelect(store.getCurrent().database.actors, currentId, onChange, "event-condition-actor");
+  return actorPickerControl(currentId, onChange, "event-condition-actor");
 }
 
 function itemPicker(currentId: ItemId, onChange: (id: ItemId) => void): HTMLElement {
-  return recordSelect(store.getCurrent().database.items, currentId, onChange, "event-condition-item");
+  return itemPickerControl(currentId, onChange, "event-condition-item");
 }
 
 export function renderActorCondition(
@@ -826,25 +826,6 @@ export function renderFriendshipAtLeastCondition(
   return row;
 }
 
-function recordSelect(
-  list: readonly { readonly id: string; readonly name: string }[],
-  currentId: string,
-  onChange: (id: string) => void,
-  testId: string
-): HTMLElement {
-  const sel = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
-  sel.append(el("option", { text: "(선택)", attrs: { value: "" } }));
-  for (const [index, item] of list.entries()) {
-    sel.append(el("option", { text: numberedName(index, item.name), attrs: { value: item.id } }));
-  }
-  // 삭제된 레코드 id도 선택 표시 — 없으면 값이 조용히 비어 보여 조건이 깨진 것처럼 보인다.
-  if (currentId && !list.some((item) => item.id === currentId)) {
-    sel.append(el("option", { text: `${currentId} (없음)`, attrs: { value: currentId } }));
-  }
-  sel.value = currentId;
-  sel.addEventListener("change", () => onChange(sel.value));
-  return sel;
-}
 
 function firstActorId(): ActorId {
   return store.getCurrent().database.actors[0]?.id ?? "";

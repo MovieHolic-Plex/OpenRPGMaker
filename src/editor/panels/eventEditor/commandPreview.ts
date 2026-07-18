@@ -674,7 +674,7 @@ function actorStage(actorId: string, caption: string): HTMLElement {
   const project = store.getCurrent();
   const record = project.database.actors.find((actor) => actor.id === actorId);
   const stage = el("div", { class: "ecp-icon-stage" });
-  stage.append(el("div", { class: "ecp-hero-icon", children: [recordIconElement(facesetIconOf(project, record?.faceResourceId), record?.name ?? actorId)] }));
+  stage.append(el("div", { class: "ecp-hero-icon", children: [recordIconElement(facesetIconOf(project, record?.faceResourceId, record?.faceIndex ?? 0), record?.name ?? actorId)] }));
   stage.append(el("div", { class: "ecp-icon-name", text: record?.name ?? (actorId || "(주인공 선택)") }));
   stage.append(el("div", { class: "ecp-op-strip", text: caption }));
   return stage;

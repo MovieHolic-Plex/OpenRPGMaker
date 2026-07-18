@@ -41,6 +41,31 @@ describe("event editor presentation", () => {
     expect(parts.some((part) => part.tone === "plain" && part.text.includes("어서 와요"))).toBe(true);
   });
 
+  it("renders choice options as chips and cancel as a distinct badge, not another option", () => {
+    const command = {
+      kind: "choices",
+      prompt: "폐광 열쇠 조사도 맡겠나?",
+      options: [
+        { text: "맡는다", branch: [] },
+        { text: "잠시 후", branch: [] },
+      ],
+      cancelBehavior: "choice2",
+    } satisfies Command;
+
+    const parts = commandSummaryParts(command);
+    const text = commandSummary(command);
+
+    expect(parts).toContainEqual({ text: "선택지 표시", tone: "command" });
+    expect(parts).toContainEqual({ text: "1.맡는다", tone: "choice-option" });
+    expect(parts).toContainEqual({ text: "2.잠시 후", tone: "choice-option" });
+    expect(parts).toContainEqual({ text: "취소→잠시 후", tone: "choice-cancel" });
+    // 취소 표기가 옵션 목록 사이에 섞이지 않는다.
+    expect(text).toContain("1.맡는다");
+    expect(text).toContain("2.잠시 후");
+    expect(text).toContain("취소→잠시 후");
+    expect(text).not.toMatch(/맡는다 \/ 잠시 후 \/ 취소/);
+  });
+
   it("shows user-defined switch and variable names instead of raw internal ids", () => {
     const project = store.getCurrent();
     const variable = project.variables[0];

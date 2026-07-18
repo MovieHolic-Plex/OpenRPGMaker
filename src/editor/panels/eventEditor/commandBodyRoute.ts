@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, Dir, MapId, MoveCommand } from "@/project/types";
 import type { CommandEditContext } from "./types";
+import { mapSelectElement } from "./sharedPickers";
 import {
   DIRECTIONAL_MOVE_TEST_IDS,
   MOVE_ROUTE_COMMAND_ROWS,
@@ -407,12 +408,11 @@ function inferRouteParameters(moves: readonly MoveCommand[]): MoveRouteCommandCo
 }
 
 function mapSelect(value: MapId): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: "move-route-npc-target-map-input" } });
-  for (const map of Object.values(store.getCurrent().maps)) {
-    select.append(el("option", { attrs: { value: map.id }, text: map.name }));
-  }
-  select.value = value;
-  return select;
+  return mapSelectElement({
+    selectedId: value,
+    testid: "move-route-npc-target-map-input",
+    allowEmpty: false,
+  });
 }
 
 function directionSelect(value: Dir): HTMLSelectElement {
