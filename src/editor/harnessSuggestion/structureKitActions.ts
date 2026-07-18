@@ -20,3 +20,25 @@ export function registerStructureKit(tilesetId: TilesetId, kit: StructureKitDef)
   });
   return stored;
 }
+
+/** DB 관리: 킷 이름 변경. */
+export function renameStructureKit(tilesetId: TilesetId, kitId: string, name: string): void {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  store.update((project) => {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset?.structureKits) return;
+    tileset.structureKits = tileset.structureKits.map((kit) =>
+      kit.id === kitId ? { ...kit, name: trimmed } : kit,
+    );
+  });
+}
+
+/** DB 관리: 킷 삭제. */
+export function deleteStructureKit(tilesetId: TilesetId, kitId: string): void {
+  store.update((project) => {
+    const tileset = project.tilesets[tilesetId];
+    if (!tileset?.structureKits) return;
+    tileset.structureKits = tileset.structureKits.filter((kit) => kit.id !== kitId);
+  });
+}
