@@ -1,18 +1,65 @@
 /* src/styles/runtime/battle-skins/_chrono.css
-   active — 커맨드 링 힌트(둥근 패널) + 시안 엣지. */
+   active — 시안 엣지 HUD. 커맨드는 둥근 사각(타원 아님 — 자기 텍스트를 깎지 않는다).
+   QA r1: border-radius 999px 타원이 'Attack'→'ttack', '도주' 반토막으로
+   자르던 문제를 라운드 사각으로 교체 + 시안 악센트를 HUD 전체로. */
 .battle-scene[data-battle-skin="chrono"] {
   --battle-window-bg: #0a1a3a;
-  --battle-window-edge: #2fa8ff;
+  --battle-window-edge: #35d6e8;
   --battle-text: #eaf6ff;
   --battle-accent: #ffd24a;
   --rm2k3-battle-text: #eaf6ff;
   background: #0a1a3a;
 }
 
+/* QA r1(layout): 타원 → 둥근 사각. 어떤 커맨드 행도 잘리지 않는다. */
 .battle-scene[data-battle-skin="chrono"] .battle-command-panel {
-  background: #0a1a3a;
-  border: 1px solid #2fa8ff;
+  background: radial-gradient(circle at 50% 0%, #10365c 0%, #0a1a3a 72%);
+  border: 2px solid #35d6e8;
   border-image: none;
-  border-radius: 999px;
-  padding: 6px 12px;
+  border-radius: 10px;
+  overflow: visible !important;
+  padding: 3px 5px !important;
+}
+
+/* QA r1(fidelity): 시안 악센트를 파티/메시지 창까지 — ATB 활극 무드. */
+.battle-scene[data-battle-skin="chrono"] .battle-party {
+  background: linear-gradient(180deg, #0c2b3a, #071a24);
+  border: 2px solid #35d6e8;
+  border-image: none;
+  border-radius: 8px;
+}
+
+.battle-scene[data-battle-skin="chrono"] .battle-message-window {
+  background: linear-gradient(180deg, #0c2b3a, #071a24);
+  border: 2px solid #35d6e8;
+  border-image: none;
+  border-radius: 8px;
+  align-content: start;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
+.battle-scene[data-battle-skin="chrono"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="chrono"] .battle-actor-status .battle-actor-vitals {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="chrono"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="chrono"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="chrono"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
 }

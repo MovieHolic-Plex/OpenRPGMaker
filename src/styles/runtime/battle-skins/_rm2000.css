@@ -1,5 +1,6 @@
 /* src/styles/runtime/battle-skins/_rm2000.css
-   frontview — 아군 스프라이트 숨김, 적 그룹 중앙 정렬. */
+   frontview — 아군 스프라이트 숨김, 적 중앙 정렬, rm2003보다 어두운 남색 창.
+   QA r1: 적 중앙 정렬(오프센터 보정) + 어두운 rm2000 창 톤 + HP 말줄임 해제. */
 .battle-scene[data-battle-skin="rm2000"] {
   --battle-window-bg: #101c48;
   --battle-window-edge: #2a52a0;
@@ -7,14 +8,57 @@
   --battle-accent: #ffcf3a;
   --rm2k3-battle-text: #eef4ff;
   background: #101c48;
+  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
 }
 
 .battle-scene[data-battle-skin="rm2000"] .battle-actor-group[data-hidden="true"] {
   display: none;
 }
 
-.battle-scene[data-battle-skin="rm2000"] .battle-enemy-group {
+/* QA r1(layout): 적이 수평 중앙에서 왼쪽으로 떠 있던 문제 — 단일 적을 필드 중앙에.
+   result 스텝의 승리 연출 좌표는 유지. */
+.battle-scene[data-battle-skin="rm2000"]:not([data-battle-director-step="result"]) .battle-enemy {
+  left: 50% !important;
+  top: 48% !important;
+}
+
+/* QA r1(fidelity): rm2003과 구분되는 어두운 남색 + 밝은 회백 테두리 창. */
+.battle-scene[data-battle-skin="rm2000"] .battle-command-panel,
+.battle-scene[data-battle-skin="rm2000"] .battle-message-window,
+.battle-scene[data-battle-skin="rm2000"] .battle-enemy-list-panel,
+.battle-scene[data-battle-skin="rm2000"] .battle-party {
+  background: linear-gradient(180deg, #101c52, #0a1238);
+  border: 2px solid #d8d8e8;
+  border-image: none;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="rm2000"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="rm2000"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="rm2000"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
 }

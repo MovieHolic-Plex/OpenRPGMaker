@@ -1,20 +1,71 @@
 /* src/styles/runtime/battle-skins/_goldensun.css
-   sideview — 로우앵글 필드(perspective) + 앰버 악센트. */
+   sideview — 로우앵글 백드롭(perspective) + 앰버 프레임 HUD.
+   QA r1: 필드 자체를 기울여 상단 모서리에 검은 틈이 생기던 문제 —
+   틸트를 백드롭에만 걸고 scale로 프레임을 다시 채운다 + 전 패널 앰버화. */
 .battle-scene[data-battle-skin="goldensun"] {
-  --battle-window-bg: #0e1830;
-  --battle-window-edge: #e0a030;
-  --battle-text: #f4ecd8;
+  --battle-window-bg: #2e2008;
+  --battle-window-edge: #e8a33d;
+  --battle-text: #ffe9c2;
   --battle-accent: #ffcf3a;
-  --rm2k3-battle-text: #f4ecd8;
-  background: #0e1830;
+  --rm2k3-battle-text: #ffe9c2;
+  background: #1a1206;
 }
 
+/* QA r1(layout): 틸트는 백드롭에만 — 스프라이트는 똑바로, 틈은 scale로 커버. */
 .battle-scene[data-battle-skin="goldensun"] .battle-field {
-  transform: perspective(600px) rotateX(6deg);
+  transform: none;
+  overflow: hidden;
 }
 
+.battle-scene[data-battle-skin="goldensun"] .battle-backdrop {
+  transform: perspective(700px) rotateX(6deg) scale(1.12);
+  transform-origin: 50% 100%;
+}
+
+/* QA r1(fidelity): 커맨드·메시지·파티 전부 다크 앰버 + 골드 프레임. */
+.battle-scene[data-battle-skin="goldensun"] .battle-command-panel,
+.battle-scene[data-battle-skin="goldensun"] .battle-message-window,
+.battle-scene[data-battle-skin="goldensun"] .battle-enemy-list-panel,
 .battle-scene[data-battle-skin="goldensun"] .battle-party {
-  background: #0e1830;
-  border: 1px solid #e0a030;
+  background: linear-gradient(180deg, #3b2a10, #241806);
+  border: 2px solid #e8a33d;
   border-image: none;
+  color: #ffe9c2;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시.
+   HP 게이지 폭도 행마다 동일하게 스트레치. */
+.battle-scene[data-battle-skin="goldensun"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-actor-status .battle-actor-vitals {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="goldensun"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-actor-status .battle-stat-bar {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="goldensun"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
 }
