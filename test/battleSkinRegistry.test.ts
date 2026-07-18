@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { BATTLE_SKINS, getBattleSkin, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
+import { createBlankProject } from "@/project/defaults";
+import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
   it("정확히 10개 스킨을 노출한다", () => {
@@ -27,5 +29,21 @@ describe("battle skin registry", () => {
 
   it("BATTLE_SKINS 키와 id가 일치한다", () => {
     for (const [key, skin] of Object.entries(BATTLE_SKINS)) expect(skin.id).toBe(key);
+  });
+});
+
+describe("battleUiStyle serialization", () => {
+  it("비-기본 스킨 id는 그대로 보존한다", () => {
+    const project = createBlankProject();
+    project.system.battleUiStyle = "octopath";
+    const out = normalizeSystemRecords(project.system) as { battleUiStyle?: string };
+    expect(out.battleUiStyle).toBe("octopath");
+  });
+
+  it("기본(rm2003) 및 미설정은 생략한다", () => {
+    const project = createBlankProject();
+    project.system.battleUiStyle = "rm2003";
+    const out = normalizeSystemRecords(project.system) as { battleUiStyle?: string };
+    expect(out.battleUiStyle).toBeUndefined();
   });
 });
