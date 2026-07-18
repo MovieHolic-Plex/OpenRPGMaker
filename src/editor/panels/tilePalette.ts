@@ -11,7 +11,6 @@ import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/ti
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
-import { makeTilePaletteToolSection } from "@/editor/panels/tilePaletteToolbar";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
@@ -80,8 +79,14 @@ export function renderTilePalette(container: HTMLElement): void {
   }
 
   if (state.layer === "event") {
-    // 이벤트 레이어: 도구 + 이벤트 편집기. basic/expert 모두 동일 경로(숨기지 않음).
-    container.append(makeTilePaletteToolSection(currentMapId));
+    // 이벤트 레이어: 통합 툴바(그리기+맵 모드) + 이벤트 편집기. basic/expert 모두 동일 경로(숨기지 않음).
+    const project = store.getCurrent();
+    const mapId = state.currentMapId ?? project.startMapId;
+    const map = project.maps[mapId];
+    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    if (map && tileset) {
+      container.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+    }
     renderEventEditor(container);
     return;
   }
@@ -110,14 +115,6 @@ export function renderTilePalette(container: HTMLElement): void {
 
   shell.append(makeWorkTabBar());
   shell.append(makeSelectedTileStatus(state.selectedTile, tileset));
-  shell.append(
-    el("div", {
-      class: "palette-tileset-badge",
-      text: tileset.name,
-      attrs: { title: tileset.name },
-      dataset: { testid: "palette-tileset-name" },
-    })
-  );
 
   let palette: HTMLElement | null = null;
   if (activeWorkTab === "paint") {
@@ -139,9 +136,6 @@ export function renderTilePalette(container: HTMLElement): void {
       tileset,
     }));
   }
-
-  // 레거시 호환: 숨은 advanced 토글 — 속성/찾기 전환용 테스트 훅
-  shell.append(makeLegacyAdvancedToggle());
 
   container.append(shell);
   if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
@@ -176,8 +170,6 @@ function makeWorkTabBar(): HTMLElement {
             if (activeWorkTab === tab.id) return;
             activeWorkTab = tab.id;
             writePaletteStorage(PALETTE_WORK_TAB_KEY, tab.id);
-            // 찾기/속성을 쓰면 advanced 플래그도 맞춰 구 테스트 기대와 맞춘다.
-            writePaletteStorage(PALETTE_ADVANCED_STORAGE_KEY, tab.id === "paint" ? "0" : "1");
             renderPalettePreservingViewport();
           },
         },
@@ -187,40 +179,35 @@ function makeWorkTabBar(): HTMLElement {
   return bar;
 }
 
-/** 구 tile-advanced-toggle: 클릭 시 찾기 탭으로 (unit e2e 호환). */
-function makeLegacyAdvancedToggle(): HTMLElement {
-  return el("button", {
-    class: "btn tile-advanced-toggle is-legacy-hook",
-    text: "고급",
-    attrs: {
-      type: "button",
-      hidden: "",
-      "aria-hidden": "true",
-      "aria-expanded": String(activeWorkTab !== "paint"),
-    },
-    dataset: { testid: "tile-advanced-toggle" },
-    on: {
-      click: () => {
-        activeWorkTab = activeWorkTab === "find" ? "paint" : "find";
-        writePaletteStorage(PALETTE_WORK_TAB_KEY, activeWorkTab);
-        writePaletteStorage(PALETTE_ADVANCED_STORAGE_KEY, activeWorkTab === "paint" ? "0" : "1");
-        renderPalettePreservingViewport();
-      },
-    },
-  });
-}
-
+/** 선택 타일 + 타일셋 이름을 한 줄 칩으로 — 구 palette-tileset-badge(별도 줄)를 흡수했다. */
 function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTMLElement {
-  const label =
-    selectedTile < 0 || selectedTile >= tileset.count
-      ? "없음"
-      : `${selectedTile} ${quickTileName(tileset, selectedTile)}`;
-  return el("div", {
+  const hasTile = selectedTile >= 0 && selectedTile < tileset.count;
+  // 기본 칩셋 라벨(tileDisplayLabelForIndex)은 이미 "360 흙길 중심"처럼 번호로 시작 — 번호 중복 표기를 막는다.
+  const name = hasTile ? quickTileName(tileset, selectedTile) : "";
+  const label = !hasTile ? "없음" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
+  const chip = el("div", {
     class: "selected-tile-status",
-    text: label,
-    attrs: { title: "현재 선택 타일" },
+    attrs: { title: `선택 타일: ${label} · 타일셋: ${tileset.name}` },
     dataset: { testid: "selected-tile-status" },
   });
+  if (hasTile) {
+    chip.append(
+      el("span", {
+        class: "selected-tile-thumb",
+        attrs: { "aria-hidden": "true", style: tilesetTileBackgroundStyle(tileset, selectedTile, 16) },
+      })
+    );
+  }
+  chip.append(el("span", { class: "selected-tile-label", text: label }));
+  chip.append(
+    el("span", {
+      class: "selected-tile-tileset",
+      text: tileset.name,
+      attrs: { title: tileset.name },
+      dataset: { testid: "palette-tileset-name" },
+    })
+  );
+  return chip;
 }
 
 function makePaintTabBody(input: {
@@ -234,7 +221,6 @@ function makePaintTabBody(input: {
     class: "palette-work-pane is-paint",
     dataset: { testid: "palette-work-pane-paint" },
   });
-  root.append(makeTilePaletteToolSection(currentMapId));
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
 

@@ -252,7 +252,7 @@ test("manual cluster pen paint places hard-rule companion tree tiles", async ({ 
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await page.getByTestId("layer-lower").click();
-  await page.getByTestId("rpg-maker-tool-pen").click();
+  await page.getByTestId("tool-paint").click();
   await page.getByTestId("cluster-tile-260").scrollIntoViewIfNeeded();
   await page.getByTestId("cluster-tile-260").click();
 

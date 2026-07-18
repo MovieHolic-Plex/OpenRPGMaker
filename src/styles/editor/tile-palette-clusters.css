@@ -31,8 +31,7 @@
   overflow: hidden;
 }
 
-.palette-view-button,
-.tile-advanced-toggle {
+.palette-view-button {
   border-radius: 0;
   font-size: 11px;
   height: 24px;
@@ -46,8 +45,7 @@
 }
 
 .palette-view-button.active,
-.palette-view-button[aria-pressed="true"],
-.tile-advanced-toggle.active {
+.palette-view-button[aria-pressed="true"] {
   background: var(--accent);
   border-color: var(--accent-border);
   color: var(--on-accent);

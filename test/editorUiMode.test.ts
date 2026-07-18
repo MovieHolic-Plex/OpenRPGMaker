@@ -95,12 +95,13 @@ describe("editorUiMode", () => {
   });
 
   it("keeps event tool id available in shared palette tool list (basic does not gate events)", async () => {
-    // Structural: shipped tool section always includes event (basic only reduces chrome density).
+    // Structural: shipped toolbar always includes event (basic only reduces chrome density).
+    // 구 tilePaletteToolbar.ts는 통합 툴바(rpgMakerTileToolbar.ts)로 흡수됨 (2026-07-18).
     const source = await import("node:fs/promises").then((fs) =>
-      fs.readFile(new URL("../src/editor/panels/tilePaletteToolbar.ts", import.meta.url), "utf8"),
+      fs.readFile(new URL("../src/editor/panels/rpgMakerTileToolbar.ts", import.meta.url), "utf8"),
     );
     expect(source).toMatch(/id:\s*"event"/);
-    expect(source).toMatch(/testid:\s*`tool-\$\{t\.id\}`|tool-event|t\.id/);
+    expect(source).toMatch(/testid:\s*`tool-\$\{item\.id\}`|tool-event/);
     // chrome flags never include an "eventsBlocked" style switch
     const basic = chromeForMode("basic");
     expect("eventsBlocked" in basic).toBe(false);

@@ -1,6 +1,6 @@
 type SvgIconName =
   | "brush" | "eraser" | "fill" | "inspector" | "pen" | "rect" | "round" | "select" | "template" | "undo"
-  | "eyedropper" | "event" | "tile" | "layers" | "map";
+  | "eyedropper" | "event" | "tile" | "layers" | "map" | "hand" | "collision" | "more";
 type SvgTag = "path" | "rect" | "circle";
 type SvgNodeSpec = {
   readonly tag: SvgTag;
@@ -79,6 +79,23 @@ const ICONS: Record<SvgIconName, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z" } },
     { tag: "path", attrs: { d: "M9 4v14" } },
     { tag: "path", attrs: { d: "M15 6v14" } },
+  ],
+  hand: [
+    { tag: "path", attrs: { d: "M11 3v16" } },
+    { tag: "path", attrs: { d: "M3 11h16" } },
+    { tag: "path", attrs: { d: "M8 6l3-3 3 3" } },
+    { tag: "path", attrs: { d: "M8 16l3 3 3-3" } },
+    { tag: "path", attrs: { d: "M6 8l-3 3 3 3" } },
+    { tag: "path", attrs: { d: "M16 8l3 3-3 3" } },
+  ],
+  collision: [
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "7.5" } },
+    { tag: "path", attrs: { d: "M5.8 5.8l10.4 10.4" } },
+  ],
+  more: [
+    { tag: "circle", attrs: { cx: "5", cy: "11", r: "1.1", fill: "currentColor" } },
+    { tag: "circle", attrs: { cx: "11", cy: "11", r: "1.1", fill: "currentColor" } },
+    { tag: "circle", attrs: { cx: "17", cy: "11", r: "1.1", fill: "currentColor" } },
   ],
 };
 

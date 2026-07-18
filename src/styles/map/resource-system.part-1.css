@@ -484,26 +484,6 @@
   padding-bottom: 1px;
 }
 
-.tool-grid {
-  display: grid;
-  gap: 1px;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-}
-
-.tool-grid .btn {
-  align-items: center;
-  display: flex;
-  font-size: 10px;
-  height: 24px;
-  justify-content: center;
-  line-height: 1;
-  min-width: 0;
-  overflow: hidden;
-  padding: 0 2px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .visually-hidden {
   border: 0;
   clip: rect(0 0 0 0);

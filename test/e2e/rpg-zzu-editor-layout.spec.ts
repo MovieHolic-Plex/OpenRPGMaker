@@ -273,16 +273,18 @@ test("quick tile picker filters AI-labeled tiles without horizontal scrolling", 
   await expect.poll(() => page.getByTestId("left-palette-root").evaluate((node) => node.scrollTop)).toBe(beforeSelectScroll);
 });
 
-test("left sidebar tool buttons use visible pixel icons with accessible names", async ({ page }) => {
+test("left sidebar tool buttons use visible icons with accessible names", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1&leftSidebarIcons=1");
 
+  // 2026-07-18: 구 tool-grid 8버튼 섹션은 통합 툴바(rpg-maker-tile-toolbar)로 흡수됨.
+  // testid는 승계, 아이콘은 rm-tool-icon(CSS) → SVG.
   const expectedTools = [
-    { testId: "tool-paint", label: "연필" },
+    { testId: "tool-paint", label: "펜" },
     { testId: "tool-fill", label: "채우기" },
     { testId: "tool-eyedropper", label: "스포이트" },
     { testId: "tool-pan", label: "이동" },
-    { testId: "tool-select", label: "선택" },
+    { testId: "tool-select", label: "영역 선택" },
     { testId: "tool-collision", label: "통행" },
     { testId: "tool-event", label: "이벤트" },
     { testId: "tool-erase", label: "지우개" },
@@ -292,7 +294,7 @@ test("left sidebar tool buttons use visible pixel icons with accessible names", 
     const button = page.getByTestId(tool.testId);
     await expect(button).toBeVisible();
     await expect(button).toHaveAttribute("aria-label", tool.label);
-    await expect(button.locator(".rm-tool-icon")).toBeVisible();
+    await expect(button.locator("svg")).toBeVisible();
   }
 
   await expect(page.getByTestId("tool-grid")).not.toContainText("스포이트");
