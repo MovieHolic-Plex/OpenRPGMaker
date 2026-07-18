@@ -5,6 +5,7 @@ import { findCharsetSemantic, type CharsetSemanticEntry } from "@/assets/charset
 import { stampFootprintHouseKit, type FootprintWing, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { createHouseDoorEvent, createHouseInteriorMap } from "@/editor/houseInteriors";
 import { appendToTree } from "@/editor/mapTreeActions";
+import { applyMapDeletion } from "@/project/mapDeletion";
 import { DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { TILE } from "@/project/defaults/constants";
 import type { Command, GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
@@ -22,6 +23,8 @@ import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
 import {
   loadVillagePlan,
+  MAX_HOUSES,
+  MIN_HOUSES,
   normalizeVillagePlan,
   storeVillagePlan,
   storeVillageSpec,
@@ -71,9 +74,7 @@ const MIN_SIZE = 36;
 const MAX_SIZE = 256;
 const DEFAULT_SIZE = 50;
 const DEFAULT_HOUSES = 8;
-const MIN_HOUSES = 4;
-/** 대형 마을(100×100 등)용 — 예전 12 상한은 대형 시공에 부족 */
-const MAX_HOUSES = 32;
+// 집 수 경계는 villagePlan에서 단일 소스로 가져온다(MIN_HOUSES=4 / MAX_HOUSES=32).
 const PLAZA_WIDTH = 8;
 const PLAZA_HEIGHT = 6;
 const HOUSE_MARGIN = 2;
@@ -1186,8 +1187,12 @@ function runVillagePipeline(draft: Project, args: Record<string, unknown>): Tool
   let lastEval: VillageLookReport | undefined;
   let lastSummary = "";
 
+  // 재시공 시 지울 대상을 이번 파이프라인이 만든 맵으로 한정하기 위해 시작 시점 맵 집합을 스냅샷.
+  const preExistingMapIds = new Set(Object.keys(draft.maps));
+
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    if (attempt > 1) wipeProjectMaps(draft);
+    // 재시도: 이전 시도가 만든 마을 맵만 제거한다. (구버그: draft.maps={}로 사용자의 무관 맵까지 전체 삭제)
+    if (attempt > 1) prunePipelineMaps(draft, preExistingMapIds);
 
     try {
       const built = villageTool("build_village").run(draft, { planId });
@@ -1271,12 +1276,14 @@ function runVillagePipeline(draft: Project, args: Record<string, unknown>): Tool
   };
 }
 
-function wipeProjectMaps(draft: Project): void {
-  draft.maps = {};
-  draft.mapTree = { mapId: "", children: [] };
-  // startMapId 빈 문자열 — create_map이 다시 채움
-  (draft as { startMapId: string }).startMapId = "";
-  draft.startPos = { x: 0, y: 0 };
+/**
+ * 마을 파이프라인 재시공 시, 이번 실행이 새로 만든 맵만 제거한다(사용자의 기존 맵은 보존).
+ * 각 맵은 applyMapDeletion으로 참조(트리/연결/이벤트 transfer 등)까지 정리하며 안전 삭제한다.
+ */
+export function prunePipelineMaps(draft: Project, preExistingMapIds: ReadonlySet<string>): void {
+  for (const id of Object.keys(draft.maps)) {
+    if (!preExistingMapIds.has(id)) applyMapDeletion(draft, id);
+  }
 }
 
 /** planId / plan 객체를 build_village 인자로 펼친다. */

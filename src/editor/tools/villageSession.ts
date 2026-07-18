@@ -5,6 +5,7 @@ import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import { loadSession as loadFromBag, saveSession as saveToBag, sessionExists } from "@/editor/roomHarness/sessionStore";
 import type { GameMap, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { CONSTRUCTION_TOOLS_V3 } from "./v3";
@@ -60,9 +61,7 @@ export interface VillageBuildSession {
   buildOverrides?: Record<string, unknown>;
 }
 
-interface SessionBag {
-  villageSessions?: Record<string, VillageBuildSession>;
-}
+const VILLAGE_SESSION_BAG = "villageSessions";
 
 const LAYER_TITLES: Record<VillageLayerId, string> = {
   plan: "계획 확정",
@@ -291,13 +290,11 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
 ];
 
 export function storeSession(project: Project, session: VillageBuildSession): void {
-  const bag = project as Project & SessionBag;
-  bag.villageSessions = { ...(bag.villageSessions ?? {}), [session.id]: session };
+  saveToBag(project, VILLAGE_SESSION_BAG, session);
 }
 
 export function loadSession(project: Project, sessionId: string): VillageBuildSession | undefined {
-  const bag = project as Project & SessionBag;
-  return bag.villageSessions?.[sessionId];
+  return loadFromBag<VillageBuildSession>(project, VILLAGE_SESSION_BAG, sessionId);
 }
 
 function startVillageSession(draft: Project, args: Record<string, unknown>): ToolExecResult {
@@ -1127,10 +1124,9 @@ function sessionSummaryLine(session: VillageBuildSession): string {
 }
 
 function uniqueSessionId(draft: Project, seed: number): string {
-  const bag = draft as Project & SessionBag;
   let n = 1;
   let id = `vses_${seed >>> 0}`;
-  while (bag.villageSessions?.[id]) {
+  while (sessionExists(draft, VILLAGE_SESSION_BAG, id)) {
     id = `vses_${seed >>> 0}_${n}`;
     n += 1;
   }

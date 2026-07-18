@@ -325,6 +325,94 @@ export function paintRoundTower(map: GameMap, x: number, y: number, height: numb
   return n;
 }
 
+export type CastleEvalReport = {
+  ok: boolean;
+  score: number;
+  issues: string[];
+  metrics: {
+    gateOpen: boolean;
+    courtyardReachable: boolean;
+    reachableGrass: number;
+    roofCells: number;
+    wallCells: number;
+    towerCells: number;
+  };
+};
+
+/**
+ * 완성된 성채를 평가한다(하네스 편입 없이 품질 게이트). 검사:
+ *  - 성문 개방(문 칸이 통행 가능한가)
+ *  - 문 → 마당 도달성(타워/벽이 마당 통행을 막지 않는가)
+ *  - 지붕/성벽이 실제로 시공됐는가
+ * 통행 = lower가 잔디(240)이고 upper가 비어있음(타워 베이스는 lower 잔디+upper 스프라이트 → 차단).
+ */
+export function evaluateCastle(map: GameMap, result: CastleStampResult): CastleEvalReport {
+  const W = map.width;
+  const idx = (x: number, y: number) => y * W + x;
+  const walkable = (x: number, y: number): boolean =>
+    x >= 0 && y >= 0 && x < W && y < map.height
+    && map.lowerTiles[idx(x, y)] === TILE.GRASS
+    && (map.upperTiles[idx(x, y)] ?? TILE.EMPTY) <= 0;
+  const issues: string[] = [];
+
+  // 1) 성문 개방
+  let gateOpen = result.gate.w > 0;
+  for (let x = result.gate.x; x < result.gate.x + result.gate.w; x += 1) {
+    if (!walkable(x, result.gate.y)) gateOpen = false;
+  }
+  if (!gateOpen) issues.push("성문이 통행 불가(벽으로 막힘)");
+
+  // 2) 문 → 마당 도달성(잔디 4-연결 BFS, 남쪽 접근로 과확산 제한)
+  const seen = new Set<number>();
+  const queue: Array<[number, number]> = [];
+  const northBound = result.outer.y - 1;
+  const southBound = result.gate.y + 3;
+  for (let x = result.gate.x; x < result.gate.x + result.gate.w; x += 1) {
+    if (walkable(x, result.gate.y)) {
+      seen.add(idx(x, result.gate.y));
+      queue.push([x, result.gate.y]);
+    }
+  }
+  let head = 0;
+  while (head < queue.length) {
+    const [x, y] = queue[head++]!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx, ny = y + dy;
+      if (ny < northBound || ny > southBound) continue;
+      if (!walkable(nx, ny)) continue;
+      const k = idx(nx, ny);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      queue.push([nx, ny]);
+    }
+  }
+  const reachableGrass = seen.size;
+  // keep 바로 남쪽(마당) 칸이 문에서 도달 가능해야 성 안을 걸을 수 있다.
+  const keepFrontX = Math.floor(result.keep.x + result.keep.w / 2);
+  const keepFrontY = result.keep.y + result.keep.h;
+  const courtyardReachable = seen.has(idx(keepFrontX, keepFrontY)) || reachableGrass >= result.courtyard.w * 2;
+  if (!courtyardReachable) issues.push("문에서 마당(keep 앞)까지 도달 불가 — 타워/벽이 통행을 막음");
+
+  // 3) 시공 sanity
+  if (result.stats.roofCells <= 0) issues.push("지붕이 시공되지 않음");
+  if (result.stats.wallCells <= 0) issues.push("성벽이 시공되지 않음");
+
+  const score = Math.max(0, 100 - issues.length * 25);
+  return {
+    ok: issues.length === 0,
+    score,
+    issues,
+    metrics: {
+      gateOpen,
+      courtyardReachable,
+      reachableGrass,
+      roofCells: result.stats.roofCells,
+      wallCells: result.stats.wallCells,
+      towerCells: result.stats.towerCells,
+    },
+  };
+}
+
 function fillLower(map: GameMap, x0: number, y0: number, w: number, h: number, tile: number): void {
   for (let y = y0; y < y0 + h; y += 1) {
     for (let x = x0; x < x0 + w; x += 1) setLower(map, x, y, tile);

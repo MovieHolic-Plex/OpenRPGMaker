@@ -99,8 +99,10 @@ export interface NormalizePlanResult {
   readonly ok: boolean;
 }
 
-const MIN_HOUSES = 4;
-const MAX_HOUSES = 12;
+// 마을 집 수 경계 — plan/build 공유 단일 소스(구버그: plan=12 vs build=32로 파일마다 달라 드리프트).
+// 32는 대형 마을(100×100 등) 시공 상한. 일반 마을은 area/budget 게이트가 실질 상한을 낮춘다.
+export const MIN_HOUSES = 4;
+export const MAX_HOUSES = 32;
 const DEFAULT_SEED = 1;
 
 export function normalizeVillagePlan(raw: unknown, seedFallback = DEFAULT_SEED): NormalizePlanResult {

@@ -4,22 +4,20 @@
  * 툴 파일은 이 함수들을 kitId로 호출하는 얇은 래퍼가 된다(툴 이름은 키트별 유지).
  */
 import { getRoomKit } from "./registry";
-import type { RoomHarnessBag, RoomSession } from "./types";
+import { loadSession as loadFromBag, saveSession as saveToBag } from "./sessionStore";
+import type { RoomSession } from "./types";
 import { ToolError, type ToolExecResult } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 
-function bagOf(project: Project): RoomHarnessBag {
-  return project as Project & RoomHarnessBag;
-}
+const ROOM_SESSION_BAG = "roomHarnessSessions";
 
 export function saveRoomSession(project: Project, session: RoomSession): void {
-  const bag = bagOf(project);
-  bag.roomHarnessSessions = { ...(bag.roomHarnessSessions ?? {}), [session.id]: session };
+  saveToBag(project, ROOM_SESSION_BAG, session);
 }
 const saveSession = saveRoomSession;
 
 export function loadRoomSession(project: Project, sessionId: string): RoomSession | null {
-  return bagOf(project).roomHarnessSessions?.[sessionId] ?? null;
+  return loadFromBag<RoomSession>(project, ROOM_SESSION_BAG, sessionId) ?? null;
 }
 
 // 세션이 만든 맵은 맵 트리에도 올라가야 에디터 맵 목록/전환 UI에 보인다(mapTools create_map 관례).
