@@ -1,5 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
+import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import type { BattleSkin } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import { store } from "@/project/store";
 
@@ -11,8 +13,13 @@ export function findBattlerNode(scope: HTMLElement | Document, targetId: string)
     ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`);
 }
 
+/** 현재 프로젝트 설정에서 활성 전투 스킨을 해석한다. */
+function activeSkin(): BattleSkin {
+  return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
+}
+
 function pokemonUiActive(): boolean {
-  return store.getCurrent().system.battleUiStyle === "pokemon";
+  return activeSkin().id === "pokemon";
 }
 
 export function battleField(snapshot: BattleSnapshot): HTMLElement {
@@ -261,6 +268,12 @@ function enemyHpHud(enemy: BattleBattlerSnapshot): HTMLElement {
 function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-actor-group";
+  group.dataset.testid = "battle-actor-sprites";
+  // frontview 일부 스킨(드퀘·마더 등)은 아군 스프라이트를 그리지 않는다.
+  if (!activeSkin().showAllySprites) {
+    group.dataset.hidden = "true";
+    return group;
+  }
   for (const [index, actor] of actors.entries()) {
     group.append(actorNode(actor, index));
   }

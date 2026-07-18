@@ -32,6 +32,14 @@ describe("battle skin registry", () => {
   });
 });
 
+describe("skin dataset wiring", () => {
+  it("resolveSkinId는 dataset에 넣기 안전한 문자열만 반환한다", () => {
+    for (const v of [undefined, "classic", "pokemon", "mother", "zzz"]) {
+      expect(resolveSkinId(v)).toMatch(/^[a-z0-9]+$/);
+    }
+  });
+});
+
 describe("battleUiStyle serialization", () => {
   it("비-기본 스킨 id는 그대로 보존한다", () => {
     const project = createBlankProject();

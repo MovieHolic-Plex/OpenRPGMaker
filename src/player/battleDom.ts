@@ -23,6 +23,7 @@ import {
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
+import { resolveSkinId } from "@/battle/skins/registry";
 import { battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
 import {
@@ -55,6 +56,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.testid = "battle-scene";
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
+  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 10종 스킨을 갈아입힌다.
+  root.dataset.battleSkin = resolveSkinId(store.getCurrent().system.battleUiStyle);
   applyBattleSystemGraphic(root);
   options.host.append(root);
 
