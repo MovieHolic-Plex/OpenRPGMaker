@@ -82,7 +82,7 @@ describe("lake village two maps rebuild", () => {
     runOk(ctx, "fill_region", {
       mapId: "map_lake_village",
       rect: { x: 37, y: 16, w: 12, h: 12 },
-      tileVocabId: BUILD_PALETTE_PRESETS.water,
+      material: "물",
       layer: "lower",
       shape: "circle",
     });
@@ -92,7 +92,7 @@ describe("lake village two maps rebuild", () => {
     runOk(ctx, "place_props", {
       mapId: "map_lake_village",
       area: { x: 36, y: 14, w: 13, h: 16 },
-      propVocabId: BUILD_PALETTE_PRESETS.tree,
+      material: "침엽수",
       count: 10,
       naturalness: 0.55,
       seed: 7,
@@ -115,7 +115,7 @@ describe("lake village two maps rebuild", () => {
     runOk(ctx, "fill_region", {
       mapId: "map_lakeside_park",
       rect: { x: 12, y: 12, w: 16, h: 16 },
-      tileVocabId: BUILD_PALETTE_PRESETS.water,
+      material: "물",
       layer: "lower",
       shape: "circle",
     });
@@ -139,7 +139,7 @@ describe("lake village two maps rebuild", () => {
     runOk(ctx, "place_props", {
       mapId: "map_lakeside_park",
       area: { x: 4, y: 4, w: 32, h: 32 },
-      propVocabId: BUILD_PALETTE_PRESETS.tree,
+      material: "침엽수",
       count: 18,
       naturalness: 0.6,
       seed: 11,

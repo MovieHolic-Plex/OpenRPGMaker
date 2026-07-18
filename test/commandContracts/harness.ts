@@ -37,6 +37,7 @@ export interface ContractRunOptions {
   answers?: readonly ContractAnswer[];
   /** 최대 스텝 수 안전핀. 기본 500 — 초과 시 테스트 실패(무한루프 검출). */
   maxSteps?: number;
+  maxInstructions?: number;
   /**
    * 실행 이벤트 컨텍스트(setSelfSwitch/selfSwitch 조건 기준).
    * 기본 CONTRACT_EVENT_ID. null 이면 "이벤트 컨텍스트 없음"으로 실행한다.
@@ -44,7 +45,27 @@ export interface ContractRunOptions {
   currentEventId?: string | null;
 }
 
+export type ContractStateSummary = {
+  readonly flags: readonly (readonly [string, boolean])[];
+  readonly switches: readonly (readonly [string, boolean])[];
+  readonly variables: readonly (readonly [string, number])[];
+  readonly timers: readonly (readonly [string, number])[];
+  readonly inventory: readonly (readonly [string, number])[];
+  readonly gold: number;
+  readonly partyActorIds: readonly string[];
+  readonly position: { readonly mapId: string; readonly x: number; readonly y: number };
+  readonly audioIds: readonly string[];
+  readonly pictureIds: readonly string[];
+};
+
+export type ContractOwnerHandoff = {
+  readonly stepKind: Exclude<StepResult["kind"], "done">;
+  readonly owner: "player" | "battle";
+};
+
 export interface ContractRunResult {
+  readonly stateSummary: ContractStateSummary;
+  readonly ownerHandoffs: readonly ContractOwnerHandoff[];
   readonly session: PlaySessionLike;      // 최종 세션 상태 (단언 대상)
   readonly pauses: readonly StepResult[]; // 발생한 pause 스텝 전부 (text/choices/wait...)
   readonly warnings: readonly string[];   // console.warn 캡처 ([interpreter] 폴백 검증용)
@@ -52,6 +73,25 @@ export interface ContractRunResult {
 }
 
 // interpreter.test.ts 의 mkSession 패턴과 동일한 "빈 세션". PlaySessionLike 필수 필드만 채운다.
+function sortedEntries<T>(record: Readonly<Record<string, T>>): readonly (readonly [string, T])[] {
+  return Object.entries(record).sort(([left], [right]) => left.localeCompare(right));
+}
+
+function summarizeState(session: PlaySessionLike): ContractStateSummary {
+  return {
+    flags: sortedEntries(session.flags),
+    switches: sortedEntries(session.switches),
+    variables: sortedEntries(session.variables),
+    timers: sortedEntries(session.timers),
+    inventory: sortedEntries(session.inventory),
+    gold: session.gold,
+    partyActorIds: [...session.partyActorIds],
+    position: { mapId: session.currentMapId, x: session.x, y: session.y },
+    audioIds: Object.keys(session.audio ?? {}).sort(),
+    pictureIds: Object.keys(session.pictures ?? {}).sort(),
+  };
+}
+
 export function createContractSession(project?: Project): PlaySessionLike {
   return {
     flags: {},
@@ -108,16 +148,24 @@ export function runCommandContract(
     options?.currentEventId === null ? undefined : options?.currentEventId ?? CONTRACT_EVENT_ID;
 
   const pauses: StepResult[] = [];
+  const ownerHandoffs: ContractOwnerHandoff[] = [];
   const warnings: string[] = [];
   const warnSpy = vi.spyOn(console, "warn").mockImplementation((...args: unknown[]) => {
     warnings.push(args.map((arg) => String(arg)).join(" "));
   });
   try {
-    const interpreter = createInterpreter(program, session, project, { currentEventId });
+    const interpreter = createInterpreter(program, session, project, {
+      currentEventId,
+      maxInstructions: options?.maxInstructions,
+    });
     let step = interpreter.start();
     let steps = 0;
     while (step.kind !== "done") {
       pauses.push(step);
+      ownerHandoffs.push({
+        stepKind: step.kind,
+        owner: step.kind === "battleProcessing" ? "battle" : "player",
+      });
       steps += 1;
       if (steps > maxSteps) {
         throw new Error(
@@ -132,7 +180,14 @@ export function runCommandContract(
 
   const finished = session.flags[FINISHED_SENTINEL_FLAG] === true;
   delete session.flags[FINISHED_SENTINEL_FLAG];
-  return { session, pauses, warnings, finished };
+  return {
+    session,
+    pauses,
+    warnings,
+    finished,
+    stateSummary: summarizeState(session),
+    ownerHandoffs,
+  };
 }
 
 // 왕복 동일성 케이스용: 명령을 프로젝트에 실어 serialize→deserialize 를 통과시킨 뒤 돌려준다.

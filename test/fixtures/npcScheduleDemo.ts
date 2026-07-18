@@ -71,6 +71,7 @@ export function createNpcScheduleDemoProject(): { readonly project: Project; rea
         activityPage("ev_farmer_home", "농부", "home", "집에 돌아왔어.", { kind: "setVariable", variableId: farmerFieldVariableId, op: "=", value: 0 }),
         activityPage("ev_farmer_field", "농부", "field", "밭을 돌보는 중이야.", { kind: "setVariable", variableId: farmerFieldVariableId, op: "=", value: 1 }),
         {
+          // D0 recipe sketch: friendshipAtLeast page unlock. For one-shot story, add setSelfSwitch A on the unlock page and a later selfSwitch-A page for permanent lines (see openwiki friendship milestone recipe).
           ...basePage("ev_farmer_friend", "농부"),
           conditions: [{ kind: "friendshipAtLeast", value: 80 }],
           commands: [
@@ -80,6 +81,7 @@ export function createNpcScheduleDemoProject(): { readonly project: Project; rea
           ],
         },
       ]),
+      characterId: "ev_farmer",
       giftPrefs: { loved: [strawberryItemId] },
       giftResponses: { loved: "딸기는 내가 제일 좋아하는 선물이야!" },
     },

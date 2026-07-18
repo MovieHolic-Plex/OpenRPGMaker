@@ -1,7 +1,7 @@
 // evals/llmSuite.eval.ts
-// 실제 LLM(기본 minimax/minimax-m3 — v3 설계 합의, OPENROUTER_MODEL로 재정의)로 골든 태스크를 헤드리스 구동·채점한다.
+// 실제 LLM(기본 minimax/minimax-m3 — v3 설계 합의, VITE_LLM_MODEL로 재정의)로 골든 태스크를 헤드리스 구동·채점한다.
 // evals/run.mjs가 .env.local을 process.env로 로드한 뒤 evals/vitest.config.mjs로 실행한다.
-// OPENROUTER_API_KEY가 없으면 스킵(네트워크/비용). 결과는 evals/results/<ts>.json에 요약만 저장.
+// VITE_LLM_API_KEY가 없으면 스킵(네트워크/비용). 결과는 evals/results/<ts>.json에 요약만 저장.
 
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
@@ -9,9 +9,9 @@ import { chatCompletion, type AiConfig, type ChatRequest, type ChatResult } from
 import { scoreProject } from "@/evals/goldenTask";
 import { GOLDEN_TASKS } from "@/evals/goldenTasks";
 
-const API_KEY = process.env.OPENROUTER_API_KEY ?? "";
-const MODEL = process.env.OPENROUTER_MODEL ?? "minimax/minimax-m3";
-const BASE_URL = process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
+const API_KEY = process.env.VITE_LLM_API_KEY ?? "";
+const MODEL = process.env.VITE_LLM_MODEL ?? "minimax/minimax-m3";
+const BASE_URL = process.env.VITE_LLM_API_URL ?? "https://example.invalid/v1";
 const MAX_TOOL_CALLS = Number(process.env.EVAL_MAX_TOOLCALLS ?? 15);
 const TASK_COUNT = Number(process.env.EVAL_TASKS ?? 4);
 const PER_TASK_TIMEOUT_MS = Number(process.env.EVAL_TASK_TIMEOUT_MS ?? 120000);

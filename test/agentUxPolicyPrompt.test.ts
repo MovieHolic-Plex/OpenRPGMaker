@@ -61,6 +61,7 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("집 vs 실내(필수)");
     expect(text).toContain("추측 실행 금지");
     expect(text).toContain("매칭 스킬이 없거나");
+    expect(text).toContain("모호한 집 요청은 author_house를 호출하지");
   });
 
   it("forbids re-asking parameters already present in the user request", () => {
@@ -104,25 +105,24 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain("사냥터=make_hunting_ground");
     expect(text).toContain("조명=set_lighting_volume/set_scene_mood");
     expect(text).toContain("수역=fill_region");
-    expect(text).toContain("build_house_lots");
-    expect(text).toContain("run_village_session");
-    expect(text).toContain("advance_village_build");
-    expect(text).toContain("plant_tree_clusters");
-    expect(text).toContain("build_village");
-    expect(text).toContain("run_village_pipeline");
+    expect(text).toContain("야외 집=author_house");
+    expect(text).toContain("마을=author_village");
+    expect(text).toContain('target:{kind:"existing",mapId}');
+    expect(text).toContain('target:{kind:"new",mapId,name,width,height,plannedMap}');
+    expect(text).toContain('countPolicy:"exact"');
     expect(text).toContain("start_interior_room_session");
-    expect(text).toContain("run_interior_room_pipeline");
-    expect(text).toContain("build_house_kit 금지");
-    expect(text).toContain("단일 야외 집 외장=build_house_kit");
+    expect(text).not.toMatch(/야외 집[^\n]*(build_house_kit|build_house_lots|build_wall|place_door|build_roof)/);
+    expect(text).not.toMatch(/마을[^\n]*(build_village|run_village_session|run_village_pipeline)/);
     expect(text).toContain("월드=plan_world/build_world");
     expect(text).toContain("퀘스트=define_quest→verify_quest");
     expect(text).toContain("upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용");
   });
 
-  it("routes interior room requests away from outdoor build_house_kit", () => {
+  it("routes interior room requests to the independent session and excludes outdoor facades", () => {
     const text = prompt();
     expect(text).toContain("실내·방·인테리어 요청은 야외 집이 아니다");
     expect(text).toContain("start_interior_room_session");
+    expect(text).toContain("실내 요청에는 author_house/author_village 금지");
     expect(text).toContain("create_map만 하고 멈추지 마세요");
   });
 

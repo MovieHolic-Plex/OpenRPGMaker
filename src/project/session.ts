@@ -17,6 +17,7 @@ import type {
 import type { BattleResult } from "@/battle/runtime";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type GameTime, type Season } from "@/project/gameTime";
+import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
@@ -56,6 +57,9 @@ export type RuntimeFollower = {
   readonly eventId?: string;
   readonly graphic: EventPageGraphic;
   readonly name: string;
+  /** Omitted or "actor" = legacy actor/script follower. "monster" = overworld train from monsterParty. */
+  readonly kind?: "actor" | "monster";
+  readonly monsterInstanceId?: string;
 };
 
 export type RuntimeFollowerTrailPoint = {
@@ -103,6 +107,7 @@ export type FarmPlotState = {
 
 export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
 export type DailyGiftLog = Record<string, string>;
+export type DailyTalkLog = Record<string, string>;
 
 export const FRIENDSHIP_MIN = 0;
 export const FRIENDSHIP_MAX = 1000;
@@ -130,6 +135,8 @@ export interface PlaySession {
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
   actorSkillIds: Record<ActorId, SkillId[]>;
+  // 런타임 전투 메뉴 오버라이드(Change Battle Commands). actorId → battleCommand ids.
+  actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience: Record<string, number>;
   actorLevels: Record<string, number>;
   actorVitals: Record<string, ActorVitals>;
@@ -167,6 +174,17 @@ export interface PlaySession {
   farmPlots?: FarmPlots;
   friendship?: Record<string, number>;
   dailyGifts?: DailyGiftLog;
+  dailyTalks?: DailyTalkLog;
+  /** Accumulated player steps toward the next monster walk-care tick. */
+  monsterCareSteps?: number;
+  /** Friendship points granted by walk care ticks, keyed by giftDayKey. */
+  monsterCareDaily?: Record<string, number>;
+  /** Opt-in: currently equipped tool item id (hand). */
+  equippedToolItemId?: string;
+  /** Opt-in: chest storage by chest id. */
+  chests?: Record<string, import("@/project/placeables").ChestState>;
+  /** Opt-in: placed furniture/objects by map:x,y key. */
+  placeables?: Record<string, import("@/project/placeables").PlaceableObjectState>;
   // 레거시 호환(flags → switches로 마이그레이션됐지만 보존).
   flags: Record<string, boolean>;
   battleResult?: BattleResult;
@@ -246,6 +264,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     farmPlots: {},
     friendship: {},
     dailyGifts: {},
+    dailyTalks: {},
     flags: { ...project.flags },
     audio: {},
     pictures: {},
@@ -370,18 +389,54 @@ export function changeParty(
 }
 
 export function learnSkill(session: PlaySessionLike, actorId: ActorId, skillId: SkillId): void {
+  changeActorSkill(session, actorId, skillId, "learn");
+}
+
+export function changeActorSkill(
+  session: PlaySessionLike,
+  actorId: ActorId | undefined,
+  skillId: SkillId,
+  action: "learn" | "forget" = "learn",
+): void {
   session.actorSkillIds ??= {};
-  const learned = session.actorSkillIds[actorId] ?? [];
-  if (!learned.includes(skillId)) session.actorSkillIds[actorId] = [...learned, skillId];
+  const targets = !actorId || actorId === "party" || actorId === "all"
+    ? (session.partyActorIds ?? [])
+    : [actorId];
+  for (const id of targets) {
+    const learned = session.actorSkillIds[id] ?? [];
+    if (action === "forget") {
+      session.actorSkillIds[id] = learned.filter((entry) => entry !== skillId);
+      continue;
+    }
+    if (!learned.includes(skillId)) session.actorSkillIds[id] = [...learned, skillId];
+  }
 }
 
-export function friendshipKey(npcKey: string | undefined, eventId?: string): string | undefined {
-  const key = npcKey?.trim() || eventId?.trim();
-  return key || undefined;
+/**
+ * Resolve friendship map key.
+ * Prefer {@link resolveSocialKey} with a host event for self (empty npcKey) paths.
+ * Bare `eventId` is no longer a social fallback.
+ */
+export function friendshipKey(
+  npcKey: string | undefined,
+  host?: SocialHost | string | null
+): string | undefined {
+  const explicit = npcKey?.trim();
+  if (explicit) return explicit;
+  if (!host) return undefined;
+  if (typeof host === "string") {
+    // String-only call sites cannot invent characterId — fail closed for self.
+    return undefined;
+  }
+  return resolveSocialKey(host) ?? undefined;
 }
 
-export function getFriendship(session: PlaySessionLike, npcKey: string | undefined, eventId?: string): number {
-  const key = friendshipKey(npcKey, eventId);
+export function getFriendship(
+  session: PlaySessionLike,
+  npcKey: string | undefined,
+  host?: SocialHost | string | null
+): number {
+  const key = friendshipKey(npcKey, host);
   if (!key) return 0;
   return clampFriendship(session.friendship?.[key] ?? 0);
 }
@@ -390,9 +445,9 @@ export function changeFriendship(
   session: PlaySessionLike,
   npcKey: string | undefined,
   delta: number,
-  eventId?: string
+  host?: SocialHost | string | null
 ): number {
-  const key = friendshipKey(npcKey, eventId);
+  const key = friendshipKey(npcKey, host);
   if (!key) return 0;
   session.friendship ??= {};
   const next = clampFriendship((session.friendship[key] ?? 0) + Math.trunc(Number.isFinite(delta) ? delta : 0));
@@ -472,9 +527,14 @@ export function erasePictureState(session: PlaySession, pictureId: string): void
 }
 
 // 조건(Condition) 평가. condition이 없으면 항상 참.
-// eventId 는 셀프 스위치 조건에서 "이 이벤트 자신"을 가리킬 때 사용(현재 실행 중인 이벤트).
-export function evalCondition(session: PlaySessionLike, condition: Condition | undefined, eventId?: string): boolean {
+// host: 셀프 스위치/활동은 event id, 호감도 self 는 characterId 필요 (SocialHost 권장).
+export function evalCondition(
+  session: PlaySessionLike,
+  condition: Condition | undefined,
+  host?: SocialHost | string
+): boolean {
   if (!condition) return true;
+  const eventId = hostEventId(host);
   switch (condition.kind) {
     case "switch":
       return getSwitch(session, condition.switchId) === condition.value;
@@ -505,6 +565,25 @@ export function evalCondition(session: PlaySessionLike, condition: Condition | u
     case "npcActivity":
       return eventId ? session.npcActivities?.[eventId] === condition.activity : false;
     case "friendshipAtLeast":
-      return getFriendship(session, condition.npcKey, eventId) >= clampFriendship(condition.value);
+      return getFriendship(session, condition.npcKey, hostSocial(host)) >= clampFriendship(condition.value);
+    case "battleResult":
+      return session.battleResult === condition.result;
+    case "all":
+      return condition.conditions.every((child) => evalCondition(session, child, host));
+    case "any":
+      return condition.conditions.some((child) => evalCondition(session, child, host));
+    case "not":
+      return !evalCondition(session, condition.condition, host);
   }
+}
+
+function hostEventId(host?: SocialHost | string): string | undefined {
+  if (!host) return undefined;
+  return typeof host === "string" ? host : host.id;
+}
+
+function hostSocial(host?: SocialHost | string): SocialHost | undefined {
+  if (!host) return undefined;
+  if (typeof host === "string") return { id: host };
+  return host;
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, houseDoorFrameIndex } from "@/editor/houseInteriors";
+import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorScale } from "@/editor/houseInteriors";
+import { VR } from "@/editor/interiorRoomPipeline";
 import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
 import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
@@ -52,13 +53,13 @@ describe("house kit — 하네싱 골든", () => {
     const result = stampRectHouseKit(map, { x: 2, y: 2, width: 6, stories: 1, roofBodyRows: 2, kitId: "bright-plaster", windows: false });
     expect(result.ok, result.reason).toBe(true);
 
-    // 용마루(상위) 행: 몸통 폭(인셋), 캡은 바깥.
-    expect(row(map, "upper", 2, 2, 7)).toEqual([354, 374, 374, 374, 374, 355]);
-    expect(row(map, "lower", 2, 2, 7)).toEqual([G, G, G, G, G, G]); // 용마루 행 하위는 비움
-    // 몸통 2행: 인셋 + 좌우 바깥 열 상위 트림.
+    // 용마루 행(2026-07-17 교정): 불투명 용마루 374는 하위, 양끝 투명 캡만 상위.
+    expect(row(map, "upper", 2, 2, 7)).toEqual([354, E, E, E, E, 355]);
+    expect(row(map, "lower", 2, 2, 7)).toEqual([G, 374, 374, 374, 374, G]);
+    // 몸통 2행: 인셋 + 좌우 바깥 열 사선 트림(불투명 — 하위).
     for (const y of [3, 4]) {
-      expect(row(map, "lower", y, 2, 7)).toEqual([G, 404, 404, 404, 404, G]);
-      expect(row(map, "upper", y, 2, 7)).toEqual([376, E, E, E, E, 377]);
+      expect(row(map, "lower", y, 2, 7)).toEqual([376, 404, 404, 404, 404, 377]);
+      expect(row(map, "upper", y, 2, 7)).toEqual([E, E, E, E, E, E]);
     }
     // 처마: 벽 폭(몸통보다 +1 오버행), 트림 하단 캡이 처마 위에 겹침.
     expect(row(map, "lower", 5, 2, 7)).toEqual([405, 405, 405, 405, 405, 405]);
@@ -116,17 +117,18 @@ describe("house kit — 하네싱 골든", () => {
     });
     expect(result.ok, result.reason).toBe(true);
 
-    // 연습08 실데이터 전체 행 비교 (x2..13).
-    expect(row(map, "upper", 2, 2, 13)).toEqual([E, 354, 374, 374, 374, 374, 374, 374, 374, 374, 355, E]);
+    // 연습08 기준 형태 + 2026-07-17 레이어 교정: 불투명 사선(374/376/377)은 하위로.
+    expect(row(map, "upper", 2, 2, 13)).toEqual([E, 354, E, E, E, E, E, E, E, E, 355, E]);
+    expect(row(map, "lower", 2, 2, 13)).toEqual([G, G, 374, 374, 374, 374, 374, 374, 374, 374, G, G]);
     for (const y of [3, 4, 5]) {
-      expect(row(map, "lower", y, 2, 13)).toEqual([G, G, 404, 404, 404, 404, 404, 404, 404, 404, G, G]);
-      expect(row(map, "upper", y, 2, 13)).toEqual([E, 376, E, E, E, E, E, E, E, E, 377, E]);
+      expect(row(map, "lower", y, 2, 13)).toEqual([G, 376, 404, 404, 404, 404, 404, 404, 404, 404, 377, G]);
+      expect(row(map, "upper", y, 2, 13)).toEqual([E, E, E, E, E, E, E, E, E, E, E, E]);
     }
-    expect(row(map, "lower", 6, 2, 13)).toEqual([G, 405, 405, 405, 405, 405, G, 404, 404, 404, G, G]);
-    expect(row(map, "upper", 6, 2, 13)).toEqual([E, 384, E, E, E, E, 376, E, E, E, 377, E]);
-    expect(row(map, "lower", 7, 2, 13)).toEqual([G, 12, 13, 13, 13, 14, G, 404, 404, 404, G, G]);
-    expect(row(map, "upper", 7, 2, 13)).toEqual([E, E, E, E, E, E, 376, E, E, E, 377, E]);
-    expect(row(map, "lower", 8, 2, 13)).toEqual([G, 42, 43, 43, 43, 44, G, 404, 404, 404, G, G]);
+    expect(row(map, "lower", 6, 2, 13)).toEqual([G, 405, 405, 405, 405, 405, 376, 404, 404, 404, 377, G]);
+    expect(row(map, "upper", 6, 2, 13)).toEqual([E, 384, E, E, E, E, E, E, E, E, E, E]);
+    expect(row(map, "lower", 7, 2, 13)).toEqual([G, 12, 13, 13, 13, 14, 376, 404, 404, 404, 377, G]);
+    expect(row(map, "upper", 7, 2, 13)).toEqual([E, E, E, E, E, E, E, E, E, E, E, E]);
+    expect(row(map, "lower", 8, 2, 13)).toEqual([G, 42, 43, 43, 43, 44, 376, 404, 404, 404, 377, G]);
     expect(row(map, "lower", 9, 2, 13)).toEqual([G, 72, 73, 73, 73, 74, 405, 405, 405, 405, 405, G]);
     expect(row(map, "upper", 9, 2, 13)).toEqual([E, E, E, E, E, E, 384, E, E, E, 385, E]);
     expect(row(map, "lower", 10, 2, 13)).toEqual([G, G, G, G, G, G, 12, 13, 13, 13, 14, G]);
@@ -161,11 +163,10 @@ describe("house kit — 하네싱 골든", () => {
       ],
     });
     expect(result.ok, result.reason).toBe(true);
-    // 안마당(x6..13, y8..9)은 비어 있다.
+    // 안마당(x6..13): y8은 잔디, y9는 남쪽 날개의 용마루 줄(374 하위 — 2026-07-17 교정).
     for (let x = 6; x <= 13; x += 1) {
-      for (const y of [8, 9]) {
-        expect(map.lowerTiles[y * map.width + x], `courtyard(${x},${y})`).toBe(G);
-      }
+      expect(map.lowerTiles[8 * map.width + x], `courtyard(${x},8)`).toBe(G);
+      expect(map.lowerTiles[9 * map.width + x], `ridge(${x},9)`).toBe(374);
     }
     // 북쪽 날개의 안마당 쪽 벽(하단 행 y=7)과 남쪽 외벽(y=14)이 존재.
     expect(map.lowerTiles[7 * map.width + 8]).toBe(73);
@@ -190,16 +191,17 @@ describe("house kit — 창문 자동 배치", () => {
     for (const x of [5, 6, 7]) expect(map.upperTiles[6 * map.width + x]).toBe(E);
   });
 
-  it("2층 직사각 집은 각 벽 중단 행마다 창문을 배치한다", () => {
+  it("다층 직사각 집은 층마다 한 줄만 창문을 배치해 층 사이를 분리한다", () => {
     const map = freshMap();
     const result = stampRectHouseKit(map, { x: 2, y: 2, width: 10, stories: 2, roofBodyRows: 1, kitId: "blue-stone" });
     expect(result.ok, result.reason).toBe(true);
 
-    for (const y of [6, 7, 8]) {
+    for (const y of [6, 8]) {
       expect(map.upperTiles[y * map.width + 3], `window left y=${y}`).toBe(87);
       expect(map.upperTiles[y * map.width + 9], `window right y=${y}`).toBe(87);
       for (const x of [6, 7, 8]) expect(map.upperTiles[y * map.width + x], `door skip (${x},${y})`).toBe(E);
     }
+    for (const x of [3, 9]) expect(map.upperTiles[7 * map.width + x], `floor separator x=${x}`).toBe(E);
   });
 
   it("windows:false면 창문 타일을 추가하지 않는다", () => {
@@ -263,7 +265,7 @@ describe("house kit — 창문 자동 배치", () => {
     expect(page?.commands[1]).toEqual({ kind: "wait", ms: HOUSE_DOOR_FRAME_WAIT_MS });
     expect(page?.commands[2]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 1) });
     expect(page?.commands[4]).toMatchObject({ kind: "setEventGraphicPattern", pattern: houseDoorFrameIndex("bright-plaster", 2) });
-    expect(page?.commands[6]).toMatchObject({ kind: "transfer", mapId: "map_inside", x: 6, y: 6 });
+    expect(page?.commands[6]).toMatchObject({ kind: "transfer", mapId: "map_inside", x: 10, y: 15 });
   });
 });
 
@@ -280,7 +282,7 @@ describe("build_house_kit AI 툴", () => {
       wings: [{ x: 2, y: 2, w: 6, h: 6 }],
     });
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(result.summary).toContain("하네싱");
+    expect(result.summary).toContain("집 키트");
     const map = ctx.project.maps[mapId];
     expect(map.lowerTiles[3 * map.width + 7]).toBe(407); // 몸통행 우측 끝
     expect(map.upperTiles[2 * map.width + 2]).toBe(356); // NW 대각
@@ -291,14 +293,17 @@ describe("build_house_kit AI 툴", () => {
     expect(data.doorEventId).toMatch(/^ev_house_door_/);
     const interior = ctx.project.maps[data.interiorMapId];
     expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-    expect(interior.width).toBe(13);
-    expect(interior.height).toBe(10);
+    expect(interior.width).toBe(20);
+    expect(interior.height).toBe(16);
     expect(treeContains(ctx.project.mapTree, data.interiorMapId)).toBe(true);
     const door = map.events.find((event) => event.id === data.doorEventId);
-    expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: data.interiorMapId, x: 6, y: 6 });
+    const entry = (result.data as { entry?: { x: number; y: number }; exit?: { x: number; y: number } }).entry
+      ?? { x: 10, y: 15 };
+    const exitPt = (result.data as { exit?: { x: number; y: number } }).exit ?? { x: 10, y: 16 };
+    expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({ kind: "transfer", mapId: data.interiorMapId, x: entry.x, y: entry.y });
     const exit = interior.events.find((event) => event.id === data.exitEventId);
-    expect(exit?.x).toBe(6);
-    expect(exit?.y).toBe(7);
+    expect(exit?.x).toBe(exitPt.x);
+    expect(exit?.y).toBe(exitPt.y);
     expect(exit?.pages?.[0]?.trigger.kind).toBe("playerTouch");
     expect(exit?.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId, x: 4, y: 8, fade: "black" }]);
   });
@@ -397,3 +402,58 @@ describe("build_house_kit AI 툴", () => {
 function treeContains(node: MapTreeNode, mapId: string): boolean {
   return node.mapId === mapId || node.children.some((child) => treeContains(child, mapId));
 }
+
+
+describe("house interior — L cottage (reference plan)", () => {
+  it("1층 dwelling/manor resolves to cottage-l with kitchen·bedroom·living rooms", () => {
+    expect(resolveHouseInteriorScale({ stories: 1, program: "dwelling" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ stories: 1, program: "manor", ownerName: "촌장 로안" }, 1)).toBe("cottage-l");
+    expect(resolveHouseInteriorScale({ stories: 2, program: "manor" }, 1)).toBe("mansion");
+    // exterior templateId "l" alone does NOT select cottage-l (only cottage-l|l-cottage aliases)
+    expect(resolveHouseInteriorScale({ stories: 1, templateId: "l" }, 1)).not.toBe("mansion");
+
+    const result = createHouseInteriorMap({
+      id: "map_l_cottage_test",
+      name: "L형 민가",
+      returnMapId: "map_out",
+      returnX: 1,
+      returnY: 2,
+      exitEventId: "ev_exit",
+      seed: 77,
+      exterior: {
+        stories: 1,
+        program: "manor",
+        ownerName: "촌장 로안",
+        kitId: "blue-stone",
+        footprintArea: 48,
+        templateId: "l",
+      },
+    });
+    expect(result.scale).toBe("cottage-l");
+    expect(result.program).toBe("manor");
+    expect(result.map.width).toBe(20);
+    expect(result.map.height).toBe(16);
+    const upper = result.map.upperTiles;
+    const lower = result.map.lowerTiles;
+    const at = (x: number, y: number) => lower[y * result.map.width + x]!;
+    // room floor samples (rugs may cover some wood cells — accept floor material set)
+    const floorMats = new Set([12, 13, 42, 43, 72, 73, 102, 103, 139, 279, 280, 281, 309, 310, 311, 339, 340, 341, 108, 109, 110, 138, 139, 140, 168, 169, 170]);
+    expect(at(3, 3)).toBe(12); // kitchen stone
+    expect(floorMats.has(at(13, 4))).toBe(true); // bedroom interior cell
+    expect(floorMats.has(at(5, 11))).toBe(true); // living interior cell
+    // SE region under bedroom (outside living w=12 → x>=14) has no walk floor materials
+    const seFloorMats = new Set([12, 13, 42, 43, 72, 73, 102, 103, 139]);
+    let seFloor = 0;
+    for (let y = 8; y <= 13; y += 1) {
+      for (let x = 14; x <= 19; x += 1) {
+        if (seFloorMats.has(at(x, y))) seFloor += 1;
+      }
+    }
+    expect(seFloor).toBe(0);
+    expect(upper.some((t) => t === VR.STOVE_TOP)).toBe(true);
+    expect(lower.some((t) => t === VR.STOVE_BOT)).toBe(true);
+    expect(upper.some((t) => t === VR.BED_L || t === VR.BED_V_HEAD)).toBe(true);
+    expect(upper.some((t) => t === VR.TABLE_L || t === VR.SQUARE_TABLE)).toBe(true);
+  });
+});
+

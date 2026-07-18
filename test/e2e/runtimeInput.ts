@@ -53,7 +53,7 @@ export async function tapKey(page: Page, key: string, holdMs = 80): Promise<void
 }
 
 
-/** RM2003 title is keyboard-only — do not click title-new-game. */
+/** Prefer keyboard Enter on title (default selection = 새 게임). Mouse click on title-new-game also works for real users. */
 export async function startNewGameFromTitle(page: Page, options?: { readonly timeoutMs?: number }): Promise<void> {
   const timeout = options?.timeoutMs ?? 15_000;
   await expect(page.getByTestId("title-screen")).toBeVisible({ timeout });

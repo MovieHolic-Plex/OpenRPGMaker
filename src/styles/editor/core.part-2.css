@@ -299,8 +299,35 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   color: #f5d04a;
   margin-bottom: 6px;
   font-size: 14px;
-  /* ?댁쭩 ?띿뒪??洹몃┝?먮줈 媛?낆꽦 蹂닿컯(?대몢??諛곌꼍 ??. */
+  /* 텍스트 그림자으로 가독성 보강(테두리 배경 위). */
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.dialogue-box .speaker.speaker-nameplate {
+  position: absolute;
+  left: 10px;
+  top: -12px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 2px 10px 3px;
+  border: 1px solid rgba(245, 251, 255, 0.9);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0)),
+    rgba(12, 28, 84, 0.96);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  color: #f8fbff;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.dialogue-box.has-speaker {
+  position: relative;
+  overflow: visible;
 }
 .dialogue-box .body {
   font-size: 15px;
@@ -379,8 +406,12 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .event-editor-sidebar {
-  display: grid;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   gap: var(--space-2);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .event-editor-launch {
@@ -409,12 +440,23 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 .event-list {
   background: var(--bg);
   border: 1px solid var(--border-soft);
-  display: grid;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
   gap: 1px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--space-1);
 }
 
 .event-list-title {
+  flex: 0 0 auto;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--bg);
   color: var(--text-dim);
   font-size: 11px;
   font-weight: 700;
@@ -440,6 +482,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   gap: var(--space-1);
   grid-template-columns: 22px minmax(0, 1fr) auto;
   min-height: 28px;
+  flex-shrink: 0;
   padding: 2px var(--space-1);
   text-align: left;
 }

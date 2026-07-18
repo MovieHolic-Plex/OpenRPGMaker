@@ -1,4 +1,10 @@
-import { DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "./autotileGroups";
+import {
+  DEFAULT_AUTOTILE_GROUPS,
+  DEFAULT_ROAD_AUTOTILE_GROUP,
+  DEFAULT_SAND_AUTOTILE_GROUP,
+  TERRAIN_TEMPLATE_ANCHORS,
+  templateBlockFromAnchor,
+} from "./autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "./chipsetMapping";
 import { dungeonTerrainQuarterKits } from "./dungeonTerrainQuarter";
 import { interiorWallFrameQuarterComposition } from "./interiorWallFrameQuarter";
@@ -79,7 +85,41 @@ const ROAD_TARGET_TILES = [
   DIRT_ROAD_TILE.INNER_CORNER,
 ] as const;
 
+// 앵커 격자 정본의 나머지 내장 그룹(포석·경작지·눈·수풀·키큰 풀·석축 단·어둠)도 같은 쿼터
+// 합성을 받는다 (2026-07-17). 폭/높이 1칸 런은 12칸 템플릿에 전용 타일이 없으므로,
+// N변 윗절반+S변 아랫절반(가로) / W변 왼절반+E변 오른절반(세로)으로 합성해야 양쪽 프린지가 산다.
+// 끝 캡은 코너 열 절반 + 변 열 절반. 외딴 타일은 모래 선례대로 target 에서 제외(통짜 아트 유지).
+function templateQuarterKit(anchor: number, groupId: string): TerrainQuarterKit {
+  const tiles = templateBlockFromAnchor(anchor);
+  const group = DEFAULT_AUTOTILE_GROUPS.find((candidate) => candidate.id === groupId);
+  const targets = [
+    tiles.body, tiles.edgeN, tiles.edgeS, tiles.edgeW, tiles.edgeE,
+    tiles.cornerNW, tiles.cornerNE, tiles.cornerSW, tiles.cornerSE, tiles.inner,
+  ];
+  return {
+    body: tiles.body,
+    edgeNorth: tiles.edgeN,
+    edgeSouth: tiles.edgeS,
+    edgeWest: tiles.edgeW,
+    edgeEast: tiles.edgeE,
+    cornerNorthWest: tiles.cornerNW,
+    cornerNorthEast: tiles.cornerNE,
+    cornerSouthWest: tiles.cornerSW,
+    cornerSouthEast: tiles.cornerSE,
+    inner: tiles.inner,
+    isolated: tiles.isolated,
+    targetTiles: targets,
+    connect: new Set<number>(group?.connectTileIds ?? [...targets, tiles.isolated]),
+  };
+}
+
+const TEMPLATE_QUARTER_KIT_GROUPS = new Set(["builtin_dirt_road", "builtin_sand"]);
+const TEMPLATE_QUARTER_KITS: readonly TerrainQuarterKit[] = TERRAIN_TEMPLATE_ANCHORS
+  .filter((entry) => entry.kind === "group" && entry.groupId !== undefined && !TEMPLATE_QUARTER_KIT_GROUPS.has(entry.groupId))
+  .map((entry) => templateQuarterKit(entry.anchor, entry.groupId as string));
+
 const KITS: readonly TerrainQuarterKit[] = [
+  ...TEMPLATE_QUARTER_KITS,
   {
     body: SAND_TILE.BODY,
     edgeNorth: SAND_TILE.EDGE_NORTH,

@@ -13,7 +13,7 @@ type EventCommandEditDialogRequest = {
   readonly title?: string;
   readonly initial: Command;
   readonly onApply: (command: Command) => void;
-  // 기존 명령 편집이면 종류 select 를 잠근다(분기 유실 방지). 새 명령 추가는 false.
+  // 명령 추가/편집 모두 종류 select 를 잠근다(분기 유실·내부 kind 노출 방지).
   readonly lockKind?: boolean;
   // [중간-3] 이 명령 시점의 활성 얼굴(직전 changeFace). 문장 표시 프리뷰에 반영.
   readonly previewFace?: { readonly resourceId: string; readonly faceIndex: number };
@@ -41,7 +41,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       };
       const renderEditor = () => {
         clearChildren(formHost);
-        formHost.append(renderCommandBody({ path: [], actions, lockKind: request.lockKind ?? false }, stagedCommand));
+        formHost.append(renderCommandBody({ path: [], actions, lockKind: request.lockKind ?? true }, stagedCommand));
         renderPreview();
       };
       const actions: CommandListActions = {
@@ -144,6 +144,12 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         on: { click: close },
       });
 
+      const footer: HTMLElement[] = [];
+      if (stagedCommand.kind === "shop") {
+        footer.push(createShopPreviewFooterToggle(editor));
+      }
+      footer.push(ok, cancel);
+
       editor.append(
         el("div", {
           class: "event-command-edit-columns",
@@ -151,13 +157,40 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         }),
         el("div", {
           class: "event-command-edit-actions",
-          children: [ok, cancel],
-        })
+          children: footer,
+        }),
       );
       body.append(editor);
       renderEditor();
+      if (stagedCommand.kind === "shop") {
+        queueMicrotask(() => setShopPreviewCollapsed(editor, true));
+      }
     },
   });
+}
+
+function createShopPreviewFooterToggle(editor: HTMLElement): HTMLElement {
+  const button = el("button", {
+    class: "event-command-edit-action shop-preview-toggle",
+    text: "미리보기",
+    attrs: { type: "button", "aria-pressed": "false", title: "상점 미리보기 열기/닫기" },
+    dataset: { testid: "shop-preview-toggle" },
+  }) as HTMLButtonElement;
+  button.addEventListener("click", () => {
+    const columns = editor.querySelector(".event-command-edit-columns");
+    const open = !(columns?.classList.contains("is-shop-preview-open") ?? false);
+    setShopPreviewCollapsed(editor, !open);
+    button.setAttribute("aria-pressed", open ? "true" : "false");
+    button.textContent = open ? "미리보기 닫기" : "미리보기";
+  });
+  return button;
+}
+
+function setShopPreviewCollapsed(from: HTMLElement, collapsed: boolean): void {
+  const columns = from.querySelector(".event-command-edit-columns");
+  if (!(columns instanceof HTMLElement) || typeof columns.classList?.toggle !== "function") return;
+  columns.classList.toggle("is-shop-preview-open", !collapsed);
+  columns.classList.toggle("shop-preview-collapsed", collapsed);
 }
 
 function commitPendingControls(root: HTMLElement): void {
@@ -178,6 +211,7 @@ export function openNewEventCommandDialog(command: Command, onApply: (command: C
   openEventCommandEditDialog({
     initial: command,
     title: commandEditTitle(command),
+    lockKind: true,
     onApply,
   });
 }
@@ -201,15 +235,82 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
       prev.itemIds.some((id, index) => id !== next.itemIds[index])
     );
   }
+  if (prev.kind === "inn" && next.kind === "inn") {
+    return Boolean(prev.branchOnNotEnoughGold) !== Boolean(next.branchOnNotEnoughGold);
+  }
+  if (prev.kind === "battleProcessing" && next.kind === "battleProcessing") {
+    return (
+      Boolean(prev.branchOnResult) !== Boolean(next.branchOnResult)
+      || (prev.troopSource ?? "fixed") !== (next.troopSource ?? "fixed")
+    );
+  }
   if (prev.kind === "choices" && next.kind === "choices") {
     return (
       (prev.cancelBehavior ?? "choice2") !== (next.cancelBehavior ?? "choice2") ||
       prev.options.length !== next.options.length
     );
   }
+  if (prev.kind === "wait" && next.kind === "wait") {
+    return Boolean(prev.variableId?.trim()) !== Boolean(next.variableId?.trim());
+  }
   if (prev.kind === "inputNumber" && next.kind === "inputNumber") {
     // 자릿수 칩 active / 키패드 토글 등 폼 구조 동기화.
     return prev.digits !== next.digits || Boolean(prev.showPad) !== Boolean(next.showPad);
+  }
+  if (prev.kind === "fork" && next.kind === "fork") {
+    return (
+      prev.condition.kind !== next.condition.kind ||
+      Boolean(prev.else) !== Boolean(next.else) ||
+      prev.then.length !== next.then.length ||
+      (prev.else?.length ?? 0) !== (next.else?.length ?? 0)
+    );
+  }
+  if (prev.kind === "loop" && next.kind === "loop") {
+    return prev.body.length !== next.body.length;
+  }
+  if (prev.kind === "setSwitch" && next.kind === "setSwitch") {
+    // 값 종류(상수/전환/변수)가 바뀌면 변수 피커 노출이 달라지므로 폼을 다시 그린다.
+    const prevKind = typeof prev.value === "object" && prev.value !== null
+      ? "variable"
+      : prev.value === "toggle"
+        ? "toggle"
+        : "literal";
+    const nextKind = typeof next.value === "object" && next.value !== null
+      ? "variable"
+      : next.value === "toggle"
+        ? "toggle"
+        : "literal";
+    return prevKind !== nextKind;
+  }
+  if (prev.kind === "setVariable" && next.kind === "setVariable") {
+    // 값 소스(숫자/변수) 또는 연산이 바뀌면 폼/미리보기 구조를 다시 맞춘다.
+    const prevSource = typeof prev.value === "number" ? "number" : "variable";
+    const nextSource = typeof next.value === "number" ? "number" : "variable";
+    return prevSource !== nextSource || prev.op !== next.op;
+  }
+  if (prev.kind === "changeGold" && next.kind === "changeGold") {
+    const prevSource = typeof prev.amount === "number" ? "number" : "variable";
+    const nextSource = typeof next.amount === "number" ? "number" : "variable";
+    return prevSource !== nextSource || prev.op !== next.op;
+  }
+  if (prev.kind === "changeExp" && next.kind === "changeExp") {
+    const prevSource = typeof prev.amount === "number" ? "number" : "variable";
+    const nextSource = typeof next.amount === "number" ? "number" : "variable";
+    const prevTarget = !prev.actorId || prev.actorId === "party" || prev.actorId === "all" ? "party" : "actor";
+    const nextTarget = !next.actorId || next.actorId === "party" || next.actorId === "all" ? "party" : "actor";
+    return prevSource !== nextSource || prev.op !== next.op || prevTarget !== nextTarget;
+  }
+  if (prev.kind === "learnSkill" && next.kind === "learnSkill") {
+    const prevAction = prev.action === "forget" ? "forget" : "learn";
+    const nextAction = next.action === "forget" ? "forget" : "learn";
+    const prevTarget = !prev.actorId || prev.actorId === "party" || prev.actorId === "all" ? "party" : "actor";
+    const nextTarget = !next.actorId || next.actorId === "party" || next.actorId === "all" ? "party" : "actor";
+    return prevAction !== nextAction || prevTarget !== nextTarget || prev.skillId !== next.skillId;
+  }
+  if (prev.kind === "changeItem" && next.kind === "changeItem") {
+    const prevSource = typeof prev.amount === "number" ? "number" : "variable";
+    const nextSource = typeof next.amount === "number" ? "number" : "variable";
+    return prevSource !== nextSource || prev.op !== next.op || prev.itemId !== next.itemId;
   }
   return false;
 }

@@ -25,6 +25,7 @@ export type Trigger =
 export type SelfSwitchKey = "A" | "B" | "C" | "D";
 
 // 조건 분기(fork)에서 사용하는 조건. 페이지 출현 조건(EventPageCondition)의 상위 집합.
+// all/any/not 은 복합 조건 그룹(모던 확장). 리프 조건은 RM 계열 + 호감/시간 등.
 export type Condition =
   | { kind: "switch"; switchId: string; value: boolean }
   | {
@@ -41,7 +42,11 @@ export type Condition =
   | { kind: "timePhase"; phase: TimePhase }
   | { kind: "season"; season: Season }
   | { kind: "npcActivity"; activity: string }
-  | { kind: "friendshipAtLeast"; npcKey?: string; value: number };
+  | { kind: "friendshipAtLeast"; npcKey?: string; value: number }
+  | { kind: "battleResult"; result: "victory" | "defeat" | "escape" }
+  | { kind: "all"; conditions: Condition[] }
+  | { kind: "any"; conditions: Condition[] }
+  | { kind: "not"; condition: Condition };
 
 export type EventPageCondition = Condition;
 
@@ -87,6 +92,11 @@ export type MoveCommand =
   | { kind: "wait" };
 
 export type VariableOperand = number | { kind: "var"; id: string };
+/** 스위치 조작 값. true/false 고정, toggle, 또는 변수(0=OFF / 비0=ON). */
+export type SwitchValue =
+  | boolean
+  | "toggle"
+  | { kind: "var"; id: string };
 export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
 export type ShopType = "normal" | "buyOnly" | "sellOnly";
@@ -111,6 +121,28 @@ export interface ShopStockEntry {
   readonly priceOverride?: number;
   readonly priceBySeason?: Partial<Record<Season, number>>;
 }
+export interface SocialCalendar {
+  /** Gift friendship Δ multiplies on this season+day when session.gameTime is set. */
+  readonly birthday?: { readonly season: Season; readonly day: number };
+}
+export interface CharacterProfile {
+  /** Optional UI label (status menu / future pickers). Not a social key. */
+  readonly displayName?: string;
+  /** Profile birthday used when event.socialCalendar.birthday is absent. */
+  readonly birthday?: { readonly season: Season; readonly day: number };
+  /** Default gift prefs; event.giftPrefs fully overrides when present. */
+  readonly giftPrefs?: GiftPrefs;
+  /** Default gift responses; event.giftResponses fully overrides when present. */
+  readonly giftResponses?: GiftResponses;
+}
+
+/** Merchant-event shop price bridge. Applied via resolveSocialKey when bond >= minFriendship. */
+export interface SocialShop {
+  readonly minFriendship: number;
+  /** Buy-price scale (e.g. 0.8 = 20% off). Sell prices are unchanged. */
+  readonly priceMultiplier: number;
+}
+
 export type TransferDirection = "retain" | Dir;
 export type TransferFade = "black" | "white" | "none";
 // 전환 연출 종류. 기본 페이드 외에 모자이크(픽셀화)/블라인드 지원.
@@ -161,7 +193,15 @@ export type ShowAnimationTarget =
   | { readonly x: number; readonly y: number };
 
 export type Command =
-  | { kind: "text"; speaker?: string; body: string }
+  | {
+      kind: "text";
+      speaker?: string;
+      body: string;
+      /** 고급 대화에서 흡수한 감정 태그 (표시/로그용, 기본 neutral). */
+      emotion?: string;
+      /** true 면 키 입력 없이 다음 단계로 진행. */
+      autoAdvance?: boolean;
+    }
   | ({ kind: "changeFace" } & FaceGraphic)
   | {
       kind: "choices";
@@ -171,7 +211,7 @@ export type Command =
       cancelBranch?: Command[];
     }
   | { kind: "fork"; condition: Condition; then: Command[]; else?: Command[] }
-  | { kind: "wait"; ms: number }
+  | { kind: "wait"; ms: number; /** 설정 시 이 변수 값(ms)만큼 대기. */ variableId?: string }
   | { kind: "inputWait"; variableId?: string }
   | {
       kind: "inputNumber";
@@ -187,7 +227,7 @@ export type Command =
   | { kind: "gotoLabel"; name: string }
   | { kind: "loop"; body: Command[] }
   | { kind: "breakLoop" }
-  | { kind: "setSwitch"; switchId: string; value: boolean }
+  | { kind: "setSwitch"; switchId: string; value: SwitchValue }
   | {
       kind: "setVariable";
       variableId: string;
@@ -212,18 +252,36 @@ export type Command =
     }
   | { kind: "callCommonEvent"; commonEventId: string }
   | { kind: "callMapEvent"; eventId: string }
-  | { kind: "battleProcessing"; troopId: TroopId; canEscape: boolean; canLose: boolean; battleFlow?: "gauge" | "strict" }
-  | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId }
-  | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | {
+      kind: "battleProcessing";
+      troopId: TroopId;
+      canEscape: boolean;
+      canLose: boolean;
+      battleFlow?: "gauge" | "strict";
+      /** fixed(기본)=troopId 사용, variable=세션 변수에서 troop id 문자열 조회 */
+      troopSource?: "fixed" | "variable";
+      troopVariableId?: string;
+      /** true면 전투 결과에 따라 victory/defeat/escape 분기 실행 */
+      branchOnResult?: boolean;
+      victoryBranch?: Command[];
+      defeatBranch?: Command[];
+      escapeBranch?: Command[];
+    }
+  | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId; action?: "learn" | "forget" }
+  | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: VariableOperand }
   | { kind: "changeLevel"; actorId: ActorId; op: ActorAmountOp; amount: number }
   | { kind: "promoteActor"; actorId: ActorId; toClassId?: string; successBranch?: Command[]; failureBranch?: Command[] }
   | { kind: "changeEquipment"; actorId: ActorId; slot: ActorEquipmentSlot; equipmentId: EquipmentId }
-  | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number }
-  | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }
+  | { kind: "changeActorMp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }
   | { kind: "recoverAll"; actorId?: ActorId }
   | { kind: "enterHeroName"; actorId: ActorId; maxLength: number; showInitialName: boolean }
-  | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: number }
-  | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: number }
+  | { kind: "changeGold"; op: "=" | "+=" | "-="; amount: VariableOperand }
+  | { kind: "changeItem"; itemId: ItemId; op: "=" | "+=" | "-="; amount: VariableOperand }
+  | { kind: "craftRecipe"; recipeId: string }
+  | { kind: "applyItemUpgrade"; upgradeId: string }
+  | { kind: "equipTool"; itemId?: ItemId }
+  | { kind: "openChest"; chestId?: string }
   | { kind: "changeFriendship"; npcKey?: string; delta: number }
   | { kind: "getFriendship"; npcKey?: string; variableId: string }
   | { kind: "changeParty"; actorId: ActorId; action: "add" | "remove" }
@@ -267,7 +325,25 @@ export type Command =
       branchOnTransaction?: boolean;
       transactionBranch?: Command[];
     }
-  | { kind: "inn"; price: number }
+  | {
+      kind: "inn";
+      price: number;
+      /** 여관 인사말. 생략 시 기본 문구. */
+      note?: string;
+      /** 숙박 여부 질문. 생략 시 요금 기반 기본 문구. */
+      question?: string;
+      /** false면 HP만 회복(MP 유지). 기본 true. */
+      recoverMp?: boolean;
+      /** true면 숙박 후 아침으로 시간 이동(시간 시스템 있을 때). */
+      advanceToMorning?: boolean;
+      /** 휴식 암전 연출 ms. 기본 500. */
+      restDurationMs?: number;
+      /** 기상 메시지 표시 ms. 기본 750. */
+      wakeDurationMs?: number;
+      /** true면 골드 부족 시 notEnoughBranch 실행. */
+      branchOnNotEnoughGold?: boolean;
+      notEnoughBranch?: Command[];
+    }
   | { kind: "checkpointSave"; label?: string }
   | { kind: "killPlayer"; message?: string }
   | { kind: "triggerEnding"; endingId?: string }
@@ -360,6 +436,8 @@ export interface EventDraftMeta {
 
 export interface GameEvent {
   id: string;
+  /** Opt-in relationship identity for friendship/gifts (shared across multi-map copies). Empty/omit = no social self-key. */
+  characterId?: string;
   x: number;
   y: number;
   sprite?: AssetRef;
@@ -371,6 +449,12 @@ export interface GameEvent {
   schedule?: NpcScheduleEntry[];
   giftPrefs?: GiftPrefs;
   giftResponses?: GiftResponses;
+  /** Opt-in: action talk grants friendship once per day per social key. true = +10, or { delta }. */
+  talkFriendship?: boolean | { delta?: number };
+  /** Opt-in calendar tags (birthday gift multiplier). Event-local; no character profile package required. */
+  socialCalendar?: SocialCalendar;
+  /** Opt-in shop buy-price discount when buyer friendship with this merchant meets minFriendship. */
+  socialShop?: SocialShop;
   draft?: EventDraftMeta;
 }
 

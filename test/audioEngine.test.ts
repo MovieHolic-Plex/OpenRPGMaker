@@ -158,6 +158,18 @@ describe("리소스 해석/분류", () => {
     expect(url).toBe("/assets/easyrpg/music/Church.mid");
   });
 
+  it("번들 EasyRPG SE 와 CC0 재생 가능 오디오를 해석", () => {
+    expect(resolveAudioSource("easyrpg-sound-decision1", projectWithUploaded({}))).toBe(
+      "/assets/easyrpg/sound/Decision1.wav"
+    );
+    expect(resolveAudioSource("cc0-music-field-loop", projectWithUploaded({}))).toBe(
+      "/assets/cc0/audio/field-loop.wav"
+    );
+    expect(resolveAudioSource("cc0-sound-ui-confirm", projectWithUploaded({}))).toBe(
+      "/assets/cc0/audio/ui-confirm.wav"
+    );
+  });
+
   it("존재하지 않는 리소스는 null", () => {
     expect(resolveAudioSource("does-not-exist", projectWithUploaded({}))).toBeNull();
   });

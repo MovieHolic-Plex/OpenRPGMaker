@@ -6,7 +6,9 @@ type DomGlobalName =
   | "HTMLInputElement"
   | "HTMLSelectElement"
   | "HTMLImageElement"
-  | "HTMLTextAreaElement";
+  | "HTMLTextAreaElement"
+  | "requestAnimationFrame"
+  | "cancelAnimationFrame";
 
 type PreviousDomGlobals = {
   readonly document: Document | undefined;
@@ -17,7 +19,16 @@ type PreviousDomGlobals = {
   readonly HTMLSelectElement: typeof HTMLSelectElement | undefined;
   readonly HTMLImageElement: typeof HTMLImageElement | undefined;
   readonly HTMLTextAreaElement: typeof HTMLTextAreaElement | undefined;
+  readonly requestAnimationFrame: typeof requestAnimationFrame | undefined;
+  readonly cancelAnimationFrame: typeof cancelAnimationFrame | undefined;
 };
+
+type FakeDomOptions = {
+  readonly animationFrames?: "manual";
+};
+
+const animationFrames = new Map<number, FrameRequestCallback>();
+let nextAnimationFrameId = 1;
 
 export class FakeNode {
   readonly childNodes: FakeNode[] = [];
@@ -145,10 +156,28 @@ export class FakeElement extends FakeNode {
 
   setAttribute(name: string, value: string): void {
     this.attrs[name] = value;
+    // HTMLOptionElement / input 호환: attribute value 는 .value 프로퍼티와 동기화.
+    if (name === "value") this.value = value;
+    if (name.startsWith("data-")) {
+      const camelKey = name
+        .slice(5)
+        .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+      this.dataset[camelKey] = value;
+    }
   }
 
   getAttribute(name: string): string | null {
+    if (name.startsWith("data-")) {
+      const camelKey = name
+        .slice(5)
+        .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+      return this.dataset[camelKey] ?? this.attrs[name] ?? null;
+    }
     return this.attrs[name] ?? null;
+  }
+
+  getAttributeNames(): string[] {
+    return Object.keys(this.attrs);
   }
 
   removeAttribute(name: string): void {
@@ -174,11 +203,16 @@ export class FakeElement extends FakeNode {
     for (const listener of this.listeners[event.type] ?? []) {
       if (typeof listener === "function") {
         listener(event);
-        continue;
+      } else {
+        listener.handleEvent(event);
       }
-      listener.handleEvent(event);
+      // stopImmediatePropagation 호환: 같은 타겟 리스너 중단.
+      if (eventPropagationStopped(event) === "immediate") break;
     }
-    if (event.bubbles) this.parentElement?.dispatchEvent(event);
+    // stopPropagation / cancelBubble — 부모로 올리지 않는다(실행 내용 Delete 가 이벤트 삭제로 새는 버그 방지).
+    if (event.bubbles && !eventPropagationStopped(event)) {
+      this.parentElement?.dispatchEvent(event);
+    }
     return !event.defaultPrevented;
   }
 
@@ -245,7 +279,21 @@ export function documentListenerCount(type: string): number {
   return documentListeners[type]?.length ?? 0;
 }
 
-export function installFakeDom(): () => void {
+export function flushFakeAnimationFrames(timestamp = 0): void {
+  let batches = 0;
+  while (animationFrames.size > 0) {
+    batches += 1;
+    if (batches > 1000) throw new Error("fake DOM animation frame queue did not settle");
+    const frameIds = [...animationFrames.keys()];
+    for (const frameId of frameIds) {
+      const callback = animationFrames.get(frameId);
+      animationFrames.delete(frameId);
+      callback?.(timestamp);
+    }
+  }
+}
+
+export function installFakeDom(options: FakeDomOptions = {}): () => void {
   const body = new FakeElement("body");
   const previous = {
     document: globalThis.document,
@@ -256,7 +304,11 @@ export function installFakeDom(): () => void {
     HTMLSelectElement: globalThis.HTMLSelectElement,
     HTMLImageElement: globalThis.HTMLImageElement,
     HTMLTextAreaElement: globalThis.HTMLTextAreaElement,
+    requestAnimationFrame: globalThis.requestAnimationFrame,
+    cancelAnimationFrame: globalThis.cancelAnimationFrame,
   } satisfies PreviousDomGlobals;
+  animationFrames.clear();
+  nextAnimationFrameId = 1;
   defineDomGlobal("Node", FakeNode);
   defineDomGlobal("HTMLElement", FakeElement);
   defineDomGlobal("HTMLButtonElement", FakeElement);
@@ -266,6 +318,17 @@ export function installFakeDom(): () => void {
   defineDomGlobal("HTMLSelectElement", FakeElement);
   defineDomGlobal("HTMLImageElement", FakeElement);
   defineDomGlobal("HTMLTextAreaElement", FakeElement);
+  if (options.animationFrames === "manual") {
+    defineDomGlobal("requestAnimationFrame", (callback: FrameRequestCallback): number => {
+      const frameId = nextAnimationFrameId;
+      nextAnimationFrameId += 1;
+      animationFrames.set(frameId, callback);
+      return frameId;
+    });
+    defineDomGlobal("cancelAnimationFrame", (frameId: number): void => {
+      animationFrames.delete(frameId);
+    });
+  }
   // document 레벨 키다운/포인터다운 리스너(Escape·바깥 클릭 처리용)를 등록/해제/발화할 수 있도록
   // 최소 EventTarget 동작을 흉내낸다(FakeElement.addEventListener 와 동일한 패턴).
   documentListeners = {};
@@ -304,6 +367,7 @@ export function installFakeDom(): () => void {
     },
   });
   return () => {
+    animationFrames.clear();
     restoreDomGlobal("document", previous.document);
     restoreDomGlobal("Node", previous.Node);
     restoreDomGlobal("HTMLElement", previous.HTMLElement);
@@ -312,6 +376,8 @@ export function installFakeDom(): () => void {
     restoreDomGlobal("HTMLSelectElement", previous.HTMLSelectElement);
     restoreDomGlobal("HTMLImageElement", previous.HTMLImageElement);
     restoreDomGlobal("HTMLTextAreaElement", previous.HTMLTextAreaElement);
+    restoreDomGlobal("requestAnimationFrame", previous.requestAnimationFrame);
+    restoreDomGlobal("cancelAnimationFrame", previous.cancelAnimationFrame);
   };
 }
 
@@ -343,6 +409,14 @@ function matchesSelector(element: FakeElement, selector: string): boolean {
   if (simpleSelector.startsWith(".")) return element.className.split(/\s+/).includes(simpleSelector.slice(1));
   const testId = simpleSelector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
   if (testId) return element.dataset.testid === testId;
+  // data-* 속성 선택자 (camelCase dataset 키로 매핑).
+  const dataAttr = simpleSelector.match(/^\[data-([a-z0-9-]+)=['"]?([^'"\]]*)['"]?\]$/iu);
+  if (dataAttr) {
+    const rawKey = dataAttr[1] ?? "";
+    const expected = dataAttr[2] ?? "";
+    const camelKey = rawKey.replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+    return (element.dataset[camelKey] ?? element.attrs[`data-${rawKey}`] ?? null) === expected;
+  }
   const tag = simpleSelector.match(/^([a-zA-Z]+)(?::not\(:disabled\))?$/u)?.[1];
   return tag ? element.tagName === tag.toUpperCase() && !element.disabled : false;
 }
@@ -361,4 +435,16 @@ function restoreDomGlobal(name: DomGlobalName, value: unknown): void {
     return;
   }
   defineDomGlobal(name, value);
+}
+
+function eventPropagationStopped(event: Event): false | "bubble" | "immediate" {
+  const anyEvent = event as Event & {
+    readonly cancelBubble?: boolean;
+    readonly eventPhase?: number;
+    readonly __stopImmediate?: boolean;
+  };
+  if (anyEvent.__stopImmediate) return "immediate";
+  // DOM Event.stopPropagation sets cancelBubble = true.
+  if (anyEvent.cancelBubble) return "bubble";
+  return false;
 }

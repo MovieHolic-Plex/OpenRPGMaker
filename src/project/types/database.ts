@@ -12,7 +12,7 @@ import type {
   StateId,
   TroopId,
 } from "./base";
-import type { Command, Condition } from "./events";
+import type { Command, Condition, EventPageGraphic } from "./events";
 import type { Season, TimeSystemConfig } from "../gameTime";
 
 export interface ActorRecord {
@@ -242,13 +242,20 @@ export interface ItemRecord {
   equipmentProfile: ItemEquipmentProfile;
   farmTool?: FarmTool;
   captureProfile?: ItemCaptureProfile;
+  careProfile?: ItemCareProfile;
 }
 
 export interface ItemCaptureProfile {
   multiplier: number;
 }
 
-export type FarmTool = "hoe" | "wateringCan";
+export interface ItemCareProfile {
+  kind: "feed" | "toy";
+  friendshipDelta: number;
+  expDelta?: number;
+}
+
+export type FarmTool = "hoe" | "wateringCan" | "axe" | "pickaxe";
 
 export type ItemScope = "none" | "ally" | "allAllies" | "enemy";
 export type ItemType =
@@ -363,6 +370,10 @@ export interface EnemyStats {
 
 export interface MonsterSpeciesGraphic {
   monsterResourceId?: string;
+  /** Optional overworld CharSet texture key (e.g. tex_easyrpg_charset_monster1). */
+  fieldCharsetId?: string;
+  /** Optional full overworld graphic override; wins over fieldCharsetId when present. */
+  fieldGraphic?: EventPageGraphic;
   graphicHue: number;
   transparent: boolean;
   flying: boolean;
@@ -640,12 +651,42 @@ export interface TitleScreenMenuLabels {
   continueGame: string;
   quit: string;
 }
+export interface TitleScreenMenuVisibility {
+  newGame: boolean;
+  continueGame: boolean;
+  quit: boolean;
+}
+
+export interface TitleScreenSounds {
+  cursorSeResourceId?: string;
+  confirmSeResourceId?: string;
+  cancelSeResourceId?: string;
+}
+
+export type TitleScreenTitleMode = "text" | "graphic" | "both";
+
+export interface TitleScreenGraphic {
+  mode: TitleScreenTitleMode;
+  resourceId?: string;
+  x: number;
+  y: number;
+}
+
 
 export interface TitleScreenSettings {
   title: string;
   backgroundResourceId?: string;
+  /** Optional title-screen BGM (music resource id). Empty/undefined = silent. */
+  musicResourceId?: string;
   layout: TitleScreenLayout;
   menuLabels: TitleScreenMenuLabels;
+  /** Required after normalize; missing fields default true, newGame always true. */
+  menuVisibility: TitleScreenMenuVisibility;
+  sounds?: TitleScreenSounds;
+  /** Omitted when text-only with no logo resource (legacy compact JSON). */
+  titleGraphic?: TitleScreenGraphic;
+  /** Default true after normalize. */
+  showInputHint?: boolean;
 }
 
 export interface SystemRecords {
@@ -667,6 +708,27 @@ export interface SystemRecords {
   giftSystem?: boolean;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
+  /** Opt-in tool→world rules. Empty/absent → legacy farm hoe/can only. */
+  toolActions?: import("@/project/toolActions").ToolActionRule[];
+  /** Opt-in craft recipes. */
+  craftRecipes?: import("@/project/craftRecipes").CraftRecipe[];
+  /** Opt-in item upgrade rows. */
+  itemUpgrades?: import("@/project/upgrades").ItemUpgradeRule[];
+  /** Opt-in sell price overrides. */
+  sellPrices?: import("@/project/upgrades").SellPriceEntry[];
+  /** Out-of-battle party monster care (walk ticks + feed/toy items). */
+  monsterCare?: MonsterCareConfig;
+}
+
+export interface MonsterCareConfig {
+  /** Player steps between walk care ticks. Default 50. */
+  stepsPerTick: number;
+  /** Friendship granted to each party monster per walk tick. Default 1. */
+  walkFriendship: number;
+  /** EXP granted to each party monster per walk tick. Default 1. */
+  walkExp: number;
+  /** Max friendship points granted by walk ticks per calendar day. Default 30. */
+  dailyCareCap: number;
 }
 
 export interface RewardPolicy {

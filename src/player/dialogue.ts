@@ -11,6 +11,7 @@ import {
   DIALOGUE_LINES_PER_PAGE,
   fallbackMeasureDialogueText,
   paginateDialogueSegments,
+  type DialogueTextControl,
   type DialogueTextMeasure,
   type DialogueTextSegment,
 } from "@/player/dialoguePagination";
@@ -27,7 +28,7 @@ type DialogueSurfaceSettings = {
 };
 
 export type DialogueTextContext = {
-  readonly session: Pick<PlaySessionLike, "variables" | "actorNames">;
+  readonly session: Pick<PlaySessionLike, "variables" | "actorNames"> & { readonly gold?: number };
   readonly project: Pick<Project, "database">;
 };
 
@@ -35,6 +36,8 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly speaker?: string;
   readonly body: string;
   readonly face?: FaceGraphic;
+  /** true 면 페이지 타이핑 종료 후 키 입력 없이 다음으로. */
+  readonly autoAdvance?: boolean;
 };
 
 export type DialogueChoicesRequest = DialogueSurfaceSettings & {
@@ -43,6 +46,25 @@ export type DialogueChoicesRequest = DialogueSurfaceSettings & {
   readonly cancelBehavior?: ChoiceCancelBehavior;
 };
 
+const DEFAULT_DIALOGUE_CHAR_DELAY_MS = 24;
+
+type DialoguePlaybackToken =
+  | { readonly kind: "char" }
+  | { readonly kind: "control"; readonly control: DialogueTextControl };
+
+export function dialogueSpeedDelayMs(value: number): number {
+  const speed = Math.max(1, Math.min(20, Math.trunc(Number.isFinite(value) ? value : 3)));
+  return speed * 8;
+}
+
+function dialoguePlaybackTokens(segments: readonly DialogueTextSegment[]): DialoguePlaybackToken[] {
+  const tokens: DialoguePlaybackToken[] = [];
+  for (const segment of segments) {
+    for (const control of segment.controlsBefore ?? []) tokens.push({ kind: "control", control });
+    for (const _char of Array.from(segment.text)) tokens.push({ kind: "char" });
+  }
+  return tokens;
+}
 const DIALOGUE_OVERLAY_HORIZONTAL_PADDING = {
   top: 12,
   center: 8,
@@ -75,18 +97,43 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
     return new Promise<void>((resolve) => {
       const box = dialogueBox("", "dialogue-box");
       const position = applyTextSettings(overlay, box, request);
+      const portraitMode = dialoguePortraitMode(request.face);
+      const isPortrait = portraitMode !== "chip";
       const content = el("div", {
-        class: `dialogue-content${request.face?.position === "right" ? " face-right" : ""}`,
+        class: [
+          "dialogue-content",
+          request.face?.position === "right" ? "face-right" : "",
+          isPortrait ? "has-bust" : "",
+          isPortrait ? `portrait-${portraitMode}` : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
       });
-      if (request.face) content.append(renderFace(request.face));
+      if (request.face && !isPortrait) content.append(renderFace(request.face));
       const textColumn = el("div", { class: "dialogue-text-column" });
-      if (request.speaker) {
-        textColumn.append(el("div", { class: "speaker", text: request.speaker }));
-      }
       const bodyEl = el("div", { class: "body" });
       textColumn.append(bodyEl);
       content.append(textColumn);
       box.append(content);
+      if (request.face && isPortrait) {
+        // Attach to the message box so left/right tracks the window, not the full screen.
+        box.classList.add("has-bust-face", `portrait-${portraitMode}`);
+        if (request.face.position === "right") box.classList.add("bust-right");
+        else box.classList.add("bust-left");
+        overlay.classList.add("has-bust-face");
+        box.append(renderFace(request.face));
+      }
+      // 화자 이름은 본문과 분리된 네임플레이트로 창 상단에 붙인다 (Fields of Mistria 식).
+      if (request.speaker?.trim()) {
+        box.classList.add("has-speaker");
+        box.append(
+          el("div", {
+            class: "speaker speaker-nameplate",
+            text: request.speaker.trim(),
+            dataset: { testid: "dialogue-speaker" },
+          })
+        );
+      }
       const cursor = el("div", {
         class: "dialogue-page-cursor",
         text: "▼",
@@ -104,44 +151,136 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       });
       let pageIndex = 0;
       let visibleChars = 0;
+      let tokenIndex = 0;
       let typing = true;
+      let waitingForControl = false;
+      let autoClosePage = request.autoAdvance === true;
+      let charDelayMs = DEFAULT_DIALOGUE_CHAR_DELAY_MS;
+      let fastMode = false;
       let timer = 0;
+      let goldWindow: HTMLElement | undefined;
+
       const currentSegments = (): readonly DialogueTextSegment[] => pages[pageIndex]?.segments ?? [];
-      const finishTyping = (): void => {
-        clearTimeout(timer);
-        renderDialogueSegments(bodyEl, currentSegments());
+      const currentTokens = (): readonly DialoguePlaybackToken[] => dialoguePlaybackTokens(currentSegments());
+      const showGoldWindow = (): void => {
+        if (!goldWindow) {
+          goldWindow = el("div", {
+            class: "dialogue-gold-window",
+            dataset: { testid: "dialogue-gold-window" },
+            children: [
+              el("span", { class: "dialogue-gold-label", text: "소지금" }),
+              el("strong", {
+                class: "dialogue-gold-value",
+                text: `${Math.max(0, Math.trunc(request.textContext?.session.gold ?? 0))} G`,
+              }),
+            ],
+          });
+          overlay.append(goldWindow);
+        }
+        goldWindow.removeAttribute("hidden");
+      };
+      const executeControl = (
+        control: DialogueTextControl,
+        skipWaits: boolean
+      ): number | "pause" => {
+        switch (control.kind) {
+          case "speed":
+            charDelayMs = dialogueSpeedDelayMs(control.value);
+            return 0;
+          case "gold":
+            showGoldWindow();
+            return 0;
+          case "pause":
+            return skipWaits ? 0 : "pause";
+          case "wait":
+            return skipWaits ? 0 : control.ms;
+          case "fastOn":
+            fastMode = true;
+            return 0;
+          case "fastOff":
+            fastMode = false;
+            return 0;
+          case "halfSpace":
+            return 0;
+          case "autoClose":
+            autoClosePage = true;
+            return 0;
+        }
+      };
+      const markPageReady = (): void => {
         typing = false;
+        waitingForControl = false;
         box.classList.add("page-ready");
       };
-      const typeStep = () => {
-        const segments = currentSegments();
-        const fullLength = visibleTextLength(segments);
-        if (visibleChars < fullLength) {
-          visibleChars += 1;
-          renderDialogueSegments(bodyEl, segments, visibleChars);
-          timer = window.setTimeout(typeStep, 24);
-        } else {
-          finishTyping();
+      const consumeRemainingPage = (): void => {
+        clearTimeout(timer);
+        const tokens = currentTokens();
+        while (tokenIndex < tokens.length) {
+          const token = tokens[tokenIndex++];
+          if (token?.kind === "char") {
+            visibleChars += 1;
+          } else if (token?.kind === "control") {
+            executeControl(token.control, true);
+          }
         }
+        renderDialogueSegments(bodyEl, currentSegments());
+        markPageReady();
+        if (autoClosePage) timer = window.setTimeout(advance, 0);
+      };
+      const completeTypedPage = (): void => {
+        renderDialogueSegments(bodyEl, currentSegments());
+        markPageReady();
+        if (autoClosePage) timer = window.setTimeout(advance, 0);
+      };
+      const typeStep = (): void => {
+        const tokens = currentTokens();
+        while (tokenIndex < tokens.length) {
+          const token = tokens[tokenIndex++];
+          if (token?.kind === "control") {
+            const effect = executeControl(token.control, false);
+            if (effect === "pause") {
+              typing = false;
+              waitingForControl = true;
+              box.classList.add("page-ready");
+              return;
+            }
+            if (effect > 0) {
+              timer = window.setTimeout(typeStep, effect);
+              return;
+            }
+            continue;
+          }
+          if (token?.kind === "char") {
+            visibleChars += 1;
+            renderDialogueSegments(bodyEl, currentSegments(), visibleChars);
+            timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
+            return;
+          }
+        }
+        completeTypedPage();
       };
       const startPage = (nextPageIndex: number): void => {
         clearTimeout(timer);
         pageIndex = nextPageIndex;
         visibleChars = 0;
+        tokenIndex = 0;
         typing = true;
+        waitingForControl = false;
+        autoClosePage = request.autoAdvance === true;
         box.classList.remove("page-ready");
         renderDialogueSegments(bodyEl, currentSegments(), 0);
-        if (visibleTextLength(currentSegments()) === 0) {
-          finishTyping();
+        timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
+      };
+      const advance = () => {
+        if (waitingForControl) {
+          waitingForControl = false;
+          typing = true;
+          box.classList.remove("page-ready");
+          timer = window.setTimeout(typeStep, 0);
           return;
         }
-        timer = window.setTimeout(typeStep, 24);
-      };
-      startPage(0);
-
-      const advance = () => {
         if (typing) {
-          finishTyping();
+          consumeRemainingPage();
           return;
         }
         if (pageIndex < pages.length - 1) {
@@ -166,6 +305,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       };
       box.addEventListener("click", advance);
       document.addEventListener("keydown", onKey);
+      startPage(0);
     });
   }
 
@@ -279,10 +419,20 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
   const segments: DialogueTextSegment[] = [];
   let colorIndex = 0;
   let buffer = "";
-  const push = (): void => {
-    if (!buffer) return;
-    segments.push({ text: buffer, colorIndex });
+  let pendingControls: DialogueTextControl[] = [];
+  const push = (includeEmpty = false): void => {
+    if (!buffer && !includeEmpty && pendingControls.length === 0) return;
+    segments.push({
+      text: buffer,
+      colorIndex,
+      ...(pendingControls.length > 0 ? { controlsBefore: pendingControls } : {}),
+    });
     buffer = "";
+    pendingControls = [];
+  };
+  const addControl = (control: DialogueTextControl): void => {
+    if (buffer) push();
+    pendingControls.push(control);
   };
   for (let i = 0; i < value.length; i += 1) {
     const char = value[i];
@@ -296,32 +446,57 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
       i += 1;
       continue;
     }
-    if ((next === "v" || next === "n" || next === "c") && value[i + 2] === "[") {
+    const control = next?.toLowerCase();
+    if ((control === "v" || control === "n" || control === "c" || control === "s") && value[i + 2] === "[") {
       const end = value.indexOf("]", i + 3);
       if (end >= 0) {
         const rawIndex = value.slice(i + 3, end).trim();
         const index = Number(rawIndex);
         if (Number.isInteger(index)) {
-          if (next === "v") {
+          if (control === "v") {
             buffer += String(resolveVariable(context, index));
             i = end;
             continue;
           }
-          if (next === "n") {
+          if (control === "n") {
             buffer += resolveActorName(context, index);
             i = end;
             continue;
           }
-          push();
-          colorIndex = clampDialogueColor(index);
+          if (control === "c") {
+            push();
+            colorIndex = clampDialogueColor(index);
+          } else {
+            addControl({ kind: "speed", value: index });
+          }
           i = end;
           continue;
         }
       }
     }
+    if (next === "_") {
+      addControl({ kind: "halfSpace" });
+      buffer += " ";
+      i += 1;
+      continue;
+    }
+    const simpleControl: DialogueTextControl | undefined =
+      next === "$" ? { kind: "gold" }
+      : next === "!" ? { kind: "pause" }
+      : next === "." ? { kind: "wait", ms: 250 }
+      : next === "|" ? { kind: "wait", ms: 1000 }
+      : next === ">" ? { kind: "fastOn" }
+      : next === "<" ? { kind: "fastOff" }
+      : next === "^" ? { kind: "autoClose" }
+      : undefined;
+    if (simpleControl) {
+      addControl(simpleControl);
+      i += 1;
+      continue;
+    }
     buffer += char;
   }
-  push();
+  push(pendingControls.length > 0);
   return segments;
 }
 
@@ -341,10 +516,6 @@ function resolveActorName(context: DialogueTextContext | undefined, index: numbe
 function clampDialogueColor(index: number): number {
   if (!Number.isFinite(index)) return 0;
   return Math.max(0, Math.min(19, Math.trunc(index)));
-}
-
-function visibleTextLength(segments: readonly DialogueTextSegment[]): number {
-  return segments.reduce((total, segment) => total + Array.from(segment.text).length, 0);
 }
 
 function renderDialogueSegments(target: HTMLElement, segments: readonly DialogueTextSegment[], visibleChars = Infinity): void {
@@ -469,6 +640,23 @@ function cancelChoiceIndex(
   return null;
 }
 
+function dialoguePortraitMode(face: FaceGraphic | undefined): "chip" | "bust" | "full" {
+  if (!face?.resourceId) return "chip";
+  const id = face.resourceId.trim().toLowerCase();
+  if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
+    return "full";
+  }
+  if (
+    id.includes("-bust")
+    || id.includes("-portrait")
+    || id.startsWith("generated-face-")
+    || id.endsWith("/bust")
+  ) {
+    return "bust";
+  }
+  return "chip";
+}
+
 function renderFace(face: FaceGraphic): HTMLElement {
   const url = safeResourceImageUrl(resolveAssetResourceUrl(face.resourceId, { project: store.getCurrent() }));
   if (!url) {
@@ -476,6 +664,32 @@ function renderFace(face: FaceGraphic): HTMLElement {
       class: "dialogue-face missing",
       text: face.resourceId || "face",
       dataset: { testid: "dialogue-face" },
+    });
+  }
+  const mode = dialoguePortraitMode(face);
+  if (mode !== "chip") {
+    const side = face.position === "right" ? "right" : "left";
+    return el("div", {
+      class: [
+        "dialogue-face",
+        "dialogue-face-bust",
+        `dialogue-face-${mode}`,
+        `dialogue-face-side-${side}`,
+        face.flipHorizontally ? "flipped" : "",
+      ]
+        .filter(Boolean)
+        .join(" "),
+      attrs: {
+        "aria-label": `face ${mode} ${face.resourceId}`,
+        role: "img",
+        style: `background-image:url("${url}")`,
+      },
+      dataset: {
+        testid: "dialogue-face",
+        faceMode: mode,
+        position: side,
+        resourceId: face.resourceId,
+      },
     });
   }
   const index = Math.max(0, Math.min(15, face.faceIndex));
@@ -499,7 +713,7 @@ function renderFace(face: FaceGraphic): HTMLElement {
       role: "img",
       style: style.join(";"),
     },
-    dataset: { testid: "dialogue-face" },
+    dataset: { testid: "dialogue-face", faceMode: "chip" },
   });
 }
 

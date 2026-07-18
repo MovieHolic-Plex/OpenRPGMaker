@@ -10,6 +10,7 @@ import type {
 } from "../types";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
+import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
@@ -31,6 +32,7 @@ export function collectResourceIds(project: Project): Set<string> {
     if ("textureKey" in asset) ids.add(asset.textureKey);
   }
   for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
+  for (const asset of CC0_AUDIO_ASSETS) ids.add(asset.id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
   return ids;
@@ -70,6 +72,11 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.systemResourceId", system.systemResourceId, resourceIds);
   validateOptionalResource("system.battleSystemResourceId", system.battleSystemResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.backgroundResourceId", system.titleScreen?.backgroundResourceId, resourceIds);
+  validateOptionalResource("system.titleScreen.musicResourceId", system.titleScreen?.musicResourceId, resourceIds);
+  validateOptionalResource("system.titleScreen.sounds.cursorSeResourceId", system.titleScreen?.sounds?.cursorSeResourceId, resourceIds);
+  validateOptionalResource("system.titleScreen.sounds.confirmSeResourceId", system.titleScreen?.sounds?.confirmSeResourceId, resourceIds);
+  validateOptionalResource("system.titleScreen.sounds.cancelSeResourceId", system.titleScreen?.sounds?.cancelSeResourceId, resourceIds);
+  validateOptionalResource("system.titleScreen.titleGraphic.resourceId", system.titleScreen?.titleGraphic?.resourceId, resourceIds);
 }
 
 export function validateOptionalResource(

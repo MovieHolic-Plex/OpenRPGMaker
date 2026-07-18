@@ -20,11 +20,16 @@ describe("getFriendship 계약", () => {
     expect(result.finished).toBe(true);
   });
 
-  it("self fallback: npcKey 생략 시 현재 이벤트 id의 호감도를 읽는다", () => {
+  it("self fallback: npcKey 생략 시 characterId 호감도를 읽는다", () => {
     const result = runCommandContract([
       { kind: "changeFriendship", delta: 45 },
       { kind: "getFriendship", variableId: "var_self_friendship" },
-    ]);
+    ], {
+      mutateProject: (project) => {
+        const event = project.maps[project.startMapId]?.events.find((entry) => entry.id === CONTRACT_EVENT_ID);
+        if (event) event.characterId = CONTRACT_EVENT_ID;
+      },
+    });
 
     expect(result.session.friendship?.[CONTRACT_EVENT_ID]).toBe(45);
     expect(result.session.variables.var_self_friendship).toBe(45);

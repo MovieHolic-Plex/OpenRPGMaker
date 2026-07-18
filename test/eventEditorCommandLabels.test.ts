@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Command } from "@/project/types";
 import { COMMAND_KIND_OPTIONS, PAGE_COMMAND_BUTTONS, commandKindLabel } from "@/editor/panels/eventEditor/options";
+import { EVENT_COMMAND_PICKER_NATIVE_KINDS } from "@/editor/panels/eventEditor/commandPicker";
 
 const EXPECTED_COMMAND_KINDS = [
   "text",
@@ -39,6 +40,10 @@ const EXPECTED_COMMAND_KINDS = [
   "enterHeroName",
   "changeGold",
   "changeItem",
+  "craftRecipe",
+  "applyItemUpgrade",
+  "equipTool",
+  "openChest",
   "changeFriendship",
   "getFriendship",
   "changeParty",
@@ -92,12 +97,28 @@ describe("event editor command labels", () => {
     }
   });
 
+  it("does not surface internal M2 jargon as the m2Command display label", () => {
+    expect(commandKindLabel("m2Command")).toBe("이벤트 명령");
+    expect(commandKindLabel("m2Command")).not.toMatch(/M2|현대/);
+  });
+
   it("exposes transfer as an event page quick command", () => {
     expect(PAGE_COMMAND_BUTTONS).toContainEqual({
       kind: "transfer",
       testId: "command-add-transfer",
       label: "장소 이동",
     });
+  });
+
+  it.each([
+    ["craftRecipe", "command-add-craft", "제작"],
+    ["applyItemUpgrade", "command-add-upgrade", "업그레이드"],
+    ["equipTool", "command-add-equip-tool", "도구 장착"],
+    ["openChest", "command-add-open-chest", "보관 상자"],
+  ] as const)("exposes %s through the page quick-authoring route", (kind, testId, label) => {
+    expect(PAGE_COMMAND_BUTTONS).toContainEqual({ kind, testId, label });
+    expect(commandKindLabel(kind)).toBe(label);
+    expect(EVENT_COMMAND_PICKER_NATIVE_KINDS).toContain(kind);
   });
 
 });

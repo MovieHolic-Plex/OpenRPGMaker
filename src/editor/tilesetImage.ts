@@ -3,12 +3,11 @@ import {
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   registerTilesetTextureFrames,
   TEX_TILESET,
+  TILE_FRAME_COUNT,
 } from "@/assets/bundled";
-import {
-  createTransparentColorKeyCanvas,
-  isTransparentColorKeySourceImage,
-  rawChipsetTextureKey,
-} from "@/assets/chipsetTransparency";
+import { graftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { tileGraftsTextureSuffix } from "@/assets/tileGrafts";
+import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import {
   DEFAULT_TILESET_TEXTURE_KEY,
@@ -22,37 +21,36 @@ import type Phaser from "phaser";
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
 export function tilesetImageUrl(tileset: TilesetDef): string {
-  if (tileset.image.type === "uploaded") {
-    return store.getCurrent().assets.uploaded[tileset.image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL;
-  }
-  return bundledTilesetImageUrl(tileset.image.id) ?? DEFAULT_TILESET_IMAGE_URL;
+  const baseUrl =
+    tileset.image.type === "uploaded"
+      ? store.getCurrent().assets.uploaded[tileset.image.id]?.dataUrl ?? DEFAULT_TILESET_IMAGE_URL
+      : bundledTilesetImageUrl(tileset.image.id) ?? DEFAULT_TILESET_IMAGE_URL;
+  // 타일 이식이 있으면 베이크 결과(dataURL)를 반환 — 팔레트/DB 미리보기에도 이식 타일이 보인다.
+  // 아직 베이크 전이면 베이스 URL 을 임시 반환(베이크는 예약되어 다음 리렌더에 반영).
+  return graftedTilesetImageUrl(tileset, baseUrl) ?? baseUrl;
 }
 
 export function tilesetTextureKey(tileset: TilesetDef): string {
   const baseKey = baseTilesetTextureKey(tileset);
   const transparentColor = normalizeRgbHexColor(tileset.transparentColor ?? "");
-  return transparentColor ? `${baseKey}__transparent_${transparentColor.slice(1)}` : baseKey;
+  const transparentSuffix = transparentColor ? `__transparent_${transparentColor.slice(1)}` : "";
+  return `${baseKey}${transparentSuffix}${tileGraftsTextureSuffix(tileset)}`;
 }
 
 export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): string {
   const textureKey = tilesetTextureKey(tileset);
   if (scene.textures.exists(textureKey)) return textureKey;
-  if (!normalizeRgbHexColor(tileset.transparentColor ?? "")) return textureKey;
+  if (!tilesetTextureNeedsBake(tileset)) return textureKey;
 
   const baseKey = baseTilesetTextureKey(tileset);
-  const sourceKey = sourceTextureKey(scene, baseKey);
-  if (!sourceKey) return baseKey;
-
-  const source = scene.textures.get(sourceKey).getSourceImage();
-  if (!isTransparentColorKeySourceImage(source)) return baseKey;
-
-  const canvas = createTransparentColorKeyCanvas(tileset, source);
+  const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
   if (!canvas) return baseKey;
 
   const texture = scene.textures.addCanvas(textureKey, canvas);
   if (!texture) return baseKey;
 
-  registerTilesetTextureFrames(scene, textureKey);
+  // 확장 타일셋(count > 480)은 확장분 프레임까지 등록한다(기본 480 은 불변).
+  registerTilesetTextureFrames(scene, textureKey, Math.max(TILE_FRAME_COUNT, tileset.count));
   return textureKey;
 }
 
@@ -71,13 +69,6 @@ export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean 
 
 function baseTilesetTextureKey(tileset: TilesetDef): string {
   return tileset.image.type === "bundled" ? tileset.image.id : TEX_TILESET;
-}
-
-function sourceTextureKey(scene: Phaser.Scene, baseKey: string): string | null {
-  const rawKey = rawChipsetTextureKey(baseKey);
-  if (scene.textures.exists(rawKey)) return rawKey;
-  if (scene.textures.exists(baseKey)) return baseKey;
-  return null;
 }
 
 export function tilesetTileBackgroundStyle(tileset: TilesetDef, tile: number, previewSize: number | string): string {

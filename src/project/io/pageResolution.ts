@@ -1,6 +1,7 @@
 import { compareVariableValue } from "../conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
 import { clampFriendship } from "../session";
+import { resolveSocialKey } from "../socialKey";
 import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
@@ -17,14 +18,14 @@ export function resolveEventPage(
   if (!event.pages || event.pages.length === 0) return undefined;
   for (let index = event.pages.length - 1; index >= 0; index--) {
     const page = event.pages[index];
-    if (page.conditions.every((condition) => evalPageCondition(condition, session, event.id))) {
+    if (page.conditions.every((condition) => evalPageCondition(condition, session, event))) {
       return page;
     }
   }
   return undefined;
 }
 
-function evalPageCondition(condition: EventPageCondition, session: EventPageSession, eventId: string): boolean {
+function evalPageCondition(condition: EventPageCondition, session: EventPageSession, event: GameEvent): boolean {
   switch (condition.kind) {
     case "switch":
       return (session.switches[condition.switchId] ?? false) === condition.value;
@@ -33,7 +34,7 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       return compareVariableValue(value, condition.op, condition.value);
     }
     case "selfSwitch": {
-      const own = (session.selfSwitches ?? {})[eventId];
+      const own = (session.selfSwitches ?? {})[event.id];
       return (own?.[condition.key] ?? false) === condition.value;
     }
     case "actor":
@@ -49,10 +50,20 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
     case "season":
       return conditionMatchesSeason(session.gameTime, condition.season);
     case "npcActivity":
-      return session.npcActivities?.[eventId] === condition.activity;
+      return session.npcActivities?.[event.id] === condition.activity;
     case "friendshipAtLeast": {
-      const npcKey = condition.npcKey?.trim() || eventId;
+      const npcKey = resolveSocialKey(event, condition.npcKey);
+      if (!npcKey) return false;
       return clampFriendship(session.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
     }
+    case "battleResult":
+      // Page appearance does not use last battle outcome; treat as false.
+      return false;
+    case "all":
+      return condition.conditions.every((child) => evalPageCondition(child, session, event));
+    case "any":
+      return condition.conditions.some((child) => evalPageCondition(child, session, event));
+    case "not":
+      return !evalPageCondition(condition.condition, session, event);
   }
 }

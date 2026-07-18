@@ -11,6 +11,7 @@ import {
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
@@ -51,15 +52,24 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const stableBody = el("div", { class: "event-editor-modal-stable" });
   const dynamicBody = el("div", { class: "event-editor-modal-dynamic" });
   body.append(dynamicBody, stableBody);
-  const close = createCloseHandler(backdrop);
-  const header = renderModalHeader(request.mapId, request.eventId, close);
+  // Layered Escape: topmost modal (command subdialog / picker) closes first.
+  let closed = false;
+  const closeHandler = (saved = false): void => {
+    if (closed) return;
+    closed = true;
+    unregisterModal(backdrop);
+    backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
+    backdrop.remove();
+  };
+  registerModal(backdrop, () => closeHandler(false));
+  const header = renderModalHeader(request.mapId, request.eventId, () => closeHandler(false));
   attachWindowDrag(header, windowEl);
   const resizeHandle = renderModalResizeHandle();
   attachWindowResize(resizeHandle, windowEl);
-  windowEl.append(header, body, renderModalFooter(request, close), resizeHandle);
+  windowEl.append(header, body, renderModalFooter(request, closeHandler), resizeHandle);
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
-    if (event.target === backdrop) close();
+    if (event.target === backdrop) closeHandler(false);
   });
   let stableRendered = false;
   const refresh = () => {
@@ -86,7 +96,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const checkpointTimer = globalThis.setInterval(() => {
     checkpointEventDraft(request.mapId, request.eventId);
   }, EVENT_EDITOR_CHECKPOINT_MS);
-  backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, close));
+  backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, closeHandler));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     globalThis.clearInterval(checkpointTimer);
@@ -109,6 +119,7 @@ export function isEventEditorModalOpenFor(mapId: MapId, eventId: string): boolea
 function closeExistingEventEditorModal(): void {
   const existing = document.querySelector(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
   if (existing instanceof HTMLElement) {
+    unregisterModal(existing);
     existing.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT));
     existing.remove();
   }
@@ -217,14 +228,22 @@ function handleModalKeyDown(
   request: OpenEventEditorRequest,
   close: (saved?: boolean) => void
 ): void {
-  if (event.key === "Escape") {
-    close();
-    return;
-  }
+  // Escape is owned by the document-level modal stack (topmost first).
+  if (event.key === "Escape") return;
   // 이벤트 에디터 모달이 열려 있어도 Ctrl+Z/Y 로 undo/redo. store 구독으로 자동 재렌더된다.
   if (handleHistoryHotkey(event)) return;
   if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
   if (isTextEditingTarget(event.target)) return;
+
+  // 실행 내용(명령 리스트/툴바) 포커스 중 Delete 는 절대 이벤트 삭제로 가지 않는다.
+  // 명령 줄 자체 keydown 이 명령 삭제를 처리하고 stopPropagation 한다.
+  // 여기로 오는 경우는 툴바/빈 영역 포커스 — 무시.
+  if (isCommandListSurface(event.target)) {
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
   event.preventDefault();
   if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
 }
@@ -233,6 +252,19 @@ function isTextEditingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
+}
+
+function isCommandListSurface(target: EventTarget | null): boolean {
+  // fakeDom 의 matchesSelector 는 콤마 선택자를 못 파싱한다 — 개별 루트로 검사.
+  if (!target || typeof (target as Element).closest !== "function") return false;
+  const el = target as Element;
+  return Boolean(
+    el.closest(".cmd-list")
+    || el.closest(".event-editor-command-toolbar")
+    || el.closest(".event-editor-commands-column")
+    || el.closest(".event-contents")
+    || el.closest("[data-testid='event-command-context-menu']")
+  );
 }
 
 function footerButtonAccessibleName(text: string): string {
@@ -251,10 +283,12 @@ function footerButtonAccessibleName(text: string): string {
 }
 
 function createCloseHandler(backdrop: HTMLElement): (saved?: boolean) => void {
+  // Legacy helper; openDraft uses the inline closeHandler with stack registration.
   let closed = false;
   return (saved = false) => {
     if (closed) return;
     closed = true;
+    unregisterModal(backdrop);
     backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
   };

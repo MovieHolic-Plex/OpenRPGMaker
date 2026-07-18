@@ -13,7 +13,8 @@ export type YardDecorKind =
   | "fruit_box"
   | "wood_box"
   | "table_h"
-  | "sign";
+  | "sign"
+  | "barrel";
 // chair / table-chairs 는 탁자 옆 배치 전용 — 마당 가방 산포에 넣지 않음(맵에 널브러짐 방지).
 
 export const YARD_DECOR_KINDS: readonly YardDecorKind[] = [
@@ -28,6 +29,7 @@ export const YARD_DECOR_KINDS: readonly YardDecorKind[] = [
   "wood_box",
   "table_h",
   "sign",
+  "barrel",
 ] as const;
 
 export type YardDecorPlan = {
@@ -64,7 +66,10 @@ export function materialForYardDecor(kind: YardDecorKind): string {
     case "table_h":
       return "가로 탁자";
     case "sign":
-      return "표지판";
+      // 자립 팻말은 440 — 320은 벽에 붙는 벽보라 마당 산포 금지 (2026-07-16 사용자 교정).
+      return "팻말";
+    case "barrel":
+      return "술통";
     default: {
       const _exhaustive: never = kind;
       return _exhaustive;
@@ -72,10 +77,6 @@ export function materialForYardDecor(kind: YardDecorKind): string {
   }
 }
 
-/** @deprecated materialForYardDecor 사용 */
-export function propVocabIdForYardDecor(kind: YardDecorKind): string {
-  return materialForYardDecor(kind);
-}
 
 /** 집 wings 합집합 bbox. */
 export function houseBBox(wings: readonly HouseWing[]): YardArea {

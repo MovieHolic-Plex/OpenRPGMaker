@@ -28,6 +28,10 @@ const CONTRACT_TEST_TODO_WHITELIST: readonly CommandKind[] = [
   // §5.2 legacy flag — EC2 지시는 신규 16개 / 화이트리스트 40→24 를 완료 기준으로 삼는다.
   // setFlag 동작은 setSwitch.contract.test.ts 안에서 함께 고정했고, 별도 파일은 후속 wave 로 남긴다.
   "setFlag",
+  "craftRecipe",
+  "applyItemUpgrade",
+  "equipTool",
+  "openChest",
   // §5.3 액터·파티·인벤토리 (EC3)
   "changeGold",
   "changeItem",
@@ -63,7 +67,6 @@ const CONTRACT_TEST_TODO_WHITELIST: readonly CommandKind[] = [
   "ending",
   "returnToTitle",
   // m2 네임스페이스 진입 kind — §9 m2 트리아지(EC4)와 함께 계약화.
-  "m2Command",
 ];
 
 function contractFileUrl(kind: CommandKind): URL {

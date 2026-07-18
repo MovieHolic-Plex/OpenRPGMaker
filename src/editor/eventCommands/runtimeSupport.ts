@@ -1,4 +1,13 @@
 import type { Command } from "@/project/types";
+import {
+  M2_MAP_COMMON_FULL_IDS,
+  M2_PERSISTED_BEHAVIOR_IDS,
+  M2_TROOP_FULL_IDS,
+} from "./m2RuntimeClassificationData";
+import { M2_PARTIAL_EFFECT_DECLARATIONS } from "./m2PartialEffectDeclarations";
+
+export { M2_PERSISTED_BEHAVIOR_IDS } from "./m2RuntimeClassificationData";
+export { M2_PARTIAL_EFFECT_DECLARATIONS } from "./m2PartialEffectDeclarations";
 
 export type CommandRuntimeSupport = "runtime-full" | "runtime-partial" | "editor-only";
 
@@ -9,38 +18,37 @@ export type CommandRuntimeSupportBadge = {
   readonly tooltip: string;
 };
 
-const M2_RUNTIME_FULL_IDS: ReadonlySet<string> = new Set([
-  "m2-014-change-parameters",
-  "m2-019-change-state",
-  "m2-021-damage-processing",
-  "m2-024-change-actor-graphic",
-  "m2-046-tint-screen",
-  "m2-047-flash-screen",
-  "m2-048-shake-screen",
-  "m2-049-scroll-map",
-  "m2-050-set-weather-effects",
-  "m2-052-move-picture",
-  "m2-058-wait-for-all-movement",
-  "m2-091-change-actor-class",
-  "m2-098-change-enemy-hp",
-  "m2-201-camera-control",
-  "m2-203-spawn-event",
-  "m2-204-remove-event",
-  "m2-101-enemy-encounter",
-  "m2-102-change-battleback",
-  "m2-107-force-escape",
-  "m2-108-action-times",
-]);
+export type M2PersistedBehaviorClass = keyof typeof M2_PERSISTED_BEHAVIOR_IDS;
+export type M2RuntimeContext = "map" | "common" | "troop";
 
-const M2_EDITOR_ONLY_IDS: ReadonlySet<string> = new Set([
-  "m2-088-comment",
-  "m2-099-change-enemy-mp",
-  "m2-100-change-enemy-state",
-  "m2-103-show-animation",
-  "m2-104-battle-events",
-  "m2-105-abort-battle",
-  "m2-106-call-common-event",
-]);
+export type M2RuntimeClassification = {
+  readonly commandId: string;
+  readonly behaviorClass: M2PersistedBehaviorClass;
+  readonly supportByContext: Readonly<Record<M2RuntimeContext, CommandRuntimeSupport>>;
+  readonly effectCoverage: M2EffectCoverage;
+};
+
+export type M2EffectCoverage = {
+  readonly supportedEffects: readonly string[];
+  readonly unsupportedEffects: readonly string[];
+};
+
+export class M2RuntimeClassificationError extends Error {
+  readonly commandId: string;
+
+  constructor(commandId: string) {
+    super(`Unclassified M2 command: ${commandId}`);
+    this.name = "M2RuntimeClassificationError";
+    this.commandId = commandId;
+  }
+}
+
+class M2PartialEffectDeclarationError extends Error {
+  constructor(commandId: string) {
+    super(`Missing partial M2 effect declaration: ${commandId}`);
+    this.name = "M2PartialEffectDeclarationError";
+  }
+}
 
 const BATTLE_EVENT_RUNTIME_FULL_KINDS: ReadonlySet<Command["kind"]> = new Set([
   "text",
@@ -58,25 +66,99 @@ const BATTLE_EVENT_RUNTIME_FULL_KINDS: ReadonlySet<Command["kind"]> = new Set([
   "m2Command",
 ]);
 
-export function commandRuntimeSupport(command: Command): CommandRuntimeSupport {
+export function commandRuntimeSupport(command: Command, context?: M2RuntimeContext): CommandRuntimeSupport {
   if (command.kind !== "m2Command") return "runtime-full";
-  return m2CommandRuntimeSupport(command.commandId);
+  if (!context && m2CommandRuntimeClassification(command.commandId).behaviorClass === "nativeAlias") {
+    return m2CommandRuntimeSupport(command.commandId, "map");
+  }
+  return m2CommandRuntimeSupport(command.commandId, context);
 }
 
 export function battleEventCommandRuntimeSupport(command: Command): CommandRuntimeSupport {
-  if (command.kind === "m2Command") return m2CommandRuntimeSupport(command.commandId);
+  if (command.kind === "m2Command") return m2CommandRuntimeSupport(command.commandId, "troop");
   return BATTLE_EVENT_RUNTIME_FULL_KINDS.has(command.kind) ? "runtime-full" : "runtime-partial";
 }
 
-export function m2CommandRuntimeSupport(commandId: string): CommandRuntimeSupport {
-  if (M2_RUNTIME_FULL_IDS.has(commandId)) return "runtime-full";
-  if (M2_EDITOR_ONLY_IDS.has(commandId)) return "editor-only";
-  return "runtime-partial";
+export function m2CommandRuntimeClassification(commandId: string): M2RuntimeClassification {
+  const behaviorClass = behaviorClassFor(commandId);
+  if (behaviorClass === "editorOnly") {
+    return {
+      commandId,
+      behaviorClass,
+      supportByContext: { map: "editor-only", common: "editor-only", troop: "editor-only" },
+      effectCoverage: effectCoverageFor(commandId, behaviorClass),
+    };
+  }
+  const mapCommonSupport = includesId(M2_MAP_COMMON_FULL_IDS, commandId) ? "runtime-full" : "runtime-partial";
+  return {
+    commandId,
+    behaviorClass,
+    supportByContext: {
+      map: mapCommonSupport,
+      common: mapCommonSupport,
+      troop: includesId(M2_TROOP_FULL_IDS, commandId) ? "runtime-full" : "runtime-partial",
+    },
+    effectCoverage: effectCoverageFor(commandId, behaviorClass),
+  };
+}
+
+export function m2CommandRuntimeSupport(
+  commandId: string,
+  context?: M2RuntimeContext
+): CommandRuntimeSupport {
+  const classification = m2CommandRuntimeClassification(commandId);
+  if (context) return classification.supportByContext[context];
+  switch (classification.behaviorClass) {
+    case "nativeAlias":
+    case "full":
+      return "runtime-full";
+    case "partial":
+      return "runtime-partial";
+    case "editorOnly":
+      return "editor-only";
+  }
 }
 
 export function catalogRowRuntimeSupport(commandId: string, existingKind: Command["kind"] | undefined): CommandRuntimeSupport {
   if (existingKind) return "runtime-full";
   return m2CommandRuntimeSupport(commandId);
+}
+
+function behaviorClassFor(commandId: string): M2PersistedBehaviorClass {
+  if (includesId(M2_PERSISTED_BEHAVIOR_IDS.nativeAlias, commandId)) return "nativeAlias";
+  if (includesId(M2_PERSISTED_BEHAVIOR_IDS.full, commandId)) return "full";
+  if (includesId(M2_PERSISTED_BEHAVIOR_IDS.partial, commandId)) return "partial";
+  if (includesId(M2_PERSISTED_BEHAVIOR_IDS.editorOnly, commandId)) return "editorOnly";
+  throw new M2RuntimeClassificationError(commandId);
+}
+
+function includesId(ids: readonly string[], commandId: string): boolean {
+  return ids.some((id) => id === commandId);
+}
+
+function effectCoverageFor(commandId: string, behaviorClass: M2PersistedBehaviorClass): M2EffectCoverage {
+  switch (behaviorClass) {
+    case "nativeAlias":
+      return {
+        supportedEffects: ["picker conversion to native command"],
+        unsupportedEffects: ["implicit persisted native-equivalent effect"],
+      };
+    case "full":
+      return { supportedEffects: ["declared context runtime effect"], unsupportedEffects: [] };
+    case "partial": {
+      const declaration = M2_PARTIAL_EFFECT_DECLARATIONS.find((candidate) => includesId(candidate.ids, commandId));
+      if (!declaration) throw new M2PartialEffectDeclarationError(commandId);
+      return {
+        supportedEffects: declaration.supportedEffects,
+        unsupportedEffects: declaration.unsupportedEffects,
+      };
+    }
+    case "editorOnly":
+      return {
+        supportedEffects: ["editor authoring and persistence"],
+        unsupportedEffects: ["runtime effect"],
+      };
+  }
 }
 
 export function runtimeSupportBadge(support: CommandRuntimeSupport): CommandRuntimeSupportBadge | null {

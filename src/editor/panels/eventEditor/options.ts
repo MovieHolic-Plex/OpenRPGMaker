@@ -57,6 +57,10 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "enterHeroName", label: "이름 입력 처리" },
   { value: "changeGold", label: "소지금 변경" },
   { value: "changeItem", label: "아이템 변경" },
+  { value: "craftRecipe", label: "제작" },
+  { value: "applyItemUpgrade", label: "업그레이드" },
+  { value: "equipTool", label: "도구 장착" },
+  { value: "openChest", label: "보관 상자" },
   { value: "changeFriendship", label: "호감도 변경" },
   { value: "getFriendship", label: "호감도 변수 저장" },
   { value: "changeParty", label: "파티 변경" },
@@ -86,7 +90,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "wait", label: "대기" },
   { value: "setFlag", label: "플래그 설정" },
   { value: "setSelfSwitch", label: "셀프 스위치 설정" },
-  { value: "m2Command", label: "M2/현대 명령" },
+  { value: "m2Command", label: "이벤트 명령" },
 ] as const satisfies readonly SelectOption<Command["kind"]>[];
 
 export const SELF_SWITCH_KEY_OPTIONS = [
@@ -116,6 +120,10 @@ export const PAGE_COMMAND_BUTTONS = [
   { kind: "battleProcessing", testId: "command-add-battle", label: "전투" },
   { kind: "changeGold", testId: "command-add-gold", label: "돈" },
   { kind: "changeItem", testId: "command-add-item", label: "아이템" },
+  { kind: "craftRecipe", testId: "command-add-craft", label: "제작" },
+  { kind: "applyItemUpgrade", testId: "command-add-upgrade", label: "업그레이드" },
+  { kind: "equipTool", testId: "command-add-equip-tool", label: "도구 장착" },
+  { kind: "openChest", testId: "command-add-open-chest", label: "보관 상자" },
   { kind: "changeFriendship", testId: "command-add-friendship", label: "호감도" },
   { kind: "changeParty", testId: "command-add-party", label: "파티" },
   { kind: "giveMonster", testId: "command-add-give-monster", label: "몬스터" },

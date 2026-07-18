@@ -27,7 +27,16 @@ describe("출력 토큰 예산", () => {
     let rounds = 0;
     const session = new AssistantSession(createBlankProject(), {
       config: { ...defaultAiConfig(), apiKey: "sk", maxTokens: 10240 },
-      chat: async () => {
+      chat: async (cfg, req) => {
+        // 플래너(tool 없음)는 예산 집계 밖 또는 direct 로 패스 — 실행 루프만 카운트.
+        const hasTools = Array.isArray((req as { tools?: unknown }).tools) && ((req as { tools: unknown[] }).tools?.length ?? 0) > 0;
+        if (!hasTools) {
+          return {
+            message: { role: "assistant", content: JSON.stringify({ action: "direct", reason: "lookup" }) },
+            finishReason: "stop",
+            usage: { completion_tokens: 20 },
+          };
+        }
         rounds += 1;
         return toolCallResult("get_project_summary", 6000);
       },

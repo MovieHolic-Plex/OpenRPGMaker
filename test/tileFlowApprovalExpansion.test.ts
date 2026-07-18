@@ -71,10 +71,11 @@ describe("T1 — v3 프리미티브는 스펙 게이트 제외", () => {
 
   it("승인 어휘가 있으면 set_build_spec 없이 build_wall이 성공한다", async () => {
     const { ctx } = contextWithMap();
-    const groupId = approveWallGroup(ctx);
+    approveWallGroup(ctx);
 
     const chat = scriptedChat([
-      toolCallMsg("build_wall", { mapId: "m1", rect: { x: 4, y: 4, w: 5, h: 4 }, wallVocabId: groupId }, "c1"),
+      finalMsg('{"action":"direct","reason":"single wall"}'),
+      toolCallMsg("build_wall", { mapId: "m1", rect: { x: 4, y: 4, w: 5, h: 4 }, material: "테스트석벽" }, "c1"),
       finalMsg("벽을 지었습니다."),
     ]);
     const session = new AssistantSession(ctx.project, { config: CONFIG, chat });

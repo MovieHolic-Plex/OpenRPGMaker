@@ -23,3 +23,41 @@ describe("tile_query ask:vocab", () => {
     expect(result.summary).toContain("wall");
   });
 });
+
+describe("tile_query ask:labels tileset resolution", () => {
+  it("defaults labels to startMap tileset so interior maps do not see combined-town labels", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const map = project.maps[mapId]!;
+    map.tilesetId = "easyrpg_chipset_interior";
+    const ctx: ToolContext = { project };
+
+    const result = runTool(ctx, "tile_query", { ask: "labels", query: "탁자" }, { dryRun: true });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { tilesetId: string; labels: { label: string }[] };
+    expect(data.tilesetId).toBe("easyrpg_chipset_interior");
+    const labels = data.labels.map((l) => l.label);
+    expect(labels.some((l) => l.includes("사각") || l.includes("긴 탁자") || l.includes("원형"))).toBe(true);
+    expect(labels.some((l) => l === "가로 탁자 중" || l === "가로 탁자 좌")).toBe(false);
+  });
+
+  it("mapId overrides default when querying another map tileset", () => {
+    const project = createBlankProject();
+    const start = project.maps[project.startMapId]!;
+    start.tilesetId = "easyrpg_chipset_interior";
+    // add outdoor map
+    const outdoorId = "map_outdoor";
+    project.maps[outdoorId] = {
+      ...structuredClone(start),
+      id: outdoorId,
+      name: "야외",
+      tilesetId: DEFAULT_TILESET_ID,
+    };
+    const ctx: ToolContext = { project };
+    const result = runTool(ctx, "tile_query", { ask: "labels", query: "탁자", mapId: outdoorId }, { dryRun: true });
+    expect(result.ok, result.summary).toBe(true);
+    const data = result.data as { tilesetId: string; labels: { label: string }[] };
+    expect(data.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(data.labels.some((l) => l.label.includes("가로 탁자"))).toBe(true);
+  });
+});

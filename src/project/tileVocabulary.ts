@@ -12,6 +12,7 @@
 // - 그룹 한정 예외: source === "bundled-default"(큐레이션 번들)는 origin:"user"와 동급 신뢰(2026-07-11).
 
 import type { Project, TileGroupMetadata, TilesetDef } from "./types";
+import { bagMaterialRejectMessage, isBagGroup, isBagMaterialQuery } from "./materialPolicy";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
 
@@ -126,11 +127,15 @@ const MATERIAL_QUERY_SYNONYMS: readonly (readonly [RegExp, readonly string[]])[]
   [/지붕|roof/, ["지붕"]],
   [/^문$|입구|door/, ["문", "입구", "나무 문"]],
   [/창문|window/, ["창문"]],
-  [/잔디|풀|grass/, ["잔디"]],
+  [/^잔디$|풀밭|^grass$/, ["잔디"]],
+  [/키큰\s*풀|tall\s*grass|dark\s*grass|짙은\s*잔디|인카운터\s*풀/, ["키큰 풀"]],
   [/나무\s*상자|나무상자/, ["나무 상자", "상자"]],
   [/과일\s*박스|과일박스/, ["과일박스", "과일"]],
   [/벤치/, ["벤치"]],
   [/^꽃$|꽃\/|꽃·/, ["꽃"]],
+  // 모호한 요청만 확장. "가로 탁자 중" 같은 구체 라벨 문자열에 bare 탁자가 매칭되면 안 됨.
+  // (동의어는 오케스트레이션 대체재가 아님 — 맵 타일셋 조회 + successTools 가드가 본선.)
+  [/^(?:나무\s*)?탁자$|^식탁$|^카운터$|^table$/, ["가로 탁자", "사각 탁자", "긴 탁자", "원형 탁자", "탁자"]],
 ];
 
 export interface MaterialSuggestion {
@@ -228,6 +233,24 @@ function isAutotileGroup(group: TileGroupMetadata): boolean {
   return kind === "autotile_3x3" || kind === "animated_terrain" || group.role === "water";
 }
 
+function findExactGroupByName(tileset: TilesetDef, query: string): TileGroupMetadata | undefined {
+  const needle = normalizeMaterialQuery(query);
+  if (!needle) return undefined;
+  const groups = tileset.tileGroups ?? [];
+  const exact = groups.filter((group) => normalizeMaterialQuery(group.name) === needle);
+  if (exact.length === 0) return undefined;
+  if (exact.length === 1) return exact[0];
+  // multi exact-name ambiguity → missing path (caller falls through); prefer patterned/smaller.
+  exact.sort((a, b) => {
+    const aPat = a.patternGrammar ? 1 : 0;
+    const bPat = b.patternGrammar ? 1 : 0;
+    if (aPat !== bPat) return bPat - aPat;
+    return a.tileIds.length - b.tileIds.length;
+  });
+  // Ambiguous same-name groups: do not auto-pick.
+  return undefined;
+}
+
 /** 타일 label/description 만으로 재료를 고른다. 그룹 id·vocabId 는 입력으로 쓰지 않는다. */
 export function resolveMaterialByLabel(
   tileset: TilesetDef,
@@ -245,6 +268,33 @@ export function resolveMaterialByLabel(
       message: `material에 그룹 id("${raw}")를 넣지 마세요. 타일 라벨·설명(예: "물", "침엽수", "나무 상자")을 쓰세요.`,
       suggestions: suggestMaterialsByLabel(tileset, raw.replace(/^harness-combined-town-/, "").replace(/-/g, " "), 5),
     };
+  }
+  // 잡소품 가방 라벨/id — 구체 재료로만 시공 (2026-07-10 small-props 사고).
+  if (isBagMaterialQuery(raw)) {
+    return {
+      status: "missing",
+      message: bagMaterialRejectMessage(raw),
+      suggestions: suggestMaterialsByLabel(tileset, "소품", 5).filter((s) => !isBagMaterialQuery(s.label)),
+    };
+  }
+  // 그룹 display name 완전 일치 우선(라벨 동의어 오염 방지 — "키큰 풀" ≠ "잔디").
+  const exactGroup = findExactGroupByName(tileset, raw);
+  if (exactGroup) {
+    if (options.requireAutotileGroup && !isAutotileGroup(exactGroup)) {
+      // fall through to tile scoring
+    } else {
+      const seedTile = exactGroup.tileIds[0] ?? 0;
+      const seedMeta = tileLabelDescription(tileset, seedTile);
+      const hit = {
+        tileId: seedTile,
+        label: seedMeta.label || exactGroup.name,
+        description: seedMeta.description || exactGroup.description || "",
+      };
+      if (options.preferGroup !== false || options.requireAutotileGroup === true || exactGroup.patternGrammar || exactGroup.tileIds.length > 1) {
+        const byGroup = materialAccessForGroup(tileset, exactGroup, hit);
+        if (byGroup.status !== "missing") return byGroup;
+      }
+    }
   }
 
   const terms = materialQueryTerms(raw);
@@ -316,6 +366,13 @@ function materialAccessForGroup(
   group: TileGroupMetadata,
   hit: { tileId: number; label: string; description: string },
 ): MaterialResolveResult {
+  if (isBagGroup(group)) {
+    return {
+      status: "missing",
+      message: bagMaterialRejectMessage(group.name || group.id),
+      suggestions: suggestMaterialsByLabel(tileset, "나무", 5).filter((s) => !isBagMaterialQuery(s.label)),
+    };
+  }
   const access = resolveVocabForBuild(tileset, { groupId: group.id });
   if (access.status === "missing" || access.kind !== "group") {
     return {

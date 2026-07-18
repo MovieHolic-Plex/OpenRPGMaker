@@ -25,11 +25,11 @@ function makeMapProject(): Project {
   return context.project;
 }
 
-function loadOpenRouterKey(): { apiKey: string; baseUrl: string } | null {
+function loadLLMKey(): { apiKey: string; baseUrl: string } | null {
   try {
     const raw = fs.readFileSync(".env.local", "utf8");
-    const key = raw.match(/^\s*OPENROUTER_API_KEY\s*=\s*(.+)\s*$/m)?.[1]?.trim().replace(/^["']|["']$/g, "");
-    const base = raw.match(/^\s*OPENROUTER_BASE_URL\s*=\s*(.+)\s*$/m)?.[1]?.trim().replace(/^["']|["']$/g, "") || DEFAULT_BASE_URL;
+    const key = raw.match(/^\s*VITE_LLM_API_KEY\s*=\s*(.+)\s*$/m)?.[1]?.trim().replace(/^["']|["']$/g, "");
+    const base = raw.match(/^\s*VITE_LLM_API_URL\s*=\s*(.+)\s*$/m)?.[1]?.trim().replace(/^["']|["']$/g, "") || DEFAULT_BASE_URL;
     if (!key) return null;
     return { apiKey: key, baseUrl: base.startsWith("http") ? base : DEFAULT_BASE_URL };
   } catch {
@@ -63,15 +63,14 @@ describe("region AI house/tree/npc probe", () => {
     console.log("HOUSE", house.ok, house.summary, house.error);
 
     ensureRegionPlacementHarness(tileset);
-    const propId = BUILD_PALETTE_PRESETS.tree;
-    const props = runTool(ctx, "place_props", {
+        const props = runTool(ctx, "place_props", {
       mapId: MAP_ID,
       area: { x: 10, y: 3, w: 6, h: 6 },
-      propVocabId: String(propId),
+      material: "침엽수",
       count: 1,
       seed: 1,
     });
-    console.log("PROPS", props.ok, props.summary, props.error, "propId=", propId);
+    console.log("PROPS", props.ok, props.summary, props.error, "material=침엽수");
 
     const npc = runTool(ctx, "place_npc", {
       mapId: MAP_ID,
@@ -111,9 +110,9 @@ describe("region AI house/tree/npc probe", () => {
   });
 
   it("live region task LLM: 집과 나무 1개 npc 배치", async () => {
-    const creds = loadOpenRouterKey();
+    const creds = loadLLMKey();
     if (!creds) {
-      console.log("SKIP live LLM: no OPENROUTER_API_KEY");
+      console.log("SKIP live LLM: no VITE_LLM_API_KEY");
       return;
     }
     const project = makeMapProject();

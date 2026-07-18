@@ -1,5 +1,5 @@
 // scripts/aiSmoke.mjs
-// 라이브 스모크: .env.local의 OPENROUTER_API_KEY로 OpenRouter에 실제 1콜.
+// 라이브 스모크: .env.local의 VITE_LLM_API_KEY로 LLM에 실제 1콜.
 // get_project_summary 툴 하나만 주고 "프로젝트 요약해줘"로 tool_call을 유도한다.
 // npm test에는 포함하지 않는다(네트워크 의존). 실행: `node scripts/aiSmoke.mjs`
 //
@@ -30,7 +30,7 @@ function parseEnv(text) {
 }
 
 const DEFAULT_MODEL = "google/gemini-3.1-flash-lite";
-const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
+const DEFAULT_BASE_URL = "https://example.invalid/v1";
 
 const TOOLS = [
   {
@@ -52,11 +52,11 @@ async function main() {
     process.exit(2);
   }
 
-  const apiKey = env.OPENROUTER_API_KEY;
-  const model = env.OPENROUTER_MODEL || DEFAULT_MODEL;
-  const baseUrl = (env.OPENROUTER_BASE_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
+  const apiKey = env.VITE_LLM_API_KEY;
+  const model = env.VITE_LLM_MODEL || DEFAULT_MODEL;
+  const baseUrl = (env.VITE_LLM_API_URL || DEFAULT_BASE_URL).replace(/\/$/, "");
   if (!apiKey) {
-    console.error("[smoke] OPENROUTER_API_KEY가 .env.local에 없습니다.");
+    console.error("[smoke] VITE_LLM_API_KEY가 .env.local에 없습니다.");
     process.exit(2);
   }
 

@@ -105,34 +105,39 @@ describe("tile brush tools", () => {
     expect(similar).not.toContain(9);
   });
 
-  it("lets manual auto-connect mode paint a raw road tile without reshaping it", () => {
+  it("lets manual auto-connect mode paint a non-autotile tile without reshaping it", () => {
+    // RM: dirt body still reshapes under Manual. Non-autotile (grass) keeps exact tile.
     const project = store.getCurrent();
     const mapId = project.startMapId;
     const map = store.getCurrent().maps[mapId];
 
-    paintTile(mapId, "lower", 2, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    paintTile(mapId, "lower", 2, 2, TILE.GRASS, { autoConnect: false });
 
-    expect(store.getCurrent().maps[mapId].lowerTiles[2 * map.width + 2]).toBe(DIRT_ROAD_TILE.BODY);
+    expect(store.getCurrent().maps[mapId].lowerTiles[2 * map.width + 2]).toBe(TILE.GRASS);
   });
 
-
-
-  it("keeps neighboring dirt-road members unchanged when autoConnect is Manual", () => {
+  it("keeps neighboring non-autotile tiles unchanged when painting grass in Manual", () => {
     const mapId = store.getCurrent().startMapId;
     const map = store.getCurrent().maps[mapId]!;
-    // seed a 3x1 dirt body strip, then paint center with Manual — neighbors stay put
-    paintTile(mapId, "lower", 1, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
-    paintTile(mapId, "lower", 2, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
-    paintTile(mapId, "lower", 3, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    paintTile(mapId, "lower", 1, 2, TILE.GRASS, { autoConnect: false });
+    paintTile(mapId, "lower", 2, 2, TILE.GRASS, { autoConnect: false });
+    paintTile(mapId, "lower", 3, 2, TILE.GRASS, { autoConnect: false });
     const leftBefore = store.getCurrent().maps[mapId]!.lowerTiles[2 * map.width + 1];
     const rightBefore = store.getCurrent().maps[mapId]!.lowerTiles[2 * map.width + 3];
 
-    paintTile(mapId, "lower", 2, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    paintTile(mapId, "lower", 2, 2, TILE.GRASS, { autoConnect: false });
 
     const after = store.getCurrent().maps[mapId]!;
     expect(after.lowerTiles[2 * map.width + 1]).toBe(leftBefore);
-    expect(after.lowerTiles[2 * map.width + 2]).toBe(DIRT_ROAD_TILE.BODY);
+    expect(after.lowerTiles[2 * map.width + 2]).toBe(TILE.GRASS);
     expect(after.lowerTiles[2 * map.width + 3]).toBe(rightBefore);
+  });
+
+  it("RM-style: dirt body still reshapes under Manual autoConnect", () => {
+    const mapId = store.getCurrent().startMapId;
+    const map = store.getCurrent().maps[mapId]!;
+    paintTile(mapId, "lower", 2, 2, DIRT_ROAD_TILE.BODY, { autoConnect: false });
+    expect(store.getCurrent().maps[mapId]!.lowerTiles[2 * map.width + 2]).toBe(DIRT_ROAD_TILE.ISOLATED);
   });
 });
 

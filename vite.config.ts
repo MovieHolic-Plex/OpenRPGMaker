@@ -3,7 +3,7 @@ import { fileURLToPath, URL } from "node:url";
 import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 
-const DEFAULT_DEV_SERVER_PORT = 9173;
+const DEFAULT_DEV_SERVER_PORT = 9999;
 
 function devServerPort(mode: string): number {
   const rawPort = loadEnv(mode, process.cwd(), "").DEV_SERVER_PORT;
@@ -115,10 +115,10 @@ export default defineConfig(({ mode }) => ({
     extensions: [".ts", ".js"],
   },
   server: {
-    host: "::",
+    host: "0.0.0.0",
     port: devServerPort(mode),
     strictPort: true,
-    allowedHosts: ["mdc-server"],
+    allowedHosts: true,
     open: false,
     watch: {
       ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],

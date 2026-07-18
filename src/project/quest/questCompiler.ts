@@ -237,8 +237,15 @@ function materializeCollectSource(
     const fight = page(`${id}_fight`, "전투", [switchCond(flags.started)], [
       text("적이 나타났다!"),
       { kind: "battleProcessing", troopId: source.troopId, canEscape: true, canLose: false },
-      { kind: "setSwitch", switchId: clearSwitch, value: true },
-      ...grantAndCheck,
+      {
+        kind: "fork",
+        condition: { kind: "battleResult", result: "victory" },
+        then: [
+          { kind: "setSwitch", switchId: clearSwitch, value: true },
+          { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} },
+          ...grantAndCheck,
+        ],
+      },
     ], graphic);
     const cleared = page(`${id}_cleared`, "정리됨", [switchCond(clearSwitch)], [], { transparent: true }, { priority: "below" });
     const idle = page(`${id}_idle`, "휴식", [], [text("조용하다.")], graphic);

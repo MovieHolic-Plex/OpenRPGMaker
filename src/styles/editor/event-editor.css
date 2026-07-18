@@ -10,3 +10,6 @@
 @import "./event-editor.p1-graphic.css";
 @import "./event-editor.p1-route.css";
 @import "./event-editor.p1-pagetabs.css";
+
+.event-command-text-limit-hint{margin-top:4px;font-size:11px;color:var(--text-2);}
+.event-command-text-limit-hint[data-over="1"]{color:var(--danger,#f0716f);font-weight:600;}

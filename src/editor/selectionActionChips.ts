@@ -14,20 +14,10 @@ export interface SelectionChipPreset {
   readonly instruction: string | null;
 }
 
+// 영역 모달(suggestedCommands)과 중복되는 구조물/길/다듬기 단축 칩은 두지 않는다.
+// 캔버스 칩은 모달 진입 1개만 — 세부 추천은 모달 안에서 보여준다.
 export const SELECTION_CHIP_PRESETS: readonly SelectionChipPreset[] = [
   { id: "ai", label: "✨ AI 작업…", title: "이 영역에 자연어 지시로 AI 작업", instruction: null },
-  {
-    id: "structure",
-    label: "🏠 구조물",
-    title: "영역 안에 어울리는 구조물 배치",
-    instruction: "이 영역 안에 지형과 어울리는 구조물(집이나 시설)을 배치해 주세요. 영역 밖은 건드리지 마세요.",
-  },
-  {
-    id: "polish",
-    label: "🎨 다듬기",
-    title: "영역 지형을 주변과 자연스럽게 다듬기",
-    instruction: "이 영역의 타일을 주변 지형과 자연스럽게 이어지도록 다듬어 주세요. 영역 밖은 건드리지 마세요.",
-  },
 ] as const;
 
 export function selectionChipModalOptions(

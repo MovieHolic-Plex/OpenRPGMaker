@@ -1,6 +1,6 @@
 // 라이브 스모크: 하네싱 집 키트 소비 경로 종단 검증.
 // 시나리오: "키트로 집 지어줘" → build_house_kit + 필요 시 paint_road.
-// 실행: OPENROUTER_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/templateSmoke.eval.ts`
+// 실행: VITE_LLM_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/templateSmoke.eval.ts`
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
@@ -8,13 +8,13 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 
 describe("live smoke — 하네싱 키트로 집 짓기", () => {
-  it.skipIf(!process.env.OPENROUTER_API_KEY)("build_house_kit 경로를 사용한다", async () => {
+  it.skipIf(!process.env.VITE_LLM_API_KEY)("build_house_kit 경로를 사용한다", async () => {
     const project = createBlankProject();
     const ctx = { project };
     expect(runTool(ctx, "create_map", { name: "템플릿 마을", width: 30, height: 30, id: "map_tpl_smoke" }).ok).toBe(true);
 
     const session = new AssistantSession(ctx.project, {
-      config: { ...defaultAiConfig(), apiKey: process.env.OPENROUTER_API_KEY ?? "" },
+      config: { ...defaultAiConfig(), apiKey: process.env.VITE_LLM_API_KEY ?? "" },
     });
     const toolLog: string[] = [];
     const result = await session.sendUserMessage(

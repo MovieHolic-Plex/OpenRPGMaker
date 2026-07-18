@@ -3,7 +3,9 @@ import type { ToolDefinition, ToolExecResult } from "./types";
 // 몬스터 수집/포획 + 몬스터 전투 파티 모드를 켜고 끄는 저작 도구.
 // 두 플래그는 별개 축이다:
 //  - system.monsterCollection   : 전투에 '포획' 커맨드가 뜨는 게이트(battleCommands.ts).
-//  - system.monsterBattleParty  : 전투를 영웅 대신 몬스터 파티로 진행(playSceneBattle.ts, 옵션 A).
+//  - system.monsterBattleParty  : 전투를 영웅 대신 몬스터 파티로 진행(playSceneBattle 레거시 경로).
+//  - system.battleParty:"monsters" : 런타임/시뮤레이트 정식 게이트(createBattleRuntime).
+// battleParty:true 는 두 출전 플래그를 함께 켠다(이중 표기 호환).
 const configureMonsterSystem: ToolDefinition = {
   name: "configure_monster_system",
   description:
@@ -22,12 +24,18 @@ const configureMonsterSystem: ToolDefinition = {
     if (args.enabled !== true) {
       delete draft.system.monsterCollection;
       delete draft.system.monsterBattleParty;
+      if (draft.system.battleParty === "monsters") delete draft.system.battleParty;
       return { summary: "몬스터 수집 비활성화 — 포획/몬스터 전투 플래그를 모두 제거했습니다.", data: { enabled: false, battleParty: false } };
     }
     draft.system.monsterCollection = true;
     const battleParty = args.battleParty === true;
-    if (battleParty) draft.system.monsterBattleParty = true;
-    else delete draft.system.monsterBattleParty;
+    if (battleParty) {
+      draft.system.monsterBattleParty = true;
+      draft.system.battleParty = "monsters";
+    } else {
+      delete draft.system.monsterBattleParty;
+      if (draft.system.battleParty === "monsters") delete draft.system.battleParty;
+    }
     return {
       summary: battleParty
         ? "몬스터 수집 활성화 + 전투를 몬스터 파티로 진행합니다(포획 커맨드 노출)."

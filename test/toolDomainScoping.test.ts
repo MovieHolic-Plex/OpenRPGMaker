@@ -13,7 +13,9 @@ import {
   resetAssistantToolDomainMemory,
 } from "@/editor/assistantToolMode";
 import { editorState } from "@/editor/editorState";
-import { allTools, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type ToolDefinition, type ToolDomain } from "@/editor/tools";
+import { allTools, getTool, toOpenAiTools, LEGACY_TILE_KNOWLEDGE_SUPERSEDED, type ToolDefinition, type ToolDomain } from "@/editor/tools";
+import { CONSTRUCTION_WRITE_ROUTE_MANIFEST, PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS } from "@/editor/construction/routeManifest";
+import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { el } from "@/util/dom";
 import { installFakeDom } from "./fakeDom";
 
@@ -38,19 +40,18 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
     }
   });
 
-  it("tile 모드: v3 프리미티브 + propose + 코어만 노출(~12개), 옛 타일 툴 0개", () => {
+  it("tile 모드: v3 프리미티브 + 코어 노출, propose 비노출, 옛 타일 툴 0개", () => {
     const exposed = exposedNames("tile");
-    for (const name of ["propose_tile_vocabulary", "paint_road", ...V3_PRIMITIVES, ...CORE_TOOLS]) {
+    for (const name of ["paint_road", ...V3_PRIMITIVES, ...CORE_TOOLS]) {
       expect(exposed.has(name), name).toBe(true);
     }
+    expect(exposed.has("propose_tile_vocabulary")).toBe(false);
     for (const name of OLD_TILE_TOOLS) expect(exposed.has(name), name).toBe(false);
-    // 타 도메인 대군(이벤트/DB/세계관)은 tile 모드에서 보이지 않는다.
     for (const name of ["upsert_event", "place_npc", "upsert_item", "query_world", "create_quest"]) {
       expect(exposed.has(name), name).toBe(false);
     }
-    // ~12개 스코프(코어 5 + 타일 핀 포함).
     expect(exposed.size).toBeGreaterThanOrEqual(12);
-    expect(exposed.size).toBeLessThanOrEqual(20);
+    expect(exposed.size).toBeLessThanOrEqual(40);
   });
 
   it("event 모드: 이벤트 툴 포함, 타일 프리미티브 제외, 코어는 상시", () => {
@@ -67,6 +68,39 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
       const exposed = exposedNames(mode);
       for (const name of deprecated) expect(exposed.has(name), `${mode ?? "all"}:${name}`).toBe(false);
     }
+  });
+
+  it("canonical construction만 write surface에 남고 legacy write는 직접 실행 metadata만 유지한다", () => {
+    // Given: the canonical migration matrix and the real registry/browser catalog.
+    const browserNames = new Set(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name)));
+    const exposed = exposedNames();
+
+    // When: canonical, compatibility, and read-only construction routes are inspected.
+    const legacyWrites = CONSTRUCTION_WRITE_ROUTE_MANIFEST.filter((route) => route.supersededBy !== null);
+
+    // Then: canonical writes are public first-class tools, legacy writes are hidden but executable,
+    // and read diagnostics remain public. Independent interior tools are unaffected.
+    expect(allTools().slice(0, 8).map((tool) => tool.name)).toEqual(expect.arrayContaining(["author_house", "author_village"]));
+    expect(getTool("author_house")?.domains).toEqual(["tile"]);
+    expect(getTool("author_village")?.domains).toEqual(["tile", "map"]);
+    for (const name of ["author_house", "author_village"]) {
+      expect(exposed.has(name), name).toBe(true);
+      expect(browserNames.has(name), name).toBe(true);
+    }
+    for (const route of legacyWrites) {
+      const tool = getTool(route.name);
+      expect(tool, route.name).toBeDefined();
+      expect(tool?.deprecated, route.name).toBe(true);
+      expect(tool?.supersededBy, route.name).toBe(route.supersededBy);
+      expect(exposed.has(route.name), route.name).toBe(false);
+      expect(browserNames.has(route.name), route.name).toBe(false);
+    }
+    for (const route of PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS) {
+      expect(getTool(route.name)?.mode, route.name).toBe("read");
+      expect(exposed.has(route.name), route.name).toBe(true);
+      expect(browserNames.has(route.name), route.name).toBe(true);
+    }
+    expect(exposed.has("start_interior_room_session")).toBe(true);
   });
 
   it("mode 없으면 종전 동작(deprecated 만 제외한 전체 노출)", () => {

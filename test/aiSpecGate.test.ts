@@ -51,6 +51,42 @@ function projectWithMap() {
 const SPEC_TOOL_ARGS = { id: "m1", name: "스펙 테스트", width: 20, height: 20 };
 
 describe("buildSpec 검증기(결정적)", () => {
+  it("planned new-map descriptor supplies synthetic dimensions before map creation", () => {
+    // Given: a BuildSpec for a map that does not exist yet.
+    const project = createBlankProject();
+    const spec: BuildSpec = {
+      mapId: "planned_village",
+      plannedMap: { mapId: "planned_village", width: 24, height: 20 },
+      assets: [{ id: "마을", kind: "village", x: 2, y: 2, w: 20, h: 16 }],
+    };
+
+    // When: the spec is validated without creating the target map.
+    const issues = validateBuildSpec(project, spec);
+
+    // Then: synthetic bounds are accepted, while an out-of-bounds asset is rejected.
+    expect(issues.filter((issue) => issue.severity === "error")).toEqual([]);
+    expect(validateBuildSpec(project, {
+      ...spec,
+      assets: [{ id: "마을", kind: "village", x: 2, y: 2, w: 23, h: 16 }],
+    }).some((issue) => issue.severity === "error" && issue.message.includes("24×20"))).toBe(true);
+  });
+
+  it("planned descriptor identity and dimensions must be internally consistent", () => {
+    // Given: planned descriptors that disagree with their BuildSpec target.
+    const project = createBlankProject();
+    const base: BuildSpec = {
+      mapId: "planned_village",
+      plannedMap: { mapId: "wrong", width: 24, height: 20 },
+      assets: [{ id: "마을", kind: "village", x: 2, y: 2, w: 20, h: 16 }],
+    };
+
+    // When/Then: identity mismatch and invalid dimensions are both rejected before creation.
+    expect(validateBuildSpec(project, base).some((issue) => issue.severity === "error" && issue.message.includes("plannedMap"))).toBe(true);
+    expect(validateBuildSpec(project, {
+      ...base,
+      plannedMap: { mapId: "planned_village", width: 0, height: 20 },
+    }).some((issue) => issue.severity === "error" && issue.message.includes("plannedMap"))).toBe(true);
+  });
   it("경계를 벗어난 에셋은 error", () => {
     const project = projectWithMap();
     const spec: BuildSpec = { mapId: "m1", assets: [{ id: "집A", kind: "house", x: 15, y: 15, w: 8, h: 8 }] };
@@ -135,6 +171,34 @@ describe("buildSpec 검증기(결정적)", () => {
 });
 
 describe("affectedRegions — 툴 인자에서 영향 영역 추출", () => {
+  it("canonical house/village nested targets resolve exact map regions", () => {
+    // Given: canonical single/lots house requests and existing/new village targets.
+    const single = affectedRegions("author_house", {
+      kind: "single", mapId: "m1", wings: [{ x: 2, y: 3, w: 7, h: 6 }],
+    });
+    const lots = affectedRegions("author_house", {
+      kind: "lots", mapId: "m1", houses: [{ wings: [{ x: 10, y: 4, w: 6, h: 5 }] }],
+    });
+    const existing = affectedRegions("author_village", {
+      target: { kind: "existing", mapId: "m1", bounds: { x: 3, y: 4, w: 12, h: 10 } },
+    });
+    const planned = affectedRegions("author_village", {
+      target: { kind: "new", mapId: "m2", name: "새 마을", width: 30, height: 28, plannedMap: { mapId: "m2", width: 30, height: 28 } },
+    });
+
+    // When/Then: nested map identity and synthetic dimensions are preserved.
+    expect(single).toEqual([
+      { mapId: "m1", x: 2, y: 3, w: 7, h: 6 },
+      { mapId: "m1", x: 5, y: 9, w: 1, h: 1 },
+    ]);
+    expect(lots).toEqual([
+      { mapId: "m1", x: 10, y: 4, w: 6, h: 5 },
+      { mapId: "m1", x: 10, y: 9, w: 6, h: 3 },
+    ]);
+    expect(existing).toEqual([{ mapId: "m1", x: 3, y: 4, w: 12, h: 10 }]);
+    expect(planned).toEqual([{ mapId: "m2", x: 0, y: 0, w: 30, h: 28 }]);
+  });
+
   it("paint_tiles rect(from/to), cells, build_house(width/height), place_npc(1×1), paint_road(points)", () => {
     expect(affectedRegions("paint_tiles", { mapId: "m1", from: { x: 3, y: 4 }, to: { x: 5, y: 6 } }))
       .toEqual([{ mapId: "m1", x: 3, y: 4, w: 3, h: 3 }]);
@@ -189,6 +253,39 @@ describe("implicitSpecFromContext — 사용자 선택 영역은 암묵적 명�
 });
 
 describe("세션 스펙 게이트", () => {
+  it("canonical planned target requires matching BuildSpec dimensions before runner entry", async () => {
+    // Given: a valid synthetic BuildSpec followed by a mismatched canonical new-map target.
+    const chat = scriptedChat([
+      toolCallMsg("set_build_spec", {
+        mapId: "planned_village",
+        plannedMap: { mapId: "planned_village", width: 24, height: 20 },
+        assets: [{ id: "마을", kind: "village", x: 0, y: 0, w: 24, h: 20 }],
+      }, "c1"),
+      toolCallMsg("author_village", {
+        target: {
+          kind: "new", mapId: "planned_village", name: "새 마을", width: 25, height: 20,
+          plannedMap: { mapId: "planned_village", width: 25, height: 20 },
+        },
+        houseCount: 2,
+        countPolicy: "exact",
+      }, "c2"),
+      finalMsg("대상 크기를 다시 맞추겠습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat });
+    const events: Array<{ name: string; ok: boolean; summary: string }> = [];
+
+    // When: the mismatched canonical call reaches the session gate.
+    await session.sendUserMessage("새 마을 만들어줘", (event) => {
+      if (event.type === "tool_call") events.push({ name: event.name, ok: event.result.ok, summary: event.result.summary });
+    });
+
+    // Then: it is blocked by the spec gate before schema/domain execution and no map is created.
+    const village = events.find((event) => event.name === "author_village");
+    expect(village?.ok).toBe(false);
+    expect(village?.summary).toContain("planned");
+    expect(session.getProposedProject().maps.planned_village).toBeUndefined();
+  });
+
   it("스펙 없이 공간 툴 호출 → 차단(set_build_spec 안내), 비공간 쓰기(create_map)는 그대로 실행", async () => {
     expect(SPATIAL_BUILD_TOOLS.has("build_house")).toBe(true);
     expect(SPATIAL_BUILD_TOOLS.has("create_map")).toBe(false);

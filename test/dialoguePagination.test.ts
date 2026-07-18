@@ -29,6 +29,29 @@ describe("dialogue pagination", () => {
     expect(plainPageText(pages[0]!)).toBe("첫 줄\n둘째 줄 Renamed");
   });
 
+  it("preserves non-printing controls as zero-width playback events", () => {
+    const source = String.raw`A\s[3]\c[2]B\$\!\.\|\>\<\^\_C`;
+    const segments = parseDialogueText(source);
+    const pages = paginateDialogueSegments(segments, { maxWidth: 2, maxLines: 1, measure: measureChars });
+    const pageSegments = pages.flatMap((page) => page.segments);
+
+    expect(segments.map((segment) => segment.text).join("")).toBe("AB C");
+    expect(segments.map((segment) => segment.text).join("")).not.toContain("\\");
+    expect(pageSegments.flatMap((segment) => segment.controlsBefore ?? [])).toEqual([
+      { kind: "speed", value: 3 },
+      { kind: "gold" },
+      { kind: "pause" },
+      { kind: "wait", ms: 250 },
+      { kind: "wait", ms: 1000 },
+      { kind: "fastOn" },
+      { kind: "fastOff" },
+      { kind: "autoClose" },
+      { kind: "halfSpace" },
+    ]);
+    expect(plainPageText(pages[0]!)).toBe("AB");
+    expect(plainPageText(pages[1]!)).toBe("C");
+  });
+
   it("fills four wrapped body lines before starting the next page", () => {
     const pages = paginateDialogueSegments([
       { text: "가나다라마바사아자차카타파하거너", colorIndex: 0 },

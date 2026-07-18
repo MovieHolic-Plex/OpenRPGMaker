@@ -12,11 +12,17 @@ type MockFlushResult =
 const mocks = vi.hoisted(() => ({
   flush: vi.fn<() => Promise<MockFlushResult>>(),
   toast: vi.fn<(message: string, kind?: "info" | "ok" | "error") => void>(),
+  isLoaded: vi.fn(() => true),
+  hasUnsavedChanges: vi.fn(() => true),
+  getAutoSaveState: vi.fn(() => ({ kind: "idle" as const })),
 }));
 
 vi.mock("@/project/store", () => ({
   store: {
     flush: mocks.flush,
+    isLoaded: mocks.isLoaded,
+    hasUnsavedChanges: mocks.hasUnsavedChanges,
+    getAutoSaveState: mocks.getAutoSaveState,
   },
 }));
 
@@ -28,6 +34,12 @@ describe("saveProjectNow", () => {
   beforeEach(() => {
     mocks.flush.mockReset();
     mocks.toast.mockReset();
+    mocks.isLoaded.mockReset();
+    mocks.hasUnsavedChanges.mockReset();
+    mocks.getAutoSaveState.mockReset();
+    mocks.isLoaded.mockReturnValue(true);
+    mocks.hasUnsavedChanges.mockReturnValue(true);
+    mocks.getAutoSaveState.mockReturnValue({ kind: "idle" });
   });
 
   it("shows a saving toast immediately and a completion toast after flush resolves", async () => {

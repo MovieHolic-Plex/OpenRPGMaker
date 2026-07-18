@@ -68,4 +68,58 @@ describe("place_npc graphic.query", () => {
     expect(result.issues?.[0]?.message).toContain("후보 라벨 예시");
     expect(result.issues?.[0]?.message).toContain("청년 남성 주민");
   });
+
+  it("default villager graphics diversify across sequential placements", () => {
+    const project = createBlankProject();
+    const ctx: ToolContext = { project };
+    const keys = new Set<string>();
+    for (let i = 0; i < 6; i += 1) {
+      const result = runTool(ctx, "place_npc", {
+        mapId: project.startMapId,
+        x: 1 + (i % 3),
+        y: 1 + Math.floor(i / 3),
+        id: `npc_div_${i}`,
+        name: `주민 ${i}`,
+        pages: [{ text: "안녕." }],
+      });
+      expect(result.ok, result.summary).toBe(true);
+      const event = ctx.project.maps[project.startMapId].events.find((e) => e.id === `npc_div_${i}`);
+      const g = event?.pages?.[0]?.graphic;
+      const textureKey = g?.sprite?.id ?? "";
+      const characterIndex = decodeCharsetFrameIndex(g?.pattern ?? 0).characterIndex;
+      keys.add(`${textureKey}#${characterIndex}`);
+    }
+    // 6명 전부 같은 people1#0이면 실패 — 최소 2종 이상
+    expect(keys.size).toBeGreaterThanOrEqual(2);
+  });
+
+  it("places matching changeFace for diversified charset slots", () => {
+    const project = createBlankProject();
+    const ctx: ToolContext = { project };
+    const faces = new Set<string>();
+    for (let i = 0; i < 4; i += 1) {
+      const id = `npc_face_${i}`;
+      const result = runTool(ctx, "place_npc", {
+        mapId: project.startMapId,
+        x: 1 + i,
+        y: 2,
+        id,
+        name: `주민F${i}`,
+        pages: [{ text: "안녕." }],
+      });
+      expect(result.ok, result.summary).toBe(true);
+      const event = ctx.project.maps[project.startMapId].events.find((e) => e.id === id);
+      const cmds = event?.pages?.[0]?.commands ?? [];
+      const face = cmds.find((c) => c.kind === "changeFace");
+      expect(face, `missing changeFace for ${id}`).toBeTruthy();
+      if (face && face.kind === "changeFace") {
+        faces.add(`${face.resourceId}#${face.faceIndex}`);
+        const g = event?.pages?.[0]?.graphic;
+        const characterIndex = decodeCharsetFrameIndex(g?.pattern ?? 0).characterIndex;
+        // faceset index should track charset characterIndex
+        expect(face.faceIndex).toBe(characterIndex);
+      }
+    }
+    expect(faces.size).toBeGreaterThanOrEqual(2);
+  });
 });

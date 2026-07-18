@@ -3,9 +3,12 @@ import { duplicateInto } from "@/editor/databaseCopy";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { monsterSpeciesReferenceMessage } from "@/editor/databaseReferences";
 import { numberInput, selectInput } from "@/editor/panels/actorRecordControls";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { emptyToUndefined, numberField, textControl } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { imageIconOf, recordIconElement } from "@/editor/panels/eventEditor/recordPicker";
+import { applyMagentaChromaKey } from "@/editor/panels/chromaKey";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import type { EnemyStats, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
@@ -18,6 +21,13 @@ const DELETE_IDLE_LABEL = "삭제";
 const DELETE_CONFIRM_WINDOW_MS = 3000;
 
 let selectedSpeciesId: string | undefined;
+export function setSelectedMonsterSpeciesId(id?: string): void {
+  selectedSpeciesId = id;
+}
+
+export function getSelectedMonsterSpeciesId(): string | undefined {
+  return selectedSpeciesId;
+}
 
 export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void): void {
   const project = store.getCurrent();
@@ -181,6 +191,8 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
   if (stageImage instanceof HTMLImageElement) {
     stageImage.style.filter = `hue-rotate(${record.graphic.graphicHue}deg)`;
     stageImage.style.opacity = record.graphic.transparent ? "0.58" : "1";
+    // Magenta #FF00FF chroma-key (same contract as enemy previews / DB art pipeline).
+    applyMagentaChromaKey(stageImage);
   }
   form.append(
     el("div", { class: "db-record-id", children: [el("span", { text: "ID" }), el("code", { text: record.id })] }),
@@ -211,9 +223,7 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
       },
       rerender,
     }),
-    textControl("타입(최대 2, 쉼표 구분)", (record.types ?? []).join(", "), (value) => {
-      updateSpecies(record.id, { types: parseTypes(value) });
-    }, "db-monster-species-types"),
+    typesField(record, rerender),
     numberField("그래픽 Hue", "db-monster-species-hue", record.graphic.graphicHue, (value) => {
       const current = currentSpecies(record.id, record);
       updateSpecies(record.id, { graphic: { ...current.graphic, graphicHue: value } });
@@ -223,9 +233,66 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
     }, { min: 0, max: 1 }),
     ...statFields(record),
     skillsByLevelField(record, rerender),
-    evolutionsField(record, rerender)
+    evolutionsField(record, rerender),
+    linkedEnemiesField(record)
   );
   return form;
+}
+
+// G006: reverse jump — enemies that point at this species via speciesId.
+// Append-only list; delete guard remains monsterSpeciesReferenceMessage (toolbar).
+function linkedEnemiesField(record: MonsterSpeciesRecord): HTMLElement {
+  const enemies = store.getCurrent().database.enemies.filter((entry) => entry.speciesId === record.id);
+  const rows =
+    enemies.length === 0
+      ? [el("p", { class: "db-monster-species-linked-empty", text: "이 종족을 포획 종족으로 쓰는 몬스터가 없습니다." })]
+      : enemies.map((enemy) =>
+          el("div", {
+            class: "db-monster-species-linked-row",
+            children: [
+              el("span", { class: "db-monster-species-linked-name", text: enemy.name || "(이름 없음)" }),
+              el("small", { text: enemy.id }),
+              el("button", {
+                class: "btn small",
+                text: "몬스터 열기",
+                attrs: { type: "button" },
+                dataset: { testid: `db-monster-species-open-enemy-${enemy.id}` },
+                on: {
+                  click: (event) => {
+                    const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+                    setSelectedRecordId("enemies", enemy.id);
+                    if (!panelRoot) {
+                      toast(`몬스터 탭에서 ${enemy.id}를 선택하세요`, "ok");
+                      return;
+                    }
+                    switchDatabaseActiveTab("enemies", panelRoot);
+                  },
+                },
+              }),
+            ],
+          })
+        );
+
+  return el("div", {
+    class: "db-monster-species-linked-enemies",
+    dataset: { testid: "db-monster-species-linked-enemies" },
+    children: [
+      el("h4", { class: "db-monster-species-linked-title", text: "이 종족을 쓰는 몬스터" }),
+      ...rows,
+    ],
+  });
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }
 
 // 뮤테이션 직전 store에서 레코드를 refetch한다. statFields/hue/resourcePicker 콜백이
@@ -430,6 +497,81 @@ function evolutionsField(record: MonsterSpeciesRecord, rerender: () => void): HT
 
 function parseTypes(value: string): string[] {
   return [...new Set(value.split(",").map((entry) => entry.trim()).filter(Boolean))].slice(0, 2);
+}
+
+function typesField(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
+  const chartTypes = store.getCurrent().system.typeChart?.types ?? [];
+  if (chartTypes.length === 0) {
+    return el("div", {
+      class: "db-monster-species-types-free",
+      dataset: { testid: "db-monster-species-types-free" },
+      children: [
+        textControl("타입(최대 2, 쉼표 구분)", (record.types ?? []).join(", "), (value) => {
+          updateSpecies(record.id, { types: parseTypes(value) });
+        }, "db-monster-species-types"),
+        el("div", {
+          class: "db-field-hint",
+          dataset: { testid: "db-monster-species-types-hint" },
+          text: "시스템 탭의 타입 상성에서 타입 목록을 설정하면 여기서 선택 UI로 바뀝니다.",
+        }),
+      ],
+    });
+  }
+
+  const selected = record.types ?? [];
+  const chartSet = new Set(chartTypes);
+  const outliers = selected.filter((type) => !chartSet.has(type));
+  const chips = chartTypes.map((type) => {
+    const input = el("input", {
+      attrs: { type: "checkbox" },
+      dataset: { testid: `db-monster-species-type-${type}` },
+    }) as HTMLInputElement;
+    input.checked = selected.includes(type);
+    input.addEventListener("change", () => {
+      const current = currentSpecies(record.id, record);
+      const live = current.types ?? [];
+      let next: string[];
+      if (input.checked) {
+        if (live.includes(type)) {
+          next = [...live];
+        } else if (live.length >= 2) {
+          // 최대 2개 — 세 번째 선택은 저장하지 않고 체크 표시만 되돌린다.
+          input.checked = false;
+          return;
+        } else {
+          next = [...live, type];
+        }
+      } else {
+        next = live.filter((entry) => entry !== type);
+      }
+      updateSpecies(record.id, { types: next.length > 0 ? next : undefined });
+      rerender();
+    });
+    return el("label", {
+      class: "actor-check db-monster-species-type-chip",
+      children: [input, el("span", { text: type })],
+    });
+  });
+
+  const children: HTMLElement[] = [
+    el("strong", { text: "타입(최대 2)" }),
+    ...chips,
+  ];
+  if (outliers.length > 0) {
+    children.push(
+      el("div", {
+        class: "db-field-hint db-monster-species-type-warn",
+        dataset: { testid: "db-monster-species-type-warn" },
+        text: `타입 상성표에 없는 타입: ${outliers.join(", ")}`,
+      }),
+    );
+  }
+
+  return el("div", {
+    class: "db-item-choice-list db-monster-species-types",
+    dataset: { testid: "db-monster-species-types" },
+    children,
+  });
 }
 
 function updateSpecies(id: string, patch: Partial<MonsterSpeciesRecord>): void {

@@ -10,6 +10,8 @@ import {
   updateEventPage,
 } from "@/editor/eventPages";
 import { editorState } from "@/editor/editorState";
+import { updateEvent } from "@/editor/eventActions";
+import { recordCoalescedSnapshot } from "@/editor/mapEditHistory";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
@@ -30,7 +32,16 @@ import {
   TRIGGER_OPTIONS,
   commandKindLabel,
 } from "./options";
+import { openCharacterIdPicker } from "./characterIdPickerDialog";
 import type { Command, EventPage, EventPageCondition, GameEvent, MapId, Trigger } from "@/project/types";
+import {
+  bindEventSectionOpenState,
+  eventEditorOpenKey,
+  openEventConditions,
+  openEventMovement,
+} from "./eventEditorOpenState";
+/** Expanded empty character-id panels (event id). Module UI state only — not EventPage schema. */
+const openCharacterIdFields = new Set<string>();
 
 export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
   const name = el("input", {
@@ -295,7 +306,165 @@ function commandLabel(kind: Command["kind"]): string {
   return commandKindLabel(kind);
 }
 
-export function renderEventPageProps(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
+  const characterIdHelp =
+    "같은 키를 여러 맵 이벤트에 쓰면 호감·선물을 공유합니다. 비우면 호감 조건·선물은 동작하지 않습니다. 활동(npcActivity)은 이벤트별입니다. 선물 기본값/생일은 project.characters 프로필에 둘 수 있고, 이벤트 필드가 있으면 우선합니다.";
+  const hasCharacterId = Boolean(event.characterId?.trim());
+  const openKey = event.id;
+  const expanded = hasCharacterId || openCharacterIdFields.has(openKey);
+
+  if (!hasCharacterId && !expanded) {
+    return el("div", {
+      class: "event-character-id-field event-character-id-field-collapsed",
+      dataset: { testid: "event-character-id-field" },
+      children: [
+        el("button", {
+          class: "btn small event-character-id-connect",
+          text: "캐릭터 연결 (호감/선물)…",
+          attrs: {
+            type: "button",
+            title: characterIdHelp,
+          },
+          dataset: { testid: "event-character-id-connect" },
+          on: {
+            click: (eventClick) => {
+              openCharacterIdFields.add(openKey);
+              const next = renderEventCharacterIdField(mapId, event);
+              const host = (eventClick.currentTarget as HTMLElement | null)?.closest(
+                '[data-testid="event-character-id-field"]'
+              );
+              if (host instanceof HTMLElement) host.replaceWith(next);
+              openCharacterIdPicker({
+                mapId,
+                eventId: event.id,
+                currentId: event.characterId,
+              });
+            },
+          },
+        }),
+      ],
+    });
+  }
+
+  const input = el("input", {
+    attrs: {
+      type: "text",
+      placeholder: "비우면 호감/선물 비활성 (opt-in)",
+      title: characterIdHelp,
+    },
+    value: event.characterId ?? "",
+    dataset: { testid: "event-character-id-input" },
+  }) as HTMLInputElement;
+  input.addEventListener("change", () => {
+    // Free-type attaches characterId only. Unknown ids do NOT auto-create a profile.
+    const next = input.value.trim() || undefined;
+    if (!next) openCharacterIdFields.delete(openKey);
+    updateEvent(mapId, event.id, next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined });
+  });
+  const pickerButton = el("button", {
+    class: "btn small event-character-id-picker-open",
+    text: "...",
+    attrs: {
+      type: "button",
+      title: "캐릭터 ID 찾기 / 새로 만들기",
+      "aria-label": "캐릭터 ID 찾기",
+    },
+    dataset: { testid: "event-character-id-picker-open" },
+    on: {
+      click: () => openCharacterIdPicker({
+        mapId,
+        eventId: event.id,
+        currentId: event.characterId,
+      }),
+    },
+  });
+
+  const children: HTMLElement[] = [
+    el("label", {
+      class: "event-character-id-label",
+      children: [
+        el("span", {
+          text: "캐릭터 ID (호감/선물 공유 키)",
+          attrs: { title: characterIdHelp },
+        }),
+        el("span", {
+          class: "event-character-id-input-row",
+          children: [input, pickerButton],
+        }),
+      ],
+    }),
+  ];
+
+  // Talk-friendship is opt-in only when a character is linked — never show a disabled checkbox.
+  if (hasCharacterId) {
+    const talkCheckbox = el("input", {
+      attrs: { type: "checkbox" },
+      dataset: { testid: "event-talk-friendship-checkbox" },
+    }) as HTMLInputElement;
+    talkCheckbox.checked = event.talkFriendship === true
+      || (typeof event.talkFriendship === "object" && event.talkFriendship !== null);
+    talkCheckbox.addEventListener("change", () => {
+      updateEvent(mapId, event.id, { talkFriendship: talkCheckbox.checked ? true : undefined });
+    });
+    children.push(
+      el("label", {
+        class: "event-talk-friendship-label",
+        dataset: { testid: "event-talk-friendship-field" },
+        children: [
+          talkCheckbox,
+          el("span", { text: "대화 시 호감도 상승 (하루 1회)" }),
+        ],
+      })
+    );
+
+    const characterId = event.characterId!.trim();
+    const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
+    const displayNameInput = el("input", {
+      attrs: {
+        type: "text",
+        placeholder: "상태 메뉴 표시용 (선택)",
+      },
+      value: profileName,
+      dataset: { testid: "event-character-display-name-input" },
+    }) as HTMLInputElement;
+    displayNameInput.addEventListener("change", () => {
+      const name = displayNameInput.value.trim();
+      recordCoalescedSnapshot(`event-character-display-name:${characterId}`);
+      store.update((project) => {
+        const next = { ...(project.characters ?? {}) };
+        const existing = { ...(next[characterId] ?? {}) };
+        if (name) {
+          existing.displayName = name;
+          next[characterId] = existing;
+        } else {
+          delete existing.displayName;
+          if (Object.keys(existing).length === 0) delete next[characterId];
+          else next[characterId] = existing;
+        }
+        if (Object.keys(next).length === 0) delete project.characters;
+        else project.characters = next;
+      }, { scope: "project" });
+    });
+    children.push(
+      el("label", {
+        class: "event-character-display-name-label",
+        dataset: { testid: "event-character-display-name-field" },
+        children: [
+          el("span", { text: "프로필 표시 이름" }),
+          displayNameInput,
+        ],
+      })
+    );
+  }
+
+  return el("div", {
+    class: "event-character-id-field",
+    dataset: { testid: "event-character-id-field" },
+    children,
+  });
+}
+
+export function renderEventPageProps(mapId: MapId, eventId: string, page: EventPage, event?: GameEvent): HTMLElement {
   const wrap = el("div", { class: "event-page-props", dataset: { testid: "event-page-props" } });
   const trigger = selectWithOptions(TRIGGER_OPTIONS, eventEditorTriggerKind(page.trigger), "event-page-trigger-select");
   trigger.addEventListener("change", () => {
@@ -319,72 +488,206 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
     updateEventPage(mapId, eventId, page.id, { overlapForbidden: overlap.checked });
   });
 
-  // RM2003: 조건 패널은 항상 펼친다. 활성 개수만 메타로 표시.
-  const activeConditionCount = page.conditions?.length ?? 0;
+  const openKey = eventEditorOpenKey(mapId, eventId, page.id);
+  const conditions = page.conditions ?? [];
   wrap.append(
     collapsibleSection({
       title: "조건",
       testId: "event-classic-conditions",
-      open: true,
-      meta: activeConditionCount > 0 ? `${activeConditionCount}개 활성` : "항상",
-      body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page) }),
+      openSet: openEventConditions,
+      openKey,
+      summaryExtra: renderConditionSummaryBadges(conditions),
+      body: el("div", { class: "event-conditions-grid", children: renderPageConditions(mapId, eventId, page, event) }),
     }),
+    rm2k3Fieldset("그래픽", graphicControl(mapId, eventId, page), "event-classic-graphic"),
+    // Trigger + priority always visible under graphic (do not bury under movement collapsible).
     el("div", {
-      class: "event-page-bottom-grid",
+      class: "event-page-trigger-priority-stack",
+      dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
-        el("div", {
-          class: "event-page-bottom-left",
-          dataset: { testid: "event-page-bottom-left" },
+        rm2k3Fieldset("트리거", trigger, "event-classic-trigger"),
+        rm2k3Fieldset("우선순위", el("div", {
+          class: "event-priority-block",
           children: [
-            rm2k3Fieldset("그래픽", graphicControl(mapId, eventId, page), "event-classic-graphic"),
-            rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
+            priority,
+            el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
           ],
-        }),
-        el("div", {
-          class: "event-page-bottom-right",
-          dataset: { testid: "event-page-bottom-right" },
-          children: [
-            rm2k3Fieldset("트리거", trigger, "event-classic-trigger"),
-            renderEventPageSafetyWarning(page),
-            rm2k3Fieldset("우선순위", el("div", {
-              class: "event-priority-block",
-              children: [
-                priority,
-                el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
-              ],
-            })),
-            rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
-            rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
-          ],
-        }),
+        })),
+        renderEventPageSafetyWarning(page),
       ],
+    }),
+    collapsibleSection({
+      title: "이동/기타",
+      testId: "event-classic-movement-section",
+      openSet: openEventMovement,
+      openKey,
+      summaryExtra: renderMovementSummaryChips(page),
+      body: el("div", {
+        class: "event-page-movement-stack",
+        children: [
+          rm2k3Fieldset("이동 유형", renderPageMovement(mapId, eventId, page), "event-classic-movement-type"),
+          rm2k3Fieldset("애니메이션 유형", renderPageAnimationType(mapId, eventId, page), "event-classic-animation-type"),
+          rm2k3Fieldset("이동 속도", movementSpeedSelect(mapId, eventId, page), "event-classic-movement-speed"),
+        ],
+      }),
     })
   );
   return wrap;
 }
 
+const CONDITION_BADGE_LIMIT = 3;
+
+function renderConditionSummaryBadges(conditions: readonly EventPageCondition[]): HTMLElement {
+  if (conditions.length === 0) {
+    return el("span", {
+      class: "event-condition-summary-empty",
+      text: "항상",
+      dataset: { testid: "event-condition-summary-empty" },
+    });
+  }
+  const badges = el("span", {
+    class: "event-condition-summary-badges",
+    dataset: { testid: "event-condition-summary-badges" },
+  });
+  for (const condition of conditions.slice(0, CONDITION_BADGE_LIMIT)) {
+    badges.append(
+      el("span", {
+        class: `event-condition-badge event-condition-badge-${condition.kind}`,
+        text: pageConditionBadgeText(condition),
+        attrs: { title: pageConditionSummary(condition) },
+        dataset: { testid: "event-condition-badge" },
+      })
+    );
+  }
+  if (conditions.length > CONDITION_BADGE_LIMIT) {
+    badges.append(
+      el("span", {
+        class: "event-condition-badge event-condition-badge-overflow",
+        text: `+${conditions.length - CONDITION_BADGE_LIMIT}`,
+        dataset: { testid: "event-condition-badge-overflow" },
+      })
+    );
+  }
+  return badges;
+}
+
+function pageConditionBadgeText(condition: EventPageCondition): string {
+  switch (condition.kind) {
+    case "switch": {
+      const id = truncateBadgeToken(switchVariableName("switch", condition.switchId), 12);
+      return `${id} ${condition.value ? "ON" : "OFF"}`;
+    }
+    case "selfSwitch":
+      return `셀프${condition.key} ${condition.value ? "ON" : "OFF"}`;
+    case "variable": {
+      const id = truncateBadgeToken(switchVariableName("variable", condition.variableId), 10);
+      return `${id} ${condition.op} ${condition.value}`;
+    }
+    case "actor": {
+      const name = truncateBadgeToken(recordName(store.getCurrent().database.actors, condition.actorId), 10);
+      return condition.present ? name : `!${name}`;
+    }
+    case "item": {
+      const name = truncateBadgeToken(recordName(store.getCurrent().database.items, condition.itemId), 10);
+      return condition.present ? name : `!${name}`;
+    }
+    case "gold":
+      return `G ${condition.op} ${condition.amount}`;
+    case "timer":
+      return `T${condition.timerId === "timer1" ? "1" : "2"} ${condition.seconds}s`;
+    case "timePhase":
+      return timePhaseLabel(condition.phase);
+    case "season":
+      return seasonLabel(condition.season);
+    case "npcActivity":
+      return truncateBadgeToken(condition.activity, 10);
+    case "friendshipAtLeast":
+      return `호감≥${condition.value}`;
+  }
+}
+
+function truncateBadgeToken(value: string, max: number): string {
+  const text = value.trim() || "?";
+  if (text.length <= max) return text;
+  return `${text.slice(0, Math.max(1, max - 1))}…`;
+}
+
+function renderMovementSummaryChips(page: EventPage): HTMLElement {
+  const typeLabel = movementTypeChipLabel(page.movement.type);
+  const speedLabel = movementSpeedChipLabel(page.movement.speed);
+  return el("span", {
+    class: "event-movement-summary-chips",
+    text: `${typeLabel} · ${speedLabel}`,
+    dataset: { testid: "event-movement-summary-chips" },
+  });
+}
+
+function movementTypeChipLabel(type: EventPage["movement"]["type"]): string {
+  switch (type) {
+    case "fixed":
+      return "정지";
+    case "random":
+      return "무작위";
+    case "approach":
+      return "접근";
+    case "chase":
+      return "추격";
+    case "custom":
+      return "사용자 지정";
+    case "living":
+      return "생활 이동";
+    default:
+      return String(type);
+  }
+}
+
+function movementSpeedChipLabel(speed: number): string {
+  switch (speed) {
+    case 1:
+      return "x8 느림";
+    case 2:
+      return "x4 느림";
+    case 3:
+      return "x2 느림";
+    case 4:
+      return "보통";
+    case 5:
+      return "x2 빠름";
+    case 6:
+      return "x4 빠름";
+    default:
+      return String(speed);
+  }
+}
+
 function collapsibleSection(options: {
   readonly title: string;
   readonly testId: string;
-  readonly open: boolean;
-  readonly meta: string;
+  readonly openSet: Set<string>;
+  readonly openKey: string;
+  readonly meta?: string;
+  readonly summaryExtra?: HTMLElement;
   readonly body: HTMLElement;
 }): HTMLElement {
   const details = el("details", {
     class: "event-rm2k3-fieldset event-collapsible-section",
     dataset: { testid: options.testId },
   }) as HTMLDetailsElement;
-  details.open = options.open;
+  const summaryChildren: (Node | string)[] = [
+    el("span", { class: "event-collapsible-title", text: options.title }),
+  ];
+  if (options.summaryExtra) summaryChildren.push(options.summaryExtra);
+  if (options.meta !== undefined) {
+    summaryChildren.push(el("span", { class: "event-collapsible-meta", text: options.meta }));
+  }
   details.append(
     el("summary", {
       class: "event-collapsible-summary",
-      children: [
-        el("span", { class: "event-collapsible-title", text: options.title }),
-        el("span", { class: "event-collapsible-meta", text: options.meta }),
-      ],
+      children: summaryChildren,
     }),
     el("div", { class: "event-collapsible-body", children: [options.body] })
   );
+  bindEventSectionOpenState(details, options.openSet, options.openKey);
   return details;
 }
 

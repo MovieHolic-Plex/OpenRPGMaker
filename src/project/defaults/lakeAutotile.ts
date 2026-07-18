@@ -18,6 +18,37 @@ export const LAKE_AUTOTILE_TILE = {
   BODY: 120,
 } as const;
 
+/**
+ * 물 스킨(2026-07-17 사용자 정본) — 물 시스템은 하나고 "물가 스킨"이 여럿이다.
+ * 열 0~2 = 잔디 물가, 열 3~5 = 석축 수로. 행별 역할이 정확히 평행하고 몸통(120)은 공용:
+ *   볼록 0↔3 · 세로 변 30↔33 · 가로 변 60↔63 · 오목 90↔93.
+ * 수로는 전부 타일 3으로 저장하고(호수=0 저장과 동일) 렌더가 쿼터로 역할을 복원한다.
+ */
+export interface WaterShoreSkin {
+  readonly OUTER_CORNER: number;
+  readonly INNER_CORNER: number;
+  readonly EDGE_WEST: number;
+  readonly EDGE_NORTH: number;
+  readonly EDGE_SOUTH: number;
+  readonly BODY: number;
+}
+
+export const CANAL_AUTOTILE_TILE: WaterShoreSkin = {
+  OUTER_CORNER: 3,
+  INNER_CORNER: 93,
+  EDGE_WEST: 33,
+  EDGE_NORTH: 63,
+  EDGE_SOUTH: 63,
+  BODY: 120,
+};
+
+// 수로 프레임 타일(애니 3프레임 포함) — 저장 타일이 이 집합이면 수로 스킨으로 렌더.
+const CANAL_FRAME_TILES = new Set<number>([3, 4, 5, 33, 34, 35, 63, 64, 65, 93, 94, 95]);
+
+function skinForStoredTile(tile: number | undefined): WaterShoreSkin {
+  return typeof tile === "number" && CANAL_FRAME_TILES.has(tile) ? CANAL_AUTOTILE_TILE : LAKE_AUTOTILE_TILE;
+}
+
 export type LakeAutotileQuarter = "nw" | "ne" | "sw" | "se";
 
 export type LakeAutotileQuarterSource = {
@@ -46,6 +77,8 @@ type QuarterContext = {
 const LAKE_AUTOTILE_TILES = new Set<number>([
   ...CHIPSET_TILE_GROUPS.lakeWaterBodyAnimationFrames,
   ...CHIPSET_TILE_GROUPS.lakeShoreEdgeAnimationFrames,
+  // 수로 프레임도 같은 물 시스템 — 호수·수로가 서로 물로 연결되고 쿼터 렌더를 공유한다.
+  ...CANAL_FRAME_TILES,
 ]);
 
 const QUARTER_GEOMETRY = {
@@ -67,30 +100,32 @@ export function lakeAutotileQuarterSources(
   x: number,
   y: number
 ): readonly LakeAutotileQuarterSource[] {
+  // 스킨은 저장 타일이 결정 — 수로 프레임(3 패밀리)이면 석축 스킨, 아니면 잔디 물가.
+  const skin = skinForStoredTile(map.lowerTiles[y * map.width + x]);
   const north = hasLakeWater(map, x, y - 1);
   const south = hasLakeWater(map, x, y + 1);
   const west = hasLakeWater(map, x - 1, y);
   const east = hasLakeWater(map, x + 1, y);
   return [
-    quarterSource({
+    quarterSource(skin, {
       quarter: "nw",
       verticalWater: north,
       horizontalWater: west,
       diagonalWater: hasLakeWater(map, x - 1, y - 1),
     }),
-    quarterSource({
+    quarterSource(skin, {
       quarter: "ne",
       verticalWater: north,
       horizontalWater: east,
       diagonalWater: hasLakeWater(map, x + 1, y - 1),
     }),
-    quarterSource({
+    quarterSource(skin, {
       quarter: "sw",
       verticalWater: south,
       horizontalWater: west,
       diagonalWater: hasLakeWater(map, x - 1, y + 1),
     }),
-    quarterSource({
+    quarterSource(skin, {
       quarter: "se",
       verticalWater: south,
       horizontalWater: east,
@@ -99,8 +134,8 @@ export function lakeAutotileQuarterSources(
   ];
 }
 
-function quarterSource(context: QuarterContext): LakeAutotileQuarterSource {
-  const tile = quarterTile(context);
+function quarterSource(skin: WaterShoreSkin, context: QuarterContext): LakeAutotileQuarterSource {
+  const tile = quarterTile(skin, context);
   const sourceQuarter = sourceQuarterForLakeChip(tile, context.quarter, context);
   return {
     quarter: context.quarter,
@@ -110,20 +145,20 @@ function quarterSource(context: QuarterContext): LakeAutotileQuarterSource {
   };
 }
 
-function quarterTile(context: QuarterContext): number {
+function quarterTile(skin: WaterShoreSkin, context: QuarterContext): number {
   // 바깥 모서리: 수직·수평 둘 다 땅
-  if (!context.verticalWater && !context.horizontalWater) return LAKE_AUTOTILE_TILE.OUTER_CORNER;
+  if (!context.verticalWater && !context.horizontalWater) return skin.OUTER_CORNER;
   // 직선 가장자리: 한쪽만 땅
-  if (!context.verticalWater) return verticalEdgeTile(context.quarter);
-  if (!context.horizontalWater) return LAKE_AUTOTILE_TILE.EDGE_WEST;
-  // 직교 이웃은 물인데 대각만 땅 → 오목(inner) 모서리 — 90/91/92
-  if (!context.diagonalWater) return LAKE_AUTOTILE_TILE.INNER_CORNER;
-  return LAKE_AUTOTILE_TILE.BODY;
+  if (!context.verticalWater) return verticalEdgeTile(skin, context.quarter);
+  if (!context.horizontalWater) return skin.EDGE_WEST;
+  // 직교 이웃은 물인데 대각만 땅 → 오목(inner) 모서리 — 90/91/92 (수로는 93/94/95)
+  if (!context.diagonalWater) return skin.INNER_CORNER;
+  return skin.BODY;
 }
 
-function verticalEdgeTile(quarter: LakeAutotileQuarter): number {
-  // 북·남 직선 가장자리는 같은 60 스트립 (상단/하단 소스로 구분)
-  return quarter === "nw" || quarter === "ne" ? LAKE_AUTOTILE_TILE.EDGE_NORTH : LAKE_AUTOTILE_TILE.EDGE_SOUTH;
+function verticalEdgeTile(skin: WaterShoreSkin, quarter: LakeAutotileQuarter): number {
+  // 북·남 직선 가장자리는 같은 스트립 (상단/하단 소스로 구분)
+  return quarter === "nw" || quarter === "ne" ? skin.EDGE_NORTH : skin.EDGE_SOUTH;
 }
 
 /**

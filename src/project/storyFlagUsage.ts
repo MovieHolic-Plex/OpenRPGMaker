@@ -187,11 +187,29 @@ function scanCommand(
   switch (command.kind) {
     case "setSwitch":
       add("write", "switch", command.switchId, { ...owner, commandPath, detail: "setSwitch" });
+      if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
+        add("read", "variable", command.value.id, { ...owner, commandPath: `${commandPath}.value`, detail: "setSwitch operand" });
+      }
       break;
     case "setVariable":
       add("write", "variable", command.variableId, { ...owner, commandPath, detail: "setVariable" });
       if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
         add("read", "variable", command.value.id, { ...owner, commandPath: `${commandPath}.value`, detail: "setVariable operand" });
+      }
+      break;
+    case "changeGold":
+      if (typeof command.amount === "object" && command.amount !== null && command.amount.kind === "var") {
+        add("read", "variable", command.amount.id, { ...owner, commandPath: `${commandPath}.amount`, detail: "changeGold amount" });
+      }
+      break;
+    case "changeExp":
+      if (typeof command.amount === "object" && command.amount !== null && command.amount.kind === "var") {
+        add("read", "variable", command.amount.id, { ...owner, commandPath: `${commandPath}.amount`, detail: "changeExp amount" });
+      }
+      break;
+    case "changeItem":
+      if (typeof command.amount === "object" && command.amount !== null && command.amount.kind === "var") {
+        add("read", "variable", command.amount.id, { ...owner, commandPath: `${commandPath}.amount`, detail: "changeItem amount" });
       }
       break;
     case "inputWait":
@@ -262,6 +280,10 @@ function addConditionReads(
   if (!condition) return;
   if (condition.kind === "switch") add("read", "switch", condition.switchId, location);
   if (condition.kind === "variable") add("read", "variable", condition.variableId, location);
+  if (condition.kind === "all" || condition.kind === "any") {
+    for (const child of condition.conditions) addConditionReads(child, add, location);
+  }
+  if (condition.kind === "not") addConditionReads(condition.condition, add, location);
 }
 
 function addBattleConditionReads(

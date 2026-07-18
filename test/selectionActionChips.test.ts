@@ -24,13 +24,6 @@ describe("selectionChipModalOptions", () => {
     expect(options.initialInstruction).toBeUndefined();
     expect(options.autoRun).toBeUndefined();
   });
-
-  it("프리셋 칩은 지시문과 autoRun을 채운다", () => {
-    const preset = SELECTION_CHIP_PRESETS.find((p) => p.id === "polish");
-    const options = selectionChipModalOptions(preset!, SELECTION);
-    expect(options.initialInstruction).toContain("영역");
-    expect(options.autoRun).toBe(true);
-  });
 });
 
 describe("renderSelectionActionChips", () => {
@@ -38,7 +31,7 @@ describe("renderSelectionActionChips", () => {
   beforeEach(() => { restore = installFakeDom(); });
   afterEach(() => { restore(); });
 
-  it("칩 3개를 렌더하고 클릭 시 주입된 openModal을 호출한다", () => {
+  it("AI 칩 1개를 렌더하고 클릭 시 주입된 openModal을 호출한다", () => {
     const calls: RegionTaskModalOptions[] = [];
     const stub = ((options: RegionTaskModalOptions) => {
       calls.push(options);

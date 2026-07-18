@@ -100,4 +100,18 @@ describe("노출 상한 도메인 쿼터", () => {
       expect(names, name).toContain(name);
     }
   });
+
+  it("canonical house/village routes survive real multi-domain quota trimming", () => {
+    // Given: a village request that opens map+tile plus several crowded domains.
+    resetAssistantToolDomainMemory();
+    const domains = computeActiveToolDomains("마을에 집과 NPC, 아이템, 퀘스트, 세계관을 만들어줘");
+
+    // When: the real registry is trimmed to the 40-tool provider limit.
+    const names = toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name);
+
+    // Then: both canonical construction front doors are pinned and survive.
+    expect(names.length).toBeLessThanOrEqual(40);
+    expect(names).toContain("author_house");
+    expect(names).toContain("author_village");
+  });
 });

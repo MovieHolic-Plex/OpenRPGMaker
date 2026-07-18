@@ -17,11 +17,11 @@ import {
 } from "@/project/tileVocabulary";
 import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { inMapBounds, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
-import { wobblePath, poissonScatter } from "../naturalScatter";
+import { wobblePath } from "../naturalScatter";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
-import { isPathSurfaceTile, runScatterObject } from "../placementTools";
+import { placePropsOnDraft } from "../placePropsDomain";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
-import { coerceInt, coercePoint, coercePointArray, compactArgs, failWithExample } from "../toolArgCoerce";
+import { coerceInt, coercePoint, coercePointArray, failWithExample } from "../toolArgCoerce";
 import { tilesetGrammarProfile } from "./grammarProfiles";
 import {
   expandRoof,
@@ -552,58 +552,22 @@ const placeProps: ToolDefinition = {
     required: ["mapId", "area", "material", "count"],
   },
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
-    const { map, tileset } = requireMapContext(draft, args, PROPS_EXAMPLE);
+    const { map } = requireMapContext(draft, args, PROPS_EXAMPLE);
     const area = coerceRect(args.area, "area", PROPS_EXAMPLE);
     const count = coerceInt(args.count, "count", PROPS_EXAMPLE);
     const material = typeof args.material === "string" ? args.material.trim() : "";
     if (!material) failWithExample("material(타일 라벨/설명, 예: \"침엽수\"·\"나무 상자\")이 필요합니다", PROPS_EXAMPLE);
-
-    const access = resolveMaterialByLabel(tileset, material, {
-      preferGroup: true,
-      preferRoles: ["prop", "terrain"],
+    const minGap = typeof args.minGap === "number" && Number.isInteger(args.minGap) ? args.minGap : undefined;
+    const seed = args.seed === undefined ? undefined : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
+    return placePropsOnDraft(draft, {
+      mapId: map.id,
+      area,
+      material,
+      count,
+      ...(minGap === undefined ? {} : { minGap }),
+      naturalness: naturalnessArg(args),
+      ...(seed === undefined ? {} : { seed }),
     });
-    if (access.status === "missing") {
-      const suggestions = access.suggestions.length > 0 ? access.suggestions : suggestMaterialsByLabel(tileset, material, 5);
-      const hint = suggestions.length > 0
-        ? ` 비슷한 라벨: ${suggestions.map((s) => `"${s.label}"`).join(", ")}`
-        : ` tile_query ask:"labels" 로 조회`;
-      throw new ToolError(`${access.message}${hint} — 다시 보낼 형식 예시: ${JSON.stringify(PROPS_EXAMPLE)}`, { code: "material-not-found" });
-    }
-
-    if (access.kind === "group") {
-      const soft = access.status === "soft" ? access.softConfirm : undefined;
-      const scattered = runScatterObject(draft, compactArgs({
-        mapId: args.mapId, area: args.area, count, groupId: access.group.id,
-        minGap: args.minGap, naturalness: args.naturalness, seed: args.seed,
-      }));
-      return withSoftConfirm(scattered, soft);
-    }
-
-    const tileId = access.tileId;
-    const soft = access.status === "soft" ? access.softConfirm : undefined;
-    const naturalness = naturalnessArg(args);
-    const minGap = typeof args.minGap === "number" && Number.isInteger(args.minGap) ? Math.max(0, args.minGap) : 1;
-    const signature = `place_props|${map.id}|${area.x},${area.y},${area.w},${area.h}|${tileId}|${count}|${naturalnessLabel(naturalness)}`;
-    const rng = rngForTool(args, signature);
-    const scatter = poissonScatter({ x: area.x, y: area.y, width: area.w, height: area.h }, count, minGap, rng);
-    const declared = tileset.tileMeta?.[tileId]?.defaultLayer;
-    const tileHome: VocabLayerHome = declared === "lower" || declared === "upper" ? declared : "perCell";
-    const home = layerForVocabTile(tileset, tileHome, tileId);
-    let placed = 0;
-    for (const cell of scatter.points) {
-      if (!inMapBounds(map, cell.x, cell.y)) continue;
-      const index = cell.y * map.width + cell.x;
-      if (map.upperTiles[index] !== TILE.EMPTY) continue;
-      if (!isPassable(draft, map, cell.x, cell.y)) continue;
-      if (isPathSurfaceTile(map.lowerTiles[index])) continue;
-      if (home === "upper") setUpper(map, cell.x, cell.y, tileId);
-      else setLower(map, cell.x, cell.y, tileId);
-      placed += 1;
-    }
-    return withSoftConfirm({
-      summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h}에 소품(${access.matchedLabel || tileId}) ${placed}/${count}개 산포 — 자연도 ${naturalnessLabel(naturalness)}.`,
-      data: { placed, requested: count, tileId, material: access.matchedLabel },
-    }, soft);
   },
 };
 

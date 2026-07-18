@@ -99,13 +99,20 @@ describe("buildRegionTaskMessage", () => {
     expect(asset).toMatchObject({ x: 1, y: 1, w: 3, h: 3 });
   });
 
-  it("실내 요청은 build_house_kit 대신 실내 세션 툴을 안내한다", () => {
+  it("실내 요청은 독립 실내 세션만 안내하고 야외 facade를 배제한다", () => {
     const message = buildRegionTaskMessage("연금술사의 집 이라는 실내 를 하나 만드렁줘", "외곽", MAP_ID, REGION);
     expect(message).toContain("start_interior_room_session");
-    expect(message).toContain("run_interior_room_pipeline");
-    expect(message).toMatch(/build_house_kit 금지/);
+    expect(message).not.toContain("run_interior_room_pipeline");
+    expect(message).not.toContain("author_house");
+    expect(message).not.toContain("author_village");
     expect(message).not.toContain("이 작업은 아래 선택 영역 안에서만 수행하라");
     expect(message).toContain("새 맵 전체를 시공하라");
+  });
+
+  it("모호한 집 요청은 야외 시공을 고르지 않고 야외/실내를 되묻는다", () => {
+    const message = buildRegionTaskMessage("이 영역에 집 만들어줘", "외곽", MAP_ID, REGION);
+    expect(message).toContain("야외 집(외장) / 실내 맵 / 둘 다");
+    expect(message).not.toContain("author_house");
   });
 });
 

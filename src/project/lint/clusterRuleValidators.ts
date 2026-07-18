@@ -118,7 +118,11 @@ function adjacencyViolation(map: GameMap, group: TileGroupMetadata, rule: Cluste
   const coords = new Map<string, ClusterRuleViolationCoord>();
   for (const coord of tileCoords(map, params.a)) {
     const expected = neighbor(coord, params.relation);
-    if (!isInside(map, expected.x, expected.y) || !hasTileAt(map, expected.x, expected.y, params.b)) {
+    // bAlt: a 옆에 b 대신 와도 되는 대체 타일(예: 마른나무 261 세로 스택 — 261 아래 261 허용, 체인 끝은 291).
+    const ok = isInside(map, expected.x, expected.y)
+      && (hasTileAt(map, expected.x, expected.y, params.b)
+        || params.bAlt.some((alt) => hasTileAt(map, expected.x, expected.y, alt)));
+    if (!ok) {
       coords.set(coordKey(coord), { mapId: map.id, x: coord.x, y: coord.y });
     }
   }
@@ -131,12 +135,15 @@ function adjacencyViolation(map: GameMap, group: TileGroupMetadata, rule: Cluste
   return coords.size > 0 ? baseViolation(group, rule, [...coords.values()]) : null;
 }
 
-function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly relation: RuleRelation } | null {
+function adjacencyParams(params: Record<string, unknown>): { readonly a: number; readonly b: number; readonly bAlt: readonly number[]; readonly relation: RuleRelation } | null {
   const a = integerParam(params.a);
   const b = integerParam(params.b);
   const relation = RELATIONS.find((candidate) => candidate === params.relation);
   if (a === null || b === null || !relation) return null;
-  return { a, b, relation };
+  const bAlt = Array.isArray(params.bAlt)
+    ? params.bAlt.map((value) => integerParam(value)).filter((value): value is number => value !== null)
+    : [];
+  return { a, b, bAlt, relation };
 }
 
 function neighbor(coord: ClusterRuleViolationCoord, relation: RuleRelation): { readonly x: number; readonly y: number } {

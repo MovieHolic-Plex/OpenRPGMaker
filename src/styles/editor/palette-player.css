@@ -342,22 +342,20 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  margin-bottom: var(--space-1);
-  /* 트리 들여쓰기 + 인덴트 가이드 — event-editor.part-2.css 의 규칙과 동일한 18px 그리드.
-     (이벤트 필드셋 밖 중첩 커맨드 리스트에서도 위계가 보이도록 통합) */
-  padding-left: calc(var(--cmd-depth, 0) * 18px);
+  /* 스레드 들여쓰기 — 28px step (modern 이벤트 리스트와 동일) */
+  padding-left: calc(var(--cmd-depth, 0) * 28px);
   background-image: repeating-linear-gradient(
     to right,
     transparent 0,
-    transparent 5px,
-    var(--border-subtle) 5px,
-    var(--border-subtle) 6px,
-    transparent 6px,
-    transparent 18px
+    transparent 26px,
+    color-mix(in srgb, var(--accent) 55%, var(--border-default)) 26px,
+    color-mix(in srgb, var(--accent) 55%, var(--border-default)) 27px,
+    transparent 27px,
+    transparent 28px
   );
   background-position: 0 0;
   background-repeat: no-repeat;
-  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
+  background-size: calc(var(--cmd-depth, 0) * 28px) 100%;
 }
 .cmd-item .cmd-head:hover {
   background-color: var(--bg-hover);
@@ -415,6 +413,34 @@
   background: var(--control-bg);
   border-color: var(--border-default);
   color: var(--text-2);
+}
+.cmd-summary-token.choice-option {
+  border: 1px solid color-mix(in srgb, var(--warning, #d9a441) 45%, var(--border-default));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning, #d9a441) 14%, transparent);
+  color: var(--warning, #d9a441);
+  flex: 0 1 auto;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  max-width: 14ch;
+  overflow: hidden;
+  padding: 0 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cmd-summary-token.choice-cancel {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  margin-left: 2px;
+  padding: 0 6px;
+  white-space: nowrap;
 }
 /* 아이템/장비 요약 아이콘 (16px 픽셀아트). */
 .cmd-summary-icon {
@@ -515,17 +541,42 @@
   pointer-events: none;
   /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
      너비를 제한하고 2줄까지만 보여준 뒤 자른다. */
-  max-width: min(520px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  white-space: normal;
+}
+.toast .toast-message {
+  flex: 1 1 auto;
+  min-width: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: normal;
 }
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+.toast.show.has-action {
+  /* 복구 버튼 클릭 가능 */
+  pointer-events: auto;
+}
+.toast .toast-action {
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  cursor: pointer;
+}
+.toast .toast-action:hover {
+  background: color-mix(in srgb, currentColor 14%, transparent);
 }
 .toast.error {
   border-color: var(--danger);
@@ -566,4 +617,15 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--space-2);
+}
+
+
+/* 맵 우클릭 스포이트 → 팔레트 칩셋 셀 하이라이트 (전문가 모드) */
+.chipset-tile.is-map-reveal,
+[data-testid^="cluster-tile-"].is-map-reveal,
+[data-testid^="quick-tile-"].is-map-reveal {
+  outline: 2px solid var(--accent, #3bc9db);
+  box-shadow: 0 0 0 3px rgba(59, 201, 219, 0.45);
+  z-index: 2;
+  position: relative;
 }

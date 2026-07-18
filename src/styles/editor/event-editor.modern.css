@@ -501,9 +501,7 @@
   white-space: nowrap;
 }
 
-.event-conditions-grid,
-.event-page-bottom-left,
-.event-page-bottom-right {
+.event-conditions-grid {
   display: grid;
   gap: 8px;
 }
@@ -518,6 +516,7 @@
   min-height: 32px;
   min-width: 0;
 }
+
 
 .event-editor-modal-body .event-condition-control {
   max-width: 100%;
@@ -602,21 +601,6 @@
   width: 100%;
 }
 
-.event-page-bottom-grid {
-  display: grid;
-  gap: 8px;
-  /* 설정 열(~320–480px)에서 2열이 버튼/셀렉트를 밀어내지 않도록 단일 열 */
-  grid-template-columns: minmax(0, 1fr);
-  max-width: 100%;
-  min-width: 0;
-}
-
-.event-page-bottom-left,
-.event-page-bottom-right {
-  max-width: 100%;
-  min-width: 0;
-}
-
 .event-graphic-control {
   display: grid;
   gap: 8px 10px;
@@ -651,7 +635,8 @@
   background: transparent;
   display: grid;
   gap: 8px;
-  grid-template-rows: minmax(0, 1fr) auto;
+  /* 실행 내용 최소 높이 확보 + aux 는 auto 행만 (cmd-list 비고갈) */
+  grid-template-rows: minmax(220px, 1fr) auto;
   min-width: 0;
   overflow: hidden;
   position: relative;
@@ -664,7 +649,7 @@
   gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
   grid-template-rows: auto minmax(0, 1fr);
-  min-height: 0;
+  min-height: 220px;
   padding: 12px 12px 10px;
 }
 
@@ -751,13 +736,17 @@
   opacity: 0.55;
 }
 
-/* 하단 보조 도구 — 접힘 시 가로 칩 한 줄 */
+/* 하단 보조 도구 — 접힘 시 가로 칩 한 줄.
+   열림 시 flex 성장 금지: 본문은 칩 행 위 absolute 오버레이로 띄워 cmd-list 기하를 유지. */
 .event-editor-aux-tools {
   align-items: start;
   display: flex;
+  flex: 0 0 auto;
   flex-wrap: wrap;
   gap: 6px;
   min-width: 0;
+  position: relative;
+  z-index: 2;
 }
 
 .event-editor-aux-tools > .ai-event-assist,
@@ -774,8 +763,11 @@
 .event-editor-aux-tools > .ai-event-assist[open],
 .event-editor-aux-tools .event-script-live-preview[open],
 .event-editor-aux-tools .event-script-flowchart[open] {
-  border-radius: 10px;
-  flex: 1 1 100%;
+  border-color: color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border));
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 18%, transparent);
+  /* 금지: flex: 1 1 100% — 열리면 행 전체를 먹어 cmd-list 를 붕괴시킴 */
+  flex: 0 0 auto;
 }
 
 .event-editor-aux-tools .event-script-modern-views {
@@ -789,10 +781,10 @@
   color: var(--text-2);
   cursor: pointer;
   display: inline-flex;
-  gap: 6px;
+  gap: 8px;
   list-style: none;
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 38px;
+  padding: 0 14px;
   user-select: none;
 }
 
@@ -802,22 +794,82 @@
 
 .event-aux-chip-icon {
   color: var(--event-modern-accent);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1;
 }
 
 .event-aux-chip-label {
-  font: 700 12px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font: 700 13px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-aux-chip-status {
+  background: color-mix(in srgb, var(--event-modern-accent) 12%, var(--event-modern-field));
+  border: 1px solid color-mix(in srgb, var(--event-modern-accent) 28%, var(--event-modern-border));
+  border-radius: 999px;
+  color: var(--text-2);
+  font: 600 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  margin-left: 2px;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.event-aux-chip-status[data-kind="busy"] {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--event-modern-border));
+  color: var(--accent);
+}
+
+.event-aux-chip-status[data-kind="error"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--event-modern-border));
+  color: var(--danger);
+}
+
+.event-aux-chip-status[data-kind="ready"] {
+  border-color: color-mix(in srgb, var(--event-modern-accent) 50%, var(--event-modern-border));
+  color: var(--event-modern-accent);
+}
+
+.event-aux-chip-status[data-kind="empty"],
+.event-aux-chip-status[data-kind="idle"] {
+  border-color: var(--event-modern-border);
+  color: var(--text-3);
+}
+
+/* idle/빈 칩 상태 배지 — 시각·스크린리더 모두 숨김 */
+.event-aux-chip-status[hidden],
+.event-aux-chip-status[aria-hidden="true"],
+.event-aux-chip-status:empty {
+  display: none;
 }
 
 .event-editor-aux-tools > .ai-event-assist[open] > .event-aux-chip-summary,
 .event-editor-aux-tools .event-script-live-preview[open] > .event-aux-chip-summary,
 .event-editor-aux-tools .event-script-flowchart[open] > .event-aux-chip-summary {
-  border-bottom: 1px solid var(--event-modern-border);
-  border-radius: 10px 10px 0 0;
   color: var(--text-1);
-  display: flex;
-  width: 100%;
+  display: inline-flex;
+  min-height: 38px;
+  width: auto;
+}
+
+/* open body: 칩 행 위 오버레이 — containing block 은 .event-editor-aux-tools
+   (칩에 position 두지 않음). 인플로우 높이 비점유 → cmd-list min-height 유지. */
+.event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body,
+.event-editor-aux-tools .event-script-live-preview[open] > .event-script-live-preview-body,
+.event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
+  background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #1a1f2b));
+  border: 1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border));
+  border-radius: 10px;
+  bottom: calc(100% + 6px);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.38),
+    0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent);
+  left: 0;
+  max-height: min(280px, 42vh);
+  overflow: auto;
+  position: absolute;
+  right: 0;
+  width: auto;
+  z-index: 8;
 }
 
 .event-contents-fieldset .cmd-list {
@@ -838,9 +890,17 @@
   padding: 0;
 }
 
-/* RM2K3 클래식 명령 라인: ◆ 프리픽스 + 고밀도 한 줄 + depth 들여쓰기 + 인덴트 가이드선.
-   행 번호(counter)·펼치기 토글(+/^)·원형 불릿·카드 배경은 모두 제거해 실제
-   RPG 만들기 2003 이벤트 창처럼 촘촘한 트리로 보이게 한다. */
+/* RM2K3 클래식 명령 라인 + 스레드형 parent/child 위계.
+   depth마다 넓은 들여쓰기 + 연속 세로 레일 + 자식 행 배경 밴드로 분기를 즉시 읽는다. */
+.event-contents-fieldset .cmd-list {
+  --cmd-indent-step: 28px;
+  --cmd-indent-base: 10px;
+  --cmd-rail: color-mix(in srgb, var(--accent, #6ea8ff) 55%, var(--border-default));
+  --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));
+  --cmd-rail-fork: color-mix(in srgb, var(--accent, #6ea8ff) 70%, var(--border-default));
+  --cmd-rail-shop: color-mix(in srgb, var(--success, #4caf7a) 70%, var(--border-default));
+}
+
 .event-contents-fieldset .cmd-head,
 .event-contents-fieldset .cmd-line-marker,
 .event-contents-fieldset .cmd-empty-line {
@@ -852,37 +912,50 @@
   display: flex;
   font: 400 13px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   gap: 6px;
-  min-height: 22px;
+  min-height: 24px;
   overflow: hidden;
-  /* depth 레벨마다 18px 우측 이동(중첩 분기 누적 들여쓰기). root=8px */
-  padding: 0 8px 0 calc(8px + (var(--cmd-depth, 0) * 18px));
+  /* depth 레벨마다 28px — 18px 때보다 parent/child가 확실히 갈라진다. */
+  padding: 1px 8px 1px calc(var(--cmd-indent-base) + (var(--cmd-depth, 0) * var(--cmd-indent-step)));
+  position: relative;
   text-overflow: ellipsis;
   white-space: nowrap;
-  /* depth 개의 18px 밴드 좌측마다 1px 세로 가이드선 → 중첩 위계 추적. */
+  /* 깊이마다 세로 레일(스레드). 연한 선이 아니라 확실한 트랙. */
   background-image: repeating-linear-gradient(
     to right,
-    var(--border-subtle) 0,
-    var(--border-subtle) 1px,
-    transparent 1px,
-    transparent 18px
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
   );
-  background-position: 8px 0;
+  background-position: var(--cmd-indent-base) 0;
   background-repeat: no-repeat;
-  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
 }
 
-/* event-editor.part-2.css 의 zebra(nth-child 배경, 특이도 0,5,0)를 무력화해 균일한
-   RM2003 행으로 만든다. 같은 특이도지만 modern.css 가 나중에 로드되어 이긴다. */
-.event-contents-fieldset .cmd-list > .cmd-item:nth-child(odd) > .cmd-head,
-.event-contents-fieldset .cmd-list > .cmd-item:nth-child(even) > .cmd-head,
-.event-contents-fieldset .cmd-list > .cmd-line-marker:nth-child(odd),
-.event-contents-fieldset .cmd-list > .cmd-line-marker:nth-child(even),
-.event-contents-fieldset .cmd-list > .cmd-empty-line:nth-child(odd),
-.event-contents-fieldset .cmd-list > .cmd-empty-line:nth-child(even) {
-  background-color: transparent;
+/* 자식 행(depth≥1): 레일 안쪽 틴트로 parent 블록이 한 덩어리로 보이게. */
+.event-contents-fieldset .cmd-item[data-cmd-depth="1"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head,
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="1"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="2"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="3"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="4"] {
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 6%, transparent);
 }
 
-/* hover/선택은 zebra 무력화 규칙보다 뒤에 두어(동일 특이도) 이긴다. 가이드선은 보존. */
+.event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head {
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 10%, transparent);
+}
+
+/* zebra 줄무늬는 스레드 틴트/레일과 충돌하므로 비활성화(아래 transparent 규칙 없음).
+   part-2.css zebra 특이도는 modern의 depth tint / hover 규칙이 이긴다. */
+
+/* hover/선택 — 레일 보존, 배경만 강조. */
 .event-contents-fieldset .cmd-list > .cmd-item > .cmd-head:hover,
 .event-contents-fieldset .cmd-list > .cmd-empty-line:hover {
   background-color: var(--bg-hover);
@@ -903,11 +976,54 @@
   line-height: 1;
 }
 
-/* 분기 라벨(：수락한다의 경우 / 조건이 참일 때 등) — 명령과 구분되는 이탤릭 보조 라인.
-   fork/choices/shop 별 색은 event-editor.part-2.css 의 .cmd-marker-* 규칙이 얹힌다. */
+/* 분기 라벨 — parent 스레드 헤더. 트리 글리프 + 굵기 + 배경 밴드로 child와 구분. */
 .event-contents-fieldset .cmd-line-marker {
   color: var(--text-2);
-  font-style: italic;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background-color: color-mix(in srgb, var(--warning, #d9a441) 10%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border-default) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-default) 40%, transparent);
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-choices {
+  color: var(--warning, #d9a441);
+  background-color: color-mix(in srgb, var(--warning, #d9a441) 12%, transparent);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-choices) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-choices) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
+  color: var(--event-modern-accent, var(--accent));
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 12%, transparent);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-fork) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-fork) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-shop {
+  color: var(--success, #4caf7a);
+  background-color: color-mix(in srgb, var(--success, #4caf7a) 12%, transparent);
 }
 
 /* 명령 추가 빈 줄(◆). */
@@ -968,6 +1084,7 @@
   gap: 14px;
 }
 
+/* changeFace form — selected card + 4x4 faceset grid + option chips */
 .event-command-face-editor {
   align-items: stretch;
   background: var(--bg-raised);
@@ -975,16 +1092,66 @@
   border-radius: 8px;
   display: grid;
   gap: 0;
-  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   overflow: hidden;
   width: 100%;
 }
 
-.event-command-face-preview-host {
+.event-command-face-selected-card {
+  align-items: start;
   background: var(--event-modern-field-muted);
-  border-right: 1px solid var(--event-modern-line);
-  min-height: 180px;
+  border-bottom: 1px solid var(--event-modern-line);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  min-width: 0;
+  padding: 14px;
+}
+
+.event-command-face-editor[data-face-mode="bust"] .event-command-face-selected-card {
+  grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+}
+
+.event-command-face-editor[data-face-mode="bust"] .event-command-face-preview-copy {
+  max-width: none;
+}
+
+.event-command-face-editor[data-face-mode="bust"] .event-command-face-index-input {
+  opacity: 0.55;
+}
+
+.event-command-face-bust-note {
+  background: color-mix(in srgb, var(--event-modern-field-muted) 90%, transparent);
+  border: 1px dashed var(--event-modern-line);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+  padding: 14px 16px;
+}
+
+.event-command-face-bust-note strong {
+  color: var(--text-1);
+  font: 700 12px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-bust-note p {
+  color: var(--text-2);
+  font: 500 12px/1.45 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.event-command-face-crop.event-command-face-bust {
+  background-position: bottom center !important;
+  background-repeat: no-repeat !important;
+  background-size: contain !important;
+  border: 1px solid var(--border-subtle);
+  /* Do not force background-image:none — inline url from bustVisual must show. */
+}
+
+.event-command-face-preview-host {
+  flex: 0 0 auto;
   min-width: 0;
 }
 
@@ -992,18 +1159,18 @@
   background: transparent;
   border: 0;
   display: grid;
-  gap: 12px;
+  gap: 8px;
   grid-template-columns: minmax(0, 1fr);
-  height: 100%;
   justify-items: center;
-  min-height: 180px;
-  padding: 18px 14px;
+  min-height: 0;
+  padding: 0;
   text-align: center;
 }
 
 .event-command-face-editor .event-command-face-preview-copy {
   align-content: start;
   justify-items: center;
+  max-width: 180px;
   text-align: center;
   width: 100%;
 }
@@ -1043,27 +1210,154 @@
   font: 500 12px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
-.event-command-face-fields {
+.event-command-face-selected-meta {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.event-command-face-selected-heading {
+  color: var(--event-modern-text-soft);
+  font: 700 11px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.event-command-face-resource-actions {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-command-face-resource-actions .btn {
+  flex: 0 0 auto;
+  min-height: 30px;
+  min-width: max-content;
+  white-space: nowrap;
+  width: auto;
+  writing-mode: horizontal-tb;
+}
+
+.event-command-face-resource-label {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-command-face-resource-label > span {
+  color: var(--event-modern-text-soft);
+  font: 700 11px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-resource-input {
+  background: var(--bg-raised);
+  border: 1px solid var(--event-modern-border-strong);
+  border-radius: 4px;
+  color: var(--text-1);
+  font: 600 12px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  min-width: 0;
+  padding: 6px 8px;
+  width: 100%;
+}
+
+.event-command-face-grid-section {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.event-command-face-section-label {
+  color: var(--event-modern-text-soft);
+  font: 700 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-command-face-grid-host {
+  min-width: 0;
+}
+
+.event-command-face-index-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  justify-items: center;
+  max-width: 248px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-face-index-grid[data-empty="true"] {
+  display: block;
+  max-width: none;
+}
+
+.event-command-face-index-grid-empty {
+  background: color-mix(in srgb, var(--event-modern-field-muted) 88%, transparent);
+  border: 1px dashed var(--event-modern-line);
+  border-radius: 6px;
+  color: var(--text-2);
+  font: 500 12px/1.4 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 18px 14px;
+  text-align: center;
+}
+
+.event-command-face-index-cell {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-inset, #0f1420) 70%, transparent);
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  display: grid;
+  justify-items: center;
+  min-width: 0;
+  padding: 2px;
+  place-items: center;
+}
+
+.event-command-face-index-cell:hover {
+  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 55%, transparent);
+}
+
+.event-command-face-index-cell.is-selected {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 45%, transparent);
+}
+
+.event-command-face-index-cell.flipped .event-command-face-crop {
+  transform: scaleX(-1);
+}
+
+.event-command-face-index-cell .event-command-face-crop {
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.event-command-face-options {
+  border-top: 1px solid var(--event-modern-line);
   display: grid;
   gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   min-width: 0;
-  padding: 4px 0;
 }
 
 .event-command-face-editor .inline-field {
   align-content: start;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--event-modern-line);
+  border-right: 1px solid var(--event-modern-line);
   display: grid;
   gap: 6px;
-  grid-template-columns: minmax(88px, 110px) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   min-height: 0;
-  padding: 10px 14px;
+  min-width: 0;
+  padding: 12px 14px;
 }
 
-.event-command-face-editor .inline-field:last-of-type {
-  border-bottom: 0;
+.event-command-face-editor .inline-field:last-child {
+  border-right: 0;
 }
 
 .event-command-face-editor .inline-field > span {
@@ -1082,28 +1376,16 @@
   width: 100%;
 }
 
-.event-command-face-resource-row {
-  align-items: center;
-  display: grid;
-  gap: 6px;
-  grid-template-columns: minmax(0, 1fr) auto auto;
-  min-width: 0;
-}
-
 .event-command-face-editor .inline-field:has(input[type="checkbox"]) {
-  align-items: center;
-  grid-template-columns: minmax(88px, 110px) 22px minmax(0, 1fr);
-}
-
-.event-command-face-editor .inline-field:has(input[type="checkbox"]) > span {
-  grid-column: 1;
-  grid-row: 1;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .event-command-face-editor .inline-field input[type="checkbox"] {
-  grid-column: 2;
-  grid-row: 1;
+  height: 18px;
   justify-self: start;
+  margin: 2px 0 0;
+  width: 18px;
 }
 
 .event-command-face-hint {
@@ -1276,9 +1558,6 @@
     grid-template-columns: minmax(32px, 1fr) max-content minmax(32px, 1fr) max-content;
   }
 
-  .event-page-bottom-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 
   .event-editor-command-tool {
     min-width: 34px;
@@ -1297,4 +1576,68 @@
   .event-editor-column-resizer {
     display: none;
   }
+}
+
+
+/* Transfer inline editor owns its layout; do not force generic stacks on children. */
+.event-command-edit-body:has(.transfer-command-editor-inline) {
+  align-content: start;
+}
+.event-command-edit-body > div:has(.transfer-command-editor-inline) {
+  display: block;
+  min-width: 0;
+}
+
+
+/* Field monster one-click template dialog */
+.field-monster-template-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 2px 8px;
+}
+.field-monster-template-hint {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+.field-monster-template-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field-monster-template-label {
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+}
+.field-monster-template-textarea,
+.field-monster-template-input {
+  background: var(--bg-inset, var(--event-modern-field));
+  border: 1px solid var(--border-subtle, var(--event-modern-border));
+  border-radius: 6px;
+  color: inherit;
+  font: inherit;
+  min-height: 34px;
+  padding: 8px 10px;
+  resize: vertical;
+  width: 100%;
+}
+.field-monster-template-checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+}
+.field-monster-template-check {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 12px;
+}
+.field-monster-template-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
 }

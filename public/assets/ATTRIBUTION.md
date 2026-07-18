@@ -66,3 +66,16 @@
 - Pinned source commit: `993d88cbc78c658d348bbfa74a3b424d393d27e5`
 - License: Creative Commons Attribution 4.0 International for EasyRPG RTP materials
 - Upstream asset attribution: see `public/assets/easyrpg/AUTHORS.md`; license text is mirrored at `public/assets/easyrpg/COPYING`.
+
+## Mabaci — Crates Chests Coins and Barrels Collection (CC0) — **EXCLUDED / unused**
+
+- Source: https://opengameart.org/content/crates-chests-coins-and-barrels-collection
+- Upstream download: medieval_items.zip (GLB/FBX 3D models + License.txt)
+- Author page: OpenGameArt / Mabaci (credit appreciated, not required under CC0)
+- License: **CC0 1.0 Universal** (public domain dedication) — commercial use, modification, and redistribution allowed without attribution
+- Local files under public/assets/cc0/mabaci-medieval-items/:
+  - crate_closed.png, crate_open.png, chest_closed.png, chest_open.png, barrel.png, coin_stack.png, crate_long.png (2D orthographic previews rendered from GLB)
+  - charset-crates.png (RM2K3 CharSet 288x256; character 0=closed crate, 1=open crate; true alpha, not magenta color-key)
+  - LICENSE.txt (upstream CC0 notice)
+- Notes: **Style mismatch with EasyRPG interior chipset — excluded from charset catalog and interior events (2026-07-15).** Files may remain under public/assets/cc0/mabaci-medieval-items/ for reference only; not loaded by runtime.
+

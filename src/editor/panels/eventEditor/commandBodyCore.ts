@@ -2,14 +2,15 @@ import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResour
 import { clearChildren, el } from "@/util/dom";
 import { recordUsageHint } from "./recordUsageHint";
 import { selectedOptionValue, selectWithOptions } from "./dom";
+import { segmentedSelect, type SegmentOption } from "./recordPicker";
 import { choicesBody } from "./commandBodyChoices";
 import { inputNumberBody } from "./commandBodyInputNumber";
 import { labelBody } from "./commandBodyLabels";
 import { loopBody } from "./commandBodyLoop";
 import { setVariableBody } from "./commandBodyVariable";
 import { databasePicker, conditionForm } from "./conditionForm";
-import { renderFacesetPreview } from "./facesetPreview";
-import { renderForkBranch } from "./forkBranch";
+import { faceDisplayModeOf, isBustResourceId, renderFacesetIndexGrid, renderFacesetPreview } from "./facesetPreview";
+import { renderConditionEvalPreview } from "./conditionEvalPreview";
 import { clampFaceIndex, FACESET_FACE_COUNT } from "./messageDialogControls";
 import {
   BOOLEAN_OPTIONS,
@@ -18,7 +19,10 @@ import {
   TIMER_ID_OPTIONS,
   type SelectOption,
 } from "./options";
-import type { Command, MessageWindowFormat, MessageWindowPosition } from "@/project/types";
+import type { Command, MessageWindowFormat, MessageWindowPosition, SwitchValue } from "@/project/types";
+import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
+import { hasCharacterId } from "@/project/socialKey";
 import type { CommandEditContext } from "./types";
 
 const MESSAGE_WINDOW_FORMAT_OPTIONS = [
@@ -26,11 +30,22 @@ const MESSAGE_WINDOW_FORMAT_OPTIONS = [
   { value: "transparent", label: "투명" },
 ] as const satisfies readonly SelectOption<MessageWindowFormat>[];
 
+const MESSAGE_WINDOW_FORMAT_SEGMENTS = [
+  { value: "normal", label: "일반", key: "normal" },
+  { value: "transparent", label: "투명", key: "transparent" },
+] as const satisfies readonly SegmentOption<MessageWindowFormat>[];
+
 const MESSAGE_WINDOW_POSITION_OPTIONS = [
   { value: "top", label: "상단" },
   { value: "center", label: "중앙" },
   { value: "bottom", label: "하단" },
 ] as const satisfies readonly SelectOption<MessageWindowPosition>[];
+
+const MESSAGE_WINDOW_POSITION_SEGMENTS = [
+  { value: "top", label: "상단", key: "top" },
+  { value: "center", label: "중앙", key: "center" },
+  { value: "bottom", label: "하단", key: "bottom" },
+] as const satisfies readonly SegmentOption<MessageWindowPosition>[];
 
 export function renderCoreCommandBody(
   context: CommandEditContext,
@@ -63,40 +78,166 @@ const coreCommandBodyHandlers: CoreCommandBodyHandlers = {
   label: labelBody,
   gotoLabel: labelBody,
   loop: loopBody,
-  breakLoop: () => el("div", { class: "empty-hint", text: "현재 반복을 탈출합니다" }),
+  breakLoop: () => el("div", { class: "empty-hint", text: "현재 반복을 탈출합니다", dataset: { testid: "break-loop-editor" } }),
 };
 
-// [중간-3] 문장 표시 폼: 화자/내용 세로 스택 + 제어 문자 팔레트.
-const TEXT_CONTROL_SNIPPETS: readonly { readonly key: string; readonly code: string; readonly hint: string }[] = [
-  { key: "color", code: "\\c[1]", hint: "색상 변경 (0-19)" },
-  { key: "hero", code: "\\n[1]", hint: "주인공 이름" },
-  { key: "variable", code: "\\v[1]", hint: "변수 값" },
-  { key: "gold", code: "\\$", hint: "소지금 창" },
-  { key: "pause", code: "\\!", hint: "키 입력 대기" },
-  { key: "wait-quarter", code: "\\.", hint: "1/4초 지연" },
-  { key: "wait-second", code: "\\|", hint: "1초 지연" },
+// [중간-3] 문장 표시 폼: 내용 본문 + 제어 문자 팔레트(라벨/용도). 화자 필드는 선택 접기.
+const TEXT_EMOTION_SEGMENTS = [
+  { value: "neutral", key: "neutral", label: "기본" },
+  { value: "happy", key: "happy", label: "기쁨" },
+  { value: "sad", key: "sad", label: "슬픔" },
+  { value: "angry", key: "angry", label: "분노" },
+  { value: "surprised", key: "surprised", label: "놀람" },
+] as const satisfies readonly SegmentOption<"neutral" | "happy" | "sad" | "angry" | "surprised">[];
+
+const TEXT_CONTROL_SNIPPETS: readonly {
+  readonly key: string;
+  readonly code: string;
+  readonly label: string;
+  readonly hint: string;
+}[] = [
+  { key: "color", code: "\\c[1]", label: "색", hint: "이후 글자 색 (0~19)" },
+  { key: "hero", code: "\\n[1]", label: "이름", hint: "n번 주인공 이름 표시" },
+  { key: "variable", code: "\\v[1]", label: "변수", hint: "n번 변수 값 표시" },
+  { key: "gold", code: "\\$", label: "소지금", hint: "소지금 창 표시" },
+  { key: "pause", code: "\\!", label: "대기", hint: "키 입력까지 문장 정지" },
+  { key: "wait-quarter", code: "\\.", label: "0.25초", hint: "1/4초 지연" },
+  { key: "wait-second", code: "\\|", label: "1초", hint: "1초 지연" },
+  { key: "fast-on", code: "\\>", label: "빨리", hint: "이후 문장 즉시 표시" },
+  { key: "fast-off", code: "\\<", label: "보통", hint: "즉시 표시 해제" },
+  { key: "skip-wait", code: "\\^", label: "닫기", hint: "키 입력 없이 창 닫기" },
+  { key: "space", code: "\\_", label: "반각", hint: "반각 공백" },
+  { key: "speed", code: "\\s[3]", label: "속도", hint: "글자 표시 속도" },
 ];
 
 function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "text" }>): HTMLElement {
-  const wrap = el("div", { class: "event-command-text-editor" });
+  const wrap = el("div", {
+    class: "event-command-text-editor",
+    dataset: { testid: "event-command-text-editor" },
+  });
   const speaker = el("input", {
-    attrs: { type: "text", placeholder: "화자" },
+    attrs: { type: "text", placeholder: "비우면 이름 없이 대사만 표시", spellcheck: "false" },
     value: cmd.speaker ?? "",
+    dataset: { testid: "event-command-text-speaker" },
   }) as HTMLInputElement;
-  const body = el("textarea", { attrs: { placeholder: "대화 내용" } }) as HTMLTextAreaElement;
+  const body = el("textarea", {
+    attrs: { placeholder: "대화 내용 (제어 문자는 아래 버튼으로 삽입)" },
+    dataset: { testid: "event-command-text-body" },
+  }) as HTMLTextAreaElement;
   body.value = cmd.body;
+
+  const emotionValueRaw = cmd.emotion ?? "neutral";
+  const emotionValue = (TEXT_EMOTION_SEGMENTS.some((entry) => entry.value === emotionValueRaw)
+    ? emotionValueRaw
+    : "neutral") as (typeof TEXT_EMOTION_SEGMENTS)[number]["value"];
+  const emotion = segmentedSelect({
+    options: TEXT_EMOTION_SEGMENTS,
+    value: emotionValue,
+    testid: "event-command-text-emotion",
+    ariaLabel: "감정",
+  });
+  const autoAdvance = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-command-text-auto-advance" },
+  }) as HTMLInputElement;
+  autoAdvance.checked = cmd.autoAdvance === true;
+
+  const limitHint = el("div", {
+    class: "event-command-text-limit-hint",
+    dataset: { testid: "event-command-text-limit-hint" },
+  });
+  const refreshLimitHint = () => {
+    const lines = body.value.split(/\r?\n/);
+    const maxLine = lines.reduce((m, line) => Math.max(m, line.length), 0);
+    const faceAware = Boolean(context.previewFace);
+    const maxChars = faceAware ? 38 : 50;
+    const overLines = lines.length > 4;
+    const overChars = maxLine > maxChars;
+    if (overLines || overChars) {
+      limitHint.textContent = `RM2003 over: ${lines.length} lines / max ${maxLine} chars (prefer 4 x ${maxChars}${faceAware ? "; face" : ""})`;
+      limitHint.dataset.over = "1";
+    } else {
+      limitHint.textContent = `Prefer max 4 lines / ${maxChars} chars${faceAware ? " (with face)" : ""}`;
+      delete limitHint.dataset.over;
+    }
+  };
   const apply = () => {
+    refreshLimitHint();
+    const nextEmotion = emotion.select.value;
     context.actions.replaceCommand(context.path, {
       kind: "text",
       speaker: speaker.value.trim() || undefined,
       body: body.value,
+      ...(nextEmotion && nextEmotion !== "neutral" ? { emotion: nextEmotion } : {}),
+      ...(autoAdvance.checked ? { autoAdvance: true } : {}),
     });
   };
   speaker.addEventListener("change", apply);
   speaker.addEventListener("input", apply);
   body.addEventListener("change", apply);
   body.addEventListener("input", apply);
-  wrap.append(fieldControl("화자", speaker), fieldControl("내용", body), controlCharPalette(body, apply));
+  emotion.select.addEventListener("change", apply);
+  autoAdvance.addEventListener("change", apply);
+
+  const speakerDetails = el("details", {
+    class: "event-command-text-speaker-details",
+    dataset: { testid: "event-command-text-speaker-details" },
+  }) as HTMLDetailsElement;
+  if (cmd.speaker?.trim()) speakerDetails.open = true;
+  speakerDetails.append(
+    el("summary", {
+      class: "event-command-text-speaker-summary",
+      text: "화자 이름 (선택)",
+    }),
+    el("p", {
+      class: "event-command-text-speaker-hint",
+      text: "플레이 시 대사 창 위에 붙는 이름입니다. 비우면 얼굴 그래픽만으로 누가 말하는지 표시할 수 있습니다.",
+    }),
+    speaker,
+  );
+
+  refreshLimitHint();
+  const advancedOpen = Boolean(cmd.emotion && cmd.emotion !== "neutral") || cmd.autoAdvance === true;
+  const advanced = el("details", {
+    class: "event-command-text-advanced",
+    dataset: { testid: "event-command-text-advanced" },
+  }) as HTMLDetailsElement;
+  advanced.open = advancedOpen;
+  advanced.append(
+    el("summary", {
+      class: "event-command-text-advanced-summary",
+      text: "고급 옵션 (감정 · 자동 넘김)",
+    }),
+    el("p", {
+      class: "event-command-text-speaker-hint",
+      text: "예전 「고급 대화」 기능입니다. 얼굴 그래픽은 별도 「얼굴 그래픽 변경」 명령을 쓰세요.",
+    }),
+    el("div", {
+      class: "event-command-text-advanced-row",
+      children: [
+        el("span", { class: "event-command-text-body-label", text: "감정" }),
+        emotion.root,
+      ],
+    }),
+    el("label", {
+      class: "event-command-text-auto-advance-label",
+      children: [autoAdvance, el("span", { text: " 자동 넘김 (키 입력 없이 다음)" })],
+    })
+  );
+
+  wrap.append(
+    el("div", {
+      class: "event-command-text-body-field",
+      children: [
+        el("div", { class: "event-command-text-body-label", text: "내용" }),
+        body,
+        limitHint,
+      ],
+    }),
+    controlCharPalette(body, apply),
+    speakerDetails,
+    advanced,
+  );
   return wrap;
 }
 
@@ -107,14 +248,25 @@ function controlCharPalette(body: HTMLTextAreaElement, apply: () => void): HTMLE
     attrs: { "aria-label": "제어 문자 팔레트" },
     dataset: { testid: "event-command-text-palette" },
   });
-  palette.append(el("span", { class: "event-command-text-palette-label", text: "제어 문자" }));
+  palette.append(
+    el("div", {
+      class: "event-command-text-palette-header",
+      children: [
+        el("span", { class: "event-command-text-palette-label", text: "제어 문자 삽입" }),
+        el("span", {
+          class: "event-command-text-palette-sub",
+          text: "클릭하면 커서 위치에 들어갑니다. 오른쪽 미리보기에 반영됩니다.",
+        }),
+      ],
+    })
+  );
+  const row = el("div", { class: "event-command-text-palette-row" });
   for (const snippet of TEXT_CONTROL_SNIPPETS) {
-    palette.append(
+    row.append(
       el("button", {
         class: "event-command-text-palette-button",
-        text: snippet.code,
-        attrs: { type: "button", title: snippet.hint },
-        dataset: { testid: `event-command-text-insert-${snippet.key}` },
+        attrs: { type: "button", title: snippet.hint + " — " + snippet.code },
+        dataset: { testid: "event-command-text-insert-" + snippet.key },
         on: {
           click: () => {
             insertAtCursor(body, snippet.code);
@@ -122,9 +274,14 @@ function controlCharPalette(body: HTMLTextAreaElement, apply: () => void): HTMLE
             body.focus();
           },
         },
+        children: [
+          el("span", { class: "event-command-text-palette-code", text: snippet.code }),
+          el("span", { class: "event-command-text-palette-name", text: snippet.label }),
+        ],
       })
     );
   }
+  palette.append(row);
   return palette;
 }
 
@@ -141,19 +298,41 @@ function insertAtCursor(body: HTMLTextAreaElement, code: string): void {
 }
 
 function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeFace" }>): HTMLElement {
-  const wrap = el("div", { class: "event-command-face-editor" });
+  // RM-style face picker: selected face card + resource actions on top,
+  // 4×4 faceset index grid as the main work surface, position/flip chips below.
+  const wrap = el("div", {
+    class: "event-command-face-editor",
+    dataset: { testid: "event-command-face-editor" },
+  });
   const previewHost = el("div", {
     class: "event-command-face-preview-host",
     dataset: { testid: "event-command-face-preview-host" },
   });
+  const gridHost = el("div", {
+    class: "event-command-face-grid-host",
+    dataset: { testid: "event-command-face-grid-host" },
+  });
+  // Hidden-friendly resource id keeps e2e/tests that fill the resource field working.
   const resource = el("input", {
     class: "event-command-face-resource-input",
-    attrs: { type: "text", placeholder: "얼굴 그래픽 리소스 ID", spellcheck: "false" },
+    attrs: {
+      type: "text",
+      placeholder: "얼굴 그래픽 리소스 ID",
+      spellcheck: "false",
+      "aria-label": "얼굴 그래픽 리소스 ID",
+    },
     value: cmd.resourceId,
     dataset: { testid: "event-command-face-resource" },
   }) as HTMLInputElement;
+  // 1-based face number for keyboard/e2e compatibility; selection primarily via grid.
   const faceIndex = el("input", {
-    attrs: { type: "number", min: "1", max: String(FACESET_FACE_COUNT) },
+    class: "event-command-face-index-input",
+    attrs: {
+      type: "number",
+      min: "1",
+      max: String(FACESET_FACE_COUNT),
+      "aria-label": "얼굴 번호",
+    },
     value: String(cmd.faceIndex + 1),
     dataset: { testid: "event-command-face-index" },
   }) as HTMLInputElement;
@@ -165,7 +344,9 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     cmd.position,
     "event-command-face-position"
   );
+  position.classList.add("event-command-face-position-select");
   const flip = checkboxControl(cmd.flipHorizontally, "event-command-face-flip-horizontal");
+  flip.classList.add("event-command-face-flip-checkbox");
 
   const readDraft = (): Extract<Command, { kind: "changeFace" }> => ({
     kind: "changeFace",
@@ -184,23 +365,67 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
         faceIndex: draft.faceIndex,
         position: draft.position,
         flipHorizontally: draft.flipHorizontally,
-        displaySize: 112,
+        displaySize: 96,
       })
     );
   };
 
+  const refreshGrid = (): void => {
+    const draft = readDraft();
+    clearChildren(gridHost);
+    const mode = faceDisplayModeOf(draft.resourceId);
+    const whole = mode !== "chip";
+    wrap.dataset.faceMode = mode;
+    faceIndex.disabled = whole;
+    if (whole) {
+      gridHost.append(
+        el("div", {
+          class: "event-command-face-bust-note",
+          dataset: { testid: "event-command-face-bust-note", faceMode: mode },
+          children: [
+            el("strong", { text: mode === "full" ? "전신 모드" : "흉상 모드" }),
+            el("p", {
+              text:
+                mode === "full"
+                  ? "이 리소스는 통짜 전신 이미지입니다. 4×4 얼굴 번호는 쓰지 않습니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요."
+                  : "이 리소스는 통짜 흉상 이미지입니다. 4×4 얼굴 번호는 쓰지 않습니다. 표시 위치(왼쪽/오른쪽)와 좌우 반전만 조절하세요.",
+            }),
+          ],
+        })
+      );
+      return;
+    }
+    gridHost.append(
+      renderFacesetIndexGrid({
+        resourceId: draft.resourceId,
+        faceIndex: draft.faceIndex,
+        flipHorizontally: draft.flipHorizontally,
+        cellSize: 52,
+        onSelect: (index) => {
+          faceIndex.value = String(index + 1);
+          apply();
+        },
+      })
+    );
+  };
+
+  const refreshAll = (): void => {
+    refreshPreview();
+    refreshGrid();
+  };
+
   const apply = (): void => {
     context.actions.replaceCommand(context.path, readDraft());
-    refreshPreview();
+    refreshAll();
   };
 
   resource.addEventListener("change", apply);
   resource.addEventListener("input", () => {
-    // Live left-card refresh while typing; staged commit still on change/blur via apply.
-    refreshPreview();
+    // Live card/grid refresh while typing; staged commit still on change via apply.
+    refreshAll();
   });
   faceIndex.addEventListener("change", apply);
-  faceIndex.addEventListener("input", refreshPreview);
+  faceIndex.addEventListener("input", refreshAll);
   position.addEventListener("change", apply);
   flip.addEventListener("change", apply);
 
@@ -227,18 +452,49 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     apply();
   };
 
-  refreshPreview();
+  refreshAll();
 
-  const resourceRow = el("div", {
-    class: "event-command-face-resource-row",
+  const resourceActions = el("div", {
+    class: "event-command-face-resource-actions",
     children: [
-      resource,
       el("button", {
         class: "btn small event-command-face-pick",
-        text: "설정…",
+        text: "그래픽 선택…",
         attrs: { type: "button", "aria-label": "얼굴 그래픽 리소스 선택" },
         dataset: { testid: "event-command-face-resource-set" },
         on: { click: openPicker },
+      }),
+      el("button", {
+        class: "btn small event-command-face-bust-preset",
+        text: "흉상",
+        attrs: {
+          type: "button",
+          title: "Actor1 흉상 — 대사 창 위 대형 초상",
+        },
+        dataset: { testid: "event-command-face-bust-preset" },
+        on: {
+          click: () => {
+            resource.value = "generated-face-actor1-bust";
+            faceIndex.value = "1";
+            apply();
+          },
+        },
+      }),
+      el("button", {
+        class: "btn small event-command-face-full-preset",
+        text: "전신",
+        attrs: {
+          type: "button",
+          title: "전신 레이아웃 (id: generated-face-actor1-full)",
+        },
+        dataset: { testid: "event-command-face-full-preset" },
+        on: {
+          click: () => {
+            resource.value = "generated-face-actor1-full";
+            faceIndex.value = "1";
+            apply();
+          },
+        },
       }),
       el("button", {
         class: "btn small event-command-face-clear",
@@ -250,20 +506,56 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     ],
   });
 
+  const selectedCard = el("div", {
+    class: "event-command-face-selected-card",
+    children: [
+      previewHost,
+      el("div", {
+        class: "event-command-face-selected-meta",
+        children: [
+          el("div", {
+            class: "event-command-face-selected-heading",
+            text: "선택한 얼굴",
+          }),
+          resourceActions,
+          el("label", {
+            class: "event-command-face-resource-label",
+            children: [
+              el("span", { text: "리소스 ID" }),
+              resource,
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+
+  const optionsRow = el("div", {
+    class: "event-command-face-options",
+    children: [
+      fieldControl("얼굴 번호", faceIndex),
+      fieldControl("표시 위치", position),
+      fieldControl("좌우 반전", flip),
+    ],
+  });
+
   wrap.append(
-    previewHost,
+    selectedCard,
     el("div", {
-      class: "event-command-face-fields",
+      class: "event-command-face-grid-section",
+      dataset: { testid: "event-command-face-grid-section" },
       children: [
-        fieldControl("얼굴 그래픽", resourceRow),
-        fieldControl("얼굴 번호", faceIndex),
-        fieldControl("표시 위치", position),
-        fieldControl("좌우 반전", flip),
-        el("p", {
-          class: "event-command-face-hint",
-          text: "이후 문장 표시 창에 이 얼굴이 붙습니다. 오른쪽 미리보기는 플레이 시 대사 창 모습입니다.",
+        el("div", {
+          class: "event-command-face-section-label",
+          text: "얼굴 선택",
         }),
+        gridHost,
       ],
+    }),
+    optionsRow,
+    el("p", {
+      class: "event-command-face-hint",
+      text: "칩셋 얼굴은 4×4 칸에서 고릅니다. 리소스 id에 -bust 가 있으면 대사 창 위 대형 흉상으로 표시되며 시트 칸 선택은 숨깁니다.",
     })
   );
   return wrap;
@@ -278,33 +570,44 @@ function displayTextSettingsBody(
     class: "event-command-message-settings",
     dataset: { testid: "event-command-message-settings" },
   });
-  const format = selectWithOptions(MESSAGE_WINDOW_FORMAT_OPTIONS, cmd.format, "event-command-message-format");
-  const position = selectWithOptions(MESSAGE_WINDOW_POSITION_OPTIONS, cmd.position, "event-command-message-position");
+  // 드롭다운 대신 세그먼트 버튼으로 즉시 선택. 숨김 select 는 testid/selectOption 호환.
+  const format = segmentedSelect({
+    options: MESSAGE_WINDOW_FORMAT_SEGMENTS,
+    value: cmd.format,
+    testid: "event-command-message-format",
+    ariaLabel: "윈도우 표시 형식",
+  });
+  const position = segmentedSelect({
+    options: MESSAGE_WINDOW_POSITION_SEGMENTS,
+    value: cmd.position,
+    testid: "event-command-message-position",
+    ariaLabel: "윈도우 위치",
+  });
   const preventObscuring = checkboxControl(cmd.preventObscuringPlayer, "event-command-message-prevent-obscuring");
   const allowMovement = checkboxControl(cmd.allowEventMovementDuringWait, "event-command-message-allow-movement");
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "displayTextSettings",
-      format: selectedOptionValue(format, MESSAGE_WINDOW_FORMAT_OPTIONS, cmd.format),
-      position: selectedOptionValue(position, MESSAGE_WINDOW_POSITION_OPTIONS, cmd.position),
+      format: selectedOptionValue(format.select, MESSAGE_WINDOW_FORMAT_OPTIONS, cmd.format),
+      position: selectedOptionValue(position.select, MESSAGE_WINDOW_POSITION_OPTIONS, cmd.position),
       preventObscuringPlayer: preventObscuring.checked,
       allowEventMovementDuringWait: allowMovement.checked,
     });
   };
-  format.addEventListener("change", apply);
-  position.addEventListener("change", apply);
+  format.select.addEventListener("change", apply);
+  position.select.addEventListener("change", apply);
   preventObscuring.addEventListener("change", apply);
   allowMovement.addEventListener("change", apply);
   wrap.append(
     settingsGroup("윈도우 표시 형식", [
-      fieldControl("표시 형식", format),
+      format.root,
       el("p", {
         class: "event-command-settings-hint",
         text: "일반은 창 스킨 배경, 투명은 글자만 표시합니다.",
       }),
     ]),
     settingsGroup("윈도우 위치", [
-      fieldControl("표시 위치", position),
+      position.root,
       el("p", {
         class: "event-command-settings-hint",
         text: "이후 문장·선택지·숫자 입력 창의 기본 위치를 바꿉니다.",
@@ -346,6 +649,7 @@ function setFlagBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
   const flag = el("input", {
     attrs: { type: "text", placeholder: "플래그 이름" },
     value: cmd.flag,
+    dataset: { testid: "event-command-flag-name" },
   }) as HTMLInputElement;
   const val = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.value));
   const apply = () => {
@@ -379,42 +683,163 @@ function setSelfSwitchBody(context: CommandEditContext, cmd: Extract<Command, { 
 }
 
 function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fork" }>): HTMLElement {
-  const wrap = el("div", {});
-  wrap.append(conditionForm(cmd.condition, (condition) => {
-    context.actions.replaceCommand(context.path, { ...cmd, condition });
-  }));
-  wrap.append(renderForkBranch(context.path, context.actions, cmd, "then", cmd.then));
-  if (cmd.else) {
-    wrap.append(renderForkBranch(context.path, context.actions, cmd, "else", cmd.else));
-  } else {
-    wrap.append(el("button", {
-      class: "btn",
-      text: "+ else 추가",
-      on: { click: () => context.actions.replaceCommand(context.path, { ...cmd, else: [] }) },
-    }));
-  }
+  // RM2003 rhythm: dialog edits condition + else flag only. then/else bodies live in the main list.
+  const wrap = el("div", {
+    class: "event-command-fork-form",
+    dataset: { testid: "event-command-fork-form" },
+  });
+
+  const conditionSection = el("section", {
+    class: "event-fork-section event-fork-condition-section",
+    children: [
+      el("div", {
+        class: "event-fork-section-title",
+        text: "조건",
+        dataset: { testid: "event-fork-condition-title" },
+      }),
+      conditionForm(cmd.condition, (condition) => {
+        context.actions.replaceCommand(context.path, { ...cmd, condition });
+      }),
+    ],
+  });
+
+  const elseCheck = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-fork-else-enabled" },
+  }) as HTMLInputElement;
+  elseCheck.checked = cmd.else !== undefined;
+  elseCheck.addEventListener("change", () => {
+    if (elseCheck.checked) {
+      context.actions.replaceCommand(context.path, { ...cmd, else: cmd.else ?? [] });
+      return;
+    }
+    if ((cmd.else?.length ?? 0) > 0 && !window.confirm("그 외 분기의 명령을 삭제할까요?")) {
+      elseCheck.checked = true;
+      return;
+    }
+    context.actions.replaceCommand(context.path, { kind: "fork", condition: cmd.condition, then: cmd.then });
+  });
+
+  const optionsSection = el("section", {
+    class: "event-fork-section event-fork-options-section",
+    children: [
+      el("label", {
+        class: "event-fork-else-check",
+        children: [
+          elseCheck,
+          el("span", { text: "조건이 만족되지 않을 때 처리 (그 외 분기)" }),
+        ],
+      }),
+      el("p", {
+        class: "event-fork-section-hint",
+        text: "참/그 외 안의 명령은 이 창이 아니라 메인 실행 내용 목록의 들여쓰기 가지에서 편집합니다.",
+        dataset: { testid: "event-fork-body-hint" },
+      }),
+      el("div", {
+        class: "event-fork-branch-summary",
+        dataset: { testid: "event-fork-branch-summary" },
+        children: [
+          el("div", {
+            class: "event-fork-branch-summary-card then",
+            text: `참일 때 · ${cmd.then.length}개 명령`,
+            dataset: { testid: "event-fork-summary-then" },
+          }),
+          el("div", {
+            class: `event-fork-branch-summary-card else${cmd.else ? "" : " absent"}`,
+            text: cmd.else ? `그 외 · ${cmd.else.length}개 명령` : "그 외 · 분기 없음",
+            dataset: { testid: "event-fork-summary-else" },
+          }),
+        ],
+      }),
+      renderConditionEvalPreview(cmd.condition),
+    ],
+  });
+
+  wrap.append(conditionSection, optionsSection);
   return wrap;
 }
 
 function setSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSwitch" }>): HTMLElement {
-  // [치명-2] 전용 레코드 폼 레이아웃(스타일: .event-command-record-form) — 셀렉트 최소폭 보장,
-  // ... 피커 버튼과 수평 배치, 빈 공간에는 참조 요약을 표시한다.
-  const wrap = el("div", { class: "event-command-record-form" });
+  // 스위치 조작: 검색 가능 피커 + 값(ON/OFF/전환/변수) 한 줄. "값 소스" 별도 필드는 두지 않는다.
+  const wrap = el("div", { class: "event-command-record-form event-command-switch-form" });
   let currentSwitchId = cmd.switchId;
+  let currentOperandVariableId = typeof cmd.value === "object" && cmd.value !== null ? cmd.value.id : "";
+
   const swSel = databasePicker("switch", cmd.switchId, (switchId) => {
     currentSwitchId = switchId;
-    context.actions.replaceCommand(context.path, { ...cmd, switchId });
+    apply();
+  }, "event-command-switch-target");
+
+  const valueSelect = selectWithOptions(
+    SWITCH_VALUE_OPTIONS,
+    switchValueOption(cmd.value),
+    "event-command-switch-value",
+  );
+
+  const operandVariable = databasePicker("variable", currentOperandVariableId, (variableId) => {
+    currentOperandVariableId = variableId;
+    apply();
+  }, "event-command-switch-operand");
+
+  const valueRow = el("div", {
+    class: "event-command-switch-value-row",
+    dataset: { testid: "event-command-switch-value-row" },
+    children: [valueSelect, operandVariable],
   });
-  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.value));
-  val.addEventListener("change", () => {
-    context.actions.replaceCommand(context.path, { ...cmd, switchId: currentSwitchId, value: val.value === "true" });
+
+  const syncVisibility = (): void => {
+    const useVariable = valueSelect.value === "variable";
+    operandVariable.hidden = !useVariable;
+    // fakeDom 호환: classList.toggle 대신 add/remove.
+    if (useVariable) valueRow.classList.add("is-variable");
+    else valueRow.classList.remove("is-variable");
+  };
+
+  const apply = (): void => {
+    const token = valueSelect.value;
+    const value: SwitchValue = token === "variable"
+      ? { kind: "var", id: currentOperandVariableId }
+      : token === "toggle"
+        ? "toggle"
+        : token === "true";
+    context.actions.replaceCommand(context.path, {
+      kind: "setSwitch",
+      switchId: currentSwitchId,
+      value,
+    });
+  };
+
+  valueSelect.addEventListener("change", () => {
+    syncVisibility();
+    apply();
   });
+  syncVisibility();
+
   wrap.append(
     fieldControl("스위치", swSel),
-    fieldControl("값", val),
-    recordUsageHint("switch", cmd.switchId)
+    fieldControl("값", valueRow),
+    el("p", {
+      class: "event-command-switch-hint",
+      text: "변수: 0=OFF / 그 외=ON · 전환: 현재 값을 반전",
+      dataset: { testid: "event-command-switch-hint" },
+    }),
+    recordUsageHint("switch", cmd.switchId),
   );
   return wrap;
+}
+
+const SWITCH_VALUE_OPTIONS = [
+  { value: "true", label: "ON" },
+  { value: "false", label: "OFF" },
+  { value: "toggle", label: "전환" },
+  { value: "variable", label: "변수" },
+] as const satisfies readonly SelectOption<"true" | "false" | "toggle" | "variable">[];
+
+function switchValueOption(value: SwitchValue): "true" | "false" | "toggle" | "variable" {
+  if (typeof value === "object" && value !== null) return "variable";
+  if (value === "toggle") return "toggle";
+  if (value === false) return "false";
+  return "true";
 }
 
 function inputWaitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "inputWait" }>): HTMLElement {
@@ -424,7 +849,7 @@ function inputWaitBody(context: CommandEditContext, cmd: Extract<Command, { kind
   const variablePicker = databasePicker("variable", currentVariableId, (variableId) => {
     currentVariableId = variableId;
     context.actions.replaceCommand(context.path, { kind: "inputWait", variableId: currentVariableId });
-  });
+  }, "event-command-input-wait-variable");
   wrap.append(el("label", { class: "inline-field", children: [el("span", { text: "키 코드 저장 변수(선택)" }), variablePicker] }));
   return wrap;
 }
@@ -451,6 +876,7 @@ function changeFriendshipBody(context: CommandEditContext, cmd: Extract<Command,
   npcKey.addEventListener("change", apply);
   delta.addEventListener("change", apply);
   wrap.append(fieldControl("NPC 키", npcKey), fieldControl("변화량", delta));
+  appendFriendshipCharacterHint(wrap, cmd.npcKey);
   return wrap;
 }
 
@@ -478,6 +904,7 @@ function getFriendshipBody(context: CommandEditContext, cmd: Extract<Command, { 
     });
   });
   wrap.append(fieldControl("NPC 키", npcKey), fieldControl("저장 변수", variablePicker), recordUsageHint("variable", cmd.variableId));
+  appendFriendshipCharacterHint(wrap, cmd.npcKey);
   return wrap;
 }
 
@@ -503,4 +930,23 @@ function timerBody(context: CommandEditContext, cmd: Extract<Command, { kind: "t
   secs.addEventListener("change", apply);
   wrap.append(fieldControl("동작", action), fieldControl("타이머", timerId), fieldControl("시간(초)", secs));
   return wrap;
+}
+
+function appendFriendshipCharacterHint(wrap: HTMLElement, npcKey: string | undefined): void {
+  if (npcKey?.trim()) return;
+  const eventId = editorState.get().selectedEventId;
+  if (!eventId) return;
+  for (const map of Object.values(store.getCurrent().maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (!event) continue;
+    if (hasCharacterId(event)) return;
+    wrap.append(
+      el("p", {
+        class: "event-command-friendship-hint",
+        dataset: { testid: "event-command-friendship-requires-character-id" },
+        text: "NPC 키를 비우면 이 이벤트의 캐릭터 ID가 필요합니다. 없으면 런타임에서 무시됩니다.",
+      })
+    );
+    return;
+  }
 }

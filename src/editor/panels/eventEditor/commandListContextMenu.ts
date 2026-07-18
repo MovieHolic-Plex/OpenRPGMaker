@@ -1,6 +1,7 @@
 import { el } from "@/util/dom";
 import type { Command } from "@/project/types";
 import { openNewEventCommandDialog } from "./commandEditDialog";
+import { newM2Command } from "@/editor/eventCommandFactory";
 import { copyEventCommandToClipboard, hasEventCommandClipboard, readEventCommandClipboard } from "./commandClipboard";
 import { openEventCommandPicker } from "./commandPicker";
 import type { CommandListActions } from "./types";
@@ -68,22 +69,33 @@ export function handleCommandShortcut(
     switch (event.key.toLowerCase()) {
       case "x":
         event.preventDefault();
+        event.stopPropagation();
         cutCommand(request);
         closeMenu?.();
         return;
       case "c":
         event.preventDefault();
+        event.stopPropagation();
         copyEventCommandToClipboard(request.command);
         closeMenu?.();
         return;
       case "v":
         event.preventDefault();
+        event.stopPropagation();
         pasteCommand(request);
         closeMenu?.();
         return;
       case "a":
         event.preventDefault();
+        event.stopPropagation();
         selectAllCommands(request.item);
+        closeMenu?.();
+        return;
+      case "/":
+      case "?":
+        event.preventDefault();
+        event.stopPropagation();
+        insertCommentCommand(request);
         closeMenu?.();
         return;
     }
@@ -91,17 +103,22 @@ export function handleCommandShortcut(
   if (event.ctrlKey || event.altKey) return;
   if (event.key === "Enter") {
     event.preventDefault();
+    event.stopPropagation();
     openInsertPicker(request, closeMenu ?? (() => undefined));
     return;
   }
   if (event.key === " " || event.key === "Spacebar") {
     event.preventDefault();
+    event.stopPropagation();
     request.openEditor();
     closeMenu?.();
     return;
   }
-  if (event.key === "Delete" || event.key === "Del") {
+  if (event.key === "Delete" || event.key === "Del" || event.key === "Backspace") {
+    // 실행 내용 포커스에서 Delete 는 명령만 지운다.
+    // stopPropagation 필수 — 모달 backdrop 의 "이벤트 삭제" 핸들러로 버블되면 이벤트 전체가 날아간다.
     event.preventDefault();
+    event.stopPropagation();
     request.actions.deleteCommand(request.path);
     closeMenu?.();
   }
@@ -115,6 +132,16 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       icon: "insert",
       testId: "event-command-menu-insert",
       run: () => openInsertPicker(request, close),
+    },
+    {
+      label: "주석 삽입",
+      shortcut: "Ctrl+/",
+      icon: "insert",
+      testId: "event-command-menu-insert-comment",
+      run: () => {
+        insertCommentCommand(request);
+        close();
+      },
     },
     {
       label: "편집...",
@@ -191,6 +218,13 @@ function cutCommand(request: CommandShortcutRequest): void {
 function pasteCommand(request: CommandShortcutRequest): void {
   const command = readEventCommandClipboard();
   if (command) request.actions.insertCommand(request.path, command);
+}
+
+function insertCommentCommand(request: CommandShortcutRequest): void {
+  const command = newM2Command("m2-088-comment");
+  openNewEventCommandDialog(command, (edited) => {
+    request.actions.insertCommand(request.path, edited);
+  });
 }
 
 function selectAllCommands(item: HTMLElement): void {

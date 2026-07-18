@@ -5,7 +5,8 @@
 //  2) 플로우차트: 조건 분기/선택지/반복을 노드 그래프로 보여주는 읽기 전용 뷰.
 //     데이터 모델은 Command union 그대로 두고(원칙 5) 전부 파생 렌더다.
 import { clearChildren, el } from "@/util/dom";
-import type { Command, EventPage } from "@/project/types";
+import type { Command, EventPage, MapId } from "@/project/types";
+import { auxCompositeKey, bindAuxDetails, getAuxOpen, isAuxOpenApplying, setAuxOpen } from "./auxOpenController";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { renderCommandPreview } from "./commandPreview";
 import { commandSummary } from "./commandSummary";
@@ -19,39 +20,78 @@ type ScriptStep = {
   readonly face?: ActiveFace;
 };
 
-// 접힘/스텝 상태는 재렌더(스토어 구독)를 넘어 유지한다. 페이지 id 키.
-const openLivePreview = new Set<string>();
-const openFlowchart = new Set<string>();
+export type EventScriptModernViewsOptions = {
+  readonly mapId: MapId;
+  readonly eventId: string;
+  readonly page: EventPage;
+};
+
+// 스텝 위치는 재렌더(스토어 구독)를 넘어 유지. open 은 auxOpenController 가 소유.
+// 키: mapId:eventId:pageId
 const stepByPage = new Map<string, number>();
 
-export function renderEventScriptModernViews(page: EventPage): HTMLElement {
+export function renderEventScriptModernViews(
+  optionsOrMapId: EventScriptModernViewsOptions | EventPage | MapId,
+  eventIdOrPage?: string | EventPage,
+  pageArg?: EventPage
+): HTMLElement {
+  // ({ mapId, eventId, page }) | (mapId, eventId, page) | (page) 테스트 호환
+  let mapId: string;
+  let eventId: string;
+  let page: EventPage;
+  if (typeof optionsOrMapId === "object" && optionsOrMapId !== null && "page" in optionsOrMapId) {
+    ({ mapId, eventId, page } = optionsOrMapId as EventScriptModernViewsOptions);
+  } else if (typeof optionsOrMapId === "string" && typeof eventIdOrPage === "string" && pageArg) {
+    mapId = optionsOrMapId;
+    eventId = eventIdOrPage;
+    page = pageArg;
+  } else {
+    page = optionsOrMapId as EventPage;
+    mapId = "";
+    eventId = "";
+  }
+  const key = auxCompositeKey(mapId, eventId, page.id);
   const wrap = el("div", { class: "event-script-modern-views" });
-  wrap.append(renderLivePreview(page), renderFlowchart(page));
+  wrap.append(renderLivePreview(key, page), renderFlowchart(key, page));
   return wrap;
 }
 
 /* ---------------------------------------------------------------- 라이브 미리보기 */
 
-function renderLivePreview(page: EventPage): HTMLElement {
+function renderLivePreview(key: string, page: EventPage): HTMLElement {
   const details = el("details", {
     class: "event-script-live-preview",
     dataset: { testid: "event-script-live-preview" },
   }) as HTMLDetailsElement;
-  if (openLivePreview.has(page.id)) details.open = true;
+  const steps = flattenScript(page.commands);
+  // Preview: keep "N steps" or short first-command label when available.
+  let statusText = "empty";
+  let statusKind = "empty";
+  if (steps.length > 0) {
+    statusKind = "ready";
+    const first = commandSummary(steps[0]!.command).trim();
+    statusText = first.length > 0 && first.length <= 18 ? first : `${steps.length} steps`;
+  }
   const summary = el("summary", {
     class: "event-aux-chip-summary",
     children: [
       el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "▶" }),
       el("span", { class: "event-aux-chip-label", text: "미리보기" }),
+      el("span", {
+        class: "event-aux-chip-status",
+        text: statusText,
+        dataset: { testid: "event-preview-chip-status", kind: statusKind },
+      }),
     ],
   });
   details.append(summary);
+  bindAuxDetails(key, "preview", details);
   details.addEventListener("toggle", () => {
-    if (details.open) openLivePreview.add(page.id);
-    else openLivePreview.delete(page.id);
+    if (isAuxOpenApplying()) return;
+    if (details.open) setAuxOpen(key, "preview");
+    else if (getAuxOpen(key) === "preview") setAuxOpen(key, null);
   });
 
-  const steps = flattenScript(page.commands);
   const body = el("div", { class: "event-script-live-preview-body" });
   if (steps.length === 0) {
     body.append(el("div", { class: "empty-hint", text: "재생할 명령이 없습니다." }));
@@ -59,7 +99,7 @@ function renderLivePreview(page: EventPage): HTMLElement {
     return details;
   }
 
-  let index = Math.min(stepByPage.get(page.id) ?? 0, steps.length - 1);
+  let index = Math.min(stepByPage.get(key) ?? 0, steps.length - 1);
   let playTimer: ReturnType<typeof setInterval> | null = null;
 
   const stage = el("div", { class: "event-script-live-stage", dataset: { testid: "event-script-live-stage" } });
@@ -67,7 +107,7 @@ function renderLivePreview(page: EventPage): HTMLElement {
   const position = el("span", { class: "event-script-live-position" });
 
   const renderStep = () => {
-    stepByPage.set(page.id, index);
+    stepByPage.set(key, index);
     const step = steps[index];
     if (!step) return;
     clearChildren(stage);
@@ -174,6 +214,12 @@ export function flattenScript(commands: readonly Command[]): ScriptStep[] {
         walk(command.body, depth + 1, "반복");
       } else if (command.kind === "shop" && command.branchOnTransaction) {
         walk(command.transactionBranch ?? [], depth + 1, "구매/판매");
+      } else if (command.kind === "inn" && command.branchOnNotEnoughGold) {
+        walk(command.notEnoughBranch ?? [], depth + 1, "골드 부족");
+      } else if (command.kind === "battleProcessing" && command.branchOnResult) {
+        walk(command.victoryBranch ?? [], depth + 1, "전투 승리");
+        walk(command.defeatBranch ?? [], depth + 1, "전투 패배");
+        walk(command.escapeBranch ?? [], depth + 1, "전투 도망");
       } else if (command.kind === "promoteActor") {
         walk(command.successBranch ?? [], depth + 1, "승급 성공");
         walk(command.failureBranch ?? [], depth + 1, "승급 실패");
@@ -189,24 +235,39 @@ export function flattenScript(commands: readonly Command[]): ScriptStep[] {
 
 /* ---------------------------------------------------------------- 플로우차트 */
 
-function renderFlowchart(page: EventPage): HTMLElement {
+function renderFlowchart(key: string, page: EventPage): HTMLElement {
   const details = el("details", {
     class: "event-script-flowchart",
     dataset: { testid: "event-script-flowchart" },
   }) as HTMLDetailsElement;
-  if (openFlowchart.has(page.id)) details.open = true;
+  const nodeCount = countFlowNodes(page.commands);
+  const branchCount = countFlowBranches(page.commands);
+  // Flow: branch-ish label when branches exist, else node count.
+  let statusText = "empty";
+  let statusKind = "empty";
+  if (nodeCount > 0) {
+    statusKind = "ready";
+    statusText = branchCount > 0 ? `분기 ${branchCount}` : `${nodeCount}`;
+  }
   details.append(
     el("summary", {
       class: "event-aux-chip-summary",
       children: [
         el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "◎" }),
         el("span", { class: "event-aux-chip-label", text: "플로우" }),
+        el("span", {
+          class: "event-aux-chip-status",
+          text: statusText,
+          dataset: { testid: "event-flow-chip-status", kind: statusKind },
+        }),
       ],
     })
   );
+  bindAuxDetails(key, "flow", details);
   details.addEventListener("toggle", () => {
-    if (details.open) openFlowchart.add(page.id);
-    else openFlowchart.delete(page.id);
+    if (isAuxOpenApplying()) return;
+    if (details.open) setAuxOpen(key, "flow");
+    else if (getAuxOpen(key) === "flow") setAuxOpen(key, null);
   });
   const body = el("div", { class: "event-flowchart-body", dataset: { testid: "event-flowchart-body" } });
   if (page.commands.length === 0) {
@@ -216,6 +277,27 @@ function renderFlowchart(page: EventPage): HTMLElement {
   }
   details.append(body);
   return details;
+}
+
+function countFlowNodes(commands: readonly Command[]): number {
+  let count = 0;
+  for (const command of commands) {
+    count += 1;
+    for (const branch of flowBranchesOf(command)) {
+      count += countFlowNodes(branch.commands);
+    }
+  }
+  return count;
+}
+
+function countFlowBranches(commands: readonly Command[]): number {
+  let count = 0;
+  for (const command of commands) {
+    const branches = flowBranchesOf(command);
+    count += branches.length;
+    for (const branch of branches) count += countFlowBranches(branch.commands);
+  }
+  return count;
 }
 
 // 순차 명령 = 세로 컬럼, 분기 = 가로로 나란한 하위 컬럼.
@@ -273,6 +355,16 @@ function flowBranchesOf(command: Command): FlowBranch[] {
   if (command.kind === "loop") return [{ label: "반복", commands: command.body }];
   if (command.kind === "shop" && command.branchOnTransaction) {
     return [{ label: "구매/판매", commands: command.transactionBranch ?? [] }];
+  }
+  if (command.kind === "inn" && command.branchOnNotEnoughGold) {
+    return [{ label: "골드 부족", commands: command.notEnoughBranch ?? [] }];
+  }
+  if (command.kind === "battleProcessing" && command.branchOnResult) {
+    return [
+      { label: "전투 승리", commands: command.victoryBranch ?? [] },
+      { label: "전투 패배", commands: command.defeatBranch ?? [] },
+      { label: "전투 도망", commands: command.escapeBranch ?? [] },
+    ];
   }
   if (command.kind === "promoteActor") {
     return [

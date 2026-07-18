@@ -89,6 +89,36 @@ export const SAND_TILE = {
   INNER_CORNER: 365,
 } as const;
 
+// 포석(돌길) 오토타일 — 129 템플릿 블록(열 9~11 × 행 4~7). 2026-07-16 사용자 지정 정본.
+export const COBBLE_TILE = {
+  BODY: 190,
+  EDGE_NORTH: 160,
+  EDGE_SOUTH: 220,
+  EDGE_WEST: 189,
+  EDGE_EAST: 191,
+  CORNER_NORTH_WEST: 159,
+  CORNER_NORTH_EAST: 161,
+  CORNER_SOUTH_WEST: 219,
+  CORNER_SOUTH_EAST: 221,
+  ISOLATED: 129,
+  INNER_CORNER: 131,
+} as const;
+
+// 경작지(밭고랑+새싹) 오토타일 — 126 템플릿 블록(열 6~8 × 행 4~7). 참조 맵 밭 문법.
+export const FARMLAND_TILE = {
+  BODY: 187,
+  EDGE_NORTH: 157,
+  EDGE_SOUTH: 217,
+  EDGE_WEST: 186,
+  EDGE_EAST: 188,
+  CORNER_NORTH_WEST: 156,
+  CORNER_NORTH_EAST: 158,
+  CORNER_SOUTH_WEST: 216,
+  CORNER_SOUTH_EAST: 218,
+  ISOLATED: 126,
+  INNER_CORNER: 128,
+} as const;
+
 const SAND_SIDE_EDGES = [
   SAND_TILE.EDGE_NORTH,
   SAND_TILE.EDGE_SOUTH,
@@ -111,9 +141,11 @@ const LAKE_SHORE_EDGE_TILES = [0, 30, 60, 90] as const;
 const LAKE_SHORE_EDGE_ANIMATION_FRAMES = [
   ...tilesInRect({ left: 0, top: 0, right: 2, bottom: 3 }),
 ] as const;
-const WATERFALL_WATER_TILES = [93, 123, 153, 183, 213] as const;
+// 2026-07-17 정본 교정: 3행(93~95)은 폭포가 아니라 수로(석축 스킨)의 오목(inner) 코너다.
+// 폭포는 4행부터 — lakeAutotile.ts CANAL_AUTOTILE_TILE 참조.
+const WATERFALL_WATER_TILES = [123, 153, 183, 213] as const;
 const WATERFALL_WATER_ANIMATION_FRAMES = [
-  ...tilesInRect({ left: 3, top: 3, right: 5, bottom: 7 }),
+  ...tilesInRect({ left: 3, top: 4, right: 5, bottom: 7 }),
 ] as const;
 const DESERT_SAND_BODY_TILES = [SAND_TILE.BODY] as const;
 const DESERT_SAND_EDGE_TILES = [...SAND_SIDE_EDGES, ...SAND_CORNERS] as const;
@@ -170,10 +202,10 @@ export const CHIPSET_TILE_GROUPS = {
     300, 301, 302, 303, 304, 305,
     330, 331, 332, 333, 334, 335,
   ],
-  // 키큰 풀(포켓몬풍 인카운터 풀숲 상징) — 잔디 블록 우측의 짙은 대역.
-  // grass-autotile 하네스 그룹이 이미 점유한 273·333은 제외해 이중 배선을 피한다.
+  // 키큰 풀(포켓몬풍 인카운터 풀숲 상징) — 243 템플릿 블록 + 상단 변형 244.
+  // 273/333은 243 블록의 NW/SW 모서리 — 잔디 오분류를 교정해 편입 (2026-07-17, grass-autotile 그룹에서 제거).
   // 통행성은 잔디와 동일(passable) — 인카운터는 사냥터/조우표로 별도 배선하며 타일 자체엔 로직을 넣지 않는다.
-  tallGrass: [303, 304, 305, 334, 335, 243, 244, 245, 274, 275],
+  tallGrass: [303, 304, 305, 334, 335, 243, 244, 245, 273, 274, 275, 333],
   lakeWaterBody: LAKE_WATER_BODY_TILES,
   lakeWaterBodyAnimationFrames: LAKE_WATER_BODY_ANIMATION_FRAMES,
   lakeShoreEdges: LAKE_SHORE_EDGE_TILES,
@@ -290,15 +322,31 @@ export const CHIPSET_TILE_GROUPS = {
   castleRoundTowerBaseObjects: [54, 55],
   castleRoundTowerObjects: [24, 25, 54, 55, 138, 139, 140, 141, 142, 143],
   magicCircleObjects: [231],
-  vineObjects: [291, 321, 325, 355, 356],
+  // 2026-07-17 교정: 덩굴 정본은 265(V자)·295(대각) — 예전 목록(291=마른나무 하단,
+  // 355=지붕 캡 등)은 오분류였다.
+  vineObjects: [265, 295],
   signObjects: [319, 320],
   fireObjects: [318, 381],
-  statueObjects: [382, 412, 413],
+  // 2026-07-16 사용자 교정: 382=우물(wellObjects로), 412=돌바닥 하위 지면 타일(소품 아님).
+  // 441/442 바위는 412 돌바닥 패치 위에 섞어 쓴다. 이 가방은 해체됨.
+  statueObjects: [],
+  // 2026-07-16 칩셋 재조사 + 사용자 교정 반영.
+  // 술통 177 + 오크통 207. 석상/돌기둥은 세로 2칸 페어: 266(상)+296(하), 267(상)+297(하).
+  barrelObjects: [177, 207],
+  plazaStatueObjects: [266, 296],
+  plazaPillarObjects: [267, 297],
+  // 우물(382) — 위에서 본 돌 우물 (2026-07-16 사용자 확정). 마을 광장 근처 단독 배치.
+  wellObjects: [382],
+  // 화려한 깃발 208/209 — 장터·중요한 집 입구의 벽면 장식.
+  bannerObjects: [208, 209],
   // 마켓 공터 실측: 하단 가로 레일 468|469*|470, 가장자리 돌단/슬랩 268
   marketRailObjects: [468, 469, 470],
   marketRailHorizontalObjects: [468, 469, 470],
   stoneStepObjects: [268],
-  smallObjects: [259, 318, 319, 320, 348, 349, 350, 351, 352, 411, 440, 441, 442, 443, 472, 473],
+  // 411/443은 소품이 아니라 돌바닥 지면 텍스처(통행 가능) — 가방에서 제외 (2026-07-16, 돌마당 필드).
+  // 2026-07-17 교정: 441/442 바위는 전역 밴(석상/기둥으로 대체), 318 횃불·320 벽보·
+  // 472/473 간판은 "벽 전용"이라 지면 산포 가방에서 제외.
+  smallObjects: [259, 319, 348, 349, 350, 351, 352, 440],
 } as const;
 
 export const CONFIRMED_CHIPSET_TILE_INDEXES = [
@@ -358,6 +406,11 @@ export const CONFIRMED_CHIPSET_TILE_INDEXES = [
   ...CHIPSET_TILE_GROUPS.signObjects,
   ...CHIPSET_TILE_GROUPS.fireObjects,
   ...CHIPSET_TILE_GROUPS.statueObjects,
+  ...CHIPSET_TILE_GROUPS.barrelObjects,
+  ...CHIPSET_TILE_GROUPS.plazaStatueObjects,
+  ...CHIPSET_TILE_GROUPS.plazaPillarObjects,
+  ...CHIPSET_TILE_GROUPS.wellObjects,
+  ...CHIPSET_TILE_GROUPS.bannerObjects,
   ...CHIPSET_TILE_GROUPS.smallObjects,
 ] as const;
 
@@ -393,6 +446,10 @@ export function isPropOverlayChipsetTile(index: number): boolean {
     hasTile(CHIPSET_TILE_GROUPS.signObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.fireObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.statueObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.barrelObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.plazaStatueObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.plazaPillarObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.wellObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.houseWindowObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.castleWindowObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.tentObjects, index) ||
@@ -457,6 +514,10 @@ export function isSolidChipsetTile(index: number): boolean {
     hasTile(CHIPSET_TILE_GROUPS.signObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.fireObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.statueObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.barrelObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.plazaStatueObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.plazaPillarObjects, index) ||
+    hasTile(CHIPSET_TILE_GROUPS.wellObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.tentObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.fenceObjects, index) ||
     hasTile(CHIPSET_TILE_GROUPS.stakeObjects, index) ||

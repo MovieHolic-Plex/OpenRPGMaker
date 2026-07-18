@@ -12,7 +12,7 @@ import type {
   Trigger,
   Condition,
 } from "@/project/types";
-import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults";
+// Default events are transparent (no charset) until the author picks a graphic.
 import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 export { newCommand, newM2Command } from "@/editor/eventCommandFactory";
 
@@ -28,7 +28,6 @@ export function createDefaultGameEvent(
     id: eventId,
     x,
     y,
-    sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID },
     trigger,
     commands,
   };
@@ -75,7 +74,7 @@ export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): 
 export function updateEvent(
   mapId: MapId,
   eventId: string,
-  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition" | "schedule">>
+  patch: Partial<Pick<GameEvent, "sprite" | "trigger" | "condition" | "schedule" | "characterId" | "giftPrefs" | "giftResponses" | "talkFriendship">>
 ): void {
   store.update((p) => {
     const m = p.maps[mapId];
@@ -86,6 +85,27 @@ export function updateEvent(
     if ("trigger" in patch && patch.trigger !== undefined) ev.trigger = patch.trigger;
     if ("condition" in patch) ev.condition = patch.condition;
     if ("schedule" in patch) ev.schedule = patch.schedule;
+    if ("characterId" in patch) {
+      const next = patch.characterId?.trim();
+      if (next) ev.characterId = next;
+      else {
+        delete ev.characterId;
+        // Avoid stamp restamping characterId=event.id solely from leftover talkFriendship.
+        delete ev.talkFriendship;
+      }
+    }
+    if ("giftPrefs" in patch) {
+      if (patch.giftPrefs) ev.giftPrefs = patch.giftPrefs;
+      else delete ev.giftPrefs;
+    }
+    if ("giftResponses" in patch) {
+      if (patch.giftResponses) ev.giftResponses = patch.giftResponses;
+      else delete ev.giftResponses;
+    }
+    if ("talkFriendship" in patch) {
+      if (patch.talkFriendship === undefined || patch.talkFriendship === false) delete ev.talkFriendship;
+      else ev.talkFriendship = patch.talkFriendship;
+    }
   }, { scope: "map", mapId });
 }
 

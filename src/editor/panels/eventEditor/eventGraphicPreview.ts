@@ -17,10 +17,11 @@ const PREVIEW_SCALE = 2;
 /** Compact icons for event list / world cards (~16.5×22). */
 const ICON_PREVIEW_SCALE = 0.6875;
 /**
- * Page-tab thumbnails: 48×64 charset cell (scale 2) so the side strip tab
- * is almost filled by the character graphic; page number overlays the bottom.
+ * Page-tab thumbnails: 36×48 charset cell (scale 1.5) so the side-strip tab
+ * (72px tall with number overlay padding) shows the same full frame as the
+ * graphic panel without CSS max-size squashing the crop.
  */
-export const PAGE_TAB_ICON_PREVIEW_SCALE = 2;
+export const PAGE_TAB_ICON_PREVIEW_SCALE = 1.5;
 const DEFAULT_FRONT_FRAME = {
   characterIndex: 0,
   direction: "down",

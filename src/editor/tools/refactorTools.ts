@@ -44,16 +44,30 @@ function addConditionRefs(condition: Condition | undefined, refs: ReferenceSets)
   if (condition.kind === "switch") refs.switches.add(condition.switchId);
   else if (condition.kind === "variable") refs.variables.add(condition.variableId);
   else if (condition.kind === "item") refs.items.add(condition.itemId);
+  else if (condition.kind === "all" || condition.kind === "any") {
+    for (const child of condition.conditions) addConditionRefs(child, refs);
+  } else if (condition.kind === "not") {
+    addConditionRefs(condition.condition, refs);
+  }
 }
 
 function addCommandRefs(command: Command, refs: ReferenceSets): void {
   switch (command.kind) {
     case "setSwitch":
       refs.switches.add(command.switchId);
+      if (typeof command.value === "object" && command.value !== null && command.value.kind === "var") {
+        refs.variables.add(command.value.id);
+      }
       break;
     case "setVariable":
       refs.variables.add(command.variableId);
       if (typeof command.value === "object" && command.value.kind === "var") refs.variables.add(command.value.id);
+      break;
+    case "changeGold":
+      if (typeof command.amount === "object" && command.amount.kind === "var") refs.variables.add(command.amount.id);
+      break;
+    case "changeExp":
+      if (typeof command.amount === "object" && command.amount.kind === "var") refs.variables.add(command.amount.id);
       break;
     case "getFriendship":
       refs.variables.add(command.variableId);
@@ -63,6 +77,7 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
       break;
     case "changeItem":
       refs.items.add(command.itemId);
+      if (typeof command.amount === "object" && command.amount.kind === "var") refs.variables.add(command.amount.id);
       break;
     case "battleProcessing":
       refs.troops.add(command.troopId);
@@ -276,6 +291,16 @@ export function renameVariableEverywhere(project: Project, oldId: string, newId:
       }
       if (typeof command.value === "object" && command.value.kind === "var" && command.value.id === oldId) {
         command.value.id = newId;
+        count += 1;
+      }
+    } else if (command.kind === "setSwitch") {
+      if (typeof command.value === "object" && command.value !== null && command.value.kind === "var" && command.value.id === oldId) {
+        command.value.id = newId;
+        count += 1;
+      }
+    } else if (command.kind === "changeGold" || command.kind === "changeItem" || command.kind === "changeExp") {
+      if (typeof command.amount === "object" && command.amount.kind === "var" && command.amount.id === oldId) {
+        command.amount.id = newId;
         count += 1;
       }
     } else if ((command.kind === "inputNumber" || command.kind === "inputWait") && command.variableId === oldId) {

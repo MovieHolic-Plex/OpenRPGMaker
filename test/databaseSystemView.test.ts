@@ -126,4 +126,96 @@ describe("database system view", () => {
     expect(undone).toBe(true);
     expect(store.getCurrent().system.battleFlow).toBe(before);
   });
+
+  it("renders title workbench preview and accepts musicResourceId", () => {
+    const host = renderSystem();
+    expect(findByTestId(host, "db-title-workbench")).not.toBeNull();
+    expect(findByTestId(host, "db-title-workbench-preview")).not.toBeNull();
+    expect(findByTestId(host, "db-title-workbench-stage")).not.toBeNull();
+    expect(findByTestId(host, "db-field-title-screen-music")).not.toBeNull();
+    expect(findByTestId(host, "db-title-bgm-play")).not.toBeNull();
+    expect(findByTestId(host, "db-title-bgm-stop")).not.toBeNull();
+
+    const music = findByTestId(host, "db-field-title-screen-music") as { value?: string } | null;
+    if (!music) throw new Error("missing music field");
+    music.value = "easyrpg-music-field-1";
+    (music as FakeElement).dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.titleScreen?.musicResourceId).toBe("easyrpg-music-field-1");
+    const label = findByTestId(host, "db-title-workbench-music-id");
+    expect(label?.textContent).toContain("easyrpg-music-field-1");
+  })
+
+  it("groups title workbench into display/audio/menu fieldsets", () => {
+    const host = renderSystem();
+    expect(findByTestId(host, "db-title-workbench-display")).not.toBeNull();
+    expect(findByTestId(host, "db-title-workbench-audio")).not.toBeNull();
+    expect(findByTestId(host, "db-title-workbench-menu")).not.toBeNull();
+    expect(findByTestId(host, "db-field-title-screen-presentation")).not.toBeNull();
+    expect(findByTestId(host, "db-field-title-screen-se-cursor")).not.toBeNull();
+    expect(findByTestId(host, "db-field-title-screen-visible-new-game")).not.toBeNull();
+  });
+
+  it("background resource change does not clear system.titleResourceId", () => {
+    store.update((draft) => {
+      draft.system.titleResourceId = "easyrpg-title-title2";
+      draft.system.titleScreen ??= {
+        title: "bg test",
+        layout: { titleX: 160, titleY: 70, menuX: 160, menuY: 118 },
+        menuLabels: { newGame: "새 게임", continueGame: "계속", quit: "종료" },
+        menuVisibility: { newGame: true, continueGame: true, quit: true },
+        backgroundResourceId: "rpg-zzu-title-field",
+      };
+    });
+    const host = renderSystem();
+    const background = findByTestId(host, "db-field-title-screen-background") as { value?: string } | null;
+    if (!background) throw new Error("missing background field");
+    background.value = "easyrpg-title-title1";
+    (background as FakeElement).dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.titleScreen?.backgroundResourceId).toBe("easyrpg-title-title1");
+    expect(store.getCurrent().system.titleResourceId).toBe("easyrpg-title-title2");
+  });
+
+  it("locks new-game visibility checked+disabled and hides continue from preview", () => {
+    const host = renderSystem();
+    const locked = findByTestId(host, "db-field-title-screen-visible-new-game") as { checked?: boolean; disabled?: boolean } | null;
+    if (!locked) throw new Error("missing new-game visibility checkbox");
+    expect(locked.checked).toBe(true);
+    expect(locked.disabled).toBe(true);
+
+    setCheckbox(host, "db-field-title-screen-visible-continue", false);
+    expect(store.getCurrent().system.titleScreen?.menuVisibility).toEqual({
+      newGame: true,
+      continueGame: false,
+      quit: true,
+    });
+
+    const menuPreview = findByTestId(host, "db-title-workbench-menu-preview");
+    if (!menuPreview) throw new Error("missing menu preview");
+    expect(menuPreview.textContent).toContain("새 게임");
+    expect(menuPreview.textContent).toContain("게임 종료");
+    expect(menuPreview.textContent).not.toContain("계속");
+    expect(menuPreview.childNodes).toHaveLength(2);
+  });
+
+  it("shows logo fields when presentation is graphic and previews logo", () => {
+    const host = renderSystem();
+    // Defaults now ship a crest logo in both mode, so logo controls are already visible.
+    expect(findByTestId(host, "db-field-title-screen-logo")).not.toBeNull();
+    expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBe("rpg-zzu-title-logo-crest");
+    expect(findByTestId(host, "db-title-workbench-logo")).not.toBeNull();
+
+    setSelectValue(host, "db-field-title-screen-presentation", "graphic");
+    expect(store.getCurrent().system.titleScreen?.titleGraphic?.mode).toBe("graphic");
+    expect(findByTestId(host, "db-field-title-screen-logo")).not.toBeNull();
+
+    const logo = findByTestId(host, "db-field-title-screen-logo") as { value?: string } | null;
+    if (!logo) throw new Error("missing logo field");
+    logo.value = "easyrpg-title-title1";
+    (logo as FakeElement).dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBe("easyrpg-title-title1");
+    expect(findByTestId(host, "db-title-workbench-logo")).not.toBeNull();
+  });
+;
 });

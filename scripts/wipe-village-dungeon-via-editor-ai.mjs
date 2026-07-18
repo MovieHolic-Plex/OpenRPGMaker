@@ -139,10 +139,10 @@ async function main() {
     source: "custom",
   };
   const aiConfig = {
-    baseUrl: env.VITE_OPENROUTER_BASE_URL || env.OPENROUTER_BASE_URL || "https://openrouter.ai/api/v1",
-    model: env.VITE_OPENROUTER_MODEL || env.OPENROUTER_MODEL || "google/gemini-3.1-flash-lite",
-    liteModel: env.VITE_OPENROUTER_LITE_MODEL || env.VITE_OPENROUTER_MODEL || "google/gemini-3.1-flash-lite",
-    apiKey: env.VITE_LLM_API_KEY || env.OPENROUTER_API_KEY || "",
+    baseUrl: env.VITE_VITE_LLM_API_URL || env.VITE_LLM_API_URL || "https://example.invalid/v1",
+    model: env.VITE_VITE_LLM_MODEL || env.VITE_LLM_MODEL || "google/gemini-3.1-flash-lite",
+    liteModel: env.VITE_llm-provider_LITE_MODEL || env.VITE_VITE_LLM_MODEL || "google/gemini-3.1-flash-lite",
+    apiKey: env.VITE_LLM_API_KEY || env.VITE_LLM_API_KEY || "",
     maxToolCalls: 200,
     maxTokens: 32768,
     reasoningEffort: "low",

@@ -1,12 +1,16 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   DEFAULT_SUPABASE_PROJECT_ID,
+  hydrateLastRemoteCommitTip,
+  listSupabaseAiActivityLogs,
   listSupabaseProjects,
   loadProjectFromSupabase,
+  peekLastRemoteCommitTip,
   recordSupabaseAiActivityLog,
   recordSupabaseAiAnalysisRun,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
+  seedLastRemoteCommitTip,
 } from "@/project/supabaseProjectSync";
 import { createHouseTemplateGalleryProject } from "@/project/defaults";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
@@ -35,6 +39,7 @@ describe("Supabase project sync", () => {
     const calls: FetchCall[] = [];
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
       return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(source)) }]), { status: 200 });
     }) satisfies typeof fetch);
 
@@ -54,14 +59,16 @@ describe("Supabase project sync", () => {
       calls.push({ input, init });
       return new Response(JSON.stringify([
         {
-          current_json: { meta: { title: "안개 항구와 등대의 밤" } },
           project_id: "fog-harbor-lighthouse",
-          title: null,
+          title: "안개 항구와 등대의 밤",
         },
         {
-          current_json: { meta: { title: "Fallback ignored" } },
           project_id: "star-village",
           title: "별등 마을",
+        },
+        {
+          project_id: "untitled-project",
+          title: null,
         },
       ]), { status: 200 });
     }) satisfies typeof fetch);
@@ -71,9 +78,11 @@ describe("Supabase project sync", () => {
     expect(projects).toEqual([
       { projectId: "fog-harbor-lighthouse", title: "안개 항구와 등대의 밤" },
       { projectId: "star-village", title: "별등 마을" },
+      { projectId: "untitled-project", title: "untitled-project" },
     ]);
     expect(String(calls[0]?.input)).toContain("/rest/v1/projects?");
-    expect(String(calls[0]?.input)).toContain("select=project_id%2Ctitle%2Ccurrent_json");
+    expect(String(calls[0]?.input)).toContain("select=project_id%2Ctitle");
+    expect(String(calls[0]?.input)).not.toContain("current_json");
     expect(String(calls[0]?.input)).toContain("order=project_id.asc");
     expect(calls[0]?.init?.headers).toMatchObject({
       "Accept-Profile": "rpg_zzu",
@@ -85,9 +94,11 @@ describe("Supabase project sync", () => {
     const source = createHouseTemplateGalleryProject();
     const calls: FetchCall[] = [];
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
     vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
       return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(source)) }]), { status: 200 });
     }) satisfies typeof fetch);
 
@@ -103,9 +114,10 @@ describe("Supabase project sync", () => {
       throw new Error("expected serialized project database skills");
     }
     source.database.skills = source.database.skills.filter((skill) => isRecord(skill) && skill.id !== "skill_item_ether");
-    vi.stubGlobal("fetch", (async () => (
-      new Response(JSON.stringify([{ current_json: source }]), { status: 200 })
-    )) satisfies typeof fetch);
+    vi.stubGlobal("fetch", (async (input) => {
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+      return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+    }) satisfies typeof fetch);
 
     const project = await loadProjectFromSupabase(TEST_CONFIG);
 
@@ -118,9 +130,10 @@ describe("Supabase project sync", () => {
     const legacySpriteId = legacySpriteReference("npc", "villager");
     const legacyTextureId = legacySpriteReference("tex", "npc", "villager");
     addLegacySpriteProbe(source, legacySpriteId, legacyTextureId);
-    vi.stubGlobal("fetch", (async () => (
-      new Response(JSON.stringify([{ current_json: source }]), { status: 200 })
-    )) satisfies typeof fetch);
+    vi.stubGlobal("fetch", (async (input) => {
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+      return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+    }) satisfies typeof fetch);
 
     const project = await loadProjectFromSupabase(TEST_CONFIG);
     const serialized = JSON.stringify(project);
@@ -139,9 +152,10 @@ describe("Supabase project sync", () => {
       { id: "doc_valid", mapId, title: "Valid.md", markdown: "# Valid" },
       { id: "doc_stale", mapId: "map_moonwell_forest", title: "Stale.md", markdown: "# Stale" },
     ];
-    vi.stubGlobal("fetch", (async () => (
-      new Response(JSON.stringify([{ current_json: source }]), { status: 200 })
-    )) satisfies typeof fetch);
+    vi.stubGlobal("fetch", (async (input) => {
+      if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
+      return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
+    }) satisfies typeof fetch);
 
     const project = await loadProjectFromSupabase(TEST_CONFIG);
 
@@ -232,28 +246,35 @@ describe("Supabase project sync", () => {
     const calls: FetchCall[] = [];
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
-      if (calls.length === 1) {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.includes("/rest/v1/projects?")) {
         return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(latestProject)) }]), { status: 200 });
+      }
+      if (method === "GET" && url.includes("/rest/v1/maps?")) {
+        return new Response(JSON.stringify([]), { status: 200 });
       }
       return new Response(null, { status: 201 });
     }) satisfies typeof fetch);
 
     const result = await saveProjectMapPatchToSupabase({ project: localProject, baseProject }, TEST_CONFIG);
-    const projectBody = calls[1]?.init?.body;
+    const projectCall = calls.find((call) => String(call.input).includes("/rest/v1/projects?") && (call.init?.method === "POST" || call.init?.method === "PATCH"));
+    const projectBody = projectCall?.init?.body;
     if (typeof projectBody !== "string") throw new Error("expected project upsert body");
     const projectPayload = parseRecord(projectBody);
     const currentJson = projectPayload.current_json;
     if (!isRecord(currentJson) || !isRecord(currentJson.maps)) throw new Error("expected current_json maps");
-    const mapRowsBody = calls[2]?.init?.body;
+    const mapRowsCall = calls.find((call) => String(call.input).includes("/rest/v1/maps?") && call.init?.method === "POST");
+    const mapRowsBody = mapRowsCall?.init?.body;
     if (typeof mapRowsBody !== "string") throw new Error("expected map rows body");
     const mapRows = parseRecords(mapRowsBody);
 
     expect(result.kind).toBe("saved");
     expect(requiredSerializedMapName(currentJson.maps, editedMapId)).toBe("Local edited map");
     expect(requiredSerializedMapName(currentJson.maps, remoteMapId)).toBe("Remote edited map");
-    expect(String(calls[0]?.input)).toContain("/rest/v1/projects?");
-    expect(String(calls[1]?.input)).toContain("on_conflict=project_id");
-    expect(String(calls[2]?.input)).toContain("/rest/v1/maps?");
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && (call.init?.method ?? "GET") === "GET")).toBe(true);
+    expect(String(projectCall?.input)).toContain("on_conflict=project_id");
+    expect(String(mapRowsCall?.input)).toContain("/rest/v1/maps?");
     expect(calls.some((call) => String(call.input).includes("/rest/v1/maps?") && call.init?.method === "DELETE")).toBe(false);
     expect(mapRows.map((row) => row.map_id)).toEqual([editedMapId]);
   });
@@ -268,6 +289,14 @@ describe("Supabase project sync", () => {
     const calls: FetchCall[] = [];
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.includes("/rest/v1/maps?")) {
+        return new Response(JSON.stringify([]), { status: 200 });
+      }
+      if (method === "POST" && url.includes("/rest/v1/maps?")) {
+        return new Response(null, { status: 201 });
+      }
       return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(latestProject)) }]), { status: 200 });
     }) satisfies typeof fetch);
 
@@ -276,7 +305,8 @@ describe("Supabase project sync", () => {
     expect(result.kind).toBe("conflict");
     if (result.kind !== "conflict") throw new Error("expected conflict result");
     expect(result.conflicts.map((conflict) => conflict.mapId)).toEqual([editedMapId]);
-    expect(calls).toHaveLength(1);
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && call.init?.method === "POST")).toBe(false);
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && call.init?.method === "PATCH")).toBe(false);
   });
 
   it("preserves concurrent saves from separate editors touching different maps", async () => {
@@ -294,6 +324,9 @@ describe("Supabase project sync", () => {
       calls.push({ input, init });
       const method = init?.method ?? "GET";
       if (method === "GET") {
+        if (String(input).includes("/rest/v1/maps?")) {
+          return new Response(JSON.stringify([]), { status: 200 });
+        }
         return new Response(JSON.stringify([{
           current_json: JSON.parse(serialize(remoteProject)),
           current_sha256: remoteSha256,
@@ -347,6 +380,9 @@ describe("Supabase project sync", () => {
       calls.push({ input, init });
       const method = init?.method ?? "GET";
       if (method === "GET") {
+        if (String(input).includes("/rest/v1/maps?")) {
+          return new Response(JSON.stringify([]), { status: 200 });
+        }
         return new Response(JSON.stringify([{
           current_json: JSON.parse(serialize(remoteProject)),
           current_sha256: remoteSha256,
@@ -391,6 +427,9 @@ describe("Supabase project sync", () => {
       calls.push({ input, init });
       const method = init?.method ?? "GET";
       if (method === "GET") {
+        if (String(input).includes("/rest/v1/maps?")) {
+          return new Response(JSON.stringify([]), { status: 200 });
+        }
         return new Response(JSON.stringify([{
           current_json: JSON.parse(serialize(remoteProject)),
           current_sha256: remoteSha256,
@@ -403,7 +442,8 @@ describe("Supabase project sync", () => {
     }) satisfies typeof fetch);
 
     const result = await saveProjectMapPatchToSupabase({ project: localProject, baseProject }, TEST_CONFIG);
-    const projectBody = calls[1]?.init?.body;
+    const projectCall = calls.find((call) => String(call.input).includes("/rest/v1/projects?") && (call.init?.method === "POST" || call.init?.method === "PATCH"));
+    const projectBody = projectCall?.init?.body;
     if (typeof projectBody !== "string") throw new Error("expected project upsert body");
     const projectPayload = parseRecord(projectBody);
     const currentJson = projectPayload.current_json;
@@ -525,6 +565,71 @@ describe("Supabase project sync", () => {
     expect(row?.tileset_id).toBe("__ai_activity__");
     expect(row?.run_id).toBe("22222222-2222-4222-8222-222222222222");
   });
+
+  it("lists AI activity scoped to project and merges primary with fallback", async () => {
+    vi.stubGlobal("fetch", (async (input) => {
+      const url = String(input);
+      if (url.includes("ai_activity_logs")) {
+        expect(url).toContain("project_id=eq.");
+        return new Response(JSON.stringify([
+          { log_id: "a1", channel: "chat", instruction: "primary", created_at: "2026-07-14T12:00:00.000Z" },
+        ]), { status: 200 });
+      }
+      if (url.includes("ai_analysis_runs")) {
+        expect(url).toContain("project_id=eq.");
+        return new Response(JSON.stringify([
+          {
+            run_id: "b1",
+            prompt_context_json: { channel: "region", instruction: "fallback-only" },
+            result_json: { ok: true },
+            created_at: "2026-07-14T11:00:00.000Z",
+          },
+          {
+            run_id: "a1",
+            prompt_context_json: { channel: "chat", instruction: "stale-fallback" },
+            result_json: {},
+            created_at: "2026-07-14T10:00:00.000Z",
+          },
+        ]), { status: 200 });
+      }
+      return new Response(JSON.stringify([]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const rows = await listSupabaseAiActivityLogs(20, TEST_CONFIG);
+    expect(rows.map((r) => r.log_id)).toEqual(["a1", "b1"]);
+    expect(rows[0]?.instruction).toBe("primary");
+    expect(rows[1]?.source).toBe("ai_analysis_runs_fallback");
+  });
+
+  it("hydrates last remote commit tip from commit list", async () => {
+    vi.stubGlobal("fetch", (async () => new Response(JSON.stringify([
+      { commit_id: "tip-commit-9", message: "latest", summary: "latest", review_status: "direct", author_id: null, author_label: null, author_kind: null, agent_name: null, created_at: "2026-07-14T12:00:00.000Z" },
+    ]), { status: 200 })) satisfies typeof fetch);
+    const tip = await hydrateLastRemoteCommitTip(TEST_CONFIG);
+    expect(tip).toBe("tip-commit-9");
+    expect(peekLastRemoteCommitTip(TEST_CONFIG.projectId)).toBe("tip-commit-9");
+  });
+
+  it("overlays map_json from maps table onto current_json on load", async () => {
+    const source = createHouseTemplateGalleryProject();
+    const mapId = firstMapId(source);
+    const overlayMap = renameMap(requiredMap(source, mapId), "Maps table wins");
+    const calls: FetchCall[] = [];
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      const url = String(input);
+      if (url.includes("/rest/v1/maps?")) {
+        return new Response(JSON.stringify([{ map_id: mapId, map_json: overlayMap }]), { status: 200 });
+      }
+      return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(source)) }]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const project = await loadProjectFromSupabase(TEST_CONFIG);
+
+    expect(project?.maps[mapId]?.name).toBe("Maps table wins");
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/maps?"))).toBe(true);
+  });
+
 });
 
 function parseRecord(json: string): Record<string, unknown> {

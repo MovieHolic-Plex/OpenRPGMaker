@@ -41,6 +41,31 @@ describe("event editor presentation", () => {
     expect(parts.some((part) => part.tone === "plain" && part.text.includes("어서 와요"))).toBe(true);
   });
 
+  it("renders choice options as chips and cancel as a distinct badge, not another option", () => {
+    const command = {
+      kind: "choices",
+      prompt: "폐광 열쇠 조사도 맡겠나?",
+      options: [
+        { text: "맡는다", branch: [] },
+        { text: "잠시 후", branch: [] },
+      ],
+      cancelBehavior: "choice2",
+    } satisfies Command;
+
+    const parts = commandSummaryParts(command);
+    const text = commandSummary(command);
+
+    expect(parts).toContainEqual({ text: "선택지 표시", tone: "command" });
+    expect(parts).toContainEqual({ text: "1.맡는다", tone: "choice-option" });
+    expect(parts).toContainEqual({ text: "2.잠시 후", tone: "choice-option" });
+    expect(parts).toContainEqual({ text: "취소→잠시 후", tone: "choice-cancel" });
+    // 취소 표기가 옵션 목록 사이에 섞이지 않는다.
+    expect(text).toContain("1.맡는다");
+    expect(text).toContain("2.잠시 후");
+    expect(text).toContain("취소→잠시 후");
+    expect(text).not.toMatch(/맡는다 \/ 잠시 후 \/ 취소/);
+  });
+
   it("shows user-defined switch and variable names instead of raw internal ids", () => {
     const project = store.getCurrent();
     const variable = project.variables[0];
@@ -55,6 +80,81 @@ describe("event editor presentation", () => {
     expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: true })).toContain("Gate Open");
     expect(commandSummary({ kind: "setVariable", variableId: blankVariable.id, op: "=", value: 0 })).toContain("(이름 없음)");
     expect(commandSummary({ kind: "setVariable", variableId: blankVariable.id, op: "=", value: 0 })).not.toContain(blankVariable.id);
+  });
+
+  it("스위치 조작 요약은 ON/OFF/전환/변수 값을 구분한다", () => {
+    const project = store.getCurrent();
+    const switchRecord = project.switches[0];
+    const variable = project.variables[0];
+    if (!switchRecord || !variable) throw new Error("missing default switch/variable slots");
+    switchRecord.name = "Gate Open";
+    variable.name = "Flag Count";
+    store.replace(project);
+
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: true })).toContain("ON");
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: false })).toContain("OFF");
+    expect(commandSummary({ kind: "setSwitch", switchId: switchRecord.id, value: "toggle" })).toContain("전환");
+    expect(commandSummary({
+      kind: "setSwitch",
+      switchId: switchRecord.id,
+      value: { kind: "var", id: variable.id },
+    })).toContain("Flag Count");
+  });
+
+  it("스위치 조작 폼은 인라인 검색·ON/OFF/전환/변수 값을 한 줄로 노출한다", () => {
+    const project = store.getCurrent();
+    const switchRecord = project.switches[0];
+    const variable = project.variables[0];
+    if (!switchRecord || !variable) throw new Error("missing default switch/variable slots");
+    switchRecord.name = "Gate Open";
+    variable.name = "Flag Count";
+    store.replace(project);
+
+    let staged: Command = { kind: "setSwitch", switchId: switchRecord.id, value: true };
+    const body = renderWithFakeDom(() => renderCommandBody(
+      {
+        path: [0],
+        lockKind: true,
+        actions: {
+          addCommand: () => undefined,
+          deleteCommand: () => undefined,
+          insertCommand: () => undefined,
+          moveCommand: () => undefined,
+          moveCommandTo: () => undefined,
+          replaceCommand: (_path, next) => {
+            staged = next;
+          },
+        },
+      },
+      staged,
+    ));
+
+    expect(findByTestId(body, "event-switch-inline-filter")).not.toBeNull();
+    expect(findByTestId(body, "event-command-switch-value")).not.toBeNull();
+    expect(findByTestId(body, "event-command-switch-value-row")).not.toBeNull();
+    expect(findByTestId(body, "event-command-switch-hint")).not.toBeNull();
+    // "값 소스" 배지/세그먼트는 쓰지 않는다.
+    expect(findByTestId(body, "event-command-switch-value-mode")).toBeNull();
+    expect(body.textContent).not.toContain("값 소스");
+
+    const valueSelect = findByTestId(body, "event-command-switch-value") as unknown as HTMLSelectElement;
+    valueSelect.value = "toggle";
+    valueSelect.dispatchEvent(new Event("change"));
+    expect(staged).toEqual({ kind: "setSwitch", switchId: switchRecord.id, value: "toggle" });
+
+    valueSelect.value = "variable";
+    valueSelect.dispatchEvent(new Event("change"));
+    const operand = findByTestId(body, "event-command-switch-operand") as unknown as HTMLElement;
+    expect(operand.hidden).toBe(false);
+    const operandSelect = operand.querySelector("select") as HTMLSelectElement | null;
+    if (!operandSelect) throw new Error("missing switch operand select");
+    operandSelect.value = variable.id;
+    operandSelect.dispatchEvent(new Event("change"));
+    expect(staged).toEqual({
+      kind: "setSwitch",
+      switchId: switchRecord.id,
+      value: { kind: "var", id: variable.id },
+    });
   });
 
   it("marks non-fixed event graphics as animated previews", () => {
@@ -200,10 +300,43 @@ describe("event editor presentation", () => {
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-x"]).toBe("-48px");
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-y"]).toBe("-48px");
     expect(findByTestId(body, "event-command-face-crop")?.style["--face-sheet-size"]).toBe("192px");
-    expect(findByTestId(body, "event-command-face-crop")?.style["--face-display-width"]).toBe("112px");
+    expect(findByTestId(body, "event-command-face-crop")?.style["--face-display-width"]).toBe("96px");
+    expect(findByTestId(body, "event-command-face-index-grid")).not.toBeNull();
+    expect(findByTestId(body, "event-command-face-slot-5")?.className).toContain("is-selected");
   });
 
-  it("explains missing face graphic previews instead of leaving a blank slot", () => {
+  
+  it("hides the 4x4 sheet grid for bust resources and shows a bust note", () => {
+    const body = renderWithFakeDom(() =>
+      renderCommandBody(
+        {
+          path: [],
+          actions: {
+            addCommand: () => undefined,
+            deleteCommand: () => undefined,
+            insertCommand: () => undefined,
+            moveCommand: () => undefined,
+            moveCommandTo: () => undefined,
+            replaceCommand: () => undefined,
+          },
+        },
+        {
+          kind: "changeFace",
+          resourceId: "generated-face-actor1-bust",
+          faceIndex: 0,
+          position: "left",
+          flipHorizontally: false,
+        }
+      )
+    );
+
+    expect(findByTestId(body, "event-command-face-bust-note")).not.toBeNull();
+    expect(findByTestId(body, "event-command-face-index-grid")).toBeNull();
+    expect(findByTestId(body, "event-command-face-preview")?.dataset.faceMode).toBe("bust");
+    expect(findByTestId(body, "event-command-face-bust-preset")).not.toBeNull();
+  });
+
+it("explains missing face graphic previews instead of leaving a blank slot", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
         {

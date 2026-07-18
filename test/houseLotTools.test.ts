@@ -1,14 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import type { GameMap, Project } from "@/project/types";
 import { runTool } from "@/editor/tools/toolRunner";
-import { houseBBox, propVocabIdForYardDecor, yardAreaForHouse } from "@/editor/tools/houseLotDecor";
+import { houseBBox, materialForYardDecor, yardAreaForHouse } from "@/editor/tools/houseLotDecor";
 import { getTool } from "@/editor/tools/toolRegistry";
+import { buildHouseLots } from "@/editor/tools/houseLotDomain";
 
 describe("houseLotDecor pure helpers", () => {
-  it("maps yard tags to vocab ids", () => {
-    expect(propVocabIdForYardDecor("mailbox")).toBe("350");
-    expect(propVocabIdForYardDecor("firewood")).toBe("349");
-    expect(propVocabIdForYardDecor("bench_h")).toContain("bench-horizontal");
+  it("maps yard tags to material labels", () => {
+    expect(materialForYardDecor("mailbox")).toBe("우편함");
+    expect(materialForYardDecor("firewood")).toBe("장작 더미");
+    expect(materialForYardDecor("bench_h")).toBe("벤치");
   });
 
   it("places yard south of door", () => {
@@ -33,10 +35,11 @@ describe("build_house_lots tool", () => {
     const created = runTool(ctx, "create_map", { id: mapId, name: "lot test", width: 40, height: 30 });
     expect(created.ok, created.summary).toBe(true);
     {
-      const map = ctx.project.maps[mapId]!;
+      const map = requireProjectMap(ctx.project, mapId);
       map.lowerTiles.fill(240);
       map.upperTiles.fill(-1);
     }
+    const mapCountBeforeBuild = Object.keys(ctx.project.maps).length;
 
     const result = runTool(
       ctx,
@@ -64,19 +67,20 @@ describe("build_house_lots tool", () => {
     );
 
     expect(result.ok, result.summary + JSON.stringify(result.issues ?? [])).toBe(true);
-    expect(result.data?.houses).toBe(2);
+    expect(isLotResultData(result.data)).toBe(true);
+    if (!isLotResultData(result.data)) throw new Error("Missing lot result data");
+    expect(result.data.houses).toBe(2);
+    expect(Object.keys(ctx.project.maps)).toHaveLength(mapCountBeforeBuild);
+    expect(Object.keys(ctx.project.maps).some((id) => id.startsWith("map_house_interior_"))).toBe(false);
     // runTool 은 맵 객체를 교체하므로 재조회
-    const map = ctx.project.maps[mapId]!;
-    const lots = result.data?.lots as {
-      yardArea: { x: number; y: number; w: number; h: number };
-      decor: { kind: string; summary: string }[];
-    }[];
-    expect(lots?.length).toBe(2);
+    const map = requireProjectMap(ctx.project, mapId);
+    const lots = result.data.lots;
+    expect(lots.length).toBe(2);
 
     const yardTiles: { x: number; y: number; u: number }[] = [];
     for (let y = 0; y < map.height; y += 1) {
       for (let x = 0; x < map.width; x += 1) {
-        const u = map.upperTiles[y * map.width + x]!;
+        const u = map.upperTiles[y * map.width + x] ?? -1;
         if ([349, 350, 351, 327, 328].includes(u)) yardTiles.push({ x, y, u });
       }
     }
@@ -87,4 +91,58 @@ describe("build_house_lots tool", () => {
     expect(Math.max(...ys) - Math.min(...ys)).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe("house lot yard outcomes", () => {
+  it("preserves a typed material failure with requested and placed counts", () => {
+    // Given
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const map = requireProjectMap(project, mapId);
+    const tileset = project.tilesets[map.tilesetId];
+    if (tileset === undefined) throw new Error("Missing fixture tileset");
+    tileset.tileMeta = [];
+    tileset.tileGroups = [];
+
+    // When
+    const result = buildHouseLots(project, {
+      mapId,
+      seed: 3,
+      houses: [{
+        kitId: "blue-stone",
+        wings: [{ x: 3, y: 3, w: 8, h: 6 }],
+        door: true,
+        interior: false,
+        yard: [{ kind: "mailbox", count: 2 }],
+      }],
+    });
+
+    // Then
+    expect(result.data.lots[0]?.decor[0]).toMatchObject({
+      status: "failed",
+      kind: "mailbox",
+      requested: 2,
+      placed: 0,
+      issue: { code: "material-not-found" },
+    });
+  });
+});
+
+type LotResultData = {
+  readonly houses: number;
+  readonly lots: readonly {
+    readonly yardArea: { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
+    readonly decor: readonly { readonly kind: string; readonly summary: string }[];
+  }[];
+};
+
+function requireProjectMap(project: Project, mapId: string): GameMap {
+  const map = project.maps[mapId];
+  if (map) return map;
+  throw new Error(`Missing test map: ${mapId}`);
+}
+
+function isLotResultData(value: unknown): value is LotResultData {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return false;
+  return "houses" in value && typeof value.houses === "number" && "lots" in value && Array.isArray(value.lots);
+}
 

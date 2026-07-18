@@ -11,7 +11,7 @@ import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project
 import { commitChangeset, createDraft, summarizeChanges } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
-import { ToolError, type ToolContext, type ToolResult } from "./types";
+import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 
 export interface RunToolOptions {
   readonly dryRun?: boolean;
@@ -60,6 +60,17 @@ export function runTool(
     return { ok: false, summary: `알 수 없는 툴: ${name}`, issues: [{ severity: "error", code: "unknown-tool", message: `등록되지 않은 툴: ${name}` }] };
   }
 
+  return runToolDefinition(ctx, tool, args, options);
+}
+
+export function runToolDefinition(
+  ctx: ToolContext,
+  tool: ToolDefinition,
+  args: Record<string, unknown>,
+  options: RunToolOptions = {},
+): ToolResult {
+  const name = tool.name;
+
   const normalizedArgs = normalizeArgsForSchema(tool.parameters, args) as Record<string, unknown>;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
@@ -85,7 +96,8 @@ export function runTool(
         data: exec.data,
       };
     } catch (cause) {
-      return { ok: false, summary: failureSummary(name, cause), issues: [issueFromError(cause)] };
+      const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
+      return { ok: false, summary: failureSummary(name, error), issues: [issueFromError(error)] };
     }
   }
 
@@ -96,7 +108,8 @@ export function runTool(
   try {
     exec = tool.run(draft, normalizedArgs);
   } catch (cause) {
-    return { ok: false, summary: failureSummary(name, cause), issues: [issueFromError(cause)] };
+    const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
+    return { ok: false, summary: failureSummary(name, error), issues: [issueFromError(error)] };
   }
 
   try {

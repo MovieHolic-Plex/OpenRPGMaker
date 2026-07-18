@@ -61,6 +61,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkQuestGraphs(project, issues);
   checkClusterRules(project, issues);
   issues.push(...lintWorldGraph(project));
+  checkCharacterIdSocial(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
 }
@@ -473,6 +474,9 @@ function visitCommand(command: Command, visit: (command: Command) => void, issue
   if (command.kind === "shop" && command.transactionBranch) {
     visitCommands(command.transactionBranch, visit, issues, `${label}.transactionBranch`);
   }
+  if (command.kind === "inn" && command.notEnoughBranch) {
+    visitCommands(command.notEnoughBranch, visit, issues, `${label}.notEnoughBranch`);
+  }
 }
 
 function pushCommandShapeWarning(issues: LintIssue[] | undefined, label: string, detail: string): void {
@@ -513,6 +517,45 @@ function isPlayerTouch(trigger: Trigger): boolean {
 
 function errorMessage(cause: unknown): string {
   return cause instanceof Error ? cause.message : String(cause);
+}
+function checkCharacterIdSocial(project: Project, issues: LintIssue[]): void {
+  type GiftSig = string;
+  const byCharacter = new Map<string, { mapId: string; eventId: string; giftSig: GiftSig; scheduled: boolean }[]>();
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    for (const event of map.events) {
+      const characterId = event.characterId?.trim();
+      if (!characterId) continue;
+      const giftSig = JSON.stringify({
+        giftPrefs: event.giftPrefs ?? null,
+        giftResponses: event.giftResponses ?? null,
+      });
+      const scheduled = Array.isArray(event.schedule) && event.schedule.length > 0;
+      const list = byCharacter.get(characterId) ?? [];
+      list.push({ mapId, eventId: event.id, giftSig, scheduled });
+      byCharacter.set(characterId, list);
+    }
+  }
+  for (const [characterId, hosts] of byCharacter) {
+    if (hosts.length < 2) continue;
+    const giftSigs = new Set(hosts.map((host) => host.giftSig));
+    if (giftSigs.size > 1) {
+      issues.push({
+        severity: "warning",
+        code: "character-id:divergent-gift-prefs",
+        mapId: hosts[0]?.mapId,
+        message: `characterId '${characterId}' 를 공유하는 이벤트들의 giftPrefs/giftResponses 가 다릅니다 (자동 병합 없음). 공통 기본값은 project.characters['${characterId}'] 프로필을 쓰세요.`,
+      });
+    }
+    const scheduledCount = hosts.filter((host) => host.scheduled).length;
+    if (scheduledCount > 1) {
+      issues.push({
+        severity: "warning",
+        code: "character-id:dual-schedule",
+        mapId: hosts[0]?.mapId,
+        message: `characterId '${characterId}' 에 스케줄 본체가 ${scheduledCount}개 있습니다. 활동은 이벤트 단위이며 병합되지 않습니다.`,
+      });
+    }
+  }
 }
 
 // 라이브러리 소비자가 도달성 검사를 재사용할 수 있게 재수출.

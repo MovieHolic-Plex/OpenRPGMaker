@@ -189,6 +189,8 @@ function issueFromItemError(index: number, cause: unknown): LintIssue {
 
 const proposeTileVocabulary: ToolDefinition = {
   name: "propose_tile_vocabulary",
+  // LLM 기본 노출 제외: 시공 전제 조건이 아님. getTool/테스트/전문가 수동 호출만.
+  deprecated: true,
   description:
     "신규 재료(어휘에 없는 타일 조합)를 승인 어휘로 편입하자고 사용자에게 제안한다(v3). items마다 kind=group(9분할 벽·기둥·오토타일 등 패턴 단위, groupId=기존 그룹 또는 tileIds=신규)/kind=tile(낱개 소품, tileIds). 기존 그룹 재제안은 groupId만 보내라(tileIds 불필요). name/role/patternKind/layerHome은 너의 추정이며 카드에서 사용자가 교정 후 수락한다. **이미 존재하는 그룹/타일로 시공할 때는 이 툴이 필요 없다 — build_wall 등 프리미티브를 바로 호출하면 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의된다.** 이 툴은 '어휘에 아직 없는 새 재료'를 정의할 때만 쓴다.",
   mode: "write",

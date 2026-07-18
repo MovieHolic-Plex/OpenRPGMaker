@@ -2,6 +2,7 @@ import { buildGroupSample, type GroupSample } from "@/ai/groupSampleBuilder";
 import { TILE } from "@/project/defaults/constants";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";
+import { isCobbleTile } from "@/project/defaults/cobbleAutotile";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isTreeCanopyTileId, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
 import type { Command, GameMap, PaletteSlotRole, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
@@ -105,11 +106,18 @@ export function runScatterObject(draft: Project, rawArgs: Record<string, unknown
         ? bagPropFootprint(group, tileset, seed, step)
         : footprint;
       const sourceCandidates = ranked?.ordered ?? candidates;
-      const allowed = sourceCandidates.filter((origin) => {
-        if (!footprintFits(map, stepFootprint, origin, protectedCells)) return false;
+      // 성능 캡(2026-07-17): 스텝마다 전 후보(면적 규모)를 재검사·재채점하면 대형 맵에서
+      // count×면적 곱으로 폭주한다(100×100 침엽수 84그루 = 수백 초). ranked는 이미
+      // 자연도 순 정렬이라 "상위 512개 중 선택"이 의미를 보존한다. uniform은 전수 유지.
+      const allowedCap = ranked ? 512 : Number.POSITIVE_INFINITY;
+      const allowed: typeof candidates = [];
+      for (const origin of sourceCandidates) {
+        if (allowed.length >= allowedCap) break;
+        if (!footprintFits(map, stepFootprint, origin, protectedCells)) continue;
         // 숲: 레이어가 다르면 발자국이 겹쳐도 됨(수관 upper + 밑동 lower).
-        return layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap);
-      });
+        if (!layeredSpaced(rectAt(origin, stepFootprint), stepFootprint, placed, footprints, args.minGap)) continue;
+        allowed.push(origin);
+      }
       if (allowed.length === 0) break;
       const remaining = args.count - placed.length;
       const chosen = ranked
@@ -507,7 +515,8 @@ function treeLayeredFootprint(group: TileGroupMetadata, _tileset: TilesetDef): F
 
 /** 흙길·모래 등 길/포장 하층 — 소품 산포 시 보호. */
 export function isPathSurfaceTile(tile: number): boolean {
-  return isRoadTile(tile) || isSandTile(tile) || tile === TILE.PATH;
+  // 포석(129 블록)도 길 표면 — 소품 산포가 돌길을 막지 않게 보호.
+  return isRoadTile(tile) || isSandTile(tile) || tile === TILE.PATH || isCobbleTile(tile);
 }
 
 function origins(map: GameMap, area: Area, footprint: Footprint): readonly Point[] {
@@ -541,14 +550,8 @@ function footprintFits(map: GameMap, footprint: Footprint, origin: Point, protec
       if (isLakeAutotileTile(haveLower) || isPathSurfaceTile(haveLower) || haveLower === TILE.WALL) return false;
       if (wantUpper !== TILE.EMPTY) {
         if (haveUpper !== TILE.EMPTY) return false;
-        // 수관은 잔디·빈 칸·기존 나무 밑동 위에만 (집 벽 위 금지)
-        if (
-          haveLower !== TILE.EMPTY
-          && haveLower !== TILE.GRASS
-          && !isTreeTrunkTileId(haveLower)
-        ) {
-          return false;
-        }
+        // 상위 소품: 물·길·벽만 금지. 실내 나무바닥(72) 등 비-잔디 통행 바닥 위에도 놓인다.
+        // (예전 잔디/빈칸/나무밑동 제한은 야외 수관 전제 — 실내 가구 place_props가 0개 스킵되던 원인)
       }
       if (wantLower !== TILE.EMPTY) {
         // 밑동 자리: 잔디/빈 칸만. 이미 밑동이 있으면 겹침 금지.

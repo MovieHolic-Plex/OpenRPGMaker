@@ -3,6 +3,7 @@ import { store } from "@/project/store";
 import type { Dir, EventPage, MapConnection, MapId, NpcLivingDestination } from "@/project/types";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
+import { mapSelectElement } from "./sharedPickers";
 
 const DIRECTION_OPTIONS: readonly { readonly value: Dir; readonly label: string }[] = [
   { value: "down", label: "아래" },
@@ -146,12 +147,11 @@ function connectionSummary(mapId: MapId): HTMLElement {
 }
 
 function mapSelect(value: MapId, testId: string): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
-  for (const map of Object.values(store.getCurrent().maps)) {
-    select.append(el("option", { text: map.name, attrs: { value: map.id } }));
-  }
-  select.value = value;
-  return select;
+  return mapSelectElement({
+    selectedId: value,
+    testid: testId,
+    allowEmpty: false,
+  });
 }
 
 function directionSelect(value: Dir, testId: string): HTMLSelectElement {

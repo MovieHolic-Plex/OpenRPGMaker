@@ -44,7 +44,7 @@ function sentBody(): Record<string, unknown> {
   return JSON.parse(String(init.body)) as Record<string, unknown>;
 }
 
-const CONFIG_BASE = { baseUrl: "https://openrouter.ai/api/v1", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
+const CONFIG_BASE = { baseUrl: "https://example.invalid/v1", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -59,7 +59,8 @@ describe("aiConfig 저장/로드", () => {
     const initial = loadAiConfig();
     expect(initial.model).toBe(DEFAULT_MODEL);
     expect(initial.liteModel).toBe(DEFAULT_LITE_MODEL);
-    expect(initial.apiKey).toBe(""); // 키 기본값은 항상 빈값.
+    // localStorage 비어 있으면 env(VITE_LLM_API_KEY 등) 폴백 가능 — 빈 문자열만 강제하지 않음.
+    expect(typeof initial.apiKey).toBe("string");
     expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
 
     saveAiConfig({ ...initial, apiKey: "sk-user", maxTokens: 4000, autoApprove: true });
@@ -69,8 +70,8 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
-    // M1 모델 이원화: 감독은 m3, 실행은 flash-lite.
-    expect(DEFAULT_MODEL).toBe("minimax/minimax-m3");
+    // 기본 경로: 감독·실행 모두 flash-lite(이원화 비활성). MiniMax는 사용자 설정 시에만.
+    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
     expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
   });
 
@@ -79,7 +80,7 @@ describe("aiConfig 저장/로드", () => {
     const { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, loadAiConfig } = await loadClient();
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       apiKey: "sk-user",
-      baseUrl: "https://openrouter.ai/api/v1",
+      baseUrl: "https://example.invalid/v1",
       model: "user-main-model",
     }));
 
@@ -90,7 +91,7 @@ describe("aiConfig 저장/로드", () => {
 
   it("configForLiteModel은 보조 모델을 실제 요청 모델로 승격한다", async () => {
     const { configForLiteModel, defaultAiConfig } = await loadClient();
-    const config = configForLiteModel({ ...defaultAiConfig(), model: "main-model", liteModel: "batch-model" });
+    const config = configForLiteModel({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "main-model", liteModel: "batch-model" });
     expect(config.model).toBe("batch-model");
     expect(config.liteModel).toBe("batch-model");
   });
@@ -98,16 +99,16 @@ describe("aiConfig 저장/로드", () => {
   it("maxToolCalls 저장값을 실제 세션 안전핀으로 로드한다", async () => {
     installLocalStorage();
     const { loadAiConfig, saveAiConfig, defaultAiConfig } = await loadClient();
-    saveAiConfig({ ...defaultAiConfig(), maxToolCalls: 3 });
+    saveAiConfig({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", maxToolCalls: 3 });
     expect(loadAiConfig().maxToolCalls).toBe(3);
   });
 
   it("옛 기본값 maxTokens 2048/10240은 새 기본으로 승격된다", async () => {
     installLocalStorage();
     const { loadAiConfig, saveAiConfig, defaultAiConfig, DEFAULT_MAX_TOKENS } = await loadClient();
-    saveAiConfig({ ...defaultAiConfig(), maxTokens: 2048 });
+    saveAiConfig({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", maxTokens: 2048 });
     expect(loadAiConfig().maxTokens).toBe(DEFAULT_MAX_TOKENS);
-    saveAiConfig({ ...defaultAiConfig(), maxTokens: 10240 });
+    saveAiConfig({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", maxTokens: 10240 });
     expect(loadAiConfig().maxTokens).toBe(DEFAULT_MAX_TOKENS);
   });
 });

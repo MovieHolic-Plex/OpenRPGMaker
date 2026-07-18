@@ -29,6 +29,7 @@ describe("player build output", () => {
     expect(html).toContain("player.js");
     expect(searchable.toLowerCase()).not.toContain("supabase");
     expect(searchable.toLowerCase()).not.toContain("openrouter");
+    expect(searchable.toLowerCase()).not.toContain("llm-provider");
     expect(searchable).not.toContain("src/editor/");
   }, 30_000);
 });

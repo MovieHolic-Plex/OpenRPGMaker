@@ -79,10 +79,15 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     return menu;
   }
 
-  for (const command of battleCommandsForActor(store.getCurrent(), actor?.recordId, {
+  const project = store.getCurrent();
+  const overrideCommandIds = actor?.recordId
+    ? snapshot.eventState.actorBattleCommands?.[actor.recordId]
+    : undefined;
+  for (const command of battleCommandsForActor(project, actor?.recordId, {
     classId: actor?.classId,
     includeSwitch: snapshot.reserveActors.length > 0,
     forceSwitchOnly: Boolean(snapshot.forcedSwitchActorId),
+    overrideCommandIds,
   })) {
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }

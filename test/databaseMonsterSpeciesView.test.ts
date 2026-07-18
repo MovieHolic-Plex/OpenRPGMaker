@@ -130,4 +130,83 @@ describe("database monster species view", () => {
     expect(undone).toBe(true);
     expect(store.getCurrent().database.monsterSpecies).toHaveLength(before);
   });
+
+  it("uses type-chart chips: two stick, third does not, and outlier types warn", () => {
+    store.update((project) => {
+      project.system.typeChart = {
+        types: ["fire", "water", "grass"],
+        multipliers: {
+          fire: { fire: 1, water: 0.5, grass: 2 },
+          water: { fire: 2, water: 1, grass: 0.5 },
+          grass: { fire: 0.5, water: 2, grass: 1 },
+        },
+      };
+    });
+
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")?.click();
+    const id = store.getCurrent().database.monsterSpecies?.at(-1)?.id;
+    if (!id) throw new Error("missing species id");
+
+    const toggleType = (type: string, checked: boolean): FakeElement => {
+      const chip = findByTestId(host, `db-monster-species-type-${type}`);
+      if (!chip) throw new Error(`missing type chip ${type}`);
+      chip.checked = checked;
+      chip.dispatchEvent(new Event("change"));
+      return chip;
+    };
+
+    toggleType("fire", true);
+    toggleType("water", true);
+    expect(store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === id)?.types).toEqual([
+      "fire",
+      "water",
+    ]);
+
+    const grass = toggleType("grass", true);
+    expect(grass.checked).toBe(false);
+    expect(store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === id)?.types).toEqual([
+      "fire",
+      "water",
+    ]);
+    expect(store.getCurrent().system.typeChart?.types).toEqual(["fire", "water", "grass"]);
+
+    // Outlier warn: store a type outside the chart without clearing chart types.
+    store.update((project) => {
+      const record = project.database.monsterSpecies?.find((entry) => entry.id === id);
+      if (!record) throw new Error("missing species");
+      record.types = ["fire", "ghost"];
+    });
+    const refreshed = renderUtility(renderMonsterSpeciesTab);
+    const warn = findByTestId(refreshed, "db-monster-species-type-warn");
+    expect(warn?.textContent).toContain("타입 상성표에 없는 타입");
+    expect(warn?.textContent).toContain("ghost");
+    expect(findByTestId(refreshed, "db-monster-species-type-fire")?.checked).toBe(true);
+    expect(findByTestId(refreshed, "db-monster-species-type-water")?.checked).toBe(false);
+  });
+
+  it("falls back to free-text types when the type chart is empty", () => {
+    store.update((project) => {
+      delete project.system.typeChart;
+    });
+
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")?.click();
+    const id = store.getCurrent().database.monsterSpecies?.at(-1)?.id;
+    if (!id) throw new Error("missing species id");
+
+    expect(findByTestId(host, "db-monster-species-types-hint")).not.toBeNull();
+    expect(findByTestId(host, "db-monster-species-type-fire")).toBeNull();
+
+    const input = findByTestId(host, "db-monster-species-types");
+    if (!input) throw new Error("missing free-text types field");
+    input.value = "불, 물, 바람";
+    input.dispatchEvent(new Event("input"));
+
+    expect(store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === id)?.types).toEqual([
+      "불",
+      "물",
+    ]);
+    expect(store.getCurrent().system.typeChart).toBeUndefined();
+  });
 });

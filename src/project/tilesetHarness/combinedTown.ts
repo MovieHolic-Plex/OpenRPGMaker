@@ -125,7 +125,7 @@ export function combinedTownHarnessPrompt(tileset: Pick<TilesetDef, "id" | "imag
       "길과 물은 대표 타일을 칠하면 주변 연결에 맞춰 실제 타일이 바뀌는 오토타일입니다.",
       "userLocked 메타는 절대 덮어쓰지 않습니다.",
       // 성채(map_castle_keep) 실측 조립 순서
-      "성 맵: (1) 잔디 바탕 (2) castle-roof-deck로 북쪽 보루·본채 지붕·남쪽 커튼 윗면 (3) castle-wall-face로 커튼/본채 정면(21/51*/81) (4) 남쪽 성문 2~4칸 비우고 sand/dirt 접근로 (5) 마당은 잔디 통행 유지—지붕 타일 금지 (6) castle-round-tower는 마당 랜드마크(2폭, 창문 142|143).",
+      "성 맵: 자유조립 금지 — build_castle 툴(castleKit.stampCastle, 금본 map_castle_keep)로만 시공한다. 성문 접근로만 sand/dirt로 잇고 마당은 잔디 통행 유지.",
     ],
     groups: COMBINED_TOWN_HARNESS_GROUPS.map((group) => ({
       id: group.id,
@@ -385,6 +385,11 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
     return "장터 레일 우";
   }
   if (group.id.includes("stone-step-slab")) return "돌단/석판";
+  if (group.id.includes("barrel-prop")) return tile === 177 ? "술통" : "오크통";
+  if (group.id.includes("plaza-statue")) return tile === 266 ? "석상 상단" : "석상 하단";
+  if (group.id.includes("plaza-pillar")) return tile === 267 ? "돌기둥 상단" : "돌기둥 하단";
+  if (group.id.includes("village-well")) return "우물";
+  if (group.id.includes("small-props")) return smallPropLabel(tile);
   if (group.id.includes("magic-circle")) return "마법진";
   if (group.id.includes("wood-door")) return tile === 116 ? "나무 문 상" : "나무 문 하";
   if (group.id.includes("stone-stairs")) {
@@ -416,6 +421,39 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
 function castleSolidLabel(tile: number): string {
   if (tile === TILE.STAIRS) return "계단";
   return "어두운 벽";
+}
+
+/** small-props 가방 멤버의 구체 라벨 — place_props material로 개별 지정 가능하게 한다.
+ * 2026-07-16 사용자 교정: 320=벽보(벽 전용), 440=팻말(갈림길), 441=그루터기, 443=자갈 바닥(텍스처),
+ * 382/412=돌바닥 사이 잡석(단독 배치 어색), 472=방패 간판(무기점), 473=물약 간판(잡화점). */
+function smallPropLabel(tile: number): string {
+  switch (tile) {
+    case 318:
+      return "벽 횃불";
+    case 381:
+      return "모닥불";
+    case 320:
+      return "벽보";
+    case 319:
+      return "쪽문";
+    case 259:
+      return "마른 가지";
+    case 441:
+    case 442:
+      return "바위"; // 412 돌바닥 패치 위에 섞어 쓴다
+    case 443:
+      return "자갈(사용 금지)";
+    case 440:
+      return "팻말";
+    case 411:
+      return "이끼 자갈";
+    case 472:
+      return "방패 간판";
+    case 473:
+      return "물약 간판";
+    default:
+      return `마을 소품 ${tile}`;
+  }
 }
 
 function castleRoofDeckLabel(tile: number): string {

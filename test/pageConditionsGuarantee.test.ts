@@ -263,7 +263,19 @@ describe("page conditions working guarantee (all kinds)", () => {
       movement: { type: "fixed", speed: 3, frequency: 3 },
       commands: [],
     };
-    const root = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page) }));
+    // No characterId: friendship row/gate is omitted (connect CTA lives on pageProps, not here).
+    const rootWithoutChar = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page) }));
+    expect(findByTestId(rootWithoutChar, "event-page-friendship-requires-character-id")).toBeNull();
+    expect(findByTestId(rootWithoutChar, "event-page-friendship-condition-value")).toBeNull();
+    expect(findByTestId(rootWithoutChar, "event-page-condition-add-toolbar")).not.toBeNull();
+    // Friendship is not offered in the add-kind select without characterId.
+    const addKindWithoutChar = findByTestId(rootWithoutChar, "event-page-condition-add-kind");
+    const friendshipOptionWithout = addKindWithoutChar
+      ? [...addKindWithoutChar.querySelectorAll("option")].some((opt) => (opt as HTMLOptionElement).value === "friendshipAtLeast")
+      : false;
+    expect(friendshipOptionWithout).toBe(false);
+
+    const root = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page, { characterId: "char_ev" }) }));
     const ids = [
       "event-page-switch-condition-input",
       "event-page-switch2-condition-input",
@@ -280,11 +292,17 @@ describe("page conditions working guarantee (all kinds)", () => {
       "event-page-season-condition-input",
       "event-page-npc-activity-condition-input",
       "event-page-friendship-condition-value",
+      "event-page-condition-add-toolbar",
+      "event-page-condition-add",
       "event-page-advanced-conditions",
     ];
     for (const id of ids) {
       expect(findByTestId(root, id), id).not.toBeNull();
     }
+    // 이 픽스처는 모든 간단 조건을 켠 상태 — 전부 active 여야 한다.
+    const activeRows = root.querySelectorAll('[data-condition-active="true"]');
+    expect(activeRows.length).toBeGreaterThan(0);
+    expect(root.querySelectorAll('[data-condition-active="false"]').length).toBe(0);
     expect(root.textContent).toContain("보유 중");
     expect(root.textContent).toContain("파티에 있음");
     expect(root.textContent).toContain("켜짐");
@@ -324,6 +342,7 @@ describe("page conditions working guarantee (all kinds)", () => {
       npcActivities: { ev_runtime: "work" },
       friendship: { ev_runtime: 50 },
     };
+    event.characterId = "ev_runtime";
     // fill variable id from actual sample
     const varCond = conditions.find((c) => c.kind === "variable");
     if (varCond?.kind === "variable") passSession.variables[varCond.variableId] = 5;
@@ -446,6 +465,7 @@ describe("page conditions working guarantee (all kinds)", () => {
           pass.npcActivities[event.id] = condition.activity;
           break;
         case "friendshipAtLeast":
+          event.characterId = event.id;
           pass.friendship[event.id] = condition.value;
           break;
       }

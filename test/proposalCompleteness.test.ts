@@ -196,4 +196,30 @@ describe("proposal completeness lint", () => {
     expect(proposalHasChangedMap(calls, "m1")).toBe(true);
     expect(proposalHasChangedMap(calls, "m2")).toBe(false);
   });
+
+  it("canonical construction calls fulfill nested target BuildSpec coverage and exact counts", () => {
+    // Given: one canonical house proposal and one canonical village proposal.
+    const houseSpec: BuildSpec = {
+      mapId: "m1",
+      assets: [{ id: "집", kind: "house", x: 3, y: 4, w: 8, h: 7 }],
+    };
+    const houseCalls = [call(
+      "author_house",
+      { kind: "single", mapId: "m1", wings: [{ x: 3, y: 4, w: 8, h: 7 }] },
+      { tilesChanged: 50 },
+      { construction: { counts: { requested: 1, actual: 1 } } },
+    )];
+    const villageCalls = [call(
+      "author_village",
+      { target: { kind: "existing", mapId: "m1", bounds: { x: 2, y: 2, w: 20, h: 18 } }, houseCount: 6, countPolicy: "exact" },
+      { tilesChanged: 180 },
+      { construction: { counts: { requested: 6, actual: 6 } } },
+    )];
+
+    // When/Then: canonical regions count as real map changes and exact requested counts do not warn.
+    expect(proposalCompletenessWarnings({ buildSpec: houseSpec, calls: houseCalls })).toEqual([]);
+    expect(proposalHasChangedMap(villageCalls, "m1")).toBe(true);
+    expect(proposalCompletenessWarnings({ requestText: "집 6채 마을 만들어줘", calls: villageCalls }))
+      .not.toContainEqual(expect.stringContaining("요청 수량"));
+  });
 });

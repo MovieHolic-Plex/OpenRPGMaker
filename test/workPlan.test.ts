@@ -13,6 +13,7 @@ import {
   buildOrchestratorUserPayload,
   summarizeWorkPlan,
   MAX_WORK_PLAN_AUTO_STEPS_PER_TURN,
+  ORCHESTRATOR_SYSTEM_PROMPT,
 } from "@/ai/workPlan";
 
 describe("planner LLM plan parsing (no regex planning)", () => {
@@ -115,6 +116,25 @@ describe("workPlan progress harness", () => {
     expect(next?.title).toBe("B");
   });
 
+  it("does not auto-complete items without successTools on unrelated writes", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [
+        {
+          title: "L",
+          items: [
+            { title: "탁자", instruction: "place_props table" },
+            { title: "NPC", instruction: "place_npc", successTools: ["place_npc"] },
+          ],
+        },
+      ],
+    });
+    const stuck = advanceWorkPlanFromTools(plan, ["place_npc"]);
+    expect(stuck.completed).toBeNull();
+    expect(stuck.next?.title).toBe("탁자");
+  });
+
   it("completes all via completeWorkItemById", () => {
     const plan = workPlanFromOrchestratorDecision({
       action: "new_plan",
@@ -129,8 +149,8 @@ describe("workPlan progress harness", () => {
         },
       ],
     });
-    completeWorkItemById(plan, "a");
-    completeWorkItemById(plan, "b");
+    expect(completeWorkItemById(plan, "a").ok).toBe(true);
+    expect(completeWorkItemById(plan, "b").ok).toBe(true);
     expect(isWorkPlanComplete(plan)).toBe(true);
   });
 
@@ -165,7 +185,47 @@ describe("workPlan progress harness", () => {
       goal: "g",
       layers: [{ title: "L", items: [{ id: "a", title: "A", instruction: "a" }] }],
     });
-    completeWorkItemById(plan, "a");
+    expect(completeWorkItemById(plan, "a").ok).toBe(true);
     expect(shouldRalphContinue(plan, { autoStepsUsed: 0 })).toBe(false);
+  });
+
+  it("rejects complete when successTools were not used", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "g",
+      layers: [
+        {
+          title: "L",
+          items: [{ title: "탁자", instruction: "place_props table", successTools: ["place_props"] }],
+        },
+      ],
+    });
+    const id = plan.currentItemId!;
+    const blocked = completeWorkItemById(plan, id, "못 함", { successfulWriteTools: ["place_npc"] });
+    expect(blocked.ok).toBe(false);
+    if (blocked.ok) throw new Error("expected fail");
+    expect(blocked.reason).toContain("place_props");
+    expect(plan.layers[0]!.items[0]!.status).toBe("in_progress");
+
+    const ok = completeWorkItemById(plan, id, "done", { successfulWriteTools: ["place_props"] });
+    expect(ok.ok).toBe(true);
+    expect(isWorkPlanComplete(plan)).toBe(true);
+  });
+});
+
+describe("canonical construction routing in work plans", () => {
+  it("플래너 예시는 목표·정확 수량을 갖춘 공식 facade만 권장한다", () => {
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("author_house");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("author_village");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("목표 맵");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).toContain("정확한 수량");
+    expect(ORCHESTRATOR_SYSTEM_PROMPT).not.toMatch(/build_house_kit|build_house_lots|build_village|run_village_session|run_village_pipeline/);
+  });
+
+  it("폴백 계획의 야외 집과 마을 successTools는 각각 공식 facade만 쓴다", () => {
+    const house = buildDefaultWorkPlan("현재 맵에 야외 집 2채를 지어줘", new Date("2026-07-18T00:00:00.000Z"));
+    expect(house.layers[0]?.items[0]?.successTools).toEqual(["author_house"]);
+    const village = buildDefaultWorkPlan("현재 맵에 집 6채 마을을 만들어줘", new Date("2026-07-18T00:00:00.000Z"));
+    expect(village.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
   });
 });

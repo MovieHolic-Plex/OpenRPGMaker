@@ -177,7 +177,7 @@ describe("market town map", () => {
     for (const switchId of ["sw_0001", "sw_0002", "sw_0003", "sw_0004"]) expect(switchIds.has(switchId)).toBe(true);
     expect(variableIds.has("var_0001")).toBe(true);
     expect(rewardItems.some((command) => command.itemId === DEFAULT_ITEM_ID && command.amount === 2)).toBe(true);
-    expect(rewardGold.some((command) => command.amount >= 120)).toBe(true);
+    expect(rewardGold.some((command) => typeof command.amount === "number" && command.amount >= 120)).toBe(true);
 
     const monsterEvents = map.events.filter((event) => event.id.includes("monster"));
     expect(monsterEvents).toHaveLength(2);

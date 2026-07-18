@@ -47,14 +47,14 @@ describe("soft-confirm UX fixes", () => {
     const a = writeDedupeKey("place_props", {
       mapId: "m1",
       area: { x: 1, y: 2, w: 3, h: 4 },
-      propVocabId: TREE,
+      material: "침엽수",
       count: 2,
       seed: 1,
     });
     const b = writeDedupeKey("place_props", {
       mapId: "m1",
       area: { x: 1, y: 2, w: 3, h: 4 },
-      propVocabId: TREE,
+      material: "침엽수",
       count: 2,
       seed: 99,
     });
@@ -71,7 +71,7 @@ describe("soft-confirm UX fixes", () => {
     const args = {
       mapId: "m1",
       area: { x: 4, y: 4, w: 10, h: 8 },
-      propVocabId: TREE,
+      material: "침엽수",
       count: 2,
       seed: 3,
     };

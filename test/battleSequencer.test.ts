@@ -50,6 +50,7 @@ describe("battle sequencer", () => {
       return queue.length;
     });
     const steps: string[] = [];
+    const motions: Array<string | undefined> = [];
 
     const sequencer = createBattleSequencer(
       runtime,
@@ -57,6 +58,7 @@ describe("battle sequencer", () => {
         onDirectorState: (state) => steps.push(state.step),
         onSyncView: () => steps.push("sync"),
         onDamageFeedback: () => steps.push("damage"),
+        onActionMotion: (beat) => motions.push(beat ? `${beat.kind}:${beat.userMotion}/${beat.targetMotion}` : "clear"),
         onResultStage: () => undefined,
         onSequenceBusy: () => undefined,
       },
@@ -72,16 +74,21 @@ describe("battle sequencer", () => {
     expect(advanceSpy).not.toHaveBeenCalled();
     expect(steps[0]).toBe("acting");
     expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_ACTING_MS);
+    // Approach beat: actor lunges, target idle.
+    expect(motions[0]).toBe("approach:lunge/idle");
 
     // After acting hold → damage + hit-stop schedule
     queue.shift()?.callback();
     expect(steps).toContain("impact");
     expect(steps).toContain("damage");
     expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_HITSTOP_MS);
+    // Impact beat: still lunged, knockback on connect (or idle if miss/zero damage).
+    expect(motions.some((m) => m?.startsWith("impact:"))).toBe(true);
 
-    // Hit-stop ends → impact dwell, then enemy resolve chain
+    // Hit-stop ends → impact dwell (recover), then enemy resolve chain
     queue.shift()?.callback();
     expect(schedule).toHaveBeenCalledWith(expect.any(Function), BATTLE_IMPACT_MS);
+    expect(motions.some((m) => m === "recover:return/idle")).toBe(true);
 
     let guard = 0;
     while (queue.length > 0 && guard < 10) {
@@ -94,6 +101,8 @@ describe("battle sequencer", () => {
     expect(delays).toContain(BATTLE_HITSTOP_MS);
     expect(delays).toContain(BATTLE_IMPACT_MS);
     expect(delays).toContain(BATTLE_RESOLVE_MS);
+    // Motion cleared after the action chain.
+    expect(motions.at(-1)).toBe("clear");
   });
 
   it("finishes a player turn in charging director state until actorCommand returns", () => {

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>전투 처리 · 전투 커맨드 변경 UX 플랜 — html-explain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #171b26;
+      --muted: #5a6274;
+      --paper: #f3efe6;
+      --card: #fffcf6;
+      --line: #d5ccba;
+      --teal: #0c7469;
+      --teal-deep: #08564f;
+      --teal-soft: #d5eee9;
+      --amber: #b86f0f;
+      --amber-soft: #f6e6c4;
+      --rose: #a13646;
+      --rose-soft: #f5d8de;
+      --blue: #2c5b98;
+      --blue-soft: #dce7f7;
+      --violet: #564392;
+      --violet-soft: #e5dff5;
+      --green: #2a7236;
+      --green-soft: #d7edd8;
+      --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+      --sans: "IBM Plex Sans KR", "Malgun Gothic", system-ui, sans-serif;
+      --display: "Newsreader", "IBM Plex Sans KR", serif;
+      --shadow: 0 16px 44px rgba(23, 27, 38, 0.08);
+      --radius: 18px;
+      --ed-bg: #12161f;
+      --ed-panel: #1a2030;
+      --ed-line: #2c3548;
+      --ed-text: #e7ecf7;
+      --ed-muted: #9aa6bf;
+      --ed-accent: #7aa2ff;
+      --ed-good: #5fd38d;
+      --ed-warn: #e6b35a;
+      --ed-bad: #ff7b8a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--ink);
+      line-height: 1.55;
+      background:
+        radial-gradient(1100px 480px at 8% -10%, #fff3d6 0%, transparent 55%),
+        radial-gradient(900px 400px at 100% 0%, #e4f1ee 0%, transparent 48%),
+        radial-gradient(700px 360px at 40% 100%, #ebe4f8 0%, transparent 42%),
+        var(--paper);
+    }
+    a { color: var(--teal-deep); text-underline-offset: 3px; }
+    .wrap { width: min(1180px, calc(100% - 2rem)); margin: 0 auto; }
+    header.hero { padding: 3rem 0 1.5rem; border-bottom: 1px solid rgba(213,204,186,.75); }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-size: .8rem; font-weight: 600; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--teal-deep);
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--teal);
+      box-shadow: 0 0 0 4px var(--teal-soft);
+    }
+    h1 {
+      font-family: var(--display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.12; letter-spacing: -.02em;
+      margin: .7rem 0 .85rem;
+    }
+    .hl { background: linear-gradient(180deg, transparent 60%, #ffe7a8 60%); }
+    .lede { max-width: 74ch; color: var(--muted); font-size: 1.06rem; margin: 0 0 1.2rem; }
+    .meta-row { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip, .tag {
+      font-size: .8rem; color: var(--muted);
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: 999px; padding: .32rem .7rem;
+    }
+    .chip b { color: var(--ink); }
+    .tag.p0 { background: var(--rose-soft); color: var(--rose); border-color: transparent; }
+    .tag.p1 { background: var(--amber-soft); color: var(--amber); border-color: transparent; }
+    .tag.p2 { background: var(--blue-soft); color: var(--blue); border-color: transparent; }
+    .tag.good { background: var(--green-soft); color: var(--green); border-color: transparent; }
+    nav.toc {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(10px);
+      background: rgba(243,239,230,.9);
+      border-bottom: 1px solid var(--line);
+    }
+    nav.toc .wrap {
+      display: flex; gap: .4rem 1rem; flex-wrap: wrap;
+      padding: .7rem 0; font-size: .88rem;
+    }
+    nav.toc a { color: var(--muted); text-decoration: none; font-weight: 500; }
+    nav.toc a:hover { color: var(--teal-deep); }
+    main { padding: 1.5rem 0 4rem; display: grid; gap: 1.25rem; }
+    section.block {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.25rem 1.35rem 1.4rem;
+    }
+    section.block h2 {
+      font-family: var(--display);
+      font-size: 1.45rem; margin: 0 0 .75rem; letter-spacing: -.01em;
+    }
+    section.block h3 { font-size: 1.02rem; margin: 1rem 0 .45rem; }
+    .tldr {
+      display: grid; gap: .55rem;
+      background: linear-gradient(135deg, var(--teal-soft), #fff8e8);
+      border: 1px solid #c5ddd7;
+      border-radius: 14px; padding: 1rem 1.1rem;
+    }
+    .tldr ol { margin: 0; padding-left: 1.2rem; }
+    .tldr li { margin: .25rem 0; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .85rem; }
+    @media (max-width: 880px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: .9rem 1rem;
+    }
+    .card h3 { margin: 0 0 .35rem; font-size: .98rem; }
+    .card p, .card li { color: var(--muted); font-size: .92rem; margin: .25rem 0; }
+    .callout {
+      border-radius: 12px; padding: .85rem 1rem; border: 1px solid var(--line);
+      background: var(--blue-soft); color: var(--ink); margin: .6rem 0;
+    }
+    .callout.good { background: var(--green-soft); }
+    .callout.warn { background: var(--amber-soft); }
+    .callout.bad { background: var(--rose-soft); }
+    .flow { display: flex; flex-wrap: wrap; gap: .55rem; align-items: stretch; }
+    .flow .step {
+      flex: 1 1 120px;
+      background: #fff;
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: .7rem .8rem;
+      font-size: .9rem;
+    }
+    .flow .step b { display: block; color: var(--teal-deep); font-size: .72rem; letter-spacing: .04em; margin-bottom: .25rem; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+    @media (max-width: 880px) { .compare { grid-template-columns: 1fr; } }
+    .compare .side {
+      border-radius: 14px; border: 1px solid var(--line); padding: .85rem;
+      background: #fff;
+    }
+    .compare .side.bad { background: #fff7f8; }
+    .compare .side.good { background: #f3fbf4; }
+    .pin {
+      display: inline-grid; place-items: center;
+      width: 1.25rem; height: 1.25rem; border-radius: 50%;
+      background: var(--rose); color: #fff; font-size: .72rem; font-weight: 700;
+      margin-right: .25rem;
+    }
+    .pin.ok { background: var(--green); }
+    .mock-window {
+      background: var(--ed-bg);
+      color: var(--ed-text);
+      border: 1px solid var(--ed-line);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 12px;
+      margin-top: .55rem;
+    }
+    .mock-titlebar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .55rem .75rem;
+      background: #0e121a;
+      border-bottom: 1px solid var(--ed-line);
+      font-weight: 600;
+    }
+    .mock-body { display: grid; grid-template-columns: 1.15fr .85fr; gap: .75rem; padding: .75rem; }
+    @media (max-width: 880px) { .mock-body { grid-template-columns: 1fr; } }
+    .mock-panel {
+      background: var(--ed-panel);
+      border: 1px solid var(--ed-line);
+      border-radius: 10px;
+      padding: .65rem .7rem;
+    }
+    .mock-panel .lbl { color: var(--ed-muted); font-size: 10px; margin-bottom: .35rem; letter-spacing: .03em; }
+    .mock-btn {
+      display: inline-block; border: 1px solid var(--ed-line);
+      border-radius: 8px; padding: .4rem .55rem; margin: .15rem .15rem 0 0;
+      background: #222a3b; color: var(--ed-text);
+    }
+    .mock-btn.primary { background: #2a3d6d; border-color: var(--ed-accent); color: #dfe9ff; }
+    .mock-btn.wide { display: block; text-align: center; margin: .25rem 0; }
+    .mock-btn.stack { display: block; width: 100%; margin: .2rem 0; text-align: left; }
+    .mock-btn.active { outline: 1px solid var(--ed-accent); background: #243456; }
+    .mock-preview {
+      min-height: 120px; border-radius: 10px;
+      border: 1px solid var(--ed-line); background: #0f1522;
+      color: var(--ed-muted); padding: .65rem .7rem;
+    }
+    .mock-preview .shop-title { color: var(--ed-accent); font-weight: 700; margin-bottom: .3rem; }
+    .mock-preview .shop-msg { color: #c9d4ef; margin-bottom: .25rem; }
+    .muted { color: var(--ed-muted); font-size: 10px; }
+    .warn-line { color: var(--ed-bad); font-size: 11px; margin-top: .35rem; }
+    .ok-line { color: var(--ed-good); font-size: 11px; margin-top: .35rem; }
+    .intent {
+      border: 1px dashed #3a4a6d; border-radius: 8px; padding: .45rem .55rem;
+      color: #b9c7e6; font-size: 11px; margin-bottom: .45rem; background: #141b2a;
+    }
+    .seg {
+      display: inline-flex; border: 1px solid var(--ed-line); border-radius: 8px; overflow: hidden; margin: .15rem 0 .35rem;
+    }
+    .seg span {
+      padding: .35rem .55rem; border-right: 1px solid var(--ed-line); color: var(--ed-muted);
+    }
+    .seg span:last-child { border-right: 0; }
+    .seg span.on { background: #243456; color: #dfe9ff; }
+    .row-item {
+      display: grid; grid-template-columns: 28px 1fr auto; gap: .5rem; align-items: center;
+      padding: .4rem; border-radius: 8px; border: 1px solid var(--ed-line); margin-top: .35rem;
+      background: #151c2b;
+    }
+    .ico {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: linear-gradient(135deg,#6a3a3a,#3a2030);
+    }
+    .ico.cmd { background: linear-gradient(135deg,#3a4a6d,#253048); }
+    .battle-field {
+      border-radius: 10px; min-height: 96px; margin-bottom: .45rem;
+      background:
+        linear-gradient(180deg, rgba(8,12,24,.2), rgba(8,12,24,.55)),
+        linear-gradient(135deg, #6b4a1d, #2f4a1f 55%, #1b2a3a);
+      border: 1px solid var(--ed-line);
+      display: flex; align-items: flex-end; justify-content: center; gap: .35rem;
+      padding: .6rem;
+    }
+    .enemy-chip {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: #2a2030; border: 1px solid #6a4a5a; color: #ffd0d8;
+      display: grid; place-items: center; font-size: 10px; font-weight: 700;
+    }
+    .cmd-slot {
+      display: grid; grid-template-columns: 24px 1fr auto; gap: .4rem; align-items: center;
+      padding: .35rem .45rem; border-radius: 8px; border: 1px solid var(--ed-line);
+      background: #151c2b; margin-top: .3rem;
+    }
+    .cmd-slot .n { color: var(--ed-muted); font-family: var(--mono); font-size: 10px; }
+    code, .mono { font-family: var(--mono); font-size: .86em; }
+    table.nice { width: 100%; border-collapse: collapse; font-size: .92rem; }
+    table.nice th, table.nice td {
+      border: 1px solid var(--line); padding: .55rem .65rem; text-align: left; vertical-align: top;
+    }
+    table.nice th { background: #f7f1e4; }
+    .foot-actions { margin: 0; padding-left: 1.2rem; }
+    .foot-actions li { margin: .35rem 0; }
+    .ia { display: grid; gap: .4rem; }
+    .ia .lane {
+      display: grid; grid-template-columns: 130px 1fr; gap: .6rem; align-items: center;
+      background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: .55rem .7rem;
+    }
+    .ia .lane b { color: var(--teal-deep); font-size: .82rem; }
+    .ia .lane span { color: var(--muted); font-size: .9rem; }
+    footer.site {
+      padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: .85rem;
+      border-top: 1px solid var(--line);
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: .4rem; margin: .4rem 0 .8rem; }
+    .split-title {
+      display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; margin: 0 0 .6rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow"><span class="dot"></span> html-explain · 이벤트 명령 UX</div>
+      <h1><span class="hl">전투 처리</span>와 <span class="hl">전투 커맨드 변경</span></h1>
+      <p class="lede">
+        둘 다 “전투”라는 단어만 공유하고 작업 대상이 다르다.
+        전자는 <b>지금 이 이벤트에서 어떤 싸움을 열까</b>,
+        후자는 <b>주인공 전투 메뉴 버튼을 어떻게 고칠까</b>.
+        지금 화면은 둘 다 그 질문에 먼저 답하지 않는다.
+      </p>
+      <div class="meta-row">
+        <span class="chip"><b>상태</b> P0 설계 (구현 전 플랜)</span>
+        <span class="chip"><b>범위</b> battleProcessing + m2 Change Battle Commands</span>
+        <span class="chip"><b>날짜</b> 2026-07-17</span>
+        <span class="chip"><b>앵커</b> commandBodyDatabase.ts · commandBodyM2.ts</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <div class="wrap">
+      <a href="#tldr">TL;DR</a>
+      <a href="#pain">지금 깨짐</a>
+      <a href="#model">멘탈 모델</a>
+      <a href="#battle">전투 처리 타깃</a>
+      <a href="#commands">커맨드 변경 타깃</a>
+      <a href="#ia">정보 구조</a>
+      <a href="#plan">페이즈</a>
+      <a href="#files">파일</a>
+      <a href="#next">다음 액션</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="block" id="tldr">
+      <h2>TL;DR 결정</h2>
+      <div class="tldr">
+        <ol>
+          <li><b>두 명령을 하나로 합치지 않는다.</b> 전투 처리 = 전투 세션 시작, 전투 커맨드 변경 = 메뉴 버튼 편집.</li>
+          <li><b>전투 처리는 “적 그룹 카드”가 메인.</b> 탈출/패배/전투 방식은 규칙 카드로 내려보낸다.</li>
+          <li><b>전투 커맨드 변경은 generic M2 폼을 버린다.</b> 대상 액터 + 조작(추가/제거/설정) + 커맨드 슬롯 미리보기.</li>
+          <li><b>프리뷰가 답을 말한다.</b> 전투 처리 → 미니 전장 + 적 목록. 커맨드 변경 → 전투 메뉴 버튼 바.</li>
+          <li><b>P0는 UX/스키마 최소 확장.</b> battleProcessing은 레이아웃+프리뷰 강화 우선. Change Battle Commands는 전용 폼 + 세션 오버라이드 런타임까지 묶는다.</li>
+        </ol>
+      </div>
+      <div class="callout good">
+        이미 있는 것: <code class="mono">battleProcessing { troopId, canEscape, canLose, battleFlow? }</code>,
+        트룹/적 DB, 직업 <code class="mono">classes[].battleCommands</code>, 전역 <code class="mono">database.battleCommands</code>,
+        우측 미니 전장 프리뷰 뼈대.
+      </div>
+      <div class="callout warn">
+        약한 것: 전투 처리 폼이 “드롭다운+체크박스 한 줄”. Change Battle Commands는 M2 껍데기만 있고
+        대상 필드가 자유 텍스트, 미리보기는 <code class="mono">operation:set</code> 원시 덤프.
+      </div>
+    </section>
+
+    <section class="block" id="pain">
+      <h2>지금 뭐가 깨지나</h2>
+      <div class="legend">
+        <span class="tag p0">전투 처리</span>
+        <span class="tag p1">전투 커맨드 변경</span>
+        <span class="tag p2">공통</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>전투 처리 — 지금 스크린샷</h3>
+          <ul>
+            <li><span class="pin">1</span> 메인 질문이 “누구랑 싸워?”인데 빈 드롭다운만 큼직하다.</li>
+            <li><span class="pin">2</span> 탈출/패배/전투 방식이 같은 줄에 몰려 규칙이 안 읽힌다.</li>
+            <li><span class="pin">3</span> 우측 프리뷰는 배경 이미지만 있고 적 멤버·보상·결과 분기가 없다.</li>
+            <li><span class="pin">4</span> 필드 몬스터/보스/도망 불가 전투 같은 장르 프리셋이 없다.</li>
+            <li><span class="pin">5</span> 트룹 미선택 경고가 약하다. 빈 전투 명령을 확인해도 티가 안 난다.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>전투 커맨드 변경 — 지금 스크린샷</h3>
+          <ul>
+            <li><span class="pin">1</span> 제목은 “전투 커맨드 변경”인데 셀렉트는 “M2/현대 명령”.</li>
+            <li><span class="pin">2</span> 대상이 자유 텍스트. 주인공 얼굴/이름 픽커가 없다.</li>
+            <li><span class="pin">3</span> 조작=설정 하나만 보이고 추가/제거 의미가 안 보인다.</li>
+            <li><span class="pin">4</span> 커맨드 선택 후 “선택 없음” 유령 필드가 남아 레이아웃이 깨진다.</li>
+            <li><span class="pin">5</span> 우측 프리뷰가 디버그 문자열: <code class="mono">operation:set</code>.</li>
+            <li><span class="pin">6</span> 런타임이 부분 지원(m2-092 partial). 폼만 있어도 실행 기대가 어긋난다.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="compare" style="margin-top:.85rem">
+        <div class="side bad">
+          <h3><span class="pin">!</span> Before — 전투 처리</h3>
+          <div class="mock-window">
+            <div class="mock-titlebar"><span>전투 처리</span><span>×</span></div>
+            <div class="mock-body">
+              <div class="mock-panel">
+                <div class="lbl">한 줄 컨트롤</div>
+                <div class="mock-btn stack">(적 그룹 선택)</div>
+                <div class="muted">☑ 탈출 허용  ☐ 패배 허용  ·  시스템/트룹 설정 ▾</div>
+                <p class="warn-line"><span class="pin">1</span> 누가 나오는지 폼 안에서 안 보임</p>
+              </div>
+              <div class="mock-panel">
+                <div class="lbl">프리뷰</div>
+                <div class="mock-preview">
+                  <div class="battle-field"><div class="enemy-chip">?</div></div>
+                  <div class="shop-title">(적 그룹 선택)</div>
+                  <div class="mock-btn">도망 가능</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="side bad">
+          <h3><span class="pin">!</span> Before — 전투 커맨드 변경</h3>
+          <div class="mock-window">
+            <div class="mock-titlebar"><span>전투 커맨드 변경</span><span>×</span></div>
+            <div class="mock-body">
+              <div class="mock-panel">
+                <div class="lbl">M2 generic</div>
+                <div class="muted">필요한 값을 선택하고 확인을 누르세요.</div>
+                <div class="mock-btn">조작 설정 ▾</div>
+                <div class="mock-btn stack">대상 [     ]</div>
+                <div class="mock-btn stack">(전투 커맨드 선택)</div>
+                <div class="muted">선택 없음</div>
+                <p class="warn-line"><span class="pin">5</span> 메뉴 모습이 안 보임</p>
+              </div>
+              <div class="mock-panel">
+                <div class="lbl">프리뷰</div>
+                <div class="mock-preview">
+                  <div class="shop-title">M2/현대 명령</div>
+                  <div class="shop-msg">전투 커맨드 변경 : operation:set</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="model">
+      <h2>멘탈 모델</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>전투 처리 = 전투 세션 열기</h3>
+          <p>작가가 고르는 것:</p>
+          <ol>
+            <li>어느 적 그룹(troop)과 싸울지</li>
+            <li>도망/패배 규칙</li>
+            <li>게이지 vs 엄격 턴제(옵션)</li>
+            <li>(후속) 승리/패배/도망 분기</li>
+          </ol>
+          <p>엔진 앵커: <code class="mono">pause("battleProcessing")</code> → PlayScene 전투 → <code class="mono">battleResult</code>.</p>
+        </div>
+        <div class="card">
+          <h3>전투 커맨드 변경 = 메뉴 버튼 편집</h3>
+          <p>작가가 고르는 것:</p>
+          <ol>
+            <li>누구의 전투 메뉴인가 (주인공 / 파티)</li>
+            <li>무엇을 하는가 (추가 / 제거 / 목록 설정)</li>
+            <li>어느 커맨드인가 (공격·스킬·아이템·방어…)</li>
+          </ol>
+          <p>엔진 앵커: 직업 기본 메뉴 + 세션 오버라이드. DB 직업 편집과 이벤트 편집을 혼동하면 안 된다.</p>
+        </div>
+      </div>
+      <div class="callout">
+        비유: 전투 처리는 “던전 문 열기”, 전투 커맨드 변경은 “컨트롤러 버튼 리맵”.
+        같은 방(전투)을 다루지만 도구가 다르다.
+      </div>
+    </section>
+
+    <section class="block" id="battle">
+      <div class="split-title">
+        <h2 style="margin:0">전투 처리 타깃 UX</h2>
+        <span class="tag p0">P0</span>
+        <span class="tag good">기존 kind 유지</span>
+      </div>
+
+      <div class="compare">
+        <div class="side good">
+          <h3><span class="pin ok">✓</span> After — 적 그룹 우선</h3>
+          <div class="mock-window">
+            <div class="mock-titlebar"><span>전투 처리</span><span>×</span></div>
+            <div class="mock-body">
+              <div class="mock-panel">
+                <div class="intent"><span class="pin ok">1</span> 이 이벤트에서 전투를 시작한다</div>
+                <div class="lbl">적 그룹</div>
+                <div class="row-item">
+                  <div class="ico"></div>
+                  <div>슬라임 무리<br><span class="muted">슬라임 · 슬라임 · 박쥐</span></div>
+                  <div class="muted">3</div>
+                </div>
+                <div class="mock-btn primary wide">적 그룹 선택…</div>
+                <div class="mock-btn wide">프리셋: 필드 랜덤</div>
+                <div class="mock-btn wide">프리셋: 보스 (도망 불가)</div>
+                <div class="lbl" style="margin-top:.55rem">규칙</div>
+                <div class="seg"><span class="on">도망 가능</span><span>도망 불가</span></div>
+                <div class="seg"><span class="on">패배=게임오버</span><span>패배 허용</span></div>
+                <div class="seg"><span class="on">시스템 기본</span><span>게이지</span><span>엄격</span></div>
+              </div>
+              <div class="mock-panel">
+                <div class="lbl">프리뷰</div>
+                <div class="mock-preview">
+                  <div class="battle-field">
+                    <div class="enemy-chip">슬</div>
+                    <div class="enemy-chip">슬</div>
+                    <div class="enemy-chip">박</div>
+                  </div>
+                  <div class="shop-title">슬라임 무리</div>
+                  <div class="shop-msg">EXP 24 · Gold 12 · 드롭 포션</div>
+                  <div class="mock-btn">도망 가능</div>
+                  <div class="mock-btn">패배=게임오버</div>
+                  <div class="ok-line">확인 시 전투 시작 → battleResult 저장</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="side good">
+          <h3>폼 규칙</h3>
+          <ul>
+            <li><b>1행</b> 트룹 카드(아이콘+이름+멤버 부제). 빈 값이면 빨간 배지 “적 그룹 필요”.</li>
+            <li><b>2행</b> 규칙 세그먼트: 도망 / 패배 / 전투 방식. 체크박스 나열 금지.</li>
+            <li><b>3행(선택 P1)</b> 결과 분기 토글: 승리/패배/도망 시 이벤트 본문에서 마커로 편집 (choices/fork 패턴 재사용).</li>
+            <li><b>프리셋</b> 은 seed일 뿐: 필드(도망O/패배O), 스토리(도망X/패배X), 보스(도망X/엄격).</li>
+            <li><b>프리뷰</b> 멤버 얼굴/실루엣 최대 4, 초과는 “외 N”. 보상 요약은 troop/enemy rewards에서 합산 표시.</li>
+          </ul>
+          <div class="callout good">스키마 변경 최소: 기존 필드만으로 P0 가능. 분기 마커는 P1.</div>
+        </div>
+      </div>
+
+      <h3>작업 순서 (작가 30초)</h3>
+      <div class="flow">
+        <div class="step"><b>1. 적 그룹</b>슬라임 무리 고른다</div>
+        <div class="step"><b>2. 규칙</b>도망 가능 / 패배 게임오버</div>
+        <div class="step"><b>3. 프리뷰 확인</b>적 3마리 + EXP 보임</div>
+        <div class="step"><b>4. 확인</b>명령 리스트에 “전투 처리: 슬라임 무리 / 도망”</div>
+      </div>
+    </section>
+
+    <section class="block" id="commands">
+      <div class="split-title">
+        <h2 style="margin:0">전투 커맨드 변경 타깃 UX</h2>
+        <span class="tag p1">P0~P1</span>
+        <span class="tag p0">M2 전용 폼</span>
+      </div>
+
+      <div class="compare">
+        <div class="side good">
+          <h3><span class="pin ok">✓</span> After — 메뉴 편집기</h3>
+          <div class="mock-window">
+            <div class="mock-titlebar"><span>전투 커맨드 변경</span><span>×</span></div>
+            <div class="mock-body">
+              <div class="mock-panel">
+                <div class="intent"><span class="pin ok">1</span> 전투 중 메뉴 버튼을 바꾼다 (DB 직업 기본값 ≠ 이벤트 오버라이드)</div>
+                <div class="lbl">대상</div>
+                <div class="seg"><span>파티</span><span class="on">주인공</span></div>
+                <div class="row-item">
+                  <div class="ico cmd"></div>
+                  <div>주인공<br><span class="muted">전사 · Lv.1</span></div>
+                  <div class="muted">선택</div>
+                </div>
+                <div class="lbl" style="margin-top:.45rem">조작</div>
+                <div class="seg"><span class="on">추가</span><span>제거</span><span>목록 설정</span></div>
+                <div class="lbl">커맨드</div>
+                <div class="row-item">
+                  <div class="ico cmd"></div>
+                  <div>포획<br><span class="muted">kind: capture</span></div>
+                  <div class="muted">선택</div>
+                </div>
+              </div>
+              <div class="mock-panel">
+                <div class="lbl">전투 메뉴 미리보기</div>
+                <div class="mock-preview">
+                  <div class="shop-title">주인공 · 추가 후</div>
+                  <div class="cmd-slot"><span class="n">1</span><span>공격</span><span class="muted">attack</span></div>
+                  <div class="cmd-slot"><span class="n">2</span><span>스킬</span><span class="muted">skill</span></div>
+                  <div class="cmd-slot"><span class="n">3</span><span>아이템</span><span class="muted">item</span></div>
+                  <div class="cmd-slot"><span class="n">4</span><span style="color:var(--ed-good)">포획 +</span><span class="muted">capture</span></div>
+                  <div class="cmd-slot"><span class="n">5</span><span>방어</span><span class="muted">defend</span></div>
+                  <div class="ok-line">교체(switch)는 맨 아래 고정 슬롯</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="side good">
+          <h3>폼 규칙</h3>
+          <ul>
+            <li><b>대상</b> 파티 / 주인공 세그먼트 + 얼굴 픽커. 자유 텍스트 금지.</li>
+            <li><b>조작</b> 추가 · 제거 · 목록 설정(= 교체/리셋 계열). 라벨은 한국어 동사.</li>
+            <li><b>커맨드</b> <code class="mono">database.battleCommands</code> 카드 피커. 부제에 kind 한글.</li>
+            <li><b>목록 설정</b> 모드일 때만 슬롯 리스트 편집(최대 6 + 교체 고정). P1.</li>
+            <li><b>프리뷰</b> 항상 “변경 후 메뉴 바”. 원시 field dump 금지.</li>
+            <li><b>카피</b> 헤더/셀렉트 라벨을 “전투 커맨드 변경”으로 통일. M2/현대 명령 노출 금지.</li>
+          </ul>
+          <div class="callout warn">
+            P0에서 전용 폼만 만들고 런타임이 여전히 no-op이면 더 나쁘다.
+            폼과 함께 <code class="mono">session.actorBattleCommands</code>(가칭) 오버라이드 + battleCommandsForActor 조회를 묶는다.
+          </div>
+        </div>
+      </div>
+
+      <h3>조작 의미 (RM2003 대응)</h3>
+      <table class="nice">
+        <thead>
+          <tr>
+            <th>UI 라벨</th>
+            <th>의미</th>
+            <th>런타임</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>추가</td>
+            <td>대상 메뉴 끝에 커맨드 1개 삽입 (중복 스킵 또는 맨 앞으로 이동)</td>
+            <td>세션 오버라이드 배열 push</td>
+          </tr>
+          <tr>
+            <td>제거</td>
+            <td>해당 id/kind 커맨드를 메뉴에서 삭제</td>
+            <td>filter. 교체 슬롯은 삭제 불가</td>
+          </tr>
+          <tr>
+            <td>목록 설정</td>
+            <td>직업 기본 대신 이 목록을 사용 (리셋 옵션 포함)</td>
+            <td>override replace / clear</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="block" id="ia">
+      <h2>정보 구조</h2>
+      <div class="grid-2">
+        <div>
+          <h3>전투 처리</h3>
+          <div class="ia">
+            <div class="lane"><b>의도</b><span>이 이벤트에서 전투를 연다</span></div>
+            <div class="lane"><b>메인</b><span>적 그룹 카드 + 선택 버튼</span></div>
+            <div class="lane"><b>규칙</b><span>도망 · 패배 · 전투 방식 세그먼트</span></div>
+            <div class="lane"><b>프리셋</b><span>필드 / 스토리 / 보스 seed</span></div>
+            <div class="lane"><b>프리뷰</b><span>미니 전장 · 멤버 · 보상 · 규칙 배지</span></div>
+            <div class="lane"><b>P1</b><span>승리/패배/도망 분기 마커</span></div>
+          </div>
+        </div>
+        <div>
+          <h3>전투 커맨드 변경</h3>
+          <div class="ia">
+            <div class="lane"><b>의도</b><span>전투 메뉴 버튼을 고친다</span></div>
+            <div class="lane"><b>대상</b><span>파티 / 주인공 픽커</span></div>
+            <div class="lane"><b>조작</b><span>추가 · 제거 · 목록 설정</span></div>
+            <div class="lane"><b>커맨드</b><span>전역 battleCommands 카드</span></div>
+            <div class="lane"><b>프리뷰</b><span>변경 후 메뉴 슬롯 1..N</span></div>
+            <div class="lane"><b>런타임</b><span>세션 오버라이드 + battleCommandsForActor</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="plan">
+      <h2>페이즈</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3><span class="tag p0">P0</span> 보이게 만들기</h3>
+          <ul>
+            <li>전투 처리: 세로 스택 + 규칙 세그먼트 + 빈 트룹 경고</li>
+            <li>전투 처리: 프리뷰 멤버/보상 요약 강화</li>
+            <li>커맨드 변경: M2 generic 탈출, 전용 폼(대상/조작/커맨드)</li>
+            <li>커맨드 변경: 메뉴 바 프리뷰 (정적, 직업 기본 기준)</li>
+            <li>라벨 정리: “전투 커맨드 변경”, 원시 operation 문자열 제거</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="tag p1">P1</span> 실행되게 만들기</h3>
+          <ul>
+            <li>세션 오버라이드 필드 + save/load</li>
+            <li><code class="mono">battleCommandsForActor</code>가 오버라이드 존중</li>
+            <li>m2-092 runtime-full 또는 네이티브 kind 승격</li>
+            <li>전투 처리 결과 분기 마커 (승리/패배/도망)</li>
+            <li>프리셋 3종 seed</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3><span class="tag p2">P2</span> 고급</h3>
+          <ul>
+            <li>목록 설정 모드 슬롯 드래그 정렬</li>
+            <li>트룹 인라인 미리보기(적 스탯 호버)</li>
+            <li>변수 트룹 / 랜덤 인카운터 연동 카드</li>
+            <li>클래스 기본 메뉴 “DB에서 열기” 점프</li>
+            <li>e2e 스크린샷 계약</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>완료 기준 (P0)</h3>
+      <table class="nice">
+        <thead>
+          <tr><th>화면</th><th>작가가 10초 안에 말할 수 있어야 하는 것</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>전투 처리</td>
+            <td>“슬라임 3마리랑 싸우고, 도망은 되고, 지면 게임오버”</td>
+          </tr>
+          <tr>
+            <td>전투 커맨드 변경</td>
+            <td>“주인공 메뉴에 포획을 추가한다. 미리보기에 4번째 칸이 포획”</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="block" id="files">
+      <h2>파일 / 소유</h2>
+      <table class="nice">
+        <thead>
+          <tr><th>영역</th><th>파일</th><th>역할</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>전투 처리 폼</td>
+            <td><code class="mono">src/editor/panels/eventEditor/commandBodyDatabase.ts</code></td>
+            <td><code class="mono">battleProcessingBody</code> 레이아웃 개편</td>
+          </tr>
+          <tr>
+            <td>전투 프리뷰</td>
+            <td><code class="mono">commandPreview.ts</code> · <code class="mono">event-editor.command-preview.css</code></td>
+            <td>멤버/보상/배지 강화</td>
+          </tr>
+          <tr>
+            <td>커맨드 변경 폼</td>
+            <td><code class="mono">commandBodyM2.ts</code> (+ 전용 분기 또는 네이티브 body)</td>
+            <td>generic M2 탈출, 액터/조작/커맨드 카드</td>
+          </tr>
+          <tr>
+            <td>커맨드 카탈로그</td>
+            <td><code class="mono">database.battleCommands</code> · <code class="mono">databaseUtilityRecordViews.ts</code></td>
+            <td>피커 데이터 소스</td>
+          </tr>
+          <tr>
+            <td>런타임 메뉴</td>
+            <td><code class="mono">src/battle/battleCommands.ts</code></td>
+            <td>세션 오버라이드 합성</td>
+          </tr>
+          <tr>
+            <td>스키마</td>
+            <td><code class="mono">src/project/types/events.ts</code> · session 타입</td>
+            <td>P1: 오버라이드 필드 / 또는 m2 fields 정규화</td>
+          </tr>
+          <tr>
+            <td>테스트</td>
+            <td><code class="mono">test/battleProcessingCommandBody.test.ts</code> (신설) · <code class="mono">test/changeBattleCommands*.test.ts</code></td>
+            <td>폼 + 런타임 계약</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        네이티브 <code class="mono">battleProcessing</code>은 이미 kind가 있다.
+        Change Battle Commands는 당분간 m2-092를 유지하되 <b>전용 폼 레이어</b>를 얹거나,
+        네이티브 <code class="mono">changeBattleCommands</code> kind로 승격하는 편이 장기적으로 싸다.
+      </div>
+    </section>
+
+    <section class="block" id="next">
+      <h2>다음 액션</h2>
+      <ol class="foot-actions">
+        <li><b>이 문서 기준으로 구현 승인</b> — 특히 커맨드 변경을 m2 유지 vs 네이티브 kind 승격 중 하나 확정.</li>
+        <li><b>P0-A 전투 처리</b> 세로 스택 + 세그먼트 + 빈 트룹 경고 + 프리뷰 멤버/보상.</li>
+        <li><b>P0-B 전투 커맨드 변경</b> 전용 폼(대상/조작/커맨드) + 메뉴 바 프리뷰 + 라벨 정리.</li>
+        <li><b>P1 런타임</b> 세션 오버라이드 연결 전까지 “부분 지원” 배지를 폼에 명시.</li>
+        <li><b>증거</b> 에디터 스크린샷 before/after + 단위 테스트.</li>
+      </ol>
+      <div class="callout good">
+        구현 착수 시 우선순위: 전투 처리 P0 → 커맨드 변경 전용 폼 P0 → 커맨드 런타임 P1.
+        폼만 예쁜 no-op을 만들지 않는다.
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      RPG ZZU · html-explain · 전투 처리 / 전투 커맨드 변경 UX 플랜 · 2026-07-17 · 구현 전 설계 문서
+    </div>
+  </footer>
+</body>
+</html>

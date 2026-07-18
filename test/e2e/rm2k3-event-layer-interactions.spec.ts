@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { EventPageGraphic, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { expandEventMovementSection } from "./eventEditorExpandHelpers";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
 
@@ -228,14 +229,18 @@ test("event layer canvas selects on first click and opens the editor on double c
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
   await expect(page.getByTestId("event-editor-diff")).toBeVisible();
   await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
-  await expect(page.getByTestId("event-page-bottom-left")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-right")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-left").getByText("그래픽")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-left").getByText("이동 유형")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-right").getByText("트리거")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-right").getByText("우선순위")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-right").getByText("애니메이션 유형")).toBeVisible();
-  await expect(page.getByTestId("event-page-bottom-right").getByText("이동 속도")).toBeVisible();
+  await expect(page.getByTestId("event-classic-graphic")).toBeVisible();
+  await expect(page.getByTestId("event-classic-graphic")).toContainText("그래픽");
+  await expect(page.getByTestId("event-page-bottom-left")).toHaveCount(0);
+  await expect(page.getByTestId("event-page-bottom-right")).toHaveCount(0);
+  // Movement/trigger/priority/animation/speed live under folded section (Disposition B).
+  await expandEventMovementSection(page);
+  await expect(page.getByTestId("event-classic-movement-type")).toBeVisible();
+  await expect(page.getByTestId("event-classic-movement-type")).toContainText("이동 유형");
+  await expect(page.getByTestId("event-classic-trigger")).toContainText("트리거");
+  await expect(page.getByTestId("event-page-priority-select")).toBeVisible();
+  await expect(page.getByTestId("event-classic-animation-type")).toContainText("애니메이션 유형");
+  await expect(page.getByTestId("event-classic-movement-speed")).toContainText("이동 속도");
   await expect(page.getByTestId("event-page-movement-type")).toHaveValue("fixed");
   await expect(page.getByTestId("event-page-movement-type").locator("option:checked")).toHaveText("정지");
   await expect(page.getByTestId("event-page-movement-frequency")).toBeDisabled();

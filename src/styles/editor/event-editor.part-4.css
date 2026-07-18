@@ -157,9 +157,7 @@
 .event-conditions-grid,
 .event-condition-row,
 .event-page-movement,
-.event-page-movement-basics,
-.event-page-bottom-left,
-.event-page-bottom-right {
+.event-page-movement-basics {
   gap: 3px;
 }
 
@@ -343,20 +341,6 @@
   font: 700 11px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-height: 20px;
   padding-inline: 5px;
-}
-
-.event-page-bottom-grid {
-  display: grid;
-  gap: 7px;
-  grid-template-columns: 272px minmax(240px, 1fr);
-}
-
-.event-page-bottom-left,
-.event-page-bottom-right {
-  align-content: start;
-  display: grid;
-  gap: 6px;
-  min-width: 0;
 }
 
 .event-graphic-control {
@@ -721,7 +705,6 @@
 }
 
 .event-page-movement-basics > select,
-.event-page-bottom-right select,
 .event-page-movement-label select {
   width: 100%;
 }
@@ -920,16 +903,6 @@
     gap: 2px;
     margin-top: 2px;
   }
-
-  .event-page-bottom-grid {
-    gap: 4px;
-  }
-
-  .event-page-bottom-left,
-  .event-page-bottom-right {
-    gap: 2px;
-  }
-
   .event-graphic-control {
     min-height: 52px;
   }
@@ -947,12 +920,10 @@
     min-height: 18px;
   }
 
-  .event-page-bottom-right select,
   .event-page-movement-label select {
     height: 24px;
     min-height: 24px;
   }
-
   .event-priority-block {
     gap: 2px;
   }

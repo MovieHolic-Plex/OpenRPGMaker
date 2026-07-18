@@ -103,7 +103,12 @@ function executeByTitle(
     mutateActorState(session, runtime, title, fields, context);
     return;
   }
-  if (title === "Change Parameters" || title === "Change State" || title === "Damage Processing") {
+  if (
+    title === "Change Parameters"
+    || title === "Change State"
+    || title === "Damage Processing"
+    || title === "Change Battle Commands"
+  ) {
     mutateActorState(session, runtime, title, fields, context);
     return;
   }
@@ -214,10 +219,6 @@ function mutateActorState(
     }
     return;
   }
-  if (title === "Change Actor Faceset") {
-    actor.faceset = fieldString(fields, "value", "");
-    return;
-  }
   if (title === "Change Actor Class") {
     const classId = fieldString(fields, "value", "");
     actor.classId = classId;
@@ -229,13 +230,32 @@ function mutateActorState(
     return;
   }
   if (title === "Change Battle Commands") {
-    actor.battleCommands = fieldString(fields, "value", "");
+    const commandId = fieldString(fields, "value", "");
+    const operation = fieldString(fields, "operation", "add");
+    const slots = fieldString(fields, "slots", "")
+      .split(",")
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    actor.battleCommands = commandId;
+    session.actorBattleCommands ??= {};
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      const current = session.actorBattleCommands[targetActorId] ?? [];
+      if (operation === "remove") {
+        session.actorBattleCommands[targetActorId] = current.filter((id) => id !== commandId);
+      } else if (operation === "set") {
+        session.actorBattleCommands[targetActorId] = slots.length > 0 ? slots : (commandId ? [commandId] : []);
+      } else if (commandId && !current.includes(commandId)) {
+        session.actorBattleCommands[targetActorId] = [...current, commandId];
+      } else {
+        session.actorBattleCommands[targetActorId] = current.length ? current : (commandId ? [commandId] : []);
+      }
+    }
     return;
   }
   if (title === "Change Parameters") {
-    actor.parameters = applyRuntimeNumber(actor.parameters, fields);
+    const amount = resolveNumericField(session, fields, "value", 0);
+    actor.parameters = applyRuntimeNumber(actor.parameters, { ...fields, value: amount });
     const parameter = actorParameterKey(fields);
-    const amount = fieldNumber(fields, "value", 0);
     const op = fieldString(fields, "operation", "set");
     session.actorParamBonuses ??= {};
     for (const targetActorId of resolveActorTargets(session, actorId)) {
@@ -249,8 +269,8 @@ function mutateActorState(
     return;
   }
   if (title === "Damage Processing") {
-    actor.damage = applyRuntimeNumber(actor.damage, fields);
-    const amount = Math.max(0, fieldNumber(fields, "value", 0));
+    const amount = Math.max(0, resolveNumericField(session, fields, "value", 0));
+    actor.damage = applyRuntimeNumber(actor.damage, { ...fields, value: amount });
     const op = fieldString(fields, "operation", "add");
     for (const targetActorId of resolveActorTargets(session, actorId)) {
       const vitals = session.actorVitals[targetActorId];
@@ -258,6 +278,13 @@ function mutateActorState(
       const signed = op === "remove" ? amount : -amount;
       vitals.hp = clampNumber(vitals.hp + signed, 0, vitals.maxHp);
     }
+    return;
+  }
+  if (title === "Change Actor Faceset") {
+    const resourceId = fieldString(fields, "value", "");
+    const faceIndex = Math.max(0, Math.trunc(fieldNumber(fields, "faceIndex", 0)));
+    actor.faceset = resourceId;
+    actor.faceIndex = faceIndex;
     return;
   }
   if (title === "Change State") {
@@ -269,6 +296,22 @@ function mutateActorState(
   }
 }
 
+function resolveNumericField(
+  session: PlaySessionLike,
+  fields: M2CommandFields,
+  key: string,
+  fallback: number
+): number {
+  const source = fieldString(fields, "valueSource", "number");
+  const variableId = fieldString(fields, "valueVariableId", "").trim();
+  if (source === "variable" && variableId) {
+    const raw = session.variables?.[variableId];
+    const parsed = typeof raw === "number" ? raw : Number(raw);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+  return fieldNumber(fields, key, fallback);
+}
+
 function resolveActorTargets(session: PlaySessionLike, target: string): readonly string[] {
   if (!target || target === "party" || target === "all") return session.partyActorIds;
   return [target];
@@ -276,7 +319,9 @@ function resolveActorTargets(session: PlaySessionLike, target: string): readonly
 
 function actorParameterKey(fields: M2CommandFields): ActorParameterKey {
   const explicit = fieldString(fields, "parameter", fieldString(fields, "stat", fieldString(fields, "key", "")));
-  return ACTOR_PARAMETER_KEYS.includes(explicit as ActorParameterKey) ? explicit as ActorParameterKey : "maxHp";
+  // RM2003 "정신" legacy field name spirit maps to engine key mind.
+  const normalized = explicit === "spirit" ? "mind" : explicit;
+  return ACTOR_PARAMETER_KEYS.includes(normalized as ActorParameterKey) ? normalized as ActorParameterKey : "maxHp";
 }
 
 function applySessionNumber(current: number, operation: string, value: number): number {

@@ -1,5 +1,6 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
+import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks, maybeStartBasicCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import {
@@ -26,7 +27,13 @@ import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionSettings";
 import { renderMapList } from "@/editor/panels/mapList";
-import { closeTestPlayModal, openSelectedEventTestModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
+import {
+  closeTestPlayModal,
+  openRandomTroopBattleTestModal,
+  openSelectedEventTestModal,
+  openTestPlayModal,
+  openTroopBattleTestModal,
+} from "@/editor/panels/testPlayModal";
 import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -227,6 +234,9 @@ export function applyEditorUiModeLayout(): void {
 }
 
 export function teardownEditor(): void {
+  registerAiBootIntentTarget(null);
+  clearPendingAiBootIntent();
+
   unsubStore?.();
   unsubAutoSave?.();
   unsubEditor?.();
@@ -678,6 +688,14 @@ function onTestPlayWindowRequest(event: Event): void {
     void openSelectedEventTestModal(detail.mapId, detail.eventId);
     return;
   }
+  if (isTroopBattleTestRequest(detail)) {
+    void openTroopBattleTestModal(detail.troopId);
+    return;
+  }
+  if (isRandomBattleTestRequest(detail)) {
+    void openRandomTroopBattleTestModal();
+    return;
+  }
   void openTestPlayModal();
 }
 
@@ -689,6 +707,20 @@ function isSelectedEventTestRequest(value: unknown): value is { readonly mapId: 
     typeof value.mapId === "string" &&
     "eventId" in value &&
     typeof value.eventId === "string";
+}
+
+function isTroopBattleTestRequest(value: unknown): value is { readonly troopId: string } {
+  if (typeof value !== "object" || value === null) return false;
+  return "kind" in value &&
+    value.kind === "troop-battle" &&
+    "troopId" in value &&
+    typeof value.troopId === "string" &&
+    value.troopId.length > 0;
+}
+
+function isRandomBattleTestRequest(value: unknown): value is { readonly kind: "random-battle" } {
+  if (typeof value !== "object" || value === null) return false;
+  return "kind" in value && value.kind === "random-battle";
 }
 // 프로젝트 전체 clone+stringify라 비싸다 — 페인트 드래그처럼 연속 변경 시 셀마다 실행하면
 // 그 자체가 렉의 주범이 된다(대량 편집 렉 보고의 1순위 원인). trailing 디바운스로 합친다.

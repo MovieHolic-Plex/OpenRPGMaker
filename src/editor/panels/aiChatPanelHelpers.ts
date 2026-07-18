@@ -126,7 +126,9 @@ export function isMetadataOnlyProposal(calls: readonly ProposedCall[]): boolean 
 export function isCardLevelApprovalWarning(warning: string): boolean {
   return (
     warning.includes("이대로 적용")
+    || warning.includes("맵만 적용")
     || warning.includes("재료 합의")
+    || warning.includes("맵 배치 초안")
     || warning.includes("목업")
     || warning.includes("자동 적용되지 않습니다")
     || warning.includes("맵에 이렇게 놓습니다")

@@ -1,6 +1,6 @@
 // 라이브 스모크: 시연으로 가르치기 — 시연 메시지를 받은 모델이 교정 툴을 실제로 호출하는지.
 // 시나리오: "나무 290은 뭉쳐야 한다"를 붓질 시연으로 전달 → set_tile_metadata/upsert_tile_group 기록.
-// 실행: OPENROUTER_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/demoTeachSmoke.eval.ts`
+// 실행: VITE_LLM_API_KEY 로드 후 `npx vitest run --config evals/vitest.config.mjs evals/demoTeachSmoke.eval.ts`
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { buildDemonstrationMessage } from "@/ai/demonstrationPrompt";
@@ -9,9 +9,9 @@ import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 
 describe("live smoke — 시연으로 가르치기", () => {
-  it.skipIf(!process.env.OPENROUTER_API_KEY)("시연을 해석해 교정 메타데이터를 기록한다", async () => {
+  it.skipIf(!process.env.VITE_LLM_API_KEY)("시연을 해석해 교정 메타데이터를 기록한다", async () => {
     const session = new AssistantSession(createBlankProject(), {
-      config: { ...defaultAiConfig(), apiKey: process.env.OPENROUTER_API_KEY ?? "" },
+      config: { ...defaultAiConfig(), apiKey: process.env.VITE_LLM_API_KEY ?? "" },
     });
     const toolLog: string[] = [];
     const message = buildDemonstrationMessage({

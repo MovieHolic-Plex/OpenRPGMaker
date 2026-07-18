@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { expandEventConditions, expandEventMovementSection } from "./eventEditorExpandHelpers";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
@@ -112,6 +113,7 @@ async function clickMapCenter(page: Page): Promise<void> {
 }
 
 async function expectClassicSettingsVisible(page: Page): Promise<void> {
+  await expandEventMovementSection(page);
   const footer = page.locator(".event-editor-modal-footer");
   const movementType = page.getByTestId("event-classic-movement-type");
   const movementSpeed = page.getByTestId("event-classic-movement-speed");
@@ -302,6 +304,7 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
   await expect(page.getByTestId("event-page-tab-2")).toBeVisible();
   await page.getByTestId("event-page-name-input").fill("Switch Page");
   await page.getByTestId("event-page-name-input").blur();
+  await expandEventMovementSection(page);
   await page.getByTestId("event-page-trigger-select").selectOption("action");
   await page.getByTestId("event-page-priority-select").selectOption("above");
   await page.getByTestId("event-page-movement-type").selectOption("custom");
@@ -377,6 +380,7 @@ test("event editor manages RM2K3-style pages with conditions and page-owned text
   await routeDialog.getByTestId("event-page-move-route-ok").click();
   await expect(routeDialog).toBeHidden();
   await expect(page.getByTestId("event-page-movement-route-summary")).toContainText("오른쪽 이동");
+  await expandEventConditions(page);
   await page.getByTestId("event-page-sprite-input").fill("tex_easyrpg_charset_people1");
   await page.getByTestId("event-page-sprite-input").blur();
   await page.getByTestId("event-page-switch-condition-input").fill("sw_page");

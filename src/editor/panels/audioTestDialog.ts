@@ -1,12 +1,22 @@
+import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS, type Cc0AudioAsset } from "@/assets/cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS, type EasyRpgRtpAsset } from "@/assets/easyrpgRtp";
+import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
 type AudioCategory = "music" | "sound";
+
+type ListedAudio = {
+  readonly id: string;
+  readonly label: string;
+  readonly playable: boolean;
+};
 
 type AudioDialogState = {
   category: AudioCategory;
   selectedIndex: number;
   playing: boolean;
+  volume: number;
 };
 
 type AudioControlSpec = {
@@ -16,6 +26,7 @@ type AudioControlSpec = {
   readonly min: number;
   readonly max: number;
   readonly value: number;
+  readonly onInput?: (value: number) => void;
 };
 
 const CATEGORY_LABELS: Readonly<Record<AudioCategory, string>> = {
@@ -23,15 +34,12 @@ const CATEGORY_LABELS: Readonly<Record<AudioCategory, string>> = {
   sound: "효과음",
 };
 
-const AUDIO_GROUPS: Readonly<Record<AudioCategory, readonly EasyRpgRtpAsset[]>> = {
-  music: EASYRPG_MUSIC_ASSETS,
-  sound: EASYRPG_SOUND_ASSETS,
-};
-
 export function openAudioTestDialog(): void {
   document.querySelector("[data-testid='audio-test-dialog']")?.remove();
+  getAudioEngine().installUnlockListeners();
+  getAudioEngine().unlock();
 
-  const state: AudioDialogState = { category: "music", selectedIndex: 0, playing: false };
+  const state: AudioDialogState = { category: "music", selectedIndex: 0, playing: false, volume: 100 };
   const closeButton = el("button", {
     class: "audio-test-close",
     text: "×",
@@ -65,7 +73,18 @@ export function openAudioTestDialog(): void {
         class: "audio-test-right",
         children: [
           audioFieldset({ label: "페이드인 시간", testId: "audio-test-fade", scale: ["None", "5초", "10초"], min: 0, max: 10, value: 0 }),
-          audioFieldset({ label: "음량", testId: "audio-test-volume", scale: ["0%", "50%", "100%"], min: 0, max: 100, value: 100 }),
+          audioFieldset({
+            label: "음량",
+            testId: "audio-test-volume",
+            scale: ["0%", "50%", "100%"],
+            min: 0,
+            max: 100,
+            value: 100,
+            onInput: (value) => {
+              state.volume = value;
+              applyVolume(state);
+            },
+          }),
           audioFieldset({ label: "템포", testId: "audio-test-tempo", scale: ["50%", "100%", "150%"], min: 50, max: 150, value: 100 }),
           audioFieldset({ label: "밸런스", testId: "audio-test-balance", scale: ["왼쪽", "중앙", "오른쪽"], min: -50, max: 50, value: 0 }),
           el("div", {
@@ -73,14 +92,16 @@ export function openAudioTestDialog(): void {
             children: [
               el("button", {
                 class: "audio-test-button",
+                text: "재생",
                 attrs: { type: "button" },
-                children: [el("span", { class: "audio-test-play-icon", attrs: { "aria-hidden": "true" } }), "재생"],
+                dataset: { testid: "audio-test-play" },
                 on: { click: () => setPlaying(true) },
               }),
               el("button", {
                 class: "audio-test-button",
+                text: "정지",
                 attrs: { type: "button" },
-                children: [el("span", { class: "audio-test-stop-icon", attrs: { "aria-hidden": "true" } }), "정지"],
+                dataset: { testid: "audio-test-stop" },
                 on: { click: () => setPlaying(false) },
               }),
             ],
@@ -111,6 +132,7 @@ export function openAudioTestDialog(): void {
   });
 
   function close(): void {
+    stopAudioCommand();
     backdrop.remove();
     document.removeEventListener("keydown", onKeyDown);
   }
@@ -120,51 +142,81 @@ export function openAudioTestDialog(): void {
   }
 
   function setPlaying(playing: boolean): void {
-    state.playing = playing;
-    const selected = currentAsset(state);
-    status.textContent = playing ? `재생 중: ${selected}` : "정지됨";
+    const selected = currentEntry(state);
+    if (!playing || state.selectedIndex === 0 || !selected) {
+      stopAudioCommand();
+      state.playing = false;
+      status.textContent = "정지됨";
+      return;
+    }
+    if (!selected.playable) {
+      stopAudioCommand();
+      state.playing = false;
+      status.textContent =
+        state.category === "music"
+          ? `재생 불가(MIDI): ${selected.label} — CC0 WAV/OGG 트랙을 쓰세요`
+          : `재생 불가: ${selected.label}`;
+      return;
+    }
+    applyVolume(state);
+    playAudioCommand(
+      {
+        resourceId: selected.id,
+        loop: state.category === "music",
+      },
+      store.getCurrent()
+    );
+    state.playing = true;
+    status.textContent = `재생 중: ${selected.label}`;
   }
 
   function renderTabs(): void {
     categoryTabs.replaceChildren();
     for (const category of ["music", "sound"] as const) {
-      categoryTabs.append(el("button", {
-        class: "audio-test-tab" + (state.category === category ? " active" : ""),
-        text: CATEGORY_LABELS[category],
-        attrs: { type: "button", role: "tab", "aria-selected": String(state.category === category) },
-        dataset: { testid: `audio-test-tab-${category}` },
-        on: {
-          click: () => {
-            state.category = category;
-            state.selectedIndex = 0;
-            state.playing = false;
-            status.textContent = "대기 중";
-            render();
+      categoryTabs.append(
+        el("button", {
+          class: "audio-test-tab" + (state.category === category ? " active" : ""),
+          text: CATEGORY_LABELS[category],
+          attrs: { type: "button", role: "tab", "aria-selected": String(state.category === category) },
+          dataset: { testid: `audio-test-tab-${category}` },
+          on: {
+            click: () => {
+              stopAudioCommand();
+              state.category = category;
+              state.selectedIndex = 0;
+              state.playing = false;
+              status.textContent = "대기 중";
+              render();
+            },
           },
-        },
-      }));
+        })
+      );
     }
   }
 
   function renderList(): void {
     list.replaceChildren();
-    const options = ["(꺼짐)", ...AUDIO_GROUPS[state.category].map(audioDisplayName)];
-    options.forEach((label, index) => {
+    const options: readonly ListedAudio[] = listAudio(state.category);
+    const labels = ["(꺼짐)", ...options.map((entry) => entry.label)];
+    labels.forEach((label, index) => {
       const selected = state.selectedIndex === index;
-      list.append(el("button", {
-        class: "audio-test-option" + (selected ? " selected" : ""),
-        text: label,
-        attrs: { type: "button", role: "option", "aria-selected": String(selected) },
-        dataset: { testid: index === 0 ? "audio-test-option-off" : `audio-test-option-${index}` },
-        on: {
-          click: () => {
-            state.selectedIndex = index;
-            state.playing = false;
-            status.textContent = "대기 중";
-            renderList();
+      list.append(
+        el("button", {
+          class: "audio-test-option" + (selected ? " selected" : ""),
+          text: label,
+          attrs: { type: "button", role: "option", "aria-selected": String(selected) },
+          dataset: { testid: index === 0 ? "audio-test-option-off" : `audio-test-option-${index}` },
+          on: {
+            click: () => {
+              stopAudioCommand();
+              state.selectedIndex = index;
+              state.playing = false;
+              status.textContent = "대기 중";
+              renderList();
+            },
           },
-        },
-      }));
+        })
+      );
     });
   }
 
@@ -183,15 +235,44 @@ export function openAudioTestDialog(): void {
   closeAction.focus();
 }
 
-function audioDisplayName(asset: EasyRpgRtpAsset): string {
-  return `${asset.fileName.replace(/\.[^.]+$/, "")} <RTP>`;
+function listAudio(category: AudioCategory): readonly ListedAudio[] {
+  if (category === "music") {
+    return [
+      ...CC0_MUSIC_ASSETS.map(cc0Entry),
+      ...EASYRPG_MUSIC_ASSETS.map((asset) => rtpEntry(asset, false)),
+    ];
+  }
+  return [
+    ...CC0_SOUND_ASSETS.map(cc0Entry),
+    ...EASYRPG_SOUND_ASSETS.map((asset) => rtpEntry(asset, true)),
+  ];
 }
 
-function currentAsset(state: AudioDialogState): string {
-  if (state.selectedIndex === 0) return "(꺼짐)";
-  const fallback = AUDIO_GROUPS[state.category][0];
-  const selected = AUDIO_GROUPS[state.category][state.selectedIndex - 1] ?? fallback;
-  return selected ? audioDisplayName(selected) : "(꺼짐)";
+function cc0Entry(asset: Cc0AudioAsset): ListedAudio {
+  return {
+    id: asset.id,
+    label: `${asset.name} <CC0>`,
+    playable: true,
+  };
+}
+
+function rtpEntry(asset: EasyRpgRtpAsset, playable: boolean): ListedAudio {
+  const file = asset.fileName.replace(/\.[^.]+$/, "");
+  return {
+    id: asset.id,
+    label: playable ? `${file} <RTP>` : `${file} <RTP·MIDI 비재생>`,
+    playable,
+  };
+}
+
+function currentEntry(state: AudioDialogState): ListedAudio | null {
+  if (state.selectedIndex === 0) return null;
+  return listAudio(state.category)[state.selectedIndex - 1] ?? null;
+}
+
+function applyVolume(state: AudioDialogState): void {
+  const group = state.category === "music" ? "bgm" : "se";
+  getAudioEngine().setVolume(group, Math.max(0, Math.min(1, state.volume / 100)));
 }
 
 function audioFieldset(spec: AudioControlSpec): HTMLElement {
@@ -201,6 +282,9 @@ function audioFieldset(spec: AudioControlSpec): HTMLElement {
   input.max = String(spec.max);
   input.value = String(spec.value);
   input.step = "1";
+  if (spec.onInput) {
+    input.addEventListener("input", () => spec.onInput?.(Number(input.value)));
+  }
   return el("fieldset", {
     class: "audio-test-fieldset",
     dataset: { testid: spec.testId },

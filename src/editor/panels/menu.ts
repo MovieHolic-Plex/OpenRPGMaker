@@ -32,7 +32,7 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
-import { saveProjectNow } from "@/editor/saveActions";
+import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
@@ -86,7 +86,12 @@ export function renderTopbar(topbar: HTMLElement): void {
     class: "editor-topbar-trailing",
     dataset: { testid: "editor-topbar-trailing" },
   });
-  trailing.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar), renderWindowControls());
+  trailing.append(
+    renderQuickBattleTestButton(),
+    renderCommitHistoryButton(),
+    renderTopbarIdentityControl(topbar),
+    renderWindowControls()
+  );
   menuBar.append(trailing);
 
   // Classic toolbar: expert edit surface only — gradual deprecation (not default in basic).
@@ -335,6 +340,7 @@ function menuCommands(
         item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
+        item("DB에서 새로고침", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
         item("내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("가져오기...", "menu-project-import", () => doImport()),
@@ -362,6 +368,7 @@ function menuCommands(
       return [
         item(state.layer === "event" ? "편집 계속" : "테스트 플레이", "menu-game-play", () => void togglePlayMode()),
         item("테스트 플레이 창", "menu-game-test-window", () => void openTestPlayWindow()),
+        item("랜덤 전투 테스트", "menu-game-battle-test", () => void openRandomBattleTestWindow()),
         { kind: "separator" },
         item("내보내기...", "menu-game-export", () => void doExportWebGame()),
       ];
@@ -398,8 +405,22 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     }),
     separator(),
     playModeButton("edit"),
+    toolbarButton({
+      testId: "toolbar-battle-test",
+      label: "전투",
+      title: "랜덤 적 그룹과 바로 전투 테스트",
+      icon: "play",
+      onClick: () => void openRandomBattleTestWindow(),
+    }),
     separator(),
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
+    toolbarButton({
+      testId: "toolbar-reload-db",
+      label: "DB 새로고침",
+      title: "Supabase에서 프로젝트를 다시 불러와 맵/이벤트를 즉시 반영",
+      icon: "open",
+      onClick: () => void reloadProjectFromDb(topbar),
+    }),
     separator(),
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "Supabase 프로젝트 열기", icon: "open", onClick: () => doLoad(topbar) }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
@@ -447,6 +468,38 @@ async function openSelectedEventTestWindow(): Promise<void> {
   }));
 }
 
+function renderQuickBattleTestButton(): HTMLElement {
+  return el("button", {
+    class: "team-history-button is-icon-only quick-battle-test-button",
+    attrs: {
+      type: "button",
+      title: "랜덤 전투 테스트 — 적 그룹을 뽑아 즉시 전투",
+      "aria-label": "랜덤 전투 테스트",
+    },
+    dataset: { testid: "topbar-battle-test" },
+    children: [
+      el("span", {
+        class: "quick-battle-test-glyph",
+        text: "⚔",
+        attrs: { "aria-hidden": "true" },
+      }),
+    ],
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        openRandomBattleTestWindow();
+      },
+    },
+  });
+}
+
+function openRandomBattleTestWindow(): void {
+  window.dispatchEvent(
+    new CustomEvent("rpgzzu:test-play-window", {
+      detail: { kind: "random-battle" },
+    })
+  );
+}
 function classicPlayToolbarRow(mode: string): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
   row.append(playModeButton(mode));
@@ -601,6 +654,20 @@ async function togglePlayMode(): Promise<void> {
 async function openTestPlayWindow(): Promise<void> {
   // flush 는 openTestPlayModal 이 창을 먼저 띄운 뒤 진행(로딩 UI 표시).
   window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
+}
+async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
+  if (store.hasUnsavedChanges()) {
+    const ok = await showConfirm({
+      title: "DB에서 새로고침",
+      message: "저장되지 않은 로컬 변경이 있습니다. DB 내용으로 덮어쓸까요?",
+      confirmLabel: "DB로 덮어쓰기",
+      danger: true,
+    });
+    if (!ok) return;
+    await reloadProjectFromDbNow({ force: true });
+    return;
+  }
+  await reloadProjectFromDbNow();
 }
 
 function doLoad(topbar: HTMLElement): void {

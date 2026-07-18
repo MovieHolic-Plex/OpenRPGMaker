@@ -15,6 +15,11 @@ import {
 import { recordAiActivityFromRegionLog } from "@/ai/activityLog";
 import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
 import {
+  activityToolCallsFromAudit,
+  type ConstructionActivityDisposition,
+} from "@/editor/construction/constructionActivity";
+import type { ConstructionAuditRecord } from "@/editor/construction/constructionAudit";
+import {
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
   setAgentGhostPreviewHidden,
@@ -25,7 +30,8 @@ import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
-import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
+import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
 import {
@@ -94,8 +100,10 @@ export interface RegionTaskLogExport {
   readonly toolCalls: readonly {
     readonly name: string;
     readonly args: Record<string, unknown>;
+    readonly ok: boolean;
     readonly summary: string;
     readonly softConfirm?: unknown;
+    readonly construction?: ConstructionAuditRecord;
   }[];
   readonly uiEvents: readonly RegionTaskUiEvent[];
   readonly audit: readonly AuditEntry[];
@@ -188,14 +196,32 @@ export function buildRegionTaskLogExport(input: {
 }): RegionTaskLogExport {
   const audit = input.session?.getAuditEntries?.() ?? [];
   const harness = input.session?.getHarnessSnapshot?.() ?? null;
-  const toolCalls = (input.turn?.proposedCalls ?? []).map((call) => ({
-    name: call.name,
-    args: call.args,
-    summary: call.summary,
-    ...(extractVocabSoftConfirm(call.result.data)
-      ? { softConfirm: extractVocabSoftConfirm(call.result.data) }
-      : {}),
-  }));
+  const hasChanges = hasRegionTaskChanges(input.result);
+  const disposition: ConstructionActivityDisposition = input.result.applied
+    ? "applied"
+    : hasChanges
+      ? "pending"
+      : "no-change";
+  const auditedCalls = activityToolCallsFromAudit(audit, disposition);
+  const proposedCalls = input.turn?.proposedCalls ?? [];
+  const toolCalls = auditedCalls.length > 0
+    ? auditedCalls.map((call) => {
+        const proposal = proposedCalls.find((candidate) => candidate.name === call.name);
+        const softConfirm = extractVocabSoftConfirm(proposal?.result.data);
+        return {
+          ...call,
+          ...(softConfirm === null ? {} : { softConfirm }),
+        };
+      })
+    : proposedCalls.map((call) => ({
+        name: call.name,
+        args: call.args,
+        ok: call.result.ok,
+        summary: call.summary,
+        ...(extractVocabSoftConfirm(call.result.data) === null
+          ? {}
+          : { softConfirm: extractVocabSoftConfirm(call.result.data) }),
+      }));
   return {
     kind: "region-task-log",
     exportedAt: new Date().toISOString(),
@@ -265,11 +291,10 @@ export function ensureRegionPlacementHarness(tileset: TilesetDef): void {
   ensureBuildPalettePresets(tileset);
 }
 
-/** 장식 박스 전용 그룹 — small-props 가방과 혼동되면 랜덤 소품이 깔린다(라이브 사고 2026-07-10). */
+/** 장식 박스 전용 그룹 참조(엔진 내부). 시공 public contract 는 material 라벨만. */
 export const REGION_PROP_VOCAB = {
   woodBox: `${COMBINED_TOWN_HARNESS_PREFIX}wood-box`,
   fruitBox: `${COMBINED_TOWN_HARNESS_PREFIX}fruit-box`,
-  smallProps: BUILD_PALETTE_PRESETS.prop,
 } as const;
 
 /** 영역 메시지에 넣을 소품/지형 그룹 id 힌트(존재하면 soft-confirm 으로 바로 place_props 가능). */
@@ -279,35 +304,37 @@ export function formatApprovedPropVocabHint(tileset: TilesetDef | undefined): st
 
 export function formatMaterialLabelHint(tileset: TilesetDef | undefined): string {
   if (!tileset) {
-    return `- 소품 어휘: (타일셋 없음) ${BUILD_PALETTE_PRESETS.tree}, ${REGION_PROP_VOCAB.woodBox}, ${REGION_PROP_VOCAB.fruitBox} 등`;
+    return `- 소품 재료: (타일셋 없음) tile_query ask:"labels" — 예: "침엽수", "나무 상자", "과일박스" (가방·그룹 id 금지)`;
   }
-  // wood/fruit-box를 small-props보다 앞에 — "박스 2개"가 랜덤 마을 소품 가방으로 빠지지 않게.
+  // 구체 소품 우선. 마을 소품(small-props) 가방은 시공 material 후보에서 제외.
   const preferred = [
     BUILD_PALETTE_PRESETS.tree,
     REGION_PROP_VOCAB.woodBox,
     REGION_PROP_VOCAB.fruitBox,
-    BUILD_PALETTE_PRESETS.prop,
     BUILD_PALETTE_PRESETS.path,
     BUILD_PALETTE_PRESETS.water,
   ];
   const groups = tileset.tileGroups ?? [];
   const preferredFound = preferred
     .map((id) => groups.find((group) => group.id === id))
-    .filter((group): group is NonNullable<typeof group> => Boolean(group));
-  const propish = groups.filter((group) =>
-    group.role === "prop" || group.role === "terrain" || group.role === "water" || group.role === "fence"
-    || /tree|prop|bush|flower|fence|path|water|road|box/i.test(group.id)
-  );
+    .filter((group): group is NonNullable<typeof group> => Boolean(group) && !isBagGroupId(group.id));
+  const propish = groups.filter((group) => {
+    if (isBagGroupId(group.id) || isBagMaterialQuery(group.name)) return false;
+    return (
+      group.role === "prop" || group.role === "terrain" || group.role === "water" || group.role === "fence"
+      || /tree|bush|flower|fence|path|water|road|box/i.test(group.id)
+    );
+  });
   const ordered = [
     ...preferredFound,
     ...propish.filter((group) => !preferred.includes(group.id)),
   ];
   const unique = [...new Map(ordered.map((group) => [group.id, group])).values()].slice(0, 10);
   if (unique.length === 0) {
-    return `- 소품 재료: tile_query ask:"labels" 로 라벨/설명을 찾아 place_props material 에 넣기 (그룹 id 금지)`;
+    return `- 소품 재료: tile_query ask:"labels" 로 라벨/설명을 찾아 place_props material 에 넣기 (가방·그룹 id 금지)`;
   }
   const list = unique.map((group) => `${group.name}(${group.role})`).join(", ");
-  return `- 소품·지형 material 라벨 예(place_props/fill_region — 그룹 id 금지, 미합의는 목업 확인): ${list}`;
+  return `- 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): ${list}`;
 }
 
 // aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).
@@ -331,13 +358,14 @@ export function buildRegionTaskMessage(
       : "- 집/건물(야외 외장): build_house_kit (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 build_house_kit 금지 → 실내 세션 툴",
     "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회",
     formatMaterialLabelHint(tileset),
-    // 툴콜링 사고: "박스 2개" → small-props 랜덤 산포. 전용 그룹 id를 강제한다.
-    `- 장식 박스/나무상자/나무박스: place_props { material: \"나무 상자\", count:N }. 과일박스= material:\"과일박스\". small-props 가방·place_chest로 대체 금지`,
-    "- 보물상자(열면 아이템/골드·개봉 기억): place_chest 만. '박스'/'나무상자' 요청에 place_chest 금지",
+    // 툴콜링 사고: "박스 2개" → small-props 가방. 구체 라벨만 허용.
+    `- 장식 박스/나무상자/나무박스: place_props { material: \"나무 상자\", count:N }. 과일박스= material:\"과일박스\". 마을 소품/small-props 가방·place_chest로 대체 금지`,
+    "- 보물상자(열면 아이템/골드·개봉 기억): place_chest 만. 보관/창고 상자(넣고 빼기): place_storage_chest. '박스'/'나무상자' 장식은 place_props — place_chest 금지",
     "- 지면/수역/바닥 면: fill_region { material:\"물\" 또는 \"잔디\" } + 원형·둥근은 shape=circle(필수). 그룹 id 금지. rect만 쓰면 네모. 타원=ellipse",
     "- 길/도로: paint_road { mapId, style:\"dirt\"|\"sand\", points:[{x,y},...] } — 흙길 오토타일 성형. 영역 안 동선·호수 둘레 산책로에 사용",
     "- 나무/소품: place_props — 물·호수 칸 위 금지. area는 호수 바깥 육지(통행 가능)만. 호수 채운 뒤 주변에 나무를 깔 것",
-    "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지",
+    "- 주민/NPC: place_npc 또는 make_villager — graphic 생략 시 villager 기본. 물 위 NPC 금지. 상점 NPC는 make_villager({shop}) 1회 또는 place_npc 1회(같은 역할 중복 금지)",
+    `- tile_query ask:\"labels\" 는 mapId:\"${mapId}\" 를 넣어 현재 맵 타일셋 라벨만 조회(기본값=야외 타일셋 — 실내 맵에서 가로 탁자 등 오조회 주의)`,
     ...intentGuides,
     "- 지원하지 않는 요청 부분은 시도하지 말고, 마지막 응답에 '못 한 것: …' 한 줄로 명시하라",
     // "적용" 표기 금지: assistantToolMode.INTENT_KEYWORDS.battle.strong의 단음절 "적"과
@@ -511,12 +539,8 @@ export async function runRegionTask(
   }
 
   const proposed = session.getProposedProject();
-  // 영역 AI는 채팅 soft-confirm UI 없이 진행 — soft 재료 합의는 이 시점에 처리한다
-  // (적용 자체는 아래 승인 게이트를 통과한 뒤에야 store에 반영된다).
-  const softs = turn.proposedCalls
-    .map((call) => extractVocabSoftConfirm(call.result.data))
-    .filter((soft): soft is NonNullable<typeof soft> => soft !== null);
-  if (softs.length > 0) applyVocabSoftConfirmApprovals(proposed, softs);
+  // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
+  // (채팅 카드의 [맵 적용 + 재료 합의]만 영구 합의 스탬프)
   // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
   // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
   const { project: clipped, clippedCells } = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);

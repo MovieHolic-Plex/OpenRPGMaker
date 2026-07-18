@@ -99,3 +99,10 @@ light from top-left.
 3. 새 PNG → 해당 파일 덮어쓰기 (파일명 유지).
 4. Vite dev 서버가 HMR로 자동 반영.
 5. 이 매니페스트의 버전 히스토리에 한 줄 추가.
+
+## CC0 Mabaci medieval props (EXCLUDED / unused)
+
+- Path: 
+- License: CC0-1.0 (see LICENSE.txt + root ATTRIBUTION.md)
+- CharSet:  registered as  via 
+- Runtime: **excluded** — interiors use native chipset BOX/CRATE tiles only

@@ -242,6 +242,8 @@ export function isRuntimeFollowerArray(value: unknown): value is PlaySession["fo
     if (!isRecord(follower)) return false;
     if (follower.eventId !== undefined && typeof follower.eventId !== "string") return false;
     if (typeof follower.name !== "string") return false;
+    if (follower.kind !== undefined && follower.kind !== "actor" && follower.kind !== "monster") return false;
+    if (follower.monsterInstanceId !== undefined && typeof follower.monsterInstanceId !== "string") return false;
     if (!isRecord(follower.graphic)) return false;
     const graphic = follower.graphic;
     if (graphic.transparent !== undefined && typeof graphic.transparent !== "boolean") return false;

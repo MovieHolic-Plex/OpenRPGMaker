@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>실내 벽 계약 — 주택 통타일 / 다크 366 / 쿼터 소스 (Option B)</title>
+  <style>
+    :root {
+      --bg: #0e1319;
+      --panel: #171e28;
+      --line: #2c3848;
+      --text: #e7eef7;
+      --muted: #93a4b8;
+      --bad: #e86a6a;
+      --ok: #6bcf8e;
+      --warn: #e0b35a;
+      --accent: #5aa7e0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 15px/1.55 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 400px at 0% 0%, #1a2838 0%, transparent 55%),
+        var(--bg);
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 16px 80px; }
+    h1 { font-size: 26px; margin: 0 0 8px; }
+    h2 { font-size: 19px; margin: 34px 0 10px; border-left: 4px solid var(--accent); padding-left: 10px; }
+    h3 { font-size: 14px; color: var(--muted); margin: 0 0 8px; }
+    p, li { color: var(--text); }
+    .lead { color: var(--muted); margin-bottom: 18px; }
+    .card {
+      background: linear-gradient(180deg, #1a222d, #141b24);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin: 12px 0;
+    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 900px) { .grid2 { grid-template-columns: 1fr; } }
+    img.shot {
+      width: 100%;
+      image-rendering: pixelated;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #0a0e13;
+      display: block;
+    }
+    .scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border: 1px solid var(--line); padding: 7px 8px; text-align: left; vertical-align: top; }
+    th { background: #101722; color: var(--muted); }
+    code { font: 12px/1.4 ui-monospace, Consolas, monospace; color: #cfe7ff; }
+    pre {
+      overflow: auto; background: #0a1016; border: 1px solid var(--line);
+      border-radius: 10px; padding: 10px; color: #cfe7ff;
+      font: 12px ui-monospace, Consolas, monospace;
+    }
+    .bad { color: var(--bad); font-weight: 700; }
+    .ok { color: var(--ok); font-weight: 700; }
+    .warn { color: var(--warn); font-weight: 700; }
+    .tile-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin: 8px 0; }
+    .tile-card { width: 74px; text-align: center; font-size: 11px; color: var(--muted); }
+    .tile-card .px {
+      width: 64px; height: 64px; margin: 0 auto 4px;
+      image-rendering: pixelated;
+      border: 2px solid #0008; border-radius: 6px;
+      background-image: url("../public/assets/easyrpg-chipset-interior-transparent.png");
+      background-size: 1920px 1024px; /* 480*4 x 256*4 */
+      background-repeat: no-repeat;
+    }
+    .tile-card.house .px { border-color: var(--ok); }
+    .tile-card.dark .px { border-color: var(--accent); }
+    .tile-card.source .px { border-color: var(--warn); }
+    .tile-card.forbidden .px { border-color: var(--bad); }
+    .callout {
+      border-left: 4px solid var(--bad);
+      background: #2a1518;
+      padding: 10px 12px;
+      border-radius: 0 10px 10px 0;
+      margin: 12px 0;
+    }
+    .callout.ok { border-left-color: var(--ok); background: #14251a; }
+    .callout.warn { border-left-color: var(--warn); background: #2a2414; }
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin: 6px 0 12px; }
+    .legend span::before {
+      content: ""; display: inline-block; width: 10px; height: 10px;
+      border-radius: 3px; margin-right: 5px; vertical-align: middle;
+    }
+    .legend .l-house::before { background: var(--ok); }
+    .legend .l-dark::before { background: var(--accent); }
+    .legend .l-source::before { background: var(--warn); }
+    .legend .l-bad::before { background: var(--bad); }
+    footer { margin-top: 36px; color: var(--muted); font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>실내 벽 계약 — 주택 통타일 / 다크 <code>366</code> / 쿼터 소스</h1>
+    <p class="lead">
+      <strong class="ok">Option B (2026-07-15) 적용 완료.</strong>
+      이 문서는 아카이브가 아니라 <strong>현재 코드의 계약서</strong>입니다.
+      모든 이미지는 <code>scripts/render-interior-wall-contract-cases.mts</code>가
+      실제 상수·<code>planInteriorHouseWalls</code>·<code>interiorDarkWallQuarterComposition</code>을
+      호출해 생성합니다. 손으로 조립한 픽셀은 없습니다.
+    </p>
+
+    <div class="legend">
+      <span class="l-house">주택 저장 (완성 통타일)</span>
+      <span class="l-dark">다크 저장 (<code>366</code> 하나)</span>
+      <span class="l-source">렌더 전용 쿼터 소스</span>
+      <span class="l-bad">금지</span>
+    </div>
+
+    <div class="card">
+      <h3>한 줄 결론</h3>
+      <p>
+        예전 문제는 “오토타일 개념”이 아니라 <strong>같은 숫자 ID를 세 가지 저장 의미로 동시에 해석한 것</strong>이었습니다.
+        이제 계약은 한 방향입니다.
+      </p>
+      <ol>
+        <li><span class="ok">A. 주택 셸 = 통타일 writer</span> — <code>planInteriorHouseWalls</code>가 완성 타일을 <code>lowerTiles</code>에 직접 기록. 저장 오토타일 없음.</li>
+        <li><span class="ok">B. 어두운 벽 = <code>366</code> 저장</span> — 모든 다크 벽 셀은 <code>366</code> 하나로만 저장.</li>
+        <li><span class="ok">C. 다크 쿼터 소스 = 렌더 전용</span> — <code>368</code>/<code>396–458</code>은 아틀라스 좌표일 뿐, 저장 멤버·variant 출력이 아님.</li>
+      </ol>
+      <p>
+        <code>397</code>은 이제 <strong>충돌이 아닙니다</strong>. 주택은 <code>397</code>을 완성 문턱/남측 트림으로 <em>저장</em>하고,
+        다크는 <code>366</code>을 저장한 뒤 렌더에서만 <code>397</code>의 위쪽 선 쿼터를 <em>샘플링</em>합니다.
+        저장 계층과 렌더 계층이 분리됐기 때문에 같은 픽셀을 공유해도 복원이 모호하지 않습니다.
+      </p>
+    </div>
+
+    <h2>0. 계약표</h2>
+    <div class="card scroll">
+      <table>
+        <tr><th>경로</th><th>저장(lowerTiles)</th><th>렌더</th></tr>
+        <tr>
+          <td>주택 셸 (<code>villager-room-v1</code> walls)</td>
+          <td>완성 통타일: 크림 <code>74–76</code>/<code>104–106</code>, 1칸 <code>77</code>/<code>107</code>,
+              캡 <code>457</code>, 캡 조인트 <code>458</code>/<code>456</code>, 포스트 <code>428</code>/<code>426</code>,
+              남측 트림·문턱 <code>397</code>, 문 플랭크 <code>398</code>|floor|<code>396</code></td>
+          <td>plain 통타일 — 이 ID들이 중심이면 쿼터 합성 <strong>안 함</strong></td>
+        </tr>
+        <tr>
+          <td>어두운 벽</td>
+          <td><strong>모든 셀 <code>366</code></strong></td>
+          <td><code>interiorDarkWallQuarterComposition</code>이 <code>427</code> underlay + 네 쿼터를
+              <code>368</code>/<code>396–458</code>에서 샘플링</td>
+        </tr>
+        <tr>
+          <td>새 주택 결과 금지</td>
+          <td class="bad"><code>233</code>, <code>257</code>, <code>258</code></td>
+          <td>—</td>
+        </tr>
+      </table>
+    </div>
+
+    <h2>1. 픽셀 방향 — 이름이 아니라 선을 믿는다</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>원본 3×4 소스 블록 (변경 없음)</h3>
+        <img class="shot" src="interior-wall-frame-cases/case_chipset_3x4_autotile_block.png" alt="3x4 block" />
+      </div>
+      <div class="card">
+        <h3>3×3 쿼터 소스 — 실제 선 방향 기준표</h3>
+        <img class="shot" src="interior-wall-frame-cases/case_3x3_body_for_quarters.png" alt="3x3 body" />
+      </div>
+    </div>
+    <div class="card scroll">
+      <table>
+        <tr><th>ID</th><th>실제 보이는 선</th><th>주택 배치 역할 (저장)</th><th>다크 쿼터 역할 (렌더 소스)</th></tr>
+        <tr><td><code>396</code></td><td>위 + 왼쪽</td><td class="ok">남동 외곽 코너 / 문 동 플랭크</td><td class="warn">위+왼쪽 볼록 코너</td></tr>
+        <tr><td><code>397</code></td><td>위</td><td class="ok">남측 트림 / 문턱</td><td class="warn">위쪽 변</td></tr>
+        <tr><td><code>398</code></td><td>위 + 오른쪽</td><td class="ok">남서 외곽 코너 / 문 서 플랭크</td><td class="warn">위+오른쪽 볼록 코너</td></tr>
+        <tr><td><code>426</code></td><td>왼쪽</td><td class="ok">동쪽 포스트 (선이 방 안쪽)</td><td class="warn">왼쪽 변</td></tr>
+        <tr><td><code>427</code></td><td>없음 — 어두운 몸통</td><td class="bad">저장 안 함</td><td class="warn">중앙 몸통 / underlay</td></tr>
+        <tr><td><code>428</code></td><td>오른쪽</td><td class="ok">서쪽 포스트 (선이 방 안쪽)</td><td class="warn">오른쪽 변</td></tr>
+        <tr><td><code>456</code></td><td>아래 + 왼쪽</td><td class="ok">북동 캡 조인트</td><td class="warn">아래+왼쪽 볼록 코너</td></tr>
+        <tr><td><code>457</code></td><td>아래</td><td class="ok">북쪽 캡 직선</td><td class="warn">아래쪽 변</td></tr>
+        <tr><td><code>458</code></td><td>아래 + 오른쪽</td><td class="ok">북서 캡 조인트</td><td class="warn">아래+오른쪽 볼록 코너</td></tr>
+        <tr><td><code>368</code></td><td>오목 코너 조각</td><td class="bad">저장 안 함</td><td class="warn">오목 코너</td></tr>
+        <tr><td><code>366</code></td><td>고립 프리뷰</td><td class="bad">주택 아님</td><td><span class="ok">다크의 유일한 저장 ID</span> · 렌더 중심 게이트</td></tr>
+      </table>
+      <div class="callout ok">
+        구 저장 이름(<code>edgeN=457</code>, <code>edgeS=397</code>, <code>edgeW=428</code>, <code>edgeE=426</code>)은
+        픽셀 방향과 <strong>반대</strong>였습니다. 새 이름은 전부 <strong>배치 역할</strong> 또는 <strong>선 방향</strong>이며,
+        “결손 방향”을 이름에 섞지 않습니다.
+      </div>
+    </div>
+
+    <h2>2. 역할 카드 — 저장 vs 렌더 소스</h2>
+    <div class="card">
+      <div class="tile-row" id="role-tiles"></div>
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_role_cards.png" alt="role cards" /></div>
+      <pre>// src/project/defaults/interiorHouseWallTiles.ts  (주택 저장 정본)
+HOUSE_SHELL_TILE = {
+  creamUpperL: 74, creamUpperM: 75, creamUpperR: 76,
+  creamLowerL: 104, creamLowerM: 105, creamLowerR: 106,
+  soloUpper: 77, soloLower: 107,
+  capStraight: 457, capJointNW: 458, capJointNE: 456,
+  postWest: 428, postEast: 426,
+  southTrim: 397, southWestCorner: 398, southEastCorner: 396,
+  void: 430, floor: 72,
+}
+HOUSE_SHELL_FORBIDDEN_TILES = [233, 257, 258]
+
+// src/project/defaults/darkWallAutotile.ts  (다크 정본)
+DARK_WALL_TILE = { BODY: 366 }              // 유일한 저장 ID
+DARK_WALL_QUARTER_SOURCE = {                // 렌더 전용 아틀라스 좌표
+  center: 427, concave: 368,
+  edgeN: 397, edgeS: 457, edgeW: 426, edgeE: 428,
+  cornerNW: 396, cornerNE: 398, cornerSW: 456, cornerSE: 458,
+}</pre>
+    </div>
+
+    <h2>3. 금지 타일 — 원본 픽셀이 계약과 다르다</h2>
+    <div class="card">
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_role_strip.png" alt="forbidden strip" /></div>
+      <div class="callout">
+        <span class="bad">233 / 258</span> 는 코너 아트가 아니라 <strong>불투명 핑크 플레이스홀더</strong>입니다.
+        위 이미지에서 원본 픽셀 그대로 확인됩니다. 캡 조인트는 <code>458</code>/<code>456</code>을 씁니다.<br>
+        <span class="bad">257</span> 은 문 기둥 받침 프레임이 아니라 <strong>어두운 녹회색 가구 질감</strong>입니다.
+        문턱은 <code>397</code> 하나만 쓰고 좌우 받침을 쓰지 않습니다 — 주변은 실제 공허 <code>430</code>으로 남습니다.
+      </div>
+    </div>
+
+    <h2>4. 주택 셸 — 통타일 writer</h2>
+    <div class="card">
+      <h3>단일 사각 방 — <code>planInteriorHouseWalls</code> 출력 전체</h3>
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_house_single_rect.png" alt="single rect shell" /></div>
+      <p style="font-size:13px;color:var(--muted)">
+        왼쪽이 저장 grid(각 셀에 실제 <code>lowerTiles</code> 값), 오른쪽이 최종 렌더입니다.
+        캡 <code>458 · 457… · 456</code> → 크림 <code>74/75/76</code> → <code>104/105/106</code> → 바닥,
+        좌우 포스트 <code>428</code>/<code>426</code>, 남측 <code>397</code> 트림에 <code>398 | 72 | 396</code> 문과 <code>397</code> 계단.
+        <span class="bad">233/258/257 없음.</span> 남쪽 대각 코너는 실제 공허 <code>430</code>입니다.
+      </p>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>북벽 2단 + <code>457</code> 캡</h3>
+        <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_cream_north_face_2row.png" alt="cream face" /></div>
+        <p style="font-size:13px;color:var(--muted)">가로 run 양 끝만 <code>74/104</code>·<code>76/106</code>, 가운데는 <code>75/105</code>.</p>
+      </div>
+      <div class="card">
+        <h3>남문 알코브 — <code>398 | 72 | 396</code> + <code>397</code></h3>
+        <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_door_alcove_398_396_397.png" alt="door alcove" /></div>
+        <p style="font-size:13px;color:var(--muted)">계단은 <code>397</code> 하나. 구 <code>257</code> 받침은 삭제됐습니다.</p>
+      </div>
+      <div class="card">
+        <h3>캡·포스트·코너 링 (핑크 없음)</h3>
+        <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_ring_edge_corner_labels.png" alt="labeled ring" /></div>
+      </div>
+      <div class="card">
+        <h3><code>105</code>는 plain 크림 — 오토타일 몸통이 아님</h3>
+        <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_ring_body_105_only.png" alt="105 ring" /></div>
+        <p style="font-size:13px;color:var(--muted)">
+          저장과 렌더가 동일합니다. <code>105</code>는 더 이상 성형되지 않고, 쿼터 합성도 <strong>0셀</strong>입니다
+          (생성기가 이 값을 assert 합니다).
+        </p>
+      </div>
+    </div>
+
+    <h2>5. 방 구조 — 파티션과 내부 문</h2>
+    <div class="card">
+      <h3>좌우 인접(gapless) — 1열 파티션 <code>77</code>/<code>107</code> + 1칸 문</h3>
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_cream_solo_partition_77_107.png" alt="solo partition" /></div>
+      <p style="font-size:13px;color:var(--muted)">
+        파티션 셀은 셸 계산 <strong>이전에</strong> 예약됩니다. 천장에 붙은 위 2칸이 <code>77</code>/<code>107</code>,
+        문 이남의 더 깊은 칸은 포스트 <code>428</code>입니다. walls 이후에 <code>105</code>를 덮는 후처리
+        (<code>paintRoomPartitionWalls</code>)는 <strong>삭제됐습니다</strong>.
+      </p>
+    </div>
+    <div class="card">
+      <h3>상하 인접 — 3행 밴드 + 세로 3칸 복도</h3>
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_house_two_rooms_horizontal.png" alt="horizontal partition" /></div>
+      <p style="font-size:13px;color:var(--muted)">
+        밴드는 캡 <code>457</code> + 크림 2단으로 풀리고, 내부 문 3칸은 바닥으로 뚫린 뒤 좌우가
+        <code>398</code>/<code>396</code> 플랭크로 마감됩니다.
+      </p>
+    </div>
+    <div class="card">
+      <h3>1열 — 주택 포스트(통타일) vs 다크 기둥(쿼터)</h3>
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_1col_pillar_posts.png" alt="pillar" /></div>
+      <div class="callout warn">
+        같은 “1열”이라도 계층이 다릅니다. 주택 포스트는 <strong>완성 통타일</strong>이라 방을 향한 한쪽 선만 갖고,
+        다크 기둥은 <strong>쿼터 합성</strong>이라 <code>426</code>|<code>428</code> 좌우 반으로 쪼개져 양쪽 선을 갖습니다.
+        주택 셸이 다크 쿼터 경로를 타지 않는 것은 <em>의도</em>입니다 — 문·포스트·공허까지 합성 대상이 되던 구 버그의 원인이었습니다.
+      </div>
+    </div>
+
+    <h2>6. <code>397</code> 충돌은 어떻게 해소됐나</h2>
+    <div class="card">
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_conflict_397_edgeS_vs_doorStep.png" alt="397 resolved" /></div>
+      <p>
+        왼쪽 두 패널: 주택은 <code>397</code>을 <strong>완성 문턱으로 저장</strong>하고 그대로 렌더합니다(plain).<br>
+        오른쪽 두 패널: 다크는 <code>366</code>만 저장하고, <code>397</code>은 저장 grid 어디에도 없이
+        <strong>렌더의 위쪽 선 쿼터로만</strong> 등장합니다.
+      </p>
+      <div class="callout ok">
+        픽셀 공유는 문제가 아니었습니다. 문제는 <strong>저장 오토타일이 이를 <code>edgeS</code>로,
+        쿼터 렌더가 다시 <code>Q_EDGE_N</code>으로 분류하던 반대 좌표계</strong>였습니다.
+        저장 계층에서 오토타일을 없애자 좌표계가 하나만 남았습니다.
+      </div>
+    </div>
+
+    <h2>7. 어두운 벽 — <code>366</code> 저장 + 순수 쿼터 렌더</h2>
+    <div class="card">
+      <p style="color:var(--muted);font-size:13px">
+        모든 grid의 저장 값은 <code>366</code> 하나뿐입니다. 네 쿼터는 렌더 시점에 이웃 mass로 결정됩니다.
+        <code>430</code> 공허와 주택 통타일은 mass가 아니므로 <strong>바깥으로 새지 않습니다</strong>.
+      </p>
+      <div class="grid2">
+        <div><h3>1점</h3><img class="shot" src="interior-wall-frame-cases/case_dark_366_isolated.png" alt="dark isolated" /></div>
+        <div><h3>1행</h3><img class="shot" src="interior-wall-frame-cases/case_dark_366_row.png" alt="dark row" /></div>
+        <div><h3>1열</h3><img class="shot" src="interior-wall-frame-cases/case_dark_366_col.png" alt="dark col" /></div>
+        <div><h3>L자</h3><img class="shot" src="interior-wall-frame-cases/case_dark_366_l_bend.png" alt="dark L" /></div>
+        <div><h3>3×3 + 가운데 바닥</h3><img class="shot" src="interior-wall-frame-cases/case_dark_366_3x3_hole.png" alt="dark ring" /></div>
+        <div><h3>오목 코너</h3><img class="shot" src="interior-wall-frame-cases/case_dark_366_concave.png" alt="dark concave" /></div>
+      </div>
+    </div>
+
+    <h2>8. 리틴트 — 면만 바꾸고 프레임은 유지</h2>
+    <div class="card">
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/case_gold_brick_face_retint.png" alt="gold" /></div>
+      <div class="scroll" style="margin-top:10px"><img class="shot" src="interior-wall-frame-cases/case_stone_brick_face_retint.png" alt="stone" /></div>
+      <p style="font-size:13px;color:var(--muted)">
+        <code>retintHouseWallFace</code>가 크림 2단(<code>74–76</code>/<code>104–106</code>)과 1칸(<code>77</code>/<code>107</code>)만
+        완성 벽돌 타일로 교체합니다. 캡·포스트·트림·문 프레임 ID는 그대로이고, 오토타일도 타지 않습니다.
+      </p>
+    </div>
+
+    <h2>9. 칩셋 소유권 지도</h2>
+    <div class="card">
+      <div class="scroll"><img class="shot" src="interior-wall-frame-cases/chipset_highlight_key_tiles.png" alt="chipset ownership" /></div>
+      <p style="font-size:13px;color:var(--muted)">
+        어느 계약도 소유하지 않는 타일은 어둡게 처리했습니다. 초록 = 주택 저장,
+        파랑 = 다크 저장 <code>366</code>, 앰버 = 렌더 전용 소스, 초록+앰버 = 두 역할 겸함,
+        빨강 = 금지. “한 ID 연속 범위 = 한 저장 문법”이 아니라는 점이 한눈에 보입니다.
+      </p>
+    </div>
+
+    <h2>10. 정본 파일과 재생성</h2>
+    <div class="card">
+      <ul>
+        <li><code>src/project/defaults/interiorHouseWallTiles.ts</code> — <code>HOUSE_SHELL_TILE</code>, 금지 목록</li>
+        <li><code>src/editor/interiorHouseWallGrammar.ts</code> — <code>planInteriorHouseWalls</code> / <code>paintInteriorHouseWalls</code> (주택 벽 유일 writer)</li>
+        <li><code>src/project/defaults/darkWallAutotile.ts</code> — <code>366</code> 전용 저장 그룹 + <code>DARK_WALL_QUARTER_SOURCE</code></li>
+        <li><code>src/project/defaults/interiorDarkWallQuarter.ts</code> — 중심이 <code>366</code>일 때만 쿼터 합성</li>
+        <li><code>src/project/defaults/legacyInteriorWallContract.ts</code> — 레거시 진단(읽기 전용) + 명시적 dark→<code>366</code> 축약</li>
+        <li><code>openwiki/editor-workflows.md</code> — <code>villager-room-v1</code> / 쿼터 규칙</li>
+      </ul>
+      <pre>#  이 문서의 모든 PNG 재생성 (실제 API 호출)
+bun scripts/render-interior-wall-contract-cases.mts
+
+#  계약 테스트
+npx vitest run \
+  test/interiorAutotile.test.ts \
+  test/darkWallAutotile.test.ts \
+  test/interiorWallFrameQuarterComposition.test.ts \
+  test/interiorRoomPipeline.test.ts \
+  test/legacyInteriorWallContract.test.ts \
+  test/tilesetHarness.test.ts</pre>
+    </div>
+
+    <footer>
+      케이스 PNG: <code>docs/interior-wall-frame-cases/</code> · 생성기:
+      <code>scripts/render-interior-wall-contract-cases.mts</code> · 칩셋:
+      <code>public/assets/easyrpg-chipset-interior-transparent.png</code> · 계획:
+      <code>docs/specs/2026-07-15-interior-wall-frame-autotile-fix-plan.md</code>
+    </footer>
+  </div>
+
+  <script>
+    // Live CSS tile chips straight off the chipset — grouped by contract, same colors as the PNGs.
+    const COLS = 30, TILE = 16, SCALE = 4;
+    const roles = [
+      [74, "크림 상 L", "house"], [75, "크림 상 M", "house"], [76, "크림 상 R", "house"],
+      [104, "크림 하 L", "house"], [105, "크림 하 M", "house"], [106, "크림 하 R", "house"],
+      [77, "1칸 상", "house"], [107, "1칸 하", "house"],
+      [457, "캡", "house"], [458, "조인트 NW", "house"], [456, "조인트 NE", "house"],
+      [428, "포스트 서", "house"], [426, "포스트 동", "house"],
+      [397, "트림/문턱", "house"], [398, "문 서", "house"], [396, "문 동", "house"],
+      [366, "다크 저장", "dark"],
+      [427, "쿼터 중앙", "source"], [368, "쿼터 오목", "source"],
+      [233, "금지", "forbidden"], [257, "금지", "forbidden"], [258, "금지", "forbidden"],
+    ];
+    const host = document.getElementById("role-tiles");
+    for (const [id, name, kind] of roles) {
+      const card = document.createElement("div");
+      card.className = "tile-card " + kind;
+      const px = document.createElement("div");
+      px.className = "px";
+      const col = id % COLS, row = Math.floor(id / COLS);
+      px.style.backgroundPosition = `-${col * TILE * SCALE}px -${row * TILE * SCALE}px`;
+      card.appendChild(px);
+      card.appendChild(document.createTextNode(id + " " + name));
+      host.appendChild(card);
+    }
+  </script>
+</body>
+</html>

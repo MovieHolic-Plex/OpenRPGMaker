@@ -118,15 +118,16 @@ describe("regionIntentGuideLines / buildRegionTaskMessage 통합", () => {
     // place_chest는 박스 vs 보물 구분 고정 문구에만 등장 — 상호작용 가이드 블록(place_examine_hotspots 등)은 없음
     expect(message).not.toContain("place_examine_hotspots");
     expect(message).toContain("build_house_kit");
-    expect(message).toContain("wood-box");
+    expect(message).toContain("나무 상자");
+    expect(message).not.toContain("wood-box");
   });
 
   it("'박스 2개'는 quest-trigger(place_chest)로 가지 않고 wood-box place_props를 안내한다", () => {
     expect(routeRegionIntent("박스 2개 설치해줘")).not.toContain("quest-trigger");
     const message = buildRegionTaskMessage("박스 2개 설치해줘", "맵", "m1", { x: 0, y: 0, width: 4, height: 4 });
-    expect(message).toContain("harness-combined-town-wood-box");
-    expect(message).toContain("small-props 가방");
-    // 기본 가이드에 wood-box 줄이 항상 있음; quest-trigger 전용 place_chest 강제 문장은 없음
+    expect(message).toContain("나무 상자");
+    expect(message).not.toContain("harness-combined-town-wood-box");
+    expect(message).toMatch(/small-props 가방|마을 소품\/small-props/);
     expect(message).toContain("place_chest 금지");
   });
 
@@ -137,5 +138,25 @@ describe("regionIntentGuideLines / buildRegionTaskMessage 통합", () => {
   it("'보물상자'·'상자를 열면'은 quest-trigger로 간다", () => {
     expect(routeRegionIntent("보물상자를 하나 숨겨줘")).toContain("quest-trigger");
     expect(routeRegionIntent("상자를 열면 포션을 주게")).toContain("quest-trigger");
+  });
+
+  it("한국어 야외 집·필지·마을은 각각 하나의 공식 시공 루트만 선택한다", () => {
+    const single = buildRegionTaskMessage("이 영역에 야외 집 한 채 지어줘", "맵", "m1", { x: 1, y: 2, width: 12, height: 10 });
+    expect(single.match(/author_house/g)).toHaveLength(1);
+    expect(single).toContain('kind:"single"');
+    expect(single).toContain('mapId:"m1"');
+    expect(single).toContain("정확히 1채");
+
+    const lots = buildRegionTaskMessage("이 영역에 야외 집 3채 지어줘", "맵", "m1", { x: 1, y: 2, width: 30, height: 20 });
+    expect(lots.match(/author_house/g)).toHaveLength(1);
+    expect(lots).toContain('kind:"lots"');
+    expect(lots).toContain("정확히 3채");
+
+    const village = buildRegionTaskMessage("현재 영역에 집 4채인 마을을 만들어줘", "맵", "m1", { x: 1, y: 2, width: 40, height: 40 });
+    expect(village.match(/author_village/g)).toHaveLength(1);
+    expect(village).toContain('target:{kind:"existing",mapId:"m1"');
+    expect(village).toContain("houseCount:4");
+    expect(village).toContain('countPolicy:"exact"');
+    expect(village).not.toMatch(/build_house_kit|build_house_lots|build_village|run_village_session|run_village_pipeline/);
   });
 });

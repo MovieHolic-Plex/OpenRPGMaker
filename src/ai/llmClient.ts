@@ -1,6 +1,6 @@
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
-// 공급자: OpenRouter(https://openrouter.ai/api/v1) — 브라우저 CORS 지원.
+// 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
 // - 스트리밍 SSE 파서(data: 라인 / [DONE] / tool_calls delta 조립) 포함.
 // - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(rpg-zzu:ai-config).
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
@@ -44,10 +44,12 @@ export interface AiConfig {
 }
 
 // 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
-// DEFAULT_MODEL: 감독(계획·검수)은 minimax-m3. 저장된 사용자 지정 모델은 loadAiConfig가 존중한다.
-export const DEFAULT_BASE_URL = "https://openrouter.ai/api/v1";
-export const DEFAULT_MODEL = "minimax/minimax-m3";
-// DEFAULT_LITE_MODEL: 실행(툴 루프)은 flash-lite로 분리해 긴 작업의 벽시계를 줄인다.
+// DEFAULT_MODEL: 기본 경로는 flash-lite 단일(계획·실행·검수 동일).
+// MiniMax 이원화는 사용자가 감독 모델을 따로 둘 때만(model !== liteModel).
+// 저장 설정은 loadAiConfig가 존중한다.
+export const DEFAULT_BASE_URL = "";
+export const DEFAULT_MODEL = "google/gemini-3.1-flash-lite";
+// DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
 export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
 export const DEFAULT_MAX_TOKENS = 32768;
 
@@ -66,9 +68,7 @@ function envApiKey(): string {
 
 function envBaseUrl(): string {
   try {
-    // Prefer explicit OpenRouter base; skip relative proxy paths like /api/ai (yunwu-only).
-    const openrouter = import.meta.env.VITE_OPENROUTER_BASE_URL?.trim();
-    if (openrouter && /^https?:\/\//i.test(openrouter)) return openrouter.replace(/\/$/, "");
+    // OpenAI-compatible absolute URL only. Relative proxy paths are yunwu-only and not used as default.
     const llm = import.meta.env.VITE_LLM_API_URL?.trim();
     if (llm && /^https?:\/\//i.test(llm)) return llm.replace(/\/$/, "");
   } catch {
@@ -85,7 +85,7 @@ export function defaultAiConfig(): AiConfig {
     apiKey: envApiKey(),
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
-    // MiniMax-M3 등은 medium/high에서 추론 토큰이 과도하게 길어질 수 있어 기본은 low.
+    // 장문 reasoning 모델(MiniMax 등)을 감독으로 쓸 때만 low 캡이 의미 있음.
     reasoningEffort: "low",
     autoApprove: false,
   };
@@ -198,9 +198,9 @@ function humanizeStatus(status: number, body: string): string {
   const detail = body ? ` — ${body.slice(0, 300)}` : "";
   switch (status) {
     case 401:
-      return `인증 실패(401): API 키가 없거나 잘못되었습니다. 설정에서 OpenRouter 키를 확인하세요.${detail}`;
+      return `인증 실패(401): API 키가 없거나 잘못되었습니다. 어시스턴트 설정에서 API 키와 엔드포인트(baseUrl)를 확인하세요.${detail}`;
     case 402:
-      return `크레딧 부족(402): OpenRouter 잔액이 부족합니다.${detail}`;
+      return `결제/크레딧 오류(402): LLM 공급자 잔액 또는 과금 설정을 확인하세요.${detail}`;
     case 429:
       return `요청 한도 초과(429): 잠시 후 다시 시도하세요.${detail}`;
     default:
@@ -215,7 +215,7 @@ function endpoint(config: AiConfig): string {
 
 function headers(config: AiConfig): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json", Authorization: `Bearer ${config.apiKey}` };
-  // OpenRouter 권장 헤더(선택). 브라우저 환경에서만 의미 있음.
+  // Optional provider metadata (harmless for most OpenAI-compatible gateways).
   if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
   h["X-Title"] = "RPG ZZU Editor";
   return h;
@@ -224,7 +224,7 @@ function headers(config: AiConfig): Record<string, string> {
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
   const effective = configWithReasoningPolicy(config);
   const body: Record<string, unknown> = { model: effective.model, messages: req.messages, stream, max_tokens: effective.maxTokens };
-  // 스트리밍에서도 usage(prompt_tokens 등)를 마지막 청크로 받는다(OpenAI 호환, OpenRouter 지원).
+  // 스트리밍에서도 usage(prompt_tokens 등)를 마지막 청크로 받는다(OpenAI 호환).
   // 미지원 공급자가 usage를 안 주면 소비 측(tokenBudget 관측)이 조용히 건너뛴다.
   if (stream) body.stream_options = { include_usage: true };
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
@@ -430,7 +430,10 @@ function sleep(ms: number): Promise<void> {
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
 async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
   if (!config.apiKey || !config.apiKey.trim()) {
-    throw new LlmError("API 키가 설정되지 않았습니다. 어시스턴트 설정에서 OpenRouter 키를 입력하세요.", 401);
+    throw new LlmError("API 키가 설정되지 않았습니다. 어시스턴트 설정에서 API 키를 입력하세요.", 401);
+  }
+  if (!config.baseUrl || !config.baseUrl.trim()) {
+    throw new LlmError("LLM 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.", 400);
   }
   const stream = req.stream ?? Boolean(req.onToken || req.onReasoning);
   let response: Response;

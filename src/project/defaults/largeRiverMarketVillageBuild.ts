@@ -2110,10 +2110,17 @@ function villageMonsterEvent(input: {
         commands: [
           { kind: "text", speaker: input.name, body: input.intro },
           { kind: "battleProcessing", troopId: input.troopId, canEscape: true, canLose: false },
-          { kind: "setSwitch", switchId: input.switchId, value: true },
-          { kind: "setVariable", variableId: VILLAGE_QUEST.defeatedCount, op: "+=", value: 1 },
-          { kind: "changeGold", op: "+=", amount: 30 },
-          { kind: "text", speaker: input.name, body: "무리가 흩어졌다. 미라에게 보고하자." },
+          {
+            kind: "fork",
+            condition: { kind: "battleResult", result: "victory" },
+            then: [
+              { kind: "setSwitch", switchId: input.switchId, value: true },
+              { kind: "m2Command", commandId: "m2-086-erase-event", fields: {} },
+              { kind: "setVariable", variableId: VILLAGE_QUEST.defeatedCount, op: "+=", value: 1 },
+              { kind: "changeGold", op: "+=", amount: 30 },
+              { kind: "text", speaker: input.name, body: "무리가 흩어졌다. 미라에게 보고하자." },
+            ],
+          },
         ],
       },
       {
@@ -2772,11 +2779,11 @@ function applyDefaultTitleScreen(project: Project, title: string): void {
   const base = defaultTitleScreenSettings();
   project.system = {
     ...project.system,
-    titleResourceId: "easyrpg-title-title1",
+    titleResourceId: "rpg-zzu-title-field",
     titleScreen: {
       ...base,
       title,
-      backgroundResourceId: "easyrpg-title-title1",
+      backgroundResourceId: "rpg-zzu-title-field",
       layout: { ...base.layout },
       menuLabels: { ...base.menuLabels },
     },

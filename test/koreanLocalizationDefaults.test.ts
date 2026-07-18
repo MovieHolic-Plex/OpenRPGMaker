@@ -57,7 +57,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     expect(project.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1");
     expect(project.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
     expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
-    expect(project.system.titleResourceId).toBe("easyrpg-title-title1");
+    expect(project.system.titleResourceId).toBe("rpg-zzu-title-field");
     expect(project.system.systemResourceId).toBe("windowskin-rm2003");
     expect(project.system.battleSystemResourceId).toBe("easyrpg-system2-system2-c");
     for (const id of defaultIds) expect(allKnownIds.has(id ?? "")).toBe(true);
