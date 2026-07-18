@@ -13,6 +13,7 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { createDungeonTerrainAutotileGroups, DUNGEON_TERRAIN_AUTOTILE_PREFIX } from "@/project/defaults/dungeonTerrainAutotiles";
 import { applyEasyRpgThemeMetadataPacks } from "@/project/tilesetHarness";
+import type { RoomEvalReport, RoomLayerResult } from "@/editor/roomHarness/types";
 import type { AutotileGroup, GameMap, Project } from "@/project/types";
 
 export const DUNGEON_ROOM_KIT_ID = "dungeon-room-v1" as const;
@@ -80,56 +81,134 @@ function terrainGroup(key: string): AutotileGroup {
   return g;
 }
 
-/** 던전 방을 원샷 절차 생성한다. */
-export function runDungeonRoomPipeline(plan: DungeonRoomPlan): { map: GameMap; log: string[]; warnings: string[]; ok: boolean } {
+/** 던전 방 시공 레이어 순서 — 세션 체크리스트/advance 순서. */
+export const DUNGEON_ROOM_BUILD_ORDER = ["plan", "ceiling", "wall", "floor", "hazard", "critique"] as const;
+export type DungeonRoomLayer = (typeof DUNGEON_ROOM_BUILD_ORDER)[number];
+
+function cloneDungeonMap(map: GameMap): GameMap {
+  return { ...map, lowerTiles: [...map.lowerTiles], upperTiles: [...map.upperTiles], events: [...(map.events ?? [])] };
+}
+
+function hazardRect(W: number, H: number): { hx0: number; hx1: number; hy0: number; hy1: number } {
+  return { hx0: Math.floor(W / 2) - 3, hx1: Math.floor(W / 2) + 2, hy0: H - 7, hy1: H - 4 };
+}
+
+/** 던전 방 레이어 1개를 시공한다(맵 사본 반환). */
+export function applyDungeonRoomLayer(map: GameMap, plan: DungeonRoomPlan, layer: string): RoomLayerResult {
   const W = plan.width, H = plan.height;
   const spec = THEME[plan.theme];
-  const map = createEmptyDungeonRoomMap(plan);
-  const lower = map.lowerTiles;
-  const upper = map.upperTiles;
+  const next = cloneDungeonMap(map);
+  const lower = next.lowerTiles;
+  const upper = next.upperTiles;
   const idx = (x: number, y: number) => y * W + x;
-  const log: string[] = [];
   const warnings: string[] = [];
 
-  if (W < 8 || H < 8) warnings.push(`방이 작습니다(${W}×${H}) — 8×8 이상 권장`);
-
-  // ── 1. 천장(공허) 프레임: 바깥 2링. 안쪽 링만 성형. ─────────────
-  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
-    if (!(x >= 2 && x <= W - 3 && y >= 3 && y <= H - 3)) lower[idx(x, y)] = spec.ceilBody;
-  }
-  const ceilPts: { x: number; y: number }[] = [];
-  for (let y = 1; y <= H - 2; y += 1) for (let x = 1; x <= W - 2; x += 1)
-    if (x === 1 || x === W - 2 || y === 2 || y === H - 2) ceilPts.push({ x, y });
-  shapeAutotileGroupAround({ width: W, height: H, lowerTiles: lower }, terrainGroup(spec.ceilKey), ceilPts);
-  log.push(`ceiling ${spec.ceilKey} frame`);
-
-  // ── 2. 천장 하단 벽: 직선 [좌끝·증식·우끝] 2단(대각 금지). ────────
-  const x0 = 2, x1 = W - 3, yTop = 2;
-  for (let x = x0; x <= x1; x += 1) {
-    const c = x === x0 ? 0 : x === x1 ? 2 : 1;
-    lower[idx(x, yTop)] = spec.wallTop[c]!;
-    lower[idx(x, yTop + 1)] = spec.wallBottom[c]!;
-  }
-  log.push(`wall band ${spec.wallTop.join("/")} below ceiling`);
-
-  // ── 3. 바닥은 blank가 이미 채움. (오토타일 성형 불필요 — 전면 몸통) ─
-  log.push(`floor ${spec.floorKey}`);
-
-  // ── 4. 위험지형 + 판자 다리(상위 레이어). ────────────────────────
-  if (plan.hazard !== false) {
-    const hx0 = Math.floor(W / 2) - 3, hx1 = Math.floor(W / 2) + 2;
-    const hy0 = H - 7, hy1 = H - 4;
-    const pts: { x: number; y: number }[] = [];
-    for (let y = hy0; y <= hy1; y += 1) for (let x = hx0; x <= hx1; x += 1) { lower[idx(x, y)] = spec.hazardBody; pts.push({ x, y }); }
-    if (spec.hazardKind !== "rapids") {
-      shapeAutotileGroupAround({ width: W, height: H, lowerTiles: lower }, terrainGroup(spec.hazardKind), pts);
+  switch (layer) {
+    case "plan": {
+      if (W < 8 || H < 8) warnings.push(`방이 작습니다(${W}×${H}) — 8×8 이상 권장`);
+      return { map, ok: warnings.length === 0, summary: `plan ${plan.theme} ${W}×${H}`, warnings };
     }
-    const bridgeY = Math.floor((hy0 + hy1) / 2);
-    for (let x = hx0 - 1; x <= hx1 + 1; x += 1) upper[idx(x, bridgeY)] = x === hx0 - 1 ? PLANK_H.left : x === hx1 + 1 ? PLANK_H.right : PLANK_H.mid;
-    log.push(`hazard ${spec.hazardKind} + plank bridge (upper layer)`);
+    case "ceiling": {
+      // 천장(공허) 프레임: 바깥 2링. 안쪽 링만 성형.
+      for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+        if (!(x >= 2 && x <= W - 3 && y >= 3 && y <= H - 3)) lower[idx(x, y)] = spec.ceilBody;
+      }
+      const ceilPts: { x: number; y: number }[] = [];
+      for (let y = 1; y <= H - 2; y += 1) for (let x = 1; x <= W - 2; x += 1)
+        if (x === 1 || x === W - 2 || y === 2 || y === H - 2) ceilPts.push({ x, y });
+      shapeAutotileGroupAround({ width: W, height: H, lowerTiles: lower }, terrainGroup(spec.ceilKey), ceilPts);
+      return { map: next, ok: true, summary: `ceiling ${spec.ceilKey} frame`, warnings };
+    }
+    case "wall": {
+      // 천장 하단 벽: 직선 [좌끝·증식·우끝] 2단(대각 금지).
+      const x0 = 2, x1 = W - 3, yTop = 2;
+      for (let x = x0; x <= x1; x += 1) {
+        const c = x === x0 ? 0 : x === x1 ? 2 : 1;
+        lower[idx(x, yTop)] = spec.wallTop[c]!;
+        lower[idx(x, yTop + 1)] = spec.wallBottom[c]!;
+      }
+      return { map: next, ok: true, summary: `wall band ${spec.wallTop.join("/")} below ceiling`, warnings };
+    }
+    case "floor": {
+      // 바닥은 createEmptyMap이 이미 채움 — 방 안쪽(벽 아래)을 몸통으로 재확정.
+      for (let y = 4; y <= H - 3; y += 1) for (let x = 2; x <= W - 3; x += 1) lower[idx(x, y)] = spec.floorBody;
+      return { map: next, ok: true, summary: `floor ${spec.floorKey}`, warnings };
+    }
+    case "hazard": {
+      if (plan.hazard === false) return { map, ok: true, summary: "hazard 생략", warnings };
+      const { hx0, hx1, hy0, hy1 } = hazardRect(W, H);
+      const pts: { x: number; y: number }[] = [];
+      for (let y = hy0; y <= hy1; y += 1) for (let x = hx0; x <= hx1; x += 1) { lower[idx(x, y)] = spec.hazardBody; pts.push({ x, y }); }
+      if (spec.hazardKind !== "rapids") {
+        shapeAutotileGroupAround({ width: W, height: H, lowerTiles: lower }, terrainGroup(spec.hazardKind), pts);
+      }
+      const bridgeY = Math.floor((hy0 + hy1) / 2);
+      for (let x = hx0 - 1; x <= hx1 + 1; x += 1) upper[idx(x, bridgeY)] = x === hx0 - 1 ? PLANK_H.left : x === hx1 + 1 ? PLANK_H.right : PLANK_H.mid;
+      return { map: next, ok: true, summary: `hazard ${spec.hazardKind} + plank bridge (upper layer)`, warnings };
+    }
+    case "critique": {
+      const report = evaluateDungeonRoom(map, plan);
+      return { map, ok: report.ok, summary: report.ok ? `critique 합격 (score ${report.score})` : `critique ${report.issues.length}건`, warnings: [...report.issues] };
+    }
+    default:
+      warnings.push(`알 수 없는 레이어: ${layer}`);
+      return { map, ok: false, summary: `unknown layer ${layer}`, warnings };
+  }
+}
+
+/** 던전 방을 원샷 절차 생성한다(모든 레이어 순서 시공). */
+export function runDungeonRoomPipeline(plan: DungeonRoomPlan): { map: GameMap; log: string[]; warnings: string[]; ok: boolean } {
+  let map = createEmptyDungeonRoomMap(plan);
+  const log: string[] = [];
+  const warnings: string[] = [];
+  for (const layer of DUNGEON_ROOM_BUILD_ORDER) {
+    const r = applyDungeonRoomLayer(map, plan, layer);
+    map = r.map;
+    log.push(`[${layer}] ${r.summary}`);
+    warnings.push(...r.warnings);
+  }
+  return { map, log, warnings, ok: warnings.length === 0 };
+}
+
+/** 완성 던전 방을 평가한다(실내 리포트 계약 정렬: ok/score/issues). */
+export function evaluateDungeonRoom(map: GameMap, plan: DungeonRoomPlan, attempt = 1): RoomEvalReport {
+  const W = map.width;
+  const spec = THEME[plan.theme];
+  const at = (x: number, y: number) => map.lowerTiles[y * W + x]!;
+  const issues: string[] = [];
+
+  // 1) 천장 프레임: 코너가 천장 그룹 멤버.
+  const ceilSet = new Set(terrainGroup(spec.ceilKey).memberTileIds);
+  if (!ceilSet.has(at(0, 0))) issues.push("천장 프레임 없음(코너 미시공)");
+
+  // 2) 천장 하단 직선 벽(대각 금지).
+  const diagonals = new Set([16, 17, 432, 433, 286, 287, 316, 317]);
+  let wallStraight = true;
+  for (let x = 2; x <= W - 3; x += 1) {
+    const t = at(x, 2);
+    if (diagonals.has(t)) issues.push(`천장 하단 벽에 대각 타일 (${x},2)`);
+    if (!spec.wallTop.includes(t as never)) wallStraight = false;
+  }
+  if (!wallStraight) issues.push("천장 하단 직선 벽 미완");
+
+  // 3) 바닥 몸통.
+  if (at(Math.floor(W / 2), 5) !== spec.floorBody) issues.push("바닥 미완");
+
+  // 4) hazard 시 상위 레이어 판자 다리.
+  if (plan.hazard !== false) {
+    const hasPlank = map.upperTiles.some((t) => t === PLANK_H.left || t === PLANK_H.mid || t === PLANK_H.right);
+    if (!hasPlank) issues.push("판자 다리 없음(위험지형 위)");
   }
 
-  return { map, log, warnings, ok: warnings.length === 0 };
+  const score = Math.max(0, 100 - issues.length * 25);
+  const report = {
+    ok: issues.length === 0,
+    score,
+    issues,
+    metrics: { theme: plan.theme, attempt },
+    feedbackForLlm: issues.length ? issues.join("; ") : "던전 방 구조 합격",
+  };
+  return report;
 }
 
 export const DUNGEON_ROOM_DEMO_PLANS: readonly DungeonRoomPlan[] = [

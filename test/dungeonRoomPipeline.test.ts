@@ -1,11 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import {
+  applyDungeonRoomLayer,
+  createEmptyDungeonRoomMap,
+  DUNGEON_ROOM_BUILD_ORDER,
   DUNGEON_ROOM_DEMO_PLANS,
   DUNGEON_ROOM_THEMES,
   DUNGEON_ROOM_TILESET_ID,
   ensureDungeonRoomHarness,
+  evaluateDungeonRoom,
   runDungeonRoomPipeline,
+  type DungeonRoomPlan,
   type DungeonRoomTheme,
 } from "@/editor/dungeonRoomPipeline";
 import { getTool } from "@/editor/tools/toolRegistry";
@@ -70,6 +75,52 @@ describe("dungeon-room-v1 pipeline", () => {
     // 블랭크 프로젝트는 이미 시드됨 → 재적용은 false
     expect(ensureDungeonRoomHarness(project)).toBe(false);
     expect(project.tilesets[DUNGEON_ROOM_TILESET_ID]).toBeDefined();
+  });
+
+  it("buildOrder는 plan으로 시작하고 critique로 끝나며 레이어를 담는다", () => {
+    expect(DUNGEON_ROOM_BUILD_ORDER[0]).toBe("plan");
+    expect(DUNGEON_ROOM_BUILD_ORDER[DUNGEON_ROOM_BUILD_ORDER.length - 1]).toBe("critique");
+    expect(DUNGEON_ROOM_BUILD_ORDER).toContain("ceiling");
+    expect(DUNGEON_ROOM_BUILD_ORDER).toContain("wall");
+    expect(DUNGEON_ROOM_BUILD_ORDER).toContain("floor");
+    expect(DUNGEON_ROOM_BUILD_ORDER).toContain("hazard");
+  });
+
+  it("applyDungeonRoomLayer 단계별 시공이 원샷 runPipeline과 동일한 맵을 낸다", () => {
+    const plan: DungeonRoomPlan = { mapId: "m", name: "lava", width: 26, height: 18, theme: "lava" };
+    let map = createEmptyDungeonRoomMap(plan);
+    for (const layer of DUNGEON_ROOM_BUILD_ORDER) {
+      map = applyDungeonRoomLayer(map, plan, layer).map;
+    }
+    const oneShot = runDungeonRoomPipeline(plan).map;
+    expect(map.lowerTiles).toEqual(oneShot.lowerTiles);
+    expect(map.upperTiles).toEqual(oneShot.upperTiles);
+  });
+
+  it("applyDungeonRoomLayer는 입력 맵을 변형하지 않는다(사본 반환)", () => {
+    const plan: DungeonRoomPlan = { mapId: "m", name: "ice", width: 26, height: 18, theme: "ice" };
+    const map = createEmptyDungeonRoomMap(plan);
+    const before = [...map.lowerTiles];
+    applyDungeonRoomLayer(map, plan, "ceiling");
+    expect(map.lowerTiles).toEqual(before);
+  });
+
+  it("evaluateDungeonRoom은 완성 맵을 합격 판정한다", () => {
+    for (const theme of DUNGEON_ROOM_THEMES) {
+      const { map } = runDungeonRoomPipeline({ mapId: "m", name: theme, width: 26, height: 18, theme });
+      const report = evaluateDungeonRoom(map, { mapId: "m", name: theme, width: 26, height: 18, theme });
+      expect(report.ok, `${theme} 합격`).toBe(true);
+      expect(report.score).toBeGreaterThan(0);
+      expect(report.issues).toEqual([]);
+    }
+  });
+
+  it("evaluateDungeonRoom은 빈 맵을 불합격 판정한다", () => {
+    const plan: DungeonRoomPlan = { mapId: "m", name: "stone", width: 26, height: 18, theme: "stone" };
+    const empty = createEmptyDungeonRoomMap(plan);
+    const report = evaluateDungeonRoom(empty, plan);
+    expect(report.ok).toBe(false);
+    expect(report.issues.length).toBeGreaterThan(0);
   });
 
   it("run_dungeon_room_pipeline 툴이 레지스트리에 노출되고 맵을 만든다", () => {
