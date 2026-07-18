@@ -145,9 +145,21 @@ export class FakeElement extends FakeNode {
 
   setAttribute(name: string, value: string): void {
     this.attrs[name] = value;
+    if (name.startsWith("data-")) {
+      const camelKey = name
+        .slice(5)
+        .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+      this.dataset[camelKey] = value;
+    }
   }
 
   getAttribute(name: string): string | null {
+    if (name.startsWith("data-")) {
+      const camelKey = name
+        .slice(5)
+        .replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+      return this.dataset[camelKey] ?? this.attrs[name] ?? null;
+    }
     return this.attrs[name] ?? null;
   }
 
@@ -343,6 +355,14 @@ function matchesSelector(element: FakeElement, selector: string): boolean {
   if (simpleSelector.startsWith(".")) return element.className.split(/\s+/).includes(simpleSelector.slice(1));
   const testId = simpleSelector.match(/^\[data-testid=['"]?([^'"\]]+)['"]?\]$/u)?.[1];
   if (testId) return element.dataset.testid === testId;
+  // data-* 속성 선택자 (camelCase dataset 키로 매핑).
+  const dataAttr = simpleSelector.match(/^\[data-([a-z0-9-]+)=['"]?([^'"\]]*)['"]?\]$/iu);
+  if (dataAttr) {
+    const rawKey = dataAttr[1] ?? "";
+    const expected = dataAttr[2] ?? "";
+    const camelKey = rawKey.replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
+    return (element.dataset[camelKey] ?? element.attrs[`data-${rawKey}`] ?? null) === expected;
+  }
   const tag = simpleSelector.match(/^([a-zA-Z]+)(?::not\(:disabled\))?$/u)?.[1];
   return tag ? element.tagName === tag.toUpperCase() && !element.disabled : false;
 }

@@ -519,6 +519,7 @@
   min-width: 0;
 }
 
+
 .event-editor-modal-body .event-condition-control {
   max-width: 100%;
   min-width: 0;
@@ -838,9 +839,17 @@
   padding: 0;
 }
 
-/* RM2K3 클래식 명령 라인: ◆ 프리픽스 + 고밀도 한 줄 + depth 들여쓰기 + 인덴트 가이드선.
-   행 번호(counter)·펼치기 토글(+/^)·원형 불릿·카드 배경은 모두 제거해 실제
-   RPG 만들기 2003 이벤트 창처럼 촘촘한 트리로 보이게 한다. */
+/* RM2K3 클래식 명령 라인 + 스레드형 parent/child 위계.
+   depth마다 넓은 들여쓰기 + 연속 세로 레일 + 자식 행 배경 밴드로 분기를 즉시 읽는다. */
+.event-contents-fieldset .cmd-list {
+  --cmd-indent-step: 28px;
+  --cmd-indent-base: 10px;
+  --cmd-rail: color-mix(in srgb, var(--accent, #6ea8ff) 55%, var(--border-default));
+  --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));
+  --cmd-rail-fork: color-mix(in srgb, var(--accent, #6ea8ff) 70%, var(--border-default));
+  --cmd-rail-shop: color-mix(in srgb, var(--success, #4caf7a) 70%, var(--border-default));
+}
+
 .event-contents-fieldset .cmd-head,
 .event-contents-fieldset .cmd-line-marker,
 .event-contents-fieldset .cmd-empty-line {
@@ -852,37 +861,50 @@
   display: flex;
   font: 400 13px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   gap: 6px;
-  min-height: 22px;
+  min-height: 24px;
   overflow: hidden;
-  /* depth 레벨마다 18px 우측 이동(중첩 분기 누적 들여쓰기). root=8px */
-  padding: 0 8px 0 calc(8px + (var(--cmd-depth, 0) * 18px));
+  /* depth 레벨마다 28px — 18px 때보다 parent/child가 확실히 갈라진다. */
+  padding: 1px 8px 1px calc(var(--cmd-indent-base) + (var(--cmd-depth, 0) * var(--cmd-indent-step)));
+  position: relative;
   text-overflow: ellipsis;
   white-space: nowrap;
-  /* depth 개의 18px 밴드 좌측마다 1px 세로 가이드선 → 중첩 위계 추적. */
+  /* 깊이마다 세로 레일(스레드). 연한 선이 아니라 확실한 트랙. */
   background-image: repeating-linear-gradient(
     to right,
-    var(--border-subtle) 0,
-    var(--border-subtle) 1px,
-    transparent 1px,
-    transparent 18px
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
   );
-  background-position: 8px 0;
+  background-position: var(--cmd-indent-base) 0;
   background-repeat: no-repeat;
-  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
 }
 
-/* event-editor.part-2.css 의 zebra(nth-child 배경, 특이도 0,5,0)를 무력화해 균일한
-   RM2003 행으로 만든다. 같은 특이도지만 modern.css 가 나중에 로드되어 이긴다. */
-.event-contents-fieldset .cmd-list > .cmd-item:nth-child(odd) > .cmd-head,
-.event-contents-fieldset .cmd-list > .cmd-item:nth-child(even) > .cmd-head,
-.event-contents-fieldset .cmd-list > .cmd-line-marker:nth-child(odd),
-.event-contents-fieldset .cmd-list > .cmd-line-marker:nth-child(even),
-.event-contents-fieldset .cmd-list > .cmd-empty-line:nth-child(odd),
-.event-contents-fieldset .cmd-list > .cmd-empty-line:nth-child(even) {
-  background-color: transparent;
+/* 자식 행(depth≥1): 레일 안쪽 틴트로 parent 블록이 한 덩어리로 보이게. */
+.event-contents-fieldset .cmd-item[data-cmd-depth="1"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head,
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="1"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="2"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="3"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="4"] {
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 6%, transparent);
 }
 
-/* hover/선택은 zebra 무력화 규칙보다 뒤에 두어(동일 특이도) 이긴다. 가이드선은 보존. */
+.event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head {
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 10%, transparent);
+}
+
+/* zebra 줄무늬는 스레드 틴트/레일과 충돌하므로 비활성화(아래 transparent 규칙 없음).
+   part-2.css zebra 특이도는 modern의 depth tint / hover 규칙이 이긴다. */
+
+/* hover/선택 — 레일 보존, 배경만 강조. */
 .event-contents-fieldset .cmd-list > .cmd-item > .cmd-head:hover,
 .event-contents-fieldset .cmd-list > .cmd-empty-line:hover {
   background-color: var(--bg-hover);
@@ -903,11 +925,54 @@
   line-height: 1;
 }
 
-/* 분기 라벨(：수락한다의 경우 / 조건이 참일 때 등) — 명령과 구분되는 이탤릭 보조 라인.
-   fork/choices/shop 별 색은 event-editor.part-2.css 의 .cmd-marker-* 규칙이 얹힌다. */
+/* 분기 라벨 — parent 스레드 헤더. 트리 글리프 + 굵기 + 배경 밴드로 child와 구분. */
 .event-contents-fieldset .cmd-line-marker {
   color: var(--text-2);
-  font-style: italic;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background-color: color-mix(in srgb, var(--warning, #d9a441) 10%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border-default) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-default) 40%, transparent);
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-choices {
+  color: var(--warning, #d9a441);
+  background-color: color-mix(in srgb, var(--warning, #d9a441) 12%, transparent);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-choices) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-choices) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
+  color: var(--event-modern-accent, var(--accent));
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 12%, transparent);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-fork) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-fork) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-shop {
+  color: var(--success, #4caf7a);
+  background-color: color-mix(in srgb, var(--success, #4caf7a) 12%, transparent);
 }
 
 /* 명령 추가 빈 줄(◆). */

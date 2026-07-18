@@ -144,6 +144,12 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         on: { click: close },
       });
 
+      const footerChildren: HTMLElement[] = [];
+      if (stagedCommand.kind === "shop") {
+        footerChildren.push(createShopPreviewFooterToggle(editor));
+      }
+      footerChildren.push(ok, cancel);
+
       editor.append(
         el("div", {
           class: "event-command-edit-columns",
@@ -151,13 +157,40 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         }),
         el("div", {
           class: "event-command-edit-actions",
-          children: [ok, cancel],
-        })
+          children: footerChildren,
+        }),
       );
       body.append(editor);
       renderEditor();
+      if (stagedCommand.kind === "shop") {
+        queueMicrotask(() => setShopPreviewCollapsed(editor, true));
+      }
     },
   });
+}
+
+function createShopPreviewFooterToggle(editor: HTMLElement): HTMLElement {
+  const button = el("button", {
+    class: "event-command-edit-action shop-preview-toggle",
+    text: "미리보기",
+    attrs: { type: "button", "aria-pressed": "false", title: "상점 미리보기 열기/닫기" },
+    dataset: { testid: "shop-preview-toggle" },
+  }) as HTMLButtonElement;
+  button.addEventListener("click", () => {
+    const columns = editor.querySelector(".event-command-edit-columns");
+    const open = !(columns?.classList.contains("is-shop-preview-open") ?? false);
+    setShopPreviewCollapsed(editor, !open);
+    button.setAttribute("aria-pressed", open ? "true" : "false");
+    button.textContent = open ? "미리보기 닫기" : "미리보기";
+  });
+  return button;
+}
+
+function setShopPreviewCollapsed(from: HTMLElement, collapsed: boolean): void {
+  const columns = from.querySelector(".event-command-edit-columns");
+  if (!(columns instanceof HTMLElement) || typeof columns.classList?.toggle !== "function") return;
+  columns.classList.toggle("is-shop-preview-open", !collapsed);
+  columns.classList.toggle("shop-preview-collapsed", collapsed);
 }
 
 function commitPendingControls(root: HTMLElement): void {

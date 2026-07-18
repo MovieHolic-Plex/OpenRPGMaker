@@ -4,7 +4,6 @@ import { el } from "@/util/dom";
 import { selectWithOptions } from "./dom";
 import { innBody, shopBody } from "./commandBodyCommerce";
 import {
-  actorSubtitle,
   battleProcessingBody,
   changeActorHpBody,
   changeActorMpBody,
@@ -21,7 +20,8 @@ import {
   promoteActorBody,
   recoverAllBody,
 } from "./commandBodyDatabase";
-import { facesetIconOf, recordPickerWithPreview } from "./recordPicker";
+import { recordPickerWithPreview } from "./recordPicker";
+import { actorPicker } from "./sharedPickers";
 import { isPassable } from "@/project/collision";
 import { moveEventBody } from "./commandBodyRoute";
 import { changeTileBody } from "./commandBodyTile";
@@ -306,14 +306,10 @@ function callMapEventBody(
 
 function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kind: "learnSkill" }>): HTMLElement {
   const project = store.getCurrent();
-  // 액터/스킬 픽커: 얼굴(또는 이니셜) + 직업 부제, 스킬은 MP/위력 부제.
-  const actor = recordPickerWithPreview({
-    records: project.database.actors,
+  const actor = actorPicker({
+    project,
     selectedId: cmd.actorId,
-    placeholder: "주인공 선택",
     testid: "learn-skill-actor-select",
-    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
-    subtitleOf: (record) => actorSubtitle(project, record),
   });
   const skill = recordPickerWithPreview({
     records: project.database.skills,
@@ -334,7 +330,7 @@ function learnSkillBody(context: CommandEditContext, cmd: Extract<Command, { kin
   const wrap = el("span", { class: "rich-command-form" });
   wrap.append(
     el("span", { class: "rich-form-row", children: [actor.root] }),
-    el("span", { class: "rich-form-row", children: [skill.root] })
+    el("span", { class: "rich-form-row", children: [skill.root] }),
   );
   return wrap;
 }
@@ -581,18 +577,6 @@ function terminalHint(testId: string, text: string): HTMLElement {
   });
 }
 
-export function mapSelect(currentId: string, testId?: string): HTMLSelectElement {
-  const project = store.getCurrent();
-  const mapSel = el("select", {
-    dataset: testId ? { testid: testId } : undefined,
-  }) as HTMLSelectElement;
-  mapSel.append(el("option", { text: "(맵 선택)", attrs: { value: "" } }));
-  for (const id of Object.keys(project.maps)) {
-    mapSel.append(el("option", { text: project.maps[id].name || id, attrs: { value: id } }));
-  }
-  mapSel.value = currentId;
-  return mapSel;
-}
 
 function textInput(value: string, placeholder: string, testId: string): HTMLInputElement {
   return el("input", {

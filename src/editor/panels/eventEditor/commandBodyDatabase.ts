@@ -13,8 +13,11 @@ import {
   recordPickerWithPreview,
   segmentedSelect,
 } from "./recordPicker";
-import type { ActorAmountOp, ActorEquipmentSlot, ActorRecord, Command, Project } from "@/project/types";
+import { actorPicker, itemPicker } from "./sharedPickers";
+import type { ActorAmountOp, ActorEquipmentSlot, Command, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
+
+export { actorSubtitle } from "./sharedPickers";
 
 const AMOUNT_OP_OPTIONS = [
   { value: "=", label: "대입" },
@@ -145,13 +148,10 @@ export function changeItemBody(context: CommandEditContext, cmd: Extract<Command
   const project = store.getCurrent();
   const items = project.database.items;
   const startInventory = startStateOf(project).inventory;
-  // 아이템 픽커: 카드에 아이콘 + 이름 + 시작 보유 수량.
-  const item = recordPickerWithPreview({
-    records: items,
+  const item = itemPicker({
+    project,
     selectedId: cmd.itemId,
-    placeholder: "아이템 선택",
     testid: "change-item-select",
-    iconOf: (record) => imageIconOf(project, record.iconResourceId ?? record.imageResourceId),
     subtitleOf: (record) => `시작 보유 ×${startInventory[record.id] ?? 0}`,
   });
   const op = segmentedSelect({ options: AMOUNT_OP_SEGMENTS, value: cmd.op, testid: "change-item-op-select", ariaLabel: "아이템 연산 선택" });
@@ -212,13 +212,10 @@ function deltaTone(before: number, after: number): string {
 export function changePartyBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeParty" }>): HTMLElement {
   const project = store.getCurrent();
   const actors = project.database.actors;
-  const actor = recordPickerWithPreview({
-    records: actors,
+  const actor = actorPicker({
+    project,
     selectedId: cmd.actorId,
-    placeholder: "주인공 선택",
     testid: "change-party-actor-select",
-    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
-    subtitleOf: (record) => actorSubtitle(project, record),
   });
   // 추가/제거 세그먼트(기존 select 는 숨김 호환 유지).
   const action = segmentedSelect({
@@ -246,7 +243,7 @@ export function changePartyBody(context: CommandEditContext, cmd: Extract<Comman
     preview.root.dataset.beforeIn = String(beforeIn);
     preview.root.dataset.afterIn = String(afterIn);
     preview.body.replaceChildren(
-      recordIconElement(facesetIconOf(project, record.faceResourceId), record.name),
+      recordIconElement(facesetIconOf(project, record.faceResourceId, record.faceIndex ?? 0), record.name),
       el("span", { text: `${record.name} — 지금: ${beforeIn ? "파티에 있음" : "파티에 없음"}` }),
       el("span", { class: "rich-preview-arrow", text: "→" }),
       el("span", {
@@ -380,12 +377,7 @@ export function evolveMonsterBody(context: CommandEditContext, cmd: Extract<Comm
   });
 }
 
-// 액터 카드 부제: 직업 이름(+ 초기 레벨). (learnSkill 등 다른 폼에서도 재사용)
-export function actorSubtitle(project: Project, record: ActorRecord): string | null {
-  const className = project.database.classes.find((entry) => entry.id === record.classId)?.name;
-  const level = `Lv.${record.initialLevel}`;
-  return className ? `${className} · ${level}` : level;
-}
+// actorSubtitle is re-exported from sharedPickers above.
 
 export function changeExpBody(context: CommandEditContext, cmd: Extract<Command, { kind: "changeExp" }>): HTMLElement {
   return actorAmountBody(context, cmd);
@@ -400,13 +392,10 @@ export function promoteActorBody(
   cmd: Extract<Command, { kind: "promoteActor" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordPickerWithPreview({
-    records: project.database.actors,
+  const actor = actorPicker({
+    project,
     selectedId: cmd.actorId,
-    placeholder: "주인공 선택",
     testid: "promote-actor-select",
-    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
-    subtitleOf: (record) => actorSubtitle(project, record),
   });
   const klass = recordPickerWithPreview({
     records: project.database.classes,
@@ -451,13 +440,10 @@ export function changeEquipmentBody(
   cmd: Extract<Command, { kind: "changeEquipment" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordPickerWithPreview({
-    records: project.database.actors,
+  const actor = actorPicker({
+    project,
     selectedId: cmd.actorId,
-    placeholder: "주인공 선택",
     testid: "change-equipment-actor-select",
-    iconOf: (record) => facesetIconOf(project, record.faceResourceId),
-    subtitleOf: (record) => actorSubtitle(project, record),
   });
   const slot = selectWithOptions(EQUIPMENT_SLOT_OPTIONS, cmd.slot, "change-equipment-slot-select");
   // 장비 픽커: 아이콘 + 슬롯/주요 스탯 부제. 빈 값은 "장비 해제".
@@ -503,7 +489,11 @@ export function enterHeroNameBody(
   cmd: Extract<Command, { kind: "enterHeroName" }>
 ): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", "enter-hero-name-actor-select");
+  const actor = actorPicker({
+    project,
+    selectedId: cmd.actorId,
+    testid: "enter-hero-name-actor-select",
+  });
   const maxLength = el("input", {
     attrs: { type: "number", min: "1", max: "12", title: "최대 글자 수" },
     value: String(cmd.maxLength),
@@ -514,22 +504,23 @@ export function enterHeroNameBody(
   const apply = () => {
     context.actions.replaceCommand(context.path, {
       kind: "enterHeroName",
-      actorId: actor.value,
+      actorId: actor.select.value,
       maxLength: clampMaxLengthInput(maxLength.value),
       showInitialName: showInitial.checked,
     });
   };
-  actor.addEventListener("change", apply);
+  actor.select.addEventListener("change", apply);
   maxLength.addEventListener("change", apply);
   showInitial.addEventListener("change", apply);
-  const wrap = el("span", {});
+  const wrap = el("span", { class: "rich-command-form" });
   wrap.append(
-    actor,
+    el("span", { class: "rich-form-row", children: [actor.root] }),
     labeledControl("최대 글자", maxLength),
-    labeledControl("초기 이름 표시", showInitial)
+    labeledControl("초기 이름 표시", showInitial),
   );
   return wrap;
 }
+
 
 function labeledControl(label: string, control: HTMLElement): HTMLElement {
   return el("label", { class: "inline-field", children: [el("span", { text: label }), control] });
@@ -543,36 +534,48 @@ function clampMaxLengthInput(value: string): number {
 
 export function recoverAllBody(context: CommandEditContext, cmd: Extract<Command, { kind: "recoverAll" }>): HTMLElement {
   const project = store.getCurrent();
-  const actor = recordSelect(project.database.actors, cmd.actorId ?? "", "파티 전체", "recover-all-actor-select");
-  actor.addEventListener("change", () => {
+  const actor = actorPicker({
+    project,
+    selectedId: cmd.actorId ?? "",
+    testid: "recover-all-actor-select",
+    placeholder: "파티 전체",
+  });
+  actor.select.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, {
       kind: "recoverAll",
-      actorId: actor.value,
+      actorId: actor.select.value,
     });
   });
-  return actor;
+  return actor.root;
 }
 
 function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): HTMLElement {
   const project = store.getCurrent();
   const labels = actorAmountLabels(cmd.kind);
-  const actor = recordSelect(project.database.actors, cmd.actorId, "주인공 선택", labels.actorTestId);
+  const actor = actorPicker({
+    project,
+    selectedId: cmd.actorId,
+    testid: labels.actorTestId,
+  });
   const op = selectWithOptions(AMOUNT_OP_OPTIONS, cmd.op, labels.opTestId);
   const amount = numberInput(cmd.amount, labels.amountTitle, labels.amountTestId);
   const apply = () => {
     const next = actorAmountCommand(
       cmd.kind,
-      actor.value,
+      actor.select.value,
       selectedOptionValue(op, AMOUNT_OP_OPTIONS, cmd.op),
-      parseInt(amount.value, 10) || 0
+      parseInt(amount.value, 10) || 0,
     );
     context.actions.replaceCommand(context.path, next);
   };
-  actor.addEventListener("change", apply);
+  actor.select.addEventListener("change", apply);
   op.addEventListener("change", apply);
   amount.addEventListener("change", apply);
-  const wrap = el("span", {});
-  wrap.append(actor, op, amount);
+  const wrap = el("span", { class: "rich-command-form" });
+  wrap.append(
+    el("span", { class: "rich-form-row", children: [actor.root] }),
+    el("span", { class: "rich-form-row", children: [op, amount] }),
+  );
   return wrap;
 }
 
@@ -632,20 +635,6 @@ function actorAmountLabels(kind: ActorAmountCommand["kind"]): {
   }
 }
 
-function recordSelect(
-  records: readonly { readonly id: string; readonly name: string }[],
-  currentId: string,
-  placeholder: string,
-  testId: string
-): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
-  select.append(el("option", { text: `(${placeholder})`, attrs: { value: "" } }));
-  for (const [index, record] of records.entries()) {
-    select.append(el("option", { text: `${String(index + 1).padStart(4, "0")}: ${record.name}`, attrs: { value: record.id } }));
-  }
-  select.value = currentId;
-  return select;
-}
 
 function numberInput(value: number, title: string, testId: string): HTMLInputElement {
   return el("input", {

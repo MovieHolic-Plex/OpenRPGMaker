@@ -342,22 +342,20 @@
   display: flex;
   align-items: center;
   gap: var(--space-1);
-  margin-bottom: var(--space-1);
-  /* 트리 들여쓰기 + 인덴트 가이드 — event-editor.part-2.css 의 규칙과 동일한 18px 그리드.
-     (이벤트 필드셋 밖 중첩 커맨드 리스트에서도 위계가 보이도록 통합) */
-  padding-left: calc(var(--cmd-depth, 0) * 18px);
+  /* 스레드 들여쓰기 — 28px step (modern 이벤트 리스트와 동일) */
+  padding-left: calc(var(--cmd-depth, 0) * 28px);
   background-image: repeating-linear-gradient(
     to right,
     transparent 0,
-    transparent 5px,
-    var(--border-subtle) 5px,
-    var(--border-subtle) 6px,
-    transparent 6px,
-    transparent 18px
+    transparent 26px,
+    color-mix(in srgb, var(--accent) 55%, var(--border-default)) 26px,
+    color-mix(in srgb, var(--accent) 55%, var(--border-default)) 27px,
+    transparent 27px,
+    transparent 28px
   );
   background-position: 0 0;
   background-repeat: no-repeat;
-  background-size: calc(var(--cmd-depth, 0) * 18px) 100%;
+  background-size: calc(var(--cmd-depth, 0) * 28px) 100%;
 }
 .cmd-item .cmd-head:hover {
   background-color: var(--bg-hover);
@@ -415,6 +413,34 @@
   background: var(--control-bg);
   border-color: var(--border-default);
   color: var(--text-2);
+}
+.cmd-summary-token.choice-option {
+  border: 1px solid color-mix(in srgb, var(--warning, #d9a441) 45%, var(--border-default));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--warning, #d9a441) 14%, transparent);
+  color: var(--warning, #d9a441);
+  flex: 0 1 auto;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  max-width: 14ch;
+  overflow: hidden;
+  padding: 0 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cmd-summary-token.choice-cancel {
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+  margin-left: 2px;
+  padding: 0 6px;
+  white-space: nowrap;
 }
 /* 아이템/장비 요약 아이콘 (16px 픽셀아트). */
 .cmd-summary-icon {

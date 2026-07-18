@@ -105,6 +105,7 @@
   height: 24px;
   flex: none;
   display: inline-block;
+  overflow: hidden;
   background-repeat: no-repeat;
   image-rendering: pixelated;
   border-radius: var(--radius-s);

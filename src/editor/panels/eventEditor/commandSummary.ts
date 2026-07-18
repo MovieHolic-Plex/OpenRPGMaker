@@ -14,7 +14,10 @@ export type CommandSummaryTone =
   | "op-set"
   // 스위치/플래그 ON·OFF 배지 톤.
   | "badge-on"
-  | "badge-off";
+  | "badge-off"
+  // 선택지 옵션 칩 / 취소 배지.
+  | "choice-option"
+  | "choice-cancel";
 
 export type CommandSummaryPart = {
   readonly text: string;
@@ -95,11 +98,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...(cmd.preventObscuringPlayer ? [plainPart(" / "), valuePart("가림 방지")] : []),
     ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
   ),
-  choices: (cmd) => commandLine(
-    "선택지 표시",
-    valuePart(choiceSummary(cmd)),
-    ...(cmd.cancelBehavior ? [plainPart(" / 취소 "), valuePart(choiceCancelSummary(cmd.cancelBehavior))] : [])
-  ),
+  choices: (cmd) => choicesSummaryParts(cmd),
   fork: (cmd) => commandLine("조건 분기", valuePart(conditionSummary(cmd.condition))),
   wait: (cmd) => commandLine("대기", valuePart((cmd.ms / 1000).toFixed(1)), plainPart(" 초")),
   inputWait: (cmd) => cmd.variableId
@@ -396,16 +395,47 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   return commandLine(label, valuePart(fields.join(", ")));
 }
 
-function choiceSummary(cmd: Extract<Command, { kind: "choices" }>): string {
-  const options = cmd.options.map((option) => option.text).join(" / ");
-  return cmd.prompt ? `${oneLine(cmd.prompt)} - ${options}` : options;
+function choicesSummaryParts(cmd: Extract<Command, { kind: "choices" }>): readonly CommandSummaryToken[] {
+  const parts: CommandSummaryToken[] = [commandPart("선택지 표시"), plainPart(": ")];
+  const prompt = oneLine(cmd.prompt ?? "");
+  if (prompt) {
+    parts.push(valuePart(prompt), plainPart("  "));
+  }
+  const options = cmd.options;
+  if (options.length === 0) {
+    parts.push(valuePart("(선택지 없음)"));
+  } else {
+    options.forEach((option, index) => {
+      if (index > 0) parts.push(plainPart(" "));
+      const label = oneLine(option.text) || `선택지 ${index + 1}`;
+      parts.push(choiceOptionPart(`${index + 1}.${label}`));
+    });
+  }
+  if (cmd.cancelBehavior) {
+    parts.push(plainPart("  "), choiceCancelPart(choiceCancelSummary(cmd)));
+  }
+  return parts;
 }
 
-function choiceCancelSummary(behavior: Extract<Command, { kind: "choices" }>["cancelBehavior"]): string {
+function choiceOptionPart(text: string): CommandSummaryPart {
+  return { text, tone: "choice-option" };
+}
+
+function choiceCancelPart(text: string): CommandSummaryPart {
+  return { text, tone: "choice-cancel" };
+}
+
+/** 취소 동작 요약. choiceN 이면 해당 옵션 본문을 보여 "잠시 후" 같은 선택지와 구분한다. */
+function choiceCancelSummary(cmd: Extract<Command, { kind: "choices" }>): string {
+  const behavior = cmd.cancelBehavior;
   if (!behavior) return "";
-  if (behavior === "disallow") return "금지";
-  if (behavior === "branch") return "분기";
-  return `선택지 ${behavior.slice("choice".length)}`;
+  if (behavior === "disallow") return "취소 금지";
+  if (behavior === "branch") return "취소 시 별도 분기";
+  const index = Number.parseInt(behavior.slice("choice".length), 10);
+  if (!Number.isFinite(index) || index < 1) return "취소";
+  const option = cmd.options[index - 1];
+  const label = oneLine(option?.text ?? "") || `선택지 ${index}`;
+  return `취소→${label}`;
 }
 
 function facePositionLabel(position: Extract<Command, { kind: "changeFace" }>["position"]): string {

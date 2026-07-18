@@ -126,17 +126,13 @@ function renderCommandItem(
   if (speakerFace) speakerFace.dataset.testid = "cmd-speaker-face";
   head.append(
     handle,
+    // RM2003 정본: 명령 줄 프리픽스는 ◆ 하나만. 카테고리 글리프(◇ 등)를 옆에 붙이면
+    // 스위치/조건 줄이 "◆ ◇" 이중 마름모로 보인다. 카테고리 구분은 좌측 색 레일만 쓴다.
     el("span", { class: "cmd-prefix", text: "◆" }),
-    // kind 아이콘은 ::before(attr(data-glyph)) — 줄 textContent(RM2003 텍스트 정본)를 보존한다.
-    el("span", {
-      class: "cmd-cat-icon",
-      attrs: { "aria-hidden": "true" },
-      dataset: { category: categoryVisual.key, glyph: categoryVisual.glyph },
-    }),
     ...(speakerFace ? [speakerFace] : []),
     renderCommandSummary(cmd),
     ...(supportBadge ? [supportBadge] : []),
-    commandActions(path, actions)
+    commandActions(path, actions),
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
   head.addEventListener("click", () => selectCommandLine(item));
@@ -294,46 +290,57 @@ function appendCommandChildren(
   options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
 ): void {
   if (cmd.kind === "choices") {
+    const optionCount = cmd.options.length;
     cmd.options.forEach((option, optionIndex) => {
-      host.append(renderMarkerLine(`: ${option.text || `선택지 ${optionIndex + 1}`}`, depth, "choices"));
+      const isLastOption =
+        optionIndex === optionCount - 1
+        && cmd.cancelBehavior !== "branch";
+      const branchGlyph = isLastOption ? "└" : "├";
+      host.append(
+        renderMarkerLine(
+          `${branchGlyph} ${option.text || `선택지 ${optionIndex + 1}`}`,
+          depth,
+          "choices",
+        ),
+      );
       option.branch.forEach((child, childIndex) => {
         renderCommandTree(host, child, [...path, optionIndex, childIndex], containerPath, actions, depth + 1, faceState, options);
       });
     });
     if (cmd.cancelBehavior === "branch") {
-      host.append(renderMarkerLine(": 취소할 때", depth, "choices"));
+      host.append(renderMarkerLine("├ 취소할 때", depth, "choices"));
       (cmd.cancelBranch ?? []).forEach((child, childIndex) => {
         renderCommandTree(
           host,
-            child,
-            [...path, CHOICE_CANCEL_BRANCH_INDEX, childIndex],
-            containerPath,
-            actions,
-            depth + 1,
-            faceState,
-            options
-        );
-      });
-    }
-    host.append(renderMarkerLine(": 선택지 종료", depth, "choices"));
-    return;
-  }
-  if (cmd.kind === "fork") {
-    host.append(renderMarkerLine(": 조건이 참일 때", depth, "fork"));
-    cmd.then.forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
           child,
-          [...path, FORK_THEN_BRANCH_INDEX, childIndex],
+          [...path, CHOICE_CANCEL_BRANCH_INDEX, childIndex],
           containerPath,
           actions,
           depth + 1,
           faceState,
-          options
+          options,
+        );
+      });
+    }
+    host.append(renderMarkerLine("└ 선택지 종료", depth, "choices"));
+    return;
+  }
+  if (cmd.kind === "fork") {
+    host.append(renderMarkerLine("├ 조건이 참일 때", depth, "fork"));
+    cmd.then.forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, FORK_THEN_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options,
       );
     });
     if (cmd.else) {
-      host.append(renderMarkerLine(": 그 외의 경우", depth, "fork"));
+      host.append(renderMarkerLine("├ 그 외의 경우", depth, "fork"));
       cmd.else.forEach((child, childIndex) => {
         renderCommandTree(
           host,
@@ -347,56 +354,27 @@ function appendCommandChildren(
         );
       });
     }
-    host.append(renderMarkerLine(": 분기 종료", depth, "fork"));
+    host.append(renderMarkerLine("└ 분기 종료", depth, "fork"));
     return;
   }
   if (cmd.kind === "shop" && cmd.branchOnTransaction) {
-    host.append(renderMarkerLine(": 플레이어가 구매/판매했을 때", depth, "shop"));
+    host.append(renderMarkerLine("├ 플레이어가 구매/판매했을 때", depth, "shop"));
     (cmd.transactionBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
-          child,
-          [...path, SHOP_TRANSACTION_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
+        child,
+        [...path, SHOP_TRANSACTION_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options,
       );
     });
-    host.append(renderMarkerLine(": 상점 분기 종료", depth, "shop"));
+    host.append(renderMarkerLine("└ 상점 분기 종료", depth, "shop"));
   }
   if (cmd.kind === "promoteActor") {
-    host.append(renderMarkerLine(": 승급 성공", depth, "fork"));
-    (cmd.successBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-          child,
-          [...path, PROMOTE_SUCCESS_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
-      );
-    });
-    host.append(renderMarkerLine(": 승급 실패", depth, "fork"));
-    (cmd.failureBranch ?? []).forEach((child, childIndex) => {
-      renderCommandTree(
-        host,
-          child,
-          [...path, PROMOTE_FAILURE_BRANCH_INDEX, childIndex],
-          containerPath,
-          actions,
-          depth + 1,
-          faceState,
-          options
-      );
-    });
-    host.append(renderMarkerLine(": 승급 분기 종료", depth, "fork"));
-  }
-  if (cmd.kind === "evolveMonster") {
-    host.append(renderMarkerLine(": 진화 성공", depth, "fork"));
+    host.append(renderMarkerLine("├ 승급 성공", depth, "fork"));
     (cmd.successBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -406,10 +384,10 @@ function appendCommandChildren(
         actions,
         depth + 1,
         faceState,
-        options
+        options,
       );
     });
-    host.append(renderMarkerLine(": 진화 실패", depth, "fork"));
+    host.append(renderMarkerLine("├ 승급 실패", depth, "fork"));
     (cmd.failureBranch ?? []).forEach((child, childIndex) => {
       renderCommandTree(
         host,
@@ -419,10 +397,39 @@ function appendCommandChildren(
         actions,
         depth + 1,
         faceState,
-        options
+        options,
       );
     });
-    host.append(renderMarkerLine(": 진화 분기 종료", depth, "fork"));
+    host.append(renderMarkerLine("└ 승급 분기 종료", depth, "fork"));
+  }
+  if (cmd.kind === "evolveMonster") {
+    host.append(renderMarkerLine("├ 진화 성공", depth, "fork"));
+    (cmd.successBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, PROMOTE_SUCCESS_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options,
+      );
+    });
+    host.append(renderMarkerLine("├ 진화 실패", depth, "fork"));
+    (cmd.failureBranch ?? []).forEach((child, childIndex) => {
+      renderCommandTree(
+        host,
+        child,
+        [...path, PROMOTE_FAILURE_BRANCH_INDEX, childIndex],
+        containerPath,
+        actions,
+        depth + 1,
+        faceState,
+        options,
+      );
+    });
+    host.append(renderMarkerLine("└ 진화 분기 종료", depth, "fork"));
   }
 }
 

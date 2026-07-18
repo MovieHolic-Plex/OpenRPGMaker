@@ -83,6 +83,9 @@ describe("event editor UI density", () => {
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
     expect(conditions?.open).toBe(true);
     expect(conditions?.textContent).toContain("항상");
+    // 비활성 조건 행도 data-condition-active 마커로 구분된다.
+    const inactive = conditions?.querySelectorAll('[data-condition-active="false"]') ?? [];
+    expect(inactive.length).toBeGreaterThan(0);
     // 이동/애니메이션/속도는 RM 계약상 항상 노출
     expect(host.querySelector('[data-testid="event-classic-movement-type"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-classic-animation-type"]')).toBeTruthy();
@@ -112,5 +115,22 @@ describe("event editor UI density", () => {
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
     expect(conditions?.open).toBe(true);
     expect(conditions?.textContent).toContain("1개 활성");
+    expect(conditions?.querySelectorAll('[data-condition-active="true"]').length).toBeGreaterThan(0);
+    expect(conditions?.querySelectorAll('[data-condition-active="false"]').length).toBeGreaterThan(0);
+  });
+
+  it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    const conditions = host.querySelector('[data-testid="event-classic-conditions"]');
+    const inactive = conditions?.querySelectorAll('[data-condition-active="false"]') ?? [];
+    expect(inactive.length).toBeGreaterThan(0);
+    for (const row of Array.from(inactive)) {
+      expect(row.classList.contains("disabled")).toBe(true);
+      const children = Array.from(row.children) as HTMLElement[];
+      expect(children.length).toBeGreaterThanOrEqual(3);
+      for (const child of children) {
+        expect(child.hidden || child.hasAttribute("hidden")).toBe(false);
+      }
+    }
   });
 });
