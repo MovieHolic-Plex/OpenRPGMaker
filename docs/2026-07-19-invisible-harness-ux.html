@@ -64,9 +64,11 @@ footer{margin-top:56px;color:var(--ink-3);font-size:.84rem;border-top:1px solid 
 데이터 스키마(structureKits·grammarRules)는 v1 그대로 유지 — 바뀌는 것은 <b>누구에게 무엇을 보여주느냐</b> 전부다.</p>
 
 <p class="lead big">v1의 문제: 킷 탭, 단면 편집기, 규칙 체크리스트… <b>유저에게 하네스 엔지니어 자격증을 요구하는 설계</b>였다.
-v2의 한 줄 요약 — <b>사람의 입력은 "찍기"와 "말하기" 둘뿐이고, JSON·스키마·편집기는 AI와 시스템의 언어다.</b>
-증거는 이 프로젝트 자신: 성 문법이 정본화될 때 사용자가 한 일은 캔버스에 성을 찍은 것뿐이었다.
-단면 추출·페어 탐지·린트 작성·킷 이식은 전부 AI가 했다. 그 분업을 제품 구조로 굳힌다.</p>
+v2의 요약은 두 문장이다 — <b>① 사람의 입력은 "찍기"와 "말하기" 둘뿐이고, JSON·스키마·편집기는 AI와 시스템의 언어다.
+② 하네스가 사람에게 말할 때는 언제나 그림으로 말한다</b> — 타일 번호도, "성벽"이라는 텍스트 라벨도 일반 유저에겐 무의미하다.
+모든 접점(제안·팔레트·채팅·호버)은 렌더된 이미지가 주인공이고 텍스트는 그림의 캡션이다(§④).
+증거는 이 프로젝트 자신: 성 문법이 정본화될 때 사용자가 한 일은 캔버스에 성을 찍은 것뿐이었고,
+단면 추출·페어 탐지·린트 작성은 AI가 했으며, 모든 판정은 렌더를 보고 내려졌다. 그 분업을 제품 구조로 굳힌다.</p>
 
 <!-- ══════════ ① before / after ══════════ -->
 <section id="flip">
@@ -164,24 +166,34 @@ AI가 읽고 쓰는 데이터(structureKits/grammarRules)는 그대로, 사람�
 감지는 백그라운드에서 돈다. 남는 유일한 접점이 "조용한 제안 한 줄"이므로, 이것의 예절이 이 설계의 성패다.</p>
 
 <figure>
-<svg viewBox="0 0 980 300" role="img" aria-label="조용한 제안 목업">
+<svg viewBox="0 0 980 330" role="img" aria-label="조용한 제안 목업 — 그림 카드">
 <!-- 에디터 프레임 -->
-<rect x="20" y="20" width="940" height="260" rx="12" class="sv-box"/>
-<rect x="36" y="36" width="180" height="228" rx="8" class="sv-panel"/>
+<rect x="20" y="20" width="940" height="290" rx="12" class="sv-box"/>
+<rect x="36" y="36" width="180" height="258" rx="8" class="sv-panel"/>
 <text x="52" y="60" class="sv-xs">팔레트</text>
-<rect x="52" y="72" width="148" height="180" rx="4" class="sv-box"/>
-<rect x="232" y="36" width="710" height="228" rx="8" class="sv-panel"/>
-<text x="248" y="60" class="sv-xs">맵 — 유저가 성벽 패턴을 세 번째 찍는 중</text>
-<rect x="248" y="72" width="678" height="140" rx="4" class="sv-box"/>
-<!-- 제안 칩 -->
-<rect x="286" y="222" width="600" height="34" rx="17" class="sv-box" style="stroke:var(--accent);stroke-width:1.8"/>
-<text x="306" y="244" class="sv-s">💡 이 5줄 패턴을 <tspan style="font-weight:700">성벽</tspan>으로 기억할까요?</text>
-<rect x="646" y="228" width="72" height="22" rx="11" class="sv-panel"/><text x="658" y="243" class="sv-xs">미리보기</text>
-<rect x="724" y="228" width="52" height="22" rx="11" style="fill:var(--good);opacity:.85"/><text x="737" y="243" class="sv-xs" style="fill:#fff;font-weight:700">등록</text>
-<rect x="782" y="228" width="52" height="22" rx="11" class="sv-panel"/><text x="795" y="243" class="sv-xs">무시</text>
+<rect x="52" y="72" width="148" height="210" rx="4" class="sv-box"/>
+<rect x="232" y="36" width="710" height="150" rx="8" class="sv-panel"/>
+<text x="248" y="60" class="sv-xs">맵 — 유저가 성벽 패턴을 세 번째 찍는 중 (감지된 영역에 옅은 테두리)</text>
+<rect x="248" y="72" width="678" height="100" rx="4" class="sv-box"/>
+<rect x="420" y="88" width="160" height="60" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 4"/>
+<!-- 제안 카드: 그림이 주인공 -->
+<rect x="232" y="198" width="710" height="96" rx="12" class="sv-box" style="stroke:var(--accent);stroke-width:1.8"/>
+<rect x="248" y="212" width="150" height="68" rx="6" class="sv-panel"/>
+<text x="264" y="242" class="sv-xs">[방금 찍은 패턴</text>
+<text x="272" y="258" class="sv-xs">실렌더 크롭]</text>
+<rect x="412" y="212" width="200" height="68" rx="6" class="sv-panel"/>
+<text x="428" y="236" class="sv-xs">[이 킷으로 조립하면 —</text>
+<text x="428" y="252" class="sv-xs">12×6 소형 조립 렌더,</text>
+<text x="428" y="268" class="sv-xs">스탬프로 쓸 때의 모습]</text>
+<path class="sv-arrow" d="M400 246 H408"/>
+<text x="630" y="234" class="sv-s">이 패턴, 스탬프로 기억할까요?</text>
+<text x="630" y="254" class="sv-xs">이름은 자동("성벽") — 클릭해서 변경</text>
+<rect x="630" y="264" width="56" height="24" rx="12" style="fill:var(--good);opacity:.85"/><text x="644" y="281" class="sv-xs" style="fill:#fff;font-weight:700">등록</text>
+<rect x="694" y="264" width="56" height="24" rx="12" class="sv-panel"/><text x="710" y="281" class="sv-xs">무시</text>
 </svg>
-<figcaption><b>제안 UI의 전부.</b> 화면 하단 칩 한 줄. 클릭하지 않으면 다음 붓질에 소리 없이 사라진다.
-[등록]은 그 자리에서 끝(추가 화면 없음), [미리보기]는 이 킷으로 조립한 작은 렌더 팝오버 하나.</figcaption>
+<figcaption><b>제안 UI의 전부 — 그림 카드 하나.</b> 왼쪽은 유저가 방금 찍은 패턴의 실렌더 크롭("내 것이 인식됐다"는 확신),
+가운데는 등록하면 얻게 될 스탬프의 조립 렌더("등록하면 이걸 얻는다"). 텍스트는 캡션 한 줄뿐이고
+읽지 않아도 그림 두 장으로 판단이 끝난다. 클릭하지 않으면 다음 붓질에 소리 없이 사라진다.</figcaption>
 </figure>
 
 <h3>제안 예절 5칙 — 침습도 제어</h3>
@@ -191,6 +203,7 @@ AI가 읽고 쓰는 데이터(structureKits/grammarRules)는 그대로, 사람�
 <li><b>같은 패턴 재제안 금지.</b> [무시]는 영구 기억(톰스톤과 동일 규약). "무시 3회 = 이 유형 전체 빈도 하향" 같은 감쇠 포함.</li>
 <li><b>확신 임계 미달은 침묵.</b> 반복 3회 이상 + 픽셀/구조 증거가 갖춰진 패턴만 제안. 애매하면 제안이 아니라 <b>채팅 어시스턴트의 다음 대화에서 지나가듯 질문</b>("아까 찍으신 벽, 위에 데크가 항상 오던데 규칙으로 삼을까요?").</li>
 <li><b>다이얼 제공.</b> 설정은 단 하나 — 제안 빈도: 보통 / 조용히(세션당 1) / 끄기. 이것이 이 기능의 유일한 설정 항목이다.</li>
+<li><b>그림 없는 제안 금지.</b> 제안 카드는 반드시 "찍은 패턴 크롭 + 얻게 될 스탬프 렌더" 두 장을 동봉한다(§④의 전 접점 규칙). 렌더 생성에 실패한 제안은 표출하지 않는다.</li>
 </ol>
 
 <figure>
@@ -222,9 +235,70 @@ AI가 읽고 쓰는 데이터(structureKits/grammarRules)는 그대로, 사람�
 </figure>
 </section>
 
-<!-- ══════════ ④ 말로 한다 ══════════ -->
+<!-- ══════════ ④ 그림으로 말한다 ══════════ -->
+<section id="visual">
+<h2>④ 그림으로 말한다 — 전 접점 렌더 규칙</h2>
+<p class="big"><b>하네스 → 사람 방향의 모든 메시지에는 렌더가 필수다.</b> 타일 번호와 텍스트 라벨은 그림의 캡션이며,
+렌더를 만들 수 없는 제안은 아예 표출하지 않는다. 일반 유저는 "성벽 5줄 단면"이라는 문장을 이해할 의무가 없다 —
+자기가 찍은 그림과 얻게 될 그림을 비교할 뿐이다.</p>
+
+<figure>
+<svg viewBox="0 0 980 430" role="img" aria-label="전 접점 렌더 목업">
+<!-- ⓐ 팔레트 스탬프 -->
+<rect x="20" y="20" width="300" height="190" rx="10" class="sv-box"/>
+<text x="36" y="46" class="sv-t">ⓐ 팔레트 — 킷은 그림 스탬프</text>
+<rect x="36" y="60" width="60" height="60" rx="6" class="sv-panel"/><text x="46" y="94" class="sv-xs">[성벽]</text>
+<rect x="102" y="60" width="60" height="60" rx="6" class="sv-panel"/><text x="110" y="94" class="sv-xs">[타워]</text>
+<rect x="168" y="60" width="60" height="60" rx="6" class="sv-panel"/><text x="174" y="94" class="sv-xs">[울타리]</text>
+<rect x="234" y="60" width="60" height="60" rx="6" class="sv-panel" style="stroke-dasharray:3 3"/><text x="248" y="94" class="sv-xs">…</text>
+<text x="36" y="146" class="sv-s">등록된 킷 = 미니 조립 렌더 아이콘.</text>
+<text x="36" y="166" class="sv-s">오토타일 "대표 1칸(◆)" 원칙의 확장 —</text>
+<text x="36" y="186" class="sv-s">이름·번호가 아니라 생김새로 고른다.</text>
+<!-- ⓐ' 호버 카드 -->
+<rect x="340" y="20" width="300" height="190" rx="10" class="sv-box"/>
+<text x="356" y="46" class="sv-t">ⓐ′ 호버 — 큰 조립 예시 카드</text>
+<rect x="356" y="60" width="268" height="100" rx="6" class="sv-panel"/>
+<text x="372" y="100" class="sv-xs">[킷을 넓게 조립한 예시 렌더 —</text>
+<text x="372" y="118" class="sv-xs">확장하면 어떻게 보이는지, 문·타워가</text>
+<text x="372" y="136" class="sv-xs">어디 얹히는지를 그림으로]</text>
+<text x="356" y="182" class="sv-s">캡션: "성벽 · 세로로 늘어남 · 문 뚫기 가능"</text>
+<!-- ⓑ 콘택트 시트 -->
+<rect x="660" y="20" width="300" height="190" rx="10" class="sv-box"/>
+<text x="676" y="46" class="sv-t">ⓑ 임포트 결과 — 콘택트 시트</text>
+<rect x="676" y="60" width="82" height="56" rx="4" class="sv-panel"/>
+<rect x="766" y="60" width="82" height="56" rx="4" class="sv-panel"/>
+<rect x="856" y="60" width="82" height="56" rx="4" class="sv-panel"/>
+<text x="686" y="92" class="sv-xs">[흙길]</text><text x="776" y="92" class="sv-xs">[물¹]</text><text x="866" y="92" class="sv-xs">[눈밭]</text>
+<text x="676" y="146" class="sv-s">"오토타일 3종을 인식했어요" 텍스트 대신,</text>
+<text x="676" y="166" class="sv-s">인식된 각 블록의 <tspan style="font-weight:700">성형 샘플 렌더</tspan> 그리드.</text>
+<text x="676" y="186" class="sv-xs">¹물은 애니 3프레임을 재생해서 보여줌</text>
+<!-- ⓒ 맵 하이라이트 -->
+<rect x="20" y="230" width="460" height="180" rx="10" class="sv-box"/>
+<text x="36" y="256" class="sv-t">ⓒ 문법 위반 — 맵 위 표시 + "옳은 예" 그림</text>
+<rect x="36" y="270" width="270" height="120" rx="6" class="sv-panel"/>
+<rect x="66" y="300" width="90" height="40" rx="3" fill="none" stroke="var(--warn)" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="52" y="380" class="sv-xs">위반 영역에 옅은 점선 — 차단하지 않음(RM 감성)</text>
+<rect x="320" y="270" width="144" height="86" rx="6" class="sv-box" style="stroke:var(--good)"/>
+<text x="334" y="300" class="sv-xs">호버 팝오버:</text>
+<text x="334" y="318" class="sv-xs">[옳은 조립 미니 렌더]</text>
+<text x="334" y="342" class="sv-xs">"벽 위엔 걷는 면이 얹혀요"</text>
+<!-- ⓓ 채팅 -->
+<rect x="500" y="230" width="460" height="180" rx="10" class="sv-box"/>
+<text x="516" y="256" class="sv-t">ⓓ 채팅·제안 — 전/후 렌더 강제 (§⑤·§③)</text>
+<rect x="516" y="272" width="200" height="90" rx="6" class="sv-panel"/><text x="586" y="320" class="sv-xs">[전]</text>
+<rect x="732" y="272" width="200" height="90" rx="6" class="sv-panel" style="stroke:var(--accent-2)"/><text x="798" y="320" class="sv-xs">[후]</text>
+<text x="516" y="392" class="sv-s">렌더를 첨부하지 못한 하네스 변경 제안은 UI 계층이 거부한다 — 규칙이지 권장이 아님.</text>
+</svg>
+<figcaption><b>전 접점 렌더 목업.</b> 인프라는 전부 기존 자산이다: <code>show_tiles</code>·<code>show_tile_grid</code>·
+<code>render_group_sample</code>·<code>preview_house</code>와 팔레트 렌더러가 이미 "그림으로 보여주기"를 할 줄 안다.
+이것들을 <b>썸네일 렌더 서비스</b> 하나로 묶어 모든 접점(팔레트 아이콘·제안 카드·호버 카드·콘택트 시트·채팅)이
+공유하게 만드는 것뿐 — 신규 발명이 아니라 배선 작업이다(P0에 포함).</figcaption>
+</figure>
+</section>
+
+<!-- ══════════ ⑤ 말로 한다 ══════════ -->
 <section id="talk">
-<h2>④ 말로 한다 — 채팅이 편집기를 대체</h2>
+<h2>⑤ 말로 한다 — 채팅이 편집기를 대체</h2>
 <figure>
 <svg viewBox="0 0 980 330" role="img" aria-label="채팅 소프트 컨펌 목업">
 <rect x="20" y="20" width="940" height="290" rx="12" class="sv-box"/>
@@ -257,9 +331,9 @@ AI가 읽고 쓰는 데이터(structureKits/grammarRules)는 그대로, 사람�
 </figure>
 </section>
 
-<!-- ══════════ ⑤ 시나리오 비교 ══════════ -->
+<!-- ══════════ ⑥ 시나리오 비교 ══════════ -->
 <section id="scenario">
-<h2>⑤ 같은 목표, 두 여정 — "내 칩셋으로 성 만들기"</h2>
+<h2>⑥ 같은 목표, 두 여정 — "내 칩셋으로 성 만들기"</h2>
 <figure>
 <svg viewBox="0 0 980 380" role="img" aria-label="v1 vs v2 여정 비교">
 <rect x="20" y="24" width="460" height="330" rx="12" class="sv-box" style="stroke:var(--bad)"/>
@@ -294,12 +368,12 @@ AI가 읽고 쓰는 데이터(structureKits/grammarRules)는 그대로, 사람�
 </figure>
 </section>
 
-<!-- ══════════ ⑥ 로드맵 ══════════ -->
+<!-- ══════════ ⑦ 로드맵 ══════════ -->
 <section id="roadmap">
-<h2>⑥ 수정된 로드맵 — UI를 뒤로, 자동화를 앞으로</h2>
+<h2>⑦ 수정된 로드맵 — UI를 뒤로, 자동화를 앞으로</h2>
 <div class="tablewrap"><table>
 <tr><th>단계</th><th>내용</th><th>v1 대비 변경</th></tr>
-<tr><td><b>P0</b> 기계 표면</td><td><code>structureKits</code>/<code>grammarRules</code> 스키마 + castleKit을 해석기로 전환(정본 킷=시드) + 위저드 잔여 2건</td><td>동일 (v1 P0~P1) — 모든 경로의 공통 기반</td></tr>
+<tr><td><b>P0</b> 기계 표면</td><td><code>structureKits</code>/<code>grammarRules</code> 스키마 + castleKit을 해석기로 전환(정본 킷=시드) + 위저드 잔여 2건 + <b>썸네일 렌더 서비스</b>(기존 show_tiles/render_group_sample/preview_house 배선 통합 — §④의 기반)</td><td>동일 (v1 P0~P1) + 렌더 서비스 — 모든 경로의 공통 기반</td></tr>
 <tr><td><b>P1</b> 채팅 경로</td><td>AI의 킷/규칙 수정 도구(propose 계열) + 소프트 컨펌 + 전/후 렌더 동봉 강제</td><td><b>앞당김</b> — 편집기 없이도 즉시 전 기능 개방. vocab 승인 UX 재사용이라 최저 비용</td></tr>
 <tr><td><b>P2</b> 시트 자동 인식</td><td>임포트 시 규약 스캔(3×4/애니 스트립) → 자동 그룹 등록, 위저드는 폴백으로</td><td>신규 — v1에는 없던 "설정 0" 기둥</td></tr>
 <tr><td><b>P3</b> 조용한 제안</td><td>편집 스트림 패턴 탐지(로컬·결정적) + 제안 예절 5칙 + 다이얼 1개</td><td>v1 캔버스 학습 루프의 재해석 — 버튼·캔버스·체크리스트 제거</td></tr>
