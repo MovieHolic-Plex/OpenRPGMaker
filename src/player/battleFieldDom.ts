@@ -34,25 +34,25 @@ interface SkinBattlerPlacement {
 
 const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 정면 상단(좌측 플레이존), 선두 1마리만.
-  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.1, enemy: (i) => ({ x: 150 - i * 40, y: 48 }), party: (i) => ({ x: 78 + i * 36, y: 128 }) },
+  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 150 - i * 40, y: 84 }), party: (i) => ({ x: 78 + i * 36, y: 138 }) },
   // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
-  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 40, y: 60 + i * 28 }), party: (i) => ({ x: 250, y: 50 + i * 27 }) },
+  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 40, y: 60 + i * 28 }), party: (i) => ({ x: 250 - (i % 2) * 16, y: 50 + i * 27 }) },
   // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.
   rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 82 }), party: () => ({ x: 160, y: 150 }) },
   // 옥토패스 HD-2D: 적 좌측, 아군 뒷모습 우측(오버숄더).
-  octopath: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 248, y: 50 + i * 27 }) },
+  octopath: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 248 - (i % 2) * 16, y: 50 + i * 27 }) },
   // 크로노 액티브: 대각 배치 — 아군 좌하 클러스터, 적 우상, 아군 정면.
   chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 220 - i * 38, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
   // 브레이블리: 사이드뷰, 아군 뒷모습 우측, 회화풍.
-  bravely: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 38, y: 60 + i * 28 }), party: (i) => ({ x: 248, y: 50 + i * 27 }) },
+  bravely: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 38, y: 60 + i * 28 }), party: (i) => ({ x: 248 - (i % 2) * 16, y: 50 + i * 27 }) },
   // 드퀘 1인칭: 아군 없음, 적 중앙 정면.
   dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 54, y: 78 }), party: () => ({ x: 160, y: 150 }) },
   // FF 정통 사이드뷰: 적 좌측, 아군 정면 우측 세로열.
-  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 252, y: 50 + i * 27 }) },
+  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 252 - (i % 2) * 16, y: 50 + i * 27 }) },
   // 마더 1인칭: 아군 없음, 적 정면 중앙.
   mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 46, y: 74 }), party: () => ({ x: 160, y: 150 }) },
   // 골든선 저앵글: 카메라 파티 뒤 → 아군 뒷모습 우측하단, 적 좌측.
-  goldensun: { partyFacing: "back", partyScale: 1.3, enemy: (i) => ({ x: 74 + (i % 2) * 36, y: 62 + i * 26 }), party: (i) => ({ x: 244, y: 62 + i * 27 }) },
+  goldensun: { partyFacing: "back", partyScale: 1.3, enemy: (i) => ({ x: 74 + (i % 2) * 36, y: 62 + i * 26 }), party: (i) => ({ x: 244 - (i % 2) * 16, y: 62 + i * 27 }) },
 };
 
 function skinPlacement(): SkinBattlerPlacement {
