@@ -1,0 +1,73 @@
+/* src/styles/runtime/battle-skins/_pokemon.css
+   frontview — 적은 필드 중앙(좌측 치우침), 파티 박스는 우하단 컴팩트 도킹.
+   QA r1: 파티 패널이 필드 우상단을 덮어 적 스프라이트·HP 박스를 가리고
+   클릭을 차단하던 문제(enemyPointerBlocked)를 해소. */
+.battle-scene[data-battle-skin="pokemon"] {
+  --battle-window-bg: #f8f8f8;
+  --battle-window-edge: #4858a0;
+  --battle-text: #282828;
+  --battle-accent: #f04030;
+  --rm2k3-battle-window-light: #f8f8f8;
+  --rm2k3-battle-text: #282828;
+  background: #98d0d8;
+}
+
+/* 포켓몬 문법: 내 몬스터 뒷모습(선두 1)은 JS placement가 좌하단에 세운다. 적 위치도 JS(우상). */
+
+/* QA r1(layout, 최우선): 파티 상태 박스를 우하단(HUD 바로 위)에 도킹하고
+   높이를 제한 — 적 영역·적 정보 박스를 절대 덮지 않는다.
+   첫 행이 패널 위로 잘리던 문제도 bottom 고정 + max-height + 스크롤로 해소. */
+.battle-scene[data-battle-skin="pokemon"] .battle-party {
+  position: absolute !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 1 / -1 !important;
+  top: auto !important;
+  left: auto !important;
+  right: 4px !important;
+  bottom: calc(var(--battle-hud-height) + 7px) !important;
+  width: min(46%, 168px) !important;
+  height: auto !important;
+  max-height: 46% !important;
+  overflow-y: auto !important;
+  z-index: 6 !important;
+  padding: 3px 7px 4px !important;
+  background: linear-gradient(180deg, #fdfdf4 0%, #edeadb 100%);
+  border: 2px solid #45443c;
+  border-image: none;
+  border-radius: 8px 2px 8px 8px;
+  color: #282828;
+}
+
+/* 파티 행 컴팩트화 — 4인 파티가 max-height 안에 들어가도록. */
+.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-status {
+  gap: 0 !important;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-name {
+  font-size: 7px !important;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-actor-mp {
+  font-size: 6.5px !important;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-party .battle-stat-bar {
+  height: 4px !important;
+  margin-top: 0 !important;
+}
+
+/* QA r1(readability): 메시지 창 한 줄 말줄임 → 줄바꿈 허용. */
+.battle-scene[data-battle-skin="pokemon"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="pokemon"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.3;
+}

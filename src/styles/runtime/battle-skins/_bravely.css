@@ -1,0 +1,97 @@
+/* src/styles/runtime/battle-skins/_bravely.css
+   sideview — 따뜻한 양피지 HUD + 얇은 갈색 프레임 + 다크브라운 텍스트.
+   QA r1: 검정 파티 패널 + 파란 창의 미완성 혼합 → 하단 패널 전체를
+   하나의 양피지 테마로 통일. */
+.battle-scene[data-battle-skin="bravely"] {
+  --battle-window-bg: #f3e6c9;
+  --battle-window-edge: #8a6f4d;
+  --battle-text: #4a3826;
+  --battle-accent: #a2691e;
+  --rm2k3-battle-text: #4a3826;
+  --rm2k3-battle-muted: #7a6448;
+  background: #241a10;
+  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
+}
+
+/* QA r1(fidelity/fun): 양피지 필 + 1px 얇은 프레임 — 하단 4패널 공통. */
+.battle-scene[data-battle-skin="bravely"] .battle-party,
+.battle-scene[data-battle-skin="bravely"] .battle-command-panel,
+.battle-scene[data-battle-skin="bravely"] .battle-message-window,
+.battle-scene[data-battle-skin="bravely"] .battle-enemy-list-panel {
+  background: linear-gradient(180deg, #f6ecd4, #ecdcba);
+  border: 1px solid #8a6f4d;
+  border-image: none;
+  border-radius: 4px;
+  color: #4a3826;
+  text-shadow: none;
+}
+
+/* 밝은 양피지 위에서는 검정 그림자·흰 텍스트가 모두 깨진다 — 다크브라운으로. */
+.battle-scene[data-battle-skin="bravely"] .battle-command,
+.battle-scene[data-battle-skin="bravely"] .battle-command-text strong,
+.battle-scene[data-battle-skin="bravely"] .battle-command-text small,
+.battle-scene[data-battle-skin="bravely"] .battle-message-line,
+.battle-scene[data-battle-skin="bravely"] .battle-message-cursor,
+.battle-scene[data-battle-skin="bravely"] .battle-active-actor-card h3,
+.battle-scene[data-battle-skin="bravely"] .battle-actor-name,
+.battle-scene[data-battle-skin="bravely"] .battle-actor-state,
+.battle-scene[data-battle-skin="bravely"] .battle-actor-hp,
+.battle-scene[data-battle-skin="bravely"] .battle-actor-mp,
+.battle-scene[data-battle-skin="bravely"] .battle-atb-label {
+  color: #4a3826 !important;
+  text-shadow: none !important;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-target-prompt {
+  color: #a2691e;
+  text-shadow: none;
+  border-bottom-color: #c9b68c;
+}
+
+/* QA r2(readability): 비선택 커맨드 행에 남아 있던 남색 배경(battle.css의
+   .battle-command 네이비 그라데이션) 제거 — 모든 행을 양피지 + 다크브라운으로.
+   선택 행은 아래 규칙(#fff6df)이 더 높은 특이도로 계속 이긴다. */
+.battle-scene[data-battle-skin="bravely"] .battle-command {
+  background: #f3e6c9;
+  border: 1px solid #8a6f4d;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-command:hover,
+.battle-scene[data-battle-skin="bravely"] .battle-command:focus-visible,
+.battle-scene[data-battle-skin="bravely"] .battle-command.battle-target-selected,
+.battle-scene[data-battle-skin="bravely"] .battle-command-menu .battle-command:first-of-type {
+  background: #fff6df;
+  border-color: #8a6f4d;
+  color: #241a10 !important;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
+.battle-scene[data-battle-skin="bravely"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-actor-status .battle-actor-vitals {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="bravely"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="bravely"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
+}

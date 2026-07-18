@@ -21,6 +21,7 @@
 @import "./editor/responsive-a.css";
 @import "./editor/inline-assist.css";
 @import "./runtime/battle.css";
+@import "./runtime/battle-skins/index.css";
 @import "./runtime/commerce.css";
 @import "./runtime/title.css";
 @import "./runtime/playLoading.css";

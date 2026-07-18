@@ -78,8 +78,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     battleBgmResourceId: cleanOptionalId(system.battleBgmResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
-    // 기본(classic)은 저장하지 않고, 명시적 pokemon 선택만 보존한다.
-    ...(system.battleUiStyle === "pokemon" ? { battleUiStyle: "pokemon" as const } : {}),
+    // 기본(rm2003/classic)은 저장하지 않고, 그 외 스킨 선택만 보존한다.
+    ...(system.battleUiStyle && system.battleUiStyle !== "classic" && system.battleUiStyle !== "rm2003"
+      ? { battleUiStyle: system.battleUiStyle }
+      : {}),
     // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
     ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),

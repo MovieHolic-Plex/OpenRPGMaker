@@ -1,0 +1,16 @@
+/* src/styles/runtime/battle-skins/index.css
+   Per-skin battle overrides. Imported right after runtime/battle.css so plain
+   (unlayered) rules here win ties against battle.css by source order.
+   NOTE: battle.css is unlayered — do NOT wrap these partials in `@layer`,
+   or every override would lose to battle.css (unlayered beats layered). */
+@import "./_pokemon.css";
+@import "./_rm2003.css";
+@import "./_rm2000.css";
+@import "./_octopath.css";
+@import "./_chrono.css";
+@import "./_bravely.css";
+@import "./_dragonquest.css";
+@import "./_ff.css";
+@import "./_mother.css";
+@import "./_goldensun.css";
+@import "./_battlers.css";

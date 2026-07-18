@@ -1,0 +1,88 @@
+/* src/styles/runtime/battle-skins/_dragonquest.css
+   firstperson — 아군 스프라이트 없음, 단일 적 중앙, 검정 필드 + 흰 창 테두리.
+   QA r1: 밝은 하늘 백드롭을 흑화(적만 조명 유지) + 커맨드 패널까지 흑백 통일. */
+.battle-scene[data-battle-skin="dragonquest"] {
+  --battle-window-bg: #000814;
+  --battle-window-edge: #f8f8f8;
+  --battle-text: #f8f8f8;
+  --battle-accent: #f8d030;
+  --rm2k3-battle-text: #f8f8f8;
+  background: #000814;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-actor-group {
+  display: none;
+}
+
+/* QA r1(fidelity): 1인칭 DQ — 백드롭을 거의 검정으로.
+   적 스프라이트는 별도 요소라 밝기가 유지된다. */
+/* backdrop art (dragonquest-backdrop.png) is already dark; no filter mask. */
+
+/* 단일 적 중앙 고정(result 승리 연출 좌표는 유지). */
+.battle-scene[data-battle-skin="dragonquest"]:not([data-battle-director-step="result"]) .battle-enemy {
+  left: 50% !important;
+  top: 50% !important;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-party,
+.battle-scene[data-battle-skin="dragonquest"] .battle-command-panel,
+.battle-scene[data-battle-skin="dragonquest"] .battle-enemy-list-panel,
+.battle-scene[data-battle-skin="dragonquest"] .battle-message-window {
+  background: #000;
+  border: 2px solid #f8f8f8;
+  border-image: none;
+  border-radius: 6px;
+  color: #f8f8f8;
+}
+
+/* QA r1(fidelity): 커맨드 행도 흑백 — 파란 RM 크롬/오렌지 하이라이트 제거. */
+.battle-scene[data-battle-skin="dragonquest"] .battle-command {
+  background: transparent;
+  color: #f8f8f8;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-command:hover,
+.battle-scene[data-battle-skin="dragonquest"] .battle-command:focus-visible,
+.battle-scene[data-battle-skin="dragonquest"] .battle-command-menu .battle-command:first-of-type {
+  background: transparent;
+  border-color: #f8f8f8;
+  color: #fff;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
+.battle-scene[data-battle-skin="dragonquest"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-actor-status .battle-actor-vitals {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="dragonquest"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+/* QA r2(layout): 필드 하단 경계에 절반 잘려 보이던 적 HP 수치 행(.battle-enemy-hp-text)
+   — 게이지는 유지하고 수치만 비표시. DQ 원작은 적 HP 수치를 노출하지 않는다.
+   (리뷰어가 승인한 적 중앙 배치를 건드리지 않는 최소 수정) */
+.battle-scene[data-battle-skin="dragonquest"] .battle-enemy-hp-text {
+  display: none;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="dragonquest"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
+}

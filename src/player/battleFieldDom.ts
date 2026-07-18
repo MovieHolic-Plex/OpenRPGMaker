@@ -1,6 +1,8 @@
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
+import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
+import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
 import { store } from "@/project/store";
 
@@ -12,9 +14,65 @@ export function findBattlerNode(scope: HTMLElement | Document, targetId: string)
     ?? scope.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${targetId}"]`);
 }
 
-function pokemonUiActive(): boolean {
-  return store.getCurrent().system.battleUiStyle === "pokemon";
+/** 현재 프로젝트 설정에서 활성 전투 스킨을 해석한다. */
+function activeSkin(): BattleSkin {
+  return getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
 }
+
+/** 스킨별 배틀러 배치 문법: 뷰(사이드/프론트/1인칭/액티브)에 따라
+ *  적·아군의 좌표(x 0-320, y 0-160), 아군 표시 방식(정면/후면/숨김)을 정한다. */
+type PartyFacing = "front" | "back" | "hidden";
+interface SkinBattlerPlacement {
+  readonly enemy: (i: number, n: number) => { x: number; y: number };
+  readonly party: (i: number, n: number) => { x: number; y: number };
+  readonly partyFacing: PartyFacing;
+  /** 편성 스프라이트 최대 표시 수(포켓몬은 선두 1). */
+  readonly partyMax?: number;
+  /** 컬럼 밀집 시 겹침 방지용 스프라이트 배율(기본 1.65). */
+  readonly partyScale?: number;
+}
+
+const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
+  // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 정면 상단(좌측 플레이존), 선두 1마리만.
+  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 150 - i * 40, y: 84 }), party: (i) => ({ x: 78 + i * 36, y: 138 }) },
+  // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
+  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 40, y: 60 + i * 28 }), party: (i) => ({ x: 250 - (i % 2) * 16, y: 50 + i * 27 }) },
+  // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.
+  rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 82 }), party: () => ({ x: 160, y: 150 }) },
+  // 옥토패스 HD-2D: 적 좌측, 아군 뒷모습 우측(오버숄더).
+  octopath: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 248 - (i % 2) * 16, y: 50 + i * 27 }) },
+  // 크로노 액티브: 대각 배치 — 아군 좌하 클러스터, 적 우상, 아군 정면.
+  chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 220 - i * 38, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
+  // 브레이블리: 사이드뷰, 아군 뒷모습 우측, 회화풍.
+  bravely: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 38, y: 60 + i * 28 }), party: (i) => ({ x: 248 - (i % 2) * 16, y: 50 + i * 27 }) },
+  // 드퀘 1인칭: 아군 없음, 적 중앙 정면.
+  dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 54, y: 78 }), party: () => ({ x: 160, y: 150 }) },
+  // FF 정통 사이드뷰: 적 좌측, 아군 정면 우측 세로열.
+  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 252 - (i % 2) * 16, y: 50 + i * 27 }) },
+  // 마더 1인칭: 아군 없음, 적 정면 중앙.
+  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 46, y: 74 }), party: () => ({ x: 160, y: 150 }) },
+  // 골든선 저앵글: 카메라 파티 뒤 → 아군 뒷모습 우측하단, 적 좌측.
+  goldensun: { partyFacing: "back", partyScale: 1.3, enemy: (i) => ({ x: 74 + (i % 2) * 36, y: 62 + i * 26 }), party: (i) => ({ x: 244 - (i % 2) * 16, y: 62 + i * 27 }) },
+};
+
+function skinPlacement(): SkinBattlerPlacement {
+  return BATTLER_PLACEMENTS[activeSkin().id];
+}
+
+/** 스킨 전용 적 스프라이트(bskin-enemy-<id>)를 우선 사용. 없으면 null. */
+function skinEnemySpriteUrl(): string | null {
+  return resolveAssetResourceUrl(`bskin-enemy-${activeSkin().id}`, { project: store.getCurrent() });
+}
+
+/** 스킨 파티 스프라이트(정면/후면). 포켓몬은 몬스터 뒷모습을 쓴다. */
+function skinPartySpriteUrl(index: number, facing: PartyFacing): string | null {
+  if (facing === "hidden") return null;
+  const id = activeSkin().id === "pokemon"
+    ? "bskin-ally-creature-back"
+    : `bskin-party-${index % 2 === 0 ? "warrior" : "mage"}-${facing}`;
+  return resolveAssetResourceUrl(id, { project: store.getCurrent() });
+}
+
 
 export function battleField(snapshot: BattleSnapshot): HTMLElement {
   const field = document.createElement("div");
@@ -60,12 +118,19 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
   }
 }
 
+/** 활성 스킨이 전용 배경을 정의하면 그것이 전투장(battlefield)을 결정한다.
+ *  스킨 배경이 없을 때만 troop/system 이 지정한 배경으로 폴백한다. */
+function effectiveBackdropId(resourceId: string | undefined): string | undefined {
+  return activeSkin().defaultBackdropResourceId ?? resourceId;
+}
+
 function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void {
   const backdrop = field.querySelector<HTMLElement>("[data-testid='battle-backdrop']");
   if (!backdrop) return;
-  if (resourceId && backdrop.dataset.backdropResourceId !== resourceId) {
-    backdrop.dataset.backdropResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const effectiveId = effectiveBackdropId(resourceId);
+  if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
+    backdrop.dataset.backdropResourceId = effectiveId;
+    const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
     backdrop.style.backgroundImage = url
       ? `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("${url}")`
       : "";
@@ -166,13 +231,14 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
   backdrop.dataset.testid = "battle-backdrop";
-  // Prefer troop/system authored backdrop. When absent, use the forest reference
-  // so battles still read as a JRPG scene instead of a flat procedural gradient.
-  const resolvedId = resourceId || "generated-battle-reference-forest";
+  // 활성 스킨의 전용 배경이 전투장을 결정한다. 없으면 troop/system 배경,
+  // 그것도 없으면 forest 레퍼런스로 폴백한다.
+  const effectiveId = effectiveBackdropId(resourceId);
+  const resolvedId = effectiveId || "generated-battle-reference-forest";
   const url =
     resolveAssetResourceUrl(resolvedId, { project: store.getCurrent() })
-    ?? (!resourceId ? "/generated/battle-reference-forest.png" : undefined);
-  if (resourceId) backdrop.dataset.backdropResourceId = resourceId;
+    ?? (!effectiveId ? "/generated/battle-reference-forest.png" : undefined);
+  if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.title = "전투 배경";
   if (url) {
@@ -201,15 +267,10 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   const enemyNode = document.createElement("button");
   enemyNode.type = "button";
   enemyNode.className = "battle-enemy";
-  if (pokemonUiActive()) {
-    // 포켓몬 문법: 상대는 우상단 존(카메라에서 멀게, 크게). 다수면 왼쪽으로 벌린다.
-    positionBattleNode(enemyNode, 248 - index * 48, 52 + (index % 2) * 14);
-  } else {
-    // RM2k3 side-view: enemies on the LEFT facing the party.
-    const x = enemy.battleX ?? 84 + (index % 2) * 44;
-    const y = enemy.battleY ?? 52 + index * 36;
-    positionBattleNode(enemyNode, x, y);
-  }
+  // 스킨 뷰 문법에 따라 적 위치를 결정한다(사이드=좌측, 프론트/1인칭=중앙, 포켓몬=우상).
+  const enemyCount = snapshot.enemies.length;
+  const ep = skinPlacement().enemy(index, enemyCount);
+  positionBattleNode(enemyNode, ep.x, ep.y);
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
   enemyNode.dataset.facing = "right";
@@ -220,17 +281,17 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (snapshot.targetSelection?.selectedEnemyId === enemy.id) {
     enemyNode.classList.add("battle-target-selected");
   }
+  // 스킨 전용 적 스프라이트를 우선(스킨마다 다른 몬스터). 없으면 troop 몬스터 그래픽.
   const resourceId = monsterResourceId(enemy.recordId);
-  if (resourceId) {
-    enemyNode.dataset.monsterResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-    if (url) {
-      const image = document.createElement("img");
-      image.className = "battle-enemy-image";
-      image.alt = `${enemy.name} 몬스터`;
-      image.src = url;
-      enemyNode.append(image);
-    }
+  const skinUrl = skinEnemySpriteUrl();
+  const url = skinUrl ?? (resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null);
+  if (resourceId) enemyNode.dataset.monsterResourceId = resourceId;
+  if (url) {
+    const image = document.createElement("img");
+    image.className = "battle-enemy-image";
+    image.alt = `${enemy.name} 몬스터`;
+    image.src = url;
+    enemyNode.append(image);
   }
   applyBattlerPose(enemyNode, enemy.pose);
   const name = document.createElement("span");
@@ -267,7 +328,17 @@ function enemyHpHud(enemy: BattleBattlerSnapshot): HTMLElement {
 function actorSpriteGroup(actors: readonly BattleBattlerSnapshot[]): HTMLElement {
   const group = document.createElement("div");
   group.className = "battle-actor-group";
-  for (const [index, actor] of actors.entries()) {
+  group.dataset.testid = "battle-actor-sprites";
+  const place = skinPlacement();
+  group.dataset.partyFacing = place.partyFacing;
+  // 1인칭/프론트뷰 스킨(드퀘·마더·rm2000)은 아군 스프라이트를 그리지 않는다.
+  if (place.partyFacing === "hidden") {
+    group.dataset.hidden = "true";
+    return group;
+  }
+  // 포켓몬은 선두 1마리(몬스터 뒷모습)만 필드에 세운다.
+  const shown = place.partyMax ? actors.slice(0, place.partyMax) : actors;
+  for (const [index, actor] of shown.entries()) {
     group.append(actorNode(actor, index));
   }
   return group;
@@ -286,19 +357,31 @@ function partyStatusGroup(actors: readonly BattleBattlerSnapshot[], battleFlow: 
 function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
   const node = document.createElement("div");
   node.className = "battle-actor";
-  if (pokemonUiActive()) {
-    // 포켓몬 문법: 아군은 좌하단(카메라에 가깝게 더 크게). 다수면 오른쪽으로 벌린다.
-    positionBattleNode(node, 78 + index * 44, 138 - (index % 2) * 10);
-  } else {
-    // RM2k3 side-view: party stacks on the RIGHT facing enemies.
-    const x = actor.battleX ?? 252;
-    const y = actor.battleY ?? 70 + index * 36;
-    positionBattleNode(node, x, y);
-  }
+  const place = skinPlacement();
+  const ap = place.party(index, 4);
+  positionBattleNode(node, ap.x, ap.y);
+  if (place.partyScale) node.style.setProperty("--battle-actor-scale", String(place.partyScale));
+  node.dataset.partyFacing = place.partyFacing;
   node.dataset.testid = `battle-actor-${actor.recordId}`;
   node.dataset.recordId = actor.recordId;
   node.dataset.facing = "left";
   node.setAttribute("aria-label", actor.name);
+  // 스킨 전용 파티 스프라이트(정면/후면)를 우선 사용한다.
+  const skinSprite = skinPartySpriteUrl(index, place.partyFacing);
+  if (skinSprite) {
+    const image = document.createElement("img");
+    image.className = "battle-actor-image battle-skin-actor-image";
+    image.alt = actor.name;
+    image.src = skinSprite;
+    node.append(image);
+    applyBattlerPose(node, actor.pose);
+    node.append(statusIconCluster(actor));
+    if (actor.defeated) node.classList.add("defeated");
+    const skinPlatform = document.createElement("span");
+    skinPlatform.className = "battle-actor-platform";
+    node.append(skinPlatform);
+    return node;
+  }
   // 파티 몬스터가 필드에 나선 경우: 종족 그래픽을 아군측(back) 스프라이트로 렌더.
   // 팩엔 정면 시트만 있어 CSS(.battle-monster-back)로 좌우반전+확대해 뒷모습을 근사한다.
   const monsterResource = actor.speciesId ? monsterSpeciesResourceId(actor.speciesId) : undefined;

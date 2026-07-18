@@ -5,8 +5,10 @@ import {
   FACESET_ROWS,
 } from "@/assets/easyrpgRtp";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { BATTLE_SKINS, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import {
   emptyToUndefined,
+  field,
   numberField,
   selectField,
   selectLiteral,
@@ -22,14 +24,14 @@ import {
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { ActorRecord, BattleFlow, BattleUiStyle, Project, TitleScreenSettings, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorRecord, BattleFlow, Project, TitleScreenSettings, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { listTitleMenuOptions } from "@/player/titleScreen";
 
 const START_PARTY_SLOTS = 4;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
-const BATTLE_UI_STYLE_OPTIONS = ["classic", "pokemon"] as const satisfies readonly BattleUiStyle[];
+const BATTLE_UI_STYLE_OPTIONS = listBattleSkinIds();
 const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
 
 export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
@@ -118,18 +120,20 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
           });
         },
       ),
-      selectLiteral(
-        "전투 UI 스타일",
-        "db-field-system-battle-ui-style",
-        project.system.battleUiStyle === "pokemon" ? "pokemon" : "classic",
-        BATTLE_UI_STYLE_OPTIONS,
-        (value) => {
+      field("전투 UI 스타일", (() => {
+        // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
+        const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
+        for (const id of BATTLE_UI_STYLE_OPTIONS) {
+          select.append(el("option", { text: BATTLE_SKINS[id].label, attrs: { value: id } }));
+        }
+        select.value = resolveSkinId(project.system.battleUiStyle);
+        select.addEventListener("change", () => {
           updateSystem((draft) => {
-            if (value === "pokemon") draft.system.battleUiStyle = "pokemon";
-            else delete draft.system.battleUiStyle;
+            draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
           });
-        },
-      ),
+        });
+        return select;
+      })()),
       numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
         updateSystem((draft) => {
           draft.system.activeSlots = optionalPositiveInteger(value);

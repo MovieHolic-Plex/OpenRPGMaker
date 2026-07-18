@@ -1,0 +1,67 @@
+/* src/styles/runtime/battle-skins/_ff.css
+   sideview — 아군 우측 '한 줄 세로 열', FF 흰 베벨 + 파랑 그라데 창.
+   QA r1: rm2003과 픽셀 동일하던 문제 — 아군 지그재그를 세로 1열로 정렬하고
+   창을 FF 화이트-베벨-온-블루로 교체. acting 행 margin 시프트로 이름 첫 글자가
+   잘리던 문제도 파티 행에서는 시프트 제거. */
+.battle-scene[data-battle-skin="ff"] {
+  --battle-window-bg: #16279a;
+  --battle-window-edge: #f0f0f0;
+  --battle-text: #f4f8ff;
+  --battle-accent: #48c0f0;
+  --rm2k3-battle-text: #f4f8ff;
+  background: #101838;
+}
+
+/* 아군 우측 세로열은 JS placement가 좌표를 지정한다(nth-child !important 제거). */
+
+/* QA r1(fidelity): FF 화이트 베벨 + 파랑 그라데 창. */
+.battle-scene[data-battle-skin="ff"] .battle-party,
+.battle-scene[data-battle-skin="ff"] .battle-command-panel,
+.battle-scene[data-battle-skin="ff"] .battle-message-window,
+.battle-scene[data-battle-skin="ff"] .battle-enemy-list-panel {
+  background: linear-gradient(180deg, #2a4ad8, #16279a);
+  border: 2px solid #f0f0f0;
+  border-image: none;
+  border-radius: 5px;
+}
+
+/* QA r1(layout): acting 행의 margin-left 시프트가 파티 행 이름 첫 글자를
+   패널 왼쪽 밖으로 밀던 문제 — 파티 행에서는 스텝 애니메이션 제거. */
+.battle-scene[data-battle-skin="ff"] .battle-party .battle-acting {
+  animation: none;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-party {
+  padding-left: 4px !important;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
+.battle-scene[data-battle-skin="ff"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-actor-status .battle-actor-vitals {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="ff"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="ff"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
+}

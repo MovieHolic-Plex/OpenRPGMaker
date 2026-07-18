@@ -1,0 +1,83 @@
+/* src/styles/runtime/battle-skins/_mother.css
+   frontview — 아군 스프라이트 숨김, 사이키델릭 애니메이션 배경 + 검정 라운드 흰 테두리 창.
+   QA r1: 사진풍 구름 백드롭이 사이키델릭을 깨던 문제(인라인 background-image 무력화)
+   + 스톡 파란 창 → Mother식 흑백 라운드 박스. */
+.battle-scene[data-battle-skin="mother"] {
+  --battle-window-bg: #000;
+  --battle-window-edge: #fff;
+  --battle-text: #fff;
+  --battle-accent: #ff4fd8;
+  --rm2k3-battle-text: #fff;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #ff4fd8,
+    #4f8cff,
+    #4fffa0,
+    #ffe14f,
+    #ff4fd8
+  );
+  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-actor-group[data-hidden="true"] {
+  display: none;
+}
+
+/* backdrop art(mother-backdrop.png)가 사이키델릭 씬을 담당한다.
+   그 위에 색상 드리프트만 애니메이트해 살아있는 느낌을 준다. */
+.battle-scene[data-battle-skin="mother"] .battle-backdrop {
+  animation: mother-swirl 16s linear infinite;
+}
+
+@keyframes mother-swirl {
+  from {
+    filter: hue-rotate(0deg) saturate(2.2) contrast(1.35);
+  }
+
+  to {
+    filter: hue-rotate(360deg) saturate(2.2) contrast(1.35);
+  }
+}
+
+/* QA r1(fidelity): Mother식 검정 라운드 + 흰 테두리 창. */
+.battle-scene[data-battle-skin="mother"] .battle-command-panel,
+.battle-scene[data-battle-skin="mother"] .battle-message-window,
+.battle-scene[data-battle-skin="mother"] .battle-enemy-list-panel,
+.battle-scene[data-battle-skin="mother"] .battle-party {
+  background: #000;
+  border: 2px solid #fff;
+  border-image: none;
+  border-radius: 9px;
+  color: #fff;
+}
+
+/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
+.battle-scene[data-battle-skin="mother"] .battle-actor-status {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-actor-status .battle-actor-vitals {
+  display: flex;
+  gap: 3px;
+  justify-content: flex-end;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-skin="mother"] .battle-actor-status .battle-actor-mp {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-message-window {
+  align-content: start;
+}
+
+.battle-scene[data-battle-skin="mother"] .battle-message-line {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.35;
+}
