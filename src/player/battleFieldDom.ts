@@ -67,12 +67,19 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
   }
 }
 
+/** 활성 스킨이 전용 배경을 정의하면 그것이 전투장(battlefield)을 결정한다.
+ *  스킨 배경이 없을 때만 troop/system 이 지정한 배경으로 폴백한다. */
+function effectiveBackdropId(resourceId: string | undefined): string | undefined {
+  return activeSkin().defaultBackdropResourceId ?? resourceId;
+}
+
 function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void {
   const backdrop = field.querySelector<HTMLElement>("[data-testid='battle-backdrop']");
   if (!backdrop) return;
-  if (resourceId && backdrop.dataset.backdropResourceId !== resourceId) {
-    backdrop.dataset.backdropResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const effectiveId = effectiveBackdropId(resourceId);
+  if (effectiveId && backdrop.dataset.backdropResourceId !== effectiveId) {
+    backdrop.dataset.backdropResourceId = effectiveId;
+    const url = resolveAssetResourceUrl(effectiveId, { project: store.getCurrent() });
     backdrop.style.backgroundImage = url
       ? `linear-gradient(rgba(5, 10, 24, 0.08), rgba(2, 4, 12, 0.22)), url("${url}")`
       : "";
@@ -173,13 +180,14 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   const backdrop = document.createElement("div");
   backdrop.className = "battle-backdrop";
   backdrop.dataset.testid = "battle-backdrop";
-  // Prefer troop/system authored backdrop. When absent, use the forest reference
-  // so battles still read as a JRPG scene instead of a flat procedural gradient.
-  const resolvedId = resourceId || "generated-battle-reference-forest";
+  // 활성 스킨의 전용 배경이 전투장을 결정한다. 없으면 troop/system 배경,
+  // 그것도 없으면 forest 레퍼런스로 폴백한다.
+  const effectiveId = effectiveBackdropId(resourceId);
+  const resolvedId = effectiveId || "generated-battle-reference-forest";
   const url =
     resolveAssetResourceUrl(resolvedId, { project: store.getCurrent() })
-    ?? (!resourceId ? "/generated/battle-reference-forest.png" : undefined);
-  if (resourceId) backdrop.dataset.backdropResourceId = resourceId;
+    ?? (!effectiveId ? "/generated/battle-reference-forest.png" : undefined);
+  if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.title = "전투 배경";
   if (url) {

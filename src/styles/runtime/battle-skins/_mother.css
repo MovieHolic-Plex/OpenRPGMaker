@@ -23,23 +23,10 @@
   display: none;
 }
 
-/* QA r1(fidelity): 런타임이 인라인 background-image로 넣는 사진풍 백드롭을
-   !important로 눌러 순수 추상 패턴만 남긴다. */
+/* backdrop art(mother-backdrop.png)가 사이키델릭 씬을 담당한다.
+   그 위에 색상 드리프트만 애니메이트해 살아있는 느낌을 준다. */
 .battle-scene[data-battle-skin="mother"] .battle-backdrop {
   animation: mother-swirl 16s linear infinite;
-  background: conic-gradient(
-    from 180deg at 50% 50%,
-    #ff4fd8,
-    #4f8cff,
-    #4fffa0,
-    #ffe14f,
-    #ff4fd8
-  ) !important;
-}
-
-/* 백드롭 위 지형 그라데 오버레이도 추상 패턴을 가리므로 제거. */
-.battle-scene[data-battle-skin="mother"] .battle-backdrop::after {
-  background: none;
 }
 
 @keyframes mother-swirl {

@@ -12,9 +12,7 @@
 }
 
 /* QA r1(fun): 백드롭 자체를 어둡게 — 골드-온-다크 대비가 장면을 정의. */
-.battle-scene[data-battle-skin="octopath"] .battle-backdrop {
-  filter: brightness(0.55) saturate(0.85);
-}
+/* backdrop art (octopath-backdrop.png) is already moody/dark; no filter mask. */
 
 /* QA r1(fidelity): HD-2D 비네트 — 필드 가장자리를 짙게 감싼다.
    (pseudo-element 대신 inset box-shadow — 히트 플래시 ::after와 충돌하지 않음) */

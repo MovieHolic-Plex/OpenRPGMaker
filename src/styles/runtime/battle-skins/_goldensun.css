@@ -17,10 +17,7 @@
   overflow: hidden;
 }
 
-.battle-scene[data-battle-skin="goldensun"] .battle-backdrop {
-  transform: perspective(700px) rotateX(6deg) scale(1.12);
-  transform-origin: 50% 100%;
-}
+/* backdrop art (goldensun-backdrop.png) supplies the horizon; no perspective skew. */
 
 /* QA r1(fidelity): 커맨드·메시지·파티 전부 다크 앰버 + 골드 프레임. */
 .battle-scene[data-battle-skin="goldensun"] .battle-command-panel,
