@@ -1,0 +1,152 @@
+/* 보이지 않는 하네스 §③④ — 조용한 제안 카드 + 팔레트 "내 스탬프" 선반.
+ * 카드 규약: 그림 두 장(크롭 → 조립)이 주인공, 텍스트는 캡션. 표출은 컨트롤러가 관리. */
+
+.harness-suggestion-card {
+  position: fixed;
+  bottom: 72px;
+  left: calc(var(--editor-left-safe, 12px) + 18px);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: min(760px, calc(100vw - var(--editor-left-safe, 12px) - var(--ai-chat-side-width, 0px) - 64px));
+  padding: 12px 16px;
+  background: var(--bg-glass, rgba(24, 28, 40, 0.92));
+  border: 1px solid var(--accent-border, rgba(108, 121, 242, 0.55));
+  border-radius: 12px;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(6px);
+  animation: harness-suggestion-in 220ms ease-out;
+}
+
+@keyframes harness-suggestion-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.harness-suggestion-figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.harness-suggestion-figure-body {
+  background: var(--bg-inset, #0c0e14);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border-radius: 8px;
+  padding: 6px;
+  line-height: 0;
+}
+
+.harness-suggestion-canvas {
+  display: block;
+  height: 84px;
+  width: auto;
+  max-width: 300px;
+  image-rendering: pixelated;
+}
+
+.harness-suggestion-figure-caption {
+  font-size: 11px;
+  color: var(--text-3, #626b7d);
+}
+
+.harness-suggestion-arrow {
+  color: var(--text-3, #626b7d);
+  font-size: 16px;
+}
+
+.harness-suggestion-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 190px;
+}
+
+.harness-suggestion-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1, #e9ecf3);
+}
+
+.harness-suggestion-sub {
+  font-size: 11.5px;
+  color: var(--text-2, #9aa3b5);
+}
+
+.harness-suggestion-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.harness-suggestion-register {
+  background: var(--accent, #6c79f2);
+  color: var(--on-accent, #fff);
+  border: none;
+  border-radius: 14px;
+  padding: 4px 18px;
+  font-weight: 700;
+}
+
+.harness-suggestion-register:hover {
+  background: var(--accent-hover, #8590f6);
+}
+
+.harness-suggestion-ignore {
+  background: var(--control-bg, rgba(255, 255, 255, 0.045));
+  color: var(--text-2, #9aa3b5);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border-radius: 14px;
+  padding: 4px 14px;
+}
+
+/* ── 팔레트 "내 스탬프" 선반 ── */
+
+.structure-kit-shelf {
+  padding: 8px 10px;
+  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07));
+}
+
+.structure-kit-shelf-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2, #9aa3b5);
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+
+.structure-kit-shelf-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.structure-kit-cell {
+  padding: 4px;
+  background: var(--bg-inset, #0c0e14);
+  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.structure-kit-cell:hover {
+  border-color: var(--border-strong, rgba(255, 255, 255, 0.17));
+  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+.structure-kit-cell.active {
+  border-color: var(--accent, #6c79f2);
+  box-shadow: 0 0 0 1px var(--accent, #6c79f2);
+  background: var(--accent-muted, rgba(108, 121, 242, 0.17));
+}
+
+.structure-kit-icon {
+  display: block;
+  width: 72px;
+  height: auto;
+  image-rendering: pixelated;
+}

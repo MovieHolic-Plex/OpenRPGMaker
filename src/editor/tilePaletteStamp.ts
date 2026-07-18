@@ -13,6 +13,8 @@ export type PaletteStampCell = {
 export type PaletteStamp = {
   readonly cells: readonly PaletteStampCell[];
   readonly height: number;
+  /** 등록된 구조 킷("내 스탬프")에서 온 스탬프면 그 킷 id — 팔레트 선반 하이라이트용. */
+  readonly kitId?: string;
   readonly source: {
     readonly endTile: number;
     readonly startTile: number;

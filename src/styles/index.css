@@ -6,6 +6,7 @@
 @import "./editor/core.css";
 @import "./editor/palette-player.css";
 @import "./editor/tile-palette-clusters.css";
+@import "./editor/harness-suggestion.css";
 @import "./editor/event-editor-legacy.css";
 @import "./database/core.css";
 @import "./database/tabs-a.css";
