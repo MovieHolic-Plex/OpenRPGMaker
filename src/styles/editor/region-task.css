@@ -190,3 +190,68 @@
   cursor: default;
   opacity: 0.6;
 }
+
+/* 스탬프로 만들기 — 보조 동작 버튼(회색) + 인라인 입력필드(버튼 자리 전환) */
+.region-task-actions {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.region-task-stamp {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong, #6b7280);
+  border-radius: var(--radius-s);
+  color: var(--editor-text, #d1d5db);
+  cursor: pointer;
+  font: inherit;
+  padding: var(--space-2) var(--space-3);
+}
+.region-task-stamp:hover:not(:disabled) {
+  border-color: var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
+}
+.region-task-stamp:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.region-task-stamp.hidden {
+  display: none;
+}
+.region-task-stamp-editor {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+}
+.region-task-stamp-editor.hidden {
+  display: none;
+}
+.region-task-stamp-input {
+  background: var(--editor-input-bg, #1f2937);
+  border: 1px solid var(--accent, #4a9eff);
+  border-radius: var(--radius-s);
+  color: var(--editor-text, #d1d5db);
+  font: inherit;
+  min-width: 140px;
+  padding: var(--space-1) var(--space-2);
+}
+.region-task-stamp-input:focus {
+  outline: none;
+  border-color: var(--accent, #4a9eff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #4a9eff) 30%, transparent);
+}
+.region-task-stamp-confirm {
+  background: var(--accent, #4a9eff);
+  border: none;
+  border-radius: var(--radius-s);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  padding: var(--space-1) var(--space-3);
+}
+.region-task-stamp-cancel {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong, #6b7280);
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted, #9ca3af);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+}

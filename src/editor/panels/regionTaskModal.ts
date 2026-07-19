@@ -16,6 +16,13 @@ import {
   type RegionTaskResult,
 } from "@/editor/regionTask/runRegionTask";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
+import {
+  defaultStampName,
+  saveRegionAsStamp,
+  type SaveRegionAsStampArgs,
+  type SaveRegionAsStampResult,
+} from "@/editor/regionStampCreate";
+import { store } from "@/project/store";
 import type { GameMap, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -43,6 +50,10 @@ export interface RegionTaskModalOptions {
   readonly run?: RegionTaskRunner;
   /** 테스트 주입: 썸네일 렌더러(기본 renderRegionSnapshot 캔버스). */
   readonly renderSnapshot?: (project: Project, map: GameMap, region: RegionRect) => Promise<HTMLElement>;
+  /** 테스트 주입: 스탬프 저장 함수(기본 saveRegionAsStamp). */
+  readonly saveStamp?: (args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null;
+  /** 테스트 주입: 기본 이름용 project 조회(기본 store.getCurrent). */
+  readonly projectForStampName?: () => Project;
 }
 
 let modalRoot: HTMLElement | null = null;
@@ -170,11 +181,13 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
     runButton.disabled = false;
     textarea.disabled = false;
+    updateStampButtonState();
     schedulePopoverReposition();
   };
 
   const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
     activePending = pending;
+    updateStampButtonState();
     // 이 pending 전용 settle 감시 — 모달 버튼이 아니라 캔버스 인라인 툴바(✓/✗) 등 밖에서
     // settle 되어도(썸네일 await 도중 포함) 모달 UI(요약/버튼 재활성화)가 반영되도록 구독한다.
     let selfSettling = false;
@@ -305,6 +318,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
     runButton.disabled = true;
     textarea.disabled = true;
+    updateStampButtonState();
     setCopyEnabled(false);
     copyLogButton.textContent = "로그";
     lastLog = undefined;
@@ -343,9 +357,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     } finally {
       running = false;
       if (!activePending) {
-        dispatchRegionTaskStatus({ mapId: options.mapId, region, running: false });
         runButton.disabled = false;
         textarea.disabled = false;
+        updateStampButtonState();
       }
       schedulePopoverReposition();
     }
@@ -367,7 +381,103 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   });
 
-  const actions = el("div", { class: "region-task-actions", children: [runButton] });
+  // ── 스탬프로 만들기 (보조 동작) ──────────────────────────────────────────
+  // AI 실행/제안 대기 중에는 비활성화. 인라인 입력필드로 전환 후 Enter=저장, Esc=취소.
+  const saveStamp = options.saveStamp ?? saveRegionAsStamp;
+  const stampButton = el("button", {
+    class: "region-task-stamp",
+    text: "스탬프로 만들기",
+    attrs: { type: "button", title: "이 영역을 '내 스탬프'에 저장하고 페인트 브러시로 즉시 활성화" },
+    dataset: { testid: "region-task-stamp" },
+  }) as HTMLButtonElement;
+  const stampInput = el("input", {
+    class: "region-task-stamp-input",
+    attrs: { type: "text", placeholder: "스탬프 이름" },
+    dataset: { testid: "region-task-stamp-input" },
+  }) as HTMLInputElement;
+  const stampConfirm = el("button", {
+    class: "region-task-stamp-confirm",
+    text: "✓",
+    attrs: { type: "button", title: "저장 (Enter)" },
+    dataset: { testid: "region-task-stamp-confirm" },
+  }) as HTMLButtonElement;
+  const stampCancel = el("button", {
+    class: "region-task-stamp-cancel",
+    text: "✕",
+    attrs: { type: "button", title: "취소 (Esc)" },
+    dataset: { testid: "region-task-stamp-cancel" },
+  }) as HTMLButtonElement;
+  const stampEditor = el("div", {
+    class: "region-task-stamp-editor hidden",
+    dataset: { testid: "region-task-stamp-editor" },
+    children: [stampInput, stampConfirm, stampCancel],
+  });
+  // running/activePending 변화를 반영하기 위한 게이터 — execute()/settlePendingUi() 끝에서 호출.
+  const updateStampButtonState = (): void => {
+    const busy = running || activePending !== null;
+    stampButton.disabled = busy;
+    stampButton.title = busy
+      ? "AI 작업 중에는 스탬프를 만들 수 없습니다"
+      : "이 영역을 '내 스탬프'에 저장하고 페인트 브러시로 즉시 활성화";
+  };
+  updateStampButtonState();
+  const enterStampEditor = (): void => {
+    stampButton.classList.add("hidden");
+    stampEditor.classList.remove("hidden");
+    stampInput.value = stampEditorInitialName();
+    stampInput.focus();
+    stampInput.select?.();
+  };
+  const exitStampEditor = (): void => {
+    stampEditor.classList.add("hidden");
+    stampButton.classList.remove("hidden");
+    stampInput.value = "";
+  };
+  // 기본 이름: 현재 타일셋 기준 defaultStampName. 맵/타일셋 접근 불가시 폴백.
+  const stampEditorInitialName = (): string => {
+    const proj = options.projectForStampName?.() ?? store.getCurrent();
+    const map = proj?.maps?.[options.mapId];
+    const tileset = map ? proj?.tilesets?.[map.tilesetId] : undefined;
+    return defaultStampName(tileset, region);
+  };
+  const commitStamp = (): void => {
+    const result = saveStamp({ mapId: options.mapId, region, name: stampInput.value });
+    if (result?.ok) {
+      discardAndClose();
+    }
+  };
+  stampButton.addEventListener("click", () => {
+    if (stampButton.disabled) return;
+    enterStampEditor();
+  });
+  stampConfirm.addEventListener("mousedown", (event) => {
+    // blur(→focusout 취소) 보다 click 이 먼저 발화하도록 기본 동작 억제.
+    event.preventDefault();
+  });
+  stampConfirm.addEventListener("click", () => commitStamp());
+  stampCancel.addEventListener("mousedown", (event) => {
+    event.preventDefault();
+  });
+  stampCancel.addEventListener("click", () => exitStampEditor());
+  stampInput.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commitStamp();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      exitStampEditor();
+    }
+  });
+  stampInput.addEventListener("focusout", () => {
+    // [✓]/[✕] 버튼 클릭은 mousedown preventDefault 로 blur 를 막았으므로,
+    // 여기 도달하면 다른 곳 클릭(박스 바깥 등)이다. 취소로 간주.
+    if (!stampEditor.classList.contains("hidden")) exitStampEditor();
+  });
+
+  const actions = el("div", {
+    class: "region-task-actions",
+    children: [runButton, stampButton, stampEditor],
+  });
   const asPopover = Boolean(options.anchor);
   const windowNode = el("div", {
     class: asPopover ? "region-task-modal region-task-popover" : "region-task-modal",
