@@ -255,3 +255,91 @@
   cursor: pointer;
   padding: var(--space-1) var(--space-2);
 }
+/* ── A: 부분 적용 청크 트리 ── */
+.region-task-chunk-tree {
+  border: 1px solid var(--editor-line, #374151);
+  border-radius: var(--radius-s);
+  font-size: 0.85em;
+  margin: var(--space-1) 0;
+  max-height: 180px;
+  overflow-y: auto;
+  padding: var(--space-1) var(--space-2);
+}
+.region-task-chunk-tree.hidden { display: none; }
+.region-task-chunk-layer-title {
+  color: var(--editor-text-muted, #9ca3af);
+  font-size: 0.85em;
+  margin-bottom: var(--space-1);
+}
+.region-task-chunk-layer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-1);
+}
+.region-task-chunk-layer-name {
+  color: var(--editor-text-muted, #9ca3af);
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.region-task-chunk-label {
+  align-items: center;
+  display: flex;
+  font-size: 0.9em;
+  gap: var(--space-1);
+}
+.region-task-chunk-cb {
+  accent-color: var(--accent, #4a9eff);
+  cursor: pointer;
+}
+.region-task-partial-apply {
+  background: transparent;
+  border: 1px solid var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
+}
+.region-task-partial-apply:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* ── F: 영역 통계 칩 ── */
+.region-task-stats-chip {
+  background: var(--editor-panel-bg-accent, rgba(74, 158, 255, 0.08));
+  border: 1px solid var(--editor-line, #374151);
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted, #9ca3af);
+  font-size: 0.8em;
+  padding: 1px var(--space-2);
+}
+.region-task-stats-chip.hidden { display: none; }
+
+/* ── F: 슬래시 자동완성 드롭다운 ── */
+.region-task-autocomplete {
+  background: var(--editor-panel-bg, #1f2937);
+  border: 1px solid var(--editor-line-strong, #6b7280);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  margin: var(--space-1) 0;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.region-task-autocomplete.hidden { display: none; }
+.region-task-autocomplete-item {
+  background: transparent;
+  border: none;
+  color: var(--editor-text, #d1d5db);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9em;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+}
+.region-task-autocomplete-item:hover {
+  background: var(--editor-row-hover, rgba(255, 255, 255, 0.05));
+}
+.region-task-autocomplete-item.is-selected {
+  background: var(--accent, #4a9eff);
+  color: #fff;
+}

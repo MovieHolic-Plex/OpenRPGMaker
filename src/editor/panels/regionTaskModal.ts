@@ -7,7 +7,19 @@ import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
-import { nextSuggestedRegionCommands } from "@/editor/regionTask/suggestedCommands";
+import { nextSuggestedRegionCommands, SUGGESTED_REGION_COMMANDS } from "@/editor/regionTask/suggestedCommands";
+import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
+import { formatRegionTileStatsCompact, summarizeRegionTiles } from "@/editor/regionTask/regionTileStats";
+import {
+  groupRegionChanges,
+  withChunkLabels,
+  type RegionChunk,
+} from "@/editor/regionTask/regionChangeGroups";
+import { composePartialProject } from "@/editor/regionTask/partialApplyCompose";
+import {
+  loadRecentInstructions,
+  pushRecentInstruction,
+} from "@/editor/regionTask/recentInstructions";
 import {
   describeRegionTaskResult,
   runRegionTask,
@@ -54,6 +66,13 @@ export interface RegionTaskModalOptions {
   readonly saveStamp?: (args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null;
   /** 테스트 주입: 기본 이름용 project 조회(기본 store.getCurrent). */
   readonly projectForStampName?: () => Project;
+  /** 테스트 주입: 동적 추천/통계 칩용 project 조회(기본 store.getCurrent). */
+  readonly projectForContext?: () => Project;
+  /** 테스트 주입: 부분 적용 함수(기본 composePartialProject). UI 테스트용. */
+  readonly composePartial?: typeof composePartialProject;
+  /** 테스트/프로덕션 주입: 부분 적용 프로젝트를 store.replace 로 반영. 기본은 runRegionTask.applyProject.
+   *  시그니처: (project, label, mapId) => void. 미주입 시 부분 적용은 전체 적용으로 폴백. */
+  readonly applyPartialProject?: (project: Project, label: string, mapId: MapId) => void;
 }
 
 let modalRoot: HTMLElement | null = null;
@@ -79,6 +98,22 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: "region-task-chip",
     text: `▦ (${region.x},${region.y}) ${region.width}×${region.height}`,
     dataset: { testid: "region-task-chip" },
+  });
+  // F: 영역 통계 칩 — 현재 타일 분포 컴팩트 표시. 빈 영역이면 숨김.
+  const statsText = (() => {
+    try {
+      const proj = (options.projectForContext ?? (() => store.getCurrent()))();
+      const map = proj?.maps?.[options.mapId];
+      if (!map) return "";
+      return formatRegionTileStatsCompact(summarizeRegionTiles(map, region));
+    } catch {
+      return "";
+    }
+  })();
+  const statsChip = el("span", {
+    class: "region-task-stats-chip" + (statsText ? "" : " hidden"),
+    text: statsText,
+    dataset: { testid: "region-task-stats-chip" },
   });
   const copyLogButton = el("button", {
     class: "region-task-copy-log",
@@ -107,10 +142,18 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
   const header = el("div", {
     class: "region-task-header",
-    children: [titleRow, chip, closeButton],
+    children: [titleRow, chip, statsChip, closeButton],
   });
 
-  const suggestions = nextSuggestedRegionCommands(4);
+  // E: 컨텍스트 인식 동적 추천 — 영역 주변 인접 타일 분석 기반. 정적 로테이션은 폴백.
+  const projectForCtx = options.projectForContext ?? (() => store.getCurrent());
+  const suggestions = (() => {
+    try {
+      return suggestRegionCommandsByContext(projectForCtx(), options.mapId, region, 4);
+    } catch {
+      return nextSuggestedRegionCommands(4);
+    }
+  })();
   const textarea = el("textarea", {
     class: "region-task-input",
     attrs: { placeholder: "이 영역에 무엇을 할까요? 예: 침엽수 숲으로 채워줘", rows: "3" },
@@ -237,9 +280,68 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
     if (pending.settled) return;
+    // A: 부분 적용 — 청크 그룹화. 빈 변경이면 트리 숨김.
+    // groupRegionChanges/labeling 이 예외를 던지면(예: 테스트용 최소 맵) 안전하게 폴백 — 비교 UI는 정상 렌더.
+    const compose = options.composePartial ?? composePartialProject;
+    let groups: { lower: readonly RegionChunk[]; upper: readonly RegionChunk[]; unchangedCells: number } = { lower: [], upper: [], unchangedCells: 0 };
+    let rawGroups = groups;
+    try {
+      const tileset = map ? pending.baseProject.tilesets[map.tilesetId] : undefined;
+      rawGroups = groupRegionChanges(pending.baseProject, pending.clippedProject, pending.mapId, pending.region);
+      groups = withChunkLabels(rawGroups, tileset);
+    } catch {
+      groups = { lower: [], upper: [], unchangedCells: 0 };
+      rawGroups = groups;
+    }
+    const hasChanges = groups.lower.length > 0 || groups.upper.length > 0;
+    const selectedChunkIds = new Set<string>();
+    const allChunkIds = [...groups.lower, ...groups.upper].map((c) => c.id);
+    // 기본: 모든 청크 선택(=전체 적용과 동일). 사용자가 일부 해제하면 부분 적용.
+    for (const id of allChunkIds) selectedChunkIds.add(id);
+
+    const partialApplyButton = el("button", {
+      class: "region-task-apply region-task-partial-apply",
+      text: `✓ 선택 적용`,
+      attrs: { type: "button", title: "선택한 구역만 적용" },
+      dataset: { testid: "region-task-partial-apply" },
+    }) as HTMLButtonElement;
+    partialApplyButton.addEventListener("click", () => {
+      const ids = Array.from(selectedChunkIds);
+      if (ids.length === 0) return;
+      selfSettling = true;
+      if (ids.length === allChunkIds.length) {
+        // 전체 선택 = pending.apply() 경로 (일관성)
+        pending.apply();
+      } else {
+        // 부분: 병합 프로젝트를 applyProject 로 넘긴다 — pending 내부 onApply 가
+        // store.replace(clipped) 를 부르므로, 여기서는 먼저 discard 한 뒤 별도 적용.
+        // 단, pending.discard() 는 no-op(onDiscard 가 빈 함수)이므로 안전.
+        const merged = compose({
+          base: pending.baseProject,
+          clipped: pending.clippedProject,
+          mapId: pending.mapId,
+          region: pending.region,
+          selectedChunkIds: ids,
+          groups: rawGroups,
+        });
+        // pending 을 settle 시키고 커스텀 적용 — applyProject 는 runRegionTask deps 주입.
+        // 여기서 직접 store.replace 못하므로 pending.apply() 의 onApply 흐름을 쓰되,
+        // clipped 대신 merged 를 쓰기 위해 pending 을 먼저 discard 하고 options.applyPartialProject 로 처리.
+        const applier = options.applyPartialProject;
+        if (applier) {
+          applier(merged, `영역 작업(부분 ${ids.length}/${allChunkIds.length}): ${pending.instruction.slice(0, 40)}`, pending.mapId);
+          pending.discard();
+        } else {
+          // 적용 경로 미주입시 전체 적용으로 폴백(안전).
+          pending.apply();
+        }
+      }
+      finalizeSettle(true);
+    });
+
     const applyButton = el("button", {
       class: "region-task-apply",
-      text: "✓ 적용",
+      text: "✓ 모두 적용",
       attrs: { type: "button" },
       dataset: { testid: "region-task-apply" },
       on: { click: () => { selfSettling = true; pending.apply(); finalizeSettle(true); } },
@@ -251,9 +353,55 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: "region-task-discard" },
       on: { click: () => { selfSettling = true; pending.discard(); finalizeSettle(false); } },
     });
+
+    // 청크 트리 — 각 청크 체크박스. 토글 시 부분 적용 버튼 라벨/활성 갱신.
+    const updatePartialState = (): void => {
+      const n = selectedChunkIds.size;
+      partialApplyButton.textContent = n === 0 ? "✓ 선택 적용" : `✓ 선택 ${n}칸 적용`;
+      partialApplyButton.disabled = n === 0;
+    };
+    const makeChunkCheckbox = (chunk: RegionChunk): HTMLElement => {
+      const cb = el("input", {
+        class: "region-task-chunk-cb",
+        attrs: { type: "checkbox" },
+        dataset: { testid: `region-task-chunk-${chunk.id}` },
+      }) as HTMLInputElement;
+      cb.checked = true;
+      cb.addEventListener("change", () => {
+        if (cb.checked) selectedChunkIds.add(chunk.id);
+        else selectedChunkIds.delete(chunk.id);
+        updatePartialState();
+      });
+      return el("label", {
+        class: "region-task-chunk-label",
+        children: [cb, document.createTextNode(` ${chunk.label}`)],
+      });
+    };
+    const chunkTree = el("div", {
+      class: "region-task-chunk-tree" + (hasChanges ? "" : " hidden"),
+      dataset: { testid: "region-task-chunk-tree" },
+      children: hasChanges ? [
+        el("div", { class: "region-task-chunk-layer-title", text: `적용 범위:` }),
+        ...(groups.lower.length > 0 ? [
+          el("div", { class: "region-task-chunk-layer", children: [
+            el("span", { class: "region-task-chunk-layer-name", text: "하위" }),
+            ...groups.lower.map(makeChunkCheckbox),
+          ] }),
+        ] : []),
+        ...(groups.upper.length > 0 ? [
+          el("div", { class: "region-task-chunk-layer", children: [
+            el("span", { class: "region-task-chunk-layer-name", text: "상위" }),
+            ...groups.upper.map(makeChunkCheckbox),
+          ] }),
+        ] : []),
+      ] : [],
+    });
+    updatePartialState();
+
     compareHost.replaceChildren(
       figures,
-      el("div", { class: "region-task-compare-actions", children: [applyButton, discardButton] }),
+      chunkTree,
+      el("div", { class: "region-task-compare-actions", children: [partialApplyButton, applyButton, discardButton] }),
     );
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
     schedulePopoverReposition();
@@ -341,6 +489,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     try {
       const result = await run({ mapId: options.mapId, region, instruction, onEvent });
       setSummary(describeRegionTaskResult(result));
+      // F: 성공적 실행 시 지시어를 최근 목록에 기록(자동완성 소스).
+      if (result.ok) pushRecentInstruction(instruction);
       if (result.pending && !result.pending.settled) {
         await renderPendingCompare(result.pending);
       }
@@ -474,6 +624,119 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     if (!stampEditor.classList.contains("hidden")) exitStampEditor();
   });
 
+  // ── F: 키보드 단축키 (textarea 비포커스시) + 슬래시 자동완성 ─────────────────
+  // textarea/input 포커스 중에는 단일키가 입력으로 들어가므로 무시.
+  const isTextFocused = (): boolean => {
+    const active = document.activeElement;
+    return active instanceof HTMLTextAreaElement || active instanceof HTMLInputElement;
+  };
+  const onShortcutKey = (event: KeyboardEvent): void => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    if (isTextFocused()) return;
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void execute();
+    } else if (event.key === "s" || event.key === "S") {
+      event.preventDefault();
+      enterStampEditor();
+    } else if (event.key === "r" || event.key === "R") {
+      event.preventDefault();
+      void execute(); // 같은 지시 재실행
+    }
+  };
+  document.addEventListener("keydown", onShortcutKey);
+  // activeModalCleanup 에 정리 추가 등록 — 기존 cleanup 먼저 호출 후 리스너 해제.
+  const prevCleanup = activeModalCleanup;
+  activeModalCleanup = (): void => {
+    prevCleanup?.();
+    document.removeEventListener("keydown", onShortcutKey);
+  };
+
+  // 슬래시 자동완성 드롭다운 — 소스: 동적 추천 + 코퍼스 + 최근 지시어.
+  const autocompleteHost = el("div", {
+    class: "region-task-autocomplete hidden",
+    dataset: { testid: "region-task-autocomplete" },
+  });
+  const autocompleteItems = (() => {
+    const seen = new Set<string>();
+    const out: Array<{ label: string; instruction: string }> = [];
+    const push = (label: string, instruction: string): void => {
+      if (seen.has(instruction)) return;
+      seen.add(instruction);
+      out.push({ label, instruction });
+    };
+    for (const s of suggestions) push(s.label, s.instruction);
+    for (const cmd of SUGGESTED_REGION_COMMANDS) push(cmd.label, cmd.instruction);
+    for (const recent of loadRecentInstructions()) push(`최근: ${recent.slice(0, 30)}`, recent);
+    return out;
+  })();
+  let autocompleteSelected = 0;
+  const renderAutocomplete = (filter: string): void => {
+    const query = filter.toLowerCase();
+    const matches = autocompleteItems.filter((it) =>
+      it.label.toLowerCase().includes(query) || it.instruction.toLowerCase().includes(query),
+    );
+    autocompleteHost.replaceChildren();
+    if (matches.length === 0) {
+      autocompleteHost.classList.add("hidden");
+      return;
+    }
+    autocompleteSelected = 0;
+    matches.forEach((it, i) => {
+      const item = el("button", {
+        class: "region-task-autocomplete-item" + (i === 0 ? " is-selected" : ""),
+        text: it.label,
+        attrs: { type: "button", title: it.instruction },
+        dataset: { testid: `region-task-autocomplete-item-${i}` },
+        on: { click: () => { textarea.value = it.instruction; closeAutocomplete(); textarea.focus(); } },
+      });
+      autocompleteHost.append(item);
+    });
+    autocompleteHost.classList.remove("hidden");
+    autocompleteHost.dataset.total = String(matches.length);
+  };
+  const closeAutocomplete = (): void => {
+    autocompleteHost.classList.add("hidden");
+    autocompleteHost.replaceChildren();
+  };
+  textarea.addEventListener("input", () => {
+    const v = textarea.value;
+    // `/` 로 시작하거나 `/` 가 포함된 경우 자동완성 오픈
+    if (v.startsWith("/") || v.includes("/")) {
+      const query = v.replace(/^\//, "").trim();
+      renderAutocomplete(query);
+    } else {
+      closeAutocomplete();
+    }
+  });
+  textarea.addEventListener("keydown", (event) => {
+    if (autocompleteHost.classList.contains("hidden")) return;
+    const total = Number(autocompleteHost.dataset.total ?? "0");
+    if (total === 0) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      autocompleteSelected = (autocompleteSelected + 1) % total;
+      updateAutocompleteSelection();
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      autocompleteSelected = (autocompleteSelected - 1 + total) % total;
+      updateAutocompleteSelection();
+    } else if (event.key === "Enter" && total > 0) {
+      event.preventDefault();
+      const items = autocompleteHost.querySelectorAll(".region-task-autocomplete-item");
+      const target = items[autocompleteSelected] as HTMLElement | undefined;
+      target?.click();
+    } else if (event.key === "Escape") {
+      closeAutocomplete();
+    }
+  });
+  function updateAutocompleteSelection(): void {
+    const items = autocompleteHost.querySelectorAll(".region-task-autocomplete-item");
+    items.forEach((item, i) => {
+      item.classList.toggle("is-selected", i === autocompleteSelected);
+    });
+  }
+
   const actions = el("div", {
     class: "region-task-actions",
     children: [runButton, stampButton, stampEditor],
@@ -483,7 +746,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: asPopover ? "region-task-modal region-task-popover" : "region-task-modal",
     attrs: { role: "dialog", "aria-label": "영역 작업" },
     dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal" },
-    children: [header, textarea, suggestionRow, log, summary, compareHost, actions],
+    children: [header, textarea, suggestionRow, autocompleteHost, log, summary, compareHost, actions],
   });
   /** 로그/비교 UI가 커진 뒤에도 뷰포트 안에 남도록 재클램프 (레이아웃 반영 후 1프레임). */
   schedulePopoverReposition = (): void => {

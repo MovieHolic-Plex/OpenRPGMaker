@@ -1,0 +1,189 @@
+// test/regionTaskModalEnhancements.test.ts
+// 영역 작업 박스 고도화(A 부분 적용 + E 동적 추천 + F 단축키/자동완성/통계칩) 통합 테스트.
+// 스펙 docs/superpowers/specs/2026-07-20-region-task-enhancements-design.md.
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  closeRegionTaskModal,
+  openRegionTaskModal,
+} from "@/editor/panels/regionTaskModal";
+import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import type { Project, RegionRect } from "@/project/types";
+
+const REGION: RegionRect = { x: 0, y: 0, width: 3, height: 3 };
+
+function openModal(options: Parameters<typeof openRegionTaskModal>[0]): FakeElement {
+  return openRegionTaskModal(options) as unknown as FakeElement;
+}
+
+// 기존 regionTaskModal.test.ts 의 flush 패턴 — microtask 큐 draining.
+// fakeDom 이 KeyboardEvent 생성자를 노출하지 않아 plain Event + key 로 흉내.
+function keyEvent(key: string): Event {
+  const event = new Event("keydown", { bubbles: true });
+  Object.defineProperty(event, "key", { value: key });
+  return event;
+}
+function flush(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+let restoreDom: (() => void) | null = null;
+
+afterEach(() => {
+  closeRegionTaskModal();
+  restoreDom?.();
+  restoreDom = null;
+});
+
+/** 최소 project 스텁 — E/F 순수 함수가 안전하게 동작할 만큼의 shape. */
+function stubProject(lower: number[] = [], upper: number[] = []): Project {
+  const w = 10, h = 10;
+  const lowerTiles = new Array(w * h).fill(0);
+  const upperTiles = new Array(w * h).fill(-1);
+  for (let i = 0; i < lower.length && i < w * h; i += 1) lowerTiles[i] = lower[i]!;
+  for (let i = 0; i < upper.length && i < w * h; i += 1) upperTiles[i] = upper[i]!;
+  return {
+    maps: {
+      m1: { id: "m1", name: "맵", width: w, height: h, tileSize: 16, lowerTiles, upperTiles, events: [] },
+    },
+    tilesets: {},
+  } as unknown as Project;
+}
+
+describe("F: 영역 통계 칩", () => {
+  beforeEach(() => {
+    restoreDom = installFakeDom();
+  });
+
+  it("헤더에 통계 칩이 렌더된다 (빈 값이 아니면 텍스트 표시)", () => {
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      run: vi.fn(),
+      projectForContext: () => stubProject([240, 240, 240, 240, 240, 240, 240, 240, 240]),
+    });
+    const chip = findByTestId(root, "region-task-stats-chip");
+    expect(chip).not.toBeNull();
+    expect(chip?.textContent || "").not.toBe("");
+  });
+});
+
+describe("E: 동적 추천", () => {
+  beforeEach(() => {
+    restoreDom = installFakeDom();
+  });
+
+  it("projectForContext 주입 시 추천 칩 4개 렌더", () => {
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      run: vi.fn(),
+      projectForContext: () => stubProject(),
+    });
+    const suggestions = findByTestId(root, "region-task-suggestions");
+    expect(suggestions).not.toBeNull();
+    const chips = suggestions?.querySelectorAll("button");
+    expect(chips?.length).toBe(4);
+  });
+});
+
+describe("F: 키보드 단축키 (textarea 비포커스시)", () => {
+  beforeEach(() => {
+    restoreDom = installFakeDom();
+  });
+
+  it("S 키 입력으로 스탬프 에디터 진입", () => {
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      run: vi.fn(),
+      saveStamp: vi.fn(() => null),
+      projectForStampName: () => stubProject(),
+      projectForContext: () => stubProject(),
+    });
+    // fakeDom 은 blur() 미구현 — activeElement 를 body 로 리셋해 비포커스 상태 흉내.
+    (document as unknown as { activeElement: unknown }).activeElement = null;
+    document.dispatchEvent(keyEvent("s"));
+    const editor = findByTestId(root, "region-task-stamp-editor");
+    expect(editor?.classList.contains("hidden")).toBe(false);
+  });
+
+  it("textarea 포커스시 단일키 무시", () => {
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      run: vi.fn(),
+      saveStamp: vi.fn(() => null),
+      projectForStampName: () => stubProject(),
+      projectForContext: () => stubProject(),
+    });
+    const input = findByTestId(root, "region-task-input");
+    input?.focus?.();
+    document.dispatchEvent(keyEvent("s"));
+    const editor = findByTestId(root, "region-task-stamp-editor");
+    expect(editor?.classList.contains("hidden")).toBe(true);
+  });
+});
+
+describe("A: 부분 적용", () => {
+  beforeEach(() => {
+    __clearPendingRegionApplyForTest();
+    restoreDom = installFakeDom();
+  });
+
+  // 공통: pending 결과를 만들어 모달에 전달하고 비교 UI가 렌더될 때까지 flush.
+  async function setupPartialApply(): Promise<FakeElement> {
+    const base = stubProject([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+    const clipped = stubProject([120, 120, 120, 0, 0, 0, 0, 0, 0]);
+    const pending = setPendingRegionApply({
+      baseProject: base,
+      clippedProject: clipped,
+      mapId: "m1",
+      region: REGION,
+      changedCells: 3,
+      changedEvents: 0,
+      instruction: "물 채우기",
+      onApply: () => {},
+      onDiscard: () => {},
+      onSettle: () => {},
+    });
+    const result: RegionTaskResult = {
+      ok: true, applied: false, changedCells: 3, changedEvents: 0, clippedCells: 0,
+      proposedCalls: 1, assistantText: "", pending,
+    };
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      initialInstruction: "물 채우기",
+      autoRun: true,
+      run: async () => result,
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => base,
+    });
+    await flush();
+    return root;
+  }
+
+  it("pending 시 chunk tree + 부분 적용 버튼 렌더", async () => {
+    const root = await setupPartialApply();
+    const chunkTree = findByTestId(root, "region-task-chunk-tree");
+    expect(chunkTree).not.toBeNull();
+    expect(chunkTree?.classList.contains("hidden")).toBe(false);
+    expect(findByTestId(root, "region-task-partial-apply")).not.toBeNull();
+    expect(findByTestId(root, "region-task-apply")?.textContent).toContain("모두");
+  });
+
+  it("chunk 체크 해제 시 부분 적용 버튼 라벨 갱신", async () => {
+    const root = await setupPartialApply();
+    const partialBtn = findByTestId(root, "region-task-partial-apply") as unknown as HTMLButtonElement | null;
+    expect(partialBtn).not.toBeNull();
+    const beforeText = partialBtn?.textContent;
+    const firstCb = root.querySelector(".region-task-chunk-cb") as HTMLInputElement | null;
+    if (firstCb) {
+      firstCb.checked = false;
+      firstCb.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+    expect(partialBtn?.textContent).not.toEqual(beforeText);
+  });
+});
