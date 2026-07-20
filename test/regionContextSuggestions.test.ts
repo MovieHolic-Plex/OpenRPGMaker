@@ -128,4 +128,39 @@ describe("suggestRegionCommandsByContext", () => {
     expect(suggestRegionCommandsByContext(project, mapId, region, 4)).toHaveLength(4);
     expect(suggestRegionCommandsByContext(project, mapId, region, 3)).toHaveLength(3);
   });
+
+  it("던전 타일셋에서 야외 전용 명령(꽃밭/오두막/호수) 제외", () => {
+    const { project, mapId } = makeProject();
+    // 던전 타일셋으로 변경
+    project.maps[mapId].tilesetId = "easyrpg_chipset_dungeon";
+    const region: RegionRect = { x: 0, y: 0, width: 3, height: 3 };
+    const suggestions = suggestRegionCommandsByContext(project, mapId, region, 4);
+    const ids = suggestions.map((s) => s.id);
+    expect(ids).not.toContain("flower-scatter"); // 야외 전용
+    expect(ids).not.toContain("small-cottage");  // 야외 전용
+    expect(ids).not.toContain("round-pond");     // 야외 전용
+    // any 타일셋 명령(보물상자/보관상자/음산한 조명/몬스터 구역)은 포함 가능
+    const anyCmdPresent = ids.some((id) =>
+      ["treasure-chest", "storage-chest", "dark-mood", "encounter-zone"].includes(id));
+    expect(anyCmdPresent).toBe(true);
+  });
+
+  it("실내 타일셋에서 야외 전용 명령 제외", () => {
+    const { project, mapId } = makeProject();
+    project.maps[mapId].tilesetId = "easyrpg_chipset_interior";
+    const region: RegionRect = { x: 0, y: 0, width: 3, height: 3 };
+    const suggestions = suggestRegionCommandsByContext(project, mapId, region, 4);
+    const ids = suggestions.map((s) => s.id);
+    expect(ids).not.toContain("flower-scatter");
+    expect(ids).not.toContain("pasture-fence");
+  });
+
+  it("커스텀 타일셋(id 불명)은 outdoor로 간주 — 기존 동작 유지", () => {
+    const { project, mapId } = makeProject();
+    project.maps[mapId].tilesetId = "custom_tileset";
+    const region: RegionRect = { x: 0, y: 0, width: 3, height: 3 };
+    const suggestions = suggestRegionCommandsByContext(project, mapId, region, 4);
+    // outdoor로 간주되므로 야외 명령이 포함될 수 있음
+    expect(suggestions).toHaveLength(4);
+  });
 });

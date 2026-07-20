@@ -18,7 +18,25 @@ import type { RegionRect } from "./clipToRegion";
 import {
   SUGGESTED_REGION_COMMANDS,
   type SuggestedRegionCommand,
+  type TilesetCategory,
 } from "./suggestedCommands";
+
+/** 타일셋 id → 카테고리. 알 수 없으면 outdoor(현재 동작 유지 폴백). */
+export function categorizeTileset(tilesetId: string | undefined): TilesetCategory {
+  if (!tilesetId) return "outdoor";
+  if (tilesetId === "easyrpg_chipset_dungeon") return "dungeon";
+  if (tilesetId === "easyrpg_chipset_interior") return "interior";
+  return "outdoor"; // combined_town, legacy, 커스텀 — 야외로 간주
+}
+
+/** 명령이 현재 타일셋 카테고리에 적합한지. tilesets 생략/빈 배열 = any(true). */
+export function commandFitsTileset(
+  cmd: Pick<SuggestedRegionCommand, "tilesets">,
+  category: TilesetCategory,
+): boolean {
+  if (!cmd.tilesets || cmd.tilesets.length === 0) return true;
+  return cmd.tilesets.includes(category);
+}
 
 export type ContextTileCategory = "water" | "road" | "forest" | "building" | "other";
 
@@ -69,8 +87,6 @@ export function countAdjacentTileCategories(
   }
   return counts;
 }
-
-/** 컨텍스트 가중치 기반 동적 추천 풀 생성 (정적 코퍼스에서 선별). */
 function buildContextualPool(
   counts: Record<ContextTileCategory, number>,
   regionArea: number,
@@ -80,40 +96,44 @@ function buildContextualPool(
     const found = SUGGESTED_REGION_COMMANDS.find((c) => c.id === id);
     if (found && !pool.some((c) => c.id === id)) pool.push(found);
   };
-
-  // 물 인접: 부두/다리 는 코퍼스에 없으므로 동적으로 생성해 추가
+  // 물 인접: 부두/다리 는 야외 전용(실내/던전엔 부적합).
   if (counts.water >= 3) {
     pool.push({
       id: "dock", label: "🚢 부두",
       instruction: "물 옆에 나무 부두를 만들어줘",
       category: "구조물",
+      tilesets: ["outdoor"],
     });
     pool.push({
       id: "bridge", label: "🌉 다리",
       instruction: "이 영역에 다리를 놓아줘",
       category: "구조물",
+      tilesets: ["outdoor"],
     });
   }
-  // 길 인접: 가로수/상가
+  // 길 인접: 가로수(야외)/상가
   if (counts.road >= 2) {
     pool.push({
       id: "street-trees", label: "🌳 가로수",
       instruction: "길을 따라 가로수를 심어줘",
       category: "다듬기",
+      tilesets: ["outdoor"],
     });
     addById("merchant-npc");
   }
-  // 숲 인접: 사냥터/캠프파이어
+  // 숲 인접: 사냥터/캠프파이어 (야외)
   if (counts.forest >= 3) {
     pool.push({
       id: "hunting-ground", label: "⚔️ 사냥터",
       instruction: "이 영역을 슬라임이 나오는 사냥터로 만들어줘",
       category: "전투",
+      tilesets: ["outdoor"],
     });
     pool.push({
       id: "campfire", label: "🔥 캠프파이어",
       instruction: "숲 가장자리에 캠프파이어와 통나무 의자를 만들어줘",
       category: "구조물",
+      tilesets: ["outdoor"],
     });
   }
   // 건물 인접: 울타리/정원
@@ -145,22 +165,24 @@ export function suggestRegionCommandsByContext(
   count = 4,
 ): SuggestedRegionCommand[] {
   const map = project.maps[mapId];
-  if (!map) return fallbackStatic(count);
+  if (!map) return fallbackStatic(count, "outdoor");
   const tileset = project.tilesets[map.tilesetId];
+  const category = categorizeTileset(map.tilesetId);
   const counts = countAdjacentTileCategories(map, region, tileset);
   const regionArea = region.width * region.height;
-  const pool = buildContextualPool(counts, regionArea);
-  if (pool.length === 0) return fallbackStatic(count);
-  // 컨텍스트 풀이 count 미만이면 정적 코퍼스에서 중복 없이 충원
+  const pool = buildContextualPool(counts, regionArea).filter((cmd) => commandFitsTileset(cmd, category));
+  if (pool.length === 0) return fallbackStatic(count, category);
+  // 컨텍스트 풀이 count 미만이면 정적 코퍼스에서 타일셋 적합 + 중복 없이 충원
   if (pool.length < count) {
     for (const cmd of SUGGESTED_REGION_COMMANDS) {
       if (pool.length >= count) break;
+      if (!commandFitsTileset(cmd, category)) continue;
       if (!pool.some((c) => c.id === cmd.id)) pool.push(cmd);
     }
   }
   return pool.slice(0, count);
 }
 
-function fallbackStatic(count: number): SuggestedRegionCommand[] {
-  return SUGGESTED_REGION_COMMANDS.slice(0, count);
+function fallbackStatic(count: number, category: TilesetCategory = "outdoor"): SuggestedRegionCommand[] {
+  return SUGGESTED_REGION_COMMANDS.filter((cmd) => commandFitsTileset(cmd, category)).slice(0, count);
 }
