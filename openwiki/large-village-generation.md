@@ -327,6 +327,6 @@ npx tsx scripts/diagnose-road-through-house.mts
 
 ## 관련 위키
 
-- 에디터 전반: `openwiki/editor-workflows.md`
+- 에디터 전반: `openwiki/editor-workflows.md` (slim index → topic pages: `editor-pre-edit-routing.md`, `editor-event-authoring.md`, `editor-event-commands.md`, `editor-database.md`, `editor-ai-panel.md`, `editor-workflows-misc.md`)
 - 검증 습관: `openwiki/testing.md`
 - 이 문서: `openwiki/large-village-generation.md`

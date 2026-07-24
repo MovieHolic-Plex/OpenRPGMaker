@@ -18,14 +18,27 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
 1. Read this file.
 2. Read `openwiki/quickstart.md` for the repo shape and first files to inspect.
 3. Read the focused page for the area being changed:
-   - Editor UI, map tools, events, database, resources, save/import/export: `openwiki/editor-workflows.md`
+   - Editor pre-edit routing & cautions (read first): `openwiki/editor-pre-edit-routing.md`
+   - Editor event authoring: `openwiki/editor-event-authoring.md`, `openwiki/editor-event-commands.md`, `openwiki/editor-event-command-fixes.md`
+   - Editor database: `openwiki/editor-database.md`
+   - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`
+   - Editor misc workflows: `openwiki/editor-workflows-misc.md`
+   - Editor validation: `openwiki/editor-validation.md`
+   - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
    - Large river/market village generation (bbox → houses → roads): `openwiki/large-village-generation.md`
    - Terrain autotiles, template-block anchors, water/animation wiring: `openwiki/autotiles.md`
-   - Runtime, interpreter, battle, save/session behavior, project schema: `openwiki/runtime-and-data.md`
+   - Runtime pre-edit routing & cautions (read first): `openwiki/runtime-pre-edit-routing.md`
+   - Runtime battle: `openwiki/runtime-battle.md`
+   - Runtime sessions & state: `openwiki/runtime-sessions.md`
+   - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
+   - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
+   - Runtime index: `openwiki/runtime-and-data.md` (slim TOC linking to the above)
    - Boot flow, mode switching, module boundaries: `openwiki/architecture.md`
    - Test and evidence strategy: `openwiki/testing.md`
    - CPEN/OpenWiki refresh behavior: `openwiki/cpen-openwiki.md`
+   - Community site (Next.js asset/game sharing, Supabase tables `openrpg_*`): `openwiki/community-site.md`
 4. Inspect the actual source files named by the focused page before editing.
 
 ## Project identity
@@ -73,8 +86,8 @@ For each project that uses this pattern, keep:
 - `openwiki/PROJECT_WIKI.md`: project-specific AI entry point.
 - `openwiki/quickstart.md`: repo shape and common starting files.
 - `openwiki/architecture.md`: ownership boundaries and boot/runtime structure.
-- `openwiki/editor-workflows.md`: editor-specific change map.
-- `openwiki/runtime-and-data.md`: runtime, data, persistence, migration, and schema map.
+- `openwiki/editor-workflows.md`: slim index to editor topic pages.
+- `openwiki/runtime-and-data.md`: slim index to runtime topic pages.
 - `openwiki/testing.md`: verification contract.
 - Optional focused pages for large subsystems.
 
