@@ -10,6 +10,8 @@ dist/
 artifacts/
 test-results/
 qa-screenshots/
+# one-off probes, dev logs, and bun/cargo install residue relocated out of root
+scratch/
 *.log
 debug.log
 process_temp.js
@@ -33,6 +35,8 @@ handoff.md
 /.mcp.json
 /mcps/
 /output/
+# legacy root tmp-* probes now live under scratch/ (gitignored above); keep
+# this rule to catch any future tmp-* dropped in root before relocation.
 /tmp-*
 # 에이전트/세션 잡 · 런타임 pid · 파이썬 캐시
 .claude/

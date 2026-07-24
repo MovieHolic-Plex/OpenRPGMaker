@@ -36,7 +36,9 @@ async function readOptionalText(path: string): Promise<string | null> {
 
 describe("forward-compatible command kind validation", () => {
   it("loads remote fable-village snapshot with setEventGraphicPattern", async () => {
-    const raw = await readOptionalText("tmp-fable-project.json");
+    // Fixture lives under test/fixtures/projects/ (relocated from root tmp-fable-project.json
+    // so the repo root stays clean for `ls` and agent first-scan).
+    const raw = await readOptionalText("test/fixtures/projects/fable-village-snapshot.json");
     if (!raw) return;
     const loaded = deserialize(raw);
     expect(Object.keys(loaded.maps).length).toBeGreaterThan(0);

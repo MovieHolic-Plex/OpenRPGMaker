@@ -6,12 +6,53 @@ Before making code changes, read:
 
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
 2. The focused OpenWiki page for the area you will edit:
-   - `openwiki/editor-workflows.md` for editor UI, map editing, events, database, resources, and save/import/export.
+   - Editor pre-edit routing & cautions: `openwiki/editor-pre-edit-routing.md` (read first for any editor change)
+   - Editor event authoring: `openwiki/editor-event-authoring.md` + `openwiki/editor-event-commands.md` + `openwiki/editor-event-command-fixes.md`
+   - Editor database: `openwiki/editor-database.md`
+   - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
+   - Editor misc workflows: `openwiki/editor-workflows-misc.md`
+   - Editor validation: `openwiki/editor-validation.md`
+   - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
-   - `openwiki/runtime-and-data.md` for play mode, interpreter, battles, sessions, persistence, and schema changes.
+   - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
+   - Runtime battle: `openwiki/runtime-battle.md`
+   - Runtime sessions & state: `openwiki/runtime-sessions.md`
+   - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
+   - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
+   - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
    - `openwiki/cpen-openwiki.md` for refreshing wiki content through CPEN/OpenWiki.
+
+
+## Agent Configuration Map
+
+This repo has multiple agent tooling directories. Here is what each is and whether it is tracked:
+
+| Directory / File | Purpose | Tracked? | Canonical? |
+|---|---|---|---|
+| `AGENTS.md` | **Canonical agent entry point** — read this first. All agents start here. | Yes | **Yes — source of truth** |
+| `.mcp.json` | MCP server config (rpgzzu-assistant bridge). Currently gitignored (session-local). | No (gitignored) | Yes for MCP config |
+| `openwiki/` | Project-local AI wiki (focused pages agents read before editing). | Yes | **Yes — source of truth for codebase knowledge** |
+| `.agents/` | Senpi agent skills (project-local skill overrides). | No (gitignored) | Skills only |
+| `.claude/` | Claude Code agent config. | No (gitignored) | Claude-specific |
+| `.codex/` | Codex agent config + event logs. | No (gitignored) | Codex-specific |
+| `.gjc/` | GJC agent state. | No (gitignored) | GJC-specific |
+| `.qoder/` | Qoder agent config. | No (gitignored) | Qoder-specific |
+| `.qwen/` | Qwen agent config. | No (gitignored) | Qwen-specific |
+| `.senpi/` | Senpi agent session state. | No (gitignored) | Senpi-specific |
+| `.superpowers/` | Superpowers agent config. | No (gitignored) | Superpowers-specific |
+| `.omo/` | ULW-loop state, evidence, and rules. Partially tracked (`.omo/evidence/` and `.omo/rules/`). | Partial | State + evidence |
+
+**For any agent entering this repo:**
+1. Read `AGENTS.md` (this file) — it is the canonical entry point.
+2. Read `openwiki/PROJECT_WIKI.md` — it is the canonical project-specific AI map.
+3. Use `.mcp.json` for MCP server config (rpgzzu-assistant bridge on localhost).
+4. Your own agent config dir (`.claude/`, `.codex/`, `.senpi/`, etc.) is session-local and gitignored — do not commit it.
+5. `.omo/ulw-loop/` holds durable goal state and evidence; `.omo/evidence/` and `.omo/rules/` are tracked.
+
+**Do not create a new agent config dir.** If your agent isn't listed, add it to this table with its purpose.
 
 ## Supabase DB is mandatory (hard rule)
 
