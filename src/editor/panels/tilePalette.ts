@@ -241,7 +241,6 @@ function makePaintTabBody(input: {
     tileset,
   });
 
-  root.append(makePaintTitleRow(tileLayer));
   root.append(palette);
   return { root, palette };
 }
@@ -369,17 +368,6 @@ function renderPalettePreservingViewport(): void {
   preservePaletteViewport(renderCurrentPalette);
 }
 
-function makePaintTitleRow(layer: Exclude<Layer, "event">): HTMLElement {
-  return el("div", {
-    class: "tile-palette-title-row",
-    children: [
-      el("h3", {
-        class: "tile-palette-title",
-        text: layer === "upper" ? "타일 · 상위" : "타일 · 하위",
-      }),
-    ],
-  });
-}
 
 
 function readWorkTab(): PaletteWorkTab {

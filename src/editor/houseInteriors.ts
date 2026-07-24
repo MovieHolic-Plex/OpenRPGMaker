@@ -1,11 +1,11 @@
 import { charsetFrameIndex, type CharsetDirection } from "@/assets/easyrpgRtp";
 import {
+  floorMaskFromPlan,
   runInteriorRoomPipeline,
   type InteriorRoomPlan,
   type InteriorRoomTheme,
   type InteriorWallMaterial,
   type RoomSpec,
-  VR,
 } from "@/editor/interiorRoomPipeline";
 import { DEFAULT_TILE_SIZE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
@@ -301,7 +301,8 @@ export function createHouseInteriorMap(options: {
 
   let lowerMap = ground;
   let lowerMapId = options.id;
-  let stairCell = pickStairCell(ground, entry, door);
+  // 계단은 복도 끝(2026-07-20 사용자 교정) — 복도가 있으면 문에서 먼 쪽 복도 끝, 없으면 기존 휴리스틱.
+  let stairCell = corridorStairCell(groundPlan) ?? pickStairCell(ground, entry, door);
 
   for (let floor = 2; floor <= stories; floor += 1) {
     const floorMapId = (
@@ -324,7 +325,11 @@ export function createHouseInteriorMap(options: {
     });
 
     const stairDown = floorPlan.door;
-    const floorEntry = { x: stairDown.x, y: Math.max(0, stairDown.y - 1) };
+    // 착지 방향: 계단 위 칸이 바닥이면 위(남향 착지), 아니면 아래 — 복도 북단 계단은 아래로 내린다.
+    const floorMask = floorMaskFromPlan(floorPlan);
+    const aboveIsFloor =
+      stairDown.y - 1 >= 0 && floorMask[(stairDown.y - 1) * floorPlan.width + stairDown.x] === true;
+    const floorEntry = { x: stairDown.x, y: aboveIsFloor ? stairDown.y - 1 : Math.min(floorPlan.height - 1, stairDown.y + 1) };
     const exitId =
       floor === 2 && options.upperExitEventId
         ? options.upperExitEventId
@@ -374,7 +379,7 @@ export function createHouseInteriorMap(options: {
     floors.push({ floor, mapId: floorMapId, map: floorMap });
     lowerMap = floorMap;
     lowerMapId = floorMapId;
-    stairCell = pickStairCell(floorMap, floorEntry, stairDown);
+    stairCell = corridorStairCell(floorPlan) ?? pickStairCell(floorMap, floorEntry, stairDown);
   }
 
   const f2 = floors.find((f) => f.floor === 2);
@@ -405,19 +410,38 @@ export function buildHouseInteriorPlan(input: {
   const program = input.program ?? "dwelling";
   const floor = input.floor ?? "ground";
   if (floor === "upper") {
-    return upperFloorPlan(input.mapId, input.name, input.seed, program, input.wallMaterial);
+    return shiftPlanForCeiling(upperFloorPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
   }
   switch (input.scale) {
     case "mansion":
-      return mansionPlan(input.mapId, input.name, input.seed, program, input.wallMaterial);
+      return shiftPlanForCeiling(mansionPlan(input.mapId, input.name, input.seed, program, input.wallMaterial));
     case "cottage-l":
-      return cottageLPlan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial);
+      return shiftPlanForCeiling(cottageLPlan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
     case "cottage3":
-      return cottage3Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial);
+      return shiftPlanForCeiling(cottage3Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
     case "cottage2":
     default:
-      return cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial);
+      return shiftPlanForCeiling(cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
   }
+}
+
+/**
+ * 천장 정본(2026-07-20) 여백 보정 — 북벽은 천장 1행 + 벽면 2행이 필요하므로
+ * 방 최상단 y가 3 미만이면 전체를 아래로 밀고 높이를 늘린다("벽 위에는 반드시 천장").
+ */
+function shiftPlanForCeiling(plan: InteriorRoomPlan): InteriorRoomPlan {
+  const boxes = plan.rooms && plan.rooms.length > 0 ? plan.rooms : plan.wings;
+  const minY = Math.min(...boxes.map((box) => box.y));
+  const shift = Math.max(0, 3 - minY);
+  if (shift === 0) return plan;
+  return {
+    ...plan,
+    height: plan.height + shift,
+    rooms: (plan.rooms ?? []).map((room) => ({ ...room, y: room.y + shift })),
+    wings: plan.wings.map((wing) => ({ ...wing, y: wing.y + shift })),
+    innerDoors: (plan.innerDoors ?? []).map((d) => ({ ...d, y: d.y + shift })),
+    door: { ...plan.door, y: plan.door.y + shift },
+  };
 }
 
 // ── plans ────────────────────────────────────────────────────────────
@@ -478,6 +502,8 @@ function cottageLPlan(
     program === "shop" ? "storage" :
     "bedroom";
 
+  // 천장 정본 v2: 상하로 붙은 방 사이 수평 벽은 반드시 3행(천장 1 + 크림 면 2) —
+  // 북측 방과 거실 사이를 3행 갭으로 벌린다("천장 아래 벽 / 벽 위 천장" 쌍 불변식).
   const rooms: RoomSpec[] = [
     {
       id: "kitchen",
@@ -500,7 +526,7 @@ function cottageLPlan(
     {
       id: "living",
       x: 2,
-      y: 7,
+      y: 10,
       w: 12,
       h: 6,
       theme: livingTheme,
@@ -512,15 +538,15 @@ function cottageLPlan(
     mapId,
     name,
     width: 20,
-    height: 16,
+    height: 19,
     wings: [],
     rooms,
     innerDoors: [
       { x: 10, y: 4 },
-      { x: 6, y: 6 },
-      { x: 13, y: 6 },
+      { x: 6, y: 7 },
+      { x: 13, y: 7 },
     ],
-    door: { x: 7, y: 12 },
+    door: { x: 7, y: 15 },
     theme: livingTheme,
     floorTile: floorTileForProgram(program, seed),
     seed,
@@ -565,54 +591,54 @@ function mansionPlan(
   wallMaterial?: InteriorWallMaterial,
 ): InteriorRoomPlan {
   const luxury = program === "manor" || program === "dwelling";
+  // 2026-07-20 사용자 교정(대저택 정본): 세로 중앙 복도 + 남단 입구 + 복도 끝(북단) 계단.
+  // 복도는 붉은 카펫 러너(paintCorridorCarpets), 방은 보랏빛 돌바닥(12) — "나무바닥만"에서 탈피.
+  // 좌우 방은 복도와 1열 천장 기둥으로 나뉘고 측면 문(innerDoors)으로 연결된다.
   const rooms: RoomSpec[] = [
-    { id: "master", x: 2, y: 2, w: 6, h: 5, theme: "bedroom" },
-    { id: "guest", x: 10, y: 2, w: 6, h: 5, theme: program === "inn" ? "bedroom" : "study" },
-    { id: "study", x: 18, y: 2, w: 4, h: 5, theme: program === "workshop" ? "storage" : "study" },
-    { id: "hall", x: 2, y: 9, w: 20, h: 2, theme: "corridor" },
+    { id: "master", x: 2, y: 2, w: 8, h: 6, theme: "bedroom", floorTile: 12 },
+    { id: "study", x: 15, y: 2, w: 7, h: 6, theme: program === "workshop" ? "storage" : "study", floorTile: 12 },
+    { id: "hall", x: 11, y: 2, w: 3, h: 16, theme: "corridor" },
     {
       id: "dining",
       x: 2,
-      y: 13,
+      y: 11,
       w: 8,
-      h: 5,
-      theme: program === "inn" ? "tavern" : program === "shop" ? "dining" : "dining",
+      h: 7,
+      theme: program === "inn" ? "tavern" : "dining",
+      floorTile: 12,
     },
     {
       id: "kitchen",
-      x: 12,
-      y: 13,
-      w: 6,
-      h: 5,
-      theme: program === "workshop" ? "storage" : "kitchen",
+      x: 15,
+      y: 11,
+      w: 7,
+      h: 7,
+      theme: program === "shop" ? "storage" : "kitchen",
       floorTile: 12,
     },
-    { id: "storage", x: 18, y: 13, w: 4, h: 5, theme: "storage" },
   ];
   return {
     mapId,
     name,
     width: 24,
-    height: 22,
+    height: 21,
     wings: [],
     rooms,
     wallMaterial: wallMaterial ?? (luxury ? "gold-brick" : "stone-brick"),
     innerDoors: [
-      { x: 5, y: 7 },
-      { x: 13, y: 7 },
-      { x: 19, y: 7 },
-      { x: 6, y: 11 },
-      { x: 14, y: 11 },
-      { x: 19, y: 11 },
+      { x: 10, y: 5 },
+      { x: 14, y: 5 },
+      { x: 10, y: 14 },
+      { x: 14, y: 14 },
     ],
-    door: { x: 6, y: 17 },
+    door: { x: 12, y: 17 },
     theme: "dining",
     floorTile: floorTileForProgram(program, seed),
     seed,
   };
 }
 
-/** 2층: 침실 중심. */
+/** 2층: 침실 중심. manor(대저택)는 1층과 같은 세로 복도 정본 — 복도 북단이 계단 착지. */
 function upperFloorPlan(
   mapId: MapId,
   name: string,
@@ -620,6 +646,34 @@ function upperFloorPlan(
   program: HouseInteriorProgram,
   wallMaterial?: InteriorWallMaterial,
 ): InteriorRoomPlan {
+  if (program === "manor") {
+    return {
+      mapId,
+      name,
+      width: 24,
+      height: 18,
+      wings: [],
+      rooms: [
+        { id: "master2", x: 2, y: 2, w: 8, h: 6, theme: "bedroom", floorTile: 12 },
+        { id: "guest", x: 15, y: 2, w: 7, h: 6, theme: "bedroom", floorTile: 12 },
+        { id: "hall2", x: 11, y: 2, w: 3, h: 14, theme: "corridor" },
+        { id: "study2", x: 2, y: 11, w: 8, h: 5, theme: "study", floorTile: 12 },
+        { id: "storage2", x: 15, y: 11, w: 7, h: 5, theme: "storage", floorTile: 12 },
+      ],
+      innerDoors: [
+        { x: 10, y: 5 },
+        { x: 14, y: 5 },
+        { x: 10, y: 13 },
+        { x: 14, y: 13 },
+      ],
+      // 2층 "문" = 계단 착지 — 복도 끝(북단).
+      door: { x: 12, y: 2 },
+      theme: "bedroom",
+      floorTile: 12,
+      seed,
+      wallMaterial: wallMaterial ?? "gold-brick",
+    };
+  }
   const rooms: RoomSpec[] =
     program === "study"
       ? [
@@ -810,6 +864,24 @@ function pickStairCell(
   return { x: Math.min(map.width - 2, Math.max(1, entry.x)), y: Math.max(1, entry.y - 1) };
 }
 
+/** 계단 셀 정본(2026-07-20): 복도가 있으면 그 층 문(착지)에서 먼 쪽 복도 끝 중앙. */
+function corridorStairCell(plan: InteriorRoomPlan): { x: number; y: number } | null {
+  const corridor = (plan.rooms ?? []).find((room) => room.theme === "corridor");
+  if (!corridor) return null;
+  const x = corridor.x + Math.floor(corridor.w / 2);
+  const northEnd = { x, y: corridor.y };
+  const southEnd = { x, y: corridor.y + corridor.h - 1 };
+  return Math.abs(plan.door.y - northEnd.y) >= Math.abs(plan.door.y - southEnd.y) ? northEnd : southEnd;
+}
+
+// 계단 착지·랜딩 정리 시 보존할 통행 가능 하부(바닥 재질 + 러그) — 복도 카펫을 지우지 않는다.
+const PASSABLE_LOWER_TILES = new Set<number>([
+  72, 73, 12, 13, 42, 43, 102, 103, 139,
+  375, 376, 377, 405, 406, 407, 435, 436, 437,
+  279, 280, 281, 309, 310, 311, 339, 340, 341,
+  108, 109, 110, 138, 140, 168, 169, 170,
+]);
+
 function clearPassableLanding(
   map: GameMap,
   x: number,
@@ -818,32 +890,41 @@ function clearPassableLanding(
 ): void {
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return;
   const index = y * map.width + x;
-  map.lowerTiles[index] = 72;
+  // 이미 통행 가능한 바닥/러그(복도 카펫)는 보존 — 착지 정리가 카펫을 끊지 않게.
+  if (!PASSABLE_LOWER_TILES.has(map.lowerTiles[index] ?? -1)) map.lowerTiles[index] = 72;
   if (!opts?.keepUpper) map.upperTiles[index] = -1;
   map.events = (map.events ?? []).filter(
     (event) => !(event.x === x && event.y === y && event.id.startsWith("ev_inspect_")),
   );
 }
 
-function stampStairsUp(map: GameMap, center: { x: number; y: number }): void {
-  const y = center.y;
-  for (const [dx, tile] of [[-1, VR.STAIRS_L], [0, VR.STAIRS_M], [1, VR.STAIRS_R]] as const) {
+// 2026-07-20 사용자 교정: 465~467 붉은 카펫 대계단(귀족 전용)을 민가 층계에서 배제 —
+// 일반 계단 정본은 444(대각 오르막)·474/475(어둠 하강) (tileSemanticsInterior:79).
+// 착지 3칸(x-1..x+1)을 바닥으로 정리하고 찍는다 — 가구 하드쌍(긴 탁자 등) 파편이 남지 않게.
+function clearStairLanding(map: GameMap, center: { x: number; y: number }): void {
+  for (let dx = -1; dx <= 1; dx += 1) {
     const x = center.x + dx;
-    if (x < 0 || x >= map.width || y < 0 || y >= map.height) continue;
-    const i = y * map.width + x;
-    map.lowerTiles[i] = 72;
-    map.upperTiles[i] = tile;
+    if (x < 0 || x >= map.width || center.y < 0 || center.y >= map.height) continue;
+    const i = center.y * map.width + x;
+    // 카펫/바닥 재질 보존 — 계단은 상위 타일이라 하부를 갈 필요가 없다(비통행 하부만 바닥으로).
+    if (!PASSABLE_LOWER_TILES.has(map.lowerTiles[i] ?? -1)) map.lowerTiles[i] = 72;
+    map.upperTiles[i] = -1;
   }
 }
 
+function stampStairsUp(map: GameMap, center: { x: number; y: number }): void {
+  if (center.x < 0 || center.x >= map.width || center.y < 0 || center.y >= map.height) return;
+  clearStairLanding(map, center);
+  map.upperTiles[center.y * map.width + center.x] = 444;
+}
+
 function stampStairsDown(map: GameMap, center: { x: number; y: number }): void {
-  const y = center.y;
-  for (const [dx, tile] of [[-1, VR.STAIRS_L], [0, VR.STAIRS_DOWN], [1, VR.STAIRS_R]] as const) {
+  if (center.y < 0 || center.y >= map.height) return;
+  clearStairLanding(map, center);
+  for (const [dx, tile] of [[0, 474], [1, 475]] as const) {
     const x = center.x + dx;
-    if (x < 0 || x >= map.width || y < 0 || y >= map.height) continue;
-    const i = y * map.width + x;
-    map.lowerTiles[i] = 72;
-    map.upperTiles[i] = tile;
+    if (x < 0 || x >= map.width) continue;
+    map.upperTiles[center.y * map.width + x] = tile;
   }
 }
 

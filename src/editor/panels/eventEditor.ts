@@ -6,6 +6,7 @@ import { ensureEventPages } from "@/editor/eventPages";
 import { handleEditorDeleteKey } from "@/editor/hotkeys";
 import { committedEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
+import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import type { EventPageGraphic, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventGraphicIcon } from "./eventEditor/eventGraphicPreview";
@@ -43,12 +44,6 @@ export function renderEventEditor(container: HTMLElement): void {
   section.append(renderMapEventList(mapId, events, state.selectedEventId));
 
   if (!selectedEvent) {
-    section.append(
-      el("div", {
-        class: "empty-hint",
-        text: "이벤트 도구를 선택한 뒤 맵 타일을 클릭하면 이벤트를 만들거나 편집할 수 있습니다.",
-      })
-    );
     container.append(section);
     return;
   }
@@ -94,7 +89,7 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
       attrs: { type: "button" },
       dataset: { testid: `event-list-row-${event.id}` },
       on: {
-        click: () => selectEvent(event),
+        click: () => selectEventAndFocus(mapId, event),
         dblclick: () => openEventEditorModal(mapId, event.id),
       },
     });
@@ -129,6 +124,11 @@ function selectEvent(event: GameEvent): void {
     selectedEventId: event.id,
     selectedEventPageId: firstPageId(event),
   });
+}
+
+function selectEventAndFocus(mapId: MapId, event: GameEvent): void {
+  selectEvent(event);
+  requestEditorCameraFocus({ mapId, tileX: event.x, tileY: event.y });
 }
 
 function firstPageId(event: GameEvent): string | null {

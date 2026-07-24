@@ -93,6 +93,7 @@ export function renderSettingsForm(
   });
 
   const collect = (): AiConfig => ({
+    authMode: config.authMode,
     // 비워 두면 기본값으로 저장한다.
     baseUrl: baseUrl.input.value.trim() || DEFAULT_BASE_URL,
     model: model.input.value.trim() || DEFAULT_MODEL,

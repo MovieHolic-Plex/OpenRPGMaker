@@ -1,64 +1,163 @@
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { build, type Plugin } from "vite";
 import { describe, expect, it } from "vitest";
 
-describe("player build output", () => {
-  it("player 전용 빌드에는 에디터/AI/Supabase 문자열이 포함되지 않고 HTML 구조가 유지된다", async () => {
-    const tmpDir = `/tmp/rpgzzu-player-build-${Date.now()}`;
-    const viteModuleName = "vite";
-    const { build } = (await import(viteModuleName)) as {
-      build(options: Record<string, unknown>): Promise<unknown>;
-    };
-    await build({
-      configFile: "vite.player.config.ts",
-      build: {
-        outDir: tmpDir,
-        emptyOutDir: true,
-      },
-    });
+const PLAYER_ENV_PREFIX = "OPENRPG_PLAYER_";
+const TEXT_ARTIFACT_PATTERN = /\.(?:css|html|js|map)$/u;
+const FORBIDDEN_ARTIFACT_MARKERS = [
+  {
+    label: "remote-database-client",
+    pattern: /(?:supabaseProject(?:Config|Sync)|recordSupabase|loadProjectFromSupabase|saveProjectToSupabase)/iu,
+  },
+  { label: "remote-activity-table", pattern: /ai_(?:activity_logs|analysis_runs)/iu },
+  { label: "editor-ai-module", pattern: /(?:@\/|src\/)ai\/activityLog/iu },
+  { label: "editor-module-path", pattern: /src\/editor\//iu },
+  { label: "remote-provider", pattern: /(?:openrouter|llm-provider)/iu },
+  { label: "remote-activity-endpoint", pattern: /__rpgzzu\/ai-activity/iu },
+  { label: "editor-public-env", pattern: /VITE_(?:LLM|SUPABASE|YUNWU)/u },
+  { label: "remote-api-endpoint", pattern: /api\.(?:anthropic|openai)\.com/iu },
+] as const;
 
-    const files = await listFiles(tmpDir);
-    const html = await readText(`${tmpDir}/player.html`);
-    const searchable = (await Promise.all(
-      files
-        .filter((file) => /\.(html|js|css)$/u.test(file))
-        .map((file) => readText(file))
-    )).join("\n");
+type ScanFinding = {
+  readonly label: string;
+  readonly fileCount: number;
+};
 
-    expect(files.some((file) => file.endsWith("/player.js"))).toBe(true);
-    expect(files.some((file) => file.endsWith("/player-manifest.json"))).toBe(true);
-    expect(html).toContain('<div id="app"></div>');
-    expect(html).toContain("player.js");
-    expect(searchable.toLowerCase()).not.toContain("supabase");
-    expect(searchable.toLowerCase()).not.toContain("openrouter");
-    expect(searchable.toLowerCase()).not.toContain("llm-provider");
-    expect(searchable).not.toContain("src/editor/");
-  }, 30_000);
-});
+type ScanReport = {
+  readonly scannedFileCount: number;
+  readonly findings: readonly ScanFinding[];
+};
 
-async function listFiles(root: string): Promise<string[]> {
-  const fsModuleName = "node:fs/promises";
-  const pathModuleName = "node:path";
-  const fs = (await import(fsModuleName)) as {
-    readdir(path: string, opts: { withFileTypes: true }): Promise<Array<{ name: string; isDirectory(): boolean }>>;
-  };
-  const path = (await import(pathModuleName)) as {
-    join(...parts: string[]): string;
-  };
-  const out: string[] = [];
-  async function walk(dir: string): Promise<void> {
-    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) await walk(full);
-      else out.push(full);
-    }
+class PlayerArtifactScanError extends Error {
+  readonly name = "PlayerArtifactScanError";
+
+  constructor(readonly findings: readonly ScanFinding[]) {
+    super(`Player artifact scan failed (${findings.map((finding) => `${finding.label}:${finding.fileCount}`).join(", ")})`);
   }
-  await walk(root);
-  return out;
 }
 
-async function readText(path: string): Promise<string> {
-  const fsModuleName = "node:fs/promises";
-  const fs = (await import(fsModuleName)) as {
-    readFile(path: string, encoding: "utf8"): Promise<string>;
-  };
-  return fs.readFile(path, "utf8");
+describe("player build output", () => {
+  it("keeps diagnostics source independent from editor telemetry and scopes public env exposure", async () => {
+    // Given
+    const diagnosticsSource = await readFile(resolve("src/player/playBootDiagnostics.ts"), "utf8");
+    const viteConfigSource = await readFile(resolve("vite.player.config.ts"), "utf8");
+    const modalSource = await readFile(resolve("src/editor/panels/testPlayModal.ts"), "utf8");
+    const exportEntrySource = await readFile(resolve("src/player/exportEntry.ts"), "utf8");
+
+    // When
+    const forbiddenSourceEdges = ["@/ai/activityLog", "@/project/store"].filter((edge) =>
+      diagnosticsSource.includes(edge),
+    );
+
+    // Then
+    expect(forbiddenSourceEdges).toEqual([]);
+    expect(viteConfigSource).toContain(`envPrefix: "${PLAYER_ENV_PREFIX}"`);
+    expect(modalSource.match(/diagnosticSink: editorPlayBootDiagnosticSink/gu)).toHaveLength(2);
+    expect(exportEntrySource).not.toContain("editorPlayBootDiagnosticSink");
+  });
+
+  it("builds a clean player into an OS-portable disposable directory", async () => {
+    // Given
+    const outputDir = await mkdtemp(join(tmpdir(), "rpgzzu-player-build-"));
+    const transformedModuleIds: string[] = [];
+    const importGraphProbe = {
+      name: "test-player-import-graph",
+      transform(_code, id) {
+        transformedModuleIds.push(id.replaceAll("\\", "/"));
+        return null;
+      },
+    } satisfies Plugin;
+
+    try {
+      // When
+      await build({
+        configFile: resolve("vite.player.config.ts"),
+        logLevel: "silent",
+        plugins: [importGraphProbe],
+        build: {
+          outDir: outputDir,
+          emptyOutDir: true,
+        },
+      });
+      const files = await collectFiles(outputDir);
+      const html = await readFile(join(outputDir, "player.html"), "utf8");
+      const report = await scanPlayerArtifacts(outputDir);
+      const forbiddenModules = transformedModuleIds.filter((id) =>
+        /(?:\/src\/ai\/|supabaseProject(?:Config|Sync)|tileMetadataDb)/iu.test(id),
+      );
+
+      // Then
+      expect(files.some((file) => file.endsWith("player.js"))).toBe(true);
+      expect(files.some((file) => file.endsWith("player-manifest.json"))).toBe(true);
+      expect(html).toContain('<div id="app"></div>');
+      expect(html).toContain("player.js");
+      expect(forbiddenModules).toEqual([]);
+      expect(report.findings).toEqual([]);
+      expect(report.scannedFileCount).toBeGreaterThan(0);
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  }, 120_000);
+
+  it("rejects a disposable forbidden import and fake secret without echoing matched values", async () => {
+    // Given
+    const outputDir = await mkdtemp(join(tmpdir(), "rpgzzu-player-adversarial-"));
+    const fakeSecret = `FAKE_PLAYER_SECRET_${Date.now()}_DO_NOT_ECHO`;
+    const deliberateImport = "@/ai/activityLog";
+
+    try {
+      await writeFile(
+        join(outputDir, "player.js"),
+        `import ${JSON.stringify(deliberateImport)};\nconst canary = ${JSON.stringify(fakeSecret)};\n`,
+        "utf8",
+      );
+
+      // When
+      const scan = scanPlayerArtifacts(outputDir, [fakeSecret]);
+
+      // Then
+      await expect(scan).rejects.toBeInstanceOf(PlayerArtifactScanError);
+      await expect(scan).rejects.not.toThrow(fakeSecret);
+      await expect(scan).rejects.not.toThrow(deliberateImport);
+    } finally {
+      await rm(outputDir, { recursive: true, force: true });
+    }
+  });
+});
+
+async function scanPlayerArtifacts(
+  root: string,
+  sensitiveValues: readonly string[] = [],
+): Promise<ScanReport> {
+  const files = (await collectFiles(root)).filter((file) => TEXT_ARTIFACT_PATTERN.test(file));
+  const contents = await Promise.all(files.map(async (file) => readFile(file, "utf8")));
+  const findings: ScanFinding[] = [];
+
+  for (const marker of FORBIDDEN_ARTIFACT_MARKERS) {
+    const fileCount = contents.filter((content) => marker.pattern.test(content)).length;
+    if (fileCount > 0) findings.push({ label: marker.label, fileCount });
+  }
+
+  const sensitiveFileCount = contents.filter((content) =>
+    sensitiveValues.some((value) => value.length > 0 && content.includes(value)),
+  ).length;
+  if (sensitiveFileCount > 0) {
+    findings.push({ label: "sensitive-canary", fileCount: sensitiveFileCount });
+  }
+
+  if (findings.length > 0) throw new PlayerArtifactScanError(findings);
+  return { scannedFileCount: files.length, findings };
+}
+
+async function collectFiles(root: string): Promise<readonly string[]> {
+  const entries = await readdir(root, { withFileTypes: true });
+  const nested = await Promise.all(
+    entries.map(async (entry) => {
+      const fullPath = join(root, entry.name);
+      return entry.isDirectory() ? collectFiles(fullPath) : [fullPath];
+    }),
+  );
+  return nested.flat().sort((left, right) => left.localeCompare(right));
 }

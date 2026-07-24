@@ -248,9 +248,10 @@
 
 .selected-tile-status .selected-tile-tileset {
   color: var(--text-2, var(--text-secondary));
-  flex: 1 1 auto;
+  flex: 0 1 auto;
   font-size: 10px;
   font-weight: 400;
+  max-width: 42%;
   min-width: 0;
   overflow: hidden;
   text-align: right;
@@ -699,7 +700,7 @@
   position: absolute;
   top: var(--range-top, 0);
   width: max(2px, var(--range-width, 0px));
-  z-index: 4;
+  z-index: var(--z-canvas-raised);
 }
 
 .chipset-range-marquee.hidden {
@@ -719,7 +720,7 @@
   position: absolute;
   right: 6px;
   top: 6px;
-  z-index: 5;
+  z-index: var(--z-canvas-chrome);
 }
 
 .sheet-range-classify:hover,

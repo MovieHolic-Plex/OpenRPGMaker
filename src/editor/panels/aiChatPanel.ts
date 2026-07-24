@@ -2,7 +2,7 @@
 // LLM 어시스턴트 채팅 dock. 대화 히스토리 + 입력 + 스트리밍 표시 + 제안(changeset) 카드 + 설정 폼.
 // - 이 파일은 패널 조립/배선(orchestration)을 소유한다. 순수 헬퍼·카드·설정·로그 렌더는 형제 모듈로 분리.
 // - 제안 수락은 세션 draft를 store에 반영 → projectLint 게이트 → undo 체크포인트.
-// - API 키는 설정 폼에서만 입력(localStorage). 소스/프로젝트 JSON에 하드코딩 금지.
+// - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
 import type { AiDocument } from "@/project/types";
@@ -494,7 +494,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     appendOpenSettingsButton(keyPromptBubble, "apiKey");
   };
   const ensureConfigReadyForSend = (): boolean => {
-    if (isAiConfigReady(loadAiConfig())) return true;
+    const config = loadAiConfig();
+    if (isAiConfigReady(config)) return true;
+    if (config.authMode === "chatgpt") {
+      openAiSettings("first");
+      toast("AI 설정에서 ChatGPT 연결과 모델을 확인하세요.", "error");
+      return false;
+    }
     showMissingKeyPrompt();
     toast("AI 설정에서 API 키를 먼저 입력하세요.", "error");
     return false;
@@ -872,13 +878,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const appendErrorWithRetry = (message: string, session: AssistantSession, requestText: string): void => {
     const bubble = appendBubble("system", `오류: ${message}`);
     const actions: HTMLElement[] = [];
-    if (message.includes("API 키") || message.includes("인증 실패") || message.includes("401")) {
+    if (message.includes("API 키") || message.includes("인증 실패") || message.includes("ChatGPT 로그인") || message.includes("동반 서비스") || message.includes("401")) {
+      const chatGptMode = loadAiConfig().authMode === "chatgpt";
       const settingsAction = el("button", {
         class: "ai-assistant-action ai-error-open-settings",
         text: "설정 열기",
-        attrs: { type: "button", title: "어시스턴트 설정을 열고 API 키 입력으로 이동합니다" },
+        attrs: { type: "button", title: chatGptMode ? "ChatGPT 연결 설정을 엽니다" : "어시스턴트 설정을 열고 API 키 입력으로 이동합니다" },
         dataset: { testid: "ai-error-open-settings" },
-        on: { click: () => openAiSettings("apiKey") },
+        on: { click: () => openAiSettings(chatGptMode ? "first" : "apiKey") },
       });
       actions.push(settingsAction);
     }

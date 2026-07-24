@@ -35,7 +35,7 @@ export function battleCommandsForActor(
   const overrideIds = options.overrideCommandIds;
   let source: readonly ClassBattleCommand[] = klass?.battleCommands ?? [];
   if (overrideIds && overrideIds.length > 0) {
-    source = overrideIds.map((id, index) => {
+    source = overrideIds.map((id) => {
       const global = project.database.battleCommands?.find((record) => record.id === id);
       const fromClass = klass?.battleCommands.find((entry) => entry.id === id);
       return {

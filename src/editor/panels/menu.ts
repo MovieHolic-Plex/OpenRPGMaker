@@ -12,6 +12,7 @@ import {
 } from "@/editor/editorUiMode";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
+import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
@@ -24,6 +25,7 @@ import {
   ProjectPackageError,
   projectPackageFileName,
   readProjectPackage,
+  LEGACY_RPGZZU_MIME,
   RPGZZU_MIME,
 } from "@/project/package";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -374,7 +376,7 @@ function menuCommands(
       ];
     case "help":
       return [
-        item("단축키", "menu-help-shortcuts", () => toast(SHORTCUT_HELP, "ok")),
+        item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
         item("정보", "menu-help-about", () => toast("RPG 쯔꾸르 - RM2000/2003 스타일 웹 에디터", "ok")),
       ];
   }
@@ -383,10 +385,6 @@ function menuCommands(
 function item(label: string, testId: string, onClick: () => void, disabled = false): MenuCommand {
   return { kind: "item", label, testId, onClick, disabled };
 }
-
-// 커맨드 팔레트("도움말: 단축키")에서도 재사용한다.
-export const SHORTCUT_HELP =
-  "V/B/E/G/N/I: 선택/브러시/지우개/채우기/이벤트/스포이트  •  F5/F6/F7: 하위/상위/이벤트 레이어  •  1~7: 도구(연필/채우기/스포이트/이동/선택/통행/이벤트)  •  +/-: 줌  •  Ctrl+K: 명령·맵·스킬 검색  •  Ctrl+S: 저장  •  Ctrl+Z/Y: 실행취소/다시실행  •  Ctrl+C/V: 복사/붙여넣기  •  Space: 임시 이동  •  가운데 드래그: 맵 이동";
 
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
@@ -441,7 +439,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
     toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
-    toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말", icon: "manual", onClick: () => toast(SHORTCUT_HELP, "ok") })
+    toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말 (단축키·도구 가이드)", icon: "manual", onClick: () => openHelpModal() })
   );
   disposeToolbarOverflows.push(installToolbarOverflow(row));
   return row;
@@ -731,7 +729,7 @@ async function doExportWebGame(): Promise<void> {
 function doImport(): void {
   const input = document.createElement("input");
   input.type = "file";
-  input.accept = `${RPGZZU_MIME},application/zip,.rpgzzu,application/json,.json`;
+  input.accept = `${RPGZZU_MIME},${LEGACY_RPGZZU_MIME},application/zip,.oprn,.rpgzzu,application/json,.json`;
   input.addEventListener("change", () => {
     const file = input.files?.[0];
     if (!file) return;
@@ -748,7 +746,8 @@ function doImport(): void {
 }
 
 function isProjectPackageFile(file: File): boolean {
-  return file.name.toLowerCase().endsWith(".rpgzzu") || file.type === RPGZZU_MIME;
+  const name = file.name.toLowerCase();
+  return name.endsWith(".oprn") || name.endsWith(".rpgzzu") || file.type === RPGZZU_MIME || file.type === LEGACY_RPGZZU_MIME;
 }
 
 async function replaceProjectFromPackage(file: File): Promise<void> {

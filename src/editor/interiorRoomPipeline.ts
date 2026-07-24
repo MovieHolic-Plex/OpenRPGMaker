@@ -1,20 +1,25 @@
-/**
+﻿/**
  * villager-room-v1 procedural interior pipeline (village-session style layers).
  *
  * Layers (multi-turn / one-shot):
  *   plan → floor (bbox) → walls → furniture → entrance → critique
  *
- * Walls (Option B, 2026-07-15): **house whole-tile grammar** via
- * `planInteriorHouseWalls` / `paintInteriorHouseWalls` — no store wall-frame autotile.
- * Cream face 74–76 / 104–106, solo partition 77/107, cap 457 + joints 458/456,
- * posts 428/426, door alcove 398|floor|396 + step 397. Forbidden: 233/257/258.
- * Dark wall brush 366 is a separate store+quarter-render path (not house shells).
+ * Walls (천장 정본, 2026-07-20 사용자 교정): `planInteriorHouseWalls` /
+ * `paintInteriorHouseWalls` — 천장(구조 질량)은 366 오토타일 하나로 통일(비드 테두리는
+ * 쿼터 렌더 성형), 남향 모서리에는 크림 벽면 2행(74–76/104–106, 1칸 77/107),
+ * 모든 벽면 위에는 반드시 천장(쌍 불변식). 문은 천장 띠를 뚫는 바닥 통로만 —
+ * 스텝 397·플랭크 396/398·캡 457/456/458·포스트 426/428 낱장 금지. Forbidden: 233/257/258.
  *
  * Furniture surfaces:
  *   wallFace | againstWallFloor | cornerFloor | openFloor | floorDebris
  * Hard cluster: bed 355 left-of 356 (upper) — openwiki hard adjacency contract.
  */
-import { paintInteriorHouseWalls, planInteriorHouseWalls } from "@/editor/interiorHouseWallGrammar";
+import {
+  CEILING_MEMBER_TILES,
+  paintInteriorHouseWalls,
+  planInteriorHouseWalls,
+  shapeInteriorCeiling,
+} from "@/editor/interiorHouseWallGrammar";
 import { HOUSE_SHELL_MEMBER_TILES } from "@/project/defaults/interiorHouseWallTiles";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import {
@@ -22,6 +27,7 @@ import {
   DARK_WALL_AUTOTILE_GROUP_ID,
   DARK_WALL_TILE,
 } from "@/project/defaults/darkWallAutotile";
+import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import type {
   ClusterRule,
   GameEvent,
@@ -114,6 +120,8 @@ export const VR = {
   /** 화덕 오븐 상단(21)+하단(51) — 불투명 lower 세로쌍, 북벽에 붙여 배치. */
   STOVE_TOP: 21,
   STOVE_BOT: 51,
+  /** 벽난로 아궁이(373) — 벽면 매립 화구. 실내 바닥 모닥불(124) 대체(2026-07-20). */
+  HEARTH: 373,
   CAULDRON: 323,
   KETTLE: 235,
   BUCKET: 265,
@@ -374,15 +382,16 @@ export function interiorRoomTileGroups(): TileGroupMetadata[] {
     group("floor-wood", "실내 나무 바닥", "terrain", "lower", [VR.FLOOR, VR.FLOOR_HOLE], "floor bbox 채우기", {
       rules: [],
     }),
-    // Option B: 완성 통타일만 나열한다. 233/258/257은 벽 아트가 아니라 핑크/질감 플레이스홀더라
-    // 이 그룹에 두면 AI·팔레트가 집 벽으로 골라 쓴다 (HOUSE_SHELL_FORBIDDEN_TILES).
-    group("house-shell", "하우스 셸(크림 벽면)", "wall", "lower", [
+    // 천장 정본 v2(2026-07-20): 천장(구조 질량·바깥 어둠)은 검정+회암 테두리 오토타일
+    // (앵커 369, body 430) 하나 — 저장 시점 성형(shapeInteriorCeiling). 체커 블록(366 계열)은 배제.
+    // 남향 모서리(아래가 바닥)에는 반드시 크림 벽면 2행, 모든 벽면 위에는 반드시 천장(쌍 불변식).
+    // 233/258/257은 벽 아트가 아니라 핑크/질감 플레이스홀더 — 금지(HOUSE_SHELL_FORBIDDEN_TILES).
+    group("house-shell", "하우스 셸(천장 430 오토타일 + 크림 벽면)", "wall", "lower", [
+      ...CEILING_MEMBER_TILES,
       HOUSE_WALL_FACE.UL, HOUSE_WALL_FACE.UM, HOUSE_WALL_FACE.UR,
       HOUSE_WALL_FACE.L, HOUSE_WALL_FACE.M, HOUSE_WALL_FACE.R,
       HOUSE_WALL_FACE.SOLO_U, HOUSE_WALL_FACE.SOLO_L,
-      HOUSE_WALL_FACE.CAP, HOUSE_WALL_FACE.DOOR_WEST, HOUSE_WALL_FACE.DOOR_EAST,
-      456, 458, 426, 428, 397,
-    ], "집 실내 표준 벽: 크림 면 위 74/75/76 + 아래 104/105/106 + 1칸 77/107 + 457 캡(조인트 458/456) + 428/426 포스트 + 397 트림/문턱"),
+    ], "집 실내 표준 벽: 천장=검정+회암 테두리 오토타일(앵커 369·body 430) 통일, 벽 위 필수 + 남향 모서리 크림 면 위 74/75/76 · 아래 104/105/106(1칸 77/107). 체커 블록(366-368/396-398/426-428/456-458)과 캡/포스트/트림/플랭크 낱장 사용 금지 — 문은 바닥 통로만"),
     group("wall-frame", "실내 벽 프레임(레거시 다크월)", "wall", "lower", [
       VR.BODY, VR.INNER_L, VR.INNER_R, VR.EDGE_W, VR.EDGE_E, VR.EDGE_N, VR.EDGE_S,
       VR.CORNER_NW, VR.CORNER_NE, VR.BEAM_SW, VR.BEAM_SE, VR.ALCOVE_L, VR.ALCOVE_R,
@@ -497,7 +506,7 @@ export function ensureInteriorRoomHarness(project: Project): boolean {
   if (!ts) return false;
   let changed = false;
 
-  // Dark wall 366 brush autotile (primary wall terrain).
+  // Dark wall 366 brush autotile (legacy store brush — 집 셸에는 미사용).
   const dark = createDarkWallAutotileGroup();
   const existing = ts.autotileGroups ?? [];
   const idx = existing.findIndex((g) => g.id === DARK_WALL_AUTOTILE_GROUP_ID);
@@ -507,6 +516,24 @@ export function ensureInteriorRoomHarness(project: Project): boolean {
   } else if (JSON.stringify(existing[idx]!.variantMap) !== JSON.stringify(dark.variantMap)) {
     const next = [...existing];
     next[idx] = dark;
+    ts.autotileGroups = next;
+    changed = true;
+  }
+
+  // 천장 정본 v2: 검정+회암 테두리 천장 오토타일(앵커 369·body 430) — 집 셸의 정본 천장.
+  const ceiling = {
+    ...DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP,
+    id: `${INTERIOR_ROOM_HARNESS_PREFIX}ceiling`,
+    name: "천장(회암 테두리)",
+  };
+  const groups = ts.autotileGroups ?? [];
+  const ceilingIdx = groups.findIndex((g) => g.id === ceiling.id);
+  if (ceilingIdx < 0) {
+    ts.autotileGroups = [...groups, ceiling];
+    changed = true;
+  } else if (JSON.stringify(groups[ceilingIdx]!.variantMap) !== JSON.stringify(ceiling.variantMap)) {
+    const next = [...groups];
+    next[ceilingIdx] = ceiling;
     ts.autotileGroups = next;
     changed = true;
   }
@@ -666,6 +693,8 @@ export function applyInteriorRoomLayer(
         }
       }
       paintInteriorHouseWalls(next, placements);
+      // 천장 정본 v2: 천장(430 계열)을 저장 시점에 오토타일 성형 — 회암 테두리.
+      shapeInteriorCeiling(next);
       return { map: next, layer, summary: "walls raised (house whole-tile grammar)", warnings, ok: true };
     }
     case "furniture": {
@@ -679,6 +708,8 @@ export function applyInteriorRoomLayer(
       // 배치가 끝난 뒤 바닥/벽 재질 교체 — 벽 문법·성형·러그·벽걸이는 72/크림 기준으로 이미 완료된 상태.
       retintFloorMaterials(next, plan);
       retintHouseWallFace(next, plan.wallMaterial);
+      // 통행 강제·소품 정리가 천장 인접 바닥을 바꿨을 수 있다 — 천장 재성형으로 마감.
+      shapeInteriorCeiling(next);
       return { map: next, layer, summary: `furniture theme=${plan.theme}`, warnings, ok: true };
     }
     case "entrance": {
@@ -899,6 +930,8 @@ function paintRoomSpace(
 function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan): string[] {
   const warnings: string[] = [];
   RNG = mulberry32((plan.seed ?? 1) * 0x9e3779b1 + 1);
+  // 복도 카펫 먼저 — 복도 테마 방은 붉은 카펫 러너로 잇는다(2026-07-20 사용자 교정).
+  paintCorridorCarpets(map, plan);
   // 방 구조(bbox): 방마다 자기 바닥 마스크 + 자기 테마로 배치한다.
   if (plan.rooms && plan.rooms.length > 0) {
     for (const room of plan.rooms) {
@@ -908,6 +941,29 @@ function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan):
   }
   warnings.push(...paintRoomSpace(map, floor, floor, plan.theme, plan));
   return warnings;
+}
+
+/**
+ * 복도 카펫 러너 — 복도 테마 방 바닥에 붉은 카펫(테두리 375-377 / 몸통 405-407 / 하단 435-437)을
+ * 3열 폭으로 중앙 정렬해 깐다. 세로 복도(대저택 정본)·가로 복도 모두 방 전장을 잇는다.
+ */
+function paintCorridorCarpets(map: GameMap, plan: InteriorRoomPlan): void {
+  for (const room of plan.rooms ?? []) {
+    if ((room.theme ?? plan.theme) !== "corridor") continue;
+    const stripW = Math.min(3, room.w);
+    const x0 = room.x + Math.floor((room.w - stripW) / 2);
+    for (let dy = 0; dy < room.h; dy += 1) {
+      const rowSet = dy === 0 ? RUG_RED[0]! : dy === room.h - 1 ? RUG_RED[2]! : RUG_RED[1]!;
+      for (let dx = 0; dx < stripW; dx += 1) {
+        const col = stripW === 1 ? 1 : dx === 0 ? 0 : dx === stripW - 1 ? 2 : 1;
+        const x = x0 + dx;
+        const y = room.y + dy;
+        if (!inBounds(x, y, map.width, map.height)) continue;
+        if (map.lowerTiles[y * map.width + x] !== VR.FLOOR && !FLOOR_MATERIAL_TILES.has(map.lowerTiles[y * map.width + x]!)) continue;
+        map.lowerTiles[y * map.width + x] = rowSet[col]!;
+      }
+    }
+  }
 }
 
 /**
@@ -1296,16 +1352,8 @@ function paintThemeFurniture(
       placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
       placeWallMount(map, wallFace, [VR.WINDOW]);
     }
-    // 소형 객실 밀도 가드(통행 확보): 탁자 세트는 방이 넉넉할 때만 — 4×3 객실은 침대·거울로 충분.
-    // 침대 존(주변 2칸)과 러그 위는 후보에서 제외 — 침대에 밥상이 붙는 구도 금지.
-    if (area >= 16) {
-      const awayFromBed = open.filter(
-        (c) =>
-          !RUG_TILE_SET.has(getL(map, c.x, c.y))
-          && (!bed || bed.cells.every((b) => Math.max(Math.abs(c.x - b.x), Math.abs(c.y - b.y)) > 2)),
-      );
-      placeTableChairSet(map, awayFromBed, plan.door);
-    }
+    // 2026-07-20 사용자 교정: "모든 방마다 탁자" 강제 해제 — 침실에는 탁자 세트를 놓지 않는다.
+    // 침대·협탁·거울·러그·벽 장식이 침실의 본문이다.
     // 코너·벽 스냅 — 소형 객실은 병/통 스팸 금지 (1~2개).
     placeCorner(map, corners, bedside ? [VR.BOX] : [VR.BOX, VR.JARS]);
     placeAgainstWall(map, wallSnap, [VR.CABINET_U], 2);
@@ -1341,14 +1389,18 @@ function paintThemeFurniture(
   }
   if (plan.theme === "kitchen") {
     // 화덕(21+51 세로쌍)을 북벽에 붙이고, 솥·주전자는 화덕 옆(바닥 산포 금지).
-    // 레퍼런스 코티지: 화덕 옆에 모닥불(124) 액센트로 벽난로 느낌을 보강.
+    // 2026-07-20 사용자 교정: 실내 바닥 모닥불(124) 대신 정본 아궁이(373 '벽난로 아궁이')를
+    // 화덕 옆 벽면에 매립한다 — 어휘에 있었는데 파이프라인이 안 쓰던 타일.
     const stove = placeStovePair(map, northFloor, plan.door);
     if (stove) {
       const cx = stove.x + 1;
       if (isWalkFloor(map, cx, stove.y) && isUpperEmpty(map, cx, stove.y)) setU(map, cx, stove.y, VR.CAULDRON);
       if (isWalkFloor(map, cx + 1, stove.y) && isUpperEmpty(map, cx + 1, stove.y)) setU(map, cx + 1, stove.y, VR.KETTLE);
-      const fx = stove.x - 1;
-      if (isWalkFloor(map, fx, stove.y) && isUpperEmpty(map, fx, stove.y)) setU(map, fx, stove.y, 124);
+      const hearthX = stove.x - 1;
+      const hearthY = stove.y - 1; // 화덕 상단(21)과 같은 벽면 행
+      if (isUpperEmpty(map, hearthX, hearthY) && houseShellWallMembers().has(getL(map, hearthX, hearthY))) {
+        setU(map, hearthX, hearthY, VR.HEARTH);
+      }
     }
     // 작업대(사각 탁자+의자 1) — 주방 중앙이 텅 비는 문제 해소. 화덕 존 1칸 여유.
     const awayFromStove = open.filter(
@@ -1584,6 +1636,9 @@ function placeSouthFiller(
   door: DoorSpec,
   area: number,
 ): void {
+  // 복도는 여백이 정답(2026-07-20 사용자 교정) — 남측 필러(탁자·의자·상자)를 절대 놓지 않는다.
+  // (이 가드가 없어서 대저택 홀에 탁자 세트가 들어가던 버그.)
+  if (theme === "corridor") return;
   if (area < 20) return;
   const ys: number[] = [];
   for (let y = 0; y < map.height; y += 1) {
@@ -1593,15 +1648,18 @@ function placeSouthFiller(
   const midY = (Math.min(...ys) + Math.max(...ys)) / 2;
   const south = listOpenFloor(floor, map, door).filter((c) => c.y > midY);
   if (south.length === 0) return;
-  // 좌석군 상한: 방에 이미 좌석군이 2개 이상이면 남쪽 필러는 적재물로 대체(좌석 스팸 방지).
-  if (theme === "storage" || theme === "kitchen" || countSeatingGroups(map, floor) >= 2) {
+  // 좌석군 상한: 이미 좌석군이 2개 이상이면 적재물로 대체(좌석 스팸 방지).
+  // 침실도 적재물 — "모든 방마다 탁자" 강제 해제(2026-07-20 사용자 교정).
+  if (theme === "storage" || theme === "kitchen" || theme === "bedroom" || countSeatingGroups(map, floor) >= 2) {
     const southSnap = listWallSnapFloor(floor, map, door).filter((c) => c.y > midY);
     const goods =
       theme === "kitchen"
         ? [VR.BARREL, VR.CRATE, VR.JARS, VR.BUCKET]
         : theme === "storage"
           ? [VR.BARREL, VR.CRATE, VR.GRAIN, VR.BOX]
-          : [VR.BARREL, VR.CRATE, VR.GRAIN, VR.JARS];
+          : theme === "bedroom"
+            ? [VR.CABINET_U, VR.BOX]
+            : [VR.BARREL, VR.CRATE, VR.GRAIN, VR.JARS];
     placeAgainstWall(map, southSnap, goods, 1);
     return;
   }
@@ -2101,7 +2159,6 @@ function placeEntranceEvent(map: GameMap, door: DoorSpec): void {
   // Valid command shape: text uses `body` (not `lines`) — invalid shape was dropped on save.
   const event: GameEvent = {
     id: `ev_entrance_${map.id}`,
-    name: "입구",
     x: door.x,
     y: door.y,
     trigger: { kind: "action" },
@@ -2170,7 +2227,6 @@ function attachPropInspectEvents(map: GameMap): void {
     n += 1;
     out.push({
       id: `ev_inspect_${map.id}_${n}`,
-      name,
       x,
       y,
       trigger: { kind: "action" },
@@ -2210,46 +2266,8 @@ function attachPropInspectEvents(map: GameMap): void {
     }
   }
   if (out.length) map.events = [...(map.events ?? []), ...out];
-  // Pin one interior chipset box at (1,1) for a predictable demo prop cell.
-  ensurePinnedChipsetBox(map, 1, 1);
-}
-
-/** Force a native chipset BOX tile + inspect event onto a fixed cell. */
-function ensurePinnedChipsetBox(map: GameMap, x: number, y: number): void {
-  if (!inBounds(x, y, map.width, map.height)) return;
-  if (!isWalkFloor(map, x, y)) setL(map, x, y, VR.FLOOR);
-  setU(map, x, y, VR.BOX);
-  map.events = (map.events ?? []).filter(
-    (e) => !(e.x === x && e.y === y && (e.id.startsWith("ev_inspect_") || e.id.startsWith("ev_crate_"))),
-  );
-  const key = `${x},${y}`;
-  const occupied = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
-  if (occupied.has(key)) return;
-  const id = `ev_inspect_${map.id}_pin_${x}_${y}`;
-  map.events = [
-    ...(map.events ?? []),
-    {
-      id,
-      name: "상자",
-      x,
-      y,
-      trigger: { kind: "action" },
-      commands: [],
-      pages: [
-        {
-          id: `${id}_p`,
-          name: "상자",
-          conditions: [],
-          graphic: {},
-          trigger: { kind: "action" },
-          priority: "below",
-          overlapForbidden: false,
-          movement: { type: "fixed", speed: 3, frequency: 3 },
-          commands: [{ kind: "text", body: "나무 상자를 열어본다. 잡화가 들어 있다." }],
-        },
-      ],
-    },
-  ];
+  // (2026-07-20) (1,1) 고정 데모 상자(ensurePinnedChipsetBox)는 사용자 지적으로 제거 —
+  // 천장 링 위에 바닥+상자를 강제로 박아 넣던 데모 잔재였다. 되살리지 말 것.
 }
 
 // ── Critique ────────────────────────────────────────────────────────────────

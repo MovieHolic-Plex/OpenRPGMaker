@@ -1,0 +1,188 @@
+/* Map Properties Dialog — RM2003-style tabbed layout */
+
+.map-props-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 320px;
+}
+
+.map-props-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 8px 8px 0;
+  border-bottom: 1px solid var(--border-color, #333);
+  flex-wrap: wrap;
+}
+
+.map-props-tab {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  color: var(--text-secondary, #999);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.map-props-tab:hover {
+  background: var(--hover-bg, rgba(255,255,255,0.05));
+  color: var(--text-primary, #eee);
+}
+
+.map-props-tab.active {
+  background: var(--surface-raised, #2a2a2a);
+  color: var(--accent, #7c9cff);
+  border-color: var(--border-color, #333);
+  font-weight: 600;
+}
+
+.map-props-body {
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.map-props-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.map-props-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.map-props-field label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #999);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.map-props-field input[type="text"],
+.map-props-field input[type="number"],
+.map-props-field select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  background: var(--input-bg, #1a1a1a);
+  color: var(--text-primary, #eee);
+}
+
+.map-props-size-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.map-props-size-row input[type="number"] {
+  width: 72px;
+}
+
+.map-props-size-row span {
+  font-size: 12px;
+  color: var(--text-secondary, #999);
+}
+
+.map-props-check-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.map-props-check-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent, #7c9cff);
+}
+
+.map-props-hint {
+  font-size: 11px;
+  color: var(--text-muted, #666);
+  margin: 4px 0 0;
+}
+
+.map-json-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-json-field textarea {
+  width: 100%;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  padding: 8px;
+  border: 1px solid var(--border-color, #444);
+  border-radius: 4px;
+  background: var(--input-bg, #1a1a1a);
+  color: var(--text-primary, #eee);
+  resize: vertical;
+}
+
+/* Quick add-child button in basic map tree rows */
+.map-tree-add-child-quick {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-muted, #666);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.map-item-basic:hover .map-tree-add-child-quick {
+  display: flex;
+  color: var(--accent, #7c9cff);
+}
+
+.map-tree-add-child-quick:hover {
+  background: var(--hover-bg, rgba(255,255,255,0.08));
+}
+
+/* Delete confirmation dialog — child map options */
+.map-delete-children-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  border: 1px solid var(--border-color, #444);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.map-delete-children-option:hover {
+  border-color: var(--accent, #7c9cff);
+  background: var(--hover-bg, rgba(255,255,255,0.03));
+}
+
+.map-delete-children-option.selected {
+  border-color: var(--accent, #7c9cff);
+  background: rgba(124, 156, 255, 0.08);
+}
+
+.map-delete-children-option input[type="radio"] {
+  accent-color: var(--accent, #7c9cff);
+}

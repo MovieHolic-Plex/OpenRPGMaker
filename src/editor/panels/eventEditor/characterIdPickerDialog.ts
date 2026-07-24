@@ -2,7 +2,7 @@ import { updateEvent } from "@/editor/eventActions";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   characterIdExists,
-  listCharacterIdIndex,
+  getCachedCharacterIdIndex,
   type CharacterIdIndexEntry,
 } from "@/project/characterIdIndex";
 import { store } from "@/project/store";
@@ -222,7 +222,7 @@ function renderCharacterIdPicker(options: {
 }
 
 function render(hosts: PickerHosts, state: PickerState): void {
-  const entries = listCharacterIdIndex(store.getCurrent());
+  const entries = getCachedCharacterIdIndex(store.getCurrent());
   const filtered = filterEntries(entries, state.query);
   clearChildren(hosts.list);
   clearChildren(hosts.detail);

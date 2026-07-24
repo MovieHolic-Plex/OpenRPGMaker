@@ -1586,9 +1586,9 @@
   overflow: hidden;
   padding: 7px 10px;
   text-align: left;
-  text-overflow: ellipsis;
   transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .event-command-picker-command-label {

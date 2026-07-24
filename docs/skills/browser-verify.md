@@ -1,5 +1,7 @@
 # Skill: browser-verify
 
+> **Status:** 현행 운영 문서. 참조 스크립트(`browser-verify-genre-presets.mts`)·포트(9999) 실재 확인됨 (2026-07-21).
+
 Browser verification for RPG ZZU. Opens Chromium against the Vite app, exercises a named flow, and saves screenshots + `manifest.json` under `output/evidence/`.
 
 ## When to use

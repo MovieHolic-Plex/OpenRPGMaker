@@ -280,7 +280,7 @@ describe("battle active slots, switching, and battle events", () => {
     expect(snapshot.eventLogs.filter((log) => log.pageId === "page_half" && log.kind === "message")).toHaveLength(1);
     expect(snapshot.eventLogs.filter((log) => log.pageId === "page_every" && log.kind === "fired").map((log) => log.round)).toEqual([1, 2]);
     expect(snapshot.eventLogs.some((log) => log.kind === "choices" && log.detail?.includes("응답"))).toBe(true);
-    expect(snapshot.eventLogs.some((log) => log.kind === "unsupported" && log.detail === "wait")).toBe(true);
+    expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "wait 1ms")).toBe(true);
   });
 
   it("simulateBattle strict script logs active-slot boss switch participation and HP50 event", () => {

@@ -106,10 +106,10 @@ Harness contract:
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
-6. Prefer 2–6 layers, 1–4 items each, max ~16 items. Each item = one coherent sprint.
+6. Prefer 2–4 layers, 1–3 items each, max ~8 items. Each item = one coherent sprint. Simple requests (one village, a few houses, terrain paint) should use action=direct or a 2-layer plan with ≤4 items — do NOT over-decompose.
 7. Every item needs:
    - title (short)
-   - instruction (concrete tools/numbers: build_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room, …)
+   - instruction (concrete tools/numbers: author_house, author_village, create_map, place_npc, create_transfer_pair, upsert_event, fill_region, paint_road, script_cutscene_preset, make_horror_loop, make_gallery_room, … — 건설 지시는 목표 맵과 정확한 수량을 반드시 명시)
    - doneWhen (acceptance: what must be true when this item is complete)
    - successTools (optional write tool names that auto-complete the item)
 8. Typical RPG content layers: meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
@@ -132,7 +132,7 @@ JSON schema:
           "title": "todo",
           "instruction": "tools + numbers + placement",
           "doneWhen": "observable acceptance criteria",
-          "successTools": ["build_village"]
+          "successTools": ["author_village"]
         }
       ]
     }
@@ -587,14 +587,22 @@ export function isWorkPlanComplete(plan: WorkPlan): boolean {
   return plan.layers.every((l) => l.items.every((i) => i.status === "done" || i.status === "skipped"));
 }
 
+/** 건설 의도 감지: 마을 → author_village, 집/건물 → author_house. */
+function detectConstructionIntent(goal: string): readonly string[] | null {
+  if (/마을/.test(goal)) return ["author_village"];
+  if (/집|건물|house/i.test(goal)) return ["author_house"];
+  return null;
+}
+
 /** Emergency fallback only when planner API/parse fails — single sprint wrapping the raw goal. */
 export function buildDefaultWorkPlan(goal: string, now = new Date()): WorkPlan {
   const genre = detectNarrativeHorrorGenre(goal);
   const genreTools = requiredSuccessToolsForUserText(goal);
+  const constructionTools = detectConstructionIntent(goal);
   const successTools =
     genreTools.length > 0
       ? [...genreTools]
-      : ["build_village", "create_map", "place_npc", "upsert_event", "script_cutscene_preset", "make_horror_loop", "make_gallery_room"];
+      : constructionTools ?? ["create_map", "place_npc", "upsert_event", "script_cutscene_preset", "make_horror_loop", "make_gallery_room"];
   const instruction =
     genre != null
       ? `${templateToolInstruction(genre)}

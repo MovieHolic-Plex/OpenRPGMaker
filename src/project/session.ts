@@ -130,6 +130,8 @@ export interface PlaySession {
   timers: Record<string, number>;
   gold: number;
   inventory: Record<string, number>;
+  /** persistKill 필드 스폰의 영구 처치 수(mapId → spawnId → 처치 수). 세이브에 포함된다. */
+  killedFieldSpawns?: Record<string, Record<string, number>>;
   partyActorIds: string[];
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
@@ -157,6 +159,12 @@ export interface PlaySession {
   actorRows: Record<string, ActorRowPosition>;
   // 런타임 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 미설정 시 DB 이름 사용.
   actorNames?: Record<string, string>;
+  // 런타임 액터 별명 오버라이드(Change Actor Nickname). actorId → 별명.
+  actorNicknames?: Record<string, string>;
+  // 런타임 액터 얼굴 오버라이드(Change Actor Faceset). actorId → faceResourceId.
+  actorFaceResourceIds?: Record<string, string>;
+  // 런타임 액터 얼굴 인덱스 오버라이드(Change Actor Faceset). actorId → faceIndex.
+  actorFaceIndices?: Record<string, number>;
   // 런타임 주인공 그래픽 오버라이드(Change Actor Graphic). actorId → charset resourceId.
   actorCharacterResourceIds?: Record<string, string>;
   // 런타임 직업 오버라이드(Change Actor Class/승급). actorId → classId.

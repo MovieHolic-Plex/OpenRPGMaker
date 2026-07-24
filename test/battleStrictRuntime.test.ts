@@ -59,7 +59,7 @@ describe("battle strict runtime and class commands", () => {
         beginTargetCommand: () => undefined,
         confirmTargetSelection: () => undefined,
       }) as unknown as FakeElement;
-      expect(commandPanelTexts(root)).toEqual(["Attack", "Skill2개", "Item1종", "방어", "도주"]);
+      expect(commandPanelTexts(root)).toEqual(["Attack", "Skill", "Item1종", "방어", "도주"]);
     } finally {
       cleanup();
     }

@@ -6,8 +6,8 @@ import {
   charsetFrameSource,
   type CharsetDirection,
   type CharsetFrameSelection,
-  type EasyRpgCharsetAsset,
 } from "@/assets/easyrpgRtp";
+import type { CharsetPickerAsset } from "@/assets/charsetCatalog";
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 
 export type AdvancedSpriteInput = {
@@ -40,8 +40,8 @@ const RESOURCE_THUMB_SELECTION = {
 } as const satisfies CharsetFrameSelection;
 
 export function renderGraphicResourceList(
-  assets: readonly EasyRpgCharsetAsset[],
-  onSelect: (asset: EasyRpgCharsetAsset) => void
+  assets: readonly CharsetPickerAsset[],
+  onSelect: (asset: CharsetPickerAsset) => void
 ): GraphicResourceList {
   const root = document.createElement("div");
   root.className = "event-graphic-resource-list";
@@ -211,7 +211,7 @@ function renderGraphicRadioGroup<TValue extends string | number>(
   };
 }
 
-function renderResourceIcon(asset?: EasyRpgCharsetAsset): HTMLElement {
+function renderResourceIcon(asset?: CharsetPickerAsset): HTMLElement {
   const icon = document.createElement("span");
   icon.className = "event-graphic-resource-icon";
   icon.setAttribute("aria-hidden", "true");
@@ -219,7 +219,7 @@ function renderResourceIcon(asset?: EasyRpgCharsetAsset): HTMLElement {
   return icon;
 }
 
-function applyResourceThumbnail(icon: HTMLElement, asset: EasyRpgCharsetAsset): void {
+function applyResourceThumbnail(icon: HTMLElement, asset: CharsetPickerAsset): void {
   const source = charsetFrameSource(RESOURCE_THUMB_SELECTION);
   icon.classList.add("charset-thumb");
   icon.style.width = `${CHARSET_FRAME_WIDTH}px`;
@@ -229,6 +229,6 @@ function applyResourceThumbnail(icon: HTMLElement, asset: EasyRpgCharsetAsset): 
   icon.style.backgroundPosition = `-${source.x}px -${source.y}px`;
 }
 
-function charsetResourceLabel(asset: EasyRpgCharsetAsset): string {
+function charsetResourceLabel(asset: CharsetPickerAsset): string {
   return asset.fileName.replace(/\.png$/u, "");
 }

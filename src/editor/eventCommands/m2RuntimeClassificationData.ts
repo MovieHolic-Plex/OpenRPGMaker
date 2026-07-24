@@ -58,15 +58,19 @@ export const M2_PERSISTED_BEHAVIOR_IDS = {
     "m2-091-change-actor-class",
     "m2-092-change-battle-commands",
     "m2-098-change-enemy-hp",
+    "m2-099-change-enemy-mp",
+    "m2-100-change-enemy-state",
     "m2-101-enemy-encounter",
     "m2-102-change-battleback",
+    "m2-103-show-animation",
+    "m2-104-battle-events",
+    "m2-105-abort-battle",
+    "m2-106-call-common-event",
     "m2-107-force-escape",
     "m2-108-action-times",
     "m2-201-camera-control",
     "m2-203-spawn-event",
     "m2-204-remove-event",
-  ],
-  partial: [
     "m2-022-change-actor-name",
     "m2-023-change-actor-nickname",
     "m2-025-change-actor-faceset",
@@ -123,16 +127,18 @@ export const M2_PERSISTED_BEHAVIOR_IDS = {
     "m2-216-evaluate-expression",
     "m2-217-data-query",
   ],
+  partial: [],
   editorOnly: [
     "m2-088-comment",
-    "m2-099-change-enemy-mp",
-    "m2-100-change-enemy-state",
-    "m2-103-show-animation",
-    "m2-104-battle-events",
-    "m2-105-abort-battle",
-    "m2-106-call-common-event",
   ],
 } as const;
+
+// 카탈로그(M2_COMMAND_CATALOG)에 없는 패널 합성 커맨드 — 배틀 이벤트 템플릿처럼
+// 에디터가 직접 삽입하는 마커. 완전성 계약(분류 합집합 == 카탈로그 125종)에는 세지 않고,
+// behaviorClassFor가 editorOnly로만 분류한다.
+export const M2_SYNTHETIC_EDITOR_ONLY_IDS = [
+  "m2-109-result-summary",
+] as const;
 
 export const M2_MAP_COMMON_FULL_IDS = [
   "m2-002-display-text-settings",
@@ -158,8 +164,14 @@ export const M2_MAP_COMMON_FULL_IDS = [
 
 export const M2_TROOP_FULL_IDS = [
   "m2-098-change-enemy-hp",
+  "m2-099-change-enemy-mp",
+  "m2-100-change-enemy-state",
   "m2-101-enemy-encounter",
   "m2-102-change-battleback",
+  "m2-103-show-animation",
+  "m2-104-battle-events",
+  "m2-105-abort-battle",
+  "m2-106-call-common-event",
   "m2-107-force-escape",
   "m2-108-action-times",
 ] as const;

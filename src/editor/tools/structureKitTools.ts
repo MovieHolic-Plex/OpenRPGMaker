@@ -5,12 +5,23 @@
 //  - stamp_structure_kit (write) — 타일 선택은 전부 킷 데이터가 담당, LLM은 위치·반복 횟수만 넘긴다
 //    (castleKit/houseKit과 같은 결정론 시공 규약 — LLM이 타일 id를 고르는 경로를 만들지 않는다).
 
-import { TILE } from "@/project/defaults/constants";
+import { builtinHouseStructureKitsFor } from "@/editor/harnessSuggestion/builtinHouseStructureKits";
+import {
+  structureKitRepeatable,
+  structureKitSize,
+  structureKitUnitCells,
+} from "@/editor/harnessSuggestion/structureKitModel";
 import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type Point = { readonly x: number; readonly y: number };
+
+/** 타일셋의 사용 가능한 킷 전체 — 내장 파라메트릭 집 킷 + 등록 킷. */
+function availableKits(tileset: TilesetDef | undefined): StructureKitDef[] {
+  if (!tileset) return [];
+  return [...builtinHouseStructureKitsFor(tileset), ...(tileset.structureKits ?? [])];
+}
 
 const listStructureKits: ToolDefinition = {
   name: "list_structure_kits",
@@ -29,24 +40,34 @@ const listStructureKits: ToolDefinition = {
       kitId: string;
       name: string;
       tilesetId: string;
+      kind: StructureKitDef["kind"];
       width: number;
       height: number;
       learnedFrom: string;
-      rows: { tiles: number[]; upperTiles?: number[] }[];
+      rows?: { tiles: number[]; upperTiles?: number[] }[];
+      house?: { houseKitId: string; wings: { x: number; y: number; w: number; h: number }[] };
     }[] = [];
     for (const tileset of tilesetsInScope(project, args.mapId)) {
-      for (const kit of tileset.structureKits ?? []) {
+      for (const kit of availableKits(tileset)) {
+        const size = structureKitSize(kit);
         entries.push({
           kitId: kit.id,
           name: kit.name ?? "패턴 스탬프",
           tilesetId: tileset.id,
-          width: kit.width,
-          height: kit.height,
+          kind: kit.kind,
+          width: size.width,
+          height: size.height,
           learnedFrom: kit.learnedFrom,
-          rows: kit.rows.map((row) => ({
-            tiles: [...row.tiles],
-            ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}),
-          })),
+          ...(kit.kind === "section"
+            ? {
+                rows: kit.rows.map((row) => ({
+                  tiles: [...row.tiles],
+                  ...(row.upperTiles ? { upperTiles: [...row.upperTiles] } : {}),
+                })),
+              }
+            : {
+                house: { houseKitId: kit.houseKitId, wings: kit.wings.map((wing) => ({ ...wing })) },
+              }),
         });
       }
     }
@@ -54,7 +75,7 @@ const listStructureKits: ToolDefinition = {
       summary:
         entries.length === 0
           ? "등록된 구조 킷이 없습니다. 유저가 맵에 패턴을 반복해 찍고 제안 카드에서 [등록]하면 생깁니다."
-          : `구조 킷 ${entries.length}개: ${entries.map((entry) => `${entry.name}(${entry.kitId}, ${entry.width}x${entry.height})`).join(", ")}`,
+          : `구조 킷 ${entries.length}개: ${entries.map((entry) => `${entry.name}(${entry.kitId}, ${entry.width}x${entry.height}, ${entry.kind})`).join(", ")}`,
       data: { kits: entries },
     };
   },
@@ -83,48 +104,42 @@ const stampStructureKit: ToolDefinition = {
     const tileset = draft.tilesets[map.tilesetId];
     const kit = resolveKit(tileset, args);
     const origin = originArg(args);
-    const repeat = repeatArg(args);
-    const totalWidth = kit.width * repeat;
+    // 집 킷은 한 채가 완결 단위 — repeat를 무시하고 1회 시공.
+    const repeat = structureKitRepeatable(kit) ? repeatArg(args) : 1;
+    const size = structureKitSize(kit);
+    const totalWidth = size.width * repeat;
     if (
       origin.x < 0 || origin.y < 0
       || origin.x + totalWidth > map.width
-      || origin.y + kit.height > map.height
+      || origin.y + size.height > map.height
     ) {
       throw new ToolError(
-        `킷 '${kit.name ?? kit.id}'(${kit.width}x${kit.height})×${repeat}회가 맵을 벗어납니다 — origin (${origin.x},${origin.y}), 맵 ${map.width}×${map.height}`,
+        `킷 '${kit.name ?? kit.id}'(${size.width}x${size.height})×${repeat}회가 맵을 벗어납니다 — origin (${origin.x},${origin.y}), 맵 ${map.width}×${map.height}`,
         { code: "out-of-bounds", mapId: map.id, x: origin.x, y: origin.y },
       );
     }
     const painted = stampKitCells(map, kit, origin, repeat);
     return {
-      summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${kit.width}x${kit.height} 단면 ×${repeat}회, ${painted}칸`,
-      data: { kitId: kit.id, origin, repeat, height: kit.height, width: totalWidth, painted },
+      summary: `${map.name}에 구조 킷 '${kit.name ?? kit.id}' 시공 — (${origin.x},${origin.y})부터 ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"} ×${repeat}회, ${painted}칸`,
+      data: { kitId: kit.id, origin, repeat, height: size.height, width: totalWidth, painted },
     };
   },
 };
 
-/** 팔레트 스탬프(applyPaletteStamp)와 동일 규약: 비어 있지 않은 칸만 쓴다(고른 그대로, 성형 없음). */
+/** 팔레트 스탬프(applyPaletteStamp)와 동일 규약: 비어 있지 않은 칸만 쓴다(고른 그대로, 성형 없음).
+ * 셀 목록은 구조 킷 모델이 전개(section=행렬, house=정본 houseKit 시공). */
 function stampKitCells(map: GameMap, kit: StructureKitDef, origin: Point, repeat: number): number {
+  const cells = structureKitUnitCells(kit);
+  const size = structureKitSize(kit);
   let painted = 0;
   for (let repeatIndex = 0; repeatIndex < repeat; repeatIndex += 1) {
-    for (let row = 0; row < kit.rows.length; row += 1) {
-      const rowDef = kit.rows[row];
-      if (!rowDef) continue;
-      for (let column = 0; column < kit.width; column += 1) {
-        const x = origin.x + repeatIndex * kit.width + column;
-        const y = origin.y + row;
-        const index = y * map.width + x;
-        const lower = rowDef.tiles[column] ?? TILE.EMPTY;
-        const upper = rowDef.upperTiles?.[column] ?? TILE.EMPTY;
-        if (lower !== TILE.EMPTY) {
-          map.lowerTiles[index] = lower;
-          painted += 1;
-        }
-        if (upper !== TILE.EMPTY) {
-          map.upperTiles[index] = upper;
-          painted += 1;
-        }
-      }
+    for (const cell of cells) {
+      const x = origin.x + repeatIndex * size.width + cell.dx;
+      const y = origin.y + cell.dy;
+      const index = y * map.width + x;
+      if (cell.layer === "lower") map.lowerTiles[index] = cell.tile;
+      else map.upperTiles[index] = cell.tile;
+      painted += 1;
     }
   }
   return painted;
@@ -141,7 +156,7 @@ function tilesetsInScope(project: Project, mapId: unknown): readonly TilesetDef[
 }
 
 function resolveKit(tileset: TilesetDef | undefined, args: Record<string, unknown>): StructureKitDef {
-  const kits = tileset?.structureKits ?? [];
+  const kits = availableKits(tileset);
   if (kits.length === 0) {
     throw new ToolError(
       "이 맵의 타일셋에 등록된 구조 킷이 없습니다. list_structure_kits로 확인하세요.",

@@ -6,11 +6,31 @@
 
 ```bash
 npm install
-npm run dev      # 개발 서버 (http://localhost:5173)
+npm run dev      # 개발 서버 (http://localhost:9999)
 npm run build    # 프로덕션 빌드 (typecheck + bundle)
 npm test         # 단위 테스트 실행
 npm run typecheck # 타입 검사만
 ```
+
+### AI 어시스턴트 연결
+
+기본 연결은 API 키 과금 대신 로컬 Codex의 ChatGPT OAuth 로그인을 사용합니다. `npm run dev`만 띄우면 Codex 로그인 상태를 dev 서버와 **같은 포트**(same-origin)로 자동 브릿지합니다 — 별도 터미널이 필요 없습니다.
+
+```bash
+npm run dev
+```
+
+로그인이 없으면 `AI 설정 → ChatGPT 구독 → 구독 연결` 버튼이 Codex 기기 코드 로그인을 시작합니다.
+
+- **DEV (`npm run dev`)**: vite dev 서버가 `/auth/*`·`/v1/chat/completions`를 로컬 `codex app-server`에 same-origin으로 브릿지합니다 (`vite.config.ts`의 `codexOAuthPlugin`). 별도 프로세스 불필요.
+- **PREVIEW / 배포본 (`npm run preview`, `dist/`)**: 동일 포트 브릿지가 없으므로 별도 터미널에서 동반 서비스를 실행해야 합니다.
+
+```bash
+npm run ai:oauth # 127.0.0.1:17832, 토큰은 Codex가 로컬에서 보관
+npm run preview
+```
+
+API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환해 OpenAI 호환 엔드포인트·모델·키를 입력할 수 있습니다. OAuth access/refresh token은 브라우저 localStorage나 프로젝트 데이터에 저장하지 않습니다.
 
 ## 사용법
 

@@ -13,18 +13,20 @@ import {
 import { registerAuthorHouseFailureCases } from "./support/authorHouseFacadeFailureCases";
 
 describe("author_house canonical facade", () => {
-  it("stays unregistered until the exposure migration while its typed runner enters ToolRunner", () => {
-    // Given
-    const ctx = { project: preparedProject() };
+  it("is registered and executable via both runTool and the typed runner", () => {
+    // Given: separate projects so the second call is not a zero-change replay.
+    const ctxGeneric = { project: preparedProject() };
+    const ctxFacade = { project: preparedProject() };
 
     // When
-    const genericResult = runTool(ctx, "author_house", exteriorSingle);
-    const facadeResult = runAuthorHouse(ctx, exteriorSingle);
+    const genericResult = runTool(ctxGeneric, "author_house", exteriorSingle);
+    const facadeResult = runAuthorHouse(ctxFacade, exteriorSingle);
 
     // Then
-    expect(getTool("author_house")).toBeUndefined();
+    expect(getTool("author_house")).toBeDefined();
+    expect(getTool("author_house")?.deprecated).toBeFalsy();
     expect(AUTHOR_HOUSE_TOOL.name).toBe("author_house");
-    expect(genericResult.ok).toBe(false);
+    expect(genericResult.ok, genericResult.summary).toBe(true);
     expect(facadeResult.ok, facadeResult.summary).toBe(true);
   });
 

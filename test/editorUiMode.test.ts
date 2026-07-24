@@ -126,7 +126,8 @@ describe("editorUiMode", () => {
     expect(modesIdx).toBeGreaterThan(figmaIdx);
     // Overflow + stacking so layer/map flyouts are not under the map canvas
     expect(css).toMatch(/body\.editor-ui-basic[\s\S]*overflow:\s*visible\s*!important/);
-    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*z-index:\s*50/);
+    // z-index 는 tokens.css 의 --z-rail(=50) 로 토큰화됨 — 값은 동일, 캔버스 위로 떠야 한다는 의도 보존.
+    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*z-index:\s*var\(--z-rail\)/);
     expect(css).toMatch(/body\.editor-ui-basic[\s\S]*padding:\s*0\s*!important/);
   });
 });

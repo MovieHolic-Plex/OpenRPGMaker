@@ -1,0 +1,63 @@
+.zone-feedback {
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-9);
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
+  z-index: 30;
+}
+
+.zone-feedback-banner,
+.zone-feedback-toast,
+.zone-feedback-objective,
+.zone-feedback-prompt {
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image: var(--runtime-window-skin) var(--runtime-window-slice);
+  box-sizing: border-box;
+  line-height: 1.4;
+  max-width: 72%;
+  padding: var(--space-1) var(--space-2);
+  position: absolute;
+}
+
+.zone-feedback-banner {
+  left: 50%;
+  top: var(--space-3);
+  transform: translateX(-50%);
+}
+
+.zone-feedback-toast {
+  left: 50%;
+  top: calc(var(--space-4) * 3);
+  transform: translateX(-50%);
+}
+
+.zone-feedback-objective {
+  right: var(--space-2);
+  top: var(--space-2);
+}
+
+.zone-feedback-prompt {
+  bottom: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone-feedback-banner,
+  .zone-feedback-toast,
+  .zone-feedback-prompt {
+    transform: none;
+  }
+
+  .zone-feedback-banner,
+  .zone-feedback-toast,
+  .zone-feedback-prompt {
+    left: var(--space-3);
+    right: var(--space-3);
+    text-align: center;
+  }
+}

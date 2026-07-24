@@ -13,7 +13,7 @@
 }
 
 .editor-product-brand-mark {
-  color: #7aa2ff;
+  color: var(--brand-blue);
   font-size: 14px;
 }
 
@@ -23,7 +23,7 @@
 
 .editor-ui-mode-toggle {
   align-items: center;
-  background: color-mix(in srgb, var(--control-bg, #1a2236) 88%, #000);
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 88%, #000);
   border: 1px solid var(--editor-line, #2a3550);
   border-radius: 999px;
   display: inline-flex;
@@ -53,7 +53,7 @@
 .editor-ui-mode-btn.is-active {
   background: color-mix(in srgb, var(--editor-blue, #3d6df0) 85%, #1a2744);
   box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 50%, transparent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 /* Classic RM toolbar is a legacy surface — expert only. */
@@ -67,8 +67,8 @@ body.editor-ui-basic .classic-toolbar.is-legacy-surface[data-ui-density="expert"
   display: none !important;
 }
 
-/* ── Basic statusbar: keep layer / map / tool / DB; hide secondary noise ── */
-body.editor-ui-basic .editor-statusbar .sb-secondary,
+/* ── Basic statusbar: keep layer / map / tool / tile / zoom / DB; hide expert-only detail ── */
+/* 타일(무엇을 칠하는지)·줌은 basic에서도 보여준다 — 편집에 필수정보. */
 body.editor-ui-basic .editor-statusbar .sb-detail {
   display: none;
 }
@@ -114,7 +114,7 @@ body.editor-ui-basic .left-panel {
   padding: 0 !important;
   position: relative;
   width: 48px;
-  z-index: 50;
+  z-index: var(--z-rail);
 }
 
 body.editor-ui-basic .editor-layout .left-panel-stack,
@@ -199,9 +199,9 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 
 .basic-rail-btn.is-active,
 .basic-rail-btn.is-open {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, #1a2236);
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, var(--mix-base));
   border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 55%, transparent);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .basic-rail-btn[disabled] {
@@ -213,7 +213,7 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
    (네이티브 title 툴팁은 ~1초 지연이라 발견성이 낮다). */
 .basic-rail-btn[data-rail-label]:hover::after,
 .basic-rail-btn[data-rail-label]:focus-visible::after {
-  background: color-mix(in srgb, var(--control-bg, #1a2236) 96%, #000);
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 96%, #000);
   border: 1px solid var(--editor-line-strong, #3a4a6a);
   border-radius: 6px;
   color: var(--editor-text, #e8eefc);
@@ -226,7 +226,7 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
   top: 50%;
   transform: translateY(-50%);
   white-space: nowrap;
-  z-index: 70;
+  z-index: var(--z-flyout);
 }
 
 .basic-rail-sep {
@@ -240,13 +240,13 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 /* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */
 
 .coach-mark-card {
-  background: color-mix(in srgb, var(--control-bg, #1a2236) 97%, #000);
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 97%, #000);
   border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 60%, transparent);
   border-radius: 10px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   padding: 12px 14px;
   position: fixed;
-  z-index: 90;
+  z-index: var(--z-popover);
 }
 
 .coach-mark-head {
@@ -284,7 +284,7 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 .coach-mark-next {
   background: var(--editor-blue, #3d6df0);
   border: 1px solid transparent;
-  color: #fff;
+  color: var(--on-accent);
 }
 
 .coach-mark-skip:hover {
@@ -297,7 +297,7 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 }
 
 .basic-rail-tile-thumb {
-  background-color: #0d1424;
+  background-color: var(--bg-well);
   border: 1px solid var(--editor-line, #2a3550);
   border-radius: 5px;
   display: block;
@@ -307,11 +307,11 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 /* Layer badge: compact corner chip that does not unbalance the 36px icon. */
 .basic-rail-badge {
   background: color-mix(in srgb, var(--editor-blue, #3d6df0) 88%, #0a1020);
-  border: 1px solid color-mix(in srgb, #fff 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--on-accent) 22%, transparent);
   border-radius: 6px;
   bottom: 1px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  color: #fff;
+  color: var(--on-accent);
   font: 700 8px/1 var(--font-ui, system-ui, sans-serif);
   letter-spacing: -0.02em;
   min-width: 12px;
@@ -333,7 +333,7 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
   position: absolute;
   top: 6px;
   width: 300px;
-  z-index: 80;
+  z-index: var(--z-status);
 }
 
 /* 맵 플라이아웃: 이름 목록이 읽히도록 조금 넓게 */
@@ -443,7 +443,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   background: rgba(6, 10, 20, 0.55);
   inset: 0;
   position: fixed;
-  z-index: 1200;
+  z-index: var(--z-popover-high);
 }
 
 .chipset-sheet-popout {
@@ -460,7 +460,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   top: 50%;
   transform: translate(-50%, -50%);
   width: min(680px, calc(100vw - 24px));
-  z-index: 1201;
+  z-index: var(--z-popover-top);
 }
 
 .chipset-sheet-popout-head {
@@ -548,8 +548,8 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-flyout-pin.is-pinned {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 30%, #1a2236);
-  color: #fff;
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 30%, var(--mix-base));
+  color: var(--on-accent);
 }
 
 .basic-flyout-body {
@@ -599,10 +599,10 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-flyout-map-host .map-tree-basic-add {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 22%, #1a2236);
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 22%, var(--mix-base));
   border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 50%, transparent);
   border-radius: 9px;
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   flex: 0 0 auto;
   font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
@@ -613,7 +613,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-map-host .map-tree-basic-add:hover,
 .basic-flyout-map-host .map-tree-basic-add:focus-visible {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 38%, #1a2236);
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 38%, var(--mix-base));
   outline: none;
 }
 
@@ -628,7 +628,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-map-host .map-item.map-item-basic {
   align-items: center;
-  background: color-mix(in srgb, var(--control-bg, #1a2236) 88%, #000);
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 88%, #000);
   border: 1px solid transparent;
   border-radius: 10px;
   color: var(--editor-text, #e8eefc);
@@ -647,7 +647,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-flyout-map-host .map-item.map-item-basic.active {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, #1a2236);
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, var(--mix-base));
   border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 55%, transparent);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 30%, transparent);
   font-weight: 600;
@@ -683,15 +683,15 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-flyout-map-host .map-item.map-item-basic .map-tree-toggle:hover:not(:disabled) {
-  background: color-mix(in srgb, #fff 8%, transparent);
+  background: color-mix(in srgb, var(--on-accent) 8%, transparent);
   color: var(--editor-text, #e8eefc);
 }
 
 .basic-flyout-map-host .map-item.map-item-basic .start-mark.is-start {
-  background: color-mix(in srgb, #e8b84a 22%, transparent);
-  border: 1px solid color-mix(in srgb, #e8b84a 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
   border-radius: 999px;
-  color: #f3d98a;
+  color: var(--gold-soft);
   font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
   padding: 4px 7px;
   white-space: nowrap;
@@ -712,14 +712,14 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-map-host .map-item.map-item-basic .map-tree-more:hover,
 .basic-flyout-map-host .map-item.map-item-basic .map-tree-more:focus-visible {
-  background: color-mix(in srgb, #fff 10%, transparent);
+  background: color-mix(in srgb, var(--on-accent) 10%, transparent);
   border-color: var(--editor-line-strong, #3a4a6a);
   color: var(--editor-text, #e8eefc);
   outline: none;
 }
 
 .basic-flyout-map-host .map-item.map-item-basic.drop-target {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 18%, #1a2236);
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 18%, var(--mix-base));
   outline: 1px dashed color-mix(in srgb, var(--editor-blue, #3d6df0) 70%, transparent);
   outline-offset: -2px;
 }
@@ -746,7 +746,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-tile-cell {
-  background-color: #0d1424;
+  background-color: var(--bg-well);
   background-repeat: no-repeat;
   border: 1px solid var(--editor-line, #2a3550);
   border-radius: 6px;
@@ -764,7 +764,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-rail-hint {
-  background: color-mix(in srgb, var(--control-bg, #1a2236) 85%, #000);
+  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 85%, #000);
   border: 1px dashed var(--editor-line, #2a3550);
   border-radius: 10px;
   color: var(--editor-text-muted, #9aa8c7);

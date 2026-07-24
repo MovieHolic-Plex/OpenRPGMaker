@@ -103,7 +103,9 @@ function configurePageMover(
   mover.speedRank = clampSetting(movement.speed);
   mover.frequencyRank = clampSetting(movement.frequency);
   mover.moveDurationMs = npcMoveDurationMs(movement.speed);
-  mover.moveIntervalMs = npcMoveIntervalMs(movement.frequency);
+  mover.moveIntervalMs = movement.moveIntervalMs !== undefined
+    ? Math.max(80, Math.min(10000, Math.round(movement.moveIntervalMs)))
+    : npcMoveIntervalMs(movement.frequency);
   mover.sightRange = normalizeOptionalRange(movement.sightRange);
   mover.giveUpRange = normalizeOptionalRange(movement.giveUpRange);
   mover.pathfind = movement.pathfind !== false;

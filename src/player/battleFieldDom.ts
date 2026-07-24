@@ -36,23 +36,23 @@ const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 정면 상단(좌측 플레이존), 선두 1마리만.
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 150 - i * 40, y: 84 }), party: (i) => ({ x: 78 + i * 36, y: 138 }) },
   // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
-  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 40, y: 60 + i * 28 }), party: (i) => ({ x: 250 - (i % 2) * 16, y: 50 + i * 27 }) },
+    rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.
   rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 82 }), party: () => ({ x: 160, y: 150 }) },
   // 옥토패스 HD-2D: 적 좌측, 아군 뒷모습 우측(오버숄더).
-  octopath: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 248 - (i % 2) * 16, y: 50 + i * 27 }) },
+  octopath: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // 크로노 액티브: 대각 배치 — 아군 좌하 클러스터, 적 우상, 아군 정면.
   chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 220 - i * 38, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
   // 브레이블리: 사이드뷰, 아군 뒷모습 우측, 회화풍.
-  bravely: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 38, y: 60 + i * 28 }), party: (i) => ({ x: 248 - (i % 2) * 16, y: 50 + i * 27 }) },
+  bravely: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // 드퀘 1인칭: 아군 없음, 적 중앙 정면.
   dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 54, y: 78 }), party: () => ({ x: 160, y: 150 }) },
   // FF 정통 사이드뷰: 적 좌측, 아군 정면 우측 세로열.
-  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 66 + (i % 2) * 38, y: 58 + i * 28 }), party: (i) => ({ x: 252 - (i % 2) * 16, y: 50 + i * 27 }) },
+  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // 마더 1인칭: 아군 없음, 적 정면 중앙.
   mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 46, y: 74 }), party: () => ({ x: 160, y: 150 }) },
   // 골든선 저앵글: 카메라 파티 뒤 → 아군 뒷모습 우측하단, 적 좌측.
-  goldensun: { partyFacing: "back", partyScale: 1.3, enemy: (i) => ({ x: 74 + (i % 2) * 36, y: 62 + i * 26 }), party: (i) => ({ x: 244 - (i % 2) * 16, y: 62 + i * 27 }) },
+  goldensun: { partyFacing: "back", partyScale: 1.3, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
 };
 
 function skinPlacement(): SkinBattlerPlacement {
@@ -112,16 +112,18 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
       hpBar.style.setProperty("--battle-stat", `${pct}%`);
       hpBar.dataset.hpState = hpBarState(pct);
     }
+    const mpBar = row.querySelector<HTMLElement>(".battle-stat-bar-mp");
+    if (mpBar) mpBar.style.setProperty("--battle-stat", `${hpPercent(actor.mp, actor.maxMp)}%`);
     const atbBar = row.querySelector<HTMLElement>(".battle-atb-bar");
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${Math.max(0, Math.min(100, Math.round(actor.gauge)))}%`);
     row.classList.toggle("defeated", actor.defeated);
   }
 }
 
-/** 활성 스킨이 전용 배경을 정의하면 그것이 전투장(battlefield)을 결정한다.
- *  스킨 배경이 없을 때만 troop/system 이 지정한 배경으로 폴백한다. */
+/** 트룹/시스템에서 지정한 배경을 스킨 기본 배경보다 우선한다.
+ *  트룹 배경이 없으면 스킨 기본 배경으로 폴백한다. */
 function effectiveBackdropId(resourceId: string | undefined): string | undefined {
-  return activeSkin().defaultBackdropResourceId ?? resourceId;
+  return resourceId ?? activeSkin().defaultBackdropResourceId;
 }
 
 function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void {
@@ -164,13 +166,25 @@ function syncActorGroup(field: HTMLElement, actors: readonly BattleBattlerSnapsh
 }
 
 function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot): void {
-  node.classList.toggle("battle-target-candidate", snapshot.targetSelection?.targetEnemyIds.includes(enemy.id) ?? false);
-  node.classList.toggle("battle-target-selected", snapshot.targetSelection?.selectedEnemyId === enemy.id);
+  const targetable = snapshot.targetSelection?.targetEnemyIds.includes(enemy.id) ?? false;
+  const selected = snapshot.targetSelection?.selectedEnemyId === enemy.id;
+  node.classList.toggle("battle-target-candidate", targetable);
+  node.classList.toggle("battle-target-selected", selected);
   node.classList.toggle("defeated", enemy.defeated);
   applyBattlerPose(node, enemy.pose);
-  node.dataset.battleTargetable = snapshot.targetSelection?.targetEnemyIds.includes(enemy.id) ? "true" : "false";
+  node.dataset.battleTargetable = targetable ? "true" : "false";
   if (node instanceof HTMLButtonElement) {
-    node.disabled = enemy.defeated || !snapshot.targetSelection?.targetEnemyIds.includes(enemy.id);
+    node.disabled = enemy.defeated || !targetable;
+  }
+  const existingBrackets = node.querySelector<HTMLElement>(".battle-target-brackets");
+  if (selected && !existingBrackets) {
+    const brackets = document.createElement("span");
+    brackets.className = "battle-target-brackets";
+    brackets.dataset.testid = "battle-target-brackets";
+    brackets.setAttribute("aria-hidden", "true");
+    node.append(brackets);
+  } else if (!selected) {
+    existingBrackets?.remove();
   }
   if (!node.querySelector(".battle-enemy-hud")) {
     node.append(enemyHpHud(enemy));
@@ -281,10 +295,11 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   if (snapshot.targetSelection?.selectedEnemyId === enemy.id) {
     enemyNode.classList.add("battle-target-selected");
   }
-  // 스킨 전용 적 스프라이트를 우선(스킨마다 다른 몬스터). 없으면 troop 몬스터 그래픽.
+  // 각 적 레코드의 고유 몬스터 이미지를 우선 사용. 없으면 스킨 공용 스프라이트로 대체.
   const resourceId = monsterResourceId(enemy.recordId);
+  const perEnemyUrl = resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null;
   const skinUrl = skinEnemySpriteUrl();
-  const url = skinUrl ?? (resourceId ? resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }) : null);
+  const url = perEnemyUrl ?? skinUrl;
   if (resourceId) enemyNode.dataset.monsterResourceId = resourceId;
   if (url) {
     const image = document.createElement("img");
@@ -366,6 +381,27 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
   node.dataset.recordId = actor.recordId;
   node.dataset.facing = "left";
   node.setAttribute("aria-label", actor.name);
+  // SC13/L5: 파티 몬스터가 필드에 나선 경우 종족 그래픽을 아군측(back) 스프라이트로
+  // 렌더한다. 스킨 전용 파티 스프라이트보다 우선한다(몬스터는 종족 그래픽이 필수).
+  const monsterResource = actor.speciesId ? monsterSpeciesResourceId(actor.speciesId) : undefined;
+  if (monsterResource) {
+    node.dataset.monsterBattler = "true";
+    const url = resolveAssetResourceUrl(monsterResource, { project: store.getCurrent() });
+    if (url) {
+      const image = document.createElement("img");
+      image.className = "battle-actor-image battle-monster-image battle-monster-back";
+      image.alt = `${actor.name} 몬스터`;
+      image.src = url;
+      node.append(image);
+    }
+    applyBattlerPose(node, actor.pose);
+    node.append(statusIconCluster(actor));
+    if (actor.defeated) node.classList.add("defeated");
+    const platform = document.createElement("span");
+    platform.className = "battle-actor-platform";
+    node.append(platform);
+    return node;
+  }
   // 스킨 전용 파티 스프라이트(정면/후면)를 우선 사용한다.
   const skinSprite = skinPartySpriteUrl(index, place.partyFacing);
   if (skinSprite) {
@@ -382,27 +418,13 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
     node.append(skinPlatform);
     return node;
   }
-  // 파티 몬스터가 필드에 나선 경우: 종족 그래픽을 아군측(back) 스프라이트로 렌더.
-  // 팩엔 정면 시트만 있어 CSS(.battle-monster-back)로 좌우반전+확대해 뒷모습을 근사한다.
-  const monsterResource = actor.speciesId ? monsterSpeciesResourceId(actor.speciesId) : undefined;
-  if (monsterResource) {
-    node.dataset.monsterBattler = "true";
-    const url = resolveAssetResourceUrl(monsterResource, { project: store.getCurrent() });
+  // 스킨이 아닌 일반 액터: 캐릭터셋 그래픽을 사용한다.
+  const resourceId = battleCharsetResourceId(actor.recordId);
+  if (resourceId) {
+    node.dataset.battleCharsetResourceId = resourceId;
+    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
     if (url) {
-      const image = document.createElement("img");
-      image.className = "battle-actor-image battle-monster-image battle-monster-back";
-      image.alt = `${actor.name} 몬스터`;
-      image.src = url;
-      node.append(image);
-    }
-  } else {
-    const resourceId = battleCharsetResourceId(actor.recordId);
-    if (resourceId) {
-      node.dataset.battleCharsetResourceId = resourceId;
-      const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-      if (url) {
-        node.append(actorBattleImage(actor.name, resourceId, url));
-      }
+      node.append(actorBattleImage(actor.name, resourceId, url));
     }
   }
   applyBattlerPose(node, actor.pose);
@@ -431,7 +453,7 @@ export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     );
   }
   if (!beat) return;
-  const user = findBattlerNode(field, beat.userId);
+  const user = beat.userId ? findBattlerNode(field, beat.userId) : null;
   if (user) {
     user.classList.add("battle-motion-user");
     if (beat.userMotion === "lunge") user.classList.add("battle-motion-lunge");
@@ -481,7 +503,8 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   vitals.append(hp, mp);
 
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
-  row.append(name, vitals, hpGauge);
+  const mpGauge = statBar("mp", actor.mp, actor.maxMp);
+  row.append(name, vitals, hpGauge, mpGauge);
   if (battleFlow === "gauge") {
     const gauge = document.createElement("span");
     gauge.className = "battle-actor-gauge";
@@ -508,7 +531,8 @@ export function hpBarState(pct: number): "high" | "mid" | "low" {
 function atbLabel(): HTMLElement {
   const label = document.createElement("span");
   label.className = "battle-atb-label";
-  label.textContent = "T";
+  label.textContent = "ATB";
+  label.setAttribute("aria-label", "ATB");
   return label;
 }
 

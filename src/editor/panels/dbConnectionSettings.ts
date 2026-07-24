@@ -431,7 +431,7 @@ function autoSaveStatusText(state: ReturnType<typeof store.getAutoSaveState>): s
     case "saved":
       return `✓ 저장됨 ${formatAutoSaveTime(state.at)}`;
     case "error":
-      return "⚠ 저장 실패";
+      return state.retryCount ? `⚠ 저장 실패 (재시도 ${state.retryCount}회)` : "⚠ 저장 실패";
   }
 }
 
@@ -446,7 +446,7 @@ function autoSaveStatusTitle(state: ReturnType<typeof store.getAutoSaveState>): 
     case "saved":
       return `${formatAutoSaveTime(state.at)}에 저장했습니다.`;
     case "error":
-      return `저장 실패: ${state.message}`;
+      return `저장 실패: ${state.message}${state.retryCount ? ` — 자동 재시도 ${state.retryCount}회째, 네트워크 복구 시 즉시 재시도합니다.` : ""}`;
   }
 }
 

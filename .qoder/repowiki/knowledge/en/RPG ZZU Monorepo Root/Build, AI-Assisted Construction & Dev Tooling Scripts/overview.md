@@ -1,0 +1,1 @@
+Node/TS scripts that build, seed, verify, and screenshot RPG-Zzu projects — including AI-driven map construction, RM2K3 parity checks, Supabase asset cataloging, and a Vite dev keepalive supervisor.

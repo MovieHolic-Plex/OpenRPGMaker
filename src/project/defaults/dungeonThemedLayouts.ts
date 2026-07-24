@@ -9,6 +9,7 @@ import {
   DUNGEON_TERRAIN_AUTOTILE_PREFIX,
 } from "./dungeonTerrainAutotiles";
 import type { AutotileGroup } from "../types";
+import { stampCanonicalIceRidge } from "./iceDiagonalTerrain";
 
 export const DUNGEON_MAP_WIDTH = 26;
 export const DUNGEON_MAP_HEIGHT = 18;
@@ -275,48 +276,47 @@ function buildStoneGrid(): DungeonGrid {
   return g;
 }
 
-/** Ice cave: west ice floe room, east cold corridor + crystals. */
+/** Ice cave: canonical user-authored diagonal ridge with an east ice basin. */
 function buildIceGrid(): DungeonGrid {
   const g = blank(67);
   ceiling(g, WS_ICE);
   backWall(g, 2, W - 3, 2, WS_ICE);
 
-  shape(g, "snow", rect(g, 3, 5, 13, 15, 67));
-  shape(g, "snow", rect(g, 14, 5, 22, 15, 67));
-  shape(g, "snow", rect(g, 11, 8, 16, 12, 67));
+  shape(g, "snow", rect(g, 3, 5, 22, 15, 67));
+  shape(g, "ice", rect(g, 18, 8, 22, 11, 70));
 
-  shape(g, "ice", rect(g, 4, 8, 11, 12, 70));
-  shape(g, "snow", rect(g, 4, 13, 11, 15, 67));
-  plankH(g, 4, 11, 11);
-  stamp(g, 6, 9, [
+  const ridge = stampCanonicalIceRidge(
+    { width: W, height: H, lower: g.lower },
+    { x: 4, y: 5 },
+  );
+  if (!ridge.ok) throw new Error(`canonical ice ridge rejected: ${ridge.issues.map((item) => item.code).join(", ")}`);
+  g.lower.splice(0, g.lower.length, ...ridge.lower);
+
+  stamp(g, 19, 5, [
+    [320, 321],
+    [350, 351],
+  ]);
+  stamp(g, 18, 12, [
     [282, 283, 284],
     [312, 313, 314],
     [342, 343, 344],
   ]);
-
-  rect(g, 17, 5, 20, 7, 403);
-  plankH(g, 16, 21, 9);
-
-  setUpper(g, 15, 13, 345);
-  setUpper(g, 13, 6, 315);
-  stamp(g, 15, 5, [
-    [320, 321],
-    [350, 351],
-  ]);
+  setUpper(g, 16, 13, 345);
+  setUpper(g, 17, 6, 315);
   setUpper(g, 22, 13, 351);
   setUpper(g, 23, 8, 292);
-  setUpper(g, 4, 6, 117);
-  setUpper(g, 5, 5, 119);
-  setUpper(g, 5, 6, 149);
-  setUpper(g, 21, 14, 289);
+  setUpper(g, 3, 6, 117);
+  setUpper(g, 3, 7, 149);
+  setUpper(g, 22, 6, 119);
+  setUpper(g, 22, 7, 149);
   setUpper(g, 3, 14, 237);
   setUpper(g, 4, 14, 238);
   setUpper(g, 22, 14, 239);
-  setUpper(g, 18, 13, 413);
+  setUpper(g, 17, 14, 413);
   wallTorch(g, 8, 2);
   wallTorch(g, 18, 2);
-  setUpper(g, 12, 14, 299);
-  setUpper(g, 20, 6, 265);
+  setUpper(g, 16, 14, 299);
+  setUpper(g, 21, 6, 265);
 
   return g;
 }
@@ -358,11 +358,11 @@ export function buildDungeonThemeMap(theme: DungeonTheme): BuiltDungeonThemeMap 
     height: H,
     tilesetId: DUNGEON_TILESET_ID,
     grid: buildIceGrid(),
-    start: { x: 13, y: 11 },
+    start: { x: 13, y: 14 },
     landmarks: [
-      { id: "exit", x: 13, y: 11, role: "exit" },
+      { id: "exit", x: 13, y: 14, role: "exit" },
       { id: "encounter_a", x: 8, y: 14, role: "encounter" },
-      { id: "encounter_b", x: 19, y: 11, role: "boss" },
+      { id: "encounter_b", x: 21, y: 14, role: "boss" },
     ],
   };
 }
@@ -381,6 +381,7 @@ const HAZARD_LOWER = new Set<number>([
   9, 39, 69, 99, 10, 11, 40, 41, 70, 71, 100, 101,
   15, 45, 21, 22, 23, 51, 52, 53, 102, 103, 104, 132, 133, 134,
   372, 373, 374, 402, 403, 404,
+  286, 287, 316, 317, 346, 347,
 ]);
 
 const SOLID_UPPER = new Set<number>([

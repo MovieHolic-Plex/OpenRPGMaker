@@ -1,6 +1,7 @@
 import type Phaser from "phaser";
 import { startPlayGame, destroyGame } from "@/app/mode";
 import { store } from "@/project/store";
+import { warnIfPlayBootIssues } from "@/project/playBootValidation";
 import { startSession, type PlaySession } from "@/project/session";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
@@ -39,7 +40,10 @@ import {
   type PlayLoadingOverlay,
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
-import { recordPlayBootDiagnostic } from "@/player/playBootDiagnostics";
+import {
+  recordPlayBootDiagnostic,
+  type PlayBootDiagnosticSink,
+} from "@/player/playBootDiagnostics";
 
 let teardownShell: (() => void) | null = null;
 
@@ -48,6 +52,7 @@ export type RenderPlayerOptions = {
   readonly trackGlobalGame?: boolean;
   readonly initialSession?: PlaySession;
   readonly initialEventTestId?: string;
+  readonly diagnosticSink?: PlayBootDiagnosticSink;
   // "여기서 테스트": 지정 맵/좌표에서 바로 플레이 시작(타이틀 건너뜀).
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
 };
@@ -111,6 +116,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const startGame = (session?: PlaySession, eventTestId = ""): void => {
     stopGame();
+    warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
     playStartedAt = startedAt;
@@ -151,14 +157,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       extra?: { error?: unknown; detail?: string },
     ): void => {
       if (run !== startRun) return;
-      recordPlayBootDiagnostic({
-        stage,
-        ok,
-        mapId,
-        eventTestId: eventTestId || undefined,
-        elapsedMs: performance.now() - startedAt,
-        ...extra,
-      });
+      recordPlayBootDiagnostic(
+        {
+          stage,
+          ok,
+          mapId,
+          eventTestId: eventTestId || undefined,
+          elapsedMs: performance.now() - startedAt,
+          ...extra,
+        },
+        options.diagnosticSink,
+      );
     };
     try {
       loading.setStage("engine");
@@ -204,6 +213,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("dialogue", dialogue);
       game.registry.set("dialogueHost", playStage);
       game.registry.set("returnToTitle", () => renderTitle());
+      game.registry.set("openSaveMenu", () => {
+        // 타자기 세이브: 이벤트가 세이브 화면을 연다. 전역 메뉴 세이브 비활성과 조합해 세이브 포인트 전용 설계가 가능하다.
+        statusMenu.reset();
+        statusMenu.renderMenu(undefined, "save");
+      });
       // create() 가 이미 끝났을 수도 있으므로 ready 콜백 + 폴링으로 모두 커버.
       const ready = await waitForPlaySceneReady(nextGame, () => startRun === run, readyPromise);
       if (run !== startRun) {
@@ -349,7 +363,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const viewport = playStage?.closest(".play-viewport") ?? playStage ?? layout;
     if (
       viewport?.querySelector(
-        "[data-testid='shop-scene'], [data-testid='inn-scene'], [data-testid='chest-scene'], [data-testid='game-over-screen'], [data-testid='ending-screen']"
+        "[data-testid='shop-scene'], [data-testid='inn-scene'], [data-testid='chest-scene'], [data-testid='game-over-screen'], [data-testid='ending-screen'], [data-testid='battle-scene']"
       )
     ) {
       return true;

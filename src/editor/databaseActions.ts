@@ -2,13 +2,15 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { duplicateInto } from "@/editor/databaseCopy";
 import { databaseRecordPrefix, databaseReferenceMessage } from "@/editor/databaseReferences";
 import { updateClassRecord, updateEnemyRecord, updateEquipmentRecord, updateItemRecord, updateSkillRecord, updateTroopRecord } from "@/editor/databaseRecordMutators";
-import { createActorRecord, normalizeActorPatch } from "@/project/actorModel";
+import { createActorRecord, normalizeActorPatch, normalizeActorRecord } from "@/project/actorModel";
+import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import {
   normalizeClassRecord,
   normalizeEnemyRecord,
   normalizeEquipmentRecord,
   normalizeItemRecord,
   normalizeSkillRecord,
+  normalizeStateRecord,
   normalizeTroopRecord,
 } from "@/project/databaseRecordModel";
 import { store } from "@/project/store";
@@ -75,10 +77,10 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
         project.database.troops.push(normalizeTroopRecord({ id, name: "새 적 그룹", enemyIds: [], battleEventPages: [] }));
         return;
       case "states":
-        project.database.states.push({ id, name: "새 상태" });
+        project.database.states.push(normalizeStateRecord({ id, name: "새 상태" }));
         return;
       case "battleAnimations":
-        project.database.battleAnimations.push({ id, name: "새 애니메이션" });
+        project.database.battleAnimations.push(normalizeBattleAnimationRecord({ id, name: "새 애니메이션" }));
         return;
     }
   }, { scope: "database", collection });
@@ -125,6 +127,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("learnedSkills" in actorPatch && actorPatch.learnedSkills !== undefined) record.learnedSkills = actorPatch.learnedSkills;
         if ("stateRates" in actorPatch && actorPatch.stateRates !== undefined) record.stateRates = actorPatch.stateRates;
         if ("elementRates" in actorPatch && actorPatch.elementRates !== undefined) record.elementRates = actorPatch.elementRates;
+        Object.assign(record, normalizeActorRecord(record));
         return;
       }
       case "classes": {
@@ -169,6 +172,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
         if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
         if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
+        Object.assign(record, normalizeStateRecord(record));
         return;
       }
       case "battleAnimations": {
@@ -182,6 +186,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("large" in patch && patch.large !== undefined) record.large = patch.large;
         if ("frames" in patch && patch.frames !== undefined) record.frames = patch.frames;
         if ("timings" in patch && patch.timings !== undefined) record.timings = patch.timings;
+        Object.assign(record, normalizeBattleAnimationRecord(record));
         return;
       }
     }

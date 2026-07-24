@@ -72,7 +72,10 @@ async function defaultMetrics(page: Page): Promise<Record<string, unknown>> {
         null,
       hasTriggerSelect: !!q('[data-testid="event-page-trigger-select"]'),
       triggerInsideMovement: !!movementBody?.querySelector('[data-testid="event-page-trigger-select"]'),
+      hasCharacterIdField: !!q('[data-testid="event-character-id-field"]'),
+      hasCharacterIdInput: !!q('[data-testid="event-character-id-input"]'),
       hasCharacterConnect: !!q('[data-testid="event-character-id-connect"]'),
+      characterIdInTopStrip: !!q('.event-editor-top-strip [data-testid="event-character-id-field"]'),
       hasFriendshipRequiresChar: !!q('[data-testid="event-page-friendship-requires-character-id"]'),
       movementSummaryText: movement?.querySelector("summary")?.textContent ?? null,
       auxLabels: Array.from(
@@ -144,7 +147,10 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   expect(metrics.hasBottomRight).toBe(false);
   expect(metrics.hasTriggerSelect).toBe(true);
   expect(metrics.triggerInsideMovement).toBe(false);
-  expect(metrics.hasCharacterConnect).toBe(true);
+  expect(metrics.hasCharacterIdField).toBe(true);
+  expect(metrics.hasCharacterIdInput).toBe(true);
+  expect(metrics.hasCharacterConnect).toBe(false);
+  expect(metrics.characterIdInTopStrip).toBe(true);
   expect(metrics.hasFriendshipRequiresChar).toBe(false);
   expect(String(metrics.badgeText ?? "")).toMatch(/ON|OFF|sw_|셀프/i);
   expect(String(metrics.badgeText ?? "")).not.toBe("스위치");

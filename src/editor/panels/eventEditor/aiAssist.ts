@@ -9,6 +9,7 @@
 
 import { runEventCommandAssist } from "@/ai/eventCommandAssist";
 import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -169,8 +170,13 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
       return;
     }
     const config = (options.loadConfig ?? loadAiConfig)();
-    if (!config.apiKey || !config.apiKey.trim()) {
-      setStatus("AI 설정에서 API 키를 입력하세요.", "error");
+    if (!isAiConfigReady(config)) {
+      setStatus(
+        config.authMode === "chatgpt"
+          ? "AI 설정에서 ChatGPT 연결과 모델을 확인하세요."
+          : "AI 설정에서 API 키와 baseUrl을 입력하세요.",
+        "error"
+      );
       return;
     }
     generateBtn.disabled = true;

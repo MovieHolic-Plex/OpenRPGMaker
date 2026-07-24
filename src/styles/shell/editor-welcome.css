@@ -3,7 +3,7 @@
   .editor-welcome {
     position: fixed;
     inset: 0;
-    z-index: 240;
+    z-index: var(--z-welcome);
     display: grid;
     grid-template-rows: 1fr auto;
     overflow: hidden;
@@ -15,7 +15,7 @@
   .editor-welcome-slideshow {
     position: absolute;
     inset: 0;
-    z-index: 0;
+    z-index: var(--z-below);
     background: #000;
   }
 
@@ -34,7 +34,7 @@
   .editor-welcome-slide.is-active {
     opacity: 1;
     transform: scale(1);
-    z-index: 1;
+    z-index: var(--z-base);
   }
 
   .editor-welcome-slide-img {
@@ -57,7 +57,7 @@
   .editor-welcome-scrim {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: var(--z-base);
     background:
       radial-gradient(ellipse 90% 70% at 50% 18%, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.72) 100%),
       linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 28%, transparent 48%, rgba(0, 0, 0, 0.55) 78%, rgba(0, 0, 0, 0.88) 100%);
@@ -148,7 +148,7 @@
 
   .editor-welcome-stage {
     position: relative;
-    z-index: 2;
+    z-index: var(--z-raised);
     display: flex;
     flex-direction: column;
     align-items: stretch;
@@ -213,7 +213,7 @@
 
   .editor-welcome-dock {
     position: relative;
-    z-index: 3;
+    z-index: var(--z-canvas-decor);
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -335,7 +335,7 @@
 
   .editor-welcome-worlds-track {
     position: relative;
-    z-index: 2;
+    z-index: var(--z-raised);
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
@@ -394,7 +394,7 @@
     display: block;
     border-radius: inherit;
     pointer-events: none;
-    z-index: 0;
+    z-index: var(--z-below);
   }
 
   .editor-welcome-genre-label {
@@ -402,7 +402,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: var(--z-base);
     padding: 18px 7px 7px;
     font-size: 10.5px;
     font-weight: 650;
@@ -453,7 +453,7 @@
     display: block;
     border-radius: inherit;
     pointer-events: none;
-    z-index: 0;
+    z-index: var(--z-below);
   }
 
   .editor-welcome-inspiration-label {
@@ -461,7 +461,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1;
+    z-index: var(--z-base);
     padding: 14px 5px 5px;
     font-size: 9.5px;
     font-weight: 600;

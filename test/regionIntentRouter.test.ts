@@ -117,7 +117,7 @@ describe("regionIntentGuideLines / buildRegionTaskMessage 통합", () => {
     const message = buildRegionTaskMessage("이 영역을 잔디로 채워줘", "맵", "m1", { x: 0, y: 0, width: 4, height: 4 });
     // place_chest는 박스 vs 보물 구분 고정 문구에만 등장 — 상호작용 가이드 블록(place_examine_hotspots 등)은 없음
     expect(message).not.toContain("place_examine_hotspots");
-    expect(message).toContain("build_house_kit");
+    expect(message).toContain("공식 시공 facade");
     expect(message).toContain("나무 상자");
     expect(message).not.toContain("wood-box");
   });

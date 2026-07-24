@@ -1,0 +1,1 @@
+Vitest-based smoke and golden-task evaluators that drive the AssistantSession against real LLMs to score project generation quality via lint/spec matchers.

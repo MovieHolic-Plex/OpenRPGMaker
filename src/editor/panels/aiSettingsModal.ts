@@ -10,6 +10,7 @@ import {
   saveAiConfig,
   type AiConfig,
 } from "@/ai/llmClient";
+import { modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import {
   applyAiFontSize,
   loadAiFontSize,
@@ -18,6 +19,7 @@ import {
 } from "@/editor/panels/aiPanelLayout";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { renderAiAuthSettings } from "./aiAuthSettings";
 
 export type AiSettingsFocus = "first" | "apiKey";
 
@@ -100,16 +102,32 @@ export function renderAiSettingsForm(options: {
   const onSaved = options.onSaved ?? (() => undefined);
   const onFontSizeChange = options.onFontSizeChange ?? (() => undefined);
   const config = loadAiConfig();
+  let authMode = config.authMode;
   const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
-  const model = textField("감독 모델(계획·검수)", config.model, "ai-config-model", "text", DEFAULT_MODEL);
-  const liteModel = textField(
+  const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL);
+  const liteModel = modelField(
     "실행 모델(툴 작업)",
     config.liteModel ?? DEFAULT_LITE_MODEL,
     "ai-config-lite-model",
-    "text",
+    "ai-config-lite-model-preset",
+    authMode,
     DEFAULT_LITE_MODEL
   );
   const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
+  let persistAuthMode = (): void => undefined;
+  const authSettings = renderAiAuthSettings(authMode, (next) => {
+    authMode = next;
+    updateAuthVisibility();
+    model.refresh(authMode);
+    liteModel.refresh(authMode);
+    persistAuthMode();
+  });
+  const updateAuthVisibility = (): void => {
+    const apiMode = authMode === "apiKey";
+    baseUrl.row.hidden = !apiMode;
+    apiKey.row.hidden = !apiMode;
+  };
+  updateAuthVisibility();
   const maxTokens = textField("최대 토큰", String(config.maxTokens), "ai-config-maxtokens", "number");
   maxTokens.input.setAttribute("min", "256");
   maxTokens.input.setAttribute("max", "1000000");
@@ -176,6 +194,7 @@ export function renderAiSettingsForm(options: {
   });
 
   const collect = (): AiConfig => ({
+    authMode,
     baseUrl: baseUrl.input.value.trim() || DEFAULT_BASE_URL,
     model: model.input.value.trim() || DEFAULT_MODEL,
     liteModel: liteModel.input.value.trim() || DEFAULT_LITE_MODEL,
@@ -194,6 +213,7 @@ export function renderAiSettingsForm(options: {
     savedHint.textContent = "자동 저장됨";
     if (showToast) toast("어시스턴트 설정을 저장했습니다.", "ok");
   };
+  persistAuthMode = () => persist(false);
   const scheduleAutoSave = (): void => {
     if (typeof window === "undefined") {
       persist(false);
@@ -208,6 +228,12 @@ export function renderAiSettingsForm(options: {
   for (const field of [baseUrl, model, liteModel, apiKey, maxTokens]) {
     field.input.addEventListener("input", scheduleAutoSave);
     field.input.addEventListener("change", () => persist(false));
+  }
+  for (const field of [model, liteModel]) {
+    field.preset.addEventListener("change", () => {
+      if (field.preset.value) field.input.value = field.preset.value;
+      persist(false);
+    });
   }
   autoApprove.addEventListener("change", () => persist(false));
   reasoningSelect.addEventListener("change", () => persist(false));
@@ -224,6 +250,7 @@ export function renderAiSettingsForm(options: {
     class: "ai-config-form ai-settings-form",
     dataset: { testid: "ai-config" },
     children: [
+      authSettings.element,
       baseUrl.row,
       model.row,
       liteModel.row,
@@ -238,8 +265,8 @@ export function renderAiSettingsForm(options: {
 
   return {
     element: form,
-    focusFirstInput: () => baseUrl.input.focus(),
-    focusApiKey: () => apiKey.input.focus(),
+    focusFirstInput: () => authSettings.focus(),
+    focusApiKey: () => authMode === "apiKey" ? apiKey.input.focus() : authSettings.focus(),
   };
 }
 
@@ -261,4 +288,47 @@ function textField(
     children: [el("span", { class: "ai-config-label", text: label }), input],
   });
   return { row, input };
+}
+
+function modelField(
+  label: string,
+  value: string,
+  inputTestid: string,
+  presetTestid: string,
+  authMode: AiConfig["authMode"],
+  placeholder: string
+): { row: HTMLElement; input: HTMLInputElement; preset: HTMLSelectElement; refresh: (mode: AiConfig["authMode"]) => void } {
+  const input = el("input", {
+    class: "ai-config-input",
+    attrs: { type: "text", placeholder },
+    value,
+    dataset: { testid: inputTestid },
+  }) as HTMLInputElement;
+  const preset = el("select", {
+    class: "ai-config-select ai-model-preset",
+    dataset: { testid: presetTestid },
+    attrs: { "aria-label": `${label} 추천 모델` },
+  }) as HTMLSelectElement;
+  const refresh = (nextMode: AiConfig["authMode"]): void => {
+    const groups = modelCatalogForAuthMode(nextMode);
+    const options = [
+      el("option", { attrs: { value: "" }, text: "GJC 모델 목록에서 선택" }),
+      ...groups.map((group) => el("optgroup", {
+        attrs: { label: group.label },
+        children: group.models.map((model) => el("option", { attrs: { value: model }, text: model })),
+      })),
+    ];
+    preset.replaceChildren(...options);
+    preset.value = groups.some((group) => group.models.includes(input.value)) ? input.value : "";
+  };
+  const row = el("label", {
+    class: "ai-config-row ai-model-row",
+    children: [
+      el("span", { class: "ai-config-label", text: label }),
+      el("span", { class: "ai-model-help", text: "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
+      el("div", { class: "ai-model-control", children: [preset, input] }),
+    ],
+  });
+  refresh(authMode);
+  return { row, input, preset, refresh };
 }

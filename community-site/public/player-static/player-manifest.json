@@ -1,0 +1,42 @@
+{
+  "_PlayScene-DqWHjf0Y.js": {
+    "file": "assets/PlayScene-DqWHjf0Y.js",
+    "name": "PlayScene",
+    "isDynamicEntry": true,
+    "imports": [
+      "player.html"
+    ],
+    "dynamicImports": [
+      "src/player/playSceneBattle.ts"
+    ]
+  },
+  "node_modules/.pnpm/phaser@3.90.0/node_modules/phaser/dist/phaser.min.js": {
+    "file": "assets/phaser.min-CwlHMuXa.js",
+    "src": "node_modules/.pnpm/phaser@3.90.0/node_modules/phaser/dist/phaser.min.js"
+  },
+  "player.html": {
+    "file": "player.js",
+    "name": "player",
+    "src": "player.html",
+    "isEntry": true,
+    "dynamicImports": [
+      "_PlayScene-DqWHjf0Y.js"
+    ],
+    "css": [
+      "assets/player-BzO0ayTa.css"
+    ],
+    "assets": [
+      "assets/phaser.min-CwlHMuXa.js"
+    ]
+  },
+  "src/player/playSceneBattle.ts": {
+    "file": "assets/playSceneBattle-BjBPPx5i.js",
+    "name": "playSceneBattle",
+    "src": "src/player/playSceneBattle.ts",
+    "isDynamicEntry": true,
+    "imports": [
+      "player.html",
+      "_PlayScene-DqWHjf0Y.js"
+    ]
+  }
+}

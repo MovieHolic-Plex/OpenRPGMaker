@@ -48,7 +48,7 @@ const BALANCE_NOTE = [
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
   "## 고수준 툴 우선",
-  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 집+마당=build_house_lots, **마을=run_village_session(LLM이 buildOrder 기획: 호수/강→water 먼저, 그다음 settlement=집→길, 숲, critique, look) 또는 start_village_session+advance_village_build; 숏컷 run_village_pipeline. 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)** — 빈 build_village 금지에 가깝다, 성채=build_castle, **실내/방 맵=start_interior_room_session 또는 run_interior_room_pipeline(새 mapId·이름, build_house_kit 금지)**, 단일 야외 집 외장=build_house_kit, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
+  "고수준 툴 우선 — 트랩/즉사=place_trap 또는 make_horror_loop, 체크포인트=place_trap의 checkpoint 관례, 퍼즐=compile_puzzle, 조사=place_examine_hotspots 또는 make_gallery_room(이브 갤러리 원큐), 컷신=script_cutscene 또는 script_cutscene_preset(투더문 프리셋), 추격=make_chase_scene, NPC=place_npc/make_villager(대사 시 faceset changeFace 자동), 상점=set_shop_stock, 사냥터=make_hunting_ground, 조명=set_lighting_volume/set_scene_mood, 수역=fill_region(circle+물 그룹), 야외 집=author_house(kind:\"single\" 또는 kind:\"lots\"), **마을=author_village(target:{kind:\"existing\",mapId} 또는 target:{kind:\"new\",mapId,name,width,height,plannedMap}, countPolicy:\"exact\"). 나무=list_village_tree_assets/plant_tree_clusters(broadleaf-2x2)**, 성채=build_castle, **실내/방 맵=start_interior_room_session 또는 run_interior_room_pipeline(새 mapId·이름). 실내 요청에는 author_house/author_village 금지**, 월드=plan_world/build_world, 퀘스트=define_quest→verify_quest.",
   "upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용.",
 ].join("\n");
 
@@ -75,9 +75,9 @@ const INTRO = [
   "9. 작업이 끝나면 무엇을 변경했는지 한국어로 간결히 요약하세요.",
   "10. 타일을 깔 때는 추측하지 말고 get_tile_info로 의미·배치 규칙(placementRules)을 먼저 확인하세요.",
   "    사용자가 가르친 메타데이터(source=user)가 최우선 근거입니다. 그룹의 placementRules가 있으면 반드시 따르세요.",
-  "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 build_house_kit을 우선 사용하고,",
+  "11. 집/구조물(야외 외장)은 절대 벽 타일로 사각형을 채워 만들지 마세요. 야외 집은 author_house를 우선 사용하고,",
   "    건물 평면은 wings 사각형들의 합집합으로 설계하세요. 길/모래는 paint_road(style=dirt/sand)가 오토타일로 성형합니다.",
-  "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 build_house_kit을 올리지 말고",
+  "    **실내·방·인테리어 요청은 야외 집이 아니다.** 현재 맵에 author_house를 올리지 말고",
   "    start_interior_room_session(또는 run_interior_room_pipeline)으로 **새 mapId·요청 이름**의 실내 맵을 시공하세요",
   "    (rooms[] 역할 테마 → advance_interior_room_build 반복 → evaluate_interior_room). create_map만 하고 멈추지 마세요.",
   "    위반이 남았는데 '조정 중'처럼 얼버무리지 말고, 고쳤는지 남았는지를 정직하게 보고하세요.",
@@ -94,7 +94,7 @@ const INTRO = [
   "15. 스펙 게이트(반드시 준수): 공간 쓰기 작업(집/마을/길/청소/NPC·전투 배치/수역·지면 채우기 등 맵에 무언가를 놓는 일)은",
   "    먼저 set_build_spec으로 밑그림(명세)을 제출해 검증을 통과해야 실행됩니다. 명세 체크리스트 —",
   "    대상 맵, 에셋 목록(종류·개수·각 영역 x,y,w,h·스타일), 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
-  "    맵이 요구 구조물 대비 작으면 build_house_kit/build_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).",
+  "    맵이 요구 구조물 대비 작으면 author_house/author_village 최소 제약을 계산해 resize_map을 먼저 호출하세요(비파괴 보정).",
   "    수역/지면/바닥 면은 fill_region만 쓴다. 호수·연못: material=\"물\"(타일 라벨/설명, 그룹 id·vocabId 금지), 원형·둥근 요청은 shape=circle(또는 ellipse) 필수 — rect만 쓰면 네모. 나무/바위/꽃은 place_props material=\"침엽수\" 등으로 호수·물 칸 밖(통행 가능 육지)에만 산포; 물 위 place_props 금지.",
   "    사용자가 정하지 않은 항목은 합리적 기본값으로 채우고, 넓은 요청(마을 등)은 명세 요약을 한 줄로 보여준 뒤 진행하세요.",
   "    검증기가 겹침을 거부하면 좌표·buildOrder·맵 크기를 고쳐 재제출하세요. 3회 실패하면 그 계획은 폐기하고 스스로 새 배치를 설계하세요.",
@@ -118,7 +118,7 @@ const INTRO = [
   "19. 시각 제안: 집을 짓기 전에 preview_house(mapId, origin, width, height, material)로 결과 이미지를 먼저 띄워",
   "    '이렇게 생긴 집을 지을까요?'처럼 그림으로 제안할 수 있습니다(프로젝트를 바꾸지 않는 읽기 툴 — 스펙 게이트 무관).",
   "20. 메타데이터 저장: 인터뷰로 확정한 타일 메타데이터(set_tile_metadata)는 데이터베이스의 타일셋 지식 화면에 저장됩니다.",
-  "    구조물 문법은 집 키트(build_house_kit)가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
+  "    구조물 문법은 집(author_house)가 담당하므로 별도 지형 템플릿을 만들지 마세요.",
   "21. 타일 프리셋: 타일셋에 팔레트 프리셋이 있으면 개별 tile id 대신 presetId+paletteRole을 우선 사용하세요.",
   "22. 스위치/변수를 새로 쓰기 전에 declare_story_flag로 의미를 등록하세요.",
   "23. 이벤트가 왜 안 나오는지는 explain_event로 확인하세요.",
@@ -212,7 +212,7 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
   if (lines.length === 0) return "";
   return [
     "## 타일 어휘 다이제스트",
-    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** build_house_lots — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. **마을:** run_village_session / build_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지에 가깝다). 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle + get_map_region data.water.bounds. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 시공 툴 재료는 material=타일 라벨/설명만 쓴다(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
+    "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지에 가깝다). 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle + get_map_region data.water.bounds. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 시공 툴 재료는 material=타일 라벨/설명만 쓴다(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
 }
@@ -288,7 +288,13 @@ function structureKitSection(project: Project, mapId: string | undefined): strin
   for (const tilesetId of currentTilesetIds(project, mapId)) {
     const tileset = project.tilesets[tilesetId];
     for (const kit of tileset?.structureKits ?? []) {
-      lines.push(`- ${kit.name ?? "패턴 스탬프"} (${kit.id}, ${kit.width}x${kit.height} 단면, ${kit.learnedFrom})`);
+      const size = kit.kind === "house"
+        ? {
+            width: Math.max(...kit.wings.map((wing) => wing.x + wing.w), 1),
+            height: Math.max(...kit.wings.map((wing) => wing.y + wing.h), 1),
+          }
+        : { width: kit.width, height: kit.height };
+      lines.push(`- ${kit.name ?? "패턴 스탬프"} (${kit.id}, ${size.width}x${size.height} ${kit.kind === "house" ? "집 킷" : "단면"}, ${kit.learnedFrom})`);
     }
   }
   if (lines.length === 0) return "";
@@ -305,6 +311,9 @@ function houseKitSection(): string {
   return [
     "## 집 키트 요약",
     ...lines,
+    "여러 채 시공 시 각 집에 서로 다른 kitId를 배정해 외관 다양성을 확보하라. 같은 kit 반복 금지.",
+    "2채 이상은 author_house kind=lots + houses[]로 한 번에 호출(개별 single 반복 금지).",
+    "wing 제약: w≥3, h≥5 (지붕+벽 포함). windows: false | {} | {spacing:N} (true 불가).",
     "길/모래는 paint_road(style=dirt/sand)가 8방 오토타일로 성형합니다.",
   ].join("\n");
 }

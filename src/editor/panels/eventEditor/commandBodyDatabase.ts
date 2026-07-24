@@ -1,4 +1,4 @@
-import { craftRecipesOf } from "@/project/craftRecipes";
+﻿import { craftRecipesOf } from "@/project/craftRecipes";
 import { databasePicker } from "./conditionForm";
 import { startStateOf } from "@/project/session";
 import { upgradeRulesOf } from "@/project/upgrades";
@@ -431,7 +431,7 @@ export function changeGoldBody(context: CommandEditContext, cmd: Extract<Command
   const project = store.getCurrent();
   // 연산 세그먼트(= / + / −). 기존 select(testid)는 세그먼트 안에 숨겨 호환 유지.
   const op = segmentedSelect({ options: AMOUNT_OP_SEGMENTS, value: cmd.op, testid: "change-gold-op-select", ariaLabel: "소지금 연산 선택" });
-  const amount = numberInput(cmd.amount, "금액", "change-gold-amount-input");
+  const amount = numberInput(typeof cmd.amount === "number" ? cmd.amount : 0, "금액", "change-gold-amount-input");
   const preview = previewStrip("change-gold-preview", "시작 소지금 기준");
   const startGold = Math.max(0, startStateOf(project).gold ?? 0);
   const goldBadge = () => el("span", { class: "rich-gold-badge", text: "G", attrs: { "aria-hidden": "true" } });
@@ -481,7 +481,7 @@ export function changeItemBody(context: CommandEditContext, cmd: Extract<Command
     subtitleOf: (record) => `시작 보유 ×${startInventory[record.id] ?? 0}`,
   });
   const op = segmentedSelect({ options: AMOUNT_OP_SEGMENTS, value: cmd.op, testid: "change-item-op-select", ariaLabel: "아이템 연산 선택" });
-  const amount = numberInput(cmd.amount, "개수", "change-item-amount-input");
+  const amount = numberInput(typeof cmd.amount === "number" ? cmd.amount : 0, "개수", "change-item-amount-input");
   const preview = previewStrip("change-item-preview", "시작 인벤토리 기준");
   const renderPreview = () => {
     const record = items.find((entry) => entry.id === item.select.value);
@@ -1308,7 +1308,7 @@ function actorAmountBody(context: CommandEditContext, cmd: ActorAmountCommand): 
         ariaLabel: `${labels.amountTitle} 단위`,
       })
     : null;
-  const amount = numberInput(cmd.amount, labels.amountTitle, labels.amountTestId);
+  const amount = numberInput(typeof cmd.amount === "number" ? cmd.amount : 0, labels.amountTitle, labels.amountTestId);
   const presetsHost = supportsPercent
     ? el("div", {
         class: "actor-amount-presets",
@@ -1557,20 +1557,6 @@ function actorAmountLabels(kind: ActorAmountCommand["kind"]): {
   }
 }
 
-function recordSelect(
-  records: readonly { readonly id: string; readonly name: string }[],
-  currentId: string,
-  placeholder: string,
-  testId: string
-): HTMLSelectElement {
-  const select = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
-  select.append(el("option", { text: `(${placeholder})`, attrs: { value: "" } }));
-  for (const [index, record] of records.entries()) {
-    select.append(el("option", { text: `${String(index + 1).padStart(4, "0")}: ${record.name}`, attrs: { value: record.id } }));
-  }
-  select.value = currentId;
-  return select;
-}
 
 function numberInput(value: number, title: string, testId: string): HTMLInputElement {
   return el("input", {

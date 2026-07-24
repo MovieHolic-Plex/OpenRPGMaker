@@ -34,7 +34,8 @@ import {
   releaseCutsceneControlForOwner,
 } from "@/player/cutsceneControl";
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
-import { runFieldSpawnEventBattle } from "@/player/playSceneFieldSpawns";
+import { isActionCombatSceneActive } from "@/player/playSceneActionCombat";
+import { despawnFieldEnemyForScene, runFieldSpawnEventBattle, spawnFieldEnemyForScene } from "@/player/playSceneFieldSpawns";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
@@ -45,6 +46,7 @@ export type RunCommandsOptions = {
 
 export async function runEvent(scene: PlaySceneContext, eventId: string): Promise<void> {
   if (scene.running) return;
+  if (isFieldSpawnEventId(eventId) && isActionCombatSceneActive(scene)) return;
   if (isFieldSpawnEventId(eventId) && await runFieldSpawnEventBattle(scene, eventId)) return;
   const view = runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)
     .find((entry) => entry.event.id === eventId);
@@ -346,6 +348,17 @@ async function consumeBlockingStep(
     case "changeTile":
       scene.applyChangeTileStep(step);
       return resumeAfterSurface(scene, interpreter);
+    case "openSaveMenu": {
+      const callback: unknown = scene.game.registry.get("openSaveMenu");
+      if (typeof callback === "function") callback();
+      return resumeInterpreter(interpreter);
+    }
+    case "spawnFieldEnemy":
+      spawnFieldEnemyForScene(scene, step.spawn);
+      return resumeAfterSurface(scene, interpreter);
+    case "despawnFieldEnemy":
+      despawnFieldEnemyForScene(scene, step.spawnId);
+      return resumeAfterSurface(scene, interpreter);
     case "setEventGraphicPattern":
       applyEventGraphicPatternStep(scene, step, currentEventId);
       return resumeInterpreter(interpreter);
@@ -630,7 +643,7 @@ function resolveBattleTroopId(
   step: Extract<StepResult, { kind: "battleProcessing" }>
 ): string {
   if (step.troopSource === "variable" && step.troopVariableId) {
-    const raw = scene.session.variables[step.troopVariableId];
+    const raw = scene.session.variables[step.troopVariableId] as unknown as string | number | undefined;
     if (typeof raw === "string" && raw.trim()) return raw.trim();
     if (typeof raw === "number" && Number.isFinite(raw)) {
       const asIndex = Math.trunc(raw);

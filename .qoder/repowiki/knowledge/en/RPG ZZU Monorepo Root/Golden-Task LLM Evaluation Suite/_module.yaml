@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: evals
+title: Golden-Task LLM Evaluation Suite
+scope:
+    - evals/
+source_files: []
+depends_on: []
+related_to: []

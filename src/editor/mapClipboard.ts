@@ -20,13 +20,17 @@ export function selectTileRegion(mapId: MapId, selection: TileSelection): boolea
   return true;
 }
 
+export function clearSelection(): void {
+  editorState.set({ selection: null, pastePreview: null });
+}
+
 // 선택 영역을 하위+상위 레이어(오버레이 스택 포함) 통째로 복사한다.
 // RM2K3의 영역 복사처럼 레이어를 나누지 않는다 — 붙여넣기 시 두 레이어가 함께 복원된다.
 export function copySelection(mapId: MapId): boolean {
   const state = editorState.get();
   const selection = state.selection;
   if (!selection || selection.mapId !== mapId) {
-    showClipboardToast("복사할 영역이 없습니다 — 선택 도구(5)로 영역을 먼저 지정하세요.", "error");
+    showClipboardToast("복사할 영역이 없습니다 — 선택 도구(V)로 영역을 먼저 지정하세요.", "error");
     return false;
   }
   const map = store.getCurrent().maps[mapId];
@@ -53,7 +57,46 @@ export function copySelection(mapId: MapId): boolean {
       upper,
     },
   });
-  showClipboardToast("복사됨", "ok");
+  showClipboardToast(`${selection.width}×${selection.height} 복사됨`, "ok");
+  return true;
+}
+
+// ── 붙여넣기 미리보기 모드 ──
+// Ctrl+V → 고스트가 커서 추종 → 클릭으로 확정, Esc로 취소.
+
+/** 붙여넣기 미리보기 모드 진입. 클립보드가 없으면 false. */
+export function enterPastePreview(mapId: MapId, x: number, y: number): boolean {
+  const clipboard = editorState.get().clipboard;
+  if (!clipboard) {
+    showClipboardToast("붙여넣을 내용이 없습니다 — 먼저 복사하세요.", "error");
+    return false;
+  }
+  const map = store.getCurrent().maps[mapId];
+  if (!map) return false;
+  editorState.set({ pastePreview: { x: clampPasteOrigin(x, clipboard.width, map.width), y: clampPasteOrigin(y, clipboard.height, map.height) } });
+  return true;
+}
+
+/** 미리보기 위치 갱신 (커서 추종). */
+export function movePastePreview(mapId: MapId, x: number, y: number): void {
+  const clipboard = editorState.get().clipboard;
+  const map = store.getCurrent().maps[mapId];
+  if (!clipboard || !map) return;
+  editorState.set({ pastePreview: { x: clampPasteOrigin(x, clipboard.width, map.width), y: clampPasteOrigin(y, clipboard.height, map.height) } });
+}
+
+/** 미리보기 확정 → 실제 붙여넣기. */
+export function confirmPastePreview(mapId: MapId): boolean {
+  const preview = editorState.get().pastePreview;
+  if (!preview) return false;
+  editorState.set({ pastePreview: null });
+  return pasteClipboard(mapId, preview.x, preview.y);
+}
+
+/** 미리보기 취소. */
+export function cancelPastePreview(): boolean {
+  if (!editorState.get().pastePreview) return false;
+  editorState.set({ pastePreview: null });
   return true;
 }
 
@@ -88,7 +131,44 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
       }
     }
   }, { scope: "map", mapId, cells });
+  // 붙여넣은 영역을 선택으로 표시 — 사용자가 결과를 즉시 확인.
+  const w = Math.min(clipboard.width, map.width - x);
+  const h = Math.min(clipboard.height, map.height - y);
+  editorState.set({ selection: { mapId, x, y, width: w, height: h } });
+  showClipboardToast(`${clipboard.width}×${clipboard.height} 붙여넣기 완료`, "ok");
   return true;
+}
+
+/** 선택 영역을 하위+상위 모두 빈 칸으로 지운다. */
+export function clearSelectionRegion(mapId: MapId): boolean {
+  const selection = editorState.get().selection;
+  if (!selection || selection.mapId !== mapId) return false;
+  const map = store.getCurrent().maps[mapId];
+  if (!map || !isRegionInsideMap(selection.x, selection.y, selection.width, selection.height, map.width, map.height)) return false;
+  const cells = pastedCells(map, selection.width, selection.height, selection.x, selection.y);
+  recordProjectSnapshot();
+  store.update((project) => {
+    const targetMap = project.maps[mapId];
+    if (!targetMap) return;
+    for (let cy = 0; cy < selection.height; cy++) {
+      for (let cx = 0; cx < selection.width; cx++) {
+        const tx = selection.x + cx;
+        const ty = selection.y + cy;
+        if (!isInsideMap(tx, ty, targetMap.width, targetMap.height)) continue;
+        const idx = ty * targetMap.width + tx;
+        targetMap.lowerTiles[idx] = -1;
+        targetMap.upperTiles[idx] = -1;
+        replaceTileStack(targetMap, "lower", idx, []);
+        replaceTileStack(targetMap, "upper", idx, []);
+      }
+    }
+  }, { scope: "map", mapId, cells });
+  showClipboardToast("영역 지우기 완료", "ok");
+  return true;
+}
+
+function clampPasteOrigin(origin: number, clipSize: number, mapSize: number): number {
+  return Math.max(0, Math.min(origin, mapSize - Math.min(clipSize, mapSize)));
 }
 
 function pastedCells(map: GameMap, width: number, height: number, originX: number, originY: number): readonly ProjectChangeCell[] {

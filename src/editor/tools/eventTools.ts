@@ -228,7 +228,7 @@ const upsertEvent: ToolDefinition = {
 
 // 같은 맵·근접 칸에 비슷한 이름의 NPC가 있으면 새로 만들지 않고 기존 id 재사용(중복 상인 thrash 방지).
 function isShopRoleNpcName(name: string): boolean {
-  return /상점|상인|주인|merchant|shop|가게|잡화/u.test(name.trim());
+  return /상점\s*주인|잡화\s*상|잡화점|가게\s*주인|상인|merchant|shopkeeper|shop\s*owner/u.test(name.trim());
 }
 
 function findNearbySimilarNpc(
@@ -249,8 +249,7 @@ function findNearbySimilarNpc(
     // 상점/상인/주인 등 역할 유사 또는 부분 일치
     const roleSimilar =
       (isShopRoleNpcName(needle) && isShopRoleNpcName(hay))
-      || hay.includes(needle)
-      || needle.includes(hay);
+      || hay === needle;
     if (!roleSimilar) continue;
     const dist = Math.abs(event.x - x) + Math.abs(event.y - y);
     if (dist > maxDist) continue;
@@ -327,19 +326,30 @@ const placeNpc: ToolDefinition = {
       warnings: normalizationWarnings,
       face: faceArg,
     });
-    const event: GameEvent = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
+    let event: GameEvent;
+    let finalX = x;
+    let finalY = y;
+    if (reused && similar) {
+      event = structuredClone(similar);
+      event.pages = pages;
+      finalX = similar.x;
+      finalY = similar.y;
+      normalizationWarnings.push(`병합 → 기존 위치 (${finalX}, ${finalY}) 유지, schedule ${similar.schedule?.length ?? 0}개 보존`);
+    } else {
+      event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
+    }
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const adjusted = x !== requestedX || y !== requestedY;
+    const adjusted = finalX !== requestedX || finalY !== requestedY;
     const warnings = [
-      ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${x}, ${y})`] : []),
+      ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${finalX}, ${finalY})`] : []),
       ...normalizationWarnings,
     ];
     const normalizationSummary = normalizationWarnings.length > 0 ? ` — SimplePage 정규화 경고 ${normalizationWarnings.length}건` : "";
-    const reuseSummary = reused ? ` — 기존 NPC 갱신` : "";
+    const reuseSummary = reused ? ` — 기존 NPC 병합 갱신` : "";
     return {
-      summary: `${map.name}에 NPC '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})가 통행 불가라 자동 조정` : ""}${reuseSummary}${normalizationSummary}`,
-      data: { eventId: id, x, y, adjusted, reused },
+      summary: `${map.name}에 NPC '${name}' 배치 (${finalX}, ${finalY})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}${reuseSummary}${normalizationSummary}`,
+      data: { eventId: id, x: finalX, y: finalY, adjusted, reused },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -418,8 +428,17 @@ const makeVillager: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const name = stringArg(args.name, "name");
-    const home = pointFromRecord(args.home, "home");
-    assertPassableSchedulePoint(draft, map.id, home.x, home.y, "home");
+    const homeRaw = pointFromRecord(args.home, "home");
+    // place_npc와 동일: 통행 불가 칸이면 근처 통행 가능 칸으로 자동 착지.
+    const homeLanding = nearestPassableCell(draft, map, homeRaw.x, homeRaw.y, 3);
+    if (!homeLanding) {
+      throw new ToolError(
+        `주민을 놓을 통행 가능 칸이 없습니다: (${homeRaw.x}, ${homeRaw.y}) 주변 반경 3칸까지 전부 통행 불가입니다.`,
+        { code: "npc-impassable", mapId: map.id, x: homeRaw.x, y: homeRaw.y }
+      );
+    }
+    const home = { x: homeLanding.x, y: homeLanding.y };
+    const homeAdjusted = home.x !== homeRaw.x || home.y !== homeRaw.y;
     const schedule = args.schedule !== undefined
       ? parseNpcSchedule(draft, args.schedule, "schedule")
       : routineSchedule(draft, map.id, home, args.dailyRoutine);
@@ -428,9 +447,16 @@ const makeVillager: ToolDefinition = {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${home.x},${home.y}`,
     });
-    const id = typeof args.id === "string" && args.id.trim() ? args.id.trim() : genId("ev_villager");
+    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
+    const similar = findNearbySimilarNpc(map, home.x, home.y, name, 2);
+    const shopRole = isShopRoleNpcName(name);
+    const mergeSimilar = Boolean(similar) && (shopRole || !explicitId);
+    const id = mergeSimilar ? similar!.id : (explicitId ?? genId("ev_villager"));
+    const reused = mergeSimilar;
     const warnings: string[] = [];
     if (args.graphic === undefined) warnings.push("graphic 생략 → query:\"villager\" 기본 적용");
+    if (homeAdjusted) warnings.push(`주민 위치 자동 조정: (${homeRaw.x}, ${homeRaw.y}) → (${home.x}, ${home.y})`);
+    if (reused) warnings.push(`근접 유사 NPC 재사용 → id:${id} (새 이벤트 대신 갱신)`);
     const pages = compileSimplePages(id, name, villagerPages(args.dialogue, schedule, warnings), graphic, {
       movement: PASSIVE,
       warnings,
@@ -475,24 +501,39 @@ const makeVillager: ToolDefinition = {
       });
     }
     const talkFriendship = args.talkFriendship === true ? true : undefined;
-    const event: GameEvent = {
-      id,
-      characterId,
-      x: home.x,
-      y: home.y,
-      trigger: { kind: "action" },
-      commands: [],
-      pages,
-      ...(schedule.length > 0 ? { schedule } : {}),
-      ...(giftPrefs ? { giftPrefs } : {}),
-      ...(giftResponses ? { giftResponses } : {}),
-      ...(talkFriendship ? { talkFriendship } : {}),
-    };
+    let event: GameEvent;
+    if (reused && similar) {
+      event = structuredClone(similar);
+      event.pages = pages;
+      event.characterId = characterId;
+      if (schedule.length > 0) event.schedule = schedule;
+      if (giftPrefs) event.giftPrefs = giftPrefs;
+      if (giftResponses) event.giftResponses = giftResponses;
+      if (talkFriendship) event.talkFriendship = talkFriendship;
+      warnings.push(`병합 → 기존 위치 (${similar.x}, ${similar.y}) 유지`);
+    } else {
+      event = {
+        id,
+        characterId,
+        x: home.x,
+        y: home.y,
+        trigger: { kind: "action" },
+        commands: [],
+        pages,
+        ...(schedule.length > 0 ? { schedule } : {}),
+        ...(giftPrefs ? { giftPrefs } : {}),
+        ...(giftResponses ? { giftResponses } : {}),
+        ...(talkFriendship ? { talkFriendship } : {}),
+      };
+    }
     assertEventShape(event);
     upsertEventIntoMap(map, event);
+    const finalX = reused && similar ? similar.x : home.x;
+    const finalY = reused && similar ? similar.y : home.y;
+    const reuseSummary = reused ? " — 기존 NPC 병합 갱신" : "";
     return {
-      summary: `${map.name}에 주민 '${name}' 생성 (${home.x}, ${home.y}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}`,
-      data: { eventId: id, characterId, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0 },
+      summary: `${map.name}에 주민 '${name}' 생성 (${finalX}, ${finalY}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}${reuseSummary}`,
+      data: { eventId: id, characterId, x: finalX, y: finalY, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0, reused },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },

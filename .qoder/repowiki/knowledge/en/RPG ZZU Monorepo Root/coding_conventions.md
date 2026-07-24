@@ -1,0 +1,3 @@
+- All TS paths use the `@/` alias pointing at `src/`, configured uniformly in vite.config.ts, vite.player.config.ts, vitest.config.ts, and tsconfig.json.
+- Editor-only features are swapped out for the player build by aliasing `@/editor/*` imports to `src/player/export*Shim.ts` rather than using conditional exports.
+- Node-side tooling lives under `scripts/*.mjs` and is invoked exclusively through `package.json` scripts, never run directly from the filesystem.

@@ -244,6 +244,12 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "openChest":
       scene.showRuntimeOverlay("chest-scene", "보관 상자");
       return true;
+    case "openSaveMenu":
+      return true;
+    case "spawnFieldEnemy":
+      return true;
+    case "despawnFieldEnemy":
+      return true;
     case "shop":
       scene.showRuntimeOverlay("shop-scene", commerceOverlayText(step));
       return true;

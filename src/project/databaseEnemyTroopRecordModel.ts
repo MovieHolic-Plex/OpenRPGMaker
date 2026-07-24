@@ -1,4 +1,5 @@
 import { DEFAULT_ELEMENT_RATE_LABELS } from "@/project/actorModel";
+import { normalizeEnemyActionProfile } from "@/project/actionCombat";
 import type {
   EnemyActionCondition,
   EnemyActionPattern,
@@ -34,6 +35,10 @@ export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRe
     stats: normalizeEnemyStats(record.stats),
     rewards: normalizeRewards(record.rewards),
     actions,
+    ...(() => {
+      const actionProfile = normalizeEnemyActionProfile(record.actionProfile);
+      return actionProfile ? { actionProfile } : {};
+    })(),
     stateRates: normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
   };

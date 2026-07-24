@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 100×100 대형 마을 — bbox 선배치 + 비겹침 피드백 + 시공 순서 고정.
  *
  * 1) 강/호수/광장/시장 bbox 확정
@@ -320,7 +320,7 @@ export function buildLargeRiverMarketVillageProject(
           h: fw.h,
         });
       }
-      const kitId = pickHouseKitDiverse(i, houseRng, kitUsed);
+      const kitId = pickHouseKitDiverse(i, kitUsed);
       const windowSpacing = 1 + (i % 3);
       const yardTheme = pickYardTheme(houseRng, hasFence);
       const result = runOk(ctx, "build_house_kit", {
@@ -512,7 +512,7 @@ export function buildLargeRiverMarketVillageProject(
     map = requireMap(ctx, mapId);
     placeBenchesAlongRoads(map, houseWings, plan, fencedProtected, mulberry(seed + 777), log);
     clearPropsOnRoads(map, log);
-    const scrubbed = scrubInvasionsIntoFencedLots(map, builtHouses, log);
+    const scrubbed = scrubInvasionsIntoFencedLots(map, builtHouses);
     log.info("fenced-scrub", String(scrubbed));
 
     map = requireMap(ctx, mapId);
@@ -773,7 +773,6 @@ function pickHouseShapeDiverse(
 
 function pickHouseKitDiverse(
   index: number,
-  rng: () => number,
   used: ReadonlyMap<HouseKitId, number>,
 ): HouseKitId {
   // 교대 + 사용 적은 쪽 우선
@@ -2336,7 +2335,6 @@ function paintCurvedRiverSouth(map: GameMap, river: BBox, rng: () => number): nu
 function scrubInvasionsIntoFencedLots(
   map: GameMap,
   houses: readonly BuiltHouseRef[],
-  log: LargeVillageBuildLog,
 ): number {
   const protectedCells = buildFencedLotProtectedSet(houses);
   return scrubInvasionsIntoProtected(map, protectedCells, false);

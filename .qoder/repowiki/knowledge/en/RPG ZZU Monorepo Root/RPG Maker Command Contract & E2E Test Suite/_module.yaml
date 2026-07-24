@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: test_artifacts
+title: RPG Maker Command Contract & E2E Test Suite
+scope:
+    - test/
+source_files: []
+depends_on: []
+related_to: []

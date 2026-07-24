@@ -217,6 +217,25 @@ export function summarizeAgentGhostPreviewForToolCall(
     case "build_house_kit":
       pushArea(rectArea(project, mapId, rectFromWings(args.wings), "build_house_kit", "집 키트"));
       break;
+    case "author_house": {
+      const houseMapId = stringValue(args.mapId) ?? nestedTargetMapId(args.target);
+      if (args.kind === "lots" && Array.isArray(args.houses)) {
+        for (const house of args.houses) {
+          if (!house || typeof house !== "object") continue;
+          const wings = (house as { wings?: unknown }).wings;
+          pushArea(rectArea(project, houseMapId, rectFromWings(wings), "author_house", "집 부지"));
+        }
+      } else {
+        pushArea(rectArea(project, houseMapId, rectFromWings(args.wings), "author_house", "집 시공"));
+      }
+      break;
+    }
+    case "author_village": {
+      const villageMapId = nestedTargetMapId(args.target);
+      const bounds = nestedTargetGhostBounds(args.target);
+      pushArea(rectArea(project, villageMapId, bounds, "author_village", "마을 시공"));
+      break;
+    }
     case "build_house_lots": {
       const houses = Array.isArray(args.houses) ? args.houses : [];
       for (const house of houses) {
@@ -705,6 +724,35 @@ function pointsValue(value: unknown): Point[] {
 function recordValue(value: unknown): Record<string, unknown> | null {
   if (typeof value !== "object" || value === null || Array.isArray(value)) return null;
   return value as Record<string, unknown>;
+}
+
+function nestedTargetMapId(target: unknown): string | null {
+  const record = recordValue(target);
+  if (!record) return null;
+  return stringValue(record.mapId);
+}
+
+function nestedTargetGhostBounds(target: unknown): AgentGhostBounds | null {
+  const record = recordValue(target);
+  if (!record) return null;
+  const bounds = recordValue(record.bounds);
+  if (bounds) {
+    const x = numberValue(bounds.x);
+    const y = numberValue(bounds.y);
+    const w = numberValue(bounds.w);
+    const h = numberValue(bounds.h);
+    if (x !== null && y !== null && w !== null && h !== null) return { x, y, width: w, height: h };
+  }
+  const plannedMap = recordValue(record.plannedMap);
+  if (plannedMap) {
+    const w = numberValue(plannedMap.width);
+    const h = numberValue(plannedMap.height);
+    if (w !== null && h !== null) return { x: 0, y: 0, width: w, height: h };
+  }
+  const w = numberValue(record.width);
+  const h = numberValue(record.height);
+  if (w !== null && h !== null) return { x: 0, y: 0, width: w, height: h };
+  return null;
 }
 
 function stringValue(value: unknown): string | null {

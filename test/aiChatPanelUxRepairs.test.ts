@@ -310,6 +310,7 @@ describe("키 온보딩과 설정 접근성", () => {
   });
 
   it("키가 없으면 전송 전에 설정을 열고 API 키 입력에 포커스하며 안내를 중복하지 않는다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }));
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send");
@@ -319,15 +320,16 @@ describe("키 온보딩과 설정 접근성", () => {
     send?.click();
 
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
+    const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(input.value).toBe("마을 만들어줘");
     expect((logText.match(/API 키가 필요합니다/gu) ?? []).length).toBe(1);
-    expect(findByTestId(panel, "ai-config")?.getAttribute("open")).toBe("");
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(panel, "ai-config-apikey"));
+    expect(modal).not.toBeNull();
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-config-apikey"));
     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
   });
 
   it("401 오류 버블에도 설정 열기 버튼을 붙인다", async () => {
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "bad-key" }));
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "bad-key" }));
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no key", { status: 401 })));
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
@@ -355,8 +357,9 @@ describe("키 온보딩과 설정 접근성", () => {
   });
 
   it("설정 준비 판정은 API 키까지 확인한다", () => {
-    expect(isAiConfigReady({ ...defaultAiConfig(), apiKey: "" })).toBe(false);
-    expect(isAiConfigReady({ ...defaultAiConfig(), apiKey: "sk-test" })).toBe(true);
+    expect(isAiConfigReady({ ...defaultAiConfig(), apiKey: "" })).toBe(true);
+    expect(isAiConfigReady({ ...defaultAiConfig(), authMode: "apiKey", apiKey: "" })).toBe(false);
+    expect(isAiConfigReady({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "sk-test" })).toBe(true);
   });
 });
 

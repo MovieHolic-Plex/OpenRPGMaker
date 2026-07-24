@@ -143,6 +143,23 @@ function executeM2Command(
     return { kind: "done" };
   }
 
+  if (entry.title === "Open Save Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("openSaveMenu", { kind: "openSaveMenu" });
+  }
+  if (entry.title === "Open Menu Screen" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("openSaveMenu", { kind: "openSaveMenu" });
+  }
+  if (entry.title === "Open Load Menu" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("openSaveMenu", { kind: "openSaveMenu" });
+  }
+  if (entry.title === "Exit Game" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    return pause("returnToTitle", { kind: "returnToTitle" });
+  }
+  if (entry.title === "Toggle ATB Wait Mode" || entry.title === "Toggle Fullscreen Mode" || entry.title === "Open Video Options") {
+    executeM2RuntimeCommand(state.session, entry, command, m2Context);
+    return resumeNext(frame);
+  }
+
   if (entry.title === "Erase Event" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
     return pause("eraseEvent", { kind: "eraseEvent", eventId: state.currentEventId });
   }
@@ -504,6 +521,12 @@ export function executeCommand(
     case "checkpointSave":
       saveCheckpoint(state);
       return resumeNext(frame);
+    case "openSaveMenu":
+      return pause("openSaveMenu", { kind: "openSaveMenu" });
+    case "spawnFieldEnemy":
+      return pause("spawnFieldEnemy", { kind: "spawnFieldEnemy", spawn: command.spawn });
+    case "despawnFieldEnemy":
+      return pause("despawnFieldEnemy", { kind: "despawnFieldEnemy", spawnId: command.spawnId });
     case "killPlayer":
       killParty(state);
       return pause("gameOver", { kind: "gameOver", message: command.message });
@@ -859,6 +882,6 @@ function resolveCurrentGameEvent(state: InterpreterState): GameEvent | undefined
 
 function resolveSwitchValue(session: { switches: Record<string, boolean>; variables: Record<string, number> }, switchId: string, value: SwitchValue): boolean {
   if (typeof value === "boolean") return value;
-  if (value === "toggle") return !getSwitch(session, switchId);
+  if (value === "toggle") return !getSwitch(session as any, switchId);
   return (session.variables[value.id] ?? 0) !== 0;
 }

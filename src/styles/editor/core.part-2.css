@@ -1,3 +1,4 @@
+@import "../runtime/playSurface.css";
 .battle-enemy-image {
   width: 64px;
   height: 64px;
@@ -188,80 +189,6 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 .player-layout.system-shell {
   background: #000;
-}
-.play-viewport {
-  --play-scale: 1;
-  --play-scale-x: 1;
-  --play-scale-y: 1;
-  --play-crop-top: 0px;
-  --play-crop-right: 0px;
-  --play-crop-bottom: 0px;
-  --play-crop-left: 0px;
-  --play-visible-width: 320px;
-  --play-visible-height: 240px;
-  display: grid;
-  height: 100%;
-  min-height: 100%;
-  overflow: hidden;
-  place-items: center;
-  width: 100%;
-}
-.play-stage {
-  background: #000;
-  height: 240px;
-  overflow: hidden;
-  position: relative;
-  transform: scale(var(--play-scale));
-  transform-origin: center;
-  width: 320px;
-}
-.player-layout .play-stage > .dialogue-overlay,
-.player-layout .play-stage > .name-entry-overlay,
-.player-layout .play-stage > .touch-pad {
-  bottom: var(--play-crop-bottom);
-  left: var(--play-crop-left);
-  right: var(--play-crop-right);
-  top: var(--play-crop-top);
-}
-.player-layout .play-stage > .dialogue-overlay.position-top {
-  bottom: auto;
-  height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
-  top: var(--play-crop-top);
-}
-.player-layout .play-stage > .dialogue-overlay.position-center {
-  bottom: auto;
-  max-height: var(--play-visible-height);
-  top: 50%;
-}
-.player-layout .play-stage > .dialogue-overlay.position-bottom {
-  bottom: var(--play-crop-bottom);
-  height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
-  top: auto;
-}
-.player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom {
-  height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
-  min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
-}
-.player-layout .play-stage > .runtime-overlay:not(.game-over-panel):not(.runtime-commerce-overlay) {
-  inset: calc(var(--play-crop-top) + 12px) calc(var(--play-crop-right) + 12px)
-    calc(var(--play-crop-bottom) + 12px) calc(var(--play-crop-left) + 12px);
-}
-.player-layout .play-stage > .game-over-panel {
-  max-width: min(90%, var(--play-visible-width));
-}
-.player-layout .play-stage > .runtime-commerce-overlay {
-  bottom: calc(var(--play-crop-bottom) + 28px);
-  max-width: min(560px, max(1px, calc(var(--play-visible-width) - 16px)));
-  min-width: min(320px, max(1px, calc(var(--play-visible-width) - 16px)));
-}
-.player-layout .phaser-container {
-  height: 240px;
-  width: 320px;
-}
-.player-layout .phaser-container canvas {
-  display: block;
-  height: 240px;
-  width: 100%;
 }
 
 /* ?? ??ъ갹 ?ㅻ쾭?덉씠 ?? */

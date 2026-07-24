@@ -143,6 +143,12 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "inn", price: 20 };
     case "checkpointSave":
       return { kind: "checkpointSave" };
+    case "openSaveMenu":
+      return { kind: "openSaveMenu" };
+    case "spawnFieldEnemy":
+      return { kind: "spawnFieldEnemy", spawn: { id: "spawn_new", troopId: "", area: { x: 0, y: 0, w: 3, h: 3 }, chase: true } };
+    case "despawnFieldEnemy":
+      return { kind: "despawnFieldEnemy", spawnId: "" };
     case "killPlayer":
       return { kind: "killPlayer", message: "" };
     case "triggerEnding":

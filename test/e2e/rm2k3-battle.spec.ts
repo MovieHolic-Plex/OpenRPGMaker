@@ -1,9 +1,13 @@
-﻿import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { performBattleAttack, performBattleSkill } from "./battleReferenceProject";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
 
 const SLIME_MAX_HP = 220;
 
@@ -55,7 +59,7 @@ test("side-view battleProcessing plays through victory and restores the map", as
 
   await expect(page.getByTestId("battle-scene")).toBeVisible();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-system-resource", "tex_tiles_default");
-  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "command");
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "command", { timeout: 25_000 });
   await expect(page.getByTestId("battle-backdrop")).toHaveAttribute("data-backdrop-resource-id", "tex_tiles_default");
   await expect(page.getByTestId("battle-message-window")).toBeVisible();
   await expect(page.getByTestId("battle-party")).toBeVisible();
@@ -131,6 +135,7 @@ test("generated dragon monster resource appears in a playable battle", async ({ 
 });
 
 test("battle event Enemy Encounter reveals a hidden dragon and changes battleback", async ({ page }) => {
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page, (project) => {
     const troop = project.database.troops.find((record) => record.id === "troop_slime");

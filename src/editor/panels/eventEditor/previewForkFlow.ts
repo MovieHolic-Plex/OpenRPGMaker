@@ -1,10 +1,11 @@
 import { el } from "@/util/dom";
 import { commandSummary } from "./commandSummary";
 import type { Command, Condition } from "@/project/types";
+import type { CommandPreviewContext } from "./commandPreview";
 
-// 조건 분기(fork) 프리뷰: 조건 요약 뱃지 + 참/거짓 분기 흐름도 카드(명령 수).
-export function previewForkFlow(cmd: Extract<Command, { kind: "fork" }>): HTMLElement {
+export function previewForkFlow(cmd: Extract<Command, { kind: "fork" }>, context?: CommandPreviewContext): HTMLElement {
   const root = el("div", { class: "ecp-fork", dataset: { testid: "ecp-fork-preview" } });
+  if (context?.skipped) root.classList.add("ecp-skipped");
   root.append(
     el("div", {
       class: "ecp-fork-cond",
@@ -14,23 +15,36 @@ export function previewForkFlow(cmd: Extract<Command, { kind: "fork" }>): HTMLEl
       ],
     })
   );
+  if (context?.forkTaken) {
+    const taken = context.forkTaken;
+    root.append(
+      el("div", {
+        class: `ecp-fork-eval ${taken === "then" ? "is-true" : "is-false"}`,
+        dataset: { testid: "ecp-fork-eval" },
+        text: taken === "then" ? "조건 충족 → 참 분기 실행" : "조건 불충족 → 거짓 분기 실행",
+      })
+    );
+  }
   root.append(
     el("div", {
       class: "ecp-fork-branches",
       children: [
-        branchCard("참일 때 (then)", cmd.then.length, "then"),
+        branchCard("참일 때 (then)", cmd.then.length, "then", context?.forkTaken === "then", context?.forkTaken === "else"),
         cmd.else
-          ? branchCard("그 외 (else)", cmd.else.length, "else")
-          : branchCard("그 외 (else)", 0, "else-absent"),
+          ? branchCard("그 외 (else)", cmd.else.length, "else", context?.forkTaken === "else", context?.forkTaken === "then")
+          : branchCard("그 외 (else)", 0, "else-absent", false, false),
       ],
     })
   );
   return root;
 }
 
-function branchCard(label: string, count: number, variant: "then" | "else" | "else-absent"): HTMLElement {
+function branchCard(label: string, count: number, variant: "then" | "else" | "else-absent", taken = false, skipped = false): HTMLElement {
+  const classes = [`ecp-fork-branch ${variant}`];
+  if (taken) classes.push("taken");
+  if (skipped) classes.push("skipped");
   return el("div", {
-    class: `ecp-fork-branch ${variant}`,
+    class: classes.join(" "),
     children: [
       el("span", { class: "ecp-fork-branch-label", text: label }),
       el("span", {
@@ -39,14 +53,12 @@ function branchCard(label: string, count: number, variant: "then" | "else" | "el
       }),
       el("span", {
         class: "ecp-fork-branch-hint",
-        text: variant === "then" ? "조건 참" : variant === "else" ? "조건 거짓" : "미사용",
+        text: taken ? "실행됨" : skipped ? "건너뜀" : variant === "then" ? "조건 참" : variant === "else" ? "조건 거짓" : "미사용",
       }),
     ],
   });
 }
 
-// conditionSummary 는 commandSummary 안에 private 하므로, fork 요약("조건 분기: <cond>")에서
-// 접두어만 떼어 재사용한다(중복 구현 방지).
 function describeCondition(condition: Condition): string {
   const full = commandSummary({ kind: "fork", condition, then: [] });
   const sep = full.indexOf(": ");

@@ -1,7 +1,7 @@
-import { hasFarmToolAvailable, resolveToolUseOnTile } from "@/project/toolActions";
+﻿import { resolveToolUseOnTile } from "@/project/toolActions";
 import type { GameTime, Season } from "@/project/gameTime";
 import { changeItem, type FarmPlotState, type PlaySession } from "@/project/session";
-import type { CropRecord, FarmTool, GameMap, Project, Rect } from "@/project/types";
+import type { CropRecord, GameMap, Project, Rect } from "@/project/types";
 import { placeableKey, removeObjectAt } from "@/project/placeables";
 
 export type FarmInteractionKind = "tilled" | "planted" | "watered" | "harvested" | "ignored";
@@ -213,10 +213,6 @@ function firstPlantableCrop(project: Project, session: PlaySession, season: Seas
 
 function cropById(project: Project, cropId: string): CropRecord | undefined {
   return (project.database.crops ?? []).find((crop) => crop.id === cropId);
-}
-
-function hasFarmTool(project: Project, session: PlaySession, tool: FarmTool): boolean {
-  return hasFarmToolAvailable(project, session, tool);
 }
 
 function ensureMapPlots(session: PlaySession, mapId: string): Record<string, FarmPlotState> {

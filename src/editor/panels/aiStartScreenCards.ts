@@ -67,7 +67,7 @@ export function defaultAiVisualStartPrompts(): readonly AiVisualStartPrompt[] {
       mosaicTiles: [
         BLUE.roof.body,
         BLUE.roof.body,
-        BLUE.roof.rightEdge,
+        (BLUE.roof as { body: number; rightEdge?: number }).rightEdge ?? BLUE.roof.body,
         BLUE.wall.mid[0],
         BLUE.windowTile,
         BLUE.wall.mid[2],

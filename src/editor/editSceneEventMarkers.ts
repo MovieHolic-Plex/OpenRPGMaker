@@ -23,6 +23,12 @@ const EVENT_CLICK_STROKE_COLOR = 0x0a246a;
 const EVENT_CLICK_STROKE_ALPHA = 0.95;
 const EVENT_CLICK_TEXT_COLOR = "#ffffff";
 const EVENT_CLICK_TEXT_BACKGROUND = "#0a246a";
+/** 모노 폰트로 좌표 숫자를 정렬하되, 한글(새 이벤트 위치/편집 위치)은
+ *  Pretendard/맑은 고딕으로 렌더되도록 한국어 폴백을 포함한 스택.
+ *  에디터 DOM의 --font-ui/--font-mono 토큰(tokens.css)과 짝을 맞춘다. */
+const EVENT_LABEL_FONT_FAMILY =
+  "\"Cascadia Mono\", \"JetBrains Mono\", \"Pretendard\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", Consolas, monospace, sans-serif";
+const EVENT_LABEL_FONT_SIZE = "11px";
 
 type EventMarkerPosition = {
   readonly x: number;
@@ -94,9 +100,10 @@ export function renderEventLayerClickFeedback(
   const label = context.scene.add.text(worldX + 2, labelY, `${action} ${feedback.x},${feedback.y}`, {
     backgroundColor: EVENT_CLICK_TEXT_BACKGROUND,
     color: EVENT_CLICK_TEXT_COLOR,
-    fontFamily: "\"Cascadia Mono\", \"JetBrains Mono\", Consolas, monospace",
-    fontSize: "10px",
-    padding: { left: 3, right: 3, top: 1, bottom: 1 },
+    fontFamily: EVENT_LABEL_FONT_FAMILY,
+    fontSize: EVENT_LABEL_FONT_SIZE,
+    fontStyle: "bold",
+    padding: { left: 4, right: 4, top: 2, bottom: 2 },
   });
   context.overlayLayer.add(label);
 }

@@ -139,6 +139,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const toggleMenu = (): void => {
     if (!options.getActiveScene()) return;
+    const session = options.getActiveScene()?.getSession();
+    if (session?.m2Runtime?.access?.menu === false && !currentMenu()) return;
     const menu = currentMenu();
     if (menu?.dataset.statusMenuScreen === "function") {
       backOneStep();

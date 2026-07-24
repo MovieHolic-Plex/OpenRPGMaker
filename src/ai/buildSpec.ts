@@ -36,6 +36,8 @@ export interface BuildSpec {
   pathWidth?: number;
   density?: "spacious" | "normal" | "dense";
   layoutStyle?: "straight" | "curved" | "random";
+  /** 아직 생성되지 않은 맵의 합성 차원 — planned-map descriptor. */
+  plannedMap?: { mapId: string; width: number; height: number };
 }
 
 export interface SpecIssue { severity: "error" | "warning"; message: string; }
@@ -68,6 +70,8 @@ interface CheckedAsset {
 export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
   "clear_region", "place_npc", "place_battle_blocker",
+  // canonical construction facades
+  "author_house", "author_village",
   // 타일 v2 (2026-07-07 재구축)
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   // 타일 v3 영역 채우기
@@ -76,6 +80,7 @@ export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
 
 export const SPEC_BOUNDARY_SLACK_TOOLS: ReadonlySet<string> = new Set([
   "paint_tiles", "paint_road", "build_house", "build_house_kit", "build_house_lots", "build_village", "stamp_structure",
+  "author_house", "author_village",
   "place_npc", "place_battle_blocker",
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   "fill_region",
@@ -107,8 +112,31 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
 
   const mapId = typeof rawSpec.mapId === "string" ? rawSpec.mapId : null;
   const map = mapId === null ? undefined : project.maps[mapId];
-  if (mapId === null) issues.push({ severity: "error", message: "BuildSpec.mapId는 문자열이어야 합니다." });
-  else if (map === undefined) issues.push({ severity: "error", message: `맵 '${mapId}'을 찾을 수 없습니다.` });
+  // planned-map descriptor: 아직 생성되지 않은 맵의 합성 차원을 제공하면
+  // 에셋 경계 검증에 사용한다. mapId 불일치/차원 오류는 error.
+  const plannedMap = isRecord(rawSpec.plannedMap) ? rawSpec.plannedMap : null;
+  let effectiveWidth: number | undefined;
+  let effectiveHeight: number | undefined;
+  if (mapId === null) {
+    issues.push({ severity: "error", message: "BuildSpec.mapId는 문자열이어야 합니다." });
+  } else if (map !== undefined) {
+    effectiveWidth = map.width;
+    effectiveHeight = map.height;
+  } else if (plannedMap !== null) {
+    const plannedId = typeof plannedMap.mapId === "string" ? plannedMap.mapId : null;
+    const pw = Number.isInteger(plannedMap.width) ? (plannedMap.width as number) : null;
+    const ph = Number.isInteger(plannedMap.height) ? (plannedMap.height as number) : null;
+    if (plannedId === null || plannedId !== mapId) {
+      issues.push({ severity: "error", message: `plannedMap.mapId('${plannedId ?? "?"}')가 BuildSpec.mapId('${mapId}')와 다릅니다.` });
+    } else if (pw === null || ph === null || pw < 1 || ph < 1) {
+      issues.push({ severity: "error", message: "plannedMap.width/height는 1 이상의 정수여야 합니다." });
+    } else {
+      effectiveWidth = pw;
+      effectiveHeight = ph;
+    }
+  } else {
+    issues.push({ severity: "error", message: `맵 '${mapId}'을 찾을 수 없습니다.` });
+  }
 
   const buildOrder = checkBuildOrder(rawSpec.buildOrder, issues);
 
@@ -127,8 +155,8 @@ export function validateBuildSpec(project: Project, spec: unknown): SpecIssue[] 
     if (seenIds.has(checked.id)) issues.push({ severity: "error", message: `중복 asset id '${checked.id}'가 있습니다.` });
     seenIds.add(checked.id);
 
-    if (map !== undefined && !insideMap(checked, map.width, map.height)) {
-      issues.push({ severity: "error", message: `에셋 '${checked.id}' 영역(${checked.x},${checked.y}) ${checked.w}×${checked.h}가 맵 크기 ${map.width}×${map.height} 밖입니다.` });
+    if (effectiveWidth !== undefined && effectiveHeight !== undefined && !insideMap(checked, effectiveWidth, effectiveHeight)) {
+      issues.push({ severity: "error", message: `에셋 '${checked.id}' 영역(${checked.x},${checked.y}) ${checked.w}×${checked.h}가 맵 크기 ${effectiveWidth}×${effectiveHeight} 밖입니다.` });
     }
     checkedAssets.push(checked);
   });
@@ -201,6 +229,28 @@ function placementConflict(map: GameMap, asset: CheckedAsset, clearAssets: reado
 
 export function affectedRegions(toolName: string, args: Record<string, unknown>): AffectedRegion[] {
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
+
+  // canonical construction facades — nested target 구조에서 mapId와 영역을 추출한다.
+  if (toolName === "author_house") {
+    const effectiveMapId = mapId ?? nestedTargetMapId(args.target);
+    if (effectiveMapId === null) return [];
+    if (args.kind === "lots" && Array.isArray(args.houses)) {
+      const lotWings = houseLotWings(args.houses);
+      const lotRegions = wingsRegions(effectiveMapId, lotWings, "yard");
+      if (lotRegions !== null) return lotRegions;
+    }
+    const wingRegionsForKit = wingsRegions(effectiveMapId, args.wings, "door");
+    if (wingRegionsForKit !== null) return wingRegionsForKit;
+    return [{ mapId: effectiveMapId, x: 0, y: 0, w: 0, h: 0 }];
+  }
+  if (toolName === "author_village") {
+    const targetMapId = nestedTargetMapId(args.target);
+    if (targetMapId === null) return [];
+    const bounds = nestedTargetBounds(args.target);
+    if (bounds !== null) return [bounds.mapId === targetMapId ? bounds : { ...bounds, mapId: targetMapId }];
+    return [{ mapId: targetMapId, x: 0, y: 0, w: 0, h: 0 }];
+  }
+
   if (mapId === null) return [];
 
   if (toolName === "build_house_lots") {
@@ -592,6 +642,35 @@ function assetLabel(rawAsset: unknown, index: number): string {
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === "object" && value !== null; }
+
+/** canonical construction nested target에서 mapId 추출. */
+function nestedTargetMapId(target: unknown): string | null {
+  if (!isRecord(target)) return null;
+  return typeof target.mapId === "string" && target.mapId.length > 0 ? target.mapId : null;
+}
+
+/** canonical construction nested target에서 bounds 추출 (existing bounds 또는 plannedMap dimensions). */
+function nestedTargetBounds(target: unknown): AffectedRegion | null {
+  if (!isRecord(target)) return null;
+  const mapId = nestedTargetMapId(target);
+  if (mapId === null) return null;
+  if (isRecord(target.bounds)) {
+    const b = target.bounds;
+    if (isFiniteNumber(b.x) && isFiniteNumber(b.y) && isFiniteNumber(b.w) && isFiniteNumber(b.h)) {
+      return { mapId, x: b.x, y: b.y, w: b.w, h: b.h };
+    }
+  }
+  if (isRecord(target.plannedMap)) {
+    const pm = target.plannedMap;
+    if (isFiniteNumber(pm.width) && isFiniteNumber(pm.height)) {
+      return { mapId, x: 0, y: 0, w: pm.width, h: pm.height };
+    }
+  }
+  if (isFiniteNumber(target.width) && isFiniteNumber(target.height)) {
+    return { mapId, x: 0, y: 0, w: target.width, h: target.height };
+  }
+  return null;
+}
 
 function isPoint(value: unknown): value is { x: number; y: number } { return isRecord(value) && isFiniteNumber(value.x) && isFiniteNumber(value.y); }
 

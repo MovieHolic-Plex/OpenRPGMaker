@@ -324,10 +324,11 @@ function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: strin
   for (const strip of CHIPSET_ANIMATION_STRIPS) {
     const stripKey = chipsetAnimationKey(textureKey, strip.key);
     if (scene.anims.exists(stripKey)) continue;
+    const frameRate = strip.fps > 0 ? strip.fps : CHIPSET_ANIMATION_FPS;
     scene.anims.create({
       key: stripKey,
       frames: strip.frames.map((frame) => ({ key: textureKey, frame: `tile_${frame}` })),
-      frameRate: CHIPSET_ANIMATION_FPS,
+      frameRate,
       repeat: -1,
     });
     for (const quarter of TILE_QUARTERS) {
@@ -336,7 +337,7 @@ function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: strin
       scene.anims.create({
         key,
         frames: strip.frames.map((frame) => ({ key: textureKey, frame: `tile_${frame}_${quarter.name}` })),
-        frameRate: CHIPSET_ANIMATION_FPS,
+        frameRate,
         repeat: -1,
       });
     }

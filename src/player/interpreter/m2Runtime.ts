@@ -99,6 +99,80 @@ function executeByTitle(
     runtime.access[accessKey(title)] = fieldBoolean(fields, "enabled", true);
     return;
   }
+  if (title === "Move to Variable Location") {
+    const mapVar = fieldString(fields, "mapVariableId", "");
+    const xVar = fieldString(fields, "xVariableId", "");
+    const yVar = fieldString(fields, "yVariableId", "");
+    const mapId = String(session.variables[mapVar] ?? session.currentMapId);
+    const x = Math.trunc(session.variables[xVar] ?? 0);
+    const y = Math.trunc(session.variables[yVar] ?? 0);
+    runtime.map["move_to_variable_location"] = { mapId, x, y, value: "" };
+    return;
+  }
+  if (title === "Get On/Off Vehicle") {
+    runtime.system["vehicle_boarded"] = fieldBoolean(fields, "boarded", true);
+    return;
+  }
+  if (title === "Set Vehicle Location") {
+    const vehicle = fieldString(fields, "vehicle", "boat");
+    runtime.map[`vehicle_${vehicle}`] = {
+      mapId: fieldString(fields, "mapId", ""),
+      x: fieldNumber(fields, "x", 0),
+      y: fieldNumber(fields, "y", 0),
+      value: "",
+    };
+    return;
+  }
+  if (title === "Set Event Location") {
+    recordMapOrEventState(runtime, title, fields);
+    return;
+  }
+  if (title === "Swap Event Location") {
+    const eventA = fieldString(fields, "eventA", "");
+    const eventB = fieldString(fields, "eventB", "");
+    runtime.events["_swap"] = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
+    return;
+  }
+  if (title === "Get Terrain ID") {
+    const variableId = fieldString(fields, "variableId", "");
+    session.variables[variableId] = 0;
+    return;
+  }
+  if (title === "Get Event ID") {
+    const variableId = fieldString(fields, "variableId", "");
+    session.variables[variableId] = 0;
+    return;
+  }
+  if (title === "Change Tileset") {
+    runtime.map["tileset_override"] = { mapId: "", x: 0, y: 0, value: fieldString(fields, "value", "") };
+    return;
+  }
+  if (title === "Change Parallax Back") {
+    runtime.map["parallax_override"] = { mapId: "", x: 0, y: 0, value: fieldString(fields, "value", "") };
+    return;
+  }
+  if (title === "Set Encounter Rate") {
+    runtime.map["encounter_rate"] = { mapId: "", x: 0, y: 0, value: String(fieldNumber(fields, "value", 0)) };
+    return;
+  }
+  if (title === "Set Teleportation Point") {
+    runtime.map["teleport_point"] = {
+      mapId: fieldString(fields, "mapId", ""),
+      x: fieldNumber(fields, "x", 0),
+      y: fieldNumber(fields, "y", 0),
+      value: "",
+    };
+    return;
+  }
+  if (title === "Set Escape Location") {
+    runtime.map["escape_location"] = {
+      mapId: fieldString(fields, "mapId", ""),
+      x: fieldNumber(fields, "x", 0),
+      y: fieldNumber(fields, "y", 0),
+      value: "",
+    };
+    return;
+  }
   if (title.startsWith("Change Actor ")) {
     mutateActorState(session, runtime, title, fields, context);
     return;
@@ -118,6 +192,39 @@ function executeByTitle(
   }
   if (title.includes("Location") || title.includes("Map") || title === "Scroll Map") {
     recordMapOrEventState(runtime, title, fields);
+    return;
+  }
+  if (title === "Change Vehicle Graphic") {
+    const vehicle = fieldString(fields, "vehicle", "boat");
+    runtime.system[`vehicle_graphic_${vehicle}`] = fieldString(fields, "value", "");
+    return;
+  }
+  if (title === "Change System BGM") {
+    runtime.system["system_bgm"] = fieldString(fields, "value", "");
+    return;
+  }
+  if (title === "Change System SE") {
+    runtime.system["system_se"] = fieldString(fields, "value", "");
+    return;
+  }
+  if (title === "Change System Graphic") {
+    runtime.system["system_graphic"] = fieldString(fields, "value", "");
+    return;
+  }
+  if (title === "Change Screen Transition") {
+    runtime.screen.tint = fieldString(fields, "value", "fade");
+    return;
+  }
+  if (title === "Show Animation" || title === "Flash Event") {
+    runtime.screenEffects.push({
+      effect: title === "Show Animation" ? "animation" : "flash",
+      value: fieldString(fields, "value", ""),
+      durationMs: fieldNumber(fields, "durationMs", 300),
+    });
+    return;
+  }
+  if (title === "Play Movie") {
+    runtime.system["movie"] = fieldString(fields, "value", "");
     return;
   }
   if (title.startsWith("Open ") || title === "Exit Game" || title.startsWith("Toggle ")) {
@@ -204,10 +311,18 @@ function mutateActorState(
   const actor = runtime.actors[actorId];
   if (title === "Change Actor Name") {
     actor.name = fieldString(fields, "value", "");
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      session.actorNames ??= {};
+      session.actorNames[targetActorId] = actor.name;
+    }
     return;
   }
   if (title === "Change Actor Nickname") {
     actor.nickname = fieldString(fields, "value", "");
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      session.actorNicknames ??= {};
+      session.actorNicknames[targetActorId] = actor.nickname;
+    }
     return;
   }
   if (title === "Change Actor Graphic") {
@@ -285,6 +400,12 @@ function mutateActorState(
     const faceIndex = Math.max(0, Math.trunc(fieldNumber(fields, "faceIndex", 0)));
     actor.faceset = resourceId;
     actor.faceIndex = faceIndex;
+    for (const targetActorId of resolveActorTargets(session, actorId)) {
+      session.actorFaceResourceIds ??= {};
+      session.actorFaceIndices ??= {};
+      session.actorFaceResourceIds[targetActorId] = resourceId;
+      session.actorFaceIndices[targetActorId] = faceIndex;
+    }
     return;
   }
   if (title === "Change State") {

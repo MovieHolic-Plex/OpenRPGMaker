@@ -1,0 +1,193 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" role="img" aria-labelledby="title desc">
+  <title id="title">OpenRPGMaker Community 랜딩 페이지 목업</title>
+  <desc id="desc">다크 네이비 배경, 민트와 골드 포인트, 픽셀아트 에셋 카드가 있는 한국어 커뮤니티 랜딩 페이지</desc>
+  <defs>
+    <linearGradient id="heroWash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#151c2b"/>
+      <stop offset="0.62" stop-color="#101622"/>
+      <stop offset="1" stop-color="#0d1017"/>
+    </linearGradient>
+    <linearGradient id="mintGold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#57e6b4"/>
+      <stop offset="1" stop-color="#f5c869"/>
+    </linearGradient>
+    <pattern id="pixelGrid" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M24 0H0V24" fill="none" stroke="#2a3350" stroke-width="1" opacity="0.28"/>
+    </pattern>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#05070b" flood-opacity="0.46"/>
+    </filter>
+    <clipPath id="art1"><rect x="72" y="582" width="260" height="116" rx="10"/></clipPath>
+    <clipPath id="art2"><rect x="364" y="582" width="260" height="116" rx="10"/></clipPath>
+    <clipPath id="art3"><rect x="656" y="582" width="260" height="116" rx="10"/></clipPath>
+    <clipPath id="art4"><rect x="948" y="582" width="260" height="116" rx="10"/></clipPath>
+  </defs>
+
+  <rect width="1280" height="800" fill="#0d1017"/>
+  <rect x="0" y="0" width="1280" height="508" fill="url(#heroWash)"/>
+  <rect x="0" y="0" width="1280" height="508" fill="url(#pixelGrid)" opacity="0.36"/>
+
+  <!-- Navigation -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <rect x="48" y="24" width="1184" height="64" rx="14" fill="#111722" stroke="#2a3350"/>
+    <g transform="translate(72 42)">
+      <rect width="28" height="28" rx="7" fill="#57e6b4"/>
+      <rect x="6" y="6" width="6" height="6" fill="#0d1017"/>
+      <rect x="16" y="6" width="6" height="6" fill="#0d1017"/>
+      <rect x="6" y="16" width="16" height="6" fill="#0d1017"/>
+      <text x="42" y="21" fill="#e8ecf5" font-size="17" font-weight="800" letter-spacing="-0.2">OpenRPGMaker</text>
+      <text x="179" y="21" fill="#71809f" font-size="12" font-weight="700">COMMUNITY</text>
+    </g>
+    <g fill="#aeb8cc" font-size="14" font-weight="700">
+      <text x="820" y="63">에셋</text>
+      <text x="890" y="63">게임</text>
+    </g>
+    <rect x="958" y="38" width="106" height="36" rx="9" fill="#1b2233" stroke="#38435f"/>
+    <text x="1011" y="61" text-anchor="middle" fill="#e8ecf5" font-size="13" font-weight="750">공유하기</text>
+    <rect x="1076" y="38" width="132" height="36" rx="9" fill="#57e6b4"/>
+    <text x="1142" y="61" text-anchor="middle" fill="#0d1017" font-size="13" font-weight="850">에셋 둘러보기</text>
+  </g>
+
+  <!-- Hero copy -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <g transform="translate(72 132)">
+      <rect width="160" height="30" rx="8" fill="#17281f" stroke="#2e6b57"/>
+      <rect x="12" y="10" width="10" height="10" fill="#57e6b4"/>
+      <text x="31" y="20" fill="#9cf2d4" font-size="12" font-weight="750">모두의 RPG 작업실</text>
+      <text x="0" y="92" fill="#e8ecf5" font-size="58" font-weight="900" letter-spacing="-2.9">만들고, 나누고,</text>
+      <text x="0" y="158" fill="url(#mintGold)" font-size="58" font-weight="900" letter-spacing="-2.9">다시 담는다</text>
+      <text x="2" y="205" fill="#9aa7be" font-size="16" font-weight="500">타일셋, 캐릭터, 음악과 완성된 게임까지.</text>
+      <text x="2" y="232" fill="#9aa7be" font-size="16" font-weight="500">당신의 다음 세계를 함께 만드는 커뮤니티입니다.</text>
+      <rect x="0" y="262" width="150" height="46" rx="10" fill="#57e6b4"/>
+      <text x="75" y="291" text-anchor="middle" fill="#0d1017" font-size="14" font-weight="850">에셋 찾아보기</text>
+      <rect x="162" y="262" width="142" height="46" rx="10" fill="#1b2233" stroke="#39445f"/>
+      <text x="233" y="291" text-anchor="middle" fill="#e8ecf5" font-size="14" font-weight="750">내 작업 공유</text>
+    </g>
+  </g>
+
+  <!-- Hero pixel-world composition -->
+  <g transform="translate(702 122)" filter="url(#softShadow)">
+    <rect width="506" height="344" rx="18" fill="#1b2233" stroke="#34405e"/>
+    <rect x="14" y="14" width="478" height="38" rx="9" fill="#131a27" stroke="#2a3350"/>
+    <rect x="28" y="27" width="10" height="10" fill="#57e6b4"/>
+    <text x="48" y="38" fill="#bac5d8" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="12" font-weight="700">이번 주 인기 에셋</text>
+    <text x="470" y="38" text-anchor="end" fill="#f5c869" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="11" font-weight="750">42개 새로 등록</text>
+    <rect x="14" y="66" width="300" height="264" rx="10" fill="#101722"/>
+    <rect x="14" y="66" width="300" height="264" rx="10" fill="url(#pixelGrid)"/>
+    <!-- Water -->
+    <rect x="14" y="246" width="300" height="84" fill="#173a52"/>
+    <rect x="14" y="258" width="300" height="8" fill="#245b70"/>
+    <rect x="14" y="286" width="300" height="8" fill="#245b70"/>
+    <rect x="14" y="314" width="300" height="8" fill="#245b70"/>
+    <!-- Grass and path -->
+    <rect x="14" y="66" width="300" height="180" fill="#244b3e"/>
+    <path d="M126 66h76v36h32v48h-38v36h-62v60H86v-70h32v-54H96V90h30z" fill="#b49a62"/>
+    <path d="M126 66h12v36h32v48h-12v36h-24v60H86v-70h32v-54H96V90h30z" fill="#d0b978" opacity="0.7"/>
+    <!-- House -->
+    <rect x="198" y="112" width="84" height="72" fill="#d7c08a"/>
+    <path d="M188 120l52-38 52 38z" fill="#8f4d48"/>
+    <rect x="228" y="146" width="22" height="38" fill="#5b3c35"/>
+    <rect x="210" y="130" width="16" height="16" fill="#78bfd0"/>
+    <rect x="256" y="130" width="16" height="16" fill="#78bfd0"/>
+    <!-- Trees -->
+    <g>
+      <rect x="48" y="130" width="10" height="34" fill="#604638"/><rect x="32" y="108" width="42" height="38" fill="#3e7a50"/><rect x="40" y="98" width="26" height="20" fill="#57a866"/>
+      <rect x="284" y="202" width="8" height="30" fill="#604638"/><rect x="270" y="184" width="36" height="34" fill="#3e7a50"/><rect x="278" y="174" width="22" height="18" fill="#57a866"/>
+      <rect x="52" y="214" width="8" height="26" fill="#604638"/><rect x="40" y="198" width="32" height="30" fill="#3e7a50"/>
+    </g>
+    <!-- Bridge -->
+    <rect x="122" y="242" width="72" height="18" fill="#79563d"/>
+    <rect x="126" y="246" width="12" height="10" fill="#c19054"/><rect x="142" y="246" width="12" height="10" fill="#c19054"/><rect x="158" y="246" width="12" height="10" fill="#c19054"/><rect x="174" y="246" width="12" height="10" fill="#c19054"/>
+    <!-- Side mini cards -->
+    <rect x="328" y="66" width="164" height="124" rx="10" fill="#151c2a" stroke="#2a3350"/>
+    <rect x="340" y="78" width="64" height="64" rx="7" fill="#20293b"/>
+    <rect x="352" y="90" width="40" height="40" fill="#395f65"/>
+    <rect x="360" y="98" width="24" height="18" fill="#d9b06b"/>
+    <rect x="366" y="116" width="12" height="10" fill="#7c4d3b"/>
+    <text x="416" y="99" fill="#e8ecf5" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="12" font-weight="750">항구 마을</text>
+    <text x="416" y="119" fill="#71809f" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="10">타일셋</text>
+    <text x="416" y="139" fill="#57e6b4" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="10" font-weight="750">무료</text>
+    <rect x="328" y="204" width="164" height="126" rx="10" fill="#151c2a" stroke="#2a3350"/>
+    <rect x="340" y="216" width="64" height="64" rx="7" fill="#33283f"/>
+    <rect x="352" y="228" width="40" height="40" fill="#5f4167"/>
+    <rect x="364" y="234" width="16" height="24" fill="#f5c869"/>
+    <rect x="360" y="240" width="4" height="14" fill="#e8ecf5"/><rect x="380" y="240" width="4" height="14" fill="#e8ecf5"/>
+    <text x="416" y="237" fill="#e8ecf5" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="12" font-weight="750">별빛 마법사</text>
+    <text x="416" y="257" fill="#71809f" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="10">캐릭터</text>
+    <text x="416" y="277" fill="#f5c869" font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif" font-size="10" font-weight="750">추천</text>
+  </g>
+
+  <!-- Latest asset section -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <text x="72" y="548" fill="#e8ecf5" font-size="22" font-weight="850" letter-spacing="-0.6">새로 올라온 에셋</text>
+    <text x="1208" y="548" text-anchor="end" fill="#57e6b4" font-size="13" font-weight="750">전체 보기  →</text>
+  </g>
+
+  <!-- Card 1: forest tiles -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <rect x="64" y="574" width="276" height="202" rx="14" fill="#1b2233" stroke="#2a3350"/>
+    <g clip-path="url(#art1)">
+      <rect x="72" y="582" width="260" height="116" fill="#1c3e35"/>
+      <rect x="72" y="666" width="260" height="32" fill="#18364d"/>
+      <rect x="88" y="598" width="36" height="36" fill="#39764d"/><rect x="96" y="590" width="20" height="20" fill="#55a864"/>
+      <rect x="282" y="608" width="34" height="34" fill="#39764d"/><rect x="288" y="598" width="22" height="18" fill="#55a864"/>
+      <path d="M160 582h56v116h-56z" fill="#aa8a54"/><path d="M176 582h16v116h-16z" fill="#d0b978" opacity="0.66"/>
+      <rect x="72" y="582" width="260" height="116" fill="url(#pixelGrid)"/>
+    </g>
+    <text x="80" y="726" fill="#e8ecf5" font-size="14" font-weight="800">초록숲 타일셋</text>
+    <text x="80" y="751" fill="#7f8ca4" font-size="11">맵 타일 · 16×16</text>
+    <rect x="268" y="719" width="54" height="25" rx="7" fill="#17281f" stroke="#2e6b57"/>
+    <text x="295" y="736" text-anchor="middle" fill="#85edc9" font-size="10" font-weight="750">무료</text>
+  </g>
+
+  <!-- Card 2: character -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <rect x="356" y="574" width="276" height="202" rx="14" fill="#1b2233" stroke="#2a3350"/>
+    <g clip-path="url(#art2)">
+      <rect x="364" y="582" width="260" height="116" fill="#2c263d"/>
+      <rect x="364" y="582" width="260" height="116" fill="url(#pixelGrid)"/>
+      <rect x="456" y="594" width="72" height="88" fill="#3b3150"/>
+      <rect x="476" y="602" width="32" height="30" fill="#e2b98b"/>
+      <rect x="468" y="596" width="48" height="16" fill="#735083"/>
+      <rect x="468" y="632" width="48" height="38" fill="#b54f6d"/>
+      <rect x="458" y="638" width="10" height="30" fill="#e2b98b"/><rect x="516" y="638" width="10" height="30" fill="#e2b98b"/>
+      <rect x="476" y="670" width="12" height="24" fill="#41364d"/><rect x="496" y="670" width="12" height="24" fill="#41364d"/>
+    </g>
+    <text x="372" y="726" fill="#e8ecf5" font-size="14" font-weight="800">모험가 베이스 24종</text>
+    <text x="372" y="751" fill="#7f8ca4" font-size="11">캐릭터 · 보행 그래픽</text>
+    <rect x="556" y="719" width="58" height="25" rx="7" fill="#302b1d" stroke="#695b30"/>
+    <text x="585" y="736" text-anchor="middle" fill="#f5c869" font-size="10" font-weight="750">인기</text>
+  </g>
+
+  <!-- Card 3: dungeon -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <rect x="648" y="574" width="276" height="202" rx="14" fill="#1b2233" stroke="#2a3350"/>
+    <g clip-path="url(#art3)">
+      <rect x="656" y="582" width="260" height="116" fill="#202737"/>
+      <rect x="672" y="598" width="228" height="84" fill="#323b4e"/>
+      <rect x="688" y="614" width="44" height="52" fill="#181e2a"/>
+      <rect x="842" y="614" width="42" height="52" fill="#181e2a"/>
+      <rect x="756" y="606" width="60" height="76" fill="#202737"/>
+      <rect x="780" y="630" width="12" height="30" fill="#f5c869"/>
+      <rect x="656" y="582" width="260" height="116" fill="url(#pixelGrid)"/>
+    </g>
+    <text x="664" y="726" fill="#e8ecf5" font-size="14" font-weight="800">고대 유적 던전</text>
+    <text x="664" y="751" fill="#7f8ca4" font-size="11">맵 타일 · 오토타일</text>
+    <rect x="850" y="719" width="56" height="25" rx="7" fill="#20283a" stroke="#3b4762"/>
+    <text x="878" y="736" text-anchor="middle" fill="#bdc7d9" font-size="10" font-weight="750">신규</text>
+  </g>
+
+  <!-- Card 4: music -->
+  <g font-family="Pretendard, Noto Sans KR, Malgun Gothic, sans-serif">
+    <rect x="940" y="574" width="276" height="202" rx="14" fill="#1b2233" stroke="#2a3350"/>
+    <g clip-path="url(#art4)">
+      <rect x="948" y="582" width="260" height="116" fill="#182a31"/>
+      <rect x="968" y="614" width="8" height="50" fill="#57e6b4"/><rect x="984" y="602" width="8" height="74" fill="#57e6b4"/><rect x="1000" y="624" width="8" height="30" fill="#57e6b4"/><rect x="1016" y="596" width="8" height="86" fill="#f5c869"/><rect x="1032" y="610" width="8" height="58" fill="#57e6b4"/><rect x="1048" y="632" width="8" height="22" fill="#57e6b4"/><rect x="1064" y="606" width="8" height="66" fill="#f5c869"/><rect x="1080" y="616" width="8" height="46" fill="#57e6b4"/><rect x="1096" y="590" width="8" height="92" fill="#57e6b4"/><rect x="1112" y="608" width="8" height="60" fill="#f5c869"/><rect x="1128" y="626" width="8" height="26" fill="#57e6b4"/><rect x="1144" y="600" width="8" height="78" fill="#57e6b4"/><rect x="1160" y="616" width="8" height="46" fill="#f5c869"/><rect x="1176" y="608" width="8" height="62" fill="#57e6b4"/>
+      <rect x="948" y="582" width="260" height="116" fill="url(#pixelGrid)" opacity="0.55"/>
+    </g>
+    <text x="956" y="726" fill="#e8ecf5" font-size="14" font-weight="800">여관의 저녁 BGM</text>
+    <text x="956" y="751" fill="#7f8ca4" font-size="11">오디오 · 반복 재생</text>
+    <rect x="1140" y="719" width="58" height="25" rx="7" fill="#302b1d" stroke="#695b30"/>
+    <text x="1169" y="736" text-anchor="middle" fill="#f5c869" font-size="10" font-weight="750">추천</text>
+  </g>
+</svg>

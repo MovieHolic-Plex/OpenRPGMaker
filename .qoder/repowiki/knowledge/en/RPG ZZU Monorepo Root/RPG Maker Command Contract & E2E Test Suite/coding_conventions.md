@@ -1,0 +1,5 @@
+- Each command kind gets its own `<kind>.contract.test.ts` file, declared via `defineCommandContract({ kind, happy, edge, roundtrip, pauseOrTermination })` so coverage can enumerate them mechanically.
+- Contract cases share a canonical foundation setup (`NativeFoundationSetup`) with fixed ids like `map_contract`, `event_contract`, `switch_contract`, avoiding ad-hoc id generation across specs.
+- Interpreter-driven tests use `runCommandContract(commands, { answers, mutateProject, mutateSession })` instead of calling `createInterpreter` directly, centralizing the pause-loop, maxSteps guard, and sentinel-flag finished detection.
+- Playwright specs assert via stable `data-testid` attributes (`getByTestId(...)`) rather than CSS selectors, and capture evidence screenshots to a deterministic `SHOT_DIR` path.
+- Large sample projects and resource assets are kept under `fixtures/` (projects, resources, build-budget) and imported by specs instead of being constructed inline.

@@ -216,7 +216,10 @@ export interface StructureKitRow {
   upperTiles?: number[];
 }
 
-export interface StructureKitDef {
+// 스탬프 출처 유니언(2026-07-20, 스탬프 3부작 선행과제): 붓질 학습 외에 내장 파라메트릭 킷.
+export type StructureKitLearnedFrom = "user-paint" | "builtin-parametric";
+
+export interface SectionStructureKitDef {
   id: string;
   kind: "section";
   name?: string;
@@ -224,9 +227,33 @@ export interface StructureKitDef {
   width: number;
   height: number;
   rows: StructureKitRow[];
-  learnedFrom: "user-paint";
+  learnedFrom: StructureKitLearnedFrom;
   createdAt?: string;
 }
+
+/**
+ * 파라메트릭 집 스탬프(2026-07-20, 3계층 사다리 '행렬→파라메트릭'의 상단).
+ * 행렬이 아니라 시공 파라미터를 저장 — 찍는 순간 정본 houseKit(stampFootprintHouseKit)이 전개한다.
+ * houseKitId는 editor 계층 HouseKitId 문자열(타입 순환 방지로 string 보관, 사용처에서 검증).
+ */
+export interface HouseStructureKitDef {
+  id: string;
+  kind: "house";
+  name?: string;
+  houseKitId: string;
+  /** (0,0) 기준 상대 좌표 날개 목록 — 전개 시 origin에 평행이동. */
+  wings: { x: number; y: number; w: number; h: number }[];
+  stories?: 1 | 2 | 3;
+  lowWall?: boolean;
+  windows?: { spacing?: number } | false;
+  /** 남쪽 벽 문 타일(116/146) 포함 여부. 기본 true. */
+  door?: boolean;
+  chimney?: boolean;
+  learnedFrom: StructureKitLearnedFrom;
+  createdAt?: string;
+}
+
+export type StructureKitDef = SectionStructureKitDef | HouseStructureKitDef;
 
 export interface TilesetDef {
   id: TilesetId;

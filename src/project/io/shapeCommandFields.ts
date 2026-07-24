@@ -207,6 +207,18 @@ function validateCommandShape(label: string, value: unknown): void {
     case "checkpointSave":
       if (command.label !== undefined) requireString(`${label}.label`, command.label);
       return;
+    case "openSaveMenu":
+      return;
+    case "spawnFieldEnemy": {
+      const spawn = requireRecord(`${label}.spawn`, command.spawn) as { id?: unknown; troopId?: unknown; area?: unknown };
+      requireString(`${label}.spawn.id`, spawn.id);
+      requireString(`${label}.spawn.troopId`, spawn.troopId);
+      requireRecord(`${label}.spawn.area`, spawn.area);
+      return;
+    }
+    case "despawnFieldEnemy":
+      requireString(`${label}.spawnId`, command.spawnId);
+      return;
     case "killPlayer":
       if (command.message !== undefined) requireString(`${label}.message`, command.message);
       return;

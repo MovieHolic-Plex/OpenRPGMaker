@@ -1,0 +1,17 @@
+{
+  "name": "mdc-notion-mcp-proxy",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0-beta.5",
+    "zod": "^4.1.12"
+  }
+}

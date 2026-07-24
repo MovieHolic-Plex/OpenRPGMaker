@@ -7,6 +7,7 @@ import {
 import { INTERIOR_HOUSE_TILE, INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
+import { isCeilingTile } from "@/editor/interiorHouseWallGrammar";
 import type { GameMap } from "@/project/types";
 import { genId } from "@/util/id";
 
@@ -16,13 +17,11 @@ const ROOF_LEFT = 354;
 const ROOF_RIGHT = 355;
 const WINDOW = 85;
 // 실내 기대값은 tileSemanticsInterior 정본 라벨 기준(아래 시맨틱 대조 테스트가 role을 단언한다).
-const INTERIOR_WALL_TOP_LEFT = 74; // 크림 회벽 상단 좌
+// 천장 정본 v2(2026-07-20): 천장=430 계열(회암 테두리) 통일, 문 플랭크(396/398) 낱장 배제 — 문은 바닥 통로만.
 const INTERIOR_FLOOR = 72; // 나무 바닥
 const INTERIOR_BOOKSHELF_LEFT = 48; // 책장 중단(좌·책 2단)
 const INTERIOR_BED_LEFT = 355; // 가로 침대 좌
 const INTERIOR_TABLE_MID = 326; // 긴 탁자 몸통(가로 반복)
-const INTERIOR_DOOR_WEST = 398; // 남벽 문 서쪽 플랭크(하우스 셸 트림)
-const INTERIOR_DOOR_EAST = 396; // 남벽 문 동쪽 플랭크
 
 describe("structure stamp tools", () => {
   it("stamps a complete template house onto both tile layers", () => {
@@ -56,15 +55,17 @@ describe("structure stamp tools", () => {
 
     applyStructureStampToMap(map, { id: "house-interior-10x10", origin: { x: 2, y: 3 } });
 
-    expect(map.lowerTiles[at(map, 2, 3)]).toBe(INTERIOR_WALL_TOP_LEFT);
-    expect(map.lowerTiles[at(map, 5, 6)]).toBe(INTERIOR_FLOOR);
-    // 남벽 문: 서 플랭크 398 | 개구부 바닥 72 | 동 플랭크 396 (하우스 셸 문법).
-    expect(map.lowerTiles[at(map, 5, 12)]).toBe(INTERIOR_DOOR_WEST);
-    expect(map.lowerTiles[at(map, 6, 12)]).toBe(INTERIOR_FLOOR);
-    expect(map.lowerTiles[at(map, 7, 12)]).toBe(INTERIOR_DOOR_EAST);
-    expect(map.upperTiles[at(map, 3, 5)]).toBe(INTERIOR_BOOKSHELF_LEFT);
-    expect(map.upperTiles[at(map, 8, 5)]).toBe(INTERIOR_BED_LEFT);
-    expect(map.upperTiles[at(map, 6, 8)]).toBe(INTERIOR_TABLE_MID);
+    // 천장 정본 v2(2026-07-20): y0 천장(430 계열 오토타일) 링 · y1 크림 상단 · y2 크림 하단 · 문은 바닥 통로만.
+    expect(isCeilingTile(map.lowerTiles[at(map, 2, 3)]!)).toBe(true);
+    expect(map.lowerTiles[at(map, 5, 4)]).toBe(75); // 크림 상단 중
+    expect(map.lowerTiles[at(map, 5, 5)]).toBe(105); // 크림 하단 중
+    expect(map.lowerTiles[at(map, 5, 7)]).toBe(INTERIOR_FLOOR);
+    expect(isCeilingTile(map.lowerTiles[at(map, 5, 12)]!)).toBe(true);
+    expect(map.lowerTiles[at(map, 6, 12)]).toBe(INTERIOR_FLOOR); // 문 통로
+    expect(isCeilingTile(map.lowerTiles[at(map, 7, 12)]!)).toBe(true);
+    expect(map.upperTiles[at(map, 3, 6)]).toBe(INTERIOR_BOOKSHELF_LEFT);
+    expect(map.upperTiles[at(map, 8, 6)]).toBe(INTERIOR_BED_LEFT);
+    expect(map.upperTiles[at(map, 6, 9)]).toBe(INTERIOR_TABLE_MID);
   });
 
   it("previews the 10x10 interior without mutating the map", () => {
@@ -73,10 +74,11 @@ describe("structure stamp tools", () => {
     const cells = previewStructureStampCells(map, { id: "house-interior-10x10", origin: { x: 2, y: 3 } });
 
     expect(cells).toEqual(expect.arrayContaining([
-      { layer: "lower", tile: INTERIOR_WALL_TOP_LEFT, x: 2, y: 3 },
-      { layer: "upper", tile: INTERIOR_BED_LEFT, x: 8, y: 5 },
-      { layer: "upper", tile: INTERIOR_TABLE_MID, x: 6, y: 8 },
+      { layer: "upper", tile: INTERIOR_BED_LEFT, x: 8, y: 6 },
+      { layer: "upper", tile: INTERIOR_TABLE_MID, x: 6, y: 9 },
     ]));
+    const cornerCell = cells.find((cell) => cell.x === 2 && cell.y === 3 && cell.layer === "lower");
+    expect(cornerCell && isCeilingTile(cornerCell.tile)).toBe(true);
     expect(map.lowerTiles[at(map, 2, 3)]).toBe(TILE.GRASS);
     expect(map.upperTiles[at(map, 8, 5)]).toBe(TILE.EMPTY);
   });

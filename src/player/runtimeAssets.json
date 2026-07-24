@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "paths": [
+    "assets/dialogue-frame.png",
+    "assets/fonts/Galmuri11-Bold.woff2",
+    "assets/fonts/Galmuri11.woff2",
+    "assets/fonts/Galmuri9.woff2",
+    "assets/generated/rm2k3/battle-icon-bag.png",
+    "assets/generated/rm2k3/battle-icon-boot.png",
+    "assets/generated/rm2k3/battle-icon-cross.png",
+    "assets/generated/rm2k3/battle-icon-exp.png",
+    "assets/generated/rm2k3/battle-icon-fire.png",
+    "assets/generated/rm2k3/battle-icon-gold.png",
+    "assets/generated/rm2k3/battle-icon-next.png",
+    "assets/generated/rm2k3/battle-icon-shard.png",
+    "assets/generated/rm2k3/battle-icon-shield.png",
+    "assets/generated/rm2k3/battle-icon-sword.png",
+    "assets/generated/rm2k3/battle-icon-world.png",
+    "assets/rm2k3-original-chipset.png",
+    "assets/ui/windowskin-rm2003.png",
+    "generated/battle-reference-forest.png"
+  ]
+}

@@ -85,6 +85,33 @@
   --font-mono: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas,
     monospace;
 
+
+  /* ---- z-index 스케일 (단일 진실 — 셸 전체 레이어 순서) ------------------ */
+  --z-below: 0;
+  --z-base: 1;
+  --z-raised: 2;
+  --z-canvas-decor: 3;
+  --z-canvas-raised: 4;
+  --z-canvas-chrome: 5;
+  --z-canvas-chip: 22;
+  --z-toolbar: 40;
+  --z-rail: 50;
+  --z-flyout: 70;
+  --z-status: 80;
+  --z-popover: 90;
+  --z-welcome: 240;
+  --z-popover-high: 1200;
+  --z-popover-top: 1201;
+  --z-modal: 2100;
+  --z-modal-overlay: 2200;
+  --z-modal-top: 2300;
+
+  /* ---- 추가 셸 색 (기존 raw hex 통합 — 값 동일, 시각 변화 없음) --------- */
+  --brand-blue: #7aa2ff;
+  --mix-base: #1a2236;
+  --gold: #e8b84a;
+  --gold-soft: #f3d98a;
+  --bg-well: #0d1424;
   /* ---- 얇은 라운드 스크롤바 (전역 기본은 index.css 하단) ----------------- */
   --scrollbar-thumb: rgba(255, 255, 255, 0.16);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);

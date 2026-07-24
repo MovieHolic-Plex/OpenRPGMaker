@@ -1,8 +1,3 @@
-// 플레이 부트 진단 — 로컬 링버퍼 + Supabase(ai_activity_logs / 폴백).
-// 테스트 플레이가 "준비 완료"에서 멈추거나 create 예외가 날 때 원격에서 단계를 본다.
-import { recordAiActivity } from "@/ai/activityLog";
-import { store } from "@/project/store";
-
 export type PlayBootStage =
   | "engine"
   | "assets"
@@ -36,8 +31,12 @@ export type PlayBootDiagnosticPayload = {
   readonly href?: string;
 };
 
-const RECENT: PlayBootDiagnosticPayload[] = [];
+export type PlayBootDiagnosticSink = (
+  payload: PlayBootDiagnosticPayload,
+) => void | Promise<void>;
+
 const MAX_RECENT = 40;
+const RECENT: PlayBootDiagnosticPayload[] = [];
 
 export function listRecentPlayBootDiagnostics(): readonly PlayBootDiagnosticPayload[] {
   return [...RECENT];
@@ -48,7 +47,7 @@ export function clearRecentPlayBootDiagnosticsForTest(): void {
 }
 
 export function buildPlayBootPayload(input: PlayBootDiagnosticInput): PlayBootDiagnosticPayload {
-  const err = normalizeError(input.error);
+  const error = normalizeError(input.error);
   return {
     kind: "play-boot",
     stage: input.stage,
@@ -57,72 +56,50 @@ export function buildPlayBootPayload(input: PlayBootDiagnosticInput): PlayBootDi
     ...(input.eventTestId ? { eventTestId: input.eventTestId } : {}),
     ...(input.elapsedMs === undefined ? {} : { elapsedMs: Math.round(input.elapsedMs) }),
     ...(input.detail ? { detail: input.detail.slice(0, 500) } : {}),
-    ...(err.message ? { errorMessage: err.message } : {}),
-    ...(err.stack ? { errorStack: err.stack } : {}),
-    ...(typeof navigator !== "undefined" ? { userAgent: navigator.userAgent.slice(0, 240) } : {}),
-    ...(typeof location !== "undefined" ? { href: location.href.slice(0, 400) } : {}),
+    ...(error.message ? { errorMessage: error.message } : {}),
+    ...(error.stack ? { errorStack: error.stack } : {}),
+    ...(typeof navigator === "undefined" ? {} : { userAgent: navigator.userAgent.slice(0, 240) }),
+    ...(typeof location === "undefined" ? {} : { href: location.href.slice(0, 400) }),
   };
 }
 
-/**
- * 플레이 부트 단계/실패를 AI activity 채널(other)로 남긴다.
- * - 로컬 localStorage 링버퍼
- * - Supabase 설정 시 원격 (ai_activity_logs / ai_analysis_runs 폴백)
- * - DEV 디스크 미러 (`/__rpgzzu/ai-activity`)
- * 실패해도 플레이 경로를 막지 않는다.
- */
-export function recordPlayBootDiagnostic(input: PlayBootDiagnosticInput): void {
+export function formatPlayBootDiagnosticInstruction(payload: PlayBootDiagnosticPayload): string {
+  const segments = [
+    "[play-boot]",
+    `stage=${payload.stage}`,
+    payload.ok ? "ok" : "fail",
+    payload.mapId ? `map=${payload.mapId}` : undefined,
+    payload.detail,
+    payload.errorMessage ? `err=${payload.errorMessage}` : undefined,
+  ];
+  return segments.filter((segment): segment is string => segment !== undefined).join(" ");
+}
+
+/** Records locally in every host and optionally forwards to a host-owned sink. */
+export function recordPlayBootDiagnostic(
+  input: PlayBootDiagnosticInput,
+  sink?: PlayBootDiagnosticSink,
+): void {
   const payload = buildPlayBootPayload(input);
   RECENT.unshift(payload);
   if (RECENT.length > MAX_RECENT) RECENT.length = MAX_RECENT;
 
   if (typeof window !== "undefined") {
-    (window as Window & { __rpgzzuPlayBootLog?: () => readonly PlayBootDiagnosticPayload[] }).__rpgzzuPlayBootLog =
-      listRecentPlayBootDiagnostics;
+    Reflect.set(window, "__rpgzzuPlayBootLog", listRecentPlayBootDiagnostics);
   }
 
-  const project = (() => {
-    try {
-      return store.getCurrent();
-    } catch {
-      return null;
-    }
-  })();
-  const mapId = input.mapId ?? project?.startMapId;
-  const instruction = [
-    "[play-boot]",
-    `stage=${input.stage}`,
-    input.ok ? "ok" : "fail",
-    mapId ? `map=${mapId}` : null,
-    input.detail ?? null,
-    payload.errorMessage ? `err=${payload.errorMessage}` : null,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const instruction = formatPlayBootDiagnosticInstruction(payload);
+  if (payload.ok) console.info("[play-boot]", instruction);
+  else console.error("[play-boot]", instruction, payload);
 
-  void recordAiActivity({
-    channel: "other",
-    instruction,
-    mapId,
-    result: {
-      ok: input.ok,
-      ...(payload.errorMessage ? { error: payload.errorMessage } : {}),
-      stoppedReason: input.stage,
-      assistantText: JSON.stringify(payload).slice(0, 2000),
-    },
-    uiEvents: [payload],
-  }).catch(() => {
-    /* best-effort */
-  });
-
-  if (!input.ok) {
-    console.error("[play-boot]", instruction, payload);
-  } else {
-    console.info("[play-boot]", instruction);
+  if (sink) {
+    void Promise.resolve()
+      .then(() => sink(payload))
+      .catch(() => console.warn("[play-boot] diagnostic sink failed"));
   }
 }
 
-function normalizeError(error: unknown): { message?: string; stack?: string } {
+function normalizeError(error: unknown): { readonly message?: string; readonly stack?: string } {
   if (error instanceof Error) {
     return {
       message: error.message.slice(0, 1500),

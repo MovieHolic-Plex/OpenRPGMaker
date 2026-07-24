@@ -8,7 +8,7 @@ import { applySkillLike } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
-import { battlerTypes, typeChartMultiplierFor, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
@@ -36,6 +36,7 @@ import type {
   BattleResult,
   BattleRuntime,
   BattleRuntimeOptions,
+  BattleSessionState,
   BattleSnapshot,
   BattleTargetSelectionSnapshot,
   TargetedActorCommand,
@@ -63,6 +64,10 @@ export type {
 } from "@/battle/types";
 
 const FALLBACK_SKILL_POWER = 12;
+// SC1 (C1): strict flow round cap. Prevents unbounded recursion when neither
+// side can end the battle (e.g. all actors asleep with no auto-recovery and a
+// neutered enemy). Exceeding the cap resolves the battle as a stalemate escape.
+const STRICT_MAX_ROUNDS = 200;
 
 type EnemyActionChoice = {
   readonly skillId: SkillId;
@@ -83,7 +88,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
   if (!troop) throw new Error(`Missing troop: ${options.troopId}`);
   const troopRecord = troop;
-  const rng: Rng = options.rng ?? mulberry32(1);
+  // SC5 (H4): rng is strongly recommended. If omitted, warn eagerly at construction
+  // and fall back to a deterministic test seed (mulberry32(0)) — NOT the old fixed
+  // mulberry32(1) which silently gave every rng-less battle the same sequence.
+  if (!options.rng && typeof console !== "undefined" && console.warn) {
+    console.warn("[battle] createBattleRuntime called without rng; using deterministic fallback. Pass nextSessionRandom(session, \"battle\") for save/load determinism.");
+  }
+  const rng: Rng = options.rng ?? mulberry32(0);
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
   // 아군측 소스: battleParty==="monsters" 또는 레거시 monsterBattleParty, 그리고 파티 몬스터가 있으면 몬스터가 필드에 나선다.
@@ -132,31 +143,41 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   let turn = 0;
   let currentActorCommandKind: ActorCommand["kind"] | undefined;
   let lastCaptureResult: BattleCaptureResultSnapshot | undefined;
+  // 배틀 이벤트 wait 가 적립한 일시정지 시간(ms). tick 이 소진하기 전까지 게이지/턴 진행을 멈춘다.
+  let pendingWaitMs = 0;
   let targetSelection: BattleTargetSelectionSnapshot | undefined;
   let strictActorCommands: StrictQueuedActorCommand[] = [];
   let strictPendingActorIds: ActorId[] = [];
   let strictCurrentRoundActions: BattleRoundActionLogSnapshot[] = [];
   let strictCurrentRoundParticipantIds = new Set<ActorId>();
+  let strictRoundCount = 0;
   const roundLogs: BattleRoundLogSnapshot[] = [];
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
   const participatingActorIds = new Set<ActorId>();
   const rewards: { exp: number; gold: number; items: ItemId[]; enemyLevel?: number; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
-  const sessionState = options.sessionState ?? startStateOf(options.project);
+  // sessionState 는 BattleSessionState(런타임) 또는 ProjectSession(에디터 시작 상태).
+  // ProjectSession 에는 actorSkillIds 등 런타임 전용 필드가 없으므로 BattleSessionState 로 좁혀 읽는다.
+  const rawSessionState = options.sessionState ?? startStateOf(options.project);
+  const sessionState = rawSessionState as BattleSessionState;
   const battleEventState: BattleEventRuntimeState = {
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
     inventory: { ...sessionState.inventory },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
     partyActorIds: [...(sessionState.partyActorIds ?? options.party?.partyActorIds ?? options.project.system.startActorIds)],
-    actorSkillIds: { ...(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}) },
+    actorSkillIds: Object.fromEntries(
+      Object.entries(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}).map(([id, skills]) => [id, [...skills]])
+    ),
     actorExperience: { ...(sessionState.actorExperience ?? options.party?.experience ?? {}) },
     actorLevels: { ...(sessionState.actorLevels ?? options.party?.levels ?? {}) },
-    actorBattleCommands: {
-      ...((sessionState as { actorBattleCommands?: Record<string, string[]> }).actorBattleCommands
-        ?? (options.party?.battleCommands as Record<string, string[]> | undefined)
-        ?? {}),
-    },
+    actorBattleCommands: Object.fromEntries(
+      Object.entries(
+        sessionState.actorBattleCommands
+          ?? (options.party?.battleCommands as Record<string, readonly string[]> | undefined)
+          ?? {}
+      ).map(([id, cmds]) => [id, [...cmds]])
+    ),
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
@@ -180,12 +201,42 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         })
         ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
     },
+    showBattleAnimation: (target, animationId) => {
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, animationId, target);
+    },
+    abortBattle: () => {
+      // RM2K3 Abort Battle: 승패 없이 전투 즉시 종료. 런타임은 escape 결과로 매핑한다.
+      escaped = true;
+      result = "escape";
+      phase = "resolved";
+    },
+    wait: (ms) => {
+      // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,
+      // tick 이 pendingWaitMs 를 소진하기 전까지 게이지 충전/턴 진행이 멈춘다.
+      pendingWaitMs = Math.max(pendingWaitMs, Math.max(0, Math.trunc(ms)));
+    },
+    canGrantExtraAction: () => battleFlow !== "strict",
+    playAudio: (resourceId, loop) => {
+      // 오디오 재생 자체는 호스트가 담당. 런타임은 옵션 콜백으로 위임만 한다.
+      options.playAudio?.(resourceId, loop);
+    },
+    stopAudio: () => {
+      options.stopAudio?.();
+    },
   });
   markActiveParticipants();
 
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
+    // 배틀 이벤트 wait 가 적립한 일시정지 시간을 먼저 소비한다.
+    // 한 번의 tick 이 wait 시간을 전부 소진하면 남은 시간으로 게이지 충전을 이어간다.
+    if (pendingWaitMs > 0) {
+      const consumed = Math.min(pendingWaitMs, deltaMs);
+      pendingWaitMs -= consumed;
+      deltaMs -= consumed;
+      if (deltaMs <= 0) return;
+    }
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
     const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs);
@@ -395,6 +446,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function startStrictRound(): void {
     if (result) return;
+    // SC1 (C1): round cap — a strict battle that cannot terminate (e.g. all
+    // actors permanently incapacitated and the enemy unable to kill or die)
+    // is resolved as a stalemate escape instead of recursing without bound.
+    if (strictRoundCount >= STRICT_MAX_ROUNDS) {
+      escaped = true;
+      result = "escape";
+      phase = "resolved";
+      return;
+    }
+    strictRoundCount += 1;
     phase = "roundResolve";
     activeActorId = undefined;
     targetSelection = undefined;
@@ -421,6 +482,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "actorCommand";
       return;
     }
+    // No actor can act this round. Resolve enemy-only actions then loop to the
+    // next round instead of recursing (the old resolveStrictRound→startStrictRound
+    // mutual recursion had no base case and could stack-overflow).
     resolveStrictRound();
   }
 
@@ -482,6 +546,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = "resolved";
       return;
     }
+    // SC1 (C1): iterate to the next round instead of recursing into
+    // startStrictRound(). The round cap in startStrictRound bounds the loop.
     startStrictRound();
   }
 
@@ -895,6 +961,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     target.hp = 0;
     target.gauge = 0;
     capturedMonsters.push(capture);
+    // SC11 (M6): capture must appear in actionLog so the sequencer can replay it
+    // as a discrete action beat alongside damage/skill entries.
+    recordAction({ userRecordId: "capture", targetId: target.id, hit: true, amount: 0, critical: false });
     options.onMonsterCaptured?.(capture);
     lastCaptureResult = { targetId: target.id, captureItemId, success: true, rate, roll, speciesId: species.id };
   }
@@ -1158,7 +1227,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function activeActorPosition(index: number): { readonly battleX: number; readonly battleY: number } {
     // RM2k3 side-view right column (must match battleBattlers actor slots).
-    return { battleX: 252, battleY: 70 + index * 36 };
+    return { battleX: 252, battleY: 96 + index * 36 };
   }
 
   function resolveOutcome(): void {

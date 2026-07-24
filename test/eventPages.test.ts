@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { addSwitch } from "@/editor/actions";
+import { editorState } from "@/editor/editorState";
 import { CHOICE_CANCEL_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { addEvent } from "@/editor/eventActions";
 import {
@@ -7,6 +8,7 @@ import {
   addEventPage,
   copyEventPage,
   copyEventPageToClipboard,
+  deleteEventPage,
   pasteEventPage,
   moveEventPage,
   replaceEventPageCommandAt,
@@ -56,6 +58,68 @@ describe("event pages", () => {
     if (!event) throw new Error("event missing");
     expect(resolveEventPage(event, { switches: {}, variables: {}, inventory: {}, partyActorIds: [] })?.name).toBe("페이지 1");
     expect(resolveEventPage(event, { switches: { [switchId]: true }, variables: {}, inventory: {}, partyActorIds: [] })?.id).toBe(secondPageId);
+  });
+
+  it("selects an adjacent page after deleting the active page", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const page2 = addEventPage(mapId, eventId);
+    const page3 = addEventPage(mapId, eventId);
+    editorState.set({ selectedEventPageId: page3 });
+
+    deleteEventPage(mapId, eventId, page3);
+
+    // 삭제된 페이지(page3)가 마지막이었으므로 이전 페이지(page2)가 선택된다.
+    expect(editorState.get().selectedEventPageId).toBe(page2);
+    const event = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId);
+    expect(event?.pages).toHaveLength(2);
+  });
+
+  it("selects the page now at the deleted index when deleting a middle page", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const page2 = addEventPage(mapId, eventId);
+    const page3 = addEventPage(mapId, eventId);
+    editorState.set({ selectedEventPageId: page2 });
+
+    deleteEventPage(mapId, eventId, page2);
+
+    // 중간 페이지(page2) 삭제 후 같은 인덱스의 페이지(page3)가 선택된다.
+    expect(editorState.get().selectedEventPageId).toBe(page3);
+  });
+
+  it("does not update selection when deletion is refused (single page)", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const event = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId);
+    const page1 = event?.pages?.[0]?.id ?? "";
+    editorState.set({ selectedEventPageId: page1 });
+
+    deleteEventPage(mapId, eventId, page1);
+
+    // 페이지가 1개뿐이면 삭제가 거부되고 선택도 변경되지 않는다.
+    expect(editorState.get().selectedEventPageId).toBe(page1);
+  });
+
+  it("avoids page name collision after delete and re-add", () => {
+    const project = store.getCurrent();
+    const mapId = project.startMapId;
+    const eventId = addEvent(mapId, 2, 2);
+    const page2 = addEventPage(mapId, eventId);
+    const page3 = addEventPage(mapId, eventId);
+
+    deleteEventPage(mapId, eventId, page2);
+    const newPageId = addEventPage(mapId, eventId);
+
+    const event = store.getCurrent().maps[mapId].events.find((item) => item.id === eventId);
+    const names = event?.pages?.map((page) => page.name) ?? [];
+    const newPage = event?.pages?.find((page) => page.id === newPageId);
+    // "페이지 3" 이 이미 존재하므로 새 페이지는 "페이지 4" 가 된다 (충돌 회피).
+    expect(newPage?.name).toBe("페이지 4");
+    expect(names.filter((name) => name === newPage?.name)).toHaveLength(1);
   });
 
   it("copies and reorders pages without corrupting sibling commands", () => {

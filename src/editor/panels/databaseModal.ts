@@ -181,6 +181,14 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     const run = (): void => {
       refreshQueued = false;
       if (modalClosed) return;
+      // 프레임 시점 재판정: blur/change 커밋이 유발한 갱신은 구독 시점엔 activeElement 가
+      // <body> 여도, rAF 까지 오면 다음 필드로 포커스가 정착해 있다. 편집 중이면 보류로 전환.
+      // 버튼 클릭 직전의 유예 창도 막는다 — 재렌더가 버튼을 분리해 클릭이 유실되는 경로(qa-troops).
+      if (isEditingInsideModalBody() || withinInteractionGrace()) {
+        pendingRefresh = true;
+        scheduleGraceFlush();
+        return;
+      }
       refreshDatabasePanel(body);
     };
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
@@ -195,6 +203,19 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     const tag = active.tagName;
     return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || active.isContentEditable === true;
   };
+  // 포커스 전이 과민 방지: change 커밋형 필드(number/textarea)는 다음 필드로 포커스가
+  // 옮겨가는 blur 순간에 store.update 를 발화하는데, 그 순간 activeElement 는 일시적으로
+  // <body> 다. 그 틈에 재렌더하면 사용자가 막 타이핑을 시작한 필드가 분리된다(qa-crops
+  // 회귀). 마지막 상호작용으로부터 짧은 유예(grace) 안의 갱신은 편집 중으로 간주한다.
+  const INTERACTION_GRACE_MS = 400;
+  let lastInteractionAt = 0;
+  const bumpInteraction = (): void => {
+    lastInteractionAt = Date.now();
+  };
+  for (const type of ["pointerdown", "keydown", "input"] as const) {
+    body.addEventListener(type, bumpInteraction, true);
+  }
+  const withinInteractionGrace = (): boolean => Date.now() - lastInteractionAt < INTERACTION_GRACE_MS;
   // 편집 중 스킵된 갱신은 버리지 않고 보류했다가(pendingRefresh) 포커스가 본문을
   // 떠날 때 반영한다 — 편집 도중 도착한 AI/외부 변경이 영구 stale 되는 것 방지(3파 리뷰 Medium).
   let pendingRefresh = false;
@@ -203,6 +224,22 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     pendingRefresh = false;
     scheduleModalRefresh();
   };
+  // grace 기간에 보류된 갱신은 상호작용이 멈춘 뒤에도 플러시한다 — focusout 이
+  // 본문 밖으로 일어나지 않는 경로(필드 간 이동만 하다 멈춤)의 stale 방지.
+  let graceFlushTimer: ReturnType<typeof setTimeout> | null = null;
+  const scheduleGraceFlush = (): void => {
+    if (graceFlushTimer !== null) return;
+    graceFlushTimer = setTimeout(() => {
+      graceFlushTimer = null;
+      if (modalClosed) return;
+      if (!pendingRefresh) return;
+      if (isEditingInsideModalBody() || withinInteractionGrace()) {
+        scheduleGraceFlush();
+        return;
+      }
+      flushPendingRefresh();
+    }, INTERACTION_GRACE_MS + 50);
+  };
   body.addEventListener("focusout", () => {
     // focusout 시점엔 activeElement 가 아직 이전 값일 수 있어 rAF 뒤에 재판정한다.
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => { if (!isEditingInsideModalBody()) flushPendingRefresh(); });
@@ -210,14 +247,16 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   });
   const unsubscribeStore = store.subscribe((_project, change) => {
     if (change.scope !== "database" && change.scope !== "project") return;
-    if (isEditingInsideModalBody()) {
+    if (isEditingInsideModalBody() || withinInteractionGrace()) {
       pendingRefresh = true;
+      scheduleGraceFlush();
       return;
     }
     scheduleModalRefresh();
   });
   const close = (): void => {
     modalClosed = true;
+    if (graceFlushTimer !== null) clearTimeout(graceFlushTimer);
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     backdrop.remove();
     document.removeEventListener("keydown", controller.handleKeyDown);

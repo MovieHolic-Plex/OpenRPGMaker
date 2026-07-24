@@ -52,7 +52,7 @@ export type AutoSaveState =
   | { readonly kind: "pending" }
   | { readonly kind: "saving" }
   | { readonly kind: "saved"; readonly at: number }
-  | { readonly kind: "error"; readonly message: string };
+  | { readonly kind: "error"; readonly message: string; readonly retryCount?: number };
 
 export type ProjectFlushResult =
   | { readonly kind: "disabled" }
@@ -82,7 +82,12 @@ class ProjectStore {
   private autoSaveRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private autoSaveState: AutoSaveState = { kind: "idle" };
   private readonly autoSaveDelayMs = 4000;
-  private readonly autoSaveRetryDelayMs = 30000;
+  private readonly autoSaveRetryBaseDelayMs = 10_000;
+  private readonly autoSaveRetryMaxDelayMs = 120_000;
+  private autoSaveRetryCount = 0;
+  private healthCheckTimer: ReturnType<typeof setInterval> | null = null;
+  private readonly healthCheckIntervalMs = 30_000;
+  private boundOnlineHandler: (() => void) | null = null;
   private loaded = false;
   private remotePersistenceEnabled = true;
   private remotePersistenceDisabledReason: DbPersistenceDisabledReason | null = null;
@@ -97,6 +102,10 @@ class ProjectStore {
 
   constructor() {
     this.current = createBlankProject();
+    this.boundOnlineHandler = () => this.onNetworkRestored();
+    if (typeof window !== "undefined") {
+      window.addEventListener("online", this.boundOnlineHandler);
+    }
   }
 
   async load(): Promise<Project> {
@@ -221,6 +230,10 @@ class ProjectStore {
   // store.load()가 Supabase 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
   /** @internal */
+  isRemotePersistenceEnabled(): boolean {
+    return this.remotePersistenceEnabled;
+  }
+
   _setPersistenceStateForTest(state: { loaded: boolean; remotePersistenceEnabled?: boolean; disabledReason?: DbPersistenceDisabledReason | null }): void {
     this.loaded = state.loaded;
     if (state.remotePersistenceEnabled !== undefined) this.remotePersistenceEnabled = state.remotePersistenceEnabled;
@@ -414,7 +427,7 @@ class ProjectStore {
       if (this.remotePersistenceDisabledReason === "dev-showcase") return { kind: "saved-local" };
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
-    return await this.saveCurrentWithAutoSaveState(true);
+    return await this.saveCurrentWithAutoSaveState();
   }
 
   async clearAll(): Promise<void> {
@@ -474,7 +487,7 @@ class ProjectStore {
     this.setAutoSaveState({ kind: "pending" });
     this.autoSaveTimer = setTimeout(() => {
       this.autoSaveTimer = null;
-      void this.saveCurrentWithAutoSaveState(true).catch((error) => {
+      void this.saveCurrentWithAutoSaveState().catch((error) => {
         console.error("[store] Supabase auto-save failed:", error);
       });
     }, this.autoSaveDelayMs);
@@ -488,21 +501,95 @@ class ProjectStore {
 
   private scheduleAutoSaveRetry(): void {
     if (this.autoSaveRetryTimer) return;
+    const delay = Math.min(
+      this.autoSaveRetryBaseDelayMs * 2 ** this.autoSaveRetryCount,
+      this.autoSaveRetryMaxDelayMs,
+    );
     this.autoSaveRetryTimer = setTimeout(() => {
       this.autoSaveRetryTimer = null;
-      void this.saveCurrentWithAutoSaveState(false).catch((error) => {
+      void this.saveCurrentWithAutoSaveState().catch((error) => {
         console.error("[store] Supabase auto-save retry failed:", error);
       });
-    }, this.autoSaveRetryDelayMs);
+    }, delay);
+    this.startHealthCheck();
   }
 
-  private async saveCurrentWithAutoSaveState(allowRetry: boolean): Promise<ProjectFlushResult> {
+  /**
+   * Periodic lightweight probe while in error state. If the DB responds we
+   * immediately attempt a flush instead of waiting for the next backoff tick.
+   */
+  private startHealthCheck(): void {
+    if (this.healthCheckTimer) return;
+    this.healthCheckTimer = setInterval(() => {
+      void this.runHealthCheck();
+    }, this.healthCheckIntervalMs);
+  }
+
+  private stopHealthCheck(): void {
+    if (!this.healthCheckTimer) return;
+    clearInterval(this.healthCheckTimer);
+    this.healthCheckTimer = null;
+  }
+
+  private async runHealthCheck(): Promise<void> {
+    if (!this.loaded || !this.remotePersistenceEnabled) {
+      this.stopHealthCheck();
+      return;
+    }
+    const config = supabaseProjectConfig();
+    if (!config) {
+      this.stopHealthCheck();
+      return;
+    }
+    try {
+      // GET with limit=0 on a known table in the rpg_zzu schema.
+      // Must include Accept-Profile (same as supabaseJsonHeaders "read")
+      // so PostgREST resolves the table correctly. A 200 means the DB is
+      // genuinely reachable and a flush should succeed.
+      const response = await fetch(`${config.url}/rest/v1/projects?limit=0`, {
+        headers: {
+          apikey: config.anonKey,
+          Authorization: `Bearer ${config.anonKey}`,
+          Accept: "application/json",
+          "Accept-Profile": "rpg_zzu",
+        },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (response.ok) {
+        console.info(`[store] Health check: DB reachable (${response.status}), attempting flush`);
+        this.stopHealthCheck();
+        this.clearAutoSaveRetry();
+        this.autoSaveRetryCount = 0;
+        void this.saveCurrentWithAutoSaveState().catch((error) => {
+          console.error("[store] Health-check-triggered flush failed:", error);
+        });
+      } else {
+        console.warn(`[store] Health check: server responded ${response.status} — not triggering flush`);
+      }
+    } catch {
+      // Network unreachable — keep waiting for next tick or online event.
+    }
+  }
+
+  /** Browser "online" event: network interface came back. */
+  private onNetworkRestored(): void {
+    if (!this.loaded || !this.remotePersistenceEnabled) return;
+    if (this.autoSaveState.kind !== "error") return;
+    console.info("[store] Network restored, attempting immediate flush");
+    this.stopHealthCheck();
+    this.clearAutoSaveRetry();
+    void this.saveCurrentWithAutoSaveState().catch((error) => {
+      console.error("[store] Online-event flush failed:", error);
+    });
+  }
+
+  private async saveCurrentWithAutoSaveState(): Promise<ProjectFlushResult> {
     // Coalesce concurrent flush calls onto one network round-trip, then re-run
     // if the user painted more tiles while that round-trip was in flight.
     if (this.persistInFlight) {
       const inFlightResult = await this.persistInFlight;
       if (this.dirtySinceLastPersist && this.loaded && this.remotePersistenceEnabled) {
-        return await this.saveCurrentWithAutoSaveState(allowRetry);
+        return await this.saveCurrentWithAutoSaveState();
       }
       return inFlightResult;
     }
@@ -522,10 +609,13 @@ class ProjectStore {
           result = await this.persistCurrent();
         }
         this.setAutoSaveState(autoSaveStateForFlushResult(result));
+        this.autoSaveRetryCount = 0;
+        this.stopHealthCheck();
         return result;
       } catch (error) {
-        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error) });
-        if (allowRetry) this.scheduleAutoSaveRetry();
+        this.autoSaveRetryCount += 1;
+        this.setAutoSaveState({ kind: "error", message: autoSaveErrorMessage(error), retryCount: this.autoSaveRetryCount });
+        this.scheduleAutoSaveRetry();
         throw error;
       } finally {
         this.persistInFlight = null;

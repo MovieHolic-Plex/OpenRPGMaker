@@ -1,73 +1,12 @@
 import type { ConstructionDiffTotals, ConstructionOutcome } from "@/editor/construction/contracts";
 
-import { executeAuthorHouse } from "./authorHouseExecution";
+import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import type { AuthorHouseResultData } from "./authorHouseTypes";
 import { runToolDefinition, type RunToolOptions } from "./toolRunner";
-import type { ChangeSummary, ToolContext, ToolDefinition, ToolResult } from "./types";
+import type { ChangeSummary, ToolContext, ToolResult } from "./types";
 
+export { AUTHOR_HOUSE_TOOL };
 export type { AuthorHouseResultData } from "./authorHouseTypes";
-
-const WING_SCHEMA = {
-  type: "object",
-  properties: {
-    x: { type: "integer" },
-    y: { type: "integer" },
-    w: { type: "integer" },
-    h: { type: "integer" },
-  },
-  required: ["x", "y", "w", "h"],
-} as const;
-
-const HOUSE_PLAN_SCHEMA = {
-  type: "object",
-  properties: {
-    kitId: { type: "string" },
-    wings: { type: "array", items: WING_SCHEMA },
-    interior: { type: "string", enum: ["exterior-only", "linked-interior"] },
-    door: { type: "boolean" },
-    ownerName: { type: "string" },
-    windows: { type: ["object", "boolean"] },
-    yard: { type: "array" },
-  },
-  required: ["kitId", "wings", "interior", "door", "yard"],
-} as const;
-
-const EXAMPLE = {
-  kind: "single",
-  mapId: "map_1",
-  kitId: "blue-stone",
-  wings: [{ x: 4, y: 3, w: 8, h: 6 }],
-  interior: "exterior-only",
-  door: true,
-} as const;
-
-export const AUTHOR_HOUSE_TOOL: ToolDefinition = {
-  name: "author_house",
-  description:
-    "야외 맵에 집 한 채 또는 명시된 여러 부지를 원자적으로 시공한다. 독립 실내 방 요청에는 사용하지 않는다. "
-    + "interior는 exterior-only 또는 출입 이벤트가 연결되는 linked-interior를 명시한다.",
-  mode: "write",
-  version: 3,
-  domains: ["tile"],
-  parameters: {
-    type: "object",
-    properties: {
-      kind: { type: "string", enum: ["single", "lots"] },
-      mapId: { type: "string" },
-      kitId: { type: "string" },
-      wings: { type: "array", items: WING_SCHEMA },
-      interior: { type: "string", enum: ["exterior-only", "linked-interior"] },
-      door: { type: "boolean" },
-      ownerName: { type: "string" },
-      windows: { type: ["object", "boolean"] },
-      houses: { type: "array", items: HOUSE_PLAN_SCHEMA },
-      seed: { type: "integer" },
-    },
-    required: ["kind", "mapId"],
-  },
-  invalidArgsExample: EXAMPLE,
-  run: executeAuthorHouse,
-};
 
 export type AuthorHouseToolResult = Omit<ToolResult, "data"> & {
   readonly data: AuthorHouseResultData;

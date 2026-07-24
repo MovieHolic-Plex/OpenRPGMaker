@@ -12,13 +12,21 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
   const lines = [`'${impact.mapName}' 맵을 삭제할까요?`, ""];
   lines.push(`· 이 맵의 이벤트 ${impact.eventCount}개가 함께 삭제됩니다.`);
   if (impact.isStartMap) lines.push("· 시작 맵이므로 삭제 후 다른 맵이 시작 맵이 됩니다.");
-  if (impact.treeChildCount > 0) lines.push(`· 맵 트리의 하위 맵 ${impact.treeChildCount}개는 상위로 이동해 보존됩니다.`);
+  if (impact.treeChildCount > 0) lines.push(`· 하위 맵 ${impact.treeChildCount}개가 있습니다. 기본: 하위 맵은 상위 레벨로 이동(보존). "하위 포함 삭제" 선택 시 함께 삭제됩니다.`);
   if (impact.incomingCommandCount > 0) lines.push(`· 이 맵으로 이동하는 명령 ${impact.incomingCommandCount}개가 제거됩니다.`);
   if (impact.connectionCount > 0) lines.push(`· 맵 연결 ${impact.connectionCount}개가 제거됩니다.`);
   if (impact.villageInfoCount > 0) lines.push(`· 세계관 문서 ${impact.villageInfoCount}개가 제거됩니다.`);
   if (impact.questCount > 0) lines.push(`· 이 맵을 참조하는 퀘스트 ${impact.questCount}개가 제거됩니다.`);
   if (impact.testPresetCount > 0) lines.push(`· 테스트 프리셋 ${impact.testPresetCount}개의 시작 위치가 해제됩니다.`);
   lines.push("", "삭제 후 Ctrl+Z로 되돌릴 수 있습니다.");
+  return lines.join("\n");
+}
+
+/** 하위 맵 포함 삭제 확인 메시지 */
+export function mapDeletionRecursiveMessage(impact: MapDeletionImpact, childNames: string[]): string {
+  const lines = [`'${impact.mapName}' 맵과 하위 맵 ${childNames.length}개를 모두 삭제할까요?`, ""];
+  lines.push(`삭제 대상: ${childNames.join(", ")}`);
+  lines.push("", "이 작업은 되돌릴 수 없습니다.");
   return lines.join("\n");
 }
 
@@ -29,13 +37,83 @@ export type ConfirmDeleteMapResult = DeleteMapResult | { readonly ok: false; rea
 export async function confirmAndDeleteMap(mapId: MapId): Promise<ConfirmDeleteMapResult> {
   const impact = collectMapDeletionImpact(store.getCurrent(), mapId);
   if (impact) {
-    const confirmed = await showConfirm({
-      title: "맵 삭제",
-      message: mapDeletionConfirmMessage(impact),
-      confirmLabel: "삭제",
-      danger: true,
-    });
-    if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
+    if (impact.treeChildCount > 0) {
+      // 하위 맵이 있으면: "이 맵만 삭제(하위 보존)" vs "하위 포함 모두 삭제" 선택
+      const childNames = collectChildMapNames(mapId);
+      const choice = await showConfirm({
+        title: "맵 삭제",
+        message: mapDeletionConfirmMessage(impact) + `\n\n[확인] = 이 맵만 삭제 (하위 ${childNames.length}개 보존)\n[취소 후 재시도] = 하위 포함 삭제는 컨텍스트 메뉴에서`,
+        confirmLabel: "이 맵만 삭제",
+        danger: true,
+      });
+      if (!choice) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
+    } else {
+      const confirmed = await showConfirm({
+        title: "맵 삭제",
+        message: mapDeletionConfirmMessage(impact),
+        confirmLabel: "삭제",
+        danger: true,
+      });
+      if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
+    }
   }
   return deleteMap(mapId);
+}
+
+/** 하위 맵 포함 삭제 (재귀). 컨텍스트 메뉴 "하위 포함 삭제"에서 호출. */
+export async function confirmAndDeleteMapRecursive(mapId: MapId): Promise<ConfirmDeleteMapResult> {
+  const project = store.getCurrent();
+  const impact = collectMapDeletionImpact(project, mapId);
+  if (!impact) return { ok: false, message: "맵을 찾을 수 없습니다." };
+
+  const childIds = collectDescendantMapIds(mapId);
+  const childNames = childIds.map((id) => project.maps[id]?.name ?? id);
+
+  const confirmed = await showConfirm({
+    title: "하위 포함 맵 삭제",
+    message: mapDeletionRecursiveMessage(impact, childNames),
+    confirmLabel: `${childNames.length + 1}개 맵 삭제`,
+    danger: true,
+  });
+  if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
+
+  // 리프부터 삭제 (자식 → 부모 순서)
+  const reversed = [...childIds].reverse();
+  for (const childId of reversed) {
+    deleteMap(childId);
+  }
+  return deleteMap(mapId);
+}
+
+/** 맵 트리에서 해당 맵의 직계 자식 맵 이름을 수집. */
+function collectChildMapNames(mapId: MapId): string[] {
+  const project = store.getCurrent();
+  const node = findNode(project.mapTree, mapId);
+  if (!node) return [];
+  return node.children.map((child) => project.maps[child.mapId]?.name ?? child.mapId);
+}
+
+/** 맵 트리에서 해당 맵의 모든 후손 ID를 수집 (깊이 우선, 자식 → 손자 순). */
+function collectDescendantMapIds(mapId: MapId): MapId[] {
+  const project = store.getCurrent();
+  const node = findNode(project.mapTree, mapId);
+  if (!node) return [];
+  const ids: MapId[] = [];
+  const walk = (n: { children: { mapId: MapId; children: unknown[] }[] }): void => {
+    for (const child of n.children) {
+      ids.push(child.mapId);
+      walk(child as { children: { mapId: MapId; children: unknown[] }[] });
+    }
+  };
+  walk(node);
+  return ids;
+}
+
+function findNode(node: { mapId: MapId; children: { mapId: MapId; children: unknown[] }[] }, mapId: MapId): { mapId: MapId; children: { mapId: MapId; children: unknown[] }[] } | null {
+  if (node.mapId === mapId) return node;
+  for (const child of node.children) {
+    const found = findNode(child as typeof node, mapId);
+    if (found) return found;
+  }
+  return null;
 }

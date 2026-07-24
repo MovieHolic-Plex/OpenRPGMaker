@@ -77,6 +77,38 @@ export function listCharacterIdIndex(project: Project): CharacterIdIndexEntry[] 
   return entries;
 }
 
+// ── Client-side cache ─────────────────────────────────────────────
+// store.update() / updateMap() / replace() all produce a new project
+// reference (structuredClone or object spread), so reference identity is a
+// perfect cache key.  During rapid interactions (autocomplete keystrokes,
+// dialog re-renders) the same project reference is returned and the expensive
+// full-scan is skipped entirely.
+
+let _cachedProject: Project | null = null;
+let _cachedEntries: CharacterIdIndexEntry[] = [];
+
+/**
+ * Cached version of {@link listCharacterIdIndex}.
+ *
+ * Returns the same array instance when `project` has not changed (by
+ * reference), avoiding repeated O(maps × events) scans during autocomplete
+ * typing and dialog re-renders.  The cache is invalidated automatically
+ * whenever a different project reference is passed — which happens on every
+ * store mutation because the store clones before emit.
+ */
+export function getCachedCharacterIdIndex(project: Project): CharacterIdIndexEntry[] {
+  if (_cachedProject === project) return _cachedEntries;
+  _cachedProject = project;
+  _cachedEntries = listCharacterIdIndex(project);
+  return _cachedEntries;
+}
+
+/** Drop the cache.  Useful in tests that swap project references manually. */
+export function invalidateCharacterIdIndexCache(): void {
+  _cachedProject = null;
+  _cachedEntries = [];
+}
+
 export function findCharacterIdEntry(
   project: Project,
   characterId: string | undefined | null

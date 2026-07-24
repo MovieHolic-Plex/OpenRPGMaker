@@ -8,7 +8,7 @@ import { searchResources } from "@/assets/resourceSearch";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
-import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -779,7 +779,7 @@ const upsertState: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("state", stateRecordSchema, { id: "state_poison", name: "독", runtimeEffects: { hpDamagePercentPerTurn: 5 } }),
   run(draft, args): ToolExecResult {
-    const record = mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_poison", name: "독" }) as StateRecord;
+    const record = normalizeStateRecord(mergeRecord(draft.database.states, args.state, "state", stateRecordSchema, { id: "state_poison", name: "독" }) as Partial<StateRecord> & Pick<StateRecord, "id" | "name">);
     const outcome = upsertById(draft.database.states, record);
     return { summary: `상태 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
   },

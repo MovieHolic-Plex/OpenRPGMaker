@@ -1,17 +1,37 @@
 import { store } from "@/project/store";
+import type { FieldSpawnDef } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
+  addFieldSpawnEntry,
   advanceFieldSpawns,
   createFieldSpawnRuntime,
   fieldSpawnTroopId,
+  removeFieldSpawnEntry,
   resolveFieldSpawnVictory,
   syncFieldSpawnEventsIntoMap,
+  type NormalizedFieldSpawn,
 } from "@/player/fieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
 
+// 처치 결과를 세션에 영속(persistKill)하고 킬 스위치를 켠다.
+export function recordFieldSpawnKill(scene: PlaySceneContext, spawn: NormalizedFieldSpawn | null): void {
+  if (!spawn) return;
+  if (spawn.persistKill) {
+    scene.session.killedFieldSpawns ??= {};
+    const mapKills = (scene.session.killedFieldSpawns[scene.map.id] ??= {});
+    mapKills[spawn.id] = (mapKills[spawn.id] ?? 0) + 1;
+  }
+  if (spawn.onKillSwitchId) scene.session.switches[spawn.onKillSwitchId] = true;
+}
+
 export function initializeFieldSpawnsForScene(scene: PlaySceneContext): void {
   const project = store.getCurrent();
-  scene.fieldSpawnState = createFieldSpawnRuntime(project, scene.map, { x: scene.session.x, y: scene.session.y });
+  scene.fieldSpawnState = createFieldSpawnRuntime(
+    project,
+    scene.map,
+    { x: scene.session.x, y: scene.session.y },
+    scene.session.killedFieldSpawns?.[scene.map.id]
+  );
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
 }
 
@@ -35,7 +55,7 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
     const result = await scene.playBattle({ kind: "battleProcessing", troopId, canEscape: true, canLose: true });
     scene.session.battleResult = result;
     if (result === "victory") {
-      resolveFieldSpawnVictory(scene.fieldSpawnState, eventId);
+      recordFieldSpawnKill(scene, resolveFieldSpawnVictory(scene.fieldSpawnState, eventId));
       syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
       scene.renderTiles();
       scene.registerPageMoveRoutes();
@@ -50,6 +70,39 @@ export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId:
     scene.refreshRuntimeSurfaces();
   }
   return true;
+}
+
+// spawnFieldEnemy 커맨드: 런타임 스폰을 추가하고 즉시 배치·동기화한다.
+export function spawnFieldEnemyForScene(scene: PlaySceneContext, spawn: FieldSpawnDef): void {
+  const project = store.getCurrent();
+  if (!scene.fieldSpawnState || scene.fieldSpawnState.mapId !== scene.map.id) {
+    scene.fieldSpawnState = createFieldSpawnRuntime(
+      project,
+      scene.map,
+      { x: scene.session.x, y: scene.session.y },
+      scene.session.killedFieldSpawns?.[scene.map.id]
+    );
+  }
+  addFieldSpawnEntry(
+    scene.fieldSpawnState,
+    project,
+    scene.map,
+    spawn,
+    { x: scene.tileX, y: scene.tileY },
+    scene.session.killedFieldSpawns?.[scene.map.id]?.[spawn.id] ?? 0
+  );
+  syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
+  scene.renderTiles();
+  scene.registerPageMoveRoutes();
+}
+
+// despawnFieldEnemy 커맨드: 런타임 스폰을 제거한다. 액션 전투 적은 다음 syncActionEnemies에서 자동 해제된다.
+export function despawnFieldEnemyForScene(scene: PlaySceneContext, spawnId: string): void {
+  if (!scene.fieldSpawnState) return;
+  removeFieldSpawnEntry(scene.fieldSpawnState, spawnId);
+  syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
+  scene.renderTiles();
+  scene.registerPageMoveRoutes();
 }
 
 function killPartyForFieldBattle(scene: PlaySceneContext): void {

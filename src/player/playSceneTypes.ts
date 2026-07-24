@@ -50,6 +50,8 @@ export type AutonomousMover = {
   chasePath?: { readonly x: number; readonly y: number }[];
   chaseActive?: boolean;
   chaseHome?: { readonly x: number; readonly y: number };
+  /** 액션 전투 상태기계가 선딜/후딜/돌진 중 이동을 억제할 때 세운다. */
+  actionFrozen?: boolean;
 };
 
 export type AutonomousMoveTween = {
@@ -201,6 +203,8 @@ export interface PlaySceneContext extends Phaser.Scene {
   updateAutonomousNPCs(deltaMs: number): void;
   updateTimers(deltaMs: number): void;
   updateFieldSpawns(deltaMs: number): void;
+  actionCombatState?: import("@/player/actionCombatTypes").ActionCombatSceneState | null;
+  updateActionCombat?(deltaMs: number): void;
   sleepUntilMorning(): Promise<void>;
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;

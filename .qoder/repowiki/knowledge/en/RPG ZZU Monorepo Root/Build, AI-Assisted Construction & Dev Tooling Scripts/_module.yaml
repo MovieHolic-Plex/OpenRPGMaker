@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: scripts_tooling
+title: Build, AI-Assisted Construction & Dev Tooling Scripts
+scope:
+    - scripts/
+source_files: []
+depends_on: []
+related_to: []

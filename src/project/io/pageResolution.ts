@@ -9,6 +9,7 @@ type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
     readonly gameTime?: GameTime;
     readonly npcActivities?: Record<string, string>;
     readonly friendship?: Record<string, number>;
+    readonly battleResult?: "victory" | "defeat" | "escape";
   };
 
 export function resolveEventPage(
@@ -57,8 +58,7 @@ function evalPageCondition(condition: EventPageCondition, session: EventPageSess
       return clampFriendship(session.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
     }
     case "battleResult":
-      // Page appearance does not use last battle outcome; treat as false.
-      return false;
+      return session.battleResult === condition.result;
     case "all":
       return condition.conditions.every((child) => evalPageCondition(child, session, event));
     case "any":

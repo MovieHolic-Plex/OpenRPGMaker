@@ -62,9 +62,8 @@ import {
   charsetFrameSource,
   decodeCharsetFrameIndex,
   type CharsetDirection,
-  type EasyRpgCharsetAsset,
 } from "@/assets/easyrpgRtp";
-import { CHARSET_ASSETS, findCharsetAsset } from "@/assets/charsetCatalog";
+import { projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import {
   renderDirectionRadioGroup,
@@ -512,7 +511,8 @@ function setEventGraphicPatternBody(
   let characterIndex = decoded0.characterIndex;
   let direction: CharsetDirection = decoded0.direction;
   let walkPattern = decoded0.pattern;
-  let asset = resolveAssetForEvent(eventSel.value.trim()) ?? firstCharsetAsset();
+  const charsetAssets = projectCharsetAssets(store.getCurrent());
+  let asset = resolveAssetForEvent(eventSel.value.trim(), charsetAssets) ?? firstCharsetAsset(charsetAssets);
 
   const slotButtons: HTMLButtonElement[] = [];
   const slotGrid = document.createElement("div");
@@ -568,7 +568,7 @@ function setEventGraphicPatternBody(
   optionArea.className = "event-graphic-option-area";
   optionArea.append(directionGroup.root, patternGroup.root);
 
-  const resourceList = renderGraphicResourceList(CHARSET_ASSETS, (nextAsset) => {
+  const resourceList = renderGraphicResourceList(charsetAssets, (nextAsset) => {
     asset = nextAsset;
     apply();
   });
@@ -654,7 +654,7 @@ function setEventGraphicPatternBody(
   };
 
   eventSel.addEventListener("change", () => {
-    const next = resolveAssetForEvent(eventSel.value.trim());
+    const next = resolveAssetForEvent(eventSel.value.trim(), charsetAssets);
     if (next) asset = next;
     const targetGraphic = authoredGraphicForEvent(eventSel.value.trim());
     if (typeof targetGraphic?.pattern === "number") {
@@ -681,17 +681,18 @@ function setEventGraphicPatternBody(
   return wrap;
 }
 
-function firstCharsetAsset(): EasyRpgCharsetAsset {
-  const first = CHARSET_ASSETS[0];
+function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
+  const first = assets[0];
   if (!first) throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
   return first;
 }
 
-function resolveAssetForEvent(eventId: string): EasyRpgCharsetAsset | undefined {
+function resolveAssetForEvent(eventId: string, assets: readonly CharsetPickerAsset[]): CharsetPickerAsset | undefined {
   const graphic = authoredGraphicForEvent(eventId);
   const id = graphic?.sprite?.id;
-  if (!id) return findCharsetAsset(HOUSE_DOOR_CHARSET_TEXTURE) ?? firstCharsetAsset();
-  return findCharsetAsset(id) ?? findCharsetAsset(HOUSE_DOOR_CHARSET_TEXTURE) ?? firstCharsetAsset();
+  const findByKey = (key: string) => assets.find((a) => a.textureKey === key);
+  if (!id) return findByKey(HOUSE_DOOR_CHARSET_TEXTURE) ?? firstCharsetAsset(assets);
+  return findByKey(id) ?? findByKey(HOUSE_DOOR_CHARSET_TEXTURE) ?? firstCharsetAsset(assets);
 }
 
 function authoredGraphicForEvent(eventId: string): EventPageGraphic | undefined {
@@ -709,7 +710,7 @@ function authoredGraphicForEvent(eventId: string): EventPageGraphic | undefined 
 
 function applyCharsetChipStyle(
   target: HTMLElement,
-  asset: EasyRpgCharsetAsset,
+  asset: CharsetPickerAsset,
   characterIndex: number,
   direction: CharsetDirection,
   walkPattern: number,
@@ -731,7 +732,7 @@ function applyCharsetChipStyle(
 
 function applyWalkProbeStyle(
   target: HTMLElement,
-  asset: EasyRpgCharsetAsset,
+  asset: CharsetPickerAsset,
   characterIndex: number,
   direction: CharsetDirection,
   scale: number

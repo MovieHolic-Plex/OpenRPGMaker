@@ -67,8 +67,15 @@ import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/p
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import { updateFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
+import { initializeActionCombatForScene, updateActionCombatForScene } from "@/player/playSceneActionCombat";
 import { applyAdvanceTimeStep, applySetTimeStep, installTimeTintLayer, isGameTimePausedForRuntime, sleepUntilMorningScene, updateGameTime, updateTimeTint } from "@/player/playSceneTime";
 import { updateNpcSchedules } from "@/player/npcSchedules";
+import {
+  createPlaySceneZoneFeedback,
+  destroyPlaySceneZoneFeedback,
+  syncPlaySceneZoneFeedback,
+  type PlaySceneZoneFeedback,
+} from "@/player/playSceneZoneFeedback";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -109,6 +116,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   autonomousNPCs: Map<string, AutonomousMover> = new Map();
   runtimeTimers: Map<string, RuntimeTimer> = new Map();
   fieldSpawnState: FieldSpawnRuntimeState | null = null;
+  actionCombatState: import("@/player/actionCombatTypes").ActionCombatSceneState | null = null;
+  private zoneFeedback: PlaySceneZoneFeedback | null = null;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature = "";
@@ -168,6 +177,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       return host instanceof HTMLElement ? host : undefined;
     });
     this.session = this.initialSession(project);
+    this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
     this.tileX = this.session.x;
@@ -205,6 +215,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
     this.events.once("shutdown", stopAllAudio);
     this.events.once("destroy", stopAllAudio);
+    const destroyZoneFeedback = (): void => {
+      if (!this.zoneFeedback) return;
+      destroyPlaySceneZoneFeedback(this.zoneFeedback);
+      this.zoneFeedback = null;
+    };
+    this.events.once("shutdown", destroyZoneFeedback);
+    this.events.once("destroy", destroyZoneFeedback);
     // player.ts 로딩 오버레이가 create 완료를 기다릴 수 있게 신호.
     reportStage("ready");
     const onReady: unknown = this.game.registry.get("onPlaySceneReady");
@@ -221,6 +238,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateWeather(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
+    if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
   }
 
   getMapId(): MapId {
@@ -229,6 +247,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void {
     loadSceneMap(this, mapId, options);
+    initializeActionCombatForScene(this);
     resetEncounterCounter();
   }
 
@@ -342,6 +361,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   updateFieldSpawns(deltaMs: number): void {
     updateFieldSpawnsForScene(this, deltaMs);
+  }
+
+  updateActionCombat(deltaMs: number): void {
+    updateActionCombatForScene(this, deltaMs);
   }
 
   transferTo(request: TransferRequest): Promise<void> {

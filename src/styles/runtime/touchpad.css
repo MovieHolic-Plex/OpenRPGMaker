@@ -85,3 +85,8 @@
     margin-bottom: 20px;
   }
 }
+
+  /* 전투 중 이동 패드는 명령 버튼을 가리므로 숨긴다(전투 명령은 직접 탭). */
+  .play-stage:has([data-testid="battle-scene"]) .touch-pad {
+    visibility: hidden;
+  }

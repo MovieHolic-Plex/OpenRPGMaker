@@ -6,19 +6,11 @@
 //     데이터 모델은 Command union 그대로 두고(원칙 5) 전부 파생 렌더다.
 import { clearChildren, el } from "@/util/dom";
 import type { Command, EventPage, MapId } from "@/project/types";
-import { auxCompositeKey, bindAuxDetails, getAuxOpen, isAuxOpenApplying, setAuxOpen } from "./auxOpenController";
+import { auxCompositeKey, bindAuxDetails, isAuxOpenApplying, setAuxOpen, setAuxClosed } from "./auxOpenController";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { renderCommandPreview } from "./commandPreview";
 import { commandSummary } from "./commandSummary";
-
-type ActiveFace = { readonly resourceId: string; readonly faceIndex: number };
-
-type ScriptStep = {
-  readonly command: Command;
-  readonly depth: number;
-  readonly branchLabel?: string;
-  readonly face?: ActiveFace;
-};
+import { simulatePageCommands, branchesOf, type SimulatedStep, type ActiveFace } from "./previewSimulation";
 
 export type EventScriptModernViewsOptions = {
   readonly mapId: MapId;
@@ -26,8 +18,6 @@ export type EventScriptModernViewsOptions = {
   readonly page: EventPage;
 };
 
-// 스텝 위치는 재렌더(스토어 구독)를 넘어 유지. open 은 auxOpenController 가 소유.
-// 키: mapId:eventId:pageId
 const stepByPage = new Map<string, number>();
 
 export function renderEventScriptModernViews(
@@ -52,19 +42,20 @@ export function renderEventScriptModernViews(
   }
   const key = auxCompositeKey(mapId, eventId, page.id);
   const wrap = el("div", { class: "event-script-modern-views" });
-  wrap.append(renderLivePreview(key, page), renderFlowchart(key, page));
+  wrap.append(renderLivePreview(key, page, mapId, eventId), renderFlowchart(key, page));
   return wrap;
 }
 
 /* ---------------------------------------------------------------- 라이브 미리보기 */
 
-function renderLivePreview(key: string, page: EventPage): HTMLElement {
+function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId: string): HTMLElement {
   const details = el("details", {
     class: "event-script-live-preview",
     dataset: { testid: "event-script-live-preview" },
   }) as HTMLDetailsElement;
-  const steps = flattenScript(page.commands);
-  // Preview: keep "N steps" or short first-command label when available.
+  const hostEventId = eventId;
+  const simResult = simulatePageCommands(page.commands, hostEventId);
+  const steps = simResult.steps;
   let statusText = "empty";
   let statusKind = "empty";
   if (steps.length > 0) {
@@ -89,7 +80,7 @@ function renderLivePreview(key: string, page: EventPage): HTMLElement {
   details.addEventListener("toggle", () => {
     if (isAuxOpenApplying()) return;
     if (details.open) setAuxOpen(key, "preview");
-    else if (getAuxOpen(key) === "preview") setAuxOpen(key, null);
+    else setAuxClosed(key, "preview");
   });
 
   const body = el("div", { class: "event-script-live-preview-body" });
@@ -111,9 +102,17 @@ function renderLivePreview(key: string, page: EventPage): HTMLElement {
     const step = steps[index];
     if (!step) return;
     clearChildren(stage);
-    stage.append(renderCommandPreview(step.command, { face: step.face }));
+    const activeFace = trackFace(steps, index, key);
+    stage.append(renderCommandPreview(step.command, {
+      face: activeFace,
+      simState: step.simState,
+      hostEventId,
+      forkTaken: step.forkTaken,
+      skipped: step.skipped,
+    }));
     const branch = step.branchLabel ? `[${step.branchLabel}] ` : "";
-    caption.textContent = `${branch}${commandSummary(step.command)}`;
+    const skipMark = step.skipped ? " (건너뜀)" : "";
+    caption.textContent = `${branch}${commandSummary(step.command)}${skipMark}`;
     position.textContent = `${index + 1}/${steps.length}`;
   };
 
@@ -138,7 +137,6 @@ function renderLivePreview(key: string, page: EventPage): HTMLElement {
         playButton.textContent = "정지";
         playButton.setAttribute("aria-pressed", "true");
         playTimer = setInterval(() => {
-          // 패널이 DOM 에서 떨어지거나 닫히면 자동 정지(잔여 타이머 방지).
           if (!details.isConnected || !details.open || index >= steps.length - 1) {
             stopPlayback();
             return;
@@ -190,47 +188,41 @@ function renderLivePreview(key: string, page: EventPage): HTMLElement {
   return details;
 }
 
-// 페이지 커맨드를 스크립트(문서) 순서로 펼친다. 분기 라벨과 활성 얼굴 상태를 함께 기록.
-export function flattenScript(commands: readonly Command[]): ScriptStep[] {
-  const steps: ScriptStep[] = [];
-  const face: { current: ActiveFace | undefined } = { current: undefined };
-  const walk = (list: readonly Command[], depth: number, branchLabel?: string): void => {
-    for (const command of list) {
-      steps.push({ command, depth, branchLabel, face: face.current });
-      if (command.kind === "changeFace") {
-        face.current = command.resourceId
-          ? { resourceId: command.resourceId, faceIndex: command.faceIndex }
-          : undefined;
-      }
-      if (command.kind === "choices") {
-        command.options.forEach((option, optionIndex) => {
-          walk(option.branch, depth + 1, option.text || `선택지 ${optionIndex + 1}`);
-        });
-        if (command.cancelBehavior === "branch") walk(command.cancelBranch ?? [], depth + 1, "취소할 때");
-      } else if (command.kind === "fork") {
-        walk(command.then, depth + 1, "참일 때");
-        if (command.else) walk(command.else, depth + 1, "그 외");
-      } else if (command.kind === "loop") {
-        walk(command.body, depth + 1, "반복");
-      } else if (command.kind === "shop" && command.branchOnTransaction) {
-        walk(command.transactionBranch ?? [], depth + 1, "구매/판매");
-      } else if (command.kind === "inn" && command.branchOnNotEnoughGold) {
-        walk(command.notEnoughBranch ?? [], depth + 1, "골드 부족");
-      } else if (command.kind === "battleProcessing" && command.branchOnResult) {
-        walk(command.victoryBranch ?? [], depth + 1, "전투 승리");
-        walk(command.defeatBranch ?? [], depth + 1, "전투 패배");
-        walk(command.escapeBranch ?? [], depth + 1, "전투 도망");
-      } else if (command.kind === "promoteActor") {
-        walk(command.successBranch ?? [], depth + 1, "승급 성공");
-        walk(command.failureBranch ?? [], depth + 1, "승급 실패");
-      } else if (command.kind === "evolveMonster") {
-        walk(command.successBranch ?? [], depth + 1, "진화 성공");
-        walk(command.failureBranch ?? [], depth + 1, "진화 실패");
-      }
+const faceCacheByPage = new Map<string, Map<number, ActiveFace | undefined>>();
+
+function trackFace(steps: readonly SimulatedStep[], uptoIndex: number, cacheKey?: string): ActiveFace | undefined {
+  if (cacheKey) {
+    const cache = faceCacheByPage.get(cacheKey);
+    if (cache) {
+      const cached = cache.get(uptoIndex);
+      if (cached !== undefined || cache.has(uptoIndex)) return cached;
     }
-  };
-  walk(commands, 0);
-  return steps;
+  }
+  for (let i = uptoIndex; i >= 0; i--) {
+    const step = steps[i];
+    if (!step) continue;
+    if (step.command.kind === "changeFace" && step.command.resourceId) {
+      const face = { resourceId: step.command.resourceId, faceIndex: step.command.faceIndex };
+      if (cacheKey) {
+        if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
+        faceCacheByPage.get(cacheKey)!.set(uptoIndex, face);
+      }
+      return face;
+    }
+  }
+  if (cacheKey) {
+    if (!faceCacheByPage.has(cacheKey)) faceCacheByPage.set(cacheKey, new Map());
+    faceCacheByPage.get(cacheKey)!.set(uptoIndex, undefined);
+  }
+  return undefined;
+}
+
+export function invalidateFaceCache(cacheKey: string): void {
+  faceCacheByPage.delete(cacheKey);
+}
+
+export function flattenScript(commands: readonly Command[]): readonly SimulatedStep[] {
+  return simulatePageCommands(commands).steps;
 }
 
 /* ---------------------------------------------------------------- 플로우차트 */
@@ -267,7 +259,7 @@ function renderFlowchart(key: string, page: EventPage): HTMLElement {
   details.addEventListener("toggle", () => {
     if (isAuxOpenApplying()) return;
     if (details.open) setAuxOpen(key, "flow");
-    else if (getAuxOpen(key) === "flow") setAuxOpen(key, null);
+    else setAuxClosed(key, "flow");
   });
   const body = el("div", { class: "event-flowchart-body", dataset: { testid: "event-flowchart-body" } });
   if (page.commands.length === 0) {
@@ -283,7 +275,7 @@ function countFlowNodes(commands: readonly Command[]): number {
   let count = 0;
   for (const command of commands) {
     count += 1;
-    for (const branch of flowBranchesOf(command)) {
+    for (const branch of branchesOf(command)) {
       count += countFlowNodes(branch.commands);
     }
   }
@@ -293,7 +285,7 @@ function countFlowNodes(commands: readonly Command[]): number {
 function countFlowBranches(commands: readonly Command[]): number {
   let count = 0;
   for (const command of commands) {
-    const branches = flowBranchesOf(command);
+    const branches = branchesOf(command);
     count += branches.length;
     for (const branch of branches) count += countFlowBranches(branch.commands);
   }
@@ -305,7 +297,7 @@ function flowColumn(commands: readonly Command[]): HTMLElement {
   const column = el("div", { class: "event-flow-column" });
   for (const command of commands) {
     column.append(flowNode(command));
-    const branches = flowBranchesOf(command);
+    const branches = branchesOf(command);
     if (branches.length > 0) {
       const branchRow = el("div", { class: "event-flow-branches" });
       for (const branch of branches) {
@@ -334,51 +326,6 @@ function flowNode(command: Command): HTMLElement {
       el("span", { class: "event-flow-node-text", text: truncate(commandSummary(command), 46) }),
     ],
   });
-}
-
-type FlowBranch = { readonly label: string; readonly commands: readonly Command[] };
-
-function flowBranchesOf(command: Command): FlowBranch[] {
-  if (command.kind === "fork") {
-    const branches: FlowBranch[] = [{ label: "참", commands: command.then }];
-    if (command.else) branches.push({ label: "그 외", commands: command.else });
-    return branches;
-  }
-  if (command.kind === "choices") {
-    const branches: FlowBranch[] = command.options.map((option, index) => ({
-      label: option.text || `선택지 ${index + 1}`,
-      commands: option.branch,
-    }));
-    if (command.cancelBehavior === "branch") branches.push({ label: "취소", commands: command.cancelBranch ?? [] });
-    return branches;
-  }
-  if (command.kind === "loop") return [{ label: "반복", commands: command.body }];
-  if (command.kind === "shop" && command.branchOnTransaction) {
-    return [{ label: "구매/판매", commands: command.transactionBranch ?? [] }];
-  }
-  if (command.kind === "inn" && command.branchOnNotEnoughGold) {
-    return [{ label: "골드 부족", commands: command.notEnoughBranch ?? [] }];
-  }
-  if (command.kind === "battleProcessing" && command.branchOnResult) {
-    return [
-      { label: "전투 승리", commands: command.victoryBranch ?? [] },
-      { label: "전투 패배", commands: command.defeatBranch ?? [] },
-      { label: "전투 도망", commands: command.escapeBranch ?? [] },
-    ];
-  }
-  if (command.kind === "promoteActor") {
-    return [
-      { label: "성공", commands: command.successBranch ?? [] },
-      { label: "실패", commands: command.failureBranch ?? [] },
-    ];
-  }
-  if (command.kind === "evolveMonster") {
-    return [
-      { label: "성공", commands: command.successBranch ?? [] },
-      { label: "실패", commands: command.failureBranch ?? [] },
-    ];
-  }
-  return [];
 }
 
 function truncate(text: string, max: number): string {

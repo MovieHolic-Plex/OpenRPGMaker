@@ -7,6 +7,7 @@ import type { FarmPlots, MonsterInstance } from "@/project/session";
 import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
+import type { BattleResult } from "@/battle/types";
 
 export type RuntimeAudioState = {
   readonly resourceId: string;
@@ -266,6 +267,9 @@ export interface PlaySessionLike {
   actorLevels?: Record<string, number>;
   actorEquipment?: Record<string, ActorInitialEquipment>;
   actorNames?: Record<ActorId, string>;
+  actorNicknames?: Record<ActorId, string>;
+  actorFaceResourceIds?: Record<ActorId, string>;
+  actorFaceIndices?: Record<ActorId, number>;
   actorCharacterResourceIds?: Record<ActorId, string>;
   classOverrides?: Record<ActorId, string>;
   actorParamBonuses?: Record<ActorId, Partial<Record<ActorParameterKey, number>>>;
@@ -295,4 +299,6 @@ export interface PlaySessionLike {
   commonEvents?: { id: string; commands: Command[] }[];
   m2Runtime?: M2RuntimeState;
   rng?: RngState;
+  // 직전 전투 처리 결과. battleProcessing 이 종료된 뒤 인터프리터/필드 스폰/페이지 조건에서 사용.
+  battleResult?: BattleResult;
 }

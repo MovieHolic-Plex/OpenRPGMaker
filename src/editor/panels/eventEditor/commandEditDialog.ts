@@ -5,6 +5,7 @@ import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
 import { renderCommandPreview } from "./commandPreview";
+import { createPreviewSimState, type PreviewSimState } from "./previewSimulation";
 import { commandLabel } from "./commandPicker";
 import { openEventSubdialog } from "./subdialog";
 import type { CommandListActions } from "./types";
@@ -35,9 +36,10 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         class: "event-command-preview-panel",
         dataset: { testid: "event-command-preview" },
       });
+      const previewSimState: PreviewSimState = createPreviewSimState();
       const renderPreview = () => {
         clearChildren(previewHost);
-        previewHost.append(renderCommandPreview(stagedCommand, { face: request.previewFace }));
+        previewHost.append(renderCommandPreview(stagedCommand, { face: request.previewFace, simState: previewSimState }));
       };
       const renderEditor = () => {
         clearChildren(formHost);

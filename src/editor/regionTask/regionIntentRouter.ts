@@ -47,14 +47,14 @@ export const REGION_INTENT_KEYWORDS: Readonly<Record<RegionIntentCategory, reado
 
 const GUIDE_LINES: Readonly<Record<RegionIntentCategory, string>> = {
   interior:
-    "- 실내: 현재 맵/선택 영역에 야외 집(build_house_kit)을 짓지 마세요. "
-    + "start_interior_room_session 또는 run_interior_room_pipeline으로 **새 mapId·요청 이름** 실내 맵을 시공 "
+    "- 실내: 현재 맵/선택 영역에 야외 집을 짓지 마세요. "
+    + "start_interior_room_session으로 **새 mapId·요청 이름** 실내 맵을 시공 "
     + "(rooms[] 역할 테마 bedroom|study|dining|kitchen|storage|tavern|corridor, door, wallMaterial) → "
     + "advance_interior_room_build 반복 → evaluate_interior_room. create_map만 하고 멈추지 마세요.",
   structure:
     // stamp_structure는 v1→v2(tile_structure)→v3(build_wall) 폐기 체인이라 LLM에 노출되지 않는다
     // (2026-07-10 라이브 실측 수정) — 탑 등 구조물도 build_wall로 안내한다.
-    "- 구조물(야외): build_house_kit(집·여관·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
+    "- 구조물(야외): author_house(집·여관·대장간 외장), build_wall+fill_region(울타리·안뜰·광장 바닥, 탑 등 구조물), create_farm_plot(밭). 실내/방 맵 요청에는 쓰지 말 것",
   "npc-shop":
     "- NPC: place_npc/make_villager(주민·경비·상인 — graphic은 query로 외형 지정), set_npc_schedule(순찰·시간표), set_shop_stock(상인 재고 연결)",
   "door-transfer":

@@ -12,6 +12,14 @@ export type M2BattleCommandExecutorOptions = {
   readonly revealEnemy?: (target: string) => void;
   readonly changeBattleback?: (resourceId: string) => void;
   readonly addExtraActorAction: (actorId: string, amount: number) => void;
+  // m2-103: 전투 애니메이션을 필드에 띄운다. runtime 이 lastAnimation 을 세팅하도록 콜백.
+  readonly showBattleAnimation?: (target: string, animationId: string) => void;
+  // m2-105: 전투를 즉시 중단(승패 없이 종료 → escape 결과와 동등).
+  readonly abortBattle?: () => void;
+  // m2-106: 커먼 이벤트 commands 를 받아 재귀 실행. forceEscape 여부 반환.
+  readonly executeCommonEvent?: (commonEventId: string) => boolean;
+  // m2-104: 같은 트룹의 다른 배틀 이벤트 페이지를 실행. forceEscape 여부 반환.
+  readonly executeTroopPage?: (pageId: string) => boolean;
 };
 
 export type M2BattleCommandExecution = {
@@ -28,6 +36,24 @@ export function executeM2BattleCommand(command: M2Command, options: M2BattleComm
         enemy.hp = applyM2NumberOperation(enemy.hp, parsed.operation, parsed.value, enemy.maxHp);
       }
       return { handled: true, forceEscape: false };
+    case "changeEnemyMp":
+      for (const enemy of resolveEnemyTargets(options.enemies, parsed.target)) {
+        enemy.mp = applyM2NumberOperation(enemy.mp, parsed.operation, parsed.value, enemy.maxMp);
+      }
+      return { handled: true, forceEscape: false };
+    case "changeEnemyState":
+      for (const enemy of resolveEnemyTargets(options.enemies, parsed.target)) {
+        if (parsed.operation === "add") {
+          if (!enemy.stateIds.includes(parsed.stateId)) {
+            enemy.stateIds = [...enemy.stateIds, parsed.stateId];
+            enemy.stateTurns[parsed.stateId] = 0;
+          }
+        } else {
+          enemy.stateIds = enemy.stateIds.filter((id) => id !== parsed.stateId);
+          delete enemy.stateTurns[parsed.stateId];
+        }
+      }
+      return { handled: true, forceEscape: false };
     case "enemyEncounter":
       options.revealEnemy?.(parsed.target);
       return { handled: true, forceEscape: false };
@@ -35,6 +61,25 @@ export function executeM2BattleCommand(command: M2Command, options: M2BattleComm
       const resourceId = parsed.resourceId.trim();
       if (resourceId) options.changeBattleback?.(resourceId);
       return { handled: true, forceEscape: false };
+    }
+    case "showAnimation":
+      if (parsed.animationId) options.showBattleAnimation?.(parsed.target, parsed.animationId);
+      return { handled: true, forceEscape: false };
+    case "abortBattle":
+      // RM2K3 Abort Battle: 전투를 승패 없이 즉시 종료. 런타임은 escape 결과로 매핑.
+      options.abortBattle?.();
+      return { handled: true, forceEscape: true };
+    case "battleEvents": {
+      const pageId = parsed.target.trim();
+      if (!pageId || !options.executeTroopPage) return { handled: true, forceEscape: false };
+      const forceEscape = options.executeTroopPage(pageId);
+      return { handled: true, forceEscape };
+    }
+    case "callCommonEvent": {
+      const id = parsed.commonEventId.trim();
+      if (!id || !options.executeCommonEvent) return { handled: true, forceEscape: false };
+      const forceEscape = options.executeCommonEvent(id);
+      return { handled: true, forceEscape };
     }
     case "forceEscape":
       return { handled: true, forceEscape: true };

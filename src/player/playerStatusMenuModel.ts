@@ -1,5 +1,6 @@
 import { defaultActorFaceResourceId } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
+import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
@@ -54,8 +55,13 @@ export type StatusMenuSnapshotOptions = {
 export function listStatusMenuCommandIds(project: Project, session: PlaySession): StatusMenuCommandId[] {
   const showRelationships =
     isGiftSystemEnabled(project) || Object.keys(session.friendship ?? {}).length > 0;
-  if (showRelationships) return [...STATUS_MENU_COMMAND_IDS];
-  return STATUS_MENU_COMMAND_IDS.filter((id) => id !== "relationships");
+  // Change Save Access: false면 메뉴의 저장 항목을 숨긴다(세이브 포인트 전용 설계).
+  const saveDisabled = session.m2Runtime?.access?.save === false;
+  return STATUS_MENU_COMMAND_IDS.filter((id) => {
+    if (id === "relationships") return showRelationships;
+    if (id === "save") return !saveDisabled;
+    return true;
+  });
 }
 
 
@@ -75,10 +81,10 @@ export function createPlayerStatusMenuSnapshot(
     const level = session.actorLevels[actorId] ?? actor.initialLevel;
     return [{
       actorId,
-      name: actor.name,
+      name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
       condition: "정상",
-      faceResourceId: actor.faceResourceId ?? defaultActorFaceResourceId(actor),
+      faceResourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
     }];

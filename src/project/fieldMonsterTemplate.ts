@@ -101,7 +101,7 @@ export function buildFieldMonsterPages(input: FieldMonsterPagesInput): EventPage
       priority: "below",
       overlapForbidden: false,
       movement: structuredClone(input.clearedMovement ?? PASSIVE),
-      commands: structuredClone(input.clearedCommands ?? []),
+      commands: structuredClone([...(input.clearedCommands ?? [])]),
     },
   ];
 }

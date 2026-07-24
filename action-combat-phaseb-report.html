@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG ZZU 액션 전투 Phase B — 작동 증거와 설명</title>
+<style>
+  :root {
+    --bg: #10130f;
+    --panel: #1a1f18;
+    --panel-2: #232a20;
+    --line: #37422f;
+    --text: #eef3e6;
+    --muted: #a7b59b;
+    --green: #7ec850;
+    --lime: #b8e356;
+    --amber: #f0b429;
+    --red: #e05c4a;
+    --blue: #6cb4ee;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    line-height: 1.7;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px 120px; }
+
+  .hero {
+    position: relative; height: 280px; margin: 0 -24px; overflow: hidden;
+    border-bottom: 4px solid var(--green);
+  }
+  .hero img.bg {
+    width: 100%; height: 100%; object-fit: cover;
+    image-rendering: pixelated; filter: brightness(.42) saturate(1.25);
+  }
+  .hero .hero-text {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; text-align: center; padding: 0 24px;
+    background: radial-gradient(ellipse at center, rgba(16,19,15,.1), rgba(16,19,15,.78));
+  }
+  .hero h1 { font-size: 36px; font-weight: 800; letter-spacing: -1px; text-shadow: 0 4px 24px rgba(0,0,0,.85); }
+  .hero h1 em { font-style: normal; color: var(--lime); }
+  .hero p.sub { margin-top: 10px; color: #dde8d2; font-size: 15px; text-shadow: 0 2px 8px rgba(0,0,0,.9); }
+
+  h2 { font-size: 25px; font-weight: 800; letter-spacing: -.5px; }
+  section { margin-top: 64px; }
+  .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+  .sec-head .badge {
+    font-size: 22px; width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(126,200,80,.13); border: 1px solid rgba(126,200,80,.4);
+  }
+  .sec-sub { color: var(--muted); font-size: 15px; margin: 0 0 26px 62px; }
+
+  .plain {
+    background: linear-gradient(135deg, rgba(126,200,80,.1), rgba(184,227,86,.05));
+    border: 1px solid rgba(126,200,80,.35); border-radius: 16px;
+    padding: 24px 28px; font-size: 16px; margin-top: 36px;
+  }
+  .plain strong { color: var(--lime); }
+  .plain .small { font-size: 13.5px; color: var(--muted); margin-top: 10px; }
+
+  code {
+    font-family: "Consolas", "D2Coding", monospace; font-size: .88em;
+    color: #a5d6a7; background: #131a11; padding: 2px 7px; border-radius: 5px;
+  }
+
+  .shot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .shot {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+  }
+  .shot img { width: 100%; display: block; image-rendering: pixelated; }
+  .shot .cap { padding: 12px 16px; font-size: 13.5px; color: #cfdcc4; border-top: 1px solid var(--line); }
+  .shot .cap b { color: var(--lime); display: block; font-size: 14px; margin-bottom: 2px; }
+  .shot.wide { grid-column: 1 / -1; }
+
+  .pattern-cards { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  .pattern {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+    display: grid; grid-template-columns: 1fr 1fr;
+  }
+  .pattern .p-img { position: relative; min-height: 240px; }
+  .pattern .p-img img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; position: absolute; inset: 0; }
+  .pattern .p-body { padding: 22px 24px; }
+  .pattern h3 { font-size: 18px; margin-bottom: 4px; }
+  .pattern h3 .kind { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
+  .k-melee { background: rgba(224,92,74,.15); color: var(--red); }
+  .k-proj { background: rgba(240,180,41,.15); color: var(--amber); }
+  .k-dash { background: rgba(108,180,238,.15); color: var(--blue); }
+  .pattern .who { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+  .pattern p { font-size: 14px; color: #cfdcc4; margin-bottom: 10px; }
+  .pattern pre {
+    background: #0b0f14; border: 1px solid var(--line); border-radius: 8px;
+    padding: 12px 14px; font-family: "Consolas", monospace; font-size: 11.5px;
+    color: #8fd3a0; overflow-x: auto; line-height: 1.6;
+  }
+
+  .machine {
+    display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 26px 18px;
+    margin-bottom: 24px;
+  }
+  .state {
+    border-radius: 10px; padding: 12px 18px; text-align: center; min-width: 110px;
+    border: 1px solid var(--line); background: var(--panel-2);
+  }
+  .state b { display: block; font-size: 14.5px; }
+  .state span { font-size: 11.5px; color: var(--muted); }
+  .s-combat { border-color: rgba(126,200,80,.5); }
+  .s-windup { border-color: rgba(224,92,74,.55); background: rgba(224,92,74,.08); }
+  .s-strike { border-color: rgba(240,180,41,.55); background: rgba(240,180,41,.08); }
+  .s-recover { border-color: rgba(108,180,238,.5); }
+  .arrow { color: var(--muted); font-size: 18px; }
+
+  .concept-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .concept { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .concept h3 { font-size: 15.5px; margin-bottom: 8px; color: var(--lime); }
+  .concept p { font-size: 13.5px; color: #c4d2b9; }
+
+  .tbl { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+  .tbl th, .tbl td { padding: 12px 15px; text-align: left; font-size: 13.5px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .tbl th { background: var(--panel-2); color: var(--muted); font-weight: 600; font-size: 12.5px; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .ok { color: var(--lime); font-weight: 700; }
+
+  footer { margin-top: 64px; text-align: center; color: #5f6d58; font-size: 13px; }
+  footer code { background: var(--panel-2); padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+
+  @media (max-width: 880px) {
+    .shot-grid, .concept-cards { grid-template-columns: 1fr; }
+    .pattern { grid-template-columns: 1fr; }
+    .pattern .p-img { min-height: 200px; position: relative; }
+    .pattern .p-img img { position: static; }
+    .hero h1 { font-size: 26px; }
+    .sec-sub { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <img class="bg" src="./public/assets/easyrpg/backdrop/Dawn2.png" alt="배경" onerror="this.src='./public/assets/easyrpg/backdrop/Dawn1.png'">
+    <div class="hero-text">
+      <h1>액션 전투 <em>Phase B</em> — 몬스터가 패턴으로 덤빈다</h1>
+      <p class="sub">실제 게임 화면으로 보는 구현 완료 증거 · 2026-07-20</p>
+    </div>
+  </div>
+
+  <div class="plain">
+    <strong>한 줄 요약:</strong> Phase A(때리고 맞기)에 이어 Phase B(적 공격 패턴)까지 완료했습니다. 이제 슬라임은 <strong>붉게 빛나며 공격을 예고(선딜)</strong>하고, 초원 슬라임은 <strong>탄을 쏘고</strong>, 박쥐는 <strong>직선으로 돌진</strong>합니다. 아래는 전부 실제 플레이 화면 캡처입니다.
+    <div class="small">데모: Supabase 프로젝트 <code>rpg-zzu-dungeon-example</code> → 맵 "슬라임 시험 초원"에서 새 게임 시작 시 바로 체험 가능.</div>
+  </div>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge">🎮</div>
+      <h2>지금 게임에서 되는 것 (Phase A 복습)</h2>
+    </div>
+    <p class="sec-sub">전부 실제 플레이 중인 브라우저 캡처입니다.</p>
+    <div class="shot-grid">
+      <div class="shot">
+        <img src="./output/evidence/action-combat-demo/01-field-hud.png" alt="필드와 HUD">
+        <div class="cap"><b>철력·스태미나 HUD + 배회하는 슬라임</b>좌상단 HP 바와 ST 바가 항상 보입니다. 슬라임 5마리는 걷기 캐릭터칩으로 걸어다닙니다.</div>
+      </div>
+      <div class="shot">
+        <img src="./output/evidence/action-combat-demo/07-swing-burst-0.png" alt="스윙 명중">
+        <div class="cap"><b>검 스윙 명중 — "39"</b>Space를 누르면 전방 부채꼴로 공격. 맞은 슬라임은 하얗게 점멸하고 노란 데미지 숫자가 뜹니다.</div>
+      </div>
+      <div class="shot">
+        <img src="./output/evidence/action-combat-demo/08-damaged-enemy-bar.png" alt="몬스터 철력바">
+        <div class="cap"><b>몬스터 철력바 (옵션)</b>한 번 맞은 몬스터 머리 위에 철력바가 표시됩니다. 설정: 항상 / 맞은 것만 / 끄기. 플레이어가 붉은 건 방금 맞았다는 뜻.</div>
+      </div>
+      <div class="shot">
+        <img src="./output/evidence/action-combat-demo/04-kill.png" alt="격파">
+        <div class="cap"><b>격파와 보상</b>HP를 다 깎으면 몬스터가 사라지고 골드·드롭을 얻습니다. 잠시 뒤 스폰 지점에서 리스폰.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge">⚔️</div>
+      <h2>Phase B — 몬스터의 3가지 공격 패턴</h2>
+    </div>
+    <p class="sec-sub">모든 공격은 같은 리듬을 따릅니다. 예고(선딜)가 보이니까, 피할 수 있습니다.</p>
+
+    <div class="machine">
+      <div class="state s-combat"><b>추격</b><span>기존 A* AI로 접근</span></div>
+      <span class="arrow">→</span>
+      <div class="state s-windup"><b>선딜 (예고)</b><span>붉은 점멸 + 바닥 경고</span></div>
+      <span class="arrow">→</span>
+      <div class="state s-strike"><b>공격</b><span>타격 / 탄 / 돌진</span></div>
+      <span class="arrow">→</span>
+      <div class="state s-recover"><b>후딜 (빈틈)</b><span>플레이어 반격 찬스</span></div>
+      <span class="arrow">→</span>
+      <div class="state s-combat"><b>추격</b><span>쿨다운 후 반복</span></div>
+    </div>
+
+    <div class="pattern-cards">
+      <div class="pattern">
+        <div class="p-img"><img src="./output/evidence/action-combat-phaseb/b-projectile-2.png" alt="투사체"></div>
+        <div class="p-body">
+          <h3>탄 쏘기 <span class="kind k-proj">projectile</span></h3>
+          <div class="who">초원 슬라임 (spawn_b 구역) — 실제 캡처: 탄 2발이 동시에 날아오는 중, 맞은 플레이어는 붉게 점멸</div>
+          <p>멀리 있으면 붉게 예고한 뒤 주황색 탄을 쏩니다. 탄은 직선으로 날아가 <b>벽에 막히고</b>, 플레이어에게 닿으면 데미지. 옆으로 걸어서 피할 수 있습니다.</p>
+          <pre>attack: { kind: "projectile", windupMs: 600,
+  recoverMs: 500, damage: 4, range: 8,
+  projectileSpeedTilesPerSec: 6 }</pre>
+        </div>
+      </div>
+
+      <div class="pattern">
+        <div class="p-img"><img src="./output/evidence/action-combat-phaseb/a-melee-windup-2.png" alt="돌진 텔레그래프"></div>
+        <div class="p-body">
+          <h3>돌진 <span class="kind k-dash">dash</span></h3>
+          <div class="who">동굴 박쥐 (spawn_c 구역) — 실제 캡처: 붉은 직선 경고가 플레이어 열을 덮고, 박쥐가 그 길로 돌진</div>
+          <p>플레이어와 같은 줄에 서면 <b>바닥에 붉은 직선 경고</b>가 깔리고, 잠시 뒤 그 길로 빠르게 돌진합니다. 경고가 보이면 옆으로 빠지면 됩니다.</p>
+          <pre>attack: { kind: "dash", windupMs: 450,
+  recoverMs: 700, damage: 5, range: 5 }</pre>
+        </div>
+      </div>
+
+      <div class="pattern">
+        <div class="p-img"><img src="./output/evidence/action-combat-phaseb/c-dash-5.png" alt="근접 타격"></div>
+        <div class="p-body">
+          <h3>근접 후려치기 <span class="kind k-melee">melee</span></h3>
+          <div class="who">슬라임 (spawn_a 구역) — 실제 캡처: 타격이 적중해 플레이어가 붉게 점멸하고 HP가 361 → 354로 감소</div>
+          <p>가까이 오면 붉게 예고한 뒤 전방 부채꼴로 후려칩니다. 플레이어의 검과 같은 판정이라, <b>예고를 보고 뒤로 빠지면 맞지 않습니다.</b> 기본 접촉 데미지와는 별개입니다.</p>
+          <pre>attack: { kind: "melee", windupMs: 500,
+  recoverMs: 600, damage: 6, range: 1 }</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge">🔧</div>
+      <h2>어떻게 동작하나 — 4개의 쉬운 개념</h2>
+    </div>
+    <p class="sec-sub">엔진 구조를 몰라도 읽히도록 쓴 설명입니다.</p>
+    <div class="concept-cards">
+      <div class="concept">
+        <h3>1. 몬스터마다 작은 상태기계</h3>
+        <p>각 몬스터는 "추격 → 선딜 → 공격 → 후딜"을 돕니다. 선딜·후딜 시간은 몬스터 데이터(<code>EnemyRecord.actionProfile.attack</code>)에 적으므로, 코드를 고치지 않고 몬스터마다 다른 리듬을 만들 수 있습니다.</p>
+      </div>
+      <div class="concept">
+        <h3>2. 선딜 동안은 얼린다 (freeze)</h3>
+        <p>추격 이동은 기존 NPC 묘버가 담당합니다. 선딜에 들어가면 <code>actionFrozen</code> 플래그로 묘버를 얼려 제자리에 세우고, 후딜이 끝나면 다시 풉니다. 기존 추격 AI는 한 줄도 고치지 않았습니다.</p>
+      </div>
+      <div class="concept">
+        <h3>3. 경고는 바닥에 그린다 (텔레그래프)</h3>
+        <p>공격이 닿을 칸을 선딜 시작 시점에 붉게 칠해 보여줍니다. 근접은 부채꼴, 돌진은 직선, 탄은 비행 경로. 플레이어의 흰색 스윙 표시와 같은 그리기 도구를 재사용했습니다.</p>
+      </div>
+      <div class="concept">
+        <h3>4. 탄은 매 프레임 전진하는 작은 점</h3>
+        <p>발사 순간의 플레이어 위치를 향해 직선으로 납니다. 매 프레임 벽·사거리·플레이어와의 겹침을 검사해 소멸 또는 명중시키고, 화면 밖으로는 못 나갑니다. 관통·유도 같은 물리는 의도적으로 넣지 않았습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge">✅</div>
+      <h2>검증 요약</h2>
+    </div>
+    <p class="sec-sub">"돌아간다"는 말 대신, 남겨진 증거 목록입니다.</p>
+    <table class="tbl">
+      <thead>
+        <tr><th>검증</th><th>결과</th><th>근거</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>단위 테스트 (판정·데미지·스키마 정규화)</td><td class="ok">33/33 통과</td><td><code>test/actionHitbox.test.ts</code> · <code>actionCombatMath.test.ts</code> · <code>actionCombatConfig.test.ts</code></td></tr>
+        <tr><td>기존 테스트 회귀 (입력·사냥터 런타임)</td><td class="ok">통과</td><td><code>test/input.test.ts</code> · <code>phase8bHuntingRuntime.test.ts</code></td></tr>
+        <tr><td>타입 검사 (변경 파일)</td><td class="ok">오류 0건</td><td>tsc --noEmit (기존 파일들의 pre-existing 오류와 무관함을 확인)</td></tr>
+        <tr><td>Supabase 저장 + 재로드 증명</td><td class="ok">12개 체크 통과</td><td>프로젝트 <code>rpg-zzu-dungeon-example</code> · 스크립트 <code>scripts/save-action-combat-demo.mts</code></td></tr>
+        <tr><td>브라우저 작동 증거</td><td class="ok">이 페이지의 캡처들</td><td><code>output/evidence/action-combat-demo/</code> · <code>action-combat-phaseb/</code></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge">🧭</div>
+      <h2>다음 단계</h2>
+    </div>
+    <p class="sec-sub">로드맵상 남은 것들입니다.</p>
+    <div class="concept-cards">
+      <div class="concept">
+        <h3>Phase C — 플레이어 깊이</h3>
+        <p>무기별 손맛(대검=느리고 넓게 / 단검=빠르고 좁게), MP를 쓰는 액션 스킬(탄환·범위기), 대시에 짧은 무적을 얹는 회피, 속성 상성 연결. 액션 킬에 EXP·레벨업 정산 연결.</p>
+      </div>
+      <div class="concept">
+        <h3>Phase D — 저작 도구</h3>
+        <p>AI가 "돌진하는 박쥐 무리를 동쪽에 깔아줘" 같은 프롬프트로 액션 몬스터를 배치하는 쓰기 도구, DB 에디터의 액션 프로필 탭(필드 칩 미리보기), 헤드리스 전투 시뮬레이션으로 밸런스 회귀 테스트.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    구현: <code>src/action/</code> · <code>src/player/playSceneActionCombat.ts</code> · <code>src/project/actionCombat.ts</code> · 문서: <code>openwiki/runtime-and-data.md</code><br>
+    이 페이지의 모든 게임 화면은 실제 플레이 캡처이며, 몬스터 그림은 리포 번들 캐릭터칩(<code>public/assets/easyrpg/charset/</code>)입니다.
+  </footer>
+
+</div>
+</body>
+</html>

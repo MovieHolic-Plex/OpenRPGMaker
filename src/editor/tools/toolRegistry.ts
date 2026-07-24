@@ -17,6 +17,7 @@ import { HOUSE_LOT_TOOLS } from "./houseLotTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
+import { ACTION_TOOLS } from "./actionTools";
 import { MAP_TOOLS } from "./mapTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
@@ -43,6 +44,8 @@ import { VISION_QUERY_TOOLS } from "./visionQueryTools";
 import { WORLD_TOOLS } from "./worldTools";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
+import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
+import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
 
 export { PLACEMENT_TOOLS };
 
@@ -55,12 +58,31 @@ export const LEGACY_TILE_KNOWLEDGE_SUPERSEDED: ReadonlyMap<string, string> = new
   ["show_tiles", "tile_query"],
 ]);
 
+// construction route manifest: 레거시 쓰기 → canonical facade (LLM 비노출, 직접 실행 호환).
+// preview_house는 읽기 진단이므로 여기 넣지 않는다(공개 유지).
+export const CONSTRUCTION_WRITE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
+  ["build_house", "author_house"],
+  ["build_house_kit", "author_house"],
+  ["build_house_lots", "author_house"],
+  ["plan_village", "author_village"],
+  ["materialize_village_spec", "author_village"],
+  ["revise_village_plan", "author_village"],
+  ["run_village_pipeline", "author_village"],
+  ["build_village", "author_village"],
+  ["start_village_session", "author_village"],
+  ["plant_tree_clusters", "author_village"],
+  ["advance_village_build", "author_village"],
+  ["run_village_session", "author_village"],
+]);
+
 // 레거시 툴 이름에 deprecated + supersededBy 부여 (LLM 비노출, getTool 실행 호환).
 function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] {
   return tools.map((tool) => {
     if (tool.deprecated) return tool;
     const superseded =
-      V1_TILE_SUPERSEDED.get(tool.name) ?? LEGACY_TILE_KNOWLEDGE_SUPERSEDED.get(tool.name);
+      CONSTRUCTION_WRITE_SUPERSEDED.get(tool.name)
+      ?? V1_TILE_SUPERSEDED.get(tool.name)
+      ?? LEGACY_TILE_KNOWLEDGE_SUPERSEDED.get(tool.name);
     if (superseded) {
       return { ...tool, version: tool.version ?? (1 as const), deprecated: true, supersededBy: superseded };
     }
@@ -103,9 +125,11 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
   }));
 }
 
-// 레지스트리 순서: 정공법(v3) 먼저 → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
+// 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
+  AUTHOR_HOUSE_TOOL,
+  AUTHOR_VILLAGE_TOOL,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_KIT_TOOLS, "tile"),
   ...withDomain(HOUSE_LOT_TOOLS, "tile"),
@@ -117,6 +141,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
+  ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
   ...withDomain(INVESTIGATION_TOOLS, "event"),
@@ -184,6 +209,8 @@ export interface ToolExposureOptions {
 const MAX_EXPOSED_TOOLS = 40;
 const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
   ["tile", new Set([
+    "author_house",
+    "author_village",
     "place_props",
     "build_house_kit",
     "build_house_lots", // 집 위치+마당 꾸밈 의도(LLM) → 산포 좌표(코드)
@@ -209,6 +236,7 @@ const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new
     "place_chest", "place_storage_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
   ])],
   ["map", new Set([
+    "author_village",
     "get_map_region", "show_map_region", "get_project_summary",
     // 영역 작업 transform/battle-trap/structure 가이드 대표 도구(2026-07-10 라이브 실측 수정).
     // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.

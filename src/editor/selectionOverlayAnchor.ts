@@ -46,26 +46,18 @@ export function anchoredBuildPalettePosition(input: {
   };
 }
 
-/** 선택 칩 바: 선택 영역 아래(공간 없으면 위), 가로 중앙. 맵을 덜 가린다. */
-export function anchoredSelectionChipsPosition(input: {
-  readonly selectionRect: OverlayRect;
+/** 선택 AI 칩: 캔버스 우하단 고정 플로팅 버튼 (맵/선택 위를 가리지 않음). */
+export function fixedSelectionChipsPosition(input: {
   readonly popupSize: OverlaySize;
   readonly canvasSize: OverlaySize;
-  readonly gap?: number;
   readonly padding?: number;
 }): OverlayPoint {
-  const gap = input.gap ?? SELECTION_OVERLAY_GAP_PX;
-  const padding = input.padding ?? SELECTION_OVERLAY_PADDING_PX;
-  const maxX = Math.max(padding, input.canvasSize.width - input.popupSize.width - padding);
-  const maxY = Math.max(padding, input.canvasSize.height - input.popupSize.height - padding);
-  const belowY = input.selectionRect.y + input.selectionRect.height + gap;
-  const aboveY = input.selectionRect.y - input.popupSize.height - gap;
-  const preferredY =
-    belowY + input.popupSize.height + padding <= input.canvasSize.height ? belowY : aboveY;
-  const centeredX =
-    input.selectionRect.x + input.selectionRect.width / 2 - input.popupSize.width / 2;
+  // 하단 상태바/줌 크롬과 겹치지 않게 하단 여백을 더 둔다.
+  const edge = input.padding ?? 20;
+  const bottom = Math.max(edge, 40);
   return {
-    x: clampNumber(centeredX, padding, maxX),
-    y: clampNumber(preferredY, padding, maxY),
+    x: Math.max(edge, input.canvasSize.width - input.popupSize.width - edge),
+    y: Math.max(edge, input.canvasSize.height - input.popupSize.height - bottom),
   };
 }
+

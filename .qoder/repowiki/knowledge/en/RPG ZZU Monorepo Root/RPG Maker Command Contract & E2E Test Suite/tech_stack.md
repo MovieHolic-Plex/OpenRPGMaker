@@ -1,0 +1,1 @@
+Vitest for unit tests (with `vi.spyOn` on `console.warn`), Playwright for browser e2e (headless, `page.screenshot` evidence output to `output/evidence/…`), and dynamic `import('node:fs')` used to sidestep tsconfig `types: []` node-type restrictions inside Vitest.

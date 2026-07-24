@@ -95,6 +95,12 @@ function updateChaseNpc(
   const view = runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)
     .find((entry) => entry.event.id === eventId);
   if (!view) return;
+  const baseFrame = view.page?.graphic.pattern ?? 0;
+  const sprite = scene.eventSprites.get(eventId);
+  if (mover.actionFrozen) {
+    setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
+    return;
+  }
   const decision = nextChaseDecision({
     project,
     map: scene.map,
@@ -106,8 +112,6 @@ function updateChaseNpc(
     giveUpRange: mover.giveUpRange,
     pathfind: mover.pathfind,
   });
-  const baseFrame = view.page?.graphic.pattern ?? 0;
-  const sprite = scene.eventSprites.get(eventId);
   if (decision.kind === "wait") {
     setNpcIdleFrame(sprite, baseFrame, mover.facing, view.animationType, mover.animationEnabled);
     return;
@@ -121,6 +125,18 @@ function updateChaseNpc(
   // Chase pathfinding only sees the player's committed tile. Mid-move destination still blocks.
   if (!mover.through && isPlayerOccupyingTile(scene, decision.x, decision.y)) {
     fireEventTouch(scene, eventId, view.trigger.kind);
+    setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
+    return;
+  }
+  // 좀비 군집: 일반 자율 이동과 동일한 점유 규칙을 적용한다. 목적지가 다른 이벤트에
+  // 점유되어 있으면 이번 틱은 대기 — 추적 결정은 순차 처리되고 목적지는 즉시 커밋되므로
+  // 같은 칸으로 몰려 겹치는(stacking) 현상이 방지된다.
+  if (
+    !canNpcMove(
+      { project, scene, mover, eventId, from: { x: view.x, y: view.y }, to: { x: decision.x, y: decision.y } },
+      { x: decision.x - view.x, y: decision.y - view.y, face: frameDir }
+    )
+  ) {
     setNpcIdleFrame(sprite, baseFrame, frameDir, view.animationType, mover.animationEnabled);
     return;
   }

@@ -6,7 +6,7 @@ import {
 } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
-  anchoredSelectionChipsPosition,
+  fixedSelectionChipsPosition,
 } from "@/editor/selectionOverlayAnchor";
 import type { RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import type { TileSelection } from "@/editor/editorState";
@@ -49,21 +49,23 @@ describe("renderSelectionActionChips", () => {
   });
 });
 
-describe("anchoredSelectionChipsPosition", () => {
+describe("fixedSelectionChipsPosition", () => {
   const popupSize = { width: 220, height: 36 };
   const canvasSize = { width: 800, height: 600 };
 
-  it("선택 영역 아래·가로 중앙에 둔다", () => {
-    const selectionRect = { x: 100, y: 80, width: 160, height: 96 };
-    const point = anchoredSelectionChipsPosition({ selectionRect, popupSize, canvasSize });
-    expect(point.y).toBe(80 + 96 + 8);
-    expect(point.x).toBe(Math.round(100 + 160 / 2 - 220 / 2));
+  it("캔버스 우하단에 고정한다", () => {
+    const point = fixedSelectionChipsPosition({ popupSize, canvasSize });
+    expect(point.x).toBe(800 - 220 - 20);
+    expect(point.y).toBe(600 - 36 - 40);
   });
 
-  it("아래 공간이 없으면 위로 올린다", () => {
-    const selectionRect = { x: 100, y: 540, width: 120, height: 40 };
-    const point = anchoredSelectionChipsPosition({ selectionRect, popupSize, canvasSize });
-    expect(point.y).toBe(540 - 36 - 8);
+  it("팝업이 캔버스보다 커도 패딩 밖으로 나가지 않는다", () => {
+    const point = fixedSelectionChipsPosition({
+      popupSize: { width: 900, height: 700 },
+      canvasSize,
+    });
+    expect(point.x).toBe(20);
+    expect(point.y).toBe(20);
   });
 
   it("건축 팔레트는 여전히 선택 우측 배치", () => {

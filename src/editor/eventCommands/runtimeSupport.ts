@@ -2,6 +2,7 @@ import type { Command } from "@/project/types";
 import {
   M2_MAP_COMMON_FULL_IDS,
   M2_PERSISTED_BEHAVIOR_IDS,
+  M2_SYNTHETIC_EDITOR_ONLY_IDS,
   M2_TROOP_FULL_IDS,
 } from "./m2RuntimeClassificationData";
 import { M2_PARTIAL_EFFECT_DECLARATIONS } from "./m2PartialEffectDeclarations";
@@ -129,6 +130,7 @@ function behaviorClassFor(commandId: string): M2PersistedBehaviorClass {
   if (includesId(M2_PERSISTED_BEHAVIOR_IDS.full, commandId)) return "full";
   if (includesId(M2_PERSISTED_BEHAVIOR_IDS.partial, commandId)) return "partial";
   if (includesId(M2_PERSISTED_BEHAVIOR_IDS.editorOnly, commandId)) return "editorOnly";
+  if (includesId(M2_SYNTHETIC_EDITOR_ONLY_IDS, commandId)) return "editorOnly";
   throw new M2RuntimeClassificationError(commandId);
 }
 

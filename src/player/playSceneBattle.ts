@@ -2,7 +2,9 @@ import type { BattleResult } from "@/battle/runtime";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
-import { mountBattleScene } from "@/player/battleDom";
+import { playAudioCommand, stopAudioCommand } from "@/player/audio";
+import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
+import { createBattleTransition } from "@/player/battleTransition";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -48,7 +50,7 @@ export function playBattle(
   const runtime = createBattleRuntime({
     project,
     troopId: step.troopId,
-    canEscape: step.canEscape,
+    canEscape: step.canEscape && scene.session.m2Runtime?.access?.escape !== false,
     canLose: step.canLose,
     battleFlow: step.battleFlow,
     party: {
@@ -89,22 +91,42 @@ export function playBattle(
       });
     },
     rng: () => nextSessionRandom(scene.session, "battle"),
+    playAudio: (resourceId, loop) => {
+      playAudioCommand({ resourceId, loop }, project);
+      scene.session.audio.bgm = { resourceId, loop };
+    },
+    stopAudio: () => {
+      stopAudioCommand();
+      scene.session.audio.bgm = undefined;
+    },
   });
   return new Promise<BattleResult>((resolve) => {
-    const battleScene = mountBattleScene({
-      host,
-      runtime,
-      onResult: (result, snapshot) => {
-        exitBattleAudio(project, scene.session, savedAudio);
-        applyBattleRewardsToSession(
-          scene.session,
-          { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
-          project
-        );
-        battleScene.destroy();
-        resolve(result);
-      },
+    let battleScene: BattleDomController | undefined;
+    let settled = false;
+    const entryTransition = createBattleTransition(host);
+    void entryTransition.cover().then(() => {
+      if (settled) return;
+      battleScene = mountBattleScene({
+        host,
+        runtime,
+        onResult: (result, snapshot) => {
+          if (settled) return;
+          settled = true;
+          const exitTransition = createBattleTransition(host);
+          void exitTransition.exit().then(() => {
+            exitBattleAudio(project, scene.session, savedAudio);
+            applyBattleRewardsToSession(
+              scene.session,
+              { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
+              project
+            );
+            battleScene?.destroy();
+            void exitTransition.reveal().then(() => resolve(result));
+          });
+        },
+      });
+      markBattleEntry(startedAt);
+      void entryTransition.reveal();
     });
-    markBattleEntry(startedAt);
   });
 }

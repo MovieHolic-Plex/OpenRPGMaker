@@ -86,6 +86,7 @@ function computeMagnitude(
 }
 
 function applyVariance(magnitude: number, spec: SkillLikeEffect): number {
+  // 분산(±variance%). 미지정 시 0(고정) — 데미지 공식 문서와 일치.
   const variance = spec.variance ?? 0;
   if (variance <= 0) return magnitude;
   const factor = 1 + ((spec.rng ?? fallbackRng)() * 2 - 1) * (variance / 100);
@@ -97,5 +98,5 @@ function applyDamage(target: MutableBattler, amount: number): void {
 }
 
 function fallbackRng(): number {
-  return 0.5;
+  throw new Error("applySkillLike requires an rng; pass a deterministic rng for replay/safety.");
 }

@@ -12,6 +12,11 @@
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { createDungeonTerrainAutotileGroups, DUNGEON_TERRAIN_AUTOTILE_PREFIX } from "@/project/defaults/dungeonTerrainAutotiles";
+import {
+  ICE_DIAGONAL_TILES,
+  stampCanonicalIceRidge,
+  validateIceDiagonalTerrain,
+} from "@/project/defaults/iceDiagonalTerrain";
 import { applyEasyRpgThemeMetadataPacks } from "@/project/tilesetHarness";
 import type { RoomEvalReport, RoomLayerResult } from "@/editor/roomHarness/types";
 import type { AutotileGroup, GameMap, Project } from "@/project/types";
@@ -40,14 +45,14 @@ type ThemeSpec = {
   readonly floorBody: number;
   readonly wallTop: readonly [number, number, number];    // 천장 하단 벽 윗줄 [좌끝·증식·우끝]
   readonly wallBottom: readonly [number, number, number];  // 아랫줄
-  readonly hazardKind: "lava" | "chasm" | "rapids";
+  readonly hazardKind: "lava" | "chasm" | "ice-ridge";
   readonly hazardBody: number;                             // 오토타일 브러시(lava/chasm) 또는 단일 타일(rapids)
 };
 
 const THEME: Record<DungeonRoomTheme, ThemeSpec> = {
   lava: { ceilKey: "pit-gold", ceilBody: 310, floorKey: "redrock", floorBody: 301, wallTop: [102, 103, 104], wallBottom: [132, 133, 134], hazardKind: "lava", hazardBody: 304 },
   stone: { ceilKey: "abyss-gray", ceilBody: 430, floorKey: "stone", floorBody: 187, wallTop: [21, 22, 23], wallBottom: [51, 52, 53], hazardKind: "chasm", hazardBody: 190 },
-  ice: { ceilKey: "abyss-blue", ceilBody: 427, floorKey: "snow", floorBody: 67, wallTop: [372, 373, 374], wallBottom: [402, 403, 404], hazardKind: "rapids", hazardBody: 403 },
+  ice: { ceilKey: "abyss-blue", ceilBody: 427, floorKey: "snow", floorBody: 67, wallTop: [372, 373, 374], wallBottom: [402, 403, 404], hazardKind: "ice-ridge", hazardBody: 67 },
 };
 
 // 판자 다리(상위 레이어) — 위험지형 위에 뜬다.
@@ -106,6 +111,9 @@ export function applyDungeonRoomLayer(map: GameMap, plan: DungeonRoomPlan, layer
   switch (layer) {
     case "plan": {
       if (W < 8 || H < 8) warnings.push(`방이 작습니다(${W}×${H}) — 8×8 이상 권장`);
+      if (plan.theme === "ice" && plan.hazard !== false && (W < 16 || H < 18)) {
+        warnings.push(`canonical ice ridge requires at least 16x18, received ${W}x${H}`);
+      }
       return { map, ok: warnings.length === 0, summary: `plan ${plan.theme} ${W}×${H}`, warnings };
     }
     case "ceiling": {
@@ -136,12 +144,22 @@ export function applyDungeonRoomLayer(map: GameMap, plan: DungeonRoomPlan, layer
     }
     case "hazard": {
       if (plan.hazard === false) return { map, ok: true, summary: "hazard 생략", warnings };
+      if (spec.hazardKind === "ice-ridge") {
+        const ridge = stampCanonicalIceRidge(
+          { width: W, height: H, lower },
+          { x: Math.floor((W - 12) / 2), y: Math.floor((H - 9) / 2) + 1 },
+        );
+        if (!ridge.ok) {
+          warnings.push(...ridge.issues.map((item) => `ice ridge ${item.code} at ${item.x},${item.y}`));
+          return { map, ok: false, summary: "canonical ice ridge rejected", warnings };
+        }
+        lower.splice(0, lower.length, ...ridge.lower);
+        return { map: next, ok: true, summary: "canonical user-authored ice ridge", warnings };
+      }
       const { hx0, hx1, hy0, hy1 } = hazardRect(W, H);
       const pts: { x: number; y: number }[] = [];
       for (let y = hy0; y <= hy1; y += 1) for (let x = hx0; x <= hx1; x += 1) { lower[idx(x, y)] = spec.hazardBody; pts.push({ x, y }); }
-      if (spec.hazardKind !== "rapids") {
-        shapeAutotileGroupAround({ width: W, height: H, lowerTiles: lower }, terrainGroup(spec.hazardKind), pts);
-      }
+      shapeAutotileGroupAround({ width: W, height: H, lowerTiles: lower }, terrainGroup(spec.hazardKind), pts);
       const bridgeY = Math.floor((hy0 + hy1) / 2);
       for (let x = hx0 - 1; x <= hx1 + 1; x += 1) upper[idx(x, bridgeY)] = x === hx0 - 1 ? PLANK_H.left : x === hx1 + 1 ? PLANK_H.right : PLANK_H.mid;
       return { map: next, ok: true, summary: `hazard ${spec.hazardKind} + plank bridge (upper layer)`, warnings };
@@ -182,7 +200,7 @@ export function evaluateDungeonRoom(map: GameMap, plan: DungeonRoomPlan, attempt
   if (!ceilSet.has(at(0, 0))) issues.push("천장 프레임 없음(코너 미시공)");
 
   // 2) 천장 하단 직선 벽(대각 금지).
-  const diagonals = new Set([16, 17, 432, 433, 286, 287, 316, 317]);
+  const diagonals = new Set([16, 17, 432, 433, 286, 287, 316, 317, 346, 347]);
   let wallStraight = true;
   for (let x = 2; x <= W - 3; x += 1) {
     const t = at(x, 2);
@@ -196,8 +214,22 @@ export function evaluateDungeonRoom(map: GameMap, plan: DungeonRoomPlan, attempt
 
   // 4) hazard 시 상위 레이어 판자 다리.
   if (plan.hazard !== false) {
-    const hasPlank = map.upperTiles.some((t) => t === PLANK_H.left || t === PLANK_H.mid || t === PLANK_H.right);
-    if (!hasPlank) issues.push("판자 다리 없음(위험지형 위)");
+    if (plan.theme === "ice") {
+      const expected = [
+        ICE_DIAGONAL_TILES.left.cap,
+        ICE_DIAGONAL_TILES.left.body,
+        ICE_DIAGONAL_TILES.left.base,
+        ICE_DIAGONAL_TILES.right.cap,
+        ICE_DIAGONAL_TILES.right.body,
+        ICE_DIAGONAL_TILES.right.base,
+      ];
+      if (expected.some((tile) => !map.lowerTiles.includes(tile))) issues.push("canonical ice ridge tiles missing");
+      const terrainIssues = validateIceDiagonalTerrain({ width: map.width, height: map.height, lower: map.lowerTiles });
+      issues.push(...terrainIssues.map((item) => `ice ridge ${item.code} at ${item.x},${item.y}`));
+    } else {
+      const hasPlank = map.upperTiles.some((t) => t === PLANK_H.left || t === PLANK_H.mid || t === PLANK_H.right);
+      if (!hasPlank) issues.push("판자 다리 없음(위험지형 위)");
+    }
   }
 
   const score = Math.max(0, 100 - issues.length * 25);

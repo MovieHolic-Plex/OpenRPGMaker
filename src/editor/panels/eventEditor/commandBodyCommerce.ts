@@ -581,7 +581,7 @@ function shopQuantityModeGroup(context: CommandEditContext, command: ShopCommand
     children: [
       el("label", { class: "commerce-command-title", text: "구매 수량" }),
       select,
-      el("span", { class: "commerce-command-hint", text: "select면 플레이어가 수량을 고릅니다." }),
+      el("span", { class: "commerce-command-hint", text: "플레이어가 수량을 선택합니다." }),
     ],
   });
 }
@@ -733,19 +733,86 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   const selectedItems = command.itemIds
     .map((id) => items.find((item) => item.id === id))
     .filter((item): item is ItemRecord => Boolean(item));
-  const availableItems = items.filter((item) => !command.itemIds.includes(item.id));
+  const notInShop = () => items.filter((item) => !command.itemIds.includes(item.id));
+
+  let typeFilter: ItemType | "all" = "all";
+  let searchQuery = "";
 
   const commitItems = (itemIds: readonly ItemId[]) => {
-    context.actions.replaceCommand(context.path, { ...command, itemIds: [...itemIds] });
+    // stock 는 itemIds 와 동기화 — 빠진 id 는 stock 에서도 제거
+    const stock = command.stock?.filter((entry) => itemIds.includes(entry.itemId));
+    context.actions.replaceCommand(context.path, {
+      ...command,
+      itemIds: [...itemIds],
+      ...(stock && stock.length > 0 ? { stock } : stock ? { stock: undefined } : {}),
+    });
   };
 
   const selectedList = shopItemList("shop-selected-items", selectedItems, {
     emptyText: "판매할 아이템을 오른쪽에서 추가하세요.",
     onActivate: (itemId) => commitItems(command.itemIds.filter((id) => id !== itemId)),
   });
-  const availableList = shopItemList("shop-available-items", availableItems, {
+  const availableList = shopItemList("shop-available-items", notInShop(), {
     emptyText: "추가할 아이템이 없습니다.",
     onActivate: (itemId) => commitItems(addItemId(command.itemIds, itemId)),
+  });
+
+  const countBadge = el("span", {
+    class: "shop-processing-list-count",
+    text: `${notInShop().length}`,
+    dataset: { testid: "shop-available-count" },
+  });
+
+  const applyAvailableFilter = () => {
+    const filtered = notInShop().filter((item) => {
+      if (typeFilter !== "all" && item.type !== typeFilter) return false;
+      return itemMatchesQuery(item, searchQuery);
+    });
+    rebuildShopItemList(availableList, filtered, {
+      emptyText:
+        notInShop().length === 0
+          ? "추가할 아이템이 없습니다."
+          : searchQuery || typeFilter !== "all"
+            ? "필터에 맞는 아이템 없음"
+            : "추가할 아이템이 없습니다.",
+      onActivate: (itemId) => commitItems(addItemId(command.itemIds, itemId)),
+    });
+    countBadge.textContent = `${filtered.length}`;
+    add.disabled = filtered.length === 0;
+  };
+
+  const search = document.createElement("input");
+  search.type = "search";
+  search.className = "commerce-command-input shop-processing-item-search";
+  search.placeholder = "이름 · 설명 · id 검색";
+  search.dataset.testid = "shop-item-search";
+  search.title = "추가 가능 목록 검색 (DB 아이템)";
+  search.addEventListener("input", () => {
+    searchQuery = search.value.trim().toLowerCase();
+    applyAvailableFilter();
+  });
+
+  // 카테고리 = ItemRecord.type (데이터베이스 아이템 종류)
+  const typeSelect = document.createElement("select");
+  typeSelect.className = "commerce-command-input shop-processing-item-type-filter";
+  typeSelect.dataset.testid = "shop-item-type-filter";
+  typeSelect.title = "데이터베이스 아이템 종류 필터";
+  const allOpt = document.createElement("option");
+  allOpt.value = "all";
+  allOpt.textContent = "전체 종류";
+  typeSelect.append(allOpt);
+  const presentTypes = new Set(items.map((item) => item.type));
+  for (const type of Object.keys(ITEM_TYPE_LABELS) as ItemType[]) {
+    if (!presentTypes.has(type)) continue;
+    const opt = document.createElement("option");
+    opt.value = type;
+    const count = items.filter((item) => item.type === type).length;
+    opt.textContent = `${ITEM_TYPE_LABELS[type]} (${count})`;
+    typeSelect.append(opt);
+  }
+  typeSelect.addEventListener("change", () => {
+    typeFilter = typeSelect.value === "all" ? "all" : (typeSelect.value as ItemType);
+    applyAvailableFilter();
   });
 
   const add = itemMoveButton("추가 →", "shop-add-item", () => {
@@ -764,12 +831,11 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     if (!selectedList.value) return;
     commitItems(moveItemId(command.itemIds, selectedList.value, 1));
   });
-  add.disabled = availableItems.length === 0;
+  add.disabled = notInShop().length === 0;
   remove.disabled = selectedItems.length === 0;
   moveUp.disabled = selectedItems.length < 2;
   moveDown.disabled = selectedItems.length < 2;
 
-  // 네이티브 select 변경(e2e selectOption)도 커밋에 연결
   availableList.select.addEventListener("change", () => {
     highlightListSelection(availableList.root, availableList.select.value);
   });
@@ -783,22 +849,20 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     el("p", {
       class: "commerce-command-hint shop-processing-items-hint",
       text:
-        command.itemIds.length === 0
-          ? "첫 상품을 추가하세요. 행 클릭=선택, 더블클릭 또는 버튼으로 추가/제거."
-          : "행 클릭=선택 · 더블클릭=추가/제거 · ▲▼=순서",
-    })
+        "상품은 데이터베이스 아이템(project.database.items)에서 고릅니다. 종류 필터·검색으로 좁힌 뒤 추가하세요.",
+    }),
   );
   if (items.length === 0) {
     fieldset.append(
       el("div", {
         class: "commerce-command-empty",
-        text: "등록된 아이템이 없습니다. 데이터베이스에서 아이템을 추가하세요.",
-      })
+        text: "등록된 아이템이 없습니다. 데이터베이스 → 아이템에서 추가하세요.",
+      }),
     );
     return fieldset;
   }
 
-  const detail = itemDetailPanel(selectedItems[0] ?? availableItems[0] ?? null, {
+  const detail = itemDetailPanel(selectedItems[0] ?? notInShop()[0] ?? null, {
     command,
     onStockChange: (nextStock) => {
       context.actions.replaceCommand(context.path, { ...command, stock: nextStock });
@@ -812,7 +876,7 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     syncDetail(event.detail.itemId, selectedItems);
   }) as EventListener);
   availableList.root.addEventListener("shop-item-select", ((event: CustomEvent<{ itemId: string }>) => {
-    syncDetail(event.detail.itemId, availableItems);
+    syncDetail(event.detail.itemId, notInShop());
   }) as EventListener);
 
   const controls = el("div", {
@@ -820,18 +884,150 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
     children: [add, remove, moveUp, moveDown],
   });
 
+  const filterBar = el("div", {
+    class: "shop-processing-filter-bar",
+    dataset: { testid: "shop-item-filter-bar" },
+    children: [
+      el("label", {
+        class: "shop-processing-filter-field",
+        children: [
+          el("span", { class: "shop-processing-filter-label", text: "종류" }),
+          typeSelect,
+        ],
+      }),
+      el("label", {
+        class: "shop-processing-filter-field shop-processing-filter-search",
+        children: [
+          el("span", { class: "shop-processing-filter-label", text: "검색" }),
+          search,
+        ],
+      }),
+      el("span", {
+        class: "commerce-command-hint shop-processing-filter-source",
+        text: `DB ${items.length}개`,
+        dataset: { testid: "shop-item-db-count" },
+      }),
+    ],
+  });
+
+  const availableColumn = el("div", {
+    class: "shop-processing-list-column",
+    dataset: { testid: "shop-available-column" },
+    children: [
+      el("div", {
+        class: "shop-processing-list-head",
+        children: [
+          el("span", { class: "shop-processing-list-title", text: "추가 가능" }),
+          countBadge,
+        ],
+      }),
+      availableList.root,
+    ],
+  });
+
   fieldset.append(
+    filterBar,
     el("div", {
       class: "shop-processing-item-grid",
       children: [
         listColumn("판매 중", selectedItems.length, selectedList.root, "shop-selected-column"),
         controls,
-        listColumn("추가 가능", availableItems.length, availableList.root, "shop-available-column"),
+        availableColumn,
       ],
     }),
-    detail.root
+    detail.root,
   );
   return fieldset;
+}
+
+function itemMatchesQuery(item: ItemRecord, query: string): boolean {
+  if (!query) return true;
+  const hay = `${item.name} ${item.description ?? ""} ${item.id} ${itemTypeLabel(item.type)}`.toLowerCase();
+  return hay.includes(query);
+}
+
+function rebuildShopItemList(
+  listHandle: ShopItemList,
+  items: readonly ItemRecord[],
+  options: { readonly emptyText: string; readonly onActivate: (itemId: string) => void },
+): void {
+  const project = store.getCurrent();
+  const { select } = listHandle;
+  const list = listHandle.root.querySelector(".shop-processing-item-list");
+  if (!(list instanceof HTMLElement)) return;
+
+  select.replaceChildren();
+  for (const item of items) {
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = `${item.name}  ·  ${formatPrice(item.price)}`;
+    option.dataset.testid = `shop-list-item-${item.id}`;
+    select.append(option);
+  }
+  select.size = Math.max(2, items.length || 2);
+  if (items.length > 0) {
+    select.selectedIndex = 0;
+    select.value = items[0]!.id;
+  } else {
+    select.value = "";
+  }
+
+  list.replaceChildren();
+  if (items.length === 0) {
+    list.append(el("div", { class: "shop-processing-item-empty", text: options.emptyText }));
+    return;
+  }
+  for (const item of items) {
+    const selected = item.id === select.value;
+    const row = el("button", {
+      class: `shop-processing-item-row${selected ? " is-selected" : ""}`,
+      attrs: {
+        type: "button",
+        role: "option",
+        "aria-selected": selected ? "true" : "false",
+        title: itemDetailTitle(item),
+      },
+      dataset: { testid: `shop-item-row-${item.id}`, itemId: item.id },
+    });
+    row.append(
+      el("div", {
+        class: "shop-processing-item-icon",
+        children: [recordIconElement(imageIconOf(project, item.iconResourceId ?? item.imageResourceId), item.name)],
+      }),
+      el("div", {
+        class: "shop-processing-item-copy",
+        children: [
+          el("div", {
+            class: "shop-processing-item-topline",
+            children: [
+              el("span", { class: "shop-processing-item-name", text: item.name }),
+              el("span", { class: "shop-processing-item-price", text: formatPrice(item.price) }),
+            ],
+          }),
+          el("div", {
+            class: "shop-processing-item-meta",
+            children: [
+              el("span", { class: "shop-processing-item-type", text: itemTypeLabel(item.type) }),
+              el("span", {
+                class: "shop-processing-item-desc",
+                text: item.description?.trim() || "설명 없음",
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+    row.addEventListener("click", () => {
+      select.value = item.id;
+      highlightListSelection(list, item.id);
+      list.dispatchEvent(new CustomEvent("shop-item-select", { detail: { itemId: item.id }, bubbles: true }));
+    });
+    row.addEventListener("dblclick", (event) => {
+      event.preventDefault();
+      options.onActivate(item.id);
+    });
+    list.append(row);
+  }
 }
 
 function listColumn(title: string, count: number, listRoot: HTMLElement, testId: string): HTMLElement {

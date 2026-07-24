@@ -9,8 +9,10 @@ import {
   type ZipEntry,
 } from "./packageZip";
 
-export const RPGZZU_EXTENSION = ".rpgzzu";
-export const RPGZZU_MIME = "application/vnd.rpgzzu.project+zip";
+export const RPGZZU_EXTENSION = ".oprn";
+export const RPGZZU_MIME = "application/vnd.openrpg.project+zip";
+export const LEGACY_RPGZZU_EXTENSION = ".rpgzzu";
+export const LEGACY_RPGZZU_MIME = "application/vnd.rpgzzu.project+zip";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();

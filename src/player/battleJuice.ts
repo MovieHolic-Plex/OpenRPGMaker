@@ -49,12 +49,14 @@ export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | 
           ? "battle-juice-miss"
           : event === "attack-swing"
             ? "battle-juice-swing"
-            : null;
+            : event === "defend"
+              ? "battle-juice-defend"
+              : null;
   if (!motion) return;
-  target.classList.remove("battle-juice-hit", "battle-juice-critical", "battle-juice-miss", "battle-juice-swing");
+  target.classList.remove("battle-juice-hit", "battle-juice-critical", "battle-juice-miss", "battle-juice-swing", "battle-juice-defend");
   window.requestAnimationFrame(() => {
     target.classList.add(motion);
-    window.setTimeout(() => target.classList.remove(motion), 420);
+    window.setTimeout(() => target.classList.remove(motion), event === "defend" ? 520 : 420);
   });
 }
 

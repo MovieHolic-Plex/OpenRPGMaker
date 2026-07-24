@@ -18,28 +18,28 @@ export type ConstructionWriteRouteManifestEntry = {
 
 export const CONSTRUCTION_ROUTE_MANIFEST_PHASE = "canonical-migration-target" as const;
 
-const CURRENTLY_UNREGISTERED = {
-  registered: false,
-  deprecated: false,
-  supersededBy: null,
-} as const;
-
 const CURRENTLY_ACTIVE = {
   registered: true,
   deprecated: false,
   supersededBy: null,
 } as const;
 
-const CURRENT_LEGACY_HOUSE_COMPATIBILITY = {
+const CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE = {
   registered: true,
   deprecated: true,
-  supersededBy: "build_house_kit",
+  supersededBy: "author_house",
+} as const;
+
+const CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE = {
+  registered: true,
+  deprecated: true,
+  supersededBy: "author_village",
 } as const;
 
 export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   {
     name: "author_house",
-    currentRegistry: CURRENTLY_UNREGISTERED,
+    currentRegistry: CURRENTLY_ACTIVE,
     llmExposed: true,
     defaultToolBrowserExposed: true,
     directExecution: true,
@@ -48,7 +48,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "author_village",
-    currentRegistry: CURRENTLY_UNREGISTERED,
+    currentRegistry: CURRENTLY_ACTIVE,
     llmExposed: true,
     defaultToolBrowserExposed: true,
     directExecution: true,
@@ -57,7 +57,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "build_house",
-    currentRegistry: CURRENT_LEGACY_HOUSE_COMPATIBILITY,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -66,7 +66,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "build_house_kit",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -75,7 +75,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "build_house_lots",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_HOUSE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -84,7 +84,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "plan_village",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -93,7 +93,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "materialize_village_spec",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -102,7 +102,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "revise_village_plan",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -111,7 +111,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "run_village_pipeline",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -120,7 +120,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "build_village",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -129,7 +129,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "start_village_session",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -138,7 +138,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "plant_tree_clusters",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -147,7 +147,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "advance_village_build",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -156,7 +156,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
   },
   {
     name: "run_village_session",
-    currentRegistry: CURRENTLY_ACTIVE,
+    currentRegistry: CURRENTLY_DEPRECATED_TO_AUTHOR_VILLAGE,
     llmExposed: false,
     defaultToolBrowserExposed: false,
     directExecution: true,
@@ -168,7 +168,7 @@ export const CONSTRUCTION_WRITE_ROUTE_MANIFEST = [
 export const PUBLIC_CONSTRUCTION_READ_DIAGNOSTICS = [
   {
     name: "preview_house",
-    currentRegistry: CURRENT_LEGACY_HOUSE_COMPATIBILITY,
+    currentRegistry: CURRENTLY_ACTIVE,
     llmExposed: true,
     defaultToolBrowserExposed: true,
     directExecution: true,

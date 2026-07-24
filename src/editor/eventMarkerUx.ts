@@ -1,4 +1,4 @@
-import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
+﻿import { commandSummary } from "@/editor/panels/eventEditor/commandSummary";
 import type { Layer } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type {
@@ -390,6 +390,7 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
   }
+  return "";
 }
 
 function switchVariableName(kind: "switch" | "variable", id: string): string {
@@ -414,6 +415,7 @@ function timePhaseLabel(phase: Extract<EventPageCondition, { kind: "timePhase" }
     case "night":
       return "밤";
   }
+  return "";
 }
 
 function seasonLabel(season: Extract<EventPageCondition, { kind: "season" }>["season"]): string {
@@ -422,9 +424,10 @@ function seasonLabel(season: Extract<EventPageCondition, { kind: "season" }>["se
       return "봄";
     case "summer":
       return "여름";
-    case "autumn":
+    case "fall":
       return "가을";
     case "winter":
       return "겨울";
+  return "";
   }
 }

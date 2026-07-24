@@ -147,7 +147,7 @@ const VOCAB_SOFT_CONFIRM_APPROVAL_WARNING =
   "🖼 맵 배치 초안입니다. [맵만 적용]은 배치만, [맵 적용 + 재료 합의]는 배치와 재료 영구 합의(origin:user)를 함께 합니다.";
 const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는 모든 맵의 저장(커밋)이 규칙 위반 시 거부됩니다.";
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
-const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지";
+const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).";
 const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요";
 const ORCHESTRATION_PREFIX = "[오케스트레이션] ";
 const REVIEW_REEXECUTE_PREFIX = "재실행:";
@@ -716,8 +716,12 @@ export class AssistantSession {
     }
 
     // Orchestrator (main LLM): multi-step plan decision — harness does not regex-plan.
+    // model === liteModel(이원화 비활성) 시 플래너 호출을 건너뛴다 —
+    // 플래너는 감독·실행 모델이 다를 때만 의미가 있고, 같을 땐 불필요한 왕복만 낭비한다.
     this.workPlanAutoStepsThisUserMessage = 0;
-    await this.runOrchestratorPlanner(text, onEvent, signal);
+    if (this.orchestrationEnabled() || this.workPlan) {
+      await this.runOrchestratorPlanner(text, onEvent, signal);
+    }
 
     try {
       const result = await this.runTurnLoop(onEvent, signal);
@@ -1329,7 +1333,8 @@ export class AssistantSession {
           this.injectRalphContinue(onEvent);
           continue;
         }
-        if (orchestrated && executionStarted) {
+        // 단순 요청(쓰기 도구 ≤8회)은 검수 단계를 건너뛰어 LLM 왕복 1~2회를 절약한다.
+        if (orchestrated && executionStarted && writeToolAttempts > 8) {
           phase = "review";
           this.emitPhase(onEvent, "review");
           const review = this.buildReviewPrompt(this.finalizeProposals(proposedByKey), reviewRepairUsed);
@@ -1629,7 +1634,7 @@ function moveEventTarget(proposal: ProposedCall): EventMoveTarget | null {
 }
 
 function eventBaseTarget(proposal: ProposedCall): EventTargetKey | null {
-  if (proposal.name === "place_npc" || proposal.name === "place_battle_blocker") {
+  if (proposal.name === "place_npc" || proposal.name === "make_villager" || proposal.name === "place_battle_blocker") {
     const mapId = stringValue(proposal.args.mapId);
     const data = isRecord(proposal.result.data) ? proposal.result.data : null;
     const eventId = stringValue(data?.eventId) ?? stringValue(proposal.args.id);
@@ -1659,6 +1664,9 @@ function withMovedEventBaseProposal(base: ProposedCall, move: EventMoveTarget): 
   if (base.name === "place_npc" || base.name === "place_battle_blocker" || base.name === "duplicate_event") {
     args.x = move.x;
     args.y = move.y;
+  } else if (base.name === "make_villager") {
+    const home = isRecord(args.home) ? args.home : null;
+    if (home !== null) args.home = { ...home, x: move.x, y: move.y };
   } else if (base.name === "upsert_event") {
     const event = isRecord(args.event) ? args.event : null;
     if (event !== null) args.event = { ...event, x: move.x, y: move.y };
@@ -1710,6 +1718,7 @@ function autoExpandedAssetKind(toolName: string): string {
     case "tile_paint":
       return "terrain";
     case "place_npc":
+    case "make_villager":
       return "npc";
     case "place_battle_blocker":
     case "place_props":

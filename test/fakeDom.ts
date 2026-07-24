@@ -211,7 +211,15 @@ export class FakeElement extends FakeNode {
     }
     // stopPropagation / cancelBubble — 부모로 올리지 않는다(실행 내용 Delete 가 이벤트 삭제로 새는 버그 방지).
     if (event.bubbles && !eventPropagationStopped(event)) {
-      this.parentElement?.dispatchEvent(event);
+      if (this.parentElement) {
+        this.parentElement.dispatchEvent(event);
+      } else {
+        // 루트 요소(body)에 도달 — 실제 브라우저처럼 document 레벨 리스너를 발화한다.
+        // capture 단계는 흉내내지 않지만, document.addEventListener 로 등록된
+        // 리스너(모달 스택 Escape 처리 등)가 버블 도착 시 정상 동작하도록 한다.
+        const doc = globalThis.document as unknown as { dispatchEvent?: (event: Event) => boolean };
+        doc.dispatchEvent?.(event);
+      }
     }
     return !event.defaultPrevented;
   }

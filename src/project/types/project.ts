@@ -52,15 +52,50 @@ export interface GameMap {
   fieldSpawns?: FieldSpawnDef[];
   // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
   safeZones?: Rect[];
+  // system.actionCombat.enabled 일 때 이 맵의 필드 스폰 접촉을 턴제 대신 실시간 액션으로 라우팅.
+  actionCombat?: boolean;
   // 경작 가능한 영역 선언. 경작/물/작물 상태는 PlaySession.farmPlots에만 저장한다.
   farmableArea?: Rect[];
   // 맵 진입 시 세션 lighting에 적용되는 기본 조명. 없는 맵은 이전 조명을 유지한다.
   defaultLighting?: LightingState;
+  // RM2003 스타일 맵 속성
+  /** 배경(패럴랙스) 이미지 설정. 없으면 타일셋 기본 배경. */
+  background?: MapBackground;
+  /** 맵 전용 BGM. 없으면 프로젝트 기본 BGM. */
+  bgm?: MapBgmSetting;
+  /** 전투 배경 이미지 리소스 ID. 없으면 타일셋 기본. */
+  battleBackground?: string;
+  /** 세이브 금지 맵 (RM2003 "Save" 체크 해제). */
+  disableSave?: boolean;
+  /** 텔레포트(이동) 금지 맵. */
+  disableTeleport?: boolean;
+  /** 도주(이스케이프) 금지 맵. */
+  disableEscape?: boolean;
   /**
    * 생성·시공 시 bbox 설계도. 타일 시공 후에도 남겨 두어
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
    */
   layoutPlan?: MapLayoutPlan;
+}
+
+/** 맵 배경(패럴랙스) 설정 — RM2003 Background 탭 대응. */
+export interface MapBackground {
+  /** 배경 이미지 리소스 ID 또는 URL. */
+  imageId: string;
+  /** 수평 스크롤 속도 (px/frame, 0=고정). */
+  scrollX?: number;
+  /** 수직 스크롤 속도 (px/frame, 0=고정). */
+  scrollY?: number;
+}
+
+/** 맵 BGM 설정 — RM2003 BGM 탭 대응. */
+export interface MapBgmSetting {
+  /** "parent" = 상위 맵/프로젝트 기본, "none" = 무음, "custom" = 지정 곡. */
+  mode: "parent" | "none" | "custom";
+  /** mode="custom"일 때 리소스 ID. */
+  resourceId?: string;
+  /** 페이드인 시간(ms). */
+  fadeInMs?: number;
 }
 
 /** 맵 기물 영역 (집 롯·시장·숲·강 등). 시공 후에도 좌표·역할 유지. */
@@ -119,6 +154,10 @@ export interface FieldSpawnDef {
   respawnSec?: number;
   graphic?: EventPageGraphic;
   chase?: boolean;
+  /** 처치 수를 세이브에 영속한다. 로드/맵 재진입 시 처치 수만큼 배치 상한이 줄어, 전부 처치한 방은 계속 비어 있다(생존 호러용). */
+  persistKill?: boolean;
+  /** 인스턴스 처치 시 켜는 스위치(킬 리액션 이벤트용). */
+  onKillSwitchId?: string;
 }
 
 export interface Rect {

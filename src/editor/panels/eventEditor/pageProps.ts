@@ -33,6 +33,7 @@ import {
   commandKindLabel,
 } from "./options";
 import { openCharacterIdPicker } from "./characterIdPickerDialog";
+import { attachCharacterIdAutocomplete } from "./characterIdAutocomplete";
 import type { Command, EventPage, EventPageCondition, GameEvent, MapId, Trigger } from "@/project/types";
 import {
   bindEventSectionOpenState,
@@ -40,20 +41,24 @@ import {
   openEventConditions,
   openEventMovement,
 } from "./eventEditorOpenState";
-/** Expanded empty character-id panels (event id). Module UI state only — not EventPage schema. */
-const openCharacterIdFields = new Set<string>();
 
-export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage): HTMLElement {
+export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage, event: GameEvent): HTMLElement {
   const name = el("input", {
     attrs: { type: "text", placeholder: "이벤트 이름" },
     value: page.name,
     dataset: { testid: "event-page-name-input" },
   }) as HTMLInputElement;
   name.addEventListener("change", () => updateEventPage(mapId, eventId, page.id, { name: name.value }));
-  return el("label", {
-    class: "event-editor-name-field",
+  return el("div", {
+    class: "event-editor-identity-row",
     dataset: { testid: "event-classic-name" },
-    children: [el("span", { text: "이름" }), name],
+    children: [
+      el("label", {
+        class: "event-editor-name-field",
+        children: [el("span", { text: "이름" }), name],
+      }),
+      renderEventCharacterIdField(mapId, event),
+    ],
   });
 }
 
@@ -139,6 +144,10 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   season: "S",
   npcActivity: "A",
   friendshipAtLeast: "F",
+  battleResult: "B",
+  all: "&",
+  any: "|",
+  not: "!",
 };
 
 function pageTabThumbnail(page: EventPage): HTMLElement {
@@ -207,6 +216,14 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `활동 ${condition.activity}`;
     case "friendshipAtLeast":
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
+    case "battleResult":
+      return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
+    case "all":
+      return condition.conditions.length ? `모두(${condition.conditions.length})` : "모두(비어있음)";
+    case "any":
+      return condition.conditions.length ? `하나(${condition.conditions.length})` : "하나(비어있음)";
+    case "not":
+      return `아님`;
   }
 }
 
@@ -306,51 +323,16 @@ function commandLabel(kind: Command["kind"]): string {
   return commandKindLabel(kind);
 }
 
+const CHARACTER_ID_HELP =
+  "같은 키를 여러 맵 이벤트에 쓰면 호감·선물을 공유합니다. 비우면 일회용 NPC로 취급되어 호감·선물은 동작하지 않습니다. 활동(npcActivity)은 이벤트별입니다.";
+
+/** Compact optional characterId control for the top identity row (name + characterId). */
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
-  const characterIdHelp =
-    "같은 키를 여러 맵 이벤트에 쓰면 호감·선물을 공유합니다. 비우면 호감 조건·선물은 동작하지 않습니다. 활동(npcActivity)은 이벤트별입니다. 선물 기본값/생일은 project.characters 프로필에 둘 수 있고, 이벤트 필드가 있으면 우선합니다.";
-  const hasCharacterId = Boolean(event.characterId?.trim());
-  const openKey = event.id;
-  const expanded = hasCharacterId || openCharacterIdFields.has(openKey);
-
-  if (!hasCharacterId && !expanded) {
-    return el("div", {
-      class: "event-character-id-field event-character-id-field-collapsed",
-      dataset: { testid: "event-character-id-field" },
-      children: [
-        el("button", {
-          class: "btn small event-character-id-connect",
-          text: "캐릭터 연결 (호감/선물)…",
-          attrs: {
-            type: "button",
-            title: characterIdHelp,
-          },
-          dataset: { testid: "event-character-id-connect" },
-          on: {
-            click: (eventClick) => {
-              openCharacterIdFields.add(openKey);
-              const next = renderEventCharacterIdField(mapId, event);
-              const host = (eventClick.currentTarget as HTMLElement | null)?.closest(
-                '[data-testid="event-character-id-field"]'
-              );
-              if (host instanceof HTMLElement) host.replaceWith(next);
-              openCharacterIdPicker({
-                mapId,
-                eventId: event.id,
-                currentId: event.characterId,
-              });
-            },
-          },
-        }),
-      ],
-    });
-  }
-
   const input = el("input", {
     attrs: {
       type: "text",
-      placeholder: "비우면 호감/선물 비활성 (opt-in)",
-      title: characterIdHelp,
+      placeholder: "선택 (일회용 NPC)",
+      title: CHARACTER_ID_HELP,
     },
     value: event.characterId ?? "",
     dataset: { testid: "event-character-id-input" },
@@ -358,8 +340,11 @@ export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTM
   input.addEventListener("change", () => {
     // Free-type attaches characterId only. Unknown ids do NOT auto-create a profile.
     const next = input.value.trim() || undefined;
-    if (!next) openCharacterIdFields.delete(openKey);
-    updateEvent(mapId, event.id, next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined });
+    updateEvent(
+      mapId,
+      event.id,
+      next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined },
+    );
   });
   const pickerButton = el("button", {
     class: "btn small event-character-id-picker-open",
@@ -379,34 +364,82 @@ export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTM
     },
   });
 
-  const children: HTMLElement[] = [
-    el("label", {
-      class: "event-character-id-label",
-      children: [
-        el("span", {
-          text: "캐릭터 ID (호감/선물 공유 키)",
-          attrs: { title: characterIdHelp },
-        }),
-        el("span", {
-          class: "event-character-id-input-row",
-          children: [input, pickerButton],
-        }),
-      ],
-    }),
-  ];
+  const inputRow = el("span", {
+    class: "event-character-id-input-row",
+    children: [input, pickerButton],
+  });
 
-  // Talk-friendship is opt-in only when a character is linked — never show a disabled checkbox.
-  if (hasCharacterId) {
-    const talkCheckbox = el("input", {
-      attrs: { type: "checkbox" },
-      dataset: { testid: "event-talk-friendship-checkbox" },
-    }) as HTMLInputElement;
-    talkCheckbox.checked = event.talkFriendship === true
-      || (typeof event.talkFriendship === "object" && event.talkFriendship !== null);
-    talkCheckbox.addEventListener("change", () => {
-      updateEvent(mapId, event.id, { talkFriendship: talkCheckbox.checked ? true : undefined });
-    });
-    children.push(
+  attachCharacterIdAutocomplete({
+    input,
+    getProject: () => store.getCurrent(),
+    onSelect: () => {},
+  });
+
+  return el("div", {
+    class: "event-character-id-field event-character-id-field-inline",
+    dataset: { testid: "event-character-id-field" },
+    children: [
+      el("label", {
+        class: "event-character-id-label",
+        children: [
+          el("span", {
+            text: "캐릭터 ID",
+            attrs: { title: CHARACTER_ID_HELP },
+          }),
+          inputRow,
+        ],
+      }),
+    ],
+  });
+}
+
+/** Talk-friendship / profile display name — only when characterId is linked. */
+export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent): HTMLElement | null {
+  const characterId = event.characterId?.trim();
+  if (!characterId) return null;
+
+  const talkCheckbox = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-talk-friendship-checkbox" },
+  }) as HTMLInputElement;
+  talkCheckbox.checked = event.talkFriendship === true
+    || (typeof event.talkFriendship === "object" && event.talkFriendship !== null);
+  talkCheckbox.addEventListener("change", () => {
+    updateEvent(mapId, event.id, { talkFriendship: talkCheckbox.checked ? true : undefined });
+  });
+
+  const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
+  const displayNameInput = el("input", {
+    attrs: {
+      type: "text",
+      placeholder: "상태 메뉴 표시용 (선택)",
+    },
+    value: profileName,
+    dataset: { testid: "event-character-display-name-input" },
+  }) as HTMLInputElement;
+  displayNameInput.addEventListener("change", () => {
+    const name = displayNameInput.value.trim();
+    recordCoalescedSnapshot(`event-character-display-name:${characterId}`);
+    store.update((project) => {
+      const next = { ...(project.characters ?? {}) };
+      const existing = { ...(next[characterId] ?? {}) };
+      if (name) {
+        existing.displayName = name;
+        next[characterId] = existing;
+      } else {
+        delete existing.displayName;
+        if (Object.keys(existing).length === 0) delete next[characterId];
+        else next[characterId] = existing;
+      }
+      if (Object.keys(next).length === 0) delete project.characters;
+      else project.characters = next;
+    }, { scope: "project" });
+  });
+
+  return el("div", {
+    class: "event-character-social-extras",
+    dataset: { testid: "event-character-social-extras" },
+    children: [
       el("label", {
         class: "event-talk-friendship-label",
         dataset: { testid: "event-talk-friendship-field" },
@@ -414,38 +447,7 @@ export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTM
           talkCheckbox,
           el("span", { text: "대화 시 호감도 상승 (하루 1회)" }),
         ],
-      })
-    );
-
-    const characterId = event.characterId!.trim();
-    const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
-    const displayNameInput = el("input", {
-      attrs: {
-        type: "text",
-        placeholder: "상태 메뉴 표시용 (선택)",
-      },
-      value: profileName,
-      dataset: { testid: "event-character-display-name-input" },
-    }) as HTMLInputElement;
-    displayNameInput.addEventListener("change", () => {
-      const name = displayNameInput.value.trim();
-      recordCoalescedSnapshot(`event-character-display-name:${characterId}`);
-      store.update((project) => {
-        const next = { ...(project.characters ?? {}) };
-        const existing = { ...(next[characterId] ?? {}) };
-        if (name) {
-          existing.displayName = name;
-          next[characterId] = existing;
-        } else {
-          delete existing.displayName;
-          if (Object.keys(existing).length === 0) delete next[characterId];
-          else next[characterId] = existing;
-        }
-        if (Object.keys(next).length === 0) delete project.characters;
-        else project.characters = next;
-      }, { scope: "project" });
-    });
-    children.push(
+      }),
       el("label", {
         class: "event-character-display-name-label",
         dataset: { testid: "event-character-display-name-field" },
@@ -453,14 +455,8 @@ export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTM
           el("span", { text: "프로필 표시 이름" }),
           displayNameInput,
         ],
-      })
-    );
-  }
-
-  return el("div", {
-    class: "event-character-id-field",
-    dataset: { testid: "event-character-id-field" },
-    children,
+      }),
+    ],
   });
 }
 
@@ -603,6 +599,14 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return truncateBadgeToken(condition.activity, 10);
     case "friendshipAtLeast":
       return `호감≥${condition.value}`;
+    case "battleResult":
+      return `전투${condition.result === "victory" ? "승" : condition.result === "defeat" ? "패" : "도"}`;
+    case "all":
+      return `AND(${condition.conditions.length})`;
+    case "any":
+      return `OR(${condition.conditions.length})`;
+    case "not":
+      return `NOT`;
   }
 }
 

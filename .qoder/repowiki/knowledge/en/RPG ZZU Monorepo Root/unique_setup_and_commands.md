@@ -1,0 +1,1 @@
+`pnpm install` then `pnpm dev` starts the editor at :9999; `pnpm build:player` produces the standalone runtime under `dist/export-player`; `pnpm test` runs the default suite (excluding the live lake-village rebuild); `pnpm test:e2e` drives Playwright against the running dev server.

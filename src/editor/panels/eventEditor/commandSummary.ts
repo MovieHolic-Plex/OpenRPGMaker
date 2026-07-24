@@ -904,10 +904,6 @@ function m2WeatherValueLabel(value: string): string {
   return value || "맑음";
 }
 
-function choiceSummary(cmd: Extract<Command, { kind: "choices" }>): string {
-  const options = cmd.options.map((option) => option.text).join(" / ");
-  return cmd.prompt ? `${oneLine(cmd.prompt)} - ${options}` : options;
-}
 
 function choicesSummaryParts(cmd: Extract<Command, { kind: "choices" }>): readonly CommandSummaryToken[] {
   const parts: CommandSummaryToken[] = [commandPart("선택지 표시"), plainPart(": ")];

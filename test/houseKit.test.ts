@@ -294,7 +294,7 @@ describe("build_house_kit AI 툴", () => {
     const interior = ctx.project.maps[data.interiorMapId];
     expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
     expect(interior.width).toBe(20);
-    expect(interior.height).toBe(16);
+    expect(interior.height).toBe(20); // 천장 정본 v2: +1행(벽 위 천장) + 수평 벽 3행 갭
     expect(treeContains(ctx.project.mapTree, data.interiorMapId)).toBe(true);
     const door = map.events.find((event) => event.id === data.doorEventId);
     const entry = (result.data as { entry?: { x: number; y: number }; exit?: { x: number; y: number } }).entry
@@ -432,7 +432,7 @@ describe("house interior — L cottage (reference plan)", () => {
     expect(result.scale).toBe("cottage-l");
     expect(result.program).toBe("manor");
     expect(result.map.width).toBe(20);
-    expect(result.map.height).toBe(16);
+    expect(result.map.height).toBe(20); // 천장 정본 v2: +1행(벽 위 천장) + 수평 벽 3행 갭
     const upper = result.map.upperTiles;
     const lower = result.map.lowerTiles;
     const at = (x: number, y: number) => lower[y * result.map.width + x]!;

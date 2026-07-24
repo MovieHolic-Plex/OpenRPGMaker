@@ -7,7 +7,8 @@ import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { DbConnectionRequiredError, store } from "@/project/store";
 import { ensurePhaser } from "@/app/phaserRuntime";
-import { PLAY_RESOLUTION } from "@/player/playResolution";
+import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
+import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
 import {
   markInitialEditRender,
   markModeSwitch,
@@ -130,8 +131,14 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     }
   }
 
-  const { focusProjectStartMap } = await import("@/editor/mapSelection");
-  focusProjectStartMap();
+  // 맵 URL 동기화: URL의 ?map= 파라미터로 맵 복원 + 뒤로가기/앞으로가기 설치
+  const { restoreMapFromUrl, installMapUrlSync } = await import("@/editor/mapUrlSync");
+  installMapUrlSync();
+  const restoredFromUrl = restoreMapFromUrl();
+  if (!restoredFromUrl) {
+    const { focusProjectStartMap } = await import("@/editor/mapSelection");
+    focusProjectStartMap();
+  }
 
   await renderTopbar();
   await enterMode("edit");
@@ -367,7 +374,7 @@ export async function enterMode(mode: Mode): Promise<void> {
   } else {
     const { renderPlayer } = await import("@/player/player");
     if (run !== modeRun) return;
-    renderPlayer(elements.main);
+    renderPlayer(elements.main, { diagnosticSink: editorPlayBootDiagnosticSink });
   }
   modeMounted = true;
 
@@ -402,15 +409,8 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
   return game;
 }
 
-export type StartPlayGameOptions = {
+export type StartPlayGameOptions = PlayGameBootOptions & {
   readonly trackGlobalGame?: boolean;
-  readonly initialEventTestId?: string;
-  /** PlayScene preload progress 0..1 (optional UI hook). */
-  readonly onPlayLoadProgress?: (ratio: number) => void;
-  /** PlayScene create stages for boot UI. */
-  readonly onPlayLoadStage?: (stage: "map" | "ready") => void;
-  /** Fired when PlayScene.create finishes. */
-  readonly onPlaySceneReady?: () => void;
 };
 
 export async function startPlayGame(
@@ -418,41 +418,9 @@ export async function startPlayGame(
   initialSession?: PlaySession,
   options: StartPlayGameOptions = {}
 ): Promise<Phaser.Game> {
-  const PhaserRuntime = await ensurePhaser();
-  const { PlayScene } = await import("@/player/PlayScene");
-  const nextGame = new PhaserRuntime.Game({
-    type: PhaserRuntime.AUTO,
-    parent,
-    backgroundColor: "#000",
-    roundPixels: true,
-    antialias: false,
-    pixelArt: true,
-    scale: {
-      mode: PhaserRuntime.Scale.NONE,
-      width: PLAY_RESOLUTION.width,
-      height: PLAY_RESOLUTION.height,
-      parent,
-    },
-    scene: [PlayScene],
-  });
+  const nextGame = await createPlayGame(parent, initialSession, options);
   if (options.trackGlobalGame !== false) {
     game = nextGame;
-  }
-  // Registry hooks must be set immediately so preload/create can report progress.
-  if (initialSession) {
-    nextGame.registry.set("initialSession", initialSession);
-  }
-  if (options.initialEventTestId) {
-    nextGame.registry.set("initialEventTestId", options.initialEventTestId);
-  }
-  if (options.onPlayLoadProgress) {
-    nextGame.registry.set("onPlayLoadProgress", options.onPlayLoadProgress);
-  }
-  if (options.onPlayLoadStage) {
-    nextGame.registry.set("onPlayLoadStage", options.onPlayLoadStage);
-  }
-  if (options.onPlaySceneReady) {
-    nextGame.registry.set("onPlaySceneReady", options.onPlaySceneReady);
   }
   return nextGame;
 }

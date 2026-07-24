@@ -10,6 +10,7 @@ import {
   houseShellWallMembers,
   runInteriorRoomPipeline,
 } from "@/editor/interiorRoomPipeline";
+import { CEILING_MEMBER_TILES, CEILING_TILE, isCeilingTile } from "@/editor/interiorHouseWallGrammar";
 import { DARK_WALL_TILE } from "@/project/defaults/darkWallAutotile";
 import {
   HOUSE_SHELL_FORBIDDEN_TILES,
@@ -22,12 +23,13 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     let map = createEmptyRoomMap(plan);
     map = applyInteriorRoomLayer(map, plan, "floor").map;
     expect(map.lowerTiles).toContain(VR.FLOOR);
-    const members = houseShellWallMembers();
-    const wallBefore = map.lowerTiles.filter((t) => members.has(t)).length;
+    // 천장 몸통(430)은 맵 기본 채움이라, "벽이 섰다"의 관찰자는 성형 테두리+크림 면으로 본다.
+    const borders = new Set([...CEILING_MEMBER_TILES.filter((t) => t !== CEILING_TILE), 74, 75, 76, 104, 105, 106, 77, 107]);
+    const wallBefore = map.lowerTiles.filter((t) => borders.has(t)).length;
     expect(wallBefore).toBe(0);
 
     map = applyInteriorRoomLayer(map, plan, "walls").map;
-    const wallAfter = map.lowerTiles.filter((t) => members.has(t)).length;
+    const wallAfter = map.lowerTiles.filter((t) => borders.has(t)).length;
     expect(wallAfter).toBeGreaterThan(0);
 
     map = applyInteriorRoomLayer(map, plan, "entrance").map;
@@ -55,7 +57,7 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     expect(Object.values(HOUSE_WALL_FACE)).not.toContain(257);
   });
 
-  it("raises a two-row cream face (upper 74/75/76 + lower 104/105/106) with 457 cap", () => {
+  it("raises a two-row cream face (upper 74/75/76 + lower 104/105/106) with ceiling block above", () => {
     const plan = INTERIOR_ROOM_DEMO_PLANS[0]!;
     const { map } = runInteriorRoomPipeline(plan);
     const wing = plan.wings[0]!;
@@ -63,18 +65,19 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     const at = (x: number, y: number) => map.lowerTiles[y * map.width + x]!;
     const lowerFace = [HOUSE_WALL_FACE.L, HOUSE_WALL_FACE.M, HOUSE_WALL_FACE.R];
     const upperFace = [HOUSE_WALL_FACE.UL, HOUSE_WALL_FACE.UM, HOUSE_WALL_FACE.UR];
-    // wing.y-1 = 아랫줄, wing.y-2 = 윗줄, wing.y-3 = 캡
+    // wing.y-1 = 아랫줄, wing.y-2 = 윗줄, wing.y-3 = 천장(430 계열 통일 — 벽 위에는 반드시 천장)
     expect(lowerFace).toContain(at(midX, wing.y - 1));
     expect(upperFace).toContain(at(midX, wing.y - 2));
     expect(at(wing.x, wing.y - 1)).toBe(HOUSE_WALL_FACE.L);
     expect(at(wing.x, wing.y - 2)).toBe(HOUSE_WALL_FACE.UL);
     expect(at(wing.x + wing.w - 1, wing.y - 1)).toBe(HOUSE_WALL_FACE.R);
     expect(at(wing.x + wing.w - 1, wing.y - 2)).toBe(HOUSE_WALL_FACE.UR);
-    expect(at(midX, wing.y - 3)).toBe(HOUSE_WALL_FACE.CAP);
-    // 벽면 행 옆 포스트
+    expect(isCeilingTile(at(midX, wing.y - 3))).toBe(true);
+    // 벽면 좌우 이음도 천장(구조 질량) — 낱장 포스트 금지
     const members = houseShellWallMembers();
-    expect(members.has(at(wing.x - 1, wing.y - 1))).toBe(true);
-    expect(members.has(at(wing.x + wing.w, wing.y - 1))).toBe(true);
+    expect(isCeilingTile(at(wing.x - 1, wing.y - 1))).toBe(true);
+    expect(isCeilingTile(at(wing.x + wing.w, wing.y - 1))).toBe(true);
+    expect(members.has(CEILING_TILE)).toBe(true);
   });
 
   it("places bed as hard left-right pair on bedroom", () => {
@@ -122,7 +125,7 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     expect(INTERIOR_ROOM_DEMO_PLANS.some((p) => (p.rooms?.length ?? 0) >= 2)).toBe(true);
   });
 
-  it("two-room home: solo cream 77/107 under ceiling; south door flanks 398|396", () => {
+  it("two-room home: solo cream 77/107 under ceiling; door is a plain floor passage", () => {
     const plan = {
       mapId: "map_home_partition_reg",
       name: "파티션 회귀",
@@ -142,12 +145,11 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     const { map, ok } = runInteriorRoomPipeline(plan);
     expect(ok).toBe(true);
     const at = (x: number, y: number) => map.lowerTiles[y * map.width + x]!;
-    // 천장 직하 1칸 크림 회벽(상 77 · 하 107)
+    // 수직 칸막이 = 천장 기둥(430 계열), 문 바로 위는 1칸 크림 면 쌍(상 77 · 하 107) — 쌍 불변식
     expect(at(9, 3)).toBe(HOUSE_WALL_FACE.SOLO_U);
     expect(at(9, 4)).toBe(HOUSE_WALL_FACE.SOLO_L);
-    // 더 깊은 칸막이 포스트
-    expect(at(9, 6)).toBe(HOUSE_SHELL_TILE.postWest);
-    expect(at(9, 7)).toBe(HOUSE_SHELL_TILE.postWest);
+    expect(isCeilingTile(at(9, 6))).toBe(true);
+    expect(isCeilingTile(at(9, 7))).toBe(true);
     // 내부 문 개구
     expect(at(9, 5)).toBe(VR.FLOOR);
     expect(at(8, 3)).toBe(VR.FLOOR);
@@ -155,11 +157,11 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     // 양옆 북벽 면 윗줄
     expect(at(8, 1)).toBe(HOUSE_WALL_FACE.UR);
     expect(at(10, 1)).toBe(HOUSE_WALL_FACE.UL);
-    // 남문 알코브
+    // 남문: 천장 띠를 뚫는 바닥 통로만 — 플랭크(398/396)·스텝(397) 배제
     expect(at(5, 8)).toBe(VR.FLOOR);
-    expect(at(4, 8)).toBe(HOUSE_SHELL_TILE.southWestCorner);
-    expect(at(6, 8)).toBe(HOUSE_SHELL_TILE.southEastCorner);
-    expect(at(5, 9)).toBe(HOUSE_SHELL_TILE.southTrim);
+    expect(isCeilingTile(at(4, 8))).toBe(true);
+    expect(isCeilingTile(at(6, 8))).toBe(true);
+    expect(isCeilingTile(at(5, 9))).toBe(true);
   });
 
   it("bbox rooms: partitions + inner-door flanks + per-room furniture", () => {
@@ -177,24 +179,21 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     // 주방 북벽 2줄 크림 (y9 lower, y8 upper) — 3칸 갭 구조
     expect(lowerFace).toContain(at(3, kitchen.y - 1));
     expect(upperFace).toContain(at(3, kitchen.y - 2));
-    // 수평 파티션 내부 문: 3칸 바닥 + 플랭크 398|396
+    // 수평 파티션 내부 문: 3칸 바닥 통로 — 플랭크 낱장(398/396) 배제, 이웃은 천장
     const innerDoor = plan.innerDoors![0]!;
     expect(at(innerDoor.x, innerDoor.y)).toBe(VR.FLOOR);
     expect(at(innerDoor.x, innerDoor.y + 1)).toBe(VR.FLOOR);
     expect(at(innerDoor.x, innerDoor.y + 2)).toBe(VR.FLOOR);
-    expect(at(innerDoor.x - 1, innerDoor.y)).toBe(HOUSE_SHELL_TILE.southWestCorner);
-    expect(at(innerDoor.x + 1, innerDoor.y)).toBe(HOUSE_SHELL_TILE.southEastCorner);
-    // 수직 파티션(1열): 객실 사이 x14 — 천장 직하 77/107
-    expect(at(14, guest1.y)).toBe(HOUSE_WALL_FACE.SOLO_U);
-    expect(at(14, guest1.y + 1)).toBe(HOUSE_WALL_FACE.SOLO_L);
+    // 수직 파티션(1열): 객실 사이 x14 — 천장 기둥
+    expect(isCeilingTile(at(14, guest1.y))).toBe(true);
     expect(at(13, guest1.y)).toBe(VR.FLOOR);
     expect(at(15, guest1.y)).toBe(VR.FLOOR);
-    // 수직 파티션 1칸 문: 주방↔홀
+    // 수직 파티션 1칸 문: 주방↔홀 — 문 위 1칸 크림 면 쌍(불변식), 아래는 천장 기둥
     const sideDoor = plan.innerDoors![3]!;
     expect(at(sideDoor.x, sideDoor.y)).toBe(VR.FLOOR);
     expect(at(sideDoor.x, sideDoor.y - 2)).toBe(HOUSE_WALL_FACE.SOLO_U);
     expect(at(sideDoor.x, sideDoor.y - 1)).toBe(HOUSE_WALL_FACE.SOLO_L);
-    expect(at(sideDoor.x, sideDoor.y + 1)).toBe(HOUSE_SHELL_TILE.postWest);
+    expect(isCeilingTile(at(sideDoor.x, sideDoor.y + 1))).toBe(true);
     // 방별 가구
     const inBox = (x: number, y: number, box: { x: number; y: number; w: number; h: number }) =>
       x >= box.x && x < box.x + box.w && y >= box.y && y < box.y + box.h;
@@ -304,25 +303,26 @@ describe("interior room procedural pipeline (house whole-tile grammar / Option B
     }
   });
 
-  it("wall shell matches Option B — cap joints 458/456, door 398|floor|396, no forbidden tiles", () => {
+  it("wall shell matches ceiling canon — 천장 366 통일, 문은 바닥 통로, 프레임 낱장·금지 타일 없음", () => {
     const plan = INTERIOR_ROOM_DEMO_PLANS[0]!;
     const { map } = runInteriorRoomPipeline(plan);
     const wing = plan.wings[0]!;
     const at = (x: number, y: number) => map.lowerTiles[y * map.width + x]!;
-    // 캡 끝 조인트 = 458/456 (핑크 233/258 금지)
-    expect(at(wing.x - 1, wing.y - 3)).toBe(HOUSE_SHELL_TILE.capJointNW);
-    expect(at(wing.x + wing.w, wing.y - 3)).toBe(HOUSE_SHELL_TILE.capJointNE);
-    // 남쪽 대각 코너는 void(430)
-    expect(at(wing.x - 1, wing.y + wing.h)).toBe(430);
-    // 남벽 문 행: 398 | floor | 396, 아래 397 only
+    // 예전 캡 조인트 자리도 천장(430 계열 오토타일)
+    expect(isCeilingTile(at(wing.x - 1, wing.y - 3))).toBe(true);
+    expect(isCeilingTile(at(wing.x + wing.w, wing.y - 3))).toBe(true);
+    // 남쪽 대각 코너도 천장 질량
+    expect(isCeilingTile(at(wing.x - 1, wing.y + wing.h))).toBe(true);
+    // 남벽 문: 바닥 통로만 — 플랭크·스텝 배제, 이웃은 천장
     const southY = wing.y + wing.h;
     expect(at(plan.door.x, southY)).toBe(VR.FLOOR);
-    expect(at(plan.door.x - 1, southY)).toBe(HOUSE_SHELL_TILE.southWestCorner);
-    expect(at(plan.door.x + 1, southY)).toBe(HOUSE_SHELL_TILE.southEastCorner);
-    expect(at(plan.door.x, southY + 1)).toBe(HOUSE_SHELL_TILE.southTrim);
-    // 금지 타일 없음
+    expect(isCeilingTile(at(plan.door.x - 1, southY))).toBe(true);
+    expect(isCeilingTile(at(plan.door.x + 1, southY))).toBe(true);
+    expect(isCeilingTile(at(plan.door.x, southY + 1))).toBe(true);
+    // 금지: 핑크 플레이스홀더 + 체커 블록(366 계열) 전체 + 프레임 낱장 — 천장은 430 계열 하나
+    const banned = new Set([...HOUSE_SHELL_FORBIDDEN_TILES, 366, 367, 368, 396, 397, 398, 426, 427, 428, 456, 457, 458]);
     for (const t of map.lowerTiles) {
-      expect(HOUSE_SHELL_FORBIDDEN_TILES.includes(t as 233 | 257 | 258)).toBe(false);
+      expect(banned.has(t)).toBe(false);
     }
   });
 

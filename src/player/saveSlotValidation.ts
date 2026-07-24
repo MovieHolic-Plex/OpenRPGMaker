@@ -351,6 +351,11 @@ export function isNumberRecord(value: unknown): value is Record<string, number> 
   return Object.values(value).every((item) => typeof item === "number");
 }
 
+export function isNestedNumberRecord(value: unknown): value is Record<string, Record<string, number>> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((item) => isNumberRecord(item));
+}
+
 export function isStringRecord(value: unknown): value is Record<string, string> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((item) => typeof item === "string");

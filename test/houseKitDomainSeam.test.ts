@@ -73,7 +73,7 @@ describe("HouseKit domain seam baseline characterization", () => {
 
     // Then
     expect(result.ok, JSON.stringify(result.issues)).toBe(true);
-    expect(await semanticHash(ctx.project)).toBe("ada978e42e29f5fb346631aba56862dc39a175f74931ff876d896d5f6b83f764");
+    expect(await semanticHash(ctx.project)).toBe("7c61fdb4bff952dcc10d02872c3cd81631ec8da34fa502fecca2b2de300b46d3" /* 2026-07-20 실내 정본(천장 v2·복도/가구 교정) 재고정 */);
   });
 });
 

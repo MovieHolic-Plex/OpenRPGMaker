@@ -113,9 +113,10 @@ describe("event editor UI density", () => {
     expect(movement?.contains(classicTrigger)).toBe(false);
     expect(host.querySelector('[data-testid="event-page-trigger-priority-stack"]')).toBeTruthy();
 
-    // Empty characterId collapses to connect CTA (no friendship-requires gate).
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
+    // Empty characterId is optional in the top identity row (no connect CTA gate).
+    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
     const contents = host.querySelector('[data-testid="event-classic-contents"]');
@@ -154,7 +155,8 @@ describe("event editor UI density", () => {
     expect(conditions?.open).toBe(true);
     // expand-then-assert: condition grid controls become available
     expect(host.querySelector('[data-testid="event-page-switch-condition-input"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-page-condition-add-toolbar"]')).toBeTruthy();
+    // 모든 핵심 조건 행이 항상 보인다 (체크 OFF 포함).
+    expect(host.querySelector('[data-testid="event-condition-row-변수"]')).toBeTruthy();
   });
 
   it("expands movement section for nested movement controls without burying trigger", () => {

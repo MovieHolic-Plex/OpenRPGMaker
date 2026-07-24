@@ -37,6 +37,20 @@ export type BattleEventRuntimeOptions = {
   readonly state: BattleEventRuntimeState;
   readonly revealEnemy?: (target: string) => void;
   readonly changeBattleback?: (resourceId: string) => void;
+  // m2-103 Show Animation: 런타임 lastAnimation 세팅을 위한 콜백.
+  readonly showBattleAnimation?: (target: string, animationId: string) => void;
+  // m2-105 Abort Battle: 전투 즉시 중단(런타임이 result/phase 갱신).
+  readonly abortBattle?: () => void;
+  // playAudio/stopAudio 명령: 호스트가 실제 오디오 엔진으로 라우팅.
+  readonly playAudio?: (resourceId: string, loop: boolean) => void;
+  readonly stopAudio?: () => void;
+  // wait 명령(ms): 런타임이 전투 흐름을 지정 ms 동안 일시정지.
+  // 배틀 이벤트 루프는 동기식이라 wait 이후의 명령도 즉시 실행되지만,
+  // 런타임 tick 이 pendingWaitMs 를 소진하기 전까지 게이지/턴 진행을 멈춘다.
+  readonly wait?: (ms: number) => void;
+  // SC4 (H3): strict 흐름에서는 extra actor action 을 부여할 수 없다(동기식 라운드).
+  // 이 콜백이 false 를 반환하면 actionTimes 명령은 unsupported 로그를 남긴다.
+  readonly canGrantExtraAction?: () => boolean;
 };
 
 export type BattleEventRuntimeResult = {
@@ -46,6 +60,7 @@ export type BattleEventRuntimeResult = {
 export type BattleEventRuntime = {
   applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult;
   consumeExtraActorAction(actorId: ActorId): boolean;
+  logExternal(message: string): void;
   snapshot(): BattleEventStateSnapshot;
   logs(): readonly BattleEventLogSnapshot[];
 };
@@ -124,18 +139,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function evaluateBattleEventCondition(condition: BattleEventCondition, context: BattleEventContext): boolean {
     switch (condition.kind) {
-      case "switch":
-      case "variable":
-      case "selfSwitch":
-      case "actor":
-      case "item":
-      case "gold":
-      case "timer":
-      case "timePhase":
-      case "season":
-      case "npcActivity":
-      case "friendshipAtLeast":
-        return evaluateCondition(condition);
       case "turn":
         return condition.interval <= 0
           ? context.turn === condition.start
@@ -165,6 +168,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return options.actors.some((entry) => entry.recordId === condition.actorId) && context.turn === condition.turn;
       case "actorCommand":
         return context.activeActorId === condition.actorId && (!condition.commandId || condition.commandId === context.currentActorCommandKind);
+      default:
+        // switch/variable/selfSwitch/actor/item/gold/timer/timePhase/season/npcActivity/friendshipAtLeast/
+        // battleResult/all/any/not — 모두 Condition 유니온은 evaluateCondition 으로 위임.
+        return evaluateCondition(condition);
     }
   }
 
@@ -329,12 +336,32 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
           revealEnemy: options.revealEnemy,
           changeBattleback: options.changeBattleback,
           addExtraActorAction,
+          showBattleAnimation: options.showBattleAnimation,
+          abortBattle: options.abortBattle,
+          executeCommonEvent: (commonEventId) => executeCommonEventById(page, commonEventId, context, depth + 1),
+          executeTroopPage: (pageId) => executeTroopPageById(page, pageId, context, depth + 1),
         });
         if (!result.handled) logUnsupported(page, context, command.commandId);
         return result.forceEscape;
       }
-      case "wait":
+      case "wait": {
+        const ms = "ms" in command ? command.ms : 0;
+        options.wait?.(ms);
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `wait ${ms}ms` });
+        return false;
+      }
       case "inputWait":
+        // 전투 중 입력 대기는 UI 연동이 필요. acknowledged 로그.
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "inputWait" });
+        return false;
+      case "playAudio":
+        options.playAudio?.(command.resourceId, command.loop);
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `playAudio ${command.resourceId}` });
+        return false;
+      case "stopAudio":
+        options.stopAudio?.();
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "stopAudio" });
+        return false;
       case "label":
       case "gotoLabel":
       case "transfer":
@@ -344,8 +371,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "battleProcessing":
       case "showPicture":
       case "erasePicture":
-      case "playAudio":
-      case "stopAudio":
       case "shop":
       case "inn":
       case "gameOver":
@@ -380,7 +405,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   function addExtraActorAction(actorId: string, amount: number): void {
+    if (options.canGrantExtraAction && !options.canGrantExtraAction()) {
+      logExternal("m2-108 actionTimes unsupported in strict flow");
+      return;
+    }
     extraActorActions[actorId] = (extraActorActions[actorId] ?? 0) + amount;
+  }
+
+  function logExternal(message: string): void {
+    logs.push({ pageId: "external", round: 0, triggerId: "external", kind: "unsupported", detail: message });
   }
 
   function evaluateCondition(condition: Condition): boolean {
@@ -415,7 +448,16 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         if (!npcKey) return false;
         return clampFriendship(options.state.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
       }
-    }
+      case "battleResult":
+        // 배틀 이벤트 컨텍스트에는 직전 전투 결과가 없으므로 항상 false(포크 명령은 별도 경로로 처리됨).
+        return false;
+      case "all":
+        return condition.conditions.every((child) => evaluateCondition(child));
+      case "any":
+        return condition.conditions.some((child) => evaluateCondition(child));
+      case "not":
+        return !evaluateCondition(condition.condition);
+      }
   }
 
   function resolveOperand(value: VariableOperand): number {
@@ -499,5 +541,27 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     }
   }
 
-  return { applyTroopEvents, consumeExtraActorAction, snapshot, logs: eventLogs };
+  // m2-106 Call Common Event (M2 형식): 커먼 이벤트 commands 를 동일한 배틀 컨텍스트에서 재귀 실행.
+  function executeCommonEventById(page: BattleEventPageRecord, commonEventId: string, context: BattleEventContext, depth: number): boolean {
+    const commonEvent = options.project.commonEvents.find((entry) => entry.id === commonEventId);
+    if (!commonEvent) {
+      logUnsupported(page, context, `missing common event: ${commonEventId}`);
+      return false;
+    }
+    logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "fired", detail: `commonEvent ${commonEventId}` });
+    return executeBattleEventCommands(page, commonEvent.commands, context, depth);
+  }
+
+  // m2-104 Battle Events: 같은 트룹의 지정한 배틀 이벤트 페이지를 즉시 실행(RM2K3 전투 이벤트 호출).
+  function executeTroopPageById(page: BattleEventPageRecord, pageId: string, context: BattleEventContext, depth: number): boolean {
+    const targetPage = options.troopRecord.battleEventPages.find((entry) => entry.id === pageId);
+    if (!targetPage) {
+      logUnsupported(page, context, `missing troop page: ${pageId}`);
+      return false;
+    }
+    logs.push({ pageId: page.id, round: context.turn, triggerId: pageId, kind: "fired", detail: `troopPage ${pageId}` });
+    return executeBattleEventCommands(page, targetPage.commands, context, depth);
+  }
+
+  return { applyTroopEvents, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
 }

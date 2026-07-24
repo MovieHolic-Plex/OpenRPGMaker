@@ -1,0 +1,208 @@
+import { cp, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { build } from "vite";
+import { listBattleSkinIds } from "@/battle/skins/registry";
+
+const EDITOR_ONLY_SELECTOR_SENTINEL = ".editor-layout";
+const PLAYER_BUILD_TIMEOUT_MS = 120_000;
+const REQUIRED_RUNTIME_SELECTORS = [
+  ".play-viewport",
+  ".play-stage",
+  ".rm-title-menu",
+  ".play-loading-overlay",
+  ".dialogue-overlay",
+  ".touch-pad",
+  ".action-hud",
+  ".battle-transition-overlay",
+  ".status-menu-command-rail",
+  ".status-menu-command",
+  ".status-menu-body",
+  ".status-menu-party",
+  ".status-menu-detail",
+  ".status-menu-detail-list",
+  ".status-menu-detail-action",
+  ".status-menu-footer",
+  ".picture-layer",
+  ".runtime-screen-effect",
+  ".zone-feedback",
+] as const;
+const RUNTIME_IMPORTS = [
+  "./system.css",
+  "./battle.css",
+  "./battle-skins/index.css",
+  "./commerce.css",
+  "./title.css",
+  "../database/tabs-b-title-screen.css",
+  "../database/tabs-b-status-menu-base.css",
+  "../database/tabs-b-status-menu-main.css",
+  "./playLoading.css",
+  "./actionHud.css",
+  "./timer.css",
+  "./touchpad.css",
+  "./pictures.css",
+  "./weather.css",
+  "./transitions.css",
+  "./nameEntry.css",
+  "./keyboardNav.css",
+  "../dialogue.css",
+  "./playSurface.css",
+  "./zoneFeedback.css",
+] as const;
+
+describe("exported player runtime CSS", () => {
+  let outputDirectory = "";
+  let emittedCss = "";
+
+  beforeAll(async () => {
+    // Given: the real standalone-player Vite entry and an isolated output directory.
+    outputDirectory = await mkdtemp(join(tmpdir(), "rpgzzu-player-runtime-css-"));
+
+    // When: the current player source is built through its production config.
+    await build({
+      configFile: resolve("vite.player.config.ts"),
+      build: { emptyOutDir: true, outDir: outputDirectory },
+    });
+    emittedCss = await readEmittedCss(outputDirectory);
+  }, PLAYER_BUILD_TIMEOUT_MS);
+
+  afterAll(async () => {
+    if (outputDirectory) await rm(outputDirectory, { force: true, recursive: true });
+  });
+
+  it("keeps the existing shared runtime selector families in emitted bytes", () => {
+    // Then: current title, loading, dialogue, touch, scaling, and battle-transition CSS is preserved.
+    for (const selector of [
+      ".play-viewport",
+      ".play-stage",
+      ".rm-title-menu",
+      ".play-loading-overlay",
+      ".dialogue-overlay",
+      ".touch-pad",
+      ".battle-transition-overlay",
+    ]) {
+      expect(hasCssSelector(emittedCss, selector), `missing existing selector ${selector}`).toBe(true);
+    }
+  });
+
+  it("emits the complete player-owned runtime closure without editor CSS", () => {
+    // Given: every player surface and declared battle skin is part of the standalone runtime.
+
+    // Then: emitted bytes contain every required family, while editor workbench CSS stays excluded.
+    const missingSelectors = REQUIRED_RUNTIME_SELECTORS.filter(
+      (selector) => !hasCssSelector(emittedCss, selector),
+    );
+    const missingBattleSkins = listBattleSkinIds().filter(
+      (skin) => !hasBattleSkinSelector(emittedCss, skin),
+    );
+    expect({ missingBattleSkins, missingSelectors }).toEqual({
+      missingBattleSkins: [],
+      missingSelectors: [],
+    });
+    expect(hasCssSelector(emittedCss, EDITOR_ONLY_SELECTOR_SENTINEL)).toBe(false);
+  });
+
+  it("uses one ordered runtime module list from both CSS entrypoints", async () => {
+    // Given: the player-owned aggregator and both host entrypoints.
+    const aggregator = await readFile(resolve("src/styles/runtime/playerRuntime.css"), "utf8");
+    const editorEntry = await readFile(resolve("src/styles/index.css"), "utf8");
+    const exportEntry = await readFile(resolve("src/player/player.css"), "utf8");
+
+    // When: import order is read from source rather than inferred from a repository grep.
+    const imports = Array.from(aggregator.matchAll(/@import\s+"([^"]+)";/gu), (match) => match[1]);
+
+    // Then: the closure is explicit, ordered, unique, shared, and never pulls editor core into export.
+    expect(imports).toEqual(RUNTIME_IMPORTS);
+    expect(new Set(imports).size).toBe(imports.length);
+    expect(editorEntry).toContain('@import "./runtime/playerRuntime.css";');
+    expect(exportEntry).toContain('@import "../styles/runtime/playerRuntime.css";');
+    expect(exportEntry).not.toContain("../styles/index.css");
+    expect(aggregator).not.toContain("../editor/");
+  });
+
+  it("detects an omitted required import in a disposable built entry", async () => {
+    // Given/When: a disposable closure is built without only the action-HUD import.
+    const fixtureCss = await buildDisposableClosureWithout('@import "./actionHud.css";\n');
+
+    // Then: the omission is visible in bytes while adjacent transition CSS remains.
+    expect(hasCssSelector(fixtureCss, ".action-hud")).toBe(false);
+    expect(hasCssSelector(fixtureCss, ".battle-transition-overlay")).toBe(true);
+  }, PLAYER_BUILD_TIMEOUT_MS);
+
+  it("detects an omitted status-menu module in a disposable built entry", async () => {
+    // Given/When: a disposable closure is built without only the status-menu base import.
+    const fixtureCss = await buildDisposableClosureWithout(
+      '@import "../database/tabs-b-status-menu-base.css";\n',
+    );
+
+    // Then: base status controls disappear while the adjacent main/status and action CSS remains.
+    expect(hasCssSelector(fixtureCss, ".status-menu-command-rail")).toBe(false);
+    expect(hasCssSelector(fixtureCss, ".status-menu-party")).toBe(true);
+    expect(hasCssSelector(fixtureCss, ".action-hud")).toBe(true);
+  }, PLAYER_BUILD_TIMEOUT_MS);
+});
+
+function hasBattleSkinSelector(css: string, skin: string): boolean {
+  return css.includes(`[data-battle-skin="${skin}"]`)
+    || css.includes(`[data-battle-skin=${skin}]`);
+}
+
+function hasCssSelector(css: string, selector: string): boolean {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
+  return new RegExp(`${escapedSelector}(?=[\\s,{.:#\\[])`, "u").test(css);
+}
+
+async function buildDisposableClosureWithout(importStatement: string): Promise<string> {
+  const fixtureRoot = await mkdtemp(join(tmpdir(), "rpgzzu-player-css-omission-"));
+  try {
+    const fixtureStyles = join(fixtureRoot, "styles");
+    await cp(resolve("src/styles"), fixtureStyles, { recursive: true });
+    const fixtureAggregator = join(fixtureStyles, "runtime", "playerRuntime.css");
+    const source = await readFile(fixtureAggregator, "utf8");
+    const mutated = source.replace(importStatement, "");
+    expect(mutated).not.toBe(source);
+    await writeFile(fixtureAggregator, mutated, "utf8");
+    await writeFile(
+      join(fixtureRoot, "entry.mjs"),
+      'import "./styles/runtime/playerRuntime.css";\n',
+      "utf8",
+    );
+    const fixtureOutput = join(fixtureRoot, "output");
+    await build({
+      configFile: false,
+      publicDir: false,
+      root: fixtureRoot,
+      build: {
+        emptyOutDir: true,
+        outDir: fixtureOutput,
+        rollupOptions: { input: join(fixtureRoot, "entry.mjs") },
+      },
+    });
+    return await readEmittedCss(fixtureOutput);
+  } finally {
+    await rm(fixtureRoot, { force: true, recursive: true });
+  }
+}
+
+async function readEmittedCss(root: string): Promise<string> {
+  const files = await listFiles(root);
+  const cssFiles = files.filter((file) => file.endsWith(".css"));
+  expect(cssFiles.length, "player build must emit CSS").toBeGreaterThan(0);
+  return (await Promise.all(cssFiles.map((file) => readFile(file, "utf8")))).join("\n");
+}
+
+async function listFiles(root: string): Promise<readonly string[]> {
+  const found: string[] = [];
+
+  async function walk(directory: string): Promise<void> {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) await walk(path);
+      else found.push(path);
+    }
+  }
+
+  await walk(root);
+  return found;
+}

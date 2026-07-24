@@ -22,6 +22,7 @@ import {
   upsertEvent,
 } from "./houseKitDraftSupport";
 import { ToolError } from "./types";
+import { placeHouseLotFences } from "./village/fences";
 
 const DOOR_TOP_TILE = 116;
 const DOOR_BOTTOM_TILE = 146;
@@ -46,6 +47,12 @@ export type BuildHouseKitInput = {
   readonly interior: boolean;
   readonly ownerName?: string;
   readonly windows?: HouseKitWindowsOption;
+  /** 앞마당 울타리+게이트 — 마을 파이프라인 정본(placeHouseLotFences) 재사용. 기본 꺼짐. */
+  readonly fence?: boolean;
+  /** 문 위 최상단 벽에 깃발 208/209 페어(village/decor 문법). 기본 꺼짐. */
+  readonly banner?: boolean;
+  /** 우측 사선 지붕 굴뚝 326(상위). 기본 꺼짐. */
+  readonly chimney?: boolean;
 };
 
 export type HouseKitInteriorData = {
@@ -106,6 +113,7 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     kitId: input.kitId,
     wings: input.wings,
     ...(input.windows === undefined ? {} : { windows: input.windows }),
+    ...(input.chimney ? { chimney: true } : {}),
   });
   if (!result.ok) throw new ToolError(result.reason ?? "집 시공 실패", { code: "house-kit-failed", mapId: input.mapId });
 
@@ -175,6 +183,39 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     }
   }
 
+  // ── 장식(선택): 깃발·울타리 — 마을 데코 패스의 정본 문법을 집 단독 시공에서도 ──
+  const decorNotes: string[] = [];
+  if (input.chimney) decorNotes.push("굴뚝");
+  if (result.doorAt && (input.banner || input.fence)) {
+    const { x: doorX, y: doorY } = result.doorAt;
+    if (input.banner) {
+      // village/decor.ts 문법: 지붕 바로 아래 최상단 벽 행, 문 양옆 208/209 (빈 칸에만).
+      const bannerY = doorY - 2; // 도구 경로 벽 밴드 3행(상·중·하) — 상단 행
+      for (const [dx, tile] of [[-1, 208], [1, 209]] as const) {
+        const x = doorX + dx;
+        if (x < 0 || x >= map.width || bannerY < 0) continue;
+        const index = bannerY * map.width + x;
+        if (map.upperTiles[index] === -1) map.upperTiles[index] = tile;
+      }
+      decorNotes.push("깃발 208/209");
+    }
+    if (input.fence) {
+      const minX = Math.min(...input.wings.map((wing) => wing.x));
+      const minY = Math.min(...input.wings.map((wing) => wing.y));
+      const maxX = Math.max(...input.wings.map((wing) => wing.x + wing.w));
+      const maxY = Math.max(...input.wings.map((wing) => wing.y + wing.h));
+      placeHouseLotFences(map, [{
+        bbox: { x: minX, y: minY, w: maxX - minX, h: maxY - minY },
+        doorAt: { x: doorX, y: doorY },
+        front: { x: doorX, y: doorY + 1 },
+        kitId: input.kitId,
+        stories: 1,
+        templateId: "house-kit-single",
+      }], seedFromString(`${map.id}_fence_${doorX}_${doorY}`));
+      decorNotes.push("울타리+게이트");
+    }
+  }
+
   const windowNote = input.windows === false ? "창문 없음" : "창문 자동";
   const baseData: HouseKitBuildBaseData = {
     doorAt: result.doorAt ?? null,
@@ -182,8 +223,9 @@ export function buildHouseKit(draft: Project, input: BuildHouseKitInput): BuildH
     wings: input.wings,
   };
   const data: HouseKitBuildData = interiorData ? { ...baseData, ...interiorData } : baseData;
+  const decorNote = decorNotes.length > 0 ? `, 장식(${decorNotes.join("·")})` : "";
   return {
-    summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${input.wings.length}개, ${doorNote}, ${windowNote}. 집 키트 규칙 적용 완료.`,
+    summary: `${map.name}에 '${kit.name}' 집 시공 — 날개 ${input.wings.length}개, ${doorNote}, ${windowNote}${decorNote}. 집 키트 규칙 적용 완료.`,
     ...(warnings.length > 0 ? { warnings } : {}),
     data,
   };

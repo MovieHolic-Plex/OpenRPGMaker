@@ -1,15 +1,23 @@
 /**
- * Deterministic house interior wall grammar (Option B).
- * No store autotile — every wall cell is a finished whole tile.
+ * Deterministic house interior wall grammar — ceiling canon v2 (2026-07-20).
  *
- * Topology (gold map_interior_blank):
- * - Outer 4-neighbor ring around floor (south diagonal corners stay void 430)
- * - North face: cream lower / cream upper / cap (2 rows + cap)
- * - Posts 428/426, south trim 397, door alcove 398|floor|396 + step 397
- * - 1-col partitions: ceiling-attached 77/107 then deeper 428 posts
- * - Forbidden: 233 / 257 / 258
+ * 사용자 교정 2차: 천장 블록은 (0,0) 체커+비드(366 블록)가 아니라 **(0,1)
+ * 검정+회암 테두리 오토타일**(앵커 369, body 430 — builtin_darkness_deep와 동일 블록)이다.
+ *
+ * - 천장(구조 질량·맵 바깥 어둠 전체) = 430 계열 오토타일 하나로 통일.
+ *   테두리는 templateBlockFromAnchor(369) 변형을 **저장 시점에 성형**한다
+ *   (shapeInteriorCeiling — 맵 밖은 이어진 것으로 취급, 경계 테두리 없음).
+ * - 남향 구조 모서리(아래가 방 바닥)에는 반드시 벽면: 크림 2행(위 74–76 · 아래 104–106,
+ *   1칸은 77/107). 반대로 모든 벽면 위에는 반드시 천장 — 쌍 불변식.
+ * - 문은 천장 띠를 뚫는 바닥 통로만 — 스텝(397)·플랭크(396/398) 금지.
+ * - 배제: 366 체커 블록 전체(366–368/396–398/426–428/456–458) · 233/257/258.
  */
 import { HOUSE_SHELL_TILE } from "@/project/defaults/interiorHouseWallTiles";
+import {
+  DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP,
+  templateBlockFromAnchor,
+} from "@/project/defaults/autotileGroups";
+import { AUTOTILE_DIR, autotileVariantForMask } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 
@@ -37,6 +45,51 @@ export type InteriorHouseWallInput = {
   readonly door: DoorSpec;
   readonly innerDoors?: readonly DoorSpec[];
 };
+
+/** 천장 블록(검정+회암 테두리, 앵커 369) — body 430. 테두리는 shapeInteriorCeiling이 저장 성형. */
+export const CEILING_BLOCK = templateBlockFromAnchor(369);
+export const CEILING_TILE = CEILING_BLOCK.body; // 430
+/** 천장 블록 전체 멤버(벽걸이/질량 판정·테스트 대조용). */
+export const CEILING_MEMBER_TILES: readonly number[] = [
+  CEILING_BLOCK.isolated, CEILING_BLOCK.inner,
+  CEILING_BLOCK.cornerNW, CEILING_BLOCK.edgeN, CEILING_BLOCK.cornerNE,
+  CEILING_BLOCK.edgeW, CEILING_BLOCK.body, CEILING_BLOCK.edgeE,
+  CEILING_BLOCK.cornerSW, CEILING_BLOCK.edgeS, CEILING_BLOCK.cornerSE,
+];
+const CEILING_MEMBER_SET = new Set<number>(CEILING_MEMBER_TILES);
+
+export function isCeilingTile(tile: number): boolean {
+  return CEILING_MEMBER_SET.has(tile);
+}
+
+/**
+ * 천장 저장 성형 — 천장 멤버 셀 전체를 이웃 마스크로 재계산한다.
+ * 맵 밖은 천장이 이어진 것으로 취급(경계에 테두리를 그리지 않는다 — RM2K 정본 관례).
+ */
+export function shapeInteriorCeiling(map: GameMap): void {
+  const connected = (x: number, y: number): boolean => {
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return true;
+    return CEILING_MEMBER_SET.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
+  };
+  const next = [...map.lowerTiles];
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (!CEILING_MEMBER_SET.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) continue;
+      let mask = 0;
+      if (connected(x, y - 1)) mask |= AUTOTILE_DIR.N;
+      if (connected(x + 1, y)) mask |= AUTOTILE_DIR.E;
+      if (connected(x, y + 1)) mask |= AUTOTILE_DIR.S;
+      if (connected(x - 1, y)) mask |= AUTOTILE_DIR.W;
+      if (connected(x + 1, y - 1)) mask |= AUTOTILE_DIR.NE;
+      if (connected(x + 1, y + 1)) mask |= AUTOTILE_DIR.SE;
+      if (connected(x - 1, y + 1)) mask |= AUTOTILE_DIR.SW;
+      if (connected(x - 1, y - 1)) mask |= AUTOTILE_DIR.NW;
+      const variant = autotileVariantForMask(DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP, mask);
+      if (typeof variant === "number") next[y * map.width + x] = variant;
+    }
+  }
+  map.lowerTiles = next;
+}
 
 function inBounds(x: number, y: number, w: number, h: number): boolean {
   return x >= 0 && y >= 0 && x < w && y < h;
@@ -83,9 +136,6 @@ function horizontalRuns(cells: readonly { x: number; y: number }[]): HorizontalR
 }
 
 function faceTileFor(runLen: number, i: number, upper: boolean): number {
-  if (runLen === 1) {
-    return upper ? HOUSE_SHELL_TILE.creamUpperM : HOUSE_SHELL_TILE.creamLowerM;
-  }
   if (i === 0) return upper ? HOUSE_SHELL_TILE.creamUpperL : HOUSE_SHELL_TILE.creamLowerL;
   if (i === runLen - 1) return upper ? HOUSE_SHELL_TILE.creamUpperR : HOUSE_SHELL_TILE.creamLowerR;
   return upper ? HOUSE_SHELL_TILE.creamUpperM : HOUSE_SHELL_TILE.creamLowerM;
@@ -142,7 +192,6 @@ export function planInteriorHouseWalls(input: InteriorHouseWallInput): readonly 
     if (!inBounds(x, y, W, H)) return;
     place.set(key(x, y), tile);
   };
-  const get = (x: number, y: number): number | undefined => place.get(key(x, y));
 
   // Seed floors so furniture layer sees floor cells; walls overwrite shell.
   for (let y = 0; y < H; y += 1) {
@@ -151,7 +200,7 @@ export function planInteriorHouseWalls(input: InteriorHouseWallInput): readonly 
     }
   }
 
-  // Outer ring (4-neighbor only — south diagonal corners stay void).
+  // Structure shell: 4-neighbor ring around floor.
   const shell: Array<{ x: number; y: number }> = [];
   const seen = new Set<string>();
   const addShell = (x: number, y: number): void => {
@@ -171,191 +220,59 @@ export function planInteriorHouseWalls(input: InteriorHouseWallInput): readonly 
     }
   }
 
-  // Vertical partition door gaps: floor openings that must not become north face.
-  const doorGapKeys = new Set<string>();
-  for (const innerDoor of innerDoors) {
-    if (F(innerDoor.x, innerDoor.y) && F(innerDoor.x - 1, innerDoor.y) && F(innerDoor.x + 1, innerDoor.y)) {
-      doorGapKeys.add(key(innerDoor.x, innerDoor.y));
-    }
-  }
-  // Exterior door is on the south floor edge — the shell south of it is the wall opening.
-  // Also treat horizontal-partition door cells as non-face triggers.
-  for (const d of [door, ...innerDoors]) {
-    if (!F(d.x, d.y) && F(d.x - 1, d.y) && F(d.x + 1, d.y)) {
-      // rare: door not in floor mask
-    }
-  }
-
-  // North face bottom row: shell cells with floor immediately south (not a door gap).
+  // 벽면 하단: 아래가 방 바닥인 모든 구조 칸 — 문 개구부 위도 예외 없음("천장 아래에는 반드시 벽").
+  // 위 칸이 바닥이면(1행 수평 파티션) 벽면을 세울 공간이 없어 천장 띠로 남긴다.
   const faceBottom: Array<{ x: number; y: number }> = [];
   for (let y = 0; y < H; y += 1) {
     for (let x = 0; x < W; x += 1) {
-      if (!F(x, y) && F(x, y + 1) && !doorGapKeys.has(key(x, y + 1))) {
+      if (!F(x, y) && F(x, y + 1) && !F(x, y - 1)) {
         faceBottom.push({ x, y });
-        addShell(x, y); // ensure face bottoms are in shell even if only adjacent N-S
+        addShell(x, y);
       }
     }
   }
+  // 벽면 위(=천장)와 좌우 이음 천장까지 구조에 편입 — "벽 위에는 반드시 천장" 불변식.
   for (const c of faceBottom) {
     addShell(c.x - 1, c.y);
     addShell(c.x + 1, c.y);
-    addShell(c.x, c.y - 1); // cream upper
-    addShell(c.x, c.y - 2); // cap
+    addShell(c.x, c.y - 1);
+    addShell(c.x, c.y - 2);
     addShell(c.x - 1, c.y - 1);
     addShell(c.x + 1, c.y - 1);
     addShell(c.x - 1, c.y - 2);
     addShell(c.x + 1, c.y - 2);
   }
 
-  // Default shell cells → void (will reclassify). Outside shell stays unset (void on map).
-  for (const cell of shell) set(cell.x, cell.y, HOUSE_SHELL_TILE.void);
+  // 천장 통일: 모든 구조 칸 = 366 (렌더 쿼터가 테두리 성형).
+  for (const cell of shell) set(cell.x, cell.y, CEILING_TILE);
 
-  // Cream face runs: lower at faceBottom, upper at y-1, cap at y-2.
-  const faceKeys = new Set<string>();
+  // 벽면 2행: 하단(104–106) + 상단(74–76), 1칸 런은 107/77.
   for (const run of horizontalRuns(faceBottom)) {
-    for (let i = 0; i < run.cells.length; i += 1) {
+    const len = run.cells.length;
+    for (let i = 0; i < len; i += 1) {
       const c = run.cells[i]!;
-      set(c.x, c.y, faceTileFor(run.cells.length, i, false));
-      faceKeys.add(key(c.x, c.y));
-      if (c.y - 1 >= 0 && !F(c.x, c.y - 1)) {
-        set(c.x, c.y - 1, faceTileFor(run.cells.length, i, true));
-        faceKeys.add(key(c.x, c.y - 1));
+      if (len === 1) {
+        set(c.x, c.y, HOUSE_SHELL_TILE.soloLower);
+        if (c.y - 1 >= 0 && !F(c.x, c.y - 1)) set(c.x, c.y - 1, HOUSE_SHELL_TILE.soloUpper);
+        continue;
       }
-      // Cap row above upper cream
-      if (c.y - 2 >= 0 && !F(c.x, c.y - 2)) {
-        set(c.x, c.y - 2, HOUSE_SHELL_TILE.capStraight);
-      }
+      set(c.x, c.y, faceTileFor(len, i, false));
+      if (c.y - 1 >= 0 && !F(c.x, c.y - 1)) set(c.x, c.y - 1, faceTileFor(len, i, true));
     }
   }
 
-  // Cap end joints on expanded cap cells left/right of face
-  for (const run of horizontalRuns(faceBottom)) {
-    const first = run.cells[0]!;
-    const last = run.cells[run.cells.length - 1]!;
-    const capY = first.y - 2;
-    if (capY < 0) continue;
-    // west joint cell
-    if (inBounds(first.x - 1, capY, W, H) && !F(first.x - 1, capY)) {
-      set(first.x - 1, capY, HOUSE_SHELL_TILE.capJointNW); // 458 bottom+right
-    }
-    if (inBounds(last.x + 1, capY, W, H) && !F(last.x + 1, capY)) {
-      set(last.x + 1, capY, HOUSE_SHELL_TILE.capJointNE); // 456 bottom+left
-    }
-  }
-
-  const floorOrFace = (x: number, y: number): boolean => F(x, y) || faceKeys.has(key(x, y));
-  const dualFloorPartition: Array<{ x: number; y: number }> = [];
-
-  for (const cell of shell) {
-    if (F(cell.x, cell.y)) continue;
-    if (faceKeys.has(key(cell.x, cell.y))) continue;
-    // Cap row already set — only touch if still void
-    const current = get(cell.x, cell.y);
-    if (
-      current === HOUSE_SHELL_TILE.capStraight
-      || current === HOUSE_SHELL_TILE.capJointNW
-      || current === HOUSE_SHELL_TILE.capJointNE
-    ) {
-      continue;
-    }
-
-    const eastFloor = F(cell.x + 1, cell.y);
-    const westFloor = F(cell.x - 1, cell.y);
-    const eastRoom = floorOrFace(cell.x + 1, cell.y);
-    const westRoom = floorOrFace(cell.x - 1, cell.y);
-    const northFloor = F(cell.x, cell.y - 1);
-
-    if (northFloor && !doorGapKeys.has(key(cell.x, cell.y - 1))) {
-      set(cell.x, cell.y, HOUSE_SHELL_TILE.southTrim);
-    } else if (eastFloor && westFloor) {
-      dualFloorPartition.push(cell);
-    } else if (eastRoom && westRoom) {
-      // Cream-band piercing post (between left/right face cells)
-      set(cell.x, cell.y, HOUSE_SHELL_TILE.postWest);
-    } else if (eastRoom) {
-      set(cell.x, cell.y, HOUSE_SHELL_TILE.postWest); // west exterior post (right line faces room)
-    } else if (westRoom) {
-      set(cell.x, cell.y, HOUSE_SHELL_TILE.postEast); // east exterior post
-    } else if (current === HOUSE_SHELL_TILE.void || current === undefined) {
-      // leftover shell near cap/T — prefer west-facing post
-      if (eastRoom || westRoom || northFloor) set(cell.x, cell.y, HOUSE_SHELL_TILE.postWest);
-    }
-  }
-
-  // 1-col partitions: ceiling-attached top 2 cells = 77/107, deeper = post 428.
-  const byCol = new Map<number, number[]>();
-  for (const c of dualFloorPartition) {
-    const ys = byCol.get(c.x) ?? [];
-    ys.push(c.y);
-    byCol.set(c.x, ys);
-  }
-  for (const [x, ys] of byCol) {
-    const sorted = [...new Set(ys)].sort((a, b) => a - b);
-    let i = 0;
-    while (i < sorted.length) {
-      let j = i;
-      while (j + 1 < sorted.length && sorted[j + 1]! === sorted[j]! + 1) j += 1;
-      const segment = sorted.slice(i, j + 1);
-      const northY = segment[0]! - 1;
-      const attachedToCeiling = northY >= 0 && !F(x, northY);
-      for (let k = 0; k < segment.length; k += 1) {
-        const y = segment[k]!;
-        if (attachedToCeiling && k === 0) set(x, y, HOUSE_SHELL_TILE.soloUpper);
-        else if (attachedToCeiling && k === 1) set(x, y, HOUSE_SHELL_TILE.soloLower);
-        else set(x, y, HOUSE_SHELL_TILE.postWest);
-      }
-      i = j + 1;
-    }
-  }
-
-  // Horizontal partition reserved cells → south trim (unless opening)
-  for (const [k, orient] of partition) {
-    if (openings.has(k)) continue;
-    if (orient !== "h") continue;
-    const [xs, ys] = k.split(",").map(Number) as [number, number];
-    // If still floor-looking from seed, force trim
-    if (!F(xs, ys)) set(xs, ys, HOUSE_SHELL_TILE.southTrim);
-  }
-
-  // Exterior door: door cell is south floor edge; punch shell at door.y+1.
+  // 바깥 문: 남쪽 천장 띠를 바닥으로 뚫는다 — 스텝·플랭크 없음.
   set(door.x, door.y, HOUSE_SHELL_TILE.floor);
   const doorWallY = door.y + 1;
-  const doorOpened = doorWallY < H && !F(door.x, doorWallY);
-  if (doorOpened) {
+  if (doorWallY < H && !F(door.x, doorWallY)) {
     set(door.x, doorWallY, HOUSE_SHELL_TILE.floor);
-    if (inBounds(door.x - 1, doorWallY, W, H) && !F(door.x - 1, doorWallY) && seen.has(key(door.x - 1, doorWallY))) {
-      set(door.x - 1, doorWallY, HOUSE_SHELL_TILE.southWestCorner); // 398
-    }
-    if (inBounds(door.x + 1, doorWallY, W, H) && !F(door.x + 1, doorWallY) && seen.has(key(door.x + 1, doorWallY))) {
-      set(door.x + 1, doorWallY, HOUSE_SHELL_TILE.southEastCorner); // 396
-    }
-    const stepY = doorWallY + 1;
-    if (stepY < H && !F(door.x, stepY)) {
-      set(door.x, stepY, HOUSE_SHELL_TILE.southTrim); // 397 only — no 257 flanks
-    }
   }
 
-  // Inner door openings stay floor; flank when neighbors are south-trim or cap (horizontal corridor).
+  // 내부 문 개구부는 바닥 그대로 — 플랭크 없음(이웃 천장은 쿼터 렌더가 마감).
   for (const d of innerDoors) {
     set(d.x, d.y, HOUSE_SHELL_TILE.floor);
-    const flankable = (t: number | undefined): boolean =>
-      t === HOUSE_SHELL_TILE.southTrim
-      || t === HOUSE_SHELL_TILE.capStraight
-      || t === HOUSE_SHELL_TILE.creamLowerM
-      || t === HOUSE_SHELL_TILE.creamUpperM;
-    if (flankable(get(d.x - 1, d.y))) {
-      set(d.x - 1, d.y, HOUSE_SHELL_TILE.southWestCorner);
-    }
-    if (flankable(get(d.x + 1, d.y))) {
-      set(d.x + 1, d.y, HOUSE_SHELL_TILE.southEastCorner);
-    }
   }
 
-  // South outer corners of the building: SW/SE of south wall → 398/396 when shell.
-  // (Gold left these as void 430 for quarter wrap; plan Option B allows whole-tile corners.)
-  // Keep void at diagonal south corners (not in 4-neighbor ring) — already not in shell.
-
-  // Drop pure void placements that match map default (optional) — keep them so paint clears furniture.
   return [...place.entries()].map(([k, tile]) => {
     const [x, y] = k.split(",").map(Number) as [number, number];
     return { x, y, tile };

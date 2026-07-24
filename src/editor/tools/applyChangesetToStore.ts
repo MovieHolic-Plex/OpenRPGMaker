@@ -27,12 +27,34 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "script_cutscene",
   "move_event",
   "remove_event",
+  "author_house",
 ]);
 
-function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
+export type ToolUndoScope =
+  | { readonly kind: "map"; readonly mapId: string }
+  | { readonly kind: "project" };
+
+/** canonical construction undo 정책: existing target → map, new target → project. */
+export function toolUndoScope(name: string, args: Record<string, unknown>): ToolUndoScope {
+  if (name === "author_village") {
+    const target = args.target;
+    if (typeof target === "object" && target !== null && !Array.isArray(target)) {
+      const kind = (target as Record<string, unknown>).kind;
+      if (kind === "new") return { kind: "project" };
+      const mapId = (target as Record<string, unknown>).mapId;
+      if (typeof mapId === "string" && mapId.length > 0) return { kind: "map", mapId };
+    }
+    return { kind: "project" };
+  }
   const mapId = typeof args.mapId === "string" ? args.mapId : null;
-  if (mapId && MAP_ONLY_WRITE_TOOLS.has(name)) {
-    recordProjectSnapshot(undefined, mapId, { kind: "map" });
+  if (mapId && MAP_ONLY_WRITE_TOOLS.has(name)) return { kind: "map", mapId };
+  return { kind: "project" };
+}
+
+function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
+  const scope = toolUndoScope(name, args);
+  if (scope.kind === "map") {
+    recordProjectSnapshot(undefined, scope.mapId, { kind: "map" });
     return;
   }
   recordProjectSnapshot();

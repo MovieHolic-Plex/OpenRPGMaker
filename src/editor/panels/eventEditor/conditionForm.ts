@@ -1,7 +1,7 @@
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
-import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS, SELF_SWITCH_KEY_OPTIONS } from "./options";
+import { BOOLEAN_OPTIONS, CONDITION_OP_OPTIONS } from "./options";
 import { databasePicker } from "./switchVariablePicker";
 import { actorPickerControl, itemPickerControl } from "./sharedPickers";
 import type { ActorId, Condition, ItemId, Season, TimePhase } from "@/project/types";
@@ -218,18 +218,9 @@ function labeledSelfSwitch(
   onChange: (condition: Condition) => void
 ): HTMLElement {
   const box = el("div", { class: "event-condition-detail" });
-  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cond.key, "event-condition-self-switch-key");
-  const val = selectWithOptions(SWITCH_STATE_OPTIONS, String(cond.value), "event-condition-self-switch-value");
-  const apply = (): void => {
-    onChange({
-      kind: "selfSwitch",
-      key: key.value as "A" | "B" | "C" | "D",
-      value: val.value === "true",
-    });
-  };
-  key.addEventListener("change", apply);
-  val.addEventListener("change", apply);
-  box.append(field("키", key), field("상태", val));
+  box.append(
+    selfSwitchControl(cond.key, cond.value, (key, value) => onChange({ kind: "selfSwitch", key, value }))
+  );
   return box;
 }
 
@@ -567,6 +558,73 @@ export function renderVariableCondition(
   return row;
 }
 
+const SELF_SWITCH_KEYS = ["A", "B", "C", "D"] as const;
+
+/**
+ * 세그먼트 버튼(A/B/C/D) + ON/OFF 토글로 구성된 셀프 스위치 컨트롤.
+ * 드롭다운 2개짜리 구형 UI를 대체한다.
+ */
+export function selfSwitchControl(
+  key: "A" | "B" | "C" | "D",
+  value: boolean,
+  onChange: (key: "A" | "B" | "C" | "D", value: boolean) => void,
+  options: {
+    readonly keyTestId?: string;
+    readonly valueTestId?: string;
+  } = {}
+): HTMLElement {
+  const wrap = el("span", {
+    class: "self-switch-control",
+    dataset: { testid: "self-switch-control" },
+  });
+  let currentKey = key;
+  let currentValue = value;
+
+  const keysWrap = el("span", {
+    class: "self-switch-keys",
+    attrs: { role: "group", "aria-label": "셀프 스위치 키" },
+  });
+  const keyButtons: HTMLButtonElement[] = [];
+  for (const k of SELF_SWITCH_KEYS) {
+    const btn = el("button", {
+      class: `self-switch-key${k === key ? " active" : ""}`,
+      attrs: { type: "button", "aria-pressed": String(k === key) },
+      text: k,
+      dataset: { key: k, testid: `${options.keyTestId ?? "self-switch-key"}-${k}` },
+    }) as HTMLButtonElement;
+    btn.addEventListener("click", () => {
+      if (currentKey === k) return;
+      currentKey = k;
+      keyButtons.forEach((b) => {
+        const active = b.dataset.key === k;
+        b.classList.toggle("active", active);
+        b.setAttribute("aria-pressed", String(active));
+      });
+      onChange(currentKey, currentValue);
+    });
+    keyButtons.push(btn);
+    keysWrap.append(btn);
+  }
+
+  const valueBtn = el("button", {
+    class: `self-switch-value ${value ? "on" : "off"}`,
+    attrs: { type: "button", "aria-pressed": String(value) },
+    text: value ? "ON" : "OFF",
+    dataset: { testid: options.valueTestId ?? "self-switch-value" },
+  }) as HTMLButtonElement;
+  valueBtn.addEventListener("click", () => {
+    currentValue = !currentValue;
+    valueBtn.classList.toggle("on", currentValue);
+    valueBtn.classList.toggle("off", !currentValue);
+    valueBtn.textContent = currentValue ? "ON" : "OFF";
+    valueBtn.setAttribute("aria-pressed", String(currentValue));
+    onChange(currentKey, currentValue);
+  });
+
+  wrap.append(keysWrap, valueBtn);
+  return wrap;
+}
+
 export function renderSelfSwitchCondition(
   cond: Extract<Condition, { kind: "selfSwitch" }>,
   onChange: (condition: Condition) => void,
@@ -577,14 +635,12 @@ export function renderSelfSwitchCondition(
   } = {}
 ): HTMLElement {
   const row = el(options.className ? "div" : "span", options.className ? { class: options.className } : {});
-  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cond.key, options.keyTestId ?? "event-condition-self-switch-key");
-  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value), options.valueTestId ?? "event-condition-self-switch-value");
-  const apply = () => {
-    onChange({ kind: "selfSwitch", key: key.value as "A" | "B" | "C" | "D", value: val.value === "true" });
-  };
-  key.addEventListener("change", apply);
-  val.addEventListener("change", apply);
-  row.append(key, val);
+  row.append(
+    selfSwitchControl(cond.key, cond.value, (key, value) => onChange({ kind: "selfSwitch", key, value }), {
+      keyTestId: options.keyTestId,
+      valueTestId: options.valueTestId,
+    })
+  );
   return row;
 }
 

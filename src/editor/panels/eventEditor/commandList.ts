@@ -41,7 +41,7 @@ import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
 
 // [P1] 문장 표시 줄에 "직전 얼굴 그래픽 변경" 상태를 16px 크롭으로 부가하기 위한
 // 스크립트 순서 기반 얼굴 상태. 렌더 패스(문서 순서 = 실행 순서 근사) 동안 스레딩된다.
-type ActiveFace = { readonly resourceId: string; readonly faceIndex: number };
+import type { ActiveFace } from "./previewSimulation";
 type FaceState = { current: ActiveFace | undefined };
 
 export function renderCommandList(

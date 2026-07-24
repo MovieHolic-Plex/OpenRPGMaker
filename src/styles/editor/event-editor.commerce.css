@@ -203,6 +203,40 @@
   margin: -2px 0 2px;
 }
 
+
+.shop-processing-filter-bar {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(120px, 160px) minmax(0, 1fr) auto;
+  min-width: 0;
+}
+.shop-processing-filter-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.shop-processing-filter-search {
+  min-width: 0;
+}
+.shop-processing-filter-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+.shop-processing-item-search,
+.shop-processing-item-type-filter {
+  min-width: 0;
+  width: 100%;
+}
+.shop-processing-filter-source {
+  padding-bottom: 6px;
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .shop-processing-filter-bar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
 .shop-processing-item-grid {
   align-items: stretch;
   display: grid;

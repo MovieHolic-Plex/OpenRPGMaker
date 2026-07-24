@@ -111,7 +111,7 @@ export function actorBattlers(
       chargeRate: chargeRateFor(agility),
       // RM2k3 side-view: party stacks on the RIGHT, facing left into the field.
       battleX: 252,
-      battleY: 70 + index * 36,
+      battleY: 96 + index * 36,
       gauge: 0,
       stateIds: [...(overrides?.stateIds?.[actorId] ?? [])],
       equipmentEffects: equipmentRuntimeEffects(project, actorEquipment),
@@ -123,7 +123,7 @@ export function actorBattlers(
   });
 }
 
-function learnedSkillIds(
+export function learnedSkillIds(
   project: Project,
   actor: ReturnType<typeof normalizeActorRecord>,
   level: number,
@@ -220,7 +220,7 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
       chargeRate: chargeRateFor(stats.agility),
       // RM2k3 side-view: monster party also stacks on the RIGHT.
       battleX: 252,
-      battleY: 70 + index * 36,
+      battleY: 96 + index * 36,
       gauge: 0,
       stateIds: [],
       stateTurns: {},
@@ -250,14 +250,14 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
     if (!enemy) throw new Error(`Missing enemy: ${enemyId}`);
     const normalizedEnemy = normalizeEnemyRecord(enemy);
     const stats = normalizedEnemy.stats;
-    // Prefer authored troop coordinates, but recenter center-ish placements into
-    // a proper left-side RM2k3 formation so fights read as opposing lines.
     const authoredX = member.x;
     const authoredY = member.y;
-    const needsClassicFormation =
-      authoredX == null || authoredY == null || authoredX > 150;
     const formationX = 84 + (index % 2) * 44;
     const formationY = 52 + index * 36;
+    // SC12 (M4): enemy troop coords that sit too far center (x>150) are
+    // recentered into a left-side formation so they don't overlap the party.
+    const recenteredX = authoredX != null && authoredX > 150 ? formationX : authoredX;
+    const needsClassicFormation = recenteredX == null || authoredY == null;
     return {
       id: `enemy-${index + 1}`,
       recordId: enemy.id,
@@ -272,8 +272,8 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       mind: stats.mind,
       agility: stats.agility,
       chargeRate: chargeRateFor(stats.agility),
-      battleX: needsClassicFormation ? formationX : authoredX,
-      battleY: needsClassicFormation ? formationY : authoredY,
+      battleX: needsClassicFormation ? formationX : recenteredX!,
+      battleY: needsClassicFormation ? formationY : authoredY!,
       gauge: 0,
       stateIds: [],
       stateTurns: {},
@@ -318,6 +318,7 @@ export function battlerSnapshot(
     defending: battler.defending,
     stateIds: battler.stateIds,
     skillIds: battler.skillIds,
+    equipmentEffects: battler.equipmentEffects,
     captured: battler.captured === true ? true : undefined,
   };
   return {

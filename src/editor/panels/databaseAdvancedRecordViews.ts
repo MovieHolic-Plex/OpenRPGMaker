@@ -112,15 +112,11 @@ function isMonsterPreviewResource(resourceId: string | undefined): boolean {
 
 function neutralResourceSlot(resourceId: string | undefined): HTMLElement {
   const isGenerated = isGeneratedPreviewResource(resourceId);
-  const label = isGenerated ? "설정..." : resourceId ?? "(없음)";
-  const labelNode = isGenerated
-    ? el("button", { class: "db-resource-set-button", attrs: { type: "button", "aria-label": "리소스 선택" }, text: label })
-    : el("strong", { text: label });
   return el("div", {
     class: `db-neutral-resource-slot${resourceId ? "" : " empty"}${isGenerated ? " generated" : ""}`,
     children: [
       el("span", { class: "db-neutral-resource-icon" }),
-      labelNode,
+      el("strong", { text: resourceId ?? "(없음)" }),
     ],
   });
 }

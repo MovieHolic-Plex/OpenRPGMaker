@@ -317,7 +317,7 @@ export function formatMaterialLabelHint(tileset: TilesetDef | undefined): string
   const groups = tileset.tileGroups ?? [];
   const preferredFound = preferred
     .map((id) => groups.find((group) => group.id === id))
-    .filter((group): group is NonNullable<typeof group> => Boolean(group) && !isBagGroupId(group.id));
+    .filter((group): group is NonNullable<typeof group> => group != null && !isBagGroupId(group.id));
   const propish = groups.filter((group) => {
     if (isBagGroupId(group.id) || isBagMaterialQuery(group.name)) return false;
     return (
@@ -337,9 +337,30 @@ export function formatMaterialLabelHint(tileset: TilesetDef | undefined): string
   return `- 소품·지형 material 라벨 예(place_props/fill_region — 가방·그룹 id 금지, 미합의는 목업 확인): ${list}`;
 }
 
+/** 지시 텍스트에서 집/마을 시공 의도를 감지해 공식 facade 호출 시그니처 라인을 반환. */
+function constructionFacadeLine(instruction: string, mapId: MapId): string | null {
+  // 마을 intent: "집 N채인 마을", "N채 마을"
+  const villageMatch = instruction.match(/집?\s*(\d+)채[인]?\s*마을/);
+  if (villageMatch) {
+    const n = parseInt(villageMatch[1]!, 10);
+    return `- 마을 시공: author_village { target:{kind:"existing",mapId:"${mapId}"}, houseCount:${n}, countPolicy:"exact" } — 정확히 ${n}채`;
+  }
+  // 야외 집 한 채 (author_house는 regionIntentGuideLines 구조물 가이드에 이미 노출 — 시그니처만 보강)
+  if (/야외\s*집\s*한\s*채|집\s*한\s*채/.test(instruction)) {
+    return `- 야외 집 시공 시그니처: { kind:"single", mapId:"${mapId}" } — 정확히 1채`;
+  }
+  // 야외 집 N채
+  const houseMatch = instruction.match(/(?:야외\s*)?집\s*(\d+)채/);
+  if (houseMatch) {
+    const n = parseInt(houseMatch[1]!, 10);
+    return `- 야외 집 시공 시그니처: { kind:"lots", mapId:"${mapId}" } — 정확히 ${n}채`;
+  }
+  return null;
+}
+
 // aiChatPanel.contextFooter와 동일한 [컨텍스트] 라인 포맷(buildSpec.ts의 정규식이 파싱).
 // 이 라인이 있어야 세션이 선택 영역을 이번 턴의 암묵적 명세로 인식한다.
-// 도메인 키워드(타일/npc)를 넣어 place_props·build_house_kit·place_npc 가 노출되게 한다.
+// 도메인 키워드(타일/npc)를 넣어 place_props·author_house·place_npc 가 노출되게 한다.
 export function buildRegionTaskMessage(
   instruction: string,
   mapName: string,
@@ -349,13 +370,22 @@ export function buildRegionTaskMessage(
 ): string {
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
   const categories = routeRegionIntent(instruction);
-  const intentGuides = regionIntentGuideLines(categories);
   const wantsInterior = categories.includes("interior");
+  // 모호한 집 요청: "집"이 있지만 "야외"/"실내" 표지가 없으면 되묻기.
+  const ambiguousHouse = /집|건물/.test(instruction) && !/야외|외장|실내|인테리어|마을/.test(instruction);
+  // 실내 전용·모호한 집 요청에는 야외 구조물 가이드를 빼서 facade 이름이 노출되지 않게 한다.
+  const filteredCategories = wantsInterior || ambiguousHouse
+    ? categories.filter((c) => c !== "structure")
+    : categories;
+  const intentGuides = regionIntentGuideLines(filteredCategories);
+  const facadeLine = ambiguousHouse ? null : constructionFacadeLine(instruction, mapId);
   const toolGuide = [
     "영역 작업 도구 규칙:",
+    ...(ambiguousHouse ? ["- 집/건물 요청: 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 먼저 되물으세요. 추측 시공 금지."] : []),
     wantsInterior
-      ? "- 실내/방: start_interior_room_session 또는 run_interior_room_pipeline (새 mapId). 야외 build_house_kit 금지. create_map만 하고 끝내지 말 것"
-      : "- 집/건물(야외 외장): build_house_kit (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 build_house_kit 금지 → 실내 세션 툴",
+      ? "- 실내/방: start_interior_room_session (새 mapId). 야외 시공 facade 금지. create_map만 하고 끝내지 말 것"
+      : "- 집/건물(야외 외장): 공식 시공 facade 사용 (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 야외 시공 facade 금지 → 실내 세션 툴",
+    ...(facadeLine ? [facadeLine] : []),
     "- 나무/바위/꽃 산포: place_props + material(타일 라벨/설명, 예 \"침엽수\"·\"꽃\"). 그룹 id·vocabId 금지. 같은 place_props는 1회",
     formatMaterialLabelHint(tileset),
     // 툴콜링 사고: "박스 2개" → small-props 가방. 구체 라벨만 허용.

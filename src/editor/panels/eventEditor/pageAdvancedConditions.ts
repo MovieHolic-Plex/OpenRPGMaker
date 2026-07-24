@@ -209,6 +209,7 @@ function renderAdvancedConditionContent(
         valueTestId: `event-page-advanced-condition-friendship-value-${listIndex}`,
       });
   }
+  return document.createElement("div");
 }
 
 function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageCondition {
@@ -238,4 +239,5 @@ function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageConditi
     case "friendshipAtLeast":
       return { kind: "friendshipAtLeast", value: 100 };
   }
+  return { kind: "switch", switchId: "", value: true };
 }

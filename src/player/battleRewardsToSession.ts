@@ -128,7 +128,7 @@ function applyBattleVitalsToSession(session: PlaySession, actors: readonly Battl
 }
 
 // 액터 한 명의 레벨업을 세션에 반영: 레벨/능력치(현재치 보전 가산)/습득 스킬.
-function applyActorLevelUp(session: PlaySession, project: Project, actorId: string): BattleLevelUpResult | null {
+export function applyActorLevelUp(session: PlaySession, project: Project, actorId: string): BattleLevelUpResult | null {
   const currentLevel = session.actorLevels[actorId] ?? 1;
   const totalExp = session.actorExperience[actorId] ?? 0;
   const result = computeActorLevelUp(project, actorId, currentLevel, totalExp, { classOverrides: session.classOverrides });

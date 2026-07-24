@@ -113,14 +113,14 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
           el("button", {
             class: "database-footer-button",
             text: "이전",
-            attrs: { type: "button", disabled: unlabeled.length === 0 ? "true" : undefined },
+            attrs: { type: "button", ...(unlabeled.length === 0 ? { disabled: "true" } : {}) },
             dataset: { testid: "tileset-unlabeled-prev" },
             on: { click: () => go(-1) },
           }),
           el("button", {
             class: "database-footer-button",
             text: idxInQueue >= 0 ? `다음 (${idxInQueue + 1}/${unlabeled.length})` : "첫 미라벨",
-            attrs: { type: "button", disabled: unlabeled.length === 0 ? "true" : undefined },
+            attrs: { type: "button", ...(unlabeled.length === 0 ? { disabled: "true" } : {}) },
             dataset: { testid: "tileset-unlabeled-next" },
             on: { click: () => go(1) },
           }),

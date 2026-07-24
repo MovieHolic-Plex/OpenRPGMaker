@@ -1,4 +1,5 @@
 import { canMove } from "@/project/collision";
+import { isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { store } from "@/project/store";
 import type { MoveCommand } from "@/project/types";
 import { characterSpriteX, characterSpriteY, updateCharacterDepth } from "@/player/characterDepth";
@@ -25,6 +26,7 @@ import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/enc
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
 import { interactWithFarmPlot } from "@/player/farming";
 import { tryChestInteraction } from "@/player/playSceneChest";
+import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 
 type ActionEventSceneContext = Pick<
   PlaySceneContext,
@@ -63,6 +65,8 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
   if (!cutsceneInputLocked && input.actionPressed && !scene.moving) handleAction(scene);
+  if (!cutsceneInputLocked && input.attackPressed) tryActionCombatSwing(scene);
+  if (!cutsceneInputLocked && input.skillPressed) tryActionSkillCast(scene);
   scene.input_.resetEdges();
   if (canUpdateWaitingEvents(scene)) {
     scene.updateAutonomousNPCs(deltaMs);
@@ -70,6 +74,7 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   }
   scene.updateTimers(deltaMs);
   scene.updateFieldSpawns(deltaMs);
+  scene.updateActionCombat?.(deltaMs);
   scene.syncRuntimeState();
 }
 
@@ -130,7 +135,14 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   // 현재 칸에서 직교 한 칸 통행 가능 여부(대각선은 두 직교로 분해해 판정).
   const canStep = (dx: number, dy: number): boolean =>
     canMove(project, scene.map, scene.tileX, scene.tileY, scene.tileX + dx, scene.tileY + dy);
-  const step = resolveDiagonalStep(input.x, input.y, canStep);
+  // 4방향 모드(서바이벌 호러 감각): 대각 입력을 한 축으로 직교화한다.
+  let moveX = input.x;
+  let moveY = input.y;
+  if (moveX !== 0 && moveY !== 0 && isActionCombatMap(project, scene.map) && resolveActionCombatConfig(project).fourWayMovement) {
+    if (input.dir === "up" || input.dir === "down") moveX = 0;
+    else moveY = 0;
+  }
+  const step = resolveDiagonalStep(moveX, moveY, canStep);
   if (!step) {
     // 벽을 향해도 그 방향으로 몸은 돌린다(제자리 방향 전환).
     if (input.dir) scene.facing = input.dir;
@@ -141,6 +153,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   const ny = scene.tileY + step.dy;
   const blockingEvent = findBlockingRuntimeEventInScene(scene, nx, ny);
   if (blockingEvent) {
+    scene.facing = facingForStep(step.dx, step.dy);
     firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
     return;
   }
@@ -262,7 +275,7 @@ export function handleAction(scene: ActionEventSceneContext): void {
     void scene.runEvent(event.event.id);
     return;
   }
-  if (tryChestInteraction(scene, tx, ty)) return;
+  if (tryChestInteraction(scene as any, tx, ty)) return;
   if (tryFarmInteraction(scene, tx, ty)) return;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
@@ -274,7 +287,7 @@ export function handleAction(scene: ActionEventSceneContext): void {
     void scene.runEvent(underfoot.event.id);
     return;
   }
-  if (tryChestInteraction(scene, scene.tileX, scene.tileY)) return;
+  if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return;
   void tryFarmInteraction(scene, scene.tileX, scene.tileY);
 }
 

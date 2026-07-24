@@ -5,15 +5,11 @@ const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, imp
 
 export default defineConfig({
   base: "./",
+  envPrefix: "OPENRPG_PLAYER_",
   publicDir: false,
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
-      { find: /^@\/editor\/cutscene$/, replacement: src("player/exportCutsceneShim.ts") },
-      { find: /^@\/editor\/eventCommands\/m2Catalog$/, replacement: src("player/exportM2CatalogShim.ts") },
-      { find: /^@\/editor\/tilesetImage$/, replacement: src("player/exportTilesetImageShim.ts") },
-      { find: /^@\/project\/io$/, replacement: src("player/exportProjectIoShim.ts") },
-      { find: /^@\/project\/io\/resourceReferenceValidation$/, replacement: src("player/exportResourceReferenceValidationShim.ts") },
       { find: /^@\/project\/store$/, replacement: src("player/exportProjectStoreShim.ts") },
       { find: "@", replacement: src("") },
     ],

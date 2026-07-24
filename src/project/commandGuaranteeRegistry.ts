@@ -1,4 +1,4 @@
-import type { CommandKind } from "@/project/commandKindRegistry";
+﻿import type { CommandKind } from "@/project/commandKindRegistry";
 
 export const COMMAND_CONTEXTS = ["map", "common", "troop"] as const;
 
@@ -205,6 +205,21 @@ export const COMMAND_GUARANTEES = {
     executionOwner: "player",
     completion: "dynamic",
     support: { map: "partial", common: "partial", troop: "partial" },
+  }),
+  openSaveMenu: guarantee("system", {
+    executionOwner: "player",
+    completion: "conditionalPause",
+    quick: true,
+  }),
+  spawnFieldEnemy: guarantee("monster", {
+    executionOwner: "player",
+    completion: "continue",
+    quick: true,
+  }),
+  despawnFieldEnemy: guarantee("monster", {
+    executionOwner: "player",
+    completion: "continue",
+    quick: true,
   }),
 } satisfies Record<CommandKind, CommandGuarantee>;
 

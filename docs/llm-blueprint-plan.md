@@ -1,5 +1,7 @@
 # LLM Blueprint 계획 (사용자 요청 → 청사진 → 시공)
 
+> **Status:** 구현 완료 (기록용). 현행 문서는 `openwiki/large-village-generation.md` 및 `docs/README.md` 참조.
+
 > 목적: LLM이 **타일을 직접 찍지 않고**, 사용자 말을 듣고 **블루프린트(중간 표현)** 를 그린 뒤, 코드 시공기가 맵을 만든다.  
 > 관련: `docs/village-plan-architecture-easy.md`, `villageRequirements` / `plan_village` / `run_village_pipeline`.
 

@@ -27,7 +27,7 @@ export {
   toggleCollision,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapId, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, TilesetDef } from "@/project/types";
 
 // ── 맵 CRUD ──
 export function addMap(name: string, width = 16, height = 16): MapId {
@@ -194,6 +194,49 @@ export function setMapFieldSpawns(mapId: MapId, spawns: FieldSpawnDef[]): void {
     if (!map) return;
     if (spawns.length > 0) map.fieldSpawns = structuredClone(spawns);
     else delete map.fieldSpawns;
+  }, { scope: "map", mapId });
+}
+
+// ── RM2003 스타일 맵 속성 ──
+
+export function setMapBackground(mapId: MapId, bg: MapBackground | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (bg) map.background = { ...bg };
+    else delete map.background;
+  }, { scope: "map", mapId });
+}
+
+export function setMapBgm(mapId: MapId, bgm: MapBgmSetting | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (bgm) map.bgm = { ...bgm };
+    else delete map.bgm;
+  }, { scope: "map", mapId });
+}
+
+export function setMapBattleBackground(mapId: MapId, resourceId: string | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (resourceId) map.battleBackground = resourceId;
+    else delete map.battleBackground;
+  }, { scope: "map", mapId });
+}
+
+export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disableTeleport?: boolean; disableEscape?: boolean }): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (flags.disableSave) map.disableSave = true; else delete map.disableSave;
+    if (flags.disableTeleport) map.disableTeleport = true; else delete map.disableTeleport;
+    if (flags.disableEscape) map.disableEscape = true; else delete map.disableEscape;
   }, { scope: "map", mapId });
 }
 

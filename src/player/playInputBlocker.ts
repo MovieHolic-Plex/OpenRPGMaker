@@ -46,10 +46,15 @@ export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
   // 클릭으로 시작/이어하기/종료가 되게 예외를 둔다.
   if (isAutomationPointerAllowed()) return false;
   if (isTitleMenuPointerTarget(event.target)) return false;
+  if (isTouchControlPointerTarget(event.target)) return false;
   if (event.type !== "click") return true;
   // 키보드 커서 메뉴는 기존 버튼 핸들러를 재사용하기 위해 HTMLElement.click()을 합성한다.
   // 실제 마우스 click은 detail >= 1 이므로 막고, 키보드/테스트용 합성 click(detail 0/없음)은 통과시킨다.
   return typeof event.detail === "number" && event.detail > 0;
+}
+
+export function isTouchControlPointerTarget(target: EventTarget | null | undefined): boolean {
+  return hasClosestTarget(target, "[data-play-input-owner='touch-controls']");
 }
 
 function isAutomationPointerAllowed(): boolean {
@@ -59,13 +64,16 @@ function isAutomationPointerAllowed(): boolean {
 }
 
 function isTitleMenuPointerTarget(target: EventTarget | null | undefined): boolean {
+  return hasClosestTarget(
+    target,
+    "[data-testid='title-new-game'], [data-testid='title-load-game'], [data-testid='title-quit-game']"
+  );
+}
+
+function hasClosestTarget(target: EventTarget | null | undefined, selector: string): boolean {
   // Node 단위 테스트 환경에는 Element 글로벌이 없을 수 있어 duck-type 한다.
   if (!target || typeof target !== "object") return false;
   const node = target as { closest?: (selector: string) => unknown };
   if (typeof node.closest !== "function") return false;
-  return Boolean(
-    node.closest(
-      "[data-testid='title-new-game'], [data-testid='title-load-game'], [data-testid='title-quit-game']"
-    )
-  );
+  return Boolean(node.closest(selector));
 }

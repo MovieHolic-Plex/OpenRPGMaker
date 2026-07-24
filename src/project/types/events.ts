@@ -13,6 +13,7 @@ import type {
   TroopId,
 } from "./base";
 import type { Season, TimePhase } from "../gameTime";
+import type { FieldSpawnDef } from "./project";
 
 export type Trigger =
   | { kind: "action" }
@@ -345,6 +346,9 @@ export type Command =
       notEnoughBranch?: Command[];
     }
   | { kind: "checkpointSave"; label?: string }
+  | { kind: "openSaveMenu" }
+  | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
+  | { kind: "despawnFieldEnemy"; spawnId: string }
   | { kind: "killPlayer"; message?: string }
   | { kind: "triggerEnding"; endingId?: string }
   | { kind: "gameOver" }
@@ -414,6 +418,8 @@ export interface EventPageMovement {
   sightRange?: number;
   giveUpRange?: number;
   pathfind?: boolean;
+  /** 추적 결정 간격(ms) 명시 오버라이드. 생략 시 frequency 랭크로 결정. */
+  moveIntervalMs?: number;
 }
 
 export interface EventPage {

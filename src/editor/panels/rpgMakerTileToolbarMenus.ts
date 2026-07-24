@@ -109,18 +109,27 @@ export function makeHistoryDropdown(model: RpgMakerToolbarModel): HTMLElement {
 
 /**
  * ⋯ 오버플로 메뉴 — 저빈도 컨트롤을 한 토글로 묶는다:
- * 복사/붙여넣기(구 tool-command-row), 브러시 크기, 구조 템플릿.
+ * 복사/붙여넣기, 인스펙터/규칙/기록, 브러시 크기, 구조 템플릿.
  * copy-button/paste-button/brush-size-N/structure-stamp-* testid는 그대로 승계.
  */
 export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
-  const { state, map } = model;
+  const { state, map, tileset } = model;
   const wrapper = makeToolbarMenuWrapper("toolbar-overflow-menu");
-  const active = openMenu === "overflow";
-  const highlighted = state.brushSize > 1 || state.activeStructureStampId !== null;
-  wrapper.append(makeMenuToggle("overflow", "더 보기", active, highlighted, model.rerender));
-  if (!active) return wrapper;
+  const panelOpen = openMenu === "overflow" || openMenu === "inspector" || openMenu === "ruleAudit" || openMenu === "history";
+  const ruleCount = ruleAuditViolationCount();
+  const historyCount = mapHistoryEntryCount();
+  const highlighted = state.brushSize > 1 || state.activeStructureStampId !== null || ruleCount > 0;
+  const toggle = makeMenuToggle("overflow", "더 보기", panelOpen, highlighted, model.rerender);
+  if (ruleCount > 0) toggle.append(makeToolbarBadge(ruleCount, "rule-audit-badge", true));
+  wrapper.append(toggle);
+  if (!panelOpen) return wrapper;
 
-  const menu = el("div", { class: "rpg-maker-toolbar-dropdown rpg-maker-overflow-dropdown", attrs: { role: "menu" }, dataset: { testid: "toolbar-overflow-dropdown" } });
+  const menu = el("div", {
+    class: "rpg-maker-toolbar-dropdown rpg-maker-overflow-dropdown",
+    attrs: { role: "menu" },
+    dataset: { testid: "toolbar-overflow-dropdown" },
+  });
+
   menu.append(makeOverflowSectionLabel("편집"));
   menu.append(makeOptionItem("복사 (선택 영역)", false, false, () => {
     void copySelection(map.id);
@@ -133,6 +142,64 @@ export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
     closeToolbarMenus();
     model.rerender();
   }, "paste-button"));
+
+  menu.append(makeOverflowSectionLabel("검사"));
+  menu.append(makeOptionItem("인스펙터", openMenu === "inspector", false, () => {
+    openMenu = openMenu === "inspector" ? "overflow" : "inspector";
+    model.rerender();
+  }, "rpg-maker-tool-inspector"));
+  menu.append(makeOptionItem(
+    ruleCount > 0 ? `규칙 감사 (${ruleCount})` : "규칙 감사",
+    openMenu === "ruleAudit",
+    false,
+    () => {
+      openMenu = openMenu === "ruleAudit" ? "overflow" : "ruleAudit";
+      model.rerender();
+    },
+    "toolbar-toggle-ruleAudit",
+  ));
+  menu.append(makeOptionItem(
+    historyCount > 0 ? `작업 기록 (${historyCount})` : "작업 기록",
+    openMenu === "history",
+    false,
+    () => {
+      openMenu = openMenu === "history" ? "overflow" : "history";
+      model.rerender();
+    },
+    "toolbar-toggle-history",
+  ));
+
+  if (openMenu === "inspector") {
+    const selectedTile = state.selectedTile;
+    const tileLayer = selectedTile >= 0 ? (tileset.priority[selectedTile] ?? "lower") : "lower";
+    const stamp = selectedTile >= 0 ? tileStampsForTile(selectedTile, tileset)[0] : null;
+    menu.append(makeOverflowSectionLabel("인스펙터"));
+    menu.append(makeInspectorSummary(selectedTile, tileset, tileLayer));
+    menu.append(makeOptionItem("즐겨찾기", isFavoriteTile(selectedTile), selectedTile < 0, () => {
+      toggleFavoriteTile(selectedTile);
+      model.rerender();
+    }));
+    menu.append(makeOptionItem("채우기", state.tool === "fill", false, () => {
+      selectRpgMakerTileTool("fill");
+      closeToolbarMenus();
+      model.rerender();
+    }));
+    menu.append(makeOptionItem("스탬프", Boolean(stamp && state.activeStampId === stamp.id), !stamp, () => {
+      toggleRpgMakerTileStamp(selectedTile, tileset);
+      model.rerender();
+    }));
+    menu.append(makeOptionItem("스포이드", state.tool === "eyedropper", false, () => {
+      selectRpgMakerEyedropperTool();
+      closeToolbarMenus();
+      model.rerender();
+    }));
+  } else if (openMenu === "ruleAudit") {
+    menu.append(makeOverflowSectionLabel("규칙 감사"));
+    menu.append(renderRuleAuditPanel());
+  } else if (openMenu === "history") {
+    menu.append(makeOverflowSectionLabel("작업 기록"));
+    menu.append(renderMapHistoryPanel());
+  }
 
   menu.append(makeOverflowSectionLabel("브러시 크기"));
   for (const size of EDITOR_BRUSH_SIZES) {
@@ -216,7 +283,12 @@ function makeMenuToggle(menu: OpenToolbarMenuId, label: string, expanded: boolea
     dataset: { testid: menuToggleTestId(menu) },
     on: {
       click: () => {
-        openMenu = expanded ? null : menu;
+        // overflow 토글은 인스펙터/규칙/기록 패널이 열려 있어도 닫아 1줄 상태를 복구한다.
+        if (menu === "overflow" && (openMenu === "inspector" || openMenu === "ruleAudit" || openMenu === "history")) {
+          openMenu = null;
+        } else {
+          openMenu = expanded ? null : menu;
+        }
         rerender();
       },
     },

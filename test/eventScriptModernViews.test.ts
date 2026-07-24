@@ -38,7 +38,7 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
     restoreDom?.();
   });
 
-  it("flattenScript 는 분기 라벨과 직전 얼굴 상태를 스크립트 순서로 기록한다", () => {
+  it("flattenScript 는 분기 라벨과 시뮬레이션 상태를 스크립트 순서로 기록한다", () => {
     const commands: Command[] = [
       { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 3, position: "left", flipHorizontally: false },
       { kind: "text", body: "안녕" },
@@ -51,11 +51,13 @@ describe("이벤트 스크립트 모던 뷰 (P2)", () => {
     ];
     const steps = flattenScript(commands);
     expect(steps.map((step) => step.command.kind)).toEqual(["changeFace", "text", "fork", "text", "text"]);
-    // changeFace 자신에게는 이전 얼굴(없음), 다음 text 부터 적용.
-    expect(steps[0]?.face).toBeUndefined();
-    expect(steps[1]?.face).toMatchObject({ resourceId: "easyrpg-faceset-actor1", faceIndex: 3 });
+    expect(steps[0]?.simState).toBeDefined();
+    expect(steps[1]?.simState).toBeDefined();
+    expect(steps[2]?.simState).toBeDefined();
     expect(steps[3]?.branchLabel).toBe("참일 때");
     expect(steps[4]?.branchLabel).toBe("그 외");
+    const forkStep = steps.find((s) => s.command.kind === "fork");
+    expect(forkStep?.forkTaken).toBeDefined();
   });
 
   it("라이브 미리보기와 플로우차트는 기본 접힘 details 로 렌더된다", () => {

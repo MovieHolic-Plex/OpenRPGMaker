@@ -1,0 +1,75 @@
+.action-hud {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+  font-family: "D2Coding", "Consolas", monospace;
+}
+
+.action-hud-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-hud-icon {
+  font-size: 9px;
+  font-weight: 700;
+  color: #ffd7d7;
+  background: rgba(20, 8, 8, 0.75);
+  border: 1px solid rgba(224, 92, 74, 0.8);
+  border-radius: 4px;
+  padding: 1px 4px;
+  line-height: 1.4;
+}
+
+.action-hud-icon-st {
+  color: #d7ffd7;
+  background: rgba(8, 20, 8, 0.75);
+  border-color: rgba(126, 200, 80, 0.8);
+}
+
+.action-hud-bar {
+  width: 96px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.action-hud-bar-fill {
+  height: 100%;
+  background: linear-gradient(180deg, #ff8a7a, #d63c2f);
+  transition: width 120ms ease-out;
+}
+
+.action-hud-bar-fill.is-low {
+  background: linear-gradient(180deg, #ff4d4d, #a01515);
+  animation: action-hud-low-pulse 0.7s ease-in-out infinite;
+}
+
+.action-hud-bar-fill-st {
+  background: linear-gradient(180deg, #9be37e, #4e9b3a);
+}
+
+.action-hud-bar-st {
+  width: 72px;
+  height: 6px;
+}
+
+.action-hud-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 2px #000000, 0 0 4px rgba(0, 0, 0, 0.9);
+}
+
+@keyframes action-hud-low-pulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.6); }
+}

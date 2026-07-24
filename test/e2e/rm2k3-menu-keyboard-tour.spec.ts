@@ -6,6 +6,10 @@ import {
 
 test.setTimeout(120_000);
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
+
 test("RM2K3 play menu keyboard tour mutates and restores runtime state", async ({ page }) => {
   await startActualPlay(page, recoveryItemProject(77), "/?e2eVitals=1");
   await clearSaveSlots(page);

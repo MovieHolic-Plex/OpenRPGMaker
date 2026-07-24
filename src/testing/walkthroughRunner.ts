@@ -84,21 +84,6 @@ function runOneBattle(
     levels[id] = session.actorLevels[id] ?? 1;
     experience[id] = session.actorExperience[id] ?? 0;
   }
-  const options: BattleRuntimeOptions = {
-    project,
-    troopId,
-    canEscape,
-    canLose,
-    party: { levels, experience, partyActorIds },
-    sessionState: {
-      switches: { ...session.switches },
-      variables: { ...session.variables },
-      inventory: { ...session.inventory },
-    },
-  };
-  // 회복약 후보: 인벤토리에 있으면 저HP 때 사용.
-  const potionItemId = Object.keys(session.inventory).find((id) => (session.inventory[id] ?? 0) > 0 && /potion/i.test(id));
-
   const originalRandom = Math.random;
   let a = seed >>> 0;
   const rng = (): number => {
@@ -107,6 +92,20 @@ function runOneBattle(
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+  const options: BattleRuntimeOptions = {
+    project,
+    troopId,
+    canEscape,
+    canLose,
+    rng,
+    party: { levels, experience, partyActorIds },
+    sessionState: {
+      switches: { ...session.switches },
+      variables: { ...session.variables },
+      inventory: { ...session.inventory },
+    },
+  };
+  const potionItemId = Object.keys(session.inventory).find((id) => (session.inventory[id] ?? 0) > 0 && /potion/i.test(id));
   try {
     Math.random = rng;
     const rt = createBattleRuntime(options);

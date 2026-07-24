@@ -29,6 +29,7 @@ export interface ChatMessage {
 }
 
 export interface AiConfig {
+  authMode: "chatgpt" | "apiKey";
   baseUrl: string;
   // 감독 모델: 계획/공간추론/스펙 작성/검수 AssistantSession 대화 루프.
   model: string;
@@ -44,13 +45,17 @@ export interface AiConfig {
 }
 
 // 기본값. apiKey는 localStorage 우선, 비어 있으면 dev env(VITE_LLM_API_KEY 등) 폴백.
-// DEFAULT_MODEL: 기본 경로는 flash-lite 단일(계획·실행·검수 동일).
-// MiniMax 이원화는 사용자가 감독 모델을 따로 둘 때만(model !== liteModel).
 // 저장 설정은 loadAiConfig가 존중한다.
 export const DEFAULT_BASE_URL = "";
-export const DEFAULT_MODEL = "google/gemini-3.1-flash-lite";
+// DEV: vite.config.ts codexOAuthPlugin mounts the same handlers same-origin, so the
+// browser calls /auth/* and /v1/chat/completions on the dev server itself (no separate
+// `npm run ai:oauth` process). PROD (preview/dist): fall back to the standalone
+// 127.0.0.1:17832 companion started via `npm run ai:oauth`.
+export const DEFAULT_CHATGPT_BASE_URL =
+  typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
+export const DEFAULT_MODEL = "z-ai/glm-5.2-ultrafast";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "google/gemini-3.1-flash-lite";
+export const DEFAULT_LITE_MODEL = "z-ai/glm-5.2-ultrafast";
 export const DEFAULT_MAX_TOKENS = 32768;
 
 /** Browser-exposed env keys (from .env.local via Vite). Never hardcode secrets in source. */
@@ -68,9 +73,9 @@ function envApiKey(): string {
 
 function envBaseUrl(): string {
   try {
-    // OpenAI-compatible absolute URL only. Relative proxy paths are yunwu-only and not used as default.
     const llm = import.meta.env.VITE_LLM_API_URL?.trim();
     if (llm && /^https?:\/\//i.test(llm)) return llm.replace(/\/$/, "");
+    if (llm && llm.startsWith("/")) return llm.replace(/\/$/, "");
   } catch {
     /* non-vite runtime */
   }
@@ -78,8 +83,15 @@ function envBaseUrl(): string {
 }
 
 export function defaultAiConfig(): AiConfig {
+  // env(VITE_LLM_API_URL + VITE_LLM_API_KEY)가 있으면 apiKey 모드로 자동 시작 —
+  // yunwu/게이트웨이 경로로 glm 등 비-Codex 모델이 바로 작동한다.
+  // env가 없으면 chatgpt OAuth 경로로 fallback.
+  const envUrl = envBaseUrl();
+  const envKey = envApiKey();
+  const hasEnvGateway = !!envUrl && !!envKey;
   return {
-    baseUrl: envBaseUrl() || DEFAULT_BASE_URL,
+    authMode: hasEnvGateway ? "apiKey" : "chatgpt",
+    baseUrl: envUrl || DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
     apiKey: envApiKey(),
@@ -103,12 +115,22 @@ export function loadAiConfig(): AiConfig {
     if (!raw) return base;
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
     const storedKey = typeof parsed.apiKey === "string" ? parsed.apiKey.trim() : "";
+    const authMode = parsed.authMode === "chatgpt" || parsed.authMode === "apiKey"
+      ? parsed.authMode
+      : storedKey || (typeof parsed.baseUrl === "string" && parsed.baseUrl.trim())
+        ? "apiKey"
+        : "chatgpt";
     return {
+      authMode,
       baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
       // 저장된 사용자 모델은 존중하되 비었으면 기본값.
       model: typeof parsed.model === "string" && parsed.model.trim() ? parsed.model.trim() : base.model,
-      liteModel: typeof parsed.liteModel === "string" && parsed.liteModel.trim() ? parsed.liteModel.trim() : base.liteModel,
-      apiKey: storedKey || base.apiKey || envApiKey(),
+      liteModel: typeof parsed.liteModel === "string" && parsed.liteModel.trim()
+        ? parsed.liteModel.trim()
+        : (typeof parsed.model === "string" && parsed.model.trim() ? parsed.model.trim() : base.liteModel),
+      apiKey: parsed.authMode === "apiKey" && typeof parsed.apiKey === "string"
+        ? storedKey
+        : storedKey || base.apiKey || envApiKey(),
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
         ? Math.floor(Number(parsed.maxToolCalls))
         : base.maxToolCalls,
@@ -133,7 +155,10 @@ export function saveAiConfig(config: AiConfig): void {
 }
 
 export function configForLiteModel(config: AiConfig): AiConfig {
-  const liteModel = config.liteModel?.trim() || DEFAULT_LITE_MODEL;
+  // liteModel 미설정 시 감독 model을 따라간다(일원화). 감독을 바꾸면 영역 작업 실행도 함께 바뀌고,
+  // 각 authMode(chatgpt OAuth / apiKey)의 baseUrl·게이트웨이 경로가 일관되게 유지된다.
+  // DEFAULT_LITE_MODEL은 defaultAiConfig() 초기값으로만 의미를 가진다.
+  const liteModel = config.liteModel?.trim() || config.model.trim() || DEFAULT_LITE_MODEL;
   // 실행(툴 루프) 단계는 추론 비활성 — 벽시계·비용 폭주 방지.
   return { ...config, model: liteModel, liteModel, reasoningEffort: "off" };
 }
@@ -194,11 +219,13 @@ export class LlmAbortError extends Error {
   }
 }
 
-function humanizeStatus(status: number, body: string): string {
+function humanizeStatus(status: number, body: string, authMode: AiConfig["authMode"]): string {
   const detail = body ? ` — ${body.slice(0, 300)}` : "";
   switch (status) {
     case 401:
-      return `인증 실패(401): API 키가 없거나 잘못되었습니다. 어시스턴트 설정에서 API 키와 엔드포인트(baseUrl)를 확인하세요.${detail}`;
+      return authMode === "chatgpt"
+        ? `ChatGPT 로그인 실패(401): 로컬 OAuth 동반 서비스에서 다시 로그인하세요.${detail}`
+        : `인증 실패(401): API 키가 없거나 잘못되었습니다. 어시스턴트 설정에서 API 키와 엔드포인트(baseUrl)를 확인하세요.${detail}`;
     case 402:
       return `결제/크레딧 오류(402): LLM 공급자 잔액 또는 과금 설정을 확인하세요.${detail}`;
     case 429:
@@ -210,14 +237,17 @@ function humanizeStatus(status: number, body: string): string {
 }
 
 function endpoint(config: AiConfig): string {
-  return `${config.baseUrl.replace(/\/$/, "")}/chat/completions`;
+  const baseUrl = config.authMode === "chatgpt" ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
+  return `${baseUrl.replace(/\/$/, "")}/chat/completions`;
 }
 
 function headers(config: AiConfig): Record<string, string> {
-  const h: Record<string, string> = { "Content-Type": "application/json", Authorization: `Bearer ${config.apiKey}` };
-  // Optional provider metadata (harmless for most OpenAI-compatible gateways).
-  if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
-  h["X-Title"] = "RPG ZZU Editor";
+  const h: Record<string, string> = { "Content-Type": "application/json" };
+  if (config.authMode === "apiKey") {
+    h.Authorization = `Bearer ${config.apiKey}`;
+    if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
+    h["X-Title"] = "RPG ZZU Editor";
+  }
   return h;
 }
 
@@ -429,10 +459,10 @@ function sleep(ms: number): Promise<void> {
 
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
 async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
-  if (!config.apiKey || !config.apiKey.trim()) {
+  if (config.authMode === "apiKey" && (!config.apiKey || !config.apiKey.trim())) {
     throw new LlmError("API 키가 설정되지 않았습니다. 어시스턴트 설정에서 API 키를 입력하세요.", 401);
   }
-  if (!config.baseUrl || !config.baseUrl.trim()) {
+  if (config.authMode === "apiKey" && (!config.baseUrl || !config.baseUrl.trim())) {
     throw new LlmError("LLM 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.", 400);
   }
   const stream = req.stream ?? Boolean(req.onToken || req.onReasoning);
@@ -446,7 +476,9 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     });
   } catch (cause) {
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
-    throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${config.baseUrl}). ${cause instanceof Error ? cause.message : ""}`);
+    const target = config.authMode === "chatgpt" ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
+    const hint = config.authMode === "chatgpt" ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
+    throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`);
   }
 
   if (!response.ok) {
@@ -456,7 +488,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     } catch {
       /* ignore */
     }
-    throw new LlmError(humanizeStatus(response.status, body), response.status);
+    throw new LlmError(humanizeStatus(response.status, body, config.authMode), response.status);
   }
 
   const contentType = response.headers?.get("Content-Type") ?? "";

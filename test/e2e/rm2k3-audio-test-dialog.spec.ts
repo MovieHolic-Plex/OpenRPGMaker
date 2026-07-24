@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+test.beforeEach(async ({ page }) => {
+  // 클래식 툴바(음악 버튼 포함)는 전문가 모드에서만 노출된다.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
+
 test("audio test dialog follows Korean RM2003 BGM test layout", async ({ page }, testInfo) => {
   await page.goto("/?freshProject=1&audioTestDialog=1");
   await page.getByTestId("toolbar-sound-test").click();

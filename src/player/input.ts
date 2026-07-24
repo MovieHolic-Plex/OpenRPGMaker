@@ -15,6 +15,8 @@ export interface InputState {
   dash: boolean; // 대시(Shift) 유지 여부
   actionPressed: boolean; // 이번 프레임에 action(조사) 엣지
   confirmPressed: boolean; // 이번 프레임에 confirm(대사 진행) 엣지
+  attackPressed: boolean; // 이번 프레임에 attack(액션 전투 스윙) 엣지. attackMode에서 Space가 이쪽으로 라우팅된다.
+  skillPressed: boolean; // 이번 프레임에 skill(Q — 액션 스킬 캐스트) 엣지
 }
 
 // 눌린 방향 우선순위 목록(오래된→최근)에서 8방향 이동 의도를 해석한다.
@@ -75,13 +77,26 @@ export class RuntimeKeyHoldTracker {
   private readonly actionKeys = new Set<string>();
   private readonly directions = new Set<Dir>();
   private pendingActionEdge = false;
+  private pendingAttackEdge = false;
+  private pendingSkillEdge = false;
+  private attackMode = false;
   private dashHeld = false;
+
+  setAttackMode(enabled: boolean): void {
+    this.attackMode = enabled;
+    if (!enabled) this.pendingAttackEdge = false;
+  }
 
   keyDown(key: string): void {
     if (isDashKey(key)) this.dashHeld = true;
+    if (key.toLowerCase() === "q") {
+      this.pendingSkillEdge = true;
+    }
     const actionKey = normalizedActionKey(key);
     if (actionKey) {
-      if (!this.actionKeys.has(actionKey)) {
+      if (this.attackMode && (actionKey === " " || actionKey === "space")) {
+        if (!this.actionKeys.has(actionKey)) this.pendingAttackEdge = true;
+      } else if (!this.actionKeys.has(actionKey)) {
         this.pendingActionEdge = true;
       }
       this.actionKeys.add(actionKey);
@@ -108,8 +123,30 @@ export class RuntimeKeyHoldTracker {
     return edge;
   }
 
+  consumeAttackEdge(): boolean {
+    const edge = this.pendingAttackEdge;
+    this.pendingAttackEdge = false;
+    return edge;
+  }
+
+  consumeSkillEdge(): boolean {
+    const edge = this.pendingSkillEdge;
+    this.pendingSkillEdge = false;
+    return edge;
+  }
+
+  injectSkillEdge(): void {
+    this.pendingSkillEdge = true;
+  }
+
+  injectAttackEdge(): void {
+    this.pendingAttackEdge = true;
+  }
+
   clearPendingActionEdge(): void {
     this.pendingActionEdge = false;
+    this.pendingAttackEdge = false;
+    this.pendingSkillEdge = false;
   }
 
   heldDirections(): readonly Dir[] {
@@ -123,6 +160,7 @@ export class Input {
   private priority: Dir[] = []; // 눌린 순서
   private actionConsumed = false;
   private confirmConsumed = false;
+  private attackConsumed = false;
 
   // action/confirm 엣지를 이벤트 기반으로 추적.
   // Phaser의 JustDown(폴링)은 headless/프레임 타이밍에 따라 keydown↔update
@@ -183,11 +221,16 @@ export class Input {
     }
   }
 
+  // 액션 전투 활성 맵에서 Space를 조사(action) 대신 공격(attack) 엣지로 라우팅한다.
+  setAttackMode(enabled: boolean): void {
+    this.runtimeKeys.setAttackMode(enabled);
+  }
+
   // 매 프레임 호출. 엣지 이벤트 갱신.
   update(): InputState {
     if (!this.enabled) {
       this.runtimeKeys.clearPendingActionEdge();
-      return { dir: null, x: 0, y: 0, dash: false, actionPressed: false, confirmPressed: false };
+      return { dir: null, x: 0, y: 0, dash: false, actionPressed: false, confirmPressed: false, attackPressed: false, skillPressed: false };
     }
 
     // 현재 눌린 방향들 수집(우선순위: 위/아래 > 좌/우 관례 → 여기선 마지막 눌림).
@@ -215,6 +258,8 @@ export class Input {
     // action/confirm 엣지: 이벤트 기반(keydown 리스너) 큐에서 소비.
     // JustDown(폴링)은 headless/프레임 타이밍에 취약하므로 직접 잡은 엣지를 쓴다.
     const actionEdge = this.runtimeKeys.consumeActionEdge();
+    const attackEdge = this.runtimeKeys.consumeAttackEdge();
+    const skillEdge = this.runtimeKeys.consumeSkillEdge();
 
     const state: InputState = {
       dir: intent.dir,
@@ -223,9 +268,12 @@ export class Input {
       dash,
       actionPressed: actionEdge && !this.actionConsumed,
       confirmPressed: actionEdge && !this.confirmConsumed,
+      attackPressed: attackEdge && !this.attackConsumed,
+      skillPressed: skillEdge,
     };
     if (state.actionPressed) this.actionConsumed = true;
     if (state.confirmPressed) this.confirmConsumed = true;
+    if (state.attackPressed) this.attackConsumed = true;
     return state;
   }
 
@@ -233,6 +281,7 @@ export class Input {
   resetEdges(): void {
     this.actionConsumed = false;
     this.confirmConsumed = false;
+    this.attackConsumed = false;
     // 소비되지 않은 action 엣지도 인터프리터 진입/종료 시점에 비운다.
     // (confirm 소비 후 남은 actionEdge가 다음 프레임에 중복 트리거되는 것 방지)
     this.runtimeKeys.clearPendingActionEdge();
@@ -245,6 +294,16 @@ export class Input {
   injectActionEdge(): void {
     this.runtimeKeys.keyDown("Enter");
     this.runtimeKeys.keyUp("Enter");
+  }
+
+  // 자동화용 공격 엣지 주입.
+  injectAttackEdge(): void {
+    this.runtimeKeys.injectAttackEdge();
+  }
+
+  // 자동화용 스킬 엣지 주입.
+  injectSkillEdge(): void {
+    this.runtimeKeys.injectSkillEdge();
   }
 
   // 방향 지속 입력 주입(자동화용). dir을 눌린 상태로 설정한다.

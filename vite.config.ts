@@ -2,6 +2,8 @@ import { defineConfig, loadEnv, type Plugin } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { spawnCodexSession, accountStatus, startDeviceLogin, proxyCompletion } from "./scripts/lib/codexOAuthSession.mjs";
+import type { CodexSession } from "./scripts/lib/codexOAuthSession.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
@@ -106,8 +108,106 @@ function aiActivityDiskPlugin(): Plugin {
   };
 }
 
+// DEV-only same-origin bridge to the local codex app-server (ChatGPT OAuth).
+// Removes the need to run `npm run ai:oauth` alongside `npm run dev` — the browser
+// hits /auth/* and /v1/chat/completions on the same dev port. preview/dist still
+// route to the standalone 127.0.0.1:17832 companion (npm run ai:oauth).
+function codexOAuthPlugin(): Plugin {
+  let session: CodexSession | null = null;
+  let sessionPromise: Promise<CodexSession> | null = null;
+  function getSession(): Promise<CodexSession> {
+    if (!sessionPromise) {
+      sessionPromise = (async () => {
+        session = spawnCodexSession();
+        await session.ready();
+        return session;
+      })();
+      sessionPromise.catch(() => {
+        sessionPromise = null;
+      });
+    }
+    return sessionPromise;
+  }
+  function errorStatus(error: unknown): number {
+    if (error && typeof error === "object" && "status" in error) {
+      const status = (error as { status: unknown }).status;
+      if (typeof status === "number") return status;
+    }
+    return 500;
+  }
+  return {
+    name: "rpgzzu-codex-oauth",
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        const url = req.url ?? "";
+        const isOAuthPath =
+          url === "/auth/status" ||
+          url === "/auth/login" ||
+          url === "/v1/chat/completions";
+        if (!isOAuthPath) return next();
+        try {
+          const sess = await getSession();
+          if (req.method === "OPTIONS") {
+            res.statusCode = 204;
+            res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+            res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            res.end();
+            return;
+          }
+          if (req.method === "GET" && url === "/auth/status") {
+            res.setHeader("Content-Type", "application/json; charset=utf-8");
+            res.end(JSON.stringify(await accountStatus(sess, false)));
+            return;
+          }
+          if (req.method === "POST" && url === "/auth/login") {
+            res.setHeader("Content-Type", "application/json; charset=utf-8");
+            res.end(JSON.stringify(await startDeviceLogin(sess)));
+            return;
+          }
+          if (req.method === "POST" && url === "/v1/chat/completions") {
+            const chunks: Buffer[] = [];
+            let size = 0;
+            for await (const chunk of req) {
+              size += chunk.length;
+              if (size > 64 * 1024 * 1024) throw new Error("Request body is too large");
+              chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+            }
+            const body: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
+            const clientBody = body && typeof body === "object" ? { ...(body as Record<string, unknown>) } : {};
+            const result = await proxyCompletion(sess, clientBody);
+            if (!result.stream) {
+              res.setHeader("Content-Type", "application/json; charset=utf-8");
+              res.end(JSON.stringify(result.completion));
+              return;
+            }
+            res.writeHead(200, {
+              "Content-Type": "text/event-stream; charset=utf-8",
+              "Cache-Control": "no-cache",
+              Connection: "keep-alive",
+            });
+            for (const chunk of result.chunks) res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+            res.end("data: [DONE]\n\n");
+            return;
+          }
+          res.statusCode = 404;
+          res.end(JSON.stringify({ error: "Not found" }));
+        } catch (error) {
+          res.statusCode = errorStatus(error);
+          res.setHeader("Content-Type", "application/json; charset=utf-8");
+          res.end(JSON.stringify({ error: error instanceof Error ? error.message : "OAuth dev bridge failed" }));
+        }
+      });
+      server.httpServer?.on("close", () => {
+        session?.kill();
+        session = null;
+        sessionPromise = null;
+      });
+    },
+  };
+}
+
 export default defineConfig(({ mode }) => ({
-  plugins: [aiActivityDiskPlugin()],
+  plugins: [aiActivityDiskPlugin(), codexOAuthPlugin()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -133,7 +233,7 @@ export default defineConfig(({ mode }) => ({
     },
     proxy: {
       "/api/ai": {
-        target: "https://yunwu.ai/v1",
+        target: "https://apitopia.labs.mengmota.com/v1",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/ai/, ""),
       },

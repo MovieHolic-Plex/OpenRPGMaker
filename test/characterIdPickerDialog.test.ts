@@ -50,21 +50,18 @@ describe("characterId picker dialog", () => {
     document.body.replaceChildren();
   });
 
-  it("renders connect CTA when characterId is empty, expands to free-text + find", () => {
+  it("renders optional free-text characterId field with picker always available", () => {
     const { mapId, event } = seedProject();
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    // Collapsed empty state: connect CTA only (no always-visible free-text).
-    expect(field.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
-    expect(field.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
-    expect(field.querySelector('[data-testid="event-character-id-picker-open"]')).toBeNull();
-
-    (field.querySelector('[data-testid="event-character-id-connect"]') as HTMLButtonElement).click();
-    const expanded = document.querySelector('[data-testid="event-character-id-field"]');
-    expect(expanded).toBeTruthy();
-    expect(expanded!.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
-    expect(expanded!.querySelector('[data-testid="event-character-id-picker-open"]')).toBeTruthy();
+    // Optional inline field: empty is valid (one-shot NPC), picker always present.
+    expect(field.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    expect(field.querySelector('[data-testid="event-character-id-picker-open"]')).toBeTruthy();
+    expect(field.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    expect((field.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement).placeholder).toContain(
+      "일회용",
+    );
   });
 
   it("opens dedicated dialog with union list, displayName, and usage counts", () => {
@@ -142,8 +139,7 @@ describe("characterId picker dialog", () => {
 
   it("free-type unknown id attaches without auto profile create", () => {
     const { mapId, event } = seedProject();
-    // Seed with a linked character so the free-text field is mounted (empty collapses to connect CTA).
-    const field = renderEventCharacterIdField(mapId, { ...event, characterId: "char_seed" });
+    const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
     const input = field.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement;
     expect(input).toBeTruthy();

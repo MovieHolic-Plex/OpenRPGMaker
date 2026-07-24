@@ -59,7 +59,9 @@ export function battlerStats(project: Project, battler: BattleBattlerSnapshot): 
   const actor = project.database.actors.find((entry) => entry.id === battler.recordId);
   if (actor) {
     const normalized = normalizeActorRecord(actor);
-    const level = normalized.initialLevel;
+    // SC7 (M2): use the snapshot's level when available so predictions match
+    // runtime stats for leveled-up parties, not just DB initialLevel.
+    const level = battler.level ?? normalized.initialLevel;
     const curves = normalized.parameterCurves;
     return {
       attack: parameterValueAtLevel(curves.attack, level),
@@ -73,7 +75,7 @@ export function battlerStats(project: Project, battler: BattleBattlerSnapshot): 
 
 // 데미지 속성 배율(퍼센트 → 100으로 나눈 값). runtime.elementMultiplierFor 와 동일 규칙.
 // grade 가 없으면 1(중립). 음수 배율(-100 등)은 흡수로 해석된다.
-export function elementMultiplierFor(project: Project, elementId: string | undefined, targetRecordId: ActorId | EnemyId): number {
+export function elementMultiplierFor(project: Project, elementId: string | undefined, targetRecordId: ActorId | EnemyId, target?: BattleBattlerSnapshot): number {
   if (!elementId) return 1;
   const element = project.database.elements?.find((entry) => entry.id === elementId);
   if (!element?.damageMultipliers) return 1;
@@ -85,7 +87,10 @@ export function elementMultiplierFor(project: Project, elementId: string | undef
   if (!grade) return 1;
   const multiplier = element.damageMultipliers[grade];
   if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return 1;
-  return multiplier / 100;
+  // SC8 (M2): apply equipment elemental defense halving when the target snapshot
+  // exposes elementalDefenseIds matching the attack element.
+  const equipmentReduction = target?.equipmentEffects?.elementalDefenseIds.includes(elementId) ? 0.5 : 1;
+  return (multiplier / 100) * equipmentReduction;
 }
 
 export function elementNameFor(project: Project, elementId: string | undefined): string | undefined {
@@ -146,7 +151,7 @@ export function predictSkillDamage(
   const userStats = battlerStats(project, user);
   const sourceStat = spec.statistic === "mind" ? userStats.mind : userStats.attack;
   let magnitude = spec.power + Math.floor(sourceStat / 2);
-  const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId)
+  const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId, target)
     * typeChartMultiplierFor(project, spec.elementId, user.recordId, target.recordId);
   magnitude = Math.round(magnitude * elementMultiplier);
   if (elementMultiplier === 0) magnitude = 0;

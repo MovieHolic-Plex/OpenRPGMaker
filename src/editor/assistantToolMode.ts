@@ -26,6 +26,7 @@ function tilePaletteVisible(): boolean {
 }
 
 export function computeAssistantToolMode(): ToolDomain {
+  if (typeof document === "undefined") return "map";
   if (modalOpen("database-modal")) return "database";
   if (modalOpen("event-editor-content")) return "event";
   const state = editorState.get();

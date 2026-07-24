@@ -322,6 +322,7 @@ All spacing derives from 4px.
 - The test-play window uses the full available browser window; the runtime surface stays 4:3 and centered, appearing at `2x` (`640×480`) or larger when space allows without cropping or distortion.
 - The editor's map canvas may remain pixel-grid constrained.
 - Dialogue/choice overlays align to the 320×240 grid (DOM for accessibility, visually pixel-aligned).
+- Zone feedback is a compact, pointer-transparent runtime layer for transient banners, checkpoint toasts, incomplete objective chips, and one facing interaction prompt. It reuses the runtime window tokens, respects reduced motion, and disappears under modal dialogue, battle, menu, commerce, chest, and ending surfaces; it is not a minimap or a persistent HUD.
 - Character sprites use a `24×32` logical frame convention for charsets (`CHARSET_FRAME_*`); generic sprites may be `32×32`.
 
 ### Side-view battle (built)

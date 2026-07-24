@@ -74,7 +74,7 @@ const HONEST_REPORT_RULE =
 const SPEC_RULE =
   "공간 작업 규칙(스펙 게이트): 실행 전 set_build_spec으로 밑그림을 제출하세요 — 대상 맵, 에셋별 영역(x,y,w,h)과 종류·스타일, 통로 너비, 밀도, 배치 스타일. 검증 오류(겹침)는 좌표·buildOrder·맵 크기를 고쳐 재제출하고, 3회 실패하면 계획을 폐기해 스스로 새 배치를 설계하세요. 페인트/배치 툴이 명세 밖 빈 영역을 쓰면 게이트가 명세를 자동 확장하고 warning으로 통과합니다. 기존 구조물 파괴 위험은 자동 보정하지 않습니다. 사용자가 선택한 영역은 암묵적 명세입니다.";
 const CONSTRUCTION_ORDER_RULE =
-  "시공 공정: 길 paint_road → 집+마당 build_house_lots → 숲 등 place_props → NPC. **집:** LLM은 wings 위치·kitId·yard 꾸밈 태그만 정하고 build_house_lots 한 번(또는 소수)에 넘긴다. 마당 타일 좌표는 코드. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|chair|sign. 집 앞 소품을 place_props로 직접 몰아넣지 말 것. 숲/들/묘지 산포만 place_props(넓은 area, naturalness 0.55~0.7, minGap≥2, 구역 분할). 나무 material: \"침엽수\". place_props 동일 인자 턴당 1회. 미합의 재료는 목업 확인.";
+  "시공 공정: 길 paint_road → 집+마당 author_house → 숲 등 place_props → NPC. **집:** LLM은 wings 위치·kitId·yard 꾸밈 태그만 정하고 author_house 한 번(또는 소수)에 넘긴다. 마당 타일 좌표는 코드. yard 태그: firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|chair|sign. 집 앞 소품을 place_props로 직접 몰아넣지 말 것. 숲/들/묘지 산포만 place_props(넓은 area, naturalness 0.55~0.7, minGap≥2, 구역 분할). 나무 material: \"침엽수\". place_props 동일 인자 턴당 1회. 미합의 재료는 목업 확인.";
 
 function regionText(ctx: SkillRunContext): string {
   return ctx.selection ? `(${ctx.selection.x},${ctx.selection.y}) ${ctx.selection.width}×${ctx.selection.height}` : "(선택 영역 없음)";
@@ -285,13 +285,11 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       `- 크기: ${args.width}×${args.height}, 재질: ${args.material}, 모양: ${args.shape === "l" ? "ㄴ자" : "직사각형"}`,
       `- 위치: ${args.where ? String(args.where) : "get_map_region으로 빈터를 찾아 자동 선정(기존 구조물·물·이벤트와 겹치지 않게)"}`,
       "",
-      "절차(준수 — 공정 순서: 벽→문/창→지붕):",
+      "절차(준수 — author_house 단일 호출):",
       args.shape === "l"
-        ? "1. ㄴ자 집은 build_wall(mapId, rect, material)을 직교 rect 2개로 겹쳐 호출해 조합하세요. 절대 벽 타일을 직접 칠하지 마세요."
-        : "1. build_wall(mapId, rect{x,y,w,h}, material)로 벽을 지으세요. 절대 벽 타일을 직접 칠해 사각형을 만들지 마세요.",
-      "2. place_door(mapId, at, material)로 문을, place_window(mapId, at, material)로 창문을 벽 셀에 다세요.",
-      "3. build_roof(mapId, material)로 지붕을 얹으세요(wallRect 생략 시 벽 자동 감지).",
-      "4. 완성 후 문 좌표를 보고하고, 문 앞이 통행 가능한지 get_map_region으로 확인하세요.",
+        ? `1. author_house({ mapId:"${ctx.mapId ?? "map_x"}", kind:"single", material:"${args.material}", wings:[{x,y,w,h},{x,y,w,h}] })로 ㄴ자 집을 정확히 1채 시공하세요. wings 2개로 ㄴ자를 조합합니다.`
+        : `1. author_house({ mapId:"${ctx.mapId ?? "map_x"}", kind:"single", material:"${args.material}", width:${args.width}, height:${args.height} })로 직사각형 집을 정확히 1채 시공하세요.`,
+      "2. 완성 후 문 좌표를 보고하고, 문 앞이 통행 가능한지 get_map_region으로 확인하세요.",
       CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
       HONEST_REPORT_RULE,
@@ -337,16 +335,11 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       `현재 맵(${ctx.mapName ?? "현재 맵"})에 '${args.theme || "평범한"}' 테마의 마을을 만들어 주세요. 집 ${args.houses}채, NPC ${args.npcs}명.`,
       `- 자연스러움: ${args.naturalness || "보통"} (정갈=정원/minimal, 보통=mixed/market, 야생=dense 나무+workshop/garden)`,
       "",
-      "LLM이 고를 것(의도)과 코드가 할 일(시공)을 나누세요. 단계별로 한 줄 보고하며 끝까지 진행:",
-      "1. 의도 결정 — theme/query, pathStyle, yardStyle, plazaStyle, 집 kitId+yard, NPC 대사.",
-      "2. 시공 순서 기획(LLM) — buildOrder 예: 호수/강촌 [plan,map,water,settlement,forest_conifer,forest_big,critique,look], 산골은 water 없이 settlement 먼저.",
-      "   settlement 내부는 코드가 집→길(얽기설기)→울타리→소품·NPC 고정.",
-      "3. 멀티턴 시공 — run_village_session({ theme, query, buildOrder, houses, npcs }) 또는 start+advance 반복.",
-      "   나무 카탈로그 list_village_tree_assets, 대목 plant_tree_clusters({ style:\"broadleaf-2x2\" }).",
+      "절차(준수 — author_village 단일 호출):",
+      `1. author_village({ target:{kind:"existing",mapId:"${ctx.mapId ?? "map_x"}"}, theme:"${args.theme || "평범한"}", houseCount:${args.houses}, npcCount:${args.npcs}, countPolicy:"exact", naturalness:"${args.naturalness || "보통"}" })`,
+      "2. 나무 카탈로그 list_village_tree_assets, 대목 plant_tree_clusters({ style:\"broadleaf-2x2\" }).",
       "   NPC 대사는 place_npc가 faceset changeFace를 자동 삽입한다.",
-      "4. 빠른 bulk 숏컷 — run_village_pipeline 또는 build_village(의도 채움). 2×2 대목은 세션 경로가 더 확실.",
-      "5. 검증 — evaluate_village_layer / evaluate_village_look / check_reachability.",
-      "빈 build_village() 호출 금지 — 테마·마당·NPC 의도 없이 돌리면 단조로운 기본 레시피만 나온다.",
+      "3. 검증 — evaluate_village_layer / evaluate_village_look / check_reachability.",
       CONSTRUCTION_ORDER_RULE,
       SPEC_RULE,
       HONEST_REPORT_RULE,

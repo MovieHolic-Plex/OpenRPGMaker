@@ -170,22 +170,24 @@
 }
 
 .event-editor-modal-body [data-testid="event-classic-conditions"] .event-conditions-grid {
-  gap: 1px;
+  gap: 3px;
 }
 
 .event-editor-modal-body .event-condition-row {
   align-items: center;
+  column-gap: 6px;
   display: grid;
-  gap: 3px;
-  grid-template-columns: 12px 62px minmax(0, 348px) max-content;
+  grid-template-columns: 14px 4.5rem minmax(0, 1fr) auto;
   justify-content: start;
-  min-height: 20px;
+  min-height: 22px;
+  min-width: 0;
+  row-gap: 0;
 }
 
 .event-editor-modal-body .event-condition-control {
   align-items: center;
   display: grid;
-  gap: 1px 3px;
+  gap: 2px 4px;
   min-width: 0;
 }
 
@@ -194,8 +196,8 @@
 }
 
 .event-editor-modal-body .event-condition-control.variable {
-  gap: 3px;
-  grid-template-columns: minmax(0, 170px) minmax(0, 175px);
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .event-condition-main {
@@ -213,13 +215,13 @@
 
 .event-condition-threshold {
   display: grid;
-  gap: 3px;
-  grid-template-columns: minmax(96px, 124px) 48px;
+  gap: 4px;
+  grid-template-columns: 64px 48px;
   justify-content: start;
 }
 
 .event-editor-modal-body .event-condition-control.timer {
-  grid-template-columns: 42px max-content 42px max-content;
+  grid-template-columns: 36px max-content 36px max-content;
   justify-content: start;
 }
 

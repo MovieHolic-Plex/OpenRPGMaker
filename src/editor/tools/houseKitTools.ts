@@ -32,7 +32,8 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
       "키트: blue-stone|bright-plaster|amber-wood|slate-wood|timber-hall|aframe-stone. " +
       "목록에 없는 재질(초가 등)을 요청받으면 지어내지 말고 '아직 학습되지 않은 재질'이라고 답할 것. " +
       "제약: 날개 폭 ≥3, 각 열 구간 높이 ≥5(벽3+지붕2). 문은 남쪽 외벽 중앙에 자동 배치된다. " +
-      "창문은 기본 활성으로 각 벽 중단 행에 1칸 인셋 후 spacing+1 간격으로 상위 레이어에 배치하며 문 열±1은 비운다.",
+      "창문은 기본 활성으로 각 벽 중단 행에 1칸 인셋 후 spacing+1 간격으로 상위 레이어에 배치하며 문 열±1은 비운다. " +
+      "장식(기본 꺼짐): fence=앞마당 울타리+게이트(마을 정본 문법), banner=문 위 깃발 페어, chimney=우측 사선 지붕 굴뚝.",
     mode: "write",
     parameters: {
       type: "object",
@@ -65,6 +66,9 @@ export const HOUSE_KIT_TOOLS: readonly ToolDefinition[] = [
             spacing: { type: "integer", description: "창문 사이 벽 칸 수(기본 2)" },
           },
         },
+        fence: { type: "boolean", description: "앞마당 울타리+문 게이트(기본 false) — 마을 울타리 정본 문법 재사용" },
+        banner: { type: "boolean", description: "문 위 최상단 벽에 깃발 208/209 페어(기본 false)" },
+        chimney: { type: "boolean", description: "우측 사선 지붕에 굴뚝 326(기본 false)" },
       },
       required: ["mapId", "kitId", "wings"],
     },
@@ -93,6 +97,9 @@ function parseBuildHouseKitInput(args: Record<string, unknown>): BuildHouseKitIn
     interior: args.interior !== false,
     ...(typeof args.ownerName === "string" ? { ownerName: args.ownerName } : {}),
     ...(windows === undefined ? {} : { windows }),
+    ...(args.fence === true ? { fence: true } : {}),
+    ...(args.banner === true ? { banner: true } : {}),
+    ...(args.chimney === true ? { chimney: true } : {}),
   };
 }
 

@@ -16,6 +16,7 @@ import type {
 import type { GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
 import type { Rng } from "@/util/rng";
+import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
 
 export type { BattleFlow } from "@/project/types";
 
@@ -71,6 +72,10 @@ export interface BattleRuntimeOptions {
   // system.battleParty === "monsters" 이고 이 값이 비어있지 않을 때 액터 대신 사용된다.
   readonly partyMonsters?: readonly MonsterInstance[];
   readonly rng?: Rng;
+  // 배틀 이벤트의 playAudio/stopAudio 명령을 호스트 오디오 엔진으로 라우팅.
+  // 런타임(src/battle)은 자체 완결성을 위해 직접 오디오를 재생하지 않고 위임한다.
+  readonly playAudio?: (resourceId: string, loop: boolean) => void;
+  readonly stopAudio?: () => void;
 }
 
 export interface BattleSessionState {
@@ -138,6 +143,7 @@ export interface BattleBattlerSnapshot {
   readonly pose: import("@/battle/battlePose").BattleBattlerPose;
   readonly stateIds: readonly string[];
   readonly skillIds: readonly SkillId[];
+  readonly equipmentEffects?: EquipmentRuntimeEffects;
   readonly captured?: boolean;
 }
 

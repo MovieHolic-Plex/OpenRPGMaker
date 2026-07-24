@@ -1,4 +1,4 @@
-import { destroyGame, getGame, startEditGame } from "@/app/mode";
+﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks, maybeStartBasicCoachMarks } from "@/editor/coachMarks";
@@ -49,11 +49,11 @@ const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
 const LEFT_PANEL_MAX_WIDTH = 640;
 const MIN_CANVAS_WIDTH = 520;
-const MAP_TREE_DEFAULT_HEIGHT = 154;
-const MAP_TREE_MIN_HEIGHT = 112;
-const MAP_TREE_MAX_HEIGHT = 260;
+const MAP_TREE_DEFAULT_HEIGHT = 300;
+const MAP_TREE_MIN_HEIGHT = 80;
+const MAP_TREE_MAX_HEIGHT = 480;
 const RESPONSIVE_BREAKPOINT = 720;
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout";
+const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -210,7 +210,18 @@ export function renderEditor(main: HTMLElement): void {
 
 /** Re-apply basic/expert density without tearing down Phaser or AI session. */
 export function applyEditorUiModeLayout(): void {
-  // 모드의 CSS 훅은 body.editor-ui-basic/expert 하나만 쓴다 (applyEditorUiModeClasses).
+  const game = getGame();
+  const scene = game?.scene?.getScene("EditScene") as
+    | { cameras?: { main?: { scrollX: number; scrollY: number; width: number; height: number; setScroll: (x: number, y: number) => unknown; setBounds: (x: number, y: number, w: number, h: number) => unknown } } }
+    | undefined;
+  const cam = scene?.cameras?.main;
+  const savedCenter = cam
+    ? { x: cam.scrollX + cam.width / 2, y: cam.scrollY + cam.height / 2 }
+    : null;
+  if (cam && savedCenter) {
+    cam.setBounds(savedCenter.x - 10000, savedCenter.y - 10000, 20000, 20000);
+  }
+
   const chrome = getEditorChrome();
   applyEditorUiModeClasses(getEditorUiMode());
 
@@ -224,10 +235,6 @@ export function applyEditorUiModeLayout(): void {
     if (chrome.mapTree) mapTreeResizer.classList.remove("is-ui-hidden");
     else mapTreeResizer.classList.add("is-ui-hidden");
   }
-  // 캔버스 툴바 밀도(is-basic-chrome/is-expanded/uiDensity)는 아래 renderCanvasToolbar가
-  // 전부 다시 계산한다. AI 패널은 모드와 무관한 공유 표면(uiDensity="shared"는 패널 자신이 소유).
-  // Re-render left/map chrome so palette tabs match density; keep event layer path live.
-  // 맵 트리는 basic에서도 표시(맵 전환) — 숨기지 않는다.
   if (leftPaletteRoot && leftMapRoot && canvasToolbarRoot && statusBarRoot) {
     renderTilePalette(leftPaletteRoot);
     if (chrome.mapTree) renderMapList(leftMapRoot);
@@ -237,6 +244,32 @@ export function applyEditorUiModeLayout(): void {
   }
   applyLayout();
   scheduleFitCanvas();
+
+  if (cam && savedCenter) {
+    const reapply = () => {
+      const w = cam.width;
+      const h = cam.height;
+      cam.setBounds(savedCenter.x - w, savedCenter.y - h, w * 2, h * 2);
+      cam.setScroll(savedCenter.x - w / 2, savedCenter.y - h / 2);
+    };
+    let stableFrames = 0;
+    let lastW = cam.width;
+    let lastH = cam.height;
+    const poll = () => {
+      reapply();
+      if (cam.width === lastW && cam.height === lastH) {
+        stableFrames++;
+      } else {
+        stableFrames = 0;
+        lastW = cam.width;
+        lastH = cam.height;
+      }
+      if (stableFrames < 5) {
+        requestAnimationFrame(poll);
+      }
+    };
+    requestAnimationFrame(poll);
+  }
 }
 
 export function teardownEditor(): void {
@@ -810,7 +843,6 @@ function fitCanvas(): void {
   }
   const prev = game.scale.gameSize;
   if (prev && Math.abs(prev.width - w) < 1 && Math.abs(prev.height - h) < 1) {
-    // 버퍼는 맞아도 CSS가 남아 있으면 강제 맞춤
     syncCanvasCssSize(game, w, h);
     return;
   }
@@ -841,12 +873,23 @@ function scheduleFitCanvas(): void {
   fitCanvasRaf = requestAnimationFrame(() => {
     fitCanvasRaf = 0;
     fitCanvas();
-    // 레이아웃이 한 프레임 늦게 잡히는 경우(좌패널/AI 도크) 한 번 더
     requestAnimationFrame(() => fitCanvas());
   });
 }
 
 function loadEditorLayout(): LoadedEditorLayout {
+  // Version-stamped migration: force-reset layout cache when defaults change
+  const LAYOUT_CACHE_VERSION = "2026-07-24-maptree-300";
+  const ls = browserLocalStorage();
+  if (ls) {
+    const storedVersion = ls.getItem("rpg-zzu:editor-layout-version");
+    if (storedVersion !== LAYOUT_CACHE_VERSION) {
+      for (const k of ["rpg-zzu:editor-layout", "rpg-zzu:editor-layout:v2", "rpg-zzu:editor-layout:v3", "rpg-zzu:editor-layout:v4"]) {
+        ls.removeItem(k);
+      }
+      ls.setItem("rpg-zzu:editor-layout-version", LAYOUT_CACHE_VERSION);
+    }
+  }
   const fallback = defaultEditorLayout();
   const raw = browserLocalStorage()?.getItem(EDITOR_LAYOUT_KEY);
   if (!raw) return fallback;

@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize } from "@/project/io";
-import { readStoredZipEntryNames } from "@/project/packageZip";
 import {
+  WEB_PLAYER_MANIFEST,
   collectWebExportAssets,
   createWebPlayerExportPackage,
   prepareWebExport,
@@ -34,41 +34,15 @@ describe("web player export", () => {
     expect(zipPaths).toContain("assets/rm2k3-original-chipset.png");
   });
 
-  it("플레이어 번들 manifest와 프로젝트/에셋을 단일 zip으로 묶는다", async () => {
-    const bytes = new TextEncoder();
-    const result = await createWebPlayerExportPackage(projectWithUploadedAssets(), {
+  it("검증된 배포 manifest가 없으면 불완전 ZIP을 만들지 않는다", async () => {
+    const exportAttempt = createWebPlayerExportPackage(projectWithUploadedAssets(), {
       fetchBytes: async (path) => {
-        if (path.endsWith("player-manifest.json")) {
-          return bytes.encode(JSON.stringify({
-            "player.html": {
-              file: "player.js",
-              isEntry: true,
-              css: ["assets/player.css"],
-              dynamicImports: ["src/player/PlayScene.ts"],
-            },
-            "src/player/PlayScene.ts": {
-              file: "assets/PlayScene.js",
-              imports: ["player.html"],
-              dynamicImports: ["src/player/playSceneBattle.ts"],
-            },
-            "src/player/playSceneBattle.ts": { file: "assets/playSceneBattle.js", imports: ["player.html"] },
-          }));
-        }
-        return bytes.encode(`file:${path}`);
+        if (path.endsWith(WEB_PLAYER_MANIFEST)) throw new Error("fixture manifest unavailable");
+        return new TextEncoder().encode(`file:${path}`);
       },
     });
-    const names = readStoredZipEntryNames(new Uint8Array(await result.blob.arrayBuffer()));
 
-    expect(names).toEqual(expect.arrayContaining([
-      "player.html",
-      "player.js",
-      "project.json",
-      "assets/player.css",
-      "assets/PlayScene.js",
-      "assets/playSceneBattle.js",
-      "assets/uploaded/used_picture.png",
-    ]));
-    expect(result.summary.playerBundleFileCount).toBeGreaterThanOrEqual(4);
+    await expect(exportAttempt).rejects.toMatchObject({ code: "manifest-unavailable" });
   });
 
   it("export_game 툴은 헤드리스 요약과 shape 검증 결과를 반환한다", () => {
@@ -87,12 +61,14 @@ describe("web player export", () => {
 
 function projectWithUploadedAssets(): Project {
   const project = createBlankProject();
+  const firstItem = project.database.items[0];
+  if (firstItem === undefined) throw new TypeError("web export fixture requires a database item");
   project.assets.uploaded = {
     used_picture: uploaded("used_picture"),
     unused_picture: uploaded("unused_picture"),
   };
   project.database.items[0] = {
-    ...project.database.items[0]!,
+    ...firstItem,
     imageResourceId: "used_picture",
     iconResourceId: "cc0-jetrel-potion-red",
   };

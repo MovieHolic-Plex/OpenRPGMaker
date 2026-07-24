@@ -1,4 +1,4 @@
-  :root {
+﻿  :root {
     /* (UI-0) 셸 스킨 변수 → tokens.css 별칭 */
     --editor-shell-bg: var(--bg-base);
     --editor-toolbar-bg: var(--bg-surface);
@@ -95,16 +95,16 @@
   }
 
   .quick-battle-test-button {
-    background: color-mix(in srgb, #c44b2b 18%, var(--control-bg));
-    border-color: color-mix(in srgb, #c44b2b 45%, var(--editor-line));
-    color: #ffd7c8;
+    background: var(--control-bg);
+    border-color: var(--border-default);
+    color: var(--text-1);
   }
 
   .quick-battle-test-button:hover,
   .quick-battle-test-button:focus-visible {
-    background: color-mix(in srgb, #c44b2b 30%, var(--control-bg-hover));
-    border-color: #e06a48;
-    color: #fff1ea;
+    background: var(--control-bg-hover);
+    border-color: var(--border-strong);
+    color: var(--text-1);
   }
 
   .quick-battle-test-glyph {
@@ -163,7 +163,7 @@
     padding: 24px;
     position: fixed;
     /* AI 제안 모달(≈2500)보다 아래에 두어 soft-confirm [이대로 적용]을 가리지 않게 한다. */
-    z-index: 2100;
+    z-index: var(--z-modal);
   }
 
   .team-login-card,
@@ -253,7 +253,7 @@
     padding: 12px;
     position: fixed;
     width: 220px;
-    z-index: 2300;
+    z-index: var(--z-modal-top);
   }
 
   .team-identity-menu-title {
@@ -271,7 +271,7 @@
     right: 20px;
     top: 58px;
     width: min(680px, calc(100vw - 40px));
-    z-index: 2200;
+    z-index: var(--z-modal-overlay);
   }
 
   .team-commit-head {
@@ -527,7 +527,7 @@
     border-right: 1px solid var(--editor-line-strong);
     container-type: inline-size;
     gap: 0;
-    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 154px);
+    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 300px);
     min-width: 184px;
     padding: 0;
   }
@@ -564,6 +564,8 @@
   .editor-layout.no-right-panel .left-panel-stack,
   .left-panel-stack[data-testid="left-palette-root"],
   .left-panel-stack[data-testid="left-map-root"] {
+    overflow: hidden;
+    min-height: 0;
     background-color: var(--editor-panel-bg);
     background-image: none;
     color: var(--editor-text);
@@ -571,7 +573,7 @@
 
   .left-panel-stack {
     border-bottom: 1px solid var(--editor-line);
-    padding: 18px 24px;
+    padding: 10px 12px;
   }
 
   /* 예전 구조: 1=도구섹션(숨김), 2=타일 팔레트.
@@ -966,7 +968,7 @@
     flex: 0 0 auto;
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: var(--z-base);
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .event-editor-launch,
@@ -1539,7 +1541,7 @@
   }
 
   .editor-layout .left-panel {
-    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 154px);
+    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 300px);
     min-width: 184px;
   }
 
@@ -1587,15 +1589,18 @@
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 1px;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     max-width: 100%;
-    min-height: 34px;
-    padding: 3px;
+    min-height: 30px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px;
     position: relative;
+    scrollbar-width: thin;
     width: 100%;
-    z-index: 3;
+    z-index: var(--z-canvas-decor);
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-tool {
@@ -1690,7 +1695,7 @@
     position: absolute;
     right: 0;
     top: calc(100% + 6px);
-    z-index: 40;
+    z-index: var(--z-toolbar);
   }
 
   .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-inspector-dropdown {
@@ -2203,8 +2208,16 @@
 
   @container (max-width: 220px) {
     .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar {
-      align-content: flex-start;
-      min-height: 88px;
+      min-height: 30px;
+    }
+
+    .left-panel-stack[data-testid="left-palette-root"] .selected-tile-status .selected-tile-tileset {
+      display: none;
+    }
+
+    .left-panel-stack[data-testid="left-palette-root"] .palette-work-tab {
+      font-size: 10px;
+      height: 26px;
     }
 
     .left-panel-stack[data-testid="left-map-root"] {
@@ -2347,7 +2360,7 @@
   padding: 5px 8px;
   position: absolute;
   top: 8px;
-  z-index: 22;
+  z-index: var(--z-canvas-chip);
 }
 
 .map-lock-banner.is-hidden {

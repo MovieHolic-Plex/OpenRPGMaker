@@ -37,6 +37,7 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
         panel("보상", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })], "db-enemy-panel-rewards"),
         panel("치명타 %", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record) })], "db-enemy-panel-critical"),
         panel("옵션", optionFields(record), "db-enemy-panel-options"),
+        panel("액션 전투", actionCombatFields(record), "db-enemy-panel-action-combat"),
         panel("상태 유효도", rateRows(record, "state"), "db-enemy-panel-state"),
         panel("속성 유효도", rateRows(record, "element"), "db-enemy-panel-element"),
         panel("공격 패턴", [actionSkillField(record), attackPatternTable(record, rerender)], "db-enemy-panel-actions"),
@@ -362,4 +363,64 @@ function actionSkillField(record: EnemyRecord): HTMLElement {
   });
   field.classList.add("db-enemy-action-skill-field");
   return field;
+}
+
+function actionCombatFields(record: EnemyRecord): HTMLElement[] {
+  const profile = record.actionProfile;
+  const attack = profile?.attack;
+  const patchProfile = (mutate: (draft: NonNullable<EnemyRecord["actionProfile"]>) => void): void => {
+    const draft: NonNullable<EnemyRecord["actionProfile"]> = structuredClone(profile ?? {});
+    mutate(draft);
+    updateDatabaseRecord("enemies", record.id, { actionProfile: draft });
+  };
+  const attackKindOptions = [
+    { id: "", name: "없음(접촉만)" },
+    { id: "melee", name: "근접" },
+    { id: "projectile", name: "투사체" },
+    { id: "dash", name: "돌진" },
+  ];
+  const fields: HTMLElement[] = [
+    numberField("접촉 데미지", "db-field-enemy-contact-damage", profile?.contactDamage ?? 0, (value) =>
+      patchProfile((draft) => {
+        draft.contactDamage = value;
+      })
+    ),
+    selectField("공격 종류", "db-field-enemy-action-kind", attack?.kind ?? "", attackKindOptions, (value) => {
+      if (!value) {
+        updateDatabaseRecord("enemies", record.id, { actionProfile: { ...structuredClone(profile ?? {}), attack: undefined } });
+        return;
+      }
+      patchProfile((draft) => {
+        draft.attack = {
+          kind: value as "melee" | "projectile" | "dash",
+          windupMs: draft.attack?.windupMs ?? 500,
+          recoverMs: draft.attack?.recoverMs ?? 500,
+          damage: draft.attack?.damage ?? 4,
+          range: draft.attack?.range ?? 1,
+          ...(draft.attack?.cooldownMs !== undefined ? { cooldownMs: draft.attack.cooldownMs } : {}),
+          ...(draft.attack?.projectileSpeedTilesPerSec !== undefined ? { projectileSpeedTilesPerSec: draft.attack.projectileSpeedTilesPerSec } : {}),
+        };
+      });
+    }),
+  ];
+  if (attack) {
+    const patchAttack = (key: "windupMs" | "recoverMs" | "damage" | "range" | "cooldownMs" | "projectileSpeedTilesPerSec", label: string, testid: string): HTMLElement =>
+      numberField(label, testid, attack[key] ?? 0, (value) =>
+        patchProfile((draft) => {
+          if (!draft.attack) return;
+          (draft.attack as unknown as Record<string, number>)[key] = value;
+        })
+      );
+    fields.push(
+      patchAttack("windupMs", "선딜(ms)", "db-field-enemy-windup-ms"),
+      patchAttack("recoverMs", "후딜(ms)", "db-field-enemy-recover-ms"),
+      patchAttack("damage", "공격 데미지", "db-field-enemy-attack-damage"),
+      patchAttack("range", "사거리", "db-field-enemy-attack-range"),
+      patchAttack("cooldownMs", "쿨다운(ms)", "db-field-enemy-attack-cooldown")
+    );
+    if (attack.kind === "projectile") {
+      fields.push(patchAttack("projectileSpeedTilesPerSec", "탄 속도(타일/초)", "db-field-enemy-projectile-speed"));
+    }
+  }
+  return [el("div", { class: "db-enemy-stat-grid", children: fields })];
 }

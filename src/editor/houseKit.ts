@@ -153,6 +153,12 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
 
 export type HouseKitWindowsOption = { readonly spacing?: number } | false;
 
+/**
+ * 굴뚝(2026-07-20 채택). 어휘 정본: tileSemanticsCombinedTown 326 "지붕 장식 — 굴뚝, 우측 사선 지붕용".
+ * 상위 레이어 소품 규약(§3)을 따른다 — 빈 칸에만, 우측 사선 지붕 열의 상단 바로 아래.
+ */
+export const CHIMNEY_TILE = 326;
+
 export interface RectHousePlan {
   /** 바운딩 박스 좌상단 (bright는 용마루(상위) 행이 y, blue는 지붕 최상행이 y). */
   readonly x: number;
@@ -289,6 +295,8 @@ export interface FootprintHousePlan {
   readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
+  /** 굴뚝(326, 상위) — 우측 사선 지붕 상단에 1개. 기본 꺼짐. */
+  readonly chimney?: boolean;
   /** 내부 맵으로 이어지는 문 이벤트. 도구 계층에서 내부 맵을 만든 뒤 주입한다. */
   readonly doorEvent?: FootprintHouseDoorEventPlan | false;
 }
@@ -468,6 +476,27 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     }
     lower(x, y, kit.roof.body);
     if (isTop) lowerIfInMap(x, y - 1, kit.roof.upper.ridge);
+  }
+
+  // ── 굴뚝(선택): 우측 사선 지붕 상단 바로 아래 — 상위 소품 규약(빈 칸에만) ──
+  if (plan.chimney) {
+    if (kit.roof.kind === "aframe") {
+      // 피라미드는 우측 바깥 열이 잔디라 사선 캡 안쪽 몸통 위에 얹는다.
+      const wing = plan.wings[0]!;
+      const eaveY = wing.y + wing.h - wallBandRows - 1;
+      const x = wing.x + wing.w - 3;
+      if (eaveY - 1 >= wing.y && x > wing.x) upperIfEmpty(x, eaveY - 1, CHIMNEY_TILE);
+    } else {
+      let bestX = -1;
+      for (const cell of roof) bestX = Math.max(bestX, cell % map.width);
+      if (bestX >= 0) {
+        let topY = Infinity;
+        for (const cell of roof) {
+          if (cell % map.width === bestX) topY = Math.min(topY, Math.floor(cell / map.width));
+        }
+        upperIfEmpty(bestX, topY + 1, CHIMNEY_TILE);
+      }
+    }
   }
 
   // 문 권장 위치: 건물 최남단(외부에 면한) 벽 하단 런 중 가장 긴 것의 중앙.

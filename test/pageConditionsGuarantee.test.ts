@@ -192,9 +192,10 @@ describe("page conditions working guarantee (all kinds)", () => {
       { kind: "timer", timerId: "timer1", seconds: 5 },
       { kind: "timer", timerId: "timer2", seconds: 10 },
       { kind: "timer", timerId: "timer2", seconds: 20 },
-      sampleCondition("selfSwitch"),
-      sampleCondition("gold"),
-    ];
+     sampleCondition("selfSwitch"),
+      { kind: "selfSwitch", key: "B", value: false },
+     sampleCondition("gold"),
+   ];
     const page: EventPage = {
       id: "p",
       name: "p",
@@ -217,7 +218,7 @@ describe("page conditions working guarantee (all kinds)", () => {
     expect(kinds).toContain("npcActivity");
     expect(kinds).toContain("friendshipAtLeast");
     expect(kinds).toContain("timer");
-    // 간단 행 없는 종류 — 반드시 고급에
+    // 소지금은 간단 행이 없어 항상 고급에; 셀프 스위치 2개 중 1개는 초과분
     expect(kinds).toContain("selfSwitch");
     expect(kinds).toContain("gold");
 
@@ -226,8 +227,12 @@ describe("page conditions working guarantee (all kinds)", () => {
     for (const kind of CONDITION_KINDS) {
       const total = conditions.filter((c) => c.kind === kind).length;
       expect(total, `sample has ${kind}`).toBeGreaterThan(0);
-      if (kind === "selfSwitch" || kind === "gold") {
+      if (kind === "gold") {
+        // 소지금은 간단 행 없음 — 항상 고급에
         expect(advanced.some((e) => e.condition.kind === kind)).toBe(true);
+      } else if (kind === "selfSwitch") {
+        // 셀프 스위치는 첫 번째가 간단 행, 나머지 초과분이 고급에
+        expect(advanced.filter((e) => e.condition.kind === "selfSwitch").length).toBe(1);
       } else if (kind === "timer") {
         // timer1 first + timer2 first are simple; extras advanced
         expect(advanced.filter((e) => e.condition.kind === "timer").length).toBeGreaterThanOrEqual(1);
@@ -255,25 +260,19 @@ describe("page conditions working guarantee (all kinds)", () => {
         { kind: "timePhase", phase: "evening" },
         { kind: "season", season: "fall" },
         { kind: "npcActivity", activity: "patrol" },
-        { kind: "friendshipAtLeast", value: 80 },
-      ],
+       { kind: "friendshipAtLeast", value: 80 },
+        { kind: "selfSwitch", key: "A", value: true },
+     ],
       graphic: {},
       trigger: { kind: "action" },
       priority: "same",
       movement: { type: "fixed", speed: 3, frequency: 3 },
       commands: [],
     };
-    // No characterId: friendship row/gate is omitted (connect CTA lives on pageProps, not here).
+    // No characterId: friendship row still renders, but connect/CTA may live on pageProps.
     const rootWithoutChar = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page) }));
-    expect(findByTestId(rootWithoutChar, "event-page-friendship-requires-character-id")).toBeNull();
-    expect(findByTestId(rootWithoutChar, "event-page-friendship-condition-value")).toBeNull();
-    expect(findByTestId(rootWithoutChar, "event-page-condition-add-toolbar")).not.toBeNull();
-    // Friendship is not offered in the add-kind select without characterId.
-    const addKindWithoutChar = findByTestId(rootWithoutChar, "event-page-condition-add-kind");
-    const friendshipOptionWithout = addKindWithoutChar
-      ? [...addKindWithoutChar.querySelectorAll("option")].some((opt) => (opt as HTMLOptionElement).value === "friendshipAtLeast")
-      : false;
-    expect(friendshipOptionWithout).toBe(false);
+    expect(findByTestId(rootWithoutChar, "event-page-friendship-condition-value")).not.toBeNull();
+    expect(findByTestId(rootWithoutChar, "event-page-condition-add-toolbar")).toBeNull();
 
     const root = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page, { characterId: "char_ev" }) }));
     const ids = [
@@ -291,10 +290,10 @@ describe("page conditions working guarantee (all kinds)", () => {
       "event-page-time-phase-condition-input",
       "event-page-season-condition-input",
       "event-page-npc-activity-condition-input",
-      "event-page-friendship-condition-value",
-      "event-page-condition-add-toolbar",
-      "event-page-condition-add",
-      "event-page-advanced-conditions",
+     "event-page-friendship-condition-value",
+      "event-page-self-switch-condition-key-A",
+      "event-page-self-switch-condition-value",
+     "event-page-advanced-conditions",
     ];
     for (const id of ids) {
       expect(findByTestId(root, id), id).not.toBeNull();
@@ -306,6 +305,11 @@ describe("page conditions working guarantee (all kinds)", () => {
     expect(root.textContent).toContain("보유 중");
     expect(root.textContent).toContain("파티에 있음");
     expect(root.textContent).toContain("켜짐");
+    // 비활성 행 자리도 항상 렌더되는 계약: 빈 페이지에서도 라벨 존재
+    const emptyPage: EventPage = { ...page, conditions: [] };
+    const emptyRoot = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", emptyPage) }));
+    expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBeGreaterThanOrEqual(10);
+    expect(emptyRoot.querySelectorAll('[data-condition-active="false"]').length).toBeGreaterThan(0);
   });
 
   it("런타임: CONDITION_KINDS 전원이 true/false로 평가된다", () => {

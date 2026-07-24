@@ -33,6 +33,14 @@ export function timerCondition(
   );
 }
 
+export function selfSwitchConditionAt(
+  page: EventPage
+): Extract<EventPageCondition, { kind: "selfSwitch" }> | undefined {
+  return page.conditions.find(
+    (item): item is Extract<EventPageCondition, { kind: "selfSwitch" }> => item.kind === "selfSwitch"
+  );
+}
+
 export function withoutCondition(
   conditions: readonly EventPageCondition[],
   kind: EventPageCondition["kind"]
@@ -143,8 +151,21 @@ export function toggleTimerCondition(
   updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
 }
 
+export function toggleSelfSwitchCondition(
+  context: PageConditionContext,
+  enabled: boolean
+): void {
+  const condition = selfSwitchConditionAt(context.page);
+  const next = withoutFirstCondition(context.page.conditions, "selfSwitch");
+  if (enabled) {
+    if (condition !== undefined) next.push(condition);
+    else next.push({ kind: "selfSwitch", key: "A", value: true });
+  }
+  updateEventPage(context.mapId, context.eventId, context.page.id, { conditions: next });
+}
+
 export function advancedConditionEntries(page: EventPage): AdvancedConditionEntry[] {
-  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, friendshipAtLeast: 0, timer1: 0, timer2: 0 };
+  const seen = { switch: 0, variable: 0, item: 0, actor: 0, timePhase: 0, season: 0, npcActivity: 0, friendshipAtLeast: 0, selfSwitch: 0, timer1: 0, timer2: 0 };
   const entries: AdvancedConditionEntry[] = [];
   page.conditions.forEach((condition, index) => {
     if (condition.kind === "switch") {
@@ -197,8 +218,13 @@ export function advancedConditionEntries(page: EventPage): AdvancedConditionEntr
       if (seen.timer2 > 1) entries.push({ index, condition });
       return;
     }
-    // 간단 행에 없는 종류(셀프 스위치/소지금)는 전부 고급 목록에 표시 — 누락 시 편집 불가.
-    if (condition.kind === "selfSwitch" || condition.kind === "gold") {
+    if (condition.kind === "selfSwitch") {
+      seen.selfSwitch += 1;
+      if (seen.selfSwitch > 1) entries.push({ index, condition });
+      return;
+    }
+    // 소지금은 간단 행이 없으므로 전부 고급 목록에 표시 — 누락 시 편집 불가.
+    if (condition.kind === "gold") {
       entries.push({ index, condition });
     }
   });

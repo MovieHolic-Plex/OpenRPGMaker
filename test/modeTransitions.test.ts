@@ -65,6 +65,7 @@ describe("mode transitions", () => {
       parent.append(surface);
     });
     const teardownPlayer = vi.fn();
+    const editorPlayBootDiagnosticSink = vi.fn();
 
     vi.doMock("@/project/store", () => ({
       store: {
@@ -89,6 +90,27 @@ describe("mode transitions", () => {
       renderEditor,
       teardownEditor,
     }));
+    vi.doMock("@/editor/editorWelcome", () => ({
+      presentEditorWelcome: vi.fn(),
+      setEditorWelcomeDismissed: vi.fn(),
+      shouldPresentEditorWelcome: vi.fn(() => false),
+    }));
+    vi.doMock("@/editor/aiBootIntent", () => ({
+      applyPendingAiBootIntent: vi.fn(),
+      clearPendingAiBootIntent: vi.fn(),
+      clearWelcomeIntentBootFlags: vi.fn(),
+      peekPendingAiBootIntent: vi.fn(() => null),
+      setPendingAiBootIntent: vi.fn(),
+      setPendingWelcomePipeline: vi.fn(),
+      wasWelcomeIntentAppliedThisBoot: vi.fn(() => false),
+    }));
+    vi.doMock("@/editor/mapSelection", () => ({
+      focusProjectStartMap: vi.fn(),
+    }));
+    vi.doMock("@/editor/teamWorkflowUi", () => ({
+      ensureGuestIdentityForAiSurface: vi.fn(),
+      openLoginModalIfNeeded: vi.fn(),
+    }));
     vi.doMock("@/player/player", async () => {
       await playerModuleGate.promise;
       return {
@@ -96,6 +118,9 @@ describe("mode transitions", () => {
         teardownPlayer,
       };
     });
+    vi.doMock("@/app/editorPlayBootDiagnostics", () => ({
+      editorPlayBootDiagnosticSink,
+    }));
 
     const { bootApp, enterMode } = await import("@/app/mode");
     const root = document.createElement("div");
@@ -111,6 +136,10 @@ describe("mode transitions", () => {
     await Promise.all([firstSwitch, secondSwitch]);
 
     expect(renderPlayer).toHaveBeenCalledTimes(1);
+    expect(renderPlayer).toHaveBeenCalledWith(
+      expect.anything(),
+      { diagnosticSink: editorPlayBootDiagnosticSink },
+    );
     const playParent = renderPlayer.mock.calls[0]?.[0];
     expect(playParent?.children.length).toBe(1);
     expect(playParent?.children[0]?.className).toBe("play-surface");

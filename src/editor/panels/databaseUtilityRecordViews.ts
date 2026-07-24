@@ -140,6 +140,7 @@ export function renderBattlerAnimationsTab(host: HTMLElement): void {
       readonlyValue("편집 위치", "RM2003 데이터베이스 > 애니메이션 2"),
       readonlyValue("레코드", countText(battlerAnimations.length)),
       readonlyValue("분리 대상", "전투 효과 애니메이션"),
+      runtimeUnlinkedNotice(),
     ]),
     rm2k3Fieldset(
       "포즈 세트",
@@ -154,6 +155,17 @@ export function renderBattlerAnimationsTab(host: HTMLElement): void {
     ]),
   );
   host.append(el("h3", { text: "배틀러 애니메이션" }), form);
+}
+
+function runtimeUnlinkedNotice(): HTMLElement {
+  return el("div", {
+    class: "db-readonly-row db-runtime-unlinked-notice",
+    dataset: { testid: "db-battler-animations-runtime-note" },
+    children: [
+      el("span", { text: "런타임 연결" }),
+      el("strong", { text: "미연결 — 전투는 생성 배틀 시트(3열 포즈)로 렌더한다. 이 탭의 데이터는 RM2003 호환 편집용이다." }),
+    ],
+  });
 }
 
 function battlerAnimationEditorRows(animations: readonly BattlerAnimationRecord[]): HTMLElement[] {

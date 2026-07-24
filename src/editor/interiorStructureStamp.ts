@@ -1,16 +1,10 @@
+import { planInteriorHouseWalls, shapeInteriorCeiling } from "@/editor/interiorHouseWallGrammar";
 import type { TilePoint } from "@/project/defaults/dbExtractedHouseTemplate";
 import type { GameMap } from "@/project/types";
 
 type StampTilePlacement = TilePoint & {
   readonly layer: "lower" | "upper";
   readonly tile: number;
-};
-
-type StampRect = TilePoint & {
-  readonly height: number;
-  readonly layer: "lower" | "upper";
-  readonly tile: number;
-  readonly width: number;
 };
 
 type StampPattern = {
@@ -60,71 +54,47 @@ export const INTERIOR_HOUSE_TILE = {
 
 const INTERIOR_TILE = INTERIOR_HOUSE_TILE;
 
+/**
+ * 10×10 실내 스탬프 — 천장 정본(2026-07-20) 그램마로 전개:
+ * y0 천장(366) 링 · y1 크림 상단 74–76 · y2 크림 하단 104–106 ·
+ * y3–8 바닥(좌우 천장 366 기둥) · y9 남측 천장 띠(문 위치만 바닥 통로).
+ * 캡/포스트/트림/문 플랭크 낱장은 쓰지 않는다 — 정본 planInteriorHouseWalls를 그대로 호출.
+ */
 export function stampInteriorHouse10x10(map: GameMap, origin: TilePoint): void {
-  fillRect(map, { height: 10, layer: "lower", tile: INTERIOR_TILE.FLOOR, width: 10, ...origin });
-  stampPattern(map, {
-    layer: "lower",
-    origin,
-    rows: [
-      [
-        INTERIOR_TILE.WALL_TOP_LEFT,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_MID,
-        INTERIOR_TILE.WALL_TOP_RIGHT,
-      ],
-      [
-        INTERIOR_TILE.WALL_BODY_LEFT,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_MID,
-        INTERIOR_TILE.WALL_BODY_RIGHT,
-      ],
-    ],
-  });
-  frameInteriorRoom(map, origin);
+  const SIZE = 10;
+  const floor = new Array<boolean>(SIZE * SIZE).fill(false);
+  for (let y = 3; y <= 8; y += 1) {
+    for (let x = 1; x <= 8; x += 1) floor[y * SIZE + x] = true;
+  }
+  const door = { x: 4, y: 8 };
+  const placements = planInteriorHouseWalls({ width: SIZE, height: SIZE, floor, door });
+  for (const placement of placements) {
+    setTile(map, { layer: "lower", tile: placement.tile, x: origin.x + placement.x, y: origin.y + placement.y });
+    if (placement.tile !== INTERIOR_TILE.FLOOR) {
+      const x = origin.x + placement.x;
+      const y = origin.y + placement.y;
+      if (x >= 0 && y >= 0 && x < map.width && y < map.height) map.upperTiles[y * map.width + x] = -1;
+    }
+  }
+  // 천장(430 계열) 저장 성형 — 회암 테두리(정본 v2, 맵 전체 재계산이 정본 상태).
+  shapeInteriorCeiling(map);
   placeInteriorFurniture(map, origin);
-}
-
-function frameInteriorRoom(map: GameMap, origin: TilePoint): void {
-  for (let y = 2; y < 10; y += 1) {
-    setTile(map, { layer: "lower", tile: INTERIOR_TILE.WALL_BODY_LEFT, x: origin.x, y: origin.y + y });
-    setTile(map, { layer: "lower", tile: INTERIOR_TILE.WALL_BODY_RIGHT, x: origin.x + 9, y: origin.y + y });
-  }
-  for (let x = 1; x < 9; x += 1) {
-    setTile(map, { layer: "lower", tile: INTERIOR_TILE.WALL_BODY_MID, x: origin.x + x, y: origin.y + 9 });
-  }
-  // 남벽 문 — 하우스 셸 문법: 서 플랭크 398 | 개구부 바닥 72 | 동 플랭크 396.
-  const doorX = origin.x + 4;
-  setTile(map, { layer: "lower", tile: INTERIOR_TILE.DOOR_WEST, x: doorX - 1, y: origin.y + 9 });
-  setTile(map, { layer: "lower", tile: INTERIOR_TILE.FLOOR, x: doorX, y: origin.y + 9 });
-  setTile(map, { layer: "lower", tile: INTERIOR_TILE.DOOR_EAST, x: doorX + 1, y: origin.y + 9 });
 }
 
 function placeInteriorFurniture(map: GameMap, origin: TilePoint): void {
   stampPattern(map, {
     layer: "upper",
-    origin: { x: origin.x + 1, y: origin.y + 2 },
+    origin: { x: origin.x + 1, y: origin.y + 3 },
     rows: [[INTERIOR_TILE.BOOKSHELF_LEFT, INTERIOR_TILE.BOOKSHELF_MID, INTERIOR_TILE.BOOKSHELF_RIGHT]],
   });
   stampPattern(map, {
     layer: "upper",
-    origin: { x: origin.x + 6, y: origin.y + 2 },
+    origin: { x: origin.x + 6, y: origin.y + 3 },
     rows: [[INTERIOR_TILE.BED_LEFT, INTERIOR_TILE.BED_RIGHT]],
   });
   stampPattern(map, {
     layer: "lower",
-    origin: { x: origin.x + 3, y: origin.y + 4 },
+    origin: { x: origin.x + 3, y: origin.y + 5 },
     rows: [
       [INTERIOR_TILE.RUG_TOP_LEFT, INTERIOR_TILE.RUG_TOP_MID, INTERIOR_TILE.RUG_TOP_RIGHT],
       [INTERIOR_TILE.RUG_BOTTOM_LEFT, INTERIOR_TILE.RUG_BOTTOM_MID, INTERIOR_TILE.RUG_BOTTOM_RIGHT],
@@ -132,27 +102,19 @@ function placeInteriorFurniture(map: GameMap, origin: TilePoint): void {
   });
   stampPattern(map, {
     layer: "upper",
-    origin: { x: origin.x + 3, y: origin.y + 5 },
+    origin: { x: origin.x + 3, y: origin.y + 6 },
     rows: [[INTERIOR_TILE.TABLE_LEFT, INTERIOR_TILE.TABLE_MID, INTERIOR_TILE.TABLE_RIGHT]],
   });
   placeTiles(map, [
-    { layer: "upper", tile: INTERIOR_TILE.KITCHEN_LEFT, x: origin.x + 1, y: origin.y + 7 },
-    { layer: "upper", tile: INTERIOR_TILE.KITCHEN_MID, x: origin.x + 2, y: origin.y + 7 },
-    { layer: "upper", tile: INTERIOR_TILE.KITCHEN_RIGHT, x: origin.x + 3, y: origin.y + 7 },
-    { layer: "upper", tile: INTERIOR_TILE.CHAIR_WEST, x: origin.x + 2, y: origin.y + 5 },
-    { layer: "upper", tile: INTERIOR_TILE.CHAIR_EAST, x: origin.x + 6, y: origin.y + 5 },
-    { layer: "upper", tile: INTERIOR_TILE.CABINET_TOP, x: origin.x + 8, y: origin.y + 5 },
-    { layer: "upper", tile: INTERIOR_TILE.CABINET_BOTTOM, x: origin.x + 8, y: origin.y + 6 },
-    { layer: "upper", tile: INTERIOR_TILE.FLOWER_POT, x: origin.x + 8, y: origin.y + 3 },
+    { layer: "upper", tile: INTERIOR_TILE.KITCHEN_LEFT, x: origin.x + 1, y: origin.y + 8 },
+    { layer: "upper", tile: INTERIOR_TILE.KITCHEN_MID, x: origin.x + 2, y: origin.y + 8 },
+    { layer: "upper", tile: INTERIOR_TILE.KITCHEN_RIGHT, x: origin.x + 3, y: origin.y + 8 },
+    { layer: "upper", tile: INTERIOR_TILE.CHAIR_WEST, x: origin.x + 2, y: origin.y + 6 },
+    { layer: "upper", tile: INTERIOR_TILE.CHAIR_EAST, x: origin.x + 6, y: origin.y + 6 },
+    { layer: "upper", tile: INTERIOR_TILE.CABINET_TOP, x: origin.x + 8, y: origin.y + 6 },
+    { layer: "upper", tile: INTERIOR_TILE.CABINET_BOTTOM, x: origin.x + 8, y: origin.y + 7 },
+    { layer: "upper", tile: INTERIOR_TILE.FLOWER_POT, x: origin.x + 8, y: origin.y + 4 },
   ]);
-}
-
-function fillRect(map: GameMap, rect: StampRect): void {
-  for (let dy = 0; dy < rect.height; dy += 1) {
-    for (let dx = 0; dx < rect.width; dx += 1) {
-      setTile(map, { layer: rect.layer, tile: rect.tile, x: rect.x + dx, y: rect.y + dy });
-    }
-  }
 }
 
 function stampPattern(map: GameMap, pattern: StampPattern): void {

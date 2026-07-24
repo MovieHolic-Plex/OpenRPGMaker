@@ -58,6 +58,8 @@ export interface EditorState {
   selectedEventPageId: string | null;
   selection: TileSelection | null;
   clipboard: TileClipboard | null;
+  // 붙여넣기 미리보기 모드 — 클립보드 고스트가 커서를 추종하고 클릭으로 확정.
+  pastePreview: { x: number; y: number } | null;
   showGrid: boolean;
   chatDock: ChatDock;
   // 배틀 애니메이션 에디터 — 현재 편집 중인 애니메이션의 선택 프레임/셀 인덱스.
@@ -86,6 +88,7 @@ class EditorStateStore {
     selectedEventPageId: null,
     selection: null,
     clipboard: null,
+    pastePreview: null,
     showGrid: true,
     chatDock: "side",
     selectedAnimationFrameIndex: 0,

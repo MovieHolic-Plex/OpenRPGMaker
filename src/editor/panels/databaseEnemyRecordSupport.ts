@@ -4,6 +4,7 @@ import { store } from "@/project/store";
 import type { ActorRateGrade, EnemyActionCondition, EnemyActionPattern, EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { applyMagentaChromaKey } from "./chromaKey";
+import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 
 export { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
 export { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
@@ -65,7 +66,14 @@ export function panel(title: string, children: HTMLElement[], gridClass?: string
 
 export function openDialog(testid: string, title: string, content: HTMLElement[], actions: readonly { readonly label: string; readonly testid: string; readonly action?: () => void }[]): void {
   const overlay = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid } });
-  const close = (): void => overlay.remove();
+  const close = (): void => {
+    unregisterModal(overlay);
+    overlay.remove();
+  };
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) close();
+  });
+  registerModal(overlay, close);
   overlay.append(
     el("div", {
       class: "db-enemy-dialog",

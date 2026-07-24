@@ -1,6 +1,10 @@
-﻿import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { confirmBattleTarget, seedLayoutResultBattleProject, seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
 
 type Rect = {
   readonly x: number;
@@ -39,6 +43,11 @@ type BattleLayoutMetrics = {
   readonly resultPanel?: Rect;
   readonly resultRows: readonly string[];
   readonly targetPromptText?: string;
+  readonly targetMenu?: Rect;
+  readonly targetKeyPrompts?: Rect;
+  readonly targetBracket?: Rect;
+  readonly targetControls: readonly Rect[];
+  readonly unitRects: readonly Rect[];
 };
 
 const evidenceDir = "output/evidence/rm2k3-battle-layout-ux";
@@ -66,7 +75,13 @@ test("battle command screen uses an RM2003-style field and bottom HUD layout", a
   expect(metrics.party.height / metrics.scene.height).toBeLessThan(0.42);
   expect(metrics.partyRows.length).toBeGreaterThan(0);
   expect(Math.max(...metrics.partyRows.map((row) => row.bottom))).toBeLessThanOrEqual(metrics.party.bottom - 2);
-  expect(metrics.messageDisplay).toBe("grid");
+  for (const [index, left] of metrics.unitRects.entries()) {
+    for (const right of metrics.unitRects.slice(index + 1)) {
+      expect(rectanglesOverlap(left, right)).toBe(false);
+    }
+  }
+  await expect(page.locator(".battle-party .battle-stat-bar-mp")).toHaveCount(4);
+  expect(metrics.messageDisplay).toBe("none");
   expect(metrics.commandPanelDisplay).toBe("grid");
   expect(metrics.backdropBackground).toContain("url(");
 
@@ -96,6 +111,13 @@ test("battle target and result states stay readable without HUD collision", asyn
   await writeFile(`${evidenceDir}/red-green/battle-target-layout.json`, `${JSON.stringify(targetMetrics, null, 2)}\n`, "utf8");
   expect(targetMetrics.targetPromptText).toContain("대상:");
   expect(targetMetrics.messageDisplay).toBe("grid");
+  expect(targetMetrics.targetMenu).toBeTruthy();
+  expect(targetMetrics.targetBracket?.y ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(targetMetrics.message.bottom - 1);
+  for (const [index, left] of targetMetrics.targetControls.entries()) {
+    for (const right of targetMetrics.targetControls.slice(index + 1)) {
+      expect(rectanglesOverlap(left, right)).toBe(false);
+    }
+  }
 
   await seedLayoutResultBattleProject(page);
   await startReferenceBattle(page);
@@ -187,6 +209,21 @@ async function battleLayoutMetrics(page: Page): Promise<BattleLayoutMetrics> {
       resultPanel: resultPanel ? rectOf(resultPanel) : undefined,
       resultRows: [...document.querySelectorAll<HTMLElement>(".battle-result-reward-label")].map((node) => node.textContent ?? ""),
       targetPromptText: targetPrompt?.textContent ?? undefined,
+      targetMenu: document.querySelector<HTMLElement>(".battle-target-menu")
+        ? rectOf(document.querySelector<HTMLElement>(".battle-target-menu")!)
+        : undefined,
+      targetKeyPrompts: document.querySelector<HTMLElement>(".battle-key-prompts")
+        ? rectOf(document.querySelector<HTMLElement>(".battle-key-prompts")!)
+        : undefined,
+      targetBracket: document.querySelector<HTMLElement>("[data-testid='battle-target-brackets']")
+        ? rectOf(document.querySelector<HTMLElement>("[data-testid='battle-target-brackets']")!)
+        : undefined,
+      targetControls: [...document.querySelectorAll<HTMLElement>(".battle-target-menu .battle-command")].map(rectOf),
+      unitRects: [...document.querySelectorAll<HTMLElement>(".battle-enemy, .battle-actor")].map(rectOf),
     };
   });
+}
+
+function rectanglesOverlap(left: Rect, right: Rect): boolean {
+  return left.x < right.right && left.right > right.x && left.y < right.bottom && left.bottom > right.y;
 }

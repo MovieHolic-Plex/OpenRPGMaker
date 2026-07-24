@@ -32,10 +32,17 @@ describe("structureKit 하네스 툴 — 봇이 등록 스탬프를 읽고 시�
     const result = runTool({ project }, "list_structure_kits", { mapId });
 
     expect(result.ok).toBe(true);
-    const data = result.data as { kits: { kitId: string; width: number; height: number; rows: { tiles: number[] }[] }[] };
-    expect(data.kits).toHaveLength(1);
-    expect(data.kits[0]).toMatchObject({ kitId: "kit_wall_test", width: 1, height: 5 });
-    expect(data.kits[0]!.rows.map((row) => row.tiles)).toEqual([[19], [49], [109], [51], [81]]);
+    const data = result.data as {
+      kits: { kitId: string; kind: string; width: number; height: number; learnedFrom: string; rows?: { tiles: number[] }[] }[];
+    };
+    // 2026-07-20: 내장 파라메트릭 집 킷 6종이 등록 킷 앞에 함께 실린다.
+    const learned = data.kits.filter((kit) => kit.learnedFrom === "user-paint");
+    expect(learned).toHaveLength(1);
+    expect(learned[0]).toMatchObject({ kitId: "kit_wall_test", kind: "section", width: 1, height: 5 });
+    expect(learned[0]!.rows!.map((row) => row.tiles)).toEqual([[19], [49], [109], [51], [81]]);
+    const houses = data.kits.filter((kit) => kit.kind === "house");
+    expect(houses.length).toBeGreaterThanOrEqual(6);
+    expect(houses.every((kit) => kit.rows === undefined)).toBe(true);
   });
 
   it("stamp_structure_kit이 단면을 가로 repeat회로 결정론 시공한다", () => {

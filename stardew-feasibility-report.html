@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG ZZU로 스타듀밸리 라이크 — 구현 가능성 분석</title>
+<style>
+  :root {
+    --bg: #14100c;
+    --panel: #1f1913;
+    --panel-2: #2a211a;
+    --line: #3d3227;
+    --text: #f0e6d6;
+    --muted: #b8a88e;
+    --green: #7ec850;
+    --amber: #f0b429;
+    --red: #e05c4a;
+    --accent: #d97b3f;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    line-height: 1.65;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px 120px; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    height: 340px;
+    margin: 0 -24px 0;
+    overflow: hidden;
+    border-bottom: 4px solid var(--accent);
+  }
+  .hero img.bg {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+    filter: brightness(.45) saturate(1.2);
+  }
+  .hero .hero-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 0 24px;
+    background: radial-gradient(ellipse at center, rgba(20,16,12,.1), rgba(20,16,12,.75));
+  }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: -1px; text-shadow: 0 4px 24px rgba(0,0,0,.8); }
+  .hero h1 em { font-style: normal; color: var(--green); }
+  .hero p.sub { margin-top: 12px; color: #e8dcc8; font-size: 16px; max-width: 640px; text-shadow: 0 2px 8px rgba(0,0,0,.9); }
+  .chipset-strip {
+    display: block; width: 100%; height: 96px; object-fit: cover;
+    image-rendering: pixelated; border-bottom: 1px solid var(--line);
+    filter: brightness(.8);
+  }
+
+  /* ---------- SUMMARY ---------- */
+  .verdict {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+    margin: 48px 0 8px;
+  }
+  .verdict .v-card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 24px; text-align: center;
+  }
+  .v-card .num { font-size: 52px; font-weight: 800; line-height: 1; }
+  .v-card .lbl { margin-top: 8px; color: var(--muted); font-size: 14px; }
+  .v-ok .num { color: var(--green); }
+  .v-mid .num { color: var(--amber); }
+  .v-no .num { color: var(--red); }
+  .summary-line {
+    text-align: center; color: var(--muted); font-size: 15px; margin: 16px 0 56px;
+  }
+  .summary-line strong { color: var(--text); }
+
+  /* ---------- SECTIONS ---------- */
+  section { margin-top: 72px; }
+  .sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+  .sec-head .badge {
+    font-size: 26px; width: 52px; height: 52px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .b-ok { background: rgba(126,200,80,.15); border: 1px solid rgba(126,200,80,.4); }
+  .b-mid { background: rgba(240,180,41,.12); border: 1px solid rgba(240,180,41,.4); }
+  .b-no { background: rgba(224,92,74,.12); border: 1px solid rgba(224,92,74,.4); }
+  .sec-head h2 { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+  .sec-desc { color: var(--muted); margin: 0 0 28px 66px; font-size: 15px; }
+
+  /* ---------- CARDS ---------- */
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    overflow: hidden; display: flex; flex-direction: column;
+  }
+  .card.wide { grid-column: 1 / -1; }
+  .card-top {
+    display: flex; gap: 16px; padding: 18px 20px 0;
+    align-items: flex-start;
+  }
+  .card-top.no-img { padding-top: 20px; }
+  .card h3 { font-size: 17px; font-weight: 700; }
+  .card h3 .tag {
+    font-size: 11px; font-weight: 600; vertical-align: middle; margin-left: 8px;
+    padding: 2px 8px; border-radius: 999px;
+  }
+  .t-ok { background: rgba(126,200,80,.15); color: var(--green); }
+  .t-mid { background: rgba(240,180,41,.15); color: var(--amber); }
+  .t-no { background: rgba(224,92,74,.15); color: var(--red); }
+  .card .body { padding: 12px 20px 18px; font-size: 14px; color: #d9cdb8; }
+  .card .body .prompt {
+    display: block; margin-top: 10px; padding: 9px 12px;
+    background: var(--panel-2); border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0; font-size: 13px; color: var(--muted);
+    font-style: italic;
+  }
+  .evidence {
+    margin: 0 20px 18px; padding: 10px 14px;
+    background: #171310; border: 1px solid var(--line); border-radius: 8px;
+    font-family: "Consolas", "D2Coding", monospace; font-size: 12px; color: #9ec77e;
+    word-break: break-all;
+  }
+  .evidence span.k { color: #8a7c66; }
+
+  /* 이미지 */
+  .img-row { display: flex; gap: 10px; align-items: flex-end; }
+  .img-box {
+    background:
+      repeating-conic-gradient(#26201a 0% 25%, #1b1611 0% 50%) 0 0 / 16px 16px;
+    border: 1px solid var(--line); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; flex-shrink: 0;
+  }
+  .img-box img { image-rendering: pixelated; display: block; }
+  .img-64 { width: 64px; height: 64px; } .img-64 img { width: 56px; height: 56px; object-fit: contain; }
+  .img-96 { width: 96px; height: 96px; } .img-96 img { width: 88px; height: 88px; object-fit: contain; }
+  .img-sprite { width: 96px; height: 128px; align-items: flex-start; justify-content: flex-start; }
+  .img-sprite img { width: 576px; height: auto; }
+  .img-face { width: 96px; height: 96px; }
+  .img-face img { width: 96px; height: 96px; object-fit: none; object-position: top left; transform: scale(.5); transform-origin: top left; }
+  .img-banner { width: 100%; height: 120px; border-radius: 0; border: 0; border-bottom: 1px solid var(--line); }
+  .img-banner img { width: 100%; height: 100%; object-fit: cover; }
+  .img-charset { width: 120px; height: 96px; overflow: hidden; }
+  .img-charset img { width: 480px; image-rendering: pixelated; transform: translate(0,0); }
+
+  .why { color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .why strong { color: var(--text); }
+
+  /* ---------- ARCHITECTURE ---------- */
+  .arch {
+    margin-top: 80px; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 16px; padding: 36px;
+  }
+  .arch h2 { font-size: 24px; margin-bottom: 16px; }
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+  .arch-item { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; font-size: 14px; }
+  .arch-item b { display: block; color: var(--accent); margin-bottom: 6px; font-size: 13px; }
+  .arch p { color: #d9cdb8; font-size: 15px; }
+
+  footer { margin-top: 72px; text-align: center; color: #6e6252; font-size: 13px; }
+  footer code { background: var(--panel-2); padding: 2px 8px; border-radius: 6px; font-size: 12px; }
+
+  @media (max-width: 860px) {
+    .cards, .verdict, .arch-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 30px; }
+    .sec-desc { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <img class="bg" src="./public/assets/generated/title/bright-rpg-maker-title-v2.png" alt="RPG ZZU 타이틀" onerror="this.src='./public/assets/easyrpg/backdrop/Dawn1.png'">
+    <div class="hero-text">
+      <h1>RPG ZZU로 <em>스타듀밸리 라이크</em>,<br>어디까지 만들 수 있나</h1>
+      <p class="sub">사용자 프롬프트 30+ 패턴을 에디터 실제 코드와 대조한 구현 가능성 분석 · 2026-07-20</p>
+    </div>
+  </div>
+  <img class="chipset-strip" src="./public/assets/easyrpg-chipset-combined-town-transparent.png" alt="Combined Town 칩셋">
+
+  <div class="verdict">
+    <div class="v-card v-ok"><div class="num">12</div><div class="lbl">그대로 구현 가능<br>(네이티브 도구/런타임 지원)</div></div>
+    <div class="v-card v-mid"><div class="num">7</div><div class="lbl">조합하면 가능<br>(변수+분기+이벤트 우회)</div></div>
+    <div class="v-card v-no"><div class="num">6</div><div class="lbl">구현 불가<br>(엔진 구조상 한계)</div></div>
+  </div>
+  <p class="summary-line">결론부터 말하면 — <strong>"농사 + 계절 + 마을 + NPC + 상점"</strong>이라는 스타듀밸리의 뼈대는 이 에디터에 <strong>이미 내장</strong>되어 있습니다. 다만 스타듀밸리 특유의 <strong>실시간 조작감(낚시, 액션 전투)과 관계 시스템의 깊이(호감도 UI, 결혼)</strong>는 엔진 구조가 막고 있습니다.</p>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge b-ok">✅</div>
+      <h2>그대로 구현 가능 — 네이티브 지원</h2>
+    </div>
+    <p class="sec-desc">프롬프트 한 줄이 전용 AI 도구 또는 런타임 기능으로 직결되는 영역. 우회 없이 "진짜" 기능으로 동작합니다.</p>
+    <div class="cards">
+
+      <div class="card wide">
+        <div class="img-box img-banner"><img src="./public/assets/easyrpg-chipset-retro-exterior.png" alt="야외 칩셋" onerror="this.parentElement.style.display='none'"></div>
+        <div class="card-top no-img">
+          <div>
+            <h3>농사 풀사이클 — 밭갈기 → 심기 → 물주기 → 수확 <span class="tag t-ok">핵심</span></h3>
+            <div class="body">
+              스타듀밸리의 심장인 농사 루프가 <b>런타임에 그대로 구현</b>되어 있습니다. 괭이(hoe)로 경작 → 씨앗 심기 → 물뿌리개(wateringCan)로 물주기 → 성장 단계 경과 → 수확, 그리고 <b>물을 안 주면 시드는(dead) 로직</b>까지 존재합니다. 도구는 아이템 장착 개념으로 해결됩니다.
+              <span class="prompt">"농장 맵에 밭 구역 지정하고, 파십·딸기·옥수수 작물 추가해줘. 물 안 주면 시들게."</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> src/player/farming.ts (tilled/planted/watered/harvested/dead) · src/project/farmModel.ts (FARM_TOOLS = hoe/wateringCan/axe/pickaxe) · src/project/toolActions.ts</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="img-row">
+            <div class="img-box img-64"><img src="./public/assets/farming/crops/crop_strawberry.png" alt="딸기"></div>
+            <div class="img-box img-64"><img src="./public/assets/farming/crops/crop_tomato.png" alt="토마토"></div>
+            <div class="img-box img-64"><img src="./public/assets/farming/crops/crop_corn.png" alt="옥수수"></div>
+          </div>
+          <div>
+            <h3>계절 작물 데이터베이스 <span class="tag t-ok">네이티브</span></h3>
+            <div class="body">작물 레코드에 <b>계절(seasons), 씨앗 아이템, 수확 아이템, 성장 단계</b>가 스키마로 존재. 작물 전용 스프라이트 에셋도 번들.
+              <span class="prompt">"봄 작물이랑 여름 작물 구분해서 DB에 넣어줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> define_crop 도구 · CropRecord.seasons (farmModel.ts) · assets/farming/crops/</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>시간 시스템 + 수면으로 하루 넘기기 <span class="tag t-ok">네이티브</span></h3>
+            <div class="body"><b>아침/낮/저녁/밤(timePhase)과 계절(season)</b>이 이벤트 페이지 조건으로 직접 걸 수 있는 일급 개념. 침대에서 자면 아침으로 넘어가는 것도 전용 커맨드.
+              <span class="prompt">"하루가 흐르는 시간 시스템 설정하고, 자면 아침 되게 해줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> configure_time_system · advanceTime / sleepUntilMorning · timePhase/season 페이지 조건 (types/events.ts) · playSceneTime.ts</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="img-box img-face"><img src="./public/assets/easyrpg/faceset/People1.png" alt="주민 페이스셋"></div>
+          <div>
+            <h3>주민 NPC + 시간대별 스케줄 <span class="tag t-ok">네이티브</span></h3>
+            <div class="body">주민 생성 전용 도구와 <b>스케줄 필드, npcActivity 페이지 조건</b>이 있어 "낮엔 상점, 밤엔 집"이 조건 분기 없이 표현 가능.
+              <span class="prompt">"주민 10명 만들고 각자 아침/저녁 위치 다르게 해줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> make_villager · eventSchedule.ts · npcActivity 조건 · list_npc_graphics</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>상점 + 계절 재고 + 상인 소지금 <span class="tag t-ok">네이티브</span></h3>
+            <div class="body">상점 커맨드에 <b>아이템별 계절 재고 레이어(stock[].seasons), 가격 오버라이드, 상인 매입 한도(merchantGold)</b>까지 구현됨. "피에르 잡화점"이 그대로 표현됩니다.
+              <span class="prompt">"씨앗 파는 잡화점 만들고, 봄 씨앗은 봄에만 팔게 해줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> shop 커맨드 · resolveShopStock · shop-stock-layers UI · merchantGold (commandBodyCommerce.ts)</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="img-box img-charset"><img src="./public/assets/easyrpg/charset/Monster1.png" alt="몬스터"></div>
+          <div>
+            <h3>광산 채광 + 턴제 전투 <span class="tag t-ok">네이티브</span></h3>
+            <div class="body">곡괭이(pickaxe)의 <b>"mine" 액션</b>이 도구 시스템에 내장. 인카운터 테이블/필드 스폰으로 광산 몬스터 배치, 전투는 RM2k3식 턴제로 완비.
+              <span class="prompt">"광산 맵에 광석 노드랑 몬스터 배치해줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> toolActions.ts (pickaxe → mine) · set_encounter_table / make_hunting_ground · src/battle/</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>멀티맵 월드 (마을↔농장↔광산) <span class="tag t-ok">네이티브</span></h3>
+            <div class="body">맵 그래프를 먼저 설계(plan_world)하고 빈 맵 생성(build_world) 후 워프 연결(link_maps)하는 선언적 워크플로가 전용 도구로 존재.
+              <span class="prompt">"마을에서 농장으로, 농장에서 광산으로 이동 연결해줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> src/editor/tools/worldGraphTools.ts (plan_world / build_world / link_maps / lint_world)</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>날씨·조명 무드 + 컷신 + 계절 축제 <span class="tag t-ok">네이티브</span></h3>
+            <div class="body">비/눈 날씨(setWeather), 맵 단위 조명 무드(set_scene_mood), 선언적 컷신 컴파일러(script_cutscene) 조합으로 오프닝·축제 연출 가능. season 조건으로 "봄 달걀 축제" 같은 계절 이벤트도 직결.
+              <span class="prompt">"할아버지한테 농장 물려받는 오프닝 컷신 만들어줘"</span>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> setWeather / set_scene_mood (lightingTools.ts) · script_cutscene (src/editor/cutscene/)</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge b-mid">🟡</div>
+      <h2>조합하면 가능 — 하지만 '우회'</h2>
+    </div>
+    <p class="sec-desc">전용 모델이 없어서 변수·분기·이벤트를 수동으로 엮어야 하는 영역. "된다"와 "제대로 된다"는 다릅니다.</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-top">
+          <div class="img-box img-face"><img src="./public/assets/easyrpg/faceset/Actor1.png" alt="액터"></div>
+          <div>
+            <h3>호감도 / 선물 <span class="tag t-mid">우회</span></h3>
+            <div class="body">주민마다 변수 1개를 할당하고, 선물 이벤트에서 변수를 올리고, 대사 분기를 변수 조건으로 거는 식으로 <b>동작은 합니다</b>.
+              <div class="why"><strong>한계:</strong> 하트 게이지 UI 없음, 주민 10명 = 변수 10개 수동 관리, 선물 "주는" 전용 인터랙션(아이템 들고 말걸기)이 없어 대화 선택지로 흉내.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">코드에 'affinity/호감도' 검색 시 배틀 상성(type affinity)만 존재 — NPC 관계 모델 부재</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>결혼 <span class="tag t-mid">우회</span></h3>
+            <div class="body">호감도 변수 임계값 도달 → 프러포즈 이벤트 → 결혼 후 동거 배치를 이벤트 페이지 분기로 구성 가능.
+              <div class="why"><strong>한계:</strong> "배우자"라는 게임 상태가 없어서 모든 후처리(아침 대사 교체, 집 배치)를 이벤트로 일일이 유지보수.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">전용 상태 모델 없음 — 변수+스위치 조합 필요</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>출하함 (밤 정산) <span class="tag t-mid">우회</span></h3>
+            <div class="body">출하함 상점에 "팔기"로 넣고 판매액을 변수에 누적, 침대 수면 이벤트 진입 시 변수만큼 골드 지급 후 초기화 — 논리적으로 조립 가능.
+              <div class="why"><strong>한계:</strong> 상점 판매가 곧바로 골드 지급되는 구조라 "다음날 정산" 연출을 만들려면 전용 변수 회계를 저작자가 직접 설계해야 함.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">코드에 shipping/출하 런타임 부재 (AI 프롬프트 예시에만 등장)</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div class="img-row">
+            <div class="img-box img-sprite"><img src="./public/assets/farming/animals/chicken.png" alt="닭"></div>
+            <div class="img-box img-sprite"><img src="./public/assets/farming/animals/cow.png" alt="소"></div>
+          </div>
+          <div>
+            <h3>가축 사육 (닭·소) <span class="tag t-mid">우회</span></h3>
+            <div class="body">놀랍게도 <b>닭·소 스프라이트 에셋은 번들</b>되어 있습니다. NPC 이벤트로 배치하고 "매일 알/우유 수거"를 일일 리셋 이벤트로 흉내 가능.
+              <div class="why"><strong>한계:</strong> 에셋만 있고 가축 <b>데이터 모델(먹이, 친밀도, 산출물 주기)이 없음</b>. 작물 모델(farmModel)에 해당하는 livestock 모델 부재.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">근거:</span> assets/farming/animals/ 존재 vs farmModel.ts = 작물 전용</div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>요리 / 제작 / 스킬 레벨 <span class="tag t-mid">우회</span></h3>
+            <div class="body">선택지(choices) + 변수 + 아이템 증감으로 "재료 2개 → 요리 1개" 레시피는 구현 가능. 스킬 경험치도 변수로.
+              <div class="why"><strong>한계:</strong> 레시피 10개면 선택지 분기 10개 — 데이터 주도 테이블이 아니라 이벤트 하드코딩이 됨.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">crafting/cooking 시스템 부재 — choices/variable 커맨드 조합</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>문답식 낚시 <span class="tag t-mid">우회</span></h3>
+            <div class="body">"낚싯대를 던졌다… (wait) …입질이 왔다! → 성공/실패 랜덤 변수 → 물고기 획득" 수준의 텍스트 게임은 가능.
+              <div class="why"><strong>한계:</strong> 이건 낚시 '연출'이지 낚시 '게임'이 아님. 진짜 미니게임은 아래 ❌ 참조.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">wait + 변수 랜덤 + choices 조합</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head">
+      <div class="badge b-no">❌</div>
+      <h2>구현 불가 — 엔진 구조가 막는 영역</h2>
+    </div>
+    <p class="sec-desc">노력의 문제가 아니라 런타임 아키텍처의 문제. 엔진을 고치지 않는 한 프롬프트로는 안 됩니다.</p>
+    <div class="cards">
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>실시간 낚시 미니게임 (게이지 타이밍 조작) <span class="tag t-no">불가</span></h3>
+            <div class="body">스타듀 낚시의 핵심 — 물고기 아이콘을 따라 바를 실시간으로 움직이는 조작 — 은 <b>실시간 입력 폴핑 + 연속 상태 갱신 루프</b>가 필요합니다.
+              <div class="why"><strong>왜 안 되나:</strong> 이벤트 인터프리터는 커맨드를 위에서 아래로 순차 실행하는 RM2k3식 구조(src/player/interpreter.ts). 매 프레임 입력을 읽어 UI를 갱신하는 미니게임 프레임워크 자체가 없습니다.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">src/player/interpreter.ts — 순차 커맨드 실행기, 실시간 입력 루프 부재</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>실시간 액션 전투 <span class="tag t-no">불가</span></h3>
+            <div class="body">광산에서 검을 휘둘러 슬라임을 때리는 스타듀식 전투는 불가. 이 엔진의 전투는 <b>화면 전환형 턴제</b> 하나뿐입니다.
+              <div class="why"><strong>왜 안 되나:</strong> src/battle/ 전체가 턴 상태기계. 필드 위 실시간 피격 판정(히트박스) 시스템이 없습니다. 추격 AI(make_chase_scene, A*)는 있으나 닿으면 killPlayer/배틀 진입이 전부.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">src/battle/ (turn flow) · make_chase_scene = 접촉 트리거까지만</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>연속 실시간 시계 ("10분 = 7초") <span class="tag t-no">불가</span></h3>
+            <div class="body">스타듀의 시계는 초 단위로 흐르지만, 이 엔진의 시간은 <b>아침/낮/저녁/밤의 이산 단계(timePhase)</b>입니다.
+              <div class="why"><strong>왜 안 되나:</strong> TimePhase가 타입 레벨에서 이산 열거로 정의(types/events.ts). 분 단위 연속 시간축과 그에 종속된 HUD 시계가 없습니다.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">types/events.ts — { kind: "timePhase"; phase: TimePhase }</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>자유 HUD — 하트 게이지 / 스태미나 바 / 달력 위젯 <span class="tag t-no">불가</span></h3>
+            <div class="body">관계 시스템을 우회로 만들어도 <b>보여줄 화면이 없습니다.</b>
+              <div class="why"><strong>왜 안 되나:</strong> 플레이어 UI는 대화창·메뉴·숫자 입력으로 고정. 변수 값을 게이지 바로 렌더링하는 저작 수단이 없습니다(그림 표시 picture는 정적 오버레이 수준).</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">src/player/runtimeDom.ts · dialogueNumberInput.ts — 고정 UI 세트</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>멀티플레이어 / 협동 플레이 <span class="tag t-no">불가</span></h3>
+            <div class="body">스타듀 1.6식 4인 코-op은 처음부터 설계 밖.
+              <div class="why"><strong>왜 안 되나:</strong> 런타임이 단일 PlaySession(로컬 상태) 전제. 네트워크 동기화 레이어가 없고, Supabase는 프로젝트 저장용이지 세션 공유용이 아닙니다.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">PlaySession = 싱글 세션 · supabaseProjectSync = 프로젝트 동기화 전용</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <div>
+            <h3>유저 스크립트 / 모드로 우회 탈출 <span class="tag t-no">불가</span></h3>
+            <div class="body">"그럼 스크립트로 직접 짜면 되지 않나?" — 안 됩니다.
+              <div class="why"><strong>왜 안 되나:</strong> 프로젝트 데이터는 선언적 JSON이고 런타임에 임의 코드 실행 경로(eval, 스크립트 커맨드)가 없습니다. RM2k3의 "커맨드 조합" 철학을 그대로 계승 — 못 하는 건 엔진 패치가 유일한 길.</div>
+            </div>
+          </div>
+        </div>
+        <div class="evidence"><span class="k">openwiki/runtime-and-data.md — authored JSON ↔ interpreter 구조</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="arch">
+    <h2>판정을 가르는 단 하나의 기준</h2>
+    <p>이 분류는 전부 <b>런타임 아키텍처</b>에서 나옵니다. RPG ZZU는 RM2k3 계보의 <b>"선언적 JSON 프로젝트 + 순차 커맨드 인터프리터 + 턴/메뉴 UI"</b> 엔진입니다. 이 프레임 안에서 표현 가능한 것(✅), 조합으로 억지로 엮이는 것(🟡), 프레임 밖이라 손댈 수 없는 것(❌)이 자연스럽게 갈립니다.</p>
+    <div class="arch-grid">
+      <div class="arch-item"><b>✅ 쪽이 강한 이유</b>농사·계절·시간·도구는 스타듀밸리 요청을 예상하고 엔진에 <i>모델로</i> 심어둔 영역 — farmModel, toolActions, timeSystem이 그 증거.</div>
+      <div class="arch-item"><b>🟡 쪽의 본질</b>전부 "관계·자원 회계" 문제. 변수+분기로 상태는 만들 수 있지만 <i>데이터 주도 테이블</i>이 아니라 이벤트 하드코딩이라 규모가 커질수록 물너짐.</div>
+      <div class="arch-item"><b>❌ 쪽의 본질</b>전부 "실시간성" 문제. 매 프레임 입력/갱신, 연속 시간, 히트박스 — 인터프리터 밖의 게임 루프가 필요한 것들.</div>
+      <div class="arch-item"><b>제품적 시사점</b>스타듀 수요를 노린다면 🟡의 반복 패턴 — 호감도·출하 정산·가축 모델 — 을 전용 도구로 승격하는 게 투자 대비 효과가 가장 큽니다. ❌는 엔진 로드맵 문제.</div>
+    </div>
+  </div>
+
+  <footer>
+    분석 근거: RPG ZZU 소스 직접 검증 (2026-07-20) · <code>src/player/farming.ts</code> · <code>src/project/farmModel.ts</code> · <code>src/project/toolActions.ts</code> · <code>src/editor/tools/</code> · <code>openwiki/</code><br>
+    본 문서의 모든 이미지는 이 리포지토리의 번들 에셋(<code>public/assets/</code>)입니다.
+  </footer>
+
+</div>
+</body>
+</html>

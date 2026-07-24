@@ -15,12 +15,18 @@ export interface FieldSpawnInstance {
   readonly y: number;
   readonly graphic: EventPageGraphic;
   readonly chase: boolean;
+  /** EnemyActionProfile.aggroRange에서 온 시야. 생략 시 기본 8. */
+  readonly sightRange?: number;
+  /** EnemyActionProfile.moveIntervalMs에서 온 추적 결정 간격. */
+  readonly moveIntervalMs?: number;
 }
 
 export interface FieldSpawnRuntimeEntry {
   readonly spawn: NormalizedFieldSpawn;
   alive: FieldSpawnInstance[];
   respawnTimersMs: number[];
+  /** persistKill 스폰에서 영구 처치된 수. alive와 합산해 배치 상한을 구성한다. */
+  persistedDead: number;
   cursor: number;
   serial: number;
 }
@@ -32,7 +38,7 @@ export interface FieldSpawnRuntimeState {
   fixedAccumulatorMs: number;
 }
 
-interface NormalizedFieldSpawn {
+export interface NormalizedFieldSpawn {
   readonly id: string;
   readonly troopId: string;
   readonly area: Rect;
@@ -40,6 +46,8 @@ interface NormalizedFieldSpawn {
   readonly respawnMs: number;
   readonly graphic: EventPageGraphic;
   readonly chase: boolean;
+  readonly persistKill: boolean;
+  readonly onKillSwitchId?: string;
 }
 
 export function isFieldSpawnEventId(eventId: string): boolean {
@@ -49,7 +57,8 @@ export function isFieldSpawnEventId(eventId: string): boolean {
 export function createFieldSpawnRuntime(
   project: Project,
   map: GameMap,
-  player: { readonly x: number; readonly y: number }
+  player: { readonly x: number; readonly y: number },
+  killedCounts?: Readonly<Record<string, number>>
 ): FieldSpawnRuntimeState {
   const state: FieldSpawnRuntimeState = {
     mapId: map.id,
@@ -57,6 +66,7 @@ export function createFieldSpawnRuntime(
       spawn: normalizeFieldSpawn(project, spawn),
       alive: [],
       respawnTimersMs: [],
+      persistedDead: Math.max(0, Math.round(killedCounts?.[spawn.id] ?? 0)),
       cursor: 0,
       serial: 0,
     })),
@@ -98,6 +108,34 @@ export function advanceFieldSpawns(
   return changed;
 }
 
+// 런타임 스폰 엔트리를 추가하고 즉시 배치한다(spawnFieldEnemy 커맨드용). 이미 같은 id가 있으면 무시.
+export function addFieldSpawnEntry(
+  state: FieldSpawnRuntimeState,
+  project: Project,
+  map: GameMap,
+  spawn: FieldSpawnDef,
+  player: { readonly x: number; readonly y: number },
+  killedCount = 0
+): void {
+  if (state.entries.some((entry) => entry.spawn.id === spawn.id)) return;
+  const entry: FieldSpawnRuntimeEntry = {
+    spawn: normalizeFieldSpawn(project, spawn),
+    alive: [],
+    respawnTimersMs: [],
+    persistedDead: Math.max(0, Math.round(killedCount)),
+    cursor: 0,
+    serial: 0,
+  };
+  state.entries.push(entry);
+  spawnUntilCapacity(state, entry, project, map, player);
+}
+
+// 런타임 스폰 엔트리를 제거한다(despawnFieldEnemy 커맨드용).
+export function removeFieldSpawnEntry(state: FieldSpawnRuntimeState, spawnId: string): void {
+  const index = state.entries.findIndex((entry) => entry.spawn.id === spawnId);
+  if (index >= 0) state.entries.splice(index, 1);
+}
+
 export function fieldSpawnTroopId(state: FieldSpawnRuntimeState | null, eventId: string): string | undefined {
   if (!state) return undefined;
   for (const entry of state.entries) {
@@ -107,16 +145,21 @@ export function fieldSpawnTroopId(state: FieldSpawnRuntimeState | null, eventId:
   return undefined;
 }
 
-export function resolveFieldSpawnVictory(state: FieldSpawnRuntimeState | null, eventId: string): boolean {
-  if (!state) return false;
+export function resolveFieldSpawnVictory(state: FieldSpawnRuntimeState | null, eventId: string): NormalizedFieldSpawn | null {
+  if (!state) return null;
   for (const entry of state.entries) {
     const index = entry.alive.findIndex((candidate) => candidate.eventId === eventId);
     if (index < 0) continue;
     entry.alive.splice(index, 1);
-    entry.respawnTimersMs.push(entry.spawn.respawnMs);
-    return true;
+    if (entry.spawn.persistKill) {
+      // 영구 처치: 리스폰 타이머를 걸지 않고 영구 사망 카운트만 올린다.
+      entry.persistedDead += 1;
+    } else {
+      entry.respawnTimersMs.push(entry.spawn.respawnMs);
+    }
+    return entry.spawn;
   }
-  return false;
+  return null;
 }
 
 export function fieldSpawnAliveCount(state: FieldSpawnRuntimeState | null): number {
@@ -139,15 +182,19 @@ export function syncFieldSpawnEventsIntoMap(
   state: FieldSpawnRuntimeState | null,
   eventPositions: RuntimeEventPositions
 ): void {
+  const surviving = new Map<string, RuntimeEventPositions[string]>();
   map.events = map.events.filter((event) => {
     if (!isFieldSpawnEventId(event.id)) return true;
+    const live = eventPositions[event.id];
+    if (live) surviving.set(event.id, live);
     delete eventPositions[event.id];
     return false;
   });
   const events = materializeFieldSpawnEvents(state);
   for (const event of events) {
     map.events.push(event);
-    eventPositions[event.id] = { x: event.x, y: event.y };
+    const kept = surviving.get(event.id);
+    eventPositions[event.id] = kept ?? { x: event.x, y: event.y };
   }
 }
 
@@ -159,7 +206,7 @@ function spawnUntilCapacity(
   player: { readonly x: number; readonly y: number }
 ): boolean {
   let changed = false;
-  while (entry.alive.length < entry.spawn.maxAlive) {
+  while (entry.alive.length + entry.persistedDead < entry.spawn.maxAlive) {
     if (!trySpawnInstance(state, entry, project, map, player)) break;
     changed = true;
   }
@@ -176,6 +223,7 @@ function trySpawnInstance(
   const point = nextSpawnPoint(state, entry, project, map, player);
   if (!point) return false;
   entry.serial += 1;
+  const tuning = resolveChaseTuning(project, entry.spawn.troopId);
   entry.alive.push({
     eventId: fieldSpawnEventId(entry.spawn.id, entry.serial),
     spawnId: entry.spawn.id,
@@ -184,8 +232,22 @@ function trySpawnInstance(
     y: point.y,
     graphic: entry.spawn.graphic,
     chase: entry.spawn.chase,
+    ...(tuning.sightRange !== undefined ? { sightRange: tuning.sightRange } : {}),
+    ...(tuning.moveIntervalMs !== undefined ? { moveIntervalMs: tuning.moveIntervalMs } : {}),
   });
   return true;
+}
+
+// 트룹 첫 적의 actionProfile에서 추적 튜닝(시야/결정 간격)을 읽는다.
+function resolveChaseTuning(project: Project, troopId: string): { sightRange?: number; moveIntervalMs?: number } {
+  const troop = project.database.troops.find((entry) => entry.id === troopId);
+  const firstEnemyId = troop?.members?.find((member) => member.hidden !== true)?.enemyId ?? troop?.enemyIds[0];
+  const profile = project.database.enemies.find((enemy) => enemy.id === firstEnemyId)?.actionProfile;
+  if (!profile) return {};
+  return {
+    ...(profile.aggroRange !== undefined ? { sightRange: profile.aggroRange } : {}),
+    ...(profile.moveIntervalMs !== undefined ? { moveIntervalMs: profile.moveIntervalMs } : {}),
+  };
 }
 
 function nextSpawnPoint(
@@ -248,7 +310,15 @@ function fieldSpawnEvent(instance: FieldSpawnInstance): GameEvent {
         overlapForbidden: true,
         animationType: "normal",
         movement: instance.chase
-          ? { type: "chase", speed: 3, frequency: 4, sightRange: 8, giveUpRange: 14, pathfind: true }
+          ? {
+              type: "chase",
+              speed: 3,
+              frequency: 4,
+              sightRange: instance.sightRange ?? 8,
+              giveUpRange: (instance.sightRange ?? 8) + 6,
+              pathfind: true,
+              ...(instance.moveIntervalMs !== undefined ? { moveIntervalMs: instance.moveIntervalMs } : {}),
+            }
           : { type: "fixed", speed: 3, frequency: 3 },
         commands: [{ kind: "battleProcessing", troopId: instance.troopId, canEscape: true, canLose: true }],
       },
@@ -270,6 +340,8 @@ function normalizeFieldSpawn(project: Project, spawn: FieldSpawnDef): Normalized
     respawnMs: Math.max(0, Math.round((spawn.respawnSec ?? DEFAULT_FIELD_SPAWN_RESPAWN_SEC) * 1000)),
     graphic: spawn.graphic ?? defaultFieldSpawnGraphic(project, spawn.troopId),
     chase: spawn.chase === true,
+    persistKill: spawn.persistKill === true,
+    ...(spawn.onKillSwitchId ? { onKillSwitchId: spawn.onKillSwitchId } : {}),
   };
 }
 

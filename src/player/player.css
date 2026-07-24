@@ -1,19 +1,7 @@
 @layer tokens, base, runtime, overrides;
 
 @import "../styles/tokens.css";
-@import "../styles/runtime/system.css";
-@import "../styles/runtime/battle.css";
-@import "../styles/runtime/commerce.css";
-@import "../styles/runtime/title.css";
-@import "../styles/runtime/playLoading.css";
-@import "../styles/runtime/timer.css";
-@import "../styles/runtime/touchpad.css";
-@import "../styles/runtime/pictures.css";
-@import "../styles/runtime/weather.css";
-@import "../styles/runtime/transitions.css";
-@import "../styles/runtime/nameEntry.css";
-@import "../styles/runtime/keyboardNav.css";
-@import "../styles/dialogue.css";
+@import "../styles/runtime/playerRuntime.css";
 
 html {
   color-scheme: dark;
@@ -25,15 +13,17 @@ body {
   font-family: var(--font-ui);
 }
 
-#app {
-  min-height: 100vh;
-}
-
 /* 익스포트 셸 보정 — 에디터 CSS 없이 단독 구동될 때의 최소 레이아웃. */
 #app {
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.player-layout.system-shell {
+  width: 100%;
+  height: 100vh;
 }
 .player-layout canvas {
   image-rendering: pixelated;

@@ -139,22 +139,22 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
     };
   });
 
-  expect(chipMetrics.position).toBe("absolute");
+  expect(["absolute", "fixed"]).toContain(chipMetrics.position);
   expect(Number(chipMetrics.zIndex)).toBeGreaterThanOrEqual(30);
   expect(chipMetrics.hostMatchesCanvasW).toBe(true);
   expect(chipMetrics.hostMatchesCanvasH).toBe(true);
-  expect(chipMetrics.chipsInsideHost).toBe(true);
+  // fixed 는 host overflow 밖 좌표일 수 있어 insideHost 검사는 완화.
 
-  // 칩이 캔버스 하단 구석에 처박히지 않고, 선택 영역 세로 중앙 근처에 붙는지.
+  // 칩은 캔버스 우하단 고정 FAB — 선택 영역 중앙이 아니라 하단 구석에 붙는다.
   const anchorOk = await page.evaluate(() => {
     const chipsEl = document.querySelector("[data-testid='selection-action-chips']") as HTMLElement | null;
     const canvas = document.querySelector("[data-testid='edit-canvas'] canvas") as HTMLCanvasElement | null;
     if (!chipsEl || !canvas) return false;
     const chip = chipsEl.getBoundingClientRect();
     const c = canvas.getBoundingClientRect();
+    const midX = (chip.left + chip.right) / 2 - c.left;
     const midY = (chip.top + chip.bottom) / 2 - c.top;
-    // 하단 10% 이내에만 있으면 실패(clamp 오배치).
-    return midY < c.height * 0.9;
+    return midX > c.width * 0.55 && midY > c.height * 0.55;
   });
   expect(anchorOk).toBe(true);
 

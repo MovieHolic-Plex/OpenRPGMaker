@@ -254,7 +254,8 @@ test.describe("QA — Species tab", () => {
     await expect(resourceDialog).toBeHidden();
 
     await page.getByTestId("db-monster-species-name").fill("QA종");
-    await page.getByTestId("db-monster-species-types").fill("불, 물");
+    await page.getByTestId("db-monster-species-type-fire").check();
+    await page.getByTestId("db-monster-species-type-water").check();
     await page.getByTestId("db-monster-species-hue").fill("120");
     await page.getByTestId("db-monster-species-capture-rate").fill("0.5");
     // wave2 fix: 능력치 6종을 rerender 없이 연달아 편집해도(HP→MP→공격→방어→정신→민첩)
@@ -284,7 +285,8 @@ test.describe("QA — Species tab", () => {
     await switchDatabaseTab(page, SPECIES_TAB);
     await expect(page.getByTestId(`db-monster-species-row-${id}`)).toHaveClass(/active/);
     await expect(page.getByTestId("db-monster-species-name")).toHaveValue("QA종");
-    await expect(page.getByTestId("db-monster-species-types")).toHaveValue("불, 물");
+    await expect(page.getByTestId("db-monster-species-type-fire")).toBeChecked();
+    await expect(page.getByTestId("db-monster-species-type-water")).toBeChecked();
     await expect(page.getByTestId("db-monster-species-hue")).toHaveValue("120");
     await expect(page.getByTestId("db-monster-species-capture-rate")).toHaveValue("0.5");
     await expect(page.getByTestId("db-monster-species-hp")).toHaveValue("64");
@@ -306,7 +308,7 @@ test.describe("QA — Species tab", () => {
     const species = (project.database.monsterSpecies ?? []).find((entry) => entry.id === id);
     expect(species, "exported species should exist").toBeTruthy();
     expect(species?.name).toBe("QA종");
-    expect(species?.types).toEqual(["불", "물"]);
+    expect(species?.types).toEqual(["fire", "water"]);
     expect(species?.graphic.graphicHue).toBe(120);
     expect(species?.captureRate).toBe(0.5);
     expect(species?.baseStats.maxHp).toBe(64);
@@ -350,13 +352,18 @@ test.describe("QA — Species tab", () => {
     await page.getByTestId("db-monster-species-capture-rate").fill("5");
     await page.getByTestId("db-monster-species-hue").fill("999");
     await page.getByTestId("db-monster-species-hp").fill("-10");
-    await page.getByTestId("db-monster-species-types").fill("불, 물, 바람");
+    await page.getByTestId("db-monster-species-type-fire").check();
+    await page.getByTestId("db-monster-species-type-water").check();
+    await page.getByTestId("db-monster-species-type-grass").click();
+    await expect(page.getByTestId("db-monster-species-type-grass")).not.toBeChecked();
     await switchDatabaseTab(page, ENEMIES_TAB);
     await switchDatabaseTab(page, SPECIES_TAB);
     await expect(page.getByTestId("db-monster-species-capture-rate")).toHaveValue("1");
     await expect(page.getByTestId("db-monster-species-hue")).toHaveValue("360");
     await expect(page.getByTestId("db-monster-species-hp")).toHaveValue("1");
-    await expect(page.getByTestId("db-monster-species-types")).toHaveValue("불, 물");
+    await expect(page.getByTestId("db-monster-species-type-fire")).toBeChecked();
+    await expect(page.getByTestId("db-monster-species-type-water")).toBeChecked();
+    await expect(page.getByTestId("db-monster-species-type-grass")).not.toBeChecked();
   });
 
   test("undo: species name edit reverts with Ctrl+Z", async ({ page }) => {

@@ -175,6 +175,10 @@ describe("battle runtime defect regressions", () => {
   it("excludes unrevealed hidden enemies from victory rewards", () => {
     const project = battleProject();
     const troop = project.database.troops.find((record) => record.id === "troop_slime")!;
+    // 이 테스트의 핵심은 "숨겨진 드래곤이 보상에서 제외되는가"이다.
+    // 슬라임 HP를 1로 낮춰 한 번의 공격으로 승리하게 만든다(fixture 기본 HP 220 회귀와 무관).
+    const slime = project.database.enemies.find((record) => record.id === "enemy_slime")!;
+    slime.stats = { ...slime.stats, maxHp: 1 };
     troop.members = [
       { enemyId: "enemy_slime", x: 120, y: 120, hidden: false },
       { enemyId: "enemy_dragon", x: 180, y: 120, hidden: true },

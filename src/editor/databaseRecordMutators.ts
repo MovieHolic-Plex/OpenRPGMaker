@@ -54,6 +54,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   // 속성/상태 변화는 런타임이 소비하는 필드(runtime.ts elementMultiplierFor/applyStateEffects) — 편집 반영 필수.
   if ("elementId" in patch) record.elementId = patch.elementId;
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
+  if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   database.skills[index] = normalizeSkillRecord(record);
 }
 
@@ -119,6 +120,7 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("stateDefenseIds" in patch && patch.stateDefenseIds !== undefined) record.stateDefenseIds = patch.stateDefenseIds;
   if ("stateDefenseMode" in patch && patch.stateDefenseMode !== undefined) record.stateDefenseMode = patch.stateDefenseMode;
   if ("stateResistanceChance" in patch && patch.stateResistanceChance !== undefined) record.stateResistanceChance = patch.stateResistanceChance;
+  if ("actionWeapon" in patch) record.actionWeapon = patch.actionWeapon;
   database.equipment[index] = normalizeEquipmentRecord(record);
 }
 
@@ -144,6 +146,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("actions" in patch && patch.actions !== undefined) record.actions = patch.actions;
   if ("stateRates" in patch && patch.stateRates !== undefined) record.stateRates = patch.stateRates;
   if ("elementRates" in patch && patch.elementRates !== undefined) record.elementRates = patch.elementRates;
+  if ("actionProfile" in patch) record.actionProfile = patch.actionProfile;
   database.enemies[index] = normalizeEnemyRecord(record);
 }
 

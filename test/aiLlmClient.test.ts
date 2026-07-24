@@ -44,7 +44,7 @@ function sentBody(): Record<string, unknown> {
   return JSON.parse(String(init.body)) as Record<string, unknown>;
 }
 
-const CONFIG_BASE = { baseUrl: "https://example.invalid/v1", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
+const CONFIG_BASE = { authMode: "apiKey" as const, baseUrl: "https://example.invalid/v1", model: "minimax/minimax-m3", liteModel: "minimax/minimax-m3", apiKey: "sk-test", maxToolCalls: 8, maxTokens: 1024 };
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -57,6 +57,8 @@ describe("aiConfig 저장/로드", () => {
     const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL } = await loadClient();
 
     const initial = loadAiConfig();
+    // env(VITE_LLM_API_URL + VITE_LLM_API_KEY)가 있으면 apiKey, 없으면 chatgpt.
+    expect(["chatgpt", "apiKey"]).toContain(initial.authMode);
     expect(initial.model).toBe(DEFAULT_MODEL);
     expect(initial.liteModel).toBe(DEFAULT_LITE_MODEL);
     // localStorage 비어 있으면 env(VITE_LLM_API_KEY 등) 폴백 가능 — 빈 문자열만 강제하지 않음.
@@ -70,14 +72,28 @@ describe("aiConfig 저장/로드", () => {
     expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
-    // 기본 경로: 감독·실행 모두 flash-lite(이원화 비활성). MiniMax는 사용자 설정 시에만.
-    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
-    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
+    expect(DEFAULT_MODEL).toBe("z-ai/glm-5.2-ultrafast");
+    expect(DEFAULT_LITE_MODEL).toBe("z-ai/glm-5.2-ultrafast");
   });
 
-  it("저장된 사용자 model은 존중하고 liteModel 누락은 기본값으로 보강한다", async () => {
+  it("authMode가 없는 기존 API 키 설정은 API 모드로 마이그레이션한다", async () => {
     const store = installLocalStorage();
-    const { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, loadAiConfig } = await loadClient();
+    const { AI_CONFIG_STORAGE_KEY, loadAiConfig } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      apiKey: "sk-existing",
+      baseUrl: "https://example.invalid/v1",
+      model: "existing-model",
+    }));
+
+    const reloaded = loadAiConfig();
+    expect(reloaded.authMode).toBe("apiKey");
+    expect(reloaded.baseUrl).toBe("https://example.invalid/v1");
+    expect(reloaded.model).toBe("existing-model");
+  });
+
+  it("저장된 사용자 model은 존중하고 liteModel 누락은 감독 model로 보강한다 (일원화)", async () => {
+    const store = installLocalStorage();
+    const { AI_CONFIG_STORAGE_KEY, loadAiConfig } = await loadClient();
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       apiKey: "sk-user",
       baseUrl: "https://example.invalid/v1",
@@ -86,7 +102,7 @@ describe("aiConfig 저장/로드", () => {
 
     const reloaded = loadAiConfig();
     expect(reloaded.model).toBe("user-main-model");
-    expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
+    expect(reloaded.liteModel).toBe("user-main-model");
   });
 
   it("configForLiteModel은 보조 모델을 실제 요청 모델로 승격한다", async () => {
@@ -94,6 +110,35 @@ describe("aiConfig 저장/로드", () => {
     const config = configForLiteModel({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "main-model", liteModel: "batch-model" });
     expect(config.model).toBe("batch-model");
     expect(config.liteModel).toBe("batch-model");
+  });
+
+  it("liteModel 미설정 시 감독 model을 따라간다 (authMode 일원화)", async () => {
+    const store = installLocalStorage();
+    const { AI_CONFIG_STORAGE_KEY, configForLiteModel, loadAiConfig } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "apiKey",
+      baseUrl: "https://glm-gateway.example/v1",
+      model: "glm-5.2-ultrafast",
+      apiKey: "sk-test",
+    }));
+    const glm = configForLiteModel(loadAiConfig());
+    expect(glm.model).toBe("glm-5.2-ultrafast");
+    expect(glm.liteModel).toBe("glm-5.2-ultrafast");
+
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt",
+      model: "gpt-5.6-terra",
+    }));
+    const oauth = configForLiteModel(loadAiConfig());
+    expect(oauth.model).toBe("gpt-5.6-terra");
+    expect(oauth.liteModel).toBe("gpt-5.6-terra");
+  });
+
+  it("빈 liteModel 문자열은 감독 model로 폴백한다", async () => {
+    const { configForLiteModel, defaultAiConfig } = await loadClient();
+    const config = configForLiteModel({ ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "glm-5.2-ultrafast", liteModel: "   " });
+    expect(config.model).toBe("glm-5.2-ultrafast");
+    expect(config.liteModel).toBe("glm-5.2-ultrafast");
   });
 
   it("maxToolCalls 저장값을 실제 세션 안전핀으로 로드한다", async () => {
@@ -114,6 +159,18 @@ describe("aiConfig 저장/로드", () => {
 });
 
 describe("chatCompletion 스트리밍 SSE 파서", () => {
+  it("ChatGPT OAuth 모드는 브라우저 Authorization 헤더 없이 로컬 동반 서비스로 요청한다", async () => {
+    const { chatCompletion, defaultAiConfig } = await loadClient();
+    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
+
+    await chatCompletion(defaultAiConfig(), { messages: [{ role: "user", content: "hi" }], stream: false });
+
+    const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    expect(String(url)).toBe("http://127.0.0.1:17832/v1/chat/completions");
+    expect((init as RequestInit | undefined)?.headers).toEqual({ "Content-Type": "application/json" });
+  });
+
   it("요청 본문에는 config.model을 그대로 넣는다", async () => {
     const { chatCompletion } = await loadClient();
     mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));

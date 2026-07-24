@@ -15,7 +15,10 @@ export function resolveBattlerPose(input: {
   if (input.battler.defeated) return "dead";
   const result = input.lastActionResult;
   const showAction = input.showActionPose !== false;
-  if (showAction && result) {
+  // SC10 (M5): healing actions (amount < 0) are not attacks — the caster should
+  // not show "attack" and the target should not show "hit".
+  const isHeal = result && result.amount < 0;
+  if (showAction && result && !isHeal) {
     if (result.userRecordId === input.battler.recordId || result.userRecordId === input.battler.id) {
       return "attack";
     }

@@ -21,19 +21,7 @@
 @import "./shell/editor-welcome.css";
 @import "./editor/responsive-a.css";
 @import "./editor/inline-assist.css";
-@import "./runtime/battle.css";
-@import "./runtime/battle-skins/index.css";
-@import "./runtime/commerce.css";
-@import "./runtime/title.css";
-@import "./runtime/playLoading.css";
-@import "./runtime/timer.css";
-@import "./runtime/touchpad.css";
-@import "./runtime/pictures.css";
-@import "./runtime/weather.css";
-@import "./runtime/transitions.css";
-@import "./runtime/nameEntry.css";
-@import "./runtime/keyboardNav.css";
-@import "./dialogue.css";
+@import "./runtime/playerRuntime.css";
 @import "./database/actors.css";
 @import "./database/enemies.css";
 @import "./database/elements.css";
@@ -58,11 +46,15 @@
 @import "./editor/world-panel.css";
 @import "./editor/cluster-ai-modal.css";
 @import "./editor/map-history.css";
+@import "./editor/map-props.css";
 @import "./editor/rule-audit.css";
 @import "./editor/region-task.css";
 @import "./editor/build-palette.css";
 @import "./editor/map-event-search.css";
 @import "./editor/event-marker-tooltip.css";
+@import "./editor/audio-test-dialog.css";
+@import "./editor/help-modal.css";
+@import "./editor/event-editor-help.css";
 
 /* ============================================================================
    전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md

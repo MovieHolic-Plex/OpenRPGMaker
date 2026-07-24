@@ -9,6 +9,7 @@ import { store } from "@/project/store";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
+import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -28,7 +29,12 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     void warmBundledPlayAssets(store.getCurrent());
     // Give the browser a paint before heavy player bootstrap.
     await yieldToBrowser();
-    renderPlayer(body, { onExit: closeTestPlayModal, trackGlobalGame: false, startOverride });
+    renderPlayer(body, {
+      onExit: closeTestPlayModal,
+      trackGlobalGame: false,
+      startOverride,
+      diagnosticSink: editorPlayBootDiagnosticSink,
+    });
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
     loading.setStage("error", "테스트 플레이를 열지 못했습니다");
@@ -58,6 +64,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
       initialSession: session,
       onExit: closeTestPlayModal,
       trackGlobalGame: false,
+      diagnosticSink: editorPlayBootDiagnosticSink,
     });
   } catch (error) {
     console.error("[test-play] failed to open selected-event test:", error);
@@ -78,7 +85,7 @@ export async function openTroopBattleTestModal(troopId: string): Promise<void> {
     loading.setStage("preparing");
     await yieldToBrowser();
     loading.remove();
-    const runtime = createBattleRuntime({ project, troopId, canEscape: true, canLose: true });
+    const runtime = createBattleRuntime({ project, troopId, canEscape: true, canLose: true, rng: () => Math.random() });
     advanceBattleRuntime(runtime);
     mountBattleScene({
       host: body,

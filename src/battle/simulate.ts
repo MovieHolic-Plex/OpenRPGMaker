@@ -73,8 +73,11 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
   for (const actorId of partyActorIds) levels[actorId] = input.heroLevel;
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
   const monsterMode = (input.monsterParty?.length ?? 0) > 0;
-  // Headless monster-party runs must flip battleParty and pass partyMonsters into the runtime.
-  // party.monsterParty alone is not enough — createBattleRuntime gates on partyMonsters + battleParty.
+  // SC9 (M3): do NOT mutate the caller's project. Save the original system flags
+  // and restore them after the run so the caller's project stays intact.
+  const savedSystem = monsterMode
+    ? { battleParty: input.project.system.battleParty, monsterBattleParty: input.project.system.monsterBattleParty, monsterCollection: input.project.system.monsterCollection }
+    : undefined;
   if (monsterMode) {
     input.project.system.battleParty = "monsters";
     input.project.system.monsterBattleParty = true;
@@ -141,6 +144,13 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
   }
 
   const final = rt.snapshot();
+  // SC9 (M3): restore the caller's project system flags so the simulation
+  // is side-effect-free.
+  if (savedSystem) {
+    input.project.system.battleParty = savedSystem.battleParty;
+    input.project.system.monsterBattleParty = savedSystem.monsterBattleParty;
+    input.project.system.monsterCollection = savedSystem.monsterCollection;
+  }
   const hpRemaining = [...final.actors, ...final.reserveActors].reduce((sum, entry) => sum + Math.max(0, entry.hp), 0);
   return {
     victory: final.result === "victory",

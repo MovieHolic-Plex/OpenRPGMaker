@@ -11,6 +11,7 @@ import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const CONFIG: AiConfig = {
+  authMode: "apiKey",
   baseUrl: "https://example.invalid/v1",
   model: "minimax/minimax-m3",
   liteModel: "minimax/minimax-m3",
@@ -262,12 +263,36 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     expect(inserted).toHaveLength(0);
   });
 
-  it("API 키가 없으면 설정 안내를 표시한다", () => {
+  it("apiKey 모드에서 키가 없으면 설정 안내를 표시한다", () => {
     const { actions } = recordingActions();
     const panel = renderPanel(actions, "");
     findByTestId(panel, "ai-event-input")!.value = "보물상자";
     findByTestId(panel, "ai-event-generate")!.click();
-    expect(panel.textContent).toContain("AI 설정에서 API 키를 입력하세요");
+    expect(panel.textContent).toContain("AI 설정에서 API 키와 baseUrl을 입력하세요");
+  });
+
+  it("ChatGPT 모드(apiKey 없음)에서는 생성을 막지 않고 프리뷰를 보여준다", async () => {
+    mockFetchSequence(JSON.stringify(CHEST_COMMANDS));
+    const { actions } = recordingActions();
+    const cmdList = new FakeElement("div") as unknown as HTMLElement;
+    const mapId = store.getCurrent().startMapId;
+    const panel = renderEventAiAssist({
+      mapId,
+      eventId: "event-1",
+      page: testPage(),
+      actions,
+      cmdList,
+      loadConfig: () => ({ ...CONFIG, authMode: "chatgpt", apiKey: "", baseUrl: "/v1" }),
+    }) as unknown as FakeElement;
+    findByTestId(panel, "ai-event-input")!.value = "보물상자";
+    findByTestId(panel, "ai-event-generate")!.click();
+    await vi.waitFor(() => {
+      expect(findByTestId(panel, "ai-event-preview")!.hidden).toBe(false);
+      expect(panel.textContent).toContain("조건 분기");
+    });
+    expect(panel.textContent).not.toContain("API 키");
+    // 후속 테스트가 동일 panelState 키를 공유하므로 프리뷰를 정리한다.
+    findByTestId(panel, "ai-event-discard")!.click();
   });
 
   it("존재하지 않는 itemId만 계속 돌아오면 에러를 표시한다", async () => {

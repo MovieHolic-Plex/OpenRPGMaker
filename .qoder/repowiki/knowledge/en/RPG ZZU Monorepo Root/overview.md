@@ -1,0 +1,1 @@
+Root orchestrator that wires the Phaser-based RPG editor, a standalone player build, AI-assisted construction scripts, and evaluation suites into one Vite/Vitest-driven workspace.

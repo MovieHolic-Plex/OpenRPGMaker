@@ -36,6 +36,17 @@ export function ensureEventPages(mapId: MapId, eventId: string): void {
   });
 }
 
+/**
+ * 다음 페이지 번호를 찾는다. 단순히 `pages.length + 1` 을 쓰면 삭제 후 재추가 시
+ * 기존 페이지 이름과 충돌하므로, 사용 중이지 않은 번호를 찾아 겹침을 피한다.
+ */
+function nextAvailablePageNumber(pages: readonly EventPage[]): number {
+  const usedNames = new Set(pages.map((page) => page.name));
+  let number = pages.length + 1;
+  while (usedNames.has(`페이지 ${number}`)) number += 1;
+  return number;
+}
+
 export function addEventPage(mapId: MapId, eventId: string): string {
   let pageId = "";
   store.update((project) => {
@@ -50,7 +61,7 @@ export function addEventPage(mapId: MapId, eventId: string): string {
         trigger: { kind: "action" },
         commands: [],
       },
-      event.pages.length + 1
+      nextAvailablePageNumber(event.pages)
     );
     page.conditions = [];
     event.pages.push(page);
@@ -107,12 +118,21 @@ export function pasteEventPage(mapId: MapId, eventId: string): string {
 }
 
 export function deleteEventPage(mapId: MapId, eventId: string, pageId: string): void {
+  let deleted = false;
+  let nextSelectedPageId: string | null = null;
   store.update((project) => {
     const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
     if (!event?.pages || event.pages.length <= 1) return;
+    const index = event.pages.findIndex((page) => page.id === pageId);
+    if (index < 0) return;
     event.pages = event.pages.filter((page) => page.id !== pageId);
+    deleted = true;
+    // 삭제된 위치의 다음 페이지(또는 마지막이었다면 이전 페이지)를 선택한다.
+    const nextIndex = Math.min(index, event.pages.length - 1);
+    nextSelectedPageId = event.pages[nextIndex]?.id ?? null;
   });
-  editorState.set({ selectedEventPageId: null });
+  // 삭제가 실제로 일어났을 때만 선택을 업데이트한다.
+  if (deleted) editorState.set({ selectedEventPageId: nextSelectedPageId });
 }
 
 export function moveEventPage(mapId: MapId, eventId: string, pageId: string, delta: -1 | 1): void {

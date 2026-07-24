@@ -39,7 +39,6 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   if (snapshot.phase === "targetSelect") {
     panel.append(targetPrompt(snapshot, terms));
     panel.append(targetSelectionMenu(snapshot, options, terms));
-    panel.append(keyPrompts());
     return panel;
   }
   if (snapshot.phase !== "actorCommand") return panel;
@@ -101,15 +100,24 @@ function commandControl(
   actor: BattleBattlerSnapshot | undefined,
   targetMode: boolean
 ): HTMLElement {
+  const terms = resolveTerms(store.getCurrent());
+  const normalizedName = command.name.trim().toLowerCase();
+  const label = command.kind === "attack"
+    ? terms.attack
+    : command.kind === "skill" && normalizedName === "skill"
+      ? terms.skill
+      : command.kind === "item" && normalizedName === "item"
+        ? terms.item
+        : command.name;
   switch (command.kind) {
     case "attack":
-      return commandButton(command.name, commandTestId(command), "sword", "", () => {
+      return commandButton(label, commandTestId(command), "sword", "", () => {
         options.beginTargetCommand({ kind: "attack" });
       }, targetMode);
     case "skill": {
       const skills = usableSkills(actor, command);
       // Compact main command list: name only. Counts clutter 320x240 labels.
-      return commandButton(command.name, commandTestId(command), "fire", "", () => {
+      return commandButton(label, commandTestId(command), "fire", "", () => {
         if (targetMode || skills.length === 0) return;
         // Single available skill: skip the submenu and go straight to targeting.
         if (skills.length === 1 || command.skillId) {
@@ -123,11 +131,12 @@ function commandControl(
     }
     case "item": {
       const items = battleItems(snapshot);
-      return commandButton(command.name, commandTestId(command), "bag", "", () => {
+      const itemBtn = commandButton(label, commandTestId(command), "bag", items.length > 0 ? `${items.length}종` : "없음", () => {
         if (targetMode || items.length === 0) return;
         options.setSubmenu({ kind: "item" });
         options.render();
-      }, targetMode || items.length === 0);
+      }, items.length === 0);
+      return itemBtn;
     }
     case "capture": {
       const items = captureItems(snapshot);
@@ -433,19 +442,6 @@ function targetPrompt(snapshot: BattleSnapshot, terms: ResolvedTerms): HTMLEleme
   return prompt;
 }
 
-function keyPrompts(): HTMLElement {
-  const row = document.createElement("div");
-  row.className = "battle-key-prompts";
-  row.dataset.testid = "battle-key-prompts";
-  for (const [key, label] of [["Z", "확정"], ["X", "대상 변경"], ["C", "취소"]] as const) {
-    const item = document.createElement("span");
-    const keycap = document.createElement("kbd");
-    keycap.textContent = key;
-    item.append(keycap, document.createTextNode(` ${label}`));
-    row.append(item);
-  }
-  return row;
-}
 
 function commandButton(
   label: string,

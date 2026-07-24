@@ -44,7 +44,9 @@ export function isWriteTool(name: string): boolean {
 }
 
 export function isAiConfigReady(config: AiConfig): boolean {
-  return Boolean(config.baseUrl.trim() && config.model.trim() && config.apiKey.trim());
+  if (!config.model.trim()) return false;
+  if (config.authMode === "chatgpt") return true;
+  return Boolean(config.baseUrl.trim() && config.apiKey.trim());
 }
 
 export function phaseStatusText(phase: Extract<SessionEvent, { type: "phase" }>["value"]): string {

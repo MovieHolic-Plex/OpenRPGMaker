@@ -1,0 +1,1 @@
+Vitest (custom config, node environment, 600s default timeout) + native Node ESM runner; LLM provider configured through `VITE_LLM_*` env vars (default model `minimax/minimax-m3`, also supports `google/gemini-3.1-flash-lite`); results persisted as timestamped JSON under `evals/results/`.

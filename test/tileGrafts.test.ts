@@ -8,7 +8,6 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { addTileGraft, removeTileGraft } from "@/editor/tilesetActions";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
-import { tilesetTextureKey as shimTilesetTextureKey } from "@/player/exportTilesetImageShim";
 import {
   activeTileGrafts,
   rowAlignedTileCount,
@@ -150,8 +149,6 @@ describe("텍스처 캐시 키 (graft 해시 suffix)", () => {
     addTileGraft(DEFAULT_TILESET_ID, { targetTile: 413, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
     const withTwo = tilesetTextureKey(tileset());
     expect(withTwo).not.toBe(withOne);
-    // 에디터/플레이어 셔임 두 벌이 같은 키를 만든다.
-    expect(shimTilesetTextureKey(tileset())).toBe(withTwo);
   });
 
   it("suffix 는 graft 배열 순서와 무관하게 안정적이다", () => {

@@ -15,6 +15,10 @@ import {
 } from "@/editor/dungeonRoomPipeline";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { createDungeonTerrainAutotileGroups } from "@/project/defaults/dungeonTerrainAutotiles";
+import {
+  ICE_DIAGONAL_TILES,
+  validateIceDiagonalTerrain,
+} from "@/project/defaults/iceDiagonalTerrain";
 
 // 테마별 [천장 그룹 key, 천장 하단 벽 좌끝/증식/우끝, 바닥 몸통] 기대치.
 const EXPECT: Record<DungeonRoomTheme, { ceilKey: string; wall: [number, number, number]; floor: number }> = {
@@ -46,7 +50,7 @@ describe("dungeon-room-v1 pipeline", () => {
       // 벽 아랫줄(y=3)은 상위레이어 아님, 하위 벽 아랫줄
       expect(at(13, 3)).toBeGreaterThan(0);
       // 대각 타일(16/17/432/433/287/316)이 천장 하단 벽줄(y=2)에 없어야 한다
-      const diagonals = new Set([16, 17, 432, 433, 286, 287, 316, 317]);
+      const diagonals = new Set([16, 17, 432, 433, 286, 287, 316, 317, 346, 347]);
       for (let x = 2; x <= W - 3; x += 1) expect(diagonals.has(at(x, 2)!)).toBe(false);
       // 바닥 몸통이 방 중앙 상단(벽 바로 아래)에 있다
       expect(at(13, 5)).toBe(exp.floor);
@@ -131,5 +135,23 @@ describe("dungeon-room-v1 pipeline", () => {
     expect(res.summary).toContain("stone");
     expect(project.maps.map_dungeon_stone).toBeDefined();
     expect(project.maps.map_dungeon_stone!.tilesetId).toBe(DUNGEON_ROOM_TILESET_ID);
+  });
+
+  it("ice hazard is a canonical interior ridge, never a ceiling-band diagonal", () => {
+    const { map, ok } = runDungeonRoomPipeline({ mapId: "m_ice", name: "ice", width: 26, height: 18, theme: "ice" });
+    const canonicalTiles = new Set([
+      ICE_DIAGONAL_TILES.left.cap,
+      ICE_DIAGONAL_TILES.left.body,
+      ICE_DIAGONAL_TILES.left.base,
+      ICE_DIAGONAL_TILES.right.cap,
+      ICE_DIAGONAL_TILES.right.body,
+      ICE_DIAGONAL_TILES.right.base,
+    ]);
+    for (const tile of canonicalTiles) expect(map.lowerTiles).toContain(tile);
+    expect(validateIceDiagonalTerrain({ width: map.width, height: map.height, lower: map.lowerTiles })).toEqual([]);
+    for (let x = 2; x <= map.width - 3; x += 1) {
+      expect(canonicalTiles.has(map.lowerTiles[2 * map.width + x]!)).toBe(false);
+    }
+    expect(ok).toBe(true);
   });
 });

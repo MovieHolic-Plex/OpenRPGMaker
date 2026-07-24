@@ -1,0 +1,57 @@
+- generic [ref=f3e2]:
+  - generic [ref=f3e4]:
+    - generic "AI RPG MAKER" [ref=f3e5]: ✦
+    - button "프로젝트" [ref=f3e7]
+    - button "맵" [ref=f3e8]
+    - button "도구" [ref=f3e9]
+    - button "실행" [ref=f3e10]
+    - button "도움말" [ref=f3e11]
+    - group "에디터 UI 모드" [ref=f3e12]:
+      - button "기본 모드" [pressed] [ref=f3e13] [cursor=pointer]
+      - button "전문가 모드" [ref=f3e14] [cursor=pointer]
+    - generic [ref=f3e15]:
+      - button "랜덤 전투 테스트" [ref=f3e16] [cursor=pointer]:
+        - generic [ref=f3e17]: ⚔
+      - button "커밋 히스토리" [ref=f3e18] [cursor=pointer]
+      - button "편집 신원 — 게스트" [ref=f3e23] [cursor=pointer]:
+        - generic [ref=f3e27]: 게스트
+      - generic [ref=f3e28]:
+        - button "─" [ref=f3e29] [cursor=pointer]
+        - button "□" [ref=f3e30] [cursor=pointer]
+  - generic [ref=f3e32]:
+    - generic [ref=f3e33]:
+      - generic [ref=f3e35]:
+        - generic [ref=f3e36]:
+          - button "선택" [ref=f3e37] [cursor=pointer]
+          - button "브러시" [ref=f3e41] [cursor=pointer]
+          - button "지우개" [ref=f3e45] [cursor=pointer]
+          - button "채우기" [ref=f3e49] [cursor=pointer]
+          - button "이벤트" [pressed] [ref=f3e53] [cursor=pointer]
+          - button "스포이트" [ref=f3e56] [cursor=pointer]
+        - group "레이어" [ref=f3e61]:
+          - button "바닥" [ref=f3e62] [cursor=pointer]:
+            - generic [ref=f3e68]: 바
+          - button "장식" [ref=f3e69] [cursor=pointer]:
+            - generic [ref=f3e74]: 장
+          - button "이벤트" [pressed] [ref=f3e75] [cursor=pointer]:
+            - generic [ref=f3e78]: 이
+        - generic [ref=f3e80]:
+          - button "타일 패널" [disabled] [ref=f3e81]
+          - button "맵 패널" [ref=f3e83] [cursor=pointer]
+      - text: ":::"
+    - generic [ref=f3e86]:
+      - group "캔버스 확대" [ref=f3e91]:
+        - generic [ref=f3e92]: 확대
+        - button "1배 확대" [ref=f3e93] [cursor=pointer]: 1x
+        - button "2배 확대" [pressed] [ref=f3e94] [cursor=pointer]: 2x
+        - button "4배 확대" [ref=f3e95] [cursor=pointer]: 4x
+      - generic [ref=f3e96]:
+        - generic [ref=f3e97]: 이벤트 레이어
+        - generic [ref=f3e98]: "맵: 호수 마을"
+        - generic [ref=f3e99]: 이벤트
+        - button "🔌 DB 연동" [ref=f3e100] [cursor=pointer]
+    - complementary [ref=f3e102]:
+      - complementary "AI 어시스턴트 채팅" [ref=f3e103]:
+        - button "AI 패널 펼치기" [ref=f3e104] [cursor=pointer]:
+          - generic [ref=f3e105]: 🤖
+          - generic [ref=f3e106]: AI 어시스턴트

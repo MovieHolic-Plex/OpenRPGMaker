@@ -3,6 +3,7 @@
 // 팔레트(tilesetTileBackgroundStyle)와 동일한 칩셋 시트·타일 좌표 규약을 캔버스에 그린다.
 
 import { TILE_SIZE } from "@/assets/bundled";
+import { structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, StructureKitDef, TilesetDef } from "@/project/types";
@@ -85,8 +86,10 @@ export function cellsFromMapRect(
   return cells;
 }
 
-/** 킷 단위를 가로로 이어붙인 조립 셀 — "등록하면 이걸 얻는다" 미리보기·팔레트 아이콘용. */
+/** 킷 단위를 가로로 이어붙인 조립 셀 — "등록하면 이걸 얻는다" 미리보기·팔레트 아이콘용.
+ * 파라메트릭 집 킷은 한 채가 완결 단위 — 반복 없이 전개 셀 그대로. */
 export function assembledKitCells(kit: StructureKitDef, columns: number): KitRenderCell[] {
+  if (kit.kind === "house") return structureKitUnitCells(kit);
   const cells: KitRenderCell[] = [];
   const repeatCount = Math.max(1, Math.floor(columns / Math.max(1, kit.width)));
   for (let repeat = 0; repeat < repeatCount; repeat += 1) {

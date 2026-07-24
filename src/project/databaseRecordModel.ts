@@ -6,6 +6,7 @@ import {
   normalizeActorRecord,
 } from "@/project/actorModel";
 import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from "@/project/databaseAnimationRecordModel";
+import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -20,9 +21,38 @@ import {
 } from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, SystemRecords, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
+
+// StateRecord 필드는 ontology(databaseStateOntology)와 병합되는 사용자 재정의 값이므로
+// 임의의 클램프를 가하지 않고 입력 값을 보존하되 타입만 정규화한다. 다른 컬렉션과 동일하게
+// updateDatabaseRecord / upsert_state 모두 이 함수를 거쳐 단일 정규화 계약을 보장한다.
+export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRecord, "id" | "name">): StateRecord {
+  const optionalNumber = (value: unknown): number | undefined =>
+    typeof value === "number" && Number.isFinite(value) ? value : undefined;
+  const optionalString = (value: unknown): string | undefined =>
+    typeof value === "string" ? value : undefined;
+  return {
+    id: record.id,
+    name: record.name,
+    ...(record.removalCondition !== undefined ? { removalCondition: optionalString(record.removalCondition) } : {}),
+    ...(record.restriction !== undefined ? { restriction: optionalString(record.restriction) } : {}),
+    ...(record.priority !== undefined ? { priority: optionalNumber(record.priority) } : {}),
+    ...(record.accuracyModifier !== undefined ? { accuracyModifier: optionalNumber(record.accuracyModifier) } : {}),
+    ...(record.animationIndex !== undefined ? { animationIndex: optionalNumber(record.animationIndex) } : {}),
+    ...(record.recoverNaturallyFromTurn !== undefined ? { recoverNaturallyFromTurn: optionalNumber(record.recoverNaturallyFromTurn) } : {}),
+    ...(record.recoverNaturallyChance !== undefined ? { recoverNaturallyChance: optionalNumber(record.recoverNaturallyChance) } : {}),
+    ...(record.recoverWhenHitChance !== undefined ? { recoverWhenHitChance: optionalNumber(record.recoverWhenHitChance) } : {}),
+    ...(record.hpReleaseTurn !== undefined ? { hpReleaseTurn: optionalNumber(record.hpReleaseTurn) } : {}),
+    ...(record.hpReleaseStep !== undefined ? { hpReleaseStep: optionalNumber(record.hpReleaseStep) } : {}),
+    ...(record.mpReleaseTurn !== undefined ? { mpReleaseTurn: optionalNumber(record.mpReleaseTurn) } : {}),
+    ...(record.mpReleaseStep !== undefined ? { mpReleaseStep: optionalNumber(record.mpReleaseStep) } : {}),
+    ...(record.specialFlags !== undefined ? { specialFlags: cleanIds(record.specialFlags) } : {}),
+    ...(record.lockedParameters !== undefined ? { lockedParameters: cleanIds(record.lockedParameters) } : {}),
+    ...(record.runtimeEffects !== undefined ? { runtimeEffects: record.runtimeEffects } : {}),
+  };
+}
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains" | "monsterSpecies" | "crops">>;
 
@@ -70,6 +100,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
   const timeSystem = normalizeTimeSystemConfig(system.timeSystem);
+  const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   return {
     startActorIds: cleanIds(system.startActorIds),
     titleResourceId,
@@ -91,6 +122,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
     ...(typeChart ? { typeChart } : {}),
     ...(timeSystem ? { timeSystem } : {}),
+    ...(actionCombat ? { actionCombat } : {}),
     ...(Array.isArray(system.toolActions) ? { toolActions: system.toolActions } : {}),
     ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
     ...(Array.isArray(system.itemUpgrades) ? { itemUpgrades: system.itemUpgrades } : {}),
@@ -274,6 +306,10 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
+    ...(() => {
+      const actionSkill = normalizeActionSkillProfile(record.actionSkill);
+      return actionSkill ? { actionSkill } : {};
+    })(),
   };
 }
 
@@ -338,6 +374,10 @@ export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick
     stateDefenseIds: cleanIds(record.stateDefenseIds),
     stateDefenseMode: record.stateDefenseMode === "inflict" ? "inflict" : "resist",
     stateResistanceChance: clampInteger(record.stateResistanceChance ?? 0, 0, 100),
+    ...(() => {
+      const actionWeapon = normalizeActionWeaponProfile(record.actionWeapon);
+      return actionWeapon ? { actionWeapon } : {};
+    })(),
   };
 }
 

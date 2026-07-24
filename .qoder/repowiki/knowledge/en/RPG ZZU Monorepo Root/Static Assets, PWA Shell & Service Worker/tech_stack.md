@@ -1,0 +1,1 @@
+Web App Manifest v1 (`manifest.webmanifest`) and a vanilla Cache API service worker (`sw.js`) with no third-party libraries.

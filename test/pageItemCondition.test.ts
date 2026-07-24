@@ -127,12 +127,13 @@ describe("page item possession condition", () => {
     expect(root.textContent).toContain("보유 중");
   });
 
-  it("고급 목록에 셀프 스위치/소지금 조건이 누락되지 않는다", () => {
+  it("셀프 스위치 첫 번째는 간단 행, 초과분/소지금은 고급 목록에", () => {
     const page: EventPage = {
       id: "page-1",
       name: "EV",
       conditions: [
         { kind: "selfSwitch", key: "A", value: true },
+        { kind: "selfSwitch", key: "B", value: false },
         { kind: "gold", op: ">=", amount: 100 },
         { kind: "item", itemId: "item_potion", present: true },
         { kind: "item", itemId: "item_key", present: true },

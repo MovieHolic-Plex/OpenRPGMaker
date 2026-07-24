@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: assets_and_pwa
+title: Static Assets, PWA Shell & Service Worker
+scope:
+    - public/
+source_files: []
+depends_on: []
+related_to: []

@@ -4,66 +4,122 @@ import {
   clearRecentPlayBootDiagnosticsForTest,
   listRecentPlayBootDiagnostics,
   recordPlayBootDiagnostic,
+  type PlayBootDiagnosticPayload,
 } from "@/player/playBootDiagnostics";
+import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
+
+const recordAiActivityMock = vi.hoisted(() => vi.fn(async () => ({ persisted: "local" })));
 
 vi.mock("@/ai/activityLog", () => ({
-  recordAiActivity: vi.fn(async (input: { instruction: string }) => ({
-    id: "log",
-    at: new Date().toISOString(),
-    channel: "other",
-    instruction: input.instruction,
-    result: { ok: true },
-    toolCalls: [],
-    audit: [],
-  })),
+  recordAiActivity: recordAiActivityMock,
 }));
 
 vi.mock("@/project/store", () => ({
   store: {
-    getCurrent: () => ({ startMapId: "map_home_8pyeong_v1" }),
+    getCurrent: () => ({ startMapId: "map-test" }),
   },
 }));
 
 afterEach(() => {
   clearRecentPlayBootDiagnosticsForTest();
-  vi.clearAllMocks();
+  vi.restoreAllMocks();
+  recordAiActivityMock.mockClear();
 });
 
 describe("playBootDiagnostics", () => {
-  it("builds a play-boot payload with error details", () => {
+  it("builds a bounded play-boot payload when an error reaches the local boundary", () => {
+    // Given
+    const oversizedDetail = "x".repeat(600);
+
+    // When
     const payload = buildPlayBootPayload({
       stage: "error",
       ok: false,
-      mapId: "map_home_8pyeong_v1",
+      mapId: "map-test",
       elapsedMs: 1234.6,
       error: new Error("boom"),
-      detail: "create failed",
+      detail: oversizedDetail,
     });
-    expect(payload.kind).toBe("play-boot");
-    expect(payload.stage).toBe("error");
-    expect(payload.ok).toBe(false);
-    expect(payload.mapId).toBe("map_home_8pyeong_v1");
-    expect(payload.elapsedMs).toBe(1235);
-    expect(payload.errorMessage).toBe("boom");
-    expect(payload.detail).toBe("create failed");
+
+    // Then
+    expect(payload).toMatchObject({
+      kind: "play-boot",
+      stage: "error",
+      ok: false,
+      mapId: "map-test",
+      elapsedMs: 1235,
+      errorMessage: "boom",
+    });
+    expect(payload.detail).toHaveLength(500);
   });
 
-  it("records to the in-memory ring and activity channel", async () => {
-    const { recordAiActivity } = await import("@/ai/activityLog");
-    recordPlayBootDiagnostic({
+  it("records locally without invoking editor telemetry when no sink is provided", async () => {
+    // Given
+    const info = vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    // When
+    recordPlayBootDiagnostic({ stage: "ready", ok: true, mapId: "map-test" });
+    await Promise.resolve();
+
+    // Then
+    expect(listRecentPlayBootDiagnostics()).toEqual([
+      expect.objectContaining({ stage: "ready", ok: true, mapId: "map-test" }),
+    ]);
+    expect(info).toHaveBeenCalledOnce();
+    expect(recordAiActivityMock).not.toHaveBeenCalled();
+  });
+
+  it("delivers the local payload to an injected sink", async () => {
+    // Given
+    const sink = vi.fn<(payload: PlayBootDiagnosticPayload) => Promise<void>>(async () => undefined);
+    vi.spyOn(console, "info").mockImplementation(() => undefined);
+
+    // When
+    recordPlayBootDiagnostic({ stage: "map", ok: true, mapId: "map-test" }, sink);
+    await vi.waitFor(() => expect(sink).toHaveBeenCalledOnce());
+
+    // Then
+    expect(sink).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: "play-boot", stage: "map", mapId: "map-test" }),
+    );
+  });
+
+  it("keeps diagnostics and boot flow alive when an injected sink rejects", async () => {
+    // Given
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    const sink = vi.fn<(payload: PlayBootDiagnosticPayload) => Promise<void>>(async () => {
+      throw new Error("editor persistence unavailable");
+    });
+
+    // When
+    recordPlayBootDiagnostic({ stage: "engine", ok: true, mapId: "map-test" }, sink);
+    await vi.waitFor(() => expect(warn).toHaveBeenCalledWith("[play-boot] diagnostic sink failed"));
+
+    // Then
+    expect(listRecentPlayBootDiagnostics()).toHaveLength(1);
+    expect(sink).toHaveBeenCalledOnce();
+  });
+
+  it("persists diagnostics only when the editor-owned adapter is injected", async () => {
+    // Given
+    const payload = buildPlayBootPayload({
       stage: "ready",
       ok: true,
-      mapId: "map_home_8pyeong_v1",
-      elapsedMs: 40,
+      mapId: "map-test",
+      elapsedMs: 42,
     });
-    expect(listRecentPlayBootDiagnostics()).toHaveLength(1);
-    expect(listRecentPlayBootDiagnostics()[0]?.stage).toBe("ready");
-    expect(recordAiActivity).toHaveBeenCalledWith(
+
+    // When
+    await editorPlayBootDiagnosticSink(payload);
+
+    // Then
+    expect(recordAiActivityMock).toHaveBeenCalledWith(
       expect.objectContaining({
         channel: "other",
-        instruction: expect.stringContaining("[play-boot]"),
-        mapId: "map_home_8pyeong_v1",
-      })
+        mapId: "map-test",
+        instruction: expect.stringContaining("stage=ready"),
+        uiEvents: [payload],
+      }),
     );
   });
 });

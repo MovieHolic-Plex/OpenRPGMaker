@@ -79,9 +79,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "화면",
       keywords: ["help", "shortcut", "도움말", "단축키", "키"],
       run: () => {
-        void Promise.all([import("@/editor/panels/menu"), import("@/util/toast")]).then(
-          ([menu, toastModule]) => toastModule.toast(menu.SHORTCUT_HELP, "ok"),
-        );
+        void import("@/editor/panels/helpModal").then((mod) => mod.openHelpModal());
       },
     },
   ];

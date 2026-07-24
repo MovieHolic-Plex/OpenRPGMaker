@@ -123,8 +123,17 @@
   align-items: center;
   display: grid;
   gap: 18px;
-  grid-template-columns: 392px minmax(0, 1fr);
+  grid-template-columns: minmax(520px, 1.4fr) minmax(0, 1fr);
   min-height: 42px;
+}
+
+.event-editor-identity-row {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.9fr);
+  min-height: 40px;
+  min-width: 0;
 }
 
 .event-editor-name-field {
@@ -132,11 +141,41 @@
   background: transparent;
   border: 0;
   display: grid !important;
-  gap: 18px;
-  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 12px;
+  grid-template-columns: 42px minmax(0, 1fr);
   grid-template-rows: 40px;
   min-height: 40px;
+  min-width: 0;
   padding: 0;
+}
+
+.event-character-id-field-inline {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 40px;
+  min-width: 0;
+}
+
+.event-character-id-field-inline .event-character-id-label {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-character-id-field-inline .event-character-id-label > span:first-child {
+  color: var(--text-2, var(--text-1));
+  font: 600 12px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  white-space: nowrap;
+}
+
+.event-character-social-extras {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 8px;
 }
 
 .event-editor-name-field span {
@@ -503,84 +542,108 @@
 
 .event-conditions-grid {
   display: grid;
-  gap: 8px;
+  gap: 5px;
 }
 
+/* RM 조건 한 줄: [✓] 라벨 | 컨트롤 | 접미어 */
 .event-editor-modal-body .event-condition-row {
   align-items: center;
+  column-gap: 8px;
   display: grid;
-  gap: 6px;
-  /* 라벨·접미어는 내용만큼, 컨트롤만 수축 — 접미어가 "이"처럼 한 글자로 잘리지 않게 */
-  grid-template-columns: 18px max-content minmax(0, 1fr) max-content;
+  grid-template-columns: 16px 4.75rem minmax(0, 1fr) auto;
   max-width: 100%;
-  min-height: 32px;
+  min-height: 26px;
   min-width: 0;
+  padding: 1px 0;
+  row-gap: 0;
 }
 
+.event-editor-modal-body .event-condition-row.disabled {
+  opacity: 0.7;
+}
+
+.event-editor-modal-body .event-condition-row > input[type="checkbox"] {
+  height: 14px;
+  justify-self: center;
+  margin: 0;
+  width: 14px;
+}
+
+.event-editor-modal-body .event-condition-label {
+  color: var(--event-modern-text);
+  font: 700 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor-modal-body .event-condition-suffix {
+  color: var(--event-modern-text-soft);
+  font: 600 12px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-self: end;
+  white-space: nowrap;
+}
+
+.event-editor-modal-body .event-condition-row.disabled .event-condition-label,
+.event-editor-modal-body .event-condition-row.disabled .event-condition-suffix {
+  color: var(--event-modern-text-soft);
+}
 
 .event-editor-modal-body .event-condition-control {
+  align-items: center;
+  display: grid;
   max-width: 100%;
   min-width: 0;
-  overflow: hidden;
 }
 
 .event-editor-modal-body .event-condition-control.switch,
-.event-editor-modal-body .event-condition-control.record {
-  display: grid;
-  max-width: 100%;
+.event-editor-modal-body .event-condition-control.record,
+.event-editor-modal-body .event-condition-control.time-phase,
+.event-editor-modal-body .event-condition-control.season,
+.event-editor-modal-body .event-condition-control.npc-activity,
+.event-editor-modal-body .event-condition-control.friendship {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .event-editor-modal-body .event-condition-control.variable {
-  align-items: stretch;
-  display: grid;
-  gap: 6px;
-  /* 좁은 설정 열에서 1fr+고정폭이 삐져나가지 않도록 세로 스택 */
+  gap: 4px;
   grid-template-columns: minmax(0, 1fr);
 }
 
 .event-editor-modal-body .event-condition-control.timer {
-  align-items: center;
-  display: grid;
-  gap: 4px;
-  grid-template-columns: minmax(36px, 1fr) max-content minmax(36px, 1fr) max-content;
-  max-width: 100%;
+  column-gap: 4px;
+  grid-template-columns: minmax(28px, 40px) auto minmax(28px, 40px) auto;
+  justify-content: start;
 }
 
 .event-condition-id-picker {
   align-items: center;
   display: grid;
-  gap: 6px;
-  grid-template-columns: minmax(0, 1fr) 30px;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) 28px;
   max-width: 100%;
   min-width: 0;
 }
 
 .event-condition-id-picker .btn.small {
-  flex: 0 0 auto;
-  min-height: 28px;
-  min-width: 30px;
+  min-height: 26px;
+  min-width: 28px;
   padding: 0;
 }
 
 .event-condition-threshold {
   align-items: center;
   display: grid;
-  gap: 6px;
-  grid-template-columns: minmax(0, 1fr) minmax(48px, 64px);
+  gap: 4px;
+  grid-template-columns: 64px minmax(0, 72px);
   max-width: 100%;
   min-width: 0;
 }
 
-.event-condition-label,
-.event-condition-suffix,
 .event-condition-time-unit {
-  color: var(--event-modern-text);
-  font: 700 13px/18px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  color: var(--event-modern-text-soft);
+  font: 600 11px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   white-space: nowrap;
-}
-
-.event-condition-label {
-  flex: 0 0 auto;
 }
 
 .event-condition-suffix {
@@ -1640,4 +1703,77 @@
   gap: 8px;
   justify-content: flex-end;
   margin-top: 4px;
+}
+
+/* 셀프 스위치 세그먼트 컨트롤 (A/B/C/D + ON/OFF) */
+.self-switch-control {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.self-switch-keys {
+  border: 1px solid var(--event-modern-border);
+  border-radius: 5px;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.self-switch-key {
+  background: var(--event-modern-field);
+  border: none;
+  border-right: 1px solid var(--event-modern-border);
+  color: var(--event-modern-text-soft);
+  cursor: pointer;
+  font: 700 11px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 22px;
+  padding: 4px 6px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.self-switch-key:last-child {
+  border-right: none;
+}
+
+.self-switch-key:hover {
+  background: color-mix(in srgb, var(--event-modern-accent) 12%, var(--event-modern-field));
+  color: var(--event-modern-text);
+}
+
+.self-switch-key.active {
+  background: var(--event-modern-accent);
+  color: #fff;
+}
+
+.self-switch-value {
+  border: 1px solid var(--event-modern-border);
+  border-radius: 11px;
+  cursor: pointer;
+  font: 700 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 4px 10px;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.self-switch-value.on {
+  background: var(--event-modern-success, #4caf50);
+  border-color: var(--event-modern-success, #4caf50);
+  color: #fff;
+}
+
+.self-switch-value.off {
+  background: var(--event-modern-field);
+  color: var(--event-modern-text-soft);
+}
+
+/* 비활성 조건 행에서 컨트롤 흐림 처리 */
+.event-condition-row.disabled .self-switch-key,
+.event-condition-row.disabled .self-switch-value {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 고급 조건 영역에서도 동일 스타일 적용 */
+.event-advanced-condition-control.self-switch .self-switch-control {
+  flex-wrap: wrap;
+  gap: 4px;
 }

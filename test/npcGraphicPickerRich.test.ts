@@ -12,6 +12,7 @@ import {
 } from "@/assets/easyrpgRtp";
 import { renderGraphicResourceList } from "@/editor/panels/eventEditor/npcGraphicPickerControls";
 import { renderNpcGraphicPicker } from "@/editor/panels/eventEditor/npcGraphicPicker";
+import { store } from "@/project/store";
 import type { EventPage } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
@@ -138,5 +139,44 @@ describe("NPC 그래픽 선택 다이얼로그 — 이미지 리치화", () => {
     expect(findByTestId(root, "event-graphic-confirm")).not.toBeNull();
     expect(findByTestId(root, "event-graphic-cancel")).not.toBeNull();
     expect(findByTestId(root, "event-graphic-resource-tex_easyrpg_charset_people1")).not.toBeNull();
+  });
+
+  it("소재 관리자에서 업로드한 charset이 리소스 목록에 나타난다", () => {
+    const project = store.getCurrent();
+    const uploadedId = "uploaded-custom-hero";
+    project.assets.uploaded[uploadedId] = {
+      id: uploadedId,
+      name: "커스텀 영웅.png",
+      kind: "charset",
+      dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      meta: { width: 288, height: 256 },
+    };
+    try {
+      const root = renderPicker();
+      const uploadedRow = findByTestId(root, `event-graphic-resource-${uploadedId}`);
+      expect(uploadedRow, "uploaded charset row").not.toBeNull();
+      expect(uploadedRow?.textContent).toContain("커스텀 영웅");
+    } finally {
+      delete project.assets.uploaded[uploadedId];
+    }
+  });
+
+  it("uploaded가 아닌 kind(tileset 등)은 charset 목록에 나타나지 않는다", () => {
+    const project = store.getCurrent();
+    const tilesetId = "uploaded-tileset-x";
+    project.assets.uploaded[tilesetId] = {
+      id: tilesetId,
+      name: "타일셋X.png",
+      kind: "tileset",
+      dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      meta: { width: 480, height: 256 },
+    };
+    try {
+      const root = renderPicker();
+      const tilesetRow = findByTestId(root, `event-graphic-resource-${tilesetId}`);
+      expect(tilesetRow).toBeNull();
+    } finally {
+      delete project.assets.uploaded[tilesetId];
+    }
   });
 });

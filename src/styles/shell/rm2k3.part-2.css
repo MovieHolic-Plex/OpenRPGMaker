@@ -233,7 +233,7 @@
   min-width: 226px;
   padding: 3px;
   position: fixed;
-  z-index: 80;
+  z-index: var(--z-status);
 }
 
 .map-context-menu-item {

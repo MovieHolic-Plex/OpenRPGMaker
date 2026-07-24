@@ -4,7 +4,8 @@ import type { BattleRewardsSnapshot } from "@/battle/types";
 import type { Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
 
-export function collectBattleRewards(project: Project, enemies: readonly MutableBattler[], rng: Rng = () => 0.5): BattleRewardsSnapshot {
+export function collectBattleRewards(project: Project, enemies: readonly MutableBattler[], rng?: Rng): BattleRewardsSnapshot {
+  if (!rng) throw new Error("collectBattleRewards requires an rng for deterministic drops.");
   const rewardedEnemies = enemies.filter((enemy) => !enemy.hidden && enemy.captured !== true);
   return {
     exp: rewardedEnemies.reduce((sum, enemy) => sum + enemyReward(project, enemy).exp, 0),

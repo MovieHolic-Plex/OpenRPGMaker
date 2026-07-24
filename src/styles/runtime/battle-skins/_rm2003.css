@@ -1,50 +1,494 @@
-/* src/styles/runtime/battle-skins/_rm2003.css
-   sideview — 기본 RM2k3 파란 창 유지, 최소 오버라이드. 아군은 우측 사이드뷰 존.
-   QA r1: HP 말줄임('HP 514/51…') 해제 + 메시지 창 줄바꿈. */
-.battle-scene[data-battle-skin="rm2003"] {
-  --battle-window-bg: #1742a5;
-  --battle-window-edge: #315dc0;
-  --battle-text: #f8fbff;
-  --battle-accent: #ffd75a;
-  background: #1742a5;
-  /* 메시지 창(1열)에 폭을 더 준다 — 한 줄 잘림 + 데드존 완화. */
-  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
+/* RM2003 battle skin - clean single-pass stylesheet.
+   Replaces all previous override layers with one coherent design.
+   Visual reference: RPG Maker 2003 side-view battle.
+   - Two-window bottom HUD: command menu (left) + party status (right).
+   - Enemy sprites float on the battlefield, no HP bars.
+   - Actor status shows name, HP/MP numbers, and thin gauge bars.
+   - Message ribbon across the top of the field.
+   - No key-prompt legends, no web-style affordances. */
+
+/* ---- Scene grid ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
+  --battle-hud-height: 96px;
+  background: #000;
+  grid-template-columns: 84px minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) minmax(0, var(--battle-hud-height)) !important;
+  padding: 0 !important;
 }
 
-.battle-scene[data-battle-skin="rm2003"] .battle-actor-group {
-  display: flex;
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-list-panel {
+  display: none !important;
+}
+
+/* ---- Field groups ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-group,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group {
+  inset: 4px 0 0 0 !important;
+}
+
+/* ---- Enemy sprites (60% of previous size) ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy {
+  transform: translate(-50%, -100%) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-group .battle-enemy {
+  --battle-juice-base: translate(-50%, -100%);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
+  height: 31px !important;
+  object-fit: contain !important;
+  width: 26px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-name {
+  font-size: 9px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.7) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-hud {
+  display: none !important;
+}
+
+/* ---- Actor sprites ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor {
+  height: 36px !important;
+  transform: translate(-50%, -100%) !important;
+  width: 30px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor .battle-skin-actor-image {
+  height: 32px !important;
+  width: 24px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor-sprite {
+  --battle-sprite-frame-height: 36px;
+  --battle-sprite-frame-width: 30px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-platform {
+  width: 44px;
+}
+
+/* ---- Command panel (left window) ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-panel {
+  align-content: start !important;
+  display: grid !important;
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 4px !important;
+  position: relative !important;
+  z-index: 9 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu {
+  display: grid !important;
+  gap: 1px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) {
+  grid-template-rows: repeat(5, minmax(0, 1fr)) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:has(> .battle-submenu-header) {
+  grid-auto-rows: minmax(0, 1fr) !important;
+  grid-template-rows: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command {
   align-items: center;
-  justify-content: flex-end;
+  border: 1px solid transparent;
+  display: grid;
+  gap: 3px !important;
+  grid-template-columns: 10px minmax(0, 1fr);
+  min-height: 0 !important;
+  padding: 2px 4px !important;
 }
 
-/* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
-.battle-scene[data-battle-skin="rm2003"] .battle-actor-status {
-  grid-template-columns: minmax(0, 1fr) auto !important;
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-icon {
+  display: none !important;
 }
 
-.battle-scene[data-battle-skin="rm2003"] .battle-actor-status .battle-actor-vitals {
-  display: flex;
-  gap: 3px;
-  justify-content: flex-end;
-  overflow: visible;
-  text-overflow: clip;
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text {
+  display: block !important;
+  min-width: 0;
 }
 
-.battle-scene[data-battle-skin="rm2003"] .battle-actor-status .battle-actor-hp,
-.battle-scene[data-battle-skin="rm2003"] .battle-actor-status .battle-actor-mp {
-  overflow: visible;
-  text-overflow: clip;
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong {
+  display: block;
+  font-size: 9px !important;
+  line-height: 1.2 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* QA r1(layout): 메시지 한 줄 말줄임 + 하단 데드존 → 여러 줄 래핑. */
-.battle-scene[data-battle-skin="rm2003"] .battle-message-window {
-  align-content: start;
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
+  display: none !important;
 }
 
-.battle-scene[data-battle-skin="rm2003"] .battle-message-line {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  text-overflow: clip;
-  line-height: 1.35;
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-submenu-header {
+  color: var(--rm2k3-battle-muted, #b9c8f4);
+  font-size: 8px !important;
+  padding: 1px 2px !important;
+}
+
+/* ---- Party status (right window) ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party {
+  display: grid !important;
+  gap: 0 !important;
+  grid-auto-rows: minmax(0, 1fr) !important;
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 2px 5px !important;
+  position: relative !important;
+  z-index: 8 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
+  align-content: center !important;
+  background: rgba(7, 30, 104, 0.25);
+  border-bottom: 1px solid rgba(231, 242, 255, 0.18);
+  display: grid !important;
+  gap: 1px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: minmax(0, 1fr) 3px 3px 0px !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 1px 3px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.battle-acting {
+  background: rgba(49, 93, 192, 0.45);
+  border-left: 2px solid var(--battle-gold, #ffd75a);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-name {
+  align-self: center;
+  font-size: 9px !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  line-height: 1.2 !important;
+  min-height: 0 !important;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-level {
+  font-size: 7px !important;
+  margin-left: 2px;
+  opacity: 0.8;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-vitals {
+  align-self: center;
+  display: flex;
+  gap: 5px !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-content: flex-end;
+  min-height: 0 !important;
+  overflow: hidden;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-hp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-mp {
+  font-size: 8px !important;
+  line-height: 1.2 !important;
+  min-height: 0 !important;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-hp {
+  color: #ffd2b5 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-mp {
+  color: #c9ffbf !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar {
+  display: block;
+  grid-column: 1 / -1 !important;
+  height: 3px !important;
+  min-width: 0 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar-hp {
+  grid-row: 2 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar-mp {
+  grid-row: 3 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-gauge {
+  align-items: center;
+  display: flex;
+  gap: 3px !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 4 !important;
+  min-width: 0;
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-atb-label {
+  color: var(--rm2k3-battle-muted, #b9c8f4);
+  font-size: 6px !important;
+  min-width: 16px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-atb-bar {
+  flex: 1 1 auto;
+  height: 3px !important;
+}
+
+/* ---- Message window (top of field) ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-window {
+  align-content: center !important;
+  bottom: auto !important;
+  display: grid !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 1 / -1 !important;
+  height: 24px !important;
+  left: 4px !important;
+  max-height: 24px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding: 2px 8px !important;
+  pointer-events: none !important;
+  position: absolute !important;
+  right: 4px !important;
+  top: 4px !important;
+  z-index: 12 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="command"] .battle-message-window,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="result"] .battle-message-window {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-lines {
+  gap: 0 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-line {
+  font-size: 8px !important;
+  line-height: 1.2 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-cursor {
+  font-size: 8px !important;
+}
+
+/* ---- Target select phase ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-command-panel {
+  grid-template-rows: auto minmax(0, 1fr) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-prompt {
+  align-self: start;
+  font-size: 9px !important;
+  grid-row: 1 !important;
+  line-height: 1.1 !important;
+  margin-bottom: 2px !important;
+  overflow: hidden;
+  padding: 2px 4px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
+  align-self: stretch !important;
+  display: grid !important;
+  gap: 1px !important;
+  grid-row: 2 !important;
+  grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  position: static !important;
+  width: 100% !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-submenu-header {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command {
+  align-items: center !important;
+  min-height: 0 !important;
+  padding: 3px 6px !important;
+  pointer-events: auto !important;
+  position: relative !important;
+  z-index: 11 !important;
+}
+
+/* Key prompts removed entirely - RM2k3 does not show these. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
+  display: none !important;
+}
+
+/* Target brackets */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets {
+  height: 24px !important;
+  inset: auto !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 28px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets::before {
+  border-width: 2px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets::after {
+  border-left-width: 3px !important;
+  border-right-width: 3px !important;
+  border-top-width: 6px !important;
+  top: -8px !important;
+}
+
+/* ---- Result panel ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-panel {
+  box-sizing: border-box !important;
+  display: grid !important;
+  gap: 4px !important;
+  grid-template-areas:
+    "title title"
+    "cards cards"
+    "confirm confirm" !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: auto minmax(18px, 1fr) auto !important;
+  max-height: none !important;
+  min-height: 80px !important;
+  overflow: hidden !important;
+  padding: 6px 12px !important;
+  width: 200px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-crest {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-title {
+  color: var(--battle-gold, #ffd75a) !important;
+  font-size: 13px !important;
+  grid-area: title;
+  line-height: 1 !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-cards {
+  display: grid !important;
+  gap: 2px !important;
+  grid-area: cards;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-rows: minmax(11px, auto) !important;
+  min-height: 18px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-card {
+  align-content: center !important;
+  align-items: center !important;
+  display: grid !important;
+  gap: 3px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: none !important;
+  min-height: 12px !important;
+  padding: 1px 4px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-icon {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-label {
+  font-size: 8px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-value {
+  font-size: 9px !important;
+  line-height: 1.2 !important;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-confirm {
+  font-size: 8px !important;
+  grid-area: confirm;
+  line-height: 1 !important;
+  min-width: 0 !important;
+  padding: 4px 10px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-next-prompt {
+  display: none !important;
+}
+
+/* ---- Intro animations ---- */
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-backdrop {
+  animation: rm2003-backdrop-in 0.9s ease-out both;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-enemy {
+  animation: rm2003-enemy-in 0.55s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(var(--enemy-index, 0) * 90ms);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-actor-group .battle-actor {
+  animation: rm2003-actor-in 0.5s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  animation-delay: calc(120ms + var(--actor-index, 0) * 70ms);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-command-panel,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-director-step="intro"] .battle-party {
+  animation: rm2003-hud-in 0.45s ease-out both;
+}
+
+@keyframes rm2003-backdrop-in {
+  from { transform: scale(1.12); }
+  to   { transform: scale(1); }
+}
+
+@keyframes rm2003-enemy-in {
+  from { opacity: 0; transform: translate(-190%, -100%); }
+  to   { opacity: 1; transform: translate(-50%, -100%); }
+}
+
+@keyframes rm2003-actor-in {
+  from { opacity: 0; transform: translate(90%, -100%); }
+  to   { opacity: 1; transform: translate(-50%, -100%); }
+}
+
+@keyframes rm2003-hud-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

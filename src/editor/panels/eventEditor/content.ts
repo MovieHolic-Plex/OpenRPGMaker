@@ -16,7 +16,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEventAiAssist } from "./aiAssist";
-import { auxCompositeKey, getAuxOpen, setAuxOpen } from "./auxOpenController";
+import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
@@ -25,7 +25,7 @@ import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   renderClassicPageTabStrip,
-  renderEventCharacterIdField,
+  renderEventCharacterSocialExtras,
   renderEventNameControl,
   renderEventPageProps,
   renderPageCommandCatalog,
@@ -139,9 +139,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
   // NPC schedule 은 RM2003 이벤트 창에 없는 모던 데이터 — 에디터 UI에 노출하지 않는다
   // (set_npc_schedule / make_villager 툴·project JSON 으로만 유지).
+  const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
-    children: [renderEventCharacterIdField(mapId, ev), renderEventPageProps(mapId, ev.id, activePage, ev)],
+    children: socialExtras
+      ? [socialExtras, renderEventPageProps(mapId, ev.id, activePage, ev)]
+      : [renderEventPageProps(mapId, ev.id, activePage, ev)],
   });
   settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage), settingsMain);
   commandsColumn.append(
@@ -166,7 +169,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         ],
       });
       const auxKey = auxCompositeKey(mapId, ev.id, activePage.id);
-      setAuxOpen(auxKey, getAuxOpen(auxKey));
+      syncAuxHosts(auxKey);
       return auxTools;
     })()
   );
@@ -182,7 +185,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     el("div", {
       class: "event-editor-top-strip",
       children: [
-        renderEventNameControl(mapId, ev.id, activePage),
+        renderEventNameControl(mapId, ev.id, activePage, ev),
         renderPageTabs(mapId, ev, activePage),
       ],
     }),

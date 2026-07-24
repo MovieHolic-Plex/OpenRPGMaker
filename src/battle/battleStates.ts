@@ -7,7 +7,9 @@ import type { DatabaseStateEffect, Project, StateRecord } from "@/project/types"
 import type { MutableBattler } from "@/battle/battleBattlers";
 
 export type Rng = () => number;
-const defaultRng: Rng = () => 0.5;
+const defaultRng: Rng = () => {
+  throw new Error("battle state effect requires an rng; pass a deterministic rng.");
+};
 
 // 확률(0~100)을 rng 로 굴린다. chance>=100 이면 항상 성공, <=0 이면 항상 실패.
 function rollPercent(chance: number, rng: Rng): boolean {

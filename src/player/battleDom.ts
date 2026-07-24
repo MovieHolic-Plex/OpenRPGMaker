@@ -183,14 +183,23 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (sequenceBusy) return;
-    if (event.key === "c" || event.key === "C") {
+    if (event.key === "c" || event.key === "C" || event.key === "x" || event.key === "X" || event.key === "Escape") {
       event.preventDefault();
       handleCancel(snapshot);
       return;
     }
-    if (event.key === "x" || event.key === "X") {
-      event.preventDefault();
-      cycleTarget(snapshot);
+    if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+      if (snapshot.phase === "targetSelect") {
+        event.preventDefault();
+        cycleTarget(snapshot, -1);
+      }
+      return;
+    }
+    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+      if (snapshot.phase === "targetSelect") {
+        event.preventDefault();
+        cycleTarget(snapshot, 1);
+      }
       return;
     }
     if (event.key === "z" || event.key === "Z" || event.key === "Enter") {
@@ -232,13 +241,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
   }
 
-  function cycleTarget(snapshot: BattleSnapshot): void {
+  function cycleTarget(snapshot: BattleSnapshot, direction: 1 | -1 = 1): void {
     if (snapshot.phase !== "targetSelect") return;
     const ids = snapshot.targetSelection?.targetEnemyIds ?? [];
     if (ids.length <= 1) return;
     const current = snapshot.targetSelection?.selectedEnemyId ?? ids[0];
     const index = ids.indexOf(current);
-    const nextId = ids[(index + 1) % ids.length];
+    const nextId = ids[(index + direction + ids.length) % ids.length];
     options.runtime.setSelectedTargetEnemy(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
     syncView();
@@ -316,11 +325,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function emitSwingJuice(command: ActorCommand | TargetedActorCommand, snapshot: BattleSnapshot): void {
-    if (command.kind !== "attack" && command.kind !== "skill") return;
     const actorNode = snapshot.activeActorId
       ? findBattlerNode(field, snapshot.activeActorId)
       : null;
-    emitBattleJuice("attack-swing", actorNode ?? undefined);
+    if (command.kind === "attack" || command.kind === "skill") {
+      emitBattleJuice("attack-swing", actorNode ?? undefined);
+    } else if (command.kind === "defend") {
+      emitBattleJuice("defend", actorNode ?? undefined);
+    } else if (command.kind === "escape") {
+      emitBattleJuice("escape", actorNode ?? undefined);
+    }
   }
 
   function beginTargetCommand(command: TargetedActorCommand): void {

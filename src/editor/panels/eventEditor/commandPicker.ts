@@ -166,7 +166,7 @@ const EXTRA_COMMAND_ENTRIES: readonly CommandEntry[] = [
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
   entries: [
-    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && isM2CatalogEntrySelectableInMap(entry)).map(
+    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && isM2CatalogEntrySelectableInMap(entry) && entry.pickerLabel !== "고급 대화").map(
       commandEntryFromCatalog
     ),
     ...EXTRA_COMMAND_ENTRIES.filter((entry) => entry.page === page),

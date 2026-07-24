@@ -8,13 +8,12 @@ import { inputNumberBody } from "./commandBodyInputNumber";
 import { labelBody } from "./commandBodyLabels";
 import { loopBody } from "./commandBodyLoop";
 import { setVariableBody } from "./commandBodyVariable";
-import { databasePicker, conditionForm } from "./conditionForm";
-import { faceDisplayModeOf, isBustResourceId, renderFacesetIndexGrid, renderFacesetPreview } from "./facesetPreview";
+import { conditionForm, databasePicker, selfSwitchControl } from "./conditionForm";
+import { faceDisplayModeOf, renderFacesetIndexGrid, renderFacesetPreview } from "./facesetPreview";
 import { renderConditionEvalPreview } from "./conditionEvalPreview";
 import { clampFaceIndex, FACESET_FACE_COUNT } from "./messageDialogControls";
 import {
   BOOLEAN_OPTIONS,
-  SELF_SWITCH_KEY_OPTIONS,
   TIMER_ACTION_OPTIONS,
   TIMER_ID_OPTIONS,
   type SelectOption,
@@ -149,15 +148,15 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   const refreshLimitHint = () => {
     const lines = body.value.split(/\r?\n/);
     const maxLine = lines.reduce((m, line) => Math.max(m, line.length), 0);
-    const faceAware = Boolean(context.previewFace);
+    const faceAware = Boolean((context as { previewFace?: unknown }).previewFace);
     const maxChars = faceAware ? 38 : 50;
     const overLines = lines.length > 4;
     const overChars = maxLine > maxChars;
     if (overLines || overChars) {
-      limitHint.textContent = `RM2003 over: ${lines.length} lines / max ${maxLine} chars (prefer 4 x ${maxChars}${faceAware ? "; face" : ""})`;
+      limitHint.textContent = `RM2003 초과: ${lines.length}줄 / 최대 ${maxLine}자 (권장 4×${maxChars}${faceAware ? "; 얼굴" : ""})`;
       limitHint.dataset.over = "1";
     } else {
-      limitHint.textContent = `Prefer max 4 lines / ${maxChars} chars${faceAware ? " (with face)" : ""}`;
+      limitHint.textContent = `최대 4줄 / ${maxChars}자 권장${faceAware ? " (얼굴 포함)" : ""}`;
       delete limitHint.dataset.over;
     }
   };
@@ -667,18 +666,14 @@ function setFlagBody(context: CommandEditContext, cmd: Extract<Command, { kind: 
 
 function setSelfSwitchBody(context: CommandEditContext, cmd: Extract<Command, { kind: "setSelfSwitch" }>): HTMLElement {
   const wrap = el("span", {});
-  const key = selectWithOptions(SELF_SWITCH_KEY_OPTIONS, cmd.key, "event-command-self-switch-key");
-  const val = selectWithOptions(BOOLEAN_OPTIONS, String(cmd.value), "event-command-self-switch-value");
-  const apply = () => {
-    context.actions.replaceCommand(context.path, {
-      kind: "setSelfSwitch",
-      key: key.value as "A" | "B" | "C" | "D",
-      value: val.value === "true",
-    });
-  };
-  key.addEventListener("change", apply);
-  val.addEventListener("change", apply);
-  wrap.append(fieldControl("셀프 스위치", key), fieldControl("값", val));
+  wrap.append(
+    selfSwitchControl(cmd.key, cmd.value, (key, value) => {
+      context.actions.replaceCommand(context.path, { kind: "setSelfSwitch", key, value });
+    }, {
+      keyTestId: "event-command-self-switch-key",
+      valueTestId: "event-command-self-switch-value",
+    })
+  );
   return wrap;
 }
 

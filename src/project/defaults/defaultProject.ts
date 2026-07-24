@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   CommonEvent,
   GameEvent,
   GameMap,
@@ -63,7 +63,7 @@ export function createBlankProject(): Project {
 
 /** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
-  const project = structuredClone(dewVillageDemoFixture as Project);
+  const project = structuredClone(dewVillageDemoFixture as unknown as Project);
   // Fixture는 blank 시드에서 왔으므로 시작 파티가 1명일 수 있다. DB에 배우가 더 있으면 2인 파티로 맞춘다.
   const actorIds = project.database.actors.map((actor) => actor.id).filter(Boolean);
   if (actorIds.length >= 2 && project.system.startActorIds.length < 2) {
@@ -125,6 +125,8 @@ export function createMarketTownProject(): Project {
   project.startPos = marketTownStartPos();
   return project;
 }
+
+declare const require: (id: string) => unknown;
 
 export function createVillageShoppingStreetProject(): Project {
   // Lazy import — villageShoppingStreetBuild → toolRunner/store 순환을 defaultProject 초기화에서 끊음

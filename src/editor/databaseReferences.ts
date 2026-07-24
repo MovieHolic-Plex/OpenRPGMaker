@@ -46,6 +46,8 @@ function withObjectParticle(word: string): string {
 }
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
+  // 삭제 차단 UX 계층 — orphan-FK '검출' 권위자는 src/project/io/references.ts 의 collectProjectReferenceIssues(validate*Records) 이고,
+  // 이 함수는 삭제 시점에 사용자에게 보여 줄 차단 메시지를 만드는 보조 계층이다. 두 시스템을 중복 검출기로 분리하지 말 것.
   const project = store.getCurrent();
   switch (collection) {
     case "skills": {
@@ -136,8 +138,9 @@ export function monsterSpeciesReferenceMessage(speciesId: string): string | null
 // 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)
 // 전용 필드이고 에디터가 들고 있는 Project(session: ProjectSession)에는 애초에 존재하지
 // 않는다(session.ts:96 vs project.ts:99-107) — 즉 편집 시점에 검사 가능한 정적 DB 참조가
-// 없다. 항상 null을 반환하지만, 향후 다른 레코드(퀘스트 등)가 cropId를 정적으로 참조하게
-// 되면 이 자리에 검사를 추가하면 된다. 삭제 자체는 2단계 확인으로만 보호한다.
+// 없다. 따라서 삭제 차단 대상이 아니며 항상 null 을 반환한다. crop 자신의 FK(seedItemId/
+// harvestItemId) 무결성은 단일 권위자인 collectProjectReferenceIssues(validateCropRecords)가
+// 소관한다. 향후 다른 레코드(퀘스트 등)가 cropId 를 정적으로 참조하게 되면 이 자리에 검사를 추가한다.
 export function cropReferenceMessage(_cropId: string): string | null {
   return null;
 }

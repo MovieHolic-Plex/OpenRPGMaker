@@ -6,7 +6,7 @@
 import { editorState } from "@/editor/editorState";
 import { deleteStructureKit, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
-import { paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
+import { paletteStampFromKit, structureKitSize } from "@/editor/harnessSuggestion/structureKitModel";
 import { store } from "@/project/store";
 import type { StructureKitDef, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
@@ -56,44 +56,46 @@ function renderKitCard(tileset: TilesetDef, kit: StructureKitDef, rerender: () =
   });
 
   // ── 그림이 주인공: 단위 단면(왼쪽) + 조립 미리보기(오른쪽) — 실타일 렌더 ──
+  const size = structureKitSize(kit);
   const unitCanvas = renderTileCellsToCanvas({
     tileset,
-    widthTiles: kit.width,
-    heightTiles: kit.height,
-    cells: assembledKitCells(kit, kit.width),
-    scale: 3,
+    widthTiles: size.width,
+    heightTiles: size.height,
+    cells: assembledKitCells(kit, size.width),
+    scale: kit.kind === "house" ? 2 : 3,
   });
   unitCanvas.className = "structure-kit-db-unit";
   unitCanvas.dataset.testid = `structure-kit-db-unit-${kit.id}`;
-  const previewCanvas = renderTileCellsToCanvas({
-    tileset,
-    widthTiles: PREVIEW_COLUMNS,
-    heightTiles: kit.height,
-    cells: assembledKitCells(kit, PREVIEW_COLUMNS),
-    scale: 2,
-  });
-  previewCanvas.className = "structure-kit-db-preview";
-  previewCanvas.dataset.testid = `structure-kit-db-preview-${kit.id}`;
 
-  const figures = el("div", {
-    class: "structure-kit-db-figures",
-    children: [
-      el("figure", {
-        class: "structure-kit-db-figure",
-        children: [
-          el("div", { class: "structure-kit-db-figure-body", children: [unitCanvas] }),
-          el("figcaption", { text: `단면 ${kit.width}×${kit.height}` }),
-        ],
-      }),
-      el("figure", {
-        class: "structure-kit-db-figure",
-        children: [
-          el("div", { class: "structure-kit-db-figure-body", children: [previewCanvas] }),
-          el("figcaption", { text: "이어 찍으면 (12열 조립)" }),
-        ],
-      }),
-    ],
-  });
+  const figureChildren = [
+    el("figure", {
+      class: "structure-kit-db-figure",
+      children: [
+        el("div", { class: "structure-kit-db-figure-body", children: [unitCanvas] }),
+        el("figcaption", { text: kit.kind === "house" ? `집 킷 ${size.width}×${size.height}` : `단면 ${size.width}×${size.height}` }),
+      ],
+    }),
+  ];
+  // 집 킷은 한 채가 완결 단위 — 조립 미리보기는 반복 단면(section)에만 의미가 있다.
+  if (kit.kind !== "house") {
+    const previewCanvas = renderTileCellsToCanvas({
+      tileset,
+      widthTiles: PREVIEW_COLUMNS,
+      heightTiles: size.height,
+      cells: assembledKitCells(kit, PREVIEW_COLUMNS),
+      scale: 2,
+    });
+    previewCanvas.className = "structure-kit-db-preview";
+    previewCanvas.dataset.testid = `structure-kit-db-preview-${kit.id}`;
+    figureChildren.push(el("figure", {
+      class: "structure-kit-db-figure",
+      children: [
+        el("div", { class: "structure-kit-db-figure-body", children: [previewCanvas] }),
+        el("figcaption", { text: "이어 찍으면 (12열 조립)" }),
+      ],
+    }));
+  }
+  const figures = el("div", { class: "structure-kit-db-figures", children: figureChildren });
 
   // ── 관리: 이름 변경 / 팔레트에서 쓰기 / 삭제 ──
   const nameInput = el("input", {
@@ -160,5 +162,7 @@ function renderKitCard(tileset: TilesetDef, kit: StructureKitDef, rerender: () =
 }
 
 function learnedFromLabel(learnedFrom: string): string {
-  return learnedFrom === "user-paint" ? "붓질에서 학습" : learnedFrom;
+  if (learnedFrom === "user-paint") return "붓질에서 학습";
+  if (learnedFrom === "builtin-parametric") return "내장 파라메트릭";
+  return learnedFrom;
 }

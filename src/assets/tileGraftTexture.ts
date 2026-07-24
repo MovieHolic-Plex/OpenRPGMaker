@@ -1,5 +1,5 @@
 // Phaser 텍스처용 타일셋 베이크(투명색 + 타일 이식 합성).
-// tilesetImage.ts(에디터)와 exportTilesetImageShim.ts(플레이어) 두 ensureTilesetTexture 가 공유한다.
+// 에디터와 export 플레이어가 동일한 tilesetImage.ts 의 ensureTilesetTexture 를 공유한다.
 import {
   createTransparentColorKeyCanvas,
   isColorKeyedChipsetTextureKey,

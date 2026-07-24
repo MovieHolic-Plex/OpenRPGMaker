@@ -62,37 +62,46 @@ describe("event editor settings column layout", () => {
     expect(direct[1]?.querySelector(".event-page-props")).toBeTruthy();
   });
 
-  it("orders character connect → conditions → graphic → trigger/priority → movement", () => {
+  it("orders conditions → graphic → trigger/priority → movement; characterId lives in top strip", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_layout");
     const main = host.querySelector(".event-editor-settings-main");
     expect(main).toBeTruthy();
 
-    // Empty characterId renders the connect CTA host (still testid event-character-id-field).
+    // Character ID is optional identity chrome next to name, not left-settings chrome.
+    const topStrip = host.querySelector(".event-editor-top-strip");
     const characterId = host.querySelector('[data-testid="event-character-id-field"]');
+    const nameRow = host.querySelector('[data-testid="event-classic-name"]');
+    expect(characterId).toBeTruthy();
+    expect(nameRow?.contains(characterId)).toBe(true);
+    expect(topStrip?.contains(characterId)).toBe(true);
+    expect(main?.contains(characterId)).toBe(false);
+    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    // Empty characterId: no social extras in settings.
+    expect(host.querySelector('[data-testid="event-character-social-extras"]')).toBeNull();
+
     const conditions = host.querySelector('[data-testid="event-classic-conditions"]');
     const graphic = host.querySelector('[data-testid="event-classic-graphic"]');
     const triggerPriority = host.querySelector('[data-testid="event-page-trigger-priority-stack"]');
     const movement = host.querySelector('[data-testid="event-classic-movement-section"]');
-    expect(characterId).toBeTruthy();
     expect(conditions).toBeTruthy();
     expect(graphic).toBeTruthy();
     expect(triggerPriority).toBeTruthy();
     expect(movement).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
 
     // Trigger is a sibling of movement, not nested inside it.
     expect(movement?.contains(triggerPriority)).toBe(false);
     expect(movement?.querySelector('[data-testid="event-page-trigger-select"]')).toBeNull();
 
-    const order = [characterId, conditions, graphic, triggerPriority, movement]
+    const order = [conditions, graphic, triggerPriority, movement]
       .map((node) => {
         const nodes = main!.querySelectorAll(
-          '[data-testid="event-character-id-field"], [data-testid="event-classic-conditions"], [data-testid="event-classic-graphic"], [data-testid="event-page-trigger-priority-stack"], [data-testid="event-classic-movement-section"]'
+          '[data-testid="event-classic-conditions"], [data-testid="event-classic-graphic"], [data-testid="event-page-trigger-priority-stack"], [data-testid="event-classic-movement-section"]'
         );
         return [...nodes].indexOf(node as Element);
       });
-    expect(order).toEqual([0, 1, 2, 3, 4]);
+    expect(order).toEqual([0, 1, 2, 3]);
 
     // Disposition B: no bottom-left/right panes.
     expect(host.querySelector('[data-testid="event-page-bottom-left"]')).toBeNull();

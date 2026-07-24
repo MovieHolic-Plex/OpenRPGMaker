@@ -197,6 +197,8 @@ export interface SkillRecord {
   // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
+  /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
+  actionSkill?: ActionSkillProfile;
 }
 
 export interface SkillMpCost {
@@ -209,6 +211,24 @@ export type SkillEffect =
   | { kind: "healing"; statistic: "mind"; affects: "hp" | "mp" }
   | { kind: "support" }
   | { kind: "switch"; switchId?: string };
+
+export interface ActionWeaponProfile {
+  /** 스윙 부채꼴 reach. 생략 시 시스템 기본(1). */
+  swingRange?: number;
+  /** 스윙 쿨다운. 생략 시 시스템 기본. */
+  swingCooldownMs?: number;
+  /** 스윙 데미지 가산. 생략 시 0. */
+  swingDamageBonus?: number;
+}
+
+export interface ActionSkillProfile {
+  kind: "projectile";
+  damage: number;
+  range: number;
+  speedTilesPerSec?: number;
+  /** 발사 시 인벤토리에서 소비하는 탄약 아이템. 부족하면 캐스트가 불발한다. mpCost와 병용 가능(둘 다 필요). */
+  itemCost?: { itemId: ItemId; amount: number };
+}
 
 export interface ItemRecord {
   id: ItemId;
@@ -325,6 +345,8 @@ export interface EquipmentRecord {
   stateDefenseIds: StateId[];
   stateDefenseMode: "resist" | "inflict";
   stateResistanceChance: number;
+  /** 실시간 액션 전투에서 이 무기를 들었을 때의 스윙 프로필. */
+  actionWeapon?: ActionWeaponProfile;
 }
 
 export interface EquipmentStatBonuses {
@@ -355,8 +377,38 @@ export interface EnemyRecord {
   stats: EnemyStats;
   rewards: EnemyRewards;
   actions: EnemyActionPattern[];
+  /** 실시간 액션 전투용 필드 프로필. 생략 시 턴제 전용 적. */
+  actionProfile?: EnemyActionProfile;
   stateRates: Record<string, ActorRateGrade>;
   elementRates: Record<string, ActorRateGrade>;
+}
+
+export interface EnemyActionAttack {
+  kind: "melee" | "projectile" | "dash";
+  /** 선딜 — 텔레그래프(적 점멸 + 위협 칸 표시) 시간. */
+  windupMs: number;
+  /** 후딜 — 공격 후 플레이어 반격 창. */
+  recoverMs: number;
+  damage: number;
+  /** melee: 부채꼴 reach / projectile: 최대 비행 타일 / dash: 최대 돌진 타일. */
+  range: number;
+  /** 재공격 쿨다운. 기본 1200ms. */
+  cooldownMs?: number;
+  /** 투사체 속도(타일/초). 기본 6. */
+  projectileSpeedTilesPerSec?: number;
+}
+
+export interface EnemyActionProfile {
+  /** 접촉 데미지. 생략 시 attack/2 기반 폴림. */
+  contactDamage?: number;
+  /** 추격 이동 간격(ms). 생략 시 이동 타입 기본. */
+  moveIntervalMs?: number;
+  /** 어그로(추격 시작) 거리. 생략 시 스폰 정의/기본값. */
+  aggroRange?: number;
+  /** 넉백 저항 0..1. 기본 0. */
+  knockbackResist?: number;
+  /** 선딜/후딜이 있는 능동 공격. 생략 시 접촉만. */
+  attack?: EnemyActionAttack;
 }
 
 export interface EnemyStats {
@@ -708,6 +760,8 @@ export interface SystemRecords {
   giftSystem?: boolean;
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
+  /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */
+  actionCombat?: SystemActionCombat;
   /** Opt-in tool→world rules. Empty/absent → legacy farm hoe/can only. */
   toolActions?: import("@/project/toolActions").ToolActionRule[];
   /** Opt-in craft recipes. */
@@ -718,6 +772,28 @@ export interface SystemRecords {
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
   /** Out-of-battle party monster care (walk ticks + feed/toy items). */
   monsterCare?: MonsterCareConfig;
+}
+
+export interface ActionCombatHudConfig {
+  /** 플레이어 HP 하트 바. 생략 시 true. */
+  hearts?: boolean;
+  /** 스태미나 바 표시 + 스윙/대시 소모. 생략 시 false. */
+  stamina?: boolean;
+  /** 몬스터 철력 바. "damaged"(기본)=피해입은 개척만, "always"=항상, "never"=숨김. */
+  enemyHpBars?: "always" | "damaged" | "never";
+}
+
+export interface SystemActionCombat {
+  enabled: boolean;
+  /** 플레이어 피격 무적시간. 기본 800ms. */
+  playerIframesMs?: number;
+  /** 공격 스윙 쿨다운. 기본 350ms. */
+  swingCooldownMs?: number;
+  /** 플레이어 스윙 데미지 가산. 기본 0. */
+  swingDamageBonus?: number;
+  /** true면 액션 전투 맵에서 대각 이동을 끄고 4방향 그리드 이동만 허용(클식 서바이벌 호러 감각). */
+  fourWayMovement?: boolean;
+  hud?: ActionCombatHudConfig;
 }
 
 export interface MonsterCareConfig {

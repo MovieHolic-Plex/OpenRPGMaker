@@ -22,7 +22,7 @@ export function renderConditionEvalPreview(condition: Condition | undefined): HT
     children: [
       el("div", {
         class: "event-condition-eval-badge",
-        text: ok ? "TRUE" : "FALSE",
+        text: ok ? "충족" : "불충족",
         dataset: { testid: "event-condition-eval-badge" },
       }),
       el("div", {
@@ -36,7 +36,7 @@ export function renderConditionEvalPreview(condition: Condition | undefined): HT
           el("div", {
             class: "event-condition-eval-note",
             text: hostId
-              ? `시작 상태 기준 · 호스트 이벤트 ${hostId}`
+              ? `시작 상태 기준 · 호스트 이벤트 ${hostId.replace(/^ev_[0-9a-f-]+$/i, "(자동 생성)")}`
               : "시작 상태 기준 · 선택 이벤트 없음(셀프/활동 조건은 보수적으로 평가)",
           }),
         ],

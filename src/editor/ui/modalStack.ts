@@ -12,11 +12,15 @@ type ModalEntry = {
 
 const stack: ModalEntry[] = [];
 let nextId = 1;
-let listening = false;
+// Track the document we registered on so that a document swap (e.g. fakeDom
+// reinstall between tests) triggers re-registration instead of silently
+// skipping because a stale `listening` boolean is still true.
+let listeningDoc: Document | null = null;
 
 function ensureListening(): void {
-  if (listening || typeof document === "undefined") return;
-  listening = true;
+  if (typeof document === "undefined") return;
+  if (listeningDoc === document) return;
+  listeningDoc = document;
   // Capture phase so nested field handlers do not swallow Escape first.
   document.addEventListener("keydown", onDocumentKeyDown, true);
 }
@@ -96,4 +100,5 @@ export function modalStackDepthForTest(): number {
 /** Test helper: clear stack without invoking closeUi. */
 export function resetModalStackForTest(): void {
   stack.length = 0;
+  listeningDoc = null;
 }

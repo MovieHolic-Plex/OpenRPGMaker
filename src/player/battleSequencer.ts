@@ -124,7 +124,7 @@ export function createBattleSequencer(
     };
   }
 
-  function actorUserId(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): string {
+  function actorUserId(_command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): string {
     const fromResult = after.lastActionResult?.userRecordId;
     if (fromResult) return fromResult;
     const active = before.activeActorId ?? after.activeActorId;

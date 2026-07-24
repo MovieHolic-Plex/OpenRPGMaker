@@ -1,5 +1,7 @@
 # RM2K3 Database Field Matrix
 
+> **Status:** 설계 스펙 (시점 기록). 현행 구현의 정본은 코드 — 차이가 있으면 코드를 따른다.
+
 This matrix defines the T10 editor surface. Every tab is a real editable panel with a searchable list, detail form, duplicate/delete controls where records are list-backed, and reference pickers that use current database names.
 
 | Tab | MVP Fields | Reference Pickers | Safeguards and Preview |

@@ -1,0 +1,21 @@
+/* Authoritative player runtime CSS closure. Keep imports in cascade order. */
+@import "./system.css";
+@import "./battle.css";
+@import "./battle-skins/index.css";
+@import "./commerce.css";
+@import "./title.css";
+@import "../database/tabs-b-title-screen.css";
+@import "../database/tabs-b-status-menu-base.css";
+@import "../database/tabs-b-status-menu-main.css";
+@import "./playLoading.css";
+@import "./actionHud.css";
+@import "./timer.css";
+@import "./touchpad.css";
+@import "./pictures.css";
+@import "./weather.css";
+@import "./transitions.css";
+@import "./nameEntry.css";
+@import "./keyboardNav.css";
+@import "../dialogue.css";
+@import "./playSurface.css";
+@import "./zoneFeedback.css";

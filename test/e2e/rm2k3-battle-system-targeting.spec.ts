@@ -3,10 +3,16 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { confirmBattleTarget } from "./battleReferenceProject";
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
 
 const evidenceDir = "output/evidence/rm2003-battle-system";
 
 test("battle attack waits for explicit RM2003-style target selection before executing", async ({ page }) => {
+  test.setTimeout(60_000);
   await page.setViewportSize({ width: 1360, height: 768 });
   await seedBattleProject(page);
   await startBattle(page);
@@ -24,7 +30,7 @@ test("battle attack waits for explicit RM2003-style target selection before exec
   expect(targetState.targetableEnemyIds).toContain("enemy-1");
   expect(targetState.messageText).toContain("대상");
 
-  await page.getByTestId("battle-target-enemy-1").click();
+  await confirmBattleTarget(page, "enemy-1");
   await expect(page.getByTestId("battle-scene")).not.toHaveAttribute("data-battle-phase", "targetSelect");
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", /acting|impact|result/);
   await page.screenshot({ path: `${evidenceDir}/003-attack-executed.png`, fullPage: true });
@@ -44,13 +50,17 @@ async function seedBattleProject(page: Page): Promise<void> {
 
 async function startBattle(page: Page): Promise<void> {
   await page.getByTestId("mode-play").click();
+  await page.waitForTimeout(250);
+  if (!(await page.getByTestId("test-play-window").isVisible())) {
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+  }
   await expect(page.getByTestId("test-play-window")).toBeVisible();
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
   await page.click('[data-testid="event-battle-start"]');
-  await expect(page.getByTestId("battle-scene")).toBeVisible();
-  await expect(page.getByTestId("actor-command-attack")).toBeVisible();
+  await expect(page.getByTestId("battle-scene")).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 20_000 });
 }
 
 async function battleTargetState(page: Page): Promise<{

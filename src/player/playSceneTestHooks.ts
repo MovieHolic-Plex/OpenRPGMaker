@@ -33,13 +33,22 @@ export type RuntimeDebugHook = {
 };
 
 type TestHookWindow = Window & {
-  __rpgzzuInput?: { action: () => void; dir: (d: string | null) => void };
+  __rpgzzuInput?: { action: () => void; attack: () => void; skill: () => void; dir: (d: string | null) => void };
+  __rpgzzuActionCombat?: () => ActionCombatDebug | null;
   __rpgzzuPlayerSprite?: () => PlayerSpriteDebug | null;
   __rpgzzuCharacterSprites?: () => CharacterSpriteDebug | null;
   __rpgzzuCamera?: () => CameraDebug;
   __rpgzzuSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
   __rpgzzuSetMediaState?: (state: MediaStateDebug) => void;
   __rpgzzuDebug?: RuntimeDebugHook;
+};
+
+type ActionCombatDebug = {
+  readonly enemies: readonly { readonly eventId: string; readonly hp: number; readonly maxHp: number; readonly mode: string }[];
+  readonly projectiles: number;
+  readonly swingCooldownMs: number;
+  readonly stamina: number;
+  readonly facing: string;
 };
 
 type MediaStateDebug = {
@@ -109,11 +118,14 @@ export function installPlaySceneTestHooks(
   const w = window as TestHookWindow;
   w.__rpgzzuInput = {
     action: () => input.injectActionEdge(),
+    attack: () => input.injectAttackEdge(),
+    skill: () => input.injectSkillEdge(),
     dir: (d) => input.injectDirection(parseDirection(d)),
   };
   w.__rpgzzuPlayerSprite = () => playerSpriteDebug(scene);
   w.__rpgzzuCharacterSprites = () => characterSpritesDebug(scene);
   w.__rpgzzuCamera = () => cameraDebug(scene);
+  w.__rpgzzuActionCombat = () => actionCombatDebug(scene);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {
     applyDebugOp(getSession(), op);
@@ -125,7 +137,20 @@ export function installPlaySceneTestHooks(
     giveItem: (itemId, amount) => applyAndSync({ kind: "giveItem", itemId, amount }),
     setGold: (amount) => applyAndSync({ kind: "setGold", amount }),
     heal: () => applyAndSync({ kind: "heal" }),
-    teleport: (mapId, x, y) => applyAndSync({ kind: "teleport", mapId, x, y }),
+    teleport: (mapId, x, y) => {
+      applyAndSync({ kind: "teleport", mapId, x, y });
+      const context = scene as unknown as {
+        getMapId?: () => string;
+        loadMap?: (id: string) => void;
+        tileX: number;
+        tileY: number;
+      };
+      if (typeof context.loadMap === "function" && context.getMapId?.() !== mapId) {
+        context.loadMap(mapId);
+      }
+      context.tileX = x;
+      context.tileY = y;
+    },
     applyPreset: (preset) => {
       applyStatePreset(getSession(), preset);
       syncRuntimeState();
@@ -275,4 +300,30 @@ function parseDirection(value: string | null): Dir | null {
     default:
       return null;
   }
+}
+
+function actionCombatDebug(scene: Phaser.Scene): ActionCombatDebug | null {
+  const context = scene as unknown as {
+    actionCombatState?: {
+      enemies: Map<string, { hp: number; maxHp: number; mode: string }>;
+      projectiles: unknown[];
+      swingCooldownMs: number;
+      stamina: number;
+    } | null;
+    facing?: string;
+  };
+  const state = context.actionCombatState;
+  if (!state) return null;
+  return {
+    enemies: [...state.enemies.entries()].map(([eventId, enemy]) => ({
+      eventId,
+      hp: enemy.hp,
+      maxHp: enemy.maxHp,
+      mode: enemy.mode,
+    })),
+    projectiles: state.projectiles.length,
+    swingCooldownMs: state.swingCooldownMs,
+    stamina: state.stamina,
+    facing: context.facing ?? "down",
+  };
 }

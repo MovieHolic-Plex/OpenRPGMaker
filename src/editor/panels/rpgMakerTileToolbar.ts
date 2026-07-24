@@ -6,7 +6,7 @@ import { makeSvgIcon } from "@/editor/panels/rpgMakerTileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/rpgMakerTileToolbarIcons";
 import { isRpgMakerToolbarItemActive, selectRpgMakerEyedropperTool, selectRpgMakerTileTool } from "@/editor/panels/rpgMakerTileToolbarActions";
 import type { RpgMakerTileTool } from "@/editor/panels/rpgMakerTileToolbarActions";
-import { makeHistoryDropdown, makeInspectorDropdown, makeOverflowDropdown, makeRuleAuditDropdown } from "@/editor/panels/rpgMakerTileToolbarMenus";
+import { makeOverflowDropdown } from "@/editor/panels/rpgMakerTileToolbarMenus";
 import type { RpgMakerToolbarModel } from "@/editor/panels/rpgMakerTileToolbarMenus";
 import { store } from "@/project/store";
 
@@ -96,11 +96,8 @@ export function makeRpgMakerTileToolbar(model: RpgMakerToolbarModel): HTMLElemen
 
   row.append(el("span", { class: "rpg-maker-tile-toolbar-separator", attrs: { "aria-hidden": "true" } }));
   row.append(makeMapModeGroup(model));
-
   row.append(el("span", { class: "rpg-maker-tile-toolbar-spacer", attrs: { "aria-hidden": "true" } }));
-  row.append(makeInspectorDropdown(model));
-  row.append(makeRuleAuditDropdown(model));
-  row.append(makeHistoryDropdown(model));
+  // 좁은 팔레트에서도 1줄을 유지하기 위해 검사/기록/인스펙터는 ⋯ overflow 로 흡수.
   row.append(makeOverflowDropdown(model));
 
   return row;

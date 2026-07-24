@@ -43,6 +43,9 @@ const HEARTBEAT_MS = 45 * 1000;
 export const MAP_EDIT_LOCK_IMMEDIATE_TAKEOVER_AFTER_MS = 90 * 1000;
 
 let status: MapEditLockStatus = { kind: "idle" };
+// 보유 락의 취득 시점 Supabase 설정 — 설정 변경(다른 프로젝트로 전환) 후에도 반납 DELETE가
+// 취득한 프로젝트로 나가도록 보관한다. held가 아닌 상태로 바뀌면 지운다.
+let heldLockConfig: SupabaseProjectConfig | null = null;
 let requestVersion = 0;
 let heartbeatTimer: ReturnType<typeof setTimeout> | null = null;
 let checkedMapId: MapId | null = null;
@@ -116,20 +119,32 @@ export function ensureCurrentMapLock(): void {
 // "읽기 전용"으로 시작하던 자기잠금 문제 완화(TTL은 백스톱으로 유지).
 if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
   window.addEventListener("beforeunload", () => {
-    if (status.kind === "held") void releaseMapLock(status.mapId);
+    if (status.kind === "held") void releaseMapLock(status.mapId, heldLockConfig ?? undefined);
   });
 }
 
 export async function checkoutMapForEditing(mapId: MapId, mapName: string): Promise<void> {
+  // 원격 저장이 꺼진 세션(fresh/blank/dev-showcase)은 공유 원격 락을 잡지 않는다 —
+  // 잡아도 자기 프로젝트를 보호하지 못하고 같은 map id를 쓰는 다른 세션만 차단한다.
+  // dedup보다 먼저 판정해, 라이브→스크래치 전환 시 보유 중이던 락도 반납한다.
+  if (!store.isRemotePersistenceEnabled()) {
+    const heldMapId = status.kind === "held" ? status.mapId : null;
+    stopHeartbeat();
+    if (heldMapId) void releaseMapLock(heldMapId, heldLockConfig ?? undefined);
+    if (status.kind !== "idle") setStatus({ kind: "idle" });
+    return;
+  }
   if (checkedMapId === mapId && (status.kind === "held" || status.kind === "locked" || status.kind === "unavailable")) {
     return;
   }
   const version = ++requestVersion;
   const previousHeldMapId = status.kind === "held" ? status.mapId : null;
+  // setStatus(checking)이 heldLockConfig를 지우므로 반납 전에 캡처한다.
+  const previousHeldConfig = heldLockConfig;
   checkedMapId = mapId;
   setStatus({ kind: "checking", mapId, mapName });
 
-  if (previousHeldMapId && previousHeldMapId !== mapId) void releaseMapLock(previousHeldMapId);
+  if (previousHeldMapId && previousHeldMapId !== mapId) void releaseMapLock(previousHeldMapId, previousHeldConfig ?? undefined);
 
   const config = supabaseProjectConfig();
   if (!config) {
@@ -143,12 +158,20 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
   try {
     const result = await acquireMapLock(config, mapId, mapName);
     if (version !== requestVersion) return;
+    // 대기 중 세션이 스크래치 모드로 전환된 경우 — 방금 잡은 락을 취득에 쓴 설정으로 즉시 반납한다.
+    if (!store.isRemotePersistenceEnabled()) {
+      stopHeartbeat();
+      void releaseMapLock(mapId, config);
+      setStatus({ kind: "idle" });
+      return;
+    }
     if (result.kind === "locked") {
       stopHeartbeat();
       setStatus({ kind: "locked", mapId, mapName, ownerLabel: result.ownerLabel, expiresAt: result.expiresAt, updatedAt: result.updatedAt });
       return;
     }
     setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
+    heldLockConfig = config;
     scheduleHeartbeat(mapId, mapName);
   } catch (error) {
     if (version !== requestVersion) return;
@@ -158,6 +181,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
 }
 
 export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<void> {
+  if (!store.isRemotePersistenceEnabled()) return;
   const config = supabaseProjectConfig();
   checkedMapId = mapId;
   requestVersion += 1;
@@ -169,7 +193,13 @@ export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<vo
   }
   try {
     const result = await upsertOwnMapLock(config, mapId, mapName);
+    if (!store.isRemotePersistenceEnabled()) {
+      void releaseMapLock(mapId, config);
+      setStatus({ kind: "idle" });
+      return;
+    }
     setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
+    heldLockConfig = config;
     scheduleHeartbeat(mapId, mapName);
     toast("편집 권한을 가져왔습니다", "ok");
   } catch (error) {
@@ -259,8 +289,8 @@ async function upsertMapLock(
   if (!response.ok) throw await supabaseLockError(response);
 }
 
-async function releaseMapLock(mapId: MapId): Promise<void> {
-  const config = supabaseProjectConfig();
+async function releaseMapLock(mapId: MapId, configOverride?: SupabaseProjectConfig): Promise<void> {
+  const config = configOverride ?? supabaseProjectConfig();
   if (!config) return;
   const query = new URLSearchParams({
     project_id: `eq.${config.projectId}`,
@@ -277,13 +307,28 @@ async function releaseMapLock(mapId: MapId): Promise<void> {
 function scheduleHeartbeat(mapId: MapId, mapName: string): void {
   stopHeartbeat();
   heartbeatTimer = setTimeout(() => {
+    // 세션이 스크래치 모드로 전환되면 갱신을 멈추고 보유 락을 반납한다.
+    if (!store.isRemotePersistenceEnabled()) {
+      stopHeartbeat();
+      if (status.kind === "held") {
+        void releaseMapLock(status.mapId, heldLockConfig ?? undefined);
+        setStatus({ kind: "idle" });
+      }
+      return;
+    }
     const config = supabaseProjectConfig();
     if (!config || status.kind !== "held" || status.mapId !== mapId) return;
     void acquireMapLock(config, mapId, mapName)
       .then((result) => {
+        if (!store.isRemotePersistenceEnabled()) {
+          void releaseMapLock(mapId, config);
+          setStatus({ kind: "idle" });
+          return;
+        }
         if (status.kind !== "held" || status.mapId !== mapId) return;
         if (result.kind === "held") {
           setStatus({ kind: "held", mapId, mapName, expiresAt: result.expiresAt });
+          heldLockConfig = config;
           scheduleHeartbeat(mapId, mapName);
           return;
         }
@@ -314,6 +359,7 @@ function setStatus(next: MapEditLockStatus): void {
       (status.kind !== "locked" && "mapId" in status && "mapId" in next && status.mapId === next.mapId &&
         (status.kind !== "unavailable" || (next.kind === "unavailable" && status.reason === next.reason))));
   status = next;
+  if (next.kind !== "held") heldLockConfig = null;
   if (sameIgnoringExpiry) return;
   for (const listener of listeners) listener(status);
 }

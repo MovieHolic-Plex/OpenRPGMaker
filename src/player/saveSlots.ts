@@ -23,6 +23,7 @@ import {
   isGameTime,
   isFarmPlotsRecord,
   isMonsterInstancesRecord,
+  isNestedNumberRecord,
   isNumberRecord,
   isPictureRecord,
   isRecord,
@@ -71,6 +72,7 @@ export type SaveSnapshot = {
     readonly timers: Record<string, number>;
     readonly gold: number;
     readonly inventory?: Record<string, number>;
+    readonly killedFieldSpawns?: Record<string, Record<string, number>>;
     readonly partyActorIds?: readonly string[];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
@@ -119,6 +121,8 @@ export type SaveSnapshot = {
     readonly rng?: RngState;
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
+    // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
+    readonly access?: Partial<Record<"escape" | "menu" | "save" | "teleportation", boolean>>;
   };
 };
 
@@ -158,12 +162,12 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       timers: structuredClone(session.timers),
       gold: session.gold,
       inventory: structuredClone(session.inventory),
+      killedFieldSpawns: structuredClone(session.killedFieldSpawns ?? {}),
       partyActorIds: structuredClone(session.partyActorIds),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
-      actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
@@ -206,6 +210,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
       rng: cloneRngState(normalizeRngState(session.rng)),
       screen: pickScreenState(session),
+      access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
   };
 }
@@ -260,12 +265,12 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.timers = structuredClone(snapshot.session.timers);
   session.gold = snapshot.session.gold;
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
+  if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
   if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
-  if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
@@ -312,6 +317,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
+  if (snapshot.session.access) {
+    const runtime = ensureM2Runtime(session);
+    runtime.access = { ...snapshot.session.access };
+  }
   syncMonsterPartyFollowers(project, session);
   return session;
 }
@@ -384,12 +393,12 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       timers: session.timers,
       gold: session.gold,
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
+      killedFieldSpawns: isNestedNumberRecord(session.killedFieldSpawns) ? session.killedFieldSpawns : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
-      actorBattleCommands: isActorStateIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
@@ -411,8 +420,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
         : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
-      chests: session.chests && typeof session.chests === "object" ? structuredClone(session.chests) : undefined,
-      placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) : undefined,
+      chests: session.chests && typeof session.chests === "object" ? structuredClone(session.chests) as Record<string, any> : undefined,
+      placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
       currentMapId: session.currentMapId,

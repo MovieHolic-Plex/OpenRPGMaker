@@ -12,6 +12,7 @@ import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { openEventEditorHelp } from "./eventEditorHelp";
 import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
@@ -205,7 +206,7 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
             saveEventDraft(request.mapId, request.eventId);
             close(true);
           }, true),
-          footerButton("도움말", "event-editor-help"),
+          footerButton("도움말", "event-editor-help", () => openEventEditorHelp()),
         ],
       }),
     ],
@@ -282,17 +283,6 @@ function footerButtonAccessibleName(text: string): string {
   }
 }
 
-function createCloseHandler(backdrop: HTMLElement): (saved?: boolean) => void {
-  // Legacy helper; openDraft uses the inline closeHandler with stack registration.
-  let closed = false;
-  return (saved = false) => {
-    if (closed) return;
-    closed = true;
-    unregisterModal(backdrop);
-    backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
-    backdrop.remove();
-  };
-}
 
 function focusFirstDialogControl(root: HTMLElement): void {
   const first = root.querySelector<HTMLElement>(

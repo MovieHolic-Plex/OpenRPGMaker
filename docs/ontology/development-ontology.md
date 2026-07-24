@@ -1,5 +1,7 @@
 # RPG ZZU Development Ontology
 
+> **Status:** 시점 스냅샷 (Updated: 2026-07-08). 갱신되지 않는 기록이다.
+
 - Ontology schema: 1
 - Project schema: 3
 - Updated: 2026-07-08

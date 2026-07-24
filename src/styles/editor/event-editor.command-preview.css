@@ -917,6 +917,19 @@
 .ecp-fork-branch-count { font-size: 12px; color: var(--text-2, #aeb6c8); }
 .ecp-fork-branch-hint { font-size: 10px; color: var(--text-3, #8b93a7); }
 
+.ecp-fork-eval { padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; width: 100%; text-align: center; }
+.ecp-fork-eval.is-true { background: rgba(88, 224, 138, 0.12); color: var(--success, #58e08a); border: 1px solid rgba(88, 224, 138, 0.3); }
+.ecp-fork-eval.is-false { background: rgba(224, 138, 138, 0.12); color: var(--danger, #e08a8a); border: 1px solid rgba(224, 138, 138, 0.3); }
+.ecp-fork-branch.taken { box-shadow: 0 0 0 2px var(--accent, #6ea8ff); }
+.ecp-fork-branch.skipped { opacity: 0.4; }
+
+.ecp-skipped { opacity: 0.45; }
+.ecp-skipped-badge { font-size: 10px; color: var(--text-3, #8b93a7); font-style: italic; padding: 2px 6px; }
+.ecp-current-state { font-size: 10px; color: var(--text-3, #8b93a7); padding: 2px 0; }
+.ecp-runtime-effect-card { padding: 8px; }
+.ecp-runtime-effect-title { font-size: 10px; font-weight: 700; color: var(--text-3, #8b93a7); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.ecp-runtime-effect-detail { font-size: 11px; color: var(--text-2, #aeb6c8); margin-top: 6px; padding: 4px 8px; background: var(--bg-inset, #14161c); border-radius: 4px; }
+
 /* showPicture 화면 배치 */
 .ecp-picture { display: flex; flex-direction: column; gap: 6px; }
 .ecp-picture-screen { position: relative; aspect-ratio: 4 / 3; background: #05070f; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 4px; overflow: hidden; }

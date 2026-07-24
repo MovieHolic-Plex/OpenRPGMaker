@@ -1,5 +1,4 @@
-import { TILE_SIZE } from "@/assets/bundled";
-import type { Layer } from "@/editor/editorState";
+﻿import type { Layer } from "@/editor/editorState";
 import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
@@ -14,7 +13,6 @@ import { el } from "@/util/dom";
 // RM2003과 동일하게 대표 1칸(물=0, 폭포=93)으로 축약한다.
 
 export const RM2K_PALETTE_COLUMNS = 6;
-const RM2K_CELL_SIZE = TILE_SIZE * 2;
 
 export type Rm2kAutotileEntry = {
   readonly id: string;

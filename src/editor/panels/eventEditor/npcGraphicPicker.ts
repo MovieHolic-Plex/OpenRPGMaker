@@ -1,4 +1,4 @@
-import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
+import { projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
 import {
   CHARSET_CHARACTER_COUNT,
   CHARSET_FRAME_HEIGHT,
@@ -9,10 +9,10 @@ import {
   charsetFrameSource,
   decodeCharsetFrameIndex,
   type CharsetFrameSelection,
-  type EasyRpgCharsetAsset,
 } from "@/assets/easyrpgRtp";
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import { updateEventPage } from "@/editor/eventPages";
+import { store } from "@/project/store";
 import type { EventPage, EventPageGraphic, MapId } from "@/project/types";
 import {
   renderDirectionRadioGroup,
@@ -32,8 +32,12 @@ const DEFAULT_SELECTION = {
   pattern: 1,
 } as const satisfies CharsetFrameSelection;
 type NpcGraphicSelection = CharsetFrameSelection & {
-  readonly asset: EasyRpgCharsetAsset;
+  readonly asset: CharsetPickerAsset;
 };
+
+function currentCharsetAssets(): readonly CharsetPickerAsset[] {
+  return projectCharsetAssets(store.getCurrent());
+}
 
 export function renderNpcGraphicPicker(
   mapId: MapId,
@@ -47,7 +51,8 @@ export function renderNpcGraphicPicker(
   root.className = "npc-graphic-picker event-graphic-rm-picker";
   root.dataset.testid = "npc-graphic-picker";
 
-  const resourceList = renderGraphicResourceList(CHARSET_ASSETS, (asset) => {
+  const assets = currentCharsetAssets();
+  const resourceList = renderGraphicResourceList(assets, (asset) => {
     applySelection({ ...selection, asset });
   });
 
@@ -151,23 +156,20 @@ export function renderNpcGraphicPicker(
 }
 
 function initialSelection(page: EventPage): NpcGraphicSelection {
-  const asset = page.graphic.sprite ? findCharsetAsset(page.graphic.sprite.id) : undefined;
+  const assets = currentCharsetAssets();
+  const asset = page.graphic.sprite ? assets.find((a) => a.textureKey === page.graphic.sprite?.id) : undefined;
   if (!asset) {
-    return { asset: firstCharsetAsset(), ...DEFAULT_SELECTION };
+    return { asset: firstCharsetAsset(assets), ...DEFAULT_SELECTION };
   }
   return { asset, ...decodeCharsetFrameIndex(page.graphic.pattern ?? charsetFrameIndex(DEFAULT_SELECTION)) };
 }
 
-function firstCharsetAsset(): EasyRpgCharsetAsset {
-  const first = CHARSET_ASSETS[0];
+function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
+  const first = assets[0];
   if (!first) {
     throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
   }
   return first;
-}
-
-function findCharsetAsset(textureKey: string): EasyRpgCharsetAsset | undefined {
-  return CHARSET_ASSETS.find((asset) => asset.textureKey === textureKey);
 }
 
 function applyPreviewStyle(target: HTMLElement, selection: NpcGraphicSelection, scale: number): void {
@@ -204,7 +206,8 @@ function graphicForConfirmedSelection(
 ): EventPageGraphic {
   const id = spriteId.trim();
   if (!id) return graphicWithoutSprite(graphic);
-  if (!findCharsetAsset(id)) return { ...graphic, sprite: { type: "bundled", id } };
+  const assets = currentCharsetAssets();
+  if (!assets.some((a) => a.textureKey === id)) return { ...graphic, sprite: { type: "bundled", id } };
   return {
     ...graphic,
     sprite: { type: "bundled", id },

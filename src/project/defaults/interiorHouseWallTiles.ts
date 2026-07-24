@@ -37,8 +37,13 @@ export const HOUSE_SHELL_TILE = {
 
 export type HouseShellTileId = (typeof HOUSE_SHELL_TILE)[keyof typeof HOUSE_SHELL_TILE];
 
-/** All tiles that belong to a finished house shell (for wall-mount / mass neighbor checks). */
+// 천장 정본 v2(2026-07-20): 천장 = 검정+회암 테두리 블록(앵커 369, body 430) — templateBlockFromAnchor(369).
+const CEILING_BLOCK_MEMBERS: readonly number[] = [369, 370, 371, 399, 400, 401, 429, 430, 431, 459, 460, 461];
+
+/** All tiles that belong to a finished house shell (for wall-mount / mass neighbor checks).
+ * 2026-07-20 천장 정본 v2: 천장 430 계열이 구조 질량의 본체다(프레임 낱장은 레거시 맵 호환으로 유지). */
 export const HOUSE_SHELL_MEMBER_TILES: readonly number[] = [
+  ...CEILING_BLOCK_MEMBERS,
   HOUSE_SHELL_TILE.creamUpperL,
   HOUSE_SHELL_TILE.creamUpperM,
   HOUSE_SHELL_TILE.creamUpperR,

@@ -157,7 +157,7 @@ function questGraphCompletenessWarnings(calls: readonly ProposalCompletenessCall
 }
 
 function isNpcWorldRelevantCall(call: ProposalCompletenessCall): boolean {
-  if (call.name === "place_npc") return (call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) > 0;
+  if (call.name === "place_npc" || call.name === "make_villager") return (call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) > 0;
   if (call.name !== "upsert_event") return false;
   if ((call.result.diff?.eventsAdded ?? 0) + (call.result.diff?.eventsModified ?? 0) <= 0) return false;
   const event = isRecord(call.args.event) ? call.args.event : null;
@@ -224,6 +224,19 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   if (call.name === "build_house") return originRect(mapId, call.args, numberValue(call.args.width), numberValue(call.args.height));
   if (call.name === "build_house_kit") return wingRegions(mapId, call.args.wings);
   if (call.name === "build_house_lots") return houseLotRegions(mapId, call.args.houses);
+  // canonical construction facades
+  if (call.name === "author_house") {
+    const effectiveMapId = mapId ?? nestedTargetMapId(call.args.target);
+    if (effectiveMapId === null) return [];
+    if (call.args.kind === "lots" && Array.isArray(call.args.houses)) return houseLotRegions(effectiveMapId, call.args.houses);
+    return wingRegions(effectiveMapId, call.args.wings);
+  }
+  if (call.name === "author_village") {
+    const targetMapId = nestedTargetMapId(call.args.target);
+    if (targetMapId === null) return [];
+    const bounds = nestedTargetRegion(targetMapId, call.args.target);
+    return bounds !== null ? [bounds] : [];
+  }
   // 타일 v2: tile_structure는 kind로 v1 4종을 통합한다.
   if (call.name === "tile_structure") {
     const kind = stringValue(call.args.kind);
@@ -232,7 +245,7 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   }
   if (call.name === "stamp_structure") return originRect(mapId, call.args, 1, 1);
   if (call.name === "scatter_object" || call.name === "tile_scatter") return scatterRegions(mapId, call.args, call.result.data);
-  if (call.name === "place_npc") return [actualPointRegion(mapId, call)];
+  if (call.name === "place_npc" || call.name === "make_villager") return [actualPointRegion(mapId, call)];
   if (call.name === "place_battle_blocker") return pointRegion(mapId, call.args.x, call.args.y);
 
   // create_map/generate_map are intentionally not treated as fulfilling BuildSpec
@@ -402,7 +415,15 @@ function actualPlacementCountForCall(call: ProposalCompletenessCall): number {
     const data = isRecord(call.result.data) ? call.result.data : null;
     return typeof data?.placed === "number" && data.placed > 0 ? data.placed : 0;
   }
-  if (call.name === "place_npc" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
+  if (call.name === "place_npc" || call.name === "make_villager" || call.name === "place_battle_blocker") return call.result.diff?.eventsAdded ?? 1;
+  // canonical construction: outcome의 actual count를 사용한다.
+  if (call.name === "author_house" || call.name === "author_village") {
+    const data = isRecord(call.result.data) ? call.result.data : null;
+    const construction = data && isRecord(data.construction) ? data.construction : null;
+    const counts = construction && isRecord(construction.counts) ? construction.counts : null;
+    const actual = counts && typeof counts.actual === "number" ? counts.actual : 0;
+    return actual > 0 ? actual : 1;
+  }
   if (call.name === "build_house" || call.name === "build_house_kit" || call.name === "build_house_lots" || call.name === "build_village" || call.name === "stamp_structure" || call.name === "tile_structure" || call.name === "build_wall") return 1;
   if ((call.name === "paint_tiles" || call.name === "tile_paint") && call.args.mode === "cells" && Array.isArray(call.args.cells)) return call.args.cells.length;
   return 0;
@@ -459,6 +480,33 @@ function numberValue(value: unknown): number | null {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function nestedTargetMapId(target: unknown): string | null {
+  if (!isRecord(target)) return null;
+  return stringValue(target.mapId);
+}
+
+function nestedTargetRegion(mapId: string, target: unknown): AffectedRegion | null {
+  if (!isRecord(target)) return null;
+  if (isRecord(target.bounds)) {
+    const b = target.bounds;
+    const x = numberValue(b.x);
+    const y = numberValue(b.y);
+    const w = numberValue(b.w);
+    const h = numberValue(b.h);
+    if (x !== null && y !== null && w !== null && h !== null) return { mapId, x, y, w, h };
+  }
+  if (isRecord(target.plannedMap)) {
+    const pm = target.plannedMap;
+    const w = numberValue(pm.width);
+    const h = numberValue(pm.height);
+    if (w !== null && h !== null) return { mapId, x: 0, y: 0, w, h };
+  }
+  const w = numberValue(target.width);
+  const h = numberValue(target.height);
+  if (w !== null && h !== null) return { mapId, x: 0, y: 0, w, h };
+  return null;
 }
 
 function dedupe(values: readonly string[]): string[] {

@@ -8,7 +8,7 @@ import { snapshotProjectMaps, wipeAttemptMaps } from "@/editor/tools/villageBuil
 import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
 import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
 import { CHIPSET_TILE_GROUPS } from "@/project/defaults/chipsetMapping";
-import { allTools } from "@/editor/tools/toolRegistry";
+import { allTools, getTool } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
@@ -480,9 +480,9 @@ describe("build_village", () => {
       const interior = context.project.maps[house.interiorMapId as string];
       expect(interior.name.startsWith(`${house.ownerName}의 집 내부`)).toBe(true);
       expect(interior.tilesetId).toBe(INTERIOR_HOUSE_TILESET_ID);
-      // villager-room-v1 규모: cottage-l 20×16, cottage 20×20, mansion 24×22
+      // villager-room-v1 규모(천장 정본 v2: +1행 + 수평 벽 3행): cottage-l 20×20, cottage 20×21, mansion 24×25
       expect([20, 24]).toContain(interior.width);
-      expect([16, 20, 22]).toContain(interior.height);
+      expect([20, 21, 25]).toContain(interior.height); // 20 = cottage-l·2층, 21 = cottage2/3, 25 = mansion
       expect(house.entry).toBeTruthy();
       expect(house.exit).toBeTruthy();
       expect(door?.pages?.[0]?.commands.at(-1)).toMatchObject({
@@ -599,9 +599,12 @@ it("interior:false면 내부 맵과 문 이벤트를 만들지 않는다", () =>
     expect(map.events.filter((event) => event.id.startsWith("ev_village_")).every((event) => pointInRect(event, bounds))).toBe(true);
   });
 
-  it("레지스트리와 툴 브라우저에 등록되고 runTool 경로로 실행된다", () => {
+  it("레지스트리에 등록되고(deprecated) runTool 경로로 실행된다", () => {
     expect(allTools().map((tool) => tool.name)).toContain("build_village");
-    expect(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("build_village");
+    const tool = getTool("build_village");
+    expect(tool?.deprecated).toBe(true);
+    expect(tool?.supersededBy).toBe("author_village");
+    expect(TOOL_CATEGORIES.flatMap((category) => category.tools.map((t) => t.name))).not.toContain("build_village");
 
     const context: ToolContext = { project: createEmptyToolProject("레지스트리 테스트") };
     const result = runTool(context, "build_village", { seed: 13 });
@@ -676,7 +679,7 @@ describe("build_village housePlans contract", () => {
     expect(interiorId).toBeTruthy();
     const interior = ctx.project.maps[interiorId!];
     expect(interior.width).toBe(20);
-    expect(interior.height).toBe(16);
+    expect(interior.height).toBe(20);
     expect(interior.name).toContain("촌장 로안");
   });
 

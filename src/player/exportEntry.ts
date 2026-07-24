@@ -9,15 +9,32 @@ if (!app) {
   throw new Error("#app 요소를 찾을 수 없습니다.");
 }
 
+interface OpenRpgBootConfig {
+  readonly projectUrl?: string;
+  readonly saveNamespace?: string;
+}
+
+function readBootConfig(): OpenRpgBootConfig {
+  const config = (window as unknown as { __OPENRPG_BOOT__?: OpenRpgBootConfig }).__OPENRPG_BOOT__;
+  return config ?? {};
+}
+
 void bootExportedPlayer(app);
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
   try {
-    const response = await fetch(new URL("project.json", window.location.href));
+    const boot = readBootConfig();
+    const response = await fetch(boot.projectUrl ?? new URL("project.json", window.location.href));
     if (!response.ok) throw new Error(`project.json 로드 실패 (${response.status})`);
     const project = deserialize(await response.text());
     setExportedProject(project);
-    setSaveSlotStorageNamespace(`rpgzzu-export:${exportedProjectId(project)}`);
+    const communitySlug = /^\/play\/([^/]+)/.exec(window.location.pathname)?.[1];
+    setSaveSlotStorageNamespace(
+      boot.saveNamespace
+        ?? (communitySlug
+          ? `rpgzzu-export:${decodeURIComponent(communitySlug)}`
+          : `rpgzzu-export:${exportedProjectId(project)}`),
+    );
     document.title = project.meta.title || "RPG ZZU Player";
     renderPlayer(root, { onExit: () => renderTitleExit(root) });
   } catch (error) {

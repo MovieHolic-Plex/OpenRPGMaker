@@ -24,12 +24,45 @@ export function changeActorName(session: PlaySessionLike, actorId: ActorId, name
   session.actorNames[actorId] = name;
 }
 
+export function changeActorNickname(session: PlaySessionLike, actorId: ActorId, nickname: string): void {
+  session.actorNicknames ??= {};
+  session.actorNicknames[actorId] = nickname;
+}
+
+export function changeActorFaceset(session: PlaySessionLike, actorId: ActorId, faceResourceId: string, faceIndex: number): void {
+  session.actorFaceResourceIds ??= {};
+  session.actorFaceIndices ??= {};
+  session.actorFaceResourceIds[actorId] = faceResourceId;
+  session.actorFaceIndices[actorId] = faceIndex;
+}
+
 // 액터의 표시 이름을 조회한다. 세션 오버라이드가 있으면 우선, 없으면 DB 이름.
 export function resolveActorName(
   session: Pick<PlaySessionLike, "actorNames">,
   actor: { readonly id: ActorId; readonly name: string }
 ): string {
   return session.actorNames?.[actor.id] ?? actor.name;
+}
+
+export function resolveActorNickname(
+  session: Pick<PlaySessionLike, "actorNicknames">,
+  actor: { readonly id: ActorId; readonly nickname?: string }
+): string | undefined {
+  return session.actorNicknames?.[actor.id] ?? actor.nickname;
+}
+
+export function resolveActorFaceResourceId(
+  session: Pick<PlaySessionLike, "actorFaceResourceIds">,
+  actor: { readonly id: ActorId; readonly faceResourceId?: string }
+): string | undefined {
+  return session.actorFaceResourceIds?.[actor.id] ?? actor.faceResourceId;
+}
+
+export function resolveActorFaceIndex(
+  session: Pick<PlaySessionLike, "actorFaceIndices">,
+  actor: { readonly id: ActorId; readonly faceIndex?: number }
+): number {
+  return session.actorFaceIndices?.[actor.id] ?? actor.faceIndex ?? 0;
 }
 
 export function recoverAll(session: PlaySessionLike, actorId: ActorId | undefined): void {

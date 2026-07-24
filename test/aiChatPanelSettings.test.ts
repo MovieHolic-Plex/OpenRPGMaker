@@ -84,6 +84,29 @@ describe("설정 자동 저장", () => {
     const modal = openSettingsSurface(panel);
     expect(findByTestId(modal, "ai-config-baseurl")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
+    expect(findByTestId(modal, "ai-auth-chatgpt")).not.toBeNull();
+    expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
+    expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
+    expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
+    expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
+    expect(modal.textContent).toContain("ChatGPT 구독으로 작업");
+    const apiKey = findByTestId(modal, "ai-config-apikey");
+    expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(true);
+  });
+
+  it("새 설정은 ChatGPT 로그인이 기본이고 API 키 폴백으로 전환할 수 있다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    expect(loadAiConfig().authMode).toBe("chatgpt");
+
+    const apiMode = findByTestId(modal, "ai-auth-api-key");
+    if (!apiMode) throw new Error("API auth mode button missing");
+    apiMode.click();
+
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.authMode).toBe("apiKey");
+    const apiKey = findByTestId(modal, "ai-config-apikey");
+    expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(false);
   });
 
   it("API 키 입력만으로 즉시 localStorage에 저장된다 (저장 버튼 불필요)", () => {
@@ -109,8 +132,8 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
-    expect(loadAiConfig().model).toBe("google/gemini-3.1-flash-lite");
+    expect(DEFAULT_MODEL).toBe("gpt-5.6-terra");
+    expect(loadAiConfig().model).toBe("gpt-5.6-terra");
     expect(loadAiConfig().liteModel).toBe(DEFAULT_LITE_MODEL);
   });
 
@@ -136,7 +159,7 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
-    expect(DEFAULT_LITE_MODEL).toBe("google/gemini-3.1-flash-lite");
+    expect(DEFAULT_LITE_MODEL).toBe("gpt-5.6-terra");
   });
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
@@ -145,6 +168,43 @@ describe("설정 자동 저장", () => {
 
     expect(modal.textContent).toContain("감독 모델(계획·검수)");
     expect(modal.textContent).toContain("실행 모델(툴 작업)");
+  });
+
+  it("ChatGPT 모델 선택기는 GJC의 최신 Codex 모델을 바로 선택해 저장한다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const preset = findByTestId(modal, "ai-config-model-preset");
+    if (!preset) throw new Error("model preset missing");
+    preset.value = "gpt-5.6-terra";
+    preset.dispatchEvent(new Event("change"));
+
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.model).toBe("gpt-5.6-terra");
+  });
+
+  it("ChatGPT 모델 선택기에 GPT-5.6 Sol, Terra, Luna를 모두 노출한다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const preset = findByTestId(modal, "ai-config-model-preset");
+    if (!preset) throw new Error("model preset missing");
+
+    expect(preset.textContent).toContain("gpt-5.6-sol");
+    expect(preset.textContent).toContain("gpt-5.6-terra");
+    expect(preset.textContent).toContain("gpt-5.6-luna");
+  });
+
+  it("API/게이트웨이 모드에서는 Claude, Gemini, Grok 모델 목록을 제공한다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const apiMode = findByTestId(modal, "ai-auth-api-key");
+    const preset = findByTestId(modal, "ai-config-model-preset");
+    if (!apiMode || !preset) throw new Error("API mode controls missing");
+
+    apiMode.click();
+
+    expect(preset.textContent).toContain("claude-opus-4-8");
+    expect(preset.textContent).toContain("gemini-3.5-flash");
+    expect(preset.textContent).toContain("grok-4.3");
   });
 
   it("실행 모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {

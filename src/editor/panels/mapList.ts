@@ -1,5 +1,5 @@
 import { addChildMap, addMap, duplicateMap, moveMapInTree, setStartMap } from "@/editor/actions";
-import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
+import { confirmAndDeleteMap, confirmAndDeleteMapRecursive } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { statusForMap, type MapEditLockStatus } from "@/editor/mapEditLocks";
@@ -219,10 +219,25 @@ function renderNode(spec: RenderNodeSpec): void {
   );
 
   if (isBasicRow) {
-    // 기본 모드: 이름 중심 + 시작 표시 + ⋯ 메뉴 (전문가용 인라인 버튼 제거)
+    // 기본 모드: 이름 중심 + 시작 표시 + 하위 추가 + ⋯ 메뉴
     if (isStart) {
       item.append(el("span", { class: "start-mark is-start", text: "시작", attrs: { title: "시작 맵" } }));
     }
+    // 하위 맵 빠른 추가 버튼
+    item.append(
+      el("button", {
+        class: "map-tree-add-child-quick",
+        text: "+",
+        attrs: { type: "button", title: "하위 맵 추가", "aria-label": `${actionContext.mapName}에 하위 맵 추가` },
+        dataset: { testid: `map-quick-add-child-${node.mapId}` },
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            addChildAndSelect(node.mapId);
+          },
+        },
+      }),
+    );
     item.append(
       el("button", {
         class: "map-tree-more",
@@ -496,6 +511,17 @@ function deleteAndSelectNext(mapId: MapId): void {
   });
 }
 
+function deleteRecursiveAndSelectNext(mapId: MapId): void {
+  if (Object.keys(store.getCurrent().maps).length <= 1) return;
+  void confirmAndDeleteMapRecursive(mapId).then((result) => {
+    if (!result.ok) return;
+    const next = store.getCurrent();
+    if (!next.maps[editorState.get().currentMapId ?? ""]) {
+      selectEditorMap(next.startMapId);
+    }
+  });
+}
+
 function openMapProperties(mapId: MapId, mapName: string): void {
   selectEditorMap(mapId);
   openEventSubdialog({
@@ -577,6 +603,14 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       separatorBefore: true,
       shortcut: "Del",
       testId: `map-menu-delete-${context.mapId}`,
+    },
+    {
+      action: () => deleteRecursiveAndSelectNext(context.mapId),
+      disabled: !context.canDelete,
+      icon: "trash",
+      id: "delete-recursive",
+      label: "하위 포함 삭제",
+      testId: `map-menu-delete-recursive-${context.mapId}`,
     },
     {
       action: () => openMapShiftDialog(context.mapId, context.mapName),

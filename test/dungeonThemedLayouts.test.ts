@@ -8,6 +8,10 @@ import {
   summarizeDungeonThemeMap,
   type DungeonTheme,
 } from "@/project/defaults/dungeonThemedLayouts";
+import {
+  ICE_DIAGONAL_TILES,
+  validateIceDiagonalTerrain,
+} from "@/project/defaults/iceDiagonalTerrain";
 
 const THEMES: DungeonTheme[] = ["lava", "stone", "ice"];
 
@@ -46,11 +50,21 @@ describe("dungeonThemedLayouts", () => {
     expect(vPlank.length).toBeGreaterThanOrEqual(3);
   });
 
-  it("ice has ice hazard and floe props", () => {
+  it("ice uses the user-authored canonical diagonal ridge grammar", () => {
     const built = buildDungeonThemeMap("ice");
-    const ice = built.grid.lower.filter((t) => [9, 10, 11, 39, 40, 41, 69, 70, 71, 99, 100, 101].includes(t));
-    expect(ice.length).toBeGreaterThan(4);
-    const floe = built.grid.upper.filter((t) => [282, 283, 284, 312, 313, 314, 342, 343, 344].includes(t));
-    expect(floe.length).toBeGreaterThanOrEqual(6);
+    const canonicalTiles = [
+      ICE_DIAGONAL_TILES.left.cap,
+      ICE_DIAGONAL_TILES.left.body,
+      ICE_DIAGONAL_TILES.left.base,
+      ICE_DIAGONAL_TILES.right.cap,
+      ICE_DIAGONAL_TILES.right.body,
+      ICE_DIAGONAL_TILES.right.base,
+    ];
+    for (const tile of canonicalTiles) expect(built.grid.lower).toContain(tile);
+    expect(validateIceDiagonalTerrain({
+      width: built.width,
+      height: built.height,
+      lower: built.grid.lower,
+    })).toEqual([]);
   });
 });

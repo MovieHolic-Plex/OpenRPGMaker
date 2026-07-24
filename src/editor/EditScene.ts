@@ -10,6 +10,7 @@ import {
   TILE_SIZE,
 } from "@/assets/bundled";
 import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
+import { subscribeEditorCameraFocus, type CameraFocusTarget } from "@/editor/editorCameraFocus";
 import { subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
@@ -30,7 +31,16 @@ import {
 import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import { renderEditScene, renderEditSceneTileCells, type EditSceneRenderStats, type EditSceneTileIndex } from "@/editor/editSceneRender";
-import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
+import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import {
+  cancelPastePreview,
+  clearSelection,
+  confirmPastePreview,
+  copySelection,
+  enterPastePreview,
+  movePastePreview,
+  selectTileRegion,
+} from "@/editor/mapClipboard";
 import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
@@ -46,10 +56,9 @@ import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
-  anchoredSelectionChipsPosition,
+  fixedSelectionChipsPosition,
 } from "@/editor/selectionOverlayAnchor";
 import { isSignificantRegionDrag, regionRectFromDrag } from "@/editor/regionRightDrag";
-import { selectTileRegion } from "@/editor/mapClipboard";
 import { saveProjectNow } from "@/editor/saveActions";
 import { TilePaintEngine } from "@/editor/TilePaintEngine";
 import { DragOperationHandler } from "@/editor/DragOperationHandler";
@@ -107,7 +116,7 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 }
 
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
-export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
+export { anchoredBuildPalettePosition, fixedSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
@@ -121,6 +130,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private unsubEditor: (() => void) | null = null;
   private unsubAgentGhost: (() => void) | null = null;
   private unsubAgentFocus: (() => void) | null = null;
+  private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
@@ -215,13 +225,20 @@ export class EditScene extends PhaserRuntime.Scene {
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => this.redrawForStoreChange(change));
     this.unsubEditor = editorState.subscribe(() => this.redrawWhenViewStateChanges());
-    this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
+    this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
+    this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
+    if (typeof window !== "undefined") {
+      (window as any).__rpgzzuEditCamera = () => {
+        const c = this.cameras.main;
+        return { scrollX: c.scrollX, scrollY: c.scrollY, width: c.width, height: c.height, zoom: c.zoom };
+      };
+    }
 
     // scene 정지/파괴 시 구독 해제(이중 호출 방지).
     this.events.once(PhaserRuntime.Scenes.Events.SHUTDOWN, () => this.cleanup());
@@ -237,16 +254,21 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
+    this.unsubCameraFocus?.();
     this.unsubStore = null;
     this.unsubEditor = null;
     this.unsubAgentGhost = null;
     this.unsubAgentFocus = null;
+    this.unsubCameraFocus = null;
     this.clearAgentGhostPreviewLayer();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
+    if (typeof window !== "undefined") {
+      delete (window as any).__rpgzzuEditCamera;
+    }
     this.clearBuildPaletteOverlay();
     this.regionTaskBadge?.remove();
     this.regionTaskBadge = null;
@@ -280,6 +302,17 @@ export class EditScene extends PhaserRuntime.Scene {
     // 마우스 다운 → 드래그 중 계속 적용(페인트/충돌/지우개).
     this.input.on("pointerdown", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
+      // 붙여넣기 미리보기 모드: 좌클릭 → 확정, 우클릭 → 취소.
+      if (editorState.get().pastePreview) {
+        const mid = this.mapId();
+        const { x, y } = this.pointerToTile(ptr);
+        if (this.isRightClick(ptr) || !mid || x < 0 || y < 0) {
+          cancelPastePreview();
+        } else {
+          confirmPastePreview(mid);
+        }
+        return;
+      }
       if (this.isRightClick(ptr)) {
         // 우클릭: 드래그 시작하면 영역 AI, 클릭만이면 스포이트(아래 pointerup).
         this.updateHoverPreview(ptr);
@@ -302,6 +335,15 @@ export class EditScene extends PhaserRuntime.Scene {
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
       this.updatePointerStatus(ptr);
+      // 붙여넣기 미리보기: 커서 추종.
+      if (editorState.get().pastePreview) {
+        const mid = this.mapId();
+        const { x, y } = this.pointerToTile(ptr);
+        this.lastPointerTile = { x, y };
+        if (mid) movePastePreview(mid, x, y);
+        this.renderPastePreviewGhost();
+        return;
+      }
       // 우클릭 제스처 중에는 버튼 플래그가 브라우저마다 들쭉날쭉해도 추적을 이어간다.
       if (this.rightRegionGesture) {
         this.updateRightRegionGesture(ptr);
@@ -419,8 +461,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.suppressBrowserContextMenuUntil = Date.now() + 1500;
     this.isPainting = false;
     this.lastPaintKey = "";
-    // 드래그 미리보기용 1×1 선택(클릭으로 끝나면 스포이트 시 지워도 됨).
-    selectTileRegion(mapId, { mapId, x: start.x, y: start.y, width: 1, height: 1 });
+    // 우클릭 시작 시점에는 기존 선택을 유지 — 드래그가 실제로 진행되면 updateRightRegionGesture에서 새 선택을 만든다.
+    // 이전에는 여기서 1×1 선택을 만들었는데, 클릭으로 끝나면 1×1 박스가 캔버스에 남는 문제가 있었다.
   }
 
   private updateRightRegionGesture(ptr: Phaser.Input.Pointer): void {
@@ -458,7 +500,8 @@ export class EditScene extends PhaserRuntime.Scene {
 
     const screen = this.pointerScreenPosition(ptr);
     if (significant && rect) {
-      // 우클릭 드래그 → 영역 확정 + 포인터 근처 AI 팝오버
+      // 우클릭 드래그 → 영역 선택만 확정.
+      // AI 모달 자동 오픈 대신 힌트 토스트 — 복사/붙여넣기/AI 모두 선택 칩에서 접근 가능.
       selectTileRegion(gesture.mapId, {
         mapId: gesture.mapId,
         x: rect.x,
@@ -466,7 +509,7 @@ export class EditScene extends PhaserRuntime.Scene {
         width: rect.width,
         height: rect.height,
       });
-      this.openRegionAiPopover(gesture.mapId, rect, screen);
+      toast(`${rect.width}×${rect.height} 영역 선택 — 복사·붙여넣기·✨ AI 작업 가능`, "info");
       return;
     }
 
@@ -486,10 +529,16 @@ export class EditScene extends PhaserRuntime.Scene {
       return;
     }
 
-    // 우클릭 탭(1칸) → 스포이트. 이벤트 레이어에서는 기존 컨텍스트 메뉴 유지.
+    // 우클릭 탭(1칸) → 스포이트. 드래그 미리보기로 만든 1×1 선택을 해제한다.
+    // 이벤트 레이어에서는 기존 컨텍스트 메뉴 유지.
     if (editorState.get().layer === "event") {
       this.openEventLayerMenu(ptr);
       return;
+    }
+    // 스포이트 직전 1×1 잔여 선택 박스 제거 — 기존 다중 선택이 있으면 유지.
+    const sel = editorState.get().selection;
+    if (sel && sel.width <= 1 && sel.height <= 1 && sel.mapId === gesture.mapId) {
+      editorState.set({ selection: null });
     }
     this.getTilePaintEngine().pickTileAtPointer(ptr);
   }
@@ -549,6 +598,65 @@ export class EditScene extends PhaserRuntime.Scene {
 
   /** 페인트 스트로크 중 raw 호버만 제거 (포인터 좌표·툴팁 상태 유지). */
   private suppressPaintHoverPreview(): void {
+    this.hoverPreviewLayer?.removeAll(true);
+  }
+
+  // ── 붙여넣기 미리보기 고스트 ──
+  // 클립보드 내용을 반투명 타일로 커서 위치에 그린다.
+  private renderPastePreviewGhost(): void {
+    const layer = this.hoverPreviewLayer;
+    if (!layer) return;
+    layer.removeAll(true);
+    const preview = editorState.get().pastePreview;
+    const clipboard = editorState.get().clipboard;
+    if (!preview || !clipboard) return;
+    const mapId = this.mapId();
+    if (!mapId) return;
+    const map = store.getCurrent().maps[mapId];
+    if (!map) return;
+    const tileset = store.getCurrent().tilesets[map.tilesetId];
+    if (!tileset) return;
+    for (let cy = 0; cy < clipboard.height; cy++) {
+      for (let cx = 0; cx < clipboard.width; cx++) {
+        const x = preview.x + cx;
+        const y = preview.y + cy;
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        const idx = cy * clipboard.width + cx;
+        // 하위 레이어
+        const lowerTile = clipboard.lower.tiles[idx];
+        if (lowerTile !== undefined && lowerTile >= 0) {
+          const obj = createChipsetTileObject(this, map, tileset, x, y, lowerTile);
+          obj.setAlpha(0.4);
+          layer.add(obj);
+        }
+        // 상위 레이어
+        const upperTile = clipboard.upper.tiles[idx];
+        if (upperTile !== undefined && upperTile >= 0) {
+          const obj = createChipsetTileObject(this, map, tileset, x, y, upperTile);
+          obj.setAlpha(0.55);
+          layer.add(obj);
+        }
+      }
+    }
+    // 외곽선 — 붙여넣기 범위 표시.
+    const w = Math.min(clipboard.width, map.width - preview.x);
+    const h = Math.min(clipboard.height, map.height - preview.y);
+    if (w > 0 && h > 0) {
+      const border = this.add.rectangle(
+        preview.x * TILE_SIZE,
+        preview.y * TILE_SIZE,
+        w * TILE_SIZE,
+        h * TILE_SIZE,
+        0x51cf66,
+        0.08,
+      );
+      border.setOrigin(0, 0);
+      border.setStrokeStyle(2, 0x51cf66, 0.9);
+      layer.add(border);
+    }
+  }
+
+  private clearPastePreviewGhost(): void {
     this.hoverPreviewLayer?.removeAll(true);
   }
 
@@ -617,9 +725,24 @@ export class EditScene extends PhaserRuntime.Scene {
     if (shouldIgnoreEditorShortcut(event)) return;
     if (this.cameraPanController?.handleSpaceKeyDown(event)) return;
     if (!(event.ctrlKey || event.metaKey) && this.panWithArrowKey(event)) return;
+    if (!(event.ctrlKey || event.metaKey) && event.key === "Escape" && this.handleEscapeKey()) return;
     // RM2K3 스타일 단축키: F5/F6/F7 레이어, 1..7 도구, +/- 줌.
     if (!(event.ctrlKey || event.metaKey) && handleEditorKey(event)) return;
     this.handleShortcut(event);
+  }
+
+  private handleEscapeKey(): boolean {
+    // 붙여넣기 미리보기 취소가 최우선.
+    if (cancelPastePreview()) {
+      this.clearPastePreviewGhost();
+      return true;
+    }
+    // 그 다음 선택 해제.
+    if (editorState.get().selection) {
+      clearSelection();
+      return true;
+    }
+    return false;
   }
 
   private handleKeyUp(event: KeyboardEvent): void {
@@ -696,9 +819,11 @@ export class EditScene extends PhaserRuntime.Scene {
         pasteEventAt({ mapId: mid, x: t.x, y: t.y });
         return;
       }
-      const selection = editorState.get().selection;
-      const target = this.lastPointerTile ?? selection ?? { x: 0, y: 0 };
-      pasteClipboard(mid, target.x, target.y);
+      // Ctrl+V: 붙여넣기 미리보기 모드 진입 — 고스트가 커서를 추종하고 클릭으로 확정.
+      const lastPos = this.lastPointerTile ?? editorState.get().selection ?? { x: 0, y: 0 };
+      if (enterPastePreview(mid, lastPos.x, lastPos.y)) {
+        this.renderPastePreviewGhost();
+      }
     }
   }
 
@@ -913,6 +1038,12 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid) return;
     const nextKey = this.renderStateKey(mid);
     if (nextKey === this.lastRenderStateKey) {
+      // 붙여넣기 미리보기 고스트 — editorState 변화(위치 이동 등)마다 갱신.
+      if (editorState.get().pastePreview) {
+        this.renderPastePreviewGhost();
+      } else {
+        this.clearPastePreviewGhost();
+      }
       this.renderBuildPaletteOverlay();
       return;
     }
@@ -1050,18 +1181,34 @@ export class EditScene extends PhaserRuntime.Scene {
 
     const canvasOffsetX = canvasRect.left - hostRect.left;
     const canvasOffsetY = canvasRect.top - hostRect.top;
-    let left = canvasOffsetX + tileRect.x + tileRect.width + 10;
-    let top = canvasOffsetY + tileRect.y - 4;
+    const GAP = 8;
 
-    if (left + tipWidth > hostWidth - 8) {
-      left = canvasOffsetX + tileRect.x - tipWidth - 10;
+    // Center horizontally above the event tile.
+    let left = canvasOffsetX + tileRect.x + (tileRect.width - tipWidth) / 2;
+    // Default: directly above the tile.
+    let top = canvasOffsetY + tileRect.y - tipHeight - GAP;
+    let placedAbove = true;
+
+    // Not enough room above — flip below the tile.
+    if (top < 8) {
+      top = canvasOffsetY + tileRect.y + tileRect.height + GAP;
+      placedAbove = false;
     }
+
+    // Clamp horizontally into the host.
     if (left < 8) left = 8;
+    if (left + tipWidth > hostWidth - 8) {
+      left = hostWidth - tipWidth - 8;
+    }
+
+    // Clamp vertically.
     if (top + tipHeight > hostHeight - 8) {
       top = hostHeight - tipHeight - 8;
     }
     if (top < 8) top = 8;
 
+    tip.classList.toggle("tip-above", placedAbove);
+    tip.classList.toggle("tip-below", !placedAbove);
     tip.style.left = `${Math.round(left)}px`;
     tip.style.top = `${Math.round(top)}px`;
   }
@@ -1093,6 +1240,17 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private clearAgentFocusHighlight(): void {
     this.agentFocusRenderer?.clear();
+  }
+
+  private panCameraToTile(target: CameraFocusTarget): void {
+    const mid = this.mapId();
+    if (!mid || target.mapId !== mid) return;
+    const map = store.getCurrent().maps[target.mapId];
+    if (!map) return;
+    if (target.tileX < 0 || target.tileY < 0 || target.tileX >= map.width || target.tileY >= map.height) return;
+    const worldX = (target.tileX + 0.5) * TILE_SIZE;
+    const worldY = (target.tileY + 0.5) * TILE_SIZE;
+    this.cameras.main.pan(worldX, worldY, 300, "Cubic.easeOut", true);
   }
 
   private renderBuildPaletteOverlay(): void {
@@ -1148,7 +1306,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const canvasRect = canvas.getBoundingClientRect();
     const hostRect = host.getBoundingClientRect();
     // visibility:hidden 첫 프레임에서 0 크기가 나올 수 있어 칩/팔레트 기본값을 다르게 둔다.
-    const fallback = isChips ? { width: 240, height: 40 } : { width: 228, height: 140 };
+    const fallback = isChips ? { width: 420, height: 44 } : { width: 228, height: 140 };
     const popupRect = popup.getBoundingClientRect();
     const popupSize = {
       width: Math.max(1, popupRect.width || popup.offsetWidth || fallback.width),
@@ -1159,10 +1317,20 @@ export class EditScene extends PhaserRuntime.Scene {
       height: Math.max(1, canvasRect.height || canvas.height),
     };
     const point = isChips
-      ? anchoredSelectionChipsPosition({ selectionRect, popupSize, canvasSize })
+      ? fixedSelectionChipsPosition({ popupSize, canvasSize })
       : anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
-    popup.style.left = `${Math.round(canvasRect.left - hostRect.left + point.x)}px`;
-    popup.style.top = `${Math.round(canvasRect.top - hostRect.top + point.y)}px`;
+    if (isChips) {
+      // overflow:hidden 호스트/상태바 클리핑을 피하려고 viewport fixed 로 올린다.
+      popup.style.position = "fixed";
+      popup.style.left = `${Math.round(canvasRect.left + point.x)}px`;
+      popup.style.top = `${Math.round(canvasRect.top + point.y)}px`;
+      popup.style.right = "auto";
+      popup.style.bottom = "auto";
+    } else {
+      popup.style.position = "absolute";
+      popup.style.left = `${Math.round(canvasRect.left - hostRect.left + point.x)}px`;
+      popup.style.top = `${Math.round(canvasRect.top - hostRect.top + point.y)}px`;
+    }
     popup.style.visibility = "";
     // 실제 렌더 크기로 한 번 더 맞춤(칩 바가 가로로 늘어난 뒤 중앙 정렬 보정).
     if (isChips && (popupRect.width < 8 || popupRect.height < 8)) {

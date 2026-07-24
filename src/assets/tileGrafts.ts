@@ -4,7 +4,7 @@
 //   (a) targetTile < 원본 count → 기존 슬롯 덮어쓰기,
 //   (b) targetTile >= 원본 count → 행 단위 확장(count 를 tilesPerRow 배수로 확장, 아틀라스가 세로로 자람).
 // 렌더는 베이크(캔버스 합성): Phaser 텍스처는 ensureTilesetTexture(tilesetImage.ts /
-// exportTilesetImageShim.ts), DOM 미리보기는 tileGraftImageCache.ts 가 이 모듈을 공유한다.
+// (export 번들은 vite alias 없이 실제 tilesetImage.ts 를 그대로 사용), DOM 미리보기는 tileGraftImageCache.ts 가 이 모듈을 공유한다.
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import type { TileGraft, TilesetDef } from "@/project/types";
 

@@ -1,0 +1,1 @@
+Vitest unit tests and Playwright e2e suites covering RPG Maker command contracts, editor UI flows, battle runtime semantics, and vertical-slice authoring harnesses.

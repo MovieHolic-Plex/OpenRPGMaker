@@ -103,10 +103,13 @@ function parseWings(values: readonly unknown[], scope: string): readonly HouseWi
     const y = requiredInteger(wing, "y", wingScope);
     const w = requiredInteger(wing, "w", wingScope);
     const h = requiredInteger(wing, "h", wingScope);
-    if (x < 0 || y < 0 || w < 3 || h < 5) {
-      throw new ToolError(`${wingScope} requires x/y >= 0, w >= 3, and h >= 5.`, { code: "invalid-args" });
-    }
-    return { x, y, w, h };
+    // LLM이 최소 크기를 어기는 경우가 잦으므로 클램프로 자동 보정 (에러→재시도 왕복 제거).
+    return {
+      x: Math.max(0, x),
+      y: Math.max(0, y),
+      w: Math.max(3, w),
+      h: Math.max(5, h),
+    };
   });
 }
 
@@ -117,6 +120,8 @@ function parseInteriorMode(value: unknown, scope: string): HouseInteriorMode {
 
 function parseWindows(value: unknown, scope: string): HouseWindowOptions | undefined {
   if (value === undefined) return undefined;
+  // LLM이 true를 보내는 경우가 잦으므로 {}로 자동 변환 (에러→재시도 왕복 제거).
+  if (value === true) return {};
   if (value === false) return false;
   const options = requireRecord(value, `${scope}.windows`);
   rejectUnknownKeys(options, ["spacing"], `${scope}.windows`);

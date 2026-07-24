@@ -61,11 +61,67 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
         updateDatabaseRecord("skills", record.id, { variance }), { min: 0, max: 100 }
       ),
     ]),
+    panel("액션 스킬", actionSkillFields(record)),
     effectPanel,
     statePanel,
     previewPanel
   );
   bindAnimationPreviewRefresh(form, renderPreviewPanel);
+}
+
+function actionSkillFields(record: SkillRecord): HTMLElement[] {
+  const profile = record.actionSkill;
+  const patchProfile = (mutate: (draft: NonNullable<SkillRecord["actionSkill"]>) => void): void => {
+    const draft: NonNullable<SkillRecord["actionSkill"]> = structuredClone(
+      profile ?? { kind: "projectile", damage: 4, range: 8 }
+    );
+    mutate(draft);
+    updateDatabaseRecord("skills", record.id, { actionSkill: draft });
+  };
+  const items = store.getCurrent().database.items;
+  const fields: HTMLElement[] = [
+    selectLiteral("투사체 발사", "db-field-skill-action-enabled", profile ? "on" : "off", ["off", "on"], (value) => {
+      if (value === "off") {
+        updateDatabaseRecord("skills", record.id, { actionSkill: undefined });
+        return;
+      }
+      patchProfile(() => undefined);
+    }),
+  ];
+  if (profile) {
+    fields.push(
+      numberField("데미지", "db-field-skill-action-damage", profile.damage, (value) =>
+        patchProfile((draft) => {
+          draft.damage = value;
+        }), { min: 1, max: 9999 }
+      ),
+      numberField("사거리", "db-field-skill-action-range", profile.range, (value) =>
+        patchProfile((draft) => {
+          draft.range = value;
+        }), { min: 1, max: 20 }
+      ),
+      numberField("탄속(타일/초)", "db-field-skill-action-speed", profile.speedTilesPerSec ?? 0, (value) =>
+        patchProfile((draft) => {
+          draft.speedTilesPerSec = value > 0 ? value : undefined;
+        }), { min: 0, max: 30 }
+      ),
+      selectField("탄약 아이템", "db-field-skill-action-ammo", profile.itemCost?.itemId ?? "", [{ id: "", name: "없음(MP만 소모)" }, ...items], (value) =>
+        patchProfile((draft) => {
+          draft.itemCost = value ? { itemId: value, amount: draft.itemCost?.amount ?? 1 } : undefined;
+        })
+      )
+    );
+    if (profile.itemCost) {
+      fields.push(
+        numberField("발당 소모", "db-field-skill-action-ammo-amount", profile.itemCost.amount, (value) =>
+          patchProfile((draft) => {
+            if (draft.itemCost) draft.itemCost.amount = value;
+          }), { min: 1, max: 99 }
+        )
+      );
+    }
+  }
+  return fields;
 }
 
 function panel(title: string, children: readonly HTMLElement[]): HTMLElement {

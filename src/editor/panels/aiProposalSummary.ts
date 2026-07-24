@@ -228,6 +228,8 @@ export function enforceProposalDependencies(selected: readonly boolean[], depend
   return next;
 }
 
+const CANONICAL_CONSTRUCTION_TOOLS = new Set(["author_house", "author_village"]);
+
 export function reassembleSelectedProposalProject(
   baseline: Project,
   calls: readonly ProposedCall[],
@@ -236,6 +238,15 @@ export function reassembleSelectedProposalProject(
   const dependencies = proposalDependencyIndexes(calls);
   const safeSelected = enforceProposalDependencies(selected, dependencies);
   const selectedCalls = calls.filter((_, index) => safeSelected[index]);
+  // canonical facade는 preview 드래프트를 커밋해야지 재실행하면 안 된다.
+  const canonicalCall = selectedCalls.find((call) => CANONICAL_CONSTRUCTION_TOOLS.has(call.name));
+  if (canonicalCall) {
+    return {
+      ok: false,
+      message: `canonical construction '${canonicalCall.name}'는 preview 드래프트를 직접 수락해야 합니다. 재실행(reassembly)은 지원되지 않습니다.`,
+      results: [],
+    };
+  }
   const ctx: ToolContext = { project: structuredClone(baseline) };
   const results: ToolResult[] = [];
   for (const call of selectedCalls) {

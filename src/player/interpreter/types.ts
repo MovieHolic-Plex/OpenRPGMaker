@@ -2,6 +2,7 @@ import type {
   ChoiceCancelBehavior,
   Command,
   FaceGraphic,
+  FieldSpawnDef,
   MapId,
   MessageWindowSettings,
   MoveCommand,
@@ -55,6 +56,10 @@ export type StepResult =
       tile: number;
     }
   | { kind: "moveEvent"; eventId: string; moves: MoveCommand[]; repeat: boolean; wait?: boolean }
+  | { kind: "openChest"; chestId: string }
+  | { kind: "openSaveMenu" }
+  | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef }
+  | { kind: "despawnFieldEnemy"; spawnId: string }
   | { kind: "setEventGraphicPattern"; eventId: string; pattern: number }
   | {
       kind: "battleProcessing";

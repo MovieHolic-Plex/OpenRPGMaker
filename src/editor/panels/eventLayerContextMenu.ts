@@ -3,6 +3,7 @@ import { editorState } from "@/editor/editorState";
 import { deleteEditorEvent } from "@/editor/eventDeletion";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { openTransferPlayerDialog } from "@/editor/panels/eventEditor/transferPlayerDialog";
 import { openTestPlayModal } from "@/editor/panels/testPlayModal";
 import {
   openMapContextMenu,
@@ -173,6 +174,19 @@ function createTransferEvent(target: EventLayerContextMenuTarget): void {
     page.name = "장소 이동";
     page.trigger = { kind: "playerTouch" };
     page.commands = [command];
+  });
+  // Open the transfer player picker dialog immediately so the user can choose
+  // the destination map/position right away.
+  openTransferPlayerDialog({
+    command,
+    onApply: (updated) => {
+      store.update((project) => {
+        const event = project.maps[target.mapId]?.events.find((item) => item.id === eventId);
+        const page = event?.pages?.[event.pages.length - 1];
+        if (!event || !page) return;
+        page.commands = [updated];
+      });
+    },
   });
 }
 
