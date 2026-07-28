@@ -38,6 +38,12 @@ handoff.md
 # legacy root tmp-* probes now live under scratch/ (gitignored above); keep
 # this rule to catch any future tmp-* dropped in root before relocation.
 /tmp-*
+# 세션 스크래치 디렉터리. `/tmp-*` 만 있어서 `/tmp/` 가 무시되지 않았고, 실측 157MB
+# (claude-session-detail.json 단일 파일 144MB)가 `git add -A` 한 번에 커밋될 수 있었다.
+/tmp/
+# 리포트용 스크린샷 산출물. `report-assets/` 자체에는 추적 중인 알파 PNG 가 있으므로
+# 생성물이 쌓이는 하위 디렉터리만 무시한다.
+/report-assets/shots/
 # 에이전트/세션 잡 · 런타임 pid · 파이썬 캐시
 .claude/
 .gjc/
