@@ -14,26 +14,26 @@
 /* QA r1(layout): 타원 → 둥근 사각. 어떤 커맨드 행도 잘리지 않는다. */
 .battle-scene[data-battle-skin="chrono"] .battle-command-panel {
   background: radial-gradient(circle at 50% 0%, #10365c 0%, #0a1a3a 72%);
-  border: 2px solid #35d6e8;
+  border: 4px solid #35d6e8;
   border-image: none;
-  border-radius: 10px;
+  border-radius: 20px;
   overflow: visible !important;
-  padding: 3px 5px !important;
+  padding: 6px 10px !important;
 }
 
 /* QA r1(fidelity): 시안 악센트를 파티/메시지 창까지 — ATB 활극 무드. */
 .battle-scene[data-battle-skin="chrono"] .battle-party {
   background: linear-gradient(180deg, #0c2b3a, #071a24);
-  border: 2px solid #35d6e8;
+  border: 4px solid #35d6e8;
   border-image: none;
-  border-radius: 8px;
+  border-radius: 16px;
 }
 
 .battle-scene[data-battle-skin="chrono"] .battle-message-window {
   background: linear-gradient(180deg, #0c2b3a, #071a24);
-  border: 2px solid #35d6e8;
+  border: 4px solid #35d6e8;
   border-image: none;
-  border-radius: 8px;
+  border-radius: 16px;
   align-content: start;
 }
 
@@ -44,7 +44,7 @@
 
 .battle-scene[data-battle-skin="chrono"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;

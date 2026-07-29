@@ -11,7 +11,7 @@ import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
-import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID } from "./constants";
+import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -26,6 +26,13 @@ import {
 import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
 import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
 import { createTrainingExampleMaps } from "./trainingExampleMaps";
+import { DUNGEON_TILESET_ID } from "./dungeonThemedLayouts";
+import { SNOW_MOUNTAIN_START, buildSnowMountainMap } from "./snowMountain60";
+import { ICE_PLAIN_MAP_NAME, ICE_PLAIN_START, buildIcePlainMap } from "./iceGrandPlain64";
+import { enlivenDewVillage } from "./dewVillageLiving";
+import { layerDewVillageDialogue } from "./dewVillageDialogue";
+import { repairLegacyRateKeys } from "./legacyRateKeyRepair";
+import { repairUnplayableSystemBgm } from "./legacyAudioRepair";
 import {
   createBlankMap,
   createLogCabinShowcaseMap,
@@ -71,6 +78,15 @@ export function createSampleAdventureProject(): Project {
     project.session = { ...project.session, partyActorIds: actorIds.slice(0, 2) };
   }
   ensureSwitchVariableSlots(project);
+  // 낡은 export 잔재 정리 — 적 elementRates 의 state_death 등(legacyRateKeyRepair.ts 주석 참조).
+  repairLegacyRateKeys(project);
+  // 재생 불가 BGM(MIDI) 참조 교체 — 픽스처는 defaultSystem() 변경이 닿지 않는다.
+  repairUnplayableSystemBgm(project);
+  // 시간 시스템 + 주민 하루 일과. fixture 자체는 시간표 0개·timeSystem 미설정이라
+  // 주민 전원이 제자리에 얼어 있었다(2026-07-26 실측). 자세한 이유는 dewVillageLiving.ts 주석.
+  enlivenDewVillage(project);
+  // 주민 대사에 시간대·활동·호감·퀘스트 진행을 반영한다(dewVillageDialogue.ts 주석 참조).
+  layerDewVillageDialogue(project);
   return project;
 }
 
@@ -117,6 +133,46 @@ export function createTownArchitectureTestProject(): Project {
 
 export function createTownArchitectureCityProject(): Project {
   return createProjectWithStarterMap(createTownArchitectureCityMap());
+}
+
+/**
+ * 설산 60×60 — 절벽과 계단만 깔린 지형 캔버스. 감독이 여기에 직접 타일을 얹는다.
+ *
+ * 선반 위가 비어 있는 것은 **의도한 상태**다("절벽이랑 계단 정도만 가지고" 지시).
+ * 소품·이벤트를 코드로 채우지 않으므로 편집기에서 바로 칠할 수 있다.
+ */
+export function createSnowMountain60Project(): Project {
+  const project = createProjectWithStarterMap(buildSnowMountainMap({
+    tilesetId: DUNGEON_TILESET_ID,
+    tileSize: DEFAULT_TILE_SIZE,
+  }));
+  project.meta = { ...project.meta, title: "설산 · 절벽 다섯 겹 (60×60)" };
+  /**
+   * **시작 위치를 반드시 덮어쓴다.** `createProjectWithMaps` 의 기본값은 맵 중앙
+   * (30, 31)인데, 이 맵의 (30, 31)은 가운데 절벽 겹의 몸통 한복판이다 —
+   * 그대로 두면 주인공이 절벽에 박혀 한 칸도 못 움직인다. 산 발치에 세운다.
+   */
+  project.startPos = { ...SNOW_MOUNTAIN_START };
+  return project;
+}
+
+/**
+ * 얼음 대평원 64×64 — 결정시트 q8 의 재건판(`iceGrandPlain64.ts`).
+ * 절벽 네 겹 · 계단 네 덩어리 · 얼음 바닥 패치만 깔린 지형 캔버스다. 물은 놓지 않는다.
+ * 이벤트와 원정 배선은 아직 없다 — 감독이 룩을 승인한 뒤 128×128 의 봉인/보스를 옮긴다.
+ */
+export function createIcePlain64Project(): Project {
+  const project = createProjectWithStarterMap(buildIcePlainMap({
+    tilesetId: DUNGEON_TILESET_ID,
+    tileSize: DEFAULT_TILE_SIZE,
+  }));
+  project.meta = { ...project.meta, title: ICE_PLAIN_MAP_NAME };
+  /**
+   * **시작 위치를 반드시 덮어쓴다.** 기본값인 맵 중앙 (32, 32)은 대지2 한복판이라
+   * 어두운 못과 부빙이 화면에 안 들어온다. 못의 남안에 세운다.
+   */
+  project.startPos = { ...ICE_PLAIN_START };
+  return project;
 }
 
 export function createMarketTownProject(): Project {
@@ -414,6 +470,10 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
     villageInfoDocuments: [],
   };
   ensureSwitchVariableSlots(project);
+  // 낡은 export 잔재 정리 — 적 elementRates 의 state_death 등(legacyRateKeyRepair.ts 주석 참조).
+  repairLegacyRateKeys(project);
+  // 재생 불가 BGM(MIDI) 참조 교체 — 픽스처는 defaultSystem() 변경이 닿지 않는다.
+  repairUnplayableSystemBgm(project);
   return project;
 }
 

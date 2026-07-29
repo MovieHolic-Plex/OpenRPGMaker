@@ -85,7 +85,7 @@
     padding: 9px 10px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-rows {
+  .database-modal-body .rm2k3-record-classes :is(.db-class-command-rows, .db-class-command-list) {
     max-height: 152px;
   }
 
@@ -811,7 +811,7 @@
     height: 9px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-command-rows {
+  .database-modal-body .rm2k3-record-classes :is(.db-class-command-rows, .db-class-command-list) {
     max-height: none;
     min-height: 0;
     overflow: auto;

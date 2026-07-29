@@ -3,7 +3,7 @@ import { applyDatabaseChanges, closeAndReopenDatabase, exportedProject, openData
 
 test.setTimeout(90_000);
 
-test("RM2K3 animation tab exposes sheet frames cells timings and battler separation", async ({ page }, testInfo) => {
+test("RM2K3 animation tab exposes sheet frames cells timings", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1");
   await page.evaluate(() => {
@@ -27,7 +27,6 @@ test("RM2K3 animation tab exposes sheet frames cells timings and battler separat
   await expect(page.getByTestId("db-animation-sheet-preview-surface")).toBeVisible();
   await expect(page.getByTestId("db-animation-cell-table")).toContainText("패턴");
   await expect(page.getByTestId("db-animation-timing-table")).toContainText("플래시");
-  await expect(page.getByTestId("db-animation-battler-note")).toContainText("분리");
 
   const project = await exportedProject(page);
   expect(project.database.battleAnimations[0]).toMatchObject({
@@ -35,7 +34,6 @@ test("RM2K3 animation tab exposes sheet frames cells timings and battler separat
     scope: "singleTarget",
     position: "center",
   });
-  expect(project.database.battlerAnimations?.length).toBeGreaterThan(0);
   await page.screenshot({ path: testInfo.outputPath("database-animation-tab.png"), fullPage: true });
 });
 
@@ -59,11 +57,6 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
   await page.getByTestId("db-field-animation-position").selectOption("screen");
   await page.getByTestId("db-field-animation-large").check();
 
-  await page.getByTestId("db-tab-battler-animations").click();
-  await page.getByTestId("db-field-battler-animation-name-0").fill("Hero Sideview Proof");
-  await page.getByTestId("db-field-battler-animation-resource-0").fill("generated-actor-hero-02-battle");
-  await page.getByTestId("db-field-battler-animation-idle-duration-0").fill("240");
-
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-rm2k3-name").locator("input").fill("Town Proof Tileset");
   await page.getByTestId("tileset-rm2k3-mode-terrain").click();
@@ -81,11 +74,6 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
     scope: "screen",
     sheet: { columns: 4, frameHeight: 88, frameWidth: 80 },
   });
-  expect(edited.database.battlerAnimations?.[0]).toMatchObject({
-    name: "Hero Sideview Proof",
-    resourceId: "generated-actor-hero-02-battle",
-  });
-  expect(edited.database.battlerAnimations?.[0]?.poses[0]?.frames[0]).toMatchObject({ durationMs: 240 });
   const tileset = edited.tilesets.easyrpg_chipset_combined_town;
   expect(tileset).toMatchObject({
     name: "Town Proof Tileset",
@@ -102,8 +90,6 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
 
   await page.getByTestId("db-tab-animations").click();
   await expect(page.getByTestId("db-field-name")).toHaveValue("Impact Burst");
-  await page.getByTestId("db-tab-battler-animations").click();
-  await expect(page.getByTestId("db-field-battler-animation-name-0")).toHaveValue("Hero Sideview Proof");
   await page.getByTestId("db-tab-tilesets").click();
   await expect(page.getByTestId("tileset-rm2k3-name").locator("input")).toHaveValue("Town Proof Tileset");
   await page.getByTestId("tileset-rm2k3-mode-ai").click();

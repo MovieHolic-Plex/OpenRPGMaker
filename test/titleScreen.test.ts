@@ -3,6 +3,8 @@ import {
   clampTitleMenuIndex,
   listTitleMenuOptions,
   renderTitleScreen,
+  titleMenuHeight,
+  titleMenuTop,
 } from "@/player/titleScreen";
 import { createBlankProject } from "@/project/defaults";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -71,10 +73,25 @@ describe("title screen", () => {
       expect(title.style.left).toBe("45%");
       expect(title.style.top).toBe("26.6667%");
       expect(menu.style.left).toBe("27.5%");
-      expect(menu.style.top).toBe("55%");
+      // 저작값 menuY=132 는 그대로 쓰이지 않는다. 항목 3개 + 조작 안내 창이 함께 보이면
+      // 마지막 항목이 안내 창에 가려지므로 titleMenuTop 이 116 으로 끌어올린다(=48.3333%).
+      // 규칙 자체는 아래 "clamps the menu above the input hint" 테스트가 담당한다.
+      expect(menu.style.top).toBe("48.3333%");
     } finally {
       restoreDom();
     }
+  });
+
+  it("clamps the menu above the input hint only when it would overlap", () => {
+    // 회귀 방지: 이 규칙에 단위 커버리지가 없어서 위 레이아웃 테스트가 조용히 낡았다.
+    const optionCount = 3;
+    // 안내 창이 없으면 저작값을 그대로 존중한다.
+    expect(titleMenuTop(132, optionCount, false)).toBe(132);
+    // 들어갈 자리가 있으면 저작값을 그대로 존중한다.
+    expect(titleMenuTop(60, optionCount, true)).toBe(60);
+    // 겹치면 메뉴 아래끝이 안내 영역 위에서 끝나도록 끌어올린다.
+    expect(titleMenuTop(132, optionCount, true)).toBe(240 - 40 - titleMenuHeight(optionCount));
+    expect(titleMenuTop(132, optionCount, true)).toBe(116);
   });
 
   it("uses the legacy title resource when the new title-screen background is unset", () => {

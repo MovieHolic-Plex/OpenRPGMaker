@@ -16,7 +16,6 @@ import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } fr
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
-import { compatibleStampIdForTile } from "@/editor/tileStampBrushes";
 import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
@@ -225,14 +224,6 @@ function makePaintTabBody(input: {
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
 
-  // "내 스탬프" — 붓질에서 학습·등록된 구조 킷 선반(등록 전에는 렌더 안 됨).
-  const kitShelf = makeStructureKitShelf({
-    tileset,
-    activeKitId: state.activePaletteStamp?.kitId ?? null,
-    rerender: renderPalettePreservingViewport,
-  });
-  if (kitShelf) root.append(kitShelf);
-
   // RM2003식 단일 팔레트 — 그룹/시트 보기 분리 없이 6열 고정, 오토타일은 대표 1칸 축약.
   const palette = makeRm2kPalette({
     layer: tileLayer,
@@ -240,8 +231,19 @@ function makePaintTabBody(input: {
     selectedTile: state.selectedTile,
     tileset,
   });
-
   root.append(palette);
+
+  // 구조 킷 선반은 팔레트 **아래**. 원래 위였는데, 당시 주석("등록 전에는 렌더 안 됨")대로
+  // 보통 비어 있어서 공짜였다. 2026-07-20 에 내장 집 킷이 합류하면서 선반이 상시 렌더로 바뀌었고
+  // 실측 팔레트 창 446px 중 192px(43%)을 점거해 타일 팔레트를 접힘선 아래로 밀어냈다.
+  // 타일 선택이 이 탭의 주 작업이므로 순서를 뒤집고, 내장 킷은 기본 접힘으로 둔다.
+  const kitShelf = makeStructureKitShelf({
+    tileset,
+    activeKitId: state.activePaletteStamp?.kitId ?? null,
+    rerender: renderPalettePreservingViewport,
+  });
+  if (kitShelf) root.append(kitShelf);
+
   return { root, palette };
 }
 
@@ -262,7 +264,6 @@ function makePropsTabBody(input: {
   }
   root.append(
     makeTileBrushAssistPanel({
-      activeStampId: state.activeStampId,
       autoConnectMode: state.autoConnectMode,
       mapId,
       onSelectTile: selectPaletteTile,
@@ -472,7 +473,6 @@ export function selectPaletteTile(index: number): void {
     if (recentTiles.length > 18) recentTiles.length = 18;
     const state = editorState.get();
     const tileset = currentTilesetForPalette();
-    const nextActiveStampId = compatibleStampIdForTile(state.activeStampId, index, tileset);
     let nextLayer = state.layer;
     if (tileset && state.layer !== "event") {
       const home = tileLayerHome(tileset, index);
@@ -482,8 +482,6 @@ export function selectPaletteTile(index: number): void {
     const switchToPaint = !keepTools.has(state.tool) && nextLayer !== "event";
     editorState.set({
       activePaletteStamp: null,
-      activeStampId: nextActiveStampId,
-      activeStructureStampId: null,
       layer: nextLayer,
       selectedTile: index,
       ...(switchToPaint ? { tool: "paint" as const } : {}),

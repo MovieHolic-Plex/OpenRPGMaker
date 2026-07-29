@@ -9,15 +9,10 @@ import type {
   BattleAnimationSheet,
   BattleAnimationTiming,
   BattleAnimationTone,
-  BattlerAnimationPose,
-  BattlerAnimationPoseFrame,
-  BattlerAnimationPoseKind,
-  BattlerAnimationRecord,
 } from "@/project/types";
 
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const DEFAULT_ANIMATION_TONE: BattleAnimationTone = { red: 255, green: 255, blue: 255, gray: 0 };
-const BATTLER_POSES: ReadonlySet<unknown> = new Set(["idle", "ready", "attack", "defend", "damage", "victory", "dead"]);
 
 export function normalizeBattleAnimationRecord(record: Partial<BattleAnimationRecord> & Pick<BattleAnimationRecord, "id" | "name">): BattleAnimationRecord {
   return {
@@ -30,15 +25,6 @@ export function normalizeBattleAnimationRecord(record: Partial<BattleAnimationRe
     large: record.large ?? false,
     frames: normalizeAnimationFrames(record.frames),
     timings: normalizeAnimationTimings(record.timings),
-  };
-}
-
-export function normalizeBattlerAnimationRecord(record: Partial<BattlerAnimationRecord> & Pick<BattlerAnimationRecord, "id" | "name">): BattlerAnimationRecord {
-  return {
-    id: record.id,
-    name: record.name,
-    resourceId: cleanOptionalId(record.resourceId),
-    poses: normalizeBattlerPoses(record.poses),
   };
 }
 
@@ -108,26 +94,6 @@ function defaultAnimationCell(): BattleAnimationCell {
   return { pattern: 0, x: 0, y: 0, zoom: 100, opacity: 255, visible: true };
 }
 
-function normalizeBattlerPoses(poses: readonly Partial<BattlerAnimationPose>[] | undefined): BattlerAnimationPose[] {
-  const source = poses?.length ? poses : [defaultBattlerPose()];
-  return source.map((pose) => ({
-    pose: isBattlerPose(pose.pose) ? pose.pose : "idle",
-    frames: normalizeBattlerPoseFrames(pose.frames),
-  }));
-}
-
-function defaultBattlerPose(): Partial<BattlerAnimationPose> {
-  return { pose: "idle", frames: [{ pattern: 0, durationMs: 180 }] };
-}
-
-function normalizeBattlerPoseFrames(frames: readonly Partial<BattlerAnimationPoseFrame>[] | undefined): BattlerAnimationPoseFrame[] {
-  const source = frames?.length ? frames : [{ pattern: 0, durationMs: 180 }];
-  return source.map((frame) => ({
-    pattern: clampInteger(frame.pattern ?? 0, 0, 999),
-    durationMs: clampInteger(frame.durationMs ?? 180, 1, 9999),
-  }));
-}
-
 function cleanOptionalId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
@@ -140,10 +106,6 @@ function isBattleAnimationScope(value: unknown): value is BattleAnimationScope {
 
 function isBattleAnimationPosition(value: unknown): value is BattleAnimationPosition {
   return value === "head" || value === "center" || value === "feet" || value === "screen";
-}
-
-function isBattlerPose(value: unknown): value is BattlerAnimationPoseKind {
-  return BATTLER_POSES.has(value);
 }
 
 function clampInteger(value: number, min: number, max: number): number {

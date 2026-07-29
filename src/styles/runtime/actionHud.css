@@ -10,6 +10,22 @@
   font-family: "D2Coding", "Consolas", monospace;
 }
 
+/* 메뉴·대화창이 열려 있을 때 액션 HUD 를 숨긴다.
+   둘 다 .play-stage 의 형제로 붙는데 HUD 가 좌상단 절대배치라, 안 숨기면
+   메뉴 첫 항목과 대사 첫 줄을 그대로 덮는다(실측: "아이템" 글자가 HP 바에 가림).
+   .dialogue-overlay 는 항상 DOM 에 남아 있고 내용만 비우므로 :empty 로 걸러야 한다. */
+.play-stage:has(> [data-testid="main-menu"]) > .action-hud,
+.play-stage:has(> .dialogue-overlay:not(:empty)) > .action-hud {
+  display: none;
+}
+
+/* 이벤트 마커(클릭 히트박스)는 z-index 6 으로 대사창 위에 올라앉아, 대사를 넘기려고
+   누른 클릭을 대신 삼켜 이벤트를 재실행한다. 대사창/메뉴가 열려 있으면 통과시킨다. */
+.play-stage:has(> [data-testid="main-menu"]) > .runtime-debug-marker,
+.play-stage:has(> .dialogue-overlay:not(:empty)) > .runtime-debug-marker {
+  pointer-events: none;
+}
+
 .action-hud-row {
   display: flex;
   align-items: center;

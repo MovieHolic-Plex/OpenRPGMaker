@@ -24,14 +24,27 @@ export const DEFAULT_TILE_COUNT = RESOURCE_SLICING.chipset.count;
 export const DEFAULT_SPRITE_FRAME_WIDTH = BUILTIN_SPRITE_SLICING.cellWidth;
 export const DEFAULT_SPRITE_FRAME_HEIGHT = BUILTIN_SPRITE_SLICING.cellHeight;
 
+/**
+ * 기본 칩셋(easyrpg_chipset_combined_town)의 **원시 타일 인덱스**다.
+ * 이름은 의미처럼 보이지만 실제로는 좌표일 뿐이라, **다른 타일셋에서는 전혀 다른 그림**이다
+ * (예: 342 는 combined_town·interior 에서 막힘, dungeon·world·ship 에서는 통행 가능 — 2026-07-27 실측).
+ *
+ * ⚠ FLOOR(342) / STAIRS(246) 는 **바닥·계단이 아니다.** 두 타일 모두 combined_town 에서
+ * 전방향 통행 불가다. 이 저장소는 이미 그걸 알고 있어서 하네스 그룹 이름이 그대로
+ * `stone-floor-trap`("겉보기엔 평평해 통행 가능해 보이지만 실측 결과 막히는 돌바닥")이다.
+ * 그런데도 starterHouseTransfer 가 실내 300칸을 FLOOR 로 채워 **밟을 수 있는 칸이 2칸뿐**이었다.
+ * 지면이 필요하면 GRASS / PATH / SAND / 421(자갈) / 222(나무 마루) 를 쓸 것.
+ */
 export const TILE = {
   GRASS: 240,
   WATER: 120,
   WALL: 306,
   PATH: 360,
+  /** ⚠ 통행 불가 장식 타일. 바닥으로 쓰지 말 것 — 위 주석 참고. */
   FLOOR: 342,
   SAND: 423,
   TREE: 290,
+  /** ⚠ 통행 불가 성벽 조각. 계단이 필요하면 111~113(stoneStairObjects)을 쓸 것. */
   STAIRS: 246,
   DARK_GRASS: 303,
   FLOWERS: 288,

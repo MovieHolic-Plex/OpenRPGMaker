@@ -22,6 +22,7 @@ import { isTreeTrunkTileId } from "@/project/tilesetHarness";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
+import { startMapBgm } from "@/player/mapBgm";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import {
   characterSpriteX,
@@ -107,8 +108,9 @@ interface RenderTilesSceneContext<
   syncRuntimeState(): void;
 }
 
-export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean } = {}): void {
-  const map = store.getCurrent().maps[mapId];
+export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean } = {}): void {
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
   if (!map) {
     console.warn(`[player] map not found: ${mapId}`);
     return;
@@ -116,6 +118,8 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   scene.map = mapWithCommittedEvents(map);
   scene.session.currentMapId = mapId;
   if (options.applyDefaultLighting !== false) applyMapDefaultLighting(scene.session, scene.map);
+  // 세이브 복원 경로는 저장된 BGM 을 resumeAudioState 가 되살리므로 맵 기본값으로 덮지 않는다.
+  if (options.applyMapBgm !== false) startMapBgm(project, scene.session, mapId);
   if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
   applyMapOverrides(scene);

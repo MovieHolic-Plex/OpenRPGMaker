@@ -39,6 +39,7 @@ export const COMMAND_KINDS = [
   "learnSkill",
   "changeExp",
   "changeLevel",
+  "changeLifeSkillExp",
   "promoteActor",
   "changeEquipment",
   "changeActorHp",

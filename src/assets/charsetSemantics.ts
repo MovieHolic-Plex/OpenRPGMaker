@@ -24,28 +24,43 @@ function sheet(textureKey: string, rows: readonly RawEntry[]): CharsetSemanticEn
 }
 
 export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
-  // tex_easyrpg_charset_monster1 — 검증됨(핸드오프 0.4)
+  // tex_easyrpg_charset_monster1 — 2026-07-27 사용자 확정: 8칸 전부 채움.
+  // 이전에는 0·2·3·4·5 만 있었고 **idx 2 를 "벌"이라 잘못 라벨**했다(실물은 오크).
+  // 1·6·7 은 라벨이 없어 "검증되지 않은 칸"이었다 — 그래서 저작이 그 칸을 피하거나
+  // 반대로 아무 뜻 없이 골라 썼다.
   { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 0, label: "슬라임", gender: "none", tags: ["슬라임", "몬스터", "약함", "젤리"] },
-  { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 2, label: "벌", gender: "none", tags: ["벌", "몬스터", "곤충", "비행"] },
+  { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 1, label: "붉은 악마", gender: "none", tags: ["악마", "붉은", "몬스터", "뿔"] },
+  { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 2, label: "오크", gender: "none", tags: ["오크", "몬스터", "아인", "근접"] },
   { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 3, label: "유령", gender: "none", tags: ["유령", "몬스터", "언데드", "비행"] },
   { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 4, label: "해골", gender: "none", tags: ["해골", "몬스터", "언데드", "스켈레톤"] },
   { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 5, label: "좀비", gender: "none", tags: ["좀비", "몬스터", "언데드"] },
-  // tex_easyrpg_charset_monster2 — 검증됨(핸드오프 0.4)
+  { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 6, label: "스켈레톤 메이지", gender: "none", tags: ["스켈레톤", "메이지", "언데드", "마법", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster1", characterIndex: 7, label: "미노타우르스", gender: "none", tags: ["미노타우르스", "몬스터", "뿔", "거대", "보스"] },
+  // tex_easyrpg_charset_monster2 — 2026-07-27 사용자 확정: 8칸 전부 채움.
+  // 이전에는 1·4·5 만 있었고 4 를 "모래 골렘", 5 를 "녹룡"이라 했다.
+  // **idx 2 는 라벨이 아예 없었는데** 호수 신전의 봉인 3개가 전부 그 칸을 쓰고 있었다.
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 0, label: "하피", gender: "none", tags: ["하피", "몬스터", "비행", "날개"] },
   { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 1, label: "청룡", gender: "none", tags: ["청룡", "용", "드래곤", "몬스터"] },
-  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 4, label: "모래 골렘", gender: "none", tags: ["모래 골렘", "골렘", "몬스터", "사막"] },
-  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 5, label: "녹룡", gender: "none", tags: ["녹룡", "용", "드래곤", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 2, label: "뱀파이어", gender: "none", tags: ["뱀파이어", "몬스터", "언데드", "귀족"] },
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 3, label: "마족 장군", gender: "none", tags: ["마족", "장군", "몬스터", "갑옷", "보스"] },
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 4, label: "스톤 골렘", gender: "none", tags: ["스톤 골렘", "골렘", "몬스터", "바위"] },
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 5, label: "드레이크", gender: "none", tags: ["드레이크", "용", "드래곤", "몬스터"] },
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 6, label: "악마", gender: "none", tags: ["악마", "몬스터", "무기", "보스"] },
+  { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 7, label: "마왕", gender: "none", tags: ["마왕", "악마", "몬스터", "최종보스", "보스"] },
   // tex_easyrpg_charset_monster3 — 검증됨(핸드오프 0.4)
   { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 0, label: "박쥐형 날짐승", gender: "none", tags: ["박쥐", "몬스터", "비행"] },
   { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 5, label: "붉은 드래곤", gender: "none", tags: ["붉은 드래곤", "레드 드래곤", "용", "드래곤", "몬스터", "보스"] },
 
   // tex_easyrpg_charset_people1 — 일반 마을 주민.
+  // 2026-07-27 사용자 확정 정정(0~5). 이전 라벨은 0 을 "청년 남성 주민", 4·5 를
+  // "거친 남성 주민"·"숄 두른 여성 주민" 이라 했는데 실물은 아이 둘과 흑인 중년 부부다.
   ...sheet("tex_easyrpg_charset_people1", [
-    [0, "청년 남성 주민", ["주민", "청년", "남성", "모험가"], { gender: "male", age: "youth" }],
-    [1, "어린 소녀", ["아이", "소녀", "어린이"], { gender: "female", age: "child" }],
-    [2, "청년 모험가", ["주민", "청년", "모험가", "남성"], { gender: "male", age: "youth" }],
-    [3, "젊은 여성 주민", ["주민", "여성", "청년"], { gender: "female", age: "youth" }],
-    [4, "거친 남성 주민", ["주민", "야만인", "남성", "수염"], { gender: "male" }],
-    [5, "숄 두른 여성 주민", ["주민", "여성", "청년"], { gender: "female", age: "youth" }],
+    [0, "남자아이", ["아이", "소년", "어린이", "주민"], { gender: "male", age: "child" }],
+    [1, "여자아이", ["아이", "소녀", "어린이", "주민"], { gender: "female", age: "child" }],
+    [2, "청년 남성", ["주민", "청년", "남성", "모험가"], { gender: "male", age: "youth" }],
+    [3, "젊은 여성", ["주민", "여성", "청년"], { gender: "female", age: "youth" }],
+    [4, "중년 남성 주민(흑인)", ["주민", "남성", "중년", "흑인"], { gender: "male", age: "middle" }],
+    [5, "중년 여성 주민(흑인)", ["주민", "여성", "중년", "흑인"], { gender: "female", age: "middle" }],
     [6, "대머리 남성 주민", ["주민", "남성", "대머리", "중년"], { gender: "male", age: "middle" }],
     [7, "노파", ["노인", "여성", "할머니"], { gender: "female", age: "elder" }],
   ]),
@@ -60,27 +75,32 @@ export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
     [6, "화려한 여왕", ["여왕", "여성", "화려함"], { gender: "female" }],
     [7, "요정 소녀", ["요정", "소녀", "아이", "날개"], { gender: "female", age: "child" }],
   ]),
-  // tex_easyrpg_charset_people3 — 왕족/기사.
+  // tex_easyrpg_charset_people3 — 왕족과 그 시종.
+  // 2026-07-27 사용자 확정 정정(4·5). 이전 라벨은 4 를 "노현자", 5 를 "보라 갑옷 기사"라 했는데
+  // 실물은 집사와 여자 메이드다 — 성 안 시종 시트이지 마법사·기사 시트가 아니다.
   ...sheet("tex_easyrpg_charset_people3", [
     [0, "왕", ["왕", "국왕", "남성", "왕관"], { gender: "male" }],
     [1, "여왕", ["여왕", "왕비", "여성", "왕관"], { gender: "female" }],
     [2, "왕자", ["왕자", "남성", "청년"], { gender: "male", age: "youth" }],
     [3, "공주", ["공주", "여성", "청년"], { gender: "female", age: "youth" }],
-    [4, "노현자", ["노인", "현자", "마법사", "남성"], { gender: "male", age: "elder" }],
-    [5, "보라 갑옷 기사", ["기사", "병사", "갑옷", "남성"], { gender: "male" }],
+    [4, "집사", ["집사", "시종", "남성", "정장"], { gender: "male", age: "middle" }],
+    [5, "여자 메이드", ["메이드", "시종", "여성", "하녀"], { gender: "female" }],
     [6, "귀족 남성", ["귀족", "남성", "중년"], { gender: "male", age: "middle" }],
     [7, "파란 갑옷 기사", ["기사", "병사", "갑옷", "날개"]],
   ]),
   // tex_easyrpg_charset_people4 — 이국적인 주민.
+  // 2026-07-27 사용자 확정 정정(0~7 전부). 이전 라벨은 0 을 "노년 전사", 5 를 "황금 왕"이라 했는데
+  // 실물은 아이 둘로 시작하는 마을 주민 시트다. 사용자가 5·6 을 둘 다 "5번"으로 말했으므로
+  // 실제 프레임을 4배로 잘라 육안 확인해 6 을 터번 노인, 7 을 터번 노파로 확정했다.
   ...sheet("tex_easyrpg_charset_people4", [
-    [0, "노년 전사", ["노인", "전사", "병사", "남성"], { gender: "male", age: "elder" }],
-    [1, "불량배", ["불량배", "남성", "청년", "선글라스"], { gender: "male", age: "youth" }],
-    [2, "술탄", ["술탄", "이국적", "남성", "터번"], { gender: "male" }],
-    [3, "사막 상인", ["상인", "이국적", "남성", "터번"], { gender: "male" }],
-    [4, "승려", ["승려", "남성", "대머리"], { gender: "male" }],
-    [5, "황금 왕", ["왕", "국왕", "남성", "황금"], { gender: "male" }],
-    [6, "사막 노인", ["노인", "이국적", "남성", "터번"], { gender: "male", age: "elder" }],
-    [7, "신비한 사제", ["사제", "신비", "남성", "로브"], { gender: "male" }],
+    [0, "빵모자 아이", ["아이", "어린이", "모자", "주민"], { age: "child" }],
+    [1, "삐쭉머리 남자아이", ["아이", "소년", "어린이", "안경"], { gender: "male", age: "child" }],
+    [2, "이국적인 모자 청년", ["청년", "남성", "이국적", "모자"], { gender: "male", age: "youth" }],
+    [3, "머리 장식 이국 여성", ["여성", "이국적", "머리장식"], { gender: "female" }],
+    [4, "대머리 이국 주민", ["주민", "대머리", "이국적", "남성"], { gender: "male" }],
+    [5, "노란 전통옷 남성", ["남성", "이국적", "전통옷", "노란색"], { gender: "male" }],
+    [6, "터번 노인", ["노인", "이국적", "남성", "터번"], { gender: "male", age: "elder" }],
+    [7, "터번 노파", ["노인", "이국적", "여성", "터번"], { gender: "female", age: "elder" }],
   ]),
   // tex_easyrpg_charset_people5 — 여관/마을 NPC.
   ...sheet("tex_easyrpg_charset_people5", [

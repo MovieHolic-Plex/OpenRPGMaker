@@ -52,7 +52,6 @@ function recordCollectionForTab(tab: DatabaseTab): DatabaseCollection | undefine
       return "battleAnimations";
     case "battleCommands":
     case "battleScreen":
-    case "battlerAnimations":
     case "commonEvents":
     case "elements":
     case "switches":
@@ -83,10 +82,6 @@ function utilityDatabaseSummary(tab: { readonly id: DatabaseTab; readonly label:
       const index = selectedUtilityRecordIndex("battleCommands");
       const record = database.battleCommands?.[index] ?? database.battleCommands?.[0];
       return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: tab.id, tabLabel: tab.label, totalCount: database.battleCommands?.length };
-    }
-    case "battlerAnimations": {
-      const first = database.battlerAnimations?.[0];
-      return { recordId: first?.id, recordName: first?.name, selectedIndex: first ? 1 : undefined, tabId: tab.id, tabLabel: tab.label, totalCount: database.battlerAnimations?.length };
     }
     default:
       return undefined;

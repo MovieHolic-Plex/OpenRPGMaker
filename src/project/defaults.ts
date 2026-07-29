@@ -78,6 +78,8 @@ export {
   createSampleAdventureProject,
   createScarloxyDemoProject,
   createScarloxyPokemonDemoProject,
+  createSnowMountain60Project,
+  createIcePlain64Project,
   createTrainingExamplesProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
@@ -87,3 +89,17 @@ export {
   createTownHouseShowcaseProject,
   ensureSwitchVariableSlots,
 } from "./defaults/defaultProject";
+
+// 《천공의 계단》 — 비주얼 중심 7층 JRPG. 배럴에서 바로 내보내 에디터 메뉴가 쓴다.
+export {
+  createSkyStairProject,
+  SKY_BATTLE_BG,
+  SKY_BGM,
+  SKY_ENEMY_IDS,
+  SKY_ITEM,
+  SKY_MAP,
+  SKY_SWITCH,
+  SKY_TITLE,
+  SKY_TROOP,
+  SKY_VARIABLE,
+} from "./defaults/skyStairGame";

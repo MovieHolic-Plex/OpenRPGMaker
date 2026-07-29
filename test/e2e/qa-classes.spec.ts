@@ -34,8 +34,9 @@ test("classes 탭 CRUD 왕복 — 정체성/전투명령/옵션/스킬/승급/�
   // 전투 명령
   await page.getByTestId("db-field-class-command-name").fill("QA기술");
   await page.getByTestId("db-field-class-command-kind").selectOption("skillSubset");
+  // skillSubset 종류에서는 스킬 필드가 무의미(런타임이 skillSubsetName으로 서브메뉴를 필터)→ 비활성화
+  await expect(page.getByTestId("db-picker-class-command-skill")).toBeDisabled();
   await page.getByTestId("db-field-class-command-subset").fill("QA계열");
-  await page.getByTestId("db-picker-class-command-skill").selectOption("skill_heal");
 
   // 옵션
   await page.getByTestId("db-field-class-option-dualWield").check();

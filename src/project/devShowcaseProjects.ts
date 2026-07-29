@@ -11,6 +11,8 @@ import {
   createScarloxyPokemonDemoProject,
   createShopShowcaseProject,
   createSmallHouseVariantProject,
+  createSnowMountain60Project,
+  createIcePlain64Project,
   createTownArchitectureCityProject,
   createTownArchitectureTestProject,
   createTownCityShowcaseProject,
@@ -38,6 +40,10 @@ const DEV_HOUSE_TEMPLATE_GALLERY_PARAM = "houseTemplateGallery";
 const DEV_SHOP_SHOWCASE_PARAM = "shopShowcase";
 const DEV_MARKET_TOWN_PARAM = "marketTown";
 const DEV_VILLAGE_SHOPPING_STREET_PARAM = "villageShoppingStreet";
+/** 설산 60×60 절벽·계단 캔버스 — `?devProject=1&snowMountain60=1` 로 바로 열린다. */
+const DEV_SNOW_MOUNTAIN_60_PARAM = "snowMountain60";
+/** 얼음 대평원 64×64 절벽·계단 캔버스 — `?devProject=1&icePlain64=1` 로 바로 열린다. */
+const DEV_ICE_PLAIN_64_PARAM = "icePlain64";
 const SUPABASE_CANONICAL_PROJECT_PARAM = "supabaseRecovered";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
@@ -66,6 +72,8 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (params.has(DEV_TOWN_ARCHITECTURE_TEST_PARAM)) return createTownArchitectureTestProject();
   if (params.has(DEV_MARKET_TOWN_PARAM)) return createMarketTownProject();
   if (params.has(DEV_VILLAGE_SHOPPING_STREET_PARAM)) return createVillageShoppingStreetProject();
+  if (params.has(DEV_SNOW_MOUNTAIN_60_PARAM)) return createSnowMountain60Project();
+  if (params.has(DEV_ICE_PLAIN_64_PARAM)) return createIcePlain64Project();
   if (params.has(DEV_HOUSE_TEMPLATE_GALLERY_PARAM) || params.get(DEV_SMALL_HOUSE_VARIANT_PARAM) === "all") {
     return createHouseTemplateGalleryProject();
   }

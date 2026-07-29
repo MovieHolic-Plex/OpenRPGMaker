@@ -9,6 +9,7 @@ Use this index to find the right topic page before changing play mode, event exe
 - **[runtime-sessions.md](runtime-sessions.md)** — Session state, save slots, checkpoints, farming, friendship/gifts, calendar/time system, NPC schedules, lighting, weather, field spawns, followers, and RNG.
 - **[runtime-project-schema.md](runtime-project-schema.md)** — Authored project schema, story flags, terms, quests, endings, worldview, world graph, web export, migration, save performance, and persistence boundaries.
 - **[runtime-m2-flow-controls.md](runtime-m2-flow-controls.md)** — M2 runtime flow controls (End Event, Erase, setEventGraphicPattern, Wait, Movement, checkpoint, killPlayer, triggerEnding, scroll, camera, cutscene, lighting, weather, animation, picture, spawn/remove event) and the scene test runner.
+- **[state-system.md](state-system.md)** — State system end-to-end: authored `StateRecord` definition, `StateOntology` engine template, runtime `PlaySession.actorStateIds` application, editor DB view surface, and the definition-vs-application distinction users trip over.
 
 ## Quick routing
 

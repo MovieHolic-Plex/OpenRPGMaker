@@ -1,5 +1,6 @@
 import { clampElementListCount, resizeElementRecords } from "@/editor/databaseElementList";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { pruneDanglingElementRates } from "@/project/io/references";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
 import { isElementKind, readonlyValue, selectUtilityRecord } from "@/editor/panels/databaseUtilityRecordControls";
 import { store } from "@/project/store";
@@ -63,6 +64,9 @@ function renderElementsClassicList(elements: readonly DatabaseElementRecord[], h
             recordProjectSnapshot();
             store.update((project) => {
               project.database.elements = resizeElementRecords(project.database.elements ?? [], count);
+              // B4: 축소로 잘린 속성 id 에 대한 actor/enemy/class elementRates 잔재를 즉시 제거.
+              // 같은 ordinal 로 재생성 시 stale 등급이 소생하는 위험을 에디터 세션 내에서 차단.
+              pruneDanglingElementRates(project);
             }, { scope: "database", collection: "elements" });
             selectedElementIndex = clampIndex(selectedElementIndex, store.getCurrent().database.elements ?? []);
             host.replaceChildren();

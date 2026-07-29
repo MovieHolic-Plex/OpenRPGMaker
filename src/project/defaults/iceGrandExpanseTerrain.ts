@@ -8,6 +8,7 @@ import {
   ICE_GRAND_EXPANSE_CEILING_TILE,
   ICE_GRAND_EXPANSE_FLOOR_TILE,
   ICE_GRAND_EXPANSE_HEIGHT,
+  ICE_GRAND_EXPANSE_LIP_TILE,
   ICE_GRAND_EXPANSE_REGION_BASES,
   ICE_GRAND_EXPANSE_RIDGES,
   ICE_GRAND_EXPANSE_TERRAIN_ROUTE_PLAN,
@@ -27,6 +28,7 @@ import {
   outlinedSnowTile,
   paintBarriers,
   paintCliffFringe,
+  paintCliffLip,
   paintRouteOutline,
 } from "@/project/defaults/iceGrandExpanseTerrainShape";
 
@@ -219,13 +221,20 @@ export function buildIceGrandExpanseTerrain(input: IceGrandExpanseTerrainInput =
     lower: lowerTiles,
   }, validation.columns);
   if (!stamped.ok) throw new IceGrandExpanseTerrainError("RIDGE_STAMP_REJECTED");
-  for (let index = 0; index < stamped.lower.length; index += 1) if (iceDiagonalRole(stamped.lower[index] ?? TILE.EMPTY) !== null) masks.passable[index] = 0;
-  applyConnectors({ lower: stamped.lower, upper: upperTiles, masks }, routePlan);
+  // 절벽 상단 바로 위의 **바닥** 칸을 평지 립 343 으로 바꾼다(64×64 와 같은 근거).
+  //
+  // 능선 스탬프 **뒤에** 돈다. 정본 검증기는 대각 기둥 주변 칸의 재료를 보기 때문에,
+  // 스탬프 전에 립을 깔면 `RIDGE_STAMP_REJECTED` 가 난다(실제로 거부당했다).
+  // 립은 수평 절벽 상단(372/373/374) 위의 눈 바닥에만 닿으므로 대각 타일을 건드리지 않는다.
+  const shapedLower = [...stamped.lower];
+  paintCliffLip(shapedLower, masks.snow, ICE_GRAND_EXPANSE_WIDTH, ICE_GRAND_EXPANSE_LIP_TILE);
+  for (let index = 0; index < shapedLower.length; index += 1) if (iceDiagonalRole(shapedLower[index] ?? TILE.EMPTY) !== null) masks.passable[index] = 0;
+  applyConnectors({ lower: shapedLower, upper: upperTiles, masks }, routePlan);
   paintBarriers({ upper: upperTiles, passable: masks.passable, barriers: routePlan.barriers, clearings: routePlan.clearings, width: ICE_GRAND_EXPANSE_WIDTH });
   return {
     width: ICE_GRAND_EXPANSE_WIDTH,
     height: ICE_GRAND_EXPANSE_HEIGHT,
-    lowerTiles: stamped.lower,
+    lowerTiles: shapedLower,
     upperTiles,
     ceilingMask: masks.ceiling,
     columns: validation.columns,

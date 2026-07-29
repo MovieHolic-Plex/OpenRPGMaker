@@ -51,6 +51,17 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     hudTemplate: "boxes", transition: "sweep-cyan",
     themeVars: { "--battle-window-bg": "#0e1830", "--battle-window-edge": "#e0a030", "--battle-text": "#f4ecd8", "--battle-accent": "#ffcf3a" },
   },
+  mv: {
+    id: "mv", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "RPG Maker MV", layout: "frontview", showAllySprites: false,
+    hudTemplate: "rows", transition: "wipe-blue",
+    themeVars: { "--battle-window-bg": "#e8e8f0", "--battle-window-edge": "#1a2a6c", "--battle-text": "#1c2438", "--battle-accent": "#3858c8" },
+  },
+  // VX Ace 계열 JRPG 프론트뷰(기본 스킨): 우측 세로 명령창 + 하단 가로 파티 셀(얼굴 초상 포함).
+  vxace: {
+    id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "VX Ace", layout: "frontview", showAllySprites: false,
+    hudTemplate: "boxes", transition: "wipe-blue",
+    themeVars: { "--battle-window-bg": "#0b1020", "--battle-window-edge": "#20263c", "--battle-text": "#f4f7ff", "--battle-accent": "#ffd75a" },
+  },
 };
 
 const VALID_IDS = new Set(Object.keys(BATTLE_SKINS) as BattleSkinId[]);
@@ -63,9 +74,14 @@ export function listBattleSkinIds(): BattleSkinId[] {
   return Object.keys(BATTLE_SKINS) as BattleSkinId[];
 }
 
-/** legacy(`classic`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다. */
+/** 미설정/미지의 값이 떨어지는 기본 스킨. */
+export const DEFAULT_BATTLE_SKIN_ID: BattleSkinId = "vxace";
+
+/** legacy(`classic`/`pokemon`/undefined) 및 임의 문자열을 유효 스킨 id로 정규화한다.
+ *  미설정(undefined)은 기본 스킨(vxace)으로, legacy `classic` 은 rm2003 으로 남긴다. */
 export function resolveSkinId(legacy: string | undefined): BattleSkinId {
   if (legacy === "pokemon") return "pokemon";
-  if (!legacy || legacy === "classic") return "rm2003";
-  return VALID_IDS.has(legacy as BattleSkinId) ? (legacy as BattleSkinId) : "rm2003";
+  if (legacy === "classic") return "rm2003";
+  if (!legacy) return DEFAULT_BATTLE_SKIN_ID;
+  return VALID_IDS.has(legacy as BattleSkinId) ? (legacy as BattleSkinId) : DEFAULT_BATTLE_SKIN_ID;
 }

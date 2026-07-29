@@ -152,6 +152,55 @@ function isAutoFamily(tags: ReadonlySet<string>): boolean {
   return tags.has("road") || tags.has("dirt") || tags.has("autotile");
 }
 
+/** 이 타일이 자동 연결(오토타일) 대상인가 — 연결 모드 힌트("Auto"/"Manual" 안내)에 쓰인다.
+ * 옛 tileStampBrushes.ts(제거됨)에 있던 판정 로직을 그대로 옮겼다 — 스탬프 기능과는
+ * 무관하게 "이 타일이 이웃과 성형되는 오토타일인가"만 본다. */
+export function isAutoConnectCandidate(tile: number, tileset?: TilesetDef): boolean {
+  if (tileset?.autotileGroups?.some((group) => group.memberTileIds.includes(tile) || group.connectTileIds?.includes(tile))) {
+    return true;
+  }
+  const meaning = tileAutoConnectMeaning(tile, tileset);
+  return (
+    meaning.has("autotile")
+    || meaning.has("road")
+    || meaning.has("dirt")
+    || meaning.has("wall")
+    || meaning.has("floor")
+    || meaning.has("sand")
+  );
+}
+
+function tileAutoConnectMeaning(tile: number, tileset?: TilesetDef): ReadonlySet<string> {
+  const words = new Set<string>();
+  const meta = tileset?.tileMeta?.[tile];
+  addMeaning(words, meta?.label);
+  addMeaning(words, meta?.description);
+  addMeaning(words, meta?.role);
+  addMeaning(words, meta?.repeatability);
+  if (meta?.repeatability === "auto") words.add("autotile");
+
+  for (const group of tileset?.tileGroups ?? []) {
+    if (!group.tileIds.includes(tile)) continue;
+    addMeaning(words, group.id);
+    addMeaning(words, group.name);
+    addMeaning(words, group.role);
+    addMeaning(words, group.description);
+    addMeaning(words, group.placementRules);
+    addMeaning(words, group.patternGrammar?.kind);
+    if (group.patternGrammar?.kind === "autotile_3x3") words.add("autotile");
+  }
+
+  if (words.size === 0) {
+    const descriptor = describeChipsetTile(tile);
+    descriptor.tags.forEach((tag) => words.add(tag));
+    addMeaning(words, descriptor.key);
+    addMeaning(words, descriptor.label);
+    addMeaning(words, descriptor.description);
+    addMeaning(words, descriptor.aiLabel);
+  }
+  return words;
+}
+
 function appendLayerLocation(
   locations: UsedTileLocation[],
   input: UsedLocationInput,

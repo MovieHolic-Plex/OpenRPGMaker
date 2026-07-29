@@ -153,7 +153,7 @@ function commandControl(
     case "escape":
       return commandButton(command.name, commandTestId(command), "boot", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "escape" });
-      }, targetMode);
+      }, targetMode || !snapshot.canEscape);
     case "switch": {
       const candidates = switchCandidates(snapshot);
       return commandButton(command.name, commandTestId(command), "switch", candidates.length > 0 ? `${candidates.length}명` : "없음", () => {

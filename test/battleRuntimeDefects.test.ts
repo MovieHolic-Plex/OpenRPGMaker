@@ -237,6 +237,21 @@ describe("battle runtime defect regressions", () => {
     expect(runtime.snapshot().lastActionResult?.targetId).toBe("enemy-1");
     expect(runtime.snapshot().actors[0]!.hp).toBe(actorHp);
   });
+
+  it("does not auto-win when all troop members start hidden", () => {
+    const project = battleProject();
+    const troop = project.database.troops.find((record) => record.id === "troop_slime")!;
+    troop.members = [
+      { enemyId: "enemy_slime", x: 120, y: 120, hidden: true },
+      { enemyId: "enemy_dragon", x: 180, y: 120, hidden: true },
+    ];
+    const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true, rng: () => 0.5 });
+    // 전원 hidden 이면 가시 적이 0명. 빈 배열에 every() 가 true 를 반환해 즉시 승리 처리되는
+    // 함정을 막았는지 확인한다 — reveal 이벤트를 기다리며 전투는 미종료 상태여야 한다.
+    expect(runtime.snapshot().enemies.length).toBe(0);
+    expect(runtime.snapshot().result).toBeUndefined();
+    expect(runtime.snapshot().phase).not.toBe("resolved");
+  });
 });
 
 describe("battle authoring tool reference guards", () => {

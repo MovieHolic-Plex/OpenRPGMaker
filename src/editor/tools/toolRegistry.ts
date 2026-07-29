@@ -161,7 +161,10 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(EXPORT_TOOLS, "system"),
   ...withDomain(PLAY_TOOLS, "system"),
   ...withDomain(QUERY_TOOLS, "map"),
-  ...withDomain(AI_DOC_TOOLS, "core"),
+  // present_doc / list_ai_docs: "core" 는 **모든 도메인에 상시 노출**이라 맵 크기를 묻는
+  // 한 줄짜리 질문에도 따라붙었다. 어떤 스킬·프롬프트도 이 둘을 요구하지 않으므로(grep 확인)
+  // system 도메인으로 내려 필요할 때만 노출한다. 노출 상한(40) 자리도 그만큼 돌아온다.
+  ...withDomain(AI_DOC_TOOLS, "system"),
   ...withDomain(TILE_METADATA_TOOLS, "tile"),
   ...withDomain(CLUSTER_RULE_TOOLS, "tile"),
   ...withDomain(GROUP_LAYOUT_TOOLS, "tile"),
@@ -207,15 +210,19 @@ export interface ToolExposureOptions {
 // 비용은 특정 도메인(특히 레지스트리 후순위 패밀리) 전멸이 아니라 전 도메인에 1툴씩
 // 분산된다 — 2026-07-10 라이브 실측(place_chest 크라우드아웃)의 재발 방지 구조.
 const MAX_EXPOSED_TOOLS = 40;
-const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
+// 핀 규칙: deprecated(=supersededBy 가 붙는) 툴은 절대 핀하지 않는다. toOpenAiTools가
+// deprecated를 먼저 걸러내므로 핀해도 노출되지 않고, "보장됐다"는 착각만 남는다
+// (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
+// 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
+export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
   ["tile", new Set([
-    "author_house",
+    "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",
     "place_props",
-    "build_house_kit",
-    "build_house_lots", // 집 위치+마당 꾸밈 의도(LLM) → 산포 좌표(코드)
     "build_castle", // 성채 모듈(지붕면/성벽/원형타워) 결정론 시공
-    // 실내 하네스 — 상한(40) 트림에서 build_house_kit에 밀려 "실내 만들어줘"가 외장 집으로 새는 것을 막는다.
+    // 실내 하네스 — 상한(40) 트림에서 **실제로 노출되는** 야외 시공 툴(author_house 등)에
+    // 밀려 "실내 만들어줘"가 외장 집으로 새는 것을 막는다.
+    // (build_house_kit/build_house_lots는 deprecated=비노출이라 애초에 핀 대상이 아니다.)
     "start_interior_room_session",
     "run_interior_room_pipeline",
     "advance_interior_room_build",

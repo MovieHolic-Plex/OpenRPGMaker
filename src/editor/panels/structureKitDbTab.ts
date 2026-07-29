@@ -130,8 +130,6 @@ function renderKitCard(tileset: TilesetDef, kit: StructureKitDef, rerender: () =
           click: () => {
             editorState.set({
               activePaletteStamp: paletteStampFromKit(kit),
-              activeStampId: null,
-              activeStructureStampId: null,
               tool: "paint",
             });
             toast(`'${kit.name ?? "패턴"}' 스탬프를 브러시로 선택했습니다`, "ok");

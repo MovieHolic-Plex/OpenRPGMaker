@@ -1,7 +1,11 @@
 /* ── 공용 커서 메뉴(runtimeCursorMenu.ts) 비주얼 — RM2003 정통(agy 자문) ──
    attachCursorMenu 가 관리하는 항목에 .rm-nav-item 을 붙이고, 선택 시 .selected 를 토글한다.
    좌측 거터에 ▶ 커서를 절대배치(레이아웃 밀림 없음)하고 좌우로 통통 튀는 애니를 준다. */
-.rm-nav-item {
+/* 클래스를 두 번 써서 특정도를 (0,2,0) 으로 올린다.
+   `.game-over-panel button` 같은 요소+클래스 규칙(0,1,1)이 padding 을 10px 로 덮어써
+   ▶ 커서가 첫 글자 위에 겹쳐 그려졌다(실측: 엔딩 버튼 padding-left 10px, 커서 left 5px).
+   !important 없이 커서 자리만 지킨다. */
+.rm-nav-item.rm-nav-item {
   position: relative;
   padding-left: 22px;
 }

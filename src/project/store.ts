@@ -103,7 +103,11 @@ class ProjectStore {
   constructor() {
     this.current = createBlankProject();
     this.boundOnlineHandler = () => this.onNetworkRestored();
-    if (typeof window !== "undefined") {
+    // 존재만 보지 않고 **능력**을 본다. 테스트가 심는 부분 스텁 window 에는 addEventListener 가
+    // 없어서 `typeof window !== "undefined"` 만으로는 생성자가 던졌고, 그 결과 저장/로드
+    // 테스트 10여 건이 아예 실행되지 않았다(안전망이 조용히 사라진 상태였다).
+    // regionTaskStatus.ts 가 이미 쓰는 관례와 맞춘다.
+    if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
       window.addEventListener("online", this.boundOnlineHandler);
     }
   }

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "C:\Users\USER\oh-my-openagent\packages\omo-senpi\plugin\skills\coding-agent-sessions\scripts\find-agent-sessions.py", line 19, in <module>
+    _ = runpy.run_module("agent_sessions.cli", run_name="__main__")
+  File "<frozen runpy>", line 234, in run_module
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\USER\oh-my-openagent\packages\omo-senpi\plugin\skills\coding-agent-sessions\scripts\agent_sessions\cli.py", line 283, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\USER\oh-my-openagent\packages\omo-senpi\plugin\skills\coding-agent-sessions\scripts\agent_sessions\cli.py", line 18, in main
+    _emit(_list_payload(_filter(sessions, opts), sessions, opts.limit, include_subagents=opts.include_subagents))
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\USER\oh-my-openagent\packages\omo-senpi\plugin\skills\coding-agent-sessions\scripts\agent_sessions\cli.py", line 269, in _emit
+    print(dumps(value))
+    ~~~~~^^^^^^^^^^^^^^
+UnicodeEncodeError: 'cp949' codec can't encode character '\u2014' in position 695: illegal multibyte sequence

@@ -1,7 +1,6 @@
 import type {
   ActorId,
   BattleAnimationId,
-  BattlerAnimationId,
   ClassId,
   CropId,
   EnemyId,
@@ -116,10 +115,10 @@ export interface ClassOptions {
 
 export type BattleFlow = "gauge" | "strict";
 
-/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 10-스킨 union + legacy "classic". */
+/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 12-스킨 union + legacy "classic". */
 export type BattleUiStyle =
   | "pokemon" | "rm2003" | "rm2000" | "octopath" | "chrono"
-  | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun"
+  | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
   | "classic"; // legacy alias, remapped by resolveSkinId → rm2003
 
 /** 전투 아군측 배틀러 소스 — actors: 파티 액터가 직접 싸움(기본),
@@ -141,7 +140,12 @@ export type DatabaseElementKind = "physical" | "magical";
 export interface DatabaseElementRecord {
   id: string;
   name: string;
+  /** 속성 종류. "magical" 인 경우 데미지 감소를 mind(마법 방어력) 로 라우팅 (B2 wiring).
+   *  physical 이면 defense(물리 방어력) 사용. runtime.elementMultiplierFor / isMagicalElement /
+   *  predictSkillDamage 가 소비한다. */
   kind: DatabaseElementKind;
+  /** @reserved 미사용. 등급 라벨은 A–E 하드코딩으로 동작하며, 편집 UI 도 없음(B3).
+   *  스키마 호환을 위해 유지·정규화만 수행. */
   rateLabels: ActorRateGrade[];
   damageMultipliers: Record<ActorRateGrade, number>;
 }
@@ -651,25 +655,6 @@ export interface BattleAnimationScreenShake {
   durationFrames: number;
 }
 
-export interface BattlerAnimationRecord {
-  id: BattlerAnimationId;
-  name: string;
-  resourceId?: string;
-  poses: BattlerAnimationPose[];
-}
-
-export type BattlerAnimationPoseKind = "idle" | "ready" | "attack" | "defend" | "damage" | "victory" | "dead";
-
-export interface BattlerAnimationPose {
-  pose: BattlerAnimationPoseKind;
-  frames: BattlerAnimationPoseFrame[];
-}
-
-export interface BattlerAnimationPoseFrame {
-  pattern: number;
-  durationMs: number;
-}
-
 export interface DatabaseRecords {
   actors: ActorRecord[];
   classes: ClassRecord[];
@@ -682,13 +667,47 @@ export interface DatabaseRecords {
   battleAnimations: BattleAnimationRecord[];
 }
 
+/** 라이프스킬 종류 — 스타듀밸리 5스킬 차용. */
+export type LifeSkillType = "farming" | "mining" | "foraging" | "fishing" | "combat";
+
+/** 레벨업 보상 — 스위치 ON 또는 제작 레시피 해금. */
+export interface LifeSkillLevelUpReward {
+  readonly level: number;
+  readonly switchId?: string;
+  readonly recipeId?: string;
+}
+
+/** 생활 스킬 레코드 — 농사/채광/채집/나씨/전투 XP 레벨링. */
+export interface LifeSkillRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly skillType: LifeSkillType;
+  readonly maxLevel: number;
+  readonly levelUpRewards: readonly LifeSkillLevelUpReward[];
+}
+
+/** 농장 동물 종류. */
+export type AnimalType = "chicken" | "cow" | "sheep" | "duck" | "rabbit" | (string & {});
+
+/** 농장 동물 레코드 — 산물/주기/호감도 요구치 정의. */
+export interface AnimalRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly animalType: AnimalType;
+  readonly produceItemId?: string;
+  readonly produceDays: number;
+  readonly friendshipRequired: number;
+  readonly graphicResourceId?: string;
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
   elements?: DatabaseElementRecord[];
   terrains?: DatabaseTerrainRecord[];
   battleCommands?: DatabaseBattleCommandRecord[];
-  battlerAnimations?: BattlerAnimationRecord[];
   monsterSpecies?: MonsterSpeciesRecord[];
   crops?: CropRecord[];
+  lifeSkills?: LifeSkillRecord[];
+  animals?: AnimalRecord[];
 }
 
 export interface TitleScreenLayout {
@@ -747,10 +766,15 @@ export interface SystemRecords {
   systemResourceId?: string;
   battleSystemResourceId?: string;
   battleBgmResourceId?: string;
+  /** 맵이 BGM 을 지정하지 않았을 때(mode=parent 상속 실패 포함) 쓰는 프로젝트 기본 BGM. */
+  defaultBgmResourceId?: string;
   initialTroopId?: TroopId;
   battleFlow?: BattleFlow;
   battleUiStyle?: BattleUiStyle;
   battleParty?: BattleParty;
+  /** 전투 규칙 엔진 선택. "rm2k3"(기본/생략) 또는 "gen1"(포켓몬 레드 스타일).
+   *  생략 시 기존 RM2k3 전투 규칙이 100% 유지된다. CSS·UI 게이팅은 body[data-battle-model] 속성으로 한다. */
+  battleModel?: "rm2k3" | "gen1";
   activeSlots?: number;
   rewardPolicy?: RewardPolicy;
   titleScreen?: TitleScreenSettings;
@@ -772,6 +796,8 @@ export interface SystemRecords {
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
   /** Out-of-battle party monster care (walk ticks + feed/toy items). */
   monsterCare?: MonsterCareConfig;
+  /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */
+  skillSystem?: { enabled: boolean };
 }
 
 export interface ActionCombatHudConfig {

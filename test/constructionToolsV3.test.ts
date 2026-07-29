@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 import { getTool, runTool, toOpenAiTools, type ToolContext } from "@/editor/tools";
 import { REMOVED_V2_PLACE_TOOLS } from "@/editor/tools/v2";
 import { buildEightNeighborVariantMap } from "@/editor/tools/v3/rmTypeExpander";
-import { DEFAULT_MODEL } from "@/ai/llmClient";
+import { DEFAULT_LITE_MODEL, DEFAULT_MODEL } from "@/ai/llmClient";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -410,7 +410,13 @@ describe("구 v2 배치 제거 + v3 정공법 (스택 단순화)", () => {
     }
   });
 
-  it("DEFAULT_MODEL은 flash-lite 단일 경로다 (영역 작업 실측: MiniMax 이원화 기본 해제)", () => {
-    expect(DEFAULT_MODEL).toBe("google/gemini-3.1-flash-lite");
+  it("기본 설정은 감독/실행 단일 경로다 (영역 작업 실측: MiniMax 이원화 기본 해제)", () => {
+    // 이 테스트가 지키려는 것은 **이원화 해제**이지 특정 모델 이름이 아니다.
+    // 예전에는 리터럴("google/gemini-3.1-flash-lite")을 박아 뒀는데, 기본 모델이 바뀔 때마다
+    // 여기까지 같이 고쳐야 해서 실제로 한 번 놓쳤다(리터럴을 단언하는 곳이 두 군데였다).
+    // 모델 이름 자체는 test/aiLlmClient.test.ts 가 한 곳에서 못박는다.
+    // assistantSession.orchestrationEnabled() 가 `lite !== main` 으로 이원화를 켜므로,
+    // 두 값이 같다는 것이 곧 "기본은 단일 경로" 다.
+    expect(DEFAULT_LITE_MODEL).toBe(DEFAULT_MODEL);
   });
 });

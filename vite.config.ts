@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin, type ProxyOptions } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -7,10 +7,82 @@ import type { CodexSession } from "./scripts/lib/codexOAuthSession.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
+/**
+ * dev 서버 TLS. `https://localhost:9999` 로 접속하려면 반드시 있어야 한다.
+ *
+ * 이게 없던 동안 `https://localhost:9999` 는 TLS 핸드셰이크에서 죽었다(실측 curl 코드 000).
+ * 서버는 살아서 http 로 200 을 주고 있었으므로 "서버가 안 뜬다"가 아니라
+ * **평문 서버에 https 로 노크하고 있었던 것**이 원인이었다.
+ *
+ * 인증서는 자기서명이고 `.certs/` 에 두며 커밋하지 않는다. 없으면 평문 http 로 뜬다
+ * (CI·컨테이너처럼 인증서를 만들지 않는 환경을 막지 않기 위해).
+ * 재발급: scripts/dev-certs.sh
+ */
+function devServerHttps(): { key: Buffer; cert: Buffer } | undefined {
+  if (process.env.DEV_SERVER_NO_TLS === "1") return undefined;
+  const key = fileURLToPath(new URL("./.certs/localhost-key.pem", import.meta.url));
+  const cert = fileURLToPath(new URL("./.certs/localhost-cert.pem", import.meta.url));
+  if (!existsSync(key) || !existsSync(cert)) return undefined;
+  return { key: readFileSync(key), cert: readFileSync(cert) };
+}
+
 function devServerPort(mode: string): number {
   const rawPort = loadEnv(mode, process.cwd(), "").DEV_SERVER_PORT;
   const port = Number(rawPort ?? DEFAULT_DEV_SERVER_PORT);
   return Number.isInteger(port) && port > 0 ? port : DEFAULT_DEV_SERVER_PORT;
+}
+
+// 게이트웨이 키는 서버 전용 APITOPIA_API_KEY (non-VITE) 에서 읽는다 — 클라이언트 번들에 인라인되지
+// 않는다. Vite 는 .env/.env.local 을 process.env 에 넣지 않으므로 반드시 loadEnv 로 읽어야 한다.
+// (과거 `process.env.APITOPIA_API_KEY` 직접 읽기는 항상 undefined 여서 `Authorization: "Bearer "`
+// 빈 값이 게이트웨이로 전송됐다 — 인증이 조용히 실패하던 원인.)
+function gatewayApiKey(mode: string): string {
+  const fromEnvFiles = loadEnv(mode, process.cwd(), "").APITOPIA_API_KEY;
+  return (fromEnvFiles ?? process.env.APITOPIA_API_KEY ?? "").trim();
+}
+
+// qwencloud(알리바바 MaaS OpenAI 호환) 경로 /api/qwen 의 키도 서버 전용 QWENCLOUD_API_KEY (non-VITE)
+// 에서 읽는다 — gatewayApiKey 와 같은 이유: Vite 는 .env 를 process.env 에 넣지 않으므로 loadEnv 필수.
+function qwenCloudApiKey(mode: string): string {
+  const fromEnvFiles = loadEnv(mode, process.cwd(), "").QWENCLOUD_API_KEY;
+  return (fromEnvFiles ?? process.env.QWENCLOUD_API_KEY ?? "").trim();
+}
+
+// cpenrouter.space(OpenAI 호환 게이트웨이) 경로 /api/cpen 의 키도 서버 전용 CPENROUTER_API_KEY
+// (non-VITE) 에서 읽는다 — gatewayApiKey 와 같은 이유: Vite 는 .env 를 process.env 에 넣지 않으므로
+// loadEnv 필수.
+function cpenRouterApiKey(mode: string): string {
+  const fromEnvFiles = loadEnv(mode, process.cwd(), "").CPENROUTER_API_KEY;
+  return (fromEnvFiles ?? process.env.CPENROUTER_API_KEY ?? "").trim();
+}
+
+// 루프백 여부 판정 — IPv4/IPv6/IPv4-mapped-IPv6 모두 커버.
+function isLoopbackAddress(address: string | undefined): boolean {
+  if (!address) return false;
+  const host = address.replace(/^::ffff:/, "");
+  return host === "::1" || host.startsWith("127.");
+}
+
+// /api/ai, /api/qwen, /api/cpen 프록시는 서버 측에서 유료 게이트웨이 키를 주입한다. dev 서버는
+// 0.0.0.0 에 바인드되므로 (LAN 기기 테스트용) 가드 없이는 같은 네트워크의 누구나 이 경로로 키를
+// 무제한 사용할 수 있다 — 오픈 릴레이. 아래 CORS 미들웨어와 동일한 위협 모델을 프록시에도 적용한다.
+// Origin 헤더는 위조 가능하므로 소켓 원격 주소가 루프백인지로 판정한다.
+const LOCAL_ONLY_PROXY_PATHS = ["/api/ai", "/api/qwen", "/api/cpen"] as const;
+function localOnlyAiProxyPlugin(): Plugin {
+  return {
+    name: "rpgzzu-local-only-ai-proxy",
+    // configureServer 에서 반환 함수를 쓰지 않고 즉시 등록하면 내부 proxy 미들웨어보다 앞선다.
+    configureServer(server) {
+      for (const proxyPath of LOCAL_ONLY_PROXY_PATHS) {
+        server.middlewares.use(proxyPath, (req, res, next) => {
+          if (isLoopbackAddress(req.socket?.remoteAddress ?? undefined)) return next();
+          res.statusCode = 403;
+          res.setHeader("Content-Type", "text/plain; charset=utf-8");
+          res.end(`forbidden: ${proxyPath} is loopback-only (the gateway key is injected server-side)`);
+        });
+      }
+    },
+  };
 }
 
 // 같은 머신의 Vite dev 서버(localhost/127.0.0.1, 임의 포트)만 허용 — CORS "*"는 열려 있는
@@ -206,8 +278,66 @@ function codexOAuthPlugin(): Plugin {
   };
 }
 
-export default defineConfig(({ mode }) => ({
-  plugins: [aiActivityDiskPlugin(), codexOAuthPlugin()],
+export default defineConfig(({ mode }) => {
+  const apitopiaKey = gatewayApiKey(mode);
+  if (!apitopiaKey) {
+    // 키가 없으면 프록시를 아예 등록하지 않는다 — 빈 Bearer 로 401 을 받고 원인을 못 찾는 대신
+    // /api/ai 가 404 로 명확히 실패하고, 클라이언트의 "API 키 없음" 안내가 정상 동작한다.
+    console.warn(
+      "[rpg-zzu] APITOPIA_API_KEY 가 없어 /api/ai 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
+    );
+  }
+  const qwenKey = qwenCloudApiKey(mode);
+  if (!qwenKey) {
+    console.warn(
+      "[rpg-zzu] QWENCLOUD_API_KEY 가 없어 /api/qwen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
+    );
+  }
+  const cpenKey = cpenRouterApiKey(mode);
+  if (!cpenKey) {
+    console.warn(
+      "[rpg-zzu] CPENROUTER_API_KEY 가 없어 /api/cpen 프록시를 등록하지 않습니다. .env.local 에 키를 넣으세요."
+    );
+  }
+  // 키가 있는 경로만 프록시를 등록한다(빈 Bearer 전송 금지). 접근은 localOnlyAiProxyPlugin 이 루프백으로 제한.
+  const proxy: Record<string, ProxyOptions> = {};
+  if (apitopiaKey) {
+    proxy["/api/ai"] = {
+      target: "https://apitopia.labs.mengmota.com/v1",
+      changeOrigin: true,
+      rewrite: (path: string) => path.replace(/^\/api\/ai/, ""),
+      headers: {
+        Authorization: `Bearer ${apitopiaKey}`,
+      },
+    };
+  }
+  if (qwenKey) {
+    // qwencloud(알리바바 MaaS) OpenAI 호환 엔드포인트. rewrite 로 /api/qwen 접두사를 제거하면
+    // /api/qwen/chat/completions → target 뒤의 /compatible-mode/v1/chat/completions 로 이어진다.
+    proxy["/api/qwen"] = {
+      target: "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1",
+      changeOrigin: true,
+      rewrite: (path: string) => path.replace(/^\/api\/qwen/, ""),
+      headers: {
+        Authorization: `Bearer ${qwenKey}`,
+      },
+    };
+  }
+  if (cpenKey) {
+    // cpenrouter.space OpenAI 호환 게이트웨이(라이브 검증: POST /v1/chat/completions, GET /v1/models).
+    // rewrite 로 /api/cpen 접두사를 제거하면 /api/cpen/chat/completions → target 뒤의
+    // /chat/completions, 즉 https://cpenrouter.space/v1/chat/completions 로 이어진다.
+    proxy["/api/cpen"] = {
+      target: "https://cpenrouter.space/v1",
+      changeOrigin: true,
+      rewrite: (path: string) => path.replace(/^\/api\/cpen/, ""),
+      headers: {
+        Authorization: `Bearer ${cpenKey}`,
+      },
+    };
+  }
+  return {
+  plugins: [aiActivityDiskPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
@@ -220,6 +350,8 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     allowedHosts: true,
     open: false,
+    // 인증서가 있으면 https 로 뜬다. 없으면 평문 http (undefined = vite 기본).
+    https: devServerHttps(),
     fs: {
       // 워크트리에서 node_modules 를 정션(mklink /J)으로 쓰면 @fs 실경로가 원본 저장소의
       // node_modules 로 풀린다 — 기본 allow(워크스페이스 루트)만으로는 403. 그 경로만 추가 허용.
@@ -231,16 +363,14 @@ export default defineConfig(({ mode }) => ({
     watch: {
       ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
     },
-    proxy: {
-      "/api/ai": {
-        target: "https://apitopia.labs.mengmota.com/v1",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/ai/, ""),
-      },
-    },
+    // 상대 baseUrl(/api/ai, /api/qwen, /api/cpen)을 쓰는 클라이언트는 Authorization 을 보내지 않고
+    // 이 프록시가 주입한다. 키가 없는 경로는 등록하지 않는다(빈 Bearer 전송 금지). 접근은
+    // localOnlyAiProxyPlugin 이 루프백으로 제한.
+    proxy: Object.keys(proxy).length > 0 ? proxy : undefined,
   },
   build: {
     target: "es2022",
     sourcemap: false,
   },
-}));
+  };
+});

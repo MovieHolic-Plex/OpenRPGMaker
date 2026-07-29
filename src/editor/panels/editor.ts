@@ -21,11 +21,8 @@ import {
 } from "@/editor/mapEditLocks";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
-import {
-  installHarnessSuggestionController,
-  uninstallHarnessSuggestionController,
-} from "@/editor/harnessSuggestion/suggestionController";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
@@ -54,6 +51,8 @@ const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 const RESPONSIVE_BREAKPOINT = 720;
 const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
+// AI 연동 칩 주기 재조회 — chatgpt OAuth 토큰 만료·companion 장애를 감지해 칩을 다시 그린다.
+const AI_CONNECTION_POLL_MS = 60_000;
 
 type LoadedEditorLayout = {
   readonly leftWidth: number;
@@ -87,6 +86,8 @@ let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
 let unsubUiMode: (() => void) | null = null;
+// AI 연동 칩 폴링 타이머 — teardownEditor 에서 정리한다.
+let aiConnectionPollTimer: ReturnType<typeof setInterval> | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
@@ -204,8 +205,7 @@ export function renderEditor(main: HTMLElement): void {
   });
   installSelectionChipHint();
   maybeStartBasicCoachMarks();
-  // 보이지 않는 하네스 §③ — 붓질 관찰 → 휴지기 조용한 제안 카드.
-  installHarnessSuggestionController();
+  startAiConnectionPolling();
 }
 
 /** Re-apply basic/expert density without tearing down Phaser or AI session. */
@@ -275,7 +275,7 @@ export function applyEditorUiModeLayout(): void {
 export function teardownEditor(): void {
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
-  uninstallHarnessSuggestionController();
+  stopAiConnectionPolling();
 
   unsubStore?.();
   unsubAutoSave?.();
@@ -318,6 +318,21 @@ export function toggleLeftPanel(): void {
 function refreshStatusbar(): void {
   if (!statusBarRoot) return;
   renderEditorStatusbar(statusBarRoot);
+}
+
+/** AI 연동 칩 폴링 — 부팅 시 1회 즉시 조회하고 이후 주기적으로 캐시를 갱신한다. */
+function startAiConnectionPolling(): void {
+  stopAiConnectionPolling();
+  void refreshAiConnectionStatus(refreshStatusbar);
+  aiConnectionPollTimer = setInterval(() => {
+    void refreshAiConnectionStatus(refreshStatusbar);
+  }, AI_CONNECTION_POLL_MS);
+}
+
+function stopAiConnectionPolling(): void {
+  if (aiConnectionPollTimer === null) return;
+  clearInterval(aiConnectionPollTimer);
+  aiConnectionPollTimer = null;
 }
 
 export function isLeftCollapsed(): boolean {
@@ -592,6 +607,8 @@ function renderEditorStatusbar(container: HTMLElement): void {
     cells.push(renderMapEditLockStatus(lockStatus, mapId));
   }
   cells.push(renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar));
+  // AI 연동 칩 — DB 칩과 동일 패턴. 영역 작업·AI 채팅이 LLM 인증에 의존하므로 상태를 항상 노출한다.
+  cells.push(renderAiConnectionStatus(refreshStatusbar));
   container.append(...cells);
 }
 

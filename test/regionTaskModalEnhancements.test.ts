@@ -18,12 +18,6 @@ function openModal(options: Parameters<typeof openRegionTaskModal>[0]): FakeElem
 }
 
 // 기존 regionTaskModal.test.ts 의 flush 패턴 — microtask 큐 draining.
-// fakeDom 이 KeyboardEvent 생성자를 노출하지 않아 plain Event + key 로 흉내.
-function keyEvent(key: string): Event {
-  const event = new Event("keydown", { bubbles: true });
-  Object.defineProperty(event, "key", { value: key });
-  return event;
-}
 function flush(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 0));
 }
@@ -88,44 +82,6 @@ describe("E: 동적 추천", () => {
   });
 });
 
-describe("F: 키보드 단축키 (textarea 비포커스시)", () => {
-  beforeEach(() => {
-    restoreDom = installFakeDom();
-  });
-
-  it("S 키 입력으로 스탬프 에디터 진입", () => {
-    const root = openModal({
-      mapId: "m1",
-      region: REGION,
-      run: vi.fn(),
-      saveStamp: vi.fn(() => null),
-      projectForStampName: () => stubProject(),
-      projectForContext: () => stubProject(),
-    });
-    // fakeDom 은 blur() 미구현 — activeElement 를 body 로 리셋해 비포커스 상태 흉내.
-    (document as unknown as { activeElement: unknown }).activeElement = null;
-    document.dispatchEvent(keyEvent("s"));
-    const editor = findByTestId(root, "region-task-stamp-editor");
-    expect(editor?.classList.contains("hidden")).toBe(false);
-  });
-
-  it("textarea 포커스시 단일키 무시", () => {
-    const root = openModal({
-      mapId: "m1",
-      region: REGION,
-      run: vi.fn(),
-      saveStamp: vi.fn(() => null),
-      projectForStampName: () => stubProject(),
-      projectForContext: () => stubProject(),
-    });
-    const input = findByTestId(root, "region-task-input");
-    input?.focus?.();
-    document.dispatchEvent(keyEvent("s"));
-    const editor = findByTestId(root, "region-task-stamp-editor");
-    expect(editor?.classList.contains("hidden")).toBe(true);
-  });
-});
-
 describe("A: 부분 적용", () => {
   beforeEach(() => {
     __clearPendingRegionApplyForTest();
@@ -171,7 +127,19 @@ describe("A: 부분 적용", () => {
     expect(chunkTree).not.toBeNull();
     expect(chunkTree?.classList.contains("hidden")).toBe(false);
     expect(findByTestId(root, "region-task-partial-apply")).not.toBeNull();
-    expect(findByTestId(root, "region-task-apply")?.textContent).toContain("모두");
+    // 재설계 전에는 "✓ 모두 적용"이었다. 이제 「선택 적용」은 「고급」 안으로 들어가고
+    // 주 버튼은 하나뿐이라 "모두"로 구분할 대상이 없다 — 대신 실제 변경 칸 수를 보여 준다.
+    expect(findByTestId(root, "region-task-apply")?.textContent).toContain("적용");
+    expect(findByTestId(root, "region-task-apply")?.textContent).toContain("3칸");
+  });
+
+  it("부분 적용 라벨은 청크 개수가 아니라 칸 수를 보여 준다", async () => {
+    // 회귀 가드: 예전엔 selectedChunkIds.size 를 "N칸"으로 찍어, 3칸짜리 청크 하나를
+    // 고르면 "선택 1칸 적용"이라고 표시했다(정반대로 읽히는 오표기).
+    const root = await setupPartialApply();
+    const partialBtn = findByTestId(root, "region-task-partial-apply");
+    expect(partialBtn?.textContent).toContain("3칸");
+    expect(partialBtn?.textContent).not.toContain("1칸");
   });
 
   it("chunk 체크 해제 시 부분 적용 버튼 라벨 갱신", async () => {

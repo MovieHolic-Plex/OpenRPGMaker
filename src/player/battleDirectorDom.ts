@@ -245,7 +245,10 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     cards.append(item);
   }
 
-  panel.append(crest, title, cards);
+  // crest/title/cards 는 위에서 없을 때만 만들어 이미 append 했다. 여기서 다시 append 하면
+  // 재동기화(revealStage 진행) 때마다 그 3개가 확인 버튼/계속 프롬프트 뒤로 밀려나, 화면
+  // 순서가 "확인 → 승리" 로 뒤집힌다(실측: children = confirm, prompt, crest, title, cards).
+  // 그래서 재배치는 하지 않는다.
   if (!panel.querySelector(".battle-result-confirm")) {
     const button = document.createElement("button");
     button.type = "button";

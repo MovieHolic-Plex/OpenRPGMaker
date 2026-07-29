@@ -365,15 +365,18 @@ button.btn:disabled {
   line-height: 1.25;
   z-index: 28;
 }
+/* 이벤트 마커는 클릭으로 이벤트를 실행하는 히트박스라 pointer-events 는 살려두되,
+   화면에는 보이지 않아야 한다. opacity 0.08 + 배경색이면 게임 화면과 대사창 위에
+   흐린 초록 사각형으로 그대로 드러난다(실측: 대사창 안에 32x32 초록 패치).
+   player.css 쪽 의도(opacity 0.01)와 맞춘다 — 0 이 아니라 0.01 이어야 히트 테스트가 남는다. */
 .runtime-debug-marker {
   position: absolute;
   width: 16px;
   height: 16px;
   overflow: hidden;
-  opacity: 0.08;
+  opacity: 0.01;
   pointer-events: auto;
   color: var(--text-inverse);
-  background: var(--accent-editor);
   font-size: 1px;
   z-index: 6;
 }

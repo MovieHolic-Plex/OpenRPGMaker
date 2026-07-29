@@ -1,13 +1,6 @@
 import { deserialize, serialize } from "./io";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { projectWithoutEventDrafts } from "./eventDrafts";
-import {
-  defaultBattleAnimationRecords,
-  defaultBattlerAnimationRecords,
-  defaultSkillRecords,
-  defaultStateRecords,
-} from "./defaults/defaultDatabaseStarterRecords";
-import { defaultItemRecords } from "./defaults/defaultDatabaseItemRecords";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
@@ -1139,14 +1132,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function repairSupabaseCurrentJson(value: unknown): unknown {
   if (!isRecord(value)) return value;
-  const database = value.database;
-  if (isRecord(database)) {
-    appendMissingRecords(database, "skills", defaultSkillRecords());
-    appendMissingRecords(database, "items", defaultItemRecords());
-    appendMissingRecords(database, "states", defaultStateRecords());
-    appendMissingRecords(database, "battleAnimations", defaultBattleAnimationRecords());
-    appendMissingRecords(database, "battlerAnimations", defaultBattlerAnimationRecords());
-  }
+  // DB current_json is the canonical source of truth for authored database records
+  // (items, skills, states, animations). Do NOT backfill from JSON defaults on load —
+  // defaults seed new projects via createBlankProject -> saveProjectToSupabase, and
+  // every load returns exactly what the DB row holds. Local is cache-only.
   pruneInvalidVillageInfoDocuments(value);
   removeLegacySpriteReferences(value);
   appendMissingResourceProfiles(value, defaultResourceProfiles());
@@ -1160,16 +1149,6 @@ function pruneInvalidVillageInfoDocuments(project: Record<string, unknown>): voi
     if (!isRecord(entry)) return true;
     return typeof entry.mapId !== "string" || mapIds.has(entry.mapId);
   });
-}
-
-function appendMissingRecords<T extends { readonly id: string }>(container: Record<string, unknown>, key: string, defaults: readonly T[]): void {
-  const target = ensureArray(container, key);
-  const ids = new Set(target.map(recordId).filter((id): id is string => id !== undefined));
-  for (const defaultRecord of defaults) {
-    if (ids.has(defaultRecord.id)) continue;
-    target.push(cloneRecord(defaultRecord));
-    ids.add(defaultRecord.id);
-  }
 }
 
 function appendMissingResourceProfiles(project: Record<string, unknown>, defaults: readonly { readonly assetId?: string }[]): void {
@@ -1188,10 +1167,6 @@ function ensureArray(container: Record<string, unknown>, key: string): unknown[]
   const replacement: unknown[] = [];
   container[key] = replacement;
   return replacement;
-}
-
-function recordId(value: unknown): string | undefined {
-  return isRecord(value) && typeof value.id === "string" ? value.id : undefined;
 }
 
 function resourceAssetId(value: unknown): string | undefined {

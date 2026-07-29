@@ -221,27 +221,24 @@ function renderFooter(
   message: string | undefined
 ): HTMLElement {
   const footer = el("footer", { class: "status-menu-footer" });
-  footer.append(el("div", {
-    class: "status-menu-footer-meta",
-    children: [
-      el("span", {
-        class: "status-menu-gold",
-        text: snapshot.goldLabel,
-        attrs: { title: snapshot.goldLabel },
-        dataset: { testid: "status-menu-gold" },
-      }),
-      el("span", {
-        class: "status-menu-time",
-        text: snapshot.timeLabel,
-        dataset: { testid: "status-menu-time" },
-      }),
-    ],
+  // 돈·시간·안내를 한 덩어리로 몰아두면 "돈 0G 0:00" 처럼 붙어 읽힌다.
+  // 돈은 왼쪽, 플레이 시간은 오른쪽 끝, 안내 문구는 가운데로 갈라 놓는다.
+  footer.append(el("span", {
+    class: "status-menu-gold",
+    text: snapshot.goldLabel,
+    attrs: { title: snapshot.goldLabel },
+    dataset: { testid: "status-menu-gold" },
   }));
   footer.append(el("div", {
     class: "status-menu-message",
     text: message ?? "",
     attrs: { role: "status" },
     dataset: { testid: "status-menu-message" },
+  }));
+  footer.append(el("span", {
+    class: "status-menu-time",
+    text: snapshot.timeLabel,
+    dataset: { testid: "status-menu-time" },
   }));
   return footer;
 }

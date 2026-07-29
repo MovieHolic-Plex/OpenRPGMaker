@@ -6,6 +6,7 @@ import {
   expandUserSkillTemplate,
   filterSkills,
   listAllSkills,
+  listDefaultSkills,
   loadUserSkills,
   pinnedSkills,
   recordSkillUse,
@@ -407,12 +408,31 @@ describe("스킬 UI(fakeDom)", () => {
 
 describe("핀 바 최근 사용순", () => {
   it("기록이 없으면 기본 순서, 사용하면 최근 스킬이 앞으로 온다", () => {
-    expect(pinnedSkills(5)[0]?.id).toBe("interview");
+    // 기본 핀은 제작 흐름으로 시작한다. 예전 첫 항목은 "interview"(타일 학습 저작 도구)였는데,
+    // 그 계열을 advanced 로 내리면서 기본 순서에서도 빼 첫 화면이 /build-* 로 채워지게 했다.
+    expect(pinnedSkills(5)[0]?.id).toBe("build-house");
     recordSkillUse("make-items");
     recordSkillUse("build-road");
     const pins = pinnedSkills(5).map((skill) => skill.id);
     expect(pins[0]).toBe("build-road");
     expect(pins[1]).toBe("make-items");
     expect(pins.length).toBe(5);
+  });
+
+  it("검색어가 없으면 고급(저작) 스킬을 숨기고, 검색하면 찾을 수 있다", () => {
+    // 타일 학습 계열 6종이 SYSTEM_SKILLS 맨 앞이라 슬래시 첫 화면을 다 차지했다.
+    const ADVANCED = ["interview", "learn-structure", "cluster-edit", "range-classify", "unclassified-analysis", "demo-teach"];
+    const defaultIds = filterSkills("").map((skill) => skill.id);
+    for (const id of ADVANCED) expect(defaultIds).not.toContain(id);
+    expect(defaultIds).toContain("build-house");
+    expect(defaultIds).toContain("map-audit");
+
+    // 숨겼을 뿐 지운 게 아니다 — 이름/id 로 치면 나온다.
+    expect(filterSkills("interview").map((s) => s.id)).toContain("interview");
+    expect(filterSkills("인터뷰").map((s) => s.id)).toContain("interview");
+
+    // id 조회 경로는 전체를 봐야 한다(clusterAiModal 이 cluster-edit 를 직접 부른다).
+    expect(listAllSkills().map((s) => s.id)).toContain("cluster-edit");
+    expect(listDefaultSkills().map((s) => s.id)).not.toContain("cluster-edit");
   });
 });
