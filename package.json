@@ -32,14 +32,14 @@
     "perf:bench": "node scripts/perf-benchmark.mjs",
     "openwiki:cpen": "node scripts/openwiki-cpen.mjs",
     "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",
-    "test": "vitest run --configLoader runner",
-    "test:parity": "vitest run test/parity --configLoader runner",
+    "test": "node scripts/run-vitest.mjs run --configLoader bundle",
+    "test:parity": "node scripts/run-vitest.mjs run test/parity --configLoader bundle",
     "test:node": "node scripts/run-node-tests.mjs",
     "test:ai-oauth": "node scripts/run-node-tests.mjs chatgptOAuthProtocol codexProcess",
     "test:e2e": "playwright test",
     "construction:harness": "node scripts/run-construction-harness.mjs",
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
-    "test:watch": "vitest --configLoader runner"
+    "test:watch": "node scripts/run-vitest.mjs --configLoader bundle"
   },
   "dependencies": {
     "jimp": "^0.16.13",

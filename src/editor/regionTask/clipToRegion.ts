@@ -1,6 +1,7 @@
 // 영역 지정 AI 작업의 "하드 스코프" 보장. AI 제안(proposed)에서 지정 사각형 밖의
 // 타일·이벤트 변경을 base 상태로 되돌린다. 다른 맵·타일셋·그룹 등 프로젝트 변경은
 // 통과시킨다(배치에 필요한 그룹 정의 보존). base/proposed는 변형하지 않는 순수 함수.
+import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 
 export interface RegionRect {
@@ -118,6 +119,7 @@ export function clipMapCellsToRegion(
   else delete nextMap.upperTileStacks;
 
   const nextProject: Project = { ...proposed, maps: { ...proposed.maps, [mapId]: nextMap } };
+  transferDetachedDraftMemory(proposed, nextProject);
   return { project: nextProject, clippedCells };
 }
 
@@ -141,15 +143,10 @@ export function clipEventsToRegion(
 
 function eventsEqualList(a: readonly GameEvent[], b: readonly GameEvent[]): boolean {
   if (a.length !== b.length) return false;
-  const sortedA = [...a].map((e) => e.id).sort();
-  const sortedB = [...b].map((e) => e.id).sort();
-  for (let i = 0; i < sortedA.length; i += 1) if (sortedA[i] !== sortedB[i]) return false;
-  // id 집합이 같으면 좌표·이름 등 간단 비교
   const byId = new Map(b.map((event) => [event.id, event]));
   for (const event of a) {
     const other = byId.get(event.id);
-    if (!other) return false;
-    if (event.x !== other.x || event.y !== other.y || event.pages?.[0]?.name !== other.pages?.[0]?.name) return false;
+    if (!other || JSON.stringify(event) !== JSON.stringify(other)) return false;
   }
   return true;
 }

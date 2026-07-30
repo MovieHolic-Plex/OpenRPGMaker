@@ -6,19 +6,21 @@ import {
   __clearPendingRegionApplyForTest,
   type PendingRegionApplyInput,
 } from "@/editor/regionTask/pendingRegionApply";
+import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 
-const fakeProject = { maps: {} } as unknown as Project;
+const fakeProject = createBlankProject();
 
 function input(overrides: Partial<PendingRegionApplyInput> = {}): PendingRegionApplyInput {
   return {
     baseProject: fakeProject,
     clippedProject: fakeProject,
-    mapId: "map_1",
+    mapId: fakeProject.startMapId,
     region: { x: 1, y: 2, width: 3, height: 4 },
     changedCells: 5,
     changedEvents: 1,
     instruction: "테스트",
+    getCurrentProject: () => fakeProject,
     onApply: () => {},
     onDiscard: () => {},
     onSettle: () => {},

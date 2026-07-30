@@ -38,6 +38,16 @@ import {
   type RegionTaskLogExport,
   type RegionTaskResult,
 } from "@/editor/regionTask/runRegionTask";
+import {
+  DIRECT_INTERIOR_PRESETS,
+  runDirectInteriorRoomDraft,
+  type DirectInteriorPresetId,
+  type DirectInteriorRoomDraftRunner,
+} from "@/editor/regionTask/runDirectRoomDraft";
+import {
+  INTERIOR_THEME_MODIFIERS,
+  type InteriorThemeModifier,
+} from "@/editor/interiorRoomPipeline";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import { store } from "@/project/store";
 import type { GameMap, MapId, Project } from "@/project/types";
@@ -65,15 +75,14 @@ export interface RegionTaskModalOptions {
   readonly anchor?: RegionTaskAnchor;
   // 테스트 주입: 기본은 실제 runRegionTask.
   readonly run?: RegionTaskRunner;
+  /** 테스트 주입: AI/도구 쿼터를 쓰지 않는 직접 실내 초안 경로. */
+  readonly runDirectRoomDraft?: DirectInteriorRoomDraftRunner;
   /** 테스트 주입: 썸네일 렌더러(기본 renderRegionSnapshot 캔버스). */
   readonly renderSnapshot?: (project: Project, map: GameMap, region: RegionRect) => Promise<HTMLElement>;
   /** 테스트 주입: 동적 추천/통계 칩용 project 조회(기본 store.getCurrent). */
   readonly projectForContext?: () => Project;
   /** 테스트 주입: 부분 적용 함수(기본 composePartialProject). UI 테스트용. */
   readonly composePartial?: typeof composePartialProject;
-  /** 테스트/프로덕션 주입: 부분 적용 프로젝트를 store.replace 로 반영. 기본은 runRegionTask.applyProject.
-   *  시그니처: (project, label, mapId) => void. 미주입 시 부분 적용은 전체 적용으로 폴백. */
-  readonly applyPartialProject?: (project: Project, label: string, mapId: MapId) => void;
 }
 
 /** 툴 인자를 title 툴팁용 문자열로. 순환 참조 등으로 실패하면 빈 문자열. */
@@ -123,6 +132,7 @@ export function closeRegionTaskModal(): void {
 export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElement {
   closeRegionTaskModal();
   const run: RegionTaskRunner = options.run ?? runRegionTask;
+  const runDirectRoom = options.runDirectRoomDraft ?? runDirectInteriorRoomDraft;
   const { region } = options;
 
   const chip = el("span", {
@@ -243,12 +253,45 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   const log = el("div", { class: "region-task-log", dataset: { testid: "region-task-log" } });
   const summary = el("div", { class: "region-task-summary", dataset: { testid: "region-task-summary" } });
+  const progressTimeline = el("div", {
+    class: "region-task-live-progress",
+    dataset: { testid: "region-task-live-progress" },
+  });
 
   const runButton = el("button", {
     class: "region-task-run",
-    text: "실행",
+    text: "AI 실행",
     attrs: { type: "button" },
     dataset: { testid: "region-task-run" },
+  }) as HTMLButtonElement;
+  const directPresetSelect = el("select", {
+    class: "region-task-direct-select",
+    attrs: { "aria-label": "실내 초안 종류", title: "AI 없이 만들 실내 구조" },
+    dataset: { testid: "region-task-direct-preset" },
+    children: DIRECT_INTERIOR_PRESETS.map((preset) => el("option", {
+      text: preset.label,
+      attrs: { value: preset.id },
+    })),
+  }) as HTMLSelectElement;
+  directPresetSelect.value = "inn";
+  const directModifierSelect = el("select", {
+    class: "region-task-direct-select",
+    attrs: { "aria-label": "실내 분위기", title: "역할 테마 위에 겹칠 조합형 분위기" },
+    dataset: { testid: "region-task-direct-modifier" },
+    children: [
+      el("option", { text: "기본 분위기", attrs: { value: "" } }),
+      ...INTERIOR_THEME_MODIFIERS.map((modifier) => el("option", {
+        text: `+ ${modifier}`,
+        attrs: { value: modifier },
+      })),
+    ],
+  }) as HTMLSelectElement;
+  directModifierSelect.value = "";
+  const directRoomButton = el("button", {
+    class: "region-task-direct-room",
+    text: "AI 없이 실내 초안",
+    attrs: { type: "button", title: "도구 쿼터를 쓰지 않고 연결된 실내를 생성" },
+    dataset: { testid: "region-task-direct-room" },
   }) as HTMLButtonElement;
 
   const renderSnapshot = options.renderSnapshot
@@ -351,12 +394,17 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // running:false 배지 해제는 pending.apply()/discard() → onSettle(runRegionTask.ts)에서
     // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
     runButton.disabled = false;
+    directRoomButton.disabled = false;
+    directPresetSelect.disabled = false;
+    directModifierSelect.disabled = false;
     textarea.disabled = false;
     schedulePopoverReposition();
   };
 
   const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
     activePending = pending;
+    pendingUnsubscribe?.();
+    pendingUnsubscribe = null;
     // 이 pending 전용 settle 감시 — 모달 버튼이 아니라 캔버스 인라인 툴바(✓/✗) 등 밖에서
     // settle 되어도(썸네일 await 도중 포함) 모달 UI(요약/버튼 재활성화)가 반영되도록 구독한다.
     let selfSettling = false;
@@ -392,8 +440,11 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
     const allChunks = [...groups.lower, ...groups.upper];
     const hasChanges = allChunks.length > 0;
+    const structuralProposal = pending.roomDrafts.length > 0
+      || Object.keys(pending.clippedProject.maps).some((mapId) => !pending.baseProject.maps[mapId]);
     // 청크가 1개뿐이면 "선택 적용"이 "모두 적용"과 완전히 같은 동작이라 고를 이유가 없다.
-    const partialUseful = allChunks.length > 1;
+    // 실내/맵 추가 제안은 타일만 부분 복사하면 문·맵·세션이 분리되므로 아예 제공하지 않는다.
+    const partialUseful = allChunks.length > 1 && !structuralProposal;
     const selectedChunkIds = new Set<string>();
     const allChunkIds = allChunks.map((c) => c.id);
     // 기본: 모든 청크 선택(=전체 적용과 동일). 사용자가 일부 해제하면 부분 적용.
@@ -515,32 +566,23 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       const ids = Array.from(selectedChunkIds);
       if (ids.length === 0) return;
       selfSettling = true;
-      if (ids.length === allChunkIds.length) {
-        // 전체 선택 = pending.apply() 경로 (일관성)
-        pending.apply();
-      } else {
-        // 부분: 병합 프로젝트를 applyProject 로 넘긴다 — pending 내부 onApply 가
-        // store.replace(clipped) 를 부르므로, 여기서는 먼저 discard 한 뒤 별도 적용.
-        // 단, pending.discard() 는 no-op(onDiscard 가 빈 함수)이므로 안전.
-        const merged = compose({
-          base: pending.baseProject,
-          clipped: pending.clippedProject,
-          mapId: pending.mapId,
-          region: pending.region,
-          selectedChunkIds: ids,
-          groups: rawGroups,
-        });
-        // pending 을 settle 시키고 커스텀 적용 — applyProject 는 runRegionTask deps 주입.
-        // 여기서 직접 store.replace 못하므로 pending.apply() 의 onApply 흐름을 쓰되,
-        // clipped 대신 merged 를 쓰기 위해 pending 을 먼저 discard 하고 options.applyPartialProject 로 처리.
-        const applier = options.applyPartialProject;
-        if (applier) {
-          applier(merged, `영역 작업(부분 ${ids.length}/${allChunkIds.length}): ${pending.instruction.slice(0, 40)}`, pending.mapId);
-          pending.discard();
-        } else {
-          // 적용 경로 미주입시 전체 적용으로 폴백(안전).
-          pending.apply();
-        }
+      const outcome = ids.length === allChunkIds.length
+        ? pending.apply()
+        : pending.applyProject(
+          compose({
+            base: pending.baseProject,
+            clipped: pending.clippedProject,
+            mapId: pending.mapId,
+            region: pending.region,
+            selectedChunkIds: ids,
+            groups: rawGroups,
+          }),
+        );
+      if (!outcome.ok) {
+        selfSettling = false;
+        setSummary(outcome.error ?? "적용 안전 검사를 통과하지 못했습니다.");
+        schedulePopoverReposition();
+        return;
       }
       finalizeSettle(true);
     });
@@ -550,7 +592,17 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       text: totalChangedCells > 0 ? `✓ 적용 · ${totalChangedCells}칸` : "✓ 적용",
       attrs: { type: "button" },
       dataset: { testid: "region-task-apply" },
-      on: { click: () => { selfSettling = true; pending.apply(); finalizeSettle(true); } },
+      on: { click: () => {
+        selfSettling = true;
+        const outcome = pending.apply();
+        if (!outcome.ok) {
+          selfSettling = false;
+          setSummary(outcome.error ?? "적용 안전 검사를 통과하지 못했습니다.");
+          schedulePopoverReposition();
+          return;
+        }
+        finalizeSettle(true);
+      } },
     });
     // "다시 만들기" — 같은 지시로 재실행. 마음에 안 드는 결과를 버리고 다시 뽑는 흐름이
     // 버리기→입력창 찾기→실행 3단계였던 것을 1단계로 줄인다.
@@ -564,7 +616,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
           selfSettling = true;
           pending.discard();
           finalizeSettle(false);
-          void execute();
+          if (lastRunMode === "direct") void executeDirectRoom();
+          else void execute();
         },
       },
     });
@@ -671,9 +724,15 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
     updatePartialState();
 
-    // 부분 적용은 「고급」 안으로 — 청크가 2개 이상일 때만 의미가 있다.
-    partialHost.replaceChildren(chunkTree, partialApplyButton);
-    partialHost.classList.toggle("hidden", !partialUseful);
+    // 부분 적용은 「고급」 안으로 — 구조 변경은 타일만 떼어내면 연결이 끊기므로 숨긴다.
+    // 일반 타일 제안은 기존 계약대로 청크가 하나여도 DOM은 유지하고 고급 영역만 접는다.
+    if (structuralProposal) {
+      partialHost.replaceChildren();
+      partialHost.classList.add("hidden");
+    } else {
+      partialHost.replaceChildren(chunkTree, partialApplyButton);
+      partialHost.classList.toggle("hidden", !partialUseful);
+    }
 
     // ── 변경 목록 — 타일 밖의 변경을 같은 승인 화면에 세운다 ─────────────────
     // 예전에는 미리보기(타일 스냅샷)와 "이벤트 N건" 숫자뿐이라, NPC·상자·조명을 놓아도
@@ -737,7 +796,218 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       children: changeRows,
     });
 
+    const review = pending.report;
+    const timeline = el("div", {
+      class: "region-task-checkpoint-timeline",
+      dataset: { testid: "region-task-checkpoint-timeline" },
+      children: (review?.checkpoints ?? []).map((checkpoint) => el("div", {
+        class: `region-task-checkpoint is-${checkpoint.status}`,
+        attrs: { title: checkpoint.detail },
+        children: [
+          el("span", { class: "region-task-checkpoint-dot", text: checkpoint.status === "done" ? "✓" : "!" }),
+          el("span", { text: checkpoint.label }),
+        ],
+      })),
+    });
+    const metrics = review?.metrics;
+    const metricsRow = el("div", {
+      class: "region-task-review-metrics" + (metrics ? "" : " hidden"),
+      dataset: { testid: "region-task-review-metrics" },
+      text: metrics
+        ? `변경 ${metrics.changedCells}칸 · 이벤트 ${metrics.changedEvents} · 통행 ${metrics.passableChangedCells}칸 · 수리 ${metrics.deterministicRepairs} · 목표 ${metrics.reachableObjectives ?? 0}개 도달${(metrics.unreachableObjectives ?? 0) > 0 ? `/${metrics.unreachableObjectives} 차단` : ""} · 조합 ${metrics.compositionScore ?? 100}점 · NPC 일정 ${metrics.scheduledNpcs}명 · 시간 ${metrics.timeSystemEnabled ? "켜짐" : "꺼짐"}${metrics.roomScoreAverage === null ? "" : ` · 방 점수 ${metrics.roomScoreAverage}`}`
+        : "",
+    });
+    const issueRows = (review?.issues ?? []).map((issue, index) => el("div", {
+      class: `region-task-review-issue is-${issue.severity}`,
+      dataset: { testid: `region-task-review-issue-${index}` },
+      text: `${issue.severity === "error" ? "차단" : issue.repaired ? "수리" : "주의"} · ${issue.message}${issue.mapId ? ` [${issue.mapId}${issue.x === undefined ? "" : ` ${issue.x},${issue.y}`}]` : ""}`,
+    }));
+    const issuesHost = el("div", {
+      class: "region-task-review-issues" + (issueRows.length ? "" : " is-clear"),
+      dataset: { testid: "region-task-review-issues" },
+      children: issueRows.length ? issueRows : [el("div", { class: "region-task-review-clear", text: "플레이 가능성 검사 통과" })],
+    });
+    const blockerHost = el("div", {
+      class: "region-task-blockers" + (pending.blockers.length ? "" : " hidden"),
+      dataset: { testid: "region-task-blockers" },
+      children: pending.blockers.map((reason) => el("div", { text: `적용 차단 · ${reason}` })),
+    });
+    const scheduleDecisionRequired = (review?.issues ?? []).some(
+      (issue) => issue.code === "npc-schedule-time-disabled" && issue.severity === "error",
+    );
+    const npcScheduleDecision = el("div", {
+      class: "region-task-npc-decision" + (scheduleDecisionRequired ? "" : " hidden"),
+      dataset: { testid: "region-task-npc-decision" },
+      children: scheduleDecisionRequired ? [
+        el("div", { class: "region-task-npc-decision-title", text: "NPC 일정 실행 방식을 선택하세요" }),
+        el("div", { class: "region-task-npc-decision-help", text: "시간을 켜면 일정대로 이동하고, 고정하면 새 일정을 제거해 현재 위치를 유지합니다." }),
+        el("div", {
+          class: "region-task-npc-decision-actions",
+          children: [
+            el("button", {
+              text: "시간 시스템 켜기",
+              attrs: { type: "button" },
+              dataset: { testid: "region-task-npc-enable-time" },
+              on: { click: () => {
+                pending.resolveNpcSchedules("enable-time");
+                setSummary("시간 시스템을 켰습니다. 안전 검사를 다시 실행했습니다.");
+                void renderPendingCompare(pending);
+              } },
+            }),
+            el("button", {
+              text: "NPC 현재 위치에 고정",
+              attrs: { type: "button" },
+              dataset: { testid: "region-task-npc-keep-fixed" },
+              on: { click: () => {
+                pending.resolveNpcSchedules("keep-fixed");
+                setSummary("새 NPC 일정을 제거하고 현재 위치에 고정했습니다.");
+                void renderPendingCompare(pending);
+              } },
+            }),
+            el("button", {
+              text: "제안 취소",
+              attrs: { type: "button" },
+              dataset: { testid: "region-task-npc-cancel" },
+              on: { click: () => {
+                selfSettling = true;
+                pending.discard();
+                finalizeSettle(false);
+              } },
+            }),
+          ],
+        }),
+      ] : [],
+    });
+
+    const roomSeedByKey = new Map<string, number>();
+    const roomRows: HTMLElement[] = [];
+    const checkpointPreviewHost = el("div", {
+      class: "region-task-room-checkpoint-preview hidden",
+      dataset: { testid: "region-task-room-checkpoint-preview" },
+    });
+    let checkpointPreviewVersion = 0;
+    const checkpointButtons: HTMLButtonElement[] = [];
+    const defaultCheckpointPreview: { run?: () => Promise<void> } = {};
+    const showCheckpointPreview = async (
+      draftMapId: string,
+      checkpoint: { readonly layer: string; readonly summary: string; readonly mapSnapshot?: GameMap },
+      button: HTMLButtonElement,
+      latest: boolean,
+    ): Promise<void> => {
+      const snapshot = checkpoint.mapSnapshot;
+      if (!snapshot) return;
+      const version = ++checkpointPreviewVersion;
+      for (const candidate of checkpointButtons) candidate.classList.toggle("is-selected", candidate === button);
+      checkpointPreviewHost.classList.remove("hidden");
+      checkpointPreviewHost.replaceChildren(el("span", { text: `${checkpoint.layer} 미리보기 준비 중…` }));
+      const previewProject = structuredClone(pending.clippedProject);
+      previewProject.maps[draftMapId] = structuredClone(snapshot);
+      try {
+        const node = await renderSnapshot(previewProject, snapshot, { x: 0, y: 0, width: snapshot.width, height: snapshot.height });
+        if (version !== checkpointPreviewVersion) return;
+        checkpointPreviewHost.replaceChildren(
+          el("div", {
+            class: "region-task-room-checkpoint-caption",
+            text: `${latest ? "완성 실내 미리보기" : "레이어 미리보기"} · ${checkpoint.layer} · ${checkpoint.summary}`,
+          }),
+          node,
+        );
+        schedulePopoverReposition();
+      } catch {
+        if (version !== checkpointPreviewVersion) return;
+        checkpointPreviewHost.replaceChildren(el("span", { text: "레이어 미리보기에 실패했습니다." }));
+      }
+    };
+    for (const draft of pending.roomDrafts) {
+      const previewable = draft.checkpoints.filter((checkpoint) => checkpoint.mapSnapshot);
+      if (previewable.length > 0) {
+        const buttons = previewable.map((checkpoint, index) => {
+          const latest = index === previewable.length - 1;
+          const button = el("button", {
+            class: `region-task-room-checkpoint is-${checkpoint.state}`,
+            text: `${checkpoint.index}. ${checkpoint.layer}`,
+            attrs: { type: "button", title: checkpoint.summary },
+            dataset: { testid: `region-task-room-checkpoint-${checkpoint.index}` },
+          }) as HTMLButtonElement;
+          checkpointButtons.push(button);
+          button.addEventListener("click", () => void showCheckpointPreview(draft.mapId, checkpoint, button, latest));
+          if (latest) defaultCheckpointPreview.run = () => showCheckpointPreview(draft.mapId, checkpoint, button, true);
+          return button;
+        });
+        roomRows.push(el("div", {
+          class: "region-task-room-checkpoints",
+          children: [
+            el("span", { class: "region-task-room-name", text: `${draft.mapId} 진행 스냅샷` }),
+            ...buttons,
+          ],
+        }));
+      }
+      for (const room of draft.rooms) {
+        const key = `${draft.sessionId}:${room.id}`;
+        const nextSeed = draft.checkpoints.filter((checkpoint) => checkpoint.layer === `room:${room.id}`).length + 1;
+        roomSeedByKey.set(key, nextSeed);
+        const lockButton = el("button", {
+          class: "region-task-room-lock",
+          text: room.locked ? "잠금 해제" : "방 잠금",
+          attrs: { type: "button" },
+          dataset: { testid: `region-task-room-lock-${room.id}` },
+        }) as HTMLButtonElement;
+        const rerollButton = el("button", {
+          class: "region-task-room-reroll",
+          text: `방만 재생성 · seed ${nextSeed}`,
+          attrs: { type: "button" },
+          dataset: { testid: `region-task-room-reroll-${room.id}` },
+        }) as HTMLButtonElement;
+        let locked = room.locked;
+        lockButton.addEventListener("click", () => {
+          locked = !locked;
+          pending.setRoomLocked(draft.sessionId, room.id, locked);
+          lockButton.textContent = locked ? "잠금 해제" : "방 잠금";
+          rerollButton.disabled = locked;
+        });
+        rerollButton.disabled = locked;
+        rerollButton.addEventListener("click", () => {
+          const seed = roomSeedByKey.get(key) ?? 1;
+          try {
+            const outcome = pending.rerollRoom(draft.sessionId, room.id, seed);
+            roomSeedByKey.set(key, seed + 1);
+            rerollButton.textContent = `방만 재생성 · seed ${seed + 1}`;
+            setSummary(outcome.ok ? `${room.id} 방만 seed ${seed}로 재생성했습니다.` : `${room.id} 재생성 후 이슈를 확인하세요.`);
+            void renderPendingCompare(pending);
+          } catch (cause) {
+            setSummary(cause instanceof Error ? cause.message : String(cause));
+          }
+        });
+        roomRows.push(el("div", {
+          class: "region-task-room-row",
+          children: [
+            el("span", {
+              class: "region-task-room-name",
+              text: `${room.id} · ${room.theme}${room.modifiers.length ? ` + ${room.modifiers.join("+")}` : ""}`,
+            }),
+            lockButton,
+            rerollButton,
+          ],
+        }));
+      }
+    }
+    const roomsHost = el("div", {
+      class: "region-task-room-controls" + (roomRows.length ? "" : " hidden"),
+      dataset: { testid: "region-task-room-controls" },
+      children: roomRows.length ? [
+        el("div", { class: "region-task-room-title", text: "완성 실내 미리보기 · 방별 제어" }),
+        ...roomRows,
+        checkpointPreviewHost,
+      ] : [],
+    });
+
     compareHost.replaceChildren(
+      timeline,
+      metricsRow,
+      blockerHost,
+      npcScheduleDecision,
+      issuesHost,
+      roomsHost,
       figures,
       changeList,
       el("div", { class: "region-task-compare-actions", children: [applyButton, retryButton, discardButton] }),
@@ -746,10 +1016,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     // 결과가 나오면 로그는 접는다 — 결정에 필요한 건 미리보기와 변경 칸 수다.
     if (!advancedPinned) setAdvancedOpen(false);
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
+    if (defaultCheckpointPreview.run) await defaultCheckpointPreview.run();
     schedulePopoverReposition();
   };
 
   let running = false;
+  let lastRunMode: "ai" | "direct" = "ai";
   let lastLog: RegionTaskLogExport | undefined;
   // 복사 버튼 라벨 — 실행 후에는 툴 호출 수를 함께 보여 준다("복사됨" 후 여기로 되돌린다).
   let copyLogLabel = "로그";
@@ -810,6 +1082,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       return;
     }
     running = true;
+    lastRunMode = "ai";
     // 스트리밍으로 이미 찍은 어시스턴트 문단을 결과에서 또 찍지 않기 위한 플래그.
     let sawAssistantMessage = false;
     let toolCount = 0;
@@ -817,6 +1090,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     setStage("running");
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
     runButton.disabled = true;
+    directRoomButton.disabled = true;
+    directPresetSelect.disabled = true;
+    directModifierSelect.disabled = true;
     textarea.disabled = true;
     setCopyEnabled(false);
     copyLogLabel = "로그";
@@ -824,6 +1100,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     recapText.textContent = instruction;
     lastLog = undefined;
     log.replaceChildren();
+    progressTimeline.replaceChildren(el("span", { class: "is-active", text: "1. 초안 생성" }));
     setSummary("AI가 이 영역을 작업 중…");
     appendLog(`지시: ${instruction}`);
     appendLog(`영역: (${region.x},${region.y}) ${region.width}×${region.height}`);
@@ -838,6 +1115,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
           safeJson(event.args),
         );
         toolCount += 1;
+        progressTimeline.append(el("span", { text: `${toolCount + 1}. ${event.name}` }));
+        while (progressTimeline.childNodes.length > 6) progressTimeline.firstChild?.remove();
         // 진행 중 피드백 — 로그를 펼치지 않아도 "멈춘 게 아니다"가 보이게.
         setSummary(`AI가 이 영역을 작업 중… (${toolCount}단계)`);
       } else if (event.type === "assistant_message") {
@@ -852,6 +1131,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       // F: 성공적 실행 시 지시어를 최근 목록에 기록(자동완성 소스).
       if (result.ok) pushRecentInstruction(instruction);
       if (result.pending && !result.pending.settled) {
+        progressTimeline.append(el("span", { class: result.pending.blockers.length ? "is-blocked" : "is-done", text: result.pending.blockers.length ? "검사 차단" : "검사 완료 · 승인 대기" }));
         await renderPendingCompare(result.pending);
       }
       lastLog = result.log;
@@ -879,9 +1159,73 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       if (!activePending) {
         setStage("compose");
         runButton.disabled = false;
+        directRoomButton.disabled = false;
+        directPresetSelect.disabled = false;
+        directModifierSelect.disabled = false;
         textarea.disabled = false;
       }
       // 오류는 접힌 「고급」 안에 숨으면 안 된다 — 실패했을 때만 자동으로 펼친다.
+      if (hadError) setAdvancedOpen(true);
+      schedulePopoverReposition();
+    }
+  };
+
+  const executeDirectRoom = async (): Promise<void> => {
+    if (running) return;
+    running = true;
+    lastRunMode = "direct";
+    let hadError = false;
+    const preset = (directPresetSelect.value || "inn") as DirectInteriorPresetId;
+    const modifier = (directModifierSelect.value || undefined) as InteriorThemeModifier | undefined;
+    const presetLabel = DIRECT_INTERIOR_PRESETS.find((candidate) => candidate.id === preset)?.label ?? preset;
+    const instruction = `AI 없이 실내 초안 · ${presetLabel}${modifier ? ` + ${modifier}` : ""}`;
+    setStage("running");
+    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
+    runButton.disabled = true;
+    directRoomButton.disabled = true;
+    directPresetSelect.disabled = true;
+    directModifierSelect.disabled = true;
+    textarea.disabled = true;
+    setCopyEnabled(false);
+    lastLog = undefined;
+    recapText.textContent = instruction;
+    log.replaceChildren();
+    progressTimeline.replaceChildren(el("span", { class: "is-active", text: "1. 안전한 문 위치 확인" }));
+    setSummary("AI 호출 없이 실내 레이어를 생성 중…");
+    appendLog(`직접 실내: ${presetLabel}${modifier ? ` + ${modifier}` : ""}`);
+    try {
+      const result = await runDirectRoom({
+        mapId: options.mapId,
+        region,
+        preset,
+        ...(modifier ? { modifier } : {}),
+      });
+      setSummary(describeRegionTaskResult(result));
+      if (result.pending && !result.pending.settled) {
+        progressTimeline.append(el("span", {
+          class: result.pending.blockers.length ? "is-blocked" : "is-done",
+          text: result.pending.blockers.length ? "2. 검사 차단" : "2. 검사 완료 · 승인 대기",
+        }));
+        await renderPendingCompare(result.pending);
+      }
+      if (result.error) {
+        hadError = true;
+        appendLog(`오류: ${result.error}`, "region-task-log-line is-error");
+      }
+    } catch (cause) {
+      hadError = true;
+      setSummary(`오류: ${cause instanceof Error ? cause.message : String(cause)}`);
+      appendLog(String(cause), "region-task-log-line is-error");
+    } finally {
+      running = false;
+      if (!activePending) {
+        setStage("compose");
+        runButton.disabled = false;
+        directRoomButton.disabled = false;
+        directPresetSelect.disabled = false;
+        directModifierSelect.disabled = false;
+        textarea.disabled = false;
+      }
       if (hadError) setAdvancedOpen(true);
       schedulePopoverReposition();
     }
@@ -895,6 +1239,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
 
   runButton.addEventListener("click", () => void execute());
+  directRoomButton.addEventListener("click", () => void executeDirectRoom());
   copyLogButton.addEventListener("click", () => void copyLastLog());
   textarea.addEventListener("keydown", (event) => {
     if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
@@ -1025,7 +1370,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
 
   // ① 무엇을 만들지 — 추천 칩을 입력창 위에 둔다(먼저 고르고, 아니면 직접 쓴다).
-  const actions = el("div", { class: "region-task-actions", children: [runButton] });
+  const actions = el("div", {
+    class: "region-task-actions",
+    children: [directPresetSelect, directModifierSelect, directRoomButton, runButton],
+  });
   const promptSection = el("div", {
     class: "region-task-prompt",
     dataset: { testid: "region-task-prompt" },
@@ -1043,7 +1391,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     class: asPopover ? "region-task-modal region-task-popover" : "region-task-modal",
     attrs: { role: "dialog", "aria-label": "영역 작업" },
     dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal", stage: currentStage },
-    children: [header, promptSection, recapRow, summary, compareHost, advancedToggle, advancedBody],
+    children: [header, promptSection, recapRow, summary, progressTimeline, compareHost, advancedToggle, advancedBody],
   });
   stageHost = windowNode;
   setStage(currentStage);

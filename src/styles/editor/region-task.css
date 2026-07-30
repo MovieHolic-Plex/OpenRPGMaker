@@ -187,9 +187,32 @@
   font-weight: 600;
   padding: var(--space-2) var(--space-4);
 }
-.region-task-run:disabled {
+.region-task-run:disabled,
+.region-task-direct-room:disabled,
+.region-task-direct-select:disabled {
   cursor: default;
   opacity: 0.6;
+}
+
+.region-task-direct-room {
+  background: color-mix(in srgb, var(--editor-panel, #18202b) 72%, var(--accent, #4a9eff));
+  border: 1px solid var(--accent-border, #4a9eff);
+  border-radius: var(--radius-s);
+  color: var(--editor-text, #f3f4f6);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-3);
+}
+
+.region-task-direct-select {
+  background: var(--editor-panel, #18202b);
+  border: 1px solid var(--editor-line, #374151);
+  border-radius: var(--radius-s);
+  color: var(--editor-text, #f3f4f6);
+  font: inherit;
+  max-width: 132px;
+  padding: var(--space-2);
 }
 
 .region-task-actions {
@@ -508,3 +531,153 @@
   background: var(--accent, #4a9eff);
   color: #fff;
 }
+
+
+/* Safe harness review: visible checkpoints, gameplay metrics, blockers, issues and room controls. */
+.region-task-checkpoint-timeline {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.region-task-checkpoint {
+  align-items: center;
+  color: var(--editor-text-muted, #9ca3af);
+  display: flex;
+  font-size: 11px;
+  gap: 4px;
+  min-width: 0;
+}
+.region-task-checkpoint-dot {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  display: inline-flex;
+  flex: 0 0 16px;
+  height: 16px;
+  justify-content: center;
+}
+.region-task-checkpoint.is-done { color: var(--success, #61c98b); }
+.region-task-checkpoint.is-blocked { color: var(--danger, #f87171); }
+.region-task-review-metrics {
+  background: color-mix(in srgb, var(--editor-panel-bg, #1f2937) 80%, var(--accent, #4a9eff));
+  border-radius: var(--radius-s);
+  color: var(--editor-text-muted, #9ca3af);
+  font-size: 11px;
+  line-height: 1.5;
+  padding: 6px 8px;
+}
+.region-task-review-metrics.hidden,
+.region-task-blockers.hidden,
+.region-task-room-controls.hidden { display: none; }
+.region-task-review-issues,
+.region-task-blockers {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 3px;
+}
+.region-task-review-issue.is-error,
+.region-task-blockers { color: var(--danger, #f87171); }
+.region-task-review-issue.is-warning { color: var(--warning, #e8a33d); }
+.region-task-review-clear { color: var(--success, #61c98b); }
+.region-task-room-controls {
+  border: 1px solid var(--editor-line, #374151);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px;
+}
+.region-task-room-title { color: var(--editor-text-muted); font-size: 11px; font-weight: 700; }
+.region-task-room-row { align-items: center; display: flex; gap: 6px; }
+.region-task-room-name { flex: 1 1 auto; font-size: 12px; min-width: 0; }
+.region-task-room-lock,
+.region-task-room-reroll {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong, #6b7280);
+  border-radius: 999px;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  padding: 3px 7px;
+}
+.region-task-room-reroll:disabled { cursor: default; opacity: 0.45; }
+@media (max-width: 520px) {
+  .region-task-checkpoint-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .region-task-room-row { align-items: stretch; flex-wrap: wrap; }
+  .region-task-room-name { flex-basis: 100%; }
+}
+
+
+.region-task-live-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.region-task-live-progress:empty,
+.region-task-modal[data-stage="compose"] .region-task-live-progress { display: none; }
+.region-task-live-progress span {
+  border: 1px solid var(--editor-line, #374151);
+  border-radius: 999px;
+  color: var(--editor-text-muted);
+  font-size: 10px;
+  padding: 3px 7px;
+}
+.region-task-live-progress .is-active { border-color: var(--accent, #4a9eff); color: var(--accent, #4a9eff); }
+.region-task-live-progress .is-done { border-color: var(--success, #61c98b); color: var(--success, #61c98b); }
+.region-task-live-progress .is-blocked { border-color: var(--danger, #f87171); color: var(--danger, #f87171); }
+
+
+/* NPC 일정은 암묵적으로 켜지지 않는다. 승인 전에 실행 방식 세 가지를 명시적으로 고른다. */
+.region-task-npc-decision {
+  background: color-mix(in srgb, var(--warning, #e8a33d) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning, #e8a33d) 55%, transparent);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+.region-task-npc-decision.hidden { display: none; }
+.region-task-npc-decision-title { color: var(--warning, #e8a33d); font-size: 12px; font-weight: 700; }
+.region-task-npc-decision-help { color: var(--editor-text-muted); font-size: 11px; line-height: 1.45; }
+.region-task-npc-decision-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.region-task-npc-decision-actions button,
+.region-task-room-checkpoint {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong, #6b7280);
+  border-radius: 999px;
+  color: var(--editor-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  padding: 4px 8px;
+}
+.region-task-npc-decision-actions button:hover,
+.region-task-room-checkpoint:hover { border-color: var(--accent, #4a9eff); color: var(--accent, #4a9eff); }
+
+/* 실제 detached map snapshot을 사용한 레이어별 중간 미리보기. */
+.region-task-room-checkpoints { align-items: center; display: flex; flex-wrap: wrap; gap: 5px; }
+.region-task-room-checkpoint.is-failed { border-color: var(--danger, #f87171); color: var(--danger, #f87171); }
+.region-task-room-checkpoint.is-done { border-color: color-mix(in srgb, var(--success, #61c98b) 65%, transparent); }
+.region-task-room-checkpoint.is-selected {
+  background: color-mix(in srgb, var(--accent, #4a9eff) 22%, transparent);
+  border-color: var(--accent, #4a9eff);
+  color: var(--accent, #4a9eff);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 28%, transparent);
+}
+.region-task-room-checkpoint-preview {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 6px;
+}
+.region-task-room-checkpoint-preview.hidden { display: none; }
+.region-task-room-checkpoint-preview canvas { height: auto; image-rendering: pixelated; max-width: 100%; }
+.region-task-room-checkpoint-caption { color: var(--editor-text-muted); font-size: 11px; }

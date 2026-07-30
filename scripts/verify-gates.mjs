@@ -15,7 +15,7 @@
 //   node scripts/verify-gates.mjs --json                   # 기계 판독용 출력
 //   node scripts/verify-gates.mjs --only typecheck|tests
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const DEFAULT_BASELINE = resolve(process.cwd(), ".omo/gates-baseline.json");
@@ -61,11 +61,14 @@ function testsGate() {
   // 그래서 기계 판독용 JSON 리포터를 쓴다.
   const reportPath = resolve(process.cwd(), ".omo/gates-vitest-report.json");
   mkdirSync(dirname(reportPath), { recursive: true });
-  const { code } = run("npx", [
-    "vitest",
+  // A runner/bootstrap failure must not be allowed to reuse evidence from an older run.
+  // Remove the fixed evidence file first; only this invocation may recreate it.
+  rmSync(reportPath, { force: true });
+  const { code } = run("node", [
+    "scripts/run-vitest.mjs",
     "run",
     "--configLoader",
-    "runner",
+    "bundle",
     "--reporter=json",
     "--outputFile",
     reportPath,
@@ -89,6 +92,7 @@ function testsGate() {
   ].sort();
   const failedCount = Number(parsed.numFailedTests ?? 0);
   const passedCount = Number(parsed.numPassedTests ?? 0);
+  const totalCount = Number(parsed.numTotalTests ?? 0);
 
   // 빈 결과를 기준선으로 굳히지 않는다. 이 방어가 없어서 위 파싱 버그가 조용히 통과했다.
   if (code !== 0 && failedFiles.length === 0 && failedCount === 0) {
@@ -99,8 +103,11 @@ function testsGate() {
   if (results.length === 0) {
     throw new Error(`vitest 리포트에 테스트 파일이 0개다 — 수집 경로를 확인하라 (${reportPath})`);
   }
+  if (totalCount === 0) {
+    throw new Error(`vitest 가 테스트를 하나도 수집하지 못했다 — runner 로딩 경로를 확인하라 (${reportPath})`);
+  }
 
-  return { name: "vitest", exitCode: code, failedCount, passedCount, failedFiles };
+  return { name: "vitest", exitCode: code, totalCount, failedCount, passedCount, failedFiles };
 }
 
 const report = { ranAt: new Date().toISOString(), cwd: process.cwd() };
