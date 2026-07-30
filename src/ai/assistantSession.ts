@@ -149,6 +149,10 @@ const HARD_CLUSTER_RULE_WARNING = "⚠️ 강한 규칙: 이 타일셋을 쓰는
 export const TOKEN_BUDGET_STATUS_TEXT = "요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.";
 const EXECUTION_PHASE_HINT = "실행 단계: 계획을 충실히 수행, 누락 없이 완료 후 종료. 새 질문 금지. 한 응답에 여러 tool_calls를 배치해 라운드 수를 최소화하라(예: fill_region + author_house + paint_road를 동시에).";
 const ZERO_CHANGE_REKICK_HINT = "사용자는 변경을 기대합니다. 질문이 아니면 지금 계획을 세우고 실행하세요";
+const UNBUILT_SPEC_REKICK_HINT =
+  "밑그림(set_build_spec)만 확정되었고 실제 배치 툴이 한 번도 호출되지 않았습니다. " +
+  "밑그림은 사용자에게 보이지 않고 승인할 대상도 아닙니다 — 다시 밑그림을 제출하지 말고 " +
+  "명세의 에셋을 실제로 만드는 배치 툴(place_npc · make_villager · author_house · place_props 등)을 지금 호출하세요.";
 const ORCHESTRATION_PREFIX = "[오케스트레이션] ";
 const REVIEW_REEXECUTE_PREFIX = "재실행:";
 const REVIEW_COMPLETE_PREFIX = "완료:";
@@ -1118,6 +1122,76 @@ export class AssistantSession {
     this.pushOrchestrationMessage(EXECUTION_PHASE_HINT);
   }
 
+  /**
+   * 이번 턴에 확정한 밑그림이 있는데 그 명세대로 아무것도 짓지 않았는가.
+   *
+   * 툴 호출이 0건인 대화형 응답(승인 질문 등)과 구분하는 판별자다 — 그쪽은 정상이고,
+   * 이쪽은 "에셋 명세를 확정해 두고 실행을 건너뛴" 상태라 사용자에게 아무 결과도 남지 않는다.
+   */
+  private hasUnbuiltSpecThisTurn(): boolean {
+    if (this.activeSpecTurnIndex !== this.currentTurnIndex) return false;
+    const assets = this.activeSpec?.assets ?? [];
+    return assets.length > 0;
+  }
+
+  /**
+   * 확정된 밑그림의 npc 에셋을 **코드가 직접** place_npc 로 실행한다.
+   *
+   * 실측 결함(2026-07-29 region-task-log): 모델이 npc 에셋 명세를 확정해 두고 place_npc 를
+   * 부르지 않아 사용자에게 아무 결과도 남지 않았다. 프롬프트에는 이미 place_npc 지시가 세 곳
+   * 있었고 그 턴 메시지에도 실려 있었으므로, 지시를 더 넣는 것으로는 막히지 않는다.
+   * (게다가 그 턴의 시스템 프롬프트는 예산 초과로 잘려 있었다 — 규칙 추가는 역효과다.)
+   *
+   * kind:"npc" 는 인자가 명세만으로 확정되는 에셋이다(맵·좌표·역할). author_house 가 집에
+   * 대해 이미 그렇듯, 확정된 인자의 호출은 모델의 성실함이 아니라 코드가 책임진다.
+   *
+   * 중복 배치는 호출 시점으로 막는다 — 이 메서드는 이번 턴 쓰기 툴이 0건일 때만 불린다.
+   * 모델이 스스로 place_npc 를 불렀다면 writeToolAttempts > 0 이라 여기까지 오지 않는다.
+   */
+  private buildSpecNpcAssetsDirectly(
+    onEvent: (event: SessionEvent) => void,
+    proposedByKey: Map<string, ProposedCall>
+  ): number {
+    const assets = (this.activeSpec?.assets ?? []).filter((asset) => asset.kind === "npc");
+    const mapId = this.activeSpec?.mapId;
+    if (!mapId || assets.length === 0) return 0;
+
+    let placed = 0;
+    for (const asset of assets) {
+      const name = specNpcName(asset);
+      const args: Record<string, unknown> = {
+        mapId,
+        x: asset.x,
+        y: asset.y,
+        name,
+        graphic: { query: name },
+        pages: [specNpcPage(name)],
+      };
+      const result = runTool(this.ctx, "place_npc", args, { dryRun: false });
+      onEvent({ type: "tool_call", name: "place_npc", args, result });
+      this.pushAudit({
+        kind: "tool",
+        name: "place_npc",
+        args,
+        ok: result.ok,
+        summary: `${result.summary} (밑그림 npc 에셋 자동 실행)`,
+        ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
+      });
+      if (!result.ok || !result.diff) continue;
+      this.turnSuccessfulWriteTools.add("place_npc");
+      this.upsertProposal(proposedByKey, {
+        name: "place_npc",
+        args,
+        summary: result.summary,
+        result,
+        destructive: false,
+        requiresApproval: false,
+      });
+      placed += 1;
+    }
+    return placed;
+  }
+
   private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
     const currentSpec = this.activeSpec && this.activeSpecTurnIndex === this.currentTurnIndex ? this.activeSpec : null;
     if (currentSpec && proposalHasChangedMap(calls, currentSpec.mapId)) return currentSpec;
@@ -1231,11 +1305,15 @@ export class AssistantSession {
     this.lastTurnFailed = false;
     // 컨텍스트 도메인 스코핑: 턴 시작 사용자 메시지 기준의 도메인 유니온으로 툴을 고정한다.
     const domains = this.currentTurnToolDomains ?? computeActiveToolDomains("");
-    // WorkPlan tools always on: set_work_plan / get / complete / skip (TodoWrite-style in ReAct loop).
+    // WorkPlan 툴(set/get_work_plan, complete/skip_work_item)은 **계획을 실제로 쓰는 턴에만**
+    // 붙인다. 예전에는 무조건 붙어서, 오케스트레이션이 꺼진 기본 설정(감독=실행 모델 동일)에서
+    // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
+    // 조건은 아래 `orchestrated` 와 같아야 한다 — 계획 단계를 알리면서 계획 툴을 숨기면 모순이다.
+    const planToolsOn = this.orchestrationEnabled() || Boolean(this.workPlan);
     const tools = [
       ...toOpenAiTools(undefined, { domains }),
       SET_BUILD_SPEC_TOOL,
-      ...WORK_PLAN_TOOLS,
+      ...(planToolsOn ? WORK_PLAN_TOOLS : []),
     ];
     // 토큰 보정 관측용: tools 스키마도 prompt_tokens에 포함되므로 문자 수에 더한다(근사).
     const toolsChars = JSON.stringify(tools).length;
@@ -1341,6 +1419,38 @@ export class AssistantSession {
           reviewMissingWarnings = review.missingWarnings;
           this.pushOrchestrationMessage(review.prompt);
           continue;
+        }
+        // 밑그림만 그리고 끝낸 턴은 종료로 인정하지 않는다.
+        //
+        // 실제 결함(2026-07-29 region-task-log): `set_build_spec` 으로 상인 NPC 밑그림을
+        // 확정하고 `place_npc` 를 한 번도 부를지 않은 채 "사용자 승인 후 진행됩니다"로 끝냈다.
+        // proposedCalls=0 이니 승인할 대상이 없고 UI 에 승인 버튼이 뜨지 않는다 —
+        // 사용자는 없는 버튼을 기다리게 된다.
+        //
+        // 이 조건은 `orchestrated` 와 분리해야 한다. 감독 로그는 model === liteModel 이라
+        // orchestrated=false 여서 아래 재통 재킹이 꿫 꿠 상황이었다.
+        // 단, "툴 호출 자체가 0건인 대화형 승인 질문"은 정상이므로 건드리지 않는다 —
+        // 판별자는 **이번 턴에 에셋 있는 밑그림을 확정했는가**이다.
+        if (
+          !zeroChangeRekickUsed &&
+          writeToolAttempts === 0 &&
+          this.hasUnbuiltSpecThisTurn() &&
+          !assistantTextLooksLikeQuestion(finalText)
+        ) {
+          zeroChangeRekickUsed = true;
+          this.pushOrchestrationMessage(UNBUILT_SPEC_REKICK_HINT);
+          onEvent({ type: "status", text: "밑그림만 확정된 상태를 감지해 실제 배지를 진행합니다." });
+          this.pushAudit({ kind: "status", text: "zero-change-rekick (unbuilt-spec)" });
+          continue;
+        }
+        // 재킥을 이미 썼는데도 쓰기가 0건이면 모델에게 더 기대지 않는다 — 코드가 직접 짓는다.
+        // kind:"npc" 는 명세만으로 인자가 확정되므로 결정론적으로 실행할 수 있다.
+        if (writeToolAttempts === 0 && this.hasUnbuiltSpecThisTurn()) {
+          const placed = this.buildSpecNpcAssetsDirectly(onEvent, proposedByKey);
+          if (placed > 0) {
+            onEvent({ type: "status", text: `밑그림의 NPC ${placed}명을 직접 배치했습니다.` });
+            this.pushAudit({ kind: "status", text: `spec-npc-autobuild ${placed}` });
+          }
         }
         if (
           orchestrated &&
@@ -1597,6 +1707,33 @@ function reviewRepairInstruction(reviewText: string, missingWarnings: readonly s
 
 function stripReviewCompletePrefix(text: string): string {
   return text.trim().replace(/^완료\s*[:：]\s*/u, "");
+}
+
+/** 상점 역할 이름 판정 — eventTools 의 같은 정규식과 의미를 맞춘다(그쪽은 비공개). */
+const SHOP_ROLE_NAME = /상점\s*주인|잡화\s*상|잡화점|가게\s*주인|상인|merchant|shopkeeper|shop\s*owner/u;
+
+function specNpcName(asset: SpecAsset): string {
+  const style = asset.style?.trim();
+  if (style) return style;
+  const note = asset.note?.trim();
+  return note && note.length > 0 ? note : "주민";
+}
+
+/**
+ * 밑그림 npc 에셋의 기본 대사 페이지.
+ *
+ * 상점 역할 이름이면 shop 커맨드를 붙인다 — 재고는 비워 둔다(명세에 품목이 없다).
+ * 빈 재고로도 place_npc 가 changeFace→text→shop 3커맨드를 컴파일하는 것을 실측했으므로,
+ * 사용자는 상점 창까지 열리는 이벤트를 받고 품목만 나중에 채우면 된다.
+ */
+function specNpcPage(name: string): Record<string, unknown> {
+  if (SHOP_ROLE_NAME.test(name)) {
+    return {
+      lines: ["어서 오세요. 필요한 게 있으신가요?"],
+      commands: [{ kind: "shop", itemIds: [], allowSell: true }],
+    };
+  }
+  return { lines: [`${name}입니다.`] };
 }
 
 function buildSpecPlanLabel(spec: BuildSpec): string {

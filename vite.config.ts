@@ -7,6 +7,25 @@ import type { CodexSession } from "./scripts/lib/codexOAuthSession.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
+/**
+ * dev 서버 TLS. `https://localhost:9999` 로 접속하려면 반드시 있어야 한다.
+ *
+ * 이게 없던 동안 `https://localhost:9999` 는 TLS 핸드셰이크에서 죽었다(실측 curl 코드 000).
+ * 서버는 살아서 http 로 200 을 주고 있었으므로 "서버가 안 뜬다"가 아니라
+ * **평문 서버에 https 로 노크하고 있었던 것**이 원인이었다.
+ *
+ * 인증서는 자기서명이고 `.certs/` 에 두며 커밋하지 않는다. 없으면 평문 http 로 뜬다
+ * (CI·컨테이너처럼 인증서를 만들지 않는 환경을 막지 않기 위해). 재발급: scripts/dev-certs.sh
+ * e2e 는 DEV_SERVER_NO_TLS=1 로 평문 경로를 쓴다(playwright 는 http 로 폴링한다).
+ */
+function devServerHttps(): { key: Buffer; cert: Buffer } | undefined {
+  if (process.env.DEV_SERVER_NO_TLS === "1") return undefined;
+  const key = fileURLToPath(new URL("./.certs/localhost-key.pem", import.meta.url));
+  const cert = fileURLToPath(new URL("./.certs/localhost-cert.pem", import.meta.url));
+  if (!existsSync(key) || !existsSync(cert)) return undefined;
+  return { key: readFileSync(key), cert: readFileSync(cert) };
+}
+
 function devServerPort(mode: string): number {
   const rawPort = loadEnv(mode, process.cwd(), "").DEV_SERVER_PORT;
   const port = Number(rawPort ?? DEFAULT_DEV_SERVER_PORT);
@@ -220,6 +239,8 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     allowedHosts: true,
     open: false,
+    // 인증서가 있으면 https 로 뜬다. 없으면 평문 http (undefined = vite 기본).
+    https: devServerHttps(),
     fs: {
       // 워크트리에서 node_modules 를 정션(mklink /J)으로 쓰면 @fs 실경로가 원본 저장소의
       // node_modules 로 풀린다 — 기본 allow(워크스페이스 루트)만으로는 403. 그 경로만 추가 허용.

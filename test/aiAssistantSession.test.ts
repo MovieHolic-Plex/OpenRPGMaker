@@ -509,3 +509,89 @@ describe("하네스 관측", () => {
     expect(snapshot.audit).not.toBe(session.getAuditEntries());
   }, 30000);
 });
+
+/**
+ * 실측 결함(2026-07-29 region-task-log): 어시스턴트가 `set_build_spec`(밑그림)만 확정하고
+ * 실제 쓰기 툴(place_npc)을 한 번도 호출하지 않은 채 "승인 후 진행됩니다"라고 말하고 끝냈다.
+ * proposedCalls=0 이므로 승인할 대상이 없고, UI 에는 승인 버튼이 뜰 수 없다 —
+ * 사용자는 없는 버튼을 찾게 된다. 진짜 결함은 "아무것도 안 하고 했다고 말한 것"이다.
+ *
+ * 원인 두 가지를 각각 고정한다:
+ *  (1) 빈손 종료 안전망(zero-change-rekick)이 `orchestrated` 게이트 뒤에 있었다.
+ *      model === liteModel 인 단일 모델 설정에서는 orchestrated=false 라 안전망이 꺼진다.
+ *  (2) 밑그림만 확정한 턴을 완료로 인정했다. 명세에 에셋이 있는데 그 에셋을 지은
+ *      쓰기 툴이 0건이면 그 턴은 미완이다.
+ */
+describe("밑그림만 그리고 끝내는 턴", () => {
+  const SPEC_ARGS = {
+    mapId: "map_blank_start",
+    title: "선택 영역 잡화점 상인 배치",
+    assets: [{ id: "merchant_npc", kind: "npc", x: 5, y: 5, w: 1, h: 1, style: "잡화점 상인", overExisting: "keep" }],
+    buildOrder: ["npc"],
+    density: "normal",
+    layoutStyle: "straight",
+    pathWidth: 1,
+  };
+
+  it("단일 모델에서도 쓰기 0건 종료를 감지해 실행을 다시 요구한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    // CONFIG 는 model === liteModel — 감독님 로그와 같은 단일 모델 조건이다.
+    const chat = scriptedChat([
+      assistantToolCall("set_build_spec", SPEC_ARGS),
+      assistantFinal("잡화점 상인 NPC 1명을 배치할 예정입니다. 실제 배치는 사용자 승인 후 진행됩니다."),
+      assistantFinal("다시 확인했습니다."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), { config: { ...CONFIG, authMode: "apiKey" as const }, chat });
+
+    await session.sendUserMessage("이 자리에 잡화점 상인 NPC 하나 배치해줘", () => {});
+
+    const audit = session.getAuditEntries();
+    const rekicked = audit.some((entry) => entry.kind === "status" && String(entry.text).includes("zero-change-rekick"));
+    expect(rekicked).toBe(true);
+  }, 30000);
+
+  it("밑그림 에셋을 지은 쓰기 툴이 없으면 미이행 경고를 남긴다", async () => {
+    const { proposalCompletenessWarnings } = await import("@/ai/proposalCompleteness");
+
+    // 쓰기 툴이 하나도 없는 상태 = 감독님 로그의 실제 상황(calls: []).
+    const warnings = proposalCompletenessWarnings({
+      requestText: "이 자리에 잡화점 상인 NPC 하나 배치해줘",
+      assistantText: "배치할 예정입니다. 사용자 승인 후 진행됩니다.",
+      buildSpec: SPEC_ARGS as unknown as import("@/ai/buildSpec").BuildSpec,
+      calls: [],
+    });
+
+    expect(warnings.length).toBeGreaterThan(0);
+    expect(warnings.some((w) => w.includes("미이행"))).toBe(true);
+  }, 30000);
+
+  it("모델이 place_npc 를 부르지 않아도 밑그림의 npc 에셋을 직접 배치해 이벤트를 만든다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    // 모델은 끝까지 place_npc 를 부르지 않는다 — 밑그림만 내고 "승인 후 진행"이라 말한다.
+    // 재킥(1회) 후에도 같은 태도를 유지하는, 감독 로그보다 더 나쁜 시나리오다.
+    const chat = scriptedChat([
+      assistantToolCall("set_build_spec", SPEC_ARGS),
+      assistantFinal("잡화점 상인을 배치할 예정입니다. 사용자 승인 후 진행됩니다."),
+      assistantFinal("밑그림은 이미 확정했습니다. 승인해 주세요."),
+    ]);
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...CONFIG, authMode: "apiKey" as const },
+      chat,
+    });
+
+    const result = await session.sendUserMessage("이 자리에 잡화점 상인 NPC 하나 배치해줘", () => {});
+
+    // 코드가 직접 실행했으므로 승인할 제안이 생긴다(이전에는 0건이라 승인 버튼이 없었다).
+    const npcProposals = result.proposedCalls.filter((call) => call.name === "place_npc");
+    expect(npcProposals.length).toBe(1);
+
+    // 감사 로그에 자동 실행 흔적이 남는다.
+    const audit = session.getAuditEntries();
+    expect(audit.some((e) => e.kind === "status" && String(e.text).includes("spec-npc-autobuild"))).toBe(true);
+
+    // 핵심: 실제 이벤트가 페이지·커맨드까지 컴파일됐는가. 상점 역할이므로 shop 커맨드가 있어야 한다.
+    const diff = npcProposals[0]!.result.diff;
+    expect(diff).toBeTruthy();
+    expect(diff?.eventsAdded ?? 0).toBe(1);
+  }, 30000);
+});

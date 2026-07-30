@@ -1,3 +1,4 @@
+import { ICE_DIAGONAL_TILES } from "@/project/defaults/iceDiagonalTerrain";
 import type { IceGrandExpanseTerrainBarrier } from "@/project/defaults/iceGrandExpansePlan";
 
 const TOP_WALL = [372, 373, 374] as const;
@@ -62,11 +63,29 @@ export function fillSmallVoids(snow: Uint8Array, basin: Uint8Array, width: numbe
   }
 }
 
+/**
+ * 절뱽 페이스를 눈밭 주변에 두 겹으로 둘린다. 링1 = 상단, 링2 = 밑동.
+ *
+ * 조각 선택은 **가로 위치**로 한다. 1차 판은 `index % 3` 이었고, 그것은 타일 번호와
+ * 지형이 무관하다는 뜻이다 — 374(오른 끝) 옆에 372(왼 끝)가 붙는 9슬라이스 위반이 생긴다
+ * (실측: 한 맵에서 195쌍). 이제 같은 역할이 가로로 이어지는 구간의 양 끝만 끝 조각이다.
+ */
 export function paintCliffFringe(lower: number[], snow: Uint8Array, basin: Uint8Array, width: number): void {
+  const role = new Int8Array(lower.length);
   for (let index = 0; index < lower.length; index += 1) {
     if (snow[index] === 1 || basin[index] === 1) continue;
-    if (neighbors(snow, width, index, 1)) lower[index] = TOP_WALL[index % TOP_WALL.length] ?? TOP_WALL[1];
-    else if (neighbors(snow, width, index, 2)) lower[index] = BODY_WALL[index % BODY_WALL.length] ?? BODY_WALL[1];
+    if (neighbors(snow, width, index, 1)) role[index] = 1;
+    else if (neighbors(snow, width, index, 2)) role[index] = 2;
+  }
+  for (let index = 0; index < lower.length; index += 1) {
+    const kind = role[index];
+    if (kind !== 1 && kind !== 2) continue;
+    const x = index % width;
+    const sameWest = x > 0 && role[index - 1] === kind;
+    const sameEast = x + 1 < width && role[index + 1] === kind;
+    const piece = !sameWest ? 0 : !sameEast ? 2 : 1;
+    const set = kind === 1 ? TOP_WALL : BODY_WALL;
+    lower[index] = set[piece] ?? set[1];
   }
 }
 
@@ -74,6 +93,36 @@ export function paintRouteOutline(lower: number[], route: Uint8Array, node: Uint
   const path = new Uint8Array(route.length);
   for (let index = 0; index < path.length; index += 1) if (route[index] === 1 || node[index] === 1) path[index] = 1;
   for (let index = 0; index < path.length; index += 1) if (path[index] === 1) lower[index] = outlinedSnowTile(path, width, index);
+}
+
+const CLIFF_TOPS: readonly number[] = [372, 373, 374];
+
+/** 대각 뱙벽 밑동 — 이 타일 밑 행은 정본 규칙이 눈을 요구하므로 립을 깔지 않는다. */
+const DIAGONAL_BASES: readonly number[] = [ICE_DIAGONAL_TILES.left.base, ICE_DIAGONAL_TILES.right.base];
+
+/**
+ * 절뱽 상단 바로 위 칸이 **바닥**이라면 평지 립 343 으로 바꾼다.
+ *
+ * 눈밭 9슬라이스가 깔는 남변 97 은 벌 윗선과 `97 ↓ 373` = 173 으로 부딪치고,
+ * 343 은 `343 ↓ 373` = 38 로 이어진다(실측 · 64×64 와 같은 근거).
+ *
+ * 안 바꾸는 칸이 둘 있다:
+ *  · 바닥(눈 마스크)이 아닌 칸 — 343 은 통행 `o` 라 벽에 깔면 절뱽이 뚫린다.
+ *  · 대각 밑동(346/347) 바로 아랫 행 — 정본 검증기의 `*-base-needs-snow-support` 가
+ *    그 행을 눈 계열로 제한한다. 여기에 343 을 깔았다가 실제로 거부당해서 막은 것이다.
+ */
+export function paintCliffLip(lower: number[], snow: Uint8Array, width: number, lipTile: number): number {
+  let painted = 0;
+  for (let index = width; index < lower.length; index += 1) {
+    if (!CLIFF_TOPS.includes(lower[index] ?? -1)) continue;
+    const lip = index - width;
+    if (snow[lip] !== 1) continue;
+    if (CLIFF_TOPS.includes(lower[lip] ?? -1)) continue;
+    if (lip >= width && DIAGONAL_BASES.includes(lower[lip - width] ?? -1)) continue;
+    lower[lip] = lipTile;
+    painted += 1;
+  }
+  return painted;
 }
 
 function barrierCells(barrier: IceGrandExpanseTerrainBarrier): readonly (readonly [number, number])[] {

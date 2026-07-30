@@ -2,7 +2,10 @@ import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { iceDiagonalRole, validateIceDiagonalTerrain } from "@/project/defaults/iceDiagonalTerrain";
 import {
+  ICE_GRAND_EXPANSE_BANNED_VOID_TILES,
   ICE_GRAND_EXPANSE_BOSS,
+  ICE_GRAND_EXPANSE_CEILING_TILE,
+  ICE_GRAND_EXPANSE_LIP_TILE,
   ICE_GRAND_EXPANSE_GATE_GEOMETRY,
   ICE_GRAND_EXPANSE_HEIGHT,
   ICE_GRAND_EXPANSE_MAP_ID,
@@ -99,10 +102,45 @@ describe("ice grand expanse deterministic terrain", () => {
     expect(validateIceDiagonalTerrain({ width: terrain.width, height: terrain.height, lower: terrain.lowerTiles })).toEqual([]);
     expect(terrain.lowerTiles.filter((tile, index) => iceDiagonalRole(tile) !== null && terrain.ceilingMask[index] === 1)).toEqual([]);
     expect(terrain.ceilingMask.some((cell) => cell === 1)).toBe(true);
-    expect(terrain.lowerTiles[0]).toBe(428);
-    expect(terrain.lowerTiles.filter((tile) => tile === 428).length).toBeGreaterThan(1_000);
-    expect(terrain.lowerTiles.filter((tile) => [372, 373, 374, 402, 403, 404].includes(tile)).length).toBeGreaterThan(400);
-    expect(enclosedComponentSizes(terrain.lowerTiles, terrain.width, 428).filter((size) => size < 24)).toEqual([]);
+    // 네거티브 공간은 심연 428 이 아니라 광석 암반 285 다 — 428 은 85% 순검정이라 나락으로 읽혔다.
+    expect(ICE_GRAND_EXPANSE_CEILING_TILE).toBe(285);
+    expect(terrain.lowerTiles[0]).toBe(ICE_GRAND_EXPANSE_CEILING_TILE);
+    expect(terrain.lowerTiles.filter((tile) => tile === ICE_GRAND_EXPANSE_CEILING_TILE).length).toBeGreaterThan(1_000);
+    expect(terrain.lowerTiles.filter((tile) => [372, 373, 374, 402, 403, 404].includes(tile)).length).toBeGreaterThan(300);
+    expect(enclosedComponentSizes(terrain.lowerTiles, terrain.width, ICE_GRAND_EXPANSE_CEILING_TILE).filter((size) => size < 24)).toEqual([]);
+  });
+
+  /**
+   * 감독 지시 — **물타일은 끝까지 없앤다**.
+   *
+   * 64×64 에서 427(순검정 심연)을 지웠는데 이 맵은 같은 심연 집합의 428 을 2,800칸
+   * 네거티브 공간으로 쓰고 있었다. 한 맵만 고치면 같은 결함이 다른 맵에 남는다.
+   */
+  it("places no abyss or water tile anywhere on the map", () => {
+    const terrain = buildIceGrandExpanseTerrain();
+    const present = new Set<number>();
+    for (const tile of [...terrain.lowerTiles, ...terrain.upperTiles]) {
+      if ((ICE_GRAND_EXPANSE_BANNED_VOID_TILES as readonly number[]).includes(tile)) present.add(tile);
+    }
+    expect([...present]).toEqual([]);
+  });
+
+  /**
+   * 감독 지시 — "373 위에 평지놓을거면 343 놓으라니까".
+   *
+   * 절벽 상단 바로 위가 바닥이면 343 을 깐다. 눈 남변 97 은 `97 ↓ 373` = 173 으로
+   * 벽 윗선과 부딪히고 343 은 38 이다. 립은 절벽 칸이 아니라 위 대지의 바닥이며,
+   * 대각 밑동 밑 지지 행은 정본 규칙이 눈을 요구하므로 건드리지 않는다.
+   */
+  it("lays the 343 lip on floor above cliff tops without breaking the canonical ridges", () => {
+    const terrain = buildIceGrandExpanseTerrain();
+    expect(ICE_GRAND_EXPANSE_LIP_TILE).toBe(343);
+    const lipCells = terrain.lowerTiles.filter((tile) => tile === ICE_GRAND_EXPANSE_LIP_TILE).length;
+    expect(lipCells).toBeGreaterThan(100);
+    // 립을 깔고도 정본 대각 문법이 깨지지 않는다(지지 행 규칙 포함).
+    expect(validateIceDiagonalTerrain({ width: terrain.width, height: terrain.height, lower: terrain.lowerTiles })).toEqual([]);
+    // 립은 천장(네거티브 공간)이 아니다.
+    expect(terrain.lowerTiles.filter((tile, index) => tile === ICE_GRAND_EXPANSE_LIP_TILE && terrain.ceilingMask[index] === 1)).toEqual([]);
   });
 
   it("materializes the route plan as five-cell corridors, plazas, and irregular regions", () => {
