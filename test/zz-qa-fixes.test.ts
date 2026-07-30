@@ -2,9 +2,7 @@
 // Adversarial unit checks for fixes 3/4/5 (temp QA file — delete after run).
 import { describe, expect, it } from "vitest";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
-import { renderBattlerAnimationsTab } from "@/editor/panels/databaseUtilityRecordViews";
 import { battleEventCommandRuntimeSupport, m2CommandRuntimeClassification } from "@/editor/eventCommands/runtimeSupport";
-import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
 
 function enemyWith(resourceId: string | undefined): EnemyRecord {
@@ -48,15 +46,5 @@ describe("fix 4: generated-resource preview slot", () => {
     const slot = form.querySelector(".db-neutral-resource-slot.empty");
     expect(slot).not.toBeNull();
     expect(slot!.querySelector("button")).toBeNull();
-  });
-});
-
-describe("fix 5: battler animations runtime-unlinked notice", () => {
-  it("renders the notice element", () => {
-    const host = document.createElement("div");
-    renderBattlerAnimationsTab(host);
-    const notice = host.querySelector('[data-testid="db-battler-animations-runtime-note"]');
-    expect(notice).not.toBeNull();
-    expect(notice!.textContent?.length ?? 0).toBeGreaterThan(0);
   });
 });

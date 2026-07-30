@@ -13,7 +13,7 @@ import {
   proposalHasChangedMap,
   requestLikelyExpectsChange,
 } from "@/ai/proposalCompleteness";
-import { loadAiConfig } from "@/ai/llmClient";
+import { isProxyAuth, loadAiConfig } from "@/ai/llmClient";
 import type { AiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -46,6 +46,11 @@ export function isWriteTool(name: string): boolean {
 export function isAiConfigReady(config: AiConfig): boolean {
   if (!config.model.trim()) return false;
   if (config.authMode === "chatgpt") return true;
+  // baseUrl 은 항상 필요. 단, 상대 baseUrl(동일 오리진 vite 프록시)은 서버가 Authorization 을
+  // 주입하므로(isProxyAuth) 클라이언트 apiKey 를 요구하지 않는다. 이전에는 여기서 키를 무조건
+  // 요구해 프록시 환경에서 AI 채팅 전송이 막혔다(중복 검사가 면제를 빼먹은 결함).
+  // 올바른 참조 구현: editor/panels/aiConnectionStatus.ts — 판정은 llmClient.isProxyAuth 로 통일.
+  if (isProxyAuth(config)) return Boolean(config.baseUrl.trim());
   return Boolean(config.baseUrl.trim() && config.apiKey.trim());
 }
 

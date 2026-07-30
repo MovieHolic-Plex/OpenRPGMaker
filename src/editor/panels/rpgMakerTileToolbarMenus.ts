@@ -3,17 +3,12 @@ import type { EditorState } from "@/editor/editorState";
 import { copySelection, pasteClipboard } from "@/editor/mapClipboard";
 import { mapHistoryEntryCount, renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
 import { renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
-import { canPlaceStructureStampOnMap, STRUCTURE_STAMPS } from "@/editor/structureStampTools";
-import type { StructureStampId } from "@/editor/structureStampTools";
-import { tileStampsForTile } from "@/editor/tileStampBrushes";
 import { isFavoriteTile, toggleFavoriteTile } from "@/editor/panels/tileBrushTools";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import {
   selectRpgMakerEyedropperTool,
-  selectRpgMakerStructureStamp,
   selectRpgMakerTileTool,
   setRpgMakerBrushSize,
-  toggleRpgMakerTileStamp,
 } from "@/editor/panels/rpgMakerTileToolbarActions";
 import { makeSvgIcon } from "@/editor/panels/rpgMakerTileToolbarIcons";
 import type { SvgIconName } from "@/editor/panels/rpgMakerTileToolbarIcons";
@@ -39,12 +34,11 @@ export function makeInspectorDropdown(model: RpgMakerToolbarModel): HTMLElement 
   const { state, tileset } = model;
   const wrapper = makeToolbarMenuWrapper("tile-inspector-menu");
   const active = openMenu === "inspector";
-  wrapper.append(makeMenuToggle("inspector", "인스펙터", active, state.tool === "eyedropper" || state.activeStampId !== null, model.rerender));
+  wrapper.append(makeMenuToggle("inspector", "인스펙터", active, state.tool === "eyedropper", model.rerender));
   if (!active) return wrapper;
 
   const selectedTile = state.selectedTile;
   const tileLayer = selectedTile >= 0 ? (tileset.priority[selectedTile] ?? "lower") : "lower";
-  const stamp = selectedTile >= 0 ? tileStampsForTile(selectedTile, tileset)[0] : null;
   const menu = el("div", { class: "rpg-maker-toolbar-dropdown rpg-maker-inspector-dropdown", attrs: { role: "menu" }, dataset: { testid: "tile-inspector-dropdown" } });
   menu.append(makeInspectorSummary(selectedTile, tileset, tileLayer));
   menu.append(makeOptionItem("즐겨찾기", isFavoriteTile(selectedTile), selectedTile < 0, () => {
@@ -54,10 +48,6 @@ export function makeInspectorDropdown(model: RpgMakerToolbarModel): HTMLElement 
   menu.append(makeOptionItem("채우기", state.tool === "fill", false, () => {
     selectRpgMakerTileTool("fill");
     closeToolbarMenus();
-    model.rerender();
-  }));
-  menu.append(makeOptionItem("스탬프", Boolean(stamp && state.activeStampId === stamp.id), !stamp, () => {
-    toggleRpgMakerTileStamp(selectedTile, tileset);
     model.rerender();
   }));
   menu.append(makeOptionItem("스포이드", state.tool === "eyedropper", false, () => {
@@ -109,8 +99,8 @@ export function makeHistoryDropdown(model: RpgMakerToolbarModel): HTMLElement {
 
 /**
  * ⋯ 오버플로 메뉴 — 저빈도 컨트롤을 한 토글로 묶는다:
- * 복사/붙여넣기, 인스펙터/규칙/기록, 브러시 크기, 구조 템플릿.
- * copy-button/paste-button/brush-size-N/structure-stamp-* testid는 그대로 승계.
+ * 복사/붙여넣기, 인스펙터/규칙/기록, 브러시 크기.
+ * copy-button/paste-button/brush-size-N testid는 그대로 승계.
  */
 export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
   const { state, map, tileset } = model;
@@ -118,7 +108,7 @@ export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
   const panelOpen = openMenu === "overflow" || openMenu === "inspector" || openMenu === "ruleAudit" || openMenu === "history";
   const ruleCount = ruleAuditViolationCount();
   const historyCount = mapHistoryEntryCount();
-  const highlighted = state.brushSize > 1 || state.activeStructureStampId !== null || ruleCount > 0;
+  const highlighted = state.brushSize > 1 || ruleCount > 0;
   const toggle = makeMenuToggle("overflow", "더 보기", panelOpen, highlighted, model.rerender);
   if (ruleCount > 0) toggle.append(makeToolbarBadge(ruleCount, "rule-audit-badge", true));
   wrapper.append(toggle);
@@ -172,7 +162,6 @@ export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
   if (openMenu === "inspector") {
     const selectedTile = state.selectedTile;
     const tileLayer = selectedTile >= 0 ? (tileset.priority[selectedTile] ?? "lower") : "lower";
-    const stamp = selectedTile >= 0 ? tileStampsForTile(selectedTile, tileset)[0] : null;
     menu.append(makeOverflowSectionLabel("인스펙터"));
     menu.append(makeInspectorSummary(selectedTile, tileset, tileLayer));
     menu.append(makeOptionItem("즐겨찾기", isFavoriteTile(selectedTile), selectedTile < 0, () => {
@@ -182,10 +171,6 @@ export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
     menu.append(makeOptionItem("채우기", state.tool === "fill", false, () => {
       selectRpgMakerTileTool("fill");
       closeToolbarMenus();
-      model.rerender();
-    }));
-    menu.append(makeOptionItem("스탬프", Boolean(stamp && state.activeStampId === stamp.id), !stamp, () => {
-      toggleRpgMakerTileStamp(selectedTile, tileset);
       model.rerender();
     }));
     menu.append(makeOptionItem("스포이드", state.tool === "eyedropper", false, () => {
@@ -210,47 +195,12 @@ export function makeOverflowDropdown(model: RpgMakerToolbarModel): HTMLElement {
     }, `brush-size-${size}`));
   }
 
-  menu.append(makeOverflowSectionLabel("템플릿"));
-  appendTemplateItems(menu, model);
   wrapper.append(menu);
   return wrapper;
 }
 
 function makeOverflowSectionLabel(label: string): HTMLElement {
   return el("div", { class: "rpg-maker-overflow-section", attrs: { "aria-hidden": "true" }, text: label });
-}
-
-function appendTemplateItems(menu: HTMLElement, model: RpgMakerToolbarModel): void {
-  const { state, map } = model;
-  for (const stamp of STRUCTURE_STAMPS) {
-    const compatible = canPlaceStructureStampOnMap(map, stamp.id);
-    const itemActive = compatible && state.activeStructureStampId === stamp.id;
-    const item = el("button", {
-      class: "rpg-maker-template-item" + (itemActive ? " active" : ""),
-      attrs: {
-        "aria-disabled": String(!compatible),
-        "aria-label": stamp.description,
-        "aria-pressed": String(itemActive),
-        role: "menuitemradio",
-        title: compatible ? stamp.description : structureStampDisabledHint(stamp.id),
-      },
-      children: [
-        el("span", { class: "rpg-maker-template-label", text: stamp.label }),
-        el("span", { class: "rpg-maker-template-description", text: stamp.description }),
-      ],
-      dataset: { testid: `structure-stamp-${stamp.id}` },
-      on: {
-        click: () => {
-          if (!compatible) return;
-          selectRpgMakerStructureStamp(stamp.id);
-          closeToolbarMenus();
-          model.rerender();
-        },
-      },
-    });
-    item.disabled = !compatible;
-    menu.append(item);
-  }
 }
 
 function makeInspectorSummary(selectedTile: number, tileset: TilesetDef, tileLayer: "lower" | "upper"): HTMLElement {
@@ -348,7 +298,3 @@ function tilePreviewStyle(selectedTile: number, tileset: TilesetDef): string {
   return tilesetTileBackgroundStyle(tileset, selectedTile, 32);
 }
 
-function structureStampDisabledHint(id: StructureStampId): string {
-  if (id === "house-interior-10x10") return "Interior 칩셋 맵에서만 사용할 수 있습니다.";
-  return "외부 칩셋 맵에서만 사용할 수 있습니다.";
-}

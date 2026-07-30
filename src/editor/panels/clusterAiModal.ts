@@ -7,7 +7,7 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
-import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
+import { configForLiteModel, isProxyAuth, loadAiConfig } from "@/ai/llmClient";
 import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/skills";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -382,7 +382,12 @@ function startKickoff(
   sendText: (text: string, displayText?: string) => Promise<void>
 ): void {
   const config = configForLiteModel(loadAiConfig());
-  if (!config.baseUrl.trim() || !config.model.trim() || !config.apiKey.trim()) {
+  // baseUrl/model 은 항상 필요. apiKey 는 동일 오리진 프록시(상대 baseUrl)일 때 면제 —
+  // 서버가 Authorization 을 주입하므로(isProxyAuth) 클라이언트 키가 필요 없다. 이전에는 여기서
+  // 키를 무조건 요구해 프록시 환경에서 킥오프가 막혔다(중복 검사가 면제를 빼먹은 결함).
+  // 올바른 참조 구현: editor/panels/aiConnectionStatus.ts — 판정은 llmClient.isProxyAuth 로 통일.
+  const needsClientKey = !isProxyAuth(config);
+  if (!config.baseUrl.trim() || !config.model.trim() || (needsClientKey && !config.apiKey.trim())) {
     status.textContent = "설정 필요";
     appendBubble("system", "AI 설정(엔드포인트/키)을 먼저 완료하세요. 오른쪽 AI 패널의 설정을 저장한 뒤 다시 열어 주세요.");
     return;

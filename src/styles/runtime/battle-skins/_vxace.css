@@ -1,0 +1,686 @@
+/* src/styles/runtime/battle-skins/_vxace.css
+   VX Ace 계열 일본식 JRPG 프론트뷰 — 기본 스킨.
+
+   좌표계: `.battle-scene` 의 레이아웃 박스는 **640×480 논리 px** 고정이고
+   `transform: scale(var(--battle-stage-scale))` 로 맞춰진다(battleStageScale.ts).
+   이 파일의 모든 px 는 640×480 기준이다 — 참조 원본(544×416) px × 1.176 이 곧 이 값이다.
+   1280×900 창에서는 누적 배율 1.0 이라 논리 px 가 화면 px 와 1:1 이다.
+
+   ── 참조 스크린샷 실측 → 논리 환산 ──────────────────────────────────────
+   참조 원본 541×410(VX Ace 네이티브 544×416). 환산 계수 640/544 = 1.176.
+   아래 "논리" 값은 **320 논리 시절에 적어둔 값**이므로 지금 CSS 값은 그 2배다.
+   영역별로 잘라 4배 확대해 재고(도구: `_refcrop.mjs`) 아래 값을 얻었다.
+
+     명령창      src x 409..536, y 78..274  →  논리 x 241..316, y 46..161
+                 = 폭 75, 8항목 높이 115(항목당 13), 우측 여백 3, **하단이 파티 행 위에 붙는다**
+     띠          논리 y 161..172 — 좌우 코너 라벨과 ▼ 표식이 놓이는 얇은 밴드
+     파티 행     논리 y 172..240 = 높이 68(28.3%), 셀 4개 × 78.5
+     셀 내부     얼굴이 **셀 전체 배경**이고 그 위에 HUD 를 얹는다(왼쪽 작은 초상이 아니다)
+                   · HP 큰 숫자  글자높이 25src → 논리 15px, 우측 정렬, y 3..19
+                   · HP 게이지   src x 62..136, y 33..40 → 논리 폭 44, 높이 4, y 19
+                   · MP 숫자     논리 13px, y 27..35 / MP 게이지 y 35, 폭 44
+                   · 역할 글자   논리 x 59..73, y 42..56, 13px
+                   · AP 라벨 9px + % 11px, 게이지 폭 68 · 높이 5 · y 60
+     적          방패형 번호 배지 논리 6×9, 그 아래 **호박색 HP 바**(폭 49·높이 3)
+                 그리고 더 넓은 **보라색 행동 게이지**(폭 61·높이 3). 적 이름·HP 숫자는 없다.
+
+   battle.css 의 "Compact HUD layer" 가 `.battle-party` 등을 !important 로 강제하므로
+   여기서도 !important 를 쓴다. `[data-battle-ui-style]` 은 건드리지 않는다(rm2003 이 쓴다). */
+
+.battle-scene[data-battle-skin="vxace"] {
+  --battle-window-bg: rgba(18, 24, 30, 0.74);
+  --battle-window-edge: #e4e0c8;
+  --battle-text: #ffffff;
+  --battle-accent: #ffd75a;
+  --rm2k3-battle-text: #ffffff;
+  /* 참조 창은 어둡고 반투명해서 뒤의 밝은 필드가 배어 나온다. */
+  --vxace-window-bg: rgba(18, 24, 30, 0.74);
+  --vxace-cell-bg: rgba(10, 14, 20, 0.72);
+  --vxace-frame: rgba(232, 228, 202, 0.82);
+  --vxace-frame-dark: rgba(18, 22, 28, 0.9);
+  --vxace-muted: #cfd8e8;
+  /* 참조 화면의 글자는 픽셀 폰트가 아니라 안티에일리어싱된 고딕체다(확대 대조로 확인).
+     battle.css 가 쓰는 토큰을 이 스킨 범위에서만 부드러운 산세리프로 바꾼다 —
+     기본값 Galmuri 는 다른 11종 스킨에서 그대로 쓰인다. */
+  --runtime-pixel-font: "Malgun Gothic", "Noto Sans KR", "Meiryo", "Hiragino Sans", system-ui, sans-serif;
+  /* 셀 폭 = (640 − 셀 간격 4px × 3) / 4 = 157px. 얼굴 배경 크롭 계산에도 쓴다. */
+  --vxace-cell-w: 157px;
+  /* 모든 오버레이 글자에 쓰는 검정 아웃라인 — 밝은 필드/얼굴 위에서 읽히게 한다. */
+  --vxace-outline:
+    2px 2px 0 #000, -2px 2px 0 #000, 2px -2px 0 #000, -2px -2px 0 #000,
+    0 0 4px rgba(0, 0, 0, 0.85);
+  background: #000;
+  /* 프론트뷰 한 칸 + 하단 파티 행 68px. 명령창은 그리드에서 빼고 절대배치한다. */
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) 136px !important;
+  gap: 0 !important;
+}
+
+/* --- 필드 -------------------------------------------------------------- */
+.battle-scene[data-battle-skin="vxace"] .battle-field {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  z-index: 1 !important;
+}
+
+/* 참조는 밝은 필드가 그대로 보인다 — battle.css 의 어두운 비네트를 걷어낸다. */
+.battle-scene[data-battle-skin="vxace"] .battle-field::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.18) 100%);
+}
+
+/* 적 이름 목록 패널은 쓰지 않는다(정보는 스프라이트 아래 HUD). */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-list-panel {
+  display: none !important;
+}
+
+/* --- 적: 방패 배지 + 호박색 HP + 보라 행동 게이지 ---------------------- */
+.battle-scene[data-battle-skin="vxace"]:not([data-battle-director-step="result"]) .battle-enemy {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  /* battle.css 의 scale(1.35)를 되돌린다 — 배지/게이지가 흐려지지 않게. */
+  transform: translate(-50%, -100%) scale(1) !important;
+}
+
+/* 참조 늑대는 논리 41×53 이다. 우리 몬스터 스프라이트는 정사각이라 56 으로 맞춘다. */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy .battle-enemy-image {
+  height: 112px !important;
+  width: 112px !important;
+}
+
+/* 참조에는 적 이름도, HP 숫자도 없다 — 정보는 게이지가 전한다.
+   DOM 에서 지우지 않고 글자 크기만 0 으로 둔다(textContent 를 읽는 기존 테스트가 그대로 통한다). */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-name,
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hp-text {
+  font-size: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* 방패(펜타곤) 형태 배지. */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy .battle-enemy-index-badge {
+  align-items: center;
+  background: rgba(28, 32, 40, 0.94);
+  box-shadow: inset 0 0 0 2px rgba(238, 240, 246, 0.9);
+  box-sizing: border-box;
+  clip-path: polygon(50% 0, 100% 16%, 100% 60%, 50% 100%, 0 60%, 0 16%);
+  color: #fff;
+  display: flex;
+  /* 참조 배지는 원본 10×15 → 640 논리로 ×1.176 = 12×18. 안의 숫자도 11px 로 읽힌다.
+     (320 논리 시절에는 6×9 로 줄이면 숫자가 4px 이 되어 못 읽었다 — 그래서 키워야 했다.) */
+  font-size: 11px;
+  font-weight: 700;
+  height: 18px;
+  justify-content: center;
+  line-height: 1;
+  order: 1;
+  padding-bottom: 3px;
+  text-shadow: var(--vxace-outline);
+  width: 12px;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hud {
+  align-items: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+  margin-top: -2px !important;
+  order: 2;
+  width: auto !important;
+}
+
+/* 호박색 HP 바 — 어두운 1px 테두리, 폭 49 / 높이 3. */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hud .battle-enemy-hp-bar {
+  background: rgba(96, 104, 96, 0.85) !important;
+  border: 2px solid rgba(16, 20, 16, 0.9) !important;
+  box-sizing: content-box !important;
+  height: 4px !important;
+  order: 1;
+  width: 98px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hud .battle-enemy-hp-bar::before {
+  background: linear-gradient(180deg, #f0b45c, #d8842c) !important;
+}
+
+/* 보라 행동 게이지 — HP 바보다 넓다(폭 61). 값은 스냅샷의 gauge. */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hud .battle-enemy-atb-bar {
+  background: rgba(88, 94, 84, 0.85) !important;
+  border: 2px solid rgba(16, 20, 16, 0.85) !important;
+  box-sizing: content-box !important;
+  display: block !important;
+  height: 4px !important;
+  order: 2;
+  width: 122px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hud .battle-enemy-atb-bar::before {
+  background: linear-gradient(180deg, #b98bdc, #8a54c0) !important;
+}
+
+/* MP 바는 참조에 없다(아래줄이 보라 = 행동 게이지였다) — vxace 에서는 계속 숨긴다. */
+.battle-scene[data-battle-skin="vxace"] .battle-enemy-hud .battle-enemy-mp-bar {
+  display: none !important;
+}
+
+/* --- 명령창: 우측 하단(파티 행 바로 위)에 절대배치 --------------------- */
+/* 참조 창은 그리드 칸이 아니라 필드 위에 뜬 창이고, **아래 변이 파티 행 위에 고정**되며
+   항목 수만큼 위로 자란다(8항목 = 115px). 우리 루트 메뉴는 5항목이라 자연히 더 낮다. */
+.battle-scene[data-battle-skin="vxace"] .battle-command-host {
+  bottom: 158px !important;
+  height: auto !important;
+  left: auto !important;
+  min-width: 0 !important;
+  position: absolute !important;
+  right: 6px !important;
+  top: auto !important;
+  width: 150px !important;
+  z-index: 9 !important;
+}
+
+/* 입력 단계가 아니면 창을 내린다 — 항목이 없는데 창만 남아 화면 우측을 덮었다(실측). */
+.battle-scene[data-battle-skin="vxace"][data-battle-phase="charging"] .battle-command-host,
+.battle-scene[data-battle-skin="vxace"][data-battle-phase="roundResolve"] .battle-command-host,
+.battle-scene[data-battle-skin="vxace"][data-battle-phase="resolved"] .battle-command-host {
+  visibility: hidden !important;
+}
+
+/* 모서리를 잘라낸(chamfer) 밝은 테두리 + 어두운 반투명 배경.
+   clip-path 가 inset box-shadow 까지 함께 잘라 참조의 각진 프레임이 그대로 나온다. */
+.battle-scene[data-battle-skin="vxace"] .battle-command-panel {
+  align-content: start !important;
+  background: var(--vxace-window-bg) !important;
+  border: 0 !important;
+  border-image: none !important;
+  border-radius: 0 !important;
+  box-shadow:
+    inset 0 0 0 4px var(--vxace-frame),
+    inset 0 0 0 6px var(--vxace-frame-dark) !important;
+  box-sizing: border-box !important;
+  clip-path: polygon(
+    10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px
+  ) !important;
+  display: grid !important;
+  grid-column: auto !important;
+  grid-row: auto !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, auto) !important;
+  height: auto !important;
+  overflow: hidden !important;
+  padding: 8px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-command-menu {
+  align-content: start !important;
+  align-self: start !important;
+  gap: 0 !important;
+  /* 서브메뉴 항목은 이름 + 설명 2줄이라 고정 행에서 새어나왔다(실측) → 내용 높이로 둔다. */
+  grid-auto-rows: auto !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: none !important;
+}
+
+/* 항목 = 투명한 한 줄. 선택된 항목만 밝은 반투명 상자(참조의 커서 박스). */
+.battle-scene[data-battle-skin="vxace"] .battle-command {
+  background: transparent !important;
+  border: 0 !important;
+  border-image: none !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  box-sizing: border-box !important;
+  color: #fff !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 26px !important;
+  padding: 0 6px !important;
+  text-align: left !important;
+  width: 100% !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-command-text,
+.battle-scene[data-battle-skin="vxace"] .battle-command-text strong {
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1.35 !important;
+  text-shadow: var(--vxace-outline) !important;
+  white-space: nowrap !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-command-text small {
+  color: var(--vxace-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.2 !important;
+  text-shadow: var(--vxace-outline) !important;
+}
+
+/* 참조의 커서: 항목 위에 얹힌 밝은 반투명 상자 + 1px 밝은 선. 화살표는 쓰지 않는다.
+   선택 표시는 runtimeCursorMenu 가 `.rm-nav-item` 에 `.selected` 를 토글하는 방식이다
+   (`is-selected`/`aria-selected` 가 아니다 — keyboardNav.css 확인). */
+.battle-scene[data-battle-skin="vxace"] .battle-command[data-battle-command-cursor="true"],
+.battle-scene[data-battle-skin="vxace"] .battle-command.selected,
+.battle-scene[data-battle-skin="vxace"] .battle-command:hover,
+.battle-scene[data-battle-skin="vxace"] .battle-command:focus,
+.battle-scene[data-battle-skin="vxace"] .battle-command:focus-visible {
+  background: rgba(226, 232, 240, 0.22) !important;
+  box-shadow: inset 0 0 0 2px rgba(240, 244, 250, 0.65) !important;
+  outline: 0 !important;
+}
+
+/* rm-nav 커서(▶)는 이 스킨에서 쓰지 않는다 — 선택은 상자로만 표시하므로 거터도 필요 없다. */
+.battle-scene[data-battle-skin="vxace"] .battle-command.rm-nav-item.rm-nav-item {
+  padding-left: 6px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-command.rm-nav-item.selected::before,
+.battle-scene[data-battle-skin="vxace"] .battle-command.rm-nav-item::before {
+  content: none !important;
+  display: none !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-command:disabled {
+  opacity: 0.45 !important;
+}
+
+/* --- AUTO / 속도 버튼 --------------------------------------------------- */
+/* 참조의 좌상단은 빈 하늘이다 — 기능은 남기고 최소 크기로 낮춘다. */
+.battle-scene[data-battle-skin="vxace"] .battle-controls-bar {
+  gap: 4px;
+  left: 6px;
+  opacity: 0.42;
+  right: auto;
+  top: 6px;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-control-btn {
+  border-radius: 4px;
+  font-size: 10px;
+  padding: 0 4px;
+}
+
+/* --- 메시지 창 --------------------------------------------------------- */
+/* 참조의 명령 입력 화면에는 메시지 창이 없다 → 입력 단계에서는 감춘다.
+   행동 해결 중에는 "누가 무엇을 했다" 를 보여줘야 하므로 파티 행 위 띠에 띄운다. */
+.battle-scene[data-battle-skin="vxace"] .battle-message-window {
+  background: rgba(10, 14, 20, 0.82) !important;
+  border: 0 !important;
+  border-image: none !important;
+  border-radius: 0 !important;
+  bottom: 140px !important;
+  box-shadow: inset 0 0 0 2px var(--vxace-frame) !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  left: 6px !important;
+  min-height: 0 !important;
+  padding: 4px 8px !important;
+  position: absolute !important;
+  right: 6px !important;
+  z-index: 8 !important;
+}
+
+/* 명령 입력 단계에서만 감춘다. 대상 선택 중에는 "누구를 공격할까" 안내가 필요하고,
+   기존 계약도 그렇다(rm2k3-battle-system-targeting 스펙이 targetSelect 에서 이 창의 가시성을
+   단정한다 — 처음엔 여기까지 감춰서 그 스펙을 깨뜨렸다). 참조 스크린샷은 명령 입력 화면이라
+   대상 선택 단계에 대한 근거를 주지 않는다. */
+.battle-scene[data-battle-skin="vxace"][data-battle-phase="actorCommand"] .battle-message-window,
+.battle-scene[data-battle-skin="vxace"][data-battle-director-step="result"] .battle-message-window {
+  display: none !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-message-line {
+  color: #fff !important;
+  font-size: 16px !important;
+  line-height: 1.25 !important;
+  text-shadow: var(--vxace-outline) !important;
+}
+
+/* --- 파티 행: 얼굴이 셀 배경, HUD 를 그 위에 얹는다 -------------------- */
+.battle-scene[data-battle-skin="vxace"] .battle-party {
+  align-items: stretch !important;
+  /* 4인 미만이면 남는 칸이 생긴다 — 투명이면 모달 배경이 드러났다(실측) → 어둡게 깐다. */
+  background: rgba(6, 9, 14, 0.94) !important;
+  border: 0 !important;
+  border-image: none !important;
+  border-top: 2px solid var(--vxace-frame) !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 4px !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  overflow: visible !important;
+  padding: 0 !important;
+}
+
+/* 셀 — 폭 고정(78.5), 내부는 절대배치. 얼굴은 이 상자를 꽉 채운다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status {
+  background: var(--vxace-cell-bg) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: inset 0 0 0 2px var(--vxace-frame) !important;
+  box-sizing: border-box !important;
+  clip-path: polygon(
+    8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px),
+    calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px
+  ) !important;
+  display: block !important;
+  flex: 0 0 var(--vxace-cell-w) !important;
+  gap: 0 !important;
+  grid-template-columns: none !important;
+  grid-template-rows: none !important;
+  height: 100% !important;
+  max-width: var(--vxace-cell-w) !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  position: relative !important;
+}
+
+/* 얼굴 위에 흰 글자가 얹히므로 위/아래를 어둡게 눌러 대비를 만든다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status::before {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.08) 32%,
+    rgba(0, 0, 0, 0.04) 56%,
+    rgba(0, 0, 0, 0.42) 100%
+  );
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+/* 얼굴 초상 = 셀 전체 배경. faceset 시트(4×4)에서 한 칸을 골라 셀 폭에 맞춰 확대한다.
+   시트를 셀 폭의 4배로 그리면 한 칸이 정확히 셀 폭이 되고, 칸 좌표만큼 밀어 잘라낸다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-actor-face {
+  background-image: var(--battle-face-url);
+  background-position:
+    calc(var(--vxace-cell-w) * -1 * var(--battle-face-col))
+    calc(var(--vxace-cell-w) * -1 * var(--battle-face-row));
+  background-repeat: no-repeat;
+  background-size: calc(var(--vxace-cell-w) * var(--battle-face-grid)) auto;
+  display: block !important;
+  height: 100% !important;
+  /* 참조 얼굴은 매끄러운 그림이다. 48px 시트 칸을 셀 폭(157px)까지 3.3배 키우는 경로라
+     pixelated 는 계단이 그대로 확대돼 더 나빴다(A/B 확대 대조로 확인) → 보간에 맡긴다. */
+  image-rendering: auto;
+  inset: 0 !important;
+  position: absolute !important;
+  width: 100% !important;
+  z-index: 0 !important;
+}
+
+/* 이름은 참조에 없다 — 얼굴이 인물을 알려준다. 글자 크기만 0 으로 두고(접근성 트리·textContent 유지)
+   그 안에 중첩된 레벨만 참조의 좌상단 슬롯(참조는 TP)에 드러낸다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-name {
+  font-size: 0 !important;
+  left: 6px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  max-width: none !important;
+  overflow: visible !important;
+  position: absolute !important;
+  top: 8px !important;
+  z-index: 3 !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-level {
+  align-items: center !important;
+  display: inline-flex !important;
+  gap: 2px !important;
+  margin: 0 !important;
+  opacity: 1 !important;
+}
+
+/* HP/MP/Lv 라벨 = 참조의 작은 색 배지. */
+.battle-scene[data-battle-skin="vxace"] .battle-vital-label {
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  /* 참조 배지는 논리 10×6 이다. 1.5 줄높이 + 2px 여백은 12×9 로 커졌다(실측) → 좁힌다. */
+  line-height: 1.15;
+  padding: 0 3px;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
+  white-space: pre;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-level .battle-vital-label {
+  background: #2f7f52;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-hp .battle-vital-label {
+  background: #c4335c;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-mp .battle-vital-label {
+  background: #3a5bc8;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-level .battle-vital-value {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: var(--vxace-outline);
+}
+
+/* 최대값(`/514`)은 감춘다 — 비율은 게이지가 말한다(참조도 현재값만 크게 쓴다). */
+.battle-scene[data-battle-skin="vxace"] .battle-vital-max {
+  display: none !important;
+}
+
+/* HP·MP 숫자 묶음 = 셀 우측 상단, 우측 정렬 2줄. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-vitals {
+  align-items: flex-end !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  left: 40px !important;
+  position: absolute !important;
+  right: 4px !important;
+  top: 4px !important;
+  z-index: 3 !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-hp,
+.battle-scene[data-battle-skin="vxace"] .battle-actor-mp {
+  align-items: center !important;
+  display: inline-flex !important;
+  gap: 4px !important;
+  justify-content: flex-end !important;
+  max-width: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-hp .battle-vital-value {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  line-height: 1;
+  text-shadow: var(--vxace-outline);
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-mp .battle-vital-value {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  line-height: 1;
+  text-shadow: var(--vxace-outline);
+}
+
+/* HP/MP 게이지 — 각 숫자 줄 바로 아래, 우측 정렬 폭 44. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-stat-bar {
+  border: 2px solid rgba(12, 16, 22, 0.85) !important;
+  box-sizing: content-box !important;
+  height: 8px !important;
+  position: absolute !important;
+  right: 4px !important;
+  width: 88px !important;
+  z-index: 3 !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-stat-bar-hp {
+  background: rgba(126, 142, 168, 0.85) !important;
+  top: 38px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-stat-bar-hp::before {
+  background: linear-gradient(180deg, #ff9d88, #d43a52) !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-stat-bar-mp {
+  background: rgba(126, 142, 168, 0.85) !important;
+  top: 72px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status .battle-stat-bar-mp::before {
+  background: linear-gradient(180deg, #8fc4f4, #3f74d8) !important;
+}
+
+/* 역할 글자 한 자 — 참조의 진형 배지(前/中/後) 자리. 이 엔진에는 진형이 없어 직업명 첫 글자를 쓴다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-role {
+  color: #f0dfae !important;
+  display: block !important;
+  /* 참조 진형 글자는 원본 ~22px → 640 논리로 26px. 320 논리 시절에는 AP 표시("100%" — 참조
+     "19%" 보다 한 자 길다)와 잉크가 겹쳐 9px 까지 줄여야 했는데, 640 에서는 셀이 157px 라
+     역할(x 123..149)과 AP 값(x ~98 에서 끝)이 겹치지 않는다. */
+  font-size: 26px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  position: absolute !important;
+  right: 8px !important;
+  text-shadow: var(--vxace-outline) !important;
+  top: 84px !important;
+  z-index: 3 !important;
+}
+
+/* AP(=행동 게이지) 줄 — 셀 아래쪽. 라벨 + 퍼센트, 그 아래 넓은 보라 게이지. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-gauge {
+  align-items: end !important;
+  bottom: 6px !important;
+  column-gap: 6px !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  grid-template-rows: auto 10px !important;
+  left: 8px !important;
+  position: absolute !important;
+  right: 8px !important;
+  row-gap: 2px !important;
+  z-index: 3 !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-atb-label {
+  color: #cfe0f4 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  line-height: 1 !important;
+  text-shadow: var(--vxace-outline) !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-atb-value {
+  color: #fff !important;
+  display: block !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: start !important;
+  line-height: 1 !important;
+  margin-left: 8px !important;
+  text-shadow: var(--vxace-outline) !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-atb-bar {
+  background: rgba(16, 20, 30, 0.9) !important;
+  border: 2px solid rgba(12, 16, 22, 0.85) !important;
+  box-sizing: border-box !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 2 !important;
+  height: 10px !important;
+  width: auto !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-atb-bar::before {
+  background: linear-gradient(180deg, #a884d8, #6f45b4) !important;
+}
+
+/* 지금 명령을 입력받는 액터 — 참조의 ▼ 표식을 셀 위 띠에 띄운다. */
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status.is-active-actor::after {
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid #e8c96a;
+  content: "";
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.9));
+  height: 0;
+  left: calc(50% - 10px);
+  position: absolute;
+  top: 0;
+  width: 0;
+  z-index: 4;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status.defeated,
+.battle-scene[data-battle-skin="vxace"] .battle-actor-status.is-defeated {
+  filter: grayscale(0.85) brightness(0.6);
+}
+
+/* --- 결과 창 ----------------------------------------------------------- */
+/* battle.css 의 4행 그리드 + 5개 자식 구성 때문에 DOM 순서(crest→title→cards→확인)가
+   화면에서 뒤집혀 "확인" 이 "승리" 위에 찍혔다(실측). flex 열로 바꿔 DOM 순서를 그대로 쓴다. */
+.battle-scene[data-battle-skin="vxace"] .battle-result-panel {
+  align-items: center !important;
+  background: rgba(12, 16, 24, 0.94) !important;
+  border: 0 !important;
+  border-image: none !important;
+  border-radius: 0 !important;
+  box-shadow: inset 0 0 0 2px var(--vxace-frame), 0 0 24px rgba(0, 0, 0, 0.7) !important;
+  box-sizing: border-box !important;
+  clip-path: polygon(
+    12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px),
+    calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px
+  ) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  padding: 16px 20px !important;
+  width: 300px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-result-cards {
+  width: 100% !important;
+}
+
+/* 보상 행은 밝은(rm2003 파란) 창을 전제한 색이라 어두운 창에서 보이지 않았다(실측). */
+.battle-scene[data-battle-skin="vxace"] .battle-result-reward-card {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 2px solid rgba(232, 228, 202, 0.4) !important;
+  border-radius: 4px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-result-reward-label {
+  color: var(--vxace-muted) !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-result-reward-value {
+  color: var(--battle-accent) !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-result-title {
+  color: var(--battle-accent) !important;
+}

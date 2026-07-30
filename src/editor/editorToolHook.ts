@@ -26,7 +26,7 @@ import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runReg
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
 import { store } from "@/project/store";
-import type { MapId } from "@/project/types";
+import type { GameEvent, MapId } from "@/project/types";
 
 type RegionWrite = { readonly layer: "lower" | "upper"; readonly x: number; readonly y: number; readonly tile: number };
 
@@ -36,7 +36,13 @@ type RegionTaskHarness = {
   setSelection: (selection: { mapId: MapId; x: number; y: number; width: number; height: number } | null) => void;
   readCell: (mapId: MapId, layer: "lower" | "upper", x: number, y: number) => number | null;
   runMock: (mapId: MapId, region: RegionRect, writes: readonly RegionWrite[]) => Promise<RegionTaskResult>;
-  openModal: (mapId: MapId, region: RegionRect) => void;
+  /** writes 를 주면 모달이 그 결과로 자동 실행되어 제안 검토 UI 까지 렌더된다. */
+  openModal: (
+    mapId: MapId,
+    region: RegionRect,
+    writes?: readonly RegionWrite[],
+    events?: readonly GameEvent[],
+  ) => void;
 };
 
 type EditorToolHookWindow = Window & {
@@ -145,9 +151,36 @@ export function installEditorToolHook(): void {
     },
     // 결정적 세션(주어진 writes를 proposed로 산출)을 주입해 승인 게이트까지 재현한다 —
     // 적용하려면 반환된 result.pending.apply() 또는 window.__rpgzzuRegionTaskPending.apply()를 호출.
-    runMock: (mapId, region, writes) =>
-      runRegionTask(
-        { mapId, region, instruction: "headless mock" },
+    runMock: (mapId, region, writes) => runMockRegionTask(mapId, region, writes, "headless mock"),
+    // 모달을 통째로 목업 실행에 물린다 — 제안 검토 UI(before/after, 변경 칸 하이라이트,
+    // 적용/다시 만들기/버리기)는 실제 LLM 없이 이 경로로만 e2e 검증할 수 있다.
+    openModal: (mapId, region, writes, events) => {
+      openRegionTaskModal({
+        mapId,
+        region,
+        ...(writes
+          ? {
+              initialInstruction: "여기에 둥근 호수를 만들어줘",
+              autoRun: true,
+              run: ({ instruction }) => runMockRegionTask(mapId, region, writes, instruction, events),
+            }
+          : {}),
+      });
+    },
+  };
+}
+
+/** runMock/openModal 공용 — 주어진 writes 를 proposed 로 산출하는 결정적 세션.
+ *  events 를 주면 그 맵의 이벤트 목록에 덧붙인다 — 변경 목록(NPC·상자 줄) e2e 검증용. */
+function runMockRegionTask(
+  mapId: MapId,
+  region: RegionRect,
+  writes: readonly RegionWrite[],
+  instruction: string,
+  events?: readonly GameEvent[],
+): Promise<RegionTaskResult> {
+  return runRegionTask(
+        { mapId, region, instruction },
         {
           getProject: () => store.getCurrent(),
           applyProject: (project, label, snapshotMapId) => {
@@ -174,14 +207,13 @@ export function installEditorToolHook(): void {
                   if (write.layer === "upper") map.upperTiles[index] = write.tile;
                   else map.lowerTiles[index] = write.tile;
                 }
+                if (events && events.length > 0) {
+                  map.events = [...(map.events ?? []), ...structuredClone(events as GameEvent[])];
+                }
               }
               return next;
             },
           }),
         },
-      ),
-    openModal: (mapId, region) => {
-      openRegionTaskModal({ mapId, region });
-    },
-  };
+      );
 }

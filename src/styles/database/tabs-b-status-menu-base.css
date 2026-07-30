@@ -2,7 +2,10 @@
   align-content: start;
   display: grid;
   gap: 1px;
-  grid-auto-rows: minmax(var(--rm2k3-menu-row-height, 15px), max-content);
+  /* 고정 15px 행 × 12개 + 간격이 레일 높이를 8px 넘겨 마지막 "타이틀" 이 잘렸다
+     (실측: 레일 249~623, 마지막 버튼 601~631, overflow:hidden).
+     minmax(0, 15px) 로 두면 평소엔 15px 이고 자리가 부족할 때만 줄어든다. */
+  grid-auto-rows: minmax(0, var(--rm2k3-menu-row-height, 15px));
   grid-column: 1;
   grid-row: 1;
   grid-template-columns: minmax(0, 1fr);

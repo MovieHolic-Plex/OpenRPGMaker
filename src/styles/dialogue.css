@@ -9,6 +9,11 @@
   --runtime-dialogue-panel-height: 27%;
   --runtime-choice-panel-height: 26%;
   --runtime-dialogue-face-size: 48px;
+  /* 화자 이름표가 창 안쪽으로 내려와 덮는 높이. 이름표는 top:-10px 에 놓이고
+     글꼴 9px · line-height 1.2(10.8px) · padding 1px/2px · border 1px×2 = 약 15.8px 이므로
+     안쪽으로 들어오는 양은 15.8 - 10 ≈ 6px 이다. 반올림 여유 1px 을 더해 7px.
+     이 값을 바꾸면 `.dialogue-box.has-speaker` 의 padding-top 과 이름표 글꼴을 **같이** 봐야 한다. */
+  --runtime-dialogue-speaker-inset: 7px;
   --runtime-dialogue-bust-height: min(46vh, 280px);
   --runtime-dialogue-bust-width: min(42vw, 240px);
   --runtime-dialogue-full-height: min(62vh, 420px);
@@ -126,6 +131,27 @@
 
 .dialogue-box.has-speaker {
   overflow: visible;
+  /* 이름표는 absolute + top:-10px 라서 자기 높이만큼 창 안쪽으로 내려온다.
+     창 padding-top 이 0 이면 그대로 본문 첫 줄을 덮는다(실측: 이름표 571~612px,
+     본문 시작 591px → 첫 문장이 가려짐). 이름표 높이만큼 본문을 밀어 자리를 비운다.
+
+     예전 값은 `1.35em` 이었다. **`.dialogue-box` 에는 font-size 선언이 없어서** 그 em 은
+     상속된 14px 을 기준으로 풀렸고(실측 18.9px), 상자 안쪽 높이 42.8px 의 44% 를 먹었다.
+     본문이 9px/10.8px 이므로 남는 칸은 2줄뿐이 되고, 이름표가 없을 때는 4줄이 들어간다 —
+     같은 창이 화자 유무에 따라 담는 양이 두 배로 달라졌다.
+     그래서 상속된 글꼴 크기에 딸린 em 을 버리고, **이름표가 실제로 덮는 픽셀**을 변수로
+     명시한다(아래 이름표 규칙과 한 쌍이다 — 둘 중 하나만 고치면 다시 어긋난다). */
+  padding-top: var(--runtime-dialogue-speaker-inset);
+}
+
+/* 얼굴이 붙은 창은 **얼굴이 들어갈 만큼** 높아야 한다.
+   실측(2026-07-27): 창 바깥 높이 58.8px · 테두리 8px×2 → 안쪽 42.8px 인데 얼굴 칩은
+   48×48px 이라, 초상이 창 아래 테두리를 8.4px 뚫고 나왔다. 얼굴은 시트를 48px 창으로
+   잘라 보는 방식이므로 줄여서 맞출 수 없다(줄이면 옆칸 얼굴이 같이 보인다).
+   그래서 창을 얼굴에 맞춘다: 테두리 16 + 이름표 자리 7 + 얼굴 48 = 71px.
+   RM2003 의 기본 메시지 창(320×80)도 같은 이유로 이 정도 높이다. */
+.dialogue-box:has(.dialogue-face) {
+  min-height: max(100%, 71px);
 }
 
 .dialogue-box.transparent {
@@ -276,6 +302,13 @@
   left: 8px;
   top: -10px;
   z-index: 3;
+  /* 이름표에도 글꼴 크기 선언이 없어서 상속된 14px 로 그려졌다 — 본문이 9px 인 창에서
+     이름표만 1.5배 커서, 320px 폭 창에 44×20.6px 짜리 알약이 붙었다(2026-07-27 실측).
+     본문과 같은 픽셀 글꼴로 맞춘다. 이 선언이 위의 --runtime-dialogue-speaker-inset 계산의
+     전제다. */
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  line-height: 1.2;
   display: inline-flex;
   align-items: center;
   max-width: calc(100% - 20px);
@@ -343,6 +376,30 @@
   image-rendering: pixelated;
   align-self: start;
   overflow: hidden;
+}
+
+/**
+ * 페이스셋 칩(48×48 한 칸) 자체를 그리는 규칙.
+ *
+ * **왜 여기 있어야 하나:** `dialogue.ts`의 `renderFace()`는 얼굴을
+ * `<div class="dialogue-face actor-sheet-crop">` + 인라인 `--crop-*` 커스텀 속성으로 만든다.
+ * 그런데 `.actor-sheet-crop` 의 실제 배경·크기 선언은
+ * `src/styles/editor/event-editor-legacy.part-1.css` **에디터 전용 CSS 에만** 있었다.
+ * 익스포트한 단독 플레이어(`src/player/player.css` → tokens + runtime/playerRuntime)는 그
+ * 파일을 불러오지 않으므로, **얼굴이 배경 없는 높이 0 의 빈 테두리로 그려졌다.**
+ * (확인: 빌드된 player CSS 에 `dialogue-face` 는 있고 `actor-sheet-crop` 는 0회.)
+ * 에디터 테스트 플레이에서는 에디터 CSS 가 같이 로드돼 보였기 때문에 e2e 도 이걸 못 잡았다.
+ *
+ * 런타임 대사창의 얼굴은 런타임 CSS 가 책임진다. 값은 에디터 규칙과 같되 색 토큰은
+ * 대사창 것을 쓴다(플레이어 빌드에 --bg-panel-2 / --border-soft 가 없을 수 있다).
+ */
+.dialogue-face.actor-sheet-crop {
+  background-image: var(--crop-url);
+  background-position: var(--crop-x) var(--crop-y);
+  background-repeat: no-repeat;
+  background-size: var(--crop-sheet-width) var(--crop-sheet-height);
+  height: var(--crop-height, var(--runtime-dialogue-face-size));
+  width: var(--crop-width, var(--runtime-dialogue-face-size));
 }
 
 .dialogue-face.flipped {

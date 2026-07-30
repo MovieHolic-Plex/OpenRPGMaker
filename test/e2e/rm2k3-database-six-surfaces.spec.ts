@@ -22,13 +22,10 @@ test("database six surfaces persist real edits through project export", async ({
   const afterElements = (await exportedProject(page)).database.elements?.length ?? 0;
   expect(afterElements).toBe(beforeElements + 1);
 
-  // (3) 직업 전투명령 순서
+  // (3) 직업 전투명령 순서 — 인라인 ↑↓ (별도 다이얼로그 없음)
   await page.getByTestId("db-tab-classes").click();
   const classBefore = (await exportedProject(page)).database.classes[0]?.battleCommands.map((entry) => entry.name) ?? [];
-  await page.getByTestId("db-class-command-order-open").click();
-  await expect(page.getByTestId("db-class-command-order-dialog")).toBeVisible();
-  await page.getByTestId("db-class-command-order-down-0").click();
-  await page.getByTestId("db-class-command-order-ok").click();
+  await page.getByTestId("db-class-command-down-0").click();
   const classAfter = (await exportedProject(page)).database.classes[0]?.battleCommands.map((entry) => entry.name) ?? [];
   if (classBefore.length >= 2) {
     expect(classAfter[0]).toBe(classBefore[1]);
@@ -42,12 +39,7 @@ test("database six surfaces persist real edits through project export", async ({
   await page.getByTestId("db-field-battle-screen-flow").selectOption("strict");
   await page.getByTestId("db-field-battle-screen-active-slots").fill("3");
 
-  // (2) 배틀러 애니메이션
-  await page.getByTestId("db-tab-battler-animations").click();
-  await page.getByTestId("db-field-battler-animation-name-0").fill("Six Surface Battler");
-  await page.getByTestId("db-field-battler-animation-attack-duration-0").fill("321");
-
-  // (4) 전투 애니메이션 셀 일괄
+  // (3) 전투 애니메이션 셀 일괄
   await page.getByTestId("db-tab-animations").click();
   await expect(page.getByTestId("db-animation-cell-batch")).toBeEnabled();
   await page.getByTestId("db-animation-cell-batch").click();
@@ -109,11 +101,6 @@ test("database six surfaces persist real edits through project export", async ({
   expect(system.battleSystemResourceId).toBe("easyrpg-system2-system2-a");
   expect(system.battleFlow).toBe("strict");
   expect(system.activeSlots).toBe(3);
-  expect(project.database.battlerAnimations?.[0]).toMatchObject({
-    name: "Six Surface Battler",
-  });
-  const attackPose = project.database.battlerAnimations?.[0]?.poses.find((pose) => pose.pose === "attack");
-  expect(attackPose?.frames[0]?.durationMs).toBe(321);
 
   const animationRecord = project.database.battleAnimations[0] as {
     frames?: { cells?: { zoom?: number; opacity?: number }[] }[];

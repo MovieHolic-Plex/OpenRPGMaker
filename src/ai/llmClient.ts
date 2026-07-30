@@ -6,6 +6,8 @@
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
+import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
 
@@ -53,12 +55,31 @@ export const DEFAULT_BASE_URL = "";
 // 127.0.0.1:17832 companion started via `npm run ai:oauth`.
 export const DEFAULT_CHATGPT_BASE_URL =
   typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
-export const DEFAULT_MODEL = "z-ai/glm-5.2-ultrafast";
+// 기본 모델은 **에디터의 실제 요청**(툴 45개)을 통과하는 것으로 고른다.
+// 실측(2026-07-26, 같은 본문을 모델만 바꿔 재생):
+//   cpen/gemini-3-flash        503 upstream_unavailable — 5회 전부 실패
+//   cpen/gemini-3-1-flash-lite 503
+//   cpen/gemini-flash-2-5      503 → 200 → 200 (간헐적, 기본값으로 쓸 수 없음)
+//   cpen/gpt-5-6-luna / terra / gpt-5-4-mini   200 안정
+//
+// 원인은 **페이로드 크기가 아니라 tools 자체**다. 2×2 로 갈라 재측정한 결과:
+//   gemini-3-flash  tools=Y image=Y 152KB → 503 / tools=Y image=N  45KB → 503
+//                   tools=N image=Y 120KB → 200 / tools=N image=N  13KB → 200
+// 즉 tools 가 붙으면 크기와 무관하게 실패하고, 빼면 120KB 도 통과한다. cpen 의 gemini
+// 라우트가 툴 호출을 못 받는 것으로 보인다. 채팅만 하면 gemini 도 200 이라
+// "AI 가 되는데 에디터에서만 안 된다" 로 보였다.
+export const DEFAULT_MODEL = "cpen/gpt-5-6-luna";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "z-ai/glm-5.2-ultrafast";
+export const DEFAULT_LITE_MODEL = "cpen/gpt-5-6-luna";
+// cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
+// 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
+// 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
 export const DEFAULT_MAX_TOKENS = 32768;
 
 /** Browser-exposed env keys (from .env.local via Vite). Never hardcode secrets in source. */
+// VITE_LLM_API_KEY 는 클라이언트 번들에 키를 인라인하므로 보안 위험이다 — 게이트웨이 키는
+// 서버 전용 APITOPIA_API_KEY (non-VITE) 로 두고 vite 프록시가 Authorization 을 주입한다.
+// VITE_LLM_API_KEY 는 절대 URL(https://...) 게이트웨이를 직접 치는 사용자를 위해서만 남겨둔다.
 function envApiKey(): string {
   try {
     const fromLlm = import.meta.env.VITE_LLM_API_KEY?.trim();
@@ -83,18 +104,22 @@ function envBaseUrl(): string {
 }
 
 export function defaultAiConfig(): AiConfig {
-  // env(VITE_LLM_API_URL + VITE_LLM_API_KEY)가 있으면 apiKey 모드로 자동 시작 —
-  // yunwu/게이트웨이 경로로 glm 등 비-Codex 모델이 바로 작동한다.
-  // env가 없으면 chatgpt OAuth 경로로 fallback.
+  // env VITE_LLM_API_URL 이 있으면 apiKey 모드로 부팅한다 — 게이트웨이(apitopia 등) 경로로
+  // glm 등 비-Codex 모델을 쓰겠다는 의도. 이때 키가 없으면 조용히 chatgpt OAuth 로 넘어가는 대신
+  // apiKey 모드를 유지해 상태바 "AI 연동" 칩과 영역 작업 모달이 "API 키 없음" 을 명시적으로 알리게
+  // 한다. (이전 동작: URL 만 있고 키가 없으면 chatgpt OAuth 로 폴백 → /v1 → codex 인증 실패가
+  // 되어 "영역 AI 가 왜 안 되나" 원인을 알 수 없었다.) env 가 아예 없으면 chatgpt OAuth fallback.
   const envUrl = envBaseUrl();
   const envKey = envApiKey();
-  const hasEnvGateway = !!envUrl && !!envKey;
+  const wantsGateway = !!envUrl;
+  // 상대 baseUrl(/api/ai 등)은 동일 오리진 vite 프록시 → 서버가 Authorization 을 주입하므로
+  // 클라이언트에 키가 없어도 된다(proxyAuth). 절대 URL(https://...)은 클라이언트 키 필요.
   return {
-    authMode: hasEnvGateway ? "apiKey" : "chatgpt",
+    authMode: wantsGateway ? "apiKey" : "chatgpt",
     baseUrl: envUrl || DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
-    apiKey: envApiKey(),
+    apiKey: envKey,
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
     // 장문 reasoning 모델(MiniMax 등)을 감독으로 쓸 때만 low 캡이 의미 있음.
@@ -120,14 +145,36 @@ export function loadAiConfig(): AiConfig {
       : storedKey || (typeof parsed.baseUrl === "string" && parsed.baseUrl.trim())
         ? "apiKey"
         : "chatgpt";
+    // 저장된 사용자 모델은 존중하되 비었으면 기본값.
+    // trim 한 저장값을 먼저 뽑고 || 폴백으로 단순화한다 — 각 표현식이 모두 string 으로 끝나
+    // TS 가 string 으로 확정한다(아래 isModelValidForAuthMode 가 string 을 요구). base.liteModel 은
+    // AiConfig 의 선택 필드지만 defaultAiConfig() 가 항상 DEFAULT_LITE_MODEL 을 채우므로 ?? base.model 로
+    // undefined 여지만 없앤다. 런타임 값은 이전 삼항 표현식과 동일하다.
+    const storedModel = typeof parsed.model === "string" ? parsed.model.trim() : "";
+    let model: string = storedModel || base.model;
+    const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
+    let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
+    // authMode 와 모델이 어긋나면 요청이 400 으로 실패한다(실측: ChatGPT 구독/Codex 는 `gpt-` 가 아닌
+    // 모델을 거부 — "The 'z-ai/glm-5.2-ultrafast' model is not supported when using Codex with a
+    // ChatGPT account"). 옛 기본값이 localStorage 에 남아 새 기본값을 계속 덮는 사례가 있어, 로드 시점에
+    // 그 authMode 의 권장 기본 모델로 교정한다. authMode/baseUrl 해석은 검증을 통과한 상태이므로 건드리지
+    // 않고 모델 필드만 고친다. 교정 사실은 무엇이 무엇으로 바뀌었는지 console.warn 으로 한 번만 알린다.
+    if (!isModelValidForAuthMode(authMode, model) || !isModelValidForAuthMode(authMode, liteModel)) {
+      const fallback = defaultModelForAuthMode(authMode) || base.model;
+      if (!isModelValidForAuthMode(authMode, model)) {
+        console.warn(`[llmClient] authMode(${authMode})에서 쓸 수 없는 모델 '${model}' 을(를) 권장 기본 '${fallback}' 으로 바꿨습니다.`);
+        model = fallback;
+      }
+      if (!isModelValidForAuthMode(authMode, liteModel)) {
+        console.warn(`[llmClient] authMode(${authMode})에서 쓸 수 없는 실행 모델 '${liteModel}' 을(를) 권장 기본 '${fallback}' 으로 바꿨습니다.`);
+        liteModel = fallback;
+      }
+    }
     return {
       authMode,
       baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
-      // 저장된 사용자 모델은 존중하되 비었으면 기본값.
-      model: typeof parsed.model === "string" && parsed.model.trim() ? parsed.model.trim() : base.model,
-      liteModel: typeof parsed.liteModel === "string" && parsed.liteModel.trim()
-        ? parsed.liteModel.trim()
-        : (typeof parsed.model === "string" && parsed.model.trim() ? parsed.model.trim() : base.liteModel),
+      model,
+      liteModel,
       apiKey: parsed.authMode === "apiKey" && typeof parsed.apiKey === "string"
         ? storedKey
         : storedKey || base.apiKey || envApiKey(),
@@ -241,9 +288,20 @@ function endpoint(config: AiConfig): string {
   return `${baseUrl.replace(/\/$/, "")}/chat/completions`;
 }
 
+/**
+ * 상대 baseUrl(/api/ai 등)은 동일 오리진 vite 프록시 — 서버가 Authorization 을 주입하므로
+ * 클라이언트 apiKey 가 필요 없다. 전송 가드·헤더 구성은 물론 UI 의 "준비됨" 판정도 이 함수로
+ * 통일한다: 중복 구현된 검사가 이 면제를 빼먹어 프록시 환경에서 전송이 막히는 결함이 있었음.
+ * 참조 구현: editor/panels/aiConnectionStatus.ts(proxyAuth 판정).
+ */
+export function isProxyAuth(config: AiConfig): boolean {
+  return config.authMode === "apiKey" && config.baseUrl.trim().startsWith("/");
+}
+
 function headers(config: AiConfig): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json" };
-  if (config.authMode === "apiKey") {
+  // proxyAuth: 프록시가 서버 측에서 Authorization 을 주입한다 — 클라이언트는 키를 보내지 않는다.
+  if (config.authMode === "apiKey" && !isProxyAuth(config)) {
     h.Authorization = `Bearer ${config.apiKey}`;
     if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
     h["X-Title"] = "RPG ZZU Editor";
@@ -251,15 +309,131 @@ function headers(config: AiConfig): Record<string, string> {
   return h;
 }
 
+// ── 공급자 능력(capability) 선언 ─────────────────────────────────────────────
+// 공급자마다 지원하는 요청 필드가 다르다. 제약을 하드코딩 전역 하향으로 때우면 큰 max_tokens·
+// 스트리밍·reasoning 을 지원하는 다른 공급자(apitopia/qwencloud/ChatGPT)까지 손해 본다.
+// 그래서 제약을 데이터로 선언하고 본문 구성(requestBody)·전송 방식(chatCompletionOnce)에서 걸러낸다.
+//
+// cpenrouter(CPEN v1) 실측 근거(dev 서버 경유 curl, 모델 cpen/gemini-3-flash):
+//   - max_tokens 8192        → 200 OK
+//   - max_tokens 32768       → 422 "Request body does not match the CPEN v1 chat schema"
+//   - stream: true           → 400 "Streaming currently supports text-only cpen/gpt-* chat"
+//   - reasoning:{effort:low} → 400 "This OpenAI-compatible field is not supported by CPEN v1"
+// 즉 cpen 은 reasoning 전체 미지원, 스트리밍은 cpen/gpt-* 만 지원, max_tokens 는 8192 가 실측
+// 통과 안전값이다(정확한 상한은 미확인 — 32768 이 실패했으므로 통과가 확인된 8192 를 상한으로 쓴다).
+export interface ProviderCapability {
+  /** 스트리밍(stream:true) 지원 여부. false 면 비스트리밍 경로를 탄다. */
+  readonly supportsStreaming: boolean;
+  /** OpenAI 호환 reasoning 필드 지원 여부. false 면 본문에서 reasoning 을 뺀다. */
+  readonly supportsReasoningField: boolean;
+  /** max_tokens 상한. undefined 면 제한 없음. */
+  readonly maxTokensCeiling?: number;
+  /** 메시지의 `name` 필드 지원 여부. false 면 본문에서 떼어낸다(실측: CPEN v1 400). */
+  readonly supportsMessageName: boolean;
+}
+
+/**
+ * cpenrouter 경로 식별. model 접두사(`cpen/`)를 주 판정으로 쓴다 — 사용자가 절대 URL
+ * (https://cpenrouter.space/v1 등)로 게이트웨이를 직접 치면 baseUrl 에 `/api/cpen` 이 나타나지
+ * 않지만 model ID 는 여전히 `cpen/` 로 시작하므로 model 쪽이 더 견고하다. baseUrl(`/api/cpen`)은
+ * 프록시 경로를 쓰는 기본 사례를 잡는 보조 판정으로 OR 한다.
+ */
+function isCpenProvider(config: AiConfig): boolean {
+  if (config.model.trim().toLowerCase().startsWith("cpen/")) return true;
+  return config.baseUrl.trim().toLowerCase().includes("/api/cpen");
+}
+
+/**
+ * 설정에서 공급자 능력을 판정한다. 비-cpen 공급자는 전부 지원(제한 없음)으로 둔다.
+ *
+ * hasTools: 이번 요청에 tools 배열이 붙는가. cpen 스트리밍 판정에 필요하다 — 오류 문구의
+ * "text-only" 가 문자 그대로라, 툴이 하나라도 붙으면 gpt-* 라도 스트리밍이 거부된다.
+ */
+export function providerCapability(
+  config: AiConfig,
+  opts?: { readonly hasTools?: boolean },
+): ProviderCapability {
+  if (!isCpenProvider(config)) {
+    return { supportsStreaming: true, supportsReasoningField: true, supportsMessageName: true };
+  }
+  // cpen 스트리밍은 "text-only cpen/gpt-* chat" 만 지원한다. 두 조건 다 필요하다:
+  //   모델이 cpen/gpt-* 이고 (gemini-* 는 툴이 없어도 스트리밍 불가)
+  //   이번 요청에 tools 가 없어야 한다.
+  // 실측(2026-07-26, 에디터 실제 본문 tools=45):
+  //   cpen/gpt-5-6-luna  stream=true  → 400 unsupported_streaming_request
+  //                                     "Streaming currently supports text-only cpen/gpt-* chat."
+  //   cpen/gpt-5-6-luna  stream=false → 200
+  // 모델 접두사만 보고 스트리밍을 켜던 탓에 에디터의 모든 턴이 400 이었다.
+  const isGpt = config.model.trim().toLowerCase().startsWith("cpen/gpt-");
+  const supportsStreaming = isGpt && !opts?.hasTools;
+  return {
+    supportsStreaming,
+    supportsReasoningField: false,
+    supportsMessageName: false,
+    // 실측: 8192 통과, 32768 실패. 정확한 상한은 모르므로 통과가 확인된 8192 를 안전 상한으로 쓴다.
+    maxTokensCeiling: 8192,
+  };
+}
+
+// 공급자 제약으로 본문/전송 방식을 조정한 사실을 개발자에게 한 번만 알린다(매 요청 스팸 방지).
+const capabilityWarned = new Set<string>();
+function warnCapabilityOnce(key: string, message: string): void {
+  if (capabilityWarned.has(key)) return;
+  capabilityWarned.add(key);
+  console.warn(message);
+}
+
+/**
+ * 메시지에서 `name` 을 떼어낸 사본. 원본은 건드리지 않는다.
+ *
+ * OpenAI 는 tool 결과 메시지에 `{role:"tool", tool_call_id, name, content}` 를 허용하지만
+ * CPEN v1 은 이 필드를 거부한다(실측 400):
+ *   {"code":"unsupported_field","param":"messages[3].name"}
+ * 첫 요청에는 tool 메시지가 없어 200 이 나고 **툴을 한 번 쓴 다음 턴부터** 깨졌다 —
+ * 그래서 "AI 가 답은 하는데 아무것도 못 만든다" 로 보였다.
+ * tool_call_id 가 어느 호출의 결과인지 이미 지목하므로 name 은 없어도 의미가 보존된다.
+ */
+function stripMessageNames(messages: readonly ChatMessage[]): readonly ChatMessage[] {
+  if (!messages.some((message) => message.name !== undefined)) return messages;
+  return messages.map((message) => {
+    if (message.name === undefined) return message;
+    const { name: _dropped, ...rest } = message;
+    return rest;
+  });
+}
+
 function requestBody(config: AiConfig, req: ChatRequest, stream: boolean): string {
   const effective = configWithReasoningPolicy(config);
-  const body: Record<string, unknown> = { model: effective.model, messages: req.messages, stream, max_tokens: effective.maxTokens };
+  const capability = providerCapability(effective, { hasTools: Boolean(req.tools && req.tools.length > 0) });
+  // 공급자 max_tokens 상한이 있으면 클램프한다(실측: cpen 은 32768 → 422, 8192 → 200).
+  let maxTokens = effective.maxTokens;
+  if (capability.maxTokensCeiling !== undefined && maxTokens > capability.maxTokensCeiling) {
+    warnCapabilityOnce(
+      `maxTokens:${effective.model}`,
+      `[llmClient] 공급자 제약: ${effective.model} 의 max_tokens 를 ${maxTokens} → ${capability.maxTokensCeiling} 로 클램프했습니다(실측 기반 상한).`,
+    );
+    maxTokens = capability.maxTokensCeiling;
+  }
+  const body: Record<string, unknown> = {
+    model: effective.model,
+    messages: capability.supportsMessageName ? req.messages : stripMessageNames(req.messages),
+    stream,
+    max_tokens: maxTokens,
+  };
   // 스트리밍에서도 usage(prompt_tokens 등)를 마지막 청크로 받는다(OpenAI 호환).
   // 미지원 공급자가 usage를 안 주면 소비 측(tokenBudget 관측)이 조용히 건너뛴다.
   if (stream) body.stream_options = { include_usage: true };
   if (req.tools && req.tools.length > 0) { body.tools = req.tools; body.tool_choice = req.tool_choice ?? "auto"; }
+  // reasoning 필드는 공급자가 지원할 때만 붙인다(실측: cpen 은 reasoning → 400).
   if (effective.reasoningEffort && effective.reasoningEffort !== "off") {
-    body.reasoning = { effort: effective.reasoningEffort };
+    if (capability.supportsReasoningField) {
+      body.reasoning = { effort: effective.reasoningEffort };
+    } else {
+      warnCapabilityOnce(
+        `reasoning:${effective.model}`,
+        `[llmClient] 공급자 제약: ${effective.model} 은(는) reasoning 필드를 지원하지 않아 본문에서 뺐습니다(실측: CPEN v1 400).`,
+      );
+    }
   }
   return JSON.stringify(body);
 }
@@ -459,13 +633,26 @@ function sleep(ms: number): Promise<void> {
 
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
 async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
-  if (config.authMode === "apiKey" && (!config.apiKey || !config.apiKey.trim())) {
+  // proxyAuth(상대 baseUrl)는 프록시가 서버 측에서 Authorization 을 주입하므로 클라이언트 키 불필요.
+  if (config.authMode === "apiKey" && !isProxyAuth(config) && (!config.apiKey || !config.apiKey.trim())) {
     throw new LlmError("API 키가 설정되지 않았습니다. 어시스턴트 설정에서 API 키를 입력하세요.", 401);
   }
   if (config.authMode === "apiKey" && (!config.baseUrl || !config.baseUrl.trim())) {
     throw new LlmError("LLM 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.", 400);
   }
-  const stream = req.stream ?? Boolean(req.onToken || req.onReasoning);
+  const wantsStream = req.stream ?? Boolean(req.onToken || req.onReasoning);
+  // 공급자가 스트리밍을 지원하지 않으면 비스트리밍으로 확정한다(실측: cpen 은 stream:true → 400).
+  // 여기서 확정해야 아래 requestBody(본문)와 응답 파싱 분기가 같은 stream 값으로 일관된다 —
+  // 본문에서만 stream 을 false 로 바꾸면 응답 파싱이 SSE 를 기대해 깨진다.
+  let stream = wantsStream;
+  const hasTools = Boolean(req.tools && req.tools.length > 0);
+  if (stream && !providerCapability(config, { hasTools }).supportsStreaming) {
+    warnCapabilityOnce(
+      `stream:${config.model}:${hasTools ? "tools" : "text"}`,
+      `[llmClient] 공급자 제약: ${config.model}${hasTools ? "(툴 포함 요청)" : ""} 은(는) 스트리밍을 지원하지 않아 비스트리밍으로 전환했습니다(실측: CPEN v1 400).`,
+    );
+    stream = false;
+  }
   let response: Response;
   try {
     response = await fetch(endpoint(config), {

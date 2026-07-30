@@ -198,7 +198,10 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "platform-mossy", "녹회색 암반 단상", "terrain", "lower", [405, 406, 407, 435, 436, 437, 465, 466, 467], "passable", "repeat", "바위 테두리가 있는 녹회색 암반 단상 9-슬라이스입니다(436은 바위 장식)."),
   packGroup(DUNGEON_HARNESS_PREFIX, "arrow-plate", "화살표 바닥판", "terrain", "lower", [172, 173, 202, 203], "passable", "fixed", "방향 안내용 화살표 금속 바닥판입니다(상/하/좌/우)."),
   packGroup(DUNGEON_HARNESS_PREFIX, "water", "물/폭포", "water", "lower", [0, 1, 2, 3, 4, 5, 30, 31, 32, 33, 34, 35, 60, 61, 62, 63, 64, 65, 90, 91, 92, 93, 94, 95, 120, 121, 122, 123, 124, 150, 151, 152, 153, 154, 180, 181, 182, 183, 184, 210, 211, 212, 213, 214], "solid", "repeat", "연못·수로·폭포 애니메이션 타일입니다. 통행 불가."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "rapids", "검푸른 급류", "water", "lower", [372, 373, 374, 402, 403, 404], "solid", "repeat", "부빙 주변의 어두운 급류/깊은 물입니다. 통행 불가."),
+  // 2026-07-27 사용자 확정 + 실측 렌더(cliff-vocab.png): 물이 아니라 **수평 절벽**이다.
+  // 예전 이름 "검푸른 급류"를 믿고 iceGrandExpanseTerrainShape.ts 가 이걸 상위 레이어에
+  // 세워 장벽으로 썼고, 화면에서는 가로 물결 하이라이트가 벽 중간에 그대로 보였다.
+  packGroup(DUNGEON_HARNESS_PREFIX, "cliff-horizontal", "수평 절벽(빙암)", "wall", "lower", [372, 373, 374, 402, 403, 404], "solid", "repeat", "가로로 늘리는 수평 절벽 면입니다 — **상단** 좌 372 · 중 373(반복) · 우 374, **밑동** 좌 402 · 중 403(반복) · 우 404. 이음매 없이 어느 길이로든 이어집니다. 더 높은 절벽은 상단과 밑동 사이에 얼음 벽 285 를 끼워 늘립니다. 대각 빙벽(286/287…)과 섞어 능선의 꺾이는 부분을 만들고, 오르는 자리는 계단 375~377 로 끊습니다. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "lava", "용암", "water", "lower", [243, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335], "solid", "repeat", "적암 바닥을 녹이며 흐르는 용암입니다. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "chasm", "석재 균열 구덩이", "water", "lower", [129, 131, 159, 160, 161, 189, 190, 191, 219, 220, 221], "solid", "repeat", "석재 바닥이 꺼진 검은 구덩이입니다. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "wall-brown", "갈색 암벽", "wall", "lower", [21, 22, 23, 51, 52, 53, 225, 226, 227, 255, 256, 257], "solid", "repeat", "방 외곽과 복도 경계를 막는 갈색 동굴 암벽입니다."),
@@ -222,7 +225,10 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "dome", "석조 돔/화덕", "building", "lower", [438, 439, 440, 468, 469, 470, 24, 25, 26], "solid", "fixed", "3×3 대형 석조 돔(용광로) — 윗줄 438~440 · 중간 468~470 · 받침 24~26. 마법진처럼 팔레트 세로 순서가 파일 행(14→15→0)과 다르니 주의. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "pillar", "석주", "building", "lower", [446, 476], "solid", "fixed", "석재 기둥 상·하단 세로쌍입니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "ice-magic", "얼음 마법 블록", "building", "lower", [125, 155, 185, 215], "solid", "fixed", "빛나는 얼음 마법 블록 애니메이션입니다. 통행 불가."),
-  packGroup(DUNGEON_HARNESS_PREFIX, "ice-rail", "얼음 난간", "building", "lower", [375, 376, 377], "solid", "repeat", "가로로 늘릴 수 있는 얼음 난간/다리 턱입니다."),
+  // 2026-07-27 사용자 확정 + 실측 렌더(cliff-vocab.png): 난간이 아니라 **계단**이고 통행 가능하다.
+  // 예전 이름("얼음 난간/다리 턱") + solid 를 믿고 설산 관문에서 다리 바닥으로 깔았다가
+  // 통행 불가라 크레바스를 못 건너 맵 위쪽 전체가 도달 불가가 됐다.
+  packGroup(DUNGEON_HARNESS_PREFIX, "stairs-ice", "빙암 계단", "building", "lower", [375, 376, 377], "passable", "repeat", "절벽을 오르는 가로 계단입니다 — 좌 375 · 중 376(가로로 무한 증식) · 우 377. **통행 가능**. 수평 절벽(372~404)이나 대각 빙벽을 끊고 넣어 오르는 자리를 만듭니다. 절벽 높이가 두 칸이면 계단도 두 줄로 겹쳐 깝니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "throne", "왕좌", "building", "lower", [447, 448, 449, 477, 478, 479], "solid", "fixed", "금장 붉은 왕좌 3×2 — 윗줄 447·448·449, 아랫줄 477·478·479. 447/477(왼팔걸이)을 빼면 왼쪽이 잘립니다. 통행 불가."),
   packGroup(DUNGEON_HARNESS_PREFIX, "rail", "광차 철로", "prop", "upper", [54, 55, 56, 57, 58, 59, 84, 85, 86, 87, 88, 89, 114, 115, 116, 117, 144, 174], "passable", "repeat", "광차 철로 세트 — 세로 114/144/174 · 가로 115~117 · 곡선 코너 54(남↔동)/55(남↔서)/84(북↔동)/85(북↔서) · 판자 위 곡선·분기 56~59/86~89(세로쌍, 방향 잠정). 4곡선을 2×2로 모으면 원형 루프가 됩니다. 바닥 위 레이어에 깔며 통행 가능합니다."),
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-rock", "바위/수정 소품", "prop", "upper", [259, 260, 261, 262, 288, 289, 290, 291, 292, 315, 318, 319, 320, 321, 322, 323, 345, 348, 349, 350, 351, 352, 353, 382, 383, 412, 413], "passable", "fixed", "투명 배경 자연 소품 — 가로 2폭 쌍: 바위 아치 259+260 · 잔해 318+319 · 바위 322+323 · 잔해 348+349 · 암반 352+353. 단일: 석순 261/288/291, 수정 262/289/292/321/413, 수정 파편 320, 얼음 수정 대 350·소 351, 광석 383, 둥근 바위 290, 바위 412, 눈밭 눈뭉치 315, 펭귄 345. 바닥 위 레이어에 배치합니다."),

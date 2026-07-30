@@ -6,7 +6,7 @@ import {
 } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
-  fixedSelectionChipsPosition,
+  anchoredSelectionChipsPosition,
 } from "@/editor/selectionOverlayAnchor";
 import type { RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
 import type { TileSelection } from "@/editor/editorState";
@@ -49,27 +49,54 @@ describe("renderSelectionActionChips", () => {
   });
 });
 
-describe("fixedSelectionChipsPosition", () => {
+describe("anchoredSelectionChipsPosition", () => {
   const popupSize = { width: 220, height: 36 };
   const canvasSize = { width: 800, height: 600 };
+  const selectionRect = { x: 100, y: 80, width: 160, height: 96 };
 
-  it("캔버스 우하단에 고정한다", () => {
-    const point = fixedSelectionChipsPosition({ popupSize, canvasSize });
-    expect(point.x).toBe(800 - 220 - 20);
-    expect(point.y).toBe(600 - 36 - 40);
+  it("포인터가 있으면 놓은 점 아래에 띄운다 (context-menu 느낌)", () => {
+    const point = anchoredSelectionChipsPosition({
+      selectionRect,
+      popupSize,
+      canvasSize,
+      pointer: { x: 400, y: 300 },
+    });
+    expect(point.x).toBe(400 - 220 / 2);
+    expect(point.y).toBe(300 + 16);
+  });
+
+  it("포인터 아래가 캔버스를 넘치면 위로 flip 한다", () => {
+    const point = anchoredSelectionChipsPosition({
+      selectionRect,
+      popupSize,
+      canvasSize,
+      pointer: { x: 400, y: 590 },
+    });
+    expect(point.y).toBe(590 - 36 - 16);
+  });
+
+  it("포인터가 없으면 선택 rect 우측에 세로 중앙", () => {
+    const point = anchoredSelectionChipsPosition({
+      selectionRect,
+      popupSize,
+      canvasSize,
+    });
+    expect(point.x).toBe(100 + 160 + 8);
+    expect(point.y).toBe(80 + 96 / 2 - 36 / 2);
   });
 
   it("팝업이 캔버스보다 커도 패딩 밖으로 나가지 않는다", () => {
-    const point = fixedSelectionChipsPosition({
+    const point = anchoredSelectionChipsPosition({
+      selectionRect,
       popupSize: { width: 900, height: 700 },
       canvasSize,
+      pointer: { x: 400, y: 300 },
     });
-    expect(point.x).toBe(20);
-    expect(point.y).toBe(20);
+    expect(point.x).toBe(8);
+    expect(point.y).toBe(8);
   });
 
   it("건축 팔레트는 여전히 선택 우측 배치", () => {
-    const selectionRect = { x: 100, y: 80, width: 160, height: 96 };
     const build = anchoredBuildPalettePosition({
       selectionRect,
       popupSize: { width: 228, height: 140 },

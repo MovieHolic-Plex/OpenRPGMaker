@@ -70,8 +70,14 @@ const DIALOGUE_OVERLAY_HORIZONTAL_PADDING = {
   center: 8,
   bottom: 12,
 } satisfies Record<MessageWindowPosition, number>;
-const DIALOGUE_BOX_HORIZONTAL_PADDING = 16;
-const DIALOGUE_BOX_HORIZONTAL_BORDER = 2;
+// 2026-07-27 브라우저 실측(test/e2e/_dialogue-box-measure.spec.ts, 320px 논리 화면):
+//   .dialogue-box  padding-left/right = 4px  → 좌우 합 8
+//   .dialogue-box  border-width       = 8px  → 좌우 합 16  (--runtime-window-border, border-image)
+// 예전 값은 padding 16 / border 2 였다 — 합이 18 로 실제 24 보다 **6px 작아서**
+// 폭을 6px 넉넉하게 잡았다. 한 줄이 들어간다고 계산한 문장이 실제로는 넘쳐서
+// 마지막 글자가 예상 밖에서 꺾였다(실측: 계산 236 vs 실제 본문 폭 230).
+const DIALOGUE_BOX_HORIZONTAL_PADDING = 8;
+const DIALOGUE_BOX_HORIZONTAL_BORDER = 16;
 const DIALOGUE_FACE_COLUMN_WIDTH = 48;
 const DIALOGUE_FACE_COLUMN_GAP = 6;
 const DIALOGUE_FONT_FALLBACK =
@@ -146,7 +152,7 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
       const pages = paginateDialogueSegments(parseDialogueText(request.body, request.textContext), {
         maxWidth: dialogueBodyWidth(request, position),
         measure,
-        maxLines: DIALOGUE_LINES_PER_PAGE,
+        maxLines: dialogueMaxLines(bodyEl),
         fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
       });
       let pageIndex = 0;
@@ -548,6 +554,39 @@ function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindow
     - DIALOGUE_BOX_HORIZONTAL_BORDER;
   const faceWidth = request.face ? DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP : 0;
   return Math.max(1, baseWidth - faceWidth);
+}
+
+/**
+ * **한 페이지에 들어가는 줄 수를 상자에서 유도한다.** 상수로 박아 두면 안 된다.
+ *
+ * 2026-07-27 브라우저 실측(320px 논리 화면, 화자 이름표가 있는 NPC 대사):
+ *   상자 바깥 높이 58.8px · 테두리 8px×2 → 안쪽 42.8px
+ *   `.dialogue-box.has-speaker` 의 padding-top 18.9px 를 빼면 본문 칸은 **23.9px**
+ *   `.dialogue-box .body` 는 font-size 9px · line-height 1.2 = **10.8px/줄**
+ *   → 실제로 들어가는 줄 수는 **2줄**
+ * 그런데 `DIALOGUE_LINES_PER_PAGE` 는 4 였다. 그래서 3·4번째 줄은 만들어지되
+ * (`.body { overflow: auto }`) 화면에는 없었다 — 문장이 소리 없이 잘렸다.
+ * 이름표가 없을 때는 42.8/10.8 = 3.96 → 4줄이 맞는다. 즉 상수 4 는 "이름표 없는 경우"에만
+ * 맞는 값이었고, NPC 대사는 항상 이름표가 있으므로 항상 틀렸다.
+ *
+ * 여기서 `clientHeight` 를 읽는 시점은 상자를 이미 overlay 에 붙인 뒤다 — 레이아웃이
+ * 확정돼 있어야 값이 나온다. jsdom 처럼 레이아웃이 없는 환경에서는 0 이 나오므로
+ * 그때만 상수로 되돌린다.
+ */
+function dialogueMaxLines(bodyEl: HTMLElement): number {
+  const view = bodyEl.ownerDocument?.defaultView;
+  if (!view) return DIALOGUE_LINES_PER_PAGE;
+  const available = bodyEl.clientHeight;
+  if (!Number.isFinite(available) || available <= 0) return DIALOGUE_LINES_PER_PAGE;
+  const computed = view.getComputedStyle(bodyEl);
+  const lineHeight = parseFloat(computed.lineHeight);
+  const resolved = Number.isFinite(lineHeight) && lineHeight > 0
+    ? lineHeight
+    // line-height: normal 은 숫자로 안 나온다 — 글꼴 크기의 1.2 로 근사한다(.body 의 선언값).
+    : parseFloat(computed.fontSize) * 1.2;
+  if (!Number.isFinite(resolved) || resolved <= 0) return DIALOGUE_LINES_PER_PAGE;
+  // 0.05 는 서브픽셀 반올림 여유다(23.9/10.8 = 2.213 처럼 딱 맞지 않는 값이 정상).
+  return Math.max(1, Math.floor(available / resolved + 0.05));
 }
 
 function createDialogueTextMeasure(reference: HTMLElement): DialogueTextMeasure {

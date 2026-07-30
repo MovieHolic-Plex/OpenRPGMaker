@@ -73,8 +73,9 @@ export function renderTitleScreen(project: Project, actions: TitleScreenActions,
   // Title menu window chrome follows systemResourceId (same as field menus).
   applySystemGraphic(title, project);
   title.append(...renderTitleNodes(settings, project));
-  title.append(renderMenu(settings, options, clampedIndex, actions));
-  if (settings.showInputHint !== false) {
+  const showInputHint = settings.showInputHint !== false;
+  title.append(renderMenu(settings, options, clampedIndex, actions, showInputHint));
+  if (showInputHint) {
     title.append(renderInputHint());
   }
   title.append(titleSelectionDebug(clampedIndex));
@@ -139,18 +140,48 @@ function renderTitleLogo(
   return node;
 }
 
+// 조작 안내 창은 화면 하단에 고정 배치(bottom 8px + 높이 약 29px)라 아래쪽 영역을 쓴다.
+// 기본 menuY(148)는 항목 2개 기준이어서, "종료"까지 3개가 되면 마지막 항목이
+// 안내 창에 **완전히 가려져 보이지도 선택 상태도 확인되지 않았다**(실측: 항목 629~669, 안내 631~689).
+// 그래서 안내 창을 띄울 때는 메뉴 아래끝이 안내 영역 위에서 끝나도록 menuY 를 끌어올린다.
+// 항목이 적어 원래 위치에 들어가면 프로젝트 설정값을 그대로 존중한다.
+const TITLE_MENU_ROW_HEIGHT = 20;
+const TITLE_MENU_ROW_GAP = 4;
+const TITLE_MENU_PADDING_Y = 4;
+// 창 테두리(border-image)가 위아래로 각 6px 를 더 차지한다 — 빼먹으면 4px 가 여전히 겹친다.
+const TITLE_MENU_BORDER_Y = 12;
+// 안내 창 자리(하단 여백 8 + 높이 29) + 숨 쉴 틈 3.
+const TITLE_INPUT_HINT_RESERVE = 40;
+
+export function titleMenuHeight(optionCount: number): number {
+  if (optionCount <= 0) return 0;
+  return (
+    optionCount * TITLE_MENU_ROW_HEIGHT
+    + (optionCount - 1) * TITLE_MENU_ROW_GAP
+    + TITLE_MENU_PADDING_Y
+    + TITLE_MENU_BORDER_Y
+  );
+}
+
+export function titleMenuTop(menuY: number, optionCount: number, hintVisible: boolean): number {
+  if (!hintVisible || optionCount <= 0) return menuY;
+  const maxTop = TITLE_SCREEN_LOGICAL_HEIGHT - TITLE_INPUT_HINT_RESERVE - titleMenuHeight(optionCount);
+  return Math.max(0, Math.min(menuY, maxTop));
+}
+
 function renderMenu(
   settings: TitleScreenSettings,
   options: readonly TitleMenuOption[],
   selectedIndex: number,
   actions: TitleScreenActions,
+  hintVisible: boolean,
 ): HTMLElement {
   const menu = el("div", {
     class: "rm-title-menu",
     attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
   });
   menu.style.left = logicalX(settings.layout.menuX);
-  menu.style.top = logicalY(settings.layout.menuY);
+  menu.style.top = logicalY(titleMenuTop(settings.layout.menuY, options.length, hintVisible));
   for (const [index, option] of options.entries()) {
     menu.append(
       titleOption(

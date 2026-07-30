@@ -5,14 +5,12 @@ import type {
   BattleAnimationScope,
   BattleAnimationScreenShake,
   BattleAnimationTiming,
-  BattlerAnimationPoseKind,
-  BattlerAnimationRecord,
   DatabaseStateEffect,
   SkillRecord,
   StateRecord,
 } from "../types";
 import { SCARLOXY_BATTLE_ANIMATION_SHEET } from "@/assets/scarloxyPack";
-import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from "../databaseAnimationRecordModel";
+import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./constants";
 export { defaultItemRecords } from "./defaultDatabaseItemRecords";
@@ -35,8 +33,6 @@ type BattleAnimationFlashSeed = {
   readonly durationFrames: number;
   readonly soundResourceId?: string;
 };
-
-const DEFAULT_BATTLER_POSES = ["idle", "ready", "attack", "defend", "damage", "victory", "dead"] as const satisfies readonly BattlerAnimationPoseKind[];
 
 export function defaultSkillRecords(): SkillRecord[] {
   return [
@@ -192,13 +188,6 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
   ];
 }
 
-export function defaultBattlerAnimationRecords(): BattlerAnimationRecord[] {
-  return [
-    battlerAnimation("battler_anim_hero", "영웅 배틀 포즈", "generated-actor-hero-01-battle"),
-    battlerAnimation("battler_anim_guardian", "수호자 배틀 포즈", "generated-actor-hero-02-battle"),
-  ];
-}
-
 function skill(
   id: string,
   name: string,
@@ -292,17 +281,3 @@ function timingShake(seed: BattleAnimationScreenShake & { readonly frameIndex: n
   return { frameIndex: seed.frameIndex, screenShake: { power: seed.power, speed: seed.speed, durationFrames: seed.durationFrames } };
 }
 
-function battlerAnimation(id: string, name: string, resourceId: string): BattlerAnimationRecord {
-  return normalizeBattlerAnimationRecord({
-    id,
-    name,
-    resourceId,
-    poses: DEFAULT_BATTLER_POSES.map((pose) => ({
-      pose,
-      frames: [
-        { pattern: 0, durationMs: 180 },
-        { pattern: 1, durationMs: 180 },
-      ],
-    })),
-  });
-}

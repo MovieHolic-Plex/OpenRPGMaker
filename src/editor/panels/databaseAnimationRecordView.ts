@@ -70,7 +70,7 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
   };
 
   form.classList.add("animation-detail-form");
-  form.append(animationEditor(context), referencePanel(animation), battlerSeparationNote(project.database.battlerAnimations?.length ?? 0));
+  form.append(animationEditor(context), referencePanel(animation));
 
   return form;
 }
@@ -439,14 +439,6 @@ function animationReferences(animation: BattleAnimationRecord, database: ReturnT
     ...database.skills.filter((skill) => skill.animationId === animation.id).map((skill) => ({ kind: "스킬" as const, id: skill.id, name: skill.name })),
     ...database.items.filter((item) => item.animationId === animation.id).map((item) => ({ kind: "아이템" as const, id: item.id, name: item.name })),
   ];
-}
-
-function battlerSeparationNote(count: number): HTMLElement {
-  return el("div", {
-    class: "db-field-hint",
-    dataset: { testid: "db-animation-battler-note" },
-    text: `배틀러 포즈 애니메이션은 이 효과 편집기와 분리되어 있습니다. 프로젝트 포즈 세트: ${count}개.`,
-  });
 }
 
 function panelWrap(title: string, testid: string, className = ""): HTMLElement {

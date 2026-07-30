@@ -160,7 +160,7 @@ export interface PlaySceneContext extends Phaser.Scene {
   mapAnimationLayer?: Phaser.GameObjects.Container;
   activeMapAnimations: Set<Phaser.GameObjects.Container>;
   getMapId(): MapId;
-  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void;
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void;
   renderTiles(): void;
   syncRuntimeState(): void;
   refreshRuntimeSurfaces(): void;

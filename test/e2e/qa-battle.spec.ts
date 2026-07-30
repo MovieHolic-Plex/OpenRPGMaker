@@ -8,7 +8,6 @@ import {
 import type { Page } from "@playwright/test";
 
 const ANIM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "animations")!;
-const BATTLER_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "battler-animations")!;
 const SCREEN_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "battle-screen")!;
 const COMMANDS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "battle-commands")!;
 
@@ -211,7 +210,7 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
     await expect(page.getByTestId("db-animation-play")).toHaveText("▶ 재생", { timeout: 10_000 });
 
     // ---- persistence round-trip ----
-    await switchDatabaseTab(page, BATTLER_TAB);
+    await switchDatabaseTab(page, SCREEN_TAB);
     await switchDatabaseTab(page, ANIM_TAB);
     const afterRoundTrip = await exportedProject(page);
     expect(afterRoundTrip.database.battleAnimations.some((a) => a.name === longName)).toBe(true);
@@ -236,45 +235,6 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
     console.log("ANIM_COUNT_AFTER_DELETE", delExport.database.battleAnimations.length);
 
     console.log("CONSOLE_ERRORS_ANIM", JSON.stringify(consoleErrors));
-  });
-
-  test("battler animations tab (애니메이션 2): inline edit + persistence + undo", async ({ page }) => {
-    const consoleErrors = collectConsole(page);
-    await boot(page);
-    await switchDatabaseTab(page, BATTLER_TAB);
-    await page.screenshot({ path: ".superpowers/sdd/qa-shots/battle-battler-01-initial.png" });
-
-    const project0 = await exportedProject(page);
-    const total = project0.database.battlerAnimations?.length ?? 0;
-    const renderedNameRows = await page.locator("[data-testid^='db-field-battler-animation-name-']").count();
-    console.log("BATTLER_TOTAL_VS_RENDERED", total, renderedNameRows); // slice(0,10) truncation probe
-
-    if (renderedNameRows > 0) {
-      const longName = "포즈세트".repeat(10);
-      await page.getByTestId("db-field-battler-animation-name-0").fill(longName);
-      await page.getByTestId("db-field-battler-animation-resource-0").fill("qa-battler-res");
-      await page.getByTestId("db-field-battler-animation-idle-duration-0").fill("0"); // boundary -> clamps to 1?
-      await page.getByTestId("db-field-battler-animation-attack-duration-0").fill("99999");
-      await page.screenshot({ path: ".superpowers/sdd/qa-shots/battle-battler-02-edited.png" });
-
-      // round-trip
-      await switchDatabaseTab(page, SCREEN_TAB);
-      await switchDatabaseTab(page, BATTLER_TAB);
-      await expect(page.getByTestId("db-field-battler-animation-name-0")).toHaveValue(longName);
-      const after = await exportedProject(page);
-      const rec = after.database.battlerAnimations?.[0];
-      console.log("BATTLER_EXPORT", JSON.stringify(rec));
-      expect(rec?.name).toBe(longName);
-      expect(rec?.resourceId).toBe("qa-battler-res");
-
-      // undo
-      await page.getByTestId("db-field-battler-animation-name-0").fill("UNDO 배틀러");
-      await page.keyboard.press("Control+z");
-      await page.waitForTimeout(400);
-      const undoName = (await exportedProject(page)).database.battlerAnimations?.[0]?.name;
-      console.log("BATTLER_NAME_AFTER_UNDO", undoName);
-    }
-    console.log("CONSOLE_ERRORS_BATTLER", JSON.stringify(consoleErrors));
   });
 
   test("battle screen tab: system fields edit + persistence + undo", async ({ page }) => {
@@ -363,7 +323,7 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
 
   test("layout probes: fieldset overlap/scroll metrics on utility battle tabs", async ({ page }) => {
     await boot(page);
-    for (const tab of [BATTLER_TAB, SCREEN_TAB, COMMANDS_TAB]) {
+    for (const tab of [SCREEN_TAB, COMMANDS_TAB]) {
       await switchDatabaseTab(page, tab);
       const metrics = await page.evaluate(() => {
         const form = document.querySelector(".db-parity-form");

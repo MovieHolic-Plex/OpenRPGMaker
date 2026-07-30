@@ -13,10 +13,9 @@ import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
-import { kitIdForSmallHouseMaterial } from "@/project/defaults/terrainTemplateHouseStamp";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
-import type { SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemplate";
+import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
 import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, TilesetDef } from "@/project/types";
 import {

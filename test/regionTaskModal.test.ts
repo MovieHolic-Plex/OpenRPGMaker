@@ -102,6 +102,54 @@ describe("openRegionTaskModal", () => {
     expect(copy?.getAttribute("disabled")).toBeNull();
   });
 
+  it("스트리밍으로 이미 나온 어시스턴트 문단을 결과에서 또 찍지 않는다", async () => {
+    // 회귀 가드: 예전엔 onEvent 의 assistant_message 를 280자로 찍고, 끝나고 나서
+    // result.assistantText 를 400자로 또 찍어 같은 문단이 로그에 두 번 남았다.
+    restoreDom = installFakeDom();
+    const text = "선택 영역 안에 7×7 크기의 둥근 호수 배치안을 만들었습니다.";
+    const run = vi.fn(async (opts: { onEvent?: (event: unknown) => void }) => {
+      opts.onEvent?.({ type: "assistant_message", content: text });
+      return {
+        ok: true, applied: true, changedCells: 37, changedEvents: 0,
+        clippedCells: 0, proposedCalls: 1, assistantText: text,
+      };
+    });
+    const root = openModal({ mapId: "m1", region: REGION, run: run as never });
+    const input = findByTestId(root, "region-task-input");
+    if (input) input.value = "둥근 호수";
+    findByTestId(root, "region-task-run")?.click();
+    await flush();
+
+    const logText = findByTestId(root, "region-task-log")?.textContent ?? "";
+    const occurrences = logText.split("둥근 호수 배치안").length - 1;
+    expect(occurrences).toBe(1);
+  });
+
+  it("툴 인자 JSON을 로그 본문에 찍지 않고 title 로만 단다", async () => {
+    // 회귀 가드: 인자를 120자에서 자르는 바람에 중괄호가 깨진 JSON이 화면에 노출됐다.
+    restoreDom = installFakeDom();
+    const run = vi.fn(async (opts: { onEvent?: (event: unknown) => void }) => {
+      opts.onEvent?.({
+        type: "tool_call",
+        name: "show_map_region",
+        args: { mapId: "map_blank_start", x: 8, y: 0, w: 11, h: 8 },
+        result: { ok: true, summary: "맵 미리보기: (8,0) 11×8" },
+      });
+      return { ok: true, applied: true, changedCells: 1, changedEvents: 0, clippedCells: 0, proposedCalls: 1, assistantText: "" };
+    });
+    const root = openModal({ mapId: "m1", region: REGION, run: run as never });
+    const input = findByTestId(root, "region-task-input");
+    if (input) input.value = "호수";
+    findByTestId(root, "region-task-run")?.click();
+    await flush();
+
+    const logText = findByTestId(root, "region-task-log")?.textContent ?? "";
+    expect(logText).toContain("show_map_region");
+    expect(logText).toContain("맵 미리보기");
+    expect(logText).not.toContain("map_blank_start");
+    expect(logText).not.toContain("{");
+  });
+
   it("실행 후 로그 버튼이 클립보드에 JSON을 복사한다", async () => {
     restoreDom = installFakeDom();
     const writeText = vi.fn(async () => undefined);
@@ -198,7 +246,7 @@ describe("pending 비교 UI", () => {
     expect(findByTestId(root, "region-task-discard")).not.toBeNull();
   });
 
-  it("적용 클릭 시 pending.apply가 불리고 요약이 갱신되며 run/입력이 재활성화된다", async () => {
+  it("적용 클릭 시 pending.apply가 불리고 요약이 갱신된 뒤 창이 닫힌다", async () => {
     restoreDom = installFakeDom();
     const result = fakePendingResult();
     const root = openModal({
@@ -211,8 +259,30 @@ describe("pending 비교 UI", () => {
     findByTestId(root, "region-task-apply")?.dispatchEvent(new Event("click"));
     expect(result.pending!.settled).toBe(true);
     expect(findByTestId(root, "region-task-summary")?.textContent).toContain("적용됨");
+
+    // 적용은 작업의 끝이다 — 결과는 캔버스에 있고 창이 남아 있으면 그것을 가린다.
+    // 닫기는 현재 콜스택을 빠져나온 뒤(setTimeout 0) 실행되므로 flush 후에 확인한다.
+    await flush();
+    expect(document.querySelector("[data-testid='region-task-modal']")).toBeNull();
+    expect(document.querySelector("[data-testid='region-task-backdrop']")).toBeNull();
+  });
+
+  it("버리기는 창을 닫지 않고 입력 단계로 되돌린다", async () => {
+    restoreDom = installFakeDom();
+    const result = fakePendingResult();
+    const root = openModal({
+      mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 },
+      initialInstruction: "테스트", autoRun: true,
+      run: async () => result,
+      renderSnapshot: () => Promise.resolve(document.createElement("div")),
+    });
+    await flush();
+    findByTestId(root, "region-task-discard")?.dispatchEvent(new Event("click"));
+    await flush();
+    expect(findByTestId(root, "region-task-summary")?.textContent).toContain("버려졌습니다");
     expect(findByTestId(root, "region-task-run")?.disabled).toBe(false);
     expect(findByTestId(root, "region-task-input")?.disabled).toBe(false);
+    expect(document.querySelector("[data-testid='region-task-modal']")).not.toBeNull();
   });
 
   it("pending 미해소 상태에서 모달을 닫으면 discardAndClose가 pending.discard()를 호출한다", async () => {

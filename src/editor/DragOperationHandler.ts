@@ -7,7 +7,6 @@ import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectTileRegion } from "@/editor/mapClipboard";
 import { moveEvent } from "@/editor/eventActions";
-import { placeStructureStamp, previewStructureStampCells, type StructureStampId } from "@/editor/structureStampTools";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
 import { paintTilesBulk } from "@/editor/actions";
 import { committedEvents } from "@/project/eventDrafts";
@@ -30,11 +29,6 @@ type DragOperation =
     readonly start: TilePoint;
     readonly tile: number;
     readonly autoConnect: boolean;
-  }
-  | {
-    readonly kind: "structure";
-    readonly mapId: MapId;
-    readonly stampId: StructureStampId;
   }
   | {
     readonly kind: "eventMove";
@@ -98,16 +92,6 @@ export class DragOperationHandler {
       selectTileRegion(mapId, { mapId, x: point.x, y: point.y, width: 1, height: 1 });
       return true;
     }
-    if (state.tool === "paint" && state.activeStructureStampId) {
-      const operation: Extract<DragOperation, { readonly kind: "structure" }> = {
-        kind: "structure",
-        mapId,
-        stampId: state.activeStructureStampId,
-      };
-      this.dragOperation = operation;
-      this.renderStructureDragPreview(operation, point);
-      return true;
-    }
     if (state.tool === "paint" && state.paintShape !== "pen" && state.selectedTile >= 0) {
       const layer: TileLayer = state.layer === "upper" ? "upper" : "lower";
       const operation: Extract<DragOperation, { readonly kind: "shape" }> = {
@@ -166,10 +150,6 @@ export class DragOperationHandler {
       this.updateSelectionDrag(operation, point);
       return;
     }
-    if (operation.kind === "structure") {
-      this.renderStructureDragPreview(operation, point);
-      return;
-    }
     if (operation.kind === "eventMove") {
       this.renderEventMoveDragPreview(operation, point);
       return;
@@ -184,8 +164,6 @@ export class DragOperationHandler {
     if (operation.kind === "select") {
       this.updateSelectionDrag(operation, point);
       requestAiSelectionContext(editorState.get().selection);
-    } else if (operation.kind === "structure") {
-      this.commitStructureDrag(operation, point);
     } else if (operation.kind === "eventMove") {
       this.commitEventMoveDrag(operation, point);
     } else {
@@ -222,13 +200,6 @@ export class DragOperationHandler {
     );
   }
 
-  private commitStructureDrag(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !isInsideMapPoint(point, map)) return;
-    recordProjectSnapshot();
-    placeStructureStamp(operation.mapId, { id: operation.stampId, origin: point });
-  }
-
   private commitEventMoveDrag(operation: Extract<DragOperation, { readonly kind: "eventMove" }>, point: TilePoint): void {
     const map = store.getCurrent().maps[operation.mapId];
     if (!map || !isInsideMapPoint(point, map)) return;
@@ -247,26 +218,6 @@ export class DragOperationHandler {
     recordProjectSnapshot();
     moveEvent(operation.mapId, operation.eventId, point.x, point.y);
     editorState.set({ selectedEventId: operation.eventId });
-  }
-
-  private renderStructureDragPreview(operation: Extract<DragOperation, { readonly kind: "structure" }>, point: TilePoint): void {
-    const layer = this.deps.hoverPreviewLayer();
-    if (!layer) return;
-    layer.removeAll(true);
-    const map = store.getCurrent().maps[operation.mapId];
-    if (!map || !isInsideMapPoint(point, map)) return;
-    const tileset = store.getCurrent().tilesets[map.tilesetId];
-    if (!tileset) return;
-    const cells = previewStructureStampCells(map, { id: operation.stampId, origin: point });
-    for (const cell of cells) {
-      const preview = createChipsetTileObject(this.scene, map, tileset, cell.x, cell.y, cell.tile);
-      preview.setAlpha(cell.layer === "upper" ? 0.72 : 0.58);
-      layer.add(preview);
-      const marker = this.scene.add.rectangle(cell.x * TILE_SIZE, cell.y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x51cf66, 0.12);
-      marker.setOrigin(0, 0);
-      marker.setStrokeStyle(1, 0xd3f9d8, 0.72);
-      layer.add(marker);
-    }
   }
 
   private renderShapeDragPreview(operation: Extract<DragOperation, { readonly kind: "shape" }>, point: TilePoint): void {

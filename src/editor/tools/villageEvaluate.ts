@@ -7,6 +7,7 @@ import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAN
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
+import { resolveTimeSystem } from "@/project/gameTime";
 import type { GameMap, Project } from "@/project/types";
 import { checkReachability } from "@/project/lint/reachability";
 import type { VillagePlan } from "./villagePlan";
@@ -143,7 +144,22 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
     fixes.push({ layer: "build", action: "repair_exit_roads", hint: "layoutPlan roadAnchors 네 곳을 중앙 도로망에 연결" });
     lookScore -= 0.12;
   }
-  if (map.layoutPlan?.kind === "village-harness-natural-v2") {
+  // 품질 검사를 두 갈래로 나눈다.
+  //
+  // 왜(2026-07-26 실측): 아래 블록 전체가 `layoutPlan.kind === "village-harness-natural-v2"` 에
+  // 갇혀 있었다. 그래서 그 생성기가 도장을 찍지 않은 맵(손으로 만든 맵·AI가 만든 맵·다른 생성기)은
+  // **13개 검사를 모두 건너뛰고 통과**했다. 실제 샘플 마을(이슬 장터, 100×100)은 96타일 직선 도로와
+  // NPC 일정 0개를 가진 채 "지적 1건, 점수 0.58" 로 통과했다.
+  //
+  // - 관찰 기반(타일·이벤트에서 직접 세는 것): 어떤 맵에서도 유효하므로 항상 검사한다.
+  // - 설계도 기반(집 형태/키트/층수): layoutPlan.regions 에만 있는 정보라 관찰로 확인할 수 없다.
+  //   설계도가 없을 때 검사하면 "형태 0종" 같은 **거짓 지적**이 나오므로 설계도가 있을 때만 검사한다.
+  const hasVillageBlueprint = map.layoutPlan?.kind === "village-harness-natural-v2";
+  // 집 수: 설계도가 있으면 그 값, 없으면 타일에서 센 문 쌍(집 한 채당 116/146 한 쌍)으로 추정한다.
+  const houseCount = metrics.houseRegions > 0 ? metrics.houseRegions : metrics.doorPairs;
+  // 정착지로 볼 최소 조건 — 문 쌍이 둘 이상이면 마을 품질을 따질 대상이다.
+  const isSettlement = hasVillageBlueprint || houseCount >= 2;
+  if (isSettlement) {
     const targetFromPlan = (name: string, fallback: number): number => {
       const prefix = `${name}:`;
       const tag = map.layoutPlan?.regions.flatMap((region) => region.tags ?? []).find((entry) => entry.startsWith(prefix));
@@ -162,33 +178,57 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         { layer: "build", action: "separate_floor_windows", hint: "층마다 창 한 행, 층 사이 벽 한 행을 비움" },
       );
     }
-    const shapeTarget = targetFromPlan("shape-target", Math.min(4, metrics.houseRegions));
+    // ── 설계도 기반(집 형태/키트/층수) — layoutPlan 없이는 관찰 불가라 거짓 지적을 만든다.
+    const shapeTarget = hasVillageBlueprint ? targetFromPlan("shape-target", Math.min(4, metrics.houseRegions)) : 0;
     if (metrics.houseShapeKinds < shapeTarget) {
       naturalIssue(
         `집 형태가 단조롭다 (${metrics.houseShapeKinds}/${shapeTarget}종)`,
         { layer: "plan", action: "vary_house_templates", hint: "rect/l/u와 다층 템플릿을 중복 전에 순환" },
       );
     }
-    const kitTarget = targetFromPlan("kit-target", Math.min(3, metrics.houseRegions));
+    const kitTarget = hasVillageBlueprint ? targetFromPlan("kit-target", Math.min(3, metrics.houseRegions)) : 0;
     if (metrics.houseKitKinds < kitTarget) {
       naturalIssue(
         `집 키트가 단조롭다 (${metrics.houseKitKinds}/${kitTarget}종)`,
         { layer: "plan", action: "vary_house_kits", field: "kitMix", to: "mixed", hint: "서로 다른 키트를 먼저 배치" },
       );
     }
-    const multiStoryTarget = targetFromPlan("multistory-target", Number(map.width >= 46 && metrics.houseRegions >= 6));
+    const multiStoryTarget = hasVillageBlueprint
+      ? targetFromPlan("multistory-target", Number(map.width >= 46 && metrics.houseRegions >= 6))
+      : 0;
     if (metrics.multiStoryHouses < multiStoryTarget) {
       naturalIssue(
         "다층 집이 없어 지붕선과 스카이라인이 평평하다",
         { layer: "build", action: "add_multistory_house", hint: "2층 또는 3층 템플릿을 최소 한 채 배치" },
       );
     }
-    const npcTarget = metrics.houseRegions + 2;
+    // ── 관찰 기반 — houseRegions(설계도) 가 아니라 houseCount(설계도 또는 문 쌍) 를 쓴다.
+    const npcTarget = houseCount + 2;
     if (metrics.scheduledNpcs < npcTarget) {
       naturalIssue(
         `시간표가 있는 주민이 부족하다 (${metrics.scheduledNpcs}/${npcTarget})`,
         { layer: "build", action: "assign_npc_schedules", hint: "아침 집·낮 일터·저녁 장터 3단계 일정 부여" },
       );
+    }
+    // 시간 시스템이 꺼져 있으면 시간표는 저장돼도 실행되지 않는다(npcSchedules.ts:31 에서 즉시 return).
+    //
+    // **시간표가 실제로 있을 때만** 지적한다. 이유: 시간 시스템은 맵이 아니라 프로젝트 설정이라
+    // 시공 중에는 고칠 수 없다. 무조건 지적하면 갓 생성한 마을이 자기 품질 게이트에서 실패한다
+    // (실측: run_village_session 이 status=failed 로 떨어졌다). 시간표가 0개면 위의
+    // "시간표가 있는 주민이 부족하다" 가 이미 같은 문제를 가리킨다.
+    // 게이트를 실패시키지 않고 알리기만 한다(naturalIssue 를 쓰지 않는 이유):
+    // 시간 시스템은 맵이 아니라 프로젝트 설정이고, 마을 시공은 선언한 데이터 밖을 바꿀 수 없다
+    // ("Village changed undeclared project data" 가드). 시공 중에 고칠 수 없는 것으로 시공을
+    // 실패시키면 갓 만든 마을이 무한 재시도에 빠진다(실측: run_village_session status=failed).
+    if (metrics.scheduledNpcs > 0 && !resolveTimeSystem(input.project)) {
+      issues.push("시간 시스템이 꺼져 있어 주민 시간표가 실행되지 않는다 — 주민이 제자리에 머무른다");
+      fixes.push({
+        layer: "spec",
+        action: "enable_time_system",
+        field: "timeSystem.enabled",
+        to: true,
+        hint: "system.timeSystem.enabled=true 로 켜야 시간표대로 이동한다",
+      });
     }
     if (metrics.scheduledNpcs >= 2 && metrics.npcMovementKinds < 2) {
       naturalIssue(
@@ -221,13 +261,13 @@ export function evaluateVillageLook(input: EvaluateVillageInput): VillageLookRep
         { layer: "build", action: "meander_roads", hint: "출구 간선과 집 진입로를 짧은 계단형 곡선으로 분절" },
       );
     }
-    if (metrics.houseRegions > 0 && metrics.fenceCells > metrics.houseRegions * 8) {
+    if (houseCount > 0 && metrics.fenceCells > houseCount * 8) {
       naturalIssue(
         `울타리가 필지를 과도하게 둘러싼다 (${metrics.fenceCells}칸)`,
         { layer: "build", action: "fragment_fences", hint: "완전 폐쇄형 사각 울타리를 짧은 마당 경계 조각으로 교체" },
       );
     }
-    if (metrics.interiorTreeCells < Math.min(24, metrics.houseRegions * 3)) {
+    if (metrics.interiorTreeCells < Math.min(24, houseCount * 3)) {
       naturalIssue(
         `마을 내부 수목이 부족하다 (${metrics.interiorTreeCells}칸)`,
         { layer: "build", action: "scatter_inner_groves", hint: "테두리 띠 대신 내부 빈 공간에도 혼합 수목 군락을 산포" },

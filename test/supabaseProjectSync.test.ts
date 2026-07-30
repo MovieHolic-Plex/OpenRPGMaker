@@ -12,7 +12,7 @@ import {
   saveProjectToSupabase,
   seedLastRemoteCommitTip,
 } from "@/project/supabaseProjectSync";
-import { createHouseTemplateGalleryProject } from "@/project/defaults";
+import { createBlankProject, createHouseTemplateGalleryProject } from "@/project/defaults";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import type { GameMap, MapTreeNode, Project } from "@/project/types";
@@ -108,12 +108,14 @@ describe("Supabase project sync", () => {
     expect(String(calls[0]?.input)).toContain(`project_id=eq.${DEFAULT_SUPABASE_PROJECT_ID}`);
   });
 
-  it("repairs sparse Supabase current_json database defaults before reference validation", async () => {
-    const source = JSON.parse(serialize(createHouseTemplateGalleryProject()));
-    if (!isRecord(source) || !isRecord(source.database) || !Array.isArray(source.database.skills)) {
-      throw new Error("expected serialized project database skills");
-    }
-    source.database.skills = source.database.skills.filter((skill) => isRecord(skill) && skill.id !== "skill_item_ether");
+  it("treats Supabase current_json as canonical — does not backfill removed database records", async () => {
+    // DB is the source of truth for authored database records (items, skills, states,
+    // animations). A sparse DB row must load as-is; JSON defaults never silently re-add
+    // authored records the DB row omits. Local is cache-only.
+    const source = JSON.parse(serialize(minimalValidProject()));
+    expect(source.database.items.some((item: { id: string }) => item.id === "item_capture_orb")).toBe(true);
+    // drop a leaf default item (no skillId, not an enemy drop target) from the DB row
+    source.database.items = source.database.items.filter((item: { id: string }) => item.id !== "item_capture_orb");
     vi.stubGlobal("fetch", (async (input) => {
       if (String(input).includes("/rest/v1/maps?")) return new Response(JSON.stringify([]), { status: 200 });
       return new Response(JSON.stringify([{ current_json: source }]), { status: 200 });
@@ -121,8 +123,10 @@ describe("Supabase project sync", () => {
 
     const project = await loadProjectFromSupabase(TEST_CONFIG);
 
-    expect(project?.database.skills.some((skill) => skill.id === "skill_item_ether")).toBe(true);
-    expect(project?.database.items.some((item) => item.id === "item_ether" && item.skillId === "skill_item_ether")).toBe(true);
+    // Removed item stays removed — no JSON-default backfill on load.
+    expect(project?.database.items.some((item) => item.id === "item_capture_orb")).toBe(false);
+    // Untouched items still load from the DB row (proves DB load works, not empty).
+    expect((project?.database.items.length ?? 0)).toBeGreaterThan(0);
   });
 
   it("repairs legacy sprite references from Supabase rows before project use", async () => {
@@ -631,6 +635,21 @@ describe("Supabase project sync", () => {
   });
 
 });
+
+function minimalValidProject(): Project {
+  // Unit-test asset env lacks generated monster art; strip those resource refs so
+  // deserialize reference validation passes without depending on bundled generated art.
+  const project = createBlankProject();
+  for (const enemy of project.database.enemies) {
+    const e = enemy as unknown as { monsterResourceId?: string; speciesId?: string };
+    delete e.monsterResourceId;
+    delete e.speciesId;
+  }
+  for (const species of project.database.monsterSpecies ?? []) {
+    if (species.graphic) (species.graphic as { monsterResourceId?: string }).monsterResourceId = undefined;
+  }
+  return project;
+}
 
 function parseRecord(json: string): Record<string, unknown> {
   const parsed: unknown = JSON.parse(json);

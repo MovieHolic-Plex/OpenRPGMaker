@@ -13,7 +13,6 @@ import {
 import {
   renderBattleCommandsTab,
   renderBattleScreenTab,
-  renderBattlerAnimationsTab,
   renderElementsTab,
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
@@ -26,7 +25,6 @@ export type DatabaseTab =
   | "animations"
   | "battleCommands"
   | "battleScreen"
-  | "battlerAnimations"
   | "commonEvents"
   | "characters"
   | "crops"
@@ -45,7 +43,6 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "terrain", label: "지형", testid: "db-tab-terrain" },
   { id: "battleScreen", label: "전투 화면", testid: "db-tab-battle-screen" },
   { id: "battleCommands", label: "전투 명령", testid: "db-tab-battle-commands" },
-  { id: "battlerAnimations", label: "애니메이션 2", testid: "db-tab-battler-animations" },
   { id: "actors", label: "주인공", testid: "db-tab-actors" },
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
@@ -81,7 +78,6 @@ const tabOrder: readonly DatabaseTab[] = [
   "elements",
   "states",
   "animations",
-  "battlerAnimations",
   "battleScreen",
   "battleCommands",
   "terrain",
@@ -200,9 +196,6 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       return;
     case "battleCommands":
       renderBattleCommandsTab(body);
-      return;
-    case "battlerAnimations":
-      renderBattlerAnimationsTab(body);
       return;
     case "monsterSpecies":
       renderMonsterSpeciesTab(body, rerender);

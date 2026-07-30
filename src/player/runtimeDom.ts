@@ -21,6 +21,11 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { formatGameTime, type GameTime, type TimePhase } from "@/project/gameTime";
 
+// 재생 무대의 논리 크기(playSurface.css `.play-stage` 320×240 과 같아야 한다).
+// 마커가 이 범위를 벗어나면 무대의 스크롤 영역을 넓히므로 접어 둔다.
+const STAGE_WIDTH = 320;
+const STAGE_HEIGHT = 240;
+
 type RuntimeAssetProject = Pick<Project, "assets">;
 
 // 픽처 슬롯(픽처 번호별). 이미지/텍스트 라벨 중 하나를 담고, Move Picture 트윈 상태를 보관한다.
@@ -97,6 +102,49 @@ export class RuntimeDomOverlay {
 
   constructor(private readonly host: () => HTMLElement | undefined) {}
 
+  /**
+   * 카메라 스크롤(px). 마커를 **화면 좌표**로 놓기 위해 필요하다.
+   *
+   * 왜(2026-07-26 실측): 마커를 맵 타일 좌표에 그대로 놓으면 100×100 맵에서 무대의 스크롤
+   * 콘텐츠가 1552×1552 로 부푼다(무대 client 는 320×240). `.play-stage` 는 `overflow: hidden`
+   * 이라 잘라내지만 **여전히 스크롤 컨테이너**이므로, 화면 밖 마커를 클릭하면 브라우저가 그것을
+   * 보이게 하려고 무대를 스크롤한다(scroll = 728,768). 그러면 무대 rect 는 그대로인데 캔버스만
+   * 화면 밖으로 나가 **재생 화면이 완전히 검게 된다**(canvas rect 320,225 → -1136,-1311).
+   * 마커를 화면 좌표에 두고 화면 밖을 비활성화하면 스크롤 오버플로 자체가 사라진다.
+   *
+   * 덤: 지금까지 히트박스가 실제 NPC 스프라이트 위치와 어긋나 있었다(카메라 보정이 없었으므로).
+   */
+  private cameraX = 0;
+  private cameraY = 0;
+
+  /** 매 프레임 카메라 스크롤을 반영해 마커를 화면 좌표로 재배치한다. */
+  syncCameraOffset(cameraX: number, cameraY: number): void {
+    if (cameraX === this.cameraX && cameraY === this.cameraY) return;
+    this.cameraX = cameraX;
+    this.cameraY = cameraY;
+    for (const marker of this.eventMarkers.values()) this.placeMarker(marker);
+    for (const marker of this.spriteMarkers.values()) this.placeMarker(marker);
+  }
+
+  /**
+   * dataset 에 기록된 맵 좌표를 카메라 기준 화면 좌표로 환산해 놓는다.
+   * 무대(320×240) 밖이면 좌상단으로 접고 비활성화한다 — 스크롤 영역을 넓히지 않고,
+   * 보이지 않는 NPC 를 클릭하는 일도 막는다(마커는 opacity 0.01 의 히트박스다).
+   */
+  private placeMarker(marker: HTMLElement): void {
+    const mapX = Number(marker.dataset.mapX ?? "0");
+    const mapY = Number(marker.dataset.mapY ?? "0");
+    const screenX = mapX - this.cameraX;
+    const screenY = mapY - this.cameraY;
+    const visible =
+      screenX > -TILE_SIZE && screenY > -TILE_SIZE && screenX < STAGE_WIDTH && screenY < STAGE_HEIGHT;
+    marker.dataset.offscreen = visible ? "" : "1";
+    marker.style.left = `${visible ? screenX : 0}px`;
+    marker.style.top = `${visible ? screenY : 0}px`;
+    marker.style.visibility = visible ? "" : "hidden";
+    marker.style.pointerEvents = visible ? "" : "none";
+  }
+
   upsertEventMarker(view: RuntimeEventView, onActivate?: (eventId: string) => void): void {
     const host = this.host();
     if (!host) return;
@@ -110,13 +158,14 @@ export class RuntimeDomOverlay {
       this.eventMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.style.left = `${view.x * TILE_SIZE}px`;
-    marker.style.top = `${view.y * TILE_SIZE}px`;
+    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
+    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
     marker.style.width = `${TILE_SIZE}px`;
     marker.style.height = `${TILE_SIZE}px`;
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
     marker.dataset.trigger = view.trigger.kind;
+    this.placeMarker(marker);
     this.syncSpriteMarker(host, view);
   }
 
@@ -146,12 +195,13 @@ export class RuntimeDomOverlay {
       this.spriteMarkers.set(view.event.id, marker);
     }
     marker.textContent = view.pageId ?? view.event.id;
-    marker.style.left = `${view.x * TILE_SIZE}px`;
-    marker.style.top = `${view.y * TILE_SIZE}px`;
+    marker.dataset.mapX = `${view.x * TILE_SIZE}`;
+    marker.dataset.mapY = `${view.y * TILE_SIZE}`;
     marker.style.width = `${TILE_SIZE}px`;
     marker.style.height = `${TILE_SIZE}px`;
     marker.dataset.pageId = view.pageId ?? "";
     marker.dataset.priority = view.priority;
+    this.placeMarker(marker);
   }
 
   syncMissingResourceError(missingResources: ReadonlySet<string>): void {

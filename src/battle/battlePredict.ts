@@ -6,7 +6,8 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { ActorId, EnemyId, Project, SkillId } from "@/project/types";
 import type { ActorRateGrade, EnemyRecord, SkillRecord } from "@/project/types/database";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
-import { typeChartMultiplierFor } from "@/battle/typeChart";
+import { usesMagicalDefense } from "@/battle/battleDamage";
+import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 
 export interface PredictedDamage {
   /** 분산/크리티컬/빗나감을 배제한 평균 기대 피해(또는 회복). 음수 = 흡수. */
@@ -98,6 +99,12 @@ export function elementNameFor(project: Project, elementId: string | undefined):
   return project.database.elements?.find((entry) => entry.id === elementId)?.name;
 }
 
+// 데미지 감소를 mind(마법 방어력) 로 라우팅할지 — battleDamage.usesMagicalDefense 단일 권위자에
+// 위임한다. runtime 과 동일 규칙이어야 예측/실제 데미지 parity 가 유지된다. gen1 모델에서만 활성.
+export function isMagicalElement(project: Project, elementId: string | undefined): boolean {
+  return usesMagicalDefense(project, elementId);
+}
+
 // 대상의 한 속성 등급을 가져온다(약점/내성 칩 표시용).
 export function elementGradeFor(project: Project, elementId: string, targetRecordId: ActorId | EnemyId): ActorRateGrade | undefined {
   const enemy = project.database.enemies.find((entry) => entry.id === targetRecordId);
@@ -152,7 +159,7 @@ export function predictSkillDamage(
   const sourceStat = spec.statistic === "mind" ? userStats.mind : userStats.attack;
   let magnitude = spec.power + Math.floor(sourceStat / 2);
   const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId, target)
-    * typeChartMultiplierFor(project, spec.elementId, user.recordId, target.recordId);
+    * typeChartMultiplierForTypes(project, spec.elementId, battlerTypes(project, user), battlerTypes(project, target));
   magnitude = Math.round(magnitude * elementMultiplier);
   if (elementMultiplier === 0) magnitude = 0;
   if (elementMultiplier < 0) {
@@ -167,7 +174,9 @@ export function predictSkillDamage(
   }
   const targetStats = battlerStats(project, target);
   if (magnitude > 0) {
-    magnitude -= Math.floor(targetStats.defense / 2);
+    // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense (runtime 과 동일).
+    const defenseStat = isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense;
+    magnitude -= Math.floor(defenseStat / 2);
     if (target.defending) magnitude = Math.floor(magnitude / 2);
     magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
   }

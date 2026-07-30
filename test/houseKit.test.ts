@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { HOUSE_DOOR_CHARSET_TEXTURE, HOUSE_DOOR_FRAME_WAIT_MS, houseDoorFrameIndex, createHouseInteriorMap, resolveHouseInteriorScale } from "@/editor/houseInteriors";
 import { VR } from "@/editor/interiorRoomPipeline";
 import { rectHouseHeight, stampFootprintHouseKit, stampRectHouseKit } from "@/editor/houseKit";
-import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
+import { INTERIOR_ROOM_TILESET_ID as INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
 import { projectLint } from "@/project/lint/projectLint";
 import type { GameMap, MapTreeNode } from "@/project/types";

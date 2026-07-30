@@ -65,6 +65,15 @@ export interface SkillDef {
   readonly params: readonly SkillParam[];
   /** 선택 영역이 필수인 스킬(없으면 안내). */
   readonly needsSelection?: boolean;
+  /**
+   * 고급(저작 도구) 스킬 — 목록을 그냥 열 때는 보이지 않고, 검색해야 나온다.
+   *
+   * 왜: 타일 의미를 AI 에게 가르치는 계열(interview/cluster-edit 등)은 **타일셋을 새로
+   * 붙일 때 쓰는 저작 도구**인데, SYSTEM_SKILLS 순서상 맨 앞이라 슬래시 목록의 첫 화면을
+   * 다 차지하고 정작 게임을 만드는 /build-* 를 아래로 밀어냈다(실측 스크린샷).
+   * 지우지 않는 이유: 타일셋 교체 시 실제로 필요하고, clusterAiModal 이 cluster-edit 를 직접 부른다.
+   */
+  readonly advanced?: boolean;
   readonly buildPrompt?: (args: Record<string, SkillArgValue>, ctx: SkillRunContext) => string;
   readonly displayAs?: (args: Record<string, SkillArgValue>) => string;
 }
@@ -153,6 +162,7 @@ function clusterGroupSnapshot(tilesetId: string, groupId: string): ClusterGroupS
 export const SYSTEM_SKILLS: readonly SkillDef[] = [
   {
     id: "interview",
+    advanced: true,
     icon: "🎓",
     name: "맵 인터뷰",
     description: "현재 맵의 타일 의미를 AI가 질문으로 배웁니다. 답은 원탭 선택지로.",
@@ -164,6 +174,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
   },
   {
     id: "learn-structure",
+    advanced: true,
     icon: "📐",
     name: "선택 영역 학습",
     description: "맵에서 선택한 구조물을 템플릿(교과서)으로 배웁니다.",
@@ -179,6 +190,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
   },
   {
     id: "cluster-edit",
+    advanced: true,
     icon: "🧩",
     name: "클러스터 수정",
     description: "선택한 타일 클러스터를 이미지로 확인하며 이름·역할·위/아래·좌우 구성·구조 규칙을 수정합니다.",
@@ -197,6 +209,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
   },
   {
     id: "range-classify",
+    advanced: true,
     icon: "▦",
     name: "범위 분류",
     description: "시트에서 선택한 사각형 범위를 이미지로 확인하며 그룹 이름·역할을 원탭으로 저장합니다.",
@@ -220,6 +233,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
   },
   {
     id: "unclassified-analysis",
+    advanced: true,
     icon: "🔎",
     name: "미분류 분석",
     description: "설명되지 않은 타일을 이미지로 보며 의미를 확정하고 메타데이터로 기록합니다.",
@@ -240,6 +254,7 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
   },
   {
     id: "demo-teach",
+    advanced: true,
     icon: "✍️",
     name: "시연으로 가르치기",
     description: "샌드박스에 직접 타일을 깔아 AI를 교정합니다. 실제 맵은 불변.",
@@ -311,8 +326,11 @@ export const SYSTEM_SKILLS: readonly SkillDef[] = [
       "1. run_lint로 프로젝트 전반 문제를 확인하세요.",
       "2. check_reachability로 현재 맵의 도달 불가 지점을 확인하세요.",
       "3. 집 키트로 지은 구조물은 문/길 연결과 통행성을 실제 맵 조회로 확인하세요.",
-      "4. 발견한 문제를 심각도 순으로 나열하고, 자동으로 고칠 수 있는 것은 고친 뒤 같은 검사를 재실행해 해소를 증명하세요.",
-      "5. 고칠 수 없는 것은 이유와 함께 남기세요.",
+      // 룩 게이트는 "직선 도로가 96타일", "NPC 시간표 0개", "울타리 과다" 처럼 눈에 보이는 문제를
+      // 잡는다. 이 호출이 없으면 린트/도달성만 보고 "문제 없음" 이라 보고하게 된다(2026-07-26 실측).
+      "4. evaluate_village_layer({ mapId, layer: \"look\" })로 마을 룩 품질(도로 직선 구간·NPC 시간표·울타리·광장 소품)을 확인하세요. 집이 2채 이상인 맵이면 항상 실행합니다.",
+      "5. 발견한 문제를 심각도 순으로 나열하고, 자동으로 고칠 수 있는 것은 고친 뒤 같은 검사를 재실행해 해소를 증명하세요.",
+      "6. 고칠 수 없는 것은 이유와 함께 남기세요.",
       SPEC_RULE,
       HONEST_REPORT_RULE,
     ].join("\n"),
@@ -754,10 +772,20 @@ export function listAllSkills(): SkillDef[] {
   return [...SYSTEM_SKILLS, ...loadUserSkills().map(userSkillToDef)];
 }
 
+/**
+ * 목록/추천에 기본으로 노출할 스킬 — advanced 제외.
+ * id 로 찾는 경로(clusterAiModal 의 cluster-edit 등)는 listAllSkills 를 그대로 써야 한다.
+ */
+export function listDefaultSkills(): SkillDef[] {
+  return listAllSkills().filter((skill) => !skill.advanced);
+}
+
 // ── 스킬 사용 이력(핀 바 최근 사용순 정렬) ────────────────────────
 const RECENT_SKILLS_KEY = "rpg-zzu:skill-recent";
 // 사용 이력이 없을 때의 기본 핀 — 가장 자주 쓰일 흐름 순.
-const DEFAULT_PIN_ORDER = ["interview", "build-house", "map-audit", "demo-teach", "build-village"];
+// 기본 핀 — 게임을 만드는 흐름만. 예전엔 "interview" 가 맨 앞이라 첫 화면이 타일 학습
+// 도구로 채워졌다(그 계열은 advanced 로 내렸다).
+const DEFAULT_PIN_ORDER = ["build-house", "build-village", "map-audit", "place-npcs", "build-road"];
 
 export function recordSkillUse(id: string): void {
   if (typeof localStorage === "undefined") return;
@@ -791,10 +819,12 @@ export function pinnedSkills(limit = 5): SkillDef[] {
 }
 
 // 슬래시 자동완성 필터 — "/집", "집 짓", "house" 모두 매칭.
+// 검색어 없이 목록만 열면 고급(저작) 스킬은 숨긴다. 한 글자라도 치면 전체에서 찾는다 —
+// "기본은 깔끔하게, 필요하면 접근 가능하게"를 새 UI 없이 만든다.
 export function filterSkills(query: string): SkillDef[] {
   const needle = query.trim().replace(/^\//, "").toLowerCase();
+  if (!needle) return listDefaultSkills();
   const skills = listAllSkills();
-  if (!needle) return skills;
   return skills.filter(
     (skill) =>
       skill.name.toLowerCase().includes(needle) ||

@@ -16,7 +16,7 @@
     #ffe14f,
     #ff4fd8
   );
-  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
+  grid-template-columns: minmax(0, 1fr) 172px 296px !important;
 }
 
 .battle-scene[data-battle-skin="mother"] .battle-actor-group[data-hidden="true"] {
@@ -45,9 +45,9 @@
 .battle-scene[data-battle-skin="mother"] .battle-enemy-list-panel,
 .battle-scene[data-battle-skin="mother"] .battle-party {
   background: #000;
-  border: 2px solid #fff;
+  border: 4px solid #fff;
   border-image: none;
-  border-radius: 9px;
+  border-radius: 18px;
   color: #fff;
 }
 
@@ -58,7 +58,7 @@
 
 .battle-scene[data-battle-skin="mother"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;

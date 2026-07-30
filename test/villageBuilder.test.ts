@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
-import { INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorStructureStamp";
+import { INTERIOR_ROOM_TILESET_ID as INTERIOR_HOUSE_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { TOOL_CATEGORIES } from "@/editor/panels/toolBrowserModal";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";

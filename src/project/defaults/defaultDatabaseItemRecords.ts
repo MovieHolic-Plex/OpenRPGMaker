@@ -1,6 +1,7 @@
 import type { ItemRecord } from "../types";
 import { normalizeItemRecord } from "../databaseRecordModel";
 import { DEFAULT_ITEM_ID, DEFAULT_STATE_ID } from "./constants";
+import { generatedItemRecords } from "./generatedItemRecords";
 
 export function defaultItemRecords(): ItemRecord[] {
   return [
@@ -1669,5 +1670,7 @@ export function defaultItemRecords(): ItemRecord[] {
       occasion: "never",
       consumable: false,
     }),
+    // 생성 아이콘 100종 중 소비품·재료·열쇠 계열 (무기·방어구·장식은 equipment 로 분리).
+    ...generatedItemRecords(),
   ];
 }

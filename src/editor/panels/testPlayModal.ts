@@ -1,9 +1,9 @@
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { createBattleRuntime } from "@/battle/runtime";
-import { mountBattleScene } from "@/player/battleDom";
+import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
 import { renderPlayer, teardownPlayer } from "@/player/player";
-import { startSession, type PlaySession } from "@/project/session";
+import { nextSessionRandom, startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
 import { store } from "@/project/store";
 import type { GameEvent, MapId, Project } from "@/project/types";
@@ -13,13 +13,19 @@ import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
+// 에디터 전투 테스트가 mount 한 배틀 씬 컨트롤러. closeTestPlayModal 이 destroy()
+// 를 호출해 setInterval(200ms 틱) 과 window keydown 리스너 누수를 막는다.
+let battleSceneController: BattleDomController | null = null;
 
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
+  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — "RPG 쯔꾸르" 고정 문구는
+  // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
+  const projectTitle = store.getCurrent().meta.title?.trim();
   const title = startOverride
     ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
-    : "테스트 플레이 - RPG 쯔꾸르";
+    : `테스트 플레이 - ${projectTitle || "RPG 쯔꾸르"}`;
   const body = openTestPlayShell(title);
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {
@@ -85,12 +91,49 @@ export async function openTroopBattleTestModal(troopId: string): Promise<void> {
     loading.setStage("preparing");
     await yieldToBrowser();
     loading.remove();
-    const runtime = createBattleRuntime({ project, troopId, canEscape: true, canLose: true, rng: () => Math.random() });
+    // 에디터 전투 테스트도 실제 플레이 경로(playSceneBattle) 와 동일한 세션 기반 상태/RNG 를
+    // 쓴다. 예전에는 Math.random() 에 party/sessionState 누락으로 (a) 재현 불가능하고,
+    // (b) 레벨업 미리보기·배틀 이벤트 조건이 프로젝트 초기 상태 기준으로만 작동했다.
+    const session = startSession(project);
+    const runtime = createBattleRuntime({
+      project,
+      troopId,
+      canEscape: true,
+      canLose: true,
+      party: {
+        levels: session.actorLevels,
+        experience: session.actorExperience,
+        names: session.actorNames,
+        vitals: session.actorVitals,
+        paramBonuses: session.actorParamBonuses,
+        equipment: session.actorEquipment,
+        skillIds: session.actorSkillIds,
+        classOverrides: session.classOverrides,
+        stateIds: session.actorStateIds,
+        partyActorIds: session.partyActorIds,
+        battleCommands: session.actorBattleCommands,
+      },
+      sessionState: {
+        switches: session.switches,
+        variables: session.variables,
+        inventory: session.inventory,
+        gold: session.gold,
+        partyActorIds: session.partyActorIds,
+        actorSkillIds: session.actorSkillIds,
+        actorExperience: session.actorExperience,
+        actorLevels: session.actorLevels,
+        actorBattleCommands: session.actorBattleCommands,
+      },
+      rng: () => nextSessionRandom(session, "battle"),
+    });
     advanceBattleRuntime(runtime);
-    mountBattleScene({
+    // 결과 화면의 "확인" / "Z" / 클릭 / 자동 타이머 모두 onResult 로 수렴한다.
+    // 전투가 끝나면 전투 테스트 모달을 닫고 편집기로 돌아간다(과거엔 no-op 이라 결과
+    // 화면이 먹통이었다).
+    battleSceneController = mountBattleScene({
       host: body,
       runtime,
-      onResult: () => undefined,
+      onResult: () => closeTestPlayModal(),
     });
   } catch (error) {
     console.error("[test-play] failed to open troop battle test:", error);
@@ -129,6 +172,12 @@ export async function openRandomTroopBattleTestModal(
 }
 
 export function closeTestPlayModal(): void {
+  // 배틀 씬 컨트롤러를 먼저 정리한다. mountBattleScene 가 반환한 destroy() 만이
+  // 200ms 틱 setInterval 과 window keydown 리스너를 해지한다. 이 단계를 빼면 전투
+  // 테스트를 열 때마다 타이머/리스너가 영구 누수된다(renderPlayer 를 거치지 않으므로
+  // teardownPlayer 의 teardownShell 은 null 이다).
+  battleSceneController?.destroy();
+  battleSceneController = null;
   if (!modalRoot) return;
   removePlayWindowKeydown?.();
   removePlayWindowKeydown = null;

@@ -17,10 +17,24 @@ export type PlaceableObjectState = {
   readonly y: number;
   readonly kind: string;
   readonly itemId?: ItemId;
+  readonly seasonalDrops?: Partial<Record<string, string>>;
 };
 
 export function placeableKey(mapId: string, x: number, y: number): string {
   return `${mapId}:${Math.trunc(x)},${Math.trunc(y)}`;
+}
+
+// 채집물의 계절별 산출을 해석한다 — 현재 계절에 지정된 드롭이 있으면 그것을, 없으면 기본 itemId.
+// seasonalDrops 는 스키마에만 존재하고 소비자가 없어 저작해도 아무 효과가 없었다(수확 경로 미연결).
+export function placeableDropItemId(
+  object: Pick<PlaceableObjectState, "itemId" | "seasonalDrops">,
+  season: string | undefined
+): ItemId | undefined {
+  if (season) {
+    const seasonal = object.seasonalDrops?.[season];
+    if (typeof seasonal === "string" && seasonal.trim()) return seasonal.trim();
+  }
+  return object.itemId;
 }
 
 export function ensureChest(

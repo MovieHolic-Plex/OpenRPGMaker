@@ -12,6 +12,7 @@ import {
 } from "@/editor/editorUiMode";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
+import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
@@ -19,7 +20,7 @@ import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
-import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createTrainingExamplesProject } from "@/project/defaults";
+import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -337,7 +338,10 @@ function menuCommands(
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
         item("예제로 시작", "menu-project-sample-adventure", () => void newSampleAdventureProject()),
+        item("천공의 계단 (7층 JRPG)", "menu-project-sky-stair", () => void newSkyStairProject()),
         item("학습 예시 12맵", "menu-project-training-examples", () => void newTrainingExamplesProject()),
+        item("설산 60×60 (절벽·계단 캔버스)", "menu-project-snow-mountain-60", () => void newSnowMountain60Project()),
+        item("얼음 대평원 64×64 (절벽·계단 캔버스)", "menu-project-ice-plain-64", () => void newIcePlain64Project()),
         item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
         item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
@@ -365,6 +369,8 @@ function menuCommands(
         item("데이터베이스...", "menu-tools-database", () => openDatabaseModal()),
         item("리소스 관리자...", "menu-tools-resources", () => openResourceModal()),
         item("세계관...", "menu-tools-world", () => openWorldPanel()),
+        { kind: "separator" },
+        item("AI 설정...", "menu-tools-ai-settings", () => openAiSettingsModal()),
       ];
     case "game":
       return [
@@ -586,11 +592,32 @@ async function newProject(): Promise<void> {
   toast("새 프로젝트를 만들었습니다", "ok");
 }
 
+async function newSkyStairProject(): Promise<void> {
+  if (!(await showConfirm({ title: "천공의 계단", message: "현재 작업을 지우고 《천공의 계단》(7층 JRPG)을 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replaceProject(createSkyStairProject());
+  focusLoadedProjectStartMap();
+  toast("천공의 계단을 불러왔습니다 — 등대지기 마루에게 말을 걸어 첫 퀘스트를 받으세요", "ok");
+}
+
 async function newTrainingExamplesProject(): Promise<void> {
   if (!(await showConfirm({ title: "학습 예시 12맵", message: "현재 작업을 지우고 학습 예시 12맵 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
   store.replaceProject(createTrainingExamplesProject());
   focusLoadedProjectStartMap();
   toast("학습 예시 12맵을 불러왔습니다 — 각 맵 이름의 주제대로 예시를 채워넣으세요", "ok");
+}
+
+async function newSnowMountain60Project(): Promise<void> {
+  if (!(await showConfirm({ title: "설산 60×60", message: "현재 작업을 지우고 설산 60×60 (절벽·계단만 깔린 지형 캔버스)을 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replaceProject(createSnowMountain60Project());
+  focusLoadedProjectStartMap();
+  toast("설산 60×60 을 불러왔습니다 — 선반 위는 비어 있습니다. 발치(30,57)에서 시작해 계단으로 오릅니다", "ok");
+}
+
+async function newIcePlain64Project(): Promise<void> {
+  if (!(await showConfirm({ title: "얼음 대평원 64×64", message: "현재 작업을 지우고 얼음 대평원 64×64 (절벽·계단·얼음 바닥만 깔린 지형 캔버스)을 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replaceProject(createIcePlain64Project());
+  focusLoadedProjectStartMap();
+  toast("얼음 대평원 64×64 을 불러왔습니다 — 못 남안(32,62)에서 시작합니다. 고도는 계단으로만 넘습니다", "ok");
 }
 
 async function newScarloxyPokemonDemoProject(): Promise<void> {

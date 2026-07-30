@@ -12,13 +12,11 @@ import { selectTileRegion } from "@/editor/mapClipboard";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { compatibleStampIdForTile, tileStampById, tileStampsForTile, type TileStamp } from "@/editor/tileStampBrushes";
 import { visibleTilePickAt } from "@/editor/tilePicking";
 import { topTileInStack } from "@/project/mapOverlayTiles";
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { toast } from "@/util/toast";
-import { placeStructureStamp } from "./structureStampTools";
 
 export type TileLayer = "lower" | "upper";
 
@@ -67,8 +65,7 @@ export class TilePaintEngine {
       toast(mapEditLockNotice(mid), "error");
       return;
     }
-    const { activePaletteStamp, activeStampId, activeStructureStampId, autoConnectMode, brushSize, selectedTile } = editorState.get();
-    const tileset = this.deps.tilesetForMap(mid);
+    const { activePaletteStamp, autoConnectMode, brushSize, selectedTile } = editorState.get();
     const key = `${x},${y}`;
     const firstStrokeTile = this.deps.getPaintState().lastPaintKey === "";
     const repeatedNonEventCell = layer !== "event" && key === this.deps.getPaintState().lastPaintKey;
@@ -94,23 +91,12 @@ export class TilePaintEngine {
             applyPaletteStamp({ mapId: mid, stamp: activePaletteStamp, x, y, autoConnect: autoConnectMode });
             break;
           }
-          if (activeStructureStampId) {
-            placeStructureStamp(mid, { id: activeStructureStampId, origin: { x, y } });
-            break;
-          }
-          const stamp = tileset
-            ? tileStampsForTile(selectedTile, tileset).find((candidate) => candidate.id === activeStampId) ?? null
-            : tileStampById(activeStampId);
-          if (stamp) {
-            applyStamp({ mapId: mid, layer: tileLayer, x, y, stamp, autoConnect: autoConnectMode });
-          } else {
-            // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
-            paintTilesBulk(
-              mid,
-              brushStrokeCells({ centerX: x, centerY: y, size: brushSize, layer: tileLayer, tile: selectedTile }),
-              { autoConnect: autoConnectMode },
-            );
-          }
+          // 브러시 전 칸을 한 번의 updateMap 으로 (셀마다 clone 금지)
+          paintTilesBulk(
+            mid,
+            brushStrokeCells({ centerX: x, centerY: y, size: brushSize, layer: tileLayer, tile: selectedTile }),
+            { autoConnect: autoConnectMode },
+          );
         }
         break;
       case "fill":
@@ -156,11 +142,8 @@ export class TilePaintEngine {
     const pick = visibleTilePickAt(map, y * map.width + x);
     if (!pick) return;
     this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
-    const tileset = this.deps.tilesetForMap(mapId);
     editorState.set({
       activePaletteStamp: null,
-      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, pick.tile, tileset),
-      activeStructureStampId: null,
       selectedTile: pick.tile,
       layer: pick.layer,
       tool: "paint",
@@ -182,9 +165,7 @@ export class TilePaintEngine {
       target.layer === "upper" ? topTileInStack(map, "lower", index) ?? map.lowerTiles[index] : tile;
     const selectedTile = tile >= 0 ? tile : fallbackTile;
     if (selectedTile < 0) return;
-    const tileset = this.deps.tilesetForMap(target.mapId);
     editorState.set({
-      activeStampId: compatibleStampIdForTile(editorState.get().activeStampId, selectedTile, tileset),
       selectedTile,
       layer: target.layer,
       tool: "paint",
@@ -225,26 +206,6 @@ function brushStrokeCells(stroke: {
     y: point.y,
     tile: stroke.tile,
   }));
-}
-
-function applyStamp(input: {
-  readonly autoConnect: boolean;
-  readonly layer: TileLayer;
-  readonly mapId: MapId;
-  readonly stamp: TileStamp;
-  readonly x: number;
-  readonly y: number;
-}): void {
-  paintTilesBulk(
-    input.mapId,
-    input.stamp.cells.map((cell) => ({
-      layer: input.layer,
-      x: input.x + cell.dx,
-      y: input.y + cell.dy,
-      tile: cell.tile,
-    })),
-    { autoConnect: input.autoConnect },
-  );
 }
 
 function applyPaletteStamp(input: {

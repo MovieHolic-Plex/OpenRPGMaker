@@ -79,3 +79,21 @@
   - LICENSE.txt (upstream CC0 notice)
 - Notes: **Style mismatch with EasyRPG interior chipset — excluded from charset catalog and interior events (2026-07-15).** Files may remain under public/assets/cc0/mabaci-medieval-items/ for reference only; not loaded by runtime.
 
+
+## CC0 배경음악 (OpenGameArt) — 2026-07-26 추가
+
+**왜 추가했는가:** 이 프로젝트에 등록돼 있던 음악 리소스 30곡은 전부 EasyRPG RTP 의 `.mid` 였고,
+브라우저 `HTMLAudioElement` 는 MIDI 를 재생하지 못한다. 그래서 게임은 실제로 **완전 무음**이었다
+(2026-07-26 브라우저 실측). 아래 5곡이 이 프로젝트에서 실제로 재생 가능한 최초의 음악이다.
+
+- License: **CC0 1.0 Universal** (public domain dedication). 표기 의무는 없으나 출처 재검증을 위해 남긴다.
+- Local files under `public/assets/cc0/audio/bgm/`:
+  - `field-of-dreams.mp3` — "The Field Of Dreams" by **pauliuw**, CC0, https://opengameart.org/content/the-field-of-dreams
+  - `town-theme.mp3` — "Town Theme RPG" by **cynicmusic** (cynicmusic.com / pixelsphere.org), CC0, https://opengameart.org/content/town-theme-rpg
+  - `inn-old-tower.mp3` — "Medieval: The Old Tower Inn" by **RandomMind**, CC0, https://opengameart.org/content/medieval-the-old-tower-inn
+  - `cave-theme.ogg` — "Cave Theme" by **Brandon Morris** (Brandon75689), CC0 (dual-listed OGA-BY 3.0 / CC0), https://opengameart.org/content/cave-theme
+  - `battle-theme-a.mp3` — "Battle Theme A" by **cynicmusic** (cynicmusic.com / pixelsphere.org), CC0, https://opengameart.org/content/battle-theme-a
+- Registered in `src/assets/cc0AudioAssets.ts` (자동으로 리소스 프로필/에디터 피커에 노출된다).
+- Notes: "8-bit Music Pack (Loopable)" by CodeManu 는 **CC-BY 3.0 이라 채택하지 않았다**.
+  "Boss Battle Music" (SubspaceAudio, CC0) 는 CC0 지만 원본이 21.8MB WAV 이고 이 환경에 ffmpeg 가
+  없어 트랜스코딩할 수 없어 보류했다 — 보스 곡은 아직 비어 있다.
