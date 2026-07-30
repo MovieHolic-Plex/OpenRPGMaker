@@ -6,13 +6,13 @@
 import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import {
   nextSuggestedRegionCommands,
   regionCommandCategories,
   SUGGESTED_REGION_COMMANDS,
   type SuggestedRegionCommand,
 } from "@/editor/regionTask/suggestedCommands";
+import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
 import { formatRegionTileStatsCompact, summarizeRegionTiles } from "@/editor/regionTask/regionTileStats";
 import {
@@ -33,6 +33,7 @@ import {
 } from "@/editor/regionTask/recentInstructions";
 import {
   describeRegionTaskResult,
+  REGION_TASK_MAX_TOOL_CALLS,
   runRegionTask,
   serializeRegionTaskLog,
   type RegionTaskLogExport,
@@ -58,6 +59,7 @@ type RegionTaskRunner = (opts: {
   mapId: MapId;
   region: RegionRect;
   instruction: string;
+  signal?: AbortSignal;
   onEvent?: (event: SessionEvent) => void;
 }) => Promise<RegionTaskResult>;
 
@@ -264,6 +266,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     attrs: { type: "button" },
     dataset: { testid: "region-task-run" },
   }) as HTMLButtonElement;
+  const cancelButton = el("button", {
+    class: "region-task-cancel",
+    text: "중단",
+    attrs: { type: "button", title: "현재 작업을 중단하고 초안을 버립니다" },
+    dataset: { testid: "region-task-cancel" },
+  }) as HTMLButtonElement;
   const directPresetSelect = el("select", {
     class: "region-task-direct-select",
     attrs: { "aria-label": "실내 초안 종류", title: "AI 없이 만들 실내 구조" },
@@ -353,12 +361,44 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   });
 
   let activePending: PendingRegionApply | null = null;
-  // renderPendingCompare가 건 subscribePendingRegionApply 구독의 해제 함수 — 모달 스코프에
-  // 저장해 activeModalCleanup(모달 교체/닫기 시)이 정확히 1회 해제할 수 있게 한다.
   let pendingUnsubscribe: (() => void) | null = null;
-  // windowNode 생성 후 할당 — 로그/비교 UI 성장 시 뷰포트 재클램프.
   let schedulePopoverReposition: () => void = () => undefined;
+  type ActiveExecution = {
+    readonly id: number;
+    readonly controller: AbortController;
+    elapsedTimer: ReturnType<typeof setInterval> | null;
+  };
+  let disposed = false;
+  let running = false;
+  let executionGeneration = 0;
+  let activeExecution: ActiveExecution | null = null;
+  const clearExecutionTimer = (execution: ActiveExecution | null): void => {
+    if (!execution?.elapsedTimer) return;
+    clearInterval(execution.elapsedTimer);
+    execution.elapsedTimer = null;
+  };
+  const invalidateExecution = (abort: boolean): void => {
+    const execution = activeExecution;
+    executionGeneration += 1;
+    activeExecution = null;
+    running = false;
+    clearExecutionTimer(execution);
+    if (abort && execution && !execution.controller.signal.aborted) execution.controller.abort();
+  };
+  // id 생략 = AI 실행 세대에 속하지 않는 경로(직접 실내 초안/헤드리스). 이때는 모달이
+  // 살아 있는지만 본다. id 를 준 경로는 그 세대가 아직 현재이고 abort 되지 않았는지까지 본다.
+  const isCurrentExecution = (id?: number): boolean =>
+    !disposed && (id === undefined || (activeExecution?.id === id && !activeExecution.controller.signal.aborted));
+  const releaseExecution = (id?: number): void => {
+    if (id !== undefined && activeExecution?.id !== id) return;
+    clearExecutionTimer(activeExecution);
+    activeExecution = null;
+    running = false;
+  };
   activeModalCleanup = (): void => {
+    disposed = true;
+    // 신호/세대를 먼저 끊어 late result와 pending subscriber가 DOM을 만지지 못하게 한다.
+    invalidateExecution(true);
     pendingUnsubscribe?.();
     pendingUnsubscribe = null;
     if (activePending && !activePending.settled) activePending.discard();
@@ -367,6 +407,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   // applied: true=적용, false=버리기, null=외부(캔버스 인라인 툴바 등)에서 settle되어 결과를 알 수 없음.
   const settlePendingUi = (applied: boolean | null): void => {
+    if (disposed) return;
+    releaseExecution();
     const appliedSummary = `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`;
     setSummary(
       applied === true
@@ -401,7 +443,8 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     schedulePopoverReposition();
   };
 
-  const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
+  const renderPendingCompare = async (pending: PendingRegionApply, executionId?: number): Promise<void> => {
+    if (!isCurrentExecution(executionId)) return;
     activePending = pending;
     pendingUnsubscribe?.();
     pendingUnsubscribe = null;
@@ -417,7 +460,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       settlePendingUi(applied);
     };
     pendingUnsubscribe = subscribePendingRegionApply(() => {
-      if (selfSettling || !pending.settled) return;
+      if (!isCurrentExecution(executionId) || selfSettling || !pending.settled) return;
       finalizeSettle(null);
     });
 
@@ -547,14 +590,18 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       });
     };
     const overlay = changeOverlay();
+    const beforeFigure = await makeFigure("이전", "region-task-before", pending.baseProject, map, null);
+    if (!isCurrentExecution(executionId)) return;
+    const afterFigure = await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap, overlay);
+    if (!isCurrentExecution(executionId)) return;
     figures.append(
-      await makeFigure("이전", "region-task-before", pending.baseProject, map, null),
+      beforeFigure,
       el("span", { class: "region-task-compare-arrow", text: "→" }),
-      await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap, overlay),
+      afterFigure,
     );
     // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
     // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
-    if (pending.settled) return;
+    if (pending.settled || !isCurrentExecution(executionId)) return;
 
     const partialApplyButton = el("button", {
       class: "region-task-partial-apply",
@@ -563,6 +610,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: "region-task-partial-apply" },
     }) as HTMLButtonElement;
     partialApplyButton.addEventListener("click", () => {
+      if (!isCurrentExecution(executionId)) return;
       const ids = Array.from(selectedChunkIds);
       if (ids.length === 0) return;
       selfSettling = true;
@@ -593,6 +641,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       attrs: { type: "button" },
       dataset: { testid: "region-task-apply" },
       on: { click: () => {
+        if (!isCurrentExecution(executionId)) return;
         selfSettling = true;
         const outcome = pending.apply();
         if (!outcome.ok) {
@@ -613,6 +662,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       dataset: { testid: "region-task-retry" },
       on: {
         click: () => {
+          if (!isCurrentExecution(executionId)) return;
           selfSettling = true;
           pending.discard();
           finalizeSettle(false);
@@ -626,7 +676,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       text: "✕ 버리기",
       attrs: { type: "button" },
       dataset: { testid: "region-task-discard" },
-      on: { click: () => { selfSettling = true; pending.discard(); finalizeSettle(false); } },
+      on: { click: () => {
+        if (!isCurrentExecution(executionId)) return;
+        selfSettling = true;
+        pending.discard();
+        finalizeSettle(false);
+      } },
     });
 
     // 청크 트리 — 각 청크 체크박스. 토글 시 부분 적용 버튼 라벨/활성 갱신.
@@ -1020,7 +1075,6 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     schedulePopoverReposition();
   };
 
-  let running = false;
   let lastRunMode: "ai" | "direct" = "ai";
   let lastLog: RegionTaskLogExport | undefined;
   // 복사 버튼 라벨 — 실행 후에는 툴 호출 수를 함께 보여 준다("복사됨" 후 여기로 되돌린다).
@@ -1081,14 +1135,30 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       textarea.focus();
       return;
     }
+    // 검토 중 단축키로 다시 실행하는 기존 흐름도 한 소유자만 남도록 먼저 해소한다.
+    if (activePending && !activePending.settled) activePending.discard();
+    if (activeExecution) invalidateExecution(true);
+
+    const executionId = ++executionGeneration;
+    const controller = new AbortController();
+    const execution: ActiveExecution = { id: executionId, controller, elapsedTimer: null };
+    activeExecution = execution;
     running = true;
     lastRunMode = "ai";
+    const startedAt = Date.now();
+    let progressMilestone = "영역을 살펴보는 중";
     // 스트리밍으로 이미 찍은 어시스턴트 문단을 결과에서 또 찍지 않기 위한 플래그.
     let sawAssistantMessage = false;
     let toolCount = 0;
     let hadError = false;
+    const renderProgress = (): void => {
+      if (!isCurrentExecution(executionId)) return;
+      const elapsedSeconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
+      const toolProgress = toolCount > 0 ? ` · 도구 ${toolCount}/${REGION_TASK_MAX_TOOL_CALLS}` : "";
+      setSummary(`${progressMilestone}${toolProgress} · ${elapsedSeconds}초`);
+    };
+
     setStage("running");
-    dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
     runButton.disabled = true;
     directRoomButton.disabled = true;
     directPresetSelect.disabled = true;
@@ -1101,10 +1171,12 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     lastLog = undefined;
     log.replaceChildren();
     progressTimeline.replaceChildren(el("span", { class: "is-active", text: "1. 초안 생성" }));
-    setSummary("AI가 이 영역을 작업 중…");
+    renderProgress();
+    execution.elapsedTimer = setInterval(renderProgress, 1000);
     appendLog(`지시: ${instruction}`);
     appendLog(`영역: (${region.x},${region.y}) ${region.width}×${region.height}`);
     const onEvent = (event: SessionEvent): void => {
+      if (!isCurrentExecution(executionId)) return;
       if (event.type === "status") appendLog(event.text);
       else if (event.type === "tool_call") {
         const ok = event.result.ok ? "✓" : "✗";
@@ -1117,22 +1189,44 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         toolCount += 1;
         progressTimeline.append(el("span", { text: `${toolCount + 1}. ${event.name}` }));
         while (progressTimeline.childNodes.length > 6) progressTimeline.firstChild?.remove();
-        // 진행 중 피드백 — 로그를 펼치지 않아도 "멈춘 게 아니다"가 보이게.
-        setSummary(`AI가 이 영역을 작업 중… (${toolCount}단계)`);
+        progressMilestone = "변경안을 만드는 중";
+        renderProgress();
       } else if (event.type === "assistant_message") {
         sawAssistantMessage = true;
+        progressMilestone = "결과를 정리하는 중";
         appendLog(event.content.slice(0, 280), "region-task-log-line is-assistant");
+        renderProgress();
+      } else if (event.type === "phase") {
+        progressMilestone = event.value === "plan"
+          ? "요청을 이해하는 중"
+          : event.value === "execute"
+            ? "변경안을 만드는 중"
+            : "결과를 확인하는 중";
+        renderProgress();
       }
-      // phase 이벤트는 내부 상태값이라 화면에 찍지 않는다 — 필요하면 「로그」 복사본에 남아 있다.
     };
     try {
-      const result = await run({ mapId: options.mapId, region, instruction, onEvent });
+      const result = await run({
+        mapId: options.mapId,
+        region,
+        instruction,
+        signal: controller.signal,
+        onEvent,
+      });
+      if (!isCurrentExecution(executionId)) {
+        if (result.pending && !result.pending.settled) result.pending.discard();
+        return;
+      }
       setSummary(describeRegionTaskResult(result));
       // F: 성공적 실행 시 지시어를 최근 목록에 기록(자동완성 소스).
       if (result.ok) pushRecentInstruction(instruction);
       if (result.pending && !result.pending.settled) {
         progressTimeline.append(el("span", { class: result.pending.blockers.length ? "is-blocked" : "is-done", text: result.pending.blockers.length ? "검사 차단" : "검사 완료 · 승인 대기" }));
-        await renderPendingCompare(result.pending);
+        progressMilestone = "미리보기를 준비하는 중";
+        renderProgress();
+        await renderPendingCompare(result.pending, executionId);
+        if (!isCurrentExecution(executionId)) return;
+        setSummary(describeRegionTaskResult(result));
       }
       lastLog = result.log;
       if (result.log) {
@@ -1151,12 +1245,16 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         appendLog(result.assistantText.slice(0, 400), "region-task-log-line is-assistant");
       }
     } catch (cause) {
+      if (!isCurrentExecution(executionId)) return;
       hadError = true;
       setSummary(`오류: ${cause instanceof Error ? cause.message : String(cause)}`);
       appendLog(String(cause), "region-task-log-line is-error");
     } finally {
+      if (!isCurrentExecution(executionId)) return;
+      clearExecutionTimer(activeExecution);
       running = false;
       if (!activePending) {
+        releaseExecution(executionId);
         setStage("compose");
         runButton.disabled = false;
         directRoomButton.disabled = false;
@@ -1168,6 +1266,26 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       if (hadError) setAdvancedOpen(true);
       schedulePopoverReposition();
     }
+  };
+
+  const cancelCurrentExecution = (): void => {
+    if (!running || !activeExecution) return;
+    // 먼저 세대와 신호를 끊어 abort를 무시하는 세션이 나중에 resolve해도 UI를 건드리지 못하게 한다.
+    invalidateExecution(true);
+    pendingUnsubscribe?.();
+    pendingUnsubscribe = null;
+    if (activePending && !activePending.settled) activePending.discard();
+    activePending = null;
+    compareHost.replaceChildren();
+    partialHost.replaceChildren();
+    partialHost.classList.add("hidden");
+    setStage("compose");
+    runButton.disabled = false;
+    textarea.disabled = false;
+    setSummary("작업을 중단했습니다 — 맵은 변경되지 않았습니다.");
+    appendLog("사용자가 작업을 중단했습니다.");
+    schedulePopoverReposition();
+    textarea.focus();
   };
 
   const executeDirectRoom = async (): Promise<void> => {
@@ -1239,6 +1357,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   };
 
   runButton.addEventListener("click", () => void execute());
+  cancelButton.addEventListener("click", cancelCurrentExecution);
   directRoomButton.addEventListener("click", () => void executeDirectRoom());
   copyLogButton.addEventListener("click", () => void copyLastLog());
   textarea.addEventListener("keydown", (event) => {
@@ -1372,7 +1491,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   // ① 무엇을 만들지 — 추천 칩을 입력창 위에 둔다(먼저 고르고, 아니면 직접 쓴다).
   const actions = el("div", {
     class: "region-task-actions",
-    children: [directPresetSelect, directModifierSelect, directRoomButton, runButton],
+    children: [directPresetSelect, directModifierSelect, directRoomButton, runButton, cancelButton],
   });
   const promptSection = el("div", {
     class: "region-task-prompt",

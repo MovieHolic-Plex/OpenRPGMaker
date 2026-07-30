@@ -194,6 +194,26 @@
   opacity: 0.6;
 }
 
+.region-task-cancel {
+  background: transparent;
+  border: 1px solid var(--editor-line-strong, #6b7280);
+  border-radius: var(--radius-s);
+  color: var(--editor-text, #d1d5db);
+  cursor: pointer;
+  display: none;
+  font: inherit;
+  font-weight: 600;
+  padding: var(--space-2) var(--space-4);
+}
+.region-task-cancel:hover,
+.region-task-cancel:focus-visible {
+  border-color: var(--danger, #f87171);
+  color: var(--danger, #f87171);
+  outline: none;
+}
+.region-task-modal[data-stage="running"] .region-task-run { display: none; }
+.region-task-modal[data-stage="running"] .region-task-cancel { display: inline-flex; }
+
 .region-task-direct-room {
   background: color-mix(in srgb, var(--editor-panel, #18202b) 72%, var(--accent, #4a9eff));
   border: 1px solid var(--accent-border, #4a9eff);
@@ -283,7 +303,7 @@
 .region-task-modal[data-stage="review"] .region-task-prompt { display: none; }
 .region-task-modal[data-stage="compose"] .region-task-recap,
 .region-task-modal[data-stage="running"] .region-task-recap { display: none; }
-.region-task-modal[data-stage="running"] .region-task-actions { opacity: 0.5; }
+.region-task-modal[data-stage="running"] .region-task-actions { justify-content: flex-start; }
 
 /* 검토 단계 지시 요약 — 한 줄, 넘치면 말줄임 */
 .region-task-recap {

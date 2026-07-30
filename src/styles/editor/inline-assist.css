@@ -112,6 +112,22 @@
   top: -34px;
 }
 
+.ghost-inline-approval.is-canvas-first {
+  background: color-mix(in srgb, var(--control-bg, #1a2236) 96%, var(--editor-blue, #3d6df0));
+  border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 70%, #fff);
+  max-width: min(520px, calc(100vw - 24px));
+}
+
+.ghost-inline-summary {
+  color: var(--editor-text-muted, #9aa8c7);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  max-width: 180px;
+  overflow: hidden;
+  padding: 0 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .ghost-inline-btn {
   background: transparent;
   border: 1px solid transparent;

@@ -26,6 +26,7 @@
 }
 
 .ai-rising-overlay .ai-chat-log,
+.ai-rising-overlay .ai-completion-strip,
 .ai-rising-overlay .ai-proposal-pill,
 .ai-rising-overlay .ai-proposal-notice-host > *,
 .ai-rising-overlay .ai-proposal-host > * {
@@ -107,6 +108,60 @@
 .ai-rising-sticky-zone {
   max-height: min(38vh, 420px);
   overflow-y: auto;
+}
+
+.ai-completion-host:empty {
+  display: none;
+}
+
+.ai-completion-strip {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-panel, #12141c) 94%, var(--accent, #7aa2ff) 6%);
+  border: 1px solid color-mix(in srgb, var(--accent, #7aa2ff) 42%, transparent);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 9px 10px;
+}
+
+.ai-completion-summary {
+  flex: 1 1 180px;
+  font-size: 12px;
+  font-weight: 650;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-completion-action {
+  background: color-mix(in srgb, var(--bg-inset, #0d0f16) 82%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-radius: 999px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 9px;
+  white-space: nowrap;
+}
+
+.ai-completion-action:hover:not(:disabled),
+.ai-completion-action:focus-visible {
+  border-color: color-mix(in srgb, var(--accent, #7aa2ff) 70%, transparent);
+  outline: none;
+}
+
+.ai-completion-action:disabled {
+  cursor: default;
+  opacity: 0.42;
+}
+
+.ai-chat-panel.chat-dock-side .ai-completion-strip {
+  box-shadow: none;
 }
 
 /* 최소화 pill — 승인 대기를 잃지 않는 재진입점. */
