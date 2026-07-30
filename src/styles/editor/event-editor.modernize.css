@@ -432,6 +432,114 @@
   padding: 10px 12px 12px;
 }
 
+.event-script-preview-disclaimer {
+  background: color-mix(in srgb, var(--status-warning, #f59e0b) 10%, var(--surface-recessed, var(--bg-raised)));
+  border: 1px solid color-mix(in srgb, var(--status-warning, #f59e0b) 42%, var(--border-soft, var(--border-subtle)));
+  border-radius: 6px;
+  color: var(--text-2);
+  font: 600 11px/1.45 var(--font-ui);
+  padding: 7px 9px;
+}
+
+.event-command-empty-experience {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.event-command-empty-copy {
+  display: grid;
+  gap: 3px;
+}
+
+.event-command-template-actions {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.event-command-template-button {
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+
+.event-command-template-button:hover,
+.event-command-template-button:focus-visible {
+  border-color: var(--accent, var(--accent-border));
+}
+
+.event-draft-validation {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  margin: 0 8px 8px;
+}
+
+.event-draft-validation.has-errors { border-color: color-mix(in srgb, var(--danger, #ef4444) 62%, var(--border-soft)); }
+.event-draft-validation.has-warnings { border-color: color-mix(in srgb, var(--status-warning, #f59e0b) 52%, var(--border-soft)); }
+
+.event-draft-validation-summary {
+  cursor: pointer;
+  font: 700 11px/1.4 var(--font-ui);
+  padding: 7px 10px;
+}
+
+.event-draft-validation-issues {
+  display: grid;
+  gap: 4px;
+  max-height: 142px;
+  overflow: auto;
+  padding: 0 8px 8px;
+}
+
+.event-draft-validation-issue {
+  align-items: start;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: grid;
+  font: 500 11px/1.4 var(--font-ui);
+  gap: 7px;
+  grid-template-columns: 34px 1fr;
+  padding: 5px 6px;
+  text-align: left;
+}
+
+.event-draft-validation-issue:hover,
+.event-draft-validation-issue:focus-visible { background: var(--bg-hover); }
+.event-draft-validation-issue.error .event-draft-validation-severity { color: var(--danger, #ef4444); }
+.event-draft-validation-issue.warning .event-draft-validation-severity { color: var(--status-warning, #f59e0b); }
+.event-draft-validation-issue.info .event-draft-validation-severity { color: var(--accent, #3b82f6); }
+
+.event-command-issue-badge,
+.event-page-validation-badge {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  font: 800 9px/13px var(--font-ui);
+  min-width: 17px;
+  padding: 0 3px;
+  text-align: center;
+}
+
+.event-command-issue-badge.error,
+.event-page-validation-badge.error { color: var(--danger, #ef4444); }
+.event-command-issue-badge.warning,
+.event-page-validation-badge.warning { color: var(--status-warning, #f59e0b); }
+.event-command-issue-badge.info { color: var(--accent, #3b82f6); }
+.event-page-validation-badge::before { content: attr(data-label); }
+.event-page-validation-badge.hidden { display: none; }
+
+@media (max-width: 900px) {
+  .event-command-template-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .event-script-live-controls {
   align-items: center;
   display: flex;
@@ -945,4 +1053,61 @@
   color: var(--text-3, var(--text-muted));
   font: 400 10px/12px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   white-space: nowrap;
+}
+
+
+/* ---- Draft validation repair surfaces: event coordinates and tool-authored schedules ---- */
+.event-editor-id-row,
+.event-position-controls,
+.event-position-controls label,
+.event-schedule-row,
+.event-schedule-label {
+  align-items: center;
+  display: flex;
+}
+
+.event-editor-id-row {
+  gap: 10px;
+}
+
+.event-position-controls,
+.event-position-controls label,
+.event-schedule-row,
+.event-schedule-label {
+  gap: 5px;
+}
+
+.event-position-input {
+  width: 58px;
+}
+
+.event-schedule-editor {
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.event-schedule-summary {
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.event-schedule-rows {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+}
+
+.event-schedule-row {
+  flex-wrap: wrap;
+}
+
+.event-schedule-row select,
+.event-schedule-row input[type="text"] {
+  max-width: 150px;
+}
+
+.event-schedule-row input[type="number"] {
+  width: 58px;
 }

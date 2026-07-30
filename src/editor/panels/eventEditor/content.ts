@@ -1,4 +1,15 @@
 import { editorState } from "@/editor/editorState";
+import { moveEvent } from "@/editor/eventActions";
+import {
+  buildEventBeginnerTemplate,
+  type EventBeginnerTemplateId,
+} from "@/editor/eventBeginnerTemplates";
+import {
+  eventDraftIssuesForPage,
+  validateEventDraftBody,
+  type EventDraftIssue,
+  type EventDraftValidation,
+} from "@/editor/eventDraftValidator";
 import {
   addEventPageCommand,
   addEventPageCommandAt,
@@ -13,11 +24,13 @@ import {
 } from "@/editor/eventPages";
 import { eventDraftDiffById, type EventDiff } from "@/project/eventDrafts";
 import { store } from "@/project/store";
-import type { Command, EventPage, MapId } from "@/project/types";
+import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
+import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
@@ -107,6 +120,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     return;
   }
 
+  const validation = validateEventDraftBody(store.getCurrent(), mapId, ev);
+  const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
   const commandHistory = createCommandToolbarHistory({
     key: `${mapId}:${ev.id}:${activePage.id}`,
     readCommands: () => activePageCommands(mapId, ev.id, activePage.id),
@@ -126,9 +141,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-editor-column-resizer" },
   });
   const cmdList = el("div", { class: "cmd-list" });
-  renderCommandList(cmdList, activePage.commands, [], actions);
+  renderCommandList(cmdList, activePage.commands, [], actions, { issues: activePageIssues });
   cmdList.querySelector(".empty-hint")?.remove();
-  cmdList.append(renderEmptyCommandLine(actions));
+  cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id));
   cmdList.addEventListener("dblclick", (event) => {
     if (event.target === cmdList) {
       cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -137,16 +152,20 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
-  // NPC schedule 은 RM2003 이벤트 창에 없는 모던 데이터 — 에디터 UI에 노출하지 않는다
-  // (set_npc_schedule / make_villager 툴·project JSON 으로만 유지).
+  // Tool-authored NPC schedules stay compact, but existing rows are editable so
+  // aggregate validation can navigate to and repair their map/coordinate errors.
   const socialExtras = renderEventCharacterSocialExtras(mapId, ev);
+  const scheduleEditor = renderEventScheduleEditor(mapId, ev);
+  const settingsChildren = [
+    socialExtras,
+    scheduleEditor,
+    renderEventPageProps(mapId, ev.id, activePage, ev),
+  ].filter((node): node is HTMLElement => node !== null);
   const settingsMain = el("div", {
     class: "event-editor-settings-main",
-    children: socialExtras
-      ? [socialExtras, renderEventPageProps(mapId, ev.id, activePage, ev)]
-      : [renderEventPageProps(mapId, ev.id, activePage, ev)],
+    children: settingsChildren,
   });
-  settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage), settingsMain);
+  settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage, validation), settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
@@ -191,9 +210,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }),
     el("div", {
       class: "event-editor-id-row",
-      text: `ID ${displayEventNumber(mapId, eventId)} (${ev.x}, ${ev.y})`,
+      dataset: { testid: "event-editor-id-row" },
+      children: [
+        el("span", { text: `ID ${displayEventNumber(mapId, eventId)}` }),
+        renderEventPositionControls(mapId, ev),
+      ],
     }),
     renderEventDiffSummary(mapId, eventId),
+    renderEventValidationSummary(validation),
     workbench
   );
   container.append(section);
@@ -365,23 +389,16 @@ function activePageCommands(mapId: MapId, eventId: string, pageId: string): Comm
     ?.commands ?? [];
 }
 
-function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {
-  const openPicker = () => {
-    if (document.querySelector('[data-testid="event-command-picker"]')) return;
-    openEventCommandPicker({
-      title: "이벤트 명령",
-      onSelect: (command, closePicker) => {
-        openNewEventCommandDialog(command, (editedCommand) => {
-          actions.addCommand([], editedCommand);
-          closePicker();
-        });
-        return { closePicker: false };
-      },
-    });
-  };
-  return el("button", {
+function renderEmptyCommandLine(
+  actions: CommandListActions,
+  showBeginnerTemplates: boolean,
+  mapId: MapId,
+  eventId: string,
+): HTMLElement {
+  const openPicker = () => openCommandPickerForActions(actions);
+  const line = el("button", {
     class: "cmd-empty-line",
-    text: "◆",
+    text: "◆ 명령 추가 / 검색",
     attrs: { type: "button", title: "더블클릭해서 이벤트 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {
@@ -393,6 +410,197 @@ function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {
         }
       },
     },
+  });
+  if (!showBeginnerTemplates) return line;
+
+  const templates: readonly {
+    readonly label: string;
+    readonly templateId?: EventBeginnerTemplateId;
+    readonly testId: string;
+  }[] = [
+    { label: "대사하는 NPC", templateId: "talking-npc", testId: "event-template-talking-npc" },
+    { label: "보물상자", templateId: "treasure-chest", testId: "event-template-treasure-chest" },
+    { label: "문/맵 이동", templateId: "transfer", testId: "event-template-transfer" },
+    { label: "상점", templateId: "shop", testId: "event-template-shop" },
+    { label: "전투 시작", templateId: "battle", testId: "event-template-battle" },
+    { label: "빈 이벤트 / 명령 검색", testId: "event-template-empty-search" },
+  ];
+  return el("div", {
+    class: "event-command-empty-experience",
+    dataset: { testid: "event-command-empty-experience" },
+    children: [
+      el("div", {
+        class: "event-command-empty-copy",
+        children: [
+          el("strong", { text: "이 이벤트는 아직 비어 있습니다." }),
+          el("span", { text: "시작 유형을 고르거나 명령 검색으로 직접 구성하세요." }),
+        ],
+      }),
+      el("div", {
+        class: "event-command-template-actions",
+        children: templates.map((template) => el("button", {
+          class: "event-command-template-button",
+          text: template.label,
+          attrs: { type: "button" },
+          dataset: { testid: template.testId },
+          on: {
+            click: () => {
+              if (!template.templateId) {
+                openPicker();
+                return;
+              }
+              const result = buildEventBeginnerTemplate(store.getCurrent(), mapId, eventId, template.templateId);
+              if (!result.command) {
+                toast(result.unavailableReason, "error");
+                return;
+              }
+              openNewEventCommandDialog(result.command, (command) => actions.addCommand([], command));
+            },
+          },
+        })),
+      }),
+      line,
+    ],
+  });
+}
+
+function openCommandPickerForActions(actions: CommandListActions): void {
+  if (document.querySelector('[data-testid="event-command-picker"]')) return;
+  openEventCommandPicker({
+    title: "이벤트 명령",
+    onSelect: (command, closePicker) => {
+      openNewEventCommandDialog(command, (editedCommand) => {
+        actions.addCommand([], editedCommand);
+        closePicker();
+      });
+      return { closePicker: false };
+    },
+  });
+}
+
+export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boolean {
+  const pageId = activePageIdOf(mapId, eventId);
+  if (!pageId || document.querySelector('[data-testid="event-command-picker"]')) return false;
+  openEventCommandPicker({
+    title: "이벤트 명령",
+    onSelect: (command, closePicker) => {
+      openNewEventCommandDialog(command, (editedCommand) => {
+        addEventPageCommand(mapId, eventId, pageId, editedCommand);
+        closePicker();
+      });
+      return { closePicker: false };
+    },
+  });
+  return true;
+}
+
+function renderEventValidationSummary(validation: EventDraftValidation): HTMLElement {
+  const details = el("details", {
+    class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " is-clear"}`,
+    dataset: { testid: "event-draft-validation" },
+  }) as HTMLDetailsElement;
+  details.open = validation.errorCount > 0;
+  details.append(el("summary", {
+    class: "event-draft-validation-summary",
+    dataset: { testid: "event-draft-validation-summary" },
+    text: `검사 · 오류 ${validation.errorCount} · 경고 ${validation.warningCount} · 안내 ${validation.infoCount}`,
+  }));
+  if (validation.issues.length === 0) {
+    details.append(el("div", { class: "event-draft-validation-clear", text: "현재 발견된 문제가 없습니다." }));
+    return details;
+  }
+  details.append(el("div", {
+    class: "event-draft-validation-issues",
+    children: validation.issues.map((issue, index) => el("button", {
+      class: `event-draft-validation-issue ${issue.severity}`,
+      attrs: { type: "button" },
+      dataset: {
+        testid: `event-draft-validation-issue-${index}`,
+        issueCode: issue.code,
+        severity: issue.severity,
+      },
+      children: [
+        el("span", { class: "event-draft-validation-severity", text: validationSeverityLabel(issue.severity) }),
+        el("span", { class: "event-draft-validation-message", text: issue.message }),
+      ],
+      on: { click: () => navigateToEventDraftIssue(issue) },
+    })),
+  }));
+  return details;
+}
+
+export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
+  if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });
+  const focusIssue = (): void => {
+    const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+    const root = modal ?? document.body;
+    let target: HTMLElement | null = null;
+    if (issue.commandPath) {
+      const encoded = JSON.stringify(issue.commandPath);
+      target = Array.from(root.querySelectorAll<HTMLElement>(".cmd-item"))
+        .find((candidate) => candidate.dataset.cmdPath === encoded) ?? null;
+      if (target) {
+        root.querySelectorAll(".cmd-item.selected").forEach((node) => node.classList.remove("selected"));
+        target.classList.add("selected");
+        target = target.querySelector<HTMLElement>(".cmd-head") ?? target;
+      }
+    }
+    if (!target && issue.field) {
+      target = root.querySelector<HTMLElement>(`[data-testid="${issue.field.testId}"]`);
+    }
+    if (!target) return;
+    for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
+      if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
+    }
+    if (target.getAttribute("tabindex") === null && !/^(BUTTON|INPUT|SELECT|TEXTAREA)$/u.test(target.tagName)) {
+      target.setAttribute("tabindex", "-1");
+    }
+    target.focus({ preventScroll: true });
+    target.scrollIntoView?.({ block: "center", inline: "nearest" });
+  };
+  focusIssue();
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(focusIssue);
+  }
+}
+
+function validationSeverityLabel(severity: EventDraftIssue["severity"]): string {
+  if (severity === "error") return "오류";
+  if (severity === "warning") return "경고";
+  return "안내";
+}
+
+function renderEventPositionControls(mapId: MapId, event: GameEvent): HTMLElement {
+  const map = store.getCurrent().maps[mapId];
+  const coordinateInput = (axis: "x" | "y", value: number): HTMLInputElement => el("input", {
+    class: "event-position-input",
+    attrs: {
+      type: "number",
+      value: String(value),
+      step: "1",
+      min: "0",
+      max: String(Math.max(0, (axis === "x" ? map?.width : map?.height) ?? 1) - 1),
+      "aria-label": `이벤트 ${axis.toUpperCase()} 좌표`,
+    },
+    dataset: { testid: `event-position-${axis}` },
+  }) as HTMLInputElement;
+  const x = coordinateInput("x", event.x);
+  const y = coordinateInput("y", event.y);
+  const apply = (): void => {
+    const nextX = Number(x.value);
+    const nextY = Number(y.value);
+    if (!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
+    moveEvent(mapId, event.id, Math.trunc(nextX), Math.trunc(nextY));
+  };
+  x.addEventListener("change", apply);
+  y.addEventListener("change", apply);
+  return el("span", {
+    class: "event-position-controls",
+    dataset: { testid: "event-position-controls" },
+    children: [
+      el("label", { children: [el("span", { text: "X" }), x] }),
+      el("label", { children: [el("span", { text: "Y" }), y] }),
+    ],
   });
 }
 

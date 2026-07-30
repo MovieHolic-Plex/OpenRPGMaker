@@ -30,17 +30,31 @@ export function eventWithoutDraft(event: GameEvent): PersistedGameEvent {
 }
 
 /**
- * Events as they should survive autosave/export.
- * Editor draft metadata is stripped, but the **working body** of open drafts is kept
- * so mid-edit work is durable (new + edit). Cancel still uses in-memory `draft` meta
- * / vault to discard or restore originals within the session.
+ * Events at the explicit Apply/OK commit boundary.
+ *
+ * Open new drafts do not exist in canonical project data yet. Open edit drafts
+ * contribute their pre-edit original, never the working body. The working body
+ * remains available to the editor through the live project and local draft vault.
  */
 export function committedEvents(events: readonly GameEvent[]): GameEvent[] {
   const committed: GameEvent[] = [];
   for (const event of events) {
-    committed.push(eventWithoutDraft(structuredClone(event)));
+    if (event.draft?.kind === "new") continue;
+    if (event.draft?.kind === "edit") {
+      if (event.draft.original) committed.push(structuredClone(event.draft.original));
+      continue;
+    }
+    committed.push(eventWithoutDraft(event));
   }
   return committed;
+}
+
+/**
+ * Working events shown by editor-only surfaces. Draft metadata is hidden from
+ * consumers, while the current working body stays visible in the live session.
+ */
+export function editorWorkingEvents(events: readonly GameEvent[]): GameEvent[] {
+  return events.map((event) => eventWithoutDraft(event));
 }
 
 export function mapWithCommittedEvents(map: GameMap): GameMap {
@@ -58,9 +72,10 @@ export function projectWithoutEventDrafts(project: Project): Project {
 }
 
 /**
- * Re-apply in-memory event editor drafts onto a draft-free saved project.
- * Autosave strips draft *metadata* but keeps working bodies; this restores
- * `draft.kind` / `draft.original` so Cancel still works after a remote merge.
+ * Re-apply in-memory event editor drafts onto a canonical saved project.
+ * Canonical persistence omits new drafts and keeps edit originals; this restores
+ * the local working body plus draft metadata so the session and Cancel survive
+ * a remote merge/reload.
  */
 export function projectWithPreservedEventDrafts(saved: Project, live: Project): Project {
   const next = structuredClone(saved);

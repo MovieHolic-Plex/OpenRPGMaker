@@ -2,7 +2,7 @@ import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
 import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
-import { committedEvents } from "@/project/eventDrafts";
+import { editorWorkingEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 
@@ -75,7 +75,7 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
   const project = store.getCurrent();
   const state = editorState.get();
   const selectedId = state.selectedEventId;
-  for (const event of committedEvents(map.events)) {
+  for (const event of editorWorkingEvents(map.events)) {
     const cx = event.x * TILE_SIZE + TILE_SIZE / 2;
     const cy = event.y * TILE_SIZE + TILE_SIZE / 2;
     const position = { x: cx, y: cy };

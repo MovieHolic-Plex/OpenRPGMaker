@@ -1,0 +1,140 @@
+import { expect, test, type Page } from "@playwright/test";
+import { createBlankProject } from "@/project/defaults";
+import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+
+test.setTimeout(60_000);
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    window.localStorage.setItem("rpg-zzu-editor-session-id", "e2e-event-editor-trust-loop");
+  });
+});
+
+test("event editor draft, validation, picker, and runtime test form one trustworthy loop", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const project = createBlankProject();
+  await seedProjectFromSupabaseCanonical(page, project, "/?freshProject=1");
+  const ids = await openNewEventEditor(page, project.startMapId);
+  const editor = page.getByTestId("event-editor-modal");
+
+  await expect(editor).toBeVisible();
+  await expect(editor.getByTestId("event-command-empty-experience")).toBeVisible();
+  for (const testId of [
+    "event-template-talking-npc",
+    "event-template-treasure-chest",
+    "event-template-transfer",
+    "event-template-shop",
+    "event-template-battle",
+    "event-template-empty-search",
+  ]) {
+    await expect(editor.getByTestId(testId), testId).toBeVisible();
+  }
+  await expect(editor.getByTestId("event-editor-draft-status")).toContainText("로컬 복구");
+  await expect(editor.getByTestId("event-editor-remote-status")).toContainText("원격 저장");
+
+  await editor.getByTestId("event-template-transfer").click();
+  await expect(page.getByTestId("event-transfer-player-dialog")).toBeVisible();
+  await page.getByTestId("event-command-edit-cancel").click();
+
+  await editor.getByTestId("event-template-shop").click();
+  await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();
+  await expect(page.getByTestId("shop-selected-items").locator("option")).not.toHaveCount(0);
+  await page.getByTestId("event-command-edit-cancel").click();
+
+  await editor.getByTestId("event-template-battle").click();
+  await expect(page.getByTestId("event-command-edit-dialog")).toBeVisible();
+  await expect(page.getByTestId("battle-processing-troop-select")).not.toHaveValue("");
+  await page.getByTestId("event-command-edit-cancel").click();
+
+  await editor.getByTestId("event-template-talking-npc").click();
+  const textBody = page.getByTestId("event-command-text-body");
+  await expect(textBody).toHaveValue("안녕하세요.");
+  await textBody.fill("브라우저 신뢰 루프");
+  await page.getByTestId("event-command-edit-ok").click();
+  await expect(editor.getByTestId("event-command-text")).toBeVisible();
+  expect(await eventDraftExists(page, ids)).toBe(true);
+
+  await page.keyboard.press("Control+K");
+  const picker = page.getByTestId("event-command-picker");
+  await expect(picker).toBeVisible();
+  const pickerSearch = picker.getByTestId("event-command-picker-search");
+  await expect(pickerSearch).toBeFocused();
+  await page.keyboard.type("대기");
+  await expect(pickerSearch).toHaveValue("대기");
+  await pickerSearch.fill("");
+  const firstTab = picker.getByTestId("event-command-picker-tab-1");
+  const secondTab = picker.getByTestId("event-command-picker-tab-2");
+  await expect(firstTab).toHaveAttribute("tabindex", "0");
+  await expect(secondTab).toHaveAttribute("tabindex", "-1");
+  await firstTab.press("ArrowRight");
+  await expect(secondTab).toHaveAttribute("aria-selected", "true");
+  await expect(secondTab).toHaveAttribute("tabindex", "0");
+  await picker.getByTestId("event-command-picker-cancel").click();
+  expect(await eventDraftExists(page, ids)).toBe(true);
+
+  await editor.getByTestId("event-command-text").locator(".cmd-head").press("Delete");
+  await expect(editor.getByTestId("event-command-empty-experience")).toBeVisible();
+  await editor.getByTestId("event-template-shop").click();
+  const selectedItems = page.getByTestId("shop-selected-items");
+  while (await selectedItems.locator("option").count() > 0) {
+    const itemId = await selectedItems.locator("option").first().getAttribute("value");
+    if (!itemId) throw new Error("expected selected shop item id");
+    await selectedItems.selectOption(itemId);
+    await page.getByTestId("shop-remove-item").click();
+  }
+  await expect(selectedItems.locator("option")).toHaveCount(0);
+  await page.getByTestId("event-command-edit-ok").click();
+  await expect(editor.getByTestId("event-command-shop")).toBeVisible();
+
+  await editor.getByTestId("event-editor-apply").click();
+  await expect(editor).toBeVisible();
+  const issue = editor.locator('[data-issue-code="shop.items.empty"]');
+  await expect(issue).toBeVisible();
+  await issue.click();
+  await expect(editor.getByTestId("event-command-shop")).toHaveClass(/selected/);
+  await page.screenshot({ path: testInfo.outputPath("validation-navigation.png"), fullPage: true });
+
+  await editor.getByTestId("event-command-shop").locator(".cmd-head").press("Delete");
+  await expect(editor.getByTestId("event-command-empty-experience")).toBeVisible();
+  await editor.getByTestId("event-template-talking-npc").click();
+  await textBody.fill("실제 런타임 경로");
+  await page.getByTestId("event-command-edit-ok").click();
+  await expect(editor.getByTestId("event-command-text")).toBeVisible();
+
+  await editor.getByTestId("event-editor-test").click();
+  const testWindow = page.getByTestId("test-play-window");
+  await expect(testWindow).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("test-play-window-title")).toContainText("이벤트 테스트");
+  await expect(page.getByTestId("dialogue-box")).toBeVisible({ timeout: 15_000 });
+  await page.screenshot({ path: testInfo.outputPath("selected-event-runtime.png"), fullPage: true });
+  await page.getByTestId("test-play-window-close").click();
+  await expect(testWindow).toBeHidden();
+  await expect(editor).toBeVisible();
+
+  await editor.getByTestId("event-editor-cancel").click();
+  await expect(editor).toBeHidden();
+  expect(await eventDraftExists(page, ids)).toBe(false);
+});
+
+async function openNewEventEditor(
+  page: Page,
+  mapId: string,
+): Promise<{ readonly mapId: string; readonly eventId: string }> {
+  const eventId = await page.evaluate(async (activeMapId) => {
+    const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
+    return modalModule.openNewEventEditorModal(activeMapId, 3, 3);
+  }, mapId);
+  return { mapId, eventId };
+}
+
+async function eventDraftExists(
+  page: Page,
+  ids: { readonly mapId: string; readonly eventId: string },
+): Promise<boolean> {
+  return await page.evaluate(async ({ mapId, eventId }) => {
+    const { checkpointEventDraft } = await import("/src/editor/eventDraftActions.ts");
+    return checkpointEventDraft(mapId, eventId);
+  }, ids);
+}

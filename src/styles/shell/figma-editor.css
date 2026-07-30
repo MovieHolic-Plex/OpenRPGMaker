@@ -2387,11 +2387,23 @@
   padding: 3px 8px;
 }
 
-.event-editor-draft-status {
+.event-editor-lifecycle-status {
+  display: grid;
+  gap: 2px;
+  margin-right: auto;
+  min-width: 220px;
+}
+
+.event-editor-draft-status,
+.event-editor-remote-status {
   color: var(--text-2);
   font-size: 12px;
-  margin-right: auto;
 }
+
+.event-editor-draft-status[data-state="working"] { color: var(--status-warning, var(--gold)); }
+.event-editor-draft-status[data-state="applied"] { color: var(--status-success, #22c55e); }
+.event-editor-remote-status[data-state="error"] { color: var(--danger, #ef4444); }
+.event-editor-remote-status[data-state="saved"] { color: var(--status-success, #22c55e); }
 
 @media (max-width: 1320px) {
   .map-lock-banner {

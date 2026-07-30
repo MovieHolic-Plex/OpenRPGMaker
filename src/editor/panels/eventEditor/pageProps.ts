@@ -1,3 +1,4 @@
+import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { el } from "@/util/dom";
 import {
   addEventPage,
@@ -97,7 +98,12 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   return wrap;
 }
 
-export function renderClassicPageTabStrip(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
+export function renderClassicPageTabStrip(
+  mapId: MapId,
+  ev: GameEvent,
+  activePage: EventPage,
+  validation?: EventDraftValidation,
+): HTMLElement {
   const pages = ev.pages ?? [];
   const pageButtons = el("div", {
     class: "event-page-number-tabs",
@@ -113,6 +119,7 @@ export function renderClassicPageTabStrip(mapId: MapId, ev: GameEvent, activePag
           pageTabThumbnail(page),
           el("span", { class: "event-page-tab-number", text: String(index + 1) }),
           pageTabConditionBadges(page),
+          pageValidationBadge(page.id, validation),
         ],
         on: { click: () => editorState.set({ selectedEventPageId: page.id }) },
       })
@@ -128,6 +135,24 @@ export function renderClassicPageTabStrip(mapId: MapId, ev: GameEvent, activePag
     })
   );
   return pageButtons;
+}
+
+function pageValidationBadge(pageId: string, validation?: EventDraftValidation): HTMLElement {
+  const issues = validation?.issues.filter((issue) => issue.pageId === pageId) ?? [];
+  const errors = issues.filter((issue) => issue.severity === "error").length;
+  const warnings = issues.filter((issue) => issue.severity === "warning").length;
+  const count = errors + warnings;
+  return el("span", {
+    class: `event-page-validation-badge${errors > 0 ? " error" : warnings > 0 ? " warning" : " hidden"}`,
+    text: "",
+    attrs: { "aria-label": count > 0 ? `페이지 검사 문제 ${count}개` : "페이지 검사 문제 없음" },
+    dataset: {
+      testid: `event-page-validation-badge-${pageId}`,
+      errors: String(errors),
+      warnings: String(warnings),
+      label: errors > 0 ? `!${errors}` : warnings > 0 ? `△${warnings}` : "",
+    },
+  });
 }
 
 const PAGE_TAB_BADGE_LIMIT = 3;
@@ -697,7 +722,7 @@ function collapsibleSection(options: {
 
 function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
   const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
-  const hasGateCondition = page.conditions.some((condition) => condition.kind === "switch" || condition.kind === "variable");
+  const hasGateCondition = hasRecursivePageCondition(page.conditions);
   return el("div", {
     class: "event-page-safety-warning" + (riskyTrigger && !hasGateCondition ? "" : " hidden"),
     text: "조건 없는 자동/병렬 이벤트는 반복 실행될 수 있습니다.",

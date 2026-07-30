@@ -9,7 +9,7 @@ import { selectTileRegion } from "@/editor/mapClipboard";
 import { moveEvent } from "@/editor/eventActions";
 import { tileCellsForPaintShape, tileRectFromDrag, tileRectWithinBounds, type TilePoint } from "@/editor/tileShapeTools";
 import { paintTilesBulk } from "@/editor/actions";
-import { committedEvents } from "@/project/eventDrafts";
+import { editorWorkingEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { toast } from "@/util/toast";
@@ -119,7 +119,7 @@ export class DragOperationHandler {
     if (!map) return;
     const point = this.deps.pointerToTile(ptr);
     if (!isInsideMapPoint(point, map)) return;
-    const existing = committedEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
+    const existing = editorWorkingEvents(map.events).find((event) => event.x === point.x && event.y === point.y);
     if (!existing) return;
     this.eventDragCandidate = { mapId, eventId: existing.id, origin: point };
   }
@@ -208,7 +208,7 @@ export class DragOperationHandler {
       toast(mapEditLockNotice(operation.mapId), "error");
       return;
     }
-    const occupied = committedEvents(map.events).some(
+    const occupied = editorWorkingEvents(map.events).some(
       (event) => event.id !== operation.eventId && event.x === point.x && event.y === point.y
     );
     if (occupied) {

@@ -1,0 +1,924 @@
+import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import {
+  BATTLE_DEFEAT_BRANCH_INDEX,
+  BATTLE_ESCAPE_BRANCH_INDEX,
+  BATTLE_VICTORY_BRANCH_INDEX,
+  CHOICE_CANCEL_BRANCH_INDEX,
+  FORK_ELSE_BRANCH_INDEX,
+  FORK_THEN_BRANCH_INDEX,
+  INN_NOT_ENOUGH_BRANCH_INDEX,
+  LOOP_BODY_BRANCH_INDEX,
+  PROMOTE_FAILURE_BRANCH_INDEX,
+  PROMOTE_SUCCESS_BRANCH_INDEX,
+  SHOP_TRANSACTION_BRANCH_INDEX,
+} from "@/editor/eventCommandPaths";
+import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
+import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
+import type {
+  Command,
+  Condition,
+  EventPage,
+  GameEvent,
+  MapId,
+  MoveRoute,
+  Project,
+} from "@/project/types";
+
+export type EventDraftIssueSeverity = "error" | "warning" | "info";
+
+export type EventDraftFieldLocator = {
+  readonly testId: string;
+};
+
+export type EventDraftIssue = {
+  readonly severity: EventDraftIssueSeverity;
+  /** Stable machine-readable rule id. */
+  readonly code: string;
+  readonly message: string;
+  readonly pageId: string;
+  /** Path uses the same nested branch encoding as rendered command rows. */
+  readonly commandPath?: readonly number[];
+  readonly field?: EventDraftFieldLocator;
+};
+
+export type EventDraftValidation = {
+  readonly issues: readonly EventDraftIssue[];
+  readonly errorCount: number;
+  readonly warningCount: number;
+  readonly infoCount: number;
+  readonly canCommit: boolean;
+};
+
+type ReferenceSets = ReturnType<typeof referenceSets>;
+type M2CatalogEntry = NonNullable<ReturnType<typeof m2CommandById>>;
+
+type CommandVisit = {
+  readonly command: Command;
+  readonly path: readonly number[];
+};
+
+export function validateEventDraft(
+  project: Project,
+  mapId: MapId,
+  eventId: string,
+): EventDraftValidation {
+  const event = project.maps[mapId]?.events.find((entry) => entry.id === eventId);
+  if (!event) {
+    return validationFromIssues([{
+      severity: "error",
+      code: "event.missing",
+      message: "검사할 이벤트를 찾을 수 없습니다.",
+      pageId: "",
+    }]);
+  }
+  return validateEventDraftBody(project, mapId, event);
+}
+
+export function validateEventDraftBody(
+  project: Project,
+  mapId: MapId,
+  event: GameEvent,
+): EventDraftValidation {
+  const issues: EventDraftIssue[] = [];
+  const refs = referenceSets(project, mapId);
+  const pages = event.pages ?? [];
+
+  if (pages.length === 0) {
+    issues.push({
+      severity: "error",
+      code: "page.missing",
+      message: "이벤트에는 최소 한 개의 페이지가 필요합니다.",
+      pageId: "",
+      field: { testId: "event-page-tab-add" },
+    });
+    return validationFromIssues(issues);
+  }
+
+  const firstPageId = pages[0]!.id;
+  const map = project.maps[mapId];
+  if (!map || event.x < 0 || event.y < 0 || event.x >= map.width || event.y >= map.height) {
+    issues.push({
+      severity: "error",
+      code: "event.position.out-of-bounds",
+      message: `이벤트 위치 (${event.x}, ${event.y})가 맵 범위를 벗어났습니다.`,
+      pageId: firstPageId,
+      field: { testId: "event-position-x" },
+    });
+  }
+  if (event.condition) validateCondition(event.condition, firstPageId, refs, issues);
+
+  for (const page of pages) {
+    validatePage(project, mapId, event, page, refs, issues);
+  }
+  validateSchedule(project, event, refs, firstPageId, issues);
+  return validationFromIssues(issues);
+}
+
+export function hasRecursivePageCondition(conditions: readonly Condition[]): boolean {
+  return conditions.some(conditionHasLeaf);
+}
+
+export function eventDraftIssuesForPage(
+  validation: EventDraftValidation,
+  pageId: string,
+): readonly EventDraftIssue[] {
+  return validation.issues.filter((issue) => issue.pageId === pageId);
+}
+
+function validationFromIssues(issues: readonly EventDraftIssue[]): EventDraftValidation {
+  const errorCount = issues.filter((issue) => issue.severity === "error").length;
+  const warningCount = issues.filter((issue) => issue.severity === "warning").length;
+  const infoCount = issues.filter((issue) => issue.severity === "info").length;
+  return { issues, errorCount, warningCount, infoCount, canCommit: errorCount === 0 };
+}
+
+function referenceSets(project: Project, mapId: MapId) {
+  const map = project.maps[mapId];
+  return {
+    actors: new Set(project.database.actors.map((entry) => entry.id)),
+    animations: new Set(project.database.battleAnimations.map((entry) => entry.id)),
+    classes: new Set(project.database.classes.map((entry) => entry.id)),
+    commonEvents: new Set(project.commonEvents.map((entry) => entry.id)),
+    endings: new Set((project.endings ?? []).map((entry) => entry.id)),
+    equipment: new Set(project.database.equipment.map((entry) => entry.id)),
+    events: new Set((map?.events ?? []).map((entry) => entry.id)),
+    eventTemplates: new Set(
+      Object.values(project.maps).flatMap((projectMap) => projectMap.events.map((entry) => entry.id)),
+    ),
+    items: new Set(project.database.items.map((entry) => entry.id)),
+    lifeSkills: new Set((project.database.lifeSkills ?? []).map((entry) => entry.id)),
+    maps: new Set(Object.keys(project.maps)),
+    recipes: new Set((project.system.craftRecipes ?? []).map((entry) => entry.id)),
+    resources: collectResourceIds(project),
+    skills: new Set(project.database.skills.map((entry) => entry.id)),
+    species: new Set((project.database.monsterSpecies ?? []).map((entry) => entry.id)),
+    switches: new Set(project.switches.map((entry) => entry.id)),
+    troops: new Set(project.database.troops.map((entry) => entry.id)),
+    upgrades: new Set((project.system.itemUpgrades ?? []).map((entry) => entry.id)),
+    variables: new Set(project.variables.map((entry) => entry.id)),
+  };
+}
+
+function validatePage(
+  project: Project,
+  mapId: MapId,
+  event: GameEvent,
+  page: EventPage,
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+): void {
+  if (page.graphic.sprite?.id) {
+    requireReference(issues, page.id, "reference.resource.missing", "그래픽 리소스", page.graphic.sprite.id, refs.resources, {
+      testId: "event-classic-graphic",
+    });
+  }
+
+  page.conditions.forEach((condition) => validateCondition(condition, page.id, refs, issues));
+  validateMovement(project, page, refs, issues);
+
+  const riskyTrigger = page.trigger.kind === "auto" || page.trigger.kind === "parallel";
+  if (riskyTrigger && !hasRecursivePageCondition(page.conditions)) {
+    issues.push({
+      severity: "warning",
+      code: "page.auto-parallel-ungated",
+      message: "자동/병렬 페이지에 종료·게이트 조건이 없어 계속 반복될 수 있습니다.",
+      pageId: page.id,
+      field: { testId: "event-page-safety-warning" },
+    });
+  }
+
+  const invisible = page.graphic.transparent === true || !page.graphic.sprite?.id;
+  if (invisible && page.priority === "same" && (page.overlapForbidden ?? true)) {
+    issues.push({
+      severity: "warning",
+      code: "page.invisible-collision",
+      message: "보이지 않는 페이지가 캐릭터와 같은 높이에서 이동을 막습니다. 의도한 충돌인지 확인하세요.",
+      pageId: page.id,
+      field: { testId: "event-page-overlap-forbidden" },
+    });
+  }
+
+  if (page.commands.length === 0) {
+    issues.push({
+      severity: "info",
+      code: "page.empty",
+      message: "실행 명령이 없습니다. 상태 표시용 빈 페이지라면 그대로 둘 수 있습니다.",
+      pageId: page.id,
+    });
+    return;
+  }
+
+  if (!page.commands.some(commandHasEffect)) {
+    issues.push({
+      severity: "info",
+      code: "page.no-op",
+      message: "이 페이지의 명령은 실행 결과를 만들지 않습니다.",
+      pageId: page.id,
+    });
+  }
+
+  const visits = walkCommands(page.commands);
+  validateLabels(page.id, page.commands, issues);
+  for (const visit of visits) {
+    validateCommand(project, mapId, event, page.id, visit, refs, issues);
+  }
+}
+
+function validateSchedule(
+  project: Project,
+  event: GameEvent,
+  refs: ReferenceSets,
+  pageId: string,
+  issues: EventDraftIssue[],
+): void {
+  for (const [index, entry] of (event.schedule ?? []).entries()) {
+    const mapField = { testId: `event-schedule-map-${index}` };
+    const positionField = { testId: `event-schedule-x-${index}` };
+    requireReference(
+      issues,
+      pageId,
+      "reference.map.missing",
+      "일정 목적지 맵",
+      entry.at.mapId,
+      refs.maps,
+      mapField,
+    );
+    validateMapPosition(
+      project,
+      entry.at.mapId,
+      entry.at.x,
+      entry.at.y,
+      pageId,
+      undefined,
+      "일정 목적지",
+      issues,
+      positionField,
+    );
+  }
+}
+
+function validateMovement(
+  project: Project,
+  page: EventPage,
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+): void {
+  if (page.movement.type === "custom") {
+    validateMoveRoute(
+      project,
+      page.movement.route,
+      page.id,
+      undefined,
+      refs,
+      issues,
+      { testId: "event-page-custom-route" },
+    );
+  }
+  if (page.movement.type !== "living") return;
+  for (const destination of page.movement.living?.destinations ?? []) {
+    requireReference(
+      issues,
+      page.id,
+      "reference.map.missing",
+      "생활 이동 맵",
+      destination.mapId,
+      refs.maps,
+      { testId: "event-page-living-target-map" },
+    );
+    validateMapPosition(
+      project,
+      destination.mapId,
+      destination.x,
+      destination.y,
+      page.id,
+      undefined,
+      "생활 이동 목적지",
+      issues,
+      { testId: "event-page-living-target-x" },
+    );
+    if (destination.switchId) {
+      requireReference(
+        issues,
+        page.id,
+        "reference.switch.missing",
+        "생활 이동 스위치",
+        destination.switchId,
+        refs.switches,
+        { testId: "event-page-living-route" },
+      );
+    }
+  }
+}
+
+function validateCondition(
+  condition: Condition,
+  pageId: string,
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+  commandPath?: readonly number[],
+): void {
+  switch (condition.kind) {
+    case "switch":
+      requireReference(issues, pageId, "reference.switch.missing", "스위치", condition.switchId, refs.switches, { testId: "event-condition-switch" }, commandPath);
+      return;
+    case "variable":
+      requireReference(issues, pageId, "reference.variable.missing", "변수", condition.variableId, refs.variables, { testId: "event-condition-variable" }, commandPath);
+      return;
+    case "actor":
+      requireReference(issues, pageId, "reference.actor.missing", "배우", condition.actorId, refs.actors, { testId: "event-condition-actor" }, commandPath);
+      return;
+    case "item":
+      requireReference(issues, pageId, "reference.item.missing", "아이템", condition.itemId, refs.items, { testId: "event-condition-item" }, commandPath);
+      return;
+    case "all":
+    case "any":
+      condition.conditions.forEach((child) => validateCondition(child, pageId, refs, issues, commandPath));
+      return;
+    case "not":
+      validateCondition(condition.condition, pageId, refs, issues, commandPath);
+      return;
+    case "selfSwitch":
+    case "gold":
+    case "timer":
+    case "timePhase":
+    case "season":
+    case "npcActivity":
+    case "friendshipAtLeast":
+    case "battleResult":
+      return;
+  }
+  const exhaustive: never = condition;
+  void exhaustive;
+}
+
+function conditionHasLeaf(condition: Condition): boolean {
+  if (condition.kind === "all" || condition.kind === "any") {
+    return condition.conditions.some(conditionHasLeaf);
+  }
+  if (condition.kind === "not") return conditionHasLeaf(condition.condition);
+  return true;
+}
+
+function validateLabels(
+  pageId: string,
+  commands: readonly Command[],
+  issues: EventDraftIssue[],
+  containerPath: readonly number[] = [],
+  ancestorLabels: readonly ReadonlySet<string>[] = [],
+): void {
+  const labels = new Map<string, CommandVisit[]>();
+  commands.forEach((command, index) => {
+    if (command.kind !== "label") return;
+    const path = [...containerPath, index];
+    const name = command.name.trim();
+    if (!name) {
+      issues.push({ severity: "error", code: "label.empty", message: "라벨 이름이 비어 있습니다.", pageId, commandPath: path });
+      return;
+    }
+    const rows = labels.get(name) ?? [];
+    rows.push({ command, path });
+    labels.set(name, rows);
+  });
+
+  for (const [name, rows] of labels) {
+    if (rows.length < 2) continue;
+    for (const row of rows) {
+      issues.push({
+        severity: "error",
+        code: "label.duplicate",
+        message: `라벨 '${name}'이(가) 같은 실행 범위에 ${rows.length}번 있습니다.`,
+        pageId,
+        commandPath: row.path,
+      });
+    }
+  }
+
+  const localLabels = new Set(labels.keys());
+  commands.forEach((command, index) => {
+    const path = [...containerPath, index];
+    if (command.kind === "gotoLabel") {
+      const name = command.name.trim();
+      const visible = localLabels.has(name) || ancestorLabels.some((scope) => scope.has(name));
+      if (!name || !visible) {
+        issues.push({
+          severity: "error",
+          code: "label.target-missing",
+          message: name ? `현재 실행 범위에서 이동할 라벨 '${name}'을(를) 찾을 수 없습니다.` : "이동할 라벨 이름이 비어 있습니다.",
+          pageId,
+          commandPath: path,
+        });
+      }
+    }
+    for (const branch of commandBranches(command)) {
+      validateLabels(
+        pageId,
+        branch.commands,
+        issues,
+        [...path, branch.branchIndex],
+        [localLabels, ...ancestorLabels],
+      );
+    }
+  });
+}
+
+function validateCommand(
+  project: Project,
+  mapId: MapId,
+  _event: GameEvent,
+  pageId: string,
+  visit: CommandVisit,
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+): void {
+  const command = visit.command;
+  const path = visit.path;
+  try {
+    const support = commandRuntimeSupport(command, "map");
+    if (support === "editor-only") {
+      issues.push({ severity: "warning", code: "runtime.editor-only", message: "이 명령은 에디터 전용이며 실제 게임에서는 효과 없이 건너뜁니다.", pageId, commandPath: path });
+    } else if (support === "runtime-partial") {
+      issues.push({ severity: "warning", code: "runtime.partial", message: "이 명령은 실제 게임에서 일부 효과만 실행됩니다.", pageId, commandPath: path });
+    }
+  } catch {
+    issues.push({ severity: "error", code: "runtime.unclassified", message: "런타임 지원 정보가 없는 명령입니다.", pageId, commandPath: path });
+  }
+
+  const require = (code: string, label: string, id: string | undefined, known: ReadonlySet<string>, allowEmpty = false) => {
+    if (allowEmpty && !id?.trim()) return;
+    requireReference(issues, pageId, code, label, id ?? "", known, undefined, path);
+  };
+  const variableOperand = (value: unknown, label: string) => {
+    if (typeof value === "object" && value !== null && "kind" in value && value.kind === "var" && "id" in value) {
+      require("reference.variable.missing", label, String(value.id), refs.variables);
+    }
+  };
+
+  switch (command.kind) {
+    case "changeFace": require("reference.resource.missing", "얼굴 리소스", command.resourceId, refs.resources, true); return;
+    case "fork": validateCondition(command.condition, pageId, refs, issues, path); return;
+    case "wait": require("reference.variable.missing", "대기 변수", command.variableId, refs.variables, true); return;
+    case "inputWait": require("reference.variable.missing", "입력 대기 변수", command.variableId, refs.variables, true); return;
+    case "inputNumber": require("reference.variable.missing", "숫자 입력 변수", command.variableId, refs.variables); return;
+    case "setSwitch":
+      require("reference.switch.missing", "스위치", command.switchId, refs.switches);
+      variableOperand(command.value, "스위치 값 변수");
+      return;
+    case "setVariable":
+      require("reference.variable.missing", "변수", command.variableId, refs.variables);
+      variableOperand(command.value, "변수 피연산자");
+      return;
+    case "transfer":
+      require("reference.map.missing", "맵", command.mapId, refs.maps);
+      validateMapPosition(project, command.mapId, command.x, command.y, pageId, path, "맵 이동 목적지", issues);
+      return;
+    case "changeTile":
+      require("reference.map.missing", "맵", command.mapId, refs.maps);
+      validateMapPosition(project, command.mapId, command.x, command.y, pageId, path, "타일 변경 위치", issues);
+      return;
+    case "moveEvent":
+      if (command.eventId && command.eventId !== PLAYER_MOVE_TARGET) require("reference.event.missing", "이동 대상 이벤트", command.eventId, refs.events);
+      validateMoveRoute(project, command.route, pageId, path, refs, issues);
+      return;
+    case "setEventGraphicPattern": require("reference.event.missing", "외형 변경 이벤트", command.eventId, refs.events, true); return;
+    case "callCommonEvent": require("reference.common-event.missing", "공통 이벤트", command.commonEventId, refs.commonEvents); return;
+    case "callMapEvent": require("reference.event.missing", "호출할 맵 이벤트", command.eventId, refs.events); return;
+    case "battleProcessing":
+      if (command.troopSource === "variable") require("reference.variable.missing", "적 그룹 변수", command.troopVariableId, refs.variables);
+      else require("reference.troop.missing", "적 그룹", command.troopId, refs.troops);
+      return;
+    case "learnSkill": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); require("reference.skill.missing", "스킬", command.skillId, refs.skills); return;
+    case "changeExp": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); variableOperand(command.amount, "경험치 변수"); return;
+    case "changeLevel":
+    case "changeActorHp":
+    case "changeActorMp":
+    case "changeParty": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
+    case "changeLifeSkillExp": require("reference.life-skill.missing", "생활 스킬", command.skillId, refs.lifeSkills); variableOperand(command.amount, "생활 스킬 경험치 변수"); return;
+    case "promoteActor": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.class.missing", "전직 직업", command.toClassId, refs.classes, true); return;
+    case "changeEquipment": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.equipment.missing", "장비", command.equipmentId, refs.equipment, true); return;
+    case "recoverAll": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
+    case "enterHeroName": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
+    case "changeGold": variableOperand(command.amount, "골드 변수"); return;
+    case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.items); variableOperand(command.amount, "아이템 수량 변수"); return;
+    case "craftRecipe": require("reference.recipe.missing", "제작법", command.recipeId, refs.recipes); return;
+    case "applyItemUpgrade": require("reference.upgrade.missing", "업그레이드", command.upgradeId, refs.upgrades); return;
+    case "equipTool": require("reference.item.missing", "도구 아이템", command.itemId, refs.items, true); return;
+    case "getFriendship": require("reference.variable.missing", "호감도 저장 변수", command.variableId, refs.variables); return;
+    case "giveMonster": require("reference.species.missing", "몬스터 종", command.speciesId, refs.species); return;
+    case "evolveMonster": require("reference.species.missing", "진화 대상 종", command.toSpeciesId, refs.species, true); return;
+    case "addFollower":
+      require("reference.actor.missing", "동료 배우", command.actorId, refs.actors, true);
+      require("reference.resource.missing", "동료 그래픽", command.graphic?.sprite?.id, refs.resources, true);
+      return;
+    case "addLight":
+      if (typeof command.source.at === "object") {
+        if ("eventId" in command.source.at) {
+          require("reference.event.missing", "광원 이벤트", command.source.at.eventId, refs.events, true);
+        } else {
+          validateMapPosition(
+            project,
+            mapId,
+            command.source.at.x,
+            command.source.at.y,
+            pageId,
+            path,
+            "광원 위치",
+            issues,
+          );
+        }
+      }
+      return;
+    case "showAnimation":
+      require("reference.animation.missing", "전투 애니메이션", command.animationId, refs.animations);
+      if (typeof command.target === "object") {
+        if ("eventId" in command.target) {
+          require("reference.event.missing", "애니메이션 대상 이벤트", command.target.eventId, refs.events, true);
+        } else {
+          validateMapPosition(
+            project,
+            mapId,
+            command.target.x,
+            command.target.y,
+            pageId,
+            path,
+            "애니메이션 대상 위치",
+            issues,
+          );
+        }
+      }
+      return;
+    case "showPicture": require("reference.resource.missing", "그림 리소스", command.resourceId, refs.resources); return;
+    case "playAudio": require("reference.resource.missing", "오디오 리소스", command.resourceId, refs.resources); return;
+    case "shop":
+      if (command.itemIds.length === 0 && (command.stock?.length ?? 0) === 0) {
+        issues.push({
+          severity: "error",
+          code: "shop.items.empty",
+          message: "상점에 판매할 아이템이 없습니다.",
+          pageId,
+          commandPath: path,
+        });
+      }
+      command.itemIds.forEach((id) => require("reference.item.missing", "상점 아이템", id, refs.items));
+      command.stock?.forEach((entry) => require("reference.item.missing", "상점 재고 아이템", entry.itemId, refs.items));
+      return;
+    case "m2Command": {
+      const entry = validateM2CommandReferences(command, pageId, path, refs, issues);
+      if (entry) validateM2CommandCoordinates(project, mapId, command, pageId, path, entry, issues);
+      return;
+    }
+    case "triggerEnding": require("reference.ending.missing", "엔딩", command.endingId, refs.endings, true); return;
+    case "spawnFieldEnemy":
+      require("reference.troop.missing", "필드 적 그룹", command.spawn.troopId, refs.troops);
+      require("reference.switch.missing", "필드 적 처치 스위치", command.spawn.onKillSwitchId, refs.switches, true);
+      require("reference.resource.missing", "필드 적 그래픽", command.spawn.graphic?.sprite?.id, refs.resources, true);
+      validateMapRect(project, mapId, command.spawn.area, pageId, path, "필드 적 생성 영역", issues);
+      return;
+    case "text":
+    case "choices":
+    case "label":
+    case "gotoLabel":
+    case "loop":
+    case "breakLoop":
+    case "timer":
+    case "advanceTime":
+    case "advanceCropGrowth":
+    case "setTime":
+    case "sleepUntilMorning":
+    case "moveMonster":
+    case "openChest":
+    case "changeFriendship":
+    case "removeFollower":
+    case "setLighting":
+    case "removeLight":
+    case "setWeather":
+    case "erasePicture":
+    case "stopAudio":
+    case "cutsceneControl":
+    case "displayTextSettings":
+    case "inn":
+    case "checkpointSave":
+    case "openSaveMenu":
+    case "despawnFieldEnemy":
+    case "killPlayer":
+    case "gameOver":
+    case "ending":
+    case "returnToTitle":
+    case "setFlag":
+    case "setSelfSwitch":
+      return;
+  }
+  const exhaustive: never = command;
+  void exhaustive;
+}
+
+type M2ReferenceRule = {
+  readonly code: string;
+  readonly label: string;
+  readonly known: (refs: ReferenceSets) => ReadonlySet<string>;
+};
+
+const M2_REFERENCE_RULES: Readonly<Record<string, M2ReferenceRule>> = {
+  actorId: { code: "reference.actor.missing", label: "M2 배우", known: (refs) => refs.actors },
+  animationId: { code: "reference.animation.missing", label: "M2 애니메이션", known: (refs) => refs.animations },
+  eventA: { code: "reference.event.missing", label: "M2 이벤트 A", known: (refs) => refs.events },
+  eventB: { code: "reference.event.missing", label: "M2 이벤트 B", known: (refs) => refs.events },
+  eventId: { code: "reference.event.missing", label: "M2 이벤트", known: (refs) => refs.events },
+  itemId: { code: "reference.item.missing", label: "M2 아이템", known: (refs) => refs.items },
+  mapId: { code: "reference.map.missing", label: "M2 맵", known: (refs) => refs.maps },
+  mapVariableId: { code: "reference.variable.missing", label: "M2 맵 변수", known: (refs) => refs.variables },
+  prefabId: { code: "reference.event.missing", label: "M2 생성 원본 이벤트", known: (refs) => refs.eventTemplates },
+  resourceId: { code: "reference.resource.missing", label: "M2 리소스", known: (refs) => refs.resources },
+  skillId: { code: "reference.skill.missing", label: "M2 스킬", known: (refs) => refs.skills },
+  switchId: { code: "reference.switch.missing", label: "M2 스위치", known: (refs) => refs.switches },
+  troopId: { code: "reference.troop.missing", label: "M2 적 그룹", known: (refs) => refs.troops },
+  valueVariableId: { code: "reference.variable.missing", label: "M2 값 변수", known: (refs) => refs.variables },
+  variableId: { code: "reference.variable.missing", label: "M2 변수", known: (refs) => refs.variables },
+  xVariableId: { code: "reference.variable.missing", label: "M2 X 변수", known: (refs) => refs.variables },
+  yVariableId: { code: "reference.variable.missing", label: "M2 Y 변수", known: (refs) => refs.variables },
+};
+
+function validateM2CommandReferences(
+  command: Extract<Command, { kind: "m2Command" }>,
+  pageId: string,
+  commandPath: readonly number[],
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+): M2CatalogEntry | undefined {
+  const entry = m2CommandById(command.commandId);
+  if (!entry) return undefined;
+  for (const field of entry.fields) {
+    const rule = M2_REFERENCE_RULES[field.key];
+    if (!rule || !m2ReferenceFieldApplies(command, entry, field.key)) continue;
+    const value = m2FieldValue(command, entry, field.key);
+    requireReference(
+      issues,
+      pageId,
+      rule.code,
+      rule.label,
+      typeof value === "string" ? value : String(value),
+      rule.known(refs),
+      { testId: `m2-command-${field.key}-input` },
+      commandPath,
+    );
+  }
+  return entry;
+}
+
+function m2ReferenceFieldApplies(
+  command: Extract<Command, { kind: "m2Command" }>,
+  entry: M2CatalogEntry,
+  fieldKey: string,
+): boolean {
+  const value = String(m2FieldValue(command, entry, fieldKey)).trim();
+  if (fieldKey === "valueVariableId") {
+    return String(m2FieldValue(command, entry, "valueSource")) === "variable";
+  }
+  if (entry.title === "Spawn Event") {
+    if (fieldKey === "eventId") return false;
+    if (fieldKey === "mapId") return value.length > 0;
+  }
+  if (entry.title === "Remove Event" && fieldKey === "eventId") {
+    // The blank value means the currently running event, and an explicit value
+    // may identify an event created earlier by Spawn Event rather than project data.
+    return false;
+  }
+  if (entry.title === "Region Trigger" && (fieldKey === "eventId" || fieldKey === "switchId")) {
+    return value.length > 0;
+  }
+  return true;
+}
+
+function m2FieldValue(
+  command: Extract<Command, { kind: "m2Command" }>,
+  entry: M2CatalogEntry,
+  fieldKey: string,
+): string | number | boolean {
+  return command.fields[fieldKey]
+    ?? entry.fields.find((field) => field.key === fieldKey)?.defaultValue
+    ?? "";
+}
+
+const M2_CURRENT_MAP_POSITION_TITLES = new Set([
+  "Get Terrain ID",
+  "Get Event ID",
+  "Change Tile",
+  "Pathfind Move",
+]);
+
+function m2UsesCurrentMapPosition(
+  command: Extract<Command, { kind: "m2Command" }>,
+  entry: M2CatalogEntry,
+  x: number,
+  y: number,
+): boolean {
+  if (M2_CURRENT_MAP_POSITION_TITLES.has(entry.title)) return true;
+  if (entry.title !== "Camera Control") return false;
+
+  const target = String(m2FieldValue(command, entry, "target"));
+  if (target === "screen" || target === "position" || target === "fixed") return true;
+
+  const authoredMode = String(m2FieldValue(command, entry, "mode"));
+  const panMode = !["follow", "lock", "fixed", "return", "restore", "followPlayer"].includes(authoredMode);
+  const hasEventTarget = Object.prototype.hasOwnProperty.call(command.fields, "targetEventId")
+    || Object.prototype.hasOwnProperty.call(command.fields, "eventId");
+  return panMode && (x !== 0 || y !== 0) && !hasEventTarget;
+}
+
+function validateM2CommandCoordinates(
+  project: Project,
+  currentMapId: MapId,
+  command: Extract<Command, { kind: "m2Command" }>,
+  pageId: string,
+  commandPath: readonly number[],
+  entry: M2CatalogEntry,
+  issues: EventDraftIssue[],
+): void {
+  const fieldKeys = new Set(entry.fields.map((field) => field.key));
+  if (!fieldKeys.has("x") || !fieldKeys.has("y")) return;
+  const x = Number(m2FieldValue(command, entry, "x"));
+  const y = Number(m2FieldValue(command, entry, "y"));
+  if (fieldKeys.has("mapId")) {
+    const authoredMapId = String(m2FieldValue(command, entry, "mapId")).trim();
+    const destinationMapId = entry.title === "Spawn Event" && !authoredMapId
+      ? currentMapId
+      : authoredMapId;
+    validateMapPosition(
+      project,
+      destinationMapId,
+      x,
+      y,
+      pageId,
+      commandPath,
+      `${entry.label} 위치`,
+      issues,
+    );
+    return;
+  }
+  if (m2UsesCurrentMapPosition(command, entry, x, y)) {
+    validateMapPosition(
+      project,
+      currentMapId,
+      x,
+      y,
+      pageId,
+      commandPath,
+      `${entry.label} 위치`,
+      issues,
+    );
+  }
+}
+
+function validateMapPosition(
+  project: Project,
+  mapId: MapId,
+  x: number,
+  y: number,
+  pageId: string,
+  commandPath: readonly number[] | undefined,
+  label: string,
+  issues: EventDraftIssue[],
+  field?: EventDraftFieldLocator,
+): void {
+  const map = project.maps[mapId];
+  if (!map) return;
+  if (Number.isInteger(x) && Number.isInteger(y) && x >= 0 && y >= 0 && x < map.width && y < map.height) return;
+  issues.push({
+    severity: "error",
+    code: "map.position.out-of-bounds",
+    message: `${label} (${x}, ${y})가 '${map.name}' 맵 범위를 벗어났습니다.`,
+    pageId,
+    ...(commandPath ? { commandPath: [...commandPath] } : {}),
+    ...(field ? { field } : {}),
+  });
+}
+
+function validateMapRect(
+  project: Project,
+  mapId: MapId,
+  rect: Readonly<{ x: number; y: number; w: number; h: number }>,
+  pageId: string,
+  commandPath: readonly number[] | undefined,
+  label: string,
+  issues: EventDraftIssue[],
+): void {
+  const map = project.maps[mapId];
+  if (!map) return;
+  const valid = Number.isInteger(rect.x)
+    && Number.isInteger(rect.y)
+    && Number.isInteger(rect.w)
+    && Number.isInteger(rect.h)
+    && rect.x >= 0
+    && rect.y >= 0
+    && rect.w > 0
+    && rect.h > 0
+    && rect.x + rect.w <= map.width
+    && rect.y + rect.h <= map.height;
+  if (valid) return;
+  issues.push({
+    severity: "error",
+    code: "map.area.out-of-bounds",
+    message: `${label} (${rect.x}, ${rect.y}, ${rect.w}, ${rect.h})가 '${map.name}' 맵 범위를 벗어났습니다.`,
+    pageId,
+    ...(commandPath ? { commandPath: [...commandPath] } : {}),
+  });
+}
+
+function validateMoveRoute(
+  project: Project,
+  route: MoveRoute | undefined,
+  pageId: string,
+  commandPath: readonly number[] | undefined,
+  refs: ReferenceSets,
+  issues: EventDraftIssue[],
+  field?: EventDraftFieldLocator,
+): void {
+  for (const move of route?.moves ?? []) {
+    if (move.kind === "setSwitch") {
+      requireReference(issues, pageId, "reference.switch.missing", "이동 경로 스위치", move.switchId, refs.switches, field, commandPath);
+    }
+    if (move.kind === "changeGraphic") {
+      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 그래픽", move.spriteId, refs.resources, field, commandPath);
+    }
+    if (move.kind === "npcTransfer") {
+      requireReference(issues, pageId, "reference.map.missing", "이동 경로 목적지 맵", move.mapId, refs.maps, field, commandPath);
+      validateMapPosition(project, move.mapId, move.x, move.y, pageId, commandPath, "이동 경로 목적지", issues, field);
+    }
+    if (move.kind === "playSe") {
+      requireReference(issues, pageId, "reference.resource.missing", "이동 경로 효과음", move.resourceId, refs.resources, field, commandPath);
+    }
+  }
+}
+
+function requireReference(
+  issues: EventDraftIssue[],
+  pageId: string,
+  code: string,
+  label: string,
+  id: string,
+  known: ReadonlySet<string>,
+  field?: EventDraftFieldLocator,
+  commandPath?: readonly number[],
+): void {
+  if (id.trim() && known.has(id)) return;
+  issues.push({
+    severity: "error",
+    code,
+    message: id.trim() ? `${label} '${id}'을(를) 찾을 수 없습니다.` : `${label}이(가) 선택되지 않았습니다.`,
+    pageId,
+    ...(commandPath ? { commandPath: [...commandPath] } : {}),
+    ...(field ? { field } : {}),
+  });
+}
+
+function walkCommands(commands: readonly Command[], containerPath: readonly number[] = []): CommandVisit[] {
+  const visits: CommandVisit[] = [];
+  commands.forEach((command, index) => {
+    const path = [...containerPath, index];
+    visits.push({ command, path });
+    for (const branch of commandBranches(command)) {
+      visits.push(...walkCommands(branch.commands, [...path, branch.branchIndex]));
+    }
+  });
+  return visits;
+}
+
+function commandBranches(command: Command): readonly { readonly branchIndex: number; readonly commands: readonly Command[] }[] {
+  switch (command.kind) {
+    case "choices":
+      return [
+        ...command.options.map((option, index) => ({ branchIndex: index, commands: option.branch })),
+        ...(command.cancelBranch ? [{ branchIndex: CHOICE_CANCEL_BRANCH_INDEX, commands: command.cancelBranch }] : []),
+      ];
+    case "fork":
+      return [
+        { branchIndex: FORK_THEN_BRANCH_INDEX, commands: command.then },
+        ...(command.else ? [{ branchIndex: FORK_ELSE_BRANCH_INDEX, commands: command.else }] : []),
+      ];
+    case "loop": return [{ branchIndex: LOOP_BODY_BRANCH_INDEX, commands: command.body }];
+    case "shop": return command.transactionBranch ? [{ branchIndex: SHOP_TRANSACTION_BRANCH_INDEX, commands: command.transactionBranch }] : [];
+    case "inn": return command.notEnoughBranch ? [{ branchIndex: INN_NOT_ENOUGH_BRANCH_INDEX, commands: command.notEnoughBranch }] : [];
+    case "promoteActor":
+    case "evolveMonster":
+      return [
+        ...(command.successBranch ? [{ branchIndex: PROMOTE_SUCCESS_BRANCH_INDEX, commands: command.successBranch }] : []),
+        ...(command.failureBranch ? [{ branchIndex: PROMOTE_FAILURE_BRANCH_INDEX, commands: command.failureBranch }] : []),
+      ];
+    case "battleProcessing":
+      return [
+        ...(command.victoryBranch ? [{ branchIndex: BATTLE_VICTORY_BRANCH_INDEX, commands: command.victoryBranch }] : []),
+        ...(command.defeatBranch ? [{ branchIndex: BATTLE_DEFEAT_BRANCH_INDEX, commands: command.defeatBranch }] : []),
+        ...(command.escapeBranch ? [{ branchIndex: BATTLE_ESCAPE_BRANCH_INDEX, commands: command.escapeBranch }] : []),
+      ];
+    default: return [];
+  }
+}
+
+function commandHasEffect(command: Command): boolean {
+  if (command.kind === "label" || command.kind === "breakLoop") return false;
+  if (command.kind === "text") return command.body.trim().length > 0;
+  if (command.kind === "m2Command" && command.commandId.endsWith("comment")) return false;
+  if (command.kind === "loop") return command.body.some(commandHasEffect);
+  if (command.kind === "fork") return command.then.some(commandHasEffect) || (command.else?.some(commandHasEffect) ?? false);
+  return true;
+}

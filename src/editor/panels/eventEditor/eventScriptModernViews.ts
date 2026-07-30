@@ -67,7 +67,7 @@ function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId:
     class: "event-aux-chip-summary",
     children: [
       el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, text: "▶" }),
-      el("span", { class: "event-aux-chip-label", text: "미리보기" }),
+      el("span", { class: "event-aux-chip-label", text: "스크립트 둘러보기" }),
       el("span", {
         class: "event-aux-chip-status",
         text: statusText,
@@ -84,8 +84,13 @@ function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId:
   });
 
   const body = el("div", { class: "event-script-live-preview-body" });
+  body.append(el("div", {
+    class: "event-script-preview-disclaimer",
+    text: "실제 게임 실행이 아닌 스크립트 둘러보기입니다. 반복은 한 번만 펼치고, 선택지는 모든 분기를 나열하며, 라벨/라벨 이동은 실제 점프를 수행하지 않습니다.",
+    dataset: { testid: "event-script-preview-disclaimer" },
+  }));
   if (steps.length === 0) {
-    body.append(el("div", { class: "empty-hint", text: "재생할 명령이 없습니다." }));
+    body.append(el("div", { class: "empty-hint", text: "둘러볼 명령이 없습니다." }));
     details.append(body);
     return details;
   }

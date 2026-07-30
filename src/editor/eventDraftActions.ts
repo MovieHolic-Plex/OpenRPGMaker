@@ -102,8 +102,9 @@ export function discardEventDraft(mapId: MapId, eventId: string): boolean {
 
 /**
  * Checkpoint open draft into the durable vault (localStorage).
- * Working body already lives in the project store and is included in autosave;
- * this only refreshes crash-recovery metadata without thrashing store listeners.
+ * The working body lives only in the editor session/vault until Apply; canonical
+ * autosave/export keeps the pre-edit project body. This refreshes crash recovery
+ * without thrashing store listeners.
  */
 export function checkpointEventDraft(mapId: MapId, eventId: string): boolean {
   const event = store.getCurrent().maps[mapId]?.events.find((item) => item.id === eventId);
