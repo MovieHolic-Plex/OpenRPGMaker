@@ -9,6 +9,7 @@ import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
+import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
@@ -494,7 +495,7 @@ export class AssistantSession {
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
     this.baselineProject = structuredClone(project);
-    this.ctx = { project: structuredClone(project) };
+    this.ctx = { project: cloneDetachedDraft(project) };
     // 토큰 보정: 명시 budgetChars가 없으면 실측 usage 관측(localStorage — 없으면 빈 목록)으로
     // 문자 예산을 재척도한다. 관측이 없으면 DEFAULT_BUDGET_CHARS 그대로(현행 동작).
     this.appliedBudgetChars = this.contextOptions.budgetChars
@@ -520,14 +521,14 @@ export class AssistantSession {
   // 연쇄 툴콜이 자동 생성 id를 참조하는 경우 재실행(applyToolSequenceToStore) 대신 이 값을 쓰면
   // "프리뷰 == 적용" 이 보장된다.
   getProposedProject(): Project {
-    return structuredClone(this.ctx.project);
+    return cloneDetachedDraft(this.ctx.project);
   }
 
   // 제안 수락/거부 후, 대화(메시지·감사 로그)를 유지한 채 프로젝트 기준만 store 최신 상태로 갱신한다.
   // 세션 폐기(dropSession)와 달리 대화 기억을 잃지 않는다 — "채팅 세션 단위 전체 기억"(#6)의 핵심.
   rebaseProject(project: Project): void {
     this.baselineProject = structuredClone(project);
-    this.ctx = { project: structuredClone(project) };
+    this.ctx = { project: cloneDetachedDraft(project) };
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.

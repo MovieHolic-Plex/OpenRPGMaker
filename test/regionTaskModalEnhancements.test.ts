@@ -7,7 +7,9 @@ import {
   openRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { __clearPendingRegionApplyForTest, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
+import { runDirectInteriorRoomDraft } from "@/editor/regionTask/runDirectRoomDraft";
 import type { RegionTaskResult } from "@/editor/regionTask/runRegionTask";
+import { createBlankProject } from "@/project/defaults";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import type { Project, RegionRect } from "@/project/types";
 
@@ -100,6 +102,21 @@ describe("A: 부분 적용", () => {
       changedCells: 3,
       changedEvents: 0,
       instruction: "물 채우기",
+      getCurrentProject: () => base,
+      report: {
+        issues: [{ code: "npc-schedule-time-disabled", severity: "warning", message: "NPC 일정은 시간 시스템이 필요합니다." }],
+        blockers: [],
+        checkpoints: [
+          { id: "draft", label: "분리 초안", status: "done", detail: "ready" },
+          { id: "approval", label: "승인 대기", status: "done", detail: "ready" },
+        ],
+        metrics: {
+          changedCells: 3, changedEvents: 0, passableChangedCells: 3, isolatedChangedCells: 0,
+          scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
+          roomScoreAverage: null, deterministicRepairs: 0,
+        },
+        repairLimit: 8,
+      },
       onApply: () => {},
       onDiscard: () => {},
       onSettle: () => {},
@@ -153,5 +170,104 @@ describe("A: 부분 적용", () => {
       firstCb.dispatchEvent(new Event("change", { bubbles: true }));
     }
     expect(partialBtn?.textContent).not.toEqual(beforeText);
+  });
+});
+
+
+
+describe("safe harness review surface", () => {
+  beforeEach(() => {
+    __clearPendingRegionApplyForTest();
+    restoreDom = installFakeDom();
+  });
+
+  it("shows checkpoint timeline, gameplay metrics, and structured issues in review", async () => {
+    const base = stubProject();
+    const clipped = stubProject([120, 120, 120]);
+    const pending = setPendingRegionApply({
+      baseProject: base,
+      clippedProject: clipped,
+      mapId: "m1",
+      region: REGION,
+      changedCells: 3,
+      changedEvents: 0,
+      instruction: "안전 검토",
+      getCurrentProject: () => base,
+      report: {
+        issues: [{ code: "schedule", severity: "warning", message: "NPC 일정 확인", mapId: "m1", x: 1, y: 1 }],
+        blockers: [],
+        checkpoints: [{ id: "draft", label: "분리 초안", status: "done", detail: "ready" }],
+        metrics: {
+          changedCells: 3, changedEvents: 0, passableChangedCells: 2, isolatedChangedCells: 0,
+          scheduledNpcs: 1, scheduleEntries: 1, timeSystemEnabled: false, roomSessions: 0,
+          roomScoreAverage: null, deterministicRepairs: 0,
+        },
+        repairLimit: 8,
+      },
+      onApply: () => undefined,
+      onDiscard: () => undefined,
+      onSettle: () => undefined,
+    });
+    const result: RegionTaskResult = {
+      ok: true, applied: false, changedCells: 3, changedEvents: 0, clippedCells: 0,
+      proposedCalls: 1, assistantText: "", pending, review: pending.report,
+    };
+    const root = openModal({
+      mapId: "m1",
+      region: REGION,
+      initialInstruction: "안전 검토",
+      autoRun: true,
+      run: async () => result,
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => base,
+    });
+    await flush();
+    expect(findByTestId(root, "region-task-checkpoint-timeline")?.textContent).toContain("분리 초안");
+    expect(findByTestId(root, "region-task-review-metrics")?.textContent).toContain("NPC 일정 1명");
+    expect(findByTestId(root, "region-task-review-issues")?.textContent).toContain("NPC 일정 확인");
+  });
+});
+
+
+
+describe("quota-independent interior entry", () => {
+  beforeEach(() => {
+    __clearPendingRegionApplyForTest();
+    restoreDom = installFakeDom();
+  });
+
+  it("starts a connected room from the UI without invoking the AI runner", async () => {
+    const base = createBlankProject();
+    const before = JSON.stringify(base);
+    const aiRun = vi.fn(async (): Promise<RegionTaskResult> => {
+      throw new Error("AI runner must not be called");
+    });
+    const root = openModal({
+      mapId: base.startMapId,
+      region: { x: 0, y: 0, width: 4, height: 4 },
+      run: aiRun,
+      runDirectRoomDraft: (options) => runDirectInteriorRoomDraft({ ...options, seed: 77 }, {
+        getProject: () => base,
+        applyProject: () => undefined,
+      }),
+      renderSnapshot: async () => document.createElement("div"),
+      projectForContext: () => base,
+    });
+
+    findByTestId(root, "region-task-direct-room")?.click();
+    await flush();
+    await flush();
+
+    expect(aiRun).not.toHaveBeenCalled();
+    expect(findByTestId(root, "region-task-room-controls")).not.toBeNull();
+    expect(findByTestId(root, "region-task-room-checkpoint-preview")?.textContent).toContain("완성 실내 미리보기");
+    expect(findByTestId(root, "region-task-room-checkpoint-5")?.classList.contains("is-selected")).toBe(true);
+    expect(findByTestId(root, "region-task-checkpoint-timeline")?.textContent).toContain("게임플레이 사전검사");
+    expect(findByTestId(root, "region-task-partial-apply")).toBeNull();
+    expect(JSON.stringify(base)).toBe(before);
+
+    findByTestId(root, "region-task-discard")?.click();
+    await flush();
+    expect(JSON.stringify(base)).toBe(before);
   });
 });

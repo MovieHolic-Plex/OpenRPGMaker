@@ -64,6 +64,28 @@ export interface RoomHarnessKit<Plan = unknown> {
   startLog?(plan: Plan): string;
 }
 
+export interface RoomHarnessIssue {
+  readonly code: string;
+  readonly severity: "info" | "warning" | "error";
+  readonly message: string;
+  readonly mapId: string;
+  readonly layer?: string;
+  readonly roomId?: string;
+  readonly x?: number;
+  readonly y?: number;
+  readonly repaired?: boolean;
+}
+
+export interface RoomLayerCheckpoint {
+  readonly index: number;
+  readonly layer: string;
+  readonly state: RoomLayerState;
+  readonly summary: string;
+  readonly issues: readonly RoomHarnessIssue[];
+  /** Editor-memory-only map snapshot used for real per-layer previews and rollback inspection. */
+  readonly mapSnapshot?: GameMap;
+}
+
 export interface RoomSession<Plan = unknown> {
   id: string;
   kitId: string;
@@ -71,6 +93,10 @@ export interface RoomSession<Plan = unknown> {
   checklist: Record<string, RoomLayerState>;
   mapId: string;
   log: string[];
+  /** Editor-memory-only checkpoints; never part of Project JSON. */
+  checkpoints: RoomLayerCheckpoint[];
+  /** Room ids protected from scoped rerolls. Editor-memory-only. */
+  lockedRoomIds: string[];
 }
 
 /** 세션이 얹히는 프로젝트 확장(통합 bag). */

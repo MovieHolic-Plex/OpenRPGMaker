@@ -33,6 +33,25 @@ export interface RegionChangeGroups {
   readonly unchangedCells: number;
 }
 
+type TileStacks = Readonly<Record<number, readonly number[]>>;
+
+function stacksEqual(a: readonly number[] | undefined, b: readonly number[] | undefined): boolean {
+  if (!a && !b) return true;
+  if (!a || !b || a.length !== b.length) return false;
+  return a.every((value, index) => value === b[index]);
+}
+
+function layerCellChanged(
+  index: number,
+  baseArr: readonly number[],
+  clippedArr: readonly number[],
+  baseStacks: TileStacks | undefined,
+  clippedStacks: TileStacks | undefined,
+): boolean {
+  return (baseArr[index] ?? -1) !== (clippedArr[index] ?? -1)
+    || !stacksEqual(baseStacks?.[index], clippedStacks?.[index]);
+}
+
 /** 같은 레이어에서 인접(상하좌우)한 변경 셀을 BFS 로 묶는다.
  *  변경 판정은 (base[i] ?? -1) !== (clipped[i] ?? -1) — undefined 도 -1 로 정규화. */
 function groupLayerChanges(
@@ -40,6 +59,8 @@ function groupLayerChanges(
   region: RegionRect,
   baseArr: readonly number[],
   clippedArr: readonly number[],
+  baseStacks: TileStacks | undefined,
+  clippedStacks: TileStacks | undefined,
   layer: RegionLayer,
   idPrefix: string,
 ): RegionChunk[] {
@@ -56,7 +77,7 @@ function groupLayerChanges(
       const mapY = ry + dy;
       if (mapX < 0 || mapY < 0 || mapX >= map.width || mapY >= map.height) continue;
       const mapIndex = mapY * map.width + mapX;
-      if ((baseArr[mapIndex] ?? -1) === (clippedArr[mapIndex] ?? -1)) continue;
+      if (!layerCellChanged(mapIndex, baseArr, clippedArr, baseStacks, clippedStacks)) continue;
 
       // BFS 로 연결 성분 수집
       const queue: Array<{ dx: number; dy: number; mapIndex: number }> = [{ dx, dy, mapIndex }];
@@ -82,7 +103,7 @@ function groupLayerChanges(
           const nMapY = ry + n.dy;
           if (nMapX < 0 || nMapY < 0 || nMapX >= map.width || nMapY >= map.height) continue;
           const nMapIndex = nMapY * map.width + nMapX;
-          if ((baseArr[nMapIndex] ?? -1) === (clippedArr[nMapIndex] ?? -1)) continue;
+          if (!layerCellChanged(nMapIndex, baseArr, clippedArr, baseStacks, clippedStacks)) continue;
           visited.add(nKey);
           queue.push({ dx: n.dx, dy: n.dy, mapIndex: nMapIndex });
         }
@@ -127,6 +148,8 @@ export function groupRegionChanges(
     region,
     baseMap.lowerTiles,
     clippedMap.lowerTiles,
+    baseMap.lowerTileStacks,
+    clippedMap.lowerTileStacks,
     "lower",
     "chunk",
   );
@@ -135,6 +158,8 @@ export function groupRegionChanges(
     region,
     baseMap.upperTiles,
     clippedMap.upperTiles,
+    baseMap.upperTileStacks,
+    clippedMap.upperTileStacks,
     "upper",
     "chunk",
   );

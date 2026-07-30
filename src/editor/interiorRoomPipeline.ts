@@ -272,6 +272,16 @@ export type DoorSpec = { readonly x: number; readonly y: number };
  * 상하 인접 방은 **3행 간격**(파티션: 트림 397 + 크림 벽면 ×2)을 두고 배치한다.
  * theme 생략 시 플랜 전체 테마를 따른다.
  */
+export type InteriorThemeModifier = "rustic" | "luxury" | "sacred" | "scholarly" | "martial";
+
+export const INTERIOR_THEME_MODIFIERS: readonly InteriorThemeModifier[] = [
+  "rustic",
+  "luxury",
+  "sacred",
+  "scholarly",
+  "martial",
+] as const;
+
 export type RoomSpec = {
   readonly id: string;
   readonly x: number;
@@ -279,6 +289,8 @@ export type RoomSpec = {
   readonly w: number;
   readonly h: number;
   readonly theme?: InteriorRoomTheme;
+  /** Composable mood/program overlays; e.g. dining+sacred or study+martial. */
+  readonly modifiers?: readonly InteriorThemeModifier[];
   // 방별 바닥 재질(예: 돌바닥 12, 널 바닥 102, 돗자리 139). 미지정이면 plan.floorTile → 나무 바닥 72.
   readonly floorTile?: number;
 };
@@ -296,6 +308,40 @@ export const INTERIOR_ROOM_THEMES: readonly InteriorRoomTheme[] = [
   "corridor",
 ] as const;
 
+export type InteriorSemanticTileRole = "bed" | "bookshelf" | "stove" | "table" | "counter";
+
+export interface InteriorSemanticTileSet {
+  readonly label: string;
+  readonly tileIds: readonly number[];
+  readonly layer: "lower" | "upper" | "both";
+}
+
+/** Stable semantic seam between room grammar/evaluation and the current EasyRPG art IDs. */
+export const INTERIOR_SEMANTIC_TILE_CATALOG: Readonly<Record<InteriorSemanticTileRole, InteriorSemanticTileSet>> = {
+  bed: { label: "침대", tileIds: [VR.BED_L, VR.BED_R, VR.BED_V_HEAD, VR.BED_V_FOOT], layer: "upper" },
+  bookshelf: { label: "책장", tileIds: [VR.BOOK_TL, VR.BOOK_TR, VR.BOOK_ML, VR.BOOK_MR, VR.BOOK_BL, VR.BOOK_BR], layer: "lower" },
+  stove: { label: "화덕", tileIds: [VR.STOVE_TOP, VR.STOVE_BOT], layer: "lower" },
+  table: { label: "탁자", tileIds: [VR.TABLE_L, VR.TABLE_R, VR.TABLE_R3, VR.SQUARE_TABLE], layer: "upper" },
+  counter: { label: "카운터", tileIds: [VR.COUNTER_L, VR.COUNTER_M, VR.COUNTER_R], layer: "upper" },
+};
+
+export interface InteriorThemeGrammar {
+  readonly label: string;
+  readonly requiredRoles: readonly InteriorSemanticTileRole[];
+  readonly suggestedModifiers: readonly InteriorThemeModifier[];
+}
+
+/** Data-driven role grammar. Modifiers compose with these roles instead of multiplying hard-coded themes. */
+export const INTERIOR_ROOM_THEME_CATALOG: Readonly<Record<InteriorRoomTheme, InteriorThemeGrammar>> = {
+  bedroom: { label: "침실", requiredRoles: ["bed"], suggestedModifiers: ["rustic", "luxury"] },
+  study: { label: "서재", requiredRoles: ["bookshelf"], suggestedModifiers: ["scholarly", "sacred"] },
+  dining: { label: "식당/홀", requiredRoles: ["table"], suggestedModifiers: ["rustic", "luxury", "sacred"] },
+  kitchen: { label: "주방", requiredRoles: ["stove"], suggestedModifiers: ["rustic"] },
+  storage: { label: "창고", requiredRoles: [], suggestedModifiers: ["rustic", "martial"] },
+  tavern: { label: "선술집", requiredRoles: ["table", "counter"], suggestedModifiers: ["rustic", "luxury"] },
+  corridor: { label: "복도", requiredRoles: [], suggestedModifiers: ["luxury", "sacred", "martial"] },
+};
+
 export type InteriorRoomPlan = {
   readonly mapId: MapId;
   readonly name: string;
@@ -304,6 +350,8 @@ export type InteriorRoomPlan = {
   readonly wings: readonly Wing[];
   readonly door: DoorSpec;
   readonly theme: InteriorRoomTheme;
+  /** Plan-wide composable overlays; room.modifiers overrides this list for that room. */
+  readonly themeModifiers?: readonly InteriorThemeModifier[];
   readonly seed?: number;
   // 방 구조(bbox) — 지정 시 wings 대신 rooms 합집합이 바닥이 되고, 방마다 테마 가구를 배치한다.
   readonly rooms?: readonly RoomSpec[];
@@ -902,7 +950,8 @@ function paintRoomSpace(
   plan: InteriorRoomPlan,
   room?: RoomSpec,
 ): string[] {
-  const luxury = plan.wallMaterial === "gold-brick";
+  const modifiers = room?.modifiers ?? plan.themeModifiers ?? [];
+  const luxury = plan.wallMaterial === "gold-brick" || modifiers.includes("luxury");
   const sentinels: Array<{ x: number; y: number }> = [];
   for (let y = 0; y < map.height; y += 1) {
     for (let x = 0; x < map.width; x += 1) {
@@ -920,6 +969,7 @@ function paintRoomSpace(
     }
   }
   paintThemeFurniture(map, mask, theme, plan.door, room, luxury);
+  applyThemeModifiers(map, mask, modifiers, plan.door);
   placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
   for (const c of sentinels) {
     if (getU(map, c.x, c.y) === ENTRY_SENTINEL) setU(map, c.x, c.y, TILE.EMPTY);
@@ -978,11 +1028,18 @@ export function furnishInteriorSpace(
   roomId: string,
   themeOverride?: InteriorRoomTheme,
   seed?: number,
+  modifierOverride?: readonly InteriorThemeModifier[],
 ): { plan: InteriorRoomPlan; warnings: string[] } {
   const rooms = plan.rooms ?? [];
   const idx = rooms.findIndex((r) => r.id === roomId);
   if (idx < 0) throw new Error(`room 없음: ${roomId} (rooms=${rooms.map((r) => r.id).join(",")})`);
-  const nextRooms = rooms.map((r, i) => (i === idx && themeOverride ? { ...r, theme: themeOverride } : r));
+  const nextRooms = rooms.map((r, i) => i === idx
+    ? {
+        ...r,
+        ...(themeOverride ? { theme: themeOverride } : {}),
+        ...(modifierOverride ? { modifiers: [...modifierOverride] } : {}),
+      }
+    : r);
   const nextPlan: InteriorRoomPlan = { ...plan, rooms: nextRooms };
   const room = nextRooms[idx]!;
   const floor = floorMaskFromPlan(nextPlan);
@@ -1287,14 +1344,49 @@ function themeManifestWarnings(
   };
   const where = roomId ? `room=${roomId}` : "map";
   const out: string[] = [];
-  if (theme === "bedroom" && !hasTile([VR.BED_L, VR.BED_V_HEAD], "upper")) out.push(`manifest: 침대 없는 침실 (${where})`);
-  if (theme === "kitchen" && !hasTile([VR.STOVE_BOT], "lower")) out.push(`manifest: 화덕 없는 주방 (${where})`);
-  if (theme === "study" && !hasTile([VR.BOOK_TL], "lower")) out.push(`manifest: 책장 없는 서재 (${where})`);
-  if ((theme === "dining" || theme === "tavern") && !hasTile([VR.TABLE_L, VR.SQUARE_TABLE], "upper")) {
-    out.push(`manifest: 탁자 없는 ${theme} (${where})`);
+  const grammar = INTERIOR_ROOM_THEME_CATALOG[theme];
+  for (const role of grammar.requiredRoles) {
+    if (role === "counter" && area < 30) continue;
+    const semantic = INTERIOR_SEMANTIC_TILE_CATALOG[role];
+    if (!hasTile(semantic.tileIds, semantic.layer)) {
+      out.push(`manifest: ${semantic.label} 없는 ${grammar.label} (${where})`);
+    }
   }
-  if (theme === "tavern" && area >= 30 && !hasTile([VR.COUNTER_L], "upper")) out.push(`manifest: 카운터 없는 홀 (${where})`);
   return out;
+}
+
+function applyThemeModifiers(
+  map: GameMap,
+  floor: boolean[],
+  modifiers: readonly InteriorThemeModifier[],
+  door: DoorSpec,
+): void {
+  if (modifiers.length === 0) return;
+  const selected = new Set(modifiers);
+  const wallFace = listWallFace(map, floor);
+  const northFloor = listNorthFloor(floor, map);
+  const corners = listCorners(floor, map, door);
+  const open = listOpenFloor(floor, map, door);
+
+  if (selected.has("sacred")) {
+    placeWallMount(map, wallFace, [VR.RELIGIOUS]);
+    placeTallPairU(map, northFloor, door, VR.BUST_T, VR.BUST_B);
+  }
+  if (selected.has("scholarly")) {
+    placeBookshelfRow(map, northFloor, door, 1);
+    placeOpen(map, open, [VR.CRYSTAL_BALL]);
+  }
+  if (selected.has("martial")) {
+    placeWallMount(map, wallFace, [VR.SWORD_RACK]);
+    placeTallPairU(map, northFloor, door, VR.ARMOR_T, VR.ARMOR_B);
+  }
+  if (selected.has("luxury")) {
+    placePicturePair(map, wallFace);
+    placeTallPairU(map, northFloor, door, VR.MIRROR_T, VR.MIRROR_B);
+  }
+  if (selected.has("rustic")) {
+    placeCorner(map, corners, [VR.BARREL, VR.CRATE]);
+  }
 }
 
 function paintThemeFurniture(

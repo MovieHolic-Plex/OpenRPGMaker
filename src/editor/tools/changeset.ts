@@ -2,13 +2,14 @@
 // 툴은 Project를 직접 수정하지 않고 draft(구조적 복제)에 적용한다.
 // 여기서 draft 생성 / diff 요약 / 커밋 게이트(projectLint)를 순수 함수로 제공한다.
 
+import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { ChangeSummary } from "./types";
 
-// 구조적 복제본(draft) 생성. 브라우저/Node 모두 structuredClone 전역 사용.
+// 구조적 복제본(draft) 생성. Project JSON과 editor-only detached session memory를 함께 복제한다.
 export function createDraft(project: Project): Project {
-  return structuredClone(project);
+  return cloneDetachedDraft(project);
 }
 
 function emptySummary(): ChangeSummary {
