@@ -355,6 +355,9 @@ describe("ice grand expanse geometry topology", () => {
     expect(firstTopology).toEqual(secondTopology);
     expect(reference).toEqual(referenceBefore);
     expect(sha256([terrainBefore.lowerTiles, terrainBefore.upperTiles, [...terrainBefore.ceilingMask]])).toBe(terrainHash);
-    expect(terrainHash).toBe("99e95f5eca04267510712feac7f896e940822aaf280a7f938864c19f8b611060");
+    // 지형 해시 — 심연 428 → 광석 암반 285 치회(2,800칸) · 평지 립 343 도입 ·
+    // 절뱽 페이스 조각 선택을 `index % 3` 에서 가로 연속 기반으로 교정한 뒤의 값이다.
+    // 새 값은 연속 3회 밀드에서 동일함을 확인했다.
+    expect(terrainHash).toBe("624a469b91c1a0f676eeec7fba91cac4a0dad826fb90af12b7ca0cf26fdc8a91");
   });
 });

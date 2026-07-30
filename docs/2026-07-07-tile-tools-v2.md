@@ -2,7 +2,8 @@
 
 - 작성: Claude Fable 5 (감독자 직접 구현, 사용자 지시)
 - 커밋: 7734d88 (feat/phase-6a)
-- 코드: `src/editor/tools/v2/` (tilePlaceV2.ts / tileKnowledgeV2.ts / tileToolsV2Support.ts / index.ts)
+- 코드: `src/editor/tools/v2/` (tilePlaceV2.ts / tileKnowledgeV2.ts / index.ts). `tileToolsV2Support.ts` 는
+  `../toolArgCoerce` 재수출 shim 이었고 참조가 없어 제거했다 — 인자 강제는 `@/editor/tools/toolArgCoerce` 를 직접 쓴다.
 - 테스트: `test/tileToolsV2.test.ts` (계약 테스트 19)
 
 ## 1. 왜 다시 만들었나 — 실측된 고장

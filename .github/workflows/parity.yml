@@ -34,6 +34,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm run typecheck:app
       - run: pnpm test
+      - run: pnpm run test:node
 
   build:
     runs-on: ubuntu-latest

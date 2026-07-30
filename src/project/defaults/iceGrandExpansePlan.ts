@@ -11,7 +11,39 @@ export const ICE_GRAND_EXPANSE_GATE_GEOMETRY = {
   barrier: { minX: 0, maxX: 127, topY: 46, depth: 2 },
 } as const;
 export const ICE_GRAND_EXPANSE_FLOOR_TILE = 67;
-export const ICE_GRAND_EXPANSE_CEILING_TILE = 428;
+
+/**
+ * 네가티밌 공간(천장 마스크)을 싹음 물집 — **푸른 광석 암반 285**.
+ *
+ * 1차 판은 428 이었다. 정본 의미표가 366~458 을 통째로 `푸른 발광 심연` 으로 묶어 둔 그
+ * 심연 집합이고, 실측 픽셀은 428 이 **85% 순검정**(평군 rgb 2,7,14)이다.
+ * 64×64 에서 감독이 나락으로 판정해 지운 427(100% 순검정)과 같은 재료다 —
+ * 한 맵에서 지우고 다른 맵에 2,800칸 남기면 같은 결함을 남긴 것이다.
+ *
+ * 285 는 `푸른 광석 암반`(평군 rgb 14,53,104 · 검정 11%)이며 통행 표시가 428 과 동일하게 `x` 다 —
+ * 바뀌는 것은 그림만이고 통행은 한 칸도 달라지지 않는다(봉인·보스·체크포인트 좌표가 그대로 생산한다).
+ * 315 는 같은 암반이지만 통행 표시가 `star` 라 무른 칸이 된다 — 체우기에 쓰지 않는다.
+ */
+export const ICE_GRAND_EXPANSE_CEILING_TILE = 285;
+
+/**
+ * 절뱽 상단 바로 위 행에 깔는 **평지 립** — 눈밭 블롭 하단 중앙 343.
+ *
+ * 64×64 와 같은 이유다: 눈밭 9슬라이스가 깔는 남변 97 은 벌 윗선과 `97 ↓ 373` = 173 으로
+ * 부딪치고, 343 은 `343 ↓ 373` = 38 로 이어진다. 절뱽 칸 자심은 건드리지 않으며
+ * 대각 캡 위에도 놓지 않는다(`343 ↓ 286` = 168).
+ */
+export const ICE_GRAND_EXPANSE_LIP_TILE = 343;
+
+/**
+ * 이 맵에 한 칸도 없어야 하는 심연·물 집합. 검사가 부재를 고정한다.
+ *
+ * 앞의 여덟은 정본 의미표의 `푸른 발광 심연` 전원이고, 뒤의 네개는 칩셋의 깊은 물 스트립 바탕이다.
+ */
+export const ICE_GRAND_EXPANSE_BANNED_VOID_TILES = [
+  366, 367, 368, 396, 397, 398, 426, 427, 428, 456, 457, 458,
+  120, 121, 122, 150, 151, 152, 180, 181, 182, 210, 211, 212,
+] as const;
 
 export type IceGrandExpanseDirection = "rise" | "fall";
 export type IceGrandExpanseMotifOrigin = readonly [x: number, y: number];

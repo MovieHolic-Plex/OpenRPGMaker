@@ -240,13 +240,18 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 /* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */
 
 .coach-mark-card {
-  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 97%, #000);
+  /* --control-bg 는 rgba(255,255,255,0.045) 라 color-mix 로 섞어도 알파가 남아
+     카드가 4.5% 불투명으로 보였다(반투명 원인). 온보딩 카드는 뒤 UI 를 가려야 하므로
+     불투명 색을 직접 지정한다. */
+  background: var(--mix-base, #1a2236);
   border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 60%, transparent);
   border-radius: 10px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   padding: 12px 14px;
   position: fixed;
-  z-index: var(--z-popover);
+  /* 첫 방문 안내라 어떤 셸 레이어보다 앞에 와야 한다 — z-popover(90) 는
+     flyout/popover-high/modal 아래로 깔려 레일·패널에 가렸다. */
+  z-index: var(--z-modal-top);
 }
 
 .coach-mark-head {

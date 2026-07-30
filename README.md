@@ -145,7 +145,15 @@ API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환�
 
 ## 테스트
 
-순수 로직 위주 단위 테스트(`test/`, 368개):
+```bash
+npm test          # Vitest 단위 스위트 (test/**/*.test.ts)
+npm run test:node # node:test 스위트 (test/**/*.test.mjs — 플레이어 아티팩트/OAuth 계약)
+npm run test:parity # 에디터→플레이어 parity 게이트 (test/parity/)
+npm run test:e2e  # Playwright 브라우저 스위트 (test/e2e/)
+```
+
+Vitest 단위 스위트는 약 680개 파일 / 약 4,900개 테스트다(순수 로직 위주). 주요 파일:
+
 - `interpreter.test.ts` — RM2K3 명령 상태머신(순차/choices/fork/변수연산/스위치/타이머/입력대기/라벨-루프/changeTile/moveEvent/callCommonEvent)
 - `migration.test.ts` — v1→v2 변환(tiles→lowerTiles, flags→switches, collisions→passability) + 왕복
 - `io.test.ts` — v2 직렬화 왕복 + 잘못된 파일 거부
@@ -155,4 +163,12 @@ API 사용이 필요한 경우 `AI 설정 → API / 게이트웨이`로 전환�
 - `eventCommandReorder.test.ts` — 이벤트 명령 드래그 재정렬 백엔드
 - `editorHotkeys.test.ts` — RM2K3 스타일 에디터 단축키 매핑
 
-Phaser 씬/DOM UI는 `npm run dev` + codex 브라우저 QA로 검증.
+`npm run test:node` 는 `test/` 를 **탐색**해서 `*.test.mjs` 를 전부 돌린다(`scripts/run-node-tests.mjs`).
+파일 목록을 하드코딩하지 않는 이유: 과거에 `playerArtifactPipeline*` 5개와 `playerReleasePreflight`
+(합계 85 케이스)가 vitest 의 `include`(`*.test.ts`)에도, npm 스크립트에도 걸리지 않아
+**아무데서도 실행되지 않는 상태**로 방치됐다. 웹 플레이어 export 의 fail-closed 경계를 지키는
+테스트였으므로 탐색 방식으로 바꿨다.
+
+Phaser 씬/DOM UI 는 `npm run dev` + codex 브라우저 QA 및 `test/e2e` 로 검증한다.
+`test/e2e` 에서 `_` 로 시작하는 스펙은 진단·임시용이라 기본 실행에서 제외되고, 파일 이름을
+직접 지목하거나 `E2E_INCLUDE_DIAGNOSTICS=1` 일 때만 돌아간다(`playwright.config.ts`).

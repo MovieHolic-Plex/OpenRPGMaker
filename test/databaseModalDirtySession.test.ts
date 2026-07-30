@@ -101,5 +101,8 @@ describe("database modal dirty session", () => {
       guard += 1;
       expect(store.getCurrent().database.actors[0]?.name).not.toBe("Discarded After Saturation");
     }
-  });
+    // 스냅샷 55개 + undo 소진은 프로젝트 전체를 깊은 복사한다. 포커스 실행은 ~8.5초로 통과하지만
+    // 전체 스위트 병렬 실행에서는 15초 기본 타임아웃(vitest.config.ts)을 넘겨 실패했다(실측).
+    // 케이스 자체가 느린 것이므로 기본값을 올리지 않고 이 테스트만 예산을 늘린다.
+  }, 45_000);
 });
