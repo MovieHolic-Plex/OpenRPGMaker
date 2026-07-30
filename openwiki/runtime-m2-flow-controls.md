@@ -35,3 +35,7 @@ M2 runtime commands: event processing, erase, graphic pattern, movement, checkpo
 
 - Tool place_storage_chest places an action event with openChest.
 - Distinct from place_chest treasure reward preset.
+
+## Page 3 location/vehicle compatibility (2026-07-30)
+- `m2Runtime` reads canonical editor fields first: variable location uses `mapVariableId` / `xVariableId` / `yVariableId`; boarding uses `boarded`; vehicle location uses `vehicle`; event swapping uses `eventA` / `eventB`.
+- Legacy aliases (`mapId`/`x`/`y` for variable ids, `enabled`, `target`, and swap `target`/`value`/`mapId`) remain read-only fallbacks for already-saved projects. New editor writes must use only canonical keys.

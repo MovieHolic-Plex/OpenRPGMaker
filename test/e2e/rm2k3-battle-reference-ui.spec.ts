@@ -32,7 +32,8 @@ test("battle command, target, and result surfaces stay simple", async ({ page })
   await expect(page.getByTestId("battle-target-analysis")).toHaveCount(0);
   await expect(page.getByTestId("battle-target-brackets")).toBeVisible();
   await expect(page.getByTestId("battle-expected-result")).toHaveCount(0);
-  const targetPrompt = await page.getByTestId("battle-target-prompt").textContent();
+  await expect(page.getByTestId("battle-target-prompt")).toHaveCount(0);
+  const targetHint = await page.getByTestId("battle-message-window").textContent();
   await page.screenshot({ path: `${evidenceDir}/02-target.png`, fullPage: true });
 
   await page.locator(".battle-enemy[data-battle-targetable='true']").first().click();
@@ -42,6 +43,6 @@ test("battle command, target, and result surfaces stay simple", async ({ page })
   await expect(page.getByTestId("battle-result-progress")).toHaveCount(0);
   await expect(page.getByTestId("battle-result-next-objective")).toHaveCount(0);
   await page.screenshot({ path: `${evidenceDir}/03-result.png`, fullPage: true });
-  const labels = { commands: commandLabels, targetPrompt, result };
+  const labels = { commands: commandLabels, targetHint, result };
   await writeFile(`${evidenceDir}/simple-ui-labels.json`, `${JSON.stringify(labels, null, 2)}\n`, "utf8");
 });

@@ -386,8 +386,14 @@ function labeledGroup(
     dataset: { testid: `event-condition-group-${cond.kind}` },
   });
   const list = el("div", { class: "event-condition-group-list" });
-  const children = cond.conditions.length > 0 ? cond.conditions : [{ kind: "switch" as const, switchId: "", value: true }];
-  children.forEach((child, index) => {
+  let currentChildren: Condition[] = structuredClone(
+    cond.conditions.length > 0 ? cond.conditions : [{ kind: "switch" as const, switchId: "", value: true }]
+  );
+  const publish = (next: Condition[]) => {
+    currentChildren = next;
+    onChange({ kind: cond.kind, conditions: structuredClone(currentChildren) });
+  };
+  currentChildren.forEach((child, index) => {
     const card = el("div", {
       class: "event-condition-group-item",
       dataset: { testid: `event-condition-group-item-${index}` },
@@ -395,8 +401,7 @@ function labeledGroup(
     card.append(
       el("div", { class: "event-condition-group-item-title", text: `조건 ${index + 1}` }),
       conditionForm(child, (nextChild) => {
-        const next = children.map((entry, i) => (i === index ? nextChild : entry));
-        onChange({ kind: cond.kind, conditions: next });
+        publish(currentChildren.map((entry, i) => (i === index ? nextChild : entry)));
       }),
       el("button", {
         class: "btn danger",
@@ -405,8 +410,8 @@ function labeledGroup(
         dataset: { testid: `event-condition-group-remove-${index}` },
         on: {
           click: () => {
-            const next = children.filter((_, i) => i !== index);
-            onChange({ kind: cond.kind, conditions: next.length ? next : [{ kind: "switch", switchId: "", value: true }] });
+            const next = currentChildren.filter((_, i) => i !== index);
+            publish(next.length ? next : [{ kind: "switch", switchId: "", value: true }]);
           },
         },
       })
@@ -422,10 +427,7 @@ function labeledGroup(
       dataset: { testid: "event-condition-group-add" },
       on: {
         click: () => {
-          onChange({
-            kind: cond.kind,
-            conditions: [...children, { kind: "switch", switchId: "", value: true }],
-          });
+          publish([...currentChildren, { kind: "switch", switchId: "", value: true }]);
         },
       },
     })

@@ -25,6 +25,9 @@ type SkinDiag = {
   enemies?: number;
   /** true = another element covers the field enemy's center (pointer blocked) — QA datum for Task 8 */
   enemyPointerBlocked?: boolean;
+  /** true = MV layout panels overlap; textOverlapPairs counts visible label intersections. */
+  commandPartyOverlap?: boolean;
+  textOverlapPairs?: number;
   /** field size + rendered sprite rects (ground truth for battler placement tuning). */
   field?: { w: number; h: number } | null;
   partySprites?: { w: number; h: number; x: number; y: number }[];
@@ -67,13 +70,15 @@ async function startSkinBattle(page: Page): Promise<void> {
  * window-level keydown listener) — skin-agnostic, unlike a pointer click on
  * the field enemy, which the pokemon skin's party panel overlaps.
  */
-async function performSkinAttack(page: Page): Promise<void> {
+async function performSkinAttack(page: Page): Promise<SkinDiag> {
   await waitForActorCommand(page);
   await page.getByTestId("actor-command-attack").click();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
+  const targetDiag = await diag(page);
   await page.keyboard.press("z");
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", /acting|impact|result/, { timeout: 10_000 });
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-sequence-busy", "false", { timeout: 20_000 });
+  return targetDiag;
 }
 
 async function diag(page: Page): Promise<SkinDiag> {
@@ -100,6 +105,34 @@ async function diag(page: Page): Promise<SkinDiag> {
         const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
         return hit !== null && hit !== enemy && !enemy.contains(hit);
       })(),
+      commandPartyOverlap: (() => {
+        const command = document.querySelector<HTMLElement>(".battle-command-host");
+        const party = document.querySelector<HTMLElement>(".battle-party");
+        if (!command || !party) return false;
+        const a = command.getBoundingClientRect();
+        const b = party.getBoundingClientRect();
+        return Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1
+          && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+      })(),
+      textOverlapPairs: (() => {
+        const nodes = [...document.querySelectorAll<HTMLElement>(
+          ".battle-command-text strong, .battle-party .battle-actor-name, .battle-party .battle-actor-vitals",
+        )].filter((node) => {
+          const style = getComputedStyle(node);
+          const rect = node.getBoundingClientRect();
+          return style.display !== "none" && style.visibility !== "hidden" && rect.width > 0 && rect.height > 0;
+        });
+        let overlaps = 0;
+        for (let left = 0; left < nodes.length; left += 1) {
+          const a = nodes[left]!.getBoundingClientRect();
+          for (let right = left + 1; right < nodes.length; right += 1) {
+            const b = nodes[right]!.getBoundingClientRect();
+            if (Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1
+              && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1) overlaps += 1;
+          }
+        }
+        return overlaps;
+      })(),
     };
   });
 }
@@ -123,8 +156,9 @@ for (const skin of listBattleSkinIds()) {
 
     await waitForActorCommand(page);
     await page.screenshot({ path: `${dir}/02-command.png`, fullPage: true });
+    const commandDiag = await diag(page);
 
-    await performSkinAttack(page);
+    const targetDiag = await performSkinAttack(page);
     await page.screenshot({ path: `${dir}/04-attack-impact.png`, fullPage: true });
 
     const d = await diag(page);
@@ -132,5 +166,10 @@ for (const skin of listBattleSkinIds()) {
     expect(d.present, `${skin}: battle-scene missing`).toBe(true);
     expect(d.skin, `${skin}: skin attribute mismatch after battle`).toBe(skin);
     expect(d.clipped, `${skin}: content clipped (${d.overflowX}x${d.overflowY})`).toBe(false);
+    if (skin === "mv") {
+      expect(targetDiag.enemyPointerBlocked, "mv target: another layer blocks the enemy center").toBe(false);
+      expect(commandDiag.commandPartyOverlap, "mv command: command and party panels overlap").toBe(false);
+      expect(commandDiag.textOverlapPairs, "mv command: visible command/status labels overlap").toBe(0);
+    }
   });
 }

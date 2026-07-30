@@ -50,7 +50,7 @@ describe("m2 event command catalog", () => {
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Comment"))).toBe(true);
     expect(requireEntry("Display Text Settings").runtimeSupport).toBe("runtime-full");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Display Text Settings"))).toBe(true);
-    expect(requireEntry("Open Load Menu").runtimeSupport).toBe("runtime-partial");
+    expect(requireEntry("Open Load Menu").runtimeSupport).toBe("runtime-full");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Open Load Menu"))).toBe(true);
     expect(requireEntry("Break Loop").runtimeSupport).toBe("runtime-full");
     expect(requireEntry("Break Loop").existingKind).toBe("breakLoop");
@@ -125,7 +125,7 @@ describe("m2 event command catalog", () => {
 
     expect(isM2CatalogEntrySelectableInBattleEvent(requireEntry("Enemy Encounter"))).toBe(true);
     expect(isM2CatalogEntrySelectableInBattleEvent(requireEntry("Change Battleback"))).toBe(true);
-    expect(isM2CatalogEntrySelectableInBattleEvent(requireEntry("Open Load Menu"))).toBe(false);
+    expect(isM2CatalogEntrySelectableInBattleEvent(requireEntry("Open Load Menu"))).toBe(true);
     expect(createDefaultM2Fields(requireEntry("Enemy Encounter"))).toEqual({ target: "" });
     expect(createDefaultM2Fields(requireEntry("Change Battleback"))).toEqual({ resourceId: "" });
   });
@@ -175,21 +175,24 @@ describe("m2 event command catalog", () => {
 
     for (const title of modernTitles) {
       const entry = requireEntry(title);
-      const expectedSupport = ["Camera Control", "Spawn Event", "Remove Event"].includes(title)
-        ? "runtime-full"
-        : "runtime-partial";
-      expect(entry.runtimeSupport).toBe(expectedSupport);
-      expect(entry.bodyStrategy).toBe("generic");
+      expect(entry.runtimeSupport).toBe("runtime-full");
+      if (title === "Advanced Dialogue") {
+        expect(entry.bodyStrategy).toBe("existing");
+        expect(entry.existingKind).toBe("text");
+        expect(createDefaultM2Fields(entry)).toEqual({});
+      } else {
+        expect(entry.bodyStrategy).toBe("generic");
+        expect(createDefaultM2Fields(entry)).not.toEqual({});
+      }
       expect(entry.pickerPage).toBe(4);
       expect(isM2CatalogEntrySelectableInMap(entry)).toBe(true);
-      expect(createDefaultM2Fields(entry)).not.toEqual({});
       expect(entry.label).not.toBe(title);
     }
   });
 
   it("publishes only the three runtime support grades", () => {
     const grades = new Set(M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport));
-    expect(grades).toEqual(new Set(["runtime-full", "runtime-partial", "editor-only"]));
+    expect(grades).toEqual(new Set(["runtime-full", "editor-only"]));
     expect(M2_COMMAND_CATALOG.map((entry) => entry.supportStatus)).toEqual(
       M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport)
     );
@@ -211,8 +214,14 @@ describe("m2 event command catalog", () => {
 
     expect(fullBattleIds).toEqual([
       "m2-098-change-enemy-hp",
+      "m2-099-change-enemy-mp",
+      "m2-100-change-enemy-state",
       "m2-101-enemy-encounter",
       "m2-102-change-battleback",
+      "m2-103-show-animation",
+      "m2-104-battle-events",
+      "m2-105-abort-battle",
+      "m2-106-call-common-event",
       "m2-107-force-escape",
       "m2-108-action-times",
     ]);

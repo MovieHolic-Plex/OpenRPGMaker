@@ -27,6 +27,14 @@ export type CommandToolbarHistory = {
 const HISTORY_LIMIT = 50;
 const histories = new Map<string, CommandHistory>();
 
+/** 편집 세션의 페이지 히스토리를 모두 폐기한다. prefix 예: `${mapId}:${eventId}:`. */
+export function clearCommandToolbarHistories(prefix: string): void {
+  for (const key of histories.keys()) {
+    if (key.startsWith(prefix)) histories.delete(key);
+  }
+}
+
+
 export function createCommandToolbarHistory(options: CommandToolbarHistoryOptions): CommandToolbarHistory {
   const history = () => historyFor(options.key);
   const recordBeforeChange = () => {
@@ -61,6 +69,14 @@ export function createCommandToolbarHistory(options: CommandToolbarHistoryOption
         recordBeforeChange();
         actions.moveCommandTo(sourcePath, toIndex);
       },
+      ...(actions.moveCommandAcross
+        ? {
+            moveCommandAcross: (sourcePath: readonly number[], targetContainerPath: readonly number[], toIndex: number) => {
+              recordBeforeChange();
+              actions.moveCommandAcross!(sourcePath, targetContainerPath, toIndex);
+            },
+          }
+        : {}),
     }),
     copySelected: (path) => {
       const command = resolveCommandAtPath(options.readCommands(), path);

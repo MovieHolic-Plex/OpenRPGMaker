@@ -102,7 +102,7 @@ describe("battle dom incremental rendering", () => {
     const readHp = () => controller.root.querySelector("[data-testid='battle-enemy-hp-enemy-1']")?.textContent;
     expect(readHp()).toBe("220/220");
     controller.root.querySelector<HTMLElement>("[data-testid='actor-command-attack']")?.click();
-    controller.root.querySelector<HTMLElement>("[data-testid='battle-target-enemy-1']")?.click();
+    controller.root.querySelector<HTMLElement>(".battle-enemy[data-testid='enemy-1']")?.click();
     vi.advanceTimersByTime(50);
     expect(readHp()).not.toBe("220/220");
     controller.destroy();

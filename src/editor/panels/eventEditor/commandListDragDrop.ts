@@ -61,6 +61,7 @@ export function attachItemDropHandlers(
     const sourcePath = readDragPath(data);
     if (!sourcePath) return;
     data.preventDefault();
+    data.stopPropagation();
     item.classList.remove("cmd-drop-before", "cmd-drop-after", "cmd-drop-invalid");
     const rect = item.getBoundingClientRect();
     const before = data.clientY < rect.top + rect.height / 2;
@@ -82,6 +83,7 @@ export function ensureListDropHandlers(host: HTMLElement, actions: CommandListAc
     const sourcePath = readDragPath(data);
     if (!sourcePath) return;
     data.preventDefault();
+    data.stopPropagation();
     const containerPath = parseContainerPath(host.dataset.containerPath);
     moveCommandToEnd(sourcePath, containerPath, actions);
   });

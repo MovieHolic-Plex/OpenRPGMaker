@@ -102,17 +102,19 @@ test("battle command screen uses an RM2003-style field and bottom HUD layout", a
 test("battle target and result states stay readable without HUD collision", async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1360, height: 768 });
+  await mkdir(`${evidenceDir}/red-green`, { recursive: true });
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
 
   await page.getByTestId("actor-command-attack").click();
-  await expect(page.getByTestId("battle-target-prompt")).toBeVisible();
+  await expect(page.getByTestId("battle-target-brackets")).toBeVisible();
+  await expect(page.getByTestId("battle-target-prompt")).toHaveCount(0);
   const targetMetrics = await battleLayoutMetrics(page);
   await writeFile(`${evidenceDir}/red-green/battle-target-layout.json`, `${JSON.stringify(targetMetrics, null, 2)}\n`, "utf8");
-  expect(targetMetrics.targetPromptText).toContain("대상:");
+  expect(targetMetrics.targetPromptText).toBeUndefined();
   expect(targetMetrics.messageDisplay).toBe("grid");
-  expect(targetMetrics.targetMenu).toBeTruthy();
-  expect(targetMetrics.targetBracket?.y ?? Number.NEGATIVE_INFINITY).toBeGreaterThanOrEqual(targetMetrics.message.bottom - 1);
+  expect(targetMetrics.targetMenu).toBeUndefined();
+  expect(targetMetrics.targetBracket).toBeTruthy();
   for (const [index, left] of targetMetrics.targetControls.entries()) {
     for (const right of targetMetrics.targetControls.slice(index + 1)) {
       expect(rectanglesOverlap(left, right)).toBe(false);
@@ -170,7 +172,7 @@ async function battleLayoutMetrics(page: Page): Promise<BattleLayoutMetrics> {
     const party = requiredElement("[data-testid='battle-party']");
     const message = requiredElement("[data-testid='battle-message-window']");
     const firstEnemy = requiredElement("[data-testid='enemy-1']");
-    const firstActor = requiredElement("[data-testid='battle-actor-actor_hero']");
+    const firstActor = requiredElement(".battle-actor-group .battle-actor");
     const partyRows = [...document.querySelectorAll<HTMLElement>(".battle-actor-status")].map(rectOf);
     const commandPanelStyle = getComputedStyle(commandPanel);
     const enemyListPanelStyle = getComputedStyle(enemyListPanel);

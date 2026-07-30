@@ -59,7 +59,7 @@
 .battle-scene[data-battle-skin="bravely"] .battle-command:hover,
 .battle-scene[data-battle-skin="bravely"] .battle-command:focus-visible,
 .battle-scene[data-battle-skin="bravely"] .battle-command.battle-target-selected,
-.battle-scene[data-battle-skin="bravely"] .battle-command-menu .battle-command:first-of-type {
+.battle-scene[data-battle-skin="bravely"] .battle-command[data-battle-command-cursor="true"] {
   background: #fff6df;
   border-color: #8a6f4d;
   color: #241a10 !important;

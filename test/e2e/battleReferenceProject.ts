@@ -48,6 +48,13 @@ export async function seedLayoutResultBattleProject(page: Page): Promise<void> {
 }
 
 export function prepareReferenceBattleProject(project: BattleProject): void {
+  project.system.battleUiStyle = "classic";
+  project.meta.terms = {
+    ...project.meta.terms,
+    attack: "공격",
+    skill: "스킬",
+    item: "아이템",
+  };
   setReferenceBattleback(project);
   setReferenceEnemy(project);
   ensureReferenceParty(project);

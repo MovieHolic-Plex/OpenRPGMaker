@@ -494,3 +494,10 @@
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* Field-centric targeting: the selected battler must carry name + HP feedback even
+   though RM2003 hides enemy HUD details during ordinary command/acting phases. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"]
+  .battle-enemy.battle-target-selected .battle-enemy-hud {
+  display: grid !important;
+}

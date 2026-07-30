@@ -3,6 +3,7 @@ import type { BattleActionResultSnapshot } from "@/battle/types";
 import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { store } from "@/project/store";
+import { resolveTerms } from "@/project/terms";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -128,12 +129,13 @@ export function targetSelectDirectorState(snapshot: BattleSnapshot): BattleDirec
   const actor = activeActor(snapshot);
   const selectedEnemy = snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
     ?? snapshot.enemies.find((enemy) => snapshot.targetSelection?.targetEnemyIds.includes(enemy.id));
+  const terms = resolveTerms(store.getCurrent());
+  const targetCount = snapshot.targetSelection?.targetEnemyIds.length ?? 0;
   return {
     step: "target",
-    lines: [
-      actor ? `${actor.name}: 대상을 선택하십시오.` : "대상을 선택하십시오.",
-      selectedEnemy ? `${withJosa(selectedEnemy.name, "을/를")} 겨냥하고 있습니다.` : "선택 가능한 적이 없습니다.",
-    ],
+    lines: [targetCount > 1
+      ? `← → ${terms.target} · Z/Enter · X/Esc`
+      : "Z/Enter · X/Esc"],
     activeActorRecordId: actor?.recordId,
     targetId: selectedEnemy?.id,
   };

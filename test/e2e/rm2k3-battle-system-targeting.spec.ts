@@ -21,14 +21,17 @@ test("battle attack waits for explicit RM2003-style target selection before exec
 
   await page.getByTestId("actor-command-attack").click();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
-  await expect(page.getByTestId("battle-target-enemy-1")).toBeVisible();
+  await expect(page.locator(".battle-enemy[data-testid='enemy-1'][data-battle-targetable='true']")).toBeVisible();
+  await expect(page.getByTestId("battle-target-brackets")).toBeVisible();
+  await expect(page.getByTestId("battle-enemy-hud-enemy-1")).toBeVisible();
   await expect(page.getByTestId("battle-message-window")).toBeVisible();
   await page.screenshot({ path: `${evidenceDir}/002-target-select.png`, fullPage: true });
 
   const targetState = await battleTargetState(page);
   await writeFile(`${evidenceDir}/002-target-select.json`, `${JSON.stringify(targetState, null, 2)}\n`, "utf8");
   expect(targetState.targetableEnemyIds).toContain("enemy-1");
-  expect(targetState.messageText).toContain("대상");
+  expect(targetState.messageText).toContain("Z/Enter");
+  expect(targetState.messageText).not.toContain("슬라임");
 
   await confirmBattleTarget(page, "enemy-1");
   await expect(page.getByTestId("battle-scene")).not.toHaveAttribute("data-battle-phase", "targetSelect");

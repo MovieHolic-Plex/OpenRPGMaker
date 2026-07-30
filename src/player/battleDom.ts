@@ -100,6 +100,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let lastDamageFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   let commandPanelSignature = "";
+  let commandMenuKey = "";
+  let commandCursorIndex = 0;
   let lastEnemyActionKey = "";
   // Shift 단독 토글 감지용 — Shift 가 눌린 동안 다른 키가 함께 눌리면 조합키로 본다.
   let shiftHeld = false;
@@ -115,6 +117,15 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const partyPanel = battlePartyStatus(initialSnapshot);
   const commandHost = document.createElement("div");
   commandHost.className = "battle-command-host";
+  commandHost.addEventListener("focusin", (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest<HTMLButtonElement>("button.battle-command")
+      : null;
+    if (!button) return;
+    const buttons = commandButtons();
+    const index = buttons.indexOf(button);
+    if (index >= 0) applyCommandCursor(buttons, index, false);
+  });
   const resultHost = document.createElement("div");
   resultHost.className = "battle-result-host";
 
@@ -128,7 +139,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const autoBtn = document.createElement("button");
   autoBtn.className = "battle-control-btn";
   autoBtn.dataset.testid = "battle-auto-btn";
-  autoBtn.textContent = "🤖 AUTO (A)";
+  autoBtn.textContent = "🤖 자동 (A)";
   autoBtn.onclick = (e) => {
     e.stopPropagation();
     toggleAutoBattle();
@@ -286,6 +297,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (snapshot.phase === "targetSelect") {
         event.preventDefault();
         cycleTarget(snapshot, -1);
+      } else if (snapshot.phase === "actorCommand") {
+        event.preventDefault();
+        moveCommandCursor(-1);
       }
       return;
     }
@@ -293,6 +307,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (snapshot.phase === "targetSelect") {
         event.preventDefault();
         cycleTarget(snapshot, 1);
+      } else if (snapshot.phase === "actorCommand") {
+        event.preventDefault();
+        moveCommandCursor(1);
       }
       return;
     }
@@ -301,10 +318,22 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       handleConfirm(snapshot);
     }
   }
-  root.addEventListener("keydown", onKeydown);
+  const rootKeydownEvents = new WeakSet<KeyboardEvent>();
+  function onRootKeydown(event: KeyboardEvent): void {
+    // Confirm/cancel can synchronously replace the focused command button. Once detached,
+    // root.contains(event.target) is false at window bubble time, so remember the event
+    // object itself and keep the fallback from processing one physical key twice.
+    rootKeydownEvents.add(event);
+    onKeydown(event);
+  }
+  root.addEventListener("keydown", onRootKeydown);
   function onWindowKeydown(event: KeyboardEvent): void {
+    if (rootKeydownEvents.has(event)) return;
     if (document.activeElement === root) return;
     if (!root.isConnected) return;
+    // root 안에서 시작한 키 이벤트는 root 리스너가 이미 처리한다. window fallback에서
+    // 다시 처리하면 방향키가 두 칸 이동한다.
+    if (event.target instanceof Node && root.contains(event.target)) return;
     // 텍스트 입력 중에는 전투 키를 절대 가로채지 않는다(결함 2).
     // 에디터 입력창에 포커스가 있으면 event.target 이 input/textarea/select 이거나
     // contenteditable 요소(또는 그 자손)다. 여기서 즉시 return 해 타이핑이 삼켜지지 않게 한다.
@@ -332,9 +361,36 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (selectedId) confirmTargetSelection(selectedId);
       return;
     }
-    if (snapshot.phase === "actorCommand" && submenu === null) {
-      beginTargetCommand({ kind: "attack" });
+    if (snapshot.phase !== "actorCommand") return;
+    const selected = commandButtons().find((button) => button.dataset.battleCommandCursor === "true")
+      ?? commandButtons()[0];
+    selected?.click();
+  }
+
+  function commandButtons(): HTMLButtonElement[] {
+    return [...commandHost.querySelectorAll<HTMLButtonElement>(
+      "button.battle-command:not(:disabled):not([data-preview-only='true'])",
+    )];
+  }
+
+  function moveCommandCursor(direction: 1 | -1): void {
+    const buttons = commandButtons();
+    if (buttons.length === 0) return;
+    commandCursorIndex = (commandCursorIndex + direction + buttons.length) % buttons.length;
+    applyCommandCursor(buttons, commandCursorIndex, true);
+  }
+
+  function applyCommandCursor(buttons: readonly HTMLButtonElement[], index: number, focus: boolean): void {
+    const boundedIndex = Math.max(0, Math.min(index, buttons.length - 1));
+    commandCursorIndex = boundedIndex;
+    for (const [buttonIndex, button] of buttons.entries()) {
+      const selected = buttonIndex === boundedIndex;
+      button.tabIndex = selected ? 0 : -1;
+      if (selected) button.setAttribute("data-battle-command-cursor", "true");
+      else button.removeAttribute("data-battle-command-cursor");
+      button.setAttribute("aria-current", selected ? "true" : "false");
     }
+    if (focus) buttons[boundedIndex]?.focus({ preventScroll: true });
   }
 
   function handleCancel(snapshot: BattleSnapshot): void {
@@ -405,28 +461,36 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const signature = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${snapshot.targetSelection?.selectedEnemyId ?? ""}`;
     if (signature === commandPanelSignature && commandHost.childElementCount > 0) return;
     commandPanelSignature = signature;
+    const nextMenuKey = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${submenu?.kind === "skill" ? submenu.command.id : ""}`;
+    if (nextMenuKey !== commandMenuKey) {
+      commandMenuKey = nextMenuKey;
+      commandCursorIndex = 0;
+    }
     commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
-    markConfirmCursor(snapshot);
+    syncCommandCursor(snapshot);
   }
 
-  /** 확인 키(z/Enter)가 지금 발동시키는 명령에 커서 표식을 붙인다.
-   *
-   *  이 엔진의 전투 명령 메뉴는 attachCursorMenu 를 쓰지 않아 **선택 표식이 DOM 에 전혀
-   *  없었다**(실측: `.selected` 0개, activeElement 는 에디터 루트). 그래서 키보드로 z 를 눌러
-   *  통상공격이 나가는데도 화면에는 무엇이 선택됐는지 표시가 없었다.
-   *
-   *  표식은 `handleConfirm` 의 실제 분기와 정확히 일치시킨다 — `actorCommand` 이고 서브메뉴가
-   *  닫혀 있을 때 z 는 **통상공격**을 실행한다. 그 조건에서만, 그 버튼에만 붙인다.
-   *  서브메뉴 안에서는 z 가 아무 항목도 고르지 않으므로 아무것도 표시하지 않는다. */
-  function markConfirmCursor(snapshot: BattleSnapshot): void {
-    for (const node of commandHost.querySelectorAll("[data-battle-command-cursor]")) {
+  /** 방향키·시각 선택·DOM focus·확정 키가 같은 명령을 가리키게 한다. */
+  function syncCommandCursor(snapshot: BattleSnapshot): void {
+    for (const node of root.querySelectorAll("[data-battle-command-cursor]")) {
       node.removeAttribute("data-battle-command-cursor");
+      node.removeAttribute("aria-current");
     }
-    if (snapshot.phase !== "actorCommand" || submenu !== null) return;
-    const attack = commandHost.querySelector<HTMLButtonElement>(
-      "button.battle-command[data-testid='actor-command-attack']:not(:disabled)",
-    );
-    attack?.setAttribute("data-battle-command-cursor", "true");
+    if (snapshot.phase === "targetSelect") {
+      const selectedId = snapshot.targetSelection?.selectedEnemyId ?? snapshot.targetSelection?.targetEnemyIds[0];
+      const enemy = selectedId
+        ? field.querySelector<HTMLButtonElement>(`.battle-enemy[data-testid="${CSS.escape(selectedId)}"]`)
+        : null;
+      if (enemy) {
+        enemy.dataset.battleCommandCursor = "true";
+        enemy.setAttribute("aria-current", "true");
+        enemy.focus({ preventScroll: true });
+      }
+      return;
+    }
+    if (snapshot.phase !== "actorCommand") return;
+    const buttons = commandButtons();
+    if (buttons.length > 0) applyCommandCursor(buttons, commandCursorIndex, true);
   }
 
   function syncResultHost(snapshot: BattleSnapshot): void {

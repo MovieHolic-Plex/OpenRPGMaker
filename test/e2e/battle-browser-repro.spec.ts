@@ -25,7 +25,7 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
   await writeFile(`${OUT}/07-after-attack.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   await page.screenshot({ path: `${OUT}/07-after-attack.png`, fullPage: true });
 
-  await page.getByTestId("battle-target-enemy-1").click();
+  await page.locator(".battle-enemy[data-testid='enemy-1'][data-battle-targetable='true']").click();
   await page.waitForTimeout(700);
   diag = await battleDiagnostics(page);
   await writeFile(`${OUT}/08-after-target.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");

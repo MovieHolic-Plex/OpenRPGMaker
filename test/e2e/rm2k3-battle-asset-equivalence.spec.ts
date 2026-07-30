@@ -28,7 +28,9 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
   expect(commandMetrics.wrappedCommandLabels).toEqual([]);
 
   await page.getByTestId("actor-command-attack").click();
-  await expect(page.getByTestId("battle-target-prompt")).toBeVisible();
+  await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect");
+  await expect(page.getByTestId("battle-target-brackets")).toBeVisible();
+  await expect(page.getByTestId("battle-target-prompt")).toHaveCount(0);
   await page.screenshot({ path: `${evidenceDir}/02-target-assets.png`, fullPage: true });
 
   await page.locator(".battle-enemy[data-battle-targetable='true']").first().click();

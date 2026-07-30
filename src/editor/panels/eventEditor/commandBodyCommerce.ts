@@ -13,6 +13,13 @@ type ShopCommand = Extract<Command, { kind: "shop" }>;
 type InnCommand = Extract<Command, { kind: "inn" }>;
 type ShopTypeOption = { readonly value: ShopType; readonly label: string; readonly hint: string };
 type ShopMessageOption = { readonly value: ShopMessageType; readonly label: string };
+
+type ShopEditContext = CommandEditContext;
+
+function latestShop(context: ShopEditContext, fallback: ShopCommand): ShopCommand {
+  const current = context.getCurrentCommand?.();
+  return current?.kind === "shop" ? current : fallback;
+}
 type ShopItemList = {
   readonly root: HTMLElement;
   readonly select: HTMLSelectElement;
@@ -83,7 +90,7 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
 function shopIntentCard(): HTMLElement {
   return el("div", {
     class: "shop-processing-intent shop-processing-intent-compact",
-    dataset: { testid: "shop-intent" },
+    dataset: { testid: "shop-intent-card" },
     children: [
       el("div", { class: "shop-processing-intent-title", text: "상점 처리" }),
       el("div", {
@@ -152,13 +159,14 @@ function shopPresetsBar(
       on: {
         click: () => {
           if (matched.length === 0) return;
-          const shopType = preset.shopType ?? command.shopType ?? "normal";
+          const latest = latestShop(context, command);
+          const shopType = preset.shopType ?? latest.shopType ?? "normal";
           context.actions.replaceCommand(context.path, {
-            ...command,
+            ...latest,
             itemIds: [...matched],
             shopType,
             allowSell: shopType !== "buyOnly",
-            stock: (command.stock ?? []).filter((entry) => matched.includes(entry.itemId)),
+            stock: (latest.stock ?? []).filter((entry) => matched.includes(entry.itemId)),
           });
         },
       },
@@ -534,7 +542,7 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
     const parsed = Number.parseInt(input.value, 10);
     const merchantGold = Number.isFinite(parsed) ? Math.max(0, parsed) : 100;
     input.value = String(merchantGold);
-    context.actions.replaceCommand(context.path, { ...command, merchantGold });
+    context.actions.replaceCommand(context.path, { ...latestShop(context, command), merchantGold });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-merchant-gold" });
   fieldset.append(
@@ -572,7 +580,7 @@ function shopQuantityModeGroup(context: CommandEditContext, command: ShopCommand
   }
   select.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, {
-      ...command,
+      ...latestShop(context, command),
       quantityMode: select.value === "select" ? "select" : "single",
     });
   });
@@ -634,7 +642,7 @@ function shopTypeGroup(context: CommandEditContext, command: ShopCommand): HTMLE
     for (const radio of legacy.querySelectorAll<HTMLInputElement>("input[type=radio]")) {
       radio.checked = radio.value === next;
     }
-    context.actions.replaceCommand(context.path, withShopType(command, next));
+    context.actions.replaceCommand(context.path, withShopType(latestShop(context, command), next));
   });
   return el("div", {
     class: "commerce-command-field shop-processing-type-field",
@@ -652,10 +660,11 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
   checkbox.checked = command.branchOnTransaction ?? false;
   checkbox.dataset.testid = "shop-branch-on-transaction";
   checkbox.addEventListener("change", () => {
+    const latest = latestShop(context, command);
     context.actions.replaceCommand(context.path, {
-      ...command,
+      ...latest,
       branchOnTransaction: checkbox.checked,
-      transactionBranch: checkbox.checked ? command.transactionBranch ?? [] : command.transactionBranch,
+      transactionBranch: checkbox.checked ? latest.transactionBranch ?? [] : latest.transactionBranch,
     });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option" });
@@ -722,7 +731,10 @@ function shopMessageSelect(context: CommandEditContext, command: ShopCommand): H
     select.append(optionNode);
   }
   select.addEventListener("change", () => {
-    context.actions.replaceCommand(context.path, { ...command, messageType: selectedMessageType(select.value) });
+    context.actions.replaceCommand(context.path, {
+      ...latestShop(context, command),
+      messageType: selectedMessageType(select.value),
+    });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-message" });
   fieldset.append(el("legend", { text: "메시지 유형" }), select);
@@ -740,9 +752,10 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
 
   const commitItems = (itemIds: readonly ItemId[]) => {
     // stock 는 itemIds 와 동기화 — 빠진 id 는 stock 에서도 제거
-    const stock = command.stock?.filter((entry) => itemIds.includes(entry.itemId));
+    const latest = latestShop(context, command);
+    const stock = latest.stock?.filter((entry) => itemIds.includes(entry.itemId));
     context.actions.replaceCommand(context.path, {
-      ...command,
+      ...latest,
       itemIds: [...itemIds],
       ...(stock && stock.length > 0 ? { stock } : stock ? { stock: undefined } : {}),
     });
@@ -865,7 +878,7 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   const detail = itemDetailPanel(selectedItems[0] ?? notInShop()[0] ?? null, {
     command,
     onStockChange: (nextStock) => {
-      context.actions.replaceCommand(context.path, { ...command, stock: nextStock });
+      context.actions.replaceCommand(context.path, { ...latestShop(context, command), stock: nextStock });
     },
   });
   const syncDetail = (itemId: string, pool: readonly ItemRecord[]) => {

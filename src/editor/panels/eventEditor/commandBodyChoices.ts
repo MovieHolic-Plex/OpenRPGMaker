@@ -11,6 +11,11 @@ const DEFAULT_OPTIONS: readonly ChoiceOption[] = [
   { text: "아니오", branch: [] },
 ];
 
+function latestChoices(context: CommandEditContext, fallback: ChoicesCommand): ChoicesCommand {
+  const current = context.getCurrentCommand?.();
+  return current?.kind === "choices" ? current : fallback;
+}
+
 /**
  * RM2003 Show Choices style: dialog edits option texts + cancel only.
  * Branch commands live in the main command list under `: 선택지 …` markers.
@@ -34,7 +39,7 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
   }) as HTMLInputElement;
   prompt.addEventListener("change", () => {
     context.actions.replaceCommand(context.path, {
-      ...cmd,
+      ...latestChoices(context, cmd),
       prompt: prompt.value.trim() || undefined,
     });
   });
@@ -98,7 +103,8 @@ function choiceOptionRow(
   input.addEventListener("change", () => commitOptionTexts(context, cmd, input));
   input.addEventListener("input", () => {
     // Keep live preview in sync without full form rebuild.
-    const next = { ...cmd, options: readOptionsFromDom(input, cmd) };
+    const latest = latestChoices(context, cmd);
+    const next = { ...latest, options: readOptionsFromDom(input, latest) };
     context.actions.replaceCommand(context.path, next);
   });
 
@@ -114,13 +120,14 @@ function choiceOptionRow(
     dataset: { testid: `event-choice-remove-${index + 1}` },
     on: {
       click: () => {
-        if (cmd.options.length <= 1) return;
-        const nextOptions = cmd.options.filter((_, optionIndex) => optionIndex !== index);
+        const latest = latestChoices(context, cmd);
+        if (latest.options.length <= 1) return;
+        const nextOptions = latest.options.filter((_, optionIndex) => optionIndex !== index);
         context.actions.replaceCommand(context.path, {
-          ...cmd,
+          ...latest,
           options: nextOptions.length ? nextOptions : [...DEFAULT_OPTIONS],
           cancelBehavior: normalizeCancelBehavior(
-            cmd.cancelBehavior ?? "choice2",
+            latest.cancelBehavior ?? "choice2",
             Math.max(1, nextOptions.length)
           ),
         });
@@ -154,12 +161,13 @@ function optionActionsRow(context: CommandEditContext, cmd: ChoicesCommand, coun
         dataset: { testid: "event-choice-add" },
         on: {
           click: () => {
-            if (cmd.options.length >= MAX_CHOICE_OPTIONS) return;
+            const latest = latestChoices(context, cmd);
+            if (latest.options.length >= MAX_CHOICE_OPTIONS) return;
             context.actions.replaceCommand(context.path, {
-              ...cmd,
+              ...latest,
               options: [
-                ...cmd.options,
-                { text: `선택지 ${cmd.options.length + 1}`, branch: [] },
+                ...latest.options,
+                { text: `선택지 ${latest.options.length + 1}`, branch: [] },
               ],
             });
           },
@@ -190,10 +198,11 @@ function cancelRadioRow(
   input.checked = checked;
   input.addEventListener("change", () => {
     if (!input.checked) return;
+    const latest = latestChoices(context, cmd);
     context.actions.replaceCommand(context.path, {
-      ...cmd,
+      ...latest,
       cancelBehavior: behavior,
-      cancelBranch: behavior === "branch" ? cmd.cancelBranch ?? [] : cmd.cancelBranch,
+      cancelBranch: behavior === "branch" ? latest.cancelBranch ?? [] : latest.cancelBranch,
     });
   });
   return el("label", {
@@ -246,16 +255,19 @@ function commitOptionTexts(
   cmd: ChoicesCommand,
   source: HTMLInputElement
 ): void {
+  const latest = latestChoices(context, cmd);
   context.actions.replaceCommand(context.path, {
-    ...cmd,
-    options: readOptionsFromDom(source, cmd),
+    ...latest,
+    options: readOptionsFromDom(source, latest),
   });
 }
 
 function readOptionsFromDom(source: HTMLInputElement, cmd: ChoicesCommand): ChoiceOption[] {
   const root = source.closest(".event-command-choices-options");
   const inputs = root
-    ? [...root.querySelectorAll<HTMLInputElement>('[data-testid^="event-choice-option-"]')]
+    ? [...root.querySelectorAll<HTMLInputElement>("input")].filter((input) =>
+        input.dataset.testid?.startsWith("event-choice-option-")
+      )
     : [source];
   // Row count is owned by add/remove buttons. Preserve typed text including temporary empties.
   const next = inputs.slice(0, MAX_CHOICE_OPTIONS).map((input, index) => ({

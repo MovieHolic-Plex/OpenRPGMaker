@@ -5,7 +5,7 @@ import type {
   BattleSnapshot,
   TargetedActorCommand,
 } from "@/battle/runtime";
-import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
+import { type BattleDirectorState } from "@/player/battleDirectorDom";
 import { hpBarState } from "@/player/battleFieldDom";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
@@ -37,8 +37,8 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   const terms = resolveTerms(store.getCurrent());
 
   if (snapshot.phase === "targetSelect") {
-    panel.append(targetPrompt(snapshot, terms));
-    panel.append(targetSelectionMenu(snapshot, options, terms));
+    panel.dataset.targetPresentation = "field";
+    panel.setAttribute("aria-label", terms.target);
     return panel;
   }
   if (snapshot.phase !== "actorCommand") return panel;
@@ -104,9 +104,9 @@ function commandControl(
   const normalizedName = command.name.trim().toLowerCase();
   const label = command.kind === "attack"
     ? terms.attack
-    : command.kind === "skill" && normalizedName === "skill"
+    : command.kind === "skill" && (command.id === "cmd_skill" || normalizedName === "skill" || normalizedName === "스킬")
       ? terms.skill
-      : command.kind === "item" && normalizedName === "item"
+      : command.kind === "item" && (command.id === "cmd_item" || normalizedName === "item" || normalizedName === "아이템")
         ? terms.item
         : command.name;
   switch (command.kind) {
@@ -398,50 +398,6 @@ function submenuBackButton(options: BattleCommandPanelOptions, terms: ResolvedTe
     options.render();
   });
 }
-
-function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement {
-  const menu = document.createElement("div");
-  menu.className = "battle-command-menu battle-target-menu";
-  const header = document.createElement("div");
-  header.className = "battle-submenu-header";
-  header.textContent = terms.target;
-  menu.append(header);
-  const targetEnemyIds = snapshot.targetSelection?.targetEnemyIds ?? [];
-  for (const enemyId of targetEnemyIds) {
-    const enemy = snapshot.enemies.find((entry) => entry.id === enemyId);
-    if (!enemy) continue;
-    const button = commandButton(enemy.name, `battle-target-${enemy.id}`, "target", "", () => {
-      options.confirmTargetSelection(enemy.id);
-    });
-    button.dataset.battleTargetable = "true";
-    if (snapshot.targetSelection?.selectedEnemyId === enemy.id) {
-      button.classList.add("battle-target-selected");
-    }
-    menu.append(button);
-  }
-  menu.append(commandButton("취소", "battle-target-cancel", "back", "", () => {
-    options.runtime.cancelTargetSelection();
-    options.setDirectorState(commandPromptState(options.runtime.snapshot()));
-    options.render();
-  }));
-  return menu;
-}
-
-function targetPrompt(snapshot: BattleSnapshot, terms: ResolvedTerms): HTMLElement {
-  const prompt = document.createElement("div");
-  prompt.className = "battle-target-prompt";
-  prompt.dataset.testid = "battle-target-prompt";
-  const actor = activeActor(snapshot);
-  const selectedEnemy = snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
-    ?? snapshot.enemies.find((enemy) => snapshot.targetSelection?.targetEnemyIds.includes(enemy.id));
-  prompt.textContent = selectedEnemy
-    ? `${terms.target}: ${selectedEnemy.name}`
-    : actor
-      ? `${actor.name}: ${terms.target}을 선택`
-      : `${terms.target} 선택`;
-  return prompt;
-}
-
 
 function commandButton(
   label: string,
