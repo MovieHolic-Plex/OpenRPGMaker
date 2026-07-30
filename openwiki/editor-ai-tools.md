@@ -21,3 +21,6 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromSupabase`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
+
+
+- Room harness automation may use the low-level typed `src/editor/roomHarness/facade.ts` API for deterministic start/advance/evaluate, lock, and room-only reroll operations. The user-facing quota-independent route is `src/editor/regionTask/runDirectRoomDraft.ts`, exposed by the region modal as **AI 없이 실내 초안** with structural presets and composable modifiers. It selects a world-reachable doorway, connects both transfer directions, and enters the same `pendingRegionApply` review/approval surface as AI work; LLM tool wrappers remain compatible but are not the only route to harness behavior.

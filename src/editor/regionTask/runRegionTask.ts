@@ -27,7 +27,11 @@ import {
   setAgentGhostPreviewHidden,
 } from "@/editor/agentGhostPreview";
 import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import {
+  getMapEditHistoryMarker,
+  recordProjectSnapshot,
+  truncateMapEditHistoryFromMarker,
+} from "@/editor/mapEditHistory";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
 import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
@@ -36,19 +40,11 @@ import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import { isBagGroupId, isBagMaterialQuery } from "@/project/materialPolicy";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { MapId, Project, TilesetDef } from "@/project/types";
-import {
-  formatLayoutValidationSummary,
-  layoutValidationBlocking,
-  validateLayoutPlacement,
-} from "@/project/lint/layoutPlacementValidate";
+import { validateLayoutPlacement } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
-import {
-  getPendingRegionApply,
-  setPendingRegionApply,
-  type PendingRegionApply,
-  type PendingRegionApplyOverride,
-} from "./pendingRegionApply";
+import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import { projectApprovalFingerprint, reviewRegionDraft, type HarnessReviewReport } from "./harnessReview";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
 export const REGION_TASK_MAX_TOOL_CALLS = 24;
@@ -137,6 +133,8 @@ export interface RegionTaskResult {
   readonly error?: string;
   /** 배치 후 검증 실패 메시지(적용 거부 시). */
   readonly validationSummary?: string;
+  /** 승인 전 하네스 체크포인트·구조화 이슈·게임플레이 지표. */
+  readonly review?: HarnessReviewReport;
   /** 개발용 구조화 로그 — UI export / window.__rpgzzuRegionTaskLog */
   readonly log?: RegionTaskLogExport;
   /** 승인 게이트(gate: "approval") 성공 시 반환 — 적용/버리기 전까지 유효. */
@@ -179,12 +177,43 @@ export function countAddedMaps(base: Project, proposed: Project): number {
   return added;
 }
 
+export function applyRegionProjectWithHistory(project: Project, label: string, mapId: MapId): void {
+  // Region tasks may add maps, events, tilesets, or system data. Commit the project and its
+  // single undo entry as one failure-atomic operation so a throwing store listener cannot
+  // strand authored state or leave an orphan history snapshot.
+  const before = structuredClone(store.getCurrent());
+  const historyMarker = getMapEditHistoryMarker();
+  let replaceStarted = false;
+  try {
+    recordProjectSnapshot(label, mapId, { kind: "project" });
+    replaceStarted = true;
+    store.replace(project);
+  } catch (cause) {
+    let rollbackFailure: unknown;
+    if (replaceStarted) {
+      try {
+        store.replace(before, { preserveEventDrafts: false });
+      } catch (error) {
+        rollbackFailure = error;
+      }
+    }
+    try {
+      truncateMapEditHistoryFromMarker(historyMarker);
+    } catch (error) {
+      rollbackFailure ??= error;
+    }
+    if (rollbackFailure !== undefined) {
+      const original = cause instanceof Error ? cause.message : String(cause);
+      const rollback = rollbackFailure instanceof Error ? rollbackFailure.message : String(rollbackFailure);
+      throw new Error(`프로젝트 적용 실패 후 롤백에도 실패했습니다: ${original} / ${rollback}`);
+    }
+    throw cause;
+  }
+}
+
 const defaultDeps: RegionTaskDeps = {
   getProject: () => store.getCurrent(),
-  applyProject: (project, label, mapId) => {
-    recordProjectSnapshot(label, mapId, { kind: "map" });
-    store.replace(project);
-  },
+  applyProject: applyRegionProjectWithHistory,
   createSession: (project, mapId) => {
     const liteConfig = configForLiteModel(loadAiConfig());
     return new AssistantSession(project, {
@@ -714,10 +743,16 @@ export async function runRegionTask(
 
     const proposed = session.getProposedProject();
     if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
-    const { project: clipped, clippedCells } = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
-    const changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
-    const changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
-    const mapsAdded = countAddedMaps(base, clipped);
+    // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
+    // (채팅 카드의 [맵 적용 + 재료 합의]만 영구 합의 스탬프)
+    // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
+    // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
+    const clippedResult = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
+    let clipped = clippedResult.project;
+    const clippedCells = clippedResult.clippedCells;
+    let changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
+    let changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
+    let mapsAdded = countAddedMaps(base, clipped);
 
     if (!hasRegionTaskChanges({ changedCells, changedEvents, mapsAdded })) {
       if (isLiveRun()) clearAgentGhostPreview();
@@ -733,47 +768,66 @@ export async function runRegionTask(
       }, turn);
     }
 
+    // Detached draft hardening: bounded deterministic repairs and read-only gameplay preflight.
+    // This is repeated at every apply entry by pendingRegionApply; the first pass feeds review UI.
     const toolNames = turn.proposedCalls.map((call) => call.name);
-    if (changedCells > 0 || changedEvents > 0) {
-      const layoutIssues = validateLayoutPlacement(clipped, {
+    const reviewCandidate = (project: Project) => {
+      const harness = reviewRegionDraft({
+        base,
+        draft: project,
         mapId: opts.mapId,
-        region: {
-          x: opts.region.x,
-          y: opts.region.y,
-          width: opts.region.width,
-          height: opts.region.height,
-        },
+        region: opts.region,
+      });
+      const layoutIssues = validateLayoutPlacement(harness.project, {
+        mapId: opts.mapId,
+        region: { x: opts.region.x, y: opts.region.y, width: opts.region.width, height: opts.region.height },
         instruction,
         toolNames,
       });
-      const blocking = layoutValidationBlocking(layoutIssues);
-      if (blocking.length > 0) {
-        if (isLiveRun()) clearAgentGhostPreview();
-        const validationSummary = formatLayoutValidationSummary(layoutIssues);
-        return attachLog({
-          ok: false,
-          applied: false,
-          changedCells,
-          changedEvents,
-          mapsAdded,
-          clippedCells,
-          proposedCalls: turn.proposedCalls.length,
-          assistantText: turn.assistantText,
-          error: validationSummary,
-          validationSummary,
-        }, turn);
-      }
-    }
+      const structuredLayoutIssues = layoutIssues.map((issue) => ({
+        code: issue.code,
+        severity: issue.severity === "error" ? "error" as const : "warning" as const,
+        message: issue.message,
+        ...(issue.mapId ? { mapId: issue.mapId } : {}),
+        ...(issue.x === undefined ? {} : { x: issue.x }),
+        ...(issue.y === undefined ? {} : { y: issue.y }),
+      }));
+      const layoutBlockers = structuredLayoutIssues
+        .filter((issue) => issue.severity === "error")
+        .map((issue) => issue.message);
+      return {
+        project: harness.project,
+        report: {
+          ...harness.report,
+          issues: [...harness.report.issues, ...structuredLayoutIssues],
+          blockers: [...harness.report.blockers, ...layoutBlockers],
+          checkpoints: [
+            ...harness.report.checkpoints,
+            {
+              id: "layout",
+              label: "배치 규칙",
+              status: layoutBlockers.length ? "blocked" as const : "done" as const,
+              detail: layoutBlockers.length ? `차단 ${layoutBlockers.length}건` : "배치 규칙 통과",
+            },
+          ],
+        },
+      };
+    };
+    let reviewed = reviewCandidate(clipped);
+    clipped = reviewed.project;
+    changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
+    changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
+    mapsAdded = countAddedMaps(base, clipped);
 
+    // Layout placement validation is folded into reviewCandidate so blocker reasons remain visible
+    // in approval UI and are rechecked for full/partial/inline/headless apply entry points.
+
+    const gate = opts.gate ?? "approval";
     const label = `영역 작업: ${instruction.slice(0, 40)}`;
     const completionSummary = formatRegionTaskChangeParts({ changedCells, changedEvents, mapsAdded }).join(" · ") || "영역 변경";
-    const applyOwnedProject = (override?: PendingRegionApplyOverride): boolean => {
-      if (!isLiveRun()) return false;
-      const project = override?.project ?? clipped;
-      const appliedLabel = override?.label ?? label;
-      const applier = override?.applier ?? deps.applyProject;
-      applier(project, appliedLabel, opts.mapId);
-      if (!isLiveRun()) return false;
+    // 단일 저장 경로. 저장 후 완료 스트립에 알려 사용자가 적용 결과를 바로 확인한다.
+    const applyOwnedProject = (project: Project): void => {
+      deps.applyProject(project, label, opts.mapId);
       publishAiApplyCompletion({
         mapId: opts.mapId,
         selection: {
@@ -786,13 +840,29 @@ export async function runRegionTask(
         instruction,
         summary: completionSummary,
       });
-      return true;
     };
-
-    if ((opts.gate ?? "approval") === "immediate") {
-      if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
+    if (gate === "immediate") {
       clearAgentGhostPreview();
-      if (!applyOwnedProject()) return { ...emptyBase, error: "사용자가 중단했습니다." };
+      const stale = projectApprovalFingerprint(deps.getProject()) !== projectApprovalFingerprint(base);
+      const blockers = stale
+        ? ["기준 프로젝트가 변경되었습니다. 새 기준으로 다시 생성하세요."]
+        : reviewed.report.blockers;
+      if (blockers.length > 0) {
+        return attachLog({
+          ok: false,
+          applied: false,
+          changedCells,
+          changedEvents,
+          mapsAdded,
+          clippedCells,
+          proposedCalls: turn.proposedCalls.length,
+          assistantText: turn.assistantText,
+          error: blockers[0],
+          validationSummary: blockers.join(" · "),
+          review: reviewed.report,
+        }, turn);
+      }
+      applyOwnedProject(clipped);
       return attachLog({
         ok: true,
         applied: true,
@@ -802,6 +872,7 @@ export async function runRegionTask(
         clippedCells,
         proposedCalls: turn.proposedCalls.length,
         assistantText: turn.assistantText,
+        review: reviewed.report,
       }, turn);
     }
 
@@ -814,9 +885,11 @@ export async function runRegionTask(
       changedCells,
       changedEvents,
       instruction,
-      onApply: (override) => {
-        applyOwnedProject(override);
-      },
+      report: reviewed.report,
+      getCurrentProject: deps.getProject,
+      reviewProject: reviewCandidate,
+      onApply: applyOwnedProject,
+      // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
       onDiscard: () => {},
       onSettle: () => {
         ownedPending = null;
@@ -864,6 +937,7 @@ export async function runRegionTask(
       clippedCells,
       proposedCalls: turn.proposedCalls.length,
       assistantText: turn.assistantText,
+      review: reviewed.report,
     }, turn);
     return { ...gated, pending };
   } finally {

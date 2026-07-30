@@ -203,14 +203,21 @@ describe("openRegionTaskModal", () => {
 });
 
 function fakePendingResult(overrides: Partial<RegionTaskResult> = {}): RegionTaskResult {
+  const base = { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never;
+  const clipped = { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never;
   const pending = setPendingRegionApply({
-    baseProject: { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never,
-    clippedProject: { maps: { m1: { id: "m1", name: "맵", width: 4, height: 4, tileSize: 16, events: [] } }, tilesets: {} } as never,
+    baseProject: base,
+    clippedProject: clipped,
     mapId: "m1",
     region: { x: 0, y: 0, width: 2, height: 2 },
     changedCells: 3,
     changedEvents: 0,
     instruction: "테스트",
+    getCurrentProject: () => base,
+    reviewProject: (project) => ({
+      project,
+      report: { issues: [], blockers: [], checkpoints: [], metrics: {}, repairLimit: 0 } as never,
+    }),
     onApply: () => {},
     onDiscard: () => {},
     // 배지 해제(running:false) 발행은 실제로는 runRegionTask.ts의 onSettle이 담당한다 —

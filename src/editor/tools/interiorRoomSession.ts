@@ -6,8 +6,10 @@
 import {
   furnishInteriorSpace,
   INTERIOR_ROOM_THEMES,
+  INTERIOR_THEME_MODIFIERS,
   type InteriorRoomPlan,
   type InteriorRoomTheme,
+  type InteriorThemeModifier,
 } from "@/editor/interiorRoomPipeline";
 import {
   advanceRoomBuild,
@@ -67,6 +69,11 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         },
         door: { type: "object", description: "{x,y} 남측 입구(floor 남 경계)" },
         theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
+        themeModifiers: {
+          type: "array",
+          items: { type: "string", enum: [...INTERIOR_THEME_MODIFIERS] },
+          description: "역할 테마에 겹쳐 쓰는 조합형 분위기: rustic|luxury|sacred|scholarly|martial",
+        },
         seed: { type: "integer", description: "배치 난수 시드 — 같은 플랜이라도 시드가 다르면 가구 배치가 달라진다" },
         floorTile: { type: "integer", description: "기본 바닥 재질(예: 돌 12, 널 102, 돗자리 139). 미지정=나무 72" },
         wallMaterial: {
@@ -135,6 +142,11 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         innerDoors: { type: "array", items: { type: "object" }, description: "파티션 개구부 [{x,y}]" },
         door: { type: "object" },
         theme: { type: "string", enum: [...INTERIOR_ROOM_THEMES] },
+        themeModifiers: {
+          type: "array",
+          items: { type: "string", enum: [...INTERIOR_THEME_MODIFIERS] },
+          description: "역할 테마에 겹쳐 쓰는 조합형 분위기: rustic|luxury|sacred|scholarly|martial",
+        },
         seed: { type: "integer" },
         demo: {
           type: "string",
@@ -174,6 +186,11 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
           enum: [...INTERIOR_ROOM_THEMES],
           description: "역할 테마 교체(미지정 시 기존 테마 유지). corridor=복도(바닥 점유물 없음)",
         },
+        modifiers: {
+          type: "array",
+          items: { type: "string", enum: [...INTERIOR_THEME_MODIFIERS] },
+          description: "이 방에만 적용할 조합형 분위기 modifier 목록",
+        },
         seed: { type: "integer", description: "이 공간만의 배치 재추첨 시드(미지정 시 플랜 시드 파생)" },
       },
       required: ["sessionId", "roomId"],
@@ -190,19 +207,48 @@ export const INTERIOR_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
         throw new ToolError("rooms 플랜이 아닌 세션 — 공간 단위 재시공은 rooms 구조에서만 가능", { code: "invalid-args" });
       }
       const roomId = String(args.roomId ?? "").trim();
+      if (session.lockedRoomIds.includes(roomId)) {
+        throw new ToolError(`잠긴 방은 재시공할 수 없습니다: ${roomId}`, { code: "room-locked" });
+      }
       const theme = args.theme !== undefined ? (String(args.theme) as InteriorRoomTheme) : undefined;
       if (theme !== undefined && !INTERIOR_ROOM_THEMES.includes(theme)) {
         throw new ToolError(`theme must be ${INTERIOR_ROOM_THEMES.join("|")}`, { code: "invalid-args" });
       }
       const seed = args.seed !== undefined ? Math.floor(Number(args.seed)) : undefined;
+      const modifiers = args.modifiers === undefined
+        ? undefined
+        : [...new Set((args.modifiers as unknown[]).map((value) => String(value) as InteriorThemeModifier))];
+      if (modifiers?.some((modifier) => !INTERIOR_THEME_MODIFIERS.includes(modifier))) {
+        throw new ToolError(`modifiers must contain ${INTERIOR_THEME_MODIFIERS.join("|")}`, { code: "invalid-args" });
+      }
       let outcome: { plan: InteriorRoomPlan; warnings: string[] };
       try {
-        outcome = furnishInteriorSpace(map, plan, roomId, theme, seed);
+        outcome = furnishInteriorSpace(map, plan, roomId, theme, seed, modifiers);
       } catch (error) {
         throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" });
       }
       const logLine = `[space:${roomId}] theme=${theme ?? "유지"} seed=${seed ?? "플랜 파생"} warnings=${outcome.warnings.length}`;
-      saveRoomSession(draft, { ...session, plan: outcome.plan, log: [...session.log, logLine] });
+      const issues = outcome.warnings.map((message) => ({
+        code: message.startsWith("walkability:") ? "walkability" : "room-warning",
+        severity: message.startsWith("walkability:") ? "error" as const : "warning" as const,
+        message,
+        mapId: session.mapId,
+        layer: `room:${roomId}`,
+        roomId,
+      }));
+      saveRoomSession(draft, {
+        ...session,
+        plan: outcome.plan,
+        log: [...session.log, logLine],
+        checkpoints: [...session.checkpoints, {
+          index: session.checkpoints.length,
+          layer: `room:${roomId}`,
+          state: issues.some((issue) => issue.severity === "error") ? "failed" : "done",
+          summary: logLine,
+          issues,
+          mapSnapshot: structuredClone(map),
+        }],
+      });
       return {
         summary: `공간 재시공 ${roomId}${theme ? ` → ${theme}` : ""}${outcome.warnings.length ? ` (경고 ${outcome.warnings.length})` : ""}`,
         data: {

@@ -4,8 +4,8 @@
  * 툴 파일은 이 함수들을 kitId로 호출하는 얇은 래퍼가 된다(툴 이름은 키트별 유지).
  */
 import { getRoomKit } from "./registry";
-import { loadSession as loadFromBag, saveSession as saveToBag } from "./sessionStore";
-import type { RoomSession } from "./types";
+import { loadSession as loadFromBag, listSessions as listFromBag, saveSession as saveToBag } from "./sessionStore";
+import type { RoomHarnessIssue, RoomSession } from "./types";
 import { ToolError, type ToolExecResult } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 
@@ -17,7 +17,29 @@ export function saveRoomSession(project: Project, session: RoomSession): void {
 const saveSession = saveRoomSession;
 
 export function loadRoomSession(project: Project, sessionId: string): RoomSession | null {
-  return loadFromBag<RoomSession>(project, ROOM_SESSION_BAG, sessionId) ?? null;
+  const session = loadFromBag<RoomSession>(project, ROOM_SESSION_BAG, sessionId);
+  if (!session) return null;
+  return { ...session, checkpoints: session.checkpoints ?? [], lockedRoomIds: session.lockedRoomIds ?? [] };
+}
+
+export function listRoomSessions(project: Project): readonly RoomSession[] {
+  return listFromBag<RoomSession>(project, ROOM_SESSION_BAG).map((session) => ({
+    ...session,
+    checkpoints: session.checkpoints ?? [],
+    lockedRoomIds: session.lockedRoomIds ?? [],
+  }));
+}
+
+function warningIssue(session: RoomSession, layer: string, message: string): RoomHarnessIssue {
+  const coordinate = message.match(/\((-?\d+),\s*(-?\d+)\)/);
+  return {
+    code: message.startsWith("walkability:") ? "walkability" : "layer-warning",
+    severity: message.startsWith("walkability:") ? "error" : "warning",
+    message,
+    mapId: session.mapId,
+    layer,
+    ...(coordinate ? { x: Number(coordinate[1]), y: Number(coordinate[2]) } : {}),
+  };
 }
 
 // 세션이 만든 맵은 맵 트리에도 올라가야 에디터 맵 목록/전환 UI에 보인다(mapTools create_map 관례).
@@ -55,6 +77,15 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
     checklist,
     mapId,
     log: [kit.startLog?.(plan) ?? `[plan] ${mapId}`],
+    checkpoints: [{
+      index: 0,
+      layer: "plan",
+      state: "done",
+      summary: "계획 확정",
+      issues: [],
+      mapSnapshot: structuredClone(map),
+    }],
+    lockedRoomIds: [],
   };
   saveSession(project, session);
   return {
@@ -79,6 +110,15 @@ export function advanceRoomBuild(project: Project, sessionId: string, forceLayer
   project.maps[session.mapId] = result.map;
   session.checklist[layer] = result.ok ? "done" : "failed";
   session.log.push(`[${layer}] ${result.summary}`);
+  const issues = result.warnings.map((warning) => warningIssue(session, layer, warning));
+  session.checkpoints.push({
+    index: session.checkpoints.length,
+    layer,
+    state: session.checklist[layer]!,
+    summary: result.summary,
+    issues,
+    mapSnapshot: structuredClone(result.map),
+  });
   saveSession(project, session);
   const nextLayer = kit.buildOrder.find((l) => session.checklist[l] === "open") ?? null;
   return {
