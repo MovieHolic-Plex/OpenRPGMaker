@@ -19,9 +19,11 @@ import {
   type ConstructionActivityDisposition,
 } from "@/editor/construction/constructionActivity";
 import type { ConstructionAuditRecord } from "@/editor/construction/constructionAudit";
+import { publishAiApplyCompletion } from "@/editor/aiApplyCompletion";
 import {
   clearAgentGhostPreview,
   createThrottledAgentGhostPreviewUpdater,
+  replaceAgentGhostPreviewFromProjectDiff,
   setAgentGhostPreviewHidden,
 } from "@/editor/agentGhostPreview";
 import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
@@ -41,11 +43,22 @@ import {
 } from "@/project/lint/layoutPlacementValidate";
 import { clipMapCellsToRegion, inRegion, type RegionRect } from "./clipToRegion";
 import { regionIntentGuideLines, routeRegionIntent } from "./regionIntentRouter";
-import { getPendingRegionApply, setPendingRegionApply, type PendingRegionApply } from "./pendingRegionApply";
+import {
+  getPendingRegionApply,
+  setPendingRegionApply,
+  type PendingRegionApply,
+  type PendingRegionApplyOverride,
+} from "./pendingRegionApply";
 import { dispatchRegionTaskStatus } from "./regionTaskStatus";
 
+export const REGION_TASK_MAX_TOOL_CALLS = 24;
+
 export interface RegionTaskSessionLike {
-  sendUserMessage(text: string, onEvent?: (event: SessionEvent) => void): Promise<TurnResult>;
+  sendUserMessage(
+    text: string,
+    onEvent?: (event: SessionEvent) => void,
+    signal?: AbortSignal,
+  ): Promise<TurnResult>;
   getProposedProject(): Project;
   getAuditEntries?(): readonly AuditEntry[];
   getHarnessSnapshot?(): HarnessSnapshot;
@@ -64,6 +77,7 @@ export interface RegionTaskOptions {
   readonly instruction: string;
   /** 기본 "approval": 적용 전 승인 게이트. "immediate"는 레거시 즉시 적용. */
   readonly gate?: "approval" | "immediate";
+  readonly signal?: AbortSignal;
   readonly onEvent?: (event: SessionEvent) => void;
 }
 
@@ -171,16 +185,22 @@ const defaultDeps: RegionTaskDeps = {
     recordProjectSnapshot(label, mapId, { kind: "map" });
     store.replace(project);
   },
-  createSession: (project, mapId) => new AssistantSession(project, {
-    config: configForLiteModel(loadAiConfig()),
-    contextOptions: {
-      currentMapId: mapId,
-      getViewport: () => {
-        const snap = getEditorMapViewport();
-        return snap?.mapId === mapId ? snap : null;
+  createSession: (project, mapId) => {
+    const liteConfig = configForLiteModel(loadAiConfig());
+    return new AssistantSession(project, {
+      config: {
+        ...liteConfig,
+        maxToolCalls: Math.min(liteConfig.maxToolCalls, REGION_TASK_MAX_TOOL_CALLS),
       },
-    },
-  }),
+      contextOptions: {
+        currentMapId: mapId,
+        getViewport: () => {
+          const snap = getEditorMapViewport();
+          return snap?.mapId === mapId ? snap : null;
+        },
+      },
+    });
+  },
 };
 
 export function buildRegionTaskLogExport(input: {
@@ -476,37 +496,127 @@ export function countInRegionChangedEvents(base: Project, next: Project, mapId: 
   return changed;
 }
 
+type ActiveRegionTaskRun = {
+  readonly id: number;
+  readonly controller: AbortController;
+};
+
+let regionTaskRunSequence = 0;
+let activeRegionTaskRun: ActiveRegionTaskRun | null = null;
+
+function beginOwnedRegionTaskRun(externalSignal?: AbortSignal): ActiveRegionTaskRun {
+  // Abort listeners run synchronously. Abort the previous owner before publishing the new id so
+  // it can clean only its own pending/ghost/actions without touching the new run.
+  activeRegionTaskRun?.controller.abort();
+  const run = { id: ++regionTaskRunSequence, controller: new AbortController() };
+  activeRegionTaskRun = run;
+  if (externalSignal?.aborted) run.controller.abort();
+  return run;
+}
+
 export async function runRegionTask(
   opts: RegionTaskOptions,
   deps: RegionTaskDeps = defaultDeps,
 ): Promise<RegionTaskResult> {
-  // pending 제안이 등록되면 onSettle이 배지 해제를 소유한다(사용자가 적용/취소를
-  // 선택할 때까지 '변경 확인 대기' 배지 유지). 그 외 모든 조기 return·오류 경로는
-  // finally에서 running:false를 쏜다 — pending 경로에서 중복 해제 금지.
-  let pendingRegistered = false;
+  const emptyBase = {
+    ok: false,
+    applied: false,
+    changedCells: 0,
+    changedEvents: 0,
+    mapsAdded: 0,
+    clippedCells: 0,
+    proposedCalls: 0,
+    assistantText: "",
+  } as const;
+  const rejectBeforeRun = (error: string): RegionTaskResult => {
+    const runId = ++regionTaskRunSequence;
+    dispatchRegionTaskStatus({
+      mapId: opts.mapId,
+      region: opts.region,
+      running: false,
+      runId,
+    });
+    return { ...emptyBase, error };
+  };
+  const instruction = opts.instruction.trim();
+  if (!instruction) return rejectBeforeRun("지시 내용이 비어 있습니다.");
+
+  const base = deps.getProject();
+  const map = base.maps[opts.mapId];
+  if (!map) return rejectBeforeRun("맵을 찾을 수 없습니다.");
+
+  const run = beginOwnedRegionTaskRun(opts.signal);
+  const signal = run.controller.signal;
+  const ownsRun = (): boolean => activeRegionTaskRun?.id === run.id;
+  const isLiveRun = (): boolean => ownsRun() && !signal.aborted;
+  let keepPendingStatus = false;
+  let statusClosed = false;
+  let ownedPending: PendingRegionApply | null = null;
+  let regionInlineActions: InlineProposalActions | null = null;
+  let ghostPreviewUpdater: ReturnType<typeof createThrottledAgentGhostPreviewUpdater> | null = null;
+
+  const forwardExternalAbort = (): void => run.controller.abort();
+  if (opts.signal && !opts.signal.aborted) {
+    opts.signal.addEventListener("abort", forwardExternalAbort, { once: true });
+  }
+  let signalsDetached = false;
+  const detachSignals = (): void => {
+    if (signalsDetached) return;
+    signalsDetached = true;
+    opts.signal?.removeEventListener("abort", forwardExternalAbort);
+    signal.removeEventListener("abort", handleAbort);
+  };
+  const dispatchStopped = (): void => {
+    if (!ownsRun() || statusClosed) return;
+    statusClosed = true;
+    dispatchRegionTaskStatus({
+      mapId: opts.mapId,
+      region: opts.region,
+      running: false,
+      runId: run.id,
+    });
+    if (activeRegionTaskRun?.id === run.id) activeRegionTaskRun = null;
+  };
+  const clearOwnedSurface = (): void => {
+    if (!ownsRun()) return;
+    if (getInlineProposalActions() === regionInlineActions) setInlineProposalActions(null);
+    regionInlineActions = null;
+    setAgentGhostPreviewHidden(false);
+    clearAgentGhostPreview();
+    dispatchStopped();
+  };
+  function handleAbort(): void {
+    if (!ownsRun()) return;
+    ghostPreviewUpdater?.cancel();
+    const pending = ownedPending;
+    ownedPending = null;
+    if (pending && !pending.settled) pending.discard();
+    clearOwnedSurface();
+    detachSignals();
+  }
+  signal.addEventListener("abort", handleAbort, { once: true });
+
+  if (signal.aborted) {
+    detachSignals();
+    return { ...emptyBase, error: "사용자가 중단했습니다." };
+  }
+
+  dispatchRegionTaskStatus({
+    mapId: opts.mapId,
+    region: opts.region,
+    running: true,
+    phase: "running",
+    runId: run.id,
+  });
+
   try {
-    const emptyBase = {
-      ok: false,
-      applied: false,
-      changedCells: 0,
-      changedEvents: 0,
-      mapsAdded: 0,
-      clippedCells: 0,
-      proposedCalls: 0,
-      assistantText: "",
-    };
-    const instruction = opts.instruction.trim();
-    if (!instruction) return { ...emptyBase, error: "지시 내용이 비어 있습니다." };
+    if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
 
-    const base = deps.getProject();
-    const map = base.maps[opts.mapId];
-    if (!map) return { ...emptyBase, error: "맵을 찾을 수 없습니다." };
-
-    // 이전 pending의 onSettle(전역 고스트 정리)이 이번 실행의 프리뷰를 지우지 않도록 선-해소.
+    // 이전 pending은 이전 run의 abort listener가 먼저 정리한다. 외부 주입 pending이 남은
+    // 경우에도 새 초안을 만들기 전에 해소해 전역 슬롯을 하나로 유지한다.
     getPendingRegionApply()?.discard();
+    if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
 
-    // 영역 AI 세션용 작업본: 건축 팔레트와 동일 하네스로 나무/소품 그룹을 승인 상태로 연다.
-    // (제로 부트스트랩 본선은 유지 — 여기만 region/build-palette 큐레이션 경로)
     const working = structuredClone(base);
     const workingMap = working.maps[opts.mapId];
     const workingTileset = workingMap ? working.tilesets[workingMap.tilesetId] : undefined;
@@ -515,18 +625,24 @@ export async function runRegionTask(
     const session = deps.createSession(working, opts.mapId);
     const message = buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region, workingTileset);
     const uiEvents: RegionTaskUiEvent[] = [];
-    const ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
+    ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
       getBaseProject: () => base,
       getDraftProject: () => session.getProposedProject(),
       isWriteTool: (toolName) => getTool(toolName)?.mode === "write",
+      apply: (baseProject, draftProject) => {
+        if (isLiveRun()) replaceAgentGhostPreviewFromProjectDiff(baseProject, draftProject);
+      },
     });
     const onEvent = (event: SessionEvent): void => {
+      if (!isLiveRun()) return;
       pushUiEvent(uiEvents, event);
       opts.onEvent?.(event);
-      ghostPreviewUpdater.handleToolCall(event);
+      if (!isLiveRun()) return;
+      ghostPreviewUpdater?.handleToolCall(event);
     };
 
     const attachLog = (result: Omit<RegionTaskResult, "log">, turn?: TurnResult): RegionTaskResult => {
+      if (!isLiveRun()) return result;
       const log = buildRegionTaskLogExport({
         mapId: opts.mapId,
         mapName: map.name,
@@ -538,8 +654,8 @@ export async function runRegionTask(
         uiEvents,
         session,
       });
+      if (!isLiveRun()) return result;
       publishRegionTaskLog(log);
-      // 진단용: 영역 AI 실행마다 로컬+DB 활동 로그 (실패해도 작업 결과는 유지).
       const cfg = loadAiConfig();
       void recordAiActivityFromRegionLog(log, {
         model: cfg.model,
@@ -552,27 +668,39 @@ export async function runRegionTask(
 
     let turn: TurnResult;
     try {
-      turn = await session.sendUserMessage(message, onEvent);
+      turn = await session.sendUserMessage(message, onEvent, signal);
     } catch (cause) {
       ghostPreviewUpdater.cancel();
+      if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
       clearAgentGhostPreview();
       const error = cause instanceof Error ? cause.message : String(cause);
       return attachLog({ ...emptyBase, error });
     }
+
+    if (!isLiveRun()) {
+      ghostPreviewUpdater.cancel();
+      return {
+        ...emptyBase,
+        proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText,
+        error: "사용자가 중단했습니다.",
+      };
+    }
+
     if (turn.stoppedReason === "error" || turn.stoppedReason === "aborted") {
       ghostPreviewUpdater.cancel();
-      clearAgentGhostPreview();
+      if (isLiveRun()) clearAgentGhostPreview();
     } else {
       ghostPreviewUpdater.flush();
     }
 
-    if (turn.stoppedReason === "aborted") {
-      return attachLog({
+    if (!isLiveRun() || turn.stoppedReason === "aborted") {
+      return {
         ...emptyBase,
         proposedCalls: turn.proposedCalls.length,
         assistantText: turn.assistantText,
         error: turn.error ?? "사용자가 중단했습니다.",
-      }, turn);
+      };
     }
 
     if (turn.stoppedReason === "error") {
@@ -585,18 +713,14 @@ export async function runRegionTask(
     }
 
     const proposed = session.getProposedProject();
-    // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
-    // (채팅 카드의 [맵 적용 + 재료 합의]만 영구 합의 스탬프)
-    // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
-    // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
+    if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
     const { project: clipped, clippedCells } = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
     const changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
     const changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
     const mapsAdded = countAddedMaps(base, clipped);
 
-    // 타일만 보면 NPC-only·새 맵 only 제안이 버려진다 — 이벤트·맵 추가도 적용 조건에 포함.
     if (!hasRegionTaskChanges({ changedCells, changedEvents, mapsAdded })) {
-      clearAgentGhostPreview();
+      if (isLiveRun()) clearAgentGhostPreview();
       return attachLog({
         ok: true,
         applied: false,
@@ -609,8 +733,6 @@ export async function runRegionTask(
       }, turn);
     }
 
-    // 배치 후 검증: 물 위 나무, 나무 짝 깨짐, 지시 대비 나무 누락 등 → 적용 거부
-    // 새 맵만 추가된 경우(현재 맵 영역 무변경)에는 영역 레이아웃 검증을 건너뛴다.
     const toolNames = turn.proposedCalls.map((call) => call.name);
     if (changedCells > 0 || changedEvents > 0) {
       const layoutIssues = validateLayoutPlacement(clipped, {
@@ -626,7 +748,7 @@ export async function runRegionTask(
       });
       const blocking = layoutValidationBlocking(layoutIssues);
       if (blocking.length > 0) {
-        clearAgentGhostPreview();
+        if (isLiveRun()) clearAgentGhostPreview();
         const validationSummary = formatLayoutValidationSummary(layoutIssues);
         return attachLog({
           ok: false,
@@ -643,11 +765,34 @@ export async function runRegionTask(
       }
     }
 
-    const gate = opts.gate ?? "approval";
     const label = `영역 작업: ${instruction.slice(0, 40)}`;
-    if (gate === "immediate") {
+    const completionSummary = formatRegionTaskChangeParts({ changedCells, changedEvents, mapsAdded }).join(" · ") || "영역 변경";
+    const applyOwnedProject = (override?: PendingRegionApplyOverride): boolean => {
+      if (!isLiveRun()) return false;
+      const project = override?.project ?? clipped;
+      const appliedLabel = override?.label ?? label;
+      const applier = override?.applier ?? deps.applyProject;
+      applier(project, appliedLabel, opts.mapId);
+      if (!isLiveRun()) return false;
+      publishAiApplyCompletion({
+        mapId: opts.mapId,
+        selection: {
+          mapId: opts.mapId,
+          x: opts.region.x,
+          y: opts.region.y,
+          width: opts.region.width,
+          height: opts.region.height,
+        },
+        instruction,
+        summary: completionSummary,
+      });
+      return true;
+    };
+
+    if ((opts.gate ?? "approval") === "immediate") {
+      if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
       clearAgentGhostPreview();
-      deps.applyProject(clipped, label, opts.mapId);
+      if (!applyOwnedProject()) return { ...emptyBase, error: "사용자가 중단했습니다." };
       return attachLog({
         ok: true,
         applied: true,
@@ -660,10 +805,7 @@ export async function runRegionTask(
       }, turn);
     }
 
-    // 승인 게이트: 적용하지 않고 pending 등록 + 고스트 유지 + 캔버스 인라인 툴바 배선.
-    // regionInlineActions는 아래 setInlineProposalActions 호출 뒤에 값이 채워지지만,
-    // onSettle 클로저는 호출 시점(apply/discard 이후)에야 실행되므로 참조만 잡아두면 된다.
-    let regionInlineActions: InlineProposalActions | null = null;
+    if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
     const pending = setPendingRegionApply({
       baseProject: base,
       clippedProject: clipped,
@@ -672,30 +814,47 @@ export async function runRegionTask(
       changedCells,
       changedEvents,
       instruction,
-      onApply: () => deps.applyProject(clipped, label, opts.mapId),
-      // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
+      onApply: (override) => {
+        applyOwnedProject(override);
+      },
       onDiscard: () => {},
       onSettle: () => {
-        // CAS: 이 pending이 등록한 actions가 여전히 전역 슬롯이면(다른 등록자가 덮어쓰지 않았으면)만 지운다.
-        if (getInlineProposalActions() === regionInlineActions) setInlineProposalActions(null);
-        setAgentGhostPreviewHidden(false);
-        clearAgentGhostPreview();
-        // apply/discard 어느 경로(모달 버튼·캔버스 인라인 툴바·닫기·새 작업의 자동 discard)로
-        // settle 되든 배지/실행 상태를 여기서 한 번에 해제 — 개별 UI가 각자 해제하면 구멍이 생긴다.
-        dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
+        ownedPending = null;
+        clearOwnedSurface();
+        detachSignals();
       },
     });
-    pendingRegistered = true;
+    ownedPending = pending;
+    keepPendingStatus = true;
     regionInlineActions = {
-      accept: () => pending.apply(),
-      reject: () => pending.discard(),
+      accept: () => {
+        if (isLiveRun() && !pending.settled) pending.apply();
+      },
+      reject: () => {
+        if (ownsRun() && !pending.settled) pending.discard();
+      },
       holdOrigin: {
         label: "원본 보기",
-        start: () => setAgentGhostPreviewHidden(true),
-        end: () => setAgentGhostPreviewHidden(false),
+        start: () => {
+          if (isLiveRun() && !pending.settled) setAgentGhostPreviewHidden(true);
+        },
+        end: () => {
+          if (isLiveRun() && !pending.settled) setAgentGhostPreviewHidden(false);
+        },
       },
     };
+    if (!isLiveRun()) {
+      pending.discard();
+      return { ...emptyBase, error: "사용자가 중단했습니다." };
+    }
     setInlineProposalActions(regionInlineActions);
+    dispatchRegionTaskStatus({
+      mapId: opts.mapId,
+      region: opts.region,
+      running: true,
+      phase: "pending",
+      runId: run.id,
+    });
     const gated = attachLog({
       ok: true,
       applied: false,
@@ -708,8 +867,10 @@ export async function runRegionTask(
     }, turn);
     return { ...gated, pending };
   } finally {
-    if (!pendingRegistered) {
-      dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
+    if (!keepPendingStatus) {
+      ghostPreviewUpdater?.cancel();
+      detachSignals();
+      dispatchStopped();
     }
   }
 }

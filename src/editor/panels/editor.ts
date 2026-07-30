@@ -21,7 +21,8 @@ import {
 } from "@/editor/mapEditLocks";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { selectEditorMap } from "@/editor/mapSelection";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
@@ -273,6 +274,7 @@ export function applyEditorUiModeLayout(): void {
 }
 
 export function teardownEditor(): void {
+  teardownAiChatPanel();
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
   stopAiConnectionPolling();
@@ -741,6 +743,11 @@ function toolStatusLabel(tool: string): string {
 
 function onTestPlayWindowRequest(event: Event): void {
   const detail = event instanceof CustomEvent ? event.detail : undefined;
+  if (isMapTestRequest(detail)) {
+    selectEditorMap(detail.mapId);
+    void openTestPlayModal();
+    return;
+  }
   if (isSelectedEventTestRequest(detail)) {
     void openSelectedEventTestModal(detail.mapId, detail.eventId);
     return;
@@ -754,6 +761,15 @@ function onTestPlayWindowRequest(event: Event): void {
     return;
   }
   void openTestPlayModal();
+}
+
+function isMapTestRequest(value: unknown): value is { readonly kind: "map"; readonly mapId: string } {
+  if (typeof value !== "object" || value === null) return false;
+  return "kind" in value &&
+    value.kind === "map" &&
+    "mapId" in value &&
+    typeof value.mapId === "string" &&
+    value.mapId.length > 0;
 }
 
 function isSelectedEventTestRequest(value: unknown): value is { readonly mapId: string; readonly eventId: string } {

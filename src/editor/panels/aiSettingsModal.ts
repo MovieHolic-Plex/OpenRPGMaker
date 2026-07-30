@@ -195,8 +195,17 @@ export function renderAiSettingsForm(options: {
   autoApprove.checked = config.autoApprove === true;
   const autoApproveRow = el("label", {
     class: "ai-config-row ai-config-check-row",
-    attrs: { title: "AI가 만든 변경 제안을 검토 없이 즉시 프로젝트에 적용합니다. 되돌리기는 Ctrl+Z." },
-    children: [el("span", { class: "ai-config-label", text: "자동 승인" }), autoApprove],
+    attrs: {
+      title: "현재 맵의 같은 크기 타일만 바꾸는 안전한 꾸미기 제안에만 적용됩니다. 이벤트·DB·퀘스트·전투·삭제·맵 생성/크기 변경·경고가 있는 제안은 항상 검토합니다.",
+    },
+    children: [
+      el("span", { class: "ai-config-label", text: "안전한 맵 꾸미기 자동 적용" }),
+      autoApprove,
+      el("span", {
+        class: "ai-config-help",
+        text: "타일 꾸미기만 바로 반영합니다. 이벤트·데이터·삭제·여러 맵 변경은 항상 먼저 보여 드립니다.",
+      }),
+    ],
   });
 
   const savedHint = el("span", {
@@ -276,14 +285,26 @@ export function renderAiSettingsForm(options: {
     dataset: { testid: "ai-config" },
     children: [
       authSettings.element,
-      baseUrl.row,
-      model.row,
-      liteModel.row,
       apiKey.row,
-      maxTokens.row,
-      reasoningRow,
-      fontSizeRow,
-      autoApproveRow,
+      el("details", {
+        class: "ai-settings-advanced",
+        dataset: { testid: "ai-settings-advanced" },
+        children: [
+          el("summary", { text: "고급 설정" }),
+          el("div", {
+            class: "ai-settings-advanced-body",
+            children: [
+              baseUrl.row,
+              model.row,
+              liteModel.row,
+              maxTokens.row,
+              reasoningRow,
+              autoApproveRow,
+              fontSizeRow,
+            ],
+          }),
+        ],
+      }),
       el("div", { class: "ai-config-actions", children: [saveButton, savedHint] }),
     ],
   });

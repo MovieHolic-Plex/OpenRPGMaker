@@ -3,6 +3,14 @@
 import type { MapId, Project } from "@/project/types";
 import type { RegionRect } from "./clipToRegion";
 
+export interface PendingRegionApplyOverride {
+  /** 부분 적용처럼 기본 clippedProject 대신 반영할 프로젝트. */
+  readonly project?: Project;
+  readonly label?: string;
+  /** 테스트/호스트가 쓰는 저장 경로. 생략하면 runRegionTask 기본 applier를 쓴다. */
+  readonly applier?: (project: Project, label: string, mapId: MapId) => void;
+}
+
 export interface PendingRegionApplyInput {
   readonly baseProject: Project;
   readonly clippedProject: Project;
@@ -12,7 +20,7 @@ export interface PendingRegionApplyInput {
   readonly changedEvents: number;
   readonly instruction: string;
   /** store 반영(undo 스냅샷 포함) — runRegionTask가 주입. */
-  readonly onApply: () => void;
+  readonly onApply: (override?: PendingRegionApplyOverride) => void;
   readonly onDiscard: () => void;
   /** apply/discard 공통 후처리(고스트 정리 등). */
   readonly onSettle: () => void;
@@ -27,7 +35,7 @@ export interface PendingRegionApply {
   readonly changedEvents: number;
   readonly instruction: string;
   readonly settled: boolean;
-  apply(): void;
+  apply(override?: PendingRegionApplyOverride): void;
   discard(): void;
 }
 
@@ -53,10 +61,13 @@ export function setPendingRegionApply(input: PendingRegionApplyInput): PendingRe
   const settle = (action: () => void): void => {
     if (settled) return;
     settled = true;
-    action();
-    input.onSettle();
-    if (current === pending) current = null;
-    emit();
+    try {
+      action();
+    } finally {
+      input.onSettle();
+      if (current === pending) current = null;
+      emit();
+    }
   };
   const pending: PendingRegionApply = {
     baseProject: input.baseProject,
@@ -69,7 +80,7 @@ export function setPendingRegionApply(input: PendingRegionApplyInput): PendingRe
     get settled() {
       return settled;
     },
-    apply: () => settle(input.onApply),
+    apply: (override) => settle(() => input.onApply(override)),
     discard: () => settle(input.onDiscard),
   };
   current = pending;
@@ -78,10 +89,12 @@ export function setPendingRegionApply(input: PendingRegionApplyInput): PendingRe
   return pending;
 }
 
-/** 테스트 전용 — 리스너/pending 초기화. */
+/** 테스트 전용 — pending을 정상 settle해 실행 소유 surface까지 정리한 뒤 리스너를 초기화. */
 export function __clearPendingRegionApplyForTest(): void {
+  const pending = current;
   current = null;
   listeners.clear();
+  if (pending && !pending.settled) pending.discard();
 }
 
 // 헤드리스 훅(E2E/디버깅): window.__rpgzzuRegionTaskPending

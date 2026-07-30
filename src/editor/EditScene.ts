@@ -158,14 +158,31 @@ export class EditScene extends PhaserRuntime.Scene {
   private buildPalettePopup: HTMLElement | null = null;
   private buildPalettePopupKey = "";
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
-  private activeRegionTask: { readonly mapId: string; readonly region: RegionRect; readonly phase: "running" | "pending" } | null = null;
+  private activeRegionTask: { readonly mapId: string; readonly region: RegionRect; readonly phase: "running" | "pending"; readonly runId: number | null } | null = null;
   private regionTaskBadge: HTMLElement | null = null;
   private eventMarkerTooltipEl: HTMLElement | null = null;
   private eventMarkerTooltipKey = "";
   private readonly handleRegionTaskStatus = (event: Event): void => {
     const detail = regionTaskStatusDetail(event);
     if (!detail) return;
-    this.activeRegionTask = detail.running ? { mapId: detail.mapId, region: detail.region, phase: detail.phase ?? "running" } : null;
+    const activeRunId = this.activeRegionTask?.runId ?? null;
+    if (detail.running) {
+      if (detail.runId !== undefined && activeRunId !== null && detail.runId < activeRunId) return;
+      this.activeRegionTask = {
+        mapId: detail.mapId,
+        region: detail.region,
+        phase: detail.phase ?? "running",
+        runId: detail.runId ?? null,
+      };
+    } else {
+      if (
+        this.activeRegionTask &&
+        detail.runId !== undefined &&
+        activeRunId !== null &&
+        detail.runId !== activeRunId
+      ) return;
+      this.activeRegionTask = null;
+    }
     this.renderRegionTaskBadge();
   };
   /** 영역 작업 창 열림/닫힘 → 선택 칩 오버레이를 숨기거나 되살린다. */
