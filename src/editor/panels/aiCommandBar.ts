@@ -4,6 +4,7 @@ export interface CommandBarElements {
   readonly commandBar: HTMLElement;
   readonly commandMenu: HTMLElement;
   readonly commandMenuToggle: HTMLButtonElement;
+  readonly dispose: () => void;
 }
 
 export function createCommandBarElements(options: {
@@ -34,16 +35,18 @@ export function createCommandBarElements(options: {
   }) as HTMLButtonElement;
   // 열린 메뉴는 Escape/바깥 클릭으로 닫힌다 — 이전엔 닫을 방법이 토글 재클릭뿐이라
   // 절대배치 메뉴가 좌측 맵트리를 계속 덮은 채 클릭을 가로챘다.
+  const onDocumentPointerDown = (event: PointerEvent): void => {
+    if (commandMenu.hidden) return;
+    if (event.target instanceof Node && (commandMenu.contains(event.target) || commandMenuToggle.contains(event.target))) return;
+    setMenuOpen(false);
+  };
+  const onDocumentKeyDown = (event: KeyboardEvent): void => {
+    if (commandMenu.hidden || event.key !== "Escape") return;
+    setMenuOpen(false);
+  };
   if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
-    document.addEventListener("pointerdown", (event) => {
-      if (commandMenu.hidden) return;
-      if (event.target instanceof Node && (commandMenu.contains(event.target) || commandMenuToggle.contains(event.target))) return;
-      setMenuOpen(false);
-    });
-    document.addEventListener("keydown", (event) => {
-      if (commandMenu.hidden || event.key !== "Escape") return;
-      setMenuOpen(false);
-    });
+    document.addEventListener("pointerdown", onDocumentPointerDown);
+    document.addEventListener("keydown", onDocumentKeyDown);
   }
   const commandBar = el("div", {
     class: "ai-command-bar",
@@ -58,5 +61,14 @@ export function createCommandBarElements(options: {
       options.statusGroup,
     ],
   });
-  return { commandBar, commandMenu, commandMenuToggle };
+  return {
+    commandBar,
+    commandMenu,
+    commandMenuToggle,
+    dispose: () => {
+      if (typeof document === "undefined" || typeof document.removeEventListener !== "function") return;
+      document.removeEventListener("pointerdown", onDocumentPointerDown);
+      document.removeEventListener("keydown", onDocumentKeyDown);
+    },
+  };
 }

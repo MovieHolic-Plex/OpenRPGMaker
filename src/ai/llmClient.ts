@@ -42,7 +42,7 @@ export interface AiConfig {
   maxToolCalls: number;
   maxTokens: number;
   reasoningEffort?: "off" | "low" | "medium" | "high";
-  // 제안(changeset)을 검토 없이 즉시 프로젝트에 적용.
+  // 현재 맵의 경고 없는 저위험 타일 변경만 검토 없이 적용(그 외 제안은 항상 검토).
   autoApprove?: boolean;
 }
 

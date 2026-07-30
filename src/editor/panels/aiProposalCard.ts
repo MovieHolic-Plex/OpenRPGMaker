@@ -1,5 +1,5 @@
 // editor/panels/aiProposalCard.ts
-// 제안 카드 렌더 + 수락/거부/메타데이터 즉시저장. 패널 클로저 밖 의존성은 deps로 주입.
+// 제안 카드 렌더 + 수락/거부. 패널 클로저 밖 의존성은 deps로 주입.
 
 import {
   proposalApprovalWarnings,
@@ -21,7 +21,7 @@ import {
 } from "@/project/lint/layoutPlacementValidate";
 import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { ensureGuestIdentityForAiSurface } from "@/editor/teamWorkflowUi";
@@ -31,6 +31,7 @@ import {
   renderVocabularyCardList,
   type VocabularyCardEdit,
 } from "./aiChatRenderers";
+import type { ProposalPresentationMode } from "./aiProposalModal";
 import {
   collectVocabSoftConfirms,
   markSoftVocabApprovalsOnProject,
@@ -181,13 +182,23 @@ export type ProposalMessageState = {
   readonly summary: string;
 };
 
+export interface ProposalAppliedResult {
+  readonly mapId: MapId;
+  readonly instruction: string;
+  readonly summary: string;
+}
+
 export interface ProposalHostApi {
   pendingProposalMessage: ProposalMessageState | null;
   lastAppliedProposalMessage: ProposalMessageState | null;
-  renderProposal: (result: TurnResult, extraWarnings?: readonly string[], assistantBubble?: HTMLElement | null) => void;
+  renderProposal: (
+    result: TurnResult,
+    extraWarnings?: readonly string[],
+    assistantBubble?: HTMLElement | null,
+    presentation?: ProposalPresentationMode,
+  ) => void;
   acceptProposal: (calls: readonly ProposedCall[], selectedState?: readonly boolean[], hasEdits?: boolean, approveMaterials?: boolean) => void;
   rejectProposal: () => void;
-  applyMetadataKeepSession: (calls: readonly ProposedCall[]) => void;
   /** 이 호스트가 마지막으로 등록한 인라인 승인 actions가 여전히 현재 슬롯이면(CAS) 해제한다. */
   clearInlineActionsIfMine: () => void;
 }
@@ -197,11 +208,12 @@ export function createProposalHost(options: {
   readonly proposalNoticeHost: HTMLElement;
   readonly proposalModalCount: HTMLElement;
   readonly proposalPill: HTMLButtonElement;
-  readonly openProposalModal: () => void;
+  readonly openProposalModal: (mode?: ProposalPresentationMode) => void;
   readonly closeProposalModal: () => void;
   readonly controller: ChatController;
   readonly appendBubble: (role: "user" | "assistant" | "tool" | "system", text: string) => HTMLElement;
   readonly setStatus: (text: string, record?: boolean) => void;
+  readonly onApplied?: (result: ProposalAppliedResult) => void;
   /** 제안 적용/거부 직후 — AI 자동 펼침 패널을 다시 접을 때 사용. */
   readonly onProposalSettled?: () => void;
 }): ProposalHostApi {
@@ -215,6 +227,7 @@ export function createProposalHost(options: {
     controller,
     appendBubble,
     setStatus,
+    onApplied,
     onProposalSettled,
   } = options;
 
@@ -278,6 +291,11 @@ export function createProposalHost(options: {
       toast(`적용 실패: ${issue?.message ?? "무결성 오류"}`, "error");
       return;
     }
+    const completionMapId = proposalPreviewMapId(selectedCalls, before, proposed)
+      ?? currentHistoryMapId()
+      ?? proposed.startMapId;
+    const completionInstruction = instruction.split("\n\n[컨텍스트]")[0]?.trim() ?? instruction.trim();
+    const completionSummary = proposalHumanSummaryLine(selectedCalls);
     clearAgentGhostPreview();
     recordProjectSnapshot(aiHistoryLabel(selectedCalls), currentHistoryMapId());
     store.replace(proposed);
@@ -314,6 +332,13 @@ export function createProposalHost(options: {
       "ok",
     );
     controller.session?.rebaseProject(store.getCurrent());
+    if (completionMapId && proposed.maps[completionMapId]) {
+      onApplied?.({
+        mapId: completionMapId,
+        instruction: completionInstruction,
+        summary: completionSummary,
+      });
+    }
     onProposalSettled?.();
   };
 
@@ -353,35 +378,12 @@ export function createProposalHost(options: {
     onProposalSettled?.();
   };
 
-  const applyMetadataKeepSession = (calls: readonly ProposedCall[]): void => {
-    const session = controller.session;
-    if (!session) return;
-    const proposed = session.getProposedProject();
-    const commit = commitChangeset(proposed, store.getCurrent());
-    if (!commit.ok) {
-      setStatus("저장 실패");
-      const issue = commit.issues.find((entry) => entry.severity === "error");
-      toast(`저장 실패: ${issue?.message ?? "무결성 오류"}`, "error");
-      return;
-    }
-    const before = store.getCurrent();
-    recordProjectSnapshot(aiHistoryLabel(calls), currentHistoryMapId());
-    store.replace(proposed);
-    focusAcceptedAgentChanges(before, proposed);
-    recordProjectCommitFireAndForget({
-      project: proposed,
-      identity: currentAgentEditorIdentity(loadAiConfig().model),
-      reviewStatus: "approved",
-      summary: aiHistoryLabel(calls),
-      diff: combineDiffs(calls.map((call) => call.result.diff)),
-      toolNames: calls.map((call) => call.name),
-    });
-    resetManualProjectCommitBaseline(proposed);
-    setStatus("저장됨");
-    appendBubble("system", `타일 지식 ${calls.length}건 저장됨 (Ctrl+Z로 복구 가능)`);
-  };
-
-  const renderProposal = (result: TurnResult, extraWarnings: readonly string[] = [], assistantBubble: HTMLElement | null = null): void => {
+  const renderProposal = (
+    result: TurnResult,
+    extraWarnings: readonly string[] = [],
+    assistantBubble: HTMLElement | null = null,
+    presentation: ProposalPresentationMode = "modal",
+  ): void => {
     const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
     // 제안·경고 모두 없는 턴(순수 채팅 응답)은 기존 대기 카드를 건드리지 않는다.
     // 예전에는 여기서 replaceChildren 후 early return 해서 모달 헤더(N건)만 남고
@@ -582,22 +584,30 @@ export function createProposalHost(options: {
       ],
     });
     proposalCardEl = card;
-    pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: proposalHumanSummaryLine(result.proposedCalls) };
+    const humanSummary = proposalHumanSummaryLine(result.proposedCalls);
+    pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: humanSummary };
     setAssistantMessageBadge(assistantBubble, "proposal");
     refreshSelectionUi();
     // 인라인 승인(캔버스 고스트 마커) — 카드의 실제 버튼 경로를 그대로 태운다.
     myInlineActions = {
       accept: () => { if (acceptButton && !acceptButton.disabled) acceptButton.click(); },
       reject: () => rejectButton?.click(),
+      presentation: presentation === "canvas" ? "canvas-first" : "default",
+      summary: humanSummary,
       focusCard: () => {
-        proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+        openProposalModal("modal");
+        const focus = (): void => proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+        if (typeof requestAnimationFrame === "function") requestAnimationFrame(focus);
+        else focus();
       },
     };
     setInlineProposalActions(myInlineActions);
     proposalHost.append(card);
     proposalModalCount.textContent = `${result.proposedCalls.length}건`;
-    proposalPill.textContent = `📋 변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;
-    openProposalModal();
+    proposalPill.textContent = presentation === "canvas"
+      ? `맵에서 변경 ${result.proposedCalls.length}건 검토 중 — 전체 보기`
+      : `변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;
+    openProposalModal(presentation);
   };
 
   return {
@@ -617,6 +627,5 @@ export function createProposalHost(options: {
     acceptProposal,
     rejectProposal,
     clearInlineActionsIfMine,
-    applyMetadataKeepSession,
   };
 }

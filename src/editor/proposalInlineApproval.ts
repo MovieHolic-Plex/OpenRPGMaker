@@ -16,6 +16,9 @@ export interface InlineProposalActions {
   readonly reject: () => void;
   /** 채팅 제안 카드로 스크롤 — 영역 작업 pending에는 없음. */
   readonly focusCard?: () => void;
+  /** 안전한 공간 제안을 캔버스에서 먼저 검토하는 축약 표시. */
+  readonly presentation?: "default" | "canvas-first";
+  readonly summary?: string;
   /** 누르고 있는 동안 원본(before)을 보여주는 홀드 버튼 — 영역 작업 pending 전용. */
   readonly holdOrigin?: {
     readonly label: string;
@@ -42,7 +45,15 @@ export function subscribeInlineProposalActions(listener: () => void): () => void
 }
 
 export function buildInlineApprovalToolbar(actions: InlineProposalActions): HTMLElement {
+  const canvasFirst = actions.presentation === "canvas-first";
   const children: HTMLElement[] = [
+    ...(canvasFirst
+      ? [el("span", {
+          class: "ghost-inline-summary",
+          text: actions.summary || "맵 변경 미리보기",
+          attrs: { title: actions.summary || "안전한 맵 변경을 캔버스에서 검토 중입니다" },
+        })]
+      : []),
     el("button", {
       class: "ghost-inline-btn is-accept",
       text: "✓ 적용",
@@ -63,8 +74,8 @@ export function buildInlineApprovalToolbar(actions: InlineProposalActions): HTML
     children.push(
       el("button", {
         class: "ghost-inline-btn",
-        text: "상세",
-        attrs: { type: "button", title: "채팅 패널의 제안 카드로 이동" },
+        text: canvasFirst ? "전체 검토" : "상세",
+        attrs: { type: "button", title: "전체 변경 목록과 기술 상세를 검토" },
         dataset: { testid: "ghost-inline-detail" },
         on: { click: () => focusCard() },
       }),
@@ -136,8 +147,8 @@ export function buildInlineApprovalToolbar(actions: InlineProposalActions): HTML
     );
   }
   return el("div", {
-    class: "ghost-inline-approval",
-    attrs: { role: "toolbar", "aria-label": "AI 제안 인라인 승인" },
+    class: `ghost-inline-approval${canvasFirst ? " is-canvas-first" : ""}`,
+    attrs: { role: "toolbar", "aria-label": canvasFirst ? "맵 위 AI 제안 검토" : "AI 제안 인라인 승인" },
     dataset: { testid: "ghost-inline-approval" },
     children,
   });
