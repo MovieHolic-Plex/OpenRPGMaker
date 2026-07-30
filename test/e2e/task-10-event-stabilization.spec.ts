@@ -1,5 +1,4 @@
-import { expect, test, type Locator } from "@playwright/test";
-import type { Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createShopShowcaseProject } from "@/project/defaults";
 import type { Command, Project } from "@/project/types";
@@ -13,6 +12,8 @@ test.beforeEach(async ({ page }) => {
     window.localStorage.clear();
     window.sessionStorage.clear();
     window.localStorage.setItem("rpg-zzu-editor-session-id", "task-10-event");
+    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
   });
 });
 
@@ -50,8 +51,10 @@ test("shop transaction branch survives apply, OK, and editor reopen", async ({ p
   await openSeededEventEditor(page, "ev_shopkeeper");
 
   const shop = page.getByTestId("event-command-shop").first();
-  await openInlineCommand(shop);
-  await shop.getByTestId("shop-add-transaction-branch-command").click();
+  const commandDialog = await openCommandDialog(page, shop);
+  await commandDialog.getByTestId("shop-add-transaction-branch-command").click();
+  await commandDialog.getByTestId("event-command-edit-ok").click();
+  await expect(commandDialog).toHaveCount(0);
   await page.getByTestId("event-editor-apply").click();
   await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
   expect(shopCommand(await debugState(page))?.transactionBranch?.some((command) => command.kind === "text")).toBe(true);
@@ -64,10 +67,12 @@ test("shop transaction branch survives apply, OK, and editor reopen", async ({ p
   await page.screenshot({ path: `${EVIDENCE_DIR}/event-shop-branch-reopened.png`, fullPage: true });
 });
 
-async function openInlineCommand(command: Locator): Promise<void> {
+async function openCommandDialog(page: Page, command: Locator): Promise<Locator> {
   await expect(command).toBeVisible();
   await command.locator(".cmd-head").dblclick();
-  await expect(command).toHaveClass(/editing/);
+  const dialog = page.getByTestId("event-command-edit-dialog");
+  await expect(dialog).toBeVisible();
+  return dialog;
 }
 
 async function openSeededEventEditor(page: Page, eventId: string): Promise<void> {

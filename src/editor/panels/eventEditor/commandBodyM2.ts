@@ -426,10 +426,12 @@ function resourceImageSize(
 }
 
 function updateField(context: CommandEditContext, cmd: M2Command, key: string, value: M2CommandValue): void {
+  const current = context.getCurrentCommand?.();
+  const latest = current?.kind === "m2Command" && current.commandId === cmd.commandId ? current : cmd;
   context.actions.replaceCommand(context.path, {
-    ...cmd,
+    ...latest,
     fields: {
-      ...cmd.fields,
+      ...latest.fields,
       [key]: value,
     },
   });

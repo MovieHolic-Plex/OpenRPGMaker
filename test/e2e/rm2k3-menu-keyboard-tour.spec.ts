@@ -69,7 +69,7 @@ test("RM2K3 play menu keyboard tour mutates and restores runtime state", async (
   expect((await runtimeSnapshot(page)).inventory).toEqual(saved.inventory);
 
   await openMenu(page);
-  await openCommand(page, "row", "열");
+  await openCommand(page, "row", "열 바꾸기");
   await focusDetailAction(page, `status-menu-row-${firstActorId}`);
   await page.keyboard.press("Enter");
   await expect.poll(async () => (await runtimeSnapshot(page)).actorRows[firstActorId]).toBe("back");

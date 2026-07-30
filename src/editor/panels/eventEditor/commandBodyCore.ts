@@ -679,6 +679,10 @@ function setSelfSwitchBody(context: CommandEditContext, cmd: Extract<Command, { 
 
 function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fork" }>): HTMLElement {
   // RM2003 rhythm: dialog edits condition + else flag only. then/else bodies live in the main list.
+  const latestFork = (): Extract<Command, { kind: "fork" }> => {
+    const current = context.getCurrentCommand?.();
+    return current?.kind === "fork" ? current : cmd;
+  };
   const wrap = el("div", {
     class: "event-command-fork-form",
     dataset: { testid: "event-command-fork-form" },
@@ -693,7 +697,7 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
         dataset: { testid: "event-fork-condition-title" },
       }),
       conditionForm(cmd.condition, (condition) => {
-        context.actions.replaceCommand(context.path, { ...cmd, condition });
+        context.actions.replaceCommand(context.path, { ...latestFork(), condition });
       }),
     ],
   });
@@ -704,15 +708,16 @@ function forkBody(context: CommandEditContext, cmd: Extract<Command, { kind: "fo
   }) as HTMLInputElement;
   elseCheck.checked = cmd.else !== undefined;
   elseCheck.addEventListener("change", () => {
+    const latest = latestFork();
     if (elseCheck.checked) {
-      context.actions.replaceCommand(context.path, { ...cmd, else: cmd.else ?? [] });
+      context.actions.replaceCommand(context.path, { ...latest, else: latest.else ?? [] });
       return;
     }
-    if ((cmd.else?.length ?? 0) > 0 && !window.confirm("그 외 분기의 명령을 삭제할까요?")) {
+    if ((latest.else?.length ?? 0) > 0 && !window.confirm("그 외 분기의 명령을 삭제할까요?")) {
       elseCheck.checked = true;
       return;
     }
-    context.actions.replaceCommand(context.path, { kind: "fork", condition: cmd.condition, then: cmd.then });
+    context.actions.replaceCommand(context.path, { kind: "fork", condition: latest.condition, then: latest.then });
   });
 
   const optionsSection = el("section", {

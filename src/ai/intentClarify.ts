@@ -4,7 +4,7 @@
 // 집/실내 표지가 부족하면 도구 호출 없이 한 번 되묻는다.
 
 import { QUICK_REPLY_MARKER } from "@/ai/interviewPrompt";
-import { listAllSkills, type SkillDef } from "@/ai/skills";
+import { listDefaultSkills, type SkillDef } from "@/ai/skills";
 
 export type IntentClarifyKind = "house-vs-interior";
 
@@ -126,8 +126,9 @@ function isProtocolLocked(text: string): boolean {
   return PROTOCOL_LOCKED_RE.test(text);
 }
 
-/** 자유 텍스트와 스킬 레지스트리의 느슨한 점수 매칭(슬래시 필터보다 약함). */
-export function rankSkillsForText(text: string, skills: readonly SkillDef[] = listAllSkills()): SkillTextMatch[] {
+/** 자유 텍스트와 스킬 레지스트리의 느슨한 점수 매칭(슬래시 필터보다 약함).
+ *  기본 후보는 advanced 를 뺀 목록 — 사용자가 부르지도 않은 저작 도구를 추천하지 않는다. */
+export function rankSkillsForText(text: string, skills: readonly SkillDef[] = listDefaultSkills()): SkillTextMatch[] {
   const n = normalize(text);
   if (!n) return [];
   const scored: SkillTextMatch[] = [];
@@ -219,7 +220,7 @@ export function resolveIntentClarification(
     return null;
   }
 
-  const skills = options.skills ?? listAllSkills();
+  const skills = options.skills ?? listDefaultSkills();
   const ranked = rankSkillsForText(raw, skills);
   const top = topSkillMatches(ranked);
 

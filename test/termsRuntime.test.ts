@@ -124,6 +124,14 @@ describe("Terms runtime integration", () => {
       expect(battleCommandsForActor(project, DEFAULT_ACTOR_ID).map((command) => command.name)).toContain("Strike");
       expect(battleCommandsForActor(project, DEFAULT_ACTOR_ID).map((command) => command.name)).toContain("Catch");
 
+      // Canonical generic commands may retain old localized names in authored class data;
+      // the runtime surface must still use the project's term resolver.
+      klass.battleCommands = [
+        { id: "cmd_attack", name: "공격", kind: "attack" },
+        { id: "cmd_skill", name: "스킬", kind: "skill" },
+        { id: "cmd_item", name: "아이템", kind: "item" },
+      ];
+
       const runtime = createBattleRuntime({
         project,
         troopId: DEFAULT_TROOP_ID,
@@ -139,7 +147,9 @@ describe("Terms runtime integration", () => {
 
       runtime.beginActorCommand({ kind: "attack" });
       const target = commandPanel(runtime.snapshot(), panelOptions(runtime)) as unknown as FakeElement;
-      expect(target.textContent).toContain("Mark");
+      expect(target.getAttribute("data-target-presentation")).toBe("field");
+      expect(target.getAttribute("aria-label")).toBe("Mark");
+      expect(target.textContent).not.toContain("Mark");
     } finally {
       cleanup();
     }

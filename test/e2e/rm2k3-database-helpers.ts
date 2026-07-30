@@ -17,7 +17,6 @@ export const DATABASE_TAB_SPECS = [
   { label: "Elements", slug: "elements", testId: "db-tab-elements" },
   { label: "States", slug: "states", testId: "db-tab-states" },
   { label: "Animations", slug: "animations", testId: "db-tab-animations" },
-  { label: "Battler Animations", slug: "battler-animations", testId: "db-tab-battler-animations" },
   { label: "Battle Screen", slug: "battle-screen", testId: "db-tab-battle-screen" },
   { label: "Battle Commands", slug: "battle-commands", testId: "db-tab-battle-commands" },
   { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" },
@@ -144,7 +143,6 @@ export type ExportedProject = {
       position?: string;
     }[];
     battleCommands?: { id: string; name: string; kind: string; skillId?: string; skillSubsetName?: string }[];
-    battlerAnimations?: { name: string; poses: { frames: { durationMs: number; pattern: number }[]; pose: string }[]; resourceId?: string }[];
   };
   commonEvents: {
     id: string;

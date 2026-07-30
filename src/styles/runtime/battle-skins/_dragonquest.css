@@ -29,9 +29,9 @@
 .battle-scene[data-battle-skin="dragonquest"] .battle-enemy-list-panel,
 .battle-scene[data-battle-skin="dragonquest"] .battle-message-window {
   background: #000;
-  border: 2px solid #f8f8f8;
+  border: 4px solid #f8f8f8;
   border-image: none;
-  border-radius: 6px;
+  border-radius: 12px;
   color: #f8f8f8;
 }
 
@@ -43,7 +43,7 @@
 
 .battle-scene[data-battle-skin="dragonquest"] .battle-command:hover,
 .battle-scene[data-battle-skin="dragonquest"] .battle-command:focus-visible,
-.battle-scene[data-battle-skin="dragonquest"] .battle-command-menu .battle-command:first-of-type {
+.battle-scene[data-battle-skin="dragonquest"] .battle-command[data-battle-command-cursor="true"] {
   background: transparent;
   border-color: #f8f8f8;
   color: #fff;
@@ -56,7 +56,7 @@
 
 .battle-scene[data-battle-skin="dragonquest"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;

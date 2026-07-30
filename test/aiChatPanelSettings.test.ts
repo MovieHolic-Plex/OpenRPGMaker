@@ -1,7 +1,7 @@
 // AI 어시스턴트 채팅 패널 — 접기 토글 + 설정 자동 저장 + 세션 설정 반영.
 // 사용자 불만 회귀 테스트: (1) 패널을 접을 수 없었다, (2) API 키/설정이 저장되지 않는 것처럼
 // 보였다(세션이 생성 시점 설정을 캐시), (3) 모델 기본값은 감독 m3 / 실행 flash-lite.
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
@@ -27,6 +27,10 @@ function installFakeLocalStorage(): void {
 }
 
 beforeEach(() => {
+  // .env 의 VITE_LLM_API_URL 이 테스트 환경까지 로드되어 defaultAiConfig 가 apiKey 모드로
+  // 바뀌는 것을 막고, 이 파일의 "chatgpt 기본" 전제를 deterministic 하게 유지한다.
+  vi.stubEnv("VITE_LLM_API_URL", "");
+  vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
   restoreDom = installFakeDom();
   installFakeLocalStorage();
@@ -36,6 +40,7 @@ afterEach(() => {
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
+  vi.unstubAllEnvs();
 });
 
 function renderPanel(): FakeElement {

@@ -113,10 +113,14 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "save": return "저장";
     case "load": return "로드";
     case "status": return "상태";
-    case "row": return "열";
+    // "열" 한 글자는 "열다"로 읽혀 무슨 기능인지 알 수 없다(전열/후열 교체).
+    case "row": return "열 바꾸기";
     case "formation": return "진형";
     case "quests": return "임무";
     case "relationships": return "관계";
+    // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
+    // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
+    // 상세 패널 제목("전투 대기")과 설명이 알려준다.
     case "wait": return waitModeEnabled ? "대기 ON" : "대기 OFF";
     case "to-title": return "타이틀";
     default: return assertNever(commandId);

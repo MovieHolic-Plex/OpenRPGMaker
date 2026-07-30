@@ -14,6 +14,7 @@ import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { openEventEditorHelp } from "./eventEditorHelp";
 import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
+import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 
@@ -41,6 +42,7 @@ export function openNewEventEditorModal(mapId: MapId, x: number, y: number): str
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
   const backdrop = el("div", {
     class: "event-editor-modal-backdrop",
     dataset: { testid: EVENT_EDITOR_MODAL_TEST_ID, mapId: request.mapId, eventId: request.eventId },
@@ -101,6 +103,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
     globalThis.clearInterval(checkpointTimer);
+    clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
     if (!saved) discardEventDraft(request.mapId, request.eventId);
     unsubscribeStore();
     unsubscribeEditor();

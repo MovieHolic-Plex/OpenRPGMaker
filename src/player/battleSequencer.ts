@@ -53,6 +53,7 @@ export interface BattleSequencerHooks {
 
 export interface BattleSequencer {
   readonly busy: boolean;
+  speedMultiplier: number;
   startIntro(snapshot: BattleSnapshot): void;
   runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void;
   runAfterEnemyAdvance(before: BattleSnapshot, after: BattleSnapshot): void;
@@ -67,6 +68,7 @@ export function createBattleSequencer(
 ): BattleSequencer {
   const timers = new Set<number>();
   let busy = false;
+  let speedMultiplier = 1.0;
   // 행동 로그 소비 지점 — 이보다 뒤의 엔트리만 새 비트로 재생한다.
   let consumedActions = runtime.snapshot().actionLog.length;
 
@@ -85,7 +87,8 @@ export function createBattleSequencer(
   }
 
   function delay(callback: () => void, ms: number): void {
-    trackTimer(schedule(callback, ms));
+    const scaledMs = Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
+    trackTimer(schedule(callback, scaledMs));
   }
 
   function clearMotion(): void {
@@ -234,6 +237,12 @@ export function createBattleSequencer(
   return {
     get busy() {
       return busy;
+    },
+    get speedMultiplier() {
+      return speedMultiplier;
+    },
+    set speedMultiplier(val: number) {
+      speedMultiplier = val;
     },
     startIntro(snapshot: BattleSnapshot): void {
       clearTimers();

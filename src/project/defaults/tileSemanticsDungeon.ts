@@ -78,14 +78,25 @@ export const DUNGEON_TILE_SEMANTICS: readonly DungeonTileSemanticEntry[] = [
   one(108, "흰 석벽돌 벽", "wall", "solid", ["white brick", "석벽돌", "흰"]),
   one(109, "장식 각석 블록", "wall", "solid", ["carved block", "각석", "장식"]),
   ...entries([255, 256, 257], "금맥 암반(황금빛 자갈)", "wall", "solid", ["gold vein", "금맥", "광산", "황금"]),
-  ...entries([285, 315, 372, 373, 374, 402, 403, 404], "푸른 광석 암반", "wall", "solid", ["blue ore", "청광석", "광산", "암반"]),
+  ...entries([285, 315], "푸른 광석 암반", "wall", "solid", ["blue ore", "청광석", "광산", "암반"]),
+  // 2026-07-27 사용자 확정: 372~374 는 수평 절벽 **상단**, 402~404 는 **밑동**이다.
+  // 예전엔 여덟 칸을 "푸른 광석 암반"으로 뭉쳐 놔서 상단/밑동 구분이 사라져 있었다.
+  one(372, "수평 절벽 상단 왼쪽", "wall", "solid", ["cliff top", "수평 절벽", "상단", "빙암"]),
+  one(373, "수평 절벽 상단 중앙(반복)", "wall", "solid", ["cliff top", "수평 절벽", "상단", "빙암"]),
+  one(374, "수평 절벽 상단 오른쪽", "wall", "solid", ["cliff top", "수평 절벽", "상단", "빙암"]),
+  one(402, "수평 절벽 밑동 왼쪽", "wall", "solid", ["cliff base", "수평 절벽", "밑동", "빙암"]),
+  one(403, "수평 절벽 밑동 중앙(반복)", "wall", "solid", ["cliff base", "수평 절벽", "밑동", "빙암"]),
+  one(404, "수평 절벽 밑동 오른쪽", "wall", "solid", ["cliff base", "수평 절벽", "밑동", "빙암"]),
   one(286, "대각 빙벽 왼쪽 캡", "wall", "solid", ["ice ridge", "left cap", "빙벽", "정본"]),
   one(287, "대각 빙벽 오른쪽 캡", "wall", "solid", ["ice ridge", "right cap", "빙벽", "정본"]),
   one(316, "대각 빙벽 왼쪽 몸통", "wall", "solid", ["ice ridge", "left body", "빙벽", "정본"]),
   one(317, "대각 빙벽 오른쪽 몸통", "wall", "solid", ["ice ridge", "right body", "빙벽", "정본"]),
   one(346, "대각 빙벽 왼쪽 바닥", "wall", "solid", ["ice ridge", "left base", "빙벽", "정본"]),
   one(347, "대각 빙벽 오른쪽 바닥", "wall", "solid", ["ice ridge", "right base", "빙벽", "정본"]),
-  ...entries([375, 376, 377], "빙붕 선반(얼음 턱)", "wall", "solid", ["ice shelf", "빙붕", "선반", "얼음"]),
+  // 2026-07-27 사용자 확정: 난간/선반이 아니라 **계단**이고 통행 가능하다.
+  one(375, "빙암 계단 왼쪽", "building", "passable", ["stairs", "계단", "절벽", "오르막"]),
+  one(376, "빙암 계단 중앙(가로 증식)", "building", "passable", ["stairs", "계단", "절벽", "오르막"]),
+  one(377, "빙암 계단 오른쪽", "building", "passable", ["stairs", "계단", "절벽", "오르막"]),
   ...entries([432, 433, 462, 463], "V자 크레바스 암벽", "wall", "solid", ["crevasse", "크레바스", "암벽"]),
   ...entries([434, 464], "검은 잡석 벽", "wall", "solid", ["rubble", "잡석", "어둠"]),
 

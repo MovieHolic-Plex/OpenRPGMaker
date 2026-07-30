@@ -14,7 +14,9 @@ import type {
   TroopRecord,
 } from "@/project/types";
 
-export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">): EnemyRecord {
+export function normalizeEnemyRecord(
+  record: Partial<Omit<EnemyRecord, "actions">> & { actions?: readonly Partial<EnemyActionPattern>[] } & Pick<EnemyRecord, "id" | "name">,
+): EnemyRecord {
   const actions = normalizeEnemyActions(record.actions, record.skillIds);
   const legacy = record as Partial<EnemyRecord> & { critical?: EnemyCritical; options?: EnemyOptions };
   const critical = normalizeCritical(legacy.critical ?? record.criticalHit);
@@ -39,7 +41,7 @@ export function normalizeEnemyRecord(record: Partial<EnemyRecord> & Pick<EnemyRe
       const actionProfile = normalizeEnemyActionProfile(record.actionProfile);
       return actionProfile ? { actionProfile } : {};
     })(),
-    stateRates: normalizeRates(record.stateRates),
+    stateRates: { state_death: "C", ...normalizeRates(record.stateRates) },
     elementRates: defaultElementRates(record.elementRates),
   };
 }
@@ -176,7 +178,7 @@ function normalizeMembers(members: readonly Partial<TroopMemberRecord>[] | undef
 }
 
 function normalizeRates(rates: Record<string, unknown> | undefined): Record<string, "A" | "B" | "C" | "D" | "E"> {
-  const normalized: Record<string, "A" | "B" | "C" | "D" | "E"> = { state_death: "C" };
+  const normalized: Record<string, "A" | "B" | "C" | "D" | "E"> = {};
   for (const [id, grade] of Object.entries(rates ?? {})) normalized[id] = isRateGrade(grade) ? grade : "C";
   return normalized;
 }

@@ -5,7 +5,8 @@ import {
   clampLevel,
   normalizeActorRecord,
 } from "@/project/actorModel";
-import { normalizeBattleAnimationRecord, normalizeBattlerAnimationRecord } from "@/project/databaseAnimationRecordModel";
+import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
+import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
@@ -20,8 +21,9 @@ import {
   type TimeSystemConfig,
 } from "@/project/gameTime";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
-import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { isFarmTool, normalizeAnimalRecord, normalizeCropRecord } from "@/project/farmModel";
+import { normalizeLifeSkillRecord } from "@/project/skillModel";
+import type { AnimalRecord, ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -54,7 +56,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   };
 }
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "battlerAnimations" | "elements" | "terrains" | "monsterSpecies" | "crops">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills" | "animals">>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -70,9 +72,10 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     elements: normalizeElementRecords(database.elements),
     terrains: normalizeTerrainRecords(database.terrains),
     battleCommands: normalizeGlobalBattleCommands(database.battleCommands),
-    battlerAnimations: (database.battlerAnimations ?? []).map(normalizeBattlerAnimationRecord),
     monsterSpecies: (database.monsterSpecies ?? []).map(normalizeMonsterSpeciesRecord),
     crops: (database.crops ?? []).map((crop) => normalizeCropRecord(crop as Partial<CropRecord> & Pick<CropRecord, "id" | "name">)),
+    lifeSkills: (database.lifeSkills ?? []).map((skill) => normalizeLifeSkillRecord(skill as Partial<LifeSkillRecord> & Pick<LifeSkillRecord, "id" | "name">)),
+    animals: (database.animals ?? []).map((animal) => normalizeAnimalRecord(animal as Partial<AnimalRecord> & Pick<AnimalRecord, "id" | "name">)),
   };
 }
 
@@ -107,16 +110,25 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),
     battleSystemResourceId: cleanOptionalId(system.battleSystemResourceId),
     battleBgmResourceId: cleanOptionalId(system.battleBgmResourceId),
+    // 맵이 BGM 을 정하지 않았을 때 쓰는 프로젝트 기본 BGM. 화이트리스트 정규화이므로
+    // 여기 없으면 왕복 1회에 사라진다(skillSystem 이 실제로 그렇게 사라진 전례가 위에 있다).
+    defaultBgmResourceId: cleanOptionalId(system.defaultBgmResourceId),
     initialTroopId: cleanOptionalId(system.initialTroopId),
     battleFlow: normalizeBattleFlow(system.battleFlow),
-    // 기본(rm2003/classic)은 저장하지 않고, 그 외 스킨 선택만 보존한다.
-    ...(system.battleUiStyle && system.battleUiStyle !== "classic" && system.battleUiStyle !== "rm2003"
+    // 기본 스킨(vxace)만 저장하지 않는다. 명시적 rm2003/classic 선택은 반드시 보존해야 한다 —
+    // 기본이 vxace 로 바뀐 뒤에는 rm2003 을 생략하면 왕복 후 vxace 로 바뀌어버린다.
+    ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
       ? { battleUiStyle: system.battleUiStyle }
       : {}),
     // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
     ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
+    // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
+    ...(system.battleModel === "gen1" ? { battleModel: "gen1" as const } : {}),
     activeSlots: normalizeOptionalPositiveInteger(system.activeSlots),
     rewardPolicy: normalizeRewardPolicy(system.rewardPolicy),
+    // 생활 스킬 시스템 옵트인 플래그. 화이트리스트 방식 정규화라 여기에 없으면 저장/로드 1회 왕복에
+    // 사라진다 — 실제로 누락되어 사용자가 켠 플래그가 영속되지 않았다. 기본(미설정)은 생략 유지.
+    ...(system.skillSystem !== undefined ? { skillSystem: { enabled: system.skillSystem.enabled === true } } : {}),
     ...(system.monsterCollection !== undefined ? { monsterCollection: system.monsterCollection === true } : {}),
     ...(system.monsterBattleParty !== undefined ? { monsterBattleParty: system.monsterBattleParty === true } : {}),
     ...(system.giftSystem !== undefined ? { giftSystem: system.giftSystem === true } : {}),
@@ -276,7 +288,7 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     },
     parameterCurves: normalizeParameterCurves(record.parameterCurves),
     expCurve: normalizeExpCurve(record.expCurve),
-    stateRates: normalizeRates(record.stateRates),
+    stateRates: { state_death: "C", ...normalizeRates(record.stateRates) },
     elementRates: defaultElementRates(record.elementRates),
   };
 }
@@ -600,7 +612,7 @@ function defaultElementRates(overrides: Record<string, ActorRateGrade> | undefin
 }
 
 function normalizeRates(rates: Record<string, ActorRateGrade> | undefined): Record<string, ActorRateGrade> {
-  const normalized: Record<string, ActorRateGrade> = { state_death: "C" };
+  const normalized: Record<string, ActorRateGrade> = {};
   for (const [id, grade] of Object.entries(rates ?? {})) normalized[id] = ACTOR_RATE_GRADES.includes(grade) ? grade : "C";
   return normalized;
 }

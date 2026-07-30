@@ -19,11 +19,20 @@ type RuntimeState = {
   running: boolean;
 };
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
+  });
+});
+
+
 test.setTimeout(60_000);
 
 type PickerTarget = {
   readonly tab: 1 | 2 | 3 | 4;
   readonly name: string;
+  readonly testId?: string;
 };
 
 const COMMAND_PICKER_TARGETS: Record<string, PickerTarget> = {
@@ -32,11 +41,11 @@ const COMMAND_PICKER_TARGETS: Record<string, PickerTarget> = {
   changeItem: { tab: 1, name: "아이템 변경..." },
   changeParty: { tab: 1, name: "파티 멤버 변경..." },
   choices: { tab: 1, name: "선택지 표시..." },
-  fork: { tab: 3, name: "조건 분기..." },
-  gameOver: { tab: 3, name: "게임 오버" },
+  fork: { tab: 1, name: "조건 분기" },
+  gameOver: { tab: 4, name: "게임 오버" },
   inputNumber: { tab: 1, name: "숫자 입력..." },
-  moveEvent: { tab: 2, name: "이동 경로 설정..." },
-  playAudio: { tab: 3, name: "BGM 재생..." },
+  moveEvent: { tab: 1, name: "이동 경로 설정" },
+  playAudio: { tab: 1, name: "BGM 재생" },
   setSwitch: { tab: 1, name: "스위치 조작..." },
   setVariable: { tab: 1, name: "변수 조작..." },
   showPicture: { tab: 2, name: "그림 표시..." },
@@ -91,12 +100,18 @@ async function tapKey(page: Page, key: string, holdMs = 80): Promise<void> {
 
 async function seedProject(page: Page, project: SeedProject, path = "/"): Promise<void> {
   await seedProjectFromSupabaseCanonical(page, project, path);
+  const expert = page.getByRole("button", { name: "전문가 모드", exact: true });
+  if (await expert.getAttribute("aria-pressed") !== "true") await expert.click();
+  await expect(expert).toHaveAttribute("aria-pressed", "true");
 }
 
 async function addRootCommand(page: Page, kind: string): Promise<void> {
   const target = COMMAND_PICKER_TARGETS[kind];
   if (!target) throw new Error(`missing command picker target for ${kind}`);
-  await addRootCommandByPickerTarget(page, target);
+  await addRootCommandByPickerTarget(page, {
+    ...target,
+    testId: `command-picker-add-${kind}`,
+  });
 }
 
 async function addRootCommandByPickerTestId(page: Page, testId: string, tab: 1 | 2 | 3 | 4): Promise<void> {
@@ -107,6 +122,10 @@ async function addRootCommandByPickerTestId(page: Page, testId: string, tab: 1 |
   await expect(picker).toBeVisible();
   if (tab !== 1) await picker.getByTestId(`event-command-picker-tab-${tab}`).click({ force: true });
   await picker.getByTestId(testId).first().click({ force: true });
+  const dialog = page.getByTestId("event-command-edit-dialog");
+  await expect(dialog).toBeVisible();
+  await dialog.getByTestId("event-command-edit-ok").click();
+  await expect(dialog).toHaveCount(0);
   await expect(picker).toHaveCount(0);
 }
 
@@ -125,25 +144,29 @@ async function addRootCommandByPickerTarget(page: Page, target: PickerTarget): P
   }
   await expect(picker).toBeVisible();
   if (target.tab !== 1) await picker.getByTestId(`event-command-picker-tab-${target.tab}`).click({ force: true });
-  await picker.getByRole("button", { name: target.name, exact: true }).click({ force: true });
+  const entry = target.testId
+    ? picker.getByTestId(target.testId).first()
+    : picker.getByRole("button", { name: target.name, exact: true });
+  await entry.click({ force: true });
+  const dialog = page.getByTestId("event-command-edit-dialog");
+  await expect(dialog).toBeVisible();
   if (target.name === "문장 표시...") {
-    const dialog = page.getByTestId("event-command-text-dialog");
-    await expect(dialog).toBeVisible();
     await dialog.getByTestId("event-command-text-body").fill("Auto text");
-    await dialog.getByTestId("event-command-text-ok").click();
-    await expect(dialog).toBeHidden();
   }
+  await dialog.getByTestId("event-command-edit-ok").click();
+  await expect(dialog).toHaveCount(0);
   await expect(picker).toHaveCount(0);
 }
 
-async function openCommandEditor(page: Page, kind: string): Promise<void> {
+async function openCommandEditor(page: Page, kind: string): Promise<Locator> {
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const command = page.getByTestId(`event-command-${kind}`).first();
     try {
       await expect(command).toBeVisible({ timeout: 5_000 });
       await command.locator(".cmd-head").dblclick({ timeout: 5_000 });
-      await expect(command).toHaveClass(/editing/, { timeout: 5_000 });
-      return;
+      const dialog = page.getByTestId("event-command-edit-dialog");
+      await expect(dialog).toBeVisible({ timeout: 5_000 });
+      return dialog;
     } catch (error) {
       if (attempt === 2) {
         if (error instanceof Error) throw error;
@@ -151,11 +174,14 @@ async function openCommandEditor(page: Page, kind: string): Promise<void> {
       }
     }
   }
+  throw new Error(`Unable to open ${kind} command editor`);
 }
 
-async function editCommand(page: Page, kind: string, action: (command: Locator) => Promise<void>): Promise<void> {
-  await openCommandEditor(page, kind);
-  await action(page.getByTestId(`event-command-${kind}`).first());
+async function editCommand(page: Page, kind: string, action: (dialog: Locator) => Promise<void>): Promise<void> {
+  const dialog = await openCommandEditor(page, kind);
+  await action(dialog);
+  await dialog.getByTestId("event-command-edit-ok").click();
+  await expect(dialog).toHaveCount(0);
 }
 
 async function applyEventEditor(page: Page): Promise<void> {
@@ -351,8 +377,12 @@ test("m2 PDF catalog commands are selectable, editable, and persisted", async ({
   const command = page.getByTestId("event-command-m2Command");
   await expect(command).toContainText("주석");
   await command.locator(".cmd-head").dblclick();
-  await command.getByTestId("m2-command-comment-textarea").fill("QA note");
-  await command.getByTestId("m2-command-comment-textarea").blur();
+  let dialog = page.getByTestId("event-command-edit-dialog");
+  await expect(dialog).toBeVisible();
+  await dialog.getByTestId("m2-command-comment-textarea").fill("QA note");
+  await dialog.getByTestId("m2-command-comment-textarea").blur();
+  await dialog.getByTestId("event-command-edit-ok").click();
+  await expect(dialog).toHaveCount(0);
 
   await applyEventEditor(page);
   const state = await debugState(page);
@@ -368,7 +398,9 @@ test("m2 PDF catalog commands are selectable, editable, and persisted", async ({
     )
   ).toBe(true);
   await command.locator(".cmd-head").dblclick();
-  await expect(command).toHaveClass(/editing/);
+  dialog = page.getByTestId("event-command-edit-dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByTestId("m2-command-comment-textarea")).toHaveValue("QA note");
   await page.screenshot({ path: testInfo.outputPath("m2-pdf-command-editor.png"), fullPage: true });
 });
 
@@ -455,8 +487,11 @@ test("shop transaction branch persists after Apply OK and reopen", async ({ page
   await page.getByTestId("event-editor-open").click();
   const shopCommand = page.getByTestId("event-command-shop").first();
   await shopCommand.locator(".cmd-head").dblclick();
-  await expect(shopCommand).toHaveClass(/editing/);
-  await shopCommand.getByTestId("shop-add-transaction-branch-command").click();
+  const shopDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(shopDialog).toBeVisible();
+  await shopDialog.getByTestId("shop-add-transaction-branch-command").click();
+  await shopDialog.getByTestId("event-command-edit-ok").click();
+  await expect(shopDialog).toHaveCount(0);
 
   await applyEventEditor(page);
   const appliedState = await debugState(page);
@@ -646,8 +681,7 @@ test("input number command stores runtime entry in the selected variable", async
     await picker.getByTestId("event-record-picker-add").click();
     await picker.getByTestId("event-record-picker-row-1").click();
     await picker.getByTestId("event-record-picker-ok").click();
-    await command.locator(".cmd-head").dblclick();
-    await expect(command).toHaveClass(/editing/);
+    await expect(picker).toHaveCount(0);
     await command.getByTestId("input-number-digit-chip-4").click();
   });
 

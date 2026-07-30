@@ -3,6 +3,7 @@ import type { BattleActionResultSnapshot } from "@/battle/types";
 import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { store } from "@/project/store";
+import { resolveTerms } from "@/project/terms";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -128,12 +129,13 @@ export function targetSelectDirectorState(snapshot: BattleSnapshot): BattleDirec
   const actor = activeActor(snapshot);
   const selectedEnemy = snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
     ?? snapshot.enemies.find((enemy) => snapshot.targetSelection?.targetEnemyIds.includes(enemy.id));
+  const terms = resolveTerms(store.getCurrent());
+  const targetCount = snapshot.targetSelection?.targetEnemyIds.length ?? 0;
   return {
     step: "target",
-    lines: [
-      actor ? `${actor.name}: 대상을 선택하십시오.` : "대상을 선택하십시오.",
-      selectedEnemy ? `${withJosa(selectedEnemy.name, "을/를")} 겨냥하고 있습니다.` : "선택 가능한 적이 없습니다.",
-    ],
+    lines: [targetCount > 1
+      ? `← → ${terms.target} · Z/Enter · X/Esc`
+      : "Z/Enter · X/Esc"],
     activeActorRecordId: actor?.recordId,
     targetId: selectedEnemy?.id,
   };
@@ -245,7 +247,10 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     cards.append(item);
   }
 
-  panel.append(crest, title, cards);
+  // crest/title/cards 는 위에서 없을 때만 만들어 이미 append 했다. 여기서 다시 append 하면
+  // 재동기화(revealStage 진행) 때마다 그 3개가 확인 버튼/계속 프롬프트 뒤로 밀려나, 화면
+  // 순서가 "확인 → 승리" 로 뒤집힌다(실측: children = confirm, prompt, crest, title, cards).
+  // 그래서 재배치는 하지 않는다.
   if (!panel.querySelector(".battle-result-confirm")) {
     const button = document.createElement("button");
     button.type = "button";

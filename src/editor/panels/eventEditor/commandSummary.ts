@@ -642,9 +642,9 @@ function page3M2SummaryParts(
       );
     }
     case "Move to Variable Location": {
-      const mapId = str("mapId");
-      const x = str("x") || str("variableX") || "?";
-      const y = str("y") || str("variableY") || "?";
+      const mapId = str("mapVariableId") || str("mapId");
+      const x = str("xVariableId") || str("x") || str("variableX") || "?";
+      const y = str("yVariableId") || str("y") || str("variableY") || "?";
       return commandLine(
         labelOf("변수 위치로 이동"),
         valuePart(mapId ? mapName(mapId) : "(맵)"),
@@ -654,14 +654,14 @@ function page3M2SummaryParts(
       );
     }
     case "Get On/Off Vehicle": {
-      const target = str("target") || str("vehicle") || "탈것";
-      const enabled = str("enabled");
+      const target = str("vehicle") || str("target") || "탈것";
+      const enabled = str("boarded") || str("enabled");
       const action =
         enabled === "false" || enabled === "0" ? "하차" : enabled === "true" || enabled === "1" ? "승차" : "승하차";
       return commandLine(labelOf("탈것 승하차"), valuePart(target), plainPart(" · "), valuePart(action));
     }
     case "Set Vehicle Location": {
-      const vehicle = str("target") || str("vehicle") || "탈것";
+      const vehicle = str("vehicle") || str("target") || "탈것";
       const mapId = str("mapId");
       return commandLine(
         labelOf("탈것 위치 설정"),
@@ -687,8 +687,8 @@ function page3M2SummaryParts(
       );
     }
     case "Swap Event Location": {
-      const a = str("target") || str("eventId") || "이벤트 A";
-      const b = str("target2") || str("eventId2") || str("with") || "이벤트 B";
+      const a = str("eventA") || str("target") || str("eventId") || "이벤트 A";
+      const b = str("eventB") || str("value") || str("mapId") || str("target2") || str("eventId2") || str("with") || "이벤트 B";
       return commandLine(labelOf("이벤트 위치 교환"), valuePart(a), plainPart(" ↔ "), valuePart(b));
     }
     case "Get Terrain ID": {

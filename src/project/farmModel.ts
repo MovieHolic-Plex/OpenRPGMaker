@@ -1,5 +1,5 @@
 import { isSeason, type Season } from "@/project/gameTime";
-import type { CropGraphicStage, CropRecord, FarmTool } from "@/project/types";
+import type { AnimalRecord, CropGraphicStage, CropRecord, FarmTool } from "@/project/types";
 
 export const FARM_TOOLS = ["hoe", "wateringCan", "axe", "pickaxe"] as const satisfies readonly FarmTool[];
 
@@ -25,6 +25,30 @@ export function normalizeCropRecord(record: Partial<CropRecord> & Pick<CropRecor
     ...(regrowDays > 0 ? { regrow: { days: regrowDays } } : {}),
     ...(graphicStages.length > 0 ? { graphicStages } : {}),
   };
+}
+
+// 농장 동물 레코드 정규화 — crops/monsterSpecies 와 동일 계약. 이전에는 database.animals 가
+// `database.animals ?? []` 로 정규화 없이 통과해, 임의 필드·비정상 수치가 그대로 영속화됐다.
+export function normalizeAnimalRecord(record: Partial<AnimalRecord> & Pick<AnimalRecord, "id" | "name">): AnimalRecord {
+  const produceItemId = cleanId(record.produceItemId);
+  const graphicResourceId = cleanId(record.graphicResourceId);
+  const animalType = typeof record.animalType === "string" && record.animalType.trim()
+    ? record.animalType.trim()
+    : "chicken";
+  return {
+    id: record.id,
+    name: textOrDefault(record.name, "동물"),
+    animalType,
+    ...(produceItemId ? { produceItemId } : {}),
+    produceDays: clampInteger(record.produceDays, 1, 3650, 1),
+    friendshipRequired: clampInteger(record.friendshipRequired, 0, 1000, 0),
+    ...(graphicResourceId ? { graphicResourceId } : {}),
+  };
+}
+
+function clampInteger(value: unknown, min: number, max: number, fallback: number): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
+  return Math.min(max, Math.max(min, Math.trunc(value)));
 }
 
 function normalizeStages(stages: readonly Partial<{ readonly days: number }>[] | undefined): CropRecord["stages"] {

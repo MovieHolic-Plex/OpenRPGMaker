@@ -50,21 +50,16 @@ describe("event editor M2 command body", () => {
     restoreDom?.();
   });
 
-  it("renders Move Picture with a friendly picture resource picker and preview instead of a raw resource id input", () => {
+  it("renders Move Picture as the canonical rich picture-slot movement form", () => {
     const context = contextWithReplaceSpy(vi.fn());
 
     const body = renderWithFakeDom(() => renderM2CommandBody(context, MOVE_PICTURE_COMMAND) ?? document.createElement("div"));
 
     expect(body.textContent).not.toMatch(/catalog-disabled|missing-runtime|runtime:/);
-    expect(findByTestId(body, "m2-command-resourceId-input")).toBeNull();
-    const picker = findByTestId(body, "m2-command-resourceId-picker");
-    const preview = findByTestId(body, "m2-command-resourceId-preview");
-    expect(picker?.tagName).toBe("SELECT");
-    expect(picker?.attrs["aria-label"]).toBe("그림 리소스 선택");
-    expect(picker?.value).toBe("easyrpg-picture-cloud");
-    expect(picker?.textContent).toContain("EasyRPG RTP Cloud Picture");
-    expect(preview?.attrs["aria-label"]).toBe("선택한 그림 리소스 미리보기");
-    expect(preview?.textContent).toContain("EasyRPG RTP Cloud Picture");
+    expect(findByTestId(body, "move-picture-m2-command-body")).not.toBeNull();
+    expect(findByTestId(body, "move-picture-m2-intent")?.textContent).toContain("그림 이동");
+    expect(findByTestId(body, "move-picture-m2-preview")).not.toBeNull();
+    expect(findByTestId(body, "move-picture-m2-resource-select")).toBeNull();
   });
 
   it("keeps Move Picture numeric fields editable through the normal command replace path", () => {
@@ -72,9 +67,9 @@ describe("event editor M2 command body", () => {
     const context = contextWithReplaceSpy(replaceCommand);
 
     const body = renderWithFakeDom(() => renderM2CommandBody(context, MOVE_PICTURE_COMMAND) ?? document.createElement("div"));
-    const pictureId = findByTestId(body, "m2-command-pictureId-input");
-    const x = findByTestId(body, "m2-command-x-input");
-    const y = findByTestId(body, "m2-command-y-input");
+    const pictureId = findByTestId(body, "move-picture-m2-id-input");
+    const x = findByTestId(body, "move-picture-m2-x-input");
+    const y = findByTestId(body, "move-picture-m2-y-input");
     expect(pictureId?.value).toBe("pic_cloud");
     expect(x?.value).toBe("12");
     expect(y?.value).toBe("34");
@@ -83,13 +78,14 @@ describe("event editor M2 command body", () => {
     x.value = "48";
     x.dispatchEvent(new Event("change"));
 
-    expect(replaceCommand).toHaveBeenCalledWith([2], {
-      ...MOVE_PICTURE_COMMAND,
-      fields: {
-        ...MOVE_PICTURE_COMMAND.fields,
-        x: 48,
-      },
-    });
+    expect(replaceCommand).toHaveBeenCalledWith(
+      [2],
+      expect.objectContaining({
+        kind: "m2Command",
+        commandId: "m2-052-move-picture",
+        fields: expect.objectContaining({ pictureId: "pic_cloud", x: 48, y: 34 }),
+      })
+    );
   });
 
   it("renders database-backed generic command ids as Korean record selectors instead of raw text inputs", () => {
@@ -107,15 +103,12 @@ describe("event editor M2 command body", () => {
 
     expect(Boolean(findByTestId(body, "m2-command-target-input"))).toBe(false);
     expect(Boolean(findByTestId(body, "m2-command-value-input"))).toBe(false);
-    const actor = findByTestId(body, "m2-command-target-record-select");
-    const actorName = findByTestId(body, "m2-command-target-record-selected-name");
-    const actorClass = findByTestId(body, "m2-command-value-record-select");
+    const actor = findByTestId(body, "change-actor-class-actor-select");
+    const actorClass = findByTestId(body, "change-actor-class-class-select");
+    expect(findByTestId(body, "change-actor-class-command-body")).not.toBeNull();
     expect(actor?.tagName).toBe("SELECT");
-    expect(actor?.attrs["aria-label"]).toBe("주인공 선택");
     expect(actor?.textContent).toContain("테스트 주인공");
-    expect(actorName?.textContent).toContain("테스트 주인공");
     expect(actorClass?.tagName).toBe("SELECT");
-    expect(actorClass?.attrs["aria-label"]).toBe("직업 선택");
     expect(actorClass?.textContent).toContain("테스트 직업");
   });
 
@@ -132,9 +125,9 @@ describe("event editor M2 command body", () => {
     );
 
     expect(Boolean(findByTestId(body, "m2-command-animationId-input"))).toBe(false);
-    const animation = findByTestId(body, "m2-command-animationId-record-select");
+    const animation = findByTestId(body, "show-animation-m2-animation-select");
+    expect(findByTestId(body, "show-animation-m2-command-body")).not.toBeNull();
     expect(animation?.tagName).toBe("SELECT");
-    expect(animation?.attrs["aria-label"]).toBe("전투 애니메이션 선택");
     expect(animation?.textContent).toContain("테스트 애니메이션");
   });
 
@@ -172,10 +165,11 @@ describe("event editor M2 command body", () => {
     );
 
     expect(body.textContent).not.toMatch(/catalog-disabled|missing-runtime|runtime:/);
-    expect(findByTestId(body, "m2-command-target-record-select")?.tagName).toBe("SELECT");
-    expect(findByTestId(body, "m2-command-mapId-record-select")?.tagName).toBe("SELECT");
-    expect(findByTestId(body, "m2-command-x-input")?.value).toBe("3");
-    expect(findByTestId(body, "m2-command-y-input")?.value).toBe("4");
+    expect(findByTestId(body, "set-event-location-command-body")).not.toBeNull();
+    expect(findByTestId(body, "set-event-location-event-select")?.tagName).toBe("SELECT");
+    expect(findByTestId(body, "set-event-location-map-select")?.tagName).toBe("SELECT");
+    expect(findByTestId(body, "set-event-location-x-input")?.value).toBe("3");
+    expect(findByTestId(body, "set-event-location-y-input")?.value).toBe("4");
   });
 
   it("renders modern commands as guided controls instead of raw note fields", () => {
@@ -219,12 +213,10 @@ describe("event editor M2 command body", () => {
       }) ?? document.createElement("div")
     );
 
-    expect(findByTestId(body, "m2-command-intent-card")).not.toBeNull();
-    expect(findByTestId(body, "m2-command-intent-body")?.textContent).toContain("강제 이동");
-    expect(findByTestId(body, "m2-command-no-params")).not.toBeNull();
+    expect(findByTestId(body, "m2-command-body-m2-058-wait-for-all-movement")).not.toBeNull();
     expect(findByTestId(body, "m2-command-note-input")).toBeNull();
-    expect(body.textContent).toContain("대기 대상");
-    expect(body.textContent).not.toContain("필요한 값을 선택하고 확인을 누르세요");
+    expect(body.textContent).toContain("이 명령은 추가 설정 없이 실행됩니다");
+    expect(body.textContent).toContain("추가 설정 없음");
   });
 
 });

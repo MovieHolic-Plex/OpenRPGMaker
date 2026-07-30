@@ -35,32 +35,8 @@ describe("RPG2003 animation schema", () => {
     });
   });
 
-  it("keeps side-view battler pose animations in a separate collection", () => {
-    // Given: a default project includes both effect animations and battler pose animations.
-    const project = createBlankProject();
-
-    // When: the battler animation collection is inspected.
-    const heroBattler = project.database.battlerAnimations?.find((animation) => animation.id === "battler_anim_hero");
-
-    // Then: battler poses are separate from battle effect animations.
-    expect(project.database.battleAnimations.some((animation) => animation.id === "battler_anim_hero")).toBe(false);
-    expect(heroBattler).toMatchObject({
-      id: "battler_anim_hero",
-      resourceId: "generated-actor-hero-01-battle",
-      poses: expect.arrayContaining([
-        {
-          pose: "idle",
-          frames: [
-            { pattern: 0, durationMs: 180 },
-            { pattern: 1, durationMs: 180 },
-          ],
-        },
-      ]),
-    });
-  });
-
   it("normalizes legacy shallow battle animations into runtime-safe effect records", () => {
-    // Given: an existing save only has legacy battle animation fields and no battler animation collection.
+    // Given: an existing save only has legacy battle animation fields.
     const legacyDatabase: ProjectDatabaseRecords = {
       actors: [],
       classes: [],
@@ -71,13 +47,12 @@ describe("RPG2003 animation schema", () => {
       troops: [],
       states: [],
       battleAnimations: [{ id: "anim_legacy", name: "Legacy", resourceId: "easyrpg-battle-blow" }],
-      battlerAnimations: [],
     };
 
     // When: the database passes through runtime normalization.
     const normalized = normalizeDatabaseRecords(legacyDatabase);
 
-    // Then: the effect animation gains safe playback fields without becoming a battler pose record.
+    // Then: the effect animation gains safe playback fields.
     expect(normalized.battleAnimations[0]).toMatchObject({
       id: "anim_legacy",
       name: "Legacy",
@@ -86,18 +61,16 @@ describe("RPG2003 animation schema", () => {
       frames: [{ cells: [{ pattern: 0, visible: true }] }],
       timings: [],
     });
-    expect(normalized.battlerAnimations).toEqual([]);
   });
 
-  it("round-trips default effect and battler animation records through project IO", () => {
+  it("round-trips default effect animation records through project IO", () => {
     // Given: the starter project includes expanded animation records.
     const project = createBlankProject();
 
     // When: the project is serialized and deserialized through the real IO layer.
     const restored = deserialize(serialize(project));
 
-    // Then: both animation collections survive validation.
+    // Then: the animation collection survives validation.
     expect(restored.database.battleAnimations[0]?.frames?.length).toBeGreaterThan(0);
-    expect(restored.database.battlerAnimations?.[0]?.poses.length).toBeGreaterThan(0);
   });
 });

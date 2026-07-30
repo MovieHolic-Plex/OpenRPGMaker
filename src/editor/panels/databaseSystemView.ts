@@ -134,6 +134,29 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
         });
         return select;
       })()),
+      field("배틀 모델", (() => {
+        // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
+        // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
+        // Gen1 규칙 엔진은 아직 미구현이다(데미지 공식·상태·포획은 계획서 task 2+). 현재 gen1 을
+        // 골라도 바뀌는 것은 magical 속성의 mind 방어 라우팅과 body[data-battle-model] 뿐이므로,
+        // 완성된 모드처럼 보이지 않게 라벨에 명시한다.
+        const select = el("select", {
+          dataset: { testid: "db-field-system-battle-model" },
+          attrs: { title: "Gen1 규칙 엔진은 구현 중입니다. 현재는 마법 속성의 마법방어 적용만 달라집니다." },
+        });
+        select.append(
+          el("option", { text: "RM2k3 (기본)", attrs: { value: "rm2k3" } }),
+          el("option", { text: "Gen1 (포켓몬 레드 스타일 · 구현 중)", attrs: { value: "gen1" } }),
+        );
+        select.value = project.system.battleModel === "gen1" ? "gen1" : "rm2k3";
+        select.addEventListener("change", () => {
+          updateSystem((draft) => {
+            if (select.value === "gen1") draft.system.battleModel = "gen1";
+            else delete draft.system.battleModel;
+          });
+        });
+        return select;
+      })()),
       numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
         updateSystem((draft) => {
           draft.system.activeSlots = optionalPositiveInteger(value);

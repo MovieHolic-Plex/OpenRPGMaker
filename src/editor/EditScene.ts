@@ -45,7 +45,11 @@ import { redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { handleEditorKey, shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { copyEventAt, openEventLayerContextMenu, pasteEventAt } from "@/editor/panels/eventLayerContextMenu";
 import { isCellInsideSelection } from "@/editor/panels/mapSelectionContextMenu";
-import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import {
+  isRegionTaskModalOpen,
+  openRegionTaskModal,
+  REGION_TASK_MODAL_EVENT,
+} from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
@@ -56,7 +60,7 @@ import { computeMapViewport } from "@/ai/mapViewportContext";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
-  fixedSelectionChipsPosition,
+  anchoredSelectionChipsPosition,
 } from "@/editor/selectionOverlayAnchor";
 import { isSignificantRegionDrag, regionRectFromDrag } from "@/editor/regionRightDrag";
 import { saveProjectNow } from "@/editor/saveActions";
@@ -116,7 +120,7 @@ export function tileRectToScreenRect(rect: TileRect, camera: CameraView, tileSiz
 }
 
 // 위치 헬퍼는 selectionOverlayAnchor.ts — 테스트/재사용용 re-export
-export { anchoredBuildPalettePosition, fixedSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
+export { anchoredBuildPalettePosition, anchoredSelectionChipsPosition } from "@/editor/selectionOverlayAnchor";
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
@@ -147,6 +151,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private tilePaintEngine: TilePaintEngine | null = null;
   private dragOperationHandler: DragOperationHandler | null = null;
   private rightRegionGesture: RightRegionGesture | null = null;
+  /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
+  private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
   /** 맵 캔버스에서 우클릭이 시작되면 true. 버튼을 놓는 순간 contextmenu 가 문서 타겟으로 뜨는 경우 대비. */
   private suppressBrowserContextMenuUntil = 0;
   private buildPalettePopup: HTMLElement | null = null;
@@ -161,6 +167,10 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!detail) return;
     this.activeRegionTask = detail.running ? { mapId: detail.mapId, region: detail.region, phase: detail.phase ?? "running" } : null;
     this.renderRegionTaskBadge();
+  };
+  /** 영역 작업 창 열림/닫힘 → 선택 칩 오버레이를 숨기거나 되살린다. */
+  private readonly handleRegionTaskModalToggle = (): void => {
+    this.renderBuildPaletteOverlay();
   };
   /**
    * 브라우저 기본 컨텍스트 메뉴만 차단.
@@ -232,6 +242,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
+    // 영역 작업 창이 닫히면 선택 칩 오버레이를 되살린다(열릴 때는 숨긴다).
+    window.addEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
     if (typeof window !== "undefined") {
       (window as any).__rpgzzuEditCamera = () => {
@@ -264,6 +276,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
+    window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     if (typeof window !== "undefined") {
@@ -500,8 +513,11 @@ export class EditScene extends PhaserRuntime.Scene {
 
     const screen = this.pointerScreenPosition(ptr);
     if (significant && rect) {
-      // 우클릭 드래그 → 영역 선택만 확정.
-      // AI 모달 자동 오픈 대신 힌트 토스트 — 복사/붙여넣기/AI 모두 선택 칩에서 접근 가능.
+      // 우클릭 드래그 → 영역 선택 확정 + **놓은 자리에 영역 작업 창을 바로 띄운다.**
+      // 예전에는 선택 칩 바만 떴고 그 안의 「AI」를 한 번 더 눌러야 이 창이 나왔다.
+      // 우클릭 드래그로 영역을 잡는 목적이 사실상 AI 작업이므로 그 한 단계를 없앴다.
+      // 칩(복사/붙여넣기/지우기)은 창을 닫으면 선택이 남아 있어 그때 나타난다.
+      this.lastRightDragScreen = screen;
       selectTileRegion(gesture.mapId, {
         mapId: gesture.mapId,
         x: rect.x,
@@ -509,7 +525,11 @@ export class EditScene extends PhaserRuntime.Scene {
         width: rect.width,
         height: rect.height,
       });
-      toast(`${rect.width}×${rect.height} 영역 선택 — 복사·붙여넣기·✨ AI 작업 가능`, "info");
+      this.openRegionAiPopover(
+        gesture.mapId,
+        { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+        screen,
+      );
       return;
     }
 
@@ -1065,8 +1085,6 @@ export class EditScene extends PhaserRuntime.Scene {
       state.selectedTile,
       state.autoConnectMode,
       state.activePaletteStamp ? `${state.activePaletteStamp.source.startTile}:${state.activePaletteStamp.source.endTile}` : "none",
-      state.activeStampId ?? "none",
-      state.activeStructureStampId ?? "none",
       state.brushSize,
       state.selectedEventId ?? "none",
       selectionKey,
@@ -1257,6 +1275,13 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
+    // 영역 작업 창이 열려 있으면 칩/팔레트 오버레이를 띄우지 않는다 — 우클릭 드래그가 창을
+    // 바로 열게 되면서 둘이 동시에 떠 화면이 어수선해졌다. 창을 닫으면 다시 나타난다.
+    if (isRegionTaskModalOpen()) {
+      this.clearBuildPaletteOverlay();
+      this.renderRegionTaskBadge();
+      return;
+    }
     if (!selection || selection.mapId !== mapId) {
       this.clearBuildPaletteOverlay();
       this.renderRegionTaskBadge();
@@ -1317,7 +1342,19 @@ export class EditScene extends PhaserRuntime.Scene {
       height: Math.max(1, canvasRect.height || canvas.height),
     };
     const point = isChips
-      ? fixedSelectionChipsPosition({ popupSize, canvasSize })
+      ? anchoredSelectionChipsPosition({
+          selectionRect,
+          popupSize,
+          canvasSize,
+          // lastRightDragScreen 은 viewport 좌표 — 캔버스 내 좌표로 변환해 전달.
+          // 선택 칩을 드래그 놓은 자리(context-menu 처럼)에 띄운다.
+          pointer: this.lastRightDragScreen
+            ? {
+                x: this.lastRightDragScreen.x - canvasRect.left,
+                y: this.lastRightDragScreen.y - canvasRect.top,
+              }
+            : undefined,
+        })
       : anchoredBuildPalettePosition({ selectionRect, popupSize, canvasSize });
     if (isChips) {
       // overflow:hidden 호스트/상태바 클리핑을 피하려고 viewport fixed 로 올린다.

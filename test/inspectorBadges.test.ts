@@ -68,8 +68,6 @@ beforeEach(() => {
   store.replace(project);
   editorState.set({
     activePaletteStamp: null,
-    activeStampId: null,
-    activeStructureStampId: null,
     currentMapId: project.startMapId,
     layer: "lower",
     paintShape: "pen",

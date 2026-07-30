@@ -53,7 +53,10 @@ const REPRESENTATIVE_INSTRUCTIONS: Readonly<Record<RegionIntentCategory, string>
 // 전부 보장하지는 못한다 — 별도의 상한 알고리즘 개선이 필요한 사전 존재 이슈로 남겨둔다.
 const GUARANTEED_TOOLS_BY_CATEGORY: Readonly<Record<RegionIntentCategory, readonly string[]>> = {
   interior: ["start_interior_room_session", "run_interior_room_pipeline", "advance_interior_room_build", "evaluate_interior_room"],
-  structure: ["build_house_kit", "build_wall", "fill_region", "create_farm_plot"],
+  // build_house_kit/build_house_lots는 CONSTRUCTION_WRITE_SUPERSEDED로 deprecated라 도메인을
+  // 열어도 절대 노출되지 않는다(toOpenAiTools가 deprecated를 무조건 제외) → canonical 대체
+  // 툴인 author_house로 검증한다. 가이드 문구도 author_house를 안내한다.
+  structure: ["author_house", "build_wall", "fill_region", "create_farm_plot"],
   "npc-shop": ["place_npc", "make_villager"],
   "door-transfer": ["create_transfer_pair", "place_door"],
   "quest-trigger": ["place_chest", "place_storage_chest", "place_savepoint"],

@@ -31,12 +31,42 @@
 
 .battle-scene {
   --battle-hud-height: 40%;
-  inset: 0;
-  gap: 2px;
+  /* 640×480 이주: 창틀 테두리는 논리 px 기준 12px. 전역 --runtime-window-border-tight: 6px
+     (system.css) 은 dialogue.css / status-menu / title-screen 과 공유하므로 여기서 2배할 수
+     없고, 씬 스코프에서 재정의한다. (border-image-slice 는 --runtime-window-slice = 24 fill —
+     windowskin PNG 의 소스 px 이라 논리 px 이 아니므로 2배하지 않는다.) */
+  --runtime-window-border-tight: 12px;
+  /* 포커스 링: var(--focus-ring, …) 의 폴백은 죽은 코드다 — tokens.css 가 --focus-ring 을
+     정의(2px 판)해서 폴백이 아예 평가되지 않는다. 그래서 4px 판(= 논리 px 2배)을 씬
+     스코프에서 재정의한다. 색은 전역과 동일. */
+  --focus-ring: 0 0 0 4px rgba(108, 121, 242, 0.55);
+  /* 논리 해상도 스케일링 — battleStageScale.ts 가 컨테이너 크기에서 배율을 계산해
+     --battle-stage-scale / --battle-stage-offset-* 을 세팅한다. 스킨(rm2003)은 320×240
+     (RM2003 해상도) 기준으로 저작됐는데 예전에는 640×480 에 transform 없이 붙어
+     모든 치수가 의도의 절반으로 보였다(실측: 명령 레일 84px = 640 화면의 13%). */
+  --battle-stage-scale: 1;
+  --battle-stage-offset-x: 0px;
+  --battle-stage-offset-y: 0px;
+  /* 배틀러 무대(battler stage) 기하 — 단일 소스.
+     `--battle-node-x/y`(battleFieldDom.positionBattleNode)는 **백분율** 이므로 그 값을
+     소비하는 요소들의 컨테이닝 블록이 서로 같아야 같은 점으로 풀린다.
+     `.battle-enemy-group` / `.battle-actor-group` 은 `.battle-field` 의 패딩 박스에서
+     상단만 `--battle-stage-inset-top` 만큼 들어간 박스이고, `.battle-animation-layer` /
+     `.battle-effects-layer` 도 아래에서 이 두 변수로 같은 박스를 재현한다.
+     값을 바꿀 때는 이 변수만 바꿔라(스킨은 스킨 스코프에서 재정의). */
+  --battle-field-border-width: 2px;
+  --battle-stage-inset-top: 48px;
+  left: var(--battle-stage-offset-x);
+  top: var(--battle-stage-offset-y);
+  width: 640px;
+  height: 480px;
+  transform: scale(var(--battle-stage-scale));
+  transform-origin: top left;
+  gap: 4px;
   padding: 0;
   display: grid;
-  grid-template-columns: minmax(56px, 16%) minmax(82px, 22%) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) minmax(96px, var(--battle-hud-height));
+  grid-template-columns: minmax(112px, 16%) minmax(164px, 22%) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(192px, var(--battle-hud-height));
   border: 0;
   border-radius: 0;
   background: #000;
@@ -91,7 +121,7 @@
   background-size: cover;
   color: var(--rm2k3-battle-muted);
   font-family: inherit;
-  font-size: 8px;
+  font-size: 16px;
 }
 
 .battle-backdrop::after {
@@ -128,10 +158,10 @@
 }
 
 .battle-enemy-image {
-  height: 96px;
+  height: 192px;
   image-rendering: pixelated;
   object-fit: contain;
-  width: 112px;
+  width: 224px;
   /* 적 스프라이트를 배경에서 분리 */
   filter: brightness(1.4) contrast(1.5) saturate(1.4);
   background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, transparent 80%);
@@ -170,26 +200,26 @@
   grid-auto-rows: minmax(0, 1fr);
   min-width: 0;
   overflow: hidden;
-  padding: 2px;
+  padding: 4px;
   align-self: stretch;
 }
 
 .battle-actor {
-  min-height: 42px;
-  gap: 6px;
+  min-height: 84px;
+  gap: 12px;
   border: 0;
   border-radius: 0;
   background: transparent;
   color: var(--rm2k3-battle-text);
-  font-size: 11px;
+  font-size: 22px;
   line-height: 1.2;
-  padding: 4px 5px;
+  padding: 8px 10px;
 }
 
 .battle-actor-group .battle-actor {
   align-items: center;
   display: grid;
-  height: 96px;
+  height: 192px;
   justify-items: center;
   left: var(--battle-node-x);
   min-height: 0;
@@ -197,24 +227,24 @@
   position: absolute;
   top: var(--battle-node-y);
   transform: translate(-50%, -100%);
-  width: 88px;
+  width: 176px;
 }
 
 .battle-actor-sprite {
   background-repeat: no-repeat;
   display: block;
-  height: var(--battle-sprite-frame-height, 72px);
+  height: var(--battle-sprite-frame-height, 144px);
   image-rendering: pixelated;
-  width: var(--battle-sprite-frame-width, 72px);
+  width: var(--battle-sprite-frame-width, 144px);
 }
 
 .battle-actor + .battle-actor {
-  border-top: 1px solid rgba(216, 228, 255, 0.35);
+  border-top: 2px solid rgba(216, 228, 255, 0.35);
 }
 
 .battle-actor-image {
-  width: 72px;
-  height: 72px;
+  width: 144px;
+  height: 144px;
 }
 
 .battle-actor-label,
@@ -223,7 +253,7 @@
 .battle-actor-hp,
 .battle-atb-label {
   color: var(--rm2k3-battle-text);
-  text-shadow: 1px 1px 0 #000;
+  text-shadow: 2px 2px 0 #000;
 }
 
 .battle-actor-state,
@@ -236,11 +266,15 @@
   grid-row: 2;
   align-content: start;
   display: grid;
+  /* gap 은 외부 파일(editor/core.part-2.css 의 gap: var(--space-2) = 8px)에 의존하던 값이라
+     그 파일이 없는 빌드(독립 플레이어: src/player/player.css)에서는 gap: normal = 0 으로
+     갈렸다. 16px = 이주 전 화면 크기와 같은 8 논리 px × 2 — 여기서 명시해 두 빌드를 통일한다. */
+  gap: 16px;
   grid-template-columns: minmax(0, 1fr);
   justify-items: stretch;
   min-width: 0;
   overflow: hidden;
-  padding: 3px;
+  padding: 6px;
 }
 
 .battle-enemy-list-panel {
@@ -248,20 +282,20 @@
   grid-row: 2;
   min-width: 0;
   overflow: hidden;
-  padding: 3px;
+  padding: 6px;
 }
 
 .battle-message-window {
-  bottom: calc(var(--battle-hud-height) + 4px);
+  bottom: calc(var(--battle-hud-height) + 8px);
   grid-column: 1 / -1;
-  left: 2px;
-  right: 2px;
+  left: 4px;
+  right: 4px;
   display: grid;
-  grid-template-columns: 14px minmax(0, 1fr);
-  min-height: 30px;
-  padding: 3px 5px;
+  grid-template-columns: 28px minmax(0, 1fr);
+  min-height: 60px;
+  padding: 6px 10px;
   position: absolute;
-  text-shadow: 1px 1px 0 #000;
+  text-shadow: 2px 2px 0 #000;
   z-index: 3;
 }
 
@@ -326,7 +360,7 @@
 
 .battle-message-lines {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -341,8 +375,8 @@
   top: calc((100% - var(--battle-hud-height)) * 0.5);
   bottom: auto;
   left: 50%;
-  min-width: 210px;
-  padding: 7px 10px;
+  min-width: 420px;
+  padding: 14px 20px;
   position: absolute;
   text-align: center;
   transform: translate(-50%, -50%);
@@ -350,19 +384,19 @@
 }
 
 .battle-result-title {
-  font-size: 11px;
-  margin-bottom: 5px;
+  font-size: 22px;
+  margin-bottom: 10px;
 }
 
 .battle-result-rewards {
   color: var(--rm2k3-battle-muted);
-  font-size: 8px;
+  font-size: 16px;
 }
 
 .battle-result-reward-row {
   display: grid;
-  gap: 14px;
-  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 28px;
+  grid-template-columns: 108px minmax(0, 1fr);
   text-align: left;
 }
 
@@ -377,7 +411,7 @@
 
 .battle-command-menu {
   display: grid;
-  gap: 1px;
+  gap: 2px;
   grid-template-columns: minmax(0, 1fr);
   justify-self: stretch;
   min-width: 0;
@@ -386,7 +420,7 @@
 
 .battle-submenu-header {
   color: var(--rm2k3-battle-muted);
-  font-size: 8px;
+  font-size: 16px;
   letter-spacing: 0;
   text-align: left;
   text-transform: none;
@@ -395,42 +429,68 @@
 .battle-command,
 .battle-enemy-list-row {
   min-width: 0;
-  min-height: 11px;
-  border: 1px solid transparent;
+  min-height: 22px;
+  border: 2px solid transparent;
   border-radius: 0;
   background: transparent;
   color: var(--rm2k3-battle-text);
   font-family: inherit;
-  font-size: 8px;
+  font-size: 16px;
   font-weight: 400;
-  padding: 1px 3px;
+  padding: 2px 6px;
   text-align: left;
-  text-shadow: 1px 1px 0 #000;
+  text-shadow: 2px 2px 0 #000;
   width: 100%;
 }
 
 .battle-target-prompt {
-  border-bottom: 1px solid rgba(231, 242, 255, 0.45);
+  border-bottom: 2px solid rgba(231, 242, 255, 0.45);
   color: #fff6a8;
-  font-size: 8px;
-  margin-bottom: 2px;
+  font-size: 16px;
+  margin-bottom: 4px;
   min-width: 0;
   overflow: hidden;
-  padding: 1px 3px 3px;
+  padding: 2px 6px 6px;
   text-overflow: ellipsis;
-  text-shadow: 1px 1px 0 #000;
+  text-shadow: 2px 2px 0 #000;
   white-space: nowrap;
 }
 
 .battle-actor-status {
   align-items: center;
   display: grid;
-  gap: 1px 4px;
-  grid-template-columns: minmax(0, 1fr) auto 28px;
+  gap: 2px 8px;
+  grid-template-columns: minmax(0, 1fr) auto 56px;
   min-height: 0;
   min-width: 0;
   overflow: hidden;
-  padding: 1px 2px;
+  padding: 2px 4px;
+}
+
+/* vxace 스킨 전용 노드 — 기존 11종 스킨의 레이아웃이 바뀌지 않도록 기본은 숨긴다.
+   각 스킨 CSS 가 필요할 때만 display 를 되돌린다(현재는 _vxace.css 만). */
+.battle-actor-status .battle-actor-face,
+.battle-actor-status .battle-actor-role,
+.battle-actor-status .battle-atb-value,
+.battle-enemy .battle-enemy-index-badge,
+.battle-enemy-hud .battle-enemy-mp-bar,
+.battle-enemy-hud .battle-enemy-atb-bar {
+  display: none;
+}
+
+/* HP/MP 는 `HP`(라벨) · ` 514`(현재값) · `/514`(최대값) 세 조각으로 쪼개져 있다
+   (battleFieldDom: vitalNode). 기본 11종 스킨은 셋을 이어 붙여 한 줄로 읽히게만 하면 되고,
+   vxace 만 라벨을 배지로 띄우고 최대값을 감춘다. */
+.battle-actor-hp .battle-vital-label,
+.battle-actor-hp .battle-vital-value,
+.battle-actor-hp .battle-vital-max,
+.battle-actor-mp .battle-vital-label,
+.battle-actor-mp .battle-vital-value,
+.battle-actor-mp .battle-vital-max,
+.battle-actor-level .battle-vital-label,
+.battle-actor-level .battle-vital-value {
+  font: inherit;
+  white-space: pre;
 }
 
 .battle-actor-name,
@@ -443,7 +503,7 @@
 }
 
 .battle-actor-state {
-  font-size: 7px;
+  font-size: 14px;
 }
 
 .battle-actor-hp {
@@ -453,17 +513,17 @@
 .battle-actor-gauge {
   align-items: center;
   display: flex;
-  gap: 3px;
+  gap: 6px;
   grid-column: 1 / -1;
   min-width: 0;
 }
 
 .battle-atb-bar {
   background: var(--rm2k3-battle-window-shadow);
-  border: 1px solid var(--rm2k3-battle-window-light);
+  border: 2px solid var(--rm2k3-battle-window-light);
   display: inline-block;
   flex: 1 1 auto;
-  height: 6px;
+  height: 12px;
   min-width: 0;
   position: relative;
 }
@@ -491,7 +551,7 @@
 
 .battle-command:hover,
 .battle-command:focus-visible,
-.battle-command-menu .battle-command:first-of-type,
+.battle-command[data-battle-command-cursor="true"],
 .battle-enemy-list-row:hover,
 .battle-enemy-list-row:focus-visible {
   border-color: #eef4ff #081849 #081849 #eef4ff;
@@ -499,11 +559,11 @@
   outline: 0;
 }
 
-.battle-target-menu .battle-command:first-of-type {
+.battle-target-menu .battle-command[data-battle-command-cursor="true"] {
   border-color: transparent;
 }
 
-.battle-target-menu .battle-command:first-of-type::before {
+.battle-target-menu .battle-command[data-battle-command-cursor="true"]::before {
   content: "";
 }
 
@@ -521,7 +581,7 @@
 
 .battle-command:hover::before,
 .battle-command:focus-visible::before,
-.battle-command-menu .battle-command:first-of-type::before,
+.battle-command[data-battle-command-cursor="true"]::before,
 .battle-enemy-list-row:hover::before,
 .battle-enemy-list-row:focus-visible::before {
   content: ">";
@@ -534,61 +594,98 @@
 
 .battle-enemy > .battle-status-icons {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   justify-content: center;
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .battle-enemy-hud {
   display: grid;
-  gap: 1px;
-  margin-top: 2px;
-  min-width: 52px;
+  gap: 2px;
+  margin-top: 4px;
+  min-width: 104px;
 }
 
 .battle-enemy-name {
   color: var(--rm2k3-battle-text);
   display: block;
-  font-size: 9px;
+  font-size: 18px;
   line-height: 1.1;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
 .battle-enemy-hp-text {
   color: var(--rm2k3-battle-text);
   display: block;
-  font-size: 8px;
+  font-size: 16px;
   line-height: 1;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.7);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
 }
 
 .battle-enemy-hp-bar {
   display: block;
-  height: 4px;
+  height: 8px;
 }
 
 .battle-enemy-list-hp {
   color: var(--rm2k3-battle-muted);
-  font-size: 8px;
+  font-size: 16px;
 }
 
 .battle-field {
   position: relative;
 }
 
+/* rm2003 스킨만 무대 상단 여백을 8px 로 덮어쓴다(battle-skins/_rm2003.css:26-29 —
+   `.battle-enemy-group/.battle-actor-group { inset: 8px 0 0 0 !important }`). 그 파일은
+   여기 변수를 모르므로 같은 조건을 변수로 미러링해 레이어가 그룹과 계속 일치하게 둔다.
+   (나머지 11종 스킨은 그룹 inset 을 건드리지 않아 기본 48px 을 그대로 쓴다 — 전수 확인.) */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
+  --battle-stage-inset-top: 8px;
+}
+
+/* 애니메이션 레이어는 `.battle-scene`(그리드 컨테이너)의 직계 자식이고, 배틀러 그룹은
+   `.battle-field` 안에 있다(battleDom.ts: root.append(field, animationLayer, …)). DOM 을 바꿀
+   수 없으므로 **레이어 박스를 배틀러 무대 박스와 같게** 만들어 백분율 앵커가 같은 점으로
+   풀리게 한다.
+
+   왜 예전에 어긋났나(실측 근거):
+   - `grid-row: 1` 은 시작선만 1 이고 끝선은 auto 다. 정적 그리드 아이템(`.battle-field`)에서
+     auto 끝선은 span 1 이지만, **절대배치** 그리드 아이템의 auto 끝선은 그리드 컨테이너의
+     **패딩 끝선**으로 풀린다(CSS Grid §9.1 abspos items). 그래서 레이어의 컨테이닝 블록은
+     행 1 이 아니라 씬 전체가 됐다: layer=[top 0, height 480] vs 행 1 = [0, 344](vxace).
+   - 거기서 65% → 312 로 풀리는 반면, 그룹은 [top 50, height 292] 기준이라 240 으로 풀렸다.
+     72px 차이가 그대로 오프셋이 되어 애니메이션이 적 스프라이트(y 88~200) 아래 바깥(y 308)에
+     찍혔다.
+
+   고침:
+   - `grid-row: 1 / 2` — 끝선을 명시해 필드와 **같은 그리드 영역**(행 1)을 차지한다.
+     필드는 battle.css 2009~2013 에서 `grid-column: 1 / -1 !important; grid-row: 1 !important`
+     라 12종 스킨 전부에서 행 1 · 전체 열이다(스킨의 열/행 정의가 무엇이든 동일).
+   - inset — 그리드 영역(= 필드의 **테두리 박스**)에서 테두리만큼 들어가 필드의 **패딩 박스**
+     가 되고, 상단에 무대 여백을 더해 그룹 박스와 일치시킨다. 하드코딩 오프셋이 아니라
+     필드/그룹이 실제로 쓰는 같은 변수다.
+   검증(vxace, 논리 640×480): 행 1 = [0, 344] → 패딩 박스 [2, 340] → +48 → [50, 292]
+   = `.battle-enemy-group` 실측값과 동일. */
 .battle-animation-layer {
   grid-column: 1 / -1;
-  grid-row: 1;
-  inset: 0;
+  grid-row: 1 / 2;
+  inset:
+    calc(var(--battle-field-border-width) + var(--battle-stage-inset-top))
+    var(--battle-field-border-width)
+    var(--battle-field-border-width);
   pointer-events: none;
   position: absolute;
   z-index: 4;
 }
 
+/* 데미지 팝업 레이어는 `.battle-field` 의 자식(battleFieldDom.appendEffectsLayer)이라
+   테두리 보정은 필요 없지만, 팝업도 `--battle-node-y` 백분율을 쓰므로 같은 무대 여백을
+   적용해야 배틀러와 같은 기준으로 풀린다. */
 .battle-effects-layer {
-  inset: 0;
+  inset: var(--battle-stage-inset-top) 0 0 0;
   pointer-events: none;
   position: absolute;
   z-index: 5;
@@ -597,11 +694,11 @@
 .battle-damage-popup {
   animation: battle-damage-float 0.9s ease-out forwards;
   color: #fff6a8;
-  font-size: 14px;
+  font-size: 28px;
   font-weight: 700;
   left: var(--battle-node-x);
   position: absolute;
-  text-shadow: 1px 1px 0 #4a1200, -1px -1px 0 #4a1200;
+  text-shadow: 2px 2px 0 #4a1200, -2px -2px 0 #4a1200;
   top: calc(var(--battle-node-y) - 12%);
   transform: translate(-50%, -100%);
   z-index: 6;
@@ -609,7 +706,7 @@
 
 .battle-damage-popup-critical {
   color: #ff8a4d;
-  font-size: 16px;
+  font-size: 32px;
 }
 
 .battle-damage-popup-heal {
@@ -621,22 +718,25 @@
   border: 0;
   color: transparent;
   font-size: 0;
-  height: 0;
+  /* 시트(.battle-animation-sheet 240×240)와 같은 크기여야 translate(-50%, -55%) 퍼센트가
+     동작한다. 0×0 이면 퍼센트 translate 가 (0, 0) 으로 무효가 되어, 셀이 앵커에서
+     시트 50% = +120, +120 논리 px 어긋난 곳에 그려졌다(실측). */
+  height: 240px;
   left: var(--battle-node-x);
   overflow: visible;
   pointer-events: none;
   position: absolute;
   top: var(--battle-node-y);
   transform: translate(-50%, -55%);
-  width: 0;
+  width: 240px;
   z-index: 4;
 }
 
 .battle-animation-sheet {
-  height: 120px;
+  height: 240px;
   overflow: visible;
   position: relative;
-  width: 120px;
+  width: 240px;
 }
 
 .battle-animation-frame {
@@ -655,15 +755,15 @@
 
 /* Side-view pose presentation (data-battle-pose from runtime snapshot). */
 .battle-actor-group .battle-actor[data-battle-pose="attack"] {
-  transform: translate(-50%, -100%) translateX(-12px);
+  transform: translate(-50%, -100%) translateX(-24px);
   transition: transform 120ms ease-out;
 }
 .battle-actor-group .battle-actor[data-battle-pose="hit"] {
   filter: brightness(1.35) saturate(0.7);
-  transform: translate(-50%, -100%) translateX(6px);
+  transform: translate(-50%, -100%) translateX(12px);
 }
 .battle-actor-group .battle-actor[data-battle-pose="defend"] {
-  transform: translate(-50%, -100%) translateX(4px);
+  transform: translate(-50%, -100%) translateX(8px);
   filter: brightness(0.95);
 }
 .battle-actor[data-battle-pose="dead"],
@@ -672,12 +772,12 @@
   filter: grayscale(0.8);
 }
 .battle-enemy[data-battle-pose="attack"] {
-  transform: translate(-50%, -100%) translateX(10px);
+  transform: translate(-50%, -100%) translateX(20px);
   transition: transform 120ms ease-out;
 }
 .battle-enemy[data-battle-pose="hit"] {
   filter: brightness(1.35) saturate(0.7);
-  transform: translate(-50%, -100%) translateX(-8px);
+  transform: translate(-50%, -100%) translateX(-16px);
 }
 
 /* Sequencer-driven approach / knockback (classic side-view cadence).
@@ -687,7 +787,7 @@
   z-index: 4;
 }
 .battle-actor-group .battle-actor.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-28px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-56px);
   transition: transform 130ms ease-out;
 }
 .battle-actor-group .battle-actor.battle-motion-return {
@@ -695,7 +795,7 @@
   transition: transform 160ms ease-out;
 }
 .battle-enemy-group .battle-enemy.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(22px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(44px);
   transition: transform 130ms ease-out;
 }
 .battle-enemy-group .battle-enemy.battle-motion-return {
@@ -704,18 +804,18 @@
 }
 .battle-actor-group .battle-actor.battle-motion-knockback {
   filter: brightness(1.4) saturate(0.75);
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(14px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(28px);
   transition: transform 100ms ease-out, filter 100ms ease-out;
 }
 .battle-enemy-group .battle-enemy.battle-motion-knockback {
   filter: brightness(1.45) saturate(0.7);
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-16px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-32px);
   transition: transform 100ms ease-out, filter 100ms ease-out;
 }
 
 /* Pokemon skin: larger lunge / knockback, higher specificity than base resting scale. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45)) translateX(-36px);
+  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45)) translateX(-72px);
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-return {
@@ -723,7 +823,7 @@
   transition: transform 180ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28)) translateX(28px);
+  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28)) translateX(56px);
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-return {
@@ -732,12 +832,12 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-knockback {
   filter: brightness(1.45) saturate(0.7);
-  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45)) translateX(18px);
+  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45)) translateX(36px);
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-knockback {
   filter: brightness(1.5) saturate(0.65);
-  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28)) translateX(-22px);
+  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28)) translateX(-44px);
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 
@@ -771,7 +871,7 @@
 }
 @keyframes battle-juice-hit {
   0% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
-  40% { filter: brightness(1.8); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(4px); }
+  40% { filter: brightness(1.8); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(8px); }
   100% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 @keyframes battle-juice-critical {
@@ -781,11 +881,11 @@
 }
 @keyframes battle-juice-miss {
   0%, 100% { opacity: 1; transform: var(--battle-juice-base, translate(-50%, -100%)); }
-  50% { opacity: 0.4; transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(-3px); }
+  50% { opacity: 0.4; transform: var(--battle-juice-base, translate(-50%, -100%)) translateY(-6px); }
 }
 @keyframes battle-juice-swing {
   0% { transform: var(--battle-juice-base, translate(-50%, -100%)); }
-  50% { transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-12px); }
+  50% { transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-24px); }
   100% { transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 
@@ -834,31 +934,147 @@
 @keyframes battle-damage-float {
   0% {
     opacity: 0;
-    transform: translate(-50%, -70%) scale(0.8);
+    transform: translate(var(--pop-x, -50%), -60%) scale(0.5);
   }
-  20% {
+  15% {
     opacity: 1;
-    transform: translate(-50%, -100%) scale(1);
+    transform: translate(var(--pop-x, -50%), -120%) scale(1.3);
+  }
+  30% {
+    transform: translate(var(--pop-x, -50%), -100%) scale(1.0);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -135%) scale(1.0);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -145%) scale(1);
+    transform: translate(var(--pop-x, -50%), -160%) scale(0.9);
+  }
+}
+
+@keyframes battle-damage-critical-pop {
+  0% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -40%) scale(0.3);
+    filter: brightness(2) drop-shadow(0 0 16px #ff2200);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -130%) scale(1.7);
+    filter: brightness(1.6) drop-shadow(0 0 24px #ffee00);
+  }
+  40% {
+    transform: translate(var(--pop-x, -50%), -95%) scale(1.1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -140%) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -170%) scale(0.8);
+  }
+}
+
+.battle-damage-popup.is-critical {
+  animation-name: battle-damage-critical-pop;
+  color: #fff263;
+  font-size: 34px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px #ff0000, 4px 4px 0 #880000, -2px -2px 0 #000;
+  z-index: 10;
+}
+
+.battle-damage-popup.is-heal {
+  color: #79ff6b;
+  text-shadow: 0 0 8px #008822, 2px 2px 0 #004411;
+}
+
+.battle-damage-popup.is-miss {
+  color: #d1d5db;
+  font-style: italic;
+  text-shadow: 2px 2px 0 #374151;
+}
+
+.battle-flash-critical {
+  animation: battle-flash-crit 0.35s ease-out;
+}
+
+.battle-flash-hit {
+  animation: battle-flash-hit-anim 0.2s ease-out;
+}
+
+@keyframes battle-flash-crit {
+  0% {
+    background-color: rgba(255, 30, 30, 0.45);
+    filter: contrast(1.4) brightness(1.3);
+  }
+  30% {
+    background-color: rgba(255, 230, 100, 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes battle-flash-hit-anim {
+  0% {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
+  100% {
+    background-color: transparent;
   }
 }
 
 @keyframes battle-screen-shake {
   25% {
-    transform: translate(-2px, 1px);
+    transform: translate(-6px, 4px);
   }
   50% {
-    transform: translate(2px, -1px);
+    transform: translate(6px, -4px);
   }
   75% {
-    transform: translate(-1px, -1px);
+    transform: translate(-4px, -2px);
   }
   100% {
     transform: translate(0, 0);
   }
+}
+
+.battle-controls-bar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.battle-control-btn {
+  background: rgba(4, 11, 40, 0.85);
+  border: 2px solid var(--rm2k3-battle-window-light, #e7f2ff);
+  color: #fff;
+  font-family: var(--runtime-pixel-font);
+  font-size: 16px;
+  padding: 2px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  text-shadow: 2px 2px 0 #000;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+.battle-control-btn:hover {
+  background: #315dc0;
+  border-color: #fff;
+}
+
+.battle-control-btn.is-active {
+  background: #e76f51;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(231, 111, 81, 0.8);
 }
 
 @keyframes battle-screen-flash {
@@ -874,31 +1090,31 @@
 
 .battle-targeted {
   animation: rm2k3-target-flash 0.2s ease-out 2;
-  outline: 2px solid var(--rm2k3-battle-window-light);
-  outline-offset: 2px;
+  outline: 4px solid var(--rm2k3-battle-window-light);
+  outline-offset: 4px;
 }
 
 .battle-target-candidate {
   cursor: pointer;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.55));
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
 }
 
 .battle-target-candidate::after {
   content: ">";
   color: #fff;
-  font-size: 14px;
-  left: -12px;
+  font-size: 28px;
+  left: -24px;
   line-height: 1;
   position: absolute;
-  text-shadow: 1px 1px 0 #00134c;
+  text-shadow: 2px 2px 0 #00134c;
   top: 42%;
   transform: translateY(-50%);
 }
 
 .battle-target-selected {
   animation: none;
-  outline: 2px solid var(--rm2k3-battle-window-light);
-  outline-offset: 2px;
+  outline: 4px solid var(--rm2k3-battle-window-light);
+  outline-offset: 4px;
 }
 
 .battle-has-result .battle-targeted,
@@ -924,9 +1140,26 @@
   }
 }
 
+/* ── 전투 커서(▶) 640×480 이주 — keyboardNav.css 는 씬 스코프에서 덮는다 ──
+   keyboardNav.css 의 .rm-nav-item.rm-nav-item(padding-left: 22px) 과
+   .rm-nav-item.selected::before(left: 5px / font-size: 11px / drop-shadow 1px) 는
+   맵 메뉴와 공유하는 값이라 거기서 2배할 수 없다. 전투 명령 버튼에도 rm-nav-item 이
+   붙어서(runtimeCursorMenu.ts) 라벨 16px 에 커서 11px 로 왜소해졌다.
+   클래스를 두 번 + 씬 접두어로 특정도 (0,3,0)/(0,4,0) — 공유 규칙 (0,2,0) 을 이긴다.
+   (기본 스킨 vxace 는 커서를 감추므로 나머지 11종 스킨에서만 보인다.) */
+.battle-scene .rm-nav-item.rm-nav-item {
+  padding-left: 44px;
+}
+
+.battle-scene .rm-nav-item.selected::before {
+  filter: drop-shadow(2px 2px 0 #061038);
+  font-size: 22px;
+  left: 10px;
+}
+
 @keyframes rm2k3-actor-step {
   50% {
-    margin-left: -8px;
+    margin-left: -16px;
   }
 }
 
@@ -959,17 +1192,19 @@
   display: grid;
   font-family: var(--runtime-pixel-font);
   font-size: var(--runtime-font-size-11);
-  gap: 8px;
-  grid-template-columns: minmax(280px, 30%) minmax(520px, 1fr) minmax(300px, 28%);
-  grid-template-rows: 92px minmax(0, 1fr) minmax(250px, 34%);
+  gap: 16px;
+  grid-template-columns: minmax(560px, 30%) minmax(1040px, 1fr) minmax(600px, 28%);
+  grid-template-rows: 184px minmax(0, 1fr) minmax(500px, 34%);
   line-height: 1.25;
-  padding: 18px 22px;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.8);
+  padding: 36px 44px;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.8);
 }
 
 .battle-field {
-  border: 1px solid rgba(213, 228, 255, 0.65);
-  box-shadow: inset 0 0 0 1px rgba(23, 62, 119, 0.9), 0 0 26px rgba(0, 12, 40, 0.8);
+  /* 테두리 두께는 애니메이션 레이어가 필드의 **패딩 박스** 를 재현할 때 그대로 쓴다 —
+     숫자를 두 곳에 두지 않도록 --battle-field-border-width 로 묶었다. */
+  border: var(--battle-field-border-width) solid rgba(213, 228, 255, 0.65);
+  box-shadow: inset 0 0 0 2px rgba(23, 62, 119, 0.9), 0 0 52px rgba(0, 12, 40, 0.8);
   grid-column: 1 / -1;
   grid-row: 1 / 3;
   overflow: hidden;
@@ -995,140 +1230,140 @@
 .battle-turn-ribbon {
   align-items: stretch;
   background: linear-gradient(180deg, rgba(22, 50, 92, 0.96), rgba(2, 10, 26, 0.97));
-  border: 2px solid var(--battle-metal);
+  border: 4px solid var(--battle-metal);
   border-bottom-color: #667897;
   border-right-color: #475673;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 6px 20px rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.2), 0 12px 40px rgba(0, 0, 0, 0.45);
   display: grid;
-  gap: 14px;
-  grid-template-columns: 128px minmax(0, 1fr);
-  height: 62px;
-  left: 8px;
+  gap: 28px;
+  grid-template-columns: 256px minmax(0, 1fr);
+  height: 124px;
+  left: 16px;
   position: absolute;
-  right: 8px;
-  top: 8px;
+  right: 16px;
+  top: 16px;
   z-index: 5;
 }
 
 .battle-turn-label {
   align-content: center;
   background: linear-gradient(180deg, #173a78, #081a42);
-  border-right: 2px solid rgba(255, 255, 255, 0.36);
+  border-right: 4px solid rgba(255, 255, 255, 0.36);
   display: grid;
   justify-items: center;
 }
 
 .battle-turn-label strong {
   color: #fff;
-  font-size: 22px;
+  font-size: 44px;
 }
 
 .battle-turn-label span {
   color: #e8f1ff;
-  font-size: 13px;
+  font-size: 26px;
 }
 
 .battle-turn-track {
   align-items: center;
   display: flex;
-  gap: 10px;
+  gap: 20px;
   min-width: 0;
   overflow: hidden;
   position: relative;
 }
 
 .battle-turn-track::after {
-  background-image: repeating-linear-gradient(90deg, rgba(198, 213, 255, 0.62) 0 3px, transparent 3px 12px);
+  background-image: repeating-linear-gradient(90deg, rgba(198, 213, 255, 0.62) 0 6px, transparent 6px 24px);
   content: "";
-  height: 2px;
-  left: 380px;
+  height: 4px;
+  left: 760px;
   position: absolute;
-  right: 18px;
+  right: 36px;
   top: 50%;
 }
 
 .battle-turn-token {
   align-items: center;
   background: linear-gradient(145deg, #1a355f, #071226);
-  border: 2px solid #d8e5ff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  border: 4px solid #d8e5ff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
   clip-path: polygon(10% 0, 88% 0, 100% 50%, 88% 100%, 10% 100%, 0 50%);
   display: grid;
-  height: 50px;
+  height: 100px;
   justify-items: center;
-  min-width: 74px;
+  min-width: 148px;
   position: relative;
   z-index: 1;
 }
 
 .battle-turn-token.active {
   border-color: var(--battle-gold);
-  filter: drop-shadow(0 0 8px rgba(255, 216, 102, 0.7));
+  filter: drop-shadow(0 0 16px rgba(255, 216, 102, 0.7));
 }
 
 .battle-turn-thumb {
   background-position: center top;
   background-repeat: no-repeat;
-  background-size: auto 42px;
-  height: 42px;
+  background-size: auto 84px;
+  height: 84px;
   image-rendering: pixelated;
-  width: 48px;
+  width: 96px;
 }
 
 .battle-turn-order {
-  bottom: -2px;
+  bottom: -4px;
   color: #fff;
-  font-size: 11px;
+  font-size: 22px;
   position: absolute;
 }
 
 .battle-turn-future {
   flex: 1 1 auto;
-  min-width: 220px;
+  min-width: 440px;
 }
 
 .battle-enemy-group,
 .battle-actor-group {
-  inset: 24px 0 0 0;
+  inset: var(--battle-stage-inset-top) 0 0 0;
   z-index: 2;
 }
 
 .battle-enemy {
-  filter: drop-shadow(0 20px 8px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 40px 16px rgba(0, 0, 0, 0.4));
   transform: translate(-50%, -100%);
 }
 
 .battle-enemy-image {
-  height: 36px;
-  width: 32px;
+  height: 72px;
+  width: 64px;
 }
 
 .battle-actor-group .battle-actor {
-  filter: drop-shadow(0 14px 4px rgba(0, 0, 0, 0.38));
+  filter: drop-shadow(0 28px 8px rgba(0, 0, 0, 0.38));
   transform: translate(-50%, -100%);
   z-index: 3;
 }
 
 .battle-actor-platform {
   background: linear-gradient(90deg, transparent, rgba(225, 239, 255, 0.72), transparent);
-  bottom: 4px;
-  height: 2px;
+  bottom: 8px;
+  height: 4px;
   position: absolute;
-  width: 76px;
+  width: 152px;
 }
 
 .battle-enemy-intent {
   background: rgba(3, 8, 20, 0.86);
-  border: 2px solid rgba(229, 238, 255, 0.86);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  border: 4px solid rgba(229, 238, 255, 0.86);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.18);
   color: #fff;
   display: grid;
-  font-size: 16px;
-  gap: 6px;
+  font-size: 32px;
+  gap: 12px;
   left: 31%;
-  padding: 12px 16px;
+  padding: 24px 32px;
   position: absolute;
-  top: 116px;
+  top: 232px;
   z-index: 4;
 }
 
@@ -1143,7 +1378,7 @@
 .battle-weakness-chips {
   align-items: center;
   display: flex;
-  gap: 8px;
+  gap: 16px;
   left: 30%;
   position: absolute;
   top: 54%;
@@ -1152,11 +1387,11 @@
 
 .battle-weakness-label,
 .battle-weakness-chip {
-  border: 2px solid rgba(255, 219, 124, 0.9);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+  border: 4px solid rgba(255, 219, 124, 0.9);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.7);
   color: #fff7d2;
   font-weight: 700;
-  padding: 4px 9px;
+  padding: 8px 18px;
 }
 
 .battle-weakness-label {
@@ -1166,9 +1401,9 @@
 .battle-weakness-chip {
   align-items: center;
   display: inline-grid;
-  height: 30px;
+  height: 60px;
   justify-items: center;
-  min-width: 30px;
+  min-width: 60px;
 }
 
 .battle-weakness-chip-fire {
@@ -1186,34 +1421,34 @@
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-analysis {
   background: linear-gradient(180deg, #173d86, #06143a);
-  border: 2px solid var(--battle-metal);
-  box-shadow: 8px 0 0 rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  border: 4px solid var(--battle-metal);
+  box-shadow: 16px 0 0 rgba(0, 0, 0, 0.25), inset 0 0 0 2px rgba(255, 255, 255, 0.18);
   color: #fff;
   display: grid;
-  font-size: 19px;
-  gap: 12px;
-  left: 24px;
-  padding: 20px 24px;
+  font-size: 38px;
+  gap: 24px;
+  left: 48px;
+  padding: 40px 48px;
   position: absolute;
-  top: 118px;
-  width: 300px;
+  top: 236px;
+  width: 600px;
   z-index: 5;
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-analysis::after {
-  border-bottom: 14px solid transparent;
-  border-left: 18px solid var(--battle-metal);
-  border-top: 14px solid transparent;
+  border-bottom: 28px solid transparent;
+  border-left: 36px solid var(--battle-metal);
+  border-top: 28px solid transparent;
   content: "";
   position: absolute;
-  right: -20px;
+  right: -40px;
   top: 50%;
 }
 
 .battle-analysis-line {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 32px;
 }
 
 .battle-analysis-line strong,
@@ -1223,39 +1458,39 @@
 
 .battle-analysis-badge {
   background: #8d4218;
-  border: 1px solid rgba(255, 224, 139, 0.9);
+  border: 2px solid rgba(255, 224, 139, 0.9);
   justify-self: start;
-  padding: 4px 12px;
+  padding: 8px 24px;
 }
 
 .battle-analysis-small {
-  border-top: 1px dashed rgba(216, 229, 255, 0.45);
+  border-top: 2px dashed rgba(216, 229, 255, 0.45);
   color: #e8f1ff;
-  font-size: 15px;
-  padding-top: 10px;
+  font-size: 30px;
+  padding-top: 20px;
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-expected-result {
   background: linear-gradient(180deg, #173d86, #071637);
-  border: 2px solid var(--battle-metal);
-  bottom: 10px;
+  border: 4px solid var(--battle-metal);
+  bottom: 20px;
   color: #fff8c0;
   display: block;
-  font-size: 18px;
+  font-size: 36px;
   left: 50%;
-  padding: 8px 34px;
+  padding: 16px 68px;
   position: absolute;
   transform: translateX(-50%);
   z-index: 5;
 }
 
 .battle-target-brackets {
-  inset: -12px;
+  inset: -24px;
   position: absolute;
 }
 
 .battle-target-brackets::before {
-  border: 4px solid #fff;
+  border: 8px solid #fff;
   clip-path: polygon(0 0, 26% 0, 26% 8%, 8% 8%, 8% 26%, 0 26%, 0 0, 74% 0, 100% 0, 100% 26%, 92% 26%, 92% 8%, 74% 8%, 74% 0, 100% 74%, 100% 100%, 74% 100%, 74% 92%, 92% 92%, 92% 74%, 100% 74%, 26% 100%, 0 100%, 0 74%, 8% 74%, 8% 92%, 26% 92%, 26% 100%);
   content: "";
   inset: 0;
@@ -1263,13 +1498,13 @@
 }
 
 .battle-target-brackets::after {
-  border-left: 11px solid transparent;
-  border-right: 11px solid transparent;
-  border-top: 24px solid #fff;
+  border-left: 22px solid transparent;
+  border-right: 22px solid transparent;
+  border-top: 48px solid #fff;
   content: "";
   left: 50%;
   position: absolute;
-  top: -34px;
+  top: -68px;
   transform: translateX(-50%);
 }
 
@@ -1291,33 +1526,33 @@
 .battle-command-panel {
   align-content: stretch;
   display: grid;
-  gap: 8px;
+  gap: 16px;
   grid-column: 1 / 3;
   grid-row: 3;
-  grid-template-columns: minmax(260px, 32%) minmax(0, 1fr);
+  grid-template-columns: minmax(520px, 32%) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto auto;
   min-height: 0;
   overflow: hidden;
-  padding: 8px;
+  padding: 16px;
   z-index: 6;
 }
 
 .battle-active-actor-card {
-  border-right: 1px solid rgba(221, 234, 255, 0.42);
+  border-right: 2px solid rgba(221, 234, 255, 0.42);
   display: grid;
   grid-column: 1;
   grid-row: 1 / -1;
-  grid-template-columns: 96px minmax(0, 1fr);
+  grid-template-columns: 192px minmax(0, 1fr);
   grid-template-rows: auto minmax(0, 1fr) auto;
   min-width: 0;
-  padding: 6px 12px 8px 6px;
+  padding: 12px 24px 16px 12px;
 }
 
 .battle-active-actor-card h3 {
   color: #fff;
-  font-size: 20px;
+  font-size: 40px;
   grid-column: 1 / -1;
-  margin: 0 0 8px;
+  margin: 0 0 16px;
 }
 
 .battle-actor-portrait {
@@ -1325,30 +1560,30 @@
   background:
     radial-gradient(circle at 50% 30%, #f3b47a 0 16%, transparent 17%),
     linear-gradient(135deg, #263d70, #07142e);
-  border: 2px solid rgba(223, 235, 255, 0.7);
-  height: 94px;
+  border: 4px solid rgba(223, 235, 255, 0.7);
+  height: 188px;
   image-rendering: pixelated;
-  width: 82px;
+  width: 164px;
 }
 
 .battle-actor-card-stats {
   display: grid;
-  gap: 8px;
+  gap: 16px;
   min-width: 0;
 }
 
 .battle-actor-card-stat {
   display: grid;
-  gap: 4px 8px;
-  grid-template-columns: 34px minmax(70px, auto);
+  gap: 8px 16px;
+  grid-template-columns: 68px minmax(140px, auto);
 }
 
 .battle-stat-bar {
   background: #081126;
-  border: 1px solid rgba(213, 228, 255, 0.55);
+  border: 2px solid rgba(213, 228, 255, 0.55);
   display: block;
   grid-column: 1 / -1;
-  height: 8px;
+  height: 16px;
   position: relative;
 }
 
@@ -1384,14 +1619,14 @@
 
 .battle-active-actor-card p {
   color: #e5eeff;
-  font-size: 14px;
+  font-size: 28px;
   grid-column: 1 / -1;
-  margin: 8px 0 0;
+  margin: 16px 0 0;
 }
 
 .battle-command-menu {
   display: grid;
-  gap: 4px;
+  gap: 8px;
   grid-column: 2;
   grid-row: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1401,17 +1636,17 @@
 .battle-command {
   align-items: center;
   background: linear-gradient(180deg, rgba(26, 64, 136, 0.96), rgba(5, 20, 52, 0.98));
-  border: 2px solid rgba(154, 180, 220, 0.72);
+  border: 4px solid rgba(154, 180, 220, 0.72);
   color: #fff;
   display: grid;
-  font-size: 16px;
-  gap: 10px;
-  grid-template-columns: 44px minmax(0, 1fr);
-  min-height: 72px;
-  padding: 8px 12px;
+  font-size: 32px;
+  gap: 20px;
+  grid-template-columns: 88px minmax(0, 1fr);
+  min-height: 144px;
+  padding: 16px 24px;
 }
 
-.battle-command:first-of-type,
+.battle-command[data-battle-command-cursor="true"],
 .battle-command:hover,
 .battle-command:focus-visible,
 .battle-command.battle-target-selected {
@@ -1429,13 +1664,13 @@
 .battle-command-icon {
   align-items: center;
   background: #081126;
-  border: 1px solid rgba(255, 255, 255, 0.55);
+  border: 2px solid rgba(255, 255, 255, 0.55);
   color: #fff;
   display: grid;
-  font-size: 24px;
-  height: 38px;
+  font-size: 48px;
+  height: 76px;
   justify-items: center;
-  width: 38px;
+  width: 76px;
 }
 
 .battle-command-icon-fire {
@@ -1444,20 +1679,20 @@
 
 .battle-command-text {
   display: grid;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
 }
 
 .battle-command-text strong {
-  font-size: 18px;
+  font-size: 36px;
 }
 
 .battle-command-text small {
   color: #e5eeff;
-  font-size: 13px;
+  font-size: 26px;
 }
 
-.battle-command:first-of-type small,
+.battle-command[data-battle-command-cursor="true"] small,
 .battle-command:hover small,
 .battle-command:focus-visible small,
 .battle-command.battle-target-selected small {
@@ -1468,22 +1703,22 @@
 .battle-key-prompts,
 .battle-target-prompt {
   color: #fff7c6;
-  font-size: 15px;
+  font-size: 30px;
   grid-column: 2;
 }
 
 .battle-command-help {
-  border-top: 1px solid rgba(221, 234, 255, 0.42);
-  padding: 8px 12px 0;
+  border-top: 2px solid rgba(221, 234, 255, 0.42);
+  padding: 16px 24px 0;
   text-align: center;
 }
 
 .battle-target-prompt {
   align-self: start;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(221, 234, 255, 0.42);
+  border: 2px solid rgba(221, 234, 255, 0.42);
   grid-row: 2;
-  padding: 5px 10px;
+  padding: 10px 20px;
 }
 
 .battle-target-menu {
@@ -1495,53 +1730,53 @@
 .battle-key-prompts {
   align-items: center;
   display: flex;
-  gap: 28px;
+  gap: 56px;
   grid-row: 4;
   justify-content: center;
 }
 
 .battle-key-prompts kbd {
   background: linear-gradient(180deg, #f1ca66, #9a5c1e);
-  border: 1px solid #fff3b1;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.6);
+  border: 2px solid #fff3b1;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
   color: #102045;
   font: inherit;
-  padding: 2px 8px;
+  padding: 4px 16px;
   text-shadow: none;
 }
 
 .battle-party {
   grid-column: 3;
   grid-row: 3;
-  padding: 10px 14px;
+  padding: 20px 28px;
   z-index: 6;
 }
 
 .battle-resource-preview {
   display: grid;
-  gap: 10px;
+  gap: 20px;
   height: 100%;
   min-height: 0;
 }
 
 .battle-resource-heading {
-  border-bottom: 1px solid rgba(221, 234, 255, 0.42);
+  border-bottom: 2px solid rgba(221, 234, 255, 0.42);
   color: #fff;
-  font-size: 18px;
-  padding-bottom: 6px;
+  font-size: 36px;
+  padding-bottom: 12px;
 }
 
 .battle-actor-status {
   display: grid;
-  gap: 4px 10px;
-  grid-template-columns: minmax(74px, 1fr) auto minmax(84px, auto);
+  gap: 8px 20px;
+  grid-template-columns: minmax(148px, 1fr) auto minmax(168px, auto);
   padding: 0;
 }
 
 .battle-actor-name,
 .battle-actor-state,
 .battle-actor-hp {
-  font-size: 15px;
+  font-size: 30px;
 }
 
 .battle-actor-gauge {
@@ -1552,7 +1787,7 @@
 .battle-risk-label {
   align-self: end;
   color: var(--battle-green);
-  font-size: 17px;
+  font-size: 34px;
 }
 
 .battle-enemy-list-panel {
@@ -1560,10 +1795,10 @@
 }
 
 .battle-message-window {
-  bottom: calc(var(--battle-hud-height) + 18px);
-  font-size: 17px;
-  left: 24px;
-  right: 24px;
+  bottom: calc(var(--battle-hud-height) + 36px);
+  font-size: 34px;
+  left: 48px;
+  right: 48px;
 }
 
 .battle-scene[data-battle-director-step="result"] {
@@ -1594,149 +1829,149 @@
 
 .battle-scene[data-battle-director-step="result"] .battle-enemy.defeated::after {
   background:
-    radial-gradient(circle, rgba(125, 205, 255, 0.95) 0 2px, transparent 3px),
-    radial-gradient(circle at 70% 30%, rgba(196, 237, 255, 0.9) 0 2px, transparent 3px),
-    radial-gradient(circle at 25% 65%, rgba(80, 165, 255, 0.88) 0 2px, transparent 3px);
-  background-size: 26px 26px, 34px 34px, 22px 22px;
+    radial-gradient(circle, rgba(125, 205, 255, 0.95) 0 4px, transparent 6px),
+    radial-gradient(circle at 70% 30%, rgba(196, 237, 255, 0.9) 0 4px, transparent 6px),
+    radial-gradient(circle at 25% 65%, rgba(80, 165, 255, 0.88) 0 4px, transparent 6px);
+  background-size: 52px 52px, 68px 68px, 44px 44px;
   content: "";
-  inset: -20px;
+  inset: -40px;
   position: absolute;
 }
 
 .battle-result-panel {
   background: linear-gradient(180deg, #08286a, #020d2b);
-  border: 3px solid var(--battle-metal);
-  box-shadow: inset 0 0 0 2px rgba(255, 218, 116, 0.38), 0 0 40px rgba(0, 0, 0, 0.78);
+  border: 6px solid var(--battle-metal);
+  box-shadow: inset 0 0 0 4px rgba(255, 218, 116, 0.38), 0 0 80px rgba(0, 0, 0, 0.78);
   display: grid;
-  gap: 16px;
+  gap: 32px;
   left: 50%;
   min-width: 0;
-  padding: 26px 48px 22px;
+  padding: 52px 96px 44px;
   position: absolute;
   text-align: center;
   top: 46%;
   transform: translate(-50%, -50%);
-  width: min(820px, 58vw);
+  width: min(1640px, 58vw);
   z-index: 8;
 }
 
 .battle-result-crest {
   align-self: center;
   background: linear-gradient(135deg, transparent 35%, var(--battle-gold) 35% 65%, transparent 65%);
-  height: 38px;
+  height: 76px;
   justify-self: center;
-  margin-top: -48px;
-  width: 86px;
+  margin-top: -96px;
+  width: 172px;
 }
 
 .battle-result-title {
   color: #ffe69a;
-  font-size: 46px;
+  font-size: 92px;
   font-weight: 900;
   margin: 0;
-  text-shadow: 0 0 14px rgba(255, 216, 102, 0.75), 0 3px 0 #000;
+  text-shadow: 0 0 28px rgba(255, 216, 102, 0.75), 0 6px 0 #000;
 }
 
 .battle-result-cards {
   display: grid;
-  gap: 18px;
+  gap: 36px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .battle-result-reward-card {
   align-content: center;
   background: linear-gradient(180deg, rgba(15, 48, 109, 0.98), rgba(3, 14, 44, 0.98));
-  border: 2px solid rgba(255, 216, 102, 0.72);
+  border: 4px solid rgba(255, 216, 102, 0.72);
   display: grid;
-  gap: 12px;
-  min-height: 152px;
-  padding: 16px;
+  gap: 24px;
+  min-height: 304px;
+  padding: 32px;
   text-align: center;
 }
 
 .battle-result-reward-label {
-  font-size: 20px;
+  font-size: 40px;
 }
 
 .battle-result-reward-icon {
   align-self: center;
   border-radius: 0;
   display: block;
-  height: 58px;
+  height: 116px;
   justify-self: center;
-  width: 70px;
+  width: 140px;
 }
 
 .battle-result-reward-value {
   color: #ffe98b;
-  font-size: 28px;
+  font-size: 56px;
 }
 
 .battle-result-quest {
-  border-bottom: 1px solid rgba(255, 216, 102, 0.5);
-  border-top: 1px solid rgba(255, 216, 102, 0.5);
+  border-bottom: 2px solid rgba(255, 216, 102, 0.5);
+  border-top: 2px solid rgba(255, 216, 102, 0.5);
   display: grid;
-  gap: 6px;
-  padding: 12px;
+  gap: 12px;
+  padding: 24px;
 }
 
 .battle-result-quest strong {
   color: var(--battle-green);
-  font-size: 21px;
+  font-size: 42px;
 }
 
 .battle-result-quest span {
   color: #fff;
-  font-size: 17px;
+  font-size: 34px;
 }
 
 .battle-result-confirm {
   background: linear-gradient(180deg, #0b244f, #020817);
-  border: 2px solid rgba(255, 216, 102, 0.8);
+  border: 4px solid rgba(255, 216, 102, 0.8);
   color: #fff;
   font: inherit;
-  font-size: 20px;
+  font-size: 40px;
   justify-self: center;
-  min-width: 260px;
-  padding: 10px 24px;
+  min-width: 520px;
+  padding: 20px 48px;
 }
 
 .battle-result-progress {
   align-items: center;
   background: rgba(0, 5, 9, 0.9);
-  border: 2px solid rgba(255, 216, 102, 0.7);
-  bottom: -138px;
+  border: 4px solid rgba(255, 216, 102, 0.7);
+  bottom: -276px;
   color: #fff;
   display: grid;
-  gap: 24px;
+  gap: 48px;
   grid-template-columns: 1fr 1fr;
   left: 50%;
-  padding: 16px 28px;
+  padding: 32px 56px;
   position: absolute;
   text-align: left;
   transform: translateX(-50%);
-  width: min(1040px, 76vw);
+  width: min(2080px, 76vw);
 }
 
 .battle-result-world-state,
 .battle-result-next-objective {
   align-items: center;
   display: grid;
-  gap: 16px;
-  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 32px;
+  grid-template-columns: 128px minmax(0, 1fr);
 }
 
 .battle-result-world-state {
-  border-right: 2px solid rgba(255, 255, 255, 0.72);
-  padding-right: 28px;
+  border-right: 4px solid rgba(255, 255, 255, 0.72);
+  padding-right: 56px;
 }
 
 .battle-result-progress-icon {
   background: linear-gradient(180deg, #173f87, #061535);
-  border: 2px solid rgba(106, 178, 255, 0.8);
+  border: 4px solid rgba(106, 178, 255, 0.8);
   display: block;
-  height: 56px;
-  width: 56px;
+  height: 112px;
+  width: 112px;
 }
 
 .battle-result-progress-icon-world {
@@ -1748,7 +1983,7 @@
   color: #cfe8ff;
   content: "!";
   display: grid;
-  font-size: 38px;
+  font-size: 76px;
   font-weight: 900;
   height: 100%;
   place-items: center;
@@ -1757,7 +1992,7 @@
 .battle-result-world-state div,
 .battle-result-next-objective div {
   display: grid;
-  gap: 5px;
+  gap: 10px;
 }
 
 .battle-result-world-state strong {
@@ -1770,9 +2005,9 @@
 
 .battle-result-progress-bar {
   background: #1e3717;
-  height: 11px;
+  height: 22px;
   position: relative;
-  width: 260px;
+  width: 520px;
 }
 
 .battle-result-progress-bar::before {
@@ -1786,13 +2021,13 @@
 .battle-result-progress-count {
   color: var(--battle-green);
   position: absolute;
-  right: 26px;
+  right: 52px;
 }
 
 .battle-result-next-prompt {
-  bottom: -194px;
+  bottom: -388px;
   color: #fff;
-  font-size: 19px;
+  font-size: 38px;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
@@ -1812,9 +2047,9 @@
    ======================================================================== */
 
 .battle-scene {
-  --battle-hud-height: 96px;
-  gap: 2px !important;
-  grid-template-columns: minmax(0, 1fr) 92px 164px !important;
+  --battle-hud-height: 192px;
+  gap: 4px !important;
+  grid-template-columns: minmax(0, 1fr) 184px 328px !important;
   grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
   padding: 0 !important;
 }
@@ -1833,14 +2068,14 @@
 }
 
 .battle-enemy-image {
-  height: 56px;
-  width: 64px;
+  height: 112px;
+  width: 128px;
 }
 
 .battle-actor-group .battle-actor {
   transform: translate(-50%, -100%) scale(1.2);
-  height: 48px;
-  width: 40px;
+  height: 96px;
+  width: 80px;
 }
 
 .battle-enemy-group,
@@ -1953,12 +2188,12 @@
 }
 
 .battle-message-line {
-  font-size: 9px !important;
+  font-size: 18px !important;
   line-height: 1.3 !important;
 }
 
 .battle-message-cursor {
-  font-size: 9px !important;
+  font-size: 18px !important;
 }
 
 .battle-command-panel {
@@ -1971,7 +2206,7 @@
   grid-template-rows: minmax(0, 1fr) !important;
   height: 100% !important;
   min-height: 0 !important;
-  padding: 3px !important;
+  padding: 6px !important;
   pointer-events: auto !important;
   position: relative !important;
   z-index: 9 !important;
@@ -1980,7 +2215,7 @@
 .battle-command-menu {
   align-self: stretch !important;
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   grid-column: 1 !important;
   grid-row: 1 !important;
   grid-template-columns: minmax(0, 1fr) !important;
@@ -1991,8 +2226,8 @@
 .battle-command {
   gap: 0 !important;
   grid-template-columns: minmax(0, 1fr) !important;
-  min-height: 10px !important;
-  padding: 1px 3px !important;
+  min-height: 20px !important;
+  padding: 2px 6px !important;
   pointer-events: auto !important;
   position: relative !important;
   z-index: 10 !important;
@@ -2008,7 +2243,7 @@
 
 .battle-command-text strong {
   display: block;
-  font-size: 9px !important;
+  font-size: 18px !important;
   letter-spacing: 0;
   line-height: 1.05 !important;
   overflow: hidden;
@@ -2018,7 +2253,7 @@
 
 .battle-command-text small {
   display: block !important;
-  font-size: 7px !important;
+  font-size: 14px !important;
   line-height: 1 !important;
   opacity: 0.85;
   overflow: hidden;
@@ -2033,38 +2268,38 @@
 }
 
 .battle-command-help {
-  font-size: 7px !important;
+  font-size: 14px !important;
   line-height: 1.1 !important;
 }
 
 .battle-submenu-header {
-  font-size: 8px !important;
+  font-size: 16px !important;
 }
 
 .battle-target-prompt {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1.15 !important;
 }
 
 .battle-key-prompts {
-  font-size: 7px !important;
-  gap: 4px !important;
+  font-size: 14px !important;
+  gap: 8px !important;
 }
 
 .battle-key-prompts kbd {
-  font-size: 7px !important;
+  font-size: 14px !important;
 }
 
 /* --- HUD row: party status rows ----------------------------------------- */
 
 .battle-party {
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   grid-column: 3 !important;
   grid-row: 2 !important;
   grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
   min-height: 0 !important;
-  padding: 3px !important;
+  padding: 6px !important;
   position: relative !important;
   z-index: 8 !important;
 }
@@ -2072,23 +2307,23 @@
 .battle-actor-status {
   align-content: center;
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   grid-template-columns: minmax(0, 1fr) !important;
   min-height: 0 !important;
   overflow: hidden;
-  padding: 1px 2px !important;
+  padding: 2px 4px !important;
 }
 
 .battle-actor-status-head {
   align-items: baseline;
   display: flex;
-  gap: 4px;
+  gap: 8px;
   justify-content: space-between;
   min-width: 0;
 }
 
 .battle-actor-name {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1.1 !important;
   min-width: 0;
   overflow: hidden;
@@ -2097,21 +2332,21 @@
 }
 
 .battle-actor-level {
-  font-size: 7px !important;
-  margin-left: 2px;
+  font-size: 14px !important;
+  margin-left: 4px;
   opacity: 0.85;
 }
 
 .battle-actor-vitals {
   display: flex;
   flex: 0 0 auto;
-  gap: 4px;
+  gap: 8px;
   justify-content: flex-end;
 }
 
 .battle-actor-hp,
 .battle-actor-mp {
-  font-size: 7px !important;
+  font-size: 14px !important;
   line-height: 1.1 !important;
   white-space: nowrap;
 }
@@ -2119,16 +2354,16 @@
 .battle-actor-status-bars {
   align-items: center;
   display: grid;
-  gap: 3px;
+  gap: 6px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  height: 5px !important;
+  height: 10px !important;
   min-width: 0;
 }
 
 .battle-actor-status .battle-stat-bar {
   display: block;
   grid-column: auto !important;
-  height: 3px !important;
+  height: 6px !important;
   min-width: 0;
 }
 
@@ -2140,7 +2375,7 @@
 
 .battle-atb-bar {
   flex: 1 1 auto;
-  height: 3px !important;
+  height: 6px !important;
 }
 
 /* --- Target-select phase ------------------------------------------------- */
@@ -2158,7 +2393,7 @@
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-menu {
   bottom: auto !important;
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   left: auto !important;
   overflow: hidden !important;
   position: relative !important;
@@ -2171,27 +2406,27 @@
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-command {
-  min-height: 13px !important;
+  min-height: 26px !important;
 }
 
 .battle-target-brackets {
-  height: 29px !important;
+  height: 58px !important;
   inset: auto !important;
   left: 50% !important;
   top: 50% !important;
   transform: translate(-50%, -50%) !important;
-  width: 34px !important;
+  width: 68px !important;
 }
 
 .battle-target-brackets::before {
-  border-width: 2px !important;
+  border-width: 4px !important;
 }
 
 .battle-target-brackets::after {
-  border-left-width: 3px !important;
-  border-right-width: 3px !important;
-  border-top-width: 7px !important;
-  top: -10px !important;
+  border-left-width: 6px !important;
+  border-right-width: 6px !important;
+  border-top-width: 14px !important;
+  top: -20px !important;
 }
 
 /* --- Victory result box --------------------------------------------------- */
@@ -2205,12 +2440,12 @@
 .battle-result-panel {
   box-sizing: border-box !important;
   display: grid !important;
-  gap: 4px !important;
+  gap: 8px !important;
   grid-template-rows: auto auto auto auto !important;
-  max-height: 96px !important;
+  max-height: 192px !important;
   overflow: hidden !important;
-  padding: 6px 10px !important;
-  width: 170px !important;
+  padding: 12px 20px !important;
+  width: 340px !important;
 }
 
 .battle-result-crest {
@@ -2218,7 +2453,7 @@
 }
 
 .battle-result-title {
-  font-size: 11px !important;
+  font-size: 22px !important;
   line-height: 1 !important;
   margin: 0 !important;
   text-align: center !important;
@@ -2226,21 +2461,21 @@
 
 .battle-result-cards {
   display: grid !important;
-  gap: 2px !important;
+  gap: 4px !important;
   grid-template-columns: minmax(0, 1fr) !important;
-  grid-auto-rows: minmax(11px, auto) !important;
+  grid-auto-rows: minmax(22px, auto) !important;
 }
 
 .battle-result-reward-card {
   align-content: center !important;
   align-items: center !important;
   display: grid !important;
-  gap: 3px !important;
+  gap: 6px !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
   grid-template-rows: none !important;
   justify-items: stretch !important;
-  min-height: 11px !important;
-  padding: 1px 4px !important;
+  min-height: 22px !important;
+  padding: 2px 8px !important;
   text-align: left !important;
 }
 
@@ -2249,7 +2484,7 @@
 }
 
 .battle-result-reward-label {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1 !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -2257,20 +2492,20 @@
 }
 
 .battle-result-reward-value {
-  font-size: 9px !important;
+  font-size: 18px !important;
   line-height: 1 !important;
   white-space: nowrap !important;
 }
 
 .battle-result-confirm {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1 !important;
   min-width: 0 !important;
-  padding: 3px 10px !important;
+  padding: 6px 20px !important;
 }
 
 .battle-result-next-prompt {
-  font-size: 7px !important;
+  font-size: 14px !important;
   line-height: 1 !important;
 }
 
@@ -2282,7 +2517,7 @@
 .battle-command:focus-visible,
 .battle-enemy-list-row:focus-visible,
 .battle-result-confirm:focus-visible {
-  box-shadow: var(--focus-ring, 0 0 0 2px rgba(108, 121, 242, 0.55));
+  box-shadow: var(--focus-ring, 0 0 0 4px rgba(108, 121, 242, 0.55));
   outline: 0;
 }
 
@@ -2312,13 +2547,13 @@
    ========================================================================= */
 
 .battle-scene[data-battle-ui-style="pokemon"] {
-  --battle-hud-height: 108px;
+  --battle-hud-height: 216px;
   --pkmn-panel-bg: linear-gradient(180deg, #fdfdf4 0%, #edeadb 100%);
   --pkmn-panel-border: #45443c;
   --pkmn-text: #2e3238;
   --pkmn-muted: #70747a;
   --pkmn-accent: #e43b44;
-  grid-template-columns: minmax(0, 1fr) minmax(200px, 42%) !important;
+  grid-template-columns: minmax(0, 1fr) minmax(400px, 42%) !important;
   grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
 }
 
@@ -2334,18 +2569,18 @@
   /* absolute 그리드 자식은 배정된 그리드 영역이 containing block이 된다 — 씬 전체로 확장 */
   grid-column: 1 / -1 !important;
   grid-row: 1 / -1 !important;
-  top: 4px !important;
-  left: 4px !important;
+  top: 8px !important;
+  left: 8px !important;
   right: auto !important;
   bottom: auto !important;
-  width: min(46%, 132px) !important;
+  width: min(46%, 264px) !important;
   z-index: 8 !important;
   background: var(--pkmn-panel-bg);
-  border: 2px solid var(--pkmn-panel-border);
+  border: 4px solid var(--pkmn-panel-border);
   border-image: none;
-  border-radius: 8px 8px 8px 2px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-  padding: 2px 5px 3px !important;
+  border-radius: 16px 16px 16px 4px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  padding: 4px 10px 6px !important;
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
@@ -2361,7 +2596,7 @@
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
   color: var(--pkmn-muted) !important;
-  margin-left: 5px;
+  margin-left: 10px;
 }
 
 /* --- 필드 우하단 아군 정보 박스 --- */
@@ -2369,21 +2604,21 @@
   position: absolute !important;
   grid-column: 1 / -1 !important;
   grid-row: 1 / -1 !important;
-  right: 4px !important;
+  right: 8px !important;
   left: auto !important;
   top: auto !important;
-  bottom: calc(var(--battle-hud-height) + 7px) !important;
-  width: min(52%, 148px) !important;
+  bottom: calc(var(--battle-hud-height) + 14px) !important;
+  width: min(52%, 296px) !important;
   height: auto !important;
   z-index: 8 !important;
   grid-template-rows: none !important;
   grid-auto-rows: auto !important;
   background: var(--pkmn-panel-bg);
-  border: 2px solid var(--pkmn-panel-border);
+  border: 4px solid var(--pkmn-panel-border);
   border-image: none;
-  border-radius: 8px 2px 8px 8px;
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
-  padding: 2px 5px 3px !important;
+  border-radius: 16px 4px 16px 16px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  padding: 4px 10px 6px !important;
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name,
@@ -2401,11 +2636,11 @@
 
 /* --- 하단 바: 좌측 메시지 창 --- */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
-  margin: 2px 1px 2px 2px !important;
+  margin: 4px 2px 4px 4px !important;
   background: linear-gradient(180deg, #262b33 0%, #1c2027 100%);
-  border: 2px solid #5b636d;
+  border: 4px solid #5b636d;
   border-image: none;
-  border-radius: 8px;
+  border-radius: 16px;
   color: #f4f6f8;
   text-shadow: none;
   align-content: center;
@@ -2422,33 +2657,33 @@
 
 /* --- 하단 바: 우측 명령 그리드 --- */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
-  margin: 2px 2px 2px 1px !important;
+  margin: 4px 4px 4px 2px !important;
   background: var(--pkmn-panel-bg);
-  border: 2px solid var(--pkmn-panel-border);
+  border: 4px solid var(--pkmn-panel-border);
   border-image: none;
-  border-radius: 8px;
-  padding: 3px !important;
+  border-radius: 16px;
+  padding: 6px !important;
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   grid-template-rows: repeat(3, minmax(0, 1fr)) !important;
-  gap: 2px !important;
+  gap: 4px !important;
 }
 
 /* 서브메뉴(기술/아이템/포획 목록)는 행이 길어 1열 + 자동 높이로 전환 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
   grid-template-columns: minmax(0, 1fr) !important;
   grid-template-rows: none !important;
-  grid-auto-rows: minmax(9px, auto) !important;
-  gap: 1px !important;
+  grid-auto-rows: minmax(18px, auto) !important;
+  gap: 2px !important;
   overflow-y: auto;
 }
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command {
   background: #ffffff;
-  border: 2px solid #b9b7a6 !important;
-  border-radius: 6px !important;
+  border: 4px solid #b9b7a6 !important;
+  border-radius: 12px !important;
   color: var(--pkmn-text);
   text-shadow: none;
 }
@@ -2467,7 +2702,7 @@
 
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu .battle-command:first-of-type {
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
   background: #fff6f0;
   border-color: var(--pkmn-accent) !important;
   outline: none;
@@ -2486,8 +2721,8 @@
 
 /* 적 스프라이트를 크게 — 정통 포켓몬 1:1 대치 크기 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image {
-  width: 148px !important;
-  height: 148px !important;
+  width: 296px !important;
+  height: 296px !important;
   transform: scale(1);
   transform-origin: 50% 100%;
   image-rendering: pixelated;
@@ -2495,52 +2730,52 @@
 
 /* ── UI 크기: 320×240 클래식 폰트를 상속받아 왜소하던 것을 포켓몬 규모로 확대 ── */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command {
-  min-height: 22px !important;
-  padding: 3px 7px !important;
+  min-height: 44px !important;
+  padding: 6px 14px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
-  font-size: 9px !important;
+  font-size: 18px !important;
   line-height: 1.15 !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
-  font-size: 6.5px !important;
+  font-size: 13px !important;
   line-height: 1 !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-message-window {
-  font-size: 9.5px !important;
+  font-size: 19px !important;
   line-height: 1.35 !important;
-  padding: 6px 9px !important;
+  padding: 12px 18px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-message-line {
-  font-size: 9.5px !important;
+  font-size: 19px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-name {
-  font-size: 9.5px !important;
+  font-size: 19px !important;
   font-weight: 700;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-mp {
-  font-size: 8.5px !important;
+  font-size: 17px !important;
 }
 /* 적 정보 박스·아군 박스 HP 바를 조금 키워 균형 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
-  height: 6px !important;
+  height: 12px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party {
-  width: min(64%, 210px) !important;
-  padding: 4px 9px 6px !important;
+  width: min(64%, 420px) !important;
+  padding: 8px 18px 12px !important;
 }
 /* 아군 정보 박스: 이름·HP가 한 줄에 안 들어가 잘리던 것을 세로로 편다 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-status {
   display: flex !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  gap: 1px !important;
+  gap: 2px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-vitals {
   display: flex !important;
-  gap: 8px !important;
+  gap: 16px !important;
   justify-content: flex-end;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-actor-hp,
@@ -2549,12 +2784,12 @@
   overflow: visible;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-stat-bar {
-  height: 6px !important;
-  margin-top: 1px;
+  height: 12px !important;
+  margin-top: 2px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
-  width: min(50%, 150px) !important;
-  padding: 4px 8px 5px !important;
+  width: min(50%, 300px) !important;
+  padding: 8px 16px 10px !important;
 }
 
 /* 대상 선택 흰 박스/화살표는 포켓몬 1:1 대치에선 어색 — 모두 숨긴다 */
@@ -2615,7 +2850,7 @@
 /* MISS 팝업 */
 .battle-damage-popup-miss {
   color: #cfd6de !important;
-  font-size: 9px;
+  font-size: 18px;
   letter-spacing: 0.08em;
 }
 
@@ -2627,19 +2862,19 @@
 @keyframes battle-death-fade {
   0% { opacity: 0.9; filter: none; }
   35% { opacity: 0.75; filter: brightness(1.6); }
-  100% { opacity: 0; filter: grayscale(1); translate: 0 7px; }
+  100% { opacity: 0; filter: grayscale(1); translate: 0 14px; }
 }
 
 /* ---- 포획 구슬 시네마틱 ---- */
 .battle-capture-orb {
   --orb-to-x: 70%;
   --orb-to-y: 35%;
-  height: 11px;
-  width: 11px;
+  height: 22px;
+  width: 22px;
   border-radius: 50%;
   background: linear-gradient(180deg, #e43b44 0%, #e43b44 44%, #23262b 44%, #23262b 56%, #f6f5f1 56%);
-  border: 1.5px solid #23262b;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  border: 3px solid #23262b;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   left: 20%;
   top: 78%;
   position: absolute;
@@ -2659,8 +2894,8 @@
 }
 @keyframes battle-orb-rock {
   0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-  25% { transform: translate(calc(-50% - 4px), -50%) rotate(-22deg); }
-  75% { transform: translate(calc(-50% + 4px), -50%) rotate(22deg); }
+  25% { transform: translate(calc(-50% - 8px), -50%) rotate(-22deg); }
+  75% { transform: translate(calc(-50% + 8px), -50%) rotate(22deg); }
 }
 .battle-orb-caught {
   animation: battle-orb-caught 400ms ease-out forwards;
@@ -2669,7 +2904,7 @@
 }
 @keyframes battle-orb-caught {
   0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 244, 180, 0.9); }
-  60% { box-shadow: 0 0 0 14px rgba(255, 244, 180, 0); }
+  60% { box-shadow: 0 0 0 28px rgba(255, 244, 180, 0); }
   100% { transform: translate(-50%, -50%) scale(1); filter: brightness(0.75); }
 }
 .battle-orb-burst {
@@ -2703,14 +2938,14 @@
 /* 아군: 좌하단에서 크게, 상대를 바라보도록 스프라이트만 좌우 반전 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
   transform: translate(-50%, -55%) scale(2.45);
-  height: 120px;
-  width: 110px;
+  height: 240px;
+  width: 220px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-sprite,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-image {
   transform: scaleX(-1);
-  width: 112px !important;
-  height: 148px !important;
+  width: 224px !important;
+  height: 296px !important;
 }
 /* 적 노드 자체도 키워 이미지+그림자가 한 덩어리로 읽히게 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy {
@@ -2722,9 +2957,9 @@
   content: "";
   position: absolute;
   left: 50%;
-  bottom: -6px;
-  width: 78px;
-  height: 18px;
+  bottom: -12px;
+  width: 156px;
+  height: 36px;
   transform: translateX(-50%);
   background: radial-gradient(ellipse at center, rgba(30, 40, 30, 0.38) 0%, transparent 68%);
   z-index: -1;
@@ -2742,15 +2977,15 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 52px;
+  grid-template-columns: minmax(0, 1fr) 104px;
   align-items: center;
-  gap: 6px;
+  gap: 12px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
   display: inline-block;
-  height: 5px;
-  border: 1px solid #6e6a5c;
-  border-radius: 3px;
+  height: 10px;
+  border: 2px solid #6e6a5c;
+  border-radius: 6px;
   background: #d8d4c4;
   position: relative;
   overflow: hidden;
@@ -2774,8 +3009,8 @@
    팩에 back view가 없어 정면 시트를 좌우반전+확대해 '가까이서 본 뒷모습'을 흉내낸다.
    ========================================================================= */
 .battle-actor-group .battle-monster-image {
-  width: 96px;
-  height: 96px;
+  width: 192px;
+  height: 192px;
   image-rendering: pixelated;
   object-fit: contain;
 }
@@ -2789,8 +3024,8 @@
 }
 /* 몬스터 배틀러 노드는 캐릭터용 3열 스프라이트 프레이밍을 쓰지 않는다 */
 .battle-actor-group .battle-actor[data-monster-battler="true"] {
-  height: 120px;
-  width: 120px;
+  height: 240px;
+  width: 240px;
 }
 
 /* =========================================================================
@@ -2800,8 +3035,8 @@
 /* ── 레벨 배지 (이름 옆) ── */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-level,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-level {
-  margin-left: 6px;
-  font-size: 8px;
+  margin-left: 12px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--pkmn-muted);
   letter-spacing: 0.02em;
@@ -2816,9 +3051,9 @@
 /* ── HP 바: 회색 트랙 + 색상 채움(포켓몬 3단계) ── */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp {
   background: #3f423c !important;
-  border: 1px solid #26281f !important;
-  border-radius: 4px !important;
-  height: 7px !important;
+  border: 2px solid #26281f !important;
+  border-radius: 8px !important;
+  height: 14px !important;
   overflow: hidden;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp::before {
@@ -2834,9 +3069,9 @@
 /* 적 정보 박스 HP 바도 동일 트랙/색 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
   background: #3f423c !important;
-  border: 1px solid #26281f !important;
-  border-radius: 4px !important;
-  height: 7px !important;
+  border: 2px solid #26281f !important;
+  border-radius: 8px !important;
+  height: 14px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar::before {
   background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%) !important;
@@ -2853,18 +3088,18 @@
   content: "HP";
   grid-column: 1;
   grid-row: 2;
-  font-size: 7px;
+  font-size: 14px;
   font-weight: 800;
   color: #d8a72a;
   align-self: center;
   justify-self: start;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
-  grid-template-columns: 14px minmax(0, 1fr) !important;
+  grid-template-columns: 28px minmax(0, 1fr) !important;
   grid-template-rows: auto auto;
   align-items: center;
-  gap: 1px 5px !important;
+  gap: 2px 10px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
   grid-column: 1 / -1;
@@ -2877,23 +3112,23 @@
 
 /* ── 명령 버튼: 좀 더 큼직하고 포켓몬 감성(둥근 흰 버튼, 선택 시 빨간 테) ── */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command {
-  min-height: 26px !important;
-  border-radius: 8px !important;
-  border-width: 2px !important;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+  min-height: 52px !important;
+  border-radius: 16px !important;
+  border-width: 4px !important;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-text strong {
-  font-size: 10px !important;
+  font-size: 20px !important;
 }
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu .battle-command:first-of-type::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"]::before,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover::before,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible::before {
   content: "▸";
   display: inline-block !important;
   position: static !important;
   color: var(--pkmn-accent);
-  margin-right: 3px;
-  font-size: 9px;
+  margin-right: 6px;
+  font-size: 18px;
 }
 
 /* =========================================================================
@@ -2917,17 +3152,17 @@
 
 @keyframes battle-idle-breath {
   0%, 100% { translate: 0 0; }
-  50% { translate: 0 -2px; }
+  50% { translate: 0 -4px; }
 }
 
 @keyframes battle-idle-breath-pokemon-enemy {
   0%, 100% { transform: translate(-50%, -100%) scale(1.28); }
-  50% { transform: translate(-50%, -100%) scale(1.28) translateY(-3px); }
+  50% { transform: translate(-50%, -100%) scale(1.28) translateY(-6px); }
 }
 
 @keyframes battle-idle-breath-pokemon-actor {
   0%, 100% { transform: translate(-50%, -55%) scale(2.45); }
-  50% { transform: translate(-50%, -55%) scale(2.45) translateY(-3px); }
+  50% { transform: translate(-50%, -55%) scale(2.45) translateY(-6px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2940,24 +3175,24 @@
 /* Classic command focus: stop blue-on-blue washout. */
 .battle-command:hover,
 .battle-command:focus-visible,
-.battle-command-menu .battle-command:first-of-type {
+.battle-command[data-battle-command-cursor="true"] {
   background: linear-gradient(180deg, #3a5f9a 0%, #2a4574 100%);
   border-color: #eef4ff #081849 #081849 #eef4ff;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
 }
 
 .battle-command:focus-visible {
-  outline: 2px solid rgba(240, 195, 106, 0.85);
-  outline-offset: 1px;
+  outline: 4px solid rgba(240, 195, 106, 0.85);
+  outline-offset: 2px;
 }
 
 /* Pokemon command selected state stays cream + red rim, slightly larger type. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
-.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu .battle-command:first-of-type {
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
   background: #fff6f0 !important;
   border-color: var(--pkmn-accent) !important;
-  box-shadow: 0 0 0 1px rgba(228, 59, 68, 0.25), 0 2px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 0 2px rgba(228, 59, 68, 0.25), 0 4px 0 rgba(0, 0, 0, 0.08);
   transform: scale(1.02);
 }
 
@@ -2975,11 +3210,11 @@
 }
 @keyframes battle-juice-defend {
   0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
-  40% { filter: brightness(1.4) drop-shadow(0 0 6px rgba(100, 180, 255, 0.8)); }
+  40% { filter: brightness(1.4) drop-shadow(0 0 12px rgba(100, 180, 255, 0.8)); }
   100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
 }
 .battle-scene[data-battle-director-step="acting"] .battle-actor-status.battle-acting {
-  border-left: 2px solid rgba(100, 180, 255, 0.7);
+  border-left: 4px solid rgba(100, 180, 255, 0.7);
   background: rgba(60, 120, 220, 0.12);
 }
 
@@ -2992,7 +3227,7 @@
 .battle-result-panel[data-battle-result="victory"] .battle-result-title {
   animation: battle-victory-title 0.6s ease-out;
   color: #ffd700;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.6), 1px 1px 0 #000;
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.6), 2px 2px 0 #000;
 }
 @keyframes battle-victory-title {
   0% { transform: scale(0.5); opacity: 0; }
@@ -3007,12 +3242,12 @@
 .battle-result-reward-card[data-reveal-index="2"] { animation-delay: 0.4s; }
 .battle-result-reward-card[data-reveal-index="3"] { animation-delay: 0.55s; }
 @keyframes battle-reward-reveal {
-  0% { transform: translateY(8px); opacity: 0; }
+  0% { transform: translateY(16px); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
 }
 .battle-result-panel[data-battle-result="defeat"] .battle-result-title {
   color: #ff4444;
-  text-shadow: 0 0 6px rgba(255, 0, 0, 0.4), 1px 1px 0 #000;
+  text-shadow: 0 0 12px rgba(255, 0, 0, 0.4), 2px 2px 0 #000;
 }
 .battle-result-crest {
   animation: battle-crest-pulse 1.2s ease-in-out infinite alternate;

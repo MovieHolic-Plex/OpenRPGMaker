@@ -41,9 +41,24 @@ describe("walkthroughRunner — 잿불의 유산 완주", () => {
     const hornets = forest.events.find((e) => e.id === "ev_forest_hornets")!;
     const fightPage = hornets.pages!.find((p) => p.id === "ev_forest_hornets_fight")!;
     // changeItem(oldKey) 커맨드 제거.
-    (fightPage as { commands: unknown[] }).commands = fightPage.commands.filter(
-      (c) => !(c as { kind?: string; itemId?: string }).itemId?.includes("old_key")
-    );
+    //
+    // 반드시 **재귀로** 제거해야 한다: battleBlockerEvent 는 승리 보상을
+    // `fork { condition: battleResult=victory, then: [...] }` 안쪽에 넣는다. 최상위 배열만
+    // 걸러내면 파손이 아무 효과가 없고 완주가 그냥 성공해 이 네거티브 컨트롤이 무력해진다
+    // (2026-07-26 실측: result.ok 가 true 로 나왔다).
+    const stripOldKey = (commands: readonly unknown[]): unknown[] =>
+      commands
+        .filter((command) => !(command as { itemId?: string }).itemId?.includes("old_key"))
+        .map((command) => {
+          const node = command as { kind?: string; then?: unknown[]; else?: unknown[] };
+          if (node.kind !== "fork") return command;
+          return {
+            ...node,
+            ...(node.then ? { then: stripOldKey(node.then) } : {}),
+            ...(node.else ? { else: stripOldKey(node.else) } : {}),
+          };
+        });
+    (fightPage as { commands: unknown[] }).commands = stripOldKey(fightPage.commands);
 
     const result = runWalkthrough(project, EMBER_WALKTHROUGH, { seed: 20260704 });
     expect(result.ok).toBe(false);

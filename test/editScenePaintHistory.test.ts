@@ -42,8 +42,6 @@ beforeEach(() => {
   resetMapEditHistory();
   editorState.set({
     activePaletteStamp: null,
-    activeStampId: null,
-    activeStructureStampId: null,
     autoConnectMode: true,
     brushSize: 1,
     currentMapId: store.getCurrent().startMapId,

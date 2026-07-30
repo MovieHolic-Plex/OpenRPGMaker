@@ -3,6 +3,7 @@ import { updateDatabaseRecord, type DatabaseCollection } from "@/editor/database
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { openQuickBattleModal } from "@/editor/panels/quickBattleModal";
 
 export function skillFields(form: HTMLElement, id: string): void {
   const skill = store.getCurrent().database.skills.find((record) => record.id === id);
@@ -51,7 +52,33 @@ export function enemyFields(form: HTMLElement, id: string): void {
 export function troopFields(form: HTMLElement, id: string): void {
   const troop = store.getCurrent().database.troops.find((record) => record.id === id);
   if (!troop) return;
-  form.append(el("div", { class: "db-preview", text: `전투 이벤트 페이지: ${troop.battleEventPages.length}` }));
+  const previewWrap = el("div", { class: "db-preview" });
+  previewWrap.append(el("div", { text: `전투 이벤트 페이지: ${troop.battleEventPages.length}` }));
+
+  const testBtn = el("button", {
+    class: "db-action-btn",
+    text: "⚔️ 전투 시뮬레이션 테스트 (Quick Battle Test)",
+    dataset: { testid: "quick-battle-test-btn" },
+  });
+  testBtn.style.cssText = `
+    margin-top: 8px;
+    padding: 6px 12px;
+    background: #1742a5;
+    color: #fff;
+    border: 1px solid #7099fc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 11px;
+    display: block;
+    width: 100%;
+  `;
+  testBtn.onclick = (e) => {
+    e.preventDefault();
+    openQuickBattleModal(id);
+  };
+
+  form.append(previewWrap, testBtn);
 }
 
 export function animationFields(form: HTMLElement, id: string, rerender: () => void): void {

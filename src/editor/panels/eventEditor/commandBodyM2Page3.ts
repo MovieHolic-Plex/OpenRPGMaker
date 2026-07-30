@@ -200,9 +200,9 @@ function getPlayerLocationBody(context: CommandEditContext, cmd: M2Command): HTM
 
 function moveToVariableLocationBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "move-to-variable-location-command-body");
-  let mapVariableId = String(cmd.fields.mapId ?? "").trim();
-  let xVariableId = String(cmd.fields.x ?? "").trim() || String(cmd.fields.xVariableId ?? "").trim();
-  let yVariableId = String(cmd.fields.y ?? "").trim() || String(cmd.fields.yVariableId ?? "").trim();
+  let mapVariableId = String(cmd.fields.mapVariableId ?? cmd.fields.mapId ?? "").trim();
+  let xVariableId = String(cmd.fields.xVariableId ?? cmd.fields.x ?? "").trim();
+  let yVariableId = String(cmd.fields.yVariableId ?? cmd.fields.y ?? "").trim();
   // 숫자 좌표로 저장된 레거시 값이면 변수 필드로 옮기지 않고 빈 값 취급.
   if (/^\d+$/.test(xVariableId)) xVariableId = "";
   if (/^\d+$/.test(yVariableId)) yVariableId = "";
@@ -238,11 +238,10 @@ function moveToVariableLocationBody(context: CommandEditContext, cmd: M2Command)
 
   const commit = () => {
     replaceFields(context, cmd, {
-      target: "player",
-      mapId: mapVariableId,
-      x: xVariableId || 0,
-      y: yVariableId || 0,
-    });
+      mapVariableId,
+      xVariableId,
+      yVariableId,
+    }, ["mapId", "x", "y"]);
     renderPreview();
   };
 
@@ -278,14 +277,14 @@ function getOnOffVehicleBody(context: CommandEditContext, cmd: M2Command): HTMLE
   const wrap = shell("page3-command-body actor-m2-command-body", "get-on-off-vehicle-command-body");
   const enabled = segmentedSelect({
     options: BOOLEAN_SEGMENTS,
-    value: String(cmd.fields.enabled ?? "true") === "false" ? "false" : "true",
+    value: String(cmd.fields.boarded ?? cmd.fields.enabled ?? "true") === "false" ? "false" : "true",
     testid: "get-on-off-vehicle-enabled",
     ariaLabel: "승하차",
   });
   const preview = previewPanel("get-on-off-vehicle-preview");
 
   const commit = () => {
-    replaceFields(context, cmd, { enabled: enabled.select.value });
+    replaceFields(context, cmd, { boarded: enabled.select.value }, ["enabled"]);
     renderPreview();
   };
   const renderPreview = () => {
@@ -306,7 +305,7 @@ function getOnOffVehicleBody(context: CommandEditContext, cmd: M2Command): HTMLE
 
 function setVehicleLocationBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
   const wrap = shell("page3-command-body actor-m2-command-body", "set-vehicle-location-command-body");
-  const vehicleRaw = String(cmd.fields.target ?? "boat");
+  const vehicleRaw = String(cmd.fields.vehicle ?? cmd.fields.target ?? "boat");
   const vehicle = segmentedSelect({
     options: VEHICLE_SEGMENTS,
     value: vehicleRaw === "ship" || vehicleRaw === "airship" ? vehicleRaw : "boat",
@@ -319,11 +318,11 @@ function setVehicleLocationBody(context: CommandEditContext, cmd: M2Command): HT
   const commit = () => {
     const loc = coords.read();
     replaceFields(context, cmd, {
-      target: vehicle.select.value,
+      vehicle: vehicle.select.value,
       mapId: loc.mapId,
       x: loc.x,
       y: loc.y,
-    });
+    }, ["target"]);
     renderPreview();
   };
   const renderPreview = () => {
@@ -397,14 +396,14 @@ function swapEventLocationBody(context: CommandEditContext, cmd: M2Command): HTM
   const events = eventRecords(project);
   const a = recordPickerWithPreview({
     records: events,
-    selectedId: String(cmd.fields.target ?? ""),
+    selectedId: String(cmd.fields.eventA ?? cmd.fields.target ?? ""),
     placeholder: "이벤트 A",
     testid: "swap-event-location-event-a",
     subtitleOf: (record) => record.id,
   });
   const b = recordPickerWithPreview({
     records: events,
-    selectedId: String(cmd.fields.mapId ?? cmd.fields.value ?? ""),
+    selectedId: String(cmd.fields.eventB ?? cmd.fields.value ?? cmd.fields.mapId ?? ""),
     placeholder: "이벤트 B",
     testid: "swap-event-location-event-b",
     subtitleOf: (record) => record.id,
@@ -413,12 +412,9 @@ function swapEventLocationBody(context: CommandEditContext, cmd: M2Command): HTM
 
   const commit = () => {
     replaceFields(context, cmd, {
-      target: a.select.value,
-      mapId: b.select.value,
-      value: b.select.value,
-      x: 0,
-      y: 0,
-    });
+      eventA: a.select.value,
+      eventB: b.select.value,
+    }, ["target", "value", "mapId", "x", "y"]);
     renderPreview();
   };
   const renderPreview = () => {
@@ -1758,14 +1754,16 @@ function note(text: string): HTMLElement {
 function replaceFields(
   context: CommandEditContext,
   cmd: M2Command,
-  fields: Record<string, M2CommandValue>
+  fields: Record<string, M2CommandValue>,
+  removeKeys: readonly string[] = []
 ): void {
+  const current = context.getCurrentCommand?.();
+  const latest = current?.kind === "m2Command" && current.commandId === cmd.commandId ? current : cmd;
+  const nextFields = { ...latest.fields, ...fields };
+  for (const key of removeKeys) delete nextFields[key];
   context.actions.replaceCommand(context.path, {
-    ...cmd,
-    fields: {
-      ...cmd.fields,
-      ...fields,
-    },
+    ...latest,
+    fields: nextFields,
   });
 }
 

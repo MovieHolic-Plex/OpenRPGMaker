@@ -10,7 +10,7 @@
   --rm2k3-battle-text: #4a3826;
   --rm2k3-battle-muted: #7a6448;
   background: #241a10;
-  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
+  grid-template-columns: minmax(0, 1fr) 172px 296px !important;
 }
 
 /* QA r1(fidelity/fun): 양피지 필 + 1px 얇은 프레임 — 하단 4패널 공통. */
@@ -19,9 +19,9 @@
 .battle-scene[data-battle-skin="bravely"] .battle-message-window,
 .battle-scene[data-battle-skin="bravely"] .battle-enemy-list-panel {
   background: linear-gradient(180deg, #f6ecd4, #ecdcba);
-  border: 1px solid #8a6f4d;
+  border: 2px solid #8a6f4d;
   border-image: none;
-  border-radius: 4px;
+  border-radius: 8px;
   color: #4a3826;
   text-shadow: none;
 }
@@ -53,13 +53,13 @@
    선택 행은 아래 규칙(#fff6df)이 더 높은 특이도로 계속 이긴다. */
 .battle-scene[data-battle-skin="bravely"] .battle-command {
   background: #f3e6c9;
-  border: 1px solid #8a6f4d;
+  border: 2px solid #8a6f4d;
 }
 
 .battle-scene[data-battle-skin="bravely"] .battle-command:hover,
 .battle-scene[data-battle-skin="bravely"] .battle-command:focus-visible,
 .battle-scene[data-battle-skin="bravely"] .battle-command.battle-target-selected,
-.battle-scene[data-battle-skin="bravely"] .battle-command-menu .battle-command:first-of-type {
+.battle-scene[data-battle-skin="bravely"] .battle-command[data-battle-command-cursor="true"] {
   background: #fff6df;
   border-color: #8a6f4d;
   color: #241a10 !important;
@@ -72,7 +72,7 @@
 
 .battle-scene[data-battle-skin="bravely"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;

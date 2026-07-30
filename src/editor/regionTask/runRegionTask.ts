@@ -355,6 +355,14 @@ function constructionFacadeLine(instruction: string, mapId: MapId): string | nul
     const n = parseInt(houseMatch[1]!, 10);
     return `- 야외 집 시공 시그니처: { kind:"lots", mapId:"${mapId}" } — 정확히 ${n}채`;
   }
+  // bare "집지어"/"집 만들어" — 영역 작업에서 야외 집 1채 기본(되묻지 않음).
+  // 영역 선택이 현재 맵 위이므로 야외 외장 의도로 간주한다(실내는 별도 표지가 있을 때만).
+  // "건물"(일반 건물)은 여기서 잡지 않는다 — 탑/성벽/대장간 등은 structure 가이드가
+  // build_wall/create_farm_plot 등으로 안내하고, 일반 "건물"은 가이드가 LLM에게 맡긴다.
+  // (이전 /집|건물/ 은 "탑 건물"·"성벽 건물" 을 author_house 로 오경로했다.)
+  if (/집/.test(instruction)) {
+    return `- 야외 집 시공: author_house { kind:"single", mapId:"${mapId}" } — 선택 영역 안에 1채 시공`;
+  }
   return null;
 }
 
@@ -371,17 +379,20 @@ export function buildRegionTaskMessage(
   const footer = `[컨텍스트] 현재 맵: ${mapName} (${mapId}) · 사용자 선택 영역: (${region.x},${region.y}) ${region.width}×${region.height}`;
   const categories = routeRegionIntent(instruction);
   const wantsInterior = categories.includes("interior");
-  // 모호한 집 요청: "집"이 있지만 "야외"/"실내" 표지가 없으면 되묻기.
-  const ambiguousHouse = /집|건물/.test(instruction) && !/야외|외장|실내|인테리어|마을/.test(instruction);
-  // 실내 전용·모호한 집 요청에는 야외 구조물 가이드를 빼서 facade 이름이 노출되지 않게 한다.
-  const filteredCategories = wantsInterior || ambiguousHouse
+  // 영역 작업: 사용자가 현재 맵 위에 영역을 선택했으므로 "집"이라고만 해도 야외 집(현재 맵 외장)으로
+  // 간주한다. 실내는 명시적 표지(실내/인테리어)가 있을 때만 wantsInterior 경로.
+  // (이전: bare "집" → 야외/실내 되묻기 → "집지어"인데 아무것도 안 짓는 불만. 영역 선택 자체가
+  // 현재 맵 위 야외 시공 의도의 신호다 — 실내는 새 맵으로 빠져나가므로 영역 선택과 모순.)
+  const bareHouse = !wantsInterior && /집/.test(instruction) && !/야외|외장|마을/.test(instruction);
+  // 실내 요청에만 야외 구조물 가이드를 뺀다(bare 집은 이제 야외 집으로 시공하므로 structure 유지).
+  const filteredCategories = wantsInterior
     ? categories.filter((c) => c !== "structure")
     : categories;
   const intentGuides = regionIntentGuideLines(filteredCategories);
-  const facadeLine = ambiguousHouse ? null : constructionFacadeLine(instruction, mapId);
+  const facadeLine = wantsInterior ? null : constructionFacadeLine(instruction, mapId);
   const toolGuide = [
     "영역 작업 도구 규칙:",
-    ...(ambiguousHouse ? ["- 집/건물 요청: 야외 집(외장) / 실내 맵 / 둘 다 중 하나를 먼저 되물으세요. 추측 시공 금지."] : []),
+    ...(bareHouse ? ["- 집 요청(영역 선택): 선택 영역이 현재 맵 위이므로 야외 집으로 시공. 되묻지 말고 author_house(kind:\"single\")로 바로 시공하라."] : []),
     wantsInterior
       ? "- 실내/방: start_interior_room_session (새 mapId). 야외 시공 facade 금지. create_map만 하고 끝내지 말 것"
       : "- 집/건물(야외 외장): 공식 시공 facade 사용 (벽 타일로 직사각 채우기 금지). 실내·방 맵 요청에는 야외 시공 facade 금지 → 실내 세션 툴",
@@ -469,172 +480,225 @@ export async function runRegionTask(
   opts: RegionTaskOptions,
   deps: RegionTaskDeps = defaultDeps,
 ): Promise<RegionTaskResult> {
-  const emptyBase = {
-    ok: false,
-    applied: false,
-    changedCells: 0,
-    changedEvents: 0,
-    mapsAdded: 0,
-    clippedCells: 0,
-    proposedCalls: 0,
-    assistantText: "",
-  };
-  const instruction = opts.instruction.trim();
-  if (!instruction) return { ...emptyBase, error: "지시 내용이 비어 있습니다." };
-
-  const base = deps.getProject();
-  const map = base.maps[opts.mapId];
-  if (!map) return { ...emptyBase, error: "맵을 찾을 수 없습니다." };
-
-  // 이전 pending의 onSettle(전역 고스트 정리)이 이번 실행의 프리뷰를 지우지 않도록 선-해소.
-  getPendingRegionApply()?.discard();
-
-  // 영역 AI 세션용 작업본: 건축 팔레트와 동일 하네스로 나무/소품 그룹을 승인 상태로 연다.
-  // (제로 부트스트랩 본선은 유지 — 여기만 region/build-palette 큐레이션 경로)
-  const working = structuredClone(base);
-  const workingMap = working.maps[opts.mapId];
-  const workingTileset = workingMap ? working.tilesets[workingMap.tilesetId] : undefined;
-  if (workingTileset) ensureRegionPlacementHarness(workingTileset);
-
-  const session = deps.createSession(working, opts.mapId);
-  const message = buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region, workingTileset);
-  const uiEvents: RegionTaskUiEvent[] = [];
-  const ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
-    getBaseProject: () => base,
-    getDraftProject: () => session.getProposedProject(),
-    isWriteTool: (toolName) => getTool(toolName)?.mode === "write",
-  });
-  const onEvent = (event: SessionEvent): void => {
-    pushUiEvent(uiEvents, event);
-    opts.onEvent?.(event);
-    ghostPreviewUpdater.handleToolCall(event);
-  };
-
-  const attachLog = (result: Omit<RegionTaskResult, "log">, turn?: TurnResult): RegionTaskResult => {
-    const log = buildRegionTaskLogExport({
-      mapId: opts.mapId,
-      mapName: map.name,
-      region: opts.region,
-      instruction,
-      composedMessage: message,
-      result,
-      turn,
-      uiEvents,
-      session,
-    });
-    publishRegionTaskLog(log);
-    // 진단용: 영역 AI 실행마다 로컬+DB 활동 로그 (실패해도 작업 결과는 유지).
-    const cfg = loadAiConfig();
-    void recordAiActivityFromRegionLog(log, {
-      model: cfg.model,
-      liteModel: cfg.liteModel,
-    }).catch(() => {
-      /* ignore persistence failures */
-    });
-    return { ...result, log };
-  };
-
-  let turn: TurnResult;
+  // pending 제안이 등록되면 onSettle이 배지 해제를 소유한다(사용자가 적용/취소를
+  // 선택할 때까지 '변경 확인 대기' 배지 유지). 그 외 모든 조기 return·오류 경로는
+  // finally에서 running:false를 쏜다 — pending 경로에서 중복 해제 금지.
+  let pendingRegistered = false;
   try {
-    turn = await session.sendUserMessage(message, onEvent);
-  } catch (cause) {
-    ghostPreviewUpdater.cancel();
-    clearAgentGhostPreview();
-    const error = cause instanceof Error ? cause.message : String(cause);
-    return attachLog({ ...emptyBase, error });
-  }
-  if (turn.stoppedReason === "error" || turn.stoppedReason === "aborted") {
-    ghostPreviewUpdater.cancel();
-    clearAgentGhostPreview();
-  } else {
-    ghostPreviewUpdater.flush();
-  }
-
-  if (turn.stoppedReason === "aborted") {
-    return attachLog({
-      ...emptyBase,
-      proposedCalls: turn.proposedCalls.length,
-      assistantText: turn.assistantText,
-      error: turn.error ?? "사용자가 중단했습니다.",
-    }, turn);
-  }
-
-  if (turn.stoppedReason === "error") {
-    return attachLog({
-      ...emptyBase,
-      proposedCalls: turn.proposedCalls.length,
-      assistantText: turn.assistantText,
-      error: turn.error ?? "AI 처리 오류",
-    }, turn);
-  }
-
-  const proposed = session.getProposedProject();
-  // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
-  // (채팅 카드의 [맵 적용 + 재료 합의]만 영구 합의 스탬프)
-  // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
-  // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
-  const { project: clipped, clippedCells } = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
-  const changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
-  const changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
-  const mapsAdded = countAddedMaps(base, clipped);
-
-  // 타일만 보면 NPC-only·새 맵 only 제안이 버려진다 — 이벤트·맵 추가도 적용 조건에 포함.
-  if (!hasRegionTaskChanges({ changedCells, changedEvents, mapsAdded })) {
-    clearAgentGhostPreview();
-    return attachLog({
-      ok: true,
+    const emptyBase = {
+      ok: false,
       applied: false,
       changedCells: 0,
       changedEvents: 0,
       mapsAdded: 0,
-      clippedCells,
-      proposedCalls: turn.proposedCalls.length,
-      assistantText: turn.assistantText,
-    }, turn);
-  }
+      clippedCells: 0,
+      proposedCalls: 0,
+      assistantText: "",
+    };
+    const instruction = opts.instruction.trim();
+    if (!instruction) return { ...emptyBase, error: "지시 내용이 비어 있습니다." };
 
-  // 배치 후 검증: 물 위 나무, 나무 짝 깨짐, 지시 대비 나무 누락 등 → 적용 거부
-  // 새 맵만 추가된 경우(현재 맵 영역 무변경)에는 영역 레이아웃 검증을 건너뛴다.
-  const toolNames = turn.proposedCalls.map((call) => call.name);
-  if (changedCells > 0 || changedEvents > 0) {
-    const layoutIssues = validateLayoutPlacement(clipped, {
-      mapId: opts.mapId,
-      region: {
-        x: opts.region.x,
-        y: opts.region.y,
-        width: opts.region.width,
-        height: opts.region.height,
-      },
-      instruction,
-      toolNames,
+    const base = deps.getProject();
+    const map = base.maps[opts.mapId];
+    if (!map) return { ...emptyBase, error: "맵을 찾을 수 없습니다." };
+
+    // 이전 pending의 onSettle(전역 고스트 정리)이 이번 실행의 프리뷰를 지우지 않도록 선-해소.
+    getPendingRegionApply()?.discard();
+
+    // 영역 AI 세션용 작업본: 건축 팔레트와 동일 하네스로 나무/소품 그룹을 승인 상태로 연다.
+    // (제로 부트스트랩 본선은 유지 — 여기만 region/build-palette 큐레이션 경로)
+    const working = structuredClone(base);
+    const workingMap = working.maps[opts.mapId];
+    const workingTileset = workingMap ? working.tilesets[workingMap.tilesetId] : undefined;
+    if (workingTileset) ensureRegionPlacementHarness(workingTileset);
+
+    const session = deps.createSession(working, opts.mapId);
+    const message = buildRegionTaskMessage(instruction, map.name, opts.mapId, opts.region, workingTileset);
+    const uiEvents: RegionTaskUiEvent[] = [];
+    const ghostPreviewUpdater = createThrottledAgentGhostPreviewUpdater({
+      getBaseProject: () => base,
+      getDraftProject: () => session.getProposedProject(),
+      isWriteTool: (toolName) => getTool(toolName)?.mode === "write",
     });
-    const blocking = layoutValidationBlocking(layoutIssues);
-    if (blocking.length > 0) {
+    const onEvent = (event: SessionEvent): void => {
+      pushUiEvent(uiEvents, event);
+      opts.onEvent?.(event);
+      ghostPreviewUpdater.handleToolCall(event);
+    };
+
+    const attachLog = (result: Omit<RegionTaskResult, "log">, turn?: TurnResult): RegionTaskResult => {
+      const log = buildRegionTaskLogExport({
+        mapId: opts.mapId,
+        mapName: map.name,
+        region: opts.region,
+        instruction,
+        composedMessage: message,
+        result,
+        turn,
+        uiEvents,
+        session,
+      });
+      publishRegionTaskLog(log);
+      // 진단용: 영역 AI 실행마다 로컬+DB 활동 로그 (실패해도 작업 결과는 유지).
+      const cfg = loadAiConfig();
+      void recordAiActivityFromRegionLog(log, {
+        model: cfg.model,
+        liteModel: cfg.liteModel,
+      }).catch(() => {
+        /* ignore persistence failures */
+      });
+      return { ...result, log };
+    };
+
+    let turn: TurnResult;
+    try {
+      turn = await session.sendUserMessage(message, onEvent);
+    } catch (cause) {
+      ghostPreviewUpdater.cancel();
       clearAgentGhostPreview();
-      const validationSummary = formatLayoutValidationSummary(layoutIssues);
+      const error = cause instanceof Error ? cause.message : String(cause);
+      return attachLog({ ...emptyBase, error });
+    }
+    if (turn.stoppedReason === "error" || turn.stoppedReason === "aborted") {
+      ghostPreviewUpdater.cancel();
+      clearAgentGhostPreview();
+    } else {
+      ghostPreviewUpdater.flush();
+    }
+
+    if (turn.stoppedReason === "aborted") {
       return attachLog({
-        ok: false,
+        ...emptyBase,
+        proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText,
+        error: turn.error ?? "사용자가 중단했습니다.",
+      }, turn);
+    }
+
+    if (turn.stoppedReason === "error") {
+      return attachLog({
+        ...emptyBase,
+        proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText,
+        error: turn.error ?? "AI 처리 오류",
+      }, turn);
+    }
+
+    const proposed = session.getProposedProject();
+    // 영역 경로에서는 soft 재료를 origin:user 로 자동 승격하지 않는다.
+    // (채팅 카드의 [맵 적용 + 재료 합의]만 영구 합의 스탬프)
+    // 실내/새 맵: clip은 현재 맵 영역 밖 타일만 되돌리고 다른 맵은 통과(clipToRegion 계약).
+    // 다만 셀 0 + 맵 추가만 있으면 예전엔 통째로 폐기했다 → mapsAdded를 적용 조건에 포함한다.
+    const { project: clipped, clippedCells } = clipMapCellsToRegion(base, proposed, opts.mapId, opts.region);
+    const changedCells = countInRegionChangedCells(base, clipped, opts.mapId, opts.region);
+    const changedEvents = countInRegionChangedEvents(base, clipped, opts.mapId, opts.region);
+    const mapsAdded = countAddedMaps(base, clipped);
+
+    // 타일만 보면 NPC-only·새 맵 only 제안이 버려진다 — 이벤트·맵 추가도 적용 조건에 포함.
+    if (!hasRegionTaskChanges({ changedCells, changedEvents, mapsAdded })) {
+      clearAgentGhostPreview();
+      return attachLog({
+        ok: true,
         applied: false,
+        changedCells: 0,
+        changedEvents: 0,
+        mapsAdded: 0,
+        clippedCells,
+        proposedCalls: turn.proposedCalls.length,
+        assistantText: turn.assistantText,
+      }, turn);
+    }
+
+    // 배치 후 검증: 물 위 나무, 나무 짝 깨짐, 지시 대비 나무 누락 등 → 적용 거부
+    // 새 맵만 추가된 경우(현재 맵 영역 무변경)에는 영역 레이아웃 검증을 건너뛴다.
+    const toolNames = turn.proposedCalls.map((call) => call.name);
+    if (changedCells > 0 || changedEvents > 0) {
+      const layoutIssues = validateLayoutPlacement(clipped, {
+        mapId: opts.mapId,
+        region: {
+          x: opts.region.x,
+          y: opts.region.y,
+          width: opts.region.width,
+          height: opts.region.height,
+        },
+        instruction,
+        toolNames,
+      });
+      const blocking = layoutValidationBlocking(layoutIssues);
+      if (blocking.length > 0) {
+        clearAgentGhostPreview();
+        const validationSummary = formatLayoutValidationSummary(layoutIssues);
+        return attachLog({
+          ok: false,
+          applied: false,
+          changedCells,
+          changedEvents,
+          mapsAdded,
+          clippedCells,
+          proposedCalls: turn.proposedCalls.length,
+          assistantText: turn.assistantText,
+          error: validationSummary,
+          validationSummary,
+        }, turn);
+      }
+    }
+
+    const gate = opts.gate ?? "approval";
+    const label = `영역 작업: ${instruction.slice(0, 40)}`;
+    if (gate === "immediate") {
+      clearAgentGhostPreview();
+      deps.applyProject(clipped, label, opts.mapId);
+      return attachLog({
+        ok: true,
+        applied: true,
         changedCells,
         changedEvents,
         mapsAdded,
         clippedCells,
         proposedCalls: turn.proposedCalls.length,
         assistantText: turn.assistantText,
-        error: validationSummary,
-        validationSummary,
       }, turn);
     }
-  }
 
-  const gate = opts.gate ?? "approval";
-  const label = `영역 작업: ${instruction.slice(0, 40)}`;
-  if (gate === "immediate") {
-    clearAgentGhostPreview();
-    deps.applyProject(clipped, label, opts.mapId);
-    return attachLog({
+    // 승인 게이트: 적용하지 않고 pending 등록 + 고스트 유지 + 캔버스 인라인 툴바 배선.
+    // regionInlineActions는 아래 setInlineProposalActions 호출 뒤에 값이 채워지지만,
+    // onSettle 클로저는 호출 시점(apply/discard 이후)에야 실행되므로 참조만 잡아두면 된다.
+    let regionInlineActions: InlineProposalActions | null = null;
+    const pending = setPendingRegionApply({
+      baseProject: base,
+      clippedProject: clipped,
+      mapId: opts.mapId,
+      region: opts.region,
+      changedCells,
+      changedEvents,
+      instruction,
+      onApply: () => deps.applyProject(clipped, label, opts.mapId),
+      // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
+      onDiscard: () => {},
+      onSettle: () => {
+        // CAS: 이 pending이 등록한 actions가 여전히 전역 슬롯이면(다른 등록자가 덮어쓰지 않았으면)만 지운다.
+        if (getInlineProposalActions() === regionInlineActions) setInlineProposalActions(null);
+        setAgentGhostPreviewHidden(false);
+        clearAgentGhostPreview();
+        // apply/discard 어느 경로(모달 버튼·캔버스 인라인 툴바·닫기·새 작업의 자동 discard)로
+        // settle 되든 배지/실행 상태를 여기서 한 번에 해제 — 개별 UI가 각자 해제하면 구멍이 생긴다.
+        dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
+      },
+    });
+    pendingRegistered = true;
+    regionInlineActions = {
+      accept: () => pending.apply(),
+      reject: () => pending.discard(),
+      holdOrigin: {
+        label: "원본 보기",
+        start: () => setAgentGhostPreviewHidden(true),
+        end: () => setAgentGhostPreviewHidden(false),
+      },
+    };
+    setInlineProposalActions(regionInlineActions);
+    const gated = attachLog({
       ok: true,
-      applied: true,
+      applied: false,
       changedCells,
       changedEvents,
       mapsAdded,
@@ -642,52 +706,10 @@ export async function runRegionTask(
       proposedCalls: turn.proposedCalls.length,
       assistantText: turn.assistantText,
     }, turn);
-  }
-
-  // 승인 게이트: 적용하지 않고 pending 등록 + 고스트 유지 + 캔버스 인라인 툴바 배선.
-  // regionInlineActions는 아래 setInlineProposalActions 호출 뒤에 값이 채워지지만,
-  // onSettle 클로저는 호출 시점(apply/discard 이후)에야 실행되므로 참조만 잡아두면 된다.
-  let regionInlineActions: InlineProposalActions | null = null;
-  const pending = setPendingRegionApply({
-    baseProject: base,
-    clippedProject: clipped,
-    mapId: opts.mapId,
-    region: opts.region,
-    changedCells,
-    changedEvents,
-    instruction,
-    onApply: () => deps.applyProject(clipped, label, opts.mapId),
-    // no-op: 아직 store에 아무 것도 반영하지 않았으므로(pending은 clipped를 들고만 있음) 되돌릴 것이 없다.
-    onDiscard: () => {},
-    onSettle: () => {
-      // CAS: 이 pending이 등록한 actions가 여전히 전역 슬롯이면(다른 등록자가 덮어쓰지 않았으면)만 지운다.
-      if (getInlineProposalActions() === regionInlineActions) setInlineProposalActions(null);
-      setAgentGhostPreviewHidden(false);
-      clearAgentGhostPreview();
-      // apply/discard 어느 경로(모달 버튼·캔버스 인라인 툴바·닫기·새 작업의 자동 discard)로
-      // settle 되든 배지/실행 상태를 여기서 한 번에 해제 — 개별 UI가 각자 해제하면 구멍이 생긴다.
+    return { ...gated, pending };
+  } finally {
+    if (!pendingRegistered) {
       dispatchRegionTaskStatus({ mapId: opts.mapId, region: opts.region, running: false });
-    },
-  });
-  regionInlineActions = {
-    accept: () => pending.apply(),
-    reject: () => pending.discard(),
-    holdOrigin: {
-      label: "원본 보기",
-      start: () => setAgentGhostPreviewHidden(true),
-      end: () => setAgentGhostPreviewHidden(false),
-    },
-  };
-  setInlineProposalActions(regionInlineActions);
-  const gated = attachLog({
-    ok: true,
-    applied: false,
-    changedCells,
-    changedEvents,
-    mapsAdded,
-    clippedCells,
-    proposedCalls: turn.proposedCalls.length,
-    assistantText: turn.assistantText,
-  }, turn);
-  return { ...gated, pending };
+    }
+  }
 }

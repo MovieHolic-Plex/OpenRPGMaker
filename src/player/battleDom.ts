@@ -34,6 +34,7 @@ import {
 } from "@/player/battleSequencer";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
+import { bindBattleStageScale } from "@/player/battleStageScale";
 
 export interface BattleDomOptions {
   readonly host: HTMLElement;
@@ -49,7 +50,33 @@ export interface BattleDomController {
 
 const BATTLE_TICK_MS = 200;
 
+// host 기준으로 활성 전투 컨트롤러를 추적한다. 같은 host에 다시 마운트할 때
+// 이전 컨트롤러의 destroy()를 먼저 불러 setInterval(200ms 틱)·window keydown 리스너·
+// ResizeObserver 가 중복으로 남는 것을 막는다(결함 1a).
+const activeBattleControllers = new WeakMap<HTMLElement, BattleDomController>();
+
+/** 이벤트 대상이 텍스트 입력 요소(input/textarea/select/contenteditable)인지,
+ *  또는 그 자손인지 판별한다. 전투 키 가로채기 방지용(결함 2). */
+function isTextInputTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  if (target.closest("input, textarea, select")) return true;
+  // isContentEditable 은 상속·"false" 값을 정확히 반영한다.
+  const editable = target.closest("[contenteditable]");
+  return editable instanceof HTMLElement && editable.isContentEditable;
+}
+
+/** host에 마운트된 전투 컨트롤러를 정리한다. 플레이어 teardown 등에서 호출해
+ *  전투가 끝나기 전에 플레이를 닫아도 틱·리스너가 새지 않게 한다(결함 1c). */
+export function destroyBattleSceneOnHost(host: HTMLElement): void {
+  activeBattleControllers.get(host)?.destroy();
+  activeBattleControllers.delete(host);
+}
+
 export function mountBattleScene(options: BattleDomOptions): BattleDomController {
+  // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
+  // DOM만 지우면 setInterval/window keydown/ResizeObserver가 중복으로 남는다(결함 1a).
+  activeBattleControllers.get(options.host)?.destroy();
+  activeBattleControllers.delete(options.host);
   options.host.querySelector("[data-testid='battle-scene']")?.remove();
   const root = document.createElement("section");
   root.className = "battle-scene";
@@ -60,6 +87,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.battleSkin = resolveSkinId(store.getCurrent().system.battleUiStyle);
   applyBattleSystemGraphic(root);
   options.host.append(root);
+  // 논리 해상도(320×240) 스케일링 — 스킨이 그 해상도 기준으로 저작돼 있다.
+  const stageScale = bindBattleStageScale(options.host, root);
 
   const initialSnapshot = options.runtime.snapshot();
   let resultSent = false;
@@ -71,7 +100,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let lastDamageFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   let commandPanelSignature = "";
+  let commandMenuKey = "";
+  let commandCursorIndex = 0;
   let lastEnemyActionKey = "";
+  // Shift 단독 토글 감지용 — Shift 가 눌린 동안 다른 키가 함께 눌리면 조합키로 본다.
+  let shiftHeld = false;
+  let shiftCombined = false;
 
   const field = battleField(initialSnapshot);
   field.dataset.testid = "battle-field";
@@ -83,9 +117,66 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const partyPanel = battlePartyStatus(initialSnapshot);
   const commandHost = document.createElement("div");
   commandHost.className = "battle-command-host";
+  commandHost.addEventListener("focusin", (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest<HTMLButtonElement>("button.battle-command")
+      : null;
+    if (!button) return;
+    const buttons = commandButtons();
+    const index = buttons.indexOf(button);
+    if (index >= 0) applyCommandCursor(buttons, index, false);
+  });
   const resultHost = document.createElement("div");
   resultHost.className = "battle-result-host";
-  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
+
+  let autoBattle = false;
+  let speedMultiplier = 1.0;
+
+  const controlsBar = document.createElement("div");
+  controlsBar.className = "battle-controls-bar";
+  controlsBar.dataset.testid = "battle-controls-bar";
+
+  const autoBtn = document.createElement("button");
+  autoBtn.className = "battle-control-btn";
+  autoBtn.dataset.testid = "battle-auto-btn";
+  autoBtn.textContent = "🤖 자동 (A)";
+  autoBtn.onclick = (e) => {
+    e.stopPropagation();
+    toggleAutoBattle();
+  };
+
+  const speedBtn = document.createElement("button");
+  speedBtn.className = "battle-control-btn";
+  speedBtn.dataset.testid = "battle-speed-btn";
+  speedBtn.textContent = "⚡ 1.0x";
+  speedBtn.onclick = (e) => {
+    e.stopPropagation();
+    toggleSpeed();
+  };
+
+  controlsBar.append(autoBtn, speedBtn);
+  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, controlsBar);
+
+  function toggleAutoBattle(): void {
+    autoBattle = !autoBattle;
+    autoBtn.classList.toggle("is-active", autoBattle);
+    if (autoBattle && speedMultiplier === 1.0) {
+      setSpeed(1.8);
+    }
+    syncView();
+  }
+
+  function toggleSpeed(): void {
+    const nextSpeed = speedMultiplier === 1.0 ? 1.8 : speedMultiplier === 1.8 ? 3.0 : 1.0;
+    setSpeed(nextSpeed);
+  }
+
+  function setSpeed(spd: number): void {
+    speedMultiplier = spd;
+    sequencer.speedMultiplier = spd;
+    speedBtn.textContent = `⚡ ${spd.toFixed(1)}x`;
+    speedBtn.classList.toggle("is-active", spd > 1.0);
+  }
 
   const panelOptions: {
     runtime: BattleRuntime;
@@ -183,6 +274,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (sequenceBusy) return;
+    // 자동전투/속도 토글은 연출 중에는 무시한다 — 다른 키와 같은 규칙을 따른다(결함 2).
+    if (event.key === "a" || event.key === "A") {
+      event.preventDefault();
+      toggleAutoBattle();
+      return;
+    }
+    if (event.key === "Shift") {
+      // Shift 는 조합키다. keydown 시점에는 단독인지 조합인지 알 수 없으므로
+      // 상태만 기록하고, keyup 에서 단독이었을 때만 속도를 토글한다(결함 2).
+      shiftHeld = true;
+      shiftCombined = false;
+      return;
+    }
+    if (shiftHeld) shiftCombined = true;
     if (event.key === "c" || event.key === "C" || event.key === "x" || event.key === "X" || event.key === "Escape") {
       event.preventDefault();
       handleCancel(snapshot);
@@ -192,6 +297,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (snapshot.phase === "targetSelect") {
         event.preventDefault();
         cycleTarget(snapshot, -1);
+      } else if (snapshot.phase === "actorCommand") {
+        event.preventDefault();
+        moveCommandCursor(-1);
       }
       return;
     }
@@ -199,6 +307,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (snapshot.phase === "targetSelect") {
         event.preventDefault();
         cycleTarget(snapshot, 1);
+      } else if (snapshot.phase === "actorCommand") {
+        event.preventDefault();
+        moveCommandCursor(1);
       }
       return;
     }
@@ -207,13 +318,41 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       handleConfirm(snapshot);
     }
   }
-  root.addEventListener("keydown", onKeydown);
+  const rootKeydownEvents = new WeakSet<KeyboardEvent>();
+  function onRootKeydown(event: KeyboardEvent): void {
+    // Confirm/cancel can synchronously replace the focused command button. Once detached,
+    // root.contains(event.target) is false at window bubble time, so remember the event
+    // object itself and keep the fallback from processing one physical key twice.
+    rootKeydownEvents.add(event);
+    onKeydown(event);
+  }
+  root.addEventListener("keydown", onRootKeydown);
   function onWindowKeydown(event: KeyboardEvent): void {
+    if (rootKeydownEvents.has(event)) return;
     if (document.activeElement === root) return;
     if (!root.isConnected) return;
+    // root 안에서 시작한 키 이벤트는 root 리스너가 이미 처리한다. window fallback에서
+    // 다시 처리하면 방향키가 두 칸 이동한다.
+    if (event.target instanceof Node && root.contains(event.target)) return;
+    // 텍스트 입력 중에는 전투 키를 절대 가로채지 않는다(결함 2).
+    // 에디터 입력창에 포커스가 있으면 event.target 이 input/textarea/select 이거나
+    // contenteditable 요소(또는 그 자손)다. 여기서 즉시 return 해 타이핑이 삼켜지지 않게 한다.
+    if (isTextInputTarget(event.target)) return;
     onKeydown(event);
   }
   window.addEventListener("keydown", onWindowKeydown);
+  // Shift 단독 토글: keydown 에서 조합 여부를 기록하고, keyup 에서 단독이었을 때만
+  // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
+  function onWindowKeyup(event: KeyboardEvent): void {
+    if (event.key !== "Shift") return;
+    // 텍스트 입력 중·연출 중에는 토글하지 않는다(결함 2).
+    if (!sequenceBusy && shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
+      toggleSpeed();
+    }
+    shiftHeld = false;
+    shiftCombined = false;
+  }
+  window.addEventListener("keyup", onWindowKeyup);
 
   function handleConfirm(snapshot: BattleSnapshot): void {
     if (snapshot.phase === "targetSelect") {
@@ -222,9 +361,36 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (selectedId) confirmTargetSelection(selectedId);
       return;
     }
-    if (snapshot.phase === "actorCommand" && submenu === null) {
-      beginTargetCommand({ kind: "attack" });
+    if (snapshot.phase !== "actorCommand") return;
+    const selected = commandButtons().find((button) => button.dataset.battleCommandCursor === "true")
+      ?? commandButtons()[0];
+    selected?.click();
+  }
+
+  function commandButtons(): HTMLButtonElement[] {
+    return [...commandHost.querySelectorAll<HTMLButtonElement>(
+      "button.battle-command:not(:disabled):not([data-preview-only='true'])",
+    )];
+  }
+
+  function moveCommandCursor(direction: 1 | -1): void {
+    const buttons = commandButtons();
+    if (buttons.length === 0) return;
+    commandCursorIndex = (commandCursorIndex + direction + buttons.length) % buttons.length;
+    applyCommandCursor(buttons, commandCursorIndex, true);
+  }
+
+  function applyCommandCursor(buttons: readonly HTMLButtonElement[], index: number, focus: boolean): void {
+    const boundedIndex = Math.max(0, Math.min(index, buttons.length - 1));
+    commandCursorIndex = boundedIndex;
+    for (const [buttonIndex, button] of buttons.entries()) {
+      const selected = buttonIndex === boundedIndex;
+      button.tabIndex = selected ? 0 : -1;
+      if (selected) button.setAttribute("data-battle-command-cursor", "true");
+      else button.removeAttribute("data-battle-command-cursor");
+      button.setAttribute("aria-current", selected ? "true" : "false");
     }
+    if (focus) buttons[boundedIndex]?.focus({ preventScroll: true });
   }
 
   function handleCancel(snapshot: BattleSnapshot): void {
@@ -272,13 +438,59 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     root.dataset.battleSequenceBusy = sequenceBusy ? "true" : "false";
     root.dataset.battleBgmActive = snapshot.result ? "false" : "true";
     scheduleAutoResult(snapshot);
+    checkAutoBattleStep(snapshot);
+  }
+
+  function checkAutoBattleStep(snapshot: BattleSnapshot): void {
+    if (!autoBattle || sequenceBusy || snapshot.result) return;
+    if (snapshot.phase === "actorCommand") {
+      const livingEnemies = snapshot.enemies.filter((e) => !e.defeated);
+      if (livingEnemies.length > 0) {
+        const target = livingEnemies[Math.floor(Math.random() * livingEnemies.length)];
+        runActorCommand({ kind: "attack", targetEnemyId: target.id });
+      }
+    } else if (snapshot.phase === "targetSelect") {
+      const selectedId = snapshot.targetSelection?.selectedEnemyId ?? snapshot.targetSelection?.targetEnemyIds[0];
+      if (selectedId) {
+        confirmTargetSelection(selectedId);
+      }
+    }
   }
 
   function rebuildCommandPanelIfNeeded(snapshot: BattleSnapshot): void {
     const signature = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${snapshot.targetSelection?.selectedEnemyId ?? ""}`;
     if (signature === commandPanelSignature && commandHost.childElementCount > 0) return;
     commandPanelSignature = signature;
+    const nextMenuKey = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${submenu?.kind === "skill" ? submenu.command.id : ""}`;
+    if (nextMenuKey !== commandMenuKey) {
+      commandMenuKey = nextMenuKey;
+      commandCursorIndex = 0;
+    }
     commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
+    syncCommandCursor(snapshot);
+  }
+
+  /** 방향키·시각 선택·DOM focus·확정 키가 같은 명령을 가리키게 한다. */
+  function syncCommandCursor(snapshot: BattleSnapshot): void {
+    for (const node of root.querySelectorAll("[data-battle-command-cursor]")) {
+      node.removeAttribute("data-battle-command-cursor");
+      node.removeAttribute("aria-current");
+    }
+    if (snapshot.phase === "targetSelect") {
+      const selectedId = snapshot.targetSelection?.selectedEnemyId ?? snapshot.targetSelection?.targetEnemyIds[0];
+      const enemy = selectedId
+        ? field.querySelector<HTMLButtonElement>(`.battle-enemy[data-testid="${CSS.escape(selectedId)}"]`)
+        : null;
+      if (enemy) {
+        enemy.dataset.battleCommandCursor = "true";
+        enemy.setAttribute("aria-current", "true");
+        enemy.focus({ preventScroll: true });
+      }
+      return;
+    }
+    if (snapshot.phase !== "actorCommand") return;
+    const buttons = commandButtons();
+    if (buttons.length > 0) applyCommandCursor(buttons, commandCursorIndex, true);
   }
 
   function syncResultHost(snapshot: BattleSnapshot): void {
@@ -414,15 +626,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     syncView();
   }, BATTLE_TICK_MS);
 
-  return {
+  let destroyed = false;
+  const controller: BattleDomController = {
     root,
     destroy(): void {
+      // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
+      if (destroyed) return;
+      destroyed = true;
       window.clearInterval(tickInterval);
       window.removeEventListener("keydown", onWindowKeydown);
+      window.removeEventListener("keyup", onWindowKeyup);
       if (resultTimer !== undefined) window.clearTimeout(resultTimer);
       sequencer.cancel();
       activeAnimation?.destroy();
+      stageScale.cleanup();
       root.remove();
+      activeBattleControllers.delete(options.host);
     },
   };
+  activeBattleControllers.set(options.host, controller);
+  return controller;
 }

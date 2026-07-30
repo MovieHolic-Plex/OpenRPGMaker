@@ -1,0 +1,418 @@
+scripts/build-ice-grand-expanse.mts(8,8): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+scripts/build-ice-grand-expanse.mts(9,29): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.
+src/editor/panels/databaseAnimationPreview.ts(245,5): error TS2322: Type 'number' is not assignable to type 'Timeout'.
+test/advancedDialogueMerge.test.ts(47,11): error TS2741: Property 'trigger' is missing in type '{ id: string; x: number; y: number; pages: { id: string; name: string; conditions: never[]; commands: { kind: "m2Command"; commandId: string; fields: { speaker: string; portraitId: string; emotion: string; body: string; autoAdvance: true; }; }[]; graphic: { ...; }; trigger: { ...; }; priority: "same"; movement: { .....' but required in type 'GameEvent'.
+test/aiActivityLog.test.ts(127,9): error TS2741: Property 'ok' is missing in type '{ name: string; args: { tileVocabId: string; }; summary: string; }' but required in type '{ readonly name: string; readonly args: Record<string, unknown>; readonly ok: boolean; readonly summary: string; readonly softConfirm?: unknown; readonly construction?: ConstructionAuditRecord | undefined; }'.
+test/aiActivityLog.test.ts(128,9): error TS2741: Property 'ok' is missing in type '{ name: string; args: { count: number; }; summary: string; }' but required in type '{ readonly name: string; readonly args: Record<string, unknown>; readonly ok: boolean; readonly summary: string; readonly softConfirm?: unknown; readonly construction?: ConstructionAuditRecord | undefined; }'.
+test/aiAgentic.test.ts(30,20): error TS6133: 'cfg' is declared but its value is never read.
+test/aiAgentic.test.ts(32,81): error TS2352: Conversion of type 'ChatRequest' to type '{ tools: unknown[]; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'tools' are incompatible.
+    Type 'readonly OpenAiToolSchema[] | undefined' is not comparable to type 'unknown[]'.
+      The type 'readonly OpenAiToolSchema[]' is 'readonly' and cannot be assigned to the mutable type 'unknown[]'.
+test/aiAssistantBridge.test.ts(54,12): error TS2571: Object is of type 'unknown'.
+test/aiAssistantSession.test.ts(48,7): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; baseUrl: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(65,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(82,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(95,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(120,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(151,66): error TS2741: Property 'authMode' is missing in type '{ maxToolCalls: number; baseUrl: string; model: string; liteModel: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(160,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(186,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(234,53): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(272,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(325,66): error TS2741: Property 'authMode' is missing in type '{ maxToolCalls: number; model: string; liteModel: string; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(348,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(372,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(396,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(417,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(434,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(451,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(476,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiAssistantSession.test.ts(498,66): error TS2741: Property 'authMode' is missing in type '{ model: string; liteModel: string; maxToolCalls: number; baseUrl: string; apiKey: string; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiChatPanelUxRepairs.test.ts(332,108): error TS2345: Argument of type 'FakeElement | null' is not assignable to parameter of type 'FakeNode'.
+  Type 'null' is not assignable to type 'FakeNode'.
+test/aiConnectionStatus.test.ts(74,42): error TS2345: Argument of type '{ apiKey: string; authMode: string; baseUrl: string; model: string; liteModel: string; maxToolCalls: number; maxTokens: number; reasoningEffort: "off"; }' is not assignable to parameter of type 'AiConfig'.
+  Types of property 'authMode' are incompatible.
+    Type 'string' is not assignable to type '"chatgpt" | "apiKey"'.
+test/aiConnectionStatus.test.ts(81,42): error TS2345: Argument of type '{ baseUrl: string; authMode: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; reasoningEffort: "off"; }' is not assignable to parameter of type 'AiConfig'.
+  Types of property 'authMode' are incompatible.
+    Type 'string' is not assignable to type '"chatgpt" | "apiKey"'.
+test/aiConnectionStatus.test.ts(88,42): error TS2345: Argument of type '{ authMode: string; baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; reasoningEffort: "off"; }' is not assignable to parameter of type 'AiConfig'.
+  Types of property 'authMode' are incompatible.
+    Type 'string' is not assignable to type '"chatgpt" | "apiKey"'.
+test/aiConnectionStatus.test.ts(96,42): error TS2345: Argument of type '{ baseUrl: string; apiKey: string; authMode: string; model: string; liteModel: string; maxToolCalls: number; maxTokens: number; reasoningEffort: "off"; }' is not assignable to parameter of type 'AiConfig'.
+  Types of property 'authMode' are incompatible.
+    Type 'string' is not assignable to type '"chatgpt" | "apiKey"'.
+test/aiPanelAutoExpand.test.ts(97,89): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
+test/aiSpecGate.test.ts(274,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(297,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(335,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(354,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(371,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(400,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(427,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(451,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(476,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(491,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(505,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(539,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(561,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(583,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(600,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(719,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/aiSpecGate.test.ts(736,66): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/assistantProposalAssembly.test.ts(69,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/assistantProposalAssembly.test.ts(87,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/assistantProposalAssembly.test.ts(113,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/assistantProposalAssembly.test.ts(134,53): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/assistantProposalAssembly.test.ts(158,57): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/assistantProposalAssembly.test.ts(182,57): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/battle-diagnose.mts(28,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-diagnose.mts(114,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-diagnose.mts(119,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-diagnose.mts(146,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-diagnose.mts(151,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-diagnose.mts(175,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-diagnose.mts(180,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-review-deep.mts(20,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-review-deep.mts(28,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-review-deep.mts(109,36): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/battle-review-deep.mts(316,36): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/battle-review-playwright.mts(54,40): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/battle-review-playwright.mts(76,57): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-review-playwright.mts(77,38): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/battle-verify-fixes.mts(20,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-fixes.mts(28,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-targeted.mts(29,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-targeted.mts(61,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-targeted.mts(69,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-targeted.mts(124,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-targeted.mts(132,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-variance.mts(28,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-variance.mts(109,50): error TS2307: Cannot find module '/src/battle/runtime.ts' or its corresponding type declarations.
+test/battle-verify-variance.mts(110,51): error TS2307: Cannot find module '/src/battle/battleRuntimeAdvance.ts' or its corresponding type declarations.
+test/battle-verify-variance.mts(111,36): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(29,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(75,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(83,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(90,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(98,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(105,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(113,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-verify-visual.mts(120,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-zoom-compare.mts(28,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-zoom-compare.mts(86,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-zoom-compare.mts(91,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-zoom-compare.mts(114,49): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battle-zoom-compare.mts(119,55): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/battleAdversarialFixes.test.ts(3,30): error TS6133: 'hitFeelFromActionResult' is declared but its value is never read.
+test/battleAdversarialFixes.test.ts(14,1): error TS6133: 'EquipmentRuntimeEffects' is declared but its value is never read.
+test/battleAdversarialFixes.test.ts(15,1): error TS6133: 'deserialize' is declared but its value is never read.
+test/battleAdversarialFixes.test.ts(16,24): error TS6196: 'SkillId' is declared but never used.
+test/battleAdversarialFixes.test.ts(67,7): error TS2741: Property 'name' is missing in type '{ id: string; span: "battle"; runOnce: true; conditions: { kind: "turn"; start: number; interval: number; }[]; commands: never[]; }' but required in type 'BattleEventPageRecord'.
+test/battleAdversarialFixes.test.ts(99,7): error TS2741: Property 'name' is missing in type '{ id: string; span: "battle"; runOnce: true; conditions: { kind: "turn"; start: number; interval: number; }[]; commands: never[]; }' but required in type 'BattleEventPageRecord'.
+test/battleElementAdversarialFixes.test.ts(35,5): error TS2741: Property 'graphic' is missing in type '{ id: string; name: string; types: string[]; baseStats: { attack: number; defense: number; mind: number; agility: number; maxHp: number; maxMp: number; }; captureRate: number; skillsByLevel: never[]; evolutions: never[]; }' but required in type 'MonsterSpeciesRecord'.
+test/battleElementAdversarialFixes.test.ts(36,5): error TS2741: Property 'graphic' is missing in type '{ id: string; name: string; types: string[]; baseStats: { attack: number; defense: number; mind: number; agility: number; maxHp: number; maxMp: number; }; captureRate: number; skillsByLevel: never[]; evolutions: never[]; }' but required in type 'MonsterSpeciesRecord'.
+test/battlePoseHitFeelBackdropEvents.test.ts(107,5): error TS2322: Type '{ [x: number]: TileAiMetadata | { terrainTag: number; label?: string | undefined; description?: string | undefined; tags?: string[]; role?: string; repeatability?: "auto" | "center" | "fixed" | "repeat"; ... 6 more ...; userLocked?: boolean; }; ... 34 more ...; [Symbol.unscopables]?: { ...; } | undefined; }' is not assignable to type 'TileAiMetadata[]'.
+  Types of property 'length' are incompatible.
+    Type 'number | undefined' is not assignable to type 'number'.
+      Type 'undefined' is not assignable to type 'number'.
+test/battleResultErasePattern.test.ts(33,18): error TS18048: 'event.pages' is possibly 'undefined'.
+test/battleRewardsToSession.test.ts(103,16): error TS2741: Property 'pose' is missing in type '{ id: string; recordId: string; name: string; hp: number; maxHp: number; mp: number; maxMp: number; gauge: number; defeated: false; defending: false; stateIds: string[]; skillIds: never[]; }' but required in type 'BattleBattlerSnapshot'.
+test/characterIdIndex.test.ts(8,5): error TS2783: 'id' is specified more than once, so this usage will be overwritten.
+test/characterIdIndex.test.ts(13,5): error TS2322: Type 'EventPage[] | { id: string; conditions: never[]; commands: never[]; }[]' is not assignable to type 'EventPage[] | undefined'.
+  Type '{ id: string; conditions: never[]; commands: never[]; }[]' is not assignable to type 'EventPage[]'.
+    Type '{ id: string; conditions: never[]; commands: never[]; }' is missing the following properties from type 'EventPage': name, graphic, trigger, priority, movement
+test/characterIdRelationshipGate.test.ts(3,1): error TS6192: All imports in import declaration are unused.
+test/characterListThumbnail.test.ts(33,9): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; graphic: { transparent: true; sprite: { type: "bundled"; id: string; }; }; }' is missing the following properties from type 'EventPage': trigger, priority, movement
+test/characterListThumbnail.test.ts(40,9): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; graphic: { sprite: { type: "bundled"; id: string; }; pattern: number; }; }' is missing the following properties from type 'EventPage': trigger, priority, movement
+test/characterListThumbnail.test.ts(65,9): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; graphic: { transparent: true; sprite: { type: "bundled"; id: string; }; }; }' is missing the following properties from type 'EventPage': trigger, priority, movement
+test/characterListThumbnail.test.ts(97,15): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; }' is missing the following properties from type 'EventPage': graphic, trigger, priority, movement
+test/characterListThumbnail.test.ts(113,17): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; }' is missing the following properties from type 'EventPage': graphic, trigger, priority, movement
+test/characterListThumbnail.test.ts(121,11): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; graphic: { sprite: { type: "bundled"; id: string; }; }; }' is missing the following properties from type 'EventPage': trigger, priority, movement
+test/chromaKey.test.ts(2,34): error TS7016: Could not find a declaration file for module '../scripts/assets/chromaKey.mjs'. 'C:/Users/USER/Downloads/rpg-zzu/scripts/assets/chromaKey.mjs' implicitly has an 'any' type.
+test/commandContracts/changeLifeSkillExp.contract.test.ts(36,27): error TS2339: Property 'lifeSkills' does not exist on type 'PlaySessionLike'.
+test/commandContracts/changeLifeSkillExp.contract.test.ts(58,27): error TS2339: Property 'lifeSkills' does not exist on type 'PlaySessionLike'.
+test/commandContracts/changeLifeSkillExp.contract.test.ts(68,27): error TS2339: Property 'lifeSkills' does not exist on type 'PlaySessionLike'.
+test/commandContracts/nativeManifest.ts(14,3): error TS1360: Type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }' does not satisfy the expected type 'NativeManifest'.
+  Type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }' is missing the following properties from type 'NativeManifest': openSaveMenu, spawnFieldEnemy, despawnFieldEnemy
+test/commandContracts/registry.test.ts(27,14): error TS7053: Element implicitly has an 'any' type because expression of type '"gameOver" | "label" | "inn" | "choices" | "m2Command" | "text" | "changeFace" | "fork" | "wait" | "inputWait" | "inputNumber" | "gotoLabel" | "loop" | "breakLoop" | "setSwitch" | ... 58 more ... | "setSelfSwitch"' can't be used to index type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }'.
+  Property 'openSaveMenu' does not exist on type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }'.
+test/commandContracts/registry.test.ts(28,14): error TS7053: Element implicitly has an 'any' type because expression of type '"gameOver" | "label" | "inn" | "choices" | "m2Command" | "text" | "changeFace" | "fork" | "wait" | "inputWait" | "inputNumber" | "gotoLabel" | "loop" | "breakLoop" | "setSwitch" | ... 58 more ... | "setSelfSwitch"' can't be used to index type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }'.
+  Property 'openSaveMenu' does not exist on type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }'.
+test/commandContracts/registry.test.ts(34,35): error TS7053: Element implicitly has an 'any' type because expression of type '"gameOver" | "label" | "inn" | "choices" | "m2Command" | "text" | "changeFace" | "fork" | "wait" | "inputWait" | "inputNumber" | "gotoLabel" | "loop" | "breakLoop" | "setSwitch" | ... 58 more ... | "setSelfSwitch"' can't be used to index type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }'.
+  Property 'openSaveMenu' does not exist on type '{ killPlayer: NativeManifestEntry<"killPlayer">; triggerEnding: NativeManifestEntry<"triggerEnding">; gameOver: NativeManifestEntry<"gameOver">; ... 67 more ...; displayTextSettings: NativeManifestEntry<...>; }'.
+test/commandKindCoverage.test.ts(62,109): error TS2353: Object literal may only specify known properties, and 'width' does not exist in type 'Rect'.
+test/commentCommandBody.test.ts(14,7): error TS6133: 'inserted' is declared but its value is never read.
+test/complexMonsterAuthoring.test.ts(72,18): error TS18048: 'event.pages' is possibly 'undefined'.
+test/complexMonsterAuthoring.test.ts(80,18): error TS18048: 'event.pages' is possibly 'undefined'.
+test/constructionToolsV3.test.ts(140,7): error TS2532: Object is possibly 'undefined'.
+test/constructionToolsV3.test.ts(141,13): error TS2532: Object is possibly 'undefined'.
+test/databaseCharacterView.test.ts(17,60): error TS2556: A spread argument must either have a tuple type or be passed to a rest parameter.
+test/databaseCharacterView.test.ts(60,13): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; }' is missing the following properties from type 'EventPage': graphic, trigger, priority, movement
+test/databaseCharacterView.test.ts(133,17): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; }' is missing the following properties from type 'EventPage': graphic, trigger, priority, movement
+test/databaseCharacterView.test.ts(181,13): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; graphic: { sprite: { type: "bundled"; id: string; }; }; }' is missing the following properties from type 'EventPage': trigger, priority, movement
+test/databaseCharacterView.test.ts(195,19): error TS2739: Type '{ id: string; name: string; conditions: never[]; commands: never[]; }' is missing the following properties from type 'EventPage': graphic, trigger, priority, movement
+test/dbToolsIntegrity.test.ts(91,44): error TS2339: Property 'title' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(92,44): error TS2339: Property 'menuLabels' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(93,44): error TS2339: Property 'menuLabels' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(94,44): error TS2339: Property 'sounds' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(95,44): error TS2339: Property 'titleGraphic' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(101,44): error TS2339: Property 'showInputHint' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(110,44): error TS2339: Property 'sounds' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(114,44): error TS2339: Property 'titleGraphic' does not exist on type 'never'.
+test/dbToolsIntegrity.test.ts(120,44): error TS2339: Property 'backgroundResourceId' does not exist on type 'never'.
+test/dungeonRoomPipeline.test.ts(153,33): error TS2345: Argument of type 'number' is not assignable to parameter of type '346 | 347 | 316 | 317 | 286 | 287'.
+test/dungeonSkillRouting.test.ts(11,21): error TS2352: Conversion of type 'SkillDef | undefined' to type '{ buildPrompt: (args: Record<string, unknown>, ctx: Record<string, unknown>) => string; }' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'SkillDef' is not comparable to type '{ buildPrompt: (args: Record<string, unknown>, ctx: Record<string, unknown>) => string; }'.
+    Types of property 'buildPrompt' are incompatible.
+      Type '((args: Record<string, SkillArgValue>, ctx: SkillRunContext) => string) | undefined' is not comparable to type '(args: Record<string, unknown>, ctx: Record<string, unknown>) => string'.
+        Type '(args: Record<string, SkillArgValue>, ctx: SkillRunContext) => string' is not comparable to type '(args: Record<string, unknown>, ctx: Record<string, unknown>) => string'.
+          Types of parameters 'ctx' and 'ctx' are incompatible.
+            Type 'Record<string, unknown>' is missing the following properties from type 'SkillRunContext': mapId, mapName, selection
+test/e2e/_battle-mechanics-probe.spec.ts(17,32): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(30,35): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(31,32): error TS2307: Cannot find module '/src/battle/runtime.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(32,33): error TS2307: Cannot find module '/src/battle/battleDamage.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(33,38): error TS2307: Cannot find module '/src/battle/battleBattlers.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(34,33): error TS2307: Cannot find module '/src/util/rng.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(137,31): error TS2307: Cannot find module '/src/battle/typeChart.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(161,32): error TS2307: Cannot find module '/src/battle/simulate.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(186,39): error TS2307: Cannot find module '/src/battle/skins/registry.ts' or its corresponding type declarations.
+test/e2e/_battle-mechanics-probe.spec.ts(197,31): error TS2307: Cannot find module '/src/project/actorModel.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(32,32): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(45,35): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(46,37): error TS2307: Cannot find module '/src/project/actorModel.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(47,35): error TS2307: Cannot find module '/src/battle/battleBattlers.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(48,30): error TS2307: Cannot find module '/src/battle/battleDamage.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(49,37): error TS2307: Cannot find module '/src/project/databaseEnemyTroopRecordModel.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(174,30): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/e2e/_battle-turnbased-review.spec.ts(183,30): error TS2307: Cannot find module '/src/editor/panels/testPlayModal.ts' or its corresponding type declarations.
+test/e2e/_verify_right_drag_chips.spec.ts(19,16): error TS2339: Property 'waitForElementState' does not exist on type 'Locator'.
+test/e2e/action-combat.spec.ts(22,58): error TS2869: Right operand of ?? is unreachable because the left operand is never nullish.
+test/e2e/action-combat.spec.ts(59,16): error TS6133: 's' is declared but its value is never read.
+test/e2e/action-combat.spec.ts(147,76): error TS18046: 'sum' is of type 'unknown'.
+test/e2e/action-survival.spec.ts(29,58): error TS2869: Right operand of ?? is unreachable because the left operand is never nullish.
+test/e2e/action-survival.spec.ts(35,73): error TS2322: Type '"normal"' is not assignable to type 'ItemType | undefined'.
+test/e2e/action-survival.spec.ts(107,18): error TS6133: 's' is declared but its value is never read.
+test/e2e/author-dew-village-editor-demo.spec.ts(40,36): error TS2307: Cannot find module '/src/editor/actions.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(41,41): error TS2307: Cannot find module '/src/editor/eventActions.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(42,39): error TS2307: Cannot find module '/src/editor/eventPages.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(43,44): error TS2307: Cannot find module '/src/editor/editorState.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(44,38): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(45,54): error TS2307: Cannot find module '/src/project/defaults/constants.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(46,50): error TS2307: Cannot find module '/src/assets/easyrpgRtp.ts' or its corresponding type declarations.
+test/e2e/author-dew-village-editor-demo.spec.ts(65,21): error TS7006: Parameter 'draft' implicitly has an 'any' type.
+test/e2e/author-dew-village-editor-demo.spec.ts(225,67): error TS7006: Parameter 'e' implicitly has an 'any' type.
+test/e2e/author-dew-village-editor-demo.spec.ts(239,23): error TS7006: Parameter 'draft' implicitly has an 'any' type.
+test/e2e/battle-animation-runtime-transparency.spec.ts(21,36): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/battle-animation-runtime-transparency.spec.ts(38,19): error TS7006: Parameter 'draft' implicitly has an 'any' type.
+test/e2e/battle-animation-runtime-transparency.spec.ts(54,34): error TS2307: Cannot find module '/src/player/battleAnimationDom.ts' or its corresponding type declarations.
+test/e2e/battle-animation-runtime-transparency.spec.ts(70,21): error TS2347: Untyped function calls may not accept type arguments.
+test/e2e/battle-animation-transparency.spec.ts(22,36): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/battle-animation-transparency.spec.ts(39,19): error TS7006: Parameter 'draft' implicitly has an 'any' type.
+test/e2e/battle-animation-transparency.spec.ts(72,8): error TS6133: 'k' is declared but its value is never read.
+test/e2e/battle-animation-transparency.spec.ts(83,49): error TS6133: 'k' is declared but its value is never read.
+test/e2e/chat-dock-switch.spec.ts(5,7): error TS6133: 'MAP_FIRST_KEY' is declared but its value is never read.
+test/e2e/event-editor-ux-progressive-evidence.spec.ts(5,10): error TS6133: 'openEventEditor' is declared but its value is never read.
+test/e2e/event-editor-ux-progressive-evidence.spec.ts(6,1): error TS6192: All imports in import declaration are unused.
+test/e2e/harness-flowerbed-ai-db-drive.spec.ts(192,40): error TS2307: Cannot find module '/src/ai/contextBuilder.ts' or its corresponding type declarations.
+test/e2e/harness-flowerbed-ai-db-drive.spec.ts(193,38): error TS2307: Cannot find module '/src/project/store.ts' or its corresponding type declarations.
+test/e2e/ice-grand-expanse-play.spec.ts(11,8): error TS5097: An import path can only end with a '.mts' extension when 'allowImportingTsExtensions' is enabled.
+test/e2e/ice-grand-expanse-play.spec.ts(156,12): error TS2339: Property 'to' does not exist on type '{ kind: "move"; dir: Dir; to?: undefined; } | { kind: "move"; dir?: undefined; to: { x: number; y: number; }; } | { kind: "advanceDays"; days: number; } | SceneExpectStep'.
+  Property 'to' does not exist on type '{ kind: "advanceDays"; days: number; }'.
+test/e2e/ice-grand-expanse-play.spec.ts(158,37): error TS2339: Property 'dir' does not exist on type '{ kind: "move"; dir: Dir; to?: undefined; } | { kind: "move"; dir?: undefined; to: { x: number; y: number; }; } | { kind: "advanceDays"; days: number; } | SceneExpectStep'.
+  Property 'dir' does not exist on type '{ kind: "advanceDays"; days: number; }'.
+test/e2e/ice-grand-expanse-play.spec.ts(161,44): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ readonly down: "ArrowDown"; readonly left: "ArrowLeft"; readonly right: "ArrowRight"; readonly up: "ArrowUp"; }'.
+test/e2e/ice-grand-expanse-play.spec.ts(161,60): error TS2339: Property 'dir' does not exist on type '{ kind: "move"; dir: Dir; to?: undefined; } | { kind: "move"; dir?: undefined; to: { x: number; y: number; }; } | { kind: "advanceDays"; days: number; } | SceneExpectStep'.
+  Property 'dir' does not exist on type '{ kind: "advanceDays"; days: number; }'.
+test/e2e/ice-grand-expanse-play.spec.ts(170,68): error TS2339: Property 'dir' does not exist on type '{ kind: "move"; dir: Dir; to?: undefined; } | { kind: "move"; dir?: undefined; to: { x: number; y: number; }; } | { kind: "advanceDays"; days: number; } | SceneExpectStep'.
+  Property 'dir' does not exist on type '{ kind: "advanceDays"; days: number; }'.
+test/e2e/ice-grand-expanse-play.spec.ts(212,10): error TS2352: Conversion of type 'Record<string, unknown>' to type 'GameMap' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'Record<string, unknown>' is missing the following properties from type 'GameMap': id, name, width, height, and 5 more.
+test/e2e/interior-dark-wall-autotile.spec.ts(72,41): error TS2339: Property 'EDGE_NORTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(73,41): error TS2339: Property 'EDGE_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(74,41): error TS2339: Property 'EDGE_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(75,41): error TS2339: Property 'EDGE_SOUTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(76,41): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(77,41): error TS2339: Property 'CORNER_NORTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(78,41): error TS2339: Property 'CORNER_SOUTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(79,41): error TS2339: Property 'CORNER_SOUTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(101,51): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(102,51): error TS2339: Property 'CORNER_NORTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(103,51): error TS2339: Property 'CORNER_SOUTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(104,51): error TS2339: Property 'CORNER_SOUTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(119,61): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(142,51): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(159,24): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(160,24): error TS2339: Property 'CORNER_NORTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(161,24): error TS2339: Property 'CORNER_SOUTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(162,24): error TS2339: Property 'CORNER_SOUTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(165,24): error TS2339: Property 'EDGE_NORTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(166,24): error TS2339: Property 'EDGE_SOUTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(167,24): error TS2339: Property 'EDGE_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(168,24): error TS2339: Property 'EDGE_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(181,45): error TS2339: Property 'name' does not exist on type 'GameEvent'.
+test/e2e/interior-dark-wall-autotile.spec.ts(227,22): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(228,22): error TS2339: Property 'CORNER_NORTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(229,22): error TS2339: Property 'CORNER_SOUTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(230,22): error TS2339: Property 'CORNER_SOUTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(235,38): error TS2339: Property 'name' does not exist on type 'GameEvent'.
+test/e2e/interior-dark-wall-autotile.spec.ts(280,41): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(281,41): error TS2339: Property 'CORNER_NORTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(282,41): error TS2339: Property 'CORNER_SOUTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(283,41): error TS2339: Property 'CORNER_SOUTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(284,41): error TS2339: Property 'EDGE_NORTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(299,11): error TS2741: Property 'tileSize' is missing in type '{ id: string; name: string; width: number; height: number; tilesetId: string; lowerTiles: number[]; upperTiles: number[]; events: never[]; }' but required in type 'GameMap'.
+test/e2e/interior-dark-wall-autotile.spec.ts(339,41): error TS2339: Property 'CORNER_NORTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(340,41): error TS2339: Property 'CORNER_NORTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(341,41): error TS2339: Property 'CORNER_SOUTH_WEST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(342,41): error TS2339: Property 'CORNER_SOUTH_EAST' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(343,41): error TS2339: Property 'EDGE_NORTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/interior-dark-wall-autotile.spec.ts(344,41): error TS2339: Property 'EDGE_NORTH' does not exist on type '{ readonly BODY: 366; }'.
+test/e2e/npc-picker-uploaded-charset.spec.ts(102,13): error TS2353: Object literal may only specify known properties, and 'name' does not exist in type 'GameEvent'.
+test/e2e/verifyBattleEnhancements.spec.ts(1,16): error TS6133: 'expect' is declared but its value is never read.
+test/editorNpcSchedule.test.ts(3,1): error TS6133: 'NpcScheduleEntry' is declared but its value is never read.
+test/editorWelcomeBootGate.test.ts(2,44): error TS6133: 'vi' is declared but its value is never read.
+test/evals.test.ts(11,7): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/eventCommandAuthoring/referenceFixture.ts(207,37): error TS2345: Argument of type '{ kind: "changeLifeSkillExp"; skillId: string; op: "=" | "+=" | "-="; amount: VariableOperand; } | { kind: "openSaveMenu"; } | { kind: "spawnFieldEnemy"; spawn: FieldSpawnDef; } | { ...; }' is not assignable to parameter of type 'never'.
+  Type '{ kind: "changeLifeSkillExp"; skillId: string; op: "=" | "+=" | "-="; amount: VariableOperand; }' is not assignable to type 'never'.
+test/eventCommandAuthoringMatrix.test.ts(21,33): error TS2307: Cannot find module './eventCommandAuthoring/mutationStateActor' or its corresponding type declarations.
+test/eventDraftVault.test.ts(77,5): error TS2741: Property 'mapId' is missing in type '{ children: { mapId: string; children: never[]; }[]; }' but required in type 'MapTreeNode'.
+test/eventEditorCommandLabels.test.ts(80,7): error TS2322: Type 'true' is not assignable to type 'never'.
+test/eventPages.test.ts(112,11): error TS6133: 'page3' is declared but its value is never read.
+test/fieldMonsterTemplate.test.ts(49,36): error TS2345: Argument of type '{ id: string; name: string; enemyIds: never[]; members: never[]; battleEventPages: never[]; }' is not assignable to parameter of type 'TroopRecord'.
+  Property 'autoAlign' is missing in type '{ id: string; name: string; enemyIds: never[]; members: never[]; battleEventPages: never[]; }' but required in type 'TroopRecord'.
+test/harnessPatternDetect.test.ts(105,16): error TS2339: Property 'rows' does not exist on type 'StructureKitDef'.
+  Property 'rows' does not exist on type 'HouseStructureKitDef'.
+test/harnessPatternDetect.test.ts(105,26): error TS7006: Parameter 'row' implicitly has an 'any' type.
+test/harnessPatternDetect.test.ts(107,16): error TS2339: Property 'rows' does not exist on type 'StructureKitDef'.
+  Property 'rows' does not exist on type 'HouseStructureKitDef'.
+test/harnessPatternDetect.test.ts(107,28): error TS7006: Parameter 'row' implicitly has an 'any' type.
+test/innCommandBody.test.ts(72,18): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLInputElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, autocomplete, and 330 more.
+test/innCommandBody.test.ts(76,22): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLInputElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, autocomplete, and 330 more.
+test/innCommandBody.test.ts(80,23): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLInputElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, autocomplete, and 330 more.
+test/innCommandBody.test.ts(84,21): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLInputElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, autocomplete, and 330 more.
+test/innCommandBody.test.ts(88,18): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLInputElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, autocomplete, and 330 more.
+test/innCommandBody.test.ts(92,20): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLInputElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLInputElement': accept, align, alt, autocomplete, and 330 more.
+test/interiorRoomPipeline.test.ts(37,22): error TS2339: Property 'name' does not exist on type 'GameEvent'.
+test/lakeVillageCenterRebuild.test.ts(6,37): error TS6133: 'BUILD_PALETTE_PRESETS' is declared but its value is never read.
+test/lakeVillageRebuildFinal.test.ts(6,37): error TS6133: 'BUILD_PALETTE_PRESETS' is declared but its value is never read.
+test/llmRetry.test.ts(23,7): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/m2EventCommandCatalog.test.ts(229,11): error TS2739: Type '{ stack: Frame[]; session: PlaySessionLike; maxStackDepth: number; maxLoopIterations: number; }' is missing the following properties from type 'InterpreterState': instructionsExecuted, maxInstructions
+test/m2EventCommandCatalog.test.ts(249,11): error TS2739: Type '{ stack: Frame[]; session: PlaySessionLike; maxStackDepth: number; maxLoopIterations: number; }' is missing the following properties from type 'InterpreterState': instructionsExecuted, maxInstructions
+test/mapEditLockScratchSession.test.ts(73,44): error TS6133: 'input' is declared but its value is never read.
+test/materialPolicy.test.ts(31,11): error TS6133: 'tileset' is declared but its value is never read.
+test/narrativeHorrorTemplateTools.test.ts(26,54): error TS2367: This comparison appears to be unintentional because the types '"gameOver" | "label" | "inn" | "choices" | "m2Command" | "changeFace" | "fork" | "wait" | "inputWait" | "inputNumber" | "gotoLabel" | "loop" | "breakLoop" | "setSwitch" | "setVariable" | ... 57 more ... | "setSelfSwitch"' and '"camera"' have no overlap.
+test/page3CommandBodies.test.ts(105,15): error TS2339: Property 'resources' does not exist on type 'Project'.
+test/page3CommandBodies.test.ts(105,34): error TS7006: Parameter 'r' implicitly has an 'any' type.
+test/pageConditionsGuarantee.test.ts(71,67): error TS2366: Function lacks ending return statement and return type does not include 'undefined'.
+test/parity/dbBattleParity.test.ts(55,52): error TS2739: Type '{ attack: number; }' is missing the following properties from type 'EquipmentStatBonuses': defense, mind, agility
+test/parity/t6ActorParity.test.ts(4,10): error TS6133: 'resolveActorName' is declared but its value is never read.
+test/parity/t6ActorParity.test.ts(4,50): error TS6133: 'resolveActorFaceResourceId' is declared but its value is never read.
+test/partialApplyCompose.test.ts(9,31): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
+test/pkmnBalanceB6.test.ts(153,58): error TS2554: Expected 2 arguments, but got 3.
+test/playAudioCommandBody.test.ts(29,9): error TS2741: Property 'moveCommandTo' is missing in type '{ addCommand: () => undefined; insertCommand: () => undefined; replaceCommand: (_path: readonly number[], command: Command) => void; deleteCommand: () => undefined; moveCommand: () => undefined; }' but required in type 'CommandListActions'.
+test/playerManifestContract.test.ts(17,8): error TS7016: Could not find a declaration file for module '../scripts/lib/playerDeploymentManifest.mjs'. 'C:/Users/USER/Downloads/rpg-zzu/scripts/lib/playerDeploymentManifest.mjs' implicitly has an 'any' type.
+test/playerManifestContract.test.ts(510,3): error TS2322: Type 'object' is not assignable to type 'Record<string, unknown>'.
+  Index signature for type 'string' is missing in type '{}'.
+test/playInputBlocker.test.ts(17,40): error TS2345: Argument of type '{ type: string; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; }' but required in type 'Pick<Event, "type" | "target">'.
+test/playInputBlocker.test.ts(18,40): error TS2345: Argument of type '{ type: string; detail: number; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; detail: number; }' but required in type 'Pick<Event, "type" | "target">'.
+test/playInputBlocker.test.ts(19,40): error TS2345: Argument of type '{ type: string; detail: number; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; detail: number; }' but required in type 'Pick<Event, "type" | "target">'.
+test/playInputBlocker.test.ts(20,40): error TS2345: Argument of type '{ type: string; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; }' but required in type 'Pick<Event, "type" | "target">'.
+test/playInputBlocker.test.ts(78,42): error TS2345: Argument of type '{ type: string; detail: number; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; detail: number; }' but required in type 'Pick<Event, "type" | "target">'.
+test/playInputBlocker.test.ts(79,42): error TS2345: Argument of type '{ type: string; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; }' but required in type 'Pick<Event, "type" | "target">'.
+test/playInputBlocker.test.ts(81,42): error TS2345: Argument of type '{ type: string; detail: number; }' is not assignable to parameter of type 'PlayPointerEvent'.
+  Property 'target' is missing in type '{ type: string; detail: number; }' but required in type 'Pick<Event, "type" | "target">'.
+test/previewSimulation.test.ts(2,79): error TS6133: 'PreviewSimState' is declared but its value is never read.
+test/regionAiHouseTreeNpc.probe.test.ts(7,1): error TS6133: 'BUILD_PALETTE_PRESETS' is declared but its value is never read.
+test/regionAiHouseTreeNpc.probe.test.ts(12,1): error TS6133: 'computeAssistantToolMode' is declared but its value is never read.
+test/regionAiHouseTreeNpc.probe.test.ts(63,57): error TS2339: Property 'error' does not exist on type 'ToolResult'.
+test/regionAiHouseTreeNpc.probe.test.ts(73,57): error TS2339: Property 'error' does not exist on type 'ToolResult'.
+test/regionAiHouseTreeNpc.probe.test.ts(82,49): error TS2339: Property 'error' does not exist on type 'ToolResult'.
+test/regionAiHouseTreeNpc.probe.test.ts(177,49): error TS6133: 'i' is declared but its value is never read.
+test/regionAiHouseTreeNpc.probe.test.ts(196,21): error TS2339: Property 'name' does not exist on type 'GameEvent'.
+test/regionChangeGroups.test.ts(13,31): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
+test/regionContextSuggestions.test.ts(12,31): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
+test/regionSelectionPastePreview.test.ts(94,11): error TS6133: 'TILE' is declared but its value is never read.
+test/regionSelectionPastePreview.test.ts(158,11): error TS6133: 'TILE' is declared but its value is never read.
+test/regionTaskModal.test.ts(143,59): error TS2322: Type 'Mock<() => Promise<{ ok: boolean; applied: boolean; changedCells: number; changedEvents: number; clippedCells: number; proposedCalls: number; assistantText: string; log: { kind: "region-task-log"; exportedAt: string; ... 9 more ...; harness: null; }; }>>' is not assignable to type 'RegionTaskRunner | undefined'.
+  Type 'Mock<() => Promise<{ ok: boolean; applied: boolean; changedCells: number; changedEvents: number; clippedCells: number; proposedCalls: number; assistantText: string; log: { kind: "region-task-log"; exportedAt: string; ... 9 more ...; harness: null; }; }>>' is not assignable to type 'RegionTaskRunner'.
+    Type 'Promise<{ ok: boolean; applied: boolean; changedCells: number; changedEvents: number; clippedCells: number; proposedCalls: number; assistantText: string; log: { kind: "region-task-log"; exportedAt: string; ... 9 more ...; harness: null; }; }>' is not assignable to type 'Promise<RegionTaskResult>'.
+      Type '{ ok: boolean; applied: boolean; changedCells: number; changedEvents: number; clippedCells: number; proposedCalls: number; assistantText: string; log: { kind: "region-task-log"; exportedAt: string; ... 9 more ...; harness: null; }; }' is not assignable to type 'RegionTaskResult'.
+        The types of 'log.toolCalls' are incompatible between these types.
+          Type '{ name: string; args: { count: number; }; summary: string; }[]' is not assignable to type 'readonly { readonly name: string; readonly args: Record<string, unknown>; readonly ok: boolean; readonly summary: string; readonly softConfirm?: unknown; readonly construction?: ConstructionAuditRecord | undefined; }[]'.
+            Property 'ok' is missing in type '{ name: string; args: { count: number; }; summary: string; }' but required in type '{ readonly name: string; readonly args: Record<string, unknown>; readonly ok: boolean; readonly summary: string; readonly softConfirm?: unknown; readonly construction?: ConstructionAuditRecord | undefined; }'.
+test/regionTaskModal.test.ts(151,21): error TS2352: Conversion of type 'undefined' to type 'string' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+test/regionTaskModal.test.ts(151,47): error TS2493: Tuple type '[]' of length '0' has no element at index '0'.
+test/regionTaskModal.test.ts(257,23): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLElement': accessKey, accessKeyLabel, autocapitalize, autocorrect, and 277 more.
+test/regionTaskModal.test.ts(259,19): error TS2352: Conversion of type 'FakeElement | null' to type 'HTMLTextAreaElement' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'FakeElement' is missing the following properties from type 'HTMLTextAreaElement': autocomplete, cols, defaultValue, dirName, and 304 more.
+test/regionTaskModalEnhancements.test.ts(12,24): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
+test/regionTaskModalStamp.test.ts(12,24): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
+test/regionTaskModalStamp.test.ts(83,7): error TS2322: Type 'Mock<() => { ok: boolean; kit: { id: string; }; }>' is not assignable to type '((args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null) | undefined'.
+  Type 'Mock<() => { ok: boolean; kit: { id: string; }; }>' is not assignable to type '(args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null'.
+    Call signature return types '{ ok: boolean; kit: { id: string; }; }' and 'SaveRegionAsStampResult | null' are incompatible.
+      The types of 'ok' are incompatible between these types.
+        Type 'boolean' is not assignable to type 'true'.
+test/regionTaskModalStamp.test.ts(126,7): error TS2322: Type 'Mock<() => { ok: boolean; kit: { id: string; }; }>' is not assignable to type '((args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null) | undefined'.
+  Type 'Mock<() => { ok: boolean; kit: { id: string; }; }>' is not assignable to type '(args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null'.
+    Call signature return types '{ ok: boolean; kit: { id: string; }; }' and 'SaveRegionAsStampResult | null' are incompatible.
+      The types of 'ok' are incompatible between these types.
+        Type 'boolean' is not assignable to type 'true'.
+test/regionTaskModalStamp.test.ts(160,66): error TS2550: Property 'withResolvers' does not exist on type 'PromiseConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'es2024' or later.
+test/regionTaskRun.test.ts(274,7): error TS2352: Conversion of type '{ id: string; name: string; x: number; y: number; pages: { id: string; conditions: never[]; trigger: string; commands: never[]; }[]; }' to type 'GameEvent' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ id: string; name: string; x: number; y: number; pages: { id: string; conditions: never[]; trigger: string; commands: never[]; }[]; }' is missing the following properties from type 'GameEvent': trigger, commands
+test/regionTileStats.test.ts(8,31): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
+test/rm2k3DeckElevation.test.ts(88,20): error TS18048: 'c.pages' is possibly 'undefined'.
+test/rm2k3DeckElevation.test.ts(93,20): error TS18048: 'n.pages' is possibly 'undefined'.
+test/ruleApprovalGate.test.ts(70,5): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/runtimeJuice.test.ts(44,3): error TS2322: Type 'typeof FakeAudio' is not assignable to type 'new (src?: string | undefined) => HTMLAudioElement'.
+  Type 'FakeAudio' is missing the following properties from type 'HTMLAudioElement': addEventListener, removeEventListener, autoplay, buffered, and 361 more.
+test/scarloxyPokemonDemo.test.ts(79,43): error TS2540: Cannot assign to 'level' because it is a read-only property.
+test/sessionLogExport.test.ts(10,7): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/shopMerchantGold.test.ts(40,29): error TS2353: Object literal may only specify known properties, and 'maxHp' does not exist in type 'EquipmentStatBonuses'.
+test/shopMerchantGold.test.ts(41,25): error TS2353: Object literal may only specify known properties, and 'equipable' does not exist in type 'ItemEquipmentProfile'.
+test/shopMerchantGold.test.ts(73,46): error TS2339: Property 'startGold' does not exist on type 'SystemRecords'.
+test/softConfirmUxFixes.test.ts(10,7): error TS6133: 'TREE' is declared but its value is never read.
+test/softConfirmUxFixes.test.ts(83,57): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/stardewAuthoringTools.test.ts(16,10): error TS6133: 'changeItem' is declared but its value is never read.
+test/stardewDemo.test.ts(159,55): error TS2339: Property 'placeables' does not exist on type 'ProjectSession'.
+test/stardewDemo.test.ts(160,48): error TS18046: 'p' is of type 'unknown'.
+test/stardewDemo.test.ts(209,30): error TS2339: Property 'conditions' does not exist on type 'GameEvent | EventPage'.
+  Property 'conditions' does not exist on type 'GameEvent'.
+test/stardewDemo.test.ts(209,54): error TS7006: Parameter 'c' implicitly has an 'any' type.
+test/stardewSupabaseRoundtrip.live.test.ts(3,63): error TS2724: '"@/project/supabaseProjectSync"' has no exported member named 'SupabaseProjectConfig'. Did you mean 'SupabaseProjectListConfig'?
+test/stardewSupabaseRoundtrip.live.test.ts(85,52): error TS2339: Property 'placeables' does not exist on type 'ProjectSession'.
+test/stardewSupabaseRoundtrip.live.test.ts(85,88): error TS18046: 'p' is of type 'unknown'.
+test/supabaseProjectSync.test.ts(13,3): error TS6133: 'seedLastRemoteCommitTip' is declared but its value is never read.
+test/termsRuntime.test.ts(163,41): error TS2345: Argument of type '{ scene: PlaySceneContext; step: { kind: "shop"; itemIds: string[]; items?: readonly { readonly itemId: string; readonly price?: number; }[]; allowSell?: boolean; ... 4 more ...; branchOnTransaction?: boolean; }; ... 6 more ...; onItem: () => undefined; }' is not assignable to parameter of type 'ShopItemsRenderRequest'.
+  Property 'merchantGold' is missing in type '{ scene: PlaySceneContext; step: { kind: "shop"; itemIds: string[]; items?: readonly { readonly itemId: string; readonly price?: number; }[]; allowSell?: boolean; ... 4 more ...; branchOnTransaction?: boolean; }; ... 6 more ...; onItem: () => undefined; }' but required in type 'ShopItemsRenderRequest'.
+test/threeAxisRedTeam.test.ts(181,86): error TS2339: Property 'error' does not exist on type 'ToolResult'.
+test/tileFlowApprovalExpansion.test.ts(81,57): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/tilesetSectionTabs.test.ts(181,30): error TS2352: Conversion of type '{ key: string; defaultPrevented: false; }' to type 'Event' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ key: string; defaultPrevented: false; }' is missing the following properties from type 'Event': bubbles, cancelBubble, cancelable, composed, and 17 more.
+test/tilesetSectionTabs.test.ts(186,30): error TS2352: Conversion of type '{ key: string; defaultPrevented: false; }' to type 'Event' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ key: string; defaultPrevented: false; }' is missing the following properties from type 'Event': bubbles, cancelBubble, cancelable, composed, and 17 more.
+test/tileVocabularyV3.test.ts(308,7): error TS2741: Property 'authMode' is missing in type '{ baseUrl: string; model: string; liteModel: string; apiKey: string; maxToolCalls: number; maxTokens: number; }' but required in type 'AiConfig'.
+test/touchPad.test.ts(118,10): error TS2790: The operand of a 'delete' operator must be optional.
+test/transparentColorKeyAuto.test.ts(58,38): error TS6133: 'x' is declared but its value is never read.
+test/uxcEditorShell.test.ts(111,19): error TS18048: 'event.pages' is possibly 'undefined'.
+test/uxcEditorShell.test.ts(149,12): error TS18048: 'event.pages' is possibly 'undefined'.
+test/uxcEditorShell.test.ts(158,12): error TS18048: 'event.pages' is possibly 'undefined'.
+test/villagerRoomKit.test.ts(9,38): error TS2339: Property 'name' does not exist on type 'GameEvent'.
+test/vocabScenarios.test.ts(7,1): error TS6133: 'COMBINED_TOWN_HARNESS_PREFIX' is declared but its value is never read.
+test/weightedBranchUx.test.ts(71,7): error TS6133: 'replaced' is declared but its value is never read.

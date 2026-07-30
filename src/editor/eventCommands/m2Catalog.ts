@@ -357,12 +357,11 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       ];
     case "Get On/Off Vehicle":
       return [
-        { key: "target", label: "탈것", type: "select", defaultValue: "boat", options: VEHICLE_OPTIONS },
-        { key: "enabled", label: "탑승", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
+        { key: "boarded", label: "탑승", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
       ];
     case "Set Vehicle Location":
       return [
-        { key: "target", label: "탈것", type: "select", defaultValue: "boat", options: VEHICLE_OPTIONS },
+        { key: "vehicle", label: "탈것", type: "select", defaultValue: "boat", options: VEHICLE_OPTIONS },
         { key: "mapId", label: "맵 ID", type: "text", defaultValue: "" },
         { key: "x", label: "X", type: "number", defaultValue: 0 },
         { key: "y", label: "Y", type: "number", defaultValue: 0 },
@@ -376,8 +375,8 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       ];
     case "Swap Event Location":
       return [
-        { key: "target", label: "이벤트 A", type: "text", defaultValue: "" },
-        { key: "value", label: "이벤트 B", type: "text", defaultValue: "" },
+        { key: "eventA", label: "이벤트 A", type: "text", defaultValue: "" },
+        { key: "eventB", label: "이벤트 B", type: "text", defaultValue: "" },
       ];
     case "Get Terrain ID":
       return [

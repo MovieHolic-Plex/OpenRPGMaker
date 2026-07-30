@@ -43,7 +43,12 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       };
       const renderEditor = () => {
         clearChildren(formHost);
-        formHost.append(renderCommandBody({ path: [], actions, lockKind: request.lockKind ?? true }, stagedCommand));
+        formHost.append(renderCommandBody({
+          path: [],
+          actions,
+          lockKind: request.lockKind ?? true,
+          getCurrentCommand: () => stagedCommand,
+        }, stagedCommand));
         renderPreview();
       };
       const actions: CommandListActions = {
@@ -132,7 +137,6 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         dataset: { testid: "event-command-edit-ok" },
         on: {
           click: () => {
-            commitPendingControls(editor);
             request.onApply(structuredClone(stagedCommand));
             close();
           },
@@ -193,16 +197,6 @@ function setShopPreviewCollapsed(from: HTMLElement, collapsed: boolean): void {
   if (!(columns instanceof HTMLElement) || typeof columns.classList?.toggle !== "function") return;
   columns.classList.toggle("is-shop-preview-open", !collapsed);
   columns.classList.toggle("shop-preview-collapsed", collapsed);
-}
-
-function commitPendingControls(root: HTMLElement): void {
-  const controls = root.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
-    "input, select, textarea"
-  );
-  for (const control of [...controls]) {
-    if (control.dataset.commandKindSelect === "true") continue;
-    control.dispatchEvent(new Event("change", { bubbles: true }));
-  }
 }
 
 function commandContainer(rootCommand: Command, containerPath: readonly number[]): Command[] | null {

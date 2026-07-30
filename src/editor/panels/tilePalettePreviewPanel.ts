@@ -2,12 +2,12 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { editorState } from "@/editor/editorState";
 import {
   favoriteTilesSnapshot,
+  isAutoConnectCandidate,
   selectUsedLocation,
   similarTilesForTile,
   usedLocationsForTile,
 } from "@/editor/panels/tileBrushTools";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import { isAutoConnectCandidate, tileStampsForTile, type TileStampId } from "@/editor/tileStampBrushes";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
@@ -17,7 +17,6 @@ import { el } from "@/util/dom";
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
 
 export type TileBrushAssistModel = {
-  readonly activeStampId: TileStampId | null;
   readonly autoConnectMode: boolean;
   readonly mapId: string;
   readonly onSelectTile: (tile: number) => void;
@@ -56,7 +55,6 @@ export function makePaletteStampStatus(stamp: PaletteStamp | null, rerender: () 
 export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLElement {
   const project = store.getCurrent();
   const map = project.maps[model.mapId];
-  const stamps = tileStampsForTile(model.selectedTile, model.tileset);
   const favorites = favoriteTilesSnapshot().filter((tile) => tile >= 0 && tile < model.tileset.count);
   const similar = similarTilesForTile({ tileset: model.tileset, tile: model.selectedTile, limit: 8 });
   const used = map ? usedLocationsForTile({ map, tile: model.selectedTile, limit: 6 }) : [];
@@ -95,42 +93,11 @@ export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLEleme
       ],
     })
   );
-  panel.append(makeStampPicker(stamps, model.activeStampId));
   panel.append(makeTileStrip("즐겨", favorites, "favorite-tile-grid", "favorite-tile", model));
   panel.append(makeTileStrip("유사", similar, "similar-tile-grid", "similar-tile", model));
   panel.append(makeUsedLocations(model.mapId, used, model.rerender));
   panel.append(makeCurrentNeighborhoodSummary());
   return panel;
-}
-
-function makeStampPicker(stamps: ReturnType<typeof tileStampsForTile>, activeStampId: TileStampId | null): HTMLElement {
-  const row = el("div", { class: "tile-brush-row" });
-  row.append(el("span", { class: "tile-brush-label", text: "스탬프" }));
-  const picker = el("div", { class: "stamp-picker", dataset: { testid: "stamp-picker" } });
-  if (stamps.length === 0) {
-    picker.append(el("span", { class: "tile-brush-empty", text: "없음" }));
-  }
-  for (const stamp of stamps) {
-    picker.append(
-      el("button", {
-        class: "btn stamp-button" + (activeStampId === stamp.id ? " active" : ""),
-        text: stamp.label,
-        attrs: {
-          title: stamp.description,
-          "aria-label": stamp.description,
-          "aria-pressed": String(activeStampId === stamp.id),
-        },
-        dataset: { testid: `stamp-${stamp.id}` },
-        on: {
-          click: () => {
-            editorState.set({ activeStampId: editorState.get().activeStampId === stamp.id ? null : stamp.id });
-          },
-        },
-      })
-    );
-  }
-  row.append(picker);
-  return row;
 }
 
 function makeTileStrip(

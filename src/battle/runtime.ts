@@ -2,9 +2,10 @@
 // assembly together so battle-event regressions can verify one state machine.
 import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
+import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, type MutableBattler } from "@/battle/battleBattlers";
-import { applySkillLike } from "@/battle/battleDamage";
+import { applySkillLike, usesMagicalDefense } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
@@ -1034,7 +1035,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function applySkill(user: MutableBattler, target: MutableBattler, skillId: SkillId): void {
     const skill = lookupSkill(skillId);
-    const power = skill?.power ?? FALLBACK_SKILL_POWER;
+    // 기본 "공격" 스킬(skill_attack)은 통상공격을 표현하는 스킬이다. 그 위력은 고정 10 이 아니라
+    // 시전자의 공격력에서 나와야 한다 — 플레이어 통상공격 명령은 이미 attackPower 를 쓴다.
+    //
+    // 이 한 줄이 없으면 적 220종 전부(authored action 이 모두 skill_attack 경유, 폴백 0종)의 피해가
+    // `10 + floor(공/2) − floor(방/2)` 로 계산된다. 주인공 방어 72 → −36 이라
+    // 공격 33 짜리 적이 정확히 0 을 때리고, 기본 트룹 3종 전부 피해 0 · 승률 1.0 이 된다(실측).
+    const power = skillId === DEFAULT_SKILL_ID
+      ? user.attackPower
+      : skill?.power ?? FALLBACK_SKILL_POWER;
     const effect = skill?.effect;
     const effectKind = effect?.kind ?? "damage";
     // statistic 필드는 damage/healing 효과에만 존재한다.
@@ -1056,6 +1065,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       elementMultiplier: elementMultiplierFor(skill?.elementId, user, target),
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      useMagicalDefense: isMagicalElement(skill?.elementId),
       rng,
     });
     recordAction({ userRecordId: user.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical, skillName: skill?.name });
@@ -1137,6 +1147,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 음수(-100 등)는 흡수(-1.0 = 회복)를 의미한다.
     const equipmentReduction = target.equipmentEffects?.elementalDefenseIds.includes(elementId) ? 0.5 : 1;
     return (multiplier / 100) * equipmentReduction * typeMultiplier;
+  }
+
+  // 데미지 감소를 mind(마법 방어력) 로 라우팅할지 — 판정은 battleDamage.usesMagicalDefense 단일
+  // 권위자에 위임한다(predict 와 동일 규칙 보장). gen1 모델에서만 활성.
+  function isMagicalElement(elementId: string | undefined): boolean {
+    return usesMagicalDefense(options.project, elementId);
   }
 
   function applyTroopEvents(eventTurn: number = turn): void {
@@ -1232,7 +1248,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function resolveOutcome(): void {
     if (result) return;
-    if (visibleEnemies().every((enemy) => enemy.hp <= 0)) {
+    const enemiesInBattle = visibleEnemies();
+    // 가시 적이 한 명도 없으면(전원 hidden 미출현) 승리로 처리하지 않는다.
+    // RM2K3: 숨겨진 적은 필드에 없는 것 — 이벤트로 reveal 되기 전까지 전투는 계속된다.
+    // 빈 배열에 every() 가 true 를 반환해 즉시 승리 처리되는 함정을 막는 가드다.
+    if (enemiesInBattle.length > 0 && enemiesInBattle.every((enemy) => enemy.hp <= 0)) {
       result = "victory";
       phase = "resolved";
       clearEndOfBattleStates();

@@ -10,6 +10,14 @@ import {
 } from "./rm2k3-commerce-fixtures";
 import { startNewGameFromTitle } from "./runtimeInput";
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
+  });
+});
+
+
 type PickerCommand = {
   readonly kind: "shop" | "inn";
   readonly testId: "command-picker-add-shop" | "command-picker-add-inn";
@@ -34,12 +42,9 @@ async function addCommerceCommand(page: Page, command: PickerCommand): Promise<L
   await expect(picker).toBeVisible();
   await picker.getByTestId("event-command-picker-tab-2").click();
   await picker.getByTestId(command.testId).click();
-  await expect(picker).toBeHidden();
-  const commandRow = page.getByTestId(`event-command-${command.kind}`).first();
-  await expect(commandRow).toBeVisible();
-  await commandRow.locator(".cmd-head").dblclick();
-  await expect(commandRow).toHaveClass(/editing/);
-  return commandRow;
+  const dialog = page.getByTestId("event-command-edit-dialog");
+  await expect(dialog).toBeVisible();
+  return dialog;
 }
 
 async function openEventEditorAtMapTile(page: Page): Promise<void> {
@@ -79,14 +84,21 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await shopCommand.getByTestId("shop-available-items").selectOption("item_potion");
   await shopCommand.getByTestId("shop-add-item").click();
   await expect(shopCommand.getByTestId("shop-selected-items")).toHaveValue("item_potion");
-  await expect(shopCommand).toContainText("Type");
-  await expect(shopCommand).toContainText("Available Items");
+  await expect(shopCommand).toContainText("상점 종류");
+  await expect(shopCommand).toContainText("추가 가능");
   await page.screenshot({ path: testInfo.outputPath("shop-editor-readable.png"), fullPage: true });
+  await shopCommand.getByTestId("event-command-edit-ok").click();
+  await expect(shopCommand).toHaveCount(0);
+  await expect(page.getByTestId("event-command-picker")).toHaveCount(0);
+  await expect(page.getByTestId("event-command-shop").first()).toBeVisible();
 
   const innCommand = await addCommerceCommand(page, { kind: "inn", testId: "command-picker-add-inn" });
   await innCommand.getByTestId("inn-price-input").fill("25");
   await innCommand.getByTestId("inn-price-input").blur();
   await expect(innCommand).toContainText("여관 요금");
+  await innCommand.getByTestId("event-command-edit-ok").click();
+  await expect(innCommand).toHaveCount(0);
+  await expect(page.getByTestId("event-command-picker")).toHaveCount(0);
   await page.getByTestId("event-editor-apply").click();
   await page.screenshot({ path: testInfo.outputPath("shop-inn-editor-readable.png"), fullPage: true });
   const authoredCommands = Object.values((await exportedProject(page)).maps).flatMap((map) =>
@@ -97,16 +109,16 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   );
   expect(authoredCommands).toContainEqual(expect.objectContaining({ kind: "shop", itemIds: ["item_potion"] }));
   expect(authoredCommands).toContainEqual(expect.objectContaining({ kind: "inn", price: 25 }));
-  await shopCommand.locator(".cmd-head").dblclick();
-  await expect(shopCommand).toHaveClass(/editing/);
-  await shopCommand.getByTestId("shop-type-sellOnly").check();
-  await shopCommand.locator(".cmd-head").dblclick();
-  await expect(shopCommand).toHaveClass(/editing/);
-  await shopCommand.getByTestId("shop-branch-on-transaction").check();
-  await shopCommand.locator(".cmd-head").dblclick();
-  await expect(shopCommand).toHaveClass(/editing/);
-  await expect(shopCommand.getByTestId("shop-transaction-branch-controls")).toBeVisible();
-  await shopCommand.getByTestId("shop-add-transaction-branch-command").click();
+  const shopRow = page.getByTestId("event-command-shop").first();
+  await shopRow.locator(".cmd-head").dblclick();
+  const shopEditDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(shopEditDialog).toBeVisible();
+  await shopEditDialog.getByTestId("shop-type-select").selectOption("sellOnly");
+  await shopEditDialog.getByTestId("shop-branch-on-transaction").check();
+  await expect(shopEditDialog.getByTestId("shop-transaction-branch-controls")).toBeVisible();
+  await shopEditDialog.getByTestId("shop-add-transaction-branch-command").click();
+  await shopEditDialog.getByTestId("event-command-edit-ok").click();
+  await expect(shopEditDialog).toHaveCount(0);
   await page.getByTestId("event-editor-apply").click();
   const authoredCommerceCommands = Object.values((await exportedProject(page)).maps).flatMap((map) =>
     map.events.flatMap((event) => [

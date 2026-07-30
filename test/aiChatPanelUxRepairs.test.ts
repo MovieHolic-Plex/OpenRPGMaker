@@ -76,6 +76,10 @@ function dispatchInputKey(input: HTMLElement, key: string): void {
 }
 
 beforeEach(() => {
+  // .env 의 VITE_LLM_API_URL 이 테스트 환경까지 로드되어 defaultAiConfig 가 apiKey 모드로
+  // 바뀌는 것을 막고, 이 파일의 "chatgpt 기본" 전제를 deterministic 하게 유지한다.
+  vi.stubEnv("VITE_LLM_API_URL", "");
+  vi.stubEnv("VITE_LLM_API_KEY", "");
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
@@ -89,6 +93,7 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("선택 영역 AI 직결 칩", () => {

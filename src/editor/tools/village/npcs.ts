@@ -9,6 +9,7 @@ import { mulberry32 } from "@/util/rng";
 import { EVENT_TOOLS } from "../eventTools";
 import { inMapBounds } from "../mapHelpers";
 import { ToolError } from "../types";
+import { resolveTimeSystem } from "@/project/gameTime";
 import {
   coordKey,
   DEFAULT_NPCS,
@@ -75,6 +76,26 @@ export function placeVillageNpcs(
       ],
     }, warnings);
   }
+  warnIfSchedulesCannotRun(draft, warnings);
+}
+
+/**
+ * 시간표를 저장했지만 시간 시스템이 꺼져 있으면 경고한다.
+ *
+ * 왜(2026-07-26 실측): 이 함수는 주민마다 아침/낮/저녁 3단계 시간표를 저장하는데
+ * updateNpcSchedules 는 시간 시스템이 없으면 즉시 return 한다(npcSchedules.ts:31).
+ * 즉 **생성된 모든 마을의 시간표가 죽어 있었고** 아무 경고도 없었다 — 주민이 영원히 제자리에 선다.
+ *
+ * 여기서 system.timeSystem 을 직접 켜지 않는 이유: 마을 시공은 선언한 데이터(맵·이벤트) 밖을
+ * 바꿀 수 없다("Village changed undeclared project data" 가드가 실제로 거부한다). 프로젝트
+ * 설정을 바꾸는 것은 감독의 결정이므로 알리기만 한다.
+ */
+function warnIfSchedulesCannotRun(draft: Project, warnings: string[]): void {
+  if (resolveTimeSystem(draft)) return;
+  warnings.push(
+    "주민 시간표를 저장했지만 시간 시스템이 꺼져 있어 실행되지 않습니다 — 주민이 제자리에 머무릅니다. " +
+      "system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+  );
 }
 
 function villageNpcWorkAnchors(area: Rect, plaza: Plaza, seed: number): readonly Point[] {

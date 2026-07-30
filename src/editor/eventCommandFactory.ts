@@ -59,6 +59,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeExp", actorId: "", op: "+=", amount: 10 };
     case "changeLevel":
       return { kind: "changeLevel", actorId: "", op: "+=", amount: 1 };
+    case "changeLifeSkillExp":
+      return { kind: "changeLifeSkillExp", skillId: "", op: "+=", amount: 10 };
     case "promoteActor":
       return { kind: "promoteActor", actorId: "", toClassId: "", successBranch: [], failureBranch: [] };
     case "changeEquipment":

@@ -153,6 +153,8 @@ export interface PlaySession {
   npcTravelStates: Record<string, RuntimeNpcTravelState>;
   npcActivities?: Record<string, string>;
   npcScheduleStates?: Record<string, RuntimeNpcScheduleState>;
+  // 라이프스킬 XP/레벨 (skillId → { xp, level }).
+  lifeSkills?: Record<string, { xp: number; level: number }>;
   followers: RuntimeFollower[];
   followerTrail: RuntimeFollowerTrailPoint[];
   actorEquipment: Record<string, ActorInitialEquipment>;
@@ -256,6 +258,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     npcTravelStates: {},
     npcActivities: {},
     npcScheduleStates: {},
+    lifeSkills: {},
     followers: [],
     followerTrail: [],
     actorEquipment: initialActorEquipment(project),

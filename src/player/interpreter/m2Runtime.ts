@@ -100,9 +100,9 @@ function executeByTitle(
     return;
   }
   if (title === "Move to Variable Location") {
-    const mapVar = fieldString(fields, "mapVariableId", "");
-    const xVar = fieldString(fields, "xVariableId", "");
-    const yVar = fieldString(fields, "yVariableId", "");
+    const mapVar = fieldString(fields, "mapVariableId", fieldString(fields, "mapId", ""));
+    const xVar = fieldString(fields, "xVariableId", fieldString(fields, "x", ""));
+    const yVar = fieldString(fields, "yVariableId", fieldString(fields, "y", ""));
     const mapId = String(session.variables[mapVar] ?? session.currentMapId);
     const x = Math.trunc(session.variables[xVar] ?? 0);
     const y = Math.trunc(session.variables[yVar] ?? 0);
@@ -110,11 +110,13 @@ function executeByTitle(
     return;
   }
   if (title === "Get On/Off Vehicle") {
-    runtime.system["vehicle_boarded"] = fieldBoolean(fields, "boarded", true);
+    runtime.system["vehicle_boarded"] = hasField(fields, "boarded")
+      ? fieldBoolean(fields, "boarded", true)
+      : fieldBoolean(fields, "enabled", true);
     return;
   }
   if (title === "Set Vehicle Location") {
-    const vehicle = fieldString(fields, "vehicle", "boat");
+    const vehicle = fieldString(fields, "vehicle", fieldString(fields, "target", "boat"));
     runtime.map[`vehicle_${vehicle}`] = {
       mapId: fieldString(fields, "mapId", ""),
       x: fieldNumber(fields, "x", 0),
@@ -128,8 +130,12 @@ function executeByTitle(
     return;
   }
   if (title === "Swap Event Location") {
-    const eventA = fieldString(fields, "eventA", "");
-    const eventB = fieldString(fields, "eventB", "");
+    const eventA = fieldString(fields, "eventA", fieldString(fields, "target", ""));
+    const eventB = fieldString(
+      fields,
+      "eventB",
+      fieldString(fields, "value", fieldString(fields, "mapId", ""))
+    );
     runtime.events["_swap"] = { mapId: "", x: 0, y: 0, value: `${eventA}<->${eventB}` };
     return;
   }

@@ -21,7 +21,7 @@ describeLive("live Supabase canonical project roundtrip", () => {
 
     expect(project.database.elements?.[0]?.id).toBe("sword");
     expect(project.database.terrains?.[0]?.id).toBe("terrain_grassland");
-    expect(project.database.battleCommands?.map((command) => command.name)).toEqual(["Attack", "Skill", "Defend", "Item"]);
+    expect(project.database.battleCommands?.map((command) => command.id)).toEqual(["cmd_attack", "cmd_skill", "cmd_defend", "cmd_item"]);
 
     await saveProjectToSupabase(project, config);
     const restored = await loadProjectFromSupabase(config);

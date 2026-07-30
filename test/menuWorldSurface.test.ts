@@ -5,10 +5,16 @@ import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
   openWorldPanel: vi.fn(),
+  openAiSettingsModal: vi.fn(),
 }));
 
 vi.mock("@/editor/panels/worldPanel", () => ({
   openWorldPanel: mocks.openWorldPanel,
+}));
+
+vi.mock("@/editor/panels/aiSettingsModal", () => ({
+  openAiSettingsModal: mocks.openAiSettingsModal,
+  closeAiSettingsModal: vi.fn(),
 }));
 
 class MemoryStorage implements Storage {
