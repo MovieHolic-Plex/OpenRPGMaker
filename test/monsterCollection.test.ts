@@ -114,6 +114,7 @@ describe("monster collection core", () => {
     const blocked = captureRuntime({ ...project, database: { ...project.database, troops: project.database.troops.map((troop) => troop.id === "troop_slime" ? { ...troop, uncapturable: true } : troop) } });
     blocked.performActorCommand({ kind: "capture", captureItemId: "item_capture_orb", targetEnemyId: "enemy-1" });
     expect(blocked.snapshot().lastCaptureResult?.blockedReason).toBe("uncapturable");
+    expect(blocked.snapshot().timeline.some((entry) => entry.kind === "capture" && entry.success === false)).toBe(true);
 
     const runtime = captureRuntime(project, (() => {
       const values = [0, 0.1, 0.2, 0.3, 0.4];
@@ -123,6 +124,7 @@ describe("monster collection core", () => {
     const snapshot = runtime.snapshot();
     expect(snapshot.result).toBe("victory");
     expect(snapshot.capturedMonsters).toHaveLength(1);
+    expect(snapshot.timeline.some((entry) => entry.kind === "capture" && entry.success === true && entry.targetId === "enemy-1")).toBe(true);
     expect(snapshot.rewards.exp).toBe(0);
   });
 

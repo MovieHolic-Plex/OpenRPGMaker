@@ -57,6 +57,8 @@ export function playBattle(
       levels: scene.session.actorLevels,
       experience: scene.session.actorExperience,
       names: scene.session.actorNames,
+      faceResourceIds: scene.session.actorFaceResourceIds,
+      faceIndices: scene.session.actorFaceIndices,
       vitals: scene.session.actorVitals,
       paramBonuses: scene.session.actorParamBonuses,
       equipment: scene.session.actorEquipment,

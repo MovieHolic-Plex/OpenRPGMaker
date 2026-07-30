@@ -214,7 +214,7 @@ export function databaseRecordPrefix(collection: DatabaseCollection): string {
 }
 
 export function isSkillScope(value: unknown): value is SkillRecord["scope"] {
-  return value === "self" || value === "ally" || value === "enemy" || value === "allEnemies";
+  return value === "self" || value === "ally" || value === "allAllies" || value === "enemy" || value === "allEnemies";
 }
 
 export function isItemScope(value: unknown): value is ItemRecord["scope"] {

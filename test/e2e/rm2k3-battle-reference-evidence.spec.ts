@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import { seedLayoutResultBattleProject, startReferenceBattle } from "./battleReferenceProject";
 
 const evidenceRoot = "output/evidence/battle-scene-reference-20260630/final";
 const taskEvidenceManifest = ".omo/evidence/task-8-battle-asset-equivalence-screenshots.json";
@@ -9,11 +9,15 @@ const viewports = [
   { name: "wide-1920", width: 1920, height: 1080 },
 ] as const;
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
+
 for (const viewport of viewports) {
   test(`capture reference battle evidence at ${viewport.name}`, async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await mkdir(`${evidenceRoot}/${viewport.name}`, { recursive: true });
-    await seedReferenceBattleProject(page);
+    await seedLayoutResultBattleProject(page);
     await startReferenceBattle(page);
 
     const screenshots: string[] = [];
@@ -24,9 +28,9 @@ for (const viewport of viewports) {
     await writeJson(`${evidenceRoot}/${viewport.name}/10-command-metrics.json`, commandMetrics);
 
     await page.getByTestId("actor-command-attack").click();
-    await expect(page.getByTestId("battle-target-analysis")).toBeVisible();
+    await expect(page.locator(".battle-enemy.battle-target-selected")).toBeVisible();
     await capture(page, viewport.name, "04-target-full", screenshots);
-    await captureLocator(page, viewport.name, "05-target-analysis", "[data-testid='battle-target-analysis']", screenshots);
+    await captureLocator(page, viewport.name, "05-target-focus", ".battle-enemy.battle-target-selected", screenshots);
     await captureLocator(page, viewport.name, "06-target-command-hud", ".battle-command-panel", screenshots);
     const targetMetrics = await battleMetrics(page);
     await writeJson(`${evidenceRoot}/${viewport.name}/11-target-metrics.json`, targetMetrics);
@@ -35,7 +39,7 @@ for (const viewport of viewports) {
     await expect(page.getByTestId("battle-result-panel")).toBeVisible();
     await capture(page, viewport.name, "07-result-full", screenshots);
     await captureLocator(page, viewport.name, "08-result-modal", "[data-testid='battle-result-panel']", screenshots);
-    await captureLocator(page, viewport.name, "09-result-progress", "[data-testid='battle-result-progress']", screenshots);
+    await captureLocator(page, viewport.name, "09-result-cards", "[data-testid='battle-result-cards']", screenshots);
     const resultMetrics = await battleMetrics(page);
     await writeJson(`${evidenceRoot}/${viewport.name}/12-result-metrics.json`, resultMetrics);
     await writeJson(`${evidenceRoot}/${viewport.name}/10-metrics.json`, {

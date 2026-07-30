@@ -143,6 +143,54 @@ describe("battle sequencer", () => {
     expect(lastStep).toBe("acting");
   });
 
+  it("consumes strict setup and command timeline entries once without replay", () => {
+    const project = deserialize(JSON.stringify(battleFixture));
+    const burn = project.database.states.find((state) => state.id === "state_burn");
+    if (!burn) throw new Error("missing fixture state");
+    burn.runtimeEffects = { ...burn.runtimeEffects, hpDamagePercentPerTurn: 1 };
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "strict",
+      party: {
+        levels: { actor_hero: 1 },
+        experience: {},
+        stateIds: { actor_hero: ["state_burn"] },
+        partyActorIds: ["actor_hero"],
+      },
+      rng: () => 0.5,
+    });
+    const consumed: number[] = [];
+    const sequencer = createBattleSequencer(
+      runtime,
+      {
+        onDirectorState: () => undefined,
+        onSyncView: () => undefined,
+        onDamageFeedback: () => undefined,
+        onResultStage: () => undefined,
+        onSequenceBusy: () => undefined,
+        onTimelineEntry: (entry) => consumed.push(entry.sequence),
+      },
+      (callback) => {
+        callback();
+        return consumed.length + 1;
+      },
+      () => undefined,
+    );
+    const before = runtime.snapshot();
+    expect(before.timeline.map((entry) => entry.kind)).toContain("stateUpkeep");
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    const after = runtime.snapshot();
+    const expected = after.timeline.map((entry) => entry.sequence);
+
+    sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-1" }, before, after);
+    sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-1" }, before, after);
+
+    expect(consumed).toEqual(expected);
+  });
+
   it("holds intro lines before releasing command prompt", () => {
     const runtime = battleRuntime();
     const introLines: string[] = [];

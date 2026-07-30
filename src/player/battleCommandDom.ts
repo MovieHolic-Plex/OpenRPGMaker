@@ -5,13 +5,15 @@ import type {
   BattleSnapshot,
   TargetedActorCommand,
 } from "@/battle/runtime";
-import { type BattleDirectorState } from "@/player/battleDirectorDom";
+import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
 import { hpBarState } from "@/player/battleFieldDom";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { activeActor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
+import { battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel } from "@/battle/battleSkillUse";
+import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -28,7 +30,8 @@ export interface BattleCommandPanelOptions {
   render(): void;
   runActorCommand(command: ActorCommand): void;
   beginTargetCommand(command: TargetedActorCommand): void;
-  confirmTargetSelection(enemyId: string): void;
+  confirmTargetSelection(targetId: string): void;
+  cancelTargetSelection?(): void;
 }
 
 export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
@@ -37,13 +40,22 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
   const terms = resolveTerms(store.getCurrent());
 
   if (snapshot.phase === "targetSelect") {
-    panel.dataset.targetPresentation = "field";
     panel.setAttribute("aria-label", terms.target);
+    if (snapshot.targetSelection?.side === "actor") {
+      panel.dataset.targetPresentation = "menu";
+      panel.append(targetPrompt(snapshot, terms));
+      panel.append(targetSelectionMenu(snapshot, options, terms));
+      panel.append(keyPrompts());
+    } else {
+      panel.dataset.targetPresentation = "field";
+    }
     return panel;
   }
   if (snapshot.phase !== "actorCommand") return panel;
 
+  if (snapshot.battleFlow === "strict") panel.append(strictFlowStatus(snapshot));
   panel.append(commandGrid(snapshot, options, false));
+  panel.append(keyPrompts());
   return panel;
 }
 
@@ -115,19 +127,21 @@ function commandControl(
         options.beginTargetCommand({ kind: "attack" });
       }, targetMode);
     case "skill": {
-      const skills = usableSkills(actor, command);
-      // Compact main command list: name only. Counts clutter 320x240 labels.
-      return commandButton(label, commandTestId(command), "fire", "", () => {
-        if (targetMode || skills.length === 0) return;
-        // Single available skill: skip the submenu and go straight to targeting.
-        if (skills.length === 1 || command.skillId) {
-          const skillId = command.skillId && skills.includes(command.skillId) ? command.skillId : skills[0];
-          options.beginTargetCommand({ kind: "skill", skillId });
+      const skillIds = listedSkillIds(actor, command);
+      const project = store.getCurrent();
+      const usable = skillIds.filter((skillId) => actor && !battleSkillUseFailure(project, actor, skillId));
+      const onlySkill = skillIds.length === 1 ? project.database.skills.find((skill) => skill.id === skillIds[0]) : undefined;
+      const failure = onlySkill && actor ? battleSkillUseFailure(project, actor, onlySkill.id) : undefined;
+      const reason = failure && actor ? battleSkillUseFailureLabel(failure, onlySkill, actor) : skillIds.length === 0 ? "사용 가능한 스킬이 없습니다." : undefined;
+      return commandButton(label, commandTestId(command), "fire", reason ?? "", () => {
+        if (targetMode || skillIds.length === 0) return;
+        if ((skillIds.length === 1 || command.skillId) && usable.length === 1) {
+          options.beginTargetCommand({ kind: "skill", skillId: usable[0] });
           return;
         }
         options.setSubmenu({ kind: "skill", command });
         options.render();
-      }, targetMode || skills.length === 0);
+      }, targetMode || skillIds.length === 0 || Boolean(failure), reason);
     }
     case "item": {
       const items = battleItems(snapshot);
@@ -243,13 +257,13 @@ function enemyListRow(enemy: BattleBattlerSnapshot): HTMLElement {
   return row;
 }
 
-function usableSkills(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
-  if (!actor) return [];
-  const skills = store.getCurrent().database.skills;
+function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
+  if (!actor) return command?.skillId ? [command.skillId] : [];
+  if (command?.skillId) return [command.skillId];
+  const project = store.getCurrent();
   return actor.skillIds.filter((id) => {
-    const skill = skills.find((record) => record.id === id);
-    if (!skill) return false;
-    if (command?.skillId) return skill.id === command.skillId;
+    const skill = project.database.skills.find((record) => record.id === id);
+    if (!skill) return true;
     if (command?.skillSubsetName) return skill.type === command.skillSubsetName;
     return true;
   });
@@ -309,12 +323,14 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
   const command = options.submenu?.kind === "skill" ? options.submenu.command : undefined;
-  for (const skillId of usableSkills(actor, command)) {
+  for (const skillId of listedSkillIds(actor, command)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
-    const detail = skill ? skillDetailFor(project, skill, terms) : terms.skill;
-    nodes.push(commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
+    const failure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
+    const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor) : failure ? "사용자가 없습니다." : undefined;
+    const detail = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
+    nodes.push(commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", reason ? `${detail} · ${reason}` : detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
-    }));
+    }, Boolean(reason), reason));
   }
   nodes.push(submenuBackButton(options, terms));
   return nodes;
@@ -322,26 +338,34 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
 
 function skillDetailFor(
   project: ReturnType<typeof store.getCurrent>,
-  skill: { id: SkillId; power: number; effect: { kind: string } },
-  terms: ResolvedTerms
+  skill: { id: SkillId; power: number; scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies"; effect: { kind: string }; stateEffects?: readonly { stateId: string; operation: string }[] },
+  terms: ResolvedTerms,
+  actor: BattleBattlerSnapshot,
 ): string {
-  const mp = mpDetail(project, skill.id, terms);
   const fullSkill = project.database.skills.find((record) => record.id === skill.id);
-  if (!fullSkill) return mp;
-  if (fullSkill.effect.kind === "healing") return `${terms.hp} ${fullSkill.power} 회복 ${mp}`;
-  if (fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch") return `보조 ${mp}`;
-  // Prefer MP cost; fall back to power rather than the attack command label (keeps KR UI clean).
-  return mp || (fullSkill.power > 0 ? `위력 ${fullSkill.power}` : "");
+  if (!fullSkill) return terms.skill;
+  const mp = `${terms.mp} ${battleSkillMpCost(fullSkill, actor.maxMp)}`;
+  const scope = scopeLabel(fullSkill.scope);
+  const states = (fullSkill.stateEffects ?? []).map((effect) => {
+    const name = project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId;
+    return `${name} ${effect.operation === "remove" ? "해제" : "부여"}`;
+  }).join(", ");
+  const effect = fullSkill.effect.kind === "healing"
+    ? `${terms.hp} ${fullSkill.power} 회복`
+    : fullSkill.effect.kind === "support" || fullSkill.effect.kind === "switch"
+      ? "보조"
+      : fullSkill.power > 0 ? `위력 ${fullSkill.power}` : "공격";
+  return [mp, scope, effect, states].filter(Boolean).join(" · ");
 }
 
-// MP 소비 표기. flat + percentMax.
-function mpDetail(project: ReturnType<typeof store.getCurrent>, skillId: SkillId, terms: ResolvedTerms): string {
-  const skill = project.database.skills.find((record) => record.id === skillId);
-  if (!skill?.mpCost) return "";
-  const flat = skill.mpCost.flat ?? 0;
-  const pct = skill.mpCost.percentMax ?? 0;
-  if (flat === 0 && pct === 0) return "";
-  return `${terms.mp} ${flat}${pct > 0 ? `+${pct}%` : ""}`;
+function scopeLabel(scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies"): string {
+  switch (scope) {
+    case "self": return "자신";
+    case "ally": return "아군 1명";
+    case "allAllies": return "아군 전체";
+    case "enemy": return "적 1명";
+    case "allEnemies": return "적 전체";
+  }
 }
 
 function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
@@ -349,8 +373,13 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   header.className = "battle-submenu-header";
   header.textContent = terms.item;
   const nodes: HTMLElement[] = [header];
+  const project = store.getCurrent();
   for (const item of battleItems(snapshot)) {
-    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", `${terms.item} 사용`, () => {
+    const record = project.database.items.find((entry) => entry.id === item.itemId);
+    const scope = record ? targetScopeForCommand(project, { kind: "item", itemId: record.id }) : "self";
+    const states = record?.stateEffects.map((effect) => project.database.states.find((state) => state.id === effect.stateId)?.name ?? effect.stateId).join(", ");
+    const detail = [scopeLabel(scope), states].filter(Boolean).join(" · ");
+    nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", detail || `${terms.item} 사용`, () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
     }));
   }
@@ -399,20 +428,97 @@ function submenuBackButton(options: BattleCommandPanelOptions, terms: ResolvedTe
   });
 }
 
+function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement {
+  const menu = document.createElement("div");
+  menu.className = "battle-command-menu battle-target-menu";
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = terms.target;
+  menu.append(header);
+  const targetIds = snapshot.targetSelection?.targetIds ?? [];
+  for (const targetId of targetIds) {
+    const target = snapshot.targetSelection?.side === "actor"
+      ? snapshot.actors.find((entry) => entry.id === targetId || entry.recordId === targetId)
+      : snapshot.enemies.find((entry) => entry.id === targetId);
+    if (!target) continue;
+    const button = commandButton(target.name, `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
+      options.confirmTargetSelection(target.id);
+    });
+    button.dataset.battleTargetable = "true";
+    button.dataset.battleTargetId = target.id;
+    button.dataset.battleTargetSide = snapshot.targetSelection?.side ?? "enemy";
+    const selected = snapshot.targetSelection?.selectedTargetId === target.id;
+    button.setAttribute("aria-pressed", selected ? "true" : "false");
+    if (selected) button.classList.add("battle-target-selected");
+    menu.append(button);
+  }
+  menu.append(commandButton("취소", "battle-target-cancel", "back", "", () => {
+    if (options.cancelTargetSelection) {
+      options.cancelTargetSelection();
+      return;
+    }
+    options.runtime.cancelTargetSelection();
+    options.setDirectorState(commandPromptState(options.runtime.snapshot()));
+    options.render();
+  }));
+  return menu;
+}
+
+function targetPrompt(snapshot: BattleSnapshot, terms: ResolvedTerms): HTMLElement {
+  const prompt = document.createElement("div");
+  prompt.className = "battle-target-prompt";
+  prompt.dataset.testid = "battle-target-prompt";
+  const actor = activeActor(snapshot);
+  const selectedId = snapshot.targetSelection?.selectedTargetId ?? snapshot.targetSelection?.targetIds[0];
+  const selected = snapshot.targetSelection?.side === "actor"
+    ? snapshot.actors.find((entry) => entry.id === selectedId || entry.recordId === selectedId)
+    : snapshot.enemies.find((entry) => entry.id === selectedId);
+  prompt.textContent = selected
+    ? `${terms.target}: ${selected.name}`
+    : actor
+      ? `${actor.name}: ${terms.target}을 선택`
+      : `${terms.target} 선택`;
+  return prompt;
+}
+
+
+function strictFlowStatus(snapshot: BattleSnapshot): HTMLElement {
+  const status = document.createElement("div");
+  status.className = "battle-flow-status battle-flow-status-strict";
+  status.dataset.testid = "battle-strict-flow-status";
+  const total = snapshot.strictPendingActorIds.length + snapshot.strictQueuedActorIds.length;
+  status.textContent = `ROUND ${Math.max(1, snapshot.strictRound)} · 명령 ${snapshot.strictQueuedActorIds.length + 1}/${Math.max(1, total)}`;
+  return status;
+}
+
+function keyPrompts(): HTMLElement {
+  const prompt = document.createElement("div");
+  prompt.className = "battle-key-prompts";
+  prompt.textContent = "방향키 선택 · Enter/Z 확인 · Esc/X/C 취소";
+  return prompt;
+}
+
 function commandButton(
   label: string,
   testId: string,
   icon: string,
   detail: string,
   onClick: () => void,
-  inert = false
+  inert = false,
+  disabledReason?: string,
 ): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "battle-command";
   button.dataset.testid = testId;
   button.dataset.commandIcon = icon;
-  if (inert) button.dataset.previewOnly = "true";
+  if (inert) {
+    button.dataset.previewOnly = "true";
+    button.disabled = true;
+    const reason = disabledReason || detail || "현재 사용할 수 없습니다.";
+    button.title = reason;
+    button.setAttribute("aria-label", `${label}: ${reason}`);
+  }
   const iconNode = document.createElement("span");
   iconNode.className = `battle-command-icon battle-command-icon-${icon}`;
   iconNode.setAttribute("aria-hidden", "true");
@@ -427,6 +533,6 @@ function commandButton(
     text.append(small);
   }
   button.append(iconNode, text);
-  button.addEventListener("click", onClick);
+  if (!inert) button.addEventListener("click", onClick);
   return button;
 }

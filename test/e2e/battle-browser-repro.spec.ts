@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import { confirmBattleTarget, seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
 
 const OUT = "output/evidence/battle-browser-repro";
 
@@ -8,6 +8,8 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
   test.setTimeout(90_000);
   await mkdir(OUT, { recursive: true });
   await page.setViewportSize({ width: 1360, height: 900 });
+  // `startReferenceBattle` uses the expert classic toolbar's `mode-play` control.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
 
@@ -25,7 +27,7 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
   await writeFile(`${OUT}/07-after-attack.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");
   await page.screenshot({ path: `${OUT}/07-after-attack.png`, fullPage: true });
 
-  await page.locator(".battle-enemy[data-testid='enemy-1'][data-battle-targetable='true']").click();
+  await confirmBattleTarget(page);
   await page.waitForTimeout(700);
   diag = await battleDiagnostics(page);
   await writeFile(`${OUT}/08-after-target.json`, `${JSON.stringify(diag, null, 2)}\n`, "utf8");

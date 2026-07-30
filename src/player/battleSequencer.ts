@@ -1,5 +1,5 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
-import type { BattleActionResultSnapshot } from "@/battle/types";
+import type { BattleActionResultSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
   planActionBeats,
@@ -47,6 +47,8 @@ export interface BattleSequencerHooks {
   readonly onActionMotion?: (beat: BattleActionBeat | undefined) => void;
   readonly onResultStage: (stage: number) => void;
   readonly onSequenceBusy: (busy: boolean) => void;
+  /** Called once for each newly appended runtime timeline entry, in order. */
+  readonly onTimelineEntry?: (entry: BattleTimelineEntrySnapshot) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
   readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
 }
@@ -69,8 +71,9 @@ export function createBattleSequencer(
   const timers = new Set<number>();
   let busy = false;
   let speedMultiplier = 1.0;
-  // 행동 로그 소비 지점 — 이보다 뒤의 엔트리만 새 비트로 재생한다.
-  let consumedActions = runtime.snapshot().actionLog.length;
+  // Ordered timeline cursor. A sequencer is created with its runtime, so facts
+  // appended during strict-round setup remain pending for the first sequence.
+  let consumedTimeline = 0;
 
   function setBusy(next: boolean): void {
     busy = next;
@@ -87,7 +90,9 @@ export function createBattleSequencer(
   }
 
   function delay(callback: () => void, ms: number): void {
-    const scaledMs = Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
+    const reduced = typeof window !== "undefined" && typeof window.matchMedia === "function"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const scaledMs = reduced ? 10 : Math.max(10, Math.round(ms / Math.max(0.2, speedMultiplier)));
     trackTimer(schedule(callback, scaledMs));
   }
 
@@ -96,44 +101,31 @@ export function createBattleSequencer(
     hooks.onHitFeel?.(false);
   }
 
-  function feedbackFromEntry(entry: BattleActionResultSnapshot): DamageFeedback | undefined {
-    if (!entry.hit) return { targetId: entry.targetId, amount: 0, critical: false, healing: false, miss: true };
-    if (entry.amount === 0) return undefined;
-    if (entry.amount < 0) {
-      return { targetId: entry.targetId, amount: Math.abs(entry.amount), critical: false, healing: true };
+  function feedbackFromTimeline(entry: BattleTimelineEntrySnapshot): DamageFeedback | undefined {
+    if (!entry.targetId) return undefined;
+    if (entry.kind === "miss" || entry.hit === false) {
+      return { targetId: entry.targetId, amount: 0, critical: false, healing: false, miss: true };
     }
-    return { targetId: entry.targetId, amount: entry.amount, critical: entry.critical, healing: false };
-  }
-
-  function damageFeedback(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): DamageFeedback | undefined {
-    const result = after.lastActionResult;
-    if (!result?.targetId) return undefined;
-    const target = after.enemies.find((enemy) => enemy.id === result.targetId)
-      ?? after.actors.find((actor) => actor.id === result.targetId);
-    if (!target) return undefined;
-    const beforeTarget = before.enemies.find((entry) => entry.id === result.targetId)
-      ?? before.actors.find((entry) => entry.id === result.targetId);
-    const delta = beforeTarget ? beforeTarget.hp - target.hp : Math.abs(result.amount);
-    const healing = command.kind === "skill" || command.kind === "item"
-      ? (beforeTarget ? target.hp > beforeTarget.hp : false)
-      : false;
-    if (!result.hit) return { targetId: result.targetId, amount: 0, critical: false, healing: false, miss: true };
-    if (!healing && delta <= 0) return undefined;
+    const amount = Math.abs(entry.amount ?? 0);
+    if (amount === 0) return undefined;
     return {
-      targetId: result.targetId,
-      amount: healing ? Math.max(0, target.hp - (beforeTarget?.hp ?? target.hp)) : delta,
-      critical: Boolean(result.critical),
-      healing,
+      targetId: entry.targetId,
+      amount,
+      critical: Boolean(entry.critical),
+      healing: entry.kind === "healing" || (entry.amount ?? 0) < 0,
     };
   }
 
-  function actorUserId(_command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): string {
-    const fromResult = after.lastActionResult?.userRecordId;
-    if (fromResult) return fromResult;
-    const active = before.activeActorId ?? after.activeActorId;
-    if (active) return active;
-    const first = before.actors.find((actor) => !actor.defeated) ?? after.actors[0];
-    return first?.recordId ?? first?.id ?? "actor";
+  function resultFromTimeline(entry: BattleTimelineEntrySnapshot): BattleActionResultSnapshot | undefined {
+    if (!entry.targetId || !entry.userRecordId) return undefined;
+    return {
+      userRecordId: entry.userRecordId,
+      targetId: entry.targetId,
+      hit: entry.hit !== false,
+      amount: entry.amount ?? 0,
+      critical: Boolean(entry.critical),
+      skillName: entry.skillName,
+    };
   }
 
   function revealResult(snapshot: BattleSnapshot, previous: BattleDirectorState): void {
@@ -156,7 +148,7 @@ export function createBattleSequencer(
   function finishTurn(previous: BattleDirectorState): void {
     clearMotion();
     const snapshot = runtime.snapshot();
-    consumedActions = snapshot.actionLog.length;
+    consumedTimeline = snapshot.timeline.length;
     if (snapshot.result) {
       revealResult(snapshot, previous);
       setBusy(false);
@@ -173,7 +165,10 @@ export function createBattleSequencer(
       hooks.onDirectorState({ ...directorBase, step: beat.directorStep });
     }
     hooks.onActionMotion?.(beat);
-    if (beat.feedback) hooks.onDamageFeedback(beat.feedback);
+    // Feedback belongs to exactly one beat. Explicitly clear it on approach/recover
+    // before syncing, otherwise battleDom reuses the prior impact feedback and
+    // appends the same damage popup again on the recover frame.
+    hooks.onDamageFeedback(beat.feedback);
     if (beat.hitStop) hooks.onHitFeel?.(true, beat.feedback);
     else hooks.onHitFeel?.(false, beat.feedback);
     hooks.onSyncView();
@@ -200,37 +195,69 @@ export function createBattleSequencer(
     else advance();
   }
 
-  /** 새 행동 로그 엔트리들을 하나씩 비트로 재생한 뒤 done을 호출한다. */
-  function playActionEntries(
-    entries: readonly BattleActionResultSnapshot[],
+  function playTimelineEntries(
+    entries: readonly BattleTimelineEntrySnapshot[],
     snapshot: BattleSnapshot,
-    done: () => void
+    done: () => void,
+    firstDirector?: BattleDirectorState,
   ): void {
     if (entries.length === 0) {
       done();
       return;
     }
     const [entry, ...rest] = entries;
-    const feedback = feedbackFromEntry(entry);
-    const directorBase = enemyActionDirectorState(entry, snapshot);
-    const beats = planEnemyActionBeats({
-      userId: entry.userRecordId,
-      feedback,
-      hitStopMs: BATTLE_HITSTOP_MS,
-      impactMs: BATTLE_IMPACT_MS,
-    });
-    playBeats(beats, directorBase, () => {
-      playActionEntries(rest, snapshot, done);
-    });
+    hooks.onTimelineEntry?.(entry);
+    const resultEntry = resultFromTimeline(entry);
+    const directorBase = firstDirector
+      ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry));
+    const feedback = feedbackFromTimeline(entry);
+    const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
+      || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep";
+    if (!visual) {
+      hooks.onDirectorState(directorBase);
+      hooks.onSyncView();
+      playTimelineEntries(rest, snapshot, done);
+      return;
+    }
+    const cinematicMs = entry.kind === "capture" && entry.targetId
+      ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true) ?? 0
+      : 0;
+    const beats = entry.side === "enemy"
+      ? planEnemyActionBeats({
+          userId: entry.userRecordId ?? entry.userId ?? "enemy",
+          feedback,
+          hitStopMs: BATTLE_HITSTOP_MS,
+          impactMs: BATTLE_IMPACT_MS,
+        })
+      : planActionBeats({
+          userId: entry.userRecordId ?? entry.userId ?? "actor",
+          targetId: entry.targetId,
+          feedback,
+          actingMs: Math.max(BATTLE_ACTING_MS, cinematicMs),
+          hitStopMs: BATTLE_HITSTOP_MS,
+          impactMs: BATTLE_IMPACT_MS,
+        });
+    playBeats(beats, directorBase, () => playTimelineEntries(rest, snapshot, done));
+  }
+
+  function timelineDirectorState(entry: BattleTimelineEntrySnapshot): BattleDirectorState {
+    const detail = entry.kind === "stateAdded" ? `상태가 부여되었다: ${entry.stateId ?? "상태"}`
+      : entry.kind === "stateRemoved" ? `상태가 해제되었다: ${entry.stateId ?? "상태"}`
+      : entry.kind === "stateUpkeep" ? `상태 지속 피해 ${entry.amount ?? 0}`
+      : entry.kind === "incapacitated" ? "상태 이상으로 행동할 수 없다."
+      : entry.kind === "switch" ? "전열을 교체했다."
+      : entry.kind === "capture" ? (entry.success ? "포획에 성공했다!" : "포획에 실패했다.")
+      : "행동을 실행했다.";
+    return { step: "acting", lines: [detail], targetId: entry.targetId };
   }
 
   function resolveEnemyTurns(previous: BattleDirectorState): void {
     delay(() => {
       advanceBattleRuntime(runtime);
       const after = runtime.snapshot();
-      const entries = after.actionLog.slice(consumedActions);
-      consumedActions = after.actionLog.length;
-      playActionEntries(entries, after, () => finishTurn(previous));
+      const entries = after.timeline.slice(consumedTimeline);
+      consumedTimeline = after.timeline.length;
+      playTimelineEntries(entries, after, () => finishTurn(previous));
     }, BATTLE_RESOLVE_MS);
   }
 
@@ -259,49 +286,36 @@ export function createBattleSequencer(
     runAfterActorCommand(command: ActorCommand, before: BattleSnapshot, after: BattleSnapshot): void {
       clearTimers();
       setBusy(true);
-      // 플레이어 자신의 행동 엔트리는 아래 연출이 담당하므로 로그에서 소비 처리.
-      consumedActions = after.actionLog.length;
+      const setupEntries = before.timeline.slice(consumedTimeline);
+      const commandStart = Math.max(consumedTimeline, before.timeline.length);
+      const commandEntries = after.timeline.slice(commandStart);
+      consumedTimeline = after.timeline.length;
       const actingState = actorCommandDirectorState(command, before, after);
-      const feedback = damageFeedback(command, before, after);
-      const userId = actorUserId(command, before, after);
-
-      // 포획은 구슬 시네마틱이 먼저 재생된 뒤 결과 텍스트/임팩트로 이어진다.
-      const cinematicMs = command.kind === "capture"
-        ? hooks.onCaptureCinematic?.(command.targetEnemyId, after.lastCaptureResult?.success === true) ?? 0
-        : 0;
-
-      const beats = planActionBeats({
-        userId,
-        targetId: feedback?.targetId
-          ?? (command.kind === "attack" || command.kind === "capture" ? command.targetEnemyId : undefined),
-        feedback,
-        actingMs: Math.max(BATTLE_ACTING_MS, cinematicMs),
-        hitStopMs: BATTLE_HITSTOP_MS,
-        impactMs: BATTLE_IMPACT_MS,
-      });
-
-      // First beat stamps acting immediately (matches prior test: steps[0] === "acting").
-      playBeats(beats, actingState, () => {
+      const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);
-        // 막타로 전투가 끝났으면 적 턴 비트를 건너뛰고 곧바로 결과·보상 공개로 넘어간다.
-        if (runtime.snapshot().result) {
+        if (after.battleFlow === "strict" || runtime.snapshot().result) {
           finishTurn(actingState);
         } else {
           resolveEnemyTurns(actingState);
         }
-      });
+      };
+      playTimelineEntries(
+        setupEntries,
+        before,
+        () => playTimelineEntries(commandEntries, after, finish, actingState),
+      );
     },
     runAfterEnemyAdvance(_before: BattleSnapshot, after: BattleSnapshot): void {
       if (busy) return;
-      const entries = after.actionLog.slice(consumedActions);
+      const entries = after.timeline.slice(consumedTimeline);
       if (entries.length === 0) return;
-      consumedActions = after.actionLog.length;
+      consumedTimeline = after.timeline.length;
       setBusy(true);
-      playActionEntries(entries, after, () => {
+      playTimelineEntries(entries, after, () => {
         clearMotion();
         const snapshot = runtime.snapshot();
-        consumedActions = snapshot.actionLog.length;
+        consumedTimeline = snapshot.timeline.length;
         if (snapshot.result) {
           revealResult(snapshot, commandPromptState(snapshot));
           setBusy(false);
