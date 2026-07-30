@@ -47,6 +47,18 @@ handoff.md
 # 리포트용 스크린샷 산출물. `report-assets/` 자체에는 추적 중인 알파 PNG 가 있으므로
 # 생성물이 쌓이는 하위 디렉터리만 무시한다.
 /report-assets/shots/
+# 진단·스크래치 산출물. 실측: 정리 시점에 루트/scripts 에 35건(9.5MB)이 쌓여 있었고
+# 모두 재생성 가능한 일회용이었다. 개별 삭제로 끝내면 다시 쌓이므로 패턴으로 막는다.
+# tsc 전체 출력 덤프
+/tsc-full*.txt
+# 에이전트 세션 덤프 (claude CLI 가 루트에 흘린다)
+/tmpclaude-*
+# 일회용 스크립트: scripts/scratch-*.{mts,cjs,py} 21건이 커밋 후보로 올라왔다.
+# 보존 가치가 있으면 scratch- 접두사를 떼고 정식 이름으로 커밋한다.
+/scripts/scratch-*
+# 배경 제거·리포트 생성용 일회용 루트 스크립트
+/remove_bg.*
+/_fix_report.py
 # 에이전트/세션 잡 · 런타임 pid · 파이썬 캐시
 .claude/
 .gjc/
