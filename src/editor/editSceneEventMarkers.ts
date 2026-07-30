@@ -23,12 +23,26 @@ const EVENT_CLICK_STROKE_COLOR = 0x0a246a;
 const EVENT_CLICK_STROKE_ALPHA = 0.95;
 const EVENT_CLICK_TEXT_COLOR = "#ffffff";
 const EVENT_CLICK_TEXT_BACKGROUND = "#0a246a";
-/** 모노 폰트로 좌표 숫자를 정렬하되, 한글(새 이벤트 위치/편집 위치)은
- *  Pretendard/맑은 고딕으로 렌더되도록 한국어 폴백을 포함한 스택.
- *  에디터 DOM의 --font-ui/--font-mono 토큰(tokens.css)과 짝을 맞춘다. */
-const EVENT_LABEL_FONT_FAMILY =
-  "\"Cascadia Mono\", \"JetBrains Mono\", \"Pretendard\", \"Apple SD Gothic Neo\", \"Malgun Gothic\", Consolas, monospace, sans-serif";
-const EVENT_LABEL_FONT_SIZE = "11px";
+/** 라벨 문자열('새 이벤트 위치 12,34')은 한글이 대부분이라 한글 본문 폰트를 앞에 둔다.
+ *  모노가 앞에 있으면 한글 글리프가 없어 글자마다 Malgun Gothic 등으로 폴백하며
+ *  베이스라인·굵기가 섞여 지저분해 보인다. 모노는 마지막 폴백으로만 남긴다. */
+export const EVENT_LABEL_FONT_FAMILY =
+  "\"Pretendard\", \"Malgun Gothic\", \"Apple SD Gothic Neo\", system-ui, sans-serif, \"Cascadia Mono\", \"JetBrains Mono\", Consolas, monospace";
+export const EVENT_LABEL_FONT_SIZE = "12px";
+/** 캔버스 텍스트 래스터화 해상도 하한. Phaser Text의 resolution 기본값은 1이라
+ *  고DPI 화면이나 카메라 확대 시 1x로 래스터화된 뒤 뭉개진다. */
+const EVENT_LABEL_MIN_RESOLUTION = 2;
+/** 텍스처 메모리 낭비를 막기 위한 해상도 상한. */
+const EVENT_LABEL_MAX_RESOLUTION = 4;
+
+/** 클릭 피드백 라벨의 캔버스 래스터화 해상도를 계산하는 순수 함수.
+ *  devicePixelRatio와 카메라 zoom을 곱해 올림하되, [하한, 상한] 범위로 제한한다.
+ *  happy-dom 등 devicePixelRatio가 없는 환경에서는 1로 폴백한다. */
+export function eventLabelResolution(devicePixelRatio: number | undefined, cameraZoom: number): number {
+  const dpr = Number.isFinite(devicePixelRatio) && (devicePixelRatio as number) > 0 ? (devicePixelRatio as number) : 1;
+  const zoom = Number.isFinite(cameraZoom) && cameraZoom > 0 ? cameraZoom : 1;
+  return Math.min(EVENT_LABEL_MAX_RESOLUTION, Math.max(EVENT_LABEL_MIN_RESOLUTION, Math.ceil(dpr * zoom)));
+}
 
 type EventMarkerPosition = {
   readonly x: number;
@@ -97,12 +111,16 @@ export function renderEventLayerClickFeedback(
 
   const labelY = Math.max(0, worldY - 14);
   const action = feedback.mode === "edit" ? "편집 위치" : "새 이벤트 위치";
+  // overlayLayer는 카메라 zoom이 적용되므로 zoom까지 반영해 고해상도로 래스터화한다.
+  // 12px + 배경(#0a246a) 대비로 가독성을 확보하며, 캔버스에서 뭉개지는 bold는 쓰지 않는다.
   const label = context.scene.add.text(worldX + 2, labelY, `${action} ${feedback.x},${feedback.y}`, {
     backgroundColor: EVENT_CLICK_TEXT_BACKGROUND,
     color: EVENT_CLICK_TEXT_COLOR,
     fontFamily: EVENT_LABEL_FONT_FAMILY,
     fontSize: EVENT_LABEL_FONT_SIZE,
-    fontStyle: "bold",
+    // cameras 는 테스트의 가짜 scene 에 없을 수 있다 — 옵셔널 체이닝으로 접근하고 zoom 은 1로 폴백한다.
+    // (eventLabelResolution 이 비정상 zoom 을 다시 1로 정규화하므로 안전하다.)
+    resolution: eventLabelResolution(globalThis.devicePixelRatio, context.scene.cameras?.main?.zoom ?? 1),
     padding: { left: 4, right: 4, top: 2, bottom: 2 },
   });
   context.overlayLayer.add(label);

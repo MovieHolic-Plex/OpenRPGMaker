@@ -11,7 +11,6 @@ import {
   collectResourceIds,
   validateActorResources,
   validateAnimationResource,
-  validateBattlerAnimationResources,
   validateEnemyResources,
   validateEquipmentResources,
   validateItemResources,
@@ -72,11 +71,11 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateItemRecords(project, actorIds, classIds, skillIds, animationIds, resourceIds, issues);
   validateEquipmentRecords(project, actorIds, classIds, skillIds, resourceIds, issues);
   validateEnemyRecords(project, itemIds, skillIds, resourceIds, context.switchIds, speciesIds, issues);
+  validateElementRates(project, issues);
   validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues);
   validateCropRecords(project, itemIds, resourceIds, issues);
   validateTroopRecords(project, enemyIds, context, issues);
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
-  for (const animation of project.database.battlerAnimations ?? []) check(() => validateBattlerAnimationResources(animation, resourceIds));
   for (const terrain of project.database.terrains ?? []) {
     check(() => validateOptionalResource(`terrain ${terrain.id}: battleBackgroundResourceId`, terrain.battleBackgroundResourceId, resourceIds));
     check(() => validateOptionalResource(`terrain ${terrain.id}: footstepSoundResourceId`, terrain.footstepSoundResourceId, resourceIds));
@@ -130,6 +129,10 @@ export function repairProjectReferences(project: Project): void {
   for (const skill of project.database.skills) {
     if (skill.elementId && !elementIdExists(project, skill.elementId)) delete skill.elementId;
   }
+  // 삭제된 속성(database.elements) 을 가리키는 actor/enemy/class 의 elementRates 잔재 제거.
+  // 요소 개수 축소로 잘린 id 가 잔존하다가, 같은 ordinal 로 재생성될 때 stale 등급이 소생하는
+  // 위험(B4) 을 로드 시점에 원천 차단한다. skill.elementId 정리와 동일한 자동치유 정책.
+  pruneDanglingElementRates(project);
   // 삭제/미생성 맵을 가리키는 transfer·changeTile 과 생활 이동 목적지는 로드를 벽돌내는 대신
   // 여기서 정리한다 — AI가 만들다 만 맵 참조가 저장본에 남아 프로젝트 전체가 열리지 않던 사고의 재발 방지.
   const prune = new PruneStats();
@@ -480,6 +483,41 @@ function elementIds(project: Project): ReadonlySet<string> {
 
 function elementIdExists(project: Project, elementId: string): boolean {
   return elementIds(project).has(elementId);
+}
+
+// elementRates 키 공간은 database.elements[].id 만이다 — 에디터가 database.elements 순회로
+// 행을 만들기 때문. typeChart.types 와는 별개 네임스페이스이므로 분리된 집합을 쓴다.
+function databaseElementIds(project: Project): ReadonlySet<string> {
+  return new Set((project.database.elements ?? []).map((element) => element.id));
+}
+
+// actor/enemy/class 의 elementRates 에서 존재하지 않는 속성 id 키를 제거한다.
+// B4: 요소 축소/삭제 후 잔존하는 고아 등급을 치워, 같은 id 재생성 시 stale 등급 소생 방지.
+export function pruneDanglingElementRates(project: Project): void {
+  const ids = databaseElementIds(project);
+  const scrub = (rates: Record<string, unknown> | undefined): void => {
+    if (!rates) return;
+    for (const id of Object.keys(rates)) {
+      if (!ids.has(id)) delete rates[id];
+    }
+  };
+  for (const actor of project.database.actors) scrub(actor.elementRates);
+  for (const enemy of project.database.enemies) scrub(enemy.elementRates);
+  for (const klass of project.database.classes) scrub(klass.elementRates);
+}
+
+// elementRates 의 dangling 키를 검증 이슈로 보고한다 — equipment element 보고(L271/L290) 와 대칭.
+function validateElementRates(project: Project, issues: string[]): void {
+  const ids = databaseElementIds(project);
+  const report = (owner: string, rates: Record<string, unknown> | undefined): void => {
+    if (!rates) return;
+    for (const id of Object.keys(rates)) {
+      if (!ids.has(id)) issues.push(`${owner}: elementRates key does not exist: ${id}`);
+    }
+  };
+  for (const actor of project.database.actors) report(`actor ${actor.id}`, actor.elementRates);
+  for (const enemy of project.database.enemies) report(`enemy ${enemy.id}`, enemy.elementRates);
+  for (const klass of project.database.classes) report(`class ${klass.id}`, klass.elementRates);
 }
 
 function pruneDanglingCommandRefs(

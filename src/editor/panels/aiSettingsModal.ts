@@ -10,7 +10,7 @@ import {
   saveAiConfig,
   type AiConfig,
 } from "@/ai/llmClient";
-import { modelCatalogForAuthMode } from "@/ai/modelCatalog";
+import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
 import {
   applyAiFontSize,
   loadAiFontSize,
@@ -118,6 +118,18 @@ export function renderAiSettingsForm(options: {
   const authSettings = renderAiAuthSettings(authMode, (next) => {
     authMode = next;
     updateAuthVisibility();
+    // 연결 방식을 바꾸면 모델 드롭다운 목록만 갈아끼우고 선택된 값은 그대로 두던 결함이 있었다.
+    // 그래서 ChatGPT(Codex)로 전환해도 게이트웨이 모델 ID 가 남아 400 이 났다. 새 authMode 에서
+    // 현재 값이 무효하면 권장 기본값으로 따라오게 한다. 유효하면 사용자 선택을 존중해 그대로 둔다.
+    // setValue 를 써야 드롭다운 하이라이트 동기화와 경고 재평가가 함께 일어난다.
+    // defaultModelForAuthMode 는 방어적으로 "" 를 줄 수 있어(카탈로그 빈 경우) DEFAULT_* 로 폴백한다.
+    const recommended = defaultModelForAuthMode(authMode);
+    if (!isModelValidForAuthMode(authMode, model.input.value.trim())) {
+      model.setValue(recommended || DEFAULT_MODEL, authMode);
+    }
+    if (!isModelValidForAuthMode(authMode, liteModel.input.value.trim())) {
+      liteModel.setValue(recommended || DEFAULT_LITE_MODEL, authMode);
+    }
     model.refresh(authMode);
     liteModel.refresh(authMode);
     persistAuthMode();
@@ -208,10 +220,21 @@ export function renderAiSettingsForm(options: {
   let autoSaveTimer: number | null = null;
   const persist = (showToast: boolean): void => {
     const next = collect();
+    // 저장 전에 모델 유효성을 검사해 무효하면 눈에 보이게 알린다. 요청을 보내고 400 을 받고 나서야
+    // 아는 지금 동작을 막기 위함이다. 저장 자체는 막지 않는다 — 무효 모델이 저장돼도 loadAiConfig 가
+    // 로드 시점에 권장 기본으로 교정(원인 1 수정)하므로 실제로 400 요청이 나가지는 않기 때문이다.
+    // 여기서 저장을 막으면 사용자 입력을 되돌리는 부작용이 생기고, 교정 안전망이 이미 있으므로
+    // 경고(인라인 + 토스트)만으로 충분하다고 판단했다.
+    const modelValid = model.validate(authMode);
+    const liteValid = liteModel.validate(authMode);
     saveAiConfig(next);
     onSaved(next);
     savedHint.textContent = "자동 저장됨";
-    if (showToast) toast("어시스턴트 설정을 저장했습니다.", "ok");
+    if (!modelValid || !liteValid) {
+      toast("선택한 모델이 현재 연결 방식에서 쓸 수 없습니다. 모델 입력 아래 경고를 확인하세요.", "error");
+    } else if (showToast) {
+      toast("어시스턴트 설정을 저장했습니다.", "ok");
+    }
   };
   persistAuthMode = () => persist(false);
   const scheduleAutoSave = (): void => {
@@ -230,6 +253,8 @@ export function renderAiSettingsForm(options: {
     field.input.addEventListener("change", () => persist(false));
   }
   for (const field of [model, liteModel]) {
+    // 입력 즉시 유효성을 보여준다(저장까지 기다리지 않음). authMode 는 클로저의 현재 값을 쓴다.
+    field.input.addEventListener("input", () => field.validate(authMode));
     field.preset.addEventListener("change", () => {
       if (field.preset.value) field.input.value = field.preset.value;
       persist(false);
@@ -297,7 +322,14 @@ function modelField(
   presetTestid: string,
   authMode: AiConfig["authMode"],
   placeholder: string
-): { row: HTMLElement; input: HTMLInputElement; preset: HTMLSelectElement; refresh: (mode: AiConfig["authMode"]) => void } {
+): {
+  row: HTMLElement;
+  input: HTMLInputElement;
+  preset: HTMLSelectElement;
+  refresh: (mode: AiConfig["authMode"]) => void;
+  validate: (mode: AiConfig["authMode"]) => boolean;
+  setValue: (value: string, mode: AiConfig["authMode"]) => void;
+} {
   const input = el("input", {
     class: "ai-config-input",
     attrs: { type: "text", placeholder },
@@ -309,6 +341,18 @@ function modelField(
     dataset: { testid: presetTestid },
     attrs: { "aria-label": `${label} 추천 모델` },
   }) as HTMLSelectElement;
+  // 무효 모델 경고. aiAuthSettings 의 serverError(companion-hint) 관례를 따라 인라인 div 로 표시한다.
+  // companion-hint 의 글자 크기(11px)·여백은 CSS 를 따르고, 경고색은 이 패널의 위험 표시 관례
+  // (tabs-b-assistant-panel.css 의 --danger 사용)를 인라인으로 적용한다 — 이 파일은 CSS 를 편집할 수
+  // 없으므로 새 클래스 스타일을 발명하지 않고 기존 토큰을 그대로 쓴다.
+  const warning = el("div", {
+    class: "ai-model-warning",
+    attrs: { hidden: "", role: "alert" },
+    dataset: { testid: `${inputTestid}-warning` },
+  });
+  warning.style.color = "var(--danger, #d85c5c)";
+  warning.style.fontSize = "11px";
+  warning.style.marginTop = "4px";
   const refresh = (nextMode: AiConfig["authMode"]): void => {
     const groups = modelCatalogForAuthMode(nextMode);
     const options = [
@@ -321,14 +365,41 @@ function modelField(
     preset.replaceChildren(...options);
     preset.value = groups.some((group) => group.models.includes(input.value)) ? input.value : "";
   };
+  // 현재 입력값이 해당 authMode 에서 유효한지 판정하고, 무효하면 경고 문구를 보여준다.
+  // 유효하면 경고를 숨긴다. true = 유효.
+  const validate = (mode: AiConfig["authMode"]): boolean => {
+    const value = input.value.trim();
+    if (isModelValidForAuthMode(mode, value)) {
+      warning.hidden = true;
+      warning.textContent = "";
+      return true;
+    }
+    warning.hidden = false;
+    warning.textContent =
+      mode === "chatgpt"
+        ? "ChatGPT 구독(Codex)은 gpt- 로 시작하는 모델만 쓸 수 있습니다. 목록에서 gpt- 모델을 고르거나 연결 방식을 API/게이트웨이로 바꾸세요."
+        : "이 연결 방식에서 쓸 수 없는 모델입니다. 목록에서 모델을 고르세요.";
+    return false;
+  };
+  // 값을 바꾸는 공개 수단. input.value 직접 대입은 드롭다운 하이라이트와 경고 표시가 어긋난다.
+  // setValue 는 입력값 교체 → 드롭다운 동기화 → 경고 재평가를 한꺼번에 처리한다.
+  // (authMode 전환 시 무효 모델을 권장 기본으로 교정할 때 이 setter 를 쓴다.)
+  // mode 를 인자로 받는 이유: 이 함수의 authMode 매개변수는 생성 시점 초기값이라 전환 후엔
+  // stale 하다 — 호출 쪽이 현재 authMode 를 넘겨야 경고가 올바른 기준으로 재평가된다.
+  const setValue = (value: string, mode: AiConfig["authMode"]): void => {
+    input.value = value;
+    preset.value = value;
+    validate(mode);
+  };
   const row = el("label", {
     class: "ai-config-row ai-model-row",
     children: [
       el("span", { class: "ai-config-label", text: label }),
       el("span", { class: "ai-model-help", text: "목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
       el("div", { class: "ai-model-control", children: [preset, input] }),
+      warning,
     ],
   });
   refresh(authMode);
-  return { row, input, preset, refresh };
+  return { row, input, preset, refresh, validate, setValue };
 }

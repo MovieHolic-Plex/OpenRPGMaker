@@ -11,6 +11,7 @@ import {
   type SaveSlotIndex,
 } from "@/player/saveSlots";
 import { createDialogueUI } from "@/player/dialogue";
+import { destroyBattleSceneOnHost } from "@/player/battleDom";
 import { markPlayRender } from "@/app/perfMetrics";
 import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
@@ -83,6 +84,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     loadDetach = null;
     touchPad?.cleanup();
     touchPad = null;
+    // 전투가 끝나기 전에 플레이를 닫으면(편집으로/x) battleScene 지역변수가 도달 불가가 되어
+    // 틱·keydown·ResizeObserver 가 새어나간다. host 기준으로 컨트롤러를 정리한다(결함 1c).
+    if (playStage) destroyBattleSceneOnHost(playStage);
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
     playStage = null;

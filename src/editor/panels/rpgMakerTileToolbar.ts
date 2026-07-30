@@ -12,10 +12,8 @@ import { store } from "@/project/store";
 
 export {
   selectRpgMakerEyedropperTool,
-  selectRpgMakerStructureStamp,
   selectRpgMakerTileTool,
   setRpgMakerBrushSize,
-  toggleRpgMakerTileStamp,
 } from "@/editor/panels/rpgMakerTileToolbarActions";
 
 type RpgMakerToolbarItem = {

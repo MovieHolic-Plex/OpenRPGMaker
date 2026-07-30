@@ -7,10 +7,21 @@ import type { SessionEvent } from "@/ai/assistantSession";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { subscribePendingRegionApply, type PendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { dispatchRegionTaskStatus } from "@/editor/regionTask/regionTaskStatus";
-import { nextSuggestedRegionCommands, SUGGESTED_REGION_COMMANDS } from "@/editor/regionTask/suggestedCommands";
+import {
+  nextSuggestedRegionCommands,
+  regionCommandCategories,
+  SUGGESTED_REGION_COMMANDS,
+  type SuggestedRegionCommand,
+} from "@/editor/regionTask/suggestedCommands";
 import { suggestRegionCommandsByContext } from "@/editor/regionTask/regionContextSuggestions";
 import { formatRegionTileStatsCompact, summarizeRegionTiles } from "@/editor/regionTask/regionTileStats";
 import {
+  regionEventChangeLabel,
+  summarizeOutsideRegionChanges,
+  summarizeRegionEventChanges,
+} from "@/editor/regionTask/regionChangeSummary";
+import {
+  describeChunkPosition,
   groupRegionChanges,
   withChunkLabels,
   type RegionChunk,
@@ -28,12 +39,6 @@ import {
   type RegionTaskResult,
 } from "@/editor/regionTask/runRegionTask";
 import { renderRegionSnapshot } from "@/editor/regionSnapshot";
-import {
-  defaultStampName,
-  saveRegionAsStamp,
-  type SaveRegionAsStampArgs,
-  type SaveRegionAsStampResult,
-} from "@/editor/regionStampCreate";
 import { store } from "@/project/store";
 import type { GameMap, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -62,10 +67,6 @@ export interface RegionTaskModalOptions {
   readonly run?: RegionTaskRunner;
   /** 테스트 주입: 썸네일 렌더러(기본 renderRegionSnapshot 캔버스). */
   readonly renderSnapshot?: (project: Project, map: GameMap, region: RegionRect) => Promise<HTMLElement>;
-  /** 테스트 주입: 스탬프 저장 함수(기본 saveRegionAsStamp). */
-  readonly saveStamp?: (args: SaveRegionAsStampArgs) => SaveRegionAsStampResult | null;
-  /** 테스트 주입: 기본 이름용 project 조회(기본 store.getCurrent). */
-  readonly projectForStampName?: () => Project;
   /** 테스트 주입: 동적 추천/통계 칩용 project 조회(기본 store.getCurrent). */
   readonly projectForContext?: () => Project;
   /** 테스트 주입: 부분 적용 함수(기본 composePartialProject). UI 테스트용. */
@@ -75,18 +76,48 @@ export interface RegionTaskModalOptions {
   readonly applyPartialProject?: (project: Project, label: string, mapId: MapId) => void;
 }
 
+/** 툴 인자를 title 툴팁용 문자열로. 순환 참조 등으로 실패하면 빈 문자열. */
+function safeJson(value: unknown): string {
+  try {
+    return JSON.stringify(value) ?? "";
+  } catch {
+    return "";
+  }
+}
+
 let modalRoot: HTMLElement | null = null;
 // 현재 열린 모달의 정리 콜백 — 새 모달이 열리거나(closeRegionTaskModal 선호출) 명시적으로
 // 닫힐 때 미해소 pending을 discard하고 구독을 해제한다(스펙: 새 영역 작업 시작 시 기존
 // pending discard). 이 콜백 내부에서 closeRegionTaskModal을 다시 호출하지 않는다(재귀 방지).
 let activeModalCleanup: (() => void) | null = null;
 
+/** 영역 작업 창(모달/팝오버)이 열려 있는가. 캔버스 오버레이(선택 칩)가 겹치지 않게 쓴다. */
+export function isRegionTaskModalOpen(): boolean {
+  return modalRoot !== null;
+}
+
+export const REGION_TASK_MODAL_EVENT = "rpgzzu:region-task-modal";
+
+/** 열림/닫힘을 알린다 — EditScene 이 선택 칩 오버레이를 숨기거나 되살리는 신호. */
+function dispatchModalOpenState(open: boolean): void {
+  if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
+  if (typeof CustomEvent === "function") {
+    window.dispatchEvent(new CustomEvent(REGION_TASK_MODAL_EVENT, { detail: { open } }));
+    return;
+  }
+  const event = new Event(REGION_TASK_MODAL_EVENT);
+  Object.defineProperty(event, "detail", { configurable: true, value: { open } });
+  window.dispatchEvent(event);
+}
+
 export function closeRegionTaskModal(): void {
+  const wasOpen = modalRoot !== null;
   const cleanup = activeModalCleanup;
   activeModalCleanup = null;
   cleanup?.();
   modalRoot?.remove();
   modalRoot = null;
+  if (wasOpen) dispatchModalOpenState(false);
 }
 
 export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElement {
@@ -133,12 +164,10 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     dataset: { testid: "region-task-close" },
     on: { click: () => discardAndClose() },
   });
+  // 로그 버튼은 헤더에서 「고급」 안으로 옮겼다 — 초보자에게 첫 화면에 보일 이유가 없다.
   const titleRow = el("div", {
     class: "region-task-title-row",
-    children: [
-      el("span", { class: "region-task-title", text: "✦ 영역 작업" }),
-      copyLogButton,
-    ],
+    children: [el("span", { class: "region-task-title", text: "✦ 영역 작업" })],
   });
   const header = el("div", {
     class: "region-task-header",
@@ -164,23 +193,52 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   } else {
     textarea.setAttribute("placeholder", `이 영역에 무엇을 할까요? 예: ${suggestions[0].instruction}`);
   }
+  const makeCommandChip = (command: SuggestedRegionCommand): HTMLElement =>
+    el("button", {
+      class: "region-task-suggest-chip",
+      text: command.label,
+      attrs: { type: "button", title: command.instruction },
+      dataset: { testid: `region-suggest-${command.id}` },
+      on: {
+        click: () => {
+          textarea.value = command.instruction;
+          textarea.focus();
+        },
+      },
+    });
   const suggestionRow = el("div", {
     class: "region-task-suggestions",
     dataset: { testid: "region-task-suggestions" },
-    children: suggestions.map((command) =>
-      el("button", {
-        class: "region-task-suggest-chip",
-        text: command.label,
-        attrs: { type: "button", title: command.instruction },
-        dataset: { testid: `region-suggest-${command.id}` },
-        on: {
-          click: () => {
-            textarea.value = command.instruction;
-            textarea.focus();
-          },
-        },
-      }),
-    ),
+    children: suggestions.map(makeCommandChip),
+  });
+  // 카테고리 줄 — 로테이션 4개만 보이면 "타일 채우기 도구"로 오해된다. 무엇을 시킬 수 있는지의
+  // 범위(NPC·전투·분위기…)를 항상 눈에 두고, 고르면 그 카테고리 명령으로 아래 줄을 갈아 끼운다.
+  const categories = regionCommandCategories();
+  let activeCategoryId: string | null = null;
+  const categoryChips = new Map<string, HTMLElement>();
+  const showCategory = (id: string | null): void => {
+    // 같은 칩을 다시 누르면 해제 — 문맥 추천(4개)으로 돌아온다.
+    activeCategoryId = id;
+    for (const [chipId, chip] of categoryChips) chip.classList.toggle("is-active", chipId === id);
+    const picked = id === null ? null : categories.find((category) => category.id === id);
+    suggestionRow.replaceChildren(
+      ...(picked ? picked.commands.map(makeCommandChip) : suggestions.map(makeCommandChip)),
+    );
+  };
+  const categoryRow = el("div", {
+    class: "region-task-categories",
+    dataset: { testid: "region-task-categories" },
+    children: categories.map((category) => {
+      const chip = el("button", {
+        class: "region-task-category-chip",
+        text: `${category.icon} ${category.label}`,
+        attrs: { type: "button" },
+        dataset: { testid: `region-category-${category.id}` },
+        on: { click: () => showCategory(activeCategoryId === category.id ? null : category.id) },
+      });
+      categoryChips.set(category.id, chip);
+      return chip;
+    }),
   });
 
   const log = el("div", { class: "region-task-log", dataset: { testid: "region-task-log" } });
@@ -194,8 +252,63 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
   }) as HTMLButtonElement;
 
   const renderSnapshot = options.renderSnapshot
-    ?? ((project: Project, map: GameMap, rect: RegionRect) => renderRegionSnapshot(project, map, rect));
+    // targetWidth 를 기본 140 → 200 으로 키운다. 미리보기가 결정의 근거인데 너무 작았다.
+    ?? ((project: Project, map: GameMap, rect: RegionRect) =>
+      renderRegionSnapshot(project, map, rect, { targetWidth: 200 }));
   const compareHost = el("div", { class: "region-task-compare-host" });
+
+  // 검토 단계에서 입력창 대신 보여 줄 지시 요약 — 무엇을 시켰는지는 남되 자리는 한 줄만 쓴다.
+  const recapText = el("span", { class: "region-task-recap-text", dataset: { testid: "region-task-recap-text" } });
+  const recapEdit = el("button", {
+    class: "region-task-recap-edit",
+    text: "지시 수정",
+    attrs: { type: "button" },
+    dataset: { testid: "region-task-recap-edit" },
+  });
+  const recapRow = el("div", {
+    class: "region-task-recap",
+    dataset: { testid: "region-task-recap" },
+    children: [recapText, recapEdit],
+  });
+
+  // ── 단계 상태 ────────────────────────────────────────────────────────────
+  // compose: 무엇을 만들지 고른다 / running: 생성 중 / review: 제안을 보고 결정한다.
+  // 어떤 요소를 보일지는 CSS 가 data-stage 로 정한다 — JS 가 개별 요소를 숨기지 않는다.
+  type RegionTaskStage = "compose" | "running" | "review";
+  let stageHost: HTMLElement | null = null;
+  let currentStage: RegionTaskStage = "compose";
+  const setStage = (stage: RegionTaskStage): void => {
+    currentStage = stage;
+    if (stageHost?.dataset) stageHost.dataset.stage = stage;
+  };
+
+  // ── 「고급」 접이식 영역 ──────────────────────────────────────────────────
+  // 로그·부분 적용·스탬프는 초보자가 첫 화면에서 만날 이유가 없다. 다만 한번 펼치면
+  // (advancedPinned) 사용자가 명시적으로 연 것이므로 자동으로 닫지 않는다.
+  const partialHost = el("div", {
+    class: "region-task-partial-host hidden",
+    dataset: { testid: "region-task-partial-host" },
+  });
+  const advancedBody = el("div", { class: "region-task-advanced-body hidden" });
+  const advancedToggle = el("button", {
+    class: "region-task-advanced-toggle",
+    text: "▸ 고급 (로그 · 부분 적용 · 스탬프)",
+    attrs: { type: "button", "aria-expanded": "false" },
+    dataset: { testid: "region-task-advanced-toggle" },
+  }) as HTMLButtonElement;
+  let advancedPinned = false;
+  const setAdvancedOpen = (open: boolean): void => {
+    advancedBody.classList.toggle("hidden", !open);
+    advancedToggle.setAttribute("aria-expanded", open ? "true" : "false");
+    advancedToggle.textContent = `${open ? "▾" : "▸"} 고급 (로그 · 부분 적용 · 스탬프)`;
+  };
+  advancedToggle.addEventListener("click", () => {
+    const open = advancedBody.classList.contains("hidden");
+    advancedPinned = open;
+    setAdvancedOpen(open);
+    schedulePopoverReposition();
+  });
+
   let activePending: PendingRegionApply | null = null;
   // renderPendingCompare가 건 subscribePendingRegionApply 구독의 해제 함수 — 모달 스코프에
   // 저장해 activeModalCleanup(모달 교체/닫기 시)이 정확히 1회 해제할 수 있게 한다.
@@ -211,26 +324,39 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   // applied: true=적용, false=버리기, null=외부(캔버스 인라인 툴바 등)에서 settle되어 결과를 알 수 없음.
   const settlePendingUi = (applied: boolean | null): void => {
+    const appliedSummary = `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`;
     setSummary(
       applied === true
-        ? `적용됨 — ${activePending?.changedCells ?? 0}칸 타일 · 이벤트 ${activePending?.changedEvents ?? 0}건`
+        ? appliedSummary
         : applied === false
           ? "버려졌습니다 — 맵은 변경되지 않았습니다"
           : "제안이 처리되었습니다",
     );
+    // 적용했으면 할 일이 끝났으므로 창을 닫는다 — 결과는 캔버스에 이미 보이고, 창이 남아
+    // 있으면 방금 만든 것을 가린다. 무엇이 반영됐는지는 토스트로 알린다.
+    if (applied === true) {
+      toast(appliedSummary, "ok");
+      // 이 함수는 pending.apply() 직후 동기적으로 불린다. 여기서 바로 닫으면 호출부(버튼
+      // 핸들러)가 이미 사라진 DOM 을 계속 만지므로, 현재 콜스택을 빠져나온 뒤 닫는다.
+      const close = (): void => closeRegionTaskModal();
+      if (typeof globalThis.setTimeout === "function") globalThis.setTimeout(close, 0);
+      else close();
+      return;
+    }
     compareHost.replaceChildren();
+    partialHost.replaceChildren();
+    partialHost.classList.add("hidden");
+    setStage("compose");
     activePending = null;
     // running:false 배지 해제는 pending.apply()/discard() → onSettle(runRegionTask.ts)에서
     // 담당한다 — 캔버스 인라인 툴바 등 이 모달을 거치지 않는 settle 경로도 있어 여기서 중복 발행하지 않는다.
     runButton.disabled = false;
     textarea.disabled = false;
-    updateStampButtonState();
     schedulePopoverReposition();
   };
 
   const renderPendingCompare = async (pending: PendingRegionApply): Promise<void> => {
     activePending = pending;
-    updateStampButtonState();
     // 이 pending 전용 settle 감시 — 모달 버튼이 아니라 캔버스 인라인 툴바(✓/✗) 등 밖에서
     // settle 되어도(썸네일 await 도중 포함) 모달 UI(요약/버튼 재활성화)가 반영되도록 구독한다.
     let selfSettling = false;
@@ -249,38 +375,9 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     const map = pending.baseProject.maps[pending.mapId];
     const clippedMap = pending.clippedProject.maps[pending.mapId];
-    const figures = el("div", { class: "region-task-compare", dataset: { testid: "region-task-compare" } });
-    const makeFigure = async (
-      label: string,
-      testid: string,
-      project: Project,
-      figureMap: GameMap | undefined,
-    ): Promise<HTMLElement> => {
-      const body = el("div", { class: "region-task-compare-canvas", dataset: { testid } });
-      if (figureMap) {
-        try {
-          const canvas = await renderSnapshot(project, figureMap, pending.region);
-          // 클릭 시 2배 확대 토글
-          canvas.addEventListener?.("click", () => body.classList.toggle("is-zoomed"));
-          body.append(canvas);
-        } catch {
-          body.append(el("span", { class: "region-task-compare-fallback", text: "미리보기 실패" }));
-        }
-      }
-      return el("figure", {
-        class: "region-task-compare-figure",
-        children: [body, el("figcaption", { text: label })],
-      });
-    };
-    figures.append(
-      await makeFigure("이전", "region-task-before", pending.baseProject, map),
-      el("span", { class: "region-task-compare-arrow", text: "→" }),
-      await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap),
-    );
-    // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
-    // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
-    if (pending.settled) return;
-    // A: 부분 적용 — 청크 그룹화. 빈 변경이면 트리 숨김.
+
+    // A: 부분 적용 — 청크 그룹화. 썸네일보다 먼저 계산한다: "이후" 그림에 변경 칸
+    // 하이라이트를 겹치려면 어떤 칸이 바뀌었는지 알아야 한다.
     // groupRegionChanges/labeling 이 예외를 던지면(예: 테스트용 최소 맵) 안전하게 폴백 — 비교 UI는 정상 렌더.
     const compose = options.composePartial ?? composePartialProject;
     let groups: { lower: readonly RegionChunk[]; upper: readonly RegionChunk[]; unchangedCells: number } = { lower: [], upper: [], unchangedCells: 0 };
@@ -293,14 +390,123 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       groups = { lower: [], upper: [], unchangedCells: 0 };
       rawGroups = groups;
     }
-    const hasChanges = groups.lower.length > 0 || groups.upper.length > 0;
+    const allChunks = [...groups.lower, ...groups.upper];
+    const hasChanges = allChunks.length > 0;
+    // 청크가 1개뿐이면 "선택 적용"이 "모두 적용"과 완전히 같은 동작이라 고를 이유가 없다.
+    const partialUseful = allChunks.length > 1;
     const selectedChunkIds = new Set<string>();
-    const allChunkIds = [...groups.lower, ...groups.upper].map((c) => c.id);
+    const allChunkIds = allChunks.map((c) => c.id);
     // 기본: 모든 청크 선택(=전체 적용과 동일). 사용자가 일부 해제하면 부분 적용.
     for (const id of allChunkIds) selectedChunkIds.add(id);
+    const cellsOf = (ids: Iterable<string>): number => {
+      let total = 0;
+      const wanted = new Set(ids);
+      for (const chunk of allChunks) if (wanted.has(chunk.id)) total += chunk.cells.length;
+      return total;
+    };
+    // 총합은 pending.changedCells 를 쓴다. 청크 셀을 더하면 **레이어별로 따로 세므로**
+    // 한 칸이 바닥과 위 양쪽에서 바뀌면 2로 계산된다(실측: 버튼 18칸 vs 적용 요약 12칸).
+    // 적용 후 요약("적용됨 — N칸")과 같은 수를 보여야 한다.
+    const totalChangedCells = pending.changedCells;
+
+    const figures = el("div", { class: "region-task-compare", dataset: { testid: "region-task-compare" } });
+
+    // 이벤트 변경 목록은 **오버레이보다 먼저** 계산한다 — "이후" 그림 위에 이벤트 마커를
+    // 얹으려면 어떤 이벤트가 어디에 놓이는지 알아야 한다. (아래 변경 목록에서도 그대로 쓴다.)
+    const eventChanges = (() => {
+      try {
+        return summarizeRegionEventChanges(pending.baseProject, pending.clippedProject, pending.mapId, pending.region);
+      } catch {
+        return [];
+      }
+    })();
+
+    // 변경 칸 하이라이트 — 어디가 바뀌는지 그림만 보고 알 수 있어야 한다.
+    // 청크 id → 그 청크가 차지하는 오버레이 칸들. 체크박스 hover/해제 시 이 칸들만 손댄다.
+    const overlayCellsByChunk = new Map<string, HTMLElement[]>();
+    // 이벤트 id → 미리보기 마커. 변경 목록 행에 마우스를 올리면 이 마커를 강조한다 —
+    // 예전엔 캔버스에 작은 파란 점 하나여서 "무엇이 어디에 놓였는지"를 알 수 없었다.
+    const eventMarkersById = new Map<string, HTMLElement>();
+    const changeOverlay = (): HTMLElement | null => {
+      // 타일이 하나도 안 바뀌어도 이벤트만 놓이는 제안(NPC·상자)이 있다 — 그때도 마커를
+      // 얹을 격자가 필요하므로 오버레이를 만든다.
+      if (!hasChanges && eventChanges.length === 0) return null;
+      const { width: rw, height: rh } = pending.region;
+      if (rw <= 0 || rh <= 0) return null;
+      const chunkAt = new Map<string, string>();
+      for (const chunk of allChunks) for (const cell of chunk.cells) chunkAt.set(`${cell.x},${cell.y}`, chunk.id);
+      const cells: HTMLElement[] = [];
+      for (let cy = 0; cy < rh; cy += 1) {
+        for (let cx = 0; cx < rw; cx += 1) {
+          const chunkId = chunkAt.get(`${cx},${cy}`);
+          const cell = el("span", {
+            class: chunkId ? "region-task-change-cell is-changed" : "region-task-change-cell",
+          });
+          if (chunkId) {
+            const bucket = overlayCellsByChunk.get(chunkId);
+            if (bucket) bucket.push(cell);
+            else overlayCellsByChunk.set(chunkId, [cell]);
+          }
+          cells.push(cell);
+        }
+      }
+      // 이벤트 마커 — 절대 좌표를 영역 로컬 좌표로 환산해 같은 격자에 배치한다.
+      // 영역 밖(clipToRegion 이 되돌리기 전 좌표 등)은 격자에 자리가 없으므로 건너뛴다.
+      for (const change of eventChanges) {
+        const lx = change.x - pending.region.x;
+        const ly = change.y - pending.region.y;
+        if (lx < 0 || ly < 0 || lx >= rw || ly >= rh) continue;
+        const marker = el("span", {
+          class: "region-task-event-marker",
+          text: change.icon,
+          attrs: { style: `grid-column: ${lx + 1}; grid-row: ${ly + 1};` },
+        });
+        eventMarkersById.set(change.eventId, marker);
+        cells.push(marker);
+      }
+      return el("div", {
+        class: "region-task-change-overlay",
+        attrs: { style: `grid-template-columns: repeat(${rw}, 1fr); grid-template-rows: repeat(${rh}, 1fr);`, "aria-hidden": "true" },
+        dataset: { testid: "region-task-change-overlay" },
+        children: cells,
+      });
+    };
+    const makeFigure = async (
+      label: string,
+      testid: string,
+      project: Project,
+      figureMap: GameMap | undefined,
+      overlay: HTMLElement | null,
+    ): Promise<HTMLElement> => {
+      const body = el("div", { class: "region-task-compare-canvas", dataset: { testid } });
+      if (figureMap) {
+        try {
+          const canvas = await renderSnapshot(project, figureMap, pending.region);
+          // 클릭 시 2배 확대 토글
+          canvas.addEventListener?.("click", () => body.classList.toggle("is-zoomed"));
+          body.append(canvas);
+          if (overlay) body.append(overlay);
+        } catch {
+          body.append(el("span", { class: "region-task-compare-fallback", text: "미리보기 실패" }));
+        }
+      }
+      return el("figure", {
+        class: "region-task-compare-figure",
+        children: [body, el("figcaption", { text: label })],
+      });
+    };
+    const overlay = changeOverlay();
+    figures.append(
+      await makeFigure("이전", "region-task-before", pending.baseProject, map, null),
+      el("span", { class: "region-task-compare-arrow", text: "→" }),
+      await makeFigure("이후", "region-task-after", pending.clippedProject, clippedMap, overlay),
+    );
+    // 썸네일 렌더 도중 이미 밖에서(캔버스 등) settle 됐다면 — 구독이 이미 처리했으므로
+    // 지금 와서 apply/discard 버튼이 있는 비교 UI를 새로 그리지 않는다.
+    if (pending.settled) return;
 
     const partialApplyButton = el("button", {
-      class: "region-task-apply region-task-partial-apply",
+      class: "region-task-partial-apply",
       text: `✓ 선택 적용`,
       attrs: { type: "button", title: "선택한 구역만 적용" },
       dataset: { testid: "region-task-partial-apply" },
@@ -341,10 +547,26 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
     const applyButton = el("button", {
       class: "region-task-apply",
-      text: "✓ 모두 적용",
+      text: totalChangedCells > 0 ? `✓ 적용 · ${totalChangedCells}칸` : "✓ 적용",
       attrs: { type: "button" },
       dataset: { testid: "region-task-apply" },
       on: { click: () => { selfSettling = true; pending.apply(); finalizeSettle(true); } },
+    });
+    // "다시 만들기" — 같은 지시로 재실행. 마음에 안 드는 결과를 버리고 다시 뽑는 흐름이
+    // 버리기→입력창 찾기→실행 3단계였던 것을 1단계로 줄인다.
+    const retryButton = el("button", {
+      class: "region-task-retry",
+      text: "↻ 다시 만들기",
+      attrs: { type: "button", title: "같은 지시로 다시 생성" },
+      dataset: { testid: "region-task-retry" },
+      on: {
+        click: () => {
+          selfSettling = true;
+          pending.discard();
+          finalizeSettle(false);
+          void execute();
+        },
+      },
     });
     const discardButton = el("button", {
       class: "region-task-discard",
@@ -355,11 +577,53 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
 
     // 청크 트리 — 각 청크 체크박스. 토글 시 부분 적용 버튼 라벨/활성 갱신.
+    // 라벨은 **칸 수**다. 예전엔 선택된 청크 개수를 "N칸"으로 찍어서 37칸짜리 하나를
+    // 고르면 "선택 1칸 적용"이라고 표시했다 — 정반대로 읽히는 오표기였다.
     const updatePartialState = (): void => {
-      const n = selectedChunkIds.size;
-      partialApplyButton.textContent = n === 0 ? "✓ 선택 적용" : `✓ 선택 ${n}칸 적용`;
-      partialApplyButton.disabled = n === 0;
+      const selectedCells = cellsOf(selectedChunkIds);
+      const partial = selectedChunkIds.size < allChunkIds.length;
+      partialApplyButton.textContent =
+        selectedCells === 0 ? "✓ 선택 적용" : `✓ 선택한 ${selectedCells}칸만 적용`;
+      partialApplyButton.disabled = selectedCells === 0;
+      // 일부만 선택했을 때만 "선택 적용"이 의미가 있다 — 전부 선택이면 아래 「적용」과 동일.
+      partialApplyButton.classList.toggle("hidden", !partial);
+      // 체크를 푼 덩어리는 미리보기에서도 빠진 것으로 보여야 한다 — 어느 칸을 버리는지가 보인다.
+      for (const [id, cells] of overlayCellsByChunk) {
+        const excluded = !selectedChunkIds.has(id);
+        for (const cell of cells) cell.classList.toggle("is-excluded", excluded);
+      }
     };
+    // 같은 타일로 된 덩어리가 여럿이면 라벨이 완전히 겹친다("Stone floor(3칸)" 두 줄).
+    // 겹치는 것들에만 위치를 붙인다 — 안 겹치는데 붙이면 그냥 소음이다.
+    // 겹치는 것은 **이름**이지 칸 수가 아니다 — chunk.label 은 "(N칸)" 까지 포함하므로
+    // 그걸로 세면 "Stone floor(3칸)" 과 "Stone floor(1칸)" 이 서로 다른 것으로 잡힌다.
+    // 라벨의 출처인 (레이어, 대표 타일)로 센다.
+    const nameKey = (chunk: RegionChunk): string => `${chunk.layer}:${chunk.dominantTile}`;
+    const labelCounts = new Map<string, number>();
+    for (const chunk of allChunks) labelCounts.set(nameKey(chunk), (labelCounts.get(nameKey(chunk)) ?? 0) + 1);
+    const chunkText = (chunk: RegionChunk): string => {
+      if ((labelCounts.get(nameKey(chunk)) ?? 0) < 2) return chunk.label;
+      const where = describeChunkPosition(chunk, pending.region);
+      return where ? `${chunk.label} · ${where}` : chunk.label;
+    };
+
+    const setChunkHighlight = (chunkId: string | null): void => {
+      for (const [id, cells] of overlayCellsByChunk) {
+        for (const cell of cells) cell.classList.toggle("is-focus", chunkId === id);
+      }
+      // 하나를 지목하는 동안 나머지는 물러나게 — 어느 덩어리인지가 한눈에 보인다.
+      overlay?.classList.toggle("is-isolating", chunkId !== null);
+    };
+
+    // 변경 목록의 이벤트 행 ↔ 미리보기 마커를 잇는다. setChunkHighlight 와 같은 모양:
+    // 지목된 것만 살리고 나머지는 물러난다.
+    const setEventHighlight = (eventId: string | null): void => {
+      for (const [id, marker] of eventMarkersById) {
+        marker.classList.toggle("is-focus", eventId === id);
+      }
+      overlay?.classList.toggle("is-isolating", eventId !== null);
+    };
+
     const makeChunkCheckbox = (chunk: RegionChunk): HTMLElement => {
       const cb = el("input", {
         class: "region-task-chunk-cb",
@@ -372,25 +636,34 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
         else selectedChunkIds.delete(chunk.id);
         updatePartialState();
       });
-      return el("label", {
+      const label = el("label", {
         class: "region-task-chunk-label",
-        children: [cb, document.createTextNode(` ${chunk.label}`)],
+        attrs: { title: `${chunkText(chunk)} — 마우스를 올리면 미리보기에서 이 덩어리가 표시됩니다` },
+        dataset: { testid: `region-task-chunk-label-${chunk.id}` },
+        children: [cb, document.createTextNode(` ${chunkText(chunk)}`)],
       });
+      // 마우스가 없어도 되게 포커스에도 같은 강조를 건다(체크박스 탭 이동).
+      label.addEventListener("mouseenter", () => setChunkHighlight(chunk.id));
+      label.addEventListener("mouseleave", () => setChunkHighlight(null));
+      cb.addEventListener("focus", () => setChunkHighlight(chunk.id));
+      cb.addEventListener("blur", () => setChunkHighlight(null));
+      return label;
     };
     const chunkTree = el("div", {
       class: "region-task-chunk-tree" + (hasChanges ? "" : " hidden"),
       dataset: { testid: "region-task-chunk-tree" },
       children: hasChanges ? [
-        el("div", { class: "region-task-chunk-layer-title", text: `적용 범위:` }),
+        el("div", { class: "region-task-chunk-layer-title", text: "적용할 구역을 고르세요" }),
+        // "하위/상위" 는 내부 레이어 이름이었다 — 무엇이 놓이는 자리인지로 바꿨다.
         ...(groups.lower.length > 0 ? [
           el("div", { class: "region-task-chunk-layer", children: [
-            el("span", { class: "region-task-chunk-layer-name", text: "하위" }),
+            el("span", { class: "region-task-chunk-layer-name", text: "바닥(지형)" }),
             ...groups.lower.map(makeChunkCheckbox),
           ] }),
         ] : []),
         ...(groups.upper.length > 0 ? [
           el("div", { class: "region-task-chunk-layer", children: [
-            el("span", { class: "region-task-chunk-layer-name", text: "상위" }),
+            el("span", { class: "region-task-chunk-layer-name", text: "위(사물)" }),
             ...groups.upper.map(makeChunkCheckbox),
           ] }),
         ] : []),
@@ -398,23 +671,97 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
     updatePartialState();
 
+    // 부분 적용은 「고급」 안으로 — 청크가 2개 이상일 때만 의미가 있다.
+    partialHost.replaceChildren(chunkTree, partialApplyButton);
+    partialHost.classList.toggle("hidden", !partialUseful);
+
+    // ── 변경 목록 — 타일 밖의 변경을 같은 승인 화면에 세운다 ─────────────────
+    // 예전에는 미리보기(타일 스냅샷)와 "이벤트 N건" 숫자뿐이라, NPC·상자·조명을 놓아도
+    // 무엇이 반영되는지 알 수 없었다. 영역 밖 변경은 아예 보이지 않았다.
+    const outsideChanges = (() => {
+      try {
+        return summarizeOutsideRegionChanges(pending.baseProject, pending.clippedProject, pending.mapId);
+      } catch {
+        return [];
+      }
+    })();
+
+    // 목록은 **타일 밖 변경이 있을 때만** 띄운다. 타일 한 줄만 있으면 「적용 · N칸」 버튼과
+    // 같은 말을 두 번 하는 셈이라 소음이다.
+    const hasNonTileChanges = eventChanges.length > 0 || outsideChanges.length > 0;
+    // 목록이 항목별로 세어 주므로 버튼은 단순히 「적용」으로 둔다. 타일만 바뀔 때만 칸 수를
+    // 버튼에 남긴다 — 그때는 목록이 없어서 버튼이 유일한 수량 표시다.
+    if (hasNonTileChanges) applyButton.textContent = "✓ 적용";
+    const changeRows: HTMLElement[] = [];
+    if (hasNonTileChanges && totalChangedCells > 0) {
+      changeRows.push(el("div", {
+        class: "region-task-change-row",
+        dataset: { testid: "region-task-change-row-tiles" },
+        children: [
+          el("span", { class: "region-task-change-icon", text: "🟦" }),
+          el("span", { class: "region-task-change-text", text: `타일 ${totalChangedCells}칸` }),
+        ],
+      }));
+    }
+    for (const change of eventChanges) {
+      const row = el("div", {
+        class: "region-task-change-row",
+        attrs: { title: "마우스를 올리면 미리보기에서 이 위치가 표시됩니다", tabindex: "0" },
+        dataset: { testid: `region-task-change-row-event-${change.eventId}` },
+        children: [
+          el("span", { class: "region-task-change-icon", text: change.icon }),
+          el("span", { class: "region-task-change-text", text: regionEventChangeLabel(change) }),
+        ],
+      });
+      // 마우스가 없어도 되게 포커스에도 같은 강조를 건다(청크 체크박스와 같은 규칙).
+      row.addEventListener("mouseenter", () => setEventHighlight(change.eventId));
+      row.addEventListener("mouseleave", () => setEventHighlight(null));
+      row.addEventListener("focus", () => setEventHighlight(change.eventId));
+      row.addEventListener("blur", () => setEventHighlight(null));
+      changeRows.push(row);
+    }
+    for (const change of outsideChanges) {
+      changeRows.push(el("div", {
+        class: "region-task-change-row is-outside",
+        attrs: { title: "이 변경은 선택한 영역 밖입니다 — 적용하면 프로젝트 전체에 반영됩니다" },
+        dataset: { testid: `region-task-change-row-outside-${change.kind}` },
+        children: [
+          el("span", { class: "region-task-change-icon", text: "⚠️" }),
+          el("span", { class: "region-task-change-text", text: `${change.label} · 영역 밖` }),
+        ],
+      }));
+    }
+    const changeList = el("div", {
+      class: "region-task-change-list" + (changeRows.length > 0 ? "" : " hidden"),
+      dataset: { testid: "region-task-change-list" },
+      children: changeRows,
+    });
+
     compareHost.replaceChildren(
       figures,
-      chunkTree,
-      el("div", { class: "region-task-compare-actions", children: [partialApplyButton, applyButton, discardButton] }),
+      changeList,
+      el("div", { class: "region-task-compare-actions", children: [applyButton, retryButton, discardButton] }),
     );
+    setStage("review");
+    // 결과가 나오면 로그는 접는다 — 결정에 필요한 건 미리보기와 변경 칸 수다.
+    if (!advancedPinned) setAdvancedOpen(false);
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true, phase: "pending" });
     schedulePopoverReposition();
   };
 
   let running = false;
   let lastLog: RegionTaskLogExport | undefined;
+  // 복사 버튼 라벨 — 실행 후에는 툴 호출 수를 함께 보여 준다("복사됨" 후 여기로 되돌린다).
+  let copyLogLabel = "로그";
   const setSummary = (text: string): void => {
     summary.textContent = text;
   };
-  const appendLog = (text: string, className = "region-task-log-line"): void => {
+  // detail: 전체 인자 JSON 등 사람이 읽을 필요 없는 부속 정보 — 화면에 찍지 않고 title 로만 단다.
+  const appendLog = (text: string, className = "region-task-log-line", detail?: string): void => {
     if (!text.trim()) return;
-    log.append(el("div", { class: className, text }));
+    const line = el("div", { class: className, text });
+    if (detail) line.setAttribute("title", detail);
+    log.append(line);
     while (log.childNodes.length > 40) log.firstChild?.remove();
     log.scrollTop = log.scrollHeight;
   };
@@ -445,7 +792,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       copyLogButton.textContent = "복사됨";
       toast("로그 복사 · 활동 DB에도 자동 저장됨 (window.__rpgzzuAiActivityLog)", "ok");
       const resetLabel = (): void => {
-        if (copyLogButton.isConnected) copyLogButton.textContent = "로그";
+        if (copyLogButton.isConnected) copyLogButton.textContent = copyLogLabel;
       };
       if (typeof globalThis.setTimeout === "function") globalThis.setTimeout(resetLabel, 1200);
       else resetLabel();
@@ -463,12 +810,18 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       return;
     }
     running = true;
+    // 스트리밍으로 이미 찍은 어시스턴트 문단을 결과에서 또 찍지 않기 위한 플래그.
+    let sawAssistantMessage = false;
+    let toolCount = 0;
+    let hadError = false;
+    setStage("running");
     dispatchRegionTaskStatus({ mapId: options.mapId, region, running: true });
     runButton.disabled = true;
     textarea.disabled = true;
-    updateStampButtonState();
     setCopyEnabled(false);
-    copyLogButton.textContent = "로그";
+    copyLogLabel = "로그";
+    copyLogButton.textContent = copyLogLabel;
+    recapText.textContent = instruction;
     lastLog = undefined;
     log.replaceChildren();
     setSummary("AI가 이 영역을 작업 중…");
@@ -478,13 +831,20 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       if (event.type === "status") appendLog(event.text);
       else if (event.type === "tool_call") {
         const ok = event.result.ok ? "✓" : "✗";
-        const argsPreview = JSON.stringify(event.args);
+        // 인자 JSON 은 120자에서 잘리면 중괄호가 깨진 채로 보였다 — 이제 title 로만 붙인다.
         appendLog(
-          `${ok} ${event.name} — ${event.result.summary || ""}${argsPreview.length > 120 ? ` · ${argsPreview.slice(0, 120)}…` : ` · ${argsPreview}`}`,
+          `${ok} ${event.name}${event.result.summary ? ` — ${event.result.summary}` : ""}`,
           event.result.ok ? "region-task-log-line" : "region-task-log-line is-error",
+          safeJson(event.args),
         );
-      } else if (event.type === "assistant_message") appendLog(event.content.slice(0, 280));
-      else if (event.type === "phase") appendLog(`phase: ${event.value}`);
+        toolCount += 1;
+        // 진행 중 피드백 — 로그를 펼치지 않아도 "멈춘 게 아니다"가 보이게.
+        setSummary(`AI가 이 영역을 작업 중… (${toolCount}단계)`);
+      } else if (event.type === "assistant_message") {
+        sawAssistantMessage = true;
+        appendLog(event.content.slice(0, 280), "region-task-log-line is-assistant");
+      }
+      // phase 이벤트는 내부 상태값이라 화면에 찍지 않는다 — 필요하면 「로그」 복사본에 남아 있다.
     };
     try {
       const result = await run({ mapId: options.mapId, region, instruction, onEvent });
@@ -496,21 +856,33 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
       }
       lastLog = result.log;
       if (result.log) {
+        // "로그 준비 · 툴 N · audit M" 을 로그 줄로 찍던 것을 버튼 라벨로 옮겼다 —
+        // 사용자용 로그에 개발자 계측 문자열이 섞이지 않게.
         setCopyEnabled(true);
-        appendLog(`로그 준비 · 툴 ${result.log.toolCalls.length} · audit ${result.log.audit.length} (헤더 「로그」로 복사)`);
+        copyLogLabel = `로그 · 툴 ${result.log.toolCalls.length}`;
+        copyLogButton.textContent = copyLogLabel;
       }
-      if (result.error) appendLog(`오류: ${result.error}`, "region-task-log-line is-error");
-      if (result.assistantText) appendLog(result.assistantText.slice(0, 400));
+      if (result.error) {
+        hadError = true;
+        appendLog(`오류: ${result.error}`, "region-task-log-line is-error");
+      }
+      // 스트리밍 경로가 이미 찍었으면 중복 출력하지 않는다(같은 문단이 280/400자로 두 번 남던 버그).
+      if (result.assistantText && !sawAssistantMessage) {
+        appendLog(result.assistantText.slice(0, 400), "region-task-log-line is-assistant");
+      }
     } catch (cause) {
+      hadError = true;
       setSummary(`오류: ${cause instanceof Error ? cause.message : String(cause)}`);
       appendLog(String(cause), "region-task-log-line is-error");
     } finally {
       running = false;
       if (!activePending) {
+        setStage("compose");
         runButton.disabled = false;
         textarea.disabled = false;
-        updateStampButtonState();
       }
+      // 오류는 접힌 「고급」 안에 숨으면 안 된다 — 실패했을 때만 자동으로 펼친다.
+      if (hadError) setAdvancedOpen(true);
       schedulePopoverReposition();
     }
   };
@@ -531,99 +903,6 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     }
   });
 
-  // ── 스탬프로 만들기 (보조 동작) ──────────────────────────────────────────
-  // AI 실행/제안 대기 중에는 비활성화. 인라인 입력필드로 전환 후 Enter=저장, Esc=취소.
-  const saveStamp = options.saveStamp ?? saveRegionAsStamp;
-  const stampButton = el("button", {
-    class: "region-task-stamp",
-    text: "스탬프로 만들기",
-    attrs: { type: "button", title: "이 영역을 '내 스탬프'에 저장하고 페인트 브러시로 즉시 활성화" },
-    dataset: { testid: "region-task-stamp" },
-  }) as HTMLButtonElement;
-  const stampInput = el("input", {
-    class: "region-task-stamp-input",
-    attrs: { type: "text", placeholder: "스탬프 이름" },
-    dataset: { testid: "region-task-stamp-input" },
-  }) as HTMLInputElement;
-  const stampConfirm = el("button", {
-    class: "region-task-stamp-confirm",
-    text: "✓",
-    attrs: { type: "button", title: "저장 (Enter)" },
-    dataset: { testid: "region-task-stamp-confirm" },
-  }) as HTMLButtonElement;
-  const stampCancel = el("button", {
-    class: "region-task-stamp-cancel",
-    text: "✕",
-    attrs: { type: "button", title: "취소 (Esc)" },
-    dataset: { testid: "region-task-stamp-cancel" },
-  }) as HTMLButtonElement;
-  const stampEditor = el("div", {
-    class: "region-task-stamp-editor hidden",
-    dataset: { testid: "region-task-stamp-editor" },
-    children: [stampInput, stampConfirm, stampCancel],
-  });
-  // running/activePending 변화를 반영하기 위한 게이터 — execute()/settlePendingUi() 끝에서 호출.
-  const updateStampButtonState = (): void => {
-    const busy = running || activePending !== null;
-    stampButton.disabled = busy;
-    stampButton.title = busy
-      ? "AI 작업 중에는 스탬프를 만들 수 없습니다"
-      : "이 영역을 '내 스탬프'에 저장하고 페인트 브러시로 즉시 활성화";
-  };
-  updateStampButtonState();
-  const enterStampEditor = (): void => {
-    stampButton.classList.add("hidden");
-    stampEditor.classList.remove("hidden");
-    stampInput.value = stampEditorInitialName();
-    stampInput.focus();
-    stampInput.select?.();
-  };
-  const exitStampEditor = (): void => {
-    stampEditor.classList.add("hidden");
-    stampButton.classList.remove("hidden");
-    stampInput.value = "";
-  };
-  // 기본 이름: 현재 타일셋 기준 defaultStampName. 맵/타일셋 접근 불가시 폴백.
-  const stampEditorInitialName = (): string => {
-    const proj = options.projectForStampName?.() ?? store.getCurrent();
-    const map = proj?.maps?.[options.mapId];
-    const tileset = map ? proj?.tilesets?.[map.tilesetId] : undefined;
-    return defaultStampName(tileset, region);
-  };
-  const commitStamp = (): void => {
-    const result = saveStamp({ mapId: options.mapId, region, name: stampInput.value });
-    if (result?.ok) {
-      discardAndClose();
-    }
-  };
-  stampButton.addEventListener("click", () => {
-    if (stampButton.disabled) return;
-    enterStampEditor();
-  });
-  stampConfirm.addEventListener("mousedown", (event) => {
-    // blur(→focusout 취소) 보다 click 이 먼저 발화하도록 기본 동작 억제.
-    event.preventDefault();
-  });
-  stampConfirm.addEventListener("click", () => commitStamp());
-  stampCancel.addEventListener("mousedown", (event) => {
-    event.preventDefault();
-  });
-  stampCancel.addEventListener("click", () => exitStampEditor());
-  stampInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      commitStamp();
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      exitStampEditor();
-    }
-  });
-  stampInput.addEventListener("focusout", () => {
-    // [✓]/[✕] 버튼 클릭은 mousedown preventDefault 로 blur 를 막았으므로,
-    // 여기 도달하면 다른 곳 클릭(박스 바깥 등)이다. 취소로 간주.
-    if (!stampEditor.classList.contains("hidden")) exitStampEditor();
-  });
-
   // ── F: 키보드 단축키 (textarea 비포커스시) + 슬래시 자동완성 ─────────────────
   // textarea/input 포커스 중에는 단일키가 입력으로 들어가므로 무시.
   const isTextFocused = (): boolean => {
@@ -636,9 +915,6 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     if (event.key === "Enter") {
       event.preventDefault();
       void execute();
-    } else if (event.key === "s" || event.key === "S") {
-      event.preventDefault();
-      enterStampEditor();
     } else if (event.key === "r" || event.key === "R") {
       event.preventDefault();
       void execute(); // 같은 지시 재실행
@@ -737,17 +1013,40 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
     });
   }
 
-  const actions = el("div", {
-    class: "region-task-actions",
-    children: [runButton, stampButton, stampEditor],
+  recapEdit.addEventListener("click", () => {
+    // 미해소 제안이 있으면 버리고 입력 단계로 되돌린다(settlePendingUi 가 stage 를 compose 로).
+    const hadPending = Boolean(activePending && !activePending.settled);
+    if (activePending && !activePending.settled) activePending.discard();
+    setStage("compose");
+    textarea.disabled = false;
+    // settlePendingUi 의 기본 문구("제안이 처리되었습니다")는 외부 경로용이라 여기선 모호하다.
+    if (hadPending) setSummary("제안을 버렸습니다 — 지시를 고쳐 다시 실행하세요.");
+    textarea.focus();
   });
+
+  // ① 무엇을 만들지 — 추천 칩을 입력창 위에 둔다(먼저 고르고, 아니면 직접 쓴다).
+  const actions = el("div", { class: "region-task-actions", children: [runButton] });
+  const promptSection = el("div", {
+    class: "region-task-prompt",
+    dataset: { testid: "region-task-prompt" },
+    children: [categoryRow, suggestionRow, textarea, autocompleteHost, actions],
+  });
+
+  advancedBody.replaceChildren(
+    el("div", { class: "region-task-advanced-row", children: [copyLogButton] }),
+    log,
+    partialHost,
+  );
+
   const asPopover = Boolean(options.anchor);
   const windowNode = el("div", {
     class: asPopover ? "region-task-modal region-task-popover" : "region-task-modal",
     attrs: { role: "dialog", "aria-label": "영역 작업" },
-    dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal" },
-    children: [header, textarea, suggestionRow, autocompleteHost, log, summary, compareHost, actions],
+    dataset: { testid: asPopover ? "region-task-popover" : "region-task-modal", stage: currentStage },
+    children: [header, promptSection, recapRow, summary, compareHost, advancedToggle, advancedBody],
   });
+  stageHost = windowNode;
+  setStage(currentStage);
   /** 로그/비교 UI가 커진 뒤에도 뷰포트 안에 남도록 재클램프 (레이아웃 반영 후 1프레임). */
   schedulePopoverReposition = (): void => {
     if (!asPopover || !options.anchor) return;
@@ -779,6 +1078,7 @@ export function openRegionTaskModal(options: RegionTaskModalOptions): HTMLElemen
 
   document.body.append(backdrop);
   modalRoot = backdrop;
+  dispatchModalOpenState(true);
   if (asPopover && options.anchor) {
     positionRegionTaskPopover(windowNode, options.anchor);
   }
@@ -797,12 +1097,13 @@ export function positionRegionTaskPopover(panel: HTMLElement, anchor: RegionTask
   const view = globalThis as { innerWidth?: number; innerHeight?: number };
   const vw = typeof view.innerWidth === "number" && view.innerWidth > 0 ? view.innerWidth : 1024;
   const vh = typeof view.innerHeight === "number" && view.innerHeight > 0 ? view.innerHeight : 768;
-  const maxWidth = Math.min(360, Math.max(200, vw - margin * 2));
+  // 460: before/after 썸네일(각 200px)과 화살표가 한 줄에 들어가는 폭.
+  const maxWidth = Math.min(460, Math.max(200, vw - margin * 2));
   const maxHeight = Math.max(160, vh - margin * 2);
 
   panel.style.position = "fixed";
   panel.style.width = `${maxWidth}px`;
-  panel.style.maxWidth = `min(360px, calc(100vw - ${margin * 2}px))`;
+  panel.style.maxWidth = `min(460px, calc(100vw - ${margin * 2}px))`;
   panel.style.maxHeight = `${maxHeight}px`;
   // 임시 배치 후 실측 → 좌/우·위/아래 플립·클램프.
   let left = anchor.x + 12;

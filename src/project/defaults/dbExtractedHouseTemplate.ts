@@ -4,7 +4,6 @@ import { appendTileToStack } from "@/project/mapOverlayTiles";
 import type { GameMap } from "../types";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
 import { paintRoadRect, shapeRoadEdges, type RoadRect } from "./roadAutotile";
-import { kitIdForSmallHouseMaterial, SMALL_HOUSE_01_HOUSE_KIT_PLAN, stampTerrainTemplateHouse, type HouseKitBuildPlan, type HouseStampPlan } from "./terrainTemplateHouseStamp";
 
 type TilePattern = readonly (readonly number[])[];
 type TileLayerName = "lower" | "upper";
@@ -44,6 +43,34 @@ type HouseBodyPlan = {
   readonly roof: RoofFootprint;
   readonly wall: WallFootprint;
   readonly windows: readonly TilePoint[];
+};
+// 옛 terrainTemplateHouseStamp.ts(제거됨)의 타입을 그대로 옮겼다 — L자/복합/도시 빌드플랜이
+// 여전히 이 모양(fence·roof·wall·door)을 구조적으로 참조한다.
+export type HouseStampRect = TilePoint & {
+  readonly height: number;
+  readonly width: number;
+};
+export type HouseStampPlan = {
+  readonly door: {
+    readonly bottomY: number;
+    readonly topY: number;
+    readonly x: number;
+  };
+  readonly roof: {
+    readonly origin: TilePoint;
+    readonly width: number;
+  };
+  readonly wall: {
+    readonly origin: TilePoint;
+    readonly rows: number;
+    readonly width: number;
+  };
+  readonly windows?: readonly TilePoint[];
+};
+export type HouseKitBuildPlan = {
+  readonly fence: HouseStampRect;
+  readonly house: HouseStampPlan;
+  readonly roads: readonly RoadRect[];
 };
 type LShapedHouseBuildPlan = {
   readonly fence: HouseKitBuildPlan["fence"];
@@ -106,6 +133,20 @@ const SMALL_HOUSE_CITY_MAP_SIZE = {
   width: 50,
 } as const;
 const SMALL_HOUSE_VARIANT_INDICES = [1, 2, 3, 4, 5, 6, 7, 8, 9] as const satisfies readonly SmallHouseVariantIndex[];
+// 옛 terrainTemplateHouseStamp.ts(제거됨)의 기본 집 빌드플랜 — dbExtractedHouseVariants.ts의
+// "template" 변형과 아래 buildSideGardenVariant가 그대로 이어 쓴다.
+export const SMALL_HOUSE_01_HOUSE_KIT_PLAN = {
+  fence: { x: 2, y: 2, width: 17, height: 15 },
+  house: {
+    roof: { origin: { x: 7, y: 4 }, width: 11 },
+    wall: { origin: { x: 7, y: 8 }, width: 11, rows: 3 },
+    door: { x: 13, topY: 9, bottomY: 10 },
+  },
+  roads: [
+    { x: 13, y: 11, width: 2, height: 6 },
+    { x: 13, y: 14, width: 4, height: 2 },
+  ],
+} as const satisfies HouseKitBuildPlan;
 const WIDE_SMALL_HOUSE_TEMPLATE_BUILD_PLAN = {
   fence: { x: 2, y: 2, width: 17, height: 15 },
   house: {
@@ -530,6 +571,60 @@ export function stampDbExtractedHouse(map: GameMap, input: DbExtractedHouseStamp
     stampPattern({ layer: "lower", map, origin: input.origin, pattern: lowerPattern });
   }
   stampPattern({ layer: "upper", map, origin: input.origin, pattern: upperPattern });
+}
+
+// 옛 terrainTemplateHouseStamp.ts(제거됨)의 하우스키트 브리지 — dbExtractedHouseVariants.ts의
+// "template" 변형(marketTownMap/townArchitectureCityMap/townHousePatterns 실사용)과
+// 아래 buildSideGardenVariant/buildWideFrontPathVariant가 그대로 이어 쓴다.
+export function kitIdForSmallHouseMaterial(material: SmallHouseMaterial): HouseKitId {
+  return material === "stone" ? "blue-stone" : "bright-plaster";
+}
+
+export function stampTerrainTemplateHouse(map: GameMap, input: {
+  readonly buildPlan: HouseKitBuildPlan;
+  readonly includeFence?: boolean;
+  readonly material: SmallHouseMaterial;
+  readonly origin: TilePoint;
+  readonly paintRoads?: boolean;
+}): void {
+  const buildPlan = offsetHouseKitBuildPlan(input.buildPlan, input.origin);
+  if (input.includeFence !== false) {
+    placeFenceRect(map, { origin: buildPlan.fence, width: buildPlan.fence.width, height: buildPlan.fence.height });
+  }
+  const result = stampRectHouseKit(map, {
+    x: buildPlan.house.wall.origin.x,
+    y: buildPlan.house.roof.origin.y,
+    width: buildPlan.house.wall.width,
+    stories: buildPlan.house.wall.rows >= 5 ? 2 : 1,
+    roofBodyRows: Math.max(1, buildPlan.house.wall.origin.y - buildPlan.house.roof.origin.y - 2),
+    kitId: kitIdForSmallHouseMaterial(input.material),
+  });
+  if (result.ok) stampDoor(map, buildPlan.house.door);
+  if (input.paintRoads === true) paintAutoRoad(map, buildPlan.roads);
+}
+
+export function terrainTemplateDoorBottomOffset(buildPlan: HouseKitBuildPlan): TilePoint {
+  return { x: buildPlan.house.door.x, y: buildPlan.house.door.bottomY };
+}
+
+function offsetHouseKitBuildPlan(buildPlan: HouseKitBuildPlan, origin: TilePoint): HouseKitBuildPlan {
+  return {
+    fence: { x: origin.x + buildPlan.fence.x, y: origin.y + buildPlan.fence.y, width: buildPlan.fence.width, height: buildPlan.fence.height },
+    house: {
+      door: {
+        x: origin.x + buildPlan.house.door.x,
+        topY: origin.y + buildPlan.house.door.topY,
+        bottomY: origin.y + buildPlan.house.door.bottomY,
+      },
+      roof: { origin: { x: origin.x + buildPlan.house.roof.origin.x, y: origin.y + buildPlan.house.roof.origin.y }, width: buildPlan.house.roof.width },
+      wall: {
+        origin: { x: origin.x + buildPlan.house.wall.origin.x, y: origin.y + buildPlan.house.wall.origin.y },
+        rows: buildPlan.house.wall.rows,
+        width: buildPlan.house.wall.width,
+      },
+    },
+    roads: buildPlan.roads.map((road) => ({ x: origin.x + road.x, y: origin.y + road.y, width: road.width, height: road.height })),
+  };
 }
 
 function wallTileSwaps(material: SmallHouseMaterial): ReadonlyMap<number, number> {

@@ -20,6 +20,8 @@
 
 import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
 import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
+import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
@@ -62,8 +64,56 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkClusterRules(project, issues);
   issues.push(...lintWorldGraph(project));
   checkCharacterIdSocial(project, issues);
+  checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   return issues;
+}
+
+/**
+ * 재생 불가 오디오 참조(warning) — 브라우저가 못 트는 포맷을 BGM 으로 가리키는 경우.
+ *
+ * 왜(2026-07-26 실측): 번들된 EasyRPG RTP 음악 30곡이 전부 `.mid` 이고, 브라우저
+ * HTMLAudioElement 는 MIDI 를 재생하지 못한다. 그런데 이 참조는 **조용히 무음**이 된다 —
+ * 재생 실패는 콘솔 경고 한 줄뿐이라 저작자는 "음악을 넣었는데 안 들린다" 로만 겪는다.
+ * 실제로 기본 전투 BGM 이 `easyrpg-music-battle-1`(.mid) 이었고, 전투에 들어가면 필드 음악이
+ * 멈춘 뒤 아무 소리도 나지 않았다.
+ *
+ * error 가 아니라 warning 인 이유: 게임이 돌아가고, 사용자가 외부 재생기를 쓸 의도일 수도 있다.
+ * 판단은 저작자 몫이고 린트의 일은 "이건 안 들린다" 를 알리는 것이다.
+ */
+function checkUnplayableAudio(project: Project, issues: LintIssue[]): void {
+  const slots: { readonly label: string; readonly resourceId?: string }[] = [
+    { label: "system.battleBgmResourceId", resourceId: project.system.battleBgmResourceId },
+    { label: "system.defaultBgmResourceId", resourceId: project.system.defaultBgmResourceId },
+    { label: "system.titleScreen.musicResourceId", resourceId: project.system.titleScreen?.musicResourceId },
+  ];
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    if (map.bgm?.mode === "custom" && map.bgm.resourceId) {
+      slots.push({ label: `maps.${mapId}.bgm`, resourceId: map.bgm.resourceId });
+    }
+  }
+  for (const slot of slots) {
+    const resourceId = slot.resourceId?.trim();
+    if (!resourceId) continue;
+    const path = bundledAudioPath(resourceId);
+    // 번들 자산에서 찾을 수 없으면(업로드 리소스 등) 판단하지 않는다 — 모르는 것을 지적하지 않는다.
+    if (path === null || isBrowserPlayableAudioPath(path)) continue;
+    issues.push({
+      severity: "warning",
+      code: "audio-unplayable",
+      message:
+        `${slot.label} 이 브라우저에서 재생할 수 없는 파일을 가리킨다: ${resourceId} (${path}). ` +
+        "MIDI 는 HTMLAudioElement 로 재생되지 않아 조용히 무음이 된다 — ogg/mp3/wav 리소스로 바꾸세요.",
+    });
+  }
+}
+
+/** 번들 오디오 레지스트리에서 resourceId 의 파일 경로를 찾는다. 없으면 null. */
+function bundledAudioPath(resourceId: string): string | null {
+  const cc0 = CC0_AUDIO_ASSETS.find((asset) => asset.id === resourceId);
+  if (cc0) return cc0.path;
+  const rtp = EASYRPG_RTP_ASSETS.find((asset) => asset.id === resourceId);
+  return rtp ? rtp.path : null;
 }
 
 // (a) 직렬화 왕복: serialize→deserialize가 throw하면 error로 수집.

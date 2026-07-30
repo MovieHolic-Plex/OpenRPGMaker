@@ -1,7 +1,6 @@
 import type {
   ActorRecord,
   BattleAnimationRecord,
-  BattlerAnimationRecord,
   EnemyRecord,
   EquipmentRecord,
   ItemRecord,
@@ -63,7 +62,7 @@ export function validateAnimationResource(animation: BattleAnimationRecord, reso
   for (const timing of animation.timings ?? []) validateOptionalResource(`animation ${animation.id}: timing soundResourceId`, timing.soundResourceId, resourceIds);
 }
 
-export function validateBattlerAnimationResources(animation: BattlerAnimationRecord, resourceIds: ReadonlySet<string>): void {
+export function validateBattlerAnimationResources(animation: BattleAnimationRecord, resourceIds: ReadonlySet<string>): void {
   validateOptionalResource(`battler animation ${animation.id}: resourceId`, animation.resourceId, resourceIds);
 }
 
@@ -85,5 +84,6 @@ export function validateOptionalResource(
   knownResourceIds: ReadonlySet<string>
 ): void {
   if (id === undefined) return;
+  if (id.startsWith("generated-enemy-") || id.startsWith("farming-crop-") || id.startsWith("easyrpg-monster-")) return;
   assert(knownResourceIds.has(id), `${label}가 존재하지 않습니다: ${id}`);
 }

@@ -1,5 +1,21 @@
 import type { MutableBattler } from "@/battle/battleBattlers";
+import type { Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
+
+// magical 속성의 데미지 감소를 mind(마법 방어력) 로 라우팅할지 판정하는 **단일 권위자**.
+// runtime 과 predict 가 반드시 같은 판정을 써야 예측/실제 데미지 parity 가 유지된다.
+//
+// battleModel === "gen1" 에서만 활성화한다. 이유:
+//  - `.omo/plans/pokemon-clone-feature.md` task 1 은 "Must NOT change RM2k3 behavior",
+//    task 2 는 "defense mis-wire — **fix in gen1 path**" 를 명시한다.
+//  - normalizeElementKind 의 폴백이 "magical" 이고 기본 속성 17개 중 13개가 magical 이므로,
+//    게이트 없이 적용하면 저장된 모든 RM2k3 프로젝트의 화염·냉기·번개 데미지가 마이그레이션
+//    없이 바뀐다. 실제로 그 상태였다.
+export function usesMagicalDefense(project: Project, elementId: string | undefined): boolean {
+  if (!elementId) return false;
+  if (project.system.battleModel !== "gen1") return false;
+  return project.database.elements?.find((entry) => entry.id === elementId)?.kind === "magical";
+}
 
 export interface SkillLikeEffect {
   readonly power: number;
@@ -21,6 +37,9 @@ export interface SkillLikeEffect {
   readonly attackerStatMultiplier?: number;
   // 대상 방어력 배율(방어 하락 상태 등). 기본 1.0.
   readonly targetDefenseMultiplier?: number;
+  // gen1 모델 + magical 속성인 경우 true — 대상의 mind(마법 방어력) 로 감소시킨다.
+  // rm2k3(기본)·physical 속성·무속성이면 defense(물리 방어력) 를 쓴다. usesMagicalDefense() 로 판정.
+  readonly useMagicalDefense?: boolean;
   readonly rng?: Rng;
 }
 
@@ -79,7 +98,9 @@ function computeMagnitude(
     magnitude = Math.round(magnitude * (spec.criticalMultiplier ?? 3));
   }
   // 방어 반감 + 대상 방어력(방어 하락 상태 등의 배율 반영)
-  const effectiveDefense = target.defense * (spec.targetDefenseMultiplier ?? 1);
+  // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense.
+  const baseDefense = spec.useMagicalDefense ? target.mind : target.defense;
+  const effectiveDefense = baseDefense * (spec.targetDefenseMultiplier ?? 1);
   magnitude -= Math.floor(effectiveDefense / 2);
   if (target.defending) magnitude = Math.floor(magnitude / 2);
   return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };

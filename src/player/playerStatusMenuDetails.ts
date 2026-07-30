@@ -126,15 +126,22 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const equipmentById = new Map(project.database.equipment.map((item) => [item.id, item]));
   if (!options.equipmentActorId) {
     const entries = partyActors(project, session).map((actor) => {
-      const equipped = EQUIPMENT_SLOTS.map((slot) => equipmentName(equipmentById, actorEquipment(session, actor.id)[slot.id]));
+      const worn = actorEquipment(session, actor.id);
+      // 5개 부위를 " / " 로 이어 한 줄에 넣으면 좁은 패널에서 통째로 줄바꿈되어
+      // 슬래시만 늘어선 정체불명의 덩어리가 된다(실측: "청동 검 / 참나무 방패 / ...").
+      // 값은 무기 하나만 짧게 보이고, 나머지는 부위 이름을 붙여 설명 줄로 내린다.
+      // 부위 전체를 설명 줄에 늘어놓아도 -webkit-line-clamp:2 에 걸려 잘린다.
+      // 이 패널의 역할은 "누구 장비를 볼지" 고르는 것이므로 무기만 보이고,
+      // 부위별 목록은 선택 후 화면(슬롯당 한 줄)에서 제대로 보여준다.
+      const weaponSlot = EQUIPMENT_SLOTS[0];
       return {
         label: actor.name,
-        value: equipped.join(" / "),
+        value: equipmentName(equipmentById, worn[weaponSlot.id]),
         testId: `status-menu-equipment-actor-${actor.id}`,
         onActivate: options.onSelectEquipmentActor ? () => options.onSelectEquipmentActor?.(actor.id) : undefined,
       };
     });
-    return { title: "장비", entries, emptyLabel: "장비를 볼 파티원이 없습니다" };
+    return { title: "장비", entries, emptyLabel: "장비를 볼 파티원이 없습니다", hint: "파티원을 선택하세요." };
   }
 
   const actor = project.database.actors.find((record) => record.id === options.equipmentActorId);
@@ -222,9 +229,11 @@ function statusDetail(project: Project, session: PlaySession): StatusMenuDetail 
     return {
       label: actor.name,
       value: `${className} L${level}`,
+      // 구분자를 "/" 로 쓰면 HP 510/514 의 분수 슬래시와 뒤섞여 어디까지가 한 항목인지
+      // 읽히지 않는다. 가운뎃점으로 갈라 분수 슬래시만 슬래시로 남긴다.
       description: vitals
-        ? `HP ${vitals.hp}/${vitals.maxHp} / MP ${vitals.mp}/${vitals.maxMp} / 정상`
-        : "HP 0/0 / MP 0/0 / 정상",
+        ? `HP ${vitals.hp}/${vitals.maxHp} · MP ${vitals.mp}/${vitals.maxMp} · 정상`
+        : "HP 0/0 · MP 0/0 · 정상",
     };
   });
   return { title: "상태", entries, emptyLabel: "상태를 볼 파티원이 없습니다" };
@@ -238,7 +247,7 @@ function rowDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
     testId: `status-menu-row-${actor.id}`,
     onActivate: options.onToggleRow ? () => options.onToggleRow?.(actor.id) : undefined,
   }));
-  return { title: "열", entries, emptyLabel: "열을 바꿀 파티원이 없습니다" };
+  return { title: "열 바꾸기", entries, emptyLabel: "열을 바꿀 파티원이 없습니다" };
 }
 
 function formationDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
@@ -342,11 +351,15 @@ function relationshipsDetail(project: Project, session: PlaySession): StatusMenu
 
 function waitDetail(waitModeEnabled: boolean): StatusMenuDetail {
   return {
-    title: "대기",
+    title: "전투 대기",
     entries: [{
       label: "현재 설정",
       value: waitModeEnabled ? "ON" : "OFF",
-      description: waitModeEnabled ? "대기 방식을 ON으로 사용 중입니다." : "대기 방식을 OFF로 전환했습니다.",
+      // 무엇에 영향을 주는지 안 적혀 있어서 켜도 끄도 뭐가 달라지는지 알 수 없었다.
+      // 상세 패널이 좁아 3줄에서 잘린다 — 턴제 전투 전제는 제목("전투 대기")이 이미 말해준다.
+      description: waitModeEnabled
+        ? "명령 입력 중 시간이 멈춥니다."
+        : "명령 입력 중에도 시간이 흐릅니다.",
     }],
   };
 }

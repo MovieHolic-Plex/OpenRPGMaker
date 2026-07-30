@@ -20,9 +20,9 @@
 .battle-scene[data-battle-skin="ff"] .battle-message-window,
 .battle-scene[data-battle-skin="ff"] .battle-enemy-list-panel {
   background: linear-gradient(180deg, #2a4ad8, #16279a);
-  border: 2px solid #f0f0f0;
+  border: 4px solid #f0f0f0;
   border-image: none;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 /* QA r1(layout): acting 행의 margin-left 시프트가 파티 행 이름 첫 글자를
@@ -32,7 +32,7 @@
 }
 
 .battle-scene[data-battle-skin="ff"] .battle-party {
-  padding-left: 4px !important;
+  padding-left: 8px !important;
 }
 
 /* QA r1(readability): HP/MP 값 셀을 auto 폭으로 — 'HP 514/514' 전체 표시. */
@@ -42,7 +42,7 @@
 
 .battle-scene[data-battle-skin="ff"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;

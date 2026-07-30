@@ -271,6 +271,7 @@ export type Command =
   | { kind: "learnSkill"; actorId: ActorId; skillId: SkillId; action?: "learn" | "forget" }
   | { kind: "changeExp"; actorId: ActorId; op: ActorAmountOp; amount: VariableOperand }
   | { kind: "changeLevel"; actorId: ActorId; op: ActorAmountOp; amount: number }
+  | { kind: "changeLifeSkillExp"; skillId: string; op: "=" | "+=" | "-="; amount: VariableOperand }
   | { kind: "promoteActor"; actorId: ActorId; toClassId?: string; successBranch?: Command[]; failureBranch?: Command[] }
   | { kind: "changeEquipment"; actorId: ActorId; slot: ActorEquipmentSlot; equipmentId: EquipmentId }
   | { kind: "changeActorHp"; actorId: ActorId; op: ActorAmountOp; amount: number; amountMode?: "flat" | "percent" }

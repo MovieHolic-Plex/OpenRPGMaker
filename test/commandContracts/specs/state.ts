@@ -20,6 +20,8 @@ export const STATE_SPECS = {
   }),
   changeExp: nativeManifestEntry("state", { kind: "changeExp", actorId: "actor_contract", op: "+=", amount: 10 }),
   changeLevel: nativeManifestEntry("state", { kind: "changeLevel", actorId: "actor_contract", op: "+=", amount: 1 }),
+  // 생활 스킬 XP — kind 만 추가되고 매니페스트 엔트리가 누락돼 있었다.
+  changeLifeSkillExp: nativeManifestEntry("state", { kind: "changeLifeSkillExp", skillId: "skill_farming", op: "+=", amount: 10 }),
   promoteActor: nativeManifestEntry("state", {
     kind: "promoteActor",
     actorId: "actor_contract",

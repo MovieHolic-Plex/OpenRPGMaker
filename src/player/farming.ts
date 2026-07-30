@@ -2,7 +2,7 @@
 import type { GameTime, Season } from "@/project/gameTime";
 import { changeItem, type FarmPlotState, type PlaySession } from "@/project/session";
 import type { CropRecord, GameMap, Project, Rect } from "@/project/types";
-import { placeableKey, removeObjectAt } from "@/project/placeables";
+import { placeableDropItemId, placeableKey, removeObjectAt } from "@/project/placeables";
 
 export type FarmInteractionKind = "tilled" | "planted" | "watered" | "harvested" | "ignored";
 
@@ -106,7 +106,8 @@ function tryPlaceableToolHarvest(
   if (!preferred) return undefined;
   const use = resolveToolUseOnTile(project, session, map, tileX, tileY, preferred);
   if (!use) return ignored(tileX, tileY, preferred === "chop" ? "missing-axe" : "missing-pickaxe");
-  const dropId = placeable.itemId;
+  // 계절별 채집물(seasonalDrops)이 저작돼 있으면 현재 계절의 산출을 우선한다.
+  const dropId = placeableDropItemId(placeable, currentSeason(session));
   const removed = removeObjectAt(session, map.id, tileX, tileY);
   if (!removed) return ignored(tileX, tileY, "missing-placeable");
   if (dropId) changeItem(session, dropId, "+=", 1);

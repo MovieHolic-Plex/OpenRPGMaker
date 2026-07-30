@@ -21,7 +21,7 @@ import {
   applyTerrainPassFromMasks,
   type TerrainConstraintMasks,
 } from "./villageTerrainPass";
-import { countBroadleaf2x2, evaluateVillageLook, type VillageLookReport } from "./villageEvaluate";
+import { countBroadleaf2x2, evaluateVillageLook, type VillageFix, type VillageLookReport } from "./villageEvaluate";
 import { checkReachability } from "@/project/lint/reachability";
 import { MAP_TOOLS } from "./mapTools";
 import { buildVillageDomain } from "./villageBuilder";
@@ -1013,7 +1013,14 @@ function verifyLayer(
   project: Project,
   session: Pick<VillageBuildSession, "mapId" | "doorFronts" | "planId">,
   layer: VillageLayerId | string,
-): { ok: boolean; layer: string; detail: string; metrics?: Record<string, number> } {
+): {
+  ok: boolean;
+  layer: string;
+  detail: string;
+  metrics?: Record<string, number>;
+  issues?: readonly string[];
+  fixes?: readonly VillageFix[];
+} {
   const mapId = session.mapId;
   if (!mapId || !project.maps[mapId]) {
     return { ok: false, layer, detail: "맵 없음" };
@@ -1073,11 +1080,17 @@ function verifyLayer(
     const clusters = countBroadleaf2x2(map);
     const needBig = plan?.requirements.landmarks.includes("forest");
     const ok = report.ok && (!needBig || clusters >= 3);
+    // 지적과 수정안을 반드시 함께 돌려준다. 점수만 주면(`score=0.34`) 무엇을 고쳐야 할지 알 수 없다 —
+    // 실제로 이 값들이 계산된 뒤 버려지고 있었다(2026-07-26).
     return {
       ok,
       layer,
-      detail: `score=${report.score} 2x2=${clusters}`,
+      detail: ok
+        ? `score=${report.score} 2x2=${clusters}`
+        : `score=${report.score} 2x2=${clusters} — ${report.issues.join(" / ")}`,
       metrics: { score: report.score, tree2x2Clusters: clusters },
+      issues: report.issues,
+      fixes: report.fixes,
     };
   }
   return { ok: true, layer, detail: "n/a" };

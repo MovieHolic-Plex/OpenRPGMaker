@@ -1,8 +1,5 @@
 import { editorState } from "@/editor/editorState";
 import type { EditorBrushSize, PaintShape, Tool } from "@/editor/editorState";
-import { tileStampsForTile } from "@/editor/tileStampBrushes";
-import type { StructureStampId } from "@/editor/structureStampTools";
-import type { TilesetDef } from "@/project/types";
 
 export type RpgMakerTileTool = "select" | "pen" | "rect" | "round" | "fill" | "erase";
 
@@ -20,8 +17,6 @@ export function selectRpgMakerTileTool(tool: RpgMakerTileTool): void {
   const next = TOOL_PATCHES[tool];
   editorState.set({
     activePaletteStamp: null,
-    activeStampId: null,
-    activeStructureStampId: null,
     layer: current.layer === "event" ? "lower" : current.layer,
     paintShape: next.paintShape,
     selection: tool === "select" ? current.selection : null,
@@ -29,25 +24,10 @@ export function selectRpgMakerTileTool(tool: RpgMakerTileTool): void {
   });
 }
 
-export function selectRpgMakerStructureStamp(stampId: StructureStampId): void {
-  const current = editorState.get();
-  editorState.set({
-    activePaletteStamp: null,
-    activeStampId: null,
-    activeStructureStampId: current.activeStructureStampId === stampId ? null : stampId,
-    layer: "lower",
-    paintShape: "pen",
-    selection: null,
-    tool: "paint",
-  });
-}
-
 export function selectRpgMakerEyedropperTool(): void {
   const current = editorState.get();
   editorState.set({
     activePaletteStamp: null,
-    activeStampId: null,
-    activeStructureStampId: null,
     layer: current.layer === "event" ? "lower" : current.layer,
     paintShape: "pen",
     selection: null,
@@ -57,20 +37,6 @@ export function selectRpgMakerEyedropperTool(): void {
 
 export function setRpgMakerBrushSize(size: EditorBrushSize): void {
   editorState.set({ brushSize: size });
-}
-
-export function toggleRpgMakerTileStamp(selectedTile: number, tileset: TilesetDef): void {
-  const stamp = tileStampsForTile(selectedTile, tileset)[0];
-  if (!stamp) return;
-  const current = editorState.get();
-  editorState.set({
-    activePaletteStamp: null,
-    activeStampId: current.activeStampId === stamp.id ? null : stamp.id,
-    activeStructureStampId: null,
-    paintShape: "pen",
-    selection: null,
-    tool: "paint",
-  });
 }
 
 export function isRpgMakerToolbarItemActive(tool: RpgMakerTileTool, activeTool: Tool, activeShape: PaintShape): boolean {

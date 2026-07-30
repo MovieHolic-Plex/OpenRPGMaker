@@ -12,7 +12,7 @@ import type {
 } from "@/project/types";
 import { el } from "@/util/dom";
 
-type UtilityTabId = "battleCommands" | "elements" | "terrain" | "battlerAnimations";
+type UtilityTabId = "battleCommands" | "elements" | "terrain";
 
 const selectedUtilityRecords: Partial<Record<UtilityTabId, number>> = {};
 
@@ -177,10 +177,6 @@ function utilitySummary(tab: UtilityTabId, index: number): DatabaseWorkbenchSumm
   if (tab === "terrain") {
     const record = database.terrains?.[index] ?? database.terrains?.[0];
     return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "terrain", tabLabel: "지형", totalCount: database.terrains?.length };
-  }
-  if (tab === "battlerAnimations") {
-    const record = database.battlerAnimations?.[index] ?? database.battlerAnimations?.[0];
-    return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "battlerAnimations", tabLabel: "애니메이션 2", totalCount: database.battlerAnimations?.length };
   }
   const record = database.battleCommands?.[index] ?? database.battleCommands?.[0];
   return { recordId: record?.id, recordName: record?.name, selectedIndex: record ? index + 1 : undefined, tabId: "battleCommands", tabLabel: "전투 명령", totalCount: database.battleCommands?.length };

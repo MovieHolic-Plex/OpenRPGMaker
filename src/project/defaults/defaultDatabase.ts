@@ -3,11 +3,10 @@ import { defaultBattleRecords } from "./defaultDatabaseBattleRecords";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import {
   defaultBattleAnimationRecords,
-  defaultBattlerAnimationRecords,
-  defaultItemRecords,
   defaultSkillRecords,
   defaultStateRecords,
 } from "./defaultDatabaseStarterRecords";
+import { defaultItemRecords } from "./defaultDatabaseItemRecords";
 import {
   defaultBattleCommandRecords,
   defaultElementRecords,
@@ -57,7 +56,6 @@ export function defaultDatabase(): ProjectDatabaseRecords {
     elements: defaultElementRecords(),
     terrains: defaultTerrainRecords(),
     battleCommands: defaultBattleCommandRecords(),
-    battlerAnimations: defaultBattlerAnimationRecords(),
     monsterSpecies: battle.monsterSpecies,
     crops: [],
   };
@@ -71,7 +69,10 @@ export function defaultSystem(): SystemRecords {
     systemResourceId: "windowskin-rm2003",
     // System2 stays as gauge/number chrome only — never used as border-image fill.
     battleSystemResourceId: "easyrpg-system2-system2-c",
-    battleBgmResourceId: "easyrpg-music-battle-1",
+    // EasyRPG RTP 음악 30곡은 전부 .mid 다 — 브라우저 HTMLAudioElement 는 MIDI 를 재생하지 못한다.
+    // 그래서 easyrpg-music-* 을 기본값으로 두면 게임이 무음으로 돌아간다(실측). CC0 mp3/ogg 를 쓴다.
+    battleBgmResourceId: "cc0-bgm-battle",
+    defaultBgmResourceId: "cc0-bgm-field",
     initialTroopId: DEFAULT_TROOP_ID,
     battleFlow: "gauge",
     typeChart: {

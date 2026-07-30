@@ -29,6 +29,57 @@ export const SUGGESTED_REGION_COMMANDS: readonly SuggestedRegionCommand[] = [
   { id: "encounter-zone", label: "⚔️ 몬스터 구역", instruction: "이 영역에 들어서면 슬라임이 나오는 인카운터 구역으로 설정해줘", category: "전투" },
 ] as const;
 
+export interface RegionCommandCategory {
+  readonly id: string;
+  readonly label: string;
+  readonly icon: string;
+  readonly commands: readonly SuggestedRegionCommand[];
+}
+
+// 카테고리 표시 순서·아이콘·ASCII id. 왜 고정 목록인가: 로테이션 4개만 보이면 "지형 도구"로만
+// 읽혀서, 실제로 가능한 범위(NPC·전투·분위기)가 사용자에게 전달되지 않았다. 순서는 "지형 →
+// 사물 → 사람 → 그 외"로 사용자가 찾는 빈도순이다.
+// id 를 ASCII 로 따로 두는 이유: 이 값이 data-testid(`region-category-<id>`)와 CSS 선택자에
+// 들어간다 — 한글이 그대로 들어가면 셀렉터 이스케이프가 필요해진다.
+const CATEGORY_ORDER: readonly { readonly id: string; readonly label: string; readonly icon: string }[] = [
+  { id: "tiles", label: "타일", icon: "🌊" },
+  { id: "structures", label: "구조물", icon: "🏠" },
+  { id: "polish", label: "다듬기", icon: "🌿" },
+  { id: "npc", label: "NPC", icon: "🧑" },
+  { id: "interaction", label: "상호작용", icon: "🎁" },
+  { id: "combat", label: "전투", icon: "⚔️" },
+  { id: "mood", label: "분위기", icon: "🌙" },
+  { id: "composite", label: "복합", icon: "✨" },
+];
+
+/**
+ * SUGGESTED_REGION_COMMANDS 를 category 로 묶어 표시 순서대로 돌려준다.
+ * 명령이 없는 카테고리는 빈 칩이 되므로 생략한다.
+ * CATEGORY_ORDER 에 없는 category 문자열도 📌 로 뒤에 붙여 반환한다 — 명령을 추가하면서
+ * 이 목록을 잊었을 때 그 칩이 조용히 사라지면 추가 사실 자체를 눈치챌 수 없다.
+ */
+export function regionCommandCategories(): RegionCommandCategory[] {
+  const byCategory = new Map<string, SuggestedRegionCommand[]>();
+  for (const command of SUGGESTED_REGION_COMMANDS) {
+    const bucket = byCategory.get(command.category);
+    if (bucket) bucket.push(command);
+    else byCategory.set(command.category, [command]);
+  }
+  const result: RegionCommandCategory[] = [];
+  for (const entry of CATEGORY_ORDER) {
+    const commands = byCategory.get(entry.label);
+    if (!commands || commands.length === 0) continue;
+    byCategory.delete(entry.label);
+    result.push({ id: entry.id, label: entry.label, icon: entry.icon, commands });
+  }
+  // 남은 것 = 아직 CATEGORY_ORDER 에 등록되지 않은 새 카테고리.
+  for (const [label, commands] of byCategory) {
+    if (commands.length === 0) continue;
+    result.push({ id: label, label, icon: "📌", commands });
+  }
+  return result;
+}
+
 let rotation = 0;
 // 시작 화면 카드("이렇게 해보세요")는 모달과 별도의 로테이션 순번을 쓴다 — 두 진입점이 같은 카운터를
 // 공유하면 "새 대화"를 누를 때마다 모달 쪽 로테이션이 예측 불가하게 어긋난다.

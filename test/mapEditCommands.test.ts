@@ -258,7 +258,6 @@ describe("map edit commands", () => {
         source: { endTile: interiorTileset.count + 12, startTile: interiorTileset.count + 12 },
         width: 1,
       },
-      activeStampId: "road-block",
       currentMapId: mapId,
       selectedTile: interiorTileset.count + 12,
     });
@@ -267,7 +266,6 @@ describe("map edit commands", () => {
 
     expect(store.getCurrent().maps[mapId].tilesetId).toBe(interiorTilesetId);
     expect(editorState.get().selectedTile).toBe(0);
-    expect(editorState.get().activeStampId).toBeNull();
     expect(editorState.get().activePaletteStamp).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 // emberQuestGame.ts — 《잿불의 유산》: 에디터 기능 시연용 소형 완성 RPG.
 // 구성: 맵 5개 / 주인공 1명 / NPC 12명 / 몬스터 5종 / 아이템 8종 / 퀘스트 3개 / 고정 전투 5회 + 엔딩.
-import type { Command, EnemyStats, EventPage, GameEvent, GameMap, Project } from "../types";
+import type { ActorParameterCurves, Command, EnemyStats, EventPage, GameEvent, GameMap, Project } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "../databaseRecordModel";
@@ -72,6 +72,38 @@ const EMBER_TROOP = {
 } as const;
 
 const EMBER_ENEMY_IDS = ["enemy_slime", "enemy_meadow_slime", "enemy_cave_bat", "enemy_stone_golem", "enemy_dragon"] as const;
+
+/**
+ * 성장 곡선 — 실측으로 설계했다(2026-07-26).
+ *
+ * 고치기 전 상태: 기본 expCurve 가 `{ base: 1, extra: 677, acceleration: 40 }` 라 **레벨 2 에
+ * 678 경험치**가 필요했다. 그런데 이 게임에서 얻을 수 있는 경험치 총량은
+ * 슬라임 44 + 말벌 70 + 박쥐 78 + 골렘 142 + 드래곤 160 = **494** 다.
+ * 즉 주인공은 이 게임에서 **레벨 2 에 도달할 수 없었다** — 성장이 구조적으로 불가능했다.
+ * 게다가 능력치 곡선도 평평해서(L1 공격 45 → L20 59) 레벨업이 체감되지 않았다.
+ *
+ * 아래 값으로 플레이어는 박쥐 떼를 L4, 골렘 호위를 L6, 드래곤을 L8 로 맞이한다
+ * (누적 경험치 114 / 192 / 334 지점을 totalExpForLevel 로 역산한 결과).
+ * 공격 곡선은 L8 에서 80 을 넘도록 잡았다 — 드래곤 승률이 공격 60 에서 20%, 80 에서 100% 로
+ * 갈리는 것을 스윕으로 측정했다.
+ */
+const EMBER_EXP_CURVE = { base: 6, extra: 10, acceleration: 2 } as const;
+
+/** 레벨당 선형 성장을 덮어씌운다. 기존 배열 길이(최대 레벨)는 유지한다. */
+function emberHeroCurves(base: ActorParameterCurves): ActorParameterCurves {
+  const ramp = (start: number, perLevel: number): number[] =>
+    base.maxHp.map((_value, index) => start + Math.round(index * perLevel));
+  return {
+    // HP·방어는 이미 초반 전투를 안전하게 만드는 값이라 기울기만 준다.
+    maxHp: ramp(base.maxHp[0] ?? 514, 30),
+    maxMp: ramp(base.maxMp[0] ?? 43, 4),
+    // 드래곤(HP 190·방어 30)을 L8 에 잡을 수 있어야 한다 → L8 에서 80 (45 + 7×5).
+    attack: ramp(base.attack[0] ?? 45, 5),
+    defense: ramp(base.defense[0] ?? 59, 2),
+    mind: ramp(base.mind[0] ?? 45, 3),
+    agility: ramp(base.agility[0] ?? 43, 2),
+  };
+}
 
 const PEOPLE_1 = "tex_easyrpg_charset_people1";
 const PEOPLE_2 = "tex_easyrpg_charset_people2";
@@ -240,7 +272,13 @@ function emberDatabase(): Project["database"] {
   db.troops = db.troops.filter((troop) => keepTroops.has(troop.id));
   db.actors = db.actors
     .filter((actor) => actor.id === DEFAULT_ACTOR_ID)
-    .map((actor) => ({ ...actor, name: "아린", nickname: "잿불지기" }));
+    .map((actor) => ({
+      ...actor,
+      name: "아린",
+      nickname: "잿불지기",
+      expCurve: EMBER_EXP_CURVE,
+      parameterCurves: emberHeroCurves(actor.parameterCurves),
+    }));
   db.classes = db.classes
     .filter((cls) => cls.id === DEFAULT_CLASS_ID)
     .map((cls) => ({

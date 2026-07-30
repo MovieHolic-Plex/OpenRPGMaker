@@ -4,16 +4,12 @@
 // 상세 설계: docs/specs/2026-06-18-rm2k3-overhaul-design.md 3.1.
 
 import type { MapId } from "@/project/types";
-import type { StructureStampId } from "@/editor/structureStampTools";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import type { TileStampId } from "@/editor/tileStampBrushes";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
 export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
 export type AutoConnectMode = boolean;
-export type ActiveStampId = TileStampId | null;
-export type ActiveStructureStampId = StructureStampId | null;
 export type ActivePaletteStamp = PaletteStamp | null;
 export type ChatDock = "float" | "side";
 export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
@@ -51,8 +47,6 @@ export interface EditorState {
   paintShape: PaintShape;
   selectedTile: number;
   autoConnectMode: AutoConnectMode;
-  activeStampId: ActiveStampId;
-  activeStructureStampId: ActiveStructureStampId;
   activePaletteStamp: ActivePaletteStamp;
   brushSize: EditorBrushSize;
   selectedEventPageId: string | null;
@@ -80,8 +74,6 @@ class EditorStateStore {
     selectedTile: 360,
     // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.
     autoConnectMode: false,
-    activeStampId: null,
-    activeStructureStampId: null,
     activePaletteStamp: null,
     brushSize: 1,
     selectedEventId: null,

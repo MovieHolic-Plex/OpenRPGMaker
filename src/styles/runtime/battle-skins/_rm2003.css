@@ -10,9 +10,9 @@
 /* ---- Scene grid ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
-  --battle-hud-height: 96px;
+  --battle-hud-height: 192px;
   background: #000;
-  grid-template-columns: 84px minmax(0, 1fr) !important;
+  grid-template-columns: 168px minmax(0, 1fr) !important;
   grid-template-rows: minmax(0, 1fr) minmax(0, var(--battle-hud-height)) !important;
   padding: 0 !important;
 }
@@ -25,7 +25,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-group,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group {
-  inset: 4px 0 0 0 !important;
+  inset: 8px 0 0 0 !important;
 }
 
 /* ---- Enemy sprites (60% of previous size) ---- */
@@ -39,14 +39,14 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
-  height: 31px !important;
+  height: 62px !important;
   object-fit: contain !important;
-  width: 26px !important;
+  width: 52px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-name {
-  font-size: 9px !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.7) !important;
+  font-size: 18px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7) !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy-hud {
@@ -56,23 +56,23 @@
 /* ---- Actor sprites ---- */
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor {
-  height: 36px !important;
+  height: 72px !important;
   transform: translate(-50%, -100%) !important;
-  width: 30px !important;
+  width: 60px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor .battle-skin-actor-image {
-  height: 32px !important;
-  width: 24px !important;
+  height: 64px !important;
+  width: 48px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-group .battle-actor-sprite {
-  --battle-sprite-frame-height: 36px;
-  --battle-sprite-frame-width: 30px;
+  --battle-sprite-frame-height: 72px;
+  --battle-sprite-frame-width: 60px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-platform {
-  width: 44px;
+  width: 88px;
 }
 
 /* ---- Command panel (left window) ---- */
@@ -86,14 +86,14 @@
   grid-template-rows: minmax(0, 1fr) !important;
   min-height: 0 !important;
   overflow: hidden !important;
-  padding: 4px !important;
+  padding: 8px !important;
   position: relative !important;
   z-index: 9 !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu {
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
@@ -108,12 +108,12 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command {
   align-items: center;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   display: grid;
-  gap: 3px !important;
-  grid-template-columns: 10px minmax(0, 1fr);
+  gap: 6px !important;
+  grid-template-columns: 20px minmax(0, 1fr);
   min-height: 0 !important;
-  padding: 2px 4px !important;
+  padding: 4px 8px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-icon {
@@ -127,7 +127,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong {
   display: block;
-  font-size: 9px !important;
+  font-size: 18px !important;
   line-height: 1.2 !important;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -140,8 +140,8 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-submenu-header {
   color: var(--rm2k3-battle-muted, #b9c8f4);
-  font-size: 8px !important;
-  padding: 1px 2px !important;
+  font-size: 16px !important;
+  padding: 2px 4px !important;
 }
 
 /* ---- Party status (right window) ---- */
@@ -154,7 +154,7 @@
   grid-row: 2 !important;
   min-height: 0 !important;
   overflow: hidden !important;
-  padding: 2px 5px !important;
+  padding: 4px 10px !important;
   position: relative !important;
   z-index: 8 !important;
 }
@@ -162,25 +162,25 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
   align-content: center !important;
   background: rgba(7, 30, 104, 0.25);
-  border-bottom: 1px solid rgba(231, 242, 255, 0.18);
+  border-bottom: 2px solid rgba(231, 242, 255, 0.18);
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
-  grid-template-rows: minmax(0, 1fr) 3px 3px 0px !important;
+  grid-template-rows: minmax(0, 1fr) 6px 6px 0px !important;
   max-height: 100% !important;
   min-height: 0 !important;
   overflow: hidden !important;
-  padding: 1px 3px !important;
+  padding: 2px 6px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.battle-acting {
   background: rgba(49, 93, 192, 0.45);
-  border-left: 2px solid var(--battle-gold, #ffd75a);
+  border-left: 4px solid var(--battle-gold, #ffd75a);
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-name {
   align-self: center;
-  font-size: 9px !important;
+  font-size: 18px !important;
   grid-column: 1 !important;
   grid-row: 1 !important;
   line-height: 1.2 !important;
@@ -192,15 +192,17 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-level {
-  font-size: 7px !important;
-  margin-left: 2px;
+  font-size: 14px !important;
+  /* 2px(논리) 이면 "주인공Lv.1" 로 붙어 읽힌다. 레벨은 이름 안에 중첩돼 있어
+     이 여백이 유일한 분리 수단이다. 논리 4px = 2배 스케일에서 8px. */
+  margin-left: 8px;
   opacity: 0.8;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-vitals {
   align-self: center;
   display: flex;
-  gap: 5px !important;
+  gap: 10px !important;
   grid-column: 2 !important;
   grid-row: 1 !important;
   justify-content: flex-end;
@@ -210,7 +212,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-hp,
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-mp {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1.2 !important;
   min-height: 0 !important;
   overflow: hidden;
@@ -228,7 +230,7 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar {
   display: block;
   grid-column: 1 / -1 !important;
-  height: 3px !important;
+  height: 6px !important;
   min-width: 0 !important;
 }
 
@@ -243,7 +245,7 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-gauge {
   align-items: center;
   display: flex;
-  gap: 3px !important;
+  gap: 6px !important;
   grid-column: 1 / -1 !important;
   grid-row: 4 !important;
   min-width: 0;
@@ -252,13 +254,13 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-atb-label {
   color: var(--rm2k3-battle-muted, #b9c8f4);
-  font-size: 6px !important;
-  min-width: 16px;
+  font-size: 12px !important;
+  min-width: 32px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-atb-bar {
   flex: 1 1 auto;
-  height: 3px !important;
+  height: 6px !important;
 }
 
 /* ---- Message window (top of field) ---- */
@@ -269,16 +271,16 @@
   display: grid !important;
   grid-column: 1 / -1 !important;
   grid-row: 1 / -1 !important;
-  height: 24px !important;
-  left: 4px !important;
-  max-height: 24px !important;
+  height: 48px !important;
+  left: 8px !important;
+  max-height: 48px !important;
   min-height: 0 !important;
   overflow: hidden !important;
-  padding: 2px 8px !important;
+  padding: 4px 16px !important;
   pointer-events: none !important;
   position: absolute !important;
-  right: 4px !important;
-  top: 4px !important;
+  right: 8px !important;
+  top: 8px !important;
   z-index: 12 !important;
 }
 
@@ -292,7 +294,7 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-line {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1.2 !important;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -300,7 +302,7 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-cursor {
-  font-size: 8px !important;
+  font-size: 16px !important;
 }
 
 /* ---- Target select phase ---- */
@@ -311,12 +313,12 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-prompt {
   align-self: start;
-  font-size: 9px !important;
+  font-size: 18px !important;
   grid-row: 1 !important;
   line-height: 1.1 !important;
-  margin-bottom: 2px !important;
+  margin-bottom: 4px !important;
   overflow: hidden;
-  padding: 2px 4px !important;
+  padding: 4px 8px !important;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -324,7 +326,7 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
   align-self: stretch !important;
   display: grid !important;
-  gap: 1px !important;
+  gap: 2px !important;
   grid-row: 2 !important;
   grid-template-rows: repeat(2, minmax(0, 1fr)) !important;
   min-height: 0 !important;
@@ -340,7 +342,7 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu .battle-command {
   align-items: center !important;
   min-height: 0 !important;
-  padding: 3px 6px !important;
+  padding: 6px 12px !important;
   pointer-events: auto !important;
   position: relative !important;
   z-index: 11 !important;
@@ -353,23 +355,23 @@
 
 /* Target brackets */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets {
-  height: 24px !important;
+  height: 48px !important;
   inset: auto !important;
   left: 50% !important;
   top: 50% !important;
   transform: translate(-50%, -50%) !important;
-  width: 28px !important;
+  width: 56px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets::before {
-  border-width: 2px !important;
+  border-width: 4px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-brackets::after {
-  border-left-width: 3px !important;
-  border-right-width: 3px !important;
-  border-top-width: 6px !important;
-  top: -8px !important;
+  border-left-width: 6px !important;
+  border-right-width: 6px !important;
+  border-top-width: 12px !important;
+  top: -16px !important;
 }
 
 /* ---- Result panel ---- */
@@ -377,18 +379,18 @@
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-panel {
   box-sizing: border-box !important;
   display: grid !important;
-  gap: 4px !important;
+  gap: 8px !important;
   grid-template-areas:
     "title title"
     "cards cards"
     "confirm confirm" !important;
   grid-template-columns: minmax(0, 1fr) !important;
-  grid-template-rows: auto minmax(18px, 1fr) auto !important;
+  grid-template-rows: auto minmax(36px, 1fr) auto !important;
   max-height: none !important;
-  min-height: 80px !important;
+  min-height: 160px !important;
   overflow: hidden !important;
-  padding: 6px 12px !important;
-  width: 200px !important;
+  padding: 12px 24px !important;
+  width: 400px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-crest {
@@ -397,7 +399,7 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-title {
   color: var(--battle-gold, #ffd75a) !important;
-  font-size: 13px !important;
+  font-size: 26px !important;
   grid-area: title;
   line-height: 1 !important;
   margin: 0 !important;
@@ -406,22 +408,22 @@
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-cards {
   display: grid !important;
-  gap: 2px !important;
+  gap: 4px !important;
   grid-area: cards;
   grid-template-columns: minmax(0, 1fr) !important;
-  grid-auto-rows: minmax(11px, auto) !important;
-  min-height: 18px;
+  grid-auto-rows: minmax(22px, auto) !important;
+  min-height: 36px;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-card {
   align-content: center !important;
   align-items: center !important;
   display: grid !important;
-  gap: 3px !important;
+  gap: 6px !important;
   grid-template-columns: minmax(0, 1fr) auto !important;
   grid-template-rows: none !important;
-  min-height: 12px !important;
-  padding: 1px 4px !important;
+  min-height: 24px !important;
+  padding: 2px 8px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-icon {
@@ -429,23 +431,23 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-label {
-  font-size: 8px !important;
+  font-size: 16px !important;
   line-height: 1.2 !important;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-reward-value {
-  font-size: 9px !important;
+  font-size: 18px !important;
   line-height: 1.2 !important;
   white-space: nowrap;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-confirm {
-  font-size: 8px !important;
+  font-size: 16px !important;
   grid-area: confirm;
   line-height: 1 !important;
   min-width: 0 !important;
-  padding: 4px 10px !important;
+  padding: 8px 20px !important;
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-next-prompt {
@@ -489,6 +491,6 @@
 }
 
 @keyframes rm2003-hud-in {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }

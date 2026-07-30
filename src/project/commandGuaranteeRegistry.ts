@@ -128,6 +128,8 @@ export const COMMAND_GUARANTEES = {
   learnSkill: guarantee("actor"),
   changeExp: guarantee("actor"),
   changeLevel: guarantee("actor"),
+  // 생활 스킬 XP — changeExp/changeLevel 과 동일 계열(액터 상태 변경, 즉시 완료).
+  changeLifeSkillExp: guarantee("actor"),
   promoteActor: guarantee("actor", { direct: false, support: scopedPartial }),
   changeEquipment: guarantee("actor"),
   changeActorHp: guarantee("actor", { support: troopFull }),

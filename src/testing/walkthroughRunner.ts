@@ -171,11 +171,17 @@ function pump(state: RunnerState, interp: ReturnType<typeof createInterpreter>, 
         const outcome = runOneBattle(state, step.troopId, step.canEscape, step.canLose, seedBase + battleIndex * 7919);
         battleIndex += 1;
         state.lastBattle = outcome;
+        // 실제 런타임과 같이 세션에 결과를 남기고 그 값으로 resume 한다
+        // (playSceneInterpreter.ts:389-390). 이게 빠져 있어서 전투 뒤의
+        // `fork { kind: "battleResult", result: "victory" }` 가 항상 거짓이 되고,
+        // battleBlockerEvent 가 클리어 스위치를 켜지 못해 **완주가 거짓 실패**로 보고됐다
+        // (2026-07-26 실측: "완주 실패 @스텝 22: 스위치 sw_ember_b1_slime"). 게임이 아니라 하네스 결함이었다.
+        state.session.battleResult = outcome;
         state.log.push(`  ⚔ 전투 ${step.troopId}: ${outcome}`);
         if (outcome === "defeat" && !step.canLose) {
           return { stop: "ended", success: false, reason: `전투 패배(패배 불가): ${step.troopId}` };
         }
-        step = interp.resume(undefined);
+        step = interp.resume(outcome);
         break;
       }
       case "gameOver":

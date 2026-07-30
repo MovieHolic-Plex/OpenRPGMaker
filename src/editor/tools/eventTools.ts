@@ -3,7 +3,7 @@
 //              / duplicate_event / remove_event / move_event.
 
 import { isPassable } from "@/project/collision";
-import { isSeason, isTimePhase, type Season } from "@/project/gameTime";
+import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
 import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
@@ -355,6 +355,22 @@ const placeNpc: ToolDefinition = {
   },
 };
 
+/**
+ * 시간표를 저장했지만 시간 시스템이 꺼져 있으면 경고한다.
+ *
+ * 왜(2026-07-26 실측): updateNpcSchedules 는 `resolveTimeSystem(project)` 가 없으면 즉시 return 한다
+ * (npcSchedules.ts:31). 즉 timeSystem 이 꺼진 프로젝트에서는 시간표를 아무리 넣어도 NPC 가
+ * 영원히 제자리에 얼어 있고, **아무 경고도 없었다**. 저작한 데이터가 조용히 죽는 부류의 결함이다.
+ */
+function timeSystemOffWarnings(project: Project, scheduleCount: number): string[] {
+  if (scheduleCount === 0) return [];
+  if (resolveTimeSystem(project)) return [];
+  return [
+    "시간 시스템이 꺼져 있어 이 시간표는 실행되지 않습니다 — NPC 가 제자리에 머무릅니다. " +
+      "system.timeSystem.enabled 를 켜면 시간표대로 이동합니다.",
+  ];
+}
+
 const setNpcSchedule: ToolDefinition = {
   name: "set_npc_schedule",
   description:
@@ -384,6 +400,7 @@ const setNpcSchedule: ToolDefinition = {
     event.schedule = schedule.length > 0 ? schedule : undefined;
     return {
       summary: `${map.name} 이벤트 '${event.id}' 스케줄 ${schedule.length}개 설정`,
+      warnings: timeSystemOffWarnings(draft, schedule.length),
       data: { eventId: event.id, scheduleCount: schedule.length },
     };
   },
@@ -531,6 +548,8 @@ const makeVillager: ToolDefinition = {
     const finalX = reused && similar ? similar.x : home.x;
     const finalY = reused && similar ? similar.y : home.y;
     const reuseSummary = reused ? " — 기존 NPC 병합 갱신" : "";
+    // 시간표를 붙였는데 시간 시스템이 꺼져 있으면 그 시간표는 실행되지 않는다(set_npc_schedule 과 동일).
+    warnings.push(...timeSystemOffWarnings(draft, schedule.length));
     return {
       summary: `${map.name}에 주민 '${name}' 생성 (${finalX}, ${finalY}) — characterId=${characterId}, 스케줄 ${schedule.length}개, 대사 페이지 ${pages.length}개${shopStock ? ", 상점 재고 " + shopStock.length + "개" : ""}${reuseSummary}`,
       data: { eventId: id, characterId, x: finalX, y: finalY, scheduleCount: schedule.length, pageCount: pages.length, shopStockCount: shopStock?.length ?? 0, reused },
