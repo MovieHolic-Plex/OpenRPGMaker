@@ -35,6 +35,8 @@ test("generated battle assets load with magenta-keyed transparent corners", asyn
 
 test("generated hero and slime assets render inside the battle scene", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
+  // `mode-play` belongs to the expert classic toolbar; make that test dependency explicit.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await seedGeneratedBattleProject(page);
   await page.click('[data-testid="mode-play"]');
   await startNewGameFromTitle(page);
@@ -91,8 +93,11 @@ async function seedGeneratedBattleProject(page: Page): Promise<void> {
   const fixture = await readFile("test/fixtures/projects/battle-v3.json", "utf8");
   const generatedFixture = fixture
     .replaceAll('"battleCharacterResourceId": "hero"', '"battleCharacterResourceId": "generated-actor-hero-01-battle"')
-    .replaceAll('"monsterResourceId": "slime"', '"monsterResourceId": "generated-enemy-slime-01"')
-    .replaceAll('"battleSystemResourceId": "tex_tiles_default"', '"battleSystemResourceId": "easyrpg-backdrop-sky1"')
-    .replaceAll('"previewBackgroundResourceId": "tex_tiles_default"', '"previewBackgroundResourceId": "easyrpg-backdrop-sky1"');
-  await seedProjectFromSupabaseCanonical(page, deserialize(generatedFixture));
+    .replaceAll('"monsterResourceId": "slime"', '"monsterResourceId": "generated-enemy-slime-01"');
+  const project = deserialize(generatedFixture);
+  project.system.battleUiStyle = "rm2003";
+  const troop = project.database.troops.find((record) => record.id === "troop_slime");
+  if (!troop) throw new Error("missing troop_slime fixture");
+  troop.previewBackgroundResourceId = "easyrpg-backdrop-sky1";
+  await seedProjectFromSupabaseCanonical(page, project);
 }

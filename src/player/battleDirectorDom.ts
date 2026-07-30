@@ -91,7 +91,7 @@ export function actorCommandDirectorState(
 ): BattleDirectorState {
   const actor = activeActor(before);
   const target = commandTarget(command, before, after);
-  const impact = enemyHpDelta(target?.id, before, after);
+  const impact = battlerHpDelta(target?.id, before, after);
   // 런타임이 기록한 직전 행동 결과(hit/miss/critical)로 빗맞음/크리 표시.
   const result = after.lastActionResult;
   const lines = [
@@ -121,23 +121,32 @@ function impactLine(
   if (result && !result.hit) return "공격이 빗나갔다!";
   if (result && result.critical && impact > 0) return `급소에 맞았다! ${target?.name ?? "적"}에게 ${impact} 피해!`;
   if (impact > 0) return `${target?.name ?? "적"}에게 ${impact} 피해!`;
-  // 회복/서포트이거나 데미지 0
+  if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;
+  // 서포트이거나 데미지 0
   return "효과가 충분하지 않았다.";
 }
 
 export function targetSelectDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
   const actor = activeActor(snapshot);
-  const selectedEnemy = snapshot.enemies.find((enemy) => enemy.id === snapshot.targetSelection?.selectedEnemyId)
-    ?? snapshot.enemies.find((enemy) => snapshot.targetSelection?.targetEnemyIds.includes(enemy.id));
+  const selectedId = snapshot.targetSelection?.selectedTargetId ?? snapshot.targetSelection?.targetIds[0];
+  const selected = snapshot.targetSelection?.side === "actor"
+    ? snapshot.actors.find((entry) => entry.id === selectedId || entry.recordId === selectedId)
+    : snapshot.enemies.find((entry) => entry.id === selectedId);
   const terms = resolveTerms(store.getCurrent());
-  const targetCount = snapshot.targetSelection?.targetEnemyIds.length ?? 0;
+  const targetCount = snapshot.targetSelection?.targetIds.length ?? 0;
+  const lines = snapshot.targetSelection?.side === "actor"
+    ? [
+      actor ? `${actor.name}: 대상을 선택하십시오.` : "대상을 선택하십시오.",
+      selected ? `${withJosa(selected.name, "을/를")} 겨냥하고 있습니다.` : "선택 가능한 대상이 없습니다.",
+    ]
+    : [targetCount > 1
+      ? `← → ${terms.target} · Z/Enter · X/Esc`
+      : "Z/Enter · X/Esc"];
   return {
     step: "target",
-    lines: [targetCount > 1
-      ? `← → ${terms.target} · Z/Enter · X/Esc`
-      : "Z/Enter · X/Esc"],
+    lines,
     activeActorRecordId: actor?.recordId,
-    targetId: selectedEnemy?.id,
+    targetId: selected?.id,
   };
 }
 
@@ -165,6 +174,9 @@ export function battleMessageWindow(state: BattleDirectorState): HTMLElement {
   const windowNode = document.createElement("div");
   windowNode.className = "battle-message-window";
   windowNode.dataset.testid = "battle-message-window";
+  windowNode.setAttribute("role", "status");
+  windowNode.setAttribute("aria-live", "polite");
+  windowNode.setAttribute("aria-atomic", "true");
   syncBattleMessageWindow(windowNode, state);
   return windowNode;
 }
@@ -199,6 +211,9 @@ export function battleResultPanel(snapshot: BattleSnapshot, revealStage = 0): HT
   panel.className = "battle-result-panel";
   panel.dataset.testid = "battle-result-panel";
   panel.dataset.battleResult = snapshot.result;
+  panel.setAttribute("role", "status");
+  panel.setAttribute("aria-live", "assertive");
+  panel.setAttribute("aria-atomic", "true");
   syncBattleResultPanel(panel, snapshot, revealStage);
   return panel;
 }
@@ -274,6 +289,7 @@ export function applyBattleDirectorState(
 ): void {
   root.dataset.battleDirectorStep = state.step;
   root.dataset.battlePhase = snapshot.phase;
+  root.dataset.battleFlow = snapshot.battleFlow;
   root.classList.toggle("battle-has-result", Boolean(snapshot.result));
   markByDataset(root, "recordId", state.activeActorRecordId, "battle-acting");
   markByDataset(root, "testid", state.targetId, "battle-targeted");
@@ -285,9 +301,15 @@ function commandTarget(
   after: BattleSnapshot
 ): BattleBattlerSnapshot | undefined {
   switch (command.kind) {
-    case "attack":
     case "skill":
-    case "item":
+    case "item": {
+      const targetId = command.targetActorId ?? command.targetEnemyId;
+      return after.actors.find((actor) => actor.id === targetId || actor.recordId === targetId)
+        ?? before.actors.find((actor) => actor.id === targetId || actor.recordId === targetId)
+        ?? after.enemies.find((enemy) => enemy.id === targetId)
+        ?? before.enemies.find((enemy) => enemy.id === targetId);
+    }
+    case "attack":
     case "capture":
       return after.enemies.find((enemy) => enemy.id === command.targetEnemyId)
         ?? before.enemies.find((enemy) => enemy.id === command.targetEnemyId);
@@ -336,12 +358,14 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
   }
 }
 
-function enemyHpDelta(enemyId: string | undefined, before: BattleSnapshot, after: BattleSnapshot): number {
-  if (!enemyId) return 0;
-  const beforeEnemy = before.enemies.find((enemy) => enemy.id === enemyId);
-  const afterEnemy = after.enemies.find((enemy) => enemy.id === enemyId);
-  if (!beforeEnemy || !afterEnemy) return 0;
-  return Math.max(0, beforeEnemy.hp - afterEnemy.hp);
+function battlerHpDelta(targetId: string | undefined, before: BattleSnapshot, after: BattleSnapshot): number {
+  if (!targetId) return 0;
+  const beforeTarget = before.enemies.find((entry) => entry.id === targetId)
+    ?? before.actors.find((entry) => entry.id === targetId || entry.recordId === targetId);
+  const afterTarget = after.enemies.find((entry) => entry.id === targetId)
+    ?? after.actors.find((entry) => entry.id === targetId || entry.recordId === targetId);
+  if (!beforeTarget || !afterTarget) return 0;
+  return beforeTarget.hp - afterTarget.hp;
 }
 
 function resultLine(result: BattleSnapshot["result"]): string {

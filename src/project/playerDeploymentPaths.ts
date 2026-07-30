@@ -1,4 +1,4 @@
-import runtimeAssetInventory from "@/player/runtimeAssets.json";
+import runtimeAssetInventory from "@/player/runtimeAssets.json" with { type: "json" };
 import { contractFailure, WebExportContractError, type WebExportContractErrorCode } from "@/project/playerDeploymentErrors";
 import type { DeploymentFileRecord } from "@/project/playerDeploymentTypes";
 import { unicodeCaseFoldKey } from "@/project/unicodeCaseFold.js";

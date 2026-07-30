@@ -6,6 +6,7 @@ import { mountBattleScene } from "@/player/battleDom";
 import { introDirectorState } from "@/player/battleDirectorDom";
 import { store } from "@/project/store";
 import battleFixture from "./fixtures/projects/battle-v3.json";
+import "./battleOverhaulContracts.cases";
 
 function pressKey(key: string): void {
   window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));

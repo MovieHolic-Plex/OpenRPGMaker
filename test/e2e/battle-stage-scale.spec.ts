@@ -101,7 +101,7 @@ test("battle scene fills its host without clipping on the battle-test route", as
 
 test("vxace hides the command window while a round resolves", async ({ page }) => {
   test.setTimeout(120_000);
-  await seedReferenceBattleProject(page);
+  await seedReferenceBattleProject(page, { battleUiStyle: "vxace" });
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
   await startNewGameFromTitle(page);

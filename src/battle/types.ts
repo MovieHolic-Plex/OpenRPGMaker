@@ -37,8 +37,8 @@ export type ActorCommandDraft =
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
-  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string }
-  | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string }
+  | { readonly kind: "skill"; readonly skillId: SkillId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
+  | { readonly kind: "item"; readonly itemId: ItemId; readonly targetEnemyId: string; readonly targetActorId?: ActorId }
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
@@ -46,8 +46,14 @@ export type ActorCommand =
 
 export interface BattleTargetSelectionSnapshot {
   readonly command: TargetedActorCommand;
+  readonly side: "actor" | "enemy";
+  readonly targetIds: readonly string[];
+  readonly selectedTargetId?: string;
+  /** Compatibility aliases for callers persisted before generic ally targeting. */
   readonly targetEnemyIds: readonly string[];
   readonly selectedEnemyId?: string;
+  readonly targetActorIds: readonly ActorId[];
+  readonly selectedActorId?: ActorId;
 }
 
 export interface BattleRuntimeOptions {
@@ -97,6 +103,9 @@ export interface BattlePartyProgress {
   readonly experience: Readonly<Record<string, number>>;
   // 세션 액터 이름 오버라이드(enterHeroName 등). actorId → 이름. 없으면 DB 이름 사용.
   readonly names?: Readonly<Record<string, string>>;
+  // Change Actor Faceset 런타임 오버라이드. 전투 HUD도 필드/메시지와 같은 현재 얼굴을 사용한다.
+  readonly faceResourceIds?: Readonly<Record<string, string>>;
+  readonly faceIndices?: Readonly<Record<string, number>>;
   // 세션 현재 바이탈(필드에서 이어지는 현재 HP/MP). 전투 진입 능력치에 반영.
   readonly vitals?: Readonly<Record<string, { readonly hp: number; readonly mp: number }>>;
   // 세션 영구 파라미터 보정(Change Parameters). 전투 진입 능력치에 반영.
@@ -127,6 +136,10 @@ export interface BattleBattlerSnapshot {
   readonly speciesId?: MonsterSpeciesId;
   readonly classId?: string;
   readonly level?: number;
+  /** 현재 배우 식별 그래픽. 런타임 faceset 변경을 포함하며 DOM은 DB를 다시 추측하지 않는다. */
+  readonly faceResourceId?: string;
+  readonly faceIndex?: number;
+  readonly battleCharacterResourceId?: string;
   /** 아군측 배틀러가 파티 몬스터에서 온 경우의 원 식별자(스프라이트·되돌려쓰기 키). */
   readonly monsterInstanceId?: string;
   readonly name: string;
@@ -178,6 +191,36 @@ export interface BattleActionResultSnapshot {
   readonly skillName?: string;
 }
 
+export type BattleTimelineEntryKind =
+  | "action"
+  | "damage"
+  | "healing"
+  | "miss"
+  | "capture"
+  | "switch"
+  | "stateUpkeep"
+  | "stateAdded"
+  | "stateRemoved"
+  | "incapacitated";
+
+/** Ordered, append-only battle facts consumed by presentation exactly once. */
+export interface BattleTimelineEntrySnapshot {
+  readonly sequence: number;
+  readonly kind: BattleTimelineEntryKind;
+  readonly side?: "actor" | "enemy";
+  readonly userId?: string;
+  readonly userRecordId?: string;
+  readonly targetId?: string;
+  readonly commandKind?: ActorCommand["kind"] | "enemyAttack" | "enemySkill";
+  readonly hit?: boolean;
+  readonly amount?: number;
+  readonly critical?: boolean;
+  readonly skillName?: string;
+  readonly stateId?: string;
+  readonly reason?: "natural" | "hit" | "battleEnd" | "effect";
+  readonly success?: boolean;
+}
+
 export interface BattleCapturedMonsterSnapshot {
   readonly targetId: string;
   readonly enemyId: EnemyId;
@@ -217,6 +260,7 @@ export interface BattleRoundActionLogSnapshot {
 export interface BattleRoundLogSnapshot {
   readonly round: number;
   readonly actions: readonly BattleRoundActionLogSnapshot[];
+  readonly timeline: readonly BattleTimelineEntrySnapshot[];
   readonly participatingActorIds: readonly ActorId[];
   readonly actors: readonly { readonly id: string; readonly hp: number; readonly mp: number; readonly stateIds: readonly string[] }[];
   readonly enemies: readonly { readonly id: string; readonly hp: number; readonly mp: number; readonly stateIds: readonly string[] }[];
@@ -279,8 +323,10 @@ export interface BattleSnapshot {
   readonly enemies: readonly BattleBattlerSnapshot[];
   readonly lastAnimation?: BattleAnimationSnapshot;
   readonly lastActionResult?: BattleActionResultSnapshot;
-  /** 전투 시작부터 누적된 행동 결과 로그(append-only). 다중 행동 연출용. */
+  /** Compatibility result log retained for older callers. */
   readonly actionLog: readonly BattleActionResultSnapshot[];
+  /** Ordered append-only facts for complete round/action presentation. */
+  readonly timeline: readonly BattleTimelineEntrySnapshot[];
   /** Present when the last resolved action should show hit-feel juice. */
   readonly hitFeel?: BattleHitFeelSnapshot;
   readonly lastCaptureResult?: BattleCaptureResultSnapshot;
@@ -292,6 +338,9 @@ export interface BattleSnapshot {
   readonly troopId: TroopId;
   readonly backdropResourceId?: string;
   readonly turn: number;
+  readonly strictRound: number;
+  readonly strictPendingActorIds: readonly ActorId[];
+  readonly strictQueuedActorIds: readonly ActorId[];
   readonly eventState: BattleEventStateSnapshot;
   readonly targetSelection?: BattleTargetSelectionSnapshot;
   readonly roundLogs: readonly BattleRoundLogSnapshot[];
@@ -301,9 +350,13 @@ export interface BattleSnapshot {
 export interface BattleRuntime {
   tick(deltaMs: number): void;
   beginActorCommand(command: ActorCommandDraft): void;
+  selectTarget(targetId: string): void;
+  setSelectedTarget(targetId: string): void;
+  /** Compatibility aliases for enemy-only callers. */
   selectTargetEnemy(enemyId: string): void;
   setSelectedTargetEnemy(enemyId: string): void;
   cancelTargetSelection(): void;
   performActorCommand(command: ActorCommand): void;
+  chooseAutoCommand(): ActorCommand | undefined;
   snapshot(): BattleSnapshot;
 }

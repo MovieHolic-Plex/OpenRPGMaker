@@ -3265,3 +3265,81 @@
 .battle-command[data-preview-only="true"]:hover {
   background: inherit;
 }
+
+/* Unified command cursor + native disabled state. Keyboard, focus, and pointer
+   all stamp the same data attribute from battleDom.ts. */
+.battle-command[data-battle-command-cursor="true"] {
+  background: linear-gradient(180deg, #3a5f9a 0%, #2a4574 100%);
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.battle-command:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.45) saturate(0.45);
+  opacity: 0.48;
+}
+
+.battle-command:disabled:hover {
+  background: inherit;
+  border-color: rgba(154, 180, 220, 0.42);
+  box-shadow: none;
+  transform: none;
+}
+
+.battle-command-menu:has(> .battle-submenu-header),
+.battle-target-menu,
+.battle-result-panel,
+.battle-result-cards {
+  min-width: 0;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.battle-command-menu:has(> .battle-submenu-header) {
+  align-content: start !important;
+  grid-auto-rows: minmax(28px, auto) !important;
+  grid-template-rows: none !important;
+}
+
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong,
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text small,
+.battle-target-menu .battle-command-text strong,
+.battle-target-menu .battle-command-text small,
+.battle-result-panel {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.battle-actor[data-battle-targetable="true"] {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.battle-flow-status,
+.battle-strict-order {
+  color: var(--rm2k3-battle-muted, #b9c8f4);
+  font-size: 13px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.battle-strict-order {
+  grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene,
+  .battle-scene *,
+  .battle-scene *::before,
+  .battle-scene *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+}

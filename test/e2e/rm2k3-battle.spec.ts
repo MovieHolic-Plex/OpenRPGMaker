@@ -52,7 +52,9 @@ function isRuntimeState(value: unknown): value is RuntimeState {
 test("side-view battleProcessing plays through victory and restores the map", async ({ page }, testInfo) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProject(page);
+  await seedProject(page, (project) => {
+    project.system.battleUiStyle = "rm2003";
+  });
   await startPlayFromEditor(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
   await page.click('[data-testid="event-battle-start"]');
@@ -60,8 +62,8 @@ test("side-view battleProcessing plays through victory and restores the map", as
   await expect(page.getByTestId("battle-scene")).toBeVisible();
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-system-resource", "tex_tiles_default");
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-director-step", "command", { timeout: 25_000 });
-  await expect(page.getByTestId("battle-backdrop")).toHaveAttribute("data-backdrop-resource-id", "tex_tiles_default");
-  await expect(page.getByTestId("battle-message-window")).toBeVisible();
+  await expect(page.getByTestId("battle-backdrop")).toHaveAttribute("data-backdrop-resource-id", "easyrpg-backdrop-dawn1");
+  await expect(page.getByTestId("battle-message-window")).toBeHidden();
   await expect(page.getByTestId("battle-party")).toBeVisible();
   await expect(page.getByTestId("battle-actor-actor_hero")).toHaveAttribute("data-battle-charset-resource-id", "hero");
   await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 15_000 });
@@ -79,21 +81,27 @@ test("side-view battleProcessing plays through victory and restores the map", as
     await expect(page.getByTestId("battle-result-panel")).toHaveCount(0);
     await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 20_000 });
   }
-  await performBattleSkill(page);
-  const battleAnimation = page.getByTestId("battle-scene").getByTestId("battle-animation");
-  await expect(battleAnimation).toBeVisible();
-  const animationState = await battleAnimation.evaluate((node) => ({
-    animationId: node.getAttribute("data-animation-id"),
-    currentFrame: node.getAttribute("data-current-frame"),
-    frameCount: node.getAttribute("data-animation-frame-count"),
-    renderedFrameCount: node.getAttribute("data-rendered-frame-count"),
-    resourceId: node.getAttribute("data-animation-resource-id"),
-    screenShake: node.getAttribute("data-animation-screen-shake"),
-    soundResourceIds: node.getAttribute("data-animation-sound-resource-ids"),
-    visibleRenderedCells: node.querySelectorAll(
+  const animationStatePromise = page.waitForFunction(() => {
+    const node = document.querySelector("[data-testid='battle-animation']");
+    if (!node) return false;
+    const visibleRenderedCells = node.querySelectorAll(
       ".battle-animation-frame:not([hidden]) .battle-animation-cell[data-rendered='true']"
-    ).length,
-  }));
+    ).length;
+    if (visibleRenderedCells === 0) return false;
+    return {
+      animationId: node.getAttribute("data-animation-id"),
+      currentFrame: node.getAttribute("data-current-frame"),
+      frameCount: node.getAttribute("data-animation-frame-count"),
+      renderedFrameCount: node.getAttribute("data-rendered-frame-count"),
+      resourceId: node.getAttribute("data-animation-resource-id"),
+      screenShake: node.getAttribute("data-animation-screen-shake"),
+      soundResourceIds: node.getAttribute("data-animation-sound-resource-ids"),
+      visibleRenderedCells,
+    };
+  }, undefined, { timeout: 10_000 });
+  await performBattleSkill(page);
+  const animationState = await (await animationStatePromise).jsonValue();
+  if (!animationState) throw new Error("battle animation was not rendered");
   expect(animationState).toMatchObject({
     animationId: "anim_magic",
     frameCount: "2",
@@ -134,7 +142,7 @@ test("generated dragon monster resource appears in a playable battle", async ({ 
   await page.screenshot({ path: testInfo.outputPath("battle-dragon-monster.png"), fullPage: true });
 });
 
-test("battle event Enemy Encounter reveals a hidden dragon and changes battleback", async ({ page }) => {
+test("battle event Enemy Encounter reveals a hidden dragon and changes battleback", async ({ page }, testInfo) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page, (project) => {
@@ -168,7 +176,7 @@ test("battle event Enemy Encounter reveals a hidden dragon and changes battlebac
   await expect(page.getByTestId("enemy-1")).toHaveAttribute("data-monster-resource-id", "generated-enemy-slime-01");
   await expect(page.getByTestId("enemy-2")).toHaveCount(0);
   await page.screenshot({
-    path: "C:/Users/hyeon/Downloads/rpg-zzu/.omo/evidence/battle-editor-db-commands/battle-before-enemy-encounter.png",
+    path: testInfo.outputPath("battle-before-enemy-encounter.png"),
     fullPage: true,
   });
 
@@ -177,7 +185,7 @@ test("battle event Enemy Encounter reveals a hidden dragon and changes battlebac
   await expect(page.getByTestId("battle-backdrop")).toHaveAttribute("data-backdrop-resource-id", "easyrpg-backdrop-dawn1");
   await expect(page.getByTestId("enemy-2")).toHaveAttribute("data-monster-resource-id", "generated-enemy-dragon-01");
   await page.screenshot({
-    path: "C:/Users/hyeon/Downloads/rpg-zzu/.omo/evidence/battle-editor-db-commands/battle-after-enemy-encounter.png",
+    path: testInfo.outputPath("battle-after-enemy-encounter.png"),
     fullPage: true,
   });
 });
