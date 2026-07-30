@@ -36,7 +36,7 @@ This repo has multiple agent tooling directories. Here is what each is and wheth
 |---|---|---|---|
 | `AGENTS.md` | **Canonical agent entry point** — read this first. All agents start here. | Yes | **Yes — source of truth** |
 | `.mcp.json` | MCP server config (rpgzzu-assistant bridge). Currently gitignored (session-local). | No (gitignored) | Yes for MCP config |
-| `.kiro/agents/` | Kiro CLI workspace custom agents. Agent profiles are tracked; invoke with an explicit model/effort when the task requires a fixed profile. | Yes | Kiro-specific |
+| `.kiro/` | Kiro CLI workspace config. `agents/` holds tracked custom agent profiles; `settings/cli.json` holds tracked model defaults. Invoke with an explicit model/effort when the task requires a fixed profile. | Yes | Kiro-specific |
 | `openwiki/` | Project-local AI wiki (focused pages agents read before editing). | Yes | **Yes — source of truth for codebase knowledge** |
 | `.agents/` | Senpi agent skills (project-local skill overrides). | No (gitignored) | Skills only |
 | `.claude/` | Claude Code agent config. | No (gitignored) | Claude-specific |

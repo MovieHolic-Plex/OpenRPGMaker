@@ -1,0 +1,10 @@
+{
+  "chat.modelDefaults": {
+    "gpt-5.6-sol": {
+      "reasoning": {
+        "effort": "high",
+        "mode": "pro"
+      }
+    }
+  }
+}
