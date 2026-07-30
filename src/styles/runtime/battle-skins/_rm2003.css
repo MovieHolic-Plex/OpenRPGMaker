@@ -276,7 +276,7 @@
   max-height: 48px !important;
   min-height: 0 !important;
   overflow: hidden !important;
-  padding: 4px 16px !important;
+  padding: 2px 16px !important;
   pointer-events: none !important;
   position: absolute !important;
   right: 8px !important;
@@ -294,8 +294,8 @@
 }
 
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-message-line {
-  font-size: 16px !important;
-  line-height: 1.2 !important;
+  font-size: 15px !important;
+  line-height: 1.4 !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -358,7 +358,7 @@
   height: 48px !important;
   inset: auto !important;
   left: 50% !important;
-  top: 50% !important;
+  top: calc(50% + 16px) !important;
   transform: translate(-50%, -50%) !important;
   width: 56px !important;
 }
@@ -493,4 +493,376 @@
 @keyframes rm2003-hud-in {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Accessibility/flow overrides: authored command detail and input help remain
+   available, gauge mode exposes ATB, and strict mode exposes pending order. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-panel {
+  grid-template-rows: minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu {
+  align-content: start !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text small {
+  display: block !important;
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+  opacity: 0.88;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-help,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-target-prompt,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
+  grid-column: 1 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
+  align-items: center;
+  display: flex !important;
+  font-size: 11px !important;
+  grid-row: 2 !important;
+  justify-content: center;
+  line-height: 1.15 !important;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-top: 2px;
+  text-align: center;
+  white-space: normal;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-command-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-key-prompts {
+  grid-row: 3 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-command-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-flow-status {
+  align-self: center;
+  font-size: 11px !important;
+  grid-row: 1 !important;
+  line-height: 1.15 !important;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-command-menu {
+  grid-row: 2 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"][data-battle-phase="actorCommand"] .battle-key-prompts {
+  grid-row: 3 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-phase="targetSelect"] .battle-target-menu {
+  align-content: start !important;
+  grid-auto-rows: minmax(30px, auto) !important;
+  grid-template-rows: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
+  grid-template-rows: minmax(0, 1fr) 6px 6px minmax(14px, auto) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="gauge"] .battle-actor-gauge {
+  display: flex !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"][data-battle-flow="strict"] .battle-strict-order {
+  align-self: center;
+  display: block !important;
+  grid-column: 1 / -1 !important;
+  grid-row: 4 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-panel,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-result-cards {
+  max-width: calc(100% - 16px) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+
+/* ---- Actor identity + readable compact command rail ----------------------
+   Authored battle sheets/faces must identify the actual party member. The
+   generic skin warrior/mage images are fallback art, never actor identity. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
+  grid-template-columns: 208px minmax(0, 1fr) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] {
+  height: 96px !important;
+  width: 94px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
+  background-repeat: no-repeat;
+  height: var(--battle-sprite-frame-height) !important;
+  image-rendering: pixelated;
+  width: var(--battle-sprite-frame-width) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
+  grid-template-columns: 40px minmax(0, 1fr) auto !important;
+  grid-template-rows: minmax(0, 1fr) 6px 6px minmax(14px, auto) !important;
+  padding: 2px 6px 2px 4px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status .battle-actor-face {
+  --rm2003-face-size: 36px;
+  align-self: center;
+  background-color: #06133f;
+  background-image: var(--battle-face-url);
+  background-position:
+    calc(var(--rm2003-face-size) * -1 * var(--battle-face-col))
+    calc(var(--rm2003-face-size) * -1 * var(--battle-face-row));
+  background-repeat: no-repeat;
+  background-size: calc(var(--rm2003-face-size) * var(--battle-face-grid)) auto;
+  border: 2px solid rgba(231, 242, 255, 0.68);
+  box-shadow: inset 0 0 0 1px rgba(4, 11, 40, 0.8);
+  box-sizing: border-box;
+  display: block !important;
+  grid-column: 1 !important;
+  grid-row: 1 / -1 !important;
+  height: var(--rm2003-face-size) !important;
+  image-rendering: auto;
+  justify-self: center;
+  overflow: hidden;
+  width: var(--rm2003-face-size) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-name {
+  grid-column: 2 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-vitals {
+  grid-column: 3 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status > .battle-stat-bar,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-gauge,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-strict-order {
+  grid-column: 2 / -1 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.is-active-actor {
+  background: linear-gradient(90deg, rgba(255, 216, 102, 0.2), rgba(49, 93, 192, 0.42));
+  box-shadow: inset 4px 0 0 var(--battle-gold, #ffd866);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.is-active-actor .battle-actor-face {
+  border-color: var(--battle-gold, #ffd866);
+  filter: brightness(1.12);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status.is-active-actor .battle-actor-name::before {
+  color: var(--battle-gold, #ffd866);
+  content: "▶ ";
+}
+
+/* Root commands stay one readable line. Rich MP/scope/effect detail remains
+   visible in skill/item/target submenus and in each button's title/ARIA. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text small {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-text strong {
+  font-size: 20px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible {
+  background: linear-gradient(180deg, #ffe58a, #d08a2e) !important;
+  border-color: #fff8c9 #6b3a12 #6b3a12 #fff8c9 !important;
+  color: #10152a !important;
+  text-shadow: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"] .battle-command-text strong,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled)[data-battle-command-cursor="true"] .battle-command-text small,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover .battle-command-text strong,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):hover .battle-command-text small,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text strong,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command:not(:disabled):focus-visible .battle-command-text small {
+  color: #10152a !important;
+}
+
+
+/* Field readability: keep pixel battlers large enough to read at the 360×260
+   smoke viewport, and make the actor accepting input unambiguous. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
+  height: 104px !important;
+  width: 88px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor[data-authored-battler="true"] .battle-actor-sprite {
+  transform: scale(1.25);
+  transform-origin: 50% 100%;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor.is-active-actor .battle-actor-platform {
+  background: linear-gradient(90deg, transparent, rgba(255, 225, 122, 0.96), transparent);
+  box-shadow: 0 0 12px rgba(255, 216, 102, 0.72);
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor.is-active-actor .battle-actor-sprite,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor.is-active-actor .battle-skin-actor-image {
+  filter: brightness(1.12) drop-shadow(0 0 5px rgba(255, 222, 116, 0.72));
+}
+
+
+/* Use the available status-window height instead of reserving four empty rows.
+   Two-active-slot battles get readable portraits; 3–4 member parties compact
+   back to the classic 36px face without changing the authored party size. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party {
+  grid-template-rows: none !important;
+  grid-auto-rows: minmax(0, 1fr) !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status {
+  grid-template-columns: 56px minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-actor-status .battle-actor-face {
+  --rm2003-face-size: 52px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status {
+  grid-template-columns: 40px minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-face {
+  --rm2003-face-size: 36px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-enemy .battle-enemy-image {
+  height: 140px !important;
+  width: 120px !important;
+}
+
+/* Four-member rows prioritize identity and readable numeric HP/MP. Repeating
+   those values as two extra rails made every row look like a stack of bars;
+   keep only the flow-specific ATB/order rail along the bottom. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status {
+  gap: 1px !important;
+  grid-template-rows: minmax(0, 1fr) 5px !important;
+  padding: 1px 4px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name {
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-level {
+  font-size: 11px !important;
+  margin-left: 4px;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-vitals {
+  gap: 6px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-status > .battle-stat-bar {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-gauge {
+  gap: 0 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-gauge .battle-atb-label {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-gauge .battle-atb-bar {
+  height: 5px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-strict-order {
+  font-size: 10px !important;
+  grid-row: 2 !important;
+  line-height: 1 !important;
+}
+
+
+/* The five root commands share the remaining HUD height with the persistent
+   keyboard help. Their real button box is about 20px tall, so a 24px line box
+   necessarily leaks into the next command. Submenus retain their richer type. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command {
+  padding: 0 8px !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text strong {
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+/* Galmuri glyphs extend beyond a 1.0 line box. The compact four-member row
+   has enough first-row space for 1.25 without sacrificing its three gauges. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
+  line-height: 1.25 !important;
+}
+
+
+/* Preserve Galmuri's ascenders/descenders inside compact boxes. The outer
+   button/status row still clips at its own boundary, so ink cannot cross into
+   a neighboring command or actor. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text strong {
+  overflow: visible !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-command-menu:not(:has(> .battle-submenu-header)) .battle-command-text strong {
+  line-height: 1.2 !important;
+  overflow-wrap: normal !important;
+  white-space: nowrap !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-key-prompts {
+  font-size: 10px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
+
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-name,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-vitals,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-hp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] .battle-party:has(> .battle-actor-status:nth-child(3)) .battle-actor-mp {
+  overflow: visible !important;
 }

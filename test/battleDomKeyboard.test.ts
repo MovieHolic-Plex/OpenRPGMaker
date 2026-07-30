@@ -6,6 +6,7 @@ import { mountBattleScene } from "@/player/battleDom";
 import { introDirectorState } from "@/player/battleDirectorDom";
 import { store } from "@/project/store";
 import battleFixture from "./fixtures/projects/battle-v3.json";
+import "./battleOverhaulContracts.cases";
 
 function pressKey(key: string): void {
   window.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
@@ -47,13 +48,14 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
-  it("party status rows use head/bars structure with hp and mp bars and no atb letter label", () => {
+  it("party status rows expose hp/mp bars and the gauge-flow ATB label", () => {
     const { controller } = setup();
     const row = controller.root.querySelector(".battle-actor-status");
     expect(row?.querySelector(".battle-actor-status-head")).toBeTruthy();
     expect(row?.querySelector(".battle-actor-status-bars .battle-stat-bar-hp")).toBeTruthy();
     expect(row?.querySelector(".battle-actor-status-bars .battle-stat-bar-mp")).toBeTruthy();
-    expect(row?.querySelector(".battle-atb-label")).toBeNull();
+    expect(row?.querySelector(".battle-atb-label")?.textContent).toBe("ATB");
+    expect(controller.root.dataset.battleFlow).toBe("gauge");
     expect(controller.root.querySelector(".battle-title")).toBeNull();
     controller.destroy();
   });

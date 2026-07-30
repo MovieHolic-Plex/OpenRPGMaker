@@ -98,7 +98,7 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
 export function syncBattleField(field: HTMLElement, snapshot: BattleSnapshot, feedback?: DamageFeedback): void {
   syncBackdrop(field, snapshot.backdropResourceId);
   syncEnemyGroup(field, snapshot);
-  syncActorGroup(field, snapshot.actors);
+  syncActorGroup(field, snapshot);
   if (feedback) showDamageFeedback(field, feedback);
 }
 
@@ -141,6 +141,20 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${gaugePct}%`);
     const atbValueNode = row.querySelector<HTMLElement>(".battle-atb-value");
     if (atbValueNode) atbValueNode.textContent = `${gaugePct}%`;
+    let strictOrder = row.querySelector<HTMLElement>(".battle-strict-order");
+    if (snapshot.battleFlow === "strict") {
+      if (!strictOrder) {
+        strictOrder = document.createElement("span");
+        strictOrder.className = "battle-strict-order";
+        row.append(strictOrder);
+      }
+      const pendingIndex = snapshot.strictPendingActorIds.indexOf(actor.recordId);
+      strictOrder.textContent = snapshot.strictQueuedActorIds.includes(actor.recordId)
+        ? "입력 완료"
+        : pendingIndex >= 0 ? `대기 ${pendingIndex + 1}` : "행동 불가";
+    } else {
+      strictOrder?.remove();
+    }
     row.classList.toggle("defeated", actor.defeated);
   }
 }
@@ -190,12 +204,35 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
   }
 }
 
-function syncActorGroup(field: HTMLElement, actors: readonly BattleBattlerSnapshot[]): void {
+function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
   const group = field.querySelector(".battle-actor-group");
   if (!group) return;
-  for (const actor of actors) {
+  for (const actor of snapshot.actors) {
     const node = group.querySelector<HTMLElement>(`[data-testid="battle-actor-${actor.recordId}"]`);
     if (!node) continue;
+    const targetable = snapshot.targetSelection?.side === "actor" && snapshot.targetSelection.targetIds.some((id) => id === actor.id || id === actor.recordId);
+    const selected = snapshot.targetSelection?.side === "actor" && (snapshot.targetSelection.selectedTargetId === actor.id || snapshot.targetSelection.selectedTargetId === actor.recordId);
+    node.classList.toggle("battle-target-candidate", targetable);
+    node.classList.toggle("battle-target-selected", selected);
+    node.classList.toggle("is-active-actor", Boolean(snapshot.activeActorId) && actor.recordId === snapshot.activeActorId);
+    node.dataset.battleTargetable = targetable ? "true" : "false";
+    if (targetable) {
+      const targetId = snapshot.targetSelection?.targetIds.find((id) => id === actor.id || id === actor.recordId);
+      if (targetId) node.dataset.battleTargetId = targetId;
+    } else {
+      delete node.dataset.battleTargetId;
+    }
+    node.setAttribute("aria-selected", selected ? "true" : "false");
+    const brackets = node.querySelector<HTMLElement>(".battle-target-brackets");
+    if (selected && !brackets) {
+      const next = document.createElement("span");
+      next.className = "battle-target-brackets";
+      next.dataset.testid = "battle-target-brackets";
+      next.setAttribute("aria-hidden", "true");
+      node.append(next);
+    } else if (!selected) {
+      brackets?.remove();
+    }
     node.classList.toggle("defeated", actor.defeated);
     applyBattlerPose(node, actor.pose);
     syncStatusIcons(node, actor);
@@ -203,13 +240,15 @@ function syncActorGroup(field: HTMLElement, actors: readonly BattleBattlerSnapsh
 }
 
 function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot): void {
-  const targetable = snapshot.targetSelection?.targetEnemyIds.includes(enemy.id) ?? false;
-  const selected = snapshot.targetSelection?.selectedEnemyId === enemy.id;
+  const targetable = snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.targetIds.includes(enemy.id);
+  const selected = snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id;
   node.classList.toggle("battle-target-candidate", targetable);
   node.classList.toggle("battle-target-selected", selected);
   node.classList.toggle("defeated", enemy.defeated);
   applyBattlerPose(node, enemy.pose);
   node.dataset.battleTargetable = targetable ? "true" : "false";
+  if (targetable) node.dataset.battleTargetId = enemy.id;
+  else delete node.dataset.battleTargetId;
   if (node instanceof HTMLButtonElement) {
     node.disabled = enemy.defeated || !targetable;
   }
@@ -329,11 +368,11 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
   enemyNode.dataset.facing = "right";
-  if (snapshot.targetSelection?.targetEnemyIds.includes(enemy.id)) {
+  if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.targetIds.includes(enemy.id)) {
     enemyNode.dataset.battleTargetable = "true";
     enemyNode.classList.add("battle-target-candidate");
   }
-  if (snapshot.targetSelection?.selectedEnemyId === enemy.id) {
+  if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id) {
     enemyNode.classList.add("battle-target-selected");
   }
   // 각 적 레코드의 고유 몬스터 이미지를 우선 사용. 없으면 스킨 공용 스프라이트로 대체.
@@ -354,7 +393,7 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   name.className = "battle-enemy-name";
   name.textContent = enemy.name;
   enemyNode.append(name, enemyIndexBadge(index), statusIconCluster(enemy), enemyHpHud(enemy));
-  if (snapshot.targetSelection?.selectedEnemyId === enemy.id) {
+  if (snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id) {
     const brackets = document.createElement("span");
     brackets.className = "battle-target-brackets";
     brackets.dataset.testid = "battle-target-brackets";
@@ -362,7 +401,7 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
     enemyNode.append(brackets);
   }
   if (enemy.defeated) enemyNode.classList.add("defeated");
-  enemyNode.disabled = enemy.defeated || !snapshot.targetSelection?.targetEnemyIds.includes(enemy.id);
+  enemyNode.disabled = enemy.defeated || snapshot.targetSelection?.side !== "enemy" || !snapshot.targetSelection.targetIds.includes(enemy.id);
   return enemyNode;
 }
 
@@ -461,7 +500,23 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
     node.append(platform);
     return node;
   }
-  // 스킨 전용 파티 스프라이트(정면/후면)를 우선 사용한다.
+  // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
+  // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
+  const resourceId = place.partyFacing === "front" ? actor.battleCharacterResourceId : undefined;
+  if (resourceId) {
+    node.dataset.authoredBattler = "true";
+    node.dataset.battleCharsetResourceId = resourceId;
+    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+    if (url) node.append(actorBattleImage(actor.name, resourceId, url));
+    applyBattlerPose(node, actor.pose);
+    node.append(statusIconCluster(actor));
+    if (actor.defeated) node.classList.add("defeated");
+    const authoredPlatform = document.createElement("span");
+    authoredPlatform.className = "battle-actor-platform";
+    node.append(authoredPlatform);
+    return node;
+  }
+  // authored 정면 시트가 없거나 후면 구도가 필요한 스킨만 스킨 공용 파티 스프라이트로 폴백한다.
   const skinSprite = skinPartySpriteUrl(index, place.partyFacing);
   if (skinSprite) {
     const image = document.createElement("img");
@@ -476,15 +531,6 @@ function actorNode(actor: BattleBattlerSnapshot, index = 0): HTMLElement {
     skinPlatform.className = "battle-actor-platform";
     node.append(skinPlatform);
     return node;
-  }
-  // 스킨이 아닌 일반 액터: 캐릭터셋 그래픽을 사용한다.
-  const resourceId = battleCharsetResourceId(actor.recordId);
-  if (resourceId) {
-    node.dataset.battleCharsetResourceId = resourceId;
-    const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
-    if (url) {
-      node.append(actorBattleImage(actor.name, resourceId, url));
-    }
   }
   applyBattlerPose(node, actor.pose);
   node.append(statusIconCluster(actor));
@@ -644,14 +690,16 @@ function actorFaceNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   const project = store.getCurrent();
   const record = project.database.actors.find((entry) => entry.id === actor.recordId);
   if (!record) return null;
-  const resourceId = record.faceResourceId ?? defaultActorFaceResourceId(record);
+  const resourceId = actor.faceResourceId ?? record.faceResourceId ?? defaultActorFaceResourceId(record);
   if (!resourceId) return null;
   const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) return null;
-  const index = Math.max(0, Math.trunc(record.faceIndex ?? 0)) % FACE_SHEET_GRID ** 2;
+  const index = Math.max(0, Math.trunc(actor.faceIndex ?? record.faceIndex ?? 0)) % FACE_SHEET_GRID ** 2;
   const node = document.createElement("span");
   node.className = "battle-actor-face";
   node.dataset.testid = `battle-actor-face-${actor.recordId}`;
+  node.dataset.faceResourceId = resourceId;
+  node.dataset.faceIndex = String(index);
   node.setAttribute("role", "img");
   node.setAttribute("aria-label", `${actor.name} 얼굴`);
   node.style.setProperty("--battle-face-url", `url("${url}")`);
@@ -794,18 +842,14 @@ function statusIconCluster(battler: BattleBattlerSnapshot): HTMLElement {
   return cluster;
 }
 
-function battleCharsetResourceId(recordId: string): string | undefined {
-  return store.getCurrent().database.actors.find((actor) => actor.id === recordId)?.battleCharacterResourceId;
-}
-
 function actorBattleImage(name: string, resourceId: string, url: string): HTMLElement {
   if (resourceId === "hero" || isGeneratedBattleActor(resourceId)) {
     // Generated battle sheets are 3×N grids of 48×64 cells (144×384 source).
-    // Display at 2× so actors read as field protagonists, not stickers.
-    // 논리 해상도가 640×480 이라 자산 px 를 그대로 쓰면 화면에서 절반으로 보인다
-    // (battleStageScale: BATTLE_ASSET_PIXEL_SCALE).
-    const frameW = 48 * 2 * BATTLE_ASSET_PIXEL_SCALE;
-    const frameH = 64 * 2 * BATTLE_ASSET_PIXEL_SCALE;
+    // Asset pixels are authored for the old 320×240 stage, so one source pixel maps
+    // once through BATTLE_ASSET_PIXEL_SCALE into the 640×480 logical stage. Multiplying
+    // by an additional 2 made each actor almost field-height after the stage migration.
+    const frameW = 48 * BATTLE_ASSET_PIXEL_SCALE;
+    const frameH = 64 * BATTLE_ASSET_PIXEL_SCALE;
     const sprite = document.createElement("span");
     sprite.className = "battle-actor-sprite";
     sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;

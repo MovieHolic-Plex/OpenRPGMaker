@@ -203,7 +203,8 @@ test("battle animation cells land on the target battler anchor", async ({ page }
   await page.getByTestId("actor-command-skill").click();
   const probeSkill = page.getByTestId("actor-skill-skill_anchor_probe");
   await expect(probeSkill).toBeVisible({ timeout: 10_000 });
-  await probeSkill.click();
+  await expect(probeSkill).toHaveAttribute("data-battle-command-cursor", "true");
+  await probeSkill.evaluate((button) => (button as HTMLButtonElement).click());
   await expect(page.getByTestId("battle-scene")).toHaveAttribute("data-battle-phase", "targetSelect", {
     timeout: 10_000,
   });

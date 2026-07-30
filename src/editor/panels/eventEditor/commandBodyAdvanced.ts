@@ -987,6 +987,7 @@ function skillField(label: string, control: HTMLElement): HTMLElement {
 function skillSubtitle(record: { readonly mpCost: { readonly flat: number }; readonly power: number; readonly scope: string; readonly type: string }): string {
   const scopeLabel =
     record.scope === "allEnemies" ? "적 전체"
+      : record.scope === "allAllies" ? "아군 전체"
       : record.scope === "enemy" ? "적 1명"
         : record.scope === "ally" ? "아군"
           : "자신";

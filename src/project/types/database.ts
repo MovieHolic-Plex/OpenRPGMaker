@@ -186,7 +186,7 @@ export interface ClassEquipmentPermissions {
 export interface SkillRecord {
   id: SkillId;
   name: string;
-  scope: "self" | "ally" | "enemy" | "allEnemies";
+  scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies";
   power: number;
   animationId?: BattleAnimationId;
   description: string;

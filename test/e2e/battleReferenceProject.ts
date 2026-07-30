@@ -8,6 +8,10 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type BattleProject = ReturnType<typeof deserialize>;
+type ReferenceBattleSeedOptions = {
+  readonly battleFlow?: BattleProject["system"]["battleFlow"];
+  readonly battleUiStyle?: BattleProject["system"]["battleUiStyle"];
+};
 
 // 전투 애니메이션 앵커 회귀 가드용 탐침 애니메이션/스킬 id.
 // 기존 픽스처의 anim_magic/skill_fire 를 건드리지 않고 별도 레코드를 심어,
@@ -30,17 +34,27 @@ const referenceActors = [
   { id: "actor_scout", name: "정찰병", battleResourceId: "generated-actor-hero-04-battle", faceResourceId: "easyrpg-faceset-people2" },
 ] as const;
 
-export async function seedReferenceBattleProject(page: Page): Promise<void> {
+export async function seedReferenceBattleProject(
+  page: Page,
+  options: ReferenceBattleSeedOptions = {},
+): Promise<void> {
   const fixture = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
   const project = deserialize(fixture);
   prepareReferenceBattleProject(project);
+  if (options.battleFlow !== undefined) project.system.battleFlow = options.battleFlow;
+  if (options.battleUiStyle !== undefined) project.system.battleUiStyle = options.battleUiStyle;
   await seedProjectFromSupabaseCanonical(page, project);
 }
 
-export async function seedLayoutResultBattleProject(page: Page): Promise<void> {
+export async function seedLayoutResultBattleProject(
+  page: Page,
+  options: ReferenceBattleSeedOptions = {},
+): Promise<void> {
   const fixture = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
   const project = deserialize(fixture);
   prepareReferenceBattleProject(project);
+  if (options.battleFlow !== undefined) project.system.battleFlow = options.battleFlow;
+  if (options.battleUiStyle !== undefined) project.system.battleUiStyle = options.battleUiStyle;
   const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
   if (!enemy) throw new Error("missing enemy_slime fixture");
   enemy.stats.maxHp = 14;

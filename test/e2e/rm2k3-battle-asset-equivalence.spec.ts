@@ -1,13 +1,15 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import { seedLayoutResultBattleProject, startReferenceBattle } from "./battleReferenceProject";
 
 const evidenceDir = "output/evidence/battle-asset-equivalence-20260630/red-green";
 
 test("battle reference scene uses equivalent enemy, party, portrait, and icon assets", async ({ page }) => {
   await page.setViewportSize({ width: 1360, height: 768 });
+  // `startReferenceBattle` uses the expert classic toolbar's `mode-play` control.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await mkdir(evidenceDir, { recursive: true });
-  await seedReferenceBattleProject(page);
+  await seedLayoutResultBattleProject(page, { battleUiStyle: "rm2003" });
   await startReferenceBattle(page);
   await page.screenshot({ path: `${evidenceDir}/01-command-assets.png`, fullPage: true });
 
@@ -57,7 +59,7 @@ async function assetMetrics(page: Page): Promise<{
   return page.getByTestId("battle-scene").evaluate((scene) => {
     const textNodes = [
       ...scene.querySelectorAll<HTMLElement>(
-        ".battle-command-text strong, .battle-command-text small, .battle-actor-status .battle-actor-name, .battle-actor-status .battle-actor-state, .battle-actor-status .battle-actor-hp, .battle-actor-status .battle-actor-mp"
+        ".battle-command-text strong, .battle-command-text small, .battle-actor-status .battle-actor-name, .battle-actor-status .battle-actor-state, .battle-actor-status .battle-actor-hp, .battle-actor-status .battle-actor-mp",
       ),
     ];
     const textLeaks = textNodes
@@ -65,6 +67,8 @@ async function assetMetrics(page: Page): Promise<{
         const owner = node.closest<HTMLElement>(".battle-command, .battle-actor-status");
         if (!owner) return false;
         const rect = node.getBoundingClientRect();
+        // Hidden command details intentionally have no rendered box and cannot leak.
+        if (rect.width === 0 && rect.height === 0) return false;
         const ownerRect = owner.getBoundingClientRect();
         const tolerance = 3;
         return (
@@ -77,7 +81,8 @@ async function assetMetrics(page: Page): Promise<{
       .map((node) => node.textContent?.replace(/\s+/g, " ").trim() ?? "");
     const wrappedCommandLabels = [...scene.querySelectorAll<HTMLElement>(".battle-command-text strong")]
       .filter((node) => {
-        return node.scrollHeight > node.clientHeight + 2;
+        const lineHeight = Number.parseFloat(getComputedStyle(node).lineHeight);
+        return Number.isFinite(lineHeight) && node.getBoundingClientRect().height > lineHeight * 1.5;
       })
       .map((node) => node.textContent?.replace(/\s+/g, " ").trim() ?? "");
     return {

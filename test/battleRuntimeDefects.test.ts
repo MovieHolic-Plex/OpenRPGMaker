@@ -71,7 +71,7 @@ describe("battle runtime defect regressions", () => {
     expect(runtime.snapshot().eventState.switches.sw_poison_used).toBe(true);
   });
 
-  it("falls back to a basic attack when actor MP is insufficient or the skill is not learned", () => {
+  it("rejects insufficient-MP and unlearned skills without consuming the turn", () => {
     const project = battleProject();
     const fire = project.database.skills.find((skill) => skill.id === "skill_fire")!;
     fire.mpCost = { flat: 4, percentMax: 0 };
@@ -91,14 +91,18 @@ describe("battle runtime defect regressions", () => {
       },
     });
     untilActorCommand(runtime);
-    const hpBefore = runtime.snapshot().enemies[0]?.hp ?? 0;
+    const before = runtime.snapshot();
+    const hpBefore = before.enemies[0]?.hp ?? 0;
 
     runtime.performActorCommand({ kind: "skill", skillId: "skill_fire", targetEnemyId: "enemy-1" });
 
     const snap = runtime.snapshot();
+    expect(snap.phase).toBe("actorCommand");
     expect(snap.actors[0]?.mp).toBe(0);
-    expect(snap.lastActionResult?.skillName).toBeUndefined();
-    expect((snap.enemies[0]?.hp ?? 0)).toBeLessThan(hpBefore);
+    expect(snap.lastActionResult).toBe(before.lastActionResult);
+    expect(snap.actionLog).toHaveLength(before.actionLog.length);
+    expect(snap.timeline).toHaveLength(before.timeline.length);
+    expect(snap.enemies[0]?.hp).toBe(hpBefore);
   });
 
   it("includes session-learned skills by level and session, and excludes future skills", () => {

@@ -6,6 +6,7 @@ import type {
   TargetedActorCommand,
 } from "@/battle/runtime";
 import { concreteTargetCommand } from "@/battle/runtime";
+import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
@@ -94,12 +95,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let resultSent = false;
   let resultTimer: number | undefined;
   let submenu: BattleCommandSubmenu = null;
+  let targetReturnSubmenu: BattleCommandSubmenu = null;
   let directorState: BattleDirectorState = commandPromptState(initialSnapshot);
   let resultRevealStage = 0;
   let sequenceBusy = false;
   let lastDamageFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   let commandPanelSignature = "";
+  const cursorByContext = new Map<string, string>();
   let lastEnemyActionKey = "";
   // Shift 단독 토글 감지용 — Shift 가 눌린 동안 다른 키가 함께 눌리면 조합키로 본다.
   let shiftHeld = false;
@@ -129,6 +132,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   autoBtn.className = "battle-control-btn";
   autoBtn.dataset.testid = "battle-auto-btn";
   autoBtn.textContent = "🤖 AUTO (A)";
+  autoBtn.setAttribute("aria-pressed", "false");
   autoBtn.onclick = (e) => {
     e.stopPropagation();
     toggleAutoBattle();
@@ -138,6 +142,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   speedBtn.className = "battle-control-btn";
   speedBtn.dataset.testid = "battle-speed-btn";
   speedBtn.textContent = "⚡ 1.0x";
+  speedBtn.setAttribute("aria-pressed", "false");
   speedBtn.onclick = (e) => {
     e.stopPropagation();
     toggleSpeed();
@@ -149,6 +154,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function toggleAutoBattle(): void {
     autoBattle = !autoBattle;
     autoBtn.classList.toggle("is-active", autoBattle);
+    autoBtn.setAttribute("aria-pressed", autoBattle ? "true" : "false");
     if (autoBattle && speedMultiplier === 1.0) {
       setSpeed(1.8);
     }
@@ -165,6 +171,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.speedMultiplier = spd;
     speedBtn.textContent = `⚡ ${spd.toFixed(1)}x`;
     speedBtn.classList.toggle("is-active", spd > 1.0);
+    speedBtn.setAttribute("aria-pressed", spd > 1.0 ? "true" : "false");
   }
 
   const panelOptions: {
@@ -175,7 +182,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     render(): void;
     runActorCommand(command: ActorCommand): void;
     beginTargetCommand(command: TargetedActorCommand): void;
-    confirmTargetSelection(enemyId: string): void;
+    confirmTargetSelection(targetId: string): void;
+    cancelTargetSelection(): void;
   } = {
     runtime: options.runtime,
     submenu: null,
@@ -190,6 +198,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     runActorCommand,
     beginTargetCommand,
     confirmTargetSelection,
+    cancelTargetSelection: cancelTargetSelectionAndRestore,
   };
 
   const sequencer = createBattleSequencer(options.runtime, {
@@ -228,6 +237,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onSequenceBusy(busy) {
       sequenceBusy = busy;
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
+      if (!busy && autoBattle) queueMicrotask(() => {
+        if (root.isConnected) syncView();
+      });
     },
   });
 
@@ -243,16 +255,36 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
       return;
     }
-    const target = event.target.closest<HTMLElement>(".battle-enemy[data-battle-targetable='true']");
-    if (!target?.dataset.testid) return;
-    confirmTargetSelection(target.dataset.testid);
+    const target = event.target.closest<HTMLElement>(".battle-field [data-battle-targetable='true'][data-battle-target-id]");
+    const targetId = target?.dataset.battleTargetId;
+    if (!targetId) return;
+    confirmTargetSelection(targetId);
   });
 
   root.tabIndex = 0;
+
+  function isConfirmKey(event: KeyboardEvent): boolean {
+    return event.key === "z" || event.key === "Z" || event.key === "Enter";
+  }
+
+  function isCancelKey(event: KeyboardEvent): boolean {
+    return event.key === "c" || event.key === "C" || event.key === "x" || event.key === "X" || event.key === "Escape";
+  }
+
+  function isNativeButtonEnter(event: KeyboardEvent): boolean {
+    return event.key === "Enter"
+      && event.target instanceof HTMLButtonElement
+      && root.contains(event.target)
+      && !event.target.disabled;
+  }
+
   function onKeydown(event: KeyboardEvent): void {
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
-      if (event.key === "z" || event.key === "Z" || event.key === "Enter") {
+      if (isConfirmKey(event)) {
+        // Native buttons already dispatch one click for Enter. Let that click bubble to
+        // the result handler instead of also confirming from the root key handler.
+        if (isNativeButtonEnter(event)) return;
         event.preventDefault();
         if (!resultSent) {
           resultSent = true;
@@ -277,34 +309,33 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (shiftHeld) shiftCombined = true;
-    if (event.key === "c" || event.key === "C" || event.key === "x" || event.key === "X" || event.key === "Escape") {
+    if (isCancelKey(event)) {
       event.preventDefault();
       handleCancel(snapshot);
       return;
     }
-    if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
-      if (snapshot.phase === "targetSelect") {
-        event.preventDefault();
-        cycleTarget(snapshot, -1);
-      }
+    if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "ArrowDown" || event.key === "ArrowRight") {
+      const direction: 1 | -1 = event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
+      if (moveMenuCursor(snapshot, direction)) event.preventDefault();
       return;
     }
-    if (event.key === "ArrowDown" || event.key === "ArrowRight") {
-      if (snapshot.phase === "targetSelect") {
-        event.preventDefault();
-        cycleTarget(snapshot, 1);
-      }
-      return;
-    }
-    if (event.key === "z" || event.key === "Z" || event.key === "Enter") {
-      event.preventDefault();
-      handleConfirm(snapshot);
+    if (isConfirmKey(event)) {
+      // Enter on a focused native button must be handled by the browser exactly once.
+      // Z has no native activation, so it still goes through the shared cursor model.
+      if (isNativeButtonEnter(event)) return;
+      if (handleConfirm(snapshot)) event.preventDefault();
     }
   }
   root.addEventListener("keydown", onKeydown);
   function onWindowKeydown(event: KeyboardEvent): void {
-    if (document.activeElement === root) return;
     if (!root.isConnected) return;
+    // The same key event bubbles from root to window. Use the event's original
+    // propagation path because a handled navigation key can rebuild the command
+    // panel and detach event.target before the event reaches window.
+    const originatedInBattle = typeof event.composedPath === "function"
+      ? event.composedPath().includes(root)
+      : event.target instanceof Element && root.contains(event.target);
+    if (originatedInBattle) return;
     // 텍스트 입력 중에는 전투 키를 절대 가로채지 않는다(결함 2).
     // 에디터 입력창에 포커스가 있으면 event.target 이 input/textarea/select 이거나
     // contenteditable 요소(또는 그 자손)다. 여기서 즉시 return 해 타이핑이 삼켜지지 않게 한다.
@@ -325,43 +356,120 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   window.addEventListener("keyup", onWindowKeyup);
 
-  function handleConfirm(snapshot: BattleSnapshot): void {
-    if (snapshot.phase === "targetSelect") {
-      const selectedId = snapshot.targetSelection?.selectedEnemyId
-        ?? snapshot.targetSelection?.targetEnemyIds[0];
-      if (selectedId) confirmTargetSelection(selectedId);
+  function menuContext(snapshot: BattleSnapshot): string {
+    if (snapshot.phase === "targetSelect" && snapshot.targetSelection) {
+      const command = snapshot.targetSelection.command;
+      const commandId = command.kind === "skill"
+        ? command.skillId
+        : command.kind === "item"
+          ? command.itemId
+          : command.kind === "capture"
+            ? command.captureItemId
+            : command.kind;
+      return `target:${snapshot.activeActorId ?? ""}:${command.kind}:${commandId}:${snapshot.targetSelection.side}`;
+    }
+    if (snapshot.phase === "actorCommand" && submenu) {
+      const submenuId = submenu.kind === "skill" ? submenu.command.id : submenu.kind;
+      return `submenu:${snapshot.activeActorId ?? ""}:${submenu.kind}:${submenuId}`;
+    }
+    return `command:${snapshot.activeActorId ?? ""}`;
+  }
+
+  function enabledMenuButtons(): HTMLButtonElement[] {
+    return Array.from(commandHost.querySelectorAll<HTMLButtonElement>("button.battle-command:not(:disabled)"));
+  }
+
+  function markMenuCursor(snapshot: BattleSnapshot, preferredTestId?: string): HTMLButtonElement | undefined {
+    const buttons = enabledMenuButtons();
+    for (const button of commandHost.querySelectorAll<HTMLButtonElement>("button.battle-command")) {
+      button.removeAttribute("data-battle-command-cursor");
+      button.removeAttribute("aria-current");
+      button.tabIndex = -1;
+    }
+    if (buttons.length === 0) return undefined;
+    const context = menuContext(snapshot);
+    const selectedTargetId = snapshot.targetSelection?.selectedTargetId;
+    const selectedTarget = selectedTargetId
+      ? buttons.find((button) => button.dataset.battleTargetId === selectedTargetId)
+      : undefined;
+    const savedId = preferredTestId ?? cursorByContext.get(context);
+    const selected = buttons.find((button) => button.dataset.testid === savedId)
+      ?? selectedTarget
+      ?? buttons[0];
+    if (!selected.dataset.testid) return undefined;
+    cursorByContext.set(context, selected.dataset.testid);
+    selected.dataset.battleCommandCursor = "true";
+    selected.setAttribute("aria-current", "true");
+    selected.tabIndex = 0;
+    return selected;
+  }
+
+  function setMenuCursor(snapshot: BattleSnapshot, button: HTMLButtonElement, focus: boolean): void {
+    if (button.disabled || !commandHost.contains(button)) return;
+    const testId = button.dataset.testid;
+    if (!testId) return;
+    cursorByContext.set(menuContext(snapshot), testId);
+    const selected = markMenuCursor(snapshot, testId);
+    const targetId = button.dataset.battleTargetId;
+    if (snapshot.phase === "targetSelect" && targetId && snapshot.targetSelection?.selectedTargetId !== targetId) {
+      options.runtime.setSelectedTarget(targetId);
+      directorState = targetSelectDirectorState(options.runtime.snapshot());
+      syncView();
       return;
     }
-    if (snapshot.phase === "actorCommand" && submenu === null) {
-      beginTargetCommand({ kind: "attack" });
-    }
+    if (focus && selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+  }
+
+  function moveMenuCursor(snapshot: BattleSnapshot, direction: 1 | -1): boolean {
+    const buttons = enabledMenuButtons();
+    if (buttons.length === 0) return false;
+    const current = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)")
+      ?? markMenuCursor(snapshot);
+    const index = current ? buttons.indexOf(current) : -1;
+    const next = buttons[(index + direction + buttons.length) % buttons.length];
+    setMenuCursor(snapshot, next, true);
+    return true;
+  }
+
+  function handleConfirm(snapshot: BattleSnapshot): boolean {
+    const button = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)")
+      ?? markMenuCursor(snapshot);
+    if (!button) return false;
+    button.click();
+    return true;
   }
 
   function handleCancel(snapshot: BattleSnapshot): void {
+    if (snapshot.phase === "targetSelect") {
+      cancelTargetSelectionAndRestore();
+      return;
+    }
     if (submenu !== null) {
       submenu = null;
       panelOptions.submenu = null;
       syncView();
-      return;
-    }
-    if (snapshot.phase === "targetSelect") {
-      options.runtime.cancelTargetSelection();
-      directorState = commandPromptState(options.runtime.snapshot());
-      syncView();
     }
   }
 
-  function cycleTarget(snapshot: BattleSnapshot, direction: 1 | -1 = 1): void {
-    if (snapshot.phase !== "targetSelect") return;
-    const ids = snapshot.targetSelection?.targetEnemyIds ?? [];
-    if (ids.length <= 1) return;
-    const current = snapshot.targetSelection?.selectedEnemyId ?? ids[0];
-    const index = ids.indexOf(current);
-    const nextId = ids[(index + direction + ids.length) % ids.length];
-    options.runtime.setSelectedTargetEnemy(nextId);
-    directorState = targetSelectDirectorState(options.runtime.snapshot());
+  function cancelTargetSelectionAndRestore(): void {
+    if (options.runtime.snapshot().phase !== "targetSelect") return;
+    options.runtime.cancelTargetSelection();
+    submenu = targetReturnSubmenu;
+    panelOptions.submenu = targetReturnSubmenu;
+    targetReturnSubmenu = null;
+    directorState = commandPromptState(options.runtime.snapshot());
     syncView();
   }
+
+  function onMenuPointerOrFocus(event: Event): void {
+    const button = event.target instanceof Element
+      ? event.target.closest<HTMLButtonElement>("button.battle-command:not(:disabled)")
+      : null;
+    if (!button || !commandHost.contains(button)) return;
+    setMenuCursor(options.runtime.snapshot(), button, event.type === "focusin");
+  }
+  commandHost.addEventListener("mouseover", onMenuPointerOrFocus);
+  commandHost.addEventListener("focusin", onMenuPointerOrFocus);
 
   function syncView(): void {
     const snapshot = options.runtime.snapshot();
@@ -388,45 +496,49 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function checkAutoBattleStep(snapshot: BattleSnapshot): void {
     if (!autoBattle || sequenceBusy || snapshot.result) return;
     if (snapshot.phase === "actorCommand") {
-      const livingEnemies = snapshot.enemies.filter((e) => !e.defeated);
-      if (livingEnemies.length > 0) {
-        const target = livingEnemies[Math.floor(Math.random() * livingEnemies.length)];
-        runActorCommand({ kind: "attack", targetEnemyId: target.id });
-      }
+      const command = options.runtime.chooseAutoCommand();
+      if (command) runActorCommand(command);
     } else if (snapshot.phase === "targetSelect") {
-      const selectedId = snapshot.targetSelection?.selectedEnemyId ?? snapshot.targetSelection?.targetEnemyIds[0];
-      if (selectedId) {
-        confirmTargetSelection(selectedId);
-      }
+      const selectedId = snapshot.targetSelection?.selectedTargetId ?? snapshot.targetSelection?.targetIds[0];
+      if (selectedId) confirmTargetSelection(selectedId);
     }
   }
 
   function rebuildCommandPanelIfNeeded(snapshot: BattleSnapshot): void {
-    const signature = `${snapshot.phase}:${snapshot.activeActorId ?? ""}:${submenu?.kind ?? "none"}:${snapshot.targetSelection?.selectedEnemyId ?? ""}`;
-    if (signature === commandPanelSignature && commandHost.childElementCount > 0) return;
+    const actor = snapshot.actors.find((entry) => entry.recordId === snapshot.activeActorId);
+    const submenuId = submenu?.kind === "skill" ? submenu.command.id : submenu?.kind ?? "none";
+    const inventorySignature = Object.entries(snapshot.eventState.inventory)
+      .filter(([, count]) => count > 0)
+      .map(([id, count]) => `${id}:${count}`)
+      .join(",");
+    const signature = [
+      snapshot.phase,
+      snapshot.activeActorId ?? "",
+      submenuId,
+      snapshot.targetSelection?.side ?? "",
+      snapshot.targetSelection?.selectedTargetId ?? "",
+      snapshot.targetSelection?.targetIds.join(",") ?? "",
+      actor?.mp ?? "",
+      actor?.maxMp ?? "",
+      actor?.skillIds.join(",") ?? "",
+      inventorySignature,
+      snapshot.forcedSwitchActorId ?? "",
+      snapshot.switchCandidateActorIds.join(","),
+      snapshot.strictPendingActorIds.join(","),
+      snapshot.strictQueuedActorIds.join(","),
+    ].join(":");
+    if (signature === commandPanelSignature && commandHost.childElementCount > 0) {
+      markMenuCursor(snapshot);
+      return;
+    }
+
+    const focused = document.activeElement instanceof HTMLButtonElement && commandHost.contains(document.activeElement)
+      ? document.activeElement
+      : undefined;
     commandPanelSignature = signature;
     commandHost.replaceChildren(commandPanel(snapshot, panelOptions));
-    markConfirmCursor(snapshot);
-  }
-
-  /** 확인 키(z/Enter)가 지금 발동시키는 명령에 커서 표식을 붙인다.
-   *
-   *  이 엔진의 전투 명령 메뉴는 attachCursorMenu 를 쓰지 않아 **선택 표식이 DOM 에 전혀
-   *  없었다**(실측: `.selected` 0개, activeElement 는 에디터 루트). 그래서 키보드로 z 를 눌러
-   *  통상공격이 나가는데도 화면에는 무엇이 선택됐는지 표시가 없었다.
-   *
-   *  표식은 `handleConfirm` 의 실제 분기와 정확히 일치시킨다 — `actorCommand` 이고 서브메뉴가
-   *  닫혀 있을 때 z 는 **통상공격**을 실행한다. 그 조건에서만, 그 버튼에만 붙인다.
-   *  서브메뉴 안에서는 z 가 아무 항목도 고르지 않으므로 아무것도 표시하지 않는다. */
-  function markConfirmCursor(snapshot: BattleSnapshot): void {
-    for (const node of commandHost.querySelectorAll("[data-battle-command-cursor]")) {
-      node.removeAttribute("data-battle-command-cursor");
-    }
-    if (snapshot.phase !== "actorCommand" || submenu !== null) return;
-    const attack = commandHost.querySelector<HTMLButtonElement>(
-      "button.battle-command[data-testid='actor-command-attack']:not(:disabled)",
-    );
-    attack?.setAttribute("data-battle-command-cursor", "true");
+    const selected = markMenuCursor(snapshot);
+    if (focused && selected) selected.focus({ preventScroll: true });
   }
 
   function syncResultHost(snapshot: BattleSnapshot): void {
@@ -461,13 +573,27 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }, Math.max(BATTLE_RESULT_HOLD_MS, revealMs + BATTLE_RESULT_HOLD_MS));
   }
 
+  function commandProgressed(before: BattleSnapshot, after: BattleSnapshot): boolean {
+    return after.timeline.length !== before.timeline.length
+      || after.phase !== before.phase
+      || after.activeActorId !== before.activeActorId
+      || after.turn !== before.turn
+      || after.result !== before.result
+      || after.strictQueuedActorIds.join(",") !== before.strictQueuedActorIds.join(",");
+  }
+
   function runActorCommand(command: ActorCommand): void {
     if (sequenceBusy) return;
     const before = options.runtime.snapshot();
-    emitSwingJuice(command, before);
     options.runtime.performActorCommand(command);
     const afterCommand = options.runtime.snapshot();
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+    emitSwingJuice(command, before);
     submenu = null;
+    targetReturnSubmenu = null;
     panelOptions.submenu = null;
     sequencer.runAfterActorCommand(command, before, afterCommand);
   }
@@ -487,31 +613,65 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function beginTargetCommand(command: TargetedActorCommand): void {
     if (sequenceBusy) return;
+    const before = options.runtime.snapshot();
+    const returnSubmenu = submenu;
     options.runtime.beginActorCommand(command);
-    const snapshot = options.runtime.snapshot();
-    if (snapshot.phase === "targetSelect") {
-      directorState = targetSelectDirectorState(snapshot);
+    const afterCommand = options.runtime.snapshot();
+    if (afterCommand.phase === "targetSelect") {
+      targetReturnSubmenu = returnSubmenu;
+      directorState = targetSelectDirectorState(afterCommand);
       submenu = null;
       panelOptions.submenu = null;
+      syncView();
+      return;
     }
-    syncView();
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+
+    // self/all* scopes resolve without opening targetSelect. Build the additive
+    // compatibility command only for presentation; the runtime already applied it.
+    const scope = targetScopeForCommand(store.getCurrent(), command);
+    const side: "actor" | "enemy" = scope === "self" || scope === "ally" || scope === "allAllies" ? "actor" : "enemy";
+    const firstTimelineTarget = afterCommand.timeline.slice(before.timeline.length).find((entry) => entry.targetId)?.targetId;
+    const fallbackTarget = side === "actor"
+      ? before.actors.find((actor) => actor.recordId === before.activeActorId)?.id
+      : before.enemies.find((enemy) => !enemy.defeated)?.id;
+    const targetId = firstTimelineTarget ?? fallbackTarget;
+    if (!targetId) {
+      syncView();
+      return;
+    }
+    const concrete = concreteTargetCommand(command, targetId, side);
+    emitSwingJuice(concrete, before);
+    submenu = null;
+    targetReturnSubmenu = null;
+    panelOptions.submenu = null;
+    sequencer.runAfterActorCommand(concrete, before, afterCommand);
   }
 
-  function confirmTargetSelection(enemyId: string): void {
+  function confirmTargetSelection(targetId: string): void {
     if (sequenceBusy) return;
     const before = options.runtime.snapshot();
     const pending = before.targetSelection?.command;
-    if (before.phase !== "targetSelect" || !pending) return;
-    const command = concreteTargetCommand(pending, enemyId);
-    emitSwingJuice(command, before);
-    options.runtime.selectTargetEnemy(enemyId);
+    const side = before.targetSelection?.side;
+    if (before.phase !== "targetSelect" || !pending || !side) return;
+    const command = concreteTargetCommand(pending, targetId, side);
+    options.runtime.selectTarget(targetId);
     const afterCommand = options.runtime.snapshot();
     if (afterCommand.phase === "targetSelect") {
       directorState = targetSelectDirectorState(afterCommand);
       syncView();
       return;
     }
+    if (!commandProgressed(before, afterCommand)) {
+      syncView();
+      return;
+    }
+    emitSwingJuice(command, before);
     submenu = null;
+    targetReturnSubmenu = null;
     panelOptions.submenu = null;
     syncView();
     sequencer.runAfterActorCommand(command, before, afterCommand);
@@ -551,11 +711,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     options.runtime.tick(BATTLE_TICK_MS);
     const after = options.runtime.snapshot();
-    const actionKey = after.lastActionResult
-      ? `${after.lastActionResult.targetId}:${after.lastActionResult.amount}:${after.turn}`
-      : "";
-    if (actionKey && actionKey !== lastEnemyActionKey) {
-      lastEnemyActionKey = actionKey;
+    const timelineKey = `${before.timeline.length}:${after.timeline.length}`;
+    if (after.timeline.length > before.timeline.length && timelineKey !== lastEnemyActionKey) {
+      lastEnemyActionKey = timelineKey;
       sequencer.runAfterEnemyAdvance(before, after);
       return;
     }

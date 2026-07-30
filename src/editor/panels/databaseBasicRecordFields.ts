@@ -8,7 +8,7 @@ import { openQuickBattleModal } from "@/editor/panels/quickBattleModal";
 export function skillFields(form: HTMLElement, id: string): void {
   const skill = store.getCurrent().database.skills.find((record) => record.id === id);
   if (!skill) return;
-  form.append(selectLiteral("범위", "db-field-scope", skill.scope, ["self", "ally", "enemy", "allEnemies"], (value) =>
+  form.append(selectLiteral("범위", "db-field-scope", skill.scope, ["self", "ally", "allAllies", "enemy", "allEnemies"], (value) =>
     updateDatabaseRecord("skills", id, { scope: value })
   ));
   form.append(numberField("위력", "db-field-power", skill.power, (value) => updateDatabaseRecord("skills", id, { power: value }), { min: -9999, max: 9999 }));

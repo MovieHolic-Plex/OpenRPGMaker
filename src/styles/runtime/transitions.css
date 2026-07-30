@@ -15,4 +15,88 @@
     position: absolute;
     right: 0;
   }
+
+  /* 전투 진입/종료는 battleTransition.ts 의 JS 타임라인과 같은 길이를 쓴다.
+     오버레이 자체가 전체 host를 덮어야 flash 단계부터 실제로 보이고,
+     여덟 blind가 닫힌 뒤 새 전투 장면을 reveal할 수 있다. */
+  .battle-transition-overlay {
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    position: absolute;
+    z-index: 70;
+  }
+
+  .battle-transition-flash,
+  .battle-transition-blinds {
+    inset: 0;
+    position: absolute;
+  }
+
+  .battle-transition-flash {
+    background: #fff;
+    opacity: 0;
+  }
+
+  .battle-transition-blinds {
+    display: grid;
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+  }
+
+  .battle-transition-blind-bar {
+    background: var(--bg-canvas, #05070c);
+    display: block;
+    min-height: 0;
+    transform: scaleX(0);
+    transform-origin: center;
+  }
+
+  .battle-transition-overlay[data-battle-transition-phase="flash"] .battle-transition-flash {
+    animation: battle-transition-flash 340ms ease-out both;
+  }
+
+  .battle-transition-overlay[data-battle-transition-phase="close"] .battle-transition-blind-bar {
+    animation: battle-transition-blind-close 190ms cubic-bezier(0.55, 0, 0.85, 0.45) both;
+    animation-delay: calc(var(--blind-index) * 10ms);
+  }
+
+  .battle-transition-overlay[data-battle-transition-phase="reveal"] .battle-transition-blind-bar {
+    animation: battle-transition-blind-reveal 300ms cubic-bezier(0.15, 0.55, 0.25, 1) both;
+  }
+
+  .battle-transition-overlay[data-battle-transition-phase="exit"] {
+    animation: battle-transition-exit-cover 220ms ease-in both;
+    background: var(--bg-canvas, #05070c);
+  }
+
+  .battle-transition-overlay[data-battle-transition-phase="reveal"]:not(:has(.battle-transition-blinds)) {
+    animation: battle-transition-exit-reveal 300ms ease-out both;
+    background: var(--bg-canvas, #05070c);
+  }
+
+  @keyframes battle-transition-flash {
+    0% { opacity: 0; }
+    24% { opacity: 0.92; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes battle-transition-blind-close {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes battle-transition-blind-reveal {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+
+  @keyframes battle-transition-exit-cover {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes battle-transition-exit-reveal {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
 }

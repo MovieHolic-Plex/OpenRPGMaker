@@ -1,6 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { seedLayoutResultBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import {
+  confirmBattleTarget,
+  seedLayoutResultBattleProject,
+  startReferenceBattle,
+} from "./battleReferenceProject";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
@@ -12,7 +16,7 @@ test("battle command, target, and result surfaces stay simple", async ({ page })
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1360, height: 768 });
   await mkdir(evidenceDir, { recursive: true });
-  await seedLayoutResultBattleProject(page);
+  await seedLayoutResultBattleProject(page, { battleFlow: "strict", battleUiStyle: "rm2003" });
   await startReferenceBattle(page);
 
   await page.screenshot({ path: `${evidenceDir}/01-command.png`, fullPage: true });
@@ -30,13 +34,17 @@ test("battle command, target, and result surfaces stay simple", async ({ page })
 
   await page.getByTestId("actor-command-attack").click();
   await expect(page.getByTestId("battle-target-analysis")).toHaveCount(0);
-  await expect(page.getByTestId("battle-target-brackets")).toBeVisible();
+  await expect(page.getByTestId("battle-target-enemy-1")).toBeVisible();
   await expect(page.getByTestId("battle-expected-result")).toHaveCount(0);
   const targetPrompt = await page.getByTestId("battle-target-prompt").textContent();
   await page.screenshot({ path: `${evidenceDir}/02-target.png`, fullPage: true });
 
-  await page.locator(".battle-enemy[data-battle-targetable='true']").first().click();
-  await expect(page.getByTestId("battle-result-panel")).toBeVisible();
+  await confirmBattleTarget(page);
+  for (const commandNumber of [2, 3, 4]) {
+    await expect(page.getByTestId("battle-scene")).toContainText(`명령 ${commandNumber}/4`);
+    await page.getByTestId("actor-command-defend").click();
+  }
+  await expect(page.getByTestId("battle-result-panel")).toBeVisible({ timeout: 20_000 });
   const result = await page.getByTestId("battle-result-panel").textContent();
   await expect(page.getByTestId("battle-result-cards")).toBeVisible();
   await expect(page.getByTestId("battle-result-progress")).toHaveCount(0);
