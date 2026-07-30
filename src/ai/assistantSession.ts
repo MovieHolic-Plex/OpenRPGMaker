@@ -1134,6 +1134,64 @@ export class AssistantSession {
     return assets.length > 0;
   }
 
+  /**
+   * 확정된 밑그림의 npc 에셋을 **코드가 직접** place_npc 로 실행한다.
+   *
+   * 실측 결함(2026-07-29 region-task-log): 모델이 npc 에셋 명세를 확정해 두고 place_npc 를
+   * 부르지 않아 사용자에게 아무 결과도 남지 않았다. 프롬프트에는 이미 place_npc 지시가 세 곳
+   * 있었고 그 턴 메시지에도 실려 있었으므로, 지시를 더 넣는 것으로는 막히지 않는다.
+   * (게다가 그 턴의 시스템 프롬프트는 예산 초과로 잘려 있었다 — 규칙 추가는 역효과다.)
+   *
+   * kind:"npc" 는 인자가 명세만으로 확정되는 에셋이다(맵·좌표·역할). author_house 가 집에
+   * 대해 이미 그렇듯, 확정된 인자의 호출은 모델의 성실함이 아니라 코드가 책임진다.
+   *
+   * 중복 배치는 호출 시점으로 막는다 — 이 메서드는 이번 턴 쓰기 툴이 0건일 때만 불린다.
+   * 모델이 스스로 place_npc 를 불렀다면 writeToolAttempts > 0 이라 여기까지 오지 않는다.
+   */
+  private buildSpecNpcAssetsDirectly(
+    onEvent: (event: SessionEvent) => void,
+    proposedByKey: Map<string, ProposedCall>
+  ): number {
+    const assets = (this.activeSpec?.assets ?? []).filter((asset) => asset.kind === "npc");
+    const mapId = this.activeSpec?.mapId;
+    if (!mapId || assets.length === 0) return 0;
+
+    let placed = 0;
+    for (const asset of assets) {
+      const name = specNpcName(asset);
+      const args: Record<string, unknown> = {
+        mapId,
+        x: asset.x,
+        y: asset.y,
+        name,
+        graphic: { query: name },
+        pages: [specNpcPage(name)],
+      };
+      const result = runTool(this.ctx, "place_npc", args, { dryRun: false });
+      onEvent({ type: "tool_call", name: "place_npc", args, result });
+      this.pushAudit({
+        kind: "tool",
+        name: "place_npc",
+        args,
+        ok: result.ok,
+        summary: `${result.summary} (밑그림 npc 에셋 자동 실행)`,
+        ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
+      });
+      if (!result.ok || !result.diff) continue;
+      this.turnSuccessfulWriteTools.add("place_npc");
+      this.upsertProposal(proposedByKey, {
+        name: "place_npc",
+        args,
+        summary: result.summary,
+        result,
+        destructive: false,
+        requiresApproval: false,
+      });
+      placed += 1;
+    }
+    return placed;
+  }
+
   private reviewBuildSpecForProposal(calls: readonly ProposedCall[]): BuildSpec | null {
     const currentSpec = this.activeSpec && this.activeSpecTurnIndex === this.currentTurnIndex ? this.activeSpec : null;
     if (currentSpec && proposalHasChangedMap(calls, currentSpec.mapId)) return currentSpec;
@@ -1384,6 +1442,15 @@ export class AssistantSession {
           onEvent({ type: "status", text: "밑그림만 확정된 상태를 감지해 실제 배지를 진행합니다." });
           this.pushAudit({ kind: "status", text: "zero-change-rekick (unbuilt-spec)" });
           continue;
+        }
+        // 재킥을 이미 썼는데도 쓰기가 0건이면 모델에게 더 기대지 않는다 — 코드가 직접 짓는다.
+        // kind:"npc" 는 명세만으로 인자가 확정되므로 결정론적으로 실행할 수 있다.
+        if (writeToolAttempts === 0 && this.hasUnbuiltSpecThisTurn()) {
+          const placed = this.buildSpecNpcAssetsDirectly(onEvent, proposedByKey);
+          if (placed > 0) {
+            onEvent({ type: "status", text: `밑그림의 NPC ${placed}명을 직접 배치했습니다.` });
+            this.pushAudit({ kind: "status", text: `spec-npc-autobuild ${placed}` });
+          }
         }
         if (
           orchestrated &&
@@ -1640,6 +1707,33 @@ function reviewRepairInstruction(reviewText: string, missingWarnings: readonly s
 
 function stripReviewCompletePrefix(text: string): string {
   return text.trim().replace(/^완료\s*[:：]\s*/u, "");
+}
+
+/** 상점 역할 이름 판정 — eventTools 의 같은 정규식과 의미를 맞춘다(그쪽은 비공개). */
+const SHOP_ROLE_NAME = /상점\s*주인|잡화\s*상|잡화점|가게\s*주인|상인|merchant|shopkeeper|shop\s*owner/u;
+
+function specNpcName(asset: SpecAsset): string {
+  const style = asset.style?.trim();
+  if (style) return style;
+  const note = asset.note?.trim();
+  return note && note.length > 0 ? note : "주민";
+}
+
+/**
+ * 밑그림 npc 에셋의 기본 대사 페이지.
+ *
+ * 상점 역할 이름이면 shop 커맨드를 붙인다 — 재고는 비워 둔다(명세에 품목이 없다).
+ * 빈 재고로도 place_npc 가 changeFace→text→shop 3커맨드를 컴파일하는 것을 실측했으므로,
+ * 사용자는 상점 창까지 열리는 이벤트를 받고 품목만 나중에 채우면 된다.
+ */
+function specNpcPage(name: string): Record<string, unknown> {
+  if (SHOP_ROLE_NAME.test(name)) {
+    return {
+      lines: ["어서 오세요. 필요한 게 있으신가요?"],
+      commands: [{ kind: "shop", itemIds: [], allowSell: true }],
+    };
+  }
+  return { lines: [`${name}입니다.`] };
 }
 
 function buildSpecPlanLabel(spec: BuildSpec): string {

@@ -15,8 +15,8 @@ const DEFAULT_DEV_SERVER_PORT = 9999;
  * **평문 서버에 https 로 노크하고 있었던 것**이 원인이었다.
  *
  * 인증서는 자기서명이고 `.certs/` 에 두며 커밋하지 않는다. 없으면 평문 http 로 뜬다
- * (CI·컨테이너처럼 인증서를 만들지 않는 환경을 막지 않기 위해).
- * 재발급: scripts/dev-certs.sh
+ * (CI·컨테이너처럼 인증서를 만들지 않는 환경을 막지 않기 위해). 재발급: scripts/dev-certs.sh
+ * e2e 는 DEV_SERVER_NO_TLS=1 로 평문 경로를 쓴다(playwright 는 http 로 폴링한다).
  */
 function devServerHttps(): { key: Buffer; cert: Buffer } | undefined {
   if (process.env.DEV_SERVER_NO_TLS === "1") return undefined;

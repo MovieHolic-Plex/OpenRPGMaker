@@ -50,6 +50,8 @@ export default defineConfig({
   ],
   webServer: {
     command: `npm run dev -- --host 127.0.0.1 --port ${devServerPort} --strictPort`,
+    // dev 서버는 인증서가 있으면 https 로 뜨는데 이 설정의 url 은 http 다 —
+    // 평문으로 고정해야 webServer 폴링이 붙는다.
     env: { DEV_SERVER_NO_TLS: "1" },
     url: devServerUrl,
     reuseExistingServer: true,

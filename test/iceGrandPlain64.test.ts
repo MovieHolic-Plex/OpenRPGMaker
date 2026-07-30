@@ -7,9 +7,9 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
 import type { GameMap, Project } from "@/project/types";
 import {
   BLOCK_BODY, CLIFF_HEIGHT, CLIFF_ORE_ROCK, CLIFF_TILES, CLIFF_TOP, CLIFF_BASE, CLIFF_WALL_ROWS,
-  BANNED_WATER_TILES, CLIFF_LIP, DEFERRED_PROPS, FLOOR_PROPS, FLOOR_PROP_SHAPES, FORBIDDEN_CLIFF_LIP,
+  BANNED_WATER_TILES, CLIFF_LIP, DEFERRED_PROPS, FLOOR_PROPS, FLOOR_PROP_COUNTS, FLOOR_PROP_SHAPES, FLOOR_PROP_TARGET_COUNT, FORBIDDEN_CLIFF_LIP,
   ICE_PLAIN_HEIGHT, ICE_PLAIN_MAP_ID, ICE_PLAIN_START, ICE_PLAIN_SUMMIT, ICE_PLAIN_WIDTH,
-  SNOW_DRAPE, STAIR_TILES, STAIR_WIDTH, WATERFALL_FRAMES,
+  SNOW_DRAPE, STAIR_TILES, STAIR_WIDTH, TERRACES, WATERFALL_FRAMES,
   blockTile, buildIcePlainMap, buildIcePlainTerrain,
 } from "@/project/defaults/iceGrandPlain64";
 
@@ -270,6 +270,72 @@ describe("ice grand plain 64x64 terrain", () => {
       const y = Math.floor(index / W);
       expect(terrain.cliffMask[index], `lip @${x},${y} must not be cliff`).toBe(0);
       expect(isPassable(project, map, x, y), `lip ${x},${y}`).toBe(true);
+    }
+  });
+
+  /** 자연 산포는 총량·안전구역을 지키면서 대지별 도장 반복과 정렬을 만들지 않는다. */
+  it("scatters the approved palette with varied spacing, habitat weighting, and no repeated stamp", () => {
+    const { terrain } = scene();
+    const shapeByHead = new Map(FLOOR_PROP_SHAPES.map((shape) => [shape.tiles[0]![0]!, shape]));
+    const familyOf = (id: string): "crystal" | "rock" | "rare" =>
+      ["big-crystal", "crystal-pillar", "blue-spire", "small-crystal", "twin-crystal"].includes(id) ? "crystal" : id === "snowman" ? "rare" : "rock";
+    const instances = terrain.upperTiles.flatMap((tile, index) => {
+      const shape = shapeByHead.get(tile);
+      return shape ? [{ shape, family: familyOf(shape.id), x: index % W, y: Math.floor(index / W) }] : [];
+    });
+    expect(instances).toHaveLength(FLOOR_PROP_TARGET_COUNT);
+    expect(FLOOR_PROP_TARGET_COUNT).toBe(38);
+    for (const shape of FLOOR_PROP_SHAPES) {
+      expect(instances.filter((item) => item.shape.id === shape.id), shape.id).toHaveLength(FLOOR_PROP_COUNTS[shape.id]);
+    }
+
+    const terraceCounts = TERRACES.map((terrace) => instances.filter((item) => item.y >= terrace.floorFrom && item.y <= terrace.floorTo).length);
+    expect(Math.min(...terraceCounts)).toBeGreaterThanOrEqual(2);
+    expect(Math.max(...terraceCounts) - Math.min(...terraceCounts)).toBeGreaterThanOrEqual(5);
+    expect(new Set(terraceCounts).size).toBeGreaterThanOrEqual(3);
+
+    const nearest = instances.map((item, index) => Math.min(...instances.filter((_, other) => other !== index).map((candidate) => Math.hypot(item.x - candidate.x, item.y - candidate.y))));
+    const mean = nearest.reduce((sum, value) => sum + value, 0) / nearest.length;
+    const deviation = Math.sqrt(nearest.reduce((sum, value) => sum + (value - mean) ** 2, 0) / nearest.length);
+    expect(Math.min(...nearest)).toBeGreaterThanOrEqual(2);
+    expect(Math.max(...nearest)).toBeGreaterThan(10);
+    expect(deviation / mean).toBeGreaterThan(0.35);
+    expect(new Set(nearest.map((value) => value.toFixed(2))).size).toBeGreaterThanOrEqual(10);
+
+    let alignedTriples = 0;
+    for (let a = 0; a < instances.length; a += 1) for (let b = a + 1; b < instances.length; b += 1) for (let c = b + 1; c < instances.length; c += 1) {
+      const triple = [instances[a]!, instances[b]!, instances[c]!];
+      if (triple.every((item) => item.y === triple[0]!.y) && Math.max(...triple.map((item) => item.x)) - Math.min(...triple.map((item) => item.x)) <= 12) alignedTriples += 1;
+      if (triple.every((item) => item.x === triple[0]!.x) && Math.max(...triple.map((item) => item.y)) - Math.min(...triple.map((item) => item.y)) <= 12) alignedTriples += 1;
+    }
+    expect(alignedTriples).toBe(0);
+
+    const signatures = instances.flatMap((item) => {
+      const offsets = instances
+        .filter((candidate) => candidate !== item && candidate.family === item.family && Math.hypot(candidate.x - item.x, candidate.y - item.y) <= 7)
+        .map((candidate) => [candidate.x - item.x, candidate.y - item.y] as const)
+        .sort((left, right) => Math.hypot(...left) - Math.hypot(...right))
+        .slice(0, 3);
+      return offsets.length >= 2 ? [JSON.stringify(offsets)] : [];
+    });
+    expect(new Set(signatures).size).toBe(signatures.length);
+
+    const highCrystals = instances.filter((item) => item.family === "crystal" && item.y <= TERRACES[2]!.floorTo).length;
+    const lowCrystals = instances.filter((item) => item.family === "crystal" && item.y >= TERRACES[1]!.floorFrom).length;
+    expect(highCrystals).toBeGreaterThan(lowCrystals);
+
+    const floorPropAt = (x: number, y: number): boolean =>
+      x >= 0 && y >= 0 && x < W && y < H && FLOOR_PROPS.includes(terrain.upperTiles[y * W + x] ?? -1);
+    for (let y = ICE_PLAIN_START.y - 2; y <= ICE_PLAIN_START.y + 2; y += 1) {
+      for (let x = ICE_PLAIN_START.x - 2; x <= ICE_PLAIN_START.x + 2; x += 1) expect(floorPropAt(x, y), `start ${x},${y}`).toBe(false);
+    }
+    for (let y = ICE_PLAIN_SUMMIT.y - 2; y <= ICE_PLAIN_SUMMIT.y + 2; y += 1) {
+      for (let x = ICE_PLAIN_SUMMIT.x - 3; x <= ICE_PLAIN_SUMMIT.x + 3; x += 1) expect(floorPropAt(x, y), `summit ${x},${y}`).toBe(false);
+    }
+    for (const stair of terrain.stairs) {
+      for (let y = stair.crestY - 2; y <= stair.crestY + CLIFF_WALL_ROWS + 1; y += 1) {
+        for (let x = stair.fromX - 2; x <= stair.fromX + STAIR_WIDTH + 1; x += 1) expect(floorPropAt(x, y), `${stair.bandId} ${x},${y}`).toBe(false);
+      }
     }
   });
 

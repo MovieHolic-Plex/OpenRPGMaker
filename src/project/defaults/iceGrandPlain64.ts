@@ -182,11 +182,38 @@ export const WATERFALL_FRAMES = [125, 155, 185, 215] as const;
  * 315 는 소품이 아니다 — 의미표가 `푸른 광석 암반`(wall)이며 바닥 불통행 암반이다.
  */
 export const FLOOR_PROP_SHAPES = [
-  { tiles: [[320, 321], [350, 351]], label: "대형 수정 군집(2×2)" },
-  { tiles: [[261], [291]], label: "회색 바위 첨탑(1×2)" },
-  { tiles: [[288]], label: "바위 첨탑(소형)" },
-  { tiles: [[345]], label: "눈사람" },
+  { id: "big-crystal", tiles: [[320, 321], [350, 351]], label: "대형 수정 군집(2×2)" },
+  { id: "gray-spire", tiles: [[261], [291]], label: "회색 바위 첨탑(1×2)" },
+  { id: "brown-spire", tiles: [[288]], label: "바위 첨탑(소형)" },
+  { id: "snowman", tiles: [[345]], label: "눈사람" },
+  { id: "crystal-pillar", tiles: [[119], [149]], label: "수정 기둥(1×2)" },
+  { id: "blue-spire", tiles: [[262], [292]], label: "푸른 수정 첨탑(1×2)" },
+  { id: "small-crystal", tiles: [[289]], label: "소형 수정 군집" },
+  { id: "twin-crystal", tiles: [[413]], label: "쌍둥이 결정" },
+  { id: "round-boulder", tiles: [[290]], label: "둥근 회색 바위" },
+  { id: "gray-rock-pile", tiles: [[322, 323], [352, 353]], label: "회색 바위 더미(2×2)" },
+  { id: "pebbles", tiles: [[382]], label: "회색 잔돌" },
 ] as const;
+
+export type FloorPropShapeId = (typeof FLOOR_PROP_SHAPES)[number]["id"];
+
+/** 팔레트 비율만 고정하고 위치·군집 모양은 밀도장에서 결정한다. */
+export const FLOOR_PROP_COUNTS: Readonly<Record<FloorPropShapeId, number>> = {
+  "big-crystal": 2,
+  "gray-spire": 2,
+  "brown-spire": 1,
+  snowman: 1,
+  "crystal-pillar": 6,
+  "blue-spire": 7,
+  "small-crystal": 9,
+  "twin-crystal": 4,
+  "round-boulder": 3,
+  "gray-rock-pile": 1,
+  pebbles: 2,
+};
+
+export const FLOOR_PROP_SCATTER_SEED = 20260730;
+export const FLOOR_PROP_TARGET_COUNT = Object.values(FLOOR_PROP_COUNTS).reduce((sum, count) => sum + count, 0);
 
 /** 소품에 쓰이는 모든 타일(★ 허용 목록). 발자국 모양은 `FLOOR_PROP_SHAPES` 가 가진다. */
 export const FLOOR_PROPS: readonly number[] = FLOOR_PROP_SHAPES.flatMap((shape) => shape.tiles.flat());
@@ -660,6 +687,7 @@ export function buildIcePlainTerrain(): IcePlainTerrain {
   paintFloorProps({
     cliffMask,
     stairMask,
+    iceMask,
     upperTaken: (x, y) => (upper[idx(x, y)] ?? -1) !== -1,
     safeUpper,
   });
@@ -700,70 +728,249 @@ function paintSnowDrapes(lower: readonly number[], cliffMask: Uint8Array, safeUp
 }
 
 /**
- * ★ 소품을 **군집**으로 흩고, 재료는 **한 벌 통째**로 놓는다.
- *
- * 1차 판은 칸마다 독립 확률로 놓아 70개가 맵 전체에 균일하게 깔렸고, 그림에서
- * 지형이 아니라 **얼룩(speckle)** 으로 읽혔다. 그래서 씨앗 칸을 드물게 뽑고 그 주변에 붙인다.
- *
- * **발자국 통째 배치:** 이전 판은 소품 목록을 1×1 타일 풀로 쓰며 다섯 칸 오프셋에 흩어서,
- * 여러 칸을 차지하는 재료가 조각만 남은 모여들이로 나왔다 — 상유석(회색 바위 첨탑 261/291)이
- * 세로로 길어야 하는데 한 칸만 놓여 있다는 지적이 이것이다. 이제 한 재료의 모든 칸이
- * 들어갈 자리가 있을 때만 통째로 놓는다. 부분 배치는 하지 않는다.
+ * 밀도장 + 서식 적합도 + 확률적 군집 + 가변 반경으로 38개 소품을 산포한다.
+ * 고정 앵커·고정 shape 순서·최근접 빈칸 채우기를 쓰지 않는다.
  */
 function paintFloorProps(input: {
   readonly cliffMask: Uint8Array;
   readonly stairMask: Uint8Array;
+  readonly iceMask: Uint8Array;
   readonly upperTaken: (x: number, y: number) => boolean;
   readonly safeUpper: (x: number, y: number, tile: number) => boolean;
 }): void {
-  const CLUSTER_GAP = 11;
-  const seeds: { x: number; y: number }[] = [];
+  type Shape = (typeof FLOOR_PROP_SHAPES)[number];
+  type Family = "crystal" | "rock" | "rare";
+  type Placed = { readonly family: Family; readonly radius: number; readonly shape: Shape; readonly x: number; readonly y: number; readonly cx: number; readonly cy: number };
+
+  const reserved = floorPropReservedMask(stairBlocks());
+  const iceDistance = maskDistanceField(input.iceMask);
+  const cliffDistance = maskDistanceField(input.cliffMask);
+  const placed: Placed[] = [];
+  const requests = FLOOR_PROP_SHAPES.flatMap((shape) =>
+    Array.from({ length: FLOOR_PROP_COUNTS[shape.id] }, (_, copy) => ({ shape, copy })),
+  ).sort((a, b) => {
+    const aArea = a.shape.tiles.length * a.shape.tiles[0]!.length;
+    const bArea = b.shape.tiles.length * b.shape.tiles[0]!.length;
+    if (aArea !== bArea) return bArea - aArea;
+    const aKey = noise(floorPropIdSalt(a.shape.id), a.copy + FLOOR_PROP_SCATTER_SEED);
+    const bKey = noise(floorPropIdSalt(b.shape.id), b.copy + FLOOR_PROP_SCATTER_SEED);
+    return aKey - bKey;
+  });
+
   const free = (x: number, y: number): boolean => {
     if (!inBounds(x, y)) return false;
     const cell = idx(x, y);
-    if (input.cliffMask[cell] === 1 || input.stairMask[cell] === 1) return false;
-    if (input.upperTaken(x, y)) return false;
-    return !(x === ICE_PLAIN_START.x && y === ICE_PLAIN_START.y);
+    return reserved[cell] !== 1
+      && input.cliffMask[cell] !== 1
+      && input.stairMask[cell] !== 1
+      && !input.upperTaken(x, y);
   };
 
-  /** 발자국 전체가 비어 있을 때만 한 벌을 놓는다 — 조각만 남는 배치를 막는다. */
-  const placeShape = (shape: (typeof FLOOR_PROP_SHAPES)[number], x: number, y: number): boolean => {
-    for (let row = 0; row < shape.tiles.length; row += 1) {
-      const cols = shape.tiles[row]!;
-      for (let col = 0; col < cols.length; col += 1) if (!free(x + col, y + row)) return false;
-    }
-    for (let row = 0; row < shape.tiles.length; row += 1) {
-      const cols = shape.tiles[row]!;
-      for (let col = 0; col < cols.length; col += 1) input.safeUpper(x + col, y + row, cols[col]!);
-    }
-    return true;
-  };
+  for (let requestIndex = 0; requestIndex < requests.length; requestIndex += 1) {
+    const request = requests[requestIndex]!;
+    const shape = request.shape;
+    const family = floorPropFamily(shape.id);
+    const rows = shape.tiles.length;
+    const cols = shape.tiles[0]!.length;
+    const radius = 0.78 + Math.max(rows, cols) * 0.46;
+    let chosen: { x: number; y: number; cx: number; cy: number } | null = null;
 
-  for (const terrace of TERRACES) {
-    for (let y = terrace.floorFrom + 1; y <= terrace.floorTo - 1; y += 1) {
-      for (let x = 2; x < W - 2; x += 1) {
-        if (!free(x, y) || noise(x * 61, y * 41) > 0.02) continue;
-        if (seeds.some((seed) => Math.max(Math.abs(seed.x - x), Math.abs(seed.y - y)) < CLUSTER_GAP)) continue;
-        seeds.push({ x, y });
-        // 씨앗마다 한 종류만 쓴다 — 한 덩어리 안에 수정과 눈사람이 섞이면 다시 얼룩이 된다.
-        const pick = Math.floor(noise(y * 97, x * 53) * FLOOR_PROP_SHAPES.length) % FLOOR_PROP_SHAPES.length;
-        const shape = FLOOR_PROP_SHAPES[pick];
-        if (shape === undefined) continue;
-        // 발자국이 큰 재료는 여러 벌이 붙으면 다시 얼룩이 되므로 덜 붙인다.
-        const footprint = shape.tiles.length * shape.tiles[0]!.length;
-        const count = footprint > 1
-          ? 1 + Math.floor(noise(x * 13, y * 7) * 2)
-          : 2 + Math.floor(noise(x * 13, y * 7) * 3);
-        // 오프셋은 가장 큰 발자국(2×2)이 서로 겹치지 않도록 벌려 둔다.
-        const offsets = [[0, 0], [3, 1], [-3, 1], [4, -2], [-4, -1]] as const;
-        let placed = 0;
-        for (const [dx, dy] of offsets) {
-          if (placed >= count) break;
-          if (placeShape(shape, x + dx, y + dy)) placed += 1;
+    for (let relaxation = 0; relaxation <= 2 && chosen === null; relaxation += 1) {
+      let bestKey = Number.POSITIVE_INFINITY;
+      for (let terraceIndex = 0; terraceIndex < TERRACES.length; terraceIndex += 1) {
+        const terrace = TERRACES[terraceIndex]!;
+        for (let y = terrace.floorFrom + 1; y + rows - 1 <= terrace.floorTo - 1; y += 1) {
+          for (let x = 2; x + cols <= W - 2; x += 1) {
+            let fits = true;
+            for (let row = 0; row < rows && fits; row += 1) for (let col = 0; col < cols; col += 1) {
+              if (!free(x + col, y + row)) { fits = false; break; }
+            }
+            if (!fits) continue;
+
+            const cx = x + (cols - 1) / 2;
+            const cy = y + (rows - 1) / 2;
+            const spacingScale = relaxation === 0 ? 1 : relaxation === 1 ? 0.82 : 0.68;
+            if (placed.some((other) => {
+              const jitter = 0.88 + noise(x * 43 + other.x, y * 47 + other.y) * 0.24;
+              return Math.hypot(cx - other.cx, cy - other.cy) < (radius + other.radius) * 0.72 * spacingScale * jitter;
+            })) continue;
+
+            const local = placed.filter((other) => Math.hypot(cx - other.cx, cy - other.cy) <= 6.5);
+            const sameFamily = local.filter((other) => other.family === family);
+            if (local.length >= (relaxation === 0 ? 5 : relaxation === 1 ? 7 : 9)) continue;
+            if (sameFamily.length >= (relaxation === 0 ? 4 : relaxation === 1 ? 6 : 8)) continue;
+            if (relaxation === 0) {
+              const rowAligned = placed.filter((other) => Math.abs(other.cy - cy) < 0.01 && Math.abs(other.cx - cx) <= 12).length;
+              const colAligned = placed.filter((other) => Math.abs(other.cx - cx) < 0.01 && Math.abs(other.cy - cy) <= 12).length;
+              if (rowAligned >= 2 || colAligned >= 2) continue;
+            }
+
+            const cell = idx(Math.round(cx), Math.round(cy));
+            const habitat = floorPropHabitatScore({
+              family,
+              shapeId: shape.id,
+              terraceIndex,
+              x: cx,
+              y: cy,
+              iceDistance: iceDistance[cell] ?? 99,
+              cliffDistance: cliffDistance[cell] ?? 99,
+            });
+            if (habitat <= 0) continue;
+            const macro = 0.32 + 0.68 * floorPropFbm(cx, cy, family === "crystal" ? 101 : family === "rock" ? 211 : 307);
+            const nearestSame = placed.reduce((best, other) => other.family === family ? Math.min(best, Math.hypot(cx - other.cx, cy - other.cy)) : best, Number.POSITIVE_INFINITY);
+            const cluster = !Number.isFinite(nearestSame) ? 1
+              : nearestSame <= 4.5 ? 1.55
+                : nearestSame <= 8 ? 1.2
+                  : 0.82;
+            const crowding = 1 / (1 + sameFamily.length * sameFamily.length * 0.2);
+            const score = habitat * macro * cluster * crowding;
+            const u = Math.max(0.000001, noise(
+              x * 193 + requestIndex * 997 + floorPropIdSalt(shape.id),
+              y * 389 + request.copy * 571 + FLOOR_PROP_SCATTER_SEED,
+            ));
+            const key = -Math.log(u) / Math.max(score, 0.000001);
+            if (key < bestKey) {
+              bestKey = key;
+              chosen = { x, y, cx, cy };
+            }
+          }
         }
       }
     }
+
+    if (!chosen) throw new Error(`얼음 대평원 64×64: 자연 산포 중 ${shape.id} 배치 실패`);
+    for (let row = 0; row < rows; row += 1) {
+      const tileRow = shape.tiles[row]!;
+      for (let col = 0; col < tileRow.length; col += 1) {
+        if (!input.safeUpper(chosen.x + col, chosen.y + row, tileRow[col]!)) {
+          throw new Error(`얼음 대평원 64×64: ${shape.id} ${chosen.x},${chosen.y} 원자 배치 실패`);
+        }
+      }
+    }
+    placed.push({ family, radius, shape, ...chosen });
   }
+
+  if (placed.length !== FLOOR_PROP_TARGET_COUNT) {
+    throw new Error(`얼음 대평원 64×64: 바닥 소품 ${FLOOR_PROP_TARGET_COUNT}개 중 ${placed.length}개만 배치`);
+  }
+}
+
+function floorPropFamily(id: FloorPropShapeId): "crystal" | "rock" | "rare" {
+  if (id === "big-crystal" || id === "crystal-pillar" || id === "blue-spire" || id === "small-crystal" || id === "twin-crystal") return "crystal";
+  if (id === "snowman") return "rare";
+  return "rock";
+}
+
+function floorPropIdSalt(id: FloorPropShapeId): number {
+  let value = 0;
+  for (let index = 0; index < id.length; index += 1) value = Math.imul(value ^ id.charCodeAt(index), 16777619);
+  return value | 0;
+}
+
+function floorPropValueNoise(x: number, y: number, scale: number, salt: number): number {
+  const gx = Math.floor(x / scale);
+  const gy = Math.floor(y / scale);
+  const tx0 = x / scale - gx;
+  const ty0 = y / scale - gy;
+  const tx = tx0 * tx0 * (3 - 2 * tx0);
+  const ty = ty0 * ty0 * (3 - 2 * ty0);
+  const sample = (dx: number, dy: number): number => noise((gx + dx) * 1619 + salt * 313, (gy + dy) * 6971 - salt * 1013);
+  const north = sample(0, 0) * (1 - tx) + sample(1, 0) * tx;
+  const south = sample(0, 1) * (1 - tx) + sample(1, 1) * tx;
+  return north * (1 - ty) + south * ty;
+}
+
+function floorPropFbm(x: number, y: number, salt: number): number {
+  return floorPropValueNoise(x, y, 15, salt) * 0.5
+    + floorPropValueNoise(x, y, 7, salt + 17) * 0.32
+    + floorPropValueNoise(x, y, 3, salt + 41) * 0.18;
+}
+
+function floorPropHabitatScore(input: {
+  readonly family: "crystal" | "rock" | "rare";
+  readonly shapeId: FloorPropShapeId;
+  readonly terraceIndex: number;
+  readonly x: number;
+  readonly y: number;
+  readonly iceDistance: number;
+  readonly cliffDistance: number;
+}): number {
+  if (input.family === "crystal") {
+    const elevation = 0.5 + input.terraceIndex * 0.16;
+    const iceEdge = input.iceDistance <= 4
+      ? 1.5 - Math.abs(input.iceDistance - 1.5) * 0.16
+      : Math.max(0.34, 0.95 - (input.iceDistance - 4) * 0.07);
+    const cliffSafety = input.cliffDistance < 1.5 ? 0.5 : 1;
+    const largePenalty = input.shapeId === "big-crystal" && input.terraceIndex < 2 ? 0.35 : 1;
+    return elevation * iceEdge * cliffSafety * largePenalty;
+  }
+  if (input.family === "rock") {
+    const elevation = 1.08 - input.terraceIndex * 0.1;
+    const cliffAffinity = 0.62 + Math.exp(-Math.abs(input.cliffDistance - 3) / 3) * 0.7;
+    const icePenalty = input.iceDistance < 0.5 ? 0.62 : 1;
+    return elevation * cliffAffinity * icePenalty;
+  }
+  if (input.terraceIndex > 1 || input.iceDistance < 2 || input.cliffDistance < 2.5) return 0;
+  return 0.75 + floorPropFbm(input.x, input.y, 401) * 0.5;
+}
+
+function maskDistanceField(mask: Uint8Array): Float64Array {
+  const occupied: { x: number; y: number }[] = [];
+  for (let cell = 0; cell < mask.length; cell += 1) if (mask[cell] === 1) occupied.push({ x: cell % W, y: Math.floor(cell / W) });
+  const result = new Float64Array(W * H);
+  for (let y = 0; y < H; y += 1) for (let x = 0; x < W; x += 1) {
+    let best = Number.POSITIVE_INFINITY;
+    for (const point of occupied) {
+      const dx = x - point.x;
+      const dy = y - point.y;
+      best = Math.min(best, dx * dx + dy * dy);
+    }
+    result[idx(x, y)] = Math.sqrt(best);
+  }
+  return result;
+}
+
+/** 시작·정상·계단과 각 대지의 지그재그 주동선을 소품 금지 마스크로 만든다. */
+function floorPropReservedMask(stairs: readonly StairBlock[]): Uint8Array {
+  const mask = new Uint8Array(W * H);
+  const mark = (x: number, y: number): void => { if (inBounds(x, y)) mask[idx(x, y)] = 1; };
+  const brush = (x: number, y: number, radius: number): void => {
+    for (let dy = -radius; dy <= radius; dy += 1) for (let dx = -radius; dx <= radius; dx += 1) mark(x + dx, y + dy);
+  };
+  const segment = (from: { x: number; y: number }, to: { x: number; y: number }): void => {
+    let x = from.x;
+    let y = from.y;
+    brush(x, y, 2);
+    while (x !== to.x) { x += Math.sign(to.x - x); brush(x, y, 2); }
+    while (y !== to.y) { y += Math.sign(to.y - y); brush(x, y, 2); }
+  };
+  const route = (from: { x: number; y: number }, to: { x: number; y: number }): void => {
+    const midY = Math.round((from.y + to.y) / 2);
+    segment(from, { x: from.x, y: midY });
+    segment({ x: from.x, y: midY }, { x: to.x, y: midY });
+    segment({ x: to.x, y: midY }, to);
+  };
+
+  for (let y = ICE_PLAIN_START.y - 2; y <= ICE_PLAIN_START.y + 2; y += 1) {
+    for (let x = ICE_PLAIN_START.x - 2; x <= ICE_PLAIN_START.x + 2; x += 1) mark(x, y);
+  }
+  for (let y = ICE_PLAIN_SUMMIT.y - 2; y <= ICE_PLAIN_SUMMIT.y + 2; y += 1) {
+    for (let x = ICE_PLAIN_SUMMIT.x - 3; x <= ICE_PLAIN_SUMMIT.x + 3; x += 1) mark(x, y);
+  }
+  for (const stair of stairs) {
+    for (let y = stair.crestY - 2; y <= stair.crestY + CLIFF_WALL_ROWS + 1; y += 1) {
+      for (let x = stair.fromX - 2; x <= stair.fromX + STAIR_WIDTH + 1; x += 1) mark(x, y);
+    }
+  }
+
+  const stairX = stairs.map((stair) => stair.fromX + 1);
+  if (stairX.length !== 4) throw new Error("얼음 대평원 64×64: 주동선에는 계단 네 덩어리가 필요하다");
+  route(ICE_PLAIN_START, { x: stairX[0]!, y: TERRACES[0]!.floorFrom });
+  route({ x: stairX[0]!, y: TERRACES[1]!.floorTo }, { x: stairX[1]!, y: TERRACES[1]!.floorFrom });
+  route({ x: stairX[1]!, y: TERRACES[2]!.floorTo }, { x: stairX[2]!, y: TERRACES[2]!.floorFrom });
+  route({ x: stairX[2]!, y: TERRACES[3]!.floorTo }, { x: stairX[3]!, y: TERRACES[3]!.floorFrom });
+  route({ x: stairX[3]!, y: TERRACES[4]!.floorTo }, ICE_PLAIN_SUMMIT);
+  return mask;
 }
 
 export const ICE_PLAIN_MAP_ID = "map_ice_grand_plain_64";
