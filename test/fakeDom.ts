@@ -107,6 +107,10 @@ export class FakeElement extends FakeNode {
   innerHTML = "";
   max = "";
   min = "";
+  scrollLeft = 0;
+  scrollTop = 0;
+  selectionEnd: number | null = 0;
+  selectionStart: number | null = 0;
   style: Record<string, string> & { setProperty: (name: string, value: string) => void } = createFakeStyle();
   type = "";
   value = "";
@@ -228,9 +232,14 @@ export class FakeElement extends FakeNode {
     this.dispatchEvent(new Event("click"));
   }
 
-  focus(): void {
+  focus(_options?: FocusOptions): void {
     const doc = globalThis.document as unknown as { activeElement?: FakeElement };
     doc.activeElement = this;
+  }
+
+  setSelectionRange(start: number | null, end: number | null): void {
+    this.selectionStart = start;
+    this.selectionEnd = end;
   }
 
   closest(selector: string): FakeElement | null {
@@ -252,7 +261,14 @@ export class FakeElement extends FakeNode {
     return matches;
   }
 
-  scrollTo(): void {
+  scrollTo(options?: ScrollToOptions | number, y?: number): void {
+    if (typeof options === "number") {
+      this.scrollLeft = options;
+      this.scrollTop = y ?? 0;
+      return;
+    }
+    if (options?.left !== undefined) this.scrollLeft = options.left;
+    if (options?.top !== undefined) this.scrollTop = options.top;
   }
 
   getBoundingClientRect(): DOMRect {

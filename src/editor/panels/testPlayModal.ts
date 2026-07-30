@@ -5,14 +5,19 @@ import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
 import { renderPlayer, teardownPlayer } from "@/player/player";
 import { nextSessionRandom, startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
+import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
+import { validateEventDraft } from "@/editor/eventDraftValidator";
+import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestSandbox";
+import { toast } from "@/util/toast";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
+let releaseEventTestSnapshot: (() => void) | null = null;
 // 에디터 전투 테스트가 mount 한 배틀 씬 컨트롤러. closeTestPlayModal 이 destroy()
 // 를 호출해 setInterval(200ms 틱) 과 window keydown 리스너 누수를 막는다.
 let battleSceneController: BattleDomController | null = null;
@@ -31,8 +36,10 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
   try {
     await store.flush();
     loading.setStage("preparing");
-    // 타이틀/플레이 전에 번들 에셋을 브라우저 캐시에 데운다.
-    void warmBundledPlayAssets(store.getCurrent());
+    const project = projectWithoutEventDrafts(store.getCurrent());
+    releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(project);
+    // 타이틀/플레이 전에 canonical 번들 에셋을 브라우저 캐시에 데운다.
+    void warmBundledPlayAssets(project);
     // Give the browser a paint before heavy player bootstrap.
     await yieldToBrowser();
     renderPlayer(body, {
@@ -43,6 +50,8 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     });
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
+    releaseEventTestSnapshot?.();
+    releaseEventTestSnapshot = null;
     loading.setStage("error", "테스트 플레이를 열지 못했습니다");
     return;
   }
@@ -52,28 +61,37 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
-  const project = store.getCurrent();
-  const map = project.maps[mapId];
-  const event = map?.events.find((item) => item.id === eventId);
-  if (!map || !event) return false;
-  const title = `이벤트 테스트 - ${eventDisplayName(event)}`;
+  const liveProject = store.getCurrent();
+  const validation = validateEventDraft(liveProject, mapId, eventId);
+  if (!validation.canCommit) {
+    toast(`이벤트 테스트를 시작할 수 없습니다. 오류 ${validation.errorCount}개를 먼저 해결하세요.`, "error");
+    return false;
+  }
+  const preparation = prepareEventTest(liveProject, mapId, eventId);
+  if (!preparation) return false;
+
+  const title = `이벤트 테스트 - ${eventDisplayName(preparation.event)}`;
   const body = openTestPlayShell(title);
-  const loading = mountPlayLoadingOverlay(body, "saving");
+  const loading = mountPlayLoadingOverlay(body, "preparing");
   try {
-    await store.flush();
-    loading.setStage("preparing");
-    void warmBundledPlayAssets(store.getCurrent());
+    releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(preparation.project);
+    if (validation.warningCount > 0) {
+      toast(`경고 ${validation.warningCount}개가 있지만 현재 작업 초안을 테스트합니다.`, "info");
+    }
+    if (preparation.spawn.diagnostic) toast(preparation.spawn.diagnostic, "info");
+    void warmBundledPlayAssets(preparation.project);
     await yieldToBrowser();
-    const session = selectedEventTestSession(mapId, event);
     renderPlayer(body, {
       initialEventTestId: eventId,
-      initialSession: session,
+      initialSession: selectedEventTestSession(preparation),
       onExit: closeTestPlayModal,
       trackGlobalGame: false,
       diagnosticSink: editorPlayBootDiagnosticSink,
     });
   } catch (error) {
     console.error("[test-play] failed to open selected-event test:", error);
+    releaseEventTestSnapshot?.();
+    releaseEventTestSnapshot = null;
     loading.setStage("error", "이벤트 테스트를 열지 못했습니다");
     return false;
   }
@@ -180,11 +198,14 @@ export function closeTestPlayModal(): void {
   // teardownPlayer 의 teardownShell 은 null 이다).
   battleSceneController?.destroy();
   battleSceneController = null;
-  if (!modalRoot) return;
   removePlayWindowKeydown?.();
   removePlayWindowKeydown = null;
+  // Runtime teardown must finish while store.getCurrent() still resolves to the
+  // sandbox. Only then expose the canonical editor project again.
   teardownPlayer();
-  modalRoot.remove();
+  releaseEventTestSnapshot?.();
+  releaseEventTestSnapshot = null;
+  modalRoot?.remove();
   modalRoot = null;
 }
 
@@ -277,14 +298,11 @@ function nextTestPlayWindowMode(mode: string | undefined): TestPlayWindowMode {
   return mode === "fullscreen" ? "windowed" : "fullscreen";
 }
 
-function selectedEventTestSession(mapId: MapId, event: GameEvent): PlaySession {
-  const project = store.getCurrent();
-  const session = startSession(project);
-  const map = project.maps[mapId];
-  const fallbackY = Math.max(0, event.y - 1);
-  session.currentMapId = mapId;
-  session.x = Math.max(0, Math.min(map.width - 1, event.x));
-  session.y = event.y + 1 < map.height ? event.y + 1 : fallbackY;
+function selectedEventTestSession(preparation: EventTestPreparation): PlaySession {
+  const session = startSession(preparation.project);
+  session.currentMapId = preparation.mapId;
+  session.x = preparation.spawn.x;
+  session.y = preparation.spawn.y;
   return session;
 }
 

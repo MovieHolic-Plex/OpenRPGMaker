@@ -99,6 +99,12 @@ class ProjectStore {
   private dirtySinceLastPersist = false;
   /** Bumps on every local edit. Used so in-flight remote saves cannot rewind paint. */
   private mutationGeneration = 0;
+  /**
+   * Read-only player snapshot used by editor sandbox tests. Mutations and every
+   * persistence path continue to operate on `current`, so a test run cannot
+   * commit or remotely flush the snapshot.
+   */
+  private readOnlyProjectSnapshot: Project | null = null;
 
   constructor() {
     this.current = createBlankProject();
@@ -245,7 +251,24 @@ class ProjectStore {
   }
 
   getCurrent(): Project {
-    return this.current;
+    return this.readOnlyProjectSnapshot ?? this.current;
+  }
+
+  /**
+   * Temporarily exposes an in-memory project to read-only runtime consumers.
+   * Store updates, autosave, export projections, and Supabase persistence keep
+   * using the canonical `current` project. The returned release is idempotent.
+   */
+  beginReadOnlyProjectSnapshot(project: Project): () => void {
+    const previous = this.readOnlyProjectSnapshot;
+    const snapshot = structuredClone(project);
+    this.readOnlyProjectSnapshot = snapshot;
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      if (this.readOnlyProjectSnapshot === snapshot) this.readOnlyProjectSnapshot = previous;
+    };
   }
 
   getDbPersistenceStatus(): DbPersistenceStatus {
@@ -272,7 +295,8 @@ class ProjectStore {
     try {
       const project = await loadProjectFromSupabase();
       if (project) {
-        this.current = project;
+        this.current = preserveEventDraftsOnProject(project, this.current);
+        syncEventDraftVaultFromProject(this.current);
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
         await this.normalizeCurrentProject();
@@ -320,7 +344,8 @@ class ProjectStore {
       if (!project) {
         return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다." };
       }
-      this.adoptProject(project, { restoreVault: false });
+      this.current = preserveEventDraftsOnProject(project, this.current);
+      syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       await this.normalizeCurrentProject();

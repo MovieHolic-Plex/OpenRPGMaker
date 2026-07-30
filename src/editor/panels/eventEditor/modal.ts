@@ -8,15 +8,24 @@ import {
   discardEventDraft,
   saveEventDraft,
 } from "@/editor/eventDraftActions";
-import { store } from "@/project/store";
+import { eventDraftDiffById } from "@/project/eventDrafts";
+import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
+import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
+import { store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { openEventEditorHelp } from "./eventEditorHelp";
-import { renderEventEditorDynamic, renderEventEditorStable } from "./content";
+import {
+  navigateToEventDraftIssue,
+  openActiveEventCommandPicker,
+  renderEventEditorDynamic,
+  renderEventEditorStable,
+} from "./content";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
+import { toast } from "@/util/toast";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 const EVENT_EDITOR_CLOSE_EVENT = "rpgzzu:event-editor-close";
@@ -69,7 +78,8 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   attachWindowDrag(header, windowEl);
   const resizeHandle = renderModalResizeHandle();
   attachWindowResize(resizeHandle, windowEl);
-  windowEl.append(header, body, renderModalFooter(request, closeHandler), resizeHandle);
+  const footer = renderModalFooter(request, closeHandler);
+  windowEl.append(header, body, footer, resizeHandle);
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) closeHandler(false);
@@ -79,6 +89,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     // Full dynamic re-render resets overflow; restore scroll so edits in the lower
     // page-prop grid (graphic / movement / living destinations) do not jump to top.
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
+    const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
     // If a store race dropped the event, reattach from vault before paint.
     const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
     if (!live) store.restoreEventDraftFromVault(request.mapId, request.eventId);
@@ -90,12 +101,15 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     clearChildren(dynamicBody);
     renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
+    restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
+    refreshModalFooterStatus(footer, request);
     // Keep title in sync when draft meta changes after autosave reattach.
     const title = header.querySelector("h2");
     if (title) title.textContent = eventEditorTitle(request.mapId, request.eventId);
   };
   const unsubscribeStore = store.subscribe(refresh);
   const unsubscribeEditor = editorState.subscribe(refresh);
+  const unsubscribeAutoSave = store.subscribeAutoSave(() => refreshModalFooterStatus(footer, request));
   const checkpointTimer = globalThis.setInterval(() => {
     checkpointEventDraft(request.mapId, request.eventId);
   }, EVENT_EDITOR_CHECKPOINT_MS);
@@ -107,6 +121,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     if (!saved) discardEventDraft(request.mapId, request.eventId);
     unsubscribeStore();
     unsubscribeEditor();
+    unsubscribeAutoSave();
   });
   document.body.append(backdrop);
   // Immediate durable checkpoint so a crash right after open still recovers.
@@ -173,9 +188,9 @@ function eventDisplayNameOf(event: { readonly pages?: readonly { readonly name: 
 function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
   const draftKind = store.getCurrent().maps[request.mapId]?.events.find((event) => event.id === request.eventId)?.draft?.kind;
   const cancelHint = draftKind === "new"
-    ? "편집 중 내용은 자동 저장됩니다. 취소하면 이 새 이벤트를 삭제합니다."
-    : "편집 중 내용은 자동 저장됩니다. 취소하면 열기 전 상태로 되돌립니다.";
-  return el("div", {
+    ? "취소하면 이 새 이벤트를 삭제합니다."
+    : "취소하면 열기 전 상태로 되돌립니다.";
+  const footer = el("div", {
     class: "event-editor-modal-footer",
     children: [
       el("div", {
@@ -190,23 +205,39 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
               }),
             ],
           }),
-          el("span", {
-            class: "event-editor-draft-status",
-            text: cancelHint,
-            dataset: { testid: "event-editor-draft-status" },
+          el("div", {
+            class: "event-editor-lifecycle-status",
+            children: [
+              el("span", {
+                class: "event-editor-draft-status",
+                text: cancelHint,
+                dataset: { testid: "event-editor-draft-status" },
+              }),
+              el("span", {
+                class: "event-editor-remote-status",
+                dataset: { testid: "event-editor-remote-status" },
+              }),
+            ],
           }),
         ],
       }),
       el("div", {
         class: "event-editor-footer-actions",
         children: [
+          footerButton("이 이벤트 테스트", "event-editor-test", () => {
+            const validation = validateForModalAction(request, "테스트");
+            if (!validation.canCommit) return;
+            void openSelectedEventTestModal(request.mapId, request.eventId);
+          }),
           footerButton("취소", "event-editor-cancel", () => close()),
           footerButton("적용", "event-editor-apply", () => {
-            saveEventDraft(request.mapId, request.eventId);
+            if (!commitValidatedEventDraft(request, "적용")) return;
+            footer.dataset.applied = "true";
             beginExistingEventDraft(request.mapId, request.eventId);
+            refreshModalFooterStatus(footer, request);
           }),
           footerButton("확인", "event-editor-ok", () => {
-            saveEventDraft(request.mapId, request.eventId);
+            if (!commitValidatedEventDraft(request, "확인")) return;
             close(true);
           }, true),
           footerButton("도움말", "event-editor-help", () => openEventEditorHelp()),
@@ -214,6 +245,73 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
       }),
     ],
   });
+  refreshModalFooterStatus(footer, request);
+  return footer;
+}
+
+function validateForModalAction(request: OpenEventEditorRequest, actionLabel: string): EventDraftValidation {
+  const validation = validateEventDraft(store.getCurrent(), request.mapId, request.eventId);
+  if (!validation.canCommit) {
+    toast(`${actionLabel}할 수 없습니다. 오류 ${validation.errorCount}개를 먼저 해결하세요.`, "error");
+    const firstError = validation.issues.find((issue) => issue.severity === "error");
+    if (firstError) navigateToEventDraftIssue(firstError);
+    return validation;
+  }
+  if (validation.warningCount > 0) {
+    toast(`경고 ${validation.warningCount}개를 확인하세요. ${actionLabel}은 계속 진행합니다.`, "info");
+  }
+  return validation;
+}
+
+function commitValidatedEventDraft(request: OpenEventEditorRequest, actionLabel: string): boolean {
+  const validation = validateForModalAction(request, actionLabel);
+  if (!validation.canCommit) return false;
+  saveEventDraft(request.mapId, request.eventId);
+  return true;
+}
+
+function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorRequest): void {
+  const local = footer.querySelector<HTMLElement>('[data-testid="event-editor-draft-status"]');
+  const remote = footer.querySelector<HTMLElement>('[data-testid="event-editor-remote-status"]');
+  if (!local || !remote) return;
+  const project = store.getCurrent();
+  const event = project.maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
+  const diff = eventDraftDiffById(project, request.mapId, request.eventId);
+  const changed = Boolean(diff && diff.changes.length > 0);
+  if (changed) {
+    local.textContent = "작업 중 · 현재 초안은 로컬 복구 보관됨";
+    local.dataset.state = "working";
+  } else if (footer.dataset.applied === "true") {
+    local.textContent = "적용됨 · 프로젝트 상태에 반영됨";
+    local.dataset.state = "applied";
+  } else if (event?.draft) {
+    local.textContent = "편집 세션 · 프로젝트 기준과 같음 · 로컬 복구 준비됨";
+    local.dataset.state = "session";
+  } else {
+    local.textContent = "프로젝트 상태";
+    local.dataset.state = "project";
+  }
+  const remoteStatus = remotePersistenceLabel(store.getAutoSaveState());
+  remote.textContent = remoteStatus.text;
+  remote.dataset.state = remoteStatus.state;
+}
+
+function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: string; readonly state: string } {
+  const db = store.getDbPersistenceStatus();
+  if (db.kind === "not-configured") return { text: "원격 저장 · 미설정", state: "not-configured" };
+  if (db.kind === "disabled") {
+    return {
+      text: db.reason === "dev-showcase" ? "원격 저장 · 임시 세션에서 꺼짐" : "원격 저장 · 연결 실패로 꺼짐",
+      state: "disabled",
+    };
+  }
+  switch (autoSave.kind) {
+    case "pending": return { text: "원격 저장 · 대기 중", state: "pending" };
+    case "saving": return { text: "원격 저장 · 저장 중", state: "saving" };
+    case "saved": return { text: `원격 저장됨 · ${new Date(autoSave.at).toLocaleTimeString()}`, state: "saved" };
+    case "error": return { text: `원격 저장 실패 · ${autoSave.message}`, state: "error" };
+    case "idle": return { text: "원격 저장 · 연결됨 · 저장 신호 대기", state: "idle" };
+  }
 }
 
 function footerButton(text: string, testId: string, onClick?: () => void, primary = false): HTMLButtonElement {
@@ -234,6 +332,12 @@ function handleModalKeyDown(
 ): void {
   // Escape is owned by the document-level modal stack (topmost first).
   if (event.key === "Escape") return;
+  if ((event.ctrlKey || event.metaKey) && !event.altKey && event.key.toLowerCase() === "k") {
+    event.preventDefault();
+    event.stopPropagation();
+    openActiveEventCommandPicker(request.mapId, request.eventId);
+    return;
+  }
   // 이벤트 에디터 모달이 열려 있어도 Ctrl+Z/Y 로 undo/redo. store 구독으로 자동 재렌더된다.
   if (handleHistoryHotkey(event)) return;
   if (event.key !== "Delete" || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -346,6 +450,82 @@ function applyEventEditorScroll(root: HTMLElement, snapshots: readonly EventEdit
 function readScrollNumber(node: HTMLElement, key: "scrollLeft" | "scrollTop"): number {
   const value = (node as unknown as Record<string, unknown>)[key];
   return typeof value === "number" && Number.isFinite(value) ? value : 0;
+}
+
+type EventEditorInteractionSnapshot = {
+  readonly focusTestId?: string;
+  readonly focusTestIdIndex?: number;
+  readonly focusCommandPath?: string;
+  readonly selectionEnd?: number;
+  readonly selectionStart?: number;
+  readonly selectedCommandPath?: string;
+  readonly openDetailsTestIds: readonly string[];
+};
+
+function captureEventEditorInteraction(root: HTMLElement): EventEditorInteractionSnapshot {
+  const active = document.activeElement instanceof HTMLElement && root.contains(document.activeElement)
+    ? document.activeElement
+    : null;
+  const focusTestId = active?.dataset.testid;
+  const matchingFocusNodes = focusTestId
+    ? Array.from(root.querySelectorAll<HTMLElement>(`[data-testid="${focusTestId}"]`))
+    : [];
+  const selection = active as (HTMLInputElement | HTMLTextAreaElement | null);
+  return {
+    ...(focusTestId ? { focusTestId, focusTestIdIndex: Math.max(0, matchingFocusNodes.indexOf(active!)) } : {}),
+    ...(active?.closest<HTMLElement>(".cmd-item")?.dataset.cmdPath
+      ? { focusCommandPath: active.closest<HTMLElement>(".cmd-item")!.dataset.cmdPath }
+      : {}),
+    ...(typeof selection?.selectionStart === "number" ? { selectionStart: selection.selectionStart } : {}),
+    ...(typeof selection?.selectionEnd === "number" ? { selectionEnd: selection.selectionEnd } : {}),
+    ...(root.querySelector<HTMLElement>(".cmd-item.selected")?.dataset.cmdPath
+      ? { selectedCommandPath: root.querySelector<HTMLElement>(".cmd-item.selected")!.dataset.cmdPath }
+      : {}),
+    openDetailsTestIds: Array.from(root.querySelectorAll<HTMLDetailsElement>("details"))
+      .filter((details) => details.open && Boolean(details.dataset.testid))
+      .map((details) => details.dataset.testid!),
+  };
+}
+
+function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorInteractionSnapshot): void {
+  for (const testId of snapshot.openDetailsTestIds) {
+    const details = root.querySelector<HTMLDetailsElement>(`[data-testid="${testId}"]`);
+    if (details) details.open = true;
+  }
+  if (snapshot.selectedCommandPath) selectRenderedCommand(root, snapshot.selectedCommandPath);
+
+  let focusTarget: HTMLElement | null = null;
+  if (snapshot.focusTestId) {
+    focusTarget = Array.from(root.querySelectorAll<HTMLElement>(`[data-testid="${snapshot.focusTestId}"]`))[
+      snapshot.focusTestIdIndex ?? 0
+    ] ?? null;
+  }
+  if (!focusTarget && snapshot.focusCommandPath) {
+    const row = findRenderedCommand(root, snapshot.focusCommandPath);
+    focusTarget = row?.querySelector<HTMLElement>(".cmd-head") ?? row;
+  }
+  if (!focusTarget) return;
+  focusTarget.focus({ preventScroll: true });
+  if (
+    snapshot.selectionStart !== undefined
+    && snapshot.selectionEnd !== undefined
+    && "setSelectionRange" in focusTarget
+    && typeof focusTarget.setSelectionRange === "function"
+  ) {
+    focusTarget.setSelectionRange(snapshot.selectionStart, snapshot.selectionEnd);
+  }
+}
+
+function selectRenderedCommand(root: HTMLElement, encodedPath: string): void {
+  const row = findRenderedCommand(root, encodedPath);
+  if (!row) return;
+  root.querySelectorAll(".cmd-item.selected").forEach((node) => node.classList.remove("selected"));
+  row.classList.add("selected");
+}
+
+function findRenderedCommand(root: HTMLElement, encodedPath: string): HTMLElement | null {
+  return Array.from(root.querySelectorAll<HTMLElement>(".cmd-item"))
+    .find((candidate) => candidate.dataset.cmdPath === encodedPath) ?? null;
 }
 
 function displayEventNumber(mapId: MapId, eventId: string): string {

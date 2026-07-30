@@ -4,7 +4,7 @@ import {
 } from "@/editor/eventMarkerUx";
 import { ensureEventPages } from "@/editor/eventPages";
 import { handleEditorDeleteKey } from "@/editor/hotkeys";
-import { committedEvents } from "@/project/eventDrafts";
+import { editorWorkingEvents } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import type { EventPageGraphic, GameEvent, MapId } from "@/project/types";
@@ -36,7 +36,7 @@ export function renderEventEditor(container: HTMLElement): void {
     return;
   }
 
-  const events = committedEvents(map.events);
+  const events = editorWorkingEvents(map.events);
   const selectedEvent = state.selectedEventId
     ? events.find((event) => event.id === state.selectedEventId)
     : undefined;

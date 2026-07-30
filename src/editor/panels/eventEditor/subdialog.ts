@@ -10,6 +10,24 @@ type EventSubdialogOptions = {
 };
 
 export function openEventSubdialog(options: EventSubdialogOptions): void {
+  const returnFocus = document.activeElement instanceof HTMLElement
+    ? document.activeElement
+    : null;
+  const returnFocusAncestors: HTMLElement[] = [];
+  let ancestor = returnFocus?.parentElement ?? null;
+  while (ancestor && ancestor !== document.body) {
+    returnFocusAncestors.push(ancestor);
+    ancestor = ancestor.parentElement;
+  }
+  const activeScope = returnFocus?.closest<HTMLElement>('[role="dialog"]') ?? null;
+  const returnFocusScopes = Array.from(
+    document.querySelectorAll<HTMLElement>('[role="dialog"]'),
+  ).reverse();
+  if (activeScope) {
+    const activeScopeIndex = returnFocusScopes.indexOf(activeScope);
+    if (activeScopeIndex >= 0) returnFocusScopes.splice(activeScopeIndex, 1);
+    returnFocusScopes.unshift(activeScope);
+  }
   const backdrop = el("div", {
     class: "event-subdialog-backdrop",
     dataset: { testid: options.testId },
@@ -19,7 +37,25 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
     attrs: { role: "dialog", "aria-modal": "true", "aria-label": options.title },
   });
   const body = el("div", { class: "event-subdialog-body" });
-  const close = registerModal(backdrop, () => backdrop.remove());
+  const close = registerModal(backdrop, () => {
+    backdrop.remove();
+    if (returnFocus && document.body.contains(returnFocus) && returnFocus.getAttribute("disabled") === null) {
+      returnFocus.focus({ preventScroll: true });
+      return;
+    }
+    const scope = returnFocusAncestors.find((candidate) => document.body.contains(candidate))
+      ?? returnFocusScopes.find((candidate) => document.body.contains(candidate));
+    if (!scope) return;
+    const fallback = ["button", "input", "select", "textarea", "[tabindex]"]
+      .map((selector) => scope.querySelector<HTMLElement>(selector))
+      .find((candidate) => candidate?.getAttribute("disabled") === null);
+    if (fallback) {
+      fallback.focus({ preventScroll: true });
+      return;
+    }
+    if (scope.getAttribute("tabindex") === null) scope.setAttribute("tabindex", "-1");
+    scope.focus({ preventScroll: true });
+  });
 
   windowEl.append(renderHeader(options, close), body);
   backdrop.append(windowEl);

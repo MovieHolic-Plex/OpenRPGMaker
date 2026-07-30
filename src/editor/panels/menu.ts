@@ -460,13 +460,12 @@ function selectedEventForState(state: ReturnType<typeof editorState.get>): { rea
   return event ? { mapId, eventId } : null;
 }
 
-async function openSelectedEventTestWindow(): Promise<void> {
+function openSelectedEventTestWindow(): void {
   const selectedEvent = selectedEventForState(editorState.get());
   if (!selectedEvent) {
     toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok");
     return;
   }
-  await store.flush();
   window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
     detail: { kind: "selected-event", ...selectedEvent },
   }));

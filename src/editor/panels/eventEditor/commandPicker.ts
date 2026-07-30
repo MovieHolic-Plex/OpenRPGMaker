@@ -13,6 +13,11 @@ import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
 import { groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
+import {
+  readEventCommandPickerPreferences,
+  recordRecentEventCommand,
+  toggleEventCommandFavorite,
+} from "./commandPickerPreferences";
 import { openEventSubdialog } from "./subdialog";
 
 type CommandKind = Command["kind"];
@@ -172,6 +177,7 @@ const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
     ...EXTRA_COMMAND_ENTRIES.filter((entry) => entry.page === page),
   ],
 }));
+const ALL_COMMAND_ENTRIES = COMMAND_PAGES.flatMap((page) => page.entries);
 
 export const EVENT_COMMAND_PICKER_NATIVE_KINDS: readonly CommandKind[] = [
   ...new Set(
@@ -228,18 +234,23 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         text: viewMode === "grid" ? "▤ 리스트" : "▦ 그리드",
       }) as HTMLButtonElement;
       const render = () => {
+        const focusSnapshot = captureCommandPickerFocus(commandArea);
         clearChildren(commandArea);
         for (const button of tabs.querySelectorAll<HTMLButtonElement>("button")) {
-          button.setAttribute("aria-selected", button.dataset.page === String(activePage) ? "true" : "false");
+          const selected = button.dataset.page === String(activePage);
+          button.setAttribute("aria-selected", selected ? "true" : "false");
+          button.setAttribute("tabindex", selected ? "0" : "-1");
         }
         gridToggle.textContent = viewMode === "grid" ? "▤ 리스트" : "▦ 그리드";
         gridToggle.setAttribute("aria-pressed", viewMode === "grid" ? "true" : "false");
         if (query.trim().length > 0) {
-          commandArea.append(renderSearchResults(query, request.onSelect, close, viewMode));
+          commandArea.append(renderSearchResults(query, request.onSelect, close, viewMode, render));
+          restoreCommandPickerFocus(commandArea, focusSnapshot);
           return;
         }
         const page = COMMAND_PAGES.find((candidate) => candidate.page === activePage) ?? COMMAND_PAGES[0];
-        commandArea.append(renderCommandGrid(page.entries, request.onSelect, close, { showPageChip: false, viewMode }));
+        commandArea.append(renderPickerPage(page.entries, request.onSelect, close, viewMode, render));
+        restoreCommandPickerFocus(commandArea, focusSnapshot);
       };
       search.addEventListener("input", () => {
         query = search.value;
@@ -251,13 +262,20 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         render();
       });
       for (const page of COMMAND_PAGES) {
-        // 아이콘은 data-glyph + CSS ::before 로 그린다 — textContent("1"~"4")를 오염시키지 않아
-        // 기존 텍스트 기반 e2e/단언과 호환된다.
+        // Persistent text labels keep the four categories understandable even
+        // without relying on icon glyphs or hover-only title text.
         tabs.append(
           el("button", {
             class: "event-command-picker-tab",
-            text: String(page.page),
-            attrs: { type: "button", role: "tab", title: pickerPageTitle(page.page), "aria-label": `탭 ${page.page}: ${pickerPageTitle(page.page)}`, "aria-selected": page.page === activePage ? "true" : "false" },
+            text: pickerPageTitle(page.page),
+            attrs: {
+              type: "button",
+              role: "tab",
+              title: pickerPageTitle(page.page),
+              "aria-label": `탭 ${page.page}: ${pickerPageTitle(page.page)}`,
+              "aria-selected": page.page === activePage ? "true" : "false",
+              tabindex: page.page === activePage ? "0" : "-1",
+            },
             dataset: {
               testid: `event-command-picker-tab-${page.page}`,
               page: String(page.page),
@@ -272,6 +290,25 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
           })
         );
       }
+      tabs.addEventListener("keydown", (event) => {
+        if (!(event.target instanceof HTMLButtonElement)) return;
+        const buttons = Array.from(tabs.querySelectorAll<HTMLButtonElement>("button"))
+          .filter((button) => button.dataset.page !== undefined);
+        const currentIndex = buttons.indexOf(event.target);
+        if (currentIndex < 0) return;
+        let nextIndex = currentIndex;
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (currentIndex - 1 + buttons.length) % buttons.length;
+        else if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (currentIndex + 1) % buttons.length;
+        else if (event.key === "Home") nextIndex = 0;
+        else if (event.key === "End") nextIndex = buttons.length - 1;
+        else return;
+        event.preventDefault();
+        const next = buttons[nextIndex];
+        if (!next) return;
+        activePage = Number(next.dataset.page) as CommandPage["page"];
+        next.focus();
+        render();
+      });
       body.append(
         tabs,
         el("div", { class: "event-command-picker-search-row", children: [search, gridToggle] }),
@@ -279,7 +316,57 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         renderFooter(close)
       );
       render();
+      search.focus({ preventScroll: true });
     },
+  });
+}
+
+function renderPickerPage(
+  entries: readonly CommandEntry[],
+  onSelect: EventCommandPickerRequest["onSelect"],
+  close: () => void,
+  viewMode: PickerViewMode,
+  onPreferencesChanged: () => void,
+): HTMLElement {
+  const preferences = readEventCommandPickerPreferences();
+  const byId = new Map(ALL_COMMAND_ENTRIES.map((entry) => [entry.commandId, entry]));
+  const favorites = preferences.favorites.flatMap((id) => byId.get(id) ?? []);
+  const recents = preferences.recents
+    .filter((id) => !preferences.favorites.includes(id))
+    .flatMap((id) => byId.get(id) ?? []);
+  const wrap = el("div", { class: "event-command-picker-page" });
+  if (favorites.length > 0) {
+    wrap.append(renderQuickCommandSection("즐겨찾기", "event-command-picker-favorites", favorites, onSelect, close, viewMode, onPreferencesChanged));
+  }
+  if (recents.length > 0) {
+    wrap.append(renderQuickCommandSection("최근 명령", "event-command-picker-recents", recents, onSelect, close, viewMode, onPreferencesChanged));
+  }
+  wrap.append(renderCommandGrid(entries, onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged }));
+  return wrap;
+}
+
+function renderQuickCommandSection(
+  title: string,
+  testId: string,
+  entries: readonly CommandEntry[],
+  onSelect: EventCommandPickerRequest["onSelect"],
+  close: () => void,
+  viewMode: PickerViewMode,
+  onPreferencesChanged: () => void,
+): HTMLElement {
+  return el("section", {
+    class: "event-command-picker-quick-section",
+    dataset: { testid: testId },
+    children: [
+      el("h3", { class: "event-command-picker-quick-title", text: title }),
+      renderCommandGrid(entries, onSelect, close, {
+        showPageChip: true,
+        viewMode,
+        onPreferencesChanged,
+        showGroupHeadings: false,
+        preserveOrder: true,
+      }),
+    ],
   });
 }
 
@@ -288,7 +375,8 @@ function renderSearchResults(
   query: string,
   onSelect: EventCommandPickerRequest["onSelect"],
   close: () => void,
-  viewMode: PickerViewMode
+  viewMode: PickerViewMode,
+  onPreferencesChanged: () => void,
 ): HTMLElement {
   const needle = query.trim().toLowerCase();
   const matches = COMMAND_PAGES.flatMap((page) => page.entries).filter(
@@ -301,21 +389,28 @@ function renderSearchResults(
       dataset: { testid: "event-command-picker-no-result" },
     });
   }
-  return renderCommandGrid(matches, onSelect, close, { showPageChip: true, viewMode });
+  return renderCommandGrid(matches, onSelect, close, { showPageChip: true, viewMode, onPreferencesChanged });
 }
 
 function renderCommandGrid(
   entries: readonly CommandEntry[],
   onSelect: EventCommandPickerRequest["onSelect"],
   close: () => void,
-  options: { readonly showPageChip: boolean; readonly viewMode: PickerViewMode }
+  options: {
+    readonly showPageChip: boolean;
+    readonly viewMode: PickerViewMode;
+    readonly onPreferencesChanged: () => void;
+    readonly showGroupHeadings?: boolean;
+    readonly preserveOrder?: boolean;
+  }
 ): HTMLElement {
   const grid = el("div", {
     class: options.viewMode === "grid" ? "event-command-picker-grid icon-grid" : "event-command-picker-grid",
   });
   let currentGroup: M2CommandPickerGroup | undefined;
-  for (const entry of [...entries].sort(compareCommandEntries)) {
-    if (entry.group !== currentGroup) {
+  const orderedEntries = options.preserveOrder ? entries : [...entries].sort(compareCommandEntries);
+  for (const entry of orderedEntries) {
+    if (options.showGroupHeadings !== false && entry.group !== currentGroup) {
       currentGroup = entry.group;
       const visual = groupVisual(entry.group);
       // 아이콘은 ::before(attr(data-glyph)) 로 — 헤딩 textContent 는 그룹명 그대로 유지(e2e toHaveText 호환).
@@ -336,8 +431,8 @@ function renderCommandButton(
   entry: CommandEntry,
   onSelect: EventCommandPickerRequest["onSelect"],
   close: () => void,
-  options: { readonly showPageChip: boolean },
-): HTMLButtonElement {
+  options: { readonly showPageChip: boolean; readonly onPreferencesChanged: () => void },
+): HTMLElement {
   const visual = groupVisual(entry.group);
   // 카테고리 아이콘: aria-hidden 스팬의 ::before(attr(data-glyph)) — 버튼 textContent 와
   // 접근성 이름(getByRole name, exact:true 포함)을 오염시키지 않는다.
@@ -363,6 +458,8 @@ function renderCommandButton(
   button.dataset.testid = entry.testId;
   if (entry.selectable) {
     button.addEventListener("click", () => {
+      recordRecentEventCommand(entry.commandId);
+      options.onPreferencesChanged();
       const result = onSelect(createCommandFromEntry(entry), close);
       if (!result || result.closePicker !== false) close();
     });
@@ -370,7 +467,61 @@ function renderCommandButton(
     button.disabled = true;
     button.setAttribute("aria-disabled", "true");
   }
-  return button;
+
+  const favorite = readEventCommandPickerPreferences().favorites.includes(entry.commandId);
+  const favoriteButton = el("button", {
+    class: `event-command-picker-favorite${favorite ? " is-favorite" : ""}`,
+    text: favorite ? "★" : "☆",
+    attrs: {
+      type: "button",
+      title: favorite ? `${entry.label} 즐겨찾기 해제` : `${entry.label} 즐겨찾기 추가`,
+      "aria-label": favorite ? `${entry.label} 즐겨찾기 해제` : `${entry.label} 즐겨찾기 추가`,
+      "aria-pressed": favorite ? "true" : "false",
+    },
+    dataset: { testid: `command-picker-favorite-${entry.commandId}` },
+    on: {
+      click: () => {
+        toggleEventCommandFavorite(entry.commandId);
+        options.onPreferencesChanged();
+      },
+    },
+  }) as HTMLButtonElement;
+  favoriteButton.disabled = !entry.selectable;
+  return el("div", {
+    class: "event-command-picker-command-wrap",
+    dataset: { commandId: entry.commandId },
+    children: [button, favoriteButton],
+  });
+}
+
+type CommandPickerFocusSnapshot = {
+  readonly commandId: string;
+  readonly control: "command" | "favorite";
+};
+
+function captureCommandPickerFocus(commandArea: HTMLElement): CommandPickerFocusSnapshot | null {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement) || !commandArea.contains(active)) return null;
+  const wrap = active.closest<HTMLElement>(".event-command-picker-command-wrap");
+  const commandId = wrap?.dataset.commandId;
+  if (!commandId) return null;
+  return {
+    commandId,
+    control: active.classList.contains("event-command-picker-favorite") ? "favorite" : "command",
+  };
+}
+
+function restoreCommandPickerFocus(
+  commandArea: HTMLElement,
+  snapshot: CommandPickerFocusSnapshot | null,
+): void {
+  if (!snapshot) return;
+  const wrap = Array.from(commandArea.querySelectorAll<HTMLElement>(".event-command-picker-command-wrap"))
+    .find((candidate) => candidate.dataset.commandId === snapshot.commandId);
+  const selector = snapshot.control === "favorite"
+    ? ".event-command-picker-favorite"
+    : ".event-command-picker-command";
+  wrap?.querySelector<HTMLElement>(selector)?.focus({ preventScroll: true });
 }
 
 function compareCommandEntries(a: CommandEntry, b: CommandEntry): number {

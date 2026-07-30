@@ -8,7 +8,7 @@ import {
   projectWithoutEventDrafts,
   projectWithPreservedEventDrafts,
 } from "@/project/eventDrafts";
-import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
+import { _resetEventDraftVaultForTest, getEventDraftVaultEntry } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
 
 beforeEach(() => {
@@ -102,18 +102,18 @@ describe("event draft lifecycle", () => {
     expect(editorState.get().selectedEventPageId).toBe("event_multi_page_2");
   });
 
-  it("persists the working body of a new draft so autosave can recover mid-edit work", () => {
+  it("keeps a new working draft local while canonical projection omits it until Apply", () => {
     const mapId = store.getCurrent().startMapId;
     const initialEventCount = store.getCurrent().maps[mapId].events.length;
     const initialPersistedCount = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events.length;
     const eventId = createEventDraft(mapId, 2, 2);
 
     expect(store.getCurrent().maps[mapId].events).toHaveLength(initialEventCount + 1);
-    // Working body is durable; only draft *metadata* is stripped for storage.
     const persistedWhileDraft = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events;
-    expect(persistedWhileDraft).toHaveLength(initialPersistedCount + 1);
-    expect(persistedWhileDraft.find((event) => event.id === eventId)?.draft).toBeUndefined();
+    expect(persistedWhileDraft).toHaveLength(initialPersistedCount);
+    expect(persistedWhileDraft.some((event) => event.id === eventId)).toBe(false);
     expect(store.getCurrent().maps[mapId].events.find((event) => event.id === eventId)?.draft?.kind).toBe("new");
+    expect(getEventDraftVaultEntry(mapId, eventId)?.event.draft?.kind).toBe("new");
 
     const diff = eventDraftDiffById(store.getCurrent(), mapId, eventId);
     expect(diff?.kind).toBe("created");
@@ -124,6 +124,7 @@ describe("event draft lifecycle", () => {
     const persisted = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events;
     expect(persisted).toHaveLength(initialPersistedCount + 1);
     expect(persisted.find((event) => event.id === eventId)?.draft).toBeUndefined();
+    expect(getEventDraftVaultEntry(mapId, eventId)).toBeNull();
   });
 
   it("discards an unsaved new event without leaving persisted data behind", () => {
@@ -148,7 +149,7 @@ describe("event draft lifecycle", () => {
     expect(editorState.get().selectedEventPageId).toBe(pageId);
   });
 
-  it("keeps edit diffs while also persisting the working body for recovery", () => {
+  it("keeps edit diffs locally while canonical projection stays at the original until Apply", () => {
     const mapId = store.getCurrent().startMapId;
     const eventId = createEventDraft(mapId, 4, 4);
     saveEventDraft(mapId, eventId);
@@ -158,9 +159,11 @@ describe("event draft lifecycle", () => {
     beginExistingEventDraft(mapId, eventId);
     setEventPageTextCommand(mapId, eventId, pageId, undefined, "changed before save");
 
-    // Working body is what autosave writes (continuous recovery).
+    // Canonical autosave/export remains at the explicit Apply baseline.
     const beforeSave = projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events.find((event) => event.id === eventId);
-    expect(beforeSave?.pages?.[0]?.commands[0]).toEqual({
+    expect(beforeSave?.pages?.[0]?.commands).toEqual([]);
+    // The live session and local vault retain the current working body.
+    expect(getEventDraftVaultEntry(mapId, eventId)?.event.pages?.[0]?.commands[0]).toEqual({
       kind: "text",
       body: "changed before save",
       speaker: undefined,
@@ -183,7 +186,7 @@ describe("event draft lifecycle", () => {
     });
   });
 
-  it("reapplies draft metadata onto a metadata-stripped autosave snapshot", () => {
+  it("reapplies local working drafts onto a canonical autosave snapshot", () => {
     const mapId = store.getCurrent().startMapId;
     const newEventId = createEventDraft(mapId, 6, 6);
     const existingId = createEventDraft(mapId, 7, 7);
@@ -195,14 +198,9 @@ describe("event draft lifecycle", () => {
 
     const live = store.getCurrent();
     const saved = projectWithoutEventDrafts(live);
-    // Working bodies survive strip; draft metadata does not.
-    expect(saved.maps[mapId].events.some((event) => event.id === newEventId)).toBe(true);
-    expect(saved.maps[mapId].events.find((event) => event.id === newEventId)?.draft).toBeUndefined();
-    expect(saved.maps[mapId].events.find((event) => event.id === existingId)?.pages?.[0]?.commands[0]).toEqual({
-      kind: "text",
-      body: "still editing",
-      speaker: undefined,
-    });
+    // Canonical snapshot omits the new draft and keeps the edit baseline.
+    expect(saved.maps[mapId].events.some((event) => event.id === newEventId)).toBe(false);
+    expect(saved.maps[mapId].events.find((event) => event.id === existingId)?.pages?.[0]?.commands).toEqual([]);
 
     const restored = projectWithPreservedEventDrafts(saved, live);
     const restoredNew = restored.maps[mapId].events.find((event) => event.id === newEventId);

@@ -34,6 +34,12 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
+import type { EventDraftIssue } from "@/editor/eventDraftValidator";
+
+type CommandListRenderOptions = {
+  readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
+  readonly issues?: readonly EventDraftIssue[];
+};
 
 // 이벤트 명령 리스트 렌더링. RM2K3 처럼 트리 들여쓰기 + 드래그 재정렬 + 위/아래/삭제 버튼.
 // 드래그: 같은 컨테이너 재정렬 + (호스트가 moveCommandAcross 를 지원하면) 가지 안팎
@@ -49,7 +55,7 @@ export function renderCommandList(
   commands: Command[],
   containerPath: number[],
   actions: CommandListActions,
-  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport } = {}
+  options: CommandListRenderOptions = {}
 ): void {
   clearChildren(host);
   host.dataset.containerPath = JSON.stringify(containerPath);
@@ -74,7 +80,7 @@ function renderCommandTree(
   actions: CommandListActions,
   depth: number,
   faceState: FaceState,
-  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
+  options: CommandListRenderOptions
 ): void {
   host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState, options));
   if (cmd.kind === "changeFace") {
@@ -90,7 +96,7 @@ function renderCommandItem(
   actions: CommandListActions,
   depth: number,
   faceState: FaceState,
-  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
+  options: CommandListRenderOptions
 ): HTMLElement {
   // [중간-1] 카테고리 색 레일 + kind 아이콘용 시각 정보 (CSS 는 data-command-category 로 매칭).
   const categoryVisual = commandCategoryVisual(cmd);
@@ -126,6 +132,7 @@ function renderCommandItem(
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path);
   const supportBadge = renderRuntimeSupportBadge((options.runtimeSupport ?? commandRuntimeSupport)(cmd), `command-runtime-badge-list-${path.join("-")}`);
+  const issueBadge = renderCommandIssueBadge(path, options.issues ?? []);
   // 문장 표시 줄: 직전 changeFace 상태를 화자 얼굴 16px 크롭으로 부가.
   const activeFaceForItem = faceState.current;
   const speakerFace =
@@ -145,6 +152,7 @@ function renderCommandItem(
     ...(speakerFace ? [speakerFace] : []),
     renderCommandSummary(cmd),
     ...(supportBadge ? [supportBadge] : []),
+    ...(issueBadge ? [issueBadge] : []),
     commandActions(path, actions)
   );
   const openEditor = () => openCommandEditModal(cmd, path, actions, activeFaceForItem);
@@ -172,6 +180,26 @@ function renderCommandItem(
   // 중첩 행은 항상 자기 실제 부모 컨테이너를 사용해야 같은 분기 재정렬/분기 간 이동이 작동한다.
   attachItemDropHandlers(item, path, path.slice(0, -1), actions);
   return item;
+}
+
+function renderCommandIssueBadge(path: readonly number[], issues: readonly EventDraftIssue[]): HTMLElement | null {
+  const matches = issues.filter((issue) => issue.commandPath && sameCommandPath(issue.commandPath, path));
+  if (matches.length === 0) return null;
+  const severity = matches.some((issue) => issue.severity === "error")
+    ? "error"
+    : matches.some((issue) => issue.severity === "warning")
+      ? "warning"
+      : "info";
+  return el("span", {
+    class: `event-command-issue-badge ${severity}`,
+    text: `${severity === "error" ? "!" : severity === "warning" ? "△" : "i"}${matches.length}`,
+    attrs: { title: matches.map((issue) => issue.message).join("\n"), "aria-label": `검사 문제 ${matches.length}개` },
+    dataset: { testid: `event-command-issue-badge-${path.join("-")}`, severity },
+  });
+}
+
+function sameCommandPath(a: readonly number[], b: readonly number[]): boolean {
+  return a.length === b.length && a.every((part, index) => part === b[index]);
 }
 
 function renderCommandSummary(cmd: Command): HTMLElement {
@@ -302,7 +330,7 @@ function appendCommandChildren(
   actions: CommandListActions,
   depth: number,
   faceState: FaceState,
-  options: { readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport }
+  options: CommandListRenderOptions
 ): void {
   if (cmd.kind === "choices") {
     cmd.options.forEach((option, optionIndex) => {
