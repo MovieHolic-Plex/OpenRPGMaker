@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   buildRegionTaskMessage,
   countAddedMaps,
@@ -109,10 +109,25 @@ describe("buildRegionTaskMessage", () => {
     expect(message).toContain("새 맵 전체를 시공하라");
   });
 
-  it("모호한 집 요청은 야외 시공을 고르지 않고 야외/실내를 되묻는다", () => {
+  it("영역 작업의 bare 집 요청은 야외 집으로 바로 시공한다 (되묻지 않음)", () => {
     const message = buildRegionTaskMessage("이 영역에 집 만들어줘", "외곽", MAP_ID, REGION);
-    expect(message).toContain("야외 집(외장) / 실내 맵 / 둘 다");
-    expect(message).not.toContain("author_house");
+    // 영역 선택이 현재 맵 위이므로 야외 집 의도 — 되묻지 않고 author_house 시공.
+    expect(message).not.toContain("야외 집(외장) / 실내 맵 / 둘 다");
+    expect(message).toContain("author_house");
+    expect(message).toContain("되묻지 말고");
+  });
+
+  it("'건물' 단어는 author_house facade 시그니처를 강제하지 않는다 (탑/성벽 오경로 방지)", () => {
+    // 탑/성벽 등은 structure 가이드가 build_wall/create_farm_plot 로 안내한다.
+    // bare fallback 이 /건물/ 을 잡아 author_house 시그니처를 내면 가이드와 충돌한다.
+    const tower = buildRegionTaskMessage("탑 건물 지어줘", "외곽", MAP_ID, REGION);
+    expect(tower).not.toContain("야외 집 시공: author_house");
+    const wall = buildRegionTaskMessage("성벽 건물 지어", "외곽", MAP_ID, REGION);
+    expect(wall).not.toContain("야외 집 시공: author_house");
+    // bare '건물' 단독도 facade 시그니처 강제 없음 — 가이드가 LLM 에게 맨긴다.
+    const bare = buildRegionTaskMessage("건물 지어", "외곽", MAP_ID, REGION);
+    expect(bare).not.toContain("야외 집 시공: author_house");
+    expect(bare).not.toContain("되묻지 말고");
   });
 });
 
@@ -412,5 +427,76 @@ describe("describeRegionTaskResult — pending", () => {
       pending: { settled: false } as never,
     });
     expect(text).toBe("제안 준비 — 34칸 타일 · 이벤트 2건 · 적용 여부를 선택하세요");
+  });
+});
+
+// 회귀: 이전에는 조기 return 경로(빈 지시·맵 없음·오류·무변경)에서 running:false가
+// 발행되지 않아 맵의 '✨ AI 작업 중…' 배지가 영구히 남았다. pending 경로만 onSettle이
+// 해제를 소유하고, 그 외 모든 경로는 finally가 running:false를 쏴야 한다.
+describe("runRegionTask — running:false 배지 해제 회귀", () => {
+  let restoreWindow: (() => void) | null = null;
+  let events: (RegionTaskStatusDetail | null)[] = [];
+  let listener: ((event: Event) => void) | null = null;
+
+  beforeEach(() => {
+    __clearPendingRegionApplyForTest();
+    restoreWindow = installFakeWindow();
+    events = [];
+    listener = (event: Event): void => {
+      events.push(regionTaskStatusDetail(event));
+    };
+    window.addEventListener(REGION_TASK_STATUS_EVENT, listener);
+  });
+
+  afterEach(() => {
+    if (listener) window.removeEventListener(REGION_TASK_STATUS_EVENT, listener);
+    listener = null;
+    restoreWindow?.();
+    restoreWindow = null;
+  });
+
+  it("빈 지시 조기 return에서도 running:false가 정확히 1회 발행된다", async () => {
+    const base = baseProject();
+    const { deps } = makeDeps(base, structuredClone(base));
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "   " }, deps);
+
+    expect(result.ok).toBe(false);
+    const runningFalse = events.filter((detail) => detail?.mapId === MAP_ID && detail?.running === false);
+    expect(runningFalse.length).toBe(1);
+  });
+
+  it("pending 제안 등록 성공 시 반환 시점에는 running:false를 발행하지 않는다(해제 소유권은 onSettle)", async () => {
+    const base = baseProject();
+    const proposed: Project = structuredClone(base);
+    proposed.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5; // 영역 안 변경
+    const { deps } = makeDeps(base, proposed);
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "잔디로 채워줘" }, deps);
+
+    expect(result.ok).toBe(true);
+    expect(result.pending).toBeDefined();
+    // 반환 시점: 아직 settle 전이므로 finally가 running:false를 쏘면 안 된다.
+    expect(events.some((detail) => detail?.mapId === MAP_ID && detail?.running === false)).toBe(false);
+
+    // 해제 소유권 확인: onSettle(discard) 시점에 비로소 running:false 발행.
+    result.pending!.discard();
+    expect(events.some((detail) => detail?.mapId === MAP_ID && detail?.running === false)).toBe(true);
+  });
+
+  it("내부 예외 경로에서도 running:false가 발행된다", async () => {
+    const base = baseProject();
+    const { deps } = makeDeps(base, structuredClone(base), {
+      async sendUserMessage() {
+        throw new Error("네트워크 실패");
+      },
+    });
+
+    const result = await runRegionTask({ mapId: MAP_ID, region: REGION, instruction: "여기 채워" }, deps);
+
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain("네트워크");
+    const runningFalse = events.filter((detail) => detail?.mapId === MAP_ID && detail?.running === false);
+    expect(runningFalse.length).toBe(1);
   });
 });

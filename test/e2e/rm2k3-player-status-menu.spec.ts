@@ -78,7 +78,7 @@ test("Korean command panels work from the X-key actual play menu", async ({ page
   await expect(page.getByTestId("status-menu-detail")).toContainText(/MP \d+\/\d+/);
   await screenshotMenu(page, COMMAND_SCREENSHOTS.status);
 
-  await selectCommand(page, "row", "열");
+  await selectCommand(page, "row", "열 바꾸기");
   await expect(page.getByTestId("status-menu-detail")).toContainText("전열");
   await screenshotMenu(page, COMMAND_SCREENSHOTS.row);
 
@@ -103,8 +103,8 @@ test("Korean command panels work from the X-key actual play menu", async ({ page
   await selectCommand(page, "quests", "임무");
   await expect(page.getByTestId("status-menu-detail")).toContainText("등록된 임무가 없습니다");
 
-  await selectCommand(page, "wait", "대기");
-  await expect(page.getByTestId("status-menu-detail")).toContainText("대기 방식을 OFF로 전환했습니다");
+  await selectCommand(page, "wait", "전투 대기");
+  await expect(page.getByTestId("status-menu-detail")).toContainText("명령 입력 중에도 시간이 흐릅니다");
   await expect(page.getByTestId("status-menu-command-wait")).toContainText("대기 OFF");
   await screenshotMenu(page, COMMAND_SCREENSHOTS.wait);
 

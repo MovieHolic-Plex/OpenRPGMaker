@@ -1,5 +1,6 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { emptyToUndefined, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { store } from "@/project/store";
 import type { EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags } from "@/project/types";
@@ -291,10 +292,6 @@ function checkboxField(input: CheckboxFieldInput): HTMLElement {
     if (control instanceof HTMLInputElement) input.onInput(control.checked);
   });
   return el("label", { class: "actor-check", children: [control, el("span", { text: input.label })] });
-}
-
-function panel(title: string, children: readonly HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
 }
 
 function currentEquipment(record: EquipmentRecord): EquipmentRecord {

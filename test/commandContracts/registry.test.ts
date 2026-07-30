@@ -17,8 +17,8 @@ import type { GameEvent } from "@/project/types";
 import { NATIVE_MANIFEST } from "./nativeManifest";
 
 describe("native command guarantee registry", () => {
-  it("has one valid guarantee for every one of the 70 commands and 15 conditions", () => {
-    expect(COMMAND_KINDS).toHaveLength(70);
+  it("has one valid guarantee for every one of the 74 commands and 15 conditions", () => {
+    expect(COMMAND_KINDS).toHaveLength(74);
     expect(CONDITION_KINDS).toHaveLength(15);
     expect(Object.keys(COMMAND_GUARANTEES).sort()).toEqual([...COMMAND_KINDS].sort());
     expect(Object.keys(NATIVE_MANIFEST).sort()).toEqual([...COMMAND_KINDS].sort());

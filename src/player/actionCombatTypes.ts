@@ -50,6 +50,7 @@ export interface ActionEnemyState {
   attackCooldownMs: number;
   dash?: ActionEnemyDashState;
   telegraph?: Phaser.GameObjects.Graphics;
+  windupTween?: Phaser.Tweens.Tween;
 }
 
 export interface ActionCombatSceneState {
@@ -61,6 +62,7 @@ export interface ActionCombatSceneState {
   playerFlashMs: number;
   swingCooldownMs: number;
   stamina: number;
+  hitstopMs: number;
   barsGraphics?: Phaser.GameObjects.Graphics;
   hud?: { update(model: ActionHudModel): void; destroy(): void; setHpVisible(visible: boolean): void };
   lastHudSignature: string;

@@ -121,6 +121,11 @@ function validateCommandShape(label: string, value: unknown): void {
       requireActorAmountOp(`${label}.op`, command.op);
       requireNumber(`${label}.amount`, command.amount);
       return;
+    case "changeLifeSkillExp":
+      requireString(`${label}.skillId`, command.skillId);
+      if (command.op !== "=" && command.op !== "+=" && command.op !== "-=") throw new Error(`${label}.op must be =, +=, or -=`);
+      validateVariableOperand(`${label}.amount`, command.amount);
+      return;
     case "changeActorHp":
     case "changeActorMp":
       requireString(`${label}.actorId`, command.actorId);

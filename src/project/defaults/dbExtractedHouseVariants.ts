@@ -1,8 +1,13 @@
 import type { GameMap } from "../types";
 import { SAND_TILE } from "./chipsetMapping";
 import { TILE } from "./constants";
-import type { SmallHouseMaterial, TilePoint } from "./dbExtractedHouseTemplate";
-import { SMALL_HOUSE_01_HOUSE_KIT_PLAN, stampTerrainTemplateHouse, terrainTemplateDoorBottomOffset } from "./terrainTemplateHouseStamp";
+import {
+  SMALL_HOUSE_01_HOUSE_KIT_PLAN,
+  stampTerrainTemplateHouse,
+  terrainTemplateDoorBottomOffset,
+  type SmallHouseMaterial,
+  type TilePoint,
+} from "./dbExtractedHouseTemplate";
 import { paintTownPathNetwork } from "./townPathAutotile";
 
 type TileLayerName = "lower" | "upper";

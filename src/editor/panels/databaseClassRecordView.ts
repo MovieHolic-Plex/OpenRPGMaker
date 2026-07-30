@@ -7,7 +7,6 @@ import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommand, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
-import { toast } from "@/util/toast";
 import { classCurveCards } from "./databaseClassCurveEditors";
 import { renderClassExperiencePanel } from "./databaseClassExperienceCurveEditor";
 
@@ -17,20 +16,13 @@ const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
   skill: "특수기능",
   skillSubset: "특수계열",
   defend: "방어",
-  guard: "방어",
+  guard: "방어(구형)",
   item: "아이템",
   capture: "포획",
   escape: "도망",
   switch: "교체",
   event: "교체(구형)",
 };
-const FALLBACK_CLASS_COMMANDS: ClassRecord["battleCommands"] = [
-  { id: "cmd_attack", name: "공격", kind: "attack" },
-  { id: "cmd_skill", name: "기술", kind: "skill" },
-  { id: "cmd_item", name: "아이템", kind: "item" },
-  { id: "cmd_defend", name: "방어", kind: "defend" },
-  { id: "cmd_escape", name: "도주", kind: "escape" },
-];
 const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string }[] = [
   { id: "sword", name: "검" },
   { id: "spear", name: "창" },
@@ -43,6 +35,14 @@ const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string
   { id: "earth", name: "대지" },
   { id: "wind", name: "바람" },
   { id: "holy", name: "성" },
+];
+
+const FALLBACK_CLASS_COMMANDS: ClassRecord["battleCommands"] = [
+  { id: "cmd_attack", name: "공격", kind: "attack" },
+  { id: "cmd_skill", name: "기술", kind: "skill" },
+  { id: "cmd_item", name: "아이템", kind: "item" },
+  { id: "cmd_defend", name: "방어", kind: "defend" },
+  { id: "cmd_escape", name: "도주", kind: "escape" },
 ];
 
 export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): void {
@@ -107,144 +107,181 @@ function animationSelect(record: ClassRecord): HTMLElement {
 }
 
 function battleCommandControls(record: ClassRecord): HTMLElement[] {
-  const commands = classCommandsWithChange(record);
-  const rows = commands.map((command, index) => {
-    const name = el("input", {
-      value: command.name,
-      dataset: index === 0 ? { testid: "db-field-class-command-name" } : undefined,
-      attrs: { type: "text" },
-    }) as HTMLInputElement;
-    const kind = kindSelect(command.kind, index === 0 ? "db-field-class-command-kind" : undefined);
-    const subset = el("input", {
-      value: command.skillSubsetName ?? "",
-      dataset: index === 0 ? { testid: "db-field-class-command-subset" } : undefined,
-      attrs: { type: "text", placeholder: "스킬 그룹" },
-    }) as HTMLInputElement;
-    const skill = recordSelect(command.skillId ?? "", store.getCurrent().database.skills, index === 0 ? "db-picker-class-command-skill" : undefined);
-    if (command.id !== "cmd_change") {
-      const apply = (): void => updateDatabaseRecord("classes", record.id, {
-        battleCommands: replaceClassCommand(record, index, {
+  const list = el("div", { class: "db-class-command-list", dataset: { testid: "db-class-command-list" } });
+  const preview = el("div", { class: "db-class-command-preview", dataset: { testid: "db-class-command-preview" } });
+  const addBtn = el("button", {
+    class: "db-class-command-add",
+    text: "+ 명령 추가",
+    attrs: { type: "button", title: "전투 명령 추가 (최대 6개)" },
+    dataset: { testid: "db-class-command-add" },
+    on: {
+      click: () => {
+        const current = editableClassCommands(sourceCommands(record));
+        if (current.length >= 6) return;
+        const next = [...current, { id: newCommandId(), name: "신규 명령", kind: "attack" as const }];
+        commitCommands(record, next);
+        refresh();
+      },
+    },
+  });
+
+  const refresh = (): void => {
+    const withChange = liveCommandsWithChange(record);
+    const editable = withChange.filter((command) => command.id !== "cmd_change");
+    list.replaceChildren(
+      commandHeader(),
+      ...editable.map((command, index) => commandRow(record, command, index, refresh)),
+      lockedFooter(withChange),
+    );
+    addBtn.disabled = editable.length >= 6;
+    preview.replaceChildren(
+      el("span", { class: "db-class-command-preview-label", text: "전투 메뉴 미리보기" }),
+      ...withChange.map((command) =>
+        el("span", { class: "db-class-command-preview-item", text: command.name || "(이름 없음)" }),
+      ),
+    );
+  };
+
+  refresh();
+  return [list, preview, addBtn];
+}
+
+function commandHeader(): HTMLElement {
+  return el("div", {
+    class: "db-class-command-header",
+    children: [
+      el("span", { text: "순서" }),
+      el("span", { text: "명령 이름" }),
+      el("span", { text: "종류" }),
+      el("span", { text: "스킬 그룹" }),
+      el("span", { text: "스킬" }),
+      el("span", { text: "삭제" }),
+    ],
+  });
+}
+
+function commandRow(record: ClassRecord, command: ClassBattleCommand, index: number, onChanged: () => void): HTMLElement {
+  const name = el("input", {
+    value: command.name,
+    dataset: index === 0 ? { testid: "db-field-class-command-name" } : undefined,
+    attrs: { type: "text", "aria-label": "명령 이름" },
+  }) as HTMLInputElement;
+  const kind = kindSelect(command.kind, index === 0 ? "db-field-class-command-kind" : undefined);
+  const subset = el("input", {
+    value: command.skillSubsetName ?? "",
+    dataset: index === 0 ? { testid: "db-field-class-command-subset" } : undefined,
+    attrs: { type: "text", placeholder: "스킬 그룹", "aria-label": "스킬 그룹" },
+  }) as HTMLInputElement;
+  const skill = recordSelect(command.skillId ?? "", store.getCurrent().database.skills, index === 0 ? "db-picker-class-command-skill" : undefined);
+  applyCommandFieldState(readCommandKind(kind.value), subset, skill);
+
+  const apply = (): void => {
+    const next = editableClassCommands(sourceCommands(record)).map((entry, entryIndex) =>
+      entryIndex === index
+        ? {
           ...command,
           name: name.value,
           kind: readCommandKind(kind.value),
           skillSubsetName: subset.value || undefined,
           skillId: skill.value || undefined,
-        }),
-      });
-      name.addEventListener("input", apply);
-      kind.addEventListener("change", apply);
-      subset.addEventListener("input", apply);
-      skill.addEventListener("change", apply);
-    } else {
-      name.readOnly = true;
-      kind.disabled = true;
-      subset.readOnly = true;
-      skill.disabled = true;
-    }
-    return el("div", { class: "db-class-command-row", children: [name, kind, subset, skill] });
-  });
-  return [
-    el("button", {
-      class: "db-class-set-button",
-      text: "설정",
-      attrs: { type: "button", title: "전투 명령 순서 설정" },
-      dataset: { testid: "db-class-command-order-open" },
-      on: {
-        click: () => openClassCommandOrderDialog(record, () => {
-          const workbench = document.querySelector("[data-testid='db-classes-bm88-workbench']");
-          if (workbench instanceof HTMLElement) {
-            const form = workbench.closest(".db-detail-form");
-            if (form instanceof HTMLElement) {
-              form.replaceChildren();
-              const next = store.getCurrent().database.classes.find((entry) => entry.id === record.id) ?? record;
-              renderClassRecordForm(form, next);
-            }
-          }
-          toast("전투 명령 순서를 저장했습니다.", "ok");
-        }),
-      },
-    }),
-    el("div", { class: "db-class-command-rows", children: rows }),
-  ];
-}
-
-function openClassCommandOrderDialog(record: ClassRecord, onSaved: () => void): void {
-  document.querySelector("[data-testid='db-class-command-order-dialog']")?.remove();
-  let working = editableClassCommands(classCommandsWithChange(record));
-  const list = el("div", { class: "db-class-command-order-list", dataset: { testid: "db-class-command-order-list" } });
-  const refreshList = (): void => {
-    list.replaceChildren(...working.map((command, index) => commandOrderRow(command, index, (delta) => {
-      working = moveEditableClassCommand(working, index, delta).filter((entry) => entry.id !== "cmd_change");
-      refreshList();
-    })));
+        }
+        : entry,
+    );
+    commitCommands(record, next);
   };
-  refreshList();
-  const backdrop = el("div", { class: "db-enemy-dialog-backdrop", dataset: { testid: "db-class-command-order-dialog" } });
-  const close = (): void => backdrop.remove();
-  backdrop.append(
-    el("div", {
-      class: "db-enemy-dialog",
-      children: [
-        el("header", { text: "전투 명령 순서" }),
-        el("main", { children: [list, el("p", { class: "db-hint", text: "↑↓로 순서를 바꿉니다. 교체 명령은 항상 맨 아래에 둡니다." })] }),
-        el("footer", {
-          children: [
-            el("button", {
-              class: "btn small",
-              text: "OK",
-              dataset: { testid: "db-class-command-order-ok" },
-              attrs: { type: "button" },
-              on: {
-                click: () => {
-                  updateDatabaseRecord("classes", record.id, {
-                    battleCommands: finalizeClassBattleCommands(working),
-                  });
-                  close();
-                  onSaved();
-                },
-              },
-            }),
-            el("button", {
-              class: "btn small",
-              text: "Cancel",
-              dataset: { testid: "db-class-command-order-cancel" },
-              attrs: { type: "button" },
-              on: { click: close },
-            }),
-          ],
-        }),
-      ],
-    }),
-  );
-  document.body.append(backdrop);
+  name.addEventListener("input", apply);
+  subset.addEventListener("input", apply);
+  skill.addEventListener("change", apply);
+  // 종류 변경은 스킬 그룹/스킬 활성화 여부에 영향 → 저장 후 재렌더
+  kind.addEventListener("change", () => {
+    apply();
+    onChanged();
+  });
+
+  const up = el("button", {
+    class: "db-class-command-move",
+    text: "↑",
+    attrs: { type: "button", title: "위로", "aria-label": `${index + 1}번 명령 위로` },
+    dataset: { testid: `db-class-command-up-${index}` },
+    on: { click: () => { commitCommands(record, moveEditableClassCommand(sourceCommands(record), index, -1)); onChanged(); } },
+  });
+  const down = el("button", {
+    class: "db-class-command-move",
+    text: "↓",
+    attrs: { type: "button", title: "아래로", "aria-label": `${index + 1}번 명령 아래로` },
+    dataset: { testid: `db-class-command-down-${index}` },
+    on: { click: () => { commitCommands(record, moveEditableClassCommand(sourceCommands(record), index, 1)); onChanged(); } },
+  });
+  const remove = el("button", {
+    class: "db-class-command-remove",
+    text: "✕",
+    attrs: { type: "button", title: "명령 삭제", "aria-label": `${command.name || `${index + 1}번`} 명령 삭제` },
+    dataset: { testid: `db-class-command-remove-${index}` },
+    on: {
+      click: () => {
+        const current = editableClassCommands(sourceCommands(record));
+        commitCommands(record, current.filter((_, entryIndex) => entryIndex !== index));
+        onChanged();
+      },
+    },
+  });
+
+  return el("div", {
+    class: "db-class-command-row",
+    children: [up, down, name, kind, subset, skill, remove],
+  });
 }
 
-function commandOrderRow(
-  command: ClassBattleCommand,
-  index: number,
-  move: (delta: -1 | 1) => void,
-): HTMLElement {
+function lockedFooter(commands: readonly ClassBattleCommand[]): HTMLElement {
+  const change = commands.find((command) => command.id === "cmd_change") ?? { id: "cmd_change", name: "교체", kind: "switch" };
   return el("div", {
-    class: "db-class-command-order-row",
-    dataset: { testid: `db-class-command-order-row-${index}` },
+    class: "db-class-command-row db-class-command-row-locked",
+    dataset: { testid: "db-class-command-row-locked" },
     children: [
-      el("span", { text: `${index + 1}. ${command.name} (${command.kind})` }),
-      el("button", {
-        class: "btn small",
-        text: "↑",
-        attrs: { type: "button", title: "위로" },
-        dataset: { testid: `db-class-command-order-up-${index}` },
-        on: { click: () => move(-1) },
-      }),
-      el("button", {
-        class: "btn small",
-        text: "↓",
-        attrs: { type: "button", title: "아래로" },
-        dataset: { testid: `db-class-command-order-down-${index}` },
-        on: { click: () => move(1) },
-      }),
+      el("span", { class: "db-class-command-lock", text: "🔒", attrs: { "aria-label": "고정 명령" } }),
+      el("span", { class: "db-class-command-locked-name", text: change.name }),
+      el("span", { class: "db-class-command-locked-tag", text: "고정(교체)" }),
     ],
   });
+}
+
+/** live store state — record 스냅샷이 아니라 현재 스토어의 전투 명령을 읽는다(인라인 편집에서 재렌더 동기화용). */
+function liveCommands(record: ClassRecord): ClassRecord["battleCommands"] {
+  return currentClass(record).battleCommands;
+}
+
+/** 빈 전투 명령은 기본 5종(공격/기술/아이템/방어/도주)으로 표시하고, 첫 편집 keystroke 에서 store 에 반영된다. */
+function sourceCommands(record: ClassRecord): ClassRecord["battleCommands"] {
+  const live = liveCommands(record);
+  return live.length > 0 ? live : FALLBACK_CLASS_COMMANDS;
+}
+
+function liveCommandsWithChange(record: ClassRecord): ClassBattleCommand[] {
+  const editable = editableClassCommands(sourceCommands(record));
+  return [...editable, { id: "cmd_change", name: "교체", kind: "switch" as const }];
+}
+
+function commitCommands(record: ClassRecord, editable: readonly ClassBattleCommand[]): void {
+  updateDatabaseRecord("classes", record.id, { battleCommands: finalizeClassBattleCommands(editable) });
+}
+
+/** kind 에 따라 스킬 그룹/스킬 필드의 활성화 여부를 정한다(적 행동 basic/skill 모드와 동일 패턴). */
+function commandFieldVisibility(kind: ClassBattleCommandKind): { readonly subset: boolean; readonly skill: boolean } {
+  if (kind === "skill") return { subset: true, skill: true };
+  if (kind === "skillSubset") return { subset: true, skill: false };
+  return { subset: false, skill: false };
+}
+
+function applyCommandFieldState(kind: ClassBattleCommandKind, subset: HTMLInputElement, skill: HTMLSelectElement): void {
+  const visibility = commandFieldVisibility(kind);
+  subset.disabled = !visibility.subset;
+  skill.disabled = !visibility.skill;
+  subset.classList.toggle("is-inert", !visibility.subset);
+  skill.classList.toggle("is-inert", !visibility.skill);
+}
+
+function newCommandId(): string {
+  return `cmd_new_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 function optionControls(record: ClassRecord): HTMLElement[] {
@@ -455,16 +492,6 @@ function gradeSelect(value: ActorRateGrade, testid: string): HTMLSelectElement {
   ACTOR_RATE_GRADES.forEach((grade) => select.append(el("option", { text: grade, attrs: { value: grade } })));
   select.value = value;
   return select;
-}
-
-function classCommandsWithChange(record: ClassRecord): ClassRecord["battleCommands"] {
-  const source = record.battleCommands.length > 0 ? record.battleCommands : FALLBACK_CLASS_COMMANDS;
-  const editable = source.filter((command) => command.id !== "cmd_change").slice(0, 6);
-  return [...editable, { id: "cmd_change", name: "교체", kind: "switch" }];
-}
-
-function replaceClassCommand(record: ClassRecord, index: number, command: ClassRecord["battleCommands"][number]): ClassRecord["battleCommands"] {
-  return classCommandsWithChange(record).map((entry, entryIndex) => (entryIndex === index ? command : entry));
 }
 
 function replaceSkill(record: ClassRecord, index: number, skill: ClassRecord["learnedSkills"][number]): ClassRecord["learnedSkills"] {

@@ -84,6 +84,16 @@
   white-space: normal;
   word-break: keep-all;
 }
+/* 한글은 기본 word-break 로 어절 중간이 잘린다("아이템이 없습니 / 다").
+   상세 패널의 안내/설명 문구도 제목처럼 어절 단위로 끊는다. */
+.rm2k3-status-menu .status-menu-detail-empty,
+.rm2k3-status-menu .status-menu-detail-hint,
+.rm2k3-status-menu .status-menu-detail-description,
+.rm2k3-status-menu .status-menu-detail-entry-description {
+  overflow-wrap: normal;
+  white-space: normal;
+  word-break: keep-all;
+}
 .status-menu-detail-list {
   align-content: start;
   display: grid;
@@ -95,8 +105,8 @@
   box-sizing: border-box;
   display: grid;
   gap: 2px;
-  /* max-content 는 긴 value 가 label 칼럼을 0 으로 붕괴시켜 겹침 — auto 로 컨테이너 안에 가둔다. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  /* label 을 1fr 로 두면 긴 value 가 label 칼럼을 0 까지 밀어내고, label 은 overflow 가 없어 값 위로 삐져나와 겹친다(실측 "주인공"+"공격, 검격, 집중"). label=auto, value=1fr 이 맞다. */
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   min-height: var(--rm2k3-menu-row-height, 15px);
   padding: 1px 2px;
   text-shadow: none;
@@ -135,7 +145,8 @@
   display: -webkit-box;
   grid-column: 1 / -1;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  /* 2줄은 좁은 상세 패널에서 "HP 510/514 · MP 43/43 ···" 처럼 마지막 항목이 잘렸다. */
+  -webkit-line-clamp: 3;
   line-height: 1.1;
   min-width: 0;
   overflow: hidden;
@@ -150,8 +161,8 @@
 .status-menu-detail-copy {
   display: grid;
   gap: 1px 2px;
-  /* max-content 는 긴 value 가 label 칼럼을 0 으로 붕괴시켜 겹침 — auto 로 컨테이너 안에 가둔다. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  /* 위 .status-menu-detail-row 와 같은 이유 — label 은 내용 크기, value 가 남는 폭. */
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
 }
 .status-menu-footer {
   align-items: center;
@@ -169,18 +180,14 @@
   gap: 4px;
   grid-column: 1 / -1;
   grid-row: 2;
-  grid-template-columns: max-content minmax(0, 1fr);
+  /* 돈 | 안내 | 시간 — 시간을 오른쪽 끝으로 밀어 "돈 0G 0:00" 붙어보임을 없앤다. */
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
   padding: 1px 4px;
-}
-.status-menu-footer-meta {
-  display: flex;
-  gap: 4px;
-  min-width: max-content;
 }
 .status-menu-message {
   min-width: 0;
   overflow: hidden;
-  text-align: right;
+  text-align: center;
   text-overflow: clip;
   white-space: nowrap;
 }

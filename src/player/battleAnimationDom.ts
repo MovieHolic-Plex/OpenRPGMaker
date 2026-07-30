@@ -1,9 +1,11 @@
 import type { BattleSnapshot } from "@/battle/runtime";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
 import type { BattleAnimationRecord } from "@/project/types";
 import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
 import { findBattlerNode } from "@/player/battleFieldDom";
+import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 
 type CellSourceRect = {
   readonly x: number;
@@ -175,10 +177,13 @@ function animationCell(
   canvas.dataset.pattern = String(cell.pattern);
   canvas.width = record.sheet.frameWidth;
   canvas.height = record.sheet.frameHeight;
-  canvas.style.width = `${record.sheet.frameWidth}px`;
-  canvas.style.height = `${record.sheet.frameHeight}px`;
-  canvas.style.left = `calc(50% + ${cell.x}px)`;
-  canvas.style.top = `calc(50% + ${cell.y}px)`;
+  // 시트 프레임 크기와 셀 좌표는 **자산 px**(320×240 화면 기준으로 저작된 RM 애니메이션 데이터)다.
+  // 전투 씬의 논리 해상도는 640×480 이라 그대로 쓰면 화면에서 절반으로 보인다.
+  const assetScale = BATTLE_ASSET_PIXEL_SCALE;
+  canvas.style.width = `${record.sheet.frameWidth * assetScale}px`;
+  canvas.style.height = `${record.sheet.frameHeight * assetScale}px`;
+  canvas.style.left = `calc(50% + ${cell.x * assetScale}px)`;
+  canvas.style.top = `calc(50% + ${cell.y * assetScale}px)`;
   canvas.style.opacity = String(Math.max(0, Math.min(255, cell.opacity)) / 255);
   canvas.style.transform = `translate(-50%, -50%) scale(${Math.max(1, cell.zoom) / 100})`;
 
@@ -237,14 +242,9 @@ function drawChromaKeyedCell(canvas: HTMLCanvasElement, url: string, source: Cel
     context.clearRect(0, 0, width, height);
     context.drawImage(image, x, y, width, height, 0, 0, width, height);
     const pixels = context.getImageData(0, 0, width, height);
-    for (let index = 0; index < pixels.data.length; index += 4) {
-      const red = pixels.data[index] ?? 0;
-      const green = pixels.data[index + 1] ?? 0;
-      const blue = pixels.data[index + 2] ?? 0;
-      if (green > 90 && red < 40 && blue < 40) {
-        pixels.data[index + 3] = 0;
-      }
-    }
+    // 단일 색(마젠타/녹색/검은 등 어떤 단색 배경이든) 을 자동 감지해 키아웃한다.
+    // 투명 PNG 는 테두리가 이미 alpha=0 이라 no-op 이다.
+    applyAutoTransparencyKey(pixels.data, width, height);
     context.putImageData(pixels, 0, 0);
     canvas.dataset.rendered = "true";
   });

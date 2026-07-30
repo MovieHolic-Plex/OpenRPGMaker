@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject, TILE } from "@/project/defaults";
 import {
+  describeChunkPosition,
   groupRegionChanges,
   labelRegionChunk,
   withChunkLabels,
@@ -166,5 +167,36 @@ describe("withChunkLabels", () => {
     const labeled = withChunkLabels(groups, undefined as unknown as TilesetDef);
     expect(labeled.lower[0].label).toMatch(/\(2칸\)$/);
     expect(labeled.lower[0].label.length).toBeGreaterThan(0);
+  });
+});
+
+describe("describeChunkPosition", () => {
+  // 같은 타일로 된 덩어리가 여럿이면 라벨이 완전히 겹친다("Stone floor(3칸)" 두 줄) —
+  // 목록만 보고 구분할 수 있도록 영역 안 위치를 사람 말로 돌려준다.
+  const chunkAt = (cells: readonly [number, number][]): RegionChunk => ({
+    id: "c",
+    layer: "lower",
+    cells: cells.map(([x, y]) => ({ x, y, index: 0 })),
+    dominantTile: TILE.WATER,
+    label: "",
+  });
+  const REGION = { x: 2, y: 2, width: 9, height: 9 };
+
+  it("영역을 3×3 구획으로 나눠 무게중심이 놓인 칸의 이름을 준다", () => {
+    expect(describeChunkPosition(chunkAt([[0, 0]]), REGION)).toBe("좌상단");
+    expect(describeChunkPosition(chunkAt([[8, 8]]), REGION)).toBe("우하단");
+    expect(describeChunkPosition(chunkAt([[4, 4]]), REGION)).toBe("가운데");
+    expect(describeChunkPosition(chunkAt([[8, 0]]), REGION)).toBe("우상단");
+    expect(describeChunkPosition(chunkAt([[0, 8]]), REGION)).toBe("좌하단");
+  });
+
+  it("여러 칸이면 무게중심으로 판정한다", () => {
+    // (0,0),(1,0),(0,1) → 무게중심 (0.33,0.33) → 좌상단
+    expect(describeChunkPosition(chunkAt([[0, 0], [1, 0], [0, 1]]), REGION)).toBe("좌상단");
+  });
+
+  it("빈 청크나 폭 0 영역에서도 던지지 않는다", () => {
+    expect(describeChunkPosition(chunkAt([]), REGION)).toBe("");
+    expect(describeChunkPosition(chunkAt([[0, 0]]), { x: 0, y: 0, width: 0, height: 0 })).toBe("가운데");
   });
 });

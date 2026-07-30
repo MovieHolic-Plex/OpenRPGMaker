@@ -98,6 +98,7 @@
     padding: 4px 8px;
   }
 
+  /* promotion UI 가 재사용하므로 전투 명령 리디자인과 분리 — 기본 규칙 유지 */
   .database-modal-body .rm2k3-record-classes .db-class-command-rows {
     display: grid;
     gap: 5px;
@@ -119,6 +120,120 @@
     margin: 0 0 6px;
     min-height: 28px;
     width: 100%;
+  }
+
+  /* 전투 명령 인라인 워크벤치 — .db-class-command-list 내부에만 적용 */
+  .database-modal-body .rm2k3-record-classes .db-class-command-list {
+    display: grid;
+    gap: 4px;
+    max-height: 196px;
+    overflow: auto;
+    padding-right: 2px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-header {
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 26px 26px minmax(70px, 1fr) 108px minmax(70px, 1fr) 128px 26px;
+    color: var(--text-2, var(--db-modern-text));
+    font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    padding: 2px 2px 4px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-header span:first-child {
+    grid-column: 1 / span 2;
+    text-align: center;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row {
+    align-items: center;
+    display: grid;
+    gap: 6px;
+    grid-template-columns: 26px 26px minmax(70px, 1fr) 108px minmax(70px, 1fr) 128px 26px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row :is(input, select) {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row .is-inert {
+    opacity: 0.4;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-move,
+  .database-modal-body .rm2k3-record-classes .db-class-command-remove {
+    background: var(--control-bg);
+    border: 1px solid var(--db-modern-line);
+    color: var(--text-1);
+    font-size: 12px;
+    height: 26px;
+    line-height: 1;
+    padding: 0;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-move:hover,
+  .database-modal-body .rm2k3-record-classes .db-class-command-remove:hover {
+    border-color: var(--accent, var(--db-modern-line));
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-list .db-class-command-row-locked {
+    align-items: center;
+    border-top: 1px dashed var(--db-modern-line);
+    color: var(--text-2, var(--db-modern-text));
+    margin-top: 4px;
+    padding-top: 6px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-row-locked .db-class-command-lock {
+    grid-column: 1 / span 2;
+    text-align: center;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-row-locked .db-class-command-locked-name {
+    grid-column: 3 / span 1;
+    font-weight: 600;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-row-locked .db-class-command-locked-tag {
+    grid-column: 4 / span 4;
+    font-size: 11px;
+    opacity: 0.8;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-add {
+    background: var(--control-bg);
+    border: 1px dashed var(--db-modern-line);
+    color: var(--text-1);
+    margin: 6px 0 0;
+    min-height: 28px;
+    width: 100%;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-add:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-preview {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 8px 0 0;
+    max-width: 160px;
+    padding: 6px 8px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-preview-label {
+    color: var(--text-2, var(--db-modern-text));
+    font: 600 11px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    margin-bottom: 2px;
+  }
+
+  .database-modal-body .rm2k3-record-classes .db-class-command-preview-item {
+    font: 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   }
 
   .database-modal-body .rm2k3-record-classes .actor-check {

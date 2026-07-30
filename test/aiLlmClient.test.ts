@@ -49,10 +49,15 @@ const CONFIG_BASE = { authMode: "apiKey" as const, baseUrl: "https://example.inv
 afterEach(() => {
   vi.restoreAllMocks();
   delete (globalThis as unknown as { localStorage?: unknown }).localStorage;
+  vi.unstubAllEnvs();
 });
 
 describe("aiConfig 저장/로드", () => {
   it("기본값을 반환하고 저장값을 병합한다", async () => {
+    // .env.local 의 VITE_LLM_API_URL 이 있으면 defaultAiConfig 가 apiKey 모드로 부팅해
+    // 이 테스트의 전제가 기계마다 달라진다 — 명시적으로 비워 환경 독립으로 만든다.
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
     installLocalStorage();
     const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL } = await loadClient();
 
@@ -65,15 +70,60 @@ describe("aiConfig 저장/로드", () => {
     expect(typeof initial.apiKey).toBe("string");
     expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
 
-    saveAiConfig({ ...initial, apiKey: "sk-user", maxTokens: 4000, autoApprove: true });
+    // 병합 자체를 보는 테스트이므로 apiKey 모드로 저장한다. chatgpt 모드로 저장하면
+    // 로드 시점 모델 교정(Codex 는 gpt- 만 허용)이 끼어들어 모델 왕복을 볼 수 없다.
+    saveAiConfig({ ...initial, authMode: "apiKey", apiKey: "sk-user", maxTokens: 4000, autoApprove: true });
     const reloaded = loadAiConfig();
     expect(reloaded.apiKey).toBe("sk-user");
     expect(reloaded.maxTokens).toBe(4000);
     expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
-    expect(DEFAULT_MODEL).toBe("z-ai/glm-5.2-ultrafast");
-    expect(DEFAULT_LITE_MODEL).toBe("z-ai/glm-5.2-ultrafast");
+    // 기본 모델은 cpenrouter 경로로 옮겼다 — 에디터의 45개 툴 페이로드를 실제로 통과한
+    // 실측 모델이다(glm 경로는 ChatGPT/Codex 연결에서 400 을 냈다).
+    expect(DEFAULT_MODEL).toBe("cpen/gpt-5-6-luna");
+    expect(DEFAULT_LITE_MODEL).toBe("cpen/gpt-5-6-luna");
+  });
+
+  it("ChatGPT 모드에 저장된 비-gpt 모델은 로드 시점에 권장 기본으로 교정된다", async () => {
+    // 실측 근거: {"detail":"The 'z-ai/glm-5.2-ultrafast' model is not supported when using
+    // Codex with a ChatGPT account."} — 옛 기본값이 localStorage 에 남아 400 을 내던 사례.
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    const store = installLocalStorage();
+    const { loadAiConfig, AI_CONFIG_STORAGE_KEY } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt", model: "z-ai/glm-5.2-ultrafast", liteModel: "z-ai/glm-5.2-ultrafast",
+    }));
+
+    const loaded = loadAiConfig();
+    expect(loaded.authMode).toBe("chatgpt");
+    expect(loaded.model.startsWith("gpt-")).toBe(true);
+    expect(loaded.liteModel?.startsWith("gpt-")).toBe(true);
+  });
+
+  it("apiKey 모드는 카탈로그에 없는 공급자 모델 ID 도 그대로 존중한다", async () => {
+    // 카탈로그는 추천 목록이지 화이트리스트가 아니다 — 직접 입력한 ID 를 교정하면 정상 사용을 깬다.
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    const store = installLocalStorage();
+    const { loadAiConfig, AI_CONFIG_STORAGE_KEY } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "apiKey", baseUrl: "/api/ai", model: "some-vendor/brand-new-model",
+    }));
+
+    expect(loadAiConfig().model).toBe("some-vendor/brand-new-model");
+  });
+
+  it("env VITE_LLM_API_URL 이 있고 키가 없으면 apiKey 모드로 부팅한다 (조용한 OAuth 폴백 방지)", async () => {
+    vi.stubEnv("VITE_LLM_API_URL", "/api/ai");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    installLocalStorage();
+    const { defaultAiConfig } = await loadClient();
+    const cfg = defaultAiConfig();
+    expect(cfg.authMode).toBe("apiKey");
+    expect(cfg.baseUrl).toBe("/api/ai");
+    expect(cfg.apiKey).toBe("");
   });
 
   it("authMode가 없는 기존 API 키 설정은 API 모드로 마이그레이션한다", async () => {
@@ -160,15 +210,87 @@ describe("aiConfig 저장/로드", () => {
 
 describe("chatCompletion 스트리밍 SSE 파서", () => {
   it("ChatGPT OAuth 모드는 브라우저 Authorization 헤더 없이 로컬 동반 서비스로 요청한다", async () => {
-    const { chatCompletion, defaultAiConfig } = await loadClient();
+    // env 게이트웨이 URL 이 있으면 defaultAiConfig 가 apiKey 모드로 부팅해 이 경로를 타지
+    // 않는다 — chatgpt 모드를 검증하려면 env 를 비워야 한다.
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    const { chatCompletion, defaultAiConfig, DEFAULT_CHATGPT_BASE_URL } = await loadClient();
     mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
 
-    await chatCompletion(defaultAiConfig(), { messages: [{ role: "user", content: "hi" }], stream: false });
+    const config = defaultAiConfig();
+    expect(config.authMode).toBe("chatgpt");
+    await chatCompletion(config, { messages: [{ role: "user", content: "hi" }], stream: false });
 
     const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
     const [url, init] = fetchMock.mock.calls[0] ?? [];
-    expect(String(url)).toBe("http://127.0.0.1:17832/v1/chat/completions");
+    // 하드코딩된 127.0.0.1:17832 을 단언하던 테스트였는데, 그건 prod 전용 값이다:
+    // DEV 에서는 vite 가 같은 오리진에 OAuth 핸들러를 붙여 /v1 을 쓴다(DEFAULT_CHATGPT_BASE_URL).
+    // 요점은 "게이트웨이 baseUrl 이 아니라 OAuth 경로로 간다" 이므로 그 상수 기준으로 본다.
+    expect(String(url)).toBe(`${DEFAULT_CHATGPT_BASE_URL}/chat/completions`);
+    expect(String(url)).not.toContain(config.baseUrl || " 없음");
     expect((init as RequestInit | undefined)?.headers).toEqual({ "Content-Type": "application/json" });
+  });
+
+  it("cpen 은 툴이 붙으면 gpt- 모델이라도 스트리밍을 끈다", async () => {
+    // 실측 400: {"code":"unsupported_streaming_request",
+    //           "message":"Streaming currently supports text-only cpen/gpt-* chat."}
+    // 모델 접두사만 보고 스트리밍을 켜던 탓에 에디터의 모든 턴이 400 이었다.
+    const { chatCompletion } = await loadClient();
+    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    await chatCompletion(
+      { ...CONFIG_BASE, baseUrl: "/api/cpen", model: "cpen/gpt-5-6-luna" },
+      {
+        messages: [{ role: "user", content: "hi" }],
+        stream: true,
+        tools: [{ type: "function", function: { name: "t", description: "d", parameters: { type: "object", properties: {} } } }],
+      },
+    );
+    expect(sentBody().stream).toBe(false);
+  });
+
+  it("cpen 은 툴이 없으면 gpt- 모델에서 스트리밍을 유지한다", async () => {
+    const { chatCompletion } = await loadClient();
+    mockFetchOnce(new Response("data: [DONE]\n\n", { status: 200 }));
+    await chatCompletion(
+      { ...CONFIG_BASE, baseUrl: "/api/cpen", model: "cpen/gpt-5-6-luna" },
+      { messages: [{ role: "user", content: "hi" }], stream: true },
+    );
+    expect(sentBody().stream).toBe(true);
+  });
+
+  it("cpen 요청에서는 메시지의 name 을 떼어낸다", async () => {
+    // 실측 400: {"code":"unsupported_field","param":"messages[3].name"}
+    // 첫 요청에는 tool 메시지가 없어 200 이 나고 툴을 한 번 쓴 다음 턴부터 깨졌다.
+    const { chatCompletion } = await loadClient();
+    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    await chatCompletion(
+      { ...CONFIG_BASE, baseUrl: "/api/cpen", model: "cpen/gpt-5-6-luna" },
+      {
+        messages: [
+          { role: "user", content: "hi" },
+          { role: "tool", tool_call_id: "call_1", name: "get_project_summary", content: "{}" },
+        ],
+        stream: false,
+      },
+    );
+    const messages = sentBody().messages as Record<string, unknown>[];
+    expect(messages[1]?.name).toBeUndefined();
+    // tool_call_id 는 남아야 어느 호출의 결과인지 알 수 있다.
+    expect(messages[1]?.tool_call_id).toBe("call_1");
+  });
+
+  it("비-cpen 공급자에서는 메시지의 name 을 보존한다", async () => {
+    const { chatCompletion } = await loadClient();
+    mockFetchOnce(new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    await chatCompletion(CONFIG_BASE, {
+      messages: [
+        { role: "user", content: "hi" },
+        { role: "tool", tool_call_id: "call_1", name: "get_project_summary", content: "{}" },
+      ],
+      stream: false,
+    });
+    const messages = sentBody().messages as Record<string, unknown>[];
+    expect(messages[1]?.name).toBe("get_project_summary");
   });
 
   it("요청 본문에는 config.model을 그대로 넣는다", async () => {

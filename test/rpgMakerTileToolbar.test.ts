@@ -1,14 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import {
   selectRpgMakerEyedropperTool,
-  selectRpgMakerStructureStamp,
   selectRpgMakerTileTool,
   setRpgMakerBrushSize,
-  toggleRpgMakerTileStamp,
 } from "@/editor/panels/rpgMakerTileToolbar";
 import { editorState } from "@/editor/editorState";
-import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
-import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
+import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 
 describe("RPG Maker tile toolbar actions", () => {
@@ -17,8 +14,6 @@ describe("RPG Maker tile toolbar actions", () => {
     store.replace(project);
     editorState.set({
       activePaletteStamp: null,
-      activeStampId: null,
-      activeStructureStampId: null,
       currentMapId: project.startMapId,
       layer: "lower",
       paintShape: "pen",
@@ -49,10 +44,8 @@ describe("RPG Maker tile toolbar actions", () => {
     expect(editorState.get().paintShape).toBe("pen");
   });
 
-  it("moves tile tools off the event layer and clears stamp modes", () => {
+  it("moves tile tools off the event layer", () => {
     editorState.set({
-      activeStampId: "road-plus",
-      activeStructureStampId: "house-template",
       layer: "event",
       tool: "event",
     });
@@ -63,8 +56,6 @@ describe("RPG Maker tile toolbar actions", () => {
     expect(state.layer).toBe("lower");
     expect(state.tool).toBe("paint");
     expect(state.paintShape).toBe("rect");
-    expect(state.activeStampId).toBeNull();
-    expect(state.activeStructureStampId).toBeNull();
   });
 
   it("keeps an existing region only while the select tool is active", () => {
@@ -80,31 +71,6 @@ describe("RPG Maker tile toolbar actions", () => {
     expect(editorState.get().selection).toBeNull();
   });
 
-  it("selects a structure template from the toolbar menu", () => {
-    const project = store.getCurrent();
-    const selection = { mapId: project.startMapId, x: 2, y: 3, width: 4, height: 5 };
-    editorState.set({
-      activeStampId: "road-plus",
-      activeStructureStampId: null,
-      layer: "event",
-      selection,
-      tool: "event",
-    });
-
-    selectRpgMakerStructureStamp("house-wide");
-
-    const state = editorState.get();
-    expect(state.activeStampId).toBeNull();
-    expect(state.activeStructureStampId).toBe("house-wide");
-    expect(state.layer).toBe("lower");
-    expect(state.paintShape).toBe("pen");
-    expect(state.selection).toBeNull();
-    expect(state.tool).toBe("paint");
-
-    selectRpgMakerStructureStamp("house-wide");
-    expect(editorState.get().activeStructureStampId).toBeNull();
-  });
-
   it("moves brush size into toolbar state", () => {
     setRpgMakerBrushSize(3);
 
@@ -113,8 +79,6 @@ describe("RPG Maker tile toolbar actions", () => {
 
   it("selects eyedropper from the folded inspector options", () => {
     editorState.set({
-      activeStampId: "road-plus",
-      activeStructureStampId: "house-template",
       layer: "event",
       tool: "event",
     });
@@ -122,23 +86,9 @@ describe("RPG Maker tile toolbar actions", () => {
     selectRpgMakerEyedropperTool();
 
     const state = editorState.get();
-    expect(state.activeStampId).toBeNull();
-    expect(state.activeStructureStampId).toBeNull();
     expect(state.layer).toBe("lower");
     expect(state.paintShape).toBe("pen");
     expect(state.selection).toBeNull();
     expect(state.tool).toBe("eyedropper");
-  });
-
-  it("toggles a tile stamp from the folded inspector options", () => {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
-    if (!tileset) throw new Error("missing default tileset");
-
-    toggleRpgMakerTileStamp(DIRT_ROAD_TILE.BODY, tileset);
-    expect(editorState.get().activeStampId).toBe("road-plus");
-    expect(editorState.get().tool).toBe("paint");
-
-    toggleRpgMakerTileStamp(DIRT_ROAD_TILE.BODY, tileset);
-    expect(editorState.get().activeStampId).toBeNull();
   });
 });

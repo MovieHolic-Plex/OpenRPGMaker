@@ -2,6 +2,8 @@ import { store } from "@/project/store";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
 import { swingArcCells, cellInArc } from "@/action/hitbox";
 import { computeContactDamage, computeSwingDamage } from "@/action/combatMath";
+import { consumeHitstop } from "@/action/hitstop";
+import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
@@ -28,10 +30,20 @@ import { mountActionHud } from "@/player/actionHud";
 
 const ENEMY_FLASH_MS = 120;
 const PLAYER_FLASH_MS = 200;
-const SWING_VFX_MS = 120;
+const SWING_VFX_MS = 160;
 const COMBAT_DEPTH = MAP_UPPER_LAYER_DEPTH + 1;
 const DASH_STEP_MS = 70;
 const TELEGRAPH_ALPHA = 0.35;
+// 히트스톱: 타격 순간 액션 전투 갱신만 아주 짧게 건너뛴다(게임 전체는 얼리지 않음).
+const HITSTOP_HIT_ENEMY_MS = 70;
+const HITSTOP_PLAYER_HURT_MS = 110;
+// 액션 전투 효과음 SE 리소스(EasyRPG RTP 사운드). 프로젝트에 해당 SE 가 없으면 resolveAudioSource 가 null 을 반환해 무음.
+const SE_SWING_RESOURCE_ID = "easyrpg-sound-attack1";
+const SE_HIT_ENEMY_RESOURCE_ID = "easyrpg-sound-blow2";
+const SE_PLAYER_HURT_RESOURCE_ID = "easyrpg-sound-damage2";
+// 적 공격 예고: windup 중 스프라이트 붉은 tint 점멸.
+const WINDUP_TINT_COLOR = 0xff5544;
+const WINDUP_TINT_DURATION_MS = 160;
 
 export function isActionCombatSceneActive(scene: PlaySceneContext): boolean {
   return scene.actionCombatState !== null;
@@ -55,6 +67,7 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
     playerFlashMs: 0,
     swingCooldownMs: 0,
     stamina: ACTION_STAMINA_MAX,
+    hitstopMs: 0,
     lastHudSignature: "",
   };
   scene.actionCombatState = state;
@@ -87,6 +100,10 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   const state = scene.actionCombatState;
   if (!state) return;
   if (scene.running) return;
+  // 히트스톱: 남은 시간이 있으면 이번 프레임 갱신을 건너뛴다(입력 큐는 막지 않음).
+  const hitstop = consumeHitstop(state.hitstopMs, deltaMs);
+  state.hitstopMs = hitstop.nextRemainingMs;
+  if (hitstop.skipUpdate) return;
   syncActionEnemies(scene);
   tickActionTimers(scene, state, deltaMs);
   updateEnemyModes(scene, state, deltaMs);
@@ -217,8 +234,10 @@ function damagePlayer(scene: PlaySceneContext, state: ActionCombatSceneState, da
   vitals.hp = Math.max(0, vitals.hp - damage);
   state.playerIframesMs = state.config.playerIframesMs;
   state.playerFlashMs = PLAYER_FLASH_MS;
+  state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_PLAYER_HURT_MS);
   scene.player.setTintFill(0xff7777);
   scene.cameras.main.shake(90, 0.006);
+  playActionSe(SE_PLAYER_HURT_RESOURCE_ID);
   spawnDamageNumber(scene, characterSpriteX(fromTileX), characterSpriteY(fromTileY) - 20, `-${damage}`, "#ff6655");
   if (vitals.hp <= 0) killPartyForActionCombat(scene);
 }
@@ -247,7 +266,9 @@ export function tryActionCombatSwing(scene: PlaySceneContext): void {
   state.swingCooldownMs = lead.cooldownMs;
   if (state.config.stamina) state.stamina = Math.max(0, state.stamina - ACTION_SWING_STAMINA_COST);
   const arc = swingArcCells(scene.facing, scene.tileX, scene.tileY, lead.range);
-  flashSwingArc(scene, arc);
+  flashSwingArc(scene, scene.facing, lead.range);
+  pulsePlayerSwing(scene);
+  playActionSe(SE_SWING_RESOURCE_ID);
   const project = store.getCurrent();
   for (const enemy of [...state.enemies.values()]) {
     const pos = enemyTilePosition(scene, enemy.eventId);
@@ -311,8 +332,10 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
 function hitActionEnemy(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, damage: number, tileX: number, tileY: number): void {
   enemy.hp = Math.max(0, enemy.hp - damage);
   enemy.flashMs = ENEMY_FLASH_MS;
+  state.hitstopMs = Math.max(state.hitstopMs, HITSTOP_HIT_ENEMY_MS);
   scene.eventSprites.get(enemy.eventId)?.setTintFill(0xffffff);
   scene.cameras.main.shake(60, 0.004);
+  playActionSe(SE_HIT_ENEMY_RESOURCE_ID);
   spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 20, String(damage), "#ffe066");
   applyKnockbackVisual(scene, enemy);
   if (enemy.hp > 0) return;
@@ -391,14 +414,101 @@ function leadActorStats(scene: PlaySceneContext): { attack: number; defense: num
   return profile ? { attack: profile.attack, defense: profile.defense } : null;
 }
 
-function flashSwingArc(scene: PlaySceneContext, arc: readonly { x: number; y: number }[]): void {
+// 스윙 궤적. 예전에는 공격 범위 타일을 흰 사각형으로 칠했다 지우기만 해서
+// "검기"가 아니라 네모 칸 점멸로 보였다. 이제 플레이어를 중심으로 초승달 궤적을
+// 실제로 **훑고 지나가게** 그린다: 선행 각도가 SWING_SWEEP_DEG 를 쓸어가며
+// 잔상이 뒤따르고, 진행에 따라 굵기·알파가 줄어 사라진다.
+const SWING_SWEEP_DEG = 132;
+const SWING_TRAIL_DEG = 74;
+// 화면 좌표(y 아래로 증가) 기준 정면 각도.
+const FACING_ANGLE_DEG: Record<Dir, number> = { right: 0, down: 90, left: 180, up: -90 };
+
+function flashSwingArc(scene: PlaySceneContext, facing: Dir, range: number): void {
   const graphics = scene.add.graphics();
   graphics.setDepth(COMBAT_DEPTH);
-  graphics.fillStyle(0xffffff, 0.45);
-  for (const cell of arc) {
-    graphics.fillRect(characterSpriteX(cell.x) - TILE_SIZE / 2, characterSpriteY(cell.y) - TILE_SIZE, TILE_SIZE, TILE_SIZE);
+  const centerX = characterSpriteX(scene.tileX);
+  // 스프라이트 발밑이 아니라 몸통 높이에서 베어야 궤적이 캐릭터에 걸린다.
+  const centerY = characterSpriteY(scene.tileY) - TILE_SIZE / 2;
+  // 타일 16px 기준이라 작게 잡으면 데미지 숫자에 묻힌다 — 사거리 1 에서도 한 타일보다 크게.
+  const radius = TILE_SIZE * (0.7 * Math.max(1, range) + 0.75);
+  const facingDeg = FACING_ANGLE_DEG[facing];
+  const startDeg = facingDeg - SWING_SWEEP_DEG / 2;
+
+  // 진행도는 별도 객체를 트윈해서 읽는다. addCounter + tween.getValue() 는
+  // Phaser 버전에 따라 null 을 돌려줘 t 가 계속 0 이 되고, 그러면 폭이 0 이라
+  // 궤적이 한 프레임도 그려지지 않는다(실측으로 확인).
+  const progress = { t: 0 };
+  scene.tweens.add({
+    targets: progress,
+    t: 1,
+    duration: SWING_VFX_MS,
+    ease: "Cubic.easeOut",
+    onUpdate: () => {
+      const t = progress.t;
+      const leadDeg = startDeg + SWING_SWEEP_DEG * t;
+      // 잔상은 시작점 이전으로 넘어가지 않게 자르되, 첫 프레임에도 보이도록 최소 폭을 준다.
+      const tailDeg = Math.max(startDeg, leadDeg - SWING_TRAIL_DEG) === leadDeg
+        ? leadDeg - Math.min(SWING_TRAIL_DEG, 10)
+        : Math.max(startDeg, leadDeg - SWING_TRAIL_DEG);
+      const fade = 1 - t;
+      graphics.clear();
+      // 바깥쪽 흐린 층 → 안쪽 밝은 심 두 겹으로 겹쳐 검광처럼 보이게 한다.
+      strokeArcBand(graphics, centerX, centerY, radius, tailDeg, leadDeg, 9, 0x8fd0ff, 0.4 * fade);
+      strokeArcBand(graphics, centerX, centerY, radius, tailDeg, leadDeg, 4, 0xffffff, fade);
+      // 선두를 짧게 한 번 더 덧그려 베는 끝이 밝게 튀게 한다.
+      strokeArcBand(graphics, centerX, centerY, radius, Math.max(tailDeg, leadDeg - 16), leadDeg, 6, 0xffffff, fade);
+    },
+    onComplete: () => graphics.destroy(),
+  });
+}
+
+// 스윙할 때 캐릭터도 같이 움직여야 궤적만 따로 나가는 느낌이 안 든다.
+// 위치는 playSceneMovement 가 매 프레임 덮어쓰므로(x/y 직접 대입) 손대면 안 되고,
+// 스케일은 아무도 건드리지 않아 안전하다. 눌렀다 펴는 스쿼시로 내지르는 동작을 낸다.
+function pulsePlayerSwing(scene: PlaySceneContext): void {
+  scene.tweens.killTweensOf(scene.player);
+  scene.player.setScale(1, 1);
+  scene.tweens.add({
+    targets: scene.player,
+    scaleX: 1.16,
+    scaleY: 0.88,
+    duration: Math.round(SWING_VFX_MS * 0.35),
+    yoyo: true,
+    ease: "Quad.easeOut",
+    onComplete: () => scene.player.setScale(1, 1),
+  });
+}
+
+// 초승달 한 겹. lineStyle + arc + strokePath 는 이 씬에서 화면에 나오지 않는다
+// (HP 바처럼 fill 계열만 그려진다 — 실측 확인). 그래서 바깥/안쪽 반지름을 따라
+// 점을 뽑아 **채워진 띠**로 그린다.
+const ARC_SEGMENTS = 14;
+
+function strokeArcBand(
+  graphics: Phaser.GameObjects.Graphics,
+  centerX: number,
+  centerY: number,
+  radius: number,
+  fromDeg: number,
+  toDeg: number,
+  thickness: number,
+  color: number,
+  alpha: number
+): void {
+  if (alpha <= 0 || toDeg <= fromDeg) return;
+  const outer = radius + thickness / 2;
+  const inner = Math.max(1, radius - thickness / 2);
+  const points: Phaser.Types.Math.Vector2Like[] = [];
+  for (let step = 0; step <= ARC_SEGMENTS; step += 1) {
+    const rad = Phaser.Math.DegToRad(fromDeg + ((toDeg - fromDeg) * step) / ARC_SEGMENTS);
+    points.push({ x: centerX + Math.cos(rad) * outer, y: centerY + Math.sin(rad) * outer });
   }
-  scene.time.delayedCall(SWING_VFX_MS, () => graphics.destroy());
+  for (let step = ARC_SEGMENTS; step >= 0; step -= 1) {
+    const rad = Phaser.Math.DegToRad(fromDeg + ((toDeg - fromDeg) * step) / ARC_SEGMENTS);
+    points.push({ x: centerX + Math.cos(rad) * inner, y: centerY + Math.sin(rad) * inner });
+  }
+  graphics.fillStyle(color, alpha);
+  graphics.fillPoints(points, true, true);
 }
 
 function spawnDamageNumber(scene: PlaySceneContext, worldX: number, worldY: number, text: string, color: string): void {
@@ -463,9 +573,15 @@ function updateActionHudModel(scene: PlaySceneContext, state: ActionCombatSceneS
 function cleanupEnemyVisuals(scene: PlaySceneContext, enemy: ActionEnemyState): void {
   enemy.telegraph?.destroy();
   enemy.telegraph = undefined;
+  stopWindupTelegraph(scene, enemy);
   const mover = scene.autonomousNPCs.get(enemy.eventId);
   if (mover) mover.actionFrozen = false;
   scene.eventSprites.get(enemy.eventId)?.clearTint();
+}
+
+// 액션 전투 효과음 재생. 리소스가 프로젝트에 없으면 playAudioCommand 가 조용히 no-op.
+function playActionSe(resourceId: string): void {
+  playAudioCommand({ resourceId, loop: false }, store.getCurrent());
 }
 
 function applyKnockbackVisual(scene: PlaySceneContext, enemy: ActionEnemyState): void {
@@ -546,8 +662,35 @@ function startWindup(scene: PlaySceneContext, enemy: ActionEnemyState, attack: E
   if (sprite) sprite.setPosition(characterSpriteX(ex), characterSpriteY(ey));
   const dir = dominantAxisDir(dx, dy);
   moveRuntimeEventPosition(scene.eventPositions, enemy.eventId, ex, ey, dir);
-  scene.eventSprites.get(enemy.eventId)?.setTint(0xff7777);
+  startWindupTelegraph(scene, enemy, sprite);
   drawTelegraph(scene, enemy, attack, ex, ey, dir, dx, dy);
+}
+
+// windup 예고 시각화: 스프라이트에 붉은 tint 를 입히고 alpha 를 점멸시켜 "공격이 온다" 를 알린다.
+function startWindupTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, sprite: Phaser.GameObjects.Sprite | undefined): void {
+  if (!sprite) return;
+  stopWindupTelegraph(scene, enemy);
+  sprite.setTint(WINDUP_TINT_COLOR);
+  enemy.windupTween = scene.tweens.add({
+    targets: sprite,
+    alpha: 0.4,
+    duration: WINDUP_TINT_DURATION_MS,
+    yoyo: true,
+    repeat: -1,
+  });
+}
+
+// windup 종료/취소 시 예고 시각화 원복. tint 가 남으면 적이 계속 빨갛게 보인다.
+function stopWindupTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState): void {
+  if (enemy.windupTween) {
+    enemy.windupTween.stop();
+    enemy.windupTween = undefined;
+  }
+  const sprite = scene.eventSprites.get(enemy.eventId);
+  if (!sprite) return;
+  sprite.setAlpha(1);
+  // 피격 흰색 플래시가 진행 중이면 그 tint 를 지우지 않는다.
+  if (enemy.flashMs <= 0) sprite.clearTint();
 }
 
 function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack: EnemyActionAttack, ex: number, ey: number, dir: Dir, dx: number, dy: number): void {
@@ -584,7 +727,7 @@ function drawTelegraph(scene: PlaySceneContext, enemy: ActionEnemyState, attack:
 function executeStrike(scene: PlaySceneContext, state: ActionCombatSceneState, enemy: ActionEnemyState, attack: EnemyActionAttack | undefined, pos: { x: number; y: number }): void {
   enemy.telegraph?.destroy();
   enemy.telegraph = undefined;
-  scene.eventSprites.get(enemy.eventId)?.clearTint();
+  stopWindupTelegraph(scene, enemy);
   if (!attack) {
     endRecover(scene, enemy, attack);
     return;

@@ -4,12 +4,12 @@ import { editorState } from "@/editor/editorState";
 import {
   clearFavoriteTilesForTest,
   favoriteTilesSnapshot,
+  isAutoConnectCandidate,
   selectUsedLocation,
   similarTilesForTile,
   toggleFavoriteTile,
   usedLocationsForTile,
 } from "@/editor/panels/tileBrushTools";
-import { compatibleStampIdForTile, isAutoConnectCandidate, tileStampsForTile } from "@/editor/tileStampBrushes";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { appendTileToStack } from "@/project/mapOverlayTiles";
@@ -21,7 +21,6 @@ describe("tile brush tools", () => {
     store.replace(createBlankProject());
     clearFavoriteTilesForTest();
     editorState.set({
-      activeStampId: null,
       autoConnectMode: true,
       currentMapId: null,
       layer: "lower",
@@ -31,22 +30,14 @@ describe("tile brush tools", () => {
     });
   });
 
-  it("offers road stamps and auto-connect affordance when a road body tile is selected", () => {
-    const stamps = tileStampsForTile(DIRT_ROAD_TILE.BODY);
-
+  it("offers auto-connect affordance when a road body tile is selected", () => {
     expect(isAutoConnectCandidate(DIRT_ROAD_TILE.BODY)).toBe(true);
-    expect(stamps.map((stamp) => stamp.id)).toEqual(["road-plus", "road-block"]);
   });
 
-  it("derives stamps and auto-connect affordance from custom tileset metadata", () => {
+  it("derives auto-connect affordance from custom tileset metadata", () => {
     const tileset = customMetadataTileset();
 
-    const stamps = tileStampsForTile(3, tileset);
-
     expect(isAutoConnectCandidate(3, tileset)).toBe(true);
-    expect(stamps.map((stamp) => stamp.id)).toEqual(["road-plus", "road-block"]);
-    expect(stamps[0]?.cells.map((cell) => cell.tile)).toEqual([3, 3, 3, 3, 3]);
-    expect(compatibleStampIdForTile("road-plus", 9, tileset)).toBeNull();
   });
 
   it("keeps favorite tiles in most-recent order when toggled", () => {

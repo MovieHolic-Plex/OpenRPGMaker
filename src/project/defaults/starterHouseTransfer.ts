@@ -1,5 +1,6 @@
 import type { EventPageGraphic, GameMap, MapId } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { RM2K3_WOOD_FLOOR_PASSABILITY } from "./chipsetMapping";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TROOP_ID, TILE } from "./constants";
 
 export const STARTER_HOUSE_INTERIOR_MAP_ID = "map_starter_house_interior";
@@ -49,7 +50,13 @@ export function addStarterHouseDoor(map: GameMap): void {
 export function createStarterHouseInteriorMap(returnMapId: MapId): GameMap {
   const width = STARTER_HOUSE_INTERIOR_SIZE.width;
   const height = STARTER_HOUSE_INTERIOR_SIZE.height;
-  const lowerTiles = new Array<number>(width * height).fill(TILE.FLOOR);
+  // 바닥은 **통행 가능한** 나무 마루(222 = RM2K3_WOOD_FLOOR_PASSABILITY.body)다.
+  // 원래 TILE.FLOOR(342)로 채워져 있었는데, 342 는 combined_town 에서 전방향 통행 불가라
+  // 실내 300칸 중 밟을 수 있는 칸이 입구/출구 2칸뿐이었다(2026-07-27 도달성 실측).
+  // (10,5)에 놓인 슬라임은 영원히 만날 수 없는 죽은 콘텐츠였다.
+  // 이 저장소는 342 가 함정인 걸 이미 알고 있었다 — combinedTownGroups 의 그룹 이름이
+  // 그대로 "stone-floor-trap"("통행 가능해 보이지만 막히는 돌바닥")이다.
+  const lowerTiles = new Array<number>(width * height).fill(RM2K3_WOOD_FLOOR_PASSABILITY.body);
   const upperTiles = new Array<number>(width * height).fill(TILE.EMPTY);
   for (let x = 0; x < width; x += 1) {
     lowerTiles[x] = TILE.WALL;

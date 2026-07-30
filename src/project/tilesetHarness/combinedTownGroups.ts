@@ -700,11 +700,27 @@ function broadleafTreeGroup(): CombinedTownHarnessGroup {
         preserveCaps: true,
         repeat: "source_order",
       },
+      // ── 대각 겹침 허용(2026-07-27) ────────────────────────────────────────
+      // 숲을 숲처럼 보이게 하려면 활엽수 수관이 서로 맞물려야 한다. 원자를 대각으로
+      // (+1,+1) 밀어 놓으면 앞 원자의 우하(293) 자리에 다음 원자의 좌상(262)이 앉는다.
+      // 그래서 두 규칙에 `bAlt: [262]` 를 준다 — 마른나무 세로 스택이 쓰던 것과 같은 장치다.
+      //
+      // 이건 규칙을 무르게 하는 게 아니다. 262 는 **자기 규칙을 그대로 지켜야 하므로**
+      // (오른쪽에 263, 아래에 292) 겹침은 **다른 완전한 원자가 시작되는 자리에서만** 성립한다.
+      // 조각난 나무는 여전히 error 다.
       rules: [
         hardPairRule("r_broadleaf_left_column", BROADLEAF_TOP_LEFT, BROADLEAF_BOTTOM_LEFT, "aAboveB", "활엽수 왼쪽 열은 상단(262)이 하단(292) 바로 위에 있어야 합니다."),
-        hardPairRule("r_broadleaf_right_column", BROADLEAF_TOP_RIGHT, BROADLEAF_BOTTOM_RIGHT, "aAboveB", "활엽수 오른쪽 열은 상단(263)이 하단(293) 바로 위에 있어야 합니다."),
+        hardPairRule(
+          "r_broadleaf_right_column", BROADLEAF_TOP_RIGHT, BROADLEAF_BOTTOM_RIGHT, "aAboveB",
+          "활엽수 오른쪽 열은 상단(263) 아래에 하단(293) 또는 겹친 다음 나무의 좌상(262)이 있어야 합니다.",
+          [BROADLEAF_TOP_LEFT]
+        ),
         hardPairRule("r_broadleaf_top_row", BROADLEAF_TOP_LEFT, BROADLEAF_TOP_RIGHT, "aLeftOfB", "활엽수 상단은 262가 263 바로 왼쪽에 있어야 합니다."),
-        hardPairRule("r_broadleaf_bottom_row", BROADLEAF_BOTTOM_LEFT, BROADLEAF_BOTTOM_RIGHT, "aLeftOfB", "활엽수 하단은 292가 293 바로 왼쪽에 있어야 합니다."),
+        hardPairRule(
+          "r_broadleaf_bottom_row", BROADLEAF_BOTTOM_LEFT, BROADLEAF_BOTTOM_RIGHT, "aLeftOfB",
+          "활엽수 하단은 292 오른쪽에 293 또는 겹친 다음 나무의 좌상(262)이 있어야 합니다.",
+          [BROADLEAF_TOP_LEFT]
+        ),
       ],
     }
   );
@@ -715,9 +731,17 @@ function hardPairRule(
   a: number,
   b: number,
   relation: "aAboveB" | "aBelowB" | "aLeftOfB" | "aRightOfB",
-  message: string
+  message: string,
+  /** a 옆에 b 대신 와도 되는 대체 타일(겹침·체인 허용). clusterRuleValidators.ts:121 참조. */
+  bAlt?: readonly number[]
 ): NonNullable<TileGroupMetadata["rules"]>[number] {
-  return { id, kind: "adjacency", message, params: { a, b, relation }, strength: "hard" };
+  return {
+    id,
+    kind: "adjacency",
+    message,
+    params: bAlt && bAlt.length > 0 ? { a, b, bAlt: [...bAlt], relation } : { a, b, relation },
+    strength: "hard",
+  };
 }
 
 function nineSliceGrammar(tileIds: readonly number[]): TileGroupMetadata["patternGrammar"] {

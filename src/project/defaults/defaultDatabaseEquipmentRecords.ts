@@ -1,6 +1,7 @@
 import type { EquipmentRecord } from "../types";
 import { normalizeEquipmentRecord } from "../databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID } from "./constants";
+import { generatedEquipmentRecords } from "./generatedItemRecords";
 import {
   ACTOR_GUARDIAN_ID,
   ACTOR_MAGE_ID,
@@ -157,5 +158,7 @@ export function defaultEquipmentRecords(): EquipmentRecord[] {
       equippableActorIds: [...ALL_ACTOR_IDS],
       equippableClassIds: [...ALL_CLASS_IDS],
     }),
+    // 생성 아이콘 100종 중 무기·방어구·장식 계열.
+    ...generatedEquipmentRecords(),
   ];
 }

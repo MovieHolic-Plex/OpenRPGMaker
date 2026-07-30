@@ -20,9 +20,11 @@ Before making code changes, read:
    - Runtime sessions & state: `openwiki/runtime-sessions.md`
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
+   - State system (authored definition, ontology, runtime application, editor surface): `openwiki/state-system.md`
    - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
+   - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
    - `openwiki/cpen-openwiki.md` for refreshing wiki content through CPEN/OpenWiki.
 
 
@@ -53,6 +55,20 @@ This repo has multiple agent tooling directories. Here is what each is and wheth
 5. `.omo/ulw-loop/` holds durable goal state and evidence; `.omo/evidence/` and `.omo/rules/` are tracked.
 
 **Do not create a new agent config dir.** If your agent isn't listed, add it to this table with its purpose.
+
+## Parallel coding agents (hard rule)
+
+**두 개 이상의 에이전트가 코드를 동시에 편집하지 않는다.** 하나의 워킹트리를 공유하면 서로의
+미완성 편집을 덮어쓰고, 검증이 움직이는 표적을 쫓게 된다.
+
+1. 병렬이 필요하면 `npm run wt create <name>` 로 **에이전트마다 격리 워크트리**를 만든다.
+   절차·함정은 `openwiki/agent-worktrees.md` 참조.
+2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** Supabase 프로젝트 행이
+   공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id 를 분리한다.
+3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트의 "테스트 통과했습니다"와 파이프를
+   거친 종료 코드는 근거로 쓰지 않는다 (실측: 백그라운드 실행기가 exit 0 을 보고했으나 실제로는
+   typecheck exit 2 / vitest exit 1 이었다).
+4. 기준선이 빨간불이므로 게이트는 **기준선 대비 새 실패**만 회귀로 본다.
 
 ## Supabase DB is mandatory (hard rule)
 

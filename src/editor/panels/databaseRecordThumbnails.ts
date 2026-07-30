@@ -22,7 +22,7 @@ import type {
 } from "@/project/types";
 import { stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import { el } from "@/util/dom";
-import { applyMagentaChromaKey } from "@/editor/panels/chromaKey";
+import { applyMagentaChromaKey, applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
 
 const THUMB_SIZE = 32;
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
@@ -171,4 +171,6 @@ function applyAnimationPatternCrop(element: HTMLElement, sheet: BattleAnimationS
   element.style.backgroundImage = `url("${url}")`;
   element.style.backgroundPosition = `-${column * sheet.frameWidth * scale}px -${row * sheet.frameHeight * scale}px`;
   element.style.backgroundSize = `${columns * sheet.frameWidth * scale}px auto`;
+  // 단색 배경 시트 자동 키아웃. 투명 PNG 면 no-op.
+  applyAutoChromaKeyToBackground(element, url);
 }

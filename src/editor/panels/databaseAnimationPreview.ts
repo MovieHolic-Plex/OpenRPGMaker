@@ -1,5 +1,6 @@
 import { batchApplyCells, interpolateCells, type AnimationCellBatchPatch } from "@/editor/databaseAnimationCellOps";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
 import type { BattleAnimationCell, BattleAnimationFrame, BattleAnimationRecord, BattleAnimationSheet, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -292,6 +293,8 @@ function applySpriteBackground(element: HTMLElement, sheet: BattleAnimationSheet
   element.style.backgroundImage = `url("${url}")`;
   element.style.backgroundPosition = `-${column * sheet.frameWidth}px -${row * sheet.frameHeight}px`;
   element.style.backgroundSize = `${columns * sheet.frameWidth}px auto`;
+  // 단색 배경 시트(마젠타/녹성/검은 등) 자동 키아웃. 투명 PNG 면 no-op.
+  applyAutoChromaKeyToBackground(element, url);
 }
 
 function cloneCells(cells: readonly BattleAnimationCell[]): BattleAnimationCell[] {

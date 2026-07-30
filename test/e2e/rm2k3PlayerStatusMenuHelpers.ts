@@ -23,10 +23,13 @@ export const COMMAND_LABELS = [
   ["items", "아이템"],
   ["skills", "스킬"],
   ["equipment", "장비"],
+  // STATUS_MENU_COMMAND_IDS 에 monsters 가 추가됐는데 이 목록만 안 따라와서
+  // statusMenuCommandsFullyVisible 의 개수 검사가 12 != 11 로 계속 실패했다.
+  ["monsters", "몬스터"],
   ["save", "저장"],
   ["load", "로드"],
   ["status", "상태"],
-  ["row", "열"],
+  ["row", "열 바꾸기"],
   ["formation", "진형"],
   ["quests", "임무"],
   ["wait", "대기 ON"],
@@ -138,7 +141,18 @@ export async function screenshotMenu(page: Page, path: string): Promise<void> {
 
 export async function openTestPlayWindow(page: Page): Promise<void> {
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15000 });
-  await page.getByTestId("mode-play").click();
+  // 실행 버튼(mode-play)이 있는 클래식 툴바는 **전문가 모드에서만** 렌더된다
+  // (menu.ts: showClassic = mode !== "edit" || chrome.classicToolbar).
+  // UI 모드를 지정하지 않은 스펙은 기본 모드로 떠서 이 버튼이 아예 없었고,
+  // click() 이 보이지 않는 요소를 기다리다 타임아웃했다. 두 모드 모두에서 동작하게 한다.
+  const modeButton = page.getByTestId("mode-play");
+  if (await modeButton.count() > 0 && await modeButton.isVisible()) {
+    await modeButton.click();
+  } else {
+    // 기본 모드 경로: 메뉴 바 게임 → 테스트 플레이 창.
+    await page.getByTestId("menu-game").click();
+    await page.getByTestId("menu-game-test-window").click();
+  }
   const modal = page.getByTestId("test-play-window");
   await page.waitForTimeout(250);
   if (!(await modal.isVisible())) await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));

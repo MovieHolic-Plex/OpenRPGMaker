@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPG ZZU AI 어시스턴트 - 게임성 & UX 비판 분석</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0f;
+  color: #e0e0e8;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+.hero {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: linear-gradient(180deg, #12121a 0%, #0a0a0f 100%);
+  border-bottom: 1px solid #222;
+  padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.06) 0%, transparent 60%);
+  animation: pulse 8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
+  position: relative;
+}
+.hero .subtitle {
+  font-size: 1.2rem;
+  color: #888;
+  max-width: 600px;
+}
+.hero .verdict {
+  margin-top: 2rem;
+  padding: 1rem 2rem;
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  color: #ff6b6b;
+  font-weight: 700;
+}
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+section {
+  margin-bottom: 4rem;
+}
+h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+h2 .emoji { font-size: 1.5rem; }
+h3 {
+  font-size: 1.2rem;
+  color: #a0a0b0;
+  margin-bottom: 0.8rem;
+  font-weight: 600;
+}
+p { margin-bottom: 1rem; color: #b0b0c0; }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+.card {
+  background: #14141e;
+  border: 1px solid #2a2a3a;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover {
+  border-color: #4a4a6a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+}
+.card.bad::before { background: linear-gradient(90deg, #ff6b6b, #ff9f43); }
+.card.warn::before { background: linear-gradient(90deg, #feca57, #ff9f43); }
+.card.good::before { background: linear-gradient(90deg, #48dbfb, #0abde3); }
+.card.mid::before { background: linear-gradient(90deg, #a29bfe, #6c5ce7); }
+.card .card-icon {
+  font-size: 2rem;
+  margin-bottom: 0.8rem;
+}
+.card h4 {
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+.card p { font-size: 0.9rem; color: #888; margin-bottom: 0; }
+.score-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #14141e;
+  border-radius: 12px;
+  border: 1px solid #2a2a3a;
+}
+.score-bar .label {
+  font-weight: 700;
+  min-width: 120px;
+  color: #fff;
+}
+.score-bar .bar {
+  flex: 1;
+  height: 12px;
+  background: #1a1a2a;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.score-bar .bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 1s ease;
+}
+.score-bar .score-num {
+  font-weight: 900;
+  font-size: 1.2rem;
+  min-width: 50px;
+  text-align: right;
+}
+.red .bar-fill { background: linear-gradient(90deg, #ff6b6b, #ee5a24); }
+.orange .bar-fill { background: linear-gradient(90deg, #feca57, #ff9f43); }
+.blue .bar-fill { background: linear-gradient(90deg, #48dbfb, #0abde3); }
+.purple .bar-fill { background: linear-gradient(90deg, #a29bfe, #6c5ce7); }
+.green .bar-fill { background: linear-gradient(90deg, #55efc4, #00b894); }
+.flow-diagram {
+  background: #14141e;
+  border: 1px solid #2a2a3a;
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 1.5rem 0;
+  text-align: center;
+}
+.flow-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.flow-step {
+  padding: 0.7rem 1.2rem;
+  background: #1e1e2e;
+  border: 1px solid #3a3a5a;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #c0c0d0;
+  font-weight: 600;
+}
+.flow-arrow {
+  color: #4a4a6a;
+  font-size: 1.5rem;
+}
+.highlight-box {
+  background: linear-gradient(135deg, rgba(255,107,107,0.05), rgba(254,202,87,0.05));
+  border: 1px solid rgba(255,107,107,0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+.highlight-box.info {
+  background: linear-gradient(135deg, rgba(72,219,251,0.05), rgba(10,189,227,0.05));
+  border-color: rgba(72,219,251,0.2);
+}
+.highlight-box h4 {
+  color: #ff6b6b;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+.highlight-box.info h4 { color: #48dbfb; }
+.highlight-box ul {
+  list-style: none;
+  padding: 0;
+}
+.highlight-box li {
+  padding: 0.3rem 0;
+  color: #999;
+  font-size: 0.9rem;
+}
+.highlight-box li::before {
+  content: '>';
+  color: #ff6b6b;
+  margin-right: 0.5rem;
+  font-weight: 700;
+}
+.highlight-box.info li::before { color: #48dbfb; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+th, td {
+  padding: 0.8rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #222;
+}
+th {
+  color: #fff;
+  font-weight: 700;
+  background: #14141e;
+}
+td { color: #999; }
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.tag-bad { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+.tag-warn { background: rgba(254,202,87,0.15); color: #feca57; }
+.tag-ok { background: rgba(85,239,196,0.15); color: #55efc4; }
+.comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+.comparison > div {
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+.comparison .current {
+  background: rgba(255,107,107,0.05);
+  border: 1px solid rgba(255,107,107,0.2);
+}
+.comparison .ideal {
+  background: rgba(85,239,196,0.05);
+  border: 1px solid rgba(85,239,196,0.2);
+}
+.comparison h4 { margin-bottom: 0.5rem; }
+.comparison .current h4 { color: #ff6b6b; }
+.comparison .ideal h4 { color: #55efc4; }
+.comparison ul { list-style: none; padding: 0; }
+.comparison li { padding: 0.2rem 0; font-size: 0.85rem; color: #888; }
+.arch-box {
+  background: #14141e;
+  border: 1px solid #2a2a3a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: #6c6c8c;
+  white-space: pre-wrap;
+  line-height: 1.8;
+}
+.arch-box .hl { color: #48dbfb; }
+.arch-box .warn { color: #feca57; }
+.arch-box .err { color: #ff6b6b; }
+footer {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #444;
+  border-top: 1px solid #1a1a2a;
+  font-size: 0.85rem;
+}
+@media (max-width: 768px) {
+  .comparison { grid-template-columns: 1fr; }
+  .flow-steps { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== HERO ==================== -->
+<div class="hero">
+  <h1>RPG ZZU AI Assistant</h1>
+  <p class="subtitle">2D RPG 에디터에 내장된 AI 어시스턴트의 게임성 & UI/UX 비판 분석</p>
+  <div class="verdict">종합 판정: "엔진 개발자가 만든 개발자용 도구" - 유저 경험은 뒷전</div>
+</div>
+
+<!-- ==================== SCORES ==================== -->
+<div class="container">
+
+<section>
+<h2><span class="emoji">📊</span> 종합 점수</h2>
+<p>10점 만점. 실제 "RPG 만들고 싶은 초보 유저"가 이걸 열었을 때의 체감 기준.</p>
+
+<div class="score-bar red">
+  <span class="label">직관성</span>
+  <div class="bar"><div class="bar-fill" style="width:25%"></div></div>
+  <span class="score-num" style="color:#ff6b6b">2.5</span>
+</div>
+<div class="score-bar orange">
+  <span class="label">온보딩</span>
+  <div class="bar"><div class="bar-fill" style="width:20%"></div></div>
+  <span class="score-num" style="color:#feca57">2.0</span>
+</div>
+<div class="score-bar purple">
+  <span class="label">기능 깊이</span>
+  <div class="bar"><div class="bar-fill" style="width:85%"></div></div>
+  <span class="score-num" style="color:#a29bfe">8.5</span>
+</div>
+<div class="score-bar blue">
+  <span class="label">게임성 기여</span>
+  <div class="bar"><div class="bar-fill" style="width:45%"></div></div>
+  <span class="score-num" style="color:#48dbfb">4.5</span>
+</div>
+<div class="score-bar orange">
+  <span class="label">반응 속도</span>
+  <div class="bar"><div class="bar-fill" style="width:40%"></div></div>
+  <span class="score-num" style="color:#feca57">4.0</span>
+</div>
+<div class="score-bar green">
+  <span class="label">기술 완성도</span>
+  <div class="bar"><div class="bar-fill" style="width:80%"></div></div>
+  <span class="score-num" style="color:#55efc4">8.0</span>
+</div>
+</section>
+
+
+<!-- ==================== ARCHITECTURE OVERVIEW ==================== -->
+<section>
+<h2><span class="emoji">🏗️</span> 아키텍처 한눈에 보기</h2>
+<p>이 AI 어시스턴트가 뭘 하는 놈인지부터 정리하자.</p>
+
+<div class="arch-box">
+<span class="hl">[유저 입력]</span> ──> <span class="hl">[aiChatPanel.ts]</span> ──> <span class="hl">[AssistantSession]</span> ──> <span class="warn">[LLM API (fetch)]</span>
+                                                     │
+                                            <span class="hl">[contextBuilder]</span> (한국어 시스템 프롬프트 24개 규칙)
+                                                     │
+                                            <span class="warn">[tool_calls 루프]</span> (최대 200회)
+                                                     │
+                                     ┌───────────────┼───────────────┐
+                              <span class="hl">[read tools]</span>      <span class="hl">[write tools]</span>      <span class="hl">[session tools]</span>
+                              (맵 조회)        (맵 수정)          (build spec)
+                                                     │
+                                            <span class="warn">[ProposalCard]</span> ──> 유저 승인 ──> <span class="hl">[Store 반영]</span>
+                                                     │
+                                            <span class="err">[유저가 이걸 이해해야 함]</span>
+</div>
+
+<div class="card-grid">
+  <div class="card mid">
+    <div class="card-icon">🧠</div>
+    <h4>100+ 개의 Tools</h4>
+    <p>맵 생성, 이벤트, NPC, 집, 마을, 던전, 퀘스트, DB, 월드... 도구가 100개 넘음. 턴당 40개만 노출.</p>
+  </div>
+  <div class="card mid">
+    <div class="card-icon">🗣️</div>
+    <h4>한국어 시스템 프롬프트</h4>
+    <p>시스템 프롬프트 전체가 한국어. 24개의 작업 규칙 + UX 정책 + 건축 공정 규칙을 LLM에 매번 주입.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">👻</div>
+    <h4>Ghost Preview</h4>
+    <p>AI가 작업 중에 맵 위에 실시간으로 변경 사항을 반투명하게 미리보기. 기술적으로 인상적.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">📋</div>
+    <h4>Proposal 카드</h4>
+    <p>AI 작업 결과를 before/after 썸네일 + 체크박스로 부분 승인 가능. 개념은 좋은데...</p>
+  </div>
+</div>
+</section>
+
+
+<!-- ==================== CRITICAL: UX PROBLEMS ==================== -->
+<section>
+<h2><span class="emoji">💀</span> 핵심 UX 문제점 (치명적)</h2>
+
+<div class="highlight-box">
+<h4>요약: "초보 유저는 이 AI를 쓸 수 없다"</h4>
+<ul>
+  <li>슬래시 명령어 진입점 - 유저가 "/" 를 치면 스킬 목록이 뜨는데, 첫 화면이 "맵 인터뷰", "클러스터 수정" 같은 개발자용 도구</li>
+  <li>한국어 UI인데 기술 용어 범벅 - "author_house", "BuildSpec", "villager-room-v1 하네스" 가 유저에게 노출됨</li>
+  <li>100개 넘는 도구 중 유저가 실제로 쓸 건 5개 이하인데, 도메인 스코핑이 자동이라 뭐가 되는지 예측 불가</li>
+  <li>에러 발생 시 "spec-gate-auto-expand", "invalid-args" 같은 코드 에러가 UI에 그대로 노출</li>
+  <li>작업 시간이 길다 - 마을 하나 짓는데 tool_call 100회 이상, 유저는 수 분을 기다려야 함</li>
+</ul>
+</div>
+
+<div class="card-grid">
+  <div class="card bad">
+    <div class="card-icon">🚪</div>
+    <h4>진입 장벽: API 키 필수</h4>
+    <p>AI를 쓰려면 OpenAI API 키 또는 ChatGPT OAuth 설정이 필요. 설정 모달이 "base URL", "model" 같은 기술 용어 투성이. RPG 만들려는 중학생이 이걸 어떻게 하라고?</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">⏳</div>
+    <h4>인터랙션 딜레이</h4>
+    <p>"집 지어줘" 한 마디에: intent 분류 → spec 검증 → tool loop(10-50회) → proposal 생성 → 유저 승인 대기. 최소 30초~수 분. 게임 "만드는 재미"를 죽인다.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">🤯</div>
+    <h4>인지 과부하</h4>
+    <p>Proposal 카드에 "기술 상세" 펼치면 raw tool name이 그대로. "author_house wings:[{x:3,y:2,w:8,h:7}]" 이게 유저에게 뭔 의미? before/after 썸네일은 좋지만 나머지는 개발자 디버그 로그 수준.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">🔄</div>
+    <h4>되묻기 지옥</h4>
+    <p>"집 만들어줘" → "야외 집인가요 실내인가요?" → "야외요" → "크기는?" → "적당히" → 그제서야 작업 시작. 유저가 원하는 건 "대충 깔끔한 집 하나"인데 면접을 봄.</p>
+  </div>
+</div>
+</section>
+
+
+<!-- ==================== UX FLOW CRITIQUE ==================== -->
+<section>
+<h2><span class="emoji">🔀</span> 유저 플로우 비판</h2>
+<p>"마을 하나 만들고 싶어요" 시나리오의 현실</p>
+
+<div class="flow-diagram">
+  <div class="flow-steps">
+    <div class="flow-step">AI 패널 열기</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">API 키 설정<br><small style="color:#ff6b6b">여기서 50% 이탈</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">"/" 입력<br><small>스킬 목록 탐색</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">/마을 생성 선택<br><small>파라미터 폼 출현</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">테마/집수/NPC 설정</div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step" style="border-color:#feca57">AI 작업 시작<br><small style="color:#feca57">30초~3분 대기</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step">Proposal 카드<br><small>승인/거부 결정</small></div>
+    <span class="flow-arrow">→</span>
+    <div class="flow-step" style="border-color:#55efc4">맵에 반영</div>
+  </div>
+</div>
+
+<div class="comparison">
+  <div class="current">
+    <h4>현재 UX (8단계)</h4>
+    <ul>
+      <li>1. 패널 열기 (사이드 1/3 차지)</li>
+      <li>2. 인증 설정 (API 키 or OAuth)</li>
+      <li>3. 슬래시 명령어 검색</li>
+      <li>4. 파라미터 입력 (가로/세로/재질/모양)</li>
+      <li>5. 대기 (reasoning blocks 스트리밍)</li>
+      <li>6. tool call 로그 보기 (의미불명)</li>
+      <li>7. Proposal 카드 검토</li>
+      <li>8. 승인 후 반영</li>
+    </ul>
+  </div>
+  <div class="ideal">
+    <h4>이상적 UX (3단계)</h4>
+    <ul>
+      <li>1. "마을 만들어줘" 입력</li>
+      <li>2. 실시간 미리보기 확인</li>
+      <li>3. "좋아" / "더 크게" / "나무 더 많이"</li>
+      <li>---</li>
+      <li>인증: 내장 or 원클릭</li>
+      <li>파라미터: AI가 알아서 추론</li>
+      <li>기다림: 프로그레스로 달래기</li>
+      <li>승인: 맵 위 직접 확인 후 탭</li>
+    </ul>
+  </div>
+</div>
+</section>
+
+
+<!-- ==================== GAME DESIGN CRITIQUE ==================== -->
+<section>
+<h2><span class="emoji">🎮</span> 게임성(Gameplay) 관점의 문제</h2>
+<p>이 AI가 "RPG 만드는 경험"을 얼마나 재밌게 만들어주느냐.</p>
+
+<div class="card-grid">
+  <div class="card bad">
+    <div class="card-icon">🎯</div>
+    <h4>피드백 루프가 없다</h4>
+    <p>게임 제작의 핵심은 "만들기 → 바로 플레이 → 수정"의 빠른 반복. 이 AI는 "만들기 → 30초 대기 → 카드 읽기 → 승인 → 다시 수정 요청 → 30초 대기".<br><br><strong>결과:</strong> Flow 상태에 진입할 수 없다. RPG 만드는 게 재밌는 게 아니라 AI 관리가 된다.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">🎨</div>
+    <h4>창작 주도권 박탈</h4>
+    <p>"author_house" 하나면 집이 뚝딱. 근데 유저가 결정한 건 "가로10 세로10 회벽"뿐. 지붕 모양, 창문 위치, 정원 배치는 전부 AI가 함. 유저는 결과물의 "소유감"을 느끼지 못한다.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">📦</div>
+    <h4>블랙박스 생성</h4>
+    <p>AI가 만든 집/마을/던전이 내부적으로 어떤 타일을 어떻게 조합했는지 유저가 이해할 수 없음. 나중에 "이 벽만 좀 바꾸고 싶은데" → 어떤 타일인지 모름 → AI한테 또 물어봐야 함 → 의존성 심화.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">🔐</div>
+    <h4>Spec Gate = 자유도 감옥</h4>
+    <p>AI가 뭘 하려면 무조건 BuildSpec을 먼저 제출해야 하고, 겹치면 거부됨. 유저가 "여기에 나무 좀 넣어" 하면 spec 검증 → 자동 확장 → 경고 → 유저 혼란. 안전장치가 UX를 잡아먹는 전형적 사례.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">🗺️</div>
+    <h4>"만드는 재미" vs "지시하는 재미"</h4>
+    <p>RPG Maker의 핵심 재미는 "내가 직접 타일을 놓는 즐거움". 이 AI는 그 재미를 "텍스트로 지시하고 결과를 기다리는" 경험으로 대체함. 마인크래프트를 음성 명령으로만 하는 느낌.</p>
+  </div>
+  <div class="card mid">
+    <div class="card-icon">🏆</div>
+    <h4>성취감 설계 부재</h4>
+    <p>AI가 다 해주니까 유저 성취감이 없음. "내가 마을을 만들었다" vs "AI가 마을을 만들었고 나는 승인 버튼을 눌렀다". 게이미피케이션(진척도, 배지, 레벨업) 요소 제로.</p>
+  </div>
+</div>
+
+<div class="highlight-box info">
+<h4>반론: "그래도 잘 되는 것들"</h4>
+<ul>
+  <li>Ghost Preview - AI 작업 중 맵 위에 실시간 미리보기. 이건 진짜 좋다. 기다리는 동안이라도 뭔가 보인다.</li>
+  <li>Region Task - 영역 선택 후 "여기에 숲" 하면 바로 적용. 이게 메인 UX여야 하는데 보조 기능 취급.</li>
+  <li>Skill 시스템 자체 - /집, /마을, /던전 으로 원탭 시공은 아이디어가 좋음. 문제는 실행.</li>
+  <li>Soft-confirm 어휘 - 타일 재료를 "일단 쓰고 나중에 확정" 개념. 유저 관점에서 마찰 감소.</li>
+</ul>
+</div>
+</section>
+
+
+<!-- ==================== UI DETAILS ==================== -->
+<section>
+<h2><span class="emoji">🖥️</span> UI 디테일 비판</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>요소</th>
+      <th>현재 상태</th>
+      <th>문제점</th>
+      <th>심각도</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>패널 크기</td>
+      <td>에디터의 1/3 (480px 고정)</td>
+      <td>맵 캔버스 공간을 과하게 차지. 작업 안 할 때도 1/3 점유.</td>
+      <td><span class="tag tag-bad">치명</span></td>
+    </tr>
+    <tr>
+      <td>dock 모드</td>
+      <td>side (기본) / float</td>
+      <td>float 모드는 맵 위에 떠서 작업 방해. side는 공간 낭비. 둘 다 불편.</td>
+      <td><span class="tag tag-warn">높음</span></td>
+    </tr>
+    <tr>
+      <td>상태 표시</td>
+      <td>status badge (idle/running/review/error/ok)</td>
+      <td>collapse 상태에서 작은 dot만 깜빡임. "지금 뭐 하는지"를 글로 안 알려줌.</td>
+      <td><span class="tag tag-warn">높음</span></td>
+    </tr>
+    <tr>
+      <td>대화 로그</td>
+      <td>46vh max-height 스크롤</td>
+      <td>tool call 로그가 대화를 압도. 유저 메시지 1줄에 AI 도구 호출 20줄.</td>
+      <td><span class="tag tag-bad">치명</span></td>
+    </tr>
+    <tr>
+      <td>입력창</td>
+      <td>하단 textarea + "/" 슬래시 트리거</td>
+      <td>자동완성이 스킬 이름뿐. 자연어 힌트/예시/가이드 없음.</td>
+      <td><span class="tag tag-warn">높음</span></td>
+    </tr>
+    <tr>
+      <td>Proposal 모달</td>
+      <td>before/after 썸네일 + 체크박스</td>
+      <td>맵 전체 스케일 썸네일이라 차이점이 안 보임. diff 하이라이트 없음.</td>
+      <td><span class="tag tag-warn">높음</span></td>
+    </tr>
+    <tr>
+      <td>에러 표시</td>
+      <td>ToolResult.issues 그대로 노출</td>
+      <td>"spec-gate-auto-expand warning" 같은 내부 코드가 유저에게 직접 보임.</td>
+      <td><span class="tag tag-bad">치명</span></td>
+    </tr>
+    <tr>
+      <td>폰트/크기</td>
+      <td>11-13px, 모노스페이스 입력</td>
+      <td>전체적으로 너무 작음. 2D RPG 에디터인데 분위기가 IDE.</td>
+      <td><span class="tag tag-warn">높음</span></td>
+    </tr>
+    <tr>
+      <td>접근성</td>
+      <td>focus-visible, 키보드 탐색 일부</td>
+      <td>스크린리더 지원 미확인. ARIA label 부족. 색 대비 미흡(#888 on #0a0a0f).</td>
+      <td><span class="tag tag-warn">높음</span></td>
+    </tr>
+  </tbody>
+</table>
+</section>
+
+
+<!-- ==================== SKILL SYSTEM CRITIQUE ==================== -->
+<section>
+<h2><span class="emoji">⚔️</span> 스킬 시스템 비판</h2>
+<p>유저가 실제로 보는 "/" 슬래시 명령어 목록과 그 문제점.</p>
+
+<div class="card-grid">
+  <div class="card warn">
+    <div class="card-icon">🎓</div>
+    <h4>/맵 인터뷰 (advanced)</h4>
+    <p><strong>무엇:</strong> AI에게 타일 의미를 가르치는 도구<br>
+    <strong>문제:</strong> 유저가 "내가 AI를 가르쳐야 한다"는 것 자체가 UX 실패. "AI가 모른다"를 인정하는 UI. advanced 태그가 있어서 검색해야 보이지만, 검색 안 해도 개발자 도구가 상위에.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">🏠</div>
+    <h4>/집 짓기</h4>
+    <p><strong>무엇:</strong> 가로/세로/재질/모양 설정 후 집 생성<br>
+    <strong>장점:</strong> 직관적. 파라미터 폼도 깔끔.<br>
+    <strong>문제:</strong> 폼에서 "위치(비우면 자동)"가 뭔 뜻인지 초보는 모름. 결과가 프롬프트 품질에 의존.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">🏘️</div>
+    <h4>/마을 생성</h4>
+    <p><strong>무엇:</strong> 테마/집수/NPC수 설정하면 마을 통째로<br>
+    <strong>장점:</strong> "강가의 어촌" 한 줄이면 마을 생성 - 킬러 피처<br>
+    <strong>문제:</strong> 시간이 너무 오래 걸림. 집 3채면 2-3분. 실패 시 전부 롤백.</p>
+  </div>
+  <div class="card mid">
+    <div class="card-icon">🛏️</div>
+    <h4>/실내 방 시공</h4>
+    <p><strong>무엇:</strong> 실내 맵 시공 (벽/바닥/가구)<br>
+    <strong>문제:</strong> 파라미터가 5개(요구사항/가로/세로/벽재질/방수). "villager-room-v1 하네스"라는 용어가 설명에 노출됨. 뭔 소리인지 유저는 모름.</p>
+  </div>
+  <div class="card mid">
+    <div class="card-icon">⛏️</div>
+    <h4>/던전 시공</h4>
+    <p><strong>무엇:</strong> 용암/석재/얼음 테마 던전 방<br>
+    <strong>장점:</strong> 테마 선택이 enum이라 선택만 하면 됨<br>
+    <strong>문제:</strong> "위험지형" "다리" 같은 옵션이 뭘 만드는지 미리보기가 없음.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">📐</div>
+    <h4>/선택 영역 학습 (advanced)</h4>
+    <p><strong>무엇:</strong> 맵에서 선택한 부분을 AI에게 가르침<br>
+    <strong>문제:</strong> "구조물을 템플릿으로 배운다"가 뭔 뜻? 유저는 "AI 훈련" 개념 자체를 이해 못함. 이건 개발자 도구다.</p>
+  </div>
+</div>
+
+<div class="highlight-box">
+<h4>스킬 시스템의 근본 문제</h4>
+<ul>
+  <li>목록 상단이 "advanced" 도구 (인터뷰/클러스터 수정) - 정작 쓸 일 없는 게 눈에 먼저 들어옴</li>
+  <li>"advanced" 태그로 숨겼지만, 슬래시 검색에서는 또 보임 - 정보 계층이 일관되지 않음</li>
+  <li>각 스킬의 buildPrompt가 Korean 프로시저 지침서 - AI에게 절차를 지시하는 텍스트가 800바이트+</li>
+  <li>유저에게 보이는 displayAs는 기계적 - "🏠 집 짓기 - 10x10 plaster" 는 영감을 안 줌</li>
+  <li>결과 미리보기/갤러리가 없음 - "이 스킬 쓰면 이런 게 나와요" 예시 이미지 0개</li>
+</ul>
+</div>
+</section>
+
+
+<!-- ==================== DOCK MODE & LAYOUT ==================== -->
+<section>
+<h2><span class="emoji">📐</span> 레이아웃 & 공간 활용 비판</h2>
+
+<div class="card-grid">
+  <div class="card bad">
+    <div class="card-icon">📏</div>
+    <h4>Side Dock = 캔버스 33% 강탈</h4>
+    <p>기본 모드가 "오른쪽 1/3 고정". 1920px 모니터 기준 480px을 AI 패널이 먹음. 맵 편집 캔버스가 좁아지면서 2D 타일 작업의 정밀도가 떨어진다. AI를 안 쓸 때도 공간을 차지.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">🫥</div>
+    <h4>Float Dock = 맵 가림</h4>
+    <p>float 모드로 전환하면 캔버스 위에 뜨는데, 커맨드바가 맵 하단을 가린다. 결국 "어디에 둬도 불편"한 상황. 팝업형 AI가 아니라 상시 존재하는 어시스턴트라서 위치 설계가 어중간.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">📱</div>
+    <h4>반응형 미대응</h4>
+    <p>max-width: calc(100vw - 16px) 이지만 실제로 1024px 미만 화면에서의 동작이 불명확. 태블릿에서 RPG Maker를 쓰는 시나리오가 고려 안 됨. 접힘(collapse) 상태의 44px rail이 모바일에선 터치 영역으로 불충분.</p>
+  </div>
+</div>
+
+<div class="arch-box">
+<span class="hl">에디터 레이아웃 (기본: side dock)</span>
+┌─────────────────────────────────┬──────────────┐
+│                                 │              │
+│         <span class="hl">맵 캔버스</span>              │  <span class="warn">AI 패널</span>     │
+│         (남은 2/3)              │  (1/3 차지)  │
+│                                 │              │
+│   실제 맵 편집 공간이           │  - 대화 로그 │
+│   여기서 이루어짐               │  - tool 활동 │
+│                                 │  - 입력창    │
+│                                 │              │
+└─────────────────────────────────┴──────────────┘
+
+<span class="err">문제: 유저가 맵을 볼 공간이 부족한데 AI 패널이 상시 점유</span>
+</div>
+</section>
+
+<!-- ==================== PROPOSAL SYSTEM ==================== -->
+<section>
+<h2><span class="emoji">🗳️</span> Proposal(제안) 시스템 비판</h2>
+<p>AI의 작업 결과를 유저가 검토하는 핵심 UI.</p>
+
+<div class="card-grid">
+  <div class="card mid">
+    <div class="card-icon">✅</div>
+    <h4>컨셉은 좋다</h4>
+    <p>"AI가 바로 반영하지 않고 유저 승인을 받는다" → 안전. before/after 썸네일 → 시각적 확인. 체크박스로 부분 승인 → 유연성. 이 3가지 원칙 자체는 훌륭함.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">🔍</div>
+    <h4>썸네일이 너무 작다</h4>
+    <p>변경 bbox 크롭이긴 한데, 전체 맵 스케일에서의 비교가 안 됨. "집이 생겼네" 까지는 보이는데 "집 위치가 길이랑 연결되나?" "문 앞이 막혀있진 않나?" 같은 디테일은 확인 불가.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">📋</div>
+    <h4>체크박스 = 의존성 폭탄</h4>
+    <p>부분 승인 시 "이 집을 선택 해제하면 이 집 안의 NPC도 자동으로 해제됩니다" 같은 의존성을 시스템이 처리하긴 하는데, 유저는 그 로직을 이해 못함. 결국 "전체 승인" 아니면 "전체 거부"만 함.</p>
+  </div>
+  <div class="card warn">
+    <div class="card-icon">⏱️</div>
+    <h4>"완성도 경고" 의미불명</h4>
+    <p>proposalCompleteness 린트가 "미이행", "세계관 미기록" 같은 경고를 카드에 띄우는데, 유저 입장에서 이게 심각한 건지 무시해도 되는 건지 판단 불가. 경고 피로감.</p>
+  </div>
+</div>
+</section>
+
+
+<!-- ==================== COMPARISON TABLE ==================== -->
+<section>
+<h2><span class="emoji">⚖️</span> 경쟁 제품 비교</h2>
+<p>비슷한 "AI 어시스턴트 + 게임 에디터" 경험과의 비교.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>기준</th>
+      <th>RPG ZZU AI</th>
+      <th>RPG Maker (수동)</th>
+      <th>Cursor/Copilot (코드 AI)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>첫 결과물까지 시간</td>
+      <td style="color:#ff6b6b">2-5분 (설정+대기)</td>
+      <td style="color:#55efc4">30초 (드래그)</td>
+      <td style="color:#feca57">10초 (Tab)</td>
+    </tr>
+    <tr>
+      <td>유저 컨트롤</td>
+      <td style="color:#ff6b6b">낮음 (텍스트 지시)</td>
+      <td style="color:#55efc4">완전 (타일 단위)</td>
+      <td style="color:#feca57">중간 (인라인 수정)</td>
+    </tr>
+    <tr>
+      <td>결과 예측가능성</td>
+      <td style="color:#ff6b6b">낮음 (LLM 의존)</td>
+      <td style="color:#55efc4">100%</td>
+      <td style="color:#feca57">중간</td>
+    </tr>
+    <tr>
+      <td>학습 곡선</td>
+      <td style="color:#ff6b6b">가파름 (스킬/프롬프트)</td>
+      <td style="color:#feca57">중간 (타일셋 학습)</td>
+      <td style="color:#55efc4">낮음 (Tab 수락)</td>
+    </tr>
+    <tr>
+      <td>창작 소유감</td>
+      <td style="color:#feca57">중간</td>
+      <td style="color:#55efc4">높음</td>
+      <td style="color:#feca57">중간</td>
+    </tr>
+    <tr>
+      <td>복잡한 작업 처리</td>
+      <td style="color:#55efc4">강함 (마을 통째)</td>
+      <td style="color:#ff6b6b">노동 집약적</td>
+      <td style="color:#feca57">코드에 한정</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="highlight-box info">
+<h4>핵심 인사이트</h4>
+<ul>
+  <li>RPG ZZU AI의 최대 강점은 "복잡한 작업을 한 번에" - 마을/던전/퀘스트 통째 생성은 수동 대비 압도적</li>
+  <li>최대 약점은 "간단한 작업도 복잡하게" - 나무 하나 심는 것도 prompt → tool → proposal → approve</li>
+  <li>Cursor처럼 "인라인 제안 + Tab 수락" 패턴을 맵 에디터에 적용하는 게 이상적인 방향</li>
+  <li>"큰 건 AI, 작은 건 직접" 분리가 안 됨 - 모든 AI 인터랙션이 같은 무거운 파이프라인을 탐</li>
+</ul>
+</div>
+</section>
+
+
+<!-- ==================== TECHNICAL QUALITY ==================== -->
+<section>
+<h2><span class="emoji">🔧</span> 기술적 품질 (인정할 건 인정)</h2>
+<p>비판만 하면 불공정하니까. 이 시스템의 엔지니어링은 솔직히 대단하다.</p>
+
+<div class="card-grid">
+  <div class="card good">
+    <div class="card-icon">🚀</div>
+    <h4>Zero-dependency LLM Client</h4>
+    <p>OpenAI SDK 없이 raw fetch + 커스텀 SSE 파서로 구현. 어떤 OpenAI 호환 엔드포인트든 사용 가능. 번들 크기 최소화. 기술적으로 깔끔.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">🏗️</div>
+    <h4>Draft/Commit 패턴</h4>
+    <p>AI 도구가 프로젝트를 직접 수정하지 않고 structuredClone 복사본에서 작업. 실패해도 원본 무손상. 동시 작업 충돌 없음. 데이터 안정성 최고.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">📐</div>
+    <h4>Spec Gate 검증</h4>
+    <p>공간 배치 전에 규격 제출 → 겹침/경계 검증 → 통과 후 실행. AI 환각으로 인한 맵 파괴를 원천 차단. 안전장치로서는 이상적.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">🧩</div>
+    <h4>Domain-scoped Tool Exposure</h4>
+    <p>턴마다 40개만 노출 + 의도 분석으로 도메인 자동 선택. LLM이 100개 도구에 혼란받지 않음. 토큰 절약 + 정확도 상승. 스마트한 설계.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">🔄</div>
+    <h4>Multi-phase Orchestration</h4>
+    <p>plan(supervisor) → execute(lite) → review(supervisor) 3단계 모델 분리. 비용 절감 + 품질 관리 동시 달성. production-grade 설계.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">🌐</div>
+    <h4>MCP Bridge</h4>
+    <p>외부 에이전트(Claude, Codex 등)가 같은 AI 세션을 HTTP로 쓸 수 있는 브릿지. 에코시스템 확장성. 다만 유저에겐 보이지 않는 기능.</p>
+  </div>
+</div>
+</section>
+
+<!-- ==================== FUNDAMENTAL TENSION ==================== -->
+<section>
+<h2><span class="emoji">💥</span> 근본적 모순</h2>
+<p>이 AI 어시스턴트가 안고 있는 해결 불가능한 긴장.</p>
+
+<div class="card-grid">
+  <div class="card bad">
+    <div class="card-icon">🎭</div>
+    <h4>"도구" vs "동료"</h4>
+    <p>도구라면 예측 가능해야 하고, 동료라면 자율적이어야 한다. 이 AI는 둘 다 아님. Spec Gate로 자율성을 제한하면서 동시에 "알아서 해줘" 경험을 약속. 유저는 "이 AI가 뭘 할 수 있는지"를 영원히 학습 중.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">⚡</div>
+    <h4>"안전" vs "속도"</h4>
+    <p>Proposal 승인, BuildSpec 검증, 린트 게이트, 완성도 경고... 모두 안전장치. 하지만 각각이 1-5초씩 딜레이를 추가. 5개 안전장치 x 5초 = 25초 오버헤드. "빠른 창작" 경험과 양립 불가.</p>
+  </div>
+  <div class="card bad">
+    <div class="card-icon">🧠</div>
+    <h4>"초보용" vs "100개 도구"</h4>
+    <p>시스템 프롬프트가 "초보 대면 3-5문장 응답"을 강제하면서, 내부적으로는 100개 도구를 조합하는 복잡한 파이프라인을 돌린다. UI는 그 복잡성을 숨기지 못하고 있다 (tool activity 라인이 그대로 보임).</p>
+  </div>
+</div>
+</section>
+
+
+<!-- ==================== RECOMMENDATIONS ==================== -->
+<section>
+<h2><span class="emoji">💡</span> 개선 제안 (뻔하지만 중요한 것들)</h2>
+
+<div class="card-grid">
+  <div class="card good">
+    <div class="card-icon">1️⃣</div>
+    <h4>"맵 위 인라인 AI" 모드 추가</h4>
+    <p>영역 선택 → 작은 팝오버 → "숲", "집", "호수" 버튼 → 즉시 적용(auto-approve). Region Task가 이미 이 경험에 가까운데, 채팅 없이 맵 위에서 직접 쓸 수 있게. Figma AI처럼.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">2️⃣</div>
+    <h4>프로그레스를 "게임처럼"</h4>
+    <p>AI 작업 대기 시간에 "마을 건설 중... 집 1/3 완성 | 길 포장 중 | NPC 배치 중" 같은 서사형 프로그레스. Ghost Preview를 확대해서 건설 애니메이션처럼. 기다림을 "구경"으로.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">3️⃣</div>
+    <h4>갤러리 카탈로그</h4>
+    <p>"/마을 생성" 선택 전에 "이런 마을이 만들어집니다" 예시 갤러리. 3-5가지 프리셋 이미지. 유저가 "이 스타일로" 선택하면 프롬프트 자동 구성. 텍스트 입력 최소화.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">4️⃣</div>
+    <h4>AI 패널 크기 동적 조절</h4>
+    <p>작업 안 할 때: 44px 레일(아이콘만). 입력 중: 300px 커맨드 바. 작업 중: 전체 패널 확장. 결과 검토: 맵 위 오버레이. "맥락에 따른 크기"로 캔버스 공간 확보.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">5️⃣</div>
+    <h4>Tool Activity = 숨기기 기본</h4>
+    <p>"author_house(wings:[...])" 같은 기술 로그는 기본 숨김. "집 짓는 중..." 한 줄만 표시. 전문가 모드에서만 펼치기. 유저에게 보이는 건 "결과"와 "진행률"뿐이어야.</p>
+  </div>
+  <div class="card good">
+    <div class="card-icon">6️⃣</div>
+    <h4>Proposal = 맵 위 직접 확인</h4>
+    <p>모달 카드 대신, Ghost Preview를 강화해서 맵 위에서 직접 확인 + "적용" / "취소" 플로팅 버튼. before/after 토글은 맵 캔버스에서. 별도 모달 창을 열지 않아도 되게.</p>
+  </div>
+</div>
+</section>
+
+<!-- ==================== FINAL VERDICT ==================== -->
+<section>
+<h2><span class="emoji">🏁</span> 최종 판정</h2>
+
+<div class="highlight-box">
+<h4>한 줄 요약</h4>
+<ul>
+  <li>"기술적으로는 역대급 RPG 에디터 AI. 하지만 UX가 개발자 도구 수준이라 타겟 유저(RPG 만들고 싶은 일반인)한테는 못 쓸 물건."</li>
+</ul>
+</div>
+
+<div class="card-grid">
+  <div class="card mid">
+    <div class="card-icon">🎯</div>
+    <h4>타겟 미스매치</h4>
+    <p>이 AI는 "RPG Maker를 이미 아는 사람이 속도를 높이기 위해" 쓸 도구. 하지만 포지셔닝은 "누구나 RPG를 만들 수 있게". 그 간극이 전체 UX 문제의 근원.</p>
+  </div>
+  <div class="card mid">
+    <div class="card-icon">🔮</div>
+    <h4>잠재력</h4>
+    <p>100개 도구, Ghost Preview, Spec Gate, Region Task, 다중 모델 오케스트레이션... 기반은 이미 세계 최고 수준. UX 레이어만 갈아엎으면 킬러 프로덕트가 될 수 있음.</p>
+  </div>
+  <div class="card mid">
+    <div class="card-icon">⚠️</div>
+    <h4>핵심 리스크</h4>
+    <p>"엔지니어가 쓸 때만 잘 돌아가는 AI". 팀 내부에서는 프롬프트 엔지니어링으로 좋은 결과를 뽑지만, 일반 유저는 "집 만들어줘" 이상을 입력하지 않음. 그 갭을 메울 UX 투자가 필요.</p>
+  </div>
+</div>
+
+<div style="text-align:center; margin-top:3rem; padding:2rem; background:#14141e; border-radius:16px; border:1px solid #2a2a3a;">
+  <p style="font-size:2rem; margin-bottom:0.5rem;">🏆 기술 8/10 | 🎮 게임성 4/10 | 🖥️ UX 3/10</p>
+  <p style="color:#666; font-size:0.9rem;">기술력은 인정. 근데 유저가 못 쓰면 의미 없잖아.</p>
+</div>
+
+</section>
+</div>
+
+<footer>
+  <p>RPG ZZU AI Assistant 비판 분석 | 2026-07-30 | 코드베이스 기반 분석</p>
+  <p style="margin-top:0.5rem;">분석 대상: src/ai/, src/editor/panels/ai*, src/editor/tools/, openwiki/editor-ai-*</p>
+</footer>
+
+</body>
+</html>

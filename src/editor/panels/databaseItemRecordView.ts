@@ -6,6 +6,7 @@ import {
   selectLiteral,
   textField,
 } from "@/editor/panels/databaseControls";
+import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -389,10 +390,6 @@ function checkboxField(label: string, testid: string, checked: boolean, onInput:
 
 function choiceList(title: string, children: HTMLElement[]): HTMLElement {
   return el("div", { class: "db-item-choice-list", children: [el("strong", { text: title }), ...children] });
-}
-
-function panel(title: string, children: HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "db-advanced-panel db-item-panel", children: [el("legend", { text: title }), ...children] });
 }
 
 function updateItemType(record: ItemRecord, type: ItemType): void {

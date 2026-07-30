@@ -11,6 +11,7 @@ import { Input } from "@/player/input";
 import type { StepResult } from "@/player/interpreter";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
 import { resumeAudioState, stopAllAudio } from "@/player/audio";
+import { startMapBgm } from "@/player/mapBgm";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
 import type { GameMap, MapId, MoveCommand, TilesetDef, Trigger } from "@/project/types";
 import type { RuntimeEventPositions, RuntimeEventView } from "@/player/runtimeEventState";
@@ -179,7 +180,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.session = this.initialSession(project);
     this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player = this.add.sprite(
@@ -212,6 +213,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     installPlaySceneTestHooks(this, this.input_, () => this.session, () => this.syncRuntimeState());
     // 세이브 로드로 진입한 세션이면 저장된 BGM/BGS 를 재개(원샷은 복원 안 함).
     resumeAudioState(this.session.audio, project);
+    // 새 게임(저장된 BGM 없음)이면 시작 맵의 BGM 으로 시작한다 — 이게 없으면 게임이 무음으로 켜진다.
+    if (!this.session.audio.bgm) startMapBgm(project, this.session, this.session.currentMapId);
     // 씬 종료(모드 전환/타이틀 복귀/게임 파괴) 시 모든 오디오 정지.
     this.events.once("shutdown", stopAllAudio);
     this.events.once("destroy", stopAllAudio);
@@ -238,6 +241,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateWeather(this, deltaMs);
     updateTimeTint(this, deltaMs);
     updateLighting(this, deltaMs);
+    // 이벤트 마커는 화면 좌표로 놓여야 한다 — 카메라를 반영하지 않으면 무대의 스크롤 영역이
+    // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
+    this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
     if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
   }
 
@@ -245,7 +251,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return this.session.currentMapId;
   }
 
-  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean }): void {
+  loadMap(mapId: MapId, options?: { readonly preserveErasedEvents?: boolean; readonly applyDefaultLighting?: boolean; readonly applyMapBgm?: boolean }): void {
     loadSceneMap(this, mapId, options);
     initializeActionCombatForScene(this);
     resetEncounterCounter();
@@ -391,7 +397,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.session = structuredClone(session);
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
-    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false });
+    this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);
@@ -406,6 +412,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 인게임 로드: 이전 오디오 정지 후 저장된 BGM/BGS 재개.
     stopAllAudio();
     resumeAudioState(this.session.audio, project);
+    if (!this.session.audio.bgm) startMapBgm(project, this.session, this.session.currentMapId);
     this.refreshRuntimeSurfaces();
     syncFollowerSprites(this);
   }

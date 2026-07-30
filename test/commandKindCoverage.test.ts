@@ -56,6 +56,11 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   learnSkill: { kind: "learnSkill", actorId: "actor1", skillId: "skill1" },
   changeExp: { kind: "changeExp", actorId: "actor1", op: "+=", amount: 10 },
   changeLevel: { kind: "changeLevel", actorId: "actor1", op: "+=", amount: 1 },
+  // 아래 4종은 kind 만 추가되고 커버리지 픽스처가 누락돼 있었다(COMMAND_KINDS 70→74).
+  changeLifeSkillExp: { kind: "changeLifeSkillExp", skillId: "skill_farming", op: "+=", amount: 10 },
+  openSaveMenu: { kind: "openSaveMenu" },
+  spawnFieldEnemy: { kind: "spawnFieldEnemy", spawn: { id: "spawn1", troopId: "troop1", area: { x: 0, y: 0, width: 4, height: 4 } } },
+  despawnFieldEnemy: { kind: "despawnFieldEnemy", spawnId: "spawn1" },
   promoteActor: { kind: "promoteActor", actorId: "actor1", toClassId: "class1", successBranch: [], failureBranch: [] },
   evolveMonster: { kind: "evolveMonster", instanceId: "monster_1", toSpeciesId: "species1", successBranch: [], failureBranch: [] },
   changeEquipment: { kind: "changeEquipment", actorId: "actor1", slot: "weapon", equipmentId: "eq1" },

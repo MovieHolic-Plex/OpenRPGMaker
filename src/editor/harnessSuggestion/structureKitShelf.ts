@@ -19,6 +19,11 @@ export type StructureKitShelfInput = {
 /** 아이콘 조립 폭 상한(타일) — 킷 단위를 이 폭 안에서 최대한 반복해 보여준다. */
 const ICON_MAX_COLUMNS = 6;
 
+// 내장 집 킷 접힘 상태. 팔레트는 붓질마다 재렌더되므로 <details open> 을 DOM 에 맡기면
+// 매번 닫힌다 — 모듈 수준에 들고 있어야 사용자가 펼친 상태가 유지된다.
+// 기본값 false: 내장 킷은 항상 존재하므로(2026-07-20) 펼쳐두면 타일 팔레트를 영구히 밀어낸다.
+let houseKitsOpen = false;
+
 /** 등록·내장 킷이 모두 없으면 null — 팔레트에 빈 섹션을 만들지 않는다(조용함 유지). */
 export function makeStructureKitShelf(input: StructureKitShelfInput): HTMLElement | null {
   const builtinKits = builtinHouseStructureKitsFor(input.tileset);
@@ -30,10 +35,23 @@ export function makeStructureKitShelf(input: StructureKitShelfInput): HTMLElemen
     dataset: { testid: "structure-kit-shelf" },
   });
   if (builtinKits.length > 0) {
-    shelf.append(el("div", { class: "structure-kit-shelf-title", text: "집 킷" }));
+    // 접이식 — 내장 킷은 늘 있으므로(빈 선반이 되지 않는다) 펼친 채로 두면 43% 를 상시 점거한다.
     const grid = el("div", { class: "structure-kit-shelf-grid", dataset: { testid: "structure-kit-shelf-house" } });
     for (const kit of builtinKits) grid.append(makeKitButton(kit, input));
-    shelf.append(grid);
+    const summary = el("summary", {
+      class: "structure-kit-shelf-title",
+      text: `집 킷 ${builtinKits.length}`,
+      dataset: { testid: "structure-kit-shelf-house-toggle" },
+    });
+    const details = el("details", {
+      class: "structure-kit-shelf-fold",
+      children: [summary, grid],
+    });
+    if (houseKitsOpen) details.setAttribute("open", "");
+    details.addEventListener("toggle", () => {
+      houseKitsOpen = details.hasAttribute("open");
+    });
+    shelf.append(details);
   }
   if (learnedKits.length > 0) {
     shelf.append(el("div", { class: "structure-kit-shelf-title", text: "내 스탬프" }));
@@ -80,8 +98,6 @@ function makeKitButton(kit: StructureKitDef, input: StructureKitShelfInput): HTM
         } else {
           editorState.set({
             activePaletteStamp: paletteStampFromKit(kit),
-            activeStampId: null,
-            activeStructureStampId: null,
             tool: "paint",
           });
         }

@@ -171,7 +171,7 @@ export function setMapTileset(mapId: MapId, tilesetId: TilesetDef["id"]): void {
       m.tileSize = tileset.tileSize;
       const state = editorState.get();
       if (state.currentMapId === mapId && state.selectedTile >= tileset.count) {
-        editorState.set({ activePaletteStamp: null, activeStampId: null, selectedTile: 0 });
+        editorState.set({ activePaletteStamp: null, selectedTile: 0 });
       }
     }
   }, { scope: "map", mapId });

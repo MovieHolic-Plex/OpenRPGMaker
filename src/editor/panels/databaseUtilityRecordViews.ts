@@ -20,8 +20,6 @@ import {
 import { store } from "@/project/store";
 import type {
   BattleFlow,
-  BattlerAnimationPoseKind,
-  BattlerAnimationRecord,
   ClassBattleCommandKind,
   DatabaseBattleCommandRecord,
   DatabaseTerrainRecord,
@@ -130,107 +128,6 @@ export function renderBattleCommandsTab(host: HTMLElement): void {
     ]),
   );
   host.append(el("h3", { text: "전투 명령" }), form);
-}
-
-export function renderBattlerAnimationsTab(host: HTMLElement): void {
-  const battlerAnimations = store.getCurrent().database.battlerAnimations ?? [];
-  const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
-  form.append(
-    rm2k3Fieldset("배틀러 애니메이션", [
-      readonlyValue("편집 위치", "RM2003 데이터베이스 > 애니메이션 2"),
-      readonlyValue("레코드", countText(battlerAnimations.length)),
-      readonlyValue("분리 대상", "전투 효과 애니메이션"),
-      runtimeUnlinkedNotice(),
-    ]),
-    rm2k3Fieldset(
-      "포즈 세트",
-      battlerAnimations.length > 0
-        ? battlerAnimationEditorRows(battlerAnimations)
-        : [readonlyValue("0001", "배틀러 포즈 세트 없음")],
-    ),
-    rm2k3Fieldset("RM2003 포즈 범위", [
-      readonlyValue("대기", "서기/대기 포즈"),
-      readonlyValue("행동", "공격/스킬/아이템 포즈"),
-      readonlyValue("피해", "피격/전투불능/회피 포즈"),
-    ]),
-  );
-  host.append(el("h3", { text: "배틀러 애니메이션" }), form);
-}
-
-function runtimeUnlinkedNotice(): HTMLElement {
-  return el("div", {
-    class: "db-readonly-row db-runtime-unlinked-notice",
-    dataset: { testid: "db-battler-animations-runtime-note" },
-    children: [
-      el("span", { text: "런타임 연결" }),
-      el("strong", { text: "미연결 — 전투는 생성 배틀 시트(3열 포즈)로 렌더한다. 이 탭의 데이터는 RM2003 호환 편집용이다." }),
-    ],
-  });
-}
-
-function battlerAnimationEditorRows(animations: readonly BattlerAnimationRecord[]): HTMLElement[] {
-  return animations.slice(0, 10).flatMap((animation, index) => [
-    utilityTextRow({
-      label: ordinalLabel(index),
-      onFocus: () => selectUtilityRecord("battlerAnimations", index),
-      onInput: (value) => updateBattlerAnimation(index, { name: value }),
-      testid: `db-field-battler-animation-name-${index}`,
-      value: animation.name,
-    }),
-    utilityTextRow({
-      label: "배틀러 그래픽",
-      onFocus: () => selectUtilityRecord("battlerAnimations", index),
-      onInput: (value) => updateBattlerAnimation(index, { resourceId: emptyToUndefined(value) }),
-      testid: `db-field-battler-animation-resource-${index}`,
-      value: animation.resourceId ?? "",
-    }),
-    utilityNumberRow({
-      label: "대기 1프레임",
-      onFocus: () => selectUtilityRecord("battlerAnimations", index),
-      onInput: (value) => updateBattlerPoseDuration(index, "idle", value),
-      testid: `db-field-battler-animation-idle-duration-${index}`,
-      value: poseFirstDuration(animation, "idle"),
-    }),
-    utilityNumberRow({
-      label: "공격 1프레임",
-      onFocus: () => selectUtilityRecord("battlerAnimations", index),
-      onInput: (value) => updateBattlerPoseDuration(index, "attack", value),
-      testid: `db-field-battler-animation-attack-duration-${index}`,
-      value: poseFirstDuration(animation, "attack"),
-    }),
-    readonlyValue("포즈", animation.poses.map((pose) => `${pose.pose}:${pose.frames.length}`).join(" / ")),
-  ]);
-}
-
-function poseFirstDuration(animation: BattlerAnimationRecord, pose: BattlerAnimationPoseKind): number {
-  return animation.poses.find((entry) => entry.pose === pose)?.frames[0]?.durationMs ?? 180;
-}
-
-function updateBattlerAnimation(index: number, patch: Partial<Pick<BattlerAnimationRecord, "name" | "resourceId">>): void {
-  recordCoalescedSnapshot(`db-utility:battler-animation:${index}:${Object.keys(patch).sort().join(",")}`);
-  store.update((project) => {
-    const target = project.database.battlerAnimations?.[index];
-    if (!target) return;
-    if (patch.name !== undefined) target.name = patch.name;
-    if ("resourceId" in patch) target.resourceId = patch.resourceId;
-  }, { scope: "database", collection: "battlerAnimations" });
-}
-
-function updateBattlerPoseDuration(index: number, poseKind: BattlerAnimationPoseKind, value: number): void {
-  recordCoalescedSnapshot(`db-utility:battler-animation-pose:${index}:${poseKind}`);
-  store.update((project) => {
-    const target = project.database.battlerAnimations?.[index];
-    if (!target) return;
-    let pose = target.poses.find((entry) => entry.pose === poseKind);
-    if (!pose) {
-      pose = { pose: poseKind, frames: [{ pattern: 0, durationMs: 180 }] };
-      target.poses = [...target.poses, pose];
-    }
-    if (pose.frames.length === 0) pose.frames = [{ pattern: 0, durationMs: 180 }];
-    const firstFrame = pose.frames[0];
-    if (!firstFrame) return;
-    firstFrame.durationMs = Math.max(1, Math.trunc(value));
-  }, { scope: "database", collection: "battlerAnimations" });
 }
 
 function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[]): HTMLElement[] {

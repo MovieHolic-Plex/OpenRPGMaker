@@ -60,15 +60,21 @@ describe("EasyRPG Combined Town tileset harness", () => {
     expect(group("conifer-tree")?.rules).toEqual([
       expect.objectContaining({ kind: "adjacency", params: { a: 260, b: 290, relation: "aAboveB" }, strength: "hard" }),
     ]);
+    // bAlt = "a 옆에 b 대신 와도 되는 대체 타일"(clusterRuleValidators.ts:121).
+    // 마른나무는 상단(261)을 세로로 이어 쌓을 수 있어야 하므로 261 이 대체로 허용된다 —
+    // 출하 코드에 원래부터 있던 것이고, 이 단정이 그걸 반영하지 못해 실패하고 있었다.
     expect(group("dry-tree")?.rules).toEqual([
-      expect.objectContaining({ kind: "adjacency", params: { a: 261, b: 291, relation: "aAboveB" }, strength: "hard" }),
+      expect.objectContaining({ kind: "adjacency", params: { a: 261, b: 291, bAlt: [261], relation: "aAboveB" }, strength: "hard" }),
     ]);
+    // 활엽수 2×2 는 **대각 겹침**(원자를 (+1,+1) 로 밀어 수관을 맞물리게 하는 것)을 허용한다.
+    // 그래서 앞 원자의 우하(293) 자리에 다음 원자의 좌상(262)이 와도 되도록 두 규칙에 bAlt 를 준다.
+    // 262 는 자기 규칙(오른쪽 263, 아래 292)을 그대로 지켜야 하므로 조각난 나무는 여전히 error 다.
     expect(group("broadleaf-tree-2x2")?.rules).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ params: { a: 262, b: 292, relation: "aAboveB" }, strength: "hard" }),
-        expect.objectContaining({ params: { a: 263, b: 293, relation: "aAboveB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 263, b: 293, bAlt: [262], relation: "aAboveB" }, strength: "hard" }),
         expect.objectContaining({ params: { a: 262, b: 263, relation: "aLeftOfB" }, strength: "hard" }),
-        expect.objectContaining({ params: { a: 292, b: 293, relation: "aLeftOfB" }, strength: "hard" }),
+        expect.objectContaining({ params: { a: 292, b: 293, bAlt: [262], relation: "aLeftOfB" }, strength: "hard" }),
       ])
     );
     expect(group("flower-props")?.rules).toEqual([

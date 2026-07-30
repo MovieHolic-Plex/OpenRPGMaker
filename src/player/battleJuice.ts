@@ -78,49 +78,8 @@ function tryPlay(soundResourceId: string): boolean {
   return true;
 }
 
-export function spawnDamagePopup(
-  host: HTMLElement,
-  options: {
-    readonly amount: number;
-    readonly critical?: boolean;
-    readonly miss?: boolean;
-    readonly heal?: boolean;
-    readonly anchor?: DOMRect | null;
-    /** Prefer field-local coords so the pop sits over battlers, not the HUD. */
-    readonly field?: HTMLElement | null;
-  }
-): void {
-  const popup = document.createElement("div");
-  popup.className = "battle-damage-popup";
-  popup.dataset.testid = "battle-damage-popup";
-  if (options.miss) {
-    popup.classList.add("is-miss");
-    popup.textContent = "MISS";
-  } else if (options.heal) {
-    popup.classList.add("is-heal");
-    popup.textContent = `+${options.amount}`;
-  } else if (options.critical) {
-    popup.classList.add("is-critical");
-    popup.textContent = String(options.amount);
-  } else {
-    popup.textContent = String(options.amount);
-  }
-
-  const field = options.field ?? host.querySelector<HTMLElement>(".battle-field");
-  const mount = field ?? host;
-  const mountRect = mount.getBoundingClientRect();
-  const anchor = options.anchor;
-  const x = anchor ? anchor.left + anchor.width / 2 - mountRect.left : mountRect.width * 0.36;
-  const y = anchor ? anchor.top + anchor.height * 0.2 - mountRect.top : mountRect.height * 0.42;
-  popup.style.left = `${Math.max(10, Math.min(mountRect.width - 10, x))}px`;
-  popup.style.top = `${Math.max(8, Math.min(mountRect.height - 18, y))}px`;
-  if (getComputedStyle(mount).position === "static") mount.style.position = "relative";
-  mount.append(popup);
-  window.setTimeout(() => popup.remove(), 900);
-}
-
 export function flashBattleField(root: HTMLElement, kind: "hit" | "critical" | "victory" | "defeat"): void {
-  root.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-flash-victory", "battle-flash-defeat");
+  root.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-flash-victory", "battle-flash-defeat", "battle-screen-shake");
   const className =
     kind === "critical"
       ? "battle-flash-critical"
@@ -131,6 +90,11 @@ export function flashBattleField(root: HTMLElement, kind: "hit" | "critical" | "
           : "battle-flash-hit";
   window.requestAnimationFrame(() => {
     root.classList.add(className);
-    window.setTimeout(() => root.classList.remove(className), kind === "victory" || kind === "defeat" ? 700 : 280);
+    if (kind === "critical") {
+      root.classList.add("battle-screen-shake");
+    }
+    window.setTimeout(() => {
+      root.classList.remove(className, "battle-screen-shake");
+    }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" ? 400 : 280);
   });
 }

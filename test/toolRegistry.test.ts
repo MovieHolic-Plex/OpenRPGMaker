@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { createEmberQuestProject } from "@/project/defaults/emberQuestGame";
-import { allTools, toOpenAiTools } from "@/editor/tools/toolRegistry";
+import { PINNED_TOOLS_BY_DOMAIN, allTools, getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { ToolContext } from "@/editor/tools/types";
@@ -207,5 +207,24 @@ describe("toolRegistry", () => {
     const result = runTool(ctx, "create_map", { name: "이름만" }, { dryRun: true });
     expect(result.ok).toBe(false);
     expect(result.issues?.some((issue) => issue.code === "invalid-args")).toBe(true);
+  });
+});
+
+// 노출 상한(40) 핀 목록의 무효 핀 방지 가드.
+// toOpenAiTools()가 deprecated를 먼저 걸러내므로, deprecated 툴을 핀해도 노출은 되지 않는다.
+// 즉 그 핀은 "보장됐다"는 착각만 남기고 실제로는 죽은 항목이다 —
+// build_house_kit/build_house_lots(→author_house)가 실제로 이 상태였다.
+describe("PINNED_TOOLS_BY_DOMAIN", () => {
+  it("핀된 툴은 모두 실존하고 deprecated가 아니다", () => {
+    for (const [domain, names] of PINNED_TOOLS_BY_DOMAIN) {
+      for (const name of names) {
+        const tool = getTool(name);
+        expect(tool, `핀된 툴이 레지스트리에 없다: ${name} (domain=${domain})`).toBeDefined();
+        expect(
+          tool?.deprecated,
+          `핀된 툴이 deprecated 다: ${name} (domain=${domain}, supersededBy=${tool?.supersededBy}) — 노출 필터가 먼저 걸러 핀이 무효하다`,
+        ).not.toBe(true);
+      }
+    }
   });
 });

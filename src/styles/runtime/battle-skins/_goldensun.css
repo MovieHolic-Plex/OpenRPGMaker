@@ -25,7 +25,7 @@
 .battle-scene[data-battle-skin="goldensun"] .battle-enemy-list-panel,
 .battle-scene[data-battle-skin="goldensun"] .battle-party {
   background: linear-gradient(180deg, #3b2a10, #241806);
-  border: 2px solid #e8a33d;
+  border: 4px solid #e8a33d;
   border-image: none;
   color: #ffe9c2;
 }
@@ -38,7 +38,7 @@
 
 .battle-scene[data-battle-skin="goldensun"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;

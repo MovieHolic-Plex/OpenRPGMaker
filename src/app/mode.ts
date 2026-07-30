@@ -80,6 +80,11 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     return;
   }
 
+  // 전투 모델(rm2k3/gen1)을 body[data-battle-model] 로 동기화 — CSS·UI 게이팅 진입점.
+  // 로드 직후 1회 반영하고 이후 store 변경(전투 모델 전환 포함)마다 갱신한다.
+  syncBattleModelAttribute(store.getCurrent());
+  store.subscribe(syncBattleModelAttribute);
+
   // 최초 편집 맵 = 시작 맵.
   await finishEditorBoot(startedAt);
 }
@@ -439,6 +444,15 @@ export function destroyGame(): void {
 // 현재 프로젝트(편의 접근).
 export function currentProject(): Project {
   return store.getCurrent();
+}
+
+// 전투 모델(rm2k3/gen1)을 body 의 data-battle-model 속성으로 노출한다.
+// CSS·UI 컴포넌트가 Gen1 전용 동작을 게이트할 때 이 속성을 읽는다.
+// rm2k3(기본/생략) 또는 gen1. Node 테스트 환경(document 미존재)에서는 no-op.
+export function syncBattleModelAttribute(project: Project): void {
+  if (typeof document === "undefined") return;
+  const value = project.system.battleModel ?? "rm2k3";
+  document.body.setAttribute("data-battle-model", value);
 }
 
 // 모드 전환 토글.

@@ -157,6 +157,41 @@ export function labelRegionChunk(chunk: RegionChunk, tileset: TilesetDef | undef
   return `${baseName}(${chunk.cells.length}칸)`;
 }
 
+/**
+ * 청크가 영역 안에서 어느 쪽에 있는지 사람 말로. 셀 무게중심을 영역의 3×3 구획에 떨어뜨린다.
+ *
+ * 왜 필요한가: 라벨은 대표 타일 이름이라 같은 타일로 된 서로 다른 덩어리가 완전히 같은 문자열이
+ * 된다("Stone floor(3칸)" 이 두 줄). 목록만 보고는 어느 것이 어느 덩어리인지 구분할 수 없었다.
+ * 위치를 붙이면 클릭하지 않고도 고를 수 있다.
+ */
+export function describeChunkPosition(chunk: RegionChunk, region: RegionRect): string {
+  if (chunk.cells.length === 0) return "";
+  let sumX = 0;
+  let sumY = 0;
+  for (const cell of chunk.cells) {
+    sumX += cell.x;
+    sumY += cell.y;
+  }
+  // cells 의 x/y 는 영역 원점 기준 로컬 좌표(groupLayerChanges 가 dx/dy 로 채운다).
+  const cx = sumX / chunk.cells.length;
+  const cy = sumY / chunk.cells.length;
+  const sector = (value: number, extent: number): 0 | 1 | 2 => {
+    if (!Number.isFinite(extent) || extent <= 0) return 1;
+    const ratio = value / extent;
+    if (ratio < 1 / 3) return 0;
+    if (ratio < 2 / 3) return 1;
+    return 2;
+  };
+  const col = sector(cx, region.width);
+  const row = sector(cy, region.height);
+  const NAMES = [
+    ["좌상단", "위쪽", "우상단"],
+    ["왼쪽", "가운데", "오른쪽"],
+    ["좌하단", "아래쪽", "우하단"],
+  ] as const;
+  return NAMES[row]![col]!;
+}
+
 /** 모든 청크의 라벨을 채운 새 groups 를 반환(불변). */
 export function withChunkLabels(
   groups: RegionChangeGroups,

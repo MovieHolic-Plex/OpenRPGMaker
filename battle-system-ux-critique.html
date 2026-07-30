@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0a0b10">
+  <meta name="description" content="RPG ZZU 턴제 전투의 게임성·UI·UX를 코드와 실제 화면으로 분석한 비판적 보고서">
+  <title>RPG ZZU 전투 해부 — 화려한 껍데기, 새는 선택권</title>
+  <style>
+    :root {
+      --bg: #090a0f;
+      --bg-raised: #10121a;
+      --panel: #141722;
+      --panel-2: #191d29;
+      --ink: #f4f2ed;
+      --muted: #a8acb8;
+      --faint: #6f7585;
+      --line: rgba(255,255,255,.11);
+      --line-strong: rgba(255,255,255,.2);
+      --red: #ff5c67;
+      --red-dark: #7d2730;
+      --orange: #ff9a52;
+      --yellow: #ffd166;
+      --green: #64d99b;
+      --cyan: #64c7df;
+      --blue: #7399ff;
+      --violet: #a98cff;
+      --radius: 22px;
+      --shadow: 0 24px 70px rgba(0,0,0,.42);
+      --content: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 20% -10%, rgba(115,153,255,.11), transparent 34rem),
+        radial-gradient(circle at 90% 5%, rgba(255,92,103,.09), transparent 30rem),
+        var(--bg);
+      color: var(--ink);
+      font-family: Pretendard, "Noto Sans KR", "Malgun Gothic", system-ui, -apple-system, sans-serif;
+      font-size: 17px;
+      line-height: 1.72;
+      word-break: keep-all;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+    button { font: inherit; }
+    code, pre { font-family: "Cascadia Code", Consolas, monospace; }
+    ::selection { background: rgba(255,209,102,.28); }
+
+    .skip-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 1000;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--ink);
+      color: var(--bg);
+      transform: translateY(-150%);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    .progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 999;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--cyan));
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    .rail {
+      position: fixed;
+      top: 50%;
+      left: 22px;
+      z-index: 40;
+      display: grid;
+      gap: 5px;
+      width: 150px;
+      transform: translateY(-50%);
+    }
+    .rail::before {
+      content: "REPORT / 07.30";
+      margin: 0 0 12px 10px;
+      color: var(--faint);
+      font: 700 10px/1.2 "Cascadia Code", monospace;
+      letter-spacing: .14em;
+    }
+    .rail a {
+      padding: 7px 10px;
+      border-left: 2px solid var(--line);
+      color: var(--faint);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: .2s ease;
+    }
+    .rail a:hover,
+    .rail a.active {
+      border-left-color: var(--yellow);
+      color: var(--ink);
+      transform: translateX(3px);
+    }
+
+    .wrap { width: min(calc(100% - 40px), var(--content)); margin-inline: auto; }
+    main { overflow: clip; }
+    section { scroll-margin-top: 30px; }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px;
+      color: var(--yellow);
+      font: 800 12px/1.2 "Cascadia Code", Consolas, monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: currentColor;
+    }
+
+    .hero {
+      position: relative;
+      min-height: 94svh;
+      display: grid;
+      align-items: center;
+      padding: 76px 0 58px;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -8vw;
+      bottom: -16vw;
+      width: 40vw;
+      aspect-ratio: 1;
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 50%;
+      box-shadow: 0 0 0 8vw rgba(255,255,255,.012), 0 0 0 16vw rgba(255,255,255,.008);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(420px, .98fr);
+      align-items: center;
+      gap: clamp(34px, 6vw, 90px);
+    }
+    .hero h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(48px, 7.2vw, 106px);
+      line-height: .96;
+      letter-spacing: -.07em;
+    }
+    .hero h1 span { color: var(--red); }
+    .hero-deck {
+      max-width: 720px;
+      margin: 28px 0 0;
+      color: #d4d2ce;
+      font-size: clamp(19px, 2vw, 26px);
+      line-height: 1.45;
+      letter-spacing: -.02em;
+    }
+    .hero-deck strong { color: var(--ink); }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 30px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.035);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+    }
+    .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+    .pill.danger .dot { background: var(--red); box-shadow: 0 0 12px var(--red); }
+
+    .hero-visual { position: relative; }
+    .hero-visual::before {
+      content: "실제 저장소 캡처";
+      position: absolute;
+      top: -12px;
+      right: 18px;
+      z-index: 3;
+      padding: 6px 9px;
+      border: 1px solid rgba(255,209,102,.45);
+      border-radius: 999px;
+      background: #13151d;
+      color: var(--yellow);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+    .hero-shot {
+      overflow: hidden;
+      border: 1px solid var(--line-strong);
+      border-radius: 18px;
+      background: #08090d;
+      box-shadow: var(--shadow);
+      transform: rotate(1.2deg);
+    }
+    .hero-shot img { width: 100%; aspect-ratio: 16/11; object-fit: cover; }
+    .hero-note {
+      position: absolute;
+      left: -24px;
+      bottom: -25px;
+      width: min(270px, 70%);
+      padding: 15px 17px;
+      border: 1px solid rgba(255,92,103,.35);
+      border-radius: 14px;
+      background: rgba(18,19,27,.95);
+      box-shadow: 0 14px 40px rgba(0,0,0,.4);
+      color: #e4dfe0;
+      font-size: 13px;
+      line-height: 1.45;
+      transform: rotate(-2deg);
+    }
+    .hero-note strong { display: block; margin-bottom: 4px; color: var(--red); }
+
+    .verdict-strip {
+      border-bottom: 1px solid var(--line);
+      background: var(--red);
+      color: #13090b;
+    }
+    .verdict-strip .wrap {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      align-items: center;
+      gap: 24px;
+      padding-block: 17px;
+    }
+    .verdict-strip strong {
+      font: 900 13px/1 "Cascadia Code", monospace;
+      letter-spacing: .08em;
+    }
+    .verdict-strip p { margin: 0; font-size: 16px; font-weight: 800; line-height: 1.4; }
+
+    .section { padding: 105px 0; }
+    .section + .section { border-top: 1px solid var(--line); }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, .95fr) minmax(300px, .55fr);
+      gap: 60px;
+      align-items: end;
+      margin-bottom: 52px;
+    }
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(38px, 5vw, 70px);
+      line-height: 1.04;
+      letter-spacing: -.055em;
+    }
+    .section-head p { margin: 0; color: var(--muted); font-size: 16px; }
+    .section-head strong { color: var(--ink); }
+
+    .lede {
+      max-width: 920px;
+      margin: 0 0 46px;
+      color: #d9d7d1;
+      font-size: clamp(21px, 2.5vw, 32px);
+      line-height: 1.45;
+      letter-spacing: -.025em;
+    }
+    .lede strong { color: var(--red); }
+
+    .score-layout {
+      display: grid;
+      grid-template-columns: minmax(320px, .8fr) minmax(0, 1.2fr);
+      gap: 24px;
+    }
+    .radar-card, .score-card, .card, .issue, .road-card, .evidence-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+      box-shadow: 0 18px 55px rgba(0,0,0,.16);
+    }
+    .radar-card { display: grid; place-items: center; min-height: 520px; padding: 26px; }
+    .radar-card svg { width: min(100%, 470px); height: auto; overflow: visible; }
+    .radar-card .gridline { fill: none; stroke: rgba(255,255,255,.12); }
+    .radar-card .axis { stroke: rgba(255,255,255,.08); }
+    .radar-card .shape { fill: rgba(255,92,103,.19); stroke: var(--red); stroke-width: 3; }
+    .radar-card .point { fill: var(--yellow); stroke: #16171d; stroke-width: 3; }
+    .radar-card text { fill: var(--muted); font-size: 13px; font-weight: 700; }
+    .radar-card .radar-score { fill: var(--ink); font-size: 44px; font-weight: 900; letter-spacing: -.06em; }
+    .radar-card .radar-label { fill: var(--red); font-size: 12px; letter-spacing: .1em; }
+
+    .score-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .score-card { position: relative; overflow: hidden; padding: 22px; }
+    .score-card::after {
+      content: attr(data-score);
+      position: absolute;
+      right: -2px;
+      bottom: -28px;
+      color: rgba(255,255,255,.035);
+      font-size: 108px;
+      font-weight: 950;
+      line-height: 1;
+      letter-spacing: -.1em;
+    }
+    .score-top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+    .score-top h3 { margin: 0; font-size: 16px; }
+    .score-top strong { color: var(--yellow); font-size: 27px; letter-spacing: -.05em; }
+    .meter { height: 7px; margin: 15px 0 13px; border-radius: 99px; background: rgba(255,255,255,.07); overflow: hidden; }
+    .meter i { display: block; width: var(--score); height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--red), var(--yellow)); }
+    .score-card p { position: relative; z-index: 1; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.52; }
+
+    .triple { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+    .card { padding: 25px; }
+    .card .num { color: var(--red); font: 800 12px/1 "Cascadia Code", monospace; letter-spacing: .1em; }
+    .card h3 { margin: 13px 0 8px; font-size: 23px; line-height: 1.23; letter-spacing: -.03em; }
+    .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .architecture {
+      overflow: hidden;
+      padding: clamp(22px, 4vw, 44px);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        #0d0f16;
+      background-size: 28px 28px;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(130px, 1fr));
+      align-items: center;
+      gap: 12px;
+    }
+    .flow-node {
+      position: relative;
+      min-height: 126px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 17px;
+      border: 1px solid var(--line-strong);
+      border-radius: 15px;
+      background: rgba(14,16,24,.93);
+    }
+    .flow-node:not(:last-child)::after {
+      content: "→";
+      position: absolute;
+      top: 50%;
+      right: -20px;
+      z-index: 2;
+      color: var(--yellow);
+      font-weight: 900;
+      transform: translateY(-50%);
+    }
+    .flow-node b { color: var(--yellow); font: 700 10px/1 "Cascadia Code", monospace; }
+    .flow-node strong { font-size: 17px; line-height: 1.2; }
+    .flow-node small { color: var(--faint); font-size: 11px; line-height: 1.35; }
+    .flow-node.bad { border-color: rgba(255,92,103,.52); box-shadow: inset 0 0 28px rgba(255,92,103,.07); }
+
+    .split-note {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .route {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.025);
+    }
+    .route h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: 17px; }
+    .route h3 span { width: 9px; height: 9px; border-radius: 50%; background: var(--green); }
+    .route.action h3 span { background: var(--violet); }
+    .route p { margin: 0; color: var(--muted); font-size: 13px; }
+    .route code { color: var(--cyan); font-size: 11px; }
+
+    .strengths {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .strength {
+      min-height: 150px;
+      padding: 20px;
+      border-top: 2px solid var(--green);
+      background: rgba(100,217,155,.045);
+    }
+    .strength span { color: var(--green); font-size: 21px; }
+    .strength h3 { margin: 9px 0 7px; font-size: 16px; }
+    .strength p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .gallery-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .gallery-grid.three { grid-template-columns: repeat(3, 1fr); }
+    .shot {
+      position: relative;
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 19px;
+      background: #0d0f15;
+    }
+    .shot.wide { grid-column: 1 / -1; }
+    .shot button {
+      position: relative;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: #08090d;
+      color: inherit;
+      cursor: zoom-in;
+    }
+    .shot button::after {
+      content: "확대 ↗";
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      padding: 6px 9px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      background: rgba(7,8,12,.78);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: .2s ease;
+    }
+    .shot button:hover::after, .shot button:focus-visible::after { opacity: 1; transform: translateY(0); }
+    .shot img { width: 100%; aspect-ratio: 16/10.7; object-fit: cover; transition: transform .35s ease; }
+    .shot button:hover img { transform: scale(1.015); }
+    .shot figcaption { padding: 16px 18px 18px; }
+    .shot figcaption strong { display: block; margin-bottom: 4px; font-size: 15px; }
+    .shot figcaption span { display: block; color: var(--muted); font-size: 12px; line-height: 1.48; }
+    .shot .tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 2;
+      padding: 5px 8px;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      background: rgba(9,10,15,.85);
+      color: var(--yellow);
+      font: 750 9px/1 "Cascadia Code", monospace;
+      letter-spacing: .08em;
+    }
+
+    .callout-line {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 20px;
+      align-items: start;
+      max-width: 920px;
+      margin: 38px auto 0;
+      padding: 22px;
+      border-left: 4px solid var(--red);
+      background: rgba(255,92,103,.055);
+    }
+    .callout-line b { color: var(--red); font: 900 38px/1 "Cascadia Code", monospace; }
+    .callout-line p { margin: 0; color: #ded9da; font-size: 17px; }
+
+    .issue-stack { display: grid; gap: 22px; }
+    .issue { overflow: hidden; }
+    .issue-head {
+      display: grid;
+      grid-template-columns: 100px minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: center;
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--line);
+    }
+    .severity {
+      display: grid;
+      place-items: center;
+      width: 80px;
+      aspect-ratio: 1;
+      border: 1px solid rgba(255,92,103,.45);
+      border-radius: 50%;
+      background: rgba(255,92,103,.08);
+      color: var(--red);
+      font: 900 20px/1 "Cascadia Code", monospace;
+    }
+    .issue-title small { display: block; margin-bottom: 4px; color: var(--red); font: 800 10px/1 "Cascadia Code", monospace; letter-spacing: .1em; }
+    .issue-title h3 { margin: 0; font-size: clamp(23px, 3vw, 38px); line-height: 1.12; letter-spacing: -.045em; }
+    .issue-verdict { max-width: 260px; color: var(--muted); font-size: 12px; line-height: 1.4; text-align: right; }
+    .issue-body { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr); gap: 30px; padding: 28px; }
+    .issue-body p { margin: 0 0 16px; color: #d3d1cf; }
+    .issue-body ul { margin: 0; padding-left: 20px; color: var(--muted); }
+    .issue-body li + li { margin-top: 7px; }
+    .issue-body strong { color: var(--ink); }
+    .codebox {
+      align-self: start;
+      overflow: auto;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #090b10;
+    }
+    .codebox .path { display: block; margin-bottom: 13px; color: var(--cyan); font: 700 10px/1.3 "Cascadia Code", monospace; }
+    .codebox pre { margin: 0; color: #c8cbd3; font-size: 11px; line-height: 1.65; white-space: pre-wrap; }
+    .codebox mark { padding: 1px 3px; background: rgba(255,92,103,.17); color: #ffb8bd; }
+
+    .target-diagram {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 14px;
+      align-items: stretch;
+      margin-top: 24px;
+    }
+    .target-pane { padding: 19px; border: 1px solid var(--line); border-radius: 15px; background: rgba(255,255,255,.025); }
+    .target-pane.good { border-color: rgba(100,217,155,.32); }
+    .target-pane.bad { border-color: rgba(255,92,103,.4); background: rgba(255,92,103,.045); }
+    .target-pane h4 { margin: 0 0 12px; color: var(--muted); font-size: 11px; letter-spacing: .08em; }
+    .target-pane .choice { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 10px; border-radius: 9px; background: rgba(255,255,255,.045); font-size: 12px; }
+    .target-pane .choice + .choice { margin-top: 7px; }
+    .target-pane .choice b { color: var(--yellow); }
+    .target-arrow { align-self: center; color: var(--red); font-size: 28px; font-weight: 900; }
+
+    .choice-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 16px 18px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: rgba(255,255,255,.035); color: var(--faint); font: 800 10px/1.35 "Cascadia Code", monospace; letter-spacing: .08em; }
+    td { color: var(--muted); font-size: 13px; }
+    td:first-child { color: var(--ink); font-weight: 800; white-space: nowrap; }
+    tr:last-child td { border-bottom: 0; }
+    .grade { display: inline-grid; place-items: center; min-width: 38px; padding: 4px 7px; border-radius: 999px; font: 900 11px/1 "Cascadia Code", monospace; }
+    .grade.f { background: rgba(255,92,103,.13); color: var(--red); }
+    .grade.d { background: rgba(255,154,82,.13); color: var(--orange); }
+    .grade.c { background: rgba(255,209,102,.13); color: var(--yellow); }
+    .grade.b { background: rgba(100,217,155,.13); color: var(--green); }
+
+    .ai-visual {
+      display: grid;
+      grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr);
+      gap: 20px;
+      margin-top: 28px;
+    }
+    .ai-loop { padding: 25px; border: 1px solid var(--line); border-radius: 20px; background: #0d0f16; }
+    .ai-step { position: relative; padding: 12px 14px; border: 1px solid var(--line); border-radius: 11px; color: var(--muted); font-size: 13px; }
+    .ai-step + .ai-step { margin-top: 24px; }
+    .ai-step + .ai-step::before { content: "↓"; position: absolute; top: -24px; left: 50%; color: var(--red); transform: translateX(-50%); }
+    .ai-step strong { color: var(--ink); }
+    .ai-step.final { border-color: rgba(255,92,103,.45); color: #ffb8bd; }
+    .design-note { padding: 28px; border-radius: 20px; background: linear-gradient(135deg, rgba(115,153,255,.11), rgba(169,140,255,.055)); }
+    .design-note h3 { margin: 0 0 13px; font-size: 28px; line-height: 1.16; }
+    .design-note p { margin: 0; color: #c9c7cf; }
+    .design-note blockquote { margin: 22px 0 0; padding: 16px 18px; border-left: 3px solid var(--yellow); background: rgba(0,0,0,.18); color: var(--ink); font-size: 18px; font-weight: 800; }
+
+    .history-warning {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: start;
+      margin-top: 28px;
+      padding: 20px;
+      border: 1px solid rgba(255,209,102,.35);
+      border-radius: 16px;
+      background: rgba(255,209,102,.045);
+    }
+    .history-warning .icon { color: var(--yellow); font-size: 25px; }
+    .history-warning h3 { margin: 0 0 5px; font-size: 16px; }
+    .history-warning p { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .ux-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .ux-panel { padding: 27px; border: 1px solid var(--line); border-radius: 21px; background: rgba(255,255,255,.022); }
+    .ux-panel h3 { margin: 0 0 15px; font-size: 25px; line-height: 1.2; }
+    .ux-panel p { margin: 0; color: var(--muted); font-size: 14px; }
+    .ux-panel code { color: var(--cyan); font-size: 11px; }
+    .ux-panel.danger { border-color: rgba(255,92,103,.32); }
+    .keyboard-map { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 20px; }
+    .key {
+      min-height: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-bottom-width: 3px;
+      border-radius: 9px;
+      background: #10131c;
+    }
+    .key b { color: var(--ink); font: 900 15px/1 "Cascadia Code", monospace; }
+    .key span { color: var(--faint); font-size: 9px; line-height: 1.3; }
+    .key.bad { border-color: rgba(255,92,103,.45); }
+    .key.bad span { color: var(--red); }
+
+    .compare-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 20px; margin-top: 22px; }
+    .compare-grid .shot:first-child img { object-fit: contain; aspect-ratio: 16/7.4; }
+    .compare-grid .shot:last-child img { object-fit: cover; aspect-ratio: 16/10.7; }
+
+    .redesign {
+      margin-top: 46px;
+      padding: clamp(22px, 4vw, 42px);
+      border: 1px solid rgba(100,217,155,.28);
+      border-radius: 26px;
+      background: linear-gradient(145deg, rgba(100,217,155,.055), rgba(115,153,255,.03));
+    }
+    .redesign-head { display: flex; justify-content: space-between; gap: 30px; align-items: end; margin-bottom: 28px; }
+    .redesign-head h3 { margin: 0; font-size: clamp(28px, 4vw, 47px); line-height: 1.1; letter-spacing: -.04em; }
+    .redesign-head p { max-width: 420px; margin: 0; color: var(--muted); font-size: 13px; }
+    .redesign svg { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 18px; background: #090b12; }
+    .redesign svg text { font-family: Pretendard, "Malgun Gothic", sans-serif; }
+
+    .priority-grid { display: grid; gap: 14px; }
+    .road-card {
+      display: grid;
+      grid-template-columns: 96px minmax(220px, .8fr) minmax(0, 1.2fr) 100px;
+      gap: 22px;
+      align-items: center;
+      padding: 23px;
+    }
+    .road-priority { color: var(--red); font: 950 28px/1 "Cascadia Code", monospace; }
+    .road-title h3 { margin: 0 0 4px; font-size: 19px; }
+    .road-title code { color: var(--cyan); font-size: 10px; }
+    .road-copy { color: var(--muted); font-size: 13px; }
+    .effort { justify-self: end; padding: 7px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--yellow); font: 800 10px/1 "Cascadia Code", monospace; }
+
+    .acceptance {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 26px;
+    }
+    .acceptance .card { border-top: 2px solid var(--cyan); }
+    .acceptance .card h3 { font-size: 18px; }
+    .acceptance .card ul { margin: 13px 0 0; padding-left: 18px; color: var(--muted); font-size: 12px; }
+
+    .evidence-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .evidence-card { padding: 24px; }
+    .evidence-card h3 { margin: 0 0 15px; font-size: 18px; }
+    .evidence-card ul { margin: 0; padding: 0; list-style: none; }
+    .evidence-card li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 15px; padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .evidence-card li:last-child { border-bottom: 0; }
+    .evidence-card code { color: #d5d8e1; font-size: 10px; word-break: break-all; }
+    .evidence-card b { color: var(--faint); font: 750 9px/1.5 "Cascadia Code", monospace; white-space: nowrap; }
+
+    .limits {
+      margin-top: 22px;
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255,255,255,.018);
+    }
+    .limits h3 { margin: 0 0 9px; font-size: 16px; }
+    .limits p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    footer { padding: 42px 0 70px; border-top: 1px solid var(--line); }
+    .footer-grid { display: flex; justify-content: space-between; gap: 30px; align-items: end; }
+    footer strong { display: block; font-size: 20px; }
+    footer p { margin: 5px 0 0; color: var(--faint); font-size: 12px; }
+    footer .stamp { color: var(--faint); font: 800 10px/1.5 "Cascadia Code", monospace; text-align: right; }
+
+    dialog {
+      width: min(94vw, 1500px);
+      max-width: none;
+      max-height: 94vh;
+      padding: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 18px;
+      background: #090a0e;
+      color: var(--ink);
+      box-shadow: 0 30px 100px rgba(0,0,0,.7);
+    }
+    dialog::backdrop { background: rgba(2,3,6,.88); backdrop-filter: blur(10px); }
+    .lightbox-inner { position: relative; }
+    .lightbox-inner img { width: 100%; max-height: calc(94vh - 70px); object-fit: contain; background: #05060a; }
+    .lightbox-inner p { margin: 0; padding: 13px 70px 14px 17px; color: var(--muted); font-size: 12px; }
+    .lightbox-close {
+      position: absolute;
+      right: 13px;
+      bottom: 10px;
+      z-index: 2;
+      padding: 7px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: #171923;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .mobile-toc { display: none; }
+
+    @media (max-width: 1500px) {
+      .rail { display: none; }
+    }
+    @media (max-width: 980px) {
+      body { font-size: 16px; }
+      .hero { min-height: auto; }
+      .hero-grid, .section-head, .score-layout, .issue-body, .ai-visual, .compare-grid { grid-template-columns: 1fr; }
+      .hero-visual { max-width: 760px; margin-top: 20px; }
+      .section-head { gap: 18px; }
+      .section { padding: 80px 0; }
+      .flow { grid-template-columns: repeat(3, 1fr); }
+      .flow-node:nth-child(3)::after { display: none; }
+      .strengths { grid-template-columns: repeat(2, 1fr); }
+      .gallery-grid.three { grid-template-columns: 1fr 1fr; }
+      .issue-verdict { display: none; }
+      .road-card { grid-template-columns: 70px 1fr auto; }
+      .road-copy { grid-column: 2 / -1; }
+      .mobile-toc { display: block; position: sticky; top: 10px; z-index: 50; margin: 10px auto; width: min(calc(100% - 30px), 700px); }
+      .mobile-toc summary { padding: 10px 13px; border: 1px solid var(--line); border-radius: 12px; background: rgba(15,17,24,.92); backdrop-filter: blur(12px); cursor: pointer; font-size: 12px; font-weight: 800; }
+      .mobile-toc nav { display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px; margin-top: 6px; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: #11131b; }
+      .mobile-toc a { padding: 7px; color: var(--muted); font-size: 11px; text-decoration: none; }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: min(calc(100% - 24px), var(--content)); }
+      .hero { padding-top: 55px; }
+      .hero h1 { font-size: clamp(45px, 16vw, 72px); }
+      .hero-grid { display: block; }
+      .hero-visual { margin-top: 55px; }
+      .hero-note { left: 8px; bottom: -32px; }
+      .verdict-strip .wrap { grid-template-columns: 1fr; gap: 7px; }
+      .score-grid, .triple, .gallery-grid, .gallery-grid.three, .split-note, .ux-grid, .acceptance, .evidence-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr; }
+      .flow-node:not(:last-child)::after { content: "↓"; top: auto; right: 50%; bottom: -23px; transform: translateX(50%); }
+      .flow-node:nth-child(3)::after { display: block; }
+      .strengths { grid-template-columns: 1fr 1fr; }
+      .target-diagram { grid-template-columns: 1fr; }
+      .target-arrow { transform: rotate(90deg); justify-self: center; }
+      .issue-head { grid-template-columns: 62px 1fr; gap: 14px; padding: 18px; }
+      .severity { width: 58px; font-size: 16px; }
+      .issue-body { padding: 18px; }
+      .keyboard-map { grid-template-columns: repeat(2, 1fr); }
+      .redesign-head, .footer-grid { display: block; }
+      .redesign-head p { margin-top: 12px; }
+      .road-card { grid-template-columns: 55px 1fr; gap: 14px; }
+      .effort { grid-column: 1; grid-row: 2; justify-self: start; }
+      .road-copy { grid-column: 2; }
+      footer .stamp { margin-top: 20px; text-align: left; }
+      .mobile-toc nav { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+    @media print {
+      body { background: #fff; color: #111; font-size: 11pt; }
+      .rail, .progress, .mobile-toc, .shot button::after { display: none !important; }
+      .hero { min-height: auto; padding: 40px 0; }
+      .hero h1, .section-head h2 { color: #111; }
+      .section { padding: 34px 0; break-inside: avoid; }
+      .card, .issue, .shot, .road-card, .evidence-card, .radar-card, .score-card { box-shadow: none; break-inside: avoid; }
+      .muted, p, td { color: #333 !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <nav class="rail" aria-label="보고서 목차">
+    <a href="#verdict">총평</a>
+    <a href="#architecture">구조</a>
+    <a href="#screens">실제 화면</a>
+    <a href="#fatal">치명적 문제</a>
+    <a href="#gameplay">게임성</a>
+    <a href="#ux">UI · UX</a>
+    <a href="#roadmap">개선 순서</a>
+    <a href="#evidence">근거</a>
+  </nav>
+
+  <details class="mobile-toc">
+    <summary>목차 열기</summary>
+    <nav aria-label="모바일 보고서 목차">
+      <a href="#verdict">총평</a><a href="#architecture">구조</a><a href="#screens">실제 화면</a><a href="#fatal">치명적 문제</a>
+      <a href="#gameplay">게임성</a><a href="#ux">UI · UX</a><a href="#roadmap">개선 순서</a><a href="#evidence">근거</a>
+    </nav>
+  </details>
+
+  <main id="main">
+    <header class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <p class="eyebrow">RPG ZZU / TURN-BASED COMBAT AUTOPSY</p>
+          <h1>화려한 껍데기,<br><span>새는 선택권.</span></h1>
+          <p class="hero-deck">지금 전투는 <strong>기능이 없는 게 아니다.</strong> 오히려 기능은 많다. 문제는 플레이어가 내린 선택과 실제 결과가 자꾸 어긋난다는 것이다. 솔직히 말해, 현재 상태는 <strong>“전투 엔진 데모”에는 가깝지만 “계속 하고 싶은 전투”에는 멀다.</strong></p>
+          <div class="hero-meta">
+            <span class="pill danger"><span class="dot"></span> P0 규칙 오류 3종</span>
+            <span class="pill"><span class="dot"></span> 현재 소스 정적 추적</span>
+            <span class="pill">11개 실제 캡처</span>
+            <span class="pill">2026.07.30</span>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <figure class="hero-shot">
+            <img src="evidence/battle-review-2026-07/01-play-troop_slime-open.png" alt="RM2003 스타일의 슬라임 전투 명령 화면">
+          </figure>
+          <div class="hero-note"><strong>첫인상은 꽤 좋다.</strong> 그런데 이 화면이 숨기는 정보와, 버튼 뒤에서 망가지는 규칙이 너무 많다.</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="verdict-strip">
+      <div class="wrap">
+        <strong>ONE-LINE VERDICT</strong>
+        <p>전투 시스템은 만들었다. 하지만 플레이어가 이해하고 예측하고 고민할 “게임”은 아직 덜 만들었다.</p>
+      </div>
+    </div>
+
+    <section class="section" id="verdict">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">01 / EXECUTIVE VERDICT</p><h2>총점 4.6 / 10.<br>기반은 좋고, 경험은 거칠다.</h2></div>
+          <p>점수는 코드 품질만이 아니라 <strong>플레이어가 실제로 무엇을 보고, 고르고, 이해할 수 있는가</strong>를 기준으로 매겼다. 따라서 런타임 구조가 탄탄해도 전투 경험 점수는 낮을 수 있다.</p>
+        </div>
+
+        <p class="lede">가장 큰 착각은 <strong>“명령이 많으면 전략이 깊다”</strong>는 것이다. 공격·스킬·아이템·방어·도주·교체·포획이 있어도, 대상 선택이 틀리고 AI가 단순하며 결과 설명이 빠지면 결국 플레이는 <strong>평타를 누르는 의식</strong>이 된다.</p>
+
+        <div class="score-layout">
+          <div class="radar-card">
+            <svg viewBox="0 0 440 390" role="img" aria-labelledby="radar-title radar-desc">
+              <title id="radar-title">전투 품질 레이더 차트</title>
+              <desc id="radar-desc">시각 연출 7점, 엔진 기반 7.5점, 전략 선택 3.5점, 피드백 5점, 조작 3점, 접근성 2.5점</desc>
+              <g transform="translate(220 190)">
+                <polygon class="gridline" points="0,-145 125.6,-72.5 125.6,72.5 0,145 -125.6,72.5 -125.6,-72.5"/>
+                <polygon class="gridline" points="0,-108.75 94.2,-54.4 94.2,54.4 0,108.75 -94.2,54.4 -94.2,-54.4"/>
+                <polygon class="gridline" points="0,-72.5 62.8,-36.25 62.8,36.25 0,72.5 -62.8,36.25 -62.8,-36.25"/>
+                <polygon class="gridline" points="0,-36.25 31.4,-18.1 31.4,18.1 0,36.25 -31.4,18.1 -31.4,-18.1"/>
+                <line class="axis" x1="0" y1="0" x2="0" y2="-145"/><line class="axis" x1="0" y1="0" x2="125.6" y2="-72.5"/>
+                <line class="axis" x1="0" y1="0" x2="125.6" y2="72.5"/><line class="axis" x1="0" y1="0" x2="0" y2="145"/>
+                <line class="axis" x1="0" y1="0" x2="-125.6" y2="72.5"/><line class="axis" x1="0" y1="0" x2="-125.6" y2="-72.5"/>
+                <polygon class="shape" points="0,-101.5 94.2,-54.4 43.96,25.38 0,43.5 -31.4,18.1 -43.96,-25.38"/>
+                <circle class="point" cx="0" cy="-101.5" r="5"/><circle class="point" cx="94.2" cy="-54.4" r="5"/>
+                <circle class="point" cx="43.96" cy="25.38" r="5"/><circle class="point" cx="0" cy="43.5" r="5"/>
+                <circle class="point" cx="-31.4" cy="18.1" r="5"/><circle class="point" cx="-43.96" cy="-25.38" r="5"/>
+              </g>
+              <text x="220" y="17" text-anchor="middle">시각 연출 7.0</text>
+              <text x="392" y="112" text-anchor="end">엔진 기반 7.5</text>
+              <text x="392" y="286" text-anchor="end">피드백 3.5</text>
+              <text x="220" y="370" text-anchor="middle">조작 3.0</text>
+              <text x="48" y="286">접근성 2.5</text>
+              <text x="48" y="112">전략 선택 3.5</text>
+              <text class="radar-score" x="220" y="190" text-anchor="middle">4.6</text>
+              <text class="radar-label" x="220" y="212" text-anchor="middle">OVERALL</text>
+            </svg>
+          </div>
+
+          <div class="score-grid">
+            <article class="score-card" data-score="3.5"><div class="score-top"><h3>전략적 선택</h3><strong>3.5</strong></div><div class="meter"><i style="--score:35%"></i></div><p>명령 종류는 많지만 지원 대상·적 AI·AUTO가 결정을 납작하게 만든다.</p></article>
+            <article class="score-card" data-score="3.5"><div class="score-top"><h3>행동 피드백</h3><strong>3.5</strong></div><div class="meter"><i style="--score:35%"></i></div><p>타격감 재료는 좋지만 상태 틱과 다중 행동의 원인·결과가 사라진다.</p></article>
+            <article class="score-card" data-score="4.0"><div class="score-top"><h3>정보 구조</h3><strong>4.0</strong></div><div class="meter"><i style="--score:40%"></i></div><p>기본 flow가 gauge인데 대표 스킨은 게이지·비용·키 힌트를 숨긴다.</p></article>
+            <article class="score-card" data-score="3.0"><div class="score-top"><h3>입력·조작</h3><strong>3.0</strong></div><div class="meter"><i style="--score:30%"></i></div><p>버튼은 있지만 메뉴 커서가 없고 Enter가 보이는 focus를 배신할 수 있다.</p></article>
+            <article class="score-card" data-score="7.0"><div class="score-top"><h3>시각 연출</h3><strong>7.0</strong></div><div class="meter"><i style="--score:70%"></i></div><p>배경·스프라이트·피격 정지·팝업·결과 공개는 분명 강점이다.</p></article>
+            <article class="score-card" data-score="7.5"><div class="score-top"><h3>구현 기반</h3><strong>7.5</strong></div><div class="meter"><i style="--score:75%"></i></div><p>상태기계·세션 경계·정리 로직은 좋다. 그래서 고칠 가치가 더 크다.</p></article>
+          </div>
+        </div>
+
+        <div class="triple">
+          <article class="card"><span class="num">FATAL 01</span><h3>규칙이 화면을 배신한다</h3><p>self, ally, allAllies, 심지어 enemy support까지 하나의 “저HP 자동 대상” 함수로 뭉개진다.</p></article>
+          <article class="card"><span class="num">FATAL 02</span><h3>선택 결과가 사라진다</h3><p>strict 라운드와 다중 타격의 로그를 한 번에 소비해, 실제 행동과 연출이 어긋날 수 있다.</p></article>
+          <article class="card"><span class="num">FATAL 03</span><h3>AUTO는 AI가 아니다</h3><p><code>Math.random()</code>으로 적을 고른 뒤 평타만 누른다. 강제 교체에서는 막힐 여지도 있다.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">02 / WHAT ACTUALLY RUNS</p><h2>뼈대는 생각보다 좋다.<br>문제는 연결부다.</h2></div>
+          <p>전투 진입, 런타임, DOM, 연출, 보상 반영이 분리되어 있다. <strong>설계가 엉망이라서 망한 전투가 아니다.</strong> 각 층 사이의 계약이 플레이 경험을 제대로 보존하지 못하는 게 핵심이다.</p>
+        </div>
+
+        <div class="architecture">
+          <div class="flow" aria-label="전투 실행 흐름">
+            <div class="flow-node"><b>01 / ENTRY</b><strong>이벤트에서<br>전투 진입</strong><small>playSceneBattle.ts<br>세션·RNG·오디오 주입</small></div>
+            <div class="flow-node"><b>02 / RUNTIME</b><strong>상태기계<br>생성</strong><small>runtime.ts<br>gauge / strict</small></div>
+            <div class="flow-node bad"><b>03 / DECISION</b><strong>명령·대상<br>결정</strong><small>target resolver<br>핵심 규칙 오류 지점</small></div>
+            <div class="flow-node bad"><b>04 / RESOLVE</b><strong>피해·상태·<br>적 AI</strong><small>행동 로그 생성<br>AI는 조건 폭이 좁음</small></div>
+            <div class="flow-node bad"><b>05 / PRESENT</b><strong>연출·메시지<br>재생</strong><small>sequencer.ts<br>로그 소비 불일치</small></div>
+            <div class="flow-node"><b>06 / RETURN</b><strong>보상 반영·<br>필드 복귀</strong><small>경험치·골드·상태<br>세션에 합치기</small></div>
+          </div>
+
+          <div class="split-note">
+            <article class="route"><h3><span></span>이 보고서의 주 대상: 턴제 전투</h3><p><code>battleProcessing → playBattle → createBattleRuntime</code><br>이벤트 기반 전투가 타는 정식 경로다. 공격·스킬·아이템·포획·교체·보상을 포함한다.</p></article>
+            <article class="route action"><h3><span></span>별도 시스템: 액션 전투</h3><p><code>playSceneActionCombat.ts</code><br>특정 맵에서만 켜지는 별도 런타임이다. 제어·상태·UI 경로를 턴제와 공유하지 않으므로, 액션 전투 캡처를 턴제 품질의 증거로 섞으면 안 된다.</p></article>
+          </div>
+        </div>
+
+        <div class="strengths">
+          <article class="strength"><span>✓</span><h3>세션 경계가 명확함</h3><p>전투 전 상태를 주입하고, 종료 뒤 보상·HP/MP·이벤트 상태를 다시 합친다.</p></article>
+          <article class="strength"><span>✓</span><h3>정상 경로 RNG 재현성</h3><p>세션 PRNG를 battle namespace로 전달한다. 단, AUTO만 Math.random으로 이 규칙을 깨뜨린다.</p></article>
+          <article class="strength"><span>✓</span><h3>연출 재료가 풍부함</h3><p>hit-stop, flash, motion, popup, animation, capture cinematic, 결과 단계 공개가 있다.</p></article>
+          <article class="strength"><span>✓</span><h3>정리 로직이 꼼꼼함</h3><p>interval, listener, timer, animation, ResizeObserver를 destroy에서 정리한다.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="screens">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">03 / WHAT THE PLAYER SEES</p><h2>화면은 “될 것 같다”.<br>그래서 문제가 더 늦게 보인다.</h2></div>
+          <p>아래는 저장소의 기존 턴제 evidence 캡처다. 화면 자체는 상당히 정돈되어 있다. 하지만 <strong>잘 정돈된 화면이 잘 설명된 규칙을 뜻하지는 않는다.</strong></p>
+        </div>
+
+        <div class="gallery-grid">
+          <figure class="shot"><span class="tag">01 / COMMAND</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/01-play-troop_slime-open.png" alt="슬라임 전투의 기본 명령 화면"></button><figcaption><strong>첫 명령 화면 — 인상은 깔끔하다</strong><span>공격·기술·방어·아이템·도주가 한눈에 보인다. 하지만 MP 비용, 행동 순서, 조작 힌트는 대표 스킨에서 사라진다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">02 / TARGET</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/02-play-troop_slime-target-select.png" alt="슬라임을 선택하는 적 대상 지정 화면"></button><figcaption><strong>적 대상 선택 — 이 부분은 잘 보인다</strong><span>브래킷과 대상 메뉴가 같은 적을 가리킨다. 문제는 아군 대상 화면이 같은 수준으로 존재하지 않는다는 점이다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">03 / IMPACT</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/03-play-troop_slime-after-attack.png" alt="슬라임 공격 해결 뒤 화면"></button><figcaption><strong>타격 피드백 — 재료는 충분하다</strong><span>동작·피격·수치 변화 경로가 있다. 그러나 상태 지속 피해와 strict 다중 행동은 같은 밀도로 설명되지 않는다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">04 / RESULT</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/04-play-troop_slime-result.png" alt="슬라임 전투 승리 결과 화면"></button><figcaption><strong>결과 화면 — 기능적이지만 감정 곡선은 짧다</strong><span>경험치·골드·아이템·레벨업을 단계 공개한다. 전투 본편보다 결과 정리가 더 명확한 편이다.</span></figcaption></figure>
+        </div>
+
+        <div class="callout-line"><b>!</b><p><strong>여기서 함정:</strong> 스크린샷만 보면 “깔끔한 고전 JRPG 전투”로 보인다. 하지만 코드를 따라가면 플레이어가 고른 대상, 실제 대상, 화면에 재생되는 행동이 서로 다를 수 있다. 비주얼 QA만으로는 잡히지 않는 종류의 실패다.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="fatal">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">04 / FATAL FAILURES</p><h2>취향 문제가 아니다.<br>전투 규칙이 틀린다.</h2></div>
+          <p>아래 세 가지는 “더 예쁘게 만들자” 수준이 아니다. <strong>플레이어 입력과 런타임 결과의 계약</strong>이 깨지는 문제다. 출시 전 가장 먼저 막아야 한다.</p>
+        </div>
+
+        <div class="issue-stack">
+          <article class="issue">
+            <header class="issue-head"><div class="severity">P0</div><div class="issue-title"><small>RULE INTEGRITY</small><h3>대상 지정이 전투의 의미를 박살낸다</h3></div><div class="issue-verdict">가장 심각하다.<br>잘못된 UX가 아니라 잘못된 규칙이다.</div></header>
+            <div class="issue-body">
+              <div>
+                <p><strong>self, ally, allAllies, healing, support</strong>가 사실상 하나의 함수로 들어간다. 그 함수는 “같은 편 생존자 중 HP 비율이 가장 낮은 한 명”을 고른다.</p>
+                <ul>
+                  <li><strong>self 스킬</strong>이 시전자가 아니라 저HP 동료에게 갈 수 있다.</li>
+                  <li><strong>allAllies 아이템</strong>이 전체가 아니라 한 명에게만 적용될 수 있다.</li>
+                  <li><strong>enemy 범위의 support 디버프</strong>도 effect가 support라는 이유로 아군 저HP 대상에게 틀어질 수 있다.</li>
+                  <li>플레이어에게 <strong>아군 대상 선택 UI 자체가 없다.</strong> 잘못된 자동 선택을 고칠 방법도 없다.</li>
+                </ul>
+
+                <div class="target-diagram" aria-label="기대 대상 처리와 현재 대상 처리 비교">
+                  <div class="target-pane good"><h4>플레이어가 기대하는 규칙</h4><div class="choice"><span>집중 / self</span><b>나 자신</b></div><div class="choice"><span>치유 / ally</span><b>직접 선택</b></div><div class="choice"><span>전체 회복</span><b>모든 아군</b></div><div class="choice"><span>약화 / enemy</span><b>선택한 적</b></div></div>
+                  <div class="target-arrow">≠</div>
+                  <div class="target-pane bad"><h4>현재 resolver가 할 수 있는 일</h4><div class="choice"><span>집중 / self</span><b>저HP 아군 1명</b></div><div class="choice"><span>치유 / ally</span><b>저HP 아군 1명</b></div><div class="choice"><span>전체 회복</span><b>저HP 아군 1명</b></div><div class="choice"><span>support 효과</span><b>저HP 아군 1명</b></div></div>
+                </div>
+              </div>
+              <div class="codebox"><span class="path">src/battle/runtime.ts:661–689</span><pre>if (item.scope === "ally" ||
+    item.scope === <mark>"allAllies"</mark> ||
+    item.scope === "none")
+  return supportTargetFor(user);
+
+if (effect.kind === "healing" ||
+    effect.kind === <mark>"support"</mark>)
+  return supportTargetFor(user);
+
+// supportTargetFor:
+// 같은 편을 HP 비율 오름차순 정렬 후 [0]</pre></div>
+            </div>
+          </article>
+
+          <article class="issue">
+            <header class="issue-head"><div class="severity">P0</div><div class="issue-title"><small>PRESENTATION CONTRACT</small><h3>여러 행동을 계산하고, 한 행동처럼 보여 준다</h3></div><div class="issue-verdict">strict·전체 공격·2회 공격에서<br>결과와 연출이 분리될 위험이 크다.</div></header>
+            <div class="issue-body">
+              <div>
+                <p>strict flow는 마지막 아군 명령을 받은 순간 <strong>아군과 적의 전체 라운드를 동기적으로 계산</strong>한다. 2회 공격과 전체 공격도 action log에 여러 항목을 남긴다.</p>
+                <p>그런데 플레이어 명령 뒤 sequencer는 곧바로 <strong>로그 끝까지 “소비 완료” 처리</strong>하고, <code>lastActionResult</code> 하나로 연출을 만든다. 즉 계산은 여러 번 했는데 화면은 마지막 결과 하나만 대표처럼 보여 줄 수 있다.</p>
+                <ul>
+                  <li>누가 누구를 몇 번 때렸는지 플레이어가 복원하기 어렵다.</li>
+                  <li>HP는 이미 바뀌었는데 해당 행동의 모션·팝업·메시지가 생략될 수 있다.</li>
+                  <li>적 advance 경로는 새 로그를 slice해 재생하므로, 아군과 적의 처리 규칙도 비대칭이다.</li>
+                </ul>
+              </div>
+              <div class="codebox"><span class="path">src/player/battleSequencer.ts:260–295</span><pre>runAfterActorCommand(command, before, after) {
+  clearTimers();
+  setBusy(true);
+
+  // 현재 명령이 만든 범위가 아니라
+  // 전체 로그 길이까지 소비한다.
+  <mark>consumedActions = after.actionLog.length;</mark>
+
+  const feedback = damageFeedback(
+    command, before, after
+  );
+  // lastActionResult 중심의 단일 beat
+}</pre></div>
+            </div>
+          </article>
+
+          <article class="issue">
+            <header class="issue-head"><div class="severity">P0</div><div class="issue-title"><small>AUTO BATTLE</small><h3>자동전투는 AI가 아니라 랜덤 평타 매크로다</h3></div><div class="issue-verdict">회복도, 스킬도, 교체도 없다.<br>재현성까지 깨뜨린다.</div></header>
+            <div class="issue-body">
+              <div>
+                <p>AUTO가 하는 일은 간단하다. 살아 있는 적 중 하나를 <code>Math.random()</code>으로 고르고 <strong>무조건 공격</strong>한다. 스킬, MP, 회복, 약점, 포획, 방어, 교체를 보지 않는다.</p>
+                <ul>
+                  <li>정상 전투는 세션 RNG를 쓰는데 AUTO만 브라우저 랜덤을 써서 <strong>세이브 재현성 원칙을 위반</strong>한다.</li>
+                  <li>전열이 쓰러져 강제 교체가 필요한 phase도 <code>actorCommand</code>다. AUTO는 계속 평타를 제출하고 런타임은 switch 외 명령을 거절할 수 있어 <strong>교착 가능성</strong>이 있다.</li>
+                  <li>화면에 AUTO 버튼이 있다는 이유로 플레이어는 “전투가 반복적이어도 버튼으로 넘기면 된다”고 학습한다. 이는 전투 자체의 재미 부족을 가리는 진통제다.</li>
+                </ul>
+              </div>
+              <div class="codebox"><span class="path">src/player/battleDom.ts:389–403</span><pre>if (snapshot.phase === "actorCommand") {
+  const livingEnemies = snapshot.enemies
+    .filter((e) =&gt; !e.defeated);
+
+  const target = livingEnemies[
+    Math.floor(<mark>Math.random()</mark>
+      * livingEnemies.length)
+  ];
+
+  runActorCommand({
+    kind: <mark>"attack"</mark>,
+    targetEnemyId: target.id
+  });
+}</pre></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="gameplay">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">05 / GAME DESIGN CRITIQUE</p><h2>선택지는 많다.<br>고민할 이유는 적다.</h2></div>
+          <p>좋은 턴제 전투는 “무엇을 누를까?”보다 <strong>“왜 지금 이걸 눌러야 할까?”</strong>를 만든다. 현재 구현은 명령 표면은 넓지만 그 판단을 지지하는 적 행동, 정보, 피드백이 얕다.</p>
+        </div>
+
+        <div class="gallery-grid three">
+          <figure class="shot"><span class="tag">SKILL MENU</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/08-play-troop_bat_swarm-skill-menu.png" alt="동굴 박쥐 전투의 스킬 메뉴"></button><figcaption><strong>스킬은 보이지만 사용 가능성은 흐리다</strong><span>현재 MP로 쓸 수 없는 스킬도 목록 단계에서 실제 disabled 처리되지 않는다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">ITEM MENU</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/09-play-troop_bat_swarm-item-menu.png" alt="동굴 박쥐 전투의 아이템 메뉴"></button><figcaption><strong>아이템은 있어도 아군 대상 선택은 없다</strong><span>회복·해제 대상을 직접 고르는 전술적 순간이 자동 선택으로 증발한다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">MULTI ENEMY</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/05-play-troop_bat_swarm-open.png" alt="동굴 박쥐 여러 마리가 나온 전투 화면"></button><figcaption><strong>적이 늘어도 AI의 사고는 늘지 않는다</strong><span>대상 정책이 단순해 적 구성 차이가 전술 차이로 충분히 이어지지 않는다.</span></figcaption></figure>
+        </div>
+
+        <h3 style="margin:55px 0 17px;font-size:30px;letter-spacing:-.04em">명령별 “실제 의사결정 가치”</h3>
+        <div class="choice-table-wrap">
+          <table>
+            <thead><tr><th>명령</th><th>표면상 기대</th><th>현재 실제 경험</th><th>판정</th></tr></thead>
+            <tbody>
+              <tr><td>공격</td><td>안전하고 자원 없는 기본 선택</td><td>가장 예측 가능하다. 그래서 다른 명령이 망가질수록 사실상 정답이 된다.</td><td><span class="grade b">B</span></td></tr>
+              <tr><td>스킬</td><td>자원·효과·대상을 비교하는 핵심 선택</td><td>MP 부족을 메뉴가 막지 않고, 실패하면 설명 없이 평타로 바뀐다. support 대상도 위험하다.</td><td><span class="grade f">F</span></td></tr>
+              <tr><td>아이템</td><td>희소 자원으로 위기를 복구</td><td>소모·효과는 있지만 아군 대상 선택이 없고 allAllies 의미도 보존되지 않을 수 있다.</td><td><span class="grade f">F</span></td></tr>
+              <tr><td>방어</td><td>적의 큰 공격을 읽고 피해를 줄임</td><td>피해 감소는 구현됐지만 적 의도·행동 예고가 빈약해 “읽고 막는” 판단보다 찍기에 가깝다.</td><td><span class="grade c">C</span></td></tr>
+              <tr><td>도주</td><td>위험과 손실을 계산하는 선택</td><td>민첩 기반 확률은 있으나 성공 가능성·실패 비용이 화면에서 설명되지 않는다.</td><td><span class="grade d">D</span></td></tr>
+              <tr><td>교체</td><td>전열·상성·생존을 재구성</td><td>active/reserve 기반은 좋다. 다만 강제 교체와 AUTO의 상호작용이 위험하다.</td><td><span class="grade c">C+</span></td></tr>
+              <tr><td>AUTO</td><td>반복 전투를 합리적으로 단축</td><td>무작위 적에게 평타만 제출한다. 전술 자동화가 아니라 입력 반복이다.</td><td><span class="grade f">F</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ai-visual">
+          <div class="ai-loop">
+            <div class="ai-step"><strong>1.</strong> action 조건 확인<br><small>always 또는 주기적 turn</small></div>
+            <div class="ai-step"><strong>2.</strong> MP 가능한 후보만 남김</div>
+            <div class="ai-step"><strong>3.</strong> priority 가중 랜덤 선택</div>
+            <div class="ai-step"><strong>4.</strong> 공격 대상은 첫 생존 전열</div>
+            <div class="ai-step final"><strong>결과:</strong> HP·상태·약점·처치 가능성·파티 구성을 거의 읽지 못함</div>
+          </div>
+          <div class="design-note">
+            <h3>적이 생각하지 않으면<br>플레이어도 생각할 필요가 없다.</h3>
+            <p>적 AI는 “무작위성이 있다”와 “전술이 있다”를 혼동한다. 우선순위 추첨은 패턴 다양성을 조금 만들 뿐, 플레이어에게 읽고 대응할 신호를 만들지 않는다. 기본 공격이 첫 생존 전열에 고정되면 파티 관리도 쉽게 정형화된다.</p>
+            <blockquote>선택지가 7개라고 선택이 7개인 게 아니다. 상황이 달라져야 정답도 달라진다.</blockquote>
+          </div>
+        </div>
+
+        <div class="triple">
+          <article class="card"><span class="num">P1 / RESOURCE</span><h3>MP 부족이 평타로 둔갑</h3><p><code>usableSkills</code>는 현재 MP를 보지 않는다. 런타임 거절 뒤 <code>performFallbackAttack</code>이 조용히 실행된다. “왜 안 됐는지” 대신 다른 행동을 해버리는 최악의 피드백이다.</p></article>
+          <article class="card"><span class="num">P1 / STATE</span><h3>독 피해가 유령처럼 발생</h3><p><code>runStateUpkeep</code>은 피해와 해제 상태를 반환하지만 호출부가 action log에 기록하지 않는다. HP가 줄고 턴을 쉬어도 원인을 학습하기 어렵다.</p></article>
+          <article class="card"><span class="num">P1 / RHYTHM</span><h3>전투 속도와 정보가 따로 논다</h3><p>gauge 전투는 시간 예측이 핵심인데 대표 스킨이 게이지를 숨긴다. 빠른 전투가 아니라 이유 없이 기다리는 전투가 된다.</p></article>
+        </div>
+
+        <div class="history-warning"><div class="icon">⚠</div><div><h3>기존 밸런스 숫자를 현재 사실로 믿으면 안 된다</h3><p><code>evidence/battle-review-2026-07/mechanics.json</code>에는 초반 troop 승률 100%, 1–3턴 종료, 적 피해 0 같은 강한 경고가 있다. 그러나 그 분석은 기본 공격을 고정 power 10으로 계산하던 시점의 역사 자료다. 현재 <code>applySkill</code>은 기본 공격에 <code>attackPower</code>를 쓴다. 즉 “예전 수치가 끔찍했다”는 흔적은 맞지만, 현재 밸런스를 증명하거나 반증하는 최신 측정값은 아니다. 더 큰 문제는 <strong>공식이 바뀐 뒤 검증 자료가 갱신되지 않았다는 것</strong>이다.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section" id="ux">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">06 / UI · UX CRITIQUE</p><h2>보이는 것과<br>조작되는 것이 다르다.</h2></div>
+          <p>고전풍 UI는 단순할 수 있다. 하지만 단순함은 정보를 없애는 게 아니라 <strong>판단에 필요한 정보만 더 선명하게 남기는 것</strong>이다. 현재 RM2003 스킨은 필요한 것까지 지운다.</p>
+        </div>
+
+        <div class="ux-grid">
+          <article class="ux-panel danger">
+            <h3>키보드 focus가 거짓말한다</h3>
+            <p>Arrow는 적 대상 선택에서만 동작한다. 주 명령·스킬·아이템·교체 메뉴에는 일관된 roving cursor가 없다. 더 심각하게, Z/Enter는 실제 focus와 무관하게 submenu가 닫힌 actorCommand에서 기본 공격을 연다. Tab으로 다른 버튼을 보고 Enter를 눌러도 root handler의 “기본 공격”과 충돌할 여지가 있다.</p>
+            <div class="keyboard-map" aria-label="현재 키보드 입력 모델">
+              <div class="key bad"><b>↑ ↓ ← →</b><span>주 메뉴: 명확한 이동 없음<br>적 대상: 다음 대상 순환</span></div>
+              <div class="key bad"><b>Enter / Z</b><span>보이는 focus보다<br>기본 공격 우선 가능</span></div>
+              <div class="key"><b>X</b><span>적 대상 변경<br>사실상 next target</span></div>
+              <div class="key"><b>C</b><span>submenu 또는<br>target 취소</span></div>
+            </div>
+          </article>
+          <article class="ux-panel danger">
+            <h3>비활성 버튼이 실제로는 활성이다</h3>
+            <p><code>commandButton(..., inert=true)</code>는 <code>data-preview-only</code>만 붙인다. <code>button.disabled</code>도, <code>aria-disabled</code>도 없다. click handler가 아무것도 하지 않게 막을 뿐이므로 키보드와 스크린리더에는 “누를 수 있는 버튼”처럼 보인다. 적 sprite 버튼은 실제 disabled를 쓰므로 규칙도 일관되지 않다.</p>
+            <div class="codebox" style="margin-top:20px"><span class="path">src/player/battleCommandDom.ts:447–477</span><pre>if (inert)
+  button.dataset.previewOnly = "true";
+
+// 빠진 것:
+// button.disabled = true
+// aria-disabled / 비활성 사유</pre></div>
+          </article>
+          <article class="ux-panel">
+            <h3>정보를 숨겨서 고전풍을 흉내 낸다</h3>
+            <p>RM2003 CSS는 gauge를 <code>display:none !important</code>로 감추고, 명령의 <code>&lt;small&gt;</code> 설명도 숨긴다. 이 설명에는 MP 비용·아이템 수·교체 후보 수가 들어간다. message는 한 줄 ellipsis, key prompt는 완전 제거다. 향수는 남지만 판단 근거가 사라진다.</p>
+          </article>
+          <article class="ux-panel">
+            <h3>접근성은 “버튼을 썼다”에서 멈춘다</h3>
+            <p>native button, 일부 <code>aria-label</code>, <code>:focus-visible</code>은 좋은 출발이다. 그러나 battle message/result의 live region, reduced-motion 분기, 메뉴 focus 계약은 확인되지 않는다. 소형 viewport에서는 scale 하한 0.5 때문에 320×240보다 작은 영역에서 전체 stage가 맞지 않을 수도 있다.</p>
+          </article>
+        </div>
+
+        <div class="compare-grid">
+          <figure class="shot"><span class="tag">CURRENT RM2003 HUD CROP</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-ui-2026-07/cmp-hud-scaled.png" alt="현재 RM2003 전투 HUD 확대 비교 화면"></button><figcaption><strong>현재 스킨: 큰 글자, 적은 정보</strong><span>가독성 자체는 나쁘지 않다. 문제는 ATB, 비용, 상세 효과가 삭제되어 “읽을 것”이 너무 적다는 점이다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">VX-STYLE COMPARISON</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-skin-vxace/vx-01-command.png" alt="ATB와 네 명의 파티 HUD가 보이는 VX 스타일 전투 화면"></button><figcaption><strong>비교 스킨: 다음 행동과 파티 상태가 보인다</strong><span>화면이 더 바쁘지만 “누가 준비됐는가”를 바로 읽을 수 있다. gauge flow와 정보 구조가 맞는다.</span></figcaption></figure>
+        </div>
+
+        <div class="redesign">
+          <div class="redesign-head"><h3>같은 고전풍으로도<br>이 정도는 보여 줄 수 있다.</h3><p>새 아트가 아니라 정보 구조 제안이다. 행동 순서, 비용, 효과, 대상, 상태 원인을 같은 화면에 연결한다.</p></div>
+          <svg viewBox="0 0 1200 690" role="img" aria-labelledby="mockup-title mockup-desc">
+            <title id="mockup-title">개선된 턴제 전투 UI 목업</title>
+            <desc id="mockup-desc">상단에 행동 순서, 좌측에 스킬 목록과 비용, 중앙에 전장, 우측에 아군 대상 선택, 하단에 상태와 행동 설명이 있는 화면</desc>
+            <defs>
+              <linearGradient id="field" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#162a3f"/><stop offset="1" stop-color="#10172b"/></linearGradient>
+              <linearGradient id="panelg" x1="0" x2="1"><stop stop-color="#17203b"/><stop offset="1" stop-color="#10162a"/></linearGradient>
+              <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <rect width="1200" height="690" rx="18" fill="#080a11"/>
+            <rect x="24" y="22" width="1152" height="62" rx="12" fill="url(#panelg)" stroke="#37466d"/>
+            <text x="48" y="48" fill="#8b96b6" font-size="13" font-weight="700">다음 행동</text>
+            <g transform="translate(154 34)"><circle cx="20" cy="20" r="18" fill="#efb356"/><text x="20" y="25" text-anchor="middle" fill="#17100a" font-size="13" font-weight="900">나</text><path d="M46 20h34" stroke="#4d5878" stroke-width="2"/><circle cx="102" cy="20" r="18" fill="#d25465"/><text x="102" y="25" text-anchor="middle" fill="#fff" font-size="11" font-weight="900">박쥐</text><path d="M128 20h34" stroke="#4d5878" stroke-width="2"/><circle cx="184" cy="20" r="18" fill="#63a9d7"/><text x="184" y="25" text-anchor="middle" fill="#06131b" font-size="11" font-weight="900">법사</text><path d="M210 20h34" stroke="#4d5878" stroke-width="2"/><circle cx="266" cy="20" r="18" fill="#d25465"/><text x="266" y="25" text-anchor="middle" fill="#fff" font-size="11" font-weight="900">박쥐</text></g>
+            <rect x="24" y="104" width="280" height="402" rx="14" fill="url(#panelg)" stroke="#37466d"/>
+            <text x="48" y="140" fill="#fff" font-size="19" font-weight="900">기술</text>
+            <g font-size="15" font-weight="700"><rect x="42" y="158" width="244" height="58" rx="9" fill="#26355a" stroke="#ffd166" stroke-width="2"/><text x="59" y="183" fill="#fff">치유</text><text x="59" y="202" fill="#9cb0d7" font-size="11">HP 32 회복 · 아군 1명</text><text x="265" y="184" text-anchor="end" fill="#74d2ef">MP 3</text>
+            <rect x="42" y="225" width="244" height="58" rx="9" fill="#151c32"/><text x="59" y="250" fill="#fff">화염</text><text x="59" y="269" fill="#9cb0d7" font-size="11">위력 30 · 불 · 적 1명</text><text x="265" y="251" text-anchor="end" fill="#74d2ef">MP 4</text>
+            <rect x="42" y="292" width="244" height="58" rx="9" fill="#151c32"/><text x="59" y="317" fill="#fff">집중</text><text x="59" y="336" fill="#9cb0d7" font-size="11">공격 상승 · 자신</text><text x="265" y="318" text-anchor="end" fill="#74d2ef">MP 2</text>
+            <rect x="42" y="359" width="244" height="58" rx="9" fill="#111624" opacity=".55"/><text x="59" y="384" fill="#778098">수면 안개</text><text x="59" y="403" fill="#69728b" font-size="11">MP 부족</text><text x="265" y="385" text-anchor="end" fill="#ff737d">MP 5</text></g>
+            <rect x="324" y="104" width="548" height="402" rx="14" fill="url(#field)" stroke="#37466d"/>
+            <circle cx="470" cy="292" r="47" fill="#772e5f" opacity=".75"/><path d="M430 292q40-80 80 0q-40 42-80 0" fill="#ba5797"/><text x="470" y="366" text-anchor="middle" fill="#d7dbe8" font-size="14">동굴 박쥐 A</text>
+            <circle cx="686" cy="220" r="38" fill="#682a56" opacity=".65"/><path d="M653 220q33-65 66 0q-33 35-66 0" fill="#a94a88"/><text x="686" y="278" text-anchor="middle" fill="#d7dbe8" font-size="14">동굴 박쥐 B</text>
+            <circle cx="791" cy="365" r="42" fill="#df8d4f" filter="url(#glow)"/><path d="M778 338l28 0l16 54h-60z" fill="#f7cb74"/><text x="791" y="433" text-anchor="middle" fill="#fff" font-size="14" font-weight="800">주인공</text>
+            <rect x="892" y="104" width="284" height="402" rx="14" fill="url(#panelg)" stroke="#37466d"/>
+            <text x="916" y="140" fill="#fff" font-size="19" font-weight="900">치유 대상 선택</text>
+            <g><rect x="910" y="158" width="248" height="86" rx="10" fill="#26355a" stroke="#ffd166" stroke-width="2"/><text x="930" y="184" fill="#fff" font-size="15" font-weight="800">주인공</text><text x="1138" y="184" text-anchor="end" fill="#ff8a8a" font-size="13">154 / 514</text><rect x="930" y="198" width="208" height="8" rx="4" fill="#37212b"/><rect x="930" y="198" width="62" height="8" rx="4" fill="#ff6874"/><text x="930" y="227" fill="#ffb4ba" font-size="11">독 · 턴 종료 시 -30 HP</text>
+            <rect x="910" y="254" width="248" height="86" rx="10" fill="#151c32"/><text x="930" y="280" fill="#fff" font-size="15" font-weight="800">마법사</text><text x="1138" y="280" text-anchor="end" fill="#8de2ac" font-size="13">402 / 402</text><rect x="930" y="294" width="208" height="8" rx="4" fill="#173127"/><rect x="930" y="294" width="208" height="8" rx="4" fill="#60d894"/></g>
+            <rect x="24" y="526" width="1152" height="140" rx="14" fill="url(#panelg)" stroke="#37466d"/>
+            <text x="48" y="559" fill="#ffd166" font-size="15" font-weight="900">치유 → 주인공</text><text x="48" y="590" fill="#d9dce7" font-size="18" font-weight="800">HP를 약 32 회복합니다. 독 상태는 제거하지 않습니다.</text><text x="48" y="626" fill="#8b96b6" font-size="13">← → 대상 변경   ·   Z / Enter 확정   ·   C / Esc 취소</text>
+            <rect x="904" y="550" width="244" height="84" rx="10" fill="#101625"/><text x="924" y="574" fill="#8b96b6" font-size="11" font-weight="700">선택 후 예상</text><text x="924" y="606" fill="#fff" font-size="22" font-weight="900">HP 154 → 186</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="roadmap">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">07 / FIX ORDER</p><h2>예쁘게 다듬기 전에<br>규칙부터 봉합하라.</h2></div>
+          <p>스킨 추가나 이펙트 보강보다 먼저 할 일은 명확하다. <strong>입력 → 규칙 → 로그 → 연출</strong>의 한 줄 계약을 복구해야 한다. 아래 순서를 뒤집으면 버그가 더 예쁘게 보일 뿐이다.</p>
+        </div>
+
+        <div class="priority-grid">
+          <article class="road-card"><div class="road-priority">P0</div><div class="road-title"><h3>scope별 target resolver 분리</h3><code>runtime.ts / command UI</code></div><div class="road-copy">self는 자신, ally는 사용자 선택, allAllies는 전체, enemy support는 적을 보장한다. 아군/적 대상 UI를 같은 모델로 통합한다.</div><div class="effort">M / 최고효과</div></article>
+          <article class="road-card"><div class="road-priority">P0</div><div class="road-title"><h3>행동 로그 범위 보존</h3><code>runtime.ts / battleSequencer.ts</code></div><div class="road-copy">한 명령이 만든 action log의 시작·끝을 명시하고 strict, double attack, all-enemies를 항목별로 전부 재생한다.</div><div class="effort">M</div></article>
+          <article class="road-card"><div class="road-priority">P0</div><div class="road-title"><h3>AUTO를 최소한의 정책 AI로</h3><code>battleDom.ts</code></div><div class="road-copy">강제 교체를 최우선 처리하고 세션 RNG를 사용한다. 위기 회복, 사용 가능한 공격 스킬, 기본 공격 순서의 최소 정책을 둔다.</div><div class="effort">S–M</div></article>
+          <article class="road-card"><div class="road-priority">P1</div><div class="road-title"><h3>silent fallback 제거</h3><code>battleCommandDom.ts / runtime.ts</code></div><div class="road-copy">MP 부족 스킬을 실제 disabled로 표시하고 부족량을 설명한다. 런타임 거절은 평타로 바꾸지 말고 명시적 실패로 반환한다.</div><div class="effort">S</div></article>
+          <article class="road-card"><div class="road-priority">P1</div><div class="road-title"><h3>모든 메뉴에 단일 커서</h3><code>battleDom.ts / command DOM</code></div><div class="road-copy">Arrow, Z/Enter, C/Esc가 실제 focus와 항상 일치하게 한다. root 단축키가 native button 동작을 덮지 않도록 입력 소유권을 정리한다.</div><div class="effort">M</div></article>
+          <article class="road-card"><div class="road-priority">P1</div><div class="road-title"><h3>상태·행동 순서 가시화</h3><code>battleStates.ts / rm2003.css</code></div><div class="road-copy">독 피해, 자연 회복, 행동 불가, 상태 해제를 로그·팝업·메시지로 남긴다. gauge flow에서는 ATB나 turn order 중 하나를 반드시 보여 준다.</div><div class="effort">M</div></article>
+          <article class="road-card"><div class="road-priority">P2</div><div class="road-title"><h3>AI 조건과 밸런스 게이트 확장</h3><code>runtime.ts / existing tests</code></div><div class="road-copy">HP·상태·약점·예상 처치 조건과 target policy를 데이터화하고, 현재 공식으로 승률·TTK·무피해 비율을 다시 측정한다.</div><div class="effort">L</div></article>
+          <article class="road-card"><div class="road-priority">P2</div><div class="road-title"><h3>접근성·소형 화면 계약</h3><code>battle DOM / stage scale / CSS</code></div><div class="road-copy">live region, reduced motion, 진짜 disabled, 320×240 미만 재배치, 최소 터치 영역, screen-reader와 keyboard-only 검증을 추가한다.</div><div class="effort">M</div></article>
+        </div>
+
+        <div class="acceptance">
+          <article class="card"><span class="num">GATE A / CORRECTNESS</span><h3>선택한 것이 그대로 실행된다</h3><ul><li>self/ally/allAllies/enemy target 계약</li><li>strict·다중 타격 전부 재생</li><li>강제 교체 AUTO 무교착</li></ul></article>
+          <article class="card"><span class="num">GATE B / CLARITY</span><h3>왜 일어났는지 설명된다</h3><ul><li>MP 부족 사유 표시</li><li>상태 틱·해제·행동 불가 피드백</li><li>gauge 또는 turn order 상시 가시화</li></ul></article>
+          <article class="card"><span class="num">GATE C / CONTROL</span><h3>보이는 focus와 실행이 같다</h3><ul><li>모든 submenu 방향키 탐색</li><li>Enter가 focused button만 실행</li><li>disabled와 보조기술 의미 일치</li></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="evidence">
+      <div class="wrap">
+        <div class="section-head">
+          <div><p class="eyebrow">08 / EVIDENCE MAP</p><h2>주장은 세게,<br>근거는 더 세게.</h2></div>
+          <p>이 보고서는 현재 소스의 실행 경로와 저장소에 남아 있는 턴제 화면 증거를 교차해 작성했다. <strong>확인한 것과 확인하지 않은 것을 분리</strong>했다.</p>
+        </div>
+
+        <div class="evidence-grid">
+          <article class="evidence-card"><h3>핵심 런타임 근거</h3><ul>
+            <li><code>src/player/playSceneBattle.ts:17–133</code><b>진입·세션·복귀</b></li>
+            <li><code>src/battle/runtime.ts:88–end</code><b>상태기계·행동·AI·보상</b></li>
+            <li><code>src/battle/runtime.ts:661–689</code><b>지원 대상 오류</b></li>
+            <li><code>src/battle/runtime.ts:728–788</code><b>적 턴</b></li>
+            <li><code>src/battle/runtime.ts:998–1035</code><b>AI 선택·대상</b></li>
+            <li><code>src/battle/battleStates.ts:168–188</code><b>상태 upkeep</b></li>
+          </ul></article>
+          <article class="evidence-card"><h3>UI·연출 근거</h3><ul>
+            <li><code>src/player/battleDom.ts:252–302</code><b>키보드 모델</b></li>
+            <li><code>src/player/battleDom.ts:389–403</code><b>AUTO</b></li>
+            <li><code>src/player/battleCommandDom.ts:247–257</code><b>스킬 필터</b></li>
+            <li><code>src/player/battleCommandDom.ts:447–477</code><b>가짜 disabled</b></li>
+            <li><code>src/player/battleSequencer.ts:260–295</code><b>로그 소비</b></li>
+            <li><code>src/styles/runtime/battle-skins/_rm2003.css</code><b>정보 숨김</b></li>
+          </ul></article>
+          <article class="evidence-card"><h3>화면 증거</h3><ul>
+            <li><code>evidence/battle-review-2026-07/01–09*.png</code><b>명령→결과 흐름</b></li>
+            <li><code>evidence/battle-ui-2026-07/cmp-hud-scaled.png</code><b>HUD 확대</b></li>
+            <li><code>evidence/battle-skin-vxace/vx-01-command.png</code><b>정보 구조 비교</b></li>
+            <li><code>evidence/battle-skin-vxace/vx-03-target.png</code><b>대상 비교</b></li>
+            <li><code>evidence/battle-skin-vxace/vx-05-result.png</code><b>결과 비교</b></li>
+          </ul></article>
+          <article class="evidence-card"><h3>현재 테스트가 비우는 영역</h3><ul>
+            <li><code>support scope correctness</code><b>보장 확인 못함</b></li>
+            <li><code>strict / multi-hit presentation</code><b>보장 확인 못함</b></li>
+            <li><code>AUTO forced switch</code><b>보장 확인 못함</b></li>
+            <li><code>submenu keyboard navigation</code><b>보장 확인 못함</b></li>
+            <li><code>screen reader / reduced motion</code><b>보장 확인 못함</b></li>
+            <li><code>small mobile viewport</code><b>보장 확인 못함</b></li>
+          </ul></article>
+        </div>
+
+        <div class="gallery-grid three" style="margin-top:22px">
+          <figure class="shot"><span class="tag">REFERENCE / TARGET</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-skin-vxace/vx-03-target.png" alt="VX 스타일 적 대상 선택 화면"></button><figcaption><strong>대상 선택 비교 자료</strong><span>적 대상은 이미 충분히 명시적이다. 이 명료함을 아군 대상으로 확장해야 한다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">REFERENCE / RESULT</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-skin-vxace/vx-05-result.png" alt="VX 스타일 승리 결과 화면"></button><figcaption><strong>결과 화면 비교 자료</strong><span>현재 전투도 staged result를 갖고 있어 이 부분의 기반은 나쁘지 않다.</span></figcaption></figure>
+          <figure class="shot"><span class="tag">CURRENT / TARGET</span><button type="button" data-lightbox><img loading="lazy" decoding="async" src="evidence/battle-review-2026-07/06-play-troop_bat_swarm-target-select.png" alt="여러 박쥐 중 대상을 선택하는 현재 화면"></button><figcaption><strong>다중 적 대상 현재 화면</strong><span>여러 적 선택은 된다. “대상 시스템이 없다”가 아니라 “아군과 scope별 계약이 반쪽”인 것이다.</span></figcaption></figure>
+        </div>
+
+        <div class="limits"><h3>분석 범위와 한계</h3><p>현재 TypeScript/CSS 구현을 정적으로 추적하고 저장소의 기존 턴제 캡처를 확인했다. 이번 보고서 작성 과정에서는 새 브라우저 플레이 세션, 모바일 실기, 스크린리더, 전체 테스트 suite를 실행하지 않았다. 따라서 “정적 코드상 충돌 가능성”과 “실제 캡처에서 관찰된 현상”을 구분해 서술했다. 기존 mechanics/balance JSON은 현재 기본 공격 공식과 달라 역사 자료로만 취급했다. 별도 action-combat 런타임은 구조 경계만 확인했으며 턴제 평가 점수에 섞지 않았다.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-grid">
+      <div><strong>결론: 더 많은 기능이 아니라, 더 정직한 연결이 필요하다.</strong><p>플레이어가 본 것, 고른 것, 계산된 것, 재생된 것이 하나로 맞아야 전투가 된다.</p></div>
+      <div class="stamp">RPG ZZU COMBAT UX AUTOPSY<br>STATIC SOURCE REVIEW · 2026-07-30</div>
+    </div>
+  </footer>
+
+  <dialog id="lightbox" aria-label="이미지 확대 보기">
+    <div class="lightbox-inner">
+      <img alt="">
+      <p></p>
+      <button class="lightbox-close" type="button">닫기 Esc</button>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      const progress = document.querySelector('.progress');
+      const updateProgress = () => {
+        const max = document.documentElement.scrollHeight - innerHeight;
+        const ratio = max > 0 ? scrollY / max : 0;
+        progress.style.transform = `scaleX(${Math.max(0, Math.min(1, ratio))})`;
+      };
+      addEventListener('scroll', updateProgress, { passive: true });
+      addEventListener('resize', updateProgress);
+      updateProgress();
+
+      const railLinks = [...document.querySelectorAll('.rail a')];
+      const sections = railLinks.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+      const sectionObserver = new IntersectionObserver((entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        railLinks.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === `#${visible.target.id}`));
+      }, { rootMargin: '-25% 0px -60%', threshold: [0, .1, .4] });
+      sections.forEach((section) => sectionObserver.observe(section));
+
+      const dialog = document.querySelector('#lightbox');
+      const dialogImage = dialog.querySelector('img');
+      const dialogCaption = dialog.querySelector('p');
+      document.querySelectorAll('[data-lightbox]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const image = button.querySelector('img');
+          dialogImage.src = image.currentSrc || image.src;
+          dialogImage.alt = image.alt;
+          dialogCaption.textContent = image.alt;
+          dialog.showModal();
+        });
+      });
+      dialog.querySelector('.lightbox-close').addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        const rect = dialog.getBoundingClientRect();
+        const outside = event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+        if (outside) dialog.close();
+      });
+      dialog.addEventListener('close', () => { dialogImage.removeAttribute('src'); });
+    })();
+  </script>
+</body>
+</html>

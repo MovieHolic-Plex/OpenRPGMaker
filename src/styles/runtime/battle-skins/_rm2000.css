@@ -8,7 +8,7 @@
   --battle-accent: #ffcf3a;
   --rm2k3-battle-text: #eef4ff;
   background: #101c48;
-  grid-template-columns: minmax(0, 1fr) 86px 148px !important;
+  grid-template-columns: minmax(0, 1fr) 172px 296px !important;
 }
 
 .battle-scene[data-battle-skin="rm2000"] .battle-actor-group[data-hidden="true"] {
@@ -28,7 +28,7 @@
 .battle-scene[data-battle-skin="rm2000"] .battle-enemy-list-panel,
 .battle-scene[data-battle-skin="rm2000"] .battle-party {
   background: linear-gradient(180deg, #101c52, #0a1238);
-  border: 2px solid #d8d8e8;
+  border: 4px solid #d8d8e8;
   border-image: none;
 }
 
@@ -39,7 +39,7 @@
 
 .battle-scene[data-battle-skin="rm2000"] .battle-actor-status .battle-actor-vitals {
   display: flex;
-  gap: 3px;
+  gap: 6px;
   justify-content: flex-end;
   overflow: visible;
   text-overflow: clip;
