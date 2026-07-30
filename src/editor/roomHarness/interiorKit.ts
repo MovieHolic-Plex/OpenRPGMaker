@@ -8,15 +8,28 @@ import {
   INTERIOR_ROOM_DEMO_PLANS,
   INTERIOR_ROOM_KIT_ID,
   INTERIOR_ROOM_THEMES,
+  INTERIOR_THEME_MODIFIERS,
   runInteriorRoomPipeline,
   type InteriorRoomPlan,
   type InteriorRoomTheme,
+  type InteriorThemeModifier,
   type Wing,
 } from "@/editor/interiorRoomPipeline";
 import { ToolError } from "@/editor/tools/types";
 import type { RoomHarnessKit } from "./types";
 
 // interiorRoomSession.ts에서 이관 — 실내 플랜 arg 파서.
+function parseThemeModifiers(value: unknown, label: string): InteriorThemeModifier[] | undefined {
+  if (value === undefined) return undefined;
+  if (!Array.isArray(value)) throw new ToolError(`${label} must be an array`, { code: "invalid-args" });
+  const modifiers = [...new Set(value.map((entry) => String(entry) as InteriorThemeModifier))];
+  const invalid = modifiers.find((modifier) => !INTERIOR_THEME_MODIFIERS.includes(modifier));
+  if (invalid) {
+    throw new ToolError(`${label} must contain ${INTERIOR_THEME_MODIFIERS.join("|")}`, { code: "invalid-args" });
+  }
+  return modifiers;
+}
+
 export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPlan {
   const mapId = String(args.mapId ?? "").trim();
   const name = String(args.name ?? mapId).trim();
@@ -31,7 +44,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
     throw new ToolError("mapId + door:{x,y} required", { code: "invalid-args" });
   }
   const wingsRaw = args.wings as Wing[] | undefined;
-  const roomsRaw = args.rooms as Array<{ id?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown; theme?: unknown }> | undefined;
+  const roomsRaw = args.rooms as Array<{ id?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown; theme?: unknown; modifiers?: unknown; floorTile?: unknown }> | undefined;
   const hasRooms = Array.isArray(roomsRaw) && roomsRaw.length > 0;
   if (!hasRooms && (!Array.isArray(wingsRaw) || wingsRaw.length === 0)) {
     throw new ToolError("wings 또는 rooms 필요: 바닥 bbox 배열 {x,y,w,h} (rooms는 {id,x,y,w,h,theme?})", {
@@ -57,6 +70,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
           w: Math.floor(Number(r.w)),
           h: Math.floor(Number(r.h)),
           theme: roomTheme,
+          modifiers: parseThemeModifiers(r.modifiers, `rooms[${index}].modifiers`),
           floorTile: r.floorTile !== undefined ? Math.floor(Number(r.floorTile)) : undefined,
         };
       })
@@ -79,6 +93,7 @@ export function parseInteriorPlan(args: Record<string, unknown>): InteriorRoomPl
     innerDoors,
     door: { x: Math.floor(door.x), y: Math.floor(door.y) },
     theme,
+    themeModifiers: parseThemeModifiers(args.themeModifiers, "themeModifiers"),
     // seed 미지정 시 매번 새 판을 뽑는다(구버그: 상수 1 고정 → 재생성 항상 동일).
     seed: args.seed !== undefined ? Math.floor(Number(args.seed)) : Date.now() % 1_000_000,
     floorTile: args.floorTile !== undefined ? Math.floor(Number(args.floorTile)) : undefined,

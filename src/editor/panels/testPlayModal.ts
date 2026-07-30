@@ -122,6 +122,8 @@ export async function openTroopBattleTestModal(troopId: string): Promise<void> {
         levels: session.actorLevels,
         experience: session.actorExperience,
         names: session.actorNames,
+        faceResourceIds: session.actorFaceResourceIds,
+        faceIndices: session.actorFaceIndices,
         vitals: session.actorVitals,
         paramBonuses: session.actorParamBonuses,
         equipment: session.actorEquipment,

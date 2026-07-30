@@ -1,11 +1,13 @@
 import { el } from "@/util/dom";
 
+export type ProposalPresentationMode = "modal" | "canvas";
+
 export interface ProposalModalElements {
   readonly noticeHost: HTMLElement;
   readonly pill: HTMLButtonElement;
   readonly count: HTMLElement;
   readonly root: HTMLElement;
-  readonly open: () => void;
+  readonly open: (mode?: ProposalPresentationMode) => void;
   readonly minimize: () => void;
   readonly close: () => void;
 }
@@ -27,7 +29,7 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
   const root = el("div", {
     class: "ai-proposal-modal-backdrop",
     attrs: { hidden: "" },
-    dataset: { testid: "ai-proposal-modal" },
+    dataset: { testid: "ai-proposal-modal", presentation: "modal" },
     children: [
       el("div", {
         class: "ai-proposal-modal",
@@ -46,15 +48,25 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
       }),
     ],
   });
-  const open = (): void => {
+  const open = (mode: ProposalPresentationMode = "modal"): void => {
     // 본문(host)이 비어 있으면 헤더만 뜬 빈 껍데기를 열지 않는다.
     if (proposalHost.childElementCount === 0) {
       root.hidden = true;
       pill.hidden = true;
       return;
     }
+    root.dataset.presentation = mode;
+    if (mode === "canvas") {
+      // 안전한 공간 제안은 캔버스 고스트의 실제 승인 버튼으로 먼저 검토한다.
+      // 카드와 모달은 그대로 보존해 pill/상세 버튼으로 언제든 전체 검토에 들어갈 수 있다.
+      root.hidden = true;
+      pill.hidden = false;
+      pill.dataset.presentation = "canvas";
+      return;
+    }
     root.hidden = false;
     pill.hidden = true;
+    pill.dataset.presentation = "modal";
   };
   const minimize = (): void => {
     if (root.hidden) return;
@@ -65,8 +77,10 @@ export function createProposalModalElements(proposalHost: HTMLElement): Proposal
   const close = (): void => {
     root.hidden = true;
     pill.hidden = true;
+    root.dataset.presentation = "modal";
+    pill.dataset.presentation = "modal";
   };
-  pill.addEventListener("click", () => open());
+  pill.addEventListener("click", () => open("modal"));
   later.addEventListener("click", () => minimize());
   root.addEventListener("click", (event) => {
     if ((event as { target?: unknown }).target === root) minimize();

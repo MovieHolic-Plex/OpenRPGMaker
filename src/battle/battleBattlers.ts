@@ -16,6 +16,9 @@ const CHARGE_FLOOR = 0.02;
 export interface ActorBattlerOverrides {
   // 이름 오버라이드(enterHeroName 등). actorId → 이름.
   readonly names?: Readonly<Record<string, string>>;
+  // 현재 faceset(Change Actor Faceset 포함). 전투 HUD가 DB 기본 얼굴로 되돌아가지 않게 한다.
+  readonly faceResourceIds?: Readonly<Record<string, string>>;
+  readonly faceIndices?: Readonly<Record<string, number>>;
   // 레벨 오버라이드(레벨업 반영값). actorId → 레벨. 없으면 DB initialLevel.
   readonly levels?: Readonly<Record<string, number>>;
   // 현재 바이탈(필드에서 이어지는 현재 HP/MP). actorId → {hp, mp}.
@@ -37,6 +40,9 @@ export interface MutableBattler {
   readonly recordId: ActorId | EnemyId;
   readonly classId?: string;
   readonly level?: number;
+  readonly faceResourceId?: string;
+  readonly faceIndex?: number;
+  readonly battleCharacterResourceId?: string;
   // 아군측 배틀러가 파티 몬스터에서 합성된 경우 원 인스턴스/종족 식별자.
   // 스프라이트 해석과 전투 후 HP/EXP 되돌려쓰기의 키가 된다.
   readonly monsterInstanceId?: string;
@@ -99,6 +105,9 @@ export function actorBattlers(
       recordId: actor.id,
       classId: effectiveClassId,
       level,
+      faceResourceId: overrides?.faceResourceIds?.[actorId] ?? normalizedActor.faceResourceId,
+      faceIndex: overrides?.faceIndices?.[actorId] ?? normalizedActor.faceIndex ?? 0,
+      battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
       maxHp,
       hp,
@@ -140,6 +149,7 @@ export function learnedSkillIds(
 
 export interface EquipmentRuntimeEffects {
   readonly doubleAttack: boolean;
+  readonly attackAll?: boolean;
   readonly elementalDefenseIds: readonly string[];
   readonly stateDefenseIds: readonly string[];
   readonly stateDefenseMode: "resist" | "inflict";
@@ -164,6 +174,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   const elementalDefenseIds = new Set<string>();
   const stateDefenseIds = new Set<string>();
   let doubleAttack = false;
+  let attackAll = false;
   let stateResistanceChance = 0;
   let stateDefenseMode: "resist" | "inflict" = "resist";
   for (const equipmentId of Object.values(equipment)) {
@@ -171,6 +182,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     const record = project.database.equipment.find((entry) => entry.id === equipmentId);
     if (!record) continue;
     if (record.effectFlags.doubleAttack) doubleAttack = true;
+    if (record.effectFlags.attackAll) attackAll = true;
     for (const elementId of record.elementalDefenseIds) elementalDefenseIds.add(elementId);
     for (const stateId of record.stateDefenseIds) stateDefenseIds.add(stateId);
     if (record.stateDefenseMode === "inflict") stateDefenseMode = "inflict";
@@ -178,6 +190,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   }
   return {
     doubleAttack,
+    attackAll,
     elementalDefenseIds: [...elementalDefenseIds],
     stateDefenseIds: [...stateDefenseIds],
     stateDefenseMode,
@@ -305,6 +318,9 @@ export function battlerSnapshot(
     name: battler.name,
     classId: battler.classId,
     level: battler.level,
+    faceResourceId: battler.faceResourceId,
+    faceIndex: battler.faceIndex,
+    battleCharacterResourceId: battler.battleCharacterResourceId,
     monsterInstanceId: battler.monsterInstanceId,
     speciesId: battler.speciesId,
     hp: battler.hp,

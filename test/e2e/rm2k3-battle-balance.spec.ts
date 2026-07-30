@@ -8,6 +8,10 @@ import {
 
 const SLIME_MAX_HP = 220;
 
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+});
+
 test("reference slime battle survives the first player action", async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });

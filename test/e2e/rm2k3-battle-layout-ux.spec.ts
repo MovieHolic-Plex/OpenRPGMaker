@@ -54,7 +54,7 @@ const evidenceDir = "output/evidence/rm2k3-battle-layout-ux";
 
 test("battle command screen uses an RM2003-style field and bottom HUD layout", async ({ page }) => {
   await page.setViewportSize({ width: 1360, height: 768 });
-  await seedReferenceBattleProject(page);
+  await seedReferenceBattleProject(page, { battleUiStyle: "rm2003" });
   await startReferenceBattle(page);
   await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 15_000 });
   await mkdir(`${evidenceDir}/red-green`, { recursive: true });
@@ -103,7 +103,7 @@ test("battle target and result states stay readable without HUD collision", asyn
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1360, height: 768 });
   await mkdir(`${evidenceDir}/red-green`, { recursive: true });
-  await seedReferenceBattleProject(page);
+  await seedReferenceBattleProject(page, { battleUiStyle: "rm2003" });
   await startReferenceBattle(page);
 
   await page.getByTestId("actor-command-attack").click();
@@ -121,7 +121,7 @@ test("battle target and result states stay readable without HUD collision", asyn
     }
   }
 
-  await seedLayoutResultBattleProject(page);
+  await seedLayoutResultBattleProject(page, { battleUiStyle: "rm2003" });
   await startReferenceBattle(page);
   await page.getByTestId("actor-command-attack").click();
   await confirmBattleTarget(page);

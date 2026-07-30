@@ -36,7 +36,7 @@ export function summarizeActivityResult(record: AiActivityLogRecord): string {
   return parts.join(" · ");
 }
 
-/** 시작 화면 비주얼 프롬프트 — 아주 소수(3개 전후). */
+/** 시작 화면 비주얼 프롬프트 — 초보자용 결과 중심 5개. */
 export type AiVisualStartPrompt = {
   readonly id: string;
   readonly label: string;
@@ -54,32 +54,31 @@ export type AiVisualStartPrompt = {
 
 const BLUE = HOUSE_KITS["blue-stone"];
 
-/** Combined Town 기준 고정 프리셋 — 시작 화면은 항상 같은 3장. */
+/** 처음 바로 시도할 수 있는 결과 중심 5개 카드. 내부 도구/스킬 이름은 노출하지 않는다. */
 export function defaultAiVisualStartPrompts(): readonly AiVisualStartPrompt[] {
   const people = EASYRPG_CHARSET_ASSETS.find((asset) => asset.textureKey === "tex_easyrpg_charset_people1");
   return [
     {
-      id: "house",
-      label: "집",
-      instruction: "이 맵에 작은 집 한 채 지어줘. 문 앞은 지나다닐 수 있게.",
+      id: "place",
+      label: "장소 만들기",
+      instruction: "현재 맵에 집과 길, 나무가 자연스럽게 이어지는 작은 장소를 만들어줘.",
       mosaicCols: 3,
-      // 지붕 / 벽+창 / 벽 하단 — 한눈에 집으로 읽히게
       mosaicTiles: [
         BLUE.roof.body,
         BLUE.roof.body,
-        (BLUE.roof as { body: number; rightEdge?: number }).rightEdge ?? BLUE.roof.body,
+        TILE.TREE,
         BLUE.wall.mid[0],
         BLUE.windowTile,
-        BLUE.wall.mid[2],
-        BLUE.wall.bottom[0],
-        BLUE.wall.bottom[1],
-        BLUE.wall.bottom[2],
+        TILE.PATH,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.FLOWERS,
       ],
     },
     {
-      id: "villager",
-      label: "주민",
-      instruction: "마을 주민 NPC 한 명을 배치하고 짧은 인사 대사 2줄 넣어줘.",
+      id: "character",
+      label: "등장인물 만들기",
+      instruction: "현재 장소에 어울리는 등장인물 한 명을 만들고, 말을 걸면 자연스럽게 인사하도록 해줘.",
       charset: people
         ? {
             textureKey: people.textureKey,
@@ -87,25 +86,55 @@ export function defaultAiVisualStartPrompts(): readonly AiVisualStartPrompt[] {
             characterIndex: 0,
           }
         : undefined,
-      // charset 없을 때 폴백 타일
       mosaicCols: 1,
       mosaicTiles: [TILE.PATH],
     },
     {
-      id: "grove",
-      label: "숲",
-      instruction: "이 근처에 나무 몇 그루와 풀·꽃으로 작은 숲 분위기를 내줘.",
+      id: "quest",
+      label: "퀘스트 만들기",
+      instruction: "현재 맵의 등장인물과 장소를 활용한 짧은 퀘스트를 만들어줘. 시작 조건과 완료 보상도 포함해줘.",
+      charset: people
+        ? {
+            textureKey: people.textureKey,
+            path: people.path,
+            characterIndex: 1,
+          }
+        : undefined,
+      mosaicCols: 1,
+      mosaicTiles: [TILE.GRASS],
+    },
+    {
+      id: "selection",
+      label: "선택 영역 꾸미기",
+      instruction: "선택한 영역을 나무와 풀, 꽃, 자연스러운 길이 어울리도록 꾸며줘.",
       mosaicCols: 3,
       mosaicTiles: [
         TILE.DARK_GRASS,
-        260, // 침엽수 수관(상위 계열 칩 — 미리보기용)
+        TILE.TREE,
         TILE.DARK_GRASS,
         TILE.GRASS,
-        TILE.TREE,
+        TILE.PATH,
         TILE.FLOWERS,
         TILE.GRASS,
+        TILE.PATH,
+        TILE.GRASS,
+      ],
+    },
+    {
+      id: "audit",
+      label: "문제 검사/수정",
+      instruction: "현재 맵에서 이동 불가, 막힌 입구, 어색한 타일이나 이벤트 문제를 검사하고 안전하게 고칠 변경안을 보여줘.",
+      mosaicCols: 3,
+      mosaicTiles: [
+        TILE.WALL,
+        TILE.PATH,
+        TILE.WALL,
         TILE.GRASS,
         TILE.PATH,
+        TILE.FLOWERS,
+        TILE.GRASS,
+        TILE.PATH,
+        TILE.GRASS,
       ],
     },
   ];
@@ -173,7 +202,7 @@ function renderVisualPreview(prompt: AiVisualStartPrompt, tileset: TilesetDef | 
 }
 
 /**
- * 이미지 리치 시작 갤러리 — 3장 전후. 클릭 시 instruction을 넘긴다.
+ * 이미지 리치 시작 갤러리 — 결과 중심 카드 5개. 클릭 시 instruction을 넘긴다.
  */
 export function buildVisualStartGallery(opts: {
   readonly tileset: TilesetDef | null;

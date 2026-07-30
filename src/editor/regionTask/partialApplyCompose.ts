@@ -31,23 +31,33 @@ export function composePartialProject(args: ComposePartialArgs): Project {
   const groups = args.groups ?? collectAllChunks(base, clipped, mapId, region);
   for (const chunk of groups.lower) {
     if (!selected.has(chunk.id)) continue;
-    writeChunkCells(mergedMap.lowerTiles, clippedMap.lowerTiles, chunk);
+    writeChunkLayer(mergedMap, clippedMap, "lower", chunk);
   }
   for (const chunk of groups.upper) {
     if (!selected.has(chunk.id)) continue;
-    writeChunkCells(mergedMap.upperTiles, clippedMap.upperTiles, chunk);
+    writeChunkLayer(mergedMap, clippedMap, "upper", chunk);
   }
   return merged;
 }
 
-function writeChunkCells(
-  dst: number[],
-  src: readonly number[],
+function writeChunkLayer(
+  dst: Project["maps"][string],
+  src: Project["maps"][string],
+  layer: "lower" | "upper",
   chunk: RegionChunk,
 ): void {
+  const dstTiles = layer === "lower" ? dst.lowerTiles : dst.upperTiles;
+  const srcTiles = layer === "lower" ? src.lowerTiles : src.upperTiles;
+  const field = layer === "lower" ? "lowerTileStacks" : "upperTileStacks";
+  const stacks = dst[field] ?? {};
   for (const cell of chunk.cells) {
-    dst[cell.index] = src[cell.index];
+    dstTiles[cell.index] = srcTiles[cell.index]!;
+    const stack = src[field]?.[cell.index];
+    if (stack) stacks[cell.index] = [...stack];
+    else delete stacks[cell.index];
   }
+  if (Object.keys(stacks).length > 0) dst[field] = stacks;
+  else delete dst[field];
 }
 
 function collectAllChunks(

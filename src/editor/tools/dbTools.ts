@@ -322,7 +322,7 @@ const actorRecordSchema = objectSchema({
 const skillRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
-  scope: { type: "string", enum: ["self", "ally", "enemy", "allEnemies"] },
+  scope: { type: "string", enum: ["self", "ally", "allAllies", "enemy", "allEnemies"] },
   power: integerSchema(),
   animationId: stringSchema(),
   description: stringSchema(),

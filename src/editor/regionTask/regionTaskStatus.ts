@@ -7,6 +7,8 @@ export interface RegionTaskStatusDetail {
   readonly mapId: string;
   readonly region: RegionRect;
   readonly running: boolean;
+  /** 같은 mapId의 새 실행이 이전 running:false를 무시하도록 하는 실행 소유권 번호. */
+  readonly runId?: number;
   /** running=true일 때 세부 단계 — 생략 시 "running"으로 간주. */
   readonly phase?: "running" | "pending";
 }
@@ -35,5 +37,12 @@ export function regionTaskStatusDetail(event: Event): RegionTaskStatusDetail | n
     !Number.isInteger(region.width) || !Number.isInteger(region.height)
   ) return null;
   const phase = candidate.phase === "running" || candidate.phase === "pending" ? candidate.phase : undefined;
-  return { mapId: candidate.mapId, region: region as RegionRect, running: candidate.running, ...(phase ? { phase } : {}) };
+  const runId = typeof candidate.runId === "number" && Number.isInteger(candidate.runId) ? candidate.runId : undefined;
+  return {
+    mapId: candidate.mapId,
+    region: region as RegionRect,
+    running: candidate.running,
+    ...(runId !== undefined ? { runId } : {}),
+    ...(phase ? { phase } : {}),
+  };
 }

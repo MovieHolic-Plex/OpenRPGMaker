@@ -5,11 +5,25 @@
 // - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, undoMapEdit } from "@/editor/mapEditHistory";
+import {
+  clearAiApplyCompletion,
+  publishAiApplyCompletion,
+  subscribeAiApplyCompletion,
+  type AiApplyCompletionContext,
+} from "@/editor/aiApplyCompletion";
 import type { AiDocument } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, type ChatDock } from "@/editor/editorState";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
-import { clearAgentGhostPreview, createThrottledAgentGhostPreviewUpdater } from "@/editor/agentGhostPreview";
+import {
+  agentGhostPreviewsForMap,
+  clearAgentGhostPreview,
+  createThrottledAgentGhostPreviewUpdater,
+  getAgentGhostPreviewState,
+  hasAgentGhostPreviewSubscribers,
+} from "@/editor/agentGhostPreview";
+import { classifyProposalSafety } from "@/editor/proposalSafety";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
@@ -48,11 +62,14 @@ import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSk
 import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createCommandBarElements } from "./aiCommandBar";
+import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
+import { buildVisualStartGallery } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
   setAiBridgeLastStatus,
+  unregisterAiAssistantBridge,
   type AiBridgeAuditEntry,
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
@@ -86,7 +103,6 @@ import {
   exportCombinedAudit,
   isAiAssistDetail,
   isAiConfigReady,
-  isMetadataOnlyProposal,
   isWriteTool,
   phaseStatusText,
   shouldShowStatusInChat,
@@ -170,11 +186,25 @@ export interface AiChatPanelOptions {
 }
 
 let cleanupAiAssistBridge: (() => void) | null = null;
+let activeAiChatPanelCleanup: (() => void) | null = null;
+
+export function teardownAiChatPanel(): void {
+  const cleanup = activeAiChatPanelCleanup;
+  activeAiChatPanelCleanup = null;
+  cleanup?.();
+  cleanupAiAssistBridge?.();
+  cleanupAiAssistBridge = null;
+  unregisterAiAssistantBridge();
+  registerAiBootIntentTarget(null);
+  clearAiApplyCompletion();
+}
 
 export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement {
+  teardownAiChatPanel();
   const now = options.clock ?? (() => Date.now());
   const runRegion = options.regionTaskRunner ?? runRegionTask;
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
+  let disposed = false;
   const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
   const latestConversation = loadLatestConversation();
   const autoRestoreConversation =
@@ -354,6 +384,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     controller,
     appendBubble,
     setStatus,
+    onApplied: (result) => {
+      const selection = editorState.get().selection;
+      publishAiApplyCompletion({
+        mapId: result.mapId,
+        selection: selection?.mapId === result.mapId ? selection : null,
+        instruction: result.instruction,
+        summary: result.summary,
+      });
+    },
     onProposalSettled: () => {
       // 검토 카드가 닫힌 뒤 — 자동 펼침이었다면 맵으로 화면을 되돌린다.
       if (!turnBusy) scheduleCollapseAfterAiWork();
@@ -361,7 +400,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const renderProposal = proposalApi.renderProposal;
   const acceptProposal = proposalApi.acceptProposal;
-  const applyMetadataKeepSession = proposalApi.applyMetadataKeepSession;
   // pending/last-applied message state is owned by proposalApi (getters/setters).
   const setPendingProposalMessage = (value: typeof proposalApi.pendingProposalMessage) => {
     proposalApi.pendingProposalMessage = value;
@@ -507,6 +545,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   let abortButton: HTMLButtonElement | null = null;
   let activeAbortController: AbortController | null = null;
+  let activeSelectionRegionController: AbortController | null = null;
+  let activeSelectionRegionKey: string | null = null;
+  const abortActiveSelectionRegionTask = (): void => {
+    const regionController = activeSelectionRegionController;
+    if (!regionController || regionController.signal.aborted) return;
+    regionController.abort();
+    if (activeAbortController === regionController) {
+      setStatus("중단 중…");
+      refreshAbortButton();
+    }
+  };
   let abortNoticeShown = false;
   let progressTimer: number | null = null;
   const refreshAbortButton = (): void => {
@@ -602,6 +651,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
+    const ownsTurn = (allowAborted = false): boolean =>
+      !disposed
+      && activeAbortController === abortController
+      && (allowAborted || !abortController.signal.aborted);
     // 접혀 있으면 스트리밍/제안을 볼 수 있게 펼치고, 턴 종료 후 맵 우선 재접기 예약.
     collapseAfterAiWork = true;
     expandForAiWork();
@@ -638,6 +691,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       reasoningBox = null;
     };
     const onEvent = (event: SessionEvent): void => {
+      if (!ownsTurn()) return;
       if (event.type === "phase") {
         runningPhaseStatus = phaseStatusText(event.value);
         if (runningProgress) refreshRunningStatus(true);
@@ -747,9 +801,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
     try {
       const result = await exec(onEvent, abortController.signal);
+      if (!ownsTurn(true)) {
+        ghostPreviewUpdater.cancel();
+        return;
+      }
       turnResult = result;
       endTurnProgress();
-      if (result.stoppedReason === "aborted") {
+      if (abortController.signal.aborted || result.stoppedReason === "aborted") {
         ghostPreviewUpdater.cancel();
         clearAgentGhostPreview();
         setStatus("대기");
@@ -774,15 +832,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       attachCompletenessWarnings(result.proposedCalls, completenessWarnings);
       streamedBubbles.forEach(renderStreamedMarkdown); // 스트리밍 원문을 마크다운으로 다시 렌더.
       if (result.assistantText && !assistantBubble) assistantBubble = appendBubble("assistant", result.assistantText);
-      if (result.proposedCalls.length > 0 && completenessWarnings.length === 0 && result.stoppedReason !== "error" && isMetadataOnlyProposal(result.proposedCalls) && !proposalNeedsExplicitApproval(result.proposedCalls)) {
-        // 타일 지식만 바뀌었으면 검토 카드 없이 저장하고 세션(인터뷰 대화)을 이어간다.
-        applyMetadataKeepSession(result.proposedCalls);
-      } else if (result.proposedCalls.length > 0 && completenessWarnings.length === 0 && loadAiConfig().autoApprove === true && result.stoppedReason !== "error" && !proposalNeedsExplicitApproval(result.proposedCalls)) {
-        // 자동 승인 모드: 제안을 즉시 적용한다(검토 카드 생략). 되돌리기는 Ctrl+Z. 말풍선 없이 상태줄만.
-        setStatus(`자동 적용 ${result.proposedCalls.length}건`);
+      const beforeProject = store.getCurrent();
+      const afterProject = session.getProposedProject();
+      const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
+      const explicitApprovalRequired = result.proposedCalls.length > 0
+        && proposalNeedsExplicitApproval(result.proposedCalls);
+      const safety = classifyProposalSafety({
+        calls: result.proposedCalls,
+        before: beforeProject,
+        after: afterProject,
+        currentMapId,
+        warnings: completenessWarnings,
+      });
+      const hasCurrentMapGhost = currentMapId && hasAgentGhostPreviewSubscribers()
+        ? agentGhostPreviewsForMap(getAgentGhostPreviewState(), currentMapId).length > 0
+        : false;
+      const canvasFirst = safety.safe && !explicitApprovalRequired && hasCurrentMapGhost;
+      if (
+        result.proposedCalls.length > 0
+        && completenessWarnings.length === 0
+        && loadAiConfig().autoApprove === true
+        && result.stoppedReason !== "error"
+        && !explicitApprovalRequired
+        && safety.safe
+      ) {
+        // 자동 적용은 양성 allowlist와 실제 프로젝트 구조 비교를 모두 통과한
+        // 현재 맵 타일 변경에만 허용한다. 나머지는 아래 단일 검토 경로로 보낸다.
+        setStatus(`안전한 맵 꾸미기 자동 적용 ${result.proposedCalls.length}건`);
         acceptProposal(result.proposedCalls);
       } else {
-        renderProposal(result, result.proposedCalls.length === 0 ? completenessWarnings : [], assistantBubble);
+        renderProposal(
+          result,
+          result.proposedCalls.length === 0 ? completenessWarnings : [],
+          assistantBubble,
+          canvasFirst ? "canvas" : "modal",
+        );
         // 0건 프로포절은 더 이상 "검토 대기"로 세션을 잡아두지 않는다(결함 ⑤ — 비블로킹).
         setStatus(
           result.stoppedReason === "error"
@@ -804,6 +888,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (result.error) appendErrorWithRetry(result.error, session, requestText);
     } catch (cause) {
+      if (!ownsTurn(true)) return;
+      if (abortController.signal.aborted) {
+        setStatus("대기");
+        return;
+      }
       turnFailed = true;
       turnCatchError = cause instanceof Error ? cause.message : String(cause);
       endTurnProgress();
@@ -813,6 +902,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       appendBubble("system", `오류: ${turnCatchError}`);
     } finally {
       ghostPreviewUpdater.cancel();
+      if (!ownsTurn(true)) return;
       endTurnProgress();
       if (activeAbortController === abortController) activeAbortController = null;
       sendButton.disabled = false;
@@ -930,6 +1020,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
       return;
     }
+    const abortController = new AbortController();
+    const selectionKey = `${selection.mapId}:${selection.region.x}:${selection.region.y}:${selection.region.width}:${selection.region.height}`;
+    activeAbortController = abortController;
+    activeSelectionRegionController = abortController;
+    activeSelectionRegionKey = selectionKey;
+    abortNoticeShown = false;
+    const ownsRegionRun = (allowAborted = false): boolean =>
+      !disposed
+      && activeAbortController === abortController
+      && activeSelectionRegionController === abortController
+      && activeSelectionRegionKey === selectionKey
+      && (allowAborted || !abortController.signal.aborted);
     turnBusy = true;
     sendButton.disabled = true;
     collapseAfterAiWork = true;
@@ -968,6 +1070,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       controller.auditHistory.push({ kind: "assistant", text: content, at: new Date().toISOString() });
     };
     const onEvent = (event: SessionEvent): void => {
+      if (!ownsRegionRun()) return;
       if (event.type === "phase") {
         runningPhaseStatus = phaseStatusText(event.value);
         if (runningProgress) refreshRunningStatus(true);
@@ -1039,8 +1142,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         mapId: selection.mapId,
         region: selection.region,
         instruction: text,
+        signal: abortController.signal,
         onEvent,
       });
+      if (!ownsRegionRun()) {
+        result.pending?.discard();
+        return;
+      }
       streamedBubbles.forEach(renderStreamedMarkdown);
       if (result.assistantText && !assistantMessageDisplayed) appendAssistantText(result.assistantText);
       const summary = describeRegionTaskResult(result);
@@ -1049,19 +1157,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       setStatus(result.ok ? (result.applied ? "적용됨" : "완료") : "오류");
       if (!result.ok && result.error) toast(`영역 작업 실패: ${result.error}`, "error");
     } catch (cause) {
+      if (!ownsRegionRun()) return;
       const message = cause instanceof Error ? cause.message : String(cause);
       setStatus("오류");
       appendBubble("system", `오류: ${message}`);
       controller.auditHistory.push({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
     } finally {
-      const regionFailed = (status.textContent ?? "") === "오류";
+      if (!ownsRegionRun(true)) return;
+      const cancelled = abortController.signal.aborted;
+      activeSelectionRegionController = null;
+      activeSelectionRegionKey = null;
+      if (activeAbortController === abortController) activeAbortController = null;
+      if (cancelled) setStatus("대기");
+      const regionFailed = !cancelled && (status.textContent ?? "") === "오류";
       endTurnProgress();
       sendButton.disabled = false;
       turnBusy = false;
       refreshAbortButton();
-      if (collapsed) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
+      if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation();
-      notifyIfObscuredByTestPlay();
+      if (!cancelled) notifyIfObscuredByTestPlay();
       drainPendingSends();
       if (pendingSends.length === 0) scheduleVolatileFade();
       if (collapseAfterAiWork) {
@@ -1103,8 +1218,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const composing = event.isComposing || (event as KeyboardEvent & { keyCode?: number }).keyCode === 229;
     if (event.key === "Escape" && selectionTaskActive) {
       event.preventDefault();
-      selectionTaskActive = false;
-      refreshContextChips();
+      clearSelectionTaskContext();
       return;
     }
     if (input.value.startsWith("/") && !composing) {
@@ -1201,13 +1315,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     void sendText(prompt, `/${skill.id}`, { explicitSkillId: skill.id });
   };
 
-  // 빈 대화 시작 화면 — 최소 힌트 + 클릭 한 번으로 입력창을 채우는 예시 3개.
-  // 예시는 전송하지 않고 입력창만 채운다(키 미설정 오류 회피 + 편집 여지).
-  const START_EXAMPLE_PROMPTS: readonly { readonly label: string; readonly prompt: string }[] = [
-    { label: "🏘 작은 마을 만들기", prompt: "빈 곳에 집 두세 채와 길이 이어진 작은 마을을 만들어줘." },
-    { label: "🌲 지형 다듬기", prompt: "맵 가장자리를 나무와 수풀로 자연스럽게 다듬어줘." },
-    { label: "💬 NPC 대사 넣기", prompt: "마을 주민 NPC를 하나 만들고 말을 걸면 인사하는 대사를 넣어줘." },
-  ];
+  // 빈 대화 시작 화면 — 결과 중심 카드 다섯 개는 전송하지 않고 입력창만 채운다.
+  // 키 미설정 오류를 피하고 사용자가 문장을 고칠 여지를 남긴다.
   // 대화 기록 검색 — 제목 부분일치(searchConversations), 클릭으로 복원. 기록 2건 이상일 때만 노출
   // (1건이면 "이전 대화 이어가기" 버튼과 중복).
   const buildConversationHistoryCard = (): HTMLElement | null => {
@@ -1254,40 +1363,42 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         })]
       : [];
     const history = buildConversationHistoryCard();
+    const project = store.getCurrent();
+    const mapId = editorState.get().currentMapId ?? project.startMapId ?? null;
+    const map = mapId ? project.maps[mapId] : undefined;
+    const tileset = map ? project.tilesets[map.tilesetId] ?? null : null;
+    const gallery = buildVisualStartGallery({
+      tileset,
+      onPick: (instruction, id) => {
+        if (id === "selection") {
+          if (editorState.get().selection) activateSelectionTaskContext(false);
+          else toast("먼저 맵에서 꾸밀 영역을 선택하면 그 안에서만 작업합니다.", "info");
+        }
+        input.value = instruction;
+        input.focus();
+      },
+    });
     return el("div", {
       class: "ai-start-screen is-minimal",
       dataset: { testid: "ai-start-screen" },
       children: [
-        ...resume,
         el("div", {
-          class: "ai-start-empty-hint",
-          text: "아래에 요청을 입력하세요 — 예를 들어:",
+          class: "ai-start-title",
+          text: "무엇을 만들까요?",
           dataset: { testid: "ai-start-empty-hint" },
         }),
+        gallery,
         el("div", {
-          class: "ai-start-examples",
-          dataset: { testid: "ai-start-examples" },
-          children: START_EXAMPLE_PROMPTS.map((example, index) =>
-            el("button", {
-              class: "ai-start-example-chip",
-              text: example.label,
-              attrs: { type: "button", title: example.prompt },
-              dataset: { testid: `ai-start-example-${index}` },
-              on: {
-                click: () => {
-                  input.value = example.prompt;
-                  input.focus();
-                },
-              },
-            }),
-          ),
+          class: "ai-start-empty-hint",
+          text: "카드를 고르면 요청이 입력됩니다. 내용을 고친 뒤 보내세요.",
         }),
+        ...resume,
+        ...(history ? [history] : []),
         el("div", {
           class: "ai-start-shortcut-hint",
-          text: "Ctrl+K 명령·맵·스킬 검색 · 캔버스에서 영역을 드래그하면 ✨ AI 작업",
+          text: "더 많은 기능은 / 또는 Ctrl+K에서 찾을 수 있습니다. 맵에서 영역을 선택하면 그 안만 꾸밀 수 있습니다.",
           dataset: { testid: "ai-start-shortcut-hint" },
         }),
-        ...(history ? [history] : []),
       ],
     });
   };
@@ -1371,6 +1482,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
   const clearSelectionTaskContext = (): void => {
+    abortActiveSelectionRegionTask();
     if (!selectionTaskActive) return;
     selectionTaskActive = false;
     dismissedSelectionKey = selectionKeyOf(editorState.get().selection);
@@ -1406,8 +1518,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     sel ? `${sel.mapId}:${sel.x}:${sel.y}:${sel.width}:${sel.height}` : null;
   const refreshContextChips = (): void => {
     if (typeof document === "undefined") return; // fakeDom 해제 후 잔존 구독 가드(테스트).
-    const currentSelection = editorState.get().selection;
+    const state = editorState.get();
+    const project = store.getCurrent();
+    const currentSelection = state.selection;
     const currentKey = selectionKeyOf(currentSelection);
+    const currentMapId = state.currentMapId ?? project.startMapId ?? null;
+    const runnableSelectionKey = currentSelection
+      && currentMapId === currentSelection.mapId
+      && project.maps[currentSelection.mapId]
+      ? currentKey
+      : null;
+    if (activeSelectionRegionKey && activeSelectionRegionKey !== runnableSelectionKey) {
+      abortActiveSelectionRegionTask();
+    }
     if (currentKey && currentKey !== dismissedSelectionKey) selectionTaskActive = true;
     if (!currentKey) dismissedSelectionKey = null;
     const ctx = getSkillContext();
@@ -1420,8 +1543,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     contextChips.replaceChildren(...chips);
   };
   refreshContextChips();
-  editorState.subscribe(() => refreshContextChips());
-  store.subscribe(() => refreshContextChips());
+  const unsubscribeContextEditor = editorState.subscribe(() => refreshContextChips());
+  const unsubscribeContextStore = store.subscribe(() => refreshContextChips());
   const activateSelectionTaskContext = (focus = true): void => {
     if (!editorState.get().selection) return;
     selectionTaskActive = true;
@@ -1700,15 +1823,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
   }) as HTMLButtonElement;
+  const onMoreMenuPointerDown = (event: PointerEvent): void => {
+    if (moreMenu.hidden) return;
+    if (event.target instanceof Node && (moreMenu.contains(event.target) || moreMenuToggle.contains(event.target))) return;
+    closeMoreMenu();
+  };
+  const onMoreMenuKeyDown = (event: KeyboardEvent): void => {
+    if (!moreMenu.hidden && event.key === "Escape") closeMoreMenu();
+  };
   if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
-    document.addEventListener("pointerdown", (event) => {
-      if (moreMenu.hidden) return;
-      if (event.target instanceof Node && (moreMenu.contains(event.target) || moreMenuToggle.contains(event.target))) return;
-      closeMoreMenu();
-    });
-    document.addEventListener("keydown", (event) => {
-      if (!moreMenu.hidden && event.key === "Escape") closeMoreMenu();
-    });
+    document.addEventListener("pointerdown", onMoreMenuPointerDown);
+    document.addEventListener("keydown", onMoreMenuKeyDown);
   }
   const moreMenuItem = (text: string, testId: string, onClick: () => void): HTMLElement =>
     el("button", {
@@ -1770,7 +1895,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-chat-input-row",
     children: [skillToggle, input, sendButton, commandBarSettingsButton],
   });
-  const { commandBar, commandMenu, commandMenuToggle } = createCommandBarElements({
+  const { commandBar, commandMenu, commandMenuToggle, dispose: disposeCommandBar } = createCommandBarElements({
     slashHost,
     contextChips,
     queueIndicator,
@@ -1793,11 +1918,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   volatileZone = volatileLogMount;
   // 초기(빈 대화)엔 휘발 존을 접어 맵을 가리지 않는다. 입력 포커스/첫 콘텐츠에서 펼쳐진다.
   volatileLogMount.hidden = true;
+  const completionHost = el("div", {
+    class: "ai-completion-host",
+    dataset: { testid: "ai-completion-host" },
+  });
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
-    // 제안 카드 본체는 몰입 모달에 상주 — 여기엔 0건 알림과 '검토 대기' pill만 남는다.
-    children: [proposalNoticeHost, proposalPill],
+    // 적용 완료 액션과 0건 알림, '검토 대기' pill은 맵 위에서 잃지 않는 고정 영역이다.
+    children: [completionHost, proposalNoticeHost, proposalPill],
   });
   const risingOverlay = el("div", {
     class: "ai-rising-overlay",
@@ -1825,8 +1954,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__rpgzzuAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
+  const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {
-    window.__rpgzzuAiHarness = () => controller.session?.getHarnessSnapshot() ?? null;
+    window.__rpgzzuAiHarness = harnessAccessor;
   }
 
   // 크기 커스텀: 좌상단 코너 핸들 드래그(오른쪽·아래가 고정이라 왼쪽·위로 끌면 커진다).
@@ -1850,8 +1980,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { title: "드래그로 패널 크기 조절", "aria-label": "패널 크기 조절" },
     dataset: { testid: "ai-resize-handle" },
   });
+  let activeResizeCleanup: (() => void) | null = null;
   resizeHandle.addEventListener("pointerdown", (event: PointerEvent) => {
     event.preventDefault();
+    activeResizeCleanup?.();
     const startX = event.clientX;
     const startY = event.clientY;
     const rect = panel.getBoundingClientRect ? panel.getBoundingClientRect() : { width: 320, height: 480 };
@@ -1864,11 +1996,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       applySize();
     };
-    const onUp = (): void => {
+    const cleanupResize = (): void => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      if (activeResizeCleanup === cleanupResize) activeResizeCleanup = null;
+    };
+    const onUp = (): void => {
+      cleanupResize();
       if (panelSize) savePanelSize(panelSize);
     };
+    activeResizeCleanup = cleanupResize;
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   });
@@ -1942,6 +2079,44 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   collapseButton.addEventListener("click", toggleCollapsed);
   collapsedRestore.addEventListener("click", restoreCollapsed);
   applyCollapsed();
+
+  let completionStripHandle: AiCompletionStripHandle | null = null;
+  const renderCompletion = (context: AiApplyCompletionContext | null): void => {
+    completionStripHandle?.dispose();
+    completionStripHandle = null;
+    completionHost.replaceChildren();
+    if (!context || disposed) return;
+    completionStripHandle = buildAiCompletionStrip({
+      context,
+      onPrefill: (prompt, completion) => {
+        const project = store.getCurrent();
+        const targetMap = project.maps[completion.mapId];
+        if (targetMap) {
+          const capturedSelection = completion.selection?.mapId === completion.mapId
+            ? { ...completion.selection }
+            : null;
+          dismissedSelectionKey = null;
+          selectionTaskActive = capturedSelection !== null;
+          selectEditorMap(completion.mapId);
+          editorState.set({ selection: capturedSelection });
+        } else {
+          toast("적용했던 맵을 찾을 수 없어 현재 맵에서 요청을 이어갑니다.", "info");
+        }
+        restoreCollapsed();
+        revealVolatileZone();
+        input.value = prompt;
+        refreshSlash();
+        refreshContextChips();
+        try {
+          input.focus();
+        } catch {
+          // headless DOM may not implement focus
+        }
+      },
+    });
+    completionHost.append(completionStripHandle.element);
+  };
+  const unsubscribeCompletion = subscribeAiApplyCompletion(renderCompletion);
 
   applyHistoryOpen = (next: boolean): void => {
     historyOpen = next;
@@ -2097,15 +2272,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     cleanupAiAssistBridge = () => targetWindow.removeEventListener("rpgzzu:ai-assist", handleAiAssist);
   }
 
-  // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵+스킬). 전역 1회만 등록.
+  // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵+스킬). 패널 수명주기와 함께 등록/해제한다.
+  const onCommandPaletteKeyDown = (event: KeyboardEvent): void => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
+    }
+  };
+  let ownsCommandPaletteHotkey = false;
   if (typeof window !== "undefined" && !(window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey) {
     (window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey = true;
-    document.addEventListener?.("keydown", (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
-      }
-    });
+    ownsCommandPaletteHotkey = true;
+    document.addEventListener?.("keydown", onCommandPaletteKeyDown);
   }
 
   // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
@@ -2240,6 +2418,58 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void sendText(text);
     },
   });
+
+  activeAiChatPanelCleanup = () => {
+    if (disposed) return;
+    disposed = true;
+
+    const turnController = activeAbortController;
+    const regionController = activeSelectionRegionController;
+    turnController?.abort();
+    if (regionController && regionController !== turnController) regionController.abort();
+    activeAbortController = null;
+    activeSelectionRegionController = null;
+    activeSelectionRegionKey = null;
+    turnBusy = false;
+    pendingSends.length = 0;
+    endTurnProgress();
+    clearAutoCollapseTimer();
+    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
+    volatileFadeTimer = null;
+    activeResizeCleanup?.();
+    activeResizeCleanup = null;
+
+    unsubscribeContextEditor();
+    unsubscribeContextStore();
+    unsubscribeCompletion();
+    completionStripHandle?.dispose();
+    completionStripHandle = null;
+    disposeCommandBar();
+
+    if (typeof window !== "undefined") {
+      window.removeEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);
+      window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
+      if (window.__rpgzzuAiHarness === harnessAccessor) delete window.__rpgzzuAiHarness;
+      if (ownsCommandPaletteHotkey) {
+        document.removeEventListener?.("keydown", onCommandPaletteKeyDown);
+        delete (window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey;
+      }
+    }
+    if (typeof document !== "undefined") {
+      document.removeEventListener("pointerdown", onMoreMenuPointerDown);
+      document.removeEventListener("keydown", onMoreMenuKeyDown);
+      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked");
+    }
+
+    cleanupAiAssistBridge?.();
+    cleanupAiAssistBridge = null;
+    unregisterAiAssistantBridge();
+    registerAiBootIntentTarget(null);
+    proposalApi.clearInlineActionsIfMine();
+    closeProposalModal();
+    clearAgentGhostPreview();
+    panel.remove();
+  };
 
   return panel;
 }

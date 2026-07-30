@@ -640,7 +640,7 @@ function textOrDefault(value: string | undefined, fallback: string): string {
 }
 
 function isSkillScope(value: unknown): value is SkillRecord["scope"] {
-  return value === "self" || value === "ally" || value === "enemy" || value === "allEnemies";
+  return value === "self" || value === "ally" || value === "allAllies" || value === "enemy" || value === "allEnemies";
 }
 
 function isItemScope(value: unknown): value is ItemRecord["scope"] {

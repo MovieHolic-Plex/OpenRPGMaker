@@ -79,6 +79,7 @@ The built-in `STATE_ONTOLOGY` covers the five default states:
 - `PlaySession.actorStateIds` records which states are currently applied per actor; `Change State` event command adds/removes; persisted in save slots.
 - Field-state overrides also live on `PlaySession` (`actorStateIds`), never on the project database record — runtime overrides must not mutate authored `StateRecord`.
 - Battle state application, damage-over-time, recovery rolls, and removal conditions are owned by `src/battle` (see `runtime-battle.md`).
+- Every resolved state transition is also an ordered presentation fact in the append-only `BattleSnapshot.timeline`: `stateUpkeep` records turn damage, `stateAdded` / `stateRemoved` record effect, natural, hit, and battle-end changes, and `incapacitated` records an action skipped by restriction. Strict rounds retain their exact timeline slice in `roundLogs[].timeline`; presentation consumes these facts once rather than reconstructing state changes from the final battler snapshot.
 - State `removalCondition` / `restriction` / `runtimeEffects` are consumed by battle resolution; the editor only authors them.
 
 ## Common confusion points
