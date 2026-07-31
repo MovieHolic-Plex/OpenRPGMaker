@@ -1,1 +1,0 @@
-AI-facing project wiki and human-readable design specs, research notes, and HTML guides that document RPG ZZU's architecture, editor workflows, runtime, and feature plans.

@@ -1,4 +1,0 @@
-- PWA icons follow the fixed naming convention `pwa-<size>.png` under `/icons/` and are referenced by both the web manifest and the service worker's `APP_SHELL_URLS`.
-- Service-worker cache strategy is split by request type: navigations use network-first with a cached `/index.html` fallback, while resource requests under `/assets/` or standard `font|image|manifest|script|style|worker` destinations use cache-first.
-- Third-party asset packs are kept in their own `assets/<pack>/` subtree with a README or LICENSE file documenting provenance (e.g. `easyrpg/COPYING`, `cc0/mabaci-medieval-items/LICENSE.txt`, `cc0/audio/README.txt`).
-- Generated asset metadata lives alongside its source pack under `assets/<pack>/generated-*` JSON files (e.g. `jetrel/generated-icon-manifest.json`, `easyrpg/rtp-manifest.json`) rather than being embedded in code.

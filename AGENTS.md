@@ -41,11 +41,17 @@ This repo has multiple agent tooling directories. Here is what each is and wheth
 | `.claude/` | Claude Code agent config. | No (gitignored) | Claude-specific |
 | `.codex/` | Codex agent config + event logs. | No (gitignored) | Codex-specific |
 | `.gjc/` | GJC agent state. | No (gitignored) | GJC-specific |
-| `.qoder/` | Qoder agent config. | No (gitignored) | Qoder-specific |
+| `.qoder/` | Qoder auto-generated repowiki. **Not tracked — it duplicates `openwiki/` and went stale** (10 files still described the repo as a pnpm monorepo after the npm switch). Use `openwiki/` instead. | No (gitignored) | **No — use `openwiki/`** |
 | `.qwen/` | Qwen agent config. | No (gitignored) | Qwen-specific |
 | `.senpi/` | Senpi agent session state. | No (gitignored) | Senpi-specific |
-| `.superpowers/` | Superpowers agent config. | No (gitignored) | Superpowers-specific |
+| `.superpowers/` | Superpowers agent config + `sdd/qa-shots/` QA screenshots. The QA screenshots **are** tracked as authored evidence; the rest is session-local. | Partial (`sdd/qa-shots/`) | Superpowers-specific |
 | `.omo/` | ULW-loop state, evidence, and rules. Partially tracked (`.omo/evidence/` and `.omo/rules/`). | Partial | State + evidence |
+
+이 표는 실측과 일치해야 한다. 실측: 2026-07-31 정리에서 `.qoder/` 75건과 `.codex/` 5건이
+"No (gitignored)" 라고 적혀 있었는데도 **tracked** 였다. `.codex/` 는 `.gitignore` 규칙이
+있었지만 규칙보다 먼저 커밋돼 규칙이 무력화된 상태였다. 표를 고치는 것만으로는 부족하므로
+index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents/` 를 추가했다.
+표를 수정할 때는 `git ls-files <dir> | wc -l` 과 `git check-ignore -q <dir>` 로 검증하라.
 
 **For any agent entering this repo:**
 1. Read `AGENTS.md` (this file) — it is the canonical entry point.

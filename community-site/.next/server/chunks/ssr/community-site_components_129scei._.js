@@ -1,3 +1,0 @@
-module.exports=[80382,a=>{"use strict";var b=a.i(68259),c=a.i(24703),d=a.i(97938);a.s(["default",0,function({current:a,label:e}){let f=(0,d.usePathname)()??`/${a}`,g="en"===a?"ko":"en",h=f.replace(/^\/(en|ko)(\/|$)/,`/${g}$2`);return(0,b.jsx)(c.default,{href:h,className:"lang-switch",lang:g,children:e})}])},13057,a=>{"use strict";var b=a.i(68201);a.s(["default",0,function({lang:a}){return(0,b.useEffect)(()=>{document.documentElement.lang=a},[a]),null}])}];
-
-//# sourceMappingURL=community-site_components_129scei._.js.map

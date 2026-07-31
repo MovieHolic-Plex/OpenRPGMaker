@@ -1,3 +1,0 @@
-{
-  "/play/[slug]/[[...path]]/route": "app/play/[slug]/[[...path]]/route.js"
-}

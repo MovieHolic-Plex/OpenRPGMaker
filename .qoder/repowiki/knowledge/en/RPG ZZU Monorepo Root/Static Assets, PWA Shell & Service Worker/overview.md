@@ -1,1 +1,0 @@
-Serves the game's static art/audio/fonts, EasyRPG RTP resources, and the PWA manifest + service worker that caches app-shell and asset-first requests.

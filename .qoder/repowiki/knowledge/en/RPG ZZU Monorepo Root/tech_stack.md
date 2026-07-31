@@ -1,1 +1,0 @@
-Vite 6 + TypeScript 5 (ES2022 target, Bundler resolver) for both the editor and player bundles; Vitest 4 for unit/golden tests; Playwright 1.61 for browser e2e; Phaser 3.90 as the sole runtime dependency; pnpm workspaces for package orchestration.
