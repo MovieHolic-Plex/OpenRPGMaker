@@ -1,9 +1,0 @@
-Two parallel test layers sit under `test/`:
-
-- `commandContracts/` — a contract-testing framework for every `CommandKind`. `specTypes.ts` defines the `NativeManifestEntry` shape (happy / edge / roundtrip / pauseOrTermination cases) plus a shared `NativeFoundationSetup` with canonical ids (`map_contract`, `event_contract`, …). `defineCommandContract.ts` registers each kind into a global set; `nativeManifest.ts` merges per-family manifests from `specs/{dialogue,controlFlow,scene,state,system}.ts` into one `NATIVE_MANIFEST`. `harness.ts` bootstraps a blank project, injects a single event carrying the commands under test, runs `createInterpreter` in a loop, auto-drains pauses via an `answers` queue, and asserts completion through a sentinel `setFlag`. `coverage.test.ts` enforces that every `COMMAND_KINDS` entry has a matching `<kind>.contract.test.ts` file, using a TODO whitelist as a shrinking gate.
-
-- `e2e/` — Playwright specs exercising the full editor + player stack. Each spec is self-contained: it navigates to `/`, waits for Phaser boot, then drives DOM via `getByTestId` selectors. Shared fixtures live in sibling helpers (`battleReferenceProject.ts`, `rm2k3CommerceFixtures.ts`, `runtimeInput.ts`, `supabaseProjectSeed.ts`) and large sample projects are stored under `fixtures/projects/` and `fixtures/build-budget/`.
-
-- Flat Vitest files at `test/*.test.ts` cover domain logic (interpreter, autotile engine, database views, AI panels, tile tools, etc.) and reuse small shared helpers (`fakeDom.ts`, `runtimeEventPageFixtures.ts`).
-
-Dependency direction is one-way: test code imports production modules under `@/player/*`, `@/project/*`, `@/database/*`; no production code imports back into `test/`.

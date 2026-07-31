@@ -1,5 +1,0 @@
-- Live-eval suites are named `*.eval.ts` and gated with `describe.skipIf(!process.env.VITE_LLM_API_KEY)` so they skip cleanly without an API key.
-- Each evaluator constructs an `AssistantSession` with a config object built from `VITE_LLM_*` env vars (model, baseUrl, apiKey, maxToolCalls, maxTokens) rather than importing a shared singleton.
-- Per-task execution is wrapped in a manual `withTimeout` helper using `Promise.race` instead of relying solely on Vitest's global timeout, with a configurable `PER_TASK_TIMEOUT_MS`.
-- Results written to disk contain only aggregated summaries (pass/score/matcher list/toolCalls/tokens/stoppedReason/error) — raw prompts, responses, and API keys are never persisted.
-- Assertions focus on harness sanity (e.g. `expect(outcomes.length).toBe(count)`, `expect(outcomes.some(o => o.toolCalls > 0))`) rather than demanding every task pass.

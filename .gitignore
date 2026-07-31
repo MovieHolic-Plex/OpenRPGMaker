@@ -47,10 +47,42 @@ handoff.md
 # 리포트용 스크린샷 산출물. `report-assets/` 자체에는 추적 중인 알파 PNG 가 있으므로
 # 생성물이 쌓이는 하위 디렉터리만 무시한다.
 /report-assets/shots/
+# Next.js 빌드 산출물. 실측: community-site/.next/ 가 516파일 108MB 로 커밋돼 있었고
+# .gitignore 에 .next 규칙이 아예 없었다. turbopack 캐시(.sst) · 서버 청크 · manifest ·
+# trace · BUILD_ID · .tsbuildinfo 전부 `npm run build` 로 재생성된다.
+# 덤으로 sourcemap 에 다른 사람 홈 경로(C:\Users\hyeon\...)가 8개 파일에 박혀 있었다.
+.next/
+# 루트에 흘린 일회성 리포트 HTML. 정본은 날짜 접두사가 붙은 docs/ 다.
+# 실측: 루트에 8건(1.4MB)이 커밋돼 있었고 문서 링크는 0건이었다.
+# 생성 스크립트가 있는 산출물(ai-npc-placement-proof.html)도 재생성되므로 커밋하지 않는다.
+/*-report.html
+/*-critique.html
+/*-proof.html
+/codebase-analysis-ko.html
+/stardew-feasibility-report.html
+# 진단·스크래치 산출물. 실측: 정리 시점에 루트/scripts 에 35건(9.5MB)이 쌓여 있었고
+# 모두 재생성 가능한 일회용이었다. 개별 삭제로 끝내면 다시 쌓이므로 패턴으로 막는다.
+# tsc 전체 출력 덤프
+/tsc-full*.txt
+# 에이전트 세션 덤프 (claude CLI 가 루트에 흘린다)
+/tmpclaude-*
+# 일회용 스크립트: scripts/scratch-*.{mts,cjs,py} 21건이 커밋 후보로 올라왔다.
+# 보존 가치가 있으면 scratch- 접두사를 떼고 정식 이름으로 커밋한다.
+/scripts/scratch-*
+# 배경 제거·리포트 생성용 일회용 루트 스크립트
+/remove_bg.*
+/_fix_report.py
 # 에이전트/세션 잡 · 런타임 pid · 파이썬 캐시
 .claude/
 .gjc/
 .codex/
+# Qoder 자동생성 repowiki. 실측 75파일. openwiki/ 가 코드베이스 지식의 정본인데
+# 이쪽은 도구가 리포를 스캔해 만든 중복이고 이미 stale 했다(10개 파일이 npm 전환 전
+# pnpm 모노레포로 기술). 잘못된 정보를 주는 중복이라 추적하지 않는다.
+.qoder/
+.qwen/
+.senpi/
+.agents/
 .codex-vite*.pid
 .codex-vite*.log
 .codex-event-proof*.log

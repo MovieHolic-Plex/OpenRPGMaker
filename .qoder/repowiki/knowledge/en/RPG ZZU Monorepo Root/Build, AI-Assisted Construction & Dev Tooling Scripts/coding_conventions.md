@@ -1,5 +1,0 @@
-- Top-level scripts are single-file CLIs that parse env/config at the top, call an async `main()`, and exit with numeric codes (0 success, 1 parity/tool failure, 2 missing env/input error).
-- Secrets and API keys are read from `process.env` prefixed with `VITE_` (e.g. `VITE_SUPABASE_ANON_KEY`, `VITE_LLM_API_KEY`) and validated before use, with explicit `console.error` + `process.exit(2)` when absent.
-- RM2K3 parity and similar check scripts write structured JSON evidence under `output/evidence/<scenario>/` via a shared `writeEvidence` helper rather than printing raw diffs.
-- Scripts that mutate projects load/save through `loadProjectFromSupabase` / `saveProjectToSupabase` using a config object `{ url, anonKey, projectId }` instead of direct DB calls.
-- Reusable image/PNG helpers live in `scripts/lib/*.mjs` and `scripts/assets/*.mjs` and are imported by multiple top-level scripts rather than duplicated.

@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: rpg_maker_skills
-title: RPG Maker Authoring Skills & Editor Feature Specs
-scope:
-    - rpg_maker_skills/
-source_files: []
-depends_on: []
-related_to: []

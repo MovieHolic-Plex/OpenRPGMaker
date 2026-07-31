@@ -1,4 +1,0 @@
-- Each skill is a self-contained directory under `skills/<id>/` containing only a `SKILL.md` file, referenced from `manifest.json` via its relative path.
-- Every SKILL.md begins with YAML front-matter declaring at least `name` and `description`, followed by structured sections (purpose, editor evidence, minimum content, failure condition).
-- Feature specs live directly under `features/` as flat Markdown files named after the editor capability they describe, with no nested sub-packages.
-- Skills are classified by their `useWhen` intent in `manifest.json` rather than by alphabetical order, so consumers can pick a skill by the authoring need.

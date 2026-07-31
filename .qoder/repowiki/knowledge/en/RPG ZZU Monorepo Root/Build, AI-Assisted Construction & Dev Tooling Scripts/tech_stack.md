@@ -1,1 +1,0 @@
-Node.js ESM (`.mjs`) and TypeScript (`.mts`/`.ts`) executed via `tsx`; Python helpers (`.py`) for tile-analysis; PowerShell/`.cmd` wrappers for Windows process management; Supabase REST client for remote project persistence.

@@ -1,3 +1,0 @@
-- Wiki and spec filenames are prefixed with an ISO date (`YYYY-MM-DD-`) so entries are chronologically sortable and versioned by day.
-- Each `openwiki/` page targets a single subsystem and explicitly names the `src/` files it owns, so agents can jump from prose to source without guessing.
-- HTML guides in `docs/` are self-contained single-file documents (inline CSS, no external JS framework) intended for direct browser viewing rather than a static-site generator pipeline.
