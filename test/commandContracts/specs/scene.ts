@@ -34,6 +34,11 @@ export const SCENE_SPECS = {
     canLose: false,
   }),
   openChest: nativeManifestEntry("scene", { kind: "openChest", chestId: "chest_contract" }),
+  spawnFieldEnemy: nativeManifestEntry("scene", {
+    kind: "spawnFieldEnemy",
+    spawn: { id: "spawn_contract", troopId: "troop_contract", area: { x: 1, y: 1, w: 2, h: 2 } },
+  }),
+  despawnFieldEnemy: nativeManifestEntry("scene", { kind: "despawnFieldEnemy", spawnId: "spawn_contract" }),
   setLighting: nativeManifestEntry("scene", {
     kind: "setLighting",
     ambient: 0.75,

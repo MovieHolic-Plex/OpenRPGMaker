@@ -7,6 +7,8 @@
 // - 상태는 모듈 레벨(재렌더에도 유지), 문서 리스너는 1회만 설치.
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
+import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { canEditMap } from "@/editor/mapEditLocks";
 import { TILE_SIZE } from "@/assets/bundled";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
@@ -113,6 +115,9 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   shell.append(makeLayerSwitcher(state.layer));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));
   shell.append(makePanelToggles(state.selectedTile, state.layer, tileset));
+  if (state.pendingEventCoordinate && state.layer === "event" && state.tool === "event") {
+    shell.append(makePendingEventCta(state.pendingEventCoordinate));
+  }
   if (flyoutState.open) {
     shell.append(makeFlyout(flyoutState.open, state.selectedTile, state.layer, tileset));
   }
@@ -227,6 +232,37 @@ function makePanelToggles(selectedTile: number, activeLayer: Layer, tileset: Til
     }),
   );
   return wrap;
+}
+
+function makePendingEventCta(coordinate: { readonly mapId: string; readonly x: number; readonly y: number }): HTMLElement {
+  return el("button", {
+    class: "basic-pending-event-cta",
+    attrs: {
+      type: "button",
+      title: `${coordinate.x},${coordinate.y}에 새 이벤트 만들기`,
+      "aria-label": `${coordinate.x},${coordinate.y}에 새 이벤트 만들기`,
+    },
+    dataset: { testid: "basic-create-selected-event" },
+    on: {
+      click: () => {
+        const pending = editorState.get().pendingEventCoordinate;
+        if (!pending || pending.mapId !== coordinate.mapId || pending.x !== coordinate.x || pending.y !== coordinate.y) return;
+        const map = store.getCurrent().maps[pending.mapId];
+        const occupied = map?.events.some((event) => event.x === pending.x && event.y === pending.y);
+        if (!map || !canEditMap(pending.mapId) || pending.x < 0 || pending.y < 0 || pending.x >= map.width || pending.y >= map.height || occupied) {
+          editorState.set({ pendingEventCoordinate: null });
+          return;
+        }
+        editorState.set({ pendingEventCoordinate: null });
+        openNewEventEditorModal(pending.mapId, pending.x, pending.y);
+      },
+    },
+    children: [
+      el("span", { class: "basic-pending-event-cta-mark", text: "+", attrs: { "aria-hidden": "true" } }),
+      el("span", { text: "이벤트 만들기" }),
+      el("span", { class: "basic-pending-event-cta-coord", text: `${coordinate.x},${coordinate.y}` }),
+    ],
+  });
 }
 
 function makeFlyout(id: BasicFlyoutId, selectedTile: number, activeLayer: Layer, tileset: TilesetDef | undefined): HTMLElement {

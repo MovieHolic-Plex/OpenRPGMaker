@@ -17,6 +17,12 @@ export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
 export const EDITOR_BRUSH_SIZES = [1, 2, 3, 4] as const;
 export type EditorBrushSize = typeof EDITOR_BRUSH_SIZES[number];
 
+export interface PendingEventCoordinate {
+  mapId: MapId;
+  x: number;
+  y: number;
+}
+
 export interface TileSelection {
   mapId: MapId;
   x: number;
@@ -51,6 +57,7 @@ export interface EditorState {
   brushSize: EditorBrushSize;
   selectedEventPageId: string | null;
   selection: TileSelection | null;
+  pendingEventCoordinate: PendingEventCoordinate | null;
   clipboard: TileClipboard | null;
   // 붙여넣기 미리보기 모드 — 클립보드 고스트가 커서를 추종하고 클릭으로 확정.
   pastePreview: { x: number; y: number } | null;
@@ -79,6 +86,7 @@ class EditorStateStore {
     selectedEventId: null,
     selectedEventPageId: null,
     selection: null,
+    pendingEventCoordinate: null,
     clipboard: null,
     pastePreview: null,
     showGrid: true,

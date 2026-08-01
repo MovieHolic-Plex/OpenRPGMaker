@@ -73,6 +73,7 @@ export function playBattle(
       switches: scene.session.switches,
       variables: scene.session.variables,
       inventory: scene.session.inventory,
+      itemUseCharges: scene.session.itemUseCharges,
       gold: scene.session.gold,
       partyActorIds: scene.session.partyActorIds,
       actorSkillIds: scene.session.actorSkillIds,
@@ -119,7 +120,7 @@ export function playBattle(
             exitBattleAudio(project, scene.session, savedAudio);
             applyBattleRewardsToSession(
               scene.session,
-              { result, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
+              { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
               project
             );
             battleScene?.destroy();

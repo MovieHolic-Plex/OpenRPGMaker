@@ -629,6 +629,26 @@
     grid-column: 1 / -1;
   }
 
+  .database-modal-body .db-field-support-notice {
+    background: color-mix(in srgb, var(--bg-raised, #fff) 94%, var(--db-modern-accent, #2f67c9) 6%);
+    border: 1px solid var(--db-modern-line, var(--border-subtle));
+    border-radius: 4px;
+    color: var(--text-2, var(--text-secondary));
+    display: grid;
+    font: 12px/1.45 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+    gap: 4px;
+    grid-column: 1 / -1;
+    padding: 8px 10px;
+  }
+
+  .database-modal-body .db-field-support-notice p {
+    margin: 0;
+  }
+
+  .database-modal-body .db-field-support-notice strong {
+    color: var(--text-1);
+  }
+
   .database-modal-body .db-item-type-panels {
     display: grid;
     gap: 8px 12px;

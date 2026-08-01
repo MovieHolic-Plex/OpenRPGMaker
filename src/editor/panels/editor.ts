@@ -21,6 +21,7 @@ import {
 } from "@/editor/mapEditLocks";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
+import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
@@ -278,6 +279,7 @@ export function teardownEditor(): void {
   registerAiBootIntentTarget(null);
   clearPendingAiBootIntent();
   stopAiConnectionPolling();
+  cleanupProjectE2EBridge();
 
   unsubStore?.();
   unsubAutoSave?.();

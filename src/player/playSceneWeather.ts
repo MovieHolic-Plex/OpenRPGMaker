@@ -21,6 +21,29 @@ const WEATHER_DEPTH = 800_000;
 const WEATHER_FIXED_STEP_MS = 16;
 const MAX_PARTICLES = 96;
 
+export type WeatherRenderPlan = {
+  readonly active: boolean;
+  readonly kind: WeatherParams["kind"];
+  readonly particleCount: number;
+  readonly fogOpacity: number;
+  readonly stormFlashOpacity: number;
+};
+
+/** Pure render contract shared by Phaser drawing and focused tests. */
+export function weatherRenderPlan(
+  params: WeatherParams,
+  timeMs: number,
+  maxParticles = MAX_PARTICLES,
+): WeatherRenderPlan {
+  return {
+    active: isWeatherActive(params),
+    kind: params.kind,
+    particleCount: weatherParticleCount(params, maxParticles),
+    fogOpacity: fogOpacity(params),
+    stormFlashOpacity: stormFlashOpacity(params, timeMs),
+  };
+}
+
 export function installWeatherLayer(scene: PlaySceneContext): void {
   if (scene.weatherLayer && scene.weatherGraphics) return;
   const layer = scene.add.container(0, 0);
@@ -104,19 +127,19 @@ function renderWeather(scene: PlaySceneContext, params: WeatherParams): void {
   const graphics = scene.weatherGraphics;
   const layer = scene.weatherLayer;
   if (!graphics || !layer) return;
+  const plan = weatherRenderPlan(params, scene.weatherClockMs ?? 0);
   graphics.clear();
-  layer.setVisible(isWeatherActive(params));
-  if (!isWeatherActive(params)) return;
+  layer.setVisible(plan.active);
+  if (!plan.active) return;
   const width = scene.cameras.main.width || PLAY_RESOLUTION.width;
   const height = scene.cameras.main.height || PLAY_RESOLUTION.height;
-  if (params.kind === "fog") {
+  if (plan.kind === "fog") {
     renderFog(graphics, params, width, height, scene.weatherClockMs ?? 0);
     return;
   }
   renderPrecipitation(graphics, params, width, height, scene.weatherClockMs ?? 0);
-  const flash = stormFlashOpacity(params, scene.weatherClockMs ?? 0);
-  if (flash > 0) {
-    graphics.fillStyle(0xffffff, flash);
+  if (plan.stormFlashOpacity > 0) {
+    graphics.fillStyle(0xffffff, plan.stormFlashOpacity);
     graphics.fillRect(0, 0, width, height);
   }
 }

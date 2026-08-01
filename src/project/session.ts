@@ -22,6 +22,7 @@ import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
 import { normalizeLightingState } from "@/player/lighting";
+import { transitionItemState } from "@/player/itemTransitions";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -130,6 +131,8 @@ export interface PlaySession {
   timers: Record<string, number>;
   gold: number;
   inventory: Record<string, number>;
+  /** Successful-use cursor for the current FIFO copy of each finite-use item. */
+  itemUseCharges?: Record<string, number>;
   /** persistKill 필드 스폰의 영구 처치 수(mapId → spawnId → 처치 수). 세이브에 포함된다. */
   killedFieldSpawns?: Record<string, Record<string, number>>;
   partyActorIds: string[];
@@ -241,6 +244,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     // 시작 소지금은 인벤토리/파티와 마찬가지로 프로젝트 시작 상태 설정을 따른다.
     gold: Math.max(0, start.gold ?? 0),
     inventory: { ...start.inventory },
+    itemUseCharges: {},
     partyActorIds: [...start.partyActorIds],
     monsterInstances: {},
     monsterParty: [],
@@ -378,11 +382,14 @@ export function changeItem(
 ): void {
   const current = session.inventory[itemId] ?? 0;
   const next = Math.max(0, applyAmount(current, op, amount));
-  if (next === 0) {
-    delete session.inventory[itemId];
-    return;
-  }
-  session.inventory[itemId] = next;
+  const action = op === "+="
+    ? { kind: "grant" as const, itemId, amount: next - current }
+    : op === "-="
+      ? { kind: "remove" as const, itemId, amount: current - next }
+      : { kind: "assign" as const, itemId, count: next };
+  const transitioned = transitionItemState(session, [], action);
+  session.inventory = transitioned.inventory;
+  session.itemUseCharges = transitioned.itemUseCharges;
 }
 
 export function changeParty(

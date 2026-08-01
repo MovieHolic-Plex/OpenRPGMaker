@@ -23,6 +23,24 @@ export type { BattleFlow } from "@/project/types";
 export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
 export type BattleResult = "victory" | "defeat" | "escape";
 
+export type EquipmentUseTarget =
+  | { readonly kind: "enemy"; readonly enemyId: string }
+  | { readonly kind: "actor"; readonly actorId: ActorId }
+  | { readonly kind: "none" };
+
+export type EquipmentUseFailureReason =
+  | "notActorTurn"
+  | "missingActor"
+  | "sourceNotEquipped"
+  | "sourceHasNoSkill"
+  | "missingSkill"
+  | "insufficientMp"
+  | "invalidTarget";
+
+export type EquipmentUseResult =
+  | { readonly kind: "used"; readonly skillId: SkillId }
+  | { readonly kind: "rejected"; readonly reason: EquipmentUseFailureReason };
+
 export type TargetedActorCommand =
   | { readonly kind: "attack" }
   | { readonly kind: "skill"; readonly skillId: SkillId }
@@ -88,6 +106,7 @@ export interface BattleSessionState {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
@@ -302,6 +321,7 @@ export interface BattleEventStateSnapshot {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
@@ -358,5 +378,6 @@ export interface BattleRuntime {
   cancelTargetSelection(): void;
   performActorCommand(command: ActorCommand): void;
   chooseAutoCommand(): ActorCommand | undefined;
+  executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;
 }

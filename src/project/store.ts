@@ -12,6 +12,7 @@ import {
   saveProjectToSupabase,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import { serialize } from "./io";
 import {
   applyEventDraftVault,
   clearEventDraftVault,
@@ -26,10 +27,13 @@ import {
   saveSupabaseProjectConfigDraft,
   supabaseProjectConfig,
   supabaseProjectConfigDraft,
+  supabaseProjectConfigDraftWithSource,
+  type SupabaseProjectConfigSource,
 } from "./supabaseProjectConfig";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/editor/mapTreeActions";
+import { sha256HexText } from "@/util/sha256";
 import { randomUuid } from "@/util/id";
 import type { GameMap, MapId, Project } from "./types";
 
@@ -66,6 +70,45 @@ export type ProjectDbReconnectResult =
   | { readonly kind: "connected"; readonly source: "remote" }
   | { readonly kind: "failed"; readonly message: string }
   | { readonly kind: "not-configured" };
+
+/** Stable result for switching the singleton to a new remote project. */
+export type LoadNewRemoteProjectResult = {
+  readonly projectId: string | null;
+};
+
+/** Stable result for an explicit remote reload, including observed target ID only. */
+export type ReloadFromRemoteResult =
+  | { readonly kind: "reloaded"; readonly title: string; readonly projectId: string }
+  | { readonly kind: "not-configured"; readonly projectId: string | null }
+  | { readonly kind: "disabled"; readonly projectId: string | null; readonly reason: string }
+  | { readonly kind: "cancelled"; readonly projectId: string | null }
+  | { readonly kind: "failed"; readonly message: string; readonly projectId: string | null };
+
+export type DeepReadonly<T> =
+  T extends (...args: any[]) => unknown
+    ? T
+    : T extends ReadonlyMap<infer Key, infer Value>
+      ? ReadonlyMap<DeepReadonly<Key>, DeepReadonly<Value>>
+      : T extends ReadonlySet<infer Item>
+        ? ReadonlySet<DeepReadonly<Item>>
+        : T extends readonly (infer Item)[]
+          ? readonly DeepReadonly<Item>[]
+          : T extends object
+            ? { readonly [Key in keyof T]: DeepReadonly<T[Key]> }
+            : T;
+
+export type ProjectE2EEffectiveTarget = {
+  readonly projectId: string;
+  readonly source: SupabaseProjectConfigSource;
+  readonly url: string;
+};
+
+/** Detached, runtime-immutable evidence only; none of these fields are persisted in Project. */
+export type ProjectE2ESnapshot = {
+  readonly canonicalPayload: string;
+  readonly effectiveTarget: ProjectE2EEffectiveTarget;
+  readonly project: DeepReadonly<Project>;
+};
 
 export class DbConnectionRequiredError extends Error {
   constructor(message: string) {
@@ -193,7 +236,7 @@ class ProjectStore {
   async loadNewRemoteProject(
     project: Project,
     options: { readonly projectId?: string; readonly title?: string } = {},
-  ): Promise<{ readonly projectId: string | null }> {
+  ): Promise<LoadNewRemoteProjectResult> {
     const title = options.title?.trim();
     if (title) {
       project.meta = { ...project.meta, title };
@@ -236,6 +279,28 @@ class ProjectStore {
     return { projectId };
   }
 
+  /** Atomic target proof plus fixture switch for the private E2E bridge. */
+  async loadNewRemoteProjectForE2E(
+    project: Project,
+    input: {
+      readonly expectedAnonKeyDigest: string;
+      readonly expectedCurrentProjectId: string;
+      readonly expectedProjectId: string;
+      readonly expectedTargetUrl: string;
+      readonly title: string;
+    },
+  ): Promise<LoadNewRemoteProjectResult | { readonly kind: "target-mismatch" }> {
+    const draft = supabaseProjectConfigDraft();
+    if (
+      draft.projectId !== input.expectedCurrentProjectId
+      || draft.url.replace(/\/$/, "") !== input.expectedTargetUrl
+      || await sha256HexText(draft.anonKey.trim()) !== input.expectedAnonKeyDigest
+    ) {
+      return { kind: "target-mismatch" };
+    }
+    return this.loadNewRemoteProject(project, { projectId: input.expectedProjectId, title: input.title });
+  }
+
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
   // store.load()가 Supabase 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
@@ -269,6 +334,21 @@ class ProjectStore {
       released = true;
       if (this.readOnlyProjectSnapshot === snapshot) this.readOnlyProjectSnapshot = previous;
     };
+  }
+
+  /** Narrow E2E observation seam. It never exposes credentials or a live Project reference. */
+  getE2ESnapshot(): ProjectE2ESnapshot {
+    const project = structuredClone(projectWithoutEventDrafts(this.current));
+    const effectiveTarget = supabaseProjectConfigDraftWithSource();
+    return deepFreeze({
+      canonicalPayload: serialize(project),
+      effectiveTarget: {
+        projectId: effectiveTarget.projectId,
+        source: effectiveTarget.source,
+        url: effectiveTarget.url.replace(/\/$/, ""),
+      },
+      project,
+    });
   }
 
   getDbPersistenceStatus(): DbPersistenceStatus {
@@ -323,26 +403,22 @@ class ProjectStore {
    * DB에서 현재 projectId 프로젝트를 다시 읽어 에디터 메모리를 교체한다.
    * 외부 스크립트/다른 세션 저장분을 즉시 반영할 때 사용.
    */
-  async reloadFromRemote(options: { readonly force?: boolean } = {}): Promise<
-    | { readonly kind: "reloaded"; readonly title: string }
-    | { readonly kind: "not-configured" }
-    | { readonly kind: "disabled"; readonly reason: string }
-    | { readonly kind: "cancelled" }
-    | { readonly kind: "failed"; readonly message: string }
-  > {
+  async reloadFromRemote(options: { readonly force?: boolean } = {}): Promise<ReloadFromRemoteResult> {
+    const projectId = supabaseProjectConfigDraft().projectId || null;
     if (!this.remotePersistenceEnabled) {
       return {
         kind: "disabled",
+        projectId,
         reason: this.remotePersistenceDisabledReason ?? "remote-disabled",
       };
     }
     if (!options.force && this.dirtySinceLastPersist) {
-      return { kind: "cancelled" };
+      return { kind: "cancelled", projectId };
     }
     try {
       const project = await loadProjectFromSupabase();
       if (!project) {
-        return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다." };
+        return { kind: "failed", message: "DB에서 프로젝트를 찾을 수 없습니다.", projectId };
       }
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
@@ -355,13 +431,32 @@ class ProjectStore {
       this.syncProjectUrlBar();
       this.emit({ scope: "project" });
       this.refreshSupabaseResourceCache();
-      return { kind: "reloaded", title: this.current.meta?.title ?? "" };
+      return { kind: "reloaded", projectId: supabaseProjectConfigDraft().projectId, title: this.current.meta?.title ?? "" };
     } catch (error) {
       return {
         kind: "failed",
         message: error instanceof Error ? error.message : "DB 새로고침 실패",
+        projectId,
       };
     }
+  }
+
+  /** Atomic target proof plus forced reload for the private E2E bridge. */
+  async reloadFromRemoteForE2E(input: {
+    readonly expectedAnonKeyDigest: string;
+    readonly expectedProjectId: string;
+    readonly expectedTargetUrl: string;
+  }): Promise<ReloadFromRemoteResult | { readonly kind: "target-mismatch" }> {
+    const config = supabaseProjectConfig();
+    if (
+      !config
+      || config.projectId !== input.expectedProjectId
+      || config.url !== input.expectedTargetUrl
+      || await sha256HexText(config.anonKey.trim()) !== input.expectedAnonKeyDigest
+    ) {
+      return { kind: "target-mismatch" };
+    }
+    return this.reloadFromRemote({ force: true });
   }
 
   replace(project: Project, options: { readonly preserveEventDrafts?: boolean } = {}): void {
@@ -757,6 +852,17 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+
+function deepFreeze<T>(value: T): DeepReadonly<T> {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    if (value instanceof Map || value instanceof Set) {
+      throw new TypeError("E2E snapshots cannot contain mutable collections");
+    }
+    for (const child of Object.values(value)) deepFreeze(child);
+    Object.freeze(value);
+  }
+  return value as DeepReadonly<T>;
+}
 
 function ensureProjectMapConnections(project: Project): boolean {
   if (Array.isArray(project.mapConnections)) return false;

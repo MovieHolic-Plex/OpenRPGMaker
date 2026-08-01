@@ -1,5 +1,5 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
-import { canEquip } from "@/player/playerEquipmentRules";
+import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/player/playerEquipmentRules";
 import { resolveActorName } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { PlaySession } from "@/project/session";
@@ -126,7 +126,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const equipmentById = new Map(project.database.equipment.map((item) => [item.id, item]));
   if (!options.equipmentActorId) {
     const entries = partyActors(project, session).map((actor) => {
-      const worn = actorEquipment(session, actor.id);
+      const worn = actorEquipment(project, session, actor);
       // 5개 부위를 " / " 로 이어 한 줄에 넣으면 좁은 패널에서 통째로 줄바꿈되어
       // 슬래시만 늘어선 정체불명의 덩어리가 된다(실측: "청동 검 / 참나무 방패 / ...").
       // 값은 무기 하나만 짧게 보이고, 나머지는 부위 이름을 붙여 설명 줄로 내린다.
@@ -149,18 +149,19 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   if (!options.equipmentSlotId) {
     const entries = EQUIPMENT_SLOTS.map((slot) => ({
       label: slot.label,
-      value: equipmentName(equipmentById, actorEquipment(session, actor.id)[slot.id]),
+      value: equipmentName(equipmentById, actorEquipment(project, session, actor)[slot.id]),
       testId: `status-menu-equipment-slot-${slot.id}`,
       onActivate: options.onSelectEquipmentSlot ? () => options.onSelectEquipmentSlot?.(actor.id, slot.id) : undefined,
     }));
     return { title: `장비: ${resolveActorName(session, actor)}`, entries, hint: "바꿀 부위를 선택하세요." };
   }
 
-  const currentEquipmentId = actorEquipment(session, actor.id)[options.equipmentSlotId];
+  const currentEquipmentId = actorEquipment(project, session, actor)[options.equipmentSlotId];
+  const classId = effectiveActorClassId(project, session, actor.id);
   const choices = project.database.equipment.filter((equipment) => {
-    return equipment.slot === options.equipmentSlotId
+    return equipmentSlotAccepts(project, actor, options.equipmentSlotId as keyof ActorInitialEquipment, equipment, classId)
       && (session.inventory[equipment.id] ?? 0) > 0
-      && canEquip(project, actor, equipment, effectiveActorClassId(project, session, actor.id));
+      && canEquip(project, actor, equipment, classId);
   });
   const currentStats = equipmentStats(project, currentEquipmentId);
   const unequipEntry = currentEquipmentId
@@ -181,7 +182,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
         description: equipmentDetailLine(equipment, currentStats),
         testId: `status-menu-equipment-item-${equipment.id}`,
-        onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, equipment.id) : undefined,
+        onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, options.equipmentSlotId as keyof ActorInitialEquipment, equipment.id) : undefined,
       })),
     ],
     emptyLabel: "장비할 수 있는 소지품이 없습니다",
@@ -421,8 +422,8 @@ function classNameFor(project: Project, session: PlaySession, actor: ActorRecord
   return project.database.classes.find((record) => record.id === classId)?.name ?? "직업 없음";
 }
 
-function actorEquipment(session: PlaySession, actorId: string): ActorInitialEquipment {
-  return session.actorEquipment[actorId] ?? {};
+function actorEquipment(project: Project, session: PlaySession, actor: ActorRecord): ActorInitialEquipment {
+  return effectiveActorEquipment(project, actor, session.actorEquipment[actor.id], effectiveActorClassId(project, session, actor.id));
 }
 
 function equipmentStats(project: Project, equipmentId: string | undefined): EquipmentStatBonuses {

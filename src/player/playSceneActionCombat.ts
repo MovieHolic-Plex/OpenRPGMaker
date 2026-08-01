@@ -17,6 +17,8 @@ import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typ
 import { applyActorLevelUp } from "@/player/battleRewardsToSession";
 import { learnedSkillIds } from "@/battle/battleBattlers";
 import { effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
+import { effectiveActorEquipment } from "@/player/playerEquipmentRules";
+import { transitionItemState } from "@/player/itemTransitions";
 import type { Dir, EnemyActionAttack, EnemyRecord, Project } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -313,7 +315,7 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
   const ammo = skill.actionSkill.itemCost;
   if (ammo && (scene.session.inventory[ammo.itemId] ?? 0) < ammo.amount) return;
   vitals.mp -= mpCost;
-  if (ammo) scene.session.inventory[ammo.itemId] = (scene.session.inventory[ammo.itemId] ?? 0) - ammo.amount;
+  if (ammo) commitItemRemoval(project, scene, ammo.itemId, ammo.amount);
   const dir = dirDelta(scene.facing);
   spawnProjectileFrom(scene, state, {
     faction: "player",
@@ -371,11 +373,27 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
   if (enemy.dropItemId && enemy.dropRatePercent > 0) {
     const roll = nextSessionRandom(scene.session, "battle") * 100;
     if (roll < enemy.dropRatePercent) {
-      scene.session.inventory[enemy.dropItemId] = (scene.session.inventory[enemy.dropItemId] ?? 0) + 1;
+      commitItemGrant(store.getCurrent(), scene, enemy.dropItemId, 1);
       text = text ? `${text} +아이템` : "+아이템";
     }
   }
   if (text) spawnDamageNumber(scene, characterSpriteX(tileX), characterSpriteY(tileY) - 34, text, "#9be37e");
+}
+
+function commitItemGrant(project: Project, scene: PlaySceneContext, itemId: string, amount: number): void {
+  commitItemTransition(scene, transitionItemState(scene.session, project.database.items, { kind: "grant", itemId, amount }));
+}
+
+function commitItemRemoval(project: Project, scene: PlaySceneContext, itemId: string, amount: number): void {
+  commitItemTransition(scene, transitionItemState(scene.session, project.database.items, { kind: "remove", itemId, amount }));
+}
+
+function commitItemTransition(
+  scene: PlaySceneContext,
+  next: { readonly inventory: Record<string, number>; readonly itemUseCharges: Record<string, number> },
+): void {
+  scene.session.inventory = next.inventory;
+  scene.session.itemUseCharges = next.itemUseCharges;
 }
 
 interface LeadSwingProfile {
@@ -395,7 +413,7 @@ function leadActorSwingProfile(scene: PlaySceneContext): LeadSwingProfile | null
   const normalized = normalizeActorRecord(actor);
   const level = scene.session.actorLevels?.[leadId] ?? normalized.initialLevel;
   const config = scene.actionCombatState?.config;
-  const weaponId = leadId ? scene.session.actorEquipment?.[leadId]?.weapon : undefined;
+  const weaponId = effectiveActorEquipment(project, actor, scene.session.actorEquipment?.[actor.id], effectiveActorClassId(project, scene.session, actor.id)).weapon;
   const weapon = project.database.equipment.find((entry) => entry.id === weaponId);
   const profile = weapon?.actionWeapon;
   const weaponAttack = weapon?.statBonuses?.attack ?? 0;

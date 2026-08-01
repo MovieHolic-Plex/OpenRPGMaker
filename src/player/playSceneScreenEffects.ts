@@ -9,13 +9,10 @@ import {
   TRANSPARENT_TINT,
   type Rgba,
 } from "@/player/screen/tintModel";
-import { removeWeatherOverlay } from "@/player/weather/weatherOverlay";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
-// tint/hide screen 같은 "지속형" 화면 효과와 날씨를 DOM 오버레이로 반영한다.
-// 인터프리터는 값을 session.m2Runtime.screen 에 기록하며, 이 함수는
-// refreshRuntimeSurfaces() 호출마다 함께 호출되어 오버레이 레이어들을 동기화한다.
-//
+// tint/hide screen 같은 "지속형" 화면 효과를 DOM 오버레이로 반영한다.
+// 날씨는 Phaser 전용 레이어가 소유하며 이 경로에서는 다루지 않는다.
 // 색조는 tintDurationMs 가 있으면 목표 색으로 점진 트윈(requestAnimationFrame)한다.
 // 일회형 효과(flash/shake)는 Phaser 카메라 API 로 별도 처리되며 여기서 다루지 않는다.
 export function syncScreenEffects(scene: PlaySceneContext): void {
@@ -24,8 +21,6 @@ export function syncScreenEffects(scene: PlaySceneContext): void {
 
   const screen = scene.session.m2Runtime?.screen;
 
-  // 날씨는 Phaser 레이어(조명 마스크 아래)에서 렌더한다. 예전 DOM 레이어가 있으면 제거한다.
-  removeWeatherOverlay(host);
 
   const hidden = screen?.hidden === true;
   // 우선순위: 화면 숨김(즉시, 불투명 검정) > 색조(트윈 가능).

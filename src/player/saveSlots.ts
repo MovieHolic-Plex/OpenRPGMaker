@@ -6,6 +6,7 @@ import {
   type PictureState,
   type PlaySession,
 } from "@/project/session";
+import { normalizeItemTransitionState } from "@/player/itemTransitions";
 import { syncMonsterPartyFollowers } from "@/player/followers";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -72,6 +73,7 @@ export type SaveSnapshot = {
     readonly timers: Record<string, number>;
     readonly gold: number;
     readonly inventory?: Record<string, number>;
+    readonly itemUseCharges?: Record<string, number>;
     readonly killedFieldSpawns?: Record<string, Record<string, number>>;
     readonly partyActorIds?: readonly string[];
     readonly monsterInstances?: PlaySession["monsterInstances"];
@@ -148,6 +150,7 @@ export function setSaveSlotStorageNamespace(namespace: string | null): void {
 }
 
 export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {
+  const normalizedItems = normalizeItemTransitionState(session, project.database.items);
   return {
     schemaVersion: SCHEMA_VERSION,
     projectTitle: project.meta.title,
@@ -161,7 +164,8 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
       gold: session.gold,
-      inventory: structuredClone(session.inventory),
+      inventory: structuredClone(normalizedItems.inventory),
+      itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
       killedFieldSpawns: structuredClone(session.killedFieldSpawns ?? {}),
       partyActorIds: structuredClone(session.partyActorIds),
       monsterInstances: structuredClone(session.monsterInstances),
@@ -265,6 +269,12 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.timers = structuredClone(snapshot.session.timers);
   session.gold = snapshot.session.gold;
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
+  const normalizedItems = normalizeItemTransitionState({
+    inventory: session.inventory,
+    itemUseCharges: snapshot.session.itemUseCharges,
+  }, project.database.items);
+  session.inventory = normalizedItems.inventory;
+  session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
   if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
@@ -393,6 +403,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       timers: session.timers,
       gold: session.gold,
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
+      itemUseCharges: parseItemUseCharges(session.itemUseCharges),
       killedFieldSpawns: isNestedNumberRecord(session.killedFieldSpawns) ? session.killedFieldSpawns : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
@@ -445,6 +456,15 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       screen: parseScreenState(session.screen),
     },
   };
+}
+
+function parseItemUseCharges(value: unknown): Record<string, number> {
+  if (!isRecord(value)) return {};
+  const charges: Record<string, number> = {};
+  for (const [itemId, charge] of Object.entries(value)) {
+    if (typeof charge === "number" && Number.isFinite(charge)) charges[itemId] = charge;
+  }
+  return charges;
 }
 
 // 저장된 화면 상태를 방어적으로 파싱(모든 필드 선택). 유효 필드가 없으면 undefined.
