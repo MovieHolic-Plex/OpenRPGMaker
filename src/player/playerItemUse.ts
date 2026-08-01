@@ -37,7 +37,7 @@ export function useItemFromMenu(
 
   let changed = false;
   for (const actorId of targets) {
-    if (!isEligibleActor(project, session, item, actorId)) continue;
+    if (!isItemActorEligible(project, item, actorId, effectiveActorClassId(project, session, actorId))) continue;
     if (!canApplyItemEffects(item, session, actorId)) continue;
     changed = applyItemEffects(item, session, actorId) || changed;
   }
@@ -56,15 +56,19 @@ function useCareItem(
   const instanceId = targetMonsterInstanceId?.trim();
   if (!instanceId) return { kind: "unusable", message: "대상을 선택하세요" };
   const beforeInventory = session.inventory[item.id] ?? 0;
+  const beforeCharge = session.itemUseCharges?.[item.id];
   const result = applyCareItem(project, session, { itemId: item.id, instanceId });
   if (!result.ok) {
     if (result.reason === "notInParty") return { kind: "unusable", message: "파티 몬스터에게만 사용할 수 있습니다" };
     if (result.reason === "missingInstance") return { kind: "unusable", message: "대상을 찾을 수 없습니다" };
     return { kind: "unusable", message: `${item.name}은(는) 지금 사용할 수 없습니다` };
   }
-  // applyCareItem owns its legacy one-copy decrement; restore it before the
-  // shared authority commits this successful use under the finite-use policy.
+  // applyCareItem owns its legacy one-copy decrement. Restore both the copy and
+  // its FIFO cursor before the shared authority commits the successful use.
   session.inventory[item.id] = beforeInventory;
+  session.itemUseCharges ??= {};
+  if (beforeCharge === undefined) delete session.itemUseCharges[item.id];
+  else session.itemUseCharges[item.id] = beforeCharge;
   commitSuccessfulUse(project, session, item);
   return { kind: "used", message: `${item.name}을 사용했습니다` };
 }
@@ -78,7 +82,7 @@ function useSkillBook(
 ): MenuItemUseResult {
   const actorId = targetActorId ?? session.partyActorIds[0];
   if (!actorId) return { kind: "unusable", message: "대상을 선택하세요" };
-  if (!isEligibleActor(project, session, item, actorId)) {
+  if (!isItemActorEligible(project, item, actorId, effectiveActorClassId(project, session, actorId))) {
     return { kind: "unusable", message: `${item.name}을(를) 사용할 수 없는 대상입니다` };
   }
 
@@ -175,11 +179,16 @@ function hasSeedBonus(item: ItemRecord): boolean {
   return SEED_PARAMETER_KEYS.some((key) => item.seedParameterBonuses[key] !== 0);
 }
 
-function isEligibleActor(project: Project, session: PlaySession, item: ItemRecord, actorId: string): boolean {
-  if (!project.database.actors.some((actor) => actor.id === actorId)) return false;
+export function isItemActorEligible(
+  project: Project,
+  item: ItemRecord,
+  actorId: string | undefined,
+  effectiveClassId?: string
+): boolean {
   if (!isActorUseFamily(item)) return true;
+  if (!actorId || !project.database.actors.some((actor) => actor.id === actorId)) return false;
   if (item.usableActorIds.length > 0 && !item.usableActorIds.includes(actorId)) return false;
-  const classId = effectiveActorClassId(project, session, actorId);
+  const classId = effectiveClassId ?? project.database.actors.find((actor) => actor.id === actorId)?.classId;
   if (item.usableClassIds.length > 0 && (!classId || !item.usableClassIds.includes(classId))) return false;
   return true;
 }

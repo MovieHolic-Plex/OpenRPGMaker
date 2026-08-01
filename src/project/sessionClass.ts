@@ -1,6 +1,7 @@
 import { clampLevel, parameterValueAtLevel } from "@/project/actorModel";
 import type { ActorId, ActorParameterKey, ClassId, ClassPromotion, ClassPromotionRequirement, Project, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
+import { transitionItemState } from "@/player/itemTransitions";
 
 export interface ClassOverrideSession {
   classOverrides?: Record<string, string>;
@@ -11,6 +12,7 @@ export interface ClassOverrideSession {
   switches: Record<string, boolean>;
   variables: Record<string, number>;
   inventory: Record<string, number>;
+  itemUseCharges?: Record<string, number>;
 }
 
 export type ClassChangeResult =
@@ -64,8 +66,18 @@ export function promoteActor(
   const candidates = (currentClass.promotions ?? []).filter((promotion) => !toClassId || promotion.toClassId === toClassId);
   const promotion = candidates.find((entry) => promotionRequirementsMet(session, actorId, entry.requires));
   if (!promotion) return { ok: false, actorId, reason: toClassId ? "requirements-not-met" : "promotion-not-available" };
-  if (promotion.requires.itemId) consumePromotionItem(session, promotion.requires.itemId);
-  return changeActorClass(session, project, actorId, promotion.toClassId);
+  if (!project.database.classes.some((record) => record.id === promotion.toClassId)) {
+    return { ok: false, actorId, reason: "class-not-found" };
+  }
+  const itemTransition = promotion.requires.itemId
+    ? transitionItemState(session, project.database.items, { kind: "remove", itemId: promotion.requires.itemId, amount: 1 })
+    : undefined;
+  const result = changeActorClass(session, project, actorId, promotion.toClassId);
+  if (result.ok && itemTransition) {
+    session.inventory = itemTransition.inventory;
+    session.itemUseCharges = itemTransition.itemUseCharges;
+  }
+  return result;
 }
 
 export function promotionRequirementsMet(
@@ -137,13 +149,4 @@ function classVitalsAtLevel(
   const maxHp = Math.max(1, parameterValueAtLevel(klass.parameterCurves.maxHp, clampLevel(level)) + Math.trunc(bonuses?.maxHp ?? 0));
   const maxMp = Math.max(0, parameterValueAtLevel(klass.parameterCurves.maxMp, clampLevel(level)) + Math.trunc(bonuses?.maxMp ?? 0));
   return { maxHp, maxMp };
-}
-
-function consumePromotionItem(session: ClassOverrideSession, itemId: string): void {
-  const current = session.inventory[itemId] ?? 0;
-  if (current <= 1) {
-    delete session.inventory[itemId];
-    return;
-  }
-  session.inventory[itemId] = current - 1;
 }

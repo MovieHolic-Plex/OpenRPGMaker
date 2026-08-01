@@ -11,6 +11,7 @@ import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
+import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import type {
   ActorId,
   ClassId,
@@ -49,6 +50,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
       dataset: { testid: "db-items-rm2k3-workbench" },
       children: [
         resourcePanel(record, rerender),
+        databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"),
         panel("기본 설정", [
           textField("설명", "db-field-item-description", record.description, (description) =>
             updateDatabaseRecord("items", record.id, { description })

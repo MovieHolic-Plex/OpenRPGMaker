@@ -13,9 +13,17 @@ import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
 import { groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
+import {
+  COMMAND_PRESENTATION_DESCRIPTORS,
+  commandPresentationDescriptor,
+  commandPresentationGroupLabel,
+  type CommandPresentationDescriptor,
+} from "@/editor/eventCommands/commandPresentation";
 import { openEventSubdialog } from "./subdialog";
 
 type CommandKind = Command["kind"];
+
+type RuntimeOwner = CommandPresentationDescriptor["executionOwner"];
 
 const PICKER_PAGE_TITLES: Record<1 | 2 | 3 | 4, string> = {
   1: "빠른 저작",
@@ -38,6 +46,8 @@ type CommandEntry = {
   readonly testId: string;
   readonly selectable: boolean;
   readonly runtimeSupport: CommandRuntimeSupport;
+  readonly runtimeOwner: RuntimeOwner;
+  readonly alternateRoute?: string;
   readonly page: M2CommandPickerPage;
 };
 
@@ -51,150 +61,133 @@ type PickerViewMode = "list" | "grid";
 const PICKER_VIEW_MODE_KEY = "rpgzzu.eventCommandPicker.viewMode";
 
 const PICKER_PAGES: readonly M2CommandPickerPage[] = [1, 2, 3, 4];
-const EXTRA_COMMAND_ENTRIES: readonly CommandEntry[] = [
-  {
-    label: "조명 설정",
-    kind: "setLighting",
-    commandId: "setLighting",
-    group: "화면/연출",
-    index: 110,
-    testId: "command-picker-add-setLighting",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 3,
-  },
-  {
-    label: "광원 추가",
-    kind: "addLight",
-    commandId: "addLight",
-    group: "화면/연출",
-    index: 111,
-    testId: "command-picker-add-addLight",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 3,
-  },
-  {
-    label: "광원 제거",
-    kind: "removeLight",
-    commandId: "removeLight",
-    group: "화면/연출",
-    index: 112,
-    testId: "command-picker-add-removeLight",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 3,
-  },
-  {
-    label: "날씨 설정",
-    kind: "setWeather",
-    commandId: "setWeather",
-    group: "화면/연출",
-    index: 113,
-    testId: "command-picker-add-setWeather",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 3,
-  },
-  {
-    label: "애니메이션 표시",
-    kind: "showAnimation",
-    commandId: "showAnimation",
-    group: "화면/연출",
-    index: 114,
-    testId: "command-picker-add-showAnimation",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 3,
-  },
-  {
-    label: "엔딩",
-    kind: "ending",
-    commandId: "ending",
-    group: "시스템/고급",
-    index: 109,
-    testId: "command-picker-add-ending",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 4,
-  },
-  {
-    label: "제작",
-    kind: "craftRecipe",
-    commandId: "craftRecipe",
-    group: "모던 명령",
-    index: 211,
-    testId: "command-picker-add-craftRecipe",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 4,
-  },
-  {
-    label: "업그레이드",
-    kind: "applyItemUpgrade",
-    commandId: "applyItemUpgrade",
-    group: "모던 명령",
-    index: 212,
-    testId: "command-picker-add-applyItemUpgrade",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 4,
-  },
-  {
-    label: "도구 장착",
-    kind: "equipTool",
-    commandId: "equipTool",
-    group: "모던 명령",
-    index: 213,
-    testId: "command-picker-add-equipTool",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 4,
-  },
-  {
-    label: "보관 상자",
-    kind: "openChest",
-    commandId: "openChest",
-    group: "모던 명령",
-    index: 214,
-    testId: "command-picker-add-openChest",
-    selectable: true,
-    runtimeSupport: "runtime-full",
-    page: 4,
-  },
-];
+
+function runtimeSupportFor(descriptor: CommandPresentationDescriptor): CommandRuntimeSupport {
+  if (descriptor.support === "full") return "runtime-full";
+  if (descriptor.support === "partial") return "runtime-partial";
+  return "editor-only";
+}
+
+function nativeCommandEntry(
+  kind: Exclude<CommandKind, "m2Command">,
+  index: number
+): CommandEntry {
+  const descriptor = commandPresentationDescriptor(kind);
+  return {
+    label: descriptor.label,
+    kind,
+    commandId: kind,
+    group: commandPresentationGroupLabel(descriptor.group),
+    index,
+    testId: `command-picker-add-${kind}`,
+    selectable: descriptor.selectable,
+    runtimeSupport: runtimeSupportFor(descriptor),
+    runtimeOwner: descriptor.executionOwner,
+    page: descriptor.page,
+    alternateRoute: descriptor.alternateRoute,
+  };
+}
+
+// These commands are absent from the RM2k3 catalog. Their explicit picker data only
+// preserves ordering; presentation and runtime behavior come from the descriptor.
+const NATIVE_ONLY_LAYOUT = [
+  ["setLighting", 110],
+  ["addLight", 111],
+  ["removeLight", 112],
+  ["setWeather", 113],
+  ["showAnimation", 114],
+  ["ending", 109],
+  ["craftRecipe", 211],
+  ["applyItemUpgrade", 212],
+  ["equipTool", 213],
+  ["openChest", 214],
+] as const satisfies readonly (readonly [Exclude<CommandKind, "m2Command">, number])[];
+
+const NATIVE_ONLY_ENTRIES: readonly CommandEntry[] = NATIVE_ONLY_LAYOUT.map(([kind, index]) =>
+  nativeCommandEntry(kind, index)
+);
+
+export const EVENT_COMMAND_PICKER_NATIVE_ONLY_PLACEMENTS = NATIVE_ONLY_ENTRIES.map((entry) => ({
+  kind: entry.kind as Exclude<CommandKind, "m2Command">,
+  group: entry.group,
+  page: entry.page,
+}));
+
+const CATALOG_NATIVE_KINDS: ReadonlySet<CommandKind> = new Set(
+  M2_COMMAND_CATALOG.flatMap((entry) => entry.existingKind ? [entry.existingKind] : [])
+);
+const NATIVE_ONLY_KINDS: ReadonlySet<CommandKind> = new Set(NATIVE_ONLY_LAYOUT.map(([kind]) => kind));
+const DERIVED_COMMAND_ENTRIES: readonly CommandEntry[] = COMMAND_PRESENTATION_DESCRIPTORS
+  .filter((descriptor) =>
+    descriptor.kind !== "m2Command"
+    && !CATALOG_NATIVE_KINDS.has(descriptor.kind)
+    && !NATIVE_ONLY_KINDS.has(descriptor.kind)
+  )
+  .map((descriptor, index) => ({
+    label: descriptor.label,
+    kind: descriptor.kind,
+    commandId: descriptor.kind,
+    group: commandPresentationGroupLabel(descriptor.group),
+    index: 1_000 + index,
+    testId: `${descriptor.selectable ? "command-picker-add" : "command-picker-info"}-${descriptor.kind}`,
+    selectable: descriptor.selectable,
+    runtimeSupport: runtimeSupportFor(descriptor),
+    runtimeOwner: descriptor.executionOwner,
+    page: descriptor.page,
+    alternateRoute: descriptor.alternateRoute,
+  }));
 const COMMAND_PAGES: readonly CommandPage[] = PICKER_PAGES.map((page) => ({
   page,
   entries: [
-    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && isM2CatalogEntrySelectableInMap(entry) && entry.pickerLabel !== "고급 대화").map(
+    ...M2_COMMAND_CATALOG.filter((entry) => entry.pickerPage === page && entry.pickerLabel !== "고급 대화").map(
       commandEntryFromCatalog
     ),
-    ...EXTRA_COMMAND_ENTRIES.filter((entry) => entry.page === page),
+    ...NATIVE_ONLY_ENTRIES.filter((entry) => entry.page === page),
+    ...DERIVED_COMMAND_ENTRIES.filter((entry) => entry.page === page),
   ],
 }));
 
 export const EVENT_COMMAND_PICKER_NATIVE_KINDS: readonly CommandKind[] = [
   ...new Set(
     COMMAND_PAGES.flatMap((page) => page.entries)
+      .filter((entry) => entry.selectable)
       .map((entry) => entry.kind)
       .filter((kind): kind is CommandKind => kind !== undefined)
   ),
-  ...(COMMAND_PAGES.some((page) => page.entries.some((entry) => entry.kind === undefined))
+  ...(COMMAND_PAGES.some((page) => page.entries.some((entry) => entry.selectable && entry.kind === undefined))
     ? (["m2Command"] satisfies readonly CommandKind[])
     : []),
 ];
 
 function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
+  if (entry.existingKind) {
+    const descriptor = commandPresentationDescriptor(entry.existingKind);
+    return {
+      label: entry.pickerLabel,
+      kind: entry.existingKind,
+      commandId: entry.id,
+      group: entry.pickerGroup,
+      index: entry.index,
+      testId: `command-picker-add-${entry.existingKind}`,
+      selectable: descriptor.selectable,
+      runtimeSupport: runtimeSupportFor(descriptor),
+      runtimeOwner: descriptor.executionOwner,
+      page: entry.pickerPage,
+      alternateRoute: descriptor.alternateRoute,
+    };
+  }
+  const selectable = isM2CatalogEntrySelectableInMap(entry);
   return {
     label: entry.pickerLabel,
-    kind: entry.existingKind,
     commandId: entry.id,
     group: entry.pickerGroup,
     index: entry.index,
-    testId: entry.existingKind ? `command-picker-add-${entry.existingKind}` : entry.testId,
-    selectable: isM2CatalogEntrySelectableInMap(entry),
+    testId: entry.testId,
+    selectable,
     runtimeSupport: entry.runtimeSupport,
+    runtimeOwner: commandPresentationDescriptor("m2Command").executionOwner,
     page: entry.pickerPage,
+    alternateRoute: selectable ? undefined : commandPresentationDescriptor("m2Command").alternateRoute,
   };
 }
 
@@ -292,7 +285,9 @@ function renderSearchResults(
 ): HTMLElement {
   const needle = query.trim().toLowerCase();
   const matches = COMMAND_PAGES.flatMap((page) => page.entries).filter(
-    (entry) => entry.label.toLowerCase().includes(needle) || entry.group.toLowerCase().includes(needle)
+    (entry) => entry.label.toLowerCase().includes(needle)
+      || entry.group.toLowerCase().includes(needle)
+      || entry.alternateRoute?.toLowerCase().includes(needle)
   );
   if (matches.length === 0) {
     return el("div", {
@@ -354,10 +349,26 @@ function renderCommandButton(
   }
   const badge = renderRuntimeSupportBadge(entry.runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`);
   if (badge) children.push(badge);
+  if (!entry.selectable) {
+    const guidanceId = `command-picker-guidance-${entry.commandId}`;
+    children.push(el("span", {
+      class: "event-command-picker-alternate-route",
+      text: entry.alternateRoute ? `사용 경로: ${entry.alternateRoute}` : "현재 피커에서는 실행할 수 없음",
+      attrs: { id: guidanceId },
+      dataset: { testid: guidanceId },
+    }));
+  }
   const button = el("button", {
-    class: entry.selectable ? "event-command-picker-command" : "event-command-picker-command disabled",
-    attrs: { type: "button" },
-    dataset: { category: visual.key },
+    class: entry.selectable ? "event-command-picker-command" : "event-command-picker-command is-informational",
+    attrs: {
+      type: "button",
+      "aria-label": entry.label,
+      ...(entry.selectable ? {} : {
+        "aria-disabled": "true",
+        "aria-describedby": `command-picker-guidance-${entry.commandId}`,
+      }),
+    },
+    dataset: { category: visual.key, runtimeSupport: entry.runtimeSupport, runtimeOwner: entry.runtimeOwner },
     children,
   }) as HTMLButtonElement;
   button.dataset.testid = entry.testId;
@@ -366,9 +377,6 @@ function renderCommandButton(
       const result = onSelect(createCommandFromEntry(entry), close);
       if (!result || result.closePicker !== false) close();
     });
-  } else {
-    button.disabled = true;
-    button.setAttribute("aria-disabled", "true");
   }
   return button;
 }

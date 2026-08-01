@@ -145,7 +145,7 @@ function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
 export function installEditorToolHook(): void {
   if (typeof window === "undefined") return;
   const w = window as EditorToolHookWindow;
-  installProjectE2EBridge(w);
+  if (import.meta.env.DEV) installProjectE2EBridge(w);
   w.__rpgzzuEditorTool = (name, args) => {
     const ctx = { project: store.getCurrent() };
     const result = runTool(ctx, name, args, { dryRun: false });
@@ -229,6 +229,7 @@ export function installEditorToolHook(): void {
 }
 
 export function cleanupProjectE2EBridge(): void {
+  if (!import.meta.env.DEV) return;
   projectE2EBootstrap = null;
   if (typeof window === "undefined") return;
   const w = window as EditorToolHookWindow;
@@ -237,7 +238,8 @@ export function cleanupProjectE2EBridge(): void {
 }
 
 function installProjectE2EBridge(w: EditorToolHookWindow): void {
-  if (!import.meta.env.DEV || typeof navigator === "undefined" || navigator.webdriver !== true) {
+  if (!import.meta.env.DEV) return;
+  if (typeof navigator === "undefined" || navigator.webdriver !== true) {
     cleanupProjectE2EBridge();
     return;
   }
@@ -257,7 +259,7 @@ function installProjectE2EBridge(w: EditorToolHookWindow): void {
         expectedTargetUrl: normalizeTargetUrl(proof.expectedTargetUrl),
         title: input.title,
       });
-      if ("kind" in result && result.kind === "target-mismatch") return frozenDenial("target-mismatch");
+      if ("kind" in result) return frozenDenial("target-mismatch");
       return frozenAuthorizedResult(result);
     },
     reloadRemote: async (proof) => {

@@ -18,6 +18,7 @@ import type {
 } from "@/project/types";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
 import { syncMonsterPartyFollowers } from "@/player/followers";
+import { transitionItemState } from "@/player/itemTransitions";
 
 export const MONSTER_PARTY_MAX = 6;
 
@@ -273,9 +274,15 @@ export function evolveMonster(project: Project, session: PlaySession, input: Evo
     currentHp: nextCurrentHp,
     skillIds: mergeSkillIds(instance.skillIds ?? [], learnedSkillIds),
   };
-  session.monsterInstances[input.instanceId] = evolved;
   const consumedItemId = evolution.requires.itemId;
-  if (consumedItemId) session.inventory[consumedItemId] = Math.max(0, (session.inventory[consumedItemId] ?? 0) - 1);
+  const itemTransition = consumedItemId
+    ? transitionItemState(session, project.database.items, { kind: "remove", itemId: consumedItemId, amount: 1 })
+    : undefined;
+  session.monsterInstances[input.instanceId] = evolved;
+  if (itemTransition) {
+    session.inventory = itemTransition.inventory;
+    session.itemUseCharges = itemTransition.itemUseCharges;
+  }
   return {
     ok: true,
     instance: evolved,

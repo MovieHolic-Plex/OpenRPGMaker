@@ -3,6 +3,7 @@ import { emptyToUndefined, numberField, selectField, selectLiteral, textField } 
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { store } from "@/project/store";
+import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import type { EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -67,6 +68,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
 
   form.append(
     resourcePanel(record, rerender),
+    databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance"),
     summaryHost,
     textField("설명", "db-field-equipment-description", record.description, (description) =>
       updateDatabaseRecord("equipment", record.id, { description })

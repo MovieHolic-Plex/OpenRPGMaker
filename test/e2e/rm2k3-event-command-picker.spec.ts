@@ -72,20 +72,16 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
   await expect(picker).toBeVisible();
   await expect(picker.getByRole("heading", { name: "이벤트 명령" })).toBeVisible();
   await expect(picker.getByTestId("event-command-picker-tab-1")).toHaveAttribute("aria-selected", "true");
-  await expect(picker.locator(".event-command-picker-group-heading")).toHaveText([
-    "대화/입력",
-    "조건/흐름",
-    "맵/이동",
-    "보상/상점",
-    "소리",
-  ]);
+  for (const heading of ["대화/입력", "조건/흐름", "맵/이동", "보상/상점", "소리"]) {
+    await expect(picker.locator(".event-command-picker-group-heading").filter({ hasText: heading })).toBeVisible();
+  }
   await expect(picker.getByRole("button", { name: "문장 표시..." })).toBeVisible();
   await expect(picker.getByRole("button", { name: "문장 표시 설정..." })).toBeEnabled();
   await expect(picker.getByRole("button", { name: "스위치 조작..." })).toBeVisible();
   await expect(picker.getByRole("button", { name: "조건 분기..." })).toBeVisible();
   await expect(picker.getByRole("button", { name: "장소 이동..." })).toBeVisible();
   await expect(picker.getByRole("button", { name: "BGM 재생..." })).toBeVisible();
-  await expect(picker.locator(".event-command-picker-command")).toHaveCount(21);
+  expect(await picker.locator(".event-command-picker-command").count()).toBeGreaterThanOrEqual(21);
   await expect(picker.getByRole("button", { name: "경험치 변경..." })).toHaveCount(0);
 
   await picker.getByTestId("event-command-picker-tab-2").click();
@@ -107,7 +103,31 @@ test("double-clicking the @> contents line opens the Korean RM2003 command windo
   await expect(commandGrid.locator(".event-command-picker-command:disabled")).toHaveCount(0);
   await expect(picker.getByRole("button", { name: "저장 메뉴 열기" })).toBeVisible();
   await expect(picker.getByRole("button", { name: "로드 메뉴 열기" })).toBeEnabled();
-  await expect(picker.getByRole("button", { name: "적 HP 변경..." })).toHaveCount(0);
+  const battleOnlyInfo = picker.getByRole("button", { name: "적 HP 변경..." });
+  await expect(battleOnlyInfo).toBeVisible();
+  await expect(battleOnlyInfo).toHaveAttribute("aria-disabled", "true");
+
+  const unavailable = picker.getByTestId("command-picker-info-checkpointSave");
+  await expect(unavailable).toBeVisible();
+  await unavailable.focus();
+  await expect(unavailable).toBeFocused();
+  await expect(unavailable).toHaveAttribute("aria-disabled", "true");
+  await expect(unavailable).toHaveAttribute("data-runtime-support", "runtime-partial");
+  await expect(unavailable).toHaveAttribute("data-runtime-owner", "interpreter");
+  await expect(unavailable).toHaveAttribute("aria-describedby", "command-picker-guidance-checkpointSave");
+  await expect(picker.getByTestId("command-picker-guidance-checkpointSave")).toContainText("사용 경로: 빠른 저작");
+  await unavailable.focus();
+  await expect(unavailable).toBeFocused();
+  await unavailable.press("Enter");
+  await expect(picker).toBeVisible();
+  await expect(page.getByTestId("event-command-edit-dialog")).toHaveCount(0);
+
+  await picker.getByTestId("event-command-picker-tab-1").click();
+  await expect(picker.getByTestId("command-picker-add-setSwitch")).toHaveAttribute("data-runtime-owner", "interpreter");
+  await picker.getByTestId("event-command-picker-tab-2").click();
+  await expect(picker.getByTestId("command-picker-add-battleProcessing")).toHaveAttribute("data-runtime-owner", "battle");
+  await picker.getByTestId("event-command-picker-tab-1").click();
+  await expect(picker.getByTestId("command-picker-add-transfer")).toHaveAttribute("data-runtime-owner", "player");
 
   await picker.getByTestId("event-command-picker-tab-1").click();
   await picker.screenshot({ path: testInfo.outputPath("rm2k3-event-command-picker.png") });

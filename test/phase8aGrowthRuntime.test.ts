@@ -307,6 +307,33 @@ describe("Phase 8a 승급 트리", () => {
     expect(promoteActor(variableSession, project, HERO_ID, "class_variable").ok).toBe(true);
   });
 
+  it("승급 아이템의 마지막 충전된 복사본을 소모하면 커서를 지운다", () => {
+    const project = phase8aProject();
+    const badge = project.database.items.find((item) => item.id === BADGE_ID)!;
+    badge.consumptionLimit = 3;
+    const session = startPhase8aSession(project);
+    session.inventory[BADGE_ID] = 1;
+    session.itemUseCharges![BADGE_ID] = 2;
+
+    expect(promoteActor(session, project, HERO_ID, WARRIOR_CLASS_ID).ok).toBe(true);
+    expect(session.inventory[BADGE_ID]).toBeUndefined();
+    expect(session.itemUseCharges?.[BADGE_ID]).toBeUndefined();
+  });
+
+  it("존재하지 않는 승급 대상은 아이템과 충전 커서를 변경하지 않는다", () => {
+    const project = phase8aProject();
+    const source = project.database.classes.find((record) => record.id === APPRENTICE_CLASS_ID)!;
+    source.promotions = [{ toClassId: "class_missing", requires: { itemId: BADGE_ID } }];
+    const session = startPhase8aSession(project);
+    session.inventory[BADGE_ID] = 1;
+    session.itemUseCharges![BADGE_ID] = 2;
+
+    expect(promoteActor(session, project, HERO_ID, "class_missing")).toMatchObject({ ok: false, reason: "class-not-found" });
+    expect(session.inventory[BADGE_ID]).toBe(1);
+    expect(session.itemUseCharges?.[BADGE_ID]).toBe(2);
+    expect(session.classOverrides[HERO_ID]).toBeUndefined();
+  });
+
   it("promoteActor 커맨드는 성공/실패 분기로 진행한다", () => {
     const project = phase8aProject();
     const success = startPhase8aSession(project);

@@ -8,6 +8,7 @@ import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPatt
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
+import { logicalEquipmentIds } from "@/player/playerEquipmentRules";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
 const CHARGE_FLOOR = 0.02;
@@ -148,7 +149,7 @@ export interface EquipmentRuntimeEffects {
 
 function totalEquipmentBonuses(project: Project, equipment: ActorInitialEquipment): { attack: number; defense: number; mind: number; agility: number } {
   const total = { attack: 0, defense: 0, mind: 0, agility: 0 };
-  for (const equipmentId of Object.values(equipment)) {
+  for (const equipmentId of logicalEquipmentIds(project, equipment)) {
     if (!equipmentId) continue;
     const record = project.database.equipment.find((entry) => entry.id === equipmentId);
     if (!record) continue;
@@ -166,7 +167,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
   let doubleAttack = false;
   let stateResistanceChance = 0;
   let stateDefenseMode: "resist" | "inflict" = "resist";
-  for (const equipmentId of Object.values(equipment)) {
+  for (const equipmentId of logicalEquipmentIds(project, equipment)) {
     if (!equipmentId) continue;
     const record = project.database.equipment.find((entry) => entry.id === equipmentId);
     if (!record) continue;
@@ -184,6 +185,7 @@ function equipmentRuntimeEffects(project: Project, equipment: ActorInitialEquipm
     stateResistanceChance,
   };
 }
+
 
 function clampVital(value: number, max: number): number {
   if (!Number.isFinite(value)) return max;

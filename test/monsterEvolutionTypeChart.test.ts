@@ -38,7 +38,23 @@ describe("monster evolution", () => {
     const itemGift = giveMonster(itemProject, itemSession, { speciesId: "species_wild_slime", level: 3 });
     const itemResult = evolveMonster(itemProject, itemSession, { instanceId: itemGift.ok ? itemGift.instance.instanceId : "", allowItemEvolution: true });
     expect(itemResult.ok && itemResult.consumedItemId).toBe("item_capture_orb");
-    expect(itemSession.inventory.item_capture_orb).toBe(0);
+    expect(itemSession.inventory.item_capture_orb).toBeUndefined();
+
+    const chargedProject = createBlankProject();
+    const chargedOrb = chargedProject.database.items.find((item) => item.id === "item_capture_orb")!;
+    chargedOrb.consumptionLimit = 3;
+    slime(chargedProject).evolutions = [{ toSpeciesId: "species_king_slime", requires: { itemId: chargedOrb.id } }];
+    const chargedSession = startSession(chargedProject, 20);
+    chargedSession.inventory[chargedOrb.id] = 1;
+    chargedSession.itemUseCharges![chargedOrb.id] = 2;
+    const chargedGift = giveMonster(chargedProject, chargedSession, { speciesId: "species_wild_slime", level: 3 });
+    const chargedResult = evolveMonster(chargedProject, chargedSession, {
+      instanceId: chargedGift.ok ? chargedGift.instance.instanceId : "",
+      allowItemEvolution: true,
+    });
+    expect(chargedResult.ok).toBe(true);
+    expect(chargedSession.inventory[chargedOrb.id]).toBeUndefined();
+    expect(chargedSession.itemUseCharges?.[chargedOrb.id]).toBeUndefined();
 
     const friendProject = createBlankProject();
     slime(friendProject).evolutions = [{ toSpeciesId: "species_king_slime", requires: { friendshipAtLeast: 200 } }];

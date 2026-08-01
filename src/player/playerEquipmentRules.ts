@@ -45,6 +45,19 @@ export function canEquip(project: Project, actor: ActorRecord, equipment: Equipm
   );
 }
 
+export function equipmentSlotAccepts(
+  project: Project,
+  actor: ActorRecord,
+  slot: EquipmentSlot,
+  equipment: EquipmentRecord,
+  classId = actor.classId
+): boolean {
+  if (equipment.slot === slot) return true;
+  const classDualWield = project.database.classes.find((record) => record.id === classId)?.options.dualWield === true;
+  return slot === "shield" && equipment.slot === "weapon" && !equipment.twoHanded
+    && (actor.options.dualWield || classDualWield);
+}
+
 /**
  * Produces the equipment projection used by save/bootstrap and runtime readers.
  * It never adjusts inventory: malformed or legacy hand combinations are represented
@@ -59,14 +72,12 @@ export function effectiveActorEquipment(
   const records = equipmentRecords(project);
   const source = equipment ?? actor.initialEquipment;
   const effective: ActorInitialEquipment = {};
-  const dualWield = actor.options.dualWield
-    || Boolean(project.database.classes.find((record) => record.id === classId)?.options.dualWield);
 
   for (const slot of EQUIPMENT_SLOTS) {
     const id = source[slot];
     const record = id ? records.get(id) : undefined;
     if (!record) continue;
-    if (record.slot === slot || (slot === "shield" && dualWield && record.slot === "weapon" && !record.twoHanded)) {
+    if (equipmentSlotAccepts(project, actor, slot, record, classId)) {
       effective[slot] = record.id;
     }
   }
@@ -74,6 +85,20 @@ export function effectiveActorEquipment(
   const weapon = effective.weapon ? records.get(effective.weapon) : undefined;
   if (weapon?.twoHanded) effective.shield = weapon.id;
   return effective;
+}
+
+/** Projects physical equipment slots into logical items, excluding only a two-handed weapon's shield mirror. */
+export function logicalEquipmentIds(project: Project, equipment: ActorInitialEquipment): string[] {
+  const ids: string[] = [];
+  for (const [slot, equipmentId] of Object.entries(equipment)) {
+    if (!equipmentId) continue;
+    if (slot === "shield" && equipment.weapon === equipmentId) {
+      const record = project.database.equipment.find((entry) => entry.id === equipmentId);
+      if (record?.twoHanded) continue;
+    }
+    ids.push(equipmentId);
+  }
+  return ids;
 }
 
 /** Pure, atomic equip/replace/unequip authority. Rejected transitions return no partial state. */
@@ -92,7 +117,7 @@ export function transitionActorEquipment(input: EquipmentTransitionInput): Equip
   if (input.equipmentId && !requested) return rejected("missingEquipment");
   if (requested && !canEquip(project, actor, requested, classId)) return rejected("notEquippable");
   if (requested?.twoHanded && requested.slot !== "weapon") return rejected("invalidSlot");
-  if (requested && !slotAccepts(actor, classRecord?.options.dualWield === true, input.slot, requested)) {
+  if (requested && !equipmentSlotAccepts(project, actor, input.slot, requested, classId)) {
     return rejected("invalidSlot");
   }
 
@@ -100,15 +125,15 @@ export function transitionActorEquipment(input: EquipmentTransitionInput): Equip
   if (requested) equipInto(next, input.slot, requested, records);
   else unequipFrom(next, input.slot, records);
 
-  const removedIds = removedLogicalEquipment(current, next, records);
+  const removedIds = removedLogicalEquipment(project, current, next);
   for (const id of removedIds) {
     const record = records.get(id);
     if (record?.cursed) return rejected("cursedEquipment");
     if (record?.effectFlags.fixedEquipment) return rejected("fixedEquipment");
   }
 
-  const beforeCounts = logicalEquipmentCounts(current, records);
-  const afterCounts = logicalEquipmentCounts(next, records);
+  const beforeCounts = logicalEquipmentCounts(project, current);
+  const afterCounts = logicalEquipmentCounts(project, next);
   const inventory = normalizeInventory(input.inventory);
   const ids = new Set([...beforeCounts.keys(), ...afterCounts.keys()]);
   for (const id of ids) {
@@ -118,17 +143,14 @@ export function transitionActorEquipment(input: EquipmentTransitionInput): Equip
   for (const id of ids) {
     const delta = (afterCounts.get(id) ?? 0) - (beforeCounts.get(id) ?? 0);
     if (delta === 0) continue;
-    inventory[id] = (inventory[id] ?? 0) - delta;
+    const count = (inventory[id] ?? 0) - delta;
+    if (count > 0) inventory[id] = count;
+    else delete inventory[id];
   }
 
   return { kind: "accepted", equipment: next, inventory };
 }
 
-function slotAccepts(actor: ActorRecord, classDualWield: boolean, slot: EquipmentSlot, record: EquipmentRecord): boolean {
-  if (record.slot === slot) return true;
-  return slot === "shield" && record.slot === "weapon" && !record.twoHanded
-    && (actor.options.dualWield || classDualWield);
-}
 
 function equipInto(
   next: ActorInitialEquipment,
@@ -169,24 +191,19 @@ function unequipFrom(
 }
 
 function removedLogicalEquipment(
+  project: Project,
   before: ActorInitialEquipment,
-  after: ActorInitialEquipment,
-  records: ReadonlyMap<string, EquipmentRecord>
+  after: ActorInitialEquipment
 ): readonly string[] {
-  const beforeCounts = logicalEquipmentCounts(before, records);
-  const afterCounts = logicalEquipmentCounts(after, records);
+  const beforeCounts = logicalEquipmentCounts(project, before);
+  const afterCounts = logicalEquipmentCounts(project, after);
   return [...beforeCounts.keys()].filter((id) => (afterCounts.get(id) ?? 0) < (beforeCounts.get(id) ?? 0));
 }
 
-function logicalEquipmentCounts(
-  equipment: ActorInitialEquipment,
-  records: ReadonlyMap<string, EquipmentRecord>
-): Map<string, number> {
+function logicalEquipmentCounts(project: Project, equipment: ActorInitialEquipment): Map<string, number> {
   const counts = new Map<string, number>();
-  for (const slot of EQUIPMENT_SLOTS) {
-    const id = equipment[slot];
-    if (!id || !records.has(id)) continue;
-    if (slot === "shield" && equipment.weapon === id && records.get(id)?.twoHanded) continue;
+  for (const id of logicalEquipmentIds(project, equipment)) {
+    if (!project.database.equipment.some((record) => record.id === id)) continue;
     counts.set(id, (counts.get(id) ?? 0) + 1);
   }
   return counts;
@@ -200,14 +217,12 @@ function strictActorEquipment(
 ): ActorInitialEquipment {
   const records = equipmentRecords(project);
   const source = equipment ?? actor.initialEquipment;
-  const dualWield = actor.options.dualWield
-    || Boolean(project.database.classes.find((record) => record.id === classId)?.options.dualWield);
   const current: ActorInitialEquipment = {};
   for (const slot of EQUIPMENT_SLOTS) {
     const id = source[slot];
     const record = id ? records.get(id) : undefined;
     if (!record) continue;
-    if (record.slot === slot || (slot === "shield" && dualWield && record.slot === "weapon" && !record.twoHanded)) {
+    if (equipmentSlotAccepts(project, actor, slot, record, classId)) {
       current[slot] = record.id;
     }
   }
@@ -218,7 +233,11 @@ function equipmentRecords(project: Project): Map<string, EquipmentRecord> {
 }
 
 function normalizeInventory(inventory: Readonly<Record<string, number>>): Record<string, number> {
-  return Object.fromEntries(Object.entries(inventory).map(([id, count]) => [id, Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0]));
+  return Object.fromEntries(
+    Object.entries(inventory)
+      .map(([id, count]) => [id, Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0] as const)
+      .filter(([, count]) => count > 0)
+  );
 }
 
 function rejected(reason: EquipmentTransitionFailureReason): EquipmentTransitionResult {

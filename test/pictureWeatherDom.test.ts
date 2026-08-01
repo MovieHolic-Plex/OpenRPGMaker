@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { RuntimeDomOverlay } from "@/player/runtimeDom";
-import { syncWeatherOverlay, removeWeatherOverlay } from "@/player/weather/weatherOverlay";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import { FakeElement, installFakeDom, findByTestId } from "./fakeDom";
 import type { PictureState } from "@/project/session";
@@ -90,35 +89,6 @@ describe("syncPictureLayer — 실 이미지 렌더", () => {
   });
 });
 
-describe("syncWeatherOverlay — 날씨 파티클/안개", () => {
-  it("rain 은 강도만큼 파티클 생성", () => {
-    const host = new TestHost();
-    syncWeatherOverlay(asHost(host), "rain,5");
-    const overlay = findByTestId(host, "runtime-weather-overlay")!;
-    expect(overlay.dataset.kind).toBe("rain");
-    expect(overlay.childNodes.length).toBe(40); // 80 * 0.5
-  });
-
-  it("fog 는 파티클 대신 그라디언트 레이어", () => {
-    const host = new TestHost();
-    syncWeatherOverlay(asHost(host), "fog,10");
-    const overlay = findByTestId(host, "runtime-weather-overlay")!;
-    expect(overlay.dataset.kind).toBe("fog");
-    expect(overlay.childNodes.length).toBe(0);
-    expect(Number(overlay.style.opacity)).toBeGreaterThan(0);
-  });
-
-  it("none/undefined 은 오버레이 제거", () => {
-    const host = new TestHost();
-    syncWeatherOverlay(asHost(host), "snow,3");
-    expect(findByTestId(host, "runtime-weather-overlay")).not.toBeNull();
-    syncWeatherOverlay(asHost(host), "none");
-    expect(findByTestId(host, "runtime-weather-overlay")).toBeNull();
-    syncWeatherOverlay(asHost(host), "snow,3");
-    removeWeatherOverlay(asHost(host));
-    expect(findByTestId(host, "runtime-weather-overlay")).toBeNull();
-  });
-});
 
 describe("runTransitionPhase — 모자이크/블라인드 오버레이", () => {
   it("rAF 미지원 환경에서 out 단계는 오버레이를 남기고 최종 프레임 적용", async () => {

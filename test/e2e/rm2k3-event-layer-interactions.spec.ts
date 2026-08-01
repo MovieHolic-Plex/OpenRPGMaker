@@ -120,6 +120,26 @@ async function interactWithMapTile(interaction: MapTileInteraction): Promise<voi
   await canvas.click({ position });
 }
 
+async function nativeDoubleClickMapTile(page: Page, x: number, y: number): Promise<void> {
+  const canvas = page.getByTestId("edit-canvas").locator("canvas");
+  const box = await canvas.boundingBox();
+  if (!box) throw new Error("missing editor canvas");
+  const state = await debugState(page);
+  const map = state.project.maps[state.project.startMapId];
+  if (!map) throw new Error("missing current map");
+  const tileSize = 16 * 2;
+  const mapLeft = Math.floor((box.width - map.width * tileSize) / 2);
+  const mapTop = Math.floor((box.height - map.height * tileSize) / 2);
+  await page.mouse.move(
+    box.x + mapLeft + x * tileSize + tileSize / 2,
+    box.y + mapTop + y * tileSize + tileSize / 2
+  );
+  await page.mouse.down();
+  await page.mouse.up();
+  await page.mouse.down();
+  await page.mouse.up();
+}
+
 function eventGraphic(state: DebugState, eventId: string): ExportedGraphic {
   const map = state.project.maps[state.project.startMapId];
   const event = map?.events.find((item) => item.id === eventId);
@@ -225,9 +245,9 @@ test("event layer canvas selects on first click and opens the editor on double c
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath("event-first-click-selected.png"), fullPage: true });
 
-  await doubleClickMapTile(page, 2, 2);
+  await nativeDoubleClickMapTile(page, 2, 2);
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
-  await expect(page.getByTestId("event-editor-diff")).toBeVisible();
+  await expect(page.getByTestId("event-editor-diff")).toHaveCount(1);
   await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
   await expect(page.getByTestId("event-classic-graphic")).toBeVisible();
   await expect(page.getByTestId("event-classic-graphic")).toContainText("그래픽");

@@ -233,8 +233,18 @@ export class EditScene extends PhaserRuntime.Scene {
     this.redraw();
 
     // store/에디터 상태 변경 시 재렌더.
-    this.unsubStore = store.subscribe((_project, change) => this.redrawForStoreChange(change));
-    this.unsubEditor = editorState.subscribe(() => this.redrawWhenViewStateChanges());
+    this.unsubStore = store.subscribe((_project, change) => {
+      this.clearInvalidPendingEventCoordinate();
+      this.redrawForStoreChange(change);
+    });
+    this.unsubEditor = editorState.subscribe((state) => {
+      const pending = state.pendingEventCoordinate;
+      if (pending && (this.mapId() !== pending.mapId || state.layer !== "event" || state.tool !== "event")) {
+        editorState.set({ pendingEventCoordinate: null });
+        return;
+      }
+      this.redrawWhenViewStateChanges();
+    });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => this.renderAgentGhostPreview());
@@ -337,6 +347,7 @@ export class EditScene extends PhaserRuntime.Scene {
         return;
       }
       if (this.tryOfferEventLayerSwitchFromPointer(ptr)) return;
+      this.clearPendingEventCoordinateForPointerContext(ptr);
       if (this.beginDragOperation(ptr)) return;
       // 페인트 시작 전 호버(raw 팔레트 타일)를 지운다 — 성형된 결과와 겹쳐 깜빡이는 UX 방지.
       this.suppressPaintHoverPreview();
@@ -728,7 +739,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private openEventLayerMenu(ptr: Phaser.Input.Pointer): void {
     const mapId = this.mapId();
     if (!mapId) return;
+    editorState.set({ pendingEventCoordinate: null });
     if (!canEditMap(mapId)) {
+      editorState.set({ pendingEventCoordinate: null });
       toast(mapEditLockNotice(mapId), "error");
       return;
     }
@@ -875,15 +888,56 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private handleEventClick(mapId: MapId, x: number, y: number, openEditor = false): void {
     const map = store.getCurrent().maps[mapId];
-    if (!map) return;
-    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return;
+    if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) {
+      editorState.set({ pendingEventCoordinate: null });
+      return;
+    }
     const existing = committedEvents(map.events).find((e) => e.x === x && e.y === y);
     if (existing) {
-      editorState.set({ selectedEventId: existing.id, selectedEventPageId: null });
+      editorState.set({ selectedEventId: existing.id, selectedEventPageId: null, pendingEventCoordinate: null });
       if (openEditor) openEventEditorModal(mapId, existing.id);
     } else if (openEditor) {
+      editorState.set({ pendingEventCoordinate: null });
       openNewEventEditorModal(mapId, x, y);
+    } else {
+      editorState.set({ selectedEventId: null, selectedEventPageId: null, pendingEventCoordinate: { mapId, x, y } });
     }
+  }
+
+  private clearPendingEventCoordinateForPointerContext(ptr: Phaser.Input.Pointer): void {
+    const pending = editorState.get().pendingEventCoordinate;
+    if (!pending) return;
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const { x, y } = this.pointerToTile(ptr);
+    const validEmptyEventTile = Boolean(
+      mapId &&
+      map &&
+      canEditMap(mapId) &&
+      editorState.get().layer === "event" &&
+      editorState.get().tool === "event" &&
+      x >= 0 &&
+      y >= 0 &&
+      x < map.width &&
+      y < map.height &&
+      !committedEvents(map.events).some((event) => event.x === x && event.y === y),
+    );
+    if (!validEmptyEventTile) editorState.set({ pendingEventCoordinate: null });
+  }
+
+  private clearInvalidPendingEventCoordinate(): void {
+    const pending = editorState.get().pendingEventCoordinate;
+    if (!pending) return;
+    const map = store.getCurrent().maps[pending.mapId];
+    const valid = Boolean(
+      map &&
+      pending.x >= 0 &&
+      pending.y >= 0 &&
+      pending.x < map.width &&
+      pending.y < map.height &&
+      !committedEvents(map.events).some((event) => event.x === pending.x && event.y === pending.y),
+    );
+    if (!valid) editorState.set({ pendingEventCoordinate: null });
   }
 
   private offerEventLayerSwitchAt(mapId: MapId, x: number, y: number, layer: string, clickCount: number): boolean {
@@ -918,7 +972,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!existing) return false;
     this.isPainting = false;
     this.lastPaintKey = "";
-    editorState.set({ selectedEventId: existing.id, selectedEventPageId: null });
+    editorState.set({ selectedEventId: existing.id, selectedEventPageId: null, pendingEventCoordinate: null });
     openEventEditorModal(mapId, existing.id);
     return true;
   }

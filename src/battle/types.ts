@@ -100,6 +100,7 @@ export interface BattleSessionState {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
@@ -276,6 +277,7 @@ export interface BattleEventStateSnapshot {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;

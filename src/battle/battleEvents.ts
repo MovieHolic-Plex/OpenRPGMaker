@@ -4,13 +4,15 @@ import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
+import { transitionItemState } from "@/player/itemTransitions";
 import type { ActorId, Command, Condition, Project, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
 export type BattleEventRuntimeState = {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
-  readonly inventory: Record<string, number>;
+  inventory: Record<string, number>;
+  itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
   gold?: number;
   actorSkillIds?: Record<string, string[]>;
@@ -100,6 +102,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       switches: options.state.switches,
       variables: options.state.variables,
       inventory: options.state.inventory,
+      itemUseCharges: { ...(options.state.itemUseCharges ?? {}) },
       gold: options.state.gold ?? 0,
       partyActorIds: [...(options.state.partyActorIds ?? [])],
       actorSkillIds: { ...(options.state.actorSkillIds ?? {}) },
@@ -219,7 +222,16 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const amount = typeof command.amount === "number"
           ? command.amount
           : options.state.variables[command.amount.id] ?? 0;
-        options.state.inventory[command.itemId] = Math.max(0, applyNumberOperation(current, command.op, amount));
+        const next = Math.max(0, applyNumberOperation(current, command.op, amount));
+        const action = command.op === "="
+          ? { kind: "assign" as const, itemId: command.itemId, count: next }
+          : next >= current
+            ? { kind: "grant" as const, itemId: command.itemId, amount: next - current }
+            : { kind: "remove" as const, itemId: command.itemId, amount: current - next };
+        Object.assign(
+          options.state,
+          transitionItemState(options.state, options.project.database.items, action)
+        );
         return false;
       }
       case "changeFriendship": {

@@ -25,6 +25,37 @@ describe("battle rewards to play session", () => {
     expect(session.actorExperience[actorId]).toBe(28);
     expect(session.gold).toBe(5);
     expect(session.inventory.item_bomb).toBe(1);
+    expect(session.itemUseCharges).toEqual({});
+  });
+
+  it("grants duplicate reward entries as separate copies", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+
+    applyBattleRewardsToSession(session, {
+      result: "victory",
+      rewards: { exp: 0, gold: 0, items: ["item_bomb", "item_bomb"] },
+    }, project);
+
+    expect(session.inventory.item_bomb).toBe(2);
+  });
+
+  it("preserves the finite-use FIFO cursor when victory grants another copy", () => {
+    const project = createBlankProject();
+    const finiteItem = project.database.items.find((item) => item.id === "item_bomb")!;
+    finiteItem.consumable = true;
+    finiteItem.consumptionLimit = 3;
+    const session = startSession(project);
+    session.inventory[finiteItem.id] = 1;
+    session.itemUseCharges = { [finiteItem.id]: 2 };
+
+    applyBattleRewardsToSession(session, {
+      result: "victory",
+      rewards: { exp: 0, gold: 0, items: [finiteItem.id] },
+    }, project);
+
+    expect(session.inventory[finiteItem.id]).toBe(2);
+    expect(session.itemUseCharges).toEqual({ [finiteItem.id]: 2 });
   });
 
   it("does not pay rewards for escape or defeat", () => {

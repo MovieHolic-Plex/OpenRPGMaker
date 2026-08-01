@@ -7,6 +7,7 @@ import {
   stormFlashOpacity,
   weatherParticleCount,
 } from "@/player/weather/weatherModel";
+import { weatherRenderPlan } from "@/player/playSceneWeather";
 
 describe("parseWeather", () => {
   it("none/빈값/미지정은 날씨 없음", () => {
@@ -81,5 +82,36 @@ describe("fogOpacity / isWeatherActive", () => {
   it("활성 판정", () => {
     expect(isWeatherActive({ kind: "rain", intensity: 0.5 })).toBe(true);
     expect(isWeatherActive(NO_WEATHER)).toBe(false);
+  });
+});
+
+describe("Phaser weather render contract", () => {
+  it("drives precipitation, fog, visibility, and deterministic storm flash from the model", () => {
+    expect(weatherRenderPlan({ kind: "rain", intensity: 0.5 }, 0, 96)).toMatchObject({
+      active: true,
+      kind: "rain",
+      particleCount: 48,
+      fogOpacity: 0,
+      stormFlashOpacity: 0,
+    });
+    expect(weatherRenderPlan({ kind: "snow", intensity: 0.25 }, 0, 96)).toMatchObject({
+      active: true,
+      kind: "snow",
+      particleCount: 24,
+    });
+    expect(weatherRenderPlan({ kind: "fog", intensity: 1 }, 0, 96)).toMatchObject({
+      active: true,
+      kind: "fog",
+      particleCount: 0,
+      fogOpacity: 0.6,
+    });
+    expect(weatherRenderPlan({ kind: "storm", intensity: 0.8 }, 120, 96).stormFlashOpacity).toBeGreaterThan(0);
+    expect(weatherRenderPlan(NO_WEATHER, 0, 96)).toEqual({
+      active: false,
+      kind: "none",
+      particleCount: 0,
+      fogOpacity: 0,
+      stormFlashOpacity: 0,
+    });
   });
 });

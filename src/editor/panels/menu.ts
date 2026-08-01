@@ -90,6 +90,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
+    ...(mode === "edit" && uiMode === "basic" ? [renderTestPlayButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
@@ -472,6 +473,27 @@ async function openSelectedEventTestWindow(): Promise<void> {
   }));
 }
 
+function renderTestPlayButton(): HTMLElement {
+  return el("button", {
+    class: "topbar-test-play",
+    attrs: {
+      type: "button",
+      title: "전체 프로젝트 테스트 플레이",
+      "aria-label": "전체 프로젝트 테스트 플레이",
+    },
+    dataset: { testid: "topbar-test-play" },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        void openTestPlayWindow();
+      },
+    },
+    children: [
+      el("span", { class: "topbar-test-play-glyph", text: "▶", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "topbar-test-play-label", text: "테스트" }),
+    ],
+  });
+}
 function renderQuickBattleTestButton(): HTMLElement {
   return el("button", {
     class: "team-history-button is-icon-only quick-battle-test-button",

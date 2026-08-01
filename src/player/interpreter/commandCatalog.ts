@@ -597,7 +597,7 @@ export function executeCommand(
       return resumeNext(frame);
     }
     case "changeEquipment":
-      changeActorEquipment(state.session, command);
+      if (state.project) changeActorEquipment(state.session, state.project, command);
       return resumeNext(frame);
     case "changeActorHp":
     case "changeActorMp":

@@ -2,13 +2,16 @@ import type { BattleResult } from "@/battle/runtime";
 import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnapshot } from "@/battle/types";
 import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
-import { changeGold, changeItem, type PlaySession } from "@/project/session";
+import { changeGold, type PlaySession } from "@/project/session";
 import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
+import { transitionItemStates } from "@/player/itemTransitions";
 
 export type BattleRewardsOutcome = {
   readonly result: BattleResult;
   readonly rewards: BattleRewardsSnapshot;
+  /** Defeat returns to the live session only when the battle was authored as losable. */
+  readonly canLose?: boolean;
   // 전투 종료 시점 아군 배틀러 스냅샷. 전투 중 소모/피해가 필드 세션 HP/MP로 이어지도록 반영한다.
   readonly actors?: readonly BattleBattlerSnapshot[];
   // 전투 종료 시점 스위치/변수/인벤토리(전투 개시 때 세션에서 시드됨).
@@ -27,8 +30,9 @@ export function applyBattleRewardsToSession(
   outcome: BattleRewardsOutcome,
   project: Project
 ): readonly BattleLevelUpResult[] {
-  // RM2K3 관례: 승리/도주 모두 전투에서 입은 피해와 MP 소모가 필드로 유지된다.
-  if (outcome.result === "victory" || outcome.result === "escape") {
+  // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
+  // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.
+  if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
     applyBattleVitalsToSession(session, outcome.actors ?? []);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
@@ -54,9 +58,13 @@ export function applyBattleRewardsToSession(
     }
   }
   changeGold(session, "+=", Math.max(0, Math.trunc(outcome.rewards.gold)));
-  for (const itemId of outcome.rewards.items) {
-    changeItem(session, itemId, "+=", 1);
-  }
+  const itemState = transitionItemStates(
+    { inventory: session.inventory, itemUseCharges: session.itemUseCharges },
+    project.database.items,
+    outcome.rewards.items.map((itemId) => ({ kind: "grant" as const, itemId, amount: 1 })),
+  );
+  session.inventory = itemState.inventory;
+  session.itemUseCharges = itemState.itemUseCharges;
   // 전투에 나선 파티 몬스터에게만 경험치를 준다(참전 몬스터가 있으면 그들로 한정, 없으면 기존 파티 전원).
   const participantInstanceIds = (outcome.actors ?? [])
     .map((actor) => actor.monsterInstanceId)
@@ -93,7 +101,8 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
   if (!eventState) return;
   for (const [key, value] of Object.entries(eventState.switches)) session.switches[key] = value;
   for (const [key, value] of Object.entries(eventState.variables)) session.variables[key] = value;
-  for (const [key, value] of Object.entries(eventState.inventory)) session.inventory[key] = value;
+  session.inventory = { ...eventState.inventory };
+  session.itemUseCharges = { ...(eventState.itemUseCharges ?? {}) };
   if (typeof eventState.gold === "number") session.gold = Math.max(0, Math.trunc(eventState.gold));
   if (eventState.partyActorIds) session.partyActorIds = [...eventState.partyActorIds];
   if (eventState.actorSkillIds) {

@@ -228,11 +228,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     emitMutationResult(result, renderMenu(result.message, "items"));
   }
 
-  function equipItem(actorId: string, equipmentId: string): void {
+  function equipItem(actorId: string, slotId: keyof ActorInitialEquipment, equipmentId: string): void {
     const scene = options.getActiveScene();
     if (!scene) return;
     rememberDetailCursorFromTestId(`status-menu-equipment-item-${equipmentId}`);
-    const result = equipStatusMenuItem(scene, actorId, equipmentId);
+    const result = equipStatusMenuItem(scene, actorId, slotId, equipmentId);
     if (result.kind === "used") equipmentSlotId = undefined;
     emitMutationResult(result, renderMenu(result.message, "equipment"));
   }

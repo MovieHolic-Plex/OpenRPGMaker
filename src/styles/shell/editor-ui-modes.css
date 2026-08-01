@@ -56,6 +56,33 @@
   color: var(--on-accent);
 }
 
+body.editor-ui-basic .topbar-test-play {
+  align-items: center;
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 82%, #15213a);
+  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 72%, var(--editor-line));
+  border-radius: var(--radius-s, 6px);
+  color: var(--on-accent, #fff);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 700 12px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 6px;
+  height: 32px;
+  padding: 0 11px;
+  white-space: nowrap;
+}
+
+body.editor-ui-basic .topbar-test-play:hover,
+body.editor-ui-basic .topbar-test-play:focus-visible {
+  filter: brightness(1.12);
+  outline: 2px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.topbar-test-play-glyph {
+  font-size: 11px;
+}
+
 /* Classic RM toolbar is a legacy surface — expert only. */
 .classic-toolbar.is-legacy-surface {
   opacity: 0.96;
@@ -235,6 +262,85 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
   height: 1px;
   margin: 2px 0;
   width: 22px;
+}
+
+.basic-pending-event-cta {
+  align-items: center;
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 26%, var(--mix-base));
+  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 58%, transparent);
+  border-radius: 9px;
+  color: var(--on-accent);
+  cursor: pointer;
+  display: flex;
+  flex: 0 0 auto;
+  font: 700 11px/1.2 var(--font-ui, system-ui, sans-serif);
+  gap: 5px;
+  margin-top: 2px;
+  min-height: 38px;
+  padding: 5px;
+  position: relative;
+  width: 40px;
+}
+
+.basic-pending-event-cta > span:not(.basic-pending-event-cta-mark) {
+  background: var(--editor-popover-bg, #151b2c);
+  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  color: var(--editor-text, #e8eefc);
+  display: none;
+  left: calc(100% + 8px);
+  padding: 7px 8px;
+  position: absolute;
+  white-space: nowrap;
+  z-index: var(--z-flyout);
+}
+
+.basic-pending-event-cta > span:nth-child(2) {
+  border-radius: 7px 7px 0 0;
+  bottom: 50%;
+}
+
+.basic-pending-event-cta-coord {
+  border-radius: 0 0 7px 7px;
+  color: var(--editor-text-muted, #9aa8c7) !important;
+  top: 50%;
+}
+
+.basic-pending-event-cta:hover > span:not(.basic-pending-event-cta-mark),
+.basic-pending-event-cta:focus-visible > span:not(.basic-pending-event-cta-mark) {
+  display: block;
+}
+
+.basic-pending-event-cta:hover,
+.basic-pending-event-cta:focus-visible {
+  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 42%, var(--mix-base));
+  outline: none;
+}
+
+.basic-pending-event-cta-mark {
+  font-size: 22px;
+  line-height: 1;
+}
+
+@media (max-width: 1320px) {
+  body.editor-ui-basic .editor-product-brand-text,
+  body.editor-ui-basic .editor-ui-mode-btn:not(.is-active),
+  body.editor-ui-basic .topbar-test-play-label {
+    display: none;
+  }
+
+  body.editor-ui-basic .editor-product-brand {
+    margin-right: 6px;
+  }
+
+  body.editor-ui-basic .editor-ui-mode-toggle {
+    margin-left: 4px;
+  }
+
+  body.editor-ui-basic .topbar-test-play {
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
 }
 
 /* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */

@@ -1632,7 +1632,7 @@
   transform: translateY(1px);
 }
 
-.event-command-picker-command.disabled,
+.event-command-picker-command.is-informational,
 .event-command-picker-command:disabled {
   background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 88%, var(--bg-raised));
   border-color: var(--border-soft, var(--border-subtle));

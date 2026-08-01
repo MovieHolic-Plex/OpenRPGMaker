@@ -10,6 +10,7 @@ export const SYSTEM_SPECS = {
     message: "Contract complete",
   }),
   returnToTitle: nativeManifestEntry("system", { kind: "returnToTitle" }),
+  openSaveMenu: nativeManifestEntry("system", { kind: "openSaveMenu" }),
   m2Command: nativeManifestEntry("system", {
     kind: "m2Command",
     commandId: "m2-002-display-text-settings",

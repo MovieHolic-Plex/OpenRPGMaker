@@ -8,6 +8,7 @@ import { createInterpreter } from "@/player/interpreter";
 import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
+import { createBlankProject } from "@/project/defaults";
 
 type Interpreter = ReturnType<typeof createInterpreter>;
 type InterpreterResult = ReturnType<Interpreter["start"]>;
@@ -154,7 +155,7 @@ it("배우 상태 명령을 세션에 반영한다", () => {
     { kind: "recoverAll", actorId: "" },
   ];
 
-  drain(createInterpreter(commands, session));
+  drain(createInterpreter(commands, session, createBlankProject()));
 
   expect(session.actorVitals.actor_hero).toMatchObject({ hp: 80, mp: 20 });
   expect(session.actorVitals.actor_mage).toMatchObject({ hp: 50, mp: 30 });

@@ -2,6 +2,8 @@
 // assembly together so battle-event regressions can verify one state machine.
 import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
+import { transitionItemState } from "@/player/itemTransitions";
+import { isItemActorEligible } from "@/player/playerItemUse";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, type MutableBattler } from "@/battle/battleBattlers";
@@ -181,6 +183,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
     inventory: { ...sessionState.inventory },
+    itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
     partyActorIds: [...(sessionState.partyActorIds ?? options.party?.partyActorIds ?? options.project.system.startActorIds)],
     actorSkillIds: Object.fromEntries(
@@ -899,6 +902,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const count = battleEventState.inventory[itemId] ?? 0;
     if (count <= 0) return;
     if (!itemIsBattleUsable(item)) return;
+    if (!isItemActorEligible(options.project, item, user.monsterInstanceId ? undefined : user.recordId, user.classId)) return;
 
     const skillId = item.activateSkillId ?? item.skillId;
     const usesNativeMedicineEffects = itemUsesNativeBattleEffects(item);
@@ -912,14 +916,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyStateEffects(options.project, target, itemStateEffectsForBattle(item), rng);
     }
 
-    if (item.consumable !== false) {
-      battleEventState.inventory[itemId] = count - 1;
-    }
+    const consumed = transitionItemState(battleEventState, options.project.database.items, {
+      kind: "successfulUse",
+      itemId,
+    });
+    replaceItemTransitionState(consumed);
     if (item.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
     } else if (skillId && !usesNativeMedicineEffects) {
       // skill path already sets lastAnimation when the skill has animationId
     }
+  }
+
+  function replaceItemTransitionState(next: { inventory: Record<string, number>; itemUseCharges: Record<string, number> }): void {
+    Object.assign(battleEventState, next);
   }
 
   function itemIsBattleUsable(item: {
@@ -1024,7 +1034,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       lastCaptureResult = { targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingSpecies" };
       return;
     }
-    battleEventState.inventory[captureItemId] = count - 1;
+    replaceItemTransitionState(transitionItemState(battleEventState, options.project.database.items, {
+      kind: "successfulUse",
+      itemId: captureItemId,
+    }));
     const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item));
     const roll = rng();
     if (roll >= rate) {

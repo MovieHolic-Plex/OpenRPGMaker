@@ -1,5 +1,8 @@
 import type { ActorAmountOp, ActorId, Command, VariableOperand } from "@/project/types";
 import type { PlaySessionLike } from "@/player/types";
+import type { Project } from "@/project/types";
+import { effectiveActorClassId } from "@/project/sessionClass";
+import { transitionActorEquipment, type EquipmentTransitionResult } from "@/player/playerEquipmentRules";
 
 type ActorVitalKind = "hp" | "mp";
 type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActorMp" }>;
@@ -95,16 +98,26 @@ export function changeActorLevel(session: PlaySessionLike, command: Extract<Comm
   );
 }
 
-export function changeActorEquipment(session: PlaySessionLike, command: Extract<Command, { kind: "changeEquipment" }>): void {
+export function changeActorEquipment(
+  session: PlaySessionLike,
+  project: Project,
+  command: Extract<Command, { kind: "changeEquipment" }>
+): EquipmentTransitionResult {
   session.actorEquipment ??= {};
-  const current = session.actorEquipment[command.actorId] ?? {};
-  if (command.equipmentId) {
-    session.actorEquipment[command.actorId] = { ...current, [command.slot]: command.equipmentId };
-    return;
+  const transition = transitionActorEquipment({
+    project,
+    actorId: command.actorId,
+    classId: effectiveActorClassId(project, session, command.actorId),
+    equipment: session.actorEquipment[command.actorId],
+    inventory: session.inventory,
+    slot: command.slot,
+    equipmentId: command.equipmentId || undefined,
+  });
+  if (transition.kind === "accepted") {
+    session.actorEquipment[command.actorId] = transition.equipment;
+    session.inventory = transition.inventory;
   }
-  const next = { ...current };
-  delete next[command.slot];
-  session.actorEquipment[command.actorId] = next;
+  return transition;
 }
 
 function vitalKind(command: ActorVitalCommand): ActorVitalKind {
