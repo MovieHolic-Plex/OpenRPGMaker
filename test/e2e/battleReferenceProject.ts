@@ -19,12 +19,6 @@ type ReferenceBattleSeedOptions = {
 const ANCHOR_ANIMATION_ID = "anim_anchor_probe";
 const ANCHOR_SKILL_ID = "skill_anchor_probe";
 
-// 전투 애니메이션 앵커 회귀 가드용 탐침 애니메이션/스킬 id.
-// 기존 픽스처의 anim_magic/skill_fire 를 건드리지 않고 별도 레코드를 심어,
-// 셀 좌표 (0, 0) 이 곧 '대상 앵커 중심' 인 최소 애니메이션으로 앵커 위치만 검증한다.
-const ANCHOR_ANIMATION_ID = "anim_anchor_probe";
-const ANCHOR_SKILL_ID = "skill_anchor_probe";
-
 const referenceActors = [
   // 고해상도 단일 초상(generated-face-actor1-bust, 1254×1254)을 얼굴로 쓰지 않는 이유.
   // 이 PNG 는 **이미 키잉돼 있다** — 직접 디코드한 결과 마젠타(#FF00FF) 픽셀 557,995개가 전부

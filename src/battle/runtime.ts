@@ -421,13 +421,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function resolvedCommandTargets(user: MutableBattler, command: TargetedActorCommand & { readonly targetEnemyId?: string; readonly targetActorId?: string }) {
-    return resolveBattleTargets({
+    const resolution = resolveBattleTargets({
       scope: commandScope(user, command),
       user,
       actors: activeActors(),
       enemies: visibleEnemies(),
       requestedTargetId: requestedTargetId(command),
     });
+    // 직접 실행 경로(테스트/헤드리스)에서 ally 계열 대상이 명시되지 않으면
+    // 가장 아픈 생존 동료를 자동 선택한다(전투 UI 의 beginTargetSelection 은 그대로).
+    if (resolution.targets.length === 0 && (resolution.scope === "ally" || resolution.scope === "allAllies" || resolution.scope === "self")) {
+      const ally = resolution.candidates
+        .filter((entry) => entry.hp > 0)
+        .sort((a, b) => (a.hp / Math.max(1, a.maxHp)) - (b.hp / Math.max(1, b.maxHp)))[0];
+      if (ally) return { ...resolution, targets: [ally] };
+    }
+    return resolution;
   }
 
   function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
@@ -474,9 +483,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!item) return;
         const targets = resolvedCommandTargets(actor, command).targets;
         for (const target of targets) applyItem(command.itemId, target, actor);
-        if (item.consumable !== false) {
-          battleEventState.inventory[command.itemId] = Math.max(0, (battleEventState.inventory[command.itemId] ?? 0) - 1);
-        }
+        // 소모는 applyItem 의 finite-use 전환 권한(transitionItemState)이 소유한다 —
+        // 여기서 한 번 더 감소시키면 유한 아이템 커서/인벤토리가 이중 소모된다.
         break;
       }
       case "capture":

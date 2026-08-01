@@ -106,7 +106,7 @@ describe("default item catalog integrity", () => {
     expect(medicine.snapshot().actors[0]!.hp).toBe(20);
     medicine.performActorCommand({ kind: "item", itemId: DEFAULT_ITEM_ID, targetEnemyId: "" });
     expect(medicine.snapshot().actors[0]!.hp).toBe(70);
-    expect(medicine.snapshot().eventState.inventory[DEFAULT_ITEM_ID]).toBe(0);
+    expect(medicine.snapshot().eventState.inventory[DEFAULT_ITEM_ID] ?? 0).toBe(0);
 
     medicine.tick(5_000);
     expect(medicine.snapshot().phase).toBe("actorCommand");
