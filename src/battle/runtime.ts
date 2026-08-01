@@ -40,6 +40,8 @@ import type {
   BattleSessionState,
   BattleSnapshot,
   BattleTargetSelectionSnapshot,
+  EquipmentUseResult,
+  EquipmentUseTarget,
   TargetedActorCommand,
 } from "@/battle/types";
 import { resolveBattleBackdrop } from "@/battle/battleBackdrop";
@@ -49,6 +51,7 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
+import { effectiveActorEquipment } from "@/player/playerEquipmentRules";
 
 export type {
   ActorCommand,
@@ -62,6 +65,8 @@ export type {
   BattleSnapshot,
   BattleTargetSelectionSnapshot,
   TargetedActorCommand,
+  EquipmentUseResult,
+  EquipmentUseTarget,
 } from "@/battle/types";
 
 const FALLBACK_SKILL_POWER = 12;
@@ -98,6 +103,17 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const rng: Rng = options.rng ?? mulberry32(0);
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
 
+  const actorEquipment = new Map(
+    options.project.database.actors.map((actor) => [
+      actor.id,
+      effectiveActorEquipment(
+        options.project,
+        actor,
+        options.party?.equipment?.[actor.id],
+        options.party?.classOverrides?.[actor.id] ?? actor.classId
+      ),
+    ])
+  );
   // 아군측 소스: battleParty==="monsters" 또는 레거시 monsterBattleParty, 그리고 파티 몬스터가 있으면 몬스터가 필드에 나선다.
   // 그 외에는 기존대로 파티 액터가 직접 싸운다.
   const usePartyMonsters =
@@ -110,7 +126,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         levels: options.party?.levels,
         vitals: options.party?.vitals,
         paramBonuses: options.party?.paramBonuses,
-        equipment: options.party?.equipment,
+        equipment: Object.fromEntries(actorEquipment),
         skillIds: options.party?.skillIds,
         classOverrides: options.party?.classOverrides,
         stateIds: options.party?.stateIds,
@@ -392,9 +408,77 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       rng,
     });
     if (result.hit && result.amount > 0) recoverStatesWhenHit(options.project, target, rng);
+    if (result.hit) applyNormalAttackEquipmentStates(actor, target);
     recordAction({ userRecordId: actor.recordId, targetId: target.id, hit: result.hit, amount: result.amount, critical: result.critical });
   }
 
+  function applyNormalAttackEquipmentStates(actor: MutableBattler, target: MutableBattler): void {
+    const equipment = actorEquipment.get(actor.recordId as ActorId);
+    if (!equipment) return;
+    const chances = new Map<string, number>();
+    for (const equipmentId of new Set(Object.values(equipment).filter((id): id is string => Boolean(id)))) {
+      const record = options.project.database.equipment.find((entry) => entry.id === equipmentId);
+      if (!record) continue;
+      const chance = Math.max(0, Math.min(100, record.stateInflictionChance));
+      for (const stateId of new Set(record.stateInflictIds)) {
+        chances.set(stateId, Math.max(chances.get(stateId) ?? 0, chance));
+      }
+    }
+    for (const [stateId, chance] of chances) {
+      applyStateEffects(options.project, target, [{ stateId, chance, operation: "add" }], rng);
+    }
+  }
+
+  function executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult {
+    if (phase !== "actorCommand" || activeActorId !== actorId || result) return { kind: "rejected", reason: "notActorTurn" };
+    const actor = actors.find((entry) => entry.recordId === actorId);
+    if (!actor) return { kind: "rejected", reason: "missingActor" };
+    const equipped = actorEquipment.get(actorId);
+    if (!equipped || !Object.values(equipped).includes(equipmentId)) return { kind: "rejected", reason: "sourceNotEquipped" };
+    const source = options.project.database.equipment.find((record) => record.id === equipmentId);
+    if (!source?.usableAsItemSkillId) return { kind: "rejected", reason: "sourceHasNoSkill" };
+    const skill = lookupSkill(source.usableAsItemSkillId);
+    if (!skill) return { kind: "rejected", reason: "missingSkill" };
+    if (actor.mp < skillMpCost(actor, skill.id)) return { kind: "rejected", reason: "insufficientMp" };
+
+    let targets: readonly MutableBattler[];
+    switch (skill.scope) {
+      case "self":
+        if (target.kind !== "none" && (target.kind !== "actor" || target.actorId !== actorId)) return { kind: "rejected", reason: "invalidTarget" };
+        targets = [actor];
+        break;
+      case "ally": {
+        if (target.kind !== "actor") return { kind: "rejected", reason: "invalidTarget" };
+        const ally = activeActors().find((entry) => entry.recordId === target.actorId && entry.hp > 0);
+        if (!ally) return { kind: "rejected", reason: "invalidTarget" };
+        targets = [ally];
+        break;
+      }
+      case "enemy": {
+        if (target.kind !== "enemy") return { kind: "rejected", reason: "invalidTarget" };
+        const enemy = visibleEnemies().find((entry) => entry.id === target.enemyId && entry.hp > 0);
+        if (!enemy) return { kind: "rejected", reason: "invalidTarget" };
+        targets = [enemy];
+        break;
+      }
+      case "allEnemies":
+        if (target.kind !== "none") return { kind: "rejected", reason: "invalidTarget" };
+        targets = visibleEnemies().filter((entry) => entry.hp > 0);
+        if (targets.length === 0) return { kind: "rejected", reason: "invalidTarget" };
+        break;
+    }
+
+    consumeSkillMp(actor, skill.id);
+    currentActorCommandKind = "skill";
+    for (const skillTarget of targets) applySkill(actor, skillTarget, skill.id);
+    applyTroopEvents();
+    resolveOutcome();
+    actor.gauge = 0;
+    activeActorId = undefined;
+    currentActorCommandKind = undefined;
+    phase = result ? "resolved" : "charging";
+    return { kind: "used", skillId: skill.id };
+  }
   function attemptEscape(): void {
     if (!options.canEscape) return;
     // RM2K3 도주: 민첩성 기반 확률(파티 평균 vs 적 평균). 단순화해 절반 확률 + 우위 보정.
@@ -1302,7 +1386,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   if (battleFlow === "strict") startStrictRound();
 
-  return { tick, beginActorCommand, selectTargetEnemy, setSelectedTargetEnemy, cancelTargetSelection, performActorCommand, snapshot };
+  return { tick, beginActorCommand, selectTargetEnemy, setSelectedTargetEnemy, cancelTargetSelection, performActorCommand, executeEquipmentUse, snapshot };
 }
 
 // 대상 선택 초안(TargetedActorCommand)과 선택된 적 id 를 확정된 명령(ActorCommand)으로 조립.

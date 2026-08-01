@@ -23,6 +23,24 @@ export type { BattleFlow } from "@/project/types";
 export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
 export type BattleResult = "victory" | "defeat" | "escape";
 
+export type EquipmentUseTarget =
+  | { readonly kind: "enemy"; readonly enemyId: string }
+  | { readonly kind: "actor"; readonly actorId: ActorId }
+  | { readonly kind: "none" };
+
+export type EquipmentUseFailureReason =
+  | "notActorTurn"
+  | "missingActor"
+  | "sourceNotEquipped"
+  | "sourceHasNoSkill"
+  | "missingSkill"
+  | "insufficientMp"
+  | "invalidTarget";
+
+export type EquipmentUseResult =
+  | { readonly kind: "used"; readonly skillId: SkillId }
+  | { readonly kind: "rejected"; readonly reason: EquipmentUseFailureReason };
+
 export type TargetedActorCommand =
   | { readonly kind: "attack" }
   | { readonly kind: "skill"; readonly skillId: SkillId }
@@ -305,5 +323,6 @@ export interface BattleRuntime {
   setSelectedTargetEnemy(enemyId: string): void;
   cancelTargetSelection(): void;
   performActorCommand(command: ActorCommand): void;
+  executeEquipmentUse(actorId: ActorId, equipmentId: string, target: EquipmentUseTarget): EquipmentUseResult;
   snapshot(): BattleSnapshot;
 }

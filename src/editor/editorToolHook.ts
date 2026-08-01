@@ -25,10 +25,65 @@ import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { runRegionTask, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import type { ToolResult } from "@/editor/tools";
-import { store } from "@/project/store";
-import type { GameEvent, MapId } from "@/project/types";
+import {
+  store,
+  type ProjectE2ESnapshot,
+  type ProjectFlushResult,
+  type ReloadFromRemoteResult,
+} from "@/project/store";
+import { serialize } from "@/project/io";
+import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
+import type { GameEvent, MapId, Project } from "@/project/types";
+import { sha256HexText } from "@/util/sha256";
 
 type RegionWrite = { readonly layer: "lower" | "upper"; readonly x: number; readonly y: number; readonly tile: number };
+
+export type ProjectE2EDeniedResult = {
+  readonly kind: "denied";
+  readonly reason: "capability-required" | "target-mismatch" | "project-id-mismatch" | "payload-mismatch";
+};
+
+export type ProjectE2ERemoteProof = {
+  readonly capability: string;
+  readonly expectedCanonicalPayload: string;
+  readonly expectedProjectId: string;
+  readonly expectedTargetUrl: string;
+};
+
+export type ProjectE2EAuthorizedResult<T> = {
+  readonly evidence: ProjectE2ESnapshot;
+  readonly kind: "authorized";
+  readonly result: T;
+};
+
+export type ProjectE2EInitializeStoreResult = { readonly projectId: string | null };
+export type ProjectE2EReloadStoreResult = ReloadFromRemoteResult;
+
+export type ProjectE2EInitializeResult = ProjectE2EDeniedResult | ProjectE2EAuthorizedResult<ProjectE2EInitializeStoreResult>;
+export type ProjectE2EReloadResult = ProjectE2EDeniedResult | ProjectE2EAuthorizedResult<ProjectE2EReloadStoreResult>;
+
+export type ProjectE2EBridge = Readonly<{
+  flush: () => Promise<ProjectFlushResult>;
+  currentProject: () => ProjectE2ESnapshot;
+  initializeRemoteFixture: (
+    input: { readonly blankProject: Project; readonly projectId: string; readonly title: string },
+    proof: ProjectE2ERemoteProof,
+  ) => Promise<ProjectE2EInitializeResult>;
+  reloadRemote: (proof: ProjectE2ERemoteProof) => Promise<ProjectE2EReloadResult>;
+}>;
+
+type ProjectE2EBootstrap = {
+  readonly capability: string;
+  readonly credentialDigest: string;
+  readonly projectId: string;
+  readonly targetUrl: string;
+};
+
+// The dev server injects this Symbol-keyed, one-run envelope before app startup.
+// It is consumed and deleted on install; capability and credential proof stay closure-private.
+const PROJECT_E2E_BOOTSTRAP = Symbol.for("rpg-zzu.project-e2e.bootstrap");
+const MIN_PROJECT_E2E_CAPABILITY_LENGTH = 32;
+let projectE2EBootstrap: ProjectE2EBootstrap | null = null;
 
 // 헤드리스 영역 작업 검증용. Phaser 캔버스 입력/LLM 없이 실제 store에 clip/적용을 재현한다.
 type RegionTaskHarness = {
@@ -58,6 +113,8 @@ type EditorToolHookWindow = Window & {
   __rpgzzuHouseKit?: (mapId: MapId, plan: RectHousePlan) => RectHouseStampResult;
   // 임의 평면(ㄱ/ㄴ/ㄷ/ㅁ/O …) — 날개 사각형 합집합을 하네싱 국소 규칙으로 전개.
   __rpgzzuFootprintHouse?: (mapId: MapId, plan: FootprintHousePlan) => RectHouseStampResult;
+  __rpgzzuProjectE2E?: ProjectE2EBridge;
+  [PROJECT_E2E_BOOTSTRAP]?: unknown;
 };
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
@@ -88,6 +145,7 @@ function recordToolSnapshot(name: string, args: Record<string, unknown>): void {
 export function installEditorToolHook(): void {
   if (typeof window === "undefined") return;
   const w = window as EditorToolHookWindow;
+  installProjectE2EBridge(w);
   w.__rpgzzuEditorTool = (name, args) => {
     const ctx = { project: store.getCurrent() };
     const result = runTool(ctx, name, args, { dryRun: false });
@@ -168,6 +226,152 @@ export function installEditorToolHook(): void {
       });
     },
   };
+}
+
+export function cleanupProjectE2EBridge(): void {
+  projectE2EBootstrap = null;
+  if (typeof window === "undefined") return;
+  const w = window as EditorToolHookWindow;
+  delete w.__rpgzzuProjectE2E;
+  delete w[PROJECT_E2E_BOOTSTRAP];
+}
+
+function installProjectE2EBridge(w: EditorToolHookWindow): void {
+  if (!import.meta.env.DEV || typeof navigator === "undefined" || navigator.webdriver !== true) {
+    cleanupProjectE2EBridge();
+    return;
+  }
+  if (w.__rpgzzuProjectE2E) return;
+
+  projectE2EBootstrap = consumeProjectE2EBootstrap(w);
+  const methods = {
+    flush: () => store.flush(),
+    currentProject: () => store.getE2ESnapshot(),
+    initializeRemoteFixture: async (input, proof) => {
+      const bootstrap = await authorizeRemoteProjectCall(proof, input.blankProject, input.projectId);
+      if ("kind" in bootstrap) return bootstrap;
+      const result = await store.loadNewRemoteProjectForE2E(input.blankProject, {
+        expectedAnonKeyDigest: bootstrap.credentialDigest,
+        expectedCurrentProjectId: proof.expectedProjectId,
+        expectedProjectId: input.projectId,
+        expectedTargetUrl: normalizeTargetUrl(proof.expectedTargetUrl),
+        title: input.title,
+      });
+      if ("kind" in result && result.kind === "target-mismatch") return frozenDenial("target-mismatch");
+      return frozenAuthorizedResult(result);
+    },
+    reloadRemote: async (proof) => {
+      const bootstrap = await authorizeRemoteProjectCall(proof);
+      if ("kind" in bootstrap) return bootstrap;
+      const result = await store.reloadFromRemoteForE2E({
+        expectedAnonKeyDigest: bootstrap.credentialDigest,
+        expectedProjectId: proof.expectedProjectId,
+        expectedTargetUrl: normalizeTargetUrl(proof.expectedTargetUrl),
+      });
+      if (result.kind === "target-mismatch") return frozenDenial("target-mismatch");
+      return frozenAuthorizedResult(result);
+    },
+  } satisfies ProjectE2EBridge;
+  w.__rpgzzuProjectE2E = Object.freeze(methods);
+}
+
+function consumeProjectE2EBootstrap(w: EditorToolHookWindow): ProjectE2EBootstrap | null {
+  const candidate = w[PROJECT_E2E_BOOTSTRAP];
+  delete w[PROJECT_E2E_BOOTSTRAP];
+  if (!isRecord(candidate)) return null;
+  if (
+    typeof candidate.capability !== "string"
+    || candidate.capability.length < MIN_PROJECT_E2E_CAPABILITY_LENGTH
+    || typeof candidate.credentialDigest !== "string"
+    || !/^[a-f0-9]{64}$/.test(candidate.credentialDigest)
+    || typeof candidate.projectId !== "string"
+    || candidate.projectId.length === 0
+    || typeof candidate.targetUrl !== "string"
+    || candidate.targetUrl.length === 0
+  ) {
+    return null;
+  }
+  return Object.freeze({
+    capability: candidate.capability,
+    credentialDigest: candidate.credentialDigest,
+    projectId: candidate.projectId,
+    targetUrl: normalizeTargetUrl(candidate.targetUrl),
+  });
+}
+
+async function authorizeRemoteProjectCall(
+  proof: ProjectE2ERemoteProof,
+  expectedProject?: Project,
+  requestedProjectId?: string,
+): Promise<ProjectE2EDeniedResult | ProjectE2EBootstrap> {
+  const bootstrap = projectE2EBootstrap;
+  if (!bootstrap || !constantTimeEqual(proof.capability, bootstrap.capability)) {
+    return frozenDenial("capability-required");
+  }
+  if (requestedProjectId !== undefined && requestedProjectId !== bootstrap.projectId) {
+    return frozenDenial("project-id-mismatch");
+  }
+  const snapshot = store.getE2ESnapshot();
+  const expectedUrl = normalizeTargetUrl(proof.expectedTargetUrl);
+  const effectiveConfig = supabaseProjectConfigDraft();
+  const effectiveCredentialDigest = await sha256HexText(effectiveConfig.anonKey.trim());
+  if (
+    expectedUrl !== bootstrap.targetUrl
+    || snapshot.effectiveTarget.url !== bootstrap.targetUrl
+    || !constantTimeEqual(effectiveCredentialDigest, bootstrap.credentialDigest)
+  ) {
+    return frozenDenial("target-mismatch");
+  }
+  if (
+    proof.expectedProjectId !== bootstrap.projectId
+    || snapshot.effectiveTarget.projectId !== bootstrap.projectId
+  ) {
+    return frozenDenial("project-id-mismatch");
+  }
+  const canonicalPayload = expectedProject ? serialize(expectedProject) : snapshot.canonicalPayload;
+  const [actualDigest, expectedDigest] = await Promise.all([
+    sha256HexText(canonicalPayload),
+    sha256HexText(proof.expectedCanonicalPayload),
+  ]);
+  if (!constantTimeEqual(actualDigest, expectedDigest)) return frozenDenial("payload-mismatch");
+  return bootstrap;
+}
+
+function frozenAuthorizedResult<T>(result: T): ProjectE2EAuthorizedResult<T> {
+  return deepFreeze({ kind: "authorized", result, evidence: store.getE2ESnapshot() });
+}
+
+function frozenDenial(reason: ProjectE2EDeniedResult["reason"]): ProjectE2EDeniedResult {
+  return Object.freeze({ kind: "denied", reason });
+}
+
+function normalizeTargetUrl(value: string): string {
+  try {
+    return new URL(value).origin;
+  } catch {
+    return "";
+  }
+}
+
+function constantTimeEqual(left: string, right: string): boolean {
+  const length = Math.max(left.length, right.length);
+  let difference = left.length ^ right.length;
+  for (let index = 0; index < length; index += 1) {
+    difference |= (left.charCodeAt(index) || 0) ^ (right.charCodeAt(index) || 0);
+  }
+  return difference === 0;
+}
+
+function deepFreeze<T>(value: T): T {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) deepFreeze(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /** runMock/openModal 공용 — 주어진 writes 를 proposed 로 산출하는 결정적 세션.
