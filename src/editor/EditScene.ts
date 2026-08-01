@@ -937,7 +937,7 @@ export class EditScene extends PhaserRuntime.Scene {
       y >= 0 &&
       x < map.width &&
       y < map.height &&
-      !committedEvents(map.events).some((event) => event.x === x && event.y === y),
+      !editorWorkingEvents(map.events).some((event) => event.x === x && event.y === y),
     );
     if (!validEmptyEventTile) editorState.set({ pendingEventCoordinate: null });
   }
@@ -952,7 +952,7 @@ export class EditScene extends PhaserRuntime.Scene {
       pending.y >= 0 &&
       pending.x < map.width &&
       pending.y < map.height &&
-      !committedEvents(map.events).some((event) => event.x === pending.x && event.y === pending.y),
+      !editorWorkingEvents(map.events).some((event) => event.x === pending.x && event.y === pending.y),
     );
     if (!valid) editorState.set({ pendingEventCoordinate: null });
   }

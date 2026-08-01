@@ -553,7 +553,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     if (!source?.usableAsItemSkillId) return { kind: "rejected", reason: "sourceHasNoSkill" };
     const skill = lookupSkill(source.usableAsItemSkillId);
     if (!skill) return { kind: "rejected", reason: "missingSkill" };
-    if (actor.mp < skillMpCost(actor, skill.id)) return { kind: "rejected", reason: "insufficientMp" };
+    if (actor.mp < battleSkillMpCost(skill, actor.maxMp)) return { kind: "rejected", reason: "insufficientMp" };
 
     let targets: readonly MutableBattler[];
     switch (skill.scope) {
@@ -580,6 +580,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         targets = visibleEnemies().filter((entry) => entry.hp > 0);
         if (targets.length === 0) return { kind: "rejected", reason: "invalidTarget" };
         break;
+      case "allAllies":
+        if (target.kind !== "none" && (target.kind !== "actor" || target.actorId !== actorId)) return { kind: "rejected", reason: "invalidTarget" };
+        targets = activeActors().filter((entry) => entry.hp > 0);
+        if (targets.length === 0) return { kind: "rejected", reason: "invalidTarget" };
+        break;
+      default:
+        return { kind: "rejected", reason: "invalidTarget" };
     }
 
     consumeSkillMp(actor, skill.id);
