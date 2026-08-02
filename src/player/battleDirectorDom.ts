@@ -259,6 +259,15 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     value.className = "battle-result-reward-value";
     value.textContent = row.value;
     item.append(label, icon, value);
+    if (row.kind === "exp") {
+      const bar = document.createElement("div");
+      bar.className = "battle-result-exp-bar";
+      bar.dataset.testid = "battle-result-exp-bar";
+      const fill = document.createElement("div");
+      fill.className = "battle-result-exp-fill";
+      bar.append(fill);
+      item.append(bar);
+    }
     cards.append(item);
   }
 

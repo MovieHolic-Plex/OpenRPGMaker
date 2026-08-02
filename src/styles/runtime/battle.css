@@ -875,7 +875,10 @@
 }
 @keyframes battle-juice-hit {
   0% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
-  40% { filter: brightness(1.8); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(8px); }
+  15% { filter: brightness(1.8); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(7px); }
+  35% { filter: brightness(1.5); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-6px); }
+  55% { filter: brightness(1.3); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(4px); }
+  75% { filter: brightness(1.1); transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-2px); }
   100% { filter: brightness(1); transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 @keyframes battle-juice-critical {
@@ -3264,6 +3267,26 @@
 @keyframes battle-reward-reveal {
   0% { transform: translateY(16px); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 경험치 보상 행의 게이지 바 — 포켓몬 결과 화면의 EXP 채움 연출 */
+.battle-result-exp-bar {
+  background: #3f423c;
+  border: 2px solid #26281f;
+  border-radius: 8px;
+  grid-column: 1 / -1;
+  height: 12px;
+  overflow: hidden;
+}
+.battle-result-exp-fill {
+  animation: battle-exp-fill 0.9s ease-out 0.35s backwards;
+  background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%);
+  height: 100%;
+  width: 100%;
+}
+@keyframes battle-exp-fill {
+  0% { width: 0; }
+  100% { width: 100%; }
 }
 .battle-result-panel[data-battle-result="defeat"] .battle-result-title {
   color: #ff4444;
