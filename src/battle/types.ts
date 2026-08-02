@@ -238,6 +238,9 @@ export interface BattleTimelineEntrySnapshot {
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect";
   readonly success?: boolean;
+  /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
+   *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */
+  readonly animation?: BattleAnimationSnapshot;
 }
 
 export interface BattleCapturedMonsterSnapshot {

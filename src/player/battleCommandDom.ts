@@ -7,6 +7,7 @@ import type {
 } from "@/battle/runtime";
 import { commandPromptState, type BattleDirectorState } from "@/player/battleDirectorDom";
 import { hpBarState } from "@/player/battleFieldDom";
+import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
@@ -41,14 +42,12 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
 
   if (snapshot.phase === "targetSelect") {
     panel.setAttribute("aria-label", terms.target);
-    if (snapshot.targetSelection?.side === "actor") {
-      panel.dataset.targetPresentation = "menu";
-      panel.append(targetPrompt(snapshot, terms));
-      panel.append(targetSelectionMenu(snapshot, options, terms));
-      panel.append(keyPrompts());
-    } else {
-      panel.dataset.targetPresentation = "field";
-    }
+    // 적 대상 선택도 하단 패널에 대상 메뉴를 유지한다. 예전에는 패널을 통째로 비워
+    // ("field" 표시) 하단 밴드가 빈 화면이 됐고, 어느 적이 선택됐는지 읽을 곳이 없었다.
+    panel.dataset.targetPresentation = "menu";
+    panel.append(targetPrompt(snapshot, terms));
+    panel.append(targetSelectionMenu(snapshot, options, terms));
+    panel.append(keyPrompts());
     return panel;
   }
   if (snapshot.phase !== "actorCommand") return panel;
@@ -207,7 +206,11 @@ function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
   return list;
 }
 
-export function syncEnemyListPanel(panel: HTMLElement, enemies: readonly BattleBattlerSnapshot[]): void {
+export function syncEnemyListPanel(
+  panel: HTMLElement,
+  enemies: readonly BattleBattlerSnapshot[],
+  ledger?: BattlePresentationLedger,
+): void {
   const list = panel.querySelector<HTMLElement>(".battle-enemy-list");
   if (!list) return;
   for (const enemy of enemies) {
@@ -217,15 +220,18 @@ export function syncEnemyListPanel(panel: HTMLElement, enemies: readonly BattleB
       row = list.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${enemy.id}"]`);
     }
     if (!row) continue;
+    const vitals = ledger?.vitalsFor(enemy.id);
+    const shownHp = vitals ? vitals.hp : enemy.hp;
+    const shownDefeated = vitals ? vitals.defeated : enemy.defeated;
     const hp = row.querySelector<HTMLElement>(".battle-enemy-list-hp");
-    if (hp) hp.textContent = `HP ${enemy.hp}/${enemy.maxHp}`;
+    if (hp) hp.textContent = `HP ${shownHp}/${enemy.maxHp}`;
     const bar = row.querySelector<HTMLElement>(".battle-enemy-list-bar");
     if (bar) {
-      const pct = Math.max(0, Math.min(100, Math.round(enemy.hp / Math.max(1, enemy.maxHp) * 100)));
+      const pct = Math.max(0, Math.min(100, Math.round(shownHp / Math.max(1, enemy.maxHp) * 100)));
       bar.style.setProperty("--battle-stat", `${pct}%`);
       bar.dataset.hpState = hpBarState(pct);
     }
-    row.classList.toggle("defeated", enemy.defeated);
+    row.classList.toggle("defeated", shownDefeated);
   }
 }
 
@@ -318,7 +324,13 @@ function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string;
 function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions, terms: ResolvedTerms): HTMLElement[] {
   const header = document.createElement("div");
   header.className = "battle-submenu-header";
-  header.textContent = options.submenu?.kind === "skill" ? options.submenu.command.name : terms.skill;
+  // 메인 커맨드 버튼과 같은 용어 해석을 쓴다 — 버튼은 "스킬"인데 헤더만 "기술"로
+  // 갈리던 명칭 불일치(적대 리뷰 §기타)의 수정 지점. 커스텀 서브셋 커맨드만 고유 이름 유지.
+  const submenuCommand = options.submenu?.kind === "skill" ? options.submenu.command : undefined;
+  const normalizedName = submenuCommand?.name.trim().toLowerCase();
+  const isGenericSkillCommand = submenuCommand
+    && (submenuCommand.id === "cmd_skill" || normalizedName === "skill" || normalizedName === "스킬" || normalizedName === "기술");
+  header.textContent = submenuCommand && !isGenericSkillCommand ? submenuCommand.name : terms.skill;
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();

@@ -97,14 +97,25 @@ export function applyBattleSystemGraphic(node: HTMLElement, project?: Project): 
   }
   const windowSkinId = resolveWindowSkinResourceId(source.system.systemResourceId);
   node.dataset.systemResource = windowSkinId;
-  applyWindowSkinResource(node, windowSkinId, source);
+  // 전투 루트에는 CSS 변수만 심는다 — 패널들이 var(--runtime-window-skin) 으로 소비한다.
+  // 루트 자체에 border-image(slice "24 fill")를 걸면 fill 이 windowskin 의 중앙 타일을
+  // **씬 전체**(자식 아래, 배경 위)에 칠해서, 커맨드 패널이 비는 순간(타깃 선택 등)
+  // 파란 윈도스킨 타일이 화면을 채우던 결함(적대 리뷰 §1)의 원인이었다.
+  applyWindowSkinVariable(node, windowSkinId, source);
+  node.style.removeProperty("border-image-source");
+  node.style.removeProperty("border-image-slice");
 }
 
-function applyWindowSkinResource(node: HTMLElement, resourceId: string | undefined, project?: Project): void {
+function applyWindowSkinVariable(node: HTMLElement, resourceId: string | undefined, project?: Project): string {
   const skinId = resolveWindowSkinResourceId(resourceId);
   const dataUrl = resourceUrl(skinId, project) ?? "/assets/ui/windowskin-rm2003.png";
   const cssUrl = `url("${dataUrl}")`;
   node.style.setProperty("--runtime-window-skin", cssUrl);
+  return cssUrl;
+}
+
+function applyWindowSkinResource(node: HTMLElement, resourceId: string | undefined, project?: Project): void {
+  const cssUrl = applyWindowSkinVariable(node, resourceId, project);
   node.style.borderImageSource = cssUrl;
   node.style.borderImageSlice = "24 fill";
 }

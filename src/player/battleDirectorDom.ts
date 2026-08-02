@@ -2,6 +2,8 @@ import type { ActorCommand, BattleBattlerSnapshot, BattleSnapshot } from "@/batt
 import type { BattleActionResultSnapshot } from "@/battle/types";
 import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
+import { expForRewardActor } from "@/battle/rewardPolicy";
+import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 
@@ -92,8 +94,23 @@ export function actorCommandDirectorState(
   const actor = activeActor(before);
   const target = commandTarget(command, before, after);
   const impact = battlerHpDelta(target?.id, before, after);
-  // 런타임이 기록한 직전 행동 결과(hit/miss/critical)로 빗맞음/크리 표시.
-  const result = after.lastActionResult;
+  // 이 명령의 결과는 타임라인 델타에서 찾는다. after.lastActionResult 는 strict 플로우에서
+  // 라운드의 "마지막" 액션(대개 적의 반격)이라, 그걸 쓰면 아군 공격 메시지의 숫자가
+  // 팝업(타임라인 amount)과 어긋난다(실측: 팝업 -28 / 메시지 20 피해).
+  const commandEntry = after.timeline.slice(before.timeline.length).find((entry) =>
+    entry.userRecordId === actor?.recordId
+    && entry.targetId === target?.id
+    && (entry.kind === "damage" || entry.kind === "miss" || entry.kind === "healing" || entry.kind === "action"));
+  const result = commandEntry
+    ? {
+      userRecordId: commandEntry.userRecordId ?? actor?.recordId ?? "",
+      targetId: commandEntry.targetId ?? target?.id ?? "",
+      hit: commandEntry.kind !== "miss" && commandEntry.hit !== false,
+      amount: commandEntry.amount ?? 0,
+      critical: Boolean(commandEntry.critical),
+      skillName: commandEntry.skillName,
+    }
+    : after.lastActionResult;
   const lines = [
     commandLine(command, actor),
     impactLine(command, target, impact, result, after),
@@ -119,8 +136,13 @@ function impactLine(
   if (command.kind === "switch") return "전열을 교체했다.";
   if (command.kind === "capture") return captureImpactLine(after.lastCaptureResult, target);
   if (result && !result.hit) return "공격이 빗나갔다!";
-  if (result && result.critical && impact > 0) return `급소에 맞았다! ${target?.name ?? "적"}에게 ${impact} 피해!`;
-  if (impact > 0) return `${target?.name ?? "적"}에게 ${impact} 피해!`;
+  // 메시지 숫자는 HP 차분이 아니라 실제 롤(lastActionResult.amount)을 쓴다 —
+  // 팝업(entry.amount)과 같은 소스라 항상 일치하고, 잔여 HP 클램프에 가려지지 않는다.
+  const rolled = result && result.hit && result.targetId === target?.id && result.amount > 0
+    ? result.amount
+    : impact;
+  if (result && result.critical && rolled > 0) return `급소에 맞았다! ${target?.name ?? "적"}에게 ${rolled} 피해!`;
+  if (rolled > 0) return `${target?.name ?? "적"}에게 ${rolled} 피해!`;
   if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;
   // 서포트이거나 데미지 0
   return "효과가 충분하지 않았다.";
@@ -267,6 +289,23 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
       fill.className = "battle-result-exp-fill";
       bar.append(fill);
       item.append(bar);
+      // 실제 경험치 진행률로 채운다. 예전에는 항상 0→100% 채우는 장식이라
+      // 14 EXP 를 얻어도 게이지가 꽉 찼다(적대 리뷰 §17).
+      const progress = expGaugeProgress(snapshot);
+      if (progress) {
+        bar.dataset.expLevelUp = progress.levelUp ? "true" : "false";
+        if (!item.hidden && panel.dataset.expAnimated !== "true") {
+          panel.dataset.expAnimated = "true";
+          fill.style.width = `${progress.fromPct}%`;
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            fill.style.width = `${progress.toPct}%`;
+          }));
+        } else {
+          fill.style.width = `${item.hidden ? progress.fromPct : progress.toPct}%`;
+        }
+      } else {
+        fill.style.width = "0%";
+      }
     }
     cards.append(item);
   }
@@ -299,7 +338,9 @@ export function applyBattleDirectorState(
   root.dataset.battleDirectorStep = state.step;
   root.dataset.battlePhase = snapshot.phase;
   root.dataset.battleFlow = snapshot.battleFlow;
-  root.classList.toggle("battle-has-result", Boolean(snapshot.result));
+  // 결과 클래스는 연출(비트)이 전부 끝나고 디렉터가 result 단계에 진입했을 때만 붙인다.
+  // snapshot.result 만 보면 막타 액션이 재생되는 도중에 전투 UI 가 통째로 숨는다(적대 리뷰 §2).
+  root.classList.toggle("battle-has-result", Boolean(snapshot.result) && state.step === "result");
   markByDataset(root, "recordId", state.activeActorRecordId, "battle-acting");
   markByDataset(root, "testid", state.targetId, "battle-targeted");
 }
@@ -365,6 +406,31 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
     case undefined:
       return "아앗, 아깝다! 몬스터가 구슬에서 빠져나왔다!";
   }
+}
+
+/**
+ * 결과 화면 EXP 게이지 — 선두 액터의 실제 경험치 진행률(현재 레벨 구간 내 %).
+ * 획득 경험치는 런타임의 레벨업 미리보기와 동일한 보정(expForRewardActor)을 쓴다.
+ */
+function expGaugeProgress(snapshot: BattleSnapshot): { fromPct: number; toPct: number; levelUp: boolean } | undefined {
+  const lead = snapshot.actors[0];
+  if (!lead || snapshot.result !== "victory") return undefined;
+  const project = store.getCurrent();
+  const record = project.database.actors.find((entry) => entry.id === lead.recordId);
+  if (!record) return undefined;
+  const actor = normalizeActorRecord(record);
+  const level = snapshot.eventState.actorLevels?.[lead.recordId] ?? lead.level ?? 1;
+  const base = totalExpForLevel(actor.expCurve, level);
+  const next = totalExpForLevel(actor.expCurve, level + 1);
+  if (!(next > base)) return undefined;
+  const current = snapshot.eventState.actorExperience?.[lead.recordId] ?? base;
+  const gained = expForRewardActor(snapshot.rewards.exp, level, snapshot.rewards.enemyLevel, project.system.rewardPolicy);
+  const clampPct = (value: number): number => Math.max(0, Math.min(100, value * 100));
+  const fromPct = clampPct((current - base) / (next - base));
+  const after = current + gained;
+  const levelUp = after >= next;
+  const toPct = levelUp ? 100 : clampPct((after - base) / (next - base));
+  return { fromPct, toPct, levelUp };
 }
 
 function battlerHpDelta(targetId: string | undefined, before: BattleSnapshot, after: BattleSnapshot): number {

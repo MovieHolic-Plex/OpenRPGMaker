@@ -338,11 +338,10 @@
   background: rgba(0, 0, 0, 0.18);
 }
 
+/* 결과 화면에서도 전장(배틀러 그룹)과 아군 상태(파티 패널)는 남는다 — 포켓몬처럼
+   승리의 현장 위에 보상이 얹힌다. 명령/적 정보 패널만 정리한다(적대 리뷰 §13). */
 .battle-scene[data-battle-director-step="result"] .battle-command-panel,
-.battle-scene[data-battle-director-step="result"] .battle-enemy-list-panel,
-.battle-scene[data-battle-director-step="result"] .battle-actor-group,
-.battle-scene[data-battle-director-step="result"] .battle-enemy-group,
-.battle-scene[data-battle-director-step="result"] .battle-party {
+.battle-scene[data-battle-director-step="result"] .battle-enemy-list-panel {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
@@ -355,6 +354,52 @@
   pointer-events: none;
   position: absolute;
   z-index: 3;
+}
+
+/* ── 등장 연출(인트로) ──
+   포켓몬처럼 "화면이 걷히고 → 적이 튀어나오고 → 정보 패널이 미끄러져 들어온" 뒤에야
+   커맨드가 열린다. 인트로 동안(시퀀서가 1.2초 점유) 커맨드/컨트롤은 숨긴다. */
+.battle-scene[data-battle-director-step="intro"] .battle-command-host,
+.battle-scene[data-battle-director-step="intro"] .battle-controls-bar {
+  visibility: hidden;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-field {
+  animation: battle-intro-field 550ms ease-out both;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-enemy {
+  animation: battle-intro-enemy 620ms cubic-bezier(0.2, 0.9, 0.3, 1.15) 260ms both;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-actor-group .battle-actor {
+  animation: battle-intro-ally 550ms ease-out 140ms both;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-enemy-list-panel,
+.battle-scene[data-battle-director-step="intro"] .battle-party {
+  animation: battle-intro-panel 420ms ease-out 620ms both;
+}
+
+@keyframes battle-intro-field {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes battle-intro-enemy {
+  from { opacity: 0; transform: translate(-30%, -100%) scale(0.3); }
+  70% { opacity: 1; transform: translate(-52%, -100%) scale(1.06); }
+  to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
+@keyframes battle-intro-ally {
+  from { opacity: 0; transform: translate(-110%, -100%); }
+  to { opacity: 1; transform: translate(-50%, -100%); }
+}
+
+@keyframes battle-intro-panel {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .battle-message-cursor {
@@ -692,7 +737,7 @@
   inset: var(--battle-stage-inset-top) 0 0 0;
   pointer-events: none;
   position: absolute;
-  z-index: 5;
+  z-index: 9;
 }
 
 .battle-damage-popup {
@@ -914,26 +959,22 @@
   display: none !important;
 }
 
-.battle-has-result .battle-message-window,
-.battle-scene[data-battle-phase="resolved"] .battle-message-window {
+/* 결과 화면 정리는 battle-has-result(= 디렉터 step "result" 진입 후에만 부여)로만 건다.
+   예전에는 data-battle-phase="resolved" 로도 걸었는데, 런타임은 막타 즉시 resolved 가
+   되므로 마지막 액션의 연출이 재생되는 동안 메시지 창·패널이 전부 사라졌다(적대 리뷰 §2). */
+.battle-has-result .battle-message-window {
   display: none !important;
 }
 
 .battle-has-result .battle-command-panel,
-.battle-has-result .battle-enemy-list-panel,
-.battle-has-result .battle-party,
-.battle-scene[data-battle-phase="resolved"] .battle-command-panel,
-.battle-scene[data-battle-phase="resolved"] .battle-enemy-list-panel,
-.battle-scene[data-battle-phase="resolved"] .battle-party {
+.battle-has-result .battle-enemy-list-panel {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
 }
 
 .battle-has-result .battle-actor-group,
-.battle-has-result .battle-enemy-group,
-.battle-scene[data-battle-phase="resolved"] .battle-actor-group,
-.battle-scene[data-battle-phase="resolved"] .battle-enemy-group {
+.battle-has-result .battle-enemy-group {
   opacity: 1;
   visibility: visible;
 }
@@ -2596,7 +2637,7 @@
   left: 8px !important;
   right: auto !important;
   bottom: auto !important;
-  width: min(46%, 264px) !important;
+  width: min(38%, 220px) !important;
   z-index: 8 !important;
   background: var(--pkmn-panel-bg);
   border: 4px solid var(--pkmn-panel-border);
@@ -2698,8 +2739,10 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
   grid-template-columns: minmax(0, 1fr) !important;
   grid-template-rows: none !important;
-  grid-auto-rows: minmax(18px, auto) !important;
+  grid-auto-rows: auto !important;
   gap: 2px !important;
+  height: auto !important;
+  max-height: 100% !important;
   overflow-y: auto;
 }
 
@@ -3089,6 +3132,18 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp[data-hp-state="low"]::before {
   background: linear-gradient(180deg, #f78d8d 0%, #df474b 100%) !important;
 }
+/* ── MP 바: 파란색 채움(HP 초록과 구분) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-mp {
+  background: #3f423c !important;
+  border: 2px solid #26281f !important;
+  border-radius: 8px !important;
+  height: 14px !important;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-mp::before {
+  background: linear-gradient(180deg, #6db8f2 0%, #3a7bd5 100%) !important;
+  transition: width 0.3s ease;
+}
 /* 적 정보 박스 HP 바도 동일 트랙/색 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
   background: #3f423c !important;
@@ -3279,14 +3334,15 @@
   overflow: hidden;
 }
 .battle-result-exp-fill {
-  animation: battle-exp-fill 0.9s ease-out 0.35s backwards;
+  /* 폭은 battleDirectorDom 이 실제 경험치 진행률(%)로 세팅하고,
+     transition 이 이전 진행률 → 새 진행률을 채워 올린다. 가짜 0→100% 금지. */
   background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%);
   height: 100%;
-  width: 100%;
+  transition: width 0.9s ease-out 0.25s;
+  width: 0;
 }
-@keyframes battle-exp-fill {
-  0% { width: 0; }
-  100% { width: 100%; }
+.battle-result-exp-bar[data-exp-level-up="true"] .battle-result-exp-fill {
+  background: linear-gradient(180deg, #ffe27a 0%, #f0a72e 100%);
 }
 .battle-result-panel[data-battle-result="defeat"] .battle-result-title {
   color: #ff4444;
@@ -3385,4 +3441,210 @@
     transition-delay: 0ms !important;
     transition-duration: 1ms !important;
   }
+}
+
+/* =========================================================================
+   포켓몬 스킨 레이아웃 재설계 — 적대적 리뷰 2차(2026-08-02) 반영.
+   파일 끝에 두어 위의 개별 규칙들을 캐스케이드로 이긴다.
+   ========================================================================= */
+
+/* 씬 바탕: 루트 windowskin border-image(fill) 제거 후 드러나는 바탕은
+   어두운 프레임 색. 패널이 비는 순간에도 파란 타일/하늘색이 새지 않는다. */
+.battle-scene[data-battle-skin="pokemon"],
+.battle-scene[data-battle-ui-style="pokemon"] {
+  background: #14181f !important;
+  border-image: none !important;
+}
+
+/* 필드는 자기 영역을 항상 칠한다 — 배경 그림이 없어도 구멍이 없게. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-field {
+  background: linear-gradient(180deg, #8ecae6 0%, #a3d9a5 68%, #7fae6b 100%);
+}
+
+/* ── 적 스프라이트: 우상, 흰 원판·네온 필터 제거 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy {
+  background: none !important;
+  transform: translate(-50%, -100%) !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-image {
+  width: 160px !important;
+  height: 160px !important;
+  max-width: none !important;
+  object-fit: contain;
+  border-radius: 0 !important;
+  background: none !important;
+  filter: none !important;
+}
+
+/* ── 아군 뒷모습: 좌하 대형(노드 크기로 제어 — 이중 scale 제거) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
+  transform: translate(-50%, -100%) !important;
+  width: 220px !important;
+  height: 220px !important;
+  overflow: visible;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor-sprite {
+  transform: scaleX(-1) !important;
+  width: 205px !important;
+  height: 215px !important;
+  max-width: none !important;
+  object-fit: contain;
+}
+
+/* ── 적 정보 박스: 좌상 컴팩트(스프라이트·아군을 덮지 않게 폭·행 최소화) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
+  width: min(32%, 205px) !important;
+  padding: 4px 12px 6px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  min-height: 22px !important;
+  padding: 0 !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
+  font-size: 15px !important;
+}
+
+/* ── 커맨드 패널: 상태줄 / 메뉴(스크롤) / 힌트 3단. 행 겹침 제거 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  overflow: hidden !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  grid-template-rows: none !important;
+  grid-auto-rows: minmax(46px, auto) !important;
+  gap: 6px !important;
+  align-content: start;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-rows: minmax(42px, auto) !important;
+  gap: 4px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  min-height: 46px !important;
+  padding: 4px 12px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-submenu-header {
+  font-size: 13px !important;
+  padding: 2px 4px 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-flow-status {
+  flex: 0 0 auto;
+  font-size: 12px !important;
+  color: var(--pkmn-muted) !important;
+  text-shadow: none !important;
+  padding: 0 4px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts {
+  flex: 0 0 auto;
+  font-size: 12px !important;
+  color: var(--pkmn-muted) !important;
+  text-shadow: none !important;
+  text-align: center;
+  border-top: 2px solid #d8d5c6;
+  padding-top: 2px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-prompt {
+  flex: 0 0 auto;
+  font-size: 14px !important;
+  padding: 0 4px 2px;
+}
+
+/* ── 타깃 화살표: 선택된 적 위에서 튀는 빨간 ▼ (기존 display:none 뒤집기) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets {
+  display: block !important;
+  position: absolute;
+  left: 50%;
+  top: -44px;
+  width: 0;
+  height: 0;
+  border: 13px solid transparent;
+  border-top: 20px solid #e43b44;
+  border-bottom: 0;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+  animation: battle-target-arrow 0.45s ease-in-out infinite alternate;
+  z-index: 6;
+}
+@keyframes battle-target-arrow {
+  from { margin-top: 0; }
+  to { margin-top: 7px; }
+}
+
+/* ── 데미지 팝업/이펙트는 정보 패널(z 8)보다 위에 ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-effects-layer {
+  z-index: 9 !important;
+}
+
+/* 연출(비트)이 재생되는 동안 커맨드 패널을 숨긴다 — 이전 액션의 메시지가 아직
+   표시 중인데 다음 라운드 메뉴가 이미 떠 있던 페이싱 결함(적대 리뷰 §11). */
+.battle-scene[data-battle-sequence-busy="true"] .battle-command-host {
+  visibility: hidden;
+}
+
+/* ── 결과 패널: 포켓몬 스킨 재스타일(남색 저대비 → 베이지 고대비, 적대 리뷰 §13/§16) ── */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-panel {
+  background: var(--pkmn-panel-bg);
+  border: 4px solid var(--pkmn-panel-border);
+  border-image: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  color: var(--pkmn-text);
+  min-width: 380px;
+  padding: 12px 22px 14px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-title {
+  color: var(--pkmn-text);
+  text-shadow: none;
+  font-weight: 800;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-panel[data-battle-result="defeat"] .battle-result-title {
+  color: var(--pkmn-accent);
+  text-shadow: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-label {
+  color: var(--pkmn-muted);
+  text-shadow: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-value {
+  color: #a06514;
+  text-shadow: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-rewards {
+  color: var(--pkmn-muted);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm {
+  background: #ffffff;
+  border: 3px solid #b9b7a6;
+  border-radius: 10px;
+  color: var(--pkmn-text);
+  font-family: inherit;
+  font-size: 16px;
+  padding: 4px 26px;
+  margin-top: 8px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm:hover,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-confirm:focus-visible {
+  border-color: var(--pkmn-accent);
+  background: #fff6f0;
+  outline: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-next-prompt {
+  color: var(--pkmn-muted);
+  text-shadow: none;
+  font-size: 12px;
+}
+/* 결과 화면 암전 완화 — 전장이 야간처럼 꺼지던 문제 */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"]::after {
+  background: rgba(0, 0, 0, 0.1);
+}
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-backdrop::before {
+  background: rgba(9, 35, 98, 0.12);
 }

@@ -1,5 +1,6 @@
 import type { ActorCommand, BattleRuntime, BattleSnapshot } from "@/battle/runtime";
-import type { BattleActionResultSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
+import type { BattleActionResultSnapshot, BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
+import { withJosa } from "@/util/josa";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import {
   planActionBeats,
@@ -22,6 +23,8 @@ export const BATTLE_ACTING_MS = 550;
 /** Brief freeze on a damaging connect before impact UI continues. */
 export const BATTLE_HITSTOP_MS = 120;
 export const BATTLE_IMPACT_MS = 750;
+/** "○○을(를) 쓰러뜨렸다!" 격파 대사가 화면에 머무는 시간. */
+export const BATTLE_KILL_LINE_MS = 780;
 export const BATTLE_RESOLVE_MS = 400;
 export const BATTLE_RESULT_STAGE_MS = 450;
 export const BATTLE_RESULT_HOLD_MS = 2_200;
@@ -49,6 +52,8 @@ export interface BattleSequencerHooks {
   readonly onSequenceBusy: (busy: boolean) => void;
   /** Called once for each newly appended runtime timeline entry, in order. */
   readonly onTimelineEntry?: (entry: BattleTimelineEntrySnapshot) => void;
+  /** 엔트리 재생 시작 시 그 엔트리의 전투 애니메이션(없으면 undefined — 레이어 정리). */
+  readonly onEntryAnimation?: (animation: BattleAnimationSnapshot | undefined) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
   readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
 }
@@ -162,7 +167,12 @@ export function createBattleSequencer(
 
   function applyBeat(beat: BattleActionBeat, directorBase?: BattleDirectorState): void {
     if (directorBase) {
-      hooks.onDirectorState({ ...directorBase, step: beat.directorStep });
+      // 비트 단위 메시지: approach(선언 연출) 동안은 첫 줄(선언)만 보여주고,
+      // impact 부터 결과 문구를 드러낸다. 선언·피해가 한 덩어리로 터지지 않게 한다.
+      const lines = beat.kind === "approach" && directorBase.lines.length > 1
+        ? directorBase.lines.slice(0, 1)
+        : directorBase.lines;
+      hooks.onDirectorState({ ...directorBase, step: beat.directorStep, lines });
     }
     hooks.onActionMotion?.(beat);
     // Feedback belongs to exactly one beat. Explicitly clear it on approach/recover
@@ -195,18 +205,44 @@ export function createBattleSequencer(
     else advance();
   }
 
+  /**
+   * 이 엔트리가 대상을 쓰러뜨리는 마지막 유효타면 격파 대사를 돌려준다.
+   * "마지막"인 이유: 다단히트에서 중간 타격마다 대사가 나오지 않게 하기 위함.
+   */
+  function killLineFor(
+    entries: readonly BattleTimelineEntrySnapshot[],
+    index: number,
+    snapshot: BattleSnapshot,
+  ): string | undefined {
+    const entry = entries[index];
+    if (entry.kind !== "damage" || !entry.targetId || (entry.amount ?? 0) <= 0) return undefined;
+    const target = snapshot.enemies.find((enemy) => enemy.id === entry.targetId)
+      ?? snapshot.actors.find((actor) => actor.id === entry.targetId || actor.recordId === entry.targetId);
+    if (!target?.defeated) return undefined;
+    for (let i = index + 1; i < entries.length; i += 1) {
+      const later = entries[i];
+      if (later.targetId === entry.targetId && later.kind === "damage" && (later.amount ?? 0) > 0) return undefined;
+    }
+    const isEnemy = snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
+    return isEnemy
+      ? `${withJosa(target.name, "을/를")} 쓰러뜨렸다!`
+      : `${withJosa(target.name, "이/가")} 쓰러졌다!`;
+  }
+
   function playTimelineEntries(
     entries: readonly BattleTimelineEntrySnapshot[],
     snapshot: BattleSnapshot,
     done: () => void,
     firstDirector?: BattleDirectorState,
+    entryOffset = 0,
   ): void {
-    if (entries.length === 0) {
+    if (entryOffset >= entries.length) {
       done();
       return;
     }
-    const [entry, ...rest] = entries;
+    const entry = entries[entryOffset];
     hooks.onTimelineEntry?.(entry);
+    const continueNext = (): void => playTimelineEntries(entries, snapshot, done, undefined, entryOffset + 1);
     const resultEntry = resultFromTimeline(entry);
     const directorBase = firstDirector
       ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry));
@@ -216,9 +252,10 @@ export function createBattleSequencer(
     if (!visual) {
       hooks.onDirectorState(directorBase);
       hooks.onSyncView();
-      playTimelineEntries(rest, snapshot, done);
+      continueNext();
       return;
     }
+    hooks.onEntryAnimation?.(entry.animation);
     const cinematicMs = entry.kind === "capture" && entry.targetId
       ? hooks.onCaptureCinematic?.(entry.targetId, entry.success === true) ?? 0
       : 0;
@@ -237,7 +274,18 @@ export function createBattleSequencer(
           hitStopMs: BATTLE_HITSTOP_MS,
           impactMs: BATTLE_IMPACT_MS,
         });
-    playBeats(beats, directorBase, () => playTimelineEntries(rest, snapshot, done));
+    // 격파 대사 비트 — 이 타격이 대상을 쓰러뜨리면, recover 후 대사가 잠시 머문다.
+    // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.
+    const killLine = killLineFor(entries, entryOffset, snapshot);
+    const afterBeats = killLine
+      ? (): void => {
+        hooks.onActionMotion?.(undefined);
+        hooks.onDirectorState({ step: "impact", lines: [killLine], targetId: entry.targetId });
+        hooks.onSyncView();
+        delay(continueNext, BATTLE_KILL_LINE_MS);
+      }
+      : continueNext;
+    playBeats(beats, directorBase, afterBeats);
   }
 
   function timelineDirectorState(entry: BattleTimelineEntrySnapshot): BattleDirectorState {

@@ -117,14 +117,15 @@ function applyVariance(magnitude: number, spec: SkillLikeEffect): number {
 /**
  * HP 를 깎고 **실제로 깎인 양**을 돌려준다.
  *
- * 굴린 데미지가 남은 HP 보다 크면 초과분은 사라지므로, 원본 값을 그대로 보고하면
- * 화면의 데미지 팝업(entry.amount 사용)과 메시지(HP 차분 사용)가 서로 다른 숫자를
- * 말하게 된다. 실측: 최대 HP 20 인 적에게 50 이 굴려지면 팝업 -50 / 메시지 20 피해.
+ * HP 는 0 미만으로 내려가지 않지만, 보고값은 **굴린 데미지 원본**이다.
+ * 예전에는 "실제로 깎인 양"(잔여 HP 클램프)을 보고했는데, 그러면 잡는 타격마다
+ * 표기가 정확히 잔여 HP 와 같아져(92 최대 적: 85 → "7 피해") 롤이 숨겨지고
+ * 타격감의 일관성이 사라진다(적대 리뷰 §5). 메시지도 같은 값(lastActionResult.amount)을
+ * 쓰므로 팝업/메시지 parity 는 유지된다.
  */
 function applyDamage(target: MutableBattler, amount: number): number {
-  const before = target.hp;
   target.hp = Math.max(0, target.hp - amount);
-  return before - target.hp;
+  return amount;
 }
 
 function fallbackRng(): number {

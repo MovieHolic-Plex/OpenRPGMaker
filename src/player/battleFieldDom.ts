@@ -4,6 +4,7 @@ import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/runtime";
 import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 import type { DamageFeedback } from "@/player/battleSequencer";
+import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
@@ -35,8 +36,9 @@ interface SkinBattlerPlacement {
 }
 
 const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
-  // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 정면 상단(좌측 플레이존), 선두 1마리만.
-  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 150 - i * 40, y: 84 }), party: (i) => ({ x: 78 + i * 36, y: 138 }) },
+  // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 우상(정면). 좌상단은 적 정보 박스,
+  // 우하단은 아군 정보 박스가 차지하므로 스프라이트는 그 대각선을 피해서 선다.
+  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 245 - i * 44, y: 92 }), party: () => ({ x: 60, y: 152 }) },
   // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
     rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.
@@ -95,18 +97,59 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
   return field;
 }
 
-export function syncBattleField(field: HTMLElement, snapshot: BattleSnapshot, feedback?: DamageFeedback): void {
+export interface BattleFieldPresentation {
+  readonly ledger?: BattlePresentationLedger;
+  /** 시퀀스가 돌지 않는 화면(명령/타깃 선택)에서 지난 액션의 attack/hit pose 잔류를 걷는다. */
+  readonly calm?: boolean;
+  /** 지금 impact 비트로 맞고 있는 배틀러 — 이 배틀러만 hit pose 를 보여준다. */
+  readonly hitTargetId?: string;
+}
+
+export function syncBattleField(
+  field: HTMLElement,
+  snapshot: BattleSnapshot,
+  feedback?: DamageFeedback,
+  presentation?: BattleFieldPresentation,
+): void {
   syncBackdrop(field, snapshot.backdropResourceId);
-  syncEnemyGroup(field, snapshot);
-  syncActorGroup(field, snapshot);
+  syncEnemyGroup(field, snapshot, presentation);
+  syncActorGroup(field, snapshot, presentation);
   if (feedback) showDamageFeedback(field, feedback);
+}
+
+/** 원장이 있으면 원장의 HP/사망을, 없으면 스냅샷 값을 쓴다. 연출이 상태를 앞지르지 않게
+ *  하는 단일 지점 — pose 도 원장 기준으로 보정한다(아직 안 죽었으면 dead 를 보여주지 않는다).
+ *  calm(명령 화면)에서는 지난 액션의 attack/hit pose 를 idle/defend 로 되돌린다 —
+ *  런타임의 lastActionResult 는 라운드가 끝나도 남기 때문(적 pose=attack 박제 결함). */
+function presentedState(
+  battler: BattleBattlerSnapshot,
+  presentation: BattleFieldPresentation | undefined,
+): { hp: number; defeated: boolean; pose: BattleBattlerSnapshot["pose"] } {
+  const ledger = presentation?.ledger;
+  const vitals = ledger?.vitalsFor(battler.id) ?? ledger?.vitalsFor(battler.recordId);
+  let pose = battler.pose;
+  if (presentation?.calm && (pose === "attack" || pose === "hit")) {
+    pose = battler.defending ? "defend" : "idle";
+  }
+  // 스냅샷 pose 는 라운드 "마지막" 액션 기준이라 비트 중에는 엉뚱한 배틀러가 hit 로
+  // 보일 수 있다 — 지금 재생 중인 impact 의 대상에게만 hit 를 준다.
+  const beingHit = presentation?.hitTargetId !== undefined
+    && (presentation.hitTargetId === battler.id || presentation.hitTargetId === battler.recordId);
+  if (!vitals) {
+    if (beingHit && !battler.defeated) pose = "hit";
+    return { hp: battler.hp, defeated: battler.defeated, pose };
+  }
+  const defeated = vitals.defeated;
+  if (!defeated && (pose === "dead" || beingHit)) pose = beingHit ? "hit" : "idle";
+  if (defeated) pose = "dead";
+  return { hp: vitals.hp, defeated, pose };
 }
 
 export function battlePartyStatus(snapshot: BattleSnapshot): HTMLElement {
   return partyStatusGroup(snapshot.actors, snapshot.battleFlow);
 }
 
-export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): void {
+export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   // 파티 패널은 마운트 시 한 번만 만들어지고 호출자가 요소 참조를 쥐고 있다. 교대(멤버 교체)로
   // 스냅샷의 액터 집합과 DOM 행 집합이 어긋나면, 새로 들어온 액터의 행은 없어 스킵되고 빠져나간
   // 액터의 행은 마지막 클래스를 그대로 유지한다. 그 액터가 교대 직전 활성 액터였다면 파티에 없는
@@ -122,15 +165,16 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
   for (const actor of snapshot.actors) {
     const row = party.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${actor.recordId}"]`);
     if (!row) continue;
+    const presented = presentedState(actor, presentation);
     const hp = row.querySelector(".battle-actor-hp");
-    if (hp) setVitalNode(hp, "hp", actor.hp, actor.maxHp);
+    if (hp) setVitalNode(hp, "hp", presented.hp, actor.maxHp);
     const mp = row.querySelector(".battle-actor-mp");
     if (mp) setVitalNode(mp, "mp", actor.mp, actor.maxMp);
     // 참조의 ▼ 표식 — 지금 명령을 입력받는 액터의 셀 위에 붙는다(실제 스냅샷 값).
     row.classList.toggle("is-active-actor", Boolean(snapshot.activeActorId) && actor.recordId === snapshot.activeActorId);
     const hpBar = row.querySelector<HTMLElement>(".battle-stat-bar-hp");
     if (hpBar) {
-      const pct = hpPercent(actor.hp, actor.maxHp);
+      const pct = hpPercent(presented.hp, actor.maxHp);
       hpBar.style.setProperty("--battle-stat", `${pct}%`);
       hpBar.dataset.hpState = hpBarState(pct);
     }
@@ -155,7 +199,7 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot): v
     } else {
       strictOrder?.remove();
     }
-    row.classList.toggle("defeated", actor.defeated);
+    row.classList.toggle("defeated", presented.defeated);
   }
 }
 
@@ -190,7 +234,7 @@ function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void 
   }
 }
 
-function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
+function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-enemy-group");
   if (!group) return;
   for (const [index, enemy] of snapshot.enemies.entries()) {
@@ -200,11 +244,11 @@ function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
       node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
     }
     if (!node) continue;
-    syncEnemyNode(node, enemy, snapshot);
+    syncEnemyNode(node, enemy, snapshot, presentation);
   }
 }
 
-function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
+function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-actor-group");
   if (!group) return;
   for (const actor of snapshot.actors) {
@@ -233,19 +277,21 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot): void {
     } else if (!selected) {
       brackets?.remove();
     }
-    node.classList.toggle("defeated", actor.defeated);
-    applyBattlerPose(node, actor.pose);
+    const presented = presentedState(actor, presentation);
+    node.classList.toggle("defeated", presented.defeated);
+    applyBattlerPose(node, presented.pose);
     syncStatusIcons(node, actor);
   }
 }
 
-function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot): void {
+function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
+  const presented = presentedState(enemy, presentation);
   const targetable = snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.targetIds.includes(enemy.id);
   const selected = snapshot.targetSelection?.side === "enemy" && snapshot.targetSelection.selectedTargetId === enemy.id;
   node.classList.toggle("battle-target-candidate", targetable);
   node.classList.toggle("battle-target-selected", selected);
-  node.classList.toggle("defeated", enemy.defeated);
-  applyBattlerPose(node, enemy.pose);
+  node.classList.toggle("defeated", presented.defeated);
+  applyBattlerPose(node, presented.pose);
   node.dataset.battleTargetable = targetable ? "true" : "false";
   if (targetable) node.dataset.battleTargetId = enemy.id;
   else delete node.dataset.battleTargetId;
@@ -266,9 +312,9 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
     node.append(enemyHpHud(enemy));
   }
   const hpText = node.querySelector<HTMLElement>(".battle-enemy-hp-text");
-  if (hpText) hpText.textContent = `${enemy.hp}/${enemy.maxHp}`;
+  if (hpText) hpText.textContent = `${presented.hp}/${enemy.maxHp}`;
   const hpBar = node.querySelector<HTMLElement>(".battle-enemy-hp-bar");
-  if (hpBar) hpBar.style.setProperty("--battle-stat", `${hpPercent(enemy.hp, enemy.maxHp)}%`);
+  if (hpBar) hpBar.style.setProperty("--battle-stat", `${hpPercent(presented.hp, enemy.maxHp)}%`);
   const mpBar = node.querySelector<HTMLElement>(".battle-enemy-mp-bar");
   if (mpBar) mpBar.style.setProperty("--battle-stat", `${hpPercent(enemy.mp, enemy.maxMp)}%`);
   const atbBar = node.querySelector<HTMLElement>(".battle-enemy-atb-bar");

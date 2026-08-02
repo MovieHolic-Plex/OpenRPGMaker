@@ -170,6 +170,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function recordTimeline(entry: Omit<BattleTimelineEntrySnapshot, "sequence">): void {
     timeline.push({ ...entry, sequence: timeline.length });
   }
+  /** 방금 기록된 타임라인 엔트리에 애니메이션을 붙인다. 스킬/아이템 실행부가
+   *  recordAction 직후 lastAnimation 을 세팅하므로, 그 시점에 호출해 엔트리와 짝을 맞춘다. */
+  function attachAnimationToLatestTimeline(animation: BattleAnimationSnapshot): void {
+    const latest = timeline[timeline.length - 1];
+    if (latest) (latest as { animation?: BattleAnimationSnapshot }).animation = animation;
+  }
+
   function recordAction(
     entry: BattleActionResultSnapshot,
     kind: BattleTimelineEntrySnapshot["kind"] = entry.hit ? "damage" : "miss",
@@ -521,6 +528,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       effect: "damage",
       criticalRate: criticalRateFor(actor),
       hitRate: normalAttackHitRate(actor, target),
+      // RM2K3 통상공격 분산(±20%) — 없으면 매 타격이 완전히 같은 숫자라 도박성이 0이다.
+      variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       rng,
@@ -1019,6 +1028,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       effect: "damage",
       criticalRate: criticalRateFor(enemy),
       hitRate: normalAttackHitRate(enemy, target),
+      // 통상공격 분산 ±20% — 아군 공격(applySingleActorAttack)과 동일 규칙.
+      variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       rng,
@@ -1062,6 +1073,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     replaceItemTransitionState(consumed);
     if (item.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
+      attachAnimationToLatestTimeline(lastAnimation);
     } else if (skillId && !usesNativeMedicineEffects) {
       // skill path already sets lastAnimation when the skill has animationId
     }
@@ -1364,6 +1376,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     );
     if (skill?.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
+      attachAnimationToLatestTimeline(lastAnimation);
     }
     // 피격에 의한 상태 해제(수면 등)를 먼저 처리한 뒤, 스킬의 상태 효과를 적용한다.
     // 이 순서라야 이번 스킬로 새로 부여한 상태가 즉시 해제되지 않는다.

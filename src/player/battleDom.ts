@@ -9,11 +9,11 @@ import { concreteTargetCommand } from "@/battle/runtime";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { syncBattleAnimationLayer } from "@/player/battleAnimationDom";
+import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   applyBattleDirectorState,
   battleMessageWindow,
-  battleResultRewardRowCount,
   battleEventDirectorState,
   battleResultPanel,
   chargingDirectorState,
@@ -27,9 +27,8 @@ import {
 import { resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
+import { playBattleSfx, unlockBattleSfx } from "@/player/battleSfx";
 import {
-  BATTLE_RESULT_HOLD_MS,
-  BATTLE_RESULT_STAGE_MS,
   createBattleSequencer,
   type DamageFeedback,
 } from "@/player/battleSequencer";
@@ -93,7 +92,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   const initialSnapshot = options.runtime.snapshot();
   let resultSent = false;
-  let resultTimer: number | undefined;
   let submenu: BattleCommandSubmenu = null;
   let targetReturnSubmenu: BattleCommandSubmenu = null;
   let directorState: BattleDirectorState = commandPromptState(initialSnapshot);
@@ -101,6 +99,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let sequenceBusy = false;
   let lastDamageFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
+  // 프레젠테이션 HP 원장 — 시퀀스가 도는 동안 화면은 이 원장을 본다.
+  // 런타임 스냅샷(즉시 최종 상태)이 연출을 앞지르는 결함의 단일 수정 지점.
+  let presentation: BattlePresentationLedger | undefined;
   let commandPanelSignature = "";
   const cursorByContext = new Map<string, string>();
   let lastEnemyActionKey = "";
@@ -211,9 +212,27 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onSyncView() {
       syncView();
     },
+    onEntryAnimation(animation) {
+      // 엔트리 단위 애니메이션 — 잔류하는 snapshot.lastAnimation 대신, 지금 재생 중인
+      // 액션의 애니메이션만 레이어에 올린다. animation 이 없으면 레이어를 비운다.
+      activeAnimation?.destroy();
+      activeAnimation = syncBattleAnimationLayer(
+        animationLayer,
+        { ...options.runtime.snapshot(), lastAnimation: animation },
+        root,
+      );
+    },
     onDamageFeedback(feedback) {
       lastDamageFeedback = feedback;
       if (feedback) {
+        const wasAlive = !presentation?.vitalsFor(feedback.targetId)?.defeated;
+        presentation?.applyFeedback(feedback);
+        // 타격/급소/회복/빗나감 효과음 — 화면 연출과 같은 비트(impact)에서 울린다.
+        playBattleSfx(feedback.miss ? "miss" : feedback.critical ? "critical" : feedback.healing ? "heal" : "hit");
+        // 이 타격으로 쓰러졌다면 기절음이 잠시 뒤따른다.
+        if (wasAlive && presentation?.vitalsFor(feedback.targetId)?.defeated) {
+          window.setTimeout(() => playBattleSfx("faint"), 260);
+        }
         const targetNode =
           field.querySelector<HTMLElement>(`[data-testid="${feedback.targetId}"]`)
           ?? field.querySelector<HTMLElement>(`.battle-enemy[data-record-id="${feedback.targetId}"]`)
@@ -242,6 +261,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onSequenceBusy(busy) {
       sequenceBusy = busy;
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
+      // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
+      if (!busy) presentation = undefined;
       if (!busy && autoBattle) queueMicrotask(() => {
         if (root.isConnected) syncView();
       });
@@ -249,13 +270,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   });
 
   root.addEventListener("click", (event) => {
+    unlockBattleSfx();
     if (!(event.target instanceof Element)) return;
     const snapshot = options.runtime.snapshot();
     // 결과 화면에서는 어디를 클릭해도 종료 확정("클릭으로 계속" 프롬프트와 확인 버튼 포함).
     if (snapshot.result) {
       if (!resultSent) {
         resultSent = true;
-        window.clearTimeout(resultTimer ?? undefined);
         options.onResult(snapshot.result, snapshot);
       }
       return;
@@ -284,6 +305,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function onKeydown(event: KeyboardEvent): void {
+    // 첫 사용자 입력에서 오디오 컨텍스트를 깨운다(autoplay 정책).
+    unlockBattleSfx();
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
       if (isConfirmKey(event)) {
@@ -293,7 +316,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         event.preventDefault();
         if (!resultSent) {
           resultSent = true;
-          window.clearTimeout(resultTimer ?? undefined);
           options.onResult(snapshot.result, snapshot);
         }
       }
@@ -323,7 +345,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       const direction: 1 | -1 = event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
       const moved = snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy"
         ? cycleTarget(snapshot, direction)
-        : moveMenuCursor(snapshot, direction);
+        : moveMenuCursor(snapshot, event.key);
       if (moved) event.preventDefault();
       return;
     }
@@ -429,6 +451,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (button.disabled || !commandHost.contains(button)) return;
     const testId = button.dataset.testid;
     if (!testId) return;
+    if (cursorByContext.get(menuContext(snapshot)) !== testId) playBattleSfx("cursor");
     cursorByContext.set(menuContext(snapshot), testId);
     const selected = markMenuCursor(snapshot, testId);
     const targetId = button.dataset.battleTargetId;
@@ -439,6 +462,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       return;
     }
     if (focus && selected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+    // 스크롤되는 서브메뉴(기술/아이템 목록)에서 커서가 화면 밖 항목으로 내려가면 따라간다.
+    selected?.scrollIntoView({ block: "nearest" });
   }
 
   function cycleTarget(snapshot: BattleSnapshot, direction: 1 | -1): boolean {
@@ -449,19 +474,74 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const selectedIndex = ids.indexOf(selectedId);
     const baseIndex = selectedIndex >= 0 ? selectedIndex : direction > 0 ? -1 : 0;
     const nextId = ids[(baseIndex + direction + ids.length) % ids.length];
+    if (nextId !== selectedId) playBattleSfx("cursor");
     options.runtime.setSelectedTarget(nextId);
     directorState = targetSelectDirectorState(options.runtime.snapshot());
     syncView();
     return true;
   }
 
-  function moveMenuCursor(snapshot: BattleSnapshot, direction: 1 | -1): boolean {
+  /**
+   * 화살표 키를 **화면 기하**에 맞춰 움직인다. 커맨드가 2열 그리드로 그려지는 스킨에서
+   * ArrowDown 이 "목록상 다음"(시각적으로 오른쪽 칸)으로 가던 어긋남의 수정 지점.
+   * 방향 반평면에서 보조축 어긋남에 페널티를 줘 가장 가까운 버튼을 고르고,
+   * 그 방향에 아무것도 없으면 반대편 끝으로 감싼다.
+   */
+  function moveMenuCursor(snapshot: BattleSnapshot, key: string): boolean {
     const buttons = enabledMenuButtons();
     if (buttons.length === 0) return false;
     const current = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)")
       ?? markMenuCursor(snapshot);
-    const index = current ? buttons.indexOf(current) : -1;
-    const next = buttons[(index + direction + buttons.length) % buttons.length];
+    if (!current) return false;
+    const center = (b: HTMLElement): { x: number; y: number } => {
+      const r = b.getBoundingClientRect();
+      return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+    };
+    const from = center(current);
+    const axis = key === "ArrowUp" || key === "ArrowDown" ? "y" : "x";
+    const sign = key === "ArrowDown" || key === "ArrowRight" ? 1 : -1;
+    const pick = (candidates: HTMLButtonElement[], directionSign: number): HTMLButtonElement | undefined => {
+      let best: HTMLButtonElement | undefined;
+      let bestScore = Infinity;
+      for (const button of candidates) {
+        if (button === current) continue;
+        const c = center(button);
+        const primary = axis === "y" ? (c.y - from.y) * directionSign : (c.x - from.x) * directionSign;
+        const secondary = axis === "y" ? Math.abs(c.x - from.x) : Math.abs(c.y - from.y);
+        if (primary < 2) continue;
+        const score = primary + secondary * 3;
+        if (score < bestScore) {
+          bestScore = score;
+          best = button;
+        }
+      }
+      return best;
+    };
+    // 정방향에 없으면 반대편 끝으로 랩 — 반대 방향으로 가장 먼(=primary 최대) 버튼 중
+    // 보조축이 가장 맞는 것을 고른다.
+    let next = pick(buttons, sign);
+    if (!next) {
+      let bestScore = -Infinity;
+      for (const button of buttons) {
+        if (button === current) continue;
+        const c = center(button);
+        const primary = axis === "y" ? (c.y - from.y) * -sign : (c.x - from.x) * -sign;
+        const secondary = axis === "y" ? Math.abs(c.x - from.x) : Math.abs(c.y - from.y);
+        if (primary < 2) continue;
+        const score = primary - secondary * 3;
+        if (score > bestScore) {
+          bestScore = score;
+          next = button;
+        }
+      }
+    }
+    // 기하 정보가 없으면(레이아웃 전·jsdom 등 rect 가 전부 0) 목록 순서로 폴백한다.
+    if (!next) {
+      const index = buttons.indexOf(current);
+      const linearSign = key === "ArrowDown" || key === "ArrowRight" ? 1 : -1;
+      next = buttons[(index + linearSign + buttons.length) % buttons.length];
+      if (!next || next === current) return false;
+    }
     setMenuCursor(snapshot, next, true);
     return true;
   }
@@ -482,10 +562,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   function handleCancel(snapshot: BattleSnapshot): void {
     if (snapshot.phase === "targetSelect") {
+      playBattleSfx("cancel");
       cancelTargetSelectionAndRestore();
       return;
     }
     if (submenu !== null) {
+      playBattleSfx("cancel");
       submenu = null;
       panelOptions.submenu = null;
       syncView();
@@ -511,35 +593,49 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
   commandHost.addEventListener("mouseover", onMenuPointerOrFocus);
   commandHost.addEventListener("focusin", onMenuPointerOrFocus);
+  // 확정음 — 키보드(Enter→button.click())와 마우스 클릭이 같은 경로로 울린다.
+  commandHost.addEventListener("click", (event) => {
+    const button = event.target instanceof Element
+      ? event.target.closest<HTMLButtonElement>("button.battle-command:not(:disabled)")
+      : null;
+    if (button) playBattleSfx("confirm");
+  });
 
   function syncView(): void {
     const snapshot = options.runtime.snapshot();
-    if (snapshot.result) {
+    const showingResult = Boolean(snapshot.result) && directorState.step === "result";
+    if (showingResult) {
       directorState = resultDirectorState(snapshot, directorState);
     } else if (!sequenceBusy) {
       directorState = nextDirectorState(snapshot, directorState);
       directorState = battleEventDirectorState(snapshot, directorState);
     }
-    syncBattleField(field, snapshot, lastDamageFeedback);
-    syncBattleParty(partyPanel, snapshot);
+    const fieldPresentation = {
+      ledger: presentation,
+      // 비트 재생 중에도 스냅샷의 잔류 attack/hit pose 는 걷어내고(라운드 마지막 액션
+      // 기준이라 엉뚱한 배틀러가 맞은 것처럼 보인다), 지금 impact 대상에게만 hit 를 준다.
+      calm: !snapshot.result,
+      hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss
+        ? lastDamageFeedback.targetId
+        : undefined,
+    };
+    syncBattleField(field, snapshot, lastDamageFeedback, fieldPresentation);
+    syncBattleParty(partyPanel, snapshot, fieldPresentation);
     syncBattleMessageWindow(messageWindow, directorState);
-    syncEnemyListPanel(enemyPanel, snapshot.enemies);
+    syncEnemyListPanel(enemyPanel, snapshot.enemies, presentation);
     rebuildCommandPanelIfNeeded(snapshot);
-    syncResultHost(snapshot);
+    syncResultHost(snapshot, showingResult);
     applyBattleDirectorState(root, directorState, snapshot);
-    if (snapshot.result) {
-      // 결과가 확정되면 스킬 애니메이션은 더 재생하지 않는다. snapshot.lastAnimation 은
-      // 마지막 일격을 계속 가리키므로, 여기서 막지 않으면 지워도 매 동기화마다 되살아나
-      // 검격의 칼 같은 스프라이트가 결과 화면 위에 그대로 떠 있었다.
+    if (showingResult || !sequenceBusy) {
+      // 애니메이션은 시퀀서의 onEntryAnimation 이 비트 단위로만 올린다. 시퀀스가 돌지
+      // 않는 화면(명령 선택·타깃 선택·결과)에는 어떤 액션 애니메이션도 남지 않는다 —
+      // 화염 스프라이트가 다음 라운드 커맨드 메뉴까지 타오르던 결함의 수정 지점.
       activeAnimation?.destroy();
       activeAnimation = undefined;
       animationLayer.replaceChildren();
-    } else {
-      activeAnimation = syncBattleAnimationLayer(animationLayer, snapshot, root);
     }
     root.dataset.battleSequenceBusy = sequenceBusy ? "true" : "false";
-    root.dataset.battleBgmActive = snapshot.result ? "false" : "true";
-    scheduleAutoResult(snapshot);
+    root.dataset.battleBgmActive = showingResult ? "false" : "true";
     checkAutoBattleStep(snapshot);
   }
 
@@ -612,8 +708,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return target;
   }
 
-  function syncResultHost(snapshot: BattleSnapshot): void {
-    if (!snapshot.result) {
+  function syncResultHost(snapshot: BattleSnapshot, showResult: boolean): void {
+    if (!showResult) {
       resultHost.replaceChildren();
       return;
     }
@@ -630,20 +726,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
       emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
       flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
+      playBattleSfx(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape");
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }
 
-  function scheduleAutoResult(snapshot: BattleSnapshot): void {
-    const result = snapshot.result;
-    if (!result || resultSent) return;
-    resultSent = true;
-    // 보상 행이 모두 공개될 시간을 보장한 뒤에도 잠시 머문다(클릭/Z로 즉시 종료 가능).
-    const revealMs = (battleResultRewardRowCount(snapshot) + 1) * BATTLE_RESULT_STAGE_MS;
-    resultTimer = window.setTimeout(() => {
-      options.onResult(result, snapshot);
-    }, Math.max(BATTLE_RESULT_HOLD_MS, revealMs + BATTLE_RESULT_HOLD_MS));
-  }
 
   function commandProgressed(before: BattleSnapshot, after: BattleSnapshot): boolean {
     return after.timeline.length !== before.timeline.length
@@ -667,6 +754,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     submenu = null;
     targetReturnSubmenu = null;
     panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
     sequencer.runAfterActorCommand(command, before, afterCommand);
   }
 
@@ -720,6 +808,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     submenu = null;
     targetReturnSubmenu = null;
     panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
     sequencer.runAfterActorCommand(concrete, before, afterCommand);
   }
 
@@ -745,6 +834,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     submenu = null;
     targetReturnSubmenu = null;
     panelOptions.submenu = null;
+    presentation = createPresentationLedger(before);
     syncView();
     sequencer.runAfterActorCommand(command, before, afterCommand);
   }
@@ -786,6 +876,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const timelineKey = `${before.timeline.length}:${after.timeline.length}`;
     if (after.timeline.length > before.timeline.length && timelineKey !== lastEnemyActionKey) {
       lastEnemyActionKey = timelineKey;
+      presentation = createPresentationLedger(before);
       sequencer.runAfterEnemyAdvance(before, after);
       return;
     }
@@ -802,7 +893,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       window.clearInterval(tickInterval);
       window.removeEventListener("keydown", onWindowKeydown);
       window.removeEventListener("keyup", onWindowKeyup);
-      if (resultTimer !== undefined) window.clearTimeout(resultTimer);
       sequencer.cancel();
       activeAnimation?.destroy();
       stageScale.cleanup();

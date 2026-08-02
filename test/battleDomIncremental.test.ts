@@ -103,7 +103,11 @@ describe("battle dom incremental rendering", () => {
     expect(readHp()).toBe("220/220");
     controller.root.querySelector<HTMLElement>("[data-testid='actor-command-attack']")?.click();
     controller.root.querySelector<HTMLElement>(".battle-enemy[data-testid='enemy-1']")?.click();
+    // 프레젠테이션 원장 계약: HP 는 명령 직후가 아니라 impact 비트(approach 550ms 이후)에
+    // 반영된다 — 연출이 상태를 앞지르지 않게 하는 의도된 지연이다.
     vi.advanceTimersByTime(50);
+    expect(readHp()).toBe("220/220");
+    vi.advanceTimersByTime(1000);
     expect(readHp()).not.toBe("220/220");
     controller.destroy();
   });

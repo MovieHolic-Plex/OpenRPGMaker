@@ -163,7 +163,9 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
-  it("uses the field ring, name, and HP as the target signal without duplicate prompt or list", () => {
+  // 적대 리뷰 2차 계약: 적 대상 선택도 하단 패널에 대상 메뉴를 유지한다(빈 밴드 금지).
+  // 필드의 선택 링(브래킷)과 메뉴의 selected 표시가 같은 대상을 가리켜야 한다.
+  it("keeps the bottom target menu and the field ring in sync during target select", () => {
     vi.useFakeTimers();
     const { runtime, controller } = setup();
     untilActorCommand(runtime);
@@ -171,17 +173,17 @@ describe("battle dom keyboard and status rows", () => {
 
     controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-attack']")?.click();
     expect(runtime.snapshot().phase).toBe("targetSelect");
-    expect(controller.root.querySelector("[data-testid='battle-target-prompt']")).toBeNull();
-    expect(controller.root.querySelector(".battle-target-menu")).toBeNull();
+    expect(controller.root.querySelector("[data-testid='battle-target-prompt']")).toBeTruthy();
+    const menu = controller.root.querySelector(".battle-target-menu");
+    expect(menu).toBeTruthy();
 
     const selected = controller.root.querySelector<HTMLButtonElement>(".battle-enemy.battle-target-selected");
     expect(selected?.querySelector("[data-testid='battle-target-brackets']")).toBeTruthy();
     expect(selected?.querySelector(".battle-enemy-name")?.textContent).toBeTruthy();
     expect(selected?.querySelector(".battle-enemy-hud")).toBeTruthy();
     expect(document.activeElement).toBe(selected);
-    const message = controller.root.querySelector("[data-testid='battle-message-window']")?.textContent ?? "";
-    expect(message).not.toContain(selected?.querySelector(".battle-enemy-name")?.textContent ?? "__missing__");
-    expect(message).not.toContain("겨냥");
+    const menuSelected = menu?.querySelector<HTMLButtonElement>("button.battle-target-selected");
+    expect(menuSelected?.dataset.battleTargetId).toBe(selected?.dataset.testid);
     controller.destroy();
   });
 
