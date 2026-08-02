@@ -1747,15 +1747,19 @@
   color: #17203a;
 }
 
-/* 전투는 키보드 전용(src/player/battlePointerPolicy.ts). 클릭 핸들러를 떼는 것만으로는
-   호버 강조와 손가락 커서가 남아 "눌러도 반응 없는 버튼"처럼 보이므로, 포인터 자체를
-   통과시켜 클릭할 수 있다는 신호를 지운다. 키보드 포커스/커서 표시는 그대로 둔다. */
+/* 전투 마우스 조작 복원(코덱스 리뷰 C1). 과거 "키보드 전용" 정책이 pointer-events 를
+   죽였는데, 그 근거였던 battlePointerPolicy.ts 는 삭제된 파일이고 지금은 커맨드 버튼
+   (battleCommandDom activeButton)과 필드 타깃(battleDom root click → confirmTargetSelection)
+   에 클릭 핸들러가 실제로 배선되어 있다 — 보이는 버튼이 눌리지 않고 필드 적 클릭이
+   backdrop 에 먹히는 상태였다. P0 계약(openwiki/runtime-battle.md:65)도 "선택된 필드
+   적이 click target 을 소유"를 요구한다. 키보드 확정은 .click() 디스패치라 영향 없다. */
 .battle-scene .battle-command,
-.battle-scene .battle-command *,
 .battle-scene [data-battle-targetable="true"] {
-  /* 스킨 파일들이 pointer-events 를 !important 로 되살리므로 여기서도 맞춰 눌러야 한다. */
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+.battle-scene .battle-command:disabled {
   cursor: default !important;
-  pointer-events: none !important;
 }
 
 /* `.battle-command-panel` 은 `grid-template-columns: minmax(0, 1fr)` 로 열이 하나뿐이다(:264).
@@ -2617,7 +2621,9 @@
   --pkmn-text: #2e3238;
   --pkmn-muted: #70747a;
   --pkmn-accent: #e43b44;
-  grid-template-columns: minmax(0, 1fr) minmax(400px, 42%) !important;
+  /* 명령 열 최소 400px 는 메시지 창을 ~240px 로 짓눌러 짧은 문장도 3줄로 갈랐다
+     (코덱스 리뷰 C9). 명령 버튼 라벨은 2열 160px 이면 충분하다. */
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 38%) !important;
   grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
 }
 
@@ -3694,28 +3700,51 @@
   width: min(42%, 250px) !important;
   padding: 6px 12px !important;
 }
+/* 원 구조(battle.css:3171-3195)는 이름(1행 전체)/HP라벨+바(2행)의 2줄 행 — 3마리
+   트룹에서 패널이 아군 머리까지 내려왔다(코덱스 리뷰 C7). 한 줄 [이름|HP|바]로 눌러
+   같은 정보를 절반 높이에 담는다. 원 규칙이 !important 라 여기서도 !important 로 이긴다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
   display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 88px;
-  align-items: center;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 24px 96px !important;
+  grid-template-rows: auto !important;
+  align-items: center !important;
+  gap: 0 6px !important;
   min-height: 0 !important;
   padding: 2px 2px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
   font-size: 15px !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::after {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  margin-top: 0 !important;
+}
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
   display: none !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
   height: 10px !important;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row.defeated {
   display: none !important;
+}
+
+/* 스킬/아이템 서브메뉴 행 잘림(코덱스 리뷰 C3): 행 콘텐츠(제목 18px + 설명 13px +
+   패딩 12 + 테두리 8 ≈ 54px)가 최소 행 높이 42px 를 넘겨 설명 줄이 깎였고,
+   설명 자체도 line-height 1 + overflow hidden 으로 한글 하단이 잘렸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
+  line-height: 1.25 !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  grid-auto-rows: minmax(54px, auto) !important;
 }
 
 /* 결과 화면에서 죽은 적 노드에 깔리던 반짝이(radial-gradient 반복 타일)가 148×152

@@ -235,6 +235,7 @@ export function createBattleSequencer(
     done: () => void,
     firstDirector?: BattleDirectorState,
     entryOffset = 0,
+    firstDirectorIndex = 0,
   ): void {
     if (entryOffset >= entries.length) {
       done();
@@ -242,10 +243,17 @@ export function createBattleSequencer(
     }
     const entry = entries[entryOffset];
     hooks.onTimelineEntry?.(entry);
-    const continueNext = (): void => playTimelineEntries(entries, snapshot, done, undefined, entryOffset + 1);
+    const continueNext = (): void =>
+      playTimelineEntries(entries, snapshot, done, firstDirector, entryOffset + 1, firstDirectorIndex);
+    // 명령 대사(firstDirector)는 그 명령의 엔트리에만 붙인다. 무조건 0번에 붙이면,
+    // 민첩이 빠른 적이 라운드에서 먼저 움직일 때 적의 선공이 아군 명령 대사(도주/공격)로
+    // 뒤집히고, 정작 아군 엔트리는 제네릭 재생으로 떨어진다(코덱스 리뷰 C2: 도주 성공
+    // 뒤 "주인공의 공격! 효과가 충분하지 않았다"가 재생되던 결함).
     const resultEntry = resultFromTimeline(entry);
-    const directorBase = firstDirector
-      ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry));
+    const directorBase = (firstDirector && entryOffset === firstDirectorIndex)
+      ? firstDirector
+      : actionEntryDirectorState(entry, snapshot)
+        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot) : timelineDirectorState(entry));
     const feedback = feedbackFromTimeline(entry);
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep";
@@ -286,6 +294,35 @@ export function createBattleSequencer(
       }
       : continueNext;
     playBeats(beats, directorBase, afterBeats);
+  }
+
+  /** 도주/방어/교체 커맨드의 "action" 엔트리 전용 대사 — 제네릭 경로(resultFromTimeline →
+   *  enemyActionDirectorState)로 떨어지면 자기 자신을 대상으로 한 "○○의 공격!"이 된다. */
+  function actionEntryDirectorState(
+    entry: BattleTimelineEntrySnapshot,
+    snapshot: BattleSnapshot,
+  ): BattleDirectorState | undefined {
+    if (entry.kind !== "action") return undefined;
+    const user = snapshot.actors.find((actor) => actor.recordId === entry.userRecordId)
+      ?? snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId);
+    const name = user?.name ?? "아군";
+    if (entry.commandKind === "escape") {
+      return {
+        step: "acting",
+        lines: [
+          `${withJosa(name, "이/가")} 도망치려 한다…`,
+          entry.success ? "무사히 도망쳤다!" : "그러나 도망칠 수 없었다!",
+        ],
+        targetId: entry.targetId,
+      };
+    }
+    if (entry.commandKind === "defend") {
+      return { step: "acting", lines: [`${withJosa(name, "은/는")} 몸을 웅크려 방어했다!`], targetId: entry.targetId };
+    }
+    if (entry.commandKind === "switch") {
+      return { step: "acting", lines: ["전열을 교체했다."], targetId: entry.targetId };
+    }
+    return undefined;
   }
 
   function timelineDirectorState(entry: BattleTimelineEntrySnapshot): BattleDirectorState {
@@ -339,6 +376,12 @@ export function createBattleSequencer(
       const commandEntries = after.timeline.slice(commandStart);
       consumedTimeline = after.timeline.length;
       const actingState = actorCommandDirectorState(command, before, after);
+      // 이 명령을 내린 액터의 첫 엔트리를 찾는다 — strict 라운드에서 민첩이 빠른 적이
+      // 먼저 움직이면 commandEntries 앞쪽은 적의 행동이다. 대사는 액터 엔트리에 붙인다.
+      const commandActorId = before.activeActorId;
+      const commandEntryIndex = commandEntries.findIndex(
+        (entry) => entry.side === "actor" && entry.userRecordId === commandActorId,
+      );
       const finish = (): void => {
         clearMotion();
         hooks.onDamageFeedback(undefined);
@@ -351,7 +394,14 @@ export function createBattleSequencer(
       playTimelineEntries(
         setupEntries,
         before,
-        () => playTimelineEntries(commandEntries, after, finish, actingState),
+        () => playTimelineEntries(
+          commandEntries,
+          after,
+          finish,
+          actingState,
+          0,
+          commandEntryIndex >= 0 ? commandEntryIndex : 0,
+        ),
       );
     },
     runAfterEnemyAdvance(_before: BattleSnapshot, after: BattleSnapshot): void {

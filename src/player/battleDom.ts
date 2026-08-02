@@ -326,8 +326,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       }
       return;
     }
-    if (sequenceBusy) return;
-    // 자동전투/속도 토글은 연출 중에는 무시한다 — 다른 키와 같은 규칙을 따른다(결함 2).
+    // 자동전투/속도 토글은 연출 중에도 받는다 — 재생을 보다가 끄거나 빨리감기를 켜는
+    // 게 바로 이 순간이고, 명령 확정과 달리 비트 재생과 경합하지 않는다(코덱스 리뷰 C6:
+    // 화면에 A·Shift 단축키가 표시되어 있는데 연출 중엔 눌러도 반응이 없었다).
     if (event.key === "a" || event.key === "A") {
       event.preventDefault();
       toggleAutoBattle();
@@ -340,6 +341,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       shiftCombined = false;
       return;
     }
+    if (sequenceBusy) return;
     if (shiftHeld) shiftCombined = true;
     if (isCancelKey(event)) {
       event.preventDefault();
@@ -391,8 +393,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
     if (event.key !== "Shift") return;
-    // 텍스트 입력 중·연출 중에는 토글하지 않는다(결함 2).
-    if (!sequenceBusy && shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
+    // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
+    // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
+    if (shiftHeld && !shiftCombined && root.isConnected && !isTextInputTarget(event.target)) {
       toggleSpeed();
     }
     shiftHeld = false;

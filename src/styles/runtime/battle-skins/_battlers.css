@@ -39,9 +39,10 @@
    아군 뒷모습은 화면 좌하를 크게 차지하고, 적도 그에 준하는 덩치를 갖는다. */
 .battle-scene[data-battle-skin="pokemon"] .battle-actor .battle-skin-actor-image {
   /* 208px 높이는 250px 필드의 83% — 머리가 좌상단 적 정보 패널 밑으로 파고들었다
-     (적대 리뷰 3차). 150px 이면 3마리 패널(바닥 ~88px)과도 겹치지 않는다. */
-  width: 150px !important;
-  height: 150px !important;
+     (적대 리뷰 3차). 3마리 1줄 패널 바닥(~98px)까지 고려해 140px(머리 y≈97.5)로
+     맞춘다(코덱스 리뷰 C7: 150px 시절 3마리 패널이 머리를 10px 덮었다). */
+  width: 145px !important;
+  height: 140px !important;
   object-fit: contain;
 }
 
