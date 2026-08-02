@@ -240,6 +240,20 @@
   width: 100% !important;
 }
 
+/* 이 스킨은 커맨드 창을 150px 로 좁힌다(.battle-command-host). 기본값의 30~32px 글자는
+   그 폭에 들어가지 않아 넘치므로, min-height/padding 을 줄인 것과 같은 축척으로 맞춘다. */
+.battle-scene[data-battle-skin="vxace"] .battle-command,
+.battle-scene[data-battle-skin="vxace"] .battle-command-text,
+.battle-scene[data-battle-skin="vxace"] .battle-command-text strong,
+.battle-scene[data-battle-skin="vxace"] .battle-key-prompts,
+.battle-scene[data-battle-skin="vxace"] .battle-target-prompt {
+  font-size: 13px !important;
+}
+
+.battle-scene[data-battle-skin="vxace"] .battle-command-text small {
+  font-size: 11px !important;
+}
+
 .battle-scene[data-battle-skin="vxace"] .battle-command-text,
 .battle-scene[data-battle-skin="vxace"] .battle-command-text strong {
   color: #fff !important;

@@ -323,11 +323,15 @@
   z-index: 0;
 }
 
-.battle-scene[data-battle-director-step="result"] .battle-backdrop {
-  background:
-    radial-gradient(ellipse at 20% 18%, rgba(255, 255, 255, 0.34), transparent 16%),
-    radial-gradient(ellipse at 76% 26%, rgba(255, 255, 255, 0.28), transparent 18%),
-    linear-gradient(180deg, #092362 0%, #123f86 52%, #185397 100%) !important;
+/* 결과 단계에서 배경을 파란 하늘 그라데이션으로 갈아치우던 규칙이 있었다. `background`
+   단축 속성 + !important 라 인라인 background-image(전투 배경 그림 url)까지 통째로 덮어,
+   승리 화면에서 전투장이 사라지고 단색 그라데이션만 남았다.
+   결과 단계의 어두워짐은 아래 `filter: brightness(0.72)` 규칙이 이미 담당한다. */
+.battle-scene[data-battle-director-step="result"] .battle-backdrop::before {
+  background: rgba(9, 35, 98, 0.28);
+  content: "";
+  inset: 0;
+  position: absolute;
 }
 
 .battle-scene[data-battle-director-step="result"] .battle-backdrop::after {
@@ -1699,12 +1703,28 @@
   color: #17203a;
 }
 
+/* 전투는 키보드 전용(src/player/battlePointerPolicy.ts). 클릭 핸들러를 떼는 것만으로는
+   호버 강조와 손가락 커서가 남아 "눌러도 반응 없는 버튼"처럼 보이므로, 포인터 자체를
+   통과시켜 클릭할 수 있다는 신호를 지운다. 키보드 포커스/커서 표시는 그대로 둔다. */
+.battle-scene .battle-command,
+.battle-scene .battle-command *,
+.battle-scene [data-battle-targetable="true"] {
+  /* 스킨 파일들이 pointer-events 를 !important 로 되살리므로 여기서도 맞춰 눌러야 한다. */
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+/* `.battle-command-panel` 은 `grid-template-columns: minmax(0, 1fr)` 로 열이 하나뿐이다(:264).
+   여기서 `grid-column: 2` 를 주면 없는 열을 가리켜 암시적 auto 열이 생기고, 그 열이 내용 폭을
+   먼저 가져가 커맨드가 놓인 `minmax(0, 1fr)` 열이 0px 로 붕괴한다(최소값이 0이라 제동도 없다).
+   그러면 커맨드 항목이 DOM 에는 있는데 폭 0 으로 눌려 화면에서 사라져 전투 진행이 막힌다.
+   rm2003 스킨만 `grid-column: 1 !important` 로 국소 우회하고 있었다(_rm2003.css:535). */
 .battle-command-help,
 .battle-key-prompts,
 .battle-target-prompt {
   color: #fff7c6;
   font-size: 30px;
-  grid-column: 2;
+  grid-column: 1;
 }
 
 .battle-command-help {

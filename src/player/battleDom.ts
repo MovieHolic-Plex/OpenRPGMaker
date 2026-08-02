@@ -233,6 +233,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     },
     onResultStage(stage) {
       resultRevealStage = stage;
+      // 값만 바꾸면 화면은 stage 0 인 채로 남는다 — 보상 행은 `index >= revealStage` 로
+      // hidden 이 결정되므로(battleDirectorDom.ts:251) 경험치·골드가 끝까지 안 보였다.
+      // 결과 패널이 이미 떠 있을 때만 즉시 다시 그린다(전체 syncView 는 불필요).
+      const panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
+      if (panel) syncBattleResultPanel(panel, options.runtime.snapshot(), resultRevealStage);
     },
     onSequenceBusy(busy) {
       sequenceBusy = busy;
@@ -522,7 +527,16 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     rebuildCommandPanelIfNeeded(snapshot);
     syncResultHost(snapshot);
     applyBattleDirectorState(root, directorState, snapshot);
-    activeAnimation = syncBattleAnimationLayer(animationLayer, snapshot, root);
+    if (snapshot.result) {
+      // 결과가 확정되면 스킬 애니메이션은 더 재생하지 않는다. snapshot.lastAnimation 은
+      // 마지막 일격을 계속 가리키므로, 여기서 막지 않으면 지워도 매 동기화마다 되살아나
+      // 검격의 칼 같은 스프라이트가 결과 화면 위에 그대로 떠 있었다.
+      activeAnimation?.destroy();
+      activeAnimation = undefined;
+      animationLayer.replaceChildren();
+    } else {
+      activeAnimation = syncBattleAnimationLayer(animationLayer, snapshot, root);
+    }
     root.dataset.battleSequenceBusy = sequenceBusy ? "true" : "false";
     root.dataset.battleBgmActive = snapshot.result ? "false" : "true";
     scheduleAutoResult(snapshot);
@@ -605,6 +619,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     // 결과 화면 동안은 뒤늦게 뜬 데미지 팝업 잔상을 매 동기화마다 걷어낸다.
     for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
+    // 애니메이션 레이어 정리는 syncView 의 생성 지점에서 함께 처리한다(중복 방지).
     let panel = resultHost.querySelector<HTMLElement>("[data-testid='battle-result-panel']");
     if (!panel) {
       const created = battleResultPanel(snapshot, resultRevealStage);

@@ -69,8 +69,8 @@ export function applySkillLike(user: MutableBattler, target: MutableBattler, spe
     target.hp = Math.min(target.maxHp, target.hp + Math.abs(magnitude.amount));
     return { hit: true, amount: magnitude.amount, critical: false };
   }
-  applyDamage(target, magnitude.amount);
-  return { hit: true, amount: magnitude.amount, critical: magnitude.critical };
+  const dealt = applyDamage(target, magnitude.amount);
+  return { hit: true, amount: dealt, critical: magnitude.critical };
 }
 
 function computeMagnitude(
@@ -114,8 +114,17 @@ function applyVariance(magnitude: number, spec: SkillLikeEffect): number {
   return Math.max(1, Math.round(magnitude * factor));
 }
 
-function applyDamage(target: MutableBattler, amount: number): void {
+/**
+ * HP 를 깎고 **실제로 깎인 양**을 돌려준다.
+ *
+ * 굴린 데미지가 남은 HP 보다 크면 초과분은 사라지므로, 원본 값을 그대로 보고하면
+ * 화면의 데미지 팝업(entry.amount 사용)과 메시지(HP 차분 사용)가 서로 다른 숫자를
+ * 말하게 된다. 실측: 최대 HP 20 인 적에게 50 이 굴려지면 팝업 -50 / 메시지 20 피해.
+ */
+function applyDamage(target: MutableBattler, amount: number): number {
+  const before = target.hp;
   target.hp = Math.max(0, target.hp - amount);
+  return before - target.hp;
 }
 
 function fallbackRng(): number {
