@@ -1,0 +1,247 @@
+/* ?? UX ?ㅼ궗 ?쎌뒪(2026-07-05): ?ㅻ뜑 ??? 諛?1以??쒖옉 ?붾㈃ ?뺣룉/鍮??몄뒪???④? ?? */
+.ai-chat-header {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  /* 釉뚮옖???≪꽱??諛??쒖븞 6) ??AI RPG MAKER accent 怨꾩뿴 */
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: inset 0 2px 0 0 transparent;
+  padding-bottom: 8px;
+  position: relative;
+}
+.ai-chat-header::before {
+  background: linear-gradient(
+    90deg,
+    var(--accent) 0%,
+    #7aa2ff 42%,
+    color-mix(in srgb, var(--accent) 35%, transparent) 78%,
+    transparent 100%
+  );
+  border-radius: 1px;
+  content: "";
+  height: 2px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+.ai-chat-header h2 {
+  margin-right: auto;
+}
+
+.ai-chat-tools-button {
+  opacity: 0.9;
+}
+
+.ai-chat-tools-button:hover {
+  opacity: 1;
+}
+
+/* ? 諛붾뒗 ??以?怨좎젙 ???몃줈 怨듦컙???좎떇?섏? ?딅뒗?? */
+
+/* 鍮?蹂댁“ ?몄뒪?몃뒗 ?먮━瑜?李⑥??섏? ?딅뒗?? */
+.ai-proposal-host:empty,
+.ai-quick-replies:empty,
+.ai-context-chips:empty,
+.ai-slash-host:empty {
+  display: none;
+}
+
+/* ?쒖옉 ?붾㈃: ?곷떒 怨좎젙 + ?ㅽ겕濡?(?몃줈 以묒븰 湲덉?). */
+.ai-chat-log:has(.ai-start-screen) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: var(--space-3);
+}
+
+/* ?볦? ?꾪겕/?ㅽ뒠?붿삤: 3??*/
+.ai-chat-panel.chat-dock-side .ai-start-grid,
+.ai-chat-panel.is-docked .ai-start-grid,
+.ai-chat-panel.is-history-open .ai-start-grid,
+.ai-chat-panel.is-studio .ai-start-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 420px) {
+  .ai-chat-panel.chat-dock-side .ai-start-grid,
+  .ai-chat-panel.is-docked .ai-start-grid,
+  .ai-chat-panel.is-history-open .ai-start-grid,
+  .ai-chat-panel.is-studio .ai-start-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ?ㅽ뒠?붿삤: ???而щ읆??以묒븰 ?뺣젹??珥덇킅??뿉???묓븯吏 ?딄쾶. */
+.ai-chat-panel.is-studio .ai-chat-main {
+  margin: 0 auto;
+  max-width: 920px;
+  width: 100%;
+}
+
+/* 1280px 湲?醫곸? ?붾㈃: AI ?꾪궧 ?몄뀑??以꾩뿬 罹붾쾭??醫뚰뙏?덊듃????쓣 ?뚮젮以?? */
+@media (max-width: 1320px) {
+  body.ai-panel-docked {
+    --ai-docked-panel-inset: calc(min(360px, 40vw) + 4px);
+  }
+}
+
+/* ?? 梨꾪똿 愿痢≪꽦(V3C): 湲???ш린 3??+ 異붾줎 ?먮Ц + ?꾧뎄 ?몄텧 ?곸꽭 ????? */
+/* 湲???ш린 ???⑤꼸 data-ai-font-size(?묎쾶/蹂댄넻/?ш쾶)媛 --ai-font-scale 濡?濡쒓렇/?쒖븞 移대뱶/?꾧뎄 濡쒓렇瑜??④퍡 ?ㅼ??? */
+.ai-chat-panel[data-ai-font-size="small"] {
+  --ai-font-scale: 0.85;
+}
+.ai-chat-panel[data-ai-font-size="large"] {
+  --ai-font-scale: 1.2;
+}
+.ai-chat-bubble,
+.ai-proposal-card {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-title,
+.ai-proposal-summary {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+}
+.ai-proposal-lines,
+.ai-tool-activity-line,
+.ai-tool-activity-toggle,
+.ai-reasoning-toggle,
+.ai-reasoning-body {
+  font-size: calc(11px * var(--ai-font-scale, 1));
+}
+
+/* 蹂묓빀 異붾줎 釉붾줉 ??媛?異붾줎???먮Ц ?꾩껜瑜??꾩씠?쒖쑝濡?蹂댁〈, 湲??먮Ц? ?ㅽ겕濡?而⑦뀒?대꼫 max-height). */
+.ai-reasoning-body {
+  max-height: 320px;
+}
+.ai-reasoning-item {
+  white-space: pre-wrap;
+}
+.ai-reasoning-item + .ai-reasoning-item {
+  border-top: 1px dashed var(--border-subtle);
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+/* ?꾧뎄 濡쒓렇 ?쇱씤 ?대┃ ???몄텧 ?몄옄 JSON + 寃곌낵 ?먮Ц ?꾩퐫?붿뼵. */
+.ai-tool-entry summary,
+.ai-tool-entry-summary {
+  cursor: pointer;
+}
+.ai-tool-detail {
+  border-left: 2px solid var(--border-subtle);
+  margin: 4px 0 4px 4px;
+  padding-left: 8px;
+}
+.ai-tool-detail-label {
+  color: var(--text-3);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin-top: 4px;
+}
+.ai-tool-detail-pre {
+  background: var(--bg-inset);
+  border-radius: 4px;
+  color: var(--text-2);
+  font-size: calc(10px * var(--ai-font-scale, 1));
+  margin: 2px 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: 4px 6px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* ?? Visual polish (?쒖븞 6): 湲곕줉 ?좎쭨 援щ텇 + ???묎린 ?? */
+.ai-day-divider {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  margin: 10px 4px 8px;
+  user-select: none;
+}
+.ai-day-divider::before,
+.ai-day-divider::after {
+  background: var(--border-subtle);
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+}
+.ai-day-divider-label {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.ai-turn-group {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 4px 0;
+  overflow: hidden;
+  padding: 4px;
+}
+.ai-turn-group-toggle {
+  background: color-mix(in srgb, var(--control-bg) 88%, transparent);
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: calc(11px * var(--ai-font-scale, 1));
+  font-weight: 600;
+  padding: 6px 8px;
+  text-align: left;
+  width: 100%;
+}
+.ai-turn-group-toggle:hover,
+.ai-turn-group-toggle:focus-visible {
+  background: var(--control-bg-hover);
+  color: var(--text-1);
+  outline: none;
+}
+.ai-turn-group-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 0;
+}
+.ai-turn-group.is-collapsed > .ai-turn-group-body {
+  display: none;
+}
+
+/* 誘몃땲 ?ㅽ듃由? ?댁쟾 ??洹몃９ ?꾩껜 ?④?(湲곗〈 is-prior-turn 怨꾩빟 ?좎?). */
+.ai-rising-overlay .ai-chat-log > .ai-turn-group.is-prior-turn,
+.ai-rising-overlay .ai-chat-log > .is-prior-turn {
+  display: none;
+}
+
+/* ?꾩껜 湲곕줉/?ъ씠?? ?댁쟾 ?댁? ?묓엺 ?ㅻ뜑留?蹂댁씠怨??쇱튂硫?蹂몃Ц. */
+.ai-history-log-mount .ai-chat-log > .ai-turn-group.is-prior-turn,
+.ai-chat-panel.is-studio .ai-chat-log > .ai-turn-group.is-prior-turn,
+.ai-chat-panel.chat-dock-side .ai-chat-log > .ai-turn-group.is-prior-turn {
+  display: flex;
+  opacity: 0.92;
+}
+.ai-history-log-mount .ai-chat-log > .ai-day-divider,
+.ai-chat-panel.is-studio .ai-chat-log > .ai-day-divider,
+.ai-chat-panel.chat-dock-side .ai-chat-log > .ai-day-divider {
+  display: flex;
+}
+
+/* 而ㅻ㎤?쒕컮 ?곹깭 諛곗????숈씪 ???좏겙 ?ъ슜(?ㅻ뜑? 怨듭쑀 ?대옒??. */
+.ai-command-bar .ai-assistant-status {
+  font-size: 11px;
+  font-weight: 600;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+

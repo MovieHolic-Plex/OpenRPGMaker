@@ -1,0 +1,350 @@
+/* 전투는 키보드 전용 — 감독 결정(2026-08-03): 이 에디터의 게임 플레이 런타임은
+   마우스를 쓰지 않는다. 클릭 핸들러를 떼는 것만으로는 호버 강조와 손가락 커서가 남아
+   "눌러도 반응 없는 버튼"처럼 보이므로, 포인터 자체를 통과시켜 클릭할 수 있다는 신호를
+   지운다. 키보드 포커스/커서 표시와 Z/Enter 의 .click() 디스패치는 그대로 동작한다. */
+.battle-scene .battle-command,
+.battle-scene .battle-command *,
+.battle-scene [data-battle-targetable="true"] {
+  /* 스킨 파일들이 pointer-events 를 !important 로 되살리므로 여기서도 맞춰 눌러야 한다. */
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+/* `.battle-command-panel` 은 `grid-template-columns: minmax(0, 1fr)` 로 열이 하나뿐이다(:264).
+   여기서 `grid-column: 2` 를 주면 없는 열을 가리켜 암시적 auto 열이 생기고, 그 열이 내용 폭을
+   먼저 가져가 커맨드가 놓인 `minmax(0, 1fr)` 열이 0px 로 붕괴한다(최소값이 0이라 제동도 없다).
+   그러면 커맨드 항목이 DOM 에는 있는데 폭 0 으로 눌려 화면에서 사라져 전투 진행이 막힌다.
+   rm2003 스킨만 `grid-column: 1 !important` 로 국소 우회하고 있었다(_rm2003.css:535). */
+.battle-command-help,
+.battle-key-prompts,
+.battle-target-prompt {
+  color: #fff7c6;
+  font-size: 30px;
+  grid-column: 1;
+}
+
+.battle-command-help {
+  border-top: 2px solid rgba(221, 234, 255, 0.42);
+  padding: 16px 24px 0;
+  text-align: center;
+}
+
+.battle-target-prompt {
+  align-self: start;
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px solid rgba(221, 234, 255, 0.42);
+  grid-row: 2;
+  padding: 10px 20px;
+}
+
+.battle-target-menu {
+  align-self: end;
+  grid-row: 3;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.battle-key-prompts {
+  align-items: center;
+  display: flex;
+  gap: 56px;
+  grid-row: 4;
+  justify-content: center;
+}
+
+.battle-key-prompts kbd {
+  background: linear-gradient(180deg, #f1ca66, #9a5c1e);
+  border: 2px solid #fff3b1;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.6);
+  color: #102045;
+  font: inherit;
+  padding: 4px 16px;
+  text-shadow: none;
+}
+
+.battle-party {
+  grid-column: 3;
+  grid-row: 3;
+  padding: 20px 28px;
+  z-index: 6;
+}
+
+.battle-resource-preview {
+  display: grid;
+  gap: 20px;
+  height: 100%;
+  min-height: 0;
+}
+
+.battle-resource-heading {
+  border-bottom: 2px solid rgba(221, 234, 255, 0.42);
+  color: #fff;
+  font-size: 36px;
+  padding-bottom: 12px;
+}
+
+.battle-actor-status {
+  display: grid;
+  gap: 8px 20px;
+  grid-template-columns: minmax(148px, 1fr) auto minmax(168px, auto);
+  padding: 0;
+}
+
+.battle-actor-name,
+.battle-actor-state,
+.battle-actor-hp {
+  font-size: 30px;
+}
+
+.battle-actor-gauge {
+  /* Keep ATB row visible so System2 AT fill chrome is actually consumed. */
+  display: flex;
+}
+
+.battle-risk-label {
+  align-self: end;
+  color: var(--battle-green);
+  font-size: 34px;
+}
+
+.battle-enemy-list-panel {
+  display: none;
+}
+
+.battle-message-window {
+  bottom: calc(var(--battle-hud-height) + 36px);
+  font-size: 34px;
+  left: 48px;
+  right: 48px;
+}
+
+.battle-scene[data-battle-director-step="result"] {
+  background: #000;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-field {
+  grid-row: 1 / -1;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-backdrop {
+  filter: brightness(0.72) saturate(1.05);
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-command-panel,
+.battle-scene[data-battle-director-step="result"] .battle-enemy-list-panel,
+.battle-scene[data-battle-director-step="result"] .battle-party {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-actor-group,
+.battle-scene[data-battle-director-step="result"] .battle-enemy-group {
+  opacity: 1;
+  visibility: visible;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-enemy.defeated::after {
+  background:
+    radial-gradient(circle, rgba(125, 205, 255, 0.95) 0 4px, transparent 6px),
+    radial-gradient(circle at 70% 30%, rgba(196, 237, 255, 0.9) 0 4px, transparent 6px),
+    radial-gradient(circle at 25% 65%, rgba(80, 165, 255, 0.88) 0 4px, transparent 6px);
+  background-size: 52px 52px, 68px 68px, 44px 44px;
+  content: "";
+  inset: -40px;
+  position: absolute;
+}
+
+.battle-result-panel {
+  background: linear-gradient(180deg, #08286a, #020d2b);
+  border: 6px solid var(--battle-metal);
+  box-shadow: inset 0 0 0 4px rgba(255, 218, 116, 0.38), 0 0 80px rgba(0, 0, 0, 0.78);
+  display: grid;
+  gap: 32px;
+  left: 50%;
+  min-width: 0;
+  padding: 52px 96px 44px;
+  position: absolute;
+  text-align: center;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  width: min(1640px, 58vw);
+  z-index: 8;
+}
+
+.battle-result-crest {
+  align-self: center;
+  background: linear-gradient(135deg, transparent 35%, var(--battle-gold) 35% 65%, transparent 65%);
+  height: 76px;
+  justify-self: center;
+  margin-top: -96px;
+  width: 172px;
+}
+
+.battle-result-title {
+  color: #ffe69a;
+  font-size: 92px;
+  font-weight: 900;
+  margin: 0;
+  text-shadow: 0 0 28px rgba(255, 216, 102, 0.75), 0 6px 0 #000;
+}
+
+.battle-result-cards {
+  display: grid;
+  gap: 36px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.battle-result-reward-card {
+  align-content: center;
+  background: linear-gradient(180deg, rgba(15, 48, 109, 0.98), rgba(3, 14, 44, 0.98));
+  border: 4px solid rgba(255, 216, 102, 0.72);
+  display: grid;
+  gap: 24px;
+  min-height: 304px;
+  padding: 32px;
+  text-align: center;
+}
+
+.battle-result-reward-label {
+  font-size: 40px;
+}
+
+.battle-result-reward-icon {
+  align-self: center;
+  border-radius: 0;
+  display: block;
+  height: 116px;
+  justify-self: center;
+  width: 140px;
+}
+
+.battle-result-reward-value {
+  color: #ffe98b;
+  font-size: 56px;
+}
+
+.battle-result-quest {
+  border-bottom: 2px solid rgba(255, 216, 102, 0.5);
+  border-top: 2px solid rgba(255, 216, 102, 0.5);
+  display: grid;
+  gap: 12px;
+  padding: 24px;
+}
+
+.battle-result-quest strong {
+  color: var(--battle-green);
+  font-size: 42px;
+}
+
+.battle-result-quest span {
+  color: #fff;
+  font-size: 34px;
+}
+
+.battle-result-confirm {
+  background: linear-gradient(180deg, #0b244f, #020817);
+  border: 4px solid rgba(255, 216, 102, 0.8);
+  color: #fff;
+  font: inherit;
+  font-size: 40px;
+  justify-self: center;
+  min-width: 520px;
+  padding: 20px 48px;
+}
+
+.battle-result-progress {
+  align-items: center;
+  background: rgba(0, 5, 9, 0.9);
+  border: 4px solid rgba(255, 216, 102, 0.7);
+  bottom: -276px;
+  color: #fff;
+  display: grid;
+  gap: 48px;
+  grid-template-columns: 1fr 1fr;
+  left: 50%;
+  padding: 32px 56px;
+  position: absolute;
+  text-align: left;
+  transform: translateX(-50%);
+  width: min(2080px, 76vw);
+}
+
+.battle-result-world-state,
+.battle-result-next-objective {
+  align-items: center;
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 128px minmax(0, 1fr);
+}
+
+.battle-result-world-state {
+  border-right: 4px solid rgba(255, 255, 255, 0.72);
+  padding-right: 56px;
+}
+
+.battle-result-progress-icon {
+  background: linear-gradient(180deg, #173f87, #061535);
+  border: 4px solid rgba(106, 178, 255, 0.8);
+  display: block;
+  height: 112px;
+  width: 112px;
+}
+
+.battle-result-progress-icon-world {
+  background: radial-gradient(circle, rgba(141, 240, 100, 0.85), #17390f 65%);
+  border-color: rgba(141, 240, 100, 0.9);
+}
+
+.battle-result-progress-icon-next::before {
+  color: #cfe8ff;
+  content: "!";
+  display: grid;
+  font-size: 76px;
+  font-weight: 900;
+  height: 100%;
+  place-items: center;
+}
+
+.battle-result-world-state div,
+.battle-result-next-objective div {
+  display: grid;
+  gap: 10px;
+}
+
+.battle-result-world-state strong {
+  color: var(--battle-green);
+}
+
+.battle-result-next-objective strong {
+  color: #7ab8ff;
+}
+
+.battle-result-progress-bar {
+  background: #1e3717;
+  height: 22px;
+  position: relative;
+  width: 520px;
+}
+
+.battle-result-progress-bar::before {
+  background: var(--battle-green);
+  content: "";
+  display: block;
+  height: 100%;
+  width: 34%;
+}
+
+.battle-result-progress-count {
+  color: var(--battle-green);
+  position: absolute;
+  right: 52px;
+}
+
+.battle-result-next-prompt {
+  bottom: -388px;
+  color: #fff;
+  font-size: 38px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}

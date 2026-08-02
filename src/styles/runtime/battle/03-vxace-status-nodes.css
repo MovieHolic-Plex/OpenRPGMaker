@@ -1,0 +1,171 @@
+/* vxace 스킨 전용 노드 — 기존 11종 스킨의 레이아웃이 바뀌지 않도록 기본은 숨긴다.
+   각 스킨 CSS 가 필요할 때만 display 를 되돌린다(현재는 _vxace.css 만). */
+.battle-actor-status .battle-actor-face,
+.battle-actor-status .battle-actor-role,
+.battle-actor-status .battle-atb-value,
+.battle-enemy .battle-enemy-index-badge,
+.battle-enemy-hud .battle-enemy-mp-bar,
+.battle-enemy-hud .battle-enemy-atb-bar {
+  display: none;
+}
+
+/* HP/MP 는 `HP`(라벨) · ` 514`(현재값) · `/514`(최대값) 세 조각으로 쪼개져 있다
+   (battleFieldDom: vitalNode). 기본 11종 스킨은 셋을 이어 붙여 한 줄로 읽히게만 하면 되고,
+   vxace 만 라벨을 배지로 띄우고 최대값을 감춘다. */
+.battle-actor-hp .battle-vital-label,
+.battle-actor-hp .battle-vital-value,
+.battle-actor-hp .battle-vital-max,
+.battle-actor-mp .battle-vital-label,
+.battle-actor-mp .battle-vital-value,
+.battle-actor-mp .battle-vital-max,
+.battle-actor-level .battle-vital-label,
+.battle-actor-level .battle-vital-value {
+  font: inherit;
+  white-space: pre;
+}
+
+.battle-actor-name,
+.battle-actor-state,
+.battle-actor-hp {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-actor-state {
+  font-size: 14px;
+}
+
+.battle-actor-hp {
+  text-align: right;
+}
+
+.battle-actor-gauge {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.battle-atb-bar {
+  background: var(--rm2k3-battle-window-shadow);
+  border: 2px solid var(--rm2k3-battle-window-light);
+  display: inline-block;
+  flex: 1 1 auto;
+  height: 12px;
+  min-width: 0;
+  position: relative;
+}
+
+.battle-atb-bar::before {
+  /* System2 AT palette (sampled from System2C blue fill strip). */
+  background: linear-gradient(
+    180deg,
+    var(--system2-at-fill-hi, #82caf2),
+    var(--system2-at-fill-lo, #60bcee)
+  );
+  content: "";
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  width: var(--battle-atb);
+}
+
+.battle-command::before,
+.battle-enemy-list-row::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+}
+
+.battle-command:hover,
+.battle-command:focus-visible,
+.battle-command[data-battle-command-cursor="true"],
+.battle-enemy-list-row:hover,
+.battle-enemy-list-row:focus-visible {
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+  color: #fff;
+  outline: 0;
+}
+
+.battle-target-menu .battle-command[data-battle-command-cursor="true"] {
+  border-color: transparent;
+}
+
+.battle-target-menu .battle-command[data-battle-command-cursor="true"]::before {
+  content: "";
+}
+
+.battle-target-menu .battle-command.battle-target-selected,
+.battle-target-menu .battle-command:hover,
+.battle-target-menu .battle-command:focus-visible {
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+}
+
+.battle-target-menu .battle-command.battle-target-selected::before,
+.battle-target-menu .battle-command:hover::before,
+.battle-target-menu .battle-command:focus-visible::before {
+  content: ">";
+}
+
+.battle-command:hover::before,
+.battle-command:focus-visible::before,
+.battle-command[data-battle-command-cursor="true"]::before,
+.battle-enemy-list-row:hover::before,
+.battle-enemy-list-row:focus-visible::before {
+  content: ">";
+}
+
+.battle-enemy-list {
+  background: transparent;
+  padding: 0;
+}
+
+.battle-enemy > .battle-status-icons {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.battle-enemy-hud {
+  display: grid;
+  gap: 2px;
+  margin-top: 4px;
+  min-width: 104px;
+}
+
+.battle-enemy-name {
+  color: var(--rm2k3-battle-text);
+  display: block;
+  font-size: 18px;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.battle-enemy-hp-text {
+  color: var(--rm2k3-battle-text);
+  display: block;
+  font-size: 16px;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
+}
+
+.battle-enemy-hp-bar {
+  display: block;
+  height: 8px;
+}
+
+.battle-enemy-list-hp {
+  color: var(--rm2k3-battle-muted);
+  font-size: 16px;
+}
+
+.battle-field {
+  position: relative;
+}
+

@@ -1,0 +1,188 @@
+  .map-context-menu-item:hover:not(.disabled),
+  .map-context-menu-item:focus-visible:not(.disabled),
+  .rm2k3-menu-command:hover:not(:disabled),
+  .rm2k3-menu-command:focus-visible:not(:disabled) {
+    background: var(--editor-blue-soft);
+    border-color: var(--accent-border);
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .structure-stamp-panel,
+  .left-panel-stack[data-testid="left-palette-root"] .palette-stamp-status,
+  .left-panel-stack[data-testid="left-palette-root"] .palette-option-row,
+  .left-panel-stack[data-testid="left-palette-root"] > .empty-hint {
+    display: none;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav {
+    align-items: center;
+    border-bottom: 1px solid var(--editor-line);
+    display: flex;
+    gap: 10px;
+    margin: 0 0 6px;
+    padding: 2px 0 8px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-nav::before {
+    color: var(--editor-text);
+    content: "선택 타일";
+    flex: 0 0 76px;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .chipset-band-button {
+    flex: 0 0 48px;
+    height: 48px;
+    width: 48px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+    flex: 1 1 auto;
+    height: auto;
+    max-height: none;
+    min-height: min(200px, 26vh);
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .tile-tool-status {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: 70px minmax(0, 1fr);
+    margin: 0 0 8px;
+    padding: 0;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .tile-tool-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .brush-control {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 6px 0 0;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
+    display: block;
+    grid-column: 1 / -1;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .brush-size-btn {
+    height: 32px;
+  }
+
+  .map-context-menu-item:focus:not(:focus-visible) {
+    background: transparent;
+    border-color: transparent;
+    outline: none;
+  }
+
+  .map-context-menu-shortcut {
+    color: var(--editor-text-muted);
+    font-size: 15px;
+  }
+
+  .map-context-menu-item.disabled,
+  .rm2k3-menu-command:disabled {
+    color: var(--editor-text-soft);
+    opacity: 0.72;
+  }
+
+  .map-context-menu-item.separator-before {
+    border-top-color: var(--editor-line);
+    margin-top: 8px;
+    padding-top: 11px;
+  }
+
+  @media (max-width: 900px) {
+    .rm2k3-menu-item {
+      margin-right: 10px;
+    }
+
+    .canvas-toolbar {
+      gap: 4px;
+      left: 12px;
+      padding: 7px;
+      right: 12px;
+      transform: none;
+    }
+
+    .canvas-toolbar-label {
+      font-size: 13px;
+      padding: 0 4px;
+    }
+
+    .zoom-button {
+      min-width: 38px;
+      padding: 0 7px;
+    }
+
+    .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+      min-width: 62px;
+    }
+
+    .editor-statusbar-cell {
+      padding: 0 10px;
+    }
+
+    .map-context-menu,
+    .rm2k3-menu-popup {
+      min-width: min(304px, calc(100vw - 24px));
+      padding: 10px;
+    }
+
+    .map-context-menu-item,
+    .rm2k3-menu-command {
+      column-gap: 10px;
+      font-size: 15px;
+      min-height: 36px;
+      padding: 6px 10px;
+    }
+
+    .map-context-menu-shortcut {
+      font-size: 13px;
+    }
+  }
+
+  @media (min-width: 901px) and (max-width: 1320px) {
+    .canvas-toolbar {
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 6px;
+    }
+
+    .canvas-toolbar-label {
+      font-size: 13px;
+      padding: 0 4px;
+    }
+
+    .zoom-button {
+      min-width: 34px;
+      padding: 0 6px;
+    }
+
+    .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+      min-width: 60px;
+    }
+
+    .editor-statusbar {
+      font-size: 12px;
+    }
+
+    .editor-statusbar-cell {
+      padding: 0 8px;
+    }
+
+    .editor-statusbar-cell.db-connection-status {
+      display: inline-flex;
+      max-width: none;
+      padding: 0 10px;
+    }
+  }
+
+  .editor-layout .left-panel {
+    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 300px);
+    min-width: 184px;
+  }
+

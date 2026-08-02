@@ -1,0 +1,192 @@
+  .rm2k3-window-control:hover,
+  .rm2k3-window-control:focus-visible {
+    background: var(--control-bg-hover);
+    color: var(--editor-text);
+    outline: none;
+  }
+
+  .toolbar-collapsed .rm2k3-toolbar {
+    display: none;
+  }
+
+  .rm2k3-menu-item {
+    border-radius: var(--radius-s);
+    color: var(--editor-text);
+    font: 600 14px/1.1 var(--font-ui);
+    height: 34px;
+    margin-right: 12px;
+    padding: 0 10px;
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .rm2k3-menu-item:hover,
+  .rm2k3-menu-item:focus-visible,
+  .rm2k3-menu-item[aria-expanded="true"] {
+    background: var(--control-bg-hover);
+    border-color: transparent;
+    color: var(--text-1);
+  }
+
+  .rm2k3-toolbar {
+    background: var(--editor-toolbar-bg);
+    border-top: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    min-height: 64px;
+    padding: 12px 20px;
+  }
+
+  body.ai-panel-docked .topbar {
+    padding-right: var(--ai-docked-panel-inset);
+  }
+
+  .rm2k3-toolbar-row {
+    gap: 8px;
+    min-height: 38px;
+    overflow-x: auto;
+  }
+
+  .rm2k3-toolbar-separator {
+    background: var(--editor-line);
+    border-right: 0;
+    height: 32px;
+    margin: 0 6px;
+  }
+
+  .rm2k3-tool-button,
+  .tool-grid .btn,
+  .layer-btn,
+  .brush-size-btn,
+  .tool-command-row .icon-btn,
+  .left-panel-stack[data-testid="left-map-root"] .map-tree-action,
+  .left-panel-stack[data-testid="left-map-root"] .btn,
+  .left-panel-stack[data-testid="left-map-root"] .map-tree-wide-action {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line);
+    border-radius: 6px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    color: var(--editor-text);
+  }
+
+  .rm2k3-tool-button {
+    height: 42px;
+    min-width: 42px;
+    padding: 0 9px;
+  }
+
+  .rm2k3-tool-button.icon-only {
+    min-width: 42px;
+    width: 42px;
+  }
+
+  .rm2k3-tool-button:hover:not(:disabled),
+  .rm2k3-tool-button:focus-visible,
+  .tool-grid .btn:hover:not(:disabled),
+  .tool-grid .btn:focus-visible {
+    background: var(--control-bg-hover);
+    border-color: var(--editor-line-strong);
+    outline: none;
+  }
+
+  .rm2k3-tool-button.active,
+  .rm2k3-tool-button[aria-pressed="true"],
+  .rm2k3-tool-button.primary,
+  .tool-grid .btn.active,
+  .tool-grid .btn[aria-pressed="true"],
+  .layer-btn.active,
+  .layer-btn[aria-pressed="true"],
+  .brush-size-btn.active,
+  .brush-size-btn[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
+  }
+
+  .rm2k3-tool-button.active:hover:not(:disabled),
+  .rm2k3-tool-button[aria-pressed="true"]:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--accent-border);
+    color: var(--on-accent);
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-1,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-2,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-4,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-8 {
+    align-items: center;
+    background-image: none;
+    color: var(--editor-text);
+    display: inline-flex;
+    font: 700 12px/1 var(--font-mono);
+    height: 22px;
+    justify-content: center;
+    letter-spacing: 0;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+    width: 22px;
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-1::before,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-2::before,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-4::before,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-8::before {
+    display: none;
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-1::after,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-2::after,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-4::after,
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-8::after {
+    color: currentColor;
+    display: block;
+    font: inherit;
+    height: auto;
+    left: auto;
+    position: static;
+    text-indent: 0;
+    top: auto;
+    width: auto;
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-1::after {
+    content: "1x";
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-2::after {
+    content: "2x";
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-4::after {
+    content: "4x";
+  }
+
+  .rm2k3-tool-button.icon-only .rm-tool-icon-zoom-8::after {
+    content: "8x";
+  }
+
+  .rm2k3-tool-button.active .rm-tool-icon-zoom-1,
+  .rm2k3-tool-button.active .rm-tool-icon-zoom-2,
+  .rm2k3-tool-button.active .rm-tool-icon-zoom-4,
+  .rm2k3-tool-button.active .rm-tool-icon-zoom-8,
+  .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-1,
+  .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-2,
+  .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-4,
+  .rm2k3-tool-button[aria-pressed="true"] .rm-tool-icon-zoom-8 {
+    color: var(--on-accent);
+  }
+
+  .main,
+  .editor-layout,
+  .canvas-area,
+  .editor-layout .canvas-area {
+    background: var(--editor-canvas-bg);
+  }
+
+  .editor-layout .left-panel {
+    background: var(--editor-panel-bg);
+    border-right: 1px solid var(--editor-line-strong);
+    container-type: inline-size;
+    gap: 0;
+    grid-template-rows: minmax(0, 1fr) 6px var(--map-tree-height, 300px);
+    min-width: 184px;
+    padding: 0;
+  }
+

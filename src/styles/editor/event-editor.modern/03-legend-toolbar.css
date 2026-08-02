@@ -1,0 +1,292 @@
+/* 실행 내용: legend + toolbar 한 줄, 리스트가 나머지 채움 */
+.event-contents-fieldset {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 220px;
+  padding: 12px 12px 10px;
+}
+
+.event-contents-fieldset > .event-contents-legend,
+.event-contents-fieldset > legend {
+  align-self: center;
+  color: var(--text-1);
+  float: none;
+  font: 700 14px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  grid-column: 1;
+  grid-row: 1;
+  padding: 0;
+  width: auto;
+}
+
+.event-contents-fieldset > .event-editor-command-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: flex-end;
+  min-height: 32px;
+  position: static;
+  right: auto;
+  top: auto;
+  z-index: 1;
+}
+
+.event-contents-fieldset > .cmd-list {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  min-height: 0;
+}
+
+.event-editor-command-tool-group {
+  align-items: center;
+  display: inline-flex;
+  gap: 3px;
+}
+
+.event-editor-command-tool-group + .event-editor-command-tool-group,
+.event-editor-command-tool-group + .event-editor-command-tool {
+  border-left: 1px solid var(--event-modern-border);
+  margin-left: 2px;
+  padding-left: 8px;
+}
+
+.event-editor-command-tool {
+  align-items: center;
+  background: var(--event-modern-field);
+  border: 1px solid var(--event-modern-border);
+  border-radius: 6px;
+  color: var(--text-1);
+  display: inline-flex;
+  font: 600 16px/1 "Segoe UI Symbol", "Segoe UI", system-ui, sans-serif;
+  height: 30px;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0;
+  transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+}
+
+.event-editor-command-tool:hover:not(:disabled) {
+  background: var(--bg-hover, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border));
+}
+
+.event-editor-command-tool:focus-visible {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--event-modern-accent) 22%, transparent);
+  outline: none;
+}
+
+.event-editor-command-tool.primary {
+  background: color-mix(in srgb, var(--event-modern-accent) 18%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--event-modern-accent) 55%, var(--event-modern-border));
+  color: var(--event-modern-accent);
+  font-weight: 700;
+  min-width: 36px;
+}
+
+.event-editor-command-tool:disabled {
+  color: var(--text-3);
+  opacity: 0.55;
+}
+
+/* 하단 보조 도구 — 접힘 시 가로 칩 한 줄.
+   열림 시 flex 성장 금지: 본문은 칩 행 위 absolute 오버레이로 띄워 cmd-list 기하를 유지. */
+.event-editor-aux-tools {
+  align-items: start;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.event-editor-aux-tools > .ai-event-assist,
+.event-editor-aux-tools .event-script-live-preview,
+.event-editor-aux-tools .event-script-flowchart {
+  background: var(--event-modern-field);
+  border: 1px solid var(--event-modern-border);
+  border-radius: 999px;
+  box-shadow: none;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.event-editor-aux-tools > .ai-event-assist[open],
+.event-editor-aux-tools .event-script-live-preview[open],
+.event-editor-aux-tools .event-script-flowchart[open] {
+  border-color: color-mix(in srgb, var(--event-modern-accent) 45%, var(--event-modern-border));
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 18%, transparent);
+  /* 금지: flex: 1 1 100% — 열리면 행 전체를 먹어 cmd-list 를 붕괴시킴 */
+  flex: 0 0 auto;
+}
+
+.event-editor-aux-tools .event-script-modern-views {
+  display: contents;
+  position: relative;
+  z-index: 1;
+}
+
+.event-aux-chip-summary {
+  align-items: center;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  list-style: none;
+  min-height: 38px;
+  padding: 0 14px;
+  user-select: none;
+}
+
+.event-aux-chip-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-aux-chip-icon {
+  color: var(--event-modern-accent);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.event-aux-chip-label {
+  font: 700 13px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-aux-chip-status {
+  background: color-mix(in srgb, var(--event-modern-accent) 12%, var(--event-modern-field));
+  border: 1px solid color-mix(in srgb, var(--event-modern-accent) 28%, var(--event-modern-border));
+  border-radius: 999px;
+  color: var(--text-2);
+  font: 600 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.02em;
+  margin-left: 2px;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.event-aux-chip-status[data-kind="busy"] {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--event-modern-border));
+  color: var(--accent);
+}
+
+.event-aux-chip-status[data-kind="error"] {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--event-modern-border));
+  color: var(--danger);
+}
+
+.event-aux-chip-status[data-kind="ready"] {
+  border-color: color-mix(in srgb, var(--event-modern-accent) 50%, var(--event-modern-border));
+  color: var(--event-modern-accent);
+}
+
+.event-aux-chip-status[data-kind="empty"],
+.event-aux-chip-status[data-kind="idle"] {
+  border-color: var(--event-modern-border);
+  color: var(--text-3);
+}
+
+/* idle/빈 칩 상태 배지 — 시각·스크린리더 모두 숨김 */
+.event-aux-chip-status[hidden],
+.event-aux-chip-status[aria-hidden="true"],
+.event-aux-chip-status:empty {
+  display: none;
+}
+
+.event-editor-aux-tools > .ai-event-assist[open] > .event-aux-chip-summary,
+.event-editor-aux-tools .event-script-live-preview[open] > .event-aux-chip-summary,
+.event-editor-aux-tools .event-script-flowchart[open] > .event-aux-chip-summary {
+  color: var(--text-1);
+  display: inline-flex;
+  min-height: 38px;
+  width: auto;
+}
+
+/* open body: 칩 행 위 오버레이 — containing block 은 .event-editor-aux-tools
+   (칩에 position 두지 않음). 인플로우 높이 비점유 → cmd-list min-height 유지. */
+.event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body,
+.event-editor-aux-tools .event-script-live-preview[open] > .event-script-live-preview-body,
+.event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
+  background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #1a1f2b));
+  border: 1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border));
+  border-radius: 10px;
+  bottom: calc(100% + 6px);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.38),
+    0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent);
+  left: 0;
+  max-height: min(280px, 42vh);
+  overflow: auto;
+  position: absolute;
+  right: 0;
+  width: auto;
+  z-index: 8;
+}
+
+.event-contents-fieldset .cmd-list {
+  background: var(--event-modern-field);
+  border: 1px solid var(--event-modern-border);
+  border-radius: 8px;
+  counter-reset: command-row;
+  display: block;
+  height: 100%;
+  overflow: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+}
+
+.event-contents-fieldset .cmd-item {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* RM2K3 클래식 명령 라인 + 스레드형 parent/child 위계.
+   depth마다 넓은 들여쓰기 + 연속 세로 레일 + 자식 행 배경 밴드로 분기를 즉시 읽는다. */
+.event-contents-fieldset .cmd-list {
+  --cmd-indent-step: 28px;
+  --cmd-indent-base: 10px;
+  --cmd-rail: color-mix(in srgb, var(--accent, #6ea8ff) 55%, var(--border-default));
+  --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));
+  --cmd-rail-fork: color-mix(in srgb, var(--accent, #6ea8ff) 70%, var(--border-default));
+  --cmd-rail-shop: color-mix(in srgb, var(--success, #4caf7a) 70%, var(--border-default));
+}
+
+.event-contents-fieldset .cmd-head,
+.event-contents-fieldset .cmd-line-marker,
+.event-contents-fieldset .cmd-empty-line {
+  align-items: center;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-1);
+  display: flex;
+  font: 400 13px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  gap: 6px;
+  min-height: 24px;
+  overflow: hidden;
+  /* depth 레벨마다 28px — 18px 때보다 parent/child가 확실히 갈라진다. */
+  padding: 1px 8px 1px calc(var(--cmd-indent-base) + (var(--cmd-depth, 0) * var(--cmd-indent-step)));
+  position: relative;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* 깊이마다 세로 레일(스레드). 연한 선이 아니라 확실한 트랙. */
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+

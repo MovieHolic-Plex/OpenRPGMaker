@@ -1,0 +1,117 @@
+/* ── Dock mode clarity: side panel vs floating bar ── */
+.ai-header-title-row {
+  align-items: center;
+  display: inline-flex;
+  flex: 1 1 auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ai-dock-mode-btn {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 700 11px/1 var(--font-ui, system-ui, sans-serif);
+  height: 24px;
+  letter-spacing: 0.02em;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+.ai-dock-mode-btn:hover,
+.ai-dock-mode-btn:focus-visible {
+  border-color: var(--accent-border);
+  color: var(--text-1);
+  outline: none;
+}
+.ai-dock-mode-btn[data-dock-mode="side"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-hover);
+}
+.ai-dock-mode-btn[data-dock-mode="float"] {
+  background: var(--warning-muted);
+  border-color: color-mix(in srgb, var(--warning) 50%, transparent);
+  color: var(--warning);
+}
+/* 사이드 패널: 도크 뱃지는 더보기 메뉴로만 — 입력줄 뱃지 소음 제거 */
+.ai-chat-panel.chat-dock-side .ai-dock-mode-btn {
+  display: none;
+}
+
+/* Side: full-height column with left accent */
+.editor-layout .ai-chat-side-panel {
+  background: var(--bg-surface);
+  border-left: 3px solid var(--accent);
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.22);
+}
+.ai-chat-panel.chat-dock-side {
+  background: var(--bg-surface);
+}
+.ai-chat-panel.chat-dock-side .ai-chat-header {
+  background: color-mix(in srgb, var(--bg-raised) 88%, var(--accent-muted));
+  border-bottom: 1px solid var(--border-subtle);
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) 0;
+  padding: 10px var(--space-2) 10px;
+}
+.ai-chat-panel.chat-dock-side .ai-command-bar {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  border-top: 1px solid var(--border-subtle);
+  box-shadow: none;
+  margin-top: 4px;
+  padding: 8px 0 0;
+}
+.ai-chat-panel.chat-dock-side .ai-command-bar::before {
+  content: none;
+}
+
+/* Float: capsule over the map (not a side column) */
+.ai-chat-panel.chat-dock-float .ai-command-bar {
+  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning) 35%, var(--border-strong));
+  border-radius: 16px;
+  box-shadow: var(--shadow-modal);
+  padding: 10px 12px;
+}
+.ai-chat-panel.chat-dock-float .ai-command-bar::before {
+  color: var(--warning);
+  content: "플로팅 바 · 맵 위 입력";
+  display: block;
+  font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
+  letter-spacing: 0.04em;
+  margin: 0 0 8px 36px;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+/* ── AI 리치 문서 (present_doc) ─────────────────────────────────────────── */
+.ai-chat-bubble.ai-chat-doc { max-width: 100%; padding: 10px 12px; }
+.ai-doc { display: flex; flex-direction: column; gap: 10px; }
+.ai-doc-title { margin: 0; font-size: 14px; font-weight: 800; }
+.ai-doc-block { min-width: 0; }
+.ai-doc-error { color: #c65f5f; font-size: 12px; }
+.ai-doc-table-scroll, .ai-doc-sheet-scroll, .ai-doc-demo-scroll { overflow-x: auto; }
+.ai-doc-table-scroll table { border-collapse: collapse; font-size: 12.5px; width: 100%; }
+.ai-doc-table-scroll th, .ai-doc-table-scroll td { border-bottom: 1px solid rgba(128,128,128,0.25); padding: 4px 8px; text-align: left; }
+.ai-doc-sheet-inner { position: relative; image-rendering: pixelated; border-radius: 6px; }
+.ai-doc-zone { position: absolute; border: 2px solid; border-radius: 4px; pointer-events: none; }
+.ai-doc-zone span { position: absolute; left: -2px; top: -18px; font-size: 10px; font-weight: 700; color: #fff; padding: 0 4px; border-radius: 3px; white-space: nowrap; }
+.ai-doc-card-head { display: flex; align-items: center; gap: 6px; }
+.ai-doc-card-title { font-size: 13px; font-weight: 700; }
+.ai-doc-badge { font-size: 10.5px; font-weight: 700; color: #fff; background: #7c5b1e; border-radius: 4px; padding: 1px 6px; }
+.ai-doc-card-ids { font-size: 11px; opacity: 0.65; font-family: Consolas, monospace; }
+.ai-doc-card-grid { display: inline-block; margin-top: 6px; border-radius: 6px; overflow: hidden; background: #12160f; }
+.ai-doc-card-row { display: flex; }
+.ai-doc-card-cell { image-rendering: pixelated; flex: 0 0 auto; }
+.ai-doc-card-caption { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+.ai-doc-demo-toolbar { display: flex; gap: 6px; margin-bottom: 6px; }
+.ai-doc-demo-btn { font-size: 12px; padding: 3px 10px; border: 1px solid rgba(128,128,128,0.4); border-radius: 6px; background: transparent; cursor: pointer; color: inherit; }
+.ai-doc-demo-btn[aria-pressed="true"] { background: #7c5b1e; color: #fff; border-color: #7c5b1e; }
+.ai-doc-demo-canvas { image-rendering: pixelated; border-radius: 6px; display: block; }
+.ai-doc-iframe { width: 100%; height: 420px; border: 1px solid rgba(128,128,128,0.3); border-radius: 8px; background: #fff; }

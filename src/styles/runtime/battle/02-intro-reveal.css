@@ -1,0 +1,159 @@
+/* ── 등장 연출(인트로) ──
+   포켓몬처럼 "화면이 걷히고 → 적이 튀어나오고 → 정보 패널이 미끄러져 들어온" 뒤에야
+   커맨드가 열린다. 인트로 동안(시퀀서가 1.2초 점유) 커맨드/컨트롤은 숨긴다. */
+.battle-scene[data-battle-director-step="intro"] .battle-command-host {
+  visibility: hidden;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-field {
+  animation: battle-intro-field 550ms ease-out both;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-enemy {
+  animation: battle-intro-enemy 620ms cubic-bezier(0.2, 0.9, 0.3, 1.15) 260ms both;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-actor-group .battle-actor {
+  animation: battle-intro-ally 550ms ease-out 140ms both;
+}
+
+.battle-scene[data-battle-director-step="intro"] .battle-enemy-list-panel,
+.battle-scene[data-battle-director-step="intro"] .battle-party {
+  animation: battle-intro-panel 420ms ease-out 620ms both;
+}
+
+@keyframes battle-intro-field {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes battle-intro-enemy {
+  from { opacity: 0; transform: translate(-30%, -100%) scale(0.3); }
+  70% { opacity: 1; transform: translate(-52%, -100%) scale(1.06); }
+  to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
+@keyframes battle-intro-ally {
+  from { opacity: 0; transform: translate(-110%, -100%); }
+  to { opacity: 1; transform: translate(-50%, -100%); }
+}
+
+@keyframes battle-intro-panel {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.battle-message-cursor {
+  animation: rm2k3-message-cursor 0.8s steps(2, end) infinite;
+  color: var(--rm2k3-battle-window-light);
+}
+
+.battle-message-lines {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.battle-message-line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-result-panel {
+  top: calc((100% - var(--battle-hud-height)) * 0.5);
+  bottom: auto;
+  left: 50%;
+  min-width: 420px;
+  padding: 14px 20px;
+  position: absolute;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+.battle-result-title {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.battle-result-rewards {
+  color: var(--rm2k3-battle-muted);
+  font-size: 16px;
+}
+
+.battle-result-reward-row {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 108px minmax(0, 1fr);
+  text-align: left;
+}
+
+.battle-result-reward-label {
+  color: var(--rm2k3-battle-text);
+}
+
+.battle-result-reward-value {
+  color: #fff6a8;
+  text-align: right;
+}
+
+.battle-command-menu {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-self: stretch;
+  min-width: 0;
+  width: 100%;
+}
+
+.battle-submenu-header {
+  color: var(--rm2k3-battle-muted);
+  font-size: 16px;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+}
+
+.battle-command,
+.battle-enemy-list-row {
+  min-width: 0;
+  min-height: 22px;
+  border: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--rm2k3-battle-text);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 2px 6px;
+  text-align: left;
+  text-shadow: 2px 2px 0 #000;
+  width: 100%;
+}
+
+.battle-target-prompt {
+  border-bottom: 2px solid rgba(231, 242, 255, 0.45);
+  color: #fff6a8;
+  font-size: 16px;
+  margin-bottom: 4px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 2px 6px 6px;
+  text-overflow: ellipsis;
+  text-shadow: 2px 2px 0 #000;
+  white-space: nowrap;
+}
+
+.battle-actor-status {
+  align-items: center;
+  display: grid;
+  gap: 2px 8px;
+  grid-template-columns: minmax(0, 1fr) auto 56px;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 2px 4px;
+}
+

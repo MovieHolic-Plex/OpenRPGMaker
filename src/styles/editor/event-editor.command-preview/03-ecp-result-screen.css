@@ -1,0 +1,235 @@
+/* 결과 화면 목업 */
+.ecp-result-screen {
+  display: grid; place-items: center; width: 100%; height: 100%; min-height: 96px;
+  font: 800 18px/1.2 Tahoma, sans-serif; letter-spacing: 0.12em; border-radius: 6px;
+}
+.ecp-result-screen.gameover { background: #000; color: #d33; }
+.ecp-result-screen.title { background: linear-gradient(180deg, #0a1230, #1a2a5a); color: #ffe07a; }
+.ecp-result-screen.ending { background: #000; color: #eee; }
+
+
+
+/* 숫자 입력 편집 폼 — 자체 세로 스택 (auto-fit 그리드 제외 대상). */
+.event-command-edit-body .input-number-command-body,
+.input-number-command-body {
+  align-content: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  width: 100%;
+}
+
+.event-command-edit-body .input-number-command-body .input-number-field,
+.input-number-command-body .input-number-field {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(56px, 72px) minmax(0, 1fr);
+  min-width: 0;
+}
+
+.event-command-edit-body .input-number-command-body .input-number-field-label,
+.input-number-command-body .input-number-field-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding-top: 7px;
+  white-space: nowrap;
+}
+
+.input-number-digits-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.input-number-digit-stepper {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.input-number-digit-chip {
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 4px;
+  background: var(--bg-raised, #20242e);
+  color: var(--text-2, #aeb6c8);
+  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+  cursor: pointer;
+}
+
+.input-number-digit-chip:hover {
+  border-color: var(--accent, #6ea8ff);
+  color: var(--text-1, #e9ecf5);
+}
+
+.input-number-digit-chip.active {
+  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, transparent);
+  border-color: var(--accent, #6ea8ff);
+  color: var(--accent, #6ea8ff);
+}
+
+.input-number-digit-chip:focus-visible {
+  outline: 2px solid var(--accent, #6ea8ff);
+  outline-offset: 1px;
+}
+
+.input-number-digits-mirror {
+  display: none;
+}
+
+.input-number-digits-caption {
+  color: var(--text-3, #8b93a7);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.input-number-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding-left: 0;
+}
+
+.input-number-pad-toggle {
+  align-items: center;
+  color: var(--text-1, #e9ecf5);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  width: fit-content;
+}
+
+.input-number-pad-toggle input[type="checkbox"] {
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.input-number-hint {
+  color: var(--text-3, #8b93a7);
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* 숫자 입력 창 — System.png fill 금지, 빈 슬롯 idle 미리보기. */
+.ecp-number-stage {
+  place-items: center;
+  padding: 12px;
+}
+
+.ecp-number-window,
+.ecp-number-window-clean {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, #2b4c9b);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(22, 28, 44, 0.98), rgba(12, 16, 28, 0.98));
+  color: #f4f6ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-image: none !important;
+  background-image: none !important;
+}
+
+.ecp-number-title {
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--rm2k3-command-blue, #9ec0ff);
+}
+
+.ecp-number-slots {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.ecp-number-slot {
+  min-width: 22px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid rgba(245, 251, 255, 0.35);
+  background: rgba(4, 12, 40, 0.88);
+  color: transparent;
+  font: 700 16px/1 "Malgun Gothic", Tahoma, sans-serif;
+  border-radius: 2px;
+}
+
+.ecp-number-slot.empty {
+  color: transparent;
+}
+
+.ecp-number-slot.filled {
+  border-color: #f5d04a;
+  color: #f4f6ff;
+}
+
+.ecp-number-slot.cursor {
+  border-color: #f5d04a;
+  box-shadow: 0 0 0 1px rgba(255, 246, 168, 0.5);
+}
+
+.ecp-number-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(28px, 1fr));
+  gap: 4px;
+  width: 100%;
+  max-width: 148px;
+}
+
+.ecp-number-pad-key {
+  min-height: 24px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(245, 251, 255, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  font-weight: 700;
+  color: #e9ecf5;
+  border-radius: 3px;
+}
+
+.ecp-number-pad-key.ok {
+  background: rgba(110, 168, 255, 0.22);
+  border-color: var(--accent, #6ea8ff);
+  color: #9ec0ff;
+}
+
+.ecp-number-pad-key.back {
+  color: #f5d04a;
+}
+
+.ecp-number-ok-mock {
+  min-width: 56px;
+  min-height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 2px 10px;
+  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 55%, #2b4c9b);
+  border-radius: 3px;
+  background: rgba(110, 168, 255, 0.16);
+  color: #9ec0ff;
+  font: 700 12px/1 Tahoma, "Malgun Gothic", sans-serif;
+}
+
+.ecp-number-meta {
+  font-size: 11px;
+  color: #aeb6c8;
+  text-align: center;
+}
+

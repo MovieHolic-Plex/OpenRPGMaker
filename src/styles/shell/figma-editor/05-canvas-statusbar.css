@@ -1,0 +1,154 @@
+  .canvas-area,
+  .editor-layout .canvas-area {
+    /* 상태바 54px / 툴바 예약 — scroll-shell이 상태바 아래로 들어가지 않게 맞춤 */
+    --editor-canvas-chrome-top: 48px;
+    --editor-canvas-chrome-bottom: 54px;
+  }
+
+  .editor-canvas-scroll-shell {
+    background: var(--editor-canvas-bg);
+    bottom: var(--editor-canvas-chrome-bottom, 54px);
+    top: var(--editor-canvas-chrome-top, 48px);
+  }
+
+  .editor-layout .canvas-area .phaser-container {
+    background: var(--bg-canvas);
+    border: 0;
+    box-shadow: none;
+    box-sizing: border-box;
+    display: block;
+    height: 100%;
+    min-height: 100%;
+    min-width: 100%;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  .editor-layout .canvas-area .phaser-container > canvas {
+    display: block;
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .editor-canvas-scroll-shell {
+    overflow: hidden;
+  }
+
+  .canvas-toolbar {
+    background: var(--bg-glass);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
+    box-sizing: border-box;
+    gap: 6px;
+    max-width: calc(100% - 24px);
+    padding: 8px;
+    top: 12px;
+  }
+
+  .canvas-toolbar-label {
+    color: var(--editor-text-muted);
+    flex: 0 0 auto;
+    font-size: 15px;
+    padding: 0 8px;
+    white-space: nowrap;
+  }
+
+  .zoom-button {
+    flex: 0 0 auto;
+    min-width: 44px;
+    white-space: nowrap;
+  }
+
+  .canvas-toolbar [data-testid="editor-map-screenshot-button"] {
+    min-width: 72px;
+  }
+
+  .editor-statusbar {
+    background: var(--editor-toolbar-bg);
+    border-top: 1px solid var(--editor-line);
+    color: var(--editor-text-muted);
+    font-size: 14px;
+    height: 54px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 14px;
+  }
+
+  .editor-statusbar-cell {
+    align-items: center;
+    border-left: 0;
+    border-right: 1px solid var(--editor-line);
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-width: max-content;
+    overflow: visible;
+    padding: 0 10px;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
+
+  .editor-statusbar-cell.strong {
+    color: var(--editor-text);
+    flex: 0 0 auto;
+  }
+
+  .editor-statusbar-cell.map-edit-lock-status,
+  .editor-statusbar-cell.db-connection-status {
+    flex-shrink: 0;
+    max-width: none;
+  }
+
+  .map-lock-takeover-button {
+    background: var(--control-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: var(--radius-s);
+    color: var(--editor-text);
+    cursor: pointer;
+    font: 700 12px/1 var(--font-ui);
+    margin-left: 8px;
+    min-height: 24px;
+    padding: 0 8px;
+    white-space: nowrap;
+  }
+
+  .map-lock-takeover-button:hover,
+  .map-lock-takeover-button:focus-visible {
+    background: var(--control-bg-hover);
+    outline: 1px solid var(--editor-blue);
+    outline-offset: 1px;
+  }
+
+  button.editor-statusbar-cell {
+    align-items: center;
+    background: transparent;
+    border-bottom: 0;
+    border-left: 0;
+    border-top: 0;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    height: 100%;
+  }
+
+  button.editor-statusbar-cell:hover,
+  button.editor-statusbar-cell:focus-visible {
+    background: var(--editor-blue-soft);
+    color: var(--editor-text);
+    outline: 1px solid var(--editor-blue);
+    outline-offset: -2px;
+  }
+
+  .map-context-menu,
+  .rm2k3-menu-popup {
+    background: var(--editor-popover-bg);
+    border: 1px solid var(--editor-line-strong);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
+    color: var(--editor-text);
+    min-width: 322px;
+    padding: 12px;
+  }
+

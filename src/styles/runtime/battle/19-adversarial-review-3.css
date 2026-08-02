@@ -1,0 +1,85 @@
+/* ═══════════ 적대 리뷰 3차(2026-08-02) 수정 ═══════════ */
+
+/* 죽은 배틀러 퇴장 연출 — 임팩트 순간 회색 석상으로 굳어 영구히 서 있던 것을,
+   포켓몬처럼 주저앉으며 사라지게 한다. 노드는 남으므로(팝업 좌표 기준) 이미지만 보낸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated {
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated .battle-enemy-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor.defeated .battle-skin-actor-image {
+  animation: pkmn-battler-faint 0.55s ease-in forwards;
+}
+@keyframes pkmn-battler-faint {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(26px); filter: saturate(0) brightness(1.4); }
+}
+
+/* 아군 정보 카드의 strict 대기열 텍스트("대기 1"/"입력 완료")는 카드 바닥에 반쯤 잘려
+   보였고, 포켓몬 HUD 에는 이름/Lv/HP/MP 외의 텍스트가 없다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-strict-order {
+  display: none !important;
+}
+
+/* 좌상단 적 정보 패널 압축 — 2줄(이름/HP바) 행이 3마리에서 필드의 절반을 덮어 아군
+   스프라이트 머리를 가렸다. 한 줄(이름|바) 행으로 줄이고, 죽은 적 행은 걷어낸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
+  width: min(42%, 250px) !important;
+  padding: 6px 12px !important;
+}
+/* 원 구조(battle.css:3171-3195)는 이름(1행 전체)/HP라벨+바(2행)의 2줄 행 — 3마리
+   트룹에서 패널이 아군 머리까지 내려왔다(코덱스 리뷰 C7). 한 줄 [이름|HP|바]로 눌러
+   같은 정보를 절반 높이에 담는다. 원 규칙이 !important 라 여기서도 !important 로 이긴다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 24px 96px !important;
+  grid-template-rows: auto !important;
+  align-items: center !important;
+  gap: 0 6px !important;
+  min-height: 0 !important;
+  padding: 2px 2px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  font-size: 15px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row::after {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  margin-top: 0 !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
+  display: none !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
+  grid-column: 3 !important;
+  grid-row: 1 !important;
+  height: 10px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row.defeated {
+  display: none !important;
+}
+/* 마지막 적이 쓰러지면 죽은 행이 걷힌 빈 패널 껍데기만 남는다 — 패널째 숨긴다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel:not(:has(.battle-enemy-list-row:not(.defeated))) {
+  visibility: hidden;
+}
+
+/* 스킬/아이템 서브메뉴 행 잘림(코덱스 리뷰 C3): 행 콘텐츠(제목 18px + 설명 13px +
+   패딩 12 + 테두리 8 ≈ 54px)가 최소 행 높이 42px 를 넘겨 설명 줄이 깎였고,
+   설명 자체도 line-height 1 + overflow hidden 으로 한글 하단이 잘렸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-text small {
+  line-height: 1.25 !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:has(.battle-submenu-header) {
+  grid-auto-rows: minmax(54px, auto) !important;
+}
+
+/* 결과 화면에서 죽은 적 노드에 깔리던 반짝이(radial-gradient 반복 타일)가 148×152
+   영역 전체에 흰 점 격자로 보였다(4차 리뷰) — 포켓몬 스킨은 faint 연출로 충분하다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-enemy.defeated::after {
+  content: none !important;
+}

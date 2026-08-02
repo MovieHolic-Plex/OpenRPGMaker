@@ -1,0 +1,120 @@
+/* =========================================================================
+   전투 연출 보강 — 히트 플래시(데드코드 복구), juice 좌표 변수화,
+   인트로 배너, 포획 구슬 시네마틱, 사망 페이드, MISS 팝업.
+   ========================================================================= */
+
+/* 히트/크리티컬/결과 화면 플래시 — battleJuice.flashBattleField가 붙이는 클래스 */
+.battle-scene.battle-flash-hit .battle-field::after,
+.battle-scene.battle-flash-critical .battle-field::after,
+.battle-scene.battle-flash-victory .battle-field::after,
+.battle-scene.battle-flash-defeat .battle-field::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
+  animation: battle-flash-fade 320ms ease-out forwards;
+}
+.battle-scene.battle-flash-hit .battle-field::after { background: rgba(255, 255, 255, 0.34); }
+.battle-scene.battle-flash-critical .battle-field::after { background: rgba(255, 214, 138, 0.5); animation-duration: 430ms; }
+.battle-scene.battle-flash-victory .battle-field::after { background: rgba(255, 250, 214, 0.42); animation-duration: 600ms; }
+.battle-scene.battle-flash-defeat .battle-field::after { background: rgba(120, 20, 30, 0.45); animation-duration: 700ms; }
+
+@keyframes battle-flash-fade {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* juice 히트 키프레임의 기준 변환을 변수화 — 아군(-45%)과 적(-72%)이 다른 문제 수정 */
+.battle-enemy-group .battle-enemy { --battle-juice-base: translate(-50%, -100%); }
+.battle-actor-group .battle-actor { --battle-juice-base: translate(-50%, -100%); }
+
+/* 인트로 배너: 양 스킨 모두에서 메시지 창 노출 */
+.battle-scene[data-battle-director-step="intro"] .battle-message-window {
+  display: grid !important;
+}
+
+/* MISS 팝업 */
+.battle-damage-popup-miss {
+  color: #cfd6de !important;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+}
+
+/* 적 사망: 필터 잔상 대신 쓰러지며 사라진다 */
+.battle-enemy.defeated {
+  animation: battle-death-fade 620ms ease-in forwards;
+  pointer-events: none;
+}
+@keyframes battle-death-fade {
+  0% { opacity: 0.9; filter: none; }
+  35% { opacity: 0.75; filter: brightness(1.6); }
+  100% { opacity: 0; filter: grayscale(1); translate: 0 14px; }
+}
+
+/* ---- 포획 구슬 시네마틱 ---- */
+.battle-capture-orb {
+  --orb-to-x: 70%;
+  --orb-to-y: 35%;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #e43b44 0%, #e43b44 44%, #23262b 44%, #23262b 56%, #f6f5f1 56%);
+  border: 3px solid #23262b;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  left: 20%;
+  top: 78%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  animation: battle-orb-throw 460ms cubic-bezier(0.3, 0.6, 0.6, 1) forwards;
+}
+@keyframes battle-orb-throw {
+  0% { left: 20%; top: 78%; transform: translate(-50%, -50%) rotate(0deg); }
+  50% { transform: translate(-50%, -260%) rotate(380deg); }
+  100% { left: var(--orb-to-x); top: var(--orb-to-y); transform: translate(-50%, -50%) rotate(720deg); }
+}
+.battle-orb-shake {
+  animation: battle-orb-rock 420ms ease-in-out 3;
+  left: var(--orb-to-x);
+  top: var(--orb-to-y);
+}
+@keyframes battle-orb-rock {
+  0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+  25% { transform: translate(calc(-50% - 8px), -50%) rotate(-22deg); }
+  75% { transform: translate(calc(-50% + 8px), -50%) rotate(22deg); }
+}
+.battle-orb-caught {
+  animation: battle-orb-caught 400ms ease-out forwards;
+  left: var(--orb-to-x);
+  top: var(--orb-to-y);
+}
+@keyframes battle-orb-caught {
+  0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 244, 180, 0.9); }
+  60% { box-shadow: 0 0 0 28px rgba(255, 244, 180, 0); }
+  100% { transform: translate(-50%, -50%) scale(1); filter: brightness(0.75); }
+}
+.battle-orb-burst {
+  animation: battle-orb-burst 260ms ease-in forwards;
+  left: var(--orb-to-x);
+  top: var(--orb-to-y);
+}
+@keyframes battle-orb-burst {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+}
+.battle-capture-absorbed .battle-enemy-image,
+.battle-capture-absorbed .battle-actor-image {
+  transform: scale(0) !important;
+  transition: transform 220ms ease-in;
+}
+.battle-enemy .battle-enemy-image,
+.battle-enemy .battle-actor-image {
+  transition: transform 220ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-capture-orb, .battle-orb-shake, .battle-orb-caught, .battle-orb-burst,
+  .battle-enemy.defeated { animation-duration: 1ms !important; }
+}
+

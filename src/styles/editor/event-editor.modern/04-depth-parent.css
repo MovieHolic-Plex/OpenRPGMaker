@@ -1,0 +1,150 @@
+/* 자식 행(depth≥1): 레일 안쪽 틴트로 parent 블록이 한 덩어리로 보이게. */
+.event-contents-fieldset .cmd-item[data-cmd-depth="1"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head,
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="1"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="2"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="3"],
+.event-contents-fieldset .cmd-line-marker[data-cmd-depth="4"] {
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 6%, transparent);
+}
+
+.event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
+.event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head {
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 10%, transparent);
+}
+
+/* zebra 줄무늬는 스레드 틴트/레일과 충돌하므로 비활성화(아래 transparent 규칙 없음).
+   part-2.css zebra 특이도는 modern의 depth tint / hover 규칙이 이긴다. */
+
+/* hover/선택 — 레일 보존, 배경만 강조. */
+.event-contents-fieldset .cmd-list > .cmd-item > .cmd-head:hover,
+.event-contents-fieldset .cmd-list > .cmd-empty-line:hover {
+  background-color: var(--bg-hover);
+}
+
+.event-contents-fieldset .cmd-list > .cmd-item.selected > .cmd-head,
+.event-contents-fieldset .cmd-list > .cmd-item.editing > .cmd-head {
+  background-color: var(--accent-muted);
+  box-shadow: inset 2px 0 0 var(--accent);
+  color: var(--text-1);
+}
+
+/* ◆ 프리픽스(RM2003 명령 다이아몬드). */
+.event-contents-fieldset .cmd-prefix {
+  color: var(--event-modern-accent, var(--accent));
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1;
+}
+
+/* 분기 라벨 — parent 스레드 헤더. 트리 글리프 + 굵기 + 배경 밴드로 child와 구분. */
+.event-contents-fieldset .cmd-line-marker {
+  color: var(--text-2);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background-color: color-mix(in srgb, var(--warning, #d9a441) 10%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border-default) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border-default) 40%, transparent);
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-choices {
+  color: var(--warning, #d9a441);
+  background-color: color-mix(in srgb, var(--warning, #d9a441) 12%, transparent);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-choices) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-choices) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
+  color: var(--event-modern-accent, var(--accent));
+  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 12%, transparent);
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-fork) calc(var(--cmd-indent-step) - 2px),
+    var(--cmd-rail-fork) calc(var(--cmd-indent-step) - 1px),
+    transparent calc(var(--cmd-indent-step) - 1px),
+    transparent var(--cmd-indent-step)
+  );
+  background-position: var(--cmd-indent-base) 0;
+  background-repeat: no-repeat;
+  background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
+}
+
+.event-contents-fieldset .cmd-line-marker.cmd-marker-shop {
+  color: var(--success, #4caf7a);
+  background-color: color-mix(in srgb, var(--success, #4caf7a) 12%, transparent);
+}
+
+/* 명령 추가 빈 줄(◆). */
+.event-contents-fieldset .cmd-empty-line {
+  color: var(--event-modern-accent, var(--accent));
+  font-weight: 700;
+}
+
+.event-contents-fieldset .cmd-kind {
+  color: var(--text-1);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-contents-fieldset .cmd-summary-token.command {
+  color: var(--event-modern-accent);
+  font-weight: 700;
+}
+
+.event-contents-fieldset .cmd-summary-token.value {
+  color: var(--event-modern-success);
+  font-weight: 700;
+}
+
+.event-contents-fieldset .cmd-drag-handle,
+.event-contents-fieldset .cmd-actions,
+.event-contents-fieldset .terminal-command-editor {
+  display: none;
+}
+
+.event-contents-fieldset .cmd-item.editing .cmd-inline-editor {
+  background: var(--bg-overlay);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  display: grid;
+  /* 편집 패널도 대상 명령의 들여쓰기 깊이만큼 함께 밀어 정렬한다. */
+  margin: 0 0 10px calc(8px + (var(--cmd-depth, 0) * 18px));
+  padding: 14px;
+}
+
+.event-command-edit-body {
+  background: transparent;
+  border: 0;
+  display: grid;
+  gap: 14px;
+  min-height: 0;
+  padding: 0;
+}
+
+.event-command-edit-body .event-command-edit-summary,
+.cmd-inline-editor .event-command-edit-summary {
+  display: none;
+}
+
+.event-command-edit-body > div {
+  display: grid;
+  gap: 14px;
+}
+

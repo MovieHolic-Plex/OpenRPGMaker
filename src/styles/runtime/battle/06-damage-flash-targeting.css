@@ -1,0 +1,200 @@
+/* 보상 행 공개: display 를 껐다 켜면 패널 크기가 스테이지마다 늘어나 확인 버튼이
+   아래로 밀린다(감독 지적 2) — 자리는 처음부터 예약하고 보이기만 늦춘다. */
+.battle-result-reward-row[data-revealed="false"] {
+  visibility: hidden;
+}
+
+/* 결과 화면 정리는 battle-has-result(= 디렉터 step "result" 진입 후에만 부여)로만 건다.
+   예전에는 data-battle-phase="resolved" 로도 걸었는데, 런타임은 막타 즉시 resolved 가
+   되므로 마지막 액션의 연출이 재생되는 동안 메시지 창·패널이 전부 사라졌다(적대 리뷰 §2). */
+.battle-has-result .battle-message-window {
+  display: none !important;
+}
+
+.battle-has-result .battle-command-panel,
+.battle-has-result .battle-enemy-list-panel {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.battle-has-result .battle-actor-group,
+.battle-has-result .battle-enemy-group {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes battle-damage-float {
+  0% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -60%) scale(0.5);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -120%) scale(1.3);
+  }
+  30% {
+    transform: translate(var(--pop-x, -50%), -100%) scale(1.0);
+  }
+  80% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -135%) scale(1.0);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -160%) scale(0.9);
+  }
+}
+
+@keyframes battle-damage-critical-pop {
+  0% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -40%) scale(0.3);
+    filter: brightness(2) drop-shadow(0 0 16px #ff2200);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -130%) scale(1.7);
+    filter: brightness(1.6) drop-shadow(0 0 24px #ffee00);
+  }
+  40% {
+    transform: translate(var(--pop-x, -50%), -95%) scale(1.1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -140%) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -170%) scale(0.8);
+  }
+}
+
+.battle-damage-popup.is-critical {
+  animation-name: battle-damage-critical-pop;
+  color: #fff263;
+  font-size: 34px;
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px #ff0000, 4px 4px 0 #880000, -2px -2px 0 #000;
+  z-index: 10;
+}
+
+.battle-damage-popup.is-heal {
+  color: #79ff6b;
+  text-shadow: 0 0 8px #008822, 2px 2px 0 #004411;
+}
+
+.battle-damage-popup.is-miss {
+  color: #d1d5db;
+  font-style: italic;
+  text-shadow: 2px 2px 0 #374151;
+}
+
+.battle-flash-critical {
+  animation: battle-flash-crit 0.35s ease-out;
+}
+
+.battle-flash-hit {
+  animation: battle-flash-hit-anim 0.2s ease-out;
+}
+
+@keyframes battle-flash-crit {
+  0% {
+    background-color: rgba(255, 30, 30, 0.45);
+    filter: contrast(1.4) brightness(1.3);
+  }
+  30% {
+    background-color: rgba(255, 230, 100, 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes battle-flash-hit-anim {
+  0% {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes battle-screen-shake {
+  25% {
+    transform: translate(-6px, 4px);
+  }
+  50% {
+    transform: translate(6px, -4px);
+  }
+  75% {
+    transform: translate(-4px, -2px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes battle-screen-flash {
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.battle-acting {
+  animation: rm2k3-actor-step 0.3s ease-out 1;
+  filter: brightness(1.2);
+}
+
+.battle-targeted {
+  animation: rm2k3-target-flash 0.2s ease-out 2;
+  outline: 4px solid var(--rm2k3-battle-window-light);
+  outline-offset: 4px;
+}
+
+.battle-target-candidate {
+  cursor: pointer;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.55));
+}
+
+.battle-target-candidate::after {
+  content: ">";
+  color: #fff;
+  font-size: 28px;
+  left: -24px;
+  line-height: 1;
+  position: absolute;
+  text-shadow: 2px 2px 0 #00134c;
+  top: 42%;
+  transform: translateY(-50%);
+}
+
+.battle-target-selected {
+  animation: none;
+  outline: 4px solid var(--rm2k3-battle-window-light);
+  outline-offset: 4px;
+}
+
+.battle-has-result .battle-targeted,
+.battle-has-result .battle-target-selected {
+  animation: none;
+  filter: none;
+  outline: 0;
+}
+
+.battle-has-result .battle-target-candidate::after {
+  content: none;
+}
+
+.battle-enemy.defeated,
+.battle-enemy-list-row.defeated {
+  opacity: 0.42;
+  text-decoration: line-through;
+}
+
+@keyframes rm2k3-message-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+

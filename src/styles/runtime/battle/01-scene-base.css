@@ -1,0 +1,358 @@
+:root {
+  --rm2k3-battle-blue-hi: #315dc0;
+  --rm2k3-battle-blue: #1742a5;
+  --rm2k3-battle-blue-deep: #071e68;
+  --rm2k3-battle-window-light: #e7f2ff;
+  --rm2k3-battle-window-shadow: #040b28;
+  --rm2k3-battle-text: #f8fbff;
+  --rm2k3-battle-muted: #b9c8f4;
+  --rm2k3-battle-backdrop-top: #84b8e3;
+  --rm2k3-battle-backdrop-mid: #6aa85a;
+  --rm2k3-battle-backdrop-ground: #368b37;
+}
+
+.player-layout.system-shell {
+  align-items: center;
+  display: grid;
+  justify-items: center;
+}
+
+.player-layout.system-shell .play-viewport {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.player-layout.system-shell .title-screen {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.battle-scene {
+  --battle-hud-height: 40%;
+  /* 640×480 이주: 창틀 테두리는 논리 px 기준 12px. 전역 --runtime-window-border-tight: 6px
+     (system.css) 은 dialogue.css / status-menu / title-screen 과 공유하므로 여기서 2배할 수
+     없고, 씬 스코프에서 재정의한다. (border-image-slice 는 --runtime-window-slice = 24 fill —
+     windowskin PNG 의 소스 px 이라 논리 px 이 아니므로 2배하지 않는다.) */
+  --runtime-window-border-tight: 12px;
+  /* 포커스 링: var(--focus-ring, …) 의 폴백은 죽은 코드다 — tokens.css 가 --focus-ring 을
+     정의(2px 판)해서 폴백이 아예 평가되지 않는다. 그래서 4px 판(= 논리 px 2배)을 씬
+     스코프에서 재정의한다. 색은 전역과 동일. */
+  --focus-ring: 0 0 0 4px rgba(108, 121, 242, 0.55);
+  /* 논리 해상도 스케일링 — battleStageScale.ts 가 컨테이너 크기에서 배율을 계산해
+     --battle-stage-scale / --battle-stage-offset-* 을 세팅한다. 스킨(rm2003)은 320×240
+     (RM2003 해상도) 기준으로 저작됐는데 예전에는 640×480 에 transform 없이 붙어
+     모든 치수가 의도의 절반으로 보였다(실측: 명령 레일 84px = 640 화면의 13%). */
+  --battle-stage-scale: 1;
+  --battle-stage-offset-x: 0px;
+  --battle-stage-offset-y: 0px;
+  /* 배틀러 무대(battler stage) 기하 — 단일 소스.
+     `--battle-node-x/y`(battleFieldDom.positionBattleNode)는 **백분율** 이므로 그 값을
+     소비하는 요소들의 컨테이닝 블록이 서로 같아야 같은 점으로 풀린다.
+     `.battle-enemy-group` / `.battle-actor-group` 은 `.battle-field` 의 패딩 박스에서
+     상단만 `--battle-stage-inset-top` 만큼 들어간 박스이고, `.battle-animation-layer` /
+     `.battle-effects-layer` 도 아래에서 이 두 변수로 같은 박스를 재현한다.
+     값을 바꿀 때는 이 변수만 바꿔라(스킨은 스킨 스코프에서 재정의). */
+  --battle-field-border-width: 2px;
+  --battle-stage-inset-top: 48px;
+  left: var(--battle-stage-offset-x);
+  top: var(--battle-stage-offset-y);
+  width: 640px;
+  height: 480px;
+  transform: scale(var(--battle-stage-scale));
+  transform-origin: top left;
+  gap: 4px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(112px, 16%) minmax(164px, 22%) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(192px, var(--battle-hud-height));
+  border: 0;
+  border-radius: 0;
+  background: #000;
+  color: var(--rm2k3-battle-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-9);
+  line-height: 1.25;
+  overflow: hidden;
+  position: absolute;
+  box-shadow: none;
+}
+
+.battle-field {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: block;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.battle-field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.6) 100%);
+}
+
+.battle-backdrop {
+  inset: 0;
+  padding: 0;
+  position: absolute;
+  border: 0;
+  border-radius: 0;
+  z-index: 0;
+  /* 배경 이미지를 어둡게 — 몬스터가 묻히지 않도록 */
+  filter: brightness(0.55) saturate(0.7);
+  background:
+    radial-gradient(ellipse at 20% 26%, rgba(255, 255, 255, 0.52), transparent 18%),
+    radial-gradient(ellipse at 78% 28%, rgba(255, 255, 255, 0.42), transparent 22%),
+    linear-gradient(
+      180deg,
+      var(--rm2k3-battle-backdrop-top) 0%,
+      #a7d6f3 32%,
+      var(--rm2k3-battle-backdrop-mid) 33%,
+      var(--rm2k3-battle-backdrop-ground) 100%
+    );
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--rm2k3-battle-muted);
+  font-family: inherit;
+  font-size: 16px;
+}
+
+.battle-backdrop::after {
+  display: none;
+}
+
+.battle-title {
+  display: none;
+}
+
+.battle-enemy {
+  left: var(--battle-node-x);
+  min-height: 0;
+  position: absolute;
+  top: var(--battle-node-y);
+  transform: translate(-50%, -100%);
+  border: 0;
+  border-radius: 0;
+  background: radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 55%, transparent 85%);
+  color: var(--rm2k3-battle-text);
+  font-size: 0;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 0;
+  text-shadow: none;
+}
+
+.battle-enemy-group {
+  inset: 0;
+  min-width: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.battle-enemy-image {
+  height: 192px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 224px;
+  /* 적 스프라이트를 배경에서 분리 */
+  filter: brightness(1.4) contrast(1.5) saturate(1.4);
+  background: radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.6) 30%, rgba(0,0,0,0.3) 60%, transparent 80%);
+  border-radius: 50%;
+  opacity: 1;
+}
+
+.battle-actor-group {
+  inset: 0;
+  min-width: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.battle-party,
+.battle-command-panel,
+.battle-enemy-list-panel,
+.battle-message-window,
+.battle-result-panel {
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.battle-party {
+  grid-column: 3;
+  grid-row: 2;
+  display: grid;
+  gap: 0;
+  grid-auto-rows: minmax(0, 1fr);
+  min-width: 0;
+  overflow: hidden;
+  padding: 4px;
+  align-self: stretch;
+}
+
+.battle-actor {
+  min-height: 84px;
+  gap: 12px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--rm2k3-battle-text);
+  font-size: 22px;
+  line-height: 1.2;
+  padding: 8px 10px;
+}
+
+.battle-actor-group .battle-actor {
+  align-items: center;
+  display: grid;
+  height: 192px;
+  justify-items: center;
+  left: var(--battle-node-x);
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  top: var(--battle-node-y);
+  transform: translate(-50%, -100%);
+  width: 176px;
+}
+
+.battle-actor-sprite {
+  background-repeat: no-repeat;
+  display: block;
+  height: var(--battle-sprite-frame-height, 144px);
+  image-rendering: pixelated;
+  width: var(--battle-sprite-frame-width, 144px);
+}
+
+.battle-actor + .battle-actor {
+  border-top: 2px solid rgba(216, 228, 255, 0.35);
+}
+
+.battle-actor-image {
+  width: 144px;
+  height: 144px;
+}
+
+.battle-actor-label,
+.battle-actor-name,
+.battle-actor-state,
+.battle-actor-hp,
+.battle-atb-label {
+  color: var(--rm2k3-battle-text);
+  text-shadow: 2px 2px 0 #000;
+}
+
+.battle-actor-state,
+.battle-atb-label {
+  color: var(--rm2k3-battle-muted);
+}
+
+.battle-command-panel {
+  grid-column: 2;
+  grid-row: 2;
+  align-content: start;
+  display: grid;
+  /* gap 은 외부 파일(editor/core.part-2.css 의 gap: var(--space-2) = 8px)에 의존하던 값이라
+     그 파일이 없는 빌드(독립 플레이어: src/player/player.css)에서는 gap: normal = 0 으로
+     갈렸다. 16px = 이주 전 화면 크기와 같은 8 논리 px × 2 — 여기서 명시해 두 빌드를 통일한다. */
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: stretch;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.battle-enemy-list-panel {
+  grid-column: 1;
+  grid-row: 2;
+  min-width: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+
+.battle-message-window {
+  bottom: calc(var(--battle-hud-height) + 8px);
+  grid-column: 1 / -1;
+  left: 4px;
+  right: 4px;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  min-height: 60px;
+  padding: 6px 10px;
+  position: absolute;
+  text-shadow: 2px 2px 0 #000;
+  z-index: 3;
+}
+
+.battle-scene[data-battle-director-step="command"] .battle-message-window {
+  display: none;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-message-window {
+  display: grid;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-message-window {
+  display: none;
+}
+
+.battle-scene[data-battle-director-step="result"] {
+  background: #000;
+  background-image: none !important;
+  overflow: hidden;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-field {
+  inset: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+/* 결과 단계에서 배경을 파란 하늘 그라데이션으로 갈아치우던 규칙이 있었다. `background`
+   단축 속성 + !important 라 인라인 background-image(전투 배경 그림 url)까지 통째로 덮어,
+   승리 화면에서 전투장이 사라지고 단색 그라데이션만 남았다.
+   결과 단계의 어두워짐은 아래 `filter: brightness(0.72)` 규칙이 이미 담당한다. */
+.battle-scene[data-battle-director-step="result"] .battle-backdrop::before {
+  background: rgba(9, 35, 98, 0.28);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.battle-scene[data-battle-director-step="result"] .battle-backdrop::after {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+/* 결과 화면에서도 전장(배틀러 그룹)과 아군 상태(파티 패널)는 남는다 — 포켓몬처럼
+   승리의 현장 위에 보상이 얹힌다. 명령/적 정보 패널만 정리한다(적대 리뷰 §13). */
+.battle-scene[data-battle-director-step="result"] .battle-command-panel,
+.battle-scene[data-battle-director-step="result"] .battle-enemy-list-panel {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.battle-scene[data-battle-director-step="result"]::after {
+  background: rgba(0, 0, 0, 0.22);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 3;
+}
+

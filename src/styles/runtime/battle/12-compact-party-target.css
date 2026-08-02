@@ -1,0 +1,139 @@
+/* --- HUD row: party status rows ----------------------------------------- */
+
+.battle-party {
+  display: grid !important;
+  gap: 2px !important;
+  grid-column: 3 !important;
+  grid-row: 2 !important;
+  grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
+  min-height: 0 !important;
+  padding: 6px !important;
+  position: relative !important;
+  z-index: 8 !important;
+}
+
+.battle-actor-status {
+  align-content: center;
+  display: grid !important;
+  gap: 2px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  min-height: 0 !important;
+  overflow: hidden;
+  padding: 2px 4px !important;
+}
+
+.battle-actor-status-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.battle-actor-name {
+  font-size: 16px !important;
+  line-height: 1.1 !important;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.battle-actor-level {
+  font-size: 14px !important;
+  margin-left: 4px;
+  opacity: 0.85;
+}
+
+.battle-actor-vitals {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.battle-actor-hp,
+.battle-actor-mp {
+  font-size: 14px !important;
+  line-height: 1.1 !important;
+  white-space: nowrap;
+}
+
+.battle-actor-status-bars {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  height: 10px !important;
+  min-width: 0;
+}
+
+.battle-actor-status .battle-stat-bar {
+  display: block;
+  grid-column: auto !important;
+  height: 6px !important;
+  min-width: 0;
+}
+
+.battle-actor-gauge {
+  align-items: center;
+  display: flex;
+  min-width: 0;
+}
+
+.battle-atb-bar {
+  flex: 1 1 auto;
+  height: 6px !important;
+}
+
+/* --- Target-select phase ------------------------------------------------- */
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-command-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-prompt,
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu,
+.battle-scene[data-battle-phase="targetSelect"] .battle-key-prompts {
+  grid-row: auto !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu {
+  bottom: auto !important;
+  display: grid !important;
+  gap: 2px !important;
+  left: auto !important;
+  overflow: hidden !important;
+  position: relative !important;
+  right: auto !important;
+  width: 100% !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-target-menu .battle-submenu-header {
+  display: none !important;
+}
+
+.battle-scene[data-battle-phase="targetSelect"] .battle-command {
+  min-height: 26px !important;
+}
+
+.battle-target-brackets {
+  height: 58px !important;
+  inset: auto !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 68px !important;
+}
+
+.battle-target-brackets::before {
+  border-width: 4px !important;
+}
+
+.battle-target-brackets::after {
+  border-left-width: 6px !important;
+  border-right-width: 6px !important;
+  border-top-width: 14px !important;
+  top: -20px !important;
+}
+

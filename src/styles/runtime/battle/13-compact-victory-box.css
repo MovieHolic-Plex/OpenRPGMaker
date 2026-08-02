@@ -1,0 +1,108 @@
+/* --- Victory result box --------------------------------------------------- */
+
+.battle-scene[data-battle-director-step="result"] .battle-message-window,
+.battle-scene[data-battle-director-step="result"] .battle-command-panel,
+.battle-scene[data-battle-director-step="result"] .battle-party {
+  display: none !important;
+}
+
+.battle-result-panel {
+  box-sizing: border-box !important;
+  display: grid !important;
+  gap: 8px !important;
+  grid-template-rows: auto auto auto auto !important;
+  max-height: 192px !important;
+  overflow: hidden !important;
+  padding: 12px 20px !important;
+  width: 340px !important;
+}
+
+.battle-result-crest {
+  display: none !important;
+}
+
+.battle-result-title {
+  font-size: 22px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+  text-align: center !important;
+}
+
+.battle-result-cards {
+  display: grid !important;
+  gap: 4px !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-auto-rows: minmax(22px, auto) !important;
+}
+
+.battle-result-reward-card {
+  align-content: center !important;
+  align-items: center !important;
+  display: grid !important;
+  gap: 6px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  grid-template-rows: none !important;
+  justify-items: stretch !important;
+  min-height: 22px !important;
+  padding: 2px 8px !important;
+  text-align: left !important;
+}
+
+.battle-result-reward-icon {
+  display: none !important;
+}
+
+.battle-result-reward-label {
+  font-size: 16px !important;
+  line-height: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.battle-result-reward-value {
+  font-size: 18px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+.battle-result-confirm {
+  font-size: 16px !important;
+  line-height: 1 !important;
+  min-width: 0 !important;
+  padding: 6px 20px !important;
+}
+
+.battle-result-next-prompt {
+  font-size: 14px !important;
+  line-height: 1 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   상태 스타일 정돈 (UI 폴리시) — RM2K3 골드/블루 감성은 유지하고,
+   키보드 포커스 가시성과 확인 버튼 hover/focus 상태만 토큰으로 일관화한다.
+   레이아웃 속성(display/inset/grid)은 건드리지 않는다.
+   ------------------------------------------------------------------------ */
+.battle-command:focus-visible,
+.battle-enemy-list-row:focus-visible,
+.battle-result-confirm:focus-visible {
+  box-shadow: var(--focus-ring, 0 0 0 4px rgba(108, 121, 242, 0.55));
+  outline: 0;
+}
+
+.battle-result-confirm {
+  cursor: pointer;
+  transition: background var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease);
+}
+
+.battle-result-confirm:hover,
+.battle-result-confirm:focus-visible {
+  background: linear-gradient(180deg, var(--battle-panel-hi, #123b82), var(--battle-panel-low, #020a1d));
+  border-color: var(--battle-gold, #ffd866);
+}
+
+.battle-command,
+.battle-enemy-list-row {
+  cursor: pointer;
+}
+

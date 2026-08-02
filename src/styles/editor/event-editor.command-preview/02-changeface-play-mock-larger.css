@@ -1,0 +1,267 @@
+/* changeFace play mock — larger face crop, no editor meta chrome inside the window */
+.ecp-face-stage {
+  gap: 8px;
+}
+.ecp-face-stage.ecp-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  aspect-ratio: auto;
+  min-height: 200px;
+}
+
+.ecp-face-stage-bust {
+  position: relative;
+  min-height: 260px;
+}
+
+.ecp-face-stage-bust > .event-command-face-crop-shell {
+  align-self: flex-start;
+  margin: 0 8px -12px;
+  position: relative;
+  z-index: 2;
+}
+
+.ecp-face-stage.ecp-face-pos-right > .event-command-face-crop-shell,
+.ecp-face-stage-bust.ecp-face-pos-right > .event-command-face-crop-shell {
+  align-self: flex-end;
+}
+
+.ecp-face-stage.ecp-face-pos-left > .event-command-face-crop-shell,
+.ecp-face-stage-bust.ecp-face-pos-left > .event-command-face-crop-shell {
+  align-self: flex-start;
+}
+
+.ecp-message-window.with-bust {
+  position: relative;
+  z-index: 1;
+}
+.ecp-face-message {
+  min-height: 128px;
+  width: 100%;
+  max-width: 100%;
+}
+.ecp-message-window .event-command-face-crop-shell {
+  flex: 0 0 auto;
+  align-self: center;
+}
+.ecp-message-window .event-command-face-crop {
+  background-image: var(--face-url);
+  background-position: var(--face-scaled-x) var(--face-scaled-y);
+  background-repeat: no-repeat;
+  background-size: var(--face-scaled-sheet-width) var(--face-scaled-sheet-height);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 2px;
+  height: var(--face-display-height, 96px);
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: var(--face-display-width, 96px);
+}
+.ecp-message-window .event-command-face-crop-shell.flipped .event-command-face-crop {
+  transform: scaleX(-1);
+}
+.ecp-message-window .event-command-face-crop-shell[data-empty="true"] {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(255, 255, 255, 0.28);
+  border-radius: 2px;
+  display: grid;
+  height: 96px;
+  justify-items: center;
+  width: 96px;
+}
+.ecp-message-window .event-command-face-crop-missing {
+  color: #b9c2e0;
+  font-size: 22px;
+  font-weight: 700;
+}
+.ecp-face-caption {
+  color: var(--text-2, #aeb6c8);
+  font: 600 11px/1.35 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+
+/* 문장 표시 설정 프리뷰: 무대 + 옵션 배지 */
+.ecp-settings-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ecp-settings-preview .ecp-stage {
+  position: relative;
+}
+.ecp-player-pawn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 3px;
+  background: rgba(255, 215, 110, 0.18);
+  border: 1px solid rgba(255, 215, 110, 0.55);
+  color: #ffd76e;
+  font-size: 11px;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+.ecp-settings-preview .ecp-message-window {
+  position: relative;
+  z-index: 1;
+}
+.ecp-settings-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.ecp-settings-badges .ecp-move-badge.off {
+  opacity: 0.55;
+  background: var(--bg-inset, #14161c);
+  color: var(--text-2, #aeb6c8);
+  border-color: var(--border-default, #3a3f4b);
+}
+
+/* 문장 표시 설정 폼 그룹 */
+.event-command-message-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.event-command-settings-group {
+  margin: 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  border-radius: 8px;
+  background: var(--bg-inset, rgba(0, 0, 0, 0.14));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.event-command-settings-group > legend {
+  padding: 0 6px;
+  font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
+  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+}
+.event-command-settings-hint {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-2, #aeb6c8);
+}
+.event-command-message-settings .rich-segment-group {
+  display: flex;
+  width: 100%;
+}
+.event-command-message-settings .rich-segment {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  font-weight: 700;
+  padding: 8px 10px;
+}
+
+.ecp-choice-list { display: flex; flex-direction: column; gap: 3px; margin-top: 4px; }
+.ecp-choice { padding: 2px 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.06); font-size: 12px; }
+.ecp-choice.empty { opacity: 0.6; }
+
+/* 미니맵 */
+.ecp-map-stage { place-items: center; background: #0b1020; }
+.ecp-map-canvas { image-rendering: pixelated; max-width: 100%; max-height: 210px; border: 1px solid rgba(255, 255, 255, 0.15); }
+.ecp-map-caption {
+  position: absolute; bottom: 6px; left: 8px; font-size: 11px; color: #cdd6f4;
+  background: rgba(0, 0, 0, 0.5); padding: 1px 6px; border-radius: 3px;
+}
+
+/* 아이콘 무대 (아이템/배우/골드/전투/스위치) */
+.ecp-icon-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px; }
+.ecp-hero-icon {
+  display: grid; place-items: center; width: 56px; height: 56px;
+  background: var(--bg-raised, #20242e); border: 1px solid var(--border-default, #3a3f4b); border-radius: 8px;
+}
+.ecp-hero-img { image-rendering: pixelated; }
+.ecp-icon-name { font-weight: 600; font-size: 13px; color: var(--text-1, #e9ecf5); text-align: center; }
+.ecp-op-strip {
+  font-size: 12px; color: var(--text-2, #aeb6c8);
+  background: var(--bg-inset, #14161c); border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 999px; padding: 2px 10px;
+}
+.ecp-gold-badge, .ecp-battle-badge, .ecp-exp-badge, .ecp-skill-badge { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-weight: 800; font-size: 20px; }
+.ecp-gold-badge { background: radial-gradient(circle at 35% 30%, #ffe07a, #c9971a); color: #4a3200; }
+.ecp-exp-badge { background: radial-gradient(circle at 35% 30%, #9ec5ff, #3d6fd4); color: #0b1f4a; font-size: 14px; }
+.ecp-skill-badge { background: radial-gradient(circle at 35% 30%, #d3c0ff, #6d4fd4); color: #1b0f44; font-size: 14px; }
+.ecp-battle-badge { background: #3a1420; color: #ff7a99; border: 1px solid #ff7a99; }
+.ecp-battle-stage { width: 100%; align-items: stretch; padding: 10px 8px 14px; }
+.ecp-battle-field {
+  position: relative;
+  width: 100%;
+  min-height: 110px;
+  border-radius: 10px;
+  border: 1px solid var(--border-default, #3a3f4b);
+  background: linear-gradient(180deg, #1a2438 0%, #243018 70%, #1a2014 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px 8px 8px;
+}
+.ecp-battle-enemies {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 72px;
+}
+.ecp-battle-enemy {
+  max-width: 72px;
+  max-height: 72px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 0 rgba(0,0,0,0.45));
+}
+.ecp-battle-enemy-fallback {
+  min-width: 40px;
+  min-height: 40px;
+  padding: 6px;
+  border-radius: 8px;
+  background: #2a3140;
+  color: #c8d0e0;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+.ecp-battle-rewards {
+  color: var(--text-2, #aeb6c8);
+  font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin-top: 4px;
+  text-align: center;
+}
+.ecp-battle-empty-warn {
+  margin-top: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, #ff7b8a 18%, transparent);
+  color: #ff7b8a;
+  font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+.ecp-battle-result-note {
+  margin-top: 6px;
+  color: var(--text-3, #8b93a7);
+  font: 500 10px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: center;
+}
+.ecp-lamp { display: grid; place-items: center; width: 56px; height: 30px; border-radius: 6px; font-weight: 800; font-size: 13px; letter-spacing: 0.08em; }
+.ecp-lamp.on { background: #133a1f; color: #58e08a; border: 1px solid #58e08a; }
+.ecp-lamp.off { background: #2a1414; color: #e08a8a; border: 1px solid #6b3b3b; }
+

@@ -1,0 +1,400 @@
+.event-command-picker-favorite:hover,
+.event-command-picker-favorite:focus-visible {
+  border-color: var(--accent, var(--accent-border));
+}
+
+.event-command-picker-panel {
+  min-height: 0;
+}
+
+.event-command-picker-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.event-command-picker-group-heading {
+  align-items: center;
+  color: var(--text-dim, var(--text-1));
+  display: flex;
+  font: 700 11px/14px var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  gap: 8px;
+  grid-column: 1 / -1;
+  margin-top: 2px;
+}
+
+.event-command-picker-group-heading::after {
+  background: var(--border-soft, var(--bg-overlay));
+  content: "";
+  flex: 1;
+  height: 1px;
+}
+
+.event-command-picker-group-heading:first-child {
+  margin-top: 0;
+}
+
+.event-command-picker-command {
+  align-items: center;
+  background: var(--surface-panel, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 6px;
+  color: var(--text, var(--text-1));
+  display: flex;
+  font: 650 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  justify-content: flex-start;
+  min-height: 34px;
+  overflow: hidden;
+  padding: 7px 10px;
+  text-align: left;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+  white-space: normal;
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.event-command-picker-command-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.command-runtime-badge {
+  align-items: center;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-s, 3px);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 800 10px/12px Inter, "Segoe UI", system-ui, sans-serif;
+  height: 16px;
+  justify-content: center;
+  margin-left: 6px;
+  min-width: 16px;
+  padding: 0 3px;
+}
+
+.command-runtime-badge.runtime-partial {
+  background: var(--accent-soft, var(--editor-blue-soft));
+  color: var(--status-warning, var(--gold));
+}
+
+.command-runtime-badge.editor-only {
+  background: var(--danger-muted, var(--accent-soft));
+  color: var(--status-error, var(--danger));
+}
+
+.event-command-picker-command:hover {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 58%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 48%, var(--border-soft, var(--border-subtle)));
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+}
+
+.event-command-picker-command:active {
+  transform: translateY(1px);
+}
+
+.event-command-picker-command.is-informational,
+.event-command-picker-command:disabled {
+  background: color-mix(in srgb, var(--bg-panel, var(--bg-raised)) 88%, var(--bg-raised));
+  border-color: var(--border-soft, var(--border-subtle));
+  color: var(--text-muted, var(--text-2));
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.event-command-picker-cancel {
+  min-width: 84px;
+}
+
+.event-command-context-menu {
+  background: color-mix(in srgb, var(--surface-panel, var(--bg-raised)) 95%, var(--accent-soft, var(--accent-muted)));
+  border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 78%, var(--accent, var(--accent-border)));
+  border-radius: 8px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.28), 0 2px 8px rgba(15, 23, 42, 0.12);
+  display: grid;
+  font: 600 13px/19px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-width: 236px;
+  padding: 6px;
+  position: fixed;
+  z-index: 10000;
+}
+
+.event-command-context-menu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text, var(--text-1));
+  display: grid;
+  font: inherit;
+  gap: 8px;
+  grid-template-columns: 22px minmax(92px, 1fr) 64px;
+  min-height: 30px;
+  padding: 5px 9px 5px 6px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.event-command-context-menu button:hover,
+.event-command-context-menu button:focus {
+  background: var(--accent, var(--accent));
+  color: var(--text-inverse, var(--text-1));
+  outline: 0;
+}
+
+.event-command-context-menu button:disabled {
+  background: transparent;
+  color: var(--text-muted, var(--text-2));
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.event-command-menu-icon {
+  align-self: center;
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 62%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--accent, var(--accent-border)) 22%, var(--border-soft, var(--border-subtle)));
+  border-radius: 5px;
+  height: 18px;
+  width: 18px;
+}
+
+.event-command-context-menu button:hover .event-command-menu-icon,
+.event-command-context-menu button:focus .event-command-menu-icon {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.event-command-menu-shortcut {
+  color: var(--text-muted, var(--text-2));
+  font-weight: 650;
+  justify-self: end;
+}
+
+.event-command-context-menu button:hover .event-command-menu-shortcut,
+.event-command-context-menu button:focus .event-command-menu-shortcut {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-window.narrow {
+  border-color: var(--border, var(--border-default));
+  border-radius: 0;
+  width: min(560px, calc(100vw - 36px));
+}
+
+.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-header {
+  background: var(--bg-panel-2, var(--bg-raised));
+  border-bottom: 1px solid var(--border-soft, var(--border-default));
+  min-height: 36px;
+  padding: 8px 10px;
+}
+
+.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-header h3 {
+  font: 500 14px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-close {
+  border-radius: 0;
+  height: 24px;
+  min-height: 24px;
+  min-width: 24px;
+}
+
+.event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-body {
+  background: var(--bg-panel, var(--bg-raised));
+  gap: 0;
+  padding: 8px;
+}
+
+.event-record-picker.classic {
+  display: grid;
+  gap: 8px;
+}
+
+.event-record-picker-frame {
+  border: 2px groove var(--border-soft, var(--border-default));
+  box-sizing: border-box;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 180px minmax(0, 1fr);
+  height: 520px;
+  min-height: 0;
+  padding: 12px;
+}
+
+.event-record-picker-range-pane {
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  grid-template-rows: 30px minmax(0, 1fr) 32px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-record-picker-heading {
+  align-items: center;
+  background: var(--accent-primary, var(--accent));
+  border: 1px solid var(--border-default, var(--border-default));
+  color: var(--text-inverse, var(--text-1));
+  display: flex;
+  font: 600 20px/24px "Cascadia Mono", "MS Gothic", monospace;
+  justify-content: center;
+}
+
+.event-record-picker-blocks {
+  align-content: start;
+  background: var(--surface-panel, var(--bg-raised));
+  border: 2px inset var(--border-soft, var(--border-default));
+  display: grid;
+  grid-auto-rows: 21px;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px;
+}
+
+.event-record-picker-block,
+.event-record-picker-row {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text, var(--text-1));
+  font: 500 18px/20px "Cascadia Mono", "MS Gothic", monospace;
+  min-height: 20px;
+  overflow: hidden;
+  padding: 0 4px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-record-picker-block.active,
+.event-record-picker-block:hover,
+.event-record-picker-row:hover,
+.event-record-picker-row.selected {
+  background: var(--accent-primary, var(--accent));
+  color: var(--text-inverse, var(--text-1));
+}
+
+.event-record-picker-max {
+  width: 100%;
+}
+
+.event-record-picker-record-pane {
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  grid-template-rows: minmax(0, 1fr) 62px;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.event-record-picker-list {
+  align-content: start;
+  background: var(--surface-panel, var(--bg-raised));
+  border: 2px inset var(--border-soft, var(--border-default));
+  display: grid;
+  grid-auto-rows: 20px;
+  max-height: none;
+  min-height: 0;
+  overflow: auto;
+  padding: 2px;
+}
+
+.event-record-picker-name-box {
+  align-items: center;
+  border: 2px groove var(--border-soft, var(--border-default));
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin: 0;
+  min-width: 0;
+  padding: 8px 10px 6px;
+}
+
+.event-record-picker-name-box legend {
+  color: var(--text, var(--text-1));
+  font: 500 14px/18px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 0 4px;
+}
+
+.event-record-picker-name-id {
+  font: 500 18px/20px "Cascadia Mono", "MS Gothic", monospace;
+  white-space: nowrap;
+}
+
+.event-subdialog-body .event-record-picker-name-box input {
+  border-radius: 0;
+  min-height: 30px;
+  padding: 3px 6px;
+}
+
+.event-record-picker-footer .btn:disabled {
+  color: var(--text-muted, var(--text-2));
+  opacity: 0.54;
+}
+
+.transfer-player-zoom-button.active {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 78%, var(--bg-raised));
+  border-color: var(--accent, var(--accent-border));
+  color: var(--accent, var(--accent));
+}
+
+.transfer-player-map-row:hover,
+.transfer-player-map-row.selected,
+.event-page-move-route-list-row:hover,
+.event-page-move-route-list-row.selected,
+.event-graphic-resource-row:not(.disabled):hover,
+.event-graphic-resource-row.active {
+  background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised));
+  color: var(--accent, var(--accent));
+}
+
+.event-page-move-route {
+  gap: 10px;
+  grid-template-rows: auto minmax(0, 1fr) 116px 42px;
+}
+
+.event-page-move-route fieldset,
+.transfer-player-direction,
+.event-graphic-radio-group {
+  margin: 0;
+}
+
+.event-page-move-route legend,
+.event-graphic-radio-group legend {
+  color: var(--text-muted, var(--text-2));
+  font: 750 12px/16px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 0 4px;
+}
+
+.transfer-player-direction legend {
+  color: color-mix(in srgb, var(--text, var(--text-1)) 88%, var(--text-muted, var(--text-2)));
+  font: 750 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  padding: 0 4px;
+}
+
+.event-page-move-route-frequency-radios span,
+.event-page-move-route-options span,
+.event-page-move-route-parameters span,
+.event-graphic-radio-option {
+  color: var(--text, var(--text-1));
+  font: 600 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.transfer-player-direction-options span {
+  color: var(--text, var(--text-1));
+  font: 600 14px/20px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.event-page-move-route-command-list,
+.transfer-player-tree,
+.event-graphic-resource-list {
+  background: var(--event-popup-field, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-subtle));
+  border-radius: 8px;
+}
+

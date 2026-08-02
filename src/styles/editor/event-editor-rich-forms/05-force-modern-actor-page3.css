@@ -1,0 +1,224 @@
+/* ---- force modern actor/page3 forms out of auto-fit collapse ---- */
+.event-command-edit-body .party-member-command-body,
+.event-command-edit-body .change-equipment-command-body,
+.event-command-edit-body .change-parameters-command-body,
+.event-command-edit-body .actor-m2-command-body,
+.event-command-edit-body .page3-command-body,
+.event-command-edit-body .actor-amount-command-body,
+.event-command-edit-body .rich-command-form.party-member-command-body,
+.event-command-edit-body .rich-command-form.change-equipment-command-body,
+.event-command-edit-body .rich-command-form.actor-amount-command-body,
+.event-command-edit-body .rich-command-form.page3-command-body {
+  align-content: start;
+  display: flex !important;
+  flex-direction: column;
+  gap: 12px;
+  grid-template-columns: none !important;
+  min-width: 0;
+  width: 100%;
+}
+
+
+.event-command-edit-body .party-member-layout,
+.event-command-edit-body .change-parameters-layout,
+.event-command-edit-body .actor-m2-layout,
+.event-command-edit-body .page3-layout,
+.event-command-edit-body .page3-command-layout {
+  align-items: start;
+  display: grid !important;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(220px, 0.95fr) !important;
+  min-width: 0;
+  width: 100%;
+}
+
+
+.event-command-edit-body .change-equipment-layout {
+  align-items: start;
+  display: grid !important;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) !important;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .event-command-edit-body .party-member-layout,
+  .event-command-edit-body .change-parameters-layout,
+  .event-command-edit-body .actor-m2-layout,
+  .event-command-edit-body .page3-layout,
+  .event-command-edit-body .page3-command-layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+
+.event-command-edit-body .party-member-main,
+.event-command-edit-body .change-equipment-main,
+.event-command-edit-body .change-parameters-main,
+.event-command-edit-body .actor-m2-main,
+.event-command-edit-body .page3-main,
+.event-command-edit-body .page3-command-main,
+.event-command-edit-body .party-member-followups,
+.event-command-edit-body .change-equipment-preview,
+.event-command-edit-body .change-parameters-preview,
+.event-command-edit-body .actor-m2-preview,
+.event-command-edit-body .page3-preview,
+.event-command-edit-body .page3-command-preview {
+  display: grid !important;
+  gap: 10px;
+  min-width: 0;
+}
+
+
+.event-command-edit-body .party-member-intent,
+.event-command-edit-body .actor-m2-presets,
+.event-command-edit-body .page3-presets,
+.event-command-edit-body .change-parameters-param-chips,
+.event-command-edit-body .actor-m2-chip-grid,
+.event-command-edit-body .page3-chip-grid,
+.event-command-edit-body .party-member-followup-buttons,
+.event-command-edit-body .record-browser {
+  min-width: 0;
+  width: 100%;
+}
+
+
+.event-command-edit-body .party-member-field-label,
+.event-command-edit-body .change-equipment-field-label,
+.event-command-edit-body .change-parameters-field-label,
+.event-command-edit-body .actor-m2-field-label,
+.event-command-edit-body .page3-field-label {
+  writing-mode: horizontal-tb;
+}
+
+
+.event-command-edit-body .rich-segment-group,
+.event-command-edit-body .change-parameters-param-chips,
+.event-command-edit-body .actor-m2-chip-grid,
+.event-command-edit-body .page3-chip-grid,
+.event-command-edit-body .party-member-followup-buttons,
+.event-command-edit-body .actor-m2-presets,
+.event-command-edit-body .page3-presets {
+  align-items: center;
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+
+.event-command-edit-columns > .event-command-edit-body:has(.party-member-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.change-equipment-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.change-parameters-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.actor-m2-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.page3-command-body),
+.event-command-edit-columns > .event-command-edit-body:has(.actor-amount-command-body) {
+  max-height: min(70vh, 680px);
+  overflow: auto;
+  padding-right: 2px;
+}
+
+
+/* ---- Actor/combat M2 + recover/name modern forms ---- */
+.actor-m2-command-body {
+  gap: 12px;
+  width: 100%;
+}
+
+.actor-m2-layout {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.9fr);
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .actor-m2-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.actor-m2-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.actor-m2-field {
+  display: grid;
+  gap: 4px;
+}
+
+.actor-m2-field-label,
+.actor-m2-presets-label {
+  color: var(--text-2, #aeb6c8);
+  font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.actor-m2-presets,
+.actor-m2-chip-grid,
+.actor-m2-inline {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.actor-m2-chip.is-active {
+  border-color: var(--accent, #6ea8ff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+}
+
+.actor-m2-text-input {
+  min-width: 180px;
+}
+
+.actor-m2-check {
+  align-items: center;
+  color: var(--text-1, #e9ecf5);
+  display: inline-flex;
+  gap: 8px;
+  font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+}
+
+.actor-m2-preview {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle, #2a2e38);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.actor-m2-preview-line {
+  color: var(--text-1, #e9ecf5);
+  font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.actor-m2-preview-note {
+  color: var(--text-2, #aeb6c8);
+  font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  margin: 0;
+}
+
+.actor-m2-preview-actor,
+.actor-m2-preview-copy {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.actor-m2-preview-copy {
+  align-items: flex-start;
+  display: grid;
+  gap: 2px;
+}
+
+.actor-m2-faceset-preview,
+.actor-m2-faceset-grid {
+  min-width: 0;
+}
+

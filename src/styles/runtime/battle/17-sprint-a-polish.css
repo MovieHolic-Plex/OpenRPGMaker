@@ -1,0 +1,232 @@
+/* =========================================================================
+   Sprint A polish — idle breath, classic command focus, juice base sync.
+   Layout ownership stays with classic/pokemon blocks above.
+   ========================================================================= */
+
+/* Idle life: tiny breathing bounce while waiting for commands. */
+.battle-scene[data-battle-phase="actorCommand"] .battle-enemy:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]),
+.battle-scene[data-battle-phase="actorCommand"] .battle-actor-group .battle-actor:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]):not([data-battle-pose="defend"]) {
+  animation: battle-idle-breath 1.8s ease-in-out infinite;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="actorCommand"] .battle-enemy:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]) {
+  animation: battle-idle-breath-pokemon-enemy 1.9s ease-in-out infinite;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="actorCommand"] .battle-actor-group .battle-actor:not(.defeated):not([data-battle-pose="hit"]):not([data-battle-pose="attack"]):not([data-battle-pose="defend"]) {
+  animation: battle-idle-breath-pokemon-actor 1.7s ease-in-out infinite;
+}
+
+@keyframes battle-idle-breath {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -4px; }
+}
+
+@keyframes battle-idle-breath-pokemon-enemy {
+  0%, 100% { transform: translate(-50%, -100%) scale(1.28); }
+  50% { transform: translate(-50%, -100%) scale(1.28) translateY(-6px); }
+}
+
+@keyframes battle-idle-breath-pokemon-actor {
+  0%, 100% { transform: translate(-50%, -55%) scale(2.45); }
+  50% { transform: translate(-50%, -55%) scale(2.45) translateY(-6px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-phase="actorCommand"] .battle-enemy,
+  .battle-scene[data-battle-phase="actorCommand"] .battle-actor-group .battle-actor {
+    animation: none !important;
+  }
+}
+
+/* Classic command focus: stop blue-on-blue washout. */
+.battle-command:hover,
+.battle-command:focus-visible,
+.battle-command[data-battle-command-cursor="true"] {
+  background: linear-gradient(180deg, #3a5f9a 0%, #2a4574 100%);
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.battle-command:focus-visible {
+  outline: 4px solid rgba(240, 195, 106, 0.85);
+  outline-offset: 2px;
+}
+
+/* Pokemon command selected state stays cream + red rim, slightly larger type. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
+  background: #fff6f0 !important;
+  border-color: var(--pkmn-accent) !important;
+  box-shadow: 0 0 0 2px rgba(228, 59, 68, 0.25), 0 4px 0 rgba(0, 0, 0, 0.08);
+  transform: scale(1.02);
+}
+
+/* Juice base must match the resting transform of each skin. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy {
+  --battle-juice-base: translate(-50%, -100%) scale(1.28);
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
+  --battle-juice-base: translate(-50%, -55%) scale(2.45);
+}
+
+/* === Defend visual feedback === */
+.battle-juice-defend {
+  animation: battle-juice-defend 0.5s ease-out;
+}
+@keyframes battle-juice-defend {
+  0% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+  40% { filter: brightness(1.4) drop-shadow(0 0 12px rgba(100, 180, 255, 0.8)); }
+  100% { filter: brightness(1) drop-shadow(0 0 0 transparent); }
+}
+.battle-scene[data-battle-director-step="acting"] .battle-actor-status.battle-acting {
+  border-left: 4px solid rgba(100, 180, 255, 0.7);
+  background: rgba(60, 120, 220, 0.12);
+}
+
+/* === Skill submenu text spacing === */
+.battle-command-text strong + small::before {
+  content: " ";
+}
+
+/* === Victory result presentation === */
+.battle-result-panel[data-battle-result="victory"] .battle-result-title {
+  animation: battle-victory-title 0.6s ease-out;
+  color: #ffd700;
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.6), 2px 2px 0 #000;
+}
+@keyframes battle-victory-title {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+/* 등장 애니메이션은 공개되는 순간(data-revealed 전환)에 시작한다 — 스테이지가 이미
+   순차 공개(450ms 간격)라 인덱스별 지연은 이중 지연이 되어 제거했다. */
+.battle-result-reward-card[data-revealed="true"] {
+  animation: battle-reward-reveal 0.35s ease-out backwards;
+}
+@keyframes battle-reward-reveal {
+  0% { transform: translateY(16px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 경험치 보상 행의 게이지 바 — 포켓몬 결과 화면의 EXP 채움 연출 */
+.battle-result-exp-bar {
+  background: #3f423c;
+  border: 2px solid #26281f;
+  border-radius: 8px;
+  grid-column: 1 / -1;
+  height: 12px;
+  overflow: hidden;
+}
+.battle-result-exp-fill {
+  /* 폭은 battleDirectorDom 이 실제 경험치 진행률(%)로 세팅하고,
+     transition 이 이전 진행률 → 새 진행률을 채워 올린다. 가짜 0→100% 금지. */
+  background: linear-gradient(180deg, #7ee081 0%, #40b24a 100%);
+  height: 100%;
+  transition: width 0.9s ease-out 0.25s;
+  width: 0;
+}
+.battle-result-exp-bar[data-exp-level-up="true"] .battle-result-exp-fill {
+  background: linear-gradient(180deg, #ffe27a 0%, #f0a72e 100%);
+}
+.battle-result-panel[data-battle-result="defeat"] .battle-result-title {
+  color: #ff4444;
+  text-shadow: 0 0 12px rgba(255, 0, 0, 0.4), 2px 2px 0 #000;
+}
+.battle-result-crest {
+  animation: battle-crest-pulse 1.2s ease-in-out infinite alternate;
+}
+@keyframes battle-crest-pulse {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* === Item button empty state === */
+.battle-command[data-preview-only="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.battle-command[data-preview-only="true"]:hover {
+  background: inherit;
+}
+
+/* Unified command cursor + native disabled state. Keyboard, focus, and pointer
+   all stamp the same data attribute from battleDom.ts. */
+.battle-command[data-battle-command-cursor="true"] {
+  background: linear-gradient(180deg, #3a5f9a 0%, #2a4574 100%);
+  border-color: #eef4ff #081849 #081849 #eef4ff;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
+
+.battle-command:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.45) saturate(0.45);
+  opacity: 0.48;
+}
+
+.battle-command:disabled:hover {
+  background: inherit;
+  border-color: rgba(154, 180, 220, 0.42);
+  box-shadow: none;
+  transform: none;
+}
+
+.battle-command-menu:has(> .battle-submenu-header),
+.battle-target-menu,
+.battle-result-panel,
+.battle-result-cards {
+  min-width: 0;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.battle-command-menu:has(> .battle-submenu-header) {
+  align-content: start !important;
+  grid-auto-rows: minmax(28px, auto) !important;
+  grid-template-rows: none !important;
+}
+
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong,
+.battle-command-menu:has(> .battle-submenu-header) .battle-command-text small,
+.battle-target-menu .battle-command-text strong,
+.battle-target-menu .battle-command-text small,
+.battle-result-panel {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.battle-actor[data-battle-targetable="true"] {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.battle-flow-status,
+.battle-strict-order {
+  color: var(--rm2k3-battle-muted, #b9c8f4);
+  font-size: 13px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.battle-strict-order {
+  grid-column: 1 / -1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene,
+  .battle-scene *,
+  .battle-scene *::before,
+  .battle-scene *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+

@@ -1,0 +1,137 @@
+/* ===========================================================================
+   Compact HUD layer — 320×240 stage geometry + readable typography.
+
+   History: this layer used to force every battle text down to 2.5–7px with
+   !important so the HUD would fit the 320×240 play stage; at those sizes
+   Galmuri11 renders as unreadable smudge. It now keeps only the stage
+   geometry (scene grid, HUD row placement, victory box sizing) and sets all
+   text on the same 9/11px pixel grid the rest of the runtime uses
+   (--runtime-font-size-9 / --runtime-font-size-11 in system.css).
+   Rules for elements that no longer exist in the battle DOM (turn ribbon,
+   active actor card, target analysis panel, resource preview, weakness
+   chips, enemy intent, result progress) were removed.
+   ======================================================================== */
+
+.battle-scene {
+  --battle-hud-height: 192px;
+  gap: 4px !important;
+  grid-template-columns: minmax(0, 1fr) 184px 328px !important;
+  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
+  padding: 0 !important;
+}
+
+.battle-field {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  z-index: 1 !important;
+}
+
+/* Side-view staging: enemy/party read as field protagonists. The rm2003 skin
+   resets these transforms for its own sprite sizes; every other skin keeps
+   the scaled node together with the _battlers.css sprite sizing. */
+.battle-enemy {
+  transform: translate(-50%, -100%) scale(1.35);
+}
+
+.battle-enemy-image {
+  height: 112px;
+  width: 128px;
+}
+
+.battle-actor-group .battle-actor {
+  transform: translate(-50%, -100%) scale(1.2);
+  height: 96px;
+  width: 80px;
+}
+
+.battle-enemy-group,
+.battle-actor-group {
+  pointer-events: none;
+}
+
+.battle-enemy {
+  pointer-events: auto;
+}
+
+/* --- Command / result icon assets (shared by every skin) ---------------- */
+
+.battle-command[data-preview-only="true"] {
+  filter: saturate(0.74) brightness(0.88);
+}
+
+.battle-command-icon {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.battle-command-icon::before {
+  content: none !important;
+}
+
+.battle-command::before {
+  content: none !important;
+  width: 0 !important;
+}
+
+.battle-command-icon-sword,
+.battle-command-icon-target {
+  background-image: url("/assets/generated/rm2k3/battle-icon-sword.png") !important;
+}
+
+.battle-command-icon-fire {
+  background-image: url("/assets/generated/rm2k3/battle-icon-fire.png") !important;
+}
+
+.battle-command-icon-shield {
+  background-image: url("/assets/generated/rm2k3/battle-icon-shield.png") !important;
+}
+
+.battle-command-icon-cross {
+  background-image: url("/assets/generated/rm2k3/battle-icon-cross.png") !important;
+}
+
+.battle-command-icon-bag {
+  background-image: url("/assets/generated/rm2k3/battle-icon-bag.png") !important;
+}
+
+.battle-command-icon-boot,
+.battle-command-icon-back {
+  background-image: url("/assets/generated/rm2k3/battle-icon-boot.png") !important;
+}
+
+.battle-result-reward-icon,
+.battle-result-progress-icon {
+  background-color: transparent;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.battle-result-reward-icon-exp {
+  background-image: url("/assets/generated/rm2k3/battle-icon-exp.png") !important;
+  border: 0;
+  transform: none;
+}
+
+.battle-result-reward-icon-gold {
+  background-image: url("/assets/generated/rm2k3/battle-icon-gold.png") !important;
+}
+
+.battle-result-reward-icon-item {
+  background-image: url("/assets/generated/rm2k3/battle-icon-shard.png") !important;
+}
+
+.battle-result-progress-icon-world {
+  background-image: url("/assets/generated/rm2k3/battle-icon-world.png") !important;
+}
+
+.battle-result-progress-icon-next {
+  background-image: url("/assets/generated/rm2k3/battle-icon-next.png") !important;
+}
+
+.battle-result-progress-icon-next::before {
+  content: none !important;
+}
+
