@@ -1,6 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
-import { confirmBattleTarget, seedLayoutResultBattleProject, seedReferenceBattleProject, startReferenceBattle } from "./battleReferenceProject";
+import {
+  confirmBattleTarget,
+  seedLayoutResultBattleProject,
+  seedPokemonLayoutBattleProject,
+  seedReferenceBattleProject,
+  startReferenceBattle,
+} from "./battleReferenceProject";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
@@ -142,6 +148,115 @@ test("battle target and result states stay readable without HUD collision", asyn
   expect(resultMetrics.enemyGroupVisibility).toBe("visible");
   expect(resultMetrics.field.height / resultMetrics.scene.height).toBeGreaterThan(0.9);
   expect(resultMetrics.resultPanel?.bottom ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(resultMetrics.scene.bottom - 2);
+});
+
+test("pokemon battle keeps submenu actions, duplicate targets, and rewards readable", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 1360, height: 768 });
+  await seedPokemonLayoutBattleProject(page);
+  await startReferenceBattle(page);
+
+  const itemHitTarget = await page.getByTestId("actor-command-item").evaluate((button) => {
+    const rect = button.getBoundingClientRect();
+    const top = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    return {
+      topClass: top?.className ?? "",
+      topTestId: top instanceof HTMLElement ? top.dataset.testid ?? "" : "",
+      buttonContainsTop: Boolean(top && button.contains(top)),
+      pointerEvents: getComputedStyle(button).pointerEvents,
+      zIndex: getComputedStyle(button).zIndex,
+      stack: document.elementsFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+        .slice(0, 8)
+        .map((element) => ({
+          className: String(element.className),
+          testId: element instanceof HTMLElement ? element.dataset.testid ?? "" : "",
+        })),
+      rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+    };
+  });
+  expect(itemHitTarget.buttonContainsTop, JSON.stringify(itemHitTarget)).toBe(true);
+  await page.getByTestId("actor-command-item").click();
+  await expect(page.getByTestId("actor-command-back")).toBeVisible();
+  const submenuLayout = await page.evaluate(() => {
+    const back = document.querySelector<HTMLElement>("[data-testid='actor-command-back']");
+    const prompt = document.querySelector<HTMLElement>(".battle-key-prompts");
+    const menu = document.querySelector<HTMLElement>(".battle-command-menu");
+    if (!back || !prompt || !menu) throw new Error("pokemon submenu layout nodes are missing");
+    const backRect = back.getBoundingClientRect();
+    const promptRect = prompt.getBoundingClientRect();
+    return {
+      backBottom: backRect.bottom,
+      promptTop: promptRect.top,
+      menuClientHeight: menu.clientHeight,
+      menuScrollHeight: menu.scrollHeight,
+    };
+  });
+  expect(submenuLayout.backBottom).toBeLessThanOrEqual(submenuLayout.promptTop + 1);
+  expect(submenuLayout.menuScrollHeight).toBeLessThanOrEqual(submenuLayout.menuClientHeight + 1);
+
+  await page.keyboard.press("Escape");
+  await page.getByTestId("actor-command-attack").click();
+  await expect(page.getByTestId("battle-target-prompt")).toBeVisible();
+  const targetLayout = await page.evaluate(() => {
+    const labels = [...document.querySelectorAll<HTMLElement>(".battle-target-menu [data-battle-target-id]")]
+      .map((node) => node.querySelector("strong")?.textContent?.trim() ?? "");
+    const textWithinButtons = [...document.querySelectorAll<HTMLElement>(".battle-target-menu [data-battle-target-id]")]
+      .every((button) => {
+        const bounds = button.getBoundingClientRect();
+        return [...button.querySelectorAll<HTMLElement>("strong, small")].every((text) => {
+          const rect = text.getBoundingClientRect();
+          return rect.top >= bounds.top - 1 && rect.bottom <= bounds.bottom + 1;
+        });
+      });
+    const cancel = document.querySelector<HTMLElement>("[data-testid='battle-target-cancel']");
+    const prompt = document.querySelector<HTMLElement>(".battle-key-prompts");
+    if (!cancel || !prompt) throw new Error("pokemon target layout nodes are missing");
+    return {
+      labels,
+      textWithinButtons,
+      cancelBottom: cancel.getBoundingClientRect().bottom,
+      promptTop: prompt.getBoundingClientRect().top,
+    };
+  });
+  expect(new Set(targetLayout.labels).size).toBe(targetLayout.labels.length);
+  expect(targetLayout.textWithinButtons).toBe(true);
+  expect(targetLayout.cancelBottom).toBeLessThanOrEqual(targetLayout.promptTop + 1);
+
+  await seedLayoutResultBattleProject(page, { battleUiStyle: "pokemon" });
+  await startReferenceBattle(page);
+  await page.getByTestId("actor-command-attack").click();
+  await page.getByTestId("battle-target-enemy-1").click();
+  const resultPanel = page.getByTestId("battle-result-panel");
+  await expect(resultPanel).toBeVisible({ timeout: 20_000 });
+  await expect(resultPanel.locator(".battle-result-title")).toHaveText("승리");
+  await expect(resultPanel.locator(".battle-result-reward-label")).toHaveCount(2);
+  await expect(resultPanel.locator(".battle-result-reward-label").first()).toBeVisible({ timeout: 5_000 });
+  await expect(resultPanel.locator(".battle-result-reward-label").nth(1)).toBeVisible({ timeout: 5_000 });
+  const resultLayout = await resultPanel.evaluate((panel) => {
+    const panelRect = panel.getBoundingClientRect();
+    const required = [
+      panel.querySelector<HTMLElement>(".battle-result-title"),
+      panel.querySelector<HTMLElement>(".battle-result-cards"),
+      panel.querySelector<HTMLElement>(".battle-result-confirm"),
+    ];
+    return {
+      overflows: panel.scrollHeight > panel.clientHeight + 1,
+      clientHeight: panel.clientHeight,
+      scrollHeight: panel.scrollHeight,
+      panel: { top: panelRect.top, bottom: panelRect.bottom },
+      children: required.map((node) => {
+        const rect = node?.getBoundingClientRect();
+        return rect ? { className: node?.className ?? "", top: rect.top, bottom: rect.bottom } : null;
+      }),
+      childrenWithin: required.every((node) => {
+        if (!node) return false;
+        const rect = node.getBoundingClientRect();
+        return rect.top >= panelRect.top - 1 && rect.bottom <= panelRect.bottom + 1;
+      }),
+    };
+  });
+  expect(resultLayout.overflows, JSON.stringify(resultLayout)).toBe(false);
+  expect(resultLayout.childrenWithin).toBe(true);
 });
 
 async function battleLayoutMetrics(page: Page): Promise<BattleLayoutMetrics> {

@@ -47,6 +47,7 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
     panel.dataset.targetPresentation = "menu";
     panel.append(targetPrompt(snapshot, terms));
     panel.append(targetSelectionMenu(snapshot, options, terms));
+    panel.append(targetCancelButton(options));
     panel.append(keyPrompts());
     return panel;
   }
@@ -54,6 +55,9 @@ export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPan
 
   if (snapshot.battleFlow === "strict") panel.append(strictFlowStatus(snapshot));
   panel.append(commandGrid(snapshot, options, false));
+  if (options.submenu && !(options.submenu.kind === "switch" && snapshot.forcedSwitchActorId)) {
+    panel.append(submenuBackButton(options, terms));
+  }
   panel.append(keyPrompts());
   return panel;
 }
@@ -201,7 +205,7 @@ function enemyNameList(enemies: readonly BattleBattlerSnapshot[]): HTMLElement {
   const list = document.createElement("div");
   list.className = "battle-enemy-list";
   for (const enemy of enemies) {
-    list.append(enemyListRow(enemy));
+    list.append(enemyListRow(enemy, enemies));
   }
   return list;
 }
@@ -216,10 +220,11 @@ export function syncEnemyListPanel(
   for (const enemy of enemies) {
     let row = list.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${enemy.id}"]`);
     if (!row) {
-      list.append(enemyListRow(enemy));
+      list.append(enemyListRow(enemy, enemies));
       row = list.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${enemy.id}"]`);
     }
     if (!row) continue;
+    syncEnemyListName(row, enemy, enemies);
     const vitals = ledger?.vitalsFor(enemy.id);
     const shownHp = vitals ? vitals.hp : enemy.hp;
     const shownDefeated = vitals ? vitals.defeated : enemy.defeated;
@@ -235,19 +240,17 @@ export function syncEnemyListPanel(
   }
 }
 
-function enemyListRow(enemy: BattleBattlerSnapshot): HTMLElement {
+function enemyListRow(
+  enemy: BattleBattlerSnapshot,
+  enemies: readonly BattleBattlerSnapshot[],
+): HTMLElement {
   const row = document.createElement("div");
   row.className = "battle-enemy-list-row";
   row.dataset.enemyId = enemy.id;
   const name = document.createElement("span");
   name.className = "battle-enemy-list-name";
-  name.textContent = enemy.name;
-  if (enemy.level) {
-    const lv = document.createElement("span");
-    lv.className = "battle-enemy-list-level";
-    lv.textContent = `Lv.${enemy.level}`;
-    name.append(lv);
-  }
+  row.append(name);
+  syncEnemyListName(row, enemy, enemies);
   const hp = document.createElement("span");
   hp.className = "battle-enemy-list-hp";
   hp.dataset.testid = `battle-enemy-list-hp-${enemy.id}`;
@@ -258,9 +261,34 @@ function enemyListRow(enemy: BattleBattlerSnapshot): HTMLElement {
   bar.className = "battle-enemy-list-bar battle-stat-bar battle-stat-bar-hp";
   bar.style.setProperty("--battle-stat", `${pct}%`);
   bar.dataset.hpState = hpBarState(pct);
-  row.append(name, hp, bar);
+  row.append(hp, bar);
   if (enemy.defeated) row.classList.add("defeated");
   return row;
+}
+
+function syncEnemyListName(
+  row: HTMLElement,
+  enemy: BattleBattlerSnapshot,
+  enemies: readonly BattleBattlerSnapshot[],
+): void {
+  const name = row.querySelector<HTMLElement>(".battle-enemy-list-name");
+  if (!name) return;
+  name.replaceChildren(document.createTextNode(disambiguatedBattlerName(enemy, enemies)));
+  if (!enemy.level) return;
+  const level = document.createElement("span");
+  level.className = "battle-enemy-list-level";
+  level.textContent = `Lv.${enemy.level}`;
+  name.append(level);
+}
+
+function disambiguatedBattlerName(
+  battler: BattleBattlerSnapshot,
+  peers: readonly BattleBattlerSnapshot[],
+): string {
+  const duplicates = peers.filter((peer) => peer.name === battler.name);
+  if (duplicates.length < 2) return battler.name;
+  const index = duplicates.findIndex((peer) => peer.id === battler.id);
+  return `${battler.name} ${Math.max(0, index) + 1}`;
 }
 
 function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: RuntimeBattleCommand): SkillId[] {
@@ -344,7 +372,6 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
       options.beginTargetCommand({ kind: "skill", skillId });
     }, Boolean(reason), reason));
   }
-  nodes.push(submenuBackButton(options, terms));
   return nodes;
 }
 
@@ -395,7 +422,6 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
     }));
   }
-  nodes.push(submenuBackButton(options, terms));
   return nodes;
 }
 
@@ -410,7 +436,6 @@ function captureSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpt
       options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
     }));
   }
-  nodes.push(submenuBackButton(options, terms));
   return nodes;
 }
 
@@ -424,7 +449,6 @@ function switchSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOpti
       options.runActorCommand({ kind: "switch", targetActorId: actor.recordId });
     }));
   }
-  if (!snapshot.forcedSwitchActorId) nodes.push(submenuBackButton(options, terms));
   return nodes;
 }
 
@@ -453,7 +477,8 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
       ? snapshot.actors.find((entry) => entry.id === targetId || entry.recordId === targetId)
       : snapshot.enemies.find((entry) => entry.id === targetId);
     if (!target) continue;
-    const button = commandButton(target.name, `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
+    const peers = snapshot.targetSelection?.side === "actor" ? snapshot.actors : snapshot.enemies;
+    const button = commandButton(disambiguatedBattlerName(target, peers), `battle-target-${target.id}`, "target", `${terms.hp} ${target.hp}/${target.maxHp}`, () => {
       options.confirmTargetSelection(target.id);
     });
     button.dataset.battleTargetable = "true";
@@ -464,7 +489,11 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
     if (selected) button.classList.add("battle-target-selected");
     menu.append(button);
   }
-  menu.append(commandButton("취소", "battle-target-cancel", "back", "", () => {
+  return menu;
+}
+
+function targetCancelButton(options: BattleCommandPanelOptions): HTMLButtonElement {
+  return commandButton("취소", "battle-target-cancel", "back", "", () => {
     if (options.cancelTargetSelection) {
       options.cancelTargetSelection();
       return;
@@ -472,8 +501,7 @@ function targetSelectionMenu(snapshot: BattleSnapshot, options: BattleCommandPan
     options.runtime.cancelTargetSelection();
     options.setDirectorState(commandPromptState(options.runtime.snapshot()));
     options.render();
-  }));
-  return menu;
+  });
 }
 
 function targetPrompt(snapshot: BattleSnapshot, terms: ResolvedTerms): HTMLElement {
@@ -485,8 +513,9 @@ function targetPrompt(snapshot: BattleSnapshot, terms: ResolvedTerms): HTMLEleme
   const selected = snapshot.targetSelection?.side === "actor"
     ? snapshot.actors.find((entry) => entry.id === selectedId || entry.recordId === selectedId)
     : snapshot.enemies.find((entry) => entry.id === selectedId);
+  const peers = snapshot.targetSelection?.side === "actor" ? snapshot.actors : snapshot.enemies;
   prompt.textContent = selected
-    ? `${terms.target}: ${selected.name}`
+    ? `${terms.target}: ${disambiguatedBattlerName(selected, peers)}`
     : actor
       ? `${actor.name}: ${terms.target}을 선택`
       : `${terms.target} 선택`;

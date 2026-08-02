@@ -7,6 +7,7 @@ import {
   BATTLE_ACTING_MS,
   BATTLE_HITSTOP_MS,
   BATTLE_IMPACT_MS,
+  BATTLE_RESULT_HOLD_MS,
   BATTLE_RESOLVE_MS,
 } from "@/player/battleSequencer";
 import battleFixture from "./fixtures/projects/battle-v3.json";
@@ -216,5 +217,51 @@ describe("battle sequencer", () => {
     // 인트로는 "○○이(가) 나타났다!" 배너 → 커맨드 프롬프트("무엇을 할까?") 순으로 흐른다.
     expect(introLines[0]).toContain("나타났다");
     expect(introLines.at(-1)).toMatch(/무엇을 할까|게이지/);
+  });
+
+  it("holds a terminal action outcome before replacing it with the result panel", () => {
+    const runtime = createBattleRuntime({
+      project: deserialize(JSON.stringify(battleFixture)),
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      rng: () => 0,
+    });
+    untilActorCommand(runtime);
+    const queue: Array<{ callback: () => void; delayMs: number }> = [];
+    const delays: number[] = [];
+    const lines: string[] = [];
+    const sequencer = createBattleSequencer(
+      runtime,
+      {
+        onDirectorState: (state) => lines.push(state.lines.join(" ")),
+        onSyncView: () => undefined,
+        onDamageFeedback: () => undefined,
+        onResultStage: () => undefined,
+        onSequenceBusy: () => undefined,
+      },
+      (callback, delayMs) => {
+        delays.push(delayMs);
+        queue.push({ callback, delayMs });
+        return queue.length;
+      },
+      () => undefined,
+    );
+
+    const before = runtime.snapshot();
+    runtime.performActorCommand({ kind: "escape" });
+    const after = runtime.snapshot();
+    sequencer.runAfterActorCommand({ kind: "escape" }, before, after);
+
+    let guard = 0;
+    while (queue.length > 0 && guard < 20) {
+      queue.shift()?.callback();
+      guard += 1;
+    }
+
+    expect(lines.some((line) => line.includes("무사히 후퇴했다"))).toBe(true);
+    expect(delays).toContain(BATTLE_RESULT_HOLD_MS);
+    expect(lines.at(-1)).toContain("무사히 후퇴했다");
+    expect(queue).toHaveLength(0);
   });
 });

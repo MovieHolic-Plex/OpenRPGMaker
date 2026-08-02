@@ -155,8 +155,10 @@ export function createBattleSequencer(
     const snapshot = runtime.snapshot();
     consumedTimeline = snapshot.timeline.length;
     if (snapshot.result) {
-      revealResult(snapshot, previous);
-      setBusy(false);
+      delay(() => {
+        revealResult(snapshot, previous);
+        setBusy(false);
+      }, BATTLE_RESULT_HOLD_MS);
       return;
     }
     hooks.onDirectorState(directorStateAfterTurn(snapshot, previous));

@@ -46,6 +46,21 @@ export async function seedReferenceBattleProject(
   await seedProjectFromSupabaseCanonical(page, project);
 }
 
+export async function seedPokemonLayoutBattleProject(page: Page): Promise<void> {
+  const fixture = await readFile(new URL("../fixtures/projects/battle-v3.json", import.meta.url), "utf8");
+  const project = deserialize(fixture);
+  prepareReferenceBattleProject(project);
+  project.system.battleUiStyle = "pokemon";
+  const troop = project.database.troops.find((record) => record.id === "troop_slime");
+  if (!troop) throw new Error("missing troop_slime fixture");
+  troop.enemyIds = ["enemy_slime", "enemy_slime"];
+  troop.members = [
+    { enemyId: "enemy_slime", x: 105, y: 105, hidden: false },
+    { enemyId: "enemy_slime", x: 185, y: 145, hidden: false },
+  ];
+  await seedProjectFromSupabaseCanonical(page, project);
+}
+
 export async function seedLayoutResultBattleProject(
   page: Page,
   options: ReferenceBattleSeedOptions = {},

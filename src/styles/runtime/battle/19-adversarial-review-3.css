@@ -78,6 +78,75 @@
   grid-auto-rows: minmax(54px, auto) !important;
 }
 
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] [data-battle-targetable="true"] {
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel
+  > .battle-command[data-testid="actor-command-back"] small {
+  display: none !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel
+  > .battle-command[data-testid="actor-command-back"],
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel
+  > .battle-command[data-testid="battle-target-cancel"] {
+  flex: 0 0 auto;
+  min-height: 42px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu:has(.battle-command:nth-of-type(2)) {
+  grid-auto-rows: minmax(44px, auto) !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-submenu-header {
+  grid-column: 1 / -1;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command {
+  min-height: 44px !important;
+  padding: 2px 8px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text strong {
+  font-size: 17px !important;
+  line-height: 1 !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-target-menu .battle-command-text small {
+  font-size: 12px !important;
+  line-height: 1 !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-message-line {
+  font-size: 17px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-panel {
+  grid-template-rows: auto auto auto auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  width: 380px !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-cards {
+  overflow: visible !important;
+}
+
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-next-prompt {
+  bottom: auto !important;
+  left: auto !important;
+  position: static !important;
+  transform: none !important;
+}
+
 /* 결과 화면에서 죽은 적 노드에 깔리던 반짝이(radial-gradient 반복 타일)가 148×152
    영역 전체에 흰 점 격자로 보였다(4차 리뷰) — 포켓몬 스킨은 faint 연출로 충분하다. */
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-enemy.defeated::after {
