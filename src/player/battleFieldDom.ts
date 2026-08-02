@@ -354,6 +354,17 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
   if (anchor) {
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
     popup.style.setProperty("--battle-node-y", anchor.style.getPropertyValue("--battle-node-y"));
+    // 고정 -12% 오프셋은 스프라이트 키에 따라 몸통 한가운데(적)나 발밑(아군)으로
+    // 흩어진다 — 실측한 스프라이트 상단 기준으로 머리 위에 띄운다(9차 리뷰).
+    const sprite = anchor.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-image, .battle-actor-sprite") ?? anchor;
+    const layerRect = layer.getBoundingClientRect();
+    const spriteRect = sprite.getBoundingClientRect();
+    if (layerRect.height > 0 && spriteRect.height > 0) {
+      popup.style.top = `${((spriteRect.top - layerRect.top) / layerRect.height) * 100 - 2}%`;
+    }
+    // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
+    // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).
+    if (anchor.classList.contains("defeated")) popup.classList.add("battle-damage-popup-final");
   }
   layer.append(popup);
   window.setTimeout(() => popup.remove(), 900);
