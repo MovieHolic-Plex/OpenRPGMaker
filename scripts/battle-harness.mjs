@@ -85,6 +85,14 @@ const READ_STATE = () => {
       y: e.style.getPropertyValue("--battle-node-y"),
     })),
     allySprites: document.querySelectorAll(".battle-actor-group .battle-actor, .battle-actor-sprite").length,
+    allyGroups: document.querySelectorAll(".battle-actor-group").length,
+    actors: Array.from(document.querySelectorAll(".battle-actor")).map((a) => ({
+      name: (a.querySelector(".battle-actor-name")?.textContent || "").replace(/\s+/g, " ").trim(),
+      hp: (a.querySelector(".battle-actor-hp")?.textContent || "").replace(/\s+/g, " ").trim(),
+      mp: (a.querySelector(".battle-actor-mp")?.textContent || "").replace(/\s+/g, " ").trim(),
+      pose: a.dataset.battlePose,
+      acting: a.classList.contains("battle-acting"),
+    })),
     damagePopups: Array.from(document.querySelectorAll(".battle-damage-popup"))
       .map((p) => ({ text: p.textContent, targetId: p.dataset.targetId })),
     animationChildren: q(".battle-animation-layer")?.childElementCount ?? -1,
@@ -106,8 +114,32 @@ const READ_STATE = () => {
   };
 };
 
+/**
+ * 메시지 창을 관찰해 전투 로그를 통째로 모은다.
+ * 비트 스냅샷만으로는 "적이 한 번이라도 행동했는가"(E1)를 증명할 수 없다 —
+ * 액션이 비트 사이에 끼면 그냥 안 보인다. 관찰자는 그 사이를 메운다.
+ */
+const INSTALL_LOG = () => {
+  window.__battleLog = [];
+  const push = () => {
+    const el = document.querySelector(".battle-message-window");
+    if (!el) return;
+    const t = (el.textContent || "").replace(/\s+/g, " ").trim();
+    const log = window.__battleLog;
+    if (t && log[log.length - 1] !== t) log.push(t);
+  };
+  if (!window.__battleLogInstalled) {
+    window.__battleLogInstalled = true;
+    new MutationObserver(push).observe(document.body, {
+      subtree: true, childList: true, characterData: true,
+    });
+  }
+  push();
+};
+
 async function captureRun(page, runDir, errors) {
   await mkdir(runDir, { recursive: true });
+  await page.evaluate(INSTALL_LOG);
   const beats = [];
   let n = 0;
 
@@ -168,8 +200,14 @@ async function captureRun(page, runDir, errors) {
     await shoot("timeout-no-result");
   }
 
+  const log = await page.evaluate(() => window.__battleLog || []);
   await writeFile(path.join(runDir, "state.json"), JSON.stringify(beats, null, 2), "utf8");
-  return { beats: beats.map(({ n, beat, file, state }) => ({ n, beat, file, phase: state.phase, step: state.step })), reachedResult: reached };
+  await writeFile(path.join(runDir, "log.json"), JSON.stringify(log, null, 2), "utf8");
+  return {
+    beats: beats.map(({ n, beat, file, state }) => ({ n, beat, file, phase: state.phase, step: state.step })),
+    reachedResult: reached,
+    log,
+  };
 }
 
 async function openBattle(page) {
