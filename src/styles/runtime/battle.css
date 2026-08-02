@@ -3505,10 +3505,14 @@
   font-size: 15px !important;
 }
 
-/* ── 커맨드 패널: 상태줄 / 메뉴(스크롤) / 힌트 3단. 행 겹침 제거 ── */
+/* ── 커맨드 패널: 상태줄 / 메뉴(스크롤) / 힌트 3단. 행 겹침 제거 ──
+   flex-wrap/justify 도 명시한다 — 에디터 스타일(editor/core.part-2.css:48)이 같은
+   클래스에 wrap + flex-end 를 걸어, 에디터 전투 테스트에서 4항목 타깃 메뉴가 다음
+   열로 랩되어 오른쪽으로 잘려 나갔다(적대 리뷰 4차: 프롬프트 좌하단, 메뉴 우측 클리핑). */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-panel {
   display: flex !important;
-  flex-direction: column !important;
+  flex-flow: column nowrap !important;
+  justify-content: flex-start !important;
   gap: 4px !important;
   overflow: hidden !important;
 }
@@ -3557,21 +3561,32 @@
   padding: 0 4px 2px;
 }
 
-/* ── 타깃 화살표: 선택된 적 위에서 튀는 빨간 ▼ (기존 display:none 뒤집기) ── */
+/* ── 타깃 화살표: 선택된 적 위에서 튀는 빨간 ▼ (기존 display:none 뒤집기) ──
+   주의: 구형(모던) 규칙이 width 68px/height 58px/top 50% 를 !important 로 강제한다
+   (battle.css:2476). !important 없이 두면 화살표가 68px 빨간 리본으로 펴진 채 적 몸통
+   한가운데 얹히고, 흰 코너 브래킷(::before)·흰 삼각형(::after)까지 겹쳐 보였다(3차 리뷰). */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets {
   display: block !important;
-  position: absolute;
-  left: 50%;
-  top: -44px;
-  width: 0;
-  height: 0;
-  border: 13px solid transparent;
-  border-top: 20px solid #e43b44;
-  border-bottom: 0;
-  transform: translateX(-50%);
+  position: absolute !important;
+  inset: auto !important;
+  left: 50% !important;
+  /* 노드 밖(-44px)에 두면 씬 상단 클리핑에 잘리고, 노드 상단(2px)은 우상단
+     자동/속도 컨트롤 바(z 상위) 뒤에 숨는다(4차 리뷰 줌 판정). 컨트롤 바 아래·
+     스프라이트 정수리에 얹히는 깊이로 내린다. */
+  top: 30px !important;
+  width: 0 !important;
+  height: 0 !important;
+  border: 13px solid transparent !important;
+  border-top: 20px solid #e43b44 !important;
+  border-bottom: 0 !important;
+  transform: translateX(-50%) !important;
   filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
   animation: battle-target-arrow 0.45s ease-in-out infinite alternate;
   z-index: 6;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy .battle-target-brackets::after {
+  content: none !important;
 }
 @keyframes battle-target-arrow {
   from { margin-top: 0; }
@@ -3610,7 +3625,8 @@
   text-shadow: none;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-label {
-  color: var(--pkmn-muted);
+  /* 보상 행 배경은 남색 캡슐 — muted 회색(#70747a)은 그 위에서 저대비였다(4차 리뷰) */
+  color: #dfe7f6;
   text-shadow: none;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-result-reward-value {
@@ -3647,4 +3663,63 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-backdrop::before {
   background: rgba(9, 35, 98, 0.12);
+}
+
+/* ═══════════ 적대 리뷰 3차(2026-08-02) 수정 ═══════════ */
+
+/* 죽은 배틀러 퇴장 연출 — 임팩트 순간 회색 석상으로 굳어 영구히 서 있던 것을,
+   포켓몬처럼 주저앉으며 사라지게 한다. 노드는 남으므로(팝업 좌표 기준) 이미지만 보낸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated {
+  opacity: 1 !important;
+  pointer-events: none !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated .battle-enemy-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor.defeated .battle-skin-actor-image {
+  animation: pkmn-battler-faint 0.55s ease-in forwards;
+}
+@keyframes pkmn-battler-faint {
+  0% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(26px); filter: saturate(0) brightness(1.4); }
+}
+
+/* 아군 정보 카드의 strict 대기열 텍스트("대기 1"/"입력 완료")는 카드 바닥에 반쯤 잘려
+   보였고, 포켓몬 HUD 에는 이름/Lv/HP/MP 외의 텍스트가 없다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-party .battle-strict-order {
+  display: none !important;
+}
+
+/* 좌상단 적 정보 패널 압축 — 2줄(이름/HP바) 행이 3마리에서 필드의 절반을 덮어 아군
+   스프라이트 머리를 가렸다. 한 줄(이름|바) 행으로 줄이고, 죽은 적 행은 걷어낸다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel {
+  width: min(42%, 250px) !important;
+  padding: 6px 12px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  align-items: center;
+  gap: 8px;
+  min-height: 0 !important;
+  padding: 2px 2px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-name {
+  font-size: 15px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-hp {
+  display: none !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar {
+  height: 10px !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row.defeated {
+  display: none !important;
+}
+
+/* 결과 화면에서 죽은 적 노드에 깔리던 반짝이(radial-gradient 반복 타일)가 148×152
+   영역 전체에 흰 점 격자로 보였다(4차 리뷰) — 포켓몬 스킨은 faint 연출로 충분하다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-director-step="result"] .battle-enemy.defeated::after {
+  content: none !important;
 }

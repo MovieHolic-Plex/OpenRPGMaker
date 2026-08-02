@@ -273,9 +273,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     unlockBattleSfx();
     if (!(event.target instanceof Element)) return;
     const snapshot = options.runtime.snapshot();
-    // 결과 화면에서는 어디를 클릭해도 종료 확정("클릭으로 계속" 프롬프트와 확인 버튼 포함).
+    // 결과 "화면"에서는 어디를 클릭해도 종료 확정("클릭으로 계속" 프롬프트와 확인 버튼 포함).
+    // 단 result 값이 아니라 디렉터 스텝으로 판정한다 — 도주/막타 확정 Enter 가 네이티브
+    // 버튼에 click 을 합성하고, 그 click 이 여기로 버블될 때 런타임에는 이미 result 가
+    // 서 있어서, 연출·결과 화면을 하나도 못 본 채 즉시 닫혔다(적대 리뷰 4차: 도주 성공
+    // 시 "도망치려 한다…" 직후 씬 소멸).
     if (snapshot.result) {
-      if (!resultSent) {
+      if (directorState.step === "result" && !resultSent) {
         resultSent = true;
         options.onResult(snapshot.result, snapshot);
       }
@@ -314,7 +318,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         // the result handler instead of also confirming from the root key handler.
         if (isNativeButtonEnter(event)) return;
         event.preventDefault();
-        if (!resultSent) {
+        // 클릭 핸들러와 같은 이유로, 결과 연출이 화면에 도달했을 때만 확정한다.
+        if (directorState.step === "result" && !resultSent) {
           resultSent = true;
           options.onResult(snapshot.result, snapshot);
         }
@@ -614,7 +619,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       ledger: presentation,
       // 비트 재생 중에도 스냅샷의 잔류 attack/hit pose 는 걷어내고(라운드 마지막 액션
       // 기준이라 엉뚱한 배틀러가 맞은 것처럼 보인다), 지금 impact 대상에게만 hit 를 준다.
-      calm: !snapshot.result,
+      // 시퀀스가 끝난 뒤(결과 화면 포함)에도 걷는다 — 패배 결과에서 살아남은 적이
+      // attack 포즈로 박제되던 결함(적대 리뷰 3차).
+      calm: !sequenceBusy || !snapshot.result,
       hitTargetId: lastDamageFeedback && !lastDamageFeedback.healing && !lastDamageFeedback.miss
         ? lastDamageFeedback.targetId
         : undefined,

@@ -38,7 +38,7 @@ interface SkinBattlerPlacement {
 const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 우상(정면). 좌상단은 적 정보 박스,
   // 우하단은 아군 정보 박스가 차지하므로 스프라이트는 그 대각선을 피해서 선다.
-  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 245 - i * 44, y: 92 }), party: () => ({ x: 60, y: 152 }) },
+  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 245 - i * 44, y: 92 }), party: () => ({ x: 84, y: 152 }) },
   // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
     rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.

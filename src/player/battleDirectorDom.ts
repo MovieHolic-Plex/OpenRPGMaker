@@ -49,7 +49,9 @@ export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snap
   const target = snapshot.actors.find((actor) => actor.id === entry.targetId)
     ?? snapshot.enemies.find((enemy) => enemy.id === entry.targetId);
   const userName = user?.name ?? "적";
-  const action = entry.skillName
+  // 적의 기본 공격은 내부적으로 "공격" 스킬로 굴러가지만, "○○가 공격을 사용했다!"는
+  // 아군의 "주인공의 공격!"과 문체가 어긋난다 — 기본 공격은 같은 문형으로 맞춘다.
+  const action = entry.skillName && entry.skillName !== "공격"
     ? `${withJosa(userName, "이/가")} ${withJosa(entry.skillName, "을/를")} 사용했다!`
     : `${userName}의 공격!`;
   const impact = !entry.hit
@@ -161,9 +163,13 @@ export function targetSelectDirectorState(snapshot: BattleSnapshot): BattleDirec
       actor ? `${actor.name}: 대상을 선택하십시오.` : "대상을 선택하십시오.",
       selected ? `${withJosa(selected.name, "을/를")} 겨냥하고 있습니다.` : "선택 가능한 대상이 없습니다.",
     ]
-    : [targetCount > 1
-      ? `← → ${terms.target} · Z/Enter · X/Esc`
-      : "Z/Enter · X/Esc"];
+    : [
+      // 키 조작 힌트는 커맨드 패널 하단의 키 프롬프트가 이미 보여준다 — 메시지 창에
+      // "Z/Enter · X/Esc"만 대사처럼 떠 있던 결함(적대 리뷰 3차). 여기는 상황 서술만.
+      selected
+        ? `${withJosa(selected.name, "을/를")} 노린다${targetCount > 1 ? ` — ← →로 ${terms.target} 변경` : ""}`
+        : `${withJosa(terms.target, "을/를")} 고르는 중…`,
+    ];
   return {
     step: "target",
     lines,
@@ -265,49 +271,66 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     cards.dataset.testid = "battle-result-cards";
     panel.append(cards);
   }
-  cards.replaceChildren();
-  for (const [index, row] of rewardRows(snapshot).entries()) {
-    const item = document.createElement("div");
-    item.className = "battle-result-reward-card battle-result-reward-row";
-    item.dataset.revealIndex = String(index);
-    item.hidden = index >= revealStage;
-    const icon = document.createElement("span");
-    icon.className = `battle-result-reward-icon battle-result-reward-icon-${row.kind}`;
-    icon.setAttribute("aria-hidden", "true");
-    const label = document.createElement("span");
-    label.className = "battle-result-reward-label";
-    label.textContent = row.label;
-    const value = document.createElement("strong");
-    value.className = "battle-result-reward-value";
-    value.textContent = row.value;
-    item.append(label, icon, value);
-    if (row.kind === "exp") {
-      const bar = document.createElement("div");
-      bar.className = "battle-result-exp-bar";
-      bar.dataset.testid = "battle-result-exp-bar";
-      const fill = document.createElement("div");
-      fill.className = "battle-result-exp-fill";
-      bar.append(fill);
-      item.append(bar);
-      // 실제 경험치 진행률로 채운다. 예전에는 항상 0→100% 채우는 장식이라
-      // 14 EXP 를 얻어도 게이지가 꽉 찼다(적대 리뷰 §17).
-      const progress = expGaugeProgress(snapshot);
-      if (progress) {
-        bar.dataset.expLevelUp = progress.levelUp ? "true" : "false";
-        if (!item.hidden && panel.dataset.expAnimated !== "true") {
-          panel.dataset.expAnimated = "true";
-          fill.style.width = `${progress.fromPct}%`;
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            fill.style.width = `${progress.toPct}%`;
-          }));
-        } else {
-          fill.style.width = `${item.hidden ? progress.fromPct : progress.toPct}%`;
-        }
-      } else {
-        fill.style.width = "0%";
+  // 행 노드는 결과당 한 번만 만든다. 매 동기화마다 replaceChildren 으로 다시 만들면
+  // battle-reward-reveal(opacity 0→1, delay) 애니메이션이 매번 0초로 리셋돼 행이
+  // 반투명에 갇히거나(경험치) 아예 안 보였다(골드 — 적대 리뷰 3차 실측).
+  const rows = rewardRows(snapshot);
+  const rowsKey = `${snapshot.result}:${rows.map((row) => `${row.kind}=${row.value}`).join("|")}`;
+  if (cards.dataset.rowsKey !== rowsKey) {
+    cards.dataset.rowsKey = rowsKey;
+    cards.replaceChildren();
+    for (const [index, row] of rows.entries()) {
+      const item = document.createElement("div");
+      item.className = "battle-result-reward-card battle-result-reward-row";
+      item.dataset.revealIndex = String(index);
+      const icon = document.createElement("span");
+      icon.className = `battle-result-reward-icon battle-result-reward-icon-${row.kind}`;
+      icon.setAttribute("aria-hidden", "true");
+      const label = document.createElement("span");
+      label.className = "battle-result-reward-label";
+      label.textContent = row.label;
+      const value = document.createElement("strong");
+      value.className = "battle-result-reward-value";
+      value.textContent = row.value;
+      item.append(label, icon, value);
+      if (row.kind === "exp") {
+        const bar = document.createElement("div");
+        bar.className = "battle-result-exp-bar";
+        bar.dataset.testid = "battle-result-exp-bar";
+        const fill = document.createElement("div");
+        fill.className = "battle-result-exp-fill";
+        bar.append(fill);
+        item.append(bar);
       }
+      cards.append(item);
     }
-    cards.append(item);
+  }
+  for (const item of cards.querySelectorAll<HTMLElement>(".battle-result-reward-row")) {
+    item.hidden = Number(item.dataset.revealIndex) >= revealStage;
+    const fill = item.querySelector<HTMLElement>(".battle-result-exp-fill");
+    if (!fill) continue;
+    const bar = fill.parentElement as HTMLElement;
+    // 실제 경험치 진행률로 채운다. 예전에는 항상 0→100% 채우는 장식이라
+    // 14 EXP 를 얻어도 게이지가 꽉 찼다(적대 리뷰 §17).
+    const progress = expGaugeProgress(snapshot);
+    if (!progress) {
+      fill.style.width = "0%";
+      continue;
+    }
+    bar.dataset.expLevelUp = progress.levelUp ? "true" : "false";
+    if (!item.hidden && panel.dataset.expAnimated !== "true") {
+      // 행이 처음 공개될 때 한 번만 이전 진행률 → 새 진행률로 차오른다.
+      panel.dataset.expAnimated = "true";
+      fill.style.width = `${progress.fromPct}%`;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        fill.style.width = `${progress.toPct}%`;
+      }));
+    } else if (panel.dataset.expAnimated !== "true") {
+      fill.style.width = `${progress.fromPct}%`;
+    } else {
+      // 같은 값 재설정은 transition 을 건드리지 않는다.
+      fill.style.width = `${progress.toPct}%`;
+    }
   }
 
   // crest/title/cards 는 위에서 없을 때만 만들어 이미 append 했다. 여기서 다시 append 하면
@@ -471,7 +494,9 @@ export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
 }
 
 function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string; readonly label: string; readonly value: string }[] {
-  if (snapshot.result !== "victory") return [{ kind: "result", label: "결과", value: "전투 종료" }];
+  // 패배/도주에는 보상이 없다 — "결과: 전투 종료" 자리표시 행은 정보가 없고
+  // 저대비 남색 띠로만 보였다(적대 리뷰 3차). 제목+확인 버튼만 남긴다.
+  if (snapshot.result !== "victory") return [];
   const rows: { kind: string; label: string; value: string }[] = [
     { kind: "exp", label: "경험치", value: `+${snapshot.rewards.exp}` },
     { kind: "gold", label: "골드", value: `+${snapshot.rewards.gold}` },

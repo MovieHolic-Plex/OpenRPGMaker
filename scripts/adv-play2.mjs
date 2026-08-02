@@ -16,7 +16,7 @@ const URL_ =
   "https://localhost:9999/?project=rpg-zzu-house-template-gallery"
   + "&name=Scarloxy+%EB%AA%AC%EC%8A%A4%ED%84%B0+%EC%B4%88%EC%9B%90+%EB%8D%B0%EB%AA%A8"
   + "&map=map_scarloxy_ruins";
-const OUT = ".omo/battle-runs/adv-play3-0802";
+const OUT = process.env.ADV_OUT || ".omo/battle-runs/adv-play4-0802";
 
 const sleep = (n) => new Promise((r) => setTimeout(r, n));
 
@@ -153,14 +153,16 @@ async function playBattle(page, dir, opts) {
       if (!resultSeenAt) resultSeenAt = Date.now();
       // 입력 없이 6초 관찰 → 자동 닫힘 검증
       if (Date.now() - resultSeenAt > 6000) break;
-    } else if (opts.escape && s.commands.length > 0 && s.busy !== "true") {
-      // 도주: 공격 → (아래×2) 도주 → 확정 (2D 내비게이션 기준, 한 번만 시도)
-      if (!pressed.includes("escape-seq")) {
-        for (let i = 0; i < 2; i++) { await page.keyboard.press("ArrowDown"); await sleep(200); }
-        await snap("cursor-on-escape");
-        await page.keyboard.press("Enter");
-        pressed.push("escape-seq");
-      }
+    } else if (opts.escape && s.commands.length > 0 && s.busy !== "true"
+      && !pressed.some((p) => String(p).startsWith("escape-seq")) && Date.now() - lastPress > 700) {
+      // 도주: 공격 → (아래×2) 도주 → 확정 (2D 내비게이션 기준, 한 번만 시도).
+      // 실패하면 아래 Enter 연사 분기로 넘어가 전투를 끝까지 치른다 — 이전 판에서는
+      // 실패 후 아무 키도 안 누른 채 데드라인까지 정지해 전투 모달이 열린 채 남았다.
+      for (let i = 0; i < 2; i++) { await page.keyboard.press("ArrowDown"); await sleep(200); }
+      await snap("cursor-on-escape");
+      await page.keyboard.press("Enter");
+      lastPress = Date.now();
+      pressed.push("escape-seq");
     } else if (s.hasScene && s.busy !== "true" && Date.now() - lastPress > 700) {
       await page.keyboard.press("Enter");
       lastPress = Date.now();
@@ -207,11 +209,18 @@ async function main() {
     const r = await playBattle(page, path.join(OUT, sc.name), sc.opts);
     summary.push({ name: sc.name, ...r });
     console.log(`${sc.name}: frames=${r.frames}`);
-    // 남은 모달/백드롭 정리 — Enter → Escape 반복
-    for (let i = 0; i < 6; i++) {
+    // 남은 모달/백드롭 정리 — 결과 확인 버튼 클릭 → Enter/Escape → 헤더 X 버튼 순서로 시도
+    for (let i = 0; i < 8; i++) {
       const open = await page.evaluate(() => !!document.querySelector(".test-play-modal-backdrop"));
       if (!open) break;
-      await page.keyboard.press(i % 2 === 0 ? "Enter" : "Escape").catch(() => {});
+      const confirm = page.locator(".battle-result-confirm");
+      if (await confirm.count() > 0) { await confirm.first().click({ timeout: 2000 }).catch(() => {}); }
+      else if (i < 4) { await page.keyboard.press(i % 2 === 0 ? "Enter" : "Escape").catch(() => {}); }
+      else {
+        // 마지막 수단: 모달 헤더의 닫기(X) 버튼
+        await page.locator(".test-play-modal-backdrop button").filter({ hasText: /^[xX✕]$/ }).first()
+          .click({ timeout: 2000 }).catch(() => {});
+      }
       await sleep(900);
     }
     await sleep(1200);
