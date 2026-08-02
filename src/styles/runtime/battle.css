@@ -1747,19 +1747,16 @@
   color: #17203a;
 }
 
-/* 전투 마우스 조작 복원(코덱스 리뷰 C1). 과거 "키보드 전용" 정책이 pointer-events 를
-   죽였는데, 그 근거였던 battlePointerPolicy.ts 는 삭제된 파일이고 지금은 커맨드 버튼
-   (battleCommandDom activeButton)과 필드 타깃(battleDom root click → confirmTargetSelection)
-   에 클릭 핸들러가 실제로 배선되어 있다 — 보이는 버튼이 눌리지 않고 필드 적 클릭이
-   backdrop 에 먹히는 상태였다. P0 계약(openwiki/runtime-battle.md:65)도 "선택된 필드
-   적이 click target 을 소유"를 요구한다. 키보드 확정은 .click() 디스패치라 영향 없다. */
+/* 전투는 키보드 전용 — 감독 결정(2026-08-03): 이 에디터의 게임 플레이 런타임은
+   마우스를 쓰지 않는다. 클릭 핸들러를 떼는 것만으로는 호버 강조와 손가락 커서가 남아
+   "눌러도 반응 없는 버튼"처럼 보이므로, 포인터 자체를 통과시켜 클릭할 수 있다는 신호를
+   지운다. 키보드 포커스/커서 표시와 Z/Enter 의 .click() 디스패치는 그대로 동작한다. */
 .battle-scene .battle-command,
+.battle-scene .battle-command *,
 .battle-scene [data-battle-targetable="true"] {
-  cursor: pointer !important;
-  pointer-events: auto !important;
-}
-.battle-scene .battle-command:disabled {
+  /* 스킨 파일들이 pointer-events 를 !important 로 되살리므로 여기서도 맞춰 눌러야 한다. */
   cursor: default !important;
+  pointer-events: none !important;
 }
 
 /* `.battle-command-panel` 은 `grid-template-columns: minmax(0, 1fr)` 로 열이 하나뿐이다(:264).
@@ -3554,12 +3551,23 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts {
   flex: 0 0 auto;
+  /* 픽셀 폰트 12px 는 디더링으로 뭉개져 읽기 어려웠다(적대 리뷰 잔여 항목) —
+     조작 힌트는 장식이 아니라 안내문이므로 UI 폰트로 또렷하게 그린다. */
+  font-family: var(--font-ui, system-ui, sans-serif) !important;
   font-size: 12px !important;
+  letter-spacing: 0.2px;
   color: var(--pkmn-muted) !important;
   text-shadow: none !important;
   text-align: center;
   border-top: 2px solid #d8d5c6;
-  padding-top: 2px;
+  padding-top: 3px;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts kbd {
+  font-family: inherit !important;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-result-next-prompt {
+  font-family: var(--font-ui, system-ui, sans-serif) !important;
+  letter-spacing: 0.2px;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-target-prompt {
   flex: 0 0 auto;

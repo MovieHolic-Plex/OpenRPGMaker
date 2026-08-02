@@ -295,6 +295,8 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       defending: false,
       skillIds: normalizedEnemy.skillIds,
       enemyActions: normalizedEnemy.actions,
+      // 몬스터 종 트룹 판별(인트로 "야생의 ○○" 분기)과 포획 UI가 스냅샷에서 읽는다.
+      speciesId: normalizedEnemy.speciesId,
       hidden: member.hidden ?? false,
       captured: false,
     };

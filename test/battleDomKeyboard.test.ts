@@ -135,6 +135,11 @@ describe("battle dom keyboard and status rows", () => {
     expect(item?.dataset.previewOnly).not.toBe("true");
     item?.focus();
     item?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    // 합성 keydown 은 브라우저와 달리 네이티브 버튼 활성화를 일으키지 않는다 — 계약
+    // ("포커스된 네이티브 버튼의 Enter 는 브라우저 클릭 경로에 한 번 맡긴다")대로
+    // keydown 경로는 무반응이어야 하고, 브라우저가 쏠 클릭은 여기서 모사한다
+    // (같은 파일의 "leaves native button Enter to one browser click" 관례와 동일).
+    item?.click();
 
     expect(runtime.snapshot().phase).toBe("actorCommand");
     expect(controller.root.querySelector("[data-testid='actor-command-back']")).toBeTruthy();

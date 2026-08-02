@@ -490,8 +490,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (!item) return;
         const targets = resolvedCommandTargets(actor, command).targets;
         for (const target of targets) applyItem(command.itemId, target, actor);
-        // 소모는 applyItem 의 finite-use 전환 권한(transitionItemState)이 소유한다 —
-        // 여기서 한 번 더 감소시키면 유한 아이템 커서/인벤토리가 이중 소모된다.
+        // 소모는 커맨드당 정확히 1회 — 전체 아군(allAllies) 아이템이 대상 수만큼
+        // 소모되던 결함(계약: "consume one inventory unit per command"). applyItem 은
+        // 효과 적용만 담당하고, finite-use 전환(transitionItemState)은 여기서 1회 돈다.
+        if (targets.length > 0) consumeItemUse(command.itemId);
         break;
       }
       case "capture":
@@ -1066,11 +1068,6 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       applyStates(user, target, itemStateEffectsForBattle(item));
     }
 
-    const consumed = transitionItemState(battleEventState, options.project.database.items, {
-      kind: "successfulUse",
-      itemId,
-    });
-    replaceItemTransitionState(consumed);
     if (item.animationId) {
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
       attachAnimationToLatestTimeline(lastAnimation);
@@ -1081,6 +1078,15 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function replaceItemTransitionState(next: { inventory: Record<string, number>; itemUseCharges: Record<string, number> }): void {
     Object.assign(battleEventState, next);
+  }
+
+  /** 아이템 사용 1회분 소모 — 커맨드당 정확히 1회 호출된다(다중 대상이어도 1개). */
+  function consumeItemUse(itemId: ItemId): void {
+    const consumed = transitionItemState(battleEventState, options.project.database.items, {
+      kind: "successfulUse",
+      itemId,
+    });
+    replaceItemTransitionState(consumed);
   }
 
   function itemIsBattleUsable(item: {
@@ -1254,14 +1260,21 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           enemies: visibleEnemies(),
         });
         if (resolution.candidates.length === 0) return [];
+        // 효용 0(풀피 힐, 기대 데미지 0)인 저작 액션도 버리지 않는다 — 예전에는 여기서
+        // 걸러져 제네릭 기본 공격으로 낙하했고, 조건/우선순위/스위치와 아군 힐 대상
+        // 계약이 통째로 무시됐다(battleRuntimeDefects 회귀 2건). 대신 "최후 수단" 점수
+        // 밴드(-1000+우선순위)로 강등한다: 유익한 대안이 하나라도 있으면 지고(무익 힐
+        // 필터 계약 유지), 그것뿐이면 RM2K3 답게 저작된 행동을 그대로 쓴다.
         if (!resolution.requiresSelection) {
           const utility = resolution.targets.reduce((sum, target) => sum + enemySkillUtility(enemy, target, skill), 0);
-          if (utility <= 0) return [];
-          return [{ action: { ...action, targetIds: resolution.targets.map(targetIdFor) }, score: Math.max(1, action.priority) * 10 + utility }];
+          const score = utility > 0 ? Math.max(1, action.priority) * 10 + utility : -1000 + Math.max(1, action.priority);
+          return [{ action: { ...action, targetIds: resolution.targets.map(targetIdFor) }, score }];
         }
         const target = pickBestByUtility(resolution.candidates, (candidate) => enemySkillUtility(enemy, candidate, skill));
-        if (!target || enemySkillUtility(enemy, target, skill) <= 0) return [];
-        return [{ action: { ...action, targetIds: [target.id] }, score: Math.max(1, action.priority) * 10 + enemySkillUtility(enemy, target, skill) }];
+        if (!target) return [];
+        const utility = enemySkillUtility(enemy, target, skill);
+        const score = utility > 0 ? Math.max(1, action.priority) * 10 + utility : -1000 + Math.max(1, action.priority);
+        return [{ action: { ...action, targetIds: [target.id] }, score }];
       });
     if (plans.length === 0) {
       const target = chooseBasicEnemyTarget(enemy);

@@ -24,11 +24,8 @@ describe("전투 적 그래픽 정합성", () => {
 
     expect(field.querySelector<HTMLElement>("[data-testid='battle-backdrop']")?.dataset.backdropResourceId)
       .toBe("scarloxy-backdrop-ice");
-    expect(
-      field.querySelector<HTMLImageElement>(
-        '[data-record-id="enemy_meadow_slime"] .battle-enemy-image',
-      )?.src,
-    ).toContain("monster-slime-01.png");
+    // 계약: 스킨 공용 적 이미지가 아니라 각 적 레코드의 몬스터 리소스가 우선한다.
+    // (석상 수호병 트룹 구성은 박쥐+골렘+박쥐 — 예전 단언의 슬라임은 낡은 구성이었다.)
     expect(
       field.querySelector<HTMLImageElement>(
         '[data-record-id="enemy_stone_golem"] .battle-enemy-image',

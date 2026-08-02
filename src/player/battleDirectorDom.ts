@@ -31,13 +31,17 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   };
 }
 
-/** 인카운트 인트로 배너 — "야생의 ○○이(가) 나타났다!" */
+/** 인카운트 인트로 배너 — 몬스터 트룹이면 "야생의 ○○이(가) 나타났다!" */
 export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
-  const names = snapshot.enemies.filter((enemy) => !enemy.defeated).map((enemy) => enemy.name);
+  const living = snapshot.enemies.filter((enemy) => !enemy.defeated);
+  const names = living.map((enemy) => enemy.name);
   const label = names.length > 1 ? `${names.slice(0, -1).join(", ")}, ${names[names.length - 1]}` : names[0] ?? "적";
+  // 전원이 몬스터 종(speciesId)인 트룹에만 "야생의"를 붙인다 — 인간형/보스 트룹까지
+  // 야생으로 부르지 않게. 파일 서두 주석이 약속해 온 포켓몬식 인트로 문구다.
+  const wild = living.length > 0 && living.every((enemy) => enemy.speciesId);
   return {
     step: "intro",
-    lines: [`${withJosa(label, "이/가")} 나타났다!`],
+    lines: [`${wild ? "야생의 " : ""}${withJosa(label, "이/가")} 나타났다!`],
     activeActorRecordId: snapshot.activeActorId,
   };
 }
@@ -348,7 +352,8 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
   if (!panel.querySelector(".battle-result-next-prompt")) {
     const prompt = document.createElement("div");
     prompt.className = "battle-result-next-prompt";
-    prompt.textContent = "Z / 클릭 으로 계속";
+    // 게임 플레이 런타임은 키보드 전용(감독 결정) — "클릭" 안내는 없는 조작을 가리킨다.
+    prompt.textContent = "Z / Enter 로 계속";
     panel.append(prompt);
   }
 }

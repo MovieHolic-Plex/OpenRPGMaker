@@ -244,6 +244,9 @@ describe("shared MP validation and target UI", () => {
     const project = battleProject();
     addSecondActor(project);
     addSkill(project, { id: "skill_ally_heal", scope: "ally", effect: "healing" });
+    // 필드 아군 링 계약은 파티 스프라이트를 그리는 스킨에서만 성립한다 — 기본 스킨이
+    // vxace(파티 숨김)로 바뀌면서 이 테스트가 깨졌다. 전원 렌더하는 클래식으로 고정.
+    project.system.battleUiStyle = "classic";
     store.replace(project);
     const host = document.createElement("div");
     document.body.append(host);
