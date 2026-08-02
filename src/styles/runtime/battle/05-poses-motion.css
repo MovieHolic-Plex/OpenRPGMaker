@@ -71,12 +71,15 @@
   transform: translate(-50%, -100%) !important;
   transition: transform 180ms ease-out;
 }
+/* 적 쪽도 정지 규칙(18-pokemon-layout-redesign.css 의 transform !important)이 모션을
+   눌러 죽인다 — 아군과 똑같이 !important 로 되살린다(rAF 실측: !important 없이는
+   knockback/lunge 프레임에서 matrix 가 1px 도 안 변했다). */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(56px);
+  transform: translate(-50%, -100%) translateX(56px) !important;
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-return {
-  transform: var(--battle-juice-base, translate(-50%, -100%));
+  transform: translate(-50%, -100%) !important;
   transition: transform 180ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-knockback {
@@ -86,7 +89,7 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-knockback {
   filter: brightness(1.5) saturate(0.65);
-  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-44px);
+  transform: translate(-50%, -100%) translateX(-44px) !important;
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 
@@ -100,10 +103,13 @@
 .battle-scene.battle-hit-stop-critical .battle-field {
   filter: contrast(1.15) brightness(1.12) saturate(1.2);
 }
+/* 씬 루트는 transform: scale(var(--battle-stage-scale))(01-scene-base.css)로 확대돼
+   있다 — 키프레임이 리터럴 scale(1)을 쓰면 애니메이션 120ms 동안 스테이지 배율을
+   통째로 덮어써 씬이 640px 로 붕괴한다(배율 1.708 창에서 실측 1093→640px). */
 @keyframes battle-hit-stop-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.012); }
-  100% { transform: scale(1); }
+  0% { transform: scale(var(--battle-stage-scale, 1)); }
+  50% { transform: scale(calc(var(--battle-stage-scale, 1) * 1.012)); }
+  100% { transform: scale(var(--battle-stage-scale, 1)); }
 }
 
 .battle-juice-hit {

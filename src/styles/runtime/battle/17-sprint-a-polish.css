@@ -63,13 +63,10 @@
   transform: scale(1.02);
 }
 
-/* Juice base must match the resting transform of each skin. */
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy {
-  --battle-juice-base: translate(-50%, -100%) scale(1.28);
-}
-.battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
-  --battle-juice-base: translate(-50%, -55%) scale(2.45);
-}
+/* --battle-juice-base 는 각 스킨의 정지 transform 과 일치해야 한다. 포켓몬 정지
+   transform 은 이제 translate(-50%, -100%)(18-pokemon-layout-redesign.css) — 공통
+   기본값(15-juice-capture-fx.css)과 같으므로 여기서 덮어쓰지 않는다. 예전 노드
+   scale(1.28/2.45) 값을 남겨두면 juice/모션이 살아나는 순간 적이 부풀어 오른다. */
 
 /* === Defend visual feedback === */
 .battle-juice-defend {

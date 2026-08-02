@@ -366,3 +366,18 @@ openwiki P0 계약에서 "click target" 문구를 키보드 전용 정책으로 
 | 4 | 전투 UI 가 너무 좁음 | 테스트 플레이 창 windowed 기본 642×512 가 씬(논리 640×480)을 배율 1.0에 가둠 | 기본 창 크기를 화면 대부분(≤1320×1000)으로 — 스테이지 스케일이 채움 | 1440×900에서 씬 ~1090×810 |
 
 부수: 마지막 적 격파 순간 빈 적 패널 껍데기가 남던 것을 패널째 숨김(:has).
+
+# 8차 — 타격/피격 순간 재검토 (2026-08-03, 외부 리뷰 후속)
+
+외부 리뷰가 지목한 impact 경로를 rAF 계측 프로브(scripts/probe-impact-visuals.mjs,
+프레임별 씬 폭·노드 transform 기록)로 재검증 — 확정 결함 2건 + 지뢰 1건.
+
+| # | 결함 | 원인 | 수정 | 검증 |
+|---|---|---|---|---|
+| 1 | 타격마다 씬 전체가 58%로 붕괴 후 복귀(120ms) | battle-hit-stop-pulse 키프레임의 리터럴 scale(1)이 씬 루트의 scale(var(--battle-stage-scale))(1.708)을 애니메이션 동안 덮어씀. 배율 1.0 창에선 무증상 — 7차에서 창을 키우자 발현 | 키프레임을 scale(var(--battle-stage-scale,1))·×1.012 로 — 배율 보존 펄스 | 실측 씬 폭: 수정 전 1093→640 붕괴, 수정 후 1093→1106 펄스만 |
+| 2 | 포켓몬 스킨 적이 맞아도/때려도 이동 0 | 18-pokemon-layout-redesign 정지 transform !important 가 적 lunge/knockback(무 !important)과 juice 쉐이크 키프레임(author !important > animation)을 전부 억제 | 아군과 동일 패턴: 적 모션 3규칙에 리터럴 transform + !important | knockback -74→-118(-44px), lunge +56px 전이 프레임 포착, scale 성분 없음 |
+| 3 | (지뢰) --battle-juice-base 에 구 scale(1.28/2.45) 잔존 | 17-sprint-a-polish 의 변수 선언이 새 정지 transform(스케일 없음)과 불일치 — ②를 살리는 순간 "맞으면 부풂" 부활 | 변수 선언 삭제(공통 기본값과 동일해짐) + 16의 구 scale(1.28) !important 정지 규칙 삭제 | ② 계측에 scale 성분 없음으로 동시 검증 |
+
+리뷰의 "포켓몬 <img> 배틀러는 포즈 미술 변화 없음"(applyBattlerPose 시트 전용 분기)은
+사실이나 타격 프레임 자산 자체가 없음 — 모션+플래시+팝업으로 체감 충족, 자산 한계로 기록.
+adv-play 전장면 캡처(.omo/battle-runs/impact-fix-0803, 4시나리오 169프레임) 육안 판정 이상 없음.

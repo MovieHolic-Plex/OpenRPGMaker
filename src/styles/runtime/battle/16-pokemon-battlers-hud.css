@@ -14,10 +14,8 @@
   width: 224px !important;
   height: 296px !important;
 }
-/* 적 노드 자체도 키워 이미지+그림자가 한 덩어리로 읽히게 */
-.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy {
-  transform: translate(-50%, -100%) scale(1.28) !important;
-}
+/* (구) 적 노드 scale(1.28) 확대는 18-pokemon-layout-redesign.css 가 이미지 크기
+   제어로 대체하며 폐기 — !important 잔재를 남기면 모션/juice transform 의 덫이 된다. */
 
 /* 상대: 우상단, 발밑 타원 그림자 */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy::before {
