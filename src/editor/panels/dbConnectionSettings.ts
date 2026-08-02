@@ -1,3 +1,4 @@
+import { COVER_HEIGHT, COVER_WIDTH, paintProjectCover } from "@/editor/panels/projectPickerCover";
 import type { DbConfigField, DbPersistenceStatus } from "@/project/persistenceStatus";
 import {
   clearSupabaseProjectConfigDraft,
@@ -12,6 +13,7 @@ import {
   type SupabaseProjectListConfig,
   type SupabaseProjectListItem,
 } from "@/project/supabaseProjectSync";
+import { resolveBrowserSupabaseUrl } from "@/project/supabaseProxyPath";
 import { markSupabaseRecoveredLocation } from "@/project/supabaseRecoveryLocation";
 import { syncProjectToUrl } from "@/project/projectUrl";
 import { store } from "@/project/store";
@@ -199,7 +201,7 @@ async function loadProjectOptions(form: HTMLFormElement, list: HTMLElement, stat
   setStatusLine(statusLine, "Supabase 프로젝트 목록을 불러오는 중...");
   try {
     const projects = await listSupabaseProjects(config);
-    renderProjectList(form, list, statusLine, projects);
+    renderProjectList(form, list, statusLine, projects, config);
     setStatusLine(statusLine, projects.length > 0 ? "Supabase 프로젝트를 선택할 수 있습니다." : "Supabase projects 테이블에 프로젝트가 없습니다.");
   } catch (error) {
     const message = error instanceof Error ? error.message : "알 수 없는 오류";
@@ -209,9 +211,15 @@ async function loadProjectOptions(form: HTMLFormElement, list: HTMLElement, stat
 }
 
 function projectListConfigFromForm(form: HTMLFormElement): SupabaseProjectListConfig | null {
-  const url = inputValue(form, "url").replace(/\/+$/, "");
+  const raw = inputValue(form, "url").replace(/\/+$/, "");
   const anonKey = inputValue(form, "anonKey");
-  if (url.length === 0 || anonKey.length === 0) return null;
+  if (raw.length === 0 || anonKey.length === 0) return null;
+  // 폼 값은 사용자가 친 원본(http://dbserver:8100)이라, https 페이지에서 그대로 fetch 하면
+  // mixed content 로 차단된다. 저장된 설정과 같은 규칙으로 dev 프록시 경로에 접어 넣는다.
+  const url = resolveBrowserSupabaseUrl(raw, {
+    isDev: import.meta.env.DEV === true,
+    pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol,
+  });
   return { anonKey, url };
 }
 
@@ -230,6 +238,7 @@ function renderProjectList(
   list: HTMLElement,
   statusLine: HTMLElement,
   projects: readonly SupabaseProjectListItem[],
+  config: SupabaseProjectListConfig,
 ): void {
   clearChildren(list);
   list.classList.toggle("empty", projects.length === 0);
@@ -238,19 +247,62 @@ function renderProjectList(
     return;
   }
   for (const project of projects) {
-    list.append(renderProjectOption(form, statusLine, project));
+    list.append(renderProjectOption(form, statusLine, project, config));
   }
 }
 
-function renderProjectOption(form: HTMLFormElement, statusLine: HTMLElement, project: SupabaseProjectListItem): HTMLElement {
+function relativeUpdatedAt(iso: string | null): string {
+  if (!iso) return "시각 미상";
+  const then = Date.parse(iso);
+  if (Number.isNaN(then)) return "시각 미상";
+  const seconds = Math.max(0, (Date.now() - then) / 1000);
+  if (seconds < 3600) return `${Math.max(1, Math.round(seconds / 60))}분 전`;
+  if (seconds < 86400) return `${Math.round(seconds / 3600)}시간 전`;
+  if (seconds < 86400 * 14) return `${Math.round(seconds / 86400)}일 전`;
+  if (seconds < 86400 * 60) return `${Math.round(seconds / (86400 * 7))}주 전`;
+  return `${Math.round(seconds / (86400 * 30))}개월 전`;
+}
+
+function renderProjectOption(
+  form: HTMLFormElement,
+  statusLine: HTMLElement,
+  project: SupabaseProjectListItem,
+  config: SupabaseProjectListConfig,
+): HTMLElement {
+  const canvas = el("canvas", {
+    class: "db-config-project-cover-canvas",
+    attrs: { width: String(COVER_WIDTH), height: String(COVER_HEIGHT), role: "presentation" },
+  }) as HTMLCanvasElement;
+
+  const coverTag = el("span", { class: "db-config-project-cover-tag", text: "불러오는 중" });
+
+  void paintProjectCover(canvas, config, project.projectId, project.updatedAt).then((kind) => {
+    coverTag.textContent = kind === "map" ? "대표 맵" : "대체 커버";
+    coverTag.classList.toggle("is-fallback", kind === "fallback");
+  });
+
   return el("button", {
     class: "db-config-project-option",
     attrs: { type: "button" },
     dataset: { projectId: project.projectId, testid: "db-config-project-option" },
     on: { click: () => selectProjectId(form, statusLine, project) },
     children: [
-      el("strong", { text: project.title }),
-      el("code", { text: project.projectId }),
+      el("span", { class: "db-config-project-cover", children: [canvas, coverTag] }),
+      el("span", {
+        class: "db-config-project-meta",
+        children: [
+          el("strong", { text: project.title }),
+          el("code", { text: project.projectId }),
+          el("span", {
+            class: "db-config-project-stats",
+            children: [
+              el("span", { text: `맵 ${project.mapCount}` }),
+              el("span", { text: `타일셋 ${project.tilesetCount}` }),
+              el("span", { class: "db-config-project-when", text: relativeUpdatedAt(project.updatedAt) }),
+            ],
+          }),
+        ],
+      }),
     ],
   });
 }

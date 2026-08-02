@@ -22,11 +22,30 @@ export type SupabaseProjectListConfig = Pick<SupabaseProjectConfig, "anonKey" | 
 export type SupabaseProjectListItem = {
   readonly projectId: string;
   readonly title: string;
+  readonly mapCount: number;
+  readonly tilesetCount: number;
+  readonly updatedAt: string | null;
 };
 
 type SupabaseProjectListRow = {
   readonly project_id: string;
   readonly title: string | null;
+  readonly map_count: number | null;
+  readonly tileset_count: number | null;
+  readonly updated_at: string | null;
+};
+
+/** 목록 카드 썸네일용 최소 재료 — 맵 1장과 그 맵이 쓰는 타일셋 1개. */
+export type SupabaseProjectPreview = {
+  readonly map: GameMap;
+  readonly tileset: TilesetDef;
+};
+
+type SupabaseMapMetaRow = {
+  readonly map_id: string;
+  readonly tileset_id: string;
+  readonly width: number;
+  readonly height: number;
 };
 
 type SupabaseChildTable = "ai_activity_logs" | "ai_analysis_runs" | "ai_conversations" | "maps" | "tilesets" | "user_skills";
@@ -122,7 +141,50 @@ export async function listSupabaseProjects(config: SupabaseProjectListConfig): P
   return rows.map((row) => ({
     projectId: row.project_id,
     title: supabaseProjectListTitle(row),
+    mapCount: row.map_count ?? 0,
+    tilesetCount: row.tileset_count ?? 0,
+    updatedAt: row.updated_at,
   }));
+}
+
+/**
+ * 목록 카드 썸네일 재료를 가져온다. 대표 맵은 타일 수가 가장 많은 맵.
+ * 재료가 없거나 응답이 비면 null — 호출 측이 대체 커버로 넘어간다.
+ */
+export async function loadSupabaseProjectPreview(
+  config: SupabaseProjectListConfig,
+  projectId: string,
+): Promise<SupabaseProjectPreview | null> {
+  const headers = supabaseJsonHeaders(config, "read");
+  const metaResponse = await fetch(supabaseProjectPreviewMapsUrl(config, projectId), { headers });
+  if (!metaResponse.ok) return null;
+  const metaParsed: unknown = await metaResponse.json();
+  if (!Array.isArray(metaParsed)) return null;
+
+  const metas = metaParsed.filter((entry): entry is SupabaseMapMetaRow =>
+    isRecord(entry) && typeof entry.map_id === "string" && typeof entry.tileset_id === "string",
+  );
+  if (metas.length === 0) return null;
+  const best = metas.reduce((a, b) => ((b.width ?? 0) * (b.height ?? 0) > (a.width ?? 0) * (a.height ?? 0) ? b : a));
+
+  const [mapResponse, tilesetResponse] = await Promise.all([
+    fetch(supabaseProjectPreviewMapUrl(config, projectId, best.map_id), { headers }),
+    fetch(supabaseProjectPreviewTilesetUrl(config, projectId, best.tileset_id), { headers }),
+  ]);
+  if (!mapResponse.ok || !tilesetResponse.ok) return null;
+
+  const mapRows: unknown = await mapResponse.json();
+  const tilesetRows: unknown = await tilesetResponse.json();
+  if (!Array.isArray(mapRows) || !Array.isArray(tilesetRows)) return null;
+  const mapRow = mapRows[0];
+  const tilesetRow = tilesetRows[0];
+  if (!isRecord(mapRow) || !isRecord(tilesetRow)) return null;
+  if (!isRecord(mapRow.map_json) || !isRecord(tilesetRow.tileset_json)) return null;
+
+  return {
+    map: mapRow.map_json as unknown as GameMap,
+    tileset: tilesetRow.tileset_json as unknown as TilesetDef,
+  };
 }
 
 async function loadProjectSnapshotFromSupabase(
@@ -589,13 +651,43 @@ function supabaseProjectUrl(config: SupabaseProjectConfig): string {
 }
 
 function supabaseProjectListUrl(config: SupabaseProjectListConfig): string {
-  // List picker only needs ids/titles. Pulling every current_json blob is ~20MB+ and
-  // hangs the "목록 불러오기" UI over Tailscale/dbserver.
+  // List picker never pulls current_json — those blobs are ~20MB+ each and hang the
+  // "목록 불러오기" UI over Tailscale/dbserver. The extra scalar columns are free by
+  // comparison and give each card its map/tileset counts and last-updated stamp.
   const query = new URLSearchParams({
-    order: "project_id.asc",
-    select: "project_id,title",
+    order: "updated_at.desc",
+    select: "project_id,title,map_count,tileset_count,updated_at",
   });
   return `${config.url}/rest/v1/projects?${query.toString()}`;
+}
+
+/** 프로젝트의 대표 맵(가장 큰 맵) 1장 + 그 타일셋만 받아온다. 맵 1행은 약 5KB. */
+function supabaseProjectPreviewMapsUrl(config: SupabaseProjectListConfig, projectId: string): string {
+  const query = new URLSearchParams({
+    project_id: `eq.${projectId}`,
+    select: "map_id,tileset_id,width,height",
+  });
+  return `${config.url}/rest/v1/maps?${query.toString()}`;
+}
+
+function supabaseProjectPreviewMapUrl(config: SupabaseProjectListConfig, projectId: string, mapId: string): string {
+  const query = new URLSearchParams({
+    project_id: `eq.${projectId}`,
+    map_id: `eq.${mapId}`,
+    select: "map_json",
+    limit: "1",
+  });
+  return `${config.url}/rest/v1/maps?${query.toString()}`;
+}
+
+function supabaseProjectPreviewTilesetUrl(config: SupabaseProjectListConfig, projectId: string, tilesetId: string): string {
+  const query = new URLSearchParams({
+    project_id: `eq.${projectId}`,
+    tileset_id: `eq.${tilesetId}`,
+    select: "tileset_json",
+    limit: "1",
+  });
+  return `${config.url}/rest/v1/tilesets?${query.toString()}`;
 }
 
 function supabaseUpsertUrl(config: SupabaseProjectConfig): string {
@@ -681,6 +773,9 @@ async function parseProjectListRows(response: Response): Promise<readonly Supaba
     return {
       project_id: entry.project_id,
       title: typeof entry.title === "string" ? entry.title : null,
+      map_count: typeof entry.map_count === "number" ? entry.map_count : null,
+      tileset_count: typeof entry.tileset_count === "number" ? entry.tileset_count : null,
+      updated_at: typeof entry.updated_at === "string" ? entry.updated_at : null,
     };
   });
 }

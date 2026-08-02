@@ -1289,29 +1289,35 @@
   }
 
   .db-config-project-list {
+    /* max-height + grid 기본 align-content:stretch 조합은 행을 강제로 눌러
+       aspect-ratio 커버를 0 높이로 만든다. start 로 고정하고 넘치면 스크롤. */
+    align-content: start;
     display: grid;
-    gap: 6px;
-    max-height: 168px;
-    overflow: auto;
+    gap: 10px;
+    grid-auto-rows: min-content;
+    grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+    max-height: 460px;
+    overflow-y: auto;
+    padding: 2px;
   }
 
   .db-config-project-list.empty {
     color: var(--editor-text-muted);
+    display: block;
     font-size: 12px;
     line-height: 1.45;
   }
 
   .db-config-project-option {
-    align-items: center;
     background: var(--bg-inset);
     border: 1px solid var(--editor-line-strong);
-    border-radius: 6px;
+    border-radius: 8px;
     color: var(--editor-text);
     cursor: pointer;
-    display: grid;
-    gap: 3px;
-    min-height: 44px;
-    padding: 7px 9px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
     text-align: left;
   }
 
@@ -1321,9 +1327,53 @@
     outline: 2px solid var(--accent-muted);
   }
 
+  .db-config-project-cover {
+    aspect-ratio: 8 / 5;
+    background: #22252c;
+    border-bottom: 1px solid var(--editor-line-strong);
+    display: block;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  .db-config-project-cover-canvas {
+    display: block;
+    height: 100%;
+    image-rendering: pixelated;
+    object-fit: cover;
+    width: 100%;
+  }
+
+  .db-config-project-cover-tag {
+    background: rgb(0 0 0 / 62%);
+    border-radius: 3px;
+    bottom: 5px;
+    color: #fff;
+    font: 9px var(--font-mono);
+    left: 5px;
+    letter-spacing: 0.08em;
+    padding: 2px 5px;
+    position: absolute;
+    text-transform: uppercase;
+  }
+
+  .db-config-project-cover-tag.is-fallback {
+    color: #d8d2c4;
+  }
+
+  .db-config-project-meta {
+    display: grid;
+    gap: 3px;
+    padding: 8px 9px 9px;
+  }
+
   .db-config-project-option strong {
     font-size: 13px;
-    line-height: 1.2;
+    line-height: 1.25;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .db-config-project-option code {
@@ -1332,6 +1382,19 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .db-config-project-stats {
+    color: var(--editor-text-muted);
+    display: flex;
+    flex-wrap: wrap;
+    font: 10px var(--font-mono);
+    gap: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .db-config-project-when {
+    margin-left: auto;
   }
 
   .db-config-actions {

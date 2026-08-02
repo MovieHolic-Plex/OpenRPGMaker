@@ -61,10 +61,16 @@ describe("Supabase project sync", () => {
         {
           project_id: "fog-harbor-lighthouse",
           title: "안개 항구와 등대의 밤",
+          map_count: 4,
+          tileset_count: 12,
+          updated_at: "2026-07-30T21:53:00+00:00",
         },
         {
           project_id: "star-village",
           title: "별등 마을",
+          map_count: 2,
+          tileset_count: 12,
+          updated_at: "2026-07-28T10:00:00+00:00",
         },
         {
           project_id: "untitled-project",
@@ -76,14 +82,28 @@ describe("Supabase project sync", () => {
     const projects = await listSupabaseProjects(TEST_CONFIG);
 
     expect(projects).toEqual([
-      { projectId: "fog-harbor-lighthouse", title: "안개 항구와 등대의 밤" },
-      { projectId: "star-village", title: "별등 마을" },
-      { projectId: "untitled-project", title: "untitled-project" },
+      {
+        projectId: "fog-harbor-lighthouse",
+        title: "안개 항구와 등대의 밤",
+        mapCount: 4,
+        tilesetCount: 12,
+        updatedAt: "2026-07-30T21:53:00+00:00",
+      },
+      {
+        projectId: "star-village",
+        title: "별등 마을",
+        mapCount: 2,
+        tilesetCount: 12,
+        updatedAt: "2026-07-28T10:00:00+00:00",
+      },
+      // 카운트/시각 컬럼이 없는 행도 목록에서 빠지지 않는다.
+      { projectId: "untitled-project", title: "untitled-project", mapCount: 0, tilesetCount: 0, updatedAt: null },
     ]);
     expect(String(calls[0]?.input)).toContain("/rest/v1/projects?");
     expect(String(calls[0]?.input)).toContain("select=project_id%2Ctitle");
+    expect(String(calls[0]?.input)).toContain("map_count");
     expect(String(calls[0]?.input)).not.toContain("current_json");
-    expect(String(calls[0]?.input)).toContain("order=project_id.asc");
+    expect(String(calls[0]?.input)).toContain("order=updated_at.desc");
     expect(calls[0]?.init?.headers).toMatchObject({
       "Accept-Profile": "rpg_zzu",
       apikey: "test-anon-key",

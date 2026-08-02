@@ -26,6 +26,20 @@ function devServerHttps(): { key: Buffer; cert: Buffer } | undefined {
   return { key: readFileSync(key), cert: readFileSync(cert) };
 }
 
+/**
+ * 브라우저가 Supabase 로 나갈 때 쓰는 같은-오리진 경로. `src/project/supabaseProxyPath.ts` 와 반드시 같아야 한다.
+ * (순환 import 를 만들지 않기 위해 값만 복제하고, 계약은 테스트가 고정한다.)
+ */
+const SUPABASE_PROXY_PATH = "/supabase";
+
+/** /supabase 프록시가 바라보는 실제 Supabase(Kong) 오리진. */
+function supabaseUpstreamUrl(mode: string): string {
+  const env = loadEnv(mode, process.cwd(), "");
+  const raw = (env.SUPABASE_UPSTREAM_URL ?? env.VITE_SUPABASE_URL ?? "").trim().replace(/\/$/, "");
+  // 상대 경로(이미 프록시 경로로 설정된 경우)는 업스트림이 될 수 없다.
+  return /^https?:\/\//.test(raw) ? raw : "http://dbserver:8100";
+}
+
 function devServerPort(mode: string): number {
   const rawPort = loadEnv(mode, process.cwd(), "").DEV_SERVER_PORT;
   const port = Number(rawPort ?? DEFAULT_DEV_SERVER_PORT);
@@ -301,6 +315,14 @@ export default defineConfig(({ mode }) => {
   }
   // 키가 있는 경로만 프록시를 등록한다(빈 Bearer 전송 금지). 접근은 localOnlyAiProxyPlugin 이 루프백으로 제한.
   const proxy: Record<string, ProxyOptions> = {};
+  // Supabase(Kong) 는 평문 HTTP 라, dev 서버를 HTTPS 로 열면 브라우저가 mixed content 로 차단한다.
+  // 같은 오리진의 /supabase 로 프록시해 두면 페이지 프로토콜과 무관하게 항상 붙는다(CORS 도 불필요).
+  // 업스트림은 .env 의 절대 URL 을 그대로 쓴다 — node 스크립트들이 같은 값을 쓰므로 .env 는 절대 URL 로 유지한다.
+  proxy[SUPABASE_PROXY_PATH] = {
+    target: supabaseUpstreamUrl(mode),
+    changeOrigin: true,
+    rewrite: (path: string) => path.replace(new RegExp(`^${SUPABASE_PROXY_PATH}`), ""),
+  };
   if (apitopiaKey) {
     proxy["/api/ai"] = {
       target: "https://apitopia.labs.mengmota.com/v1",

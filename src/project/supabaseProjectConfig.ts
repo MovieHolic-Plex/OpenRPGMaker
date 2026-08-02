@@ -1,4 +1,5 @@
 import { readProjectFromUrl } from "./projectUrl";
+import { resolveBrowserSupabaseUrl } from "./supabaseProxyPath";
 
 export const DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
@@ -35,7 +36,11 @@ type StoredSupabaseProjectConfig = SupabaseProjectConfigDraft & {
 export function supabaseProjectConfig(env: SupabaseProjectEnv = import.meta.env): SupabaseProjectConfig | null {
   const draft = supabaseProjectConfigDraft(env);
   if (!draft.url || !draft.anonKey) return null;
-  return { anonKey: draft.anonKey, projectId: draft.projectId, url: draft.url.replace(/\/$/, "") };
+  const url = resolveBrowserSupabaseUrl(draft.url, {
+    isDev: import.meta.env.DEV === true,
+    pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol,
+  });
+  return { anonKey: draft.anonKey, projectId: draft.projectId, url };
 }
 
 export function supabaseProjectConfigDraft(env: SupabaseProjectEnv = import.meta.env): SupabaseProjectConfigDraft {
