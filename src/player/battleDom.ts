@@ -125,37 +125,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let autoBattle = false;
   let speedMultiplier = 1.0;
 
-  const controlsBar = document.createElement("div");
-  controlsBar.className = "battle-controls-bar";
-  controlsBar.dataset.testid = "battle-controls-bar";
-
-  const autoBtn = document.createElement("button");
-  autoBtn.className = "battle-control-btn";
-  autoBtn.dataset.testid = "battle-auto-btn";
-  autoBtn.textContent = "🤖 자동 (A)";
-  autoBtn.setAttribute("aria-pressed", "false");
-  autoBtn.onclick = (e) => {
-    e.stopPropagation();
-    toggleAutoBattle();
-  };
-
-  const speedBtn = document.createElement("button");
-  speedBtn.className = "battle-control-btn";
-  speedBtn.dataset.testid = "battle-speed-btn";
-  speedBtn.textContent = "⚡ 1.0x";
-  speedBtn.setAttribute("aria-pressed", "false");
-  speedBtn.onclick = (e) => {
-    e.stopPropagation();
-    toggleSpeed();
-  };
-
-  controlsBar.append(autoBtn, speedBtn);
-  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost, controlsBar);
+  // 우상단 자동/배속 버튼 바는 제거했다(감독 지적 3) — 게임 화면 위에 뜬 에디터풍
+  // 크롬이었고 런타임은 키보드 전용이다. 자동전투(A)·배속(Shift) 토글은 키로만 받고,
+  // 상태는 루트 data 속성으로 노출한다(스킨/테스트가 읽을 수 있게).
+  root.append(field, animationLayer, messageWindow, enemyPanel, commandHost, partyPanel, resultHost);
 
   function toggleAutoBattle(): void {
     autoBattle = !autoBattle;
-    autoBtn.classList.toggle("is-active", autoBattle);
-    autoBtn.setAttribute("aria-pressed", autoBattle ? "true" : "false");
+    root.dataset.battleAuto = autoBattle ? "true" : "false";
     if (autoBattle && speedMultiplier === 1.0) {
       setSpeed(1.8);
     }
@@ -170,9 +147,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function setSpeed(spd: number): void {
     speedMultiplier = spd;
     sequencer.speedMultiplier = spd;
-    speedBtn.textContent = `⚡ ${spd.toFixed(1)}x`;
-    speedBtn.classList.toggle("is-active", spd > 1.0);
-    speedBtn.setAttribute("aria-pressed", spd > 1.0 ? "true" : "false");
+    root.dataset.battleSpeed = spd.toFixed(1);
   }
 
   const panelOptions: {

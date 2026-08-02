@@ -359,8 +359,7 @@
 /* ── 등장 연출(인트로) ──
    포켓몬처럼 "화면이 걷히고 → 적이 튀어나오고 → 정보 패널이 미끄러져 들어온" 뒤에야
    커맨드가 열린다. 인트로 동안(시퀀서가 1.2초 점유) 커맨드/컨트롤은 숨긴다. */
-.battle-scene[data-battle-director-step="intro"] .battle-command-host,
-.battle-scene[data-battle-director-step="intro"] .battle-controls-bar {
+.battle-scene[data-battle-director-step="intro"] .battle-command-host {
   visibility: hidden;
 }
 
@@ -862,31 +861,35 @@
   transition: transform 100ms ease-out, filter 100ms ease-out;
 }
 
-/* Pokemon skin: larger lunge / knockback, higher specificity than base resting scale. */
+/* Pokemon skin: larger lunge / knockback.
+   주의: 예전 폴백에 노드 scale(2.45/1.28)이 남아 있었다 — 스프라이트가 px 로 커진
+   지금은 이중 확대가 되어, 맞는 순간 적이 1.28배로 부풀었다(감독 지적 1: "타격할 때
+   확대가 이상하게 됨"). 이동(translateX)만 남긴다. 아군 쪽은 정지 규칙(transform
+   !important, :3480대)이 모션을 눌러 죽이므로 !important 로 되살린다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45)) translateX(-72px);
+  transform: translate(-50%, -100%) translateX(-72px) !important;
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-return {
-  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45));
+  transform: translate(-50%, -100%) !important;
   transition: transform 180ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
-  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28)) translateX(56px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(56px);
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-return {
-  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28));
+  transform: var(--battle-juice-base, translate(-50%, -100%));
   transition: transform 180ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-knockback {
   filter: brightness(1.45) saturate(0.7);
-  transform: var(--battle-juice-base, translate(-50%, -55%) scale(2.45)) translateX(36px);
+  transform: translate(-50%, -100%) translateX(36px) !important;
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-knockback {
   filter: brightness(1.5) saturate(0.65);
-  transform: var(--battle-juice-base, translate(-50%, -100%) scale(1.28)) translateX(-44px);
+  transform: var(--battle-juice-base, translate(-50%, -100%)) translateX(-44px);
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 
@@ -951,12 +954,10 @@
   z-index: 8;
 }
 
-.battle-result-panel[data-result-reveal-stage="0"] .battle-result-reward-row {
-  opacity: 0;
-}
-
-.battle-result-reward-row[hidden] {
-  display: none !important;
+/* 보상 행 공개: display 를 껐다 켜면 패널 크기가 스테이지마다 늘어나 확인 버튼이
+   아래로 밀린다(감독 지적 2) — 자리는 처음부터 예약하고 보이기만 늦춘다. */
+.battle-result-reward-row[data-revealed="false"] {
+  visibility: hidden;
 }
 
 /* 결과 화면 정리는 battle-has-result(= 디렉터 step "result" 진입 후에만 부여)로만 건다.
@@ -1088,41 +1089,6 @@
   100% {
     transform: translate(0, 0);
   }
-}
-
-.battle-controls-bar {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: flex;
-  gap: 8px;
-  z-index: 10;
-}
-
-.battle-control-btn {
-  background: rgba(4, 11, 40, 0.85);
-  border: 2px solid var(--rm2k3-battle-window-light, #e7f2ff);
-  color: #fff;
-  font-family: var(--runtime-pixel-font);
-  font-size: 16px;
-  padding: 2px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-  text-shadow: 2px 2px 0 #000;
-  user-select: none;
-  transition: all 0.15s ease;
-}
-
-.battle-control-btn:hover {
-  background: #315dc0;
-  border-color: #fff;
-}
-
-.battle-control-btn.is-active {
-  background: #e76f51;
-  color: #fff;
-  font-weight: bold;
-  box-shadow: 0 0 12px rgba(231, 111, 81, 0.8);
 }
 
 @keyframes battle-screen-flash {
@@ -3315,13 +3281,11 @@
   60% { transform: scale(1.15); opacity: 1; }
   100% { transform: scale(1); opacity: 1; }
 }
-.battle-result-reward-card {
+/* 등장 애니메이션은 공개되는 순간(data-revealed 전환)에 시작한다 — 스테이지가 이미
+   순차 공개(450ms 간격)라 인덱스별 지연은 이중 지연이 되어 제거했다. */
+.battle-result-reward-card[data-revealed="true"] {
   animation: battle-reward-reveal 0.35s ease-out backwards;
 }
-.battle-result-reward-card[data-reveal-index="0"] { animation-delay: 0.1s; }
-.battle-result-reward-card[data-reveal-index="1"] { animation-delay: 0.25s; }
-.battle-result-reward-card[data-reveal-index="2"] { animation-delay: 0.4s; }
-.battle-result-reward-card[data-reveal-index="3"] { animation-delay: 0.55s; }
 @keyframes battle-reward-reveal {
   0% { transform: translateY(16px); opacity: 0; }
   100% { transform: translateY(0); opacity: 1; }
@@ -3743,6 +3707,10 @@
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-row.defeated {
   display: none !important;
+}
+/* 마지막 적이 쓰러지면 죽은 행이 걷힌 빈 패널 껍데기만 남는다 — 패널째 숨긴다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-panel:not(:has(.battle-enemy-list-row:not(.defeated))) {
+  visibility: hidden;
 }
 
 /* 스킬/아이템 서브메뉴 행 잘림(코덱스 리뷰 C3): 행 콘텐츠(제목 18px + 설명 13px +

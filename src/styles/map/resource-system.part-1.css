@@ -281,13 +281,15 @@
   align-self: center;
   border: 1px solid var(--editor-line-strong);
   box-shadow: 0 22px 70px rgba(0, 0, 0, 0.55);
-  height: min(512px, calc(100dvh - 32px));
+  /* 642×512 기본은 전투 씬(논리 640×480)을 배율 1.0 에 가둬 "전투 UI 가 너무 좁다"
+     (감독 지적 4). 화면 대부분을 기본으로 쓰고, 스테이지 스케일이 창에 맞춰 키운다. */
+  height: min(1000px, calc(100dvh - 48px));
   max-height: calc(100dvh - 32px);
   max-width: calc(100vw - 32px);
   min-height: 360px;
   min-width: 0;
   resize: both;
-  width: min(642px, calc(100vw - 32px));
+  width: min(1320px, calc(100vw - 64px));
 }
 
 .test-play-titlebar {

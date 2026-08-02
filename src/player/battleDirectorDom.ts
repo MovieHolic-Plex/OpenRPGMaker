@@ -310,7 +310,11 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     }
   }
   for (const item of cards.querySelectorAll<HTMLElement>(".battle-result-reward-row")) {
-    item.hidden = Number(item.dataset.revealIndex) >= revealStage;
+    // hidden(display:none) 대신 자리를 예약한 채 공개한다 — 예전에는 "승리+확인"만 있는
+    // 작은 패널이 떴다가 행이 하나씩 끼어들며 패널이 커지고 확인 버튼이 아래로 밀려났다
+    // (감독 지적 2: 승리 UI 널뛰기). 패널은 처음부터 최종 크기다.
+    const revealed = Number(item.dataset.revealIndex) < revealStage;
+    item.dataset.revealed = revealed ? "true" : "false";
     const fill = item.querySelector<HTMLElement>(".battle-result-exp-fill");
     if (!fill) continue;
     const bar = fill.parentElement as HTMLElement;
@@ -322,7 +326,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
       continue;
     }
     bar.dataset.expLevelUp = progress.levelUp ? "true" : "false";
-    if (!item.hidden && panel.dataset.expAnimated !== "true") {
+    if (revealed && panel.dataset.expAnimated !== "true") {
       // 행이 처음 공개될 때 한 번만 이전 진행률 → 새 진행률로 차오른다.
       panel.dataset.expAnimated = "true";
       fill.style.width = `${progress.fromPct}%`;

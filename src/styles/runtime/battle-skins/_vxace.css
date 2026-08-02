@@ -300,20 +300,7 @@
 }
 
 /* --- AUTO / 속도 버튼 --------------------------------------------------- */
-/* 참조의 좌상단은 빈 하늘이다 — 기능은 남기고 최소 크기로 낮춘다. */
-.battle-scene[data-battle-skin="vxace"] .battle-controls-bar {
-  gap: 4px;
-  left: 6px;
-  opacity: 0.42;
-  right: auto;
-  top: 6px;
-}
 
-.battle-scene[data-battle-skin="vxace"] .battle-control-btn {
-  border-radius: 4px;
-  font-size: 10px;
-  padding: 0 4px;
-}
 
 /* --- 메시지 창 --------------------------------------------------------- */
 /* 참조의 명령 입력 화면에는 메시지 창이 없다 → 입력 단계에서는 감춘다.
