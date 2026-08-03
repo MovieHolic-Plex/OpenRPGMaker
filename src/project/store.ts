@@ -3,6 +3,7 @@ import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/defaultProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
+import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import { createDevShowcaseProjectForLocation } from "./devShowcaseProjects";
@@ -812,6 +813,8 @@ class ProjectStore {
     const changed = [
       dialogueRewritten,
       ensureProjectMapConnections(this.current),
+      // 실내 보강은 mapTree 고아 복구보다 먼저 — 새로 넣은 실내 맵이 같은 패스에서 트리에 편입된다.
+      ensureScarloxyPokemonInteriors(this.current),
       ensureMapTreeCoversAllMaps(this.current),
       ensureSwitchVariableSlots(this.current),
       ensureBundledTilesets(this.current),

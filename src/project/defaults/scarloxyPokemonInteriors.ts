@@ -300,3 +300,60 @@ export function createTownDoorSigns(entries: {
     sign("ev_pkmn_sign_center", entries.center.x + 1, entries.center.y, ["몬스터 회복 센터 — 접수원이 파티를 무료로 회복해 준다."]),
   ];
 }
+
+// ---------------------------------------------------------------------------
+// 기존 프로젝트 업그레이드
+// ---------------------------------------------------------------------------
+// 맵은 코드가 아니라 DB(rpg_zzu.maps)에 산다. createScarloxyPokemonDemoProject()
+// 는 **새로 만들 때만** 실행되므로, 이미 DB에 저장된 포켓몬풍 데모(마을+1번 길
+// 2장)는 코드를 고쳐도 실내가 생기지 않는다. store.normalizeCurrentProject()
+// 가 로드 직후 돌리는 ensure* 계열과 같은 방식으로 결손을 메운다.
+
+/** 이 프로젝트가 Scarloxy 포켓몬풍 데모인가 — 제목 대신 구조로 판별한다(제목은 사용자가 바꿀 수 있다). */
+function isScarloxyPokemonDemo(project: {
+  readonly maps: Record<string, GameMap>;
+  readonly system?: { readonly monsterCollection?: boolean };
+}): boolean {
+  const town = project.maps[SCARLOXY_TOWN_MAP_ID];
+  if (!town) return false;
+  // 마을 맵이 존재하고 스타터 지급 이벤트가 살아 있으면 이 데모로 본다.
+  return town.events.some((event) => event.id === "ev_pkmn_professor");
+}
+
+export const SCARLOXY_TOWN_MAP_ID = "map_pkmn_town";
+
+/** 마을 건물 문 앞 칸 — scarloxyPokemonDemoGame.ts 의 TOWN_DOORS 와 같은 값이어야 한다. */
+const TOWN_DOOR_CELLS = {
+  lab: { x: 12, y: 7 },
+  home: { x: 3, y: 8 },
+  center: { x: 20, y: 8 },
+} as const;
+
+/**
+ * 이미 저장된 포켓몬풍 데모에 실내 맵 3종과 출입 동선을 채워 넣는다.
+ * 이미 다 있으면 아무것도 하지 않고 false 를 돌려준다(멱등).
+ *
+ * 사용자가 일부러 지운 실내를 되살리지 않도록, **셋 다 없을 때만** 일괄 추가한다.
+ */
+export function ensureScarloxyPokemonInteriors(project: {
+  maps: Record<string, GameMap>;
+  readonly system?: { readonly monsterCollection?: boolean };
+}): boolean {
+  if (!isScarloxyPokemonDemo(project)) return false;
+  const present = [LAB_MAP_ID, HOME_MAP_ID, CENTER_MAP_ID].filter((id) => project.maps[id]);
+  if (present.length > 0) return false; // 하나라도 있으면 사용자 편집으로 보고 손대지 않는다.
+
+  project.maps[LAB_MAP_ID] = createLabInteriorMap(SCARLOXY_TOWN_MAP_ID, TOWN_DOOR_CELLS.lab.x, TOWN_DOOR_CELLS.lab.y + 1);
+  project.maps[HOME_MAP_ID] = createHomeInteriorMap(SCARLOXY_TOWN_MAP_ID, TOWN_DOOR_CELLS.home.x, TOWN_DOOR_CELLS.home.y + 1);
+  project.maps[CENTER_MAP_ID] = createCenterInteriorMap(SCARLOXY_TOWN_MAP_ID, TOWN_DOOR_CELLS.center.x, TOWN_DOOR_CELLS.center.y + 1);
+
+  // 마을 쪽 출입구/안내판 — 같은 id 가 이미 있으면 건너뛴다.
+  const town = project.maps[SCARLOXY_TOWN_MAP_ID]!;
+  const existingIds = new Set(town.events.map((event) => event.id));
+  for (const event of [...createTownDoorEvents(TOWN_DOOR_CELLS), ...createTownDoorSigns(TOWN_DOOR_CELLS)]) {
+    if (existingIds.has(event.id)) continue;
+    town.events.push(event);
+  }
+  // mapTree 편입은 store 의 repairMapTreeOrphans 가 맡는다(고아 맵을 루트에 붙인다).
+  return true;
+}

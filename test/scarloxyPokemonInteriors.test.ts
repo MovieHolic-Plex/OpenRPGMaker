@@ -6,7 +6,7 @@
 import { describe, expect, it } from "vitest";
 import { canMove, tilePassability } from "@/project/collision";
 import { createScarloxyPokemonDemoProject } from "@/project/defaults";
-import { CENTER_MAP_ID, HOME_MAP_ID, INTERIOR_TILESET_ID, LAB_MAP_ID } from "@/project/defaults/scarloxyPokemonInteriors";
+import { CENTER_MAP_ID, HOME_MAP_ID, INTERIOR_TILESET_ID, LAB_MAP_ID, ensureScarloxyPokemonInteriors } from "@/project/defaults/scarloxyPokemonInteriors";
 import { deserialize, serialize } from "@/project/io";
 import { canTravelBetweenMaps } from "@/testing/mapTravelReachability";
 
@@ -88,6 +88,59 @@ describe("Scarloxy 포켓몬풍 데모 실내 맵", () => {
       // 방이 실제로 걸어다닐 만한 크기인지 — 벽·가구를 빼고도 내부의 절반 이상.
       expect(walkable.size, `${mapId} 보행 가능 칸 ${walkable.size}`).toBeGreaterThan((map.width - 2) * (map.height - 3) * 0.5);
     }
+  });
+
+  // 맵은 코드가 아니라 DB(rpg_zzu.maps)에 산다 — 이미 저장된 데모는 코드를 고쳐도
+  // 실내가 생기지 않는다. store 가 로드 직후 돌리는 보강 패스가 그 결손을 메운다.
+  describe("이미 저장된 데모 프로젝트 보강", () => {
+    /** DB에 남아 있는 옛 상태 재현 — 마을+1번 길 2장, 실내도 출입구도 없음. */
+    function legacyStoredDemo(): ReturnType<typeof createScarloxyPokemonDemoProject> {
+      const project = createScarloxyPokemonDemoProject();
+      for (const mapId of INTERIOR_MAP_IDS) delete project.maps[mapId];
+      const town = project.maps[TOWN_MAP_ID]!;
+      town.events = town.events.filter((event) => !event.id.startsWith("ev_pkmn_door_") && !event.id.startsWith("ev_pkmn_sign_"));
+      return project;
+    }
+
+    it("실내가 없는 옛 프로젝트에 실내 3종과 출입구를 채운다", () => {
+      const project = legacyStoredDemo();
+      expect(Object.keys(project.maps)).toHaveLength(2);
+
+      expect(ensureScarloxyPokemonInteriors(project)).toBe(true);
+
+      expect(Object.keys(project.maps).sort()).toEqual([CENTER_MAP_ID, HOME_MAP_ID, LAB_MAP_ID, TOWN_MAP_ID, "map_pkmn_route"].sort());
+      for (const mapId of INTERIOR_MAP_IDS) {
+        const result = canTravelBetweenMaps(project, START, mapId);
+        expect(result.reachable, `보강 후에도 ${mapId} 에 닿지 않는다`).toBe(true);
+      }
+    });
+
+    it("두 번 돌려도 이벤트가 중복되지 않는다 (멱등)", () => {
+      const project = legacyStoredDemo();
+      expect(ensureScarloxyPokemonInteriors(project)).toBe(true);
+      const townEventIds = project.maps[TOWN_MAP_ID]!.events.map((event) => event.id);
+
+      expect(ensureScarloxyPokemonInteriors(project)).toBe(false);
+      expect(project.maps[TOWN_MAP_ID]!.events.map((event) => event.id)).toEqual(townEventIds);
+      expect(new Set(townEventIds).size).toBe(townEventIds.length);
+    });
+
+    it("사용자가 실내 하나만 지운 경우엔 손대지 않는다", () => {
+      const project = createScarloxyPokemonDemoProject();
+      delete project.maps[HOME_MAP_ID];
+      expect(ensureScarloxyPokemonInteriors(project)).toBe(false);
+      expect(project.maps[HOME_MAP_ID]).toBeUndefined();
+    });
+
+    it("포켓몬풍 데모가 아닌 프로젝트는 건드리지 않는다", () => {
+      const project = createScarloxyPokemonDemoProject();
+      // 스타터 지급 이벤트가 없으면 이 데모가 아니다.
+      const town = project.maps[TOWN_MAP_ID]!;
+      town.events = town.events.filter((event) => event.id !== "ev_pkmn_professor");
+      for (const mapId of INTERIOR_MAP_IDS) delete project.maps[mapId];
+      expect(ensureScarloxyPokemonInteriors(project)).toBe(false);
+      expect(project.maps[LAB_MAP_ID]).toBeUndefined();
+    });
   });
 });
 
