@@ -139,7 +139,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-s
 <nav><div class="wrap">
   <a href="#verdict">총평</a><a href="#now">현재 화면</a><a href="#failures">결함 12</a>
   <a href="#mockups">목업 3종</a><a href="#focus">포커스 모델</a><a href="#skins">메뉴 스킨</a>
-  <a href="#tech">기술 부채</a><a href="#shipped">구현 결과</a><a href="#priority">실행 순서</a>
+  <a href="#tech">기술 부채</a><a href="#shipped">구현 결과 A</a><a href="#shipped-b">구현 결과 B</a><a href="#priority">실행 순서</a>
 </div></nav>
 
 <main class="wrap">
@@ -563,6 +563,44 @@ footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-s
       <p>· e2e: 신규 <code>status-menu-p0-redesign.spec.ts</code> 통과 — 그룹·게이지·감광·무클리핑·레일 수납을 한 번에 검사</p>
       <p class="muted">이 저장소의 스위트는 이 환경에서 원래 105개 파일이 빨갛다(자산·네트워크 의존). 그 목록은 손대지 않았다.</p>
     </div>
+  </div>
+</section>
+
+<section id="shipped-b">
+  <div class="section-kicker">Shipped · B</div>
+  <h2>B안 2열 레이아웃 — 구현 완료</h2>
+  <p>좌측 한 창(레일 + 파티) / 우측 전체 작업 영역. 아래는 실제 런타임 캡처다.</p>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-b-items.png" alt="B안 아이템 화면">
+      <div class="caption"><b>아이템</b> — 이름 + 효과 + 개수가 <b>한 줄</b>에. 파티 4명은 이름·레벨 한 줄에 HP 게이지가 배경으로 깔린다</div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-b-system.png" alt="B안 시스템 그룹">
+      <div class="caption"><b>시스템 ▸</b> — 접힌 그룹은 작업 영역에 펼쳐지고, 각 항목이 무엇을 하는지 설명이 함께 뜬다</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <div class="card bad"><h3>세로 예산이 설계를 정했다</h3>
+      <p>사이드바 가용 높이는 <b>약 175px</b>. 명령 12개(하한 11px = 132px) + 파티는 어떻게 배치해도 넘쳤다.</p>
+      <p>뒤쪽 두 그룹만 접어도 레일 9개(117px) + 파티(71px) = <b>191px</b>로 파티 4번째가 잘렸다(실측).</p>
+      <p>행동 3개만 펼치고 파티·기록·시스템을 접으니 레일 75px + 파티 71px = <b>146px</b>. 목업 B의 <code>기록 · 시스템 ▸</code>가 장식이 아니라 필수였다.</p>
+    </div>
+    <div class="card warn"><h3>포기한 것</h3>
+      <p>· 사이드바 파티가 <b>1줄/1명</b>이 되면서 MP 게이지와 정확한 HP/MP 숫자가 빠졌다 → "상태" 화면이 맡는다. 화면에서 사라지는 값이라 <code>aria-label</code>로는 남겼다.</p>
+      <p>· 얼굴이 32px → 16px. 1줄 행에서는 얼굴이 행 높이를 정하기 때문이다(24px일 때 파티 4번째가 잘렸다).</p>
+      <p>· 저장·타이틀이 한 단계 깊어졌다. 타이틀의 파괴적 표시는 색 대신 <b>설명 문구</b>가 맡는다.</p>
+    </div>
+    <div class="card good"><h3>검사로 굳힌 것</h3>
+      <p>구현 중 실제로 낸 회귀가 <b>4건</b>이고, 전부 캡처를 눈으로 보고 찾았다. 그래서 각각을 검사로 만들었다.</p>
+      <p>· 명령/파티 항목이 컨테이너 밖으로 밀렸는가(<code>toBeVisible</code>은 잘린 자식도 통과시킨다)</p>
+      <p>· 압축 행이 두 줄로 접혔는가</p>
+      <p>· 한 행 안에서 이름/설명/개수가 서로 겹쳤는가</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px"><h3>구현하며 배운 것 — 목업은 세로 예산을 모른다</h3>
+    <p>목업 3종은 전부 4:3 비율을 지켰지만 <b>실제 폰트 메트릭과 최소 행 높이</b>는 담지 못했다. B안에서 바뀐 결정(파티 그룹까지 접기, 파티 1줄화, 얼굴 16px)은 모두 목업이 아니라 실측이 정했다.</p>
+    <p>검사 자체가 틀린 적도 있다. 압축 행이 두 줄인지 보려고 <code>getBoundingClientRect()</code>(스테이지 스케일이 곱해진 값)와 <code>lineHeight</code>(CSS px)를 비교해 <b>항상 실패</b>했다. 실제로는 CSS가 이미 옳았다 — 측정 단위를 섞은 쪽이 틀렸다.</p>
   </div>
 </section>
 

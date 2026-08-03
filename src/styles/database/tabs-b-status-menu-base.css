@@ -8,10 +8,27 @@
   /* 레일 가용 높이는 약 175px. 명령 12개(하한 11px = 9px 글리프 박스) + 라벨 4개(9px)로
      168px — 1px 간격 15개(15px)를 두면 넘친다. 구분선이 이미 그룹을 갈라 주므로 간격은 0. */
   gap: 0;
+  flex: 0 0 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+/* 좌측 사이드바 — 레일(위) + 파티(아래)를 한 창에 담는다. */
+.status-menu-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
   grid-column: 1;
   grid-row: 1;
   min-height: 0;
   overflow: hidden;
+}
+.status-menu-sidebar > .status-menu-party {
+  flex: 1 1 auto;
+}
+/* 작업 영역이 우측 열 전체를 쓴다. */
+.rm2k3-status-menu .status-menu-detail {
+  grid-column: 2;
+  grid-row: 1;
 }
 /* 라벨은 자기 높이만, 명령 행은 남는 높이를 나눠 갖는다. */
 .status-menu-command-rail > .status-menu-command-group-label {

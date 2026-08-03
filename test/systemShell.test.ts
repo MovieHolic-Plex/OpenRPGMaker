@@ -156,33 +156,25 @@ describe("T12 RM2K3 player status menu", () => {
 
     const snapshot = createPlayerStatusMenuSnapshot(project, session);
 
-    // 그룹 순서(행동 → 파티 → 기록 → 시스템)가 곧 화면 순서이자 ↑↓ 이동 순서다.
-    // 타이틀은 진행 손실 위험이 있어 항상 마지막에 온다.
+    // 레일 = 펼친 명령(행동 → 파티) + 접힌 그룹 열기 항목(기록/시스템).
+    // 그 순서가 곧 화면 순서이자 ↑↓ 이동 순서다.
     expect(snapshot.commandLabels).toEqual([
       "아이템",
       "스킬",
       "장비",
-      "상태",
-      "열 바꾸기",
-      "진형",
-      "몬스터",
-      "임무",
-      "저장",
-      "로드",
-      "대기 ON",
-      "타이틀",
+      "파티 ▸",
+      "기록 ▸",
+      "시스템 ▸",
     ]);
     expect(snapshot.commands.map((command) => command.groupId)).toEqual([
       "action", "action", "action",
-      "party", "party", "party", "party",
-      "record",
-      "system", "system", "system", "system",
+      "party", "record", "system",
     ]);
-    // 그룹 첫 항목에만 라벨/구분선이 붙는다.
+    // 접힌 그룹 항목은 자기 자신이 그룹을 대표하므로 앞에 별도 라벨을 두지 않는다.
     expect(snapshot.commands.filter((command) => command.groupStart).map((command) => command.id))
-      .toEqual(["items", "status", "quests", "save"]);
-    expect(snapshot.commands.filter((command) => command.destructive).map((command) => command.id))
-      .toEqual(["to-title"]);
+      .toEqual(["items"]);
+    expect(snapshot.commands.filter((command) => command.opensGroup).map((command) => command.id))
+      .toEqual(["party-menu", "record-menu", "system-menu"]);
     expect(snapshot.goldLabel).toBe("돈 0G");
     expect(snapshot.partyRows).toEqual([]);
     expect(snapshot.emptyPartyLabel).toBe("파티원이 없습니다");
@@ -228,7 +220,8 @@ describe("T12 RM2K3 player status menu", () => {
 
       expect(menu.className).toContain("rm2k3-status-menu");
       expect(findByTestId(menu, "status-menu-command-rail")?.textContent).toContain("아이템");
-      expect(findByTestId(menu, "status-menu-command-save")?.textContent).toBe("저장");
+      // 저장은 "시스템 ▸" 그룹으로 접혔다 — 레일에는 그룹 열기 항목만 남는다.
+      expect(findByTestId(menu, "status-menu-command-system-menu")?.textContent).toBe("시스템 ▸");
       expect(findByTestId(menu, "status-menu-gold")?.textContent).toBe("돈 0G");
       expect(findByTestId(menu, "status-menu-slots")).toBeNull();
       expect(findByTestId(menu, "status-menu-time")?.textContent).toBe("0:00");

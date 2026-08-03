@@ -45,14 +45,16 @@ describe("player status menu", () => {
 
       expect(findByTestId(menu, "status-menu-command-rail")).not.toBeNull();
       expect(findByTestId(menu, "status-menu-fullscreen-skills")).toBeNull();
-      expect(findByTestId(menu, "status-menu-command-quests")?.textContent).toBe("임무");
+      // 임무는 "기록 ▸" 그룹으로 접혔다 — 레일에 직접 버튼은 없다.
+      expect(findByTestId(menu, "status-menu-command-quests")).toBeNull();
+      expect(findByTestId(menu, "status-menu-command-record-menu")?.textContent).toBe("기록 ▸");
       expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("스킬");
     } finally {
       restoreDom();
     }
   });
 
-  it("renders all 12 commands and full party vitals", () => {
+  it("renders the folded rail and full party vitals", () => {
     const restoreDom = installFakeDom();
     try {
       const project = createBlankProject();
@@ -65,11 +67,16 @@ describe("player status menu", () => {
         }),
       );
 
-      for (const commandId of ["items", "skills", "equipment", "monsters", "save", "load", "status", "row", "formation", "quests", "wait", "to-title"]) {
-        expect(findByTestId(menu, `status-menu-command-${commandId}`)).not.toBeNull();
+      // 좌측 사이드바 가용 높이(약 175px)에 명령 12개 + 파티 4명이 안 들어가 뒤쪽 두 그룹을 접었다.
+      for (const railId of ["items", "skills", "equipment", "party-menu", "record-menu", "system-menu"]) {
+        expect(findByTestId(menu, `status-menu-command-${railId}`)).not.toBeNull();
       }
-      expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toMatch(/HP \d+\/\d+/);
-      expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toMatch(/MP \d+\/\d+/);
+      for (const foldedId of ["status", "row", "formation", "monsters", "quests", "save", "load", "wait", "to-title"]) {
+        expect(findByTestId(menu, `status-menu-command-${foldedId}`)).toBeNull();
+      }
+      expect(findByTestId(menu, "status-menu-party-row-0")?.getAttribute("aria-label"))
+        .toMatch(/HP \d+\/\d+ MP \d+\/\d+/);
+      expect(findByTestId(menu, "status-menu-hp-gauge-0")).not.toBeNull();
     } finally {
       restoreDom();
     }
@@ -116,9 +123,11 @@ describe("player status menu", () => {
       const hpGauge = findByTestId(menu, "status-menu-hp-gauge-0");
       expect(hpGauge?.className).toContain("crit");
       expect(hpGauge?.getAttribute("aria-valuenow")).toBe("10");
-      expect(findByTestId(menu, "status-menu-mp-gauge-0")?.getAttribute("aria-valuenow")).toBe("100");
-      // 숫자 라벨은 사라지지 않는다 — 정확한 값은 여전히 숫자가 담당한다.
-      expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toMatch(/HP \d+\/\d+/);
+      // B안 사이드바는 1줄/1명이라 MP 게이지와 정확한 수치는 "상태" 화면이 맡는다.
+      // 화면에서 빠지는 값이라도 접근성 라벨에는 남긴다.
+      expect(findByTestId(menu, "status-menu-mp-gauge-0")).toBeNull();
+      expect(findByTestId(menu, "status-menu-party-row-0")?.getAttribute("aria-label"))
+        .toMatch(/HP \d+\/\d+ MP \d+\/\d+/);
     } finally {
       restoreDom();
     }
@@ -155,11 +164,39 @@ describe("player status menu", () => {
       );
 
       expect(findByTestId(menu, "status-menu-command-group-action")?.textContent).toBe("행동");
-      expect(findByTestId(menu, "status-menu-command-group-system")?.textContent).toBe("시스템");
-      expect(findByTestId(menu, "status-menu-command-to-title")?.className).toContain("destructive");
+      // 접힌 그룹은 자기 자신이 그룹을 대표하므로 앞에 별도 라벨을 두지 않는다.
+      expect(findByTestId(menu, "status-menu-command-group-party")).toBeNull();
+      expect(findByTestId(menu, "status-menu-command-group-system")).toBeNull();
+      expect(findByTestId(menu, "status-menu-command-party-menu")?.textContent).toBe("파티 ▸");
       expect(findByTestId(menu, "status-menu-command-items")?.className).not.toContain("destructive");
       // 그룹 라벨은 menuitem 이 아니어야 한다 — 커서가 라벨에서 멈추면 이동이 한 칸씩 어긋난다.
       expect(findByTestId(menu, "status-menu-command-group-action")?.getAttribute("role")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("lists the folded system commands in the work area", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const menu = renderWithFakeDom(() =>
+        renderPlayerStatusMenu({
+          project,
+          session: startSession(project),
+          slots: [],
+          selectedCommand: "system-menu",
+          mode: "function",
+          actions: noopActions,
+        }),
+      );
+
+      expect(findByTestId(menu, "status-menu-detail-title")?.textContent).toBe("시스템");
+      for (const commandId of ["save", "load", "wait", "to-title"]) {
+        expect(findByTestId(menu, `status-menu-group-command-${commandId}`)).not.toBeNull();
+      }
+      // 레일에서는 접힌 그룹 항목이 강조된다.
+      expect(findByTestId(menu, "status-menu-command-system-menu")?.className).toContain("selected");
     } finally {
       restoreDom();
     }

@@ -44,6 +44,78 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 /** 되돌릴 수 없는(또는 진행을 잃는) 명령 — 레일에서 시각적으로 분리한다. */
 export const STATUS_MENU_DESTRUCTIVE_COMMAND_IDS: readonly StatusMenuCommandId[] = ["to-title"];
 
+/** 레일에 남는 "그룹 열기" 항목. 실제 기능이 아니라 해당 그룹의 명령 목록을 작업 영역에 띄운다.
+    2열 레이아웃(좌: 레일+파티 / 우: 작업 영역)에서 좌측 가용 높이는 약 175px 인데
+    명령 12개(11px 하한 = 132px) + 파티 4명 + 구분선이 이미 넘친다. 뒤쪽 두 그룹만 접어도
+    레일 9개(117px) + 파티(71px) = 191px 로 여전히 넘쳐 파티 4번째가 잘렸다(실측).
+    행동 3개만 펼치면 레일 75px + 파티 71px = 146px 로 여유가 생긴다. */
+export const STATUS_MENU_GROUP_ENTRY_IDS = ["party-menu", "record-menu", "system-menu"] as const;
+export type StatusMenuGroupEntryId = (typeof STATUS_MENU_GROUP_ENTRY_IDS)[number];
+
+/** 레일이 실제로 그리는 항목 = 펼친 명령 + 접힌 그룹 열기 항목. */
+export type StatusMenuRailId = StatusMenuCommandId | StatusMenuGroupEntryId;
+
+/** 접어 둘 그룹 — 레일에는 그룹 열기 항목 하나만 남고, 실제 명령은 작업 영역에서 고른다. */
+const COLLAPSED_GROUPS: readonly {
+  readonly entryId: StatusMenuGroupEntryId;
+  readonly groupId: StatusMenuCommandGroupId;
+  readonly label: string;
+}[] = [
+  { entryId: "party-menu", groupId: "party", label: "파티 ▸" },
+  { entryId: "record-menu", groupId: "record", label: "기록 ▸" },
+  { entryId: "system-menu", groupId: "system", label: "시스템 ▸" },
+];
+
+export function isStatusMenuGroupEntryId(value: StatusMenuRailId): value is StatusMenuGroupEntryId {
+  return (STATUS_MENU_GROUP_ENTRY_IDS as readonly string[]).includes(value);
+}
+
+export function statusMenuGroupEntryLabel(entryId: StatusMenuGroupEntryId): string {
+  const group = COLLAPSED_GROUPS.find((candidate) => candidate.entryId === entryId);
+  if (!group) throw new Error(`Unknown status menu group entry: ${entryId}`);
+  return group.label;
+}
+
+/** 그룹 열기 항목이 담는 실제 명령들(숨김 규칙 적용 후). */
+export function listStatusMenuGroupCommandIds(
+  entryId: StatusMenuGroupEntryId,
+  project: Project,
+  session: PlaySession
+): StatusMenuCommandId[] {
+  const group = COLLAPSED_GROUPS.find((candidate) => candidate.entryId === entryId);
+  if (!group) throw new Error(`Unknown status menu group entry: ${entryId}`);
+  const visible = new Set(listStatusMenuCommandIds(project, session));
+  return STATUS_MENU_COMMAND_GROUPS
+    .filter((candidate) => candidate.id === group.groupId)
+    .flatMap((candidate) => candidate.commandIds)
+    .filter((id) => visible.has(id));
+}
+
+/** 접힌 명령을 실행 중일 때 레일에서 강조할 항목. 펼친 명령은 자기 자신. */
+export function statusMenuRailIdForCommand(commandId: StatusMenuRailId): StatusMenuRailId {
+  if (isStatusMenuGroupEntryId(commandId)) return commandId;
+  const groupId = commandGroupIdOf(commandId);
+  const collapsed = COLLAPSED_GROUPS.find((candidate) => candidate.groupId === groupId);
+  return collapsed ? collapsed.entryId : commandId;
+}
+
+/** 레일 순서 = 화면 순서 = ↑↓ 이동 순서. */
+export function listStatusMenuRailIds(project: Project, session: PlaySession): StatusMenuRailId[] {
+  const collapsedGroupIds = new Set(COLLAPSED_GROUPS.map((group) => group.groupId));
+  const expanded = listStatusMenuCommandIds(project, session)
+    .filter((id) => !collapsedGroupIds.has(commandGroupIdOf(id)));
+  const entries = COLLAPSED_GROUPS
+    .filter((group) => listStatusMenuGroupCommandIds(group.entryId, project, session).length > 0)
+    .map((group) => group.entryId);
+  return [...expanded, ...entries];
+}
+
+export function statusMenuRailLabel(railId: StatusMenuRailId, waitModeEnabled: boolean): string {
+  return isStatusMenuGroupEntryId(railId)
+    ? statusMenuGroupEntryLabel(railId)
+    : statusMenuCommandLabel(railId, waitModeEnabled);
+}
+
 export function statusMenuCommandGroupLabel(groupId: StatusMenuCommandGroupId): string {
   const group = STATUS_MENU_COMMAND_GROUPS.find((candidate) => candidate.id === groupId);
   if (!group) throw new Error(`Unknown status menu command group: ${groupId}`);
@@ -51,12 +123,15 @@ export function statusMenuCommandGroupLabel(groupId: StatusMenuCommandGroupId): 
 }
 
 export type StatusMenuCommand = {
-  readonly id: StatusMenuCommandId;
+  /** 펼친 명령이면 명령 id, 접힌 그룹이면 그룹 열기 id. */
+  readonly id: StatusMenuRailId;
   readonly label: string;
   readonly groupId: StatusMenuCommandGroupId;
   /** 그룹의 첫 항목 — 렌더러가 이 앞에 그룹 라벨/구분선을 넣는다. */
   readonly groupStart: boolean;
   readonly destructive: boolean;
+  /** 접힌 그룹 열기 항목인가. 렌더러가 ▸ 표식과 testid 를 다르게 준다. */
+  readonly opensGroup: boolean;
 };
 
 export type PlayerStatusMenuPartyRow = {
@@ -103,6 +178,12 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   });
 }
 
+function collapsedGroupIdOf(entryId: StatusMenuGroupEntryId): StatusMenuCommandGroupId {
+  const group = COLLAPSED_GROUPS.find((candidate) => candidate.entryId === entryId);
+  if (!group) throw new Error(`Unknown status menu group entry: ${entryId}`);
+  return group.groupId;
+}
+
 function commandGroupIdOf(commandId: StatusMenuCommandId): StatusMenuCommandGroupId {
   const group = STATUS_MENU_COMMAND_GROUPS.find((candidate) => candidate.commandIds.includes(commandId));
   if (!group) throw new Error(`Status menu command is not assigned to a group: ${commandId}`);
@@ -139,16 +220,19 @@ export function createPlayerStatusMenuSnapshot(
     }];
   });
   const seenGroups = new Set<StatusMenuCommandGroupId>();
-  const commands = listStatusMenuCommandIds(project, session).map((id): StatusMenuCommand => {
-    const groupId = commandGroupIdOf(id);
-    const groupStart = !seenGroups.has(groupId);
+  const commands = listStatusMenuRailIds(project, session).map((id): StatusMenuCommand => {
+    const opensGroup = isStatusMenuGroupEntryId(id);
+    const groupId = opensGroup ? collapsedGroupIdOf(id) : commandGroupIdOf(id);
+    // 접힌 그룹 열기 항목은 그 자체가 그룹을 대표하므로 별도 그룹 라벨을 앞세우지 않는다.
+    const groupStart = !opensGroup && !seenGroups.has(groupId);
     seenGroups.add(groupId);
     return {
       id,
-      label: statusMenuCommandLabel(id, options.waitModeEnabled ?? true),
+      label: statusMenuRailLabel(id, options.waitModeEnabled ?? true),
       groupId,
       groupStart,
-      destructive: STATUS_MENU_DESTRUCTIVE_COMMAND_IDS.includes(id),
+      destructive: !opensGroup && STATUS_MENU_DESTRUCTIVE_COMMAND_IDS.includes(id),
+      opensGroup,
     };
   });
 

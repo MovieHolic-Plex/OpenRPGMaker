@@ -4,6 +4,10 @@
   min-height: 0;
   overflow: hidden;
 }
+/* 사이드바(112px)에 레일 + 파티가 함께 들어가야 한다. 2줄/1명(96px) 이면 레일과 합쳐
+   183px 로 가용 175px 를 넘겼다(실측: HP/MP 줄이 통째로 잘려 사라짐).
+   그래서 사이드바 파티는 1줄/1명 — 이름 + 레벨, HP 게이지가 그 줄의 배경이다.
+   정확한 수치와 MP 는 "상태" 화면이 맡고, 여기서는 위급한 아군을 색으로 찾게 한다. */
 .status-menu-party {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
@@ -17,25 +21,29 @@
   box-shadow: none;
   display: grid;
   gap: 1px;
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: max-content;
+  align-content: start;
   padding: 2px;
 }
 .status-menu-party-row {
-  align-items: start;
+  align-items: center;
   box-sizing: border-box;
   display: grid;
-  gap: 4px;
-  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 3px;
+  /* 사이드바가 좁아진 만큼 얼굴을 줄여 숫자 자리를 남긴다. */
+  grid-template-columns: 16px minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
 }
+/* 1줄/1명이 되면서 행 높이를 결정하는 건 글자가 아니라 얼굴이다. 24px 로는 4명이
+   사이드바 높이를 넘겨 뒤 2명이 통째로 잘렸다(실측) — 16px 로 낮춘다. */
 .status-menu-face.actor-sheet-crop {
-  --crop-width: 32px !important;
-  --crop-height: 32px !important;
-  --crop-sheet-width: 128px !important;
-  --crop-sheet-height: 128px !important;
-  height: 32px;
-  width: 32px;
+  --crop-width: 16px !important;
+  --crop-height: 16px !important;
+  --crop-sheet-width: 64px !important;
+  --crop-sheet-height: 64px !important;
+  height: 16px;
+  width: 16px;
 }
 .status-menu-face {
   box-sizing: border-box;
@@ -72,6 +80,17 @@
   gap: 3px;
   grid-template-columns: minmax(0, 1fr) max-content;
   min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+.status-menu-party-headline .status-menu-actor-name,
+.status-menu-party-headline .status-menu-actor-subline {
+  /* 채워진 게이지 위에 얹히므로 얇은 외곽선으로 판독성을 지킨다. */
+  text-shadow: 0 1px 0 rgba(4, 14, 48, 0.85);
+}
+/* 파티 행 = 이름/레벨 한 줄 + 그 줄을 덮는 HP 게이지. */
+.status-menu-party-info {
+  position: relative;
 }
 .status-menu-party-headline .status-menu-actor-subline {
   color: #ffe9a8;
@@ -169,21 +188,6 @@
 /* 하단 페이드 그라디언트도 시도했지만, 목록이 짧을 때 패널 중간에 어두운 띠로 남아
    그 자체가 버그처럼 보였다(장비 화면 실측). 행이 1줄로 압축돼 더 이상 글자가 잘린 채
    끝나지 않으므로, 넘침 신호는 얇은 스크롤바에 맡긴다. */
-/* 조작 가능한 행 — 설명을 푸터로 넘겨 1줄로 압축한다. 리스트에 들어가는 항목 수가 2배가 된다. */
-.status-menu-detail-row-compact {
-  align-items: center;
-  min-height: var(--rm2k3-menu-row-height, 15px);
-  white-space: nowrap;
-}
-.status-menu-detail-row-compact .status-menu-detail-label,
-.status-menu-detail-row-compact .status-menu-detail-value {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.status-menu-detail-row-compact .status-menu-detail-description {
-  display: none;
-}
 .status-menu-detail-row {
   align-items: center;
   box-sizing: border-box;
@@ -218,6 +222,52 @@
 }
 .status-menu-detail-description {
   display: none;
+}
+/* 조작 가능한 행 — 설명을 푸터로 넘겨 1줄로 압축한다. 리스트에 들어가는 항목 수가 2배가 된다. */
+.status-menu-detail-row-compact {
+  align-items: center;
+  min-height: var(--rm2k3-menu-row-height, 15px);
+  white-space: nowrap;
+}
+.status-menu-detail-row-compact .status-menu-detail-label,
+.status-menu-detail-row-compact .status-menu-detail-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* B안: 작업 영역이 넓어져 이름 + 효과 + 개수가 한 행에 들어간다.
+   설명은 이름과 값 사이에 오른쪽 정렬로 붙이고, 넘치면 말줄임(푸터가 전문을 보여준다). */
+.status-menu-detail-row-compact {
+  gap: 6px;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+}
+/* DOM 순서는 label → value → description 이라, 설명에 grid-column:2 만 주면 자동배치가
+   뒤로 못 가고 2행으로 밀린다(실측: 모든 행이 2줄). 세 칸 모두 1행으로 못 박는다. */
+.status-menu-detail-row-compact .status-menu-detail-label {
+  grid-column: 1;
+  grid-row: 1;
+}
+.status-menu-detail-row-compact .status-menu-detail-description {
+  color: #cfe2ff;
+  display: block;
+  grid-column: 2;
+  grid-row: 1;
+  /* justify-self:end 는 폭을 max-content 로 만들어 열을 넘고 왼쪽(라벨 위)으로 삐져나왔다.
+     stretch 로 두어 열 폭에 가두고, 정렬은 text-align 이 맡는다(실측: 이름과 설명이 겹침). */
+  justify-self: stretch;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.status-menu-detail-row-compact .status-menu-detail-value {
+  grid-column: 3;
+  grid-row: 1;
+}
+/* 설명이 없는 행(그룹 목록 등)은 2칸 그대로. */
+.status-menu-detail-row-compact:not(:has(.status-menu-detail-description)) {
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
 }
 .status-menu-detail-row.has-description {
   align-items: start;

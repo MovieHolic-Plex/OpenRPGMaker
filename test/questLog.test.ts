@@ -86,15 +86,22 @@ describe("questLog", () => {
     expect(entry.steps.every((step) => step.done)).toBe(true);
   });
 
-  it('메인 메뉴 명령 레일에 "임무" 버튼이 나타난다', () => {
+  it('메인 메뉴 레일의 "기록 ▸" 를 열면 "임무" 가 나온다', () => {
     installFakeDom();
     const session = startSession(project);
     const menu = renderWithFakeDom(() =>
       renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "items", mode: "main", actions: emptyActions() })
     );
-    const button = findByTestId(menu, "status-menu-command-quests");
-    expect(button).not.toBeNull();
-    expect(button?.textContent).toContain("임무");
+    // 사이드바 높이 때문에 기록/시스템/파티 그룹은 접혔다 — 레일에는 그룹 열기 항목만 있다.
+    expect(findByTestId(menu, "status-menu-command-quests")).toBeNull();
+    expect(findByTestId(menu, "status-menu-command-record-menu")?.textContent).toContain("기록");
+
+    const record = renderWithFakeDom(() =>
+      renderPlayerStatusMenu({ project, session, slots: [], selectedCommand: "record-menu", mode: "function", actions: emptyActions() })
+    );
+    const entry = findByTestId(record, "status-menu-group-command-quests");
+    expect(entry).not.toBeNull();
+    expect(entry?.textContent).toContain("임무");
   });
 
   it("임무 함수 화면이 퀘스트/단계 testid를 렌더한다", () => {

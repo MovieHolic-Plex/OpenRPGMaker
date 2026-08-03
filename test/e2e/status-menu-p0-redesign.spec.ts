@@ -21,29 +21,37 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
   await startPlayOnMap(page);
   await openStatusMenu(page);
 
-  // P0-2 — 그룹 라벨 4개가 실제로 렌더되고, 타이틀만 파괴적으로 표시된다.
-  for (const groupId of ["action", "party", "record", "system"]) {
-    await expect(page.getByTestId(`status-menu-command-group-${groupId}`)).toBeVisible();
+  // P0-2 / B안 — 펼친 그룹은 라벨이, 접힌 그룹은 열기 항목이 레일에 있다.
+  await expect(page.getByTestId("status-menu-command-group-action")).toBeVisible();
+  for (const entryId of ["party-menu", "record-menu", "system-menu"]) {
+    await expect(page.getByTestId(`status-menu-command-${entryId}`)).toBeVisible();
   }
-  await expect(page.getByTestId("status-menu-command-to-title")).toHaveClass(/destructive/);
   await expect(page.getByTestId("status-menu-command-items")).not.toHaveClass(/destructive/);
   // 그룹 라벨을 넣으면서 레일 높이를 넘겨 저장/로드/대기/타이틀이 화면 밖으로 밀린 적이 있다.
   // toBeVisible 은 overflow:hidden 으로 잘린 자식도 통과시키므로 레일 안에 실제로 들어왔는지 본다.
   expect(await commandsOutsideRail(page)).toEqual([]);
 
-  // P0-1 — 파티 4명 전원에게 HP/MP 게이지가 있고, 채워진 폭이 0 이 아니다.
+  // P0-1 — 파티 4명 전원에게 HP 게이지가 있고, 채워진 폭이 0 이 아니다.
+  // B안 사이드바는 1줄/1명이라 MP 게이지와 정확한 수치는 "상태" 화면이 맡는다.
+  // 화면에서 빠지는 값이므로 접근성 라벨에는 남아 있어야 한다.
   for (let index = 0; index < 4; index += 1) {
-    const hp = page.getByTestId(`status-menu-hp-gauge-${index}`);
-    await expect(hp).toBeVisible();
+    await expect(page.getByTestId(`status-menu-hp-gauge-${index}`)).toBeVisible();
     expect(await filledGaugeWidth(page, `status-menu-hp-gauge-${index}`)).toBeGreaterThan(0);
-    await expect(page.getByTestId(`status-menu-mp-gauge-${index}`)).toBeVisible();
+    await expect(page.getByTestId(`status-menu-party-row-${index}`)).toHaveAttribute("aria-label", /HP \d+\/\d+ MP \d+\/\d+/);
   }
+  // 레일과 같은 사고가 파티에서도 났다 — 얼굴 크기 때문에 4명 중 뒤 2명이 통째로 잘렸다.
+  expect(await clippedOutOf(page, "status-menu-party", ".status-menu-party-row")).toEqual([]);
+  // 좁은 열에서 설명이 이름 위로 삐져나와 글자가 겹친 적이 있다.
+  expect(await overlappingCompactCells(page)).toEqual([]);
 
   // P0-4 — 아이템 목록의 모든 행이 1줄로 압축돼 잘리지 않는다.
   await selectCommand(page, "items", "아이템");
   expect(await clippedMenuText(page)).toEqual([]);
   const compactRows = page.locator(".status-menu-detail-action.status-menu-detail-row-compact");
   expect(await compactRows.count()).toBeGreaterThan(0);
+  // B안의 요점 — 넓어진 작업 영역에서 이름 + 효과 + 개수가 **한 줄**에 들어간다.
+  // 설명이 둘째 줄로 내려가면 행 높이가 두 배가 되고 목록에 들어가는 항목 수가 반으로 준다.
+  expect(await multiLineCompactRows(page)).toEqual([]);
   await screenshotMenu(page, `${EVIDENCE_DIR}/items-grouped-rail-and-gauges.png`);
 
   // P0-3 — 상세 패널로 들어가면 레일이 감광되고, 활성 커서는 상세 쪽에만 남는다.
@@ -54,6 +62,16 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
   await selectCommand(page, "equipment", "장비");
   expect(await clippedMenuText(page)).toEqual([]);
   await screenshotMenu(page, `${EVIDENCE_DIR}/equipment-grouped-rail-and-gauges.png`);
+
+  // B안 — 접힌 시스템 그룹이 작업 영역에 펼쳐지고, 타이틀은 거기서 파괴적으로 표시된다.
+  await page.getByTestId("status-menu-command-system-menu").click();
+  await expect(page.getByTestId("status-menu-detail-title")).toHaveText("시스템");
+  for (const commandId of ["save", "load", "wait", "to-title"]) {
+    await expect(page.getByTestId(`status-menu-group-command-${commandId}`)).toBeVisible();
+  }
+  expect(await clippedMenuText(page)).toEqual([]);
+  expect(await commandsOutsideRail(page)).toEqual([]);
+  await screenshotMenu(page, `${EVIDENCE_DIR}/system-group-expanded.png`);
 });
 
 /** startActualPlay 와 달리 runtime-state-json 을 기다리지 않는다 — 이 스펙은 상태 덤프가
@@ -84,6 +102,43 @@ async function openStatusMenu(page: Page): Promise<void> {
   await expect(rail).toBeVisible({ timeout: 5000 });
 }
 
+/** 컨테이너의 보이는 영역을 벗어난 자식들. */
+async function clippedOutOf(page: Page, containerTestId: string, childSelector: string): Promise<readonly string[]> {
+  return page.evaluate(({ containerTestId: id, childSelector: sel }) => {
+    const box = document.querySelector<HTMLElement>(`[data-testid='${id}']`);
+    if (!box) return [`missing ${id}`];
+    const boxRect = box.getBoundingClientRect();
+    return Array.from(box.querySelectorAll<HTMLElement>(sel))
+      .filter((node) => {
+        const rect = node.getBoundingClientRect();
+        return rect.bottom > boxRect.bottom + 1 || rect.top < boxRect.top - 1 || rect.height <= 0;
+      })
+      .map((node) => node.getAttribute("aria-label") ?? node.textContent?.trim() ?? node.className);
+  }, { containerTestId, childSelector });
+}
+
+/** 한 행 안에서 이름/설명/개수 칸이 서로 겹친 경우 — 좁은 열에서 글자가 포개져 읽을 수 없다. */
+async function overlappingCompactCells(page: Page): Promise<readonly string[]> {
+  return page.evaluate(() => {
+    const overlaps: string[] = [];
+    for (const row of Array.from(document.querySelectorAll<HTMLElement>(".status-menu-detail-row-compact"))) {
+      const cells = Array.from(row.querySelectorAll<HTMLElement>(
+        ".status-menu-detail-label, .status-menu-detail-description, .status-menu-detail-value"
+      )).map((cell) => ({ cell, rect: cell.getBoundingClientRect() }));
+      for (let i = 0; i < cells.length; i += 1) {
+        for (let j = i + 1; j < cells.length; j += 1) {
+          const a = cells[i]!.rect;
+          const b = cells[j]!.rect;
+          if (a.right > b.left + 1 && b.right > a.left + 1) {
+            overlaps.push(row.textContent?.trim() ?? row.className);
+          }
+        }
+      }
+    }
+    return Array.from(new Set(overlaps));
+  });
+}
+
 /** 레일의 보이는 영역을 벗어난 명령들. 잘려 나간 항목은 조작 자체가 불가능하다. */
 async function commandsOutsideRail(page: Page): Promise<readonly string[]> {
   return page.evaluate(() => {
@@ -96,6 +151,20 @@ async function commandsOutsideRail(page: Page): Promise<readonly string[]> {
         return rect.bottom > railRect.bottom + 1 || rect.top < railRect.top - 1 || rect.height <= 0;
       })
       .map((node) => node.textContent?.trim() ?? node.className);
+  });
+}
+
+/** 한 줄을 넘긴 압축 행 — 설명이 아래로 접혔다는 뜻이다. */
+async function multiLineCompactRows(page: Page): Promise<readonly string[]> {
+  return page.evaluate(() => {
+    // getBoundingClientRect 는 스테이지 스케일이 곱해진 값이고 lineHeight 는 CSS px 다.
+    // 둘을 섞으면 항상 "2줄" 로 오판한다 — clientHeight(비스케일)로 비교한다.
+    return Array.from(document.querySelectorAll<HTMLElement>(".status-menu-detail-row-compact"))
+      .filter((row) => {
+        const lineHeight = Number.parseFloat(getComputedStyle(row).lineHeight) || 12;
+        return row.clientHeight > lineHeight * 1.8;
+      })
+      .map((row) => row.textContent?.trim() ?? row.className);
   });
 }
 
@@ -117,7 +186,9 @@ async function panelOpacity(page: Page, testId: string): Promise<number> {
   }, testId);
 }
 
-/** 텍스트를 직접 담은 리프 요소 중 자기 박스를 넘긴 것 — 스크롤 컨테이너의 의도된 overflow 는 제외. */
+/** 표시 없이 잘린 텍스트만 결함으로 본다.
+    스크롤 컨테이너와 말줄임(text-overflow: ellipsis)은 "더 있다"는 신호가 있으므로 제외한다 —
+    말줄임된 아이템 효과의 전문은 푸터가 보여준다. 신호 없이 글자가 잘리는 것만 잡는다. */
 async function clippedMenuText(page: Page): Promise<readonly string[]> {
   return page.evaluate(() => {
     const menu = document.querySelector<HTMLElement>("[data-testid='main-menu']");
@@ -126,6 +197,7 @@ async function clippedMenuText(page: Page): Promise<readonly string[]> {
     return Array.from(menu.querySelectorAll<HTMLElement>("*"))
       .filter((node) => !scrollers.has(node))
       .filter((node) => node.childElementCount === 0 && node.offsetParent !== null && node.textContent?.trim())
+      .filter((node) => getComputedStyle(node).textOverflow !== "ellipsis")
       .filter((node) => node.scrollWidth > node.clientWidth + 1 || node.scrollHeight > node.clientHeight + 1)
       .map((node) => `${node.className}: ${node.textContent?.trim() ?? ""}`);
   });

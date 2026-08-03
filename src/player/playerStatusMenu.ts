@@ -3,10 +3,13 @@ import type { Project } from "@/project/types";
 import {
   createPlayerStatusMenuSnapshot,
   statusMenuCommandGroupLabel,
+  statusMenuRailIdForCommand,
+  type StatusMenuCommandId,
+  type StatusMenuGroupEntryId,
+  type StatusMenuRailId,
   type PlayerStatusMenuPartyRow,
   type PlayerStatusMenuSnapshot,
   type StatusMenuCommand,
-  type StatusMenuCommandId,
 } from "@/player/playerStatusMenuModel";
 import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
@@ -71,14 +74,20 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onMoveFormationActor: options.actions.onMoveFormationActor,
     onToggleMonsterView: options.actions.onToggleMonsterView,
     onMoveMonster: options.actions.onMoveMonster,
+    onCommand: options.actions.onCommand,
   });
   panel.append(
-    renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
-    renderStatusMenuBody({
-      project: options.project,
-      snapshot,
-      detail,
-      selectedDetailActionIndex: options.selectedDetailActionIndex,
+    // B안 2열: 좌측 한 창에 레일 + 파티, 우측 전체가 작업 영역.
+    el("div", {
+      class: "status-menu-sidebar",
+      dataset: { testid: "status-menu-sidebar" },
+      children: [
+        renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
+        renderPartyPanel(options.project, snapshot),
+      ],
+    }),
+    renderStatusMenuDetailPanel(options.project, detail, {
+      selectedActionIndex: options.selectedDetailActionIndex,
     }),
     // 명시 메시지가 없으면 커서가 올라간 항목의 설명을 푸터에 띄운다(리스트 행은 1줄로 압축됨).
     renderFooter(snapshot, options.message ?? selectedEntryDescription(detail, options.selectedDetailActionIndex))
@@ -89,7 +98,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
 
 type CommandRailRenderOptions = {
   readonly snapshot: PlayerStatusMenuSnapshot;
-  readonly selectedCommand: StatusMenuCommandId;
+  readonly selectedCommand: StatusMenuRailId;
   readonly actions: PlayerStatusMenuActions;
 };
 
@@ -118,14 +127,19 @@ function renderCommandRail(options: CommandRailRenderOptions): HTMLElement {
       on: { click: () => runCommand(command, options.actions) },
     });
     if (command.destructive) button.classList.add("destructive");
-    if (command.id === options.selectedCommand) button.classList.add("selected");
+    if (command.id === statusMenuRailIdForCommand(options.selectedCommand)) button.classList.add("selected");
     rail.append(button);
   }
   return rail;
 }
 
 function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions): void {
-  switch (command.id) {
+  // 접힌 그룹 열기 — 기능 실행이 아니라 작업 영역에 그 그룹의 명령 목록을 띄운다.
+  if (command.opensGroup) {
+    actions.onOpenGroup(command.id as StatusMenuGroupEntryId);
+    return;
+  }
+  switch (command.id as StatusMenuCommandId) {
     case "wait":
       actions.onToggleWait();
       return;
@@ -143,27 +157,11 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "formation":
     case "quests":
     case "relationships":
-      actions.onCommand(command.id);
+      actions.onCommand(command.id as StatusMenuCommandId);
       return;
     default:
-      assertNever(command.id);
+      assertNever(command.id as never);
   }
-}
-
-function renderStatusMenuBody(options: {
-  readonly project: Project;
-  readonly snapshot: PlayerStatusMenuSnapshot;
-  readonly detail: StatusMenuDetail;
-  readonly selectedDetailActionIndex?: number;
-}): HTMLElement {
-  return el("div", {
-    class: "status-menu-body",
-    children: [
-      renderPartyPanel(options.project, options.snapshot),
-      renderStatusMenuDetailPanel(options.project, options.detail, { selectedActionIndex: options.selectedDetailActionIndex }),
-    ],
-    dataset: { testid: "status-menu-body" },
-  });
 }
 
 function renderPartyPanel(project: Project, snapshot: PlayerStatusMenuSnapshot): HTMLElement {
@@ -196,6 +194,11 @@ function renderPartyRow(project: Project, row: PlayerStatusMenuPartyRow, index: 
   // 9px 글리프 박스(11px)를 담지 못해 이름/레벨/HP/MP 가 상시 2px 잘려 있었다(baseline 실측).
   // 합치면서 condition 은 빠졌다. 지금 값은 하드코딩 "정상" 이라 4번 반복돼도 정보량이 0 이고,
   // 실제 상태 이상이 붙으면 그때 상태 화면이 맡는 편이 맞다.
+  // B안 사이드바는 112px 폭 안에 레일과 파티를 함께 담는다. 2줄/1명은 세로가 넘쳤고
+  // (실측: HP/MP 줄이 통째로 잘림), 숫자와 게이지를 나란히 놓으면 가로가 넘쳤다.
+  // 그래서 1줄/1명 — 이름 + 레벨을 쓰고 HP 게이지를 그 줄의 배경으로 깐다.
+  // 정확한 HP/MP 수치와 MP 게이지는 "상태" 화면이 맡는다. 화면에서 사라지는 값이므로
+  // 스크린리더에는 aria-label 로 그대로 남긴다.
   info.append(
     el("div", {
       class: "status-menu-party-headline",
@@ -204,23 +207,13 @@ function renderPartyRow(project: Project, row: PlayerStatusMenuPartyRow, index: 
         el("span", { class: "status-menu-actor-subline", text: row.levelLabel }),
       ],
     }),
-    renderVitalLine(row.hpLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-hp-gauge-${index}`),
-    renderVitalLine(row.mpLabel, row.mpRatio, "mp", `status-menu-mp-gauge-${index}`)
+    renderVitalGauge(row.hpRatio, `hp ${row.hpLevel}`, `status-menu-hp-gauge-${index}`)
   );
   return el("article", {
     class: "status-menu-party-row",
     children: [renderFace(project, row, index), info],
+    attrs: { "aria-label": `${row.name} ${row.levelLabel} ${row.hpLabel} ${row.mpLabel}` },
     dataset: { testid: `status-menu-party-row-${index}` },
-  });
-}
-
-function renderVitalLine(label: string, ratio: number, variant: string, testId: string): HTMLElement {
-  return el("div", {
-    class: "status-menu-vital-line",
-    children: [
-      el("span", { class: "status-menu-actor-vitals", text: label }),
-      renderVitalGauge(ratio, variant, testId),
-    ],
   });
 }
 
@@ -311,7 +304,7 @@ function renderFooter(
   return footer;
 }
 
-function statusMenuDebug(selectedCommand: StatusMenuCommandId, mode: "function" | "main"): HTMLElement {
+function statusMenuDebug(selectedCommand: StatusMenuRailId, mode: "function" | "main"): HTMLElement {
   return el("script", {
     text: JSON.stringify({ selectedCommand, mode }),
     attrs: { type: "application/json" },

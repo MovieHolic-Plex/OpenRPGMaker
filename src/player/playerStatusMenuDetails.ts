@@ -15,6 +15,14 @@ import type { StatusMenuDetail, StatusMenuDetailOptions } from "@/player/playerS
 import { buildQuestLog, questStateLabel } from "@/player/questLog";
 import { MONSTER_PARTY_MAX, monsterCurrentHp, monsterDisplayName, monsterMaxHp } from "@/project/monsterCollection";
 import { listFriendshipEntries } from "@/project/friendship";
+import {
+  isStatusMenuGroupEntryId,
+  listStatusMenuGroupCommandIds,
+  statusMenuCommandLabel,
+  statusMenuGroupEntryLabel,
+  type StatusMenuCommandId,
+  type StatusMenuGroupEntryId,
+} from "@/player/playerStatusMenuModel";
 
 export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
 
@@ -34,6 +42,8 @@ const STAT_LABELS = [
 ] as const satisfies readonly (readonly [keyof EquipmentStatBonuses, string])[];
 
 export function createStatusMenuDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  // 접힌 그룹(기록/시스템)은 레일에 항목 하나만 남기고 실제 명령은 여기 작업 영역에서 고른다.
+  if (isStatusMenuGroupEntryId(options.selectedCommand)) return groupDetail(options, options.selectedCommand);
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
     case "skills": return skillDetail(options);
@@ -51,6 +61,31 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     default: return assertNever(options.selectedCommand);
   }
 }
+
+function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupEntryId): StatusMenuDetail {
+  const commandIds = listStatusMenuGroupCommandIds(entryId, options.project, options.session);
+  const entries = commandIds.map((commandId) => ({
+    label: statusMenuCommandLabel(commandId, options.waitModeEnabled),
+    value: "",
+    description: GROUP_COMMAND_DESCRIPTIONS[commandId],
+    testId: `status-menu-group-command-${commandId}`,
+    onActivate: options.onCommand ? () => options.onCommand?.(commandId) : undefined,
+  }));
+  return {
+    title: statusMenuGroupEntryLabel(entryId).replace(" ▸", ""),
+    entries,
+    emptyLabel: "항목이 없습니다",
+  };
+}
+
+const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> = {
+  quests: "받은 의뢰와 진행 상황을 봅니다.",
+  relationships: "동료·주민과의 관계를 봅니다.",
+  save: "현재 진행을 슬롯에 저장합니다.",
+  load: "저장한 진행을 불러옵니다.",
+  wait: "전투 중 명령 입력 시 시간을 멈출지 정합니다.",
+  "to-title": "타이틀 화면으로 돌아갑니다. 저장하지 않은 진행은 사라집니다.",
+};
 
 function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { project, session } = options;

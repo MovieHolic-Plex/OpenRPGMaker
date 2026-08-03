@@ -1,10 +1,12 @@
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, Project } from "@/project/types";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
-import type { StatusMenuCommandId } from "@/player/playerStatusMenuModel";
+import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 
 export type PlayerStatusMenuActions = {
   readonly onCommand: (commandId: StatusMenuCommandId) => void;
+  /** 접힌 그룹(기록/시스템)을 작업 영역에 펼친다. */
+  readonly onOpenGroup: (entryId: StatusMenuGroupEntryId) => void;
   readonly onSaveSlot: (slot: SaveSlotIndex) => void;
   readonly onLoadSlot: (slot: SaveSlotIndex) => void;
   readonly onSelectItemTarget: (itemId: string) => void;
@@ -30,7 +32,7 @@ export type PlayerStatusMenuOptions = {
   readonly slots: readonly SaveSlotReadResult[];
   readonly message?: string;
   readonly elapsedMs?: number;
-  readonly selectedCommand?: StatusMenuCommandId;
+  readonly selectedCommand?: StatusMenuRailId;
   readonly mode?: "main" | "function";
   readonly selectedDetailActionIndex?: number;
   readonly targetItemId?: string;
