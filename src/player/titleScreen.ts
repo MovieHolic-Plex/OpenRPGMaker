@@ -3,6 +3,7 @@ import { applySystemGraphic, applyTitleScreenBackground } from "@/player/systemG
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
+import { TITLE_KEY_PROMPT } from "@/player/keyBindings";
 
 const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
@@ -236,7 +237,7 @@ function titleOption(
 function renderInputHint(): HTMLElement {
   return el("div", {
     class: "rm-title-input-hint",
-    text: "↑↓ 이동   Z/Enter·클릭 결정   X/Esc 취소",
+    text: TITLE_KEY_PROMPT,
     dataset: { testid: "title-input-hint" },
   });
 }

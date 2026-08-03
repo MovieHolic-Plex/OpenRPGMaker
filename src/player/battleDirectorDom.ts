@@ -6,6 +6,7 @@ import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
+import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -357,7 +358,7 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     const prompt = document.createElement("div");
     prompt.className = "battle-result-next-prompt";
     // 게임 플레이 런타임은 키보드 전용(감독 결정) — "클릭" 안내는 없는 조작을 가리킨다.
-    prompt.textContent = "Z / Enter 로 계속";
+    prompt.textContent = CONTINUE_KEY_PROMPT;
     panel.append(prompt);
   }
 }

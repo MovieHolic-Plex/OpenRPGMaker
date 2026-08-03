@@ -16,6 +16,7 @@ import {
   type DialogueTextSegment,
 } from "@/player/dialoguePagination";
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
+import { isCancelKey, isConfirmKey, normalizeKey } from "@/player/keyBindings";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/player/types";
 import { el, clearChildren } from "@/util/dom";
@@ -357,7 +358,8 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
           finish(n - 1);
           return;
         }
-        if (normalizedDialogueKey(e.key) === "escape") {
+        // 취소는 X/Esc 둘 다. 선택지에서 X 만 죽어 있던 결함(적대 리뷰 5).
+        if (isCancelKey(e.key)) {
           const cancelIndex = cancelChoiceIndex(request.cancelBehavior, request.options.length);
           if (cancelIndex !== null) {
             e.preventDefault();
@@ -365,17 +367,19 @@ export function createDialogueUI(host: HTMLElement): DialogueUI {
           }
           return;
         }
-        if (normalizedDialogueKey(e.key) === "arrowup") {
+        if (normalizeKey(e.key) === "arrowup") {
           e.preventDefault();
           setSelected((selectedIndex + request.options.length - 1) % request.options.length);
           return;
         }
-        if (normalizedDialogueKey(e.key) === "arrowdown") {
+        if (normalizeKey(e.key) === "arrowdown") {
           e.preventDefault();
           setSelected((selectedIndex + 1) % request.options.length);
           return;
         }
-        if (normalizedDialogueKey(e.key) === "enter" || normalizedDialogueKey(e.key) === " ") {
+        // 결정은 Z/Enter/Space/E. Enter·Space 만 받아서 대사를 Z 로 넘기다가
+        // 선택지가 뜨는 순간 Z 가 죽던 결함(적대 리뷰 1).
+        if (isConfirmKey(e.key)) {
           e.preventDefault();
           finish(selectedIndex);
         }
@@ -617,13 +621,11 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
   });
 }
 
+// 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
+// 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
+// RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
 export function isDialogueAdvanceKey(key: string): boolean {
-  const normalized = normalizedDialogueKey(key);
-  return normalized === "enter" || normalized === " " || normalized === "space" || normalized === "escape" || normalized === "e" || normalized === "z";
-}
-
-function normalizedDialogueKey(key: string): string {
-  return key.length === 1 ? key.toLowerCase() : key.toLowerCase();
+  return isConfirmKey(key);
 }
 
 function applyTextSettings(

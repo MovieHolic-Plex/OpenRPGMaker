@@ -14,11 +14,14 @@ describe("dialogue keyboard controls", () => {
     expect(isDialogueAdvanceKey("ENTER")).toBe(true);
     expect(isDialogueAdvanceKey(" ")).toBe(true);
     expect(isDialogueAdvanceKey("Space")).toBe(true);
-    expect(isDialogueAdvanceKey("Escape")).toBe(true);
     expect(isDialogueAdvanceKey("E")).toBe(true);
     expect(isDialogueAdvanceKey("z")).toBe(true);
     expect(isDialogueAdvanceKey("Z")).toBe(true);
     expect(isDialogueAdvanceKey("ArrowDown")).toBe(false);
+    // 취소 키는 대사를 진행시키지 않는다 — Esc 만 "진행"으로 새던 결함의 회귀 방지.
+    expect(isDialogueAdvanceKey("Escape")).toBe(false);
+    expect(isDialogueAdvanceKey("x")).toBe(false);
+    expect(isDialogueAdvanceKey("X")).toBe(false);
   });
 });
 

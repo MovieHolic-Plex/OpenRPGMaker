@@ -1,3 +1,4 @@
+import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { STATUS_MENU_COMMAND_IDS, type StatusMenuCommandId } from "@/player/playerStatusMenuModel";
 
 export const TITLE_MENU_ITEM_COUNT = 3;
@@ -7,6 +8,10 @@ export type RuntimeMenuKey =
   | "ArrowRight"
   | "ArrowDown"
   | "ArrowUp"
+  | "w"
+  | "a"
+  | "s"
+  | "d"
   | "Enter"
   | " "
   | "z"
@@ -48,26 +53,23 @@ export function reduceStatusMenuKeyboard(
   state: StatusMenuKeyboardState,
   key: RuntimeMenuKey
 ): StatusMenuKeyboardResult {
-  if (key === "ArrowDown" || key === "ArrowUp") {
+  const dir = directionForKey(key);
+  if (dir === "down" || dir === "up") {
     return {
-      selectedCommand: nextStatusCommand(state.selectedCommand, key === "ArrowDown" ? 1 : -1, state.commandIds),
+      selectedCommand: nextStatusCommand(state.selectedCommand, dir === "down" ? 1 : -1, state.commandIds),
       mode: state.mode,
       action: "select",
     };
   }
-  if (key === "Enter" || key === " " || key === "e" || key === "z") {
+  // 판정은 정본(keyBindings)에 위임 — 대문자 Z/X 가 여기서만 죽던 결함(적대 리뷰 6).
+  if (isConfirmKey(key)) {
     return {
       selectedCommand: state.selectedCommand,
       mode: state.mode === "main" ? "function" : state.mode,
       action: state.mode === "main" ? "enter-function" : "activate",
     };
   }
-  if (key === "Escape") {
-    return state.mode === "function"
-      ? { selectedCommand: state.selectedCommand, mode: "main", action: "back-to-main" }
-      : { selectedCommand: state.selectedCommand, mode: "main", action: "close" };
-  }
-  if (key === "x") {
+  if (isCancelKey(key)) {
     return state.mode === "function"
       ? { selectedCommand: state.selectedCommand, mode: "main", action: "back-to-main" }
       : { selectedCommand: state.selectedCommand, mode: "main", action: "close" };
@@ -90,34 +92,15 @@ function wrapIndex(index: number, length: number): number {
   return ((index % length) + length) % length;
 }
 
-// ── 공용 커서 메뉴용 순수 계층 (RM2003 키 관례 통일) ──
-// 결정(confirm): Z / Enter / Space (+ 레거시 e). 취소(cancel): X / Esc.
-export const CONFIRM_KEYS: ReadonlySet<string> = new Set(["z", "Z", "Enter", " ", "e"]);
-export const CANCEL_KEYS: ReadonlySet<string> = new Set(["x", "X", "Escape"]);
-
-export function isConfirmKey(key: string): boolean {
-  return CONFIRM_KEYS.has(key);
-}
-
-export function isCancelKey(key: string): boolean {
-  return CANCEL_KEYS.has(key);
-}
+// ── 공용 커서 메뉴용 순수 계층 ──
+// 키 계약은 keyBindings 정본이 소유한다. 여기서는 재수출만 한다(기존 import 경로 호환).
+export { CANCEL_KEYS, CONFIRM_KEYS, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 
 export type CursorDirection = "up" | "down" | "left" | "right";
 
+// 방향키 + WASD. 필드는 WASD 로 걷는데 메뉴에서는 방향키만 먹던 비대칭을 없앤다.
 export function navDirection(key: string): CursorDirection | null {
-  switch (key) {
-    case "ArrowUp":
-      return "up";
-    case "ArrowDown":
-      return "down";
-    case "ArrowLeft":
-      return "left";
-    case "ArrowRight":
-      return "right";
-    default:
-      return null;
-  }
+  return directionForKey(key);
 }
 
 // 커서 이동 인덱스 계산. columns<=1 이면 1D 리스트(up/left=-1, down/right=+1, 관용적).

@@ -20,10 +20,16 @@ import { createTouchPad, type TouchPadHandle } from "@/player/touchPad";
 import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import {
-  isConfirmKey,
   moveTitleSelection,
   type RuntimeMenuKey,
 } from "@/player/runtimeKeyboardMenu";
+import {
+  directionForKey,
+  isCancelKey,
+  isConfirmKey,
+  isMenuKey,
+  isRuntimeMenuKey as isRuntimeMenuKeyBinding,
+} from "@/player/keyBindings";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import {
@@ -346,8 +352,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const options = listTitleMenuOptions(settings);
     const visibleCount = options.length;
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, visibleCount);
-    if (key === "ArrowDown" || key === "ArrowUp") {
-      titleMenuIndex = moveTitleSelection(titleMenuIndex, key, visibleCount);
+    const titleDir = directionForKey(key);
+    if (titleDir === "down" || titleDir === "up") {
+      titleMenuIndex = moveTitleSelection(titleMenuIndex, titleDir === "down" ? "ArrowDown" : "ArrowUp", visibleCount);
       renderTitle({ emitEnterJuice: false });
       emitTitleJuice("title-select");
       return true;
@@ -387,14 +394,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (!isRuntimeMenuKey(key)) return;
     if (isDialogueSurfaceActive() || isModalOverlayActive()) return;
     if (activeScene() && isCutsceneInputLocked(activeScene()!.session)) {
-      if (key === "x" || key === "Escape") event.preventDefault();
+      if (isCancelKey(key)) event.preventDefault();
       return;
     }
     if (handleTitleKey(key) || statusMenu.handleKey(key)) {
       event.preventDefault();
       return;
     }
-    if (key === "x" || key === "Escape") {
+    if (isMenuKey(key)) {
       event.preventDefault();
       statusMenu.toggleMenu();
     }
@@ -502,16 +509,7 @@ export function teardownPlayer(): void {
 }
 
 function isRuntimeMenuKey(key: string): key is RuntimeMenuKey {
-  return key === "ArrowLeft" ||
-    key === "ArrowRight" ||
-    key === "ArrowDown" ||
-    key === "ArrowUp" ||
-    key === "Enter" ||
-    key === " " ||
-    key === "z" ||
-    key === "e" ||
-    key === "x" ||
-    key === "Escape";
+  return isRuntimeMenuKeyBinding(key);
 }
 
 async function waitForPlaySceneReady(
