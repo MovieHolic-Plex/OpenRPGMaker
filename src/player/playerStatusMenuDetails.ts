@@ -1,6 +1,8 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/player/playerEquipmentRules";
 import { resolveActorName } from "@/project/sessionActorCommands";
+import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
+import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { PlaySession } from "@/project/session";
 import type {
@@ -24,7 +26,7 @@ import {
   type StatusMenuGroupEntryId,
 } from "@/player/playerStatusMenuModel";
 
-export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions } from "@/player/playerStatusMenuDetailTypes";
+export type { StatusMenuDetail, StatusMenuDetailEntry, StatusMenuDetailOptions, StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";
 
 const EQUIPMENT_SLOTS = [
   { id: "weapon", label: "무기" },
@@ -204,6 +206,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         label: "해제",
         value: equipmentName(equipmentById, currentEquipmentId),
         description: `현재 장비를 벗습니다 / ${statDiffLine(zeroStats(), currentStats)}`,
+        statDelta: equipmentStatDelta(options, actor, options.equipmentSlotId as keyof ActorInitialEquipment, undefined),
         testId: "status-menu-equipment-item-none",
         onActivate: options.onUnequipItem ? () => options.onUnequipItem?.(actor.id, options.equipmentSlotId as keyof ActorInitialEquipment) : undefined,
       }]
@@ -216,6 +219,7 @@ function equipmentDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         label: equipment.name,
         value: `소지 ${session.inventory[equipment.id] ?? 0}개`,
         description: equipmentDetailLine(equipment, currentStats),
+        statDelta: equipmentStatDelta(options, actor, options.equipmentSlotId as keyof ActorInitialEquipment, equipment.id),
         testId: `status-menu-equipment-item-${equipment.id}`,
         onActivate: options.onEquipItem ? () => options.onEquipItem?.(actor.id, options.equipmentSlotId as keyof ActorInitialEquipment, equipment.id) : undefined,
       })),
@@ -526,6 +530,39 @@ function skillKindLabel(skill: SkillRecord): string {
 
 function statDiffLine(next: EquipmentStatBonuses, current: EquipmentStatBonuses): string {
   return STAT_LABELS.map(([key, label]) => `${label} ${signed(next[key] - current[key])}`).join(" / ");
+}
+
+/** 기본 능력치(레벨 곡선) + 전 부위 장비 보너스 합계. 한 부위만 후보로 갈아끼워 비교한다.
+    장비 보너스 증감만 보여주면 "방어 +7" 이 큰 건지 작은 건지 판단할 기준이 없다. */
+function actorStatTotal(
+  options: StatusMenuDetailOptions,
+  actor: ActorRecord,
+  statKey: keyof EquipmentStatBonuses,
+  slotId: keyof ActorInitialEquipment,
+  candidateId: string | undefined
+): number {
+  const { project, session } = options;
+  const level = session.actorLevels[actor.id] ?? actor.initialLevel;
+  const curves = normalizeActorRecord(actor).parameterCurves;
+  const worn: ActorInitialEquipment = { ...actorEquipment(project, session, actor), [slotId]: candidateId };
+  return EQUIPMENT_SLOTS.reduce(
+    (total, slot) => total + equipmentStats(project, worn[slot.id])[statKey],
+    parameterValueAtLevel(curves[statKey], level)
+  );
+}
+
+function equipmentStatDelta(
+  options: StatusMenuDetailOptions,
+  actor: ActorRecord,
+  slotId: keyof ActorInitialEquipment,
+  candidateId: string | undefined
+): readonly StatusMenuStatDelta[] {
+  const currentId = actorEquipment(options.project, options.session, actor)[slotId];
+  return STAT_LABELS.map(([key, label]) => ({
+    label,
+    current: actorStatTotal(options, actor, key, slotId, currentId),
+    next: actorStatTotal(options, actor, key, slotId, candidateId),
+  }));
 }
 
 function equipmentDetailLine(equipment: EquipmentRecord, currentStats: EquipmentStatBonuses): string {

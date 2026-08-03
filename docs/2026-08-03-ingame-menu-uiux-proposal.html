@@ -139,7 +139,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-s
 <nav><div class="wrap">
   <a href="#verdict">총평</a><a href="#now">현재 화면</a><a href="#failures">결함 12</a>
   <a href="#mockups">목업 3종</a><a href="#focus">포커스 모델</a><a href="#skins">메뉴 스킨</a>
-  <a href="#tech">기술 부채</a><a href="#shipped">구현 결과 A</a><a href="#shipped-b">구현 결과 B</a><a href="#priority">실행 순서</a>
+  <a href="#tech">기술 부채</a><a href="#shipped">구현 결과 A</a><a href="#shipped-b">구현 결과 B</a><a href="#shipped-c">구현 결과 C</a><a href="#priority">실행 순서</a>
 </div></nav>
 
 <main class="wrap">
@@ -601,6 +601,38 @@ footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-s
   <div class="card" style="margin-top:18px"><h3>구현하며 배운 것 — 목업은 세로 예산을 모른다</h3>
     <p>목업 3종은 전부 4:3 비율을 지켰지만 <b>실제 폰트 메트릭과 최소 행 높이</b>는 담지 못했다. B안에서 바뀐 결정(파티 그룹까지 접기, 파티 1줄화, 얼굴 16px)은 모두 목업이 아니라 실측이 정했다.</p>
     <p>검사 자체가 틀린 적도 있다. 압축 행이 두 줄인지 보려고 <code>getBoundingClientRect()</code>(스테이지 스케일이 곱해진 값)와 <code>lineHeight</code>(CSS px)를 비교해 <b>항상 실패</b>했다. 실제로는 CSS가 이미 옳았다 — 측정 단위를 섞은 쪽이 틀렸다.</p>
+  </div>
+</section>
+
+<section id="shipped-c">
+  <div class="section-kicker">Shipped · C</div>
+  <h2>장비 스탯 델타 + 파티 수치 복구 — 구현 완료</h2>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-c-equipment-delta.png" alt="장비 스탯 델타">
+      <div class="caption"><b>장비 후보</b> — 커서를 올린 후보 기준으로 좌측 "변화" 블록이 갱신된다. <code>공격 53 → 65 (+12)</code> 초록, 하락은 빨강, <b>변하지 않는 값은 화살표를 그리지 않는다</b></div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-b-items.png" alt="파티 2×2 격자">
+      <div class="caption"><b>파티 2×2</b> — MP 게이지와 HP/MP 수치를 되살렸다. 셀 폭 52px 라 접두사 없이 수치만, 어느 쪽인지는 게이지 색이 알려준다</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <div class="card good"><h3>델타는 절대 총합 기준</h3>
+      <p>장비 보너스 증감만 보여주면 <code>방어 +7</code>이 큰 건지 작은 건지 판단할 기준이 없다.</p>
+      <p>그래서 <b>기본 능력치(레벨 곡선) + 전 부위 장비 보너스</b>를 합산하고, 해당 부위만 후보로 갈아끼워 비교한다.</p>
+      <p>후보를 고르는 동안에는 파티 대신 "변화"가 뜬다. 그 순간 알고 싶은 건 파티 HP가 아니다.</p>
+    </div>
+    <div class="card good"><h3>파티 수치 복구</h3>
+      <p>1열 × 4명으로 HP/MP 두 줄을 넣으면 명당 34px = 136px 라 사이드바(100px)를 넘겨 뒤 2명이 잘렸다.</p>
+      <p><b>2×2 격자</b>로 두면 2행 × 34px = 69px 로 들어간다. 대신 셀 폭이 52px 라 얼굴을 뺐다.</p>
+      <p><code>HP 514/514</code>는 가로로 넘쳐 접두사를 뺐다. 전체 문자열은 <code>aria-label</code>이 담는다.</p>
+    </div>
+    <div class="card"><h3>검증</h3>
+      <p>· <code>tsc --noEmit -p tsconfig.app.json</code> 통과</p>
+      <p>· 전체 유닛 스위트 main 대비 <b>105 = 105, 증가한 실패 0건</b></p>
+      <p>· e2e에 델타 검사 추가 — 4개 스탯 행이 뜨는지, 커서 이동 시 상승 행이 정확히 1개인지, 파티가 대신 숨는지</p>
+    </div>
   </div>
 </section>
 

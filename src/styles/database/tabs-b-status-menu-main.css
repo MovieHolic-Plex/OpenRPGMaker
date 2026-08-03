@@ -146,6 +146,51 @@
     transition: none;
   }
 }
+/* 장비 후보를 고르는 동안 파티 자리에 뜨는 "변화" 블록(목업 C). */
+.status-menu-stat-delta {
+  align-content: start;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
+    var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: var(--runtime-window-slice);
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  display: grid;
+  gap: 1px;
+  grid-auto-rows: max-content;
+  line-height: 1.2;
+  min-height: 0;
+  overflow: hidden;
+  padding: 2px;
+}
+.status-menu-stat-delta-title {
+  color: #a9c8ff;
+  font-size: 7px;
+  letter-spacing: 0.1em;
+  padding: 0 2px;
+}
+.status-menu-stat-delta-row {
+  display: grid;
+  gap: 3px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  min-width: 0;
+  padding: 0 2px;
+}
+.status-menu-stat-delta-value {
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.status-menu-stat-delta-row.up .status-menu-stat-delta-value {
+  color: #9df5b8;
+}
+.status-menu-stat-delta-row.down .status-menu-stat-delta-value {
+  color: #ff9c9c;
+}
 .status-menu-detail {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),

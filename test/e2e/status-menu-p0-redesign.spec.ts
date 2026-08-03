@@ -63,6 +63,29 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
   expect(await clippedMenuText(page)).toEqual([]);
   await screenshotMenu(page, `${EVIDENCE_DIR}/equipment-grouped-rail-and-gauges.png`);
 
+  // 목업 C — 장비 후보로 들어가면 사이드바가 "변화" 블록으로 바뀌고 증감이 보인다.
+  await page.getByTestId("status-menu-equipment-actor-actor_hero").click();
+  await page.getByTestId("status-menu-equipment-slot-weapon").click();
+  await expect(page.getByTestId("status-menu-stat-delta")).toBeVisible();
+  // 파티 대신 뜬다 — 둘 다 넣으면 사이드바를 넘긴다.
+  await expect(page.getByTestId("status-menu-party")).toHaveCount(0);
+  for (const stat of ["공격", "방어", "정신", "민첩"]) {
+    await expect(page.getByTestId(`status-menu-stat-delta-${stat}`)).toBeVisible();
+  }
+  // 실제로 바뀌는 값이 하나라도 화살표로 표시돼야 한다.
+  expect(await page.locator(".status-menu-stat-delta-row.up, .status-menu-stat-delta-row.down").count())
+    .toBeGreaterThan(0);
+  expect(await clippedMenuText(page)).toEqual([]);
+  // 커서를 실제 후보로 옮기면 "변화" 블록이 그 후보 기준으로 갱신된다.
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  await expect(page.locator(".status-menu-stat-delta-row.up")).toHaveCount(1);
+  expect(await clippedMenuText(page)).toEqual([]);
+  await screenshotMenu(page, `${EVIDENCE_DIR}/equipment-stat-delta.png`);
+  await page.keyboard.press("x");
+  await page.keyboard.press("x");
+
   // B안 — 접힌 시스템 그룹이 작업 영역에 펼쳐지고, 타이틀은 거기서 파괴적으로 표시된다.
   await page.getByTestId("status-menu-command-system-menu").click();
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText("시스템");

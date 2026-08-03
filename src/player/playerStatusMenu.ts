@@ -9,7 +9,7 @@ import {
   type PlayerStatusMenuSnapshot,
   type StatusMenuCommand,
 } from "@/player/playerStatusMenuModel";
-import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
+import { createStatusMenuDetail, type StatusMenuDetail, type StatusMenuStatDelta } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic } from "@/player/systemGraphics";
 import type { PlayerStatusMenuActions, PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
@@ -81,7 +81,10 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
       dataset: { testid: "status-menu-sidebar" },
       children: [
         renderCommandRail({ snapshot, selectedCommand, actions: options.actions }),
-        renderPartyPanel(snapshot),
+        // 장비 후보를 고르는 중이면 파티 대신 "변화" 를 띄운다. 둘 다 넣으면 사이드바를 넘기고,
+        // 그 순간 알고 싶은 건 파티 HP 가 아니라 "이걸 끼면 뭐가 얼마나 바뀌나" 다.
+        renderStatDeltaPanel(selectedEntryStatDelta(detail, options.selectedDetailActionIndex))
+          ?? renderPartyPanel(snapshot),
       ],
     }),
     renderStatusMenuDetailPanel(options.project, detail, {
@@ -233,6 +236,47 @@ function renderVitalGauge(ratio: number, variant: string, testId: string): HTMLE
       attrs: { style: `width:${percent}` },
     })],
   });
+}
+
+/** 커서가 올라간 조작 가능 항목의 능력치 변화. 없으면 undefined. */
+function selectedEntryStatDelta(
+  detail: StatusMenuDetail,
+  selectedActionIndex: number | undefined
+): readonly StatusMenuStatDelta[] | undefined {
+  if (selectedActionIndex === undefined) return undefined;
+  let actionIndex = 0;
+  for (const entry of detail.entries) {
+    if (!entry.onActivate || entry.disabled) continue;
+    if (actionIndex === selectedActionIndex) return entry.statDelta;
+    actionIndex += 1;
+  }
+  return undefined;
+}
+
+function renderStatDeltaPanel(deltas: readonly StatusMenuStatDelta[] | undefined): HTMLElement | null {
+  if (!deltas || deltas.length === 0) return null;
+  const panel = el("section", {
+    class: "status-menu-stat-delta",
+    dataset: { testid: "status-menu-stat-delta" },
+  });
+  panel.append(el("div", { class: "status-menu-stat-delta-title", text: "변화" }));
+  for (const delta of deltas) {
+    const diff = delta.next - delta.current;
+    const row = el("div", {
+      class: `status-menu-stat-delta-row${diff > 0 ? " up" : diff < 0 ? " down" : ""}`,
+      dataset: { testid: `status-menu-stat-delta-${delta.label}` },
+    });
+    row.append(el("span", { class: "status-menu-stat-delta-label", text: delta.label }));
+    // 변하지 않는 값에는 화살표를 그리지 않는다 — 시선이 변화에만 가야 한다.
+    row.append(el("span", {
+      class: "status-menu-stat-delta-value",
+      text: diff === 0
+        ? String(delta.current)
+        : `${delta.current} → ${delta.next} (${diff > 0 ? "+" : "−"}${Math.abs(diff)})`,
+    }));
+    panel.append(row);
+  }
+  return panel;
 }
 
 /** 상세 패널의 actionIndex 배정 규칙(renderStatusMenuDetailPanel)과 같은 순서로 세어
