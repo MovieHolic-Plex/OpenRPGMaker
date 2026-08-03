@@ -123,9 +123,10 @@ describe("player status menu", () => {
       const hpGauge = findByTestId(menu, "status-menu-hp-gauge-0");
       expect(hpGauge?.className).toContain("crit");
       expect(hpGauge?.getAttribute("aria-valuenow")).toBe("10");
-      // B안 사이드바는 1줄/1명이라 MP 게이지와 정확한 수치는 "상태" 화면이 맡는다.
-      // 화면에서 빠지는 값이라도 접근성 라벨에는 남긴다.
-      expect(findByTestId(menu, "status-menu-mp-gauge-0")).toBeNull();
+      // 2×2 격자로 바꿔 HP/MP 게이지와 수치를 모두 되살렸다. 셀 폭(52px)에 `HP 514/514` 는
+      // 안 들어가서 화면에는 접두사 없는 수치만 두고, 전체 문자열은 aria-label 이 담는다.
+      expect(findByTestId(menu, "status-menu-mp-gauge-0")?.getAttribute("aria-valuenow")).toBe("100");
+      expect(findByTestId(menu, "status-menu-party-row-0")?.textContent).toContain("/");
       expect(findByTestId(menu, "status-menu-party-row-0")?.getAttribute("aria-label"))
         .toMatch(/HP \d+\/\d+ MP \d+\/\d+/);
     } finally {

@@ -8,6 +8,8 @@
    183px 로 가용 175px 를 넘겼다(실측: HP/MP 줄이 통째로 잘려 사라짐).
    그래서 사이드바 파티는 1줄/1명 — 이름 + 레벨, HP 게이지가 그 줄의 배경이다.
    정확한 수치와 MP 는 "상태" 화면이 맡고, 여기서는 위급한 아군을 색으로 찾게 한다. */
+/* 2×2 격자 — 1열 × 4명으로 HP/MP 두 줄을 넣으면 명당 34px = 136px 라 사이드바를 넘긴다.
+   2행 × 34px = 69px 면 레일(75px)과 합쳐 144px 로 들어간다. 셀 폭 52px 라 얼굴은 뺐다. */
 .status-menu-party {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(6, 22, 96, 0.08)),
@@ -21,18 +23,18 @@
   box-shadow: none;
   display: grid;
   gap: 1px;
-  grid-auto-rows: max-content;
   align-content: start;
+  /* 열 간격이 없으면 "L1수호자" 처럼 옆 셀과 붙어 읽힌다. */
+  gap: 2px 4px;
+  grid-auto-rows: max-content;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 2px;
 }
 .status-menu-party-row {
-  align-items: center;
   box-sizing: border-box;
-  display: grid;
-  gap: 3px;
-  /* 사이드바가 좁아진 만큼 얼굴을 줄여 숫자 자리를 남긴다. */
-  grid-template-columns: 16px minmax(0, 1fr);
+  display: block;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 /* 1줄/1명이 되면서 행 높이를 결정하는 건 글자가 아니라 얼굴이다. 24px 로는 4명이
@@ -70,8 +72,8 @@
   align-content: start;
   /* 1.02 는 9px 폰트의 글리프 박스(11px)보다 작아 overflow:hidden 과 만나 모든 줄이 2px 잘렸다.
      행을 4 → 3 으로 줄여 확보한 여유로 글리프가 들어가는 높이를 준다. */
-  line-height: 1.25;
-  padding-top: 1px;
+  line-height: 1.2;
+  padding-top: 0;
 }
 /* 이름 + 레벨을 한 행에 — 이름은 내용 폭, 레벨은 오른쪽 끝. */
 .status-menu-party-headline {

@@ -142,6 +142,10 @@ export type PlayerStatusMenuPartyRow = {
   readonly faceResourceId?: string;
   readonly hpLabel: string;
   readonly mpLabel: string;
+  /** 접두사 없는 수치. 2×2 파티 셀(52px)에는 `HP 514/514` 가 안 들어간다 —
+      어느 쪽인지는 게이지 색(HP 초록/MP 파랑)이 알려주고, 전체 문자열은 aria-label 이 담는다. */
+  readonly hpValueLabel: string;
+  readonly mpValueLabel: string;
   /** 0~1. 숫자만으로는 파티 4명 상태를 한눈에 못 읽어 게이지를 함께 그린다. */
   readonly hpRatio: number;
   readonly mpRatio: number;
@@ -214,6 +218,8 @@ export function createPlayerStatusMenuSnapshot(
       faceResourceId: resolveActorFaceResourceId(session, actor) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
+      hpValueLabel: vitals ? `${vitals.hp}/${vitals.maxHp}` : "0/0",
+      mpValueLabel: vitals ? `${vitals.mp}/${vitals.maxMp}` : "0/0",
       hpRatio,
       mpRatio: vitalRatio(vitals?.mp, vitals?.maxMp),
       hpLevel: partyVitalLevel(hpRatio),
