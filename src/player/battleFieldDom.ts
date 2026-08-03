@@ -38,7 +38,9 @@ interface SkinBattlerPlacement {
 const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 우상(정면). 좌상단은 적 정보 박스,
   // 우하단은 아군 정보 박스가 차지하므로 스프라이트는 그 대각선을 피해서 선다.
-  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i) => ({ x: 245 - i * 44, y: 92 }), party: () => ({ x: 84, y: 152 }) },
+  // 다수 적은 수평 등간격(Δ44) 이 이미지 폭(74유닛)보다 좁아 41% 겹쳤다(9차 리뷰) —
+  // 레퍼런스처럼 앞뒤 사선(Δx58 + y 스태거)으로 깊이를 준다. 가까운 쪽이 앞(z 는 depth 스탬프).
+  pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 90 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
   // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
     rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
   // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.
@@ -355,12 +357,14 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     popup.style.setProperty("--battle-node-x", anchor.style.getPropertyValue("--battle-node-x"));
     popup.style.setProperty("--battle-node-y", anchor.style.getPropertyValue("--battle-node-y"));
     // 고정 -12% 오프셋은 스프라이트 키에 따라 몸통 한가운데(적)나 발밑(아군)으로
-    // 흩어진다 — 실측한 스프라이트 상단 기준으로 머리 위에 띄운다(9차 리뷰).
+    // 흩어진다 — 실측한 스프라이트 상단 30% 지점(머리께)에 띄운다(9차 리뷰).
+    // 상단 0% 를 쓰면 팝업 전체가 스프라이트 박스 위로 나가 높이 배치된 적에서는
+    // 필드 밖(HUD 영역)까지 밀려났다.
     const sprite = anchor.querySelector<HTMLElement>(".battle-enemy-image, .battle-actor-image, .battle-actor-sprite") ?? anchor;
     const layerRect = layer.getBoundingClientRect();
     const spriteRect = sprite.getBoundingClientRect();
     if (layerRect.height > 0 && spriteRect.height > 0) {
-      popup.style.top = `${((spriteRect.top - layerRect.top) / layerRect.height) * 100 - 2}%`;
+      popup.style.top = `${((spriteRect.top - layerRect.top + spriteRect.height * 0.3) / layerRect.height) * 100}%`;
     }
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
     // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).
@@ -422,6 +426,9 @@ function enemyButton(enemy: BattleBattlerSnapshot, snapshot: BattleSnapshot, ind
   const enemyCount = snapshot.enemies.length;
   const ep = skinPlacement().enemy(index, enemyCount);
   positionBattleNode(enemyNode, ep.x, ep.y);
+  // 겹칠 때 화면 아래(가까운) 적이 앞에 오도록 — z 는 CSS 변수로만 소비해
+  // 모션 클래스(z-index 상승)가 인라인에 눌리지 않게 한다.
+  enemyNode.style.setProperty("--battle-depth", String(1 + Math.round(ep.y / 16)));
   enemyNode.dataset.testid = enemy.id;
   enemyNode.dataset.recordId = enemy.recordId;
   enemyNode.dataset.facing = "right";
