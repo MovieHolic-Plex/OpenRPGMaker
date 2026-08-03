@@ -442,3 +442,12 @@ agy generate_image 파이프라인(asset-gen 문법 재사용)으로 ally-creatu
 "몸은 원본 그대로, 머리만 우측 프로필로" 로 좁힌 v6-v7 에서 성공, v7 채택.
 후보는 .omo/asset-gen-tmp/ 에 보존(v1 이 실자산을 덮은 사고 후 임시 경로 규칙 추가).
 CSS rotate(5deg) 트릭은 제거(방향이 자산에 구워짐). 스크립트: scripts/asset-gen/gen-ally-back-34.mjs.
+
+## 10차 후속 2 — 이미지 생성 파이프라인을 MDC Image API 로 교체 (감독 지시)
+
+agy 경로 폐기 → Notion 「Image Generating API in MDC」(mdc-server:8091, god-tibo-imagen,
+reference_b64 + fallback=true) 로 재생성. 1발에 성공(80.7s): 몸통·반점·꼬리 완전 보존,
+머리 우측 프로필. agy 7수 반복보다 품질·재현성 모두 우위 — 이후 자산 생성은 MDC 로.
+스크립트: scripts/asset-gen/gen-ally-back-34-mdc.mjs (agy 판 삭제).
+Notion 정리: DuckCoding 이미지 문서를 폐기 공지+MDC 리다이렉트로 교체(감독 지시),
+허브는 이미 아카이브 상태.
