@@ -20,12 +20,12 @@
 
 /* 포켓몬 레거시 규칙([data-battle-ui-style="pokemon"] .battle-actor-image 112×148!important + scaleX(-1))을
    반드시 이긴다. 몬스터 뒷모습 스프라이트는 이미 후면이라 flip 불필요.
-   뒤 '정방향' 은 어색하다(감독 지적) — 우상단 적을 바라보듯 발밑 기준 살짝 기울인다. */
+   시선 방향(우상단 적 응시)은 자산에 구웠다(ally-creature-back.png 재생성, 머리 우측 프로필)
+   — 한때 쓰던 rotate(5deg) 트릭은 제거. */
 .battle-scene[data-battle-skin="pokemon"] .battle-actor .battle-skin-actor-image {
   width: calc(26px * var(--battle-actor-scale, 1)) !important;
   height: calc(36px * var(--battle-actor-scale, 1)) !important;
-  transform: rotate(5deg) !important;
-  transform-origin: 50% 100%;
+  transform: none !important;
 }
 
 /* 적: 총 배율 = 노드 scale(1.9) × 필드 zoom(2.0) ≈ 3.8×. 목표 ~144px → css 38px. */
