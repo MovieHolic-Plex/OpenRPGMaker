@@ -64,8 +64,12 @@ export function updatePlayScene(scene: PlaySceneContext, deltaMs: number): void 
   } else {
     scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
   }
-  if (!cutsceneInputLocked && input.actionPressed && !scene.moving) handleAction(scene);
-  if (!cutsceneInputLocked && input.attackPressed) tryActionCombatSwing(scene);
+  // 액션 전투 맵에서는 확인 키 하나가 조사와 공격을 겸한다 — 정면에 조사 대상이
+  // 있으면 대화가 우선하고, 없을 때만 스윙한다(적대 리뷰 10: Space 만 공격이고
+  // Z 는 조사로 남아 결정 키가 둘로 쪼개져 있었다).
+  let interacted = false;
+  if (!cutsceneInputLocked && input.actionPressed && !scene.moving) interacted = handleAction(scene);
+  if (!cutsceneInputLocked && input.attackPressed && !interacted) tryActionCombatSwing(scene);
   if (!cutsceneInputLocked && input.skillPressed) tryActionSkillCast(scene);
   scene.input_.resetEdges();
   if (canUpdateWaitingEvents(scene)) {
@@ -262,33 +266,36 @@ function clampPlayerMoveDuration(current: number, delta: number): number {
   return Math.min(400, Math.max(60, current - delta * 40));
 }
 
-export function handleAction(scene: ActionEventSceneContext): void {
+// 반환값: 조사 대상과 상호작용했는지. 액션 전투에서 "조사 없으면 스윙" 판정에 쓴다.
+export function handleAction(scene: ActionEventSceneContext): boolean {
   const delta = directionDelta(scene.facing);
   const tx = scene.tileX + delta.x;
   const ty = scene.tileY + delta.y;
   const key = `${tx},${ty}`;
   const event = findRuntimeEventInScene(scene, tx, ty, "action");
   if (event) {
-    if (key === scene.lastActionTargetKey) return;
+    // 같은 대상 연타 디바운스. 실행은 안 하지만 정면에 대상이 있는 건 맞으므로
+    // 상호작용으로 보고한다(여기서 false 를 주면 대화 중에 칼을 휘두른다).
+    if (key === scene.lastActionTargetKey) return true;
     scene.lastActionTargetKey = key;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
-    return;
+    return true;
   }
-  if (tryChestInteraction(scene as any, tx, ty)) return;
-  if (tryFarmInteraction(scene, tx, ty)) return;
+  if (tryChestInteraction(scene as any, tx, ty)) return true;
+  if (tryFarmInteraction(scene, tx, ty)) return true;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
   if (underfoot) {
     const underfootKey = `${scene.tileX},${scene.tileY}`;
-    if (underfootKey === scene.lastActionTargetKey) return;
+    if (underfootKey === scene.lastActionTargetKey) return true;
     scene.lastActionTargetKey = underfootKey;
     void scene.runEvent(underfoot.event.id);
-    return;
+    return true;
   }
-  if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return;
-  void tryFarmInteraction(scene, scene.tileX, scene.tileY);
+  if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return true;
+  return tryFarmInteraction(scene, scene.tileX, scene.tileY);
 }
 
 function tryFarmInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {

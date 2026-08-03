@@ -2,6 +2,7 @@ import { store } from "@/project/store";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { listStatusMenuCommandIds, renderPlayerStatusMenu, type StatusMenuCommandId } from "@/player/playerStatusMenu";
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
+import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment } from "@/project/types";
 import type { PlaySession } from "@/project/session";
@@ -168,7 +169,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
 
     if (isRailNavKey(key)) {
-      const railKey = key === "ArrowRight" ? "ArrowDown" : key === "ArrowLeft" ? "ArrowUp" : key;
+      // 레일은 1D 라 좌/우도 상/하로 접는다. WASD 도 같은 규칙을 탄다.
+      const railDir = directionForKey(key);
+      const railKey: RuntimeMenuKey =
+        railDir === "right" || railDir === "down" ? "ArrowDown" : "ArrowUp";
       const session = options.getActiveScene()?.getSession();
       const commandIds = session
         ? listStatusMenuCommandIds(store.getCurrent(), session)
@@ -499,24 +503,27 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   return { reset, renderMenu, toggleMenu, handleKey };
 }
 
-function isRailNavKey(key: RuntimeMenuKey): key is "ArrowDown" | "ArrowLeft" | "ArrowRight" | "ArrowUp" {
-  return key === "ArrowDown" || key === "ArrowUp" || key === "ArrowLeft" || key === "ArrowRight";
+function isRailNavKey(key: RuntimeMenuKey): boolean {
+  return directionForKey(key) !== null;
 }
 
-function isDetailNavKey(key: RuntimeMenuKey): key is "ArrowDown" | "ArrowLeft" | "ArrowRight" | "ArrowUp" {
+function isDetailNavKey(key: RuntimeMenuKey): boolean {
   return isRailNavKey(key);
 }
 
-function detailDelta(key: "ArrowDown" | "ArrowLeft" | "ArrowRight" | "ArrowUp"): -1 | 1 {
-  return key === "ArrowUp" || key === "ArrowLeft" ? -1 : 1;
+function detailDelta(key: RuntimeMenuKey): -1 | 1 {
+  const dir = directionForKey(key);
+  return dir === "up" || dir === "left" ? -1 : 1;
 }
 
+// 확인/취소 판정은 정본에 위임한다. 여기서만 대문자 Z·X 를 놓쳐 CapsLock 상태에서
+// 상태 메뉴만 먹통이 되던 결함(적대 리뷰 6).
 function isConfirmMenuKey(key: RuntimeMenuKey): boolean {
-  return key === "Enter" || key === " " || key === "e" || key === "z";
+  return isConfirmKey(key);
 }
 
 function isCancelMenuKey(key: RuntimeMenuKey): boolean {
-  return key === "Escape" || key === "x";
+  return isCancelKey(key);
 }
 
 function assertNever(value: never): never {

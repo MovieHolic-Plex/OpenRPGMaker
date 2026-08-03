@@ -27,6 +27,7 @@ import {
 import { resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
+import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import { playBattleSfx, unlockBattleSfx } from "@/player/battleSfx";
 import {
   createBattleSequencer,
@@ -268,14 +269,20 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
 
   root.tabIndex = 0;
 
-  function isConfirmKey(event: KeyboardEvent): boolean {
-    return event.key === "z" || event.key === "Z" || event.key === "Enter";
+  // 확인/취소는 정본(keyBindings)만 본다. 전투에만 Space 처리가 없어서 커맨드
+  // 버튼에 포커스가 있을 때만 네이티브 활성화로 "우연히" 먹던 결함(적대 리뷰 2),
+  // 그리고 전투에만 있던 유령 취소키 C(적대 리뷰 7)를 함께 잘라냈다.
+  function isBattleConfirmKey(event: KeyboardEvent): boolean {
+    return isConfirmKey(event.key);
   }
 
-  function isCancelKey(event: KeyboardEvent): boolean {
-    return event.key === "c" || event.key === "C" || event.key === "x" || event.key === "X" || event.key === "Escape";
+  function isBattleCancelKey(event: KeyboardEvent): boolean {
+    return isCancelKey(event.key);
   }
 
+  // Enter 는 포커스된 네이티브 버튼을 keydown 에서 스스로 활성화한다. 그 한 번만
+  // 통과시키고 루트 핸들러는 비켜선다. Space 는 keydown 을 preventDefault 하면
+  // 네이티브 활성화가 취소되므로 여기서 직접 처리해도 이중 발화가 없다.
   function isNativeButtonEnter(event: KeyboardEvent): boolean {
     return event.key === "Enter"
       && event.target instanceof HTMLButtonElement
@@ -288,7 +295,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     unlockBattleSfx();
     const snapshot = options.runtime.snapshot();
     if (snapshot.result) {
-      if (isConfirmKey(event)) {
+      if (isBattleConfirmKey(event)) {
         // Native buttons already dispatch one click for Enter. Let that click bubble to
         // the result handler instead of also confirming from the root key handler.
         if (isNativeButtonEnter(event)) return;
@@ -304,7 +311,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 자동전투/속도 토글은 연출 중에도 받는다 — 재생을 보다가 끄거나 빨리감기를 켜는
     // 게 바로 이 순간이고, 명령 확정과 달리 비트 재생과 경합하지 않는다(코덱스 리뷰 C6:
     // 화면에 A·Shift 단축키가 표시되어 있는데 연출 중엔 눌러도 반응이 없었다).
-    if (event.key === "a" || event.key === "A") {
+    // 자동전투 토글은 F. 예전엔 A 였는데 필드를 WASD 로 걷던 플레이어가 전투에서
+    // 좌측 이동을 누르면 자동전투가 켜졌다(적대 리뷰 11 — 화면 안내도 없는 상태였다).
+    if (isAutoBattleKey(event.key)) {
       event.preventDefault();
       toggleAutoBattle();
       return;
@@ -318,20 +327,29 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     if (sequenceBusy) return;
     if (shiftHeld) shiftCombined = true;
-    if (isCancelKey(event)) {
+    if (isBattleCancelKey(event)) {
       event.preventDefault();
       handleCancel(snapshot);
       return;
     }
-    if (event.key === "ArrowUp" || event.key === "ArrowLeft" || event.key === "ArrowDown" || event.key === "ArrowRight") {
-      const direction: 1 | -1 = event.key === "ArrowUp" || event.key === "ArrowLeft" ? -1 : 1;
+    // 방향키 + WASD. 필드는 WASD 로 걷는데 전투 커서만 방향키 전용이던 비대칭을 없앴다.
+    const navDir = directionForKey(event.key);
+    if (navDir) {
+      const direction: 1 | -1 = navDir === "up" || navDir === "left" ? -1 : 1;
+      const arrowKey = navDir === "up"
+        ? "ArrowUp"
+        : navDir === "down"
+          ? "ArrowDown"
+          : navDir === "left"
+            ? "ArrowLeft"
+            : "ArrowRight";
       const moved = snapshot.phase === "targetSelect" && snapshot.targetSelection?.side === "enemy"
         ? cycleTarget(snapshot, direction)
-        : moveMenuCursor(snapshot, event.key);
+        : moveMenuCursor(snapshot, arrowKey);
       if (moved) event.preventDefault();
       return;
     }
-    if (isConfirmKey(event)) {
+    if (isBattleConfirmKey(event)) {
       // Enter on a focused native button must be handled by the browser exactly once.
       // Z has no native activation, so it still goes through the shared cursor model.
       if (isNativeButtonEnter(event)) return;

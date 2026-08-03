@@ -4,7 +4,17 @@
 
 import type Phaser from "phaser";
 
-export type Dir = "down" | "left" | "right" | "up";
+import {
+  type Dir,
+  directionForKey,
+  isAttackKey,
+  isConfirmKey,
+  isDashKey,
+  isSkillKey,
+  normalizeKey,
+} from "@/player/keyBindings";
+
+export type { Dir };
 
 export type Axis = -1 | 0 | 1;
 
@@ -75,6 +85,7 @@ export function facingForStep(dx: number, dy: number): Dir {
 
 export class RuntimeKeyHoldTracker {
   private readonly actionKeys = new Set<string>();
+  private readonly skillKeys = new Set<string>();
   private readonly directions = new Set<Dir>();
   private pendingActionEdge = false;
   private pendingAttackEdge = false;
@@ -87,30 +98,50 @@ export class RuntimeKeyHoldTracker {
     if (!enabled) this.pendingAttackEdge = false;
   }
 
-  keyDown(key: string): void {
+  // repeat=true 는 OS 키 리피트다. 눌린 상태는 이미 기록돼 있으므로 엣지를 만들지 않는다.
+  // 조사/공격은 actionKeys 로 이미 막혀 있었지만 스킬(Q)만 가드가 없어 누르고 있으면
+  // 리피트 속도로 연사되던 결함(적대 리뷰 9)의 수정 지점.
+  keyDown(key: string, repeat = false): void {
+    if (repeat) return;
     if (isDashKey(key)) this.dashHeld = true;
-    if (key.toLowerCase() === "q") {
-      this.pendingSkillEdge = true;
+    const normalized = normalizeKey(key);
+    if (isSkillKey(key)) {
+      if (!this.skillKeys.has(normalized)) this.pendingSkillEdge = true;
+      this.skillKeys.add(normalized);
     }
-    const actionKey = normalizedActionKey(key);
-    if (actionKey) {
-      if (this.attackMode && (actionKey === " " || actionKey === "space")) {
-        if (!this.actionKeys.has(actionKey)) this.pendingAttackEdge = true;
-      } else if (!this.actionKeys.has(actionKey)) {
+    if (isConfirmKey(key)) {
+      if (!this.actionKeys.has(normalized)) {
+        // 액션 전투 맵에서는 확인 키 하나가 조사와 공격을 겸한다. 정면에 조사 대상이
+        // 있으면 조사하고, 없으면 스윙한다(판정은 playSceneMovement). Space 만 공격이고
+        // Z 는 조사로 남던 반쪽 라우팅이 결함이었다(적대 리뷰 10).
         this.pendingActionEdge = true;
+        if (this.attackMode && isAttackKey(key)) this.pendingAttackEdge = true;
       }
-      this.actionKeys.add(actionKey);
+      this.actionKeys.add(normalized);
     }
-    const dir = directionForRuntimeKey(key);
+    const dir = directionForKey(key);
     if (dir) this.directions.add(dir);
   }
 
   keyUp(key: string): void {
     if (isDashKey(key)) this.dashHeld = false;
-    const actionKey = normalizedActionKey(key);
-    if (actionKey) this.actionKeys.delete(actionKey);
-    const dir = directionForRuntimeKey(key);
+    const normalized = normalizeKey(key);
+    if (isConfirmKey(key)) this.actionKeys.delete(normalized);
+    if (isSkillKey(key)) this.skillKeys.delete(normalized);
+    const dir = directionForKey(key);
     if (dir) this.directions.delete(dir);
+  }
+
+  // 창이 포커스를 잃으면 keyup 이 오지 않는다. 눌림 상태를 전부 털어내지 않으면
+  // 돌아왔을 때 캐릭터가 혼자 걷거나 대시가 고착된다(적대 리뷰 3).
+  releaseAll(): void {
+    this.actionKeys.clear();
+    this.skillKeys.clear();
+    this.directions.clear();
+    this.dashHeld = false;
+    this.pendingActionEdge = false;
+    this.pendingAttackEdge = false;
+    this.pendingSkillEdge = false;
   }
 
   isDashing(): boolean {
@@ -178,6 +209,13 @@ export class Input {
   private readonly onDocumentKeyUp = (event: KeyboardEvent): void => {
     this.captureRuntimeKeyUp(event);
   };
+  // 포커스를 잃으면 keyup 을 못 받는다 — 눌림 상태를 즉시 턴다.
+  private readonly onWindowBlur = (): void => {
+    this.releaseAllKeys();
+  };
+  private readonly onVisibilityChange = (): void => {
+    if (document.visibilityState === "hidden") this.releaseAllKeys();
+  };
 
   constructor(scene: Phaser.Scene) {
     const kb = scene.input.keyboard;
@@ -195,22 +233,31 @@ export class Input {
     });
     document.addEventListener("keydown", this.onDocumentKeyDown);
     document.addEventListener("keyup", this.onDocumentKeyUp);
-    scene.events.once("destroy", () => {
+    window.addEventListener("blur", this.onWindowBlur);
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
+    const detach = (): void => {
       document.removeEventListener("keydown", this.onDocumentKeyDown);
       document.removeEventListener("keyup", this.onDocumentKeyUp);
-    });
-    scene.events.once("shutdown", () => {
-      document.removeEventListener("keydown", this.onDocumentKeyDown);
-      document.removeEventListener("keyup", this.onDocumentKeyUp);
-    });
+      window.removeEventListener("blur", this.onWindowBlur);
+      document.removeEventListener("visibilitychange", this.onVisibilityChange);
+    };
+    scene.events.once("destroy", detach);
+    scene.events.once("shutdown", detach);
   }
 
   private captureRuntimeKeyDown(event: KeyboardEvent): void {
-    this.runtimeKeys.keyDown(event.key);
+    this.runtimeKeys.keyDown(event.key, event.repeat);
   }
 
   private captureRuntimeKeyUp(event: KeyboardEvent): void {
     this.runtimeKeys.keyUp(event.key);
+  }
+
+  // 포커스 이탈 시 눌림 상태 해제. 주입 방향과 priority 까지 함께 비운다.
+  releaseAllKeys(): void {
+    this.runtimeKeys.releaseAll();
+    this.priority = [];
+    this.injectedDir = null;
   }
 
   setEnabled(v: boolean): void {
@@ -333,32 +380,5 @@ export class Input {
   }
 }
 
-export function directionForRuntimeKey(key: string): Dir | null {
-  switch (key.toLowerCase()) {
-    case "arrowdown":
-    case "s":
-      return "down";
-    case "arrowleft":
-    case "a":
-      return "left";
-    case "arrowright":
-    case "d":
-      return "right";
-    case "arrowup":
-    case "w":
-      return "up";
-    default:
-      return null;
-  }
-}
-
-// 대시 키(Shift). RM2K3 관례: Shift 를 누르는 동안 달리기.
-function isDashKey(key: string): boolean {
-  return key.toLowerCase() === "shift";
-}
-
-function normalizedActionKey(key: string): string | null {
-  const normalized = key.toLowerCase();
-  if (key === " " || normalized === "space" || normalized === "enter" || normalized === "e" || normalized === "z") return normalized;
-  return null;
-}
+// 키 판정은 전부 keyBindings 정본에 위임한다. 이 별칭은 기존 import 경로 호환용.
+export { directionForKey as directionForRuntimeKey } from "@/player/keyBindings";

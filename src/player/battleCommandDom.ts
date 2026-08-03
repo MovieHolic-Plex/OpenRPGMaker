@@ -15,6 +15,7 @@ import { activeActor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
 import { battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel } from "@/battle/battleSkillUse";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
+import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
@@ -535,7 +536,7 @@ function strictFlowStatus(snapshot: BattleSnapshot): HTMLElement {
 function keyPrompts(): HTMLElement {
   const prompt = document.createElement("div");
   prompt.className = "battle-key-prompts";
-  prompt.textContent = "방향키 선택 · Enter/Z 확인 · Esc/X/C 취소";
+  prompt.textContent = BATTLE_KEY_PROMPT;
   return prompt;
 }
 

@@ -167,7 +167,7 @@ async function captureRun(page, runDir, errors) {
     await ms(700);
     await shoot("action-start");
   } else {
-    await page.keyboard.press("a");       // 자동 전투
+    await page.keyboard.press("f");       // 자동 전투
     await ms(600);
     await shoot("auto-engaged");
   }

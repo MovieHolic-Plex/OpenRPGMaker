@@ -6,6 +6,7 @@ import {
   titleMenuHeight,
   titleMenuTop,
 } from "@/player/titleScreen";
+import { TITLE_KEY_PROMPT } from "@/player/keyBindings";
 import { createBlankProject } from "@/project/defaults";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { TitleScreenSettings } from "@/project/types";
@@ -61,7 +62,7 @@ describe("title screen", () => {
       expect(newGame?.textContent).toBe("처음부터");
       expect(continueGame?.textContent).toBe("이어하기");
       expect(quit?.textContent).toBe("끝내기");
-      expect(hint?.textContent).toBe("↑↓ 이동   Z/Enter·클릭 결정   X/Esc 취소");
+      expect(hint?.textContent).toBe(TITLE_KEY_PROMPT);
       expect(newGame?.attrs["aria-current"]).toBe("true");
       expect(continueGame?.attrs["aria-current"]).toBeUndefined();
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
@@ -149,7 +150,7 @@ describe("title screen", () => {
       expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
       expect(title.style.left).toBe("50%");
       expect(menu.style.left).toBe("50%");
-      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe("↑↓ 이동   Z/Enter·클릭 결정   X/Esc 취소");
+      expect(findByTestId(screen, "title-input-hint")?.textContent).toBe(TITLE_KEY_PROMPT);
     } finally {
       restoreDom();
     }

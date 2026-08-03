@@ -1,5 +1,6 @@
 import type { MessageWindowSettings } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
+import { isConfirmKey } from "@/player/keyBindings";
 
 type DialogueSurfaceSettings = {
   readonly settings?: MessageWindowSettings;
@@ -104,7 +105,7 @@ export function showNumberInput(
         setValue(value.slice(0, -1));
         return;
       }
-      if (event.key === "Enter" || event.key === " ") {
+      if (isConfirmKey(event.key)) {
         event.preventDefault();
         event.stopPropagation();
         finish();
