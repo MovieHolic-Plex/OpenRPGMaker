@@ -20,13 +20,16 @@ const PROMPT = [
   "The reference image is a finished 16-bit pixel art battle sprite: a chubby lavender-purple hamster-like",
   "creature seen from directly behind (straight rear view), with pink inner ears, a diamond pattern of pink",
   "spots on its back, a pink oval tail patch, stubby arms and feet, and a one-pixel dark outline.",
-  "Redraw the SAME sprite with exactly ONE change: turn the creature's HEAD to its right, shown in right",
-  "profile, so it looks toward the upper right of the frame at a distant opponent — a short snout and one",
-  "eye visible past its right shoulder, both round ears kept on top. The body below the neck stays identical",
-  "to the reference: same straight rear view, same pose, same proportions, same palette, same pixel density,",
-  "same spot pattern, same outline weight. Chunky square pixels, flat colors, no anti-aliasing, no gradients,",
-  "no 3D, no photorealism. Background: every non-subject pixel must be one flat uniform solid pure magenta",
-  "hex #FF00FF, no gradient, no texture. Exactly one subject, no text, no frame, no shadow.",
+  "Redraw the SAME creature as a REAR THREE-QUARTER view, exactly like a player-side (back view) battle",
+  "sprite from Pokemon HeartGold / Black-and-White: the WHOLE BODY is rotated about 35-40 degrees to its",
+  "right, so we see its back plus part of its right side; its head looks toward the upper right at a distant",
+  "opponent with a short snout and one eye visible in right profile; the near (left) shoulder and hip are",
+  "closer to the camera and slightly larger; the pink back-spot pattern shifts left on the visible back;",
+  "the tail patch moves toward the left edge of the body; stubby feet planted in an angled stance.",
+  "Keep everything else identical to the reference: same palette, same pixel density, same chunky square",
+  "pixels, flat colors, one-pixel dark outline, no anti-aliasing, no gradients, no 3D, no photorealism.",
+  "Background: every non-subject pixel must be one flat uniform solid pure magenta hex #FF00FF,",
+  "no gradient, no texture. Exactly one subject, no text, no frame, no shadow.",
 ].join(" ");
 
 const refB64 = readFileSync(REF).toString("base64");
