@@ -29,14 +29,40 @@ import {
   talker,
   transferEvent,
 } from "./scarloxyDemoGame";
+import {
+  CENTER_MAP_ID,
+  HOME_MAP_ID,
+  LAB_MAP_ID,
+  createCenterInteriorMap,
+  createHomeInteriorMap,
+  createLabInteriorMap,
+  createTownDoorEvents,
+  createTownDoorSigns,
+} from "./scarloxyPokemonInteriors";
 
 const TOWN_MAP_ID = "map_pkmn_town";
 const ROUTE_MAP_ID = "map_pkmn_route";
+
+// 마을 건물 문 앞 칸 — 건물 스프라이트의 문 타일 바로 아래.
+//   연구소  = hospital 블록(10,1) 6×6, 문 = 블록 (2..3, 5) → 마을 (12..13, 6), 접근 (12,7)
+//   우리 집 = house-small 블록(2,3) 5×5, 문 = 블록 (1, 4) → 마을 (3, 7), 접근 (3,8)
+//   센터    = house-small-alt 블록(19,3) 5×5, 문 = 블록 (1, 4) → 마을 (20, 7), 접근 (20,8)
+const TOWN_DOORS = {
+  lab: { x: 12, y: 7 },
+  home: { x: 3, y: 8 },
+  center: { x: 20, y: 8 },
+} as const;
 const CAPTURE_ORB_ITEM_ID = "item_capture_orb";
 const EMPTY = -1;
 
 export function createScarloxyPokemonDemoMaps(): readonly GameMap[] {
-  return [townMap(), routeMap()];
+  return [
+    townMap(),
+    routeMap(),
+    createLabInteriorMap(TOWN_MAP_ID, TOWN_DOORS.lab.x, TOWN_DOORS.lab.y + 1),
+    createHomeInteriorMap(TOWN_MAP_ID, TOWN_DOORS.home.x, TOWN_DOORS.home.y + 1),
+    createCenterInteriorMap(TOWN_MAP_ID, TOWN_DOORS.center.x, TOWN_DOORS.center.y + 1),
+  ];
 }
 
 export function configureScarloxyPokemonDemoProject(project: Project): void {
@@ -61,7 +87,15 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
       : {}),
   };
   project.startPos = { x: 13, y: 12 };
-  project.mapTree = { mapId: TOWN_MAP_ID, children: [singleNodeTree(ROUTE_MAP_ID)] };
+  project.mapTree = {
+    mapId: TOWN_MAP_ID,
+    children: [
+      singleNodeTree(ROUTE_MAP_ID),
+      singleNodeTree(LAB_MAP_ID),
+      singleNodeTree(HOME_MAP_ID),
+      singleNodeTree(CENTER_MAP_ID),
+    ],
+  };
   project.session = {
     ...project.session,
     partyActorIds: [DEFAULT_ACTOR_ID],
@@ -246,6 +280,8 @@ function townMap(): GameMap {
       "파티에 넣은 몬스터는 전투 경험치를 나눠 받아서 레벨이 오르고, 7레벨이 되면 진화한대!",
     ], [], charsetGraphic(PEOPLE1_CHARSET_ID, 1)),
     transferEvent("ev_pkmn_to_route", 13, 17, ROUTE_MAP_ID, 15, 2, "초원 1번 길로"),
+    ...createTownDoorEvents(TOWN_DOORS),
+    ...createTownDoorSigns(TOWN_DOORS),
   );
   return map;
 }
