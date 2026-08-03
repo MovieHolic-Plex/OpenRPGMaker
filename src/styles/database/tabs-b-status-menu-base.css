@@ -1,16 +1,49 @@
 .status-menu-command-rail {
-  align-content: start;
-  display: grid;
-  gap: 1px;
-  /* 고정 15px 행 × 12개 + 간격이 레일 높이를 8px 넘겨 마지막 "타이틀" 이 잘렸다
-     (실측: 레일 249~623, 마지막 버튼 601~631, overflow:hidden).
-     minmax(0, 15px) 로 두면 평소엔 15px 이고 자리가 부족할 때만 줄어든다. */
-  grid-auto-rows: minmax(0, var(--rm2k3-menu-row-height, 15px));
+  /* 그룹 라벨 4개가 늘면서 12개 명령 × 15px 이 레일 높이를 다시 넘겼다(실측: 저장/로드/대기/
+     타이틀이 화면 밖으로 밀려 접근 불가). 고정 행 높이를 쓰는 대신 flex 로 두고 명령 행이
+     남는 높이를 나눠 갖게 한다 — 항목이 늘어도 잘리는 대신 조금씩 좁아진다.
+     min-height 는 9px 글리프 박스(11px)를 담는 값까지만 줄어들도록 하한을 준다. */
+  display: flex;
+  flex-direction: column;
+  /* 레일 가용 높이는 약 175px. 명령 12개(하한 11px = 9px 글리프 박스) + 라벨 4개(9px)로
+     168px — 1px 간격 15개(15px)를 두면 넘친다. 구분선이 이미 그룹을 갈라 주므로 간격은 0. */
+  gap: 0;
   grid-column: 1;
   grid-row: 1;
-  grid-template-columns: minmax(0, 1fr);
   min-height: 0;
   overflow: hidden;
+}
+/* 라벨은 자기 높이만, 명령 행은 남는 높이를 나눠 갖는다. */
+.status-menu-command-rail > .status-menu-command-group-label {
+  flex: 0 0 auto;
+}
+.status-menu-command-rail > .status-menu-command {
+  flex: 1 1 auto;
+  /* 15px 를 하한으로 두면 넘친다. 9px 글리프 박스가 들어가는 11px 까지 허용한다. */
+  min-height: 11px;
+}
+/* 그룹 라벨 — 커서가 멈추지 않는 비대화 요소. 명령보다 작고 어둡게 두어
+   "읽히지만 경쟁하지 않는" 무게로 만든다. 첫 그룹 위에는 구분선을 넣지 않는다. */
+.status-menu-command-group-label {
+  border-top: 1px solid rgba(255, 255, 255, 0.26);
+  box-sizing: border-box;
+  color: #a9c8ff;
+  font-size: 6px;
+  height: 9px;
+  letter-spacing: 0.1em;
+  line-height: 8px;
+  margin: 0;
+  overflow: hidden;
+  padding: 0 3px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.status-menu-command-group-label:first-child {
+  border-top: 0;
+}
+/* 진행 손실 위험이 있는 명령(타이틀)은 색으로 분리 — 같은 리스트에 있어도 같은 것이 아니다. */
+.status-menu-command.destructive {
+  color: #ffc0c0;
 }
 .status-menu-command,
 .status-menu-detail-action {
@@ -28,19 +61,49 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* ── 포커스 모델 3규칙 ──
+   1) 활성 커서는 하나 — 발광 + ▶ 마커.
+   2) 비활성 패널은 감광(뚜렷한 밝기 차이). 알파 미세 조정으로는 계층이 안 생겼다.
+   3) 비활성 커서는 테두리 없는 "잔상" 으로만 남긴다 — 돌아갈 자리를 알리되 경쟁하지 않는다.
+   전투의 "선택 중 HUD 감광" 과 같은 규칙이라 조작 감각이 이어진다. */
 .status-menu-command.selected,
 .status-menu-detail-action.selected {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), rgba(20, 54, 150, 0.08)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(20, 54, 150, 0.08)),
     var(--runtime-window-selected-bg);
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 0 0 1px rgba(245, 251, 255, 0.36);
+  border-color: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    inset 0 0 0 1px rgba(245, 251, 255, 0.42),
+    0 0 6px rgba(214, 234, 255, 0.5);
+  position: relative;
 }
+/* ▶ 마커. 행 폭을 먹지 않도록 좌측 패딩 안쪽에 겹쳐 놓는다. */
+.status-menu-command.selected::before,
+.status-menu-detail-action.selected::before {
+  color: var(--rm2k3-status-highlight, #ffd75a);
+  content: "▶";
+  font-size: 7px;
+  left: -1px;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* 비활성 쪽 커서 — 잔상만. ::before 마커도 제거해 "활성 커서는 하나" 를 지킨다. */
 .rm2k3-status-menu.status-menu-detail-focus .status-menu-command.selected,
 .rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: transparent;
   box-shadow: none;
+}
+.rm2k3-status-menu.status-menu-detail-focus .status-menu-command.selected::before,
+.rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected::before {
+  content: none;
+}
+/* 규칙 2 — 키 입력을 받지 않는 패널 전체를 감광. */
+.rm2k3-status-menu.status-menu-detail-focus .status-menu-command-rail,
+.rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail {
+  opacity: 0.62;
 }
 .status-menu-body {
   display: grid;

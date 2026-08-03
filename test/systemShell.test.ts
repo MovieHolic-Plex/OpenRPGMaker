@@ -156,20 +156,33 @@ describe("T12 RM2K3 player status menu", () => {
 
     const snapshot = createPlayerStatusMenuSnapshot(project, session);
 
+    // 그룹 순서(행동 → 파티 → 기록 → 시스템)가 곧 화면 순서이자 ↑↓ 이동 순서다.
+    // 타이틀은 진행 손실 위험이 있어 항상 마지막에 온다.
     expect(snapshot.commandLabels).toEqual([
       "아이템",
       "스킬",
       "장비",
-      "몬스터",
-      "저장",
-      "로드",
       "상태",
       "열 바꾸기",
       "진형",
+      "몬스터",
       "임무",
+      "저장",
+      "로드",
       "대기 ON",
       "타이틀",
     ]);
+    expect(snapshot.commands.map((command) => command.groupId)).toEqual([
+      "action", "action", "action",
+      "party", "party", "party", "party",
+      "record",
+      "system", "system", "system", "system",
+    ]);
+    // 그룹 첫 항목에만 라벨/구분선이 붙는다.
+    expect(snapshot.commands.filter((command) => command.groupStart).map((command) => command.id))
+      .toEqual(["items", "status", "quests", "save"]);
+    expect(snapshot.commands.filter((command) => command.destructive).map((command) => command.id))
+      .toEqual(["to-title"]);
     expect(snapshot.goldLabel).toBe("돈 0G");
     expect(snapshot.partyRows).toEqual([]);
     expect(snapshot.emptyPartyLabel).toBe("파티원이 없습니다");

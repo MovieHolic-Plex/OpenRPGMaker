@@ -139,7 +139,7 @@ footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-s
 <nav><div class="wrap">
   <a href="#verdict">총평</a><a href="#now">현재 화면</a><a href="#failures">결함 12</a>
   <a href="#mockups">목업 3종</a><a href="#focus">포커스 모델</a><a href="#skins">메뉴 스킨</a>
-  <a href="#tech">기술 부채</a><a href="#priority">실행 순서</a>
+  <a href="#tech">기술 부채</a><a href="#shipped">구현 결과</a><a href="#priority">실행 순서</a>
 </div></nav>
 
 <main class="wrap">
@@ -519,6 +519,51 @@ footer{border-top:1px solid var(--line);padding:28px 0 48px;color:#89919f;font-s
     </div>
   </div>
   <p class="muted" style="margin-top:12px"><code>runtimeCursorMenu.ts</code>의 <code>attachCursorMenu</code>는 이미 “선택 관리 + click 합성”만 하는 올바른 설계다. 문제는 그 위 계층이 매번 DOM을 버린다는 점이다. 아래 계층은 이미 준비돼 있다.</p>
+</section>
+
+<section id="shipped">
+  <div class="section-kicker">Shipped</div>
+  <h2>P0 4건 — 구현 완료, 실측 캡처</h2>
+  <p>아래는 목업이 아니라 <b>실제 런타임 캡처</b>다(<code>evidence/browser-screenshots/status-menu-p0-redesign/</code>).
+  구현 중 목업만 봐서는 안 보이던 제약이 세 번 드러났고, 그 때문에 설계가 조금 바뀌었다 — 아래 "목업과 달라진 점"에 적었다.</p>
+  <div class="diffgrid">
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-items.png" alt="개선 후 아이템 메뉴">
+      <div class="caption"><b>개선 후 — 아이템</b> · 그룹 4개(행동/파티/기록/시스템) + 타이틀 분리 · HP/MP 게이지 · 1줄 리스트 · 설명은 푸터 · 레일 감광</div>
+    </div>
+    <div class="evidence">
+      <img src="./2026-08-03-ingame-menu-assets/after-equipment.png" alt="개선 후 장비 메뉴">
+      <div class="caption"><b>개선 후 — 장비</b> · 명령 12개가 전부 레일 안에 들어온다(구현 도중 한 번 잘렸고, 그 회귀를 잡는 검사를 추가했다)</div>
+    </div>
+  </div>
+  <div class="grid3" style="margin-top:18px">
+    <div class="card good"><h3>목업과 달라진 점 ①<br>게이지는 숫자 <em>뒤</em>로</h3>
+      <p>목업은 게이지를 숫자 아래 별도 줄에 뒀다. 실제로 넣으니 파티 열(120px 폭 × 4명 고정 높이)을 넘겨 <b>텍스트 16개가 세로로 잘렸다</b>.</p>
+      <p>숫자와 게이지를 나란히 놓아도 숫자 칼럼이 0까지 밀려 가로로 잘렸다. 결국 게이지를 숫자 행의 <b>배경</b>으로 깔았다 — 행 수도 폭도 늘지 않는다.</p>
+    </div>
+    <div class="card good"><h3>목업과 달라진 점 ②<br>레벨 줄을 이름 줄과 합침</h3>
+      <p>여유를 만들려고 4줄 → 3줄로 줄였다. 덕분에 <code>line-height</code>를 <code>1.02</code>에서 <code>1.25</code>로 올릴 수 있었다.</p>
+      <p>그 과정에서 <b>기존 버그</b>를 하나 찾았다 — 9px 폰트의 글리프 박스는 11px인데 줄 높이가 9.18px이라, 개선 전에도 파티 패널의 <b>모든 줄이 상시 2px 잘려</b> 있었다(baseline 실측 <code>scrollHeight 11 / clientHeight 9</code>).</p>
+      <p class="muted">합치면서 <code>"정상"</code>은 뺐다. 하드코딩 상수라 4번 반복돼도 정보량이 0이다(결함 9 참고).</p>
+    </div>
+    <div class="card warn"><h3>목업과 달라진 점 ③<br>스크롤 페이드는 폐기</h3>
+      <p>하단 페이드 그라디언트를 넣었더니 목록이 짧을 때 패널 중간에 <b>어두운 띠</b>로 남아 그 자체가 버그처럼 보였다(장비 화면 실측).</p>
+      <p>행이 1줄로 압축돼 더 이상 글자가 잘린 채 끝나지 않으므로, 넘침 신호는 얇은 스크롤바에 맡겼다.</p>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="card bad"><h3>구현 중 만든 회귀 1건 — 잡아서 고침</h3>
+      <p>그룹 라벨 4개를 넣자 레일 높이를 넘겨 <b>저장·로드·대기·타이틀이 화면 밖으로 밀렸다</b>(= 조작 불가).</p>
+      <p><code>toBeVisible()</code>은 <code>overflow:hidden</code>으로 잘린 자식도 통과시킨다. 그래서 "명령이 레일 사각형 안에 실제로 들어왔는가"를 좌표로 확인하는 검사를 추가했다.</p>
+      <p>고정 15px 행 대신 flex 로 바꿔 명령 행이 남는 높이를 나눠 갖게 했다 — 항목이 늘어도 잘리는 대신 조금씩 좁아진다. 하한은 글리프가 들어가는 11px.</p>
+    </div>
+    <div class="card"><h3>검증</h3>
+      <p>· <code>tsc --noEmit -p tsconfig.app.json</code> 통과(빌드가 쓰는 설정)</p>
+      <p>· 유닛: 메뉴 관련 20/20 통과. 전체 스위트를 main과 파일 단위로 비교해 <b>내 변경으로 늘어난 실패 0건</b></p>
+      <p>· e2e: 신규 <code>status-menu-p0-redesign.spec.ts</code> 통과 — 그룹·게이지·감광·무클리핑·레일 수납을 한 번에 검사</p>
+      <p class="muted">이 저장소의 스위트는 이 환경에서 원래 105개 파일이 빨갛다(자산·네트워크 의존). 그 목록은 손대지 않았다.</p>
+    </div>
+  </div>
 </section>
 
 <section id="priority">

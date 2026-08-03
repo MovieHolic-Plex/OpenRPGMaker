@@ -60,8 +60,70 @@
 }
 .status-menu-party-info {
   align-content: start;
-  line-height: 1.02;
+  /* 1.02 는 9px 폰트의 글리프 박스(11px)보다 작아 overflow:hidden 과 만나 모든 줄이 2px 잘렸다.
+     행을 4 → 3 으로 줄여 확보한 여유로 글리프가 들어가는 높이를 준다. */
+  line-height: 1.25;
   padding-top: 1px;
+}
+/* 이름 + 레벨을 한 행에 — 이름은 내용 폭, 레벨은 오른쪽 끝. */
+.status-menu-party-headline {
+  align-items: baseline;
+  display: grid;
+  gap: 3px;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  min-width: 0;
+}
+.status-menu-party-headline .status-menu-actor-subline {
+  color: #ffe9a8;
+}
+/* 숫자 행 자체가 게이지 트랙이 된다 — 행도 폭도 늘지 않는다.
+   전원 만피일 때 `514/514` 가 4번 반복되어 정보량이 0 에 가까웠다.
+   위급한 아군을 색으로 즉시 찾게 하되, 정확한 값은 그대로 숫자가 담당한다. */
+.status-menu-vital-line {
+  min-width: 0;
+  position: relative;
+}
+.status-menu-vital-line .status-menu-actor-vitals {
+  /* block 이어야 예전(직접 grid 자식이던 div) 과 같은 행 높이가 나온다. inline 으로 두면
+     라인 박스가 몇 px 더 커지고, 그만큼 파티 행이 밀려 이름/레벨이 잘렸다(실측 8개). */
+  display: block;
+  position: relative;
+  /* 채워진 게이지 위에 얹히므로 얇은 외곽선으로 판독성을 지킨다. */
+  text-shadow: 0 1px 0 rgba(4, 14, 48, 0.85);
+  z-index: 1;
+}
+.status-menu-vital-gauge {
+  background: rgba(6, 20, 62, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  inset: 0;
+  min-width: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 0;
+}
+.status-menu-vital-gauge-fill {
+  display: block;
+  height: 100%;
+  /* width 는 인라인 스타일(모델의 비율) 이 지정한다. */
+  transition: width 140ms linear;
+}
+/* 흰 숫자를 얹으므로 채움은 어둡고 채도 높은 쪽으로 — 밝은 파스텔은 글자를 먹는다. */
+.status-menu-vital-gauge.hp .status-menu-vital-gauge-fill {
+  background: linear-gradient(180deg, rgba(63, 191, 107, 0.82), rgba(24, 122, 62, 0.82));
+}
+.status-menu-vital-gauge.hp.warn .status-menu-vital-gauge-fill {
+  background: linear-gradient(180deg, rgba(224, 148, 32, 0.84), rgba(150, 92, 12, 0.84));
+}
+.status-menu-vital-gauge.hp.crit .status-menu-vital-gauge-fill {
+  background: linear-gradient(180deg, rgba(214, 58, 58, 0.86), rgba(134, 24, 24, 0.86));
+}
+.status-menu-vital-gauge.mp .status-menu-vital-gauge-fill {
+  background: linear-gradient(180deg, rgba(63, 127, 223, 0.82), rgba(26, 66, 140, 0.82));
+}
+@media (prefers-reduced-motion: reduce) {
+  .status-menu-vital-gauge-fill {
+    transition: none;
+  }
 }
 .status-menu-detail {
   background:
@@ -99,6 +161,28 @@
   display: grid;
   gap: 1px;
   grid-auto-rows: min-content;
+  /* 잘린 글자로 끝나지 않게 — 넘치면 스크롤하고, 넘친다는 사실을 아래 그라디언트가 알린다. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+/* 하단 페이드 그라디언트도 시도했지만, 목록이 짧을 때 패널 중간에 어두운 띠로 남아
+   그 자체가 버그처럼 보였다(장비 화면 실측). 행이 1줄로 압축돼 더 이상 글자가 잘린 채
+   끝나지 않으므로, 넘침 신호는 얇은 스크롤바에 맡긴다. */
+/* 조작 가능한 행 — 설명을 푸터로 넘겨 1줄로 압축한다. 리스트에 들어가는 항목 수가 2배가 된다. */
+.status-menu-detail-row-compact {
+  align-items: center;
+  min-height: var(--rm2k3-menu-row-height, 15px);
+  white-space: nowrap;
+}
+.status-menu-detail-row-compact .status-menu-detail-label,
+.status-menu-detail-row-compact .status-menu-detail-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.status-menu-detail-row-compact .status-menu-detail-description {
+  display: none;
 }
 .status-menu-detail-row {
   align-items: center;
@@ -188,7 +272,8 @@
   min-width: 0;
   overflow: hidden;
   text-align: center;
-  text-overflow: clip;
+  /* 선택 항목 설명이 들어오면서 길어질 수 있다 — clip 은 글자를 반 잘라 버그처럼 보인다. */
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .main-menu-button {
