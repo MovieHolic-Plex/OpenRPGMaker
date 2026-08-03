@@ -142,16 +142,19 @@
   inset: auto !important;
   left: 50% !important;
   /* 노드 밖(-44px)에 두면 씬 상단 클리핑에 잘리고, 노드 상단(2px)은 우상단
-     자동/속도 컨트롤 바(z 상위) 뒤에 숨는다(4차 리뷰 줌 판정). 컨트롤 바 아래·
-     스프라이트 정수리에 얹히는 깊이로 내린다. */
-  top: 30px !important;
+     자동/속도 컨트롤 바(z 상위) 뒤에 숨는다(4차 리뷰 줌 판정). 30px 는 정수리에
+     '겹쳐' 스프라이트 무늬(프리올레라 뿔)에 묻혔다(감독 지적) — 정수리 위 12px 로. */
+  top: 12px !important;
   width: 0 !important;
   height: 0 !important;
-  border: 13px solid transparent !important;
-  border-top: 20px solid #e43b44 !important;
+  border: 16px solid transparent !important;
+  border-top: 24px solid #e43b44 !important;
   border-bottom: 0 !important;
   transform: translateX(-50%) !important;
-  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+  /* 흰 외곽선(사방 drop-shadow) — 어떤 스프라이트/배경색 위에서도 분리돼 보인다 */
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff)
+    drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff)
+    drop-shadow(0 3px 2px rgba(0, 0, 0, 0.35));
   animation: battle-target-arrow 0.45s ease-in-out infinite alternate;
   z-index: 6;
 }
@@ -161,7 +164,17 @@
 }
 @keyframes battle-target-arrow {
   from { margin-top: 0; }
-  to { margin-top: 7px; }
+  to { margin-top: 9px; }
+}
+
+/* 선택된 적 스프라이트 자체를 깜빡인다 — HGSS 대상 선택 문법. 화살표만으로는
+   무늬 많은 스프라이트에서 시선을 못 끈다(감독 지적: "타겟팅 박스가 잘 안 보임"). */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.battle-target-selected .battle-enemy-image {
+  animation: battle-target-blink 0.6s steps(1, end) infinite;
+}
+@keyframes battle-target-blink {
+  0% { filter: brightness(1.7) saturate(0.55); }
+  50% { filter: none; }
 }
 
 /* ── 데미지 팝업/이펙트는 정보 패널(z 8)보다 위에 ── */

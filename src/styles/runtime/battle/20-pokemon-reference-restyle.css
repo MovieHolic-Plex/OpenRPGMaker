@@ -201,3 +201,16 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
   z-index: 6;
 }
+/* 선택된 적은 그룹 안에서 맨 앞(화살표가 앞줄 적 스프라이트에 가리지 않게) */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-target-selected {
+  z-index: 9;
+}
+/* 뒷줄 적을 고르면 타깃 화살표가 좌상단 HUD 바(z 8) 뒤에 숨어 꼭짓점만 보였다
+   (감독 지적, 실측 t02). z 로는 못 푼다 — .battle-field 자체가 z 1 스태킹 컨텍스트라
+   필드 안 어떤 z 도 필드 밖 형제인 패널을 못 이기고, 필드를 8 위로 올리면 이번엔
+   패널이 불투명 배경 뒤로 사라진다. 대신 대상 선택 동안 패널을 감광한다 — HP 정보는
+   하단 대상 메뉴가 이미 보여 주고 있어 잃는 것이 없다. */
+.battle-scene[data-battle-ui-style="pokemon"][data-battle-phase="targetSelect"] .battle-enemy-list-panel {
+  opacity: 0.15;
+  transition: opacity 0.12s ease-out;
+}
