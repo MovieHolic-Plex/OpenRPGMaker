@@ -31,8 +31,13 @@
   filter: none !important;
 }
 
-/* ── 아군 뒷모습: 좌하 대형(노드 크기로 제어 — 이중 scale 제거) ── */
+/* ── 아군 뒷모습: 좌하 대형(노드 크기로 제어 — 이중 scale 제거) ──
+   이미지는 노드 바닥에 정렬한다 — 몬스터 배틀러(145×140)가 220px 노드 상단에 붙어
+   발밑 그림자에서 80px(논리) 떠 보였다(감독 지적, 2026-08-03 스크린샷). */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor {
+  align-items: flex-end;
+  display: flex;
+  justify-content: center;
   transform: translate(-50%, -100%) !important;
   width: 220px !important;
   height: 220px !important;
