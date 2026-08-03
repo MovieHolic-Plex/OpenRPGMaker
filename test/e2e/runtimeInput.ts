@@ -54,11 +54,17 @@ export async function tapKey(page: Page, key: string, holdMs = 80): Promise<void
 
 
 /** Prefer keyboard Enter on title (default selection = 새 게임). Mouse click on title-new-game also works for real users. */
-export async function startNewGameFromTitle(page: Page, options?: { readonly timeoutMs?: number }): Promise<void> {
+export async function startNewGameFromTitle(
+  page: Page,
+  options?: { readonly timeoutMs?: number; readonly waitForRuntimeState?: boolean }
+): Promise<void> {
   const timeout = options?.timeoutMs ?? 15_000;
   await expect(page.getByTestId("title-screen")).toBeVisible({ timeout });
   await expect(page.getByTestId("title-new-game")).toBeVisible({ timeout });
   // Default selection is 새 게임 (index 0).
   await page.keyboard.press("Enter");
+  // 상태 덤프를 실제로 읽는 스펙만 기다리면 된다. 덤프가 필요 없는 스펙까지 여기서
+  // 막히면 부팅은 성공했는데 스펙 전체가 빨개진다.
+  if (options?.waitForRuntimeState === false) return;
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout });
 }

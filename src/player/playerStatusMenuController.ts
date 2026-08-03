@@ -1,6 +1,15 @@
 import { store } from "@/project/store";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
-import { listStatusMenuCommandIds, renderPlayerStatusMenu, type StatusMenuCommandId } from "@/player/playerStatusMenu";
+import { renderPlayerStatusMenu } from "@/player/playerStatusMenu";
+import {
+  isStatusMenuGroupEntryId,
+  listStatusMenuGroupCommandIds,
+  listStatusMenuRailIds,
+  statusMenuRailIdForCommand,
+  type StatusMenuCommandId,
+  type StatusMenuGroupEntryId,
+  type StatusMenuRailId,
+} from "@/player/playerStatusMenuModel";
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
 import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
@@ -19,7 +28,9 @@ import {
 } from "@/player/playerStatusMenuMutations";
 
 export function createPlayerStatusMenuController(options: PlayerStatusMenuControllerOptions): PlayerStatusMenuController {
-  let selectedCommand: StatusMenuCommandId = "items";
+  let selectedCommand: StatusMenuRailId = "items";
+  // 접힌 그룹을 통해 들어온 경우의 부모 — 취소하면 레일이 아니라 그룹 목록으로 돌아간다.
+  let openGroupId: StatusMenuGroupEntryId | undefined;
   let mode: "main" | "function" = "main";
   let selectedDetailActionIndex = 0;
   const detailCursors = new Map<string, number>();
@@ -35,6 +46,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const reset = (): void => {
     selectedCommand = "items";
+    openGroupId = undefined;
     mode = "main";
     selectedDetailActionIndex = 0;
     detailCursors.clear();
@@ -60,7 +72,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     (options.getPlayStage() ?? options.layout).append(panel);
   };
 
-  const renderMenu = (message?: string, nextCommand: StatusMenuCommandId = selectedCommand): HTMLElement | null => {
+  const renderMenu = (message?: string, nextCommand: StatusMenuRailId = selectedCommand): HTMLElement | null => {
     const project = store.getCurrent();
     const session = options.getActiveScene()?.getSession();
     if (!session) return null;
@@ -87,6 +99,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       selectedDetailActionIndex,
       actions: {
         onCommand: enterCommand,
+        onOpenGroup: openGroup,
         onSaveSlot: saveSlot,
         onLoadSlot: loadSlot,
         onSelectItemTarget: (itemId) => {
@@ -175,7 +188,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         railDir === "right" || railDir === "down" ? "ArrowDown" : "ArrowUp";
       const session = options.getActiveScene()?.getSession();
       const commandIds = session
-        ? listStatusMenuCommandIds(store.getCurrent(), session)
+        ? listStatusMenuRailIds(store.getCurrent(), session)
         : undefined;
       const next = reduceStatusMenuKeyboard({ selectedCommand, mode, commandIds }, railKey);
       if (commandIds && !commandIds.includes(next.selectedCommand)) {
@@ -283,7 +296,19 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
   }
 
-  function enterCommand(commandId: StatusMenuCommandId): void {
+  function openGroup(entryId: StatusMenuGroupEntryId): void {
+    selectedCommand = entryId;
+    openGroupId = entryId;
+    resetSubscreenState();
+    mode = "function";
+    options.emitMenuJuice("menu-confirm", renderMenu(undefined, entryId));
+  }
+
+  function enterCommand(commandId: StatusMenuRailId): void {
+    if (isStatusMenuGroupEntryId(commandId)) {
+      openGroup(commandId);
+      return;
+    }
     selectedCommand = commandId;
     switch (commandId) {
       case "wait":
@@ -339,11 +364,27 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     confirmSaveSlot = undefined;
+    // 접힌 그룹을 통해 들어왔으면 레일이 아니라 그룹 목록으로 한 단 돌아간다.
+    if (openGroupId && !isStatusMenuGroupEntryId(selectedCommand) && groupContains(openGroupId, selectedCommand)) {
+      selectedCommand = openGroupId;
+      options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
+      return;
+    }
+    if (isStatusMenuGroupEntryId(selectedCommand)) selectedCommand = statusMenuRailIdForCommand(selectedCommand);
+    openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
   }
 
+  function groupContains(entryId: StatusMenuGroupEntryId, commandId: StatusMenuCommandId): boolean {
+    const session = options.getActiveScene()?.getSession();
+    if (!session) return false;
+    return listStatusMenuGroupCommandIds(entryId, store.getCurrent(), session).includes(commandId);
+  }
+
   function stepBackWithinSubscreen(): boolean {
+    // 그룹 목록 화면에는 되돌릴 하위 단계가 없다.
+    if (isStatusMenuGroupEntryId(selectedCommand)) return false;
     switch (selectedCommand) {
       case "items":
         if (targetItemId) {
@@ -463,6 +504,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function detailStateKey(): string {
+    if (isStatusMenuGroupEntryId(selectedCommand)) return `group:${selectedCommand}`;
     switch (selectedCommand) {
       case "items":
         return targetItemId ? `items:${targetItemId}:targets` : "items:list";

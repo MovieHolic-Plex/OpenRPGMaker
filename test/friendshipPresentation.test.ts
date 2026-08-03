@@ -9,6 +9,7 @@ import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import {
   createPlayerStatusMenuSnapshot,
   listStatusMenuCommandIds,
+  listStatusMenuGroupCommandIds,
   STATUS_MENU_COMMAND_IDS,
   statusMenuCommandLabel,
 } from "@/player/playerStatusMenuModel";
@@ -87,7 +88,9 @@ describe("friendship presentation", () => {
     project.system.giftSystem = false;
     session.friendship = { char_a: 10 };
     expect(listStatusMenuCommandIds(project, session)).toContain("relationships");
+    // 레일에는 접힌 "기록 ▸" 만 오고, 관계는 그 그룹 목록에 들어간다.
     const snap = createPlayerStatusMenuSnapshot(project, session);
-    expect(snap.commands.some((c) => c.id === "relationships")).toBe(true);
+    expect(snap.commands.some((c) => c.id === "record-menu")).toBe(true);
+    expect(listStatusMenuGroupCommandIds("record-menu", project, session)).toContain("relationships");
   });
 });

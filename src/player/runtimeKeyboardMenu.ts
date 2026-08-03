@@ -1,5 +1,5 @@
 import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
-import { STATUS_MENU_COMMAND_IDS, type StatusMenuCommandId } from "@/player/playerStatusMenuModel";
+import { STATUS_MENU_COMMAND_IDS, type StatusMenuRailId } from "@/player/playerStatusMenuModel";
 
 export const TITLE_MENU_ITEM_COUNT = 3;
 
@@ -22,9 +22,10 @@ export type RuntimeMenuKey =
 export type StatusMenuKeyboardMode = "function" | "main";
 
 export type StatusMenuKeyboardState = {
-  readonly selectedCommand: StatusMenuCommandId;
+  readonly selectedCommand: StatusMenuRailId;
   readonly mode: StatusMenuKeyboardMode;
-  readonly commandIds?: readonly StatusMenuCommandId[];
+  /** 레일이 실제로 그리는 항목들 — 접힌 그룹 열기 항목도 포함한다. */
+  readonly commandIds?: readonly StatusMenuRailId[];
 };
 
 export type StatusMenuKeyboardAction =
@@ -78,10 +79,10 @@ export function reduceStatusMenuKeyboard(
 }
 
 function nextStatusCommand(
-  current: StatusMenuCommandId,
+  current: StatusMenuRailId,
   delta: number,
-  commandIds: readonly StatusMenuCommandId[] = STATUS_MENU_COMMAND_IDS
-): StatusMenuCommandId {
+  commandIds: readonly StatusMenuRailId[] = STATUS_MENU_COMMAND_IDS
+): StatusMenuRailId {
   const ids = commandIds.length > 0 ? commandIds : STATUS_MENU_COMMAND_IDS;
   const currentIndex = ids.indexOf(current);
   const base = currentIndex >= 0 ? currentIndex : 0;

@@ -126,12 +126,34 @@ export async function saveSnapshot(page: Page, slot: 1 | 2 | 3): Promise<{
   }, slot);
 }
 
+// 좌측 사이드바에 명령 12개 + 파티 4명이 안 들어가서 기록/시스템 그룹을 접었다.
+// 접힌 명령은 레일에 버튼이 없고 그룹을 연 뒤 작업 영역에서 고른다 — 스펙이 그 사정을
+// 알 필요는 없으므로 헬퍼가 알아서 그룹을 먼저 연다.
+const FOLDED_COMMAND_GROUPS: Readonly<Record<string, string>> = {
+  status: "party-menu",
+  row: "party-menu",
+  formation: "party-menu",
+  monsters: "party-menu",
+  quests: "record-menu",
+  relationships: "record-menu",
+  save: "system-menu",
+  load: "system-menu",
+  wait: "system-menu",
+  "to-title": "system-menu",
+};
+
 export async function selectCommand(page: Page, commandId: string, title: string): Promise<void> {
   if ((await page.getByTestId("status-menu-command-rail").count()) === 0) {
-    await page.keyboard.press("X");
+    await page.keyboard.press("x");
     await expect(page.getByTestId("status-menu-command-rail")).toBeVisible();
   }
-  await page.getByTestId(`status-menu-command-${commandId}`).click();
+  const groupEntryId = FOLDED_COMMAND_GROUPS[commandId];
+  if (groupEntryId) {
+    await page.getByTestId(`status-menu-command-${groupEntryId}`).click();
+    await page.getByTestId(`status-menu-group-command-${commandId}`).click();
+  } else {
+    await page.getByTestId(`status-menu-command-${commandId}`).click();
+  }
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText(title);
 }
 

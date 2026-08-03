@@ -288,7 +288,10 @@
   display: grid;
   font: 700 var(--runtime-font-size-9)/1.2 var(--runtime-pixel-font);
   gap: 4px;
-  grid-template-columns: 60px minmax(0, 1fr);
+  /* B안 2열 — 좌측 한 창(레일 + 파티), 우측 전체가 작업 영역.
+     기존 3열(60px 레일 | 120px 파티 | 나머지 상세)에서는 작업 영역이 화면 1/3 뿐이라
+     아이템 이름·효과·개수가 한 행에 못 들어갔다. 112px 로 합치면 작업 영역이 약 1.4배가 된다(96px 는 파티의 HP 숫자가 잘렸다 — 실측). */
+  grid-template-columns: 112px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
   height: 100%;
   left: 0;

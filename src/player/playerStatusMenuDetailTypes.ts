@@ -1,7 +1,7 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, Project } from "@/project/types";
-import type { StatusMenuCommandId } from "@/player/playerStatusMenuModel";
+import type { StatusMenuCommandId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 
 export type StatusMenuDetailEntry = {
   readonly label: string;
@@ -13,8 +13,17 @@ export type StatusMenuDetailEntry = {
     readonly testId: string;
   };
   readonly testId?: string;
+  /** 이 후보를 고르면 능력치가 어떻게 변하는가. 커서가 올라간 항목의 값을 사이드바가 그린다.
+      설명 문자열에도 증감이 들어 있지만 좁은 행에서 말줄임으로 묻혀 판단에 못 쓴다. */
+  readonly statDelta?: readonly StatusMenuStatDelta[];
   readonly onActivate?: () => void;
   readonly disabled?: boolean;
+};
+
+export type StatusMenuStatDelta = {
+  readonly label: string;
+  readonly current: number;
+  readonly next: number;
 };
 
 export type StatusMenuDetail = {
@@ -27,7 +36,8 @@ export type StatusMenuDetail = {
 export type StatusMenuDetailOptions = {
   readonly project: Project;
   readonly session: PlaySession;
-  readonly selectedCommand: StatusMenuCommandId;
+  /** 그룹 열기 항목(record-menu/system-menu)도 올 수 있다 — 그때는 그룹 명령 목록을 그린다. */
+  readonly selectedCommand: StatusMenuRailId;
   readonly slots: readonly SaveSlotReadResult[];
   readonly waitModeEnabled: boolean;
   readonly targetItemId?: string;
@@ -54,4 +64,6 @@ export type StatusMenuDetailOptions = {
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView?: () => void;
   readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
+  /** 접힌 그룹 목록에서 실제 명령으로 들어갈 때 쓴다. */
+  readonly onCommand?: (commandId: StatusMenuCommandId) => void;
 };
