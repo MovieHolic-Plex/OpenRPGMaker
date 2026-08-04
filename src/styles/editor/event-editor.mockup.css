@@ -580,3 +580,231 @@
   justify-self: end;
   margin: 0;
 }
+
+/* ── 이벤트 카드 (목업 evcard) ───────────────────────────────────── */
+.event-editor .event-editor-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 11px;
+  align-items: center;
+  padding: 11px 12px;
+  margin: 0 0 10px;
+  background: linear-gradient(180deg, var(--mk-raised), var(--mk-surface));
+  border: 1px solid var(--mk-line-soft);
+  border-radius: var(--mk-radius);
+}
+
+.event-editor .event-editor-card-sprite {
+  width: 52px;
+  height: 66px;
+  flex: 0 0 52px;
+  display: grid;
+  place-items: center;
+  background: var(--mk-inset);
+  border: 1px solid var(--mk-line);
+  border-radius: 3px;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+
+.event-editor .event-editor-card-meta {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+/* 카드 안에서는 top-strip 이 한 줄 컨트롤 묶음이다. */
+.event-editor .event-editor-card .event-editor-top-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-height: none;
+  min-height: 0;
+  margin: 0;
+}
+
+.event-editor .event-editor-card .event-editor-id-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-height: none;
+  margin: 0;
+  font-family: var(--mk-mono);
+  font-size: 11px;
+  color: var(--mk-t3);
+}
+
+/* ── 명령 툴바 범례 (목업 canvas-bar legend) ─────────────────────── */
+.event-editor .event-command-legend {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.event-editor .event-command-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--mk-t3);
+  white-space: nowrap;
+}
+
+.event-editor .event-command-legend-swatch {
+  width: 3px;
+  height: 11px;
+  border-radius: 2px;
+  display: block;
+  background: var(--lg-cat, #626b7d);
+}
+
+.event-editor .event-command-legend-item[data-category="dialogue"] { --lg-cat: #3987e5; }
+.event-editor .event-command-legend-item[data-category="flow"]     { --lg-cat: #d95926; }
+.event-editor .event-command-legend-item[data-category="reward"]   { --lg-cat: #199e70; }
+.event-editor .event-command-legend-item[data-category="map"]      { --lg-cat: #9085e9; }
+.event-editor .event-command-legend-item[data-category="screen"]   { --lg-cat: #d55181; }
+.event-editor .event-command-legend-item[data-category="system"]   { --lg-cat: #c98500; }
+
+/* 후순위 3종은 블록 거터와 동일하게 텍스처를 겹쳐 색 외 채널을 준다. */
+.event-editor .event-command-legend-item[data-category="map"] .event-command-legend-swatch,
+.event-editor .event-command-legend-item[data-category="screen"] .event-command-legend-swatch,
+.event-editor .event-command-legend-item[data-category="system"] .event-command-legend-swatch {
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.5) 0 2px, transparent 2px 4px);
+}
+
+/* ── 검증 스트립: 한 줄 요약 우선 (목업 valstrip) ───────────────── */
+.event-editor > .event-draft-validation > .event-draft-validation-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 설정 컬럼: 카드는 내용 높이, 설정 본문이 남는 높이를 갖고 스크롤한다.
+ * grid 로 두면 카드가 stretch 되어 400px 넘게 늘어난다. */
+.event-editor .event-editor-settings-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.event-editor .event-editor-settings-column > .event-editor-card {
+  flex: 0 0 auto;
+}
+
+.event-editor .event-editor-settings-column > .event-editor-settings-main {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* 카드 안 컨트롤 폭 배분 — 이름이 눌리지 않게. */
+.event-editor .event-editor-card .event-classic-name,
+.event-editor .event-editor-card .event-editor-identity-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.event-editor .event-editor-card [data-testid="event-page-name-input"] {
+  flex: 1 1 auto;
+  min-width: 90px;
+}
+
+.event-editor .event-editor-card [data-testid="event-character-id-input"] {
+  flex: 0 1 120px;
+  min-width: 0;
+}
+
+/* 페이지 액션 버튼은 카드에서 아이콘 위주로 압축 */
+.event-editor .event-editor-card .event-page-action-buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.event-editor .event-editor-card .event-page-action-button {
+  padding: 3px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* 탭 스트립 + 페이지 액션 버튼을 한 줄로 (목업: 탭 옆 ＋, 액션은 우측) */
+.event-editor > .event-editor-pagebar {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+.event-editor > .event-editor-pagebar > .event-page-number-tabs {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.event-editor > .event-editor-pagebar > .event-page-tabs {
+  flex: 0 0 auto;
+  align-self: center;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── 검증 스트립: 기본 접힘 한 줄 (목업 valstrip) ────────────────── */
+.event-editor > .event-draft-validation:not([open]) > .event-draft-validation-summary {
+  padding: 7px 12px;
+}
+
+.event-editor > .event-draft-validation .event-draft-validation-issues {
+  max-height: 84px;
+}
+
+/* 탭 검사 배지가 조건 요약 위로 겹쳐 작은 숫자로 보였다.
+ * 그리드 마지막 칸에 고정하고 절대배치를 끊는다. */
+.event-editor .event-page-tab-rich > .event-page-validation-badge {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  align-self: center;
+  justify-self: end;
+  margin: 0;
+  font-size: 9.5px;
+}
+
+.event-editor .event-page-tab-rich > .event-page-validation-badge.hidden {
+  display: none;
+}
+
+/* 범례는 한 줄 유지 — 좁으면 스크롤 대신 축약 */
+.event-editor .event-command-legend {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  gap: 7px;
+}
+
+.event-editor .event-command-legend-label {
+  font-size: 10px;
+}
+
+/* 탭 검사 배지는 ::after(attr(data-label)) 로 그려지고 절대배치라 겹쳤다. */
+.event-editor .event-page-tab-rich > .event-page-validation-badge::after,
+.event-editor .event-page-tab-rich > .event-page-validation-badge::before {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+}
+
+/* 검증 스트립 높이 상한 — 목업의 한 줄 스트립에 가깝게 */
+.event-editor > .event-draft-validation {
+  max-height: 92px;
+  overflow: hidden;
+}
+
+.event-editor > .event-draft-validation .event-draft-validation-issues {
+  max-height: 58px;
+}
