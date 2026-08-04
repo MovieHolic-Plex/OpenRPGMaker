@@ -263,3 +263,74 @@
     transition: none;
   }
 }
+
+/* ── 커맨드 팔레트 — 검색 우선 리스트 ───────────────────────────── */
+.event-command-picker-search-row {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--mk-line, rgba(255, 255, 255, 0.11));
+}
+
+.event-command-picker-search {
+  font-size: 14.5px;
+  padding: 7px 10px;
+}
+
+/* 명령 행: 좌측 3px 카테고리 색바 + 라벨. 목업 블록 거터와 같은 어휘. */
+.event-command-picker-command {
+  position: relative;
+  padding-left: 14px;
+}
+
+.event-command-picker-command::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--pick-cat, #626b7d);
+}
+
+.event-command-picker-command[data-category="dialogue"] { --pick-cat: #3987e5; }
+.event-command-picker-command[data-category="flow"]     { --pick-cat: #d95926; }
+.event-command-picker-command[data-category="reward"]   { --pick-cat: #199e70; }
+.event-command-picker-command[data-category="map"],
+.event-command-picker-command[data-category="actor"]    { --pick-cat: #9085e9; }
+.event-command-picker-command[data-category="screen"],
+.event-command-picker-command[data-category="sound"]    { --pick-cat: #d55181; }
+.event-command-picker-command[data-category="battle"],
+.event-command-picker-command[data-category="system"],
+.event-command-picker-command[data-category="modern"]   { --pick-cat: #c98500; }
+
+/* 키보드 후보 — 마우스 hover 와 구분되게 테두리로. */
+.event-command-picker-command.keyboard-active {
+  background: rgba(217, 164, 65, 0.14);
+  box-shadow: inset 0 0 0 1px #d9a441;
+}
+
+/* 리스트 모드는 전폭 행 — 목업처럼 라벨이 잘리지 않게. */
+.event-command-picker-grid:not(.icon-grid) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.event-command-picker-grid:not(.icon-grid) .event-command-picker-command {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.event-command-picker-grid:not(.icon-grid) .event-command-picker-command-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 즐겨찾기 별은 행 오른쪽 끝으로. */
+.event-command-picker-grid:not(.icon-grid) .event-command-picker-favorite {
+  margin-left: auto;
+}

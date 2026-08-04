@@ -301,10 +301,14 @@ function renderCommandToolbar(
         "+",
         "명령 추가",
         "event-command-toolbar-add",
-        () =>
-          cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
-            new MouseEvent("dblclick", { bubbles: true, cancelable: true })
-          ),
+        () => {
+          // 기존에는 빈 줄에 dblclick 을 보냈다 — 명령이 하나라도 있으면 빈 줄이 없어
+          // 버튼이 아무 일도 하지 않았다. 팔레트를 직접 연다.
+          if (openActiveEventCommandPicker(mapId, eventId)) return;
+          cmdList
+            .querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')
+            ?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true }));
+        },
         false,
         true
       ),

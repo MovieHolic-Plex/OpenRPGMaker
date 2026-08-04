@@ -56,11 +56,28 @@ test("event editor matches the approved mockup", async ({ page }) => {
     await settings.screenshot({ path: `${DIR}/03-rail.png` });
   }
 
-  // 4) 페이지 탭
-  const tabs = modal.locator("[data-testid='event-page-tabs'], .event-page-tabs").first();
-  if (await tabs.count()) {
-    await tabs.screenshot({ path: `${DIR}/04-page-tabs.png` });
-  }
+  // 4) 페이지 탭 — 이름 + 조건 요약이 보여야 한다
+  const tabStrip = modal.locator("[data-testid='event-classic-page-tabs']").first();
+  await expect(tabStrip).toBeVisible();
+  await expect(tabStrip.locator("[data-testid='event-page-tab-cond-1']")).toHaveText("조건 없음");
+  await tabStrip.screenshot({ path: `${DIR}/04-page-tabs.png` });
+
+  // 5) 커맨드 팔레트 — 검색 우선 + 키보드 후보
+  await modal.getByTestId("event-command-toolbar-add").first().click();
+  const picker = page.getByTestId("event-command-picker-search");
+  await expect(picker).toBeVisible();
+  await picker.fill("소지금");
+  await page.waitForTimeout(250);
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(150);
+
+  const active = page.locator(".event-command-picker-command.keyboard-active");
+  await expect(active).toHaveCount(1);
+  // eslint-disable-next-line no-console
+  console.log("[palette] keyboard candidate:", (await active.first().innerText()).replace(/\s+/g, " ").trim());
+
+  const dialog = page.locator(".event-command-picker, [data-testid='event-command-picker']").first();
+  await (await dialog.count() ? dialog : page.locator("body")).screenshot({ path: `${DIR}/05-palette.png` });
 });
 
 function mockupProject(): { project: Project; eventId: string } {
