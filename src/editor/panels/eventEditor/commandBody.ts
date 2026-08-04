@@ -5,6 +5,7 @@ import { renderAdvancedCommandBody } from "./commandBodyAdvanced";
 import { renderCoreCommandBody } from "./commandBodyCore";
 import { renderM2CommandBody } from "./commandBodyM2";
 import { commandSummary } from "./commandSummary";
+import { renderSchemaCommandBody } from "./schemaCommandBody";
 import { COMMAND_KIND_OPTIONS } from "./options";
 import type { Command } from "@/project/types";
 import type { CommandEditContext } from "./types";
@@ -32,6 +33,8 @@ export function renderCommandBody(context: CommandEditContext, cmd: Command): HT
   );
 
   const body =
+    // 스키마 등재 명령이 먼저다. 미등재 명령은 그대로 기존 체인으로 떨어진다.
+    renderSchemaCommandBody(context, cmd) ??
     renderCoreCommandBody(context, cmd) ??
     renderAdvancedCommandBody(context, cmd) ??
     renderM2CommandBody(context, cmd) ??
