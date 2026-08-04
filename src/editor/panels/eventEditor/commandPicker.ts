@@ -248,6 +248,26 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
       search.addEventListener("input", () => {
         query = search.value;
         render();
+        // 타이핑하면 첫 결과가 곧바로 후보가 된다 — Enter 한 번으로 삽입되게.
+        highlightCommand(commandArea, 0);
+      });
+      // 검색창을 떠나지 않고 결과를 훑고 넣는다(목업 팔레트의 핵심 동작).
+      search.addEventListener("keydown", (event) => {
+        const buttons = commandButtonsOf(commandArea);
+        if (buttons.length === 0) return;
+        const current = buttons.findIndex((button) => button.classList.contains("keyboard-active"));
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          highlightCommand(commandArea, current < 0 ? 0 : (current + 1) % buttons.length);
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          highlightCommand(commandArea, current <= 0 ? buttons.length - 1 : current - 1);
+        } else if (event.key === "Enter") {
+          const target = buttons[current < 0 ? 0 : current];
+          if (!target) return;
+          event.preventDefault();
+          target.click();
+        }
       });
       gridToggle.addEventListener("click", () => {
         viewMode = viewMode === "grid" ? "list" : "grid";
@@ -312,6 +332,21 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
       search.focus({ preventScroll: true });
     },
   });
+}
+
+/** 결과 영역의 명령 버튼들(그룹 헤딩·토글 제외). */
+function commandButtonsOf(area: HTMLElement): HTMLButtonElement[] {
+  return Array.from(area.querySelectorAll<HTMLButtonElement>("button[data-command-entry]"));
+}
+
+/** 키보드 후보를 index 로 옮긴다. 시야 밖이면 스크롤해 들여온다. */
+function highlightCommand(area: HTMLElement, index: number): void {
+  const buttons = commandButtonsOf(area);
+  buttons.forEach((button) => button.classList.remove("keyboard-active"));
+  const target = buttons[index];
+  if (!target) return;
+  target.classList.add("keyboard-active");
+  target.scrollIntoView({ block: "nearest" });
 }
 
 function renderPickerPage(
@@ -463,7 +498,13 @@ function renderCommandButton(
         "aria-describedby": `command-picker-guidance-${entry.commandId}`,
       }),
     },
-    dataset: { category: visual.key, runtimeSupport: entry.runtimeSupport, runtimeOwner: entry.runtimeOwner },
+    dataset: {
+      category: visual.key,
+      runtimeSupport: entry.runtimeSupport,
+      runtimeOwner: entry.runtimeOwner,
+      // 검색창에서 ↑↓/Enter 로 훑을 대상 표식. 즐겨찾기 별 버튼과 구분된다.
+      ...(entry.selectable ? { commandEntry: entry.commandId } : {}),
+    },
     children,
   }) as HTMLButtonElement;
   button.dataset.testid = entry.testId;

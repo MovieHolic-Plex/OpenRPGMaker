@@ -169,7 +169,7 @@ describe("RPG Maker style event editor entry points", () => {
     expect(content.querySelector('[data-testid="event-page-bottom-right"]')).toBeNull();
   });
 
-  it("renders the classic page toolbar with icons and a left-attached page tab strip", () => {
+  it("renders the classic page toolbar with icons and a top page tab strip carrying names and condition summaries", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     const pages = [
@@ -198,7 +198,15 @@ describe("RPG Maker style event editor entry points", () => {
     expect(content.querySelector('[data-testid="event-page-paste"]')).toBeNull();
 
     const tabStrip = content.querySelector('[data-testid="event-classic-page-tabs"]');
-    expect(tabStrip?.textContent).toContain("123");
+    expect(tabStrip).not.toBeNull();
+    // 탭은 번호뿐 아니라 페이지 이름과 조건 요약을 함께 보여준다 — 탭을 눌러 보지 않고도
+    // "이 페이지가 언제 실행되는가"를 읽을 수 있어야 한다.
+    for (const [index, name] of ["EV0002", "EV0002-2", "EV0002-3"].entries()) {
+      const tab = content.querySelector(`[data-testid="event-page-tab-${index + 1}"]`);
+      expect(tab?.textContent).toContain(String(index + 1));
+      expect(tab?.textContent).toContain(name);
+    }
+    expect(content.querySelector('[data-testid="event-page-tab-cond-1"]')?.textContent).toBe("조건 없음");
     expect(content.querySelector('[data-testid="event-page-tab-add"]')).not.toBeNull();
     expect(content.querySelector('[data-testid="event-page-tab-3"]')?.className).toContain("active");
   });

@@ -1,0 +1,170 @@
+/* 이벤트 명령 리스트 → 블록 캔버스.
+ *
+ * DOM 은 건드리지 않는다. commandList.ts 가 이미 내보내는 것만 쓴다:
+ *   .cmd-item[data-command-category][data-cmd-depth]  — 카테고리 키 · 들여쓰기 깊이
+ *   .cmd-head                                          — 행 본체
+ *   .cmd-prefix (◆)                                    — 여기서 3px 색 거터로 바꾼다
+ *   .cmd-cat-icon[data-glyph]                          — 카테고리 글리프
+ * 따라서 testid 계약이 그대로 유지되고 기존 테스트가 깨지지 않는다.
+ *
+ * 색 규칙(검증기 결과 반영):
+ *   6색 전부를 all-pairs 로 구분하는 것은 불가능하다. 그래서 색은 식별자가 아니라
+ *   스캔 보조이고, 식별은 항상 함께 있는 명령 텍스트가 담당한다.
+ *   상위 3종(대사·흐름·데이터)만 색 단독으로 갈리고, 나머지 3종은 사선 텍스처를
+ *   2차 채널로 얹는다.
+ */
+
+.event-contents-fieldset .cmd-list {
+  --blk-radius: 5px;
+  --blk-indent: 18px;
+  /* 미분류 폴백. 반드시 부모에 둔다 — .cmd-item 에 두면 카테고리 규칙과 특이도가
+     같아 소스 순서로 폴백이 이겨 버린다(실제로 그렇게 깨졌다). 커스텀 속성은
+     상속되므로 부모 선언은 자식의 카테고리 선언에 항상 진다. */
+  --blk-cat: #626b7d;
+  display: grid;
+  gap: 3px;
+  align-content: start;
+  padding: 8px 10px;
+}
+
+/* ── 카테고리 색 (dataviz 검증 통과 · 다크 서피스 기준) ───────────── */
+.event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: #3987e5; }
+.event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: #d95926; }
+.event-contents-fieldset .cmd-item[data-command-category="reward"]   { --blk-cat: #199e70; }
+.event-contents-fieldset .cmd-item[data-command-category="map"],
+.event-contents-fieldset .cmd-item[data-command-category="actor"]    { --blk-cat: #9085e9; }
+.event-contents-fieldset .cmd-item[data-command-category="screen"],
+.event-contents-fieldset .cmd-item[data-command-category="sound"]    { --blk-cat: #d55181; }
+.event-contents-fieldset .cmd-item[data-command-category="battle"],
+.event-contents-fieldset .cmd-item[data-command-category="system"],
+.event-contents-fieldset .cmd-item[data-command-category="modern"]   { --blk-cat: #c98500; }
+
+/* 2차 채널 — 색만으로 갈리지 않는 후순위 3종에 사선 텍스처. */
+.event-contents-fieldset .cmd-item[data-command-category="map"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="actor"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="screen"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="sound"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="battle"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="system"] > .cmd-head > .cmd-prefix,
+.event-contents-fieldset .cmd-item[data-command-category="modern"] > .cmd-head > .cmd-prefix {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.5) 0 2px,
+    transparent 2px 4px
+  );
+}
+
+/* ── 블록 ────────────────────────────────────────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item {
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /* 깊이는 블록 자체를 들여쓴다 — 텍스트 들여쓰기가 아니라 구조로 보이게. */
+  margin-left: calc(var(--cmd-depth, 0) * var(--blk-indent));
+  position: relative;
+}
+
+/* 들여쓰기 가이드 — 분기 안쪽임을 세로선으로 알린다. */
+.event-contents-fieldset .cmd-list .cmd-item[data-cmd-depth]:not([data-cmd-depth="0"])::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--blk-indent) * -0.5);
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-default);
+  pointer-events: none;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head {
+  display: grid;
+  grid-template-columns: auto 3px auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px 6px 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--blk-radius);
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover {
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+}
+
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  background: var(--bg-raised);
+}
+
+/* ── ◆ 접두 문자를 색 거터로 ─────────────────────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-prefix {
+  /* 글자를 지우고 3px 막대만 남긴다. 텍스트 정본은 요약문이 계속 들고 있다. */
+  font-size: 0;
+  line-height: 0;
+  width: 3px;
+  min-width: 3px;
+  align-self: stretch;
+  min-height: 16px;
+  margin: 0;
+  border-radius: 2px;
+  background-color: var(--blk-cat);
+  background-repeat: repeat;
+}
+
+/* ── 드래그 핸들 · 글리프 ────────────────────────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle {
+  color: var(--text-3);
+  opacity: 0;
+  transition: opacity 0.12s;
+  cursor: grab;
+  font-size: 11px;
+  letter-spacing: -1px;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-drag-handle,
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-drag-handle {
+  opacity: 1;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {
+  color: var(--blk-cat);
+  font-size: 12px;
+  line-height: 1;
+  width: 14px;
+  text-align: center;
+  flex: 0 0 14px;
+}
+
+/* ── 액션 버튼 — 평소 숨기고 hover/선택 시만 ─────────────────────── */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-actions {
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-actions,
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-actions {
+  opacity: 1;
+}
+
+/* 키보드 접근성 — 포커스는 항상 보이게. */
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible > .cmd-actions,
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head:focus-visible > .cmd-drag-handle {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head,
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-actions,
+  .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle {
+    transition: none;
+  }
+}

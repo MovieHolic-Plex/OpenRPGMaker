@@ -33,6 +33,7 @@ import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
+import { resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
@@ -140,6 +141,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     },
     dataset: { testid: "event-editor-column-resizer" },
   });
+  // 목업의 우측 인스펙터. 명령을 클릭하면 편집 폼이 그 자리에서 열린다(모달 없음).
+  // 리스트를 렌더하기 "전에" 호스트를 붙여야, 재렌더 시 선택된 명령의 인스펙터가 복원된다.
+  const inspectorColumn = el("div", {
+    class: "event-editor-inspector-column",
+    dataset: { testid: "event-editor-inspector" },
+  });
+  setCommandInspectorHost(inspectorColumn);
+  resetCommandInspectorView();
+
   const cmdList = el("div", { class: "cmd-list" });
   renderCommandList(cmdList, activePage.commands, [], actions, { issues: activePageIssues });
   cmdList.querySelector(".empty-hint")?.remove();
@@ -165,7 +175,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-editor-settings-main",
     children: settingsChildren,
   });
-  settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage, validation), settingsMain);
+  // 페이지 탭은 좌측 컬럼이 아니라 상단 전폭 스트립으로 나간다(아래 section.append).
+  // 좁은 컬럼 안에서는 조건 요약을 읽을 폭이 나오지 않는다.
+  const pageTabStrip = renderClassicPageTabStrip(mapId, ev, activePage, validation);
+  settingsColumn.append(settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
@@ -195,7 +208,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const workbench = el("div", {
     class: "event-editor-workbench",
-    children: [settingsColumn, columnResizer, commandsColumn],
+    children: [settingsColumn, columnResizer, commandsColumn, inspectorColumn],
   });
   applyStoredSettingsColumnWidth(workbench);
   attachColumnResize(columnResizer, workbench);
@@ -216,9 +229,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         renderEventPositionControls(mapId, ev),
       ],
     }),
+    pageTabStrip,
     renderEventDiffSummary(mapId, eventId),
-    renderEventValidationSummary(validation),
-    workbench
+    workbench,
+    // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
+    renderEventValidationSummary(validation)
   );
   container.append(section);
 }
@@ -297,10 +312,14 @@ function renderCommandToolbar(
         "+",
         "명령 추가",
         "event-command-toolbar-add",
-        () =>
-          cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
-            new MouseEvent("dblclick", { bubbles: true, cancelable: true })
-          ),
+        () => {
+          // 기존에는 빈 줄에 dblclick 을 보냈다 — 명령이 하나라도 있으면 빈 줄이 없어
+          // 버튼이 아무 일도 하지 않았다. 팔레트를 직접 연다.
+          if (openActiveEventCommandPicker(mapId, eventId)) return;
+          cmdList
+            .querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')
+            ?.dispatchEvent(new MouseEvent("dblclick", { bubbles: true, cancelable: true }));
+        },
         false,
         true
       ),
