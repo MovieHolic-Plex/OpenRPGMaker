@@ -93,6 +93,77 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await dialog.screenshot({ path: `${DIR}/06-palette.png` });
 });
 
+// 사용자가 실제로 만나는 상태: 명령이 하나도 없는 새 이벤트 + 넓은 창.
+// 앞선 캡처는 명령 11개 · 페이지 3개 · 1500px 였어서 잘림/여백 문제를 놓쳤다.
+test("empty event on a wide viewport stays clean", async ({ page }) => {
+  await mkdir(DIR, { recursive: true });
+  await page.setViewportSize({ width: 1950, height: 1200 });
+
+  const { project, eventId } = emptyEventProject();
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+
+  const modal = page.getByTestId("event-editor-modal");
+  await expect(modal).toBeVisible();
+  await page.waitForTimeout(600);
+
+  const probe = await modal.evaluate((root) => {
+    const measure = (selector: string) => {
+      const node = root.querySelector<HTMLElement>(selector);
+      if (!node) return null;
+      return {
+        clientH: node.clientHeight,
+        scrollH: node.scrollHeight,
+        clientW: node.clientWidth,
+        scrollW: node.scrollWidth,
+        clipped: node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1,
+      };
+    };
+    const confirm = root.querySelector<HTMLElement>("[data-testid='event-editor-confirm']");
+    return {
+      tab: measure(".event-page-tab-rich"),
+      tabStrip: measure(".event-page-number-tabs"),
+      graphic: measure(".event-page-graphic-section, .event-graphic-field"),
+      confirmBg: confirm ? getComputedStyle(confirm).backgroundColor : null,
+    };
+  });
+  // eslint-disable-next-line no-console
+  console.log("[empty]", JSON.stringify(probe));
+
+  await modal.screenshot({ path: `${DIR}/07-empty-wide.png` });
+
+  // 탭 내용이 잘리면 안 된다 (이름 + 조건 요약 두 줄이 다 보여야 한다).
+  expect(probe.tab?.clipped, "page tab clips its content").toBeFalsy();
+});
+
+function emptyEventProject(): { project: Project; eventId: string } {
+  const project = createBlankProject();
+  const startMap = project.maps[project.startMapId];
+  if (!startMap) throw new Error("missing start map");
+  const eventId = "event_empty_demo";
+  startMap.events.push({
+    id: eventId,
+    name: "페이지 1",
+    x: 46,
+    y: 47,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_empty",
+        name: "페이지 1",
+        conditions: [],
+        graphic: {},
+        trigger: { kind: "action" },
+        priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [],
+      },
+    ],
+  } as never);
+  return { project, eventId };
+}
+
 function mockupProject(): { project: Project; eventId: string } {
   const project = createBlankProject();
   const startMap = project.maps[project.startMapId];
@@ -179,3 +250,99 @@ function mockupProject(): { project: Project; eventId: string } {
 }
 
 export type { Page };
+
+test("diagnose page tab strip geometry", async ({ page }) => {
+  await page.setViewportSize({ width: 1950, height: 1200 });
+  const { project, eventId } = emptyEventProject();
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+  const modal = page.getByTestId("event-editor-modal");
+  await page.waitForTimeout(500);
+  const info = await modal.evaluate((root) => {
+    const section = root.querySelector<HTMLElement>(".event-editor");
+    const kids = section ? [...section.children].map((c) => ({
+      cls: (c as HTMLElement).className.slice(0, 46),
+      mt: getComputedStyle(c as HTMLElement).marginTop,
+      mb: getComputedStyle(c as HTMLElement).marginBottom,
+      order: getComputedStyle(c as HTMLElement).order,
+      gridRow: getComputedStyle(c as HTMLElement).gridRowStart,
+      pos: getComputedStyle(c as HTMLElement).position,
+      h: Math.round((c as HTMLElement).getBoundingClientRect().height),
+      y: Math.round((c as HTMLElement).getBoundingClientRect().top),
+    })) : [];
+    const ts = root.querySelector<HTMLElement>(".event-editor-top-strip");
+    const tsKids = ts ? [...ts.children].map((c) => {
+      const e = c as HTMLElement; const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
+      return { cls: e.className.slice(0,44), h: Math.round(r.height), w: Math.round(r.width), minH: cs.minHeight, disp: cs.display };
+    }) : [];
+    const tsCss = ts ? { display: getComputedStyle(ts).display, minHeight: getComputedStyle(ts).minHeight, alignItems: getComputedStyle(ts).alignItems, gap: getComputedStyle(ts).gap, padding: getComputedStyle(ts).padding, rows: getComputedStyle(ts).gridTemplateRows, cols: getComputedStyle(ts).gridTemplateColumns, alignContent: getComputedStyle(ts).alignContent } : null;
+    const ok = root.querySelector<HTMLElement>("[data-testid='event-editor-ok']");
+    const okInfo = ok ? { cls: ok.className, bg: getComputedStyle(ok).backgroundColor, parent: (ok.parentElement as HTMLElement)?.className } : null;
+    const strip = root.querySelector<HTMLElement>(".event-page-number-tabs");
+    if (!strip) return { error: "no strip", kids, okInfo };
+    const cs = getComputedStyle(strip);
+    const parent = strip.parentElement as HTMLElement | null;
+    return {
+      kids, okInfo, tsKids, tsCss,
+      stripRect: strip.getBoundingClientRect().toJSON(),
+      stripCss: { height: cs.height, minHeight: cs.minHeight, alignItems: cs.alignItems, overflowX: cs.overflowX, padding: cs.padding },
+      parentClass: parent?.className,
+      sectionCss: section ? { gap: getComputedStyle(section).gap, alignContent: getComputedStyle(section).alignContent, display: getComputedStyle(section).display, rows: getComputedStyle(section).gridTemplateRows, flow: getComputedStyle(section).gridAutoFlow } : null,
+      parentCss: parent ? { display: getComputedStyle(parent).display, height: getComputedStyle(parent).height, gridTemplate: getComputedStyle(parent).gridTemplateColumns } : null,
+      children: [...strip.children].map((c) => ({
+        cls: (c as HTMLElement).className,
+        w: Math.round((c as HTMLElement).getBoundingClientRect().width),
+        h: Math.round((c as HTMLElement).getBoundingClientRect().height),
+      })),
+    };
+  });
+  // eslint-disable-next-line no-console
+  console.log("[geom]", JSON.stringify(info, null, 1));
+});
+
+// 목업 대비 구조 체크리스트. 항목이 실제로 존재/작동하는지 기계적으로 센다.
+test("mockup parity checklist", async ({ page }) => {
+  await page.setViewportSize({ width: 1500, height: 1000 });
+  const { project, eventId } = mockupProject();
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+  const modal = page.getByTestId("event-editor-modal");
+  await page.waitForTimeout(600);
+
+  const result = await modal.evaluate((root) => {
+    const has = (sel: string) => !!root.querySelector(sel);
+    const rect = (sel: string) => {
+      const n = root.querySelector<HTMLElement>(sel);
+      return n ? n.getBoundingClientRect() : null;
+    };
+    const tabs = rect(".event-page-number-tabs");
+    const rail = rect(".event-editor-settings-column");
+    const canvas = rect(".event-editor-commands-column");
+    const insp = rect(".event-editor-inspector-column");
+    const card = rect(".event-editor-card");
+    const val = rect(".event-draft-validation");
+    const gutters = new Set<string>();
+    for (const item of root.querySelectorAll<HTMLElement>(".cmd-item[data-command-category]")) {
+      const p = item.querySelector<HTMLElement>(":scope > .cmd-head > .cmd-prefix");
+      if (p) gutters.add(getComputedStyle(p).backgroundColor);
+    }
+    const okBtn = root.querySelector<HTMLElement>(".btn.event-editor-footer-button.primary");
+    return {
+      "가로 페이지 탭": !!tabs && tabs.width > 400 && tabs.height < 80,
+      "탭 조건 요약": has("[data-testid='event-page-tab-cond-1']"),
+      "이벤트 카드": has(".event-editor-card") && has(".event-editor-card-sprite"),
+      "카드가 레일 최상단": !!card && !!rail && card.top - rail.top < 24,
+      "3열 배치": !!rail && !!canvas && !!insp && rail.right <= canvas.left + 24 && canvas.right <= insp.left + 24,
+      "블록 캔버스 거터 다색": gutters.size >= 4,
+      "인라인 인스펙터": has(".event-editor-inspector-column"),
+      "카테고리 범례": has(".event-command-legend"),
+      "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
+      "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
+    };
+  });
+  const pass = Object.values(result).filter(Boolean).length;
+  const total = Object.keys(result).length;
+  // eslint-disable-next-line no-console
+  console.log("[parity]", JSON.stringify(result), `=> ${pass}/${total}`);
+  expect(pass, JSON.stringify(result)).toBeGreaterThanOrEqual(total - 1);
+});

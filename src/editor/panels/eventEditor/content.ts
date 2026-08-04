@@ -27,6 +27,7 @@ import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
+import { renderEventGraphicIcon } from "./eventGraphicPreview";
 import { renderEventAiAssist } from "./aiAssist";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventScriptModernViews } from "./eventScriptModernViews";
@@ -178,7 +179,40 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 페이지 탭은 좌측 컬럼이 아니라 상단 전폭 스트립으로 나간다(아래 section.append).
   // 좁은 컬럼 안에서는 조건 요약을 읽을 폭이 나오지 않는다.
   const pageTabStrip = renderClassicPageTabStrip(mapId, ev, activePage, validation);
-  settingsColumn.append(settingsMain);
+
+  // 목업의 이벤트 카드 — 레일 상단의 시선 진입점.
+  // 스프라이트 실물 + 이름/캐릭터 ID + 좌표를 한 덩어리로 묶는다.
+  // top-strip 을 카드 안에 넣는 이유: 이름·캐릭터 ID 가 top-strip 안에 있어야 한다는
+  // 기존 계약(eventEditorSettingsLayout.test)을 유지하면서 배치만 목업에 맞추기 위함.
+  const eventCard = el("div", {
+    class: "event-editor-card",
+    dataset: { testid: "event-editor-card" },
+    children: [
+      el("div", {
+        class: "event-editor-card-sprite",
+        attrs: { "aria-hidden": "true" },
+        children: [renderEventGraphicIcon(activePage.graphic, { scale: 2 })],
+      }),
+      el("div", {
+        class: "event-editor-card-meta",
+        children: [
+          el("div", {
+            class: "event-editor-top-strip",
+            children: [renderEventNameControl(mapId, ev.id, activePage, ev)],
+          }),
+          el("div", {
+            class: "event-editor-id-row",
+            dataset: { testid: "event-editor-id-row" },
+            children: [
+              el("span", { text: `ID ${displayEventNumber(mapId, eventId)}` }),
+              renderEventPositionControls(mapId, ev),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+  settingsColumn.append(eventCard, settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
@@ -214,22 +248,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   attachColumnResize(columnResizer, workbench);
 
   section.append(
+    // 목업: 페이지 탭이 최상단. 이름/ID 행보다 먼저 온다.
     el("div", {
-      class: "event-editor-top-strip",
-      children: [
-        renderEventNameControl(mapId, ev.id, activePage, ev),
-        renderPageTabs(mapId, ev, activePage),
-      ],
+      class: "event-editor-pagebar",
+      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
     }),
-    el("div", {
-      class: "event-editor-id-row",
-      dataset: { testid: "event-editor-id-row" },
-      children: [
-        el("span", { text: `ID ${displayEventNumber(mapId, eventId)}` }),
-        renderEventPositionControls(mapId, ev),
-      ],
-    }),
-    pageTabStrip,
     renderEventDiffSummary(mapId, eventId),
     workbench,
     // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
@@ -331,7 +354,37 @@ function renderCommandToolbar(
         false,
         false
       ),
+      // 카테고리 범례 — 블록 거터 색이 무엇을 뜻하는지 한 줄로.
+      // 색은 스캔 보조일 뿐이고 식별은 라벨이 담당하므로 텍스트를 함께 둔다.
+      renderCommandCategoryLegend(),
     ],
+  });
+}
+
+const COMMAND_CATEGORY_LEGEND: readonly (readonly [string, string])[] = [
+  ["dialogue", "대사"],
+  ["flow", "흐름"],
+  ["reward", "데이터"],
+  ["map", "맵"],
+  ["screen", "연출"],
+  ["system", "시스템"],
+];
+
+function renderCommandCategoryLegend(): HTMLElement {
+  return el("div", {
+    class: "event-command-legend",
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: "event-command-legend" },
+    children: COMMAND_CATEGORY_LEGEND.map(([key, label]) =>
+      el("span", {
+        class: "event-command-legend-item",
+        dataset: { category: key },
+        children: [
+          el("i", { class: "event-command-legend-swatch" }),
+          el("span", { class: "event-command-legend-label", text: label }),
+        ],
+      })
+    ),
   });
 }
 
