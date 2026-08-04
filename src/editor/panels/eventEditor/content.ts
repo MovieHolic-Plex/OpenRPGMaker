@@ -214,6 +214,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   attachColumnResize(columnResizer, workbench);
 
   section.append(
+    // 목업: 페이지 탭이 최상단. 이름/ID 행보다 먼저 온다.
+    pageTabStrip,
     el("div", {
       class: "event-editor-top-strip",
       children: [
@@ -229,7 +231,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         renderEventPositionControls(mapId, ev),
       ],
     }),
-    pageTabStrip,
     renderEventDiffSummary(mapId, eventId),
     workbench,
     // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
