@@ -6,6 +6,8 @@ new-editor/
   SPEC.md                          ← 자세한 지시사항 (영역별 계약 · 전역 규칙 · 검증)
   CHECKLIST.md                     ← 라운드마다 채점하는 표. 루프 종료 조건.
   render-mockup.mjs                ← 목업 HTML → PNG 재렌더
+  render-report.mjs                ← 증거 스크린 → REPORT.html 재생성
+  REPORT.html                      ← 최종 보고서 (이미지 base64 내장)
   mockup/
     event-editor-mockup.html       ← 목업 정본 (여기를 고친다)
     event-editor-mockup.png        ← 위 파일의 렌더 (감독 검수용)
@@ -26,7 +28,7 @@ new-editor/mockup/event-editor-mockup.png 가 목표 그림이다.
 3. CHECKLIST.md 의 A~G 를 0~3 으로 채점하고, 점수를 표에 갱신한다.
 4. 가장 점수가 낮은 영역 하나만 고른다. 여러 영역을 한 번에 건드리지 마라.
 5. SPEC.md §2 의 해당 파일만 고친다. 목업 CSS 를 복사하지 마라.
-6. 다시 캡처해서 눈으로 확인한다. [parity] 10항목이 전부 true 여야 한다.
+6. 다시 캡처해서 눈으로 확인한다. [parity] 15항목이 전부 true 여야 한다.
 7. npm run typecheck:app 통과를 확인한다.
 8. 한 커밋으로 남긴다. 커밋 메시지에 "무엇이 몇 점에서 몇 점이 됐는지"를 적는다.
 
@@ -36,7 +38,7 @@ new-editor/mockup/event-editor-mockup.png 가 목표 그림이다.
 ## 종료 조건
 
 - `CHECKLIST.md` 의 A~G 가 **전부 3점**이고,
-- `[parity]` 10/10 이고,
+- `[parity]` 15/15 이고,
 - 연속 2라운드 동안 새로 내릴 점수가 없으면 멈춘다.
 
 ## 목업을 바꾸고 싶을 때

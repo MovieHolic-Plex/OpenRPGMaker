@@ -139,11 +139,15 @@ npx playwright test eventEditorMockupShots.spec.ts --reporter=line
 
 - 캡처는 `output/evidence/event-editor-mockup/` 에 7장 떨어진다.
   `01-shell.png` 을 `new-editor/mockup/event-editor-mockup.png` 와 **나란히 놓고 눈으로** 비교한다.
-- `[parity]` 줄의 10항목이 전부 `true` 여야 한다. 하나라도 `false` 면 그 라운드는 실패다.
+- `[parity]` 줄의 15항목이 전부 `true` 여야 한다. 하나라도 `false` 면 그 라운드는 실패다.
 - 새 계약을 만들었으면 그 스펙에 체크 항목을 **추가**한다(지우지 마라).
 - 뷰포트 매트릭스: `1280×800 / 1500×1000 / 1920×1080 / 2560×1440` 각 9 invariant
   (`test "mockup invariants hold at …"`). 좁은 뷰포트에서 레일·캔버스·탭이
   겹치거나 모달 밖으로 넘치지 않는지를 본다.
+
+**상태(2026-08-05):** 루프는 5라운드로 종료 — A~G 전부 3점, parity 15/15,
+2라운드 연속 강등 없음. 최종 보고서는 `new-editor/REPORT.html`(이미지 base64 내장),
+재생성은 `node new-editor/render-report.mjs`.
 
 병합 전 최종:
 ```bash
