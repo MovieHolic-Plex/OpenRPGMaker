@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@/editor/eventCommands/schema/catalog";
+import "@/editor/eventCommands/schema/catalogExtended";
 import {
   allCommandSchemas,
   commandSchemaFor,
@@ -142,7 +143,7 @@ describe("이벤트 명령 스키마", () => {
   });
 
   it("등재 목록에 있는 kind 만 스키마 폼을 렌더한다", () => {
-    // 현재 등재 목록은 비어 있다 — 기존 testid 계약을 승계하기 전에는 아무 kind 도 전환하지 않는다.
+    // 등재는 기존 testid 계약을 승계한 kind 에만 허용된다. 절차 없는 등재를 이 테스트가 막는다.
     for (const schema of allCommandSchemas()) {
       const rendered = renderSchemaCommandBody(ctx(), { kind: schema.kind } as Command);
       if (SCHEMA_RENDERED_KINDS.has(schema.kind)) expect(rendered).toBeDefined();
@@ -154,7 +155,7 @@ describe("이벤트 명령 스키마", () => {
     const schema = commandSchemaFor("cutsceneControl");
     if (!schema) throw new Error("cutsceneControl 스키마 없음");
     const body = renderSchemaForm(ctx(), { kind: "cutsceneControl", mode: "begin" } as Command, schema);
-    expect(findByTestId(body as never, "cutscene-control-mode-select")).toBeTruthy();
+    expect(findByTestId(body as never, "event-command-cutscene-mode")).toBeTruthy();
   });
 
   it("필드가 없는 명령은 요약문을 안내문으로 보여준다", () => {
@@ -171,7 +172,7 @@ describe("이벤트 명령 스키마", () => {
 
     const cmd = { kind: "cutsceneControl", mode: "begin" } as Command;
     const body = renderSchemaForm(ctx(replaceCommand), cmd, schema);
-    const select = findByTestId(body as never, "cutscene-control-mode-select") as
+    const select = findByTestId(body as never, "event-command-cutscene-mode") as
       | { value: string; dispatchEvent: (event: unknown) => void }
       | undefined;
     expect(select).toBeTruthy();
@@ -194,13 +195,15 @@ describe("이벤트 명령 스키마", () => {
 
     const cmd = { kind: "cutsceneControl", mode: "begin", skippable: false } as Command;
     const body = renderSchemaForm(ctx(replaceCommand), cmd, schema);
-    const toggle = findByTestId(body as never, "cutscene-control-skippable-toggle") as
-      | { dispatchEvent: (event: unknown) => void }
+    // bool 은 체크박스로 렌더된다 (기존 폼 계약이 HTMLInputElement 를 요구).
+    const toggle = findByTestId(body as never, "event-command-cutscene-skippable") as
+      | { checked: boolean; dispatchEvent: (event: unknown) => void }
       | undefined;
     expect(toggle).toBeTruthy();
     if (!toggle) return;
 
-    toggle.dispatchEvent(new Event("click"));
+    toggle.checked = true;
+    toggle.dispatchEvent(new Event("change"));
     const [, next] = replaceCommand.mock.calls[0] as [number[], Record<string, unknown>];
     expect(next.skippable).toBe(true);
   });

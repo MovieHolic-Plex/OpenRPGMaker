@@ -12,6 +12,7 @@ import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 // 스키마 등록 side-effect. 이 import 가 없으면 레지스트리가 비어 있다.
 import "@/editor/eventCommands/schema/catalog";
+import "@/editor/eventCommands/schema/catalogExtended";
 import {
   commandSchemaFor,
   type CommandSchema,
@@ -29,26 +30,25 @@ import { switchPicker, variablePicker } from "./switchVariablePicker";
 import type { CommandEditContext } from "./types";
 
 /**
- * 스키마 렌더 경로를 타는 kind 목록. 현재는 비어 있다 — 의도적이다.
+ * 스키마 렌더 경로를 타는 kind 목록.
  *
- * 전환 후보로 "전용 폼이 없어 정적 안내문만 나오던" 명령 8종
- * (cutsceneControl / checkpointSave / killPlayer / gameOver / returnToTitle /
- *  stopAudio / sleepUntilMorning / breakLoop)을 먼저 검토했으나,
- * 전체 스위트 대조 결과 이들 모두 기존 testid 계약을 테스트로 못박고 있었다.
- * 예: scopedForms.test.ts "keeps truly terminal commands on their hint-only route"
- * 는 gameOver 가 [data-testid="game-over-editor"] 를 내고 input/select/textarea 를
- * 하나도 갖지 않을 것을 요구한다.
+ * 명령 73종이 전부 스키마로 선언돼 있지만, 렌더 경로 전환은 kind 마다 아래 절차를
+ * 밟아야 한다. 기존 폼들이 저마다 testid 계약을 테스트로 못박고 있기 때문이다
+ * (예: scopedForms.test.ts 는 gameOver 가 [data-testid="game-over-editor"] 를 내고
+ *  input/select/textarea 를 하나도 갖지 않을 것을 요구한다).
  *
- * 따라서 kind 전환은 "한 줄 추가"가 아니라 kind 당 아래 절차를 밟는 작업이다:
  *   1. 해당 kind 의 기존 testid 를 스키마 필드의 testId 로 지정해 계약을 승계한다.
  *   2. 그 kind 를 참조하는 테스트를 돌려 DOM 형태 기대치를 맞춘다.
  *   3. 여기 등재한다.
  *
- * 첫 전환 권장 대상은 cutsceneControl 이다. 지금은 mode 를 폼에서 아예 고칠 수 없고
- * (안내문만 렌더) 스키마는 mode·skippable 편집을 제공하므로 순수 기능 개선이다.
- * 다만 위 hint-only 테스트를 함께 고쳐야 하므로 제품 결정이 필요하다.
+ * "등재 목록에 있는 kind 만 스키마 폼을 렌더한다" 테스트가 절차 없는 등재를 막는다.
  */
-export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>();
+export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>([
+  // 1호 전환. 기존에는 terminalFallbackBody 의 안내문만 렌더돼 mode 를 고칠 수 없었고,
+  // scopedForms.test.ts 의 컷신 폼 계약 2건이 그래서 실패 상태였다.
+  // 스키마가 그 testid 를 승계하며 두 테스트를 통과시킨다.
+  "cutsceneControl",
+]);
 
 /** 프로젝트 상태에서 요약문 조회기를 만든다. */
 export function summaryLookup(): SummaryLookup {
@@ -104,20 +104,24 @@ export function renderSchemaForm(
   cmd: Command,
   schema: CommandSchema
 ): HTMLElement {
+  // 컨테이너 testid 는 kind 에서 파생된다: cutsceneControl → cutscene-control-editor.
+  // 기존 폼의 컨테이너 계약과 그대로 맞물린다.
   const wrap = el("span", {
     class: "rich-command-form schema-command-form",
-    dataset: { testid: `schema-form-${schema.kind}`, schemaKind: schema.kind },
+    dataset: { testid: `${kebab(schema.kind)}-editor`, schemaKind: schema.kind },
   });
 
   const current = (): Record<string, unknown> =>
     (context.getCurrentCommand?.() ?? cmd) as unknown as Record<string, unknown>;
 
   const patch = (changes: Record<string, unknown>): void => {
-    context.actions.replaceCommand(context.path, {
-      ...current(),
-      ...changes,
-      kind: schema.kind,
-    } as unknown as Command);
+    const next: Record<string, unknown> = { ...current(), ...changes, kind: schema.kind };
+    // when 이 더 이상 성립하지 않는 필드는 명령에서 제거한다.
+    // 예: cutsceneControl 의 mode 가 "end" 가 되면 skippable 은 의미를 잃으므로 남기지 않는다.
+    for (const [key, spec] of Object.entries(schema.fields)) {
+      if (spec.when && !spec.when(next)) delete next[key];
+    }
+    context.actions.replaceCommand(context.path, next as unknown as Command);
   };
 
   const fields = visibleFields(schema.fields, cmd as unknown as Record<string, unknown>);
@@ -153,7 +157,8 @@ function renderField(
   cmd: Record<string, unknown>,
   patch: (changes: Record<string, unknown>) => void
 ): HTMLElement | undefined {
-  const testid = `${kebab(kind)}-${fieldTestId(key, spec)}`;
+  // spec.testId 는 절대 override 다 — 기존 폼의 testid 계약을 그대로 승계할 때 쓴다.
+  const testid = spec.testId ?? `${kebab(kind)}-${fieldTestId(key, spec)}`;
   const value = cmd[key];
 
   switch (spec.type) {
@@ -198,14 +203,15 @@ function renderField(
     }
 
     case "bool": {
-      const button = el("button", {
-        class: "rich-toggle",
-        text: spec.label,
-        attrs: { type: "button", "aria-pressed": String(value === true) },
-        dataset: { testid: `${testid}-toggle` },
-      }) as HTMLButtonElement;
-      button.addEventListener("click", () => patch({ [key]: value !== true }));
-      return button;
+      // 체크박스로 낸다. 토글 버튼이 아니라 input 이어야 기존 폼의 계약(HTMLInputElement)과 맞는다.
+      const box = el("input", {
+        class: "rich-checkbox",
+        attrs: { type: "checkbox", "aria-label": spec.label },
+        dataset: { testid: ctlId(spec, testid, "toggle") },
+      }) as HTMLInputElement;
+      box.checked = value === true;
+      box.addEventListener("change", () => patch({ [key]: box.checked }));
+      return box;
     }
 
     case "enum": {
@@ -216,10 +222,15 @@ function renderField(
           key: choice.key ?? choice.value,
         })),
         value: asEnumValue(value, spec.choices[0]?.value ?? ""),
-        testid: `${testid}-select`,
+        testid: ctlId(spec, testid, "select"),
         ariaLabel: spec.label,
       });
-      handle.select.addEventListener("change", () => patch({ [key]: decodeEnum(handle.select.value) }));
+      const allowed = new Set(spec.choices.map((choice) => choice.value));
+      handle.select.addEventListener("change", () => {
+        // 목록에 없는 값(빈 선택 등)은 현재 값으로 되돌려 쓴다 — 명령이 빈 값으로 오염되지 않는다.
+        const raw = handle.select.value;
+        patch({ [key]: allowed.has(raw) ? decodeEnum(raw) : cmd[key] });
+      });
       return handle.root;
     }
 
@@ -395,4 +406,12 @@ function opKey(op: string): string {
 
 function kebab(value: string): string {
   return value.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+}
+
+/**
+ * 컨트롤 요소의 testid.
+ * spec.testId 가 있으면 접미사 없이 그대로 쓴다 — 기존 폼 계약 승계용.
+ */
+function ctlId(spec: FieldSpec, testid: string, suffix: string): string {
+  return spec.testId ? testid : `${testid}-${suffix}`;
 }

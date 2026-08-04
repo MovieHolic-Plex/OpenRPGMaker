@@ -9,11 +9,11 @@
 import { defineCommand, type BranchSpec } from "./defineCommand";
 import { f } from "./fieldTypes";
 
-const num = (v: unknown, fallback = 0): number => (typeof v === "number" && Number.isFinite(v) ? v : fallback);
-const str = (v: unknown): string => (typeof v === "string" ? v : "");
+export const num = (v: unknown, fallback = 0): number => (typeof v === "number" && Number.isFinite(v) ? v : fallback);
+export const str = (v: unknown): string => (typeof v === "string" ? v : "");
 
 /** VariableOperand 를 사람이 읽는 문자열로. */
-function operandText(v: unknown, lookup: { variableName: (id: string) => string }): string {
+export function operandText(v: unknown, lookup: { variableName: (id: string) => string }): string {
   if (typeof v === "number") return String(v);
   if (v && typeof v === "object" && (v as { kind?: string }).kind === "var") {
     return lookup.variableName(str((v as { id?: unknown }).id));
@@ -22,7 +22,7 @@ function operandText(v: unknown, lookup: { variableName: (id: string) => string 
 }
 
 /** SwitchValue 를 사람이 읽는 문자열로. */
-function switchValueText(v: unknown, lookup: { variableName: (id: string) => string }): string {
+export function switchValueText(v: unknown, lookup: { variableName: (id: string) => string }): string {
   if (v === true) return "ON";
   if (v === false) return "OFF";
   if (v === "toggle") return "반전";
@@ -32,8 +32,8 @@ function switchValueText(v: unknown, lookup: { variableName: (id: string) => str
   return "ON";
 }
 
-const AMOUNT_OPS = ["=", "+=", "-="] as const;
-const VARIABLE_OPS = ["=", "+=", "-=", "*=", "/="] as const;
+export const AMOUNT_OPS = ["=", "+=", "-="] as const;
+export const VARIABLE_OPS = ["=", "+=", "-=", "*=", "/="] as const;
 
 // ── 대사 · 입력 ───────────────────────────────────────────────────
 
@@ -582,16 +582,27 @@ defineCommand({
   summary: (c, l) => `${l.recordName(str(c.animationId))} 재생`,
 });
 
+// 스키마 렌더 경로로 전환된 첫 명령. testId 로 기존 폼 계약을 승계한다
+// (scopedForms.test.ts 가 event-command-cutscene-* 를 요구한다).
+// mode 가 "end" 가 되면 skippable 의 when 이 깨지므로 렌더러가 필드를 제거한다.
 defineCommand({
   kind: "cutsceneControl",
   family: "atmosphere",
   label: "컷신 제어",
   fields: {
-    mode: f.enum("동작", [
-      { value: "begin", label: "시작", key: "begin" },
-      { value: "end", label: "종료", key: "end" },
-    ]),
-    skippable: f.bool("건너뛰기 허용", { optional: true, when: (c) => c.mode === "begin" }),
+    mode: f.enum(
+      "동작",
+      [
+        { value: "begin", label: "시작", key: "begin" },
+        { value: "end", label: "종료", key: "end" },
+      ],
+      { testId: "event-command-cutscene-mode" }
+    ),
+    skippable: f.bool("건너뛰기 허용", {
+      optional: true,
+      when: (c) => c.mode === "begin",
+      testId: "event-command-cutscene-skippable",
+    }),
   },
   summary: (c) => `컷신 ${c.mode === "end" ? "종료" : "시작"}`,
 });
