@@ -33,6 +33,7 @@ import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
+import { resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
@@ -140,6 +141,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     },
     dataset: { testid: "event-editor-column-resizer" },
   });
+  // 목업의 우측 인스펙터. 명령을 클릭하면 편집 폼이 그 자리에서 열린다(모달 없음).
+  // 리스트를 렌더하기 "전에" 호스트를 붙여야, 재렌더 시 선택된 명령의 인스펙터가 복원된다.
+  const inspectorColumn = el("div", {
+    class: "event-editor-inspector-column",
+    dataset: { testid: "event-editor-inspector" },
+  });
+  setCommandInspectorHost(inspectorColumn);
+  resetCommandInspectorView();
+
   const cmdList = el("div", { class: "cmd-list" });
   renderCommandList(cmdList, activePage.commands, [], actions, { issues: activePageIssues });
   cmdList.querySelector(".empty-hint")?.remove();
@@ -198,7 +208,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const workbench = el("div", {
     class: "event-editor-workbench",
-    children: [settingsColumn, columnResizer, commandsColumn],
+    children: [settingsColumn, columnResizer, commandsColumn, inspectorColumn],
   });
   applyStoredSettingsColumnWidth(workbench);
   attachColumnResize(columnResizer, workbench);

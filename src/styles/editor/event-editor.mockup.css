@@ -334,3 +334,76 @@
 .event-command-picker-grid:not(.icon-grid) .event-command-picker-favorite {
   margin-left: auto;
 }
+
+/* ── 우측 인라인 인스펙터 ────────────────────────────────────────── */
+.event-editor .event-editor-workbench {
+  /* 기존 3트랙(설정 | 리사이저 | 명령) 정의가 !important 라 여기서도 붙인다.
+     인스펙터 트랙을 더해 4칸으로. */
+  grid-template-columns:
+    minmax(260px, var(--event-editor-settings-track))
+    10px
+    minmax(340px, 1fr)
+    minmax(240px, 320px) !important;
+}
+
+.event-editor .event-editor-inspector-column {
+  background: var(--mk-surface);
+  border-left: 1px solid var(--mk-line);
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  display: block;
+}
+
+.event-editor .event-inspector-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--mk-surface);
+  border-bottom: 1px solid var(--mk-line-soft);
+  padding: 9px 12px;
+  display: grid;
+  gap: 3px;
+}
+
+.event-editor .event-inspector-kind {
+  font-family: var(--mk-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mk-accent);
+}
+
+.event-editor .event-inspector-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mk-t1);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.event-editor .event-inspector-body {
+  padding: 11px 12px 22px;
+}
+
+.event-editor .event-inspector-empty {
+  padding: 30px 18px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--mk-t3);
+}
+
+/* 좁은 창에서는 인스펙터를 접는다 — 명령 리스트가 우선. */
+@media (max-width: 1180px) {
+  .event-editor .event-editor-workbench {
+    grid-template-columns:
+      minmax(260px, var(--event-editor-settings-track))
+      8px
+      minmax(300px, 1fr) !important;
+  }
+  .event-editor .event-editor-inspector-column {
+    display: none;
+  }
+}
