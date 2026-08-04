@@ -347,7 +347,9 @@ function renderCommandToolbar(
         true
       ),
       toolbarButton(
-        "몬",
+        // 나머지 툴바가 전부 기호(↶ ↷ ↑ ↓ ▣ ✂ ＋)인데 여기만 한글 한 글자 "몬" 이라
+        // 잘린 라벨처럼 보였다. 같은 기호 어휘로 맞춘다 — 뜻은 title 이 계속 들고 있다.
+        "☠",
         "필드 몬스터 템플릿 (전투→승리 소거)",
         "event-command-toolbar-field-monster",
         () => openFieldMonsterTemplateDialog(mapId, eventId, page),
