@@ -249,8 +249,8 @@
 /* RM2K3 클래식 명령 라인 + 스레드형 parent/child 위계.
    depth마다 넓은 들여쓰기 + 연속 세로 레일 + 자식 행 배경 밴드로 분기를 즉시 읽는다. */
 .event-contents-fieldset .cmd-list {
-  --cmd-indent-step: 28px;
-  --cmd-indent-base: 10px;
+  --cmd-indent-step: 18px;
+  --cmd-indent-base: 0px;
   --cmd-rail: color-mix(in srgb, var(--accent, #6ea8ff) 55%, var(--border-default));
   --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));
   --cmd-rail-fork: color-mix(in srgb, var(--accent, #6ea8ff) 70%, var(--border-default));
@@ -266,11 +266,11 @@
   border-radius: 0;
   color: var(--text-1);
   display: flex;
-  font: 400 13px/20px "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  font: 400 12px/1.35 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
   gap: 6px;
   min-height: 24px;
   overflow: hidden;
-  /* depth 레벨마다 28px — 18px 때보다 parent/child가 확실히 갈라진다. */
+  /* 목업 parity: depth당 18px 들여쓰기(목업 --indent와 동일). */
   padding: 1px 8px 1px calc(var(--cmd-indent-base) + (var(--cmd-depth, 0) * var(--cmd-indent-step)));
   position: relative;
   text-overflow: ellipsis;

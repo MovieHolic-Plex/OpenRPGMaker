@@ -224,7 +224,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       class: "event-rm2k3-fieldset event-contents-fieldset",
       dataset: { testid: "event-classic-contents" },
       children: [
-        el("legend", { class: "event-contents-legend", text: "실행 내용" }),
+        el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
         cmdList,
         // 카테고리 범례 — 툴바 안이 아니라 캔버스 바로 아래 자기 한 줄로.
@@ -492,6 +492,17 @@ function maxBranchDepth(commands: readonly Command[]): number {
   };
   commands.forEach((cmd) => walk(cmd, 1));
   return max;
+}
+
+// 목업 범례("실행 내용 · 12개")와 같은 전체 명령 수 — 분기 안까지 센다.
+function countAllCommands(commands: readonly Command[]): number {
+  let n = 0;
+  const walk = (cmd: Command): void => {
+    n += 1;
+    for (const branch of branchesOf(cmd)) branch.commands.forEach(walk);
+  };
+  commands.forEach(walk);
+  return n;
 }
 
 function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {

@@ -17,6 +17,7 @@
   --mk-t1: #e9ecf3;
   --mk-t2: #9aa3b5;
   --mk-t3: #626b7d;
+  --mk-cat-flow: #d95926; /* 흐름·분기 마커 (§3.2) */
   --mk-radius: 6px;
   --mk-mono: "Cascadia Code", "Cascadia Mono", ui-monospace, Consolas, "D2Coding", monospace;
 }
@@ -27,32 +28,35 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: stretch;
-  gap: 3px;
+  gap: 4px;
   overflow-x: auto;
   overflow-y: hidden;
-  background: var(--mk-inset);
-  border-bottom: 1px solid var(--mk-line);
-  border-radius: var(--mk-radius) var(--mk-radius) 0 0;
+  background: transparent;
+  border-bottom: 0;
+  border-radius: 0;
   padding: 0;
   width: 100%;
+  min-height: 50px;
 }
 
 .event-editor .event-page-number-tabs > .event-page-tab-rich {
   display: grid;
   grid-template-columns: auto auto 1fr auto auto;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   flex: 0 0 auto;
-  min-width: 190px;
-  max-width: 280px;
+  width: 224px;
+  min-width: 0;
+  min-height: 50px;
   height: auto;
   margin: 0;
-  padding: 7px 13px 8px;
+  padding: 6px 11px 7px;
   text-align: left;
-  background: var(--mk-raised);
-  border: 1px solid var(--mk-line);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: 0;
   border-top: 2px solid transparent;
-  border-radius: 4px 4px 0 0;
+  border-radius: 6px 6px 0 0;
   color: var(--mk-t2);
   transition: background 0.13s, color 0.13s;
 }
@@ -354,13 +358,15 @@
 /* ── 우측 인라인 인스펙터 ────────────────────────────────────────── */
 .event-editor .event-editor-workbench {
   /* 기존 3트랙(설정 | 리사이저 | 명령) 정의가 !important 라 여기서도 붙인다.
-     인스펙터 트랙을 더해 4칸으로. */
+     리사이저 트랙은 0 으로 죽이고(목업엔 없음) 인스펙터 트랙을 더한다.
+     열 구분은 레일/인스펙터의 border-right/left 1px. */
   --event-editor-settings-track: 312px;
   grid-template-columns:
     minmax(0, var(--event-editor-settings-track))
-    10px
+    0
     minmax(0, 1fr)
     348px !important;
+  gap: 0;
 }
 
 .event-editor .event-editor-inspector-column {
@@ -573,9 +579,9 @@
  * 여기서 기하만 확정한다.
  */
 .event-editor .event-page-number-tabs {
-  align-self: start;
+  align-self: stretch;
   height: auto;
-  min-height: 0;
+  min-height: 50px;
   max-height: none;
 }
 
@@ -583,7 +589,7 @@
   display: grid;
   width: auto;
   height: auto;
-  min-height: 44px;
+  min-height: 50px;
   overflow: visible;
 }
 
@@ -694,6 +700,18 @@
 .event-editor-modal-dynamic .event-editor > .event-editor-workbench {
   flex: 1 1 auto;
   min-height: 0;
+}
+
+/* 목업 셸: 본문(3열)은 모달 가장자리에 붙고, 열 사이 간격은 0 —
+ * 열 구분은 레일/인스펙터의 border-right/left 1px 이 한다.
+ * (옛 .event-editor-modal-body padding 20px 25px 8px 와 .event-editor gap 8px 가
+ *  페이지바 아래 20px·좌우 25px·열 사이 8px 죽은 여백을 만들었다) */
+.event-editor-modal-body {
+  padding: 0;
+}
+
+.event-editor-modal-dynamic .event-editor {
+  gap: 0;
 }
 
 .event-editor-modal-dynamic .event-editor > .event-page-number-tabs,
@@ -958,8 +976,10 @@
 .event-editor > .event-editor-pagebar {
   display: flex;
   align-items: stretch;
-  gap: 10px;
+  gap: 6px;
   flex: 0 0 auto;
+  padding: 5px 14px 0;
+  border-bottom: 1px solid var(--mk-line);
   min-height: 0;
 }
 
@@ -970,11 +990,86 @@
 
 .event-editor > .event-editor-pagebar > .event-page-tabs {
   flex: 0 0 auto;
-  align-self: center;
+  align-self: stretch;
   min-height: 0;
   display: flex;
   align-items: center;
   gap: 6px;
+  padding-bottom: 6px;
+}
+
+.event-editor > .event-editor-pagebar > .event-page-tabs .btn {
+  align-self: stretch;
+  height: 30px;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+/* ── D: 블록 캔버스 값 맞추기 ──────────────────────────────────── */
+/* 목업 .canvas: padding 9px 11px · gap 3px */
+.event-editor .cmd-list {
+  padding: 9px 11px;
+  gap: 3px;
+}
+
+/* 목업 .mark: 블록이 아닌 흐름색 텍스트 줄 — 04-depth-parent 의
+ * 배경 밴드·사선 텍스처를 끊고 글자만으로 그린다. */
+.event-editor .cmd-list > .cmd-line-marker {
+  background-color: transparent;
+  background-image: none;
+  border: 0;
+  border-radius: 0;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 11.5px;
+  line-height: 16px;
+  height: 22px;
+  min-height: 22px;
+  padding: 3px 2px 3px 4px;
+}
+
+/* 목업 .canvas-col: padding 10px 12px 12px · gap 8px · head 32px.
+ * 실제 필드셋은 padding 12/12/10 + head 32 + gap 8, 열 자체도 좌우 인셋을
+ * 더해 캔버스를 목업(816)보다 좁게 만든다 → 열/필드셋 값을 목업에 맞춘다. */
+.event-editor .event-editor-commands-column {
+  padding: 0;
+}
+
+.event-editor .event-contents-fieldset {
+  position: relative;
+  padding: 10px 12px 12px;
+  gap: 8px;
+  min-height: 0;
+  /* 목업 canvas-head: 범례+툴바가 한 행 32px. */
+  grid-template-rows: 32px minmax(0, 1fr) auto;
+}
+
+.event-editor .event-contents-fieldset > .event-contents-legend {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  float: none;
+}
+
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar {
+  grid-row: 1;
+  grid-column: 2;
+  min-height: 32px;
+}
+
+.event-editor .event-contents-fieldset > .cmd-list {
+  grid-row: 2;
+  grid-column: 1 / -1;
+}
+
+.event-editor .event-contents-fieldset > .event-command-legend {
+  grid-row: 3;
+  grid-column: 1 / -1;
 }
 
 /* ── 검증 스트립: 기본 접힘 한 줄 (목업 valstrip) ────────────────── */

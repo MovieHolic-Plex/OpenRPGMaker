@@ -27,7 +27,7 @@
   box-shadow: none;
   color: var(--event-modern-text);
   font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  grid-template-rows: 52px minmax(0, 1fr) 78px;
+  grid-template-rows: 52px minmax(0, 1fr) 64px;
   height: 100vh;
   height: 100dvh;
   max-height: 100vh;

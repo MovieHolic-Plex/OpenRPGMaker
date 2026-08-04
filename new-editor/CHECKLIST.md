@@ -16,12 +16,13 @@
 
 ## 기계 검증
 
-`npx playwright test eventEditorMockupShots.spec.ts` 의 `[parity]` 줄 — **현재 13/13**.
+`npx playwright test eventEditorMockupShots.spec.ts` 의 `[parity]` 줄 — **현재 15/15**.
 
 ```
 가로 페이지 탭 · 탭 조건 요약 · 이벤트 카드 · 카드가 레일 최상단 · 3열 배치 ·
 열 폭 312·348 · 블록 캔버스 거터 다색 · 인라인 인스펙터 · 카테고리 범례 ·
-범례가 캔버스 아래 · 인스펙터에 읽을 것 · 하단 검증 스트립 · 황동 확인 버튼
+범례가 캔버스 아래 · 인스펙터에 읽을 것 · 하단 검증 스트립 · 황동 확인 버튼 ·
+헤드 행 32 정렬 · 범례 명령 수
 ```
 
 이 13항목은 대부분 **"있다/없다"만 본다.** `열 폭`·`범례가 캔버스 아래` 두 항목만 기하를 본다.
@@ -41,10 +42,11 @@
 | 2 | 2026-08-04 | 게임 필 스킨 레이어(`event-editor.gamefeel.css` 신설) + D 그리드 배치 확정 + F 천장 104px | D2→3 F3 유지, 회귀 없음 |
 | 3 | 2026-08-04 | 카드 겹침(A/C 회귀) · 인스펙터 한글 라벨 압착 · 탭 썸네일 스케일 · G 채점 | 전 영역 3, parity 10/10 → 13/13 |
 | 4 | 2026-08-05 | 푸터(목업과 동일: 좌 상태 2행 · 우 액션 6, 삭제=위험 고스트) · 레일 gfx/trig 겹침(1280) 수정 · 매트릭스 invariant 9번째 추가 | 전 영역 3 유지, parity 13/13 + 매트릭스 4뷰포트 9/9 |
+| 5 | 2026-08-05 | D 헤드 행 기하(범례 absolute + 32px 행, 툴바와 정렬) · 범례 "실행 내용 · N개" · parity 2항목 추가 | 전 영역 3 유지(2라운드 연속 강등 없음), parity 13→15/15 |
 
-## 게이트 (라운드 4 종료 시점)
+## 게이트 (라운드 5 종료 시점)
 
 - `npm run typecheck:app` — 통과
-- `npx playwright test eventEditorMockupShots.spec.ts` — 8 passed, `[parity] 13/13`, 매트릭스 9/9 ×4 뷰포트
+- `npx playwright test eventEditorMockupShots.spec.ts` — 8 passed, `[parity] 15/15`, 매트릭스 9/9 ×4 뷰포트
 - `npx vitest run test/eventEditor` — **4 failed / 98 passed**, SPEC §7 의 기준선과 동일(신규 실패 0)
 - `npm run build` — 통과

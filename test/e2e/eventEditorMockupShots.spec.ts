@@ -1,9 +1,8 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-import { createBlankProject } from "@/project/defaults";
+import { emptyEventProject, mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import type { Command, Project } from "@/project/types";
 
 // 목업대로 바꾼 이벤트 에디터 화면을 조각별로 캡처한다.
 // 실행: npx playwright test eventEditorMockupShots.spec.ts
@@ -152,120 +151,6 @@ test("empty event on a wide viewport stays clean", async ({ page }) => {
   expect(card?.overlap, "name input overlaps the character-id label").toBe(false);
 });
 
-function emptyEventProject(): { project: Project; eventId: string } {
-  const project = createBlankProject();
-  const startMap = project.maps[project.startMapId];
-  if (!startMap) throw new Error("missing start map");
-  const eventId = "event_empty_demo";
-  startMap.events.push({
-    id: eventId,
-    name: "페이지 1",
-    x: 46,
-    y: 47,
-    trigger: { kind: "action" },
-    commands: [],
-    pages: [
-      {
-        id: "page_empty",
-        name: "페이지 1",
-        conditions: [],
-        graphic: {},
-        trigger: { kind: "action" },
-        priority: "same",
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [],
-      },
-    ],
-  } as never);
-  return { project, eventId };
-}
-
-function mockupProject(): { project: Project; eventId: string } {
-  const project = createBlankProject();
-  const startMap = project.maps[project.startMapId];
-  if (!startMap) throw new Error("missing start map");
-
-  const mapId = project.startMapId;
-  const variableId = project.variables[0]?.id ?? "";
-  const switchId = project.switches[0]?.id ?? "";
-  const secondSwitchId = project.switches[1]?.id ?? switchId;
-  const itemId = project.database.items[0]?.id ?? "";
-
-  // 카테고리 6종 + 중첩 분기가 한 화면에 나오도록.
-  const commands: Command[] = [
-    { kind: "text", speaker: "의뢰 중개인 미라", body: "서쪽길 슬라임과 동쪽길 박쥐떼 때문에 상인들이 발이 묶였어." },
-    {
-      kind: "choices",
-      prompt: "두 길목을 정리해 줄래?",
-      options: [
-        {
-          text: "맡는다",
-          branch: [
-            { kind: "setSwitch", switchId, value: true },
-            { kind: "setVariable", variableId, op: "=", value: 0 },
-            { kind: "text", speaker: "의뢰 중개인 미라", body: "좋아. 서쪽과 동쪽 길목을 확인하고 돌아와." },
-          ],
-        },
-        {
-          text: "나중에",
-          branch: [{ kind: "text", speaker: "의뢰 중개인 미라", body: "시장 사람들은 여기서 기다릴게." }],
-        },
-      ],
-      cancelBehavior: "choice2",
-    },
-    { kind: "showPicture", pictureId: "pic_demo", resourceId: "easyrpg-picture-cloud", x: 24, y: 32 },
-    { kind: "playAudio", resourceId: "bgm-demo-town", loop: true },
-    { kind: "transfer", mapId, x: 7, y: 10, direction: "down", fade: "black" },
-    { kind: "changeGold", op: "+=", amount: 120 },
-    { kind: "changeItem", itemId, op: "+=", amount: 2 },
-    { kind: "setWeather", weather: "rain", intensity: 60 },
-    { kind: "cutsceneControl", mode: "begin", skippable: true },
-    { kind: "wait", ms: 500 },
-    { kind: "cutsceneControl", mode: "end" },
-  ];
-
-  const eventId = "event_mockup_demo";
-  const basePage = {
-    graphic: {},
-    trigger: { kind: "action" as const },
-    priority: "same" as const,
-    movement: { type: "fixed" as const, speed: 3, frequency: 3 },
-  };
-
-  startMap.events.push({
-    id: eventId,
-    name: "의뢰 중개인 미라",
-    x: 8,
-    y: 8,
-    trigger: { kind: "action" },
-    // GameEvent.commands 는 필수다 — 빠지면 로드 시 걸러진다.
-    commands: [],
-    pages: [
-      { id: "page_offer", name: "의뢰 제안", conditions: [], ...basePage, commands },
-      {
-        id: "page_active",
-        name: "진행 중",
-        conditions: [
-          { kind: "switch", switchId, value: true },
-          { kind: "variable", variableId, op: "<", value: 2 },
-        ],
-        ...basePage,
-        commands: [{ kind: "text", speaker: "의뢰 중개인 미라", body: "아직 길목이 완전히 열리지 않았어." }],
-      },
-      {
-        id: "page_done",
-        name: "완료 후",
-        conditions: [{ kind: "switch", switchId: secondSwitchId, value: true }],
-        ...basePage,
-        commands: [{ kind: "text", speaker: "의뢰 중개인 미라", body: "덕분에 시장이 다시 움직여." }],
-      },
-    ],
-  } as never);
-
-  return { project, eventId };
-}
-
-export type { Page };
 
 test("diagnose page tab strip geometry", async ({ page }) => {
   await page.setViewportSize({ width: 1950, height: 1200 });
@@ -346,6 +231,9 @@ test("mockup parity checklist", async ({ page }) => {
     const legend = rect(".event-command-legend");
     const list = rect(".cmd-list");
     const idleStats = has(".event-inspector-stats") || has("[data-testid='event-inspector-body']");
+    const headLegend = rect(".event-contents-fieldset > .event-contents-legend");
+    const toolbar = rect(".event-editor-command-toolbar");
+    const headLegendText = root.querySelector(".event-contents-fieldset > .event-contents-legend")?.textContent ?? "";
     return {
       "가로 페이지 탭": !!tabs && tabs.width > 400 && tabs.height < 80,
       "탭 조건 요약": has("[data-testid='event-page-tab-cond-1']"),
@@ -362,6 +250,10 @@ test("mockup parity checklist", async ({ page }) => {
       "인스펙터에 읽을 것": idleStats,
       "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
       "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
+      // 목업 canvas-head: 범례와 툴바가 같은 32px 행에 정렬.
+      "헤드 행 32 정렬": !!headLegend && !!toolbar && Math.abs(headLegend.top - toolbar.top) <= 2 && toolbar.height <= 34,
+      // 목업 범례 문구: "실행 내용 · N개".
+      "범례 명령 수": /실행 내용\s*·\s*\d+개/.test(headLegendText),
     };
   });
   const pass = Object.values(result).filter(Boolean).length;
