@@ -299,3 +299,50 @@ test("diagnose page tab strip geometry", async ({ page }) => {
   // eslint-disable-next-line no-console
   console.log("[geom]", JSON.stringify(info, null, 1));
 });
+
+// 목업 대비 구조 체크리스트. 항목이 실제로 존재/작동하는지 기계적으로 센다.
+test("mockup parity checklist", async ({ page }) => {
+  await page.setViewportSize({ width: 1500, height: 1000 });
+  const { project, eventId } = mockupProject();
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+  const modal = page.getByTestId("event-editor-modal");
+  await page.waitForTimeout(600);
+
+  const result = await modal.evaluate((root) => {
+    const has = (sel: string) => !!root.querySelector(sel);
+    const rect = (sel: string) => {
+      const n = root.querySelector<HTMLElement>(sel);
+      return n ? n.getBoundingClientRect() : null;
+    };
+    const tabs = rect(".event-page-number-tabs");
+    const rail = rect(".event-editor-settings-column");
+    const canvas = rect(".event-editor-commands-column");
+    const insp = rect(".event-editor-inspector-column");
+    const card = rect(".event-editor-card");
+    const val = rect(".event-draft-validation");
+    const gutters = new Set<string>();
+    for (const item of root.querySelectorAll<HTMLElement>(".cmd-item[data-command-category]")) {
+      const p = item.querySelector<HTMLElement>(":scope > .cmd-head > .cmd-prefix");
+      if (p) gutters.add(getComputedStyle(p).backgroundColor);
+    }
+    const okBtn = root.querySelector<HTMLElement>(".btn.event-editor-footer-button.primary");
+    return {
+      "가로 페이지 탭": !!tabs && tabs.width > 400 && tabs.height < 80,
+      "탭 조건 요약": has("[data-testid='event-page-tab-cond-1']"),
+      "이벤트 카드": has(".event-editor-card") && has(".event-editor-card-sprite"),
+      "카드가 레일 최상단": !!card && !!rail && card.top - rail.top < 24,
+      "3열 배치": !!rail && !!canvas && !!insp && rail.right <= canvas.left + 24 && canvas.right <= insp.left + 24,
+      "블록 캔버스 거터 다색": gutters.size >= 4,
+      "인라인 인스펙터": has(".event-editor-inspector-column"),
+      "카테고리 범례": has(".event-command-legend"),
+      "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
+      "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
+    };
+  });
+  const pass = Object.values(result).filter(Boolean).length;
+  const total = Object.keys(result).length;
+  // eslint-disable-next-line no-console
+  console.log("[parity]", JSON.stringify(result), `=> ${pass}/${total}`);
+  expect(pass, JSON.stringify(result)).toBeGreaterThanOrEqual(total - 1);
+});
