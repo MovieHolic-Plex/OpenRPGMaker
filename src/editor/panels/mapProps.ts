@@ -1,8 +1,9 @@
 import {
-  resizeMap, renameMap, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags,
+  resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags,
 } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
+import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -306,15 +307,343 @@ function renderRestrictionsTab(host: HTMLElement, map: import("@/project/types")
 }
 
 // ── 인카운터 탭 ──
+const TIME_PHASE_LABELS: Record<TimePhase, string> = {
+  morning: "아침", day: "낮", evening: "저녁", night: "밤",
+};
+const SEASON_LABELS: Record<Season, string> = {
+  spring: "봄", summer: "여름", fall: "가을", winter: "겨울",
+};
+
 function renderEncounterTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
-  const section = el("div", { class: "panel-section map-props-section" });
-  section.append(jsonArrayField(
+  const project = store.getCurrent();
+  const troops = project.database.troops;
+  const table = map.encounterTable ?? [];
+  const rate = map.encounterRate ?? 0;
+
+  // ── 인카운트율 ──
+  const rateSection = el("div", { class: "panel-section map-props-section" });
+  const rateNumber = el("input", {
+    attrs: { type: "number", min: "0", max: "100", step: "1" },
+    value: String(rate),
+    dataset: { testid: "map-encounter-rate-input" },
+  }) as HTMLInputElement;
+  const rateSlider = el("input", {
+    class: "map-encounter-slider",
+    attrs: { type: "range", min: "0", max: "40", step: "1", "aria-label": "인카운트율" },
+    value: String(Math.min(40, rate)),
+    dataset: { testid: "map-encounter-rate-slider" },
+  }) as HTMLInputElement;
+  const rateHint = el("p", { class: "map-props-hint" });
+  const describeRate = (value: number): string => {
+    if (value <= 0) return "0 — 랜덤 인카운터가 발생하지 않습니다.";
+    const steps = Math.max(1, Math.round(1000 / value));
+    return `${value} — 평균 약 ${steps}걸음마다 한 번 조우 (걸을 때마다 ${value}/1000씩 누적).`;
+  };
+  rateHint.textContent = describeRate(rate);
+  const applyRate = (value: number): void => {
+    const clamped = Math.max(0, Math.min(100, Math.trunc(value)));
+    rateNumber.value = String(clamped);
+    rateSlider.value = String(Math.min(40, clamped));
+    rateHint.textContent = describeRate(clamped);
+    setMapEncounterRate(map.id, clamped);
+  };
+  rateSlider.addEventListener("input", () => applyRate(parseInt(rateSlider.value, 10) || 0));
+  rateNumber.addEventListener("change", () => applyRate(parseInt(rateNumber.value, 10) || 0));
+
+  const rateRow = el("div", { class: "map-encounter-rate-row" });
+  rateRow.append(rateSlider, rateNumber);
+  rateSection.append(fieldRow("인카운트율", rateRow));
+  rateSection.append(rateHint);
+  host.append(rateSection);
+
+  if (troops.length === 0) {
+    host.append(el("p", { class: "map-props-hint", text: "데이터베이스에 트룹(적 그룹)이 없습니다. 먼저 트룹을 만들어 주세요." }));
+    return;
+  }
+
+  // ── 기본 트룹 (encounterTable 없을 때) ──
+  const troopSection = el("div", { class: "panel-section map-props-section" });
+  troopSection.append(el("label", { class: "map-encounter-heading", text: "기본 출현 그룹" }));
+  const selected = new Set(map.troopIds ?? []);
+  const troopList = el("div", { class: "map-encounter-troop-list", dataset: { testid: "map-encounter-troops" } });
+  for (const troop of troops) {
+    const check = el("input", {
+      attrs: { type: "checkbox" },
+      dataset: { testid: `map-encounter-troop-${troop.id}` },
+    }) as HTMLInputElement;
+    check.checked = selected.has(troop.id);
+    check.addEventListener("change", () => {
+      if (check.checked) selected.add(troop.id);
+      else selected.delete(troop.id);
+      setMapTroopIds(map.id, troops.filter((t) => selected.has(t.id)).map((t) => t.id));
+    });
+    const row = el("label", { class: "map-props-check-row" });
+    row.append(check, el("span", { text: troop.name || troop.id }));
+    troopList.append(row);
+  }
+  troopSection.append(troopList);
+  troopSection.append(el("p", {
+    class: "map-props-hint",
+    text: table.length > 0
+      ? "아래 인카운터 테이블이 비어 있지 않으므로, 지금은 테이블이 우선 적용됩니다."
+      : "체크한 그룹이 균등 확률로 출현합니다. 확률·조건을 나누려면 아래 테이블을 사용하세요.",
+  }));
+  host.append(troopSection);
+
+  // ── 인카운터 테이블 ──
+  const tableSection = el("div", { class: "panel-section map-props-section" });
+  const heading = el("div", { class: "map-encounter-table-head" });
+  heading.append(el("label", { class: "map-encounter-heading", text: "인카운터 테이블 (확률·조건)" }));
+  heading.append(el("button", {
+    class: "btn btn-sm",
+    text: "+ 행 추가",
+    attrs: { type: "button" },
+    dataset: { testid: "map-encounter-row-add" },
+    on: {
+      click: () => {
+        const next: EncounterTableEntry[] = [...table, { troopId: troops[0]!.id, weight: 1 }];
+        commitTable(map.id, next, host);
+      },
+    },
+  }));
+  tableSection.append(heading);
+
+  if (table.length === 0) {
+    tableSection.append(el("p", { class: "map-props-hint", text: "행이 없습니다. 위의 기본 출현 그룹이 사용됩니다." }));
+  } else {
+    const totalWeight = table.reduce((sum, entry) => sum + (entry.weight > 0 ? entry.weight : 0), 0);
+    for (const [index, entry] of table.entries()) {
+      tableSection.append(encounterRow(map, table, index, entry, totalWeight, troops, host));
+    }
+  }
+
+  // JSON 탈출구 — 대량 편집·복붙용
+  const advanced = el("details", { class: "map-encounter-advanced" });
+  advanced.append(el("summary", { text: "JSON으로 직접 편집" }));
+  advanced.append(jsonArrayField(
     "인카운터 테이블",
     "map-encounter-table-input",
-    map.encounterTable ?? [],
-    (entries) => setMapEncounterTable(map.id, entries as EncounterTableEntry[]),
+    table,
+    (entries) => { setMapEncounterTable(map.id, entries as EncounterTableEntry[]); rerender(host); },
   ));
-  host.append(section);
+  tableSection.append(advanced);
+  host.append(tableSection);
+}
+
+function commitTable(mapId: string, entries: EncounterTableEntry[], host: HTMLElement): void {
+  setMapEncounterTable(mapId, entries);
+  rerender(host);
+}
+
+// 탭 본문(host)은 renderMapProps가 만든 .map-props-body 이므로 전체 다이얼로그를 다시 그린다.
+function rerender(host: HTMLElement): void {
+  const container = host.parentElement?.parentElement;
+  if (container) renderMapProps(container);
+}
+
+function encounterRow(
+  map: import("@/project/types").GameMap,
+  table: readonly EncounterTableEntry[],
+  index: number,
+  entry: EncounterTableEntry,
+  totalWeight: number,
+  troops: readonly import("@/project/types").TroopRecord[],
+  host: HTMLElement
+): HTMLElement {
+  const project = store.getCurrent();
+  const update = (patch: Partial<EncounterTableEntry>): void => {
+    const next = table.map((item, i) => (i === index ? { ...item, ...patch } : item));
+    commitTable(map.id, next as EncounterTableEntry[], host);
+  };
+  const patchConditions = (patch: Partial<NonNullable<EncounterTableEntry["conditions"]>>): void => {
+    const merged = { ...(entry.conditions ?? {}), ...patch };
+    for (const [key, value] of Object.entries(merged)) {
+      if (value === undefined || value === "") delete (merged as Record<string, unknown>)[key];
+    }
+    const next = table.map((item, i) => (
+      i === index
+        ? (Object.keys(merged).length > 0 ? { ...item, conditions: merged } : stripConditions(item))
+        : item
+    ));
+    commitTable(map.id, next as EncounterTableEntry[], host);
+  };
+
+  const row = el("div", { class: "map-encounter-row", dataset: { testid: `map-encounter-row-${index}` } });
+
+  // 1행: 트룹 / 가중치 / 확률 / 삭제
+  const main = el("div", { class: "map-encounter-row-main" });
+  const troopSelect = el("select", {
+    attrs: { "aria-label": "트룹" },
+    dataset: { testid: `map-encounter-troop-select-${index}` },
+    on: { change: (e: Event) => update({ troopId: (e.target as HTMLSelectElement).value }) },
+  }) as HTMLSelectElement;
+  for (const troop of troops) {
+    troopSelect.append(el("option", { text: troop.name || troop.id, attrs: { value: troop.id } }));
+  }
+  if (!troops.some((t) => t.id === entry.troopId)) {
+    troopSelect.append(el("option", { text: `${entry.troopId} (없는 트룹)`, attrs: { value: entry.troopId } }));
+  }
+  troopSelect.value = entry.troopId;
+
+  const weightInput = el("input", {
+    class: "map-encounter-weight",
+    attrs: { type: "number", min: "1", max: "999", step: "1", "aria-label": "가중치" },
+    value: String(entry.weight),
+    dataset: { testid: `map-encounter-weight-${index}` },
+    on: {
+      change: (e: Event) => {
+        const raw = parseInt((e.target as HTMLInputElement).value, 10);
+        update({ weight: Math.max(1, Math.min(999, Number.isFinite(raw) ? raw : 1)) });
+      },
+    },
+  });
+
+  const percent = totalWeight > 0 && entry.weight > 0 ? Math.round((entry.weight / totalWeight) * 1000) / 10 : 0;
+  const share = el("span", { class: "map-encounter-share", text: `${percent}%` });
+
+  const remove = el("button", {
+    class: "btn btn-sm map-encounter-remove",
+    text: "삭제",
+    attrs: { type: "button", title: "이 행 삭제" },
+    dataset: { testid: `map-encounter-remove-${index}` },
+    on: { click: () => commitTable(map.id, table.filter((_, i) => i !== index) as EncounterTableEntry[], host) },
+  });
+
+  main.append(troopSelect, weightInput, share, remove);
+  row.append(main);
+
+  // 2행: 조건 (접힘)
+  const conditions = entry.conditions;
+  const activeCount = conditions ? Object.keys(conditions).length : 0;
+  const details = el("details", { class: "map-encounter-conditions" });
+  if (activeCount > 0) details.setAttribute("open", "");
+  details.append(el("summary", {
+    text: activeCount > 0 ? `조건 ${activeCount}개` : "조건 없음 (항상 출현)",
+    dataset: { testid: `map-encounter-conditions-${index}` },
+  }));
+
+  const grid = el("div", { class: "map-encounter-cond-grid" });
+
+  // 스위치
+  const switchSelect = selectField("스위치 ON", `map-encounter-switch-${index}`, [
+    { value: "", label: "— 없음 —" },
+    ...project.switches.map((sw) => ({ value: sw.id, label: `${sw.id} ${sw.name}` })),
+  ], conditions?.switchId ?? "", (value) => patchConditions({ switchId: value || undefined }));
+  grid.append(switchSelect);
+
+  // 변수 ≥
+  const variableSelect = selectField("변수", `map-encounter-variable-${index}`, [
+    { value: "", label: "— 없음 —" },
+    ...project.variables.map((v) => ({ value: v.id, label: `${v.id} ${v.name}` })),
+  ], conditions?.variableId ?? "", (value) => patchConditions({ variableId: value || undefined }));
+  grid.append(variableSelect);
+  grid.append(numberField("변수 값 ≥", `map-encounter-atleast-${index}`, conditions?.atLeast, (value) => patchConditions({ atLeast: value })));
+
+  // 파티 레벨
+  grid.append(numberField("파티 레벨 ≥", `map-encounter-minlevel-${index}`, conditions?.minPartyLevel, (value) => patchConditions({ minPartyLevel: value })));
+  grid.append(numberField("파티 레벨 ≤", `map-encounter-maxlevel-${index}`, conditions?.maxPartyLevel, (value) => patchConditions({ maxPartyLevel: value })));
+
+  // 시간대 / 계절
+  grid.append(selectField("시간대", `map-encounter-timephase-${index}`, [
+    { value: "", label: "— 항상 —" },
+    ...TIME_PHASES.map((phase) => ({ value: phase, label: TIME_PHASE_LABELS[phase] })),
+  ], conditions?.timePhase ?? "", (value) => patchConditions({ timePhase: (value || undefined) as TimePhase | undefined })));
+  grid.append(selectField("계절", `map-encounter-season-${index}`, [
+    { value: "", label: "— 항상 —" },
+    ...SEASONS.map((season) => ({ value: season, label: SEASON_LABELS[season] })),
+  ], conditions?.season ?? "", (value) => patchConditions({ season: (value || undefined) as Season | undefined })));
+
+  details.append(grid);
+
+  // 구역 제한
+  const region = conditions?.region;
+  const regionToggle = el("input", { attrs: { type: "checkbox" }, dataset: { testid: `map-encounter-region-toggle-${index}` } }) as HTMLInputElement;
+  regionToggle.checked = Boolean(region);
+  regionToggle.addEventListener("change", () => {
+    patchConditions({ region: regionToggle.checked ? (region ?? { x: 0, y: 0, w: map.width, h: map.height }) : undefined });
+  });
+  const regionRow = el("label", { class: "map-props-check-row" });
+  regionRow.append(regionToggle, el("span", { text: "구역 제한 (이 사각형 안에서만 출현)" }));
+  details.append(regionRow);
+
+  if (region) {
+    const rectRow = el("div", { class: "map-encounter-rect-row" });
+    const rectField = (key: "x" | "y" | "w" | "h", label: string, max: number): void => {
+      const input = el("input", {
+        attrs: { type: "number", min: key === "w" || key === "h" ? "1" : "0", max: String(max), "aria-label": label },
+        value: String(region[key]),
+        dataset: { testid: `map-encounter-region-${key}-${index}` },
+        on: {
+          change: (e: Event) => {
+            const raw = parseInt((e.target as HTMLInputElement).value, 10);
+            const value = Math.max(key === "w" || key === "h" ? 1 : 0, Math.min(max, Number.isFinite(raw) ? raw : 0));
+            patchConditions({ region: { ...region, [key]: value } });
+          },
+        },
+      });
+      const cell = el("div", { class: "map-encounter-rect-cell" });
+      cell.append(el("label", { text: label }), input);
+      rectRow.append(cell);
+    };
+    rectField("x", "X", map.width - 1);
+    rectField("y", "Y", map.height - 1);
+    rectField("w", "너비", map.width);
+    rectField("h", "높이", map.height);
+    details.append(rectRow);
+  }
+
+  row.append(details);
+  return row;
+}
+
+function stripConditions(entry: EncounterTableEntry): EncounterTableEntry {
+  const { conditions: _dropped, ...rest } = entry;
+  return rest;
+}
+
+function selectField(
+  label: string,
+  testid: string,
+  options: readonly { value: string; label: string }[],
+  value: string,
+  onChange: (value: string) => void
+): HTMLElement {
+  const select = el("select", {
+    attrs: { "aria-label": label },
+    dataset: { testid },
+    on: { change: (e: Event) => onChange((e.target as HTMLSelectElement).value) },
+  }) as HTMLSelectElement;
+  for (const option of options) {
+    select.append(el("option", { text: option.label, attrs: { value: option.value } }));
+  }
+  select.value = value;
+  const cell = el("div", { class: "map-encounter-cond-cell" });
+  cell.append(el("label", { text: label }), select);
+  return cell;
+}
+
+function numberField(
+  label: string,
+  testid: string,
+  value: number | undefined,
+  onChange: (value: number | undefined) => void
+): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "number", min: "0", step: "1", placeholder: "—", "aria-label": label },
+    value: value === undefined ? "" : String(value),
+    dataset: { testid },
+    on: {
+      change: (e: Event) => {
+        const raw = (e.target as HTMLInputElement).value.trim();
+        if (raw === "") { onChange(undefined); return; }
+        const parsed = parseInt(raw, 10);
+        onChange(Number.isFinite(parsed) ? Math.max(0, parsed) : undefined);
+      },
+    },
+  });
+  const cell = el("div", { class: "map-encounter-cond-cell" });
+  cell.append(el("label", { text: label }), input);
+  return cell;
 }
 
 // ── 필드 스폰 탭 ──

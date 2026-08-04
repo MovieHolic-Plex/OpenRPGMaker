@@ -27,7 +27,7 @@ export {
   toggleCollision,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, TilesetDef } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
 export function addMap(name: string, width = 16, height = 16): MapId {
@@ -184,6 +184,29 @@ export function setMapEncounterTable(mapId: MapId, entries: EncounterTableEntry[
     if (!map) return;
     if (entries.length > 0) map.encounterTable = structuredClone(entries);
     else delete map.encounterTable;
+  }, { scope: "map", mapId });
+}
+
+// 랜덤 인카운트율(스텝당 가중치). 0이면 발생하지 않는다.
+export function setMapEncounterRate(mapId: MapId, rate: number): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    const normalized = Math.max(0, Math.min(100, Math.trunc(rate)));
+    if (normalized > 0) map.encounterRate = normalized;
+    else delete map.encounterRate;
+  }, { scope: "map", mapId });
+}
+
+// 인카운터 테이블이 없을 때 균등 선택되는 트룹 목록.
+export function setMapTroopIds(mapId: MapId, troopIds: TroopId[]): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (troopIds.length > 0) map.troopIds = [...troopIds];
+    else delete map.troopIds;
   }, { scope: "map", mapId });
 }
 
