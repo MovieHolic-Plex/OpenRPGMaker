@@ -118,6 +118,19 @@ export function renderClassicPageTabStrip(
         children: [
           pageTabThumbnail(page),
           el("span", { class: "event-page-tab-number", text: String(index + 1) }),
+          // 탭을 눌러 보지 않고도 "이 페이지가 언제 실행되는가"를 읽을 수 있게 한다.
+          // 4페이지짜리 NPC 에서 감독이 왕복하는 주된 이유였다.
+          el("span", {
+            class: "event-page-tab-meta",
+            children: [
+              el("span", { class: "event-page-tab-title", text: page.name.trim() || "(이름 없음)" }),
+              el("span", {
+                class: "event-page-tab-cond",
+                text: pageTabConditionText(page),
+                dataset: { testid: `event-page-tab-cond-${index + 1}` },
+              }),
+            ],
+          }),
           pageTabConditionBadges(page),
           pageValidationBadge(page.id, validation),
         ],
@@ -208,6 +221,14 @@ function pageTabConditionBadges(page: EventPage): HTMLElement {
     );
   }
   return badges;
+}
+
+/** 탭에 직접 보이는 조건 요약. 길면 첫 조건 + 나머지 개수로 줄인다. */
+function pageTabConditionText(page: EventPage): string {
+  const conditions = page.conditions ?? [];
+  if (conditions.length === 0) return "조건 없음";
+  const first = pageConditionSummary(conditions[0]!);
+  return conditions.length === 1 ? first : `${first} 외 ${conditions.length - 1}`;
 }
 
 function pageTabTooltip(page: EventPage, index: number): string {

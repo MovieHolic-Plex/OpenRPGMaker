@@ -165,7 +165,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     class: "event-editor-settings-main",
     children: settingsChildren,
   });
-  settingsColumn.append(renderClassicPageTabStrip(mapId, ev, activePage, validation), settingsMain);
+  // 페이지 탭은 좌측 컬럼이 아니라 상단 전폭 스트립으로 나간다(아래 section.append).
+  // 좁은 컬럼 안에서는 조건 요약을 읽을 폭이 나오지 않는다.
+  const pageTabStrip = renderClassicPageTabStrip(mapId, ev, activePage, validation);
+  settingsColumn.append(settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
@@ -216,6 +219,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         renderEventPositionControls(mapId, ev),
       ],
     }),
+    pageTabStrip,
     renderEventDiffSummary(mapId, eventId),
     renderEventValidationSummary(validation),
     workbench

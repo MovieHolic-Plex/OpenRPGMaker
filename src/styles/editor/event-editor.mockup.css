@@ -1,0 +1,265 @@
+/* 승인된 목업(v1/v2)에 맞춘 이벤트 에디터 셸.
+ *
+ * 스코프: 이벤트 에디터 모달 내부(.event-editor)만. 에디터 전역 토큰은 건드리지 않는다.
+ * DOM 변경은 페이지 탭에 이름/조건 요약 span 을 추가한 것뿐이고, 나머지는 전부 재배치다.
+ */
+
+.event-editor {
+  /* ── 목업 토큰 ── */
+  --mk-accent: #d9a441; /* 황동 — 목업의 유일한 온색 */
+  --mk-accent-ink: #16130a;
+  --mk-accent-wash: rgba(217, 164, 65, 0.14);
+  --mk-line: rgba(255, 255, 255, 0.11);
+  --mk-line-soft: rgba(255, 255, 255, 0.06);
+  --mk-surface: #151823;
+  --mk-raised: #1c202d;
+  --mk-inset: #0f1117;
+  --mk-t1: #e9ecf3;
+  --mk-t2: #9aa3b5;
+  --mk-t3: #626b7d;
+  --mk-radius: 6px;
+  --mk-mono: "Cascadia Code", "Cascadia Mono", ui-monospace, Consolas, "D2Coding", monospace;
+}
+
+/* ── 페이지 탭: 좌측 세로 스택 → 상단 가로 스트립 ─────────────────── */
+.event-editor .event-page-number-tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--mk-inset);
+  border-bottom: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius) var(--mk-radius) 0 0;
+  padding: 0;
+  width: 100%;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto auto;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  min-width: 190px;
+  max-width: 280px;
+  height: auto;
+  margin: 0;
+  padding: 7px 13px 8px;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-right: 1px solid var(--mk-line-soft);
+  border-top: 2px solid transparent;
+  border-radius: 0;
+  color: var(--mk-t2);
+  transition: background 0.13s, color 0.13s;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich:hover {
+  background: var(--mk-raised);
+  color: var(--mk-t1);
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich.active {
+  background: var(--mk-surface);
+  color: var(--mk-t1);
+  border-top-color: var(--mk-accent);
+}
+
+.event-editor .event-page-tab-number {
+  font-family: var(--mk-mono);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.4;
+  background: var(--mk-line);
+  color: var(--mk-t2);
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+
+.event-editor .event-page-tab-rich.active .event-page-tab-number {
+  background: var(--mk-accent-wash);
+  color: var(--mk-accent);
+}
+
+.event-editor .event-page-tab-meta {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.event-editor .event-page-tab-title {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-page-tab-cond {
+  font-family: var(--mk-mono);
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: var(--mk-t3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-page-tab-rich.active .event-page-tab-cond {
+  color: var(--mk-t2);
+}
+
+.event-editor .event-page-tab-thumb {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--mk-line-soft);
+}
+
+/* 조건 배지는 요약 텍스트가 생겼으므로 보조로만 남긴다. */
+.event-editor .event-page-tab-badges {
+  display: none;
+}
+
+.event-editor .event-page-tab-add {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0 6px;
+  padding: 2px 11px;
+  background: transparent;
+  border: 1px dashed var(--mk-line);
+  border-radius: 3px;
+  color: var(--mk-t3);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.event-editor .event-page-tab-add:hover {
+  color: var(--mk-accent);
+  border-color: var(--mk-accent);
+}
+
+/* ── 좌측 설정 컬럼 = 레일 ───────────────────────────────────────── */
+.event-editor .event-editor-settings-column {
+  background: var(--mk-surface);
+  border-right: 1px solid var(--mk-line);
+  /* 페이지 탭 스트립이 상단으로 나갔으므로 자식은 settings-main 하나다.
+     기존 정의(56px + 1fr)를 그대로 두면 본문이 56px 칸에 갇힌다. */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  padding: 10px 12px;
+}
+
+/* 상단 식별 스트립을 이벤트 카드처럼 — 시선 진입점 만들기. */
+.event-editor .event-editor-id-row {
+  font-family: var(--mk-mono);
+  font-size: 11px;
+  color: var(--mk-t3);
+}
+
+.event-editor .event-editor-id-row input {
+  font-family: var(--mk-mono);
+}
+
+/* 접이식 섹션 헤더 — 목업의 대문자 마이크로 라벨. */
+.event-editor .event-rm2k3-fieldset > legend,
+.event-editor .event-contents-legend {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mk-t3);
+}
+
+/* ── 검증 스트립: 상단 대형 → 컴팩트 ─────────────────────────────── */
+.event-editor .event-draft-validation {
+  border: 1px solid var(--mk-line);
+  border-radius: var(--mk-radius);
+  background: var(--mk-raised);
+  padding: 0;
+  overflow: hidden;
+}
+
+.event-editor .event-draft-validation-summary {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 6px 12px;
+  color: var(--mk-t2);
+}
+
+.event-editor .event-draft-validation-issues {
+  max-height: 92px;
+  overflow-y: auto;
+  padding: 0 12px 8px;
+  display: grid;
+  gap: 3px;
+}
+
+.event-editor .event-draft-validation-issue {
+  font-size: 11.5px;
+  line-height: 1.5;
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+}
+
+.event-editor .event-draft-validation-severity {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0 6px;
+  flex: 0 0 auto;
+}
+
+/* ── 액센트 통일 — 목업의 황동 ───────────────────────────────────── */
+.event-editor .event-editor-command-tool.primary,
+.event-editor .btn.primary {
+  background: var(--mk-accent);
+  border-color: var(--mk-accent);
+  color: var(--mk-accent-ink);
+}
+
+.event-editor .event-editor-command-tool.primary:hover,
+.event-editor .btn.primary:hover {
+  filter: brightness(1.07);
+}
+
+.event-editor .cmd-list .cmd-item.selected > .cmd-head {
+  border-color: var(--mk-accent);
+  box-shadow: 0 0 0 1px var(--mk-accent);
+}
+
+.event-editor .cmd-list .cmd-item > .cmd-head:focus-visible {
+  outline-color: var(--mk-accent);
+}
+
+/* ── 명령 툴바 ───────────────────────────────────────────────────── */
+.event-editor .event-editor-command-toolbar {
+  gap: 6px;
+  padding: 7px 10px;
+  background: var(--mk-surface);
+  border-bottom: 1px solid var(--mk-line);
+}
+
+.event-editor .event-editor-command-tool {
+  border-radius: 3px;
+  font-size: 11.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-editor .event-page-number-tabs > .event-page-tab-rich {
+    transition: none;
+  }
+}
