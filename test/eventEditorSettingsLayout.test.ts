@@ -49,17 +49,24 @@ describe("event editor settings column layout", () => {
     openEventMovement.clear();
   });
 
-  it("keeps page tabs and settings-main as the only two direct settings-column children", () => {
+  it("keeps settings-main as the only direct settings-column child, with page tabs promoted to the top strip", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_layout");
     const column = host.querySelector(".event-editor-settings-column");
     expect(column).toBeTruthy();
     const direct = [...(column?.children ?? [])] as HTMLElement[];
-    expect(direct).toHaveLength(2);
-    expect(direct[0]?.classList.contains("event-page-number-tabs")).toBe(true);
-    expect(direct[1]?.classList.contains("event-editor-settings-main")).toBe(true);
+    // 페이지 탭은 상단 전폭 스트립으로 나갔다 — 좁은 컬럼에서는 조건 요약을 읽을 폭이 없다.
+    expect(direct).toHaveLength(1);
+    expect(direct[0]?.classList.contains("event-editor-settings-main")).toBe(true);
+    expect(column?.querySelector(".event-page-number-tabs")).toBeNull();
+
+    // 탭 스트립은 워크벤치 밖(에디터 섹션 직속)에 있어야 한다.
+    const tabs = host.querySelector(".event-page-number-tabs");
+    expect(tabs).toBeTruthy();
+    expect(tabs?.closest(".event-editor-workbench")).toBeNull();
+
     // RM2003 셸: 스케줄 패널은 마운트하지 않음. 페이지 설정만 settings-main 안.
-    expect(direct[1]?.querySelector("[data-testid='event-schedule-section']")).toBeNull();
-    expect(direct[1]?.querySelector(".event-page-props")).toBeTruthy();
+    expect(direct[0]?.querySelector("[data-testid='event-schedule-section']")).toBeNull();
+    expect(direct[0]?.querySelector(".event-page-props")).toBeTruthy();
   });
 
   it("orders conditions → graphic → trigger/priority → movement; characterId lives in top strip", () => {

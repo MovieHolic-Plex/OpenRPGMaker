@@ -407,3 +407,13 @@
     display: none;
   }
 }
+
+/* 하단 검증 스트립 — 워크벤치 아래에 붙는다. */
+.event-editor > .event-draft-validation {
+  margin-top: 8px;
+  border-radius: var(--mk-radius);
+}
+
+.event-editor > .event-draft-validation .event-draft-validation-issues {
+  max-height: 76px;
+}

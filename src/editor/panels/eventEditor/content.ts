@@ -231,8 +231,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }),
     pageTabStrip,
     renderEventDiffSummary(mapId, eventId),
-    renderEventValidationSummary(validation),
-    workbench
+    workbench,
+    // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
+    renderEventValidationSummary(validation)
   );
   container.append(section);
 }

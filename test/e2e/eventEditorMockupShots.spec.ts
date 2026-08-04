@@ -89,8 +89,8 @@ test("event editor matches the approved mockup", async ({ page }) => {
   // eslint-disable-next-line no-console
   console.log("[palette] keyboard candidate:", (await active.first().innerText()).replace(/\s+/g, " ").trim());
 
-  const dialog = page.locator(".event-command-picker, [data-testid='event-command-picker']").first();
-  await (await dialog.count() ? dialog : page.locator("body")).screenshot({ path: `${DIR}/06-palette.png` });
+  const dialog = page.getByTestId("event-command-picker").first();
+  await dialog.screenshot({ path: `${DIR}/06-palette.png` });
 });
 
 function mockupProject(): { project: Project; eventId: string } {
