@@ -27,6 +27,18 @@
   padding: 8px 10px;
 }
 
+/* 빈 이벤트 — 1500x1000 같은 넓은 창에서 캔버스 세로 절반 이상이 죽은 검은
+   공백으로 남던 것을 교정한다. 시작 유형 블록만 있을 때는 캔버스 가운데로 모은다.
+   (명령이 하나라도 있으면 :has 가 안 걸리므로 위 align-content:start 가 그대로 산다.) */
+.event-contents-fieldset .cmd-list:has(> .event-command-empty-experience) {
+  align-content: center;
+  justify-items: center;
+}
+
+.event-contents-fieldset .cmd-list > .event-command-empty-experience {
+  width: min(100%, 620px);
+}
+
 /* ── 카테고리 색 (dataviz 검증 통과 · 다크 서피스 기준) ───────────── */
 .event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: #3987e5; }
 .event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: #d95926; }

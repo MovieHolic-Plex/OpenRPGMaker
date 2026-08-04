@@ -104,14 +104,17 @@
   font-family: var(--mk-mono);
   font-size: 10.5px;
   line-height: 1.25;
-  color: var(--mk-t3);
+  /* t3(#626b7d)는 이 어두운 탭 스트립 위에서 약 3.4:1 — 10.5px 본문에 WCAG AA(4.5:1) 미달이었다.
+     비활성 탭의 조건 요약이야말로 "어느 페이지가 언제 도는지" 스캔하는 핵심 정보라 한 단계 올린다. */
+  color: var(--mk-t2);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .event-editor .event-page-tab-rich.active .event-page-tab-cond {
-  color: var(--mk-t2);
+  /* 활성 탭은 한 단계 더 밝게 둬서 비활성과의 위계는 유지한다. */
+  color: var(--mk-t1);
 }
 
 .event-editor .event-page-tab-thumb {
@@ -799,12 +802,19 @@
   transform: none !important;
 }
 
-/* 검증 스트립 높이 상한 — 목업의 한 줄 스트립에 가깝게 */
+/* 검증 스트립 높이 상한 — 목업의 한 줄 스트립에 가깝게.
+   단, 58px 은 2줄밖에 안 나와서 "오류 1 · 경고 3" 이라고 세어 놓고 2건만 보여 주는
+   상태가 됐다(스크롤 막대도 다크 테마에서 안 보였다). 4건까지는 그대로 읽히게 올리고,
+   그 이상은 스크롤 막대를 상시 보이게 해서 "더 있다"를 알린다.
+   (페이드 마스크는 쓰지 않는다 — max-height 라 박스가 내용에 맞춰 줄어드는 탓에
+    넘치지 않을 때도 마지막 줄을 흐리게 먹는다.) */
 .event-editor > .event-draft-validation {
-  max-height: 92px;
+  max-height: 136px;
   overflow: hidden;
 }
 
 .event-editor > .event-draft-validation .event-draft-validation-issues {
-  max-height: 58px;
+  max-height: 104px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--mk-t3) transparent;
 }

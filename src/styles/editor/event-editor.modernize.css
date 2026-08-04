@@ -66,7 +66,11 @@
 }
 
 .event-subdialog-backdrop[data-testid="event-command-picker"] .event-command-picker-panel {
-  min-height: 220px;
+  /* 220px 바닥값 때문에 검색 결과가 1건이어도 리스트가 항상 220px 이상 자리를 잡고
+     그 아래가 통째로 빈 검은 공백이 됐다. 바닥을 없애고 천장만 둔다 —
+     결과가 적으면 모달이 같이 줄고, 많으면 여기서 스크롤한다. */
+  min-height: 0;
+  max-height: min(52vh, 460px);
   overflow-y: auto;
   padding-right: 2px;
 }

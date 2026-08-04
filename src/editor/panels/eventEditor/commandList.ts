@@ -123,6 +123,10 @@ function renderCommandItem(
     class: "cmd-head",
     attrs: { role: "button", tabindex: "0", title: "더블클릭해서 명령 편집" },
   });
+  // 깊이는 item·head 양쪽에 심는다. CSS 커스텀 속성은 아래로만 상속되므로
+  // head 에만 심으면 부모(.cmd-item)에서 읽는 블록 들여쓰기가 항상 폴백 0 이 된다
+  // (blocks.css 의 margin-left: calc(var(--cmd-depth) * var(--blk-indent)) 가 통째로 죽었었다).
+  item.style.setProperty("--cmd-depth", String(depth));
   head.style.setProperty("--cmd-depth", String(depth));
   const handle = el("span", {
     class: "cmd-drag-handle",
