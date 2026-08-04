@@ -196,15 +196,6 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
       el("div", {
         class: "event-editor-footer-leading",
         children: [
-          // 파괴적 동작은 확인 묶음과 분리해 좌측에 둔다.
-          el("div", {
-            class: "event-editor-footer-danger",
-            children: [
-              footerButton("삭제", "event-delete", () => {
-                if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
-              }),
-            ],
-          }),
           el("div", {
             class: "event-editor-lifecycle-status",
             children: [
@@ -224,6 +215,10 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
       el("div", {
         class: "event-editor-footer-actions",
         children: [
+          // 목업과 동일 순서: 삭제도 확인 묶음 앞 액션 그룹에 둔다.
+          footerButton("삭제", "event-delete", () => {
+            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+          }),
           footerButton("이 이벤트 테스트", "event-editor-test", () => {
             const validation = validateForModalAction(request, "테스트");
             if (!validation.canCommit) return;

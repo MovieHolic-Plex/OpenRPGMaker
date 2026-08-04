@@ -27,7 +27,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: stretch;
-  gap: 0;
+  gap: 3px;
   overflow-x: auto;
   overflow-y: hidden;
   background: var(--mk-inset);
@@ -49,21 +49,22 @@
   margin: 0;
   padding: 7px 13px 8px;
   text-align: left;
-  background: transparent;
-  border: 0;
-  border-right: 1px solid var(--mk-line-soft);
+  background: var(--mk-raised);
+  border: 1px solid var(--mk-line);
   border-top: 2px solid transparent;
-  border-radius: 0;
+  border-radius: 4px 4px 0 0;
   color: var(--mk-t2);
   transition: background 0.13s, color 0.13s;
 }
 
 .event-editor .event-page-number-tabs > .event-page-tab-rich:hover {
-  background: var(--mk-raised);
+  background: var(--mk-surface);
   color: var(--mk-t1);
 }
 
 .event-editor .event-page-number-tabs > .event-page-tab-rich.active {
+  position: relative;
+  z-index: 1;
   background: var(--mk-surface);
   color: var(--mk-t1);
   border-top-color: var(--mk-accent);
@@ -117,20 +118,31 @@
   color: var(--mk-t1);
 }
 
-.event-editor .event-page-tab-thumb {
-  width: 22px;
-  height: 22px;
-  flex: 0 0 22px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 3px;
-  background: var(--mk-line-soft);
-}
-
 /* 조건 배지는 요약 텍스트가 생겼으므로 보조로만 남긴다. */
 .event-editor .event-page-tab-badges {
   display: none;
+}
+
+/* 옛 p1-pagetabs 의 absolute 오버레이(번호/배지)를 가로 스트립용 플로우로 복원.
+ * 옛 시트가 position:absolute + inset 을 주므로 !important 로 끊는다. */
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-number,
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-badges {
+  position: static !important;
+  inset: auto !important;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-number {
+  display: inline-block;
+  right: auto;
+  bottom: auto;
+  z-index: auto;
+  background: var(--mk-line);
+  padding: 1px 5px;
+  text-shadow: none;
+}
+
+.event-editor .event-page-number-tabs > .event-page-tab-rich > .event-page-tab-badges {
+  z-index: auto;
 }
 
 .event-editor .event-page-tab-add {
@@ -242,6 +254,7 @@
 .event-editor .cmd-list .cmd-item.selected > .cmd-head {
   border-color: var(--mk-accent);
   box-shadow: 0 0 0 1px var(--mk-accent);
+  background: var(--mk-raised);
 }
 
 .event-editor .cmd-list .cmd-item > .cmd-head:focus-visible {
@@ -342,11 +355,12 @@
 .event-editor .event-editor-workbench {
   /* 기존 3트랙(설정 | 리사이저 | 명령) 정의가 !important 라 여기서도 붙인다.
      인스펙터 트랙을 더해 4칸으로. */
+  --event-editor-settings-track: 312px;
   grid-template-columns:
-    minmax(260px, var(--event-editor-settings-track))
+    minmax(0, var(--event-editor-settings-track))
     10px
-    minmax(340px, 1fr)
-    minmax(240px, 320px) !important;
+    minmax(0, 1fr)
+    348px !important;
 }
 
 .event-editor .event-editor-inspector-column {
@@ -391,18 +405,149 @@
 }
 
 .event-editor .event-inspector-empty {
-  padding: 30px 18px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 100%;
+  padding: 10px;
+  text-align: left;
   font-size: 12px;
-  line-height: 1.7;
-  color: var(--mk-t3);
+  line-height: 1.6;
+  color: var(--mk-t2);
+}
+
+.event-editor .event-inspector-idle-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+}
+
+/* 한글 라벨에 mono + uppercase + 자간을 주면 글자가 짓눌려 보인다(실측: "현재 페이지"
+ * 가 겹쳐 읽혔다). 라벨은 산세리프로 두고 강조는 굵기·색으로만 한다. */
+.event-editor .event-inspector-idle-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--mk-accent);
+}
+
+.event-editor .event-inspector-idle-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mk-t1);
+  overflow-wrap: anywhere;
+}
+
+.event-editor .event-inspector-stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+
+.event-editor .event-inspector-stat {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* 라벨과 값 사이 점선 리더 — 값이 오른쪽 정렬로 떠 보이지 않게 잇는다. */
+.event-editor .event-inspector-stat::after {
+  content: "";
+  grid-column: 2;
+  height: 0;
+  border-bottom: 1px dotted var(--mk-line);
+  transform: translateY(-3px);
+}
+
+.event-editor .event-inspector-stat-label {
+  grid-column: 1;
+  color: var(--mk-t2);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.event-editor .event-inspector-stat-value {
+  grid-column: 3;
+  color: var(--mk-t1);
+  font-family: var(--mk-mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 190px;
+}
+
+.event-editor .event-inspector-recent {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-editor .event-inspector-recent-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--mk-t2);
+  padding-top: 4px;
+  border-top: 1px dotted var(--mk-line);
+}
+
+.event-editor .event-inspector-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.event-editor .event-inspector-recent-gutter {
+  flex: 0 0 3px;
+  width: 3px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--lg-cat, var(--mk-t3));
+}
+
+.event-editor .event-inspector-recent-gutter[data-category="dialogue"] { --lg-cat: #3987e5; }
+.event-editor .event-inspector-recent-gutter[data-category="flow"]     { --lg-cat: #d95926; }
+.event-editor .event-inspector-recent-gutter[data-category="reward"]   { --lg-cat: #199e70; }
+.event-editor .event-inspector-recent-gutter[data-category="map"]      { --lg-cat: #9085e9; }
+.event-editor .event-inspector-recent-gutter[data-category="screen"]   { --lg-cat: #d55181; }
+.event-editor .event-inspector-recent-gutter[data-category="system"]   { --lg-cat: #c98500; }
+
+/* 후순위 3종은 범례 스와치와 동일하게 45° 텍스처를 겹친다. */
+.event-editor .event-inspector-recent-gutter[data-category="map"],
+.event-editor .event-inspector-recent-gutter[data-category="screen"],
+.event-editor .event-inspector-recent-gutter[data-category="system"] {
+  background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.5) 0 2px, transparent 2px 4px);
+}
+
+.event-editor .event-inspector-recent-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--mk-t2);
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-inspector-idle-hint {
+  margin-top: auto;
+  color: var(--mk-t2);
+  font-size: 10.5px;
+  line-height: 1.6;
 }
 
 /* 좁은 창에서는 인스펙터를 접는다 — 명령 리스트가 우선. */
 @media (max-width: 1180px) {
   .event-editor .event-editor-workbench {
     grid-template-columns:
-      minmax(260px, var(--event-editor-settings-track))
+      minmax(0, var(--event-editor-settings-track))
       8px
       minmax(300px, 1fr) !important;
   }
@@ -438,7 +583,7 @@
   display: grid;
   width: auto;
   height: auto;
-  min-height: 0;
+  min-height: 44px;
   overflow: visible;
 }
 
@@ -637,13 +782,25 @@
   color: var(--mk-t3);
 }
 
-/* ── 명령 툴바 범례 (목업 canvas-bar legend) ─────────────────────── */
+/* ── 카테고리 범례 — 툴바 행이 아니라 캔버스 바로 아래 자기 한 줄 ──────
+ * .event-contents-fieldset 는 [1fr auto] × [auto 1fr] 그리드다. 명시 배치를 안 주면
+ * 범례가 툴바 옆 빈 칸(1행 1열)으로 auto-place 되어 다시 툴바와 같은 줄이 된다. */
+.event-editor .event-contents-fieldset > .event-command-legend {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  align-self: start;
+}
+
 .event-editor .event-command-legend {
-  margin-left: auto;
+  margin: 0;
+  padding: 6px 2px 2px;
+  border-top: 1px solid var(--mk-line-soft);
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 9px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .event-editor .event-command-legend-item {
@@ -651,7 +808,7 @@
   align-items: center;
   gap: 4px;
   font-size: 10.5px;
-  color: var(--mk-t3);
+  color: var(--mk-t2);
   white-space: nowrap;
 }
 
@@ -701,23 +858,69 @@
   min-height: 0;
 }
 
-/* 카드 안 컨트롤 폭 배분 — 이름이 눌리지 않게. */
+/* 카드 안 컨트롤 — 레일이 312px 로 좁아지면서 이름 입력과 "캐릭터 ID" 라벨이
+ * 같은 줄에서 겹쳤다(실측 312px). 목업처럼 이름 / 캐릭터 ID 를 두 줄로 쌓는다. */
 .event-editor .event-editor-card .event-classic-name,
 .event-editor .event-editor-card .event-editor-identity-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
-  gap: 7px;
+  gap: 4px;
   flex: 1 1 auto;
   min-width: 0;
 }
 
-.event-editor .event-editor-card [data-testid="event-page-name-input"] {
-  flex: 1 1 auto;
-  min-width: 90px;
+.event-editor .event-editor-card .event-editor-name-field,
+.event-editor .event-editor-card .event-character-id-label {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
 
+/* 필드 래퍼 자체는 한 칸만 차지한다 — 여기에 2열 그리드를 걸면 라벨이 62px 안에
+ * 다시 갇혀 입력이 0폭이 된다(실측: "캐릭터…" + "..." 만 남았다). */
+.event-editor .event-editor-card .event-character-id-field-inline {
+  display: block;
+  min-width: 0;
+}
+
+.event-editor .event-editor-card .event-character-id-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.event-editor .event-editor-card .event-editor-name-field > span,
+.event-editor .event-editor-card .event-character-id-label > span:first-child {
+  font-size: 11px;
+  color: var(--mk-t2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.event-editor .event-editor-card [data-testid="event-page-name-input"],
 .event-editor .event-editor-card [data-testid="event-character-id-input"] {
-  flex: 0 1 120px;
+  min-width: 0;
+  width: 100%;
+}
+
+/* ID / X / Y 는 한 줄. 라벨이 줄바꿈되면 카드가 두 줄로 부푼다. */
+.event-editor .event-editor-card .event-editor-id-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-card .event-editor-id-row input {
+  width: 42px;
   min-width: 0;
 }
 
@@ -733,6 +936,22 @@
   padding: 3px 8px;
   font-size: 11px;
   white-space: nowrap;
+}
+
+/* 그래픽 슬롯 컴팩트 — 썸네일 52×62 + 조작 버튼만 (목업 C). */
+.event-editor .event-graphic-control {
+  grid-template-columns: 56px minmax(0, 1fr);
+  min-height: 0;
+  gap: 4px 8px;
+}
+
+.event-editor .event-graphic-control .event-graphic-preview {
+  width: 52px;
+  height: 62px;
+}
+
+.event-editor .event-graphic-control .btn {
+  min-height: 26px;
 }
 
 /* 탭 스트립 + 페이지 액션 버튼을 한 줄로 (목업: 탭 옆 ＋, 액션은 우측) */
@@ -763,8 +982,25 @@
   padding: 7px 12px;
 }
 
+/* SPEC §4-F: 천장 104px(≈3.5줄) + 얇은 스크롤바 상시 — 잘렸다는 신호를 남긴다. */
 .event-editor > .event-draft-validation .event-draft-validation-issues {
-  max-height: 84px;
+  max-height: 104px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+}
+
+.event-editor > .event-draft-validation .event-draft-validation-issues::-webkit-scrollbar {
+  width: 8px;
+}
+
+.event-editor > .event-draft-validation .event-draft-validation-issues::-webkit-scrollbar-track {
+  background: var(--mk-inset);
+}
+
+.event-editor > .event-draft-validation .event-draft-validation-issues::-webkit-scrollbar-thumb {
+  background: var(--mk-line);
+  border-radius: 2px;
 }
 
 /* 탭 검사 배지가 조건 요약 위로 겹쳐 작은 숫자로 보였다.
@@ -817,4 +1053,25 @@
   max-height: 104px;
   scrollbar-width: thin;
   scrollbar-color: var(--mk-t3) transparent;
+}
+
+/* ── 푸터: 목업과 동일 — 상태 좌측, 버튼 우측·콘텐츠 크기(높이 30) ──
+   목업의 .footer 는 64px 행 + 30px 버튼(패딩 0 13px, min-width 없음).
+   part-4/modern 의 min-width 96~112·min-height 25~38 을 여기서 무력화한다. */
+.event-editor-modal-footer {
+  min-height: 64px;
+  padding: 0 14px;
+}
+.event-editor-modal-footer .btn.event-editor-footer-button {
+  height: 30px;
+  min-height: 30px;
+  min-width: 0;
+  padding: 0 13px;
+}
+.event-editor-modal-footer .event-editor-footer-button[data-testid="event-delete"] {
+  border-color: #4a2226;
+  color: var(--danger, #d4553a);
+}
+.event-editor-modal-footer .event-editor-footer-button[data-testid="event-editor-help"] {
+  background: transparent;
 }

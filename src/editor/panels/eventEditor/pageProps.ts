@@ -17,11 +17,7 @@ import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { openNewEventCommandKindDialog } from "./commandEditDialog";
-import {
-  PAGE_TAB_ICON_PREVIEW_SCALE,
-  renderEventGraphicIcon,
-  renderEventGraphicPreview,
-} from "./eventGraphicPreview";
+import { renderEventGraphicPreview } from "./eventGraphicPreview";
 import { openNpcGraphicDialog } from "./graphicDialog";
 import { renderPageAnimationType } from "./pageAnimationType";
 import { renderPageConditions } from "./pageConditions";
@@ -116,7 +112,6 @@ export function renderClassicPageTabStrip(
         dataset: { testid: `event-page-tab-${index + 1}` },
         attrs: { title: pageTabTooltip(page, index) },
         children: [
-          pageTabThumbnail(page),
           el("span", { class: "event-page-tab-number", text: String(index + 1) }),
           // 탭을 눌러 보지 않고도 "이 페이지가 언제 실행되는가"를 읽을 수 있게 한다.
           // 4페이지짜리 NPC 에서 감독이 왕복하는 주된 이유였다.
@@ -188,15 +183,6 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   not: "!",
 };
 
-function pageTabThumbnail(page: EventPage): HTMLElement {
-  return el("span", {
-    class: "event-page-tab-thumb",
-    attrs: { "aria-hidden": "true" },
-    dataset: { testid: "event-page-tab-thumb" },
-    children: [renderEventGraphicIcon(page.graphic, { scale: PAGE_TAB_ICON_PREVIEW_SCALE })],
-  });
-}
-
 function pageTabConditionBadges(page: EventPage): HTMLElement {
   const badges = el("span", {
     class: "event-page-tab-badges",
@@ -227,7 +213,7 @@ function pageTabConditionBadges(page: EventPage): HTMLElement {
 function pageTabConditionText(page: EventPage): string {
   const conditions = page.conditions ?? [];
   if (conditions.length === 0) return "조건 없음";
-  const first = pageConditionSummary(conditions[0]!);
+  const first = pageConditionCompactSummary(conditions[0]!);
   return conditions.length === 1 ? first : `${first} 외 ${conditions.length - 1}`;
 }
 
@@ -271,6 +257,36 @@ function pageConditionSummary(condition: EventPageCondition): string {
     case "not":
       return `아님`;
   }
+}
+
+/** 목업의 축약 조건 표기(SW[0001] ON 등). 나머지 종류는 배지 텍스트를 그대로 쓴다. */
+function pageConditionCompactSummary(condition: EventPageCondition): string {
+  switch (condition.kind) {
+    case "switch":
+      return `SW[${flagDisplayNumber("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+    case "selfSwitch":
+      return `SELF[${condition.key}] ${condition.value ? "ON" : "OFF"}`;
+    case "variable":
+      return `VAR[${flagDisplayNumber("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
+    case "item":
+      return condition.present ? "아이템 보유" : "아이템 미보유";
+    case "actor":
+      return condition.present ? "주인공 참여" : "주인공 이탈";
+    case "gold": {
+      const op = condition.op === ">=" ? "≥" : condition.op === "<=" ? "≤" : condition.op;
+      return `소지금 ${op} ${condition.amount}`;
+    }
+    case "timer":
+      return `${condition.timerId === "timer1" ? "타이머 1" : "타이머 2"} ${condition.seconds}초`;
+    default:
+      return pageConditionBadgeText(condition);
+  }
+}
+
+/** switch/variable 조건의 4자리 표시 번호. switchVariableName("0001: 이름") 접두를 재사용한다. */
+function flagDisplayNumber(kind: "switch" | "variable", id: string): string {
+  const match = /^\d{4}/.exec(switchVariableName(kind, id));
+  return match ? match[0] : id;
 }
 
 function timePhaseLabel(phase: Extract<EventPageCondition, { kind: "timePhase" }>["phase"]): string {
@@ -534,7 +550,7 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
   const conditions = page.conditions ?? [];
   wrap.append(
     collapsibleSection({
-      title: "조건",
+      title: "출현 조건",
       testId: "event-classic-conditions",
       openSet: openEventConditions,
       openKey,
@@ -547,14 +563,24 @@ export function renderEventPageProps(mapId: MapId, eventId: string, page: EventP
       class: "event-page-trigger-priority-stack",
       dataset: { testid: "event-page-trigger-priority-stack" },
       children: [
-        rm2k3Fieldset("트리거", trigger, "event-classic-trigger"),
-        rm2k3Fieldset("우선순위", el("div", {
-          class: "event-priority-block",
-          children: [
-            priority,
-            el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
-          ],
-        })),
+        rm2k3Fieldset(
+          "트리거 · 우선순위",
+          el("div", {
+            class: "event-trigger-priority-block",
+            children: [
+              trigger,
+              el("div", {
+                class: "event-priority-block",
+                dataset: { testid: "event-classic-priority" },
+                children: [
+                  priority,
+                  el("label", { class: "event-overlap-label", children: [overlap, el("span", { text: "이벤트 겹침 금지" })] }),
+                ],
+              }),
+            ],
+          }),
+          "event-classic-trigger"
+        ),
         renderEventPageSafetyWarning(page),
       ],
     }),
@@ -813,12 +839,17 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
   });
   control.append(
     renderEventGraphicPreview(page.graphic, page.movement.type),
-    el("label", { class: "event-graphic-transparent", children: [transparent, el("span", { text: "투명" })] }),
-    el("button", {
-      class: "btn",
-      text: "설정",
-      dataset: { testid: "event-page-graphic-set" },
-      on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
+    el("div", {
+      class: "event-graphic-control-actions",
+      children: [
+        el("button", {
+          class: "btn",
+          text: "이미지 선택",
+          dataset: { testid: "event-page-graphic-set" },
+          on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
+        }),
+        el("label", { class: "event-graphic-transparent", children: [transparent, el("span", { text: "투명" })] }),
+      ],
     }),
     spriteInput
   );

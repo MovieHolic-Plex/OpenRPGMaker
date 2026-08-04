@@ -57,7 +57,7 @@ export function attachColumnResize(handle: HTMLElement, workbench: HTMLElement):
 }
 
 function clampColumnWidth(value: number, workbenchWidth: number): number {
-  const minSettingsWidth = workbenchWidth < 900 ? 260 : 320;
+  const minSettingsWidth = workbenchWidth < 900 ? 240 : 288;
   const minCommandsWidth = workbenchWidth < 900 ? 300 : 380;
   const maxSettingsWidth = Math.max(minSettingsWidth, workbenchWidth - minCommandsWidth);
   return Math.round(Math.min(Math.max(value, minSettingsWidth), maxSettingsWidth));

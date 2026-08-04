@@ -22,6 +22,13 @@ type InspectorTarget = {
 
 let host: HTMLElement | undefined;
 let selectedPath: number[] | undefined;
+let emptyRenderer: (() => HTMLElement) | undefined;
+
+/** content.ts 가 빈(미선택) 상태 렌더러를 공급한다. undefined 면 기본 힌트로 복귀. */
+export function setCommandInspectorEmptyRenderer(render: (() => HTMLElement) | undefined): void {
+  emptyRenderer = render;
+}
+
 
 /** content.ts 가 인스펙터 컬럼을 만들 때 호출한다. */
 export function setCommandInspectorHost(next: HTMLElement | undefined): void {
@@ -86,6 +93,17 @@ export function showCommandInspector(target: InspectorTarget): void {
 }
 
 function renderEmpty(target: HTMLElement): void {
+  if (emptyRenderer) {
+    try {
+      const node = emptyRenderer();
+      if (node) {
+        target.replaceChildren(node);
+        return;
+      }
+    } catch {
+      // 렌더러 실패가 에디터를 깨면 안 된다 — 기본 힌트로 폴백.
+    }
+  }
   target.replaceChildren(
     el("div", {
       class: "event-inspector-empty empty-hint",

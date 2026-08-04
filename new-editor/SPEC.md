@@ -83,6 +83,9 @@
 - **본문만 늘어난다.** 나머지는 내용 기준 높이.
 - 본문은 3열 `312px / minmax(0,1fr) / 348px`. 가운데가 남는 폭을 전부 먹는다.
 - 좌우 열은 각자 스크롤한다. 모달 전체가 스크롤되면 안 된다.
+- 푸터(64px): 좌측 2행 상태(`편집 세션 — …` / `원격 저장 — …`, `t2`), 우측 액션
+  `삭제(위험 고스트) · 이 이벤트 테스트 · 취소 · 적용 · 확인(황동) · 도움말`.
+  액션은 푸터 우측 한 줄, 상태는 좌측. 가운데 빈 공간 금지.
 
 ### B. 페이지 탭 (상단 전폭 가로)
 - 탭 하나 = `번호 배지 | 이름 + 조건 요약 | 검사 배지`.
@@ -138,6 +141,9 @@ npx playwright test eventEditorMockupShots.spec.ts --reporter=line
   `01-shell.png` 을 `new-editor/mockup/event-editor-mockup.png` 와 **나란히 놓고 눈으로** 비교한다.
 - `[parity]` 줄의 10항목이 전부 `true` 여야 한다. 하나라도 `false` 면 그 라운드는 실패다.
 - 새 계약을 만들었으면 그 스펙에 체크 항목을 **추가**한다(지우지 마라).
+- 뷰포트 매트릭스: `1280×800 / 1500×1000 / 1920×1080 / 2560×1440` 각 9 invariant
+  (`test "mockup invariants hold at …"`). 좁은 뷰포트에서 레일·캔버스·탭이
+  겹치거나 모달 밖으로 넘치지 않는지를 본다.
 
 병합 전 최종:
 ```bash
@@ -151,8 +157,34 @@ npm run build
 - 툴바 `"몬"` → `☠`.
 - 빈 이벤트 캔버스 중앙 정렬.
 - 팔레트 `min-height: 220px` 제거 → 천장 `min(52vh,460px)`.
-- 검증 스트립 `max-height: 58px` → `104px` + 얇은 스크롤바.
+- 검증 스트립 `max-height: 58px` → `104px` + 얇은 스크롤바(`scrollbar-gutter: stable`).
 - 비활성 탭 조건 요약 `t3` → `t2`(대비 미달 해소).
+- **열 폭**: `--event-editor-settings-track` 기본 `clamp(320,36vw,540)` → `312px`,
+  인스펙터 `minmax(240,320)` → `348px`. 드래그 하한 320→288.
+- **탭 내부 절대배치**: 옛 세로 레일 시트가 썸네일/번호/조건배지에 준
+  `position:absolute; inset:0` 을 끊었다(번호 배지가 탭 아래 189px 폭 유령 숫자로 보였다).
+  탭 썸네일은 아이콘이 36×48 `!important` 로 고정돼 있어 `transform: scale()` 로만 줄인다.
+- **범례 위치**: `event-contents-fieldset` 은 `[1fr auto] × [auto 1fr]` 그리드다. DOM 순서를
+  cmdList 뒤로 옮기는 것만으로는 툴바 옆 빈 칸으로 auto-place 된다 —
+  `grid-column: 1/-1; grid-row: 3` 을 함께 줘야 한다.
+- **카드 겹침**: 레일 312px 에서 이름 입력과 "캐릭터 ID" 라벨이 겹쳤다. 카드 안 필드는
+  세 줄로 쌓는다. 2열 그리드는 `.event-character-id-label` 에 걸어야 한다
+  (래퍼 `.event-character-id-field-inline` 에 걸면 입력이 0폭이 된다).
+- **인스펙터 유휴 상태**: `setCommandInspectorEmptyRenderer` 로 content.ts 가 페이지 요약을
+  주입한다. 한글 라벨에 mono + uppercase + 자간을 주면 글자가 짓눌린다 — 라벨은 산세리프.
+- **푸터**: 목업과 동일 — 좌측 2행 상태, 우측 액션(삭제=위험 고스트 · 이 이벤트 테스트 ·
+  취소 · 적용 · 확인=황동 · 도움말). 옛 `footer-leading` 래퍼와 `margin-right:auto` 는 제거.
+  버튼 높이 30px · `min-width:0` · 패딩 13px 로 6개 액션이 1280 에서도 한 줄.
+- **레일 gfx/trig 겹침(1280×800)**: `.event-page-props` 의 auto 행이 `overflow:hidden`
+  필드셋의 자동 최소 크기 0 때문에 내용보다 줄어드는 문제. `grid-auto-rows: min-content`
+  로 고정(`.event-editor` 에 쓴 기법과 동일). 매트릭스 invariant 9번째
+  (`레일 gfx/trig 겹침 없음`)로 가드.
+- **게임 필 레이어**: `src/styles/editor/event-editor.gamefeel.css` (마지막 @import).
+  베벨 프레임 · 인셋 릴리프 · 챔퍼 탭 · 사선 해칭 검증 스트립 · 기계식 :active 등 표면 전용.
+  이 파일은 `display/position/grid-template/width/height` 를 건드리지 않는다 —
+  레이아웃을 고칠 일이 생기면 `mockup.css` 로 가라.
+  ⚠ `.btn.event-editor-footer-button.primary` 의 `background-color` 는 절대 바꾸지 마라.
+  parity 검사가 `rgb(217,164,65)` 를 정확히 비교한다(그라디언트도 실패한다).
 
 ## 7. 알려진 baseline 실패 (이 작업과 무관)
 

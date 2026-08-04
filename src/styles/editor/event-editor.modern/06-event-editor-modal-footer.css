@@ -1,4 +1,4 @@
-/* 푸터: 좌측 삭제+힌트 | 우측 취소·적용·확인·도움말 */
+/* 푸터: 좌측 힌트 | 우측 삭제·테스트·취소·적용·확인·도움말 (목업 순서) */
 .event-editor-modal-footer {
   align-items: center;
   background: color-mix(in srgb, var(--bg-raised) 94%, var(--event-modern-field));
@@ -26,23 +26,6 @@
   white-space: nowrap;
 }
 
-.event-editor-footer-danger {
-  display: flex;
-  flex: 0 0 auto;
-  justify-content: flex-start;
-}
-
-.event-editor-footer-danger .event-editor-footer-button {
-  background: transparent;
-  border-color: color-mix(in srgb, var(--danger, #b3452f) 50%, var(--event-modern-border, var(--border-subtle)));
-  color: var(--danger, #d4553a);
-  min-width: 88px;
-}
-
-.event-editor-footer-danger .event-editor-footer-button:hover {
-  background: color-mix(in srgb, var(--danger, #d4553a) 12%, transparent);
-  border-color: var(--danger, #d4553a);
-}
 
 .event-editor-footer-actions {
   display: flex;

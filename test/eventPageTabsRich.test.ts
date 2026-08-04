@@ -65,41 +65,21 @@ describe("rich event page tabs", () => {
     restoreFakeDom();
   });
 
-  it("renders a graphic thumbnail inside every page tab", () => {
+  it("renders page tabs without graphic thumbnails (mockup v2 contract)", () => {
     const pages = [
       eventPage("page-1"),
-      eventPage("page-2", { graphic: { sprite: { type: "bundled", id: "unknown-sprite" } } }),
-      eventPage("page-3", { graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } } }),
+      eventPage("page-2", { graphic: { sprite: { type: "bundled", id: "tex_easyrpg_charset_people1" } } }),
     ];
     const strip = renderStrip(pages);
 
     const tab1 = findByTestId(strip, "event-page-tab-1");
     const tab2 = findByTestId(strip, "event-page-tab-2");
-    const tab3 = findByTestId(strip, "event-page-tab-3");
     expect(tab1).not.toBeNull();
     expect(tab2).not.toBeNull();
-    expect(tab3).not.toBeNull();
-
-    const thumb1 = findByTestId(tab1!, "event-page-tab-thumb");
-    const thumb2 = findByTestId(tab2!, "event-page-tab-thumb");
-    const thumb3 = findByTestId(tab3!, "event-page-tab-thumb");
-    expect(thumb1).not.toBeNull();
-    expect(thumb2).not.toBeNull();
-    expect(thumb3).not.toBeNull();
-
-    const emptyIcon = findByTestId(thumb1!, "event-page-graphic-icon-preview");
-    expect(emptyIcon).not.toBeNull();
-    expect(emptyIcon?.dataset.empty).toBe("true");
-
-    const spriteIcon = findByTestId(thumb2!, "event-page-graphic-icon-preview");
-    expect(spriteIcon).not.toBeNull();
-    expect(spriteIcon?.dataset.spriteId).toBe("unknown-sprite");
-
-    // Page tabs use 36×48 charset cells (scale 1.5) so the full frame fits the tab without crop squash.
-    const fullIcon = findByTestId(thumb3!, "event-page-graphic-icon-preview");
-    expect(fullIcon).not.toBeNull();
-    expect(fullIcon?.style.width).toBe("36px");
-    expect(fullIcon?.style.height).toBe("48px");
+    // 목업 v2: 탭은 번호 + 이름 + 조건 요약 + 배지만 가진다 — 썸네일은 없다.
+    expect(findByTestId(tab1!, "event-page-tab-thumb")).toBeNull();
+    expect(findByTestId(tab2!, "event-page-tab-thumb")).toBeNull();
+    expect(tab2!.querySelector(".event-page-tab-thumb")).toBeNull();
   });
 
   it("renders condition badges capped at three plus an overflow counter", () => {

@@ -34,10 +34,14 @@ import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
-import { resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
+import { commandCategoryVisual } from "./commandCategoryIcons";
+import { setCommandInspectorEmptyRenderer, resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
+import { commandSummary } from "./commandSummary";
+import { branchesOf } from "./previewSimulation";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
+import { EVENT_PRIORITY_OPTIONS, TRIGGER_OPTIONS } from "./options";
 import {
   renderClassicPageTabStrip,
   renderEventCharacterSocialExtras,
@@ -149,6 +153,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-editor-inspector" },
   });
   setCommandInspectorHost(inspectorColumn);
+  // 미선택(빈) 상태: 페이지 요약 카드. 렌더러가 실패하면 기본 힌트로 폴백한다.
+  setCommandInspectorEmptyRenderer(() => renderInspectorIdleSummary(activePage, activePageIssues));
   resetCommandInspectorView();
 
   const cmdList = el("div", { class: "cmd-list" });
@@ -221,6 +227,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         el("legend", { class: "event-contents-legend", text: "실행 내용" }),
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
         cmdList,
+        // 카테고리 범례 — 툴바 안이 아니라 캔버스 바로 아래 자기 한 줄로.
+        renderCommandCategoryLegend(),
       ],
     }),
     // 하단 보조 도구: AI / 미리보기 / 플로우 — 접힘 시 한 줄 칩, 실행 내용 높이 우선.
@@ -356,9 +364,6 @@ function renderCommandToolbar(
         false,
         false
       ),
-      // 카테고리 범례 — 블록 거터 색이 무엇을 뜻하는지 한 줄로.
-      // 색은 스캔 보조일 뿐이고 식별은 라벨이 담당하므로 텍스트를 함께 둔다.
-      renderCommandCategoryLegend(),
     ],
   });
 }
@@ -388,6 +393,105 @@ function renderCommandCategoryLegend(): HTMLElement {
       })
     ),
   });
+}
+
+// 인스펙터 빈(미선택) 상태 — 페이지 요약 카드.
+function renderInspectorIdleSummary(page: EventPage, issues: readonly EventDraftIssue[]): HTMLElement {
+  const errorCount = issues.filter((issue) => issue.severity === "error").length;
+  const warningCount = issues.filter((issue) => issue.severity === "warning").length;
+  const children: HTMLElement[] = [
+    el("div", {
+      class: "event-inspector-idle-head",
+      children: [
+        el("span", { class: "event-inspector-idle-label", text: "현재 페이지" }),
+        el("span", { class: "event-inspector-idle-name", text: page.name }),
+      ],
+    }),
+    el("div", {
+      class: "event-inspector-stats",
+      children: [
+        inspectorStatRow("명령", `${page.commands.length}개`),
+        inspectorStatRow("분기 최대 깊이", String(maxBranchDepth(page.commands))),
+        inspectorStatRow("출현 조건", `${page.conditions?.length ?? 0}개`),
+        inspectorStatRow(
+          "트리거",
+          TRIGGER_OPTIONS.find(
+            (option) => option.value === (page.trigger.kind === "touch" ? "playerTouch" : page.trigger.kind)
+          )?.label ?? page.trigger.kind
+        ),
+        inspectorStatRow(
+          "우선순위",
+          EVENT_PRIORITY_OPTIONS.find((option) => option.value === page.priority)?.label ?? String(page.priority)
+        ),
+        inspectorStatRow("그래픽", page.graphic.sprite ? page.graphic.sprite.id : "없음"),
+        inspectorStatRow("검사", `오류 ${errorCount} · 경고 ${warningCount}`),
+      ],
+    }),
+  ];
+  if (page.commands.length > 0) {
+    children.push(
+      el("div", {
+        class: "event-inspector-recent",
+        children: [
+          el("div", { class: "event-inspector-recent-title", text: "최근 명령" }),
+          ...page.commands.slice(-8).reverse().map(recentCommandRow),
+        ],
+      })
+    );
+  }
+  children.push(
+    el("div", { class: "event-inspector-idle-hint", text: "명령을 클릭하면 여기서 바로 편집됩니다." })
+  );
+  return el("div", {
+    class: "event-inspector-empty",
+    dataset: { testid: "event-inspector-empty" },
+    children,
+  });
+}
+
+function inspectorStatRow(label: string, value: string): HTMLElement {
+  return el("div", {
+    class: "event-inspector-stat",
+    children: [
+      el("span", { class: "event-inspector-stat-label", text: label }),
+      el("span", { class: "event-inspector-stat-value", text: value }),
+    ],
+  });
+}
+
+function recentCommandRow(cmd: Command): HTMLElement {
+  let text: string;
+  try {
+    text = commandSummary(cmd);
+  } catch {
+    text = cmd.kind;
+  }
+  return el("div", {
+    class: "event-inspector-recent-item",
+    children: [
+      el("i", {
+        class: "event-inspector-recent-gutter",
+        attrs: { "aria-hidden": "true" },
+        dataset: { category: commandCategoryVisual(cmd).key },
+      }),
+      el("span", { class: "event-inspector-recent-text", text }),
+    ],
+  });
+}
+
+// 분기 최대 깊이. commandList 가 순회하는 것과 같은 분기 접근자(branchesOf)를 쓴다.
+function maxBranchDepth(commands: readonly Command[]): number {
+  let max = 0;
+  const walk = (cmd: Command, depth: number): void => {
+    for (const branch of branchesOf(cmd)) {
+      for (const child of branch.commands) {
+        max = Math.max(max, depth);
+        walk(child, depth + 1);
+      }
+    }
+  };
+  commands.forEach((cmd) => walk(cmd, 1));
+  return max;
 }
 
 function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {

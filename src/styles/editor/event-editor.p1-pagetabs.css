@@ -10,42 +10,6 @@
   width: 100%;
 }
 
-.event-page-tab-thumb {
-  align-items: center;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  left: 0;
-  overflow: hidden;
-  /* Bottom room for the page-number overlay; keep enough height for a full 36×48 cell. */
-  padding: 2px 2px 18px;
-  pointer-events: none;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-.event-page-tab-thumb .event-graphic-icon-preview {
-  /* Beat the shared .event-graphic-preview 48×64 rule so crop scale matches box size. */
-  flex: none;
-  height: 48px !important;
-  image-rendering: pixelated;
-  max-height: none;
-  max-width: none;
-  width: 36px !important;
-}
-
-/* 그래픽 없음/미지원 → 탭 비율에 맞는 빈 칸 placeholder */
-.event-page-tab-thumb .event-graphic-icon-preview[data-empty="true"],
-.event-page-tab-thumb .event-graphic-icon-preview[data-unsupported="true"] {
-  background: transparent;
-  border: 1px dashed var(--event-modern-border, currentColor);
-  border-radius: 4px;
-  height: 48px !important;
-  opacity: 0.45;
-  width: 36px !important;
-}
-
 .event-page-tab-number {
   align-items: flex-end;
   background: linear-gradient(

@@ -84,6 +84,9 @@
   align-content: start;
   display: grid;
   gap: 10px;
+  /* auto 행은 overflow:hidden 인 필드셋의 자동 최소 크기가 0이라
+     컨테이너가 좁을 때 내용보다 줄어든다(레일 겹침). min-content 로 고정. */
+  grid-auto-rows: min-content;
   max-width: 100%;
   min-height: 0;
   min-width: 0;

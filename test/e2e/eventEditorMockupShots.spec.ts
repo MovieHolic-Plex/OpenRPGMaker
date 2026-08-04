@@ -132,8 +132,24 @@ test("empty event on a wide viewport stays clean", async ({ page }) => {
 
   await modal.screenshot({ path: `${DIR}/07-empty-wide.png` });
 
+  // 근접 캡처 — 채점표 A(카드 밀도)와 E(선택 없는 인스펙터)는 전체 셸 샷으로는 못 본다.
+  await modal.locator(".event-editor-card").screenshot({ path: `${DIR}/08-card.png` });
+  await modal
+    .locator(".event-editor-inspector-column")
+    .screenshot({ path: `${DIR}/09-inspector-idle.png` });
+
   // 탭 내용이 잘리면 안 된다 (이름 + 조건 요약 두 줄이 다 보여야 한다).
   expect(probe.tab?.clipped, "page tab clips its content").toBeFalsy();
+  // 카드 안 이름/캐릭터 ID 는 312px 레일에서 겹치지 않고 각자 한 줄을 쓴다.
+  const card = await modal.locator(".event-editor-card").evaluate((root) => {
+    const name = root.querySelector<HTMLElement>('[data-testid="event-page-name-input"]');
+    const charLabel = root.querySelector<HTMLElement>(".event-character-id-label > span");
+    if (!name || !charLabel) return null;
+    const a = name.getBoundingClientRect();
+    const b = charLabel.getBoundingClientRect();
+    return { overlap: a.bottom > b.top + 1 && a.top < b.bottom - 1 && a.right > b.left && a.left < b.right };
+  });
+  expect(card?.overlap, "name input overlaps the character-id label").toBe(false);
 });
 
 function emptyEventProject(): { project: Project; eventId: string } {
@@ -327,15 +343,23 @@ test("mockup parity checklist", async ({ page }) => {
       if (p) gutters.add(getComputedStyle(p).backgroundColor);
     }
     const okBtn = root.querySelector<HTMLElement>(".btn.event-editor-footer-button.primary");
+    const legend = rect(".event-command-legend");
+    const list = rect(".cmd-list");
+    const idleStats = has(".event-inspector-stats") || has("[data-testid='event-inspector-body']");
     return {
       "가로 페이지 탭": !!tabs && tabs.width > 400 && tabs.height < 80,
       "탭 조건 요약": has("[data-testid='event-page-tab-cond-1']"),
       "이벤트 카드": has(".event-editor-card") && has(".event-editor-card-sprite"),
       "카드가 레일 최상단": !!card && !!rail && card.top - rail.top < 24,
       "3열 배치": !!rail && !!canvas && !!insp && rail.right <= canvas.left + 24 && canvas.right <= insp.left + 24,
+      // 목업 비율: 레일 312 / 인스펙터 348 (가운데가 남는 폭 전부).
+      "열 폭 312·348": !!rail && !!insp && Math.abs(rail.width - 312) <= 2 && Math.abs(insp.width - 348) <= 2,
       "블록 캔버스 거터 다색": gutters.size >= 4,
       "인라인 인스펙터": has(".event-editor-inspector-column"),
       "카테고리 범례": has(".event-command-legend"),
+      // 범례는 툴바 줄이 아니라 캔버스 아래 자기 한 줄.
+      "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
+      "인스펙터에 읽을 것": idleStats,
       "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
       "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
     };
@@ -346,3 +370,64 @@ test("mockup parity checklist", async ({ page }) => {
   console.log("[parity]", JSON.stringify(result), `=> ${pass}/${total}`);
   expect(pass, JSON.stringify(result)).toBeGreaterThanOrEqual(total - 1);
 });
+
+
+// 뷰포트 매트릭스 — 목업 불변식(3열 312/유연/348, 단일 행 탭, 하단 스트립)이
+// 실제 사용자가 쓰는 창 크기에서 깨지지 않는지 기계적으로 확인한다.
+const VIEWPORTS = [
+  { width: 1280, height: 800 },
+  { width: 1500, height: 1000 },
+  { width: 1920, height: 1080 },
+  { width: 2560, height: 1440 },
+];
+
+for (const vp of VIEWPORTS) {
+  test(`mockup invariants hold at ${vp.width}x${vp.height}`, async ({ page }) => {
+    await page.setViewportSize(vp);
+    const { project, eventId } = mockupProject();
+    await seedProjectFromSupabaseCanonical(page, project);
+    await openEventEditor(page, eventId);
+    const modal = page.getByTestId("event-editor-modal");
+    await expect(modal).toBeVisible();
+    await page.waitForTimeout(600);
+
+    const result = await modal.evaluate((root) => {
+      const rect = (sel: string) => {
+        const n = root.querySelector<HTMLElement>(sel);
+        return n ? n.getBoundingClientRect() : null;
+      };
+      const modalRect = root.getBoundingClientRect();
+      const tabs = rect(".event-page-number-tabs");
+      const rail = rect(".event-editor-settings-column");
+      const canvas = rect(".event-editor-commands-column");
+      const insp = rect(".event-editor-inspector-column");
+      const val = rect(".event-draft-validation");
+      const list = rect(".cmd-list");
+      const legend = rect(".event-command-legend");
+      const bench = root.querySelector<HTMLElement>(".event-editor-workbench");
+      const inX = (r: DOMRect | null) => !!r && r.left >= modalRect.left - 1 && r.right <= modalRect.right + 1;
+      return {
+        "3열 배치": !!rail && !!canvas && !!insp && rail.right <= canvas.left + 24 && canvas.right <= insp.left + 24,
+        "열 폭 312·348": !!rail && !!insp && Math.abs(rail.width - 312) <= 2 && Math.abs(insp.width - 348) <= 2,
+        "캔버스가 눌리지 않음": !!canvas && !!rail && !!insp && canvas.width >= 300,
+        "탭 단일 행": !!tabs && tabs.height < 80 && tabs.width > 400,
+        "열이 모달 안에": inX(rail) && inX(canvas) && inX(insp),
+        "검증 스트립 하단": !!val && !!canvas && val.top >= canvas.bottom - 8,
+        "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
+        "가로 스크롤 없음": !bench || bench.scrollWidth <= bench.clientWidth + 1,
+        "레일 gfx/trig 겹침 없음": (() => {
+          const gfx = rect('[data-testid="event-classic-graphic"]');
+          const trig = rect(".event-page-trigger-priority-stack");
+          return !!gfx && !!trig && trig.top >= gfx.bottom - 2;
+        })(),
+      };
+    });
+    const pass = Object.values(result).filter(Boolean).length;
+    const total = Object.keys(result).length;
+    // eslint-disable-next-line no-console
+    console.log(`[parity ${vp.width}x${vp.height}]`, JSON.stringify(result), `=> ${pass}/${total}`);
+    expect(pass, JSON.stringify(result)).toBe(total);
+
+    await modal.screenshot({ path: `${DIR}/07-shell-${vp.width}.png` });
+  });
+}
