@@ -30,6 +30,7 @@
 /* 빈 이벤트 — 1500x1000 같은 넓은 창에서 캔버스 세로 절반 이상이 죽은 검은
    공백으로 남던 것을 교정한다. 시작 유형 블록만 있을 때는 캔버스 가운데로 모은다.
    (명령이 하나라도 있으면 :has 가 안 걸리므로 위 align-content:start 가 그대로 산다.) */
+/* P0 빈 상태 CTA를 대형으로 승격 — 리스트 자체를 패딩 카드로 */
 .event-contents-fieldset .cmd-list:has(> .event-command-empty-experience) {
   align-content: center;
   justify-items: center;
@@ -179,4 +180,12 @@
   .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle {
     transition: none;
   }
+}
+
+.event-contents-fieldset .cmd-list > .event-command-empty-experience {
+  min-height: 220px;
+  place-content: center;
+  border: 1px dashed var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-surface);
 }

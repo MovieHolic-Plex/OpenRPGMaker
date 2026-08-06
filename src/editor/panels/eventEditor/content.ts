@@ -521,9 +521,10 @@ function toolbarButton(
   disabled = false,
   primary = false
 ): HTMLButtonElement {
+  const label = title.split(" ")[0] ?? title;
   return el("button", {
     class: "event-editor-command-tool" + (primary ? " primary" : ""),
-    text,
+    text: `${text} ${label}`,
     attrs: disabled ? { type: "button", title, disabled: "" } : { type: "button", title },
     dataset: { testid: testId },
     on: onClick ? { click: onClick } : undefined,
@@ -587,7 +588,7 @@ function renderEmptyCommandLine(
   const openPicker = () => openCommandPickerForActions(actions);
   const line = el("button", {
     class: "cmd-empty-line",
-    text: "◆ 명령 추가 / 검색",
+    text: "◆  명령 추가 — 더블클릭 또는 아래 템플릿에서 시작",
     attrs: { type: "button", title: "더블클릭해서 이벤트 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {

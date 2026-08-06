@@ -157,7 +157,7 @@
   background: transparent;
   border: 1px dashed var(--mk-line);
   border-radius: 3px;
-  color: var(--mk-t3);
+  color: var(--mk-t2);
   font-size: 14px;
   line-height: 1.4;
 }
@@ -182,7 +182,7 @@
 .event-editor .event-editor-id-row {
   font-family: var(--mk-mono);
   font-size: 11px;
-  color: var(--mk-t3);
+  color: var(--mk-t2);
 }
 
 .event-editor .event-editor-id-row input {
@@ -196,7 +196,7 @@
   font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--mk-t3);
+  color: var(--mk-t2);
 }
 
 /* ── 검증 스트립: 상단 대형 → 컴팩트 ─────────────────────────────── */
@@ -472,12 +472,19 @@
   grid-column: 1;
   color: var(--mk-t2);
   font-size: 11px;
+  max-width: 92px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .event-editor .event-inspector-stat-value {
   grid-column: 3;
   color: var(--mk-t1);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-family: var(--mk-mono);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -515,7 +522,7 @@
   width: 3px;
   height: 12px;
   border-radius: 2px;
-  background: var(--lg-cat, var(--mk-t3));
+  background: var(--lg-cat, var(--mk-t2));
 }
 
 .event-editor .event-inspector-recent-gutter[data-category="dialogue"] { --lg-cat: #3987e5; }
@@ -550,6 +557,7 @@
 }
 
 /* 좁은 창에서는 인스펙터를 접는다 — 명령 리스트가 우선. */
+/* 좁은 창에서는 인스펙터를 접는다 — 명령 리스트가 우선. */
 @media (max-width: 1180px) {
   .event-editor .event-editor-workbench {
     grid-template-columns:
@@ -559,6 +567,18 @@
   }
   .event-editor .event-editor-inspector-column {
     display: none;
+  }
+}
+
+/* 더 좁은 뷰포트(900px 이하)에서 4컬럼 붕괴 방지 — 2행 스택 폴백 */
+@media (max-width: 900px) {
+  .event-editor .event-editor-workbench {
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto;
+  }
+  .event-editor .event-editor-settings-column,
+  .event-editor .event-editor-commands-column {
+    min-width: 0;
   }
 }
 
@@ -637,6 +657,10 @@
  * 액션 버튼(새 페이지/페이지 복사)만 남는데 옛 높이를 유지해 235px 빈 칸이 됐다. */
 .event-editor .event-editor-top-strip {
   align-items: center;
+  border-top: 1px solid var(--mk-line-soft);
+  background: color-mix(in srgb, var(--mk-surface) 96%, transparent);
+  padding-top: 6px;
+  margin-top: 2px;
 }
 
 .event-editor .event-editor-top-strip .event-page-tabs {
@@ -797,7 +821,7 @@
   margin: 0;
   font-family: var(--mk-mono);
   font-size: 11px;
-  color: var(--mk-t3);
+  color: var(--mk-t2);
 }
 
 /* ── 카테고리 범례 — 툴바 행이 아니라 캔버스 바로 아래 자기 한 줄 ──────
@@ -1169,4 +1193,9 @@
 }
 .event-editor-modal-footer .event-editor-footer-button[data-testid="event-editor-help"] {
   background: transparent;
+}
+
+@media (max-width: 1280px) {
+  .event-editor .event-inspector-stat-label { max-width: 84px; font-size: 10.5px; }
+  .event-editor .event-inspector-stat-value { font-size: 11px; }
 }

@@ -57,9 +57,12 @@ export function attachColumnResize(handle: HTMLElement, workbench: HTMLElement):
 }
 
 function clampColumnWidth(value: number, workbenchWidth: number): number {
-  const minSettingsWidth = workbenchWidth < 900 ? 240 : 288;
-  const minCommandsWidth = workbenchWidth < 900 ? 300 : 380;
-  const maxSettingsWidth = Math.max(minSettingsWidth, workbenchWidth - minCommandsWidth);
+  const minSettingsWidth = workbenchWidth < 900 ? 220 : 288;
+  const minCommandsWidth = workbenchWidth < 900 ? 260 : 380;
+  const minInspectorWidth = 280;
+  // 4컬럼 붕괴 방지: 인스펙터가 숨는 1180px 이하는 3컬럼 기준으로, 그 이상은 4컬럼 기준으로 max 계산
+  const reserveRight = workbenchWidth < 1180 ? minCommandsWidth : minCommandsWidth + minInspectorWidth;
+  const maxSettingsWidth = Math.max(minSettingsWidth, workbenchWidth - reserveRight);
   return Math.round(Math.min(Math.max(value, minSettingsWidth), maxSettingsWidth));
 }
 

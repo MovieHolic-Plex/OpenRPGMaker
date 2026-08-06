@@ -385,9 +385,15 @@
 .event-graphic-preview[data-empty="true"],
 .event-graphic-preview[data-unsupported="true"] {
   background:
-    linear-gradient(45deg, transparent 46%, var(--border-soft) 48% 52%, transparent 54%),
-    linear-gradient(-45deg, transparent 46%, var(--border-soft) 48% 52%, transparent 54%),
+    linear-gradient(45deg, #1a1f2e 25%, transparent 25%),
+    linear-gradient(-45deg, #1a1f2e 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #1a1f2e 75%),
+    linear-gradient(-45deg, transparent 75%, #1a1f2e 75%),
     var(--event-rm-field);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  border-style: dashed;
+  border-color: var(--border-subtle);
 }
 
 .event-graphic-control input[data-testid="event-page-sprite-input"] {

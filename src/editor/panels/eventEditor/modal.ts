@@ -145,15 +145,18 @@ function closeExistingEventEditorModal(): void {
 }
 
 function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HTMLElement {
-  // [낮음-1] 타이틀에 이벤트 이름과 좌표까지 표기 — 어느 이벤트를 편집 중인지 즉시 식별.
-  // [낮음-2] 동작이 없던 최소화/최대화 장식 버튼 제거.
+  // P0 헤더 2행 분리: 타이틀행(엔진·에디터) + 아이덴티티행(ID·이름·좌표)을 시각적으로 분리한다.
+  const { eyebrow, title } = eventEditorTitleParts(mapId, eventId);
   return el("div", {
     class: "event-editor-modal-header",
     dataset: { testid: "event-editor-titlebar" },
     children: [
       el("div", {
         class: "event-editor-window-title",
-        children: [el("h2", { text: eventEditorTitle(mapId, eventId) })],
+        children: [
+          el("div", { class: "event-editor-window-eyebrow", text: eyebrow, attrs: { "aria-hidden": "true" } }),
+          el("h2", { text: title }),
+        ],
       }),
       el("button", {
         class: "event-editor-window-control event-editor-modal-close",
@@ -164,6 +167,10 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
       }),
     ],
   });
+}
+
+function eventEditorTitleParts(mapId: MapId, eventId: string): { readonly eyebrow: string; readonly title: string } {
+  return { eyebrow: "RPG ZZU ENGINE IDE  ·  이벤트 에디터", title: eventEditorTitle(mapId, eventId) };
 }
 
 function eventEditorTitle(mapId: MapId, eventId: string): string {
@@ -274,38 +281,43 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   const diff = eventDraftDiffById(project, request.mapId, request.eventId);
   const changed = Boolean(diff && diff.changes.length > 0);
   if (changed) {
-    local.textContent = "작업 중 · 현재 초안은 로컬 복구 보관됨";
+    local.textContent = "편집 중 · 변경사항 있음 — 적용(Apply)으로 프로젝트에 반영하세요";
     local.dataset.state = "working";
   } else if (footer.dataset.applied === "true") {
-    local.textContent = "적용됨 · 프로젝트 상태에 반영됨";
+    local.textContent = "적용됨 — 확인(OK)으로 닫거나 계속 편집하세요";
     local.dataset.state = "applied";
   } else if (event?.draft) {
-    local.textContent = "편집 세션 · 프로젝트 기준과 같음 · 로컬 복구 준비됨";
+    local.textContent = "편집 세션 · 변경 없음";
     local.dataset.state = "session";
   } else {
-    local.textContent = "프로젝트 상태";
+    local.textContent = "저장된 상태";
     local.dataset.state = "project";
   }
   const remoteStatus = remotePersistenceLabel(store.getAutoSaveState());
   remote.textContent = remoteStatus.text;
   remote.dataset.state = remoteStatus.state;
+  // Apply vs Confirm 구분 힌트: 버튼 타이틀에 병기
+  const applyBtn = footer.querySelector<HTMLElement>('[data-testid="event-editor-apply"]');
+  const okBtn = footer.querySelector<HTMLElement>('[data-testid="event-editor-ok"]');
+  if (applyBtn) applyBtn.title = "적용 — 저장하지 않고 편집을 유지하며 프로젝트에 반영";
+  if (okBtn) okBtn.title = "확인 — 적용 후 에디터를 닫음";
 }
 
 function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: string; readonly state: string } {
   const db = store.getDbPersistenceStatus();
-  if (db.kind === "not-configured") return { text: "원격 저장 · 미설정", state: "not-configured" };
+  if (db.kind === "not-configured") return { text: "저장소 · 미설정", state: "not-configured" };
   if (db.kind === "disabled") {
     return {
-      text: db.reason === "dev-showcase" ? "원격 저장 · 임시 세션에서 꺼짐" : "원격 저장 · 연결 실패로 꺼짐",
+      text: db.reason === "dev-showcase" ? "저장소 · 임시 세션" : "저장소 · 오프라인",
       state: "disabled",
     };
   }
   switch (autoSave.kind) {
-    case "pending": return { text: "원격 저장 · 대기 중", state: "pending" };
-    case "saving": return { text: "원격 저장 · 저장 중", state: "saving" };
-    case "saved": return { text: `원격 저장됨 · ${new Date(autoSave.at).toLocaleTimeString()}`, state: "saved" };
-    case "error": return { text: `원격 저장 실패 · ${autoSave.message}`, state: "error" };
-    case "idle": return { text: "원격 저장 · 연결됨 · 저장 신호 대기", state: "idle" };
+    case "pending": return { text: "저장 대기 중", state: "pending" };
+    case "saving": return { text: "저장 중…", state: "saving" };
+    case "saved": return { text: `저장됨 · ${new Date(autoSave.at).toLocaleTimeString()}`, state: "saved" };
+    case "error": return { text: `저장 실패 · ${autoSave.message}`, state: "error" };
+    case "idle": return { text: "저장 준비됨", state: "idle" };
   }
 }
 

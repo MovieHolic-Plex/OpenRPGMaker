@@ -37,13 +37,15 @@
 }
 
 .event-editor-modal-header {
+  align-items: center;
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-1);
   cursor: default;
+  display: flex;
   gap: 10px;
   min-height: 52px;
-  padding: 0 18px 0 26px;
+  padding: 6px 18px 6px 26px;
 }
 
 .event-editor-modal-window.dragging .event-editor-modal-header {
@@ -51,13 +53,28 @@
 }
 
 .event-editor-window-title {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+  min-width: 0;
 }
 
 .event-editor-modal-header h2 {
   color: var(--text-1);
   font: 700 20px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-shadow: none;
+  white-space: nowrap;
+}
+
+.event-editor-window-eyebrow {
+  color: var(--text-2);
+  font: 600 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .event-editor-window-controls {
