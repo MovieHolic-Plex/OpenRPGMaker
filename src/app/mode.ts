@@ -236,8 +236,8 @@ function openRequiredDbSettings(): void {
   });
 }
 
-// 프로젝트 로드 실패(데이터 무결성 오류) 화면.
-// 기존 저장본을 덮어쓰지 않는 메모리 폴백을 1차 CTA로 제공하고, 오류 원문은 접어 둔다.
+// 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
+// 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
 function renderLoadFailureScreen(error: unknown): void {
   if (!elements) return;
   elements.topbar.textContent = "RPG ZZU - 프로젝트 로드 실패";
@@ -245,9 +245,29 @@ function renderLoadFailureScreen(error: unknown): void {
     elements.main.removeChild(elements.main.firstChild);
   }
   const panel = document.createElement("section");
-  panel.className = "db-required-panel project-load-error-panel";
+  panel.className = "db-required-panel db-required-hero project-load-error-panel";
   panel.dataset.testid = "project-load-error-panel";
 
+  const hero = document.createElement("div");
+  hero.className = "db-required-hero-art";
+  hero.dataset.testid = "db-required-hero";
+  const heroImg = document.createElement("img");
+  heroImg.className = "db-required-hero-image";
+  heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
+  heroImg.alt = "AI RPG Maker";
+  heroImg.decoding = "async";
+  heroImg.addEventListener("error", () => {
+    if (heroImg.dataset.fallback === "1") return;
+    heroImg.dataset.fallback = "1";
+    heroImg.src = "/assets/generated/title/bright-rpg-maker-title-v2.png";
+  });
+  hero.append(heroImg);
+
+  const copy = document.createElement("div");
+  copy.className = "db-required-copy";
+  const kicker = document.createElement("p");
+  kicker.className = "db-required-kicker";
+  kicker.textContent = "RPG ZZU";
   const title = document.createElement("h1");
   title.textContent = "저장된 프로젝트를 바로 열 수 없습니다";
   const body = document.createElement("p");
@@ -262,6 +282,14 @@ function renderLoadFailureScreen(error: unknown): void {
   detailMessage.dataset.testid = "project-load-error-message";
   detailMessage.textContent = error instanceof Error ? error.message : String(error);
   detail.append(detailSummary, detailMessage);
+
+  const chips = document.createElement("ul");
+  chips.className = "db-required-chips";
+  for (const label of ["예제 프로젝트", "새 프로젝트", "DB 연결 선택"]) {
+    const li = document.createElement("li");
+    li.textContent = label;
+    chips.append(li);
+  }
 
   const actions = document.createElement("div");
   actions.className = "project-load-error-actions";
@@ -339,7 +367,8 @@ function renderLoadFailureScreen(error: unknown): void {
   });
   actions.append(openDb);
 
-  panel.append(title, body, actions, detail);
+  copy.append(kicker, title, body, chips, actions, detail);
+  panel.append(hero, copy);
   elements.main.append(panel);
 }
 

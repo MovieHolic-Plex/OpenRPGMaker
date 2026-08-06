@@ -390,6 +390,19 @@ export default defineConfig(({ mode }) => {
     // localOnlyAiProxyPlugin 이 루프백으로 제한.
     proxy: Object.keys(proxy).length > 0 ? proxy : undefined,
   },
+  preview: {
+    host: "127.0.0.1",
+    port: 9888,
+    strictPort: true,
+    https: devServerHttps(),
+    proxy: {
+      [SUPABASE_PROXY_PATH]: {
+        target: supabaseUpstreamUrl(mode),
+        changeOrigin: true,
+        rewrite: (path: string) => path.replace(new RegExp(`^${SUPABASE_PROXY_PATH}`), ""),
+      },
+    },
+  },
   build: {
     target: "es2022",
     sourcemap: false,
