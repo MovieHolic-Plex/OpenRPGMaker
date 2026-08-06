@@ -1723,15 +1723,19 @@ function specNpcName(asset: SpecAsset): string {
 /**
  * 밑그림 npc 에셋의 기본 대사 페이지.
  *
- * 상점 역할 이름이면 shop 커맨드를 붙인다 — 재고는 비워 둔다(명세에 품목이 없다).
- * 빈 재고로도 place_npc 가 changeFace→text→shop 3커맨드를 컴파일하는 것을 실측했으므로,
- * 사용자는 상점 창까지 열리는 이벤트를 받고 품목만 나중에 채우면 된다.
+ * 상점 역할 이름이면 빈 shop 커맨드를 꽂지 않는다 — eventDraftValidator가
+ * shop.items.empty 에러를 내고, 사용자는 "성공한 빈 가게"를 얻기 때문이다(P0-1).
+ * 대신 상점 대사와 함께 재고를 채우라는 안내를 남긴다. AI가 stock을 채워
+ * place_npc shop 옵션으로 호출하면 eventTools가 정상 상점으로 컴파일한다.
  */
 function specNpcPage(name: string): Record<string, unknown> {
   if (SHOP_ROLE_NAME.test(name)) {
     return {
-      lines: ["어서 오세요. 필요한 게 있으신가요?"],
-      commands: [{ kind: "shop", itemIds: [], allowSell: true }],
+      lines: [
+        "어서 오세요. 필요한 게 있으신가요?",
+        "※ 상점 재고가 비어 있어 상점 처리를 열 수 없습니다 — AI에게 '상점에 <아이템>을 넣어줘'라고 하거나 이벤트 편집기에서 상점 재고를 채워 주세요.",
+      ],
+      commands: [],
     };
   }
   return { lines: [`${name}입니다.`] };
