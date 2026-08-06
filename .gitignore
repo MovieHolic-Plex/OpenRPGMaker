@@ -94,3 +94,9 @@ node_modules
 
 # dev 서버 TLS 자기서명 인증서 (scripts/dev-certs.sh 로 재발급)
 .certs/
+.commandcode/
+.team/
+.typecheck-out.txt
+db_ui_mockup.png
+docs/2026-08-05-house-harness-adversarial-review.md
+new-editor/COMPREHENSIVE.html
