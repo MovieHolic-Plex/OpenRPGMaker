@@ -36,34 +36,29 @@ interface SkinBattlerPlacement {
 }
 
 const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
-  // 포켓몬: 내 몬스터 뒷모습 좌하 + 적 몬스터 우상(정면). 좌상단은 적 정보 박스,
-  // 우하단은 아군 정보 박스가 차지하므로 스프라이트는 그 대각선을 피해서 선다.
-  // 다수 적은 수평 등간격(Δ44) 이 이미지 폭(74유닛)보다 좁아 41% 겹쳤다(9차 리뷰) —
-  // 레퍼런스처럼 앞뒤 사선(Δx58 + y 스태거)으로 깊이를 준다. 가까운 쪽이 앞(z 는 depth 스탬프).
+  // 포켓몬: 1:1 대치 — 선두 1명만, 적 크고 중앙 상단, 아군 좌하 대형.
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 245, y: 92 } : { x: 250 - i * 58, y: 90 - (i % 2) * 14 }), party: () => ({ x: 84, y: 152 }) },
-  // RM2003 사이드뷰: 적 좌측 열, 아군 정면 우측 세로열.
-    rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
-  // RM2000 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬.
+  // RM2003 사이드뷰: 고전 2×2 그리드 — 적 좌열, 아군 우열, 지그재그 없음.
+  rm2003: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 68 + (i % 2) * 58, y: 78 + Math.floor(i / 2) * 56 }), party: (i) => ({ x: 224 + (i % 2) * 46, y: 78 + Math.floor(i / 2) * 56 }) },
+  // RM2000 프론트뷰: 숨김 파티, 적 중앙 수평.
   rm2000: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 82 }), party: () => ({ x: 160, y: 150 }) },
-  // 옥토패스 HD-2D: 적 좌측, 아군 뒷모습 우측(오버숄더).
-  octopath: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
-  // 크로노 액티브: 대각 배치 — 아군 좌하 클러스터, 적 우상, 아군 정면.
+  // 옥토패스 HD-2D: 오버숄더 — 적 상단 얕게, 아군 하단 깊게, HD 간격.
+  octopath: { partyFacing: "back", partyScale: 1.15, enemy: (i) => ({ x: 72 + (i % 2) * 54, y: 74 + Math.floor(i / 2) * 60 }), party: (i) => ({ x: 236 + (i % 2) * 42, y: 88 + Math.floor(i / 2) * 52 }) },
+  // 크로노 액티브: 대각 액티브 — 적 우상 일렬, 아군 좌하 클러스터.
   chrono: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 220 - i * 38, y: 48 }), party: (i) => ({ x: 62 + (i % 2) * 42, y: 104 + Math.floor(i / 2) * 30 }) },
-  // 브레이블리: 사이드뷰, 아군 뒷모습 우측, 회화풍.
-  bravely: { partyFacing: "back", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
-  // 드퀘 1인칭: 아군 없음, 적 중앙 정면.
-  dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 54, y: 78 }), party: () => ({ x: 160, y: 150 }) },
-  // FF 정통 사이드뷰: 적 좌측, 아군 정면 우측 세로열.
-  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
-  // 마더 1인칭: 아군 없음, 적 정면 중앙.
-  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 46, y: 74 }), party: () => ({ x: 160, y: 150 }) },
-  // 골든선 저앵글: 카메라 파티 뒤 → 아군 뒷모습 우측하단, 적 좌측.
-  goldensun: { partyFacing: "back", partyScale: 1.3, enemy: (i) => ({ x: 76 + (i % 2) * 56, y: 82 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 226 + (i % 2) * 48, y: 82 + Math.floor(i / 2) * 58 }) },
-  // RPG Maker MV 프론트뷰: 아군 스프라이트 없음, 적 정면 중앙 정렬(rm2000과 동일 배치).
-  mv: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 48, y: 82 }), party: () => ({ x: 160, y: 150 }) },
-  // VX Ace 프론트뷰: 아군 스프라이트 없음(하단 파티 셀이 아군 표시), 적은 필드 좌측 2/3 안에 정면 정렬.
-  // 우측은 세로 명령창이 덮는다 — 실제 명령창 폭은 _vxace.css 의 .battle-command-host width: 150px
-  // (640 논리 기준, 이 0..320 저작 좌표계로는 75 에 해당)이므로 적 중심을 x=112 로 왼쪽으로 당긴다.
+  // 브레이블리: 사이드뷰 회화풍 — 더 촘촘, 아군 대형 스케일.
+  bravely: { partyFacing: "back", partyScale: 1.35, enemy: (i) => ({ x: 64 + (i % 2) * 60, y: 80 + Math.floor(i / 2) * 54 }), party: (i) => ({ x: 218 + (i % 2) * 50, y: 84 + Math.floor(i / 2) * 56 }) },
+  // 드퀘 1인칭: 대형 단일 적 중앙, 아군 없음.
+  dragonquest: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 60, y: 68 }), party: () => ({ x: 160, y: 150 }) },
+  // FF 정통 사이드뷰: 적 좌측 2열, 아군 우측 세로 1열(진짜 칼럼).
+  ff: { partyFacing: "front", partyScale: 1.2, enemy: (i) => ({ x: 70 + (i % 2) * 52, y: 76 + Math.floor(i / 2) * 58 }), party: (i) => ({ x: 242, y: 62 + i * 36 }) },
+  // 마더: 사이키델릭 프론트뷰 — 적 상단, 간격 좁게.
+  mother: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 42, y: 62 }), party: () => ({ x: 160, y: 150 }) },
+  // 골든선 저앵글: 로우앵글 — 아군 대형·전방, 적 원경.
+  goldensun: { partyFacing: "back", partyScale: 1.4, enemy: (i) => ({ x: 74 + (i % 2) * 50, y: 86 + Math.floor(i / 2) * 54 }), party: (i) => ({ x: 232 + (i % 2) * 40, y: 92 + Math.floor(i / 2) * 48 }) },
+  // MV 프론트뷰: 숨김 파티, RM2000보다 살짝 높은 중앙.
+  mv: { partyFacing: "hidden", enemy: (i, n) => ({ x: 160 + (i - (n - 1) / 2) * 44, y: 86 }), party: () => ({ x: 160, y: 150 }) },
+  // VX Ace 프론트뷰: 좌측 2/3 정렬 — 우측 세로 명령창 회피.
   vxace: { partyFacing: "hidden", enemy: (i, n) => ({ x: 112 + (i - (n - 1) / 2) * 52, y: 104 }), party: () => ({ x: 112, y: 150 }) },
 };
 

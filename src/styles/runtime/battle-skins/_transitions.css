@@ -1,0 +1,18 @@
+/* src/styles/runtime/battle-skins/_transitions.css
+   B: 10종 스킨 트랜지션을 [data-battle-transition] + skinClass로 재생. */
+.battle-transition-overlay { --skin-transition-duration: 420ms; }
+.battle-transition-overlay.battle-transition--wipe-blue .battle-transition-blinds { background: #1742a5; }
+.battle-transition-overlay.battle-transition--wipe-black .battle-transition-blinds { background: #000; }
+.battle-transition-overlay.battle-transition--flash-white .battle-transition-flash { background: #fff; animation: skin-flash 340ms ease; }
+.battle-transition-overlay.battle-transition--fade { background: rgba(0,0,0,.72); }
+.battle-transition-overlay.battle-transition--slide-pokemon .battle-transition-blinds { transform: translateX(-100%); animation: slide-pokemon 420ms cubic-bezier(.22,1,.36,1) forwards; }
+@keyframes slide-pokemon { to { transform: translateX(0); } }
+@keyframes skin-flash { 0%{opacity:0} 30%{opacity:1} 100%{opacity:0} }
+.battle-transition-overlay.battle-transition--focus-blur { backdrop-filter: blur(6px); }
+.battle-transition-overlay.battle-transition--focus-blur .battle-transition-flash { backdrop-filter: blur(12px); background: rgba(12,16,32,.35); }
+.battle-transition-overlay.battle-transition--sweep-cyan .battle-transition-blinds { background: linear-gradient(90deg, transparent, rgba(46,196,255,.18), transparent); animation: sweep-cyan 480ms ease forwards; }
+@keyframes sweep-cyan { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+.battle-transition-overlay.battle-transition--brave-shift { background: linear-gradient(180deg,#f6ecd4,#ecdcba); }
+.battle-transition-overlay.battle-transition--psychedelic { background: conic-gradient(from 0deg,#ff4fd8,#4f8cff,#4fffa0,#ffe14f,#ff4fd8); animation: mother-swirl 900ms linear; }
+.battle-transition-overlay.battle-transition--curtain-dq .battle-transition-blinds { background: #000; transform: scaleY(0); transform-origin: top; animation: curtain-dq 420ms ease forwards; }
+@keyframes curtain-dq { to { transform: scaleY(1); } }

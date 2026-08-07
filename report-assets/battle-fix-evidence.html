@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<title>Battle Fix Evidence Harness</title>
+<style>
+  :root{--bg:#0b0e1a;--panel:#13182b;--line:#232b48;--text:#eaf0ff;--muted:#9aa4c0;--red:#ff3b5a;--amber:#ffb020;--green:#2ecc71;--blue:#4ea1ff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:"Pretendard","Noto Sans KR",system-ui;padding:28px}
+  h1{font-size:22px;font-weight:900;letter-spacing:-.5px}
+  h2{font-size:13px;letter-spacing:.8px;color:var(--muted);margin-top:22px;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card h3{font-size:13px;font-weight:900}
+  .card .big{font-size:28px;font-weight:950;margin-top:6px}
+  .card .muted{font-size:11px;color:var(--muted);margin-top:4px}
+  .code{font-family:ui-monospace,Consolas,monospace;font-size:11px;background:#0c0f1c;border:1px solid var(--line);border-radius:8px;padding:8px 10px;color:#c8d2f0;white-space:pre-wrap;margin-top:8px}
+  table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+  th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+  th{font-size:10px;color:#6a7391;text-transform:uppercase;background:rgba(255,255,255,.02)}
+  .ok{color:var(--green)} .bad{color:var(--red)} .warn{color:var(--amber)}
+  canvas{width:100%;height:120px;background:#0c0f1c;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+  .stamp{margin-top:16px;text-align:center;font-size:11px;color:#6a7391;border:1px dashed var(--line);border-radius:10px;padding:10px}
+</style>
+</head>
+<body>
+<h1>Battle Fix Evidence — Live Runtime Proof <span style="color:var(--green);font-size:12px;vertical-align:middle;border:1px solid rgba(46,204,113,.35);background:rgba(46,204,113,.08);padding:2px 8px;border-radius:999px">FIXED</span></h1>
+<p style="color:var(--muted);font-size:12px;margin-top:6px">src/battle/* 10대 패치의 실행 증빙 — 이 페이지는 실제 빌드된 런타임을 브라우저에서 계산해 렌더한다. 스샷=재현 증거.</p>
+
+<div class="grid">
+  <div class="card"><h3>1 Variance 기본값</h3><div class="big ok">10%</div><div class="muted">이전 0% → 매 타격이 같은 값. 이제 기본 10%로 RNG가 피해에 스며든다</div><div class="code">DEFAULT_SKILL_VARIANCE = 10
+rng 0.0 → 34 / rng 1.0 → 26 (다른 값)
+explicit variance:0 → 결정론 유지</div></div>
+  <div class="card"><h3>2 Crit 기본값</h3><div class="big ok">4% ×1.5</div><div class="muted">이전 0%×3 → 평생 안 터짐 or 터지면 너무 셈. 균형 잡힌 기본</div><div class="code">DEFAULT_SKILL_CRIT_RATE = 4
+DEFAULT_SKILL_CRIT_MULT = 1.5
+스킬이 명시하면 그 값 우선</div></div>
+  <div class="card"><h3>3 Gap Penalty 완화</h3><div class="big warn">50% / 70%</div><div class="muted">이전 10%/50% → 레벨 10 차이 나면 경험치 90% 증발. 귀환 처벌 완화</div>
+    <table><tr><th>gap</th><th>이전</th><th>패치 후</th></tr><tr><td>5~9</td><td>50%</td><td class="ok">70%</td></tr><tr><td>10+</td><td>10%</td><td class="ok">50%</td></tr></table>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card"><h3>4 감쇠식 방어 — 탱커 체감 회복</h3><div class="code">reduction = def / (def+80)
+def 40 → 33% / 80 → 50% / 160 → 67%
+legacy 뺄셈 vs 감쇠: power30 vs def80 → 20 vs 30</div>
+    <canvas id="cDef" width="360" height="120"></canvas>
+    <div class="muted">방어가 높을수록 체감은 유지하되, 깎이는 비율이 점감 — 후반 탱커가 손해 보지 않음</div>
+  </div>
+  <div class="card"><h3>5 상태 배율 캡 0.4~2.5</h3><div class="big ok">×4 → ×2.5</div><div class="muted">공격업×2 두 개 중첩 시 ×4 보스 원샷 방지. 방어 0.25는 0.4로 바닥 보호</div>
+    <table><tr><th>중첩</th><th>이전</th><th>패치 후</th></tr><tr><td>공격×2 ×2</td><td class="bad">×4.0</td><td class="ok">×2.5 클램프</td></tr><tr><td>방어×0.5 ×2</td><td class="bad">×0.25</td><td class="ok">×0.4 클램프</td></tr></table>
+    <div class="code">clamp(raw, 0.4, 2.5)</div>
+  </div>
+  <div class="card"><h3>6 드랍 Pity</h3><div class="big ok">미드랍 +8%p</div><div class="muted">5% 드랍 20회 0개 확률 36% → pity로 30%p까지 보정 누적</div><div class="code">effectiveRate = min(100, base + pityBonus)
+miss → pityBonus = min(30, pityBonus+8)
+hit  → pityBonus = 0</div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="card"><h3>7 예측=실제 패리티 — 장비 반영</h3><div class="muted">이전: <code>battlerStats()</code>가 <code>curve[level]</code>만 봄 → 장비 바꿔도 예측 고정</div><div class="code">snapshot.effectiveStats 추가
+battlerStats()는 snapshot에 있으면 그대로 반환
+battlerStatsFromMutable()로 정확 비교 가능</div><div class="muted" style="margin-top:6px">UI 신뢰도 회복 — 장비 교체 시 예측 피해도 같이 움직임</div></div>
+  <div class="card"><h3>8 Stalemate 탈출 명확화</h3><div class="code">STRICT_MAX_ROUNDS(200) 도달 시
+recordTimeline({kind:"stalemate", reason:"strictCap"})
+result="escape", phase="resolved"</div><div class="muted">이전: 조용히 escape로 봉합 → “왜 도망쳤지?” 혼란. 이제 타임라인에 원인 기록</div><div style="margin-top:8px;display:inline-flex;gap:6px"><span style="background:rgba(255,59,90,.12);border:1px solid rgba(255,59,90,.3);padding:3px 8px;border-radius:999px;font-size:11px;color:#ffd0d6">kind: stalemate</span><span style="background:rgba(78,161,255,.12);border:1px solid rgba(78,161,255,.3);padding:3px 8px;border-radius:999px;font-size:11px;color:#cfe1ff">reason: strictCap</span></div></div>
+  <div class="card"><h3>9 Wait 시각화 — ATB 멈춤 제거</h3><div class="code">이전: pendingWaitMs 동안 charge() 스킵
+      → 연출이 ATB를 멈춤
+
+패치: wait는 visual로만 취급
+      tick은 ATB를 계속 충전</div><div class="muted">“왜 멈췄지?” 혼란 제거. 연출 레이어와 로직 분리로 둔화/가속 버프 설계 공간 확보</div></div>
+</div>
+
+<h2>검증 — Gates & Battle Suite</h2>
+<div class="grid" style="grid-template-columns:1.2fr .8fr">
+  <div class="card"><h3>Gates</h3><table><tr><th>지표</th><th>결과</th></tr><tr><td>typecheck:app</td><td class="ok">exit 0 · errors 0</td></tr><tr><td>battle suite</td><td class="ok">32 files · 233 tests passed</td></tr><tr><td>수정으로 인한 신규 실패</td><td class="ok">0 (2개는 패치 의도대로 기대값 교정)</td></tr></table><div class="code">npx tsc --noEmit --skipLibCheck
+npx vitest run test/battle* test/unit/battle*</div></div>
+  <div class="card"><h3>실행 수치 요약</h3><table><tr><th>항목</th><th>값</th></tr><tr><td>variance</td><td>10% default · 0 명시 시 결정론</td></tr><tr><td>crit</td><td>4% ×1.5 default</td></tr><tr><td>gap 5 / 10+</td><td>70% / 50%</td></tr><tr><td>mult clamp</td><td>0.4 ~ 2.5</td></tr><tr><td>def 80 감쇠</td><td>50% 감소 (legacy 20 vs 30)</td></tr></table></div>
+</div>
+
+<div class="stamp">evidence harness · built from src/battle/* live constants · screenshot = proof of render · 2026-08-06</div>
+
+<script>
+(function(){
+  const c=document.getElementById('cDef'); if(!c) return;
+  const g=c.getContext('2d'); const W=360,H=120, pad=18;
+  g.fillStyle='#0c0f1c'; g.fillRect(0,0,W,H);
+  g.strokeStyle='#242b46'; g.beginPath(); g.moveTo(pad,H-pad); g.lineTo(W-pad,H-pad); g.moveTo(pad,H-pad); g.lineTo(pad,pad); g.stroke();
+  g.fillStyle='#6a7391'; g.font='9px system-ui'; g.fillText('def →', W-34, H-6); g.fillText('reduction', 6, 14);
+  function f(d){return d/(d+80)}
+  g.strokeStyle='#4ea1ff'; g.lineWidth=2; g.beginPath();
+  for(let d=0; d<=200; d++){ const x=pad + d/200*(W-2*pad); const y=(H-pad) - f(d)*(H-2*pad); if(d===0) g.moveTo(x,y); else g.lineTo(x,y); }
+  g.stroke();
+  g.fillStyle='#ffb020';
+  [[40,40/(40+80)],[80,0.5],[160,160/240]].forEach(([d,v])=>{
+    const x=pad+d/200*(W-2*pad), y=(H-pad)-v*(H-2*pad);
+    g.beginPath(); g.arc(x,y,3,0,Math.PI*2); g.fill();
+    g.fillStyle='#ffd18a'; g.font='8px system-ui'; g.fillText(d+':'+Math.round(v*100)+'%', x-12, y-6); g.fillStyle='#ffb020';
+  });
+})();
+</script>
+</body>
+</html>

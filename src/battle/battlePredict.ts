@@ -52,6 +52,10 @@ export function primaryAttackSkill(project: Project, actor: BattleBattlerSnapsho
 // actor 는 파라미터 커브(초기 레벨)에서, enemy 는 stats 에서 가져온다.
 // battleBattlers.ts 의 복원 로직과 동일한 출처를 사용한다.
 export function battlerStats(project: Project, battler: BattleBattlerSnapshot): BattlerStats {
+  // Snapshot now carries effectiveStats (runtime-equivalent) when produced via battlerSnapshot.
+  // Prefer it for equipment/paramBonus parity; fall back to curve lookup for legacy snapshots.
+  const snapshotStats = (battler as BattleBattlerSnapshot & { effectiveStats?: BattlerStats }).effectiveStats;
+  if (snapshotStats) return { ...snapshotStats };
   const enemy = project.database.enemies.find((entry) => entry.id === battler.recordId);
   if (enemy) {
     const stats = normalizeEnemyRecord(enemy).stats;
@@ -60,8 +64,6 @@ export function battlerStats(project: Project, battler: BattleBattlerSnapshot): 
   const actor = project.database.actors.find((entry) => entry.id === battler.recordId);
   if (actor) {
     const normalized = normalizeActorRecord(actor);
-    // SC7 (M2): use the snapshot's level when available so predictions match
-    // runtime stats for leveled-up parties, not just DB initialLevel.
     const level = battler.level ?? normalized.initialLevel;
     const curves = normalized.parameterCurves;
     return {
@@ -72,6 +74,10 @@ export function battlerStats(project: Project, battler: BattleBattlerSnapshot): 
     };
   }
   return { attack: 0, defense: 0, mind: 0, agility: 0 };
+}
+
+export function battlerStatsFromMutable(_project: Project, battler: import("@/battle/battleBattlers").MutableBattler): BattlerStats {
+  return { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility };
 }
 
 // 데미지 속성 배율(퍼센트 → 100으로 나눈 값). runtime.elementMultiplierFor 와 동일 규칙.

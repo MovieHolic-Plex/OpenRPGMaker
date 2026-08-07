@@ -7,10 +7,11 @@ export type ReadyBattler =
 export function nextReadyBattler(
   actors: readonly MutableBattler[],
   enemies: readonly MutableBattler[],
-  deltaMs: number
+  deltaMs: number,
+  hasteMultiplier = 1
 ): ReadyBattler | undefined {
-  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler));
-  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler));
+  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler, hasteMultiplier));
+  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler, hasteMultiplier));
   const ordered = [...readyActors, ...readyEnemies].sort((left, right) => {
     const delta = left.timeMs - right.timeMs;
     if (delta !== 0) return delta;
@@ -24,25 +25,35 @@ export function nextReadyBattler(
 export function chargeBattlers(
   actors: readonly MutableBattler[],
   enemies: readonly MutableBattler[],
-  deltaMs: number
+  deltaMs: number,
+  hasteMultiplier = 1
 ): void {
-  for (const actor of actors) charge(actor, deltaMs);
-  for (const enemy of enemies) charge(enemy, deltaMs);
+  for (const actor of actors) charge(actor, deltaMs, hasteMultiplier);
+  for (const enemy of enemies) charge(enemy, deltaMs, hasteMultiplier);
 }
 
-function readyActor(battler: MutableBattler): ReadyBattler {
-  return { kind: "actor", battler, timeMs: timeToReady(battler) };
+function readyActor(battler: MutableBattler, hasteMultiplier = 1): ReadyBattler {
+  return { kind: "actor", battler, timeMs: timeToReady(battler, hasteMultiplier) };
 }
 
-function readyEnemy(battler: MutableBattler): ReadyBattler {
-  return { kind: "enemy", battler, timeMs: timeToReady(battler) };
+function readyEnemy(battler: MutableBattler, hasteMultiplier = 1): ReadyBattler {
+  return { kind: "enemy", battler, timeMs: timeToReady(battler, hasteMultiplier) };
 }
 
-function timeToReady(battler: MutableBattler): number {
-  return Math.max(0, (100 - battler.gauge) / battler.chargeRate);
+function timeToReady(battler: MutableBattler, hasteMultiplier = 1): number {
+  return Math.max(0, (100 - battler.gauge) / Math.max(0.001, battler.chargeRate * hasteMultiplier));
 }
 
-function charge(battler: MutableBattler, deltaMs: number): void {
+function charge(battler: MutableBattler, deltaMs: number, hasteMultiplier = 1): void {
   if (battler.hp <= 0) return;
-  battler.gauge = Math.min(100, battler.gauge + battler.chargeRate * deltaMs);
+  void hasteMultiplier;
+  battler.gauge = Math.min(100, battler.gauge + battler.chargeRate * deltaMs * hasteMultiplier);
+}
+
+export function effectiveChargeRate(battler: MutableBattler): number {
+  return battler.chargeRate;
+}
+
+export function msToReady(battler: MutableBattler): number {
+  return Math.max(0, (100 - battler.gauge) / Math.max(0.001, battler.chargeRate));
 }

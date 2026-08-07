@@ -24,7 +24,7 @@ import {
   targetSelectDirectorState,
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
-import { resolveSkinId } from "@/battle/skins/registry";
+import { getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
 import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty } from "@/player/battleFieldDom";
 import { emitBattleJuice, flashBattleField } from "@/player/battleJuice";
 import { directionForKey, isAutoBattleKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
@@ -84,8 +84,17 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   root.dataset.testid = "battle-scene";
   // 전투 UI 스킨 — CSS가 [data-battle-ui-style="pokemon"] 로 레이아웃을 갈아입힌다.
   root.dataset.battleUiStyle = store.getCurrent().system.battleUiStyle === "pokemon" ? "pokemon" : "classic";
-  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 10종 스킨을 갈아입힌다.
-  root.dataset.battleSkin = resolveSkinId(store.getCurrent().system.battleUiStyle);
+  // 스킨 레지스트리 기반 분기 — CSS가 [data-battle-skin="<id>"] 로 12종 스킨을 갈아입힌다.
+  // B: 12 vars 테마 엔진 — 레지스트리의 themeVars를 루트에 직접 주입한다(CSS 변수).
+  const skinId = resolveSkinId(store.getCurrent().system.battleUiStyle);
+  const skin = getBattleSkin(skinId);
+  root.dataset.battleSkin = skinId;
+  root.dataset.battleTransition = skin.transition;
+  root.dataset.battleHud = skin.hudTemplate;
+  root.dataset.battleLayout = skin.layout;
+  for (const [key, value] of Object.entries(skin.themeVars)) {
+    root.style.setProperty(key, value as string);
+  }
   applyBattleSystemGraphic(root);
   options.host.append(root);
   // 논리 해상도(320×240) 스케일링 — 스킨이 그 해상도 기준으로 저작돼 있다.

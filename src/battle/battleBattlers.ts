@@ -12,6 +12,10 @@ import { logicalEquipmentIds } from "@/player/playerEquipmentRules";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
 const CHARGE_FLOOR = 0.02;
+// Haste-aware charge: 상태 배율이 0.4~2.5 clamp, 둔화/가속 버프 설계 공간 확보.
+// chargeRateFor는 기본 민첩만 계산; 상태 배율은 battleTurnGauge에서 haste 보정으로 적용.
+// FLOOR는 유지하되, agi 8 이하는 0.02로 뭉개지던 문제를 완화하기 위해
+// agi 기반 선형 + FLOOR 중 큰 값으로 유지 — 상태 둔화 시에도 최소 전진 보장.
 
 // 세션에서 온 액터별 오버라이드. 모두 선택적이며, 없으면 DB 기본값으로 폴백한다.
 export interface ActorBattlerOverrides {
@@ -316,7 +320,7 @@ export function battlerSnapshot(
     readonly showActionPose?: boolean;
   }
 ): BattleBattlerSnapshot {
-  const base = {
+  const base: BattleBattlerSnapshot = {
     id: battler.id,
     recordId: battler.recordId,
     name: battler.name,
@@ -340,6 +344,8 @@ export function battlerSnapshot(
     skillIds: battler.skillIds,
     equipmentEffects: battler.equipmentEffects,
     captured: battler.captured === true ? true : undefined,
+    effectiveStats: { attack: battler.attackPower, defense: battler.defense, mind: battler.mind, agility: battler.agility },
+    pose: "idle" as unknown as BattleBattlerSnapshot["pose"],
   };
   return {
     ...base,
