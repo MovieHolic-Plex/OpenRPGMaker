@@ -639,4 +639,23 @@
   .editor-welcome.has-world-focus .editor-welcome-slide-img {
     filter: saturate(1.08) brightness(0.9);
   }
+
+  .editor-welcome-prompt-panel { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(12px); }
+  .editor-welcome-prompt-hint { margin: 0; font: 600 11px var(--font-ui); color: rgba(255,255,255,.85); }
+  .editor-welcome-prompt-input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.28); color: #fff; font: 500 13px var(--font-ui); outline: none; }
+  .editor-welcome-prompt-input::placeholder { color: rgba(255,255,255,.55); }
+  .editor-welcome-prompt-input:focus { border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 3px rgba(255,255,255,.10); }
+  .editor-welcome-quick-picks { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+  .editor-welcome-quick-pick { flex: 0 0 auto; padding: 6px 10px; border-radius: 9999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); font: 600 11px var(--font-ui); cursor: pointer; }
+  .editor-welcome-quick-pick:hover { background: rgba(255,255,255,.14); }
+  .editor-welcome-prompt-actions { display: flex; gap: 8px; align-items: center; }
+  .editor-welcome-prompt-submit { appearance: none; padding: 8px 14px; border-radius: 9999px; border: 1px solid rgba(255,255,255,.18); background: #fff; color: #111; font: 700 12px var(--font-ui); cursor: pointer; }
+  .editor-welcome-prompt-note { font: 500 11px var(--font-ui); color: rgba(255,255,255,.65); }
+  .editor-welcome-template-row { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
+  .editor-welcome-template-card { flex: 0 0 148px; display: grid; gap: 6px; text-align: left; padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); cursor: pointer; }
+  .editor-welcome-template-card:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); }
+  .editor-welcome-template-thumb { height: 72px; border-radius: 8px; background-size: cover; background-position: center; background-color: rgba(0,0,0,.25); }
+  .editor-welcome-template-label { font: 700 11px var(--font-ui); color: #fff; }
+  .editor-welcome-template-blurb { font: 500 10px var(--font-ui); color: rgba(255,255,255,.7); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
 }

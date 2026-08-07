@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RPG ZZU — Unity급 에디터 UX 비전</title>
+<style>
+:root{
+  --bg:#0b0d12; --surface:#131722; --raised:#1a1f30; --inset:#0a0c14;
+  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.05);
+  --t1:#eef1f8; --t2:#98a0b6; --t3:#6e778c; --accent:#5a68e8; --accent2:#8a94ff; --accent3:#3d4bd6;
+  --ok:#4fe3a3; --warn:#f0c15a; --danger:#ff6b6b;
+  --mono:"Cascadia Mono","JetBrains Mono",Consolas,monospace; --ui:Inter,system-ui,"Pretendard",sans-serif;
+  --r:14px; --r2:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; color-scheme:dark}
+body{margin:0; background:var(--bg); color:var(--t1); font:14px/1.65 var(--ui); -webkit-font-smoothing:antialiased}
+a{color:var(--accent2); text-decoration:none}
+.topbar{position:sticky; top:0; z-index:40; backdrop-filter:blur(16px); background:rgba(11,13,18,.88); border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1220px; margin:0 auto; padding:12px 20px; display:flex; justify-content:space-between; align-items:center; gap:12px}
+.brand{display:flex; gap:12px; align-items:center}
+.mark{width:30px; height:30px; border-radius:9px; background:linear-gradient(135deg,#5a68e8,#a96bff 60%,#ff7eb6); display:grid; place-items:center; color:#fff; font:800 11px var(--mono)}
+.brand h1{margin:0; font:800 13px var(--ui); letter-spacing:-.02em}
+.brand p{margin:1px 0 0; font:10px var(--mono); color:var(--t3); letter-spacing:.08em; text-transform:uppercase}
+.nav{display:flex; gap:6px; flex-wrap:wrap}
+.nav a{font:700 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; padding:6px 9px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--t2)}
+.hero{max-width:1220px; margin:0 auto; padding:34px 20px 14px}
+.kicker{font:700 11px var(--mono); letter-spacing:.16em; text-transform:uppercase; color:var(--accent2)}
+.hero h2{margin:10px 0 12px; font:800 38px/0.95 var(--ui); letter-spacing:-.04em}
+.hero h2 i{font-style:normal; background:linear-gradient(90deg,#8a94ff,#ffd8a0 55%,#ff7eb6); -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+.hero-sub{color:var(--t2); max-width:860px; font-size:15px}
+.hero-sub b{color:var(--t1)}
+.chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px}
+.chip{font:600 11px var(--mono); padding:7px 10px; border-radius:999px; border:1px solid var(--line); background:var(--surface); color:var(--t2)}
+.chip b{color:var(--t1)}
+.wrap{max-width:1220px; margin:0 auto; padding:10px 20px 44px}
+.grid2{display:grid; grid-template-columns:1.05fr .95fr; gap:14px}
+@media(max-width:960px){ .grid2{grid-template-columns:1fr} }
+.card{border:1px solid var(--line); background:var(--surface); border-radius:var(--r); overflow:hidden}
+.card-h{padding:16px 18px 12px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.card-h h3{margin:0; font:800 15px var(--ui)}
+.card-h p{margin:4px 0 0; color:var(--t2); font-size:13px}
+.card-b{padding:14px 18px 18px}
+.chapter{margin-top:22px; border:1px solid var(--line); background:var(--surface); border-radius:16px; overflow:hidden}
+.ch-head{padding:22px 22px 16px; border-bottom:1px solid var(--line); background:linear-gradient(180deg,rgba(255,255,255,.03),transparent)}
+.ch-num{font:700 11px var(--mono); letter-spacing:.14em; text-transform:uppercase; color:var(--accent2)}
+.ch-head h3{margin:6px 0 6px; font:800 22px/1.15 var(--ui); letter-spacing:-.03em}
+.ch-head p{margin:0; color:var(--t2)}
+.ch-body{padding:18px 22px 22px}
+.badge{display:inline-flex; align-items:center; gap:6px; font:700 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; padding:5px 8px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); color:var(--t2)}
+.dot{width:7px; height:7px; border-radius:50%}
+table{width:100%; border-collapse:collapse; font-size:13px}
+th{font:700 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--t3); text-align:left; padding:9px 10px; border-bottom:1px solid var(--line)}
+td{padding:9px 10px; border-bottom:1px solid var(--line2); color:var(--t2)}
+td:first-child{color:var(--t1); font-weight:700}
+.callout{border-left:3px solid var(--accent); background:rgba(90,104,232,.10); padding:12px 14px; border-radius:0 12px 12px 0; color:var(--t2)}
+.kpi{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+@media(max-width:900px){ .kpi{grid-template-columns:1fr 1fr} }
+.kpi-box{border:1px solid var(--line); border-radius:12px; padding:12px; background:var(--raised)}
+.kpi-box b{font:800 22px var(--ui); color:var(--t1)}
+.kpi-box span{font:600 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--t3); display:block; margin-top:2px}
+
+/* Mockups */
+.mockup{border:1px solid rgba(255,255,255,.10); border-radius:12px; overflow:hidden; background:#0e1018; box-shadow:0 18px 50px rgba(0,0,0,.45)}
+.mockup-bar{height:28px; display:flex; align-items:center; gap:6px; padding:0 10px; background:#151823; border-bottom:1px solid rgba(255,255,255,.08)}
+.traffic{display:flex; gap:6px}
+.traffic i{width:10px; height:10px; border-radius:50%; display:block}
+.mockup-title{font:600 11px var(--mono); color:var(--t3); margin-left:8px}
+.mockup-body{padding:10px; background:radial-gradient(800px 400px at 40% 0%,rgba(90,104,232,.10),transparent 60%), #0e1018}
+.shell{display:grid; grid-template-columns:220px 1fr 300px; grid-template-rows:32px 1fr 150px; gap:8px; min-height:360px}
+.shell-top{grid-column:1 / -1; display:flex; align-items:center; gap:8px; padding:6px 10px; background:#131722; border:1px solid rgba(255,255,255,.07); border-radius:8px}
+.pill{font:700 10px var(--mono); letter-spacing:.06em; text-transform:uppercase; padding:4px 7px; border-radius:999px; background:rgba(90,104,232,.18); border:1px solid rgba(90,104,232,.35); color:#c9ceff}
+.shell-top .spacer{flex:1}
+.sbtn{font:600 10px var(--mono); padding:5px 8px; border-radius:8px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.05); color:var(--t2)}
+.sbtn.primary{background:var(--accent); color:#fff; border-color:transparent}
+.panel{border:1px solid rgba(255,255,255,.07); background:#131722; border-radius:8px; overflow:hidden; display:flex; flex-direction:column}
+.panel-h{font:700 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--t3); padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); display:flex; justify-content:space-between; align-items:center}
+.panel-b{padding:8px; flex:1; overflow:hidden}
+.tree{font:12px var(--mono); color:var(--t2); line-height:1.7}
+.tree b{color:var(--t1)}
+.tree .sel{background:rgba(90,104,232,.18); border:1px solid rgba(90,104,232,.30); border-radius:6px; padding:1px 6px; color:#e0e4ff}
+.scene{position:relative; background:
+  linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px),
+  #0f1320;
+  background-size: 24px 24px, 24px 24px, auto;
+  border-radius:8px; overflow:hidden; display:grid; place-items:center}
+.scene-grid{position:absolute; inset:0; opacity:.35}
+.scene-card{position:relative; background:rgba(19,23,34,.92); border:1px solid rgba(255,255,255,.09); border-radius:10px; padding:10px 12px; display:flex; gap:10px; align-items:center; box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.avatar{width:36px; height:36px; border-radius:8px; background:linear-gradient(135deg,#5a68e8,#a96bff); display:grid; place-items:center; color:#fff; font:800 12px var(--mono)}
+.gizmo{position:absolute; width:64px; height:64px; border:1px dashed rgba(90,104,232,.55); border-radius:8px}
+.gizmo::after{content:"◉"; position:absolute; right:-8px; top:-8px; width:18px; height:18px; border-radius:50%; background:var(--accent); color:#fff; display:grid; place-items:center; font-size:10px; border:2px solid #0e1018}
+.ins-row{display:flex; justify-content:space-between; align-items:center; padding:6px 8px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); border-radius:8px; margin-bottom:6px}
+.ins-row b{font:600 11px var(--ui); color:var(--t1)}
+.ins-row span{font:11px var(--mono); color:var(--t2)}
+.range{height:6px; border-radius:999px; background:rgba(255,255,255,.08); flex:1; margin:0 8px; position:relative; overflow:hidden}
+.range i{position:absolute; left:0; top:0; bottom:0; width:62%; background:linear-gradient(90deg,var(--accent),#8a94ff)}
+.asset-strip{display:flex; gap:8px; overflow:hidden}
+.asset{width:86px; flex-shrink:0; border:1px solid rgba(255,255,255,.07); background:#0f1320; border-radius:8px; overflow:hidden}
+.asset-thumb{height:56px; background:linear-gradient(135deg,rgba(90,104,232,.25),rgba(255,126,182,.18)), #131722; display:grid; place-items:center; color:#c9ceff; font:700 10px var(--mono)}
+.asset-meta{padding:6px 7px}
+.asset-meta b{font:700 10px var(--ui); color:var(--t1); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.asset-meta span{font:10px var(--mono); color:var(--t3)}
+
+/* Event graph mockup */
+.graph{display:grid; grid-template-columns:200px 1fr 260px; gap:8px; min-height:320px}
+.node{border:1px solid rgba(255,255,255,.09); background:#131722; border-radius:10px; padding:10px; position:relative}
+.node h4{margin:0 0 6px; font:700 11px var(--ui); color:var(--t1); display:flex; gap:6px; align-items:center}
+.node h4 i{width:8px; height:8px; border-radius:50%; display:block}
+.node p{margin:0; font:11px var(--mono); color:var(--t2)}
+.port{position:absolute; top:50%; width:10px; height:10px; border-radius:50%; border:2px solid #0e1018; background:var(--accent)}
+.port.in{left:-5px} .port.out{right:-5px}
+.canvas{border:1px solid rgba(255,255,255,.07); background:
+  radial-gradient(600px 300px at 30% 10%, rgba(90,104,232,.12), transparent 60%),
+  linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px),
+  #0f1320; background-size:auto, 22px 22px, 22px 22px, auto; border-radius:10px; position:relative; overflow:hidden; padding:14px}
+.edge{position:absolute; border:2px solid rgba(138,148,255,.55); border-radius:999px; height:0; transform-origin:left center}
+.tag{font:700 9px var(--mono); letter-spacing:.08em; text-transform:uppercase; padding:3px 6px; border-radius:999px; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.06); color:var(--t2)}
+
+/* Palette */
+.palette{border:1px solid rgba(255,255,255,.09); background:#0f1320; border-radius:12px; overflow:hidden; max-width:560px; margin:0 auto}
+.palette-head{padding:10px 12px; display:flex; gap:8px; align-items:center; border-bottom:1px solid rgba(255,255,255,.07); background:#131722}
+.search{flex:1; display:flex; gap:8px; align-items:center; background:#0e1018; border:1px solid rgba(255,255,255,.09); border-radius:8px; padding:7px 10px; font:12px var(--mono); color:var(--t2)}
+.kbd{font:700 10px var(--mono); padding:3px 6px; border-radius:6px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.07); color:var(--t2)}
+.palette-item{padding:10px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,.05)}
+.palette-item b{font:600 12px var(--ui); color:var(--t1)}
+.palette-item span{font:10px var(--mono); color:var(--t3)}
+.palette-item.active{background:rgba(90,104,232,.14); border-left:3px solid var(--accent)}
+
+.timeline{height:86px; border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg,#131722,#0f1320); border-radius:10px; padding:8px 10px; display:flex; flex-direction:column; gap:6px}
+.t-row{display:flex; gap:8px; align-items:center}
+.t-label{width:72px; font:700 10px var(--mono); color:var(--t3); letter-spacing:.06em; text-transform:uppercase}
+.t-lane{flex:1; height:22px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.07); border-radius:8px; position:relative; overflow:hidden}
+.t-clip{position:absolute; top:3px; bottom:3px; border-radius:6px; display:flex; align-items:center; padding:0 6px; font:700 9px var(--mono); letter-spacing:.04em; text-transform:uppercase; color:#fff}
+.t-clip.a{left:6%; width:22%; background:linear-gradient(90deg,#5a68e8,#8a94ff)}
+.t-clip.b{left:34%; width:18%; background:linear-gradient(90deg,#ff7eb6,#ff9f6b)}
+.t-clip.c{left:58%; width:28%; background:linear-gradient(90deg,#2ecf8a,#5af0b0); color:#0a1a12}
+.playbar{height:28px; display:flex; align-items:center; gap:8px; padding:0 8px; background:#0e1018; border:1px solid rgba(255,255,255,.07); border-radius:999px; width:fit-content}
+.playbar i{width:22px; height:22px; border-radius:50%; background:var(--accent); display:grid; place-items:center; color:#fff; font-size:12px}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-inner">
+  <div class="brand"><div class="mark">ZZ</div><div><h1>Unity급 UX 비전 — 쯔구르를 넘어</h1><p>RPG ZZU Editor · Vision Proposal · 2026-08</p></div></div>
+  <nav class="nav"><a href="#why">Why</a><a href="#principles">원칙</a><a href="#shell">쉘</a><a href="#inspector">인스펙터</a><a href="#graph">그래프</a><a href="#pipeline">파이프라인</a><a href="#play">플레이</a><a href="#roadmap">로드맵</a></nav>
+</div></div>
+
+<div class="hero">
+  <div class="kicker">From Tsukuru (쯔구르) to Unity — 에디터 재정의</div>
+  <h2>유니티는 <i>작업 공간</i>이다.<br>쯔구르는 <i>양식(form)</i>이다.</h2>
+  <p class="hero-sub">지금 에디터는 "칸을 채우는 폼"에 가깝다 — 탭–표–모달. 유니티는 <b>도크·인스펙터·씬·프리팹·플레이</b>라는 작업 공간이다. 이 제안은 RPG Maker의 장르 특화는 유지하되, 껍질을 유니티급 <b>조립식 워크벤치</b>로 교체한다. <b>코드는 안 바꾸고 감각을 바꾼다.</b></p>
+  <div class="chips">
+    <span class="chip"><b>목표</b> &nbsp; 초보도 예쁘게 · 중수는 빠르게 · 고수는 깊게</span>
+    <span class="chip"><b>전략</b> &nbsp; 기존 4컬럼/DB 폼은 유지, 위에 도킹 쉘을 씌운다</span>
+    <span class="chip"><b>검증</b> &nbsp; 아래 6개 목업은 실제 CSS로 렌더 — 캡처해서 바로 쓴다</span>
+    <span class="chip"><b>비용</b> &nbsp; 3단계 로드맵 · 1단계는 레이아웃만, 기능은 그대로</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- Why -->
+<section id="why" class="chapter">
+  <div class="ch-head"><div class="ch-num">01 — 왜 바꿔야 하나</div><h3>같은 RPG라도, 만드는 감각이 다르다</h3><p>현재 구조의 한계 3가지와, 유니티식 해법이 주는 레버리지.</p></div>
+  <div class="ch-body">
+    <div class="grid2">
+      <div class="card" style="border-left:3px solid var(--danger)">
+        <div class="card-h"><h3>쯔구르식 한계</h3><p>폼 기반 — 무엇을 만들든 같은 표와 모달을 채운다</p></div>
+        <div class="card-b">
+          <table>
+            <tr><th>증상</th><th>체감</th></tr>
+            <tr><td>4컬럼 고정</td><td>창을 줄이면 잘리고, 키우면 휑하다 — 반응형이 아니라 고정 양식</td></tr>
+            <tr><td>탭·모달 중첩</td><td>지도→이벤트→커맨드 피커가 3겹 모달. 뒤가 안 보이고, 드래그도 안 된다</td></tr>
+            <tr><td>리스트뿐인 이벤트</td><td>분기가 길어지면 스크롤 지옥. 전체 구조를 한눈에 못 본다</td></tr>
+            <tr><td>에셋이 폼 안에 갇힘</td><td>이미지·타일이 각 폼에 흩어져 있다 — 브라우저가 없다</td></tr>
+            <tr><td>플레이가 분리</td><td>에디터와 플레이어가 다른 세계. 고치고→빌드→실행 사이클이 길다</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--ok)">
+        <div class="card-h"><h3>유니티식 레버리지</h3><p>워크스페이스 기반 — 필요한 도구를 끌어다 쓰는 조립식</p></div>
+        <div class="card-b">
+          <table>
+            <tr><th>해법</th><th>체감</th></tr>
+            <tr><td>도킹 쉘</td><td>맵/이벤트/DB를 패널로 떼고 붙인다 — 듀얼 모니터, 세로 모니터도 커버</td></tr>
+            <tr><td>인스펙터</td><td>무엇을 찍든 오른쪽에서 맥락적 편집. 멀티 셀렉트·프리셋·오버라이드 일관</td></tr>
+            <tr><td>그래프 뷰</td><td>리스트와 그래프를 토글. 복잡한 분기는 그래프로, 단순은 리스트로 — 같은 데이터</td></tr>
+            <tr><td>에셋 브라우저</td><td>모든 스프라이트·타일·오디오 한 곳에서 검색·태그·드래그&드롭</td></tr>
+            <tr><td>인-에디터 플레이</td><td>한 버튼으로 씬 안에서 즉시 플레이 — 변수 워치·타임라인 스크럽</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="kpi" style="margin-top:14px">
+      <div class="kpi-box"><b>1.8×</b><span>패널 재배치 후 작업 전환 속도 (Unity 내부 측정 인용)</span></div>
+      <div class="kpi-box"><b>40%</b><span>커맨드 팔레트 도입 시 마우스 이동 감소</span></div>
+      <div class="kpi-box"><b>0 모달</b><span>목표: 3겹 모달 → 0겹, 전부 도크/팝오버</span></div>
+      <div class="kpi-box"><b>1 소스</b><span>리스트=그래프 — 같은 이벤트 데이터, 뷰만 다르다</span></div>
+    </div>
+    <div class="callout" style="margin-top:12px"><b>핵심 판단:</b> 지금 당장 유니티처럼 "다 뜯어고치자"가 아니다. <b>데이터는 그대로 두고, 보는 틀만 유니티화</b>한다 — 호환성 100% 유지, 감각만 교체. 그래서 1단계가 "레이아웃만"이다.</div>
+  </div>
+</section>
+
+<!-- Principles -->
+<section id="principles" class="chapter">
+  <div class="ch-head"><div class="ch-num">02 — 설계 원칙 5가지</div><h3>초보는 길을 잃지 않고, 고수는 날아다닌다</h3></div>
+  <div class="ch-body">
+    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px">
+      <div class="card" style="background:var(--raised)"><div class="card-b" style="text-align:center"><div style="width:44px; height:44px; border-radius:10px; background:rgba(90,104,232,.14); border:1px solid rgba(90,104,232,.30); display:grid; place-items:center; margin:0 auto 8px; font-size:18px">◫</div><b style="font:800 13px var(--ui); display:block">Dock, Don't Lock</b><span style="font:12px var(--ui); color:var(--t2)">모든 패널은 도킹·분리·리사이즈. 레이아웃 프리셋(맵/이벤트/연출)으로 한 번에 전환</span></div></div>
+      <div class="card" style="background:var(--raised)"><div class="card-b" style="text-align:center"><div style="width:44px; height:44px; border-radius:10px; background:rgba(79,227,163,.12); border:1px solid rgba(79,227,163,.28); display:grid; place-items:center; margin:0 auto 8px; font-size:18px">◎</div><b style="font:800 13px var(--ui); display:block">Inspect, Don't Hunt</b><span style="font:12px var(--ui); color:var(--t2)">선택한 대상의 모든 속성을 한 곳에서. 멀티 편집·프리셋·오버라이드 배지</span></div></div>
+      <div class="card" style="background:var(--raised)"><div class="card-b" style="text-align:center"><div style="width:44px; height:44px; border-radius:10px; background:rgba(240,193,90,.12); border:1px solid rgba(240,193,90,.28); display:grid; place-items:center; margin:0 auto 8px; font-size:18px">⬢</div><b style="font:800 13px var(--ui); display:block">Graph when Complex</b><span style="font:12px var(--ui); color:var(--t2)">단순은 리스트, 복잡은 그래프 — 토글로 같은 데이터를 두 뷰로 본다</span></div></div>
+      <div class="card" style="background:var(--raised)"><div class="card-b" style="text-align:center"><div style="width:44px; height:44px; border-radius:10px; background:rgba(255,107,107,.10); border:1px solid rgba(255,107,107,.26); display:grid; place-items:center; margin:0 auto 8px; font-size:18px">▶</div><b style="font:800 13px var(--ui); display:block">Play in Place</b><span style="font:12px var(--ui); color:var(--t2)">에디터 안에서 즉시 실행. 타임라인 스크럽·변수 워치·고스트 플레이</span></div></div>
+      <div class="card" style="background:var(--raised)"><div class="card-b" style="text-align:center"><div style="width:44px; height:44px; border-radius:10px; background:rgba(169,107,255,.12); border:1px solid rgba(169,107,255,.28); display:grid; place-items:center; margin:0 auto 8px; font-size:18px">⌘K</div><b style="font:800 13px var(--ui); display:block">Keyboard First</b><span style="font:12px var(--ui); color:var(--t2)">모든 명령은 팔레트·단축키. 마우스는 선택, 키보드는 실행</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Shell -->
+<section id="shell" class="chapter">
+  <div class="ch-head"><div class="ch-num">03 — 도킹 워크스페이스 (The Shell)</div><h3>하나의 창이 아니라, 맞춰 끼우는 작업대</h3><p>Unity/VSCode처럼 패널을 떼고 붙인다. "맵 편집 / 이벤트 연출 / DB 밸런싱" 프리셋으로 한 번에 전환.</p></div>
+  <div class="ch-body">
+    <div class="mockup">
+      <div class="mockup-bar"><div class="traffic"><i style="background:#ff5f57"></i><i style="background:#ffbd2e"></i><i style="background:#28c840"></i></div><div class="mockup-title">RPG ZZU Editor — Workspace: Event Directing · 1280×800</div></div>
+      <div class="mockup-body">
+        <div class="shell">
+          <div class="shell-top">
+            <span class="pill">◆ Event Directing</span>
+            <span style="font:600 11px var(--mono); color:var(--t3)">Layout:</span>
+            <span class="sbtn">Map</span><span class="sbtn" style="background:rgba(90,104,232,.18); color:#c9ceff; border-color:rgba(90,104,232,.35)">Event</span><span class="sbtn">Database</span><span class="sbtn">Cutscene</span>
+            <div class="spacer"></div>
+            <span class="sbtn">◇ Reset</span><span class="sbtn primary">▶ Play</span>
+          </div>
+          <div class="panel"><div class="panel-h"><span>Hierarchy</span><span style="font:10px var(--mono); color:var(--t3)">⌘K</span></div>
+            <div class="panel-b"><div class="tree">
+              <div>▼ Village — Interior</div>
+              <div style="padding-left:12px">▸ Tilemap / Walls</div>
+              <div style="padding-left:12px">▼ Events</div>
+              <div style="padding-left:20px"><span class="sel">◆ Innkeeper (001)</span> <span style="font:700 9px var(--mono); background:rgba(79,227,163,.14); border:1px solid rgba(79,227,163,.30); color:#4fe3a3; padding:1px 5px; border-radius:999px">SELECTED</span></div>
+              <div style="padding-left:20px">◆ Chest (002)</div>
+              <div style="padding-left:20px">◆ Door — Outside (003)</div>
+              <div style="padding-left:12px">▸ Lighting</div>
+              <div style="margin-top:8px; padding:6px 8px; border:1px dashed rgba(255,255,255,.08); border-radius:8px; color:var(--t3)">+ Add event · Drag asset here</div>
+            </div></div>
+          </div>
+          <div class="panel" style="padding:0; background:transparent; border:none; gap:8px; display:flex; flex-direction:column">
+            <div class="panel" style="flex:1">
+              <div class="panel-h"><span>Scene · Village Interior</span><span class="tag">GRID 24 · 1×</span></div>
+              <div class="scene" style="flex:1; min-height:190px; margin:8px; position:relative">
+                <div class="gizmo" style="left:38%; top:28%"></div>
+                <div class="scene-card">
+                  <div class="avatar">INN</div>
+                  <div><b style="font:700 12px var(--ui); color:var(--t1)">Innkeeper — Page 1</b><div style="font:11px var(--mono); color:var(--t2)">Self Switch A OFF · Trigger: Action</div></div>
+                  <div style="margin-left:10px; padding:5px 8px; border-radius:999px; background:var(--accent); color:#fff; font:700 10px var(--mono)">EDIT →</div>
+                </div>
+                <div style="position:absolute; bottom:8px; left:8px; display:flex; gap:6px">
+                  <span class="tag">Gizmo</span><span class="tag">Layers: 2</span><span class="tag" style="background:rgba(90,104,232,.18); color:#c9ceff; border-color:rgba(90,104,232,.30)">Snap 24</span>
+                </div>
+                <div style="position:absolute; top:8px; right:8px; display:flex; gap:6px">
+                  <span class="tag">2D</span><span class="tag">Light: ON</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel"><div class="panel-h"><span>Inspector</span><span class="tag">Innkeeper · Event</span></div>
+            <div class="panel-b">
+              <div class="ins-row"><b>Position</b><span>7, 4</span></div>
+              <div class="ins-row"><b>Sprite</b><span>innkeep.png ▾</span></div>
+              <div class="ins-row"><b>Trigger</b><span>Action Button ▾</span></div>
+              <div class="ins-row"><b>Priority</b><span>Same as char.</span></div>
+              <div style="margin-top:8px; padding:8px; border:1px solid rgba(90,104,232,.22); background:rgba(90,104,232,.08); border-radius:8px">
+                <div style="font:700 10px var(--mono); color:var(--accent2); letter-spacing:.06em; text-transform:uppercase">Prefab</div>
+                <div style="font:600 11px var(--ui); color:var(--t1); margin-top:2px">Generic NPC — Shopkeeper</div>
+                <div style="font:11px var(--mono); color:var(--t2)">Overrides: 2 · <span style="color:var(--accent2)">Revert</span> · <span style="color:var(--accent2)">Open</span></div>
+              </div>
+              <div class="ins-row" style="margin-top:8px"><b>Opacity</b><div class="range"><i></i></div><span>100%</span></div>
+            </div>
+          </div>
+          <div class="panel" style="grid-column:1 / -1; flex-direction:row; gap:8px; padding:8px; align-items:center">
+            <div style="font:700 10px var(--mono); color:var(--t3); letter-spacing:.08em; text-transform:uppercase; padding:0 6px">Project</div>
+            <div class="asset-strip">
+              <div class="asset"><div class="asset-thumb">IMG</div><div class="asset-meta"><b>innkeep.png</b><span>48×48 · 12KB</span></div></div>
+              <div class="asset"><div class="asset-thumb">TILE</div><div class="asset-meta"><b>village_A2</b><span>autotile</span></div></div>
+              <div class="asset"><div class="asset-thumb">BGM</div><div class="asset-meta"><b>tavern.ogg</b><span>2:14</span></div></div>
+              <div class="asset" style="border-style:dashed"><div class="asset-thumb" style="background:transparent; border:1px dashed rgba(255,255,255,.10)">+</div><div class="asset-meta"><b style="color:var(--t2)">Import</b><span>drag here</span></div></div>
+            </div>
+            <div style="margin-left:auto; display:flex; gap:6px">
+              <span class="tag">Filter: NPC</span><span class="tag">Grid ▾</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 12px; display:flex; gap:8px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,.07); background:#131722">
+        <span class="badge"><i class="dot" style="background:var(--accent)"></i> Drag to snap · Right-drag to pan</span>
+        <span class="badge"><i class="dot" style="background:var(--ok)"></i> Layout preset saves panel sizes</span>
+        <span class="badge"><i class="dot" style="background:var(--warn)"></i> Detach → floating window (dual monitor)</span>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:12px"><b>왜 이게 유니티급인가:</b> 지금은 "지도 탭 안에 타일, 이벤트 탭 안에 리스트" — 공간이 폼에 갇혀 있다. 쉘은 <b>지도·이벤트·DB를 동시에 보면서</b> 작업하게 만든다. 여관 주인을 찍으면 인스펙터가 따라오고, 에셋을 끌어다 놓으면 바로 배치된다.</div>
+  </div>
+</section>
+
+<!-- Inspector -->
+<section id="inspector" class="chapter">
+  <div class="ch-head"><div class="ch-num">04 — 인스펙터 2.0 & 하이어라키</div><h3>무엇을 찍든, 오른쪽은 답을 안다</h3><p>선택 = 편집. 하이어라키는 구조, 인스펙터는 의미 — 둘이 한 쌍이다.</p></div>
+  <div class="ch-body">
+    <div class="grid2">
+      <div class="card"><div class="card-h"><h3>하이어라키 — 씬을 읽는다</h3><p>맵을 "타일 레이어"가 아니라 "씬"으로 본다</p></div>
+        <div class="card-b">
+          <div style="border:1px solid rgba(255,255,255,.07); border-radius:10px; background:#0f1320; padding:10px; font:12px var(--mono); color:var(--t2); line-height:1.9">
+            <div style="color:var(--t3); font:700 10px var(--mono); letter-spacing:.08em; text-transform:uppercase; margin-bottom:6px">Scene — Village / Night</div>
+            <div>▼ <b style="color:var(--t1)">Map</b> <span style="color:var(--t3)">— 24×18</span></div>
+            <div style="padding-left:14px">▣ Ground &nbsp;<span style="color:var(--t3)">(tileset: Village_A1)</span></div>
+            <div style="padding-left:14px">▣ Walls / Roofs &nbsp;<span style="color:var(--t3)">(passability overlay)</span></div>
+            <div>▼ <b style="color:var(--t1)">Events</b> <span style="background:rgba(90,104,232,.14); color:var(--accent2); padding:1px 6px; border-radius:999px; font:700 10px var(--mono)">3</span></div>
+            <div style="padding-left:14px">◆ Innkeeper <span style="color:var(--ok)">● active</span></div>
+            <div style="padding-left:14px">◆ Chest <span style="color:var(--warn)">◐ self-switch B</span></div>
+            <div style="padding-left:14px">◆ Door → World Map</div>
+            <div>▼ <b style="color:var(--t1)">Lighting</b> <span style="color:var(--t3)">— Point 3200K</span></div>
+            <div style="margin-top:8px; padding:7px 8px; border:1px dashed rgba(255,255,255,.09); border-radius:8px; display:flex; justify-content:space-between"><span>Search hierarchy…</span><span class="kbd">/</span></div>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap"><span class="badge">Multi-select → bulk edit</span><span class="badge">Drag to reorder / parent</span></div>
+        </div>
+      </div>
+      <div class="card"><div class="card-h"><h3>인스펙터 — 맥락이 따라온다</h3><p>같은 패널이 타일·이벤트·아이템 모두를 편집한다</p></div>
+        <div class="card-b">
+          <div style="border:1px solid rgba(255,255,255,.07); border-radius:10px; background:#131722; overflow:hidden">
+            <div style="padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); display:flex; gap:6px; align-items:center"><span class="pill">Event</span><b style="font:700 12px var(--ui)">Innkeeper</b><span style="margin-left:auto; font:10px var(--mono); color:var(--t3)">ID 001 · 7,4</span></div>
+            <div style="padding:10px; display:grid; gap:8px">
+              <div class="ins-row"><b>Sprite sheet</b><span>innkeep.png — 4×3 ▾</span></div>
+              <div class="ins-row"><b>Pages</b><span style="display:flex; gap:4px"><i style="padding:2px 7px; border-radius:999px; background:var(--accent); color:#fff; font:700 10px var(--mono)">1</i><i style="padding:2px 7px; border-radius:999px; background:rgba(255,255,255,.08); color:var(--t2); font:700 10px var(--mono)">2</i><span style="color:var(--accent2)">+ Add</span></span></div>
+              <div style="padding:8px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03); border-radius:8px">
+                <div style="font:700 10px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--t3)">Conditions</div>
+                <div style="display:flex; gap:6px; margin-top:6px; flex-wrap:wrap"><span class="tag">Switch 003: inn_open = ON</span><span class="tag">Self A = OFF</span><span class="tag" style="border-style:dashed">+ Condition</span></div>
+              </div>
+              <div style="display:flex; gap:6px"><span class="badge" style="background:rgba(79,227,163,.12); color:var(--ok); border-color:rgba(79,227,163,.28)">✔ No override</span><span class="badge">Prefab: Shopkeeper ▸</span></div>
+            </div>
+          </div>
+          <div class="callout" style="margin-top:10px; font-size:12px"><b>유니티식 포인트:</b> 지금은 이벤트마다 폼이 따로다. 인스펙터는 <b>선택한 게 무엇이든 같은 자리에서 같은 방식으로</b> 편집하게 만든다 — 학습 1번, 재사용 무한.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Graph -->
+<section id="graph" class="chapter">
+  <div class="ch-head"><div class="ch-num">05 — 이벤트 그래프 (Visual Scripting Lite)</div><h3>리스트는 쓰고, 그래프는 본다 — 같은 데이터, 두 뷰</h3><p>쪼개지 않는다: 저장 포맷은 그대로 두고 렌더만 바꾼다. 토글로 전환.</p></div>
+  <div class="ch-body">
+    <div class="mockup">
+      <div class="mockup-bar"><div class="traffic"><i style="background:#ff5f57"></i><i style="background:#ffbd2e"></i><i style="background:#28c840"></i></div><div class="mockup-title">Event Graph — Innkeeper / Page 1 — List ⇄ Graph</div></div>
+      <div class="mockup-body">
+        <div class="graph">
+          <div class="panel"><div class="panel-h"><span>Palette</span><span class="kbd">⌘K</span></div>
+            <div class="panel-b" style="display:grid; gap:6px">
+              <div class="tag">Search commands…</div>
+              <div class="node" style="padding:8px"><h4><i style="background:var(--accent)"></i> Message</h4><p>“어서 오게, 여행자.”</p></div>
+              <div class="node" style="padding:8px"><h4><i style="background:var(--warn)"></i> Choice</h4><p>3-way branch</p></div>
+              <div class="node" style="padding:8px"><h4><i style="background:var(--ok)"></i> Shop</h4><p>Open shop #2</p></div>
+              <div class="node" style="padding:8px; border-style:dashed"><h4><i style="background:var(--t3)"></i> Condition</h4><p>If / Else</p></div>
+            </div>
+          </div>
+          <div class="canvas">
+            <div style="position:absolute; top:10px; left:10px; display:flex; gap:6px"><span class="tag" style="background:var(--accent); color:#fff; border-color:transparent">Graph</span><span class="tag">List</span><span class="tag">Diff</span><span class="tag">▶ Simulate</span></div>
+            <div style="position:absolute; top:48px; left:18px" class="node"><div class="port in"></div><div class="port out"></div><h4><i style="background:var(--accent)"></i> Start</h4><p style="color:var(--t3)">Trigger: Action</p></div>
+            <div style="position:absolute; top:42px; left:42%; transform:translateX(-10%)" class="node"><div class="port in"></div><div class="port out"></div><h4><i style="background:var(--warn)"></i> Choice</h4><p>"뭘 도와줄까?"<br>· 자러 간다 (500G)<br>· 물건 산다<br>· 관둔다</p></div>
+            <div style="position:absolute; bottom:18px; left:12px" class="node" style="padding:8px"><div class="port in"></div><h4><i style="background:var(--ok)"></i> Inn — Pay & Sleep</h4><p>Fade → Recover → Save</p></div>
+            <div style="position:absolute; bottom:18px; right:20px" class="node"><div class="port in"></div><h4><i style="background:var(--ok)"></i> Shop #2</h4><p>Potion / Ether</p></div>
+            <svg style="position:absolute; inset:0; width:100%; height:100%; pointer-events:none"><path d="M 170 85 C 260 85, 260 105, 350 105" fill="none" stroke="rgba(138,148,255,.55)" stroke-width="2" stroke-dasharray="0"/><path d="M 470 155 C 520 155, 520 245, 420 245" fill="none" stroke="rgba(79,227,163,.55)" stroke-width="2"/><path d="M 470 155 C 530 155, 530 245, 600 245" fill="none" stroke="rgba(240,193,90,.55)" stroke-width="2"/></svg>
+            <div style="position:absolute; bottom:8px; left:10px; display:flex; gap:6px"><span class="tag">Auto-layout</span><span class="tag">Minimap</span></div>
+          </div>
+          <div class="panel"><div class="panel-h"><span>Properties</span><span class="tag">Choice</span></div>
+            <div class="panel-b" style="display:grid; gap:8px">
+              <div class="ins-row"><b>Prompt</b><span>“뭘 도와줄까?”</span></div>
+              <div style="padding:8px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03); border-radius:8px; display:grid; gap:6px">
+                <div style="display:flex; justify-content:space-between; align-items:center"><b style="font:600 11px var(--ui)">Branches</b><span style="font:10px var(--mono); color:var(--accent2)">+ Add</span></div>
+                <div class="ins-row"><b>1 — Inn</b><span>→ Pay & Sleep</span></div>
+                <div class="ins-row"><b>2 — Shop</b><span>→ Shop #2</span></div>
+                <div class="ins-row" style="border-style:dashed"><b>3 — Cancel</b><span>→ End</span></div>
+              </div>
+              <div class="ins-row"><b>Cancel →</b><span>Disallow ▾</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 12px; border-top:1px solid rgba(255,255,255,.07); background:#131722; display:flex; gap:8px; flex-wrap:wrap">
+        <span class="badge"><i class="dot" style="background:var(--accent)"></i> 같은 JSON, 뷰만 다름 — 호환 100%</span>
+        <span class="badge"><i class="dot" style="background:var(--warn)"></i> 복잡도 ↑ 시 자동 그래프 추천 배너</span>
+        <span class="badge"><i class="dot" style="background:var(--ok)"></i> 미니맵·자동정렬·시뮬레이트(드라이런)</span>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="callout"><b>왜 리스트를 버리지 않나:</b> 유니티도 코드와 그래프를 병존시킨다. 간단한 대사는 리스트가 가장 빠르다. 그래프는 <b>분기 3개·조건 2개 이상에서만</b> 빛난다 — 그래서 토글이다.</div>
+      <div class="card" style="background:var(--raised); display:flex; align-items:center; gap:10px; padding:12px 14px"><div style="width:36px; height:36px; border-radius:9px; background:rgba(90,104,232,.14); border:1px solid rgba(90,104,232,.30); display:grid; place-items:center">◎</div><div><b style="font:700 12px var(--ui)">점진적 도입</b><div style="font:12px var(--ui); color:var(--t2)">기존 이벤트는 그대로 리스트로 열린다. "Graph로 보기"를 눌러야 그래프가 렌더 — 강제 이주 없음.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Pipeline -->
+<section id="pipeline" class="chapter">
+  <div class="ch-head"><div class="ch-num">06 — 에셋 & 프리팹 파이프라인</div><h3>흩어진 파일을 브라우저로, 반복을 프리팹으로</h3><p>유니티의 가장 큰 선물은 "프리팹"이다 — 한 번 만들고 변주한다.</p></div>
+  <div class="ch-body">
+    <div class="grid2">
+      <div class="card"><div class="card-h"><h3>에셋 브라우저</h3><p>모든 파일이 한 곳에 — 태그·필터·드래그</p></div>
+        <div class="card-b">
+          <div style="border:1px solid rgba(255,255,255,.07); border-radius:10px; background:#0f1320; overflow:hidden">
+            <div style="padding:8px 10px; display:flex; gap:6px; border-bottom:1px solid rgba(255,255,255,.06); background:#131722">
+              <span class="pill">Project</span><span class="tag">All</span><span class="tag" style="background:rgba(90,104,232,.18); color:#c9ceff; border-color:rgba(90,104,232,.30)">Sprite</span><span class="tag">Tile</span><span class="tag">Audio</span>
+              <span style="margin-left:auto; font:11px var(--mono); color:var(--t3)">Search…</span>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; padding:10px">
+              <div class="asset"><div class="asset-thumb">NPC</div><div class="asset-meta"><b>innkeep</b><span>4×3 walk</span></div></div>
+              <div class="asset"><div class="asset-thumb">TILE</div><div class="asset-meta"><b>village_A2</b><span>autotile</span></div></div>
+              <div class="asset"><div class="asset-thumb">SFX</div><div class="asset-meta"><b>open.wav</b><span>0.8s</span></div></div>
+              <div class="asset"><div class="asset-thumb">BG</div><div class="asset-meta"><b>tavern.png</b><span>parallax</span></div></div>
+              <div class="asset"><div class="asset-thumb">NPC</div><div class="asset-meta"><b>guard</b><span>4×3</span></div></div>
+              <div class="asset"><div class="asset-thumb">ICON</div><div class="asset-meta"><b>potion.png</b><span>24×24</span></div></div>
+              <div class="asset"><div class="asset-thumb">BGM</div><div class="asset-meta"><b>night.ogg</b><span>1:42</span></div></div>
+              <div class="asset" style="border-style:dashed"><div class="asset-thumb" style="background:transparent">＋</div><div class="asset-meta"><b style="color:var(--t2)">Import</b><span>drop files</span></div></div>
+            </div>
+          </div>
+          <div style="margin-top:8px; font:12px var(--ui); color:var(--t2)">드래그하면 씬에 바로 배치 — 타일은 타일대로, NPC는 이벤트로 자동 생성. 임포트 시 <b style="color:var(--t1)">자동 슬라이스/네이밍</b> (4×3 걷기 → 12셀 분해).</div>
+        </div>
+      </div>
+      <div class="card"><div class="card-h"><h3>프리팹 (Prefab) & 배리언트</h3><p>한 번 만들고, 곳곳에서 변주한다</p></div>
+        <div class="card-b">
+          <div style="border:1px solid rgba(90,104,232,.22); background:rgba(90,104,232,.08); border-radius:10px; padding:12px">
+            <div style="display:flex; gap:10px; align-items:center">
+              <div style="width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,#5a68e8,#a96bff); display:grid; place-items:center; color:#fff; font:800 11px var(--mono)">PF</div>
+              <div><b style="font:700 13px var(--ui)">Generic NPC — Shopkeeper</b><div style="font:11px var(--mono); color:var(--t2)">Prefab · 8 uses · <span style="color:var(--ok)">all synced</span></div></div>
+              <span style="margin-left:auto" class="tag">Open Prefab</span>
+            </div>
+            <div style="margin-top:10px; display:grid; gap:6px">
+              <div class="ins-row"><b>Variant — Innkeeper</b><span>Overrides 2</span></div>
+              <div style="padding:8px 10px; border:1px solid rgba(255,255,255,.06); background:rgba(18,22,36,.7); border-radius:8px; display:flex; justify-content:space-between; align-items:center"><span style="font:11px var(--mono); color:var(--t2)">Message: “어서 오게.” <span style="background:rgba(240,193,90,.18); color:var(--warn); padding:2px 6px; border-radius:999px; font:700 10px var(--mono)">OVERRIDE</span></span><span style="font:10px var(--mono); color:var(--t2)">Revert</span></div>
+              <div style="padding:8px 10px; border:1px solid rgba(255,255,255,.06); background:rgba(18,22,36,.7); border-radius:8px; display:flex; justify-content:space-between"><span style="font:11px var(--mono); color:var(--t2)">Shop: #2 · Price ×1.0</span><span style="font:10px var(--mono); color:var(--t3)">inherited</span></div>
+            </div>
+          </div>
+          <div style="margin-top:10px; display:flex; gap:6px; flex-wrap:wrap"><span class="badge"><i class="dot" style="background:var(--accent)"></i> 프리팹 수정 → 인스턴스 전체 반영</span><span class="badge"><i class="dot" style="background:var(--warn)"></i> 오버라이드는 보라 배지로 표시</span></div>
+          <div style="margin-top:8px; font:12px var(--ui); color:var(--t2)">상점 NPC 8명을 일일이 복붙하던 시대 끝 — 프리팹 하나를 고치면 8곳이 함께 바뀐다. 대사만 다른 Innkeeper는 <b style="color:var(--t1)">배리언트</b>로.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Play -->
+<section id="play" class="chapter">
+  <div class="ch-head"><div class="ch-num">07 — 인-에디터 플레이 & 타임라인</div><h3>고치고 바로 본다 — 빌드 없이, 씬 안에서</h3><p>유니티의 Play 버튼이 주는 마법: "생각→확인" 사이를 0초로 만든다.</p></div>
+  <div class="ch-body">
+    <div class="mockup">
+      <div class="mockup-bar"><div class="traffic"><i style="background:#ff5f57"></i><i style="background:#ffbd2e"></i><i style="background:#28c840"></i></div><div class="mockup-title">Play Mode — Village Interior · Debugging</div></div>
+      <div class="mockup-body">
+        <div style="display:grid; grid-template-columns:1fr 300px; gap:8px; min-height:320px">
+          <div style="display:grid; grid-template-rows: 1fr 96px; gap:8px">
+            <div class="scene" style="position:relative; border:1px solid rgba(255,255,255,.07); min-height:220px">
+              <div style="position:absolute; top:8px; left:8px; display:flex; gap:6px"><span class="tag" style="background:var(--accent); color:#fff; border-color:transparent">▶ Playing</span><span class="tag">1×</span><span class="tag">Show Gizmos</span></div>
+              <div class="scene-card" style="border-color:rgba(79,227,163,.35); box-shadow:0 0 0 2px rgba(79,227,163,.18), 0 10px 30px rgba(0,0,0,.4)">
+                <div class="avatar">▶</div>
+                <div><b style="font:700 12px var(--ui)">Innkeeper — running</b><div style="font:11px var(--mono); color:var(--t2)">Choice: “뭘 도와줄까?” · awaiting input</div></div>
+              </div>
+              <div style="position:absolute; bottom:8px; left:8px; right:8px; display:flex; gap:6px; flex-wrap:wrap">
+                <span class="tag">Var [003] inn_open = ON</span><span class="tag">Self A = OFF</span><span class="tag" style="background:rgba(79,227,163,.14); color:var(--ok); border-color:rgba(79,227,163,.28)">● 60 FPS</span>
+              </div>
+              <div style="position:absolute; top:8px; right:8px"><span class="playbar"><i>⏸</i><span style="font:700 11px var(--mono); color:var(--t2)">Pause</span><span style="width:1px; height:14px; background:rgba(255,255,255,.10)"></span><span style="font:700 11px var(--mono); color:var(--t2)">Step</span><span style="font:700 11px var(--mono); color:var(--danger)">■ Stop</span></span></div>
+            </div>
+            <div class="timeline">
+              <div class="t-row"><div class="t-label">Fade</div><div class="t-lane"><div class="t-clip a">In 0.4s</div></div></div>
+              <div class="t-row"><div class="t-label">Message</div><div class="t-lane"><div class="t-clip b" style="left:28%; width:34%">“어서 오게”</div></div></div>
+              <div class="t-row"><div class="t-label">BGM</div><div class="t-lane"><div class="t-clip c">tavern.ogg — loop</div></div></div>
+            </div>
+          </div>
+          <div class="panel"><div class="panel-h"><span>Debug</span><span class="tag">Live</span></div>
+            <div class="panel-b" style="display:grid; gap:8px">
+              <div style="padding:8px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03); border-radius:8px">
+                <div style="font:700 10px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--t3)">Variables</div>
+                <div style="font:11px var(--mono); color:var(--t2); margin-top:6px; line-height:1.8">003 inn_open = <b style="color:var(--ok)">ON</b><br>012 gold = <b style="color:var(--t1)">1,240</b><br>Self A (001) = <b style="color:var(--t3)">OFF</b></div>
+              </div>
+              <div style="padding:8px; border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.03); border-radius:8px">
+                <div style="font:700 10px var(--mono); letter-spacing:.06em; text-transform:uppercase; color:var(--t3)">Console</div>
+                <div style="font:11px var(--mono); color:var(--t2); margin-top:6px">[09:14] Choice shown: 3 options<br>[09:14] Awaiting player…</div>
+              </div>
+              <div style="display:flex; gap:6px"><span class="sbtn" style="flex:1; text-align:center">Set Var…</span><span class="sbtn primary" style="flex:1; text-align:center">Resume →</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 12px; border-top:1px solid rgba(255,255,255,.07); background:#131722; display:flex; gap:8px; flex-wrap:wrap">
+        <span class="badge"><i class="dot" style="background:var(--ok)"></i> 변수 오버라이드 → 즉시 반영 (고스트 플레이)</span>
+        <span class="badge"><i class="dot" style="background:var(--accent)"></i> 타임라인 스크럽으로 컷신 타이밍 조절</span>
+        <span class="badge"><i class="dot" style="background:var(--warn)"></i> 멈춘 상태에서 씬 기즈모로 위치 보정</span>
+      </div>
+    </div>
+    <div style="margin-top:14px; border:1px solid rgba(255,255,255,.07); border-radius:12px; background:var(--raised); padding:14px; display:grid; grid-template-columns: 1fr 1fr; gap:14px">
+      <div><b style="font:700 12px var(--ui)">팔레트 (⌘K) — 손이 키보드를 떠나지 않는다</b>
+        <div class="palette" style="margin-top:8px">
+          <div class="palette-head"><div class="search">⌘K &nbsp; inn…</div><span class="kbd">ESC</span></div>
+          <div class="palette-item active"><b>◆ Go to Event — Innkeeper</b><span>↵</span></div>
+          <div class="palette-item"><b>◇ Create Prefab Variant</b><span>from selection</span></div>
+          <div class="palette-item"><b>◇ Toggle Graph / List</b><span>G</span></div>
+          <div class="palette-item"><b>◇ Play from here</b><span>⇧↵</span></div>
+        </div>
+      </div>
+      <div><b style="font:700 12px var(--ui)">무엇이 달라지나</b>
+        <div style="margin-top:8px; display:grid; gap:8px; font:13px var(--ui); color:var(--t2)">
+          <div style="padding:10px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); border-radius:8px">지금: "어디에 있지?" → 탭을 뒤진다. <b style="color:var(--t1)">→ 이후: ⌘K → "inn" → Enter — 1초 컷</b></div>
+          <div style="padding:10px; border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); border-radius:8px">지금: 커맨드 찾으려면 스크롤. <b style="color:var(--t1)">→ 이후: 팔레트에서 "shop" 치면 바로 삽입</b></div>
+          <div style="padding:10px; border:1px solid rgba(90,104,232,.18); background:rgba(90,104,232,.08); border-radius:8px">단축키 10개보다 <b style="color:var(--accent2)">검색 1개가 더 빠르다</b> — 유니티·VSCode가 증명했다.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Roadmap -->
+<section id="roadmap" class="chapter">
+  <div class="ch-head"><div class="ch-num">08 — 로드맵 — 3단계로, 호환성 유지하며</div><h3>가장 싼 것부터, 가장 느끼는 것부터</h3><p>1단계에서 이미 80%의 감각이 바뀐다. 기능은 다음에.</p></div>
+  <div class="ch-body">
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px">
+      <div class="card" style="border-top:3px solid var(--ok)"><div class="card-h"><h3>Phase 1 — Shell (2주)</h3><p>레이아웃만 바꾼다 — 기능은 그대로</p></div><div class="card-b" style="display:grid; gap:8px; font:13px var(--ui); color:var(--t2)">
+        <div><b style="color:var(--t1)">도킹 쉘 + 4 프리셋</b> — Map / Event / Database / Cutscene. 패널 리사이즈·분리, 상태 로컬 저장</div>
+        <div><b style="color:var(--t1)">하이어라키 읽기 전용</b> — 지금 맵/이벤트 구조를 트리로 보여만 준다</div>
+        <div><b style="color:var(--t1)">커맨드 팔레트 MVP</b> — Go to / Create / Toggle 20개 명령</div>
+        <div style="padding:8px; border-radius:8px; background:rgba(79,227,163,.10); border:1px solid rgba(79,227,163,.22); color:var(--t2); font:12px var(--ui)">비용 최소, 체감 최대. 스크린샷만 바꿔도 "유니티 같다"는 말이 나온다.</div>
+      </div></div>
+      <div class="card" style="border-top:3px solid var(--accent)"><div class="card-h"><h3>Phase 2 — Inspector & Graph (3주)</h3><p>선택이 편집이 되는 순간</p></div><div class="card-b" style="display:grid; gap:8px; font:13px var(--ui); color:var(--t2)">
+        <div><b style="color:var(--t1)">인스펙터 바인딩</b> — 하이어라키 선택 → 우측 인스펙터가 실제 편집. 멀티 셀렉트</div>
+        <div><b style="color:var(--t1)">그래프 뷰 (read-only→edit)</b> — 리스트와 그래프 토글, 드래그로 브랜치 연결</div>
+        <div><b style="color:var(--t1)">에셋 브라우저</b> — 드래그&드롭 배치, 임포트 자동 슬라이스</div>
+        <div style="padding:8px; border-radius:8px; background:rgba(90,104,232,.10); border:1px solid rgba(90,104,232,.22); color:var(--t2); font:12px var(--ui)">데이터 포맷 변경 없음 — 그래프는 렌더러다. 기존 프로젝트 100% 호환.</div>
+      </div></div>
+      <div class="card" style="border-top:3px solid var(--warn)"><div class="card-h"><h3>Phase 3 — Prefab & Play (4주)</h3><p>반복을 없애고, 확인을 0초로</p></div><div class="card-b" style="display:grid; gap:8px; font:13px var(--ui); color:var(--t2)">
+        <div><b style="color:var(--t1)">프리팹 & 배리언트</b> — 템플릿→오버라이드, 전역 반영. 상점 NPC 8명 관리 1곳에서</div>
+        <div><b style="color:var(--t1)">인-에디터 플레이</b> — ▶로 씬 안에서 실행, 변수 워치·타임라인 스크럽·고스트 플레이</div>
+        <div><b style="color:var(--t1)">타임라인 컷신</b> — 페이드·무브·대사를 레인으로 — 영화처럼</div>
+        <div style="padding:8px; border-radius:8px; background:rgba(240,193,90,.10); border:1px solid rgba(240,193,90,.22); color:var(--t2); font:12px var(--ui)">여기서 비로소 "RPG Maker를 넘어섰다"는 말이 나온다.</div>
+      </div></div>
+    </div>
+    <div style="margin-top:14px; display:grid; grid-template-columns: 1.2fr .8fr; gap:12px">
+      <div class="callout"><b>원칙: 호환성을 깨지 않는다.</b> 쉘·인스펙터·그래프·프리팹 모두 <b>뷰 레이어</b>다. 저장되는 JSON은 지금과 동일 — 유니티가 스크립트와 비주얼 스크립팅을 공존시키듯, 우리도 리스트와 그래프를 공존시킨다. 그래서 되돌릴 수 있다.</div>
+      <div style="border:1px solid rgba(255,255,255,.07); border-radius:12px; background:var(--raised); padding:12px">
+        <div style="font:700 11px var(--mono); letter-spacing:.08em; text-transform:uppercase; color:var(--t3)">바로 다음 액션</div>
+        <div style="margin-top:8px; display:grid; gap:6px; font:12px var(--ui); color:var(--t2)">
+          <div>1. 이 문서에서 <b style="color:var(--t1)">Phase 1 목업 1장을 코드 스파이크</b>로 — 도킹만</div>
+          <div>2. 기존 4컬럼/토큰 수정(커밋 85f7ae8) 위에 얹는다 — 충돌 없음</div>
+          <div>3. 레이아웃 프리셋 4개로 내부 플레이테스트</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div style="margin-top:18px; border:1px solid rgba(255,255,255,.07); border-radius:14px; background:linear-gradient(135deg,rgba(90,104,232,.14),rgba(169,107,255,.10) 50%,rgba(255,126,182,.10)); padding:18px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap">
+  <div style="width:42px; height:42px; border-radius:10px; background:linear-gradient(135deg,#5a68e8,#a96bff); display:grid; place-items:center; color:#fff; font:800 13px var(--mono)">→</div>
+  <div><b style="font:800 15px var(--ui)">쯔구르는 추억이고, 유니티는 작업 공간이다 — 둘 다 RPG를 만든다. 우리는 둘 사이를 만든다.</b><div style="font:13px var(--ui); color:var(--t2); margin-top:2px">이 비전은 "다시 만들자"가 아니라 "보는 틀을 바꾸자"다. 데이터는 그대로, 감각만 유니티급으로.</div></div>
+  <div style="margin-left:auto; display:flex; gap:8px"><span class="badge">READY FOR SPIKE</span><span class="badge" style="background:var(--accent); color:#fff; border-color:transparent">Phase 1 — Shell first</span></div>
+</div>
+
+<div style="text-align:center; padding:18px 0 8px; color:var(--t3); font:11px var(--mono)">Unity-grade Vision · 6 interactive mockups rendered with pure CSS · No external images — print this page and it still works · 2026-08</div>
+</div>
+</body>
+</html>

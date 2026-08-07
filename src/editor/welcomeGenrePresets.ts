@@ -209,3 +209,30 @@ export const WELCOME_BLANK_CONFIRM = {
   cancelLabel: "취소",
   danger: true,
 } as const;
+
+export const WELCOME_QUICK_PICKS: readonly { readonly label: string; readonly intent: string }[] = [
+  { label: "눈 내리는 마을 + 여관", intent: "눈 내리는 마을 여관에서 단골손님이 머무는 따뜻한 이야기 — 여관주인 NPC와 저녁 컷신" },
+  { label: "숲속 던전 탐험", intent: "숲속 던전 입구에서 시작해 보물상자와 적을 배치한 모험 JRPG" },
+  { label: "추억의 재회 컷신", intent: "오랜 친구와의 재회 컷신 — 대화와 감정 연출 중심, 엔딩 분기 포함" },
+  { label: "항구 시장 하루", intent: "항구 시장과 상점가가 있는 마을 — 상인과 손님 NPC가 하루 일과로 움직이는 생활 시뮬" },
+  { label: "학교 괴담 밤", intent: "밤 학교를 탐험하는 호러 — 숨기와 추격 이벤트, 단서 아이템" },
+  { label: "달빛 호수 마을", intent: "달빛 호수 옆 작은 마을 — 고요한 분위기와 호수 던전" },
+] as const;
+
+export type WelcomeStarterTemplateId = "snow-village-inn" | "forest-dungeon" | "reunion-cutscene" | "harbor-market";
+
+export type WelcomeStarterTemplate = {
+  readonly id: WelcomeStarterTemplateId;
+  readonly label: string;
+  readonly blurb: string;
+  readonly thumb: string;
+  readonly intent: string;
+};
+
+export const WELCOME_STARTER_TEMPLATES: readonly WelcomeStarterTemplate[] = [
+  { id: "snow-village-inn", label: "눈 마을 여관", blurb: "따뜻한 불빛과 단골손님", thumb: "/assets/generated/welcome/slide-00-hero.png", intent: "눈 내리는 마을 한가운데 여관 — 여관주인과 단골손님이 등장하는 오프닝 컷신과 밤 이벤트" },
+  { id: "forest-dungeon", label: "숲속 던전", blurb: "입구부터 보스까지", thumb: "/assets/generated/welcome/slide-04.png", intent: "숲속 던전 입구부터 보스 방까지 이어지는 짧은 모험 — 보물상자·전투·열쇠 이벤트 포함" },
+  { id: "reunion-cutscene", label: "재회 컷신", blurb: "대사와 감정 중심", thumb: "/assets/generated/welcome/mini-03-moon.png", intent: "오랜 친구와의 재회 컷신 — 대화, 회상 연출, 선택지로 갈리는 엔딩" },
+  { id: "harbor-market", label: "항구 시장", blurb: "상인과 손님의 하루", thumb: "/assets/generated/welcome/slide-03.png", intent: "항구 시장이 있는 마을 — 상점, 손님 NPC, 낮/밤 일과가 있는 생활 마을" },
+] as const;
+
