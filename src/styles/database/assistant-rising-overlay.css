@@ -13,7 +13,7 @@
   position: fixed;
   right: 24px;
   /* 커맨드 바(50) 위 — 컨텍스트 칩이 pill 클릭을 가로채지 않게. 모달(72)·스킬 팔레트(80) 아래. */
-  z-index: 56;
+  z-index: 41; /* z-layers: panel 30 / bar 40 / overlay 41 / skill-palette 80 */
   /* 오버레이 컨테이너는 클릭을 삼키지 않는다 — 빈 영역/투명 틈은 아래로 통과.
      실제 인터랙티브 자식만 auto로 복원한다. */
   pointer-events: none;
@@ -34,21 +34,101 @@
 }
 
 .ai-rising-volatile-zone {
-  transition: opacity 220ms ease, transform 220ms ease;
+  transition: opacity 320ms ease, transform 320ms ease, border-color 320ms ease;
+  border: 1px dashed transparent;
+  border-radius: 14px;
+  padding: 4px;
+}
+
+.ai-volatile-dashed {
+  border-color: color-mix(in srgb, var(--accent, #7aa2ff) 22%, transparent);
+  background: color-mix(in srgb, var(--accent, #7aa2ff) 5%, transparent);
+  backdrop-filter: blur(6px);
 }
 
 .ai-rising-volatile-zone.is-faded {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(8px);
+  opacity: 0.42;
+  pointer-events: auto;
+  transform: translateY(4px);
 }
 
+.ai-pending-queue {
+  align-items: center;
+  background: color-mix(in srgb, var(--bg-panel, #12141c) 92%, var(--accent, #7aa2ff) 10%);
+  border: 1px solid color-mix(in srgb, var(--accent, #7aa2ff) 38%, transparent);
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 6px 12px;
+  margin: 6px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.14);
+}
+.ai-pending-queue::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent, #7aa2ff);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, #7aa2ff) 18%, transparent);
+  animation: ai-queue-pulse 1.2s ease-in-out infinite;
+}
+@keyframes ai-queue-pulse { 0%,100%{opacity:1} 50%{opacity:0.55} }
+
+.ai-silenced-banner {
+  background: color-mix(in srgb, #ffb84d 16%, var(--bg-panel, #12141c));
+  border: 1.5px solid color-mix(in srgb, #ffb84d 48%, transparent);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.ai-silenced-banner button {
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 12px;
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1.5px solid color-mix(in srgb, currentColor 22%, transparent);
+  background: var(--bg-inset, #0d0f16);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.ai-silenced-banner button:hover { background: var(--bg-raised); transform: translateY(-1px); }
+
+.ai-approval-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.ai-approval-badge.destructive { background: color-mix(in srgb, #ff5d73 18%, var(--bg-panel)); border-color: color-mix(in srgb, #ff5d73 40%, transparent); }
+.ai-approval-badge.vocab { background: color-mix(in srgb, #9b8cff 16%, var(--bg-panel)); border-color: color-mix(in srgb, #9b8cff 35%, transparent); }
+.ai-approval-badge.auto { background: color-mix(in srgb, #3dd68c 14%, var(--bg-panel)); border-color: color-mix(in srgb, #3dd68c 35%, transparent); }
+
 .ai-rising-overlay .ai-chat-log {
-  background: color-mix(in srgb, var(--bg-inset) 88%, transparent);
+  background: color-mix(in srgb, var(--bg-inset) 92%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+  border-radius: 14px;
   box-shadow: var(--shadow-pop);
-  /* 미니 스트림: 현재 턴만 보이므로 낮은 상한으로 맵 가림 최소화. */
-  max-height: min(18vh, 200px);
-  min-height: 0;
+  max-height: min(22vh, 240px);
+  min-height: 72px;
+  padding: 8px;
+  gap: 8px;
 }
 
 .ai-chat-panel.chat-dock-side .ai-rising-overlay {

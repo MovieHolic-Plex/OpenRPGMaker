@@ -1,27 +1,30 @@
-/* 채팅 버블 — TUI 밀도 (둥근 카드 느낌 축소) */
+/* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
 .ai-chat-bubble {
-  border-radius: 4px;
-  font-size: 12px;
-  line-height: 1.4;
-  max-width: 96%;
-  padding: 4px 8px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 72%;
+  padding: 10px 14px;
   white-space: pre-wrap;
   word-break: break-word;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
 }
 .ai-chat-user {
   align-self: flex-end;
-  background: var(--accent-muted);
-  border: 1px solid var(--accent-border);
-  border-radius: 4px;
-  color: var(--text-1);
-  max-width: 96%;
+  background: var(--accent, #4c6ef5);
+  border: none;
+  border-radius: 14px 14px 4px 14px;
+  color: #fff;
+  max-width: 72%;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--accent, #4c6ef5) 30%, transparent);
 }
 .ai-chat-assistant {
   align-self: flex-start;
-  background: transparent;
+  background: var(--bg-raised, #1a1d27);
   border: 1px solid var(--border-subtle);
+  border-radius: 14px 14px 14px 4px;
   color: var(--text-1);
-  max-width: 96%;
+  max-width: 78%;
 }
 .ai-chat-assistant.is-discarded,
 .ai-chat-assistant.is-reverted {
@@ -61,43 +64,70 @@
 }
 .ai-chat-system {
   align-self: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
   color: var(--text-3);
   font-size: 11px;
-  font-style: italic;
+  font-style: normal;
+  font-weight: 600;
+  padding: 4px 10px;
 }
 .ai-chat-input-row {
   align-items: flex-end;
   display: flex;
-  gap: 4px;
+  gap: 8px;
+  padding-top: 2px;
 }
 .ai-chat-input-row .ai-assistant-input {
-  border-radius: 4px;
+  border-radius: 12px;
   flex: 1 1 auto;
-  min-height: 32px;
+  min-height: 44px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1.5px solid var(--border-default);
+  background: var(--bg-raised);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ai-chat-input-row .ai-assistant-input:focus {
+  border-color: var(--accent, #4c6ef5);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #4c6ef5) 18%, transparent);
+  outline: none;
+}
+.ai-chat-input-row .ai-assistant-input::placeholder {
+  color: var(--text-3);
+  opacity: 0.9;
 }
 .ai-chat-send {
   flex: 0 0 auto;
   align-self: stretch;
-  background: var(--accent);
-  border-color: var(--accent-border);
-  border-radius: 4px;
-  font-family: ui-monospace, "Cascadia Code", "Consolas", monospace;
-  font-size: 11px;
+  background: var(--accent, #4c6ef5);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 13px;
   font-weight: 700;
-  min-height: 32px;
-  padding: 4px 10px;
-  color: var(--on-accent);
-  font-weight: 600;
-  min-height: 40px;
-  padding-inline: var(--space-3);
+  min-height: 44px;
+  padding: 0 18px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--accent, #4c6ef5) 25%, transparent);
 }
 .ai-chat-send:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-border);
+  background: var(--accent-hover, #3b5bdb);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--accent, #4c6ef5) 30%, transparent);
+}
+.ai-chat-send:active:not(:disabled) {
+  transform: translateY(0);
 }
 .ai-chat-send:disabled {
   background: var(--control-bg);
   color: var(--text-3);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
 /* ?쒖븞(changeset) 移대뱶 */

@@ -244,4 +244,81 @@
   white-space: nowrap;
 }
 
+/* Premium empty-state & start-grid polish (UX overhaul) */
+.ai-start-grid {
+  gap: 10px !important;
+}
+.ai-start-card {
+  border-radius: 14px !important;
+  padding: 14px !important;
+  transition: transform 0.14s, box-shadow 0.14s, border-color 0.14s;
+}
+.ai-start-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.14);
+  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 28%, var(--border-default));
+}
+.ai-start-card .ai-start-mosaic {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Reasoning & tool log readability */
+.ai-reasoning-body {
+  max-height: 420px !important;
+  line-height: 1.55;
+}
+.ai-tool-activity-line {
+  font-size: 12px !important;
+  line-height: 1.5;
+  border-left: 2px solid transparent;
+  padding-left: 8px;
+  margin-left: 2px;
+}
+.ai-tool-activity-line.ai-tool-failure {
+  border-left-color: var(--danger, #e5534b);
+  background: color-mix(in srgb, var(--danger, #e5534b) 7%, transparent);
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+/* Turn group toggle — larger hit area */
+.ai-turn-group-toggle {
+  padding: 8px 10px !important;
+  font-size: 12px !important;
+}
+
+/* Quick replies — premium pills */
+.ai-quick-replies { gap: 8px !important; }
+.ai-quick-replies.ai-choice-block {
+  padding: 10px !important;
+  gap: 8px !important;
+  border-radius: 12px !important;
+}
+.ai-quick-reply-chip {
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  border-width: 1.5px !important;
+  border-radius: 999px !important;
+  transition: background 0.14s, border-color 0.14s, transform 0.1s;
+}
+.ai-quick-reply-chip:hover { transform: translateY(-1px); }
+
+/* Tiles — larger thumbs */
+.ai-tile-thumb { width: 56px !important; height: 56px !important; border-radius: 8px !important; }
+.ai-chat-tiles { gap: 8px !important; }
+
+/* Assistant status — always visible with pulse */
+.ai-assistant-status { opacity: 1 !important; }
+.ai-assistant-status[data-status-tone="running"]::before,
+.ai-assistant-status[data-status-tone="thinking"]::before {
+  content: "●";
+  margin-right: 6px;
+  color: var(--accent, #4c6ef5);
+  animation: ai-status-pulse 1s ease-in-out infinite;
+}
+@keyframes ai-status-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+/* Skill hint: never hide completely — show on hover/focus parent */
+.ai-skill-card-hint { opacity: 1 !important; }
 

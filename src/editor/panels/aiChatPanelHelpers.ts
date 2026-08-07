@@ -19,6 +19,7 @@ import { editorState } from "@/editor/editorState";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
+export { showConfirm };
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -29,7 +30,7 @@ import {
 } from "./aiProposalSummary";
 
 export const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
-export const VOLATILE_OVERLAY_IDLE_MS = 6000;
+export const VOLATILE_OVERLAY_IDLE_MS = 12000;
 export const STUDIO_MODE_KEY = "rpg-zzu:ai-studio";
 
 export const MAP_TILE_TOOLS = new Set([
@@ -147,6 +148,10 @@ export function isCardLevelApprovalWarning(warning: string): boolean {
 // soft-confirm/재료 합의 경고만 있으면 카드의 [이대로 적용]이 확인이므로 모달을 건너뛴다.
 export function confirmRuleApproval(warnings: readonly string[]): true | Promise<boolean> {
   if (warnings.length === 0) return true;
+  const hasDestructive = warnings.some((w) => w.includes("파괴") || w.includes("지워") || w.includes("삭제") || w.includes("remove") || w.includes("clear"));
+  if (hasDestructive) {
+    return showConfirm({ title: "파괴적 변경 확인", message: `${warnings.join("\n")}\n\n되돌릴 수 있는 작업이지만 영향 범위를 확인했습니다. 계속할까요?`, confirmLabel: "확인 후 적용" });
+  }
   if (warnings.every(isCardLevelApprovalWarning)) return true;
   return showConfirm({ title: "승인 확인", message: `${warnings.join("\n")}\n\n이 규칙을 적용할까요?`, confirmLabel: "적용" });
 }
@@ -185,11 +190,14 @@ export function combineAuditJson(
   history: readonly AuditEntry[],
   session: AssistantSession | null,
   model: string,
-  statusTimeline: readonly StatusTransition[] = []
+  statusTimeline: readonly StatusTransition[] = [],
+  extra?: Record<string, unknown>
 ): string | null {
   const entries = [...history, ...(session?.getAuditEntries() ?? [])];
-  if (entries.length === 0 && statusTimeline.length === 0) return null;
-  return JSON.stringify({ model, exportedAt: new Date().toISOString(), entries, statusTimeline }, null, 2);
+  if (entries.length === 0 && statusTimeline.length === 0 && !extra) return null;
+  const payload: Record<string, unknown> = { model, exportedAt: new Date().toISOString(), entries, statusTimeline };
+  if (extra) Object.assign(payload, extra);
+  return JSON.stringify(payload, null, 2);
 }
 
 export interface ChatController {
@@ -220,31 +228,37 @@ export function downloadJson(filename: string, json: string): void {
   anchor.remove();
 }
 
-// 0건 프로포절 비블로킹 알림(도그푸딩 결함 ⑤)
-export const EMPTY_PROPOSAL_NOTICE_DISMISS_MS = 8000;
+// 0건 프로포절 — 침묵 실패는 "완료"가 아니다. 별도 배너 + 다음 행동으로 승격.
+export const EMPTY_PROPOSAL_NOTICE_DISMISS_MS = 12000;
 
 export function renderEmptyProposalNotice(lines: readonly string[], onDismiss: () => void): HTMLElement {
+  const retry = () => {
+    const input = document.querySelector<HTMLTextAreaElement>(".ai-chat-input");
+    input?.focus();
+    // 되묻기 힌트를 입력창에 주입
+    if (input && !input.value) input.placeholder = "예: 영역을 드래그로 지정한 뒤 '여기에 집 2채' 라고 해보세요";
+  };
   return el("div", {
-    class: "ai-proposal-card ai-proposal-empty",
+    class: "ai-proposal-card ai-proposal-empty ai-silenced-banner",
     dataset: { testid: "ai-proposal-empty-notice" },
     children: [
-      el("div", { class: "ai-proposal-title", text: "변경 제안 없음 (0건)" }),
-      ...(lines.length > 0
-        ? [el("div", {
-            class: "ai-proposal-lines",
-            children: lines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
-          })]
-        : []),
+      el("div", {
+        class: "ai-proposal-lines",
+        children: [
+          el("div", { class: "ai-proposal-title", text: "⚠ 변경 없음 — 이유를 확인하세요" }),
+          ...(lines.length > 0
+            ? [el("div", {
+                class: "ai-proposal-lines",
+                children: lines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
+              })]
+            : [el("div", { class: "ai-proposal-line", text: "모델이 변경 없이 종료했습니다. 영역 지정/스킬 선택 후 다시 시도하세요." })]),
+        ],
+      }),
       el("div", {
         class: "ai-proposal-actions",
         children: [
-          el("button", {
-            class: "ai-assistant-action",
-            text: "닫기",
-            attrs: { type: "button", title: "이 알림은 잠시 후 자동으로 사라집니다" },
-            dataset: { testid: "ai-proposal-dismiss" },
-            on: { click: onDismiss },
-          }),
+          el("button", { class: "ai-assistant-action", text: "되묻기", attrs: { type: "button", title: "입력창으로 이동" }, on: { click: retry } }),
+          el("button", { class: "ai-assistant-action", text: "닫기", attrs: { type: "button" }, dataset: { testid: "ai-proposal-dismiss" }, on: { click: onDismiss } }),
         ],
       }),
     ],
