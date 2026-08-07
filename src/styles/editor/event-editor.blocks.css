@@ -78,15 +78,16 @@
   position: relative;
 }
 
-/* 들여쓰기 가이드 — 분기 안쪽임을 세로선으로 알린다. */
+/* 들여쓰기 가이드 — 분기 안쪽임을 세로선으로 알린다. 3단부터 모호하던 1px를 2px로 두껍게 하고, 경계가 보이도록 accent를 22% 섞는다. */
 .event-contents-fieldset .cmd-list .cmd-item[data-cmd-depth]:not([data-cmd-depth="0"])::before {
   content: "";
   position: absolute;
   left: calc(var(--blk-indent) * -0.5);
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--border-default);
+  top: 2px;
+  bottom: 2px;
+  width: 2px;
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 22%, var(--border-default, var(--mk-line, #2a3449)));
+  border-radius: 1px;
   pointer-events: none;
 }
 
@@ -109,8 +110,9 @@
 
 .event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
-  background: var(--bg-raised);
+  border-width: 2px;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(0, 0, 0, 0.22);
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #1c202d)));
 }
 
 /* ── ◆ 접두 문자를 색 거터로 ─────────────────────────────────────── */
@@ -136,11 +138,26 @@
   cursor: grab;
   font-size: 11px;
   letter-spacing: -1px;
+  min-width: 22px;
+  min-height: 22px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 4px;
+  margin: -4px 0;
+  padding: 2px 3px;
 }
 
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head:hover > .cmd-drag-handle,
-.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-drag-handle {
+.event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head > .cmd-drag-handle,
+.event-contents-fieldset .cmd-list .cmd-item:focus-within > .cmd-head > .cmd-drag-handle {
   opacity: 1;
+}
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:hover {
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 12%, transparent);
+  color: var(--text-1, var(--mk-t1, #e9ecf3));
+}
+.event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:active {
+  cursor: grabbing;
 }
 
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-cat-icon {

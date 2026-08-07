@@ -953,7 +953,9 @@ function facePositionLabel(position: Extract<Command, { kind: "changeFace" }>["p
 }
 
 function oneLine(value: string): string {
-  return value.replace(/\s+/g, " ").trim().slice(0, 80);
+  const t = value.replace(/\s+/g, " ").trim();
+  if (t.length <= 80) return t;
+  return `${t.slice(0, 78).trimEnd()}…`;
 }
 
 function messageWindowFormatLabel(format: Extract<Command, { kind: "displayTextSettings" }>["format"]): string {

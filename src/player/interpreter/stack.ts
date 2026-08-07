@@ -47,21 +47,31 @@ export function advanceCompletedFrame(state: InterpreterState): ResumeAdvance {
   return "continue";
 }
 
+export function hasLoopFrame(state: InterpreterState): boolean {
+  return state.stack.some((frame) => Boolean(frame.loopOwner));
+}
+
 // breakLoop: 가장 가까운 루프 본문 프레임(과 그 아래 자식 프레임)을 모두 제거하고
-// 루프 명령 다음으로 진행한다. 루프 프레임이 없으면 아무 일도 하지 않는다.
-export function breakLoop(state: InterpreterState): void {
-  while (state.stack.length > 0) {
-  const frame = state.stack[state.stack.length - 1];
-    if (frame?.loopOwner) {
-      state.stack.pop();
-      const owner = topFrame(state.stack);
-      if (owner && owner.commands === frame.loopOwner.commands) {
-        owner.pc = frame.loopOwner.pc + 1;
-      }
-      return;
-    }
+// 루프 명령 다음으로 진행한다. 루프 프레임이 없으면 경고를 남기고 아무 일도 하지 않는다.
+export function breakLoop(state: InterpreterState): boolean {
+  let loopIndex = -1;
+  for (let i = state.stack.length - 1; i >= 0; i -= 1) {
+    if (state.stack[i]?.loopOwner) { loopIndex = i; break; }
+  }
+  if (loopIndex < 0) {
+    console.warn("[interpreter] breakLoop 호출: 루프 밖에서 무시됨");
+    return false;
+  }
+  while (state.stack.length > loopIndex + 1) {
     state.stack.pop();
   }
+  const frame = state.stack.pop();
+  if (!frame?.loopOwner) return false;
+  const owner = topFrame(state.stack);
+  if (owner && owner.commands === frame.loopOwner.commands) {
+    owner.pc = frame.loopOwner.pc + 1;
+  }
+  return true;
 }
 
 export function gotoLabel(stack: Frame[], name: string): boolean {

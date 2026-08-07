@@ -294,6 +294,12 @@ function resolveVariableOperand(operand: VariableOperand, state: PreviewSimState
   return state.variables[operand.id] ?? 0;
 }
 
+function clampSimValue(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  const truncated = Math.trunc(value);
+  return Math.max(-9_999_999, Math.min(9_999_999, truncated));
+}
+
 function applyVariableOp(
   state: PreviewSimState,
   variableId: string,
@@ -303,20 +309,22 @@ function applyVariableOp(
   const cur = state.variables[variableId] ?? 0;
   switch (op) {
     case "=":
-      state.variables[variableId] = value;
+      state.variables[variableId] = clampSimValue(value);
       break;
     case "+=":
-      state.variables[variableId] = cur + value;
+      state.variables[variableId] = clampSimValue(cur + value);
       break;
     case "-=":
-      state.variables[variableId] = cur - value;
+      state.variables[variableId] = clampSimValue(cur - value);
       break;
     case "*=":
-      state.variables[variableId] = cur * value;
+      state.variables[variableId] = clampSimValue(cur * value);
       break;
-    case "/=":
-      state.variables[variableId] = value !== 0 ? Math.floor(cur / value) : cur;
+    case "/=": {
+      if (value === 0) break;
+      state.variables[variableId] = clampSimValue(Math.trunc(cur / value));
       break;
+    }
   }
 }
 

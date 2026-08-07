@@ -1,19 +1,32 @@
 import { el } from "@/util/dom";
-import { evalCondition, startSession } from "@/project/session";
-import { store } from "@/project/store";
+import { evalCondition } from "@/project/session";
 import { editorState } from "@/editor/editorState";
 import type { Condition } from "@/project/types";
 import { commandSummary } from "./commandSummary";
+import { createPreviewSimState } from "./previewSimulation";
 
 /**
  * Live TRUE/FALSE evaluation against a session snapshot for author feedback.
  * Uses play-start defaults when no live play session is available.
  */
 export function renderConditionEvalPreview(condition: Condition | undefined): HTMLElement {
-  const project = store.getCurrent();
-  const session = startSession(project);
+  const simState = createPreviewSimState();
+  const sessionLike = {
+    switches: simState.switches,
+    selfSwitches: simState.selfSwitches,
+    variables: simState.variables,
+    timers: {} as Record<string, number>,
+    gold: simState.gold,
+    inventory: simState.inventory,
+    partyActorIds: simState.partyActorIds,
+    flags: simState.flags,
+    actorVitals: {},
+    currentMapId: "",
+    x: 0,
+    y: 0,
+  };
   const hostId = editorState.get().selectedEventId;
-  const ok = evalCondition(session, condition, hostId ?? undefined);
+  const ok = evalCondition(sessionLike as never, condition, hostId ?? undefined);
   const summary = describeCondition(condition);
 
   return el("div", {
@@ -36,8 +49,8 @@ export function renderConditionEvalPreview(condition: Condition | undefined): HT
           el("div", {
             class: "event-condition-eval-note",
             text: hostId
-              ? `시작 상태 기준 · 호스트 이벤트 ${hostId.replace(/^ev_[0-9a-f-]+$/i, "(자동 생성)")}`
-              : "시작 상태 기준 · 선택 이벤트 없음(셀프/활동 조건은 보수적으로 평가)",
+              ? `시뮬 상태 기준 · 호스트 ${hostId.replace(/^ev_[0-9a-f-]+$/i, "(자동 생성)")}`
+              : "시뮬 상태 기준 · 선택 이벤트 없음(셀프/활동 조건은 보수적으로 평가)",
           }),
         ],
       }),

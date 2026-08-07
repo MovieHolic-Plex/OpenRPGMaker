@@ -34,6 +34,10 @@ Authored project schema, defaults, validation, migration, references, and persis
 - Combined Town defaults seed conifer/dry-tree/broadleaf hard adjacency plus flower medium and bush soft examples, and expose 흙길/모래/lake-water terrain clusters for palette discovery. Harness re-application preserves an existing harness group as authored state, only backfilling default `rules` when the group has no `rules` property. Deleted Combined Town harness groups are persisted through `TilesetDef.suppressedHarnessGroupIds` tombstones so load/normalize does not recreate them.
 
 
+## Variable arithmetic & loop runtime (2026-08-07)
+- 변수 연산: `session.setVariable`는 `/=`에서 `Math.trunc`(0 방향) + `-9,999,999..9,999,999` 클램프, `0` 나누기는 기존값 유지+경고. `previewSimulation.applyVariableOp` 동일 규격. 프리뷰 값 소스는 시뮬 상태 기준.
+- 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고 반환. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
+
 ## Canonical event-draft projection (2026-07-30)
 - Open editor drafts may live inside the in-memory `Project`, but they are never canonical authored output. `committedEvents()` excludes `draft.kind:"new"` and projects `draft.original` for edit drafts; `projectWithoutEventDrafts()` applies this to every map. Autosave, Supabase writes, package/web export, edit-history project snapshots, and any canonical serialization boundary must use that projection.
 - Editor-only map/list/marker/drag surfaces use `editorWorkingEvents()` so new and edited events do not disappear while their canonical projection is hidden. Runtime/project consumers must not switch to this working projection.

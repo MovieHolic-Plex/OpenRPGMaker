@@ -419,7 +419,17 @@ function renderSearchResults(
       dataset: { testid: "event-command-picker-no-result" },
     });
   }
-  return renderCommandGrid(matches, onSelect, close, { showPageChip: true, viewMode, onPreferencesChanged });
+  const countHead = el("div", {
+    class: "event-command-picker-search-count",
+    dataset: { testid: "event-command-picker-search-count" },
+    text: `검색 결과 ${matches.length}개`,
+  });
+  const grid = renderCommandGrid(matches, onSelect, close, { showPageChip: true, viewMode, onPreferencesChanged });
+  return el("div", {
+    class: "event-command-picker-search-results",
+    dataset: { testid: "event-command-picker-search-results" },
+    children: [countHead, grid],
+  });
 }
 
 function renderCommandGrid(

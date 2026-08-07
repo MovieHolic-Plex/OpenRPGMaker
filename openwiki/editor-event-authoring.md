@@ -53,6 +53,16 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **셀프 스위치 조건 행:** `selfSwitch`는 간단 행에 표시된다(고급 전용 아님). 컨트롤은 `conditionForm.selfSwitchControl` — 세그먼트 A/B/C/D 버튼 + ON/OFF 토글. 첫 번째 selfSwitch는 간단 행, 초과분은 고급 목록. `setSelfSwitch` 명령 본문도 동일 컨트롤 사용.
 
 
+## Condition / Loop / Variable command trust fixes (2026-08-07)
+- `conditionForm.ts`: 빈 스위치/변수/배우/아이템 인라인 에러, all/any 빈 그룹 경고, 종류 전환 시 값 캐시 복원(되돌리기 유실 방지), 변수 비교값 정수 절삭 일관화.
+- `commandBodyVariable.ts`: 소스 전환 값 캐시 보존, 숫자 입력 소수 절삭 방지(정수 표시), 0 나누기/오버플로 경고 배지, 대상·소스 변수 빈 ID 에러. 렌더 중 상태변경 제거.
+- `commandBodyLoop.ts`: 빈 본문/무한루프(탈출 없음) 경고, breakLoop 탈출 배지, 작업 중 staged 동기화, 삭제 후 포커스 복원.
+- `session.ts` / `previewSimulation.ts`: 변수 나눗셈을 `Math.trunc` + `+/-9,999,999` 클램프, 0 나누기는 유지+경고(로그), `clampVariableValue`/`VARIABLE_MIN|MAX` 노출.
+- `stack.ts`: `breakLoop`가 루프 밖에서 스택을 증발시키지 않도록 가드 — 루프 없으면 경고만, `hasLoopFrame` 추가. 최대 반복 100,000 가드는 유지.
+- `eventDraftValidator.ts`: `loop.break-outside-loop` / `loop.empty-body` / `loop.no-break` / `variable.divide-by-zero` / `condition.all|any.empty` 경고/에러, 기존 레퍼런스 검증과 함께 커밋 게이트에서 노출.
+- `conditionEvalPreview.ts`: 프리뷰 평가를 `startSession` 고정에서 `previewSimulation` 시뮬 상태 기준으로 승격(작가-플레이어 괴리 완화).
+- 스타일: `event-editor.part-3/08-inline-validation-badges.css` 인라인 에러/경고 배지.
+
 ## Event draft trust loop (2026-07-30)
 - Opening an event starts an editor-only draft through `eventDraftActions.ts`. Existing events keep their pre-open canonical body in `draft.original`; new events use `draft.kind:"new"`. Editor map markers, event lists, and drag operations intentionally read `editorWorkingEvents()` so the open working body remains visible, while persistence and runtime consumers use the canonical projection described in `runtime-project-schema.md`.
 - Apply and OK run the aggregate validator before `saveEventDraft`; Cancel restores `draft.original` or removes a new draft. The modal checkpoints the working body into `eventDraftVault.ts` and project-scoped localStorage so an autosave merge, remote reload, or interrupted editor render cannot blank the open event. Footer text distinguishes local recovery/draft state from actual Supabase autosave state; “로컬 복구” is never presented as remote success.

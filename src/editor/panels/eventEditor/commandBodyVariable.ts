@@ -35,24 +35,15 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     dataset: { testid: "event-command-variable-form" },
   });
 
-  // Factory default may leave variableId empty; seed first project variable so the command is runnable.
+  // Factory default may leave variableId empty; show inline error instead of auto-mutating.
   let currentVariableId = cmd.variableId;
-  if (!currentVariableId.trim()) {
-    const first = store.getCurrent().variables[0]?.id ?? "";
-    if (first) {
-      currentVariableId = first;
-      context.actions.replaceCommand(context.path, {
-        kind: "setVariable",
-        variableId: first,
-        op: cmd.op,
-        value: cmd.value,
-      });
-    }
-  }
+  const hasTargetVariable = Boolean(currentVariableId.trim());
 
   let currentOperandVariableId = typeof cmd.value === "number" ? "" : cmd.value.id;
+  let cachedNumber: number = typeof cmd.value === "number" ? cmd.value : 0;
+  let cachedOperandVariableId: string = currentOperandVariableId;
   const initialSource: ValueSource = typeof cmd.value === "number" ? "number" : "variable";
-  const initialNumber = typeof cmd.value === "number" ? cmd.value : 0;
+  const initialNumber = cachedNumber;
 
   const varSel = databasePicker("variable", currentVariableId, (variableId) => {
     currentVariableId = variableId;
@@ -74,7 +65,7 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
   });
 
   const value = el("input", {
-    attrs: { type: "number", step: "1" },
+    attrs: { type: "number", step: "any" },
     value: String(initialNumber),
     dataset: { testid: "event-command-variable-number-value" },
   }) as HTMLInputElement;
@@ -92,23 +83,94 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     dataset: { testid: "event-command-variable-formula" },
   });
 
+  const targetError = el("p", {
+    class: "event-command-variable-error",
+    text: "대상 변수를 선택하세요.",
+    dataset: { testid: "event-command-variable-target-error" },
+  });
+  targetError.hidden = hasTargetVariable || Boolean(store.getCurrent().variables[0]?.id);
+
+  const operandError = el("p", {
+    class: "event-command-variable-error",
+    text: "소스 변수를 선택하세요.",
+    dataset: { testid: "event-command-variable-operand-error" },
+  });
+
+  const divideWarning = el("p", {
+    class: "event-command-variable-warning",
+    dataset: { testid: "event-command-variable-divide-warning" },
+  });
+
+  const overflowHint = el("p", {
+    class: "event-command-variable-hint",
+    dataset: { testid: "event-command-variable-overflow-hint" },
+  });
+
+  const syncOperandErrors = (): void => {
+    const useVariable = source.select.value === "variable";
+    operandError.hidden = !useVariable || Boolean(currentOperandVariableId.trim());
+  };
+
+  const syncDivideWarning = (nextOp: VariableOp, nextOperand: VariableOperand): void => {
+    if (nextOp !== "/=") { divideWarning.hidden = true; divideWarning.textContent = ""; return; }
+    const raw = typeof nextOperand === "number" ? nextOperand : null;
+    if (raw === 0) {
+      divideWarning.textContent = "0으로 나누기는 무시됩니다.";
+      divideWarning.hidden = false;
+    } else if (raw !== null && !Number.isFinite(raw)) {
+      divideWarning.textContent = "값이 올바르지 않습니다.";
+      divideWarning.hidden = false;
+    } else {
+      divideWarning.hidden = true;
+      divideWarning.textContent = "";
+    }
+  };
+
+  const syncOverflowHint = (nextOp: VariableOp, nextOperand: VariableOperand): void => {
+    const cur = store.getCurrent().variables.find((entry) => entry.id === currentVariableId);
+    void cur;
+    const operandVal = typeof nextOperand === "number" ? nextOperand : 0;
+    let preview: number | null = null;
+    if (nextOp === "*=" && Math.abs(operandVal) > 1) preview = operandVal * 1_000_000;
+    if (preview !== null && Math.abs(preview) > 9_999_999) {
+      overflowHint.textContent = "값은 -9,999,999 ~ 9,999,999로 클램프됩니다.";
+      overflowHint.hidden = false;
+    } else {
+      overflowHint.hidden = true;
+      overflowHint.textContent = "";
+    }
+  };
+
   const syncVisibility = (): void => {
     const useVariable = source.select.value === "variable";
     numberField.hidden = useVariable;
     variableField.hidden = !useVariable;
+    syncOperandErrors();
   };
 
   const apply = (): void => {
-    const operand: VariableOperand = source.select.value === "variable"
+    const useVariable = source.select.value === "variable";
+    if (useVariable) {
+      cachedNumber = parseNumberOperand(value.value);
+    } else {
+      cachedOperandVariableId = currentOperandVariableId;
+    }
+    const operand: VariableOperand = useVariable
       ? { kind: "var", id: currentOperandVariableId }
       : parseNumberOperand(value.value);
+    if (!useVariable) currentOperandVariableId = cachedOperandVariableId;
+    const resolvedOp = selectedOptionValue(op.select, VARIABLE_OP_OPTIONS, cmd.op);
     const next: SetVariableCommand = {
       kind: "setVariable",
       variableId: currentVariableId,
-      op: selectedOptionValue(op.select, VARIABLE_OP_OPTIONS, cmd.op),
+      op: resolvedOp,
       value: operand,
     };
     formula.textContent = formatVariableFormula(next);
+    targetError.hidden = Boolean(currentVariableId.trim());
+    syncDivideWarning(resolvedOp, operand);
+    syncOverflowHint(resolvedOp, operand);
+    syncOperandErrors();
     context.actions.replaceCommand(context.path, next);
   };
 
@@ -120,26 +182,32 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
   value.addEventListener("change", apply);
   value.addEventListener("blur", apply);
 
+  const initialOperand: VariableOperand = typeof cmd.value === "number" ? cmd.value : { kind: "var", id: currentOperandVariableId };
   syncVisibility();
   formula.textContent = formatVariableFormula({
     kind: "setVariable",
     variableId: currentVariableId,
     op: cmd.op,
-    value: typeof cmd.value === "number"
-      ? cmd.value
-      : { kind: "var", id: currentOperandVariableId },
+    value: initialOperand,
   });
+  syncDivideWarning(cmd.op, initialOperand);
+  syncOverflowHint(cmd.op, initialOperand);
+  syncOperandErrors();
 
   wrap.append(
     fieldControl("대상 변수", varSel),
+    targetError,
     fieldControl("연산", op.root),
     fieldControl("값 소스", source.root),
     numberField,
     variableField,
+    operandError,
+    divideWarning,
+    overflowHint,
     formula,
     el("p", {
       class: "event-command-variable-hint",
-      text: "÷= 는 정수 나눗셈(버림)입니다. 0으로 나누면 값을 유지합니다.",
+      text: "÷= 는 정수 나눗셈(0 방향 버림)입니다. 0으로 나누면 값을 유지합니다. 값은 -9,999,999 ~ 9,999,999로 클램프됩니다.",
       dataset: { testid: "event-command-variable-hint" },
     }),
     recordUsageHint("variable", currentVariableId),
@@ -155,8 +223,11 @@ function fieldControl(label: string, control: HTMLElement): HTMLElement {
 }
 
 function parseNumberOperand(raw: string): number {
-  const parsed = Number.parseInt(raw, 10);
-  return Number.isFinite(parsed) ? parsed : 0;
+  const trimmed = raw.trim();
+  if (!trimmed) return 0;
+  const parsed = Number(trimmed);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.trunc(parsed);
 }
 
 export function formatVariableFormula(cmd: SetVariableCommand): string {

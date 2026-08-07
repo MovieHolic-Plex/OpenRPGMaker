@@ -220,6 +220,9 @@ function validatePage(
 
   const visits = walkCommands(page.commands);
   validateLabels(page.id, page.commands, issues);
+  validateBreakLoopPlacement(page.commands, page.id, issues);
+  validateLoopBodies(page.commands, page.id, issues);
+  validateVariableDivideByZero(page.commands, page.id, issues);
   for (const visit of visits) {
     validateCommand(project, mapId, event, page.id, visit, refs, issues);
   }
@@ -333,6 +336,16 @@ function validateCondition(
       return;
     case "all":
     case "any":
+      if (condition.conditions.length === 0) {
+        issues.push({
+          severity: "warning",
+          code: `condition.${condition.kind}.empty`,
+          message: condition.kind === "all" ? "모두(AND)에 하위 조건이 없습니다. 빈 AND는 항상 참입니다." : "하나(OR)에 하위 조건이 없습니다. 빈 OR는 항상 거짓입니다.",
+          pageId,
+          ...(commandPath ? { commandPath: [...commandPath] } : {}),
+          field: { testId: `event-condition-${condition.kind}-empty` },
+        });
+      }
       condition.conditions.forEach((child) => validateCondition(child, pageId, refs, issues, commandPath));
       return;
     case "not":
@@ -420,6 +433,83 @@ function validateLabels(
       );
     }
   });
+}
+
+function validateBreakLoopPlacement(commands: readonly Command[], pageId: string, issues: EventDraftIssue[]): void {
+  const loopDepthAt = (targetPath: readonly number[]): number => {
+    let depth = 0;
+    let list: readonly Command[] = commands;
+    for (let i = 0; i < targetPath.length - 1; i += 2) {
+      const cmdIndex = targetPath[i]!;
+      const branchIndex = targetPath[i + 1]!;
+      const cmd = list[cmdIndex];
+      if (!cmd) break;
+      if (cmd.kind === "loop" && branchIndex === LOOP_BODY_BRANCH_INDEX) depth += 1;
+      const branch = commandBranches(cmd).find((entry) => entry.branchIndex === branchIndex);
+      if (!branch) break;
+      list = branch.commands;
+    }
+    return depth;
+  };
+  for (const visit of walkCommands(commands)) {
+    if (visit.command.kind !== "breakLoop") continue;
+    const depth = loopDepthAt(visit.path);
+    if (depth <= 0) {
+      issues.push({
+        severity: "error",
+        code: "loop.break-outside-loop",
+        message: "반복 탈출은 반복 안에서만 쓸 수 있습니다. 바깥에서 쓰면 이벤트가 중단됩니다.",
+        pageId,
+        commandPath: [...visit.path],
+        field: { testId: "event-break-loop" },
+      });
+    }
+  }
+}
+
+function validateLoopBodies(commands: readonly Command[], pageId: string, issues: EventDraftIssue[]): void {
+  for (const visit of walkCommands(commands)) {
+    if (visit.command.kind !== "loop") continue;
+    const body = visit.command.body;
+    if (body.length === 0) {
+      issues.push({
+        severity: "warning",
+        code: "loop.empty-body",
+        message: "반복 내용이 비어 있습니다. 아무 일도 일어나지 않습니다.",
+        pageId,
+        commandPath: [...visit.path],
+      });
+      continue;
+    }
+    const hasBreak = walkCommands(body).some((entry) => entry.command.kind === "breakLoop");
+    if (!hasBreak) {
+      issues.push({
+        severity: "warning",
+        code: "loop.no-break",
+        message: "반복 탈출이 없습니다. 무한 반복이 될 수 있으니 종료 조건을 확인하세요.",
+        pageId,
+        commandPath: [...visit.path],
+      });
+    }
+  }
+}
+
+function validateVariableDivideByZero(commands: readonly Command[], pageId: string, issues: EventDraftIssue[]): void {
+  for (const visit of walkCommands(commands)) {
+    if (visit.command.kind !== "setVariable") continue;
+    if (visit.command.op !== "/=") continue;
+    const value = visit.command.value;
+    if (typeof value === "number" && value === 0) {
+      issues.push({
+        severity: "warning",
+        code: "variable.divide-by-zero",
+        message: "0으로 나누기는 무시됩니다. 값을 확인하세요.",
+        pageId,
+        commandPath: [...visit.path],
+        field: { testId: "event-variable-divide-zero" },
+      });
+    }
+  }
 }
 
 function validateCommand(
