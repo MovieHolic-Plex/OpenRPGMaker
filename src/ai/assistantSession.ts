@@ -1445,6 +1445,7 @@ export class AssistantSession {
           !zeroChangeRekickUsed &&
           writeToolAttempts === 0 &&
           this.hasUnbuiltSpecThisTurn() &&
+          requestLikelyExpectsChange(this.currentTurnRequestText) &&
           !assistantTextLooksLikeQuestion(finalText)
         ) {
           zeroChangeRekickUsed = true;
