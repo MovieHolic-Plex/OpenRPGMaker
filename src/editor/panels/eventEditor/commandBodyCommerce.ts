@@ -726,7 +726,6 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
       failedTransactionBranch: failCheckbox.checked ? latest.failedTransactionBranch ?? [] : latest.failedTransactionBranch,
     });
   });
-  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option" });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option shop-branch-card" });
   fieldset.append(
     el("legend", { text: "거래 후 분기" }),
