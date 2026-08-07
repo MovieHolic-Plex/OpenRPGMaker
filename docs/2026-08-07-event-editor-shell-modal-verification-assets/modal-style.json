@@ -1,0 +1,19 @@
+{
+  "bd_pos": "fixed",
+  "bd_inset": "0px",
+  "bd_z": "1000",
+  "bd_bg": "rgba(8, 10, 18, 0.62)",
+  "win_rect": {
+    "x": 40,
+    "y": 18,
+    "w": 1280,
+    "h": 864
+  },
+  "win_w": "1280px",
+  "win_h": "864px",
+  "win_maxW": "1280px",
+  "win_maxH": "876px",
+  "win_box": "border-box",
+  "bodyOverflow": "hidden",
+  "bodyClass": "ai-chat-dock-side ai-command-bar-active editor-ui-expert event-editor-modal-open"
+}
