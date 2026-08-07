@@ -537,7 +537,7 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
   input.value = String(command.merchantGold ?? 100);
   input.className = "commerce-command-input shop-processing-merchant-gold-input";
   input.dataset.testid = "shop-merchant-gold";
-  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금";
+  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금 (0=무제한, 판매 시 예산 소모)";
   input.addEventListener("change", () => {
     const parsed = Number.parseInt(input.value, 10);
     const merchantGold = Number.isFinite(parsed) ? Math.max(0, parsed) : 100;
@@ -556,7 +556,7 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
     }),
     el("p", {
       class: "commerce-command-hint",
-      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G. 상점이 열릴 때마다 이 값으로 시작합니다.",
+      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G, 0이면 무제한. 상점 방문마다 이 값으로 리셋됩니다.",
     })
   );
   return fieldset;
@@ -589,17 +589,19 @@ function shopQuantityModeGroup(context: CommandEditContext, command: ShopCommand
     children: [
       el("label", { class: "commerce-command-title", text: "구매 수량" }),
       select,
-      el("span", { class: "commerce-command-hint", text: "플레이어가 수량을 선택합니다." }),
+      el("span", { class: "commerce-command-hint", text: "플레이어가 1~99 수량을 고릅니다 (←/→ 키 가능, 단일은 1개 고정)." }),
     ],
   });
 }
 
 function shopStockSummary(command: ShopCommand): HTMLElement {
   const stock = command.stock ?? [];
+  const free = stock.filter((row) => !row.seasons || row.seasons.length === 0).length;
+  const seasonal = stock.length - free;
   const text =
     stock.length === 0
-      ? "계절 재고(stock) 없음 — 판매 목록 행을 선택한 뒤 아래에서 계절·가격을 넣을 수 있습니다."
-      : `계절 재고 ${stock.length}건. 행 선택 후 상세에서 계절 칩·가격 오버라이드를 편집하세요.`;
+      ? "계절 재고(stock) 없음 — 행 선택 후 아래에서 계절·가격을 넣으세요. 비워두면 itemIds 판매 목록만으로 동작합니다."
+      : `계절 재고 ${stock.length}건(사계절 ${free} · 계절한정 ${seasonal}). stock이 있으면 itemIds 대신 stock 기준으로 판매합니다.`;
   return el("div", {
     class: "commerce-command-hint",
     text,
@@ -676,7 +678,7 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     }),
     el("p", {
       class: "commerce-command-hint",
-      text: "거래가 끝난 뒤 아래 분기 명령을 실행합니다.",
+      text: "거래가 끝난 뒤 아래 분기 명령을 실행합니다. 상점은 shop 커맨드 자체가 아니라 그 분기에서 후처리를 해야 합니다.",
     })
   );
   return fieldset;

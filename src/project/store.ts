@@ -837,9 +837,15 @@ class ProjectStore {
 
   private refreshSupabaseResourceCache(): void {
     if (!this.remotePersistenceEnabled) return;
-    void cacheSupabaseRootResources(this.current).catch((error) => {
-      console.error("[store] Supabase resource cache refresh failed:", error);
-    });
+    void cacheSupabaseRootResources(this.current)
+      .then((report) => {
+        if (report.skipped.length > 0) {
+          console.warn("[store] Supabase resource cache skipped:", report.skipped);
+        }
+      })
+      .catch((error) => {
+        console.error("[store] Supabase resource cache refresh failed:", error);
+      });
   }
 
   /** 주소창에 ?project=&name= 반영 (공유/북마크). */

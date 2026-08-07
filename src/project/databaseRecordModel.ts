@@ -288,7 +288,7 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     },
     parameterCurves: normalizeParameterCurves(record.parameterCurves),
     expCurve: normalizeExpCurve(record.expCurve),
-    stateRates: { state_death: "C", ...normalizeRates(record.stateRates) },
+    stateRates: normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
   };
 }

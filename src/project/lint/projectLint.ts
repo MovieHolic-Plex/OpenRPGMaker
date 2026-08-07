@@ -34,6 +34,7 @@ import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from
 import { lintWorldGraph } from "../worldGraph";
 import { validateClusterRules, type ClusterRuleViolation } from "./clusterRuleValidators";
 import { checkReachability, type ReachabilitySpec } from "./reachability";
+import { activeTileGrafts } from "@/assets/tileGrafts";
 
 export type { LintSeverity } from "../types";
 
@@ -66,6 +67,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkCharacterIdSocial(project, issues);
   checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
+  checkTileGrafts(project, issues);
   return issues;
 }
 
@@ -568,6 +570,27 @@ function isPlayerTouch(trigger: Trigger): boolean {
 function errorMessage(cause: unknown): string {
   return cause instanceof Error ? cause.message : String(cause);
 }
+function checkTileGrafts(project: Project, issues: LintIssue[]): void {
+  for (const [tilesetId, tileset] of Object.entries(project.tilesets)) {
+    for (const graft of activeTileGrafts(tileset)) {
+      const sourceExists = Boolean(
+        project.tilesets[graft.sourceChipset] ||
+          project.assets.uploaded[graft.sourceChipset] ||
+          project.assets.sprites[graft.sourceChipset]
+      );
+      // bundled texture ids like tex_* are still external; require at least known uploaded/bundled mapping
+      // keep warning minimal: unknown source is error because bake will warn+skip silently.
+      if (!sourceExists && !String(graft.sourceChipset).startsWith("tex_")) {
+        issues.push({
+          severity: "error",
+          code: "tileset.graft-unknown-source",
+          message: `tilesets.${tilesetId}: graft sourceChipset을 찾을 수 없습니다: ${graft.sourceChipset} (targetTile ${graft.targetTile})`,
+        });
+      }
+    }
+  }
+}
+
 function checkCharacterIdSocial(project: Project, issues: LintIssue[]): void {
   type GiftSig = string;
   const byCharacter = new Map<string, { mapId: string; eventId: string; giftSig: GiftSig; scheduled: boolean }[]>();

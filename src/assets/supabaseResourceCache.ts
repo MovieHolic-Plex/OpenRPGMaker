@@ -1,6 +1,6 @@
 import type { Project, UploadedAsset } from "@/project/types";
 
-export const SUPABASE_RESOURCE_CACHE_NAME = "rpg-zzu-supabase-resource-cache-v1";
+export const SUPABASE_RESOURCE_CACHE_NAME = "rpg-zzu-supabase-resource-cache-v2";
 
 export type SupabaseResourceCacheEntry = {
   readonly byteLength: number;

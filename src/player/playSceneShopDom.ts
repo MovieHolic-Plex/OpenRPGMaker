@@ -151,6 +151,8 @@ function shopItemButton(
 }
 
 function quantityControl(): HTMLElement {
+  const wrap = document.createElement("div");
+  wrap.className = "runtime-commerce-quantity-wrap";
   const input = document.createElement("input");
   input.type = "number";
   input.min = "1";
@@ -158,7 +160,12 @@ function quantityControl(): HTMLElement {
   input.value = "1";
   input.className = "runtime-commerce-quantity-input";
   input.dataset.testid = "shop-quantity-input";
-  return input;
+  input.title = "←/→ 로 1~99 수량 조절";
+  const hint = document.createElement("span");
+  hint.className = "runtime-commerce-quantity-hint";
+  hint.textContent = "←/→ 1~99";
+  wrap.append(input, hint);
+  return wrap;
 }
 
 function currentQuantity(step: ShopStep): number {
