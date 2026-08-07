@@ -114,7 +114,7 @@ function mockEditorDependencies(): void {
     getGame: vi.fn(() => null),
     startEditGame: vi.fn(async () => ({ scale: { resize: vi.fn() } })),
   }));
-  vi.doMock("@/editor/editorToolHook", () => ({ installEditorToolHook: vi.fn() }));
+  vi.doMock("@/editor/editorToolHook", () => ({ installEditorToolHook: vi.fn(), cleanupProjectE2EBridge: vi.fn() }));
   vi.doMock("@/editor/mapEditLocks", () => ({
     ensureCurrentMapLock: vi.fn(),
     getMapEditLockStatus: () => ({ kind: "idle" }),
@@ -130,6 +130,7 @@ function mockEditorDependencies(): void {
       panel.dataset.testid = "ai-panel";
       return panel;
     },
+    teardownAiChatPanel: vi.fn(),
   }));
   vi.doMock("@/editor/panels/editorZoomToolbar", () => ({
     renderCanvasToolbar: (node: HTMLElement) => {

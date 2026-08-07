@@ -374,6 +374,7 @@ function sameMapShape(before: GameMap, after: GameMap): boolean {
 function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap): void {
   const width = Math.min(before.width, after.width);
   const height = Math.min(before.height, after.height);
+  if (!before.lowerTiles || !after.lowerTiles) return;
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const index = y * before.width + x;
@@ -381,7 +382,7 @@ function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap
       if (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex])) {
         includeCell(area, { x, y, layer: "lower" });
       }
-      if (before.upperTiles[index] !== after.upperTiles[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex])) {
+      if (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex])) {
         includeCell(area, { x, y, layer: "upper" });
       }
     }

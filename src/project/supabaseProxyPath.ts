@@ -12,6 +12,7 @@ export function resolveBrowserSupabaseUrl(
   options: { readonly isDev: boolean; readonly pageProtocol: string | undefined }
 ): string {
   const url = rawUrl.trim().replace(/\/$/, "");
+  if (!options.isDev) return url;
   if (options.pageProtocol !== "https:") return url;
   if (!url.startsWith("http://")) return url;
   return SUPABASE_PROXY_PATH;

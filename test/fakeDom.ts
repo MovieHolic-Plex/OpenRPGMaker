@@ -286,11 +286,15 @@ export class FakeElement extends FakeNode {
   }
 }
 
-function createFakeStyle(): Record<string, string> & { setProperty: (name: string, value: string) => void } {
-  const style = {} as Record<string, string> & { setProperty: (name: string, value: string) => void };
+function createFakeStyle(): Record<string, string> & { setProperty: (name: string, value: string) => void; removeProperty: (name: string) => void; getPropertyValue: (name: string) => string } {
+  const style = {} as Record<string, string> & { setProperty: (name: string, value: string) => void; removeProperty: (name: string) => void; getPropertyValue: (name: string) => string };
   style.setProperty = (name: string, value: string): void => {
     style[name] = value;
   };
+  style.removeProperty = (name: string): void => {
+    delete style[name];
+  };
+  style.getPropertyValue = (name: string): string => style[name] ?? "";
   return style;
 }
 

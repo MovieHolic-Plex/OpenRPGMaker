@@ -1,6 +1,6 @@
 // QA over-fire evidence capture (temporary). Writes facade lines to tmp file.
 import { describe, it } from "vitest";
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
 
 function msgFor(instruction: string): string {
@@ -29,6 +29,7 @@ describe("QA over-fire evidence", () => {
       const overFire = msg.includes('author_house { kind:"single"');
       return `=== ${c} === (author_house single facade present: ${overFire})\n${facadeLines(msg)}\n`;
     }).join("\n");
+    mkdirSync("tmp", { recursive: true });
     writeFileSync("tmp/qa-overfire-evidence.txt", out, "utf-8");
   });
 });

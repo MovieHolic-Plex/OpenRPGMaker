@@ -639,12 +639,18 @@ export async function runRegionTask(
   });
 
   try {
-    if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
+    if (!isLiveRun()) {
+      if (!keepPendingStatus) dispatchStopped();
+      return { ...emptyBase, error: "사용자가 중단했습니다." };
+    }
 
     // 이전 pending은 이전 run의 abort listener가 먼저 정리한다. 외부 주입 pending이 남은
     // 경우에도 새 초안을 만들기 전에 해소해 전역 슬롯을 하나로 유지한다.
     getPendingRegionApply()?.discard();
-    if (!isLiveRun()) return { ...emptyBase, error: "사용자가 중단했습니다." };
+    if (!isLiveRun()) {
+      if (!keepPendingStatus) dispatchStopped();
+      return { ...emptyBase, error: "사용자가 중단했습니다." };
+    }
 
     const working = structuredClone(base);
     const workingMap = working.maps[opts.mapId];
@@ -941,10 +947,8 @@ export async function runRegionTask(
     }, turn);
     return { ...gated, pending };
   } finally {
-    if (!keepPendingStatus) {
-      ghostPreviewUpdater?.cancel();
-      detachSignals();
-      dispatchStopped();
-    }
+    ghostPreviewUpdater?.cancel();
+    detachSignals();
+    if (!keepPendingStatus) dispatchStopped();
   }
 }
