@@ -72,6 +72,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     unregisterModal(backdrop);
     backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
+    if (!document.querySelector("[data-testid='event-editor-modal']")) {
+      document.body.classList.remove("event-editor-modal-open");
+    }
+    disposeFocusTrap();
   };
   registerModal(backdrop, () => closeHandler(false));
   const header = renderModalHeader(request.mapId, request.eventId, () => closeHandler(false));
@@ -111,7 +115,8 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const unsubscribeEditor = editorState.subscribe(refresh);
   const unsubscribeAutoSave = store.subscribeAutoSave(() => refreshModalFooterStatus(footer, request));
   const checkpointTimer = globalThis.setInterval(() => {
-    checkpointEventDraft(request.mapId, request.eventId);
+    const diff = eventDraftDiffById(store.getCurrent(), request.mapId, request.eventId);
+    if (diff && diff.changes.length > 0) checkpointEventDraft(request.mapId, request.eventId);
   }, EVENT_EDITOR_CHECKPOINT_MS);
   backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, closeHandler));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
@@ -123,11 +128,12 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     unsubscribeEditor();
     unsubscribeAutoSave();
   });
+  document.body.classList.add("event-editor-modal-open");
   document.body.append(backdrop);
-  // Immediate durable checkpoint so a crash right after open still recovers.
   checkpointEventDraft(request.mapId, request.eventId);
   refresh();
   focusFirstDialogControl(backdrop);
+  disposeFocusTrap = installFocusTrap(backdrop, windowEl);
 }
 
 export function isEventEditorModalOpenFor(mapId: MapId, eventId: string): boolean {
@@ -398,6 +404,27 @@ function footerButtonAccessibleName(text: string): string {
 }
 
 
+function installFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () => void {
+  const trap = (event: KeyboardEvent): void => {
+    if (event.key !== "Tab") return;
+    const focusable = Array.from(
+      windowEl.querySelectorAll<HTMLElement>(
+        "button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])",
+      ),
+    ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+    if (focusable.length === 0) return;
+    const first = focusable[0]!;
+    const last = focusable[focusable.length - 1]!;
+    if (event.shiftKey) {
+      if (document.activeElement === first) { event.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+  };
+  backdropEl.addEventListener("keydown", trap);
+  return () => backdropEl.removeEventListener("keydown", trap);
+}
+let disposeFocusTrap: () => void = () => {};
 function focusFirstDialogControl(root: HTMLElement): void {
   const first = root.querySelector<HTMLElement>(
     ".event-editor-modal-body input:not(:disabled), " +

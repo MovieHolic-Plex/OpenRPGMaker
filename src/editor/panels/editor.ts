@@ -147,7 +147,11 @@ export function renderEditor(main: HTMLElement): void {
     dataset: { testid: "chat-side-panel" },
   });
 
-  leftResizer = el("div", { class: "resizer resizer-left", attrs: { title: "드래그로 크기 조절" } });
+  leftResizer = el("div", {
+    class: "resizer resizer-left",
+    attrs: { title: "드래그로 크기 조절", role: "separator", "aria-label": "좌측 패널 너비 조절", "aria-orientation": "vertical", tabindex: "0" },
+    dataset: { testid: "left-panel-resizer" },
+  });
   leftPaletteRoot = el("div", { class: "left-panel-stack", dataset: { testid: "left-palette-root" } });
   mapTreeResizer = el("div", {
     class: "resizer resizer-map-tree",
@@ -192,6 +196,20 @@ export function renderEditor(main: HTMLElement): void {
   ensureCurrentMapLock();
   bindLeftResizer();
   bindMapTreeResizer();
+  if (typeof ResizeObserver !== "undefined") {
+    const ro = new ResizeObserver(() => {
+      if (chatDock === "side") {
+        const usable = document.querySelector<HTMLElement>(".editor-layout")?.clientWidth ?? window.innerWidth;
+        const w = computeSideChatWidth(usable, MIN_CANVAS_WIDTH + 6 + LEFT_PANEL_MIN_WIDTH);
+        document.documentElement.style.setProperty("--ai-chat-side-width", `${w}px`);
+        const layoutEl = document.querySelector<HTMLElement>(".editor-layout");
+        if (layoutEl) layoutEl.style.setProperty("--ai-chat-side-width", `${w}px`);
+      }
+    });
+    const layoutHost = document.querySelector<HTMLElement>(".editor-layout");
+    if (layoutHost) ro.observe(layoutHost);
+    (window as unknown as Record<string, unknown>)["__rpgzzuLayoutRO"] = ro;
+  }
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
@@ -291,6 +309,8 @@ export function teardownEditor(): void {
   unsubEditor = null;
   unsubMapLocks = null;
   unsubUiMode = null;
+  const ro2 = (window as unknown as Record<string, unknown>)["__rpgzzuLayoutRO"] as ResizeObserver | undefined;
+  ro2?.disconnect?.();
   window.removeEventListener("resize", onWindowResize);
   window.removeEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
   closeTestPlayModal();
@@ -836,6 +856,13 @@ function bindLeftResizer(): void {
     document.addEventListener("mouseup", onUp);
     document.body.classList.add("resizing");
   });
+  leftResizer.addEventListener("keydown", (event: KeyboardEvent) => {
+    const step = event.shiftKey ? 40 : 16;
+    if (event.key === "ArrowLeft") { leftWidth = Math.max(LEFT_PANEL_MIN_WIDTH, leftWidth - step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "ArrowRight") { leftWidth = Math.min(LEFT_PANEL_MAX_WIDTH, leftWidth + step); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "Home") { leftWidth = LEFT_PANEL_MAX_WIDTH; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "End") { leftWidth = LEFT_PANEL_MIN_WIDTH; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+  });
 }
 
 function bindMapTreeResizer(): void {
@@ -859,6 +886,13 @@ function bindMapTreeResizer(): void {
     document.addEventListener("mousemove", onDrag);
     document.addEventListener("mouseup", onUp);
     document.body.classList.add("resizing");
+  });
+  mapTreeResizer.addEventListener("keydown", (event: KeyboardEvent) => {
+    const step = event.shiftKey ? 32 : 12;
+    if (event.key === "ArrowUp") { mapTreeHeight = clamp(mapTreeHeight + step, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "ArrowDown") { mapTreeHeight = clamp(mapTreeHeight - step, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT); applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "Home") { mapTreeHeight = MAP_TREE_MAX_HEIGHT; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
+    else if (event.key === "End") { mapTreeHeight = MAP_TREE_MIN_HEIGHT; applyLayout(); scheduleFitCanvas(); saveEditorLayout(); event.preventDefault(); }
   });
 }
 
