@@ -47,6 +47,12 @@ function hpDamagePercentFrom(hpTurn: string): number {
   return 0;
 }
 
+export function hpDamagePercentForStateExplicit(project: Project, stateId: string): number {
+  const behavior = behaviorFor(project, stateId);
+  if (!behavior) return 0;
+  return behavior.hpDamagePercentPerTurn ?? 0;
+}
+
 export function stateBehavior(record: StateRecord): StateBehavior {
   const resolved = resolvedStateValues(record.id, record.name, record);
   const runtime = record.runtimeEffects;
@@ -212,10 +218,19 @@ export function clearBattleEndStates(project: Project, battler: MutableBattler):
   }
 }
 
+const STATE_MULTIPLIER_MIN = 0.4;
+const STATE_MULTIPLIER_MAX = 2.5;
+
+function clampStateMultiplier(value: number): number {
+  return Math.max(STATE_MULTIPLIER_MIN, Math.min(STATE_MULTIPLIER_MAX, value));
+}
+
 export function attackMultiplierForStates(project: Project, battler: MutableBattler): number {
-  return battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.attackMultiplier ?? 1), 1);
+  const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.attackMultiplier ?? 1), 1);
+  return clampStateMultiplier(raw);
 }
 
 export function defenseMultiplierForStates(project: Project, battler: MutableBattler): number {
-  return battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.defenseMultiplier ?? 1), 1);
+  const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.defenseMultiplier ?? 1), 1);
+  return clampStateMultiplier(raw);
 }

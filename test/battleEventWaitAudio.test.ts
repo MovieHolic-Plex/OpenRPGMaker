@@ -58,7 +58,7 @@ describe("battle event wait/playAudio/stopAudio wiring", () => {
     expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "stopAudio")).toBe(true);
   });
 
-  it("pauses tick progression for pendingWaitMs before resuming gauge charge", () => {
+  it("visual wait no longer blocks ATB: gauge keeps charging through wait", () => {
     const project = battleProject();
     installPage(project, [{ kind: "wait", ms: 1_000 }]);
     const runtime = createBattleRuntime({
@@ -69,19 +69,12 @@ describe("battle event wait/playAudio/stopAudio wiring", () => {
     });
     runtime.tick(1_000);
     expect(runtime.snapshot().phase).toBe("actorCommand");
-
-    // defend fires the wait-bearing troop event; pendingWaitMs is now 1_000.
     runtime.performActorCommand({ kind: "defend" });
-
-    // While the wait is pending, the enemy gauge should not advance on tick.
     const gaugeAfterDefend = runtime.snapshot().enemies[0]?.gauge ?? 0;
     runtime.tick(500);
-    expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBe(gaugeAfterDefend);
-
-    // Tick past the wait window resumes normal gauge progression.
+    expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBeGreaterThan(gaugeAfterDefend);
     runtime.tick(600);
-    const gaugeAfterResume = runtime.snapshot().enemies[0]?.gauge ?? 0;
-    expect(gaugeAfterResume).toBeGreaterThan(gaugeAfterDefend);
+    expect(runtime.snapshot().enemies[0]?.gauge ?? 0).toBeGreaterThan(gaugeAfterDefend);
   });
 
   it("leaves playAudio/stopAudio as no-op callbacks when host does not supply them", () => {

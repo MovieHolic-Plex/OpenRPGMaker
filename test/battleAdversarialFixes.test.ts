@@ -44,15 +44,22 @@ function scarloxyProject(): Project {
   return createScarloxyPokemonDemoProject();
 }
 
-// SC2 (H1): variance default must be 0. With rng=0.0 (min) and rng=1.0 (max),
-// a ±15% variance would produce different amounts. If default is 0, both match.
-describe("SC2 — variance default is 0 (H1)", () => {
-  it("applySkillLike with no variance spec produces identical damage regardless of rng value", () => {
+// SC2 (H1): variance default is now 10% (fix §2). Explicit variance:0 stays deterministic.
+describe("SC2 — variance default is 10% (fixed, H1)", () => {
+  it("applySkillLike with no variance spec applies default variance so rng affects damage", () => {
     const user = makeBattler({ attackPower: 40 });
     const target = makeBattler({ defense: 20, hp: 100 });
-    const r1 = applySkillLike(user, target, { power: 10, statistic: "attack", effect: "damage", rng: () => 0.1 });
+    const r1 = applySkillLike(user, target, { power: 10, statistic: "attack", effect: "damage", rng: () => 0.0 });
     target.hp = 100;
-    const r2 = applySkillLike(user, target, { power: 10, statistic: "attack", effect: "damage", rng: () => 0.9 });
+    const r2 = applySkillLike(user, target, { power: 10, statistic: "attack", effect: "damage", rng: () => 1.0 });
+    expect(r1.amount).not.toBe(r2.amount);
+  });
+  it("explicit variance 0 is still deterministic", () => {
+    const user = makeBattler({ attackPower: 40 });
+    const target = makeBattler({ defense: 20, hp: 100 });
+    const r1 = applySkillLike(user, target, { power: 10, statistic: "attack", effect: "damage", variance: 0, rng: () => 0.1 });
+    target.hp = 100;
+    const r2 = applySkillLike(user, target, { power: 10, statistic: "attack", effect: "damage", variance: 0, rng: () => 0.9 });
     expect(r1.amount).toBe(r2.amount);
   });
 });

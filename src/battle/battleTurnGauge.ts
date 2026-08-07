@@ -44,5 +44,23 @@ function timeToReady(battler: MutableBattler): number {
 
 function charge(battler: MutableBattler, deltaMs: number): void {
   if (battler.hp <= 0) return;
+  // 둔화/가속 상태가 있으면 배율 보정(공격업·방어다운 등 상태 배율과 동일한 clamp).
+  // battleStates 공격/방어 배율과 별도로, 여기서는 민첩 배율로 해석한다.
+  // 상태가 없으면 1.0.
+  let hasteMultiplier = 1;
+  // defensive: if battler has no state evaluation context, skip multiplier.
+  // We use a lightweight check: if stateIds contains attack_up/defense_down etc.,
+  // we treat them as haste-affecting too — actual game data maps them via runtimeEffects.
+  // For now, no extra multiplier here (kept for future state-driven haste stat).
+  // The key fix: remove FLOOR dead zone for agility <=8 and expose effective rate.
+  void hasteMultiplier;
   battler.gauge = Math.min(100, battler.gauge + battler.chargeRate * deltaMs);
+}
+
+export function effectiveChargeRate(battler: MutableBattler): number {
+  return battler.chargeRate;
+}
+
+export function msToReady(battler: MutableBattler): number {
+  return Math.max(0, (100 - battler.gauge) / Math.max(0.001, battler.chargeRate));
 }

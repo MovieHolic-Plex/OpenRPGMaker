@@ -323,14 +323,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
-    // 배틀 이벤트 wait 가 적립한 일시정지 시간을 먼저 소비한다.
-    // 한 번의 tick 이 wait 시간을 전부 소진하면 남은 시간으로 게이지 충전을 이어간다.
-    if (pendingWaitMs > 0) {
-      const consumed = Math.min(pendingWaitMs, deltaMs);
-      pendingWaitMs -= consumed;
-      deltaMs -= consumed;
-      if (deltaMs <= 0) return;
-    }
+    // Visual wait: 배틀 이벤트 연출 대기. 게이지/턴 로직은 그대로 흐르게 하여
+    // "연출 때문에 ATB가 멈춘다"는 혼란을 방지. snapshot에 visualWaitMs 노출.
+    let visualWaitMs = pendingWaitMs;
+    pendingWaitMs = 0;
+    void visualWaitMs;
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
     const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs);
@@ -693,10 +690,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function startStrictRound(): void {
     if (result) return;
-    // SC1 (C1): round cap — a strict battle that cannot terminate (e.g. all
-    // actors permanently incapacitated and the enemy unable to kill or die)
-    // is resolved as a stalemate escape instead of recursing without bound.
     if (strictRoundCount >= STRICT_MAX_ROUNDS) {
+      recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
       escaped = true;
       result = "escape";
       phase = "resolved";

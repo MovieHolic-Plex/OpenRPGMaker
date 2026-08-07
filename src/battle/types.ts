@@ -151,6 +151,8 @@ export type { BattleBattlerPose } from "@/battle/battlePose";
 export interface BattleBattlerSnapshot {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
+  /** Runtime-equivalent stats including equipment/param bonuses (predict parity). */
+  readonly effectiveStats?: { readonly attack: number; readonly defense: number; readonly mind: number; readonly agility: number };
   // 플레이어 몬스터 배틀러의 종족 id(스프라이트/타입 해석용). 액터·적 스냅샷은 미설정.
   readonly speciesId?: MonsterSpeciesId;
   readonly classId?: string;
@@ -220,7 +222,8 @@ export type BattleTimelineEntryKind =
   | "stateUpkeep"
   | "stateAdded"
   | "stateRemoved"
-  | "incapacitated";
+  | "incapacitated"
+  | "stalemate";
 
 /** Ordered, append-only battle facts consumed by presentation exactly once. */
 export interface BattleTimelineEntrySnapshot {
@@ -236,7 +239,7 @@ export interface BattleTimelineEntrySnapshot {
   readonly critical?: boolean;
   readonly skillName?: string;
   readonly stateId?: string;
-  readonly reason?: "natural" | "hit" | "battleEnd" | "effect";
+  readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;
   /** 이 액션이 재생할 전투 애니메이션. 시퀀서가 비트 재생 시점에 이 스냅샷으로
    *  애니메이션을 띄운다 — lastAnimation(전역 잔류값) 기반 재생은 잔여물 결함의 원인이었다. */

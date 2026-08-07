@@ -19,7 +19,7 @@ export function expForRewardActor(
   const exp = Math.max(0, Math.trunc(baseExp));
   if (policy?.levelGapPenalty !== true) return exp;
   const gap = Math.max(0, Math.trunc(actorLevel) - Math.max(1, Math.trunc(enemyLevel ?? 1)));
-  if (gap >= 10) return Math.floor(exp * 0.1);
-  if (gap >= 5) return Math.floor(exp * 0.5);
+  if (gap >= 10) return Math.floor(exp * 0.5);
+  if (gap >= 5) return Math.floor(exp * 0.7);
   return exp;
 }
