@@ -49,6 +49,8 @@ export const SEASON_OPTIONS = [
  * 조건 분기 / 조건 편집용 폼.
  * bare select 스택이 아니라 라벨 붙은 세로 필드로 구성한다.
  */
+const conditionModeCache = new Map<string, Condition>();
+
 export function conditionForm(cond: Condition, onChange: (condition: Condition) => void): HTMLElement {
   const wrap = el("div", {
     class: "event-condition-form",
@@ -57,6 +59,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
 
   const mode = selectWithOptions(CONDITION_MODE_OPTIONS, cond.kind, "event-condition-mode");
   mode.addEventListener("change", () => {
+    conditionModeCache.set(cond.kind, structuredClone(cond));
+    const cached = conditionModeCache.get(mode.value as Condition["kind"]);
+    if (cached) { onChange(structuredClone(cached)); return; }
     switch (mode.value) {
       case "switch":
         onChange({ kind: "switch", switchId: "", value: true });
@@ -173,12 +178,20 @@ function labeledSwitch(
   const sw = databasePicker("switch", cond.switchId, (switchId) => {
     currentSwitchId = switchId;
     onChange({ kind: "switch", switchId, value: cond.value });
+    syncError();
   }, "event-condition-switch-target");
   const val = selectWithOptions(SWITCH_STATE_OPTIONS, String(cond.value), "event-condition-switch-value");
   val.addEventListener("change", () => {
     onChange({ kind: "switch", switchId: currentSwitchId, value: val.value === "true" });
   });
-  box.append(field("대상 스위치", sw), field("상태", val));
+  const error = el("p", {
+    class: "event-condition-error",
+    text: "대상 스위치를 선택하세요.",
+    dataset: { testid: "event-condition-switch-error" },
+  });
+  const syncError = (): void => { error.hidden = Boolean(currentSwitchId.trim()); };
+  syncError();
+  box.append(field("대상 스위치", sw), error, field("상태", val));
   return box;
 }
 
@@ -190,6 +203,7 @@ function labeledVariable(
   let currentVariableId = cond.variableId;
   const variable = databasePicker("variable", cond.variableId, (variableId) => {
     currentVariableId = variableId;
+    syncError();
     onChange({ kind: "variable", variableId, op: cond.op, value: cond.value });
   }, "event-condition-variable-target");
   const op = selectWithOptions(CONDITION_OP_OPTIONS, cond.op, "event-condition-variable-op");
@@ -198,18 +212,25 @@ function labeledVariable(
     value: String(cond.value),
     dataset: { testid: "event-condition-variable-value" },
   }) as HTMLInputElement;
+  const error = el("p", {
+    class: "event-condition-error",
+    text: "대상 변수를 선택하세요.",
+    dataset: { testid: "event-condition-variable-error" },
+  });
+  const syncError = (): void => { error.hidden = Boolean(currentVariableId.trim()); };
+  syncError();
   const apply = (): void => {
     onChange({
       kind: "variable",
       variableId: currentVariableId,
       op: selectedOptionValue(op, CONDITION_OP_OPTIONS, cond.op),
-      value: parseInt(value.value, 10) || 0,
+      value: Number.isFinite(Number(value.value)) ? Math.trunc(Number(value.value)) : 0,
     });
   };
   op.addEventListener("change", apply);
   value.addEventListener("change", apply);
   value.addEventListener("blur", apply);
-  box.append(field("대상 변수", variable), field("비교", op), field("비교 값", value));
+  box.append(field("대상 변수", variable), error, field("비교", op), field("비교 값", value));
   return box;
 }
 
@@ -230,10 +251,14 @@ function labeledActor(
 ): HTMLElement {
   const box = el("div", { class: "event-condition-detail" });
   let currentActorId = cond.actorId;
+  const error = el("p", { class: "event-condition-error", text: "주인공을 선택하세요.", dataset: { testid: "event-condition-actor-error" } });
+  const syncError = (): void => { error.hidden = Boolean(currentActorId.trim()); };
   const sel = actorPicker(cond.actorId, (actorId) => {
     currentActorId = actorId;
+    syncError();
     onChange({ kind: "actor", actorId, present: cond.present });
   });
+  syncError();
   const present = el("select", { dataset: { testid: "event-condition-actor-present" } }) as HTMLSelectElement;
   present.append(
     el("option", { text: "파티에 있음", attrs: { value: "true" } }),
@@ -243,7 +268,7 @@ function labeledActor(
   present.addEventListener("change", () => {
     onChange({ kind: "actor", actorId: currentActorId, present: present.value === "true" });
   });
-  box.append(field("주인공", sel), field("파티 상태", present));
+  box.append(field("주인공", sel), error, field("파티 상태", present));
   return box;
 }
 
@@ -253,10 +278,14 @@ function labeledItem(
 ): HTMLElement {
   const box = el("div", { class: "event-condition-detail" });
   let currentItemId = cond.itemId;
+  const error = el("p", { class: "event-condition-error", text: "아이템을 선택하세요.", dataset: { testid: "event-condition-item-error" } });
+  const syncError = (): void => { error.hidden = Boolean(currentItemId.trim()); };
   const sel = itemPicker(cond.itemId, (itemId) => {
     currentItemId = itemId;
+    syncError();
     onChange({ kind: "item", itemId, present: cond.present });
   });
+  syncError();
   const present = el("select", { dataset: { testid: "event-condition-item-present" } }) as HTMLSelectElement;
   present.append(
     el("option", { text: "소지함", attrs: { value: "true" } }),
@@ -266,7 +295,7 @@ function labeledItem(
   present.addEventListener("change", () => {
     onChange({ kind: "item", itemId: currentItemId, present: present.value === "true" });
   });
-  box.append(field("아이템", sel), field("소지 여부", present));
+  box.append(field("아이템", sel), error, field("소지 여부", present));
   return box;
 }
 
@@ -385,6 +414,12 @@ function labeledGroup(
     class: "event-condition-group",
     dataset: { testid: `event-condition-group-${cond.kind}` },
   });
+  const emptyWarning = el("p", {
+    class: "event-condition-warning",
+    text: cond.kind === "all" ? "하위 조건이 없습니다 — 빈 AND는 항상 참입니다." : "하위 조건이 없습니다 — 빈 OR는 항상 거짓입니다.",
+    dataset: { testid: `event-condition-group-empty-${cond.kind}` },
+  });
+  emptyWarning.hidden = cond.conditions.length > 0;
   const list = el("div", { class: "event-condition-group-list" });
   let currentChildren: Condition[] = structuredClone(
     cond.conditions.length > 0 ? cond.conditions : [{ kind: "switch" as const, switchId: "", value: true }]
@@ -419,6 +454,7 @@ function labeledGroup(
     list.append(card);
   });
   box.append(
+    emptyWarning,
     list,
     el("button", {
       class: "btn",

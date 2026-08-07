@@ -7,36 +7,91 @@ import type { CommandEditContext } from "./types";
 
 type LoopCommand = Extract<Command, { kind: "loop" }>;
 
-// fork 의 then/else 분기 편집(forkBranch.ts)과 동일한 패턴: working 사본을 두고
-// 변경 시마다 replaceCommand 로 커밋한다. loop 는 body 하나만 가진다.
 export function loopBody(context: CommandEditContext, cmd: LoopCommand): HTMLElement {
   const wrap = el("div", {
     class: "loop-body-editor",
     attrs: { style: "border:1px solid var(--border);padding:4px;margin-top:4px;border-radius:3px;" },
     dataset: { testid: "event-loop-body" },
   });
-  wrap.append(el("label", { text: `반복 내용 (${cmd.body.length} 명령)` }));
-  const working: Command[] = structuredClone(cmd.body);
-  const listEl = el("div", { class: "cmd-list", dataset: { testid: "event-loop-body-list" } });
-  const commit = () => {
-    context.actions.replaceCommand(context.path, { ...cmd, body: structuredClone(working) });
+
+  const getCurrentLoop = (): LoopCommand => {
+    const current = context.getCurrentCommand?.() as LoopCommand | undefined;
+    if (current?.kind === "loop") return current;
+    return cmd;
   };
-  const rerender = () => {
+
+  const headerLabel = el("label", { text: `반복 내용 (${cmd.body.length} 명령)` });
+  wrap.append(headerLabel);
+
+  const working: Command[] = structuredClone(getCurrentLoop().body);
+  const listEl = el("div", { class: "cmd-list", dataset: { testid: "event-loop-body-list" } });
+
+  const emptyWarning = el("p", {
+    class: "event-loop-empty-warning",
+    text: "반복 내용이 비어 있습니다 — 아무 일도 일어나지 않습니다.",
+    dataset: { testid: "event-loop-empty-warning" },
+  });
+  const noBreakWarning = el("p", {
+    class: "event-loop-no-break-warning",
+    text: "반복 탈출이 없습니다 — 무한 반복이 될 수 있습니다.",
+    dataset: { testid: "event-loop-no-break-warning" },
+  });
+
+  const syncWarnings = (): void => {
+    const currentBody = working;
+    emptyWarning.hidden = currentBody.length > 0;
+    const hasBreak = currentBody.some((entry) => entry.kind === "breakLoop")
+      || walkHasBreak(currentBody);
+    noBreakWarning.hidden = currentBody.length === 0 || hasBreak;
+    headerLabel.textContent = `반복 내용 (${currentBody.length} 명령)`;
+  };
+
+  const commit = (): void => {
+    const latest = getCurrentLoop();
+    context.actions.replaceCommand(context.path, { ...latest, body: structuredClone(working) });
+    syncWarnings();
+  };
+
+  const rerender = (): void => {
     clearChildren(listEl);
+    if (working.length === 0) {
+      listEl.append(
+        el("div", { class: "event-loop-empty", text: "명령이 없습니다. 아래에서 추가하세요.", dataset: { testid: "event-loop-empty" } })
+      );
+      syncWarnings();
+      return;
+    }
     working.forEach((_, index) => {
       listEl.append(renderLoopItem(working, index, commit, rerender));
     });
+    syncWarnings();
   };
+
   rerender();
-  wrap.append(listEl, renderLoopAddRow(working, commit, rerender));
+  syncWarnings();
+  wrap.append(emptyWarning, noBreakWarning, listEl, renderLoopAddRow(working, commit, rerender));
   return wrap;
+}
+
+function walkHasBreak(commands: readonly Command[]): boolean {
+  for (const c of commands) {
+    if (c.kind === "breakLoop") return true;
+    if (c.kind === "loop" && walkHasBreak(c.body)) return true;
+    if (c.kind === "fork" && (c.then.some((x) => walkHasBreak([x])) || (c.else?.some((x) => walkHasBreak([x])) ?? false))) return true;
+  }
+  return false;
 }
 
 function renderLoopItem(working: Command[], index: number, commit: () => void, rerender: () => void): HTMLElement {
   const command = working[index];
   const item = el("div", { class: "cmd-item", dataset: { testid: `event-loop-body-item-${index}` } });
   if (!command) return item;
-  item.append(el("span", { class: "cmd-kind", text: commandKindLabel(command.kind) }));
+  const badge = el("span", { class: "cmd-kind", text: commandKindLabel(command.kind) });
+  if (command.kind === "breakLoop") {
+    badge.textContent = `${commandKindLabel(command.kind)}  ↳ 이 반복 탈출`;
+    badge.classList.add("cmd-kind-break");
+  }
+  item.append(badge);
   if (command.kind === "text") {
     const body = el("textarea", { dataset: { testid: `event-loop-body-text-${index}` } }) as HTMLTextAreaElement;
     body.value = command.body;
@@ -46,6 +101,9 @@ function renderLoopItem(working: Command[], index: number, commit: () => void, r
     });
     item.append(body);
   }
+  if (command.kind === "breakLoop") {
+    item.append(el("span", { class: "event-loop-break-badge", text: "↳ 가장 가까운 반복을 탈출", dataset: { testid: `event-loop-break-badge-${index}` } }));
+  }
   item.append(
     el("button", {
       class: "btn danger",
@@ -53,9 +111,12 @@ function renderLoopItem(working: Command[], index: number, commit: () => void, r
       text: "×",
       on: {
         click: () => {
+          const nextFocus = index > 0 ? index - 1 : 0;
           working.splice(index, 1);
           commit();
           rerender();
+          const nextEl = document.querySelector(`[data-testid=\"event-loop-body-delete-${nextFocus}\"]`) as HTMLElement | null;
+          nextEl?.focus();
         },
       },
     }),

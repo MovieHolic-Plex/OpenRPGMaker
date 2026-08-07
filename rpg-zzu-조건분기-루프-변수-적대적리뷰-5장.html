@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>RPG ZZU — 조건분기 · 루프 · 변수 폼 적대적 리뷰 (5장)</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#111823; --panel2:#0f1826; --card:#142032; --border:#1e2d44; --border2:#24344f;
+    --text:#e8eef8; --muted:#9aa8c0; --dim:#6e7f9a;
+    --accent:#4aa3ff; --accent2:#7ee8b5; --warn:#ffb84d; --danger:#ff5a6a; --violet:#8b7dff; --cyan:#4de0ff;
+    --radius:14px; --radius2:10px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:radial-gradient(900px 600px at 20% -10%, #1a2a44 0%, #0b0f14 60%), var(--bg); color:var(--text); font-family: "Pretendard","Noto Sans KR",system-ui,-apple-system,Segoe UI,Roboto,sans-serif; line-height:1.6}
+  a{color:var(--accent)}
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 20px 64px}
+  /* header */
+  .hero{border:1px solid var(--border); background:linear-gradient(180deg, rgba(74,163,255,.12), rgba(11,15,20,0) 60%), var(--panel); border-radius:20px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.45)}
+  .hero-top{display:flex;flex-wrap:wrap;gap:16px;padding:22px 22px 16px; align-items:flex-start; justify-content:space-between}
+  .kicker{font-size:11px;letter-spacing:.14em;color:var(--cyan);font-weight:700}
+  .title{margin:6px 0 8px;font-size:28px;line-height:1.2;letter-spacing:-.02em}
+  .subtitle{margin:0;color:var(--muted);font-size:13.5px;max-width:720px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .badge{font-size:11px;padding:6px 10px;border-radius:999px;border:1px solid var(--border2);background:#0e1a2c;color:var(--muted)}
+  .badge.accent{border-color:rgba(74,163,255,.4);color:var(--accent);background:rgba(74,163,255,.12)}
+  .badge.warn{border-color:rgba(255,184,77,.35);color:var(--warn);background:rgba(255,184,77,.12)}
+  .badge.danger{border-color:rgba(255,90,106,.35);color:var(--danger);background:rgba(255,90,106,.12)}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;padding:0 16px 16px}
+  .hero-card{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:14px 14px 12px}
+  .hero-card h3{margin:0 0 8px;font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .kv{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.06);font-size:13px}
+  .kv:last-child{border:none}
+  .kv b{color:var(--text);font-weight:650}
+  .kv span{color:var(--muted)}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .legend span{font-size:11px;padding:4px 8px;border-radius:999px;border:1px solid var(--border)}
+  .sev-c{border-color:rgba(255,90,106,.45)!important;color:var(--danger);background:rgba(255,90,106,.10)}
+  .sev-m{border-color:rgba(255,184,77,.45)!important;color:var(--warn);background:rgba(255,184,77,.10)}
+  .sev-l{border-color:rgba(126,232,181,.35)!important;color:var(--accent2);background:rgba(126,232,181,.10)}
+  /* nav */
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:18px 2px 0}
+  .toc a{font-size:12px;padding:8px 12px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.03);color:var(--muted);text-decoration:none}
+  .toc a:hover{color:var(--text);border-color:var(--border2);background:rgba(255,255,255,.06)}
+  /* chapters */
+  .chapter{margin-top:26px; border:1px solid var(--border); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)), var(--panel); border-radius:18px; overflow:hidden}
+  .ch-head{display:flex;align-items:center;gap:14px;padding:16px 18px;border-bottom:1px solid var(--border);background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0))}
+  .ch-num{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:var(--card);border:1px solid var(--border2);color:var(--accent);font-weight:800;font-size:13px}
+  .ch-title{margin:0;font-size:18px;letter-spacing:-.01em}
+  .ch-sub{margin:2px 0 0;color:var(--muted);font-size:12.5px}
+  .ch-body{padding:18px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:860px){ .hero-grid,.grid2,.grid3{grid-template-columns:1fr} .title{font-size:22px} }
+  .card{border:1px solid var(--border);background:var(--card);border-radius:var(--radius);padding:14px}
+  .card h4{margin:0 0 6px;font-size:13px}
+  .card p{margin:0;color:var(--muted);font-size:12.8px}
+  .eyebrow{font-size:11px;letter-spacing:.1em;color:var(--dim);font-weight:700;margin:0 0 6px}
+  .callout{border-left:3px solid var(--accent);background:rgba(74,163,255,.08);padding:10px 12px;border-radius:8px;font-size:12.8px;color:var(--text)}
+  .callout.warn{border-color:var(--warn);background:rgba(255,184,77,.10)}
+  .callout.danger{border-color:var(--danger);background:rgba(255,90,106,.10)}
+  .callout.ok{border-color:var(--accent2);background:rgba(126,232,181,.10)}
+  /* table */
+  table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--border);border-radius:12px;background:var(--panel2);font-size:12.7px}
+  th{ text-align:left; padding:10px 10px; background:#0e1728; color:var(--muted); font-weight:700; font-size:11px; letter-spacing:.06em; border-bottom:1px solid var(--border)}
+  td{padding:10px 10px; border-bottom:1px solid rgba(255,255,255,.06); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .chip{font-size:11px;padding:3px 7px;border-radius:999px;border:1px solid var(--border);white-space:nowrap}
+  .fpath{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:var(--cyan);word-break:break-all}
+  /* svg */
+  .svg-wrap{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#0a1220}
+  .svg-wrap svg{display:block;width:100%;height:auto}
+  .caption{font-size:11px;color:var(--dim);text-align:center;padding:6px 8px 10px}
+  /* verdict bars */
+  .meter{height:8px;background:#0c1526;border:1px solid var(--border);border-radius:999px;overflow:hidden}
+  .meter>div{height:100%}
+  .score{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .score small{font-size:11px;color:var(--muted);font-weight:600}
+  details{border:1px solid var(--border);border-radius:10px;background:var(--panel2);padding:10px 12px}
+  details summary{cursor:pointer;font-weight:700;font-size:12.5px;color:var(--text);list-style:none}
+  details summary::-webkit-details-marker{display:none}
+  details[open] summary{margin-bottom:8px}
+  .mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px}
+  .hr{height:1px;background:var(--border);margin:14px 0}
+  .pill{font-size:11px;padding:4px 8px;border-radius:999px;background:#0e1a2c;border:1px solid var(--border);color:var(--muted)}
+  .foot{margin-top:18px;color:var(--dim);font-size:11px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="kicker">HOSTILE REVIEW · RPG ZZU · EVENT COMMAND FORMS</div>
+      <h1 class="title">조건분기 · 루프 · 변수 명령 폼<br/>적대적으로 뜯어보기 — 5장 보고서</h1>
+      <p class="subtitle">에디터의 세 기둥(조건·반복·변수)을 “작동한다”가 아니라 “어디서 배신하는가” 관점에서 검증했습니다. 각 장은 실제 코드 근거·재현 경로·수정 우선순위까지 한 번에 읽히도록 이미지/모형 중심으로 구성했습니다.</p>
+      <div class="badges">
+        <span class="badge accent">범위: conditionForm · forkBranch · conditionCompile · loopBody · setVariable · previewSimulation · interpreter</span>
+        <span class="badge">근거 커밋 기준: 2026-08-06</span>
+        <span class="badge warn">심각도: Critical / Major / Low</span>
+        <span class="badge danger">리뷰 성향: 적대적(Hostile) · 증거 기반</span>
+      </div>
+      <nav class="toc">
+        <a href="#ch1">1장 판정 요약</a>
+        <a href="#ch2">2장 조건분기</a>
+        <a href="#ch3">3장 루프</a>
+        <a href="#ch4">4장 변수</a>
+        <a href="#ch5">5장 로드맵</a>
+      </nav>
+    </div>
+    <div style="min-width:260px">
+      <div class="hero-card">
+        <h3>리뷰 메타</h3>
+        <div class="kv"><span>대상</span><b>조건분기 / 루프 / 변수 폼</b></div>
+        <div class="kv"><span>코드베이스</span><b>rpg-zzu-evt-commands-a</b></div>
+        <div class="kv"><span>검증 방식</span><b>정적 해부 + 런타임 대조 + 시뮬 시나리오</b></div>
+        <div class="kv"><span>심각 이슈</span><b>9 Critical · 13 Major · 9 Low</b></div>
+        <div class="kv"><span>작성일</span><b>2026-08-06</b></div>
+        <div class="legend">
+          <span class="sev-c">Critical — 저장/실행 유실, 무한루프, 데이터 손상</span>
+          <span class="sev-m">Major — 오작동/오해/검증 회피</span>
+          <span class="sev-l">Low — UX/접근성/일관성</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-grid">
+    <div class="svg-wrap">
+      
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="리스크 매트릭스">
+        <rect width="640" height="210" fill="#0a1220"/>
+        <text x="20" y="26" fill="#9aa8c0" font-size="12" font-weight="700">리스크 매트릭스 — 발생빈도 × 피해</text>
+        <g font-size="10" fill="#6e7f9a">
+          <text x="72" y="58">낮음</text><text x="210" y="58">중간</text><text x="350" y="58">높음</text>
+          <text x="18" y="92">피해 큼</text><text x="18" y="132">중간</text><text x="18" y="172">작음</text>
+        </g>
+        
+        <g stroke="#1e2d44">
+          <rect x="60" y="68" width="120" height="40" fill="#142032"/><rect x="180" y="68" width="120" height="40" fill="#1a2740"/><rect x="300" y="68" width="120" height="40" fill="#3a1d2a"/>
+          <rect x="60" y="108" width="120" height="40" fill="#13283a"/><rect x="180" y="108" width="120" height="40" fill="#24344f"/><rect x="300" y="108" width="120" height="40" fill="#4a2a1a"/>
+          <rect x="60" y="148" width="120" height="40" fill="#0f1e33"/><rect x="180" y="148" width="120" height="40" fill="#13283a"/><rect x="300" y="148" width="120" height="40" fill="#1a2740"/>
+        </g>
+        <g font-size="9" fill="#e8eef8" font-weight="700">
+          <text x="62" y="82">조건: 빈 all/any</text><text x="62" y="94">루프: break 밖 사용</text>
+          <text x="182" y="82">조건: compile 오판</text><text x="182" y="94">루프: 빈 본문 무의미</text>
+          <text x="302" y="82">변수: /0 침묵</text><text x="302" y="94">조건: 모드 전환 유실</text>
+          <text x="62" y="122">변수: parseInt 절삭</text><text x="182" y="122">조건: 시뮬 vs 실행 괴리</text><text x="302" y="122">변수: 초기 시드 부작용</text>
+          <text x="62" y="162">루프: 요약카드 빈약</text><text x="182" y="162">폼: 포커스 탈취</text><text x="302" y="162">a11y: 세그먼트 키보드</text>
+        </g>
+        <g>
+          <rect x="450" y="68" width="170" height="120" rx="10" fill="#101c31" stroke="#24344f"/>
+          <text x="462" y="88" fill="#e8eef8" font-size="11" font-weight="800">한눈에 보는 판정</text>
+          <text x="462" y="108" fill="#9aa8c0" font-size="11">조건분기  <tspan fill="#ffb84d" font-weight="800">C+</tspan> — 겉은 RM2003, 속은 함정 다수</text>
+          <text x="462" y="126" fill="#9aa8c0" font-size="11">루프      <tspan fill="#ff5a6a" font-weight="800">D</tspan> — 무한루프 가드만 있고 UX는 방치</text>
+          <text x="462" y="144" fill="#9aa8c0" font-size="11">변수      <tspan fill="#ffb84d" font-weight="800">C</tspan> — “정수 나눗셈” 한 줄이 전체 신뢰를 갉음</text>
+          <text x="462" y="168" fill="#6e7f9a" font-size="9">종합: 지금 배송하면 튜토리얼 맵 3개 중 1개는 조용히 오작동</text>
+        </g>
+      </svg>
+      <div class="caption">그림 1 — 세 폼의 리스크 분포. 오른쪽 상단(높은 빈도×큰 피해)에 몰린 4개가 이번 스프린트에서 먼저 막아야 할 구멍.</div>
+    </div>
+    <div class="hero-card">
+      <h3>종합 점수 (5점 만점 · 높을수록 양호)</h3>
+      <div style="display:grid;gap:10px">
+        <div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">조건분기 — 정확성</span><span class="mono">2.6 / 5</span></div><div class="meter"><div style="width:52%;background:linear-gradient(90deg,#ffb84d,#ff5a6a)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">루프 — 안전성</span><span class="mono">1.9 / 5</span></div><div class="meter"><div style="width:38%;background:linear-gradient(90deg,#ff5a6a,#8b7dff)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">변수 — 신뢰성</span><span class="mono">2.8 / 5</span></div><div class="meter"><div style="width:56%;background:linear-gradient(90deg,#ffb84d,#7ee8b5)"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">프리뷰/시뮬 일치도</span><span class="mono">2.2 / 5</span></div><div class="meter"><div style="width:44%;background:linear-gradient(90deg,#ffb84d,#4aa3ff)"></div></div></div>
+      </div>
+      <div class="hr"></div>
+      <div class="callout danger"><b>적대적 한 줄:</b> “돌아는 간다. 그런데 작가가 본 것과 플레이어가 겪는 것이 다른 폼이다.” — 세 폼 모두 <b>저장 유실 · 침묵 실패 · 프리뷰 거짓말</b> 중 하나를 품고 있다.</div>
+    </div>
+  </div>
+</header>
+
+<section id="ch1" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">01</div>
+    <div>
+      <h2 class="ch-title">1장 — 판정 요약: 무엇이, 얼마나 위험한가</h2>
+      <p class="ch-sub">스코프 · 방법 · 치명 체인 3선 · “지금 당장 고칠 것” Top 5</p>
+    </div>
+    <span class="pill" style="margin-left:auto">읽는 시간 3분</span>
+  </div>
+  <div class="ch-body">
+    <div class="grid2">
+      <div class="card">
+        <div class="eyebrow">SCOPE</div>
+        <h4>어디까지 뜯었나</h4>
+        <p>에디터 폼 3종과 그 배후(런타임/시뮬/검증)를 끝까지 추적. UI만 보지 않고 <span class="mono">conditionForm → forkBranch → previewForkFlow → evalCondition → previewSimulation → interpreter/stack</span> 체인을 한 줄로 관통해 “보이는 것과 실행되는 것의 괴리”를 잡았다.</p>
+        <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
+          <span class="chip">conditionForm.ts</span><span class="chip">forkBranch.ts</span><span class="chip">conditionCompile.ts</span><span class="chip">commandBodyLoop.ts</span><span class="chip">commandBodyVariable.ts</span><span class="chip">session.ts: evalCondition</span><span class="chip">stack.ts: pushLoop/breakLoop</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">METHOD</div>
+        <h4>어떻게 적대적으로 봤나</h4>
+        <p>① 빈 값·경계값·음수·깊은 중첩으로 “작가가 실수하기 좋은 경로”를 먼저 밟음 ② 프리뷰(시작 상태)와 실제 실행(플레이 세션)을 같은 입력으로 대조 ③ 검증 배지가 뜨기 전(저장 전)까지의 침묵 구간을 측정. “에러가 안 나는 게 더 위험”한 지점을 Critical로 올렸다.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="grid3">
+      <div class="card" style="border-color:rgba(255,90,106,.35)">
+        <div class="eyebrow" style="color:var(--danger)">CRITICAL CHAIN 1</div>
+        <h4>조건 모드 전환 → 값 유실</h4>
+        <p>종류 셀렉트를 바꾸는 순간 이전 <span class="mono">value/op/id</span>가 통째로 버려짐. 되돌려도 복구 불가. 튜토리얼에서 스위치↔변수 오가다 “아까 분명 5였는데 0이네?”가 재현됨.</p>
+        <div class="mono" style="margin-top:8px;color:var(--cyan)">conditionForm.ts: mode.change → onChange({kind:"switch",…})</div>
+      </div>
+      <div class="card" style="border-color:rgba(255,90,106,.35)">
+        <div class="eyebrow" style="color:var(--danger)">CRITICAL CHAIN 2</div>
+        <h4>breakLoop 바깥 사용 → 스택 전체 증발</h4>
+        <p>루프 밖 <span class="mono">breakLoop</span>가 스택을 끝까지 pop. 이벤트 자체가 중단돼 뒤 명령이 사라진 것처럼 보임. 로그도 경고도 없음.</p>
+        <div class="mono" style="margin-top:8px;color:var(--cyan)">stack.ts: breakLoop() while-pop</div>
+      </div>
+      <div class="card" style="border-color:rgba(255,90,106,.35)">
+        <div class="eyebrow" style="color:var(--danger)">CRITICAL CHAIN 3</div>
+        <h4>변수 ÷0 침묵 + 음수 floor 괴리</h4>
+        <p>0으로 나누면 “유지”만 하고 화면은 성공처럼 유지. 음수는 <span class="mono">Math.floor(-3/2) = -2</span>로 RM 기댓값(-1)과 다름. 데미지 공식이 조용히 틀림.</p>
+        <div class="mono" style="margin-top:8px;color:var(--cyan)">session.ts: setVariable "/=" · previewSimulation.ts 동일</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="card">
+      <div class="eyebrow">TOP 5 — 이번 스프린트에서 먼저 막기</div>
+      <table>
+        <thead><tr><th style="width:42px">#</th><th>조치</th><th>효과</th><th style="width:110px">난이도</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip sev-c">C1</span></td><td><b>조건 모드 전환 시 값 보존 + 되돌리기 복구</b><br/><span class="fpath">conditionForm.ts — onChange 분기 전 캐시 복원</span></td><td>튜토리얼 유실 1위 제거</td><td>1일</td></tr>
+          <tr><td><span class="chip sev-c">C2</span></td><td><b>breakLoop 가드: 루프 밖이면 no-op + 검증 에러</b><br/><span class="fpath">stack.ts · eventDraftValidator.ts</span></td><td>이벤트 증발 버그 봉쇄</td><td>0.5일</td></tr>
+          <tr><td><span class="chip sev-c">C3</span></td><td><b>변수 ÷0 경고 + 음수 나눗셈을 trunc로 교정</b><br/><span class="fpath">session.ts · commandBodyVariable.ts 힌트/배지</span></td><td>수치 버그의 침묵 제거</td><td>0.5일</td></tr>
+          <tr><td><span class="chip sev-m">M1</span></td><td><b>빈 ID 인라인 에러(스위치/변수/아이템/액터)</b><br/><span class="fpath">conditionForm / commandBodyVariable — databasePicker 옆 배지</span></td><td>“저장 전까지 모르는 실패” 제거</td><td>1일</td></tr>
+          <tr><td><span class="chip sev-m">M2</span></td><td><b>프리뷰를 “시작 상태 기준”에서 “시뮬 상태”로 승격 + 호스트/시간 컨트롤</b><br/><span class="fpath">conditionEvalPreview.ts · previewSimulation.ts</span></td><td>작가-플레이어 괴리 절반 해소</td><td>1.5일</td></tr>
+        </tbody>
+      </table>
+      <div class="callout ok" style="margin-top:12px"><b>좋은 소식:</b> 세 폼 모두 구조는 단정하다. “모르면 터지는 암묵지”를 배지와 가드로 바꾸면 점수는 한 스프린트 만에 C→B+로 오른다.</div>
+    </div>
+  </div>
+</section>
+
+<section id="ch2" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">02</div>
+    <div>
+      <h2 class="ch-title">2장 — 조건분기: RM2003의 얼굴, 모던의 속</h2>
+      <p class="ch-sub">conditionForm · forkBranch · conditionCompile · evalCondition · previewForkFlow</p>
+    </div>
+    <span class="pill" style="margin-left:auto">파일 6 · 이슈 12</span>
+  </div>
+  <div class="ch-body">
+    <div class="svg-wrap">
+      
+      <svg viewBox="0 0 1080 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="조건 폼 구조와 위험 지점">
+        <rect width="1080" height="280" fill="#0a1220"/>
+        <text x="18" y="24" fill="#4de0ff" font-size="11" font-weight="800" letter-spacing="0.08em">조건 폼 해부도 — 어디서 유실·오판이 생기나</text>
+        
+        <g>
+          <rect x="18" y="40" width="220" height="220" rx="12" fill="#142032" stroke="#24344f"/>
+          <text x="32" y="64" fill="#e8eef8" font-size="12" font-weight="800">① 종류 선택</text>
+          <text x="32" y="80" fill="#9aa8c0" font-size="10">CONDITION_MODE_OPTIONS 15종</text>
+          <g font-size="10">
+            <rect x="28" y="90" width="200" height="22" rx="8" fill="#0e1a2c" stroke="#1e2d44"/><text x="36" y="104" fill="#e8eef8">스위치 / 변수 / 셀프 스위치</text>
+            <rect x="28" y="116" width="200" height="22" rx="8" fill="#0e1a2c" stroke="#1e2d44"/><text x="36" y="130" fill="#e8eef8">주인공 / 아이템 / 소지금 / 타이머</text>
+            <rect x="28" y="142" width="200" height="22" rx="8" fill="#0e1a2c" stroke="#1e2d44"/><text x="36" y="156" fill="#e8eef8">시간대 / 계절 / 활동 / 호감도 …</text>
+            <rect x="28" y="168" width="200" height="22" rx="8" fill="#101c31" stroke="#ff5a6a"/><text x="36" y="182" fill="#ff8a96">all / any / not (복합)</text>
+          </g>
+          <g>
+            <rect x="28" y="200" width="200" height="36" rx="8" fill="rgba(255,90,106,.12)" stroke="rgba(255,90,106,.4)"/>
+            <text x="36" y="214" fill="#ff8a96" font-size="9" font-weight="800">⚠ 전환 시 값 전체 폐기</text>
+            <text x="36" y="226" fill="#9aa8c0" font-size="9">되돌려도 복구 불가 — Critical</text>
+          </g>
+        </g>
+        
+        <g>
+          <rect x="258" y="40" width="320" height="220" rx="12" fill="#142032" stroke="#24344f"/>
+          <text x="272" y="64" fill="#e8eef8" font-size="12" font-weight="800">② 종류별 디테일</text>
+          
+          <rect x="270" y="72" width="296" height="78" rx="10" fill="#0e1a2c" stroke="#1e2d44"/>
+          <text x="280" y="88" fill="#7ee8b5" font-size="10" font-weight="700">변수 예 — 가장 많이 쓰임</text>
+          <g font-size="9" fill="#9aa8c0">
+            <rect x="280" y="94" width="90" height="18" rx="6" fill="#101c31" stroke="#24344f"/><text x="286" y="106" fill="#e8eef8">대상 변수 [0003: 점수]</text>
+            <rect x="376" y="94" width="60" height="18" rx="6" fill="#101c31" stroke="#24344f"/><text x="384" y="106" fill="#e8eef8">비교 ≥</text>
+            <rect x="442" y="94" width="60" height="18" rx="6" fill="#101c31" stroke="#24344f"/><text x="450" y="106" fill="#e8eef8">값  1</text>
+            <text x="280" y="128" fill="#ffb84d">빈 ID면 eval은 false로 침묵 실패 — 인라인 에러 없음</text>
+            <text x="280" y="140" fill="#6e7f9a">op 6종 / value parseInt — 소수 절삭 이슈는 4장에서</text>
+          </g>
+          
+          <rect x="270" y="158" width="296" height="50" rx="10" fill="#0e1a2c" stroke="#8b7dff"/>
+          <text x="280" y="174" fill="#8b7dff" font-size="10" font-weight="800">all / any / not — 재귀 폼</text>
+          <text x="280" y="188" fill="#9aa8c0" font-size="9">labeledGroup 안쪽에 conditionForm 재귀 호출 — 깊이 제한 없음</text>
+          <text x="280" y="200" fill="#ffb84d" font-size="9">⚠ 깊이 4 이상이면 들여쓰기 붕괴 + 빈 배열 all/any 의미 역전</text>
+        </g>
+        
+        <g>
+          <rect x="598" y="40" width="464" height="220" rx="12" fill="#142032" stroke="#24344f"/>
+          <text x="612" y="64" fill="#e8eef8" font-size="12" font-weight="800">③ 평가 · 프리뷰 — “보이는 것과 뛰는 것”</text>
+          
+          <g font-size="10">
+            <rect x="612" y="72" width="210" height="44" rx="10" fill="#0e1a2c" stroke="#1e2d44"/>
+            <text x="622" y="88" fill="#e8eef8" font-weight="700">conditionEvalPreview</text>
+            <text x="622" y="102" fill="#9aa8c0">startSession(project) 기준</text>
+            <rect x="612" y="124" width="210" height="44" rx="10" fill="#0e1a2c" stroke="#1e2d44"/>
+            <text x="622" y="140" fill="#e8eef8" font-weight="700">previewSimulation (시뮬)</text>
+            <text x="622" y="154" fill="#9aa8c0">walkWithSimulation — forkTaken 분기</text>
+            <rect x="612" y="176" width="210" height="28" rx="8" fill="rgba(255,184,77,.12)" stroke="rgba(255,184,77,.4)"/>
+            <text x="622" y="193" fill="#ffb84d" font-size="9">괴리: 프리뷰=시작상태 / 실행=라이브 세션</text>
+          </g>
+          
+          <rect x="842" y="72" width="200" height="96" rx="10" fill="#0e1a2c" stroke="#24344f"/>
+          <text x="852" y="88" fill="#4aa3ff" font-size="10" font-weight="800">forkBranch 미니 리스트</text>
+          <text x="852" y="102" fill="#9aa8c0" font-size="9">then / else 각 0..N 명령</text>
+          <text x="852" y="116" fill="#9aa8c0" font-size="9">text만 인라인 편집 가능</text>
+          <text x="852" y="130" fill="#ffb84d" font-size="9">나머지는 “메인에서 편집”</text>
+          <text x="852" y="144" fill="#6e7f9a" font-size="9">→ 두 곳을 오가며 유실 위험</text>
+          <rect x="842" y="176" width="200" height="28" rx="8" fill="rgba(77,224,255,.10)" stroke="rgba(77,224,255,.35)"/>
+          <text x="852" y="193" fill="#4de0ff" font-size="9">힌트: conditionHint는 늘 추상적</text>
+        </g>
+        
+        <g stroke="#24344f" stroke-width="1.2" marker-end="url(#arrow2)">
+          <defs><marker id="arrow2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#24344f"/></marker></defs>
+          <line x1="238" y1="150" x2="258" y2="150"/>
+          <line x1="578" y1="150" x2="598" y2="150"/>
+          <line x1="822" y1="120" x2="842" y2="120"/>
+        </g>
+      </svg>
+      <div class="caption">그림 2 — 조건 폼의 세 층. 왼쪽의 “전환 유실”과 오른쪽의 “프리뷰 괴리”가 이번 장의 두 축.</div>
+    </div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 540 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="fork 실행 흐름">
+          <rect width="540" height="240" fill="#0a1220"/>
+          <text x="16" y="22" fill="#4aa3ff" font-size="11" font-weight="800">Fork 실행 흐름 — then / else는 “표시가 아니라 스택”</text>
+          
+          <g>
+            <polygon points="270,52 310,84 270,116 230,84" fill="#142032" stroke="#4aa3ff" stroke-width="1.4"/>
+            <text x="250" y="88" fill="#e8eef8" font-size="10" font-weight="800">조건?</text>
+            <text x="238" y="102" fill="#9aa8c0" font-size="9">evalCondition()</text>
+          </g>
+          
+          <rect x="40" y="140" width="190" height="70" rx="10" fill="#0f1e33" stroke="#24344f"/>
+          <text x="54" y="160" fill="#7ee8b5" font-size="11" font-weight="800">참일 때 (then)</text>
+          <text x="54" y="176" fill="#9aa8c0" font-size="9">N개 명령을 프레임으로 push</text>
+          <text x="54" y="190" fill="#6e7f9a" font-size="9">preview: taken 배지 / 시뮬: 상태 분기</text>
+          <rect x="310" y="140" width="190" height="70" rx="10" fill="#0f1e33" stroke="#24344f"/>
+          <text x="324" y="160" fill="#ffb84d" font-size="11" font-weight="800">그 외 (else)</text>
+          <text x="324" y="176" fill="#9aa8c0" font-size="9">없으면 “분기 없음” 카드(회색)</text>
+          <text x="324" y="190" fill="#6e7f9a" font-size="9">빈 배열이면 스킵 — 경고 없음</text>
+          
+          <g stroke="#24344f" stroke-width="1.2">
+            <line x1="245" y1="110" x2="120" y2="140"/><line x1="295" y1="110" x2="420" y2="140"/>
+          </g>
+          <g font-size="9" fill="#6e7f9a">
+            <text x="90" y="126" fill="#7ee8b5">true →</text><text x="410" y="126" fill="#ffb84d">false →</text>
+            <text x="18" y="228" fill="#9aa8c0">interpreter: pushFrame(branch)로 실행 / previewSimulation: walkWithSimulation로 분기 시뮬</text>
+          </g>
+        </svg>
+        <div class="caption">그림 3 — Fork는 분기 “표기”가 아니라 스택 push. else가 없으면 그냥 사라지므로 작가는 “else 없음”과 “else 빈 배열”을 구분 못 함.</div>
+      </div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 540 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="compile 오판 예">
+          <rect width="540" height="240" fill="#0a1220"/>
+          <text x="16" y="22" fill="#ffb84d" font-size="11" font-weight="800">conditionCompile — 자연어 → AST, 어디서 오판하나</text>
+          <g font-size="10">
+            <rect x="16" y="34" width="508" height="34" rx="8" fill="#0e1a2c" stroke="#24344f"/>
+            <text x="26" y="50" fill="#e8eef8">입력: “밤에 호감 100 이상 그리고 골드 ≥ 500”</text>
+            <text x="26" y="62" fill="#6e7f9a">의도: timePhase:night AND friendship≥100 AND gold≥500</text>
+            
+            <rect x="16" y="78" width="160" height="56" rx="10" fill="#142032" stroke="#1e2d44"/>
+            <text x="26" y="94" fill="#e8eef8" font-weight="700">1) OR 분해</text>
+            <text x="26" y="108" fill="#9aa8c0">/\bOR\b|또는|\|/</text>
+            <text x="26" y="122" fill="#ffb84d">“그리고”는 안 걸림 → OK</text>
+
+            <rect x="190" y="78" width="160" height="56" rx="10" fill="#142032" stroke="#1e2d44"/>
+            <text x="200" y="94" fill="#e8eef8" font-weight="700">2) AND 분해</text>
+            <text x="200" y="108" fill="#9aa8c0">/\bAND\b|그리고|&/</text>
+            <text x="200" y="122" fill="#7ee8b5">세 토막으로 정확히 갈라짐</text>
+
+            <rect x="364" y="78" width="160" height="56" rx="10" fill="#142032" stroke="#1e2d44"/>
+            <text x="374" y="94" fill="#e8eef8" font-weight="700">3) 리프 매칭</text>
+            <text x="374" y="108" fill="#9aa8c0">위→아래 우선순위 매칭</text>
+            <text x="374" y="122" fill="#6e7f9a">timePhase → season → … → fallback</text>
+
+            
+            <rect x="16" y="148" width="508" height="78" rx="10" fill="rgba(255,90,106,.10)" stroke="rgba(255,90,106,.35)"/>
+            <text x="26" y="166" fill="#ff8a96" font-size="11" font-weight="800">대표 오판 케이스</text>
+            <text x="26" y="182" fill="#e8eef8" font-size="10">“스위치 ‘보스 처치’ OFF”  →  /(off|꺼|거짓)/ 로 wantOn=false, findNamed는 “보스 처치” 포함 검색</text>
+            <text x="26" y="196" fill="#e8eef8" font-size="10">“점수 10” (비교 연산자 없이 변수명만) → varHit 매칭으로 “점수 ≥ 1”로 오판 (사용자는 “==10” 의도)</text>
+            <text x="26" y="210" fill="#ffb84d" font-size="9">실패 시 폴백: project.switches[0] ON — 경고는 배열에만, 배지는 없음. 조용히 다른 스위치를 본다.</text>
+          </g>
+        </svg>
+        <div class="caption">그림 4 — compileConditionFromText는 “대충 알아듣기”엔 좋지만, 경계 케이스에서 조용히 엉뚱한 조건을 만든다.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="card">
+      <div class="eyebrow">FINDINGS — 조건분기 12개</div>
+      <table>
+        <thead><tr><th style="width:58px">심각도</th><th>제목</th><th>근거 & 재현</th><th style="width:92px">권장</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip sev-c">Critical</span></td><td><b>모드 전환 시 값 유실 — 되돌리기 불가</b></td><td><span class="fpath">conditionForm.ts: mode.change → onChange({kind:"switch",…})</span><br/>스위치 값 OFF→ 변수 ≥5로 바꿨다 다시 스위치로 돌아오면 이전 OFF가 사라지고 ON으로 리셋. 캐시 없음.</td><td>이전 값 캐시 복원</td></tr>
+          <tr><td><span class="chip sev-c">Critical</span></td><td><b>빈 ID 침묵 실패</b></td><td><span class="fpath">conditionForm.ts: labeledSwitch/Variable/Item/Actor</span><br/>대상 ID가 ""면 eval은 false. 폼엔 붉은 배지 없음. 저장 전까지 모름. validator가 나중에 잡지만 폼 안에서는 무방비.</td><td>인라인 에러 배지</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>all/any 빈 배열 의미 역전</b></td><td><span class="fpath">session.ts: all every / any some</span><br/><span class="mono">all([]) → true</span>, <span class="mono">any([]) → false</span>. 작가는 둘 다 “조건 없음”으로 오해. 프리뷰도 그대로 표시.</td><td>빈 그룹 경고 + “모두/하나” 설명</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>깊은 중첩 들여쓰기 붕괴 + 성능</b></td><td><span class="fpath">conditionForm.ts: labeledGroup 재귀</span><br/>깊이 4 이상이면 카드 안 카드가 뷰포트 밖으로 밀림. 깊이 제한·접기 없음.</td><td>깊이 3 제한 + 접기</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>프리뷰 괴리: 시작 상태 vs 라이브</b></td><td><span class="fpath">conditionEvalPreview.ts: startSession(project)</span><br/>플레이 중엔 라이브 세션이 있는데 프리뷰는 항상 시작 상태로 평가. “충족” 배지가 거짓말.</td><td>라이브 세션优先 + 토글</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>compileConditionFromText 오판·폴백 침묵</b></td><td><span class="fpath">conditionCompile.ts: compileLeaf, findNamed, fallback switches[0]</span><br/>“점수 10”이 “≥1”로, 실패 시 첫 스위치 ON으로 조용히 대체. warnings 배열에만 남음.</td><td>폴백 시 폼에 경고 배지</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>forkBranch 미니 리스트 편집 불완전</b></td><td><span class="fpath">forkBranch.ts: renderForkBranchItem — text만 편집</span><br/>text 외 종류는 “메인에서 편집” 안내만. 두 곳을 오가다 then/else에 뭘 넣었는지 잊기 쉬움.</td><td>미니 리스트에서 전체 편집 or 읽기전용 요약 강화</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>timePhase/season 프리뷰 고정</b></td><td><span class="fpath">conditionEvalPreview + session gameTime</span><br/>초기 게임 시간이 아침/봄 고정이라 밤/겨울 조건 프리뷰는 항상 “불충족”처럼 보임.</td><td>프리뷰에 시간 컨트롤</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>selfSwitch/호감도 호스트 누락 시 보수적 false</b></td><td><span class="fpath">session.ts: evalCondition selfSwitch/npcActivity/friendship</span><br/>선택 이벤트 없으면 항상 false. 프리뷰 하단 작은 회색 문구로만 고지.</td><td>호스트 선택 유도 배지</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>conditionHint 추상적</b></td><td><span class="fpath">conditionForm.ts: conditionHint(cond.kind)</span><br/>“스위치가 ON일 때 참” 류. 다음 행동(예: 어느 스위치가?)을 안 알려줌.</td><td>맥락 힌트로 교체</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>접근성: 카드·세그먼트 키보드</b></td><td><span class="fpath">recordPicker / selfSwitchControl</span><br/>숨김 select는 있으나 카드 자체는 키보드 포커스/스크린리더 라벨 부족.</td><td>role/tabIndex/aria</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>요약 문자열 의존 프리뷰 설명</b></td><td><span class="fpath">conditionEvalPreview.ts: describeCondition → commandSummary slice</span><br/>fork 요약 문자열을 잘라 쓰는 간접 의존. 요약 포맷 바뀌면 프리뷰 문구 붕괴.</td><td>전용 describe 함수</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn" style="margin-top:10px"><b>한 줄 처방:</b> 조건 폼은 “종류를 고르는 폼”이 아니라 “분기 전체를 설계하는 폼”이어야 한다. 모드 캐시 + 빈 ID 배지 + 라이브 프리뷰 세 개만 넣어도 체감 신뢰가 반등한다.</div>
+    </div>
+
+    <details style="margin-top:12px">
+      <summary>증거 스니펫 — 빈 배열·호스트·컴파일 폴백</summary>
+      <div class="mono" style="white-space:pre-wrap;color:#cbd6ea">// session.ts
+case "all": return condition.conditions.every(c => evalCondition(session,c,host))
+case "any": return condition.conditions.some(c => evalCondition(session,c,host))
+// all([]) === true, any([]) === false — 작가 예상과 다름
+
+// conditionForm.ts
+mode.addEventListener("change", () => {
+  switch(mode.value){
+    case "switch": onChange({kind:"switch", switchId:"", value:true}); return; // 이전 op/value 버림
+  }
+})
+
+// conditionCompile.ts
+warnings.push(`해석 실패 → 기본 스위치 조건: "${t}"`);
+return {kind:"switch", switchId: project.switches[0]?.id ?? "", value:true};
+// 화면엔 경고 배지 없음 — 조용히 다른 스위치를 본다
+
+// conditionEvalPreview.ts
+const session = startSession(project); // 항상 시작 상태
+const ok = evalCondition(session, condition, hostId ?? undefined);
+// 라이브 PlaySession이 있어도 무시 — “시작 상태 기준” 작은 회색 문구만</div>
+    </details>
+  </div>
+</section>
+
+<section id="ch3" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">03</div>
+    <div>
+      <h2 class="ch-title">3장 — 루프: “돌아간다”는 말의 대가</h2>
+      <p class="ch-sub">commandBodyLoop · eventCommandPaths · interpreter/stack · commandList</p>
+    </div>
+    <span class="pill" style="margin-left:auto">파일 4 · 이슈 10</span>
+  </div>
+  <div class="ch-body">
+    <div class="grid2">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 540 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="루프 폼과 에디터 구조">
+          <rect width="540" height="300" fill="#0a1220"/>
+          <text x="16" y="22" fill="#4de0ff" font-size="11" font-weight="800">루프 폼 — working 복제본이 진실이 되는 순간</text>
+          
+          <rect x="16" y="32" width="508" height="76" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="28" y="50" fill="#e8eef8" font-size="11" font-weight="800">loopBody (commandBodyLoop.ts)</text>
+          <text x="28" y="64" fill="#9aa8c0" font-size="9">wrap: loop-body-editor / list: cmd-list / testid: event-loop-body</text>
+          <g font-size="9">
+            <rect x="28" y="72" width="160" height="22" rx="6" fill="#0e1a2c" stroke="#1e2d44"/><text x="34" y="86" fill="#e8eef8">반복 내용 (3 명령)</text>
+            <text x="200" y="86" fill="#6e7f9a">working = structuredClone(cmd.body)</text>
+          </g>
+          
+          <g font-size="9">
+            <rect x="28" y="100" width="496" height="28" rx="6" fill="#0e1a2c" stroke="#24344f"/>
+            <text x="34" y="112" fill="#4aa3ff">◆</text><text x="48" y="112" fill="#e8eef8">문장 표시 — “안녕”</text><text x="430" y="112" fill="#ff5a6a">× 삭제</text>
+            <rect x="28" y="132" width="496" height="28" rx="6" fill="#0e1a2c" stroke="#24344f"/>
+            <text x="34" y="144" fill="#4aa3ff">◆</text><text x="48" y="144" fill="#e8eef8">스위치 조작 — S0001 ON</text><text x="430" y="144" fill="#ff5a6a">× 삭제</text>
+            <rect x="28" y="164" width="496" height="24" rx="6" fill="#101c31" stroke="#1e2d44" stroke-dasharray="4 4"/>
+            <text x="34" y="179" fill="#9aa8c0">[ 종류 선택 ▼ ]  + 명령</text>
+          </g>
+          
+          <rect x="16" y="204" width="508" height="36" rx="10" fill="rgba(126,232,181,.10)" stroke="rgba(126,232,181,.35)"/>
+          <text x="28" y="220" fill="#7ee8b5" font-size="10" font-weight="700">commit() → replaceCommand(path, {...cmd, body: structuredClone(working)})</text>
+          <text x="28" y="232" fill="#9aa8c0" font-size="9">rerender()는 working을 다시 그림 — stagedCommand와 working이 따로 논다</text>
+          
+          <rect x="16" y="248" width="508" height="36" rx="10" fill="rgba(255,184,77,.12)" stroke="rgba(255,184,77,.4)"/>
+          <text x="28" y="264" fill="#ffb84d" font-size="10" font-weight="700">⚠ 문제: cmd는 최초 렌더 때 캡처됨 — 부모가 rerender하면 stale</text>
+          <text x="28" y="276" fill="#9aa8c0" font-size="9">빈 본문 경고 없음 / breakLoop 타깃 표시 없음 / 요약카드로만 프리뷰</text>
+        </svg>
+        <div class="caption">그림 5 — 루프 에디터는 “로컬 working 사본” 패턴. 간단하지만 바깥 stagedCommand와 동기화가 어긋나면 유실이 생긴다.</div>
+      </div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 540 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="루프 인터프리터 스택">
+          <rect width="540" height="300" fill="#0a1220"/>
+          <text x="16" y="22" fill="#ffb84d" font-size="11" font-weight="800">런타임 — 스택이 말하는 진짜 루프</text>
+          
+          <g font-size="10">
+            <rect x="16" y="32" width="180" height="90" rx="10" fill="#142032" stroke="#24344f"/>
+            <text x="26" y="48" fill="#e8eef8" font-weight="800">스택 (stack.ts)</text>
+            <text x="26" y="62" fill="#9aa8c0">[0] root:  ◆ 루프 → ◆ 다음명령</text>
+            <text x="26" y="76" fill="#7ee8b5">[1] loopBody: pc=0  loopOwner→[0].pc</text>
+            <text x="26" y="90" fill="#6e7f9a">깊이 제한 1000 / 명령 예산 100k</text>
+            <rect x="16" y="132" width="180" height="56" rx="10" fill="#0e1a2c" stroke="#1e2d44"/>
+            <text x="26" y="148" fill="#e8eef8" font-weight="700">advanceCompletedFrame</text>
+            <text x="26" y="162" fill="#9aa8c0">본문 끝나면 다시 pushLoopFrame</text>
+            <text x="26" y="174" fill="#ffb84d">maxLoop 100,000 넘으면 경고 후 탈출</text>
+          </g>
+          
+          <rect x="212" y="32" width="312" height="90" rx="10" fill="rgba(255,90,106,.10)" stroke="rgba(255,90,106,.35)"/>
+          <text x="224" y="50" fill="#ff8a96" font-size="11" font-weight="800">breakLoop — 가장 가까운 루프를 찾아 pop</text>
+          <text x="224" y="66" fill="#e8eef8" font-size="10">while(stack.length&gt;0){ if(frame.loopOwner) pop &amp; owner.pc+=1; return; stack.pop(); }</text>
+          <text x="224" y="84" fill="#ff8a96" font-size="10">⚠ 루프 밖에서 호출하면? → 스택 전체가 증발 (이벤트 중단)</text>
+          <text x="224" y="100" fill="#9aa8c0" font-size="9">가드 없음 / 경고 로그 없음 / 검증도 없음</text>
+          
+          <rect x="212" y="132" width="312" height="76" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="224" y="150" fill="#e8eef8" font-size="11" font-weight="800">case "loop"</text>
+          <text x="224" y="166" fill="#9aa8c0" font-size="10">frame.pc +=1; if(body.length==0) return; pushLoopFrame(body)</text>
+          <text x="224" y="180" fill="#7ee8b5" font-size="9">빈 본문은 “한 번도 안 돎”으로 조용히 스킵 — 경고 없음</text>
+          <text x="224" y="194" fill="#6e7f9a" font-size="9">에디터도 빈 루프를 저장 허용 — 의미 없는 루프가 쌓인다</text>
+          
+          <rect x="16" y="204" width="508" height="80" rx="10" fill="#101c31" stroke="#1e2d44"/>
+          <text x="26" y="222" fill="#4de0ff" font-size="11" font-weight="800">예산과 UX의 간극</text>
+          <text x="26" y="238" fill="#e8eef8" font-size="10">인터프리터는 10만 번 가드로 무한루프를 끊는다 — 하지만 에디터는 “무한일 수 있다”는 힌트조차 안 준다.</text>
+          <text x="26" y="254" fill="#9aa8c0" font-size="9">루프 프리뷰는 summaryCard(“반복 3개 명령”) 한 줄뿐. 몇 번 도는지, 언제 탈출하는지 시각화 없음.</text>
+          <text x="26" y="268" fill="#ffb84d" font-size="9">→ 작가는 “테스트로 돌려보기 전엔 모른다” 상태에 갇힌다.</text>
+        </svg>
+        <div class="caption">그림 6 — 런타임은 안전장치가 있지만, 에디터는 그 안전장치를 작가에게 알려주지 않는다.</div>
+      </div>
+    </div>
+
+    <div class="svg-wrap" style="margin-top:14px">
+      <svg viewBox="0 0 1080 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="루프 중첩과 break 타깃 모호함">
+        <rect width="1080" height="170" fill="#0a1220"/>
+        <text x="18" y="22" fill="#e8eef8" font-size="11" font-weight="800">중첩 루프에서 breakLoop는 누구를 끊나? — 답: “가장 가까운 루프”, 하지만 화면엔 표시 없음</text>
+        <g font-family="ui-monospace,monospace" font-size="10">
+          
+          <rect x="18" y="34" width="520" height="120" rx="10" fill="#142032" stroke="#4aa3ff"/>
+          <text x="28" y="52" fill="#4aa3ff" font-weight="800">◆ 루프 (바깥) — body</text>
+          <rect x="32" y="60" width="492" height="82" rx="8" fill="#0e1a2c" stroke="#1e2d44"/>
+          <text x="42" y="78" fill="#9aa8c0">◆ 문장 “바깥 시작”</text>
+          
+          <rect x="42" y="86" width="472" height="48" rx="8" fill="#101c31" stroke="#ffb84d"/>
+          <text x="52" y="102" fill="#ffb84d" font-weight="800">◆ 루프 (안쪽) — body</text>
+          <text x="52" y="118" fill="#e8eef8">◆ 변수 조작  +  ◆ 반복 탈출(breakLoop)  +  ◆ 문장 “안쪽 끝”</text>
+          <text x="42" y="136" fill="#9aa8c0">◆ 문장 “바깥 끝”</text>
+          
+          <rect x="560" y="34" width="502" height="120" rx="10" fill="#0f1e33" stroke="#24344f"/>
+          <text x="574" y="54" fill="#e8eef8" font-weight="800">화면이 숨기는 것</text>
+          <text x="574" y="72" fill="#9aa8c0">• breakLoop 줄엔 “어느 루프를 탈출”인지 표시 없음</text>
+          <text x="574" y="88" fill="#9aa8c0">• 들여쓰기는 --cmd-depth로 되지만, break의 타깃은 색/선으로 안 이어짐</text>
+          <text x="574" y="104" fill="#ffb84d">• 루프 밖 break는 스택 증발 — 검증 배지 없음</text>
+          <text x="574" y="122" fill="#7ee8b5">→ 개선: break 줄에 “↳ 안쪽 루프 탈출” 배지 + 루프 밖이면 즉시 에러</text>
+        </g>
+      </svg>
+      <div class="caption">그림 7 — 중첩 루프의 모호함. 코드는 “가장 가까운 루프”라지만, UI는 그걸 보여주지 않는다.</div>
+    </div>
+
+    <div style="margin-top:14px" class="card">
+      <div class="eyebrow">FINDINGS — 루프 10개</div>
+      <table>
+        <thead><tr><th style="width:58px">심각도</th><th>제목</th><th>근거 & 재현</th><th style="width:92px">권장</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip sev-c">Critical</span></td><td><b>루프 밖 breakLoop → 이벤트 증발</b></td><td><span class="fpath">stack.ts: breakLoop() while-pop</span><br/>루프 없이 breakLoop 단독 배치 → 스택 전체 pop → 뒤 명령 전부 스킵. 재현: 루프 0개 이벤트에 breakLoop만 넣고 테스트.</td><td>가드 + 검증 에러</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>빈 본문 루프 침묵 저장</b></td><td><span class="fpath">commandBodyLoop.ts / commandCatalog loop case</span><br/><span class="mono">body.length==0</span>이면 런타임은 스킵. 에디터는 “반복(0개)”로 저장 허용. 의미 없는 루프가 누적.</td><td>빈 본문 경고 + 저장 차단 옵션</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>무한루프 위험을 작가에게 안 알림</b></td><td><span class="fpath">stack.ts: maxLoopIterations 100000</span><br/>가드는 있지만 UI 힌트 없음. break 없는 루프를 만들어도 경고 0.</td><td>break 없는 루프 경고 배지</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>working vs stagedCommand 괴리</b></td><td><span class="fpath">commandBodyLoop.ts: let working = structuredClone(cmd.body)</span><br/><span class="mono">cmd</span>는 최초 캡처. 부모가 <span class="mono">shouldRerenderCommandForm</span>로 재빌드하면 stale <span class="mono">cmd</span>로 commit.</td><td>getCurrentCommand()로 동기화</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>break 타깃 표시 없음 (중첩 모호)</b></td><td><span class="fpath">commandList.ts 들여쓰기 / commandSummary breakLoop</span><br/>두 겹 루프 안 break가 어느 루프를 끊는지 시각화 없음. RM2003도 동일 문제지만 모던 에디터는 개선해야 함.</td><td>탈출 배지 + 호버 하이라이트</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>루프 프리뷰 빈약</b></td><td><span class="fpath">commandPreview.ts: visualPreviewHandlers — loop 없음 → summaryCard</span><br/>“반복 3개 명령” 한 줄. 반복 횟수·탈출 조건 시각화 없음. 이미지 리치 약속 위반.</td><td>루프 전용 프리뷰(반복 모형)</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>드래그로 루프 구조 붕괴 가능</b></td><td><span class="fpath">eventCommandPaths.ts: moveCommandBetweenLists</span><br/>루프 본문 안 명령을 바깥으로, 바깥 명령을 안으로 드래그 허용. 의도치 않은 중첩 변경.</td><td>드래그 가드/확인</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>루프 리스트 접기 없음</b></td><td><span class="fpath">commandList.ts: appendCommandChildren — loop body 마커만</span><br/>본문 10개 넘어가면 목록이 길게 늘어져 가독성 저하. 접기/펼치기 없음.</td><td>접기 토글</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>추가 행이 항상 text 기본값</b></td><td><span class="fpath">commandBodyLoop.ts: newCommand("text")</span><br/>루프 안에서 자주 쓰는 “변수 조작/조건분기”를 매번 종류 바꾸기 번거로움.</td><td>최근 사용 종류 기억</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>포커스·스크롤 복원 미흡</b></td><td><span class="fpath">commandBodyLoop.ts: rerender() clearChildren</span><br/>삭제/추가 후 포커스가 사라지고 스크롤이 튐.</td><td>포커스 복원</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn" style="margin-top:10px"><b>한 줄 처방:</b> 루프는 “돌리는 기능”보다 “멈추는 기능”이 더 중요하다. break 가드 + 빈 본문 경고 + 탈출 배지 세 개면 D→B로 오른다.</div>
+    </div>
+  </div>
+</section>
+
+<section id="ch4" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">04</div>
+    <div>
+      <h2 class="ch-title">4장 — 변수 조작: 한 줄 공식이 신뢰를 좌우한다</h2>
+      <p class="ch-sub">commandBodyVariable · switchVariablePicker · session setVariable · previewSimulation</p>
+    </div>
+    <span class="pill" style="margin-left:auto">파일 4 · 이슈 10</span>
+  </div>
+  <div class="ch-body">
+    <div class="svg-wrap">
+      <svg viewBox="0 0 1080 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="변수 폼 구조">
+        <rect width="1080" height="260" fill="#0a1220"/>
+        <text x="18" y="22" fill="#7ee8b5" font-size="11" font-weight="800">변수 폼 — 5개 필드가 한 줄 공식을 만든다</text>
+        
+        <g font-size="10">
+          <rect x="18" y="32" width="190" height="64" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="28" y="48" fill="#e8eef8" font-weight="800">대상 변수</text>
+          <text x="28" y="62" fill="#9aa8c0">databasePicker — [0003: 점수]</text>
+          <text x="28" y="78" fill="#ff8a96" font-size="9">⚠ 빈 ID면 첫 변수로 자동 시드(렌더 중 부작용)</text>
+
+          <rect x="222" y="32" width="120" height="64" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="232" y="48" fill="#e8eef8" font-weight="800">연산</text>
+          <text x="232" y="62" fill="#9aa8c0">segmented: =  +=  -=  ×=  ÷=</text>
+          <text x="232" y="78" fill="#6e7f9a" font-size="9">VARIABLE_OP_SEGMENTS</text>
+
+          <rect x="356" y="32" width="120" height="64" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="366" y="48" fill="#e8eef8" font-weight="800">값 소스</text>
+          <text x="366" y="62" fill="#9aa8c0">숫자 / 변수</text>
+          <text x="366" y="78" fill="#6e7f9a" font-size="9">hidden 토글로 전환</text>
+
+          <rect x="490" y="32" width="150" height="64" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="500" y="48" fill="#e8eef8" font-weight="800">값</text>
+          <text x="500" y="62" fill="#9aa8c0">숫자: input number</text>
+          <text x="500" y="78" fill="#ffb84d" font-size="9">parseInt 절삭 / 소수 버림</text>
+
+          <rect x="654" y="32" width="150" height="64" rx="10" fill="#142032" stroke="#24344f"/>
+          <text x="664" y="48" fill="#e8eef8" font-weight="800">소스 변수</text>
+          <text x="664" y="62" fill="#9aa8c0">databasePicker — [0007: 보정]</text>
+          <text x="664" y="78" fill="#ff8a96" font-size="9">빈 ID면 0으로 침묵</text>
+        </g>
+        
+        <rect x="18" y="110" width="1044" height="48" rx="10" fill="#0e1a2c" stroke="#7ee8b5"/>
+        <text x="28" y="128" fill="#7ee8b5" font-size="11" font-weight="800">라이브 공식 스트립 — formatVariableFormula()</text>
+        <text x="28" y="146" fill="#e8eef8" font-size="13" font-family="ui-monospace,monospace">[0003: 점수]  ÷=  [0007: 보정]</text>
+        <text x="420" y="146" fill="#9aa8c0" font-size="10">← 이 한 줄이 정확해야 작가가 “맞게 썼다”고 확신한다</text>
+        
+        <rect x="18" y="170" width="340" height="76" rx="10" fill="rgba(255,184,77,.10)" stroke="rgba(255,184,77,.4)"/>
+        <text x="28" y="188" fill="#ffb84d" font-size="10" font-weight="800">÷= 힌트: “정수 나눗셈(버림). 0으로 나누면 유지.”</text>
+        <text x="28" y="202" fill="#e8eef8" font-size="9">사실: Math.floor(-3/2)=-2 — “버림”이 floor인지 trunc인지 안 적힘</text>
+        <text x="28" y="216" fill="#9aa8c0" font-size="9">오버플로/클램프 없음 — JS number로 무한 증가 가능</text>
+        <text x="28" y="230" fill="#6e7f9a" font-size="9">RM2k3는 -9999999~9999999 클램프 — 호환성 괴리</text>
+
+        <rect x="372" y="170" width="340" height="76" rx="10" fill="#101c31" stroke="#24344f"/>
+        <text x="382" y="188" fill="#e8eef8" font-size="10" font-weight="800">초기 시드 부작용</text>
+        <text x="382" y="202" fill="#9aa8c0" font-size="9">variableId == "" 이면 렌더 중에 replaceCommand로 첫 변수 시드</text>
+        <text x="382" y="216" fill="#ffb84d" font-size="9">렌더 중 상태변경 — 리액트 원칙 위반, 재빌드 루프 위험</text>
+        <text x="382" y="230" fill="#6e7f9a" font-size="9">variables가 비어있으면 시드 실패 후에도 빈 ID로 저장 허용</text>
+
+        <rect x="726" y="170" width="336" height="76" rx="10" fill="#101c31" stroke="#24344f"/>
+        <text x="736" y="188" fill="#e8eef8" font-size="10" font-weight="800">소스 전환 유실</text>
+        <text x="736" y="202" fill="#9aa8c0" font-size="9">숫자 5 → 변수 → 다시 숫자: 5가 0으로 리셋</text>
+        <text x="736" y="216" fill="#9aa8c0" font-size="9">initialNumber는 최초 1회만 캡처 — 되돌리기 값 없음</text>
+        <text x="736" y="230" fill="#6e7f9a" font-size="9">작업 기억 상실 → 재입력 피로</text>
+
+        
+        <g stroke="#24344f" stroke-width="1.1">
+          <line x1="208" y1="64" x2="222" y2="64"/><line x1="342" y1="64" x2="356" y2="64"/><line x1="476" y1="64" x2="490" y2="64"/><line x1="640" y1="64" x2="654" y2="64"/>
+          <line x1="300" y1="110" x2="300" y2="96"/>
+        </g>
+      </svg>
+      <div class="caption">그림 8 — 변수 폼의 5필드와 한 줄 공식. 가장 작은 폼이지만 “나눗셈 한 줄”이 전체 신뢰를 결정한다.</div>
+    </div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="svg-wrap">
+        <svg viewBox="0 0 540 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="나눗셈 괴리">
+          <rect width="540" height="220" fill="#0a1220"/>
+          <text x="16" y="22" fill="#ff5a6a" font-size="11" font-weight="800">나눗셈 괴리 — floor vs trunc, 그리고 ÷0</text>
+          <g font-size="10" font-family="ui-monospace,monospace">
+            <rect x="16" y="32" width="252" height="70" rx="10" fill="#142032" stroke="#24344f"/>
+            <text x="26" y="50" fill="#e8eef8" font-weight="800">코드 (session.ts)</text>
+            <text x="26" y="66" fill="#ffb84d">value !==0 ? Math.floor(cur/value) : cur</text>
+            <text x="26" y="82" fill="#9aa8c0">previewSimulation 동일</text>
+            <text x="26" y="94" fill="#6e7f9a">힌트: “정수 나눗셈(버림)”</text>
+
+            <rect x="280" y="32" width="244" height="70" rx="10" fill="rgba(255,90,106,.10)" stroke="rgba(255,90,106,.35)"/>
+            <text x="290" y="50" fill="#ff8a96" font-weight="800">음수에서 갈림</text>
+            <text x="290" y="66" fill="#e8eef8">-3 ÷ 2  →  floor -2  /  trunc -1</text>
+            <text x="290" y="82" fill="#9aa8c0">RM2k3는 trunc(0쪽 버림) 관성</text>
+            <text x="290" y="94" fill="#ffb84d">→ 데미지/보정 공식이 조용히 1 차이</text>
+          </g>
+          <g font-size="10">
+            <rect x="16" y="114" width="508" height="42" rx="10" fill="#0f1e33" stroke="#24344f"/>
+            <text x="26" y="132" fill="#e8eef8" font-weight="700">÷0 — 침묵 유지</text>
+            <text x="26" y="148" fill="#9aa8c0">0으로 나누면 값을 유지하고 끝. 배지·토스트·로그 없음. 작가는 “성공”으로 오해.</text>
+          </g>
+          <rect x="16" y="168" width="508" height="36" rx="10" fill="rgba(126,232,181,.10)" stroke="rgba(126,232,181,.35)"/>
+          <text x="26" y="186" fill="#7ee8b5" font-size="10" font-weight="700">처방: ÷0이면 폼에 경고 배지 + 런타임에 1회 경고 로그 + 음수는 Math.trunc로 교정</text>
+          <text x="26" y="200" fill="#9aa8c0" font-size="9">+ 오버플로 클램프(-9,999,999 ~ 9,999,999) 옵션 — RM 호환 스위치</text>
+        </svg>
+        <div class="caption">그림 9 — “버림” 한 단어가 floor/trunc를 가린다. 음수 테스트 하나로 버그가 드러난다.</div>
+      </div>
+      <div class="svg-wrap">
+        <svg viewBox="0 0 540 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="변수 프리뷰와 클램프">
+          <rect width="540" height="220" fill="#0a1220"/>
+          <text x="16" y="22" fill="#7ee8b5" font-size="11" font-weight="800">프리뷰와 현실 — 왜 “맞아 보이는데 틀리나”</text>
+          <g font-size="10">
+            <rect x="16" y="32" width="250" height="68" rx="10" fill="#142032" stroke="#24344f"/>
+            <text x="26" y="50" fill="#e8eef8" font-weight="800">프리뷰 카드 (variableStage)</text>
+            <text x="26" y="66" fill="#9aa8c0">공식 스트립 + 현재값 시뮬</text>
+            <text x="26" y="80" fill="#6e7f9a">getSimVariable로 0/초기값 기준</text>
+            <text x="26" y="94" fill="#ffb84d">실제 세션의 5,000과 다를 수 있음</text>
+
+            <rect x="280" y="32" width="244" height="68" rx="10" fill="#142032" stroke="#24344f"/>
+            <text x="290" y="50" fill="#e8eef8" font-weight="800">런타임 클램프 없음</text>
+            <text x="290" y="66" fill="#9aa8c0">cur + value → JS number 무한</text>
+            <text x="290" y="80" fill="#9aa8c0">루프 안에서 += 1을 10만 번 → 100,000</text>
+            <text x="290" y="94" fill="#6e7f9a">RM2k3라면 9,999,999에서 멈춤</text>
+          </g>
+          <rect x="16" y="112" width="508" height="92" rx="10" fill="#101c31" stroke="#24344f"/>
+          <text x="26" y="130" fill="#e8eef8" font-size="10" font-weight="800">재현 시나리오 — 작가 입장에서</text>
+          <text x="26" y="148" fill="#9aa8c0" font-size="10">1) 변수 [점수]에 0.7 입력 → parseInt로 0 저장 (소수 절삭)</text>
+          <text x="26" y="164" fill="#9aa8c0" font-size="10">2) ÷= 0 인 채 저장 → 런타임은 침묵 유지, 프리뷰는 “÷= 0”으로 표시만</text>
+          <text x="26" y="180" fill="#9aa8c0" font-size="10">3) 루프에서 [점수] += [보정] 반복 → 숫자 소스/변수 소스 전환 시 값 리셋으로 재입력</text>
+          <text x="26" y="196" fill="#ff8a96" font-size="9">→ 세 번 모두 “화면에선 성공처럼 보인다”가 공통점</text>
+        </svg>
+        <div class="caption">그림 10 — 변수 폼의 실패는 모두 “침묵”에서 온다. 실패를 보이게 하는 것이 수정이다.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px" class="card">
+      <div class="eyebrow">FINDINGS — 변수 10개</div>
+      <table>
+        <thead><tr><th style="width:58px">심각도</th><th>제목</th><th>근거 & 재현</th><th style="width:92px">권장</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip sev-c">Critical</span></td><td><b>÷0 침묵 유지</b></td><td><span class="fpath">session.ts: setVariable "/=" · previewSimulation.ts</span><br/><span class="mono">value===0 ? cur : floor(cur/value)</span> — 화면·로그·검증 모두 무음. 작가는 나눗셈이 된 줄 안다.</td><td>경고 배지 + 로그</td></tr>
+          <tr><td><span class="chip sev-c">Critical</span></td><td><b>음수 나눗셈 floor 괴리</b></td><td><span class="fpath">session.ts: Math.floor</span><br/><span class="mono">-3/2 → -2</span>(floor) vs <span class="mono">-1</span>(trunc). RM2k3 기대와 1 차이. 데미지/랭킹 로직에서 누적.</td><td>Math.trunc로 교정</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>렌더 중 상태변경(초기 시드)</b></td><td><span class="fpath">commandBodyVariable.ts: if(!currentVariableId.trim()) replaceCommand</span><br/>렌더 중에 <span class="mono">replaceCommand</span> 호출. StrictMode/재빌드 시 중복 호출 위험.</td><td>초기화는 생성 시점으로 이동</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>parseInt 소수 절삭</b></td><td><span class="fpath">commandBodyVariable.ts: parseNumberOperand Number.parseInt</span><br/><span class="mono">0.9 → 0</span>, <span class="mono">1.9 → 1</span>. input type=number가 소수를 허용하는데 코드는 버림.</td><td>입력 제약 + 경고</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>소스 전환 시 값 리셋</b></td><td><span class="fpath">commandBodyVariable.ts: initialNumber/initialSource 1회 캡처</span><br/>숫자 500 → 변수 → 숫자: 500이 0으로. 작업 기억 상실.</td><td>양쪽 값 캐시</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>빈 소스 변수 ID 침묵</b></td><td><span class="fpath">commandBodyVariable.ts: currentOperandVariableId "" 허용</span><br/>소스 변수 미선택 채 저장 → 런타임은 0으로 해석. 에러 없음.</td><td>빈 ID 인라인 에러</td></tr>
+          <tr><td><span class="chip sev-m">Major</span></td><td><b>오버플로 무제한</b></td><td><span class="fpath">session.ts: setVariable "+=" "*="</span><br/>JS number로 무한 증가. RM2k3 호환 범위 없음. 루프에서 폭주 가능.</td><td>클램프 옵션/경고</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>공식 스트립과 요약 문자열 이중 관리</b></td><td><span class="fpath">commandBodyVariable.ts: formatVariableFormula vs commandSummary operandSummary</span><br/>두 곳에서 비슷한 포맷을 따로 생성. 한쪽 수정 시 다른 쪽 drift.</td><td>단일 포맷터 공유</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>연산 톤 불일치</b></td><td><span class="fpath">VARIABLE_OP_SEGMENTS vs VARIABLE_OP_OPTIONS vs displayOp</span><br/>세 곳에서 “×/÷” 표기가 따로. segmented value/key도 혼재.</td><td>단일 소스화</td></tr>
+          <tr><td><span class="chip sev-l">Low</span></td><td><b>프리뷰 시뮬과 실행의 분기 상태 차이</b></td><td><span class="fpath">previewSimulation.ts: cloneState 얕은 복제 + getSimVariable</span><br/>시뮬은 분기마다 clone하지만 루프 반복은 1회만 시뮬. “루프 안에서 변수 누적” 프리뷰가 현실과 다름.</td><td>루프 반복 힌트 명시</td></tr>
+        </tbody>
+      </table>
+      <div class="callout" style="margin-top:10px"><b>한 줄 처방:</b> “÷=” 한 줄을 고치고, 빈 ID와 ÷0을 보이게 하라. 변수 폼 신뢰의 80%는 그 세 배지로 결정된다.</div>
+    </div>
+  </div>
+</section>
+
+<section id="ch5" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">05</div>
+    <div>
+      <h2 class="ch-title">5장 — 공통 결함과 고치는 순서</h2>
+      <p class="ch-sub">세 폼을 가로지르는 패턴 · 우선순위 로드맵 · 검증 계획</p>
+    </div>
+    <span class="pill" style="margin-left:auto">다음 행동 4주</span>
+  </div>
+  <div class="ch-body">
+    <div class="grid3">
+      <div class="card" style="border-color:rgba(77,224,255,.35)">
+        <div class="eyebrow" style="color:var(--cyan)">PATTERN 1</div>
+        <h4>침묵 실패 (Silent Failure)</h4>
+        <p>빈 ID, ÷0, 빈 루프, 컴파일 폴백 — 모두 “에러 없이 저장”된다. 실패를 안 보이는 것이 가장 큰 실패.</p>
+        <div class="mono" style="margin-top:8px;color:var(--muted)">공통 해법: 인라인 배지 + validator 연동 + 저장 전 게이트</div>
+      </div>
+      <div class="card" style="border-color:rgba(255,184,77,.35)">
+        <div class="eyebrow" style="color:var(--warn)">PATTERN 2</div>
+        <h4>프리뷰 거짓말</h4>
+        <p>조건은 시작 상태, 루프는 1회 시뮬, 변수는 0 기준. 작가가 보는 것과 플레이어가 겪는 것이 다르다.</p>
+        <div class="mono" style="margin-top:8px;color:var(--muted)">공통 해법: 라이브 세션 기반 + “기준 상태” 명시 배지</div>
+      </div>
+      <div class="card" style="border-color:rgba(139,125,255,.35)">
+        <div class="eyebrow" style="color:var(--violet)">PATTERN 3</div>
+        <h4>로컬 working 괴리</h4>
+        <p>forkBranch/loopBody는 working 복제본, variable은 getCurrentCommand. 두 패턴이 혼재돼 동기화 버그가 생긴다.</p>
+        <div class="mono" style="margin-top:8px;color:var(--muted)">공통 해법: getCurrentCommand로 단일화 + rerender 시 캐시</div>
+      </div>
+    </div>
+
+    <div class="svg-wrap" style="margin-top:14px">
+      <svg viewBox="0 0 1080 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="로드맵">
+        <rect width="1080" height="220" fill="#0a1220"/>
+        <text x="18" y="22" fill="#e8eef8" font-size="11" font-weight="800">4주 로드맵 — “보이게 하고, 막고, 가볍게” 순서</text>
+        
+        <rect x="18" y="34" width="246" height="170" rx="12" fill="#142032" stroke="#ff5a6a"/>
+        <text x="30" y="52" fill="#ff8a96" font-size="11" font-weight="800">Week 1 — 막기 (가드)</text>
+        <g font-size="10" fill="#e8eef8">
+          <text x="30" y="72">• breakLoop 가드 + 검증 에러</text>
+          <text x="30" y="88">• 빈 ID 인라인 에러(조건/변수)</text>
+          <text x="30" y="104">• ÷0 경고 배지 + 로그</text>
+          <text x="30" y="120">• 빈 루프/all/any 경고</text>
+          <text x="30" y="144" fill="#9aa8c0">효과: Critical 9개 중 6개 즉시 봉쇄</text>
+          <text x="30" y="160" fill="#6e7f9a">파일: stack.ts, session.ts, conditionForm, variable</text>
+          <text x="30" y="176" fill="#ffb84d">검증: eventDraftValidator.test.ts 추가</text>
+        </g>
+        
+        <rect x="278" y="34" width="246" height="170" rx="12" fill="#142032" stroke="#ffb84d"/>
+        <text x="290" y="52" fill="#ffb84d" font-size="11" font-weight="800">Week 2 — 보이게 하기</text>
+        <g font-size="10" fill="#e8eef8">
+          <text x="290" y="72">• 조건 모드 전환 값 캐시 복원</text>
+          <text x="290" y="88">• 변수 소스 전환 값 보존</text>
+          <text x="290" y="104">• 프리뷰 라이브 세션 승격</text>
+          <text x="290" y="120">• compile 폴백 배지</text>
+          <text x="290" y="144" fill="#9aa8c0">효과: “되돌리기 유실” 체감 제거</text>
+          <text x="290" y="160" fill="#6e7f9a">파일: conditionForm, variable, previewSim</text>
+          <text x="290" y="176" fill="#7ee8b5">검증: 시뮬 vs 실행 대조 테스트</text>
+        </g>
+        
+        <rect x="538" y="34" width="246" height="170" rx="12" fill="#142032" stroke="#4aa3ff"/>
+        <text x="550" y="52" fill="#4aa3ff" font-size="11" font-weight="800">Week 3 — 정확도</text>
+        <g font-size="10" fill="#e8eef8">
+          <text x="550" y="72">• 음수 나눗셈 trunc 교정</text>
+          <text x="550" y="88">• parseInt → parseFloat + 클램프</text>
+          <text x="550" y="104">• 루프 탈출 배지 + 중첩 하이라이트</text>
+          <text x="550" y="120">• 루프 전용 프리뷰 모형</text>
+          <text x="550" y="144" fill="#9aa8c0">효과: 수치 신뢰·루프 가독성 회복</text>
+          <text x="550" y="160" fill="#6e7f9a">파일: session, variable, commandPreview</text>
+          <text x="550" y="176" fill="#8b7dff">검증: interpreter/stack 단위 테스트</text>
+        </g>
+        
+        <rect x="798" y="34" width="264" height="170" rx="12" fill="#142032" stroke="#7ee8b5"/>
+        <text x="810" y="52" fill="#7ee8b5" font-size="11" font-weight="800">Week 4 — 다듬기</text>
+        <g font-size="10" fill="#e8eef8">
+          <text x="810" y="72">• working → getCurrentCommand 통일</text>
+          <text x="810" y="88">• 포커스/스크롤 복원</text>
+          <text x="810" y="104">• a11y: 카드 키보드/라벨</text>
+          <text x="810" y="120">• 문서화: openwiki 반영</text>
+          <text x="810" y="144" fill="#9aa8c0">효과: 유지보수 부채 청산</text>
+          <text x="810" y="160" fill="#6e7f9a">파일: forkBranch, loopBody 전역</text>
+          <text x="810" y="176" fill="#4de0ff">검증: e2e 3개 시나리오</text>
+        </g>
+      </svg>
+      <div class="caption">그림 11 — 4주 로드맵. 1주차 “가드”만으로 Critical의 절반이 사라진다 — 가장 가성비 높은 투자.</div>
+    </div>
+
+    <div class="grid2" style="margin-top:14px">
+      <div class="card">
+        <div class="eyebrow">VERIFICATION PLAN</div>
+        <h4>어떻게 “고쳤다”를 증명하나</h4>
+        <table style="margin-top:8px">
+          <thead><tr><th>영역</th><th>테스트</th><th>합격 기준</th></tr></thead>
+          <tbody>
+            <tr><td>조건</td><td>빈 ID 7종 × 저장 시도</td><td>인라인 에러 + Apply 차단</td></tr>
+            <tr><td>조건</td><td>모드 전환 15종 왕복</td><td>이전 값 100% 복원</td></tr>
+            <tr><td>루프</td><td>break 밖 / 중첩 2겹 / 빈 본문</td><td>에러 배지 + 스택 보존</td></tr>
+            <tr><td>변수</td><td>÷0 / 음수 -3/2 / 0.9 / 오버플로</td><td>경고·trunc·클램프 동작</td></tr>
+            <tr><td>프리뷰</td><td>라이브 세션 vs 프리뷰 대조 20케이스</td><td>불일치 0</td></tr>
+          </tbody>
+        </table>
+        <div class="callout ok" style="margin-top:10px">기존 테스트는 건드리지 않는다. <span class="mono">eventDraftValidator / interpreter/stack / previewSimulation</span>에 케이스만 추가 — 회귀 0 목표.</div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">WHAT TO KEEP</div>
+        <h4>잘한 것 — 부수지 말 것</h4>
+        <ul style="margin:6px 0 0 18px; color:var(--muted); font-size:12.8px">
+          <li><b style="color:var(--text)">stagedCommand + shouldRerender</b> — 입력 포커스 보존 아이디어는 탁월. working만 통일하면 완성.</li>
+          <li><b style="color:var(--text)">음수 branch 인덱스</b> — eventCommandPaths의 네거티브 브랜치 설계는 우아하고 안전.</li>
+          <li><b style="color:var(--text)">시뮬 분리</b> — previewSimulation이 런타임을 오염시키지 않고 분기/루프를 1회 전개하는 설계는 유지 가치 큼.</li>
+          <li><b style="color:var(--text)">공식 스트립</b> — 변수 폼의 한 줄 공식은 “확신”을 주는 최고의 장치. 더 키워야 함.</li>
+        </ul>
+        <div class="callout" style="margin-top:10px"><b>마무리 한 마디:</b> 세 폼은 “기능이 없는” 게 아니라 “실패를 말하지 않는” 게 문제다. 말하게 하라. 그러면 작가는 스스로 고친다.</div>
+      </div>
+    </div>
+
+    <details style="margin-top:14px">
+      <summary>부록 — 파일별 빠른 찾아보기</summary>
+      <div class="mono" style="line-height:1.7; color:#cbd6ea">
+        조건분기: src/editor/panels/eventEditor/conditionForm.ts · forkBranch.ts · conditionCompile.ts · conditionEvalPreview.ts · previewForkFlow.ts · project/session.ts(evalCondition) · project/conditionEvaluation.ts<br/>
+        루프: src/editor/panels/eventEditor/commandBodyLoop.ts · editor/eventCommandPaths.ts · player/interpreter/stack.ts · player/interpreter/commandCatalog.ts(loop/break) · editor/panels/eventEditor/commandList.ts · commandPreview.ts<br/>
+        변수: src/editor/panels/eventEditor/commandBodyVariable.ts · project/session.ts(setVariable) · editor/panels/eventEditor/previewSimulation.ts · editor/panels/eventEditor/switchVariablePicker.ts<br/>
+        검증: src/editor/eventDraftValidator.ts · test/eventDraftValidator.test.ts · test/eventEditorTrustLoop.test.ts
+      </div>
+    </details>
+  </div>
+</section>
+
+<div class="foot">RPG ZZU Hostile Review · 조건분기 · 루프 · 변수 폼 · 5장 · 2026-08-06 · 근거 기반 · 재현 가능 · “침묵을 배지로 바꾸라”</div>
+
+</div>
+</body>
+</html>

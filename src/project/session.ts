@@ -343,6 +343,15 @@ export function setSwitch(session: PlaySessionLike, switchId: string, value: boo
 export function getVariable(session: PlaySessionLike, variableId: string): number {
   return session.variables[variableId] ?? 0;
 }
+export const VARIABLE_MIN = -9_999_999;
+export const VARIABLE_MAX = 9_999_999;
+
+export function clampVariableValue(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  const truncated = Math.trunc(value);
+  return Math.max(VARIABLE_MIN, Math.min(VARIABLE_MAX, truncated));
+}
+
 export function setVariable(
   session: PlaySessionLike,
   variableId: string,
@@ -351,13 +360,18 @@ export function setVariable(
 ): void {
   const cur = session.variables[variableId] ?? 0;
   switch (op) {
-    case "=": session.variables[variableId] = value; break;
-    case "+=": session.variables[variableId] = cur + value; break;
-    case "-=": session.variables[variableId] = cur - value; break;
-    case "*=": session.variables[variableId] = cur * value; break;
-    case "/=":
-      session.variables[variableId] = value !== 0 ? Math.floor(cur / value) : cur;
+    case "=": session.variables[variableId] = clampVariableValue(value); break;
+    case "+=": session.variables[variableId] = clampVariableValue(cur + value); break;
+    case "-=": session.variables[variableId] = clampVariableValue(cur - value); break;
+    case "*=": session.variables[variableId] = clampVariableValue(cur * value); break;
+    case "/=": {
+      if (value === 0) {
+        console.warn(`[session] 변수 '${variableId}' 0으로 나누기 무시됨`);
+        break;
+      }
+      session.variables[variableId] = clampVariableValue(Math.trunc(cur / value));
       break;
+    }
   }
 }
 
