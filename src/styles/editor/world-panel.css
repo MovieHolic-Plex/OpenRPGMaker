@@ -174,10 +174,22 @@
   }
 
   .world-card:hover,
-  .world-card:focus-visible,
-  .world-card.active {
-    border-color: rgba(72, 187, 120, 0.7);
+  .world-card:focus-visible {
+    border-color: rgba(148, 163, 184, 0.38);
     outline: none;
+  }
+
+  .world-card.active {
+    border-color: rgba(72, 187, 120, 0.85);
+    background: linear-gradient(180deg, #22302a 0%, #1e232b 100%);
+    box-shadow:
+      0 0 0 1px rgba(72, 187, 120, 0.22) inset,
+      0 8px 22px rgba(0, 0, 0, 0.32);
+    outline: none;
+  }
+
+  .world-card.active .world-card-title {
+    color: #ecfdf5;
   }
 
   .world-card-media {
@@ -281,7 +293,12 @@
 
   .world-card-title {
     min-width: 0;
+    flex: 1 1 auto;
     overflow: hidden;
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -290,16 +307,28 @@
     min-height: 18px;
     margin: 0;
     overflow: hidden;
-    color: #cbd5e1;
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.45;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .world-card.active .world-card-summary {
+    color: #cbd5e1;
   }
 
   .world-card-badges,
   .world-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
+  }
+
+  .world-card.active .world-type-badge {
+    border-color: rgba(72, 187, 120, 0.28);
+    background: #1a2e24;
+    color: #bbf7d0;
   }
 
   .world-type-badge,
@@ -307,10 +336,13 @@
   .world-tag {
     max-width: 100%;
     padding: 3px 7px;
+    border: 1px solid rgba(148, 163, 184, 0.18);
     border-radius: 999px;
     background: #2a3039;
     color: #dbeafe;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
     white-space: nowrap;
   }
 

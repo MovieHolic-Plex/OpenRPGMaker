@@ -287,10 +287,10 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   const diff = eventDraftDiffById(project, request.mapId, request.eventId);
   const changed = Boolean(diff && diff.changes.length > 0);
   if (changed) {
-    local.textContent = "편집 중 · 변경사항 있음 — 적용(Apply)으로 프로젝트에 반영하세요";
+    local.textContent = "편집 중 · 변경사항 있음 — [적용]을 눌러 프로젝트에 반영하세요 (닫지 않음)";
     local.dataset.state = "working";
   } else if (footer.dataset.applied === "true") {
-    local.textContent = "적용됨 — 확인(OK)으로 닫거나 계속 편집하세요";
+    local.textContent = "적용됨 — [확인]을 누르면 닫히고, 계속 편집할 수 있습니다";
     local.dataset.state = "applied";
   } else if (event?.draft) {
     local.textContent = "편집 세션 · 변경 없음";
@@ -305,8 +305,8 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   // Apply vs Confirm 구분 힌트: 버튼 타이틀에 병기
   const applyBtn = footer.querySelector<HTMLElement>('[data-testid="event-editor-apply"]');
   const okBtn = footer.querySelector<HTMLElement>('[data-testid="event-editor-ok"]');
-  if (applyBtn) applyBtn.title = "적용 — 저장하지 않고 편집을 유지하며 프로젝트에 반영";
-  if (okBtn) okBtn.title = "확인 — 적용 후 에디터를 닫음";
+  if (applyBtn) applyBtn.title = "적용(Apply): 저장하지 않고 편집을 유지하며 프로젝트에만 반영 — 에디터는 열린 채 유지";
+  if (okBtn) okBtn.title = "확인(OK): 남은 변경을 적용하고 에디터를 닫음";
 }
 
 function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: string; readonly state: string } {

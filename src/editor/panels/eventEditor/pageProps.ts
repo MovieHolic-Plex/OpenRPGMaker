@@ -848,7 +848,7 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
           dataset: { testid: "event-page-graphic-set" },
           on: { click: () => openNpcGraphicDialog(mapId, eventId, page) },
         }),
-        el("label", { class: "event-graphic-transparent", children: [transparent, el("span", { text: "투명" })] }),
+        el("label", { class: "event-graphic-transparent", attrs: { title: "체크하면 맵에서 그래픽을 숨깁니다(투명 상태). 해제하면 그래픽이 보입니다." }, children: [transparent, el("span", { text: "투명(맵에서 숨김)" })] }),
       ],
     }),
     spriteInput

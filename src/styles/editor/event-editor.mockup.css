@@ -499,6 +499,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .event-editor .event-inspector-stat-value {
@@ -512,10 +513,8 @@
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   text-align: right;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 190px;
+  max-width: min(190px, 42vw);
+  overflow-wrap: anywhere;
 }
 
 .event-editor .event-inspector-recent {
@@ -1051,7 +1050,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-bottom: 6px;
+  padding: 0 10px 6px;
+  margin-left: 8px;
+  border-left: 1px solid var(--mk-line-soft, var(--mk-line));
+  background: color-mix(in srgb, var(--mk-surface) 55%, transparent);
+  border-radius: 0 0 0 6px;
 }
 
 .event-editor > .event-editor-pagebar > .event-page-tabs .btn {

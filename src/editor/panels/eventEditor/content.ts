@@ -449,12 +449,13 @@ function renderCommandCategoryLegend(): HTMLElement {
 function renderInspectorIdleSummary(page: EventPage, issues: readonly EventDraftIssue[]): HTMLElement {
   const errorCount = issues.filter((issue) => issue.severity === "error").length;
   const warningCount = issues.filter((issue) => issue.severity === "warning").length;
+  const idleName = page.name.trim() || "(이름 없음)";
   const children: HTMLElement[] = [
     el("div", {
       class: "event-inspector-idle-head",
       children: [
         el("span", { class: "event-inspector-idle-label", text: "현재 페이지" }),
-        el("span", { class: "event-inspector-idle-name", text: page.name }),
+        el("span", { class: "event-inspector-idle-name", text: idleName, attrs: { title: idleName } }),
       ],
     }),
     el("div", {

@@ -61,7 +61,7 @@ function renderLivePreview(key: string, page: EventPage, _mapId: MapId, eventId:
   if (steps.length > 0) {
     statusKind = "ready";
     const first = commandSummary(steps[0]!.command).trim();
-    statusText = first.length > 0 && first.length <= 18 ? first : `${steps.length} steps`;
+    statusText = first.length > 0 && first.length <= 18 ? first : `${steps.length}단계`;
   }
   const summary = el("summary", {
     class: "event-aux-chip-summary",
