@@ -19,7 +19,7 @@ import type {
 
 export function updateClassRecord(database: DatabaseRecords, id: string, patch: Partial<ClassRecord>): void {
   const index = database.classes.findIndex((entry) => entry.id === id);
-  if (index < 0) return;
+  if (index < 0) throw new Error(`레코드를 찾을 수 없습니다: ${id}`);
   const record = { ...database.classes[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("options" in patch && patch.options !== undefined) record.options = patch.options;
@@ -38,7 +38,7 @@ export function updateClassRecord(database: DatabaseRecords, id: string, patch: 
 
 export function updateSkillRecord(database: DatabaseRecords, id: string, patch: Partial<SkillRecord>): void {
   const index = database.skills.findIndex((entry) => entry.id === id);
-  if (index < 0) return;
+  if (index < 0) throw new Error(`레코드를 찾을 수 없습니다: ${id}`);
   const record = { ...database.skills[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("scope" in patch && isSkillScope(patch.scope)) record.scope = patch.scope;
@@ -60,7 +60,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
 
 export function updateItemRecord(database: DatabaseRecords, id: string, patch: Partial<ItemRecord>): void {
   const index = database.items.findIndex((entry) => entry.id === id);
-  if (index < 0) return;
+  if (index < 0) throw new Error(`레코드를 찾을 수 없습니다: ${id}`);
   const record = { ...database.items[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("imageResourceId" in patch) record.imageResourceId = patch.imageResourceId;
@@ -97,7 +97,7 @@ export function updateItemRecord(database: DatabaseRecords, id: string, patch: P
 
 export function updateEquipmentRecord(database: DatabaseRecords, id: string, patch: Partial<EquipmentRecord>): void {
   const index = database.equipment.findIndex((entry) => entry.id === id);
-  if (index < 0) return;
+  if (index < 0) throw new Error(`레코드를 찾을 수 없습니다: ${id}`);
   const record = { ...database.equipment[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("imageResourceId" in patch) record.imageResourceId = patch.imageResourceId;
@@ -126,7 +126,7 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
 
 export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: Partial<EnemyRecord>): void {
   const index = database.enemies.findIndex((entry) => entry.id === id);
-  if (index < 0) return;
+  if (index < 0) throw new Error(`레코드를 찾을 수 없습니다: ${id}`);
   const record = { ...database.enemies[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("speciesId" in patch) record.speciesId = patch.speciesId;
@@ -152,7 +152,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
 
 export function updateTroopRecord(database: DatabaseRecords, id: string, patch: Partial<TroopRecord>): void {
   const index = database.troops.findIndex((entry) => entry.id === id);
-  if (index < 0) return;
+  if (index < 0) throw new Error(`레코드를 찾을 수 없습니다: ${id}`);
   const record = { ...database.troops[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("enemyIds" in patch && patch.enemyIds !== undefined) record.enemyIds = patch.enemyIds;
