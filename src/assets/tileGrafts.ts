@@ -117,11 +117,18 @@ function sourceHeight(source: GraftSource): number {
   return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
-// 짧고 안정적인 문자열 해시(djb2 → 32bit hex). 캐시 키 용도로만 사용.
 function hashString(value: string): string {
-  let hash = 5381;
+  let hash = 0x811c9dc5;
   for (let index = 0; index < value.length; index += 1) {
-    hash = ((hash << 5) + hash + value.charCodeAt(index)) | 0;
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
   }
-  return (hash >>> 0).toString(16);
+  return hash.toString(16).padStart(8, "0");
+}
+
+export function graftExpandedBadge(tileset: Pick<TilesetDef, "count" | "tilesPerRow" | "tileGrafts">): string | null {
+  const base = tileset.count;
+  const expanded = tileCountWithGrafts(tileset);
+  if (expanded <= base) return null;
+  return `+${expanded - base} tiles (${Math.ceil(expanded / Math.max(1, tileset.tilesPerRow))} rows)`;
 }

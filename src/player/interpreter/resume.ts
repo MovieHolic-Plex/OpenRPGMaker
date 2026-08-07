@@ -26,13 +26,21 @@ export function advanceResume(
     }
   } else if (pending === "shop") {
     const command = frame.commands[frame.pc];
-    if (
-      command?.kind === "shop" &&
-      command.branchOnTransaction === true &&
-      value === true &&
-      pushFrame(state, command.transactionBranch ?? [])
-    ) {
-      return "continue";
+    if (command?.kind === "shop") {
+      if (
+        command.branchOnTransaction === true &&
+        value === true &&
+        pushFrame(state, command.transactionBranch ?? [])
+      ) {
+        return "continue";
+      }
+      if (
+        command.branchOnFailedTransaction === true &&
+        value === "failed" &&
+        pushFrame(state, command.failedTransactionBranch ?? [])
+      ) {
+        return "continue";
+      }
     }
     frame.pc += 1;
   } else if (pending === "inn") {

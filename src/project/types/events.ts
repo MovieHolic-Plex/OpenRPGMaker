@@ -326,6 +326,8 @@ export type Command =
       stock?: ShopStockEntry[];
       branchOnTransaction?: boolean;
       transactionBranch?: Command[];
+      branchOnFailedTransaction?: boolean;
+      failedTransactionBranch?: Command[];
     }
   | {
       kind: "inn";

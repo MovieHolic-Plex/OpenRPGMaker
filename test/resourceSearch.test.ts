@@ -34,8 +34,8 @@ describe("searchResources", () => {
     expect(stairs.map((r) => r.id)).toContain("tile:246");
   });
 
-  it("finds bee and skeleton monster1 charsets", () => {
-    expect(searchResources("charset", "벌")[0]?.id).toBe("charset:tex_easyrpg_charset_monster1:2");
+  it("finds orc and skeleton monster1 charsets (bee label removed: idx2 was mis-labeled as 벌, now 오크)", () => {
+    expect(searchResources("charset", "오크")[0]?.id).toBe("charset:tex_easyrpg_charset_monster1:2");
     expect(searchResources("charset", "해골")[0]?.id).toBe("charset:tex_easyrpg_charset_monster1:4");
   });
 

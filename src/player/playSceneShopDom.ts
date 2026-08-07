@@ -94,7 +94,9 @@ export function shopPromptText(step: ShopStep, mode: ShopMode, terms: ResolvedTe
 }
 
 export function sellPrice(item: ItemRecord): number {
-  return Math.max(0, Math.floor(item.price / 2));
+  // price 0/1이면 floor/2==0 → 팔아도 0G, UX 혼란. 최소 1G는 보장하되 price 0은 판매 자체를 에디터에서 막는 게 정답. 런타임은 0이면 0 유지(에디터 경고).
+  if (item.price <= 0) return 0;
+  return Math.max(1, Math.floor(item.price / 2));
 }
 
 // 커서가 아이템을 옮길 때 우측 '보유' 패널을 선택 아이템 기준으로 갱신(RM2003 감각).
@@ -151,6 +153,8 @@ function shopItemButton(
 }
 
 function quantityControl(): HTMLElement {
+  const wrap = document.createElement("div");
+  wrap.className = "runtime-commerce-quantity-wrap";
   const input = document.createElement("input");
   input.type = "number";
   input.min = "1";
@@ -158,13 +162,31 @@ function quantityControl(): HTMLElement {
   input.value = "1";
   input.className = "runtime-commerce-quantity-input";
   input.dataset.testid = "shop-quantity-input";
-  return input;
+  input.title = "←/→ 로 1~99 수량 조절";
+  input.addEventListener("input", () => {
+    const raw = Number.parseInt(input.value, 10);
+    const clamped = Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
+    if (String(clamped) !== input.value.trim()) input.value = String(clamped);
+  });
+  input.addEventListener("change", () => {
+    const raw = Number.parseInt(input.value, 10);
+    input.value = String(Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1)));
+  });
+  const hint = document.createElement("span");
+  hint.className = "runtime-commerce-quantity-hint";
+  hint.textContent = "←/→ 1~99";
+  wrap.append(input, hint);
+  return wrap;
 }
 
 function currentQuantity(step: ShopStep): number {
   if ((step.quantityMode ?? "single") !== "select") return 1;
-  const input = document.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
-  return input ? Math.max(1, Number.parseInt(input.value, 10) || 1) : 1;
+  // overlay 스코프 고정: 전역 document 조회가 다른 상점/오버레이 값을 읽는 간섭 방지 + 1..99 하드 클램프
+  const overlay = document.querySelector<HTMLElement>(".runtime-shop-overlay");
+  const input = overlay?.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']")
+    ?? document.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+  const raw = input ? Number.parseInt(input.value, 10) : 1;
+  return Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
 }
 
 function shopBluePanel(className: string, children: readonly Node[]): HTMLElement {

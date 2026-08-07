@@ -50,7 +50,10 @@ function queryScore(query: string, label: string, tags: readonly string[]): numb
   if (whole > 0) return whole;
   const terms = query.split(/\s+/).filter((term) => term.length > 0);
   if (terms.length < 2) return 0;
-  return terms.reduce((total, term) => total + matchScore(term, label, tags), 0);
+  const scored = terms.map((term) => matchScore(term, label, tags));
+  const sum = scored.reduce((total, s) => total + s, 0);
+  const allHit = scored.every((s) => s > 0);
+  return sum + (allHit ? 20 : 0);
 }
 
 function matchScore(query: string, label: string, tags: readonly string[]): number {
@@ -59,11 +62,13 @@ function matchScore(query: string, label: string, tags: readonly string[]): numb
   let score = 0;
   if (labelLower === q) score += 100;
   else if (labelLower.includes(q)) score += 50;
+  let tagScore = 0;
   for (const tag of tags) {
     const tagLower = tag.toLowerCase();
-    if (tagLower === q) score += 40;
-    else if (tagLower.includes(q)) score += 20;
+    if (tagLower === q) tagScore += 40;
+    else if (tagLower.includes(q)) tagScore += 20;
   }
+  score += Math.min(40, tagScore);
   return score;
 }
 
@@ -138,8 +143,9 @@ function monsterCandidates(): ResourceCandidate[] {
 function bundledTileSemantics(tileset: TilesetDef | undefined): readonly { index: number; label: string; tags: readonly string[] }[] {
   if (tileset?.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY) return INTERIOR_TILE_SEMANTICS;
   if (tileset?.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY) return DUNGEON_TILE_SEMANTICS;
-  // 기본(타일셋 미지정 포함): combined_town — 기존 동작 유지.
-  return COMBINED_TOWN_TILE_SEMANTICS;
+  if (tileset?.image.type === "bundled") return COMBINED_TOWN_TILE_SEMANTICS;
+  if (!tileset) return COMBINED_TOWN_TILE_SEMANTICS;
+  return [];
 }
 
 // 번들 시맨틱 + 프로젝트 사용자 메타데이터 병합. 같은 타일이면 사용자 라벨이 이기고 태그는 합친다.

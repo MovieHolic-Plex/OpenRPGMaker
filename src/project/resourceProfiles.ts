@@ -40,7 +40,7 @@ export function getResourceProfileSpec(kind: ResourceKind): ResourceProfileSpec 
 
 export function validateResourceDimensions(kind: ResourceKind, width: number, height: number): ResourceDimensionResult {
   const spec = getResourceProfileSpec(kind);
-  if (spec.media === "audio") return { ok: true, message: `${spec.label}: 오디오 리소스` };
+  if (spec.media === "audio") return { ok: true, message: `${spec.label}: 오디오 리소스 (이미지 규격 검사는 생략)` };
   if (spec.expectedWidth !== undefined && spec.expectedHeight !== undefined) {
     if (width !== spec.expectedWidth || height !== spec.expectedHeight) {
       return {

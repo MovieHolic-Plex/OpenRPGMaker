@@ -269,12 +269,24 @@ function validateCommandShape(label: string, value: unknown): void {
         requireString(`${label}.itemIds[${index}]`, itemId);
       }
       if (command.allowSell !== undefined) requireBoolean(`${label}.allowSell`, command.allowSell);
-      if (command.quantityMode !== undefined) requireString(`${label}.quantityMode`, command.quantityMode);
-      if (command.shopType !== undefined) requireString(`${label}.shopType`, command.shopType);
-      if (command.messageType !== undefined) requireString(`${label}.messageType`, command.messageType);
+      if (command.quantityMode !== undefined) {
+        const qm = requireString(`${label}.quantityMode`, command.quantityMode);
+        if (qm !== "single" && qm !== "select") throw new ProjectFormatError(`${label}.quantityMode가 잘못되었습니다.`);
+      }
+      if (command.shopType !== undefined) {
+        const st = requireString(`${label}.shopType`, command.shopType);
+        if (st !== "normal" && st !== "buyOnly" && st !== "sellOnly") throw new ProjectFormatError(`${label}.shopType가 잘못되었습니다.`);
+      }
+      if (command.messageType !== undefined) {
+        const mt = requireString(`${label}.messageType`, command.messageType);
+        if (mt !== "welcome" && mt !== "business" && mt !== "direct") throw new ProjectFormatError(`${label}.messageType가 잘못되었습니다.`);
+      }
+      if (command.merchantGold !== undefined) requireNumber(`${label}.merchantGold`, command.merchantGold);
       if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);
       if (command.branchOnTransaction !== undefined) requireBoolean(`${label}.branchOnTransaction`, command.branchOnTransaction);
       if (command.transactionBranch !== undefined) validateCommandArray(`${label}.transactionBranch`, command.transactionBranch);
+      if (command.branchOnFailedTransaction !== undefined) requireBoolean(`${label}.branchOnFailedTransaction`, command.branchOnFailedTransaction);
+      if (command.failedTransactionBranch !== undefined) validateCommandArray(`${label}.failedTransactionBranch`, command.failedTransactionBranch);
       return;
     case "inn":
       requireNumber(`${label}.price`, command.price);

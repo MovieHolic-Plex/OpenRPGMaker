@@ -124,6 +124,7 @@ export type StepResult =
       /** 상인 소지금(플레이어 물품 매입 예산). 생략 시 기본 100G. */
       merchantGold?: number;
       branchOnTransaction?: boolean;
+      branchOnFailedTransaction?: boolean;
     }
   | {
       kind: "inn";
@@ -139,7 +140,7 @@ export type StepResult =
   | { kind: "gameOver"; message?: string }
   | { kind: "returnToTitle"; title?: string; message?: string };
 
-export type ResumeValue = number | boolean | string | undefined | void;
+export type ResumeValue = number | boolean | string | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done">;
 export type ResumeAdvance = "continue" | "done";
 

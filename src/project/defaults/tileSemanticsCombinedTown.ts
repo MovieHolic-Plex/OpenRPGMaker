@@ -26,7 +26,7 @@ function entries(
 export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntry[] = [
   // 검증된 통행 불가 타일(핸드오프 0.4) — 겉보기와 실제 통행성이 다른 함정 포함.
   ...entries([TILE.FLOOR, 343], "돌바닥", "floor", "solid", ["floor", "FLOOR", "통행불가", "함정"]),
-  ...entries([TILE.STAIRS], "계단", "stairs", "solid", ["stairs", "STAIRS", "성벽"]),
+  ...entries([TILE.STAIRS], "계단(통행 함정·석축 단)", "stairs", "solid", ["stairs", "STAIRS", "계단", "성벽", "석축 단", "석축", "축대", "통행불가", "함정"]),
   ...entries([TILE.WALL], "벽", "wall", "solid", ["wall", "WALL", "성벽"]),
   ...entries([TILE.TREE], "나무", "tree", "solid", ["tree", "TREE", "숲"]),
   ...entries([TILE.WATER], "물", "water", "solid", ["water", "WATER", "호수", "강"]),
@@ -97,7 +97,7 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
   ...entries([88], "깨진 창문조각", "window", "solid", ["window", "broken"]),
   ...entries([231], "마법진", "decoration", "passable", ["magic", "ritual"]),
   // 320은 벽에 붙은 벽보(공지문) — 자립 팻말은 440. (2026-07-16 사용자 교정)
-  ...entries([320], "벽보", "decoration", "passable", ["notice", "벽 전용", "퀘스트", "공지"]),
+  ...entries([320], "벽보", "decoration", "passable", ["notice", "벽 전용", "퀘스트", "공지", "표지판", "팻말", "게시판"]),
   ...entries([378, 379, 380, 408, 409, 410, 438, 439], "울타리", "fence", "solid", ["fence", "barrier", "장식"]),
 
   // 2026-07-16 칩셋 재조사 + 사용자 교정 확정본.
@@ -147,7 +147,7 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
   ...entries([70], "짙은 수풀", "terrain", "passable", ["undergrowth", "수풀", "덤불숲", "오토타일 몸통"]),
   ...entries([9, 11, 39, 40, 41, 69, 71, 99, 100, 101], "짙은 수풀 변형", "terrain", "passable", ["undergrowth", "수풀", "덤불숲", "오토타일"]),
   // 석축 단(246/249 블록) — 성벽 상단·축대 느낌의 테두리형 바닥. 통행 불가(stoneWall 분류 유지).
-  ...entries([246, 248, 276, 277, 278, 306, 307, 308, 336, 337, 338], "석축 단(석판)", "structure", "solid", ["stone platform", "석축", "축대", "성벽 상단", "오토타일"]),
+  ...entries([246, 248, 276, 277, 278, 306, 307, 308, 336, 337, 338], "석축 단(석판)", "structure", "solid", ["stone platform", "석축 단", "석축", "축대", "성벽 상단", "오토타일", "계단"]),
   ...entries([249, 251, 279, 280, 281, 309, 310, 311, 339, 340, 341], "석축 단(자갈)", "structure", "solid", ["stone platform", "석축", "축대", "성벽 상단", "오토타일"]),
   // 어둠(366/369 블록) — 심연/동굴 어둠 바닥. 통행 불가(darkWallBody 분류 유지). 426은 기존 "어두운 벽" 라벨 유지.
   ...entries([366, 368, 396, 397, 398, 427, 428, 456, 457, 458], "어둠(석축 테)", "terrain", "solid", ["darkness", "어둠", "심연", "동굴", "오토타일"]),

@@ -140,6 +140,8 @@ export function newCommand(kind: Command["kind"]): Command {
         merchantGold: 100,
         branchOnTransaction: false,
         transactionBranch: [],
+        branchOnFailedTransaction: false,
+        failedTransactionBranch: [],
       };
     case "inn":
       return { kind: "inn", price: 20 };

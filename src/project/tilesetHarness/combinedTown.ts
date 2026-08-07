@@ -31,8 +31,28 @@ export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boole
 export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): boolean {
   let changed = false;
   for (const tileset of Object.values(project.tilesets)) {
-    changed = applyCombinedTownHarness(tileset) || changed;
+    if (isCombinedTownTileset(tileset)) {
+      changed = applyCombinedTownHarness(tileset) || changed;
+    } else {
+      changed = applyCustomChipsetMinimalHarness(tileset) || changed;
+    }
     changed = applyEasyRpgThemeMetadataPacks(tileset) || changed;
+  }
+  return changed;
+}
+
+function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
+  let changed = false;
+  ensureTileMetaLength(tileset);
+  for (let tile = 0; tile < tileset.count; tile += 1) {
+    if (!isTransparentChipsetTile(tile)) continue;
+    if (isTreeTrunkTileId(tile)) continue;
+    const meta = tileset.tileMeta?.[tile];
+    if (isUserRuntimeMeta(meta) && meta?.defaultLayer === "lower") continue;
+    if (tileset.priority[tile] !== "upper") {
+      tileset.priority[tile] = "upper";
+      changed = true;
+    }
   }
   return changed;
 }

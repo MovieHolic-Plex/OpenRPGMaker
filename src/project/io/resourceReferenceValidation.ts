@@ -84,6 +84,27 @@ export function validateOptionalResource(
   knownResourceIds: ReadonlySet<string>
 ): void {
   if (id === undefined) return;
-  if (id.startsWith("generated-enemy-") || id.startsWith("farming-crop-") || id.startsWith("easyrpg-monster-")) return;
+  if (knownResourceIds.has(id)) return;
+  const isGeneratedPrefix =
+    id.startsWith("generated-enemy-") || id.startsWith("farming-crop-") || id.startsWith("easyrpg-monster-");
+  if (!isGeneratedPrefix) {
+    assert(knownResourceIds.has(id), `${label}가 존재하지 않습니다: ${id}`);
+    return;
+  }
+  const base = baseGeneratedResourceId(id);
+  if (base && knownResourceIds.has(base)) return;
   assert(knownResourceIds.has(id), `${label}가 존재하지 않습니다: ${id}`);
+}
+
+function baseGeneratedResourceId(id: string): string | null {
+  for (const marker of ["-enemy_", "-species_"]) {
+    const at = id.indexOf(marker);
+    if (at > 0) return id.slice(0, at).replace(/-+$/u, "");
+  }
+  const cropDash = id.indexOf("-crop-");
+  if (cropDash > 0) {
+    const nextDash = id.indexOf("-", cropDash + 6);
+    if (nextDash > 0) return id.slice(0, nextDash);
+  }
+  return null;
 }

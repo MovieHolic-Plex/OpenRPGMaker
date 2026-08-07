@@ -155,7 +155,7 @@ export function normalizeActorRecord(actor: LegacyActorRecord): ActorRecord {
     unarmedAnimationId: actor.unarmedAnimationId,
     options: normalizeOptions(actor.options),
     learnedSkills: normalizeLearnedSkills(actor.learnedSkills, actor.skillIds),
-    stateRates: { state_death: "C", state_poison: "C", ...actor.stateRates },
+    stateRates: normalizeRates(actor.stateRates ?? {}),
     elementRates: defaultElementRates(actor.elementRates),
   };
 }

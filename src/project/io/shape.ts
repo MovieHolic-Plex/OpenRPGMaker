@@ -96,6 +96,7 @@ export function validateProjectV3(data: JsonRecord): Project {
   project.database = normalizeDatabaseRecords(project.database);
   project.system = normalizeSystemRecords(project.system);
   stampCharacterIdsForSocialEvents(project);
+  normalizeShopCommands(project);
   repairProjectReferences(project);
   validateProjectReferences(project);
   return project;
@@ -355,4 +356,36 @@ function validateEndpoint(label: string, value: unknown, mapIds: ReadonlySet<str
     const direction = requireString(`${label}.direction`, endpoint.direction);
     assert(direction === "left" || direction === "right" || direction === "up" || direction === "down", `${label}.direction이 잘못되었습니다.`);
   }
+}
+
+function normalizeShopCommands(project: Project): void {
+  const normalize = (commands: unknown[]) => {
+    for (const raw of commands) {
+      const cmd = raw as Record<string, unknown>;
+      if (cmd?.kind !== "shop") continue;
+      // allowSell → shopType 마이그레이션 (구 저장본 호환)
+      if (cmd.shopType === undefined && typeof cmd.allowSell === "boolean") {
+        cmd.shopType = cmd.allowSell ? "normal" : "buyOnly";
+      }
+      // 레거시 명령에 새 분기 필드 기본값 주입
+      if (cmd.branchOnTransaction === undefined) cmd.branchOnTransaction = false;
+      if (cmd.transactionBranch === undefined) cmd.transactionBranch = [];
+      if ((cmd as Record<string, unknown>).branchOnFailedTransaction === undefined) (cmd as Record<string, unknown>).branchOnFailedTransaction = false;
+      if ((cmd as Record<string, unknown>).failedTransactionBranch === undefined) (cmd as Record<string, unknown>).failedTransactionBranch = [];
+      // stock ↔ itemIds 이중기록 해소: stock orphan 제거 + 순서 정렬
+      if (Array.isArray(cmd.stock) && Array.isArray(cmd.itemIds)) {
+        const ids = new Set(cmd.itemIds as string[]);
+        const filtered = (cmd.stock as { itemId: string }[]).filter((e) => ids.has(e.itemId));
+        const byId = new Map(filtered.map((e) => [e.itemId, e] as const));
+        const ordered = (cmd.itemIds as string[]).map((id) => byId.get(id)).filter(Boolean) as typeof filtered;
+        cmd.stock = ordered.length > 0 ? ordered : undefined;
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) normalize(page.commands as unknown[]);
+    }
+  }
+  for (const ce of project.commonEvents ?? []) normalize(ce.commands as unknown[]);
 }
