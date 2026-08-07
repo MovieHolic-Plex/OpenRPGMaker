@@ -537,7 +537,7 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
   input.value = String(command.merchantGold ?? 100);
   input.className = "commerce-command-input shop-processing-merchant-gold-input";
   input.dataset.testid = "shop-merchant-gold";
-  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금 (0=무제한, 판매 시 예산 소모)";
+  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금 (0이면 매입 불가, 판매 시 예산 소모)";
   input.addEventListener("change", () => {
     const parsed = Number.parseInt(input.value, 10);
     const merchantGold = Number.isFinite(parsed) ? Math.max(0, parsed) : 100;
@@ -556,7 +556,7 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
     }),
     el("p", {
       class: "commerce-command-hint",
-      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G, 0이면 무제한. 상점 방문마다 이 값으로 리셋됩니다.",
+      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G, 0이면 아무 것도 매입하지 않습니다. 방문마다 리셋됩니다.",
     })
   );
   return fieldset;
@@ -1262,12 +1262,42 @@ function itemDetailPanel(
       winter: "겨울",
     };
 
+    const sellFloor = Math.floor(item.price / 2);
+    const stockWarning = el("p", {
+      class: "commerce-command-hint shop-stock-warning",
+      dataset: { testid: "shop-stock-price-warning" },
+      text: "",
+    });
+    stockWarning.style.display = "none";
+    stockWarning.style.color = "var(--rzzu-danger, #c0392b)";
+    const refreshStockWarning = () => {
+      const raw = priceInput.value.trim();
+      if (raw === "") {
+        stockWarning.style.display = "none";
+        stockWarning.textContent = "";
+        return;
+      }
+      const parsed = Number.parseInt(raw, 10);
+      if (!Number.isFinite(parsed)) {
+        stockWarning.style.display = "none";
+        return;
+      }
+      const v = Math.max(0, parsed);
+      if (v < sellFloor) {
+        stockWarning.textContent = `⚠ 매입가(${sellFloor}G)보다 싸게 팔면(H-02 차익) 되팔아 돈이 생깁니다. 런타임은 ${sellFloor}G로 보정됩니다.`;
+        stockWarning.style.display = "";
+      } else {
+        stockWarning.style.display = "none";
+        stockWarning.textContent = "";
+      }
+    };
     const commitStock = () => {
       const nextSeasons = seasonOrder.filter((s) => seasons.has(s));
       const raw = priceInput.value.trim();
       const parsed = raw === "" ? undefined : Number.parseInt(raw, 10);
       const priceOverride =
         parsed !== undefined && Number.isFinite(parsed) ? Math.max(0, parsed) : undefined;
+      refreshStockWarning();
       const others = (command.stock ?? []).filter((row) => row.itemId !== item.id);
       const hasAny = nextSeasons.length > 0 || priceOverride !== undefined;
       const nextStock = hasAny
@@ -1282,6 +1312,7 @@ function itemDetailPanel(
         : others;
       options.onStockChange(nextStock);
     };
+    refreshStockWarning();
 
     priceInput.addEventListener("change", commitStock);
 
@@ -1327,6 +1358,7 @@ function itemDetailPanel(
             class: "shop-stock-price-field",
             children: [el("span", { text: "가격 오버라이드 (G)" }), priceInput],
           }),
+          stockWarning,
         ],
       })
     );

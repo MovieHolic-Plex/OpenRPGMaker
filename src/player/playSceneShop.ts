@@ -150,7 +150,7 @@ export function handleShopTransaction(
   count: number,
   merchantGold: number
 ): ShopTransactionResult {
-  const qty = Math.max(1, Math.floor(count) || 1);
+  const qty = Math.min(99, Math.max(1, Math.floor(count) || 1));
   if (mode === "sell") {
     const owned = scene.session.inventory[item.id] ?? 0;
     if (owned < qty) {

@@ -161,6 +161,15 @@ function quantityControl(): HTMLElement {
   input.className = "runtime-commerce-quantity-input";
   input.dataset.testid = "shop-quantity-input";
   input.title = "←/→ 로 1~99 수량 조절";
+  input.addEventListener("input", () => {
+    const raw = Number.parseInt(input.value, 10);
+    const clamped = Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
+    if (String(clamped) !== input.value.trim()) input.value = String(clamped);
+  });
+  input.addEventListener("change", () => {
+    const raw = Number.parseInt(input.value, 10);
+    input.value = String(Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1)));
+  });
   const hint = document.createElement("span");
   hint.className = "runtime-commerce-quantity-hint";
   hint.textContent = "←/→ 1~99";
@@ -170,8 +179,12 @@ function quantityControl(): HTMLElement {
 
 function currentQuantity(step: ShopStep): number {
   if ((step.quantityMode ?? "single") !== "select") return 1;
-  const input = document.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
-  return input ? Math.max(1, Number.parseInt(input.value, 10) || 1) : 1;
+  // overlay 스코프 고정: 전역 document 조회가 다른 상점/오버레이 값을 읽는 간섭 방지 + 1..99 하드 클램프
+  const overlay = document.querySelector<HTMLElement>(".runtime-shop-overlay");
+  const input = overlay?.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']")
+    ?? document.querySelector<HTMLInputElement>("[data-testid='shop-quantity-input']");
+  const raw = input ? Number.parseInt(input.value, 10) : 1;
+  return Math.min(99, Math.max(1, Number.isFinite(raw) ? raw : 1));
 }
 
 function shopBluePanel(className: string, children: readonly Node[]): HTMLElement {
