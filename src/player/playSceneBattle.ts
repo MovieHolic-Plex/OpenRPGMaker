@@ -4,7 +4,8 @@ import type { StepResult } from "@/player/interpreter";
 import { exitBattleAudio, enterBattleAudio } from "@/player/battleAudio";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
-import { createBattleTransition } from "@/player/battleTransition";
+import { createSkinBattleTransition } from "@/player/battleTransition";
+import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -106,7 +107,8 @@ export function playBattle(
   return new Promise<BattleResult>((resolve) => {
     let battleScene: BattleDomController | undefined;
     let settled = false;
-    const entryTransition = createBattleTransition(host);
+    const entrySkin = getBattleSkin(resolveSkinId(store.getCurrent().system.battleUiStyle));
+    const entryTransition = createSkinBattleTransition(host, entrySkin.transition);
     void entryTransition.cover().then(() => {
       if (settled) return;
       battleScene = mountBattleScene({
@@ -115,7 +117,7 @@ export function playBattle(
         onResult: (result, snapshot) => {
           if (settled) return;
           settled = true;
-          const exitTransition = createBattleTransition(host);
+          const exitTransition = createSkinBattleTransition(host, entrySkin.transition);
           void exitTransition.exit().then(() => {
             exitBattleAudio(project, scene.session, savedAudio);
             applyBattleRewardsToSession(

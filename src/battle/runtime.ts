@@ -25,6 +25,8 @@ import {
   runStateUpkeep,
 } from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
+import { resolveSkinId } from "@/battle/skins/registry";
+import type { BattleSkinId } from "@/battle/skins/types";
 import type {
   ActorCommand,
   ActorCommandDraft,
@@ -115,6 +117,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
   const rng: Rng = options.rng ?? mulberry32(0);
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
+  // B: skin-driven ATB haste — chrono fast, dq/mother slow, octopath subtle
+  const skinHasteMultiplier = (() => {
+    try {
+      const skinId = resolveSkinId((options.project as unknown as { system?: { battleUiStyle?: string } }).system?.battleUiStyle) as BattleSkinId;
+      const map: Record<string, number> = { chrono: 1.18, bravely: 1.08, octopath: 1.06, ff: 1.04, rm2003: 1.02, dragonquest: 0.92, mother: 0.88 };
+      return map[skinId] ?? 1;
+    } catch { return 1; }
+  })();
 
   const actorEquipment = new Map(
     options.project.database.actors.map((actor) => [
@@ -330,12 +340,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     void visualWaitMs;
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
-    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs);
+    const ready = nextReadyBattler(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier);
     if (!ready) {
-      chargeBattlers(activeActors(), enemiesInBattle, deltaMs);
+      chargeBattlers(activeActors(), enemiesInBattle, deltaMs, skinHasteMultiplier);
       return;
     }
-    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs);
+    chargeBattlers(activeActors(), enemiesInBattle, ready.timeMs, skinHasteMultiplier);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.

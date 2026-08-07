@@ -90,3 +90,37 @@ export function createBattleTransition(
     },
   };
 }
+
+/** B: 스킨별 트랜지션을 overlay dataset으로 전달한다. CSS가 [data-battle-transition]으로 분기. */
+export type SkinBattleTransition = import("@/battle/skins/types").BattleTransition;
+
+const SKIN_TRANSITION_CLASS: Record<string, string> = {
+  "slide-pokemon": "battle-transition--slide-pokemon",
+  "focus-blur": "battle-transition--focus-blur",
+  "sweep-cyan": "battle-transition--sweep-cyan",
+  "brave-shift": "battle-transition--brave-shift",
+  "psychedelic": "battle-transition--psychedelic",
+  "curtain-dq": "battle-transition--curtain-dq",
+  "wipe-blue": "battle-transition--wipe-blue",
+  "wipe-black": "battle-transition--wipe-black",
+  "flash-white": "battle-transition--flash-white",
+  "fade": "battle-transition--fade",
+};
+
+export function createSkinBattleTransition(
+  host: HTMLElement,
+  transition: string | undefined,
+  schedule: (callback: () => void, delayMs: number) => number = (callback, delayMs) => window.setTimeout(callback, delayMs)
+): BattleTransition {
+  const skinClass = transition ? (SKIN_TRANSITION_CLASS[transition] ?? "") : "";
+  const base = createBattleTransition(host, schedule);
+  if (skinClass && host.lastElementChild instanceof HTMLElement) {
+    const overlay = host.lastElementChild as HTMLElement;
+    if (overlay.classList.contains("battle-transition-overlay")) {
+      overlay.dataset.battleTransition = transition ?? "";
+      if (skinClass) overlay.classList.add(skinClass);
+    }
+  }
+  return base;
+}
+

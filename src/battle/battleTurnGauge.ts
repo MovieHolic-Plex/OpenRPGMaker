@@ -7,10 +7,11 @@ export type ReadyBattler =
 export function nextReadyBattler(
   actors: readonly MutableBattler[],
   enemies: readonly MutableBattler[],
-  deltaMs: number
+  deltaMs: number,
+  hasteMultiplier = 1
 ): ReadyBattler | undefined {
-  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler));
-  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler));
+  const readyActors = actors.filter((entry) => entry.hp > 0).map((battler) => readyActor(battler, hasteMultiplier));
+  const readyEnemies = enemies.filter((entry) => entry.hp > 0).map((battler) => readyEnemy(battler, hasteMultiplier));
   const ordered = [...readyActors, ...readyEnemies].sort((left, right) => {
     const delta = left.timeMs - right.timeMs;
     if (delta !== 0) return delta;
@@ -24,37 +25,29 @@ export function nextReadyBattler(
 export function chargeBattlers(
   actors: readonly MutableBattler[],
   enemies: readonly MutableBattler[],
-  deltaMs: number
+  deltaMs: number,
+  hasteMultiplier = 1
 ): void {
-  for (const actor of actors) charge(actor, deltaMs);
-  for (const enemy of enemies) charge(enemy, deltaMs);
+  for (const actor of actors) charge(actor, deltaMs, hasteMultiplier);
+  for (const enemy of enemies) charge(enemy, deltaMs, hasteMultiplier);
 }
 
-function readyActor(battler: MutableBattler): ReadyBattler {
-  return { kind: "actor", battler, timeMs: timeToReady(battler) };
+function readyActor(battler: MutableBattler, hasteMultiplier = 1): ReadyBattler {
+  return { kind: "actor", battler, timeMs: timeToReady(battler, hasteMultiplier) };
 }
 
-function readyEnemy(battler: MutableBattler): ReadyBattler {
-  return { kind: "enemy", battler, timeMs: timeToReady(battler) };
+function readyEnemy(battler: MutableBattler, hasteMultiplier = 1): ReadyBattler {
+  return { kind: "enemy", battler, timeMs: timeToReady(battler, hasteMultiplier) };
 }
 
-function timeToReady(battler: MutableBattler): number {
-  return Math.max(0, (100 - battler.gauge) / battler.chargeRate);
+function timeToReady(battler: MutableBattler, hasteMultiplier = 1): number {
+  return Math.max(0, (100 - battler.gauge) / Math.max(0.001, battler.chargeRate * hasteMultiplier));
 }
 
-function charge(battler: MutableBattler, deltaMs: number): void {
+function charge(battler: MutableBattler, deltaMs: number, hasteMultiplier = 1): void {
   if (battler.hp <= 0) return;
-  // 둔화/가속 상태가 있으면 배율 보정(공격업·방어다운 등 상태 배율과 동일한 clamp).
-  // battleStates 공격/방어 배율과 별도로, 여기서는 민첩 배율로 해석한다.
-  // 상태가 없으면 1.0.
-  let hasteMultiplier = 1;
-  // defensive: if battler has no state evaluation context, skip multiplier.
-  // We use a lightweight check: if stateIds contains attack_up/defense_down etc.,
-  // we treat them as haste-affecting too — actual game data maps them via runtimeEffects.
-  // For now, no extra multiplier here (kept for future state-driven haste stat).
-  // The key fix: remove FLOOR dead zone for agility <=8 and expose effective rate.
   void hasteMultiplier;
-  battler.gauge = Math.min(100, battler.gauge + battler.chargeRate * deltaMs);
+  battler.gauge = Math.min(100, battler.gauge + battler.chargeRate * deltaMs * hasteMultiplier);
 }
 
 export function effectiveChargeRate(battler: MutableBattler): number {

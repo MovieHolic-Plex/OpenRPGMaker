@@ -14,6 +14,8 @@
 @import "./_mother.css";
 @import "./_goldensun.css";
 @import "./_mv.css";
+@import "./_hud-templates.css";
+@import "./_transitions.css";
 @import "./_battlers.css";
 /* _vxace.css 는 _battlers.css 뒤에 온다 — _battlers 의 `[data-battle-skin]` 전 스킨
    공통 스프라이트 크기(적 28×32 등)를 vxace 전용 값으로 덮어써야 하고, 두 선택자의

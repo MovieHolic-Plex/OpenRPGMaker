@@ -180,7 +180,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // vxace 기본 배경 — 참조 스크린샷은 "푸른 하늘 + 먼 산 + 밝은 초원" 이다. 기존 12장 중
   // pokemon-backdrop 이 그 구도에 가장 가까워 별칭으로 등록한다(파일 공유는 기존 관례:
   // generated-face-actor1-full 도 actor1-bust.png 를 가리킨다).
-  "battle-skin-vxace-backdrop": "/assets/generated/battle-skins/pokemon-backdrop.png",
+  "battle-skin-mv-backdrop": "/assets/generated/battle-skins/mv-backdrop.png",
+  "battle-skin-vxace-backdrop": "/assets/generated/battle-skins/vxace-backdrop.png",
   "battle-skin-rm2003-backdrop": "/assets/generated/battle-skins/rm2003-backdrop.png",
   "battle-skin-rm2000-backdrop": "/assets/generated/battle-skins/rm2000-backdrop.png",
   "battle-skin-octopath-backdrop": "/assets/generated/battle-skins/octopath-backdrop.png",
