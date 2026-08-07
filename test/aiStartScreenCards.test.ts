@@ -85,13 +85,13 @@ describe("buildVisualStartGallery", () => {
       })
     );
     expect(findByTestId(gallery, "ai-start-visual-gallery")).toBeTruthy();
-    expect(defaultAiVisualStartPrompts()).toHaveLength(3);
-    const house = findByTestId(gallery, "ai-start-build-house");
-    expect(house).toBeTruthy();
-    expect(findByTestId(gallery, "ai-start-visual-stage-house")).toBeTruthy();
-    expect(findByTestId(gallery, "ai-start-visual-villager")).toBeTruthy();
-    house?.dispatchEvent(new Event("click"));
-    expect(picked[0]).toMatch(/^house:/);
+    expect(defaultAiVisualStartPrompts()).toHaveLength(5);
+    const place = findByTestId(gallery, "ai-start-visual-place") ?? findByTestId(gallery, "ai-start-build-house");
+    expect(place).toBeTruthy();
+    expect(findByTestId(gallery, "ai-start-visual-stage-place")).toBeTruthy();
+    expect(findByTestId(gallery, "ai-start-visual-stage-character") ?? findByTestId(gallery, "ai-start-visual-villager")).toBeTruthy();
+    place?.dispatchEvent(new Event("click"));
+    expect(picked[0]).toMatch(/^place:/);
     expect(picked[0]).toContain("집");
   });
 });

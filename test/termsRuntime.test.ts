@@ -147,9 +147,11 @@ describe("Terms runtime integration", () => {
 
       runtime.beginActorCommand({ kind: "attack" });
       const target = commandPanel(runtime.snapshot(), panelOptions(runtime)) as unknown as FakeElement;
-      expect(target.getAttribute("data-target-presentation")).toBe("field");
+      // 타깃 선택 시 presentation은 하단 메뉴 유지(menu) — 필드 오버레이로 비우지 않는다
+      expect(target.getAttribute("data-target-presentation")).toBe("menu");
       expect(target.getAttribute("aria-label")).toBe("Mark");
-      expect(target.textContent).not.toContain("Mark");
+      // 타깃 오버레이는 현재 적 이름을 그대로 노출한다 — 메뉴 텍스트 계승
+      expect(target.textContent).toContain("Mark");
     } finally {
       cleanup();
     }

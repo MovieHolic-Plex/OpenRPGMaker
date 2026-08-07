@@ -568,7 +568,9 @@ export class AssistantSession {
     }
     this.activeSpec = spec;
     this.activeSpecTurnIndex = this.currentTurnIndex;
-    this.carryoverSpecForTurn = null;
+    // carryoverSpecForTurn은 previous-turn 스펙을 다음 턴으로 넘기는 슬롯이라
+    // 현재 턴에서 새로 확정된 스펙이 이전 계획을 덮으면 다음 턴 carryover가 끊긴다.
+    // previous-turn carryover는 다음 sendUserMessage 초입에서 세팅되므로 여기서 null로 비우지 않는다.
     this.specRejections = 0;
     const kinds = [...new Set(spec.assets.map((asset) => asset.kind))].join("·");
     return {
@@ -1017,8 +1019,18 @@ export class AssistantSession {
 
   private withCarryoverWarningIfNeeded(proposal: ProposedCall): ProposedCall {
     const spec = this.carryoverSpecForTurn;
-    if (spec === null || this.carryoverWarningAdded || !SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
-    if (!proposalHasChangedMap([proposal], spec.mapId)) return proposal;
+    if (spec === null || this.carryoverWarningAdded) return proposal;
+    if (!SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
+    // carryover는 diff가 생기기 전 제안 시점에 붙는다 — hasMeaningfulDiff를 거치는
+    // proposalHasChangedMap을 쓰면 아직 tilesChanged 0인 proposal은 false라 누락된다.
+    // carryover는 previous-turn spec을 다음 턴의 쓰기 proposal이 다시 만질 때 붙인다.
+    // proposedCall 레벨에선 mapId만 보고 판단하고, 같은 맵 쓰기면 경고 대상이다.
+    // 이전에는 proposalHasChangedMap(영역 교차)으로 거르다가 paint_tiles from/to가
+    // regionsFromKnownCall에 없어 같은 맵 쓰기도 false가 되어 경고가 0개인 버그가 있었다.
+    const callerMapId = (proposal.args as unknown as { readonly mapId?: unknown })?.mapId;
+    if (typeof callerMapId === "string" && callerMapId === spec.mapId) {
+      // same-map spatial write → carryover 경고를 붙인다 (once)
+    } else if (!proposalHasChangedMap([proposal], spec.mapId)) return proposal;
 
     this.carryoverWarningAdded = true;
     const warning = proposalScopeCarryoverWarning(buildSpecPlanLabel(spec));

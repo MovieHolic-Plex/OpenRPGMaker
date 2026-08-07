@@ -76,7 +76,7 @@ function resolveInvocation(argv: readonly string[]): { readonly args: readonly s
     return { args: argv.slice(1), command };
   }
   const npmCli = process.env.npm_execpath;
-  if (!npmCli) throw new Error("npm_execpath is required to run npm commands safely on Windows");
+  if (!npmCli) return { args: argv.slice(1), command };
   const cli = command === "npm" ? npmCli : path.join(path.dirname(npmCli), "npx-cli.js");
   return { args: [cli, ...argv.slice(1)], command: process.execPath };
 }

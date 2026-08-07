@@ -460,6 +460,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       case "item": {
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         if (!item || (battleEventState.inventory[command.itemId] ?? 0) <= 0 || !itemIsBattleUsable(item)) return false;
+        // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
+        if (!isItemActorEligible(options.project, item, actor.id)) return false;
         break;
       }
       case "capture": {

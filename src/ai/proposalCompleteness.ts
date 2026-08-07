@@ -211,6 +211,19 @@ function regionsFromKnownCall(call: ProposalCompletenessCall): AffectedRegion[] 
   const mapId = stringValue(call.args.mapId);
   if (mapId === null) return null;
 
+  // paint_tiles는 from/to 두 모서리로 사각형을 친다 ([from,to] inclusive)
+  if (call.name === "paint_tiles") {
+    const from = call.args.from as unknown as { readonly x?: unknown; readonly y?: unknown } | undefined;
+    const to = call.args.to as unknown as { readonly x?: unknown; readonly y?: unknown } | undefined;
+    if (from && to && typeof from.x === "number" && typeof from.y === "number" && typeof to.x === "number" && typeof to.y === "number") {
+      const rx = Math.min(from.x, to.x);
+      const ry = Math.min(from.y, to.y);
+      const rw = Math.abs(to.x - from.x) + 1;
+      const rh = Math.abs(to.y - from.y) + 1;
+      return [{ mapId, x: rx, y: ry, w: rw, h: rh }];
+    }
+    return [{ mapId, x: 0, y: 0, w: 1, h: 1 }]; // 유효 좌표가 없어도 같은 맵 쓰기는 carryover 대상
+  }
   if (call.name === "paint_road" || call.name === "tile_road" || call.name === "lay_path") return roadRegions(mapId, call.args.points);
   // 타일 v3 공정 프리미티브(V3B): rect/자동 감지 영역은 result.data가 실측 영역을 준다.
   if (call.name === "build_wall") return rectRegion(mapId, call.args.rect);

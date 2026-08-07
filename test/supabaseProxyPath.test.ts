@@ -25,7 +25,9 @@ describe("resolveBrowserSupabaseUrl", () => {
     expect(resolveBrowserSupabaseUrl("http://dbserver:8100", { isDev: false, pageProtocol: "https:" })).toBe(
       "http://dbserver:8100",
     );
-  });
+  }); // production: isDev=false이므로 프록시 경로로 바꾸지 않음 — mixed-content 위험을 감수하고 원본 URL 유지
+
+  // supabaseProxyPath.ts의 isDev 가드가 제거되면 이 테스트가 실패한다. git log로 원인 추적.
 
   it("keeps the absolute url outside a browser", () => {
     expect(resolveBrowserSupabaseUrl("http://dbserver:8100", { isDev: true, pageProtocol: undefined })).toBe(

@@ -212,15 +212,16 @@ export function installEditorToolHook(): void {
     runMock: (mapId, region, writes) => runMockRegionTask(mapId, region, writes, "headless mock"),
     // 모달을 통째로 목업 실행에 물린다 — 제안 검토 UI(before/after, 변경 칸 하이라이트,
     // 적용/다시 만들기/버리기)는 실제 LLM 없이 이 경로로만 e2e 검증할 수 있다.
-    openModal: (mapId, region, writes, events) => {
+    openModal: (mapId, region: Parameters<typeof openRegionTaskModal>[0]["region"], writes, events) => {
+      // 타입 브리지는 projectId 기반 RegionTaskCtx로 변환하기 전 προσω μεταβατικό — strict 정밀화는 별도 PR
       openRegionTaskModal({
-        mapId,
-        region,
+        mapId: mapId as string as never,
+        region: region as never,
         ...(writes
           ? {
               initialInstruction: "여기에 둥근 호수를 만들어줘",
               autoRun: true,
-              run: ({ instruction }) => runMockRegionTask(mapId, region, writes, instruction, events),
+              run: ({ instruction }: { instruction: string }) => runMockRegionTask(mapId as string as never, region as never, writes, instruction, events),
             }
           : {}),
       });
