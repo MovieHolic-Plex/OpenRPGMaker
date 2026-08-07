@@ -690,10 +690,12 @@ function renderEventValidationSummary(validation: EventDraftValidation): HTMLEle
     dataset: { testid: "event-draft-validation" },
   }) as HTMLDetailsElement;
   details.open = validation.errorCount > 0;
+  const summaryText = `검사 · 오류 ${validation.errorCount} · 경고 ${validation.warningCount} · 안내 ${validation.infoCount}`;
+  const overflowLine = validation.issues.length > 4 ? ` — 목록 ${validation.issues.length}개 중 4개 미리보기 (펼쳐서 전체 보기)` : "";
   details.append(el("summary", {
     class: "event-draft-validation-summary",
     dataset: { testid: "event-draft-validation-summary" },
-    text: `검사 · 오류 ${validation.errorCount} · 경고 ${validation.warningCount} · 안내 ${validation.infoCount}`,
+    text: `${summaryText}${overflowLine}`,
   }));
   if (validation.issues.length === 0) {
     details.append(el("div", { class: "event-draft-validation-clear", text: "현재 발견된 문제가 없습니다." }));

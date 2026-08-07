@@ -131,7 +131,7 @@ function renderCommandItem(
   const handle = el("span", {
     class: "cmd-drag-handle",
     dataset: { testid: "event-command-drag-handle" },
-    attrs: { title: "드래그로 순서 변경", "aria-hidden": "true" },
+    attrs: { role: "button", tabindex: "0", title: "드래그로 순서 변경", "aria-label": `명령 ${path.join(".")} 순서 변경 핸들` },
     text: "::",
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
