@@ -1021,16 +1021,13 @@ export class AssistantSession {
     const spec = this.carryoverSpecForTurn;
     if (spec === null || this.carryoverWarningAdded) return proposal;
     if (!SPATIAL_BUILD_TOOLS.has(proposal.name)) return proposal;
-    // carryover는 diff가 생기기 전 제안 시점에 붙는다 — hasMeaningfulDiff를 거치는
-    // proposalHasChangedMap을 쓰면 아직 tilesChanged 0인 proposal은 false라 누락된다.
-    // carryover는 previous-turn spec을 다음 턴의 쓰기 proposal이 다시 만질 때 붙인다.
-    // proposedCall 레벨에선 mapId만 보고 판단하고, 같은 맵 쓰기면 경고 대상이다.
-    // 이전에는 proposalHasChangedMap(영역 교차)으로 거르다가 paint_tiles from/to가
-    // regionsFromKnownCall에 없어 같은 맵 쓰기도 false가 되어 경고가 0개인 버그가 있었다.
+    // carryover는 diff 생성 전 시점에 붙는다 — tilesChanged 기준으로 거르면 아직 0이라 누락된다.
+    // previous-turn spec의 같은 맵에 다시 쓰는 공간 쓰기면 1회 경고를 붙인다.
+    // paint_tiles 등 from/to 직사각형이 regionsFromKnownCall에서 0-폭으로 잡히는 레거시
+    // 버그로 proposalHasChangedMap이 false가 되던 케이스가 있어 same-map fast path 필수.
     const callerMapId = (proposal.args as unknown as { readonly mapId?: unknown })?.mapId;
-    if (typeof callerMapId === "string" && callerMapId === spec.mapId) {
-      // same-map spatial write → carryover 경고를 붙인다 (once)
-    } else if (!proposalHasChangedMap([proposal], spec.mapId)) return proposal;
+    const isSameMapWrite = typeof callerMapId === "string" && callerMapId === spec.mapId;
+    if (!isSameMapWrite && !proposalHasChangedMap([proposal], spec.mapId)) return proposal;
 
     this.carryoverWarningAdded = true;
     const warning = proposalScopeCarryoverWarning(buildSpecPlanLabel(spec));
