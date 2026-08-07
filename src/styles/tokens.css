@@ -27,19 +27,21 @@
   --control-bg-active: rgba(255, 255, 255, 0.12);/* 컨트롤 active(눌림) */
 
   /* ---- 테두리 (밝은 선 대신 은은한 흰색 알파) --------------------------- */
-  --border-subtle: rgba(255, 255, 255, 0.07);  /* 패널 구분선, 섹션 경계 */
+  --border-subtle: rgba(255, 255, 255, 0.10);  /* 패널 구분선, 섹션 경계 — 0.07→0.10 AA 가시성 확보 */
   --border-default: rgba(255, 255, 255, 0.11); /* 컨트롤/카드 기본 보더 */
   --border-strong: rgba(255, 255, 255, 0.17);  /* hover 보더, 강조 구분 */
 
   /* ---- 텍스트 3단계 ----------------------------------------------------- */
   --text-1: #e9ecf3; /* 본문/제목 (primary) */
   --text-2: #9aa3b5; /* 보조 라벨 (secondary) */
-  --text-3: #626b7d; /* 흐린 힌트/비활성 (muted) */
+  --text-3: #7a8499; /* 흐린 힌트/비활성 (muted) — #626b7d(3.52:1) → #7a8499(5.02:1) WCAG AA */
+  --text-placeholder: #7a8499; /* placeholder/disabled 전용 — 4.5:1 보장 */
+  --text-disabled: #7a8499;
 
   /* ---- 액센트 (인디고/바이올렛) ----------------------------------------- */
-  --accent: #6c79f2;
-  --accent-hover: #8590f6;
-  --accent-active: #5765ee;
+  --accent: #5a68e8; /* #6c79f2(3.71:1) → #5a68e8(4.59:1) — on-accent 흰 글씨 AA */
+  --accent-hover: #6c79f2;
+  --accent-active: #4f5dd8;
   --accent-muted: rgba(108, 121, 242, 0.17);  /* 선택 행/탭 배경 */
   --accent-border: rgba(108, 121, 242, 0.55); /* 선택 컨트롤 보더 */
   --on-accent: #ffffff;                       /* 액센트 배경 위 텍스트 */
@@ -86,6 +88,12 @@
     monospace;
 
 
+  /* ---- 브레이크포인트 토큰 (4단계 — 21개 난립 해소) ---------------------- */
+  --bp-sm: 640px;
+  --bp-md: 900px;
+  --bp-lg: 1280px;
+  --bp-xl: 1488px;
+
   /* ---- z-index 스케일 (단일 진실 — 셸 전체 레이어 순서) ------------------ */
   --z-below: 0;
   --z-base: 1;
@@ -99,12 +107,14 @@
   --z-flyout: 70;
   --z-status: 80;
   --z-popover: 90;
+  --z-app-modal: 300;
   --z-welcome: 240;
   --z-popover-high: 1200;
   --z-popover-top: 1201;
   --z-modal: 2100;
   --z-modal-overlay: 2200;
   --z-modal-top: 2300;
+  --z-proposal: 2500;
 
   /* ---- 추가 셸 색 (기존 raw hex 통합 — 값 동일, 시각 변화 없음) --------- */
   --brand-blue: #7aa2ff;
@@ -115,4 +125,9 @@
   /* ---- 얇은 라운드 스크롤바 (전역 기본은 index.css 하단) ----------------- */
   --scrollbar-thumb: rgba(255, 255, 255, 0.16);
   --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
+
+  /* ---- 빈 상태 토큰 ----------------------------------------------- */
+  --empty-icon-bg: rgba(108, 121, 242, 0.10);
+  --empty-icon-border: rgba(108, 121, 242, 0.28);
+  --empty-icon-color: #c9ceff;
 }

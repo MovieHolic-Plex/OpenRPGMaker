@@ -1,0 +1,27 @@
+@layer components {
+  .grid-4 {
+    display: grid;
+    gap: var(--space-1);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .grid-4--auto {
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
+  }
+  .grid-4--fixed48 {
+    grid-template-columns: repeat(auto-fill, 48px);
+    justify-content: start;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .grid-4--loose {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  }
+  @media (max-width: 640px) {
+    .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-4--loose { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 380px) {
+    .grid-4 { grid-template-columns: 1fr; }
+  }
+}

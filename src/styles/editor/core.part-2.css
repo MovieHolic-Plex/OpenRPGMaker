@@ -97,9 +97,13 @@
 
 .tile-palette {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
   gap: var(--space-1);
   overflow-y: auto;
+  max-width: 100%;
+}
+@media (max-width: 380px) {
+  .tile-palette { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* paletteVerticalCategoryScroll / paletteSelectKeepsScroll 紐⑤뱶: 移⑹뀑 ?붾젅?몃?
@@ -392,9 +396,17 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .event-list-empty {
-  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-height: 120px;
+  padding: 16px;
+  text-align: center;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+  color: var(--text-2);
   font-size: 12px;
-  padding: var(--space-2);
 }
 
 .event-list-row {

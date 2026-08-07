@@ -80,10 +80,14 @@
 }
 
 .commerce-command-empty {
-  background: var(--bg-inset, #14161c);
-  border: 1px dashed var(--border-subtle, #2a2e38);
-  border-radius: 8px;
-  color: var(--text-2, #aeb6c8);
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  min-height: 140px;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 16px;
   text-align: center;

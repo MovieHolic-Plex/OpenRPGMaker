@@ -554,10 +554,13 @@
   display: grid;
   gap: 8px 12px;
   grid-column: 1 / 3;
-  grid-template-columns: repeat(4, 48px);
+  grid-template-columns: repeat(auto-fill, 48px);
   justify-content: center;
   min-height: 194px;
   padding: 10px 8px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .event-graphic-preview-panel .npc-character-cell {

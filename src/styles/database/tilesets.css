@@ -8,7 +8,7 @@
 }
 
 .tileset-modal-backdrop {
-  z-index: 950;
+  z-index: var(--z-popover);
 }
 
 .database-modal-body .rm2k3-tileset-list-pane {
@@ -285,7 +285,7 @@
 
 /* 칩셋 우클릭 메뉴 — map-context-menu 그리드(아이콘|라벨|단축키)에 맞춤 */
 .tileset-tile-context-menu {
-  z-index: 12000;
+  z-index: var(--z-modal);
   min-width: 260px;
   max-width: min(360px, calc(100vw - 16px));
   width: max-content;
@@ -305,7 +305,7 @@
 .tileset-meaning-dialog-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 12100;
+  z-index: var(--z-modal-overlay);
   display: grid;
   place-items: center;
   background: rgba(0, 0, 0, 0.45);
@@ -898,7 +898,7 @@
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
   color: var(--text, #172033);
   padding: 10px;
-  z-index: 10000;
+  z-index: var(--z-modal);
 }
 
 .tileset-review-title,
@@ -934,7 +934,7 @@
 .tileset-review-wizard-host {
   inset: 24px;
   position: fixed;
-  z-index: 9999;
+  z-index: var(--z-modal);
 }
 
 .tileset-review-wizard {

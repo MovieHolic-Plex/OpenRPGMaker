@@ -2,7 +2,7 @@
    Imported after the base editor styles so these desktop RM2K3 rules win intentionally. */
 
 .event-subdialog-backdrop {
-  z-index: 1200;
+  z-index: var(--z-popover-high);
 }
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] {
@@ -10,7 +10,7 @@
   justify-content: center;
   overflow: auto;
   padding: 8px;
-  z-index: 1200;
+  z-index: var(--z-popover-high);
 }
 
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-window {

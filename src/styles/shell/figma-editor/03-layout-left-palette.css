@@ -185,7 +185,7 @@
 
   .palette-option-row {
     gap: 2px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
     margin-bottom: 8px;
   }
 
@@ -232,7 +232,7 @@
   .structure-stamp-panel .stamp-picker {
     display: grid;
     gap: 8px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
   }
 
   .structure-stamp-panel .stamp-button {

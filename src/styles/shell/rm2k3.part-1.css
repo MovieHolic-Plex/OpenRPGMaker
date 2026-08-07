@@ -47,7 +47,7 @@
 
   display: none;
   gap: 1px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(56px, 1fr));
   margin-top: 1px;
   width: 100%;
 }
@@ -152,7 +152,7 @@
   align-items: center;
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
   margin-bottom: 2px;
 }
 
@@ -749,7 +749,7 @@
 .chipset-band-nav {
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
   margin-bottom: 2px;
 }
 

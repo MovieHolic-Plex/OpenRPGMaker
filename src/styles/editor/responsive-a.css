@@ -290,7 +290,11 @@
 }
 
 .editor-layout.no-right-panel .palette-option-row {
-  grid-template-columns: repeat(4, 28px);
+  grid-template-columns: repeat(auto-fill, 28px);
+  justify-content: start;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .editor-layout.no-right-panel .palette-option-button,
