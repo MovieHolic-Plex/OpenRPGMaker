@@ -136,6 +136,11 @@ export interface PlaySession {
   /** persistKill 필드 스폰의 영구 처치 수(mapId → spawnId → 처치 수). 세이브에 포함된다. */
   killedFieldSpawns?: Record<string, Record<string, number>>;
   partyActorIds: string[];
+  shopLoyaltySpend?: Record<string, number>;
+  shopTradeCounts?: Record<string, { sold: number; bought: number }>;
+  shopMileagePoints?: number;
+  shopPawnTickets?: Record<string, { itemId: string; pawnPrice: number; dueDayKey: string }>;
+  shopLastRestockDayKey?: Record<string, string>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];

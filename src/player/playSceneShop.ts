@@ -99,6 +99,7 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
                 }
                 // 상태 메시지 리렌더 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
                 merchantGold = result.merchantGold;
+                { const _cost2 = (item.price * Math.min(99, Math.max(1, Math.floor(count)||1))); const _k = ((step as unknown as { loyaltyTierId?: string }).loyaltyTierId ?? "global"); const _sm2 = ((scene.session as unknown as { shopLoyaltySpend?: Record<string,number> }).shopLoyaltySpend ?? {}); (scene.session as unknown as { shopLoyaltySpend?: Record<string,number> }).shopLoyaltySpend = _sm2; _sm2[_k] = (_sm2[_k] ?? 0) + _cost2; const _rate2 = (step as unknown as { mileageRate?: number }).mileageRate; if(typeof _rate2==="number" && _rate2>0){ (scene.session as unknown as { shopMileagePoints?: number }).shopMileagePoints = Math.floor(((scene.session as unknown as { shopMileagePoints?: number }).shopMileagePoints ?? 0) + _cost2 * Math.min(0.1, Math.max(0, _rate2))); } }
                 transactionCompleted = true;
                 if (nextMode === "buy") {
                   finish();
@@ -168,6 +169,7 @@ export function handleShopTransaction(
     }
     changeItem(scene.session, item.id, "-=", qty);
     changeGold(scene.session, "+=", payout);
+    { const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts ?? {}); (scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts = tc; tc[item.id] = { sold: (tc[item.id]?.sold ?? 0) + qty, bought: tc[item.id]?.bought ?? 0 }; }
     scene.syncRuntimeState();
     return { ok: true, status: `${item.name} sold.`, merchantGold: merchantGold - payout };
   }
@@ -178,6 +180,7 @@ export function handleShopTransaction(
   }
   changeGold(scene.session, "-=", cost);
   changeItem(scene.session, item.id, "+=", qty);
+  { const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts ?? {}); (scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts = tc; tc[item.id] = { sold: tc[item.id]?.sold ?? 0, bought: (tc[item.id]?.bought ?? 0) + qty }; }
   scene.syncRuntimeState();
   // 플레이어 구매금은 상인 소지금으로 들어간다(이후 매입 여력 증가).
   return { ok: true, status: `${item.name} purchased.`, merchantGold: merchantGold + cost };

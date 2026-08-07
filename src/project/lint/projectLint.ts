@@ -574,6 +574,17 @@ function isPlayerTouch(trigger: Trigger): boolean {
 function errorMessage(cause: unknown): string {
   return cause instanceof Error ? cause.message : String(cause);
 }
+function checkShopEconomyLite(issues: LintIssue[], command: unknown, loc: string): void {
+  if (!command || typeof command !== "object" || (command as { kind?: string }).kind !== "shop") return;
+  const c = command as unknown as Record<string, unknown>;
+  const [mapId2] = loc.split(":");
+  const baseMapId = mapId2 ?? "";
+  if (Array.isArray(c.cartLines) && (c.cartLines as unknown[]).length > 12) issues.push({ severity: "warning", code: "shop.cart.overflow", message: "장바구니 줄이 12줄을 넘습니다.", mapId: baseMapId });
+  if (Array.isArray(c.buyback) && (c.buyback as unknown[]).length > 8) issues.push({ severity: "warning", code: "shop.buyback.overflow", message: "되사기 대기열이 8건을 넘습니다.", mapId: baseMapId });
+  if (Array.isArray(c.consignments) && (c.consignments as unknown[]).length > 16) issues.push({ severity: "warning", code: "shop.consignment.overflow", message: "위탁 목록이 16건을 넘습니다.", mapId: baseMapId });
+  if (typeof c.investmentLevel === "number" && (((c.investmentLevel as number) < 0) || ((c.investmentLevel as number) > 5))) issues.push({ severity: "warning", code: "shop.investment.range", message: "investmentLevel은 0..5 범위여야 합니다.", mapId: baseMapId });
+}
+
 function checkShopIntegrity(project: Project, issues: LintIssue[]): void {
   const visit = (command: Command, label: string) => {
     if (command.kind !== "shop") return;
@@ -603,6 +614,7 @@ function checkShopIntegrity(project: Project, issues: LintIssue[]): void {
           if (!Array.isArray(commands)) return;
           for (const [ci, cmd] of (commands as readonly Command[]).entries()) {
             visit(cmd, `${mapId}:${event.id}:p${pi}:${prefix}[${ci}]`);
+            checkShopEconomyLite(issues, cmd as unknown as Extract<Command, { kind: "shop" }>, `${mapId}:${event.id}:p${pi}:${prefix}[${ci}]`);
             if (cmd.kind === "shop" && cmd.transactionBranch) walk(cmd.transactionBranch, "transactionBranch");
             if (cmd.kind === "shop" && (cmd as unknown as { failedTransactionBranch?: Command[] }).failedTransactionBranch) walk((cmd as unknown as { failedTransactionBranch: Command[] }).failedTransactionBranch, "failedTransactionBranch");
           }
