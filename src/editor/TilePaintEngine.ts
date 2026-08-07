@@ -115,7 +115,7 @@ export class TilePaintEngine {
         );
         break;
       case "collision":
-        recordTileEditSnapshot(mid, { includeTilesets: true });
+        if (firstStrokeTile) recordTileEditSnapshot(mid, { includeTilesets: true });
         toggleCollision(mid, x, y);
         break;
       case "event":

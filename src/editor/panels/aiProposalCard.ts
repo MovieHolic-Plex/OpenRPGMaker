@@ -54,6 +54,7 @@ import {
   hasDestructiveCall,
   proposalPreviewMapId,
   renderEmptyProposalNotice,
+  showConfirm,
   type ChatController,
 } from "./aiChatPanelHelpers";
 
@@ -355,6 +356,15 @@ export function createProposalHost(options: {
     const selectedCalls = calls.filter((_, index) => selected[index]);
     if (selectedCalls.length === 0) return;
     const warnings = proposalApprovalWarnings(selectedCalls);
+    const hasDestructive = selectedCalls.some((c) => c.destructive || c.name === "clear_region" || c.name === "remove_event" || c.name === "remove_map" || c.name === "delete_tile_group");
+    if (hasDestructive) {
+      const summary = selectedCalls.map((c) => `• ${c.summary || c.name}`).join("\n");
+      const msg = `파괴적 작업이 포함되어 있습니다 — 아래 내역을 확인하세요:\n${summary}\n\n체크박스는 기본 해제 상태입니다. 적용하려면 직접 체크 후 [확인 후 적용]을 누르세요.`;
+      void showConfirm({ title: "파괴적 변경 — 3단 확인", message: msg, confirmLabel: "확인 후 적용" }).then((ok: boolean) => {
+        if (ok) applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
+      });
+      return;
+    }
     const decision = confirmRuleApproval(warnings);
     if (decision !== true) {
       void decision.then((confirmed) => {

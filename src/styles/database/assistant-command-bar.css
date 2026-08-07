@@ -42,15 +42,15 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   align-items: end;
   bottom: 18px;
   display: grid;
-  gap: 8px;
-  grid-template-columns: 34px minmax(0, 760px) auto;
+  gap: 10px;
+  grid-template-columns: 40px minmax(0, 760px) auto;
   /* 좌측 타일 팔레트/맵트리를 수평으로 침범하지 않는다 — 캔버스 영역 안에서 중앙 정렬.
      (뷰포트 ≤1284px에서 뷰포트-중앙 760px 바가 좌패널 하단을 덮던 버그 수정) */
   justify-content: center;
   left: calc(var(--editor-left-safe, 264px) + 12px);
   position: fixed;
   right: 24px;
-  z-index: 50;
+  z-index: 40; /* z-layers: bar 40 < overlay 41 */
 }
 
 .ai-chat-panel.chat-dock-float .ai-command-bar {
@@ -105,9 +105,9 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 .ai-command-menu-toggle {
   align-items: center;
   background: var(--bg-raised);
-  border: 1px solid var(--accent-border);
-  border-radius: 8px;
-  box-shadow: var(--shadow-pop);
+  border: 1.5px solid var(--accent-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
   color: var(--text-1);
   cursor: pointer;
   display: grid;
@@ -115,8 +115,10 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   font-weight: 800;
   height: 40px;
   place-items: center;
-  width: 34px;
+  width: 40px;
+  transition: transform 0.12s, box-shadow 0.12s;
 }
+.ai-command-menu-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.16); }
 
 .ai-chat-icon-btn,
 .ai-command-settings-button {
@@ -484,13 +486,19 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 }
 
 .ai-command-input-stack {
-  background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
-  border: 1px solid var(--border-strong);
-  border-radius: 4px;
-  box-shadow: none;
+  background: color-mix(in srgb, var(--bg-raised) 96%, transparent);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid var(--border-strong);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   display: grid;
-  gap: 2px;
-  padding: 4px 6px;
+  gap: 4px;
+  padding: 8px 10px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ai-command-input-stack:focus-within {
+  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 45%, var(--border-strong));
+  box-shadow: 0 8px 28px rgba(0,0,0,0.16), 0 0 0 3px color-mix(in srgb, var(--accent, #4c6ef5) 14%, transparent);
 }
 
 .ai-chat-panel.chat-dock-side .ai-command-input-stack {

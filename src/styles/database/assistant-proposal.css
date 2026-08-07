@@ -1,15 +1,17 @@
 .ai-proposal-card {
   background: var(--bg-raised);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-pop);
+  border: 1.5px solid var(--border-default);
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08);
   display: grid;
-  gap: var(--space-1);
-  padding: var(--space-2);
+  gap: 12px;
+  padding: 14px;
 }
 .ai-proposal-card.is-destructive {
-  border-color: var(--danger);
-  background: var(--danger-muted);
+  border-color: color-mix(in srgb, var(--danger, #e5534b) 70%, var(--border-default));
+  border-width: 2px;
+  background: color-mix(in srgb, var(--danger-muted, #2a1214) 88%, var(--bg-raised));
+  box-shadow: 0 8px 28px rgba(229,83,75,0.18);
 }
 /* AI busy 중 입력 큐 표시(결함 ⑨). */
 .ai-pending-queue {
@@ -26,25 +28,28 @@
 }
 .ai-proposal-title {
   color: var(--text-1);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 .ai-proposal-summary {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
+  border-radius: 10px;
   color: var(--text-1);
   display: grid;
   font-size: 12px;
   font-weight: 700;
-  gap: 2px;
-  padding: 6px 8px;
+  gap: 4px;
+  padding: 10px 12px;
+  line-height: 1.5;
 }
 .ai-proposal-thumbs {
   display: grid;
-  gap: var(--space-2);
+  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
+@media (max-width: 420px) { .ai-proposal-thumbs { grid-template-columns: 1fr; } }
 .ai-proposal-thumb {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
@@ -88,7 +93,7 @@
 }
 .ai-proposal-items {
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 .ai-proposal-item {
   align-items: start;
@@ -99,17 +104,21 @@
   display: grid;
   gap: 3px 7px;
   grid-template-columns: 16px minmax(0, 1fr);
-  min-height: 30px;
-  padding: 6px;
+  min-height: 36px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  transition: background 0.15s, border-color 0.15s;
 }
+.ai-proposal-item:hover { border-color: var(--accent-border); background: color-mix(in srgb, var(--bg-raised) 90%, var(--accent) 10%); }
 .ai-proposal-item input {
-  height: 14px;
+  height: 18px;
   margin: 1px 0 0;
-  width: 14px;
+  width: 18px;
+  accent-color: var(--accent);
 }
 .ai-proposal-item-main {
-  font-size: 11px;
-  line-height: 1.35;
+  font-size: 12px;
+  line-height: 1.45;
 }
 .ai-proposal-item-note {
   color: var(--warning);

@@ -633,3 +633,6 @@
   z-index: 2;
   position: relative;
 }
+
+.chipset-tile.banned { opacity: 0.45; filter: grayscale(0.6); }
+.chipset-tile.banned::after { content: "🚫"; position: absolute; top: 2px; right: 2px; font-size: 10px; }

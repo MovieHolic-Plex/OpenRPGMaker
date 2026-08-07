@@ -331,6 +331,7 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     const extras: ReturnType<typeof plainPart>[] = [];
     if (cmd.advanceToMorning) extras.push(plainPart(" · 아침"));
     if (cmd.branchOnNotEnoughGold) extras.push(plainPart(" · 부족분기"));
+    if (typeof cmd.price !== "number") return commandLine("여관 처리", valuePart(`변수 ${(cmd.price as { id: string }).id}`), plainPart(`G · ${recover}`), ...extras);
     if (cmd.price <= 0) {
       return commandLine("여관 처리", valuePart("무료"), plainPart(` · ${recover}`), ...extras);
     }

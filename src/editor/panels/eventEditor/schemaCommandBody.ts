@@ -78,7 +78,8 @@ export function schemaSummary(cmd: Command): string | undefined {
   if (!schema) return undefined;
   try {
     return schema.summary(cmd as unknown as Record<string, unknown>, summaryLookup());
-  } catch {
+  } catch (e) {
+    console.warn("[schemaSummary] " + cmd.kind, e);
     // 요약문 실패가 목록 렌더 전체를 죽이지 않게 한다.
     return undefined;
   }

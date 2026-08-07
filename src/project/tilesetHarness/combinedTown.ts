@@ -28,6 +28,10 @@ export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boole
   return tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY;
 }
 
+export function isStandard480Tileset(tileset: Pick<TilesetDef, "count">): boolean {
+  return tileset.count === 480;
+}
+
 export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): boolean {
   let changed = false;
   for (const tileset of Object.values(project.tilesets)) {
@@ -59,6 +63,7 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
 
 export function applyCombinedTownHarness(tileset: TilesetDef): boolean {
   if (!isCombinedTownTileset(tileset)) return false;
+  if (!isStandard480Tileset(tileset)) return false;
   let changed = false;
   ensureTileMetaLength(tileset);
   for (const group of COMBINED_TOWN_HARNESS_GROUPS) {
@@ -104,8 +109,8 @@ export function isTreeTrunkTileId(tile: number): boolean {
 // 투명 부분 아래가 검게 보이는 하위 배치는 금지한다. 사용자가 명시적으로 하위로 확정한
 // 타일(userLocked/user 메타 + defaultLayer:"lower")만 예외.
 // 예외: 나무 밑동은 숲 겹침을 위해 하위 solid 로 둔다(수관 upper 와 같은 칸에 공존).
-export function isUpperOnlyOverlayTile(tileset: Pick<TilesetDef, "image" | "tileMeta">, tile: number): boolean {
-  if (!isCombinedTownTileset(tileset) || !isTransparentChipsetTile(tile)) return false;
+export function isUpperOnlyOverlayTile(tileset: Pick<TilesetDef, "count" | "image" | "tileMeta">, tile: number): boolean {
+  if (!isCombinedTownTileset(tileset) || !isStandard480Tileset(tileset) || !isTransparentChipsetTile(tile)) return false;
   if (isTreeTrunkTileId(tile)) return false;
   const meta = tileset.tileMeta?.[tile];
   if (isUserRuntimeMeta(meta) && meta?.defaultLayer === "lower") return false;
@@ -114,6 +119,7 @@ export function isUpperOnlyOverlayTile(tileset: Pick<TilesetDef, "image" | "tile
 
 // 저장된 프로젝트 치유: 예전 분류로 priority가 lower로 남은 투명 칩을 로드 시 upper로 승격.
 function enforceTransparentOverlayPriority(tileset: TilesetDef): boolean {
+  if (!isStandard480Tileset(tileset)) return false;
   let changed = false;
   for (let tile = 0; tile < tileset.count; tile += 1) {
     if (!isUpperOnlyOverlayTile(tileset, tile)) continue;

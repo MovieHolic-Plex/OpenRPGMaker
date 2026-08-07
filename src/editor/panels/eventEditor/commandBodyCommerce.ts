@@ -58,18 +58,45 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
     class: "commerce-command-body shop-processing-command-body shop-processing-v2",
     dataset: { testid: "shop-command-body" },
   });
+  const badgeState = (() => {
+    const orphanCount = (command.stock ?? []).filter((row) => !command.itemIds.includes(row.itemId)).length;
+    if (command.itemIds.length === 0) return { kind: "empty", text: "빈 상점" } as const;
+    if (orphanCount > 0) return { kind: "warn", text: `유령 재고 ${orphanCount}` } as const;
+    return { kind: "ok", text: `${command.itemIds.length}개` } as const;
+  })();
+  const headerBadge = el("span", {
+    class: `shop-header-badge shop-header-badge-${badgeState.kind}`,
+    dataset: { testid: "shop-header-badge" },
+    text: badgeState.text,
+    attrs: { title: badgeState.kind === "empty" ? "빈 상점은 플레이에서 목록이 비어 보입니다" : badgeState.text },
+  });
   const emptyWarn =
     command.itemIds.length === 0
       ? el("div", {
-          class: "shop-processing-empty-banner",
+          class: "shop-empty-illust",
           dataset: { testid: "shop-empty-banner" },
-          text: "상품이 없습니다. 왼쪽 목록에서 아이템을 추가하세요. 빈 상점은 플레이에서 목록이 비어 보입니다.",
+          children: [
+            el("div", { class: "shop-empty-illust-icon", text: "🛒", attrs: { "aria-hidden": "true" } }),
+            el("div", {
+              class: "shop-empty-illust-copy",
+              children: [
+                el("div", { class: "shop-empty-illust-title", text: "아직 파는 물건이 없어요" }),
+                el("div", { class: "shop-empty-illust-sub", text: "오른쪽 목록에서 아이템을 고르거나 프리셋을 불러오세요." }),
+              ],
+            }),
+            el("div", { class: "shop-empty-illust-cta", text: "+ 아래 목록에서 선택" }),
+          ],
         })
       : null;
   const main = el("div", {
     class: "shop-processing-main",
     children: [
-      shopIntentCard(),
+      (() => {
+        const h = shopIntentCard();
+        h.append(headerBadge);
+        h.classList.add("shop-intent-header");
+        return h;
+      })(),
       ...(emptyWarn ? [emptyWarn] : []),
       shopPresetsBar(context, command, project.database.items),
       shopItemsPanel(context, command, project.database.items),
@@ -165,7 +192,6 @@ function shopPresetsBar(
             ...latest,
             itemIds: [...matched],
             shopType,
-            allowSell: shopType !== "buyOnly",
             stock: (latest.stock ?? []).filter((entry) => matched.includes(entry.itemId)),
           });
         },
@@ -180,7 +206,7 @@ function shopPresetsBar(
 export function innBody(context: CommandEditContext, command: InnCommand): HTMLElement {
   let draft: InnCommand = {
     kind: "inn",
-    price: Math.max(0, Math.trunc(command.price) || 0),
+    price: normalizeInnPrice(command.price),
     note: command.note,
     question: command.question,
     recoverMp: command.recoverMp,
@@ -259,7 +285,7 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
   const commit = (next: InnCommand) => {
     draft = {
       kind: "inn",
-      price: Math.max(0, Math.trunc(next.price) || 0),
+      price: normalizeInnPrice(next.price),
       note: cleanOptionalText(next.note),
       question: cleanOptionalText(next.question),
       recoverMp: next.recoverMp === false ? false : undefined,
@@ -269,7 +295,7 @@ export function innBody(context: CommandEditContext, command: InnCommand): HTMLE
       branchOnNotEnoughGold: next.branchOnNotEnoughGold === true ? true : undefined,
       notEnoughBranch: next.branchOnNotEnoughGold ? next.notEnoughBranch ?? [] : next.notEnoughBranch,
     };
-    price.value = String(draft.price);
+    price.value = typeof draft.price === "number" ? String(draft.price) : "";
     note.value = draft.note ?? "";
     question.value = draft.question ?? "";
     restDuration.value = String(draft.restDurationMs ?? 500);
@@ -488,10 +514,18 @@ function innNotEnoughBranchControls(context: CommandEditContext, command: InnCom
   });
 }
 
+function normalizeInnPrice(price: InnCommand["price"]): InnCommand["price"] {
+  if (typeof price === "number") return Math.max(0, Math.min(999999, Math.trunc(price)) || 0);
+  if (price && typeof price === "object" && (price as { kind?: string }).kind === "var") return price;
+  return 0;
+}
+
 function innPriceHint(command: Pick<InnCommand, "price" | "recoverMp">): string {
   const recover = command.recoverMp === false ? "HP만 회복" : "파티 전원 회복";
-  if (command.price <= 0) return `0G면 무료 숙박 · ${recover}`;
-  return `숙박 시 ${command.price.toLocaleString("ko-KR")}G 차감 · ${recover}`;
+  const priceLabel = typeof command.price === "number" ? command.price.toLocaleString("ko-KR") : `변수 ${(command.price as { id: string }).id}`;
+  if (typeof command.price === "number" && command.price <= 0) return `0G면 무료 숙박 · ${recover}`;
+  if (typeof command.price !== "number") return `숙박 시 ${priceLabel} G 차감 · ${recover} · 변수 요금`;
+  return `숙박 시 ${priceLabel}G 차감 · ${recover}`;
 }
 
 function innNoteText(command: Pick<InnCommand, "note">): string {
@@ -500,6 +534,7 @@ function innNoteText(command: Pick<InnCommand, "note">): string {
 
 function innQuestionText(command: Pick<InnCommand, "price" | "question">): string {
   if (command.question?.trim()) return command.question.trim();
+  if (typeof command.price !== "number") return `하룻밤 묵는 데 변수 ${(command.price as { id: string }).id} G 입니다. 묵으시겠습니까?`;
   if (command.price <= 0) return "하룻밤 묵으시겠습니까? (무료)";
   return `하룻밤 묵는 데 ${command.price.toLocaleString("ko-KR")} G 입니다. 묵으시겠습니까?`;
 }
@@ -534,13 +569,23 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
   input.type = "number";
   input.min = "0";
   input.step = "1";
-  input.value = String(command.merchantGold ?? 100);
+  const hasGold = command.merchantGold !== undefined;
+  input.value = hasGold ? String(command.merchantGold) : "";
+  input.placeholder = "비우면 100G";
   input.className = "commerce-command-input shop-processing-merchant-gold-input";
   input.dataset.testid = "shop-merchant-gold";
-  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금 (0이면 매입 불가, 판매 시 예산 소모)";
+  input.title = "상인이 플레이어 물품을 살 때 쓰는 소지금 (0이면 매입 불가, 판매 시 예산 소모) — 비우면 기본 100G";
   input.addEventListener("change", () => {
-    const parsed = Number.parseInt(input.value, 10);
-    const merchantGold = Number.isFinite(parsed) ? Math.max(0, parsed) : 100;
+    const raw = input.value.trim();
+    if (raw === "") {
+      input.value = "";
+      const { merchantGold: _omit, ...rest } = latestShop(context, command) as ShopCommand & Record<string, unknown>;
+      void _omit;
+      context.actions.replaceCommand(context.path, rest as ShopCommand);
+      return;
+    }
+    const parsed = Number.parseInt(raw, 10);
+    const merchantGold = Number.isFinite(parsed) ? Math.max(0, Math.min(parsed, 999999)) : 100;
     input.value = String(merchantGold);
     context.actions.replaceCommand(context.path, { ...latestShop(context, command), merchantGold });
   });
@@ -556,7 +601,7 @@ function shopMerchantGoldField(context: CommandEditContext, command: ShopCommand
     }),
     el("p", {
       class: "commerce-command-hint",
-      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G, 0이면 아무 것도 매입하지 않습니다. 방문마다 리셋됩니다.",
+      text: "플레이어가 물건을 팔 때 상인이 쓸 수 있는 금액입니다. 기본 100G(비우면 100G), 0이면 매입 불가. 방문마다 리셋됩니다.",
     })
   );
   return fieldset;
@@ -682,8 +727,9 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
     });
   });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option" });
+  const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option shop-branch-card" });
   fieldset.append(
-    el("legend", { text: "분기" }),
+    el("legend", { text: "거래 후 분기" }),
     el("label", {
       class: "commerce-command-option shop-processing-check",
       children: [checkbox, el("span", { text: "구매/판매했을 때 분기" })],
@@ -850,7 +896,7 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   const search = document.createElement("input");
   search.type = "search";
   search.className = "commerce-command-input shop-processing-item-search";
-  search.placeholder = "이름 · 설명 · id 검색";
+  search.placeholder = "🔍  이름 · 설명 · id 검색  (↑↓ 이동 · Enter 추가)";
   search.dataset.testid = "shop-item-search";
   search.title = "추가 가능 목록 검색 (DB 아이템)";
   search.addEventListener("input", () => {
@@ -1480,15 +1526,16 @@ function moveItemId(current: readonly ItemId[], itemId: string, delta: -1 | 1): 
 
 function shopTypeValue(command: ShopCommand): ShopType {
   if (command.shopType) return command.shopType;
-  return command.allowSell ? "normal" : "buyOnly";
+  return "normal";
 }
 
 function withShopType(command: ShopCommand, shopType: ShopType): ShopCommand {
+  const { allowSell: _legacyAllowSell, ...rest } = command as ShopCommand & Record<string, unknown>;
+  void _legacyAllowSell;
   return {
-    ...command,
+    ...rest,
     shopType,
-    allowSell: shopType !== "buyOnly",
-  };
+  } as ShopCommand;
 }
 
 function messageTypeValue(command: ShopCommand): ShopMessageType {

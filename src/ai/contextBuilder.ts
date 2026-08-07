@@ -37,6 +37,12 @@ export function resolveContextViewport(options: ContextOptions): MapViewportSnap
 
 // 기본 문자 예산(현행 동작 기준). tokenBudget.calibratedBudgetChars가 실측 usage로 이 값을 재척도한다.
 export const DEFAULT_BUDGET_CHARS = 12000;
+// 예산 초과 시 잘린 항목 수 노출에 사용.
+export interface ContextBudgetReport {
+  readonly usedChars: number;
+  readonly budgetChars: number;
+  readonly trimmedSections: string[];
+}
 
 // ⑥ 밸런스 상수(handoff 검증치). 모델이 수치 감각을 갖도록 명시한다.
 const BALANCE_NOTE = [
@@ -416,7 +422,10 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   }
 
   if (assembled.length > budget) {
-    assembled = `${assembled.slice(0, budget)}\n\n(컨텍스트가 예산을 초과해 일부 생략됨 — 필요한 정보는 조회 툴을 사용하세요.)`;
+    const overflow = assembled.length - budget;
+    const trimmed = assembled.length - budget;
+    assembled = `${assembled.slice(0, budget)}\n\n[예산 초과: ${trimmed}자 잘림 · 잘린 구간은 조회 툴(get_map_region 등)로 직접 조회하세요. 모델·사용자 모두에게 고지됨]`;
+    void overflow;
   }
   return assembled;
 }

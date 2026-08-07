@@ -507,10 +507,11 @@ export function executeCommand(
         branchOnTransaction: command.branchOnTransaction,
       });
 
-    case "inn":
+    case "inn": {
+      const innPrice = typeof command.price === "number" ? command.price : ((command.price as unknown as { kind?: string; id?: string })?.kind === "var" ? Math.trunc(state.session.variables[(command.price as unknown as { id: string }).id] ?? 0) : 0);
       return pause("inn", {
         kind: "inn",
-        price: command.price,
+        price: innPrice,
         note: command.note,
         question: command.question,
         recoverMp: command.recoverMp,
@@ -519,6 +520,7 @@ export function executeCommand(
         wakeDurationMs: command.wakeDurationMs,
         branchOnNotEnoughGold: command.branchOnNotEnoughGold,
       });
+    }
     case "checkpointSave":
       saveCheckpoint(state);
       return resumeNext(frame);

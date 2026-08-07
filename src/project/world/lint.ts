@@ -32,12 +32,18 @@ function checkUnlinkedLore(world: ProjectWorld, issues: LintIssue[]): void {
   for (const entity of world.entities) {
     if (entity.type === "guideline") continue;
     if ((entity.refs ?? []).length > 0) continue;
+    if (isDraftEntity(entity)) continue;
     issues.push({
       severity: "warning",
       code: "world-lore-unlinked",
       message: `세계관 lore 개체가 게임 개체와 연결되어 있지 않습니다: ${entity.id}(${entity.name})`,
     });
   }
+}
+
+function isDraftEntity(entity: { readonly name: string; readonly summary: string }): boolean {
+  const hay = `${entity.name} ${entity.summary}`.toLowerCase();
+  return (hay.includes("draft") || hay.includes("초안")) && entity.summary.trim().length < 12;
 }
 
 function checkUnregisteredNpcEvents(world: ProjectWorld, project: Project, issues: LintIssue[]): void {

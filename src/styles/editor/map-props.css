@@ -354,3 +354,31 @@
 .map-delete-children-option input[type="radio"] {
   accent-color: var(--accent, #7c9cff);
 }
+
+/* ── 미니맵 탭 미리보기 ── */
+.map-minimap-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border-color, #444);
+  border-radius: 6px;
+  background: var(--surface-raised, #1e1e1e);
+}
+
+.map-minimap-preview-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #999);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.map-minimap-preview-canvas {
+  display: block;
+  max-width: 100%;
+  image-rendering: pixelated;
+  border: 1px solid var(--border-color, #333);
+  border-radius: 4px;
+  background: #0f1217;
+}

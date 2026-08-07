@@ -76,6 +76,11 @@ export interface GameMap {
    * "가운데 파란 집 옮겨줘" 같은 영역 쿼리에 쓴다. 선택 필드 — 옛 맵 호환.
    */
   layoutPlan?: MapLayoutPlan;
+  /**
+   * 제작자가 맵마다 켜고 끄는 미니맵 설정. optional — 없으면 미니맵 off(기존 맵 호환).
+   * v1은 1회 정적 썸네일 + 플레이어 점만 갱신; fogOfWar는 자리만 두고 추후 확장.
+   */
+  minimap?: MapMinimapSetting;
 }
 
 /** 맵 배경(패럴랙스) 설정 — RM2003 Background 탭 대응. */
@@ -96,6 +101,20 @@ export interface MapBgmSetting {
   resourceId?: string;
   /** 페이드인 시간(ms). */
   fadeInMs?: number;
+}
+
+/** 맵별 미니맵 설정 — 제작자가 맵마다 켜고 끈다. optional이므로 기존 맵은 그대로 off. */
+export interface MapMinimapSetting {
+  /** 미니맵을 이 맵에서 노출하는가. 기본 false. */
+  enabled: boolean;
+  /** 모서리 위치. 기본 topRight. */
+  corner?: "topRight" | "topLeft" | "bottomRight" | "bottomLeft";
+  /** 표시 배율(0.08~0.5). 기본 auto(= 96 / max(W*16, H*16) 클램프). */
+  scale?: number;
+  /** 이벤트 마커를 미니맵에 표시하는가. 기본 true. */
+  showEvents?: boolean;
+  /** 안개(미방문 어둡게). v1은 자리만 두고 false 고정. */
+  fogOfWar?: boolean;
 }
 
 /** 맵 기물 영역 (집 롯·시장·숲·강 등). 시공 후에도 좌표·역할 유지. */

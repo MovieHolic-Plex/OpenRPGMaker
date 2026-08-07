@@ -331,7 +331,7 @@ export type Command =
     }
   | {
       kind: "inn";
-      price: number;
+      price: VariableOperand;
       /** 여관 인사말. 생략 시 기본 문구. */
       note?: string;
       /** 숙박 여부 질문. 생략 시 요금 기반 기본 문구. */

@@ -63,6 +63,7 @@ export interface EditorState {
   pastePreview: { x: number; y: number } | null;
   showGrid: boolean;
   chatDock: ChatDock;
+  showLayoutBboxes: boolean;
   // 배틀 애니메이션 에디터 — 현재 편집 중인 애니메이션의 선택 프레임/셀 인덱스.
   selectedAnimationFrameIndex: number;
   selectedAnimationCellIndex: number;
@@ -91,6 +92,7 @@ class EditorStateStore {
     pastePreview: null,
     showGrid: true,
     chatDock: "side",
+    showLayoutBboxes: false,
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,
   };

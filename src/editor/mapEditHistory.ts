@@ -126,14 +126,34 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
  * 스냅샷을 undo 스택에 밀어넣는다. 직전 스냅샷과 상태가 동일하면(직렬화 일치)
  * 불필요한 메모리 증가를 막기 위해 push 하지 않는다.
  */
+function isLargeHistorySnapshot(snapshot: HistorySnapshot): boolean {
+  if (snapshot.kind === "map") {
+    return (snapshot.before.width * snapshot.before.height) >= 10000;
+  }
+  const project = snapshot.before;
+  const mapCount = Object.keys(project.maps ?? {}).length;
+  if (mapCount === 0) return false;
+  const sample = Object.values(project.maps)[0] as GameMap | undefined;
+  if (!sample) return false;
+  return (sample.width * sample.height) >= 10000 || mapCount > 12;
+}
+
 function pushSnapshot(snapshot: HistorySnapshot, label?: string, mapId?: string | null): void {
   const signature = snapshotSignature(snapshot);
   if (undoStack.length > 0 && signature === topSignature) return;
   undoStack.push(makeEntry(snapshot, label, mapId));
   topSignature = signature;
-  if (undoStack.length > MAX_HISTORY) undoStack.shift();
+  const effectiveMax = isLargeHistorySnapshot(snapshot) ? Math.min(MAX_HISTORY, 25) : MAX_HISTORY;
+  while (undoStack.length > effectiveMax) undoStack.shift();
   redoStack = [];
   emitHistoryChange();
+}
+
+function pushSnapshotForRedo(entry: HistoryEntry): void {
+  undoStack.push(entry);
+  topSignature = snapshotSignature(entry.snapshot);
+  const effectiveMax = isLargeHistorySnapshot(entry.snapshot) ? Math.min(MAX_HISTORY, 25) : MAX_HISTORY;
+  while (undoStack.length > effectiveMax) undoStack.shift();
 }
 
 /** 이산적(단발) 편집 직전에 호출: 현재 상태를 즉시 스냅샷한다. */
@@ -191,12 +211,6 @@ export function redoMapEdit(): boolean {
 
 // redo 시에는 현재 상태를 undo 스택으로 되돌려야 하며, dedup 으로 삼켜지면
 // 다시 undo 할 대상이 사라지므로 무조건 push 한다.
-function pushSnapshotForRedo(entry: HistoryEntry): void {
-  undoStack.push(entry);
-  topSignature = snapshotSignature(entry.snapshot);
-  if (undoStack.length > MAX_HISTORY) undoStack.shift();
-}
-
 /**
  * 현재 시점의 히스토리 마커 — 세션 시작 시점 기록용(databaseModalDirtySession).
  * 이후 makeEntry 로 생성되는 모든 엔트리는 이 값 이상의 `at` 시퀀스를 받는다.

@@ -264,7 +264,7 @@ function validateCommandShape(label: string, value: unknown): void {
       requireString(`${label}.animationId`, command.animationId);
       if (command.wait !== undefined) requireBoolean(`${label}.wait`, command.wait);
       return;
-    case "shop":
+    case "shop": {
       for (const [index, itemId] of requireArray(`${label}.itemIds`, command.itemIds).entries()) {
         requireString(`${label}.itemIds[${index}]`, itemId);
       }
@@ -283,22 +283,39 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       if (command.merchantGold !== undefined) requireNumber(`${label}.merchantGold`, command.merchantGold);
       if (command.stock !== undefined) validateShopStock(`${label}.stock`, command.stock);
+      if (command.merchantGold !== undefined) {
+        const mg = requireNumber(`${label}.merchantGold`, command.merchantGold);
+        if (mg < 0 || mg > 999999) throw new ProjectFormatError(`${label}.merchantGold가 0~999999여야 합니다.`);
+      }
       if (command.branchOnTransaction !== undefined) requireBoolean(`${label}.branchOnTransaction`, command.branchOnTransaction);
       if (command.transactionBranch !== undefined) validateCommandArray(`${label}.transactionBranch`, command.transactionBranch);
       if (command.branchOnFailedTransaction !== undefined) requireBoolean(`${label}.branchOnFailedTransaction`, command.branchOnFailedTransaction);
       if (command.failedTransactionBranch !== undefined) validateCommandArray(`${label}.failedTransactionBranch`, command.failedTransactionBranch);
       return;
-    case "inn":
-      requireNumber(`${label}.price`, command.price);
+    }
+    case "inn": {
+      if (typeof command.price === "number") {
+        if (command.price < 0 || command.price > 999999) throw new ProjectFormatError(`${label}.price가 0~999999여야 합니다.`);
+        requireNumber(`${label}.price`, command.price);
+      } else {
+        validateVariableOperand(`${label}.price`, command.price);
+      }
       if (command.note !== undefined) requireString(`${label}.note`, command.note);
       if (command.question !== undefined) requireString(`${label}.question`, command.question);
       if (command.recoverMp !== undefined) requireBoolean(`${label}.recoverMp`, command.recoverMp);
       if (command.advanceToMorning !== undefined) requireBoolean(`${label}.advanceToMorning`, command.advanceToMorning);
-      if (command.restDurationMs !== undefined) requireNumber(`${label}.restDurationMs`, command.restDurationMs);
-      if (command.wakeDurationMs !== undefined) requireNumber(`${label}.wakeDurationMs`, command.wakeDurationMs);
+      if (command.restDurationMs !== undefined) {
+        const restMs = requireNumber(`${label}.restDurationMs`, command.restDurationMs);
+        if (restMs < 0 || restMs > 10000) throw new ProjectFormatError(`${label}.restDurationMs가 0~10000이어야 합니다.`);
+      }
+      if (command.wakeDurationMs !== undefined) {
+        const wakeMs = requireNumber(`${label}.wakeDurationMs`, command.wakeDurationMs);
+        if (wakeMs < 0 || wakeMs > 10000) throw new ProjectFormatError(`${label}.wakeDurationMs가 0~10000이어야 합니다.`);
+      }
       if (command.branchOnNotEnoughGold !== undefined) requireBoolean(`${label}.branchOnNotEnoughGold`, command.branchOnNotEnoughGold);
       if (command.notEnoughBranch !== undefined) validateCommandArray(`${label}.notEnoughBranch`, command.notEnoughBranch);
       return;
+    }
     case "enterHeroName": {
       requireString(`${label}.actorId`, command.actorId);
       requireBoolean(`${label}.showInitialName`, command.showInitialName);
@@ -484,12 +501,16 @@ export function validateShopStock(label: string, value: unknown): void {
         if (!isSeason(season)) throw new ProjectFormatError(`${label}[${index}].seasons[${seasonIndex}]가 잘못되었습니다.`);
       }
     }
-    if (entry.priceOverride !== undefined) requireNumber(`${label}[${index}].priceOverride`, entry.priceOverride);
+    if (entry.priceOverride !== undefined) {
+      const priceOverride = requireNumber(`${label}[${index}].priceOverride`, entry.priceOverride);
+      if (priceOverride < 0 || priceOverride > 999999) throw new ProjectFormatError(`${label}[${index}].priceOverride가 0~999999여야 합니다.`);
+    }
     if (entry.priceBySeason !== undefined) {
       const prices = requireRecord(`${label}[${index}].priceBySeason`, entry.priceBySeason);
       for (const [season, price] of Object.entries(prices)) {
         if (!isSeason(season)) throw new ProjectFormatError(`${label}[${index}].priceBySeason.${season} 계절이 잘못되었습니다.`);
-        requireNumber(`${label}[${index}].priceBySeason.${season}`, price);
+        const seasonalPrice = requireNumber(`${label}[${index}].priceBySeason.${season}`, price);
+        if (seasonalPrice < 0 || seasonalPrice > 999999) throw new ProjectFormatError(`${label}[${index}].priceBySeason.${season}가 0~999999여야 합니다.`);
       }
     }
   }

@@ -114,7 +114,7 @@ body:has(.database-modal-backdrop) .ai-chat-panel {
   display: flex;
   right: 18px;
   bottom: 18px;
-  z-index: 62;
+  z-index: 48; /* docked over modal — below skill palette(80) */
 }
 .ai-chat-header {
   align-items: center;
