@@ -23,6 +23,7 @@ import {
   getAgentGhostPreviewState,
   hasAgentGhostPreviewSubscribers,
 } from "@/editor/agentGhostPreview";
+import { classifyApproval } from "@/ai/approvalPolicy";
 import { classifyProposalSafety } from "@/editor/proposalSafety";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
@@ -37,7 +38,6 @@ import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import {
   AssistantSession,
-  proposalNeedsExplicitApproval,
   type SessionEvent,
   type TurnResult,
 } from "@/ai/assistantSession";
@@ -62,6 +62,8 @@ import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSk
 import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createCommandBarElements } from "./aiCommandBar";
+import { createVolatileController } from "./aiVolatileController";
+// queueController extracted for future use — reserved (aiQueueController.ts).
 import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
 import { buildVisualStartGallery } from "./aiStartScreenCards";
@@ -262,11 +264,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let autoCollapseTimer: number | null = null;
   let volatileFadeTimer: number | null = null;
   let volatileZone: HTMLElement | null = null;
+  const volatileCtl = createVolatileController(() => turnBusy || !!runningProgress);
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
   let scheduleCollapseAfterAiWork: () => void = () => {};
   let clearAutoCollapseTimer: () => void = () => {};
   const revealVolatileZone = (): void => {
+    volatileCtl.reveal();
     if (!volatileZone) return;
     volatileZone.hidden = false;
     volatileZone.classList.remove("is-faded");
@@ -274,6 +278,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     volatileFadeTimer = null;
   };
   const scheduleVolatileFade = (): void => {
+    volatileCtl.schedule();
     if (!volatileZone || turnBusy || runningProgress) return;
     if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
     if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
@@ -297,7 +302,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const input = el("textarea", {
     class: "ai-assistant-input",
-    attrs: { placeholder: "요청을 입력하세요 — Enter로 전송, Shift+Enter 줄바꿈 · /스킬 검색", rows: "2" },
+    attrs: { placeholder: "어떤 맵을 만들까요?  ·  Enter 전송  ·  / 스킬", rows: "2" },
     dataset: { testid: "ai-input" },
   }) as HTMLTextAreaElement;
 
@@ -362,8 +367,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         config: loadAiConfig(),
         contextOptions: {
           currentMapId: editorState.get().currentMapId ?? undefined,
-          // 매 턴 EditScene이 게시한 카메라 중심/가시 영역 — "여기" 해석용.
           getViewport: () => getEditorMapViewport(),
+
         },
         // 비전(BUG C): '보여줘' 툴 이미지를 렌더해 비전 모델에 전달한다(브라우저 전용).
         renderImages: renderToolImages,
@@ -500,7 +505,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const refreshQueueIndicator = (): void => {
     queueIndicator.hidden = pendingSends.length === 0;
     queueIndicator.textContent =
-      pendingSends.length > 0 ? `⏳ 대기 중 ${pendingSends.length}건 — 현재 응답이 끝나면 순서대로 전송됩니다` : "";
+      pendingSends.length > 0 ? `⏳ 대기 ${pendingSends.length}건 · 입력 1건 + 대기열 ${pendingSends.length}건 — Enter 연타는 순서대로 전송됩니다` : "";
   };
   const drainPendingSends = (): void => {
     const next = pendingSends.shift();
@@ -835,8 +840,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const beforeProject = store.getCurrent();
       const afterProject = session.getProposedProject();
       const currentMapId = editorState.get().currentMapId ?? beforeProject.startMapId ?? null;
-      const explicitApprovalRequired = result.proposedCalls.length > 0
-        && proposalNeedsExplicitApproval(result.proposedCalls);
+      const verdict = classifyApproval(result.proposedCalls, { autoApproveEnabled: loadAiConfig().autoApprove === true });
+      const explicitApprovalRequired = verdict.decision === "require_approval";
       const safety = classifyProposalSafety({
         calls: result.proposedCalls,
         before: beforeProject,
@@ -852,13 +857,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         result.proposedCalls.length > 0
         && completenessWarnings.length === 0
         && loadAiConfig().autoApprove === true
+        && verdict.decision === "auto"
         && result.stoppedReason !== "error"
         && !explicitApprovalRequired
         && safety.safe
       ) {
-        // 자동 적용은 양성 allowlist와 실제 프로젝트 구조 비교를 모두 통과한
-        // 현재 맵 타일 변경에만 허용한다. 나머지는 아래 단일 검토 경로로 보낸다.
-        setStatus(`안전한 맵 꾸미기 자동 적용 ${result.proposedCalls.length}건`);
+        const toastEl = appendBubble("system", `자동 적용됨 ${result.proposedCalls.length}건 — 3초 내 실행취소 가능`);
+        const undoBtn = document.createElement("button");
+        undoBtn.textContent = "실행취소";
+        undoBtn.className = "ai-assistant-action";
+        undoBtn.dataset.testid = "ai-auto-approve-undo";
+        undoBtn.addEventListener("click", () => { try { undoMapEdit(); toastEl.remove(); } catch {} });
+        toastEl.append(undoBtn);
+        window.setTimeout(() => { try { toastEl.remove(); } catch {} }, 3000);
+        setStatus(`자동 적용 ${result.proposedCalls.length}건 · 실행취소 가능(3s)`);
         acceptProposal(result.proposedCalls);
       } else {
         renderProposal(
@@ -867,18 +879,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           assistantBubble,
           canvasFirst ? "canvas" : "modal",
         );
-        // 0건 프로포절은 더 이상 "검토 대기"로 세션을 잡아두지 않는다(결함 ⑤ — 비블로킹).
-        setStatus(
-          result.stoppedReason === "error"
-            ? "오류"
-            : result.proposedCalls.length > 0
-            ? "검토 대기"
-            : completenessWarnings.length > 0
-            ? "완료 — 변경 없음(린트 경고)"
-            : !runningProgress
-            ? "완료"
-            : status.textContent ?? ""
-        );
+        if (result.proposedCalls.length === 0 && result.stoppedReason !== "error") {
+          const silenced = result.assistantText ? ` — ${result.assistantText.slice(0, 80)}` : "";
+          const emptyLabel = completenessWarnings.length > 0 ? `변경 없음(린트 경고 ${completenessWarnings.length}건)` : `변경 없음(0건)${silenced ? " · 되묻기/재시도 필요" : ""}`;
+          setStatus(emptyLabel);
+        } else {
+          setStatus(
+            result.stoppedReason === "error"
+              ? "오류"
+              : result.proposedCalls.length > 0
+              ? "검토 대기"
+              : !runningProgress
+              ? "완료"
+              : status.textContent ?? ""
+          );
+        }
       }
       if (result.assistantText) renderQuickReplies(result.assistantText);
       // 밑그림 상태 표시 — 확정된 스펙이 있으면 사용자도 본다(다음 빌드가 이 영역 안에서만 실행됨).
@@ -985,8 +1000,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     const retry = el("button", {
       class: "ai-assistant-action ai-retry-turn",
-      text: "재시도",
-      attrs: { type: "button", title: "끊긴 턴을 같은 문맥에서 다시 시도합니다" },
+      text: "재시도 — 같은 문맥에서 1회 재시도",
+      attrs: { type: "button", title: "끊긴 턴을 같은 문맥에서 다시 시도합니다 (429/5xx는 자동 재시도 1회 후 수동 재시도로 이어짐)" },
       dataset: { testid: "ai-retry-turn" },
       on: {
         click: () => {
@@ -1388,6 +1403,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           dataset: { testid: "ai-start-empty-hint" },
         }),
         gallery,
+        // 빈 상태 CTA — 클릭하면 바로 전송 (허접한 빈 화면 방지)
+        el("div", {
+          class: "ai-empty-cta",
+          dataset: { testid: "ai-empty-cta" },
+          children: [
+            el("div", { class: "ai-empty-cta-title", text: "바로 시작하기 — 클릭하면 전송됩니다" }),
+            el("div", {
+              class: "ai-empty-cta-grid",
+              children: [
+                el("button", {
+                  class: "ai-empty-cta-btn",
+                  text: "마을 광장을 예쁘게 꾸며줘",
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-empty-cta-village" },
+                  on: { click: () => void sendText("마을 광장을 예쁘게 꾸며줘", "마을 광장을 예쁘게 꾸며줘") },
+                }),
+                el("button", {
+                  class: "ai-empty-cta-btn",
+                  text: "숲속 오두막 한 채 만들어줘",
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-empty-cta-cabin" },
+                  on: { click: () => void sendText("숲속 오두막 한 채 만들어줘", "숲속 오두막 한 채 만들어줘") },
+                }),
+                el("button", {
+                  class: "ai-empty-cta-btn",
+                  text: "NPC 하나 배치하고 대사 넣어줘",
+                  attrs: { type: "button" },
+                  dataset: { testid: "ai-empty-cta-npc" },
+                  on: { click: () => void sendText("NPC 하나 배치하고 대사 넣어줘", "NPC 하나 배치하고 대사 넣어줘") },
+                }),
+              ],
+            }),
+            el("div", { class: "ai-empty-cta-hint", text: "또는 아래 카드에서 골라 입력창에 담아 고쳐 보내세요." }),
+          ],
+        }),
         el("div", {
           class: "ai-start-empty-hint",
           text: "카드를 고르면 요청이 입력됩니다. 내용을 고친 뒤 보내세요.",
@@ -1645,6 +1695,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "chat-dock-toggle-bar" },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
+  // 도킹은 2모드만(float/side) — studio/collapsed는 별도 상태이며 도크 선택에 노출하지 않는다.
+  // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
   // 도크 모드 토글: 플로팅 커맨드 바와 더보기 메뉴에만 둔다(헤더 뱃지 제거 = 시각 소음 감소).
   const dockModeButton = el("button", {
     class: "ai-dock-mode-btn",
@@ -1916,7 +1968,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [log],
   });
   volatileZone = volatileLogMount;
-  // 초기(빈 대화)엔 휘발 존을 접어 맵을 가리지 않는다. 입력 포커스/첫 콘텐츠에서 펼쳐진다.
+  volatileCtl.bind(volatileLogMount);
+  volatileZone.classList.add("ai-volatile-dashed");
+  volatileZone.setAttribute("title", "휘발 영역 — 대화가 비어 있을 때 접히고, 입력 포커스 시 펼쳐집니다 (idle 6초 후 페이드)");
   volatileLogMount.hidden = true;
   const completionHost = el("div", {
     class: "ai-completion-host",
@@ -2041,7 +2095,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI 작업 종료 후 맵 우선으로 접기 (이미 펼쳐 있던 경우 포함).
   scheduleCollapseAfterAiWork = (): void => {
     clearAutoCollapseTimer();
-    if (!collapseAfterAiWork || turnBusy || collapsed) return;
+    // 상태 기계 불변식: busy/running/큐가 있으면 접기 금지
+    if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
     if (typeof window === "undefined" || typeof window.setTimeout !== "function") {
       collapseAfterAiWork = false;
       collapsed = true;
