@@ -47,8 +47,15 @@
   align-items: stretch;
   display: grid;
   gap: 6px;
-  grid-template-columns: repeat(4, minmax(130px, 188px));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   justify-content: start;
+  max-width: 100%;
+}
+@media (max-width: 640px) {
+  .event-page-action-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 380px) {
+  .event-page-action-buttons { grid-template-columns: 1fr; }
 }
 
 .event-page-action-buttons .btn,
@@ -189,7 +196,7 @@
   }
 
   .event-page-action-buttons {
-    grid-template-columns: repeat(4, minmax(92px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
   }
 
   .event-editor-workbench {
@@ -1060,7 +1067,7 @@
   min-width: 214px;
   padding: 2px;
   position: fixed;
-  z-index: 10000;
+  z-index: var(--z-popover-top);
 }
 
 .event-command-context-menu button {

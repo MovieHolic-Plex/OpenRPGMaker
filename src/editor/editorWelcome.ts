@@ -7,6 +7,8 @@ import {
   WELCOME_BLANK_CONFIRM,
   WELCOME_GENRE_PRESETS,
   WELCOME_INSPIRATION_MINIS,
+  WELCOME_QUICK_PICKS,
+  WELCOME_STARTER_TEMPLATES,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   type WelcomeGenrePresetId,
@@ -24,6 +26,10 @@ export const EDITOR_WELCOME_TESTIDS = {
   dismiss: "editor-welcome-dismiss",
   genreStart: "editor-welcome-genre-start",
   inspirationStrip: "editor-welcome-inspiration",
+  promptInput: "editor-welcome-prompt-input",
+  promptSubmit: "editor-welcome-prompt-submit",
+  quickPick: "editor-welcome-quick-pick",
+  templateCard: "editor-welcome-template-card",
   chips: [
     "editor-welcome-chip-0",
     "editor-welcome-chip-1",
@@ -93,10 +99,26 @@ export function prefersReducedMotion(): boolean {
   }
 }
 
+function welcomeStorage(): Storage | null {
+  try {
+    const w = typeof window !== "undefined" ? (window as unknown as { localStorage?: Storage }).localStorage : undefined;
+    if (w) return w as Storage;
+  } catch { /* ignore */ }
+  try {
+    const g = (globalThis as unknown as { localStorage?: Storage }).localStorage;
+    if (g) return g;
+  } catch { /* ignore */ }
+  try {
+    if (typeof localStorage !== "undefined") return localStorage as unknown as Storage;
+  } catch { /* ignore */ }
+  return null;
+}
+
 export function isEditorWelcomeDismissed(): boolean {
   try {
-    if (typeof localStorage === "undefined") return false;
-    return localStorage.getItem(EDITOR_WELCOME_DISMISSED_KEY) === "1";
+    const s = welcomeStorage();
+    if (!s) return false;
+    return s.getItem(EDITOR_WELCOME_DISMISSED_KEY) === "1";
   } catch {
     return false;
   }
@@ -104,11 +126,12 @@ export function isEditorWelcomeDismissed(): boolean {
 
 export function setEditorWelcomeDismissed(dismissed = true): void {
   try {
-    if (typeof localStorage === "undefined") return;
+    const s = welcomeStorage();
+    if (!s) return;
     if (dismissed) {
-      localStorage.setItem(EDITOR_WELCOME_DISMISSED_KEY, "1");
+      s.setItem(EDITOR_WELCOME_DISMISSED_KEY, "1");
     } else {
-      localStorage.removeItem(EDITOR_WELCOME_DISMISSED_KEY);
+      s.removeItem(EDITOR_WELCOME_DISMISSED_KEY);
     }
   } catch {
     /* private mode / quota */
@@ -225,6 +248,17 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
         "aria-label": "만들고 싶은 게임 스타일",
       },
       dataset: { testid: EDITOR_WELCOME_TESTIDS.input },
+    }) as HTMLInputElement;
+
+    const promptInput = el("input", {
+      class: "editor-welcome-prompt-input",
+      attrs: {
+        type: "text",
+        placeholder: '한 문장으로 말해보세요 \u2014 예: "눈 내리는 마을에 여관이 있고, 여관 주인이 잠을 팔아요"',
+        autocomplete: "off",
+        "aria-label": "AI 프롬프트 \u2014 한 문장으로 말해보세요",
+      },
+      dataset: { testid: EDITOR_WELCOME_TESTIDS.promptInput },
     }) as HTMLInputElement;
 
     const settle = (result: EditorWelcomeResult): void => {
@@ -511,6 +545,79 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
       children: [dismissToggle, el("span", { text: "다시 보지 않기" })],
     });
 
+    const promptSubmit = el("button", {
+      class: "editor-welcome-prompt-submit",
+      text: "\u2728 초안 만들기 \u2014 10초",
+      attrs: { type: "button" },
+      dataset: { testid: EDITOR_WELCOME_TESTIDS.promptSubmit },
+      on: {
+        click: () => {
+          const trimmed = promptInput.value.trim();
+          if (!trimmed) return;
+          void confirmAndFinish({ action: "start", source: "free-text", label: trimmed });
+        },
+      },
+    }) as HTMLButtonElement;
+
+    promptInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        promptSubmit.click();
+      }
+    });
+
+    const quickPickRow = el("div", {
+      class: "editor-welcome-quick-picks",
+      children: WELCOME_QUICK_PICKS.map((pick, index) =>
+        el("button", {
+          class: "editor-welcome-quick-pick",
+          text: pick.label,
+          attrs: { type: "button" },
+          dataset: { testid: `${EDITOR_WELCOME_TESTIDS.quickPick}-${index}`, quickPickId: String(index) },
+          on: {
+            click: () => {
+              promptInput.value = pick.intent;
+              try { promptInput.focus(); } catch { /* headless */ }
+            },
+          },
+        })
+      ),
+    });
+
+    const promptPanel = el("div", {
+      class: "editor-welcome-prompt-panel",
+      children: [
+        el("p", { class: "editor-welcome-prompt-hint", text: "한 문장으로 말해보세요 \u2014 AI가 초안을 짜드립니다" }),
+        promptInput,
+        quickPickRow,
+        el("div", {
+          class: "editor-welcome-prompt-actions",
+          children: [promptSubmit, el("span", { class: "editor-welcome-prompt-note", text: "또는 아래 세계를 고르세요" })],
+        }),
+      ],
+    });
+
+    const templateRow = el("div", {
+      class: "editor-welcome-template-row",
+      children: WELCOME_STARTER_TEMPLATES.map((tpl, index) =>
+        el("button", {
+          class: "editor-welcome-template-card",
+          attrs: { type: "button", "aria-label": `${tpl.label} \u2014 ${tpl.blurb}` },
+          dataset: { testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`, templateId: tpl.id },
+          on: {
+            click: () => {
+              void confirmAndFinish({ action: "start", source: "free-text", label: tpl.intent });
+            },
+          },
+          children: [
+            el("span", { class: "editor-welcome-template-thumb", attrs: { style: `background-image:url('${tpl.thumb}')` } }),
+            el("span", { class: "editor-welcome-template-label", text: tpl.label }),
+            el("span", { class: "editor-welcome-template-blurb", text: tpl.blurb }),
+          ],
+        })
+      ),
+    });
+
     const startButton = el("button", {
       class: "editor-welcome-start",
       text: "시작하기",
@@ -575,6 +682,8 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
     const dock = el("div", {
       class: "editor-welcome-dock",
       children: [
+        promptPanel,
+        templateRow,
         selectionBar,
         worldsStrip,
         el("div", {

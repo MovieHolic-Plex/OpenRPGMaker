@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 300; /* above editor-welcome 240 */
+    z-index: var(--z-app-modal);
   }
   .app-modal-card {
     background: var(--bg-raised);

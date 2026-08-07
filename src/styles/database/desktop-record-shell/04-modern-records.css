@@ -842,7 +842,7 @@
   .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(5) {
     display: grid;
     gap: 10px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 
   .database-modal-body .db-system-form .db-system-preview-well {

@@ -198,7 +198,7 @@
   overflow: auto;
   padding: 8px;
   position: fixed;
-  z-index: 1300;
+  z-index: var(--z-popover-high);
 }
 
 .db-enemy-dialog {

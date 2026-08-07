@@ -225,7 +225,7 @@
     display: grid;
     gap: 10px;
     grid-area: top;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     min-height: 0;
   }
 

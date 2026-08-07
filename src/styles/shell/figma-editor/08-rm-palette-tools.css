@@ -31,7 +31,7 @@
   .left-panel-stack[data-testid="left-palette-root"] .palette-option-row {
     display: grid;
     gap: 4px;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
     margin: 0 0 8px;
     max-width: 508px;
   }

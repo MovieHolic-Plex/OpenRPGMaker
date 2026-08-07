@@ -7,7 +7,7 @@
   justify-content: center;
   padding: var(--space-4);
   position: fixed;
-  z-index: 1200;
+  z-index: var(--z-popover-high);
 }
 
 /* 우클릭 드래그 직후: 어두운 풀스크린 대신 가벼운 클릭-아웃 레이어 + 포인터 근처 팝오버 */
@@ -557,7 +557,10 @@
 .region-task-checkpoint-timeline {
   display: grid;
   gap: 4px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+}
+@media (max-width: 380px) {
+  .region-task-checkpoint-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .region-task-checkpoint {
   align-items: center;

@@ -1,8 +1,11 @@
 .ts-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
   gap: 3px;
   margin-top: 4px;
+}
+@media (max-width: 380px) {
+  .ts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .ts-cell {
   background: var(--bg-panel-2);

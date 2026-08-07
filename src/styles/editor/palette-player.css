@@ -267,9 +267,13 @@
 
 .npc-character-grid {
   display: grid;
-  grid-template-columns: repeat(4, 48px);
+  grid-template-columns: repeat(auto-fill, 48px);
   gap: var(--space-1);
   align-content: start;
+  justify-content: start;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .npc-character-cell {

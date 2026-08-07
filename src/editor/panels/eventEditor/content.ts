@@ -34,6 +34,8 @@ import { renderEventScriptModernViews } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
+import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
+import { showCommandInspector } from "./commandInspector";
 import { commandCategoryVisual } from "./commandCategoryIcons";
 import { setCommandInspectorEmptyRenderer, resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
@@ -157,10 +159,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   setCommandInspectorEmptyRenderer(() => renderInspectorIdleSummary(activePage, activePageIssues));
   resetCommandInspectorView();
 
+  const storyboardMode = loadStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
   renderCommandList(cmdList, activePage.commands, [], actions, { issues: activePageIssues });
   cmdList.querySelector(".empty-hint")?.remove();
   cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id));
+  cmdList.append(renderAiNextSteps(activePage.commands.length));
   cmdList.addEventListener("dblclick", (event) => {
     if (event.target === cmdList) {
       cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -168,6 +172,51 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       );
     }
   });
+  const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
+  let currentMode: StoryboardMode = storyboardMode;
+  const makeStoryboard = () =>
+    renderStoryboard(activePage.commands, {
+      onSelect: (path) => {
+        const cmd = activePage.commands[path[0]!];
+        if (!cmd) return;
+        showCommandInspector({ command: cmd, path, actions });
+      },
+      onAddNext: () => {
+        currentMode = "list";
+        applyViewMode();
+        cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
+          new MouseEvent("dblclick", { bubbles: true, cancelable: true })
+        );
+      },
+    });
+  let storyboardEl = makeStoryboard();
+  const graphPlaceholder = el("div", {
+    class: "event-graph-placeholder",
+    dataset: { testid: "event-graph-placeholder" },
+    children: [
+      el("div", { class: "event-graph-placeholder-title", text: "Graph \uBDF0 \u2014 Phase 2\uC5D0\uC11C \uC5F0\uACB0\uB429\uB2C8\uB2E4" }),
+      el("div", { class: "event-graph-placeholder-desc", text: "°°\uC740 \uB370\uC774\uD130\uB97C \uB178\uB4DC \uADF8\uB798\uD504\uB85C \uBD05\uB2C8\uB2E4. \uC9C0\uAE08\uC740 Storyboard/List\uB85C \uD3B8\uC9D1\uD558\uC138\uC694." }),
+    ],
+  });
+  let viewToggle = renderViewToggle(currentMode, (next) => { currentMode = next; applyViewMode(); });
+  function applyViewMode(): void {
+    const isStoryboard = currentMode === "storyboard";
+    const isGraph = currentMode === "graph";
+    cmdList.hidden = isStoryboard || isGraph;
+    storyboardEl.hidden = !isStoryboard;
+    graphPlaceholder.hidden = !isGraph;
+    const nextToggle = renderViewToggle(currentMode, (n) => { currentMode = n; applyViewMode(); });
+    viewToggle.replaceWith(nextToggle);
+    viewToggle = nextToggle;
+    if (isStoryboard) {
+      const fresh = makeStoryboard();
+      storyboardEl.replaceWith(fresh);
+      storyboardEl = fresh;
+      storyboardEl.hidden = false;
+    }
+  }
+  storyboardHost.append(viewToggle, storyboardEl, graphPlaceholder);
+  applyViewMode();
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
   // Tool-authored NPC schedules stay compact, but existing rows are editable so
   // aggregate validation can navigate to and repair their map/coordinate errors.
@@ -226,6 +275,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [
         el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
+        storyboardHost,
         cmdList,
         // 카테고리 범례 — 툴바 안이 아니라 캔버스 바로 아래 자기 한 줄로.
         renderCommandCategoryLegend(),
@@ -717,6 +767,41 @@ function renderEventValidationSummary(validation: EventDraftValidation): HTMLEle
     })),
   }));
   return details;
+}
+
+
+function renderAiNextSteps(commandCount: number): HTMLElement {
+  const suggestions: readonly string[] = commandCount === 0
+    ? ["\uBC24\uC774 \uB418\uBA74 \uBB38 \uB2EB\uAE30", "\uB2E8\uACE8 \uB300\uC0AC \uCD94\uAC00", "\uB3C8\uC774 \uBD80\uC871\uD558\uBA74 \uB2E4\uB978 \uB300\uC0AC"]
+    : commandCount < 3
+      ? ["\uB2E4\uC74C \uB300\uC0AC \uC774\uC5B4\uC4F0\uAE30", "\uC120\uD0DD\uC9C0 \uCD94\uAC00", "\uC870\uAC74 \uBD84\uAE30 \uB123\uAE30"]
+      : ["\uB4A4\uC5D0 \uBB50 \uB123\uC744\uAE4C? \u2014 AI\uC5D0\uAC8C \uBB3C\uC5B4\uBCF4\uAE30", "\uC774 \uD750\uB984 \uD14C\uC2A4\uD2B8\uD574\uBCF4\uAE30", "\uC5F0\uCD9C(\uD398\uC774\uB4DC) \uCD94\uAC00"];
+  const row = el("div", {
+    class: "event-ai-next-steps",
+    dataset: { testid: "event-ai-next-steps" },
+    children: [
+      el("span", { class: "event-ai-next-steps-label", text: "\u2728 \uB2E4\uC74C\uC5D0 \uBB50 \uB123\uC744\uAE4C?" }),
+      ...suggestions.slice(0, 3).map((label, i) =>
+        el("button", {
+          class: "event-ai-next-step",
+          text: label,
+          attrs: { type: "button" },
+          dataset: { testid: `event-ai-next-step-${i}` },
+          on: {
+            click: () => {
+              const chat = document.querySelector<HTMLElement>("[data-testid='ai-chat-input']");
+              if (chat) {
+                chat.focus();
+                try { (chat as HTMLInputElement).value = label; } catch { /* ignore */ }
+                chat.dispatchEvent(new Event("input", { bubbles: true }));
+              }
+            },
+          },
+        })
+      ),
+    ],
+  });
+  return row;
 }
 
 export function navigateToEventDraftIssue(issue: EventDraftIssue): void {

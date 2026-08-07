@@ -117,7 +117,7 @@
   min-width: 236px;
   padding: 6px;
   position: fixed;
-  z-index: 10000;
+  z-index: var(--z-popover-top);
 }
 
 .event-command-context-menu button {

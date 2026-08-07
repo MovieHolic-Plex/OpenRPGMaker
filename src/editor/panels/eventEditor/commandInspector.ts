@@ -59,36 +59,83 @@ export function resetCommandInspectorView(): void {
 }
 
 /** 명령을 선택하면 우측 인스펙터가 그 자리에서 바뀐다. 모달은 열리지 않는다. */
+const INSPECTOR_DENSITY_KEY = "rpg-zzu:inspector-density";
+export type InspectorDensity = "card" | "form";
+export function loadInspectorDensity(): InspectorDensity { try { const v = localStorage.getItem(INSPECTOR_DENSITY_KEY); if (v === "form" || v === "card") return v; } catch { /* ignore */ } return "card"; }
+export function saveInspectorDensity(d: InspectorDensity): void { try { localStorage.setItem(INSPECTOR_DENSITY_KEY, d); } catch { /* ignore */ } }
+
 export function showCommandInspector(target: InspectorTarget): void {
   selectedPath = [...target.path];
   if (!host) return;
+  const density = loadInspectorDensity();
+  const formBody = el("div", {
+    class: "event-inspector-body",
+    dataset: { testid: "event-inspector-body" },
+    children: [
+      renderCommandBody(
+        {
+          path: target.path,
+          actions: target.actions,
+          lockKind: true,
+        },
+        target.command
+      ),
+    ],
+  });
+  const isForm = density === "form";
+  const summary = safeSummary(target.command);
+  const toggleBtn = el("button", {
+    class: "event-inspector-density-toggle",
+    text: isForm ? "간단히 보기" : "자세히 편집",
+    attrs: { type: "button", "aria-pressed": isForm ? "true" : "false" },
+    dataset: { testid: "event-inspector-density-toggle" },
+    on: {
+      click: () => {
+        const next: InspectorDensity = loadInspectorDensity() === "form" ? "card" : "form";
+        saveInspectorDensity(next);
+        showCommandInspector(target);
+      },
+    },
+  });
+  const card = el("div", {
+    class: "event-inspector-card",
+    dataset: { testid: "event-inspector-card" },
+    children: [
+      el("div", { class: "event-inspector-card-title", text: target.command.kind }),
+      el("div", { class: "event-inspector-card-hint", text: summary }),
+      toggleBtn,
+    ],
+  });
+  const advanced = el("details", {
+    class: "event-inspector-advanced",
+    attrs: { open: isForm ? "true" : undefined as unknown as string },
+    dataset: { testid: "event-inspector-advanced" },
+    children: [
+      el("summary", { class: "event-inspector-advanced-summary", text: "고급 편집" }),
+      el("div", { class: "event-inspector-advanced-body", children: [formBody] }),
+    ],
+  });
+  (advanced as HTMLDetailsElement).open = isForm;
+  const syncDetails = () => {
+    const wantForm = (advanced as HTMLDetailsElement).open;
+    const cur = loadInspectorDensity();
+    if ((wantForm && cur !== "form") || (!wantForm && cur !== "card")) {
+      saveInspectorDensity(wantForm ? "form" : "card");
+      toggleBtn.textContent = wantForm ? "간단히 보기" : "자세히 편집";
+      toggleBtn.setAttribute("aria-pressed", wantForm ? "true" : "false");
+    }
+  };
+  advanced.addEventListener("toggle", syncDetails);
   host.replaceChildren(
     el("div", {
       class: "event-inspector-head",
       children: [
         el("div", { class: "event-inspector-kind", text: target.command.kind }),
-        el("div", {
-          class: "event-inspector-title",
-          text: safeSummary(target.command),
-          dataset: { testid: "event-inspector-title" },
-        }),
+        el("div", { class: "event-inspector-title", text: summary, dataset: { testid: "event-inspector-title" } }),
       ],
     }),
-    el("div", {
-      class: "event-inspector-body",
-      dataset: { testid: "event-inspector-body" },
-      children: [
-        renderCommandBody(
-          {
-            path: target.path,
-            actions: target.actions,
-            // 기존 명령 편집이므로 종류는 잠근다 — 종류 변경은 분기 자식을 잃는다.
-            lockKind: true,
-          },
-          target.command
-        ),
-      ],
-    })
+    isForm ? formBody : card,
+    isForm ? toggleBtn : advanced
   );
 }
 
