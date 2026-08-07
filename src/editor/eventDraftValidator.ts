@@ -58,6 +58,39 @@ type CommandVisit = {
   readonly path: readonly number[];
 };
 
+
+function checkCallDepth(project: Project, issues: EventDraftIssue[]): void {
+  const maxDepth = 8;
+  const visiting = new Set<string>();
+  const visit = (commands: readonly import("@/project/types").Command[], depth: number): void => {
+    if (depth > maxDepth) {
+      issues.push({ severity: "warning", code: "callCommonEvent.recursionDepth", message: `호출 깊이가 ${maxDepth}를 넘었습니다.`, pageId: "" });
+      return;
+    }
+    for (const cmd of commands) {
+      const kind = (cmd as { kind: string }).kind;
+      if (kind === "callCommonEvent") {
+        const id = (cmd as { commonEventId: string }).commonEventId;
+        if (visiting.has(id)) {
+          issues.push({ severity: "warning", code: "callCommonEvent.cycle", message: `공통 이벤트 ${id}가 순환 호출됩니다.`, pageId: "" });
+          continue;
+        }
+        const ce = project.commonEvents?.find((e) => e.id === id);
+        if (!ce) continue;
+        visiting.add(id);
+        for (const pg of (ce as { pages?: readonly { commands?: readonly import("@/project/types").Command[] }[] }).pages ?? []) {
+          if (pg.commands) visit(pg.commands, depth + 1);
+        }
+        visiting.delete(id);
+      }
+      for (const branch of commandBranches(cmd as import("@/project/types").Command)) visit(branch.commands, depth);
+    }
+  };
+  for (const page of (project.commonEvents ?? []).flatMap((ce) => (ce as { pages?: readonly { commands?: readonly import("@/project/types").Command[] }[] }).pages ?? [])) {
+    if (page.commands) visit(page.commands, 1);
+  }
+}
+
 export function validateEventDraft(
   project: Project,
   mapId: MapId,
@@ -111,6 +144,7 @@ export function validateEventDraftBody(
   for (const page of pages) {
     validatePage(project, mapId, event, page, refs, issues);
   }
+  checkCallDepth(project, issues);
   validateSchedule(project, event, refs, firstPageId, issues);
   return validationFromIssues(issues);
 }
@@ -561,6 +595,20 @@ function validateCommand(
       }
       command.itemIds.forEach((id) => require("reference.item.missing", "상점 아이템", id, refs.items));
       command.stock?.forEach((entry) => require("reference.item.missing", "상점 재고 아이템", entry.itemId, refs.items));
+      if (command.stock) {
+        const idSet = new Set(command.itemIds);
+        for (const entry of command.stock) {
+          if (!idSet.has(entry.itemId)) {
+            issues.push({
+              severity: "warning",
+              code: "shop.stock.orphan",
+              message: `상점 재고 ${entry.itemId}가 판매 목록에 없습니다.`,
+              pageId,
+              commandPath: path,
+            });
+          }
+        }
+      }
       return;
     case "m2Command": {
       const entry = validateM2CommandReferences(command, pageId, path, refs, issues);

@@ -572,7 +572,8 @@ function itemStage(cmd: Extract<Command, { kind: "changeItem" }>, context?: Comm
 
 
 function innStage(cmd: Extract<Command, { kind: "inn" }>): HTMLElement {
-  const price = Math.max(0, Math.trunc(cmd.price) || 0);
+  const price = typeof cmd.price === "number" ? Math.max(0, Math.trunc(cmd.price) || 0) : 0;
+  const priceDisplay = typeof cmd.price === "number" ? price : `변수 ${(cmd.price as { id: string }).id}`;
   const recoverMp = cmd.recoverMp !== false;
   const stage = el("div", { class: "ecp-stage ecp-inn-stage", dataset: { testid: "ecp-inn-stage" } });
   const win = el("div", { class: "ecp-inn-window", dataset: { testid: "ecp-inn-window" } });
@@ -584,7 +585,7 @@ function innStage(cmd: Extract<Command, { kind: "inn" }>): HTMLElement {
       : `하룻밤 묵는 데 ${price.toLocaleString("ko-KR")} G 입니다. 묵으시겠습니까?`);
   const recoverLabel = recoverMp ? "전원 회복" : "HP만 회복";
   const chips: string[] = [
-    price <= 0 ? `무료 숙박 · ${recoverLabel}` : `${price.toLocaleString("ko-KR")} G · ${recoverLabel}`,
+    typeof cmd.price !== "number" ? `${priceDisplay} G · ${recoverLabel} · 변수` : price <= 0 ? `무료 숙박 · ${recoverLabel}` : `${priceDisplay} G · ${recoverLabel}`,
   ];
   if (cmd.advanceToMorning) chips.push("아침 이동");
   if (cmd.branchOnNotEnoughGold) chips.push("부족 분기");

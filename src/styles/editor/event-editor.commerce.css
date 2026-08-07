@@ -1104,3 +1104,83 @@
     grid-template-columns: 1fr;
   }
 }
+
+.shop-intent-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.shop-header-badge {
+  font: 700 11px/1 Inter, "Segoe UI", sans-serif;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border, #1e3350);
+  white-space: nowrap;
+}
+.shop-header-badge-ok {
+  color: #d1ffe0;
+  background: rgba(74, 222, 128, 0.12);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+.shop-header-badge-warn {
+  color: #1a1200;
+  background: #ffb84d;
+  border-color: #ffb84d;
+}
+.shop-header-badge-empty {
+  color: #ffd2d8;
+  background: rgba(255, 90, 106, 0.12);
+  border-color: rgba(255, 90, 106, 0.35);
+}
+.shop-empty-illust {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px dashed rgba(240, 194, 74, 0.35);
+  background: rgba(240, 194, 74, 0.06);
+}
+.shop-empty-illust-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #162232;
+  border: 1px solid #1e3350;
+  font-size: 18px;
+}
+.shop-empty-illust-title { font: 700 13px/1.2 Inter, sans-serif; color: #e6edf5; }
+.shop-empty-illust-sub { font: 500 11px/1.4 Inter, sans-serif; color: #8aa0b8; margin-top: 2px; }
+.shop-empty-illust-cta {
+  font: 800 11px/1 Inter, sans-serif;
+  color: #1a1200;
+  background: #f0c24a;
+  padding: 8px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.shop-branch-card { border-color: rgba(78, 205, 196, 0.25); }
+.shop-branch-card legend { color: #4ecdc4; }
+
+.shop-processing-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+  gap: 16px;
+  align-items: start;
+}
+.shop-processing-side { position: sticky; top: 12px; }
+.shop-search-row { position: sticky; top: 0; z-index: 1; background: rgba(12,20,30,0.92); backdrop-filter: blur(6px); padding: 6px 0 8px; }
+.shop-item-row:focus-within { outline: 2px solid #4ecdc4; outline-offset: -1px; border-radius: 8px; }
+.shop-processing-list-count { background: #4ecdc4; color: #00201e; font-weight: 800; }
+
+.shop-processing-layout { gap: 16px; }
+.shop-processing-items { gap: 10px; }
+@media (max-width: 920px) {
+  .shop-processing-layout { grid-template-columns: 1fr; }
+  .shop-empty-illust { grid-template-columns: 44px 1fr; }
+  .shop-empty-illust-cta { grid-column: 1 / -1; justify-self: start; }
+}

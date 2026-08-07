@@ -33,6 +33,14 @@ import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./c
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 // id 기준으로 배열에 upsert.
+// Serialize concurrent DB writes to prevent lost update (read-modify-write race).
+export let dbWriteQueue: Promise<void> = Promise.resolve();
+export function serializeDbWrite<T>(task: () => T | Promise<T>): Promise<T> {
+  const next = dbWriteQueue.then(task, task) as Promise<T>;
+  dbWriteQueue = (next as Promise<unknown>).then(() => {}, () => {}) as Promise<void>;
+  return next;
+}
+
 function upsertById<T extends { id: string }>(list: T[], record: T): "added" | "modified" {
   const index = list.findIndex((entry) => entry.id === record.id);
   if (index >= 0) {
