@@ -2,12 +2,20 @@
     background: var(--editor-toolbar-bg);
     border-left: 1px solid var(--editor-line);
     border-right: 1px solid rgba(0, 0, 0, 0.38);
+    position: relative;
     width: 6px;
   }
-
+  .editor-layout .resizer-left::after {
+    content: "";
+    inset: 0 -6px 0 -6px;
+    position: absolute;
+  }
   .editor-layout .resizer-left:hover,
-  .editor-layout .resizer-left:active {
+  .editor-layout .resizer-left:active,
+  .editor-layout .resizer-left:focus-visible {
     background: var(--accent-muted);
+    outline: 1px solid var(--accent);
+    outline-offset: -1px;
   }
 
   .editor-layout .resizer-map-tree {

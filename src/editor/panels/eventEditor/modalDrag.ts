@@ -53,5 +53,5 @@ export function attachWindowDrag(handle: HTMLElement, windowEl: HTMLElement): vo
 }
 
 function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), Math.max(min, max));
+  return Math.min(Math.max(value, min), max);
 }

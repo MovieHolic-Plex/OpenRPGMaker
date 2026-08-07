@@ -1,12 +1,21 @@
-﻿.event-editor-modal-backdrop {
+﻿.event-editor-modal-backdrop,
+.event-editor-modal-backdrop.event-editor-modal-backdrop {
   align-content: stretch;
   align-items: stretch;
-  background: var(--bg-raised);
+  background: rgba(8, 10, 18, 0.62);
+  backdrop-filter: blur(2px);
   display: grid;
+  inset: 0;
   justify-content: stretch;
   justify-items: stretch;
   overflow: hidden;
-  padding: 0;
+  padding: 12px;
+  position: fixed;
+  z-index: 1000;
+}
+
+body.event-editor-modal-open {
+  overflow: hidden;
 }
 
 .event-editor-modal-window {
@@ -23,17 +32,18 @@
   --event-modern-text-soft: var(--text-2);
   background: var(--event-modern-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  box-shadow: none;
+  border-radius: 10px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  box-sizing: border-box;
   color: var(--event-modern-text);
+  display: grid;
   font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   grid-template-rows: 52px minmax(0, 1fr) 64px;
-  height: 100vh;
-  height: 100dvh;
-  max-height: 100vh;
-  max-height: 100dvh;
-  max-width: 100vw;
-  width: 100vw;
+  height: min(96dvh, 920px);
+  max-height: calc(100dvh - 24px);
+  max-width: min(1280px, calc(100vw - 24px));
+  width: min(1280px, calc(100vw - 24px));
+  place-self: center;
 }
 
 .event-editor-modal-header {

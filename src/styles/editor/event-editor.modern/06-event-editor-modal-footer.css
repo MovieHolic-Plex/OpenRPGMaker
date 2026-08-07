@@ -51,15 +51,19 @@
 }
 
 .event-editor-modal-resize-handle {
-  border-radius: 4px;
-  bottom: 4px;
+  border-radius: 6px;
+  bottom: 2px;
   cursor: nwse-resize;
-  height: 18px;
+  height: 22px;
   position: absolute;
-  right: 4px;
+  right: 2px;
   touch-action: none;
-  width: 18px;
+  width: 22px;
   z-index: 4;
+}
+.event-editor-modal-resize-handle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .event-editor-modal-resize-handle::before {
@@ -94,7 +98,7 @@
 
   .event-editor-workbench {
     --event-editor-settings-track: clamp(260px, 42vw, 360px);
-    grid-template-columns: minmax(260px, var(--event-editor-settings-track)) 8px minmax(300px, 1fr) !important;
+    grid-template-columns: minmax(260px, var(--event-editor-settings-track)) 8px minmax(300px, 1fr);
     overflow: hidden;
   }
 
@@ -111,7 +115,7 @@
 
   .event-editor-workbench {
     --event-editor-settings-track: clamp(250px, 42vw, 320px);
-    grid-template-columns: minmax(250px, var(--event-editor-settings-track)) 8px minmax(280px, 1fr) !important;
+    grid-template-columns: minmax(250px, var(--event-editor-settings-track)) 8px minmax(280px, 1fr);
   }
 
   .event-editor-settings-column {
@@ -156,10 +160,18 @@
 @media (max-width: 720px) {
   .event-editor-workbench {
     grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(220px, 1fr) auto;
   }
-
   .event-editor-column-resizer {
     display: none;
+  }
+  .event-editor-inspector-column {
+    max-height: 42vh;
+    overflow: auto;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 8px;
+    background: var(--bg-surface);
+    border-radius: 8px;
   }
 }
 
