@@ -429,12 +429,13 @@ function renderInspectorIdleSummary(page: EventPage, issues: readonly EventDraft
     }),
   ];
   if (page.commands.length > 0) {
+    const recent = page.commands.slice(-6).reverse();
     children.push(
       el("div", {
         class: "event-inspector-recent",
         children: [
-          el("div", { class: "event-inspector-recent-title", text: "최근 명령" }),
-          ...page.commands.slice(-8).reverse().map(recentCommandRow),
+          el("div", { class: "event-inspector-recent-title", text: `최근 명령 · ${recent.length}개` }),
+          ...recent.map(recentCommandRow),
         ],
       })
     );
