@@ -1,6 +1,7 @@
 import type { Command } from "@/project/types";
 
 export const SHOP_TRANSACTION_BRANCH_INDEX = -1;
+export const SHOP_FAILED_TRANSACTION_BRANCH_INDEX = -12;
 export const FORK_THEN_BRANCH_INDEX = -2;
 export const FORK_ELSE_BRANCH_INDEX = -3;
 export const CHOICE_CANCEL_BRANCH_INDEX = -4;
@@ -157,9 +158,16 @@ function resolveShopBranch(
   branchIndex: number,
   mode: MissingBranchMode
 ): Command[] | null {
-  if (branchIndex !== SHOP_TRANSACTION_BRANCH_INDEX) return null;
-  if (!command.transactionBranch && mode === "create") command.transactionBranch = [];
-  return command.transactionBranch ?? null;
+  const typed = command as unknown as Extract<Command, { kind: "shop" }> & { failedTransactionBranch?: Command[] };
+  if (branchIndex === SHOP_TRANSACTION_BRANCH_INDEX) {
+    if (!command.transactionBranch && mode === "create") command.transactionBranch = [];
+    return command.transactionBranch ?? null;
+  }
+  if (branchIndex === SHOP_FAILED_TRANSACTION_BRANCH_INDEX) {
+    if (!typed.failedTransactionBranch && mode === "create") typed.failedTransactionBranch = [];
+    return typed.failedTransactionBranch ?? null;
+  }
+  return null;
 }
 
 function resolvePromoteActorBranch(

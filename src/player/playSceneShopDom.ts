@@ -94,7 +94,9 @@ export function shopPromptText(step: ShopStep, mode: ShopMode, terms: ResolvedTe
 }
 
 export function sellPrice(item: ItemRecord): number {
-  return Math.max(0, Math.floor(item.price / 2));
+  // price 0/1이면 floor/2==0 → 팔아도 0G, UX 혼란. 최소 1G는 보장하되 price 0은 판매 자체를 에디터에서 막는 게 정답. 런타임은 0이면 0 유지(에디터 경고).
+  if (item.price <= 0) return 0;
+  return Math.max(1, Math.floor(item.price / 2));
 }
 
 // 커서가 아이템을 옮길 때 우측 '보유' 패널을 선택 아이템 기준으로 갱신(RM2003 감각).

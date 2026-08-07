@@ -1,5 +1,5 @@
 import { newCommand } from "@/editor/eventActions";
-import { INN_NOT_ENOUGH_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX } from "@/editor/eventCommandPaths";
+import { INN_NOT_ENOUGH_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import type { Command, ItemId, ShopMessageType, ShopType } from "@/project/types";
@@ -669,6 +669,18 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
       transactionBranch: checkbox.checked ? latest.transactionBranch ?? [] : latest.transactionBranch,
     });
   });
+  const failCheckbox = document.createElement("input");
+  failCheckbox.type = "checkbox";
+  failCheckbox.checked = (command as unknown as { branchOnFailedTransaction?: boolean }).branchOnFailedTransaction ?? false;
+  failCheckbox.dataset.testid = "shop-branch-on-failed-transaction";
+  failCheckbox.addEventListener("change", () => {
+    const latest = latestShop(context, command) as unknown as ShopCommand & { branchOnFailedTransaction?: boolean; failedTransactionBranch?: Command[] };
+    context.actions.replaceCommand(context.path, {
+      ...latest,
+      branchOnFailedTransaction: failCheckbox.checked,
+      failedTransactionBranch: failCheckbox.checked ? latest.failedTransactionBranch ?? [] : latest.failedTransactionBranch,
+    });
+  });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-option" });
   fieldset.append(
     el("legend", { text: "분기" }),
@@ -676,13 +688,24 @@ function shopBranchOption(context: CommandEditContext, command: ShopCommand): HT
       class: "commerce-command-option shop-processing-check",
       children: [checkbox, el("span", { text: "구매/판매했을 때 분기" })],
     }),
+    el("label", {
+      class: "commerce-command-option shop-processing-check",
+      children: [failCheckbox, el("span", { text: "빈 상점/거래 없음일 때 분기" })],
+    }),
     el("p", {
       class: "commerce-command-hint",
-      text: "거래가 끝난 뒤 아래 분기 명령을 실행합니다. 상점은 shop 커맨드 자체가 아니라 그 분기에서 후처리를 해야 합니다.",
+      text: "거래 성공→첫 분기, 빈 상점/취소→두 번째 분기. 여관의 ‘돈 없을 때 분기’와 대칭.",
     })
   );
   return fieldset;
 }
+
+const SHOP_FAILED_BRANCH_INDEX = SHOP_FAILED_TRANSACTION_BRANCH_INDEX;
+const SHOP_MESSAGE_PREVIEWS: Record<ShopMessageType, string> = {
+  welcome: "어심 오세요! 무엇이 필요하신가요?",
+  business: "무엇이 필요하신가요?",
+  direct: "물건을 고르세요.",
+};
 
 function shopTransactionBranchControls(context: CommandEditContext, command: ShopCommand): HTMLElement {
   const branchSel = commandKindSelect("text");
@@ -698,7 +721,21 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
       },
     },
   });
-  const hiddenClass = command.branchOnTransaction ? "" : " is-hidden";
+  const failedBranch = (command as unknown as { branchOnFailedTransaction?: boolean }).branchOnFailedTransaction ?? false;
+  const hiddenClass = command.branchOnTransaction || failedBranch ? "" : " is-hidden";
+  const txHidden = command.branchOnTransaction ? "" : " is-hidden";
+  const failHidden = failedBranch ? "" : " is-hidden";
+  const failedSel = commandKindSelect("text");
+  const failedAdd = el("button", {
+    class: "btn shop-processing-branch-add",
+    text: "추가",
+    dataset: { testid: "shop-add-failed-branch-command" },
+    attrs: { type: "button" },
+    on: { click: () => {
+      const n = newCommand(selectedOptionValue(failedSel, COMMAND_KIND_OPTIONS, "text"));
+      context.actions.addCommand([...context.path, SHOP_FAILED_BRANCH_INDEX], n);
+    }},
+  });
   return el("div", {
     class: `shop-processing-branch-controls${hiddenClass}`,
     dataset: { testid: "shop-transaction-branch-controls" },
@@ -707,15 +744,18 @@ function shopTransactionBranchControls(context: CommandEditContext, command: Sho
         class: "shop-processing-branch-head",
         children: [
           el("span", { class: "shop-processing-branch-title", text: "구매/판매 분기" }),
-          el("span", {
-            class: "commerce-command-hint",
-            text: "거래 후 실행할 명령",
-          }),
+          el("span", { class: "commerce-command-hint", text: "거래 후 실행할 명령" }),
         ],
       }),
       el("div", {
-        class: "shop-processing-branch-row",
+        class: `shop-processing-branch-row${txHidden}`,
+        dataset: { testid: "shop-transaction-branch-row" },
         children: [branchSel, add],
+      }),
+      el("div", {
+        class: `shop-processing-branch-row shop-processing-failed-branch-row${failHidden}`,
+        dataset: { testid: "shop-failed-branch-row" },
+        children: [el("span", { class: "shop-processing-branch-title", text: "빈 상점/취소 분기" }), failedSel, failedAdd],
       }),
     ],
   });
@@ -738,8 +778,16 @@ function shopMessageSelect(context: CommandEditContext, command: ShopCommand): H
       messageType: selectedMessageType(select.value),
     });
   });
+  const preview = el("p", {
+    class: "commerce-command-hint shop-message-preview",
+    dataset: { testid: "shop-message-preview" },
+    text: SHOP_MESSAGE_PREVIEWS[messageTypeValue(command)] ?? "",
+  });
+  select.addEventListener("change", () => {
+    preview.textContent = SHOP_MESSAGE_PREVIEWS[selectedMessageType(select.value)] ?? "";
+  });
   const fieldset = el("fieldset", { class: "shop-processing-fieldset shop-processing-message" });
-  fieldset.append(el("legend", { text: "메시지 유형" }), select);
+  fieldset.append(el("legend", { text: "메시지 유형" }), select, preview);
   return fieldset;
 }
 
@@ -753,13 +801,16 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   let searchQuery = "";
 
   const commitItems = (itemIds: readonly ItemId[]) => {
-    // stock 는 itemIds 와 동기화 — 빠진 id 는 stock 에서도 제거
+    // 단일 진실원: itemIds가 정답, stock는 커스텀(계절/가격) 있을 때만 유지. 순서도 itemIds에 맞춤.
     const latest = latestShop(context, command);
-    const stock = latest.stock?.filter((entry) => itemIds.includes(entry.itemId));
+    const byId = new Map((latest.stock ?? []).map((e) => [e.itemId, e] as const));
+    const reorderedStock = itemIds
+      .map((id) => byId.get(id))
+      .filter((e): e is NonNullable<typeof e> => Boolean(e));
     context.actions.replaceCommand(context.path, {
       ...latest,
       itemIds: [...itemIds],
-      ...(stock && stock.length > 0 ? { stock } : stock ? { stock: undefined } : {}),
+      ...(reorderedStock.length > 0 ? { stock: reorderedStock } : latest.stock ? { stock: undefined } : {}),
     });
   };
 
@@ -880,7 +931,18 @@ function shopItemsPanel(context: CommandEditContext, command: ShopCommand, items
   const detail = itemDetailPanel(selectedItems[0] ?? notInShop()[0] ?? null, {
     command,
     onStockChange: (nextStock) => {
-      context.actions.replaceCommand(context.path, { ...latestShop(context, command), stock: nextStock });
+      const latest = latestShop(context, command);
+      // stock에 생긴 id가 itemIds에 없으면(수동 편집 잔재) itemIds에도 추가해 이중기록 해소
+      const known = new Set(latest.itemIds);
+      const missingIds = nextStock.map((e) => e.itemId).filter((id) => !known.has(id));
+      const nextItemIds = missingIds.length > 0 ? [...latest.itemIds, ...missingIds] : latest.itemIds;
+      const byId = new Map(nextStock.map((e) => [e.itemId, e] as const));
+      const orderedStock = nextItemIds.map((id) => byId.get(id)).filter((e): e is NonNullable<typeof e> => Boolean(e));
+      context.actions.replaceCommand(context.path, {
+        ...latest,
+        itemIds: nextItemIds,
+        ...(orderedStock.length > 0 ? { stock: orderedStock } : { stock: undefined }),
+      });
     },
   });
   const syncDetail = (itemId: string, pool: readonly ItemRecord[]) => {

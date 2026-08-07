@@ -22,9 +22,13 @@ import type { ItemRecord } from "@/project/types/database";
 
 export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 
-export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean> {
+export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean | "failed"> {
   const items = shopItems(step);
   const terms = resolveTerms(store.getCurrent());
+  // 빈 상점: 메뉴 노출 대신 안내만 하고 바로 닫음 → 유령 상점(F-07) 방지
+  if (items.length === 0) {
+    return Promise.resolve(step.branchOnFailedTransaction ? "failed" as const : false);
+  }
   // 방문마다 상인 소지금을 명령값(기본 100G)으로 초기화. 방문 중 매입/매도로 증감.
   let merchantGold = resolveShopMerchantGold(step.merchantGold);
   return new Promise((resolve) => {

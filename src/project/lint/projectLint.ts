@@ -68,6 +68,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   checkTileGrafts(project, issues);
+  checkShopIntegrity(project, issues);
   return issues;
 }
 
@@ -526,6 +527,9 @@ function visitCommand(command: Command, visit: (command: Command) => void, issue
   if (command.kind === "shop" && command.transactionBranch) {
     visitCommands(command.transactionBranch, visit, issues, `${label}.transactionBranch`);
   }
+  if (command.kind === "shop" && (command as unknown as { failedTransactionBranch?: Command[] }).failedTransactionBranch) {
+    visitCommands((command as unknown as { failedTransactionBranch: Command[] }).failedTransactionBranch, visit, issues, `${label}.failedTransactionBranch`);
+  }
   if (command.kind === "inn" && command.notEnoughBranch) {
     visitCommands(command.notEnoughBranch, visit, issues, `${label}.notEnoughBranch`);
   }
@@ -570,6 +574,45 @@ function isPlayerTouch(trigger: Trigger): boolean {
 function errorMessage(cause: unknown): string {
   return cause instanceof Error ? cause.message : String(cause);
 }
+function checkShopIntegrity(project: Project, issues: LintIssue[]): void {
+  const visit = (command: Command, label: string) => {
+    if (command.kind !== "shop") return;
+    if (command.shopType && command.allowSell !== undefined) {
+      const implied = command.shopType !== "buyOnly";
+      if (implied !== command.allowSell) {
+        issues.push({ severity: "warning", code: "shop.allowSell-mismatch", message: `${label}: shopType=${command.shopType}인데 allowSell=${command.allowSell}로 모순. shopType이 우선한다.` });
+      }
+    }
+    if ((command.itemIds?.length ?? 0) === 0 && (!command.stock || command.stock.length === 0)) {
+      issues.push({ severity: "warning", code: "shop.empty", message: `${label}: 빈 상점 — 판매할 아이템이 없다. 진입 시 바로 닫힌다.` });
+    }
+    const ids = new Set<string>();
+    for (const entry of command.stock ?? []) {
+      if (ids.has(entry.itemId)) issues.push({ severity: "warning", code: "shop.stock-duplicate", message: `${label}: stock에 중복 itemId: ${entry.itemId}` });
+      ids.add(entry.itemId);
+      if (!command.itemIds.includes(entry.itemId)) issues.push({ severity: "warning", code: "shop.stock-orphan", message: `${label}: stock itemId ${entry.itemId}가 itemIds에 없음 — 동기화 필요` });
+    }
+    if (command.branchOnFailedTransaction && !command.failedTransactionBranch?.length) {
+      issues.push({ severity: "warning", code: "shop.failed-branch-empty", message: `${label}: branchOnFailedTransaction이 켜졌는데 failedTransactionBranch가 비었다.` });
+    }
+  };
+  for (const [mapId, map] of Object.entries(project.maps)) {
+    for (const event of map.events) {
+      for (const [pi, page] of (event.pages ?? []).entries()) {
+        const walk = (commands: readonly Command[] | unknown, prefix: string) => {
+          if (!Array.isArray(commands)) return;
+          for (const [ci, cmd] of (commands as readonly Command[]).entries()) {
+            visit(cmd, `${mapId}:${event.id}:p${pi}:${prefix}[${ci}]`);
+            if (cmd.kind === "shop" && cmd.transactionBranch) walk(cmd.transactionBranch, "transactionBranch");
+            if (cmd.kind === "shop" && (cmd as unknown as { failedTransactionBranch?: Command[] }).failedTransactionBranch) walk((cmd as unknown as { failedTransactionBranch: Command[] }).failedTransactionBranch, "failedTransactionBranch");
+          }
+        };
+        walk(page.commands, "commands");
+      }
+    }
+  }
+}
+
 function checkTileGrafts(project: Project, issues: LintIssue[]): void {
   for (const [tilesetId, tileset] of Object.entries(project.tilesets)) {
     for (const graft of activeTileGrafts(tileset)) {

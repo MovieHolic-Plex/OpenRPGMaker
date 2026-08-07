@@ -216,6 +216,8 @@ export interface PlaySession {
 // 명시적으로 읽는 헬퍼. 런타임 상태(PlaySession = scene.session)와 혼동하지 않도록,
 // "이 값은 플레이 중 상태가 아니라 시작 상태다"라는 의도를 코드로 표시한다.
 // 직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
+export const GOLD_MAX = 9_999_999;
+
 export function startStateOf(project: Project): ProjectStartState {
   return project.session;
 }
@@ -242,7 +244,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     variables,
     timers: { ...(start.timers ?? {}) },
     // 시작 소지금은 인벤토리/파티와 마찬가지로 프로젝트 시작 상태 설정을 따른다.
-    gold: Math.max(0, start.gold ?? 0),
+    gold: Math.min(GOLD_MAX, Math.max(0, start.gold ?? 0)),
     inventory: { ...start.inventory },
     itemUseCharges: {},
     partyActorIds: [...start.partyActorIds],
@@ -371,7 +373,7 @@ export function getTimer(session: PlaySessionLike, id: string): number {
 
 export function changeGold(session: PlaySessionLike, op: "=" | "+=" | "-=", amount: number): void {
   const next = applyAmount(session.gold, op, amount);
-  session.gold = Math.max(0, next);
+  session.gold = Math.min(GOLD_MAX, Math.max(0, next));
 }
 
 export function changeItem(
