@@ -1,6 +1,6 @@
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
 } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
@@ -9,7 +9,7 @@ import type { EncounterTableEntry, FieldSpawnDef, MapBgmSetting } from "@/projec
 import { clearChildren, el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
-type MapPropsTab = "general" | "background" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns";
+type MapPropsTab = "general" | "background" | "bgm" | "battle" | "restrictions" | "encounter" | "spawns" | "minimap";
 
 const TAB_LABELS: Record<MapPropsTab, string> = {
   general: "일반",
@@ -19,6 +19,7 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
   restrictions: "제한",
   encounter: "인카운터",
   spawns: "필드 스폰",
+  minimap: "미니맵",
 };
 
 let activeTab: MapPropsTab = "general";
@@ -64,6 +65,7 @@ export function renderMapProps(container: HTMLElement): void {
     case "restrictions": renderRestrictionsTab(body, map); break;
     case "encounter": renderEncounterTab(body, map); break;
     case "spawns": renderSpawnsTab(body, map); break;
+    case "minimap": renderMinimapTab(body, map); break;
   }
   wrapper.append(body);
   container.append(wrapper);
@@ -644,6 +646,147 @@ function numberField(
   const cell = el("div", { class: "map-encounter-cond-cell" });
   cell.append(el("label", { text: label }), input);
   return cell;
+}
+
+// ── 미니맵 탭 ──
+function renderMinimapTab(host: HTMLElement, map: import("@/project/types").GameMap): void {
+  const section = el("div", { class: "panel-section map-props-section" });
+  const cfg = map.minimap;
+
+  const enabled = Boolean(cfg?.enabled);
+  const enableCheck = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "map-minimap-enable" },
+  }) as HTMLInputElement;
+  enableCheck.checked = enabled;
+  enableCheck.addEventListener("change", () => {
+    if (enableCheck.checked) {
+      setMapMinimap(map.id, { enabled: true, showEvents: true });
+    } else {
+      setMapMinimap(map.id, null);
+    }
+    rerender(host);
+  });
+  const enableRow = el("label", { class: "map-props-check-row" });
+  enableRow.append(enableCheck, el("span", { text: "이 맵에서 미니맵 사용" }));
+  section.append(enableRow);
+  section.append(el("p", { class: "map-props-hint", text: enabled ? "플레이 중 이 맵에 진입하면 미니맵이 뜹니다. M 키로 켜고 끌 수 있습니다." : "체크하면 플레이 중 이 맵에서 미니맵이 뜹니다. (기존 맵은 기본 off)" }));
+
+  if (cfg?.enabled) {
+    const corner = (cfg.corner ?? "topRight") as NonNullable<import("@/project/types").MapMinimapSetting["corner"]>;
+    const cornerSelect = el("select", {
+      dataset: { testid: "map-minimap-corner" },
+      on: {
+        change: (e: Event) => {
+          const v = (e.target as HTMLSelectElement).value as NonNullable<import("@/project/types").MapMinimapSetting["corner"]>;
+          setMapMinimap(map.id, { corner: v });
+        },
+      },
+    }) as HTMLSelectElement;
+    for (const [v, label] of [["topRight", "오른쪽 위"], ["topLeft", "왼쪽 위"], ["bottomRight", "오른쪽 아래"], ["bottomLeft", "왼쪽 아래"]] as const) {
+      cornerSelect.append(el("option", { text: label, attrs: { value: v } }));
+    }
+    cornerSelect.value = corner;
+    section.append(fieldRow("위치", cornerSelect));
+
+    const scaleVal = cfg.scale;
+    const autoScale = Math.min(0.35, Math.max(0.08, 96 / Math.max(map.width * map.tileSize, map.height * map.tileSize, 1)));
+    const effective = scaleVal ?? autoScale;
+    const scaleRow = el("div", { class: "map-encounter-rate-row" });
+    const slider = el("input", {
+      class: "map-encounter-slider",
+      attrs: { type: "range", min: "8", max: "35", step: "1", "aria-label": "미니맵 크기" },
+      value: String(Math.round(effective * 100)),
+      dataset: { testid: "map-minimap-scale" },
+    }) as HTMLInputElement;
+    const num = el("input", {
+      attrs: { type: "number", min: "8", max: "35", step: "1" },
+      value: String(Math.round(effective * 100)),
+      dataset: { testid: "map-minimap-scale-number" },
+    }) as HTMLInputElement;
+    const hint = el("p", { class: "map-props-hint", text: scaleVal === undefined ? `자동(${Math.round(autoScale * 100)}%) — 맵 크기에 맞춰 조절됩니다.` : `${Math.round(effective * 100)}% — 8~35% 사이.` });
+    const applyScale = (pct: number): void => {
+      const clamped = Math.max(8, Math.min(35, Math.round(pct)));
+      slider.value = String(clamped);
+      num.value = String(clamped);
+      hint.textContent = `${clamped}%`;
+      setMapMinimap(map.id, { scale: clamped / 100 });
+    };
+    slider.addEventListener("input", () => applyScale(parseInt(slider.value, 10) || 8));
+    num.addEventListener("change", () => applyScale(parseInt(num.value, 10) || 8));
+    const resetBtn = el("button", {
+      class: "btn btn-sm",
+      text: "자동",
+      attrs: { type: "button", title: "자동 배율로 되돌리기" },
+      dataset: { testid: "map-minimap-scale-auto" },
+      on: {
+        click: () => {
+          // undefined로 돌리면 auto로 복귀 — 키를 지운 뒤 enabled만 남긴다.
+          setMapMinimap(map.id, { scale: undefined as unknown as number });
+          // 수동으로 키를 지우기: 실제로는 현재 minimap 객체에서 scale 삭제.
+          const fresh = store.getCurrent().maps[map.id];
+          if (fresh?.minimap) {
+            const copy = { ...fresh.minimap };
+            delete (copy as { scale?: unknown }).scale;
+            // store 직접 패치 없이 setMapMinimap(null) 후 enabled 재설정은 번거로우므로, 직접 store 조작.
+            store.update((p) => {
+              const m = p.maps[map.id];
+              if (m?.minimap) delete (m.minimap as { scale?: unknown }).scale;
+            }, { scope: "map", mapId: map.id });
+          }
+          rerender(host);
+        },
+      },
+    });
+    scaleRow.append(slider, num, resetBtn);
+    section.append(fieldRow("크기 (%)", scaleRow));
+    section.append(hint);
+
+    const showEvents = cfg.showEvents ?? true;
+    const evCheck = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-minimap-show-events" } }) as HTMLInputElement;
+    evCheck.checked = showEvents;
+    evCheck.addEventListener("change", () => setMapMinimap(map.id, { showEvents: evCheck.checked }));
+    const evRow = el("label", { class: "map-props-check-row" });
+    evRow.append(evCheck, el("span", { text: "이벤트 마커 표시" }));
+    section.append(evRow);
+
+    section.append(el("p", { class: "map-props-hint", text: "안개(fog)는 v1에서 자리만 두고, 추후 탐험형 미니맵으로 확장합니다." }));
+
+    // 미리보기 — drawTransferMapPreview를 그대로 재사용 (96px 박스).
+    const previewWrap = el("div", { class: "map-minimap-preview", dataset: { testid: "map-minimap-preview" } });
+    previewWrap.append(el("div", { class: "map-minimap-preview-label", text: "미리보기" }));
+    const canvas = document.createElement("canvas");
+    canvas.dataset.testid = "map-minimap-preview-canvas";
+    canvas.className = "map-minimap-preview-canvas";
+    previewWrap.append(canvas);
+    // 비동기로 타일 썸네일을 그린다 — 실패해도 폴백은 배경색만.
+    void (async (): Promise<void> => {
+      try {
+        const { drawTransferMapPreview } = await import("@/editor/panels/eventEditor/transferMapPreview");
+        const project = store.getCurrent();
+        const freshMap = project.maps[map.id];
+        if (!freshMap) return;
+        const showEv = freshMap.minimap?.showEvents ?? true;
+        // selection은 더미 — 마커 위치만 있으면 됨. showEvents=false면 이벤트 마커를 안 그리는 대신 drawTransferFallback처럼 배경만.
+        const zoom = 1;
+        const selection = { x: -1, y: -1, zoom };
+        // transferMapPreview가 이벤트를 항상 그리므로, showEvents=false일 땐 잠시 필터하려면
+        // 별도 분기 없이 그대로 두되 문구로만 구분 — v1 스코프에선 썸네일이니 허용.
+        void drawTransferMapPreview({ canvas, project, mapId: map.id, selection, isCurrent: () => canvas.isConnected }).catch(() => {
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return;
+          ctx.fillStyle = "#0f1217";
+          ctx.fillRect(0, 0, canvas.width || 96, canvas.height || 96);
+        });
+        void showEv;
+      } catch {
+        // ignore
+      }
+    })();
+    section.append(previewWrap);
+  }
+
+  host.append(section);
 }
 
 // ── 필드 스폰 탭 ──

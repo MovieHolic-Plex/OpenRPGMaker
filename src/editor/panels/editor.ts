@@ -19,6 +19,7 @@ import {
   takeoverMapLock,
   type MapEditLockStatus,
 } from "@/editor/mapEditLocks";
+import { installLayoutBboxOverlay, toggleLayoutBboxes } from "@/editor/layoutBboxOverlay";
 import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
@@ -88,6 +89,7 @@ let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
 let unsubUiMode: (() => void) | null = null;
+let unsubLayoutBbox: (() => void) | null = null;
 // AI 연동 칩 폴링 타이머 — teardownEditor 에서 정리한다.
 let aiConnectionPollTimer: ReturnType<typeof setInterval> | null = null;
 
@@ -195,6 +197,7 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
+  unsubLayoutBbox = installLayoutBboxOverlay();
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
   unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
@@ -286,11 +289,13 @@ export function teardownEditor(): void {
   unsubEditor?.();
   unsubMapLocks?.();
   unsubUiMode?.();
+  unsubLayoutBbox?.();
   unsubStore = null;
   unsubAutoSave = null;
   unsubEditor = null;
   unsubMapLocks = null;
   unsubUiMode = null;
+  unsubLayoutBbox = null;
   window.removeEventListener("resize", onWindowResize);
   window.removeEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
   closeTestPlayModal();
@@ -606,12 +611,32 @@ function renderEditorStatusbar(container: HTMLElement): void {
       children: ["상위: ", el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
     }),
   ];
+  if (state.tool === "event" && state.layer === "event") {
+    cells.push(
+      el("button", {
+        class: "editor-statusbar-cell editor-statusbar-hint",
+        text: "타일 칠하려면: 바닥/장식으로 전환",
+        attrs: { type: "button", title: "브러시로 전환해 타일을 칠합니다" },
+        dataset: { testid: "paint-hint-switch" },
+        on: { click: () => editorState.set({ tool: "paint", layer: "lower" }) },
+      })
+    );
+  }
   // "확보/확인 전"은 소음 — 잠김·확인 중·장애일 때만 표시.
   if (shouldShowMapEditLockStatus(lockStatus, mapId)) {
     cells.push(renderMapEditLockStatus(lockStatus, mapId));
   }
   cells.push(renderDbConnectionStatus(store.getDbPersistenceStatus(), refreshStatusbar));
   // AI 연동 칩 — DB 칩과 동일 패턴. 영역 작업·AI 채팅이 LLM 인증에 의존하므로 상태를 항상 노출한다.
+  cells.push(
+    el("button", {
+      class: "editor-statusbar-cell" + (state.showLayoutBboxes ? " active" : ""),
+      text: state.showLayoutBboxes ? "설계도 숨기기" : "설계도 보기",
+      attrs: { type: "button", title: "맵 bbox 설계도(P/M/H) 오버레이" },
+      dataset: { testid: "toggle-layout-bboxes" },
+      on: { click: () => toggleLayoutBboxes() },
+    })
+  );
   cells.push(renderAiConnectionStatus(refreshStatusbar));
   container.append(...cells);
 }

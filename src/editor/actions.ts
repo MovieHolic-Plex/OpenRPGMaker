@@ -27,7 +27,7 @@ export {
   toggleCollision,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, TilesetDef, TroopId } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
 export function addMap(name: string, width = 16, height = 16): MapId {
@@ -260,6 +260,31 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
     if (flags.disableSave) map.disableSave = true; else delete map.disableSave;
     if (flags.disableTeleport) map.disableTeleport = true; else delete map.disableTeleport;
     if (flags.disableEscape) map.disableEscape = true; else delete map.disableEscape;
+  }, { scope: "map", mapId });
+}
+
+export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (patch === null) {
+      delete map.minimap;
+      return;
+    }
+    const next: MapMinimapSetting = {
+      enabled: patch.enabled ?? map.minimap?.enabled ?? false,
+      ...(patch.corner !== undefined ? { corner: patch.corner } : map.minimap?.corner !== undefined ? { corner: map.minimap.corner } : {}),
+      ...(patch.scale !== undefined ? { scale: patch.scale } : map.minimap?.scale !== undefined ? { scale: map.minimap.scale } : {}),
+      ...(patch.showEvents !== undefined ? { showEvents: patch.showEvents } : map.minimap?.showEvents !== undefined ? { showEvents: map.minimap.showEvents } : {}),
+      ...(patch.fogOfWar !== undefined ? { fogOfWar: patch.fogOfWar } : map.minimap?.fogOfWar !== undefined ? { fogOfWar: map.minimap.fogOfWar } : {}),
+    };
+    const hasExtra = next.corner !== undefined || next.scale !== undefined || next.showEvents !== undefined || next.fogOfWar !== undefined;
+    if (!next.enabled && !hasExtra) {
+      delete map.minimap;
+    } else {
+      map.minimap = next;
+    }
   }, { scope: "map", mapId });
 }
 
