@@ -77,6 +77,13 @@ import {
   syncPlaySceneZoneFeedback,
   type PlaySceneZoneFeedback,
 } from "@/player/playSceneZoneFeedback";
+import {
+  createMinimap,
+  destroyMinimap,
+  syncMinimapPosition,
+  syncMinimapVisibility,
+  type MinimapRuntimeState,
+} from "@/player/minimap";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -119,6 +126,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   fieldSpawnState: FieldSpawnRuntimeState | null = null;
   actionCombatState: import("@/player/actionCombatTypes").ActionCombatSceneState | null = null;
   private zoneFeedback: PlaySceneZoneFeedback | null = null;
+  private minimap: MinimapRuntimeState | null = null;
+  private minimapUserHidden = false;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
   lightingMaskSignature = "";
@@ -196,6 +205,23 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.cameras.main.startFollow(this.player, true, 0.2, 0.2);
     syncFollowerSprites(this);
     this.centerCamera();
+    void this.syncMinimap();
+    // M = minimap toggle. Input abstraction doesn't expose Phaser keyboard; use document.
+    const toggleMinimap = (): void => {
+      if (!this.minimap) return;
+      this.minimapUserHidden = !this.minimapUserHidden;
+      const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
+      syncMinimapVisibility(this.minimap, host ?? null, this.minimapUserHidden);
+    };
+    const onDocKey = (e: KeyboardEvent): void => {
+      if (e.key.toLowerCase() === "m" && !e.repeat) toggleMinimap();
+    };
+    document.addEventListener("keydown", onDocKey);
+    const detachMinimapKey = (): void => {
+      document.removeEventListener("keydown", onDocKey);
+    };
+    this.events.once("shutdown", detachMinimapKey);
+    this.events.once("destroy", detachMinimapKey);
     updateNpcSchedules(this, false);
     // auto 트리거는 dialogue UI가 준비된 후에 실행해야 한다
     // (runEvent가 dialogue 없으면 즉시 return하므로). dialogue는 player.ts가
@@ -223,6 +249,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       destroyPlaySceneZoneFeedback(this.zoneFeedback);
       this.zoneFeedback = null;
     };
+    const destroyMinimapLocal = (): void => {
+      if (!this.minimap) return;
+      destroyMinimap(this.minimap);
+      this.minimap = null;
+    };
+    this.events.once("shutdown", destroyMinimapLocal);
+    this.events.once("destroy", destroyMinimapLocal);
     this.events.once("shutdown", destroyZoneFeedback);
     this.events.once("destroy", destroyZoneFeedback);
     // player.ts 로딩 오버레이가 create 완료를 기다릴 수 있게 신호.
@@ -245,6 +278,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
     if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
+    if (this.minimap) {
+      syncMinimapPosition(this.minimap, this.tileX, this.tileY, this.map);
+      const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
+      syncMinimapVisibility(this.minimap, host ?? null, this.minimapUserHidden);
+    }
   }
 
   getMapId(): MapId {
@@ -255,6 +293,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     loadSceneMap(this, mapId, options);
     initializeActionCombatForScene(this);
     resetEncounterCounter();
+    void this.syncMinimap();
   }
 
   renderTiles(): void {
@@ -398,6 +437,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     const project = store.getCurrent();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
+    void this.syncMinimap();
     this.tileX = this.session.x;
     this.tileY = this.session.y;
     this.player.setTexture(this.playerSprite.texture);
@@ -460,6 +500,27 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     if (key !== "dialogue") return;
     void this.fireAutoTriggers();
   };
+
+  private async syncMinimap(): Promise<void> {
+    const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
+    if (!host) {
+      // dialogueHost may not exist yet at create() — retry on next frame once.
+      setTimeout(() => void this.syncMinimap(), 300);
+      return;
+    }
+    if (this.minimap) {
+      destroyMinimap(this.minimap);
+      this.minimap = null;
+    }
+    const map = this.map;
+    if (!map?.minimap?.enabled) return;
+    try {
+      this.minimap = await createMinimap(host, map, this.session);
+      if (this.minimap) syncMinimapVisibility(this.minimap, host, this.minimapUserHidden);
+    } catch {
+      // minimap is best-effort — never break play scene
+    }
+  }
 
   private async runInitialEventTestWhenReady(eventId: string): Promise<void> {
     if (this.game.registry.get("dialogue")) {

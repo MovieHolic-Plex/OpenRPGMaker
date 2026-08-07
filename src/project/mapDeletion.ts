@@ -18,6 +18,8 @@ import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
 export interface MapDeletionImpact {
   readonly mapId: MapId;
   readonly mapName: string;
+  readonly worldRefCount: number;
+  readonly worldGraphEdgeCount: number;
   /** 삭제되는 맵 위의 이벤트 수. */
   readonly eventCount: number;
   /** 시작 맵이었는지(삭제 시 다른 맵으로 재배선됨). */
@@ -55,6 +57,8 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
   return {
     mapId,
     mapName: map.name,
+    worldRefCount: (project.world?.entities ?? []).reduce((sum, e) => sum + (e.refs ?? []).filter((r) => r.kind === "map" && r.id === mapId).length, 0),
+    worldGraphEdgeCount: (project.worldGraph?.edges ?? []).filter((e) => e.from.mapId === mapId || e.to.mapId === mapId).length + (project.worldGraph?.nodes ?? []).filter((n) => n.mapId === mapId).length,
     eventCount: map.events.length,
     isStartMap: project.startMapId === mapId,
     isTreeRoot: project.mapTree.mapId === mapId,
@@ -131,6 +135,20 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
         delete preset.startPos;
       }
     }
+  }
+
+  if (draft.world?.entities) {
+    for (const entity of draft.world.entities) {
+      if (!entity.refs) continue;
+      (entity as { refs?: typeof entity.refs }).refs = entity.refs.filter((ref) => !(ref.kind === "map" && ref.id === mapId));
+    }
+  }
+  if (draft.worldGraph?.nodes) {
+    draft.worldGraph = {
+      ...draft.worldGraph,
+      nodes: draft.worldGraph.nodes.filter((node) => node.mapId !== mapId),
+      edges: draft.worldGraph.edges.filter((edge) => edge.from.mapId !== mapId && edge.to.mapId !== mapId),
+    };
   }
 
   // 이벤트 명령(transfer/changeTile)과 생활 이동 목적지에서 삭제 맵 참조 제거.

@@ -154,13 +154,17 @@ export function makeRm2kPalette(args: MakeRm2kPaletteArgs): HTMLElement {
 }
 
 function makeRm2kCell(args: MakeRm2kPaletteArgs, tileId: number, autotileName?: string): HTMLButtonElement {
-  const title = autotileName !== undefined
+  const bannedReason = bannedTileReason(tileId);
+  const waterKind = waterTileKind(tileId);
+  const titleBase = autotileName !== undefined
     ? `${tileId} ${autotileName} (오토타일 — 이웃에 맞춰 자동 성형)`
     : rm2kTileTitle(args.tileset, tileId);
+  const title = bannedReason ? `${titleBase} [사용 금지: ${bannedReason}]` : waterKind ? `${titleBase} [${waterKind}]` : titleBase;
   const cell = el("button", {
     class: "chipset-tile"
       + (args.selectedTile === tileId ? " active" : "")
-      + (autotileName !== undefined ? " rm2k-autotile" : ""),
+      + (autotileName !== undefined ? " rm2k-autotile" : "") +
+      (bannedTileReason(tileId) ? " banned" : ""),
     attrs: {
       title,
       type: "button",
@@ -186,6 +190,20 @@ function makeRm2kCell(args: MakeRm2kPaletteArgs, tileId: number, autotileName?: 
     }));
   }
   return cell;
+}
+
+
+function bannedTileReason(tileId: number): string | null {
+  if (tileId >= 411 && tileId <= 413) return "천막 타일은 하네스 전용 — 일반 배치 시 시장과 불일치";
+  if (tileId === 443) return "천막 타일은 하네스 전용";
+  return null;
+}
+
+function waterTileKind(tileId: number): string | null {
+  if (tileId === 0) return "호수(쿼터 합성)";
+  if (tileId === 93 || tileId === 123) return "폭포(3프레임 3fps)";
+  if (tileId === 3) return "수로(3프레임)";
+  return null;
 }
 
 function rm2kTileTitle(tileset: TilesetDef, tileId: number): string {
