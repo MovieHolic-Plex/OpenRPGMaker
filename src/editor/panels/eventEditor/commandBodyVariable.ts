@@ -97,12 +97,12 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
   });
 
   const divideWarning = el("p", {
-    class: "event-command-variable-warning",
+    class: "event-command-variable-warning compact",
     dataset: { testid: "event-command-variable-divide-warning" },
   });
 
   const overflowHint = el("p", {
-    class: "event-command-variable-hint",
+    class: "event-command-variable-hint compact",
     dataset: { testid: "event-command-variable-overflow-hint" },
   });
 
@@ -206,8 +206,8 @@ export function setVariableBody(context: CommandEditContext, cmd: SetVariableCom
     overflowHint,
     formula,
     el("p", {
-      class: "event-command-variable-hint",
-      text: "÷= 는 정수 나눗셈(0 방향 버림)입니다. 0으로 나누면 값을 유지합니다. 값은 -9,999,999 ~ 9,999,999로 클램프됩니다.",
+      class: "event-command-variable-hint compact muted",
+      text: "÷= 정수 나눗셈(0 방향 버림) · 0 무시 · -9,999,999~9,999,999 클램프",
       dataset: { testid: "event-command-variable-hint" },
     }),
     recordUsageHint("variable", currentVariableId),

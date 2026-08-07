@@ -57,6 +57,20 @@
   background: var(--bg-raised);
 }
 
+.event-command-variable-hint.compact,
+.event-command-variable-warning.compact {
+  margin-top: 3px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.event-command-variable-hint.compact.muted {
+  opacity: 0.82;
+  background: transparent;
+  border-style: dashed;
+}
+
 .event-command-variable-field.hidden {
   display: none;
 }
