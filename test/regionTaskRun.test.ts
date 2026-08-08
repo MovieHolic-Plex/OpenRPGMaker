@@ -388,7 +388,7 @@ describe("승인 게이트 (gate: approval 기본)", () => {
     const proposedA: Project = structuredClone(base);
     proposedA.maps[MAP_ID].lowerTiles[idx(1, 1)] = 5; // A 변경 셀(영역 안)
     const proposedB: Project = structuredClone(base);
-    proposedB.maps[MAP_ID].lowerTiles[idx(2, 2)] = 7; // B 변경 셀(영역 안)
+    proposedB.maps[MAP_ID].lowerTiles[idx(2, 2)] = 5; // B 변경 셀(영역 안) — tile 5는 통행 가능·연결됨(리뷰에서 되돌려지지 않음)
 
     // write 툴(paint_tiles) tool_call을 흘려보내 ghostPreviewUpdater가 실제로 프리뷰를 갱신하게 한다.
     const sessionWithToolCall = (proposed: Project): Partial<RegionTaskSessionLike> => ({

@@ -65,7 +65,7 @@ describe("AI busy 입력 큐", () => {
 
     // 두 번째는 아직 버블로 붙지 않고 큐 표시가 뜬다.
     expect(queue.hidden).toBe(false);
-    expect(queue.textContent).toContain("대기 중 1건");
+    expect(queue.textContent).toContain("대기 1건");
 
     pendingResponses.shift()?.();
     await flushAsync();
