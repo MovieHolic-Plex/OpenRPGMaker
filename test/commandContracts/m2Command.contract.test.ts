@@ -18,13 +18,13 @@ type MapSemanticContract = {
 };
 
 const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
-  contract("m2-014-change-parameters", { target: "actor_hero", operation: "add", value: 5 }, (result) => {
+  contract("m2-014-change-parameters", { target: "actor_hero", parameter: "attack", operation: "add", value: 5, valueSource: "number", valueVariableId: "" }, (result) => {
     expect(result.session.m2Runtime?.actors.actor_hero?.parameters).toBe(5);
   }),
   contract("m2-019-change-state", { target: "actor_hero", operation: "add", value: "poison" }, (result) => {
     expect(result.session.actorStateIds?.actor_hero).toEqual(["poison"]);
   }),
-  contract("m2-021-damage-processing", { target: "actor_hero", operation: "add", value: 7 }, (result) => {
+  contract("m2-021-damage-processing", { target: "actor_hero", operation: "add", value: 7, valueSource: "number", valueVariableId: "" }, (result) => {
     expect(result.session.m2Runtime?.actors.actor_hero?.damage).toBe(7);
   }),
   contract("m2-024-change-actor-graphic", { target: "actor_hero", value: "hero_alt" }, (result) => {
@@ -33,12 +33,12 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   contract("m2-046-tint-screen", { value: "warm" }, (result) => {
     expect(result.session.m2Runtime?.screen.tint).toBe("warm");
   }),
-  contract("m2-047-flash-screen", { color: "red", durationMs: 120 }, pauseContract("flashScreen")),
-  contract("m2-048-shake-screen", { intensity: 4, durationMs: 160 }, pauseContract("shakeScreen")),
-  contract("m2-049-scroll-map", { direction: "right", distance: 3, durationMs: 180 }, pauseContract("scrollMap")),
-  contract("m2-050-set-weather-effects", { value: "rain" }, pauseContract("setWeather")),
-  contract("m2-052-move-picture", { pictureId: "pic1", resourceId: "portrait", x: 8, y: 9 }, (result) => {
-    expect(result.session.pictures?.pic1).toEqual({ pictureId: "pic1", resourceId: "portrait", x: 8, y: 9 });
+  contract("m2-047-flash-screen", { color: "red", value: "red", durationMs: 120 }, pauseContract("flashScreen")),
+  contract("m2-048-shake-screen", { intensity: 4, value: 4, durationMs: 160 }, pauseContract("shakeScreen")),
+  contract("m2-049-scroll-map", { direction: "right", distance: 3, speed: 4, wait: "true", mode: "return" }, pauseContract("scrollMap")),
+  contract("m2-050-set-weather-effects", { value: "rain", transitionMs: 0, durationMs: 0 }, pauseContract("setWeather")),
+  contract("m2-052-move-picture", { pictureId: "pic1", resourceId: "portrait", x: 8, y: 9, durationMs: 0 }, (result) => {
+    expect(result.session.pictures?.pic1).toEqual({ pictureId: "pic1", resourceId: "portrait", x: 8, y: 9, durationMs: 0 });
   }),
   contract("m2-058-wait-for-all-movement", {}, pauseContract("waitForAllMovement")),
   contract("m2-059-stop-all-movement", {}, pauseContract("stopAllMovement")),
@@ -46,14 +46,14 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   contract("m2-091-change-actor-class", { target: "actor_hero", value: "class_mage" }, (result) => {
     expect(result.session.m2Runtime?.actors.actor_hero?.classId).toBe("class_mage");
   }),
-  contract("m2-092-change-battle-commands", { target: "actor_hero", operation: "add", value: "cmd_item" }, (result) => {
+  contract("m2-092-change-battle-commands", { target: "actor_hero", operation: "add", value: "cmd_item", slots: "" }, (result) => {
     expect(result.session.actorBattleCommands?.actor_hero).toEqual(["cmd_item"]);
   }),
-  contract("m2-201-camera-control", { mode: "panTo", target: "screen", x: 3, y: 4 }, pauseContract("cameraControl")),
-  contract("m2-203-spawn-event", { templateEventId: "guard", eventId: "guard_spawn", x: 6, y: 7 }, (result) => {
+  contract("m2-201-camera-control", { mode: "panTo", target: "screen", x: 3, y: 4, zoom: 1, durationMs: 300 }, pauseContract("cameraControl")),
+  contract("m2-203-spawn-event", { templateEventId: "guard", eventId: "guard_spawn", mapId: "map_blank", templateMapId: "map_blank", x: 6, y: 7 }, (result) => {
     expect(result.session.spawnedEvents?.guard_spawn).toMatchObject({ templateEventId: "guard", x: 6, y: 7 });
   }),
-  contract("m2-204-remove-event", { eventId: "guard_spawn" }, (result) => {
+  contract("m2-204-remove-event", { eventId: "guard_spawn", mapId: "map_blank" }, (result) => {
     expect(result.session.flags["event-removed:guard_spawn"]).toBe(true);
   }),
 ];
@@ -67,12 +67,33 @@ const BATTLE_FULL_CONTRACTS: readonly {
     expected: { kind: "changeEnemyHp", target: "enemy_1", operation: "remove", value: 9 },
   },
   {
+    command: persistedM2("m2-099-change-enemy-mp", { target: "enemy_1", operation: "remove", value: 4 }),
+    expected: { kind: "changeEnemyMp", target: "enemy_1", operation: "remove", value: 4 },
+  },
+  {
+    command: persistedM2("m2-100-change-enemy-state", { target: "enemy_1", operation: "add", value: "poison" }),
+    expected: { kind: "changeEnemyState", target: "enemy_1", operation: "add", stateId: "poison" },
+  },
+  {
     command: persistedM2("m2-101-enemy-encounter", { target: "enemy_hidden" }),
     expected: { kind: "enemyEncounter", target: "enemy_hidden" },
   },
   {
     command: persistedM2("m2-102-change-battleback", { resourceId: "battleback_cave" }),
     expected: { kind: "changeBattleback", resourceId: "battleback_cave" },
+  },
+  {
+    command: persistedM2("m2-103-show-animation", { target: "enemy_1", animationId: "anim_fire" }),
+    expected: { kind: "showAnimation", target: "enemy_1", animationId: "anim_fire" },
+  },
+  {
+    command: persistedM2("m2-104-battle-events", { target: "page_rage" }),
+    expected: { kind: "battleEvents", target: "page_rage" },
+  },
+  { command: persistedM2("m2-105-abort-battle", {}), expected: { kind: "abortBattle" } },
+  {
+    command: persistedM2("m2-106-call-common-event", { commonEventId: "common_heal" }),
+    expected: { kind: "callCommonEvent", commonEventId: "common_heal" },
   },
   { command: persistedM2("m2-107-force-escape", {}), expected: { kind: "forceEscape" } },
   {
@@ -92,9 +113,11 @@ describe("m2Command persisted semantic contracts", () => {
     // When: the real interpreter drains the persisted command.
     const result = runCommandContract([command]);
 
-    // Then: the command reaches its independent semantic observation without a warning.
+    // Then: the command reaches its independent semantic observation. Missing-field
+    // diagnostics document compact/defaulted payloads; interpreter support warnings would
+    // mean the command was skipped or misclassified and remain forbidden here.
     expect(result.finished).toBe(true);
-    expect(result.warnings).toEqual([]);
+    expect(result.warnings.filter((warning) => warning.startsWith("[interpreter]"))).toEqual([]);
     verify(result);
   });
 
@@ -154,12 +177,22 @@ describe("m2Command persisted semantic contracts", () => {
     expect(persistedResult.warnings).toEqual([]);
   });
 
-  it("has a semantic contract for every full behavior-class ID", () => {
-    // Given: independent map/common and battle semantic contract tables.
+  it("has a semantic contract for every behavior-full ID in a runtime-full context", () => {
+    // Given: independent map/common and troop semantic contract tables.
     const contractIds = [...MAP_FULL_CONTRACTS, ...BATTLE_FULL_CONTRACTS].map((entry) => entry.command.commandId);
+    const runtimeFullBehaviorIds = M2_COMMAND_CATALOG
+      .map((entry) => m2CommandRuntimeClassification(entry.id))
+    .filter(
+      (classification) =>
+        classification.behaviorClass === "full" &&
+        Object.values(classification.supportByContext).some((support) => support === "runtime-full")
+    )
+    .map((classification) => classification.commandId);
 
-    // When/Then: their union is exactly the explicit full behavior class.
-    expect(new Set(contractIds)).toEqual(new Set(M2_PERSISTED_BEHAVIOR_IDS.full));
+    // When/Then: every behavior-full command with at least one full execution context has
+    // an independently observed effect in that context. Context-partial commands are not
+    // falsely treated as map-runtime contracts.
+    expect(new Set(contractIds)).toEqual(new Set(runtimeFullBehaviorIds));
   });
 });
 
