@@ -282,7 +282,7 @@ function syncEnemyListName(
   name.append(level);
 }
 
-function disambiguatedBattlerName(
+export function disambiguatedBattlerName(
   battler: BattleBattlerSnapshot,
   peers: readonly BattleBattlerSnapshot[],
 ): string {

@@ -19,7 +19,7 @@
 
 .battle-scene[data-battle-director-step="intro"] .battle-enemy-list-panel,
 .battle-scene[data-battle-director-step="intro"] .battle-party {
-  animation: battle-intro-panel 420ms ease-out 620ms both;
+  animation: battle-intro-panel 420ms ease-out 700ms both;
 }
 
 @keyframes battle-intro-field {

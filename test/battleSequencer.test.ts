@@ -106,6 +106,51 @@ describe("battle sequencer", () => {
     expect(motions.at(-1)).toBe("clear");
   });
 
+  it("disambiguates the second same-named enemy in damage messages", () => {
+    const project = deserialize(JSON.stringify(battleFixture));
+    const troop = project.database.troops.find((entry) => entry.id === "troop_slime");
+    if (!troop) throw new Error("missing fixture troop");
+    troop.enemyIds = ["enemy_slime", "enemy_slime"];
+    troop.members = [
+      { enemyId: "enemy_slime", x: 80, y: 90, hidden: false },
+      { enemyId: "enemy_slime", x: 120, y: 120, hidden: false },
+    ];
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_slime",
+      canEscape: true,
+      canLose: true,
+      rng: () => 0.5,
+    });
+    untilActorCommand(runtime);
+    const queue: Array<() => void> = [];
+    const lines: string[] = [];
+    const sequencer = createBattleSequencer(
+      runtime,
+      {
+        onDirectorState: (state) => lines.push(...state.lines),
+        onSyncView: () => undefined,
+        onDamageFeedback: () => undefined,
+        onResultStage: () => undefined,
+        onSequenceBusy: () => undefined,
+      },
+      (callback) => {
+        queue.push(callback);
+        return queue.length;
+      },
+      () => undefined,
+    );
+
+    const before = runtime.snapshot();
+    expect(before.enemies[1]?.id).toBe("enemy-2");
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-2" });
+    const after = runtime.snapshot();
+    sequencer.runAfterActorCommand({ kind: "attack", targetEnemyId: "enemy-2" }, before, after);
+    queue.shift()?.();
+
+    expect(lines).toContainEqual(expect.stringMatching(/^슬라임 2에게 \d+ 피해!$/));
+  });
+
   it("finishes a player turn in charging director state until actorCommand returns", () => {
     advanceSpy.mockRestore();
     advanceSpy = vi.spyOn(advanceModule, "advanceBattleRuntime").mockImplementation(() => undefined);

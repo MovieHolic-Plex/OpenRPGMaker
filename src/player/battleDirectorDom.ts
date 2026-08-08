@@ -7,6 +7,7 @@ import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
+import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 
 export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "impact" | "result";
 
@@ -148,8 +149,11 @@ function impactLine(
   const rolled = result && result.hit && result.targetId === target?.id && result.amount > 0
     ? result.amount
     : impact;
-  if (result && result.critical && rolled > 0) return `급소에 맞았다! ${target?.name ?? "적"}에게 ${rolled} 피해!`;
-  if (rolled > 0) return `${target?.name ?? "적"}에게 ${rolled} 피해!`;
+  const targetName = target
+    ? disambiguatedBattlerName(target, after.enemies.some((enemy) => enemy.id === target.id) ? after.enemies : after.actors)
+    : "적";
+  if (result && result.critical && rolled > 0) return `급소에 맞았다! ${targetName}에게 ${rolled} 피해!`;
+  if (rolled > 0) return `${targetName}에게 ${rolled} 피해!`;
   if (impact < 0) return `${withJosa(target?.name ?? "대상", "이(가)")} ${Math.abs(impact)} 회복했다!`;
   // 서포트이거나 데미지 0
   return "효과가 충분하지 않았다.";

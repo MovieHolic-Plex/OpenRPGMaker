@@ -17,6 +17,7 @@ import {
   type BattleDirectorState,
   resultDirectorState,
 } from "@/player/battleDirectorDom";
+import { disambiguatedBattlerName } from "@/player/battleCommandDom";
 
 export const BATTLE_INTRO_MS = 1_200;
 export const BATTLE_ACTING_MS = 550;
@@ -27,7 +28,7 @@ export const BATTLE_IMPACT_MS = 750;
 export const BATTLE_KILL_LINE_MS = 780;
 export const BATTLE_RESOLVE_MS = 400;
 export const BATTLE_RESULT_STAGE_MS = 450;
-export const BATTLE_RESULT_HOLD_MS = 2_200;
+export const BATTLE_RESULT_HOLD_MS = 900;
 
 export interface DamageFeedback {
   readonly targetId: string;
@@ -226,9 +227,11 @@ export function createBattleSequencer(
       if (later.targetId === entry.targetId && later.kind === "damage" && (later.amount ?? 0) > 0) return undefined;
     }
     const isEnemy = snapshot.enemies.some((enemy) => enemy.id === entry.targetId);
+    const peers = isEnemy ? snapshot.enemies : snapshot.actors;
+    const targetName = disambiguatedBattlerName(target, peers);
     return isEnemy
-      ? `${withJosa(target.name, "을/를")} 쓰러뜨렸다!`
-      : `${withJosa(target.name, "이/가")} 쓰러졌다!`;
+      ? `${withJosa(targetName, "을/를")} 쓰러뜨렸다!`
+      : `${withJosa(targetName, "이/가")} 쓰러졌다!`;
   }
 
   function playTimelineEntries(

@@ -1,10 +1,16 @@
 // 한국어 조사 자동 선택. 마지막 글자의 받침 유무로 이/가·을/를·은/는·와/과를 고른다.
-// 한글이 아닌 이름(영문/숫자 등)은 받침 있는 쪽(첫 번째 형태)을 쓴다.
+// 끝이 아라비아 숫자면 그 숫자의 한국어 독음 받침을 따른다 (예: "슬라임 2" → "2를", "슬라임 1" → "1을").
+// 그 밖의 한글이 아닌 이름(영문 등)은 받침 있는 쪽(첫 번째 형태)을 쓴다.
 
 export type JosaPair = "이/가" | "을/를" | "은/는" | "와/과" | "이(가)" | "을(를)";
 
+// 숫자 독음: 0 영, 1 일, 3 삼, 6 육, 7 칠, 8 팔 은 받침이 있고 2 이, 4 사, 5 오, 9 구 는 없다.
+const DIGIT_HAS_BATCHIM: readonly boolean[] = [true, true, false, true, false, false, true, true, true, false];
+
 export function hasBatchim(word: string): boolean {
   const last = word.trimEnd().slice(-1);
+  const digit = "0123456789".indexOf(last);
+  if (digit >= 0) return DIGIT_HAS_BATCHIM[digit];
   const code = last.charCodeAt(0);
   if (code < 0xac00 || code > 0xd7a3) return true;
   return (code - 0xac00) % 28 !== 0;
