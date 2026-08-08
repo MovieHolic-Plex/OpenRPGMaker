@@ -1,9 +1,9 @@
 /* ===========================================================================
    Compact HUD layer — 320×240 stage geometry + readable typography.
 
-   History: this layer used to force every battle text down to 2.5–7px with
-   !important so the HUD would fit the 320×240 play stage; at those sizes
-   Galmuri11 renders as unreadable smudge. It now keeps only the stage
+   History: this layer used to force every battle text down to 2.5–7px so the
+   HUD would fit the 320×240 play stage; at those sizes Galmuri11 renders as
+   unreadable smudge. It now keeps only the stage
    geometry (scene grid, HUD row placement, victory box sizing) and sets all
    text on the same 9/11px pixel grid the rest of the runtime uses
    (--runtime-font-size-9 / --runtime-font-size-11 in system.css).
@@ -14,16 +14,16 @@
 
 .battle-scene {
   --battle-hud-height: 192px;
-  gap: 4px !important;
-  grid-template-columns: minmax(0, 1fr) 184px 328px !important;
-  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height) !important;
-  padding: 0 !important;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) 184px 328px;
+  grid-template-rows: minmax(0, 1fr) var(--battle-hud-height);
+  padding: 0;
 }
 
 .battle-field {
-  grid-column: 1 / -1 !important;
-  grid-row: 1 !important;
-  z-index: 1 !important;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  z-index: 1;
 }
 
 /* Side-view staging: enemy/party read as field protagonists. The rm2003 skin
@@ -67,38 +67,38 @@
 }
 
 .battle-command-icon::before {
-  content: none !important;
+  content: none;
 }
 
 .battle-command::before {
-  content: none !important;
-  width: 0 !important;
+  content: none;
+  width: 0;
 }
 
 .battle-command-icon-sword,
 .battle-command-icon-target {
-  background-image: url("/assets/generated/rm2k3/battle-icon-sword.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-sword.png");
 }
 
 .battle-command-icon-fire {
-  background-image: url("/assets/generated/rm2k3/battle-icon-fire.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-fire.png");
 }
 
 .battle-command-icon-shield {
-  background-image: url("/assets/generated/rm2k3/battle-icon-shield.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-shield.png");
 }
 
 .battle-command-icon-cross {
-  background-image: url("/assets/generated/rm2k3/battle-icon-cross.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-cross.png");
 }
 
 .battle-command-icon-bag {
-  background-image: url("/assets/generated/rm2k3/battle-icon-bag.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-bag.png");
 }
 
 .battle-command-icon-boot,
 .battle-command-icon-back {
-  background-image: url("/assets/generated/rm2k3/battle-icon-boot.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-boot.png");
 }
 
 .battle-result-reward-icon,
@@ -110,28 +110,28 @@
 }
 
 .battle-result-reward-icon-exp {
-  background-image: url("/assets/generated/rm2k3/battle-icon-exp.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-exp.png");
   border: 0;
   transform: none;
 }
 
 .battle-result-reward-icon-gold {
-  background-image: url("/assets/generated/rm2k3/battle-icon-gold.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-gold.png");
 }
 
 .battle-result-reward-icon-item {
-  background-image: url("/assets/generated/rm2k3/battle-icon-shard.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-shard.png");
 }
 
 .battle-result-progress-icon-world {
-  background-image: url("/assets/generated/rm2k3/battle-icon-world.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-world.png");
 }
 
 .battle-result-progress-icon-next {
-  background-image: url("/assets/generated/rm2k3/battle-icon-next.png") !important;
+  background-image: url("/assets/generated/rm2k3/battle-icon-next.png");
 }
 
 .battle-result-progress-icon-next::before {
-  content: none !important;
+  content: none;
 }
 

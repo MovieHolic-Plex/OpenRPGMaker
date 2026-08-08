@@ -35,7 +35,7 @@
 @media (prefers-reduced-motion: reduce) {
   .battle-scene[data-battle-phase="actorCommand"] .battle-enemy,
   .battle-scene[data-battle-phase="actorCommand"] .battle-actor-group .battle-actor {
-    animation: none !important;
+    animation: none;
   }
 }
 
@@ -57,8 +57,8 @@
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:hover,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command:focus-visible,
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command[data-battle-command-cursor="true"] {
-  background: #fff6f0 !important;
-  border-color: var(--pkmn-accent) !important;
+  background: #fff6f0;
+  border-color: var(--pkmn-accent);
   box-shadow: 0 0 0 2px rgba(228, 59, 68, 0.25), 0 4px 0 rgba(0, 0, 0, 0.08);
   transform: scale(1.02);
 }
@@ -175,15 +175,15 @@
 .battle-result-panel,
 .battle-result-cards {
   min-width: 0;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
+  overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior: contain;
 }
 
 .battle-command-menu:has(> .battle-submenu-header) {
-  align-content: start !important;
-  grid-auto-rows: minmax(28px, auto) !important;
-  grid-template-rows: none !important;
+  align-content: start;
+  grid-auto-rows: minmax(28px, auto);
+  grid-template-rows: none;
 }
 
 .battle-command-menu:has(> .battle-submenu-header) .battle-command-text strong,
@@ -218,12 +218,12 @@
   .battle-scene *,
   .battle-scene *::before,
   .battle-scene *::after {
-    animation-delay: 0ms !important;
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-delay: 0ms !important;
-    transition-duration: 1ms !important;
+    animation-delay: 0ms;
+    animation-duration: 1ms;
+    animation-iteration-count: 1;
+    scroll-behavior: auto;
+    transition-delay: 0ms;
+    transition-duration: 1ms;
   }
 }
 

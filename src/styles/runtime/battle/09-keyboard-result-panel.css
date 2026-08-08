@@ -5,16 +5,16 @@
 .battle-scene .battle-command,
 .battle-scene .battle-command *,
 .battle-scene [data-battle-targetable="true"] {
-  /* 스킨 파일들이 pointer-events 를 !important 로 되살리므로 여기서도 맞춰 눌러야 한다. */
-  cursor: default !important;
-  pointer-events: none !important;
+  /* 공통 키보드 계약. 뒤의 pokemon UI 스타일만 더 구체적인 규칙으로 포인터를 연다. */
+  cursor: default;
+  pointer-events: none;
 }
 
 /* `.battle-command-panel` 은 `grid-template-columns: minmax(0, 1fr)` 로 열이 하나뿐이다(:264).
    여기서 `grid-column: 2` 를 주면 없는 열을 가리켜 암시적 auto 열이 생기고, 그 열이 내용 폭을
    먼저 가져가 커맨드가 놓인 `minmax(0, 1fr)` 열이 0px 로 붕괴한다(최소값이 0이라 제동도 없다).
    그러면 커맨드 항목이 DOM 에는 있는데 폭 0 으로 눌려 화면에서 사라져 전투 진행이 막힌다.
-   rm2003 스킨만 `grid-column: 1 !important` 로 국소 우회하고 있었다(_rm2003.css:535). */
+   rm2003 스킨만 `grid-column: 1` 로 국소 우회하고 있었다(_rm2003.css:535). */
 .battle-command-help,
 .battle-key-prompts,
 .battle-target-prompt {

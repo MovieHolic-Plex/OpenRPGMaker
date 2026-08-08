@@ -1,5 +1,5 @@
 /* rm2003 스킨만 무대 상단 여백을 8px 로 덮어쓴다(battle-skins/_rm2003.css:26-29 —
-   `.battle-enemy-group/.battle-actor-group { inset: 8px 0 0 0 !important }`). 그 파일은
+   `.battle-enemy-group/.battle-actor-group { inset: 8px 0 0 0 }`). 그 파일은
    여기 변수를 모르므로 같은 조건을 변수로 미러링해 레이어가 그룹과 계속 일치하게 둔다.
    (나머지 11종 스킨은 그룹 inset 을 건드리지 않아 기본 48px 을 그대로 쓴다 — 전수 확인.) */
 .battle-scene[data-battle-ui-style="classic"][data-battle-skin="rm2003"] {
@@ -22,7 +22,7 @@
 
    고침:
    - `grid-row: 1 / 2` — 끝선을 명시해 필드와 **같은 그리드 영역**(행 1)을 차지한다.
-     필드는 battle.css 2009~2013 에서 `grid-column: 1 / -1 !important; grid-row: 1 !important`
+     필드는 battle.css 2009~2013 에서 `grid-column: 1 / -1; grid-row: 1`
      라 12종 스킨 전부에서 행 1 · 전체 열이다(스킨의 열/행 정의가 무엇이든 동일).
    - inset — 그리드 영역(= 필드의 **테두리 박스**)에서 테두리만큼 들어가 필드의 **패딩 박스**
      가 되고, 상단에 무대 여백을 더해 그룹 박스와 일치시킨다. 하드코딩 오프셋이 아니라
