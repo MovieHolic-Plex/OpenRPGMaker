@@ -249,16 +249,12 @@ describe("event editor presentation", () => {
       return rendered;
     });
 
-    const picker = findByTestId(body, "m2-command-resourceId-picker");
-    expect(picker?.tagName).toBe("SELECT");
-    expect(picker?.value).toBe("easyrpg-picture-cloud");
-    expect(findByTestId(body, "m2-command-resourceId-selected-name")?.textContent).toContain(
-      "EasyRPG RTP Cloud Picture"
-    );
-    expect(findByTestId(body, "m2-command-resourceId-preview")?.dataset.resourceId).toBe("easyrpg-picture-cloud");
-    expect(findByTestId(body, "m2-command-pictureId-input")?.value).toBe("pic_demo");
-    expect(findByTestId(body, "m2-command-x-input")?.value).toBe("24");
-    expect(findByTestId(body, "m2-command-y-input")?.value).toBe("32");
+    expect(findByTestId(body, "move-picture-m2-resource-select")).toBeNull();
+    expect(findByTestId(body, "move-picture-m2-preview")?.textContent).toContain("pic_demo");
+    expect(findByTestId(body, "move-picture-m2-preview")?.textContent).toContain("(24, 32)");
+    expect(findByTestId(body, "move-picture-m2-id-input")?.value).toBe("pic_demo");
+    expect(findByTestId(body, "move-picture-m2-x-input")?.value).toBe("24");
+    expect(findByTestId(body, "move-picture-m2-y-input")?.value).toBe("32");
   });
 
   it("renders the selected face graphic crop inside the Change Face command editor", () => {

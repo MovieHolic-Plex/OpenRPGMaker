@@ -73,15 +73,15 @@ describe("event editor rich forms", () => {
     // 선택 레코드 카드: 아이콘 + 이름 + 시작 보유 부제.
     const card = findByTestId(body, "change-item-select-card");
     expect(card?.textContent).toContain("회복약");
-    expect(card?.textContent).toContain("시작 보유 x3");
+    expect(card?.textContent).toContain("시작 보유 ×3");
     expect(card?.querySelector("img")?.attrs.src).toContain("potion-red");
 
     // 전/후 프리뷰: 시작 인벤토리 3 + 2 = 5.
     const preview = findByTestId(body, "change-item-preview");
     expect(preview?.dataset.before).toBe("3");
     expect(preview?.dataset.after).toBe("5");
-    expect(preview?.textContent).toContain("x3");
-    expect(preview?.textContent).toContain("x5");
+    expect(preview?.textContent).toContain("×3");
+    expect(preview?.textContent).toContain("×5");
     expect(preview?.textContent).toContain("시작 인벤토리 기준");
   });
 
@@ -121,7 +121,7 @@ describe("event editor rich forms", () => {
     const preview = findByTestId(body, "change-gold-preview");
     expect(preview?.dataset.before).toBe("100");
     expect(preview?.dataset.after).toBe("250");
-    expect(preview?.textContent).toContain("시작 상태 100G");
+    expect(preview?.textContent).toContain("지금 100G");
     expect(preview?.textContent).toContain("실행 후 250G");
     expect(preview?.textContent).toContain("시작 소지금 기준");
 
@@ -196,9 +196,9 @@ describe("event editor rich forms", () => {
       canEscape: false,
       canLose: false,
       battleFlow: undefined,
-      troopSource: "fixed",
+      troopSource: undefined,
       troopVariableId: undefined,
-      branchOnResult: false,
+      branchOnResult: undefined,
       victoryBranch: undefined,
       defeatBranch: undefined,
       escapeBranch: undefined,

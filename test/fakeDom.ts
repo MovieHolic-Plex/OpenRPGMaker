@@ -200,6 +200,13 @@ export class FakeElement extends FakeNode {
     listeners.push(listener);
     this.listeners[type] = listeners;
   }
+  removeEventListener(type: string, listener: EventListenerOrEventListenerObject | null): void {
+    if (listener === null) return;
+    const listeners = this.listeners[type];
+    if (!listeners) return;
+    this.listeners[type] = listeners.filter((candidate) => candidate !== listener);
+  }
+
 
   dispatchEvent(event: Event): boolean {
     if (event.target === null) Object.defineProperty(event, "target", { configurable: true, value: this });
