@@ -187,6 +187,59 @@ describe("event command staged-state regressions", () => {
     change(findByTestId(body, "m2-command-y-input"), "88");
     expect(staged.current()).toMatchObject({ fields: { x: 99, y: 88 } });
   });
+
+  it("keeps consecutive Change Parameters edits on the latest staged command", () => {
+    const initial: M2Command = {
+      kind: "m2Command",
+      commandId: "m2-014-change-parameters",
+      fields: { target: "party", parameter: "maxHp", operation: "add", value: 1 },
+    };
+    const staged = stagedContext(initial);
+    const body = renderWithFakeDom(() => renderM2CommandBody(staged.context, initial)!);
+
+    change(findByTestId(body, "change-parameters-operation"), "remove");
+    const afterOperation = staged.current() as M2Command;
+    staged.context.actions.replaceCommand([], {
+      ...afterOperation,
+      fields: { ...afterOperation.fields, stagedBetweenEdits: "keep" },
+    });
+    change(findByTestId(body, "change-parameters-value-input"), "7");
+
+    expect(staged.current()).toMatchObject({
+      fields: { operation: "remove", value: 7, stagedBetweenEdits: "keep" },
+    });
+  });
+
+  it("keeps consecutive Weighted Branch edits on the latest staged command", () => {
+    const resultVariableId = store.getCurrent().variables[0]?.id ?? "var_result";
+    const initial: M2Command = {
+      kind: "m2Command",
+      commandId: "m2-211-weighted-branch",
+      fields: { table: "성공=1\n실패=1", resultVariableId: "" },
+    };
+    const staged = stagedContext(initial);
+    const body = renderWithFakeDom(() => renderM2CommandBody(staged.context, initial)!);
+
+    const label = findByTestId(body, "weighted-branch-label-0");
+    expect(label).not.toBeNull();
+    if (label) {
+      label.value = "대성공";
+      label.dispatchEvent(new Event("input"));
+    }
+    const afterLabel = staged.current() as M2Command;
+    staged.context.actions.replaceCommand([], {
+      ...afterLabel,
+      fields: { ...afterLabel.fields, stagedBetweenEdits: "keep" },
+    });
+    change(findByTestId(body, "weighted-branch-weight-0"), "3");
+
+    expect(staged.current()).toMatchObject({
+      fields: {
+        table: "대성공=3\n실패=1",
+        stagedBetweenEdits: "keep",
+      },
+    });
+  });
 });
 
 describe("Page 3 rich form canonical runtime fields", () => {

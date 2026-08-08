@@ -15,6 +15,7 @@ import {
 } from "./recordPicker";
 import { faceDisplayModeOf, renderFacesetCrop, renderFacesetIndexGrid } from "./facesetPreview";
 import type { CommandEditContext } from "./types";
+import { replaceFields } from "./commandBodyM2Page3";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
 
@@ -145,17 +146,13 @@ function changeParametersCommandBody(context: CommandEditContext, cmd: M2Command
 
   const commit = () => {
     const amount = source.read();
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: target.select.value === "party" ? "party" : actor.select.value,
-        parameter: currentParameter,
-        operation: operation.select.value,
-        value: amount.numberValue,
-        valueSource: amount.source,
-        valueVariableId: amount.variableId,
-      },
+    replaceFields(context, cmd, {
+      target: target.select.value === "party" ? "party" : actor.select.value,
+      parameter: currentParameter,
+      operation: operation.select.value,
+      value: amount.numberValue,
+      valueSource: amount.source,
+      valueVariableId: amount.variableId,
     });
     renderPreview();
   };
@@ -316,14 +313,10 @@ function changeStateCommandBody(context: CommandEditContext, cmd: M2Command): HT
 
   const commit = () => {
     currentStateId = stateSelect.value;
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: target.select.value === "party" ? "party" : actor.select.value,
-        operation: operation.select.value,
-        value: currentStateId,
-      },
+    replaceFields(context, cmd, {
+      target: target.select.value === "party" ? "party" : actor.select.value,
+      operation: operation.select.value,
+      value: currentStateId,
     });
     renderPreview();
   };
@@ -446,16 +439,12 @@ function damageProcessingCommandBody(context: CommandEditContext, cmd: M2Command
 
   const commit = () => {
     const amount = source.read();
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: target.select.value === "party" ? "party" : actor.select.value,
-        operation: operation.select.value,
-        value: amount.numberValue,
-        valueSource: amount.source,
-        valueVariableId: amount.variableId,
-      },
+    replaceFields(context, cmd, {
+      target: target.select.value === "party" ? "party" : actor.select.value,
+      operation: operation.select.value,
+      value: amount.numberValue,
+      valueSource: amount.source,
+      valueVariableId: amount.variableId,
     });
     renderPreview();
   };
@@ -564,13 +553,9 @@ function changeActorNameCommandBody(
   });
 
   const commit = () => {
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: actor.select.value,
-        value: text.value,
-      },
+    replaceFields(context, cmd, {
+      target: actor.select.value,
+      value: text.value,
     });
     renderPreview();
   };
@@ -678,13 +663,9 @@ function changeActorGraphicCommandBody(context: CommandEditContext, cmd: M2Comma
 
   const commit = () => {
     resourceId = resourceSelect.value.trim();
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: actor.select.value,
-        value: resourceId,
-      },
+    replaceFields(context, cmd, {
+      target: actor.select.value,
+      value: resourceId,
     });
     renderPreview();
   };
@@ -801,14 +782,10 @@ function changeActorFacesetCommandBody(context: CommandEditContext, cmd: M2Comma
 
   const commit = () => {
     resourceId = resourceSelect.value.trim();
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: actor.select.value,
-        value: resourceId,
-        faceIndex,
-      },
+    replaceFields(context, cmd, {
+      target: actor.select.value,
+      value: resourceId,
+      faceIndex,
     });
     renderFaceUi();
   };
@@ -924,13 +901,9 @@ function changeActorClassCommandBody(context: CommandEditContext, cmd: M2Command
   });
 
   const commit = () => {
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        target: actor.select.value,
-        value: klass.select.value,
-      },
+    replaceFields(context, cmd, {
+      target: actor.select.value,
+      value: klass.select.value,
     });
     renderPreview();
   };
