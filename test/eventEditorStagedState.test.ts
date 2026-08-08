@@ -175,6 +175,51 @@ describe("event command staged-state regressions", () => {
     });
   });
 
+  it("renders an added group child and keeps consecutive sibling edits", () => {
+    const switchId = store.getCurrent().switches[0]?.id ?? "sw_0001";
+    let current: Condition = {
+      kind: "all",
+      conditions: [
+        { kind: "switch", switchId, value: true },
+        { kind: "switch", switchId, value: true },
+      ],
+    };
+    const body = renderWithFakeDom(() => conditionForm(current, (next) => { current = next; }));
+    const add = findByTestId(body, "event-condition-group-add");
+    expect(add).not.toBeNull();
+    add?.dispatchEvent(new Event("click"));
+
+    const selects = body.querySelectorAll('[data-testid="event-condition-switch-value"]') as unknown as FakeElement[];
+    expect(selects).toHaveLength(3);
+    change(selects[2] ?? null, "false");
+    change(selects[0] ?? null, "false");
+    expect(current).toMatchObject({
+      kind: "all",
+      conditions: [{ value: false }, { value: true }, { value: false }],
+    });
+  });
+
+  it("rerenders a group child after changing its condition kind", () => {
+    const switchId = store.getCurrent().switches[0]?.id ?? "sw_0001";
+    let current: Condition = {
+      kind: "all",
+      conditions: [{ kind: "switch", switchId, value: true }],
+    };
+    const body = renderWithFakeDom(() => conditionForm(current, (next) => { current = next; }));
+
+    const modes = body.querySelectorAll('[data-testid="event-condition-mode"]') as unknown as FakeElement[];
+    expect(modes).toHaveLength(2);
+    change(modes[1] ?? null, "gold");
+    expect(findByTestId(body, "event-condition-gold-amount")).not.toBeNull();
+    change(findByTestId(body, "event-condition-gold-amount"), "250");
+    change(findByTestId(body, "event-condition-gold-op"), ">=");
+
+    expect(current).toMatchObject({
+      kind: "all",
+      conditions: [{ kind: "gold", amount: 250, op: ">=" }],
+    });
+  });
+
   it("accumulates consecutive generic M2 field changes", () => {
     const initial: M2Command = {
       kind: "m2Command",

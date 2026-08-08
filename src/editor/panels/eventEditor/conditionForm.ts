@@ -424,35 +424,43 @@ function labeledGroup(
   let currentChildren: Condition[] = structuredClone(
     cond.conditions.length > 0 ? cond.conditions : [{ kind: "switch" as const, switchId: "", value: true }]
   );
-  const publish = (next: Condition[]) => {
+  const publish = (next: Condition[], rerender = false) => {
     currentChildren = next;
     onChange({ kind: cond.kind, conditions: structuredClone(currentChildren) });
+    if (rerender) renderChildren();
   };
-  currentChildren.forEach((child, index) => {
-    const card = el("div", {
-      class: "event-condition-group-item",
-      dataset: { testid: `event-condition-group-item-${index}` },
-    });
-    card.append(
-      el("div", { class: "event-condition-group-item-title", text: `조건 ${index + 1}` }),
-      conditionForm(child, (nextChild) => {
-        publish(currentChildren.map((entry, i) => (i === index ? nextChild : entry)));
-      }),
-      el("button", {
-        class: "btn danger",
-        text: "제거",
-        attrs: { type: "button" },
-        dataset: { testid: `event-condition-group-remove-${index}` },
-        on: {
-          click: () => {
-            const next = currentChildren.filter((_, i) => i !== index);
-            publish(next.length ? next : [{ kind: "switch", switchId: "", value: true }]);
+  const renderChildren = () => {
+    list.replaceChildren();
+    currentChildren.forEach((child, index) => {
+      const card = el("div", {
+        class: "event-condition-group-item",
+        dataset: { testid: `event-condition-group-item-${index}` },
+      });
+      card.append(
+        el("div", { class: "event-condition-group-item-title", text: `조건 ${index + 1}` }),
+        conditionForm(child, (nextChild) => {
+          publish(
+            currentChildren.map((entry, i) => (i === index ? nextChild : entry)),
+            nextChild.kind !== child.kind
+          );
+        }),
+        el("button", {
+          class: "btn danger",
+          text: "제거",
+          attrs: { type: "button" },
+          dataset: { testid: `event-condition-group-remove-${index}` },
+          on: {
+            click: () => {
+              const next = currentChildren.filter((_, i) => i !== index);
+              publish(next.length ? next : [{ kind: "switch", switchId: "", value: true }], true);
+            },
           },
-        },
-      })
-    );
-    list.append(card);
-  });
+        })
+      );
+      list.append(card);
+    });
+  };
+  renderChildren();
   box.append(
     emptyWarning,
     list,
@@ -463,7 +471,7 @@ function labeledGroup(
       dataset: { testid: "event-condition-group-add" },
       on: {
         click: () => {
-          publish([...currentChildren, { kind: "switch", switchId: "", value: true }]);
+          publish([...currentChildren, { kind: "switch", switchId: "", value: true }], true);
         },
       },
     })
