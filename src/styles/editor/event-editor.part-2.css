@@ -853,7 +853,7 @@
 
 .weighted-branch-index.is-inactive {
   background: color-mix(in srgb, var(--bg-raised, #1b2230) 70%, #666 30%);
-  color: #9aa3b5;
+  color: var(--text-2);
 }
 
 .weighted-branch-label-input,
@@ -1043,7 +1043,7 @@
 
 .event-command-comment-preview[data-comment-color="gray"],
 .cmd-item-comment[data-comment-color="gray"] .cmd-kind {
-  color: #9aa3b5;
+  color: var(--text-2);
 }
 
 .event-command-comment-preview[data-comment-color="white"],

@@ -27,8 +27,8 @@
 
 .rm-tool-icon-trash::before {
   background: #dfe4ec;
-  border: 1px solid #1c202d;
-  box-shadow: inset 3px 0 0 #9aa3b5, inset 6px 0 0 #dfe4ec;
+  border: 1px solid var(--bg-raised);
+  box-shadow: inset 3px 0 0 var(--text-2), inset 6px 0 0 #dfe4ec;
   height: 10px;
   left: 4px;
   top: 5px;
