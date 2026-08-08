@@ -112,5 +112,26 @@ export function clampShopPriceOverride(dbPrice: number, override: number | undef
   return Math.max(floor, Math.max(0, Math.trunc(override)));
 }
 
+export const SHOP_CART_MAX_LINES = 12;
+export const SHOP_BUYBACK_MAX = 8;
+export const SHOP_CONSIGNMENT_MAX = 16;
+export const SHOP_PAWN_MAX = 8;
+export const SHOP_INVESTMENT_MAX_LEVEL = 5;
+export const SHOP_LOYALTY_TIERS: ReadonlyArray<{ id: string; minSpend: number; discount: number }> = [
+  { id: "bronze", minSpend: 0, discount: 0 },
+  { id: "silver", minSpend: 5000, discount: 0.03 },
+  { id: "gold", minSpend: 20000, discount: 0.06 },
+  { id: "platinum", minSpend: 60000, discount: 0.1 },
+];
+export function resolveLoyaltyDiscount(totalSpend: number): number { let d=0; for(const tt of SHOP_LOYALTY_TIERS) if(totalSpend>=tt.minSpend) d=tt.discount; return Math.min(0.15, Math.max(0,d)); }
+export function resolveClosingSaleDiscount(hour: number, enabled?: boolean): number { if(!enabled) return 0; return hour>=20&&hour<=22?0.15:0; }
+export function clampShopCart(lines: readonly { itemId: string; qty:number; unitPrice:number }[]): typeof lines { return lines.slice(0, SHOP_CART_MAX_LINES).map(l=>({ ...l, qty: Math.max(1, Math.min(99, Math.trunc(l.qty))), unitPrice: Math.max(0, Math.trunc(l.unitPrice)) })); }
+export function clampShopBuyback(entries: readonly { itemId:string; price:number; expiresAtDayKey?: string }[]): typeof entries { return entries.slice(-SHOP_BUYBACK_MAX); }
+export function applyHaggleDiscount(price:number, bonus:number): number { const b=Math.max(0, Math.min(10, Math.floor(bonus/10))); const rate=Math.min(0.15, 0.05+b/100); return Math.max(Math.floor(price/2), Math.max(0, Math.floor(price*(1-rate)))); }
+export function applyDynamicMarkup(base:number, sold:number, bought:number): number { const d=(bought-sold)*0.02; const f=Math.max(0.8, Math.min(1.2, 1+d)); return Math.max(1, Math.floor(base*f)); }
+export function isBlackMarketOpen(session:{ readonly switches?: Record<string,boolean> }, flag?: string): boolean { if(!flag) return true; return session.switches?.[flag]===true; }
+export function isFestivalShopOpen(session:{ readonly switches?: Record<string,boolean> }, flag?: string): boolean { if(!flag) return true; return session.switches?.[flag]===true; }
+export function shouldRestock(policy: string|undefined, lastKey:string|undefined, curKey:string): boolean { if(!policy||policy==="onDemand") return false; if(!lastKey) return true; if(policy==="daily") return lastKey!==curKey; if(policy==="weekly") return lastKey!==curKey; return false; }
+
 /** Shape helper for tests / tooling — re-export SocialShop shape intent. */
 export type { SocialShop };

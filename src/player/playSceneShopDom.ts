@@ -49,7 +49,7 @@ export function renderShopMenu(
   menu.append(shopMenuMessage(messageLine(step, terms)));
   const choices = document.createElement("div");
   choices.className = "runtime-shop-menu-choices";
-  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, terms, showItems, finish));
+  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, terms, showItems, finish, step));
   menu.append(choices);
   shell.append(shopBluePanel("runtime-shop-bottom-panel", [menu]));
   return shell;
@@ -218,20 +218,34 @@ function shopMenuButton(
   action: ShopMenuAction,
   terms: ResolvedTerms,
   showItems: (mode: ShopMode) => void,
-  finish: () => void
+  finish: () => void,
+  stepForPoolCheck?: ShopStep
 ): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "runtime-shop-menu-choice";
   button.textContent = menuActionLabel(action, terms);
   button.dataset.testid = action === "cancel" ? "shop-menu-cancel" : `shop-mode-${action}`;
+  const emptyPool = stepForPoolCheck ? isServicePoolEmpty(stepForPoolCheck) : false;
+  if (emptyPool && action !== "cancel") {
+    button.disabled = true;
+    button.title = "대상 없음 — 서비스 불가";
+    (button as unknown as { dataset: Record<string,string> }).dataset["disabledReason"] = "empty-pool";
+  }
   button.addEventListener("click", () => {
+    if ((button as HTMLButtonElement).disabled) return;
     if (action === "cancel") finish();
     else showItems(action);
   });
   return button;
 }
 
+function isServicePoolEmpty(step: ShopStep): boolean {
+  const svc = (step as unknown as { shopServiceKind?: string }).shopServiceKind;
+  const pool = (step as unknown as { appraisalUnidentifiedPool?: string[] }).appraisalUnidentifiedPool;
+  if (svc === "appraisal") return !pool || pool.length === 0;
+  return false;
+}
 function shopMenuActions(step: ShopStep): ShopMenuAction[] {
   switch (shopType(step)) {
     case "normal":
@@ -240,6 +254,14 @@ function shopMenuActions(step: ShopStep): ShopMenuAction[] {
       return ["buy", "cancel"];
     case "sellOnly":
       return ["sell", "cancel"];
+    case "repair":
+    case "appraisal":
+    case "pawn":
+    case "blackMarket":
+    case "consignment":
+      return ["buy", "sell", "cancel"];
+    default:
+      return ["buy", "sell", "cancel"];
   }
 }
 
@@ -260,7 +282,7 @@ function shopType(step: ShopStep): ShopType {
 }
 
 function messageType(step: ShopStep): ShopMessageType {
-  return step.messageType ?? "welcome";
+  return (step.messageType as ShopMessageType | undefined) ?? "welcome";
 }
 
 function messageLine(step: ShopStep, terms: ResolvedTerms): string {
@@ -271,6 +293,14 @@ function messageLine(step: ShopStep, terms: ResolvedTerms): string {
       return "무엇이 필요하신가요?";
     case "direct":
       return "물건을 고르세요.";
+    case "festival":
+      return "축제 특가! 오늘만 이 가격!";
+    case "closingSale":
+      return "마감 세일 중! 어서 고르세요!";
+    case "vip":
+      return "VIP 고객님, 어서 오세요.";
+    default:
+      return terms.shopGreeting;
   }
 }
 
@@ -282,6 +312,14 @@ function itemHeaderText(step: ShopStep): string {
       return "목록에서 물건을 고르세요.";
     case "direct":
       return "물건 하나를 고르세요.";
+    case "festival":
+      return "축제 한정 특가 목록입니다.";
+    case "closingSale":
+      return "마감 세일 목록 — 서두르세요!";
+    case "vip":
+      return "VIP 전용 혜택 목록입니다.";
+    default:
+      return "목록에서 물건을 고르세요.";
   }
 }
 
@@ -341,4 +379,18 @@ function goldPanel(
     })
   );
   return wrap;
+}
+
+/** S/A/B: 장바구니·서비스 힌트 — append-only, 기존 플로우 무파괴. */
+export function renderShopCartSummary(lines: readonly { itemId: string; qty: number; unitPrice: number }[], terms: ResolvedTerms): HTMLElement {
+  const wrap = el("div", { class: "runtime-shop-cart-summary" });
+  if (!lines.length) { wrap.append(el("div", { class: "runtime-shop-cart-empty", text: "장바구니 비어 있음" })); return wrap; }
+  let total = 0; for (const l of lines) total += Math.max(1, l.qty|0) * Math.max(0, l.unitPrice|0);
+  wrap.append(el("div", { class: "runtime-shop-cart-total", text: "합계 " + String(total) + terms.gold }));
+  return wrap;
+}
+export function renderShopServiceHint(serviceKind: string|undefined, _terms: ResolvedTerms): HTMLElement|null {
+  if(!serviceKind) return null;
+  const label = serviceKind==="repair"?"수리":serviceKind==="appraisal"?"감정":serviceKind==="pawn"?"전당포":serviceKind;
+  return el("div", { class: "runtime-shop-service-hint", text: String(label)+" 서비스" });
 }

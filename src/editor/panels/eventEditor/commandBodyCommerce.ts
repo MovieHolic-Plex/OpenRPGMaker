@@ -107,6 +107,7 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
     class: "shop-processing-side",
     children: [shopSettingsCard(context, command)],
   });
+  try { side.append(shopSabExtraCard(context, command)); } catch {}
   wrap.append(
     el("div", { class: "shop-processing-layout", children: [main, side] }),
     selectedSummary(project.database.items, command.itemIds)
@@ -550,6 +551,23 @@ function normalizeDuration(value: number | undefined, fallback: number): number 
   return next === fallback ? undefined : next;
 }
 
+function shopSabExtraCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
+  const ext = command as unknown as Record<string, unknown>;
+  const row = (label: string, input: HTMLElement) => el("div", { class: "shop-sab-row", children: [el("span", { class: "shop-sab-label", text: label }), input] });
+  const wrap = el("div", { class: "shop-sab-extra", dataset: { testid: "shop-sab-extra" }, children: [el("div", { class: "shop-sab-title", text: "S/A/B 확장 (선택)" })] });
+  const serviceSel = el("select", { dataset: { testid: "shop-serviceKind" }, children: [el("option", { text: "없음", attrs: { value: "" } }), el("option", { text: "수리", attrs: { value: "repair" } }), el("option", { text: "감정", attrs: { value: "appraisal" } }), el("option", { text: "전당포", attrs: { value: "pawn" } })] }) as HTMLSelectElement;
+  serviceSel.title = "축제·행상은 이벤트 조건(fork)으로 감싸세요 — 이 상점이 닫혔을 때 보이지 않게 됩니다.";
+  (serviceSel as HTMLSelectElement).value = String(ext.shopServiceKind ?? "");
+  serviceSel.addEventListener("change", () => { const v = (serviceSel as HTMLSelectElement).value || undefined; context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), shopServiceKind: v } as unknown as Command); });
+  const invest = el("input", { attrs: { type: "number", min: "0", max: "5", step: "1" }, dataset: { testid: "shop-investmentLevel" } }) as HTMLInputElement;
+  (invest as HTMLInputElement).value = String((ext.investmentLevel as number) ?? 0);
+  invest.addEventListener("change", () => { const n = Math.max(0, Math.min(5, Math.floor(Number((invest as HTMLInputElement).value)||0))); context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), investmentLevel: n } as unknown as Command); });
+  const mileage = el("input", { attrs: { type: "number", min: "0", max: "0.1", step: "0.01" }, dataset: { testid: "shop-mileageRate" } }) as HTMLInputElement;
+  (mileage as HTMLInputElement).value = String((ext.mileageRate as number) ?? "");
+  mileage.addEventListener("change", () => { const n = Number((mileage as HTMLInputElement).value); context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), mileageRate: Number.isFinite(n) ? Math.max(0, Math.min(0.1, n)) : undefined } as unknown as Command); });
+  wrap.append(row("서비스", serviceSel), row("투자 Lv 0..5", invest), row("마일리지 0..0.1", mileage));
+  return wrap;
+}
 function shopSettingsCard(context: CommandEditContext, command: ShopCommand): HTMLElement {
   return el("div", {
     class: "shop-processing-settings shop-processing-settings-compact",
@@ -750,6 +768,9 @@ const SHOP_MESSAGE_PREVIEWS: Record<ShopMessageType, string> = {
   welcome: "어심 오세요! 무엇이 필요하신가요?",
   business: "무엇이 필요하신가요?",
   direct: "물건을 고르세요.",
+  festival: "축제 한정 특가! 오늘만 이 가격!",
+  closingSale: "마감 세일 중! 15% 할인!",
+  vip: "VIP 고객님, 특별 혜택을 확인하세요.",
 };
 
 function shopTransactionBranchControls(context: CommandEditContext, command: ShopCommand): HTMLElement {

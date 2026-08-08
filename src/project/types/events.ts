@@ -100,8 +100,16 @@ export type SwitchValue =
   | { kind: "var"; id: string };
 export type M2CommandValue = string | number | boolean;
 export type M2CommandFields = Record<string, M2CommandValue>;
-export type ShopType = "normal" | "buyOnly" | "sellOnly";
-export type ShopMessageType = "welcome" | "business" | "direct";
+export type ShopType = "normal" | "buyOnly" | "sellOnly" | "repair" | "appraisal" | "pawn" | "blackMarket" | "consignment";
+export type ShopMessageType = "welcome" | "business" | "direct" | "festival" | "closingSale" | "vip";
+export type ShopServiceKind = "repair" | "appraisal" | "pawn";
+export type ShopRestockPolicy = "daily" | "weekly" | "onDemand";
+export interface ShopLoyaltyTier { readonly id: string; readonly name: string; readonly minSpend: number; readonly discountRate: number; readonly perks?: readonly string[]; }
+export interface ShopEconomyConfig { readonly dynamicPricing?: boolean; readonly haggleEnabled?: boolean; readonly closingSaleEnabled?: boolean; readonly inflationFactor?: number; readonly tradeRouteMarkup?: Record<string, number>; }
+export interface ShopBuybackEntry { readonly itemId: string; readonly price: number; readonly expiresAtDayKey?: string; }
+export interface ShopCartLine { readonly itemId: string; readonly qty: number; readonly unitPrice: number; }
+export interface ShopConsignment { readonly id: string; readonly itemId: string; readonly askPrice: number; readonly consignorSwitchId?: string; readonly listedDayKey: string; }
+export interface ShopDonationLedger { readonly totalDonated: number; readonly lastDonorSwitchId?: string; }
 export type GiftPreferenceRank = "loved" | "liked" | "neutral" | "disliked";
 export interface GiftPrefs {
   readonly loved?: readonly ItemId[];
@@ -120,6 +128,7 @@ export interface ShopStockEntry {
   readonly itemId: ItemId;
   readonly seasons?: readonly Season[];
   readonly priceOverride?: number;
+  readonly displayTileId?: number;
   readonly priceBySeason?: Partial<Record<Season, number>>;
 }
 export interface SocialCalendar {
@@ -324,6 +333,21 @@ export type Command =
       /** 상인이 플레이어 물품을 살 때 쓸 소지금. 생략 시 런타임 기본 100G. */
       merchantGold?: number;
       stock?: ShopStockEntry[];
+      shopServiceKind?: ShopServiceKind;
+      restockPolicy?: ShopRestockPolicy;
+      loyaltyTierId?: string;
+      economy?: ShopEconomyConfig;
+      buyback?: readonly ShopBuybackEntry[];
+      cartLines?: readonly ShopCartLine[];
+      consignments?: readonly ShopConsignment[];
+      donation?: ShopDonationLedger;
+      pawnTickets?: readonly { readonly id: string; readonly itemId: string; readonly pawnPrice: number; readonly dueDayKey: string }[];
+      blackMarketFlag?: string;
+      festivalFlag?: string;
+      investmentLevel?: number;
+      travelingRouteId?: string;
+      appraisalUnidentifiedPool?: readonly string[];
+      mileageRate?: number;
       branchOnTransaction?: boolean;
       transactionBranch?: Command[];
       branchOnFailedTransaction?: boolean;
