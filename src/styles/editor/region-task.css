@@ -181,7 +181,7 @@
   background: var(--accent, #4a9eff);
   border: 1px solid var(--accent-border, #4a9eff);
   border-radius: var(--radius-s);
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   font: inherit;
   font-weight: 600;
@@ -503,7 +503,7 @@
   background: var(--accent, #4a9eff);
   border: 1px solid var(--accent-border, #4a9eff);
   border-radius: var(--radius-s);
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   font: inherit;
   font-weight: 600;
@@ -549,7 +549,7 @@
 }
 .region-task-autocomplete-item.is-selected {
   background: var(--accent, #4a9eff);
-  color: #fff;
+  color: var(--on-accent);
 }
 
 

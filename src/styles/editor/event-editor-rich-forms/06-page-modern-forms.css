@@ -194,7 +194,7 @@
 .page3-tint-preview[data-tint="white"],
 .page3-flash-preview[data-flash="white"],
 .page3-flash-preview[data-flash="flash"] { background: #fff; }
-.page3-tint-preview[data-tint="neutral"] { background: #9aa3b5; }
+.page3-tint-preview[data-tint="neutral"] { background: var(--text-2); }
 
 .page3-flash-preview {
   animation: page3-flash-pulse 1.1s ease-in-out infinite;
