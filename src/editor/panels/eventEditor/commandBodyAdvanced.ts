@@ -128,15 +128,15 @@ export function renderAdvancedCommandBody(
     case "inn":
       return innBody(context, cmd);
     case "checkpointSave":
-      return terminalHint("checkpoint-save-editor", "현재 런타임 세션을 세션 한정 체크포인트로 저장합니다.");
+      return optionalTextCommandBody(context, cmd, "checkpoint-save-editor", "체크포인트 라벨", "event-command-checkpoint-label", "label");
     case "killPlayer":
-      return terminalHint("kill-player-editor", "파티를 전멸시키고 게임 오버 화면을 엽니다.");
+      return optionalTextCommandBody(context, cmd, "kill-player-editor", "패배 메시지", "event-command-kill-player-message", "message");
     case "triggerEnding":
-      return terminalHint("trigger-ending-editor", "지정 엔딩 또는 조건을 만족하는 최우선 엔딩을 실행합니다.");
+      return triggerEndingBody(context, cmd);
     case "addFollower":
-      return terminalHint("add-follower-editor", "동행 NPC를 세션에 추가합니다. actorId 또는 graphic을 사용합니다.");
+      return addFollowerBody(context, cmd);
     case "removeFollower":
-      return terminalHint("remove-follower-editor", "동행 NPC를 이름으로 제거하거나 all=true로 모두 제거합니다.");
+      return removeFollowerBody(context, cmd);
     case "setLighting":
       return setLightingBody(context, cmd);
     case "addLight":
@@ -184,6 +184,168 @@ export function renderAdvancedCommandBody(
     default:
       return undefined;
   }
+}
+
+function optionalTextCommandBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "checkpointSave" | "killPlayer" }>,
+  testId: string,
+  label: string,
+  inputTestId: string,
+  key: "label" | "message"
+): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "text" },
+    value: cmd.kind === "checkpointSave" ? (cmd.label ?? "") : (cmd.message ?? ""),
+    dataset: { testid: inputTestId },
+  }) as HTMLInputElement;
+  input.addEventListener("change", () => {
+    const value = input.value.trim();
+    context.actions.replaceCommand(context.path, {
+      kind: cmd.kind,
+      ...(value ? { [key]: value } : {}),
+    } as Extract<Command, { kind: "checkpointSave" | "killPlayer" }>);
+  });
+  return el("div", {
+    class: "terminal-command-editor",
+    dataset: { testid: testId },
+    children: [el("label", { class: "inline-field", children: [el("span", { text: label }), input] })],
+  });
+}
+
+function triggerEndingBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "triggerEnding" }>
+): HTMLElement {
+  const select = el("select", {
+    dataset: { testid: "event-command-trigger-ending-id" },
+  }) as HTMLSelectElement;
+  select.append(el("option", { text: "조건에 맞는 엔딩 자동 선택", attrs: { value: "" } }));
+  for (const ending of store.getCurrent().endings ?? []) {
+    select.append(el("option", { text: ending.name, attrs: { value: ending.id } }));
+  }
+  select.value = cmd.endingId ?? "";
+  select.addEventListener("change", () => {
+    context.actions.replaceCommand(context.path, {
+      kind: "triggerEnding",
+      ...(select.value ? { endingId: select.value } : {}),
+    });
+  });
+  return el("div", {
+    class: "terminal-command-editor",
+    dataset: { testid: "trigger-ending-editor" },
+    children: [el("label", { class: "inline-field", children: [el("span", { text: "엔딩" }), select] })],
+  });
+}
+
+function addFollowerBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "addFollower" }>
+): HTMLElement {
+  const actor = el("select", { dataset: { testid: "event-command-add-follower-actor-id" } }) as HTMLSelectElement;
+  actor.append(el("option", { text: "직접 지정", attrs: { value: "" } }));
+  for (const record of store.getCurrent().database.actors) {
+    actor.append(el("option", { text: record.name, attrs: { value: record.id } }));
+  }
+  actor.value = cmd.actorId ?? "";
+  const name = el("input", {
+    attrs: { type: "text" },
+    value: cmd.name ?? "",
+    dataset: { testid: "event-command-add-follower-name" },
+  }) as HTMLInputElement;
+  const useGraphic = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-command-add-follower-use-graphic" },
+  }) as HTMLInputElement;
+  useGraphic.checked = Boolean(cmd.graphic);
+  const graphicType = el("select", { dataset: { testid: "event-command-add-follower-graphic-type" } }) as HTMLSelectElement;
+  graphicType.append(
+    el("option", { text: "번들", attrs: { value: "bundled" } }),
+    el("option", { text: "업로드", attrs: { value: "uploaded" } })
+  );
+  graphicType.value = cmd.graphic?.sprite?.type ?? "bundled";
+  const graphicId = el("input", {
+    attrs: { type: "text" },
+    value: cmd.graphic?.sprite?.id ?? "",
+    dataset: { testid: "event-command-add-follower-graphic-id" },
+  }) as HTMLInputElement;
+  const direction = el("select", { dataset: { testid: "event-command-add-follower-graphic-direction" } }) as HTMLSelectElement;
+  for (const option of ["down", "left", "right", "up"] as const) {
+    direction.append(el("option", { text: option, attrs: { value: option } }));
+  }
+  direction.value = cmd.graphic?.direction ?? "down";
+  const pattern = el("input", {
+    attrs: { type: "number", min: "0", max: "3", step: "1" },
+    value: String(cmd.graphic?.pattern ?? 1),
+    dataset: { testid: "event-command-add-follower-graphic-pattern" },
+  }) as HTMLInputElement;
+  const transparent = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "event-command-add-follower-graphic-transparent" },
+  }) as HTMLInputElement;
+  transparent.checked = cmd.graphic?.transparent ?? false;
+
+  const commit = () => {
+    const actorId = actor.value.trim();
+    const followerName = name.value.trim();
+    const graphicEnabled = useGraphic.checked || Boolean(cmd.graphic);
+    const selectedDirection = (["down", "left", "right", "up"] as const).find((value) => value === direction.value)
+      ?? cmd.graphic?.direction
+      ?? "down";
+    context.actions.replaceCommand(context.path, {
+      kind: "addFollower",
+      ...(actorId ? { actorId } : {}),
+      ...(followerName ? { name: followerName } : {}),
+      ...(graphicEnabled ? {
+        graphic: {
+          ...(graphicId.value.trim() ? { sprite: { type: graphicType.value === "uploaded" ? "uploaded" : "bundled", id: graphicId.value.trim() } } : {}),
+          direction: selectedDirection,
+          pattern: Math.max(0, Math.trunc(Number(pattern.value) || 0)),
+          transparent: transparent.checked,
+        },
+      } : {}),
+    });
+  };
+  for (const control of [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent]) {
+    control.addEventListener("change", commit);
+  }
+  return el("div", {
+    class: "terminal-command-editor",
+    dataset: { testid: "add-follower-editor" },
+    children: [actor, name, useGraphic, graphicType, graphicId, direction, pattern, transparent],
+  });
+}
+
+function removeFollowerBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "removeFollower" }>
+): HTMLElement {
+  const mode = el("select", { dataset: { testid: "event-command-remove-follower-mode" } }) as HTMLSelectElement;
+  mode.append(
+    el("option", { text: "이름으로 제거", attrs: { value: "name" } }),
+    el("option", { text: "모두 제거", attrs: { value: "all" } })
+  );
+  mode.value = cmd.all ? "all" : "name";
+  const name = el("input", {
+    attrs: { type: "text" },
+    value: cmd.name ?? "",
+    dataset: { testid: "event-command-remove-follower-name" },
+  }) as HTMLInputElement;
+  const commit = () => {
+    const followerName = name.value.trim();
+    context.actions.replaceCommand(context.path,
+      mode.value === "all" || !followerName
+        ? { kind: "removeFollower", all: true }
+        : { kind: "removeFollower", name: followerName }
+    );
+  };
+  mode.addEventListener("change", commit);
+  name.addEventListener("change", commit);
+  return el("div", {
+    class: "terminal-command-editor",
+    dataset: { testid: "remove-follower-editor" },
+    children: [mode, name],
+  });
 }
 
 function transferBody(context: CommandEditContext, cmd: Extract<Command, { kind: "transfer" }>): HTMLElement {
