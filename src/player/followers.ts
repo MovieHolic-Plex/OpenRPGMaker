@@ -8,15 +8,45 @@ import { inBounds } from "@/project/collision";
 const MAX_TRAIL_POINTS = 64;
 const DEFAULT_MONSTER_FIELD_CHARSET = "tex_easyrpg_charset_monster1";
 
+function uniqueFollowerName(session: PlaySession, desired: string): string {
+  const taken = new Set(session.followers.map((f) => f.name));
+  if (!taken.has(desired)) return desired;
+  for (let i = 2; i < 100; i += 1) {
+    const cand = `${desired} (${i})`;
+    if (!taken.has(cand)) return cand;
+  }
+  return `${desired} (${Date.now() % 1000})`;
+}
+
+/** Stable id derivation — must not use display name so renames don't steal a sprite. */
+function followerIdFor(input: { readonly actorId?: string; readonly monsterInstanceId?: string; name: string }, session: PlaySession): string {
+  if (input.monsterInstanceId) return `monster:${input.monsterInstanceId}`;
+  if (input.actorId) return `actor:${input.actorId}`;
+  // mascot / custom graphic: name-derived with collision suffix, then made globally unique
+  let base = `mascot:${input.name}`;
+  // de-dup against existing ids (not names)
+  if (!session.followers.some((f) => (f as { id?: string }).id === base)) return base;
+  for (let i = 2; i < 100; i += 1) {
+    const cand = `${base} (${i})`;
+    if (!session.followers.some((f) => (f as { id?: string }).id === cand)) return cand;
+  }
+  return `${base}:${Date.now() % 1000}`;
+}
+
 export function addFollowerToSession(
   project: Project,
   session: PlaySession,
   input: { readonly actorId?: string; readonly graphic?: EventPageGraphic; readonly name?: string }
 ): RuntimeFollower | null {
-  const follower = followerFromInput(project, input);
+  let follower = followerFromInput(project, input);
   if (!follower) return null;
+  // Stabilize id before de-duplicating display name — id is what the sprite map keys on.
+  const desiredId = followerIdFor({ actorId: follower.eventId, name: follower.name }, session);
+  if ((follower as { id?: string }).id !== desiredId) follower = { ...follower, id: desiredId } as typeof follower;
+  const safeName = uniqueFollowerName(session, follower.name);
+  if (safeName !== follower.name) follower = { ...follower, name: safeName } as typeof follower;
   const actorFollowers = (session.followers ?? []).filter(
-    (entry) => entry.kind !== "monster" && !entry.monsterInstanceId && entry.name !== follower.name
+    (entry) => entry.kind !== "monster" && !entry.monsterInstanceId && (entry as { id?: string }).id !== follower.id
   );
   const monsterFollowers = (session.followers ?? []).filter(
     (entry) => entry.kind === "monster" || Boolean(entry.monsterInstanceId)
@@ -67,6 +97,7 @@ export function syncMonsterPartyFollowers(project: Project, session: PlaySession
     if (!instance) continue;
     const species = (project.database.monsterSpecies ?? []).find((record) => record.id === instance.speciesId);
     monsterFollowers.push({
+      id: `monster:${instance.instanceId}`,
       name: monsterFollowerName(instance, species?.name),
       graphic: monsterFieldGraphic(species?.graphic),
       kind: "monster",
@@ -138,6 +169,7 @@ function followerFromInput(
     const graphic = resourceId ? actorFollowerGraphic(resourceId) : input.graphic;
     if (!graphic) return null;
     return {
+      id: `actor:${input.actorId}`,
       eventId: input.actorId,
       graphic,
       name: input.name?.trim() || actor?.name || input.actorId,
@@ -146,6 +178,7 @@ function followerFromInput(
   }
   if (!input.graphic) return null;
   return {
+    id: `mascot:${input.name?.trim() || input.graphic.sprite?.id || "동행자"}`,
     graphic: input.graphic,
     name: input.name?.trim() || input.graphic.sprite?.id || "동행자",
     kind: "actor",

@@ -9,7 +9,7 @@ export function syncFollowerSprites(scene: PlaySceneContext): void {
   const expected = new Set<string>();
   const project = store.getCurrent();
   for (const position of followerPositions(scene.session)) {
-    const key = followerSpriteKey(position.follower.name);
+    const key = followerSpriteKey(position.follower);
     expected.add(key);
     const spriteRef = position.follower.graphic.sprite;
     if (!spriteRef || position.follower.graphic.transparent === true) {
@@ -50,6 +50,8 @@ function destroyFollowerSprite(scene: Pick<PlaySceneContext, "followerSprites">,
   scene.followerSprites.delete(key);
 }
 
-function followerSpriteKey(name: string): string {
-  return `follower:${name}`;
+function followerSpriteKey(follower: { readonly id?: string; readonly name: string }): string {
+  // Prefer stable id; fall back to name for saves from before this patch.
+  if (follower.id) return `follower:${follower.id}`;
+  return `follower:${follower.name}`;
 }

@@ -55,6 +55,8 @@ export type PictureState = {
 export type ActorRowPosition = "front" | "back";
 
 export type RuntimeFollower = {
+  /** Stable key for sprite map — survives renames. Missing on old saves (fallback to name). */
+  readonly id?: string;
   readonly eventId?: string;
   readonly graphic: EventPageGraphic;
   readonly name: string;
