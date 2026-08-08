@@ -49,7 +49,7 @@ export function renderShopMenu(
   menu.append(shopMenuMessage(messageLine(step, terms)));
   const choices = document.createElement("div");
   choices.className = "runtime-shop-menu-choices";
-  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, terms, showItems, finish));
+  for (const action of shopMenuActions(step)) choices.append(shopMenuButton(action, terms, showItems, finish, step));
   menu.append(choices);
   shell.append(shopBluePanel("runtime-shop-bottom-panel", [menu]));
   return shell;
@@ -218,20 +218,34 @@ function shopMenuButton(
   action: ShopMenuAction,
   terms: ResolvedTerms,
   showItems: (mode: ShopMode) => void,
-  finish: () => void
+  finish: () => void,
+  stepForPoolCheck?: ShopStep
 ): HTMLButtonElement {
   const button = document.createElement("button");
   button.type = "button";
   button.className = "runtime-shop-menu-choice";
   button.textContent = menuActionLabel(action, terms);
   button.dataset.testid = action === "cancel" ? "shop-menu-cancel" : `shop-mode-${action}`;
+  const emptyPool = stepForPoolCheck ? isServicePoolEmpty(stepForPoolCheck) : false;
+  if (emptyPool && action !== "cancel") {
+    button.disabled = true;
+    button.title = "대상 없음 — 서비스 불가";
+    (button as unknown as { dataset: Record<string,string> }).dataset["disabledReason"] = "empty-pool";
+  }
   button.addEventListener("click", () => {
+    if ((button as HTMLButtonElement).disabled) return;
     if (action === "cancel") finish();
     else showItems(action);
   });
   return button;
 }
 
+function isServicePoolEmpty(step: ShopStep): boolean {
+  const svc = (step as unknown as { shopServiceKind?: string }).shopServiceKind;
+  const pool = (step as unknown as { appraisalUnidentifiedPool?: string[] }).appraisalUnidentifiedPool;
+  if (svc === "appraisal") return !pool || pool.length === 0;
+  return false;
+}
 function shopMenuActions(step: ShopStep): ShopMenuAction[] {
   switch (shopType(step)) {
     case "normal":

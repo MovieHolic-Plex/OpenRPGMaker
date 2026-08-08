@@ -521,6 +521,7 @@ function shopSabExtraCard(context: CommandEditContext, command: ShopCommand): HT
   const row = (label: string, input: HTMLElement) => el("div", { class: "shop-sab-row", children: [el("span", { class: "shop-sab-label", text: label }), input] });
   const wrap = el("div", { class: "shop-sab-extra", dataset: { testid: "shop-sab-extra" }, children: [el("div", { class: "shop-sab-title", text: "S/A/B 확장 (선택)" })] });
   const serviceSel = el("select", { dataset: { testid: "shop-serviceKind" }, children: [el("option", { text: "없음", attrs: { value: "" } }), el("option", { text: "수리", attrs: { value: "repair" } }), el("option", { text: "감정", attrs: { value: "appraisal" } }), el("option", { text: "전당포", attrs: { value: "pawn" } })] }) as HTMLSelectElement;
+  serviceSel.title = "축제·행상은 이벤트 조건(fork)으로 감싸세요 — 이 상점이 닫혔을 때 보이지 않게 됩니다.";
   (serviceSel as HTMLSelectElement).value = String(ext.shopServiceKind ?? "");
   serviceSel.addEventListener("change", () => { const v = (serviceSel as HTMLSelectElement).value || undefined; context.actions.replaceCommand(context.path, { ...(latestShop(context, command) as unknown as Record<string, unknown>), shopServiceKind: v } as unknown as Command); });
   const invest = el("input", { attrs: { type: "number", min: "0", max: "5", step: "1" }, dataset: { testid: "shop-investmentLevel" } }) as HTMLInputElement;

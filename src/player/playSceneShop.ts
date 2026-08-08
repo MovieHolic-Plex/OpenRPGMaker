@@ -1,4 +1,5 @@
 import { changeGold, changeItem } from "@/project/session";
+import type { PlaySessionLike } from "@/player/types";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { resolveShopMerchantGold } from "@/project/shopStock";
@@ -25,6 +26,13 @@ export type ShopStep = Extract<StepResult, { kind: "shop" }>;
 export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boolean | "failed"> {
   const items = shopItems(step);
   const terms = resolveTerms(store.getCurrent());
+  // 수리/감정: 빈 풀은 “거래 불가”로 간주 (빈 풀에 수리비 청구 방지)
+  const svc = (step as unknown as { shopServiceKind?: string }).shopServiceKind;
+  const appraisalPool = (step as unknown as { appraisalUnidentifiedPool?: string[] }).appraisalUnidentifiedPool;
+  if ((svc === "appraisal" && (!appraisalPool || appraisalPool.length === 0)) || (svc === "repair" && items.length === 0)) {
+    // 실패로 간주 — 골드 환불 전제(수리비는 handleShopTransaction 이전이므로 차감 없음)
+    return Promise.resolve(step.branchOnFailedTransaction ? ("failed" as const) : false);
+  }
   // 빈 상점: 메뉴 노출 대신 안내만 하고 바로 닫음 → 유령 상점(F-07) 방지
   if (items.length === 0) {
     return Promise.resolve(step.branchOnFailedTransaction ? "failed" as const : false);
@@ -99,7 +107,20 @@ export function playShop(scene: PlaySceneContext, step: ShopStep): Promise<boole
                 }
                 // 상태 메시지 리렌더 전에 상인 소지금을 반영해야 패널 숫자가 맞다.
                 merchantGold = result.merchantGold;
-                { const _cost2 = (item.price * Math.min(99, Math.max(1, Math.floor(count)||1))); const _k = ((step as unknown as { loyaltyTierId?: string }).loyaltyTierId ?? "global"); const _sm2 = ((scene.session as unknown as { shopLoyaltySpend?: Record<string,number> }).shopLoyaltySpend ?? {}); (scene.session as unknown as { shopLoyaltySpend?: Record<string,number> }).shopLoyaltySpend = _sm2; _sm2[_k] = (_sm2[_k] ?? 0) + _cost2; const _rate2 = (step as unknown as { mileageRate?: number }).mileageRate; if(typeof _rate2==="number" && _rate2>0){ (scene.session as unknown as { shopMileagePoints?: number }).shopMileagePoints = Math.floor(((scene.session as unknown as { shopMileagePoints?: number }).shopMileagePoints ?? 0) + _cost2 * Math.min(0.1, Math.max(0, _rate2))); } }
+                if (nextMode === "buy") {
+                  const _cost2 = item.price * Math.min(99, Math.max(1, Math.floor(count) || 1));
+                  const _k = ((step as unknown as { loyaltyTierId?: string }).loyaltyTierId ?? "global");
+                  const _sm2 = ((scene.session as unknown as { shopLoyaltySpend?: Record<string, number> }).shopLoyaltySpend ?? {}) as Record<string, number>;
+                  (scene.session as unknown as { shopLoyaltySpend?: Record<string, number> }).shopLoyaltySpend = _sm2;
+                  _sm2[_k] = (_sm2[_k] ?? 0) + _cost2;
+                  const _rate2 = (step as unknown as { mileageRate?: number }).mileageRate;
+                  if (typeof _rate2 === "number" && _rate2 > 0) {
+                    (scene.session as unknown as { shopMileagePoints?: number }).shopMileagePoints = Math.floor(
+                      (((scene.session as unknown as { shopMileagePoints?: number }).shopMileagePoints ?? 0) + _cost2 * Math.min(0.1, Math.max(0, _rate2)))
+                    );
+                  }
+                  scene.syncRuntimeState();
+                }
                 transactionCompleted = true;
                 if (nextMode === "buy") {
                   finish();
@@ -147,6 +168,14 @@ type ShopTransactionResult =
   | { readonly ok: false; readonly status: string }
   | { readonly ok: true; readonly status: string; readonly merchantGold: number };
 
+/** 구매 환불(마일리지 차감) — 성공 시에만 적립했으므로 환불 시 차감한다. */
+export function refundShopMileage(session: PlaySessionLike, cost: number, mileageRate: number | undefined): void {
+  if (typeof mileageRate !== "number" || mileageRate <= 0 || cost <= 0) return;
+  const s = session as unknown as { shopMileagePoints?: number };
+  const delta = Math.floor(cost * Math.min(0.1, Math.max(0, mileageRate)));
+  s.shopMileagePoints = Math.max(0, (s.shopMileagePoints ?? 0) - delta);
+}
+
 /** 순수 거래 규칙 — 상인 소지금 한도를 포함. 단위 테스트용 export. */
 export function handleShopTransaction(
   scene: PlaySceneContext,
@@ -169,7 +198,13 @@ export function handleShopTransaction(
     }
     changeItem(scene.session, item.id, "-=", qty);
     changeGold(scene.session, "+=", payout);
-    { const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts ?? {}); (scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts = tc; tc[item.id] = { sold: (tc[item.id]?.sold ?? 0) + qty, bought: tc[item.id]?.bought ?? 0 }; }
+    {
+      const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
+      (scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts = tc;
+      tc[item.id] = { sold: (tc[item.id]?.sold ?? 0) + qty, bought: tc[item.id]?.bought ?? 0 };
+      // 환불 시 마일리지 차감(성공 시에만 적립했으므로 판매 시 차감 대상 아님 — 구매 환불 경로에서만 차감)
+      // 판매(sell)는 “되팔기”이므로 마일리지 차감 없음. 구매 환불은 handleShopTransaction 밖에서 처리.
+    }
     scene.syncRuntimeState();
     return { ok: true, status: `${item.name} sold.`, merchantGold: merchantGold - payout };
   }
@@ -180,7 +215,11 @@ export function handleShopTransaction(
   }
   changeGold(scene.session, "-=", cost);
   changeItem(scene.session, item.id, "+=", qty);
-  { const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts ?? {}); (scene.session as unknown as { shopTradeCounts?: Record<string, { sold:number; bought:number }> }).shopTradeCounts = tc; tc[item.id] = { sold: tc[item.id]?.sold ?? 0, bought: (tc[item.id]?.bought ?? 0) + qty }; }
+  {
+    const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
+    (scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts = tc;
+    tc[item.id] = { sold: tc[item.id]?.sold ?? 0, bought: (tc[item.id]?.bought ?? 0) + qty };
+  }
   scene.syncRuntimeState();
   // 플레이어 구매금은 상인 소지금으로 들어간다(이후 매입 여력 증가).
   return { ok: true, status: `${item.name} purchased.`, merchantGold: merchantGold + cost };
