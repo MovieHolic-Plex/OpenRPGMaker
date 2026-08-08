@@ -90,7 +90,6 @@ describe("event command staged-state regressions", () => {
       kind: "shop",
       quantityMode: "select",
       shopType: "buyOnly",
-      allowSell: false,
       messageType: "direct",
       merchantGold: 777,
     });

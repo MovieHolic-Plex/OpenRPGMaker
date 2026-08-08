@@ -29,7 +29,7 @@ describe("renderEmptyProposalNotice", () => {
     expect(findByTestId(notice, "ai-proposal-reject")).toBeNull();
     const dismiss = findByTestId(notice, "ai-proposal-dismiss");
     expect(dismiss).toBeTruthy();
-    expect(notice.textContent).toContain("변경 제안 없음");
+    expect(notice.textContent).toContain("변경 없음");
     expect(notice.textContent).toContain("⚠ 미이행");
 
     dismiss?.click();

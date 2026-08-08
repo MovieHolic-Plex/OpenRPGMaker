@@ -376,7 +376,7 @@ function inspectWorldNavigation(project: Project): NavigationInspection {
         x: command.x,
         y: command.y,
       }));
-      const livingDestinations = activePage?.movement.living?.destinations ?? [];
+      const livingDestinations = activePage?.movement?.living?.destinations ?? [];
       if (commands.length > 0 || (event.schedule?.length ?? 0) > 0 || livingDestinations.length > 0) {
         interactiveEvents.push({ mapId, event, hasTransfer: transfers.length > 0, livingDestinations });
       }
