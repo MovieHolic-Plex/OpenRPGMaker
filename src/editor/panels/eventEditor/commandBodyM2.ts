@@ -40,6 +40,9 @@ export function renderM2CommandBody(context: CommandEditContext, cmd: Command): 
   const page3 = renderPage3M2CommandBody(context, cmd);
   if (page3) return page3;
   const entry = m2CommandById(cmd.commandId);
+  if (entry?.title === "Erase Event" || cmd.commandId === "m2-086-erase-event") {
+    return eraseEventCommandBody(context, cmd);
+  }
   const wrap = el("div", {
     class: "m2-command-body",
     dataset: { testid: `m2-command-body-${cmd.commandId}` },
@@ -66,6 +69,72 @@ export function renderM2CommandBody(context: CommandEditContext, cmd: Command): 
     wrap.append(fieldRow(fieldLabelForSpec(cmd.commandId, entry.title, spec), controlForField({ context, cmd, spec, title: entry.title, value: cmd.fields[spec.key] ?? spec.defaultValue })));
   }
   return wrap;
+}
+
+function eraseEventCommandBody(context: CommandEditContext, cmd: M2Command): HTMLElement {
+  const project = store.getCurrent();
+  const selectedEventId = String(cmd.fields.eventId ?? "").trim();
+  const target = el("select", {
+    class: "m2-record-picker",
+    dataset: { testid: "m2-erase-event-target" },
+    attrs: { "aria-label": "지울 이벤트" },
+  }) as HTMLSelectElement;
+  target.append(el("option", { text: "이 이벤트", attrs: { value: "" } }));
+  for (const event of eventRecords(project)) {
+    target.append(el("option", { text: event.name, attrs: { value: event.id } }));
+  }
+  if (selectedEventId && !eventRecords(project).some((event) => event.id === selectedEventId)) {
+    target.append(el("option", { text: `현재 값: ${selectedEventId}`, attrs: { value: selectedEventId } }));
+  }
+  target.value = selectedEventId;
+
+  const previewTitle = el("div", { class: "m2-erase-event-preview-title" });
+  const previewSub = el("div", {
+    class: "m2-erase-event-preview-sub",
+    text: "맵을 다시 불러오면 이벤트가 다시 나타납니다.",
+  });
+  const preview = el("div", {
+    class: "m2-erase-event-preview",
+    dataset: { testid: "m2-erase-event-preview" },
+    children: [previewTitle, previewSub],
+  });
+  const renderPreview = () => {
+    const selected = eventRecords(project).find((event) => event.id === target.value);
+    previewTitle.textContent = target.value
+      ? `${selected?.name ?? target.value} 지우기`
+      : "이 이벤트 지우기";
+  };
+  target.addEventListener("change", () => {
+    updateField(context, cmd, "eventId", target.value);
+    renderPreview();
+  });
+  renderPreview();
+
+  return el("div", {
+    class: "m2-command-body m2-erase-event-body",
+    dataset: { testid: `m2-command-body-${cmd.commandId}` },
+    children: [
+      el("div", {
+        class: "m2-command-intent m2-erase-event-card",
+        dataset: { testid: "m2-command-intent-card" },
+        children: [
+          el("div", { class: "m2-command-intent-title", text: "플레이 중 이벤트 지우기" }),
+          el("p", {
+            class: "m2-command-intent-copy",
+            text: "플레이 화면에서 이벤트를 임시로 숨깁니다. 에디터 맵에서 이벤트 오브젝트를 삭제하는 버튼이 아닙니다.",
+          }),
+        ],
+      }),
+      el("div", {
+        class: "m2-erase-event-field",
+        children: [
+          el("label", { class: "m2-erase-event-label", text: "대상" }),
+          target,
+        ],
+      }),
+      preview,
+    ],
+  });
 }
 
 function m2CommandHelpText(fieldCount: number): string {

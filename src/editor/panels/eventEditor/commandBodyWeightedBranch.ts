@@ -4,6 +4,7 @@ import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { databasePicker } from "./conditionForm";
 import type { CommandEditContext } from "./types";
+import { replaceFields } from "./commandBodyM2Page3";
 import {
   formatWeightedBranchSummary,
   rowsForWeightedBranchEditor,
@@ -121,13 +122,9 @@ export function renderWeightedBranchCommandBody(
   });
 
   const commit = () => {
-    context.actions.replaceCommand(context.path, {
-      ...cmd,
-      fields: {
-        ...cmd.fields,
-        table: serializeWeightedBranchTable(rows),
-        resultVariableId,
-      },
+    replaceFields(context, cmd, {
+      table: serializeWeightedBranchTable(rows),
+      resultVariableId,
     });
   };
 

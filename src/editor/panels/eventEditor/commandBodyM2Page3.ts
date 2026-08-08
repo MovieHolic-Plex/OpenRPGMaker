@@ -1751,7 +1751,7 @@ function note(text: string): HTMLElement {
   return el("p", { class: "actor-m2-preview-note", text });
 }
 
-function replaceFields(
+export function replaceFields(
   context: CommandEditContext,
   cmd: M2Command,
   fields: Record<string, M2CommandValue>,
