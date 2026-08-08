@@ -31,12 +31,12 @@
 
 /* 인트로 배너: 양 스킨 모두에서 메시지 창 노출 */
 .battle-scene[data-battle-director-step="intro"] .battle-message-window {
-  display: grid !important;
+  display: grid;
 }
 
 /* MISS 팝업 */
 .battle-damage-popup-miss {
-  color: #cfd6de !important;
+  color: #cfd6de;
   font-size: 18px;
   letter-spacing: 0.08em;
 }
@@ -105,7 +105,7 @@
 }
 .battle-capture-absorbed .battle-enemy-image,
 .battle-capture-absorbed .battle-actor-image {
-  transform: scale(0) !important;
+  transform: scale(0);
   transition: transform 220ms ease-in;
 }
 .battle-enemy .battle-enemy-image,
@@ -115,6 +115,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .battle-capture-orb, .battle-orb-shake, .battle-orb-caught, .battle-orb-burst,
-  .battle-enemy.defeated { animation-duration: 1ms !important; }
+  .battle-enemy.defeated { animation-duration: 1ms; }
 }
 

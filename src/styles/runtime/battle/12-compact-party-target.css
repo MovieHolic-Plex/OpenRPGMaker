@@ -1,25 +1,25 @@
 /* --- HUD row: party status rows ----------------------------------------- */
 
 .battle-party {
-  display: grid !important;
-  gap: 2px !important;
-  grid-column: 3 !important;
-  grid-row: 2 !important;
-  grid-template-rows: repeat(4, minmax(0, 1fr)) !important;
-  min-height: 0 !important;
-  padding: 6px !important;
-  position: relative !important;
-  z-index: 8 !important;
+  display: grid;
+  gap: 2px;
+  grid-column: 3;
+  grid-row: 2;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  min-height: 0;
+  padding: 6px;
+  position: relative;
+  z-index: 8;
 }
 
 .battle-actor-status {
   align-content: center;
-  display: grid !important;
-  gap: 2px !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  min-height: 0 !important;
+  display: grid;
+  gap: 2px;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
   overflow: hidden;
-  padding: 2px 4px !important;
+  padding: 2px 4px;
 }
 
 .battle-actor-status-head {
@@ -31,8 +31,8 @@
 }
 
 .battle-actor-name {
-  font-size: 16px !important;
-  line-height: 1.1 !important;
+  font-size: 16px;
+  line-height: 1.1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -40,7 +40,7 @@
 }
 
 .battle-actor-level {
-  font-size: 14px !important;
+  font-size: 14px;
   margin-left: 4px;
   opacity: 0.85;
 }
@@ -54,8 +54,8 @@
 
 .battle-actor-hp,
 .battle-actor-mp {
-  font-size: 14px !important;
-  line-height: 1.1 !important;
+  font-size: 14px;
+  line-height: 1.1;
   white-space: nowrap;
 }
 
@@ -64,14 +64,14 @@
   display: grid;
   gap: 6px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  height: 10px !important;
+  height: 10px;
   min-width: 0;
 }
 
 .battle-actor-status .battle-stat-bar {
   display: block;
-  grid-column: auto !important;
-  height: 6px !important;
+  grid-column: auto;
+  height: 6px;
   min-width: 0;
 }
 
@@ -83,57 +83,57 @@
 
 .battle-atb-bar {
   flex: 1 1 auto;
-  height: 6px !important;
+  height: 6px;
 }
 
 /* --- Target-select phase ------------------------------------------------- */
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-command-panel {
-  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-prompt,
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-menu,
 .battle-scene[data-battle-phase="targetSelect"] .battle-key-prompts {
-  grid-row: auto !important;
+  grid-row: auto;
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-menu {
-  bottom: auto !important;
-  display: grid !important;
-  gap: 2px !important;
-  left: auto !important;
-  overflow: hidden !important;
-  position: relative !important;
-  right: auto !important;
-  width: 100% !important;
+  bottom: auto;
+  display: grid;
+  gap: 2px;
+  left: auto;
+  overflow: hidden;
+  position: relative;
+  right: auto;
+  width: 100%;
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-target-menu .battle-submenu-header {
-  display: none !important;
+  display: none;
 }
 
 .battle-scene[data-battle-phase="targetSelect"] .battle-command {
-  min-height: 26px !important;
+  min-height: 26px;
 }
 
 .battle-target-brackets {
-  height: 58px !important;
-  inset: auto !important;
-  left: 50% !important;
-  top: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  width: 68px !important;
+  height: 58px;
+  inset: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 68px;
 }
 
 .battle-target-brackets::before {
-  border-width: 4px !important;
+  border-width: 4px;
 }
 
 .battle-target-brackets::after {
-  border-left-width: 6px !important;
-  border-right-width: 6px !important;
-  border-top-width: 14px !important;
-  top: -20px !important;
+  border-left-width: 6px;
+  border-right-width: 6px;
+  border-top-width: 14px;
+  top: -20px;
 }
 

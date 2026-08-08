@@ -8,7 +8,7 @@
    예전에는 data-battle-phase="resolved" 로도 걸었는데, 런타임은 막타 즉시 resolved 가
    되므로 마지막 액션의 연출이 재생되는 동안 메시지 창·패널이 전부 사라졌다(적대 리뷰 §2). */
 .battle-has-result .battle-message-window {
-  display: none !important;
+  display: none;
 }
 
 .battle-has-result .battle-command-panel,

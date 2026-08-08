@@ -313,7 +313,7 @@
 
 .battle-scene[data-battle-director-step="result"] {
   background: #000;
-  background-image: none !important;
+  background-image: none;
   overflow: hidden;
 }
 
@@ -324,8 +324,8 @@
 }
 
 /* 결과 단계에서 배경을 파란 하늘 그라데이션으로 갈아치우던 규칙이 있었다. `background`
-   단축 속성 + !important 라 인라인 background-image(전투 배경 그림 url)까지 통째로 덮어,
-   승리 화면에서 전투장이 사라지고 단색 그라데이션만 남았다.
+   단축 속성은 인라인 background-image(전투 배경 그림 url)까지 통째로 덮어,
+   승리 화면에서 전투장이 사라지고 단색 그라데이션만 남겼다.
    결과 단계의 어두워짐은 아래 `filter: brightness(0.72)` 규칙이 이미 담당한다. */
 .battle-scene[data-battle-director-step="result"] .battle-backdrop::before {
   background: rgba(9, 35, 98, 0.28);

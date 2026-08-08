@@ -59,37 +59,34 @@
 }
 
 /* Pokemon skin: larger lunge / knockback.
-   주의: 예전 폴백에 노드 scale(2.45/1.28)이 남아 있었다 — 스프라이트가 px 로 커진
-   지금은 이중 확대가 되어, 맞는 순간 적이 1.28배로 부풀었다(감독 지적 1: "타격할 때
-   확대가 이상하게 됨"). 이동(translateX)만 남긴다. 아군 쪽은 정지 규칙(transform
-   !important, :3480대)이 모션을 눌러 죽이므로 !important 로 되살린다. */
+   예전 폴백에 노드 scale(2.45/1.28)이 남아 있어 px 기반 스프라이트와 이중 확대되던
+   문제를 피하려고 이동(translateX)만 남긴다. 상태보다 구체적인 motion 클래스가
+   후반의 정지 규칙을 명시적으로 이긴다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-lunge {
-  transform: translate(-50%, -100%) translateX(-72px) !important;
+  transform: translate(-50%, -100%) translateX(-72px);
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-return {
-  transform: translate(-50%, -100%) !important;
+  transform: translate(-50%, -100%);
   transition: transform 180ms ease-out;
 }
-/* 적 쪽도 정지 규칙(18-pokemon-layout-redesign.css 의 transform !important)이 모션을
-   눌러 죽인다 — 아군과 똑같이 !important 로 되살린다(rAF 실측: !important 없이는
-   knockback/lunge 프레임에서 matrix 가 1px 도 안 변했다). */
+/* 적 쪽도 같은 motion 클래스 특이성으로 후반의 정지 규칙보다 우선한다. */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-lunge {
-  transform: translate(-50%, -100%) translateX(56px) !important;
+  transform: translate(-50%, -100%) translateX(56px);
   transition: transform 140ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-return {
-  transform: translate(-50%, -100%) !important;
+  transform: translate(-50%, -100%);
   transition: transform 180ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-actor-group .battle-actor.battle-motion-knockback {
   filter: brightness(1.45) saturate(0.7);
-  transform: translate(-50%, -100%) translateX(36px) !important;
+  transform: translate(-50%, -100%) translateX(36px);
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 .battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-group .battle-enemy.battle-motion-knockback {
   filter: brightness(1.5) saturate(0.65);
-  transform: translate(-50%, -100%) translateX(-44px) !important;
+  transform: translate(-50%, -100%) translateX(-44px);
   transition: transform 120ms ease-out, filter 100ms ease-out;
 }
 
