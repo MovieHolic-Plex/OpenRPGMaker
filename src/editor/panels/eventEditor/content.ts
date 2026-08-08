@@ -52,6 +52,7 @@ import {
 } from "./pageProps";
 import type { CommandListActions } from "./types";
 import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
+import { renderFollowerPresetBar } from "./followerPresetPicker";
 
 export function renderEventEditorContent(container: HTMLElement, mapId: MapId, eventId: string): void {
   renderEventEditorDynamic(container, mapId, eventId);
@@ -327,6 +328,17 @@ function renderCommandToolbar(
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "실행 내용 도구" },
     children: [
+      el("div", {
+        children: [
+          renderFollowerPresetBar({
+            insertCommandsAt: (index, commands) => {
+              for (let i = 0; i < commands.length; i += 1)
+                insertEventPageCommandAt(mapId, eventId, page.id, [index + i], commands[i]!);
+            },
+            commandCount: () => page.commands.length,
+          }),
+        ],
+      }),
       toolGroup(
         toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
         toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo())

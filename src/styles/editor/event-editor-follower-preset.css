@@ -1,0 +1,36 @@
+.event-editor-follower-preset-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px dashed var(--border-subtle, #3a3a52);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.event-editor-follower-preset-label {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.event-editor-follower-preset-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.follower-preset-chip {
+  border-radius: 999px;
+  font-size: 12px;
+}
+.follower-preset-chip--mascot {
+  border-color: #7dd3a0;
+}
+.follower-preset-chip--actor {
+  border-color: #8aa8ff;
+}
+.follower-preset-chip--monster {
+  border-color: #f5a623;
+}
+.follower-preset-note {
+  font-size: 11px;
+  line-height: 1.35;
+}

@@ -241,6 +241,7 @@ export function isRuntimeFollowerArray(value: unknown): value is PlaySession["fo
   return value.every((follower) => {
     if (!isRecord(follower)) return false;
     if (follower.eventId !== undefined && typeof follower.eventId !== "string") return false;
+    if (follower.id !== undefined && typeof follower.id !== "string") return false;
     if (typeof follower.name !== "string") return false;
     if (follower.kind !== undefined && follower.kind !== "actor" && follower.kind !== "monster") return false;
     if (follower.monsterInstanceId !== undefined && typeof follower.monsterInstanceId !== "string") return false;

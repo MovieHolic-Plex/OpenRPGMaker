@@ -55,6 +55,7 @@
 @import "./editor/audio-test-dialog.css";
 @import "./editor/help-modal.css";
 @import "./editor/event-editor-help.css";
+@import "./editor/event-editor-follower-preset.css";
 
 /* ============================================================================
    전역 기본값 현대화 (UI-0) — 토큰은 ./tokens.css, 가이드는 ./TOKENS.md
