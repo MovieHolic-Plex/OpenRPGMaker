@@ -53,3 +53,10 @@ body {
   font-size: 1px;
   z-index: 6;
 }
+
+html[data-clean-evidence="true"] .runtime-debug-panel,
+html[data-clean-evidence="true"] .runtime-coordinate-debug,
+html[data-clean-evidence="true"] [data-testid="runtime-debug-panel"],
+html[data-clean-evidence="true"] [data-testid="runtime-coordinate-debug"] {
+  display: none !important;
+}

@@ -23,6 +23,14 @@
   bottom: -10px;
 }
 
+.player-layout.system-shell .rm-title-screen .rm-title-screen-logo {
+  height: 70px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  z-index: 2;
+}
+
 .player-layout.system-shell .rm-title-menu {
   background: var(--runtime-window-fill-fallback);
   border: var(--runtime-window-border) solid transparent;

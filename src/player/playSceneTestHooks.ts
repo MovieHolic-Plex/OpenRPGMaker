@@ -33,7 +33,13 @@ export type RuntimeDebugHook = {
 };
 
 type TestHookWindow = Window & {
-  __rpgzzuInput?: { action: () => void; attack: () => void; skill: () => void; dir: (d: string | null) => void };
+  __rpgzzuInput?: {
+    action: () => void;
+    attack: () => void;
+    skill: () => void;
+    dir: (d: string | null) => void;
+    face: (d: string) => void;
+  };
   __rpgzzuActionCombat?: () => ActionCombatDebug | null;
   __rpgzzuPlayerSprite?: () => PlayerSpriteDebug | null;
   __rpgzzuCharacterSprites?: () => CharacterSpriteDebug | null;
@@ -121,6 +127,14 @@ export function installPlaySceneTestHooks(
     attack: () => input.injectAttackEdge(),
     skill: () => input.injectSkillEdge(),
     dir: (d) => input.injectDirection(parseDirection(d)),
+    face: (d) => {
+      const direction = parseDirection(d);
+      if (!direction) return;
+      const context = scene as unknown as { facing: Dir; playerSprite?: { idleFrameFor: (dir: Dir) => number }; player?: Phaser.GameObjects.Sprite };
+      context.facing = direction;
+      if (context.playerSprite && context.player) context.player.setFrame(context.playerSprite.idleFrameFor(direction));
+      syncRuntimeState();
+    },
   };
   w.__rpgzzuPlayerSprite = () => playerSpriteDebug(scene);
   w.__rpgzzuCharacterSprites = () => characterSpritesDebug(scene);

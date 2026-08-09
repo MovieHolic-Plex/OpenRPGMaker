@@ -89,6 +89,7 @@ export {
   createTownHouseShowcaseProject,
   ensureSwitchVariableSlots,
 } from "./defaults/defaultProject";
+export { createModernNocturneProject } from "./defaults/modernNocturneGame";
 
 // 《천공의 계단》 — 비주얼 중심 7층 JRPG. 배럴에서 바로 내보내 에디터 메뉴가 쓴다.
 export {

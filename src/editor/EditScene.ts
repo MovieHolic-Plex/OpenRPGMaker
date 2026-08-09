@@ -211,11 +211,11 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   preload(): void {
-    loadBundledAssets(this);
+    loadBundledAssets(this, store.getCurrent());
   }
 
   create(): void {
-    registerBundledFrames(this);
+    registerBundledFrames(this, store.getCurrent());
     this.cameras.main.setBackgroundColor("#0f1115");
 
     this.tileLayer = this.add.container(0, 0);

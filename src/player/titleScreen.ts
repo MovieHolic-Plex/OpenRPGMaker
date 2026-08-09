@@ -1,5 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { applySystemGraphic, applyTitleScreenBackground } from "@/player/systemGraphics";
+import { applyTitleScreenBackground } from "@/player/systemGraphics";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
@@ -71,8 +71,9 @@ export function renderTitleScreen(project: Project, actions: TitleScreenActions,
     dataset: { testid: "title-screen" },
   });
   applyTitleScreenBackground(title, backgroundResourceId, project);
-  // Title menu window chrome follows systemResourceId (same as field menus).
-  applySystemGraphic(title, project);
+  // The full-screen title root owns the key art. Menu chrome consumes the runtime
+  // windowskin CSS variable without applying the 9-slice fill over the artwork.
+  applyTitleMenuGraphic(title, project);
   title.append(...renderTitleNodes(settings, project));
   const showInputHint = settings.showInputHint !== false;
   title.append(renderMenu(settings, options, clampedIndex, actions, showInputHint));
@@ -81,6 +82,15 @@ export function renderTitleScreen(project: Project, actions: TitleScreenActions,
   }
   title.append(titleSelectionDebug(clampedIndex));
   return title;
+}
+
+function applyTitleMenuGraphic(node: HTMLElement, project: Project): void {
+  const resourceId = project.system.systemResourceId || "windowskin-rm2003";
+  node.dataset.systemResource = resourceId;
+  // CSS keeps the menu's existing border-image contract; set only the variable so
+  // the full-screen root cannot paint a 9-slice fill over the key art.
+  const url = resolveAssetResourceUrl(resourceId, { project }) ?? "/assets/ui/windowskin-rm2003.png";
+  node.style.setProperty("--runtime-window-skin", `url("${url}")`);
 }
 
 function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTMLElement[] {

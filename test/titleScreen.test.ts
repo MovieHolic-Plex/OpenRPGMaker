@@ -83,6 +83,29 @@ describe("title screen", () => {
     }
   });
 
+  it("keeps the title artwork visible while exposing windowskin chrome to child menus", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundResourceId: "rpg-zzu-title-blue",
+      });
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      expect(screen.style.backgroundImage).toContain("default-title-blue.png");
+      expect(screen.style.borderImageSource).toBeUndefined();
+      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("clamps the menu above the input hint only when it would overlap", () => {
     // 회귀 방지: 이 규칙에 단위 커버리지가 없어서 위 레이아웃 테스트가 조용히 낡았다.
     const optionCount = 3;
