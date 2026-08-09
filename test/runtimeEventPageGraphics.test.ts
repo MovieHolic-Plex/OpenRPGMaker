@@ -3,11 +3,9 @@ import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID, TILE } from "@/project/
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { renderTiles } from "@/player/playSceneMapRuntime";
-import {
-  findBlockingRuntimeEventAt,
-  initialRuntimeEventPositions,
-  runtimeEventView,
-} from "@/player/runtimeEventState";
+import { findBlockingRuntimeEventAt,
+initialRuntimeEventPositions,
+runtimeEventView, } from "@/project/runtimeEventState"
 import {
   event,
   isMockSprite,

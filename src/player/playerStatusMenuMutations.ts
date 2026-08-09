@@ -1,7 +1,7 @@
 import { setAudioState } from "@/project/session";
 import { store } from "@/project/store";
 import type { PlayScene } from "@/player/PlayScene";
-import { transitionActorEquipment } from "@/player/playerEquipmentRules";
+import { transitionActorEquipment } from "@/project/equipmentRules";
 import { useItemFromMenu } from "@/player/playerItemUse";
 import type { ActorInitialEquipment } from "@/project/types";
 

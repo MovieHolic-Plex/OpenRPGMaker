@@ -1,5 +1,5 @@
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export const CUTSCENE_END_LABEL = "cutscene_end";
 export const CUTSCENE_LOCK_FLAG = "cutscene:inputLocked";

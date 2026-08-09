@@ -190,7 +190,7 @@ export function createVillageShoppingStreetProject(): Project {
   const {
     buildVillageShoppingStreetProject,
     villageShoppingStreetStartPos,
-  } = require("./villageShoppingStreetBuild") as typeof import("./villageShoppingStreetBuild");
+  } = require("@/editor/content/villageShoppingStreetBuild") as typeof import("@/editor/content/villageShoppingStreetBuild");
   // build_village 슬롯·HOUSE_MARGIN 알고리즘 + 동쪽 상점가 (하드코딩 집 origin 금지)
   const built = buildVillageShoppingStreetProject({ seed: 11, houses: 6 });
   const project = built.project;

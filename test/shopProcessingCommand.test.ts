@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { createInterpreter } from "@/player/interpreter";
 import type { Command } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 function mkSession(): PlaySessionLike {
   return {

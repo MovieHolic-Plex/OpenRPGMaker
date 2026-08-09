@@ -13,7 +13,7 @@ import type {
   SkillId,
   TroopId,
 } from "@/project/types";
-import type { GameTime } from "@/project/gameTime";
+import type { BattleResult, GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
 import type { Rng } from "@/util/rng";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
@@ -21,7 +21,7 @@ import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
 export type { BattleFlow } from "@/project/types";
 
 export type BattlePhase = "charging" | "actorCommand" | "targetSelect" | "roundResolve" | "resolved";
-export type BattleResult = "victory" | "defeat" | "escape";
+export type { BattleResult } from "@/project/gameTime";
 
 export type EquipmentUseTarget =
   | { readonly kind: "enemy"; readonly enemyId: string }

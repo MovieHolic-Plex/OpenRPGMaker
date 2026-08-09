@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { loadProjectFromSupabase } from "../src/project/supabaseProjectSync.ts";
-import { collectMapIdsInTree } from "../src/editor/mapTreeActions.ts";
+import { collectMapIdsInTree } from "../src/project/mapTree.ts";
 import { isMapWaterTile } from "../src/editor/tools/queryTools.ts";
 
 function loadEnv(): Record<string, string> {

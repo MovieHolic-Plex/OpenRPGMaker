@@ -17,22 +17,22 @@
 // generated-enemy-slime-01 을 가리켜(리치·메두사·키메라·발키리…) 이름만 다르고 전부
 // 슬라임으로 보인다. 비주얼 중심 게임에서는 치명적이라 25종을 **서로 다른 스프라이트**로
 // 새로 정의했다(디스크의 138개 monster-*.png 중에서 골랐다).
-import type { ActorParameterCurves, EnemyRecord, ItemRecord, Project, TroopRecord } from "../types";
-import { SCHEMA_VERSION } from "../types";
-import { normalizeItemRecord } from "../databaseRecordModel";
-import { normalizeEnemyRecord, normalizeTroopRecord } from "../databaseEnemyTroopRecordModel";
-import { DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "./constants";
+import type { ActorParameterCurves, EnemyRecord, ItemRecord, Project, TroopRecord } from "@/project/types";
+import { SCHEMA_VERSION } from "@/project/types";
+import { normalizeItemRecord } from "@/project/databaseRecordModel";
+import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults/constants";
 import {
   ACTOR_GUARDIAN_ID,
   ACTOR_MAGE_ID,
   ACTOR_SCOUT_ID,
   STARTER_ACTOR_IDS,
-} from "./defaultDatabaseRecordIds";
-import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "./defaultAssets";
-import { defaultDatabase, defaultSession, defaultSystem, defaultTerms, defaultTitleScreenSettings } from "./defaultDatabase";
-import { ensureSwitchVariableSlots } from "./defaultProject";
+} from "@/project/defaults/defaultDatabaseRecordIds";
+import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "@/project/defaults/defaultAssets";
+import { defaultDatabase, defaultSession, defaultSystem, defaultTerms, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { ensureSwitchVariableSlots } from "@/project/defaults/defaultProject";
 import { polishMapTerrain } from "@/editor/tools/v3/terrainPolish";
-import { skyStairMaps } from "./skyStairMaps";
+import { skyStairMaps } from "@/editor/content/skyStairMaps";
 
 export const SKY_TITLE = "천공의 계단";
 

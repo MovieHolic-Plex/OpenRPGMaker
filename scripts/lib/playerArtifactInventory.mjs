@@ -32,7 +32,6 @@ export const PLAYER_SOURCE_INPUT_INVENTORY = Object.freeze([
     "scripts/lib/playerViteClosure.mjs",
   ].map((inputPath) => Object.freeze({ kind: "file", path: inputPath })),
   ...[
-    "src/action",
     "src/app",
     "src/assets",
     "src/battle",

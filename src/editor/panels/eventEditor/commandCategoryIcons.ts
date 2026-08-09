@@ -2,8 +2,8 @@
 // - 커맨드 피커: 그룹 헤딩/버튼/탭의 카테고리 아이콘 + 색
 // - 커맨드 리스트: 행 좌측 색 레일(data-command-category) + kind 아이콘
 // RM2003 텍스트 스크립트가 정본이므로 아이콘은 16px 이하의 부가 장식으로만 쓴다.
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
-import type { M2CommandPickerGroup } from "@/editor/eventCommands/m2PickerLayout";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import type { M2CommandPickerGroup } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
 
 export type CommandCategoryKey =

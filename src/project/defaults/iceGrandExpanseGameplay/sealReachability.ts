@@ -1,4 +1,4 @@
-import { findBlockingRuntimeEventAtInMap, initialRuntimeEventPositions } from "@/player/runtimeEventState";
+import { findBlockingRuntimeEventAtInMap, initialRuntimeEventPositions } from "@/project/runtimeEventState"
 import { canMove } from "@/project/collision";
 import type { IceGrandExpansePoint } from "@/project/defaults/iceGrandExpanseMap";
 import { ICE_GRAND_EXPANSE_START } from "@/project/defaults/iceGrandExpansePlan";

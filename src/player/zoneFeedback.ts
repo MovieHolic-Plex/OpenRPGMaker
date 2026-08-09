@@ -1,4 +1,4 @@
-import type { M2UiCommandState } from "@/player/types";
+import type { M2UiCommandState } from "@/project/sessionRuntimeTypes"
 import type { EventPage } from "@/project/types";
 
 const BANNER_DURATION_MS = 1500;

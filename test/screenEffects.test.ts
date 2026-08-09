@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import { screenColorToRgb, clampMs } from "@/player/interpreter/commandCatalog";
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 function mkSession(): PlaySessionLike {
   return {

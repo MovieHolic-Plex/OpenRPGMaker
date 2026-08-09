@@ -9,7 +9,7 @@ import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import { updateNpcSchedules } from "@/player/npcSchedules";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
-import { initialRuntimeEventPositions } from "@/player/runtimeEventState";
+import { initialRuntimeEventPositions } from "@/project/runtimeEventState"
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import { createNpcScheduleDemoProject } from "./fixtures/npcScheduleDemo";
 import { mockSprite } from "./runtimeEventPageFixtures";

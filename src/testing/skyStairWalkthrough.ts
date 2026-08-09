@@ -10,7 +10,7 @@
 // projectLint 도 그걸 잡지 못했다 — lint 는 transfer 의 *목적지*만 보고 문 자체가
 // 도달 가능한지는 보지 않는다. 완주 시나리오만이 그 종류의 결함을 잡는다.
 
-import { SKY_ITEM, SKY_MAP, SKY_SWITCH, SKY_VARIABLE } from "@/project/defaults/skyStairGame";
+import { SKY_ITEM, SKY_MAP, SKY_SWITCH, SKY_VARIABLE } from "@/editor/content/skyStairGame";
 import type { WalkthroughStep } from "./walkthroughRunner";
 
 export const SKY_STAIR_WALKTHROUGH: readonly WalkthroughStep[] = [

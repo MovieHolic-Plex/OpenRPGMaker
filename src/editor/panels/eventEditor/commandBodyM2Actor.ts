@@ -1,5 +1,5 @@
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
 import type { Command, M2CommandValue } from "@/project/types";
 import { el } from "@/util/dom";

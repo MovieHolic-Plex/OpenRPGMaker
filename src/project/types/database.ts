@@ -686,20 +686,6 @@ export interface LifeSkillRecord {
   readonly levelUpRewards: readonly LifeSkillLevelUpReward[];
 }
 
-/** 농장 동물 종류. */
-export type AnimalType = "chicken" | "cow" | "sheep" | "duck" | "rabbit" | (string & {});
-
-/** 농장 동물 레코드 — 산물/주기/호감도 요구치 정의. */
-export interface AnimalRecord {
-  readonly id: string;
-  readonly name: string;
-  readonly animalType: AnimalType;
-  readonly produceItemId?: string;
-  readonly produceDays: number;
-  readonly friendshipRequired: number;
-  readonly graphicResourceId?: string;
-}
-
 export interface ProjectDatabaseRecords extends DatabaseRecords {
   elements?: DatabaseElementRecord[];
   terrains?: DatabaseTerrainRecord[];
@@ -707,7 +693,6 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   monsterSpecies?: MonsterSpeciesRecord[];
   crops?: CropRecord[];
   lifeSkills?: LifeSkillRecord[];
-  animals?: AnimalRecord[];
 }
 
 export interface TitleScreenLayout {
@@ -798,6 +783,8 @@ export interface SystemRecords {
   monsterCare?: MonsterCareConfig;
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */
   skillSystem?: { enabled: boolean };
+  /** 저자가 선언한 장르. lint 가 이 선언 대비 옵트인 정합성을 검사한다. 미설정이면 장르 검사 없음. */
+  genre?: "monster-collect" | "horror-chase" | "farm-life";
 }
 
 export interface ActionCombatHudConfig {

@@ -3,7 +3,7 @@
 // 통과한 실제 화면이 아니었다(감독 질문 10 의 답: "런타임 스크린샷").
 import { writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
-import { createSkyStairProject, SKY_MAP } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

@@ -7,7 +7,7 @@ import path from "node:path";
 import {
   buildLargeRiverMarketVillageProject,
   LARGE_RIVER_MARKET_VILLAGE_MAP_ID,
-} from "../src/project/defaults/largeRiverMarketVillageBuild.ts";
+} from "../src/editor/content/largeRiverMarketVillageBuild.ts";
 import { LargeVillageBuildLog } from "../src/project/defaults/largeVillageBuildLog.ts";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
 

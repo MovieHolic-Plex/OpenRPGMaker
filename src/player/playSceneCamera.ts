@@ -2,9 +2,9 @@ import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import type { GameMap } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/player/types";
+import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";

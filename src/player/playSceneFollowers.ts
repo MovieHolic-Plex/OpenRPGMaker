@@ -2,7 +2,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
 import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { followerPositions } from "@/player/followers";
+import { followerPositions } from "@/project/followers";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 export function syncFollowerSprites(scene: PlaySceneContext): void {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { m2CommandRuntimeSupport, battleEventCommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { m2CommandRuntimeSupport, battleEventCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 
 describe("m2-109-result-summary 분류", () => {
   it("미분류 예외 없이 editor-only로 분류된다", () => {

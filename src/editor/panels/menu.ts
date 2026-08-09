@@ -20,7 +20,7 @@ import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
-import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject } from "@/project/defaults";
+import { createSampleAdventureProject, createScarloxyDemoProject, createScarloxyPokemonDemoProject, createSkyStairProject, createSnowMountain60Project, createIcePlain64Project, createTrainingExamplesProject, createFarmingDemoProject } from "@/project/defaults";
 import {
   createProjectPackage,
   ProjectPackageError,
@@ -345,6 +345,7 @@ function menuCommands(
         item("얼음 대평원 64×64 (절벽·계단 캔버스)", "menu-project-ice-plain-64", () => void newIcePlain64Project()),
         item("Scarloxy 몬스터 초원 데모", "menu-project-scarloxy-demo", () => void newScarloxyDemoProject()),
         item("Scarloxy 포켓몬풍 데모", "menu-project-scarloxy-pokemon-demo", () => void newScarloxyPokemonDemoProject()),
+        item("농장 생활 데모", "menu-project-farming-demo", () => void newFarmingDemoProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
         item("DB에서 새로고침", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
@@ -646,6 +647,13 @@ async function newScarloxyPokemonDemoProject(): Promise<void> {
   store.replaceProject(createScarloxyPokemonDemoProject());
   focusLoadedProjectStartMap();
   toast("Scarloxy 포켓몬풍 데모를 불러왔습니다 — 박사에게 스타터를 받고 남쪽 풀숲에서 포획해 보세요", "ok");
+}
+
+async function newFarmingDemoProject(): Promise<void> {
+  if (!(await showConfirm({ title: "농장 생활 데모", message: "현재 작업을 지우고 농장 생활 데모 프로젝트를 시작할까요?", confirmLabel: "시작", danger: true }))) return;
+  store.replaceProject(createFarmingDemoProject());
+  focusLoadedProjectStartMap();
+  toast("농장 생활 데모를 불러왔습니다 — 밭을 갈고 씨앗을 심어 보세요", "ok");
 }
 
 async function newScarloxyDemoProject(): Promise<void> {

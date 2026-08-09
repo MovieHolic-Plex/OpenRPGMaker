@@ -7,7 +7,7 @@ import type { FarmPlots, MonsterInstance } from "@/project/session";
 import type { GameTime } from "@/project/gameTime";
 import type { ActorVitals } from "@/project/sessionVitals";
 import type { RngState } from "@/util/rng";
-import type { BattleResult } from "@/battle/types";
+import type { BattleResult } from "@/project/gameTime";
 
 export type RuntimeAudioState = {
   readonly resourceId: string;

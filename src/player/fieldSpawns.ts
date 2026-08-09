@@ -1,6 +1,6 @@
 import { inBounds, isPassable } from "@/project/collision";
 import type { Dir, EventPageGraphic, FieldSpawnDef, GameEvent, GameMap, Project, Rect } from "@/project/types";
-import type { RuntimeEventPositions } from "@/player/runtimeEventState";
+import type { RuntimeEventPositions } from "@/project/runtimeEventState"
 
 export const FIELD_SPAWN_EVENT_PREFIX = "__field_spawn__";
 export const FIELD_SPAWN_FIXED_STEP_MS = 1000;

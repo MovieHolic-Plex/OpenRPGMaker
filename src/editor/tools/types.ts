@@ -3,7 +3,7 @@
 // 툴은 전부 순수 함수(브라우저 전역 접근 금지 — Node 헤드리스에서도 동일 동작)로 작성한다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
-import type { Project } from "@/project/types";
+import type { ChangeSummary, Project } from "@/project/types";
 
 // 최소 JSON Schema(OpenAI function calling 파라미터). 손으로 쓰되 object 타입을 강제한다.
 export type JsonSchemaType = "object" | "array" | "string" | "number" | "integer" | "boolean";
@@ -21,28 +21,7 @@ export interface JsonSchema {
   readonly additionalProperties?: boolean;
 }
 
-// 변경 요약(모델이 다음 턴에 결과를 읽는다).
-export interface ChangeSummary {
-  tilesChanged: number;
-  eventsAdded: number;
-  eventsModified: number;
-  eventsRemoved: number;
-  mapsAdded: number;
-  mapsRemoved: number;
-  dbRecordsChanged: number;
-  // 타일셋 정의 변경(메타데이터/그룹/통행성 등) 개수.
-  tilesetsChanged: number;
-  switchesAdded: number;
-  variablesAdded: number;
-  worldEntitiesAdded: number;
-  worldEntitiesModified: number;
-  palettePresetsAdded: number;
-  palettePresetsModified: number;
-  endingsChanged: number;
-  sessionChanged: boolean;
-  systemChanged: boolean;
-  warnings: string[];
-}
+export type { ChangeSummary } from "@/project/types";
 
 // 툴 실행 결과 규약(handoff 그대로).
 export interface ToolResult {

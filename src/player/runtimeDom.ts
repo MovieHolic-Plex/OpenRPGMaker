@@ -2,8 +2,8 @@ import { TILE_SIZE } from "@/assets/bundled";
 import type { BattleResult } from "@/battle/runtime";
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
-import type { M2RuntimeState } from "@/player/types";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
+import type { M2RuntimeState } from "@/project/sessionRuntimeTypes"
+import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { RuntimeMoverSnapshot } from "@/player/runtimeMoverSnapshots";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";

@@ -423,3 +423,26 @@ export interface ProjectV1 {
   startPos: { x: number; y: number };
   flags: Record<FlagName, boolean>;
 }
+
+/** 변경 요약(모델이 다음 턴에 결과를 읽는다). */
+export interface ChangeSummary {
+  tilesChanged: number;
+  eventsAdded: number;
+  eventsModified: number;
+  eventsRemoved: number;
+  mapsAdded: number;
+  mapsRemoved: number;
+  dbRecordsChanged: number;
+  /** 타일셋 정의 변경(메타데이터/그룹/통행성 등) 개수. */
+  tilesetsChanged: number;
+  switchesAdded: number;
+  variablesAdded: number;
+  worldEntitiesAdded: number;
+  worldEntitiesModified: number;
+  palettePresetsAdded: number;
+  palettePresetsModified: number;
+  endingsChanged: number;
+  sessionChanged: boolean;
+  systemChanged: boolean;
+  warnings: string[];
+}

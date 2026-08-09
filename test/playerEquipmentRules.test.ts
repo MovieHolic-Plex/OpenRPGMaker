@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { effectiveActorEquipment, equipmentSlotAccepts, logicalEquipmentIds, transitionActorEquipment } from "@/player/playerEquipmentRules";
+import { effectiveActorEquipment, equipmentSlotAccepts, logicalEquipmentIds, transitionActorEquipment } from "@/project/equipmentRules";
 import { changeActorEquipment } from "@/project/sessionActorCommands";
 import { startSession } from "@/project/session";
 import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { swingArcCells, cellInArc } from "@/action/hitbox";
+import { swingArcCells, cellInArc } from "@/battle/action/hitbox";
 
 describe("swingArcCells", () => {
   it("down facing covers front cell and its diagonals at range 1", () => {

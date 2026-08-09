@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, rm } from "node:fs/promises";
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import {

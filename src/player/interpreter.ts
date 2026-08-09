@@ -2,7 +2,7 @@ import type { Command, Project } from "@/project/types";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import { advanceResume } from "@/player/interpreter/resume";
 import { advanceCompletedFrame, gotoLabel, topFrame } from "@/player/interpreter/stack";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type {
   Interpreter,
   InterpreterOptions,

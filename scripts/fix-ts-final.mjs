@@ -308,7 +308,7 @@ function writeLines(p, lines) { fs.writeFileSync(p, lines.join("\n")); console.l
 
 // 9. largeRiverMarketVillageBuild.ts - unused params
 {
-  const p = "src/project/defaults/largeRiverMarketVillageBuild.ts";
+  const p = "src/editor/content/largeRiverMarketVillageBuild.ts";
   const lines = readLines(p);
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].includes("_rng:") || lines[i].includes("rng: () => number,")) {

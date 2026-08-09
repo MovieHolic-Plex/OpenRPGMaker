@@ -19,8 +19,8 @@ import {
   createTownHouseShowcaseProject,
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
-} from "./defaults";
-import type { Project } from "./types";
+} from "@/project/defaults";
+import type { Project } from "@/project/types";
 
 const DEV_FRESH_PROJECT_PARAM = "freshProject";
 const DEV_BLANK_PROJECT_PARAM = "blankProject";

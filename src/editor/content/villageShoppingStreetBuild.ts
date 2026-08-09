@@ -6,11 +6,11 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
-import { repairMapTreeOrphans, collectMapIdsInTree } from "@/editor/mapTreeActions";
+import { repairMapTreeOrphans, collectMapIdsInTree } from "@/project/mapTree";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
-import { defaultDatabase, defaultTitleScreenSettings } from "./defaultDatabase";
-import { DEFAULT_ITEM_ID, TILE } from "./constants";
-import { RM2K3_WOOD_FLOOR_PASSABILITY } from "./chipsetMapping";
+import { defaultDatabase, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { DEFAULT_ITEM_ID, TILE } from "@/project/defaults/constants";
+import { RM2K3_WOOD_FLOOR_PASSABILITY } from "@/project/defaults/chipsetMapping";
 import type {
   Command,
   EventPage,
@@ -19,7 +19,7 @@ import type {
   GameEvent,
   GameMap,
   Project,
-} from "../types";
+} from "@/project/types";
 
 export const VILLAGE_SHOPPING_STREET_MAP_ID = "map_village_shopping_street";
 export const VILLAGE_SHOPPING_STREET_MAP_NAME = "마을과 상점가";

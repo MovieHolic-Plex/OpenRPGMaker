@@ -5,7 +5,13 @@
 import type Phaser from "phaser";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { DbConnectionRequiredError, store } from "@/project/store";
+import { DbConnectionRequiredError, setDevProjectFactory, store } from "@/project/store";
+import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
+import { setAiConfigProvider } from "@/project/editorIdentity";
+import { applyGenrePreset, welcomePresetToGenrePreset } from "@/project/genrePresets";
+import { setAiActivityRecorder } from "@/project/tileMetadataDb";
+import { loadAiConfig } from "@/ai/llmClient";
+import { recordAiActivity } from "@/ai/activityLog";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
@@ -67,6 +73,9 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   }
 
   try {
+    setDevProjectFactory(createDevShowcaseProjectForLocation);
+    setAiConfigProvider(loadAiConfig);
+    setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
     await store.load();
   } catch (error) {
     // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
@@ -121,7 +130,10 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
         // loadFallbackProject turns remote OFF (load-failure recovery only) and
         // would also risk overwriting the previously opened DB project row.
         const title = (result.intent || result.prompt || "새 세계").slice(0, 48);
-        await store.loadNewRemoteProject(createBlankProject(), { title });
+        const genreProject = createBlankProject();
+        const genrePresetId = welcomePresetToGenrePreset(result.presetId);
+        if (genrePresetId) applyGenrePreset(genreProject, genrePresetId);
+        await store.loadNewRemoteProject(genreProject, { title });
         setPendingWelcomePipeline({
           prompt: result.prompt,
           autoSend: result.autoSend,

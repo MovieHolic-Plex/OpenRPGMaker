@@ -5,7 +5,7 @@ import {
   transitionItemStates,
   type ItemTransitionAction,
   type ItemTransitionState,
-} from "@/player/itemTransitions";
+} from "@/project/itemTransitions";
 import { createBlankProject } from "@/project/defaults";
 import type { ItemRecord } from "@/project/types";
 

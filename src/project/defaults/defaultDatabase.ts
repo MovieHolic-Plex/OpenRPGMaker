@@ -59,7 +59,6 @@ export function defaultDatabase(): ProjectDatabaseRecords {
     monsterSpecies: battle.monsterSpecies,
     crops: [],
     lifeSkills: [],
-    animals: [],
   };
 }
 

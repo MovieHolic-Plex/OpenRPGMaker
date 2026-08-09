@@ -11,7 +11,7 @@ import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import type { BattleAnimationRecord, ShowAnimationTarget } from "@/project/types";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
 const MAP_ANIMATION_DEPTH = 800_000;
 const RAW_TEXTURE_PREFIX = "__rpg_zzu_battle_animation_raw_";

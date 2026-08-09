@@ -11,7 +11,7 @@
 import { describe, expect, it } from "vitest";
 import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { skyStairMaps } from "@/project/defaults/skyStairMaps";
+import { skyStairMaps } from "@/editor/content/skyStairMaps";
 import type { GameEvent } from "@/project/types";
 
 type Cell = { readonly textureKey: string; readonly characterIndex: number };

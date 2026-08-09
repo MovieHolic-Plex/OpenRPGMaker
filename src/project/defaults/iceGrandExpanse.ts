@@ -1,4 +1,4 @@
-import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
+import { appendToTree, removeFromTree } from "@/project/mapTree";
 import { ICE_GRAND_ADVENTURE_MAP_ID } from "@/project/defaults/iceGrandAdventure";
 import { ICE_GRAND_EXPANSE_BOSS_EVENT, ICE_GRAND_EXPANSE_GUARDS } from "@/project/defaults/iceGrandExpanseBoss";
 import { ICE_GRAND_EXPANSE_CHECKPOINTS, ICE_GRAND_EXPANSE_SUMMIT_CHECKPOINT_SWITCH } from "@/project/defaults/iceGrandExpanseCheckpoints";

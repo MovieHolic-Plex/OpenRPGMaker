@@ -4,7 +4,7 @@ import { startSession } from "@/project/session";
 import { runTool } from "@/editor/tools";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { findChasePath, nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
-import { addFollowerToSession, followerPositions, recordFollowerPlayerStep } from "@/player/followers";
+import { addFollowerToSession, followerPositions, recordFollowerPlayerStep } from "@/project/followers";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import {
   createHorrorPhase5Fixture,

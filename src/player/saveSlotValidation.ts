@@ -2,15 +2,13 @@ import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingSta
 import type { AudioCommandState, PictureState, PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { isSeason, normalizeGameTime } from "@/project/gameTime";
-import type {
-  RuntimeCameraSessionState,
-  RuntimeCameraTarget,
-  RuntimeEventLocation,
-  RuntimeNpcScheduleState,
-  RuntimeNpcTravelState,
-  RuntimeRemovedEventIds,
-  RuntimeSpawnedEventState,
-} from "@/player/types";
+import type { RuntimeCameraSessionState,
+RuntimeCameraTarget,
+RuntimeEventLocation,
+RuntimeNpcScheduleState,
+RuntimeNpcTravelState,
+RuntimeRemovedEventIds,
+RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { RNG_STREAMS, type RngState } from "@/util/rng";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {

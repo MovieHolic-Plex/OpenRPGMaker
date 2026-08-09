@@ -9,13 +9,13 @@ import { npcFaceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { stampRectHouseKit, type HouseKitId } from "@/editor/houseKit";
-import type { Command, EventPage, GameEvent, GameMap, LightingState, Project, TilesetDef } from "../types";
-import { canMove, isPassable } from "../collision";
-import { FARMLAND_TILE } from "./chipsetMapping";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
-import { defaultTilesets } from "./defaultAssets";
-import { createBlankMap } from "./defaultMaps";
-import { paintSnowGateTerrain } from "./snowGateTerrain";
+import type { Command, EventPage, GameEvent, GameMap, LightingState, Project, TilesetDef } from "@/project/types";
+import { canMove, isPassable } from "@/project/collision";
+import { FARMLAND_TILE } from "@/project/defaults/chipsetMapping";
+import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { defaultTilesets } from "@/project/defaults/defaultAssets";
+import { createBlankMap } from "@/project/defaults/defaultMaps";
+import { paintSnowGateTerrain } from "@/project/defaults/snowGateTerrain";
 import {
   SKY_BATTLE_BG,
   SKY_BGM,

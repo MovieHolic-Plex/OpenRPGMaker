@@ -10,16 +10,14 @@ import type { AutonomousNpcSprite } from "@/player/playSceneAutonomousTypes";
 import type { Dir, InputState } from "@/player/input";
 import { facingForStep, resolveDiagonalStep } from "@/player/input";
 import { assertNever, type PlaySceneContext } from "@/player/playSceneTypes";
-import {
-  findBlockingRuntimeEventAtInMap,
-  findRuntimeEventAtInMap,
-  setRuntimeEventPositionDirection,
-} from "@/player/runtimeEventState";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
+import { findBlockingRuntimeEventAtInMap,
+findRuntimeEventAtInMap,
+setRuntimeEventPositionDirection, } from "@/project/runtimeEventState"
+import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { EventAnimationType } from "@/project/types";
 import { nextSessionRandom } from "@/project/session";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
-import { recordFollowerPlayerStep } from "@/player/followers";
+import { recordFollowerPlayerStep } from "@/project/followers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";

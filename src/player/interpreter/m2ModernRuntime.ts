@@ -1,5 +1,5 @@
 import type { M2CommandFields } from "@/project/types";
-import type { M2RuntimeState, PlaySessionLike } from "@/player/types";
+import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";

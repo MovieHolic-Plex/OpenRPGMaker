@@ -27,7 +27,7 @@ import { applyCameraControl } from "@/player/playSceneCamera";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
 import { applyWeatherStep } from "@/player/playSceneWeather";
-import { runtimeEventViewsForMap, type RuntimeEventView } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap, type RuntimeEventView } from "@/project/runtimeEventState"
 import {
   CUTSCENE_END_LABEL,
   isCutsceneSkippable,

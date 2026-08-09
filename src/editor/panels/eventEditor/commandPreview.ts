@@ -7,7 +7,7 @@ import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { renderFacesetCrop } from "./facesetPreview";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
 import { facesetIconOf, initialBadge, recordIconElement } from "./recordPicker";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { commandLabel } from "./commandPicker";
 import { commandSummaryParts, isSummaryIconPart } from "./commandSummary";
 import { formatVariableFormula } from "./commandBodyVariable";

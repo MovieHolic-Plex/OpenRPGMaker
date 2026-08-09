@@ -6,7 +6,6 @@ import { repairInteriorTransparentPropLayers } from "./defaults/interiorTranspar
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
 import { loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
-import { createDevShowcaseProjectForLocation } from "./devShowcaseProjects";
 import {
   loadProjectFromSupabase,
   saveProjectMapPatchToSupabase,
@@ -33,7 +32,7 @@ import {
 } from "./supabaseProjectConfig";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
-import { repairMapTreeOrphans } from "@/editor/mapTreeActions";
+import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
 import { randomUuid } from "@/util/id";
 import type { GameMap, MapId, Project } from "./types";
@@ -118,6 +117,13 @@ export class DbConnectionRequiredError extends Error {
   }
 }
 
+
+/** 부트가 dev showcase 팩토리를 주입한다. 미설정이면 showcase 경로가 없다. */
+export type DevProjectFactory = () => Project | null;
+let devProjectFactory: DevProjectFactory | null = null;
+export function setDevProjectFactory(factory: DevProjectFactory | null): void {
+  devProjectFactory = factory;
+}
 class ProjectStore {
   private current: Project;
   private listeners = new Set<Listener>();
@@ -150,6 +156,7 @@ class ProjectStore {
    */
   private readOnlyProjectSnapshot: Project | null = null;
 
+
   constructor() {
     this.current = createBlankProject();
     this.boundOnlineHandler = () => this.onNetworkRestored();
@@ -164,7 +171,7 @@ class ProjectStore {
 
   async load(): Promise<Project> {
     try {
-      const devShowcaseProject = createDevShowcaseProjectForLocation();
+      const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
         this.adoptProject(loadDevProjectOverride() ?? devShowcaseProject, { restoreVault: true });
         this.remotePersistenceEnabled = false;

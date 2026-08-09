@@ -3,7 +3,7 @@ import type { GameMap } from "../types";
 import { SAND_TILE } from "./chipsetMapping";
 import { DEFAULT_TILE_SIZE, TILE } from "./constants";
 import { dbHouseVariantDoorBottomOffset, stampDbHouseVariant, type DbHouseShapeVariant } from "./dbExtractedHouseVariants";
-import type { SmallHouseMaterial, TilePoint } from "./dbExtractedHouseTemplate";
+import type { SmallHouseMaterial, TilePoint } from "@/project/defaults/contentBuilderTypes";
 import type { RoadRect } from "./roadAutotile";
 import { addTownArchitectureCityNpcs } from "./townArchitectureCityNpcs";
 import { clearUpperTilesOnTownPath, paintTownPathNetwork, shapeAllTownPaths } from "./townPathAutotile";

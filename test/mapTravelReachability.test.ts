@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { canMove } from "@/project/collision";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
-import { createSkyStairProject, SKY_MAP, SKY_SWITCH } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP, SKY_SWITCH } from "@/editor/content/skyStairGame";
 import {
   canTravelBetweenMaps,
   canTravelBetweenTilesets,

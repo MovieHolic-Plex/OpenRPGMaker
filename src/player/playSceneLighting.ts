@@ -1,22 +1,24 @@
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
-import { followerPositions } from "@/player/followers";
+import { followerPositions } from "@/project/followers";
 import {
   advanceLightingAmbientTransition,
-  drawLightingMask,
   ensureLightingState,
   LIGHTING_FIXED_STEP_MS,
-  lightingGradientParams,
-  lightingMaskSignature,
   normalizeLightingState,
   setSessionLighting,
   type LightTilePosition,
+} from "@/project/lightingRules";
+import {
+  drawLightingMask,
+  lightingGradientParams,
+  lightingMaskSignature,
 } from "@/player/lighting";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { LightSource, LightSourceAnchor } from "@/project/types";
 import { store } from "@/project/store";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
 const LIGHTING_MASK_TEXTURE_KEY = "__rpg_zzu_lighting_mask";
 

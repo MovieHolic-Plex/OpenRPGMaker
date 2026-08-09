@@ -1,4 +1,4 @@
-import { computeSwingDamage } from "@/action/combatMath";
+import { computeSwingDamage } from "@/battle/action/combatMath";
 import type { EnemyActionAttack } from "@/project/types";
 
 export interface ActionSimPlayer {

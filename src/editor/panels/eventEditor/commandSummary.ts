@@ -1,5 +1,5 @@
 import { formatWeightedBranchSummary } from "./weightedBranchTable";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";

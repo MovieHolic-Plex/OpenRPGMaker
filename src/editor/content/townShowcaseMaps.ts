@@ -1,6 +1,6 @@
 import { genId } from "@/util/id";
-import type { GameMap } from "../types";
-import { DEFAULT_TILE_SIZE, TILE } from "./constants";
+import type { GameMap } from "@/project/types";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import {
   stampTownCityPlot,
   stampTownHouseStyle,
@@ -8,17 +8,17 @@ import {
   townHouseShowcaseName,
   type TownCityPlotStyle,
   type TownHouseShowcaseStyle,
-} from "./townHousePatterns";
-import { clearUpperTilesOnTownPath, paintTownPathNetwork, shapeAllTownPaths } from "./townPathAutotile";
-export { createTownArchitectureCityMap } from "./townArchitectureCityMap";
-export { createTownArchitectureTestMap } from "./townArchitectureTestMap";
+} from "@/project/defaults/townHousePatterns";
+import { clearUpperTilesOnTownPath, paintTownPathNetwork, shapeAllTownPaths } from "@/project/defaults/townPathAutotile";
+export { createTownArchitectureCityMap } from "@/project/defaults/townArchitectureCityMap";
+export { createTownArchitectureTestMap } from "@/project/defaults/townArchitectureTestMap";
 export {
   createDbExtractedHouseTemplateMap,
   createSmallHouseCityMap,
   createSmallHouseVariantMap,
   createSmallHouseVariantMaps,
   type SmallHouseVariantIndex,
-} from "./dbExtractedHouseTemplate";
+} from "@/editor/content/dbExtractedHouseTemplate";
 
 const TOWN_HOUSE_SHOWCASE_SIZE = 16;
 const TOWN_CITY_SIZE = 100;

@@ -6,8 +6,8 @@ import {
   type PictureState,
   type PlaySession,
 } from "@/project/session";
-import { normalizeItemTransitionState } from "@/player/itemTransitions";
-import { syncMonsterPartyFollowers } from "@/player/followers";
+import { normalizeItemTransitionState } from "@/project/itemTransitions";
+import { syncMonsterPartyFollowers } from "@/project/followers";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { normalizeGameTime } from "@/project/gameTime";
@@ -43,7 +43,7 @@ import {
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
-import { normalizeLightingState } from "@/player/lighting";
+import { normalizeLightingState } from "@/project/lightingRules";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 export {
   createSystemShellState,

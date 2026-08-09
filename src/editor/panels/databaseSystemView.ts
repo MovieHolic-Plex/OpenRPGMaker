@@ -168,6 +168,12 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
           else delete draft.system.monsterCollection;
         });
       }),
+      checkboxField("몬스터 파티 전투", "db-field-system-monster-battle-party", project.system.monsterBattleParty === true, (checked) => {
+        updateSystem((draft) => {
+          if (checked) draft.system.monsterBattleParty = true;
+          else delete draft.system.monsterBattleParty;
+        });
+      }),
       checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
         updateSystem((draft) => {
           if (checked) draft.system.giftSystem = true;
@@ -195,6 +201,7 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
         },
       ),
     ]),
+    rm2k3Fieldset("옵트인 시스템", optInSystemFields(project, rerender)),
     timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender),
     typeChartFieldset(project.system.typeChart, rerender),
     rm2k3Fieldset("게임 시작화면", [
@@ -222,6 +229,111 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
     ]),
   );
   host.append(el("h3", { text: "시스템" }), form);
+}
+
+/**
+ * 옵트인 시스템 토글 + 배열 개수 표시. 편집이 아닌 "켰는데 비어 있다"를 보이게 하는 것이 목적.
+ * 배열 편집은 각자의 전용 DB 탭/도구가 담당한다.
+ */
+function optInSystemFields(project: Project, rerender: () => void): readonly HTMLElement[] {
+  const { system } = project;
+  const fields: HTMLElement[] = [
+    checkboxField("생활 스킬 레벨링", "db-field-system-skill-system", system.skillSystem?.enabled === true, (checked) => {
+      updateSystem((draft) => {
+        draft.system.skillSystem = { enabled: checked };
+      });
+    }),
+    checkboxField("액션 전투", "db-field-system-action-combat", system.actionCombat?.enabled === true, (checked) => {
+      updateSystem((draft) => {
+        if (checked) {
+          draft.system.actionCombat = {
+            enabled: true,
+            ...(draft.system.actionCombat ?? {}),
+          };
+        } else {
+          if (draft.system.actionCombat) draft.system.actionCombat.enabled = false;
+          else draft.system.actionCombat = { enabled: false };
+        }
+      });
+    }),
+  ];
+
+  // 액션 전투 상세 필드 (활성일 때만)
+  if (system.actionCombat?.enabled === true) {
+    fields.push(
+      numberField("피격 무적(ms)", "db-field-system-action-combat-iframes", system.actionCombat.playerIframesMs ?? 800, (value) => {
+        updateSystem((draft) => {
+          draft.system.actionCombat ??= { enabled: true };
+          draft.system.actionCombat.playerIframesMs = value;
+        });
+      }),
+      numberField("스윙 쿨다운(ms)", "db-field-system-action-combat-swing-cooldown", system.actionCombat.swingCooldownMs ?? 350, (value) => {
+        updateSystem((draft) => {
+          draft.system.actionCombat ??= { enabled: true };
+          draft.system.actionCombat.swingCooldownMs = value;
+        });
+      }),
+      numberField("스윙 데미지 가산", "db-field-system-action-combat-swing-bonus", system.actionCombat.swingDamageBonus ?? 0, (value) => {
+        updateSystem((draft) => {
+          draft.system.actionCombat ??= { enabled: true };
+          draft.system.actionCombat.swingDamageBonus = value;
+        });
+      }),
+    );
+  }
+
+  // 몬스터 돌봄 number fields
+  if (system.monsterCare) {
+    fields.push(
+      numberField("돌봄 걸음/tick", "db-field-system-monster-care-steps", system.monsterCare.stepsPerTick ?? 50, (value) => {
+        updateSystem((draft) => {
+          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
+          draft.system.monsterCare.stepsPerTick = value;
+        });
+      }),
+      numberField("산책 호감도", "db-field-system-monster-care-walk-friendship", system.monsterCare.walkFriendship ?? 1, (value) => {
+        updateSystem((draft) => {
+          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
+          draft.system.monsterCare.walkFriendship = value;
+        });
+      }),
+      numberField("산책 경험치", "db-field-system-monster-care-walk-exp", system.monsterCare.walkExp ?? 1, (value) => {
+        updateSystem((draft) => {
+          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
+          draft.system.monsterCare.walkExp = value;
+        });
+      }),
+      numberField("일일 돌봄 상한", "db-field-system-monster-care-daily-cap", system.monsterCare.dailyCareCap ?? 30, (value) => {
+        updateSystem((draft) => {
+          draft.system.monsterCare ??= { stepsPerTick: 50, walkFriendship: 1, walkExp: 1, dailyCareCap: 30 };
+          draft.system.monsterCare.dailyCareCap = value;
+        });
+      }),
+    );
+  }
+
+  // 배열 개수 읽기 전용 표시
+  const toolActionsCount = (system.toolActions ?? []).length;
+  const craftRecipesCount = (system.craftRecipes ?? []).length;
+  const itemUpgradesCount = (system.itemUpgrades ?? []).length;
+  const sellPricesCount = (system.sellPrices ?? []).length;
+  fields.push(
+    el("div", { class: "db-field db-field-readonly", children: [
+      el("span", { text: `도구 규칙: ${toolActionsCount}개` }),
+    ] }),
+    el("div", { class: "db-field db-field-readonly", children: [
+      el("span", { text: `제작 레시피: ${craftRecipesCount}개` }),
+    ] }),
+    el("div", { class: "db-field db-field-readonly", children: [
+      el("span", { text: `업그레이드 규칙: ${itemUpgradesCount}개` }),
+    ] }),
+    el("div", { class: "db-field db-field-readonly", children: [
+      el("span", { text: `판매 가격 재정의: ${sellPricesCount}개` }),
+    ] }),
+  );
+
+  void rerender;
+  return fields;
 }
 
 function startPartySlots(

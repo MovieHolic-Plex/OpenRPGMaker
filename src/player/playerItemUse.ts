@@ -2,7 +2,8 @@ import { applyCareItem } from "@/project/monsterCare";
 import { learnSkill, type PlaySession } from "@/project/session";
 import { effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorParameterKey, ItemRecord, Project, SkillId } from "@/project/types";
-import { transitionItemState } from "@/player/itemTransitions";
+import { transitionItemState } from "@/project/itemTransitions";
+import { isItemActorEligible } from "@/project/itemEligibility";
 
 export type MenuItemUseResult =
   | { readonly kind: "used"; readonly message: string }
@@ -177,24 +178,6 @@ const SEED_PARAMETER_KEYS = ["attack", "defense", "mind", "agility"] as const sa
 
 function hasSeedBonus(item: ItemRecord): boolean {
   return SEED_PARAMETER_KEYS.some((key) => item.seedParameterBonuses[key] !== 0);
-}
-
-export function isItemActorEligible(
-  project: Project,
-  item: ItemRecord,
-  actorId: string | undefined,
-  effectiveClassId?: string
-): boolean {
-  if (!isActorUseFamily(item)) return true;
-  if (!actorId || !project.database.actors.some((actor) => actor.id === actorId)) return false;
-  if (item.usableActorIds.length > 0 && !item.usableActorIds.includes(actorId)) return false;
-  const classId = effectiveClassId ?? project.database.actors.find((actor) => actor.id === actorId)?.classId;
-  if (item.usableClassIds.length > 0 && (!classId || !item.usableClassIds.includes(classId))) return false;
-  return true;
-}
-
-function isActorUseFamily(item: ItemRecord): boolean {
-  return item.type === "medicine" || item.type === "book" || item.type === "seed";
 }
 
 function commitSuccessfulUse(project: Project, session: PlaySession, item: ItemRecord): void {

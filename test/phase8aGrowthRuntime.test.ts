@@ -7,7 +7,7 @@ import { createBlankProject } from "@/project/defaults";
 import { createInterpreter } from "@/player/interpreter";
 import { createSaveSnapshot, applySaveSnapshot, type SaveSnapshot } from "@/player/saveSlots";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
-import { canEquip } from "@/player/playerEquipmentRules";
+import { canEquip } from "@/project/equipmentRules";
 import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { runTool } from "@/editor/tools/toolRunner";
 import { changeActorClass, effectiveActorClassId, promoteActor } from "@/project/sessionClass";

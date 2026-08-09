@@ -1,3 +1,6 @@
+// Export player stub for @/project/store. Needed because store.ts pulls Supabase
+// client + dev showcase factory wiring that the exported player must not bundle.
+
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 

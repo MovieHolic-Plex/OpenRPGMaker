@@ -13,7 +13,7 @@ import { store } from "@/project/store";
 import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
-import { appendToTree, removeFromTree } from "@/editor/mapTreeActions";
+import { appendToTree, removeFromTree } from "@/project/mapTree";
 import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 export {

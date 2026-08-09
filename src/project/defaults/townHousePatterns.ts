@@ -1,6 +1,6 @@
 import type { GameMap } from "../types";
 import { stampDbHouseVariant, type DbHouseShapeVariant } from "./dbExtractedHouseVariants";
-import type { SmallHouseMaterial } from "./dbExtractedHouseTemplate";
+import type { SmallHouseMaterial } from "@/project/defaults/contentBuilderTypes";
 import { paintTownPathNetwork, offsetTownRect } from "./townPathAutotile";
 
 export type TownHouseShowcaseStyle = "l" | "courtyard" | "multi" | "road";

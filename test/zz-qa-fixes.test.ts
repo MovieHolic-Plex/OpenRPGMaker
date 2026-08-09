@@ -2,7 +2,7 @@
 // Adversarial unit checks for fixes 3/4/5 (temp QA file — delete after run).
 import { describe, expect, it } from "vitest";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
-import { battleEventCommandRuntimeSupport, m2CommandRuntimeClassification } from "@/editor/eventCommands/runtimeSupport";
+import { battleEventCommandRuntimeSupport, m2CommandRuntimeClassification } from "@/project/eventCommands/runtimeSupport";
 import type { EnemyRecord } from "@/project/types";
 
 function enemyWith(resourceId: string | undefined): EnemyRecord {

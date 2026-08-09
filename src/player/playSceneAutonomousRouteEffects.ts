@@ -4,7 +4,7 @@ import type {
   AutonomousNpcSceneContext,
   AutonomousNpcSprite,
 } from "@/player/playSceneAutonomousTypes";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
+import type { RuntimeEventView } from "@/project/runtimeEventState"
 import { setAudioState } from "@/project/session";
 import { store } from "@/project/store";
 

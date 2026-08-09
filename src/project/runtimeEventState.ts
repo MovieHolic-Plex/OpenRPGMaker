@@ -11,7 +11,7 @@ import type {
   Project,
   Trigger,
 } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 const DEFAULT_PAGE_MOVEMENT: EventPageMovement = {
   type: "fixed",

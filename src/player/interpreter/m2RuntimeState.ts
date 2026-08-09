@@ -1,4 +1,4 @@
-import type { M2RuntimeState, PlaySessionLike } from "@/player/types";
+import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export function ensureM2Runtime(session: PlaySessionLike): M2RuntimeState {
   session.m2Runtime ??= {

@@ -197,7 +197,7 @@ describe("event editor M2 command body", () => {
 
   it("routes Advanced Dialogue into the native text form (merged)", async () => {
     // Advanced Dialogue is now existingKind:text — generic m2 body is not used.
-    const { m2CommandById } = await import("@/editor/eventCommands/m2Catalog");
+    const { m2CommandById } = await import("@/project/eventCommands/m2Catalog");
     const entry = m2CommandById("m2-209-advanced-dialogue");
     expect(entry?.existingKind).toBe("text");
     expect(entry?.bodyStrategy).toBe("existing");

@@ -1,7 +1,7 @@
 import { clampLevel, parameterValueAtLevel } from "@/project/actorModel";
 import type { ActorId, ActorParameterKey, ClassId, ClassPromotion, ClassPromotionRequirement, Project, SkillId } from "@/project/types";
 import type { ActorVitals } from "@/project/sessionVitals";
-import { transitionItemState } from "@/player/itemTransitions";
+import { transitionItemState } from "@/project/itemTransitions";
 
 export interface ClassOverrideSession {
   classOverrides?: Record<string, string>;

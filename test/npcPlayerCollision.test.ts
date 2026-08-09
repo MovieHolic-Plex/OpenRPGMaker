@@ -6,7 +6,7 @@ import { movementScene, pageWith } from "./runtimeEventPageFixtures";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
-import { initialRuntimeEventPositions } from "@/player/runtimeEventState";
+import { initialRuntimeEventPositions } from "@/project/runtimeEventState"
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
 import type { EventPage } from "@/project/types";
 

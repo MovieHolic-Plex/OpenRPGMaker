@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { parseM2BattleCommand } from "@/battle/battleM2Commands";
 import { newCommand } from "@/editor/eventCommandFactory";
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import {
   M2_PERSISTED_BEHAVIOR_IDS,
   commandRuntimeSupport,
   m2CommandRuntimeClassification,
-} from "@/editor/eventCommands/runtimeSupport";
+} from "@/project/eventCommands/runtimeSupport";
 import type { Command, M2CommandFields } from "@/project/types";
 import type { ContractRunResult } from "./harness";
 import { runCommandContract } from "./harness";

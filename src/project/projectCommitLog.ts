@@ -2,7 +2,7 @@ import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentit
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
 import { recordProjectCommitToSupabase, type ProjectCommitReviewStatus } from "./supabaseProjectSync";
-import type { ChangeSummary } from "@/editor/tools/types";
+import type { ChangeSummary } from "@/project/types";
 import type { Project } from "./types";
 
 type CommitLogInput = {

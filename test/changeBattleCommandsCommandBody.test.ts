@@ -6,7 +6,7 @@ import type { Command } from "@/project/types";
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { startSession } from "@/project/session";
 import { battleCommandsForActor } from "@/battle/battleCommands";
 

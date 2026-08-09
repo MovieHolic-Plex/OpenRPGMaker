@@ -6,6 +6,8 @@ export type Season = (typeof SEASONS)[number];
 export const TIME_PHASES = ["morning", "day", "evening", "night"] as const;
 export type TimePhase = (typeof TIME_PHASES)[number];
 
+export type BattleResult = "victory" | "defeat" | "escape";
+
 export interface GameTime {
   readonly minute: number;
   readonly hour: number;

@@ -6,7 +6,7 @@ import {
   addFollowerToSession,
   removeFollowerFromSession,
   syncMonsterPartyFollowers,
-} from "@/player/followers";
+} from "@/project/followers";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import type { Project } from "@/project/types";
 

@@ -15,7 +15,7 @@ import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
-import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/project/defaults/dbExtractedHouseTemplate";
+import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { genId } from "@/util/id";
 import type { EncounterTableEntry, FieldSpawnDef, GameMap, PaletteSlotRole, Project, Rect, TilesetDef } from "@/project/types";
 import {

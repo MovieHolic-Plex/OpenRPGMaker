@@ -10,7 +10,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, GameEvent, Project } from "@/project/types";
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 

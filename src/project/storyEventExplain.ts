@@ -3,7 +3,7 @@ import { timePhaseFor } from "@/project/gameTime";
 import { evalCondition, getFriendship, getSwitch, getTimer, getVariable } from "@/project/session";
 import { storyFlagForTarget, targetShortLabel } from "@/project/storyFlags";
 import type { Condition, GameEvent, Project } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export type StoryEventSessionSource = "live-play-session" | "editor-default";
 

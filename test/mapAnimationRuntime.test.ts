@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import { resolveShowAnimationTargetTile } from "@/player/playSceneMapAnimations";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { createBlankProject } from "@/project/defaults";
 import type { Command } from "@/project/types";
 

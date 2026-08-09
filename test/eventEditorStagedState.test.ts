@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
 import { shopBody } from "@/editor/panels/eventEditor/commandBodyCommerce";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";

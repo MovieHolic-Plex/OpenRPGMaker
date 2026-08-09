@@ -5,7 +5,7 @@
 // - 런타임은 project.commonEvents 가 아니라 session.commonEvents 로 복사된 명령을 실행한다.
 // - 없는 id 와 재귀 한도는 [interpreter] warn 후 현재 프레임 다음 명령으로 진행한다.
 import { describe, expect, it } from "vitest";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { Command, Project } from "@/project/types";
 import { roundtripCommands, runCommandContract } from "./harness";
 

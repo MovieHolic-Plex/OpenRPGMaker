@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { simulateActionCombat } from "@/action/simulate";
+import { simulateActionCombat } from "@/battle/action/simulate";
 
 describe("simulateActionCombat", () => {
   const strongPlayer = { maxHp: 200, attack: 40, swingCooldownMs: 350 };

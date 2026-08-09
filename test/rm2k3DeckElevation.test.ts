@@ -7,7 +7,7 @@ import {
   RM2K3_WOOD_FLOOR_PASSABILITY,
   rm2k3WoodFloorPassFlag,
 } from "@/project/defaults/chipsetMapping";
-import { buildVillageShoppingStreetProject, VILLAGE_SHOPPING_STREET_MAP_ID } from "@/project/defaults/villageShoppingStreetBuild";
+import { buildVillageShoppingStreetProject, VILLAGE_SHOPPING_STREET_MAP_ID } from "@/editor/content/villageShoppingStreetBuild";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 
 describe("RM2k3 wood floor edge passability", () => {

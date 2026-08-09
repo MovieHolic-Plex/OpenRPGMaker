@@ -3,7 +3,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { canMove } from "@/project/collision";
 import { createSnowMountain60Project } from "@/project/defaults";
-import { createDevShowcaseProjectForLocation } from "@/project/devShowcaseProjects";
+import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
 import { SNOW_MOUNTAIN_HEIGHT, SNOW_MOUNTAIN_START, SNOW_MOUNTAIN_WIDTH } from "@/project/defaults/snowMountain60";
 import { projectLint } from "@/project/lint/projectLint";
 

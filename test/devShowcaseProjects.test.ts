@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createDevShowcaseProjectForLocation } from "@/project/devShowcaseProjects";
+import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
 
 describe("local dev project URL overrides", () => {
   afterEach(() => {

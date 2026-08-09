@@ -17,7 +17,7 @@ import type { StepResult } from "@/player/interpreter";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, GameEvent, Project } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 /** 계약 테스트용 이벤트 id. setSelfSwitch 등 이벤트 컨텍스트 기준. */
 export const CONTRACT_EVENT_ID = "ev_contract";

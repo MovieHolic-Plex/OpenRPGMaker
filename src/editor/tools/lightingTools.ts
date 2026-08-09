@@ -1,5 +1,5 @@
 import { genId } from "@/util/id";
-import { normalizeLightingState, normalizeLightSource } from "@/player/lighting";
+import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
 import type { Command, EventPage, GameEvent, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";

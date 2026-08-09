@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";

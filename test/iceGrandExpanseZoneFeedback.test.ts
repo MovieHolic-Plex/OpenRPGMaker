@@ -15,7 +15,7 @@ import {
   type ZoneFeedbackScene,
 } from "@/player/playSceneZoneFeedback";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import type { M2UiCommandState } from "@/player/types";
+import type { M2UiCommandState } from "@/project/sessionRuntimeTypes"
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { startSession, type PlaySession } from "@/project/session";
 import type { Command, EventPage } from "@/project/types";

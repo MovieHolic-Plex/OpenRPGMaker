@@ -5,7 +5,7 @@ import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
 import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
-import { transitionItemStates } from "@/player/itemTransitions";
+import { transitionItemStates } from "@/project/itemTransitions";
 
 export type BattleRewardsOutcome = {
   readonly result: BattleResult;

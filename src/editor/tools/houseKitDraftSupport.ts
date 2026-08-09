@@ -1,4 +1,4 @@
-import { appendToTree } from "@/editor/mapTreeActions";
+import { appendToTree } from "@/project/mapTree";
 import { isPassable, tilePassability } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";

@@ -8,7 +8,7 @@ import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPatt
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
-import { logicalEquipmentIds } from "@/player/playerEquipmentRules";
+import { logicalEquipmentIds } from "@/project/equipmentRules";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
 const CHARGE_FLOOR = 0.02;

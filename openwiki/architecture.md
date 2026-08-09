@@ -25,7 +25,7 @@
 
 - Web player export boundary:
   - `player.html` and `src/player/exportEntry.ts` are the Vite player-only entry. They fetch sibling `project.json`, set the exported project store shim, configure the export save namespace, and start the normal player shell without booting the editor.
-  - `vite.player.config.ts` builds `dist/export-player` with exact aliases for editor-only boundaries such as `@/app/mode`, `@/project/store`, `@/project/io`, `@/editor/tilesetImage`, `@/editor/cutscene`, and `@/editor/eventCommands/m2Catalog`.
+  - `vite.player.config.ts` builds `dist/export-player` with exact aliases for editor-only boundaries such as `@/app/mode`, `@/project/store`, `@/project/io`, `@/editor/tilesetImage`, `@/editor/cutscene`, and `@/project/eventCommands/m2Catalog`.
   - Player shims under `src/player/export*Shim.ts` must stay minimal and runtime-facing. Do not import AI, Supabase, editor panels, or generated-asset provenance/validation JSON into the export bundle.
   - `scripts/lib/playerArtifactContract.mjs` is the base artifact API facade. Its bounded seams are `playerContractCore.mjs` (paths/digests/errors), `playerArtifactInventory.mjs` (filesystem inventory/secret scan), and `playerManifestAtomicWriter.mjs` (value-free typed atomic replacement). `playerDeploymentManifest.mjs` is the deployment writer facade over `playerDeploymentContract.mjs` and `playerViteClosure.mjs`.
   - `src/player/runtimeAssets.json` is the single runtime-public-asset inventory. Both Node build validation and browser export validate its schema, normalized ordinal ordering, and case-insensitive collision freedom.
@@ -45,6 +45,15 @@
   - `src/battle/runtime.ts` is the battle state machine and should be treated as the core battle boundary.
   - It builds battlers and events from project data, advances turns, resolves commands/results, and returns battle snapshots/results.
   - Keep scene/UI code in `src/player/playSceneBattle.ts` and related player modules; keep battle rules and resolution logic inside `src/battle`.
+
+- Layer dependency discipline: `app → {editor, player} → battle → project → {assets, util}`. No reverse imports.
+  - `project` must not import from `editor`, `player`, or `ai`. Exception: `src/project/playerDeploymentPaths.ts` imports `runtimeAssets.json` from player (build-time data, not code).
+  - `battle` must not import from `player`.
+  - AI dependencies in `project` (editorIdentity, tileMetadataDb) use injectable setters wired at boot (`src/app/mode.ts`), not direct imports.
+  - Event command catalog (`m2Catalog`, `runtimeSupport`) lives in `src/project/eventCommands/` — it describes what commands are, not how the editor renders them.
+  - Content builders (showcase maps, village generation) live in `src/editor/content/`; `project/defaults/` re-exports them through a barrel for backward compatibility.
+  - Action combat math modules live in `src/battle/action/` (moved from `src/action/`).
+  - Genre presets (`src/project/genrePresets.ts`) apply `system.*` toggles at project creation; the welcome screen maps its preset IDs to genre presets via `welcomePresetToGenrePreset`.
 
 - Source paths:
   - `src/main.ts`

@@ -15,7 +15,7 @@ import {
 import { explainEvent } from "@/project/storyEventExplain";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { Project, StoryFlagDef, StoryFlagKind, SwitchDef, VariableDef } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type DeclareStoryFlagAction = "declare" | "rename" | "retire";

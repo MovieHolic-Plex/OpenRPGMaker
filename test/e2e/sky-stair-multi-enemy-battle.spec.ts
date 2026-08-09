@@ -7,7 +7,7 @@
 // DOM 에서 직접 센다.
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { createSkyStairProject, SKY_MAP, SKY_TROOP } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP, SKY_TROOP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

@@ -11,7 +11,7 @@ const HARD_CEILING = 1000;
 const WARN_THRESHOLD = 500;
 
 const ALLOWLIST = new Set([
-  "src/project/defaults/largeRiverMarketVillageBuild.ts",
+  "src/editor/content/largeRiverMarketVillageBuild.ts",
   "src/editor/interiorRoomPipeline.ts",
   "src/editor/panels/aiChatPanel.ts",
   "src/ai/assistantSession.ts",

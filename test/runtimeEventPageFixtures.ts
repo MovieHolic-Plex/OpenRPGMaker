@@ -5,8 +5,8 @@ import type { EventPage, GameEvent } from "@/project/types";
 import { renderTiles } from "@/player/playSceneMapRuntime";
 import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
-import { initialRuntimeEventPositions } from "@/player/runtimeEventState";
-import type { PlaySessionLike } from "@/player/types";
+import { initialRuntimeEventPositions } from "@/project/runtimeEventState"
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export type MockTileImage = {
   readonly kind: "tile" | "sprite";

@@ -1,4 +1,4 @@
-import { runtimeSupportBadge, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { runtimeSupportBadge, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { el } from "@/util/dom";
 
 export function renderRuntimeSupportBadge(support: CommandRuntimeSupport, testId: string): HTMLElement | null {

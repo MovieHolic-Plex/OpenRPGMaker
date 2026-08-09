@@ -3,7 +3,7 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
-import type { CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import type { CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import type { CommandListActions } from "./eventEditor/types";

@@ -5,9 +5,8 @@ import {
   SMALL_HOUSE_01_HOUSE_KIT_PLAN,
   stampTerrainTemplateHouse,
   terrainTemplateDoorBottomOffset,
-  type SmallHouseMaterial,
-  type TilePoint,
-} from "./dbExtractedHouseTemplate";
+} from "@/editor/content/dbExtractedHouseTemplate";
+import type { SmallHouseMaterial, TilePoint } from "@/project/defaults/contentBuilderTypes";
 import { paintTownPathNetwork } from "./townPathAutotile";
 
 type TileLayerName = "lower" | "upper";

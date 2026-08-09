@@ -4,25 +4,22 @@
 // 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
-import type {
-  M2RuntimeState,
-  PlaySessionLike,
-  RuntimeCameraSessionState,
-  RuntimeEventLocation,
-  RuntimeNpcScheduleState,
-  RuntimeNpcTravelState,
-  RuntimeRemovedEventIds,
-  RuntimeSpawnedEventState,
-} from "@/player/types";
-import type { BattleResult } from "@/battle/runtime";
+import type { M2RuntimeState,
+PlaySessionLike,
+RuntimeCameraSessionState,
+RuntimeEventLocation,
+RuntimeNpcScheduleState,
+RuntimeNpcTravelState,
+RuntimeRemovedEventIds,
+RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { compareVariableValue } from "@/project/conditionEvaluation";
-import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type GameTime, type Season } from "@/project/gameTime";
+import { conditionMatchesSeason, conditionMatchesTimePhase, initialGameTime, type BattleResult, type GameTime, type Season } from "@/project/gameTime";
 import { resolveSocialKey, type SocialHost } from "@/project/socialKey";
 import { initialActorVitals, syncActorVitals } from "@/project/sessionVitals";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
-import { normalizeLightingState } from "@/player/lighting";
-import { transitionItemState } from "@/player/itemTransitions";
+import { normalizeLightingState } from "@/project/lightingRules";
+import { transitionItemState } from "@/project/itemTransitions";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 

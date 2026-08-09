@@ -4,7 +4,7 @@ import { projectWithoutEventDrafts } from "./eventDrafts";
 import { supabaseProjectConfig, type SupabaseProjectConfig } from "./supabaseProjectConfig";
 import { sha256HexText } from "../util/sha256";
 import { randomUuid } from "../util/id";
-import type { ChangeSummary } from "@/editor/tools/types";
+import type { ChangeSummary } from "@/project/types";
 import type { EditorIdentity } from "./editorIdentity";
 import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 

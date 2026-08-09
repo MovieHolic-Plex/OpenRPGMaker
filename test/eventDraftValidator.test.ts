@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDefaultM2Fields, M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { createDefaultM2Fields, M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, Condition, EventPage, GameEvent } from "@/project/types";

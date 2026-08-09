@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import {
   M2_PERSISTED_BEHAVIOR_IDS,
   M2_PARTIAL_EFFECT_DECLARATIONS,
@@ -7,7 +7,7 @@ import {
   m2CommandRuntimeClassification,
   m2CommandRuntimeSupport,
   runtimeSupportBadge,
-} from "@/editor/eventCommands/runtimeSupport";
+} from "@/project/eventCommands/runtimeSupport";
 import { createBlankProject } from "@/project/defaults";
 import { projectLint } from "@/project/lint/projectLint";
 

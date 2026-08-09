@@ -22,7 +22,7 @@ import { runTool } from "../src/editor/tools/toolRunner.ts";
 import { defaultDatabase } from "../src/project/defaults/defaultDatabase.ts";
 import { ensureTilesetHarnesses } from "../src/project/tilesetHarness.ts";
 import { saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
-import { buildLargeRiverMarketVillageProject } from "../src/project/defaults/largeRiverMarketVillageBuild.ts";
+import { buildLargeRiverMarketVillageProject } from "../src/editor/content/largeRiverMarketVillageBuild.ts";
 import {
   buildDungeonThemeMap,
   DUNGEON_TILESET_ID,

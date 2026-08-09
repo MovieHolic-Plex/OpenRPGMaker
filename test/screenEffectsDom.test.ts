@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { FakeElement, installFakeDom, findByTestId } from "./fakeDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 // syncScreenEffects 는 dialogueHost(scene) → host 에 풀스크린 DOM 오버레이를 추가/제거한다.
 // FakeElement 의 querySelector 는 속성 선택자([data-testid=...])를 지원하지 않으므로,

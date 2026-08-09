@@ -1,7 +1,7 @@
 import { canMove } from "@/project/collision";
 import type { Dir, GameMap, MapConnection, MapId, MoveCommand, Project } from "@/project/types";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
-import type { PlaySessionLike } from "@/player/types";
+import type { RuntimeEventView } from "@/project/runtimeEventState"
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export type LivingRoute = {
   readonly moves: MoveCommand[];

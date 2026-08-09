@@ -3,7 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
 import { store } from "@/project/store";
 import { renderCoreCommandBody } from "@/editor/panels/eventEditor/commandBodyCore";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { newCommand } from "@/editor/eventCommandFactory";
 import { installFakeDom, renderWithFakeDom, findByTestId } from "./fakeDom";
 import type { CommandEditContext } from "@/editor/panels/eventEditor/types";

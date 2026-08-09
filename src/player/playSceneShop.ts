@@ -1,5 +1,5 @@
 import { changeGold, changeItem } from "@/project/session";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { resolveShopMerchantGold } from "@/project/shopStock";

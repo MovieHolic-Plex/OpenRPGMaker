@@ -1,5 +1,5 @@
 import type { Command } from "@/project/types";
-import { createDefaultM2Fields, M2_COMMAND_CATALOG, m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { createDefaultM2Fields, M2_COMMAND_CATALOG, m2CommandById } from "@/project/eventCommands/m2Catalog";
 
 export function newCommand(kind: Command["kind"]): Command {
   switch (kind) {

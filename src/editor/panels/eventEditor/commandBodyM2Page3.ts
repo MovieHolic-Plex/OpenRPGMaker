@@ -1,7 +1,7 @@
 // 맵·연출(피커 3페이지) M2 명령 전용 리치 폼.
 // actor-m2 패턴(intent + 2열 layout + 미리보기)을 복제해 결합도를 낮춘다.
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
 import type { Command, M2CommandValue } from "@/project/types";
 import { el } from "@/util/dom";

@@ -102,4 +102,4 @@ export {
   SKY_TITLE,
   SKY_TROOP,
   SKY_VARIABLE,
-} from "./defaults/skyStairGame";
+} from "@/editor/content/skyStairGame";

@@ -1,7 +1,7 @@
 // test/commandContracts/evolveMonster.contract.test.ts
 // G1 계약: evolveMonster (Phase 9b 몬스터 진화 커맨드).
 import { describe, expect, it } from "vitest";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { MonsterInstance } from "@/project/session";
 import type { Command, Project } from "@/project/types";
 import { roundtripCommands, runCommandContract } from "./harness";

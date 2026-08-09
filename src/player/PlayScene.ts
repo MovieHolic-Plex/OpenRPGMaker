@@ -14,7 +14,7 @@ import { resumeAudioState, stopAllAudio } from "@/player/audio";
 import { startMapBgm } from "@/player/mapBgm";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
 import type { GameMap, MapId, MoveCommand, TilesetDef, Trigger } from "@/project/types";
-import type { RuntimeEventPositions, RuntimeEventView } from "@/player/runtimeEventState";
+import type { RuntimeEventPositions, RuntimeEventView } from "@/project/runtimeEventState"
 import {
   type AutonomousMover,
   type ParallelProcess,
@@ -63,7 +63,7 @@ import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
-import type { LightingAmbientTransition } from "@/player/lighting";
+import type { LightingAmbientTransition } from "@/project/lightingRules";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";

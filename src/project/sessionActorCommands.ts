@@ -1,8 +1,8 @@
 import type { ActorAmountOp, ActorId, Command, VariableOperand } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { Project } from "@/project/types";
 import { effectiveActorClassId } from "@/project/sessionClass";
-import { transitionActorEquipment, type EquipmentTransitionResult } from "@/player/playerEquipmentRules";
+import { transitionActorEquipment, type EquipmentTransitionResult } from "@/project/equipmentRules";
 
 type ActorVitalKind = "hp" | "mp";
 type ActorVitalCommand = Extract<Command, { kind: "changeActorHp" | "changeActorMp" }>;

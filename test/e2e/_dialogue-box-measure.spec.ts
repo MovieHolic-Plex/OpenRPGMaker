@@ -3,7 +3,7 @@
 // 추측으로 CSS 를 만지지 않기 위한 계측기다.
 import { expect, test } from "@playwright/test";
 import { writeFileSync } from "node:fs";
-import { createSkyStairProject, SKY_MAP } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

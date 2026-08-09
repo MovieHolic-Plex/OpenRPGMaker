@@ -1,5 +1,5 @@
 import type { PlaySession } from "@/project/session";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
+import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
   createZoneFeedbackModel,

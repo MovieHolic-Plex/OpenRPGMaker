@@ -21,9 +21,9 @@ import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
-import { followerPositions, recordFollowerPlayerStep, resetFollowerTrailNearPlayer } from "@/player/followers";
+import { followerPositions, recordFollowerPlayerStep, resetFollowerTrailNearPlayer } from "@/project/followers";
 import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
-import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/player/types";
+import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import {
   advanceLightingAmbientTransition,
   applyMapDefaultLighting,
@@ -33,16 +33,14 @@ import {
   setSessionLighting,
   type LightingAmbientTransition,
   type LightTilePosition,
-} from "@/player/lighting";
+} from "@/project/lightingRules";
 import type { LightSourceAnchor } from "@/project/types";
-import {
-  findBlockingRuntimeEventAtInMap,
-  findRuntimeEventAtInMap,
-  initialRuntimeEventPositions,
-  runtimeEventViewsForMap,
-  type RuntimeEventPositions,
-  type RuntimeEventView,
-} from "@/player/runtimeEventState";
+import { findBlockingRuntimeEventAtInMap,
+findRuntimeEventAtInMap,
+initialRuntimeEventPositions,
+runtimeEventViewsForMap,
+type RuntimeEventPositions,
+type RuntimeEventView, } from "@/project/runtimeEventState"
 import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";

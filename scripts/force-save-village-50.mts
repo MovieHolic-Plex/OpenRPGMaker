@@ -8,7 +8,7 @@ import {
   buildLargeRiverMarketVillageProject,
   VILLAGE_50_MAP_ID,
   VILLAGE_50_NAME,
-} from "../src/project/defaults/largeRiverMarketVillageBuild.ts";
+} from "../src/editor/content/largeRiverMarketVillageBuild.ts";
 import { LargeVillageBuildLog } from "../src/project/defaults/largeVillageBuildLog.ts";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";
 

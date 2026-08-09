@@ -30,7 +30,7 @@ import {
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import { sameInspectorPath, selectedCommandPath, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { commandRuntimeSupport, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";

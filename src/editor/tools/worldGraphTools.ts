@@ -3,7 +3,7 @@
 import { passableLanding, upsertEventIntoMap } from "./eventTools";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import { appendToTree } from "@/editor/mapTreeActions";
+import { appendToTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { normalizeWorldGraph } from "@/project/worldGraph";

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import { loadProjectFromSupabase } from "../src/project/supabaseProjectSync.ts";
 import { resolveAssetResourceUrl } from "../src/assets/generatedAssetResourceResolver.ts";
 import { canMove, getTileset, tileAt, tilePassability } from "../src/project/collision.ts";
-import { VILLAGE_SHOPPING_STREET_MAP_ID } from "../src/project/defaults/villageShoppingStreetBuild.ts";
+import { VILLAGE_SHOPPING_STREET_MAP_ID } from "../src/editor/content/villageShoppingStreetBuild.ts";
 
 function loadEnv(): Record<string, string> {
   const env: Record<string, string> = {};

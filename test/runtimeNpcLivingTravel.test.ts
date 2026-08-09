@@ -8,11 +8,9 @@ import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
-import {
-  findBlockingRuntimeEventAtInMap,
-  findRuntimeEventAtInMap,
-  initialRuntimeEventPositions,
-} from "@/player/runtimeEventState";
+import { findBlockingRuntimeEventAtInMap,
+findRuntimeEventAtInMap,
+initialRuntimeEventPositions, } from "@/project/runtimeEventState"
 import { event, mockSprite, pageWith } from "./runtimeEventPageFixtures";
 
 describe("runtime NPC living map travel", () => {

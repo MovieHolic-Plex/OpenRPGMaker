@@ -6,7 +6,7 @@ import type { Dir, GameEvent, GameMap, MapId, MoveCommand, Project } from "@/pro
 import { findChasePath, type ChasePoint } from "@/player/chaseAi";
 import { nearestPassableTile } from "@/player/playSceneMapCommands";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
-import type { RuntimeEventLocation } from "@/player/types";
+import type { RuntimeEventLocation } from "@/project/sessionRuntimeTypes"
 
 type NpcScheduleSceneContext = Pick<
   PlaySceneContext,

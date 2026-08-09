@@ -15,7 +15,7 @@ import {
   type WeatherParams,
   type WeatherTransition,
 } from "@/player/weather/weatherModel";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 const WEATHER_DEPTH = 800_000;
 const WEATHER_FIXED_STEP_MS = 16;

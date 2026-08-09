@@ -10,7 +10,7 @@ import { startSession } from "@/project/session";
 import { createBlankProject } from "@/project/defaults";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import type { Command, Project } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import {
   appendChar,
   charAt,

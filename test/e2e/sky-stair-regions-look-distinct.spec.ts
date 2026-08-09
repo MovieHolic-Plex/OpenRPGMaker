@@ -8,7 +8,7 @@
 // 세 가지를 실제 스크린샷에서 계산한다.
 import { PNG } from "pngjs"; // 선언은 test/pngjs.d.ts 에 좁게 두었다.
 import { expect, test } from "@playwright/test";
-import { createSkyStairProject, SKY_MAP } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

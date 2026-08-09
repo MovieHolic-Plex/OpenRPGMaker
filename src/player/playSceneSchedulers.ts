@@ -14,7 +14,7 @@ import { assertNever } from "@/player/playSceneTypes";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import { applyTimerStep, updateRuntimeTimers } from "@/player/playSceneTimers";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { applyCameraControl } from "@/player/playSceneCamera";
 import { releaseCutsceneControlForOwner } from "@/player/cutsceneControl";
 import { applyLightingStep } from "@/player/playSceneLighting";

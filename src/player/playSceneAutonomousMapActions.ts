@@ -6,7 +6,7 @@ import type { AutonomousMover } from "@/player/playSceneTypes";
 import type { AutonomousNpcSceneContext, MovementDelta } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha } from "@/player/playSceneAutonomousSprites";
 import type { NpcCommandTarget, NpcRouteCommandContext } from "@/player/playSceneAutonomousCommands";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import type { Project } from "@/project/types/project";
 
 export type NpcMoveCollision = {

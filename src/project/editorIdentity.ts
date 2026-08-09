@@ -1,5 +1,12 @@
-import { loadAiConfig } from "@/ai/llmClient";
 import { randomUuid } from "@/util/id";
+
+type AiConfigProvider = () => { readonly model: string };
+let aiConfigProvider: AiConfigProvider | null = null;
+
+/** 부트가 AI 설정 로더를 주입한다. 미설정이면 agent 이름에 undefined 를 쓴다. */
+export function setAiConfigProvider(provider: AiConfigProvider | null): void {
+  aiConfigProvider = provider;
+}
 
 export type EditorIdentity = {
   id: string;
@@ -19,12 +26,12 @@ export function currentHumanEditorIdentity(): EditorIdentity {
   };
 }
 
-export function currentAgentEditorIdentity(agentName = loadAiConfig().model): EditorIdentity {
+export function currentAgentEditorIdentity(agentName = aiConfigProvider?.().model): EditorIdentity {
   return {
     id: editorSessionId(),
     label: ownerLabel(),
     kind: "agent",
-    agentName: agentName.trim() || undefined,
+    agentName: agentName?.trim() || undefined,
   };
 }
 

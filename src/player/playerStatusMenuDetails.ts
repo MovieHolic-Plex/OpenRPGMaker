@@ -1,5 +1,5 @@
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
-import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/player/playerEquipmentRules";
+import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName } from "@/project/sessionActorCommands";
 import { normalizeActorRecord, parameterValueAtLevel } from "@/project/actorModel";
 import type { StatusMenuStatDelta } from "@/player/playerStatusMenuDetailTypes";

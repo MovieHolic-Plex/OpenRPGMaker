@@ -9,7 +9,7 @@ import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
 import { syncActorVitals } from "@/project/sessionVitals";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
@@ -17,12 +17,12 @@ import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpr
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
-import type { RuntimeCameraTarget } from "@/player/types";
+import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
 import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
-import { addFollowerToSession, removeFollowerFromSession } from "@/player/followers";
-import { addSessionLight, removeSessionLight, setSessionLighting } from "@/player/lighting";
+import { addFollowerToSession, removeFollowerFromSession } from "@/project/followers";
+import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import { evolveMonster, giveMonster, moveMonster } from "@/project/monsterCollection";
 import { advanceFarmPlotsForDay } from "@/player/farming";

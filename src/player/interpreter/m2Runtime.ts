@@ -1,8 +1,8 @@
-import type { M2CommandCatalogEntry } from "@/editor/eventCommands/m2Catalog";
+import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
-import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/player/types";
+import type { M2RuntimeState, PlaySessionLike, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { ensureM2Runtime } from "./m2RuntimeState";

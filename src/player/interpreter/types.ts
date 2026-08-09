@@ -15,8 +15,8 @@ import type {
   ShopMessageType,
   ShopType,
 } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
-import type { RuntimeCameraTarget } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
+import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 
 export type StepResult =
   | { kind: "done" }

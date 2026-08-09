@@ -13,7 +13,7 @@ import {
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
-import { initialRuntimeEventPositions } from "@/player/runtimeEventState";
+import { initialRuntimeEventPositions } from "@/project/runtimeEventState"
 import { listStatusMenuCommandIds } from "@/player/playerStatusMenuModel";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { validateCommandArray } from "@/project/io/shapeCommandFields";

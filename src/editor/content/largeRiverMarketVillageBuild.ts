@@ -9,22 +9,22 @@
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
-import { repairMapTreeOrphans, collectMapIdsInTree } from "@/editor/mapTreeActions";
+import { repairMapTreeOrphans, collectMapIdsInTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
 import { isMapWaterTile } from "@/editor/tools/queryTools";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
-import { defaultDatabase, defaultTitleScreenSettings } from "./defaultDatabase";
-import { DEFAULT_ITEM_ID, TILE } from "./constants";
-import { RM2K3_WOOD_FLOOR_PASSABILITY, SAND_TILE } from "./chipsetMapping";
-import { shapeSandAround } from "./sandAutotile";
-import { LargeVillageBuildLog } from "./largeVillageBuildLog";
+import { defaultDatabase, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { DEFAULT_ITEM_ID, TILE } from "@/project/defaults/constants";
+import { RM2K3_WOOD_FLOOR_PASSABILITY, SAND_TILE } from "@/project/defaults/chipsetMapping";
+import { shapeSandAround } from "@/project/defaults/sandAutotile";
+import { LargeVillageBuildLog } from "@/project/defaults/largeVillageBuildLog";
 import {
   planLargeVillageBboxes,
   renderPlanAscii,
   overlaps,
   type VillageBboxPlan,
   type BBox,
-} from "./largeVillageBboxPlan";
+} from "@/project/defaults/largeVillageBboxPlan";
 import type { HouseKitId } from "@/editor/houseKit";
 import type {
   Command,
@@ -36,8 +36,8 @@ import type {
   MapLayoutPlan,
   MapLayoutRegion,
   Project,
-} from "../types";
-import { setMapLayoutPlan } from "../mapLayoutPlan";
+} from "@/project/types";
+import { setMapLayoutPlan } from "@/project/mapLayoutPlan";
 
 export const LARGE_RIVER_MARKET_VILLAGE_MAP_ID = "map_large_river_market_village";
 export const LARGE_RIVER_MARKET_VILLAGE_NAME = "큰 강호 장터 마을";

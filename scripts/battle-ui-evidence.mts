@@ -18,7 +18,7 @@ import { chromium } from "@playwright/test";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { deserialize } from "@/project/io";
 import { reseedSessionRng } from "@/project/session";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 const BASE_URL = "http://127.0.0.1:9173";
 const label = process.argv[2] ?? "shot";

@@ -1,4 +1,4 @@
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 type Token = number | string;
 

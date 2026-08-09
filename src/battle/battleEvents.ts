@@ -4,7 +4,7 @@ import type { BattleEventLogSnapshot, BattleEventStateSnapshot } from "@/battle/
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
-import { transitionItemState } from "@/player/itemTransitions";
+import { transitionItemState } from "@/project/itemTransitions";
 import type { ActorId, Command, Condition, Project, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 

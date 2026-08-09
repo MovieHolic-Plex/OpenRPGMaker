@@ -3,7 +3,7 @@ import { store } from "@/project/store";
 import { resolveTimeSystem } from "@/project/gameTime";
 import type { AutonomousMover, PlaySceneContext } from "@/player/playSceneTypes";
 import { routeForLivingMovement } from "@/player/npcLivingTravel";
-import { runtimeEventViewsForMap } from "@/player/runtimeEventState";
+import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 
 type PageMoveRouteSceneContext = Pick<
   PlaySceneContext,

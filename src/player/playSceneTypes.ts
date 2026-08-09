@@ -1,13 +1,13 @@
 import type Phaser from "phaser";
 import type { Interpreter } from "@/player/interpreter";
 import type { Input, Dir } from "@/player/input";
-import type { RuntimeEventPositions } from "@/player/runtimeEventState";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
+import type { RuntimeEventPositions } from "@/project/runtimeEventState"
+import type { RuntimeEventView } from "@/project/runtimeEventState"
 import type { RuntimeDomOverlay } from "@/player/runtimeDom";
 import type { PlayerSpriteResource } from "@/player/playerSpriteResources";
 import type { GameMap, MapId, MoveCommand, TransferDirection, TransferFade, TransferTransition, Trigger } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import type { LightingAmbientTransition } from "@/player/lighting";
+import type { LightingAmbientTransition } from "@/project/lightingRules";
 import type { WeatherParams, WeatherTransition } from "@/player/weather/weatherModel";
 import type { FieldSpawnRuntimeState } from "@/player/fieldSpawns";
 import type { TimePhase } from "@/project/gameTime";

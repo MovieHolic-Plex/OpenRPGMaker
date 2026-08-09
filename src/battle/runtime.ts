@@ -2,8 +2,8 @@
 // assembly together so battle-event regressions can verify one state machine.
 import type { ActorId, EnemyId, ItemId, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
-import { transitionItemState } from "@/player/itemTransitions";
-import { isItemActorEligible } from "@/player/playerItemUse";
+import { transitionItemState } from "@/project/itemTransitions";
+import { isItemActorEligible } from "@/project/itemEligibility";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, type MutableBattler } from "@/battle/battleBattlers";
@@ -65,7 +65,7 @@ import {
   type BattleTargetScope,
 } from "@/battle/battleTargetResolver";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
-import { effectiveActorEquipment } from "@/player/playerEquipmentRules";
+import { effectiveActorEquipment } from "@/project/equipmentRules";
 
 export type {
   ActorCommand,

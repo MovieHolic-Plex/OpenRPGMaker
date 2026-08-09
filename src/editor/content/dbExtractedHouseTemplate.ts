@@ -1,16 +1,14 @@
 import { genId } from "@/util/id";
 import { stampFootprintHouseKit, stampRectHouseKit, type FootprintWing, type HouseKitId } from "@/editor/houseKit";
 import { appendTileToStack } from "@/project/mapOverlayTiles";
-import type { GameMap } from "../types";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
-import { paintRoadRect, shapeRoadEdges, type RoadRect } from "./roadAutotile";
+import type { GameMap } from "@/project/types";
+import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { paintRoadRect, shapeRoadEdges, type RoadRect } from "@/project/defaults/roadAutotile";
+import type { SmallHouseMaterial, SmallHouseVariantIndex, TilePoint } from "@/project/defaults/contentBuilderTypes";
+export type { SmallHouseMaterial, SmallHouseVariantIndex, TilePoint } from "@/project/defaults/contentBuilderTypes";
 
 type TilePattern = readonly (readonly number[])[];
 type TileLayerName = "lower" | "upper";
-export type TilePoint = {
-  readonly x: number;
-  readonly y: number;
-};
 type StampInput = {
   readonly layer: TileLayerName;
   readonly map: GameMap;
@@ -99,8 +97,6 @@ type BlankHouseMapInput = {
   readonly name: string;
   readonly width: number;
 };
-export type SmallHouseVariantIndex = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
-export type SmallHouseMaterial = "plaster" | "wood" | "stone";
 export type DbExtractedHouseStampInput = {
   readonly material?: SmallHouseMaterial;
   readonly origin: TilePoint;

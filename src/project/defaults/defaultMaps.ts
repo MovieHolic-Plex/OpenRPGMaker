@@ -19,7 +19,7 @@ export {
   createTownHouseShowcaseMap,
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
-} from "./townShowcaseMaps";
+} from "@/editor/content/townShowcaseMaps";
 export { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
 // villageShoppingStreetBuild 는 toolRunner/store 순환을 유발하므로 defaultMaps 에서 re-export 하지 않음.
 // createVillageShoppingStreet* 는 villageShoppingStreetMap / defaultProject 경로를 사용.

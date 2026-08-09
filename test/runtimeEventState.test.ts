@@ -5,19 +5,17 @@ import { store } from "@/project/store";
 import { startSession } from "@/project/session";
 import { createSaveSnapshot, applySaveSnapshot } from "@/player/saveSlots";
 import { createInterpreter } from "@/player/interpreter";
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, M2CommandFields } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { renderTiles } from "@/player/playSceneMapRuntime";
-import {
-  eventBlocksPlayerAt,
-  findBlockingRuntimeEventAt,
-  findBlockingRuntimeEventAtInMap,
-  findRuntimeEventAt,
-  initialRuntimeEventPositions,
-  moveRuntimeEventPosition,
-  runtimeEventViewsForMap,
-} from "@/player/runtimeEventState";
+import { eventBlocksPlayerAt,
+findBlockingRuntimeEventAt,
+findBlockingRuntimeEventAtInMap,
+findRuntimeEventAt,
+initialRuntimeEventPositions,
+moveRuntimeEventPosition,
+runtimeEventViewsForMap, } from "@/project/runtimeEventState"
 
 function page(id: string, priority: EventPage["priority"], trigger: EventPage["trigger"]): EventPage {
   return {

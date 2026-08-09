@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import type { Command } from "@/project/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 function mkSession(): PlaySessionLike {
   return {

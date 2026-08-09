@@ -1,6 +1,6 @@
 /** Page-3 (map and presentation) command body behavior contracts. */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";

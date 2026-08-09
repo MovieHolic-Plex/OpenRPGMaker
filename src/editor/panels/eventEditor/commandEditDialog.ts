@@ -1,5 +1,5 @@
 import { newCommand } from "@/editor/eventActions";
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";

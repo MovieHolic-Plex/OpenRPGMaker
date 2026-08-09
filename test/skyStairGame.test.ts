@@ -19,7 +19,7 @@ import {
   SKY_ENEMY_IDS,
   SKY_MAP,
   SKY_SWITCH,
-} from "@/project/defaults/skyStairGame";
+} from "@/editor/content/skyStairGame";
 import { projectLint } from "@/project/lint/projectLint";
 
 const project = createSkyStairProject();

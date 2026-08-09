@@ -3,7 +3,7 @@ import { newCommand } from "@/editor/eventCommandFactory";
 import {
   battleEventCommandRuntimeSupport,
   commandRuntimeSupport,
-} from "@/editor/eventCommands/runtimeSupport";
+} from "@/project/eventCommands/runtimeSupport";
 import {
   COMMAND_CONTEXTS,
   COMMAND_GUARANTEES,

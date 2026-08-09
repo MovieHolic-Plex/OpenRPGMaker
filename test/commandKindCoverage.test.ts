@@ -13,7 +13,7 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Command, Condition, EventPage, GameEvent } from "@/project/types";
 import { createInterpreter } from "@/player/interpreter";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { commandKinds } from "@/project/io/guards";

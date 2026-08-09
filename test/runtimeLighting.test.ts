@@ -7,8 +7,8 @@ import {
   advanceLightingAmbientTransition,
   deterministicFlickerFactor,
   lightAtTile,
-  lightingGradientParams,
-} from "@/player/lighting";
+} from "@/project/lightingRules";
+import { lightingGradientParams } from "@/player/lighting";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import {
   createHorrorPhase6aFixture,

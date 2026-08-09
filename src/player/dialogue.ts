@@ -18,7 +18,7 @@ import {
 import { showNumberInput, type DialogueNumberInputRequest } from "@/player/dialogueNumberInput";
 import { isCancelKey, isConfirmKey, normalizeKey } from "@/player/keyBindings";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { el, clearChildren } from "@/util/dom";
 
 type DialogueSurfaceSettings = {

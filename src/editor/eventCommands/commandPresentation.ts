@@ -5,7 +5,7 @@ import {
   type CommandFamily,
   type CommandSupport,
 } from "@/project/commandGuaranteeRegistry";
-import type { M2CommandPickerPage } from "@/editor/eventCommands/m2PickerLayout";
+import type { M2CommandPickerPage } from "@/project/eventCommands/m2PickerLayout";
 
 export type CommandPresentationDescriptor = Readonly<{
   kind: CommandKind;

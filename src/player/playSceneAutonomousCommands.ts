@@ -8,7 +8,7 @@ import type {
   MovementDelta,
 } from "@/player/playSceneAutonomousTypes";
 import { applySpriteAlpha, setNpcIdleFrame } from "@/player/playSceneAutonomousSprites";
-import type { RuntimeEventView } from "@/player/runtimeEventState";
+import type { RuntimeEventView } from "@/project/runtimeEventState"
 import { applyNpcTransfer } from "@/player/playSceneAutonomousMapActions";
 import {
   facingForDelta,

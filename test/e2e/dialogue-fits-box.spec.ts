@@ -16,7 +16,7 @@
 //   ③ 얼굴이 본문 글자 영역을 침범하지 않고, 창 밖으로도 나가지 않는다.
 // 상수를 다시 박아 넣거나 padding 을 em 으로 되돌리면 ①이 깨진다.
 import { expect, test } from "@playwright/test";
-import { createSkyStairProject, SKY_MAP } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

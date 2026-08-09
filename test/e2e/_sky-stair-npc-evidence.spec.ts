@@ -1,7 +1,7 @@
 // 진단·증빙용(`_` = 기본 스위트 제외). 재배치된 NPC 와 얼굴이 화면에 실제로 있는지
 // 스크린샷으로 남긴다.
 import { expect, test } from "@playwright/test";
-import { createSkyStairProject, SKY_MAP } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 

@@ -6,8 +6,8 @@ import {
   type M2CommandCatalogEntry,
   type M2CommandPickerGroup,
   type M2CommandPickerPage,
-} from "@/editor/eventCommands/m2Catalog";
-import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/editor/eventCommands/m2PickerLayout";
+} from "@/project/eventCommands/m2Catalog";
+import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";

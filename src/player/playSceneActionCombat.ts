@@ -1,8 +1,8 @@
 import { store } from "@/project/store";
 import { DEFAULT_ATTACK_COOLDOWN_MS, DEFAULT_PROJECTILE_SPEED_TILES_PER_SEC, isActionCombatMap, resolveActionCombatConfig } from "@/project/actionCombat";
-import { swingArcCells, cellInArc } from "@/action/hitbox";
-import { computeContactDamage, computeSwingDamage } from "@/action/combatMath";
-import { consumeHitstop } from "@/action/hitstop";
+import { swingArcCells, cellInArc } from "@/battle/action/hitbox";
+import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
+import { consumeHitstop } from "@/battle/action/hitstop";
 import { playAudioCommand } from "@/player/audio";
 import { resolveFieldSpawnVictory, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";
 import { recordFieldSpawnKill } from "@/player/playSceneFieldSpawns";
@@ -12,13 +12,14 @@ import { nextSessionRandom } from "@/project/session";
 import { characterSpriteX, characterSpriteY, MAP_UPPER_LAYER_DEPTH } from "@/player/characterDepth";
 import { TILE_SIZE } from "@/assets/bundled";
 import { inBounds, isPassable } from "@/project/collision";
-import { moveRuntimeEventPosition } from "@/player/runtimeEventState";
+import { moveRuntimeEventPosition } from "@/project/runtimeEventState"
 import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { applyActorLevelUp } from "@/player/battleRewardsToSession";
 import { learnedSkillIds } from "@/battle/battleBattlers";
+import { battleSkillMpCost } from "@/battle/battleSkillUse";
 import { effectiveActorClassId, hasActorClassOverride } from "@/project/sessionClass";
-import { effectiveActorEquipment } from "@/player/playerEquipmentRules";
-import { transitionItemState } from "@/player/itemTransitions";
+import { effectiveActorEquipment } from "@/project/equipmentRules";
+import { transitionItemState } from "@/project/itemTransitions";
 import type { Dir, EnemyActionAttack, EnemyRecord, Project } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -310,7 +311,7 @@ export function tryActionSkillCast(scene: PlaySceneContext): void {
     .map((id) => project.database.skills.find((entry) => entry.id === id))
     .find((record) => record?.actionSkill);
   if (!skill?.actionSkill) return;
-  const mpCost = skill.mpCost.flat + Math.round((skill.mpCost.percentMax * vitals.maxMp) / 100);
+  const mpCost = battleSkillMpCost(skill, vitals.maxMp);
   if (vitals.mp < mpCost) return;
   const ammo = skill.actionSkill.itemCost;
   if (ammo && (scene.session.inventory[ammo.itemId] ?? 0) < ammo.amount) return;

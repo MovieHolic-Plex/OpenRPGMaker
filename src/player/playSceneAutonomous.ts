@@ -11,11 +11,9 @@ import { canNpcMove, isPlayerOccupyingTile } from "@/player/playSceneAutonomousM
 import { applySpriteAlpha, setNpcIdleFrame, setNpcWalkFrame } from "@/player/playSceneAutonomousSprites";
 import { nextChaseDecision } from "@/player/chaseAi";
 import type { AutonomousNpcSceneContext } from "@/player/playSceneAutonomousTypes";
-import {
-  moveRuntimeEventPosition,
-  runtimeEventView,
-  runtimeEventViewsForMap,
-} from "@/player/runtimeEventState";
+import { moveRuntimeEventPosition,
+runtimeEventView,
+runtimeEventViewsForMap, } from "@/project/runtimeEventState"
 
 export function updateAutonomousNPCs(scene: AutonomousNpcSceneContext, deltaMs: number): void {
   const project = store.getCurrent();

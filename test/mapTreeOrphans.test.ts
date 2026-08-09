@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { collectMapIdsInTree, repairMapTreeOrphans } from "@/editor/mapTreeActions";
+import { collectMapIdsInTree, repairMapTreeOrphans } from "@/project/mapTree";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import type { Project } from "@/project/types";
 

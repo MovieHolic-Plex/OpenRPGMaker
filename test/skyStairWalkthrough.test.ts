@@ -1,6 +1,6 @@
 // 《천공의 계단》 완주 회귀. 층 하나라도 막히면 여기서 잡힌다.
 import { describe, expect, it } from "vitest";
-import { createSkyStairProject } from "@/project/defaults/skyStairGame";
+import { createSkyStairProject } from "@/editor/content/skyStairGame";
 import { SKY_STAIR_WALKTHROUGH } from "@/testing/skyStairWalkthrough";
 import { runWalkthrough } from "@/testing/walkthroughRunner";
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeContactDamage, computeSwingDamage } from "@/action/combatMath";
+import { computeContactDamage, computeSwingDamage } from "@/battle/action/combatMath";
 
 describe("computeSwingDamage", () => {
   it("is attack plus bonus minus half defense, minimum 1", () => {

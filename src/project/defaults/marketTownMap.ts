@@ -4,7 +4,7 @@ import {
   stampDbHouseVariant,
   type DbHouseShapeVariant,
 } from "./dbExtractedHouseVariants";
-import type { SmallHouseMaterial } from "./dbExtractedHouseTemplate";
+import type { SmallHouseMaterial } from "@/project/defaults/contentBuilderTypes";
 import {
   clearUpperTilesOnTownPath,
   paintTownPathNetwork,

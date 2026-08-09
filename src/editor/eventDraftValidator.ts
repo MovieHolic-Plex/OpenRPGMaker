@@ -1,5 +1,5 @@
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import { commandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import {
   BATTLE_DEFEAT_BRANCH_INDEX,
   BATTLE_ESCAPE_BRANCH_INDEX,

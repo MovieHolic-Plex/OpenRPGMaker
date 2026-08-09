@@ -1,4 +1,4 @@
-import { M2_COMMAND_CATALOG } from "@/editor/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
 import type { Command, FaceGraphic, M2CommandFields, M2CommandValue, MoveCommand, MoveRoute } from "@/project/types";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";

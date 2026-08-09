@@ -9,7 +9,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
 import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
-import { resetFollowerTrailNearPlayer } from "@/player/followers";
+import { resetFollowerTrailNearPlayer } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;

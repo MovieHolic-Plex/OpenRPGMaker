@@ -5,12 +5,12 @@ import {
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
   m2CommandById,
-} from "@/editor/eventCommands/m2Catalog";
-import { commandRuntimeSupport, m2CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+} from "@/project/eventCommands/m2Catalog";
+import { commandRuntimeSupport, m2CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { executeCommand } from "@/player/interpreter/commandCatalog";
 import type { Frame, InterpreterState } from "@/player/interpreter/types";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 describe("m2 event command catalog", () => {
   it("covers every non-front-matter PDF command row with stable ids", () => {

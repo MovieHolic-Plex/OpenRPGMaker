@@ -1,7 +1,7 @@
 /**
  * Diagnose: does sand road paint inside house wings / under house lower tiles?
  */
-import { buildLargeRiverMarketVillageProject } from "../src/project/defaults/largeRiverMarketVillageBuild.ts";
+import { buildLargeRiverMarketVillageProject } from "../src/editor/content/largeRiverMarketVillageBuild.ts";
 import { CHIPSET_TILE_GROUPS, SAND_TILE } from "../src/project/defaults/chipsetMapping.ts";
 import { isMapWaterTile } from "../src/editor/tools/queryTools.ts";
 import { writeFileSync, mkdirSync } from "node:fs";

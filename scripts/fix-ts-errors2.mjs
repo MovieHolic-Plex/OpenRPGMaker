@@ -107,7 +107,7 @@ function write(p, c) { fs.writeFileSync(p, c); console.log("Patched:", p); }
 
 // 8. largeRiverMarketVillageBuild.ts - unused rng, log
 {
-  const p = "src/project/defaults/largeRiverMarketVillageBuild.ts";
+  const p = "src/editor/content/largeRiverMarketVillageBuild.ts";
   let c = read(p);
   const lines = c.split("\n");
   if (lines[775] && lines[775].includes("rng:")) {

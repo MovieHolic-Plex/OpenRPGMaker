@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { consumeHitstop } from "@/action/hitstop";
+import { consumeHitstop } from "@/battle/action/hitstop";
 
 describe("consumeHitstop", () => {
   it("does not skip the update when no hitstop remains", () => {

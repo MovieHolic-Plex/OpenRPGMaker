@@ -18,8 +18,8 @@
 //  - cluster-rule:*        (error|warning|info) 타일 그룹 규칙 강도별 위반
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
-import { m2CommandById } from "@/editor/eventCommands/m2Catalog";
-import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { m2CommandById } from "@/project/eventCommands/m2Catalog";
+import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
@@ -68,6 +68,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkUnplayableAudio(project, issues);
   checkReachabilitySpecs(project, opts.reachability ?? [], issues);
   checkTileGrafts(project, issues);
+  checkSystemOptInConsistency(project, issues);
   checkShopIntegrity(project, issues);
   return issues;
 }
@@ -689,3 +690,110 @@ function checkCharacterIdSocial(project: Project, issues: LintIssue[]): void {
 // 라이브러리 소비자가 도달성 검사를 재사용할 수 있게 재수출.
 export { checkReachability };
 export type { ReachabilitySpec };
+
+
+/**
+ * 옵트인 시스템 토글과 실제 데이터 정합성 검사.
+ * 작업 중간 상태일 수 있으므로 severity 는 warning.
+ */
+function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): void {
+  const { system, database } = project;
+  const monsterSpecies = database.monsterSpecies ?? [];
+  const skills = database.skills ?? [];
+  const crops = database.crops ?? [];
+  const maps = Object.values(project.maps);
+
+  // 전수 명령 순회로 명령 kind 카운트.
+  let craftRecipeCalls = 0;
+  let itemUpgradeCalls = 0;
+  let eventsWithSchedule = 0;
+  const visitKind = (command: Command): void => {
+    if (command.kind === "craftRecipe") craftRecipeCalls++;
+    if (command.kind === "applyItemUpgrade") itemUpgradeCalls++;
+  };
+  for (const map of maps) {
+    for (const event of map.events) {
+      if (event.schedule && event.schedule.length > 0) eventsWithSchedule++;
+      visitCommands(event.commands, visitKind);
+      for (const page of event.pages ?? []) visitCommands(page.commands, visitKind);
+    }
+  }
+  for (const commonEvent of project.commonEvents) visitCommands(commonEvent.commands, visitKind);
+  for (const troop of database.troops) {
+    for (const page of troop.battleEventPages ?? []) visitCommands(page.commands, visitKind);
+  }
+
+  const farmableMaps = maps.filter((m) => (m.farmableArea ?? []).length > 0);
+  const actionCombatMaps = maps.filter((m) => m.actionCombat === true);
+ const timeEnabled = system.timeSystem?.enabled === true;
+
+  // 1. monsterCollection && no species
+  if (system.monsterCollection === true && monsterSpecies.length === 0) {
+    issues.push({ severity: "warning", code: "opt-in:monster-collection-empty", message: "포획이 활성인데 몬스터 종족이 0 — 전투에 포획 명령이 나타나지 않습니다." });
+  }
+  // 2. monsterBattleParty && no species
+  if (system.monsterBattleParty === true && monsterSpecies.length === 0) {
+    issues.push({ severity: "warning", code: "opt-in:monster-battle-party-empty", message: "몬스터 파티 전투가 활성인데 종족이 0 — 파티에 몬스터를 넣을 수 없습니다." });
+  }
+  // 3. monsterCare && !monsterCollection
+  if (system.monsterCare && system.monsterCollection !== true) {
+    issues.push({ severity: "warning", code: "opt-in:monster-care-without-collection", message: "몬스터 돌봄 설정이 있으나 수집이 꺼져 있어 적용 대상이 없습니다." });
+  }
+  // 4. typeChart && no skills with elementId
+  if (system.typeChart && skills.filter((s) => s.elementId).length === 0) {
+    issues.push({ severity: "warning", code: "opt-in:type-chart-no-elements", message: "타입 상성표가 있으나 속성을 가진 스킬이 없어 배율이 항상 1.0 입니다." });
+  }
+  // 5. giftSystem && no events interpreting gift tastes
+  if (system.giftSystem === true) {
+    // 선물 취향 해석은 NPC 이벤트의 gift 관련 명령으로 판별. 현재 엔진에 gift 전용 kind 가 없으므로
+    // 아이템 사용 이벤트의 존재로 대리 측정한다. 실측 필요시 정확한 판별로 교체.
+    const hasGiftConsumer = maps.some((m) => m.events.some((e) => (e.pages ?? []).length > 0 || e.commands.length > 0));
+    if (!hasGiftConsumer) {
+      issues.push({ severity: "warning", code: "opt-in:gift-system-no-npc", message: "선물 시스템이 켜졌으나 받을 NPC 가 없습니다." });
+    }
+  }
+  // 6. season crops but no time system
+  if (!timeEnabled && crops.some((c) => (c.seasons ?? []).length > 0)) {
+    issues.push({ severity: "warning", code: "opt-in:season-crops-without-time", message: "계절 작물이 있으나 시간 시스템이 꺼져 계절이 진행되지 않습니다." });
+  }
+  // 7. scheduled events but no time system
+  if (!timeEnabled && eventsWithSchedule > 0) {
+    issues.push({ severity: "warning", code: "opt-in:schedule-without-time", message: "NPC 일정이 있으나 시간 시스템이 꺼져 일정이 돌지 않습니다." });
+  }
+  // 8. crops but no farmable maps
+  if (crops.length > 0 && farmableMaps.length === 0) {
+    issues.push({ severity: "warning", code: "opt-in:crops-without-farmable", message: "작물이 정의됐으나 경작 가능 영역이 지정된 맵이 없습니다." });
+  }
+  // 9. toolActions but no farmable maps
+  if ((system.toolActions ?? []).length > 0 && farmableMaps.length === 0) {
+    issues.push({ severity: "warning", code: "opt-in:tool-actions-without-farmable", message: "도구 규칙이 있으나 적용될 경작 영역이 없습니다." });
+  }
+  // 10. actionCombat enabled but no action combat maps
+  if (system.actionCombat?.enabled === true && actionCombatMaps.length === 0) {
+    issues.push({ severity: "warning", code: "opt-in:action-combat-no-map", message: "액션 전투가 활성이나 opt-in 한 맵이 없어 필드 접촉이 턴제로 갑니다." });
+  }
+  // 11. action combat maps but system switch off
+  if (actionCombatMaps.length > 0 && system.actionCombat?.enabled !== true) {
+    issues.push({ severity: "warning", code: "opt-in:action-combat-map-without-system", message: "맵이 액션 전투를 켰으나 시스템 스위치가 꺼져 무시됩니다." });
+  }
+  // 12. craftRecipes but no calling commands
+  if ((system.craftRecipes ?? []).length > 0 && craftRecipeCalls === 0) {
+    issues.push({ severity: "warning", code: "opt-in:craft-recipes-no-call", message: "제작 레시피가 있으나 호출하는 이벤트 명령이 없습니다." });
+  }
+  // 13. itemUpgrades but no calling commands
+  if ((system.itemUpgrades ?? []).length > 0 && itemUpgradeCalls === 0) {
+    issues.push({ severity: "warning", code: "opt-in:item-upgrades-no-call", message: "업그레이드 규칙이 있으나 호출하는 명령이 없습니다." });
+  }
+  // 14. genre-specific requirements
+  if (system.genre === "monster-collect" && system.monsterCollection !== true) {
+    issues.push({ severity: "warning", code: "opt-in:genre-monster-collect-no-collection", message: "장르가 몬스터 수집이나 포획(monsterCollection)이 꺼져 있습니다." });
+  }
+  if (system.genre === "farm-life") {
+    if (system.timeSystem?.enabled !== true) {
+      issues.push({ severity: "warning", code: "opt-in:genre-farm-life-no-time", message: "장르가 농장 생활이나 시간 시스템이 꺼져 있습니다." });
+    }
+    if (crops.length === 0) {
+      issues.push({ severity: "warning", code: "opt-in:genre-farm-life-no-crops", message: "장르가 농장 생활이나 정의된 작물이 없습니다." });
+    }
+  }
+}

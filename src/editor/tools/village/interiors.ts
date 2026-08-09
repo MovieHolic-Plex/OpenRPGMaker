@@ -2,7 +2,7 @@
 // 집 실내 — 내부 맵 생성·등록, 문 이벤트 연결, 맵 트리 배선.
 
 import { createHouseDoorEvent, createHouseInteriorMap, registerInteriorMaps } from "@/editor/houseInteriors";
-import { appendToTree } from "@/editor/mapTreeActions";
+import { appendToTree } from "@/project/mapTree";
 import type { GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
 import {
   uniqueId,

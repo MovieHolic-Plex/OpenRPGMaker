@@ -1,6 +1,6 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
-import { battleEventCommandRuntimeSupport } from "@/editor/eventCommands/runtimeSupport";
+import { battleEventCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { selectLiteral } from "@/editor/panels/databaseControls";
 import { battleEventCommandControls } from "@/editor/panels/databaseTroopBattleEventCommands";
 import {

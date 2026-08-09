@@ -38,14 +38,12 @@ import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
 import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
-import { applyMapDefaultLighting } from "@/player/lighting";
+import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
-import {
-  initialRuntimeEventPositions,
-  runtimeEventViewsForMap,
-  type RuntimeEventView,
-} from "@/player/runtimeEventState";
+import { initialRuntimeEventPositions,
+runtimeEventViewsForMap,
+type RuntimeEventView, } from "@/project/runtimeEventState"
 import type { RuntimeEventSnapshot } from "@/player/runtimeDom";
 
 interface RenderedTileImage {

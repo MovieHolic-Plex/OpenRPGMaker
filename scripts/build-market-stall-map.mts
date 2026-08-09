@@ -3,7 +3,7 @@
  * mapTree 고아를 수리한 뒤 Supabase에 저장한다.
  */
 import fs from "node:fs";
-import { repairMapTreeOrphans, collectMapIdsInTree } from "../src/editor/mapTreeActions.ts";
+import { repairMapTreeOrphans, collectMapIdsInTree } from "../src/project/mapTree.ts";
 import { runTool } from "../src/editor/tools/toolRunner.ts";
 import { ensureTilesetHarnesses } from "../src/project/tilesetHarness.ts";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "../src/project/supabaseProjectSync.ts";

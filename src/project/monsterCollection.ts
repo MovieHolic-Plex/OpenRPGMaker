@@ -17,8 +17,8 @@ import type {
   Project,
 } from "@/project/types";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs, PlaySession } from "@/project/session";
-import { syncMonsterPartyFollowers } from "@/player/followers";
-import { transitionItemState } from "@/player/itemTransitions";
+import { syncMonsterPartyFollowers } from "@/project/followers";
+import { transitionItemState } from "@/project/itemTransitions";
 
 export const MONSTER_PARTY_MAX = 6;
 

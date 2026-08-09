@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import type { Command } from "@/project/types";
 import type { MonsterInstance } from "@/project/session";
-import type { PlaySessionLike } from "@/player/types";
+import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { MONSTER_PARTY_MAX } from "@/project/monsterCollection";
 import { roundtripCommands, runCommandContract } from "./harness";
 
