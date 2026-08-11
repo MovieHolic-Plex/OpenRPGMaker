@@ -276,6 +276,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [
         el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
+        renderFollowerPresetBar({
+          insertCommandsAt: (index, commands) => {
+            for (let i = 0; i < commands.length; i += 1)
+              insertEventPageCommandAt(mapId, ev.id, activePage.id, [index + i], commands[i]!);
+          },
+          commandCount: () => activePage.commands.length,
+        }),
         storyboardHost,
         cmdList,
         // 카테고리 범례 — 툴바 안이 아니라 캔버스 바로 아래 자기 한 줄로.
@@ -378,17 +385,6 @@ function renderCommandToolbar(
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "실행 내용 도구" },
     children: [
-      el("div", {
-        children: [
-          renderFollowerPresetBar({
-            insertCommandsAt: (index, commands) => {
-              for (let i = 0; i < commands.length; i += 1)
-                insertEventPageCommandAt(mapId, eventId, page.id, [index + i], commands[i]!);
-            },
-            commandCount: () => page.commands.length,
-          }),
-        ],
-      }),
       toolGroup(
         toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
         toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo())

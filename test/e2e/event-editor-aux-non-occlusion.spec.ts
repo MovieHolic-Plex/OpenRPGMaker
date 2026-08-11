@@ -17,9 +17,11 @@ test.beforeEach(async ({ page }) => {
 
 test("event editor aux chip leaves command list geometry usable (AC10)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject());
+  const project = createBlankProject();
+  await seedProjectFromSupabaseCanonical(page, project);
 
-  const editor = await openEventEditor(page);
+  const editor = await openEventEditor(page, project.startMapId);
+  await editor.getByTestId("event-view-toggle-list").click();
   const cmdList = editor.locator(".event-contents-fieldset .cmd-list");
   await expect(cmdList).toBeVisible();
 
@@ -35,13 +37,51 @@ test("event editor aux chip leaves command list geometry usable (AC10)", async (
   expect(openBox.height).toBeGreaterThan(CMD_LIST_MIN_HEIGHT_PX);
 });
 
-async function openEventEditor(page: Page): Promise<Locator> {
-  await page.getByTestId("layer-event").click();
-  const visibleEventTool = page.locator('[data-testid="tool-event"]:visible').first();
-  if ((await visibleEventTool.count()) > 0) await visibleEventTool.click();
+test("event editor preset and toolbar do not overlap the command list", async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 1180 });
+  const project = createBlankProject();
+  await seedProjectFromSupabaseCanonical(page, project);
 
-  await page.locator(".event-list-row").first().click();
-  await page.getByTestId("event-editor-open").click();
+  const editor = await openEventEditor(page, project.startMapId);
+  const cmdList = editor.locator(".event-contents-fieldset .cmd-list");
+  const toolbar = editor.locator(".event-editor-command-toolbar");
+  const presetBar = editor.getByTestId("follower-preset-bar");
+  const viewSwitcher = editor.locator(".event-storyboard-host");
+  const storyboard = editor.locator(".event-storyboard");
+  const graph = editor.locator(".event-graph-placeholder");
+
+  await expect(storyboard).toBeVisible();
+  await expect(cmdList).toBeHidden();
+  await expect(graph).toBeHidden();
+  await editor.getByTestId("event-view-toggle-list").click();
+
+  await expect(cmdList).toBeVisible();
+  await expect(storyboard).toBeHidden();
+  await expect(graph).toBeHidden();
+  await expect(toolbar).toBeVisible();
+  await expect(presetBar).toBeVisible();
+  await expect(viewSwitcher).toBeVisible();
+
+  const [cmdListBox, toolbarBox, presetBox, viewSwitcherBox] = await Promise.all([
+    cmdList.boundingBox(),
+    toolbar.boundingBox(),
+    presetBar.boundingBox(),
+    viewSwitcher.boundingBox(),
+  ]);
+  if (!cmdListBox || !toolbarBox || !presetBox || !viewSwitcherBox) {
+    throw new Error("event editor command geometry was not measurable");
+  }
+
+  expect(toolbarBox.y + toolbarBox.height).toBeLessThanOrEqual(cmdListBox.y);
+  expect(presetBox.y + presetBox.height).toBeLessThanOrEqual(cmdListBox.y);
+  expect(viewSwitcherBox.y + viewSwitcherBox.height).toBeLessThanOrEqual(cmdListBox.y);
+});
+
+async function openEventEditor(page: Page, mapId: string): Promise<Locator> {
+  await page.evaluate(async (activeMapId) => {
+    const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
+    modalModule.openNewEventEditorModal(activeMapId, 3, 3);
+  }, mapId);
 
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible();

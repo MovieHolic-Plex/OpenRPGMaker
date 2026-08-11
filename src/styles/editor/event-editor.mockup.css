@@ -1099,8 +1099,7 @@
   padding: 10px 12px 12px;
   gap: 8px;
   min-height: 0;
-  /* 목업 canvas-head: 범례+툴바가 한 행 32px. */
-  grid-template-rows: 32px minmax(0, 1fr) auto;
+  grid-template-rows: 32px auto auto minmax(0, 1fr) auto;
 }
 
 .event-editor .event-contents-fieldset > .event-contents-legend {
@@ -1122,13 +1121,30 @@
 }
 
 .event-editor .event-contents-fieldset > .cmd-list {
-  grid-row: 2;
+  grid-row: 4;
   grid-column: 1 / -1;
 }
 
 .event-editor .event-contents-fieldset > .event-command-legend {
-  grid-row: 3;
+  grid-row: 5;
   grid-column: 1 / -1;
+}
+
+.event-editor .event-contents-fieldset > .event-editor-follower-preset-bar {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+.event-editor .event-contents-fieldset > .event-storyboard-host {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-width: 0;
+}
+
+.event-editor .event-contents-fieldset > .cmd-list[hidden],
+.event-editor .event-storyboard-host > .event-storyboard[hidden],
+.event-editor .event-storyboard-host > .event-graph-placeholder[hidden] {
+  display: none;
 }
 
 /* ── 검증 스트립: 기본 접힘 한 줄 (목업 valstrip) ────────────────── */
