@@ -89,11 +89,27 @@
   padding: 2px 0 0;
   opacity: 0.8;
 }
+@media (max-width: 480px) {
+  .battle-scene[data-battle-ui-style="pokemon"] .battle-key-prompts {
+    display: none;
+  }
+}
 /* 루트 6커맨드(2×3)는 고정 낮은 행 — 어떤 상속 높이에도 3행이 152px 밴드에 들어간다.
    기술/아이템 서브메뉴(:has 헤더)와 대상 메뉴는 제외(행 구성이 다르다). */
 .battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command {
+  align-items: center;
   height: 32px;
   min-height: 0;
+  overflow: hidden;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command-text {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  min-height: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-command-menu:not(.battle-target-menu):not(:has(.battle-submenu-header)) .battle-command-text strong {
+  line-height: 1;
 }
 
 /* 대상 메뉴: 1열 컴팩트 — 이름과 HP 를 한 줄에, 행 수가 늘면 스크롤 */

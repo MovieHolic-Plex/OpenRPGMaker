@@ -3,21 +3,21 @@
 // 결정적 구성: LLM 없이 에디터 도구(run)를 Node에서 직접 실행해 프로젝트를 만든 뒤 시드한다.
 import { expect, test, type Page } from "@playwright/test";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
-import { createBlankProject } from "@/project/defaults";
-import { MONSTER_SYSTEM_TOOLS } from "@/editor/tools/monsterSystemTools";
+import { createBlankProject, createScarloxyPokemonDemoProject } from "@/project/defaults";
+import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import type { Project } from "@/project/types";
 
 function makePokemonProject(): Project {
-  const project = createBlankProject();
-  const configure = MONSTER_SYSTEM_TOOLS.find((tool) => tool.name === "configure_monster_system")!;
-  configure.run(project, { enabled: true, battleParty: true });
+  const project = createScarloxyPokemonDemoProject();
+  const sparchu = (project.database.monsterSpecies ?? []).find((species) => species.id === scarloxySpeciesId("sparchu"));
+  if (!sparchu) throw new Error("Scarloxy Sparchu species missing");
+  sparchu.baseStats = { ...sparchu.baseStats, maxHp: 60, defense: 60 };
 
   const sx = project.startPos.x;
   const sy = project.startPos.y;
   const giveStarter = DB_TOOLS.find((tool) => tool.name === "give_starter_monsters")!;
-  // 스타터 1종(물타입 아쿠아링) — 선택지 1개라 대화 진행이 결정적.
-  giveStarter.run(project, { speciesIds: ["species_aqualing"], x: sx + 1, y: sy });
+  giveStarter.run(project, { speciesIds: [scarloxySpeciesId("sparchu")], x: sx + 1, y: sy });
 
   // 야생 전투 트리거: 스타터 이벤트 page 골격을 복제해 battleProcessing 커맨드로 교체(shape 보존).
   const map = project.maps[project.startMapId]!;
@@ -75,7 +75,24 @@ async function advanceDialog(page: Page, maxPresses = 14): Promise<void> {
   }
 }
 
+async function visibleCommandLabelOverlapPairs(page: Page): Promise<readonly string[]> {
+  return page.locator(".battle-command-menu .battle-command-text strong:visible").evaluateAll((labels) => {
+    const rects = labels.map((label) => ({
+      label: label.textContent?.trim() ?? "",
+      rect: label.getBoundingClientRect(),
+    }));
+    return rects.flatMap((left, index) => rects.slice(index + 1).flatMap((right) => {
+      const overlaps = left.rect.left < right.rect.right
+        && left.rect.right > right.rect.left
+        && left.rect.top < right.rect.bottom
+        && left.rect.bottom > right.rect.top;
+      return overlaps ? [`${left.label}/${right.label}`] : [];
+    }));
+  });
+}
+
 test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가 아군 슬롯에 출전", async ({ page }) => {
+  test.setTimeout(45_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   // 기본(basic) UI 모드는 상단 메뉴(mode-play)를 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
@@ -102,16 +119,39 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
   await expect(page.locator("[data-testid='battle-actor-actor_hero']")).toHaveCount(0);
   // (c) 포획 커맨드 노출 = monsterCollection 게이트 ON.
   await expect(page.getByTestId("battle-command-grid")).toBeVisible({ timeout: 10_000 });
+  await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+  for (const viewport of [{ width: 375, height: 667 }, { width: 768, height: 800 }, { width: 1280, height: 800 }]) {
+    await page.setViewportSize(viewport);
+    expect(await visibleCommandLabelOverlapPairs(page)).toEqual([]);
+    const keyPrompts = page.locator(".battle-key-prompts");
+    if (viewport.width <= 480) {
+      await expect(page.getByTestId("mode-edit")).toBeHidden();
+      await expect(page.getByTestId("test-play-window-maximize")).toBeHidden();
+      await expect(page.getByTestId("runtime-debug-panel")).toBeHidden();
+      await expect(keyPrompts).toBeHidden();
+      await expect(page.getByTestId("test-play-window-title")).toBeVisible();
+      await expect(page.getByTestId("test-play-window-close")).toBeVisible();
+    } else {
+      await expect(keyPrompts).toBeVisible();
+    }
+    await page.screenshot({ path: `output/pkmn-dom-command-${viewport.width}.png` });
+  }
   await page.screenshot({ path: "output/pkmn-dom-02-battle-monster-party.png" });
 
   // 4) 몬스터가 실제로 행동: 공격 → 대상 선택 → 데미지.
+  const battleScene = page.getByTestId("battle-scene");
+  const enemyHp = page.locator("[data-testid^='battle-enemy-hp-']").first();
+  const hpBeforeAttack = await enemyHp.textContent();
   await page.getByTestId("actor-command-attack").click();
   const target = page.locator("[data-testid^='battle-target-']").first();
   await target.click();
-  await page.waitForTimeout(1_200);
+  await expect(battleScene).toHaveAttribute("data-battle-sequence-busy", "false", { timeout: 15_000 });
+  await expect(battleScene).toHaveAttribute("data-battle-phase", "actorCommand", { timeout: 15_000 });
+  await expect(enemyHp).not.toHaveText(hpBeforeAttack ?? "", { timeout: 15_000 });
+  await expect(page.getByTestId("battle-command-grid")).toBeVisible();
+  await expect(page.locator(".battle-result-panel")).toHaveCount(0);
   await page.screenshot({ path: "output/pkmn-dom-03-monster-attacks.png" });
 
-  // 5) 전투 필드가 유지되고(크래시/즉시 패배 아님) 몬스터 노드가 살아 있다.
   await expect(monsterNode.first()).toBeVisible();
   console.log("PKMN_DOM_PROOF", JSON.stringify(await monsterNode.first().getAttribute("data-testid")));
 });
@@ -126,7 +166,7 @@ test("control: battleParty off이면 영웅이 그대로 출전한다(액터 경
   const sy = project.startPos.y;
   // 몬스터 시스템 OFF 상태에서 전투 이벤트만 배치(스타터 이벤트 골격 재사용을 위해 임시 생성 후 커맨드 교체).
   const giveStarter = DB_TOOLS.find((tool) => tool.name === "give_starter_monsters")!;
-  giveStarter.run(project, { speciesIds: ["species_aqualing"], x: sx + 1, y: sy });
+  giveStarter.run(project, { speciesIds: ["species_wild_slime"], x: sx + 1, y: sy });
   const map = project.maps[project.startMapId]!;
   const starter = map.events.find((event) => event.id.startsWith("ev_starter"))!;
   const battleEvent = JSON.parse(JSON.stringify(starter)) as {
@@ -152,7 +192,7 @@ test("control: battleParty off이면 영웅이 그대로 출전한다(액터 경
   await pressAction(page);
 
   await expect(page.getByTestId("battle-field")).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByTestId("battle-actor-actor_hero")).toBeVisible({ timeout: 10_000 });
+  await expect(page.locator(".battle-actor-status[data-record-id='actor_hero']")).toBeVisible({ timeout: 10_000 });
   await expect(page.locator("[data-testid^='battle-actor-monster_']")).toHaveCount(0);
   await page.screenshot({ path: "output/pkmn-dom-04-actor-control.png" });
 });
