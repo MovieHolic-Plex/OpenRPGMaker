@@ -180,7 +180,7 @@ export function isModeShellMounted(): boolean {
   return modeMounted;
 }
 
-function renderDbRequiredScreen(error: unknown): void {
+function renderDbRequiredScreen(_error: unknown): void {
   if (!elements) return;
   elements.topbar.textContent = "AI RPG MAKER";
   while (elements.main.firstChild) {
@@ -214,13 +214,10 @@ function renderDbRequiredScreen(error: unknown): void {
   const title = document.createElement("h1");
   title.textContent = "세계를 설계하고, 바로 플레이하세요";
   const body = document.createElement("p");
-  body.textContent =
-    error instanceof Error
-      ? error.message
-      : "프로젝트를 열려면 Supabase DB 연결과 프로젝트 선택이 필요합니다. .env.local 의 VITE_SUPABASE_* 값이 있으면 연결 폼에 자동으로 채워집니다.";
+  body.textContent = "저장된 작업을 선택하면 편집기가 열립니다. 온라인 저장과 연결은 자동으로 처리됩니다.";
   const chips = document.createElement("ul");
   chips.className = "db-required-chips";
-  for (const label of ["맵·이벤트 편집", "AI 어시스턴트", "팀 프로젝트 DB"]) {
+  for (const label of ["맵·이벤트 편집", "AI 어시스턴트", "자동 저장"]) {
     const li = document.createElement("li");
     li.textContent = label;
     chips.append(li);
@@ -229,7 +226,7 @@ function renderDbRequiredScreen(error: unknown): void {
   action.type = "button";
   action.className = "btn primary";
   action.dataset.testid = "db-required-open-settings";
-  action.textContent = "DB 연결 열기";
+  action.textContent = "작업 선택하기";
   action.addEventListener("click", () => openRequiredDbSettings());
   copy.append(kicker, title, body, chips, action);
 
@@ -250,9 +247,9 @@ function openRequiredDbSettings(): void {
 
 // 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
-function renderLoadFailureScreen(error: unknown): void {
+function renderLoadFailureScreen(_error: unknown): void {
   if (!elements) return;
-  elements.topbar.textContent = "RPG ZZU - 프로젝트 로드 실패";
+  elements.topbar.textContent = "RPG ZZU - 작업을 불러올 수 없음";
   while (elements.main.firstChild) {
     elements.main.removeChild(elements.main.firstChild);
   }
@@ -281,23 +278,23 @@ function renderLoadFailureScreen(error: unknown): void {
   kicker.className = "db-required-kicker";
   kicker.textContent = "RPG ZZU";
   const title = document.createElement("h1");
-  title.textContent = "저장된 프로젝트를 바로 열 수 없습니다";
+  title.textContent = "저장된 작업을 바로 열 수 없습니다";
   const body = document.createElement("p");
-  body.textContent = "기존 저장본은 그대로 두고 예제나 새 프로젝트로 임시 시작할 수 있습니다.";
+  body.textContent = "기존 저장본은 그대로 두고 예제 작업이나 새 작업으로 임시 시작할 수 있습니다.";
   const detail = document.createElement("details");
   detail.className = "project-load-error-details";
   detail.dataset.testid = "project-load-error-details";
   const detailSummary = document.createElement("summary");
-  detailSummary.textContent = "자세히 보기";
+  detailSummary.textContent = "해결 방법";
   const detailMessage = document.createElement("p");
   detailMessage.className = "project-load-error-message";
   detailMessage.dataset.testid = "project-load-error-message";
-  detailMessage.textContent = error instanceof Error ? error.message : String(error);
+  detailMessage.textContent = "저장본을 다시 불러오거나 임시 작업으로 시작하세요. 기존 온라인 저장본은 바뀌지 않습니다.";
   detail.append(detailSummary, detailMessage);
 
   const chips = document.createElement("ul");
   chips.className = "db-required-chips";
-  for (const label of ["예제 프로젝트", "새 프로젝트", "DB 연결 선택"]) {
+  for (const label of ["예제 프로젝트", "새 프로젝트", "온라인 저장"]) {
     const li = document.createElement("li");
     li.textContent = label;
     chips.append(li);
@@ -310,8 +307,8 @@ function renderLoadFailureScreen(error: unknown): void {
   sample.type = "button";
   sample.className = "btn primary";
   sample.dataset.testid = "load-error-start-sample";
-  sample.textContent = "예제 프로젝트로 시작";
-  sample.title = "깨진 프로젝트를 덮어쓰지 않고 예제를 메모리로 엽니다.";
+  sample.textContent = "예제 작업으로 시작";
+  sample.title = "기존 저장본을 바꾸지 않고 예제를 엽니다.";
   sample.addEventListener("click", () => {
     void import("@/project/defaults").then(async ({ createSampleAdventureProject }) => {
       await store.loadFallbackProject(createSampleAdventureProject());
@@ -324,8 +321,8 @@ function renderLoadFailureScreen(error: unknown): void {
   blank.type = "button";
   blank.className = "btn";
   blank.dataset.testid = "load-error-start-blank";
-  blank.textContent = "새 프로젝트로 시작";
-  blank.title = "깨진 프로젝트를 덮어쓰지 않고 빈 프로젝트를 메모리로 엽니다.";
+  blank.textContent = "새 작업으로 시작";
+  blank.title = "기존 저장본을 바꾸지 않고 빈 작업을 엽니다.";
   blank.addEventListener("click", () => {
     void import("@/project/defaults").then(async ({ createBlankProject }) => {
       await store.loadFallbackProject(createBlankProject());
@@ -338,7 +335,7 @@ function renderLoadFailureScreen(error: unknown): void {
   retry.type = "button";
   retry.className = "btn";
   retry.dataset.testid = "load-error-retry";
-  retry.textContent = "원격에서 다시 로드";
+  retry.textContent = "저장본 다시 불러오기";
   retry.addEventListener("click", () => {
     retry.disabled = true;
     void store.load()
@@ -357,7 +354,7 @@ function renderLoadFailureScreen(error: unknown): void {
     discard.type = "button";
     discard.className = "btn";
     discard.dataset.testid = "load-error-discard-local";
-    discard.textContent = "로컬 사본 폐기 후 새로 시작";
+    discard.textContent = "이 기기의 임시 사본을 지우고 새로 시작";
     discard.addEventListener("click", () => {
       discardDevProjectOverride();
       window.location.reload();
@@ -369,7 +366,7 @@ function renderLoadFailureScreen(error: unknown): void {
   openDb.type = "button";
   openDb.className = "btn";
   openDb.dataset.testid = "load-error-open-db";
-  openDb.textContent = "DB 연결 설정 열기";
+  openDb.textContent = "저장된 작업 선택";
   openDb.addEventListener("click", () => {
     void import("@/editor/panels/dbConnectionSettings").then(({ openDbConnectionSettings }) => {
       openDbConnectionSettings(() => {

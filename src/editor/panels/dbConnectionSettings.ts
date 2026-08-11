@@ -1,19 +1,17 @@
-import { COVER_HEIGHT, COVER_WIDTH, paintProjectCover } from "@/editor/panels/projectPickerCover";
-import type { DbConfigField, DbPersistenceStatus } from "@/project/persistenceStatus";
 import {
-  clearSupabaseProjectConfigDraft,
+  fillConnectionForm,
+  readConnectionForm,
+  renderAdvancedConnectionSettings,
+} from "@/editor/panels/dbConnectionAdvancedSettings";
+import { renderProjectPicker } from "@/editor/panels/dbConnectionProjectPicker";
+import { onlineConfigSourceLabel, renderOnlineSaveStatus } from "@/editor/panels/dbConnectionStatus";
+import type { DbPersistenceStatus } from "@/project/persistenceStatus";
+import {
   resetSupabaseProjectConfigToEnv,
   saveSupabaseProjectConfigDraft,
-  supabaseProjectConfigDraft,
   supabaseProjectConfigDraftWithSource,
 } from "@/project/supabaseProjectConfig";
-import type { SupabaseProjectConfigSource } from "@/project/supabaseProjectConfig";
-import {
-  listSupabaseProjects,
-  type SupabaseProjectListConfig,
-  type SupabaseProjectListItem,
-} from "@/project/supabaseProjectSync";
-import { resolveBrowserSupabaseUrl } from "@/project/supabaseProxyPath";
+import type { SupabaseProjectListItem } from "@/project/supabaseProjectSync";
 import { markSupabaseRecoveredLocation } from "@/project/supabaseRecoveryLocation";
 import { syncProjectToUrl } from "@/project/projectUrl";
 import { store } from "@/project/store";
@@ -30,79 +28,55 @@ type DbConnectionSettingsOptions = {
 let modalRoot: HTMLElement | null = null;
 let connecting = false;
 
-// 상태바 "DB 연동" 칩(도그푸딩 결함 ⑫): 어떤 상태에서든 클릭하면 항상 DB 연결 설정이
-// 열린다(기존에는 자동저장 오류 상태에서 클릭이 재시도로 소비되어 설정 진입점이 사라졌다).
-// 저장 재시도는 칩 안의 별도 [재시도] 버튼으로 분리. 맵 잠금 "가져오기" 버튼과 구분되도록
-// 🔌 아이콘 + 버튼 스타일을 명시한다.
 export function renderDbConnectionStatus(status: DbPersistenceStatus, onRefresh: StatusRefresh): HTMLElement {
-  const autoSave = store.getAutoSaveState();
-  // 평시(준비됨 + 저장 대기 없음)는 짧은 라벨만. 상태 변화·오류일 때만 부가 문구 노출.
-  const quietReady = status.kind === "ready" && autoSave.kind === "idle";
-  const children: HTMLElement[] = [
-    el("span", { class: "db-connection-label", text: `🔌 ${dbConnectionStatusText(status)}` }),
-  ];
-  if (!quietReady) {
-    children.push(
-      el("span", { class: "db-autosave-state", text: autoSaveStatusText(autoSave), dataset: { testid: "db-autosave-state" } }),
-    );
-  }
-  const button = el("button", {
-    class: `editor-statusbar-cell db-connection-status db-connection-chip-button ${status.kind} autosave-${autoSave.kind}`,
-    attrs: { title: dbConnectionStatusButtonTitle(status, autoSave), type: "button" },
-    children,
-    dataset: { testid: "db-connection-status" },
-    on: {
-      click: () => openDbConnectionSettings(onRefresh),
-    },
-  });
-  if (autoSave.kind === "error") {
-    button.append(
-      el("button", {
-        class: "db-autosave-retry-button",
-        text: "재시도",
-        attrs: { type: "button", title: `저장 실패: ${autoSave.message} — 클릭해서 저장을 다시 시도합니다.` },
-        dataset: { testid: "db-autosave-retry" },
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            void store.flush()
-              .catch((error) => {
-                console.error("[store] manual auto-save retry failed:", error);
-              })
-              .finally(onRefresh);
-          },
-        },
-      }),
-    );
-  }
-  return button;
+  return renderOnlineSaveStatus(status, onRefresh, () => openDbConnectionSettings(onRefresh));
 }
 
-export function openDbConnectionSettings(onRefresh: StatusRefresh = () => undefined, options: DbConnectionSettingsOptions = {}): void {
+export function openDbConnectionSettings(
+  onRefresh: StatusRefresh = () => undefined,
+  options: DbConnectionSettingsOptions = {},
+): void {
   modalRoot?.remove();
   const required = options.required === true;
   const draft = supabaseProjectConfigDraftWithSource();
   const statusLine = el("p", {
     class: "db-config-status-line",
-    text: dbConfigStatusText(draft.source, draft),
+    text: onlineConfigStatusText(draft.source, draft.url.length > 0 && draft.anonKey.length > 0),
+    attrs: { role: "status", "aria-live": "polite" },
     dataset: { testid: "db-config-status-line" },
   });
-  const form = el("form", {
-    class: "db-config-form",
-    on: {
-      submit: (event) => {
-        event.preventDefault();
-        void connectFromForm(form, statusLine, onRefresh);
-      },
+  const form = el("form", { class: "db-config-form" });
+  const projectPicker = renderProjectPicker(form, {
+    autoLoad: options.autoLoadProjects === true,
+    onProjectSelected: async (project) => connectToSelectedProject(form, statusLine, onRefresh, project),
+    onStatus: (message) => setStatusLine(statusLine, message),
+  });
+  const advanced = renderAdvancedConnectionSettings(draft, {
+    onLoadDefaults: () => {
+      const next = resetSupabaseProjectConfigToEnv();
+      fillConnectionForm(form, next);
+      setStatusLine(statusLine, "앱의 기본 연결 정보를 다시 불러왔습니다.");
+      toast("기본 연결 정보를 불러왔습니다", "ok");
+      onRefresh();
+      void projectPicker.reload();
+    },
+    onSave: () => {
+      saveConfigFromForm(form, onRefresh);
+      setStatusLine(statusLine, "이 기기에 연결 정보를 저장했습니다.");
+      toast("연결 정보를 저장했습니다", "ok");
+      void projectPicker.reload();
     },
   });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void connectToSelectedProject(form, statusLine, onRefresh);
+  });
   form.append(
-    field("DB URL", "url", draft.url, "http://dbserver:8100"),
-    field("Anon key", "anonKey", draft.anonKey, "Supabase anon key"),
-    field("Project ID", "projectId", draft.projectId, "rpg-zzu-house-template-gallery"),
-    renderProjectPicker(form, statusLine, options.autoLoadProjects === true),
+    renderIntro(required),
+    projectPicker.element,
+    advanced,
     statusLine,
-    renderActions(form, statusLine, onRefresh, required),
+    renderFooter(required),
   );
 
   modalRoot = el("div", {
@@ -111,12 +85,12 @@ export function openDbConnectionSettings(onRefresh: StatusRefresh = () => undefi
     children: [
       el("section", {
         class: "database-modal-window db-config-window",
-        attrs: { role: "dialog", "aria-modal": "true", "aria-label": "DB 연결 설정" },
+        attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "db-config-title" },
         children: [
           el("header", {
             class: "database-modal-header",
             children: [
-              el("h2", { text: "DB 연결 설정" }),
+              el("h2", { text: "작업 열기", attrs: { id: "db-config-title" }, dataset: { testid: "db-config-title" } }),
               ...(required ? [] : [el("button", {
                 class: "database-modal-close",
                 text: "×",
@@ -131,240 +105,28 @@ export function openDbConnectionSettings(onRefresh: StatusRefresh = () => undefi
     ],
   });
   modalRoot.addEventListener("mousedown", (event) => {
-    if (required) return;
-    if (event.target === modalRoot) closeDbConnectionSettings();
+    if (!required && event.target === modalRoot) closeDbConnectionSettings();
   });
   document.body.append(modalRoot);
-  form.querySelector<HTMLInputElement>("[data-testid='db-config-url']")?.focus();
+  form.querySelector<HTMLButtonElement>("[data-testid='db-config-load-projects']")?.focus();
 }
 
-function field(label: string, name: keyof ReturnType<typeof supabaseProjectConfigDraft>, value: string, placeholder: string): HTMLElement {
-  return el("label", {
-    class: "db-config-field",
+function renderIntro(required: boolean): HTMLElement {
+  return el("section", {
+    class: "db-config-intro",
     children: [
-      el("span", { text: label }),
-      el("input", {
-        value,
-        attrs: {
-          autocomplete: name === "anonKey" ? "off" : "on",
-          name,
-          placeholder,
-          spellcheck: "false",
-          type: name === "anonKey" ? "password" : "text",
-        },
-        dataset: { testid: `db-config-${kebabName(name)}` },
-      }),
+      el("p", { class: "db-config-eyebrow", text: required ? "시작하기" : "작업 전환" }),
+      el("h3", { text: required ? "어떤 작업을 계속할까요?" : "저장된 작업을 선택하세요" }),
+      el("p", { text: "작업 카드를 선택하면 바로 편집 화면으로 이동합니다. 저장과 연결은 자동으로 처리됩니다." }),
     ],
   });
 }
 
-function renderProjectPicker(form: HTMLFormElement, statusLine: HTMLElement, autoLoadProjects: boolean): HTMLElement {
-  const list = el("div", {
-    class: "db-config-project-list empty",
-    text: "DB URL과 Anon key를 입력한 뒤 Supabase 프로젝트를 불러올 수 있습니다.",
-    dataset: { testid: "db-config-project-list" },
-  });
-  const picker = el("section", {
-    class: "db-config-project-picker",
-    children: [
-      el("div", {
-        class: "db-config-project-picker-header",
-        children: [
-          el("span", { text: "Supabase 프로젝트" }),
-          el("button", {
-            class: "btn",
-            text: "목록 불러오기",
-            attrs: { type: "button" },
-            dataset: { testid: "db-config-load-projects" },
-            on: { click: () => void loadProjectOptions(form, list, statusLine) },
-          }),
-        ],
-      }),
-      list,
-    ],
-  });
-  if (autoLoadProjects) {
-    window.setTimeout(() => {
-      void loadProjectOptions(form, list, statusLine);
-    }, 0);
-  }
-  return picker;
-}
-
-async function loadProjectOptions(form: HTMLFormElement, list: HTMLElement, statusLine: HTMLElement): Promise<void> {
-  const config = projectListConfigFromForm(form);
-  if (!config) {
-    setStatusLine(statusLine, "Supabase 프로젝트 목록을 보려면 DB URL과 Anon key가 필요합니다.");
-    return;
-  }
-  renderProjectListLoading(list);
-  setStatusLine(statusLine, "Supabase 프로젝트 목록을 불러오는 중...");
-  try {
-    const projects = await listSupabaseProjects(config);
-    renderProjectList(form, list, statusLine, projects, config);
-    setStatusLine(statusLine, projects.length > 0 ? "Supabase 프로젝트를 선택할 수 있습니다." : "Supabase projects 테이블에 프로젝트가 없습니다.");
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "알 수 없는 오류";
-    renderProjectListMessage(list, `목록을 불러오지 못했습니다: ${message}`);
-    setStatusLine(statusLine, `Supabase 프로젝트 목록 실패: ${message}`);
-  }
-}
-
-function projectListConfigFromForm(form: HTMLFormElement): SupabaseProjectListConfig | null {
-  const raw = inputValue(form, "url").replace(/\/+$/, "");
-  const anonKey = inputValue(form, "anonKey");
-  if (raw.length === 0 || anonKey.length === 0) return null;
-  // 폼 값은 사용자가 친 원본(http://dbserver:8100)이라, https 페이지에서 그대로 fetch 하면
-  // mixed content 로 차단된다. 저장된 설정과 같은 규칙으로 dev 프록시 경로에 접어 넣는다.
-  const url = resolveBrowserSupabaseUrl(raw, {
-    isDev: import.meta.env.DEV === true,
-    pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol,
-  });
-  return { anonKey, url };
-}
-
-function renderProjectListLoading(list: HTMLElement): void {
-  renderProjectListMessage(list, "목록을 불러오는 중...");
-}
-
-function renderProjectListMessage(list: HTMLElement, message: string): void {
-  clearChildren(list);
-  list.classList.add("empty");
-  list.textContent = message;
-}
-
-function renderProjectList(
-  form: HTMLFormElement,
-  list: HTMLElement,
-  statusLine: HTMLElement,
-  projects: readonly SupabaseProjectListItem[],
-  config: SupabaseProjectListConfig,
-): void {
-  clearChildren(list);
-  list.classList.toggle("empty", projects.length === 0);
-  if (projects.length === 0) {
-    list.textContent = "Supabase projects 테이블에 프로젝트가 없습니다.";
-    return;
-  }
-  for (const project of projects) {
-    list.append(renderProjectOption(form, statusLine, project, config));
-  }
-}
-
-function relativeUpdatedAt(iso: string | null): string {
-  if (!iso) return "시각 미상";
-  const then = Date.parse(iso);
-  if (Number.isNaN(then)) return "시각 미상";
-  const seconds = Math.max(0, (Date.now() - then) / 1000);
-  if (seconds < 3600) return `${Math.max(1, Math.round(seconds / 60))}분 전`;
-  if (seconds < 86400) return `${Math.round(seconds / 3600)}시간 전`;
-  if (seconds < 86400 * 14) return `${Math.round(seconds / 86400)}일 전`;
-  if (seconds < 86400 * 60) return `${Math.round(seconds / (86400 * 7))}주 전`;
-  return `${Math.round(seconds / (86400 * 30))}개월 전`;
-}
-
-function renderProjectOption(
-  form: HTMLFormElement,
-  statusLine: HTMLElement,
-  project: SupabaseProjectListItem,
-  config: SupabaseProjectListConfig,
-): HTMLElement {
-  const canvas = el("canvas", {
-    class: "db-config-project-cover-canvas",
-    attrs: { width: String(COVER_WIDTH), height: String(COVER_HEIGHT), role: "presentation" },
-  }) as HTMLCanvasElement;
-
-  const coverTag = el("span", { class: "db-config-project-cover-tag", text: "불러오는 중" });
-
-  void paintProjectCover(canvas, config, project.projectId, project.updatedAt).then((kind) => {
-    coverTag.textContent = kind === "map" ? "대표 맵" : "대체 커버";
-    coverTag.classList.toggle("is-fallback", kind === "fallback");
-  });
-
-  return el("button", {
-    class: "db-config-project-option",
-    attrs: { type: "button" },
-    dataset: { projectId: project.projectId, testid: "db-config-project-option" },
-    on: { click: () => selectProjectId(form, statusLine, project) },
-    children: [
-      el("span", { class: "db-config-project-cover", children: [canvas, coverTag] }),
-      el("span", {
-        class: "db-config-project-meta",
-        children: [
-          el("strong", { text: project.title }),
-          el("code", { text: project.projectId }),
-          el("span", {
-            class: "db-config-project-stats",
-            children: [
-              el("span", { text: `맵 ${project.mapCount}` }),
-              el("span", { text: `타일셋 ${project.tilesetCount}` }),
-              el("span", { class: "db-config-project-when", text: relativeUpdatedAt(project.updatedAt) }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  });
-}
-
-function selectProjectId(form: HTMLFormElement, statusLine: HTMLElement, project: SupabaseProjectListItem): void {
-  const control = form.elements.namedItem("projectId");
-  if (!(control instanceof HTMLInputElement)) return;
-  control.value = project.projectId;
-  // 선택 즉시 주소창에 id/이름 반영 — 연결 전에도 공유 링크를 만들 수 있다.
-  syncProjectToUrl({ projectId: project.projectId, projectName: project.title });
-  setStatusLine(statusLine, `프로젝트 선택됨: ${project.title} (${project.projectId})`);
-}
-
-function renderActions(form: HTMLFormElement, statusLine: HTMLElement, onRefresh: StatusRefresh, required: boolean): HTMLElement {
-  return el("div", {
+function renderFooter(required: boolean): HTMLElement {
+  return el("footer", {
     class: "db-config-actions",
     children: [
-      el("button", {
-        class: "btn primary",
-        text: "연결 시도",
-        attrs: { type: "submit" },
-        dataset: { testid: "db-config-connect" },
-      }),
-      el("button", {
-        class: "btn",
-        text: "env로 채우기",
-        attrs: {
-          type: "button",
-          title: ".env / .env.local 의 VITE_SUPABASE_* 값으로 폼을 다시 채웁니다",
-        },
-        dataset: { testid: "db-config-fill-env" },
-        on: {
-          click: () => {
-            const next = resetSupabaseProjectConfigToEnv();
-            fillFormFromDraft(form, next);
-            setStatusLine(statusLine, dbConfigStatusText(next.source, next));
-            toast("env 기본값으로 폼을 채웠습니다.", "ok");
-            onRefresh();
-          },
-        },
-      }),
-      ...(required ? [] : [el("button", {
-        class: "btn",
-        text: "저장만",
-        attrs: { type: "button" },
-        dataset: { testid: "db-config-save" },
-        on: { click: () => saveConfigFromForm(form, statusLine, onRefresh) },
-      }),
-      el("button", {
-        class: "btn",
-        text: "초기화",
-        attrs: { type: "button" },
-        dataset: { testid: "db-config-clear" },
-        on: {
-          click: () => {
-            clearSupabaseProjectConfigDraft();
-            toast("DB 설정을 초기화했습니다.", "ok");
-            closeDbConnectionSettings();
-            onRefresh();
-          },
-        },
-      })]),
+      el("span", { text: "연결 정보는 이 기기에만 저장됩니다." }),
       ...(required ? [] : [el("button", {
         class: "btn",
         text: "닫기",
@@ -375,75 +137,47 @@ function renderActions(form: HTMLFormElement, statusLine: HTMLElement, onRefresh
   });
 }
 
-function fillFormFromDraft(form: HTMLFormElement, draft: ReturnType<typeof supabaseProjectConfigDraft>): void {
-  const url = form.elements.namedItem("url");
-  const anon = form.elements.namedItem("anonKey");
-  const project = form.elements.namedItem("projectId");
-  if (url instanceof HTMLInputElement) url.value = draft.url;
-  if (anon instanceof HTMLInputElement) anon.value = draft.anonKey;
-  if (project instanceof HTMLInputElement) project.value = draft.projectId;
-}
-
-function dbConfigStatusText(
-  source: SupabaseProjectConfigSource,
-  draft: ReturnType<typeof supabaseProjectConfigDraft>,
-): string {
-  const filled = [draft.url ? "URL" : null, draft.anonKey ? "Anon key" : null, draft.projectId ? "Project ID" : null]
-    .filter(Boolean)
-    .join(", ");
-  const fillNote = filled.length > 0 ? ` 채워짐: ${filled}.` : " 아직 비어 있는 항목이 있습니다.";
-  return `현재 DB 설정: ${dbConfigSourceLabel(source)}.${fillNote} 저장한 뒤 즉시 연결을 시도합니다.`;
-}
-
-async function connectFromForm(form: HTMLFormElement, statusLine: HTMLElement, onRefresh: StatusRefresh): Promise<void> {
+async function connectToSelectedProject(
+  form: HTMLFormElement,
+  statusLine: HTMLElement,
+  onRefresh: StatusRefresh,
+  project?: SupabaseProjectListItem,
+): Promise<void> {
   if (connecting) return;
+  const draft = readConnectionForm(form);
+  if (!draft.projectId) {
+    setStatusLine(statusLine, "열 작업을 목록에서 선택하세요.");
+    return;
+  }
   connecting = true;
-  setStatusLine(statusLine, "DB 연결 시도 중...");
-  saveConfigFromForm(form, statusLine, onRefresh, false);
+  setStatusLine(statusLine, `${project?.title ?? "선택한 작업"}을 여는 중입니다.`);
+  saveConfigFromForm(form, onRefresh);
   const result = await store.reconnectRemotePersistence();
   connecting = false;
   onRefresh();
   if (result.kind === "connected") {
     markSupabaseRecoveredLocation();
-    // 이전 프로젝트 mapId가 남지 않도록 시작 맵으로 포커스 — 캔버스에 새 프로젝트 맵이 바로 보이게 함.
     const { focusProjectStartMap } = await import("@/editor/mapSelection");
     focusProjectStartMap();
-    toast("DB 프로젝트를 불러왔습니다.", "ok");
+    toast("작업을 열었습니다", "ok");
     closeDbConnectionSettings();
     return;
   }
-  const message = result.kind === "not-configured" ? "DB URL과 anon key가 필요합니다." : result.message;
-  setStatusLine(statusLine, message);
-  toast(`DB 연결 실패: ${message}`, "error");
+  setStatusLine(statusLine, "작업을 열지 못했습니다. ‘연결 문제 해결’을 열어 설정을 확인하세요.");
+  toast("작업을 열지 못했습니다", "error");
 }
 
-function saveConfigFromForm(
-  form: HTMLFormElement,
-  statusLine: HTMLElement,
-  onRefresh: StatusRefresh,
-  notify = true,
-): void {
-  const draft = configDraftFromForm(form);
+function saveConfigFromForm(form: HTMLFormElement, onRefresh: StatusRefresh): void {
+  const draft = readConnectionForm(form);
   saveSupabaseProjectConfigDraft(draft);
-  // 연결 시도/저장 시에도 URL 파라미터를 맞춰 둔다 (name은 로드 후 store가 채움).
   syncProjectToUrl({ projectId: draft.projectId || null, projectName: null });
   onRefresh();
-  if (!notify) return;
-  setStatusLine(statusLine, "DB 설정을 저장했습니다.");
-  toast("DB 설정을 저장했습니다.", "ok");
 }
 
-function configDraftFromForm(form: HTMLFormElement): ReturnType<typeof supabaseProjectConfigDraft> {
-  return {
-    anonKey: inputValue(form, "anonKey"),
-    projectId: inputValue(form, "projectId"),
-    url: inputValue(form, "url"),
-  };
-}
-
-function inputValue(form: HTMLFormElement, name: string): string {
-  const control = form.elements.namedItem(name);
-  return control instanceof HTMLInputElement ? control.value : "";
+function onlineConfigStatusText(source: ReturnType<typeof supabaseProjectConfigDraftWithSource>["source"], ready: boolean): string {
+  return ready
+    ? `${onlineConfigSourceLabel(source)}으로 온라인 저장을 준비했습니다.`
+    : "온라인 저장 설정이 아직 없습니다. 작업 목록이 보이지 않으면 ‘연결 문제 해결’을 확인하세요.";
 }
 
 function setStatusLine(statusLine: HTMLElement, message: string): void {
@@ -454,94 +188,4 @@ function setStatusLine(statusLine: HTMLElement, message: string): void {
 function closeDbConnectionSettings(): void {
   modalRoot?.remove();
   modalRoot = null;
-}
-
-function dbConnectionStatusText(status: DbPersistenceStatus): string {
-  switch (status.kind) {
-    case "ready":
-      // 상세 source는 title 툴팁에만 — 상태바 폭 절약.
-      return "DB 연동";
-    case "not-configured":
-      return "DB 연동: 설정 필요";
-    case "disabled":
-      return "DB 연동: 꺼짐";
-  }
-}
-
-function dbConnectionStatusButtonTitle(status: DbPersistenceStatus, autoSave: ReturnType<typeof store.getAutoSaveState>): string {
-  return `${dbConnectionStatusTitle(status)} ${autoSaveStatusTitle(autoSave)} 클릭해서 DB 설정/연결을 엽니다.`;
-}
-
-function autoSaveStatusText(state: ReturnType<typeof store.getAutoSaveState>): string {
-  switch (state.kind) {
-    case "idle":
-      return "저장 대기 없음";
-    case "pending":
-      return "● 저장 대기";
-    case "saving":
-      return "● 저장 중…";
-    case "saved":
-      return `✓ 저장됨 ${formatAutoSaveTime(state.at)}`;
-    case "error":
-      return state.retryCount ? `⚠ 저장 실패 (재시도 ${state.retryCount}회)` : "⚠ 저장 실패";
-  }
-}
-
-function autoSaveStatusTitle(state: ReturnType<typeof store.getAutoSaveState>): string {
-  switch (state.kind) {
-    case "idle":
-      return "자동저장 대기 중인 변경이 없습니다.";
-    case "pending":
-      return "변경 사항이 있어 곧 자동저장합니다.";
-    case "saving":
-      return "변경 사항을 저장하는 중입니다.";
-    case "saved":
-      return `${formatAutoSaveTime(state.at)}에 저장했습니다.`;
-    case "error":
-      return `저장 실패: ${state.message}${state.retryCount ? ` — 자동 재시도 ${state.retryCount}회째, 네트워크 복구 시 즉시 재시도합니다.` : ""}`;
-  }
-}
-
-function formatAutoSaveTime(at: number): string {
-  const date = new Date(at);
-  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
-}
-
-function pad2(value: number): string {
-  return value < 10 ? `0${value}` : String(value);
-}
-
-function dbConnectionStatusTitle(status: DbPersistenceStatus): string {
-  switch (status.kind) {
-    case "ready":
-      return `DB 저장 가능: ${status.url} / ${status.projectId} / ${dbConfigSourceLabel(status.source)}`;
-    case "not-configured":
-      return `DB 저장 설정 필요: ${status.missing.map(dbConfigFieldLabel).join(", ")} / ${dbConfigSourceLabel(status.source)}`;
-    case "disabled":
-      return status.reason === "dev-showcase" ? "개발용 URL이라 원격 DB 저장이 꺼져 있습니다." : "프로젝트 불러오기 실패로 원격 DB 저장이 꺼져 있습니다.";
-  }
-}
-
-function dbConfigSourceLabel(source: SupabaseProjectConfigSource): string {
-  switch (source) {
-    case "custom":
-      return "사용자 설정";
-    case "env":
-      return ".env 기본값";
-    case "legacy":
-      return "브라우저 저장값";
-  }
-}
-
-function dbConfigFieldLabel(field: DbConfigField): string {
-  switch (field) {
-    case "url":
-      return "DB URL";
-    case "anonKey":
-      return "Anon key";
-  }
-}
-
-function kebabName(name: keyof ReturnType<typeof supabaseProjectConfigDraft>): string {
-  return name === "anonKey" ? "anon-key" : name === "projectId" ? "project-id" : name;
 }

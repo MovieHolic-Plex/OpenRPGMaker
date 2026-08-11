@@ -451,7 +451,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
   return el("div", {
     class: "persistence-mode-banner is-recovery",
     dataset: { testid: "save-skip-banner" },
-    text: "복구 모드 — 원격 DB 저장이 꺼져 있습니다. 상태바의 'DB 연동'에서 다시 연결하거나 '내보내기'로 백업하세요.",
+    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.",
   });
 }
 
@@ -459,8 +459,8 @@ export function persistenceModeBannerText(reason: string, saveSkipped: boolean):
   if (reason === "dev-showcase" && saveSkipped) {
     return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
   }
-  if (reason === "dev-showcase") return "개발 모드 — 원격 DB 대신 이 브라우저에만 저장됩니다.";
-  return "복구 모드 — 원격 DB 저장이 꺼져 있습니다. 상태바의 'DB 연동'에서 다시 연결하거나 '내보내기'로 백업하세요.";
+  if (reason === "dev-showcase") return "개발 모드 — 이 브라우저에만 저장됩니다.";
+  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.";
 }
 
 function projectExportNodeElement(): HTMLElement {

@@ -23,10 +23,10 @@ export async function saveProjectNow(): Promise<boolean> {
         toast(`저장 충돌: ${conflictMapNames(result.conflicts)} 맵이 다른 세션에서 먼저 바뀌었습니다.`, "error");
         return false;
       case "disabled":
-        toast("DB 저장 안 됨: 개발용 쇼케이스", "error");
+        toast("이 화면에서는 온라인 저장을 사용할 수 없습니다.", "error");
         return false;
       case "not-configured":
-        toast("DB 저장 안 됨: Supabase 설정 없음", "error");
+        toast("온라인 저장 연결이 필요합니다. 상태바의 ‘온라인 저장’을 확인하세요.", "error");
         return false;
     }
   } catch (error) {
@@ -38,7 +38,7 @@ export async function saveProjectNow(): Promise<boolean> {
   }
 }
 
-/** DB에서 현재 프로젝트를 다시 읽어 맵/이벤트를 즉시 반영한다. */
+/** 온라인 저장본을 다시 읽어 맵/이벤트를 즉시 반영한다. */
 export async function reloadProjectFromDbNow(options: { readonly force?: boolean } = {}): Promise<boolean> {
   if (!store.isLoaded()) {
     toast("아직 프로젝트를 불러오는 중입니다.", "error");
@@ -49,7 +49,7 @@ export async function reloadProjectFromDbNow(options: { readonly force?: boolean
     toast("저장되지 않은 변경이 있습니다. 확인 후 다시 시도하세요.", "info");
     return false;
   }
-  toast("DB에서 새로고침 중...", "info");
+  toast("온라인 저장본을 불러오는 중...", "info");
   const result = await store.reloadFromRemote({ force: options.force === true || !store.hasUnsavedChanges() });
   switch (result.kind) {
     case "reloaded": {
@@ -63,20 +63,20 @@ export async function reloadProjectFromDbNow(options: { readonly force?: boolean
       } else {
         editorState.set({ currentMapId: currentId });
       }
-      toast(`DB 새로고침 완료${result.title ? ` — ${result.title}` : ""}`, "ok");
+      toast(`온라인 저장본을 불러왔습니다${result.title ? ` — ${result.title}` : ""}`, "ok");
       return true;
     }
     case "not-configured":
-      toast("DB 설정이 없어 새로고침할 수 없습니다", "error");
+      toast("온라인 저장 연결이 없어 저장본을 불러올 수 없습니다.", "error");
       return false;
     case "disabled":
-      toast("원격 저장이 꺼져 있어 DB 새로고침을 할 수 없습니다", "error");
+      toast("이 화면에서는 온라인 저장본을 불러올 수 없습니다.", "error");
       return false;
     case "cancelled":
       toast("저장되지 않은 변경이 있어 새로고침을 취소했습니다", "info");
       return false;
     case "failed":
-      toast(`DB 새로고침 실패: ${result.message}`, "error");
+      toast(`온라인 저장본을 불러오지 못했습니다: ${result.message}`, "error");
       return false;
   }
 }

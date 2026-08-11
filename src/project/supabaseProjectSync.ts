@@ -631,7 +631,7 @@ export async function listProjectCommitsFromSupabase(
   limit = 20,
   config = supabaseProjectConfig(),
 ): Promise<readonly SupabaseProjectCommitListItem[]> {
-  if (!config) throw new SupabaseProjectSyncError("Supabase 설정 없음");
+  if (!config) throw new SupabaseProjectSyncError("온라인 저장 연결이 필요합니다");
   const response = await fetch(supabaseProjectCommitsListUrl(config, limit), {
     headers: supabaseJsonHeaders(config, "read"),
   });

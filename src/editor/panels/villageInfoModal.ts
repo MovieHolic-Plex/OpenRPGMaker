@@ -47,7 +47,7 @@ export function openLegacyVillageInfoModal(): void {
               status,
               el("button", {
                 class: "database-footer-button",
-                text: "DB 저장",
+                text: "온라인 저장",
                 attrs: { type: "button" },
                 dataset: { testid: "village-info-save-remote" },
                 on: { click: () => void flushVillageInfo(status) },
@@ -247,10 +247,10 @@ async function flushVillageInfo(status: HTMLElement): Promise<void> {
       toast("저장 충돌이 있습니다.", "error");
       return;
     case "not-configured":
-      status.textContent = "DB 저장 설정이 없습니다.";
+      status.textContent = "온라인 저장 연결이 필요합니다.";
       return;
     case "disabled":
-      status.textContent = "DB 저장이 비활성화되어 있습니다.";
+      status.textContent = "이 화면에서는 온라인 저장을 사용할 수 없습니다.";
       return;
   }
 }

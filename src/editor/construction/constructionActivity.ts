@@ -117,9 +117,9 @@ function activityPersistenceText(value: ConstructionAuditRecord["activityPersist
     case "local":
       return "로컬 기록";
     case "supabase":
-      return "Supabase 활동 기록";
+      return "온라인 활동 기록";
     case "both":
-      return "로컬+Supabase 활동 기록";
+      return "기기+온라인 활동 기록";
     case "failed-remote":
       return "로컬 기록, 원격 활동 기록 실패";
     default:
@@ -136,9 +136,9 @@ function projectPersistenceText(value: ConstructionAuditRecord["projectPersisten
     case "local":
       return "로컬 저장";
     case "supabase":
-      return "Supabase 프로젝트 저장";
+      return "온라인 작업 저장";
     case "both":
-      return "로컬+Supabase 프로젝트 저장";
+      return "기기+온라인 작업 저장";
     case "failed":
       return "프로젝트 저장 실패";
     default:

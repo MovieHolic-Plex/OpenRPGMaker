@@ -348,7 +348,7 @@ function menuCommands(
         item("농장 생활 데모", "menu-project-farming-demo", () => void newFarmingDemoProject()),
         item("열기", "menu-project-load", () => doLoad(topbar)),
         item("저장", "menu-project-save", () => void saveProjectNow()),
-        item("DB에서 새로고침", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
+        item("저장본 다시 불러오기", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
         item("내보내기...", "menu-project-export", () => void exportProjectPackage()),
         item("가져오기...", "menu-project-import", () => doImport()),
@@ -422,13 +422,13 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
     toolbarButton({
       testId: "toolbar-reload-db",
-      label: "DB 새로고침",
-      title: "Supabase에서 프로젝트를 다시 불러와 맵/이벤트를 즉시 반영",
+      label: "저장본",
+      title: "온라인 저장본을 다시 불러와 맵과 이벤트를 반영",
       icon: "open",
       onClick: () => void reloadProjectFromDb(topbar),
     }),
     separator(),
-    toolbarButton({ testId: "toolbar-load", label: "열기", title: "Supabase 프로젝트 열기", icon: "open", onClick: () => doLoad(topbar) }),
+    toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 작업 열기", icon: "open", onClick: () => doLoad(topbar) }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
     toolbarButton({ testId: "layer-lower", label: "하위", title: "하위 레이어 편집", icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
@@ -712,9 +712,9 @@ async function openTestPlayWindow(): Promise<void> {
 async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
   if (store.hasUnsavedChanges()) {
     const ok = await showConfirm({
-      title: "DB에서 새로고침",
-      message: "저장되지 않은 로컬 변경이 있습니다. DB 내용으로 덮어쓸까요?",
-      confirmLabel: "DB로 덮어쓰기",
+      title: "저장본 다시 불러오기",
+      message: "아직 저장하지 않은 변경이 있습니다. 온라인 저장본으로 덮어쓸까요?",
+      confirmLabel: "저장본으로 덮어쓰기",
       danger: true,
     });
     if (!ok) return;

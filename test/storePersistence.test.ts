@@ -176,6 +176,39 @@ describe("Project store remote persistence", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
+  it("marks the project loaded when reconnect recovers a blocked first boot", async () => {
+    // Given: configured online storage and a store that has not completed its first load.
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-house-template-gallery");
+    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubGlobal("window", {
+      location: { hostname: "127.0.0.1", pathname: "/", search: "" },
+      localStorage: { getItem: () => null, setItem: () => undefined },
+    });
+    const [{ createHouseTemplateGalleryProject }, { serialize }] = await Promise.all([
+      import("@/project/defaults"),
+      import("@/project/io"),
+    ]);
+    const currentJson = JSON.parse(serialize(createHouseTemplateGalleryProject()));
+    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input, init) => {
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.includes("/rest/v1/projects?")) {
+        return new Response(JSON.stringify([{ current_json: currentJson, current_sha256: "test-sha" }]), { status: 200 });
+      }
+      return new Response("[]", { status: 200 });
+    }));
+    vi.resetModules();
+    const { store } = await import("@/project/store");
+
+    // When: the first-boot connection flow reconnects to the selected project.
+    const result = await store.reconnectRemotePersistence();
+
+    // Then: connected means the editor can pass its loaded gate immediately.
+    expect(result).toEqual({ kind: "connected", source: "remote" });
+    expect(store.isLoaded()).toBe(true);
+  });
+
   it("does not create a DB project when the selected project row is missing", async () => {
     vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "missing-project");

@@ -214,6 +214,19 @@
   gap: 7px;
 }
 
+.db-connection-status-group {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 4px;
+  margin-left: auto;
+  max-width: min(330px, 42vw);
+}
+
+.db-connection-status-group .editor-statusbar-cell.db-connection-status {
+  margin-left: 0;
+}
+
 .db-connection-label,
 .db-autosave-state {
   min-width: 0;

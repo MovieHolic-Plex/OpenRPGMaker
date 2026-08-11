@@ -182,14 +182,14 @@ class ProjectStore {
           this.remotePersistenceEnabled = false;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = null;
-          throw new DbConnectionRequiredError("DB URL and anon key are required before opening a project.");
+          throw new DbConnectionRequiredError("온라인 저장 설정이 필요합니다.");
         } else {
           const project = await loadProjectFromSupabase();
           if (!project) {
             this.remotePersistenceEnabled = true;
             this.remotePersistenceDisabledReason = null;
             this.persistedBaseline = null;
-            throw new DbConnectionRequiredError("No project row exists for the selected DB project ID.");
+            throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
           }
           this.adoptProject(project, { restoreVault: true });
           this.remotePersistenceEnabled = true;
@@ -388,6 +388,7 @@ class ProjectStore {
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
         await this.normalizeCurrentProject();
+        this.loaded = true;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
         resetManualProjectCommitBaseline(this.current);
         this.dirtySinceLastPersist = false;
@@ -399,12 +400,12 @@ class ProjectStore {
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       this.persistedBaseline = null;
-      return { kind: "failed", message: "선택한 DB 프로젝트 ID에 프로젝트가 없습니다. 목록에서 기존 프로젝트를 선택하세요." };
+      return { kind: "failed", message: "선택한 작업을 찾지 못했습니다. 목록에서 다시 선택하세요." };
     } catch (error) {
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = "load-failed";
       this.emit();
-      return { kind: "failed", message: error instanceof Error ? error.message : "DB 연결 실패" };
+      return { kind: "failed", message: error instanceof Error ? error.message : "온라인 저장 연결 실패" };
     }
   }
   /**
@@ -443,7 +444,7 @@ class ProjectStore {
     } catch (error) {
       return {
         kind: "failed",
-        message: error instanceof Error ? error.message : "DB 새로고침 실패",
+        message: error instanceof Error ? error.message : "온라인 저장본을 불러오지 못했습니다",
         projectId,
       };
     }
@@ -896,11 +897,11 @@ function autoSaveStateForFlushResult(result: ProjectFlushResult): AutoSaveState 
     case "saved-local":
       return { kind: "saved", at: Date.now() };
     case "conflict":
-      return { kind: "error", message: "DB 저장 충돌이 있습니다. 새로고침 후 다시 저장하세요." };
+      return { kind: "error", message: "온라인 저장이 충돌했습니다. 저장본을 다시 불러온 뒤 저장하세요." };
     case "disabled":
-      return { kind: "error", message: "DB 저장이 꺼져 있습니다." };
+      return { kind: "error", message: "온라인 저장을 사용할 수 없습니다." };
     case "not-configured":
-      return { kind: "error", message: "DB 설정이 필요합니다." };
+      return { kind: "error", message: "온라인 저장 연결이 필요합니다." };
     case "not-loaded":
       return { kind: "idle" };
   }

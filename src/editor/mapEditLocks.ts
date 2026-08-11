@@ -150,7 +150,7 @@ export async function checkoutMapForEditing(mapId: MapId, mapName: string): Prom
   if (!config) {
     if (version === requestVersion) {
       stopHeartbeat();
-      setStatus({ kind: "unavailable", mapId, mapName, reason: "not-configured", message: "Supabase 설정 없음" });
+      setStatus({ kind: "unavailable", mapId, mapName, reason: "not-configured", message: "온라인 저장 연결이 필요합니다" });
     }
     return;
   }
@@ -187,8 +187,8 @@ export async function takeoverMapLock(mapId: MapId, mapName: string): Promise<vo
   requestVersion += 1;
   if (!config) {
     stopHeartbeat();
-    setStatus({ kind: "unavailable", mapId, mapName, reason: "not-configured", message: "Supabase 설정 없음" });
-    toast("편집 권한을 가져올 수 없습니다: Supabase 설정 없음", "error");
+    setStatus({ kind: "unavailable", mapId, mapName, reason: "not-configured", message: "온라인 저장 연결이 필요합니다" });
+    toast("편집 권한을 가져오려면 온라인 저장 연결이 필요합니다.", "error");
     return;
   }
   try {

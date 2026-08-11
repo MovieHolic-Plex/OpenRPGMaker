@@ -28,6 +28,7 @@ function mockModeDependencies(): {
       }),
       loadFallbackProject,
     },
+    setDevProjectFactory: vi.fn(),
   }));
   vi.doMock("@/app/perfMetrics", () => ({
     markInitialEditRender: vi.fn(),
@@ -36,6 +37,27 @@ function mockModeDependencies(): {
   }));
   vi.doMock("@/editor/editorState", () => ({
     editorState: { set: vi.fn() },
+  }));
+  vi.doMock("@/editor/aiBootIntent", () => ({
+    applyPendingAiBootIntent: vi.fn(),
+    clearPendingAiBootIntent: vi.fn(),
+    clearWelcomeIntentBootFlags: vi.fn(),
+    peekPendingAiBootIntent: vi.fn(() => null),
+    setPendingAiBootIntent: vi.fn(),
+    setPendingWelcomePipeline: vi.fn(),
+    wasWelcomeIntentAppliedThisBoot: vi.fn(() => false),
+  }));
+  vi.doMock("@/editor/editorWelcome", () => ({
+    presentEditorWelcome: vi.fn(),
+    setEditorWelcomeDismissed: vi.fn(),
+    shouldPresentEditorWelcome: vi.fn(() => false),
+  }));
+  vi.doMock("@/editor/mapSelection", () => ({
+    focusProjectStartMap: vi.fn(),
+  }));
+  vi.doMock("@/editor/mapUrlSync", () => ({
+    installMapUrlSync: vi.fn(),
+    restoreMapFromUrl: vi.fn(() => false),
   }));
   vi.doMock("@/editor/mapEditHistory", () => ({
     MAP_EDIT_HISTORY_EVENT: "map-edit-history",
@@ -90,19 +112,20 @@ describe("UXC D01 프로젝트 로드 실패 폴백", () => {
     vi.resetModules();
   });
 
-  it("오류 원문을 자세히 보기 아래에 접고 예제/새 프로젝트 CTA를 먼저 제공한다", async () => {
+  it("오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다", async () => {
     const { root } = await bootFailureScreen();
 
     const panel = findByTestId(root, "project-load-error-panel");
     const details = findByTestId(root, "project-load-error-details");
     const message = findByTestId(root, "project-load-error-message");
 
-    expect(panel?.textContent).toContain("저장된 프로젝트를 바로 열 수 없습니다");
-    expect(panel?.textContent).toContain("예제 프로젝트로 시작");
-    expect(panel?.textContent).toContain("새 프로젝트로 시작");
+    expect(panel?.textContent).toContain("저장된 작업을 바로 열 수 없습니다");
+    expect(panel?.textContent).toContain("예제 작업으로 시작");
+    expect(panel?.textContent).toContain("새 작업으로 시작");
     expect(details?.getAttribute("open")).toBeNull();
-    expect(details?.textContent).toContain("자세히 보기");
-    expect(message?.textContent).toContain("map_ember_village");
+    expect(details?.textContent).toContain("해결 방법");
+    expect(message?.textContent).toContain("기존 온라인 저장본은 바뀌지 않습니다");
+    expect(message?.textContent).not.toContain("map_ember_village");
   });
 
   it("예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다", async () => {

@@ -6,8 +6,8 @@ export async function applyDatabaseChanges(status: HTMLElement): Promise<boolean
     const result = await store.flush();
     switch (result.kind) {
       case "saved":
-        status.textContent = "적용했습니다. DB에 저장했습니다. 닫아도 안전합니다.";
-        toast("DB에 저장했습니다.", "ok");
+        status.textContent = "적용하고 온라인에 저장했습니다. 닫아도 안전합니다.";
+        toast("온라인에 저장했습니다.", "ok");
         return true;
       case "saved-local":
         status.textContent = "적용했습니다. 브라우저에 저장했습니다. 닫아도 안전합니다.";
@@ -22,12 +22,12 @@ export async function applyDatabaseChanges(status: HTMLElement): Promise<boolean
         toast("저장 충돌이 있습니다.", "error");
         return false;
       case "not-configured":
-        status.textContent = "DB 저장 설정이 없습니다. Supabase 환경 설정을 확인하세요.";
-        toast("DB 저장 설정이 없습니다.", "error");
+        status.textContent = "온라인 저장 연결이 필요합니다. 상태바의 ‘온라인 저장’을 확인하세요.";
+        toast("온라인 저장 연결이 필요합니다.", "error");
         return false;
       case "disabled":
-        status.textContent = "DB 저장이 비활성화되어 저장하지 못했습니다.";
-        toast("DB 저장이 비활성화되어 있습니다.", "error");
+        status.textContent = "이 화면에서는 온라인 저장을 사용할 수 없습니다.";
+        toast("온라인 저장을 사용할 수 없습니다.", "error");
         return false;
     }
   } catch (error) {
