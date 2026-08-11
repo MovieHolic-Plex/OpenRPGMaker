@@ -20,6 +20,7 @@ import {
   type SmallHouseVariantIndex,
   type TownHouseShowcaseStyle,
 } from "@/project/defaults";
+import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
 import type { Project } from "@/project/types";
 
 const DEV_FRESH_PROJECT_PARAM = "freshProject";
@@ -44,6 +45,7 @@ const DEV_VILLAGE_SHOPPING_STREET_PARAM = "villageShoppingStreet";
 const DEV_SNOW_MOUNTAIN_60_PARAM = "snowMountain60";
 /** 얼음 대평원 64×64 절벽·계단 캔버스 — `?devProject=1&icePlain64=1` 로 바로 열린다. */
 const DEV_ICE_PLAIN_64_PARAM = "icePlain64";
+const DEV_MODERN_NOCTURNE_PARAM = "modernNocturne";
 const SUPABASE_CANONICAL_PROJECT_PARAM = "supabaseRecovered";
 
 export function createDevShowcaseProjectForLocation(): Project | null {
@@ -74,6 +76,7 @@ export function createDevShowcaseProjectForLocation(): Project | null {
   if (params.has(DEV_VILLAGE_SHOPPING_STREET_PARAM)) return createVillageShoppingStreetProject();
   if (params.has(DEV_SNOW_MOUNTAIN_60_PARAM)) return createSnowMountain60Project();
   if (params.has(DEV_ICE_PLAIN_64_PARAM)) return createIcePlain64Project();
+  if (params.has(DEV_MODERN_NOCTURNE_PARAM)) return createModernNocturneProject();
   if (params.has(DEV_HOUSE_TEMPLATE_GALLERY_PARAM) || params.get(DEV_SMALL_HOUSE_VARIANT_PARAM) === "all") {
     return createHouseTemplateGalleryProject();
   }

@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   autotileRepresentativeTile,
+  buildCustomPaletteModel,
   buildRm2kPaletteModel,
+  CUSTOM_PALETTE_MIN_CELL_SIZE,
+  makeCustomPalette,
   RM2K_PALETTE_COLUMNS,
   rm2kPaletteDisplayTile,
 } from "@/editor/panels/tilePaletteRm2k";
+import { installFakeDom, renderWithFakeDom } from "./fakeDom";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 
 // RM2003식 팔레트 모델 — 6열 리플로우 대상 목록(오토타일 대표 축약 + 변형 숨김) 순수 계산 검증.
@@ -17,6 +21,7 @@ function makeDefaultTileset(overrides?: Partial<TilesetDef>): TilesetDef {
   return {
     count: COMBINED_TOWN_COUNT,
     id: "combined_town_test",
+    kind: "rpg2k",
     image: { id: "tex_easyrpg_chipset_combined_town", type: "bundled" },
     name: "Combined town",
     passability: Array.from({ length: COMBINED_TOWN_COUNT }, () => ({ down: true, left: true, right: true, up: true })),
@@ -30,6 +35,7 @@ function makeDefaultTileset(overrides?: Partial<TilesetDef>): TilesetDef {
 
 function makeCustomTileset(groups: AutotileGroup[]): TilesetDef {
   return makeDefaultTileset({
+    kind: "custom",
     autotileGroups: groups,
     count: 32,
     id: "custom_test",
@@ -37,6 +43,7 @@ function makeCustomTileset(groups: AutotileGroup[]): TilesetDef {
     tilesPerRow: 8,
   });
 }
+
 
 function unionTileIds(tileset: TilesetDef): ReadonlySet<number> {
   return new Set([
@@ -135,5 +142,51 @@ describe("rm2kPaletteDisplayTile (숨겨진 변형 → 대표 칸 매핑)", () =
     expect(rm2kPaletteDisplayTile(tileset, 1)).toBe(0); // 호수 프레임 → 물 대표
     expect(rm2kPaletteDisplayTile(tileset, 123)).toBe(93); // 폭포 프레임 → 폭포 대표
     expect(rm2kPaletteDisplayTile(tileset, 465)).toBe(465); // 일반 타일은 그대로
+  });
+});
+
+describe("custom atlas palette", () => {
+  it("infers kind-less uploaded and non-480 atlases as custom", () => {
+    const uploaded = makeDefaultTileset({ kind: undefined, image: { id: "legacy_upload", type: "uploaded" } });
+    const non480 = makeDefaultTileset({ kind: undefined, count: 32 });
+    expect(buildCustomPaletteModel(uploaded)).toHaveLength(480);
+    expect(buildCustomPaletteModel(non480)).toHaveLength(32);
+  });
+
+  it("lists exact source cells without RM2K autotile collapse", () => {
+    const tileset = makeCustomTileset([{
+      id: "custom_floor",
+      memberTileIds: [5, 6, 7],
+      name: "커스텀 바닥",
+      variantMap: { "0": 5, "1": 6, "2": 7 },
+    }]);
+
+    expect(buildCustomPaletteModel(tileset)).toEqual(Array.from({ length: 32 }, (_, index) => index));
+  });
+
+  it("keeps the complete source sheet visible regardless of the active layer", () => {
+    const tileset = makeCustomTileset([]);
+    tileset.priority[3] = "upper";
+    tileset.priority[11] = "upper";
+
+    expect(buildCustomPaletteModel(tileset)).toEqual(Array.from({ length: 32 }, (_, index) => index));
+  });
+
+  it("renders the exact source column count instead of reflowing the atlas", () => {
+    const restore = installFakeDom();
+    try {
+      const tileset = makeCustomTileset([]);
+      tileset.count = 480;
+      tileset.tilesPerRow = 30;
+      const root = renderWithFakeDom(() => makeCustomPalette({ layer: "lower", onSelectTile: () => undefined, selectedTile: 0, tileset }));
+      expect(root.dataset.paletteKind).toBe("custom");
+      expect(root.dataset.sourceColumns).toBe("30");
+      expect(root.dataset.sourceRows).toBe("16");
+      expect(root.getAttribute("style")).toContain("--custom-cols:30");
+      expect(root.getAttribute("style")).toContain(`--custom-min-cell:${CUSTOM_PALETTE_MIN_CELL_SIZE}px`);
+      expect(root.querySelectorAll("button")).toHaveLength(480);
+    } finally {
+      restore();
+    }
   });
 });

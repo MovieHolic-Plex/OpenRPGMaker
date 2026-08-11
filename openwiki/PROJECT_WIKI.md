@@ -79,6 +79,14 @@ Root `AGENTS.md` hard rule: **do not finish map/event/demo/content work without 
 `blankProject` / `freshProject` / `dev-showcase` skip remote persistence — never treat those sessions as a complete deliverable.  
 Engine-only code changes and narrow unit-test fixtures are the only default exceptions.
 
+## Desktop UI integration truth (2026-08-11)
+
+- The supported editor floor is desktop `1024px`; the acceptance shell matrix is `1024×768`, `1280×800`, and `1440×900` in both Basic and Expert. No mobile or touch layout is promised below that floor.
+- Database is a topbar work window with an explicit dock mode. Runtime Test Play uses whole-number fit-without-crop scaling, and title options keep roving keyboard focus plus trusted pointer activation.
+- AI is map-first collapsed by preference, but its side/float restore rail and restored composer must stay keyboard reachable. Event-editor ownership is the desktop matrix `1586×992`, `1280×900`, `1024×768`, and `960×900`; it keeps its two-column workbench without strip/footer overlap or coachmark occlusion.
+- Shared application confirms/alerts participate in `modalStack`; they expose title/message relationships, trap action focus, route Escape only to the top layer, and restore an attached opener.
+- Modern Exteriors asset packaging, custom-atlas semantics, seeding, remote persistence, and Modern browser diagnostics are blocked pending repository-visible redistribution rights. Those blocked workstreams are not evidence for the implemented desktop UI scope and must not be substituted with a local fixture or DB write.
+
 ## Per-project wiki structure
 
 For each project that uses this pattern, keep:

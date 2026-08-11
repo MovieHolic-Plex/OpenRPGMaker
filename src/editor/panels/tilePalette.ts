@@ -11,11 +11,12 @@ import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/ti
 import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
-import { makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
+import { makeCustomPalette, makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
 import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
+import { isCustomTileset } from "@/project/tilesetKind";
 import { toast } from "@/util/toast";
 
 const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
@@ -224,13 +225,19 @@ function makePaintTabBody(input: {
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
 
-  // RM2003식 단일 팔레트 — 그룹/시트 보기 분리 없이 6열 고정, 오토타일은 대표 1칸 축약.
-  const palette = makeRm2kPalette({
-    layer: tileLayer,
-    onSelectTile: selectPaletteTile,
-    selectedTile: state.selectedTile,
-    tileset,
-  });
+  const palette = isCustomTileset(tileset)
+    ? makeCustomPalette({
+        layer: tileLayer,
+        onSelectTile: selectPaletteTile,
+        selectedTile: state.selectedTile,
+        tileset,
+      })
+    : makeRm2kPalette({
+        layer: tileLayer,
+        onSelectTile: selectPaletteTile,
+        selectedTile: state.selectedTile,
+        tileset,
+      });
   root.append(palette);
 
   // 구조 킷 선반은 팔레트 **아래**. 원래 위였는데, 당시 주석("등록 전에는 렌더 안 됨")대로
@@ -523,9 +530,9 @@ function revealChipsetTileInPalette(tile: number): void {
   if (typeof document === "undefined") return;
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   if (!root) return;
-  // 숨겨진 오토타일 변형(예: 흙길 몸통 421)은 대표 칸(360)으로 매핑해 하이라이트한다.
+  // Custom atlases expose exact source cells; RM2K chipsets collapse authored autotile variants.
   const tileset = currentTilesetForPalette();
-  const displayTile = tileset ? rm2kPaletteDisplayTile(tileset, tile) : tile;
+  const displayTile = tileset && !isCustomTileset(tileset) ? rm2kPaletteDisplayTile(tileset, tile) : tile;
   const cell =
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + displayTile + '"]') ??
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + tile + '"]') ??

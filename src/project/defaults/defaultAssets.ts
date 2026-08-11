@@ -46,6 +46,7 @@ function makeBundledTileset(id: string, name: string, textureKey: string): Tiles
     id,
     name,
     image: bundledAssetRef(textureKey),
+    kind: "rpg2k",
     tileSize: DEFAULT_TILE_SIZE,
     tilesPerRow: DEFAULT_TILES_PER_ROW,
     count,

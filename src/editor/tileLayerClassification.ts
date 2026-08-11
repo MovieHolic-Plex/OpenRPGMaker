@@ -8,18 +8,27 @@
 import { userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { isPropOverlayChipsetTile } from "@/project/defaults/chipsetMapping";
 import { harnessGroupForTile, isTreeTrunkTileId, isUpperOnlyOverlayTile } from "@/project/tilesetHarness";
+import { isCustomTileset } from "@/project/tilesetKind";
 import type { TilesetDef } from "@/project/types";
 
 export type TileLayerHome = "lower" | "upper" | "both";
 
 export function tilesetHasLayerClassification(tileset: TilesetDef): boolean {
-  return tileset.priority.includes("upper");
+  return isCustomTileset(tileset)
+    ? tileset.priority.length >= tileset.count
+      || tileset.tileGroups?.some((group) => group.defaultLayer === "upper") === true
+    : tileset.priority.includes("upper");
 }
 
 export function tileLayerHome(tileset: TilesetDef, tile: number): TileLayerHome {
   // 1) 사용자가 DB 타일셋 편집기에서 명시한 레이어가 최우선.
   const override = userTileLayerOverride(tileset, tile);
   if (override) return override;
+  // Arbitrary atlases have no RM2K tile-number semantics. Explicit priority is authoritative.
+  if (isCustomTileset(tileset)) {
+    if (!tilesetHasLayerClassification(tileset)) return "both";
+    return tileset.priority[tile] ?? "lower";
+  }
   // 2) 투명 배경 칩은 그룹/priority보다 먼저 상위 전용으로 판정한다 — 하위에 깔리면
   //    투명 부분 아래에 지형이 없어 검게 보인다(예: 벤치 357, 사선 지붕 385).
   //    나무 밑동(290…)은 투명해도 하위(수관과 같은 칸 스택).

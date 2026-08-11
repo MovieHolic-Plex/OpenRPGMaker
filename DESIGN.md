@@ -260,12 +260,12 @@ All spacing derives from 4px.
 - **Body**: left sidebar and center Phaser surface; left sidebar is resizable and the canvas owns the remaining width.
 - **Left sidebar**: `268px` default and min, `380px` max (`editor.ts` resizer clamps). Holds tool palette, tile/chipset palette, layer selector, and map tree. Collapsible via the toolbar.
 - **Center work area**: fills remaining width, centers the Phaser canvas in a recessed well. Canvas controls must not change canvas dimensions.
-- **Database and Resources**: opened from the topbar as modal work windows, not docked side panels.
+- **Database and Resources**: opened from the topbar as work windows. The Database window has an explicit dock toggle and may become a contained docked panel; Resources remains a modal work window.
 - **Statusbar**: `22px` (`.editor-statusbar`). Shows layer, tile coordinate, current map, zoom, autosave/validation state.
 
-### Compact / mobile
+### Desktop support floor
 
-- Below `1024px` (`RESPONSIVE_BREAKPOINT`), the left panel collapses; the canvas remains the primary surface.
+- The editor is desktop-only. `1024px` is the minimum supported viewport width; `1024×768`, `1280×800`, and `1440×900` are the shell acceptance matrix. Below `1024px` is not a mobile support target, even if legacy collapse styles remain present.
 - Maintain ≥ `32px` targets for touch and ≥ `24px` for dense desktop icon buttons. Do not scale editor text with viewport width — use layout changes instead.
 
 ## 5. Components
@@ -380,3 +380,12 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 - Focus stays visible via `--accent`.
 - Text and UI chrome should meet WCAG AA contrast. Pixel assets are exempt as artwork; labels and overlays are not.
 - Save failures, import errors, and destructive confirmations must be announced via visible text and an accessible live region (`toast`).
+
+## 10. Desktop UI integration truth (2026-08-11)
+
+- Basic and Expert are desktop density modes, not separate responsive products. Basic retains the 48px AI restore rail and direct layer controls; Expert retains the full palette and workbench.
+- The AI assistant is map-first collapsed by preference. Its side/float restore rail is keyboard reachable; restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport.
+- Event-editor ownership is the desktop matrix `1586×992`, `1280×900`, `1024×768`, and `960×900`. Its top strip, two-column workbench, conditions, command list, and footer stay in normal non-overlapping flow, and coachmarks are suppressed while it is open.
+- Test Play uses whole-number fit-without-crop scaling: the `320×240` runtime stays centered, 4:3, fully visible, and nearest-neighbor sharp. Title options expose one roving Tab stop; arrow navigation, keyboard confirmation, and trusted pointer activation share the same selected-option path.
+- Shared `showConfirm`/`showAlert` dialogs expose programmatic title/message relationships, focus the first action deterministically, trap Tab/Shift+Tab, route Escape through the top `modalStack` entry, and restore only an opener that is still attached.
+- Modern Exteriors asset packaging, custom-atlas layers, seeding, remote persistence, and the Modern remote diagnostic remain blocked pending repository-visible redistribution rights. Those workstreams have no local-fixture or DB-write substitute.

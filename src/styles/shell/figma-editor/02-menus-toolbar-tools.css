@@ -19,6 +19,11 @@
     transition: background var(--transition-fast), color var(--transition-fast);
   }
 
+  .editor-ui-mode-btn,
+  .rm2k3-window-control {
+    min-height: 32px;
+  }
+
   .rm2k3-menu-item:hover,
   .rm2k3-menu-item:focus-visible,
   .rm2k3-menu-item[aria-expanded="true"] {

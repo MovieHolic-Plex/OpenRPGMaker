@@ -68,6 +68,10 @@ export function validateTileset(id: string, value: unknown): void {
   requireString(`tileset ${id}.id`, tileset.id);
   requireString(`tileset ${id}.name`, tileset.name);
   validateAssetRef(`tileset ${id}.image`, tileset.image);
+  if (tileset.kind !== undefined) {
+    const kind = requireString(`tileset ${id}.kind`, tileset.kind);
+    assert(kind === "rpg2k" || kind === "custom", `tileset ${id}: kind must be rpg2k or custom`);
+  }
   const count = requireNumber(`tileset ${id}.count`, tileset.count);
   requireNumber(`tileset ${id}.tileSize`, tileset.tileSize);
   requireNumber(`tileset ${id}.tilesPerRow`, tileset.tilesPerRow);

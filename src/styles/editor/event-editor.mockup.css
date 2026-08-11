@@ -678,10 +678,6 @@
   grid-auto-rows: min-content;
 }
 
-.event-editor > .event-editor-workbench {
-  min-height: 46vh;
-}
-
 /* 번호 탭이 상단 스트립으로 나간 뒤, top-strip 안의 .event-page-tabs 는
  * 액션 버튼(새 페이지/페이지 복사)만 남는데 옛 높이를 유지해 235px 빈 칸이 됐다. */
 .event-editor .event-editor-top-strip {
@@ -711,30 +707,9 @@
 
 /* top-strip 이 grid 인 채로는 행이 234px 로 잡혀(내용은 43px) 거대한 빈 칸이 생겼다.
  * 내용 높이를 그대로 따르는 flex 로 바꾼다. */
-.event-editor > .event-editor-top-strip {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  min-height: 0;
-  height: auto;
-}
-
-.event-editor > .event-editor-top-strip > .event-editor-identity-row {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.event-editor > .event-editor-top-strip > .event-page-tabs {
-  flex: 0 0 auto;
-}
 
 /* 그리드 행이 어떤 이유로든 늘어나도 상단 스트립은 한 줄 컨트롤 높이를 넘지 않는다.
  * (측정: 내용 43px 인데 행이 235px 로 잡혀 빈 칸이 됐다) */
-.event-editor > .event-editor-top-strip {
-  max-height: 52px;
-  overflow: visible;
-}
-
 .event-editor > .event-editor-id-row {
   max-height: 40px;
 }
@@ -769,6 +744,7 @@
 
 .event-editor-modal-dynamic .event-editor > .event-page-number-tabs,
 .event-editor-modal-dynamic .event-editor > .event-editor-top-strip,
+.event-editor-modal-dynamic .event-editor > .event-editor-card,
 .event-editor-modal-dynamic .event-editor > .event-editor-id-row,
 .event-editor-modal-dynamic .event-editor > .event-editor-diff,
 .event-editor-modal-dynamic .event-editor > .event-draft-validation {
@@ -1099,7 +1075,7 @@
   padding: 10px 12px 12px;
   gap: 8px;
   min-height: 0;
-  grid-template-rows: 32px auto auto minmax(0, 1fr) auto;
+  grid-template-rows: 32px 32px auto auto minmax(0, 1fr) auto;
 }
 
 .event-editor .event-contents-fieldset > .event-contents-legend {
@@ -1114,33 +1090,48 @@
   float: none;
 }
 
-.event-editor .event-contents-fieldset > .event-editor-command-toolbar {
+.event-editor .event-contents-fieldset > .event-view-toggle {
+  align-self: center;
+  grid-column: 1 / -1;
   grid-row: 1;
-  grid-column: 2;
-  min-height: 32px;
+  justify-self: end;
+  max-width: calc(100% - 132px);
 }
 
-.event-editor .event-contents-fieldset > .cmd-list {
-  grid-row: 4;
-  grid-column: 1 / -1;
-}
-
-.event-editor .event-contents-fieldset > .event-command-legend {
-  grid-row: 5;
-  grid-column: 1 / -1;
-}
-
-.event-editor .event-contents-fieldset > .event-editor-follower-preset-bar {
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar {
   grid-column: 1 / -1;
   grid-row: 2;
+  min-height: 32px;
 }
 
 .event-editor .event-contents-fieldset > .event-storyboard-host {
   grid-column: 1 / -1;
-  grid-row: 3;
-  min-width: 0;
+  grid-row: 4;
+  min-height: 0;
+  overflow: auto;
 }
 
+.event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
+.event-editor .event-contents-fieldset > .cmd-list[hidden] {
+  display: none !important;
+}
+
+.event-editor .event-contents-fieldset > .cmd-list {
+  grid-column: 1 / -1;
+  grid-row: 5;
+}
+
+.event-editor .event-contents-fieldset > .event-command-legend {
+  grid-column: 1 / -1;
+  grid-row: 6;
+}
+
+.event-editor .event-contents-fieldset > .event-editor-follower-preset-bar {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+.event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
 .event-editor .event-contents-fieldset > .cmd-list[hidden],
 .event-editor .event-storyboard-host > .event-storyboard[hidden],
 .event-editor .event-storyboard-host > .event-graph-placeholder[hidden] {
@@ -1198,6 +1189,12 @@
 
 .event-editor .event-command-legend-label {
   font-size: 10px;
+}
+
+@media (max-height: 800px) {
+  .event-editor .event-contents-fieldset .cmd-list:has(> .event-command-empty-experience) {
+    align-content: start;
+  }
 }
 
 /* 탭 검사 배지는 ::after(attr(data-label)) 로 그려지고 절대배치라 겹쳤다. */

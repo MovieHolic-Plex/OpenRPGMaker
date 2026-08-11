@@ -23,6 +23,14 @@
   bottom: -10px;
 }
 
+.player-layout.system-shell .rm-title-screen .rm-title-screen-logo {
+  height: 70px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  z-index: 2;
+}
+
 .player-layout.system-shell .rm-title-menu {
   background: var(--runtime-window-fill-fallback);
   border: var(--runtime-window-border) solid transparent;
@@ -47,6 +55,7 @@
   text-shadow:
     1px 0 0 var(--rm2k3-title-window-shadow),
     0 1px 0 var(--rm2k3-title-window-shadow);
+  pointer-events: auto;
 }
 
 .player-layout.system-shell .rm-title-menu-button.selected::before {
@@ -54,6 +63,12 @@
   border-left-width: 10px;
   border-top-width: 6px;
   left: 9px;
+}
+
+.player-layout.system-shell .rm-title-menu-button:focus-visible {
+  background: var(--runtime-window-selected-bg);
+  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
+  outline: none;
 }
 
 .player-layout.system-shell .rm-title-input-hint {

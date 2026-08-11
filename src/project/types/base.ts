@@ -254,10 +254,15 @@ export interface HouseStructureKitDef {
 
 export type StructureKitDef = SectionStructureKitDef | HouseStructureKitDef;
 
+/** Editor-facing chipset classification. Omitted legacy records are inferred conservatively. */
+export type TilesetKind = "rpg2k" | "custom";
+
 export interface TilesetDef {
   id: TilesetId;
   name: string;
   image: AssetRef;
+  /** RPG 2000/2003 480-chip layout, or an arbitrary rectangular custom atlas. */
+  kind?: TilesetKind;
   tileSize: number;
   tilesPerRow: number;
   count: number;

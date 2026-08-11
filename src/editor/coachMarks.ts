@@ -45,11 +45,22 @@ export const BASIC_COACH_MARKS: readonly CoachMarkStep[] = [
 const CARD_WIDTH = 280;
 const MARGIN = 12;
 
+type CoachMarkPositionInput = {
+  readonly side: CoachMarkStep["side"];
+  readonly anchor: {
+    readonly left: number;
+    readonly top: number;
+    readonly right: number;
+    readonly bottom: number;
+    readonly width: number;
+  };
+  readonly viewport: { readonly width: number; readonly height: number };
+  readonly card: { readonly width: number; readonly height: number };
+};
+
 /** 앵커 rect와 뷰포트로 카드 좌표를 계산한다 (뷰포트 밖으로 나가지 않게 clamp). */
 export function coachMarkPosition(
-  side: CoachMarkStep["side"],
-  anchor: { readonly left: number; readonly top: number; readonly right: number; readonly bottom: number; readonly width: number },
-  viewport: { readonly width: number; readonly height: number },
+  { side, anchor, viewport, card }: CoachMarkPositionInput,
 ): { readonly left: number; readonly top: number } {
   let left: number;
   let top: number;
@@ -57,14 +68,14 @@ export function coachMarkPosition(
     left = anchor.right + MARGIN;
     top = anchor.top + MARGIN;
   } else if (side === "left") {
-    left = anchor.left - CARD_WIDTH - MARGIN;
+    left = anchor.left - card.width - MARGIN;
     top = anchor.top + MARGIN;
   } else {
-    left = anchor.left + anchor.width / 2 - CARD_WIDTH / 2;
+    left = anchor.left + anchor.width / 2 - card.width / 2;
     top = anchor.top + MARGIN;
   }
-  left = Math.max(MARGIN, Math.min(left, viewport.width - CARD_WIDTH - MARGIN));
-  top = Math.max(MARGIN, Math.min(top, Math.max(MARGIN, viewport.height - 160)));
+  left = Math.max(MARGIN, Math.min(left, viewport.width - card.width - MARGIN));
+  top = Math.max(MARGIN, Math.min(top, Math.max(MARGIN, viewport.height - card.height - MARGIN)));
   return { left, top };
 }
 
@@ -113,18 +124,13 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
     width: typeof window !== "undefined" && window.innerWidth ? window.innerWidth : 1280,
     height: typeof window !== "undefined" && window.innerHeight ? window.innerHeight : 800,
   };
-  const position =
-    rect && (rect.width > 0 || rect.height > 0)
-      ? coachMarkPosition(step.side, rect, viewport)
-      : { left: Math.max(MARGIN, viewport.width / 2 - CARD_WIDTH / 2), top: 120 };
-
   const isLast = stepIndex === BASIC_COACH_MARKS.length - 1;
   const card = el("div", {
     class: "coach-mark-card",
     attrs: {
       role: "dialog",
       "aria-label": `안내 ${stepIndex + 1}/${BASIC_COACH_MARKS.length}: ${step.title}`,
-      style: `left:${position.left}px;top:${position.top}px;width:${CARD_WIDTH}px;`,
+      style: `left:0;top:0;width:${CARD_WIDTH}px;visibility:hidden;`,
     },
     dataset: { testid: `coach-mark-${step.id}` },
     children: [
@@ -167,6 +173,20 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
   });
   activeHost = card;
   document.body.append(card);
+  const cardRect = card.getBoundingClientRect();
+  const cardSize = {
+    width: cardRect.width || CARD_WIDTH,
+    height: Math.max(cardRect.height, card.scrollHeight),
+  };
+  const position = rect && (rect.width > 0 || rect.height > 0)
+    ? coachMarkPosition({ side: step.side, anchor: rect, viewport, card: cardSize })
+    : {
+        left: Math.max(MARGIN, viewport.width / 2 - cardSize.width / 2),
+        top: Math.min(120, Math.max(MARGIN, viewport.height - cardSize.height - MARGIN)),
+      };
+  card.style.left = `${position.left}px`;
+  card.style.top = `${position.top}px`;
+  card.style.visibility = "visible";
 }
 
 /**

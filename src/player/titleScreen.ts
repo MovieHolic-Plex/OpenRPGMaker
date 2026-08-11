@@ -1,5 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { applySystemGraphic, applyTitleScreenBackground } from "@/player/systemGraphics";
+import { applyTitleScreenBackground } from "@/player/systemGraphics";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
@@ -24,6 +24,7 @@ export type TitleMenuOptionId = "newGame" | "continueGame" | "quit";
 export type TitleMenuOption = {
   readonly id: TitleMenuOptionId;
   readonly testId: "title-new-game" | "title-load-game" | "title-quit-game";
+  readonly elementId: "title-option-new-game" | "title-option-load-game" | "title-option-quit-game";
   readonly label: string;
 };
 
@@ -34,6 +35,7 @@ export function listTitleMenuOptions(settings: TitleScreenSettings): TitleMenuOp
     {
       id: "newGame",
       testId: "title-new-game",
+      elementId: "title-option-new-game",
       label: settings.menuLabels.newGame,
     },
   ];
@@ -41,6 +43,7 @@ export function listTitleMenuOptions(settings: TitleScreenSettings): TitleMenuOp
     options.push({
       id: "continueGame",
       testId: "title-load-game",
+      elementId: "title-option-load-game",
       label: settings.menuLabels.continueGame,
     });
   }
@@ -48,6 +51,7 @@ export function listTitleMenuOptions(settings: TitleScreenSettings): TitleMenuOp
     options.push({
       id: "quit",
       testId: "title-quit-game",
+      elementId: "title-option-quit-game",
       label: settings.menuLabels.quit,
     });
   }
@@ -61,6 +65,12 @@ export function clampTitleMenuIndex(index: number, count: number): number {
   return Math.min(Math.trunc(index), safeCount - 1);
 }
 
+export function focusSelectedTitleOption(title: HTMLElement): void {
+  const option = Array.from(title.querySelectorAll<HTMLElement>(".rm-title-menu-button"))
+    .find((candidate) => candidate.getAttribute("tabindex") === "0");
+  option?.focus({ preventScroll: true });
+}
+
 export function renderTitleScreen(project: Project, actions: TitleScreenActions, selectedIndex = 0): HTMLElement {
   const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
   const backgroundResourceId = settings.backgroundResourceId ?? project.system.titleResourceId;
@@ -71,8 +81,9 @@ export function renderTitleScreen(project: Project, actions: TitleScreenActions,
     dataset: { testid: "title-screen" },
   });
   applyTitleScreenBackground(title, backgroundResourceId, project);
-  // Title menu window chrome follows systemResourceId (same as field menus).
-  applySystemGraphic(title, project);
+  // The full-screen title root owns the key art. Menu chrome consumes the runtime
+  // windowskin CSS variable without applying the 9-slice fill over the artwork.
+  applyTitleMenuGraphic(title, project);
   title.append(...renderTitleNodes(settings, project));
   const showInputHint = settings.showInputHint !== false;
   title.append(renderMenu(settings, options, clampedIndex, actions, showInputHint));
@@ -81,6 +92,15 @@ export function renderTitleScreen(project: Project, actions: TitleScreenActions,
   }
   title.append(titleSelectionDebug(clampedIndex));
   return title;
+}
+
+function applyTitleMenuGraphic(node: HTMLElement, project: Project): void {
+  const resourceId = project.system.systemResourceId || "windowskin-rm2003";
+  node.dataset.systemResource = resourceId;
+  // CSS keeps the menu's existing border-image contract; set only the variable so
+  // the full-screen root cannot paint a 9-slice fill over the key art.
+  const url = resolveAssetResourceUrl(resourceId, { project }) ?? "/assets/ui/windowskin-rm2003.png";
+  node.style.setProperty("--runtime-window-skin", `url("${url}")`);
 }
 
 function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTMLElement[] {
@@ -180,6 +200,7 @@ function renderMenu(
   const menu = el("div", {
     class: "rm-title-menu",
     attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
+    dataset: { playInputOwner: "title-controls" },
   });
   menu.style.left = logicalX(settings.layout.menuX);
   menu.style.top = logicalY(titleMenuTop(settings.layout.menuY, options.length, hintVisible));
@@ -188,6 +209,7 @@ function renderMenu(
       titleOption(
         option.label,
         option.testId,
+        option.elementId,
         index === selectedIndex,
         activateForOption(option.id, actions),
       ),
@@ -210,14 +232,16 @@ function activateForOption(id: TitleMenuOptionId, actions: TitleScreenActions): 
 function titleOption(
   label: string,
   testId: string,
+  elementId: string,
   selected: boolean,
   onActivate: () => void,
 ): HTMLElement {
   const attrs: Record<string, string> = {
     role: "option",
     "aria-selected": selected ? "true" : "false",
+    id: elementId,
     // div+role 유지: 키보드 네비는 player.ts 가 담당, 클릭만 여기서 연결.
-    tabindex: "-1",
+    tabindex: selected ? "0" : "-1",
   };
   if (selected) attrs["aria-current"] = "true";
   return el("div", {

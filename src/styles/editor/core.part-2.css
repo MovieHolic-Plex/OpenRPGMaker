@@ -660,6 +660,26 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   opacity: 1;
 }
 
+@media (min-width: 1024px) {
+  .persistence-mode-banner-action,
+  .persistence-mode-banner-close {
+    align-items: center;
+    box-sizing: border-box;
+    justify-content: center;
+    min-height: 32px;
+    min-width: 32px;
+  }
+
+  .persistence-mode-banner-action {
+    display: inline-flex;
+  }
+
+  .persistence-mode-banner-close {
+    display: inline-flex;
+    line-height: 1;
+  }
+}
+
 .persistence-mode-banner.is-local-only {
   background: #4a4420;
   color: #f4ecc8;

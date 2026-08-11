@@ -10,6 +10,14 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 - For future editor workflow changes, run the smallest focused Vitest or Playwright path that proves the touched surface, then record the exact command and pass/fail excerpt under task evidence.
 - For event-command parity changes, include focused tests for the support table, command-list/picker badge metadata, `projectLint` warning output, and write-tool `ToolResult.issues` propagation. `projectLint` reports non-full map/common/troop-event runtime support as warning code `runtime-support:<commandKind>`; `upsert_event` and `upsert_common_event` summaries also report the unsupported-command count.
 
+## Desktop UI integration matrix (2026-08-11)
+
+- Treat `1024×768`, `1280×800`, and `1440×900` as the Basic/Expert shell matrix. Assert body/document width containment, contained menu and focus rectangles, visible status controls, and no mobile/touch fallback claim below the `1024px` floor.
+- Cover the Database dock toggle, AI collapsed restore/composer reachability, and Test Play fit-without-crop/title roving-focus paths through trusted browser input. Confirm shared application dialogs have accessible title/message references, deterministic focus, Tab/Shift+Tab wrapping, topmost-only Escape, and attached-opener restoration.
+- Event editor evidence must cover `1586×992`, `1280×900`, `1024×768`, and `960×900`: no top strip/workbench/condition/footer overlap, no coachmark intersection, keyboard-operable resizers, and a trusted open/edit/cancel path.
+- Browser policy allows only the documented optional `127.0.0.1:17831` developer bridge refusal (and intentionally aborted requests); any other console error, page error, or failed request is a failure. Store fresh screenshots and metrics with their viewport and localStorage setup.
+- Tasks involving Modern Exteriors packaging, custom atlas layers, canonical remote seed/reload, or the Modern remote browser diagnostic remain blocked until redistribution rights are repository-visible. Do not use a local fixture, a blank-project route, or a DB write as a substitute for that blocked proof.
+
 
 
 ## Event editor aggregate gate (2026-07-30)

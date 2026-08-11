@@ -143,7 +143,7 @@
   font-size: 13px;
   font-weight: 700;
   gap: var(--space-1);
-  min-height: 32px;
+  min-height: 44px;
   padding: 0 12px;
   white-space: nowrap;
 }
@@ -244,9 +244,9 @@ body.ai-panel-docked .editor-layout {
 
 /* ?ъ씠???꾪겕 ?묓옒: 1/3 而щ읆???듭㎏濡??⑤뜕 媛???湲곕줉 ?꾪겕? ?숈씪??44px ?덉씪濡?利됱떆 ?ㅻ깄. */
 .editor-layout .ai-chat-side-panel:has(.ai-chat-panel.is-collapsed) {
-  flex-basis: 44px !important;
-  min-width: 44px;
-  width: 44px !important;
+  flex-basis: 48px !important;
+  min-width: 48px;
+  width: 48px !important;
 }
 .ai-chat-panel.chat-dock-side.is-collapsed {
   padding: 0;

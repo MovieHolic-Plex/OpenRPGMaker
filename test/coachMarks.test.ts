@@ -50,17 +50,27 @@ function click(testId: string): void {
 
 describe("coachMarkPosition", () => {
   const viewport = { width: 1280, height: 800 };
+  const card = { width: 280, height: 196 };
 
   it("side별로 앵커 기준 위치를 계산하고 뷰포트 안으로 clamp한다", () => {
     const anchor = { left: 0, top: 100, right: 48, bottom: 500, width: 48 };
-    expect(coachMarkPosition("right", anchor, viewport).left).toBe(60);
+    expect(coachMarkPosition({ side: "right", anchor, viewport, card }).left).toBe(60);
 
     const rightEdge = { left: 1240, top: 100, right: 1280, bottom: 500, width: 40 };
-    const clamped = coachMarkPosition("right", rightEdge, viewport);
+    const clamped = coachMarkPosition({ side: "right", anchor: rightEdge, viewport, card });
     expect(clamped.left + 280).toBeLessThanOrEqual(viewport.width);
 
     const leftEdge = { left: 4, top: 100, right: 44, bottom: 500, width: 40 };
-    expect(coachMarkPosition("left", leftEdge, viewport).left).toBeGreaterThanOrEqual(12);
+    expect(coachMarkPosition({ side: "left", anchor: leftEdge, viewport, card }).left).toBeGreaterThanOrEqual(12);
+  });
+
+  it("uses the measured card height when clamping the lower edge", () => {
+    const lowAnchor = { left: 400, top: 760, right: 520, bottom: 790, width: 120 };
+    const compactCard = { width: 280, height: 104 };
+    const tallCard = { width: 280, height: 244 };
+
+    expect(coachMarkPosition({ side: "below", anchor: lowAnchor, viewport, card: compactCard }).top).toBe(684);
+    expect(coachMarkPosition({ side: "below", anchor: lowAnchor, viewport, card: tallCard }).top).toBe(544);
   });
 });
 

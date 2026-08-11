@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   clampTitleMenuIndex,
+  focusSelectedTitleOption,
   listTitleMenuOptions,
   renderTitleScreen,
   titleMenuHeight,
@@ -78,6 +79,29 @@ describe("title screen", () => {
       // 마지막 항목이 안내 창에 가려지므로 titleMenuTop 이 116 으로 끌어올린다(=48.3333%).
       // 규칙 자체는 아래 "clamps the menu above the input hint" 테스트가 담당한다.
       expect(menu.style.top).toBe("48.3333%");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps the title artwork visible while exposing windowskin chrome to child menus", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundResourceId: "rpg-zzu-title-blue",
+      });
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      expect(screen.style.backgroundImage).toContain("default-title-blue.png");
+      expect(screen.style.borderImageSource).toBeUndefined();
+      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
     } finally {
       restoreDom();
     }
@@ -183,6 +207,37 @@ describe("title screen", () => {
     }
   });
 
+  it("gives exactly one stable title option the roving tab stop and focuses it", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }, 1),
+      );
+
+      const newGame = findByTestId(screen, "title-new-game");
+      const load = findByTestId(screen, "title-load-game");
+      const quit = findByTestId(screen, "title-quit-game");
+      expect([newGame, load, quit].filter((option) => option?.attrs.tabindex === "0")).toHaveLength(1);
+      expect(newGame?.attrs.id).toBe("title-option-new-game");
+      expect(load?.attrs.id).toBe("title-option-load-game");
+      expect(quit?.attrs.id).toBe("title-option-quit-game");
+      expect(newGame?.attrs.tabindex).toBe("-1");
+      expect(load?.attrs.tabindex).toBe("0");
+      expect(load?.attrs["aria-selected"]).toBe("true");
+      expect(quit?.attrs["aria-selected"]).toBe("false");
+
+      focusSelectedTitleOption(screen);
+      expect(document.activeElement).toBe(load);
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("lists visible options New→Continue→Quit with stable ids/testIds", () => {
     const defaults = defaultTitleScreenSettings();
     expect(listTitleMenuOptions(defaults).map((option) => option.id)).toEqual([
@@ -210,7 +265,12 @@ describe("title screen", () => {
       menuVisibility: { newGame: true, continueGame: false, quit: false },
     });
     expect(listTitleMenuOptions(onlyNew)).toEqual([
-      { id: "newGame", testId: "title-new-game", label: defaults.menuLabels.newGame },
+      {
+        id: "newGame",
+        testId: "title-new-game",
+        elementId: "title-option-new-game",
+        label: defaults.menuLabels.newGame,
+      },
     ]);
   });
 

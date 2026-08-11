@@ -179,6 +179,8 @@ function renderCommandItem(
   head.addEventListener("dblclick", (event) => {
     // 버튼(↑↓x)·드래그 핸들 더블클릭은 편집 모달을 열지 않는다(각자 동작을 유지한다).
     if (event.target instanceof Element && event.target.closest(".cmd-actions, .cmd-drag-handle")) return;
+    event.preventDefault();
+    event.stopPropagation();
     selectCommandLine(item);
     openEditor();
   });

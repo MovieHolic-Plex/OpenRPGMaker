@@ -1,8 +1,8 @@
 ﻿import type { Layer } from "@/editor/editorState";
-import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { CHIPSET_TILE_GROUPS, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
+import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import type { AutotileGroup, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -13,6 +13,8 @@ import { el } from "@/util/dom";
 // RM2003과 동일하게 대표 1칸(물=0, 폭포=93)으로 축약한다.
 
 export const RM2K_PALETTE_COLUMNS = 6;
+export const CUSTOM_PALETTE_MIN_CELL_SIZE = 16;
+
 
 export type Rm2kAutotileEntry = {
   readonly id: string;
@@ -34,6 +36,9 @@ type MakeRm2kPaletteArgs = {
   readonly selectedTile: number;
   readonly tileset: TilesetDef;
 };
+
+type MakeCustomPaletteArgs = MakeRm2kPaletteArgs;
+
 
 /** 그룹의 대표(anchor) 타일 — 이웃이 전혀 없는 mask 0 변형(외딴 점). 없으면 첫 멤버. */
 export function autotileRepresentativeTile(group: AutotileGroup): number {
@@ -61,7 +66,7 @@ function collapsedEntrySources(tileset: TilesetDef): readonly CollapsedEntrySour
     sources.push({
       id: "chipset_lake_water",
       name: "물",
-      representativeTile: CHIPSET_TILE_GROUPS.lakeShoreEdgeAnimationFrames[0] ?? 0,
+      representativeTile: 0,
       collapsedTiles: [
         ...CHIPSET_TILE_GROUPS.lakeShoreEdgeAnimationFrames,
         ...CHIPSET_TILE_GROUPS.lakeWaterBodyAnimationFrames,
@@ -71,8 +76,8 @@ function collapsedEntrySources(tileset: TilesetDef): readonly CollapsedEntrySour
     sources.push({
       id: "chipset_waterfall",
       name: "폭포",
-      representativeTile: CHIPSET_TILE_GROUPS.waterfallWaterAnimationFrames[0] ?? 93,
-      collapsedTiles: [...CHIPSET_TILE_GROUPS.waterfallWaterAnimationFrames],
+      representativeTile: 93,
+      collapsedTiles: [93, 94, ...CHIPSET_TILE_GROUPS.waterfallWaterAnimationFrames],
     });
   }
   for (const group of autotileGroupsForTileset(tileset)) {
@@ -84,6 +89,12 @@ function collapsedEntrySources(tileset: TilesetDef): readonly CollapsedEntrySour
     });
   }
   return sources;
+}
+
+export function buildCustomPaletteModel(tileset: TilesetDef): readonly number[] {
+  // Custom sheets are visual source material, not a semantic tile list. Keep every
+  // source cell in its original row/column position; layer routing happens on select.
+  return Array.from({ length: tileset.count }, (_, tileId) => tileId);
 }
 
 export function buildRm2kPaletteModel(tileset: TilesetDef, layer: Exclude<Layer, "event">): Rm2kPaletteModel {
@@ -153,6 +164,31 @@ export function makeRm2kPalette(args: MakeRm2kPaletteArgs): HTMLElement {
   return sheet;
 }
 
+export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
+  const columns = Math.max(1, args.tileset.tilesPerRow);
+  const rows = Math.max(1, Math.ceil(args.tileset.count / columns));
+  const sheet = el("div", {
+    class: "chipset-sheet tile-palette custom-palette",
+    dataset: {
+      testid: "tile-palette",
+      paletteKind: "custom",
+      sourceColumns: String(columns),
+      sourceRows: String(rows),
+    },
+    attrs: { style: `--custom-cols:${columns};--custom-rows:${rows};--custom-min-cell:${CUSTOM_PALETTE_MIN_CELL_SIZE}px` },
+  });
+  const grid = el("div", {
+    class: "chipset-grid custom-palette-grid",
+    dataset: { testid: "custom-palette-grid" },
+    attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
+  });
+  for (const tileId of buildCustomPaletteModel(args.tileset)) {
+    grid.append(makePaletteCell(args, tileId));
+  }
+  sheet.append(grid);
+  return sheet;
+}
+
 function makeRm2kCell(args: MakeRm2kPaletteArgs, tileId: number, autotileName?: string): HTMLButtonElement {
   const bannedReason = bannedTileReason(tileId);
   const waterKind = waterTileKind(tileId);
@@ -160,11 +196,20 @@ function makeRm2kCell(args: MakeRm2kPaletteArgs, tileId: number, autotileName?: 
     ? `${tileId} ${autotileName} (오토타일 — 이웃에 맞춰 자동 성형)`
     : rm2kTileTitle(args.tileset, tileId);
   const title = bannedReason ? `${titleBase} [사용 금지: ${bannedReason}]` : waterKind ? `${titleBase} [${waterKind}]` : titleBase;
+  return makePaletteCell(args, tileId, title, {
+    className: (autotileName !== undefined ? " rm2k-autotile" : "") + (bannedReason ? " banned" : ""),
+    badge: autotileName !== undefined ? "◆" : undefined,
+  });
+}
+
+function makePaletteCell(
+  args: MakeRm2kPaletteArgs,
+  tileId: number,
+  title = rm2kTileTitle(args.tileset, tileId),
+  decorations: { readonly badge?: string; readonly className?: string } = {}
+): HTMLButtonElement {
   const cell = el("button", {
-    class: "chipset-tile"
-      + (args.selectedTile === tileId ? " active" : "")
-      + (autotileName !== undefined ? " rm2k-autotile" : "") +
-      (bannedTileReason(tileId) ? " banned" : ""),
+    class: "chipset-tile" + (args.selectedTile === tileId ? " active" : "") + (decorations.className ?? ""),
     attrs: {
       title,
       type: "button",
@@ -173,7 +218,6 @@ function makeRm2kCell(args: MakeRm2kPaletteArgs, tileId: number, autotileName?: 
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
     on: {
-      // 선택은 pointerdown에서 즉시 — click(down+up 쌍)은 도중에 패널이 재구축되면 증발한다.
       pointerdown: (event) => {
         if ("button" in event && typeof event.button === "number" && event.button !== 0) return;
         event.preventDefault();
@@ -182,10 +226,10 @@ function makeRm2kCell(args: MakeRm2kPaletteArgs, tileId: number, autotileName?: 
       click: (event) => event.preventDefault(),
     },
   });
-  if (autotileName !== undefined) {
+  if (decorations.badge) {
     cell.append(el("span", {
       class: "rm2k-autotile-badge",
-      text: "◆",
+      text: decorations.badge,
       attrs: { "aria-hidden": "true" },
     }));
   }

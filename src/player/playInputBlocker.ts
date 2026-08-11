@@ -45,7 +45,7 @@ export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
   // 실사용자(webdriver 부재)는 필드 플레이 중 마우스를 막되, 타이틀 메뉴 항목은
   // 클릭으로 시작/이어하기/종료가 되게 예외를 둔다.
   if (isAutomationPointerAllowed()) return false;
-  if (isTitleMenuPointerTarget(event.target)) return false;
+  if (isTitleControlPointerTarget(event.target)) return false;
   if (isTouchControlPointerTarget(event.target)) return false;
   if (event.type !== "click") return true;
   // 키보드 커서 메뉴는 기존 버튼 핸들러를 재사용하기 위해 HTMLElement.click()을 합성한다.
@@ -63,11 +63,8 @@ function isAutomationPointerAllowed(): boolean {
   return typeof navigator !== "undefined" && navigator.webdriver === true;
 }
 
-function isTitleMenuPointerTarget(target: EventTarget | null | undefined): boolean {
-  return hasClosestTarget(
-    target,
-    "[data-testid='title-new-game'], [data-testid='title-load-game'], [data-testid='title-quit-game']"
-  );
+function isTitleControlPointerTarget(target: EventTarget | null | undefined): boolean {
+  return hasClosestTarget(target, "[data-play-input-owner='title-controls']");
 }
 
 function hasClosestTarget(target: EventTarget | null | undefined, selector: string): boolean {

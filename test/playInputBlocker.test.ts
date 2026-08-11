@@ -20,12 +20,14 @@ describe("play pointer blocker", () => {
     expect(shouldBlockPlayPointerEvent({ type: "click" })).toBe(false);
   });
 
-  it("allows real mouse clicks on title menu options", () => {
+  it("allows real mouse clicks only within title-owned controls", () => {
     const g = globalThis as { __rpgzzuForcePointerBlock?: boolean };
     g.__rpgzzuForcePointerBlock = true;
     try {
+      const titleControls = document.createElement("section");
+      titleControls.dataset.playInputOwner = "title-controls";
       const option = document.createElement("button");
-      option.dataset.testid = "title-new-game";
+      titleControls.append(option);
       expect(shouldBlockPlayPointerEvent({ type: "click", detail: 1, target: option })).toBe(false);
       expect(shouldBlockPlayPointerEvent({ type: "pointerdown", target: option })).toBe(false);
       // 필드 클릭은 여전히 차단

@@ -141,6 +141,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
+  private lastPointerClick: EventLayerClick | null = null;
   private eventLayerClickFeedback: EventLayerClickFeedback | null = null;
   private lastPointerTile: { x: number; y: number } | null = null;
   private lastRenderedMapId: MapId | null = null;
@@ -211,11 +212,11 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   preload(): void {
-    loadBundledAssets(this);
+    loadBundledAssets(this, store.getCurrent());
   }
 
   create(): void {
-    registerBundledFrames(this);
+    registerBundledFrames(this, store.getCurrent());
     this.cameras.main.setBackgroundColor("#0f1115");
 
     this.tileLayer = this.add.container(0, 0);
@@ -273,9 +274,24 @@ export class EditScene extends PhaserRuntime.Scene {
     window.addEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
     if (typeof window !== "undefined") {
-      (window as any).__rpgzzuEditCamera = () => {
+      // e2e/진단 스펙용 후킹 — 카메라 수학을 스펙에 복제하지 않도록 엔진의 실제 값을 노출한다.
+      const editWindow = window as unknown as {
+        __rpgzzuEditCamera?: () => { scrollX: number; scrollY: number; width: number; height: number; zoom: number };
+        __rpgzzuEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
+      };
+      editWindow.__rpgzzuEditCamera = () => {
         const c = this.cameras.main;
         return { scrollX: c.scrollX, scrollY: c.scrollY, width: c.width, height: c.height, zoom: c.zoom };
+      };
+      // 월드 좌표 → 클라이언트 좌표. scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와
+      // 직접 대응하지 않으므로(실측 2026-08-11), 렌더가 실제로 쓰는 worldView 사각형을 쓴다.
+      editWindow.__rpgzzuEditWorldToClient = (worldX: number, worldY: number) => {
+        const c = this.cameras.main;
+        const rect = this.game.canvas.getBoundingClientRect();
+        return {
+          x: rect.x + (worldX - c.worldView.x) * c.zoom,
+          y: rect.y + (worldY - c.worldView.y) * c.zoom,
+        };
       };
     }
 
@@ -307,7 +323,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     if (typeof window !== "undefined") {
-      delete (window as any).__rpgzzuEditCamera;
+      const editWindow = window as unknown as { __rpgzzuEditCamera?: unknown; __rpgzzuEditWorldToClient?: unknown };
+      delete editWindow.__rpgzzuEditCamera;
+      delete editWindow.__rpgzzuEditWorldToClient;
     }
     this.clearBuildPaletteOverlay();
     this.regionTaskBadge?.remove();
@@ -996,8 +1014,21 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private pointerClickCount(ptr: Phaser.Input.Pointer): number {
     const event = ptr.event;
-    if (event instanceof MouseEvent || event instanceof PointerEvent) return event.detail;
-    return 1;
+    if (event instanceof MouseEvent || event instanceof PointerEvent) {
+      // Chromium 실측(2026-08-11): pointerdown 의 detail 은 항상 0 이고 클릭 횟수는
+      // mousedown/click 에만 실린다. Phaser 핸들러가 받는 ptr.event 는 네이티브
+      // pointerdown 이므로 detail 만으로는 더블클릭을 판별할 수 없다.
+      if (event.detail >= 2) return event.detail;
+    }
+    // 같은 타일을 500ms 안에 두 번 누르면 더블클릭으로 본다(eventLayerClickCount 와 동일 규칙).
+    const mapId = this.mapId();
+    const { x, y } = this.pointerToTile(ptr);
+    const now = Date.now();
+    const previous = this.lastPointerClick;
+    this.lastPointerClick = mapId ? { at: now, mapId, x, y } : null;
+    if (!previous || !mapId) return 1;
+    const sameTile = previous.mapId === mapId && previous.x === x && previous.y === y;
+    return sameTile && now - previous.at <= EVENT_LAYER_DOUBLE_CLICK_MS ? 2 : 1;
   }
 
   private eventLayerClickCount(target: EventLayerClickTarget): number {

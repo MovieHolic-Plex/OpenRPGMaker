@@ -14,6 +14,7 @@ const DEV_PROJECT_PARAMS = [
   "logCabinShowcase",
   "retroHouseShowcase",
   "sampleAdventure",
+  "modernNocturne",
   "shopShowcase",
   "smallHouseVariant",
   "townArchitectureCity",

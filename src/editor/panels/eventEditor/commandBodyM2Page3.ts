@@ -3,6 +3,7 @@
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { store } from "@/project/store";
+import { tilesetKind, TILESET_KIND_LABELS } from "@/project/tilesetKind";
 import type { Command, M2CommandValue } from "@/project/types";
 import { el } from "@/util/dom";
 import { databasePicker } from "./conditionForm";
@@ -1320,6 +1321,7 @@ function changeTilesetBody(context: CommandEditContext, cmd: M2Command): HTMLEle
   const tilesets = Object.values(project.tilesets).map((tileset) => ({
     id: tileset.id,
     name: tileset.name?.trim() || "(이름 없음)",
+    group: TILESET_KIND_LABELS[tilesetKind(tileset)],
   }));
   const tileset = recordPickerWithPreview({
     records: tilesets,

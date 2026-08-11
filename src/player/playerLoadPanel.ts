@@ -28,7 +28,7 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   const loadWindow = el("section", {
     class: "rm2k3-load-window",
     attrs: { "aria-label": "불러오기" },
-    dataset: { testid: "player-load-window" },
+    dataset: { testid: "player-load-window", playInputOwner: "title-controls" },
   });
   loadWindow.append(el("h2", { class: "rm2k3-load-title", text: "불러오기" }));
   if (options.message) loadWindow.append(renderSlotMessage(options.message));

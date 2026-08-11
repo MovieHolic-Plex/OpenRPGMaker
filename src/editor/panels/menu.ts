@@ -58,6 +58,8 @@ type MenuCommand =
 
 let activeMenuPopup: HTMLElement | null = null;
 let popupOutsideListener: (() => void) | null = null;
+let popupPositionCleanup: (() => void) | null = null;
+let activeMenuTrigger: HTMLElement | null = null;
 // renderTopbar가 재실행될 때마다 classicToolbarRow/classicPlayToolbarRow가 새 row에
 // installToolbarOverflow를 걸므로, 이전 호출이 남긴 document 리스너/ResizeObserver를
 // 재구축 직전에 반드시 해제해야 세션 내 리스너 누적을 막을 수 있다.
@@ -187,6 +189,11 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
         if (!(target instanceof HTMLElement)) return;
         openMenuPopup(id, target, commands);
       },
+      keydown: (event) => {
+        if (!(event instanceof KeyboardEvent) || event.key !== "Escape" || activeMenuTrigger !== event.currentTarget) return;
+        event.preventDefault();
+        closeMenuPopup({ restoreFocus: true });
+      },
     },
   });
 }
@@ -302,6 +309,22 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   popup.style.top = `${Math.round(box.bottom)}px`;
   document.body.append(popup);
   activeMenuPopup = popup;
+  activeMenuTrigger = button;
+  positionMenuPopup(popup, button);
+  popup.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    closeMenuPopup({ restoreFocus: true });
+  });
+  const reposition = () => positionMenuPopup(popup, button);
+  const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(reposition);
+  observer?.observe(popup);
+  window.addEventListener("resize", reposition);
+  popupPositionCleanup = () => {
+    observer?.disconnect();
+    window.removeEventListener("resize", reposition);
+  };
   // 바깥 클릭 시 닫기 — 단, 팝업 '안'을 누른 pointerdown은 닫지 않는다(도그푸딩 결함 ⑪ 근본 원인).
   // 기존에는 무조건 닫아서, 항목의 pointerdown이 팝업을 제거 → 이어질 click이 분리된 항목에
   // 도달하지 못해 내보내기 등 메뉴 항목 onClick이 실행되지 않았다(내보내기 무반응).
@@ -316,14 +339,33 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   popupOutsideListener = () => document.removeEventListener("pointerdown", onOutsidePointerDown);
 }
 
-function closeMenuPopup(): void {
+function closeMenuPopup(options: { readonly restoreFocus?: boolean } = {}): void {
   popupOutsideListener?.();
   popupOutsideListener = null;
+  popupPositionCleanup?.();
+  popupPositionCleanup = null;
+  const trigger = activeMenuTrigger;
+  activeMenuTrigger = null;
   activeMenuPopup?.remove();
   activeMenuPopup = null;
   document.querySelectorAll<HTMLElement>(".rm2k3-menu-item[aria-expanded='true']").forEach((node) => {
     node.setAttribute("aria-expanded", "false");
   });
+  if (options.restoreFocus && trigger?.isConnected) trigger.focus();
+}
+
+function positionMenuPopup(popup: HTMLElement, trigger: HTMLElement): void {
+  const margin = 12;
+  const triggerBox = trigger.getBoundingClientRect();
+  const popupBox = popup.getBoundingClientRect();
+  const maxLeft = Math.max(margin, window.innerWidth - popupBox.width - margin);
+  const left = Math.max(margin, Math.min(triggerBox.left, maxLeft));
+  const maxTop = Math.max(margin, window.innerHeight - popupBox.height - margin);
+  const top = triggerBox.bottom <= maxTop
+    ? triggerBox.bottom
+    : Math.max(margin, Math.min(triggerBox.top - popupBox.height, maxTop));
+  popup.style.left = `${Math.round(left)}px`;
+  popup.style.top = `${Math.round(top)}px`;
 }
 
 function menuCommands(

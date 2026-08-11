@@ -216,7 +216,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       storyboardEl.hidden = false;
     }
   }
-  storyboardHost.append(viewToggle, storyboardEl, graphPlaceholder);
+  storyboardHost.append(storyboardEl, graphPlaceholder);
   applyViewMode();
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
   // Tool-authored NPC schedules stay compact, but existing rows are editable so
@@ -268,13 +268,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       }),
     ],
   });
-  settingsColumn.append(eventCard, settingsMain);
+  settingsColumn.append(settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
       dataset: { testid: "event-classic-contents" },
       children: [
         el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
+        viewToggle,
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
         renderFollowerPresetBar({
           insertCommandsAt: (index, commands) => {
@@ -320,6 +321,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
     }),
     renderEventDiffSummary(mapId, eventId),
+    eventCard,
     workbench,
     // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
     renderEventValidationSummary(validation)
@@ -652,7 +654,11 @@ function renderEmptyCommandLine(
     attrs: { type: "button", title: "더블클릭해서 이벤트 명령을 추가" },
     dataset: { testid: "event-command-empty-line" },
     on: {
-      dblclick: openPicker,
+      dblclick: (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openPicker();
+      },
       keydown: (event) => {
         if (event instanceof KeyboardEvent && event.key === "Enter") {
           event.preventDefault();

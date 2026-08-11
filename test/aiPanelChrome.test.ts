@@ -94,6 +94,8 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(true);
     const restore = findByTestId(panel, "ai-collapsed-restore");
     expect(restore).toBeTruthy();
+    expect(restore?.getAttribute("type")).toBe("button");
+    expect(restore?.getAttribute("aria-label")).toBe("AI 패널 펼치기");
     expect(restore?.getAttribute("title")).toBe("AI 패널 펼치기");
     expect(restore?.querySelector(".ai-collapsed-restore-float")?.textContent).toBe("🤖 AI ▸");
     expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);

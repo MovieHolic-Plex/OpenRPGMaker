@@ -274,6 +274,86 @@ test("event layer canvas selects on first click and opens the editor on double c
   await page.screenshot({ path: testInfo.outputPath("event-double-click-modal.png"), fullPage: true });
 });
 
+test("event editor owns double-click and picker cancellation one layer at a time", async ({ page }, testInfo) => {
+  const browserIssues: string[] = [];
+  page.on("pageerror", (error) => browserIssues.push(`pageerror: ${error.message}`));
+  page.on("console", (message) => {
+    if (message.type() === "error") browserIssues.push(`console: ${message.text()}`);
+  });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await seedProject(page, projectWithPlacedEvent());
+
+  await page.getByTestId("layer-event").click();
+  await page.getByTestId("tool-event").click();
+  await nativeDoubleClickMapTile(page, 2, 2);
+
+  const editor = page.getByTestId("event-editor-modal");
+  const picker = page.getByTestId("event-command-picker");
+  const commandDialog = page.getByTestId("event-command-edit-dialog");
+  await expect(editor).toHaveCount(1);
+  await expect(editor).toBeVisible();
+  await expect(picker).toHaveCount(0);
+  await expect(commandDialog).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath("event-marker-double-click-editor-only.png"), fullPage: true });
+
+  await page.getByTestId("event-editor-cancel").click();
+  await expect(editor).toHaveCount(0);
+  await expect(picker).toHaveCount(0);
+  await expect(commandDialog).toHaveCount(0);
+
+  await nativeDoubleClickMapTile(page, 2, 2);
+  await expect(editor).toHaveCount(1);
+  await editor.getByRole("button", { name: "List", exact: true }).click();
+  const emptyLine = editor.getByTestId("event-command-empty-line");
+
+  await page.evaluate(() => {
+    document.body.dataset.commandPickerDoubleClickLeak = "0";
+    document.body.addEventListener("dblclick", (event) => {
+      if (event.target instanceof Element && event.target.closest('[data-testid="event-command-empty-line"]')) {
+        document.body.dataset.commandPickerDoubleClickLeak = "1";
+      }
+    }, { once: true });
+  });
+  await emptyLine.dblclick();
+  await expect(picker).toHaveCount(1);
+  await expect(picker).toBeVisible();
+  await expect(commandDialog).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => document.body.dataset.commandPickerDoubleClickLeak)).toBe("0");
+
+  await page.evaluate(() => {
+    document.body.dataset.commandPickerCancelLeak = "0";
+    document.body.addEventListener("click", (event) => {
+      if (event.target instanceof Element && event.target.closest('[data-testid="event-command-picker-cancel"]')) {
+        document.body.dataset.commandPickerCancelLeak = "1";
+      }
+    }, { once: true });
+  });
+  const cancel = picker.getByTestId("event-command-picker-cancel");
+  const cancelBox = await cancel.boundingBox();
+  if (!cancelBox) throw new Error("missing command picker Cancel box");
+  await cancel.click({ position: { x: Math.max(1, cancelBox.width - 2), y: Math.floor(cancelBox.height / 2) } });
+  await expect(picker).toHaveCount(0);
+  await expect(editor).toHaveCount(1);
+  await expect(commandDialog).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => document.body.dataset.commandPickerCancelLeak)).toBe("0");
+  await page.screenshot({ path: testInfo.outputPath("picker-pointer-edge-cancel-editor-remains.png"), fullPage: true });
+
+  await emptyLine.dblclick();
+  await expect(picker).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(picker).toHaveCount(0);
+  await expect(editor).toHaveCount(1);
+  await expect(commandDialog).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  await expect(editor).toHaveCount(0);
+  await expect(commandDialog).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath("picker-escape-then-editor-escape.png"), fullPage: true });
+  await testInfo.attach("browser-issues.json", {
+    body: JSON.stringify(browserIssues, null, 2),
+    contentType: "application/json",
+  });
+});
+
 test("event layer canvas opens the RPG Maker context menu on right click", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page, projectWithPlacedEvent());

@@ -34,6 +34,7 @@ import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import {
   clampTitleMenuIndex,
+  focusSelectedTitleOption,
   listTitleMenuOptions,
   renderTitleScreen,
   type TitleMenuOptionId,
@@ -423,12 +424,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
     // 키보드 + 클릭 모두 동일 확인 연출 후 분기.
-    surface.stage.append(renderTitleScreen(project, {
+    const title = renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
       onContinue: () => confirmTitleThen(() => activateTitleOption("continueGame")),
       onQuit: () => confirmTitleThen(() => activateTitleOption("quit")),
-    }, titleMenuIndex));
+    }, titleMenuIndex);
     layout.append(surface.viewport);
+    surface.stage.append(title);
+    focusSelectedTitleOption(title);
     surface.sync();
     startTitleBgm(project);
     if (titleOptions.emitEnterJuice ?? true) emitTitleJuice("title-enter");

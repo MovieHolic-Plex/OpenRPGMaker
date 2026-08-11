@@ -1,4 +1,26 @@
+import { appendFile, mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
+
+const COMPACT_SHELL_VIEWPORTS = [
+  { width: 1024, height: 768 },
+  { width: 1280, height: 800 },
+  { width: 1440, height: 900 },
+] as const;
+
+const COMPACT_SHELL_MODES = ["basic", "expert"] as const;
+const COMPACT_SHELL_EVIDENCE_DIR = process.env.SHELL_EVIDENCE_DIR;
+
+type CompactShellMode = (typeof COMPACT_SHELL_MODES)[number];
+type CompactShellViewport = (typeof COMPACT_SHELL_VIEWPORTS)[number];
+type CompactShellMetric = {
+  readonly mode: CompactShellMode;
+  readonly viewport: CompactShellViewport;
+  readonly bodyWidth: number;
+  readonly documentWidth: number;
+  readonly glyphWrapped: boolean;
+  readonly regions: Readonly<Record<string, { readonly bottom: number; readonly left: number; readonly right: number; readonly top: number }>>;
+};
 
 async function expectNoDocumentHorizontalOverflow(page: Page): Promise<void> {
   await expect.poll(async () =>
@@ -19,6 +41,50 @@ async function expectCenterClickable(page: Page, selector: string): Promise<void
     return target === node || Boolean(target?.closest(targetSelector));
   }, selector);
   expect(receivesPointer).toBe(true);
+}
+
+async function readCompactShellMetric(page: Page, mode: CompactShellMode, viewport: CompactShellViewport): Promise<CompactShellMetric> {
+  return page.evaluate(({ expectedMode, expectedViewport }) => {
+    const regionSelectors = {
+      canvas: '[data-testid="edit-canvas"]',
+      editorRoot: '[data-testid="editor-layout"]',
+      leftPanel: ".left-panel",
+      saveBanner: '[data-testid="save-skip-banner"]',
+      statusbar: '[data-testid="editor-statusbar"]',
+      topbar: ".topbar",
+    };
+    const longKoreanName = "달빛이 머무는 아주 긴 한국어 프로젝트와 지도 이름".repeat(4);
+    const mapLabel = document.querySelector<HTMLElement>('[data-testid="editor-statusbar"] .editor-statusbar-cell:nth-child(2)');
+    if (mapLabel) mapLabel.textContent = `맵: ${longKoreanName}`;
+    const title = document.querySelector<HTMLElement>(".rm2k3-toolbar .title");
+    if (title) title.textContent = longKoreanName;
+
+    const regions = Object.fromEntries(
+      Object.entries(regionSelectors).map(([name, selector]) => {
+        const node = document.querySelector<HTMLElement>(selector);
+        if (!node) throw new Error(`missing compact-shell region: ${name}`);
+        const box = node.getBoundingClientRect();
+        return [name, { bottom: box.bottom, left: box.left, right: box.right, top: box.top }];
+      })
+    );
+    const mapLabelStyle = mapLabel ? getComputedStyle(mapLabel) : null;
+    return {
+      bodyWidth: document.body.scrollWidth,
+      documentWidth: document.documentElement.scrollWidth,
+      glyphWrapped: mapLabelStyle?.whiteSpace !== "nowrap" || (mapLabel?.getBoundingClientRect().height ?? 0) > 54,
+      mode: expectedMode,
+      regions,
+      viewport: expectedViewport,
+    };
+  }, { expectedMode: mode, expectedViewport: viewport });
+}
+
+async function recordCompactShellEvidence(page: Page, metric: CompactShellMetric): Promise<void> {
+  if (!COMPACT_SHELL_EVIDENCE_DIR) return;
+  await mkdir(COMPACT_SHELL_EVIDENCE_DIR, { recursive: true });
+  const fileStem = `${metric.viewport.width}x${metric.viewport.height}-${metric.mode}`;
+  await page.screenshot({ path: join(COMPACT_SHELL_EVIDENCE_DIR, `${fileStem}.png`) });
+  await appendFile(join(COMPACT_SHELL_EVIDENCE_DIR, "metrics.ndjson"), `${JSON.stringify(metric)}\n`, "utf8");
 }
 
 function byteDistance(a: Uint8Array, b: Uint8Array): number {
@@ -52,18 +118,46 @@ async function findCanvasPointByCursor(
   throw new Error("missing matching canvas point");
 }
 
-test("editor sidebars avoid document overflow and keep key controls clickable", async ({ page }) => {
-  for (const viewport of [
-    { width: 1440, height: 820 },
-    { width: 1280, height: 800 },
-    { width: 1024, height: 768 },
-    { width: 390, height: 844 },
-  ]) {
-    await page.setViewportSize(viewport);
-    await page.goto(`/?freshProject=1&layoutContract=${viewport.width}`);
-    await expectNoDocumentHorizontalOverflow(page);
+test("editor shell contains Basic and Expert regions at every supported viewport", async ({ page }) => {
+  if (COMPACT_SHELL_EVIDENCE_DIR) {
+    await mkdir(COMPACT_SHELL_EVIDENCE_DIR, { recursive: true });
+    await writeFile(join(COMPACT_SHELL_EVIDENCE_DIR, "metrics.ndjson"), "", "utf8");
+  }
+  for (const mode of COMPACT_SHELL_MODES) {
+    const modePage = await page.context().newPage();
+    const browserIssues: string[] = [];
+    modePage.on("console", (message) => {
+      const isOptionalBridgeRefusal = message.text() === "Failed to load resource: net::ERR_CONNECTION_REFUSED";
+      if (message.type() === "error" && !isOptionalBridgeRefusal) browserIssues.push(`console: ${message.text()}`);
+    });
+    modePage.on("pageerror", (error) => browserIssues.push(`pageerror: ${error.message}`));
+    modePage.on("requestfailed", (request) => {
+      const errorText = request.failure()?.errorText ?? "unknown";
+      if (!request.url().includes("127.0.0.1:17831") && errorText !== "net::ERR_ABORTED") browserIssues.push(`requestfailed: ${request.url()} ${errorText}`);
+    });
+    await modePage.addInitScript((editorUiMode) => localStorage.setItem("rpg-zzu:editor-ui-mode", editorUiMode), mode);
+    for (const viewport of COMPACT_SHELL_VIEWPORTS) {
+      await modePage.setViewportSize(viewport);
+      await modePage.goto(`/?freshProject=1&layoutContract=${viewport.width}`);
+      await expect(modePage.getByTestId("edit-canvas")).toBeVisible();
+      await expect(modePage.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode}`));
+      const metric = await readCompactShellMetric(modePage, mode, viewport);
+      await recordCompactShellEvidence(modePage, metric);
+      expect(metric.documentWidth).toBeLessThanOrEqual(viewport.width);
+      expect(metric.bodyWidth).toBeLessThanOrEqual(viewport.width);
+      expect(metric.glyphWrapped).toBe(false);
+      for (const region of Object.values(metric.regions)) {
+        expect(region.left).toBeGreaterThanOrEqual(0);
+        expect(region.right).toBeLessThanOrEqual(viewport.width);
+        expect(region.top).toBeGreaterThanOrEqual(0);
+        expect(region.bottom).toBeLessThanOrEqual(viewport.height);
+      }
+    }
+    expect(browserIssues).toEqual([]);
+    await modePage.close();
   }
 
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&layoutContract=clickability");
   await expectCenterClickable(page, "[data-testid='toolbar-left-panel']");

@@ -40,9 +40,25 @@ export function installToolbarOverflow(row: HTMLElement): () => void {
     dataset: { testid: "toolbar-overflow-popup" },
   });
   popup.hidden = true;
+  const closePopup = (restoreFocus = false): void => {
+    popup.hidden = true;
+    moreButton.setAttribute("aria-expanded", "false");
+    if (restoreFocus && moreButton.isConnected) moreButton.focus();
+  };
   moreButton.addEventListener("click", () => {
     popup.hidden = !popup.hidden;
     moreButton.setAttribute("aria-expanded", String(!popup.hidden));
+  });
+  moreButton.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || popup.hidden) return;
+    event.preventDefault();
+    closePopup(true);
+  });
+  popup.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.preventDefault();
+    event.stopPropagation();
+    closePopup(true);
   });
   // onOutside의 자가 정리 분기가 observer.disconnect()를 참조해야 하므로, observer는
   // reflow/ResizeObserver 생성보다 먼저 선언해 둔다(초기화는 아래에서).
@@ -57,8 +73,7 @@ export function installToolbarOverflow(row: HTMLElement): () => void {
     }
     if (popup.hidden) return;
     if (event.target instanceof Node && (popup.contains(event.target) || moreButton.contains(event.target))) return;
-    popup.hidden = true;
-    moreButton.setAttribute("aria-expanded", "false");
+    closePopup();
   }
   document.addEventListener("pointerdown", onOutside);
 
@@ -73,7 +88,7 @@ export function installToolbarOverflow(row: HTMLElement): () => void {
     const widths = items.map((item) => item.offsetWidth || 28);
     const count = visibleItemCount(row.clientWidth, widths, moreButton.offsetWidth || 30, gap);
     if (count >= items.length) {
-      popup.hidden = true;
+      closePopup();
       return;
     }
     moreButton.hidden = false;

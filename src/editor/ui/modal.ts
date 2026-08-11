@@ -5,6 +5,7 @@
 // 규약을 승계해 자동 통과한다(confirm → true, alert → 즉시 resolve).
 
 import { el } from "@/util/dom";
+import { registerModal, unregisterModal } from "./modalStack";
 
 export interface ConfirmOptions {
   readonly title?: string;
@@ -37,7 +38,25 @@ interface ModalButton {
   readonly danger?: boolean;
 }
 
+let nextModalId = 1;
+
+function isAttached(element: Element): boolean {
+  if (typeof document === "undefined") return false;
+  if (typeof document.contains === "function") return document.contains(element);
+  return document.body.contains(element);
+}
+
+function restoreOpener(opener: Element | null): void {
+  if (!(opener instanceof HTMLElement) || !isAttached(opener)) return;
+  opener.focus();
+}
+
 function openModal(kind: "confirm" | "alert", title: string | undefined, message: string, buttons: readonly ModalButton[], onDone: (value: boolean) => void): void {
+  const modalId = nextModalId++;
+  const titleId = `app-modal-title-${modalId}`;
+  const messageId = `app-modal-message-${modalId}`;
+  const opener = document.activeElement;
+  const modalTitle = title ?? (kind === "confirm" ? "확인" : "알림");
   const overlay = el("div", {
     class: "app-modal-overlay",
     dataset: { testid: `app-${kind}-modal` },
@@ -46,12 +65,10 @@ function openModal(kind: "confirm" | "alert", title: string | undefined, message
   const done = (value: boolean): void => {
     if (settled) return;
     settled = true;
+    unregisterModal(overlay);
     overlay.remove();
-    document.removeEventListener?.("keydown", onKey);
     onDone(value);
-  };
-  const onKey = (event: KeyboardEvent): void => {
-    if (event.key === "Escape") done(false);
+    restoreOpener(opener);
   };
   const actionButtons = buttons.map((button) =>
     el("button", {
@@ -64,20 +81,42 @@ function openModal(kind: "confirm" | "alert", title: string | undefined, message
   );
   const card = el("div", {
     class: "app-modal-card",
-    attrs: { role: kind === "confirm" ? "alertdialog" : "alert", "aria-modal": "true" },
+    attrs: {
+      role: kind === "confirm" ? "alertdialog" : "dialog",
+      "aria-modal": "true",
+      "aria-labelledby": titleId,
+      "aria-describedby": messageId,
+    },
     children: [
-      ...(title ? [el("div", { class: "app-modal-title", text: title })] : []),
-      el("div", { class: "app-modal-message", text: message }),
+      el("div", { class: "app-modal-title", text: modalTitle, attrs: { id: titleId } }),
+      el("div", { class: "app-modal-message", text: message, attrs: { id: messageId } }),
       el("div", { class: "app-modal-actions", children: actionButtons }),
     ],
   });
+  const trapTab = (event: KeyboardEvent): void => {
+    if (event.key !== "Tab") return;
+    const firstAction = actionButtons[0];
+    const lastAction = actionButtons[actionButtons.length - 1];
+    if (!firstAction || !lastAction) return;
+    const activeElement = document.activeElement;
+    if (event.shiftKey && activeElement === firstAction) {
+      event.preventDefault();
+      lastAction.focus();
+      return;
+    }
+    if (!event.shiftKey && activeElement === lastAction) {
+      event.preventDefault();
+      firstAction.focus();
+    }
+  };
   overlay.append(card);
   // 오버레이(바깥) 클릭 = 취소. 카드 클릭은 전파를 막는다.
   card.addEventListener("click", (event) => event.stopPropagation());
+  card.addEventListener("keydown", trapTab);
   overlay.addEventListener("click", () => done(false));
-  document.addEventListener?.("keydown", onKey);
   document.body.append(overlay);
-  actionButtons[actionButtons.length - 1]?.focus?.();
+  registerModal(overlay, () => done(false));
+  actionButtons[0]?.focus();
 }
 
 // 확인/취소 모달. resolve(true)=확인, resolve(false)=취소(Esc/바깥 클릭 포함).

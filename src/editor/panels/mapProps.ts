@@ -2,6 +2,7 @@ import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
 } from "@/editor/actions";
+import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { editorState } from "@/editor/editorState";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
@@ -23,6 +24,10 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
 };
 
 let activeTab: MapPropsTab = "general";
+
+export function resetMapPropsTabForTests(): void {
+  activeTab = "general";
+}
 
 export function renderMapProps(container: HTMLElement): void {
   clearChildren(container);
@@ -93,9 +98,7 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
       },
     },
   }) as HTMLSelectElement;
-  for (const tileset of Object.values(store.getCurrent().tilesets)) {
-    tilesetSelect.append(el("option", { text: tileset.name, attrs: { value: tileset.id } }));
-  }
+  appendGroupedTilesetOptions(tilesetSelect, Object.values(store.getCurrent().tilesets));
   tilesetSelect.value = map.tilesetId;
   section.append(fieldRow("칩셋", tilesetSelect));
 

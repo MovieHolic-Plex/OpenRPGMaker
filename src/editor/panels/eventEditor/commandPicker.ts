@@ -617,7 +617,13 @@ function renderFooter(close: () => void): HTMLElement {
         text: "취소",
         attrs: { type: "button" },
         dataset: { testid: "event-command-picker-cancel" },
-        on: { click: close },
+        on: {
+          click: (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            close();
+          },
+        },
       }),
     ],
   });

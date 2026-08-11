@@ -65,6 +65,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_retro_house", path: "assets/easyrpg-chipset-retro-house-transparent.png", name: "EasyRPG RTP retro House ChipSet" },
   { textureKey: "tex_easyrpg_chipset_combined_town", path: "assets/easyrpg-chipset-combined-town-transparent.png", name: "EasyRPG RTP Combined Town ChipSet" },
   { textureKey: "tex_easyrpg_chipset_retro_world", path: "assets/easyrpg-chipset-retro-world-transparent.png", name: "EasyRPG RTP retro World ChipSet" },
+  { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 

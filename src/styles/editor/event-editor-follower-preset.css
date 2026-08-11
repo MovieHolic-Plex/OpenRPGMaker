@@ -8,10 +8,22 @@
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.03);
 }
-.event-editor-follower-preset-label {
+/* 기본 접힘 — 닫힌 상태는 한 줄 요약만 남겨 커맨드 툴바 밀도를 낮춘다. */
+.event-editor-follower-preset-bar:not([open]) {
+  padding: 2px 8px;
+  gap: 0;
+}
+.event-editor-follower-preset-summary {
   font-size: 12px;
   font-weight: 700;
   opacity: 0.75;
+  cursor: pointer;
+  user-select: none;
+  list-style-position: inside;
+}
+.event-editor-follower-preset-bar:not([open]) .event-editor-follower-preset-chips,
+.event-editor-follower-preset-bar:not([open]) .follower-preset-note {
+  display: none;
 }
 .event-editor-follower-preset-chips {
   display: flex;
@@ -28,9 +40,6 @@
 }
 .follower-preset-chip--actor {
   border-color: #8aa8ff;
-}
-.follower-preset-chip--monster {
-  border-color: #f5a623;
 }
 .follower-preset-note {
   grid-column: 1 / -1;

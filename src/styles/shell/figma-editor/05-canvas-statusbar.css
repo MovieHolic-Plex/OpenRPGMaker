@@ -141,6 +141,60 @@
     outline-offset: -2px;
   }
 
+  @media (min-width: 1024px) and (max-width: 1500px) {
+    .editor-statusbar {
+      padding-right: 58px;
+    }
+
+    .editor-statusbar .sb-detail,
+    .editor-statusbar .sb-secondary {
+      display: none;
+    }
+
+    .editor-statusbar > button.editor-statusbar-cell {
+      flex: 1 1 0;
+      font-size: 11px;
+      min-width: 0;
+      overflow: hidden;
+      padding-inline: 6px;
+      text-overflow: ellipsis;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed)) .editor-statusbar {
+      overflow: hidden;
+      padding-right: 14px;
+    }
+
+    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
+      .editor-statusbar
+      > .editor-statusbar-cell:not(button):not(.strong),
+    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
+      .editor-statusbar
+      > .ai-connection-status {
+      display: none;
+    }
+
+    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
+      .editor-statusbar
+      > .editor-statusbar-cell.strong {
+      min-width: 0;
+      padding-inline: 6px;
+    }
+
+    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
+      .editor-statusbar
+      > button.editor-statusbar-cell:not(.ai-connection-status) {
+      flex: 1 1 0;
+      font-size: 11px;
+      min-width: 0;
+      overflow: hidden;
+      padding-inline: 6px;
+      text-overflow: ellipsis;
+    }
+  }
+
   .map-context-menu,
   .rm2k3-menu-popup {
     background: var(--editor-popover-bg);
@@ -148,7 +202,18 @@
     border-radius: var(--radius-m);
     box-shadow: var(--shadow-pop);
     color: var(--editor-text);
+    box-sizing: border-box;
+    max-height: calc(100vh - 24px);
+    max-width: calc(100vw - 24px);
     min-width: 322px;
+    overflow: auto;
     padding: 12px;
+  }
+
+  .rm2k3-menu-command {
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
   }
 

@@ -8,12 +8,13 @@ export type FollowerPresetInsertHost = {
 };
 
 export function renderFollowerPresetBar(host: FollowerPresetInsertHost): HTMLElement {
-  const bar = el("div", {
+  // 기본 접힘(<details> open 없음) — 커맨드 툴바 밀도를 낮춘다.
+  const bar = el("details", {
     class: "event-editor-follower-preset-bar",
     dataset: { testid: "follower-preset-bar" },
   });
-  const label = el("div", {
-    class: "event-editor-follower-preset-label",
+  const summary = el("summary", {
+    class: "event-editor-follower-preset-summary",
     text: "따라오기 프리셋",
   });
   const chips = el("div", { class: "event-editor-follower-preset-chips" });
@@ -36,8 +37,8 @@ export function renderFollowerPresetBar(host: FollowerPresetInsertHost): HTMLEle
   }
   const note = el("div", {
     class: "empty-hint follower-preset-note",
-    text: "원하는 펫/동행자를 누르면 이벤트 끝에 커맨드가 추가됩니다. 몬스터는 파티 편입 후 자동 줄서기 됩니다.",
+    text: "원하는 펫/동행자를 누르면 이벤트 끝에 커맨드가 추가됩니다.",
   });
-  bar.append(label, chips, note);
+  bar.append(summary, chips, note);
   return bar;
 }
