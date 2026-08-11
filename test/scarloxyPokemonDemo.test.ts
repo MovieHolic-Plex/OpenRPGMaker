@@ -105,7 +105,7 @@ describe("Scarloxy 포켓몬풍 데모 프로젝트", () => {
     expect(field.speciesId).toBe(scarloxySpeciesId("sparchu"));
     expect(field.monsterInstanceId).toBe(partyMonsters[0]!.instanceId);
     expect(field.name).toBe("스파르츄");
-    expect(String(field.recordId).startsWith("mon:")).toBe(true);
+    expect(field.id.startsWith("mon:")).toBe(true);
     expect(field.maxHp).toBeGreaterThan(0);
     // 상대는 야생 몬스터.
     expect(snap.enemies).toHaveLength(1);
