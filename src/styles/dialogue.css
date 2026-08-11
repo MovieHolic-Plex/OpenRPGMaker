@@ -1,23 +1,21 @@
 :root {
-  --runtime-dialogue-border: var(--runtime-window-text);
-  --runtime-dialogue-border-mid: #8eb6ff;
-  --runtime-dialogue-shadow: var(--runtime-window-shadow);
+  --runtime-dialogue-border: var(--runtime-dialogue-glass-border-strong);
+  --runtime-dialogue-border-mid: var(--runtime-dialogue-glass-border);
+  --runtime-dialogue-shadow: var(--runtime-dialogue-glass-shadow);
   --runtime-dialogue-text: var(--runtime-window-text);
   --runtime-dialogue-muted: var(--runtime-window-muted);
   --runtime-dialogue-font: var(--runtime-pixel-font);
   --runtime-dialogue-font-size: var(--runtime-font-size-9);
-  --runtime-dialogue-panel-height: 27%;
-  --runtime-choice-panel-height: 26%;
+  --runtime-dialogue-panel-height: 29%;
+  --runtime-choice-panel-height: 34%;
   --runtime-dialogue-face-size: 48px;
-  /* 화자 이름표가 창 안쪽으로 내려와 덮는 높이. 이름표는 top:-10px 에 놓이고
-     글꼴 9px · line-height 1.2(10.8px) · padding 1px/2px · border 1px×2 = 약 15.8px 이므로
-     안쪽으로 들어오는 양은 15.8 - 10 ≈ 6px 이다. 반올림 여유 1px 을 더해 7px.
-     이 값을 바꾸면 `.dialogue-box.has-speaker` 의 padding-top 과 이름표 글꼴을 **같이** 봐야 한다. */
-  --runtime-dialogue-speaker-inset: 7px;
-  --runtime-dialogue-bust-height: min(46vh, 280px);
-  --runtime-dialogue-bust-width: min(42vw, 240px);
-  --runtime-dialogue-full-height: min(62vh, 420px);
-  --runtime-dialogue-full-width: min(36vw, 220px);
+  --runtime-dialogue-speaker-inset: 8px;
+  --runtime-dialogue-bust-text-reserve: 96px;
+  --runtime-dialogue-full-text-reserve: 100px;
+  --runtime-dialogue-bust-height: 112px;
+  --runtime-dialogue-bust-width: 88px;
+  --runtime-dialogue-full-height: 164px;
+  --runtime-dialogue-full-width: 92px;
 }
 
 .dialogue-overlay {
@@ -25,9 +23,9 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   left: 0;
-  padding: 0 4px 4px;
+  padding: 0 10px 8px;
   pointer-events: none;
   position: absolute;
   right: 0;
@@ -36,7 +34,7 @@
 .dialogue-overlay.position-top {
   bottom: auto;
   height: var(--runtime-dialogue-panel-height);
-  padding: 6px 6px 0;
+  padding: 8px 10px 0;
   top: 0;
   transform: none;
 }
@@ -44,7 +42,7 @@
 .dialogue-overlay.position-center {
   bottom: auto;
   min-height: var(--runtime-dialogue-panel-height);
-  padding: 0 4px;
+  padding: 0 10px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -52,19 +50,17 @@
 .dialogue-overlay.position-bottom {
   bottom: 0;
   height: var(--runtime-dialogue-panel-height);
-  padding: 0 6px 6px;
+  padding: 0 10px 8px;
   top: auto;
   transform: none;
 }
 
 .dialogue-gold-window {
   align-items: center;
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
+  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
   bottom: calc(100% + 4px);
   color: var(--runtime-dialogue-text);
   display: flex;
@@ -73,11 +69,12 @@
   gap: 10px;
   justify-content: space-between;
   min-width: 92px;
-  padding: 2px 5px;
+  padding: 4px 6px;
   pointer-events: none;
   position: absolute;
   right: 6px;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  box-shadow: var(--runtime-dialogue-glass-shadow);
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.76);
 }
 
 .dialogue-overlay.position-top .dialogue-gold-window {
@@ -104,18 +101,24 @@
 .dialogue-overlay.choices-active.position-bottom {
   height: var(--runtime-choice-panel-height);
   min-height: var(--runtime-choice-panel-height);
-  padding: 0 4px 4px;
+  padding: 0 10px 8px;
+}
+
+.dialogue-overlay.choices-active.position-top {
+  height: var(--runtime-choice-panel-height);
+  min-height: var(--runtime-choice-panel-height);
+  padding: 8px 10px 0;
 }
 
 .dialogue-box {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  border-radius: 0;
-  box-shadow: none;
+  backdrop-filter: var(--runtime-dialogue-glass-filter);
+  background:
+    linear-gradient(180deg, rgba(73, 105, 148, 0.12), rgba(8, 15, 28, 0.04)),
+    var(--runtime-dialogue-glass-surface);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius);
+  box-shadow: var(--runtime-dialogue-glass-shadow);
   box-sizing: border-box;
   cursor: pointer;
   image-rendering: pixelated;
@@ -123,7 +126,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding: 0 4px;
+  padding: 5px 8px;
   pointer-events: auto;
   position: relative;
   width: 100%;
@@ -131,31 +134,17 @@
 
 .dialogue-box.has-speaker {
   overflow: visible;
-  /* 이름표는 absolute + top:-10px 라서 자기 높이만큼 창 안쪽으로 내려온다.
-     창 padding-top 이 0 이면 그대로 본문 첫 줄을 덮는다(실측: 이름표 571~612px,
-     본문 시작 591px → 첫 문장이 가려짐). 이름표 높이만큼 본문을 밀어 자리를 비운다.
-
-     예전 값은 `1.35em` 이었다. **`.dialogue-box` 에는 font-size 선언이 없어서** 그 em 은
-     상속된 14px 을 기준으로 풀렸고(실측 18.9px), 상자 안쪽 높이 42.8px 의 44% 를 먹었다.
-     본문이 9px/10.8px 이므로 남는 칸은 2줄뿐이 되고, 이름표가 없을 때는 4줄이 들어간다 —
-     같은 창이 화자 유무에 따라 담는 양이 두 배로 달라졌다.
-     그래서 상속된 글꼴 크기에 딸린 em 을 버리고, **이름표가 실제로 덮는 픽셀**을 변수로
-     명시한다(아래 이름표 규칙과 한 쌍이다 — 둘 중 하나만 고치면 다시 어긋난다). */
   padding-top: var(--runtime-dialogue-speaker-inset);
 }
 
-/* 얼굴이 붙은 창은 **얼굴이 들어갈 만큼** 높아야 한다.
-   실측(2026-07-27): 창 바깥 높이 58.8px · 테두리 8px×2 → 안쪽 42.8px 인데 얼굴 칩은
-   48×48px 이라, 초상이 창 아래 테두리를 8.4px 뚫고 나왔다. 얼굴은 시트를 48px 창으로
-   잘라 보는 방식이므로 줄여서 맞출 수 없다(줄이면 옆칸 얼굴이 같이 보인다).
-   그래서 창을 얼굴에 맞춘다: 테두리 16 + 이름표 자리 7 + 얼굴 48 = 71px.
-   RM2003 의 기본 메시지 창(320×80)도 같은 이유로 이 정도 높이다. */
 .dialogue-box:has(.dialogue-face) {
-  min-height: max(100%, 71px);
+  min-height: max(100%, 63px);
 }
 
 .dialogue-box.transparent {
   background: transparent;
+  backdrop-filter: none;
+  border-image: none;
   border-color: transparent;
   box-shadow: none;
 }
@@ -167,7 +156,7 @@
   min-height: 0;
   max-width: min(280px, calc(100vw - 16px));
   min-width: 168px;
-  padding: 0 4px;
+  padding: 4px 8px;
   pointer-events: none;
   width: auto;
 }
@@ -180,16 +169,10 @@
 }
 
 .dialogue-overlay.choices-active .dialogue-box.choices {
-  border: var(--runtime-window-border) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border);
-  box-shadow: none;
   cursor: default;
   min-height: 100%;
   overflow: hidden;
-  padding: 0 4px;
+  padding: 5px;
 }
 
 .dialogue-box.choices::after,
@@ -201,7 +184,7 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: 0;
+  gap: 1px;
   min-height: 0;
   pointer-events: auto;
   width: 100%;
@@ -209,30 +192,44 @@
 
 .dialogue-overlay.choices-active .choice-list .choice-btn {
   background: transparent;
-  border: 0;
-  border-radius: 0;
+  border: 1px solid transparent;
+  border-radius: var(--runtime-dialogue-radius-small);
   box-sizing: border-box;
   color: var(--runtime-dialogue-text);
   display: block;
   font-size: var(--runtime-dialogue-font-size);
   line-height: 1;
   margin: 0;
-  min-height: 11px;
-  padding: 0 8px;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  min-height: 12px;
+  padding: 1px 8px 1px 14px;
+  position: relative;
+  text-align: left;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.76);
   width: 100%;
 }
 
 .dialogue-overlay.choices-active .choice-list .choice-btn.selected,
 .dialogue-overlay.choices-active .choice-list .choice-btn:hover,
 .dialogue-overlay.choices-active .choice-list .choice-btn:focus-visible {
-  background: var(--runtime-window-selected-bg);
-  box-shadow: inset 0 0 0 1px rgba(245, 251, 255, 0.74);
+  background: var(--runtime-dialogue-glass-accent-soft);
+  border-color: var(--runtime-dialogue-glass-border);
+  box-shadow: var(--runtime-dialogue-glass-focus-shadow);
   outline: 0;
 }
 
+.dialogue-overlay.choices-active .choice-list .choice-btn.selected::before {
+  color: var(--runtime-dialogue-glass-accent);
+  content: "◆";
+  font-size: 5px;
+  left: 5px;
+  line-height: 1;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 .dialogue-overlay.choices-active .choice-prompt-row {
-  border-bottom: 1px solid rgba(242, 251, 255, 0.44);
+  border-bottom: 1px solid var(--runtime-dialogue-glass-border);
   color: var(--runtime-dialogue-muted);
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-dialogue-font-size);
@@ -240,8 +237,8 @@
   line-height: 1.1;
   margin-bottom: 2px;
   overflow-wrap: anywhere;
-  padding: 2px 4px 4px;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  padding: 2px 8px 4px;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.76);
 }
 
 .dialogue-overlay.choices-compact {
@@ -296,16 +293,11 @@
   text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
 }
 
-/* Fields of Mistria-style nameplate: floats on the message window rim. */
 .dialogue-box .speaker.speaker-nameplate {
   position: absolute;
-  left: 8px;
-  top: -10px;
+  left: 10px;
+  top: -9px;
   z-index: 3;
-  /* 이름표에도 글꼴 크기 선언이 없어서 상속된 14px 로 그려졌다 — 본문이 9px 인 창에서
-     이름표만 1.5배 커서, 320px 폭 창에 44×20.6px 짜리 알약이 붙었다(2026-07-27 실측).
-     본문과 같은 픽셀 글꼴로 맞춘다. 이 선언이 위의 --runtime-dialogue-speaker-inset 계산의
-     전제다. */
   font-family: var(--runtime-dialogue-font);
   font-size: var(--runtime-dialogue-font-size);
   line-height: 1.2;
@@ -313,16 +305,16 @@
   align-items: center;
   max-width: calc(100% - 20px);
   margin: 0;
-  padding: 1px 8px 2px;
-  border: 1px solid rgba(245, 251, 255, 0.9);
-  border-radius: 999px;
+  padding: 2px 9px;
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0)),
-    rgba(12, 28, 84, 0.96);
+    linear-gradient(180deg, rgba(105, 147, 201, 0.16), rgba(8, 15, 28, 0.02)),
+    var(--runtime-dialogue-glass-surface-strong);
   box-shadow:
-    0 1px 0 rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(80, 130, 220, 0.35);
-  color: #f8fbff;
+    0 3px 8px rgba(0, 4, 13, 0.42),
+    inset 0 0 0 1px rgba(187, 219, 255, 0.08);
+  color: var(--runtime-dialogue-text);
   letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
@@ -334,7 +326,7 @@
   align-items: start;
   display: grid;
   flex: 1;
-  gap: 6px;
+  gap: 8px;
   grid-template-rows: minmax(0, 1fr);
   height: 100%;
   min-height: 0;
@@ -368,11 +360,12 @@
 }
 
 .dialogue-face {
-  background-color: rgba(255, 255, 255, 0.12);
-  border-color: var(--runtime-dialogue-border) var(--runtime-dialogue-border-mid) var(--runtime-dialogue-border-mid) var(--runtime-dialogue-border);
+  background-color: var(--runtime-dialogue-glass-surface-soft);
+  border-color: var(--runtime-dialogue-glass-border);
   border-style: solid;
   border-width: 1px;
-  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.42);
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 4, 13, 0.42);
   image-rendering: pixelated;
   align-self: start;
   overflow: hidden;
@@ -476,6 +469,22 @@
   grid-template-columns: minmax(0, 1fr) !important;
 }
 
+.dialogue-box.bust-left .dialogue-content.has-bust {
+  padding-inline-start: var(--runtime-dialogue-bust-text-reserve);
+}
+
+.dialogue-box.bust-right .dialogue-content.has-bust {
+  padding-inline-end: var(--runtime-dialogue-bust-text-reserve);
+}
+
+.dialogue-box.portrait-full.bust-left .dialogue-content.has-bust {
+  padding-inline-start: var(--runtime-dialogue-full-text-reserve);
+}
+
+.dialogue-box.portrait-full.bust-right .dialogue-content.has-bust {
+  padding-inline-end: var(--runtime-dialogue-full-text-reserve);
+}
+
 .dialogue-box .body {
   color: var(--runtime-dialogue-text);
   font-family: var(--runtime-dialogue-font);
@@ -530,13 +539,10 @@
 }
 
 .choices .choice-btn {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
   cursor: pointer;
   font-family: var(--runtime-dialogue-font);
@@ -549,8 +555,8 @@
 }
 
 .choices .choice-btn:hover {
-  background: var(--runtime-window-selected-bg);
-  border-color: var(--runtime-window-focus);
+  background: var(--runtime-dialogue-glass-accent-soft);
+  border-color: var(--runtime-dialogue-glass-border-strong);
 }
 
 .number-input-box {
@@ -582,9 +588,9 @@
 
 .number-input-slot {
   align-items: center;
-  background: rgba(4, 12, 40, 0.88);
-  border: 2px solid rgba(245, 251, 255, 0.55);
-  border-radius: 0;
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
   box-sizing: border-box;
   color: transparent;
   display: inline-flex;
@@ -632,9 +638,9 @@
 }
 
 .number-input-pad-key {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(245, 251, 255, 0.45);
-  border-radius: 0;
+  background: var(--runtime-dialogue-glass-surface-soft);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
   cursor: pointer;
   font-family: var(--runtime-dialogue-font);
@@ -645,8 +651,8 @@
 }
 
 .number-input-pad-key:hover {
-  background: rgba(255, 255, 255, 0.16);
-  border-color: var(--runtime-window-focus);
+  background: var(--runtime-dialogue-glass-accent-soft);
+  border-color: var(--runtime-dialogue-glass-border-strong);
 }
 
 .number-input-pad-key.ok {
@@ -659,13 +665,10 @@
 }
 
 .number-input-ok {
-  background: var(--runtime-window-fill-fallback);
-  border: var(--runtime-window-border-tight) solid transparent;
-  border-image-repeat: stretch;
-  border-image-slice: var(--runtime-window-slice);
-  border-image-source: var(--runtime-window-skin);
-  border-image-width: var(--runtime-window-border-tight);
-  border-radius: 0;
+  background: var(--runtime-dialogue-glass-surface-strong);
+  border: 1px solid var(--runtime-dialogue-glass-border);
+  border-image: none;
+  border-radius: var(--runtime-dialogue-radius-small);
   color: var(--runtime-dialogue-text);
   cursor: pointer;
   font-family: var(--runtime-dialogue-font);
@@ -676,38 +679,47 @@
 }
 
 .number-input-ok:hover {
-  background: rgba(255, 255, 255, 0.16);
+  background: var(--runtime-dialogue-glass-accent-soft);
 }
 
 /* === dialogue pagination cursor === */
 .dialogue-page-cursor {
-  bottom: 2px;
-  color: var(--runtime-dialogue-text);
-  font-family: var(--runtime-dialogue-font);
-  font-size: 7px;
-  font-weight: 700;
-  left: 50%;
-  line-height: 1;
+  background: var(--runtime-dialogue-text);
+  border: 1px solid var(--runtime-dialogue-glass-border-strong);
+  bottom: 7px;
+  box-shadow: 0 0 6px var(--runtime-dialogue-glass-accent);
+  color: transparent;
+  font-size: 0;
+  height: 6px;
+  left: auto;
   opacity: 0;
   pointer-events: none;
   position: absolute;
-  text-shadow: 0.5px 0.5px 0 rgba(0, 0, 0, 0.88);
-  transform: translateX(-50%);
+  right: 9px;
+  transform: rotate(45deg);
+  width: 6px;
 }
 
 .dialogue-box.page-ready .dialogue-page-cursor {
-  animation: dialogue-page-cursor-blink 0.9s steps(2, end) infinite;
+  animation: dialogue-page-cursor-pulse 1.1s ease-in-out infinite;
   opacity: 1;
 }
 
-@keyframes dialogue-page-cursor-blink {
+@keyframes dialogue-page-cursor-pulse {
   0%,
-  45% {
-    opacity: 1;
+  100% {
+    opacity: 0.55;
+    transform: rotate(45deg) scale(0.86);
   }
 
-  46%,
-  100% {
-    opacity: 0;
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogue-box.page-ready .dialogue-page-cursor {
+    animation: none;
   }
 }

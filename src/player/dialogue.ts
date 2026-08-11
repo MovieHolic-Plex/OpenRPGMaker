@@ -67,20 +67,16 @@ function dialoguePlaybackTokens(segments: readonly DialogueTextSegment[]): Dialo
   return tokens;
 }
 const DIALOGUE_OVERLAY_HORIZONTAL_PADDING = {
-  top: 12,
-  center: 8,
-  bottom: 12,
+  top: 20,
+  center: 20,
+  bottom: 20,
 } satisfies Record<MessageWindowPosition, number>;
-// 2026-07-27 브라우저 실측(test/e2e/_dialogue-box-measure.spec.ts, 320px 논리 화면):
-//   .dialogue-box  padding-left/right = 4px  → 좌우 합 8
-//   .dialogue-box  border-width       = 8px  → 좌우 합 16  (--runtime-window-border, border-image)
-// 예전 값은 padding 16 / border 2 였다 — 합이 18 로 실제 24 보다 **6px 작아서**
-// 폭을 6px 넉넉하게 잡았다. 한 줄이 들어간다고 계산한 문장이 실제로는 넘쳐서
-// 마지막 글자가 예상 밖에서 꺾였다(실측: 계산 236 vs 실제 본문 폭 230).
-const DIALOGUE_BOX_HORIZONTAL_PADDING = 8;
-const DIALOGUE_BOX_HORIZONTAL_BORDER = 16;
+const DIALOGUE_BOX_HORIZONTAL_PADDING = 16;
+const DIALOGUE_BOX_HORIZONTAL_BORDER = 2;
 const DIALOGUE_FACE_COLUMN_WIDTH = 48;
-const DIALOGUE_FACE_COLUMN_GAP = 6;
+const DIALOGUE_FACE_COLUMN_GAP = 8;
+const DIALOGUE_BUST_TEXT_RESERVE = 96;
+const DIALOGUE_FULL_TEXT_RESERVE = 100;
 const DIALOGUE_FONT_FALLBACK =
   '700 7px "DungGeunMo", "Galmuri11", "DotGothic16", "GulimChe", "DotumChe", "MS Gothic", sans-serif';
 
@@ -549,14 +545,18 @@ function renderDialogueSegments(target: HTMLElement, segments: readonly Dialogue
 }
 
 function dialogueBodyWidth(request: DialogueTextRequest, position: MessageWindowPosition): number {
-  // The play stage is a fixed 320px logical surface. dialogue.css gives the
-  // bottom/top overlay 6px horizontal padding, the box 8px padding, and a 1px
-  // border; a face column consumes 48px plus the 6px grid gap.
   const baseWidth = PLAY_RESOLUTION.width
     - DIALOGUE_OVERLAY_HORIZONTAL_PADDING[position]
     - DIALOGUE_BOX_HORIZONTAL_PADDING
     - DIALOGUE_BOX_HORIZONTAL_BORDER;
-  const faceWidth = request.face ? DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP : 0;
+  const portraitMode = dialoguePortraitMode(request.face);
+  const faceWidth = !request.face
+    ? 0
+    : portraitMode === "full"
+      ? DIALOGUE_FULL_TEXT_RESERVE
+      : portraitMode === "bust"
+        ? DIALOGUE_BUST_TEXT_RESERVE
+        : DIALOGUE_FACE_COLUMN_WIDTH + DIALOGUE_FACE_COLUMN_GAP;
   return Math.max(1, baseWidth - faceWidth);
 }
 
