@@ -114,3 +114,14 @@ background: var(--success-muted); border: 1px solid var(--success); color: var(-
 5. 레이아웃 치수(width/height/inset/grid 골격)는 보수적으로 — 색/보더/라운드/그림자/타이포 중심.
 6. `src/styles/runtime/` 와 `dialogue.css` 의 인게임 런타임 look 은 에디터 셸 토큰과 분리한다. 런타임 게임 표면은 `src/styles/runtime/system.css` 의 `--runtime-*` 토큰(픽셀 폰트, 9-slice 윈도우 스킨)을 사용하고, 모던 다크 에디터 토큰을 창 프레임/폰트에 끌어오지 않는다.
 7. `database/tabs-b-assistant-panel.css` 는 p2-assistant 소유 — 건드리지 말 것.
+
+## 5. 런타임 대화창
+
+인게임 대화 표면은 `src/styles/runtime/system.css`의 `--runtime-dialogue-*` 토큰을 사용한다. 에디터 셸의 `--bg-*`나 `--accent`를 직접 가져오지 않는다.
+
+- 기본 창: `--runtime-dialogue-glass-surface` 위에 얕은 세로 명암, 1px `--runtime-dialogue-glass-border`, `--runtime-dialogue-radius`, `--runtime-dialogue-glass-shadow`.
+- 화자 이름표: 같은 표면의 작은 직사각형 탭. 본문과 겹치지 않도록 `--runtime-dialogue-speaker-inset`을 함께 조정한다.
+- 얼굴: 일반 faceset은 48×48 칩, `-bust`/`-portrait`는 88×112 버스트, `-full`/`fullbody`는 92×164 전신으로 표시한다. 좌우 배치에 따라 본문 예약 공간을 반대로 적용한다.
+- 선택지·숫자 입력·소지금 창: 같은 표면과 보더를 공유한다. 현재 선택 행은 `--runtime-dialogue-glass-accent-soft`와 좌측 다이아몬드로 표시한다.
+- 투명 모드: 배경·블러·그림자를 제거하되 데이터 및 상/중/하단 위치 계약은 그대로 유지한다.
+- 에디터 명령 프리뷰의 `.ecp-message-window`도 같은 런타임 토큰을 사용해 실제 플레이와 재질을 맞춘다.
