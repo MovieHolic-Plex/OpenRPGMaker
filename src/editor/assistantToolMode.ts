@@ -52,7 +52,7 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
     strong: ["전투", "배틀", "적", "몬스터", "enemy", "troop", "트룹", "시뮬", "드롭", "hp"],
     weak: ["스킬", "밸런스", "행동"],
   },
-  quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계"], weak: [] },
+  quest: { strong: ["퀘스트", "quest", "플래그", "보상", "목표", "단계", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story"], weak: [] },
   database: {
     strong: ["아이템", "포션", "물약", "무기", "방어구", "장비", "액터", "캐릭터", "직업", "클래스", "상태이상", "데이터베이스", "데이터 베이스", "db", "능력치"],
     weak: ["스킬", "적"],
@@ -66,9 +66,9 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
     ],
     weak: [],
   },
-  event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민"], weak: [] },
+  event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story"], weak: [] },
   world: { strong: ["세계관", "월드", "지역", "관계", "엔티티"], weak: [] },
-  system: { strong: ["린트", "타이틀", "시작위치", "시작 위치", "히스토리", "플레이테스트"], weak: [] },
+  system: { strong: ["린트", "타이틀", "시작위치", "시작 위치", "히스토리", "플레이테스트", "품질", "quality", "평가", "evaluate"], weak: [] },
   map: { strong: ["맵", "지도", "마을", "던전", "필드", "실내"], weak: [] },
 };
 
