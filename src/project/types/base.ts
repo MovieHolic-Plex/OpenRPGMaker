@@ -93,6 +93,18 @@ export interface TileGroupOverlayRule {
   tileIds: number[];
 }
 
+export interface TileGroupSourceBlock {
+  column: number;
+  row: number;
+  sourceRect: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  tileIds: number[];
+}
+
 export type ClusterRuleStrength = "hard" | "medium" | "soft";
 
 export interface ClusterRule {
@@ -125,6 +137,8 @@ export interface TileGroupMetadata {
     width: number;
     height: number;
   };
+  sourceBlocks?: TileGroupSourceBlock[];
+  cellLayers?: ("lower" | "upper")[];
   previewMap?: {
     width: number;
     height: number;
@@ -141,11 +155,14 @@ export interface TileGroupMetadata {
       | "horizontal_expandable"
       | "nine_slice_expandable"
       | "overlay_detail"
+      | "repeatable_block"
       | "single"
       | "source_rect"
       | "vertical_expandable";
     minHeight?: number;
     minWidth?: number;
+    blockHeight?: number;
+    blockWidth?: number;
     parts: {
       role:
         | "bottom"

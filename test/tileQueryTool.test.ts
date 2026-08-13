@@ -61,3 +61,52 @@ describe("tile_query ask:labels tileset resolution", () => {
     expect(data.labels.some((l) => l.label.includes("가로 탁자"))).toBe(true);
   });
 });
+
+describe("tile_query authored knowledge", () => {
+  it("returns shape, layer, passage, and prose under the user-authored label", () => {
+    const { ctx, tileset } = context();
+    const def = tileset();
+    def.tileGroups = [...(def.tileGroups ?? []), {
+      id: "authored-cliff",
+      name: "북쪽 반복 절벽",
+      role: "wall",
+      defaultLayer: "lower",
+      layerHome: "lower",
+      origin: "user",
+      description: "2×3 절벽 단위",
+      placementRules: "가로와 세로 모두 반복 가능",
+      tileIds: [0, 1, 30, 31, 60, 61],
+      patternGrammar: {
+        axis: "both",
+        blockHeight: 3,
+        blockWidth: 2,
+        kind: "repeatable_block",
+        minHeight: 3,
+        minWidth: 2,
+        parts: [{ role: "repeatBody", tileIds: [0, 1, 30, 31, 60, 61] }],
+        preserveCaps: false,
+        repeat: "source_order",
+      },
+    }];
+    for (const tileId of [0, 1, 30, 31, 60, 61]) {
+      def.passability[tileId] = { down: true, left: false, right: false, up: false };
+    }
+
+    const vocabResult = runTool(ctx, "tile_query", { ask: "vocab" }, { dryRun: true });
+    expect(vocabResult.ok, vocabResult.summary).toBe(true);
+    const vocabData = vocabResult.data as { groups: { name: string; blockSize?: { width: number; height: number }; passage?: unknown }[] };
+    const group = vocabData.groups.find((entry) => entry.name === "북쪽 반복 절벽");
+    expect(group?.blockSize).toEqual({ height: 3, width: 2 });
+    expect(group?.passage).toEqual({ down: true, left: false, right: false, up: false });
+
+    const labelsResult = runTool(ctx, "tile_query", { ask: "labels", query: "반복 절벽" }, { dryRun: true });
+    expect(labelsResult.ok, labelsResult.summary).toBe(true);
+    const labelsData = labelsResult.data as { labels: { kind: string; label: string; patternKind?: string; placementRules?: string }[] };
+    expect(labelsData.labels).toContainEqual(expect.objectContaining({
+      kind: "group",
+      label: "북쪽 반복 절벽",
+      patternKind: "repeatable_block",
+      placementRules: "가로와 세로 모두 반복 가능",
+    }));
+  });
+});

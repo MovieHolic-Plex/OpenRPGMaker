@@ -204,7 +204,15 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
       const byRole = new Map<string, string[]>();
       for (const group of vocab.groups) {
         const bucket = byRole.get(group.role) ?? [];
-        bucket.push(`${group.id}(${group.name})`);
+        const shape = group.blockSize ?? group.sourceSize;
+        const operational = [
+          `layer=${group.layerHome}`,
+          group.patternKind ? `pattern=${group.patternKind}` : "",
+          shape ? `shape=${shape.width}x${shape.height}` : "",
+          group.passage ? `passage=${passagePromptLabel(group.passage)}` : "",
+        ].filter((entry) => entry.length > 0).join(", ");
+        const prose = group.placementRules || group.description;
+        bucket.push(`${group.name} [${operational}]${prose ? ` — ${prose.slice(0, 100)}` : ""}`);
         byRole.set(group.role, bucket);
       }
       for (const [role, entries] of byRole) lines.push(`- ${role}: ${entries.join(", ")}`);
@@ -221,6 +229,12 @@ function tileVocabularySection(project: Project, mapId: string | undefined): str
     "배치는 v3 공정 프리미티브 + 고수준 툴. **집·마당:** author_house — LLM은 집마다 wings(위치)·kitId·yard 태그만(firewood/mailbox/pot/jar/bench_h/bench_v/flowers/…). 문·타일·산포 좌표는 코드. **마을:** author_village에 theme·pathStyle·yardStyle 등 의도를 채워라(빈 호출 금지에 가깝다). 집 앞 소품을 place_props로 직접 광장에 몰지 말 것. 숲/들판 산포만 place_props(구역별, area 넓게, naturalness 0.55~0.7). 호수: fill_region+circle + get_map_region data.water.bounds. 길: paint_road. 묘지 등 집과 먼 소품만 별도 place_props. place_props 동일 인자 턴당 1회. 미합의 재료는 맵 목업 후 [이대로 적용]. 시공 툴 재료는 material=타일 라벨/설명만 쓴다(그룹 id·*VocabId 금지). 모르면 tile_query ask:\"labels\".",
     trimDigestLines(lines, 700),
   ].join("\n");
+}
+
+function passagePromptLabel(passage: ReturnType<typeof approvedVocabulary>["groups"][number]["passage"]): string {
+  if (!passage) return "unknown";
+  if (passage === "mixed") return passage;
+  return `up:${passage.up ? "open" : "blocked"},down:${passage.down ? "open" : "blocked"},left:${passage.left ? "open" : "blocked"},right:${passage.right ? "open" : "blocked"}`;
 }
 
 function styleSection(project: Project, remaining: number, hasWorldDigest: boolean): string {

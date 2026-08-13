@@ -45,6 +45,7 @@ const KIND_LABELS = {
   horizontal_expandable: "가로 확장",
   nine_slice_expandable: "9분할 확장",
   overlay_detail: "장식 오버레이",
+  repeatable_block: "2차원 반복 블록",
   single: "단일",
   source_rect: "원본 영역",
   vertical_expandable: "세로 확장",
@@ -158,6 +159,7 @@ function tileIdsFromRect(tileset: TilesetDef, rect: RangeRect): readonly number[
 function inferPatternKind(rect: RangeRect, tileIds: readonly number[]): PatternKind {
   if (tileIds.length === 1 || (rect.w === 1 && rect.h === 1)) return "single";
   if (rect.w === 3 && rect.h === 3 && tileIds.length === 9) return "autotile_3x3";
+  if (rect.w === 2 && rect.h === 3 && tileIds.length === 6) return "repeatable_block";
   if (rect.w === 1 && rect.h >= 2) return "vertical_expandable";
   if (rect.h === 1 && rect.w >= 2) return "horizontal_expandable";
   return "source_rect";
@@ -194,6 +196,8 @@ function partsFor(kind: PatternKind, tileIds: readonly number[]): readonly Patte
       const body = tileIds.slice(1, -1);
       return [part("leftCap", [tileIds[0] ?? 0]), part("repeatBody", body.length > 0 ? body : [tileIds[0] ?? 0]), part("rightCap", [tileIds.at(-1) ?? tileIds[0] ?? 0])];
     }
+    case "repeatable_block":
+      return [part("repeatBody", tileIds)];
     case "animated_terrain":
     case "event_required_object":
     case "overlay_detail":
@@ -217,6 +221,7 @@ function patternGrammarFor(kind: PatternKind, parts: readonly PatternPart[]): Pa
     ...(kind === "vertical_expandable" ? { minHeight: 2, minWidth: 1 } : {}),
     ...(kind === "horizontal_expandable" ? { minHeight: 1, minWidth: 2 } : {}),
     ...(kind === "autotile_3x3" || kind === "nine_slice_expandable" ? { minHeight: 3, minWidth: 3 } : {}),
+    ...(kind === "repeatable_block" ? { blockHeight: 3, blockWidth: 2, minHeight: 3, minWidth: 2 } : {}),
     parts: parts.map((entry) => ({ role: entry.role, tileIds: [...entry.tileIds] })),
     preserveCaps: kind !== "single",
     repeat: repeatFor(kind),
@@ -224,7 +229,7 @@ function patternGrammarFor(kind: PatternKind, parts: readonly PatternPart[]): Pa
 }
 
 function axisFor(kind: PatternKind): PatternGrammar["axis"] | null {
-  if (kind === "autotile_3x3" || kind === "nine_slice_expandable") return "both";
+  if (kind === "autotile_3x3" || kind === "nine_slice_expandable" || kind === "repeatable_block") return "both";
   if (kind === "horizontal_expandable") return "horizontal";
   if (kind === "vertical_expandable") return "vertical";
   return null;

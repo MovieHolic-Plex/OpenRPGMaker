@@ -33,7 +33,7 @@ import {
   truncateMapEditHistoryFromMarker,
 } from "@/editor/mapEditHistory";
 import { getEditorMapViewport } from "@/editor/editorMapViewport";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { getTool } from "@/editor/tools";
 import { store } from "@/project/store";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
@@ -337,7 +337,7 @@ function pushUiEvent(events: RegionTaskUiEvent[], event: SessionEvent): void {
 
 /** Combined Town 하네스 프리셋(나무/길/물 등)을 origin:user 로 승인해 place_props가 바로 쓰이게 한다. */
 export function ensureRegionPlacementHarness(tileset: TilesetDef): void {
-  ensureBuildPalettePresets(tileset);
+  ensureBuildPaletteTileGroups(tileset);
 }
 
 /** 장식 박스 전용 그룹 참조(엔진 내부). 시공 public contract 는 material 라벨만. */
@@ -357,11 +357,11 @@ export function formatMaterialLabelHint(tileset: TilesetDef | undefined): string
   }
   // 구체 소품 우선. 마을 소품(small-props) 가방은 시공 material 후보에서 제외.
   const preferred = [
-    BUILD_PALETTE_PRESETS.tree,
+    BUILD_PALETTE_GROUP_IDS.tree,
     REGION_PROP_VOCAB.woodBox,
     REGION_PROP_VOCAB.fruitBox,
-    BUILD_PALETTE_PRESETS.path,
-    BUILD_PALETTE_PRESETS.water,
+    BUILD_PALETTE_GROUP_IDS.path,
+    BUILD_PALETTE_GROUP_IDS.water,
   ];
   const groups = tileset.tileGroups ?? [];
   const preferredFound = preferred

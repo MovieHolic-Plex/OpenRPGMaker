@@ -4,7 +4,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { TILE } from "@/project/defaults/constants";
 import { approvedVocabulary, unapprovedVocabulary } from "@/project/tileVocabulary";
 import { buildRegionTaskMessage, ensureRegionPlacementHarness, runRegionTask, type RegionTaskDeps } from "@/editor/regionTask/runRegionTask";
-import { BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
 import { AssistantSession } from "@/ai/assistantSession";
 import { loadAiConfig, configForLiteModel, AI_CONFIG_STORAGE_KEY, DEFAULT_BASE_URL } from "@/ai/llmClient";
 import { toOpenAiTools } from "@/editor/tools";

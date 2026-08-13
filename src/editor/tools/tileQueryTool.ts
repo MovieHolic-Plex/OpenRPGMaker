@@ -109,7 +109,17 @@ const tileQuery: ToolDefinition = {
         data: {
           tilesetId,
           // 그룹 id는 엔진 내부 참고용 — LLM은 material 라벨을 쓴다.
-          groups: vocab.groups.map((g) => ({ name: g.name, role: g.role, layerHome: g.layerHome, ...(g.patternKind ? { patternKind: g.patternKind } : {}) })),
+          groups: vocab.groups.map((g) => ({
+            name: g.name,
+            role: g.role,
+            layerHome: g.layerHome,
+            ...(g.patternKind ? { patternKind: g.patternKind } : {}),
+            ...(g.sourceSize ? { sourceSize: g.sourceSize } : {}),
+            ...(g.blockSize ? { blockSize: g.blockSize } : {}),
+            ...(g.passage ? { passage: g.passage } : {}),
+            ...(g.description ? { description: g.description } : {}),
+            ...(g.placementRules ? { placementRules: g.placementRules } : {}),
+          })),
           looseTiles: vocab.tiles.map((t) => ({ tileId: t.tileId, label: t.label, layerHome: t.layerHome })),
         },
       };
@@ -122,16 +132,58 @@ const tileQuery: ToolDefinition = {
       const query = typeof args.query === "string" ? args.query : "";
       const materials = suggestMaterialsByLabel(tileset, query, limit);
       // 라벨이 비어 있으면 전체 스캔 샘플
-      const labels: { tileId: number; label: string; description: string; role?: string }[] = [];
-      if (materials.length > 0) {
-        for (const m of materials) labels.push({ tileId: m.tileId, label: m.label, description: m.description, ...(m.role ? { role: m.role } : {}) });
-      } else {
+      const normalizedQuery = query.trim().toLowerCase();
+      const groups = approvedVocabulary(tileset).groups.filter((group) => {
+        if (!normalizedQuery) return true;
+        return `${group.name} ${group.description ?? ""} ${group.placementRules ?? ""}`.toLowerCase().includes(normalizedQuery);
+      });
+      const labels: ({
+        readonly kind: "group";
+        readonly label: string;
+        readonly description: string;
+        readonly role: string;
+        readonly layerHome: string;
+        readonly patternKind?: string;
+        readonly placementRules?: string;
+        readonly passage?: unknown;
+        readonly sourceSize?: unknown;
+        readonly blockSize?: unknown;
+      } | {
+        readonly kind: "tile";
+        readonly tileId: number;
+        readonly label: string;
+        readonly description: string;
+        readonly role?: string;
+      })[] = groups.slice(0, limit).map((group) => ({
+        kind: "group",
+        label: group.name,
+        description: group.description ?? "",
+        role: group.role,
+        layerHome: group.layerHome,
+        ...(group.patternKind ? { patternKind: group.patternKind } : {}),
+        ...(group.placementRules ? { placementRules: group.placementRules } : {}),
+        ...(group.passage ? { passage: group.passage } : {}),
+        ...(group.sourceSize ? { sourceSize: group.sourceSize } : {}),
+        ...(group.blockSize ? { blockSize: group.blockSize } : {}),
+      }));
+      for (const material of materials) {
+        if (labels.length >= limit) break;
+        labels.push({
+          kind: "tile",
+          tileId: material.tileId,
+          label: material.label,
+          description: material.description,
+          ...(material.role ? { role: material.role } : {}),
+        });
+      }
+      if (labels.length === 0) {
         for (let tileId = 0; tileId < tileset.count && labels.length < limit; tileId += 1) {
           const meta = tileset.tileMeta?.[tileId];
           const label = typeof meta?.label === "string" ? meta.label.trim() : "";
           const description = typeof meta?.description === "string" ? meta.description.trim() : "";
           if (!label && !description) continue;
           labels.push({
+            kind: "tile",
             tileId,
             label: label || `타일 ${tileId}`,
             description,

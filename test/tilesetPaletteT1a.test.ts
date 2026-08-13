@@ -7,6 +7,13 @@ import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
+import {
+  confidenceScore,
+  confirmUserTileMetadata,
+  tileMetaConfidence,
+  tileMetaLocked,
+  tileMetaOrigin,
+} from "@/project/tilesetPalette";
 import type { GameMap, PalettePreset, Project, TileAiMetadata, TilesetDef } from "@/project/types";
 
 const EMPTY = TILE.EMPTY;
@@ -95,6 +102,42 @@ function addToolPreset(tileset: TilesetDef, slots: PalettePreset["slots"]): void
 }
 
 describe("tileset palette T1a data model and guards", () => {
+  it("normalizes confidence and compatibility provenance without changing legacy semantics", () => {
+    expect(confidenceScore(0.42)).toBe(0.42);
+    expect(confidenceScore("high")).toBe(1);
+    expect(confidenceScore("medium")).toBe(0.65);
+    expect(confidenceScore("low")).toBe(0.25);
+    expect(tileMetaOrigin({ label: "", description: "", origin: "ai", source: "user" })).toBe("ai");
+    expect(tileMetaOrigin({ label: "", description: "", source: "user" })).toBe("user");
+    expect(tileMetaLocked({ label: "", description: "", locked: true })).toBe(true);
+    expect(tileMetaLocked({ label: "", description: "", userLocked: true })).toBe(true);
+  });
+
+  it("distinguishes absent metadata from present unconfirmed metadata", () => {
+    expect(tileMetaConfidence(undefined)).toBeNull();
+    expect(tileMetaConfidence({ label: "", description: "" })).toBe(0.5);
+    expect(tileMetaConfidence({ label: "", description: "", source: "user" })).toBe(1);
+    expect(tileMetaConfidence({ label: "", description: "", confidence: 0.2, origin: "user" })).toBe(0.2);
+  });
+
+  it("marks user-confirmed metadata with canonical and compatibility fields", () => {
+    const confirmed = confirmUserTileMetadata(
+      { label: "Old", description: "description", role: "decor", source: "ai" },
+      { label: "Confirmed" }
+    );
+
+    expect(confirmed).toEqual({
+      label: "Confirmed",
+      description: "description",
+      role: "decor",
+      confidence: 1,
+      origin: "user",
+      locked: true,
+      source: "user",
+      userLocked: true,
+    });
+  });
+
   it("legacy projects without palettePresets remain absent after roundtrip", () => {
     const project = createBlankProject();
     const before = startTileset(project).palettePresets;

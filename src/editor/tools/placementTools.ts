@@ -339,6 +339,8 @@ function oneInstance(sample: GroupSample, group: TileGroupMetadata, tileset: Til
 }
 
 function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Footprint | null {
+  const waterAtlas = waterAtlasFootprint(group, tileset);
+  if (waterAtlas) return waterAtlas;
   const layered = treeLayeredFootprint(group, tileset);
   if (layered) return layered;
   if (group.patternGrammar?.kind !== "source_rect") return null;
@@ -364,6 +366,20 @@ function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Foo
     }
   }
   return { h: 2, lower, upper, w: 2 };
+}
+
+function waterAtlasFootprint(group: TileGroupMetadata, tileset: TilesetDef): Footprint | null {
+  const rect = group.sourceRect;
+  if (group.sourceBlocks?.length !== 9 || !rect || rect.width !== 9 || rect.height !== 9) return null;
+  if (group.tileIds.length !== rect.width * rect.height) return null;
+  const lower: number[] = [];
+  const upper: number[] = [];
+  for (const [index, tile] of group.tileIds.entries()) {
+    const layer = group.cellLayers?.[index] ?? footprintLayer(tileset, group, tile);
+    lower.push(layer === "lower" ? tile : TILE.EMPTY);
+    upper.push(layer === "upper" ? tile : TILE.EMPTY);
+  }
+  return { h: rect.height, lower, upper, w: rect.width };
 }
 
 function partTile(group: TileGroupMetadata, role: NonNullable<TileGroupMetadata["patternGrammar"]>["parts"][number]["role"], fallback: number | undefined): number {

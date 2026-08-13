@@ -1,4 +1,5 @@
 import { applyCombinedTownHarness, isCombinedTownTileset } from "@/project/tilesetHarness";
+import { confirmUserTileMetadata, tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import type { TileAiMetadata, TilesetDef } from "@/project/types";
 
 type UserRuntimePatch = Partial<Pick<TileAiMetadata, "passage" | "terrainTag">>;
@@ -9,8 +10,8 @@ export type TileLayerChoice = "auto" | "lower" | "upper";
 export function markUserTileRuntimeMetadata(tileset: TilesetDef, tile: number, patch: UserRuntimePatch): void {
   if (tile < 0 || tile >= tileset.count) return;
   const current = ensureTileMetaSlot(tileset, tile);
-  const wasUser = current.source === "user" || current.userLocked === true;
-  const next: TileAiMetadata = { ...current, ...patch, source: "user", userLocked: true };
+  const wasUser = tileMetaOrigin(current) === "user" || tileMetaLocked(current);
+  const next = confirmUserTileMetadata(current, patch);
   // 번들/AI 메타를 통행·지형 편집으로 승격할 때 상속된 defaultLayer까지 "사용자 확정
   // 레이어"로 둔갑하면 안 된다 — 레이어 확정은 레이어 버튼(setTileLayerOverride)으로만.
   if (!wasUser) delete next.defaultLayer;
@@ -20,7 +21,7 @@ export function markUserTileRuntimeMetadata(tileset: TilesetDef, tile: number, p
 // 사용자가 명시적으로 확정한 레이어(있으면). 하네스·투명 칩 자동 판정보다 우선한다.
 export function userTileLayerOverride(tileset: TilesetDef, tile: number): "lower" | "upper" | null {
   const meta = tileset.tileMeta?.[tile];
-  if (!meta || (meta.source !== "user" && meta.userLocked !== true)) return null;
+  if (!meta || (tileMetaOrigin(meta) !== "user" && !tileMetaLocked(meta))) return null;
   return meta.defaultLayer === "lower" || meta.defaultLayer === "upper" ? meta.defaultLayer : null;
 }
 
@@ -35,6 +36,8 @@ export function setTileLayerOverride(tileset: TilesetDef, tile: number, choice: 
     delete next.defaultLayer;
     // 레이어 때문에만 잠긴 메타라면 잠금도 해제해 하네스가 다시 관리하게 한다.
     if (!hasUserKnowledge(next)) {
+      delete next.locked;
+      delete next.origin;
       delete next.userLocked;
       next.source = "unknown";
     }
@@ -42,7 +45,7 @@ export function setTileLayerOverride(tileset: TilesetDef, tile: number, choice: 
     if (isCombinedTownTileset(tileset)) applyCombinedTownHarness(tileset);
     return;
   }
-  tileset.tileMeta![tile] = { ...current, defaultLayer: choice, source: "user", userLocked: true };
+  tileset.tileMeta![tile] = confirmUserTileMetadata(current, { defaultLayer: choice });
   tileset.priority[tile] = choice;
 }
 

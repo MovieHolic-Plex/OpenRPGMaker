@@ -1,9 +1,13 @@
-import { loadAiConfig } from "@/ai/llmClient";
+import { isProxyAuth, loadAiConfig } from "@/ai/llmClient";
 
 export type CpenTilesetRequest = {
   readonly prompt: string;
   readonly imageDataUrl: string;
 };
+
+type CpenTilesetContentPart =
+  | { readonly text: string; readonly type: "text" }
+  | { readonly image_url: { readonly url: string }; readonly type: "image_url" };
 
 type ChatCompletionResponse = {
   readonly choices?: readonly {
@@ -24,8 +28,9 @@ const JSON_ONLY_SYSTEM_PROMPT =
 
 export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Promise<string> {
   const mainConfig = loadAiConfig();
+  const proxyAuth = isProxyAuth(mainConfig);
   const apiKey = mainConfig.apiKey?.trim() || readApiKey();
-  if (!apiKey) return "AI 설정이 아직 연결되지 않았습니다. 로컬 설정을 확인해 주세요.";
+  if (!apiKey && !proxyAuth) return "AI 설정이 아직 연결되지 않았습니다. 로컬 설정을 확인해 주세요.";
   const baseUrl = (mainConfig.baseUrl?.trim() || readApiUrl()).replace(/\/$/, "");
   if (!baseUrl) return "AI 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.";
   const model = mainConfig.model?.trim() || DEFAULT_LLM_MODEL;
@@ -41,7 +46,7 @@ export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Pr
           },
           {
             role: "user",
-            content: buildPrompt(request),
+            content: messageContent(request),
           },
         ],
         response_format: { type: "json_object" },
@@ -52,8 +57,8 @@ export async function requestCpenTilesetMapping(request: CpenTilesetRequest): Pr
         temperature: 0.2,
       }),
       headers: {
-        Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
+        ...(!proxyAuth ? { Authorization: `Bearer ${apiKey}` } : {}),
       },
       method: "POST",
     });
@@ -83,12 +88,16 @@ export function normalizeCpenResponseText(responseText: string): string {
 }
 
 export function hasCpenTilesetApiKey(): boolean {
-  return readApiKey().length > 0;
+  const config = loadAiConfig();
+  return isProxyAuth(config) || (config.apiKey?.trim() || readApiKey()).length > 0;
 }
 
-function buildPrompt(request: CpenTilesetRequest): string {
+function messageContent(request: CpenTilesetRequest): string | readonly CpenTilesetContentPart[] {
   if (!request.imageDataUrl.startsWith("data:image/")) return request.prompt;
-  return `${request.prompt}\n\n참고: 현재 AI 라우터는 이미지 멀티파트를 받지 않아 임시 맵의 lowerTiles/upperTiles 데이터와 선택 타일 설명을 기준으로 분석하세요.`;
+  return [
+    { text: request.prompt, type: "text" },
+    { image_url: { url: request.imageDataUrl }, type: "image_url" },
+  ];
 }
 
 function readApiKey(): string {

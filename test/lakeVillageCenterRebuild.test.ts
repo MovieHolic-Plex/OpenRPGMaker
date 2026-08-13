@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { TILE } from "@/project/defaults/constants";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { saveProjectToSupabase } from "@/project/supabaseProjectSync";
@@ -95,7 +95,7 @@ describe("center lake village rebuild", () => {
 
     // ── 맵 1: 50×50 — 중앙 호수 → 주변 나무 → 모서리 집 ──
     logs.push(runOk(ctx, "create_map", { id: "map_lake_village", name: "호수 마을", width: 50, height: 50 }));
-    ensureBuildPalettePresets(p(ctx).tilesets[p(ctx).maps.map_lake_village.tilesetId]);
+    ensureBuildPaletteTileGroups(p(ctx).tilesets[p(ctx).maps.map_lake_village.tilesetId]);
 
     // 맵 중앙 원형 호수
     const villageLake = { x: 19, y: 19, w: 12, h: 12 };

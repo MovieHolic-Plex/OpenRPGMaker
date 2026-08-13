@@ -171,6 +171,52 @@ function expandHorizontal(tileset: TilesetDef, group: TileGroupMetadata, grammar
   return edits;
 }
 
+function expandRepeatableBlock(
+  tileset: TilesetDef,
+  group: TileGroupMetadata,
+  grammar: PatternGrammar,
+  rect: Rect,
+  home: VocabLayerHome,
+  example: Record<string, unknown>
+): CellEdit[] {
+  const blockWidth = grammar.blockWidth ?? 0;
+  const blockHeight = grammar.blockHeight ?? 0;
+  const tiles = partTiles(grammar, "repeatBody");
+  const blockSize = blockWidth * blockHeight;
+  if (blockWidth < 1 || blockHeight < 1 || tiles.length !== blockSize) {
+    throw new ToolError(
+      `'${group.name}' 반복 블록에는 blockWidth×blockHeight와 같은 수의 repeatBody 타일이 필요합니다. 다시 보낼 형식 예시: ${JSON.stringify(example)}`,
+      { code: "pattern-underspecified" }
+    );
+  }
+  const minWidth = grammar.minWidth ?? blockWidth;
+  const minHeight = grammar.minHeight ?? blockHeight;
+  if (rect.w < minWidth || rect.h < minHeight) {
+    throw new ToolError(
+      `'${group.name}' 반복 블록은 최소 ${minWidth}×${minHeight}가 필요합니다(요청 ${rect.w}×${rect.h}).`,
+      { code: "rect-too-small" }
+    );
+  }
+  const edits: CellEdit[] = [];
+  for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+    for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+      const sourceX = (x - rect.x) % blockWidth;
+      const sourceY = (y - rect.y) % blockHeight;
+      const sourceIndex = sourceY * blockWidth + sourceX;
+      const tile = tiles[sourceIndex];
+      if (tile === undefined) continue;
+      const authoredLayer = group.cellLayers?.length === blockSize ? group.cellLayers[sourceIndex] : undefined;
+      edits.push({
+        x,
+        y,
+        layer: authoredLayer ?? layerForVocabTile(tileset, home, tile),
+        tile,
+      });
+    }
+  }
+  return edits;
+}
+
 function firstNonEmpty(grammar: PatternGrammar, roles: readonly PartRole[]): readonly number[] | undefined {
   for (const role of roles) {
     const tiles = partTiles(grammar, role);
@@ -192,8 +238,11 @@ export function expandWall(tileset: TilesetDef, group: TileGroupMetadata, rect: 
   if (grammar.kind === "horizontal_expandable") {
     return { edits: expandHorizontal(tileset, group, grammar, rect, home, example), region: rect };
   }
+  if (grammar.kind === "repeatable_block") {
+    return { edits: expandRepeatableBlock(tileset, group, grammar, rect, home, example), region: rect };
+  }
   throw new ToolError(
-    `타일 그룹 '${group.name}'의 패턴 '${grammar.kind}'은(는) 벽 전개를 지원하지 않습니다(지원: nine_slice_expandable/vertical_expandable/horizontal_expandable).`,
+    `타일 그룹 '${group.name}'의 패턴 '${grammar.kind}'은(는) 벽 전개를 지원하지 않습니다(지원: nine_slice_expandable/vertical_expandable/horizontal_expandable/repeatable_block).`,
     { code: "pattern-unsupported" }
   );
 }

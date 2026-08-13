@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import * as llmClient from "@/ai/llmClient";
 import {
   applyBuildPalettePrimitiveToProject,
-  BUILD_PALETTE_PRESETS,
-  ensureBuildPalettePresets,
+  BUILD_PALETTE_GROUP_IDS,
+  ensureBuildPaletteTileGroups,
   houseKitWingsFromSelection,
   validateHouseKitSelection,
   type BuildPaletteSelection,
@@ -199,14 +199,14 @@ describe("build palette deterministic stamps", () => {
     expect(pathed.ok, pathed.summary).toBe(true);
     expect(chat).not.toHaveBeenCalled();
     const pathMap = pathed.project.maps[MAP_ID];
-    const pathMembers = new Set(pathed.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_PRESETS.path)?.tileIds ?? []);
+    const pathMembers = new Set(pathed.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_GROUP_IDS.path)?.tileIds ?? []);
     expect(pathMembers.has(pathMap.lowerTiles[11 * pathMap.width + 6])).toBe(true);
 
     const rivered = applyBuildPalettePrimitiveToProject(createBlankProject(), selection({ x: 2, y: 2, width: 4, height: 3 }), "river");
     expect(rivered.ok, rivered.summary).toBe(true);
     expect(chat).not.toHaveBeenCalled();
     const riverMap = rivered.project.maps[MAP_ID];
-    const waterMembers = new Set(rivered.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_PRESETS.water)?.tileIds ?? []);
+    const waterMembers = new Set(rivered.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((group) => group.id === BUILD_PALETTE_GROUP_IDS.water)?.tileIds ?? []);
     expect(waterMembers.has(riverMap.lowerTiles[3 * riverMap.width + 3])).toBe(true);
   });
 
@@ -215,11 +215,32 @@ describe("build palette deterministic stamps", () => {
     const sand = tileset.tileGroups?.find((group) => group.id === "harness-combined-town-sand-autotile");
     expect(sand).toBeTruthy();
 
-    ensureBuildPalettePresets(tileset);
+    ensureBuildPaletteTileGroups(tileset);
 
     expect(sand).toMatchObject({
       origin: "user",
       source: "user",
     });
+  });
+
+  it("build palette group setup leaves palette presets untouched and is idempotent", () => {
+    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    tileset.palettePresets = [{
+      id: "pp_keep",
+      name: "Keep",
+      origin: "user",
+      slots: [{ role: "ground", tileIds: [1] }],
+    }];
+    const presetBefore = structuredClone(tileset.palettePresets);
+    const missingGroupId = BUILD_PALETTE_GROUP_IDS.prop;
+    tileset.tileGroups = tileset.tileGroups?.filter((group) => group.id !== missingGroupId);
+
+    ensureBuildPaletteTileGroups(tileset);
+    const afterFirst = structuredClone(tileset.tileGroups);
+    ensureBuildPaletteTileGroups(tileset);
+
+    expect(tileset.palettePresets).toEqual(presetBefore);
+    expect(tileset.tileGroups).toEqual(afterFirst);
+    expect(tileset.tileGroups?.some((group) => group.id === missingGroupId)).toBe(false);
   });
 });

@@ -147,6 +147,11 @@ export function renderDatabasePanel(container: HTMLElement): void {
 
   renderActiveTab(body, container);
   container.append(header, body);
+  revealActiveTab(header);
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(() => revealActiveTab(header));
+    observer.observe(header);
+  }
 }
 
 // 이미 마운트된 패널을 부분 갱신한다(본문만 다시 그림). undo/redo 재렌더 경로용.
@@ -166,6 +171,13 @@ function updateTabButtons(header: HTMLElement): void {
     if (button.dataset.testid === activeTestId) button.classList.add("active");
     else button.classList.remove("active");
   }
+  revealActiveTab(header);
+}
+
+function revealActiveTab(header: HTMLElement): void {
+  const active = header.querySelector(".db-tab.active");
+  if (!(active instanceof HTMLElement) || typeof active.scrollIntoView !== "function") return;
+  active.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {

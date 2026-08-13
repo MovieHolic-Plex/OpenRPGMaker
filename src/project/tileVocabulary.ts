@@ -11,17 +11,22 @@
 //   (3) T1b/위저드 confirmedByUser 경로에서만 한다. 이 모듈 자체는 마킹하지 않는다.
 // - 그룹 한정 예외: source === "bundled-default"(큐레이션 번들)는 origin:"user"와 동급 신뢰(2026-07-11).
 
-import type { Project, TileGroupMetadata, TilesetDef } from "./types";
+import type { PassFlag, Project, TileGroupMetadata, TilesetDef } from "./types";
 import { bagMaterialRejectMessage, isBagGroup, isBagMaterialQuery } from "./materialPolicy";
 
 export type VocabLayerHome = "lower" | "upper" | "perCell";
 
 export interface ApprovedVocabularyGroup {
+  readonly blockSize?: { readonly height: number; readonly width: number };
+  readonly description?: string;
   readonly id: string;
   readonly name: string;
   readonly role: TileGroupMetadata["role"];
   readonly layerHome: VocabLayerHome;
+  readonly passage?: PassFlag | "mixed";
   readonly patternKind?: NonNullable<TileGroupMetadata["patternGrammar"]>["kind"];
+  readonly placementRules?: string;
+  readonly sourceSize?: { readonly height: number; readonly width: number };
   readonly tileIds: readonly number[];
 }
 
@@ -78,6 +83,13 @@ export function approvedVocabulary(tileset: TilesetDef): ApprovedVocabulary {
       name: group.name,
       role: group.role,
       layerHome: groupLayerHome(group),
+      ...(group.description.trim() ? { description: group.description.trim() } : {}),
+      ...(group.placementRules.trim() ? { placementRules: group.placementRules.trim() } : {}),
+      ...(group.sourceRect ? { sourceSize: { height: group.sourceRect.height, width: group.sourceRect.width } } : {}),
+      ...(group.patternGrammar?.blockHeight && group.patternGrammar.blockWidth
+        ? { blockSize: { height: group.patternGrammar.blockHeight, width: group.patternGrammar.blockWidth } }
+        : {}),
+      ...(groupPassage(tileset, group) ? { passage: groupPassage(tileset, group) } : {}),
       ...(group.patternGrammar ? { patternKind: group.patternGrammar.kind } : {}),
       tileIds: [...group.tileIds],
     }));
@@ -93,6 +105,20 @@ export function approvedVocabulary(tileset: TilesetDef): ApprovedVocabulary {
     });
   });
   return { groups, tiles };
+}
+
+function groupPassage(tileset: TilesetDef, group: TileGroupMetadata): PassFlag | "mixed" | undefined {
+  const first = tileset.passability[group.tileIds[0] ?? -1];
+  if (!first) return undefined;
+  const same = group.tileIds.every((tileId) => {
+    const candidate = tileset.passability[tileId];
+    return candidate
+      && candidate.up === first.up
+      && candidate.down === first.down
+      && candidate.left === first.left
+      && candidate.right === first.right;
+  });
+  return same ? { ...first } : "mixed";
 }
 
 // 미승인 어휘 요약 — tile_query ask:"unapproved"가 소비한다.

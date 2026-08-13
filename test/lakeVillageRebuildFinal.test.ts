@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { TILE } from "@/project/defaults/constants";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isSandTile } from "@/project/defaults/sandAutotile";
@@ -68,7 +68,7 @@ describe("natural lake village (editor tools only)", () => {
 
     // ── 1. 맵 (빈 프로젝트에서 신규 생성) ──
     logs.push(runOk(ctx, "create_map", { id: MAP_ID, name: "호수 마을", width: 52, height: 52 }));
-    ensureBuildPalettePresets(p(ctx).tilesets[p(ctx).maps[MAP_ID].tilesetId]);
+    ensureBuildPaletteTileGroups(p(ctx).tilesets[p(ctx).maps[MAP_ID].tilesetId]);
 
     // ── 2. 중앙 원형 호수 ──
     const lake = { x: 18, y: 18, w: 16, h: 16 };
