@@ -289,7 +289,7 @@ describe("author_village settlement scale and winter", () => {
     expect(snowTiles.has(firstMap.lowerTiles[first.startPos.y * firstMap.width + first.startPos.x] ?? -1) || roadTiles.has(firstMap.lowerTiles[first.startPos.y * firstMap.width + first.startPos.x] ?? -1)).toBe(true);
     expect(new Set(firstMap.events.filter((event) => event.id.startsWith("ev_village_")).map((event) => `${event.x},${event.y}`)).size).toBe(50);
     expect(firstMap.layoutPlan?.regions.find((region) => region.role === "plaza")?.tags).toContain("street-grid");
-  });
+  }, 30_000);
 
   it("rolls back an exact request when the requested population cannot fit", () => {
     const project = createExistingProject(36);

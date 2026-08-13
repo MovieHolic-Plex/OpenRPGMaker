@@ -68,7 +68,7 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
   },
   event: { strong: ["이벤트", "npc", "대사", "전송", "스위치", "변수", "트리거", "주민", "튜토리얼", "tutorial", "분기", "branch", "반전", "twist", "서사", "story"], weak: [] },
   world: { strong: ["세계관", "월드", "지역", "관계", "엔티티"], weak: [] },
-1:   system: {
+  system: {
     strong: [
       "린트", "타이틀", "시작위치", "시작 위치", "히스토리", "플레이테스트",
       "새 프로젝트", "새 게임", "처음부터", "프로젝트 초기화", "new project", "new game", "start project", "start over", "reset project",
@@ -78,11 +78,6 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
     weak: [],
   },
   map: { strong: ["맵", "지도", "마을", "던전", "필드", "실내", "도시", "정착지", "city", "town", "settlement"], weak: [] },
-2: - `author_village` preserves unsupported landmark intent truthfully at the existing theme→decor seam: normalized themes containing `fountain` or `분수` place the supported combined_town well tile `382` at the plaza and return a visible construction warning that the fountain asset is unavailable and the well was substituted. Ordinary themes retain the default single-well behavior without this warning; no fountain tile or asset-generation capability is implied.
-
-## Project-wide quality evaluation
-
-`evaluate_game_quality` is read-only. It combines project, world, and tileset-palette lint with structural coverage across legacy event commands, event pages, common events, troop battle pages, and every nested command branch. It also reports quest/battle/ending/content counts, story-flag reads and writes, and optional caller-supplied walkthrough results. Only objective `projectLint` errors block its verdict; world/palette findings and walkthrough failures remain explicit evidence. It never emits a numeric score and cannot measure fun, originality, emotional impact, pacing quality, or preferred difficulty.
 };
 
 const NEGATION_WORDS = ["말고", "제외", "빼고", "말고서", "아니라"] as const;

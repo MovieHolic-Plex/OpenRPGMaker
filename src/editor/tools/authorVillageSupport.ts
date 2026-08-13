@@ -94,9 +94,9 @@ export function assertVillagePostconditions(
       { code: "village-count-shortfall", mapId },
     );
   }
-  if (request.npcCount !== undefined && inspection.audit.npcCount !== request.npcCount) {
+  if (request.npcCount !== undefined && inspection.npcCount !== request.npcCount) {
     throw new ToolError(
-      `Village population shortfall: ${inspection.audit.npcCount}/${request.npcCount}.`,
+      `Village population shortfall: ${inspection.npcCount}/${request.npcCount}.`,
       { code: "village-population-shortfall", mapId },
     );
   }

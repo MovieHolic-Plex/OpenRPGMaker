@@ -17,6 +17,8 @@ export interface JsonSchema {
   readonly enum?: readonly (string | number)[];
   readonly minLength?: number;
   readonly maxLength?: number;
+  readonly minimum?: number;
+  readonly maximum?: number;
   /** JSON Schema oneOf (툴 인자 유니온). type 없이 쓰일 수 있다. */
   readonly oneOf?: readonly JsonSchema[];
   // 깊은 구조(이벤트/커맨드 등)는 기존 shape 검증기에 위임하므로 스키마에선 자유 형태를 허용한다.

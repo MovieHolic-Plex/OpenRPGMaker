@@ -26,17 +26,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - Room harness automation may use the low-level typed `src/editor/roomHarness/facade.ts` API for deterministic start/advance/evaluate, lock, and room-only reroll operations. The user-facing quota-independent route is `src/editor/regionTask/runDirectRoomDraft.ts`, exposed by the region modal as **AI 없이 실내 초안** with structural presets and composable modifiers. It selects a world-reachable doorway, connects both transfer directions, and enters the same `pendingRegionApply` review/approval surface as AI work; LLM tool wrappers remain compatible but are not the only route to harness behavior.
 - Tileset knowledge analysis uses `requestCpenTilesetMapping` as a real multimodal OpenAI-compatible request: the user message contains a JSON task plus an `image_url` data URL for the rendered full atlas. `tilesetAiNativeAnalysis.ts` validates proposal tile ranges and executable template geometry before any review card is shown. The review/apply boundary is `tilesetAiNativeReviewApply.ts`; do not move `store.update` into Analyze or card rendering. High-confidence means `>=0.85`, uncertain means `>=0.5`, and lower results always require an explicit per-card decision.
 - The tileset client follows the shared AI proxy-auth contract: relative `baseUrl` values are same-origin server-authenticated routes, require no browser API key, and must not receive an `Authorization` header. Absolute provider URLs still require the configured key. Review apply rejects overlapping lower-confidence candidates after deterministic confidence/id sorting.
-1:   system: {
-    strong: [
-      "린트", "타이틀", "시작위치", "시작 위치", "히스토리", "플레이테스트",
-      "새 프로젝트", "새 게임", "처음부터", "프로젝트 초기화", "new project", "new game", "start project", "start over", "reset project",
-      "시간 시스템", "낮", "밤", "아침", "저녁", "day night", "day/night", "time system",
-      "품질", "quality", "평가", "evaluate",
-    ],
-    weak: [],
-  },
-  map: { strong: ["맵", "지도", "마을", "던전", "필드", "실내", "도시", "정착지", "city", "town", "settlement"], weak: [] },
-2: - `author_village` preserves unsupported landmark intent truthfully at the existing theme→decor seam: normalized themes containing `fountain` or `분수` place the supported combined_town well tile `382` at the plaza and return a visible construction warning that the fountain asset is unavailable and the well was substituted. Ordinary themes retain the default single-well behavior without this warning; no fountain tile or asset-generation capability is implied.
+- `author_village` preserves unsupported landmark intent truthfully at the existing theme→decor seam: normalized themes containing `fountain` or `분수` place the supported combined_town well tile `382` at the plaza and return a visible construction warning that the fountain asset is unavailable and the well was substituted. Ordinary themes retain the default single-well behavior without this warning; no fountain tile or asset-generation capability is implied.
 
 ## Project-wide quality evaluation
 

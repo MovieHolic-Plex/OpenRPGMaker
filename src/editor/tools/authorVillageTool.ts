@@ -92,6 +92,7 @@ function failedData(args: Record<string, unknown>, result: ToolResult): AuthorVi
       exteriorMapId: target.mapId,
       interiorMapIds: [],
       actualHouseCount: 0,
+      npcCount: 0,
       structuralQa: {
         ok: false,
         doorsConnected: 0,

@@ -61,7 +61,7 @@ const authorStoryArc: ToolDefinition = {
     const commands: Command[] = [
       ...opening.map(textCommand),
       ...objectives.flatMap((objective, index) => [textCommand(objective.text), { kind: "setSwitch" as const, switchId: objectiveSwitchIds[index] as string, value: true }]),
-      { kind: "choices", prompt: title, options: branches.map((branch, index) => ({ text: branch.label.trim(), branch: [...cleanLines(branch.lines).map(textCommand), { kind: "setVariable", variableId: choiceVariableId, op: "set", value: index + 1 }, ...(twist.enabled && branch.id === twist.discoverInBranchId && twistSwitchId ? [{ kind: "setSwitch" as const, switchId: twistSwitchId, value: true }] : [])] })) },
+      { kind: "choices", prompt: title, options: branches.map((branch, index) => ({ text: branch.label.trim(), branch: [...cleanLines(branch.lines).map(textCommand), { kind: "setVariable", variableId: choiceVariableId, op: "=", value: index + 1 }, ...(twist.enabled && branch.id === twist.discoverInBranchId && twistSwitchId ? [{ kind: "setSwitch" as const, switchId: twistSwitchId, value: true }] : [])] })) },
       ...(twist.enabled && twistSwitchId ? [{ kind: "fork" as const, condition: { kind: "switch" as const, switchId: twistSwitchId, value: true }, then: cleanLines(twist.reveal).map(textCommand) }] : []),
     ];
     map.events.push({ id: eventId, x: at.x, y: at.y, trigger: { kind: "action" }, commands: [], pages: [{ id: `${eventId}_page_1`, name: title, conditions: [], graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands }] });

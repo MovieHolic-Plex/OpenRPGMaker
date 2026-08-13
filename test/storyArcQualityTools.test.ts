@@ -90,7 +90,7 @@ describe("evaluate_game_quality", () => {
 
   it("blocks only on objective lint errors and always reports limitations", () => {
     const advisoryProject = createBlankProject();
-    advisoryProject.world = { entities: [{ id: "bad-ref", type: "place", name: "Bad", summary: "Broken", refs: [{ kind: "map", id: "missing" }] }], relations: [] };
+    advisoryProject.world = { entities: [{ id: "bad-ref", type: "place", name: "Bad", summary: "Broken", origin: "user", refs: [{ kind: "map", id: "missing" }] }], relations: [] };
     const advisory = runTool({ project: advisoryProject }, "evaluate_game_quality", {}).data as { verdict: { blocked: boolean }; limitations: string[] };
     expect(advisory.verdict.blocked).toBe(false);
     expect(advisory.limitations).toHaveLength(5);

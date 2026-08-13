@@ -407,6 +407,7 @@ export type VillageBuildInspection = {
   readonly exteriorMapId: string;
   readonly interiorMapIds: readonly string[];
   readonly actualHouseCount: number;
+  readonly npcCount: number;
   readonly structuralQa: VillageStructuralQa;
 };
 
@@ -454,6 +455,7 @@ export function inspectVillageBuild(
   const doorsIntact = numericMetric("doorsIntact");
   const roadComponents = numericMetric("roadComponents");
   const ridgeInvaded = numericMetric("ridgeInvaded");
+  const npcCount = numericMetric("npcCount");
   const critique = Reflect.get(data, "critique");
   const critiqueOk = typeof critique === "object"
     && critique !== null
@@ -478,6 +480,7 @@ export function inspectVillageBuild(
     exteriorMapId,
     interiorMapIds: [...interiorMapIds].sort(),
     actualHouseCount,
+    npcCount,
     structuralQa,
   };
 }
@@ -1359,14 +1362,18 @@ function ensureVillageStartPosition(draft: Project, map: GameMap, plaza: Plaza):
   for (const point of candidates) {
     if (point.x < 0 || point.y < 0 || point.x >= map.width || point.y >= map.height) continue;
     const lower = map.lowerTiles[point.y * map.width + point.x] ?? TILE.EMPTY;
-    // 모래/흙길 타일이면 우선. 아니면 잔디(GRASS)도 허용.
-    if ((ROAD_TILES.has(lower) || lower === TILE.GRASS) && isPassable(draft, map, point.x, point.y)) {
+    // 길 또는 테마 바닥(눈/잔디)이면서 실제 통행 가능한 지점을 채택한다.
+    if (isVillageStartGround(lower) && isPassable(draft, map, point.x, point.y)) {
       draft.startPos = { x: point.x, y: point.y };
       return;
     }
   }
   const fallback = nearestPassableStart(draft, map, { x: plaza.centerX, y: plaza.centerRow });
   draft.startPos = fallback ?? { x: plaza.centerX, y: plaza.centerRow };
+}
+
+function isVillageStartGround(tileId: number): boolean {
+  return ROAD_TILES.has(tileId) || tileId === TILE.GRASS || DEFAULT_SNOW_AUTOTILE_GROUP.memberTileIds.includes(tileId);
 }
 
 function applyVillageGroundTheme(map: GameMap, area: Rect, value: unknown): void {
@@ -1391,7 +1398,9 @@ function nearestPassableStart(project: Project, map: GameMap, origin: Point): Po
       const dx = radius - Math.abs(dy);
       for (const x of dx === 0 ? [origin.x] : [origin.x - dx, origin.x + dx]) {
         const y = origin.y + dy;
-        if (inMapBounds(map, x, y) && isPassable(project, map, x, y)) return { x, y };
+        if (!inMapBounds(map, x, y)) continue;
+        const lower = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
+        if (isVillageStartGround(lower) && isPassable(project, map, x, y)) return { x, y };
       }
     }
   }
@@ -1434,7 +1443,7 @@ function setVillageHarnessLayoutPlan(
     regions: [
       {
         id: "village_commons",
-        role: intent.plazaStyle === "market" ? "market" : "plaza",
+        role: "plaza",
         label: intent.plazaStyle === "market" ? "생활 장터와 중앙 녹지" : "중앙 녹지 광장",
         ...plaza.rect,
         tags: [

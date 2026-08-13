@@ -30,6 +30,8 @@ import { villageRoadAnchors } from "./roads";
 const placeNpcTool = requireTool(EVENT_TOOLS, "place_npc");
 const setNpcScheduleTool = requireTool(EVENT_TOOLS, "set_npc_schedule");
 
+const MIN_NPC_CLEARANCE = 1;
+
 export function placeVillageNpcs(
   draft: Project,
   map: GameMap,
@@ -52,6 +54,7 @@ export function placeVillageNpcs(
       const key = coordKey(x, y);
       if (occupied.has(key) || map.events.some((event) => event.x === x && event.y === y)) continue;
       if (map.upperTiles[y * map.width + x] !== TILE.EMPTY || !isPassable(draft, map, x, y)) continue;
+      if (placements.some((point) => chebyshevDistance(point, { x, y }) <= MIN_NPC_CLEARANCE)) continue;
       occupied.add(key);
       placements.push({ x, y });
     }
@@ -94,6 +97,10 @@ export function placeVillageNpcs(
   }
   warnIfSchedulesCannotRun(draft, warnings);
 }
+function chebyshevDistance(a: Point, b: Point): number {
+  return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+}
+
 
 /**
  * 시간표를 저장했지만 시간 시스템이 꺼져 있으면 경고한다.

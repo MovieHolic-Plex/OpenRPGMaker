@@ -51,6 +51,7 @@ export function inspection(
     exteriorMapId,
     interiorMapIds: [],
     actualHouseCount,
+    npcCount: 0,
     structuralQa: {
       ok: qaOk,
       doorsConnected: actualHouseCount,
