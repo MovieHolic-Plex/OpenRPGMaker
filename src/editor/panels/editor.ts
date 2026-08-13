@@ -175,7 +175,7 @@ export function renderEditor(main: HTMLElement): void {
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar, chatFloatHost);
-  layout.append(left, leftResizer, canvasArea, chatSidePanel);
+  layout.append(chatSidePanel, left, leftResizer, canvasArea);
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
     onChatDockToggle: toggleChatDock,
@@ -223,15 +223,13 @@ export function renderEditor(main: HTMLElement): void {
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
     applyEditorUiModeLayout();
-    // 코치마크는 기본 모드 전용 — 투어 중 전문가로 전환하면 닫는다(미완주는 다음 방문에 재개).
-    if (getEditorUiMode() !== "basic") dismissCoachMarks();
+    if (getEditorUiMode() !== "beginner") dismissCoachMarks();
   });
   installSelectionChipHint();
   maybeStartBasicCoachMarks();
   startAiConnectionPolling();
 }
 
-/** Re-apply basic/expert density without tearing down Phaser or AI session. */
 export function applyEditorUiModeLayout(): void {
   const game = getGame();
   const scene = game?.scene?.getScene("EditScene") as
@@ -333,7 +331,7 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
-  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side", "editor-ui-basic", "editor-ui-expert");
+  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
 
 export function toggleLeftPanel(): void {
@@ -502,8 +500,7 @@ function applyLayout(): void {
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
 
-  // 기본 모드: 아이콘 레일 48px 고정 — 리사이저 없음, 오버레이 안전영역은 레일+여백.
-  if (getEditorUiMode() === "basic") {
+  if (getEditorUiMode() === "beginner") {
     if (leftFolded) {
       leftRoot.style.display = "none";
       leftResizer.style.display = "none";
@@ -527,7 +524,8 @@ function applyLayout(): void {
   leftRoot.style.display = "";
   // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩. 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
   const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth - sideWidth);
-  const effectiveLeftWidth = Math.min(leftWidth, maxLeftForCanvas);
+  const preferredLeftWidth = getEditorUiMode() === "standard" ? Math.min(leftWidth, 380) : leftWidth;
+  const effectiveLeftWidth = Math.min(preferredLeftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
   leftRoot.style.setProperty("--map-tree-height", `${mapTreeHeight}px`);
   leftResizer.style.display = "";
@@ -611,7 +609,6 @@ function renderEditorStatusbar(container: HTMLElement): void {
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
   const lockStatus = getMapEditLockStatus();
-  // 기본 표면: 레이어·맵·도구만 전면. 타일/줌/좌표/칩 번호는 보조(CSS로 basic에서 숨김, expert·좁은 폭 우선순위).
   const cells: HTMLElement[] = [
     el("span", { class: "editor-statusbar-cell strong", text: layerStatusLabel(state.layer) }),
     el("span", { class: "editor-statusbar-cell", text: `맵: ${map?.name ?? mapId}` }),
@@ -753,13 +750,12 @@ function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): strin
 }
 
 function layerStatusLabel(layer: Layer): string {
-  // 기본 모드는 레일과 같은 결과 중심 용어(바닥/장식)를 쓴다 — 표면마다 용어가 다르면 초보가 헤맨다.
-  const basic = getEditorUiMode() === "basic";
+  const beginner = getEditorUiMode() === "beginner";
   switch (layer) {
     case "lower":
-      return basic ? "바닥 레이어" : "하위 레이어";
+      return beginner ? "바닥 레이어" : "하위 레이어";
     case "upper":
-      return basic ? "장식 레이어" : "상위 레이어";
+      return beginner ? "장식 레이어" : "상위 레이어";
     case "event":
       return "이벤트 레이어";
   }

@@ -37,16 +37,16 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-describe("AI shared surface (basic/expert)", () => {
-  it("shows the same minimal start screen in basic and expert body classes", () => {
-    document.body.classList.add("editor-ui-basic");
+describe("AI shared surface", () => {
+  it("shows the same minimal start screen in beginner and expert body classes", () => {
+    document.body.classList.add("editor-ui-beginner");
     const basicPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
     expect(findByTestId(basicPanel, "ai-start-screen")).toBeTruthy();
     expect(findByTestId(basicPanel, "ai-start-empty-hint")).toBeTruthy();
     expect(findByTestId(basicPanel, "ai-expert-board")).toBeNull();
     expect(basicPanel.dataset.uiDensity).toBe("shared");
 
-    document.body.classList.remove("editor-ui-basic");
+    document.body.classList.remove("editor-ui-beginner");
     document.body.classList.add("editor-ui-expert");
     setEditorUiMode("expert");
     const expertPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;

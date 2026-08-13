@@ -81,7 +81,7 @@ describe("기본 모드 코치마크", () => {
   beforeEach(() => {
     restore = installFakeDom();
     storage = new MemoryStorage();
-    resetEditorUiModeForTests("basic");
+    resetEditorUiModeForTests("beginner");
   });
 
   afterEach(() => {

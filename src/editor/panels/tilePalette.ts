@@ -72,15 +72,12 @@ export function renderTilePalette(container: HTMLElement): void {
   const state = editorState.get();
   activeWorkTab = readWorkTab();
 
-  // 기본 모드: 레퍼런스 밀도 좌측 레일 (도구·타일·레이어). 맵 트리는 하단 맵 루트.
-  // 작업탭(칠하기/찾기/속성)은 이 조기 return 아래 expert 경로에만 존재한다.
-  if (getEditorUiMode() === "basic") {
+  if (getEditorUiMode() === "beginner") {
     renderBasicLeftRail(container);
     return;
   }
 
   if (state.layer === "event") {
-    // 이벤트 레이어: 통합 툴바(그리기+맵 모드) + 이벤트 편집기. basic/expert 모두 동일 경로(숨기지 않음).
     const project = store.getCurrent();
     const mapId = state.currentMapId ?? project.startMapId;
     const map = project.maps[mapId];
@@ -503,14 +500,9 @@ export function selectPaletteTile(index: number): void {
 }
 
 
-/**
- * 맵에서 스포이트한 타일을 전문가 모드 팔레트 칩셋 시트로 스크롤·하이라이트.
- * 하위/상위 레이어는 editorState.layer 를 이미 맞춘 뒤 호출한다.
- * 기본 모드에서는 무시(레일만 노출).
- */
 export function revealPaletteTileFromMap(tile: number): void {
   if (typeof document === "undefined") return;
-  if (getEditorUiMode() !== "expert") return;
+  if (getEditorUiMode() === "beginner") return;
   if (tile < 0) return;
   // 칠하기 탭에서 셀이 보이도록
   activeWorkTab = "paint";

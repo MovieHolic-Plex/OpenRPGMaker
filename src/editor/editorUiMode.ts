@@ -1,12 +1,10 @@
 // editor/editorUiMode.ts
-// 에디터 셸 밀도: 기본(basic) / 전문가(expert).
-// - 기본값은 basic. localStorage에 저장·복원.
 // - 데이터·이벤트 편집·AI 세션은 공유; 노출 밀도만 분기.
 
 export const EDITOR_UI_MODE_STORAGE_KEY = "rpg-zzu:editor-ui-mode";
 export const EDITOR_PRODUCT_BRAND = "AI RPG MAKER";
-export type EditorUiMode = "basic" | "expert";
-export const DEFAULT_EDITOR_UI_MODE: EditorUiMode = "basic";
+export type EditorUiMode = "beginner" | "standard" | "expert";
+export const DEFAULT_EDITOR_UI_MODE: EditorUiMode = "standard";
 
 // AI 어시스턴트 UI는 기본/전문가 동일 표면 — chrome 플래그로 분기하지 않는다.
 // 팔레트 작업탭(칠하기/찾기/속성)도 플래그가 아니라 renderTilePalette의 basic 조기
@@ -19,7 +17,7 @@ export type EditorChromeVisibility = {
   readonly gameMenuLabel: string;
 };
 
-const BASIC_CHROME: EditorChromeVisibility = {
+const BEGINNER_CHROME: EditorChromeVisibility = {
   // 맵 전환은 아이콘 레일의 맵 플라이아웃(renderBasicLeftRail)에서 제공 — 좌측 맵트리 컬럼은 숨긴다.
   mapTree: false,
   classicToolbar: false,
@@ -27,6 +25,14 @@ const BASIC_CHROME: EditorChromeVisibility = {
   // 도움말(단축키 표)은 초보용 모드에서 더 필요하다 — 기본 모드에서도 노출.
   helpMenu: true,
   gameMenuLabel: "실행",
+};
+
+const STANDARD_CHROME: EditorChromeVisibility = {
+  mapTree: true,
+  classicToolbar: false,
+  canvasChromeDense: false,
+  helpMenu: true,
+  gameMenuLabel: "게임",
 };
 
 const EXPERT_CHROME: EditorChromeVisibility = {
@@ -44,9 +50,10 @@ let hydrated = false;
 const listeners = new Set<Listener>();
 
 export function parseEditorUiMode(raw: string | null | undefined): EditorUiMode {
+  if (raw === "basic" || raw === "beginner") return "beginner";
+  if (raw === "standard") return "standard";
   if (raw === "expert") return "expert";
-  // empty, invalid, "basic" → basic (first visit default)
-  return "basic";
+  return DEFAULT_EDITOR_UI_MODE;
 }
 
 function resolveStorage(storage?: Storage | null): Storage | null {
@@ -81,7 +88,9 @@ export function saveEditorUiMode(mode: EditorUiMode, storage?: Storage | null): 
 }
 
 export function chromeForMode(mode: EditorUiMode): EditorChromeVisibility {
-  return mode === "expert" ? EXPERT_CHROME : BASIC_CHROME;
+  if (mode === "beginner") return BEGINNER_CHROME;
+  if (mode === "expert") return EXPERT_CHROME;
+  return STANDARD_CHROME;
 }
 
 export function getEditorUiMode(): EditorUiMode {
@@ -96,14 +105,8 @@ export function getEditorChrome(): EditorChromeVisibility {
 /** Apply body hooks used by CSS density gates. Safe when document is missing (unit tests). */
 export function applyEditorUiModeClasses(mode: EditorUiMode = getEditorUiMode()): void {
   if (typeof document === "undefined" || !document.body) return;
-  // Prefer add/remove over toggle — FakeElement classList in unit tests has no toggle().
-  if (mode === "basic") {
-    document.body.classList.add("editor-ui-basic");
-    document.body.classList.remove("editor-ui-expert");
-  } else {
-    document.body.classList.add("editor-ui-expert");
-    document.body.classList.remove("editor-ui-basic");
-  }
+  document.body.classList.remove("editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
+  document.body.classList.add(`editor-ui-${mode}`);
   document.body.dataset.editorUiMode = mode;
 }
 
@@ -114,7 +117,6 @@ export function setEditorUiMode(mode: EditorUiMode, storage?: Storage | null): v
   // Always persist explicit user/agent choice (even if already that mode) so reload restores it.
   saveEditorUiMode(next, storage);
   applyEditorUiModeClasses(next);
-  // Always notify: same-mode set still refreshes basic/expert chrome (HMR / re-apply).
   for (const listener of listeners) listener();
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("rpgzzu:editor-ui-mode", { detail: { mode: next } }));

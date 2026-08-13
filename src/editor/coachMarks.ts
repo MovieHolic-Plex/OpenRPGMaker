@@ -196,7 +196,7 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
 export function maybeStartBasicCoachMarks(storage?: Storage | null): void {
   if (typeof document === "undefined" || !document.body) return;
   if (activeHost) return;
-  if (getEditorUiMode() !== "basic") return;
+  if (getEditorUiMode() !== "beginner") return;
   // Welcome intent boots win the surface — do not start coach marks (and do not mark seen).
   if (shouldSuppressCoachMarksForWelcomeIntent()) return;
   const store = resolveStorage(storage);

@@ -36,57 +36,65 @@ class MemoryStorage implements Storage {
 }
 
 afterEach(() => {
-  resetEditorUiModeForTests("basic");
+  resetEditorUiModeForTests("standard");
 });
 
 describe("editorUiMode", () => {
-  it("defaults to basic when storage is empty or invalid", () => {
+  it("defaults to standard when storage is empty or invalid and migrates legacy basic", () => {
     const storage = new MemoryStorage();
-    expect(DEFAULT_EDITOR_UI_MODE).toBe("basic");
-    expect(loadEditorUiMode(storage)).toBe("basic");
-    expect(parseEditorUiMode(null)).toBe("basic");
-    expect(parseEditorUiMode("")).toBe("basic");
-    expect(parseEditorUiMode("nope")).toBe("basic");
-    expect(parseEditorUiMode("BASIC")).toBe("basic");
+    expect(DEFAULT_EDITOR_UI_MODE).toBe("standard");
+    expect(loadEditorUiMode(storage)).toBe("standard");
+    expect(parseEditorUiMode(null)).toBe("standard");
+    expect(parseEditorUiMode("")).toBe("standard");
+    expect(parseEditorUiMode("nope")).toBe("standard");
+    expect(parseEditorUiMode("basic")).toBe("beginner");
+    expect(parseEditorUiMode("beginner")).toBe("beginner");
+    expect(parseEditorUiMode("standard")).toBe("standard");
+    expect(parseEditorUiMode("expert")).toBe("expert");
   });
 
-  it("round-trips expert mode through storage", () => {
+  it("round-trips all three modes through storage", () => {
     const storage = new MemoryStorage();
-    saveEditorUiMode("expert", storage);
-    expect(storage.getItem(EDITOR_UI_MODE_STORAGE_KEY)).toBe("expert");
-    expect(loadEditorUiMode(storage)).toBe("expert");
-    saveEditorUiMode("basic", storage);
-    expect(loadEditorUiMode(storage)).toBe("basic");
-  });
-
-  it("setEditorUiMode persists and updates body hooks when document exists", () => {
-    const storage = new MemoryStorage();
-    resetEditorUiModeForTests("basic");
-    setEditorUiMode("expert", storage);
-    expect(getEditorUiMode()).toBe("expert");
-    expect(storage.getItem(EDITOR_UI_MODE_STORAGE_KEY)).toBe("expert");
-    if (typeof document !== "undefined" && document.body) {
-      applyEditorUiModeClasses("expert");
-      expect(document.body.classList.contains("editor-ui-expert")).toBe(true);
-      expect(document.body.classList.contains("editor-ui-basic")).toBe(false);
-      expect(document.body.dataset.editorUiMode).toBe("expert");
+    for (const mode of ["beginner", "standard", "expert"] as const) {
+      saveEditorUiMode(mode, storage);
+      expect(storage.getItem(EDITOR_UI_MODE_STORAGE_KEY)).toBe(mode);
+      expect(loadEditorUiMode(storage)).toBe(mode);
     }
-    setEditorUiMode("basic", storage);
-    expect(getEditorUiMode()).toBe("basic");
   });
 
-  it("basic chrome hides map tree column (map flyout owns switching) while reducing density", () => {
-    const basic = chromeForMode("basic");
+  it("setEditorUiMode persists and keeps the three body hooks mutually exclusive", () => {
+    const storage = new MemoryStorage();
+    for (const mode of ["beginner", "standard", "expert"] as const) {
+      setEditorUiMode(mode, storage);
+      expect(getEditorUiMode()).toBe(mode);
+      expect(storage.getItem(EDITOR_UI_MODE_STORAGE_KEY)).toBe(mode);
+      if (typeof document !== "undefined" && document.body) {
+        applyEditorUiModeClasses(mode);
+        for (const candidate of ["beginner", "standard", "expert"] as const) {
+          expect(document.body.classList.contains(`editor-ui-${candidate}`)).toBe(candidate === mode);
+        }
+        expect(document.body.dataset.editorUiMode).toBe(mode);
+      }
+    }
+  });
+
+  it("defines distinct progressive chrome for beginner, standard, and expert", () => {
+    const beginner = chromeForMode("beginner");
+    const standard = chromeForMode("standard");
     const expert = chromeForMode("expert");
-    // Map switching moved to the icon-rail map flyout — the left map-tree column is hidden in basic.
-    expect(basic.mapTree).toBe(false);
-    expect(basic.classicToolbar).toBe(false);
-    // Event editing is not gated off by chrome flags — layers/tools stay in shared shell.
+
+    expect(beginner.mapTree).toBe(false);
+    expect(beginner.classicToolbar).toBe(false);
+    expect(beginner.canvasChromeDense).toBe(false);
+    expect(standard.mapTree).toBe(true);
+    expect(standard.classicToolbar).toBe(false);
+    expect(standard.canvasChromeDense).toBe(false);
     expect(expert.mapTree).toBe(true);
     expect(expert.classicToolbar).toBe(true);
+    expect(expert.canvasChromeDense).toBe(true);
     expect(expert.helpMenu).toBe(true);
-    // AI assistant chrome is mode-agnostic — there is no AI density flag at all.
-    expect("aiDenseSections" in basic).toBe(false);
+    expect("aiDenseSections" in beginner).toBe(false);
+    expect("aiDenseSections" in standard).toBe(false);
     expect("aiDenseSections" in expert).toBe(false);
   });
 
@@ -103,11 +111,9 @@ describe("editorUiMode", () => {
     expect(source).toMatch(/id:\s*"event"/);
     expect(source).toMatch(/testid:\s*`tool-\$\{item\.id\}`|tool-event/);
     // chrome flags never include an "eventsBlocked" style switch
-    const basic = chromeForMode("basic");
-    expect("eventsBlocked" in basic).toBe(false);
-    // Map tree is hidden in basic; map switching is owned by the icon-rail map flyout
-    expect(basic.mapTree).toBe(false);
-    // basic left rail also ships event tool
+    const beginner = chromeForMode("beginner");
+    expect("eventsBlocked" in beginner).toBe(false);
+    expect(beginner.mapTree).toBe(false);
     const basicRail = await import("node:fs/promises").then((fs) =>
       fs.readFile(new URL("../src/editor/panels/basicLeftRail.ts", import.meta.url), "utf8"),
     );
@@ -115,7 +121,7 @@ describe("editorUiMode", () => {
     expect(basicRail).toMatch(/testid:\s*`tool-\$\{tool\.id\}`|tool-event|event/);
   });
 
-  it("basic icon rail CSS keeps flyouts unclipped above the canvas", async () => {
+  it("beginner icon rail CSS keeps flyouts unclipped above the canvas", async () => {
     const fs = await import("node:fs/promises");
     const css = await fs.readFile(new URL("../src/styles/shell/editor-ui-modes.css", import.meta.url), "utf8");
     const indexCss = await fs.readFile(new URL("../src/styles/index.css", import.meta.url), "utf8");
@@ -125,9 +131,9 @@ describe("editorUiMode", () => {
     expect(figmaIdx).toBeGreaterThan(-1);
     expect(modesIdx).toBeGreaterThan(figmaIdx);
     // Overflow + stacking so layer/map flyouts are not under the map canvas
-    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*overflow:\s*visible\s*!important/);
+    expect(css).toMatch(/body\.editor-ui-beginner[\s\S]*overflow:\s*visible\s*!important/);
     // z-index 는 tokens.css 의 --z-rail(=50) 로 토큰화됨 — 값은 동일, 캔버스 위로 떠야 한다는 의도 보존.
-    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*z-index:\s*var\(--z-rail\)/);
-    expect(css).toMatch(/body\.editor-ui-basic[\s\S]*padding:\s*0\s*!important/);
+    expect(css).toMatch(/body\.editor-ui-beginner[\s\S]*z-index:\s*var\(--z-rail\)/);
+    expect(css).toMatch(/body\.editor-ui-beginner[\s\S]*padding:\s*0\s*!important/);
   });
 });

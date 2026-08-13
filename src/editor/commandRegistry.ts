@@ -52,10 +52,13 @@ export function listEditorCommands(): readonly EditorCommand[] {
     { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
     {
       id: "mode-toggle",
-      label: "화면: 기본↔전문가 모드 전환",
+      label: "화면: 초보→표준→전문가 모드 전환",
       category: "화면",
-      keywords: ["mode", "basic", "expert", "기본", "전문가", "모드"],
-      run: () => setEditorUiMode(getEditorUiMode() === "basic" ? "expert" : "basic"),
+      keywords: ["mode", "beginner", "standard", "expert", "초보", "표준", "전문가", "모드"],
+      run: () => {
+        const mode = getEditorUiMode();
+        setEditorUiMode(mode === "beginner" ? "standard" : mode === "standard" ? "expert" : "beginner");
+      },
     },
     {
       id: "test-play",

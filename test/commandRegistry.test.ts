@@ -8,7 +8,7 @@ import { store } from "@/project/store";
 describe("commandRegistry", () => {
   beforeEach(() => {
     store.replace(createBlankProject());
-    resetEditorUiModeForTests("basic");
+    resetEditorUiModeForTests("beginner");
     editorState.set({ tool: "paint", layer: "lower" });
   });
 
@@ -33,12 +33,14 @@ describe("commandRegistry", () => {
     expect(editorState.get().layer).toBe("lower");
   });
 
-  it("모드 전환 명령이 basic↔expert를 토글한다", () => {
+  it("모드 전환 명령이 초보→표준→전문가를 순환한다", () => {
     const toggle = listEditorCommands().find((c) => c.id === "mode-toggle");
+    toggle!.run();
+    expect(getEditorUiMode()).toBe("standard");
     toggle!.run();
     expect(getEditorUiMode()).toBe("expert");
     toggle!.run();
-    expect(getEditorUiMode()).toBe("basic");
+    expect(getEditorUiMode()).toBe("beginner");
   });
 
   it("맵 명령은 주입된 select를 호출한다", () => {
