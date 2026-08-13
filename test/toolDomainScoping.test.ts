@@ -180,6 +180,20 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     expect(exposed.has("paint_road")).toBe(true);
   });
 
+  it("새 프로젝트와 밤 분위기 요청은 system 도메인의 canonical 툴을 cap 안에서 노출한다", () => {
+    const resetDomains = computeActiveToolDomains("Start a new project from scratch");
+    const resetExposed = toOpenAiTools(undefined, { domains: resetDomains });
+    expect(resetDomains.has("system")).toBe(true);
+    expect(resetExposed.length).toBeLessThanOrEqual(40);
+    expect(resetExposed.some((tool) => tool.function.name === "reset_project")).toBe(true);
+
+    const nightDomains = computeActiveToolDomains("밤이 되면 분위기가 바뀌게 해줘");
+    const nightExposed = toOpenAiTools(undefined, { domains: nightDomains });
+    expect(nightDomains.has("system")).toBe(true);
+    expect(nightExposed.length).toBeLessThanOrEqual(40);
+    expect(nightExposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
+  });
+
   it("부정 필터는 제외된 도메인 키워드를 활성화하지 않는다", () => {
     const domains = computeActiveToolDomains("전투 말고 타일만");
     expect(domains.has("battle")).toBe(false);

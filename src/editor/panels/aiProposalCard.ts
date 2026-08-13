@@ -299,7 +299,8 @@ export function createProposalHost(options: {
     const completionSummary = proposalHumanSummaryLine(selectedCalls);
     clearAgentGhostPreview();
     recordProjectSnapshot(aiHistoryLabel(selectedCalls), currentHistoryMapId());
-    store.replace(proposed);
+    if (selectedCalls.some((call) => call.name === "reset_project")) store.replaceProject(proposed);
+    else store.replace(proposed);
     focusAcceptedAgentChanges(before, proposed);
     const actualDiff = reassembled?.ok
       ? combineDiffs(reassembled.results.map((result) => result.diff))
@@ -356,7 +357,7 @@ export function createProposalHost(options: {
     const selectedCalls = calls.filter((_, index) => selected[index]);
     if (selectedCalls.length === 0) return;
     const warnings = proposalApprovalWarnings(selectedCalls);
-    const hasDestructive = selectedCalls.some((c) => c.destructive || c.name === "clear_region" || c.name === "remove_event" || c.name === "remove_map" || c.name === "delete_tile_group");
+    const hasDestructive = selectedCalls.some((c) => c.destructive || c.name === "clear_region" || c.name === "remove_event" || c.name === "remove_map" || c.name === "delete_tile_group" || c.name === "reset_project");
     if (hasDestructive) {
       const summary = selectedCalls.map((c) => `• ${c.summary || c.name}`).join("\n");
       const msg = `파괴적 작업이 포함되어 있습니다 — 아래 내역을 확인하세요:\n${summary}\n\n체크박스는 기본 해제 상태입니다. 적용하려면 직접 체크 후 [확인 후 적용]을 누르세요.`;

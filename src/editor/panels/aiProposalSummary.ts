@@ -110,6 +110,7 @@ export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
 
 export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string {
   if (calls.length === 0) return "변경 제안 없음";
+  if (calls.some((call) => call.name === "reset_project")) return "현재 프로젝트 전체를 새 프로젝트로 교체";
   const diff = combineDiffs(calls.map((call) => call.result.diff));
   const houses = countProposalHouses(calls);
   const roadCells = countProposalRoadCells(calls);
@@ -235,6 +236,10 @@ export function reassembleSelectedProposalProject(
   calls: readonly ProposedCall[],
   selected: readonly boolean[]
 ): { ok: true; project: Project; results: readonly ToolResult[]; calls: readonly ProposedCall[] } | { ok: false; message: string; results: readonly ToolResult[] } {
+  const resetIndex = calls.findIndex((call) => call.name === "reset_project");
+  if (resetIndex >= 0 && selected.some((value, index) => value !== selected[resetIndex] || (index !== resetIndex && !value))) {
+    return { ok: false, message: "프로젝트 교체 제안은 reset_project와 후속 변경을 모두 함께 수락해야 합니다.", results: [] };
+  }
   const dependencies = proposalDependencyIndexes(calls);
   const safeSelected = enforceProposalDependencies(selected, dependencies);
   const selectedCalls = calls.filter((_, index) => safeSelected[index]);

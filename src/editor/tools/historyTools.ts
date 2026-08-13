@@ -18,7 +18,7 @@ function positiveInteger(value: number | undefined, fallback: number): number {
   return Math.trunc(value);
 }
 
-function replaceProjectContents(target: Project, source: Project): void {
+export function replaceProjectContents(target: Project, source: Project): void {
   for (const key of Object.keys(target)) Reflect.deleteProperty(target, key);
   Object.assign(target, structuredClone(source));
 }

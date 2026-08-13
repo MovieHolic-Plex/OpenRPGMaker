@@ -46,6 +46,7 @@ import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
 import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
+import { PROJECT_TOOLS } from "./projectTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -127,6 +128,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
+  ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
   AUTHOR_VILLAGE_TOOL,
@@ -215,6 +217,7 @@ const MAX_EXPOSED_TOOLS = 40;
 // (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
+  ["system", new Set(["reset_project", "configure_time_system"])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",
@@ -243,6 +246,7 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "place_chest", "place_storage_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
   ])],
   ["map", new Set([
+    "reset_project",
     "author_village",
     "get_map_region", "show_map_region", "get_project_summary",
     // 영역 작업 transform/battle-trap/structure 가이드 대표 도구(2026-07-10 라이브 실측 수정).

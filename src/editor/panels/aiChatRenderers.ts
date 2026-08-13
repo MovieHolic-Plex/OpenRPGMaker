@@ -6,7 +6,7 @@ import type { Project, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 const AI_PROGRESS_TOOL_LIMIT = 30;
-const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group"]);
+const DRAFT_DESTRUCTIVE_TOOL_NAMES = new Set(["remove_map", "remove_event", "clear_region", "delete_tile_group", "reset_project"]);
 
 export function formatAiRunningStatus(
   startedAt: number,
