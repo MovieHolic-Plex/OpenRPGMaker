@@ -1,6 +1,6 @@
 import { defineConfig, loadEnv, type Plugin, type ProxyOptions } from "vite";
 import { fileURLToPath, URL } from "node:url";
-import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync } from "node:fs";
+import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync, realpathSync } from "node:fs";
 import { join } from "node:path";
 import { spawnCodexSession, accountStatus, startDeviceLogin, proxyCompletion } from "./scripts/lib/codexOAuthSession.mjs";
 import type { CodexSession } from "./scripts/lib/codexOAuthSession.mjs";
@@ -377,10 +377,17 @@ export default defineConfig(({ mode }) => {
     fs: {
       // 워크트리에서 node_modules 를 정션(mklink /J)으로 쓰면 @fs 실경로가 원본 저장소의
       // node_modules 로 풀린다 — 기본 allow(워크스페이스 루트)만으로는 403. 그 경로만 추가 허용.
-      allow: [
-        fileURLToPath(new URL("./", import.meta.url)),
-        fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url)),
-      ],
+      allow: (() => {
+        const roots = [fileURLToPath(new URL("./", import.meta.url)), fileURLToPath(new URL("../rpg-zzu/node_modules", import.meta.url))];
+        for (const root of [...roots]) {
+          try {
+            const real = realpathSync(root);
+            if (real !== root) roots.push(real);
+          } catch {
+          }
+        }
+        return [...new Set(roots)];
+      })(),
     },
     watch: {
       ignored: ["**/.omo/**", "**/output/**", "**/tmp/**", "**/test-results/**"],
