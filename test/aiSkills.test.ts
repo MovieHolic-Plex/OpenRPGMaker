@@ -85,7 +85,7 @@ describe("스킬 레지스트리", () => {
     expect(village).toContain('countPolicy:"exact"');
     expect(village).not.toMatch(/run_village_session|start_village_session|run_village_pipeline|build_village|build_house_lots/);
     expect(village).toContain("check_reachability");
-    expect(village).toContain("자연스러움: 보통");
+    expect(village).toContain("naturalness 0.55~0.7");
     const motion = SYSTEM_SKILLS.find((skill) => skill.id === "npc-motion")!.buildPrompt!({ brief: "주민 랜덤" }, CTX);
     expect(motion).toContain("get_event");
     expect(motion).toContain("random");

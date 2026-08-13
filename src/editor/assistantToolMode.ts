@@ -62,6 +62,7 @@ export const INTENT_KEYWORDS: Readonly<Record<ToolDomain, { strong: readonly str
       "벽", "길", "타일", "지붕", "문", "바닥", "오토타일", "도로", "페인트",
       "물", "호수", "연못", "강", "수역", "지형", "지면",
       "나무", "소품", "집", "건물", "숲", "꽃", "바위", "산포", "겨울", "눈", "winter", "snow",
+      "마을", "도시", "정착지", "village", "city", "town", "settlement",
       "실내", "인테리어", "침실", "서재", "주방",
     ],
     weak: [],
