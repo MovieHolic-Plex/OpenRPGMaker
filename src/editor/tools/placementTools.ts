@@ -342,6 +342,32 @@ function sourceRectFootprint(group: TileGroupMetadata, tileset: TilesetDef): Foo
   const layered = treeLayeredFootprint(group, tileset);
   if (layered) return layered;
   if (group.patternGrammar?.kind !== "source_rect") return null;
+  const rect = group.sourceRect;
+  if (rect && rect.width > 0 && rect.height > 0) {
+    const w = rect.width;
+    const h = rect.height;
+    const expected = w * h;
+    if (group.tileIds.length < expected) return null;
+    const lower: number[] = [];
+    const upper: number[] = [];
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) {
+        const tile = group.tileIds[y * w + x] ?? TILE.EMPTY;
+        if (tile === TILE.EMPTY) {
+          lower.push(TILE.EMPTY);
+          upper.push(TILE.EMPTY);
+        } else if (footprintLayer(tileset, group, tile) === "upper") {
+          lower.push(isTreeCanopyTileId(tile) ? TILE.EMPTY : backingLower(tileset, tile));
+          upper.push(tile);
+        } else {
+          lower.push(tile);
+          upper.push(TILE.EMPTY);
+        }
+      }
+    }
+    return { w, h, lower, upper };
+  }
+  // Legacy 2×2 four-corner fallback (pre-sourceRect groups).
   const topLeft = partTile(group, "topLeft", group.tileIds[0]);
   const topRight = partTile(group, "topRight", group.tileIds[1]);
   const bottomLeft = partTile(group, "bottomLeft", group.tileIds[2]);
@@ -372,8 +398,14 @@ function partTile(group: TileGroupMetadata, role: NonNullable<TileGroupMetadata[
 }
 
 function footprintLayer(tileset: TilesetDef, group: TileGroupMetadata, tile: number): "lower" | "upper" {
-  if (isTreeCanopyTileId(tile)) return "upper";
-  if (isTreeTrunkTileId(tile)) return "lower";
+  // 260–263(수관)/290–293(밑동)은 Combined Town 전역 숫자 판정이라 Modern Exteriors
+  // 건물 스탬프(같은 30×16 인덱스지만 전혀 다른 그래픽)까지 나무로 오판한다.
+  // building 스탬프(role:"building", defaultLayer:"lower")는 숫자만으로 레이어를 뒤집지 않고,
+  // prop(나무/프롭) 컨텍스트에서만 트리 전용 레이어 규칙을 적용한다.
+  if (group.role === "prop") {
+    if (isTreeCanopyTileId(tile)) return "upper";
+    if (isTreeTrunkTileId(tile)) return "lower";
+  }
   if (group.defaultLayer === "upper" || group.role === "prop" || isUpperOnlyOverlayTile(tileset, tile)) return "upper";
   return tileset.priority[tile] === "upper" ? "upper" : "lower";
 }

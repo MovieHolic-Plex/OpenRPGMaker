@@ -46,7 +46,36 @@ export const RM_TYPE_GRAMMAR_PROFILE: GrammarProfile = {
   autotileNeighborhood: 8,
 };
 
-const REGISTRY = new Map<string, GrammarProfile>([[RM_TYPE_GRAMMAR_PROFILE.id, RM_TYPE_GRAMMAR_PROFILE]]);
+// MODERN-EXTERIORS — Modern Exteriors v42.3 스탬프 도시 방언.
+// 480칩 틀(30×16)은 유지하되 내용은 3×4 템플릿 블록이 아니라
+// 하단 7~8행 건물 스탬프(8×8/6×8) + 0행 바닥/도로 스탬프다.
+// 오토타일은 쓰지 않고 원본 배열 그대로 찍는 source_rect 스탬프/브러시가 정본.
+export const MODERN_EXTERIORS_GRAMMAR_PROFILE: GrammarProfile = {
+  id: "modern-exteriors",
+  label: "Modern Exteriors (스탬프 도시)",
+  supportedPatternKinds: [
+    "source_rect", // 8×8/6×8 건물·온실·헬리패드 스탬프 (정본)
+    "single", // 아스팔트/보도/플라자 낱바닥 브러시
+    "horizontal_expandable", // 연석·차선·횡단보도 1열 확장
+    "vertical_expandable", // 연석 1열 세로 확장
+  ],
+  layerHomeByRole: {
+    terrain: "lower",
+    water: "lower",
+    wall: "lower",
+    building: "lower",
+    castle: "lower",
+    fence: "lower",
+    roof: "lower",
+    prop: "lower",
+  },
+  autotileNeighborhood: 4,
+};
+
+const REGISTRY = new Map<string, GrammarProfile>([
+  [RM_TYPE_GRAMMAR_PROFILE.id, RM_TYPE_GRAMMAR_PROFILE],
+  [MODERN_EXTERIORS_GRAMMAR_PROFILE.id, MODERN_EXTERIORS_GRAMMAR_PROFILE],
+]);
 
 // 알 수 없는 id는 기본 프로파일로 폴백한다(구 프로젝트/오타에 대해 조용히 안전).
 export function getGrammarProfile(id: string | undefined): GrammarProfile {

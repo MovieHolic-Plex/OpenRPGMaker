@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
+import { runScatterObject } from "@/editor/tools/placementTools";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { projectLint } from "@/project/lint/projectLint";
 import { deserialize, serialize } from "@/project/io";
+import { TILE } from "@/project/defaults/constants";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import {
   createModernNocturneProject,
@@ -122,5 +124,50 @@ describe("ModernNocturneGame", () => {
     expect(result.ok, result.failureReason).toBe(true);
     expect(result.log).toContain("battle troop_neon_wraith: victory");
     expect(result.log).toContain("battle troop_archive_custodian: victory");
+  });
+  it("scatters the modern source_rect stamps through the real placement path with exact footprint/size/row-major ids", () => {
+    const cases: Array<{ groupId: string; w: number; h: number }> = [
+      { groupId: "modern-west-civic", w: 8, h: 8 },
+      { groupId: "modern-archive", w: 8, h: 8 },
+      { groupId: "modern-utility", w: 8, h: 7 },
+      { groupId: "modern-police", w: 6, h: 8 },
+      { groupId: "modern-industrial", w: 6, h: 7 },
+    ];
+    for (const { groupId, w, h } of cases) {
+      const project = createModernNocturneProject();
+      const map = project.maps[MODERN_MAP.city]!;
+      map.lowerTiles.fill(TILE.GRASS);
+      map.upperTiles.fill(TILE.EMPTY);
+      map.events = [];
+      project.startPos = { x: 0, y: 0 };
+      const groups = project.tilesets[map.tilesetId]!.tileGroups ?? [];
+      const group = groups.find((entry) => entry.id === groupId);
+      expect(group, `missing modern group ${groupId}`).toBeDefined();
+      expect(group!.patternGrammar?.kind).toBe("source_rect");
+      expect(group!.sourceRect, `${groupId} needs sourceRect`).toEqual({ x: expect.any(Number), y: expect.any(Number), width: w, height: h });
+      expect(group!.tileIds).toHaveLength(w * h);
+      // Building facade ids are all-lower on this pass-through tileset — assert that the production
+      // footprintLayer does NOT reroute them as Combined Town tree canopy/trunk.
+      const result = runScatterObject(project, {
+        mapId: map.id,
+        groupId,
+        area: { x: 2, y: 2, w, h },
+        count: 1,
+        minGap: 0,
+        maxGap: 0,
+        avoidProtected: false,
+      });
+      expect(result.data, `${groupId}: ${result.summary}`).toMatchObject({ placed: 1, skipped: 0 });
+      expect((result.data as { tilesPlaced: number }).tilesPlaced).toBe(w * h);
+      const origin = { x: 2, y: 2 };
+      for (let y = 0; y < h; y += 1) {
+        for (let x = 0; x < w; x += 1) {
+          const tid = group!.tileIds[y * w + x]!;
+          const idx = (origin.y + y) * map.width + (origin.x + x);
+          expect(map.lowerTiles[idx], `${groupId} row-major @ ${x},${y}`).toBe(tid);
+        }
+      }
+      expect(map.upperTiles.every((value) => value === TILE.EMPTY), `${groupId} upper stays empty on all-lower priority`).toBe(true);
+    }
   });
 });
