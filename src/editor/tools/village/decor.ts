@@ -218,6 +218,9 @@ export function placeVillageDecor(
   // 꽃덤불 링 — 집 벽 옆 자투리 잔디에 1~2개 (참조 맵 문법 L4).
   placed += placeFlowerRings(map, houses, seed);
   // 우물 하나 — 광장 근처 (382).
+  if (/분수|fountain/i.test(intent.theme)) {
+    warnings.push("요청한 fountain(분수) 타일은 combined_town에서 사용할 수 없어 well(우물 382)로 대체했다.");
+  }
   placed += placeVillageWell(map, plaza, houses);
   // 화려한 깃발 — 중요한 집 문 양옆 벽면 (208/209).
   placed += placeEntranceBanners(map, houses);

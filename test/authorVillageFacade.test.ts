@@ -38,6 +38,55 @@ describe("author_village facade", () => {
     expect(Object.keys(project.maps)).toEqual(["map_existing"]);
   });
 
+  it.each(["분수가 있는 평화로운 마을", "town with a Fountain centerpiece"])("substitutes one plaza well for the unavailable landmark in %s", (theme) => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 4,
+      countPolicy: "exact",
+      theme,
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    const map = project.maps.map_existing;
+    const commons = map.layoutPlan?.regions.find((region) => region.id === "village_commons");
+    expect(commons).toBeDefined();
+    const wellCells = map.upperTiles.flatMap((tile, index) => tile === 382
+      ? [{ x: index % map.width, y: Math.floor(index / map.width) }]
+      : []);
+    expect(wellCells).toHaveLength(1);
+    if (commons === undefined) throw new Error("village commons region missing");
+    expect(wellCells[0]).toMatchObject({
+      x: expect.any(Number),
+      y: expect.any(Number),
+    });
+    expect(wellCells[0]?.x).toBeGreaterThanOrEqual(commons.x - 4);
+    expect(wellCells[0]?.x).toBeLessThan(commons.x + commons.w + 4);
+    expect(wellCells[0]?.y).toBeGreaterThanOrEqual(commons.y - 4);
+    expect(wellCells[0]?.y).toBeLessThan(commons.y + commons.h + 4);
+    const warnings = construction(result).warnings;
+    expect(warnings.some((warning) => /fountain|분수/i.test(warning) && /unavailable|없/i.test(warning) && /well|우물/i.test(warning) && /substitut|대체/i.test(warning))).toBe(true);
+  });
+
+  it("does not emit the fountain fallback warning for an ordinary theme", () => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 4,
+      countPolicy: "exact",
+      theme: "quiet forest village",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(construction(result).warnings.some((warning) => /fountain|분수/i.test(warning))).toBe(false);
+  });
+
   it("creates the exact requested new map identity without suffix or reuse", () => {
     const project = createEmptyToolProject("new village");
     const result = runFacade(project, {
