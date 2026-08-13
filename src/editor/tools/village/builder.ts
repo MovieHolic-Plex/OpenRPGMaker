@@ -6,6 +6,8 @@ import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId, type HouseKitWindowsO
 import type { HouseInteriorProgram } from "@/editor/houseInteriors";
 import { setMapLayoutPlan } from "@/project/mapLayoutPlan";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_SNOW_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import type { GameMap, Project } from "@/project/types";
 import { mulberry32 } from "@/util/rng";
 import { inMapBounds } from "../mapHelpers";
@@ -281,8 +283,10 @@ export function buildVillageDomain(
     ? createVillageHouseInteriors(draft, map, houses, overrides, seed, warnings)
     : [];
   perfLap("interiors");
-  placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings);
-  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled);
+  const requestedNpcCount = integerArg(merged, "npcCount", houses.length + 2);
+  placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
+  applyVillageGroundTheme(map, area, merged.groundTheme);
+  setVillageHarnessLayoutPlan(map, area, plaza, houses, intent, seed, fencesEnabled, merged.settlementLayout);
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.
   ensureVillageStartPosition(draft, map, plaza);
@@ -298,7 +302,7 @@ export function buildVillageDomain(
   if (audit.roadComponents !== 1) {
     warnings.push(`길 연결 성분 미달: ${audit.roadComponents} — ${roadComponentNotes(map, area).join(", ")}`);
   }
-  if (audit.npcCount !== houses.length + 2) warnings.push(`NPC 수 미달: ${audit.npcCount}/${houses.length + 2}`);
+  if (audit.npcCount !== requestedNpcCount) warnings.push(`NPC 수 미달: ${audit.npcCount}/${requestedNpcCount}`);
   if (audit.npcsWithText !== audit.npcCount) warnings.push(`대사 없는 NPC: ${audit.npcCount - audit.npcsWithText}명`);
   if (interiorEnabled && houseInteriors.length !== houses.length) warnings.push(`내부 생성 미달: ${houseInteriors.length}/${houses.length}`);
   if (fencesEnabled && audit.fencedHouses < houses.length) {
@@ -1365,6 +1369,22 @@ function ensureVillageStartPosition(draft: Project, map: GameMap, plaza: Plaza):
   draft.startPos = fallback ?? { x: plaza.centerX, y: plaza.centerRow };
 }
 
+function applyVillageGroundTheme(map: GameMap, area: Rect, value: unknown): void {
+  if (value === undefined || value === "grass") return;
+  if (value !== "snow") throw new ToolError("groundTheme은 grass|snow여야 합니다.", { code: "invalid-args", mapId: map.id });
+  const points: Point[] = [];
+  for (let y = area.y; y < area.y + area.h; y += 1) {
+    for (let x = area.x; x < area.x + area.w; x += 1) {
+      const index = y * map.width + x;
+      if (map.upperTiles[index] !== TILE.EMPTY || ROAD_TILES.has(map.lowerTiles[index] ?? TILE.EMPTY)) continue;
+      if ((map.lowerTiles[index] ?? TILE.EMPTY) !== TILE.GRASS) continue;
+      map.lowerTiles[index] = DEFAULT_SNOW_AUTOTILE_GROUP.memberTileIds[0] ?? 67;
+      points.push({ x, y });
+    }
+  }
+  shapeAutotileGroupAround(map, DEFAULT_SNOW_AUTOTILE_GROUP, points);
+}
+
 function nearestPassableStart(project: Project, map: GameMap, origin: Point): Point | undefined {
   for (let radius = 0; radius <= 12; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
@@ -1386,6 +1406,7 @@ function setVillageHarnessLayoutPlan(
   intent: VillageIntent,
   seed: number,
   fencesEnabled: boolean,
+  settlementLayout: unknown,
 ): void {
   const kitLabel: Record<HouseKitId, string> = {
     "blue-stone": "파랑 석벽",
@@ -1419,6 +1440,7 @@ function setVillageHarnessLayoutPlan(
         tags: [
           "commons",
           "road-loop",
+          ...(settlementLayout === "street-grid" ? ["street-grid"] : []),
           intent.plazaStyle,
           `kit-target:${kitTarget}`,
           `shape-target:${shapeTarget}`,

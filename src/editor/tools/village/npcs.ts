@@ -38,14 +38,30 @@ export function placeVillageNpcs(
   plaza: Plaza,
   overrides: readonly Partial<NpcText>[],
   seed: number,
-  warnings: string[]
+  warnings: string[],
+  requestedCount = houses.length + 2,
 ): void {
   const occupied = new Set<string>();
-  const placements = [
+  const placements: Point[] = [
     ...houses.map((house, index) => npcPointNearHouseFront(map, area, house, index, occupied)),
     { x: plaza.centerX - 1, y: plaza.centerRow },
     { x: plaza.centerX + 1, y: plaza.centerRow },
-  ];
+  ].slice(0, requestedCount);
+  for (let y = area.y; placements.length < requestedCount && y < area.y + area.h; y += 1) {
+    for (let x = area.x; placements.length < requestedCount && x < area.x + area.w; x += 1) {
+      const key = coordKey(x, y);
+      if (occupied.has(key) || map.events.some((event) => event.x === x && event.y === y)) continue;
+      if (map.upperTiles[y * map.width + x] !== TILE.EMPTY || !isPassable(draft, map, x, y)) continue;
+      occupied.add(key);
+      placements.push({ x, y });
+    }
+  }
+  if (placements.length !== requestedCount) {
+    throw new ToolError(`요청한 NPC ${requestedCount}명을 배치할 통행 가능 고유 칸이 부족합니다.`, {
+      code: "village-population-shortfall",
+      mapId: map.id,
+    });
+  }
   const graphics = seededVillageNpcGraphics(seed);
   const workAnchors = villageNpcWorkAnchors(area, plaza, seed);
   for (let index = 0; index < placements.length; index += 1) {

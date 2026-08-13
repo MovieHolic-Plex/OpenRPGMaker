@@ -166,6 +166,17 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     for (const domain of ["core", "map", "tile"] as const) expect(wall.has(domain)).toBe(true);
   });
 
+  it.each(["100x100 city", "winter town", "snow settlement", "겨울 도시", "눈 정착지"])(
+    "%s exposes canonical village construction",
+    (request) => {
+      const domains = computeActiveToolDomains(request);
+      expect(domains.has("map")).toBe(true);
+      expect(domains.has("tile")).toBe(true);
+      const names = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+      expect(names.has("author_village")).toBe(true);
+    },
+  );
+
   it("호수/수역 요청은 tile 도메인을 열어 fill_region을 노출한다", () => {
     const domains = computeActiveToolDomains("오른쪽 아래에 호수 만들어줘");
     expect(domains.has("tile")).toBe(true);

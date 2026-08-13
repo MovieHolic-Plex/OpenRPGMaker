@@ -12,16 +12,20 @@ import {
   requireRecord,
   type BoundaryRecord,
 } from "./boundary";
-import type {
-  AuthorVillageRequest,
-  AuthorVillageTarget,
-  ConstructionCountPolicy,
-  ConstructionRect,
-  PlannedMapDescriptor,
-  VillageHousePlan,
+import {
+  VILLAGE_GROUND_THEMES,
+  VILLAGE_SETTLEMENT_LAYOUTS,
+  type AuthorVillageRequest,
+  type AuthorVillageTarget,
+  type ConstructionCountPolicy,
+  type ConstructionRect,
+  type PlannedMapDescriptor,
+  type VillageGroundTheme,
+  type VillageHousePlan,
+  type VillageSettlementLayout,
 } from "./contracts";
 
-const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "theme", "seed", "interior"] as const;
+const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "groundTheme", "settlementLayout", "npcCount", "theme", "seed", "interior"] as const;
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
 const HOUSE_PLAN_KEYS = ["kitId", "yard", "ownerName", "templateId", "program"] as const;
@@ -29,6 +33,7 @@ const MIN_HOUSES = 4;
 const MAX_HOUSES = 32;
 const MIN_MAP_SIZE = 36;
 const MAX_MAP_SIZE = 256;
+const MAX_NPCS = 512;
 
 export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest {
   const request = requireRecord(value, "authorVillage");
@@ -44,15 +49,30 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
   const theme = optionalString(request, "theme", "authorVillage");
   const seed = optionalInteger(request, "seed", "authorVillage");
   const interior = optionalBoolean(request, "interior", "authorVillage");
+  const groundTheme = parseOptionalEnum(request["groundTheme"], VILLAGE_GROUND_THEMES, "authorVillage.groundTheme");
+  const settlementLayout = parseOptionalEnum(request["settlementLayout"], VILLAGE_SETTLEMENT_LAYOUTS, "authorVillage.settlementLayout");
+  const npcCount = optionalInteger(request, "npcCount", "authorVillage");
+  if (npcCount !== undefined && (npcCount < 0 || npcCount > MAX_NPCS)) {
+    throw new ToolError(`authorVillage.npcCount must be between 0 and ${MAX_NPCS}.`, { code: "invalid-args" });
+  }
   return {
     target: parseTarget(request["target"]),
     houseCount,
     countPolicy: parseCountPolicy(request["countPolicy"]),
     ...(housePlans === undefined ? {} : { housePlans }),
+    ...(groundTheme === undefined ? {} : { groundTheme: groundTheme as VillageGroundTheme }),
+    ...(settlementLayout === undefined ? {} : { settlementLayout: settlementLayout as VillageSettlementLayout }),
+    ...(npcCount === undefined ? {} : { npcCount }),
     ...(theme === undefined ? {} : { theme }),
     ...(seed === undefined ? {} : { seed }),
     ...(interior === undefined ? {} : { interior }),
   };
+}
+
+function parseOptionalEnum<T extends string>(value: unknown, values: readonly T[], scope: string): T | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === "string" && values.includes(value as T)) return value as T;
+  throw new ToolError(`${scope} must be one of ${values.join("|")}.`, { code: "invalid-args" });
 }
 
 function parseTarget(value: unknown): AuthorVillageTarget {

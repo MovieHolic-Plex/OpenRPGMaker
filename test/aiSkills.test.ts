@@ -91,6 +91,23 @@ describe("스킬 레지스트리", () => {
     expect(motion).toContain("random");
   });
 
+  it("마을 스킬은 지원되는 city/winter facade 인자만 만든다", () => {
+    const skill = SYSTEM_SKILLS.find((entry) => entry.id === "build-village")!;
+    const prompt = skill.buildPrompt!({
+      theme: "겨울 도시",
+      houses: 20,
+      npcs: 50,
+      groundTheme: "snow",
+      settlementLayout: "street-grid",
+    }, CTX);
+
+    expect(prompt).toContain("houseCount:20");
+    expect(prompt).toContain("npcCount:50");
+    expect(prompt).toContain('groundTheme:"snow"');
+    expect(prompt).toContain('settlementLayout:"street-grid"');
+    expect(prompt).not.toContain("naturalness:");
+  });
+
   it("전투 밸런스 리포트: simulate_battle/tune_enemy 실제 시그니처가 절차에 들어 있다", () => {
     const skill = SYSTEM_SKILLS.find((entry) => entry.id === "battle-balance")!;
     expect(skill.icon).toBe("⚔️");
