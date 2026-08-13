@@ -36,7 +36,7 @@ function asFake(node: HTMLElement): FakeElement {
 afterEach(() => {
   restoreDom?.();
   restoreDom = null;
-  resetEditorUiModeForTests("basic");
+  resetEditorUiModeForTests("beginner");
 });
 
 describe("renderCanvasToolbar basic zoom visibility", () => {
@@ -44,7 +44,7 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     storage = new MemoryStorage();
     restoreDom = installFakeDom();
     Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
-    setEditorUiMode("basic", storage);
+    setEditorUiMode("beginner", storage);
 
     const host = document.createElement("div") as unknown as HTMLElement;
     renderCanvasToolbar(host);

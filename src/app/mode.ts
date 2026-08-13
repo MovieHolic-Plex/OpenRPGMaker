@@ -504,7 +504,6 @@ async function renderTopbar(): Promise<void> {
   render(elements.topbar);
 }
 
-// basic/expert 전환 시 탑바(클래식 툴바·메뉴 밀도)를 다시 그린다.
 void import("@/editor/editorUiMode").then(({ subscribeEditorUiMode }) => {
   subscribeEditorUiMode(() => {
     void renderTopbar();

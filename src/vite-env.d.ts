@@ -69,10 +69,10 @@ interface Window {
   __rpgzzuExportAiActivityLogs?: (limit?: number) => string;
   // AI 하네스 스냅샷(주입 포함 원본 메시지 + 감사 로그) — 콘솔/헤드리스 디버깅용.
   __rpgzzuAiHarness?: () => unknown;
-  // 에디터 basic/expert UI 모드 (src/editor/editorUiMode.ts).
+  // 에디터 beginner/standard/expert UI 모드 (src/editor/editorUiMode.ts).
   __rpgzzuEditorUiMode?: {
-    readonly get: () => "basic" | "expert";
-    readonly set: (mode: "basic" | "expert") => void;
+    readonly get: () => "beginner" | "standard" | "expert";
+    readonly set: (mode: "beginner" | "standard" | "expert") => void;
     readonly chrome: () => unknown;
     readonly brand: string;
     readonly storageKey: string;

@@ -10,8 +10,8 @@
    ??transition ?놁쓬 ???좊땲硫붿씠?섏씠 罹붾쾭??fitCanvas ?곗뇙 ?붾뱾由쇱쓣 留뚮뱺?? */
 .editor-layout .ai-chat-side-panel {
   background: var(--bg-panel);
-  border-left: 1px solid var(--border-default);
-  border-right: none;
+  border-left: none;
+  border-right: 1px solid var(--border-default);
   display: flex;
   flex: 0 0 var(--ai-chat-side-width, 480px);
   max-width: none;
@@ -22,7 +22,7 @@
 }
 
 .editor-layout.chat-dock-float .ai-chat-side-panel {
-  border-left: 0;
+  border-right: 0;
   flex-basis: 0;
   min-width: 0;
   opacity: 0;

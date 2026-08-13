@@ -1,5 +1,3 @@
-/* Dual editor shell density: basic vs expert (AI RPG MAKER) */
-
 .editor-product-brand {
   align-items: center;
   color: var(--editor-text, #e8eefc);
@@ -56,7 +54,7 @@
   color: var(--on-accent);
 }
 
-body.editor-ui-basic .topbar-test-play {
+body.editor-ui-beginner .topbar-test-play {
   align-items: center;
   background: color-mix(in srgb, var(--editor-blue, #3d6df0) 82%, #15213a);
   border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 72%, var(--editor-line));
@@ -72,8 +70,8 @@ body.editor-ui-basic .topbar-test-play {
   white-space: nowrap;
 }
 
-body.editor-ui-basic .topbar-test-play:hover,
-body.editor-ui-basic .topbar-test-play:focus-visible {
+body.editor-ui-beginner .topbar-test-play:hover,
+body.editor-ui-beginner .topbar-test-play:focus-visible {
   filter: brightness(1.12);
   outline: 2px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 45%, transparent);
   outline-offset: 1px;
@@ -90,13 +88,14 @@ body.editor-ui-basic .topbar-test-play:focus-visible {
 }
 
 /* Basic이 숨기는 건 expert 편집 툴바뿐 — play 복귀 툴바(uiDensity="play", menu.ts)는 양쪽 모드 표시. */
-body.editor-ui-basic .classic-toolbar.is-legacy-surface[data-ui-density="expert"] {
+body.editor-ui-beginner .classic-toolbar.is-legacy-surface[data-ui-density="expert"],
+body.editor-ui-standard .classic-toolbar.is-legacy-surface[data-ui-density="expert"] {
   display: none !important;
 }
 
 /* ── Basic statusbar: keep layer / map / tool / tile / zoom / DB; hide expert-only detail ── */
 /* 타일(무엇을 칠하는지)·줌은 basic에서도 보여준다 — 편집에 필수정보. */
-body.editor-ui-basic .editor-statusbar .sb-detail {
+body.editor-ui-beginner .editor-statusbar .sb-detail {
   display: none;
 }
 
@@ -106,13 +105,14 @@ body.editor-ui-basic .editor-statusbar .sb-detail {
   display: none !important;
 }
 
-body.editor-ui-basic .canvas-toolbar.is-basic-chrome {
+body.editor-ui-beginner .canvas-toolbar.is-basic-chrome,
+body.editor-ui-standard .canvas-toolbar.is-basic-chrome {
   gap: 8px;
   opacity: 0.95;
 }
 
 /* Basic has no ⋯ expand control — never hide zoom buttons behind is-expanded gate. */
-body.editor-ui-basic .canvas-toolbar.is-basic-chrome .zoom-button,
+body.editor-ui-beginner .canvas-toolbar.is-basic-chrome .zoom-button,
 .canvas-toolbar.is-basic-chrome.is-expanded .zoom-button {
   display: inline-flex;
 }
@@ -124,8 +124,8 @@ body.editor-ui-basic .canvas-toolbar.is-basic-chrome .zoom-button,
    not clipped (layer/map toggles open overlays to the right of the rail).
 */
 
-body.editor-ui-basic .editor-layout .left-panel,
-body.editor-ui-basic .left-panel {
+body.editor-ui-beginner .editor-layout .left-panel,
+body.editor-ui-beginner .left-panel {
   /* Single-column icon rail — no expert map-tree grid row.
      z-index must beat .canvas-area (later sibling, position:relative) so
      flyouts that spill right are clickable and visible over the map. */
@@ -144,10 +144,10 @@ body.editor-ui-basic .left-panel {
   z-index: var(--z-rail);
 }
 
-body.editor-ui-basic .editor-layout .left-panel-stack,
-body.editor-ui-basic .left-panel-stack,
-body.editor-ui-basic .left-panel-stack[data-testid="left-palette-root"],
-body.editor-ui-basic .left-panel-stack[data-testid="left-map-root"] {
+body.editor-ui-beginner .editor-layout .left-panel-stack,
+body.editor-ui-beginner .left-panel-stack,
+body.editor-ui-beginner .left-panel-stack[data-testid="left-palette-root"],
+body.editor-ui-beginner .left-panel-stack[data-testid="left-map-root"] {
   border-bottom: 0;
   flex: 1 1 auto;
   max-width: none;
@@ -159,7 +159,7 @@ body.editor-ui-basic .left-panel-stack[data-testid="left-map-root"] {
   padding: 0 !important;
 }
 
-body.editor-ui-basic .basic-left-rail.is-icon-rail {
+body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   box-sizing: border-box;
   flex: 1 1 auto;
   min-height: 0;
@@ -322,21 +322,21 @@ body.editor-ui-basic .basic-left-rail.is-icon-rail {
 }
 
 @media (max-width: 1320px) {
-  body.editor-ui-basic .editor-product-brand-text,
-  body.editor-ui-basic .editor-ui-mode-btn:not(.is-active),
-  body.editor-ui-basic .topbar-test-play-label {
+  body.editor-ui-beginner .editor-product-brand-text,
+  body.editor-ui-beginner .editor-ui-mode-btn:not(.is-active),
+  body.editor-ui-beginner .topbar-test-play-label {
     display: none;
   }
 
-  body.editor-ui-basic .editor-product-brand {
+  body.editor-ui-beginner .editor-product-brand {
     margin-right: 6px;
   }
 
-  body.editor-ui-basic .editor-ui-mode-toggle {
+  body.editor-ui-beginner .editor-ui-mode-toggle {
     margin-left: 4px;
   }
 
-  body.editor-ui-basic .topbar-test-play {
+  body.editor-ui-beginner .topbar-test-play {
     justify-content: center;
     padding: 0;
     width: 32px;
@@ -504,17 +504,21 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 
 /* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통)
    basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-basic 규칙). */
+body.editor-ui-standard .editor-layout .left-panel,
 body.editor-ui-expert .editor-layout .left-panel {
   min-width: 0;
   overflow-x: hidden;
 }
 
+body.editor-ui-standard .editor-layout .left-panel-stack,
 body.editor-ui-expert .editor-layout .left-panel-stack {
   max-width: 100%;
   min-width: 0;
   overflow-x: hidden;
 }
 
+body.editor-ui-standard .left-panel-stack[data-testid="left-palette-root"],
+body.editor-ui-standard .left-panel-stack[data-testid="left-map-root"],
 body.editor-ui-expert .left-panel-stack[data-testid="left-palette-root"],
 body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   overflow-x: hidden !important;

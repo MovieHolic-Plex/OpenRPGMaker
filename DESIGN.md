@@ -396,7 +396,7 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 
 ## 10. Desktop UI integration truth (2026-08-11)
 
-- Basic and Expert are desktop density modes, not separate responsive products. Basic retains the 48px AI restore rail and direct layer controls; Expert retains the full palette and workbench.
+- Beginner, Standard, and Expert are desktop density presets, not separate products or permission levels. Beginner uses the 48px direct-action rail, Standard exposes the full palette and map tree with simplified chrome, and Expert adds the classic toolbar and dense canvas controls. The AI workspace remains the first column and the same project, history, camera, and AI session continue across mode changes.
 - The AI assistant is map-first collapsed by preference. Its side/float restore rail is keyboard reachable; restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport.
 - Event-editor ownership is the desktop matrix `1586×992`, `1280×900`, `1024×768`, and `960×900`. Its top strip, two-column workbench, conditions, command list, and footer stay in normal non-overlapping flow, and coachmarks are suppressed while it is open.
 - Test Play uses whole-number fit-without-crop scaling: the `320×240` runtime stays centered, 4:3, fully visible, and nearest-neighbor sharp. Title options expose one roving Tab stop; arrow navigation, keyboard confirmation, and trusted pointer activation share the same selected-option path.

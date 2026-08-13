@@ -18,7 +18,7 @@ describe("basic icon rail", () => {
 
   beforeEach(() => {
     restore = installFakeDom();
-    resetEditorUiModeForTests("basic");
+    resetEditorUiModeForTests("beginner");
     store.replace(createBlankProject());
     editorState.set({ tool: "paint", layer: "lower", currentMapId: store.getCurrent().startMapId });
     container = document.createElement("div");

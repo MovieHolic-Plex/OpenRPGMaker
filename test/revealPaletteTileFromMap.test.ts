@@ -19,7 +19,10 @@ describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
           cb(0);
           return 0;
         },
-        setTimeout: globalThis.setTimeout.bind(globalThis),
+        setTimeout: (cb: () => void) => {
+          cb();
+          return 0;
+        },
         clearTimeout: globalThis.clearTimeout.bind(globalThis),
         scrollTo: () => {},
         scrollX: 0,
@@ -52,22 +55,33 @@ describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
       tool: "paint",
       selectedTile: 0,
     });
-    setEditorUiMode("basic");
+    setEditorUiMode("beginner");
     document.body.replaceChildren();
   });
 
   afterEach(() => {
     document.body.replaceChildren();
-    setEditorUiMode("basic");
+    setEditorUiMode("beginner");
     restoreDom?.();
     restoreDom = null;
   });
 
-  it("does nothing visible in basic mode", () => {
-    setEditorUiMode("basic");
+  it("does nothing visible in beginner mode", () => {
+    setEditorUiMode("beginner");
     expect(() => revealPaletteTileFromMap(105)).not.toThrow();
-    expect(getEditorUiMode()).toBe("basic");
+    expect(getEditorUiMode()).toBe("beginner");
     expect(localStorage.getItem("rpg-zzu:palette-work-tab")).toBeNull();
+  });
+
+  it("in standard mode forces the paint tab and re-renders palette root", () => {
+    setEditorUiMode("standard");
+    const root = document.createElement("div");
+    root.dataset.testid = "left-palette-root";
+    document.body.append(root);
+    editorState.set({ selectedTile: 105, layer: "lower" });
+    revealPaletteTileFromMap(105);
+    expect(localStorage.getItem("rpg-zzu:palette-work-tab")).toBe("paint");
+    expect(root.childElementCount).toBeGreaterThan(0);
   });
 
   it("in expert mode forces the paint tab and re-renders palette root when present", () => {

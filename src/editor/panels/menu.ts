@@ -92,7 +92,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
-    ...(mode === "edit" && uiMode === "basic" ? [renderTestPlayButton()] : []),
+    ...(mode === "edit" && uiMode === "beginner" ? [renderTestPlayButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
@@ -100,7 +100,6 @@ export function renderTopbar(topbar: HTMLElement): void {
   );
   menuBar.append(trailing);
 
-  // Classic toolbar: expert edit surface only — gradual deprecation (not default in basic).
   const showClassic = mode !== "edit" || chrome.classicToolbar;
   topbar.append(menuBar);
   if (showClassic) {
@@ -139,7 +138,12 @@ function renderEditorUiModeToggle(): HTMLElement {
       attrs: {
         type: "button",
         "aria-pressed": current === mode ? "true" : "false",
-        title: mode === "basic" ? "기본 모드 — 간결한 편집 셸" : "전문가 모드 — 전체 도구·맵 트리",
+        title:
+          mode === "beginner"
+            ? "초보 — AI와 핵심 도구에 집중"
+            : mode === "standard"
+              ? "표준 — 팔레트와 맵 트리를 함께 사용"
+              : "전문가 — 전체 도구와 고밀도 정보 표시",
       },
       dataset: { testid: testId, editorUiMode: mode },
       on: {
@@ -152,8 +156,9 @@ function renderEditorUiModeToggle(): HTMLElement {
       },
     });
   group.append(
-    makeButton("basic", "기본 모드", "editor-ui-mode-basic"),
-    makeButton("expert", "전문가 모드", "editor-ui-mode-expert"),
+    makeButton("beginner", "초보", "editor-ui-mode-beginner"),
+    makeButton("standard", "표준", "editor-ui-mode-standard"),
+    makeButton("expert", "전문가", "editor-ui-mode-expert"),
   );
   return group;
 }
