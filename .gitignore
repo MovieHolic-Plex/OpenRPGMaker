@@ -44,6 +44,10 @@ handoff.md
 # 세션 스크래치 디렉터리. `/tmp-*` 만 있어서 `/tmp/` 가 무시되지 않았고, 실측 157MB
 # (claude-session-detail.json 단일 파일 144MB)가 `git add -A` 한 번에 커밋될 수 있었다.
 /tmp/
+# 현대 외관 타일셋 연구 스크래치. 실측: v42.3 zip(6.9MB)과 .tmp/ 캡처 612개가
+# 워크트리 스냅샷 커밋을 타고 병합에 유입될 뻔했다. research-modern-exteriors.py 의 입력.
+/.tmp/
+/Modern_Exteriors_RPG_Maker_MV_v42.3.zip
 # 리포트용 스크린샷 산출물. `report-assets/` 자체에는 추적 중인 알파 PNG 가 있으므로
 # 생성물이 쌓이는 하위 디렉터리만 무시한다.
 /report-assets/shots/

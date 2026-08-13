@@ -198,6 +198,37 @@ function modernTileset(): TilesetDef {
     passability,
     priority,
     terrain,
+    grammarProfile: "modern-exteriors",
+    palettePresets: [
+      { id: "modern-road", name: "도로·보도", origin: "ai", slots: [
+        { role: "ground", tileIds: [T.asphalt] },
+        { role: "path", tileIds: [T.sidewalk] },
+        { role: "boundary", tileIds: [T.curb, T.curbEast, T.curbNorth, T.curbSouth] },
+        { role: "decor", tileIds: [T.laneMark, T.crosswalk] },
+      ] },
+      { id: "modern-plaza", name: "광장·지붕", origin: "ai", slots: [
+        { role: "ground", tileIds: [T.plaza] },
+        { role: "decor", tileIds: [T.plazaStone, T.plazaWarm] },
+        { role: "roof", tileIds: [T.roofFloor] },
+      ] },
+      { id: "modern-buildings", name: "건물 스탬프", origin: "ai", slots: [
+        { role: "wall", tileIds: atlasRect(0, 1, 8, 1) },
+        { role: "furniture", tileIds: atlasRect(0, 9, 8, 1) },
+      ] },
+    ],
+    tileGroups: [
+      { id: "modern-road-marks", name: "도로 표시", role: "terrain", defaultLayer: "lower", tileIds: [T.laneMark, T.crosswalk], description: "차선·횡단보도: 아스팔트 위에 덮는 도로 마킹.", placementRules: "lower에 아스팔트 바탕 위에 1칸 브러시.", origin: "ai", source: "ai", patternGrammar: { kind: "single", parts: [{ role: "center", tileIds: [T.laneMark, T.crosswalk] }], preserveCaps: false, repeat: "center" } },
+      { id: "modern-curb-ns", name: "연석(세로)", role: "wall", defaultLayer: "lower", tileIds: [T.curb, T.curbEast], description: "南北 연석 — 도로와 보도 경계.", placementRules: "하위 레이어 세로 1열.", origin: "ai", source: "ai", patternGrammar: { kind: "vertical_expandable", axis: "vertical", parts: [{ role: "top", tileIds: [T.curb] }, { role: "center", tileIds: [T.curb, T.curbEast] }, { role: "bottom", tileIds: [T.curbEast] }], preserveCaps: false, repeat: "center" } },
+      { id: "modern-curb-ew", name: "연석(가로)", role: "wall", defaultLayer: "lower", tileIds: [T.curbNorth, T.curbSouth], description: "東西 연석 — 지붕/광장 테두리.", placementRules: "하위 레이어 가로 1열.", origin: "ai", source: "ai", patternGrammar: { kind: "horizontal_expandable", axis: "horizontal", parts: [{ role: "left", tileIds: [T.curbNorth] }, { role: "center", tileIds: [T.curbNorth, T.curbSouth] }, { role: "right", tileIds: [T.curbSouth] }], preserveCaps: false, repeat: "center" } },
+      { id: "modern-west-civic", name: "서부 시민회관 (8×8)", role: "building", defaultLayer: "lower", tileIds: T.westCivic, description: "붉은 벽돌 서부 시민회관 8×8 스탬프 — 원본 배열 유지.", placementRules: "sourceRect 0,1 8×8을 lower/upper 풋프린트로 전개. 외곽은 벽 충돌 있음.", origin: "ai", source: "ai", sourceRect: { x: 0, y: 1, width: 8, height: 8 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.westCivic }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-night-shops", name: "야간 상점가 (8×8)", role: "building", defaultLayer: "lower", tileIds: T.nightShops, description: "네온 상점가 8×8 스탬프.", placementRules: "sourceRect 8,1 8×8.", origin: "ai", source: "ai", sourceRect: { x: 8, y: 1, width: 8, height: 8 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.nightShops }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-archive", name: "시립 기록원 (8×8)", role: "building", defaultLayer: "lower", tileIds: T.archive, description: "시립 기록원 8×8 스탬프.", placementRules: "sourceRect 16,1 8×8.", origin: "ai", source: "ai", sourceRect: { x: 16, y: 1, width: 8, height: 8 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.archive }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-police", name: "경찰 블록 (6×8)", role: "building", defaultLayer: "lower", tileIds: T.policeBlock, description: "경찰 블록 6×8 스탬프.", placementRules: "sourceRect 24,1 6×8.", origin: "ai", source: "ai", sourceRect: { x: 24, y: 1, width: 6, height: 8 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.policeBlock }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-utility", name: "유틸리티 블록 (8×7)", role: "building", defaultLayer: "lower", tileIds: T.utility, description: "유틸리티 8×7 스탬프.", placementRules: "sourceRect 0,9 8×7.", origin: "ai", source: "ai", sourceRect: { x: 0, y: 9, width: 8, height: 7 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.utility }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-greenhouse", name: "온실 블록 (8×7)", role: "building", defaultLayer: "lower", tileIds: T.greenhouse, description: "온실 8×7 스탬프 (옥상용).", placementRules: "sourceRect 8,9 8×7.", origin: "ai", source: "ai", sourceRect: { x: 8, y: 9, width: 8, height: 7 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.greenhouse }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-memorial", name: "추모 시설 (8×7)", role: "building", defaultLayer: "lower", tileIds: T.memorial, description: "추모 시설 8×7 스탬프.", placementRules: "sourceRect 16,9 8×7.", origin: "ai", source: "ai", sourceRect: { x: 16, y: 9, width: 8, height: 7 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.memorial }], preserveCaps: true, repeat: "source_order" } },
+      { id: "modern-industrial", name: "산업 블록 (6×7)", role: "building", defaultLayer: "lower", tileIds: T.industrial, description: "산업 블록 6×7 스탬프.", placementRules: "sourceRect 24,9 6×7.", origin: "ai", source: "ai", sourceRect: { x: 24, y: 9, width: 6, height: 7 }, patternGrammar: { kind: "source_rect", parts: [{ role: "center", tileIds: T.industrial }], preserveCaps: true, repeat: "source_order" } },
+     ],
   };
 }
 

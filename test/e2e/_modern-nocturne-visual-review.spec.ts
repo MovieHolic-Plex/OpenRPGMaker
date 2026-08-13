@@ -82,7 +82,6 @@ test("plays the live Modern Exteriors investigation through its ending", async (
   await expect(presetBar).not.toContainText("몬스터는 파티 편입 후 자동 줄서기");
   await page.getByTestId("event-editor-cancel").click();
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
-
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
   await expect(page.getByTestId("title-logo")).toBeVisible();
@@ -177,7 +176,6 @@ async function expectSwitch(page: Page, switchId: string): Promise<void> {
 async function paletteTileIds(grid: ReturnType<Page["getByTestId"]>): Promise<number[]> {
   return grid.locator("[data-tile-index]").evaluateAll((cells) => cells.map((cell) => Number((cell as HTMLElement).dataset.tileIndex)));
 }
-
 
 async function teleport(page: Page, mapId: string, x: number, y: number, facing: Direction): Promise<void> {
   await page.evaluate(([targetMapId, targetX, targetY]) => {
