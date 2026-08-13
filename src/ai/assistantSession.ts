@@ -138,7 +138,7 @@ export interface HarnessSnapshot {
 type ChatFn = (config: AiConfig, req: ChatRequest) => Promise<ChatResult>;
 
 // 파괴적으로 간주하는 툴 이름.
-const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map"]);
+const DESTRUCTIVE_TOOLS = new Set(["remove_event", "remove_map", "reset_project"]);
 export const RULE_TOOLS: ReadonlySet<string> = new Set(["set_cluster_rule", "set_group_junction", "set_group_overlay"]);
 // 어휘 합의: propose_tile_vocabulary 또는 soft-confirm 시공(목업 확인) 수락 시에만 origin:user.
 // requiresApproval 이 메타데이터 자동 커밋·autoApprove 를 막아 명시 수락만 합의로 친다.

@@ -79,11 +79,20 @@ export type VillageHousePlan = {
   readonly program?: "dwelling" | "shop" | "inn" | "workshop" | "study" | "manor";
 };
 
+export const VILLAGE_GROUND_THEMES = ["grass", "snow"] as const;
+export type VillageGroundTheme = (typeof VILLAGE_GROUND_THEMES)[number];
+
+export const VILLAGE_SETTLEMENT_LAYOUTS = ["plaza-ring", "street-grid", "clusters"] as const;
+export type VillageSettlementLayout = (typeof VILLAGE_SETTLEMENT_LAYOUTS)[number];
+
 export type AuthorVillageRequest = {
   readonly target: AuthorVillageTarget;
   readonly houseCount: number;
   readonly housePlans?: readonly VillageHousePlan[];
   readonly countPolicy: ConstructionCountPolicy;
+  readonly groundTheme?: VillageGroundTheme;
+  readonly settlementLayout?: VillageSettlementLayout;
+  readonly npcCount?: number;
   readonly theme?: string;
   readonly seed?: number;
   readonly interior?: boolean;

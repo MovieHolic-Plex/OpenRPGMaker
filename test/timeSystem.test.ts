@@ -14,9 +14,16 @@ import { runSceneTest } from "@/testing/sceneTestRunner";
 import { runTool } from "@/editor/tools";
 import { eligibleEncounterEntries } from "@/player/encounters";
 import { createTimeDemoProject } from "./fixtures/timeDemo";
-import { isGameTimePausedForRuntime } from "@/player/playSceneTime";
+import { isGameTimePausedForRuntime, timeTintVisualForPhase } from "@/player/playSceneTime";
 import { beginCutsceneControl } from "@/player/cutsceneControl";
 
+
+describe("GameTime phase visuals", () => {
+  it("exports distinct automatic day and night tint visuals", () => {
+    expect(timeTintVisualForPhase("day")).not.toEqual(timeTintVisualForPhase("night"));
+    expect(timeTintVisualForPhase("night").alpha).toBeGreaterThan(timeTintVisualForPhase("day").alpha);
+  });
+});
 describe("GameTime core", () => {
   it("rolls minutes, hours, days, seasons, and years at 28-day seasons", () => {
     const system = resolveTimeSystem({ enabled: true, dayStartHour: 6, dayEndHour: 26 });

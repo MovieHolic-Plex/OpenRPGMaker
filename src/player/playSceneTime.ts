@@ -21,7 +21,7 @@ const TIME_FIXED_STEP_MS = 1000;
 const TIME_TINT_DEPTH = 850_000;
 const TIME_TINT_TRANSITION_MS = 1500;
 
-type TimeTintVisual = {
+export type TimeTintVisual = {
   readonly color: number;
   readonly alpha: number;
 };
@@ -78,7 +78,7 @@ export function updateTimeTint(scene: PlaySceneContext, deltaMs: number): void {
     hideTimeTint(scene);
     return;
   }
-  const target = tintForPhase(phase);
+  const target = timeTintVisualForPhase(phase);
   const current = scene.timeTintDisplayed ?? target;
   if (scene.timeTintPhase !== phase) {
     scene.timeTintPhase = phase;
@@ -192,7 +192,7 @@ function syncTimeTintLayer(scene: PlaySceneContext): void {
   graphics.fillRect(0, 0, camera.width || PLAY_RESOLUTION.width, camera.height || PLAY_RESOLUTION.height);
 }
 
-function tintForPhase(phase: TimePhase): TimeTintVisual {
+export function timeTintVisualForPhase(phase: TimePhase): TimeTintVisual {
   switch (phase) {
     case "morning":
       return { color: 0xffd37a, alpha: 0.08 };

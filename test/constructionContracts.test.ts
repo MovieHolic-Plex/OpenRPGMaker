@@ -166,6 +166,34 @@ describe("canonical construction contract baseline", () => {
       ["new", "best-effort"],
     ]);
   });
+  it("parses explicit settlement controls and preserves legacy defaults", () => {
+    const explicit = parseAuthorVillageRequest({
+      ...existingVillageRequest,
+      housePlans: undefined,
+      groundTheme: "snow",
+      settlementLayout: "street-grid",
+      npcCount: 48,
+    });
+    const legacy = parseAuthorVillageRequest({ ...existingVillageRequest, housePlans: undefined });
+
+    expect(explicit).toMatchObject({ groundTheme: "snow", settlementLayout: "street-grid", npcCount: 48 });
+    expect(legacy).not.toHaveProperty("groundTheme");
+    expect(legacy).not.toHaveProperty("settlementLayout");
+    expect(legacy).not.toHaveProperty("npcCount");
+  });
+  it.each([
+    ["groundTheme", "winter"],
+    ["settlementLayout", "city"],
+    ["npcCount", -1],
+    ["npcCount", 513],
+    ["npcCount", 1.5],
+  ])("rejects invalid village control %s=%s", (key, value) => {
+    const parse = (): void => {
+      parseAuthorVillageRequest({ ...existingVillageRequest, housePlans: undefined, [key]: value });
+    };
+
+    expectToolError(parse, "invalid-args");
+  });
   it.each([2, 33])("rejects invalid village count %s", (houseCount) => {
     // Given: a request outside the strict 4..32 range.
     const request = { ...existingVillageRequest, houseCount, housePlans: undefined };

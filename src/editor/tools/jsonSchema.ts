@@ -236,6 +236,11 @@ export function validateArgs(schema: JsonSchema, args: unknown): string[] {
   for (const key of schema.required ?? []) {
     if (record[key] === undefined) errors.push(`필수 인자 누락: ${key}`);
   }
+  if (schema.additionalProperties === false) {
+    for (const key of Object.keys(record)) {
+      if (!(key in (schema.properties ?? {}))) errors.push(`허용되지 않은 인자: ${key}`);
+    }
+  }
   for (const [key, propSchema] of Object.entries(schema.properties ?? {})) {
     const value = record[key];
     if (value === undefined) continue;
@@ -245,6 +250,14 @@ export function validateArgs(schema: JsonSchema, args: unknown): string[] {
     }
     if (propSchema.enum && !propSchema.enum.includes(value as string | number)) {
       errors.push(`인자 '${key}'는 [${propSchema.enum.join(", ")}] 중 하나여야 합니다.`);
+    }
+    if (typeof value === "string") {
+      if (propSchema.minLength !== undefined && value.length < propSchema.minLength) {
+        errors.push(`인자 '${key}'는 ${propSchema.minLength}자 이상이어야 합니다.`);
+      }
+      if (propSchema.maxLength !== undefined && value.length > propSchema.maxLength) {
+        errors.push(`인자 '${key}'는 ${propSchema.maxLength}자 이하여야 합니다.`);
+      }
     }
     if (propSchema.type === "array" && propSchema.items && Array.isArray(value)) {
       for (let i = 0; i < value.length; i += 1) {

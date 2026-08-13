@@ -166,6 +166,17 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     for (const domain of ["core", "map", "tile"] as const) expect(wall.has(domain)).toBe(true);
   });
 
+  it.each(["100x100 city", "winter town", "snow settlement", "겨울 도시", "눈 정착지"])(
+    "%s exposes canonical village construction",
+    (request) => {
+      const domains = computeActiveToolDomains(request);
+      expect(domains.has("map")).toBe(true);
+      expect(domains.has("tile")).toBe(true);
+      const names = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
+      expect(names.has("author_village")).toBe(true);
+    },
+  );
+
   it("호수/수역 요청은 tile 도메인을 열어 fill_region을 노출한다", () => {
     const domains = computeActiveToolDomains("오른쪽 아래에 호수 만들어줘");
     expect(domains.has("tile")).toBe(true);
@@ -178,6 +189,20 @@ describe("T4 — computeActiveToolDomains (의도 유니온 + TTL)", () => {
     expect(domains.has("tile")).toBe(true);
     const exposed = new Set(toOpenAiTools(undefined, { domains }).map((tool) => tool.function.name));
     expect(exposed.has("paint_road")).toBe(true);
+  });
+
+  it("새 프로젝트와 밤 분위기 요청은 system 도메인의 canonical 툴을 cap 안에서 노출한다", () => {
+    const resetDomains = computeActiveToolDomains("Start a new project from scratch");
+    const resetExposed = toOpenAiTools(undefined, { domains: resetDomains });
+    expect(resetDomains.has("system")).toBe(true);
+    expect(resetExposed.length).toBeLessThanOrEqual(40);
+    expect(resetExposed.some((tool) => tool.function.name === "reset_project")).toBe(true);
+
+    const nightDomains = computeActiveToolDomains("밤이 되면 분위기가 바뀌게 해줘");
+    const nightExposed = toOpenAiTools(undefined, { domains: nightDomains });
+    expect(nightDomains.has("system")).toBe(true);
+    expect(nightExposed.length).toBeLessThanOrEqual(40);
+    expect(nightExposed.some((tool) => tool.function.name === "configure_time_system")).toBe(true);
   });
 
   it("부정 필터는 제외된 도메인 키워드를 활성화하지 않는다", () => {

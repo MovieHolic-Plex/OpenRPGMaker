@@ -60,6 +60,9 @@ export function villageDomainArgs(request: AuthorVillageRequest): VillageBuildDo
     ...(request.target.kind === "existing" && request.target.bounds ? { bounds: request.target.bounds } : {}),
     ...(request.housePlans ? { housePlans: request.housePlans } : {}),
     ...(request.theme ? { theme: request.theme } : {}),
+    ...(request.groundTheme === undefined ? {} : { groundTheme: request.groundTheme }),
+    ...(request.settlementLayout === undefined ? {} : { settlementLayout: request.settlementLayout }),
+    ...(request.npcCount === undefined ? {} : { npcCount: request.npcCount }),
     ...(request.seed === undefined ? {} : { seed: request.seed }),
     interior: request.interior ?? true,
     doorEvent: request.interior ?? true,
@@ -89,6 +92,12 @@ export function assertVillagePostconditions(
     throw new ToolError(
       `Village house count shortfall: ${inspection.actualHouseCount}/${request.houseCount}.`,
       { code: "village-count-shortfall", mapId },
+    );
+  }
+  if (request.npcCount !== undefined && inspection.npcCount !== request.npcCount) {
+    throw new ToolError(
+      `Village population shortfall: ${inspection.npcCount}/${request.npcCount}.`,
+      { code: "village-population-shortfall", mapId },
     );
   }
   if (!inspection.structuralQa.ok) {

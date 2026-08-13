@@ -228,4 +228,11 @@ describe("canonical construction routing in work plans", () => {
     const village = buildDefaultWorkPlan("현재 맵에 집 6채 마을을 만들어줘", new Date("2026-07-18T00:00:00.000Z"));
     expect(village.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
   });
+  it.each(["100x100 city", "winter town", "snow settlement", "대도시", "겨울 도시", "눈 정착지"])(
+    "routes %s through author_village",
+    (goal) => {
+      const plan = buildDefaultWorkPlan(goal, new Date("2026-07-18T00:00:00.000Z"));
+      expect(plan.layers[0]?.items[0]?.successTools).toEqual(["author_village"]);
+    },
+  );
 });

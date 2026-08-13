@@ -589,7 +589,7 @@ export function isWorkPlanComplete(plan: WorkPlan): boolean {
 
 /** 건설 의도 감지: 마을 → author_village, 집/건물 → author_house. */
 function detectConstructionIntent(goal: string): readonly string[] | null {
-  if (/마을/.test(goal)) return ["author_village"];
+  if (/마을|도시|정착지|city|town|settlement/i.test(goal)) return ["author_village"];
   if (/집|건물|house/i.test(goal)) return ["author_house"];
   return null;
 }

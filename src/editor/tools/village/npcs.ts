@@ -30,6 +30,8 @@ import { villageRoadAnchors } from "./roads";
 const placeNpcTool = requireTool(EVENT_TOOLS, "place_npc");
 const setNpcScheduleTool = requireTool(EVENT_TOOLS, "set_npc_schedule");
 
+const MIN_NPC_CLEARANCE = 1;
+
 export function placeVillageNpcs(
   draft: Project,
   map: GameMap,
@@ -38,14 +40,31 @@ export function placeVillageNpcs(
   plaza: Plaza,
   overrides: readonly Partial<NpcText>[],
   seed: number,
-  warnings: string[]
+  warnings: string[],
+  requestedCount = houses.length + 2,
 ): void {
   const occupied = new Set<string>();
-  const placements = [
+  const placements: Point[] = [
     ...houses.map((house, index) => npcPointNearHouseFront(map, area, house, index, occupied)),
     { x: plaza.centerX - 1, y: plaza.centerRow },
     { x: plaza.centerX + 1, y: plaza.centerRow },
-  ];
+  ].slice(0, requestedCount);
+  for (let y = area.y; placements.length < requestedCount && y < area.y + area.h; y += 1) {
+    for (let x = area.x; placements.length < requestedCount && x < area.x + area.w; x += 1) {
+      const key = coordKey(x, y);
+      if (occupied.has(key) || map.events.some((event) => event.x === x && event.y === y)) continue;
+      if (map.upperTiles[y * map.width + x] !== TILE.EMPTY || !isPassable(draft, map, x, y)) continue;
+      if (placements.some((point) => chebyshevDistance(point, { x, y }) <= MIN_NPC_CLEARANCE)) continue;
+      occupied.add(key);
+      placements.push({ x, y });
+    }
+  }
+  if (placements.length !== requestedCount) {
+    throw new ToolError(`요청한 NPC ${requestedCount}명을 배치할 통행 가능 고유 칸이 부족합니다.`, {
+      code: "village-population-shortfall",
+      mapId: map.id,
+    });
+  }
   const graphics = seededVillageNpcGraphics(seed);
   const workAnchors = villageNpcWorkAnchors(area, plaza, seed);
   for (let index = 0; index < placements.length; index += 1) {
@@ -78,6 +97,10 @@ export function placeVillageNpcs(
   }
   warnIfSchedulesCannotRun(draft, warnings);
 }
+function chebyshevDistance(a: Point, b: Point): number {
+  return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+}
+
 
 /**
  * 시간표를 저장했지만 시간 시스템이 꺼져 있으면 경고한다.

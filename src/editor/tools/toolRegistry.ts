@@ -28,6 +28,8 @@ import { QUEST_TOOLS } from "./questTools";
 import { RANGE_CLASSIFY_TOOLS } from "./rangeClassifyTools";
 import { REFACTOR_TOOLS } from "./refactorTools";
 import { STORY_TOOLS } from "./storyTools";
+import { STORY_ARC_TOOLS } from "./storyArcTools";
+import { QUALITY_EVALUATION_TOOLS } from "./qualityEvaluation";
 import { TILE_METADATA_TOOLS } from "./tileMetadataTools";
 import { TIME_TOOLS } from "./timeTools";
 import type { JsonSchema, ToolDefinition, ToolDomain } from "./types";
@@ -46,6 +48,7 @@ import { TILE_QUERY_TOOLS } from "./tileQueryTool";
 import { getActiveToolDomainInfo } from "@/editor/assistantToolMode";
 import { AUTHOR_HOUSE_TOOL } from "./authorHouseToolDef";
 import { AUTHOR_VILLAGE_TOOL } from "./authorVillageToolDef";
+import { PROJECT_TOOLS } from "./projectTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -112,6 +115,7 @@ const NAME_DOMAIN_OVERRIDES: ReadonlyMap<string, readonly ToolDomain[]> = new Ma
   ["paint_road", ["tile", "map"]],
   ["run_lint", ["system"]],
   ["list_project_commits", ["system"]],
+  ["evaluate_game_quality", ["system"]],
 ]);
 
 function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): readonly ToolDefinition[] {
@@ -127,6 +131,7 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
 export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
+  ...PROJECT_TOOLS,
   ...withDomain(VOCABULARY_TOOLS_V3, "tile"),
   AUTHOR_HOUSE_TOOL,
   AUTHOR_VILLAGE_TOOL,
@@ -152,9 +157,11 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(WORLD_TOOLS, "world"),
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
   ...withDomain(QUEST_TOOLS, "quest"),
+  ...withDomain(STORY_ARC_TOOLS, "event"),
   ...withDomain(STORY_TOOLS, "quest"),
   ...withDomain(BATTLE_TOOLS, "battle"),
   ...withDomain(REFACTOR_TOOLS, "system"),
+  ...withDomain(QUALITY_EVALUATION_TOOLS, "system"),
   ...withDomain(HISTORY_TOOLS, "system"),
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
@@ -215,6 +222,7 @@ const MAX_EXPOSED_TOOLS = 40;
 // (build_house_kit/build_house_lots 가 실제로 이 함정에 걸려 있었다 — CONSTRUCTION_WRITE_SUPERSEDED).
 // 재발 방지는 test/toolRegistry.test.ts 의 "핀된 툴은 deprecated가 아니다" 가드가 담당한다.
 export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>> = new Map([
+  ["system", new Set(["reset_project", "configure_time_system"])],
   ["tile", new Set([
     "author_house", // 집·여관 외장 canonical facade (build_house_kit/lots의 대체 툴)
     "author_village",
@@ -241,14 +249,18 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     // event 도메인 안에서도 EVENT_TOOLS/LIGHTING_TOOLS 뒤쪽 정의라 상한(40) 슬라이스에서 밀려
     // place_chest 등이 노출 안 되던 문제.
     "place_chest", "place_storage_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
+    "author_story_arc",
   ])],
   ["map", new Set([
+    "reset_project",
     "author_village",
     "get_map_region", "show_map_region", "get_project_summary",
     // 영역 작업 transform/battle-trap/structure 가이드 대표 도구(2026-07-10 라이브 실측 수정).
     // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.
     "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",
   ])],
+  ["quest", new Set(["author_story_arc"])],
+  ["system", new Set(["evaluate_game_quality"])],
 ]);
 const WRITE_HEAVY_DOMAIN_ORDER: ReadonlyMap<ToolDomain, number> = new Map([
   ["tile", 0],

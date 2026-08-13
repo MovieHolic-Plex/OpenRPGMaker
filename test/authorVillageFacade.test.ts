@@ -38,6 +38,55 @@ describe("author_village facade", () => {
     expect(Object.keys(project.maps)).toEqual(["map_existing"]);
   });
 
+  it.each(["분수가 있는 평화로운 마을", "town with a Fountain centerpiece"])("substitutes one plaza well for the unavailable landmark in %s", (theme) => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 4,
+      countPolicy: "exact",
+      theme,
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues ?? [])}`).toBe(true);
+    const map = project.maps.map_existing;
+    const commons = map.layoutPlan?.regions.find((region) => region.id === "village_commons");
+    expect(commons).toBeDefined();
+    const wellCells = map.upperTiles.flatMap((tile, index) => tile === 382
+      ? [{ x: index % map.width, y: Math.floor(index / map.width) }]
+      : []);
+    expect(wellCells).toHaveLength(1);
+    if (commons === undefined) throw new Error("village commons region missing");
+    expect(wellCells[0]).toMatchObject({
+      x: expect.any(Number),
+      y: expect.any(Number),
+    });
+    expect(wellCells[0]?.x).toBeGreaterThanOrEqual(commons.x - 4);
+    expect(wellCells[0]?.x).toBeLessThan(commons.x + commons.w + 4);
+    expect(wellCells[0]?.y).toBeGreaterThanOrEqual(commons.y - 4);
+    expect(wellCells[0]?.y).toBeLessThan(commons.y + commons.h + 4);
+    const warnings = construction(result).warnings;
+    expect(warnings.some((warning) => /fountain|분수/i.test(warning) && /unavailable|없/i.test(warning) && /well|우물/i.test(warning) && /substitut|대체/i.test(warning))).toBe(true);
+  });
+
+  it("does not emit the fountain fallback warning for an ordinary theme", () => {
+    const project = createExistingProject();
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 4,
+      countPolicy: "exact",
+      theme: "quiet forest village",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok, result.summary).toBe(true);
+    expect(construction(result).warnings.some((warning) => /fountain|분수/i.test(warning))).toBe(false);
+  });
+
   it("creates the exact requested new map identity without suffix or reuse", () => {
     const project = createEmptyToolProject("new village");
     const result = runFacade(project, {
@@ -191,6 +240,72 @@ describe("author_village facade", () => {
 
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("village-outside-bounds");
+    expect(serialize(project)).toBe(before);
+  });
+});
+
+describe("author_village settlement scale and winter", () => {
+  it("builds a deterministic 100x100 snow city with the requested population", () => {
+    const args = {
+      target: {
+        kind: "new",
+        mapId: "map_winter_city",
+        name: "Winter City",
+        width: 100,
+        height: 100,
+        plannedMap: { mapId: "map_winter_city", width: 100, height: 100 },
+      },
+      houseCount: 20,
+      npcCount: 50,
+      countPolicy: "exact",
+      groundTheme: "snow",
+      settlementLayout: "street-grid",
+      seed: 41,
+      interior: false,
+    } as const;
+    const first = createEmptyToolProject("winter city one");
+    const second = createEmptyToolProject("winter city two");
+
+    const firstResult = runFacade(first, args);
+    const secondResult = runFacade(second, args);
+
+    expect(firstResult.ok, `${firstResult.summary} ${JSON.stringify(firstResult.issues ?? [])}`).toBe(true);
+    expect(secondResult.ok, `${secondResult.summary} ${JSON.stringify(secondResult.issues ?? [])}`).toBe(true);
+    const firstMap = first.maps.map_winter_city;
+    const secondMap = second.maps.map_winter_city;
+    expect(firstMap).toBeTruthy();
+    expect(firstMap.lowerTiles).toEqual(secondMap.lowerTiles);
+    expect(firstMap.events.map((event) => [event.id, event.x, event.y])).toEqual(
+      secondMap.events.map((event) => [event.id, event.x, event.y]),
+    );
+    const data = firstResult.data as { village: { actualHouseCount: number }; construction: { counts: { actual: number } } };
+    expect(data.village.actualHouseCount).toBe(20);
+    expect(firstMap.events.filter((event) => event.id.startsWith("ev_village_"))).toHaveLength(50);
+    const snowTiles = new Set([67, 37, 97, 66, 68, 36, 38, 96, 98, 6, 8]);
+    const roadTiles = new Set([424, 394, 454, 423, 425, 393, 395, 453, 455, 456, 421, 391, 451, 420, 422, 390, 392, 450, 452, 360, 362, 300, 190, 160, 220, 189, 191, 159, 161, 219, 221, 129, 131, 69]);
+    const exteriorGround = firstMap.lowerTiles.filter((tile) => snowTiles.has(tile) || roadTiles.has(tile)).length;
+    expect(firstMap.lowerTiles.filter((tile) => snowTiles.has(tile)).length).toBeGreaterThan(7_000);
+    expect(exteriorGround).toBeGreaterThan(8_000);
+    expect(snowTiles.has(firstMap.lowerTiles[first.startPos.y * firstMap.width + first.startPos.x] ?? -1) || roadTiles.has(firstMap.lowerTiles[first.startPos.y * firstMap.width + first.startPos.x] ?? -1)).toBe(true);
+    expect(new Set(firstMap.events.filter((event) => event.id.startsWith("ev_village_")).map((event) => `${event.x},${event.y}`)).size).toBe(50);
+    expect(firstMap.layoutPlan?.regions.find((region) => region.role === "plaza")?.tags).toContain("street-grid");
+  }, 30_000);
+
+  it("rolls back an exact request when the requested population cannot fit", () => {
+    const project = createExistingProject(36);
+    const before = serialize(project);
+
+    const result = runFacade(project, {
+      target: EXISTING_TARGET,
+      houseCount: 4,
+      npcCount: 512,
+      countPolicy: "exact",
+      seed: 7,
+      interior: false,
+    });
+
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("village-population-shortfall");
     expect(serialize(project)).toBe(before);
   });
 });
