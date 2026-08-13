@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "../src/project/defaults.ts";
 import { runTool } from "../src/editor/tools/toolRunner.ts";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "../src/editor/panels/buildPaletteCore.ts";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "../src/editor/panels/buildPaletteCore.ts";
 import { TILE } from "../src/project/defaults/constants.ts";
 import { isLakeAutotileTile } from "../src/project/defaults/lakeAutotile.ts";
 import { isSandTile } from "../src/project/defaults/sandAutotile.ts";
@@ -65,14 +65,14 @@ const logs: string[] = ["layout: NW-lake + east village + south plaza + SW cemet
 
 // 56×56 — 이전 52 중앙호수 링 배치와 구분
 logs.push(runOk(ctx, "create_map", { id: MAP_ID, name: "호수 마을", width: 56, height: 56 }));
-ensureBuildPalettePresets(ctx.project.tilesets[ctx.project.maps[MAP_ID]!.tilesetId]!);
+ensureBuildPaletteTileGroups(ctx.project.tilesets[ctx.project.maps[MAP_ID]!.tilesetId]!);
 
 // ── 호수: 북서 쪽 큰 원 (중앙 아님) ──
 logs.push(
   runOk(ctx, "fill_region", {
     mapId: MAP_ID,
     rect: { x: 3, y: 4, w: 20, h: 18 },
-    material: BUILD_PALETTE_PRESETS.water,
+    material: BUILD_PALETTE_GROUP_IDS.water,
     layer: "lower",
     shape: "circle",
   }),
@@ -201,7 +201,7 @@ for (const house of houses) {
   );
 }
 
-const CONIFER = BUILD_PALETTE_PRESETS.tree;
+const CONIFER = BUILD_PALETTE_GROUP_IDS.tree;
 const BROADLEAF = "harness-combined-town-broadleaf-tree-2x2";
 const BENCH_H = "벤치";
 const BENCH_V = "harness-combined-town-bench-vertical";

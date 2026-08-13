@@ -1,6 +1,6 @@
 import { normalizeAiTileMetadata } from "@/editor/panels/tilesetAiMetadataNormalizer";
-import type { TilesetReviewCandidate } from "@/editor/panels/tilesetReviewWizard";
-import { confidenceScore, tileMetaLocked } from "@/project/tilesetPalette";
+import type { TilesetReviewCandidate } from "@/editor/tilesetReviewModel";
+import { confidenceScore, tileMetaConfidence, tileMetaLocked } from "@/project/tilesetPalette";
 import { store } from "@/project/store";
 import type { Project, TileAiMetadata, TilesetDef } from "@/project/types";
 
@@ -90,13 +90,7 @@ function targetTiles(tileset: TilesetDef, opts: ReauditTilesetOptions): number[]
   const valid = base.filter((tile) => Number.isInteger(tile) && tile >= 0 && tile < tileset.count);
   if (opts.mode === "all") return [...new Set(valid)];
   const threshold = opts.confidenceThreshold ?? 1;
-  return [...new Set(valid)].filter((tile) => tileConfidenceForReaudit(tileset.tileMeta?.[tile]) < threshold);
-}
-
-function tileConfidenceForReaudit(meta: TileAiMetadata | undefined): number {
-  const score = confidenceScore(meta?.confidence);
-  if (score !== null) return score;
-  return meta?.origin === "user" || meta?.source === "user" ? 1 : 0.5;
+  return [...new Set(valid)].filter((tile) => (tileMetaConfidence(tileset.tileMeta?.[tile]) ?? 0.5) < threshold);
 }
 
 function normalizeVisionResponse(

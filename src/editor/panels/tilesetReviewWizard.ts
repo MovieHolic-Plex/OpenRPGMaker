@@ -1,29 +1,19 @@
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { ensureTileMeta } from "@/editor/panels/tilesetMetadataControls";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
-import { confidenceScore, primaryTileRole, tileMetaOrigin } from "@/project/tilesetPalette";
+import {
+  buildTilesetReviewQueue,
+  lowConfidenceReviewCount,
+  transitionTilesetReviewQueue,
+  type TilesetReviewCandidate,
+  type TilesetReviewItem,
+  type TilesetReviewState,
+} from "@/editor/tilesetReviewModel";
+import { confirmUserTileMetadata, primaryTileRole } from "@/project/tilesetPalette";
 import { passageMarkForTile, setPassageMark } from "@/project/tilesetPassage";
 import { store } from "@/project/store";
 import type { PaletteSlotRole, TileAiMetadata, TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-
-export interface TilesetReviewCandidate {
-  readonly meta: TileAiMetadata;
-  readonly tile: number;
-}
-
-export interface TilesetReviewItem {
-  readonly candidate?: TilesetReviewCandidate;
-  readonly confidence: number;
-  readonly meta: TileAiMetadata;
-  readonly origin: "ai" | "user";
-  readonly tile: number;
-}
-
-export interface TilesetReviewState {
-  readonly queue: readonly TilesetReviewItem[];
-  readonly skipped: readonly number[];
-}
 
 export interface RenderTilesetReviewWizardOptions {
   readonly candidates?: readonly TilesetReviewCandidate[];
@@ -33,7 +23,6 @@ export interface RenderTilesetReviewWizardOptions {
 }
 
 type OverlayMode = "group" | "passage" | "role";
-type QueueAction = "confirm" | "skip";
 
 const ROLE_ICONS: Record<PaletteSlotRole, string> = {
   boundary: "경",
@@ -49,51 +38,12 @@ const ROLE_ICONS: Record<PaletteSlotRole, string> = {
 let activeOverlayMode: OverlayMode = "passage";
 let activeWizard: HTMLElement | null = null;
 
-export function reviewConfidence(meta: TileAiMetadata | undefined): number {
-  const score = confidenceScore(meta?.confidence);
-  if (score !== null) return score;
-  if (!meta) return 0;
-  return tileMetaOrigin(meta) === "user" ? 1 : 0.5;
-}
-
-export function buildTilesetReviewQueue(
-  tileset: TilesetDef,
-  candidates: readonly TilesetReviewCandidate[] = []
-): readonly TilesetReviewItem[] {
-  const candidateByTile = new Map(candidates.map((candidate) => [candidate.tile, candidate]));
-  const tileIds = candidateByTile.size > 0
-    ? [...candidateByTile.keys()]
-    : (tileset.tileMeta ?? []).map((_meta, tile) => tile).filter((tile) => tileset.tileMeta?.[tile] !== undefined);
-  return tileIds
-    .filter((tile) => tile >= 0 && tile < tileset.count)
-    .map((tile) => {
-      const candidate = candidateByTile.get(tile);
-      const meta = candidate?.meta ?? tileset.tileMeta?.[tile];
-      if (!meta) return null;
-      const confidence = reviewConfidence(meta);
-      if (confidence >= 1) return null;
-      return {
-        ...(candidate ? { candidate } : {}),
-        confidence,
-        meta,
-        origin: tileMetaOrigin(meta) ?? "ai",
-        tile,
-      } satisfies TilesetReviewItem;
-    })
-    .filter((item): item is TilesetReviewItem => item !== null)
-    .sort((a, b) => a.confidence - b.confidence || a.tile - b.tile);
-}
-
-export function lowConfidenceReviewCount(queue: readonly TilesetReviewItem[], threshold = 0.5): number {
-  return queue.filter((item) => item.confidence < threshold).length;
-}
-
-export function transitionTilesetReviewQueue(state: TilesetReviewState, action: QueueAction, tile: number): TilesetReviewState {
-  return {
-    queue: state.queue.filter((item) => item.tile !== tile),
-    skipped: action === "skip" ? [...state.skipped, tile] : state.skipped,
-  };
-}
+export {
+  buildTilesetReviewQueue,
+  lowConfidenceReviewCount,
+  transitionTilesetReviewQueue,
+} from "@/editor/tilesetReviewModel";
+export type { TilesetReviewCandidate, TilesetReviewItem, TilesetReviewState } from "@/editor/tilesetReviewModel";
 
 export function applyReviewConfirmation(
   tileset: TilesetDef,
@@ -102,9 +52,7 @@ export function applyReviewConfirmation(
 ): TileAiMetadata | null {
   if (!Number.isInteger(tile) || tile < 0 || tile >= tileset.count) return null;
   const meta = ensureTileMeta(tileset, tile);
-  const next: TileAiMetadata = { ...meta, ...(candidate?.meta ?? {}) };
-  next.confidence = 1;
-  next.origin = tileMetaOrigin(next) ?? "ai";
+  const next = confirmUserTileMetadata(meta, candidate?.meta);
   if (next.passage === "passable") setPassageMark(tileset, tile, "o");
   if (next.passage === "solid") setPassageMark(tileset, tile, "x");
   if (next.passage === "star") setPassageMark(tileset, tile, "star");
@@ -188,7 +136,7 @@ export function renderTilesetReviewWizard(options: RenderTilesetReviewWizardOpti
         refresh();
       },
     }));
-    approveAll.textContent = `낮은 신뢰 ${lowConfidenceReviewCount(state.queue)}칸 포함 승인`;
+    approveAll.textContent = `나머지 모두 승인 (낮은 신뢰 ${lowConfidenceReviewCount(state.queue)}칸)`;
     approveAll.disabled = state.queue.length === 0;
   }
 

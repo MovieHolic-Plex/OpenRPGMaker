@@ -30,6 +30,7 @@
 @import "./database/states.css";
 @import "./database/troops.css";
 @import "./database/tilesets.css";
+@import "./database/tileset-ai-workspace.css";
 @import "./database/tilesets-terrain.css";
 @import "./database/desktop.css";
 @import "./database/desktop-record-shell.css";

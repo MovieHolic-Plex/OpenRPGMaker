@@ -629,7 +629,7 @@
   color: var(--text-1);
 }
 
-@media (min-width: 901px) {
+@media (min-width: 800px) {
   .database-modal-body .rm2k3-tileset-workspace {
     background: transparent;
     gap: 10px;
@@ -869,6 +869,590 @@
   gap: 4px;
 }
 
+.database-modal-body .rm2k3-tileset-main .tileset-db-edit-area.knowledge-mode {
+  grid-template-columns: minmax(320px, 372px) minmax(0, 1fr);
+}
+
+.tileset-knowledge-workspace {
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: var(--space-2);
+}
+
+.tileset-knowledge-sidebar {
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.tileset-knowledge-inspector {
+  align-content: start;
+  display: grid;
+  gap: var(--space-2);
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding-right: var(--space-1);
+}
+
+.tileset-ai-review-inbox {
+  --ai-review-tile-size: 24px;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.tileset-ai-review-header {
+  align-items: start;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.tileset-ai-review-header h3,
+.tileset-ai-review-header p {
+  margin: 0;
+}
+
+.tileset-ai-review-header h3 {
+  color: var(--text-1);
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.tileset-ai-review-header p {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.45;
+  margin-top: var(--space-1);
+  max-width: 30rem;
+}
+
+.tileset-ai-review-eyebrow {
+  color: var(--accent-primary);
+  display: block;
+  font: 700 9px/1.2 var(--font-mono);
+  letter-spacing: 0.12em;
+  margin-bottom: 2px;
+}
+
+.tileset-ai-review-empty,
+.tileset-ai-review-status {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+}
+
+.tileset-ai-review-empty strong {
+  color: var(--text-1);
+  font-size: 13px;
+}
+
+.tileset-ai-review-empty p,
+.tileset-ai-review-status span,
+.tileset-ai-review-status small {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.tileset-ai-review-analyze {
+  min-height: 34px;
+}
+
+.tileset-ai-review-empty .tileset-ai-review-analyze {
+  justify-self: start;
+  margin-top: var(--space-1);
+}
+
+.tileset-ai-review-status.ready {
+  border-color: var(--status-success);
+  color: var(--status-success);
+}
+
+.tileset-ai-review-status.warning {
+  border-color: var(--status-warning);
+  color: var(--status-warning);
+}
+
+.tileset-ai-review-status.error,
+.tileset-ai-review-status.offline {
+  border-color: var(--status-error);
+  color: var(--status-error);
+}
+
+.tileset-ai-review-status.working {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  overflow: hidden;
+  position: relative;
+}
+
+.tileset-ai-review-status.working::after {
+  animation: tileset-ai-review-progress 1.4s ease-in-out infinite;
+  background: var(--accent-primary);
+  bottom: 0;
+  content: "";
+  height: 2px;
+  left: 0;
+  position: absolute;
+  width: 38%;
+}
+
+.tileset-ai-review-stats {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tileset-ai-review-stats > div {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 1px;
+  padding: var(--space-2);
+}
+
+.tileset-ai-review-stats strong {
+  color: var(--text-1);
+  font: 700 16px/1 var(--font-mono);
+}
+
+.tileset-ai-review-stats span {
+  color: var(--text-2);
+  font-size: 10px;
+}
+
+.tileset-ai-review-stats .tone-high {
+  border-top-color: var(--status-success);
+}
+
+.tileset-ai-review-stats .tone-uncertain {
+  border-top-color: var(--status-warning);
+}
+
+.tileset-ai-review-stats .tone-low {
+  border-top-color: var(--status-error);
+}
+
+.tileset-ai-review-batch {
+  min-height: 36px;
+  width: 100%;
+}
+
+.tileset-ai-review-list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.tileset-ai-review-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 3px;
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.tileset-ai-review-card.confidence-high {
+  border-left-color: var(--status-success);
+}
+
+.tileset-ai-review-card.confidence-uncertain {
+  border-left-color: var(--status-warning);
+}
+
+.tileset-ai-review-card.confidence-low {
+  border-left-color: var(--status-error);
+}
+
+.tileset-ai-review-card-main {
+  align-items: center;
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.tileset-ai-review-tiles {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(3, var(--ai-review-tile-size));
+}
+
+.tileset-ai-review-tile {
+  background-color: var(--surface-workbench);
+  display: block;
+  height: var(--ai-review-tile-size);
+  image-rendering: pixelated;
+  width: var(--ai-review-tile-size);
+}
+
+.tileset-ai-review-card-copy {
+  min-width: 0;
+}
+
+.tileset-ai-review-card-title {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-1);
+  justify-content: space-between;
+}
+
+.tileset-ai-review-card-title strong {
+  color: var(--text-1);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tileset-ai-review-card-title span {
+  color: var(--text-2);
+  font: 700 11px/1 var(--font-mono);
+}
+
+.tileset-ai-review-card-copy p,
+.tileset-ai-review-card-copy small,
+.tileset-ai-review-why p {
+  color: var(--text-2);
+  font-size: 10px;
+  line-height: 1.4;
+  margin: 2px 0 0;
+}
+
+.tileset-ai-review-why summary,
+.tileset-knowledge-manual > summary {
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tileset-ai-review-feedback {
+  display: grid;
+  gap: 3px;
+}
+
+.tileset-ai-review-feedback span,
+.tileset-ai-review-feedback small {
+  color: var(--text-2);
+  font-size: 10px;
+}
+
+.tileset-ai-review-feedback input {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+  font: inherit;
+  min-height: 30px;
+  padding: 0 var(--space-2);
+}
+
+.tileset-ai-review-feedback button {
+  justify-self: start;
+  min-height: 28px;
+}
+
+.tileset-ai-review-card-actions {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 1fr 1fr minmax(100px, 1.4fr);
+}
+
+.tileset-ai-review-card-actions button {
+  min-height: 32px;
+}
+
+.tileset-ai-review-manual-link {
+  background: transparent;
+  border: 0;
+  color: var(--text-2);
+  font-size: 11px;
+  justify-self: start;
+  padding: var(--space-1) 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.tileset-knowledge-manual {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--space-2);
+}
+
+.tileset-knowledge-manual-body {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.tileset-ai-review-inbox button:focus-visible,
+.tileset-ai-review-inbox input:focus-visible,
+.tileset-ai-review-why summary:focus-visible,
+.tileset-knowledge-manual > summary:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+@keyframes tileset-ai-review-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(360%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tileset-ai-review-status.working::after {
+    animation: none;
+    width: 100%;
+  }
+}
+
+.tileset-knowledge-selection,
+.tileset-knowledge-section {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-subtle);
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.tileset-knowledge-selection span {
+  color: var(--text-1);
+  font: 600 12px/1.35 var(--font-mono);
+}
+
+.tileset-knowledge-selection small,
+.tileset-knowledge-section small {
+  color: var(--text-2);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.tileset-knowledge-template-grid {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tileset-knowledge-template-grid button {
+  align-content: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+  display: grid;
+  gap: 2px;
+  min-height: 48px;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+}
+
+.tileset-knowledge-template-grid button small {
+  word-break: keep-all;
+}
+
+.tileset-knowledge-template-grid button.active,
+.tileset-knowledge-template-grid button[aria-pressed="true"] {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  box-shadow: inset 3px 0 0 var(--accent-primary);
+}
+
+.tileset-knowledge-template-grid button:focus-visible,
+.tileset-knowledge-direction-grid button:focus-visible,
+.tileset-knowledge-layer-grid button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.tileset-knowledge-field {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.tileset-knowledge-field > span {
+  color: var(--text-1);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.tileset-knowledge-field input,
+.tileset-knowledge-field textarea {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-default);
+  box-sizing: border-box;
+  color: var(--text-1);
+  font: inherit;
+  min-height: 30px;
+  padding: var(--space-1) var(--space-2);
+  width: 100%;
+}
+
+.tileset-knowledge-field textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.tileset-knowledge-preset-row,
+.tileset-knowledge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.tileset-knowledge-preset-row button {
+  flex: 1 1 72px;
+  min-height: 30px;
+}
+
+.tileset-knowledge-direction-grid {
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tileset-knowledge-direction-grid button {
+  border: 1px solid var(--border-default);
+  min-height: 32px;
+}
+
+.tileset-knowledge-direction-grid button.open {
+  background: var(--surface-selected);
+  color: var(--text-1);
+}
+
+.tileset-knowledge-direction-grid button.blocked {
+  background: var(--surface-recessed);
+  color: var(--status-error);
+}
+
+.tileset-knowledge-layer-grid {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(var(--knowledge-cols), minmax(26px, 1fr));
+  max-height: 190px;
+  overflow: auto;
+}
+
+.tileset-knowledge-layer-grid button {
+  font: 600 10px/1.25 var(--font-mono);
+  min-height: 34px;
+  padding: 2px;
+  white-space: pre-line;
+}
+
+.tileset-knowledge-layer-grid button.upper {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+  color: var(--text-1);
+}
+
+.tileset-knowledge-layer-grid button.lower {
+  background: var(--surface-workbench);
+  border-color: var(--border-default);
+  color: var(--text-2);
+}
+
+.tileset-knowledge-status {
+  border: 1px solid var(--border-default);
+  font-size: 11px;
+  line-height: 1.4;
+  padding: var(--space-2);
+}
+
+.tileset-knowledge-status.error {
+  border-color: var(--status-error);
+  color: var(--status-error);
+}
+
+.tileset-knowledge-status.ready {
+  border-color: var(--status-success);
+  color: var(--status-success);
+}
+
+.tileset-db-group-row.active {
+  background: var(--surface-selected);
+  border-color: var(--accent-primary);
+}
+
+@media (max-width: 900px) {
+  .database-modal-body .rm2k3-tileset-workspace:has(.knowledge-mode) .rm2k3-tileset-list-pane {
+    max-height: 144px;
+    min-height: 144px;
+    padding: var(--space-2);
+  }
+
+  .database-modal-body .rm2k3-tileset-workspace:has(.knowledge-mode) .tileset-db-panel-title {
+    margin-bottom: var(--space-1);
+  }
+
+  .database-modal-body .rm2k3-tileset-workspace:has(.knowledge-mode) .rm2k3-maximum-button {
+    display: none;
+  }
+
+  .database-modal-body .rm2k3-tileset-main:has(.knowledge-mode) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body .rm2k3-tileset-main:has(.knowledge-mode) .rm2k3-tileset-terrain-pane {
+    display: none;
+  }
+
+  .database-modal-body .rm2k3-tileset-main .tileset-db-edit-area.knowledge-mode {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(300px, 0.9fr) minmax(260px, 1fr);
+    overflow-y: auto;
+  }
+
+  .database-modal-body:has(.tileset-db-workspace) .db-tabs {
+    box-shadow: inset -12px 0 10px -12px var(--text-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-1);
+    scrollbar-width: thin;
+  }
+
+  .tileset-knowledge-template-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tileset-knowledge-template-grid button {
+    min-height: 42px;
+  }
+
+  .tileset-knowledge-selection small {
+    display: none;
+  }
+
+  .tileset-ai-review-card-actions button {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 600px) {
+  .tileset-ai-review-header {
+    display: grid;
+  }
+
+  .tileset-ai-review-header .tileset-ai-review-analyze,
+  .tileset-ai-review-card-actions {
+    width: 100%;
+  }
+
+  .tileset-ai-review-card-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tileset-ai-review-card-actions .subtle {
+    grid-column: 1 / -1;
+  }
+
+  .tileset-knowledge-template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .tileset-layer-choice.active,
 .tileset-passage-choice.active {
   background: #eef4ff;
@@ -892,13 +1476,13 @@
 }
 
 .tileset-review-wizard {
-  background: var(--panel, #ffffff);
-  border: 1px solid var(--border-subtle, #cfd6e3);
-  border-radius: 6px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.18);
-  color: var(--text, #172033);
-  padding: 10px;
-  z-index: var(--z-modal);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  padding: var(--space-3);
+  z-index: var(--z-modal-top);
 }
 
 .tileset-review-title,
@@ -924,7 +1508,7 @@
 .tileset-review-overlay-tabs {
   align-items: center;
   display: flex;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .tileset-review-header {
@@ -932,15 +1516,17 @@
 }
 
 .tileset-review-wizard-host {
-  inset: 24px;
+  background: var(--bg-glass);
+  box-shadow: var(--shadow-modal);
+  inset: var(--space-5);
   position: fixed;
-  z-index: var(--z-modal);
+  z-index: var(--z-modal-overlay);
 }
 
 .tileset-review-wizard {
   display: grid;
-  gap: 10px;
-  max-height: calc(100vh - 48px);
+  gap: var(--space-3);
+  max-height: calc(100vh - (2 * var(--space-5)));
   overflow: auto;
 }
 
@@ -964,8 +1550,8 @@
 
 .tileset-review-overlay-cell {
   align-items: center;
-  border: 1px solid rgba(15, 23, 42, 0.18);
-  color: #111827;
+  border: 1px solid var(--pixel-grid);
+  color: var(--bg-base);
   display: flex;
   font-size: 10px;
   font-weight: 700;
@@ -974,30 +1560,30 @@
 }
 
 .tileset-review-overlay-cell.mark-o {
-  background: rgba(46, 204, 113, 0.25);
+  background: var(--success-muted);
 }
 
 .tileset-review-overlay-cell.mark-x {
-  background: rgba(231, 76, 60, 0.25);
+  background: var(--danger-muted);
 }
 
 .tileset-review-overlay-cell.mark-star {
-  background: rgba(52, 152, 219, 0.25);
+  background: var(--accent-muted);
 }
 
 .tileset-review-overlay-cell.has-group {
-  outline: 2px solid rgba(126, 87, 194, 0.75);
+  outline: 2px solid var(--accent-border);
   outline-offset: -2px;
 }
 
 .tileset-review-queue-card {
   align-items: center;
-  border: 1px solid var(--border-subtle, #cfd6e3);
-  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
   display: grid;
-  gap: 10px;
+  gap: var(--space-3);
   grid-template-columns: auto minmax(0, 1fr) auto;
-  padding: 8px;
+  padding: var(--space-2);
 }
 
 .tileset-review-queue-card.empty {

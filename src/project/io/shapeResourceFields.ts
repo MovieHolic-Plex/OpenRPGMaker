@@ -2,6 +2,7 @@ import { isPaletteSlotRole } from "../tilesetPalette";
 import { TERM_KEYS } from "../terms";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString, resourceKinds } from "./guards";
 import { validateAssetRef } from "./shapeReferenceFields";
+import { validateTileGroupKnowledgeFields } from "./validateTilesetKnowledgeFields";
 
 export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
@@ -198,6 +199,7 @@ export function validateTileset(id: string, value: unknown): void {
             "horizontal_expandable",
             "nine_slice_expandable",
             "overlay_detail",
+            "repeatable_block",
             "single",
             "source_rect",
             "vertical_expandable",
@@ -210,6 +212,8 @@ export function validateTileset(id: string, value: unknown): void {
         }
         if (grammar.minWidth !== undefined) requireNumber(`tileset ${id}.tileGroups[${index}].patternGrammar.minWidth`, grammar.minWidth);
         if (grammar.minHeight !== undefined) requireNumber(`tileset ${id}.tileGroups[${index}].patternGrammar.minHeight`, grammar.minHeight);
+        if (grammar.blockWidth !== undefined) requireNumber(`tileset ${id}.tileGroups[${index}].patternGrammar.blockWidth`, grammar.blockWidth);
+        if (grammar.blockHeight !== undefined) requireNumber(`tileset ${id}.tileGroups[${index}].patternGrammar.blockHeight`, grammar.blockHeight);
         const repeat = requireString(`tileset ${id}.tileGroups[${index}].patternGrammar.repeat`, grammar.repeat);
         assert(repeat === "body" || repeat === "center" || repeat === "source_order", `tileset ${id}: tileGroups[${index}] patternGrammar.repeat invalid`);
         assert(typeof grammar.preserveCaps === "boolean", `tileset ${id}: tileGroups[${index}] patternGrammar.preserveCaps invalid`);
@@ -225,6 +229,7 @@ export function validateTileset(id: string, value: unknown): void {
         const tileNumber = requireNumber(`tileset ${id}.tileGroups[${index}].tileIds[]`, tileId);
         assert(tileNumber >= 0 && tileNumber < count, `tileset ${id}: tileGroups[${index}] tileId out of range`);
       }
+      validateTileGroupKnowledgeFields(`tileset ${id}.tileGroups[${index}]`, record, count);
     }
   }
   if (tileset.palettePresets !== undefined) {

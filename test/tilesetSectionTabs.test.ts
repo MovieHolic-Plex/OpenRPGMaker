@@ -51,9 +51,15 @@ describe("타일 레이어 수동 지정(setTileLayerOverride)", () => {
 
   it("자동으로 되돌리면 하네스 판정(투명 칩=상위)으로 복귀한다", () => {
     const tileset = defaultTileset();
+    if (!tileset.tileMeta) throw new Error("missing tile metadata");
+    tileset.tileMeta[SLOPED_ROOF] = { label: "", description: "", source: "unknown" };
     setTileLayerOverride(tileset, SLOPED_ROOF, "lower");
     setTileLayerOverride(tileset, SLOPED_ROOF, "auto");
     expect(userTileLayerOverride(tileset, SLOPED_ROOF)).toBeNull();
+    expect(tileset.tileMeta?.[SLOPED_ROOF]?.source).not.toBe("user");
+    expect(tileset.tileMeta?.[SLOPED_ROOF]?.locked).toBeUndefined();
+    expect(tileset.tileMeta?.[SLOPED_ROOF]?.origin).toBeUndefined();
+    expect(tileset.tileMeta?.[SLOPED_ROOF]?.userLocked).toBeUndefined();
     expect(tileset.priority[SLOPED_ROOF]).toBe("upper");
     expect(tileLayerHome(tileset, SLOPED_ROOF)).toBe("upper");
   });

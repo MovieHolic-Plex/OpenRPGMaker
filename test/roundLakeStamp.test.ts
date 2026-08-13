@@ -1,6 +1,6 @@
 ﻿import { describe, it, expect, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { TILE } from "@/project/defaults/constants";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "@/project/supabaseProjectSync";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
@@ -55,7 +55,7 @@ describe("round lake stamp", () => {
     expect(mapId).toBeTruthy();
     const map = project.maps[mapId];
     const tileset = project.tilesets[map.tilesetId];
-    if (tileset) ensureBuildPalettePresets(tileset);
+    if (tileset) ensureBuildPaletteTileGroups(tileset);
 
     const cx = Math.floor(map.width / 2);
     const cy = Math.floor(map.height / 2);
@@ -64,7 +64,7 @@ describe("round lake stamp", () => {
       (c) => c.x >= 1 && c.y >= 1 && c.x < map.width - 1 && c.y < map.height - 1,
     );
 
-    const waterGroupId = BUILD_PALETTE_PRESETS.water;
+    const waterGroupId = BUILD_PALETTE_GROUP_IDS.water;
     const group = tileset?.tileGroups?.find((g) => g.id === waterGroupId);
     const waterTile =
       group?.patternGrammar?.parts.find((p) => p.role === "center")?.tileIds[0] ??

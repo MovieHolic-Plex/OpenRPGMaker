@@ -1,6 +1,6 @@
 ﻿import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { TILE } from "@/project/defaults/constants";
 import { loadProjectFromSupabase, saveProjectToSupabase } from "@/project/supabaseProjectSync";
 import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
@@ -54,7 +54,7 @@ async function main() {
   if (!mapId || !project.maps[mapId]) throw new Error("no map");
   const map = project.maps[mapId];
   const tileset = project.tilesets[map.tilesetId];
-  if (tileset) ensureBuildPalettePresets(tileset);
+  if (tileset) ensureBuildPaletteTileGroups(tileset);
 
   // center of map, radius ~6 for a nice round lake
   const cx = Math.floor(map.width / 2);
@@ -75,7 +75,7 @@ async function main() {
   }
 
   const ctx = { project };
-  const waterGroup = BUILD_PALETTE_PRESETS.water;
+  const waterGroup = BUILD_PALETTE_GROUP_IDS.water;
   // Prefer fill_region only does rect - so paint_tiles cells with WATER body, autotile reshape
   // Also try paint with group center tile
   const group = tileset?.tileGroups?.find((g) => g.id === waterGroup);

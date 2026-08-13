@@ -12,7 +12,7 @@ import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon"
 import { INTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsInterior";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX, DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness";
-import { tileMetaLocked } from "@/project/tilesetPalette";
+import { confirmUserTileMetadata, tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import { isBlockedPassage } from "@/project/tilesetPassage";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
 import type { GameMap, Project, TileAiMetadata, TileGroupLayer, TileGroupMetadata, TileGroupRole, TilesetDef } from "@/project/types";
@@ -188,7 +188,7 @@ export function knownTileLabel(tileset: TilesetDef, tile: number): string | unde
   const meta = tileset.tileMeta?.[tile];
   const metaLabel = meta?.label.trim();
   // 사용자 수기 라벨만 큐레이션을 이긴다 — 하네스 시드 라벨은 큐레이션과 같거나(실내) 그룹 조립 라벨이다.
-  if (metaLabel && (meta?.source === "user" || meta?.origin === "user")) return metaLabel;
+  if (metaLabel && tileMetaOrigin(meta) === "user") return metaLabel;
   return bundledTileLabels(tileset).get(tile) ?? (metaLabel || undefined);
 }
 
@@ -218,7 +218,7 @@ const getTileInfo: ToolDefinition = {
         description: usage.description,
         tags: [...usage.tags, ...(meta?.tags ?? [])],
         source: meta?.source ?? "unknown",
-        userLocked: meta?.userLocked === true,
+        userLocked: tileMetaLocked(meta),
         passable: !isBlockedPassage(tileset.passability[tile]),
         layer: tileset.priority[tile] === "upper" ? "upper" : "lower",
         terrainTag: tileset.terrain[tile] ?? 0,
@@ -316,12 +316,11 @@ const setTileMetadata: ToolDefinition = {
       if (typeof entry.description === "string") meta.description = entry.description;
       if (typeof entry.role === "string") meta.role = entry.role;
       if (Array.isArray(entry.tags)) meta.tags = entry.tags.filter((tag): tag is string => typeof tag === "string");
-      meta.source = confirmed ? "user" : "ai";
-      meta.origin = confirmed ? "user" : "ai";
       if (confirmed) {
-        meta.confidence = 1;
-        meta.locked = true;
-        meta.userLocked = true;
+        tileset.tileMeta![tile] = confirmUserTileMetadata(meta);
+      } else {
+        meta.source = "ai";
+        meta.origin = "ai";
       }
       written.push(tile);
     }

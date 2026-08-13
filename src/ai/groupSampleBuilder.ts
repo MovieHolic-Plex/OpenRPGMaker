@@ -23,6 +23,7 @@ type GroupSampleJunctionRule = MetadataJunctionRule & StructureJunctionRule;
 type GroupSampleOverlayRule = MetadataOverlayRule & StructureOverlayRule;
 
 export type GroupSampleInput = {
+  readonly cellLayers?: readonly Layer[] | null;
   readonly junctions?: readonly GroupSampleJunctionRule[] | null;
   readonly overlays?: readonly GroupSampleOverlayRule[] | null;
   readonly role: TileGroupRole;
@@ -49,6 +50,7 @@ export function buildGroupSample(tileset: TilesetDef, input: GroupSampleInput): 
 
 function buildBaseGroupSample(tileset: TilesetDef, input: GroupSampleInput): GroupSample {
   const grammar = input.patternGrammar;
+  if (grammar?.kind === "repeatable_block") return repeatableBlockSample(tileset, input);
   if (grammar?.kind === "nine_slice_expandable" || input.role === "wall") return nineSliceSample(tileset, input);
   if (grammar?.kind === "vertical_expandable") return verticalSample(tileset, input);
   if (grammar?.kind === "horizontal_expandable") return horizontalSample(tileset, input);
@@ -57,6 +59,24 @@ function buildBaseGroupSample(tileset: TilesetDef, input: GroupSampleInput): Gro
   if (!grammar && input.role === "prop" && input.tileIds.length === 2) return verticalSample(tileset, input);
   if (input.role === "roof") return roofSample(tileset, input);
   return fallbackSample(tileset, input);
+}
+
+function repeatableBlockSample(tileset: TilesetDef, input: GroupSampleInput): GroupSample {
+  const grammar = input.patternGrammar;
+  const width = Math.min(MAX_SAMPLE_SIZE, grammar?.blockWidth ?? 1);
+  const height = Math.min(MAX_SAMPLE_SIZE, grammar?.blockHeight ?? 1);
+  const sample = emptySample(width, height);
+  const tiles = repeatTiles(tileset, grammar, input.tileIds);
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = y * width + x;
+      const tile = tiles[index] ?? EMPTY_TILE;
+      const layer = input.cellLayers?.length === width * height ? input.cellLayers[index] : undefined;
+      if (layer) placeOnLayer(sample, x, y, tile, layer);
+      else place(sample, tileset, input.role, x, y, tile);
+    }
+  }
+  return sample;
 }
 
 function nineSliceSample(tileset: TilesetDef, input: GroupSampleInput): GroupSample {
@@ -137,6 +157,13 @@ function place(sample: GroupSample, tileset: TilesetDef, role: TileGroupRole, x:
   const index = y * sample.w + x;
   if (tile === EMPTY_TILE) return;
   if (targetLayer(tileset, role, tile) === "upper") sample.upper[index] = tile;
+  else sample.lower[index] = tile;
+}
+
+function placeOnLayer(sample: GroupSample, x: number, y: number, tile: number, layer: Layer): void {
+  const index = y * sample.w + x;
+  if (tile === EMPTY_TILE) return;
+  if (layer === "upper") sample.upper[index] = tile;
   else sample.lower[index] = tile;
 }
 

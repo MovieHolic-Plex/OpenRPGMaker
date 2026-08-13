@@ -14,7 +14,7 @@ import {
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   applyBuildPalettePrimitive,
-  ensureBuildPalettePresets,
+  ensureBuildPaletteTileGroups,
   type BuildPaletteApplyOptions,
   type BuildPalettePrimitive,
   type BuildPaletteResult,
@@ -166,7 +166,7 @@ export function installEditorToolHook(): void {
     const draft = structuredClone(current);
     // 키트 벽 세트가 문/창 배치의 "승인된 벽 어휘" 검사를 통과하도록 프리셋/승인 상태를 보장.
     const tileset = draft.tilesets[draft.maps[mapId].tilesetId];
-    if (tileset) ensureBuildPalettePresets(tileset);
+    if (tileset) ensureBuildPaletteTileGroups(tileset);
     const result = stampRectHouseKit(draft.maps[mapId], plan);
     if (!result.ok) return result;
     const commit = commitChangeset(draft, current);
@@ -184,7 +184,7 @@ export function installEditorToolHook(): void {
     if (!current.maps[mapId]) return { ok: false, reason: `맵을 찾을 수 없습니다: ${mapId}` };
     const draft = structuredClone(current);
     const tileset = draft.tilesets[draft.maps[mapId].tilesetId];
-    if (tileset) ensureBuildPalettePresets(tileset);
+    if (tileset) ensureBuildPaletteTileGroups(tileset);
     const result = stampFootprintHouseKit(draft.maps[mapId], plan);
     if (!result.ok) return result;
     const commit = commitChangeset(draft, current);

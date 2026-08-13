@@ -37,12 +37,15 @@ describe("set_tile_metadata", () => {
     expect(meta?.userLocked).not.toBe(true);
   });
 
-  it("confirmedByUser=true면 source=user + userLocked로 잠긴다", () => {
+  it("confirmedByUser=true sets canonical and compatibility confirmation fields", () => {
     const context = ctx();
     runTool(context, "set_tile_metadata", { entries: [{ tile: WINDOW_TILE, label: "창문" }], confirmedByUser: true });
     const meta = context.project.tilesets[DEFAULT_TILESET_ID].tileMeta?.[WINDOW_TILE];
     expect(meta?.source).toBe("user");
     expect(meta?.userLocked).toBe(true);
+    expect(meta?.origin).toBe("user");
+    expect(meta?.locked).toBe(true);
+    expect(meta?.confidence).toBe(1);
   });
 
   it("잠긴 타일은 confirmedByUser 없이는 덮어쓰지 못한다(건너뜀 경고)", () => {
@@ -80,6 +83,19 @@ describe("set_tile_metadata", () => {
 });
 
 describe("get_tile_info", () => {
+  it("reports modern-only locks through the compatibility response field", () => {
+    const context = ctx();
+    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    const current = tileset.tileMeta?.[WINDOW_TILE] ?? { label: "", description: "" };
+    if (!tileset.tileMeta) throw new Error("missing tile metadata");
+    tileset.tileMeta[WINDOW_TILE] = { ...current, locked: true };
+
+    const result = runTool(context, "get_tile_info", { tileIds: [WINDOW_TILE] });
+    const data = result.data as { tiles: Array<{ userLocked: boolean }> };
+
+    expect(data.tiles[0]?.userLocked).toBe(true);
+  });
+
   it("기록된 라벨/태그/통행성/레이어/그룹 규칙을 돌려준다", () => {
     const context = ctx();
     runTool(context, "set_tile_metadata", { entries: [{ tile: WINDOW_TILE, label: "창문", tags: ["집"] }], confirmedByUser: true });

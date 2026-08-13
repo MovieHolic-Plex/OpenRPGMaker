@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { loadProjectFromSupabase } from "../src/project/supabaseProjectSync.ts";
-import { BUILD_PALETTE_PRESETS } from "../src/editor/panels/buildPaletteCore.ts";
+import { BUILD_PALETTE_GROUP_IDS } from "../src/editor/panels/buildPaletteCore.ts";
 
 function loadEnv(): Record<string, string> {
   const env: Record<string, string> = {};
@@ -40,8 +40,8 @@ function label(id: number) {
 const targets = [cell(21, 37), cell(21, 38)];
 console.log(JSON.stringify({
   map: { id: map.id, size: `${map.width}x${map.height}` },
-  paletteTree: BUILD_PALETTE_PRESETS.tree,
-  paletteProp: BUILD_PALETTE_PRESETS.prop,
+  paletteTree: BUILD_PALETTE_GROUP_IDS.tree,
+  paletteProp: BUILD_PALETTE_GROUP_IDS.prop,
   targets: targets.map((c) => ({
     ...c,
     lowerMeta: label(c.lower),

@@ -46,7 +46,7 @@ export interface BuildPaletteApplyOptions {
   readonly windows?: HouseKitWindowsOption | boolean;
 }
 
-type PresetRole = "wall" | "door" | "window" | "roof" | "path" | "water" | "tree" | "prop";
+type BuildPaletteGroupRole = "wall" | "door" | "window" | "roof" | "path" | "water" | "tree" | "prop";
 
 const P = COMBINED_TOWN_HARNESS_PREFIX;
 
@@ -55,7 +55,7 @@ const LINT_FAILURE_MESSAGES: Record<string, string> = {
   "transfer-impassable": "문 앞이 통행 불가 타일입니다. 문 앞이 트인 곳에 짓거나 앞의 장애물을 지워주세요.",
 };
 
-export const BUILD_PALETTE_PRESETS: Record<PresetRole, string> = {
+export const BUILD_PALETTE_GROUP_IDS: Record<BuildPaletteGroupRole, string> = {
   wall: `${P}plaster-wall-9slice`,
   door: `${P}doors`,
   window: `${P}windows`,
@@ -82,14 +82,14 @@ export const HOUSE_KIT_CARDS: readonly BuildHouseKitCard[] = [
 export const DEFAULT_HOUSE_SHAPE_ID: BuildHouseShapeId = "rect";
 export const DEFAULT_HOUSE_KIT_ID: HouseKitId = "blue-stone";
 
-interface PresetClaim {
+interface BuildPaletteGroupClaim {
   readonly name: string;
   readonly role: TileGroupRole;
   readonly layerHome: "lower" | "upper" | "perCell";
   readonly patternKind?: NonNullable<NonNullable<TileGroupMetadata["patternGrammar"]>["kind"]>;
 }
 
-const PRESET_CLAIMS: Record<PresetRole, PresetClaim> = {
+const BUILD_PALETTE_GROUP_CLAIMS: Record<BuildPaletteGroupRole, BuildPaletteGroupClaim> = {
   wall: { name: "흰 집 벽", role: "wall", layerHome: "lower", patternKind: "nine_slice_expandable" },
   door: { name: "문", role: "prop", layerHome: "lower", patternKind: "vertical_expandable" },
   window: { name: "창문", role: "prop", layerHome: "upper" },
@@ -125,7 +125,7 @@ export function applyBuildPalettePrimitiveToProject(
   const houseKit = resolveHouseKitId(options.houseKitId);
   const validationFailure = validateBuildPalettePrimitive(rect, primitive, houseShape);
   if (validationFailure) return { ok: false, summary: validationFailure, toolResults: [], project };
-  ensureBuildPalettePresets(tileset);
+  ensureBuildPaletteTileGroups(tileset);
 
   const ctx: ToolContext = { project };
   const toolResults: ToolResult[] = [];
@@ -152,11 +152,11 @@ export function applyBuildPalettePrimitiveToProject(
   return { ok: ok && !failed, summary, toolResults, project: ctx.project };
 }
 
-export function ensureBuildPalettePresets(tileset: TilesetDef): void {
-  for (const role of Object.keys(BUILD_PALETTE_PRESETS) as PresetRole[]) {
-    const group = tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS[role]);
+export function ensureBuildPaletteTileGroups(tileset: TilesetDef): void {
+  for (const role of Object.keys(BUILD_PALETTE_GROUP_IDS) as BuildPaletteGroupRole[]) {
+    const group = tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_GROUP_IDS[role]);
     if (!group) continue;
-    const claim = PRESET_CLAIMS[role];
+    const claim = BUILD_PALETTE_GROUP_CLAIMS[role];
     group.name = claim.name;
     group.role = claim.role;
     group.layerHome = claim.layerHome;
@@ -359,7 +359,7 @@ function stampPath(rect: BuildPaletteSelection, run: (name: string, args: Record
 function fillRoleTile(project: Project, rect: BuildPaletteSelection, role: "water"): boolean {
   const map = project.maps[rect.mapId];
   const tileset = project.tilesets[map.tilesetId];
-  const group = tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS[role]);
+  const group = tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_GROUP_IDS[role]);
   const tile = group?.patternGrammar?.parts.find((part) => part.role === "center")?.tileIds[0] ?? group?.tileIds[0] ?? TILE.WATER;
   forEachCell(rect, (x, y) => { map.lowerTiles[y * map.width + x] = tile; });
   return true;

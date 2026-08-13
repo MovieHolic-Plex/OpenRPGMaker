@@ -23,6 +23,7 @@ import { markUserTileRuntimeMetadata, setTileLayerOverride, userTileLayerOverrid
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { isTransparentChipsetTile } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
+import { confirmUserTileMetadata } from "@/project/tilesetPalette";
 import { isCombinedTownTileset } from "@/project/tilesetHarness";
 import { summarizeTileUsage } from "@/project/tilesetSemanticChecker";
 import { blockedFlag, isBlockedPassage, passableFlag } from "@/project/tilesetPassage";
@@ -35,7 +36,7 @@ let editMode: TilesetEditMode = "passage";
 export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   clampSelectedTile(tileset);
   return el("div", {
-    class: "tileset-db-edit-area",
+    class: `tileset-db-edit-area${editMode === "group" ? " knowledge-mode" : ""}`,
     children: [
       renderEditSidebar(tileset, rerender),
       renderChipsetPreviewPanel({
@@ -60,6 +61,12 @@ export function renderTilesetMetadataEditor(tileset: TilesetDef, rerender: () =>
 function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
   const toolbox = renderToolBox(rerender);
+  if (editMode === "group") {
+    return el("div", {
+      class: "tileset-db-edit-sidebar tileset-knowledge-sidebar",
+      children: [renderTileGroupPanel(tileset, rerender)],
+    });
+  }
   return el("div", {
     class: "tileset-db-edit-sidebar",
     children: [
@@ -67,7 +74,6 @@ function renderEditSidebar(tileset: TilesetDef, rerender: () => void): HTMLEleme
       ...(tab === "knowledge" ? [renderUnlabeledQueuePanel(tileset, rerender)] : []),
       renderSelectedTilePanel(tileset, rerender),
       ...(editMode === "ai" ? [renderAiQuestionPanel(tileset, rerender, selectFirstAppliedTile)] : []),
-      ...(editMode === "group" ? [renderTileGroupPanel(tileset, rerender)] : []),
       ...(tab === "compose" ? [renderAutotileEditorPanel(tileset, rerender)] : []),
     ],
   });
@@ -393,10 +399,8 @@ function updateMetadata(tilesetId: string, patch: Partial<TileAiMetadata>): void
     const target = project.tilesets[tilesetId];
     if (!target) return;
     const tileMeta = ensureTileMeta(target, selectedTile);
-    if (patch.label !== undefined) tileMeta.label = patch.label;
-    if (patch.description !== undefined) tileMeta.description = patch.description;
-    tileMeta.source = "user";
-    nextMeta = { ...tileMeta };
+    nextMeta = confirmUserTileMetadata(tileMeta, patch);
+    target.tileMeta![selectedTile] = nextMeta;
   });
   if (nextMeta) syncSelectedTileBadge(nextMeta);
 }

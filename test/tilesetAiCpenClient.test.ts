@@ -1,10 +1,20 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { normalizeCpenResponseText, requestCpenTilesetMapping } from "@/editor/panels/tilesetAiCpenClient";
+import {
+  hasCpenTilesetApiKey,
+  normalizeCpenResponseText,
+  requestCpenTilesetMapping,
+} from "@/editor/panels/tilesetAiCpenClient";
 
 const LOCAL_STORAGE_KEY = "rpg-zzu.llmApiKey";
 
 describe("requestCpenTilesetMapping", () => {
+  beforeEach(() => {
+    const windowStub = testWindow();
+    vi.stubGlobal("window", windowStub);
+    vi.stubGlobal("localStorage", windowStub.localStorage);
+  });
+
   afterEach(() => {
     vi.unstubAllEnvs();
     vi.unstubAllGlobals();
@@ -37,6 +47,51 @@ describe("requestCpenTilesetMapping", () => {
     expect(body.messages?.[1]?.content).toBe("타일셋을 분석해줘");
     expect(body.routing?.max_input_per_1m).toBe(0.1);
     expect(body.max_tokens).toBe(8192);
+  });
+
+  it("Given a tileset image When requesting a mapping Then it sends a multimodal image part", async () => {
+    // Given
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
+      new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("VITE_YUNWU_API_KEY", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    vi.stubEnv("VITE_LLM_API_URL", "https://example.invalid/v1");
+    vi.stubGlobal("window", testWindow());
+    const imageDataUrl = "data:image/png;base64,dGlsZXNldA==";
+
+    // When
+    await requestCpenTilesetMapping({ imageDataUrl, prompt: "Analyze every tile" });
+
+    // Then
+    const [, init] = fetchMock.mock.calls[0] ?? [];
+    const body = parseBody(readStringBody(init));
+    expect(body.messages?.[1]?.content).toEqual([
+      { text: "Analyze every tile", type: "text" },
+      { image_url: { url: imageDataUrl }, type: "image_url" },
+    ]);
+  });
+
+  it("Given a relative AI proxy When analyzing without a browser key Then the proxy authenticates server-side", async () => {
+    // Given
+    const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
+      new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
+    );
+    const windowStub = proxyWindow();
+    vi.stubGlobal("window", windowStub);
+    vi.stubGlobal("localStorage", windowStub.localStorage);
+    vi.stubGlobal("fetch", fetchMock);
+
+    // When
+    const ready = hasCpenTilesetApiKey();
+    await requestCpenTilesetMapping({ imageDataUrl: "", prompt: "Analyze" });
+
+    // Then
+    expect(ready).toBe(true);
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+    expect(url).toBe("/fake-ai/chat/completions");
+    expect(readHeader(init, "Authorization")).toBeNull();
   });
 
   it("Given the LLM rejects the request When requesting a tileset mapping Then it reports the failure body", async () => {
@@ -82,7 +137,7 @@ type TestWindow = {
 type ParsedChatBody = {
   readonly max_tokens?: number;
   readonly messages?: readonly {
-    readonly content?: string;
+    readonly content?: string | readonly ParsedContentPart[];
     readonly role?: string;
   }[];
   readonly model?: string;
@@ -90,6 +145,10 @@ type ParsedChatBody = {
     readonly max_input_per_1m?: number;
   };
 };
+
+type ParsedContentPart =
+  | { readonly text: string; readonly type: "text" }
+  | { readonly image_url: { readonly url: string }; readonly type: "image_url" };
 
 function testWindow(): TestWindow {
   return {
@@ -125,7 +184,7 @@ function parseBody(bodyText: string): ParsedChatBody {
   if (!parsed || typeof parsed !== "object") return {};
   const result: {
     max_tokens?: number;
-    messages?: readonly { readonly content?: string }[];
+    messages?: readonly { readonly content?: string | readonly ParsedContentPart[] }[];
     model?: string;
     routing?: { max_input_per_1m?: number };
   } = {};
@@ -147,11 +206,49 @@ function readHeader(init: RequestInit | undefined, headerName: string): string |
   return typeof value === "string" ? value : null;
 }
 
-function readMessages(messages: readonly unknown[]): readonly { readonly content?: string }[] {
+function readMessages(messages: readonly unknown[]): readonly {
+  readonly content?: string | readonly ParsedContentPart[];
+  readonly role?: string;
+}[] {
   return messages.map((message) => {
-    if (!message || typeof message !== "object" || !("content" in message) || typeof message.content !== "string") {
-      return {};
-    }
-    return { content: message.content, ...("role" in message && typeof message.role === "string" ? { role: message.role } : {}) };
+    if (!message || typeof message !== "object" || !("content" in message)) return {};
+    const content = typeof message.content === "string" ? message.content : readContentParts(message.content);
+    return content === undefined
+      ? {}
+      : { content, ...("role" in message && typeof message.role === "string" ? { role: message.role } : {}) };
   });
+}
+
+function proxyWindow(): TestWindow {
+  return {
+    clearTimeout,
+    localStorage: {
+      getItem: (key: string) => key === "rpg-zzu:ai-config"
+        ? JSON.stringify({ authMode: "apiKey", baseUrl: "/fake-ai", model: "cpen/gpt-5-6-luna" })
+        : null,
+    },
+    setTimeout,
+  };
+}
+
+function readContentParts(value: unknown): readonly ParsedContentPart[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const parts = value.flatMap((part): readonly ParsedContentPart[] => {
+    if (!part || typeof part !== "object" || !("type" in part)) return [];
+    if (part.type === "text" && "text" in part && typeof part.text === "string") {
+      return [{ text: part.text, type: "text" }];
+    }
+    if (
+      part.type === "image_url"
+      && "image_url" in part
+      && part.image_url
+      && typeof part.image_url === "object"
+      && "url" in part.image_url
+      && typeof part.image_url.url === "string"
+    ) {
+      return [{ image_url: { url: part.image_url.url }, type: "image_url" }];
+    }
+    return [];
+  });
+  return parts.length === value.length ? parts : undefined;
 }

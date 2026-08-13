@@ -60,6 +60,14 @@ describe("tileset review wizard", () => {
     expect(buildTilesetReviewQueue(tileset).map((item) => item.tile)).toEqual([3]);
   });
 
+  it("legacy user provenance is excluded from the review queue", () => {
+    const tileset = testTileset();
+    setMeta(tileset, 1, { source: "user" });
+    setMeta(tileset, 2, { source: "ai" });
+
+    expect(buildTilesetReviewQueue(tileset).map((item) => item.tile)).toEqual([2]);
+  });
+
   it("건너뛰기 상태 전이는 현재 타일을 skipped에 남긴다", () => {
     const tileset = testTileset();
     setMeta(tileset, 1, { confidence: 0.1 });
@@ -95,7 +103,7 @@ describe("tileset review wizard", () => {
     expect(findByTestId(root, "tileset-review-overlay-passage")).toBeTruthy();
     expect(findByTestId(root, "tileset-review-overlay-role")).toBeTruthy();
     expect(findByTestId(root, "tileset-review-overlay-group")).toBeTruthy();
-    expect(findByTestId(root, "tileset-review-approve-all")?.textContent).toContain("낮은 신뢰 1칸 포함 승인");
+    expect(findByTestId(root, "tileset-review-approve-all")?.textContent).toContain("나머지 모두 승인 (낮은 신뢰 1칸)");
   });
 
   it("맞음 버튼은 confidence를 1로 승격하고 origin은 유지한다", () => {
@@ -105,7 +113,13 @@ describe("tileset review wizard", () => {
 
     findByTestId(root, "tileset-review-confirm")?.click();
 
-    expect(testTileset().tileMeta?.[1]).toMatchObject({ confidence: 1, origin: "ai" });
+    expect(testTileset().tileMeta?.[1]).toMatchObject({
+      confidence: 1,
+      locked: true,
+      origin: "user",
+      source: "user",
+      userLocked: true,
+    });
   });
 
   it("건너뛰기 버튼은 다음 카드로 진행한다", () => {
@@ -163,11 +177,33 @@ describe("locked tile metadata guards", () => {
       label: "사람 수정",
       locked: true,
       origin: "user",
+      source: "user",
+      userLocked: true,
     });
   });
 });
 
 describe("tileset reaudit pipeline", () => {
+  it("keeps the existing 0.5 fallback for missing metadata", async () => {
+    const project = createBlankProject();
+    const seen: number[][] = [];
+    const client: TilesetVisionClient = {
+      classifyTiles: (request) => {
+        seen.push([...request.tileIds]);
+        return { tiles: [] };
+      },
+    };
+
+    const result = await reauditTileset(DEFAULT_TILESET_ID, client, {
+      confidenceThreshold: 0.5,
+      project,
+      tileIds: [1],
+    });
+
+    expect(seen).toEqual([]);
+    expect(result.requestedTileIds).toEqual([]);
+  });
+
   it("mock vision client 호출에서 locked 타일을 제외하고 보존 카운트를 반환한다", async () => {
     const project = createBlankProject();
     const tileset = project.tilesets[DEFAULT_TILESET_ID];
@@ -195,7 +231,14 @@ describe("tileset reaudit pipeline", () => {
 
     applyReviewConfirmation(tileset, 2, candidate);
 
-    expect(tileset.tileMeta?.[2]).toMatchObject({ confidence: 1, label: "후보 물", origin: "ai" });
+    expect(tileset.tileMeta?.[2]).toMatchObject({
+      confidence: 1,
+      label: "후보 물",
+      locked: true,
+      origin: "user",
+      source: "user",
+      userLocked: true,
+    });
   });
 });
 

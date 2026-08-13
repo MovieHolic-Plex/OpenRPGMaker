@@ -3,6 +3,8 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { createBlankProject, TILE } from "@/project/defaults";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import { compileTilesetKnowledge } from "@/project/tilesetKnowledge";
+import { blockedFlag } from "@/project/tilesetPassage";
 import type { GameMap } from "@/project/types";
 
 const CONIFER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
@@ -174,5 +176,46 @@ describe("hard cluster rule placement", () => {
     expect(scattered.upperTiles[at(scattered, 4, 3)]).toBe(263);
     expect(scattered.upperTiles[at(scattered, 3, 4)]).toBe(292);
     expect(scattered.upperTiles[at(scattered, 4, 4)]).toBe(293);
+  });
+
+  it("scatter_object가 9x9 물 아틀라스를 81칸 원자 풋프린트로 배치한다", () => {
+    // Given
+    const { ctx, map } = context();
+    const tileset = ctx.project.tilesets[map.tilesetId];
+    if (!tileset) throw new Error("missing tileset");
+    const tileIds = Array.from({ length: 9 }, (_, row) =>
+      Array.from({ length: 9 }, (_cell, column) => (row * tileset.tilesPerRow) + column),
+    ).flat();
+    const compiled = compileTilesetKnowledge({
+      groupId: "ai-water-atlas",
+      name: "AI 물 아틀라스",
+      passage: blockedFlag(),
+      template: "water-atlas-9x9",
+      tileCount: tileset.count,
+      tileIds,
+      tilesPerRow: tileset.tilesPerRow,
+    });
+    if (compiled.kind !== "valid") throw new Error("water atlas did not compile");
+    tileset.tileGroups = [...(tileset.tileGroups ?? []), compiled.value.group];
+
+    // When
+    const result = runTool(ctx, "scatter_object", {
+      area: { x: 2, y: 2, w: 9, h: 9 },
+      avoidProtected: false,
+      count: 1,
+      groupId: "ai-water-atlas",
+      mapId: map.id,
+      maxGap: 0,
+      minGap: 0,
+    });
+
+    // Then
+    expectOk(result);
+    const scattered = currentMap(ctx, map.id);
+    for (let row = 0; row < 9; row += 1) {
+      for (let column = 0; column < 9; column += 1) {
+        expect(scattered.lowerTiles[at(scattered, 2 + column, 2 + row)]).toBe(tileIds[(row * 9) + column]);
+      }
+    }
   });
 });

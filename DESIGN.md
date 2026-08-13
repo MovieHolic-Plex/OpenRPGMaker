@@ -300,9 +300,21 @@ All spacing derives from 4px.
 - **Event editor resizing**: users can resize both the modal window and the settings/command split. The vertical separator between settings and command contents adjusts the left settings column; the bottom-right grip adjusts the whole event editor window. Keep both handles visible and keyboard-focusable, and keep resize behavior bounded to the viewport.
 - **Event move-route dialog**: custom autonomous movement opens a separate `Move Route` subdialog, styled as a desktop RM-era work window. Keep its command list, options, frequency radios, and three-column command grid fixed for desktop scanning; unsupported movement commands should render disabled rather than pretending to save runtime behavior.
 
+### First run and online save
+
+- The first required screen speaks in user concepts: **작업**, **온라인 저장**, **작업 선택**. Do not expose `DB`, `Supabase`, `Anon key`, `Project ID`, or `.env` in the default path.
+- `작업 열기` is a card-first picker. Each card shows the work title, preview, map/tileset counts, and last-saved time; selecting a card immediately opens it. Connection credentials stay inside a closed `연결 문제 해결` disclosure.
+- The required first-run picker cannot be dismissed until a work opens. Loading, empty, offline, and error states use recovery copy that tells the user what to do next without dumping provider errors.
+- The status bar says `온라인 저장`; help, save, reload, and recovery copy use the same vocabulary. Provider names and raw credentials are reserved for internal implementation and the advanced troubleshooting disclosure.
+- At compact widths the picker becomes a single-column scroll surface with full-width actions. Technical fields remain keyboard reachable only after the disclosure is opened.
+
 ### Database panels
 
 - Utilitarian split views: list on the left, form/details on the right (`db-detail-form`).
+- **Human-owned tileset knowledge**: Database > Tilesets keeps the selection/template/passage/layer/group editor visible as the default Knowledge surface. AI never replaces or collapses this manual editor. A bottom `AI 타일셋` action opens a separate workspace and leaves the normal editor dimmed underneath.
+- **Conversational AI tileset workspace**: the modal occupies `min(94vw, 1440px)` by `min(88vh, 900px)` and uses a `58 / 42` atlas-to-conversation split. The atlas shows confirmed, questioned, and unclassified regions with thin semantic outlines; the active question and its region share the warning color and question index. The conversation pane contains prior AI/user turns, one current AI question, quick replies, a freeform answer composer, and a next-question preview.
+- **Draft/apply boundary**: whole-atlas analysis, AI questions, user answers, and staged confirmations remain detached from project data. An answer may confirm the current inferred group inside the workspace, but only `확정된 N개 적용` records one project snapshot and persists those groups. Human-authored groups and locked metadata remain protected, and stale analysis must be rerun.
+- **Workspace states and accessibility**: `idle`, `analyzing`, `ready`, `partial`, `offline`, `error`, `stale`, `saving`, and `saved` remain visible text states. The modal uses `role=dialog`, `aria-modal=true`, a labelled title, visible focus, Escape close, polite status updates, and `aria-busy` during analysis/apply. Below compact widths the split stacks without hiding either the atlas or conversation.
 - Switches and variables display stable IDs plus editable names; names are labels, IDs are references.
 - Tileset editing shows passability/priority/terrain and a source-image preview without altering original pixels.
 - State and Animation tabs show reference panels / pixel previews rather than bare stubs.
@@ -342,6 +354,7 @@ All spacing derives from 4px.
 | Canvas feedback | `0–80ms` | `linear` | Tile hover, placement preview |
 
 - Pixel surfaces prioritize immediate response; avoid animated zooms that blur intermediate frames.
+- Tileset AI analysis uses a stateful action transition (`idle → analyzing → ready|partial|error|offline`) with text and opacity feedback only; reduced motion removes the pulse. Each user answer moves the conversational workspace to the next uncertain region only after the refreshed proposal is available. Manual tile range selection remains immediate in the underlying human editor and is unaffected by opening or closing the AI workspace.
 - Animate only `transform`, `opacity`, `filter` — not layout properties.
 - Every interactive element needs hover/active/disabled/focus-visible states.
 - Respect `prefers-reduced-motion`.

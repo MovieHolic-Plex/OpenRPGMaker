@@ -30,6 +30,7 @@ export const RM_TYPE_GRAMMAR_PROFILE: GrammarProfile = {
     "nine_slice_expandable", // 벽/지붕 몸체
     "vertical_expandable", // 기둥
     "horizontal_expandable", // 처마/울타리 행
+    "repeatable_block",
     "autotile_3x3", // 8-이웃 variantMap 길/수면
     "single", // 낱개 소품
   ],

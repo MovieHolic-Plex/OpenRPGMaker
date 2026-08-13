@@ -360,7 +360,7 @@ function handlePointerDown(model: ChipsetPreviewModel, tile: number, event: Even
   if (event instanceof PointerEvent && event.button !== 0) return;
   if (event instanceof MouseEvent && event.button !== 0) return;
   event.preventDefault();
-  if (model.mode === "group") startGroupDrag(tile, event);
+  if (model.mode === "group") startGroupDrag(tile, event, () => stableRerender(model.rerender));
   if (model.mode === "ai") startAiSelectionDrag(tile, event, () => stableRerender(model.rerender));
 }
 

@@ -1,4 +1,4 @@
-@media (min-width: 901px) {
+@media (min-width: 800px) {
   .database-modal-window {
     height: min(820px, calc(100vh - 24px));
   }

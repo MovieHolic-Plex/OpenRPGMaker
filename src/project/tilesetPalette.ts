@@ -55,6 +55,28 @@ export function tileMetaOrigin(meta: TileAiMetadata | undefined): "user" | "ai" 
   return undefined;
 }
 
+export function tileMetaConfidence(meta: TileAiMetadata | undefined): number | null {
+  if (!meta) return null;
+  const score = confidenceScore(meta.confidence);
+  if (score !== null) return score;
+  return tileMetaOrigin(meta) === "user" ? 1 : 0.5;
+}
+
+export function confirmUserTileMetadata(
+  meta: TileAiMetadata,
+  patch: Partial<TileAiMetadata> = {}
+): TileAiMetadata {
+  return {
+    ...meta,
+    ...patch,
+    confidence: 1,
+    locked: true,
+    origin: "user",
+    source: "user",
+    userLocked: true,
+  };
+}
+
 export function paletteTileChoices(
   tileset: TilesetDef,
   presetId: string,

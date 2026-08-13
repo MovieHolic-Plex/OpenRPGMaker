@@ -27,6 +27,23 @@ export async function renderTempMapImage(map: GameMap, tileset: TilesetDef): Pro
   return canvas.toDataURL("image/png");
 }
 
+export async function renderTilesetAtlasImage(tileset: TilesetDef): Promise<string> {
+  const height = Math.ceil(tileset.count / tileset.tilesPerRow);
+  const cellCount = height * tileset.tilesPerRow;
+  const map: GameMap = {
+    events: [],
+    height,
+    id: "ai-tileset-atlas",
+    lowerTiles: Array.from({ length: cellCount }, (_cell, index) => index < tileset.count ? index : -1),
+    name: "AI tileset atlas",
+    tileSize: tileset.tileSize,
+    tilesetId: tileset.id,
+    upperTiles: Array.from({ length: cellCount }, () => -1),
+    width: tileset.tilesPerRow,
+  };
+  return renderTempMapImage(map, tileset);
+}
+
 function drawStackLayer(
   context: CanvasRenderingContext2D,
   image: HTMLImageElement,

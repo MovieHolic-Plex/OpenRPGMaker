@@ -1,5 +1,5 @@
 /* Shared DB tab chrome: empty lists, list actions, intro banners, tab underline family. */
-@media (min-width: 901px) {
+@media (min-width: 800px) {
   /* Empty list panes still reserve a real list region (crops/characters gold gap). */
   .database-modal-body .rm2k3-record-list-pane .db-list {
     min-height: 220px;

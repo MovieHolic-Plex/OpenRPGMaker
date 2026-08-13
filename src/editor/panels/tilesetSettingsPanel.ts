@@ -51,11 +51,17 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
       },
     }),
   );
+  const listbox = el("div", { class: "tileset-db-listbox", children: rows });
+  revealSelectedTileset(listbox);
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(() => revealSelectedTileset(listbox));
+    observer.observe(listbox);
+  }
   return el("aside", {
     class: "tileset-db-list rm2k3-tileset-list-pane",
     children: [
       el("div", { class: "tileset-db-panel-title", text: "타일셋" }),
-      el("div", { class: "tileset-db-listbox", children: rows }),
+      listbox,
       el("button", {
         class: "database-footer-button rm2k3-maximum-button disabled",
         text: "최대 개수",
@@ -64,6 +70,12 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
       }),
     ],
   });
+}
+
+function revealSelectedTileset(listbox: HTMLElement): void {
+  const selected = listbox.querySelector(".tileset-db-list-row.active");
+  if (!(selected instanceof HTMLElement) || typeof selected.scrollIntoView !== "function") return;
+  selected.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 function selectTileset(tilesets: readonly TilesetDef[]): TilesetDef | undefined {

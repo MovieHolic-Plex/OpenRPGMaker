@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools/toolRunner";
-import { ensureBuildPalettePresets, BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS, ensureBuildPaletteTileGroups } from "@/editor/panels/buildPaletteCore";
 import { TILE } from "@/project/defaults/constants";
 import { saveProjectToSupabase } from "@/project/supabaseProjectSync";
 import { recordAiActivity } from "@/ai/activityLog";
@@ -60,7 +60,7 @@ describe("lake village two maps rebuild", () => {
     logs.push("create map_lake_village 50x50");
 
     const tilesetId = p(ctx).maps.map_lake_village.tilesetId;
-    ensureBuildPalettePresets(p(ctx).tilesets[tilesetId]);
+    ensureBuildPaletteTileGroups(p(ctx).tilesets[tilesetId]);
 
     // 마을 본체 (내부 맵 안 만듦 → 맵 2개 유지)
     runOk(ctx, "build_village", {
@@ -204,7 +204,7 @@ describe("lake village two maps rebuild", () => {
     const mapIds = Object.keys(project.maps);
     expect(mapIds.sort()).toEqual(["map_lake_village", "map_lakeside_park"].sort());
 
-    const waterId = BUILD_PALETTE_PRESETS.water;
+    const waterId = BUILD_PALETTE_GROUP_IDS.water;
     const countLakeish = (mapId: string): number => {
       const map = project.maps[mapId];
       const group = project.tilesets[map.tilesetId].tileGroups?.find((g) => g.id === waterId);

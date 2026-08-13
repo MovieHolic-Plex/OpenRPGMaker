@@ -3,6 +3,28 @@ import type { PassFlag, TilesetDef } from "./types";
 
 export type PassageMark = "o" | "x" | "star";
 
+export type DirectionalPassagePreset = "blocked" | "open" | "star";
+
+export interface DirectionalPassageRule {
+  readonly passability: PassFlag;
+  readonly priority: "lower" | "upper";
+}
+
+export function directionalPassageFromPreset(preset: DirectionalPassagePreset): DirectionalPassageRule {
+  switch (preset) {
+    case "blocked":
+      return { passability: blockedFlag(), priority: "lower" };
+    case "open":
+      return { passability: passableFlag(), priority: "lower" };
+    case "star":
+      return { passability: passableFlag(), priority: "upper" };
+  }
+}
+
+export function togglePassageDirection(passability: PassFlag, direction: keyof PassFlag): PassFlag {
+  return { ...passability, [direction]: !passability[direction] };
+}
+
 const PASSABLE: PassFlag = { up: true, down: true, left: true, right: true };
 const BLOCKED: PassFlag = { up: false, down: false, left: false, right: false };
 

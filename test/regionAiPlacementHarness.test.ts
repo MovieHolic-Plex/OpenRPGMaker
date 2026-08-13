@@ -5,7 +5,7 @@ import {
   formatApprovedPropVocabHint,
   REGION_PROP_VOCAB,
 } from "@/editor/regionTask/runRegionTask";
-import { BUILD_PALETTE_PRESETS } from "@/editor/panels/buildPaletteCore";
+import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
 import { toOpenAiTools } from "@/editor/tools";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains } from "@/editor/assistantToolMode";
 import { createBlankProject } from "@/project/defaults";
@@ -40,7 +40,7 @@ describe("region AI placement harness", () => {
     expect(tools).toContain("place_npc");
     expect(tools).toContain("build_house_kit");
     expect(msg).toMatch(/침엽수|나무/);
-    expect(msg).not.toContain(BUILD_PALETTE_PRESETS.tree);
+    expect(msg).not.toContain(BUILD_PALETTE_GROUP_IDS.tree);
   });
 
   it("ensureRegionPlacementHarness approves tree group so place_props succeeds", () => {
@@ -48,13 +48,13 @@ describe("region AI placement harness", () => {
     const tileset = context.project.tilesets[context.project.maps[MAP_ID].tilesetId];
     // 번들 트리 그룹은 source:"bundled-default"로 이미 시드 승인되어 있다(2026-07-11).
     // ensureRegionPlacementHarness는 이를 origin:"user"(영구 합의)로 승격한다.
-    expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_PRESETS.tree)).toBe(true);
-    expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS.tree)?.origin).not.toBe("user");
+    expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_GROUP_IDS.tree)).toBe(true);
+    expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_GROUP_IDS.tree)?.origin).not.toBe("user");
     ensureRegionPlacementHarness(tileset);
-    expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_PRESETS.tree)?.origin).toBe("user");
-    expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_PRESETS.tree)).toBe(true);
+    expect(tileset.tileGroups?.find((entry) => entry.id === BUILD_PALETTE_GROUP_IDS.tree)?.origin).toBe("user");
+    expect(approvedVocabulary(tileset).groups.some((group) => group.id === BUILD_PALETTE_GROUP_IDS.tree)).toBe(true);
     expect(formatApprovedPropVocabHint(tileset)).toMatch(/침엽수|나무/);
-    expect(formatApprovedPropVocabHint(tileset)).not.toContain(BUILD_PALETTE_PRESETS.tree);
+    expect(formatApprovedPropVocabHint(tileset)).not.toContain(BUILD_PALETTE_GROUP_IDS.tree);
     expect(formatApprovedPropVocabHint(tileset)).not.toContain("마을 소품");
 
     const props = runTool(context, "place_props", {
