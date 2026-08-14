@@ -1,0 +1,142 @@
+/* 자율 실행 런 표면(todo 6) — 활성 런 동안만 사는 체크리스트/예산/마일스톤 피드 영역.
+   기존 채팅 레이아웃은 건드리지 않고 mainColumn 상단에 얹는 전용 서피스다. */
+.ai-autonomous-run-surface {
+  background: var(--bg-raised, #1a1d27);
+  border: 1px solid var(--accent-border, #4c6ef5);
+  border-radius: 12px;
+  color: var(--text-1, #e8eaf0);
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  gap: 6px;
+  margin: 6px 8px 2px;
+  max-height: 40%;
+  overflow: auto;
+  padding: 8px 10px;
+}
+
+.ai-autonomous-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.ai-autonomous-chip {
+  background: var(--accent-muted, #2a3a6e);
+  border: 1px solid var(--accent-border, #4c6ef5);
+  border-radius: 999px;
+  color: var(--accent, #4c6ef5);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+}
+
+.ai-autonomous-budget {
+  color: var(--text-2, #b8bfcc);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.ai-autonomous-goal {
+  color: var(--text-1, #e8eaf0);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ai-autonomous-progress-row {
+  align-items: center;
+  color: var(--text-3, #8b93a5);
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+}
+
+.ai-autonomous-progress {
+  background: var(--bg-inset, #12151d);
+  border-radius: 999px;
+  color: var(--accent, #4c6ef5);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 0 8px;
+}
+
+.ai-autonomous-layer {
+  border-top: 1px solid var(--border-subtle, #262b38);
+  padding-top: 6px;
+}
+
+.ai-autonomous-layer-title {
+  color: var(--text-2, #b8bfcc);
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.ai-autonomous-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-autonomous-item {
+  align-items: center;
+  color: var(--text-2, #b8bfcc);
+  display: flex;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.ai-autonomous-item-mark {
+  color: var(--text-3, #8b93a5);
+  font-size: 10px;
+  text-align: center;
+  width: 14px;
+}
+
+.ai-autonomous-item.is-done {
+  color: var(--success, #58c472);
+  text-decoration: line-through;
+}
+
+.ai-autonomous-item.is-in_progress {
+  color: var(--text-1, #e8eaf0);
+  font-weight: 600;
+}
+
+.ai-autonomous-item.is-blocked {
+  color: var(--danger, #d85c5c);
+}
+
+.ai-autonomous-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-autonomous-feed-line {
+  align-items: center;
+  color: var(--text-2, #b8bfcc);
+  display: flex;
+  font-size: 11px;
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.ai-autonomous-feed-line.is-applied {
+  color: var(--success, #58c472);
+}
+
+.ai-autonomous-feed-line.is-paused {
+  color: var(--warning, #e0a83c);
+}
+
+.ai-autonomous-feed-mark {
+  font-size: 10px;
+  width: 14px;
+}

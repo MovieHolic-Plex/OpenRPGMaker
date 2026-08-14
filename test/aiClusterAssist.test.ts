@@ -42,6 +42,7 @@ const assistantMock = vi.hoisted(() => {
 
 vi.mock("@/ai/assistantSession", () => ({
   AssistantSession: assistantMock.MockAssistantSession,
+  AGENT_RUN_MAX_TOTAL_STEPS: 48,
   METADATA_ONLY_TOOLS: new Set(["set_tile_metadata", "set_tile_rules", "upsert_tile_group"]),
 }));
 

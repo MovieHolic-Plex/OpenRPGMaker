@@ -38,9 +38,11 @@ import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import {
   AssistantSession,
+  AGENT_RUN_MAX_TOTAL_STEPS,
   type SessionEvent,
   type TurnResult,
 } from "@/ai/assistantSession";
+import type { WorkPlan } from "@/ai/workPlan";
 import type { BuildSpec } from "@/ai/buildSpec";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import { renderToolImages } from "@/ai/toolImageRenderer";
@@ -88,7 +90,7 @@ import {
   savePanelSize,
   type AiFontSize,
 } from "./aiPanelLayout";
-import { formatAiRunningStatus } from "./aiChatRenderers";
+import { formatAiRunningStatus, parseAutonomousRunBudget, renderWorkPlanChecklist, type AutonomousRunBudget } from "./aiChatRenderers";
 import {
   appendSkillPromptToggle,
   createConversationLogHost,
@@ -156,10 +158,12 @@ export {
   formatToolActivityLine,
   hasVocabularyEdits,
   isDraftDestructiveTool,
+  parseAutonomousRunBudget,
   reasoningToggleText,
   renderToolActivityEntry,
   renderToolCallDetail,
   renderVocabularyCardList,
+  renderWorkPlanChecklist,
   vocabularyCardsData,
   type ToolDetailSource,
   type VocabularyCardEdit,
@@ -421,6 +425,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const restoreConversationRecord = (record: ConversationRecord, source: "auto" | "manual"): void => {
     dropSession(controller);
+    endAutonomousRun(); // 대화 전환 — 진행 중이던 자율 런 표면을 정리한다(스테일 상태 방지).
     controller.auditHistory = [...record.entries];
     conversationId = record.id;
     setPendingProposalMessage(null);
@@ -522,6 +527,74 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         next.explicitSkillId ? { explicitSkillId: next.explicitSkillId } : undefined,
       );
     }
+  };
+
+  // ── 자율 실행 런 표면(todo 6) ───────────────────────────────────────────
+  // 활성 자율 런 동안만 사는 라이브 영역: 작업 계획 체크리스트(emitWorkPlan) +
+  // 마일스톤 피드(milestone_applied/proposal_paused) + 예산(used/48, status 이벤트).
+  // 런이 끝나면 정리되고 다음 런이 시작되면 새로 그린다(스테일 상태 금지).
+  // 런 진행 중에는 패널 자동 접기(AUTO_COLLAPSE_AFTER_AI_MS)를 비활성화한다.
+  let autonomousRunState: { active: boolean; plan: WorkPlan | null; budget: AutonomousRunBudget } | null = null;
+  let autonomousRunSurface: HTMLElement | null = null;
+  let autonomousFeedHost: HTMLElement | null = null;
+  const clearAutonomousRunSurface = (): void => {
+    autonomousRunSurface?.remove();
+    autonomousRunSurface = null;
+    autonomousFeedHost = null;
+  };
+  const beginAutonomousRun = (): void => {
+    // 새 런: 이전 런의 계획/예산/피드를 전부 버리고 0부터 시작한다.
+    autonomousRunState = {
+      active: true,
+      plan: null,
+      budget: { used: 0, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: false },
+    };
+    clearAutonomousRunSurface();
+  };
+  const endAutonomousRun = (): void => {
+    autonomousRunState = null;
+    clearAutonomousRunSurface();
+  };
+  const ensureAutonomousRunSurface = (): HTMLElement => {
+    if (!autonomousRunSurface) {
+      autonomousFeedHost = el("div", { class: "ai-autonomous-feed", dataset: { testid: "ai-autonomous-feed" } });
+      autonomousRunSurface = el("div", {
+        class: "ai-autonomous-run-surface",
+        dataset: { testid: "ai-autonomous-run-surface" },
+      });
+      mainColumn.prepend(autonomousRunSurface);
+    }
+    return autonomousRunSurface;
+  };
+  // 계획 도착 시마다 체크리스트를 갱신한다(진행 요약/현재 레이어가 이벤트마다 재계산된다).
+  const refreshAutonomousRunSurface = (): void => {
+    if (!autonomousRunState || !autonomousRunState.plan) return;
+    ensureAutonomousRunSurface().replaceChildren(
+      renderWorkPlanChecklist(autonomousRunState.plan, {
+        active: autonomousRunState.active,
+        budget: autonomousRunState.budget,
+      }),
+      autonomousFeedHost!,
+    );
+  };
+  // 마일스톤 자동 적용/승인 대기 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
+  const appendMilestoneFeedLine = (kind: "applied" | "paused", title: string, detail: string): void => {
+    if (!autonomousRunState) return;
+    ensureAutonomousRunSurface();
+    refreshAutonomousRunSurface();
+    autonomousFeedHost!.append(
+      el("div", {
+        class: `ai-autonomous-feed-line is-${kind}`,
+        dataset: { testid: `ai-milestone-feed-${kind}` },
+        children: [
+          el("span", { class: "ai-autonomous-feed-mark", text: kind === "applied" ? "✓" : "⏸" }),
+          el("span", {
+            class: "ai-autonomous-feed-text",
+            text: `${kind === "applied" ? "마일스톤 적용" : "승인 대기"}: ${title}${detail ? ` — ${detail}` : ""}`,
+          }),
+        ],
+      })
+    );
   };
 
   let keyPromptBubble: HTMLElement | null = null;
@@ -642,11 +715,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준 — 위 autoApprove 판정과 같은 관례).
     // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
     const autonomous = loadAiConfig().agentMode === "auto";
+    // 자율 런 표면 시작: 새 런마다 이전 계획/예산/피드를 버리고 0부터 시작한다.
+    if (autonomous) beginAutonomousRun();
     await executeTurn(session, trimmed, (onEvent, signal) =>
       session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, {
         explicitSkillId: opts?.explicitSkillId,
         autonomous,
-      })
+      }),
+      { autonomous }
     );
   };
 
@@ -655,7 +731,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const executeTurn = async (
     session: AssistantSession,
     requestText: string,
-    exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>
+    exec: (onEvent: (event: SessionEvent) => void, signal: AbortSignal) => Promise<TurnResult>,
+    runOpts?: { readonly autonomous?: boolean }
   ): Promise<void> => {
     if (turnBusy) {
       toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
@@ -804,12 +881,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } else if (event.type === "status") {
         // 대부분은 상태줄만. 재시도·오류 등 행동 신호만 말풍선.
         setStatus(event.text);
+        // 자율 런 예산(used/48) 표시 갱신 — 드라이버의 계속/소진 status 이벤트에서 파싱.
+        const budget = parseAutonomousRunBudget(event.text);
+        if (budget && autonomousRunState) {
+          autonomousRunState.budget = budget;
+          refreshAutonomousRunSurface();
+        }
         if (shouldShowStatusInChat(event.text)) appendBubble("system", event.text);
       } else if (event.type === "work_plan") {
         const s = event.plan;
-        const items = s.layers.flatMap((l) => l.items);
+        const items = Array.isArray(s.layers)
+          ? s.layers.flatMap((layer) => (Array.isArray(layer.items) ? layer.items : []))
+          : [];
         const done = items.filter((i) => i.status === "done" || i.status === "skipped").length;
         setStatus(`작업 계획 ${done}/${items.length}`);
+        // 자율 런 라이브 체크리스트: emitWorkPlan 이벤트마다 항목 진행/현재 레이어를 갱신한다.
+        if (autonomousRunState) {
+          autonomousRunState.plan = s;
+          refreshAutonomousRunSurface();
+        }
+      } else if (event.type === "milestone_applied") {
+        appendMilestoneFeedLine("applied", event.title, `도구 ${event.toolCount}건${event.commitId ? ` · 커밋 ${event.commitId}` : ""}`);
+      } else if (event.type === "proposal_paused") {
+        appendMilestoneFeedLine("paused", event.reason, "");
       }
     };
 
@@ -932,6 +1026,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       sendButton.disabled = false;
       turnBusy = false;
       refreshAbortButton();
+      // 자율 런 종료(정상 완료·중단·승인 대기 포함): 런 표면을 정리하고 자동 접기를 재개한다.
+      // 다음 사용자 턴이 autonomous 로 시작되면 beginAutonomousRun 이 새 표면을 만든다.
+      if (runOpts?.autonomous) endAutonomousRun();
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (collapsed) panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation(); // 매 턴 끝에 대화 기록을 저장한다(대화 기록 뷰어에서 다시 볼 수 있다).
@@ -1784,6 +1881,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       click: () => {
         persistConversation();
         dropSession(controller);
+        endAutonomousRun(); // 새 대화 — 이전 자율 런의 계획/예산/피드를 버린다.
         controller.auditHistory = [];
         conversationId = genId("conv");
         setPendingProposalMessage(null);
@@ -2106,6 +2204,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     clearAutoCollapseTimer();
     // 상태 기계 불변식: busy/running/큐가 있으면 접기 금지
     if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
+    // 자율 런 활성 중에는 자동 접기 금지(런 종료 시 재개 — endAutonomousRun 이 먼저 실행된다).
+    if (autonomousRunState?.active) return;
     if (typeof window === "undefined" || typeof window.setTimeout !== "function") {
       collapseAfterAiWork = false;
       collapsed = true;
@@ -2496,6 +2596,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     activeSelectionRegionKey = null;
     turnBusy = false;
     pendingSends.length = 0;
+    endAutonomousRun(); // 진행 중이던 자율 런 표면 정리.
     endTurnProgress();
     clearAutoCollapseTimer();
     if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);

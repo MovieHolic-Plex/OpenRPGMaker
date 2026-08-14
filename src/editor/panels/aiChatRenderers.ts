@@ -1,4 +1,6 @@
 import { ruleToolRejectionText, type ProposedCall } from "@/ai/assistantSession";
+import { AGENT_RUN_MAX_TOTAL_STEPS } from "@/ai/assistantSession";
+import type { WorkItem, WorkLayer, WorkPlan } from "@/ai/workPlan";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import type { ToolResult } from "@/editor/tools";
 import { getGrammarProfile, type VocabularyProposalCard } from "@/editor/tools/v3";
@@ -56,6 +58,136 @@ export function formatToolActivityLine(name: string, result: ToolResult): string
 export function reasoningToggleText(count: number, collapsed: boolean): string {
   const label = count > 1 ? `💭 추론 ${count}회` : "💭 추론";
   return collapsed ? `${label} 보기 ▸` : `${label} ▾`;
+}
+
+// ── 자율 실행 런 표면(todo 6) ────────────────────────────────────────────────
+// 순수 렌더 헬퍼만 둔다(패널 배선은 aiChatPanel.ts). 세션 이벤트가 아닌 상태는
+// 여기서 파싱/렌더하고, 이벤트 구독·수명주기는 패널이 소유한다.
+
+export interface AutonomousRunBudget {
+  readonly used: number;
+  readonly total: number;
+  readonly exhausted?: boolean;
+}
+
+/**
+ * 드라이버(todo 2)의 status 이벤트에서 예산(used/48)을 파싱한다.
+ * "자율 실행 계속 (N/48)" → used=N, exhausted=false / "자율 실행 예산 소진 …" → used=total, exhausted=true.
+ * 무관한 텍스트는 null(패널은 표시를 갱신하지 않는다).
+ */
+export function parseAutonomousRunBudget(text: string): AutonomousRunBudget | null {
+  const match = /자율 실행 계속 \((\d+)\/(\d+)\)/u.exec(text);
+  if (match) {
+    const used = Number(match[1]);
+    const total = Number(match[2]);
+    if (Number.isFinite(used) && Number.isFinite(total)) return { used, total, exhausted: false };
+    return null;
+  }
+  if (/자율 실행 예산 소진/u.test(text)) {
+    return { used: AGENT_RUN_MAX_TOTAL_STEPS, total: AGENT_RUN_MAX_TOTAL_STEPS, exhausted: true };
+  }
+  return null;
+}
+
+const WORK_ITEM_MARKS: Record<WorkItem["status"], string> = {
+  pending: "○",
+  in_progress: "▶",
+  done: "✓",
+  skipped: "⊘",
+  blocked: "⛔",
+};
+
+/** 항목/레이어 배열을 방어적으로 읽는다 — 망가진(필드 누락) 페이로드도 안전하게 렌더. */
+function planLayers(plan: WorkPlan): WorkLayer[] {
+  return Array.isArray(plan.layers) ? plan.layers : [];
+}
+
+function layerItems(layer: WorkLayer): WorkItem[] {
+  return Array.isArray(layer.items) ? layer.items : [];
+}
+
+function isItemFinished(item: WorkItem): boolean {
+  return item.status === "done" || item.status === "skipped";
+}
+
+/**
+ * 라이브 작업 계획 체크리스트 — emitWorkPlan 이벤트 페이로드로부터
+ * 헤더(자율 칩 + 예산) + 목표 + 진행 요약 + 레이어/항목별 상태를 렌더한다.
+ */
+export function renderWorkPlanChecklist(
+  plan: WorkPlan,
+  opts: { readonly active?: boolean; readonly budget?: AutonomousRunBudget } = {}
+): HTMLElement {
+  const layers = planLayers(plan);
+  const items = layers.flatMap(layerItems);
+  const done = items.filter(isItemFinished).length;
+  const active = opts.active !== false;
+  const budget = opts.budget;
+  const head = el("div", {
+    class: "ai-autonomous-head",
+    children: [
+      el("span", {
+        class: "ai-autonomous-chip",
+        dataset: { testid: "ai-autonomous-chip" },
+        text: active ? "⚡ 자율 실행 중" : "⚡ 자율 실행",
+      }),
+      ...(budget
+        ? [
+            el("span", {
+              class: "ai-autonomous-budget",
+              dataset: { testid: "ai-autonomous-budget" },
+              text: `예산 ${budget.used}/${budget.total}${budget.exhausted ? " · 소진" : ""}`,
+            }),
+          ]
+        : []),
+    ],
+  });
+  const currentLayerIndex = Number.isFinite(plan.currentLayerIndex) ? plan.currentLayerIndex : 0;
+  const layerRows = layers.map((layer, index) => {
+    const layerDone = layerItems(layer).filter(isItemFinished).length;
+    const unfinished = layerItems(layer).some((item) => item.status === "pending" || item.status === "in_progress");
+    const isCurrent = index === currentLayerIndex && unfinished;
+    return el("div", {
+      class: "ai-autonomous-layer",
+      dataset: { testid: "ai-autonomous-layer", layerId: layer.id ?? "", current: String(isCurrent) },
+      children: [
+        el("div", {
+          class: "ai-autonomous-layer-title",
+          text: `${layer.title ?? "(레이어)"} — ${layerDone}/${layerItems(layer).length}`,
+        }),
+        el("ul", {
+          class: "ai-autonomous-items",
+          children: layerItems(layer).map((item) => {
+            const status = item.status ?? "pending";
+            return el("li", {
+              class: `ai-autonomous-item is-${status}`,
+              dataset: { testid: "ai-autonomous-item", itemId: item.id ?? "", status },
+              children: [
+                el("span", { class: "ai-autonomous-item-mark", text: WORK_ITEM_MARKS[status] ?? "○" }),
+                el("span", { class: "ai-autonomous-item-title", text: item.title ?? "(제목 없음)" }),
+              ],
+            });
+          }),
+        }),
+      ],
+    });
+  });
+  return el("div", {
+    class: "ai-autonomous-checklist",
+    dataset: { testid: "ai-work-plan-checklist" },
+    children: [
+      head,
+      el("div", { class: "ai-autonomous-goal", dataset: { testid: "ai-autonomous-goal" }, text: plan.goal ?? "" }),
+      el("div", {
+        class: "ai-autonomous-progress-row",
+        children: [
+          el("span", { class: "ai-autonomous-progress-label", text: "진행" }),
+          el("span", { class: "ai-autonomous-progress", dataset: { testid: "ai-autonomous-progress" }, text: `${done}/${items.length}` }),
+        ],
+      }),
+      el("div", { class: "ai-autonomous-layers", children: layerRows }),
+    ],
+  });
 }
 
 function safeJsonStringify(value: unknown): string {

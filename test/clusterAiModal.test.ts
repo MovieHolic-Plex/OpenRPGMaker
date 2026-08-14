@@ -45,6 +45,7 @@ vi.mock("@/ai/assistantSession", () => ({
     mocks.instances.push(session);
     return session;
   }),
+  AGENT_RUN_MAX_TOTAL_STEPS: 48,
   METADATA_ONLY_TOOLS: new Set<string>(),
   proposalApprovalWarnings: (calls: readonly { readonly approvalWarning?: string }[]) => [
     ...new Set(calls.map((call) => call.approvalWarning).filter((warning): warning is string => typeof warning === "string" && warning.length > 0)),
