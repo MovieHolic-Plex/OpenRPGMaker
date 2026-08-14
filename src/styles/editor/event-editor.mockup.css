@@ -380,16 +380,21 @@
 
 /* ── 우측 인라인 인스펙터 ────────────────────────────────────────── */
 .event-editor .event-editor-workbench {
-  /* 기존 3트랙(설정 | 리사이저 | 명령) 정의가 !important 라 여기서도 붙인다.
-     리사이저 트랙은 0 으로 죽이고(목업엔 없음) 인스펙터 트랙을 더한다.
-     열 구분은 레일/인스펙터의 border-right/left 1px. */
   --event-editor-settings-track: 312px;
+  position: relative;
+  grid-template-columns:
+    minmax(0, var(--event-editor-settings-track))
+    0
+    minmax(0, 1fr) !important;
+  gap: 0;
+}
+
+.event-editor .event-editor-workbench.has-command-inspector {
   grid-template-columns:
     minmax(0, var(--event-editor-settings-track))
     0
     minmax(0, 1fr)
     348px !important;
-  gap: 0;
 }
 
 .event-editor .event-editor-inspector-column {
@@ -399,6 +404,10 @@
   min-height: 0;
   overflow-y: auto;
   display: block;
+}
+
+.event-editor .event-editor-inspector-column[hidden] {
+  display: none !important;
 }
 
 .event-editor .event-inspector-head {
@@ -585,17 +594,20 @@
   border-top: 1px dotted var(--mk-line-soft);
 }
 
-/* 좁은 창에서는 인스펙터를 접는다 — 명령 리스트가 우선. */
-/* 좁은 창에서는 인스펙터를 접는다 — 명령 리스트가 우선. */
 @media (max-width: 1180px) {
-  .event-editor .event-editor-workbench {
+  .event-editor .event-editor-workbench,
+  .event-editor .event-editor-workbench.has-command-inspector {
     grid-template-columns:
       minmax(0, var(--event-editor-settings-track))
       8px
       minmax(300px, 1fr) !important;
   }
   .event-editor .event-editor-inspector-column {
-    display: none;
+    position: absolute;
+    z-index: 12;
+    inset: 0 0 0 auto;
+    width: min(348px, 46vw);
+    box-shadow: -16px 0 32px rgba(2, 6, 16, 0.32);
   }
 }
 
@@ -1111,6 +1123,11 @@
   overflow: auto;
 }
 
+.event-editor .event-contents-fieldset:has(.event-storyboard:not([hidden])) > .event-storyboard-host,
+.event-editor .event-contents-fieldset:has(.event-graph-placeholder:not([hidden])) > .event-storyboard-host {
+  grid-row: 4 / 6;
+}
+
 .event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
 .event-editor .event-contents-fieldset > .cmd-list[hidden] {
   display: none !important;
@@ -1195,6 +1212,31 @@
   .event-editor .event-contents-fieldset .cmd-list:has(> .event-command-empty-experience) {
     align-content: start;
   }
+
+  .event-editor .event-storyboard-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: center;
+    align-self: start;
+    column-gap: 8px;
+    row-gap: 2px;
+    box-sizing: border-box;
+    height: 56px;
+    overflow: hidden;
+    padding: 8px;
+  }
+
+  .event-editor .event-storyboard-card-thumb {
+    grid-row: 1 / 3;
+  }
+
+  .event-editor .event-storyboard-card-title,
+  .event-editor .event-storyboard-card-detail {
+    grid-column: 2;
+  }
+
+  .event-editor .event-storyboard-card-detail {
+    -webkit-line-clamp: 1;
+  }
 }
 
 /* 탭 검사 배지는 ::after(attr(data-label)) 로 그려지고 절대배치라 겹쳤다. */
@@ -1214,6 +1256,307 @@
 .event-editor > .event-draft-validation {
   max-height: 136px;
   overflow: hidden;
+}
+
+.event-editor .event-editor-settings-column {
+  padding: 0;
+}
+
+.event-editor .event-editor-settings-column > .event-editor-card {
+  margin: 0;
+  padding: 12px;
+  border: 0;
+  border-bottom: 1px solid var(--mk-line);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--mk-raised) 70%, var(--mk-surface));
+}
+
+.event-editor .event-editor-settings-column > .event-editor-settings-main {
+  padding: 10px 12px;
+}
+
+.event-editor .event-editor-card-sprite {
+  width: 44px;
+  height: 54px;
+  flex-basis: 44px;
+}
+
+.event-editor .event-editor-card .event-editor-top-strip {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.event-editor > .event-editor-pagebar {
+  align-items: center;
+  padding-right: 10px;
+}
+
+.event-editor > .event-editor-pagebar > .event-page-tabs {
+  position: relative;
+  display: block;
+  align-self: center;
+  min-height: 0;
+  margin-left: 2px;
+  padding: 0 0 5px;
+  border: 0;
+  background: transparent;
+}
+
+.event-editor .event-page-actions-summary,
+.event-editor .event-editor-command-edit-summary,
+.event-editor .event-editor-disclosure-summary,
+.event-editor .event-command-legend-summary,
+.event-editor-footer-more-summary {
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.event-editor .event-page-actions-summary::-webkit-details-marker,
+.event-editor .event-editor-command-edit-summary::-webkit-details-marker,
+.event-editor .event-editor-disclosure-summary::-webkit-details-marker,
+.event-editor .event-command-legend-summary::-webkit-details-marker,
+.event-editor-footer-more-summary::-webkit-details-marker {
+  display: none;
+}
+
+.event-editor .event-page-actions-summary {
+  min-width: 70px;
+  padding: 7px 10px;
+  border: 1px solid var(--mk-line);
+  border-radius: 4px;
+  color: var(--mk-t2);
+  font-size: 11.5px;
+  text-align: center;
+}
+
+.event-editor .event-page-actions-summary::after,
+.event-editor .event-editor-command-edit-summary::after,
+.event-editor .event-editor-disclosure-summary::after,
+.event-editor .event-command-legend-summary::after,
+.event-editor-footer-more-summary::after {
+  content: "▾";
+  margin-left: 7px;
+  color: var(--mk-t3, var(--mk-t2));
+  font-size: 9px;
+}
+
+.event-editor .event-page-tabs[open] > .event-page-actions-summary,
+.event-editor .event-editor-command-edit-menu[open] > .event-editor-command-edit-summary,
+.event-editor .event-editor-aux-tools-shell[open] > .event-editor-disclosure-summary,
+.event-editor .event-command-legend[open] > .event-command-legend-summary,
+.event-editor-footer-more[open] > .event-editor-footer-more-summary {
+  color: var(--mk-t1);
+  border-color: color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line));
+}
+
+.event-editor .event-page-tabs > .event-page-action-buttons {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  right: 0;
+  display: grid;
+  width: 170px;
+  padding: 6px;
+  gap: 4px;
+  background: var(--mk-raised);
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .34);
+}
+
+.event-editor .event-page-tabs:not([open]) > .event-page-action-buttons {
+  display: none;
+}
+
+.event-editor .event-page-tabs > .event-page-action-buttons .btn {
+  width: 100%;
+  min-height: 30px;
+  text-align: left;
+}
+
+.event-editor .event-contents-fieldset {
+  grid-template-rows: 32px 32px auto minmax(0, 1fr) auto auto;
+}
+
+.event-editor .event-contents-fieldset > .event-editor-command-toolbar {
+  justify-content: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.event-editor .event-editor-command-toolbar > [data-testid="event-command-toolbar-add"] {
+  order: 1;
+  min-width: 84px;
+  padding: 0 13px;
+}
+
+.event-editor .event-editor-command-edit-menu {
+  position: relative;
+  order: 2;
+}
+
+.event-editor .event-editor-command-edit-summary {
+  min-height: 30px;
+  padding: 7px 11px;
+  border: 1px solid var(--mk-line);
+  border-radius: 3px;
+  color: var(--mk-t2);
+  font-size: 11.5px;
+  line-height: 14px;
+}
+
+.event-editor .event-editor-command-edit-popover {
+  position: absolute;
+  z-index: 16;
+  top: calc(100% + 5px);
+  right: 0;
+  display: grid;
+  width: 238px;
+  padding: 8px;
+  gap: 6px;
+  background: var(--mk-raised);
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .34);
+}
+
+.event-editor .event-editor-command-edit-menu:not([open]) > .event-editor-command-edit-popover {
+  display: none;
+}
+
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool-group + .event-editor-command-tool-group,
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool-group + .event-editor-command-tool {
+  margin: 0;
+  padding: 6px 0 0;
+  border-left: 0;
+  border-top: 1px solid var(--mk-line-soft);
+}
+
+.event-editor .event-editor-command-edit-popover .event-editor-command-tool {
+  width: 100%;
+  padding: 0 8px;
+  justify-content: flex-start;
+}
+
+.event-editor .event-contents-fieldset > .event-command-legend {
+  justify-self: end;
+  width: auto;
+  padding: 0;
+  border: 0;
+}
+
+.event-editor .event-command-legend-summary {
+  padding: 4px 2px;
+  color: var(--mk-t3, var(--mk-t2));
+  font-size: 10.5px;
+}
+
+.event-editor .event-command-legend-items {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border: 1px solid var(--mk-line-soft);
+  border-radius: 4px;
+  background: var(--mk-surface);
+}
+
+.event-editor .event-command-legend:not([open]) > .event-command-legend-items {
+  display: none;
+}
+
+.event-editor .event-editor-aux-tools-shell {
+  position: relative;
+  flex: 0 0 auto;
+  margin: 0 12px 8px;
+}
+
+.event-editor .event-editor-disclosure-summary {
+  width: fit-content;
+  padding: 5px 2px;
+  color: var(--mk-t3, var(--mk-t2));
+  font-size: 11px;
+}
+
+.event-editor .event-editor-aux-tools-shell > .event-editor-aux-tools {
+  padding-top: 5px;
+}
+
+.event-editor .event-editor-aux-tools-shell:not([open]) > .event-editor-aux-tools {
+  display: none;
+}
+
+.event-editor > .event-draft-validation {
+  margin: 0;
+  border-width: 1px 0 0;
+  border-radius: 0;
+  background: var(--mk-surface);
+}
+
+.event-editor > .event-draft-validation:not([open]) > .event-draft-validation-summary {
+  padding: 6px 14px;
+  color: var(--mk-t3, var(--mk-t2));
+}
+
+.event-editor-footer-more {
+  position: relative;
+}
+
+.event-editor-footer-more-summary {
+  display: grid;
+  place-items: center;
+  min-width: 82px;
+  min-height: 38px;
+}
+
+.event-editor-footer-more-menu {
+  position: absolute;
+  z-index: 30;
+  right: 0;
+  bottom: calc(100% + 7px);
+  display: grid;
+  width: 190px;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--mk-line);
+  border-radius: 6px;
+  background: var(--mk-raised);
+  box-shadow: 0 -12px 28px rgba(0, 0, 0, .34);
+}
+
+.event-editor-footer-more:not([open]) > .event-editor-footer-more-menu {
+  display: none;
+}
+
+.event-editor-footer-more-menu .event-editor-footer-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  text-align: left;
+}
+
+@media (max-width: 1100px) {
+  .event-editor-modal-footer {
+    gap: 8px;
+    padding-inline: 12px;
+  }
+
+  .event-editor-footer-button {
+    min-width: 72px;
+  }
+
+  .event-editor .event-storyboard-card {
+    flex-basis: 158px;
+  }
 }
 
 .event-editor > .event-draft-validation .event-draft-validation-issues {

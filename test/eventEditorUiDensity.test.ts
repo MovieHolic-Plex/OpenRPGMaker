@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
+import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -56,6 +57,7 @@ describe("event editor UI density", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
+    clearCommandInspector();
     openEventConditions.clear();
     openEventMovement.clear();
     const project = createBlankProject();
@@ -68,6 +70,7 @@ describe("event editor UI density", () => {
   });
 
   afterEach(() => {
+    clearCommandInspector();
     host.remove();
     openEventConditions.clear();
     openEventMovement.clear();
@@ -92,7 +95,7 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-schedule-json"]')).toBeNull();
   });
 
-  it("defaults conditions and movement closed, keeps trigger visible, groups command toolbar", () => {
+  it("defaults secondary settings and tools closed while keeping trigger and add command visible", () => {
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
     const conditions = host.querySelector<HTMLDetailsElement>('[data-testid="event-classic-conditions"]');
     expect(conditions?.open).toBe(false);
@@ -123,7 +126,28 @@ describe("event editor UI density", () => {
     expect(contents?.querySelector(".event-editor-command-toolbar")).toBeTruthy();
     expect(host.querySelector(".event-editor-command-tool-group")).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')?.classList.contains("primary")).toBe(true);
-    expect(host.querySelector('[data-testid="event-editor-aux-tools"]')).toBeTruthy();
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-edit-menu"]')?.open).toBe(false);
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]')?.open).toBe(false);
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend"]')?.open).toBe(false);
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(false);
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]')?.open).toBe(false);
+  });
+
+  it("keeps the command inspector hidden until a command is selected", () => {
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    const workbench = host.querySelector<HTMLElement>(".event-editor-workbench");
+    const inspector = host.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]');
+    const firstCommand = host.querySelector<HTMLElement>(".cmd-item .cmd-head");
+
+    expect(workbench).toBeTruthy();
+    expect(inspector?.hidden).toBe(true);
+    expect(workbench?.classList.contains("has-command-inspector")).toBe(false);
+
+    firstCommand?.click();
+
+    expect(inspector?.hidden).toBe(false);
+    expect(workbench?.classList.contains("has-command-inspector")).toBe(true);
+    expect(inspector?.querySelector('[data-testid="event-inspector-body"]')).toBeTruthy();
   });
 
   it("shows active condition badges with switch id/ON-OFF, expands conditions on demand", () => {
