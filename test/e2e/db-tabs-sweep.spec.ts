@@ -6,6 +6,7 @@ test.setTimeout(300_000);
 test.use({ serviceWorkers: "block" });
 
 const ALL_TABS: readonly DatabaseTabSpec[] = [
+  { label: "Overview", slug: "overview", testId: "db-tab-overview" },
   { label: "Actors", slug: "actors", testId: "db-tab-actors" },
   { label: "Classes", slug: "classes", testId: "db-tab-classes" },
   { label: "Skills", slug: "skills", testId: "db-tab-skills" },
@@ -19,7 +20,6 @@ const ALL_TABS: readonly DatabaseTabSpec[] = [
   { label: "Elements", slug: "elements", testId: "db-tab-elements" },
   { label: "States", slug: "states", testId: "db-tab-states" },
   { label: "Animations", slug: "animations", testId: "db-tab-animations" },
-  { label: "Battler Animations", slug: "battler-animations", testId: "db-tab-battler-animations" },
   { label: "Battle Screen", slug: "battle-screen", testId: "db-tab-battle-screen" },
   { label: "Battle Commands", slug: "battle-commands", testId: "db-tab-battle-commands" },
   { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" },
