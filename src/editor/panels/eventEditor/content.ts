@@ -35,15 +35,11 @@ import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openNewEventCommandDialog, openNewEventCommandKindDialog } from "./commandEditDialog";
 import { renderCommandList } from "./commandList";
 import { loadStoryboardMode, renderStoryboard, renderViewToggle, type StoryboardMode } from "./storyboardView";
-import { showCommandInspector } from "./commandInspector";
-import { commandCategoryVisual } from "./commandCategoryIcons";
-import { setCommandInspectorEmptyRenderer, resetCommandInspectorView, setCommandInspectorHost } from "./commandInspector";
+import { resetCommandInspectorView, setCommandInspectorHost, showCommandInspector } from "./commandInspector";
 import { createCommandToolbarHistory, type CommandToolbarHistory } from "./commandToolbarHistory";
 import { openEventCommandPicker } from "./commandPicker";
-import { commandSummary } from "./commandSummary";
 import { branchesOf } from "./previewSimulation";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
-import { EVENT_PRIORITY_OPTIONS, TRIGGER_OPTIONS } from "./options";
 import {
   renderClassicPageTabStrip,
   renderEventCharacterSocialExtras,
@@ -156,8 +152,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-editor-inspector" },
   });
   setCommandInspectorHost(inspectorColumn);
-  // 미선택(빈) 상태: 페이지 요약 카드. 렌더러가 실패하면 기본 힌트로 폴백한다.
-  setCommandInspectorEmptyRenderer(() => renderInspectorIdleSummary(activePage, activePageIssues));
   resetCommandInspectorView();
 
   const storyboardMode = loadStoryboardMode();
@@ -268,7 +262,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       }),
     ],
   });
-  settingsColumn.append(settingsMain);
+  settingsColumn.append(eventCard, settingsMain);
   commandsColumn.append(
     el("fieldset", {
       class: "event-rm2k3-fieldset event-contents-fieldset",
@@ -286,19 +280,27 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         }),
         storyboardHost,
         cmdList,
-        // 카테고리 범례 — 툴바 안이 아니라 캔버스 바로 아래 자기 한 줄로.
         renderCommandCategoryLegend(),
       ],
     }),
     // 하단 보조 도구: AI / 미리보기 / 플로우 — 접힘 시 한 줄 칩, 실행 내용 높이 우선.
     // 배타 아코디언: 세 패널 마운트 후 open 상태 재적용(호스트 전부 bind 이후).
     (() => {
-      const auxTools = el("div", {
-        class: "event-editor-aux-tools",
+      const auxTools = el("details", {
+        class: "event-editor-aux-tools-shell",
         dataset: { testid: "event-editor-aux-tools" },
         children: [
-          renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
-          renderEventScriptModernViews({ mapId, eventId: ev.id, page: activePage }),
+          el("summary", {
+            class: "event-editor-disclosure-summary",
+            text: "도구 · AI, 미리보기, 플로우",
+          }),
+          el("div", {
+            class: "event-editor-aux-tools",
+            children: [
+              renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
+              renderEventScriptModernViews({ mapId, eventId: ev.id, page: activePage }),
+            ],
+          }),
         ],
       });
       const auxKey = auxCompositeKey(mapId, ev.id, activePage.id);
@@ -308,7 +310,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   );
 
   const workbench = el("div", {
-    class: "event-editor-workbench",
+    class: `event-editor-workbench${inspectorColumn.hidden ? "" : " has-command-inspector"}`,
     children: [settingsColumn, columnResizer, commandsColumn, inspectorColumn],
   });
   applyStoredSettingsColumnWidth(workbench);
@@ -321,7 +323,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
     }),
     renderEventDiffSummary(mapId, eventId),
-    eventCard,
     workbench,
     // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
     renderEventValidationSummary(validation)
@@ -383,22 +384,44 @@ function renderCommandToolbar(
     const path = selectedPath();
     if (path) run(path);
   };
+  const editTools = el("details", {
+    class: "event-editor-command-edit-menu",
+    dataset: { testid: "event-command-edit-menu" },
+    children: [
+      el("summary", {
+        class: "event-editor-command-edit-summary",
+        text: "편집",
+        attrs: { title: "이동, 복사, 실행 취소와 템플릿" },
+      }),
+      el("div", {
+        class: "event-editor-command-edit-popover",
+        children: [
+          toolGroup(
+            toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
+            toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo())
+          ),
+          toolGroup(
+            toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
+            toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)))
+          ),
+          toolGroup(
+            toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
+            toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)))
+          ),
+          toolbarButton(
+            "☠",
+            "필드 몬스터 템플릿 (전투→승리 소거)",
+            "event-command-toolbar-field-monster",
+            () => openFieldMonsterTemplateDialog(mapId, eventId, page)
+          ),
+        ],
+      }),
+    ],
+  });
   return el("div", {
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "실행 내용 도구" },
     children: [
-      toolGroup(
-        toolbarButton("↶", "되돌리기", "event-command-toolbar-undo", () => commandHistory.undo(), !commandHistory.canUndo()),
-        toolbarButton("↷", "다시 실행", "event-command-toolbar-redo", () => commandHistory.redo(), !commandHistory.canRedo())
-      ),
-      toolGroup(
-        toolbarButton("↑", "위로 이동", "event-command-toolbar-move-up", () => runForSelected((path) => actions.moveCommand(path, -1))),
-        toolbarButton("↓", "아래로 이동", "event-command-toolbar-move-down", () => runForSelected((path) => actions.moveCommand(path, 1)))
-      ),
-      toolGroup(
-        toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
-        toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)))
-      ),
       toolbarButton(
         "+",
         "명령 추가",
@@ -414,16 +437,7 @@ function renderCommandToolbar(
         false,
         true
       ),
-      toolbarButton(
-        // 나머지 툴바가 전부 기호(↶ ↷ ↑ ↓ ▣ ✂ ＋)인데 여기만 한글 한 글자 "몬" 이라
-        // 잘린 라벨처럼 보였다. 같은 기호 어휘로 맞춘다 — 뜻은 title 이 계속 들고 있다.
-        "☠",
-        "필드 몬스터 템플릿 (전투→승리 소거)",
-        "event-command-toolbar-field-monster",
-        () => openFieldMonsterTemplateDialog(mapId, eventId, page),
-        false,
-        false
-      ),
+      editTools,
     ],
   });
 }
@@ -438,122 +452,26 @@ const COMMAND_CATEGORY_LEGEND: readonly (readonly [string, string])[] = [
 ];
 
 function renderCommandCategoryLegend(): HTMLElement {
-  return el("div", {
+  return el("details", {
     class: "event-command-legend",
-    attrs: { "aria-hidden": "true" },
     dataset: { testid: "event-command-legend" },
-    children: COMMAND_CATEGORY_LEGEND.map(([key, label]) =>
-      el("span", {
-        class: "event-command-legend-item",
-        dataset: { category: key },
-        children: [
-          el("i", { class: "event-command-legend-swatch" }),
-          el("span", { class: "event-command-legend-label", text: label }),
-        ],
-      })
-    ),
-  });
-}
-
-// 인스펙터 빈(미선택) 상태 — 페이지 요약 카드.
-function renderInspectorIdleSummary(page: EventPage, issues: readonly EventDraftIssue[]): HTMLElement {
-  const errorCount = issues.filter((issue) => issue.severity === "error").length;
-  const warningCount = issues.filter((issue) => issue.severity === "warning").length;
-  const idleName = page.name.trim() || "(이름 없음)";
-  const children: HTMLElement[] = [
-    el("div", {
-      class: "event-inspector-idle-head",
-      children: [
-        el("span", { class: "event-inspector-idle-label", text: "현재 페이지" }),
-        el("span", { class: "event-inspector-idle-name", text: idleName, attrs: { title: idleName } }),
-      ],
-    }),
-    el("div", {
-      class: "event-inspector-stats",
-      children: [
-        inspectorStatRow("명령", `${page.commands.length}개`),
-        inspectorStatRow("분기 최대 깊이", String(maxBranchDepth(page.commands))),
-        inspectorStatRow("출현 조건", `${page.conditions?.length ?? 0}개`),
-        inspectorStatRow(
-          "트리거",
-          TRIGGER_OPTIONS.find(
-            (option) => option.value === (page.trigger.kind === "touch" ? "playerTouch" : page.trigger.kind)
-          )?.label ?? page.trigger.kind
-        ),
-        inspectorStatRow(
-          "우선순위",
-          EVENT_PRIORITY_OPTIONS.find((option) => option.value === page.priority)?.label ?? String(page.priority)
-        ),
-        inspectorStatRow("그래픽", page.graphic.sprite ? page.graphic.sprite.id : "없음"),
-        inspectorStatRow("검사", `오류 ${errorCount} · 경고 ${warningCount}`),
-      ],
-    }),
-  ];
-  if (page.commands.length > 0) {
-    const recent = page.commands.slice(-6).reverse();
-    children.push(
+    children: [
+      el("summary", { class: "event-command-legend-summary", text: "색상 범례" }),
       el("div", {
-        class: "event-inspector-recent",
-        children: [
-          el("div", { class: "event-inspector-recent-title", text: `최근 명령 · ${recent.length}개` }),
-          ...recent.map(recentCommandRow),
-        ],
-      })
-    );
-  }
-  children.push(
-    el("div", { class: "event-inspector-idle-hint", text: "명령을 클릭하면 여기서 바로 편집됩니다." })
-  );
-  return el("div", {
-    class: "event-inspector-empty",
-    dataset: { testid: "event-inspector-empty" },
-    children,
-  });
-}
-
-function inspectorStatRow(label: string, value: string): HTMLElement {
-  return el("div", {
-    class: "event-inspector-stat",
-    children: [
-      el("span", { class: "event-inspector-stat-label", text: label }),
-      el("span", { class: "event-inspector-stat-value", text: value }),
-    ],
-  });
-}
-
-function recentCommandRow(cmd: Command): HTMLElement {
-  let text: string;
-  try {
-    text = commandSummary(cmd);
-  } catch {
-    text = cmd.kind;
-  }
-  return el("div", {
-    class: "event-inspector-recent-item",
-    children: [
-      el("i", {
-        class: "event-inspector-recent-gutter",
-        attrs: { "aria-hidden": "true" },
-        dataset: { category: commandCategoryVisual(cmd).key },
+        class: "event-command-legend-items",
+        children: COMMAND_CATEGORY_LEGEND.map(([key, label]) =>
+          el("span", {
+            class: "event-command-legend-item",
+            dataset: { category: key },
+            children: [
+              el("i", { class: "event-command-legend-swatch" }),
+              el("span", { class: "event-command-legend-label", text: label }),
+            ],
+          })
+        ),
       }),
-      el("span", { class: "event-inspector-recent-text", text }),
     ],
   });
-}
-
-// 분기 최대 깊이. commandList 가 순회하는 것과 같은 분기 접근자(branchesOf)를 쓴다.
-function maxBranchDepth(commands: readonly Command[]): number {
-  let max = 0;
-  const walk = (cmd: Command, depth: number): void => {
-    for (const branch of branchesOf(cmd)) {
-      for (const child of branch.commands) {
-        max = Math.max(max, depth);
-        walk(child, depth + 1);
-      }
-    }
-  };
-  commands.forEach((cmd) => walk(cmd, 1));
-  return max;
 }
 
 // 목업 범례("실행 내용 · 12개")와 같은 전체 명령 수 — 분기 안까지 센다.
@@ -755,7 +673,6 @@ function renderEventValidationSummary(validation: EventDraftValidation): HTMLEle
     class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " is-clear"}`,
     dataset: { testid: "event-draft-validation" },
   }) as HTMLDetailsElement;
-  details.open = validation.errorCount > 0;
   const summaryText = `검사 · 오류 ${validation.errorCount} · 경고 ${validation.warningCount} · 안내 ${validation.infoCount}`;
   const overflowLine = validation.issues.length > 4 ? ` — 목록 ${validation.issues.length}개 중 4개 미리보기 (펼쳐서 전체 보기)` : "";
   details.append(el("summary", {

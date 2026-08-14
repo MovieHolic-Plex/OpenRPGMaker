@@ -56,12 +56,15 @@ export function attachColumnResize(handle: HTMLElement, workbench: HTMLElement):
   });
 }
 
-function clampColumnWidth(value: number, workbenchWidth: number): number {
+function clampColumnWidth(value: number, workbenchWidth: number, workbench: HTMLElement): number {
   const minSettingsWidth = workbenchWidth < 900 ? 220 : 288;
   const minCommandsWidth = workbenchWidth < 900 ? 260 : 380;
   const minInspectorWidth = 280;
-  // 4컬럼 붕괴 방지: 인스펙터가 숨는 1180px 이하는 3컬럼 기준으로, 그 이상은 4컬럼 기준으로 max 계산
-  const reserveRight = workbenchWidth < 1180 ? minCommandsWidth : minCommandsWidth + minInspectorWidth;
+  const inspectorWidth =
+    workbench.classList.contains("has-command-inspector") && workbenchWidth >= 1180
+      ? minInspectorWidth
+      : 0;
+  const reserveRight = minCommandsWidth + inspectorWidth;
   const maxSettingsWidth = Math.max(minSettingsWidth, workbenchWidth - reserveRight);
   return Math.round(Math.min(Math.max(value, minSettingsWidth), maxSettingsWidth));
 }
@@ -72,7 +75,7 @@ function settingsColumnWidth(workbench: HTMLElement): number {
 }
 
 function setSettingsColumnWidth(workbench: HTMLElement, width: number, workbenchWidth: number): void {
-  const nextWidth = clampColumnWidth(width, workbenchWidth);
+  const nextWidth = clampColumnWidth(width, workbenchWidth, workbench);
   eventEditorSettingsColumnWidth = nextWidth;
   workbench.style.setProperty("--event-editor-settings-track", `${nextWidth}px`);
 }

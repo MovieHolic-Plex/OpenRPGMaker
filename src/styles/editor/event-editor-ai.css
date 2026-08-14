@@ -120,6 +120,11 @@
   font-size: 11px;
 }
 
+.ai-event-preview[hidden],
+.ai-event-preview-actions[hidden] {
+  display: none;
+}
+
 .ai-event-preview-line {
   padding-left: calc(var(--cmd-depth, 0) * 14px);
   color: var(--text-2);

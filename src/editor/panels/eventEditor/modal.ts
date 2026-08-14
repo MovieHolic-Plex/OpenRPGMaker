@@ -23,6 +23,7 @@ import {
   renderEventEditorStable,
 } from "./content";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
+import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 import { toast } from "@/util/toast";
@@ -52,6 +53,8 @@ export function openNewEventEditorModal(mapId: MapId, x: number, y: number): str
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
+  clearCommandInspector();
+  setCommandInspectorHost(undefined);
   const backdrop = el("div", {
     class: "event-editor-modal-backdrop",
     dataset: { testid: EVENT_EDITOR_MODAL_TEST_ID, mapId: request.mapId, eventId: request.eventId },
@@ -69,6 +72,8 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const closeHandler = (saved = false): void => {
     if (closed) return;
     closed = true;
+    clearCommandInspector();
+    setCommandInspectorHost(undefined);
     unregisterModal(backdrop);
     backdrop.dispatchEvent(new CustomEvent(EVENT_EDITOR_CLOSE_EVENT, { detail: { saved: saved === true } }));
     backdrop.remove();
@@ -228,14 +233,25 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
       el("div", {
         class: "event-editor-footer-actions",
         children: [
-          // 목업과 동일 순서: 삭제도 확인 묶음 앞 액션 그룹에 둔다.
-          footerButton("삭제", "event-delete", () => {
-            if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
-          }),
-          footerButton("이 이벤트 테스트", "event-editor-test", () => {
-            const validation = validateForModalAction(request, "테스트");
-            if (!validation.canCommit) return;
-            void openSelectedEventTestModal(request.mapId, request.eventId);
+          el("details", {
+            class: "event-editor-footer-more",
+            children: [
+              el("summary", { class: "btn event-editor-footer-more-summary", text: "더보기" }),
+              el("div", {
+                class: "event-editor-footer-more-menu",
+                children: [
+                  footerButton("이 이벤트 테스트", "event-editor-test", () => {
+                    const validation = validateForModalAction(request, "테스트");
+                    if (!validation.canCommit) return;
+                    void openSelectedEventTestModal(request.mapId, request.eventId);
+                  }),
+                  footerButton("도움말", "event-editor-help", () => openEventEditorHelp()),
+                  footerButton("삭제", "event-delete", () => {
+                    if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
+                  }),
+                ],
+              }),
+            ],
           }),
           footerButton("취소", "event-editor-cancel", () => close()),
           footerButton("적용", "event-editor-apply", () => {
@@ -248,7 +264,6 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
             if (!commitValidatedEventDraft(request, "확인")) return;
             close(true);
           }, true),
-          footerButton("도움말", "event-editor-help", () => openEventEditorHelp()),
         ],
       }),
     ],

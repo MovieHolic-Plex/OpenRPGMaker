@@ -22,12 +22,6 @@ type InspectorTarget = {
 
 let host: HTMLElement | undefined;
 let selectedPath: number[] | undefined;
-let emptyRenderer: (() => HTMLElement) | undefined;
-
-/** content.ts 가 빈(미선택) 상태 렌더러를 공급한다. undefined 면 기본 힌트로 복귀. */
-export function setCommandInspectorEmptyRenderer(render: (() => HTMLElement) | undefined): void {
-  emptyRenderer = render;
-}
 
 
 /** content.ts 가 인스펙터 컬럼을 만들 때 호출한다. */
@@ -47,7 +41,7 @@ export function sameInspectorPath(a: readonly number[], b: readonly number[] | u
 /** 선택 자체를 버린다(다른 이벤트/페이지로 이동 등). */
 export function clearCommandInspector(): void {
   selectedPath = undefined;
-  if (host) renderEmpty(host);
+  if (host) hideInspector(host);
 }
 
 /**
@@ -55,7 +49,7 @@ export function clearCommandInspector(): void {
  * 같은 경로의 명령을 만나면 인스펙터를 복원한다.
  */
 export function resetCommandInspectorView(): void {
-  if (host) renderEmpty(host);
+  if (host) hideInspector(host);
 }
 
 /** 명령을 선택하면 우측 인스펙터가 그 자리에서 바뀐다. 모달은 열리지 않는다. */
@@ -67,6 +61,7 @@ export function saveInspectorDensity(d: InspectorDensity): void { try { localSto
 export function showCommandInspector(target: InspectorTarget): void {
   selectedPath = [...target.path];
   if (!host) return;
+  showInspector(host);
   const density = loadInspectorDensity();
   const formBody = el("div", {
     class: "event-inspector-body",
@@ -139,25 +134,15 @@ export function showCommandInspector(target: InspectorTarget): void {
   );
 }
 
-function renderEmpty(target: HTMLElement): void {
-  if (emptyRenderer) {
-    try {
-      const node = emptyRenderer();
-      if (node) {
-        target.replaceChildren(node);
-        return;
-      }
-    } catch {
-      // 렌더러 실패가 에디터를 깨면 안 된다 — 기본 힌트로 폴백.
-    }
-  }
-  target.replaceChildren(
-    el("div", {
-      class: "event-inspector-empty empty-hint",
-      text: "명령을 클릭하면 여기서 바로 편집됩니다.",
-      dataset: { testid: "event-inspector-empty" },
-    })
-  );
+function hideInspector(target: HTMLElement): void {
+  target.replaceChildren();
+  target.hidden = true;
+  target.closest(".event-editor-workbench")?.classList.remove("has-command-inspector");
+}
+
+function showInspector(target: HTMLElement): void {
+  target.hidden = false;
+  target.closest(".event-editor-workbench")?.classList.add("has-command-inspector");
 }
 
 function safeSummary(command: Command): string {

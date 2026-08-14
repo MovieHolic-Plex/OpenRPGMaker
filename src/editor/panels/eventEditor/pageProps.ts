@@ -60,7 +60,7 @@ export function renderEventNameControl(mapId: MapId, eventId: string, page: Even
 }
 
 export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPage): HTMLElement {
-  const wrap = el("div", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
+  const wrap = el("details", { class: "event-page-tabs", dataset: { testid: "event-page-tabs" } });
   const pages = ev.pages ?? [];
   const canPaste = hasCopiedEventPage();
   const canDelete = pages.length > 1;
@@ -80,9 +80,9 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
     );
   }
   wrap.append(
-    el("span", {
-      class: "event-classic-marker",
-      attrs: { "aria-hidden": "true" },
+    el("summary", {
+      class: "event-page-actions-summary",
+      text: "페이지",
       dataset: { testid: "event-classic-page-controls" },
     }),
     el("div", {

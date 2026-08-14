@@ -1,12 +1,22 @@
-import { expect, test } from "@playwright/test";
-import { mkdir } from "node:fs/promises";
+import { expect, test, type Locator } from "@playwright/test";
+import { mkdir, writeFile } from "node:fs/promises";
 import { emptyEventProject, mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 // 목업대로 바꾼 이벤트 에디터 화면을 조각별로 캡처한다.
 // 실행: npx playwright test eventEditorMockupShots.spec.ts
-const DIR = "output/evidence/event-editor-mockup";
+const DIR = "output/evidence/event-editor-simplified-hierarchy";
+
+async function selectFirstStoryboardCommand(modal: Locator): Promise<void> {
+  const card = modal.locator("[data-testid^='event-storyboard-card-']").first();
+  await expect(card).toBeVisible();
+  await card.click();
+}
+
+async function selectView(modal: Locator, label: "Storyboard" | "List"): Promise<void> {
+  await modal.getByRole("button", { name: label, exact: true }).click();
+}
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
@@ -30,6 +40,7 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await modal.screenshot({ path: `${DIR}/01-shell.png` });
 
   // 2) 명령 리스트 = 블록 캔버스
+  await selectView(modal, "List");
   const list = modal.locator(".cmd-list").first();
   await expect(list).toBeVisible();
   await list.screenshot({ path: `${DIR}/02-block-canvas.png` });
@@ -48,6 +59,7 @@ test("event editor matches the approved mockup", async ({ page }) => {
   // eslint-disable-next-line no-console
   console.log("[gutters]", JSON.stringify(gutters));
   expect(new Set(Object.values(gutters)).size).toBeGreaterThan(2);
+  await selectView(modal, "Storyboard");
 
   // 3) 좌측 설정 컬럼 (레일)
   const settings = modal.locator(".event-editor-settings-column").first();
@@ -63,16 +75,21 @@ test("event editor matches the approved mockup", async ({ page }) => {
 
   // 5) 인라인 인스펙터 — 명령을 클릭하면 모달 없이 우측에서 편집된다
   const inspector = modal.getByTestId("event-editor-inspector");
-  await expect(inspector.getByTestId("event-inspector-empty")).toBeVisible();
+  await expect(inspector).toBeHidden();
+  const initialCanvasWidth = (await modal.locator(".event-editor-commands-column").boundingBox())?.width ?? 0;
+  await modal.screenshot({ path: `${DIR}/1500x1000-initial.png` });
 
-  await list.locator(".cmd-item").first().locator(".cmd-head").click();
-  await expect(inspector.getByTestId("event-inspector-body")).toBeVisible();
+  await selectFirstStoryboardCommand(modal);
+  await expect(inspector).toBeVisible();
+  await expect(inspector.getByTestId("event-inspector-card")).toBeVisible();
+  const selectedCanvasWidth = (await modal.locator(".event-editor-commands-column").boundingBox())?.width ?? 0;
+  expect(initialCanvasWidth).toBeGreaterThan(selectedCanvasWidth);
   // 모달이 새로 열리지 않아야 한다 — 이게 "모달 3겹 제거"의 핵심.
   await expect(page.locator("[data-testid='event-command-edit-dialog']")).toHaveCount(0);
   // eslint-disable-next-line no-console
   console.log("[inspector]", (await inspector.getByTestId("event-inspector-title").innerText()).trim());
   await inspector.screenshot({ path: `${DIR}/05-inspector.png` });
-  await modal.screenshot({ path: `${DIR}/01-shell.png` });
+  await modal.screenshot({ path: `${DIR}/1500x1000-selected.png` });
 
   // 6) 커맨드 팔레트 — 검색 우선 + 키보드 후보
   await modal.getByTestId("event-command-toolbar-add").first().click();
@@ -133,9 +150,7 @@ test("empty event on a wide viewport stays clean", async ({ page }) => {
 
   // 근접 캡처 — 채점표 A(카드 밀도)와 E(선택 없는 인스펙터)는 전체 셸 샷으로는 못 본다.
   await modal.locator(".event-editor-card").screenshot({ path: `${DIR}/08-card.png` });
-  await modal
-    .locator(".event-editor-inspector-column")
-    .screenshot({ path: `${DIR}/09-inspector-idle.png` });
+  await expect(modal.getByTestId("event-editor-inspector")).toBeHidden();
 
   // 탭 내용이 잘리면 안 된다 (이름 + 조건 요약 두 줄이 다 보여야 한다).
   expect(probe.tab?.clipped, "page tab clips its content").toBeFalsy();
@@ -201,6 +216,88 @@ test("diagnose page tab strip geometry", async ({ page }) => {
   console.log("[geom]", JSON.stringify(info, null, 1));
 });
 
+test("secondary controls remain reachable through disclosures", async ({ page }) => {
+  await mkdir(DIR, { recursive: true });
+  await page.setViewportSize({ width: 1500, height: 1000 });
+  const { project, eventId } = mockupProject();
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+
+  const modal = page.getByTestId("event-editor-modal");
+  await expect(modal).toBeVisible();
+
+  const pageActions = modal.getByTestId("event-page-tabs");
+  await pageActions.locator(":scope > summary").click();
+  await expect(modal.getByTestId("event-page-add")).toBeVisible();
+  await expect(modal.getByTestId("event-page-copy")).toBeVisible();
+  await modal.getByTestId("event-page-copy").click();
+
+  await selectView(modal, "List");
+  await modal.locator(".cmd-item .cmd-head").first().click();
+  const editMenu = modal.getByTestId("event-command-edit-menu");
+  await editMenu.locator(":scope > summary").click();
+  await expect(modal.getByTestId("event-command-toolbar-undo")).toBeVisible();
+  await expect(modal.getByTestId("event-command-toolbar-move-down")).toBeVisible();
+  await expect(modal.getByTestId("event-command-toolbar-field-monster")).toBeVisible();
+  await modal.getByTestId("event-command-toolbar-copy").click();
+
+  const auxTools = modal.getByTestId("event-editor-aux-tools");
+  await auxTools.locator(":scope > summary").click();
+  await expect(modal.getByTestId("ai-event-assist").locator(":scope > summary")).toBeVisible();
+  await expect(modal.getByTestId("event-script-live-preview").locator(":scope > summary")).toBeVisible();
+  await expect(modal.getByTestId("event-script-flowchart").locator(":scope > summary")).toBeVisible();
+
+  const preview = modal.getByTestId("event-script-live-preview");
+  await preview.locator(":scope > summary").click();
+  const previewPosition = preview.locator(".event-script-live-position");
+  await expect(previewPosition).toHaveText(/1\/\d+/);
+  await preview.getByTestId("event-script-live-next").click();
+  await expect(previewPosition).toHaveText(/2\/\d+/);
+
+  const flow = modal.getByTestId("event-script-flowchart");
+  await flow.locator(":scope > summary").click();
+  await expect(flow.getByTestId("event-flowchart-body")).toBeVisible();
+  await expect(flow.locator("[data-testid^='event-flow-node-']").first()).toBeVisible();
+
+  const ai = modal.getByTestId("ai-event-assist");
+  await ai.locator(":scope > summary").click();
+  await ai.getByTestId("ai-event-input").fill("선택지를 하나 추가해 줘");
+  await expect(ai.getByTestId("ai-event-input")).toHaveValue("선택지를 하나 추가해 줘");
+  await ai.locator(":scope > summary").click();
+
+  const legend = modal.getByTestId("event-command-legend");
+  await legend.locator(":scope > summary").click();
+  await expect(legend.locator(".event-command-legend-item")).toHaveCount(6);
+  await expect(legend.locator(".event-command-legend-label")).toContainText([
+    "대사",
+    "흐름",
+    "데이터",
+    "맵",
+    "연출",
+    "시스템",
+  ]);
+
+  const validation = modal.getByTestId("event-draft-validation");
+  await validation.locator(":scope > summary").click();
+  const firstIssue = validation.locator("[data-testid^='event-draft-validation-issue-']").first();
+  await expect(firstIssue).toBeVisible();
+  await firstIssue.click();
+  await expect(modal).toBeVisible();
+
+  const footerMore = modal.locator(".event-editor-footer-more");
+  await footerMore.locator(":scope > summary").click();
+  await expect(modal.getByTestId("event-editor-test")).toBeVisible();
+  await expect(modal.getByTestId("event-editor-help")).toBeVisible();
+  await expect(modal.getByTestId("event-delete")).toBeVisible();
+  await modal.screenshot({ path: `${DIR}/10-disclosures-reachable.png` });
+
+  await modal.getByTestId("event-editor-help").click();
+  await expect(page.getByTestId("event-editor-help-modal")).toBeVisible();
+  await page.getByTestId("event-editor-help-dismiss").click();
+  await expect(page.getByTestId("event-editor-help-modal")).toBeHidden();
+  await expect(modal).toBeVisible();
+});
+
 // 목업 대비 구조 체크리스트. 항목이 실제로 존재/작동하는지 기계적으로 센다.
 test("mockup parity checklist", async ({ page }) => {
   await page.setViewportSize({ width: 1500, height: 1000 });
@@ -209,6 +306,7 @@ test("mockup parity checklist", async ({ page }) => {
   await openEventEditor(page, eventId);
   const modal = page.getByTestId("event-editor-modal");
   await page.waitForTimeout(600);
+  await selectView(modal, "List");
 
   const result = await modal.evaluate((root) => {
     const has = (sel: string) => !!root.querySelector(sel);
@@ -219,7 +317,7 @@ test("mockup parity checklist", async ({ page }) => {
     const tabs = rect(".event-page-number-tabs");
     const rail = rect(".event-editor-settings-column");
     const canvas = rect(".event-editor-commands-column");
-    const insp = rect(".event-editor-inspector-column");
+    const inspector = root.querySelector<HTMLElement>(".event-editor-inspector-column");
     const card = rect(".event-editor-card");
     const val = rect(".event-draft-validation");
     const gutters = new Set<string>();
@@ -230,7 +328,6 @@ test("mockup parity checklist", async ({ page }) => {
     const okBtn = root.querySelector<HTMLElement>(".btn.event-editor-footer-button.primary");
     const legend = rect(".event-command-legend");
     const list = rect(".cmd-list");
-    const idleStats = has(".event-inspector-stats") || has("[data-testid='event-inspector-body']");
     const headLegend = rect(".event-contents-fieldset > .event-contents-legend");
     const toolbar = rect(".event-editor-command-toolbar");
     const headLegendText = root.querySelector(".event-contents-fieldset > .event-contents-legend")?.textContent ?? "";
@@ -239,19 +336,18 @@ test("mockup parity checklist", async ({ page }) => {
       "탭 조건 요약": has("[data-testid='event-page-tab-cond-1']"),
       "이벤트 카드": has(".event-editor-card") && has(".event-editor-card-sprite"),
       "카드가 레일 최상단": !!card && !!rail && card.top - rail.top < 24,
-      "3열 배치": !!rail && !!canvas && !!insp && rail.right <= canvas.left + 24 && canvas.right <= insp.left + 24,
-      // 목업 비율: 레일 312 / 인스펙터 348 (가운데가 남는 폭 전부).
-      "열 폭 312·348": !!rail && !!insp && Math.abs(rail.width - 312) <= 2 && Math.abs(insp.width - 348) <= 2,
-      "블록 캔버스 거터 다색": gutters.size >= 4,
+      "초기 2열 배치": !!rail && !!canvas && rail.right <= canvas.left + 24,
+      "초기 인스펙터 숨김": inspector?.hidden === true,
+      "설정 열 폭 312": !!rail && Math.abs(rail.width - 312) <= 2,
+      "블록 캔버스 거터 다색": gutters.size >= 3,
       "인라인 인스펙터": has(".event-editor-inspector-column"),
-      "카테고리 범례": has(".event-command-legend"),
-      // 범례는 툴바 줄이 아니라 캔버스 아래 자기 한 줄.
+      "카테고리 범례 접힘": has(".event-command-legend") && root.querySelector<HTMLDetailsElement>(".event-command-legend")?.open === false,
       "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
-      "인스펙터에 읽을 것": idleStats,
       "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
       "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
-      // 목업 canvas-head: 범례와 툴바가 같은 32px 행에 정렬.
-      "헤드 행 32 정렬": !!headLegend && !!toolbar && Math.abs(headLegend.top - toolbar.top) <= 2 && toolbar.height <= 34,
+      "툴바가 헤드 아래": !!headLegend && !!toolbar && toolbar.top >= headLegend.bottom - 2 && toolbar.height <= 34,
+      "편집 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-edit-menu")?.open === false,
+      "보조 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-aux-tools-shell")?.open === false,
       // 목업 범례 문구: "실행 내용 · N개".
       "범례 명령 수": /실행 내용\s*·\s*\d+개/.test(headLegendText),
     };
@@ -260,21 +356,44 @@ test("mockup parity checklist", async ({ page }) => {
   const total = Object.keys(result).length;
   // eslint-disable-next-line no-console
   console.log("[parity]", JSON.stringify(result), `=> ${pass}/${total}`);
-  expect(pass, JSON.stringify(result)).toBeGreaterThanOrEqual(total - 1);
+  expect(pass, JSON.stringify(result)).toBe(total);
+
+  await selectView(modal, "Storyboard");
+  await selectFirstStoryboardCommand(modal);
+  await expect(modal.getByTestId("event-editor-inspector")).toBeVisible();
+  await expect(modal.getByTestId("event-inspector-card")).toBeVisible();
+  const selectedGeometry = await modal.evaluate((root) => {
+    const rail = root.querySelector<HTMLElement>(".event-editor-settings-column")?.getBoundingClientRect();
+    const canvas = root.querySelector<HTMLElement>(".event-editor-commands-column")?.getBoundingClientRect();
+    const inspector = root.querySelector<HTMLElement>(".event-editor-inspector-column")?.getBoundingClientRect();
+    return {
+      hasInspectorState: root.querySelector(".event-editor-workbench")?.classList.contains("has-command-inspector") === true,
+      orderedColumns: !!rail && !!canvas && !!inspector && rail.right <= canvas.left + 24 && canvas.right <= inspector.left + 2,
+      inspectorWidth: inspector?.width ?? 0,
+    };
+  });
+  expect(selectedGeometry.hasInspectorState).toBe(true);
+  expect(selectedGeometry.orderedColumns).toBe(true);
+  expect(selectedGeometry.inspectorWidth).toBeGreaterThanOrEqual(346);
 });
 
 
 // 뷰포트 매트릭스 — 목업 불변식(3열 312/유연/348, 단일 행 탭, 하단 스트립)이
 // 실제 사용자가 쓰는 창 크기에서 깨지지 않는지 기계적으로 확인한다.
 const VIEWPORTS = [
-  { width: 1280, height: 800 },
-  { width: 1500, height: 1000 },
-  { width: 1920, height: 1080 },
-  { width: 2560, height: 1440 },
+  { width: 1586, height: 992 },
+  { width: 1280, height: 900 },
+  { width: 1024, height: 768 },
+  { width: 960, height: 900 },
 ];
 
 for (const vp of VIEWPORTS) {
   test(`mockup invariants hold at ${vp.width}x${vp.height}`, async ({ page }) => {
+    const browserIssues: string[] = [];
+    page.on("pageerror", (error) => browserIssues.push(`pageerror: ${error.message}`));
+    page.on("console", (message) => {
+      if (message.type() === "error") browserIssues.push(`console: ${message.text()}`);
+    });
     await page.setViewportSize(vp);
     const { project, eventId } = mockupProject();
     await seedProjectFromSupabaseCanonical(page, project);
@@ -283,7 +402,7 @@ for (const vp of VIEWPORTS) {
     await expect(modal).toBeVisible();
     await page.waitForTimeout(600);
 
-    const result = await modal.evaluate((root) => {
+    const initial = await modal.evaluate((root) => {
       const rect = (sel: string) => {
         const n = root.querySelector<HTMLElement>(sel);
         return n ? n.getBoundingClientRect() : null;
@@ -292,20 +411,27 @@ for (const vp of VIEWPORTS) {
       const tabs = rect(".event-page-number-tabs");
       const rail = rect(".event-editor-settings-column");
       const canvas = rect(".event-editor-commands-column");
-      const insp = rect(".event-editor-inspector-column");
+      const inspector = root.querySelector<HTMLElement>(".event-editor-inspector-column");
       const val = rect(".event-draft-validation");
       const list = rect(".cmd-list");
       const legend = rect(".event-command-legend");
+      const storyboardHost = rect(".event-storyboard-host");
+      const storyboardCard = rect(".event-storyboard-card");
       const bench = root.querySelector<HTMLElement>(".event-editor-workbench");
       const inX = (r: DOMRect | null) => !!r && r.left >= modalRect.left - 1 && r.right <= modalRect.right + 1;
       return {
-        "3열 배치": !!rail && !!canvas && !!insp && rail.right <= canvas.left + 24 && canvas.right <= insp.left + 24,
-        "열 폭 312·348": !!rail && !!insp && Math.abs(rail.width - 312) <= 2 && Math.abs(insp.width - 348) <= 2,
-        "캔버스가 눌리지 않음": !!canvas && !!rail && !!insp && canvas.width >= 300,
+        inspectorHidden: inspector?.hidden === true,
+        twoColumnOrder: !!rail && !!canvas && rail.right <= canvas.left + 24,
+        canvasWidth: canvas?.width ?? 0,
         "탭 단일 행": !!tabs && tabs.height < 80 && tabs.width > 400,
-        "열이 모달 안에": inX(rail) && inX(canvas) && inX(insp),
+        "열이 모달 안에": inX(rail) && inX(canvas),
         "검증 스트립 하단": !!val && !!canvas && val.top >= canvas.bottom - 8,
         "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
+        "이벤트 카드가 레일 안": root.querySelector(".event-editor-settings-column > .event-editor-card") !== null,
+        "편집 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-edit-menu")?.open === false,
+        "보조 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-aux-tools-shell")?.open === false,
+        "검사 상세 접힘": root.querySelector<HTMLDetailsElement>(".event-draft-validation")?.open === false,
+        "스토리보드 카드 잘림 없음": !!storyboardHost && !!storyboardCard && storyboardCard.bottom <= storyboardHost.bottom + 1,
         "가로 스크롤 없음": !bench || bench.scrollWidth <= bench.clientWidth + 1,
         "레일 gfx/trig 겹침 없음": (() => {
           const gfx = rect('[data-testid="event-classic-graphic"]');
@@ -314,12 +440,57 @@ for (const vp of VIEWPORTS) {
         })(),
       };
     });
-    const pass = Object.values(result).filter(Boolean).length;
-    const total = Object.keys(result).length;
-    // eslint-disable-next-line no-console
-    console.log(`[parity ${vp.width}x${vp.height}]`, JSON.stringify(result), `=> ${pass}/${total}`);
-    expect(pass, JSON.stringify(result)).toBe(total);
+    expect(initial.inspectorHidden).toBe(true);
+    expect(initial.twoColumnOrder).toBe(true);
+    expect(initial.canvasWidth).toBeGreaterThan(300);
+    expect(initial["스토리보드 카드 잘림 없음"]).toBe(true);
+    await modal.screenshot({ path: `${DIR}/${vp.width}x${vp.height}-initial.png` });
 
-    await modal.screenshot({ path: `${DIR}/07-shell-${vp.width}.png` });
+    await selectFirstStoryboardCommand(modal);
+    const inspector = modal.getByTestId("event-editor-inspector");
+    await expect(inspector).toBeVisible();
+    await expect(inspector.getByTestId("event-inspector-card")).toBeVisible();
+    await expect(page.getByTestId("event-command-edit-dialog")).toHaveCount(0);
+
+    const selected = await modal.evaluate((root, desktop) => {
+      const rect = (selector: string) => root.querySelector<HTMLElement>(selector)?.getBoundingClientRect() ?? null;
+      const modalRect = root.getBoundingClientRect();
+      const canvas = rect(".event-editor-commands-column");
+      const inspectorRect = rect(".event-editor-inspector-column");
+      const bench = root.querySelector<HTMLElement>(".event-editor-workbench");
+      return {
+        inspectorState: bench?.classList.contains("has-command-inspector") === true,
+        inspectorWidth: inspectorRect?.width ?? 0,
+        canvasWidth: canvas?.width ?? 0,
+        desktopOrdered: !desktop || (!!canvas && !!inspectorRect && canvas.right <= inspectorRect.left + 2),
+        compactOverlay: desktop || (!!canvas && !!inspectorRect && inspectorRect.left < canvas.right),
+        inspectorInsideModal: !!inspectorRect && inspectorRect.left >= modalRect.left - 1 && inspectorRect.right <= modalRect.right + 1,
+        noHorizontalOverflow: !bench || bench.scrollWidth <= bench.clientWidth + 1,
+      };
+    }, vp.width > 1180);
+    const checks = { ...initial, ...selected };
+    const pass = Object.entries(checks).filter(([key, value]) => key === "canvasWidth" || Boolean(value)).length;
+    const total = Object.keys(checks).length;
+    // eslint-disable-next-line no-console
+    console.log(`[parity ${vp.width}x${vp.height}]`, JSON.stringify(checks), `=> ${pass}/${total}`);
+    expect(selected.inspectorState).toBe(true);
+    expect(selected.inspectorWidth).toBeGreaterThanOrEqual(346);
+    expect(selected.canvasWidth).toBeGreaterThan(300);
+    expect(selected.desktopOrdered).toBe(true);
+    expect(selected.compactOverlay).toBe(true);
+    expect(selected.inspectorInsideModal).toBe(true);
+    expect(selected.noHorizontalOverflow).toBe(true);
+
+    await modal.screenshot({ path: `${DIR}/${vp.width}x${vp.height}-selected.png` });
+    await writeFile(
+      `${DIR}/${vp.width}x${vp.height}-metrics.json`,
+      `${JSON.stringify({ viewport: vp, initial, selected }, null, 2)}\n`,
+      "utf8"
+    );
+    await writeFile(
+      `${DIR}/${vp.width}x${vp.height}-browser-issues.json`,
+      `${JSON.stringify(browserIssues, null, 2)}\n`,
+      "utf8"
+    );
   });
 }
