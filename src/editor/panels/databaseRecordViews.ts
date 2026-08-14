@@ -18,13 +18,16 @@ import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
+import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import {
+  categoryFilterForCollection,
   listScrollTopForCollection,
   resetRecordViewSessionState,
   searchQueryForCollection,
   selectedRecordForSession,
   selectedRecordIdForSession,
+  setCategoryFilterForCollection,
   setListScrollTopForCollection,
   setSearchQueryForCollection,
   setSelectedRecordId,
@@ -34,7 +37,7 @@ import {
 } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import type { DatabaseRecords } from "@/project/types";
+import type { DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
 
 let searchRerenderTimer: number | null = null;
 
@@ -49,6 +52,33 @@ const COLLECTION_LABELS: Record<DatabaseCollection, string> = {
   states: "상태",
   battleAnimations: "전투 애니메이션",
 };
+
+// 카테고리 필터 칩 라벨 — 아이템 종류는 databaseItemRecordView 의 ITEM_TYPES 상수 값과
+// DB 자체 라벨(databaseControls.literalLabel, 아이템 폼 종류 드롭다운과 동일)을 따른다.
+// 장비는 EquipmentRecord.slot 실값(weapon/shield/helmet/armor/accessory) 기준이다.
+// 주의: EQUIPMENT_TYPES 는 ItemType 명명(body/head)이라 slot 도메인(armor/helmet)과
+// 다르므로 칩 id 는 slot 값을 쓴다(부위 라벨은 actorRecordBattlePanels EQUIPMENT_SLOTS 와 동일).
+const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
+  normalGoods: "일반 물품",
+  weapon: "무기",
+  shield: "방패",
+  body: "갑옷",
+  head: "머리",
+  accessory: "장신구",
+  medicine: "약",
+  book: "책",
+  seed: "씨앗",
+  special: "특수",
+  switch: "스위치",
+};
+
+const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; readonly label: string }[] = [
+  { slot: "weapon", label: "무기" },
+  { slot: "shield", label: "방패" },
+  { slot: "helmet", label: "머리" },
+  { slot: "armor", label: "몸" },
+  { slot: "accessory", label: "장신구" },
+];
 
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
@@ -79,9 +109,11 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
 
   const listEl = recordList(collection, records, onSelect);
   const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  const chips = categoryFilterChips(collection, rerender);
   listPane.append(
     el("h3", { text: COLLECTION_LABELS[collection] }),
     recordSearch(collection, rerender),
+    ...(chips ? [chips] : []),
     listEl,
     recordListFooter(records.length),
     toolbar(collection, rerender),
@@ -305,9 +337,14 @@ function recordList(
   onSelect: (id: string) => void
 ): HTMLElement {
   const searchQuery = searchQueryForCollection(collection);
+  // 저장된 필터 id가 현재 컬렉션의 칩 목록에 없으면 'all'로 취급한다(손상/낡은
+  // localStorage 값에서도 크래시 없이 전체 목록을 보여준다).
+  const categoryFilter = effectiveCategoryFilter(collection);
   const visible: VisibleRow[] = [];
   let visibleIndex = 0;
   for (const [originalIndex, record] of records.entries()) {
+    // 카테고리 필터와 검색어는 AND 결합한다.
+    if (categoryFilter !== "all" && !matchesCategoryFilter(collection, record, categoryFilter)) continue;
     if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
     visibleIndex += 1;
     visible.push({ record, originalIndex, visibleIndex });
@@ -359,6 +396,64 @@ function scheduleFrame(run: () => void): void {
     return;
   }
   run();
+}
+
+// 아이템/장비 카테고리 필터 칩 행 — 다른 컬렉션(배우/스킬/스위치 등)에서는 null.
+// 클릭 시 세션 필터를 즉시 갱신하고 rerender 로 목록/갤러리를 다시 그린다(디바운스 없음).
+function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
+  const chips: readonly { readonly id: string; readonly label: string }[] | null =
+    collection === "items"
+      ? ITEM_TYPES.map((type) => ({ id: type, label: ITEM_TYPE_CHIP_LABELS[type] }))
+      : collection === "equipment"
+        ? EQUIPMENT_SLOT_CHIPS.map(({ slot, label }) => ({ id: slot, label }))
+        : null;
+  if (!chips) return null;
+  const current = effectiveCategoryFilter(collection);
+  const row = el("div", { class: "db-filter-chips", attrs: { role: "group", "aria-label": "카테고리 필터" } });
+  row.append(
+    filterChipButton("all", "전체", current === "all", () => {
+      if (categoryFilterForCollection(collection) === "all") return;
+      setCategoryFilterForCollection(collection, "all");
+      rerender();
+    }),
+    ...chips.map(({ id, label }) =>
+      filterChipButton(id, label, current === id, () => {
+        if (categoryFilterForCollection(collection) === id) return;
+        setCategoryFilterForCollection(collection, id);
+        rerender();
+      })
+    )
+  );
+  return row;
+}
+
+function filterChipButton(id: string, label: string, active: boolean, onClick: () => void): HTMLElement {
+  return el("button", {
+    class: `db-filter-chip${active ? " active" : ""}`,
+    attrs: { "aria-pressed": String(active), type: "button" },
+    dataset: { testid: `db-filter-chip-${id}` },
+    text: label,
+    on: { click: onClick },
+  });
+}
+
+// 저장된 필터가 현재 컬렉션의 알려진 칩 id가 아니면 'all'로 취급한다.
+function effectiveCategoryFilter(collection: DatabaseCollection): string {
+  const stored = categoryFilterForCollection(collection);
+  if (stored === "all") return "all";
+  if (collection === "items") return ITEM_TYPES.includes(stored as (typeof ITEM_TYPES)[number]) ? stored : "all";
+  if (collection === "equipment") return EQUIPMENT_SLOT_CHIPS.some((chip) => chip.slot === stored) ? stored : "all";
+  return "all";
+}
+
+function matchesCategoryFilter(
+  collection: DatabaseCollection,
+  record: DatabaseRecords[DatabaseCollection][number],
+  filter: string
+): boolean {
+  if (collection === "items") return (record as ItemRecord).type === filter;
+  if (collection === "equipment") return (record as EquipmentRecord).slot === filter;
+  return true;
 }
 
 function recordForm(
