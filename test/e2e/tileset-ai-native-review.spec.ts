@@ -116,24 +116,28 @@ test("opens a separate conversational AI workspace and only applies confirmed kn
   const workspace = page.getByTestId("tileset-ai-workspace");
   await expect(workspace).toBeVisible();
   await expect(workspace).toHaveAttribute("data-state", "analyzing");
+  await expect(workspace).toHaveAttribute("data-step", "analyze");
+  await expect(page.getByTestId("tileset-ai-workspace-analyze")).toBeVisible();
   const modalBox = await workspace.boundingBox();
   expect(modalBox?.width ?? 0).toBeGreaterThan(1040);
   expect(modalBox?.height ?? 0).toBeGreaterThan(650);
   await page.screenshot({ path: testInfo.outputPath("tileset-ai-workspace-analyzing-1280x800.png"), fullPage: true });
 
+  await expect(workspace).toHaveAttribute("data-step", "questions");
   await expect(page.getByTestId("tileset-ai-workspace-question")).toContainText("위쪽 수관만 상위 레이어");
   await expect(page.getByTestId("tileset-ai-workspace-next")).toContainText("용도 미확인 가구");
-  await expect(page.getByTestId("tileset-ai-workspace-apply")).toHaveText("확정된 1개 적용");
+  await expect(page.getByTestId("tileset-ai-workspace-apply")).toHaveCount(0);
+  await expect(page.getByTestId("tileset-ai-workspace-to-summary")).toBeVisible();
   await expect.poll(() => page.getByTestId("tileset-ai-workspace-host").evaluate((host) =>
     Array.from(document.body.children)
       .filter((element) => element !== host)
       .every((element) => element instanceof HTMLElement && element.inert),
   )).toBe(true);
-  await page.getByTestId("tileset-ai-workspace-apply").focus();
+  await page.getByTestId("tileset-ai-workspace-close").focus();
   await page.keyboard.press("Tab");
-  await expect(page.getByTestId("tileset-ai-workspace-close")).toBeFocused();
+  await expect(page.locator(".tileset-ai-workspace button:not([disabled])").first()).toBeFocused();
   await page.keyboard.press("Shift+Tab");
-  await expect(page.getByTestId("tileset-ai-workspace-apply")).toBeFocused();
+  await expect(page.getByTestId("tileset-ai-workspace-close")).toBeFocused();
   await page.screenshot({ path: testInfo.outputPath("tileset-ai-workspace-question-1280x800.png"), fullPage: true });
   await page.setViewportSize({ width: 1536, height: 1024 });
   await expect(workspace).toBeVisible();
@@ -149,12 +153,17 @@ test("opens a separate conversational AI workspace and only applies confirmed kn
   await expect(page.locator(".tileset-ai-chat-bubble.user").filter({ hasText: "네, 수관은 전부 상위예요" })).toBeVisible();
   await expect(page.getByTestId("tileset-ai-workspace-question")).toContainText("책상인가요, 선반인가요");
   await expect(page.getByTestId("tileset-ai-workspace-question")).toBeFocused();
-  await expect(page.getByTestId("tileset-ai-workspace-apply")).toHaveText("확정된 2개 적용");
+  await expect(page.getByTestId("tileset-ai-workspace-apply")).toHaveCount(0);
+  await expect(page.getByTestId("tileset-ai-workspace-to-summary")).toBeVisible();
   expect(await projectGroupNames(page)).not.toContain("AI 레이어 나무");
   await page.screenshot({ path: testInfo.outputPath("tileset-ai-workspace-conversation-1280x800.png"), fullPage: true });
 
-  await page.getByTestId("tileset-ai-workspace-skip").click();
+  await page.getByTestId("tileset-ai-workspace-discard").click();
   await expect(page.getByTestId("tileset-ai-workspace-question")).toHaveCount(0);
+  await expect(page.getByTestId("tileset-ai-workspace-finish")).toBeVisible();
+  await page.getByTestId("tileset-ai-workspace-finish-goto-summary").click();
+  await expect(workspace).toHaveAttribute("data-step", "summary");
+  await expect(page.getByTestId("tileset-ai-summary-item-ai-review-tree-4-2")).toBeVisible();
   await page.getByTestId("tileset-ai-workspace-apply").click();
   await expect.poll(() => projectGroupNames(page)).toEqual(expect.arrayContaining(["AI 반복 절벽", "AI 레이어 나무"]));
   await expect(page.getByTestId("tileset-ai-workspace-status")).toContainText("적용했습니다");

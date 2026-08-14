@@ -25,9 +25,9 @@ type AtlasRegion = {
 
 const FILTERS: readonly { readonly id: TilesetAiAtlasFilter; readonly label: string }[] = [
   { id: "all", label: "전체" },
-  { id: "confirmed", label: "확정됨" },
-  { id: "questions", label: "질문 있음" },
-  { id: "unclassified", label: "미분류" },
+  { id: "confirmed", label: "확정" },
+  { id: "questions", label: "확인 필요" },
+  { id: "unclassified", label: "낮은 확신" },
 ];
 
 const ZOOMS: readonly TilesetAiAtlasZoom[] = [2, 3, 4];
@@ -162,20 +162,23 @@ function renderRegion(region: AtlasRegion, options: AtlasOptions): HTMLElement {
     `height:${(geometry.height / rows) * 100}%`,
   ].join(";");
   const active = options.snapshot.current?.id === region.proposal.id;
+  const pending = region.proposal.status === "pending";
   return el("button", {
     class: `tileset-ai-atlas-region ${region.kind}${active ? " active" : ""}`,
     attrs: {
       type: "button",
       style,
-      title: `${region.proposal.name} · 신뢰도 ${Math.round(region.proposal.confidence * 100)}%`,
-      "aria-label": `${region.proposal.name}, ${region.proposal.tileIds.length}칸`,
+      title: pending
+        ? `${region.proposal.name} · 신뢰도 ${Math.round(region.proposal.confidence * 100)}% · 클릭해서 이 질문 열기`
+        : `${region.proposal.name} · 신뢰도 ${Math.round(region.proposal.confidence * 100)}% · 확정 · 적용 대기`,
+      "aria-label": `${region.proposal.name}, ${region.proposal.tileIds.length}칸${pending ? ", 클릭해서 이 질문 열기" : ", 확정됨"}`,
     },
     dataset: { proposalId: region.proposal.id, testid: `tileset-ai-atlas-region-${region.proposal.id}` },
     children: [el("span", {
       class: "tileset-ai-atlas-region-label",
       text: `${region.proposal.name} · ${region.proposal.tileIds.length}칸`,
     })],
-    on: { click: () => { if (region.proposal.status === "pending") options.onQuestion(region.proposal.id); } },
+    on: { click: () => { if (pending) options.onQuestion(region.proposal.id); } },
   });
 }
 
@@ -188,9 +191,9 @@ function atlasRegions(snapshot: TilesetAiConversationSnapshot): readonly AtlasRe
 
 function renderLegend(): HTMLElement {
   const items: readonly [string, string][] = [
-    ["confirmed", "AI가 확신함"],
-    ["questions", "사용자 확인 필요"],
-    ["unclassified", "아직 모름"],
+    ["confirmed", "확정 · 적용 대기"],
+    ["questions", "확인 필요"],
+    ["unclassified", "낮은 확신"],
   ];
   return el("div", {
     class: "tileset-ai-atlas-legend",

@@ -105,6 +105,7 @@ export class FakeElement extends FakeNode {
   disabled = false;
   hidden = false;
   innerHTML = "";
+  inert = false;
   max = "";
   min = "";
   scrollLeft = 0;
@@ -120,6 +121,9 @@ export class FakeElement extends FakeNode {
   /** HTMLElement 호환 — 제안 모달 open()이 빈 host 가드에 사용. */
   get childElementCount(): number {
     return this.childNodes.filter((child) => child instanceof FakeElement).length;
+  }
+  get children(): FakeElement[] {
+    return this.childNodes.filter((child): child is FakeElement => child instanceof FakeElement);
   }
   private readonly listeners: Partial<Record<string, EventListenerOrEventListenerObject[]>> = {};
   readonly classList = {
@@ -370,6 +374,9 @@ export function installFakeDom(options: FakeDomOptions = {}): () => void {
   defineDomGlobal("document", {
     activeElement: null,
     body,
+    get children(): readonly FakeElement[] {
+      return body.children;
+    },
     createElement: (tagName: string) => new FakeElement(tagName),
     // SVG 아이콘(makeSvgIcon)이 createElementNS를 쓴다 — 네임스페이스는 무시하고 일반 요소로 위임.
     createElementNS: (_ns: string, tagName: string) => new FakeElement(tagName),
