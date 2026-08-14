@@ -597,27 +597,158 @@ function typeChartFieldset(chart: TypeChartRecord | undefined, rerender: () => v
   return rm2k3Fieldset("타입 상성", children);
 }
 
+/** 타입칩 클릭 사이클 — 0→0.25→0.5→1→1.5→2→3→4 (끝에서 0 으로 wrap). */
+const TYPE_CHART_CYCLE = [0, 0.25, 0.5, 1, 1.5, 2, 3, 4] as const;
+
 function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
   const types = chart?.types ?? [];
-  const table = el("table", { class: "db-type-chart-matrix", dataset: { testid: "db-type-chart-matrix" } });
+  const multipliers = chart?.multipliers ?? {};
+
+  // 대미지 미리보기 배지 — 여기선 타입차트 승수만 표기한다. 등급(RM2k3 elementRates) ×
+  // 타입차트 × 장비(elementalDefenseIds) 3중 컴파운딩은 openwiki/editor-database.md B5
+  // 문서가 다루며(런타임 elementMultiplierFor), 셀 하나의 예상 배율로 과잉 정밀하게
+  // 보여주지 않는다.
+  const previewLine = el("span", { class: "db-type-chart-preview-line", text: "셀을 클릭하면 배율을 미리 봅니다" });
+  const preview = el("div", {
+    class: "db-type-chart-preview",
+    dataset: { testid: "db-type-preview" },
+    children: [el("span", { class: "db-type-chart-preview-legend", text: "공격→방어" }), previewLine],
+  });
+  const showPreview = (attacker: string, defender: string, value: number): void => {
+    previewLine.textContent = `${attacker} → ${defender} ${formatTypeChartMultiplier(value)}x`;
+  };
+
+  // 우클릭 직접 입력 팝오버 — 매트릭스와 함께 1회 생성, contextmenu 시 열고
+  // 확인/Escape 시 닫는다. 값은 항상 updateTypeChartCell 경로로 쓴다.
+  const popoverInput = el("input", {
+    attrs: { type: "number", min: "0", max: "4", step: "0.25" },
+    dataset: { testid: "db-type-chart-popover-input" },
+  }) as HTMLInputElement;
+  const popoverConfirm = el("button", {
+    class: "btn small",
+    text: "확인",
+    attrs: { type: "button" },
+    dataset: { testid: "db-type-chart-popover-confirm" },
+  }) as HTMLButtonElement;
+  const popover = el("div", {
+    class: "db-type-chart-popover",
+    dataset: { testid: "db-type-chart-popover" },
+    children: [popoverInput, popoverConfirm],
+  });
+  popover.hidden = true;
+
+  let popoverTarget: { readonly chip: HTMLButtonElement; readonly attacker: string; readonly defender: string } | null = null;
+  const closePopover = (): void => {
+    popover.hidden = true;
+    popoverTarget?.chip.focus();
+    popoverTarget = null;
+  };
+  popoverConfirm.addEventListener("click", () => {
+    const target = popoverTarget;
+    if (!target) return;
+    const value = clampTypeChartValue(parseFloat(popoverInput.value));
+    updateTypeChartCell(target.attacker, target.defender, value);
+    applyChipValue(target.chip, value);
+    showPreview(target.attacker, target.defender, value);
+    closePopover();
+  });
+  popoverInput.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closePopover();
+    }
+  });
+
+  const table = el("table", { class: "db-type-chart-matrix" });
   const head = el("tr", { children: [el("th", { text: "공\\방" }), ...types.map((type) => el("th", { text: type }))] });
   table.append(el("thead", { children: [head] }));
   const body = el("tbody");
   for (const attacker of types) {
     const row = el("tr", { children: [el("th", { text: attacker })] });
     for (const defender of types) {
-      const input = el("input", {
-        attrs: { type: "number", step: "0.25", min: "0", max: "4" },
-        value: String(chart?.multipliers[attacker]?.[defender] ?? 1),
-        dataset: { testid: `db-type-chart-${attacker}-${defender}` },
-      }) as HTMLInputElement;
-      input.addEventListener("change", () => updateTypeChartCell(attacker, defender, parseFloat(input.value)));
-      row.append(el("td", { children: [input] }));
+      const isDiagonal = attacker === defender;
+      const value = multipliers[attacker]?.[defender] ?? 1;
+      const chip = el("button", {
+        class: "db-type-chip",
+        attrs: { type: "button" },
+        text: formatChipValue(value),
+        dataset: {
+          testid: `db-type-chart-${attacker}-${defender}`,
+          attacker,
+          defender,
+          value: String(value),
+          state: isDiagonal ? "diag" : typeChartState(value),
+        },
+      }) as HTMLButtonElement;
+      if (isDiagonal) chip.disabled = true;
+      else {
+        chip.addEventListener("click", () => {
+          const current = parseFloat(chip.dataset.value ?? "1");
+          const next = nextTypeChartCycleValue(current);
+          updateTypeChartCell(attacker, defender, next);
+          applyChipValue(chip, next);
+          showPreview(attacker, defender, next);
+        });
+        chip.addEventListener("contextmenu", (event) => {
+          event.preventDefault();
+          popoverInput.value = String(parseFloat(chip.dataset.value ?? "1"));
+          popoverTarget = { chip, attacker, defender };
+          popover.hidden = false;
+          // 칩 근처에 띄운다 — fakeDom 의 getBoundingClientRect 는 0 을 돌려줘도 동작엔 영향 없다.
+          const chipRect = chip.getBoundingClientRect();
+          const hostRect = popover.parentElement?.getBoundingClientRect();
+          popover.style.left = `${chipRect.left - (hostRect?.left ?? 0)}px`;
+          popover.style.top = `${chipRect.bottom - (hostRect?.top ?? 0) + 4}px`;
+          popoverInput.focus();
+        });
+        chip.addEventListener("mouseenter", () => {
+          showPreview(attacker, defender, parseFloat(chip.dataset.value ?? "1"));
+        });
+      }
+      row.append(el("td", { children: [chip] }));
     }
     body.append(row);
   }
   table.append(body);
-  return el("div", { class: "db-type-chart-wrap", children: [table] });
+
+  return el("div", {
+    class: "db-type-chart-wrap",
+    dataset: { testid: "db-type-chart-matrix" },
+    children: [preview, table, popover],
+  });
+}
+
+function nextTypeChartCycleValue(current: number): number {
+  const next = TYPE_CHART_CYCLE.find((value) => value > current + 1e-9);
+  return next ?? TYPE_CHART_CYCLE[0];
+}
+
+function typeChartState(value: number): "up" | "down" | "neutral" {
+  if (value > 1) return "up";
+  if (value < 1) return "down";
+  return "neutral";
+}
+
+/** 칩 라벨 — 0.25 / 1.5 / 2 형태(불필요한 .0 생략). */
+function formatChipValue(value: number): string {
+  return String(Number(value.toFixed(2)));
+}
+
+/** 미리보기 라벨 — 2 → "2.0", 1.5 → "1.5", 0.25 → "0.25" (정수에 .0 유지). */
+function formatTypeChartMultiplier(value: number): string {
+  const text = formatChipValue(value);
+  return text.includes(".") ? text : `${text}.0`;
+}
+
+function clampTypeChartValue(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(4, Math.max(0, value));
+}
+
+function applyChipValue(chip: HTMLButtonElement, value: number): void {
+  chip.dataset.value = String(value);
+  chip.dataset.state = typeChartState(value);
+  chip.textContent = formatChipValue(value);
 }
 
 function updateTypeChartCell(attacker: string, defender: string, value: number): void {
