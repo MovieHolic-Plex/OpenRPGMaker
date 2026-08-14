@@ -59,7 +59,7 @@ describe("AI busy 입력 큐", () => {
     expect(queue.hidden).toBe(true);
 
     input.value = "첫 번째 요청";
-    send.click(); // 턴 시작(비동기) — API 키가 없어 곧 오류로 끝난다.
+    send.click(); // 턴 시작(비异步) — API 키가 없어 곧 오류로 끝난다.
     input.value = "두 번째 요청";
     send.click(); // busy 중 → 큐로.
 
@@ -67,6 +67,12 @@ describe("AI busy 입력 큐", () => {
     expect(queue.hidden).toBe(false);
     expect(queue.textContent).toContain("대기 1건");
 
+    // 기본 agentMode=auto 이므로 첫 턴은 플래너 라운드(응답 1)와 본문 라운드(응답 2)를 갖는다.
+    // 두 번째 턴도 동일하게 2라운드. 순서대로 방출한다.
+    pendingResponses.shift()?.();
+    await flushAsync();
+    pendingResponses.shift()?.();
+    await flushAsync();
     pendingResponses.shift()?.();
     await flushAsync();
     pendingResponses.shift()?.();

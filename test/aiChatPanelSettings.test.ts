@@ -137,9 +137,11 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    expect(DEFAULT_MODEL).toBe("gpt-5.6-terra");
-    expect(loadAiConfig().model).toBe("gpt-5.6-terra");
-    expect(loadAiConfig().liteModel).toBe(DEFAULT_LITE_MODEL);
+    // 기본 모델은 cpen 게이트웨이 경로(cpen/gpt-5-6-luna) — 예전 chatgpt-codex 기본이 아니다.
+    // 단 chatgpt OAuth 모드에서는 gpt- 프리픽스만 쓸 수 있어 loadAiConfig 가 권장 기본으로 교정한다.
+    expect(DEFAULT_MODEL).toBe("cpen/gpt-5-6-luna");
+    expect(loadAiConfig().model).toBe("gpt-5.6-sol");
+    expect(loadAiConfig().liteModel).toBe("gpt-5.6-sol");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", () => {
@@ -164,7 +166,8 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
-    expect(DEFAULT_LITE_MODEL).toBe("gpt-5.6-terra");
+    // 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
+    expect(DEFAULT_LITE_MODEL).toBe("cpen/gpt-5-6-luna");
   });
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {
@@ -235,6 +238,54 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.baseUrl).toBe("https://example.invalid/v1");
+  });
+});
+
+describe("agentMode 설정", () => {
+  it("agentMode 키가 없는 옛 설정 blob은 로드 시 'auto'로 백필된다", () => {
+    // 이 변경 전에 저장된 blob — agentMode 필드가 없다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: undefined }));
+    const loaded = loadAiConfig();
+    expect(loaded.agentMode).toBe("auto");
+  });
+
+  it("agentMode가 이상한 값이면 'auto'로 정규화된다", () => {
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "weird" }));
+    expect(loadAiConfig().agentMode).toBe("auto");
+  });
+
+  it("설정 모달에서 agentMode를 chat으로 바꾸면 blob에 저장되고 재렌더 시 값이 유지된다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const select = findByTestId(modal, "ai-config-agentmode");
+    if (!select) throw new Error("agentMode select missing");
+    // 기본값 auto 가 선택돼 있다.
+    expect(select.value).toBe("auto");
+
+    select.value = "chat";
+    select.dispatchEvent(new Event("change"));
+
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.agentMode).toBe("chat");
+
+    // 재로드(재렌더) 후에도 저장된 값이 토글에 다시 그려진다.
+    expect(loadAiConfig().agentMode).toBe("chat");
+    const reopened = openSettingsSurface(renderPanel());
+    const reselect = findByTestId(reopened, "ai-config-agentmode");
+    expect(reselect?.value).toBe("chat");
+  });
+
+  it("설정 저장 버튼으로도 agentMode가 저장된다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const select = findByTestId(modal, "ai-config-agentmode");
+    const save = findByTestId(modal, "ai-config-save");
+    if (!select || !save) throw new Error("agentMode controls missing");
+    select.value = "chat";
+    save.click();
+
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.agentMode).toBe("chat");
   });
 });
 

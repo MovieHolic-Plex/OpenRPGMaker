@@ -727,7 +727,18 @@ export class AssistantSession {
     // 플래너는 감독·실행 모델이 다를 때만 의미가 있고, 같을 땐 불필요한 왕복만 낭비한다.
     this.workPlanAutoStepsThisUserMessage = 0;
     if (this.orchestrationEnabled() || this.workPlan) {
-      await this.runOrchestratorPlanner(text, onEvent, signal);
+      try {
+        await this.runOrchestratorPlanner(text, onEvent, signal);
+      } catch (cause) {
+        // 플래너 라운드 중 사용자 중단 — 본문 루프의 중단 계약(stoppedReason "aborted")과
+        // 동일하게 반환한다. agentMode=auto 로 플래너가 상시 돌면서 이 경로가 도달 가능해졌다.
+        if (isLlmAbortError(cause) || signal?.aborted) {
+          this.lastTurnFailed = false;
+          this.pushAudit({ kind: "status", text: "턴 중단(aborted): 사용자가 중단했습니다" });
+          return { assistantText: "", proposedCalls: [], stoppedReason: "aborted", error: "사용자가 중단했습니다" };
+        }
+        throw cause;
+      }
     }
 
     try {
@@ -1060,6 +1071,10 @@ export class AssistantSession {
   }
 
   private orchestrationEnabled(): boolean {
+    // agentMode "auto" = 플래너 상시(모델 이원화 여부와 무관). "chat"·미지정은 종래
+    // 판정(감독≠실행 모델일 때만)을 그대로 유지한다 — 구형 저장 blob/직접 주입 config
+    // 회귀 방지.
+    if (this.config.agentMode === "auto") return true;
     const main = this.config.model.trim();
     const lite = this.config.liteModel?.trim();
     return Boolean(main && lite && lite !== main);

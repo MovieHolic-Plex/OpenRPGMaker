@@ -165,6 +165,25 @@ export function renderAiSettingsForm(options: {
     children: [el("span", { class: "ai-config-label", text: "추론" }), reasoningSelect],
   });
 
+  // agentMode(작업 모드): auto = 플래너(작업 분해) 상시, chat = 종래 채팅(모델 이원화 시에만 플래너).
+  const agentModeSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-config-agentmode" },
+    children: [
+      el("option", { attrs: { value: "auto" }, text: "자율(플래너 상시)" }),
+      el("option", { attrs: { value: "chat" }, text: "채팅(종래)" }),
+    ],
+  }) as HTMLSelectElement;
+  agentModeSelect.value = config.agentMode ?? "auto";
+  agentModeSelect.addEventListener("change", () => persist(false));
+  const agentModeRow = el("label", {
+    class: "ai-config-row",
+    attrs: {
+      title: "자율: AI가 요청을 스스로 작업 계획으로 분해해 진행합니다. 채팅: 종래처럼 대화로 진행합니다(감독·실행 모델이 다를 때만 계획 단계 사용).",
+    },
+    children: [el("span", { class: "ai-config-label", text: "작업 모드" }), agentModeSelect],
+  });
+
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },
@@ -223,6 +242,7 @@ export function renderAiSettingsForm(options: {
     maxToolCalls: defaultAiConfig().maxToolCalls,
     maxTokens: Math.max(256, Number(maxTokens.input.value) || defaultAiConfig().maxTokens),
     reasoningEffort: (reasoningSelect.value as AiConfig["reasoningEffort"]) || "medium",
+    agentMode: agentModeSelect.value === "chat" ? "chat" : "auto",
     autoApprove: autoApprove.checked,
   });
 
@@ -299,6 +319,7 @@ export function renderAiSettingsForm(options: {
               liteModel.row,
               maxTokens.row,
               reasoningRow,
+              agentModeRow,
               autoApproveRow,
               fontSizeRow,
             ],
