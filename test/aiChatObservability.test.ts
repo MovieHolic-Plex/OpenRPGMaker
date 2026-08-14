@@ -151,7 +151,13 @@ describe("도구 호출 상세 아코디언 (V3C ③)", () => {
 
 describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
   it("도구 사이 추론이 한 블록으로 병합돼도 각 추론의 원문 전체가 아이템으로 남고 토글은 횟수를 표시한다", async () => {
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test" }));
+    // 환경 고정: .env/.env.local 의 VITE_LLM_API_URL 이 있으면 apiKey+cpen 모드가 되어
+    // 스트리밍(이 테스트의 SSE 픽스처 전제)이 꺼진다. aiChatPanelSettings 와 동일하게 스텁한다.
+    // agentMode:chat — 이 테스트는 단일 모델·플래너 없는 본문 루프의 SSE 본문 3개를 순서대로
+    // 소비한다. 기본 auto 면 플래너 라운드가 첫 본문을 가져가 스트림이 한 칸씩 밀린다.
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", apiKey: "sk-test" }));
     const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
     const toolCallLine = (id: string): string =>
       JSON.stringify({ choices: [{ delta: { tool_calls: [{ index: 0, id, function: { name: "get_project_summary", arguments: "{}" } }] } }] });
@@ -191,7 +197,12 @@ describe("병합 추론 원문 전체 열람 (V3C ②)", () => {
 
 describe("실시간 고스트 프리뷰 연결", () => {
   it("채팅 턴의 성공한 쓰기 tool_call 뒤 세션 draft diff 고스트를 발행한다", async () => {
-    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), model: "ghost-test-model", liteModel: "ghost-test-model", apiKey: "sk-test" }));
+    // 환경 고정(위와 동일) + agentMode:chat — model===liteModel 단일 모델(플래너 없음)의
+    // 본문 루프 동작을 고정하는 형상 테스트다. 기본 auto 는 이 판정을 우회해 플래너 라운드가
+    // 첫 SSE 본문을 소비한다.
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), agentMode: "chat", model: "ghost-test-model", liteModel: "ghost-test-model", apiKey: "sk-test" }));
     const sse = (lines: string[]): string => [...lines.map((line) => `data: ${line}`), "data: [DONE]", ""].join("\n\n");
     const createMapArgs = { id: "map_live_ghost", name: "라이브 고스트", width: 6, height: 5 };
     const bodies = [
