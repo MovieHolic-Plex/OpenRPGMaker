@@ -1,12 +1,370 @@
 import { describe, expect, it } from "vitest";
 
+// ── 자율 실행 드라이버(todo 2: 턴 간 자동 계속 + 48단계 예산) ─────────────────────
+// 계약: sendUserMessage(..., { autonomous }) 로 진입한 런은 턴이 끝난 뒤
+// (계획 미완료 && 예산 잔여 && 대기 사용자 메시지 없음 && 중단 아님)인 동안
+// 하니스가 스스로 다음 턴을 송신한다. 사용자 우선: peekPendingUserMessage 훅이
+// 문자열을 반환하면 드라이버는 송신하지 않고 패널의 기존 드레인 루프가 전달한다.
+// 패널 배선 계약의 세션 레벨 검증(원래 DOM 테스트는 llmClient 실경로와 충돌해 제거 —
+// 이 블록이 (e)peek→일시정지, (e-2)비문자→null 취급, (f-2)chat 모드 미가동을 검증한다).
+describe("자율 실행 드라이버", () => {
+  function toolCallResult(name: string, args: unknown, id: string): ChatResult {
+    return {
+      message: {
+        role: "assistant",
+        content: null,
+        tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+      },
+      finishReason: "tool_calls",
+    } as ChatResult;
+  }
+
+  function finalResult(text: string): ChatResult {
+    return { message: { role: "assistant" as const, content: text }, finishReason: "stop" } as ChatResult;
+  }
+
+  /** 3항목 계획 — 각 항목은 set_title_screen 쓰기 성공으로 자동 완료(successTools)된다. */
+  const THREE_ITEM_PLAN = {
+    goal: "타이틀 3단계 개선",
+    layers: [
+      {
+        title: "타이틀",
+        items: [
+          { title: "1차 제목", instruction: "set_title_screen {title:'t1'}", successTools: ["set_title_screen"] },
+          { title: "2차 제목", instruction: "set_title_screen {title:'t2'}", successTools: ["set_title_screen"] },
+          { title: "3차 제목", instruction: "set_title_screen {title:'t3'}", successTools: ["set_title_screen"] },
+        ],
+      },
+    ],
+  };
+  const THREE_ITEM_PLAN_JSON = JSON.stringify({ action: "new_plan", ...THREE_ITEM_PLAN });
+  const RESUME_JSON = JSON.stringify({ action: "resume", reason: "같은 목표 계속" });
+  const titleWrite = (id: string, title: string): ChatResult => toolCallResult("set_title_screen", { title }, id);
+  const statusTexts = (session: { getAuditEntries(): readonly { kind: string; text?: string }[] }): string[] =>
+    session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text));
+  const ORCH_AUTO = { ...ORCH_CONFIG, maxToolCalls: 4 };
+
+  /** 스크립트 소진 시 영구 오류로 던진다 — 일시 오류 재시도(백오프)로 늘어지지 않게 즉시 실패.
+   *  name:"LlmError" + status 없음은 isRetryableLlmError 기준 재시도 대상이라, 여기선 401 성격의
+   *  영구 오류로 만들기 위해 status 필드를 함께 심는다. */
+  const exhausted = (): never => {
+    throw new (class extends Error {
+      readonly status = 401;
+      constructor() {
+        super("scripted chat exhausted");
+        this.name = "LlmError";
+      }
+    })();
+  };
+
+  it("(a) 3항목 계획이 자동 계속 턴으로 완료된다 — 수동 송신 0건", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    // maxToolCalls=4 로 한 턴이 결정적으로 상한 도달로 끝난다(라운드: planner는 라운드 카운트 밖).
+    // 턴1: new_plan(set_work_plan+t1 완료) → 라운드 상한. 턴2/3: resume + 다음 항목 → 상한. 턴4: 완료 보고.
+    const steps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult(RESUME_JSON),
+      titleWrite("c_t2", "t2"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult(RESUME_JSON),
+      titleWrite("c_t3", "t3"),
+      finalResult("모든 항목을 완료했습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+
+    const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
+    expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
+    const statuses = statusTexts(session);
+    expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
+    expect(result.assistantText).toContain("모든 항목을 완료했습니다");
+    // 턴1(플래너+4라운드) + 턴2(플래너+4라운드) + 턴3(플래너+쓰기+최종) = 13콜.
+    expect(index).toBe(13);
+  }, 120000);
+
+  it("(b) 총 예산 48 소진 시 agent_run_budget_exhausted 감사를 남기고 멈춘다", async () => {
+    const { AssistantSession, createBlankProject, AGENT_RUN_MAX_TOTAL_STEPS } = await load();
+    expect(AGENT_RUN_MAX_TOTAL_STEPS).toBe(48);
+    const NEVER_PLAN = { goal: "끝나지 않는 목표", layers: [{ title: "L", items: [{ title: "무한", instruction: "완료 불가" }] }] };
+    const steps: ChatResult[] = [
+      finalResult(JSON.stringify({ action: "new_plan", ...NEVER_PLAN })),
+      toolCallResult("set_work_plan", NEVER_PLAN, "c_plan"),
+    ];
+    let bodyTurns = 0;
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      // 플래너 라운드(tools 없음)는 매 턴 resume.
+      if (!req.tools || req.tools.length === 0) return finalResult(RESUME_JSON);
+      if (steps.length > 0) return steps.shift()!;
+      bodyTurns += 1;
+      return finalResult(`아직 진행 중입니다(턴 ${bodyTurns}). 계속 진행이 필요합니다.`);
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+
+    await session.sendUserMessage("끝나지 않는 목표를 처리해줘", () => {}, undefined, { autonomous: true });
+
+    const statuses = statusTexts(session);
+    expect(statuses.some((t) => t.includes("agent_run_budget_exhausted"))).toBe(true);
+    // 48회까지 자동 계속하고 49번째는 송신하지 않는다 — 본문 턴 = 초기 1 + 자동 48.
+    expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(48);
+  }, 300000);
+
+  it("(c) 턴이 사용자 질문으로 끝나면 드라이버는 자동 송신하지 않고 일시정지한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("어떤 분위기로 바꿀까요?"),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+
+    expect(result.assistantText).toContain("어떤 분위기");
+    expect(index).toBe(4); // 스크립트 소진 = 자동 송신 0건.
+    expect(statusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+  }, 30000);
+
+  it("(d) 런 중 중단이면 드라이버는 즉시 멈추고 추가 송신이 없다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const controller = new AbortController();
+    const steps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult(RESUME_JSON),
+      titleWrite("c_t2", "t2"),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    let autoContinued = false;
+
+    const promise = session.sendUserMessage(
+      "타이틀을 3단계로 개선해줘",
+      (event) => {
+        if (event.type === "status" && event.text.includes("agent_run:auto-continue")) autoContinued = true;
+      },
+      controller.signal,
+      { autonomous: true }
+    );
+    controller.abort();
+    await promise;
+
+    expect(autoContinued).toBe(false);
+    expect(statusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+  }, 30000);
+
+  it("(e) peekPendingUserMessage 가 문자열을 반환하면 드라이버가 멈추고 다음 턴에 계획 완료까지 재개한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    let pending: string | null = null;
+    const firstSteps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+    ];
+    let steps = firstSteps;
+    let index = 0;
+    const chatRef: { current: (config: never, req: never) => Promise<ChatResult> } = { current: async () => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    } };
+    // 훅 주입(생성자 옵션) — peek 만 하고 dequeue 하지 않는다.
+    const session = new AssistantSession(createBlankProject(), {
+      config: ORCH_AUTO,
+      peekPendingUserMessage: () => pending,
+      chat: (config, req) => chatRef.current(config as never, req as never),
+    });
+
+    // 턴1 종료 시점에 큐에 사용자 메시지가 있다 — 드라이버는 peek 로 보고 송신을 쉰다.
+    pending = "중간 지시";
+    await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+
+    expect(index).toBe(5); // 스크립트 소진 = 턴1 이후 LLM 호출 0건(플래너1+본문4).
+    const statuses1 = statusTexts(session);
+    expect(statuses1.some((t) => t.includes("agent_run:paused-user-message"))).toBe(true);
+    expect(statuses1.some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+
+    // 패널의 기존 드레인 루프가 큐의 메시지를 전달한 뒤(여기선 계속), 계획이 여전히 미완료면 런 재개.
+    pending = null;
+    steps = [
+      finalResult(RESUME_JSON),
+      titleWrite("c_t2", "t2"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult(RESUME_JSON),
+      titleWrite("c_t3", "t3"),
+      finalResult("모든 항목을 완료했습니다."),
+    ];
+    index = 0;
+    const result = await session.sendUserMessage("계속", () => {}, undefined, { autonomous: true });
+
+    expect(result.assistantText).toContain("모든 항목을 완료했습니다");
+    const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
+    expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
+  }, 30000);
+
+  it("(e-2) peek 훅이 비문자(가비지)를 반환하면 null 로 취급해 실행을 계속한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const garbage = ["", "   ", null, undefined, 42, {}, []] as unknown[];
+    let gi = 0;
+    const steps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult(RESUME_JSON),
+      titleWrite("c_t2", "t2"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult(RESUME_JSON),
+      titleWrite("c_t3", "t3"),
+      finalResult("모든 항목을 완료했습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(createBlankProject(), {
+      config: ORCH_AUTO,
+      peekPendingUserMessage: () => (gi < garbage.length ? (garbage[gi++] as string) : null),
+      chat,
+    });
+
+    await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+
+    const statuses = statusTexts(session);
+    expect(statuses.some((t) => t.includes("agent_run:auto-continue"))).toBe(true);
+    expect(statuses.some((t) => t.includes("agent_run:paused-user-message"))).toBe(false);
+    const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
+    expect(items.map((i) => i.status)).toEqual(["done", "done", "done"]);
+  }, 30000);
+
+  it("(f) autonomous:false 로 명시적으로 끄면 드라이버 없이 종전대로 턴 1개로 끝난다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("진행합니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+
+    // 플래그 미지정(기존 호출처)도 종전대로 턴 1개 — 자율 드라이버는 명시 진입만 켠다.
+    await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {});
+
+    expect(index).toBe(4);
+    expect(statusTexts(session).some((t) => t.includes("agent_run:"))).toBe(false);
+  }, 30000);
+
+  it("(f-2) agentMode chat + 플래그 미지정이면 드라이버가 켜지지 않는다(레거시 수동 계속)", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const steps: ChatResult[] = [
+      finalResult(THREE_ITEM_PLAN_JSON),
+      toolCallResult("set_work_plan", THREE_ITEM_PLAN, "c_plan"),
+      titleWrite("c_t1", "t1"),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+      finalResult("이어서 진행합니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    // agentMode "chat" — 패널은 autonomous:false 를 주므로(설정 기준) 같은 계약을 세션에서 직접 고정한다.
+    const session = new AssistantSession(createBlankProject(), {
+      config: { ...ORCH_AUTO, agentMode: "chat" as const },
+      chat,
+    });
+
+    await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {});
+
+    // 계획이 미완료로 남아도 턴 1개(본문 4라운드)로 끝난다 — 자동 계속 없음.
+    expect(index).toBe(5);
+    const items = session.getWorkPlan()!.layers.flatMap((l) => l.items);
+    expect(items.filter((i) => i.status === "done").length).toBe(1);
+    expect(statusTexts(session).some((t) => t.includes("agent_run:"))).toBe(false);
+  }, 30000);
+
+  it("예산 소진 후 사용자 계속 메시지는 예산을 재가동(re-arm)한다", async () => {
+    const { AssistantSession, createBlankProject, AGENT_RUN_MAX_TOTAL_STEPS } = await load();
+    const NEVER_PLAN = { goal: "끝나지 않는 목표", layers: [{ title: "L", items: [{ title: "무한", instruction: "완료 불가" }] }] };
+    let bodyTurns = 0;
+    const chat = async (_config: unknown, req: ChatRequest): Promise<ChatResult> => {
+      if (!req.tools || req.tools.length === 0) return finalResult(RESUME_JSON);
+      if (bodyTurns === 0) {
+        bodyTurns += 1;
+        return toolCallResult("set_work_plan", NEVER_PLAN, "c_plan");
+      }
+      bodyTurns += 1;
+      return finalResult(`이어서 진행합니다(${bodyTurns}).`);
+    };
+    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+
+    await session.sendUserMessage("끝나지 않는 목표를 처리해줘", () => {}, undefined, { autonomous: true });
+    let statuses = statusTexts(session);
+    expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS);
+
+    // "계속" — 수동 경로 그대로 재개하고 예산 카운터는 리셋(다시 최대치만큼 계속 가능).
+    await session.sendUserMessage("계속", () => {}, undefined, { autonomous: true });
+    statuses = statusTexts(session);
+    expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS * 2);
+    expect(statuses.filter((t) => t.includes("agent_run_budget_exhausted")).length).toBe(2);
+  }, 600000);
+});
+
+
 async function load() {
-  const [{ AssistantSession, hasRawToolCallMarkup, sanitizeAssistantText }, { createBlankProject }, llm] = await Promise.all([
+  const [assistantSession, defaults, llm] = await Promise.all([
     import("@/ai/assistantSession"),
     import("@/project/defaults"),
     import("@/ai/llmClient"),
   ]);
-  return { AssistantSession, createBlankProject, llm, hasRawToolCallMarkup, sanitizeAssistantText };
+  return {
+    AssistantSession: assistantSession.AssistantSession,
+    hasRawToolCallMarkup: assistantSession.hasRawToolCallMarkup,
+    sanitizeAssistantText: assistantSession.sanitizeAssistantText,
+    AGENT_RUN_MAX_TOTAL_STEPS: assistantSession.AGENT_RUN_MAX_TOTAL_STEPS,
+    createBlankProject: defaults.createBlankProject,
+    llm,
+  };
 }
 
 type ChatResult = import("@/ai/llmClient").ChatResult;

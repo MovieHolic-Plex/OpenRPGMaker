@@ -356,6 +356,14 @@ const ASSISTANT_TURN_RETRY_ATTEMPTS = 3;
 const TRANSIENT_NETWORK_RETRY_GUIDANCE = "일시적 네트워크 문제로 보이면 재시도를 눌러 주세요.";
 
 /**
+ * 자율 런(autonomous driver)의 총 예산 — 자동 계속 턴 수 상한.
+ * 턴당 Ralph 상한(MAX_WORK_PLAN_AUTO_STEPS_PER_TURN=12)과 별개로, 하나의 목표에 대해
+ * 하니스가 사용자 개입 없이 소비할 수 있는 총 턴 수를 묶는다. 소진 시
+ * agent_run_budget_exhausted 감사를 남기고 멈추며, 사용자의 「계속」 한마디로 재가동된다.
+ */
+export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
+
+/**
  * Session-only WorkPlan tools (Claude TodoWrite / Anthropic task-list style).
  * Always available so the main model can plan/replan inside the ReAct loop;
  * the pre-turn planner also authors the first plan without tools.
@@ -440,6 +448,12 @@ export interface AssistantSessionOptions {
   contextOptions?: ContextOptions;
   // 테스트/대체용 chat 구현. 기본은 설정 baseUrl의 OpenAI 호환 chatCompletion.
   chat?: ChatFn;
+  /**
+   * 자율 실행 드라이버용 사용자-대기 조회 훅(peek-only). 패널의 pendingSends 큐에
+   * 메시지가 있는지 "만" 보고한다 — 드라이버는 절대 dequeue 하지 않는다(패널의 기존
+   * 드레인 루프가 전달한다). 비문자·빈 문자열은 null 로 취급한다(시스템 경계 검증).
+   */
+  peekPendingUserMessage?: () => string | null;
   // 비전 이미지 렌더러(브라우저 전용). 없으면 텍스트 전용(Node/테스트에서 동일 동작).
   renderImages?: ToolImageRenderer;
   // 이전 모드 스코핑 호환 옵션. 현재는 computeActiveToolDomains()가 UI 도메인을 직접 계산한다.
@@ -480,6 +494,13 @@ export class AssistantSession {
   private currentTurnRequestText = "";
   // 직전 턴이 LLM 오류로 끊겼는가(수동 재시도 허용 플래그).
   private lastTurnFailed = false;
+  // ── 자율 실행 드라이버(todo 2) ────────────────────────────────────────
+  // 턴이 끝난 뒤 (계획 미완료 && 예산 잔여 && 대기 사용자 메시지 없음 && 중단 아님)인
+  // 동안 하니스가 스스로 다음 턴을 송신한다. 사용자가 그 사이에 무언가를 보냈다면
+  // peekPendingUserMessage 훅이 그것을 알려주고 드라이버는 양보한다(사용자 우선).
+  private readonly peekPendingUserMessage: (() => string | null) | undefined;
+  /** 이 자율 런에서 자동 계속한 턴 수(예산 소비). 사용자의 수동 진입마다 0으로 재가동된다. */
+  private autoRunSteps = 0;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
@@ -492,6 +513,7 @@ export class AssistantSession {
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
     this.chat = options.chat ?? chatCompletion;
+    this.peekPendingUserMessage = options.peekPendingUserMessage;
     this.contextOptions = options.contextOptions ?? {};
     this.renderImages = options.renderImages;
     this.baselineProject = structuredClone(project);
@@ -679,9 +701,84 @@ export class AssistantSession {
     };
   }
 
+  async sendUserMessage(
+    text: string,
+    onEvent: (event: SessionEvent) => void = () => {},
+    signal?: AbortSignal,
+    opts?: { readonly explicitSkillId?: string | null; readonly autonomous?: boolean },
+  ): Promise<TurnResult> {
+    // 자율 드라이버: opts.autonomous === true 일 때만 진입한다(명시 플래그 — 플래그 없는 기존
+    // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
+    // 패널의 sendText 가 autonomous:true 를 주므로 같은 진입점을 공유하고, 브리지 코드는 불변이다.
+    // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
+    if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal, opts);
+    const first = await this.executeUserTurn(text, onEvent, signal, opts);
+    return this.runAutonomousDriver(first, onEvent, signal);
+  }
+
+  /**
+   * 자율 실행 드라이버 — 턴이 끝난 뒤 조건이 유지되는 동안 하니스가 스스로 다음 턴을 송신한다.
+   * 사용자의 수동 진입(다음 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
+   */
+  private async runAutonomousDriver(
+    first: TurnResult,
+    onEvent: (event: SessionEvent) => void,
+    signal?: AbortSignal
+  ): Promise<TurnResult> {
+    this.autoRunSteps = 0;
+    let last = first;
+    while (this.shouldAutoContinue(last, onEvent, signal)) {
+      this.autoRunSteps += 1;
+      this.pushAudit({ kind: "status", text: `agent_run:auto-continue step=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS}` });
+      onEvent({
+        type: "status",
+        text: `자율 실행 계속 (${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS})`,
+      });
+      const next = await this.executeUserTurn("계속", onEvent, signal, undefined);
+      if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
+      last = next;
+    }
+    return last;
+  }
+
+  /** 드라이버 계속 판정 — 계획 미완료 && 예산 잔여 && 사용자 대기 없음 && 중단 아님. */
+  private shouldAutoContinue(last: TurnResult, onEvent: (event: SessionEvent) => void, signal?: AbortSignal): boolean {
+    if (signal?.aborted) return false;
+    if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
+    if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return false;
+    if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run_budget_exhausted steps=${this.autoRunSteps}/${AGENT_RUN_MAX_TOTAL_STEPS} — 이어서 진행하려면 「계속」 이라고 보내세요`,
+      });
+      onEvent({ type: "status", text: "자율 실행 예산 소진 — 「계속」이라고 보내면 이어서 진행합니다." });
+      return false;
+    }
+    // 사용자 우선: 패널의 pendingSends 큐에 대기 메시지가 있으면 드라이버는 양보한다.
+    // dequeue 하지 않는다(peek-only) — 패널의 기존 드레인 루프가 전달하고, 계획이 여전히
+    // 미완료면 다음 사용자 턴 종료 후 런이 다시 자동 계속된다.
+    const pending = this.peekPendingUserMessage?.() ?? null;
+    if (typeof pending === "string" && pending.trim().length > 0) {
+      this.pushAudit({ kind: "status", text: "agent_run:paused-user-message — 대기 중 사용자 메시지가 자동 계속보다 우선합니다" });
+      return false;
+    }
+    // Ralph 지속 판정을 그대로 재사용(두 번째 휴리스틱을 만들지 않는다). autoStepsUsed=0 은
+    // 다음 턴을 시작해도 되는가(턴 시작 시점)의 판정이고, assistantText 는 직전 턴이 사용자
+    // 질문으로 끝났는지 판별한다 — 질문이면 false(문의 대기, 자동 송신 금지).
+    return shouldRalphContinue(this.workPlan, {
+      autoStepsUsed: 0,
+      assistantText: this.rawLastTurnAssistantText(last),
+    });
+  }
+
+  /** 드라이버의 질문 판별용 원문 — 계획 게시판 접미어(행 끝 정규식 오염)를 제거한 최종 응답. */
+  private rawLastTurnAssistantText(last: TurnResult): string {
+    return last.assistantText.split("\n\n---\n")[0]!.trim();
+  }
+
   // 한 턴 실행: 사용자 메시지 → (LLM ↔ 툴) 루프 → 최종 응답 + 제안 changeset.
   // opts.explicitSkillId: 스킬 서랍/슬래시로 고른 경우 — 집/실내 되묻기 게이트를 건너뛴다.
-  async sendUserMessage(
+  private async executeUserTurn(
     text: string,
     onEvent: (event: SessionEvent) => void = () => {},
     signal?: AbortSignal,

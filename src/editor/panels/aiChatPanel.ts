@@ -370,6 +370,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           getViewport: () => getEditorMapViewport(),
 
         },
+        // 자율 실행 드라이버(todo 2): 패널 세션은 플래그 autonomous 로 진입하고
+        // pendingSends 큐를 peek 전용 훅으로 노출한다 — 드라이버가 대기 메시지를 보면
+        // 자동 계속을 양보하고 이 드레인 루프가 메시지를 전달한다(사용자 우선, 이중 전송 불가).
+        // 주입 시점에 pendingSends 가 아직 선언돼 있지 않아도 참조 시점엔 항상 존재한다(클로저).
+        peekPendingUserMessage: () => pendingSends[0]?.text ?? null,
         // 비전(BUG C): '보여줘' 툴 이미지를 렌더해 비전 모델에 전달한다(브라우저 전용).
         renderImages: renderToolImages,
         // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
@@ -634,9 +639,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const userBubble = appendBubble("user", displayAs ?? trimmed);
     if (displayAs !== undefined && displayAs !== trimmed) appendSkillPromptToggle(userBubble, trimmed);
     const session = ensureSession();
+    // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준 — 위 autoApprove 판정과 같은 관례).
+    // "chat" 은 종전대로 턴 1개(수동 「계속」). opts.autonomous 는 세션 진입점의 명시 오버라이드(브리지/테스트).
+    const autonomous = loadAiConfig().agentMode === "auto";
     await executeTurn(session, trimmed, (onEvent, signal) =>
       session.sendUserMessage(`${trimmed}\n\n${contextFooter()}`, onEvent, signal, {
         explicitSkillId: opts?.explicitSkillId,
+        autonomous,
       })
     );
   };
