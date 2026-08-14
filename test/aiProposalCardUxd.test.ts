@@ -126,6 +126,13 @@ function turn(result: Partial<TurnResult>): TurnResult {
 beforeEach(() => {
   restoreDom = installFakeDom();
   installBrowserGlobals();
+  // todo 4: 카드 수락이 공유 적용 함수(applyProposedProject)를 await하므로 실제 Supabase를
+  // 건드리지 않도록 env를 빈 값(미설정)으로 덮는다 — recordProjectCommit이 sha256/네트워크 없이
+  // 즉시 not-configured로 resolve되어 flushAsync(마이크로태스크) 안에서 결정적으로 완료된다.
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
+  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
+  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   resetMapEditHistory();
@@ -137,6 +144,8 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
   Reflect.deleteProperty(globalThis, "window");
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("UXD proposal summary helpers", () => {
@@ -438,6 +447,7 @@ describe("UXD proposal panel integration", () => {
     second.checked = false;
     second.dispatchEvent(new Event("change"));
     findByTestId(panel, "ai-proposal-accept")?.click();
+    await flushAsync(); // todo 4: 수락이 공유 적용 함수를 await하므로 완료를 기다린다.
 
     const map = store.getCurrent().maps[mapId];
     expect(map.lowerTiles[2 * map.width + 2]).toBe(TILE.PATH);
@@ -459,6 +469,7 @@ describe("UXD proposal panel integration", () => {
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
     findByTestId(panel, "ai-proposal-accept")?.click();
+    await flushAsync(); // todo 4: 수락이 공유 적용 함수를 await하므로 완료를 기다린다.
     findByTestId(panel, "ai-undo-last")?.click();
 
     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("제안 1건");

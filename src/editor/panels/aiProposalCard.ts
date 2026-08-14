@@ -7,19 +7,17 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { loadAiConfig } from "@/ai/llmClient";
-import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
-import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { drawTransferFallback, drawTransferMapPreview } from "@/editor/panels/eventEditor/transferMapPreview";
-import { commitChangeset, summarizeChanges } from "@/editor/tools";
+import { summarizeChanges } from "@/editor/tools";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { getInlineProposalActions, setInlineProposalActions, type InlineProposalActions } from "@/editor/proposalInlineApproval";
-import { currentAgentEditorIdentity } from "@/project/editorIdentity";
 import {
   formatLayoutValidationSummary,
   layoutValidationBlocking,
   validateLayoutPlacement,
 } from "@/project/lint/layoutPlacementValidate";
-import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline } from "@/project/projectCommitLog";
+import { combineDiffs } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
@@ -241,13 +239,13 @@ export function createProposalHost(options: {
     myInlineActions = null;
   };
 
-  const applyAcceptedProposal = (
+  const applyAcceptedProposal = async (
     calls: readonly ProposedCall[],
     selected: readonly boolean[],
     selectedCalls: readonly ProposedCall[],
     hasEdits: boolean,
     approveMaterials = false,
-  ): void => {
+  ): Promise<void> => {
     const session = controller.session;
     if (!session) return;
     const before = store.getCurrent();
@@ -285,35 +283,32 @@ export function createProposalHost(options: {
       return;
     }
 
-    const commit = commitChangeset(proposed, store.getCurrent());
-    if (!commit.ok) {
-      setStatus("적용 실패");
-      const issue = commit.issues.find((entry) => entry.severity === "error");
-      toast(`적용 실패: ${issue?.message ?? "무결성 오류"}`, "error");
-      return;
-    }
+    // 커밋 게이트 검증 → undo 스냅샷 → store.replace → await 커밋 로그는
+    // 공유 적용 함수(applyProposedProject)가 수행한다 — 마일스톤 자동 적용과 같은 경로.
     const completionMapId = proposalPreviewMapId(selectedCalls, before, proposed)
       ?? currentHistoryMapId()
       ?? proposed.startMapId;
     const completionInstruction = instruction.split("\n\n[컨텍스트]")[0]?.trim() ?? instruction.trim();
     const completionSummary = proposalHumanSummaryLine(selectedCalls);
     clearAgentGhostPreview();
-    recordProjectSnapshot(aiHistoryLabel(selectedCalls), currentHistoryMapId());
-    if (selectedCalls.some((call) => call.name === "reset_project")) store.replaceProject(proposed);
-    else store.replace(proposed);
-    focusAcceptedAgentChanges(before, proposed);
     const actualDiff = reassembled?.ok
       ? combineDiffs(reassembled.results.map((result) => result.diff))
       : summarizeChanges(before, proposed);
-    recordProjectCommitFireAndForget({
-      project: proposed,
-      identity: currentAgentEditorIdentity(loadAiConfig().model),
-      reviewStatus: "approved",
+    const applied = await applyProposedProject(proposed, {
+      source: "agent",
+      agentName: loadAiConfig().model,
       summary: aiHistoryLabel(selectedCalls),
-      diff: actualDiff,
       toolNames: selectedCalls.map((call) => call.name),
+      diff: actualDiff,
+      snapshotLabel: aiHistoryLabel(selectedCalls),
+      snapshotMapId: currentHistoryMapId(),
+      resetProject: selectedCalls.some((call) => call.name === "reset_project"),
     });
-    resetManualProjectCommitBaseline(proposed);
+    if (!applied.ok) {
+      setStatus("적용 실패");
+      toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
+      return;
+    }
     proposalHost.replaceChildren();
     closeProposalModal();
     setStatus("적용됨");
@@ -362,18 +357,18 @@ export function createProposalHost(options: {
       const summary = selectedCalls.map((c) => `• ${c.summary || c.name}`).join("\n");
       const msg = `파괴적 작업이 포함되어 있습니다 — 아래 내역을 확인하세요:\n${summary}\n\n체크박스는 기본 해제 상태입니다. 적용하려면 직접 체크 후 [확인 후 적용]을 누르세요.`;
       void showConfirm({ title: "파괴적 변경 — 3단 확인", message: msg, confirmLabel: "확인 후 적용" }).then((ok: boolean) => {
-        if (ok) applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
+        if (ok) void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
       });
       return;
     }
     const decision = confirmRuleApproval(warnings);
     if (decision !== true) {
       void decision.then((confirmed) => {
-        if (confirmed) applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
+        if (confirmed) void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
       });
       return;
     }
-    applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
+    void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
   };
 
   const rejectProposal = (): void => {

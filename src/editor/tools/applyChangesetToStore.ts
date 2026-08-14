@@ -4,9 +4,12 @@
 
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
+import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
-import { combineDiffs, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff } from "@/project/projectCommitLog";
+import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import type { ChangeSummary, Project } from "@/project/types";
+import { commitChangeset, summarizeChanges } from "./changeset";
 import { runTool } from "./toolRunner";
 import type { ToolContext, ToolResult } from "./types";
 
@@ -124,4 +127,77 @@ export function applyToolSequenceToStore(
     resetManualProjectCommitBaseline(ctx.project);
   }
   return results;
+}
+
+// ── 제안 프로젝트 스냅샷 공통 적용 경로(todo 4) ─────────────────────────────
+// 제안 카드 수락(aiProposalCard)과 자율 런의 마일스톤 자동 적용(assistantSession)이
+// 같은 안전 경로를 공유한다: commitChangeset 검증 → undo 스냅샷 → store.replace →
+// **await** 커밋 로그. 커밋 로그는 recordProjectCommit(await 변형)으로 결정적 증거를
+// 남긴 뒤 반환한다 — 재실행(applyToolSequenceToStore)이 아니라 제안 스냅샷을 그대로
+// 적용하므로 자동 생성 id 프리뷰와 적용이 갈라지지 않는다.
+
+export interface ApplyProposedProjectOptions {
+  readonly source: "agent" | "agent-milestone";
+  /** 에이전트 신원 이름. 기본: loadAiConfig().model(카드 현행 동작과 동일). */
+  readonly agentName?: string;
+  readonly summary: string;
+  readonly toolNames: readonly string[];
+  /** 커밋 로그에 기록할 diff. 기본: summarizeChanges(before, proposed). */
+  readonly diff?: ChangeSummary;
+  readonly snapshotLabel?: string;
+  readonly snapshotMapId?: string | null;
+  /** reset_project 포함 수락 시 전체 프로젝트 교체(카드 경로 전용). */
+  readonly resetProject?: boolean;
+  readonly reviewStatus?: CommitLogInput["reviewStatus"];
+}
+
+export type ApplyProposedProjectResult =
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project }
+  | { readonly ok: false; readonly reason: "commit-rejected"; readonly issue?: string };
+
+/**
+ * 제안 프로젝트를 안전 적용 경로로 반영한다. 실패(커밋 게이트 차단) 시 스토어를
+ * 건드리지 않는다. 성공 시 undo 스냅샷 1개 + store.replace + await 커밋 row 1개가
+ * 보장된다(마일스톤 단위 결정성). 커밋 기록 네트워크 실패는 적용을 막지 않는다
+ * (기존 fire-and-forget의 console.warn 정책과 동일) — row는 persisted:false 로 반환.
+ */
+export async function applyProposedProject(
+  proposed: Project,
+  options: ApplyProposedProjectOptions,
+): Promise<ApplyProposedProjectResult> {
+  const before = store.getCurrent();
+  const commit = commitChangeset(proposed, before);
+  if (!commit.ok) {
+    const issue = commit.issues.find((entry) => entry.severity === "error");
+    return { ok: false, reason: "commit-rejected", issue: issue?.message ?? "무결성 오류" };
+  }
+  recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
+  if (options.resetProject === true) store.replaceProject(proposed);
+  else store.replace(proposed);
+  focusAcceptedAgentChanges(before, proposed);
+  const diff = options.diff ?? summarizeChanges(before, proposed);
+  const commitInput: CommitLogInput = {
+    project: proposed,
+    identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),
+    reviewStatus: options.reviewStatus ?? "approved",
+    summary: options.summary,
+    diff,
+    toolNames: options.toolNames,
+  };
+  let commitRow: CommitRow;
+  try {
+    commitRow = await recordProjectCommit(commitInput);
+  } catch (error) {
+    console.warn("[projectCommits] record failed:", error);
+    commitRow = {
+      commitId: null,
+      persisted: false,
+      reviewStatus: commitInput.reviewStatus,
+      summary: commitInput.summary,
+      toolNames: commitInput.toolNames ?? [],
+      recordedAt: new Date().toISOString(),
+    };
+  }
+  resetManualProjectCommitBaseline(proposed);
+  return { ok: true, commit: commitRow, applied: store.getCurrent() };
 }

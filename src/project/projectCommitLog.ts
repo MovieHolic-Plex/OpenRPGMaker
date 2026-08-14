@@ -5,7 +5,7 @@ import { recordProjectCommitToSupabase, type ProjectCommitReviewStatus } from ".
 import type { ChangeSummary } from "@/project/types";
 import type { Project } from "./types";
 
-type CommitLogInput = {
+export type CommitLogInput = {
   readonly project: Project;
   readonly identity?: EditorIdentity;
   readonly reviewStatus: ProjectCommitReviewStatus;
@@ -16,10 +16,27 @@ type CommitLogInput = {
 
 let lastManualSerialized: string | null = null;
 
-export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
+/**
+ * 커밋 로그 row — 포스트 적용 증거로 쓰는 결정적 형태. supabase 미설정이면
+ * persisted:false + commitId:null(로컬 전용)로 항상 resolve 된다.
+ */
+export type CommitRow = {
+  readonly commitId: string | null;
+  readonly persisted: boolean;
+  readonly reviewStatus: ProjectCommitReviewStatus;
+  readonly summary: string;
+  readonly toolNames: readonly string[];
+  readonly recordedAt: string;
+};
+
+/**
+ * await 가능한 커밋 기록 변형 — fire-and-forget과 동일한 직렬화/호출을 거치되
+ * 완료까지 기다려 row를 돌려준다(자동 적용 마일스톤의 결정적 커밋 증거, todo 5 의존).
+ */
+export async function recordProjectCommit(input: CommitLogInput): Promise<CommitRow> {
   const persistedProject = projectWithoutEventDrafts(input.project);
   const serialized = serialize(persistedProject);
-  void recordProjectCommitToSupabase({
+  const result = await recordProjectCommitToSupabase({
     project: persistedProject,
     identity: input.identity ?? currentHumanEditorIdentity(),
     reviewStatus: input.reviewStatus,
@@ -27,7 +44,19 @@ export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
     diff: input.diff,
     toolNames: input.toolNames ?? [],
     serialized,
-  }).catch((error) => {
+  });
+  return {
+    commitId: result.kind === "saved" ? result.commitId ?? null : null,
+    persisted: result.kind === "saved",
+    reviewStatus: input.reviewStatus,
+    summary: input.summary,
+    toolNames: input.toolNames ?? [],
+    recordedAt: new Date().toISOString(),
+  };
+}
+
+export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
+  void recordProjectCommit(input).catch((error) => {
     console.warn("[projectCommits] record failed:", error);
   });
 }

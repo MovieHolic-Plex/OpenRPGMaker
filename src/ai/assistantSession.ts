@@ -7,6 +7,8 @@
 import { getTool, runTool } from "@/editor/tools";
 import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
+import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
+import { classifyApproval } from "@/ai/approvalPolicy";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
@@ -81,6 +83,7 @@ import {
   summarizeWorkPlan,
   workPlanFromOrchestratorDecision,
   workPlanFromSetToolArgs,
+  type WorkItem,
   type WorkPlan,
 } from "./workPlan";
 
@@ -93,7 +96,13 @@ export type SessionEvent =
   | { type: "tool_call"; name: string; args: Record<string, unknown>; result: ToolResult }
   | { type: "phase"; value: "plan" | "execute" | "review" }
   | { type: "status"; text: string }
-  | { type: "work_plan"; plan: WorkPlan };
+  | { type: "work_plan"; plan: WorkPlan }
+  // ── 마일스톤 자동 적용(todo 4) ─────────────────────────────────────
+  // 자율 런에서 작업 항목 완료가 안전 검사를 통과해 스토어에 자동 적용됐다.
+  | { type: "milestone_applied"; title: string; toolCount: number; commitId: string | null }
+  // 자동 적용이 차단됐다(파괴적/어휘/규칙 verdict 또는 완성도 경고) — 카드가 렌더되어
+  // 사용자 승인을 기다린다(런 일시정지).
+  | { type: "proposal_paused"; reason: string; warnings?: readonly string[] };
 
 // 제안(changeset)에 담기는 개별 쓰기 툴콜.
 export interface ProposedCall {
@@ -501,6 +510,14 @@ export class AssistantSession {
   private readonly peekPendingUserMessage: (() => string | null) | undefined;
   /** 이 자율 런에서 자동 계속한 턴 수(예산 소비). 사용자의 수동 진입마다 0으로 재가동된다. */
   private autoRunSteps = 0;
+  // ── 마일스톤 자동 적용(todo 4) ────────────────────────────────────────
+  // 이번 sendUserMessage 진입이 opts.autonomous 인가 — 참일 때만 완료 항목을 자동 적용한다.
+  private milestoneAutoApply = false;
+  // 마일스톤 자동 적용이 차단됐다(파괴적/어휘/규칙/완성도). 사용자가 카드를 해결해
+  // rebaseProject 로 세션이 store 와 재동기화되기 전까지 자동 적용·자동 계속을 멈춘다.
+  private milestoneApprovalPaused = false;
+  // 직전에 처리한 완료 항목 id — 같은 항목의 중복 complete_work_item 재트리거 방지.
+  private lastMilestoneCompletionItemId: string | null = null;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
@@ -551,6 +568,9 @@ export class AssistantSession {
   rebaseProject(project: Project): void {
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
+    // rebase = 사용자가 제안을 해결(수락/거부)해 세션이 store와 재동기화됐다는 신호 —
+    // 차단됐던 마일스톤 자동 적용을 재개한다.
+    this.milestoneApprovalPaused = false;
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.
@@ -711,6 +731,8 @@ export class AssistantSession {
     // 호출처(영역 작업·클러스터 모달·평가 러너)는 종전대로 턴 1개로 끝난다). 패널·MCP 브리지는
     // 패널의 sendText 가 autonomous:true 를 주므로 같은 진입점을 공유하고, 브리지 코드는 불변이다.
     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
+    // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다(chat 모드는 카드 대기 유지).
+    this.milestoneAutoApply = opts?.autonomous === true;
     if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal, opts);
     const first = await this.executeUserTurn(text, onEvent, signal, opts);
     return this.runAutonomousDriver(first, onEvent, signal);
@@ -745,6 +767,12 @@ export class AssistantSession {
   private shouldAutoContinue(last: TurnResult, onEvent: (event: SessionEvent) => void, signal?: AbortSignal): boolean {
     if (signal?.aborted) return false;
     if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
+    // 승인 대기 마일스톤이 있으면 런을 멈춘다 — 카드가 렌더되어 사용자가 해결할 때까지
+    // 자동 계속이 다음 항목으로 진행하지 못하게 한다.
+    if (this.milestoneApprovalPaused) {
+      this.pushAudit({ kind: "status", text: "agent_run:paused-approval — 승인 대기 마일스톤으로 자동 계속을 멈춥니다" });
+      return false;
+    }
     if (!this.workPlan || isWorkPlanComplete(this.workPlan)) return false;
     if (this.autoRunSteps >= AGENT_RUN_MAX_TOTAL_STEPS) {
       this.pushAudit({
@@ -984,6 +1012,8 @@ export class AssistantSession {
         };
       }
       this.workPlan = plan;
+      // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
+      this.lastMilestoneCompletionItemId = null;
       const progress = summarizeWorkPlan(plan);
       return {
         ok: true,
@@ -1044,7 +1074,7 @@ export class AssistantSession {
     return { ok: false, summary: `알 수 없는 WorkPlan 툴: ${name}` };
   }
 
-  private noteSuccessfulWriteTools(names: readonly string[], onEvent: (event: SessionEvent) => void): void {
+  private async noteSuccessfulWriteTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.workPlan || names.length === 0) return;
     const { completed, next } = advanceWorkPlanFromTools(this.workPlan, names);
     if (completed) {
@@ -1055,7 +1085,82 @@ export class AssistantSession {
       } else if (isWorkPlanComplete(this.workPlan)) {
         onEvent({ type: "status", text: "작업 계획의 모든 항목이 완료되었습니다." });
       }
+      // successTools 자동 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
+      await this.maybeAutoApplyMilestone(completed, onEvent);
     }
+  }
+
+  /**
+   * 마일스톤 자동 적용(todo 4): 완료된 work-item의 제안을 안전 적용 경로로 기계적으로 반영한다.
+   * 자율 런(opts.autonomous)에서만 동작한다. 승인 정책 분류는 approvalPolicy를 그대로 쓰는데,
+   * 파괴적/어휘/규칙 게이트가 autoApprove 검사보다 먼저 판정하므로 안전한 일반 쓰기만 "auto"로
+   * 분류된다 — 자동 적용이 정책 게이트를 우회하지 않는다. auto verdict + 완성도 경고 없음일 때만
+   * 적용하고, 그 외에는 paused-proposal 이벤트를 내고 런을 멈춘다(카드 렌더 → 사용자 승인 대기).
+   */
+  private async maybeAutoApplyMilestone(completed: WorkItem, onEvent: (event: SessionEvent) => void): Promise<void> {
+    if (!this.milestoneAutoApply) return;
+    if (this.milestoneApprovalPaused) return; // 이전 마일스톤이 승인 대기 — 사용자 행동까지 자동 적용 금지.
+    if (this.lastMilestoneCompletionItemId === completed.id) return; // 같은 항목 중복 트리거 방지.
+    this.lastMilestoneCompletionItemId = completed.id;
+    const calls = this.finalizeProposals(this.turnProposals);
+    if (calls.length === 0) return; // 이번 턴에 마일스톤 쓰기가 없으면 적용 대상이 없다.
+    // 승인 분류: 자율 모드(auto)는 세션 자체 유효 플래그를 쓴다 — 사용자 UI autoApprove 아님.
+    // agentMode 미지정(구형 주입 config)은 todo 1의 기본값 "auto" 계약을 따른다.
+    // chat 모드만 사용자 설정을 그대로 쓴다(종전 분류와 동일).
+    const autoApproveEnabled = this.config.agentMode === "chat" ? this.config.autoApprove === true : true;
+    const verdict = classifyApproval(calls, { autoApproveEnabled });
+    if (verdict.decision !== "auto") {
+      this.pauseMilestone(completed, verdict.reason, verdict.warnings, onEvent);
+      return;
+    }
+    const completenessWarnings = proposalCompletenessWarnings({
+      requestText: this.currentTurnRequestText,
+      buildSpec: this.reviewBuildSpecForProposal(calls),
+      calls,
+    });
+    if (completenessWarnings.length > 0) {
+      this.pauseMilestone(completed, "완성도 경고로 자동 적용을 보류합니다.", completenessWarnings, onEvent);
+      return;
+    }
+    const proposed = this.getProposedProject();
+    const applied = await applyProposedProject(proposed, {
+      source: "agent-milestone",
+      agentName: this.config.model,
+      summary: `마일스톤: ${completed.title}`,
+      toolNames: calls.map((call) => call.name),
+      snapshotLabel: `마일스톤: ${completed.title}`,
+    });
+    if (!applied.ok) {
+      // 커밋 게이트 차단 — 자동 적용 대신 사용자 검토로 넘긴다(카드 렌더).
+      this.pauseMilestone(completed, `적용 검증 실패: ${applied.issue ?? "무결성 오류"}`, [], onEvent);
+      return;
+    }
+    this.pushAudit({
+      kind: "status",
+      text: `agent_run:milestone-applied "${completed.title}" calls=${calls.length} commit=${applied.commit.commitId ?? "local-only"} persisted=${String(applied.commit.persisted)}`,
+    });
+    onEvent({
+      type: "milestone_applied",
+      title: completed.title,
+      toolCount: calls.length,
+      commitId: applied.commit.commitId,
+    });
+    // 적용된 제안을 턴 결과/카드에서 제거하고, draft == 적용본이므로 baseline을 최신화한다
+    // (store.replace 정규화 반영 — 다음 마일스톤의 draft가 깨끗하게 시작된다).
+    this.turnProposals = new Map();
+    this.rebaseProject(applied.applied);
+  }
+
+  private pauseMilestone(
+    completed: WorkItem,
+    reason: string,
+    warnings: readonly string[],
+    onEvent: (event: SessionEvent) => void,
+  ): void {
+    this.milestoneApprovalPaused = true;
+    this.pushAudit({ kind: "status", text: `agent_run:milestone-paused "${completed.title}" — ${reason}` });
+    onEvent({ type: "proposal_paused", reason, warnings });
+    onEvent({ type: "status", text: `마일스톤 승인 대기: ${completed.title} — ${reason}` });
   }
 
   private withWorkPlanResult(result: TurnResult): TurnResult {
@@ -1626,6 +1731,12 @@ export class AssistantSession {
               this.emitPhase(onEvent, "execute");
               this.injectWorkPlanOrchestration();
             }
+            // 명시 complete_work_item 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
+            if (name === "complete_work_item" && this.workPlan) {
+              const completedId = completedWorkItemIdFromResult(toolResult);
+              const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
+              if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
+            }
           }
         } else {
           const dedupeKey = writeDedupeKey(name, args);
@@ -1727,7 +1838,7 @@ export class AssistantSession {
       }
 
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
-      this.noteSuccessfulWriteTools(successfulWriteToolsThisRound, onEvent);
+      await this.noteSuccessfulWriteTools(successfulWriteToolsThisRound, onEvent);
       const afterItemId = this.workPlan?.currentItemId ?? null;
       const advanced =
         Boolean(this.workPlan) &&
@@ -2105,4 +2216,20 @@ function stringValue(value: unknown): string | null {
 
 function numberValue(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+/** 완료된 work-item을 id로 찾는다 — 완료 직후 currentItemId는 다음 항목으로 넘어가 있다. */
+function findWorkItemById(plan: WorkPlan, itemId: string): WorkItem | null {
+  for (const layer of plan.layers) {
+    const item = layer.items.find((entry) => entry.id === itemId);
+    if (item) return item;
+  }
+  return null;
+}
+
+/** complete_work_item ToolResult.data.completed(항목 id)를 안전하게 꺼낸다. */
+function completedWorkItemIdFromResult(result: ToolResult): string | null {
+  if (!result.data || typeof result.data !== "object" || Array.isArray(result.data)) return null;
+  const completed = (result.data as Record<string, unknown>).completed;
+  return typeof completed === "string" && completed.length > 0 ? completed : null;
 }

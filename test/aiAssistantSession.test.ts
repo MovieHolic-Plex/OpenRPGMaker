@@ -1,4 +1,46 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { classifyApproval } from "@/ai/approvalPolicy";
+import { store } from "@/project/store";
+import type { Project } from "@/project/types";
+import type { SessionEvent } from "@/ai/assistantSession";
+
+const MILESTONE_TEST_ENV = {
+  VITE_SUPABASE_ANON_KEY: "test-anon-key",
+  VITE_SUPABASE_PROJECT_ID: "rpg-zzu-test-project",
+  VITE_SUPABASE_URL: "http://dbserver:8100",
+} as const;
+
+function stubSupabaseEnv(): void {
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", MILESTONE_TEST_ENV.VITE_SUPABASE_ANON_KEY);
+  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID);
+  vi.stubEnv("VITE_SUPABASE_URL", MILESTONE_TEST_ENV.VITE_SUPABASE_URL);
+}
+
+/**
+ * 마일스톤 자동 적용이 실제 Supabase를 건드리지 않도록 헤르메틱 환경을 설치한다.
+ * todo 4 이후 자율 런 테스트는 항목 완료 시 자동 적용 경로를 타므로 필수다.
+ */
+function installMilestoneHermeticEnv(project: Project): void {
+  stubSupabaseEnv();
+  vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(project);
+  resetMapEditHistory();
+}
+
+/** 마일스톤 스토어 초기화만(적용 없는 테스트용 — env/fetch 스텁 불필요). */
+function initMilestoneStore(project: Project): void {
+  store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+  store.replace(project);
+  resetMapEditHistory();
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+});
 
 // ── 자율 실행 드라이버(todo 2: 턴 간 자동 계속 + 48단계 예산) ─────────────────────
 // 계약: sendUserMessage(..., { autonomous }) 로 진입한 런은 턴이 끝난 뒤
@@ -81,7 +123,11 @@ describe("자율 실행 드라이버", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    // todo 4: 자율 런은 항목 완료 시 마일스톤을 자동 적용하므로 실제 Supabase를 건드리지 않게
+    // env/fetch를 스텁하고 세션·store를 같은 프로젝트로 초기화한다.
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -133,7 +179,10 @@ describe("자율 실행 드라이버", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    // t1 완료 시 마일스톤 자동 적용이 일어나므로 헤르메틱 env 설치.
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
 
     const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
 
@@ -160,7 +209,9 @@ describe("자율 실행 드라이버", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(createBlankProject(), { config: ORCH_AUTO, chat });
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const session = new AssistantSession(project, { config: ORCH_AUTO, chat });
     let autoContinued = false;
 
     const promise = session.sendUserMessage(
@@ -197,7 +248,9 @@ describe("자율 실행 드라이버", () => {
       return steps[index++]!;
     } };
     // 훅 주입(생성자 옵션) — peek 만 하고 dequeue 하지 않는다.
-    const session = new AssistantSession(createBlankProject(), {
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const session = new AssistantSession(project, {
       config: ORCH_AUTO,
       peekPendingUserMessage: () => pending,
       chat: (config, req) => chatRef.current(config as never, req as never),
@@ -256,7 +309,9 @@ describe("자율 실행 드라이버", () => {
       if (index >= steps.length) exhausted();
       return steps[index++]!;
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const session = new AssistantSession(project, {
       config: ORCH_AUTO,
       peekPendingUserMessage: () => (gi < garbage.length ? (garbage[gi++] as string) : null),
       chat,
@@ -348,6 +403,231 @@ describe("자율 실행 드라이버", () => {
     expect(statuses.filter((t) => t.includes("agent_run:auto-continue")).length).toBe(AGENT_RUN_MAX_TOTAL_STEPS * 2);
     expect(statuses.filter((t) => t.includes("agent_run_budget_exhausted")).length).toBe(2);
   }, 600000);
+});
+
+// ── 마일스톤 자동 적용(todo 4: 완료 항목 → 제안 스냅샷 경로로 자동 적용) ─────────────
+// 계약: 자율 런(agentMode auto + opts.autonomous)에서 work-item 완료(complete_work_item
+// 또는 successTools 자동 완료) 시점에 안전 적용 경로(commitChangeset → undo 스냅샷 →
+// store.replace → await 커밋 로그)를 기계적으로 호출한다. 파괴적/어휘/규칙 verdict는
+// approvalPolicy 게이트가 autoApprove보다 먼저 판정하므로 자동 적용하지 않고
+// paused-proposal 이벤트를 내며 런을 멈춘다(카드 대기).
+describe("마일스톤 자동 적용 (todo 4)", () => {
+  function milestoneToolCall(name: string, args: unknown, id: string): ChatResult {
+    return {
+      message: {
+        role: "assistant",
+        content: null,
+        tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+      },
+      finishReason: "tool_calls",
+    } as ChatResult;
+  }
+
+  function milestoneFinal(text: string): ChatResult {
+    return { message: { role: "assistant" as const, content: text }, finishReason: "stop" } as ChatResult;
+  }
+
+  const MILESTONE_PLAN = {
+    goal: "타이틀 3단계 개선",
+    layers: [
+      {
+        title: "타이틀",
+        items: [
+          { title: "1차 제목", instruction: "set_title_screen {title:'t1'}", successTools: ["set_title_screen"] },
+          { title: "2차 제목", instruction: "set_title_screen {title:'t2'}", successTools: ["set_title_screen"] },
+          { title: "3차 제목", instruction: "set_title_screen {title:'t3'}", successTools: ["set_title_screen"] },
+        ],
+      },
+    ],
+  };
+  const MILESTONE_PLAN_JSON = JSON.stringify({ action: "new_plan", ...MILESTONE_PLAN });
+  const MILESTONE_RESUME_JSON = JSON.stringify({ action: "resume", reason: "같은 목표 계속" });
+  const titleWrite = (id: string, title: string): ChatResult => milestoneToolCall("set_title_screen", { title }, id);
+  const milestoneStatusTexts = (session: { getAuditEntries(): readonly { kind: string; text?: string }[] }): string[] =>
+    session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text));
+  const milestoneExhausted = (): never => {
+    throw new (class extends Error {
+      readonly status = 401;
+      constructor() {
+        super("scripted chat exhausted");
+        this.name = "LlmError";
+      }
+    })();
+  };
+  /** 3항목 계획을 3턴(자동 계속)에 걸쳐 완료하는 스크립트 — 드라이버 테스트 (a)와 동일한 형태. */
+  const threeMilestoneSteps = (): ChatResult[] => [
+    milestoneFinal(MILESTONE_PLAN_JSON),
+    milestoneToolCall("set_work_plan", MILESTONE_PLAN, "c_plan"),
+    titleWrite("c_t1", "t1"),
+    milestoneFinal("이어서 진행합니다."),
+    milestoneFinal("이어서 진행합니다."),
+    milestoneFinal(MILESTONE_RESUME_JSON),
+    titleWrite("c_t2", "t2"),
+    milestoneFinal("이어서 진행합니다."),
+    milestoneFinal("이어서 진행합니다."),
+    milestoneFinal("이어서 진행합니다."),
+    milestoneFinal(MILESTONE_RESUME_JSON),
+    titleWrite("c_t3", "t3"),
+    milestoneFinal("모든 항목을 완료했습니다."),
+  ];
+
+  it("(a) 자율 런에서 안전한 마일스톤이 사용자 조작 없이 적용된다 — 마일스톤마다 undo 스냅샷 1개 + 커밋 row 1개", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const commitCalls: string[] = [];
+    stubSupabaseEnv();
+    vi.stubGlobal("fetch", (async (input) => {
+      const url = String(input);
+      commitCalls.push(url);
+      return new Response(null, { status: 201 });
+    }) satisfies typeof fetch);
+    const project = createBlankProject();
+    initMilestoneStore(project);
+    const steps = threeMilestoneSteps();
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) milestoneExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const events: SessionEvent[] = [];
+
+    await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    // 사용자 조작 없이 스토어에 적용 완료.
+    expect(store.getCurrent().meta?.title).toBe("t3");
+    // 마일스톤 3개 = 커밋 row 3개(await 확정 — vi.waitFor 불필요).
+    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_commits"))).toHaveLength(3);
+    expect(commitCalls.filter((url) => url.includes("/rest/v1/project_changes"))).toHaveLength(3);
+    // undo 스냅샷 1개/마일스톤.
+    expect(getMapEditHistoryEntries()).toHaveLength(3);
+    // 마일스톤 적용 이벤트 3회 + 감사 기록.
+    expect(events.filter((event) => event.type === "milestone_applied")).toHaveLength(3);
+    const audits = milestoneStatusTexts(session);
+    expect(audits.filter((t) => t.includes("agent_run:milestone-applied"))).toHaveLength(3);
+    expect(audits.some((t) => t.includes("agent_run:milestone-paused"))).toBe(false);
+    expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
+  }, 120000);
+
+  it("(b) 파괴적 마일스톤(remove_event)은 자동 적용하지 않고 paused-proposal 이벤트를 낸다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    initMilestoneStore(project);
+    const before = JSON.stringify(store.getCurrent());
+    const DESTRUCTIVE_PLAN = {
+      goal: "이벤트 정리",
+      layers: [{ title: "정리", items: [{ title: "이벤트 제거", instruction: "remove_event", successTools: ["remove_event"] }] }],
+    };
+    const markerEvent = {
+      id: "ev_marker",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        id: "ev_marker_page",
+        name: "표식",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "action" },
+        priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [],
+      }],
+    };
+    const steps: ChatResult[] = [
+      milestoneFinal(JSON.stringify({ action: "new_plan", ...DESTRUCTIVE_PLAN })),
+      milestoneToolCall("set_work_plan", DESTRUCTIVE_PLAN, "c_plan"),
+      milestoneToolCall("upsert_event", { mapId: project.startMapId, event: markerEvent }, "c_add"),
+      milestoneToolCall("remove_event", { mapId: project.startMapId, eventId: "ev_marker" }, "c_remove"),
+      milestoneFinal("이벤트를 정리했습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) milestoneExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const events: SessionEvent[] = [];
+
+    const result = await session.sendUserMessage("이벤트 영역을 정리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    // remove_event는 자동 적용되지 않는다(파괴적 게이트 — autoApprove보다 먼저 판정).
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+    expect(events.some((event) => event.type === "proposal_paused")).toBe(true);
+    expect(events.some((event) => event.type === "milestone_applied")).toBe(false);
+    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone-paused"))).toBe(true);
+    // 런이 멈춘다(자동 계속 없음) — 카드가 렌더되어 사용자 승인을 기다린다.
+    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+    expect(result.proposedCalls.map((call) => call.name)).toContain("remove_event");
+  }, 30000);
+
+  it("(b-2) clear_region은 세션 proposal 플래그와 무관하게 policy 게이트로 차단된다(정책 우회 금지)", async () => {
+    // clear_region은 세션 누적 시 destructive:false 로 표시되지만(세션 DESTRUCTIVE_TOOLS에 없음)
+    // approvalPolicy의 DESTRUCTIVE_TOOLS에는 있다 — autoApproveEnabled:true 여도 require_approval.
+    const call = {
+      name: "clear_region",
+      args: { mapId: "m1", x: 0, y: 0, w: 2, h: 2 },
+      summary: "영역 정리",
+      result: { ok: true, summary: "영역 정리" },
+      destructive: false,
+      requiresApproval: false,
+    };
+    const verdict = classifyApproval([call], { autoApproveEnabled: true });
+    expect(verdict.decision).toBe("require_approval");
+    expect(verdict.reason).toContain("파괴적");
+  });
+
+  it("(c) autonomous 플래그 없이(채팅 모드)는 종전대로 마일스톤 자동 적용이 없다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    initMilestoneStore(project);
+    const before = JSON.stringify(store.getCurrent());
+    const steps = threeMilestoneSteps();
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) milestoneExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+    const events: SessionEvent[] = [];
+
+    // 플래그 미지정(기존 호출처) — 턴 1개로 끝나고(자동 계속 없음) 자동 적용도 없다.
+    await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); });
+
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    expect(getMapEditHistoryEntries()).toHaveLength(0);
+    expect(events.some((event) => event.type === "milestone_applied")).toBe(false);
+    expect(events.some((event) => event.type === "proposal_paused")).toBe(false);
+    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:milestone"))).toBe(false);
+  }, 30000);
+
+  it("(c-2) agentMode chat + autonomous 플래그는 사용자 autoApprove 설정 기준으로 분류해 일시정지한다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    initMilestoneStore(project);
+    const before = JSON.stringify(store.getCurrent());
+    const steps = threeMilestoneSteps();
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) milestoneExhausted();
+      return steps[index++]!;
+    };
+    // chat 모드: 세션 유효 autoApprove = 사용자 설정(기본 false) — 자동 적용 없이 카드 대기.
+    const session = new AssistantSession(project, {
+      config: { ...ORCH_CONFIG, maxToolCalls: 4, agentMode: "chat" as const },
+      chat,
+    });
+    const events: SessionEvent[] = [];
+
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    expect(JSON.stringify(store.getCurrent())).toBe(before);
+    expect(events.some((event) => event.type === "milestone_applied")).toBe(false);
+    expect(events.some((event) => event.type === "proposal_paused")).toBe(true);
+    expect(result.proposedCalls.length).toBeGreaterThan(0); // 카드 렌더 대상 유지
+    expect(milestoneStatusTexts(session).some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+  }, 30000);
 });
 
 
