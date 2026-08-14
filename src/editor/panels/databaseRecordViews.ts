@@ -542,7 +542,16 @@ function recordForm(
   onRename?: (name: string) => void
 ): HTMLElement {
   const form = el("section", { class: `db-detail-form rm2k3-detail-form rm2k3-detail-${collection}`, dataset: { testid: "db-detail-form" } });
-  if (collection !== "classes" && collection !== "enemies" && collection !== "troops") form.append(nameField(collection, record.id, record.name, onRename));
+  // items/equipment 는 모던 인스펙터 헤더가 db-field-name 을 소유한다(T9/T10) — 레거시 이름
+  // 필드를 함께 그리면 동일 testid 가 두 개 생겨 Playwright strict-mode 가 깨진다.
+  if (
+    collection !== "classes" &&
+    collection !== "enemies" &&
+    collection !== "troops" &&
+    collection !== "items" &&
+    collection !== "equipment"
+  )
+    form.append(nameField(collection, record.id, record.name, onRename));
   switch (collection) {
     case "actors": {
       const actor = store.getCurrent().database.actors.find((entry) => entry.id === record.id);

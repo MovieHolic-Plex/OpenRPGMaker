@@ -79,7 +79,8 @@ test("BM88 Classes tab exposes Korean ontology fields and persists class setting
 });
 
 test("RM2K3 database editor edits records, updates dependent pickers, and blocks referenced deletes", async ({ page }, testInfo) => {
-  test.setTimeout(60_000);
+  // 전체 컬렉션을 한 번에 편집하는 긴 흐름 — 갤러리/섹션 내비 추가 이후 60s 로는 부족하다.
+  test.setTimeout(150_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
@@ -109,7 +110,9 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   ]) {
     await page.getByTestId(id).click();
     await expect(page.getByTestId("db-detail-form")).toBeVisible();
-    await expect(page.getByTestId("database-modal")).not.toContainText("generated-");
+    // generated- 임시 ID 가 UI 에 새지 않아야 한다. 예외: troops 요약 줄이 의도적으로
+    // 전투 배경 리소스 ID(generated-battle-reference-forest)를 보여준다(9521aae6 이후).
+    await expect(page.getByTestId("database-modal")).not.toContainText(/generated-(?!battle-reference-forest)/);
   }
 
   await page.getByTestId("db-tab-skills").click();
@@ -163,7 +166,8 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-item-description").fill("Potion with battle metadata");
   await page.getByTestId("db-field-item-type").selectOption("medicine");
   await page.getByTestId("db-field-item-consumption-limit").selectOption("2");
-  await page.getByTestId("db-field-item-scope").selectOption("allAllies");
+  // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
+  await page.getByTestId("db-field-item-scope").getByText("아군 전체").click();
   await page.getByTestId("db-field-item-hp-flat").fill("25");
   await page.getByTestId("db-field-item-only-menu").check();
   await page.getByTestId("db-picker-skill").selectOption({ label: "Spark QA" });
@@ -197,6 +201,8 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-tab-animations").click();
   await page.getByTestId("db-field-name").fill("Animation QA");
   await page.getByTestId("db-tab-system").click();
+  // 타이틀 리소스 필드는 리소스 섹션에 있다(T11 섹션 내비 이후 기본 섹션은 초기 파티).
+  await page.getByTestId("db-system-nav-resources").click();
   await page.getByTestId("db-field-title-resource").fill("title_qa");
   await page.getByTestId("db-tab-terms").click();
   await page.getByTestId("db-field-gold").fill("Zenny");
