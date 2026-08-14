@@ -588,11 +588,21 @@ function parseNonStream(json: Record<string, unknown>): ChatResult {
 // 일시 오류(네트워크/429/5xx) 자동 재시도 1회의 백오프(도그푸딩 결함 ⑥).
 export const LLM_RETRY_BACKOFF_MS = 1500;
 
+// 단일 LLM 요청 수명 상한(실측 2026-08-15 자율 런): cpen 게이트웨이가 매달려 응답을
+// 안 주면 턴이 영원히 대기했다. 게이트웨이 정상 응답은 50초 안팎까지 관측되므로 넉넉한
+// 180초로 매달림만 잡고 정상 체감은 해치지 않는다. 초과 시 504 로 일시 오류 처리(재시도 경로).
+export const LLM_REQUEST_TIMEOUT_MS = 180_000;
+
 // 재시도해 볼 만한 오류인가 — 네트워크(상태 없음)/요청 한도(429)/서버 오류(5xx).
 // 인증(401)/크레딧(402) 같은 영구 오류는 재시도하지 않는다.
 export function isRetryableLlmError(error: unknown): boolean {
   if (!(error instanceof LlmError)) return false;
   return error.status === undefined || error.status === 429 || error.status >= 500;
+}
+
+/** 매달림(응답 없는 fetch)을 일시 오류로 감지한다 — AbortController.abort() 는 AbortError 를 던진다. */
+export function isLlmTimeoutError(error: unknown): boolean {
+  return error instanceof Error && error.name === "AbortError";
 }
 
 export function isLlmAbortError(error: unknown): boolean {
@@ -663,13 +673,31 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
   }
   let response: Response;
   try {
-    response = await fetch(endpoint(config), {
-      method: "POST",
-      headers: headers(config),
-      body: requestBody(config, req, stream),
-      signal: req.signal,
-    });
+    // 실측(2026-08-15 자율 런): cpen 게이트웨이가 요청을 조용히 매달아(응답 없음) 턴이
+    // 영원히 대기했다(수동 중단 외 복구 불가). 요청 수명을 LLM_REQUEST_TIMEOUT_MS 로 제한해
+    // 매달림을 일시 오류로 바꾸고 기존 재시도 경로로 넘긴다(공급자 상한 — 게이트웨이는 느려도
+    // 정상 응답이 50초 안팎이라 넉넉히 잡는다). 호출자 signal(중단)과 합성한다.
+    const controller = new AbortController();
+    const timeoutTimer = setTimeout(() => controller.abort(), LLM_REQUEST_TIMEOUT_MS);
+    const onCallerAbort = () => controller.abort();
+    req.signal?.addEventListener("abort", onCallerAbort, { once: true });
+    try {
+      response = await fetch(endpoint(config), {
+        method: "POST",
+        headers: headers(config),
+        body: requestBody(config, req, stream),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeoutTimer);
+      req.signal?.removeEventListener("abort", onCallerAbort);
+    }
   } catch (cause) {
+    // 매달림/응답 지연 — 내부 타임아웃 컨트롤러가 abort 한 경우만 여기(호출자 signal 과 구분).
+    if (isLlmTimeoutError(cause) && !req.signal?.aborted) {
+      // 공급자 일시 오류로 취급해 재시도 가능하게 한다.
+      throw new LlmError(`요청 시간 초과(${LLM_REQUEST_TIMEOUT_MS / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
+    }
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     const target = config.authMode === "chatgpt" ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
     const hint = config.authMode === "chatgpt" ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";

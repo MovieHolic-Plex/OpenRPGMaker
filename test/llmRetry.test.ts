@@ -11,6 +11,7 @@ import {
   isRetryableLlmError,
   LlmError,
   LlmAbortError,
+  LLM_REQUEST_TIMEOUT_MS,
   LLM_RETRY_BACKOFF_MS,
   type AiConfig,
   type ChatRequest,
@@ -129,6 +130,61 @@ describe("chatCompletion 자동 재시도", () => {
     expect((error as LlmError).message).toContain("스트리밍 연결이 끊겼습니다");
     expect(fetchSpy).toHaveBeenCalledTimes(1);
     expect(tokens).toEqual(["부분"]);
+  });
+
+  it("응답 없는 매달림은 요청 타임아웃(504, 재시도 가능)으로 정규화한다", async () => {
+    vi.useFakeTimers();
+    // fetch 가 영원히 resolve 되지 않는 매달림 — 타임아웃 타이머가 abort 를 걸면 reject 된다.
+    const hangFetch = vi.fn((_url: unknown, init?: RequestInit) =>
+      new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
+      }),
+    );
+    vi.stubGlobal("fetch", hangFetch);
+
+    const promise = chatCompletion(CONFIG, {
+      messages: [{ role: "user", content: "hi" }],
+      disableTransientRetry: true, // 매달림 타임아웃 자체를 검증 — 재시도 경로는 isRetryableLlmError 로 확인한다.
+    });
+    const assertion = promise.then(
+      () => null,
+      (cause: unknown) => cause,
+    );
+    await vi.advanceTimersByTimeAsync(LLM_REQUEST_TIMEOUT_MS + 1000);
+    const error = await assertion;
+
+    expect(error).toBeInstanceOf(LlmError);
+    expect((error as LlmError).status).toBe(504);
+    expect((error as LlmError).message).toContain("요청 시간 초과");
+    expect(isRetryableLlmError(error)).toBe(true);
+  });
+
+  it("호출자 signal 중단은 매달림 타임아웃보다 우선해 LlmAbortError로 끝난다", async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((_url: unknown, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
+        }),
+      ),
+    );
+    const controller = new AbortController();
+
+    const promise = chatCompletion(CONFIG, {
+      messages: [{ role: "user", content: "hi" }],
+      signal: controller.signal,
+      disableTransientRetry: true,
+    });
+    const assertion = promise.then(
+      () => null,
+      (cause: unknown) => cause,
+    );
+    controller.abort();
+    await vi.advanceTimersByTimeAsync(0);
+    const error = await assertion;
+
+    expect(error).toBeInstanceOf(LlmAbortError);
   });
 });
 
