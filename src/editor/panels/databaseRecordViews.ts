@@ -28,6 +28,9 @@ import {
   setListScrollTopForCollection,
   setSearchQueryForCollection,
   setSelectedRecordId,
+  setViewModeForCollection,
+  viewModeForCollection,
+  type RecordViewMode,
 } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
@@ -162,9 +165,35 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
         },
       },
     }),
-    deleteButton(collection, rerender)
+    deleteButton(collection, rerender),
+    viewToggle(collection, rerender)
   );
   return wrap;
+}
+
+// 갤러리↔리스트 뷰 토글 — 컬렉션별 세션 상태만 전환하고 기존 rerender 경로로 목록 창을
+// 다시 그린다(갤러리 카드 렌더링 자체는 후속 작업 범위). renderRecordTab 내부에서만
+// 생성되므로 record 탭이 아닌 탭(요소/지형/유틸리티)에는 절대 나타나지 않는다.
+function viewToggle(collection: DatabaseCollection, rerender: () => void): HTMLElement {
+  const current = viewModeForCollection(collection);
+  const toggleButton = (mode: RecordViewMode): HTMLElement => {
+    const isActive = current === mode;
+    const label = mode === "gallery" ? "갤러리" : "목록";
+    return el("button", {
+      class: `db-view-toggle${isActive ? " active" : ""}`,
+      attrs: { "aria-pressed": String(isActive), type: "button", title: label },
+      dataset: { testid: mode === "gallery" ? "db-view-toggle-gallery" : "db-view-toggle-list" },
+      text: label,
+      on: {
+        click: () => {
+          if (viewModeForCollection(collection) === mode) return;
+          setViewModeForCollection(collection, mode);
+          rerender();
+        },
+      },
+    });
+  };
+  return el("div", { class: "db-view-toggle-group", children: [toggleButton("gallery"), toggleButton("list")] });
 }
 
 const DELETE_CONFIRM_LABEL = "정말 삭제?";
