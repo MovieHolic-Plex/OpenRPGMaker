@@ -1,4 +1,13 @@
 import { el } from "@/util/dom";
+import {
+  FACESET_COLUMNS,
+  FACESET_FACE_HEIGHT,
+  FACESET_FACE_WIDTH,
+  FACESET_ROWS,
+} from "@/assets/easyrpgRtp";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+
+const AVATAR_CHIP_SIZE = 40;
 
 export function textField(label: string, testid: string, value: string, onInput: (value: string) => void): HTMLElement {
   const input = el("input", { attrs: { type: "text" }, value, dataset: { testid } });
@@ -14,6 +23,71 @@ export function textControl(label: string, value: string, onInput: (value: strin
 }
 
 export type NumberFieldBounds = { readonly min: number; readonly max: number };
+
+export type SliderStepperBounds = {
+  readonly min: number;
+  readonly max: number;
+  readonly step: number;
+  readonly unit?: string;
+};
+
+/**
+ * 슬라이더 + 숫자 입력 쌍. 두 입력은 항상 클램프·스텝 정규화된 같은 값으로 동기화된다
+ * (numberField 의 P4 패턴 — 화면과 저장값이 어긋나지 않게 클램프 결과를 되쓴다).
+ */
+export function sliderStepperField(
+  label: string,
+  testid: string,
+  value: number,
+  onInput: (value: number) => void,
+  bounds: SliderStepperBounds
+): HTMLElement {
+  const range = el("input", {
+    class: "db-slider-input",
+    attrs: { type: "range", min: String(bounds.min), max: String(bounds.max), step: String(bounds.step) },
+    value,
+    dataset: { testid: `${testid}-slider` },
+  }) as HTMLInputElement;
+  const stepper = el("input", {
+    class: "db-stepper-input",
+    attrs: { type: "number", min: String(bounds.min), max: String(bounds.max), step: String(bounds.step) },
+    value,
+    dataset: { testid: `${testid}-stepper` },
+  }) as HTMLInputElement;
+  const normalize = (raw: number): number => {
+    const numeric = Number.isFinite(raw) ? raw : bounds.min;
+    const clamped = Math.min(bounds.max, Math.max(bounds.min, numeric));
+    const offset = clamped - bounds.min;
+    return bounds.min + Math.round(offset / bounds.step) * bounds.step;
+  };
+  // 초기값도 즉시 정규화해 두 입력의 표시가 범위 밖 데이터에서도 일치하게 한다.
+  const initial = normalize(value);
+  range.value = String(initial);
+  stepper.value = String(initial);
+  const commit = (source: HTMLInputElement, next: number): void => {
+    range.value = String(next);
+    stepper.value = String(next);
+    // 소스 입력은 클램프가 값을 실제로 바꿨을 때만 되쓴다 — 타이핑 중 커서 점프 방지.
+    const rewritten = String(next) !== source.value;
+    if (rewritten) source.value = String(next);
+    onInput(next);
+  };
+  range.addEventListener("input", () => commit(range, normalize(Number(range.value))));
+  stepper.addEventListener("input", () => {
+    if (stepper.value === "") return;
+    commit(stepper, normalize(Number(stepper.value)));
+  });
+  stepper.addEventListener("change", () => commit(stepper, normalize(Number(stepper.value))));
+  const pair = el("span", {
+    class: "db-slider-stepper",
+    children: [
+      range,
+      stepper,
+      ...(bounds.unit ? [el("span", { class: "db-slider-unit", text: bounds.unit })] : []),
+    ],
+  });
+  return field(label, pair);
+}
 
 /**
  * 숫자 필드. bounds 를 주면 percentField 패턴으로 입력 즉시 클램프하고
@@ -107,6 +181,119 @@ export function selectTextLiteral<T extends string>(
     if (next) onChange(next);
   });
   return field(label, select);
+}
+
+/**
+ * 배타 선택 필(세그먼티드 컨트롤) — 네이티브 radio 그룹. 방향키 이동은 브라우저
+ * 기본 동작에 맡긴다(포커스 트랩/커스텀 키 처리 없음), Escape 도 모달 최상층
+ * 라우팅 그대로 통과시킨다.
+ */
+export function segmentedControl(
+  label: string,
+  testid: string,
+  value: string,
+  options: readonly { readonly id: string; readonly name: string }[],
+  onInput: (value: string) => void
+): HTMLElement {
+  const groupName = `db-segmented-${testid}`;
+  const group = el("div", {
+    class: "db-segmented",
+    attrs: { role: "radiogroup" },
+    dataset: { testid },
+  });
+  for (const option of options) {
+    const input = el("input", {
+      attrs: { type: "radio", name: groupName, value: option.id },
+      dataset: { testid: `${testid}-option` },
+    }) as HTMLInputElement;
+    input.checked = option.id === value;
+    input.addEventListener("change", () => {
+      if (input.checked) onInput(input.value);
+    });
+    group.append(el("label", { class: "db-segmented-pill", children: [input, el("span", { text: option.name })] }));
+  }
+  return field(label, group);
+}
+
+/**
+ * 토글 스위치 — checkbox input 을 CSS 로 스위치처럼 꾸민다. Space/클릭 토글은
+ * 네이티브 checkbox 기본 동작(키 핸들러 없음).
+ */
+export function toggleSwitch(
+  label: string,
+  testid: string,
+  checked: boolean,
+  onInput: (checked: boolean) => void
+): HTMLElement {
+  const input = el("input", {
+    class: "db-toggle-input",
+    attrs: { type: "checkbox", role: "switch" },
+    dataset: { testid },
+  }) as HTMLInputElement;
+  input.checked = checked;
+  input.addEventListener("change", () => onInput(input.checked));
+  return field(
+    label,
+    el("span", { class: "db-toggle-switch", children: [input, el("span", { class: "db-toggle-thumb" })] })
+  );
+}
+
+export type AvatarChipActor = {
+  readonly id: string;
+  readonly name: string;
+  readonly faceResourceId?: string;
+  readonly faceIndex?: number;
+};
+
+/**
+ * 배우 아바타 칩 행 — faceset 원형 칩 버튼(actorThumbnail 과 같은 크롭 수식,
+ * 크기만 칩 사이즈로 조정). 미선택 칩은 dim, 선택 상태는 aria-pressed 로 노출.
+ * 칩은 네이티브 button — Tab 포커스/Enter·Space 활성화 모두 브라우저 기본 동작.
+ */
+export function avatarChipRow(
+  label: string,
+  testid: string,
+  actors: readonly AvatarChipActor[],
+  selectedIds: readonly string[],
+  onToggle: (actorId: string, nextSelected: boolean) => void
+): HTMLElement {
+  const row = el("div", { class: "db-avatar-chip-row", dataset: { testid } });
+  for (const actor of actors) {
+    const chip = el("button", {
+      class: "db-avatar-chip",
+      attrs: { type: "button", "aria-pressed": selectedIds.includes(actor.id) ? "true" : "false" },
+      dataset: { testid: `${testid}-chip`, actorId: actor.id },
+    });
+    if (!selectedIds.includes(actor.id)) chip.classList.add("dimmed");
+    chip.append(faceChipAvatar(actor));
+    chip.append(el("span", { class: "db-avatar-chip-name", text: actor.name }));
+    chip.addEventListener("click", () => {
+      const nextSelected = chip.getAttribute("aria-pressed") !== "true";
+      chip.setAttribute("aria-pressed", nextSelected ? "true" : "false");
+      chip.classList.toggle("dimmed", !nextSelected);
+      onToggle(actor.id, nextSelected);
+    });
+    row.append(chip);
+  }
+  return field(label, row);
+}
+
+function faceChipAvatar(actor: AvatarChipActor): HTMLElement {
+  const size = AVATAR_CHIP_SIZE;
+  const url = resolveAssetResourceUrl(actor.faceResourceId);
+  const slot = el("span", {
+    class: "db-avatar-chip-face",
+    attrs: { "aria-hidden": "true" },
+  });
+  if (!url) return slot;
+  const faceIndex = actor.faceIndex ?? 0;
+  const column = faceIndex % FACESET_COLUMNS;
+  const row = Math.floor(faceIndex / FACESET_COLUMNS);
+  const scale = size / FACESET_FACE_WIDTH;
+  slot.style.backgroundImage = `url("${url}")`;
+  slot.style.backgroundPosition = `-${column * FACESET_FACE_WIDTH * scale}px -${row * FACESET_FACE_HEIGHT * scale}px`;
+  slot.style.backgroundSize = `${FACESET_COLUMNS * FACESET_FACE_WIDTH * scale}px ${FACESET_ROWS * FACESET_FACE_HEIGHT * scale}px`;
+  return slot;
 }
 
 export function field(label: string, control: HTMLElement): HTMLElement {
