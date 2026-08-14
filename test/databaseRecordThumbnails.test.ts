@@ -73,6 +73,35 @@ describe("database record list thumbnails", () => {
     expect(node.style.backgroundPosition).toContain("-");
     expect(node.style.backgroundPosition).not.toBe("0px 0px");
   });
+
+  it("parameterized size scales the crop math while the default stays at 32px", () => {
+    const project = createBlankProject();
+    const actor = { ...project.database.actors[0], faceIndex: 0 };
+
+    // 기본(size 미지정)은 기존 32px 크롭과 동일하다 — 기존 호출부 계약 유지.
+    const defaultNode = thumb("actors", actor, project);
+    const explicit32 = recordListThumbnail("actors", actor, project, 32);
+    if (!(explicit32 instanceof FakeElement)) throw new Error("expected fake element");
+    expect(explicit32.style.backgroundSize).toBe(defaultNode.style.backgroundSize);
+
+    // 48px 은 배율 1.5 로 크롭 스케일이 커진다 (backgroundSize 첫 숫자 = size × 시트 열 수).
+    const large = recordListThumbnail("actors", actor, project, 48);
+    if (!(large instanceof FakeElement)) throw new Error("expected fake element");
+    expect(large.style.backgroundSize).not.toBe(defaultNode.style.backgroundSize);
+    expect(firstPx(large.style.backgroundSize) / firstPx(defaultNode.style.backgroundSize)).toBeCloseTo(1.5);
+
+    // 손상된 size(0/음수)는 32px 기본으로 폴백한다.
+    const broken = recordListThumbnail("actors", actor, project, 0);
+    if (!(broken instanceof FakeElement)) throw new Error("expected fake element");
+    expect(broken.style.backgroundSize).toBe(defaultNode.style.backgroundSize);
+
+    // 애니메이션 크롭도 size 를 따른다 (같은 1.5 배율).
+    const animationDefault = recordListThumbnail("battleAnimations", project.database.battleAnimations[0], project);
+    const animation = recordListThumbnail("battleAnimations", project.database.battleAnimations[0], project, 48);
+    if (!(animation instanceof FakeElement) || !(animationDefault instanceof FakeElement)) throw new Error("expected fake element");
+    expect(animation.style.backgroundSize).not.toBe(animationDefault.style.backgroundSize);
+    expect(firstPx(animation.style.backgroundSize) / firstPx(animationDefault.style.backgroundSize)).toBeCloseTo(1.5);
+  });
 });
 
 function thumb<C extends DatabaseCollection>(
@@ -84,4 +113,8 @@ function thumb<C extends DatabaseCollection>(
   const node = recordListThumbnail(collection, record, project);
   if (node instanceof FakeElement) return node;
   throw new Error(`Expected ${collection} thumbnail`);
+}
+
+function firstPx(backgroundSize: string): number {
+  return Number.parseFloat(backgroundSize) || 0;
 }

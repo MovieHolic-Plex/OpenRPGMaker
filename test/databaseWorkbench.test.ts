@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { addDatabaseRecord, deleteDatabaseRecord } from "@/editor/databaseActions";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
-import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { setSelectedRecordId, setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { DATABASE_FOOTER_ACTION_TEST_IDS } from "@/editor/panels/databaseWorkbench";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -25,6 +25,7 @@ beforeEach(() => {
     configurable: true,
     value: {
       clearTimeout,
+      localStorage: createFakeLocalStorage(),
       setTimeout: (handler: TimerHandler): number => {
         if (typeof handler === "function") handler();
         return 0;
@@ -40,6 +41,11 @@ beforeEach(() => {
   });
   store.replace(createBlankProject());
   resetDatabaseRecordViewSession();
+  // 이 테스트는 리스트 행 계약(부분 렌더/검색/삭제 2단계)을 검증한다 — 갤러리 기본값
+  // 컬렉션(skills/actors/classes)을 명시적으로 list 로 고정한다.
+  setViewModeForCollection("skills", "list");
+  setViewModeForCollection("actors", "list");
+  setViewModeForCollection("classes", "list");
 });
 
 afterEach(() => {
@@ -226,4 +232,18 @@ function restoreBrowserGlobal(name: keyof FakeBrowserGlobals, value: FakeBrowser
     return;
   }
   Object.defineProperty(globalThis, name, { configurable: true, value });
+}
+
+function createFakeLocalStorage(): Storage {
+  const values = new Map<string, string>();
+  return {
+    get length() {
+      return values.size;
+    },
+    clear: () => values.clear(),
+    getItem: (key: string) => values.get(key) ?? null,
+    key: (index: number) => Array.from(values.keys())[index] ?? null,
+    removeItem: (key: string) => void values.delete(key),
+    setItem: (key: string, value: string) => void values.set(key, value),
+  } as Storage;
 }

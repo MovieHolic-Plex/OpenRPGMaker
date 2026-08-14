@@ -289,6 +289,79 @@
   padding: 1px 12px;
 }
 
+/* ── 갤러리 카드 그리드 (W3, todo 6) -----------------------------------------
+   레코드 리스트의 갤러리 뷰 — 가상화된 카드 그리드. 열 수는 컨테이너가 심는
+   --db-gallery-columns 커스텀 프로퍼티(databaseListVirtualizer 가 render() 마다 갱신)를
+   따른다. 48px 썸네일은 .db-list-thumb 의 32px 기본 크기를 카드 컨텍스트에서 키운다. */
+
+.database-modal-backdrop .database-modal-window .db-gallery .db-virtual-rows {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(var(--db-gallery-columns, 3), minmax(0, 1fr));
+  padding: 10px 12px;
+}
+
+/* 카드가 있는 갤러리는 빈 리스트 인셋 배경(:not(:has(.db-list-row)) 규칙)을 덮어쓴다. */
+.database-modal-backdrop .database-modal-window .db-gallery:has(.db-gallery-card) {
+  background: var(--db-light-bg-raised);
+  border-color: var(--db-light-border-subtle);
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 6px;
+  color: var(--db-light-text-1);
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  grid-template-rows: 48px auto auto;
+  justify-items: center;
+  min-width: 0;
+  padding: 8px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card.active {
+  background: linear-gradient(var(--db-light-accent), var(--db-light-accent));
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card .db-list-thumb {
+  height: 48px;
+  width: 48px;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-name {
+  font-size: 12px;
+  line-height: 1.3;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-tag {
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 999px;
+  color: var(--db-light-text-2);
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card.active .db-gallery-tag {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--db-light-on-accent);
+}
+
 /* ── 장비 인스펙터 헤더 (W4, todo 10) ──────────────────────────────────────
    아이콘+이름+부위 세그먼트+요약 칩 승격. 아이템 헤더(db-item-inspector-*)와
    같은 비주얼 언어를 쓰되 장비 전용 클래스로 스코프한다. 요약 칩 호스트는
