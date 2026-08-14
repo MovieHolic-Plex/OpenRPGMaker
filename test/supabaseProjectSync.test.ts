@@ -533,6 +533,76 @@ describe("Supabase project sync", () => {
     expect(requiredMap(result.project ?? localProject, mapId).events.map((event) => event.id)).toContain("ev_villager_probe");
   });
 
+  it("does not false-conflict on jsonb key reordering (alphabetical vs insertion order)", async () => {
+    // todo 8 3차 실측: 두 번의 연속 flush(전체 저장 → 맵 패치 → 맵 패치) 중 두 번째 패치가
+    // 가짜 conflict로 끝났다. 원인: Supabase current_json/map_json은 PostgreSQL jsonb 로
+    // 저장되어 객체 키가 **알파벳순 정렬**된다. 반면 에디터 메모리(persistedBaseline/로컬
+    // 드래프트) 객체는 삽입 순서 키를 유지한다 — 같은 논리 맵도 JSON.stringify 결과가
+    // 달라져 mapSaveConflicts의 latest !== base && latest !== local 판정이 매번 참이 된다.
+    // 수정: mapSnapshot을 키 재귀 정렬 비교 문자열(canonicalJsonString)로 바꿔 jsonb 왕복
+    // 여부와 무관하게 같은 논리 값은 같은 문자열이 되게 한다(배열 순서·값은 유지).
+    // 이 테스트는 JSON 키 순서만 다른 최신 맵과 기본 맵을 비교해 가짜 conflict가 없음을 고정한다.
+    const baseProject = minimalValidProject();
+    const mapId = firstMapId(baseProject);
+    const map = requiredMap(baseProject, mapId);
+    map.events = [{
+      id: "ev_order_probe",
+      name: "순서 프로브",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [],
+    }];
+    const localProject = structuredClone(baseProject);
+    const localMap = requiredMap(localProject, mapId);
+    // 로컬 편집: 같은 맵에 주민 하나 추가.
+    localMap.events = [...localMap.events, {
+      id: "ev_villager_order",
+      name: "도윤",
+      x: 4,
+      y: 4,
+      trigger: { kind: "action" },
+      commands: [],
+    }];
+    // DB 행 = baseProject 직렬화를 **jsonb 정렬 순서**로 뒤집은 것 — PostgreSQL이 키를
+    // 알파벳순으로 재정렬하는 것을 재현한다.
+    const dbJson = deserialize(JSON.stringify(JSON.parse(serialize(baseProject))));
+    const dbJsonText = JSON.stringify(dbJson);
+    // 키를 재귀 정렬해 저장본 텍스트를 만든다(load 경로는 이 정렬된 텍스트를 파싱한다).
+    function sortedText(value: unknown): string {
+      if (Array.isArray(value)) return `[${value.map((entry) => sortedText(entry)).join(",")}]`;
+      if (value && typeof value === "object") {
+        const record = value as Record<string, unknown>;
+        return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${sortedText(record[key])}`).join(",")}}`;
+      }
+      return JSON.stringify(value);
+    }
+    const sortedRowText = sortedText(JSON.parse(dbJsonText));
+    const calls: FetchCall[] = [];
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.includes("/rest/v1/maps?")) {
+        return new Response(JSON.stringify([]), { status: 200 });
+      }
+      if ((method === "POST" || method === "PATCH") && url.includes("/rest/v1/projects?")) {
+        return new Response(JSON.stringify([bodyRecord(init)]), { status: 200 });
+      }
+      if (method === "POST" && url.includes("/rest/v1/maps?")) {
+        return new Response(null, { status: 201 });
+      }
+      // 저장본은 jsonb 정렬 키 순서로 반환된다.
+      return new Response(JSON.stringify([{ current_json: JSON.parse(sortedRowText) }]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const result = await saveProjectMapPatchToSupabase({ project: localProject, baseProject }, TEST_CONFIG);
+
+    expect(result.kind).toBe("saved");
+    if (result.kind !== "saved") throw new Error("expected saved result");
+    expect(requiredMap(result.project ?? localProject, mapId).events.map((event) => event.id)).toContain("ev_villager_order");
+  });
+
   it("preserves concurrent saves from separate editors touching different maps", async () => {
     const baseProject = createHouseTemplateGalleryProject();
     const firstEditorProject = structuredClone(baseProject);
