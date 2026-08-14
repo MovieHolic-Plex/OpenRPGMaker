@@ -30,6 +30,8 @@ import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
 import { extractVocabSoftConfirm } from "@/project/tileVocabulary";
 import type { Project } from "@/project/types";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS, resolveContextViewport, type ContextOptions } from "./contextBuilder";
+import { planRequiredToolSchemas } from "./planToolExposure";
+import { compactMessagesForRequest } from "./messageBudget";
 import {
   calibratedBudgetChars,
   estimatePromptChars,
@@ -1455,10 +1457,11 @@ export class AssistantSession {
   // usage가 없으면(공급자가 스트리밍 usage 미지원) 조용히 건너뛴다. 이미지 파트가 섞인 요청은
   // 토큰이 문자 수와 비례하지 않으므로 관측하지 않는다. 호출 시점: 응답 메시지를 messages에
   // 추가하기 전(= messages가 방금 보낸 프롬프트와 정확히 일치할 때).
-  private recordPromptUsage(result: ChatResult, toolsChars: number): void {
+  private recordPromptUsage(result: ChatResult, toolsChars: number, sentMessages?: readonly ChatMessage[]): void {
     const promptTokens = result.usage?.prompt_tokens;
     if (typeof promptTokens !== "number" || !Number.isFinite(promptTokens) || promptTokens <= 0) return;
-    const estimate = estimatePromptChars(this.messages, toolsChars);
+    // 전송 사본을 기준으로 보정 관측한다(요청이 압축됐으면 압축 후 크기로).
+    const estimate = estimatePromptChars(sentMessages ?? this.messages, toolsChars);
     if (estimate.hasImages || estimate.chars <= 0) return;
     recordTokenObservation({ promptChars: estimate.chars, promptTokens, at: new Date().toISOString() });
   }
@@ -1770,8 +1773,15 @@ export class AssistantSession {
     // 플래너가 돌지도 않는데 4개가 매 요청에 실려 갔다(실측: 45개 중 4개).
     // 조건은 아래 `orchestrated` 와 같아야 한다 — 계획 단계를 알리면서 계획 툴을 숨기면 모순이다.
     const planToolsOn = this.orchestrationEnabled() || Boolean(this.workPlan);
+    // 계획 요구 툴(todo 8 실측): successTools/지시문에 명시된 툴은 도메인 게이트·40툴 상한에
+    // 떨어져도 계획이 활성인 동안 반드시 노출한다(plan_world/play_walkthrough/build_village 등).
+    // 도메인 캡 목록과 합집합을 만들고 중복은 제거한다(CPEN 128툴 상한 내 유지).
+    const baseTools = toOpenAiTools(undefined, { domains });
+    const planRequired = this.workPlan ? planRequiredToolSchemas(this.workPlan) : [];
+    const planRequiredNames = new Set(planRequired.map((tool) => tool.function.name));
     const tools = [
-      ...toOpenAiTools(undefined, { domains }),
+      ...baseTools.filter((tool) => !planRequiredNames.has(tool.function.name)),
+      ...planRequired,
       SET_BUILD_SPEC_TOOL,
       ...(planToolsOn ? WORK_PLAN_TOOLS : []),
     ];
@@ -1798,12 +1808,15 @@ export class AssistantSession {
         return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "aborted", error: "사용자가 중단했습니다" };
       }
       let result: ChatResult;
+      // CPEN 64k 메시지 내용 상한(todo 8 실측 422): 전송 사본을 안전 예산으로 압축한다.
+      // 원본(this.messages)은 감사/하네스용으로 유지된다.
+      const requestMessages = compactMessagesForRequest(this.messages);
       try {
         result = await this.chatWithTransientRetry(
           this.phaseConfig(phase),
           phase === "review"
-            ? { messages: this.messages }
-            : { messages: this.messages, tools, tool_choice: "auto" },
+            ? { messages: requestMessages }
+            : { messages: requestMessages, tools, tool_choice: "auto" },
           onEvent,
           signal,
           phase !== "execute"
@@ -1822,7 +1835,7 @@ export class AssistantSession {
       }
       spentOutputTokens += result.usage?.completion_tokens ?? estimateOutputTokens(result.message);
       // 문자↔토큰 보정 관측(usage 없으면 조용히 스킵). review 단계 요청에는 tools가 없다.
-      this.recordPromptUsage(result, phase === "review" ? 0 : toolsChars);
+      this.recordPromptUsage(result, phase === "review" ? 0 : toolsChars, requestMessages);
 
       const assistantMsg = result.message;
       // assistant 응답은 항상 문자열 content다(멀티모달 파트는 우리가 넣는 user 메시지 전용).
