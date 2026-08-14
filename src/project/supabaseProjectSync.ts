@@ -1096,14 +1096,19 @@ function mapSaveConflicts(
  * 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵이라도 원본 JSON 문자열이 달라져
  * 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후 저장 불가).
  *
- * 세 주체(base/local/latest)를 같은 serialize→deserialize 파이프라인에 통과시키면
+ * 세 주체(base/local/latest)를 같은 serialize→repair→deserialize 파이프라인에 통과시키면
  * 비교가 대칭이 된다 — 실제 동시 수정만 conflict로 감지하고, 로드 정규화 차이는
- * 사라진다. 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는 원본 그대로 폴백해
- * 기존 conflict 동작을 유지한다(새 예외를 만들지 않는다).
+ * 사라진다. repairSupabaseCurrentJson을 함께 통과시키는 이유: 로드 경로가 먼저
+ * villageInfoDocuments 를 prune 하고 resourceProfiles 를 보충하는데, deserialize(serialize)
+ * 만 돌리면 stale villageInfoDocuments 를 검증 단계에서 거부해 새 예외가 된다 — 로드와
+ * 완전히 같은 파이프라인을 써야 대칭이다. 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는
+ * 원본 그대로 폴백해 기존 conflict 동작을 유지한다(새 예외를 만들지 않는다).
  */
 function canonicalizeForMapComparison(project: Project): Project {
   try {
-    return deserialize(serialize(project));
+    // 로드 경로와 동일: repairSupabaseCurrentJson(row.current_json) → deserialize.
+    const asWire = JSON.parse(serialize(project)) as unknown;
+    return deserialize(JSON.stringify(repairSupabaseCurrentJson(asWire)));
   } catch {
     return project;
   }

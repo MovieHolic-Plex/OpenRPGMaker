@@ -341,7 +341,7 @@ describe("Supabase project sync", () => {
     // failedTransactionBranch 기본 필드를 주입한다. 에디터 메모리의 persistedBaseline/로컬
     // 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵도 JSON 문자열이 달라져
     // latestSnapshot !== baseSnapshot && latestSnapshot !== localSnapshot 으로
-    // 매 flush가 가짜 conflict로 끝났다. base/로컬을 같은 serialize→deserialize 파이프라인에
+    // 매 flush가 가짜 conflict로 끝났다. base/로컬을 같은 serialize→repair→deserialize 파이프라인에
     // 통과시켜 비교를 대칭으로 만든다(실제 동시 수정만 conflict).
     const baseProject = minimalValidProject();
     const mapId = firstMapId(baseProject);
@@ -430,6 +430,107 @@ describe("Supabase project sync", () => {
     // 병합본에 로컬 편집(주민)이 남아 있어야 한다.
     expect(requiredMap(result.project ?? localProject, mapId).events.map((event) => event.id)).toContain("ev_villager_probe");
     expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && (call.init?.method === "POST" || call.init?.method === "PATCH"))).toBe(true);
+  });
+
+  it("does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)", async () => {
+    // todo 8 2차 실측: 마일스톤 2 적용 후 flush가 여전히 conflict로 끝났다. 로컬 드래프트는
+    // 도중 상태라 전체 검증(deserialize)이 던질 수 있다(예: 커밋 거부된 upsert_enemy → 끊긴
+    // troop 참조, stale villageInfoDocument). 그때 canonicalize 폴백이 원본을 그대로 쓰면
+    // latest(로드 수리본) vs base(수리 전)가 다시 갈라져 가짜 conflict가 재발한다.
+    // 수정: base/로컬도 로드와 동일한 repairSupabaseCurrentJson → deserialize 파이프라인을
+    // 통과시킨다(repair가 villageInfoDocuments 를 prune 하고 resourceProfiles 를 보충하므로
+    // 맵 비교가 대칭이 된다). 로컬 전체 검증이 실패해도 base와 latest가 같으면 conflict 아님.
+    const baseProject = minimalValidProject();
+    const mapId = firstMapId(baseProject);
+    const map = requiredMap(baseProject, mapId);
+    map.events = [
+      {
+        id: "ev_merchant_probe",
+        name: "잡화상",
+        x: 2,
+        y: 2,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          {
+            id: "ev_merchant_probe_p0",
+            name: "잡화상",
+            conditions: [],
+            graphic: {},
+            trigger: { kind: "action" },
+            priority: "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            commands: [
+              {
+                kind: "shop",
+                itemIds: ["item_potion"],
+                stock: [{ itemId: "item_potion" }],
+                allowSell: true,
+                quantityMode: "select",
+                shopType: "normal",
+                messageType: "welcome",
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const localProject = structuredClone(baseProject);
+    const localMap = requiredMap(localProject, mapId);
+    localMap.events = [...localMap.events, {
+      id: "ev_villager_probe",
+      name: "도윤",
+      x: 4,
+      y: 4,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "ev_villager_probe_p0",
+          name: "도윤",
+          conditions: [],
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [],
+        },
+      ],
+    }];
+    // 전체 검증을 깨는 내용: 삭제된 맵을 가리키는 stale villageInfoDocument.
+    // deserialize(serialize())은 mapId 검증에서 던지지만, 로드 파이프라인은
+    // repairSupabaseCurrentJson 이 prune 한 뒤 deserialize 한다 — base/로컬도 같은
+    // 파이프라인을 통과해야 latest(수리본)와 대칭이다. 실측과 동일하게 **base 도** 이 내용을
+    // 갖는다(첫 승인이 중간 상태 드래프트를 저장한 뒤 persistedBaseline 이 됨) —
+    // canonicalize(v1, repair 없이 serialize→deserialize)이 base 에서 던져 원본 폴백 →
+    // latest(수리본)와 다시 갈라져 가짜 conflict 가 재발했다.
+    const staleDoc = { id: "stale_doc_probe", mapId: "map_missing_xyz", title: "stale", markdown: "stale" };
+    (baseProject.villageInfoDocuments as { id: string; mapId: string; title: string; markdown: string }[]).push(staleDoc);
+    (localProject.villageInfoDocuments as { id: string; mapId: string; title: string; markdown: string }[]).push(staleDoc);
+    const calls: FetchCall[] = [];
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.includes("/rest/v1/maps?")) {
+        return new Response(JSON.stringify([]), { status: 200 });
+      }
+      if ((method === "POST" || method === "PATCH") && url.includes("/rest/v1/projects?")) {
+        return new Response(JSON.stringify([bodyRecord(init)]), { status: 200 });
+      }
+      if (method === "POST" && url.includes("/rest/v1/maps?")) {
+        return new Response(null, { status: 201 });
+      }
+      return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(baseProject)) }]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const result = await saveProjectMapPatchToSupabase({ project: localProject, baseProject }, TEST_CONFIG);
+
+    // 로컬 드래프트가 전체 검증을 통과하지 못해도, base와 latest가 로드 파이프라인 기준으로
+    // 같으면 가짜 conflict 없이 저장되어야 한다.
+    expect(result.kind).toBe("saved");
+    if (result.kind !== "saved") throw new Error("expected saved result");
+    expect(requiredMap(result.project ?? localProject, mapId).events.map((event) => event.id)).toContain("ev_villager_probe");
   });
 
   it("preserves concurrent saves from separate editors touching different maps", async () => {
