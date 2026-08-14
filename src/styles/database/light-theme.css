@@ -173,3 +173,86 @@
 .database-modal-backdrop .database-modal-window .database-footer-button:active {
   border-color: var(--db-light-border-default) var(--db-light-border-subtle) var(--db-light-border-subtle) var(--db-light-border-default);
 }
+
+/* ── 아이템 인스펙터 헤더 (W4 P3) ──────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-header {
+  align-items: flex-start;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)
+    var(--db-light-border-default) var(--db-light-border-subtle);
+  display: flex;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-icon {
+  background-color: var(--db-light-bg-inset);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  flex: 0 0 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  width: 96px;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-title {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field > span {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field input[type="text"] {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field input[type="text"]:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 1px;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-type-tag {
+  align-self: flex-start;
+  background: var(--db-light-accent-muted);
+  border: 1px solid var(--db-light-accent-border);
+  border-radius: 999px;
+  color: var(--db-light-accent);
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  padding: 1px 12px;
+}

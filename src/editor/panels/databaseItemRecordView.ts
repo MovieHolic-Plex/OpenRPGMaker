@@ -1,11 +1,17 @@
 import {
+  avatarChipRow,
   emptyToUndefined,
   field,
   numberField,
+  segmentedControl,
   selectField,
   selectLiteral,
+  sliderStepperField,
   textField,
+  toggleSwitch,
+  type AvatarChipActor,
 } from "@/editor/panels/databaseControls";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
@@ -14,19 +20,21 @@ import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
 import type {
   ActorId,
+  ActorRecord,
   ClassId,
   EquipmentStatBonuses,
   ItemConsumptionLimit,
   ItemEquipmentEffectFlags,
   ItemEquipmentProfile,
   ItemRecord,
+  ItemScope,
   ItemType,
   StateId,
 } from "@/project/types";
 import { el } from "@/util/dom";
 
 // allow: SIZE_OK - one RM2K3 Items manual surface with type-specific panels kept together for auditability.
-const ITEM_TYPES = [
+export const ITEM_TYPES = [
   "normalGoods",
   "weapon",
   "shield",
@@ -43,12 +51,33 @@ const ITEM_TYPES = [
 const CONSUMPTION_LIMITS = ["noLimit", "1", "2", "3", "4", "5"] as const;
 const EQUIPMENT_TYPES = ["weapon", "shield", "body", "head", "accessory"] as const satisfies readonly ItemType[];
 
+const ITEM_TYPE_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
+  normalGoods: "일반 물품",
+  weapon: "무기",
+  shield: "방패",
+  body: "갑옷",
+  head: "머리",
+  accessory: "장신구",
+  medicine: "약",
+  book: "책",
+  seed: "씨앗",
+  special: "특수",
+  switch: "스위치",
+};
+
+// 약 계열 아이템의 대상(scope) 배타 선택 — 저장 필드는 ItemScope enum 그대로(스키마 불변).
+const MEDICINE_SCOPE_OPTIONS: readonly { readonly id: ItemScope; readonly name: string }[] = [
+  { id: "ally", name: "아군" },
+  { id: "allAllies", name: "아군 전체" },
+];
+
 export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rerender: () => void): void {
   form.append(
     el("div", {
       class: "db-items-rm2k3-workbench",
       dataset: { testid: "db-items-rm2k3-workbench" },
       children: [
+        itemHeader(record),
         resourcePanel(record, rerender),
         databaseFieldSupportNotice("imageResourceId", "iconResourceId", "consumptionLimit", "usableActorIds", "usableClassIds", "seedParameterBonuses", "usageMessage", "equipmentProfile"),
         panel("기본 설정", [
@@ -110,6 +139,31 @@ function equipmentPanels(record: ItemRecord): HTMLElement[] {
   ];
 }
 
+function itemHeader(record: ItemRecord): HTMLElement {
+  const project = store.getCurrent();
+  const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
+  const icon = el("div", {
+    class: "db-item-inspector-icon",
+    attrs: { role: "img", "aria-label": `${record.name} 아이콘` },
+  });
+  if (url) icon.style.backgroundImage = `url("${url}")`;
+  const name = textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("items", record.id, { name }));
+  return el("div", {
+    class: "db-item-inspector-header",
+    dataset: { testid: "db-item-inspector-header" },
+    children: [
+      icon,
+      el("div", {
+        class: "db-item-inspector-title",
+        children: [
+          el("div", { class: "db-item-inspector-name", children: [name] }),
+          el("span", { class: "db-item-inspector-type-tag", text: ITEM_TYPE_LABELS[record.type] }),
+        ],
+      }),
+    ],
+  });
+}
+
 function resourcePanel(record: ItemRecord, rerender: () => void): HTMLElement {
   return panel("아이템 그래픽", [
     resourcePickerControl({
@@ -143,16 +197,20 @@ function medicinePanels(record: ItemRecord): HTMLElement[] {
       class: "db-item-type-panels",
       dataset: { testid: "db-items-medicine-panel" },
       children: [
-        panel("범위", [selectLiteral("대상", "db-field-item-scope", record.scope, ["ally", "allAllies"], (scope) => updateDatabaseRecord("items", record.id, { scope }))]),
-        panel("사용 가능", [choiceList("사용 가능", actorClassChoices(record))]),
+        panel("범위", [
+          segmentedControl("대상", "db-field-item-scope", record.scope, MEDICINE_SCOPE_OPTIONS, (scope) =>
+            updateDatabaseRecord("items", record.id, { scope: scope as ItemScope })
+          ),
+        ]),
+        panel("사용 가능", actorClassChoices(record)),
         panel("상태 회복", [choiceList("상태", healStateChoices(record))]),
         panel("HP 회복", recoveryFields(record, "hpRecovery", "hp")),
         panel("MP 회복", recoveryFields(record, "mpRecovery", "mp")),
         panel("옵션", [
-          checkboxField("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) =>
+          toggleSwitch("메뉴에서만 사용", "db-field-item-only-menu", record.onlyUsableInMenu, (onlyUsableInMenu) =>
             updateDatabaseRecord("items", record.id, { onlyUsableInMenu, occasion: onlyUsableInMenu ? "field" : currentItem(record).occasion })
           ),
-          checkboxField("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
+          toggleSwitch("전투불능 대상에게만 유효", "db-field-item-only-dead", record.onlyEffectiveOnDeadActors, (onlyEffectiveOnDeadActors) =>
             updateDatabaseRecord("items", record.id, { onlyEffectiveOnDeadActors })
           ),
         ]),
@@ -168,14 +226,14 @@ function bookPanels(record: ItemRecord): HTMLElement[] {
         updateDatabaseRecord("items", record.id, { learnedSkillId: emptyToUndefined(skillId), skillId: emptyToUndefined(skillId) })
       ),
     ]),
-    panel("사용 가능", [choiceList("사용 가능", actorClassChoices(record))]),
+    panel("사용 가능", actorClassChoices(record)),
   ];
 }
 
 function seedPanels(record: ItemRecord): HTMLElement[] {
   return [
     panel("능력치 보정", statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed")),
-    panel("사용 가능", [choiceList("사용 가능", actorClassChoices(record))]),
+    panel("사용 가능", actorClassChoices(record)),
   ];
 }
 
@@ -195,7 +253,7 @@ function specialPanels(record: ItemRecord): HTMLElement[] {
             updateDatabaseRecord("items", record.id, { usageMessage })
           ),
         ]),
-        panel("사용 가능", [choiceList("사용 가능", actorClassChoices(record))]),
+        panel("사용 가능", actorClassChoices(record)),
       ],
     }),
   ];
@@ -213,13 +271,13 @@ function switchPanels(record: ItemRecord): HTMLElement[] {
           ),
         ]),
         panel("사용 조건", [
-          checkboxField("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) =>
+          toggleSwitch("필드", "db-field-item-occasion-field", record.occasionField, (occasionField) =>
             updateDatabaseRecord("items", record.id, {
               occasionField,
               occasion: occasionFromFlags(occasionField, currentItem(record).occasionBattle),
             })
           ),
-          checkboxField("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) =>
+          toggleSwitch("전투", "db-field-item-occasion-battle", record.occasionBattle, (occasionBattle) =>
             updateDatabaseRecord("items", record.id, {
               occasionBattle,
               occasion: occasionFromFlags(currentItem(record).occasionField, occasionBattle),
@@ -267,13 +325,23 @@ function statBonusField(
 function recoveryFields(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string): HTMLElement[] {
   const value = record[key];
   return [
-    numberField("%", `db-field-item-${testIdPrefix}-percent`, value.percentMax, (percentMax) =>
-      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } }), { min: 0, max: 100 }
-    ),
+    percentRecoveryField(record, key, testIdPrefix),
     numberField("고정값", `db-field-item-${testIdPrefix}-flat`, value.flat, (flat) =>
       updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat } }), { min: 0, max: 999 }
     ),
   ];
+}
+
+// 회복 % — 슬라이더+스테퍼 쌍(0-100, 스텝 5). base testid 는 필드 래퍼에도 남겨
+// 기존 testid 계약을 유지하고, 입력은 -slider/-stepper 로 식별한다.
+function percentRecoveryField(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string): HTMLElement {
+  const testid = `db-field-item-${testIdPrefix}-percent`;
+  const fieldNode = sliderStepperField("%", testid, record[key].percentMax, (percentMax) =>
+    updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } }),
+    { min: 0, max: 100, step: 5, unit: "%" }
+  );
+  fieldNode.dataset.testid = testid;
+  return fieldNode;
 }
 
 function equipmentEffectFields(record: ItemRecord, flags: ItemEquipmentEffectFlags): HTMLElement[] {
@@ -309,17 +377,26 @@ function actorClassChoices(record: ItemRecord): HTMLElement[] {
   if (isEquipmentItemType(record.type)) return equipmentActorClassChoices(record);
   const project = store.getCurrent();
   return [
-    ...project.database.actors.map((actor) =>
-      checkboxField(actor.name, `db-field-item-usable-actor-${actor.id}`, record.usableActorIds.includes(actor.id), (checked) =>
-        updateDatabaseRecord("items", record.id, { usableActorIds: toggleActorIds(currentItem(record).usableActorIds, actor.id, checked) })
-      )
+    avatarChipRow("사용 가능 배우", "db-field-item-usable-actors", actorChips(project.database.actors), record.usableActorIds, (actorId, checked) =>
+      updateDatabaseRecord("items", record.id, { usableActorIds: toggleActorIds(currentItem(record).usableActorIds, actorId, checked) })
     ),
-    ...project.database.classes.map((klass) =>
-      checkboxField(klass.name, `db-field-item-usable-class-${klass.id}`, record.usableClassIds.includes(klass.id), (checked) =>
-        updateDatabaseRecord("items", record.id, { usableClassIds: toggleClassIds(currentItem(record).usableClassIds, klass.id, checked) })
-      )
-    ),
+    choiceList("직업", [
+      ...project.database.classes.map((klass) =>
+        checkboxField(klass.name, `db-field-item-usable-class-${klass.id}`, record.usableClassIds.includes(klass.id), (checked) =>
+          updateDatabaseRecord("items", record.id, { usableClassIds: toggleClassIds(currentItem(record).usableClassIds, klass.id, checked) })
+        )
+      ),
+    ]),
   ];
+}
+
+function actorChips(actors: readonly ActorRecord[]): AvatarChipActor[] {
+  return actors.map((actor) => ({
+    id: actor.id,
+    name: actor.name,
+    faceResourceId: actor.faceResourceId,
+    faceIndex: actor.faceIndex,
+  }));
 }
 
 function equipmentActorClassChoices(record: ItemRecord): HTMLElement[] {
