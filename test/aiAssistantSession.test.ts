@@ -630,6 +630,339 @@ describe("마일스톤 자동 적용 (todo 4)", () => {
   }, 30000);
 });
 
+// ── 레이어 검증 게이트 + run-end 저장 증명(todo 5) ──────────────────────────
+// 계약: 자율 런에서 레이어 완료마다 canonical 테이블(agentVerification)대로 검증 툴콜을
+// 기존 툴 실행기(runTool — 세션 ctx)로 실행하고 verdict 를 평가한다. 실패 시 기존 re-kick
+// (오케스트레이션 메시지)으로 최대 2회 보완 재킥, 3회 연속 실패면 verification_failed 로
+// 레이어(런)를 중단한다. 플랜 완료 + remote persistence 활성이면 store.flush() →
+// store.reloadFromRemote() → agent_run_saved 감사(projectId + sha256 + 최신 커밋 row).
+describe("레이어 검증 게이트 + run-end 저장 증명 (todo 5)", () => {
+  function gateToolCall(name: string, args: unknown, id: string): ChatResult {
+    return {
+      message: {
+        role: "assistant",
+        content: null,
+        tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }],
+      },
+      finishReason: "tool_calls",
+    } as ChatResult;
+  }
+
+  function gateFinal(text: string): ChatResult {
+    return { message: { role: "assistant" as const, content: text }, finishReason: "stop" } as ChatResult;
+  }
+
+  /** 한 응답에 여러 tool_call 을 배치한다(라운드 최소화 — 모델이 한 번에 여러 툴을 부르는 실제 형태). */
+  function gateMultiCall(calls: readonly { readonly name: string; readonly args: unknown; readonly id: string }[]): ChatResult {
+    return {
+      message: {
+        role: "assistant",
+        content: null,
+        tool_calls: calls.map((c) => ({ id: c.id, type: "function", function: { name: c.name, arguments: JSON.stringify(c.args) } })),
+      },
+      finishReason: "tool_calls",
+    } as ChatResult;
+  }
+
+  const gateStatusTexts = (session: { getAuditEntries(): readonly { kind: string; text?: string }[] }): string[] =>
+    session.getAuditEntries().filter((e) => e.kind === "status").map((e) => String(e.text));
+  const gateExhausted = (): never => {
+    throw new (class extends Error {
+      readonly status = 401;
+      constructor() {
+        super("scripted chat exhausted");
+        this.name = "LlmError";
+      }
+    })();
+  };
+
+  /** 퀘스트 그래프의 write site 를 만드는 이벤트(setSwitch sw_0001) — commit 게이트 통과에 필수. */
+  function chiefEvent(): Record<string, unknown> {
+    return {
+      id: "ev_chief",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        id: "ev_chief_page",
+        name: "촌장",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "action" },
+        priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "setSwitch", switchId: "sw_0001", value: true }],
+      }],
+    };
+  }
+
+  const questArgs = (): Record<string, unknown> => ({
+    id: "q1",
+    title: "촌장의 부탁",
+    nodes: [{ id: "n1", description: "촌장과 대화", completesWhen: { kind: "switch", switchId: "sw_0001", value: true } }],
+    edges: [],
+  });
+
+  const GATE_PLAN = {
+    goal: "마을·퀘스트·최종 검증",
+    layers: [
+      { title: "마을 만들기", items: [{ title: "제목 1", instruction: "set_title_screen {title:'t1'}", successTools: ["set_title_screen"] }] },
+      { title: "퀘스트", items: [{ title: "퀘스트 등록", instruction: "define_quest {id:'q1'}", successTools: ["define_quest"] }] },
+      { title: "최종 검증", items: [{ title: "완성", instruction: "play_walkthrough 후 제목 확정", successTools: ["set_title_screen"] }] },
+    ],
+  };
+
+  it("(a) 레이어 완료마다 canonical 테이블대로 검증 툴콜이 실행된다 — map:[run_lint,evaluate_game_quality] / quest:[run_lint,verify_quest] / final:[run_lint,play_walkthrough]", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const scenario = [{ expect: "mapId", mapId: project.startMapId }];
+    const steps: ChatResult[] = [
+      gateFinal(JSON.stringify({ action: "new_plan", ...GATE_PLAN })),
+      gateToolCall("set_work_plan", GATE_PLAN, "c_plan"),
+      gateToolCall("set_title_screen", { title: "t1" }, "c_t1"),
+      gateMultiCall([
+        { name: "upsert_event", args: { mapId: project.startMapId, event: chiefEvent() }, id: "c_ev" },
+        { name: "define_quest", args: questArgs(), id: "c_quest" },
+      ]),
+      gateMultiCall([
+        { name: "play_walkthrough", args: { scenario }, id: "c_wt" },
+        { name: "set_title_screen", args: { title: "t2" }, id: "c_t2" },
+      ]),
+      gateFinal("모든 레이어를 완료했습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) gateExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const events: SessionEvent[] = [];
+
+    await session.sendUserMessage("마을·퀘스트·최종 검증을 진행해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    // 모델 툴콜 + 게이트 툴콜이 순서대로 관측된다: 레이어 1(map) → 레이어 2(quest) → 레이어 3(final).
+    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    expect(toolCalls.map((e) => e.name)).toEqual([
+      "set_work_plan",
+      "set_title_screen",
+      // L1 map/world: run_lint → evaluate_game_quality
+      "run_lint",
+      "evaluate_game_quality",
+      "upsert_event",
+      "define_quest",
+      // L2 quest: run_lint → verify_quest (퀘스트 id 는 런 히스토리의 define_quest)
+      "run_lint",
+      "verify_quest",
+      "play_walkthrough",
+      "set_title_screen",
+      // L3 final: run_lint → play_walkthrough (레이어 자신의 시나리오)
+      "run_lint",
+      "play_walkthrough",
+    ]);
+    const verifyQuestCall = toolCalls.find((e) => e.name === "verify_quest")!;
+    expect(verifyQuestCall.args).toEqual({ questId: "q1" });
+    const gateWalkthrough = toolCalls[toolCalls.length - 1]!;
+    expect(gateWalkthrough.args).toEqual({ scenario });
+    const audits = gateStatusTexts(session);
+    expect(audits.filter((t) => t.includes("agent_run:verification-pass")).length).toBe(3);
+    // 마일스톤은 각 항목 완료마다 적용됐고 검증 게이트는 레이어 단위로 돌았다.
+    expect(store.getCurrent().meta?.title).toBe("t2");
+  }, 60000);
+
+  it("(a-2) final 레이어에 play_walkthrough 가 없으면 verify_quest×전체 questId 폴백이 돈다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const FALLBACK_PLAN = {
+      goal: "퀘스트와 마무리",
+      layers: [
+        { title: "퀘스트", items: [{ title: "퀘스트 등록", instruction: "define_quest", successTools: ["define_quest"] }] },
+        { title: "최종 검증", items: [{ title: "제목 확정", instruction: "set_title_screen", successTools: ["set_title_screen"] }] },
+      ],
+    };
+    const steps: ChatResult[] = [
+      gateFinal(JSON.stringify({ action: "new_plan", ...FALLBACK_PLAN })),
+      gateToolCall("set_work_plan", FALLBACK_PLAN, "c_plan"),
+      gateMultiCall([
+        { name: "upsert_event", args: { mapId: project.startMapId, event: chiefEvent() }, id: "c_ev" },
+        { name: "define_quest", args: questArgs(), id: "c_quest" },
+      ]),
+      gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
+      gateFinal("완료했습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) gateExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const events: SessionEvent[] = [];
+
+    await session.sendUserMessage("퀘스트를 등록하고 마무리해줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    const verifyQuestCalls = toolCalls.filter((e) => e.name === "verify_quest");
+    // 퀘스트 레이어 1회 + final 레이어 폴백 1회 — 둘 다 런 히스토리의 q1.
+    expect(verifyQuestCalls).toHaveLength(2);
+    expect(verifyQuestCalls.every((e) => JSON.stringify(e.args) === JSON.stringify({ questId: "q1" }))).toBe(true);
+    // final 레이어 폴백: play_walkthrough 는 실행되지 않는다.
+    expect(toolCalls.filter((e) => e.name === "play_walkthrough")).toHaveLength(0);
+    expect(gateStatusTexts(session).filter((t) => t.includes("agent_run:verification-pass")).length).toBe(2);
+  }, 60000);
+
+  it("(b) 검증 실패(린트) → 재킥 1·2회 → 3회 연속 실패로 verification_failed 바운드 중단(3회 시도)", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    // 런 시작부터 존재하는 린트 오류(미존재 스위치 참조 이벤트)를 심는다 — 커밋 게이트는
+    // baseline 대비 새 오류만 차단하므로 마일스톤 적용은 통과하고, 검증 run_lint 만 실패한다.
+    project.maps[project.startMapId]!.events.push({
+      id: "ev_broken",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [{
+        id: "ev_broken_page",
+        name: "깨진 이벤트",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "action" },
+        priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "setSwitch", switchId: "sw_missing_xyz", value: true }],
+      }],
+    } as never);
+    initMilestoneStore(project);
+    const BROKEN_PLAN = {
+      goal: "타이틀 변경",
+      layers: [{ title: "타이틀", items: [{ title: "제목", instruction: "set_title_screen", successTools: ["set_title_screen"] }] }],
+    };
+    const steps: ChatResult[] = [
+      gateFinal(JSON.stringify({ action: "new_plan", ...BROKEN_PLAN })),
+      gateToolCall("set_work_plan", BROKEN_PLAN, "c_plan"),
+      gateToolCall("set_title_screen", { title: "t1" }, "c_t1"),
+      gateFinal("1차 완료 보고합니다."),
+      gateFinal("2차 완료 보고합니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) gateExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 8 }, chat });
+    const events: SessionEvent[] = [];
+
+    const result = await session.sendUserMessage("타이틀을 바꿔줘", (event) => { events.push(event); }, undefined, { autonomous: true });
+
+    const toolCalls = events.filter((event): event is Extract<SessionEvent, { type: "tool_call" }> => event.type === "tool_call");
+    // 레이어 게이트 = run_lint 만(final 단일 레이어, 시나리오/퀘스트 없음) — 3회 시도가 정확히 3번 실행된다.
+    expect(toolCalls.filter((e) => e.name === "run_lint")).toHaveLength(3);
+    const audits = gateStatusTexts(session);
+    // 재킥 2회(attempt 1/3, 2/3) 후 3회째에 바운드 중단.
+    expect(audits.filter((t) => t.includes("agent_run:verification-repair")).length).toBe(2);
+    expect(audits.some((t) => t.includes("agent_run:verification-repair") && t.includes("attempt=1/3"))).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run:verification-repair") && t.includes("attempt=2/3"))).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run:verification_failed"))).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run:verification-pass"))).toBe(false);
+    // 바운드: 재킥 2회 후 3회째에 중단 — 추가 LLM 호출이 없다(스크립트 5콜 소진).
+    expect(index).toBe(5);
+    // 검증 실패로 런이 멈춘다(자동 계속 없음).
+    expect(audits.some((t) => t.includes("agent_run:auto-continue"))).toBe(false);
+    // 마일스톤 적용은 검증과 독립적으로 이뤄졌다 — 실패는 검증 게이트에서만.
+    expect(store.getCurrent().meta?.title).toBe("t1");
+    expect(result.stoppedReason).toBe("final");
+  }, 60000);
+
+  /** 3항목 계획을 3턴(자동 계속)에 걸쳐 완료하는 스크립트 — run-end 증명 테스트 공용. */
+  const runEndMilestoneSteps = (): ChatResult[] => [
+    gateFinal(JSON.stringify({ action: "new_plan", ...MILESTONE_PLAN_SHAPE })),
+    gateToolCall("set_work_plan", MILESTONE_PLAN_SHAPE, "c_plan"),
+    gateToolCall("set_title_screen", { title: "t1" }, "c_t1"),
+    gateFinal("이어서 진행합니다."),
+    gateFinal("이어서 진행합니다."),
+    gateFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
+    gateToolCall("set_title_screen", { title: "t2" }, "c_t2"),
+    gateFinal("이어서 진행합니다."),
+    gateFinal("이어서 진행합니다."),
+    gateFinal("이어서 진행합니다."),
+    gateFinal(JSON.stringify({ action: "resume", reason: "같은 목표 계속" })),
+    gateToolCall("set_title_screen", { title: "t3" }, "c_t3"),
+    gateFinal("모든 항목을 완료했습니다."),
+  ];
+
+  it("(c) 플랜 완료 + remote enabled → store.flush()+reloadFromRemote() 호출 + agent_run_saved 감사(projectId+sha256)", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project);
+    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "saved", sha256: "sha-abc123" });
+    const reloadSpy = vi.spyOn(store, "reloadFromRemote").mockResolvedValue({
+      kind: "reloaded",
+      projectId: MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID,
+      title: "t3",
+    });
+    vi.spyOn(store, "isRemotePersistenceEnabled").mockReturnValue(true);
+    const steps = runEndMilestoneSteps();
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) gateExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+
+    expect(result.stoppedReason).toBe("final");
+    // run-end 게이트: flush → reloadFromRemote 순서로 정확히 1회씩.
+    expect(flushSpy).toHaveBeenCalledTimes(1);
+    expect(reloadSpy).toHaveBeenCalledTimes(1);
+    const audits = gateStatusTexts(session);
+    const saved = audits.find((t) => t.includes("agent_run_saved"));
+    expect(saved).toBeTruthy();
+    expect(saved!).toContain(`projectId=${MILESTONE_TEST_ENV.VITE_SUPABASE_PROJECT_ID}`);
+    expect(saved!).toContain("sha256=sha-abc123");
+    // commitId 증거 경로: list_project_commits 는 브라우저 전용 툴 — node 에선 우아하게 기록된다.
+    expect(audits.some((t) => t.includes("agent_run:commit-evidence-unavailable"))).toBe(true);
+  }, 120000);
+
+  it("(c-2) remote 비활성 → agent_run_local_only 감사, flush 호출 없음, 오류 없음", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installMilestoneHermeticEnv(project); // remotePersistenceEnabled: false
+    const flushSpy = vi.spyOn(store, "flush");
+    const steps = runEndMilestoneSteps();
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) gateExhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: { ...ORCH_CONFIG, maxToolCalls: 4 }, chat });
+
+    const result = await session.sendUserMessage("타이틀을 3단계로 개선해줘", () => {}, undefined, { autonomous: true });
+
+    expect(result.stoppedReason).toBe("final");
+    expect(flushSpy).not.toHaveBeenCalled();
+    const audits = gateStatusTexts(session);
+    expect(audits.some((t) => t.includes("agent_run_local_only"))).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run_saved"))).toBe(false);
+    expect(audits.some((t) => t.includes("agent_run:save-failed"))).toBe(false);
+  }, 120000);
+});
+
+const MILESTONE_PLAN_SHAPE = {
+  goal: "타이틀 3단계 개선",
+  layers: [
+    {
+      title: "타이틀",
+      items: [
+        { title: "1차 제목", instruction: "set_title_screen {title:'t1'}", successTools: ["set_title_screen"] },
+        { title: "2차 제목", instruction: "set_title_screen {title:'t2'}", successTools: ["set_title_screen"] },
+        { title: "3차 제목", instruction: "set_title_screen {title:'t3'}", successTools: ["set_title_screen"] },
+      ],
+    },
+  ],
+};
 
 async function load() {
   const [assistantSession, defaults, llm] = await Promise.all([

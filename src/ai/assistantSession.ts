@@ -9,6 +9,21 @@ import { toOpenAiTools } from "@/editor/tools";
 import type { ToolContext, ToolDomain, ToolResult } from "@/editor/tools";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { classifyApproval } from "@/ai/approvalPolicy";
+import { store } from "@/project/store";
+import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
+import {
+  MAX_VERIFICATION_ATTEMPTS,
+  PLAY_WALKTHROUGH_TOOL,
+  STOP_REASON,
+  createRetryState,
+  evaluateRetry,
+  parseLayerVerdict,
+  selectVerificationCalls,
+  type LayerDescriptor,
+  type LayerVerdictInput,
+  type RetryState,
+  type VerificationCallRecord,
+} from "./agentVerification";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains, recordAssistantToolDomainUse } from "@/editor/assistantToolMode";
 import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
@@ -84,6 +99,7 @@ import {
   workPlanFromOrchestratorDecision,
   workPlanFromSetToolArgs,
   type WorkItem,
+  type WorkLayer,
   type WorkPlan,
 } from "./workPlan";
 
@@ -518,6 +534,22 @@ export class AssistantSession {
   private milestoneApprovalPaused = false;
   // 직전에 처리한 완료 항목 id — 같은 항목의 중복 complete_work_item 재트리거 방지.
   private lastMilestoneCompletionItemId: string | null = null;
+  // ── 레이어 검증 게이트(todo 5) ──────────────────────────────────────────────
+  // 자율 런에서 레이어 완료마다 canonical 테이블(agentVerification)대로 검증 툴콜을
+  // runTool(세션 ctx)로 실행하고 verdict 를 평가한다. 실패 시 기존 re-kick(오케스트레이션
+  // 메시지)으로 최대 2회 보완 재킥, 3회 연속 실패면 verification_failed 로 레이어(런)를
+  // 중단한다. 검증 게이트가 직접 실행한 툴콜은 히스토리에 기록하지 않는다(모델 저작만).
+  /** 런 누적 툴콜 히스토리(검증 선택용) — 쓰기 툴 + play_walkthrough 만 기록한다. */
+  private verificationHistory: VerificationCallRecord[] = [];
+  /** 검증 실패로 재킥 대기 중인 레이어 — 다음 최종 응답 시점에 재검한다. */
+  private verificationPending: { readonly layer: LayerDescriptor; readonly retry: RetryState } | null = null;
+  /** 검증 3회 연속 실패 — 자동 계속·run-end 증명을 멈춘다(사용자 진입으로 재가동, replan 시 해제). */
+  private verificationFailed = false;
+  /** 이 플랜에서 이미 게이트를 통과한 레이어 id(플랜 id 기준 — replan 시 자연 리셋). */
+  private verifiedPlanId: string | null = null;
+  private verifiedLayerIds = new Set<string>();
+  /** run-end 저장 증명(flush+reload)을 처리한 플랜 id — 플랜당 1회. */
+  private runEndProofPlanId: string | null = null;
   // 현재 시스템 프롬프트에 적용된 문자 예산(토큰 보정). 관측으로 값이 바뀌면 턴 시작 시 재조립한다.
   private appliedBudgetChars: number;
   /** 어려운 요청용 다층 To-do — 턴을 넘나들며 유지. */
@@ -569,8 +601,10 @@ export class AssistantSession {
     this.baselineProject = structuredClone(project);
     this.ctx = { project: cloneDetachedDraft(project) };
     // rebase = 사용자가 제안을 해결(수락/거부)해 세션이 store와 재동기화됐다는 신호 —
-    // 차단됐던 마일스톤 자동 적용을 재개한다.
+    // 차단됐던 마일스톤 자동 적용을 재개한다. 대기 중인 레이어 검증은 draft 기준이므로
+    // stale 상태를 버린다(다음 완료/최종 응답 시점에 재검한다).
     this.milestoneApprovalPaused = false;
+    this.verificationPending = null;
   }
 
   // 현재 확정된 밑그림(없으면 null). 패널이 상태 표시/카드 렌더에 쓴다.
@@ -733,6 +767,10 @@ export class AssistantSession {
     // 사용자의 수동 진입(새 sendUserMessage 호출)은 예산 카운터를 0으로 되돌린다(re-arm).
     // 마일스톤 자동 적용도 같은 명시 플래그로만 켠다(chat 모드는 카드 대기 유지).
     this.milestoneAutoApply = opts?.autonomous === true;
+    // 검증 게이트 상태는 사용자 진입마다 재가동(re-arm)한다 — 드라이버의 자동 계속 체인
+    // 내부에서는 유지되어 3회 시도 한도가 턴 단위로 초기화되지 않는다.
+    this.verificationFailed = false;
+    this.verificationPending = null;
     if (opts?.autonomous !== true) return await this.executeUserTurn(text, onEvent, signal, opts);
     const first = await this.executeUserTurn(text, onEvent, signal, opts);
     return this.runAutonomousDriver(first, onEvent, signal);
@@ -760,6 +798,9 @@ export class AssistantSession {
       if (next.stoppedReason === "aborted" || next.stoppedReason === "error") return next;
       last = next;
     }
+    // run-end 저장 증명(todo 5): 플랜 완료 + remote persistence 활성이면 flush → reload →
+    // agent_run_saved 감사(projectId + sha256 + 최신 커밋 row).
+    await this.maybeRunEndProof(onEvent);
     return last;
   }
 
@@ -767,6 +808,8 @@ export class AssistantSession {
   private shouldAutoContinue(last: TurnResult, onEvent: (event: SessionEvent) => void, signal?: AbortSignal): boolean {
     if (signal?.aborted) return false;
     if (last.stoppedReason === "aborted" || last.stoppedReason === "error") return false;
+    // 검증 게이트 3회 실패 — 런을 멈춘다(사용자 진입/replan 으로만 재개).
+    if (this.verificationFailed) return false;
     // 승인 대기 마일스톤이 있으면 런을 멈춘다 — 카드가 렌더되어 사용자가 해결할 때까지
     // 자동 계속이 다음 항목으로 진행하지 못하게 한다.
     if (this.milestoneApprovalPaused) {
@@ -1014,6 +1057,11 @@ export class AssistantSession {
       this.workPlan = plan;
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
+      // 새 계획 = 새 검증 주기: 이전 플랜의 실패/대기/증명 상태를 리셋한다(툴콜 히스토리는
+      // 런 전체 누적 — questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
+      this.verificationFailed = false;
+      this.verificationPending = null;
+      this.runEndProofPlanId = null;
       const progress = summarizeWorkPlan(plan);
       return {
         ok: true,
@@ -1087,6 +1135,8 @@ export class AssistantSession {
       }
       // successTools 자동 완료 경로 — 마일스톤 자동 적용을 같은 단위로 트리거한다.
       await this.maybeAutoApplyMilestone(completed, onEvent);
+      // 레이어 검증 게이트(todo 5): 완료 항목이 속한 레이어가 끝났으면 canonical 테이블대로 검증.
+      await this.sweepFinishedLayers(onEvent);
     }
   }
 
@@ -1147,7 +1197,10 @@ export class AssistantSession {
     });
     // 적용된 제안을 턴 결과/카드에서 제거하고, draft == 적용본이므로 baseline을 최신화한다
     // (store.replace 정규화 반영 — 다음 마일스톤의 draft가 깨끗하게 시작된다).
-    this.turnProposals = new Map();
+    // 주의: 새 Map 으로 교체하면 runTurnLoop 가 잡아 둔 proposedByKey 참조가 stale 되어
+    // 같은 턴의 후속 라운드 쓰기가 제안에서 사라진다(다중 마일스톤 자동 적용 누락) —
+    // 제자리 clear 로 참조를 보존한다.
+    this.turnProposals.clear();
     this.rebaseProject(applied.applied);
   }
 
@@ -1161,6 +1214,186 @@ export class AssistantSession {
     this.pushAudit({ kind: "status", text: `agent_run:milestone-paused "${completed.title}" — ${reason}` });
     onEvent({ type: "proposal_paused", reason, warnings });
     onEvent({ type: "status", text: `마일스톤 승인 대기: ${completed.title} — ${reason}` });
+  }
+
+  // ── 레이어 검증 게이트(todo 5) ────────────────────────────────────────────
+
+  private isLayerFinished(layer: WorkLayer): boolean {
+    return layer.items.every((item) => item.status === "done" || item.status === "skipped");
+  }
+
+  private isLayerVerified(layerId: string): boolean {
+    return this.verifiedPlanId === (this.workPlan?.id ?? null) && this.verifiedLayerIds.has(layerId);
+  }
+
+  private markLayerVerified(layerId: string): void {
+    this.verifiedPlanId = this.workPlan?.id ?? null;
+    this.verifiedLayerIds.add(layerId);
+  }
+
+  /** 현재 모델 작업 중인 레이어 id(없으면 undefined) — 툴콜 히스토리 소속 레이어 기록용. */
+  private verificationLayerId(): string | undefined {
+    return this.workPlan?.layers[this.workPlan.currentLayerIndex]?.id;
+  }
+
+  /**
+   * 레이어 검증 게이트 1회 실행: canonical 테이블(selectVerificationCalls)대로 검증 툴콜을
+   * 기존 툴 실행기(runTool — 세션 ctx)로 실행하고 verdict 를 평가한다. 실패 시 repair
+   * 지시를 오케스트레이션 메시지로 주입해 기존 re-kick 메커니즘을 태운다(최대 2회 재킥).
+   */
+  private async executeVerificationGate(
+    layer: LayerDescriptor,
+    onEvent: (event: SessionEvent) => void,
+    retryState?: RetryState
+  ): Promise<"proceed" | "repair" | "stop"> {
+    const calls = selectVerificationCalls(layer, this.verificationHistory);
+    const results: LayerVerdictInput[] = [];
+    for (const call of calls) {
+      const result = runTool(this.ctx, call.name, call.args);
+      onEvent({ type: "tool_call", name: call.name, args: call.args, result });
+      this.pushAudit({
+        kind: "tool",
+        name: call.name,
+        args: call.args,
+        ok: result.ok,
+        summary: result.summary,
+        ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
+      });
+      results.push({ name: call.name, result });
+    }
+    const verdict = parseLayerVerdict(results);
+    const layerId = layer.id ?? "";
+    const outcome = evaluateRetry(retryState ?? createRetryState(layerId), layerId, verdict);
+    const label = layerId !== "" ? layerId : layer.title;
+    if (outcome.action === "proceed") {
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run:verification-pass layer=${label} calls=${calls.map((c) => c.name).join(",")} warnings=${verdict.warnings.length}`,
+      });
+      this.verificationPending = null;
+      this.markLayerVerified(layerId);
+      return "proceed";
+    }
+    if (outcome.action === "repair") {
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run:verification-repair layer=${label} attempt=${outcome.state.attempts}/${MAX_VERIFICATION_ATTEMPTS} issues=${verdict.blockingIssues.length}`,
+      });
+      this.pushOrchestrationMessage(outcome.repairInstruction ?? "");
+      onEvent({ type: "status", text: `검증 실패 — 보완 지시로 재시도 (${outcome.state.attempts}/${MAX_VERIFICATION_ATTEMPTS})` });
+      this.verificationPending = { layer, retry: outcome.state };
+      return "repair";
+    }
+    // 3회 연속 실패 — 레이어(런) 중단. 재킥을 더 발행하지 않는다.
+    this.verificationFailed = true;
+    this.verificationPending = null;
+    this.pushAudit({
+      kind: "status",
+      text: `agent_run:verification_failed layer=${label} — ${STOP_REASON} (${MAX_VERIFICATION_ATTEMPTS}회 시도 소진)`,
+    });
+    onEvent({ type: "status", text: "검증 게이트 3회 실패 — 런을 중단합니다. 수동 검토가 필요합니다." });
+    return "stop";
+  }
+
+  /**
+   * 완료된 레이어 검증 스윕: 플랜의 완료 레이어를 순서대로 검증한다. 이미 통과한 레이어나
+   * 대기 검증(verificationPending)이 있으면 건너뛴다(대기 검증은 최종 응답 게이트가 먼저 해결).
+   */
+  private async sweepFinishedLayers(onEvent: (event: SessionEvent) => void): Promise<"proceed" | "continue" | "stop"> {
+    const plan = this.workPlan;
+    if (!plan || !this.milestoneAutoApply || this.verificationFailed) return "proceed";
+    for (let li = 0; li < plan.layers.length; li += 1) {
+      const layer = plan.layers[li]!;
+      if (!this.isLayerFinished(layer)) continue;
+      if (this.verificationPending) return "proceed";
+      if (this.isLayerVerified(layer.id)) continue;
+      const descriptor: LayerDescriptor = {
+        id: layer.id,
+        title: layer.title,
+        isFinal: li === plan.layers.length - 1,
+        items: layer.items,
+      };
+      const outcome = await this.executeVerificationGate(descriptor, onEvent);
+      if (outcome === "repair") return "continue";
+      if (outcome === "stop") return "stop";
+    }
+    return "proceed";
+  }
+
+  /**
+   * 최종 응답 게이트: 대기 중인 레이어 검증을 먼저 재실행하고(재킥 후 모델이 고치면 통과),
+   * 남은 완료 레이어를 스윕한다. "continue" 면 루프를 계속(재킥 발행), "stop" 면
+   * verification_failed, "proceed" 면 그대로 최종 응답으로 진행한다.
+   */
+  private async runVerificationAtFinalResponse(
+    onEvent: (event: SessionEvent) => void
+  ): Promise<"proceed" | "continue" | "stop"> {
+    if (this.verificationPending) {
+      const pending = this.verificationPending;
+      const outcome = await this.executeVerificationGate(pending.layer, onEvent, pending.retry);
+      if (outcome === "repair") return "continue";
+      if (outcome === "stop") return "stop";
+    }
+    return this.sweepFinishedLayers(onEvent);
+  }
+
+  /**
+   * run-end 저장 증명(todo 5): 자율 런에서 플랜이 완료됐고 remote persistence 가 켜져 있으면
+   * store.flush() → store.reloadFromRemote() 를 실행하고, flush 결과의 sha256 + 프로젝트 id 로
+   * agent_run_saved 감사를 남긴다. commitId 는 기존 list_project_commits 읽기 툴로 최신 row 를
+   * 조회해 기록한다(브라우저 전용 툴 — node/테스트에선 unavailable 로 우아하게 기록).
+   */
+  private async maybeRunEndProof(onEvent: (event: SessionEvent) => void): Promise<void> {
+    const plan = this.workPlan;
+    if (!plan || !this.milestoneAutoApply) return;
+    if (this.verificationFailed || this.verificationPending || this.milestoneApprovalPaused) return;
+    if (!isWorkPlanComplete(plan)) return;
+    if (this.runEndProofPlanId === plan.id) return;
+    this.runEndProofPlanId = plan.id;
+    if (!store.isRemotePersistenceEnabled()) {
+      this.pushAudit({ kind: "status", text: "agent_run_local_only — remote persistence 비활성으로 저장 증명을 건너뜁니다" });
+      onEvent({ type: "status", text: "자율 런 완료 — 로컬 전용 저장(remote persistence 비활성)입니다." });
+      return;
+    }
+    try {
+      const flushResult = await store.flush();
+      if (flushResult.kind !== "saved") {
+        this.pushAudit({ kind: "status", text: `agent_run:save-skipped kind=${flushResult.kind}` });
+        onEvent({ type: "status", text: `자율 런 저장 건너뜀(${flushResult.kind}) — 저장 증명이 없습니다.` });
+        return;
+      }
+      const reloadResult = await store.reloadFromRemote();
+      const projectId = supabaseProjectConfigDraft().projectId || "(unknown)";
+      const sha256 = flushResult.sha256 ?? null;
+      let commitId: string | null = null;
+      try {
+        const commitResult = runTool(this.ctx, "list_project_commits", { limit: 1 });
+        if (commitResult.ok) {
+          const data = isRecord(commitResult.data) ? commitResult.data : null;
+          const commits = Array.isArray(data?.commits) ? data.commits : [];
+          const newest = commits[0];
+          commitId = isRecord(newest) && typeof newest.commit_id === "string" ? newest.commit_id : null;
+        } else {
+          this.pushAudit({ kind: "status", text: `agent_run:commit-evidence-unavailable — ${commitResult.summary}` });
+        }
+      } catch (error) {
+        this.pushAudit({
+          kind: "status",
+          text: `agent_run:commit-evidence-unavailable — ${error instanceof Error ? error.message : String(error)}`,
+        });
+      }
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run_saved projectId=${projectId} sha256=${sha256 ?? "none"} commit=${commitId ?? "unavailable"} reload=${reloadResult.kind}`,
+      });
+      onEvent({ type: "status", text: `자율 런 저장 증명 완료 — projectId=${projectId} sha256=${sha256 ?? "none"} reload=${reloadResult.kind}` });
+    } catch (error) {
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run:save-failed — ${error instanceof Error ? error.message : String(error)}`,
+      });
+      onEvent({ type: "status", text: "자율 런 원격 저장 실패 — 감사 로그를 확인하세요." });
+    }
   }
 
   private withWorkPlanResult(result: TurnResult): TurnResult {
@@ -1616,6 +1849,22 @@ export class AssistantSession {
           this.pushOrchestrationMessage(`검수 보완 지시: ${repairInstruction}`);
           continue;
         }
+        // 검증 게이트(todo 5): 검수 완료 응답도 레이어 검증이 해결된 뒤에만 최종화한다.
+        const reviewGateOutcome = await this.runVerificationAtFinalResponse(onEvent);
+        if (reviewGateOutcome === "continue") {
+          phase = "execute";
+          this.emitPhase(onEvent, "execute");
+          this.addExecutionHintIfNeeded();
+          continue;
+        }
+        if (reviewGateOutcome === "stop") {
+          this.pushAudit({ kind: "status", text: "턴 종료(final) — verification_failed 로 레이어 중단" });
+          return {
+            assistantText: sanitizeAssistantText(stripReviewCompletePrefix(reviewText)),
+            proposedCalls: this.finalizeProposals(proposedByKey),
+            stoppedReason: "final",
+          };
+        }
         assistantText = sanitizeAssistantText(stripReviewCompletePrefix(reviewText));
         onEvent({ type: "assistant_message", content: assistantText });
         this.pushAudit({ kind: "status", text: `턴 종료(final) — 제안 ${proposedByKey.size}건 · 출력 토큰 ~${spentOutputTokens}` });
@@ -1693,6 +1942,13 @@ export class AssistantSession {
           this.pushAudit({ kind: "status", text: "zero-change-rekick" });
           continue;
         }
+        // 검증 게이트(todo 5): 대기 중이거나 완료된 레이어 검증을 최종 응답 전에 해결한다.
+        const gateOutcome = await this.runVerificationAtFinalResponse(onEvent);
+        if (gateOutcome === "continue") continue;
+        if (gateOutcome === "stop") {
+          this.pushAudit({ kind: "status", text: "턴 종료(final) — verification_failed 로 레이어 중단" });
+          return { assistantText: finalText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "final" };
+        }
         // 최종 응답.
         assistantText = finalText;
         onEvent({ type: "assistant_message", content: assistantText });
@@ -1736,6 +1992,8 @@ export class AssistantSession {
               const completedId = completedWorkItemIdFromResult(toolResult);
               const completedItem = completedId ? findWorkItemById(this.workPlan, completedId) : null;
               if (completedItem) await this.maybeAutoApplyMilestone(completedItem, onEvent);
+              // 레이어 검증 게이트(todo 5) — 명시 complete 경로도 같은 단위로 트리거한다.
+              if (completedItem) await this.sweepFinishedLayers(onEvent);
             }
           }
         } else {
@@ -1773,6 +2031,11 @@ export class AssistantSession {
           // 실패/경고 원인은 감사 로그에도 남긴다 — summary만으로 원인 추적이 안 되던 문제 방지.
           ...(toolResult.issues && toolResult.issues.length > 0 ? { issues: toolResult.issues.map((issue) => issue.message) } : {}),
         });
+        // 검증 히스토리 기록(todo 5): 쓰기 툴 + play_walkthrough 만 — questId/시나리오 선택에 쓴다.
+        // (검증 게이트가 직접 실행한 툴콜은 여기로 오지 않는다 — 모델 저작 히스토리만.)
+        if (tool && (tool.mode === "write" || name === PLAY_WALKTHROUGH_TOOL)) {
+          this.verificationHistory.push({ name, args, ok: toolResult.ok, layerId: this.verificationLayerId() });
+        }
 
         // 성공한 쓰기 툴콜만 제안에 누적(동일 좌표 재편집은 최신 것으로 갱신).
         if (toolResult.ok && tool?.mode === "write" && toolResult.diff) {

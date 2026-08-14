@@ -63,7 +63,11 @@ export type ProjectFlushResult =
   | { readonly kind: "not-loaded" }
   | { readonly kind: "not-configured" }
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
-  | { readonly kind: "saved" }
+  // todo 5: 성공 시 원격 저장의 sha256 증거를 담는다 — 자율 런 run-end 게이트가
+  // agent_run_saved 감사에 projectId + sha256 으로 기록한다. saveProjectToSupabase/
+  // saveProjectMapPatchToSupabase 의 결과가 그대로 흘러들어온다(commitId 는 여기 오지
+  // 않는다 — 비동기 커밋 로그 경로의 전용 row 다).
+  | { readonly kind: "saved"; readonly sha256?: string }
   | { readonly kind: "saved-local" };
 
 export type ProjectDbReconnectResult =
