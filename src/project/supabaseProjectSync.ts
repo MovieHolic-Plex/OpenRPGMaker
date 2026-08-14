@@ -249,16 +249,29 @@ export async function saveProjectMapPatchToSupabase(
   const baseProject = projectWithoutEventDrafts(input.baseProject);
   removeLegacySpriteReferences(persistedProject);
   removeLegacySpriteReferences(baseProject);
-  const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(baseProject, persistedProject);
-  const changedMapTreeIds = changedMapTreeIdsBetween(baseProject.mapTree, persistedProject.mapTree);
+  // 비교 정규화(todo 8 실측 결함): 로드 경로(repairSupabaseCurrentJson + deserialize →
+  // validateProjectV3)는 저장본을 로드할 때 맵을 **변형**한다 — normalizeShopCommands가
+  // shop 커맨드에 branchOnTransaction/transactionBranch/branchOnFailedTransaction/
+  // failedTransactionBranch 기본 필드를 주입하고, stampCharacterIdsForSocialEvents가
+  // characterId를 스탬프하며, repairProjectReferences가 끊긴 참조를 정리한다. 에디터
+  // 메모리의 persistedBaseline/로컬 프로젝트는 이 변형을 거치지 않으므로 같은 논리 맵도
+  // JSON 문자열이 달라져 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후
+  // 저장 불가). base/로컬을 동일한 serialize→deserialize 파이프라인에 통과시켜 비교를
+  // 대칭으로 만든다 — 로드가 이미 정규형인 latest와 어느 쪽도 깨지지 않는다.
+  // 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는 원본 그대로 폴백해 기존 conflict
+  // 동작을 유지한다(새 예외를 만들지 않는다).
+  const canonicalBase = canonicalizeForMapComparison(baseProject);
+  const canonicalLocal = canonicalizeForMapComparison(persistedProject);
+  const changedMapIds = input.changedMapIds ?? changedMapIdsBetween(canonicalBase, canonicalLocal);
+  const changedMapTreeIds = changedMapTreeIdsBetween(canonicalBase.mapTree, canonicalLocal.mapTree);
   for (let attempt = 0; attempt < MAP_PATCH_MAX_ATTEMPTS; attempt += 1) {
     // Conflict/merge against current_json only (no maps overlay). RTT cut: drop
     // saveChangedMapRowsFromCanonical's before/after full-snapshot pair.
     const latestSnapshot = await loadProjectSnapshotFromSupabase(config, { overlayMaps: false });
-    const latestProject = latestSnapshot?.project ?? baseProject;
+    const latestProject = latestSnapshot?.project ?? canonicalBase;
     const latestSha = latestSnapshot?.sha256 ?? null;
 
-    const conflicts = mapSaveConflicts(baseProject, persistedProject, latestProject, changedMapIds);
+    const conflicts = mapSaveConflicts(canonicalBase, canonicalLocal, latestProject, changedMapIds);
     if (conflicts.length > 0) return { kind: "conflict", conflicts };
 
     const mergedProject = mergeProjectMaps(latestProject, persistedProject, changedMapIds, changedMapTreeIds);
@@ -1070,6 +1083,30 @@ function mapSaveConflicts(
       return latestSnapshot !== baseSnapshot && latestSnapshot !== localSnapshot;
     })
     .map((mapId) => ({ mapId, name: mapConflictName(mapId, project, latestProject, baseProject) }));
+}
+
+/**
+ * 맵 스냅샷 비교를 위한 정규화(todo 8 실측 결함 수정).
+ *
+ * 로드 경로(loadProjectSnapshotFromSupabase)는 저장본을 deserialize(→ validateProjectV3)
+ * 로 통과시키면서 맵을 **변형**한다: normalizeShopCommands가 shop 커맨드에 branch
+ * 필드(branchOnTransaction/transactionBranch/...)를 주입하고,
+ * stampCharacterIdsForSocialEvents가 소셜 이벤트에 characterId를 스탬프하며,
+ * repairProjectReferences가 끊긴 참조를 정리한다. 에디터 메모리의 persistedBaseline/로컬
+ * 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵이라도 원본 JSON 문자열이 달라져
+ * 매 flush가 가짜 conflict로 끝났다(데모 행이 첫 마일스톤 이후 저장 불가).
+ *
+ * 세 주체(base/local/latest)를 같은 serialize→deserialize 파이프라인에 통과시키면
+ * 비교가 대칭이 된다 — 실제 동시 수정만 conflict로 감지하고, 로드 정규화 차이는
+ * 사라진다. 검증을 통과하지 못하는 중간 상태(끊긴 참조 등)는 원본 그대로 폴백해
+ * 기존 conflict 동작을 유지한다(새 예외를 만들지 않는다).
+ */
+function canonicalizeForMapComparison(project: Project): Project {
+  try {
+    return deserialize(serialize(project));
+  } catch {
+    return project;
+  }
 }
 
 function mergeProjectMaps(

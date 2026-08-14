@@ -303,7 +303,7 @@ describe("Supabase project sync", () => {
     expect(mapRows.map((row) => row.map_id)).toEqual([editedMapId]);
   });
 
-  it("stops a stale same-map save before it overwrites a newer DB map", async () => {
+  it("does not stop a stale same-map save before it overwrites a newer DB map", async () => {
     const baseProject = createHouseTemplateGalleryProject();
     const localProject = structuredClone(baseProject);
     const latestProject = structuredClone(baseProject);
@@ -331,6 +331,105 @@ describe("Supabase project sync", () => {
     expect(result.conflicts.map((conflict) => conflict.mapId)).toEqual([editedMapId]);
     expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && call.init?.method === "POST")).toBe(false);
     expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && call.init?.method === "PATCH")).toBe(false);
+  });
+
+  it("does not false-conflict when the load path repairs a saved map (shop commands)", async () => {
+    // todo 8 실측 결함: 첫 마일스톤 저장 후 매 flush가 kind=conflict로 끝나 데모 행이
+    // 다음 마일스톤을 저장할 수 없었다. 로드 경로(repairSupabaseCurrentJson + deserialize →
+    // validateProjectV3)는 저장본을 로드할 때 맵을 변형한다 — normalizeShopCommands가 shop
+    // 커맨드에 branchOnTransaction/transactionBranch/branchOnFailedTransaction/
+    // failedTransactionBranch 기본 필드를 주입한다. 에디터 메모리의 persistedBaseline/로컬
+    // 프로젝트는 이 변형을 거치지 않으므로, 같은 논리 맵도 JSON 문자열이 달라져
+    // latestSnapshot !== baseSnapshot && latestSnapshot !== localSnapshot 으로
+    // 매 flush가 가짜 conflict로 끝났다. base/로컬을 같은 serialize→deserialize 파이프라인에
+    // 통과시켜 비교를 대칭으로 만든다(실제 동시 수정만 conflict).
+    const baseProject = minimalValidProject();
+    const mapId = firstMapId(baseProject);
+    const map = requiredMap(baseProject, mapId);
+    // shop 커맨드는 에디터 툴(make_villager shop)이 만드는 그대로 — 페이지 커맨드에 들어가고
+    // branch 필드 없음(로드 시 normalizeShopCommands가 주입 대상).
+    map.events = [
+      {
+        id: "ev_merchant_probe",
+        name: "잡화상",
+        x: 2,
+        y: 2,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [
+          {
+            id: "ev_merchant_probe_p0",
+            name: "잡화상",
+            conditions: [],
+            graphic: {},
+            trigger: { kind: "action" },
+            priority: "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            commands: [
+              {
+                kind: "shop",
+                itemIds: ["item_potion"],
+                stock: [{ itemId: "item_potion" }],
+                allowSell: true,
+                quantityMode: "select",
+                shopType: "normal",
+                messageType: "welcome",
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    // 로컬 편집: 같은 맵에 주민 하나 추가(상점 맵을 실제로 수정한 상황).
+    const localProject = structuredClone(baseProject);
+    const localMap = requiredMap(localProject, mapId);
+    localMap.events = [...localMap.events, {
+      id: "ev_villager_probe",
+      name: "도윤",
+      x: 4,
+      y: 4,
+      trigger: { kind: "action" },
+      commands: [],
+      pages: [
+        {
+          id: "ev_villager_probe_p0",
+          name: "도윤",
+          conditions: [],
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [],
+        },
+      ],
+    }];
+    // DB 행 = 첫 마일스톤이 저장한 그대로(상점 커맨드에 branch 필드 없음).
+    // saveProjectMapPatchToSupabase 가 로드 파이프라인을 통과시켜 branch 필드를 주입한다.
+    const calls: FetchCall[] = [];
+    vi.stubGlobal("fetch", (async (input, init) => {
+      calls.push({ input, init });
+      const url = String(input);
+      const method = init?.method ?? "GET";
+      if (method === "GET" && url.includes("/rest/v1/maps?")) {
+        return new Response(JSON.stringify([]), { status: 200 });
+      }
+      if ((method === "POST" || method === "PATCH") && url.includes("/rest/v1/projects?")) {
+        return new Response(JSON.stringify([bodyRecord(init)]), { status: 200 });
+      }
+      if (method === "POST" && url.includes("/rest/v1/maps?")) {
+        return new Response(null, { status: 201 });
+      }
+      return new Response(JSON.stringify([{ current_json: JSON.parse(serialize(baseProject)) }]), { status: 200 });
+    }) satisfies typeof fetch);
+
+    const result = await saveProjectMapPatchToSupabase({ project: localProject, baseProject }, TEST_CONFIG);
+
+    // 가짜 conflict가 아니라 저장되어야 한다 — 상점 맵의 로드 정규화 차이는 무시하고 병합.
+    expect(result.kind).toBe("saved");
+    if (result.kind !== "saved") throw new Error("expected saved result");
+    // 병합본에 로컬 편집(주민)이 남아 있어야 한다.
+    expect(requiredMap(result.project ?? localProject, mapId).events.map((event) => event.id)).toContain("ev_villager_probe");
+    expect(calls.some((call) => String(call.input).includes("/rest/v1/projects?") && (call.init?.method === "POST" || call.init?.method === "PATCH"))).toBe(true);
   });
 
   it("preserves concurrent saves from separate editors touching different maps", async () => {
