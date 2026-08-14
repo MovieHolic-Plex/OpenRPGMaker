@@ -1151,7 +1151,15 @@ export class AssistantSession {
    */
   private async maybeAutoApplyMilestone(completed: WorkItem, onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.milestoneAutoApply) return;
-    if (this.milestoneApprovalPaused) return; // 이전 마일스톤이 승인 대기 — 사용자 행동까지 자동 적용 금지.
+    // 승인 대기 중에는 다음 마일스톤도 적용하지 않고 조용히 넘기지 않는다 — 감사로 남긴다.
+    // (실측: L1-a pause 후 항목 2-7의 적용이 아무 기록 없이 누락돼 저작 내용이 사라졌다.)
+    if (this.milestoneApprovalPaused) {
+      this.pushAudit({
+        kind: "status",
+        text: `agent_run:milestone-skipped-paused "${completed.title}" — 승인 대기 마일스톤 해결 전에는 적용하지 않습니다`,
+      });
+      return;
+    }
     if (this.lastMilestoneCompletionItemId === completed.id) return; // 같은 항목 중복 트리거 방지.
     this.lastMilestoneCompletionItemId = completed.id;
     const calls = this.finalizeProposals(this.turnProposals);
@@ -1888,8 +1896,12 @@ export class AssistantSession {
       if (toolCalls.length === 0) {
         const finalText = sanitizeAssistantText(messageText ?? "");
         // Ralph loop: incomplete WorkPlan → re-inject current item; do not early-exit.
+        // 단, 승인 대기 마일스톤이 있으면 여기서도 멈춘다 — todo 4 계약: 파괴적/어휘/규칙
+        // 마일스톤은 카드 승인까지 다음 항목 저작을 진행하지 않는다(실측: L1-a pause 후
+        // 항목 2-7이 계속 저작되고 적용은 조용히 누락됐다).
         if (
-          shouldRalphContinue(this.workPlan, {
+          !this.milestoneApprovalPaused
+          && shouldRalphContinue(this.workPlan, {
             autoStepsUsed: this.workPlanAutoStepsThisUserMessage,
             assistantText: finalText,
           })

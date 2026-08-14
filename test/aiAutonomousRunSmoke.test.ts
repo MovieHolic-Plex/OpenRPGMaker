@@ -274,3 +274,71 @@ describe("자율 런 통합 스모크 (todo 7)", () => {
     expect(index).toBe(steps.length);
   }, 60000);
 });
+
+describe("파괴적 마일스톤 pause 계약 (todo 8 실측 회귀)", () => {
+  it("reset_project(파괴적) 마일스톤은 pause 되고 이후 마일스톤 적용은 감사 로그와 함께 중단된다", async () => {
+    const { AssistantSession, createBlankProject } = await load();
+    const project = createBlankProject();
+    installHermeticEnv(project);
+    const mapId = project.startMapId;
+    // L1: reset_project(파괴적) → 승인 필요. L2: 이후 항목은 pause 해제 전까지 적용 금지.
+    const plan = {
+      goal: "프로젝트 초기화 후 집 짓기",
+      layers: [
+        {
+          title: "초기화",
+          items: [{ title: "프로젝트 초기화", instruction: "reset_project {prompt:'새 시작', title:'새 세계'}", successTools: ["reset_project"] }],
+        },
+        {
+          title: "집 짓기",
+          items: [{ title: "집 시공", instruction: `author_house {mapId:'${mapId}'}`, successTools: ["author_house"] }],
+        },
+      ],
+    };
+    const steps = [
+      finalResult(JSON.stringify({ action: "new_plan", ...plan })),
+      toolCallResult("set_work_plan", plan, "c_plan"),
+      toolCallResult("reset_project", { prompt: "새 시작", title: "새 세계" }, "c_reset"),
+      // pause 후에도 모델이 다음 항목을 시도하지만 — 적용은 되지 않아야 한다.
+      toolCallResult(
+        "author_house",
+        {
+          kind: "single",
+          mapId,
+          kitId: HOUSE_KIT,
+          wings: [{ x: 2, y: 1, w: 5, h: 6 }],
+          interior: "exterior-only",
+          door: true,
+        },
+        "c_house",
+      ),
+      finalResult("완료했습니다."),
+    ];
+    let index = 0;
+    const chat = async (): Promise<ChatResult> => {
+      if (index >= steps.length) exhausted();
+      return steps[index++]!;
+    };
+    const session = new AssistantSession(project, { config: ORCH_CONFIG, chat });
+    const events: SessionEvent[] = [];
+
+    await session.sendUserMessage(
+      "프로젝트를 초기화하고 야외 집을 지어줘\n\n" + selectionFooter(mapId, project.maps[mapId]!.name),
+      (event) => { events.push(event); },
+      undefined,
+      { autonomous: true },
+    );
+
+    const audits = statusTexts(session);
+    // 1) reset_project 마일스톤이 pause 되고 카드 이벤트가 났다.
+    expect(events.some((e) => e.type === "proposal_paused")).toBe(true);
+    expect(audits.some((t) => t.includes("agent_run:milestone-paused"))).toBe(true);
+    // 2) pause 후 진행된 항목은 적용되지 않았고, 그 사실이 감사 로그에 남는다(조용한 누락 금지).
+    expect(audits.some((t) => t.includes("agent_run:milestone-skipped-paused"))).toBe(true);
+    expect(events.some((e) => e.type === "milestone_applied")).toBe(false);
+    // 3) 드라이버는 pause 상태에서 자동 계속하지 않는다.
+    expect(audits.some((t) => t.includes("agent_run:paused-approval"))).toBe(true);
+    // 4) 스토어에는 파괴적 마일스톤이 적용되지 않았다(타이틀 유지 — reset_project 미적용).
+    expect(store.getCurrent().meta?.title).toBe(project.meta?.title ?? "RPG Zzu");
+  }, 60000);
+});
