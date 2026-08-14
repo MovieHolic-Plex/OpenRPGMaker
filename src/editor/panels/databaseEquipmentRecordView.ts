@@ -1,5 +1,14 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { emptyToUndefined, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import {
+  emptyToUndefined,
+  numberField,
+  segmentedControl,
+  selectField,
+  sliderStepperField,
+  textField,
+  toggleSwitch,
+} from "@/editor/panels/databaseControls";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { store } from "@/project/store";
@@ -41,6 +50,22 @@ const EFFECT_FLAG_FIELDS: readonly { readonly key: keyof ItemEquipmentEffectFlag
   { key: "fixedEquipment", label: "장비 해제 불가", testid: "db-field-equipment-effect-fixed" },
 ];
 
+// 부위 세그먼트 옵션 — EquipmentRecord.slot 실값(weapon/shield/armor/helmet/accessory)
+// 기준. 라벨은 갤러리 필터 칩(databaseRecordViews EQUIPMENT_SLOT_CHIPS)과 동일.
+const EQUIPMENT_SLOT_OPTIONS: readonly { readonly id: EquipmentRecord["slot"]; readonly name: string }[] = [
+  { id: "weapon", name: "무기" },
+  { id: "shield", name: "방패" },
+  { id: "helmet", name: "머리" },
+  { id: "armor", name: "몸" },
+  { id: "accessory", name: "장신구" },
+];
+
+// 방어 방식 — 이진 enum(resist/inflict)이라 세그먼트로. 라벨은 기존 selectLiteral 과 동일.
+const STATE_DEFENSE_MODE_OPTIONS: readonly { readonly id: EquipmentRecord["stateDefenseMode"]; readonly name: string }[] = [
+  { id: "resist", name: "저항" },
+  { id: "inflict", name: "공격 시 부여" },
+];
+
 export function equipmentEffectSummaryChips(record: EquipmentRecord): EquipmentEffectSummaryChips {
   const flags = EFFECT_FLAG_FIELDS
     .filter(({ key }) => record.effectFlags[key])
@@ -57,6 +82,8 @@ export function equipmentEffectSummaryChips(record: EquipmentRecord): EquipmentE
 }
 
 export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRecord, rerender: () => void = () => undefined): void {
+  // 요약 칩 호스트 — 헤더로 승격. refreshSummaryChips 클로저는 호스트 자식만 교체하는
+  // 부분 갱신 경로를 유지한다(전체 폼 재렌더 금지).
   const summaryHost = el("div", {
     class: "db-equipment-summary-chips",
     dataset: { testid: "db-equipment-summary-chips" },
@@ -67,9 +94,9 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
   refreshSummaryChips();
 
   form.append(
+    equipmentHeader(record, summaryHost, refreshSummaryChips),
     resourcePanel(record, rerender),
     databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance"),
-    summaryHost,
     textField("설명", "db-field-equipment-description", record.description, (description) =>
       updateDatabaseRecord("equipment", record.id, { description })
     ),
@@ -80,14 +107,9 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
       statField({ equipment: record, key: "agility", label: "민첩성", testid: "db-field-equipment-agility" }),
     ]),
     panel("장착 허용", [
-      checkboxField({
-        checked: record.twoHanded,
-        label: "양손 장비",
-        onInput: (twoHanded) => {
-          updateDatabaseRecord("equipment", record.id, { twoHanded });
-          refreshSummaryChips();
-        },
-        testid: "db-field-equipment-two-handed",
+      toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
+        updateDatabaseRecord("equipment", record.id, { twoHanded });
+        refreshSummaryChips();
       }),
       // 기본 데이터에서 배우명=직업명이라 어느 쪽인지 구분 불가했다(P10) — 소제목으로 구분.
       choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record)),
@@ -102,32 +124,54 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
     ]),
     panel("상태", [
       choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds", refreshSummaryChips)),
-      numberField("상태 부여율(%)", "db-field-equipment-state-infliction", record.stateInflictionChance, (stateInflictionChance) =>
-        updateDatabaseRecord("equipment", record.id, { stateInflictionChance }), { min: 0, max: 100 }
-      ),
+      statePercentField(record, "stateInflictionChance", "db-field-equipment-state-infliction", "상태 부여율(%)"),
       choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshSummaryChips)),
-      selectLiteral("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, ["resist", "inflict"], (stateDefenseMode) =>
-        updateDatabaseRecord("equipment", record.id, { stateDefenseMode })
+      segmentedControl("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, STATE_DEFENSE_MODE_OPTIONS, (stateDefenseMode) =>
+        updateDatabaseRecord("equipment", record.id, { stateDefenseMode: stateDefenseMode as EquipmentRecord["stateDefenseMode"] })
       ),
-      numberField("상태 저항률(%)", "db-field-equipment-state-resistance", record.stateResistanceChance, (stateResistanceChance) =>
-        updateDatabaseRecord("equipment", record.id, { stateResistanceChance }), { min: 0, max: 100 }
-      ),
+      statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)"),
     ]),
     panel("사용 효과", [
       selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) =>
         updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) })
       ),
-      checkboxField({
-        checked: record.cursed,
-        label: "저주",
-        onInput: (cursed) => {
-          updateDatabaseRecord("equipment", record.id, { cursed });
-          refreshSummaryChips();
-        },
-        testid: "db-field-equipment-cursed",
+      toggleSwitch("저주", "db-field-equipment-cursed", record.cursed, (cursed) => {
+        updateDatabaseRecord("equipment", record.id, { cursed });
+        refreshSummaryChips();
       }),
     ])
   );
+}
+
+function equipmentHeader(record: EquipmentRecord, summaryHost: HTMLElement, refreshSummaryChips: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
+  const icon = el("div", {
+    class: "db-equipment-inspector-icon",
+    attrs: { role: "img", "aria-label": `${record.name} 아이콘` },
+  });
+  if (url) icon.style.backgroundImage = `url("${url}")`;
+  const name = textField("이름", "db-field-name", record.name, (name) =>
+    updateDatabaseRecord("equipment", record.id, { name })
+  );
+  return el("div", {
+    class: "db-equipment-inspector-header",
+    dataset: { testid: "db-equipment-inspector-header" },
+    children: [
+      icon,
+      el("div", {
+        class: "db-equipment-inspector-title",
+        children: [
+          el("div", { class: "db-equipment-inspector-name", children: [name] }),
+          segmentedControl("부위", "db-field-equipment-slot", record.slot, EQUIPMENT_SLOT_OPTIONS, (slot) => {
+            updateDatabaseRecord("equipment", record.id, { slot: slot as EquipmentRecord["slot"] });
+            refreshSummaryChips();
+          }),
+          summaryHost,
+        ],
+      }),
+    ],
+  });
 }
 
 function fillEquipmentSummaryChips(host: HTMLElement, record: EquipmentRecord): void {
@@ -265,18 +309,31 @@ function elementChoices(
 
 function equipmentEffectFields(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {
   return EFFECT_FLAG_FIELDS.map(({ key, label, testid }) =>
-    checkboxField({
-      checked: record.effectFlags[key],
-      label,
-      onInput: (value) => {
-        updateDatabaseRecord("equipment", record.id, {
-          effectFlags: { ...currentEquipment(record).effectFlags, [key]: value },
-        });
-        onChange?.();
-      },
-      testid,
+    toggleSwitch(label, testid, record.effectFlags[key], (value) => {
+      updateDatabaseRecord("equipment", record.id, {
+        effectFlags: { ...currentEquipment(record).effectFlags, [key]: value },
+      });
+      onChange?.();
     })
   );
+}
+
+// 0-100% 수치 — 슬라이더+스테퍼 쌍. base testid 는 클램프+쓰기-백을 수행하는 숫자
+// 입력(stepper)에 남긴다: numberField 시절 계약(databaseWave2BatchC — 250 → 100
+// 쓰기-백)이 그대로 성립해야 한다. range 는 -slider 접미사로 식별한다.
+function statePercentField(
+  record: EquipmentRecord,
+  key: "stateInflictionChance" | "stateResistanceChance",
+  testid: string,
+  label: string,
+): HTMLElement {
+  const fieldNode = sliderStepperField(label, testid, record[key], (value) =>
+    updateDatabaseRecord("equipment", record.id, { [key]: value }),
+    { min: 0, max: 100, step: 1, unit: "%" }
+  );
+  const stepper = fieldNode.querySelector<HTMLElement>(`[data-testid="${testid}-stepper"]`);
+  if (stepper) stepper.dataset.testid = testid;
+  return fieldNode;
 }
 
 function choiceGroup(title: string, testid: string, children: readonly HTMLElement[]): HTMLElement {

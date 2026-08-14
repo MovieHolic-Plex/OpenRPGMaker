@@ -256,3 +256,110 @@
   line-height: 1.6;
   padding: 1px 12px;
 }
+/* ── 장비 인스펙터 헤더 (W4, todo 10) ──────────────────────────────────────
+   아이콘+이름+부위 세그먼트+요약 칩 승격. 아이템 헤더(db-item-inspector-*)와
+   같은 비주얼 언어를 쓰되 장비 전용 클래스로 스코프한다. 요약 칩 호스트는
+   .db-equipment-summary-chips 클래스/refreshSummaryChips 부분 갱신 경로를 그대로
+   유지한 채 헤더 안으로 이동 — 기존 direct-child 규칙은 헤더 컨텍스트로 이식한다. */
+
+.database-modal-backdrop .database-modal-window .rm2k3-detail-equipment > .db-equipment-inspector-header {
+  align-items: flex-start;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)
+    var(--db-light-border-default) var(--db-light-border-subtle);
+  display: flex;
+  gap: 14px;
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-icon {
+  background-color: var(--db-light-bg-inset);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  flex: 0 0 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  width: 96px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field > span {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field input[type="text"] {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field input[type="text"]:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 1px;
+}
+
+/* 헤더 승격 요약 칩 — 기존 .db-equipment-summary-chips 필 스타일을 헤더 컨텍스트로
+   이식(라이트 팔레트 소비). 순수 함수 equipmentEffectSummaryChips 는 불변. */
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title > .db-equipment-summary-chips {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 28px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip {
+  background: var(--db-light-accent-muted);
+  border: 1px solid var(--db-light-accent-border);
+  border-radius: 999px;
+  color: var(--db-light-accent);
+  font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip-badge {
+  background: var(--db-light-warning-muted);
+  border-color: rgba(138, 90, 0, 0.4);
+  color: var(--db-light-warning);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip.muted,
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip[data-kind="empty"] {
+  background: transparent;
+  color: var(--db-light-text-3);
+  font-weight: 500;
+}
