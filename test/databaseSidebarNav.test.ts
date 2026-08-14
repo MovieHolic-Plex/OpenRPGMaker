@@ -8,9 +8,11 @@ type FakeBrowserGlobals = {
   readonly window: typeof globalThis.window | undefined;
 };
 
-// tabs/tabOrder 레지스트리(database.ts)에 정의된 23개 testid — 그룹 재구성 후에도
-// 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
+// tabs/tabOrder 레지스트리(database.ts)에 정의된 24개 testid — 그룹 재구성 + 상단 고정
+// '개요' 엔트리(todo 13) 이후에도 전부 정확히 한 번씩 사이드바에 존재해야 한다(G006 + e2e 스윕 계약).
 const EXPECTED_TABS = [
+  // 상단 고정 (그룹 밖)
+  "db-tab-overview",
   // 전투
   "db-tab-actors",
   "db-tab-classes",
@@ -104,14 +106,14 @@ describe("database sidebar navigation", () => {
     expect(groups.map((group) => group.textContent)).toEqual(EXPECTED_GROUPS);
   });
 
-  it("keeps all 23 tab testids, exactly once, in group order", () => {
+  it("keeps all 24 tab testids, exactly once, in group order (overview pinned on top)", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(23);
+    expect(EXPECTED_TABS.length).toBe(24);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(23);
+    expect(new Set(EXPECTED_TABS).size).toBe(24);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
     }
