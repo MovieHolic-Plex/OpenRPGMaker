@@ -34,201 +34,296 @@ const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly Batt
 const BATTLE_UI_STYLE_OPTIONS = listBattleSkinIds();
 const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
 
+/** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
+type SystemSectionSlug = "party" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+
+const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
+  { slug: "party", label: "초기 파티" },
+  { slug: "resources", label: "리소스" },
+  { slug: "startup", label: "시작 설정" },
+  { slug: "optin", label: "옵트인 시스템" },
+  { slug: "time", label: "시간 시스템" },
+  { slug: "typechart", label: "타입 상성" },
+  { slug: "title", label: "타이틀 화면" },
+];
+
 export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
   const project = store.getCurrent();
   const titleScreen = project.system.titleScreen ?? defaultTitleScreenSettings();
   const titleBackgroundResourceId = titleScreen.backgroundResourceId ?? project.system.titleResourceId;
   const form = el("section", { class: "db-detail-form db-system-form", dataset: { testid: "db-detail-form" } });
-  form.append(
-    rm2k3Fieldset("초기 파티", [
-      startPartyFaceStrip(project.system.startActorIds, project.database.actors),
-      ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
-    ]),
-    rm2k3Fieldset("리소스", [
-      resourcePickerControl({
-        label: "타이틀 리소스",
-        resourceId: project.system.titleResourceId,
-        kind: "title",
-        testid: "db-field-title-resource",
-        allowClear: true,
-        dialogTitle: "타이틀 그래픽",
-        onChange: (result) => {
-          const resourceId = emptyToUndefined(result.resourceId);
-          updateSystem((draft) => {
-            draft.system.titleResourceId = resourceId;
-            draft.system.titleScreen ??= defaultTitleScreenSettings();
-            draft.system.titleScreen.backgroundResourceId = resourceId;
-          });
-        },
-        rerender,
-      }),
-      resourcePickerControl({
-        label: "시스템 리소스",
-        resourceId: project.system.systemResourceId,
-        kind: "system",
-        testid: "db-field-system-resource",
-        allowClear: true,
-        dialogTitle: "시스템 그래픽",
-        onChange: (result) => {
-          updateSystem((draft) => {
-            draft.system.systemResourceId = emptyToUndefined(result.resourceId);
-          });
-        },
-        rerender,
-      }),
-      resourcePickerControl({
-        label: "전투 시스템 리소스",
-        resourceId: project.system.battleSystemResourceId,
-        kind: "system2",
-        testid: "db-field-battle-system-resource",
-        allowClear: true,
-        dialogTitle: "전투 시스템 그래픽",
-        onChange: (result) => {
-          updateSystem((draft) => {
-            draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
-          });
-        },
-        rerender,
-      }),
-      el("div", {
-        class: "db-system-resource-actions",
-        children: [
-          el("button", {
-            class: "btn small",
-            text: "미리보기 갱신",
-            attrs: { type: "button" },
-            dataset: { testid: "db-system-refresh-previews" },
-            on: { click: () => rerender() },
-          }),
-        ],
-      }),
-    ]),
-    rm2k3Fieldset("시작 설정", [
-      selectField("초기 적 그룹", "db-picker-system-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
-        updateSystem((draft) => {
-          draft.system.initialTroopId = emptyToUndefined(value);
-        });
-      }),
-      selectLiteral(
-        "전투 흐름",
-        "db-field-system-battle-flow",
-        project.system.battleFlow === "strict" ? "strict" : "gauge",
-        BATTLE_FLOW_OPTIONS,
-        (value) => {
-          updateSystem((draft) => {
-            draft.system.battleFlow = value;
-          });
-        },
-      ),
-      field("전투 UI 스타일", (() => {
-        // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
-        const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
-        for (const id of BATTLE_UI_STYLE_OPTIONS) {
-          select.append(el("option", { text: BATTLE_SKINS[id].label, attrs: { value: id } }));
-        }
-        select.value = resolveSkinId(project.system.battleUiStyle);
-        select.addEventListener("change", () => {
-          updateSystem((draft) => {
-            draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
-          });
-        });
-        return select;
-      })()),
-      field("배틀 모델", (() => {
-        // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
-        // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
-        // Gen1 규칙 엔진은 아직 미구현이다(데미지 공식·상태·포획은 계획서 task 2+). 현재 gen1 을
-        // 골라도 바뀌는 것은 magical 속성의 mind 방어 라우팅과 body[data-battle-model] 뿐이므로,
-        // 완성된 모드처럼 보이지 않게 라벨에 명시한다.
-        const select = el("select", {
-          dataset: { testid: "db-field-system-battle-model" },
-          attrs: { title: "Gen1 규칙 엔진은 구현 중입니다. 현재는 마법 속성의 마법방어 적용만 달라집니다." },
-        });
-        select.append(
-          el("option", { text: "RM2k3 (기본)", attrs: { value: "rm2k3" } }),
-          el("option", { text: "Gen1 (포켓몬 레드 스타일 · 구현 중)", attrs: { value: "gen1" } }),
-        );
-        select.value = project.system.battleModel === "gen1" ? "gen1" : "rm2k3";
-        select.addEventListener("change", () => {
-          updateSystem((draft) => {
-            if (select.value === "gen1") draft.system.battleModel = "gen1";
-            else delete draft.system.battleModel;
-          });
-        });
-        return select;
-      })()),
-      numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
-        updateSystem((draft) => {
-          draft.system.activeSlots = optionalPositiveInteger(value);
-        }, "system:active-slots");
-      }),
-      checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
-        updateSystem((draft) => {
-          if (checked) draft.system.monsterCollection = true;
-          else delete draft.system.monsterCollection;
-        });
-      }),
-      checkboxField("몬스터 파티 전투", "db-field-system-monster-battle-party", project.system.monsterBattleParty === true, (checked) => {
-        updateSystem((draft) => {
-          if (checked) draft.system.monsterBattleParty = true;
-          else delete draft.system.monsterBattleParty;
-        });
-      }),
-      checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
-        updateSystem((draft) => {
-          if (checked) draft.system.giftSystem = true;
-          else delete draft.system.giftSystem;
-        });
-      }),
-      checkboxField(
-        "참전 보상만",
-        "db-field-system-reward-participation-only",
-        project.system.rewardPolicy?.participationOnly === true,
-        (checked) => {
-          updateSystem((draft) => {
-            draft.system.rewardPolicy = nextRewardPolicy(draft.system.rewardPolicy, { participationOnly: checked });
-          });
-        },
-      ),
-      checkboxField(
-        "레벨 격차 패널티",
-        "db-field-system-reward-level-gap",
-        project.system.rewardPolicy?.levelGapPenalty === true,
-        (checked) => {
-          updateSystem((draft) => {
-            draft.system.rewardPolicy = nextRewardPolicy(draft.system.rewardPolicy, { levelGapPenalty: checked });
-          });
-        },
-      ),
-    ]),
-    rm2k3Fieldset("옵트인 시스템", optInSystemFields(project, rerender)),
-    timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender),
-    typeChartFieldset(project.system.typeChart, rerender),
-    rm2k3Fieldset("게임 시작화면", [
-      el("div", {
-        class: "db-title-workbench",
-        dataset: { testid: "db-title-workbench" },
-        children: [
-          el("div", {
-            class: "db-title-workbench-fields",
-            children: [
-              titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
-              titleScreenAudioFieldset(titleScreen, rerender),
-              titleScreenMenuFieldset(titleScreen, rerender),
-            ],
-          }),
-          titleScreenWorkbenchPreview(project, titleScreen, titleBackgroundResourceId),
-        ],
-      }),
-    ]),
-    rm2k3Fieldset("그래픽 미리보기", [
-      systemPreviewWell("타이틀", project.system.titleResourceId),
-      systemPreviewWell("시작화면", titleBackgroundResourceId),
-      systemPreviewWell("시스템", project.system.systemResourceId),
-      systemPreviewWell("전투", project.system.battleSystemResourceId),
-    ]),
-  );
+
+  // 섹션 전환은 로컬 상태(host.dataset)만 갱신한다 — store.update/스냅샷을 건드리지 않아
+  // undo 이력이 오염되지 않는다. 전체 재렌더(updateSystem 경로)에서도 host 는 유지되므로
+  // 활성 섹션이 초기 파티로 되돌아가지 않는다.
+  const activeSlug = readActiveSystemSection(host);
+  const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, rerender, activeSlug);
+  const sectionHost = el("div", { class: "db-system-sections", dataset: { testid: "db-system-sections" } });
+  for (const { slug } of SYSTEM_SECTION_ORDER) sectionHost.append(sections[slug]);
+  const nav = systemSectionNav(activeSlug, host, sectionHost);
+
+  form.append(nav, sectionHost);
   host.append(el("h3", { text: "시스템" }), form);
+}
+
+function readActiveSystemSection(host: HTMLElement): SystemSectionSlug {
+  const stored = host.dataset.dbSystemSection;
+  return SYSTEM_SECTION_ORDER.some((section) => section.slug === stored) ? (stored as SystemSectionSlug) : "party";
+}
+
+function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sectionHost: HTMLElement): HTMLElement {
+  const nav = el("nav", {
+    class: "db-system-section-nav",
+    dataset: { testid: "db-system-section-nav" },
+    attrs: { "aria-label": "시스템 설정 섹션" },
+  });
+  for (const { slug, label } of SYSTEM_SECTION_ORDER) {
+    nav.append(
+      el("button", {
+        class: `db-system-section-nav${slug === activeSlug ? " active" : ""}`,
+        text: label,
+        attrs: { type: "button", ...(slug === activeSlug ? { "aria-current": "true" } : {}) },
+        dataset: { testid: `db-system-nav-${slug}` },
+        on: {
+          click: () => {
+            activateSystemSection(slug, host, nav, sectionHost);
+          },
+        },
+      }),
+    );
+  }
+  return nav;
+}
+
+/** 섹션 전환 핸들러 — DOM 토글만 수행하며 store.update/스냅샷을 만들지 않는다. */
+function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement): void {
+  if (host.dataset.dbSystemSection === slug) return;
+  host.dataset.dbSystemSection = slug;
+  for (const button of Array.from(nav.querySelectorAll<HTMLElement>(".db-system-section-nav"))) {
+    const isActive = button.dataset.testid === `db-system-nav-${slug}`;
+    button.classList.toggle("active", isActive);
+    if (isActive) button.setAttribute("aria-current", "true");
+    else button.removeAttribute("aria-current");
+  }
+  for (const section of Array.from(sectionHost.querySelectorAll<HTMLElement>(".db-system-section"))) {
+    section.hidden = section.dataset.systemSection !== slug;
+  }
+}
+
+/**
+ * 시스템 탭의 7개 섹션을 모두 마운트하고 비활성 섹션만 [hidden] 처리한다.
+ * 모든 섹션이 DOM 에 존재하므로 기존 testid 조회(databaseSystemView.test.ts)가
+ * 섹션 상태와 무관하게 그대로 동작한다.
+ */
+function systemSectionNodes(
+  project: Project,
+  titleScreen: TitleScreenSettings,
+  titleBackgroundResourceId: string | undefined,
+  rerender: () => void,
+  activeSlug: SystemSectionSlug,
+): Record<SystemSectionSlug, HTMLElement> {
+  const section = (slug: SystemSectionSlug, children: readonly HTMLElement[]): HTMLElement => {
+    const node = el("div", { class: "db-system-section", dataset: { systemSection: slug }, children });
+    node.hidden = slug !== activeSlug;
+    return node;
+  };
+  return {
+    party: section("party", [
+      rm2k3Fieldset("초기 파티", [
+        startPartyFaceStrip(project.system.startActorIds, project.database.actors),
+        ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
+      ]),
+    ]),
+    resources: section("resources", [
+      rm2k3Fieldset("리소스", [
+        resourcePickerControl({
+          label: "타이틀 리소스",
+          resourceId: project.system.titleResourceId,
+          kind: "title",
+          testid: "db-field-title-resource",
+          allowClear: true,
+          dialogTitle: "타이틀 그래픽",
+          onChange: (result) => {
+            const resourceId = emptyToUndefined(result.resourceId);
+            updateSystem((draft) => {
+              draft.system.titleResourceId = resourceId;
+              draft.system.titleScreen ??= defaultTitleScreenSettings();
+              draft.system.titleScreen.backgroundResourceId = resourceId;
+            });
+          },
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "시스템 리소스",
+          resourceId: project.system.systemResourceId,
+          kind: "system",
+          testid: "db-field-system-resource",
+          allowClear: true,
+          dialogTitle: "시스템 그래픽",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.systemResourceId = emptyToUndefined(result.resourceId);
+            });
+          },
+          rerender,
+        }),
+        resourcePickerControl({
+          label: "전투 시스템 리소스",
+          resourceId: project.system.battleSystemResourceId,
+          kind: "system2",
+          testid: "db-field-battle-system-resource",
+          allowClear: true,
+          dialogTitle: "전투 시스템 그래픽",
+          onChange: (result) => {
+            updateSystem((draft) => {
+              draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
+            });
+          },
+          rerender,
+        }),
+        el("div", {
+          class: "db-system-resource-actions",
+          children: [
+            el("button", {
+              class: "btn small",
+              text: "미리보기 갱신",
+              attrs: { type: "button" },
+              dataset: { testid: "db-system-refresh-previews" },
+              on: { click: () => rerender() },
+            }),
+          ],
+        }),
+      ]),
+    ]),
+    startup: section("startup", [
+      rm2k3Fieldset("시작 설정", [
+        selectField("초기 적 그룹", "db-picker-system-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
+          updateSystem((draft) => {
+            draft.system.initialTroopId = emptyToUndefined(value);
+          });
+        }),
+        selectLiteral(
+          "전투 흐름",
+          "db-field-system-battle-flow",
+          project.system.battleFlow === "strict" ? "strict" : "gauge",
+          BATTLE_FLOW_OPTIONS,
+          (value) => {
+            updateSystem((draft) => {
+              draft.system.battleFlow = value;
+            });
+          },
+        ),
+        field("전투 UI 스타일", (() => {
+          // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
+          const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
+          for (const id of BATTLE_UI_STYLE_OPTIONS) {
+            select.append(el("option", { text: BATTLE_SKINS[id].label, attrs: { value: id } }));
+          }
+          select.value = resolveSkinId(project.system.battleUiStyle);
+          select.addEventListener("change", () => {
+            updateSystem((draft) => {
+              draft.system.battleUiStyle = select.value as (typeof BATTLE_UI_STYLE_OPTIONS)[number];
+            });
+          });
+          return select;
+        })()),
+        field("배틀 모델", (() => {
+          // 전투 규칙 엔진 선택. rm2k3(기본/생략) 또는 gen1(포켓몬 레드 스타일).
+          // 기본은 JSON 에 생략하고 gen1 만 보존한다(normalizeSystemRecords 와 동일 계약).
+          // Gen1 규칙 엔진은 아직 미구현이다(데미지 공식·상태·포획은 계획서 task 2+). 현재 gen1 을
+          // 골라도 바뀌는 것은 magical 속성의 mind 방어 라우팅과 body[data-battle-model] 뿐이므로,
+          // 완성된 모드처럼 보이지 않게 라벨에 명시한다.
+          const select = el("select", {
+            dataset: { testid: "db-field-system-battle-model" },
+            attrs: { title: "Gen1 규칙 엔진은 구현 중입니다. 현재는 마법 속성의 마법방어 적용만 달라집니다." },
+          });
+          select.append(
+            el("option", { text: "RM2k3 (기본)", attrs: { value: "rm2k3" } }),
+            el("option", { text: "Gen1 (포켓몬 레드 스타일 · 구현 중)", attrs: { value: "gen1" } }),
+          );
+          select.value = project.system.battleModel === "gen1" ? "gen1" : "rm2k3";
+          select.addEventListener("change", () => {
+            updateSystem((draft) => {
+              if (select.value === "gen1") draft.system.battleModel = "gen1";
+              else delete draft.system.battleModel;
+            });
+          });
+          return select;
+        })()),
+        numberField("기본 참전 수", "db-field-system-active-slots", project.system.activeSlots ?? 0, (value) => {
+          updateSystem((draft) => {
+            draft.system.activeSlots = optionalPositiveInteger(value);
+          }, "system:active-slots");
+        }),
+        checkboxField("몬스터 수집", "db-field-system-monster-collection", project.system.monsterCollection === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.monsterCollection = true;
+            else delete draft.system.monsterCollection;
+          });
+        }),
+        checkboxField("몬스터 파티 전투", "db-field-system-monster-battle-party", project.system.monsterBattleParty === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.monsterBattleParty = true;
+            else delete draft.system.monsterBattleParty;
+          });
+        }),
+        checkboxField("선물 시스템", "db-field-system-gift-system", project.system.giftSystem === true, (checked) => {
+          updateSystem((draft) => {
+            if (checked) draft.system.giftSystem = true;
+            else delete draft.system.giftSystem;
+          });
+        }),
+        checkboxField(
+          "참전 보상만",
+          "db-field-system-reward-participation-only",
+          project.system.rewardPolicy?.participationOnly === true,
+          (checked) => {
+            updateSystem((draft) => {
+              draft.system.rewardPolicy = nextRewardPolicy(draft.system.rewardPolicy, { participationOnly: checked });
+            });
+          },
+        ),
+        checkboxField(
+          "레벨 격차 패널티",
+          "db-field-system-reward-level-gap",
+          project.system.rewardPolicy?.levelGapPenalty === true,
+          (checked) => {
+            updateSystem((draft) => {
+              draft.system.rewardPolicy = nextRewardPolicy(draft.system.rewardPolicy, { levelGapPenalty: checked });
+            });
+          },
+        ),
+      ]),
+    ]),
+    optin: section("optin", [rm2k3Fieldset("옵트인 시스템", optInSystemFields(project, rerender))]),
+    time: section("time", [timeSystemFieldset(project.system.timeSystem, project.commonEvents, rerender)]),
+    typechart: section("typechart", [typeChartFieldset(project.system.typeChart, rerender)]),
+    title: section("title", [
+      rm2k3Fieldset("게임 시작화면", [
+        el("div", {
+          class: "db-title-workbench",
+          dataset: { testid: "db-title-workbench" },
+          children: [
+            el("div", {
+              class: "db-title-workbench-fields",
+              children: [
+                titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
+                titleScreenAudioFieldset(titleScreen, rerender),
+                titleScreenMenuFieldset(titleScreen, rerender),
+              ],
+            }),
+            titleScreenWorkbenchPreview(project, titleScreen, titleBackgroundResourceId),
+          ],
+        }),
+      ]),
+      rm2k3Fieldset("그래픽 미리보기", [
+        systemPreviewWell("타이틀", project.system.titleResourceId),
+        systemPreviewWell("시작화면", titleBackgroundResourceId),
+        systemPreviewWell("시스템", project.system.systemResourceId),
+        systemPreviewWell("전투", project.system.battleSystemResourceId),
+      ]),
+    ]),
+  };
 }
 
 /**
