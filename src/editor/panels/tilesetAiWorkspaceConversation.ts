@@ -6,6 +6,8 @@ import { el } from "@/util/dom";
 type ConversationOptions = {
   readonly busy: boolean;
   readonly onAnswer: (answer: string) => Promise<void>;
+  readonly onDiscard: (proposalId: string) => void;
+  readonly onGoSummary: () => void;
   readonly snapshot: TilesetAiConversationSnapshot;
   readonly tileset: TilesetDef;
 };
@@ -23,7 +25,7 @@ export function renderTilesetAiWorkspaceConversation(options: ConversationOption
           renderIntro(options.snapshot),
           ...options.snapshot.turns.map(renderTurn),
           renderCurrentQuestion(options),
-          renderNextQuestion(options.snapshot),
+          renderNextQuestion(options),
         ],
       }),
     ],
@@ -117,12 +119,21 @@ function renderCurrentQuestion(options: ConversationOptions): HTMLElement {
       }),
       el("div", {
         class: "tileset-ai-quick-replies",
-        children: proposal.quickReplies.map((reply, index) => el("button", {
-          text: reply,
-          attrs: { type: "button", ...(options.busy ? { disabled: "true" } : {}) },
-          dataset: { testid: `tileset-ai-workspace-quick-${index}` },
-          on: { click: () => { void options.onAnswer(reply); } },
-        })),
+        children: [
+          ...proposal.quickReplies.map((reply, index) => el("button", {
+            text: reply,
+            attrs: { type: "button", ...(options.busy ? { disabled: "true" } : {}) },
+            dataset: { testid: `tileset-ai-workspace-quick-${index}` },
+            on: { click: () => { void options.onAnswer(reply); } },
+          })),
+          el("button", {
+            class: "tileset-ai-quick-discard",
+            text: "이 제안 버리기",
+            attrs: { type: "button", title: "이 묶음은 반영하지 않고 넘어갑니다", ...(options.busy ? { disabled: "true" } : {}) },
+            dataset: { testid: "tileset-ai-workspace-discard" },
+            on: { click: () => { options.onDiscard(proposal.id); } },
+          }),
+        ],
       }),
       renderComposer(options),
     ],
@@ -163,8 +174,25 @@ function renderComposer(options: ConversationOptions): HTMLElement {
   });
 }
 
-function renderNextQuestion(snapshot: TilesetAiConversationSnapshot): HTMLElement {
+function renderNextQuestion(options: ConversationOptions): HTMLElement {
+  const snapshot = options.snapshot;
   if (!snapshot.next) {
+    if (!snapshot.current && snapshot.confirmed.length > 0 && !options.busy) {
+      return el("div", {
+        class: "tileset-ai-next-question finish",
+        dataset: { testid: "tileset-ai-workspace-finish" },
+        children: [
+          el("span", { text: "질문이 끝났어요. 확정된 묶음을 프로젝트에 반영할 차례입니다." }),
+          el("button", {
+            class: "database-footer-button primary",
+            text: "3단계 · 적용 확인 →",
+            attrs: { type: "button" },
+            dataset: { testid: "tileset-ai-workspace-finish-goto-summary" },
+            on: { click: options.onGoSummary },
+          }),
+        ],
+      });
+    }
     return el("span", {
       class: "tileset-ai-next-question empty",
       text: snapshot.current ? "이 질문이 마지막이에요" : "다음 질문 없음",
