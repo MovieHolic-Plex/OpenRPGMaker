@@ -3,10 +3,12 @@
 // 에디터에 온보딩 장치가 전무해 초보가 첫 화면에서 막히는 문제(기본 모드 UX 감사)의 최소 대응.
 // localStorage 플래그로 1회만 노출하고, 건너뛰기/완주/전문가 전환 모두 '본 것'으로 처리한다.
 import { shouldSuppressCoachMarksForWelcomeIntent } from "@/editor/aiBootIntent";
-import { getEditorUiMode } from "@/editor/editorUiMode";
+import { getEditorChrome } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
 export const COACH_MARKS_SEEN_KEY = "rpg-zzu:coachmarks-basic-v1";
+// 표준 모드 첫 방문 웰컴 카드 전용 키 — 초보 코치마크 키와 분리.
+export const STANDARD_WELCOME_SEEN_KEY = "rpgzzu:standard-welcome-seen";
 
 export interface CoachMarkStep {
   readonly id: string;
@@ -88,17 +90,17 @@ function resolveStorage(storage?: Storage | null): Storage | null {
   }
 }
 
-function alreadySeen(storage: Storage | null): boolean {
+function alreadySeen(storage: Storage | null, key: string): boolean {
   try {
-    return storage?.getItem(COACH_MARKS_SEEN_KEY) === "1";
+    return storage?.getItem(key) === "1";
   } catch {
     return true;
   }
 }
 
-function markSeen(storage: Storage | null): void {
+function markSeen(storage: Storage | null, key: string): void {
   try {
-    storage?.setItem(COACH_MARKS_SEEN_KEY, "1");
+    storage?.setItem(key, "1");
   } catch {
     /* private mode / quota */
   }
@@ -115,7 +117,7 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
   dismiss();
   const step = BASIC_COACH_MARKS[stepIndex];
   if (!step) {
-    markSeen(storage);
+    markSeen(storage, COACH_MARKS_SEEN_KEY);
     return;
   }
   const anchor = document.querySelector<HTMLElement>(`[data-testid="${step.anchorTestId}"]`);
@@ -146,7 +148,7 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
             dataset: { testid: "coach-mark-skip" },
             on: {
               click: () => {
-                markSeen(storage);
+                markSeen(storage, COACH_MARKS_SEEN_KEY);
                 dismiss();
               },
             },
@@ -159,7 +161,7 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
             on: {
               click: () => {
                 if (isLast) {
-                  markSeen(storage);
+                  markSeen(storage, COACH_MARKS_SEEN_KEY);
                   dismiss();
                 } else {
                   renderStep(stepIndex + 1, storage);
@@ -196,12 +198,80 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
 export function maybeStartBasicCoachMarks(storage?: Storage | null): void {
   if (typeof document === "undefined" || !document.body) return;
   if (activeHost) return;
-  if (getEditorUiMode() !== "beginner") return;
+  if (!getEditorChrome().coachMarks) return;
   // Welcome intent boots win the surface — do not start coach marks (and do not mark seen).
   if (shouldSuppressCoachMarksForWelcomeIntent()) return;
   const store = resolveStorage(storage);
-  if (alreadySeen(store)) return;
+  if (alreadySeen(store, COACH_MARKS_SEEN_KEY)) return;
   renderStep(0, store);
+}
+
+const STANDARD_WELCOME_BODY =
+  "좌측 팔레트와 맵 트리에서 타일을 고르고 맵을 이동하세요. 상단 토글에서 언제든 초보/전문가 모드로 전환할 수 있어요.";
+
+/** 표준 모드 첫 방문 웰컴 카드 한 장을 띄운다. 앵커 없이 화면 중앙 근처에 배치한다. */
+function renderStandardWelcome(storage: Storage | null): void {
+  dismiss();
+  const viewport = {
+    width: typeof window !== "undefined" && window.innerWidth ? window.innerWidth : 1280,
+    height: typeof window !== "undefined" && window.innerHeight ? window.innerHeight : 800,
+  };
+  const card = el("div", {
+    class: "coach-mark-card",
+    attrs: {
+      role: "dialog",
+      "aria-label": "표준 모드 시작 안내",
+      style: `left:0;top:0;width:${CARD_WIDTH}px;visibility:hidden;`,
+    },
+    dataset: { testid: "standard-welcome-card" },
+    children: [
+      el("div", { class: "coach-mark-head", text: "표준 모드" }),
+      el("div", { class: "coach-mark-body", text: STANDARD_WELCOME_BODY }),
+      el("div", {
+        class: "coach-mark-actions",
+        children: [
+          el("button", {
+            class: "coach-mark-next",
+            text: "시작",
+            attrs: { type: "button" },
+            dataset: { testid: "standard-welcome-start" },
+            on: {
+              click: () => {
+                markSeen(storage, STANDARD_WELCOME_SEEN_KEY);
+                dismiss();
+              },
+            },
+          }),
+        ],
+      }),
+    ],
+  });
+  activeHost = card;
+  document.body.append(card);
+  const cardRect = card.getBoundingClientRect();
+  const cardSize = {
+    width: cardRect.width || CARD_WIDTH,
+    height: Math.max(cardRect.height, card.scrollHeight),
+  };
+  card.style.left = `${Math.max(MARGIN, viewport.width / 2 - cardSize.width / 2)}px`;
+  card.style.top = `${Math.min(120, Math.max(MARGIN, viewport.height - cardSize.height - MARGIN))}px`;
+  card.style.visibility = "visible";
+}
+
+/**
+ * 표준 모드 첫 방문 웰컴 카드를 시작한다. 에디터 렌더 후 호출.
+ * 이미 진행 중이거나, 본 적이 있거나, 표준 모드가 아니거나, welcome intent 부팅 중이면 아무것도 하지 않는다.
+ * activeHost 단일 소유자라 초보 코치마크와 동시에 뜨지 않는다.
+ */
+export function maybeStartStandardWelcomeCard(storage?: Storage | null): void {
+  if (typeof document === "undefined" || !document.body) return;
+  if (activeHost) return;
+  if (!getEditorChrome().standardWelcome) return;
+  // Welcome intent boots win the surface — do not start (and do not mark seen).
+  if (shouldSuppressCoachMarksForWelcomeIntent()) return;
+  const store = resolveStorage(storage);
+  if (alreadySeen(store, STANDARD_WELCOME_SEEN_KEY)) return;
+  renderStandardWelcome(store);
 }
 
 /** 진행 중인 코치마크를 닫는다 (전문가 모드 전환·테스트 정리용). 본 것으로 기록하지는 않는다. */

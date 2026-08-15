@@ -108,7 +108,7 @@ export function renderBasicLeftRail(container: HTMLElement): void {
 
   const shell = el("div", {
     class: "basic-left-rail is-icon-rail",
-    dataset: { testid: "basic-left-rail", uiDensity: "basic" },
+    dataset: { testid: "basic-left-rail", uiDensity: "beginner" },
   });
   shell.append(makeToolsColumn(state.tool));
   shell.append(el("div", { class: "basic-rail-sep", attrs: { "aria-hidden": "true" } }));

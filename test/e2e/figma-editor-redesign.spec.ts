@@ -21,6 +21,8 @@ async function debugState(page: Page): Promise<DebugState> {
 
 async function openEventLayerContextMenu(page: Page, width: number, height: number): Promise<void> {
   await page.setViewportSize({ width, height });
+  // Dark figma shell + classic toolbar + dense zoom controls are expert-only.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.route("**/rest/v1/map_edit_locks**", async (route) => {
     await route.fulfill({ status: 404, contentType: "text/plain", body: "PGRST205" });
   });
@@ -28,6 +30,8 @@ async function openEventLayerContextMenu(page: Page, width: number, height: numb
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
+  // Dense zoom buttons sit behind the ⋯ expand gate in expert mode.
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-2").click();
 
   const canvas = page.getByTestId("edit-canvas").locator("canvas");

@@ -88,11 +88,29 @@ describe("editorUiMode", () => {
     expect(beginner.canvasChromeDense).toBe(false);
     expect(standard.mapTree).toBe(true);
     expect(standard.classicToolbar).toBe(false);
-    expect(standard.canvasChromeDense).toBe(false);
+    expect(standard.canvasChromeDense).toBe(true);
     expect(expert.mapTree).toBe(true);
     expect(expert.classicToolbar).toBe(true);
     expect(expert.canvasChromeDense).toBe(true);
     expect(expert.helpMenu).toBe(true);
+    expect(beginner.paletteRail).toBe(true);
+    expect(beginner.leftPanelMaxWidthPx).toBe(null);
+    expect(beginner.layerTermStyle).toBe("plain");
+    expect(beginner.prominentTestPlay).toBe(true);
+    expect(beginner.coachMarks).toBe(true);
+    expect(beginner.standardWelcome).toBe(false);
+    expect(standard.paletteRail).toBe(false);
+    expect(standard.leftPanelMaxWidthPx).toBe(380);
+    expect(standard.layerTermStyle).toBe("technical");
+    expect(standard.prominentTestPlay).toBe(false);
+    expect(standard.coachMarks).toBe(false);
+    expect(standard.standardWelcome).toBe(true);
+    expect(expert.paletteRail).toBe(false);
+    expect(expert.leftPanelMaxWidthPx).toBe(null);
+    expect(expert.layerTermStyle).toBe("technical");
+    expect(expert.prominentTestPlay).toBe(false);
+    expect(expert.coachMarks).toBe(false);
+    expect(expert.standardWelcome).toBe(false);
     expect("aiDenseSections" in beginner).toBe(false);
     expect("aiDenseSections" in standard).toBe(false);
     expect("aiDenseSections" in expert).toBe(false);
@@ -121,19 +139,4 @@ describe("editorUiMode", () => {
     expect(basicRail).toMatch(/testid:\s*`tool-\$\{tool\.id\}`|tool-event|event/);
   });
 
-  it("beginner icon rail CSS keeps flyouts unclipped above the canvas", async () => {
-    const fs = await import("node:fs/promises");
-    const css = await fs.readFile(new URL("../src/styles/shell/editor-ui-modes.css", import.meta.url), "utf8");
-    const indexCss = await fs.readFile(new URL("../src/styles/index.css", import.meta.url), "utf8");
-    // Cascade: density modes after figma shell skin
-    const figmaIdx = indexCss.indexOf('figma-editor.css');
-    const modesIdx = indexCss.indexOf("editor-ui-modes.css");
-    expect(figmaIdx).toBeGreaterThan(-1);
-    expect(modesIdx).toBeGreaterThan(figmaIdx);
-    // Overflow + stacking so layer/map flyouts are not under the map canvas
-    expect(css).toMatch(/body\.editor-ui-beginner[\s\S]*overflow:\s*visible\s*!important/);
-    // z-index 는 tokens.css 의 --z-rail(=50) 로 토큰화됨 — 값은 동일, 캔버스 위로 떠야 한다는 의도 보존.
-    expect(css).toMatch(/body\.editor-ui-beginner[\s\S]*z-index:\s*var\(--z-rail\)/);
-    expect(css).toMatch(/body\.editor-ui-beginner[\s\S]*padding:\s*0\s*!important/);
-  });
 });

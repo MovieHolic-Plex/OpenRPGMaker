@@ -2,10 +2,18 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   BASIC_COACH_MARKS,
   COACH_MARKS_SEEN_KEY,
+  STANDARD_WELCOME_SEEN_KEY,
   coachMarkPosition,
   dismissCoachMarks,
   maybeStartBasicCoachMarks,
+  maybeStartStandardWelcomeCard,
 } from "@/editor/coachMarks";
+import {
+  clearPendingAiBootIntent,
+  clearWelcomeIntentBootFlags,
+  setPendingAiBootIntent,
+  shouldSuppressCoachMarksForWelcomeIntent,
+} from "@/editor/aiBootIntent";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -120,5 +128,70 @@ describe("기본 모드 코치마크", () => {
     resetEditorUiModeForTests("expert");
     maybeStartBasicCoachMarks(storage);
     expect(findByTestId(fakeBody(), "coach-mark-next")).toBeNull();
+  });
+});
+
+describe("표준 모드 웰컴 카드", () => {
+  let restore: () => void;
+  let storage: MemoryStorage;
+
+  beforeEach(() => {
+    restore = installFakeDom();
+    storage = new MemoryStorage();
+    clearPendingAiBootIntent();
+    clearWelcomeIntentBootFlags();
+    resetEditorUiModeForTests("standard");
+  });
+
+  afterEach(() => {
+    dismissCoachMarks();
+    restore();
+  });
+
+  it("표준 모드 첫 방문이면 카드를 띄우고, '시작' 클릭 시 본 것으로 기록한 뒤 닫는다", () => {
+    maybeStartStandardWelcomeCard(storage);
+
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeTruthy();
+    click("standard-welcome-start");
+
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
+    expect(storage.getItem(STANDARD_WELCOME_SEEN_KEY)).toBe("1");
+
+    maybeStartStandardWelcomeCard(storage);
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
+  });
+
+  it("이미 본 사용자는 다시 보지 않는다", () => {
+    storage.setItem(STANDARD_WELCOME_SEEN_KEY, "1");
+    maybeStartStandardWelcomeCard(storage);
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
+  });
+
+  it("초보 모드에서는 띄우지 않는다", () => {
+    resetEditorUiModeForTests("beginner");
+    maybeStartStandardWelcomeCard(storage);
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
+  });
+
+  it("welcome intent 부팅 중에는 띄우지 않는다", () => {
+    setPendingAiBootIntent("모험 JRPG 만들어 줘");
+    expect(shouldSuppressCoachMarksForWelcomeIntent()).toBe(true);
+
+    maybeStartStandardWelcomeCard(storage);
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
+  });
+
+  it("localStorage를 쓸 수 없는 환경에서는 예외 없이 띄우지 않는다", () => {
+    const throwingStorage = {
+      getItem(): string | null {
+        throw new Error("localStorage unavailable");
+      },
+      setItem(): void {
+        throw new Error("localStorage unavailable");
+      },
+    } as unknown as Storage;
+
+    expect(() => maybeStartStandardWelcomeCard(throwingStorage)).not.toThrow();
+    expect(findByTestId(fakeBody(), "standard-welcome-card")).toBeNull();
   });
 });

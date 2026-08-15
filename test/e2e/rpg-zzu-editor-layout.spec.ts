@@ -20,6 +20,17 @@ type CompactShellMetric = {
   readonly documentWidth: number;
   readonly glyphWrapped: boolean;
   readonly regions: Readonly<Record<string, { readonly bottom: number; readonly left: number; readonly right: number; readonly top: number }>>;
+  // Beginner icon rail computed style — runtime contract migrated from the
+  // editor-ui-modes.css regex pin (overflow visible / z-index var(--z-rail) / ~48px width).
+  readonly leftPanelRail:
+    | {
+        readonly overflow: string;
+        readonly overflowX: string;
+        readonly overflowY: string;
+        readonly zIndex: string;
+        readonly width: number;
+      }
+    | null;
 };
 
 async function expectNoDocumentHorizontalOverflow(page: Page): Promise<void> {
@@ -68,6 +79,8 @@ async function readCompactShellMetric(page: Page, mode: CompactShellMode, viewpo
       })
     );
     const mapLabelStyle = mapLabel ? getComputedStyle(mapLabel) : null;
+    const leftPanelNode = document.querySelector<HTMLElement>(".left-panel");
+    const leftPanelStyle = leftPanelNode ? getComputedStyle(leftPanelNode) : null;
     return {
       bodyWidth: document.body.scrollWidth,
       documentWidth: document.documentElement.scrollWidth,
@@ -75,6 +88,15 @@ async function readCompactShellMetric(page: Page, mode: CompactShellMode, viewpo
       mode: expectedMode,
       regions,
       viewport: expectedViewport,
+      leftPanelRail: leftPanelStyle && leftPanelNode
+        ? {
+            overflow: leftPanelStyle.overflow,
+            overflowX: leftPanelStyle.overflowX,
+            overflowY: leftPanelStyle.overflowY,
+            zIndex: leftPanelStyle.zIndex,
+            width: leftPanelNode.getBoundingClientRect().width,
+          }
+        : null,
     };
   }, { expectedMode: mode, expectedViewport: viewport });
 }
@@ -119,6 +141,8 @@ async function findCanvasPointByCursor(
 }
 
 test("editor shell contains Basic and Expert regions at every supported viewport", async ({ page }) => {
+  // 2 modes × 3 viewports, each a full app boot — well beyond the 30s default.
+  test.setTimeout(120_000);
   if (COMPACT_SHELL_EVIDENCE_DIR) {
     await mkdir(COMPACT_SHELL_EVIDENCE_DIR, { recursive: true });
     await writeFile(join(COMPACT_SHELL_EVIDENCE_DIR, "metrics.ndjson"), "", "utf8");
@@ -140,7 +164,7 @@ test("editor shell contains Basic and Expert regions at every supported viewport
       await modePage.setViewportSize(viewport);
       await modePage.goto(`/?freshProject=1&layoutContract=${viewport.width}`);
       await expect(modePage.getByTestId("edit-canvas")).toBeVisible();
-      await expect(modePage.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode}`));
+      await expect(modePage.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode === "basic" ? "beginner" : mode}`));
       const metric = await readCompactShellMetric(modePage, mode, viewport);
       await recordCompactShellEvidence(modePage, metric);
       expect(metric.documentWidth).toBeLessThanOrEqual(viewport.width);
@@ -151,6 +175,17 @@ test("editor shell contains Basic and Expert regions at every supported viewport
         expect(region.right).toBeLessThanOrEqual(viewport.width);
         expect(region.top).toBeGreaterThanOrEqual(0);
         expect(region.bottom).toBeLessThanOrEqual(viewport.height);
+      }
+      if (mode === "basic") {
+        // Beginner 48px icon rail contract (migrated from the editor-ui-modes.css regex pin):
+        // flyouts spill right over the map, so the rail must stay unclipped (overflow visible),
+        // float above the canvas (z-index: var(--z-rail) → 50), and keep its ~48px width.
+        expect(metric.leftPanelRail).not.toBeNull();
+        expect(metric.leftPanelRail?.overflow).toBe("visible");
+        expect(metric.leftPanelRail?.overflowX).toBe("visible");
+        expect(metric.leftPanelRail?.overflowY).toBe("visible");
+        expect(metric.leftPanelRail?.zIndex).toBe("50");
+        expect(Math.abs((metric.leftPanelRail?.width ?? 0) - 48)).toBeLessThanOrEqual(2);
       }
     }
     expect(browserIssues).toEqual([]);

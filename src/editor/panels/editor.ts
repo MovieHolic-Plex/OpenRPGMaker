@@ -1,7 +1,7 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { dismissCoachMarks, maybeStartBasicCoachMarks } from "@/editor/coachMarks";
+import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import {
   applyEditorUiModeClasses,
@@ -223,10 +223,11 @@ export function renderEditor(main: HTMLElement): void {
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
     applyEditorUiModeLayout();
-    if (getEditorUiMode() !== "beginner") dismissCoachMarks();
+    if (!getEditorChrome().coachMarks || !getEditorChrome().standardWelcome) dismissCoachMarks();
   });
   installSelectionChipHint();
   maybeStartBasicCoachMarks();
+  maybeStartStandardWelcomeCard();
   startAiConnectionPolling();
 }
 
@@ -476,6 +477,7 @@ function onWindowResize(): void {
 
 function applyLayout(): void {
   if (!leftRoot || !leftResizer) return;
+  const chrome = getEditorChrome();
   const autoCollapse = window.innerWidth < RESPONSIVE_BREAKPOINT;
   const leftFolded = leftUserOverride ? leftCollapsed : autoCollapse;
   const layoutEl = leftRoot.parentElement;
@@ -500,7 +502,7 @@ function applyLayout(): void {
       : 0;
   publishSideChatWidth(layoutEl, sideWidth);
 
-  if (getEditorUiMode() === "beginner") {
+  if (chrome.paletteRail) {
     if (leftFolded) {
       leftRoot.style.display = "none";
       leftResizer.style.display = "none";
@@ -524,7 +526,7 @@ function applyLayout(): void {
   leftRoot.style.display = "";
   // 실제 사용 가능한 폭 = 레이아웃 콘텐츠폭 − 좌우 패딩. 캔버스 최소폭을 먼저 확보한 뒤 좌패널 상한을 잡는다.
   const maxLeftForCanvas = Math.max(LEFT_PANEL_MIN_WIDTH, usableWidth - MIN_CANVAS_WIDTH - resizerWidth - sideWidth);
-  const preferredLeftWidth = getEditorUiMode() === "standard" ? Math.min(leftWidth, 380) : leftWidth;
+  const preferredLeftWidth = chrome.leftPanelMaxWidthPx ? Math.min(leftWidth, chrome.leftPanelMaxWidthPx) : leftWidth;
   const effectiveLeftWidth = Math.min(preferredLeftWidth, maxLeftForCanvas);
   leftRoot.style.width = `${effectiveLeftWidth}px`;
   leftRoot.style.setProperty("--map-tree-height", `${mapTreeHeight}px`);
@@ -750,12 +752,12 @@ function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): strin
 }
 
 function layerStatusLabel(layer: Layer): string {
-  const beginner = getEditorUiMode() === "beginner";
+  const plain = getEditorChrome().layerTermStyle === "plain";
   switch (layer) {
     case "lower":
-      return beginner ? "바닥 레이어" : "하위 레이어";
+      return plain ? "바닥 레이어" : "하위 레이어";
     case "upper":
-      return beginner ? "장식 레이어" : "상위 레이어";
+      return plain ? "장식 레이어" : "상위 레이어";
     case "event":
       return "이벤트 레이어";
   }

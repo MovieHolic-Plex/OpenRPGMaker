@@ -92,7 +92,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
-    ...(mode === "edit" && uiMode === "beginner" ? [renderTestPlayButton()] : []),
+    ...(mode === "edit" && chrome.prominentTestPlay ? [renderTestPlayButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
