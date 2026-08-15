@@ -16,11 +16,13 @@ import {
   renderElementsTab,
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
+import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
+  | "overview"
   | DatabaseCollection
   | "animations"
   | "battleCommands"
@@ -39,6 +41,7 @@ export type DatabaseTab =
   | "variables";
 
 const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = [
+  { id: "overview", label: "개요", testid: "db-tab-overview" },
   { id: "elements", label: "속성", testid: "db-tab-elements" },
   { id: "terrain", label: "지형", testid: "db-tab-terrain" },
   { id: "battleScreen", label: "전투 화면", testid: "db-tab-battle-screen" },
@@ -65,6 +68,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
 ];
 
 const tabOrder: readonly DatabaseTab[] = [
+  "overview",
   "actors",
   "classes",
   "skills",
@@ -90,11 +94,30 @@ const tabOrder: readonly DatabaseTab[] = [
   "variables",
 ];
 
-const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map((id) => {
+const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map(tabFor);
+
+export type DatabaseTabGroup = {
+  readonly label: string;
+  readonly tabs: readonly DatabaseTab[];
+};
+
+// 사이드바 그룹 라벨/순서만 정의한다 — 탭 id는 tabs/tabOrder 레지스트리에서 역참조하므로
+// 라벨·testid는 여기서 중복 정의하지 않는다.
+export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
+  {
+    label: "전투",
+    tabs: ["actors", "classes", "skills", "items", "equipment", "elements", "states", "animations", "battleScreen", "battleCommands"],
+  },
+  { label: "수집", tabs: ["enemies", "monsterSpecies", "troops", "crops", "characters"] },
+  { label: "세계", tabs: ["terrain", "tilesets", "structureKits", "commonEvents"] },
+  { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
+];
+
+function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: string; readonly testid: string } {
   const tab = tabs.find((candidate) => candidate.id === id);
   if (!tab) throw new Error(`Missing database tab metadata: ${id}`);
   return tab;
-});
+}
 
 const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
 
@@ -126,23 +149,14 @@ export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   const header = el("div", { class: "db-tabs" });
   const body = el("div", { class: "db-body" });
-  for (const tab of orderedTabs) {
-    header.append(
-      el("button", {
-        class: `db-tab${activeTab === tab.id ? " active" : ""}`,
-        text: tab.label,
-        dataset: { testid: tab.testid },
-        on: {
-          click: () => {
-            if (activeTab === tab.id) return;
-            setDatabaseActiveTab(tab.id);
-            // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
-            updateTabButtons(header);
-            renderActiveTab(body, container);
-          },
-        },
-      }),
-    );
+  // 세로 사이드바: 상단 고정 '개요' 엔트리(그룹 밖, todo 13) 아래 그룹 라벨(.db-tab-group)과
+  // 기존 .db-tab 버튼이 이어진다. 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 그대로다.
+  appendTabButton(header, body, container, tabFor("overview"));
+  for (const group of TAB_GROUPS) {
+    header.append(el("div", { class: "db-tab-group", text: group.label }));
+    for (const id of group.tabs) {
+      appendTabButton(header, body, container, tabFor(id));
+    }
   }
 
   renderActiveTab(body, container);
@@ -162,6 +176,30 @@ export function refreshDatabasePanel(container: HTMLElement): void {
     return;
   }
   renderDatabasePanel(container);
+}
+
+function appendTabButton(
+  header: HTMLElement,
+  body: HTMLElement,
+  container: HTMLElement,
+  tab: { readonly id: DatabaseTab; readonly label: string; readonly testid: string },
+): void {
+  header.append(
+    el("button", {
+      class: `db-tab${activeTab === tab.id ? " active" : ""}`,
+      text: tab.label,
+      dataset: { testid: tab.testid },
+      on: {
+        click: () => {
+          if (activeTab === tab.id) return;
+          setDatabaseActiveTab(tab.id);
+          // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
+          updateTabButtons(header);
+          renderActiveTab(body, container);
+        },
+      },
+    }),
+  );
 }
 
 function updateTabButtons(header: HTMLElement): void {
@@ -238,6 +276,9 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       return;
     case "terms":
       renderTermsTab(body);
+      return;
+    case "overview":
+      renderOverviewTab(body, rerender);
       return;
   }
 }

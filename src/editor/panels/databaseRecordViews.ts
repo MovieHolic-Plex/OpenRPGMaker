@@ -18,20 +18,26 @@ import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
+import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import {
+  categoryFilterForCollection,
   listScrollTopForCollection,
   resetRecordViewSessionState,
   searchQueryForCollection,
   selectedRecordForSession,
   selectedRecordIdForSession,
+  setCategoryFilterForCollection,
   setListScrollTopForCollection,
   setSearchQueryForCollection,
   setSelectedRecordId,
+  setViewModeForCollection,
+  viewModeForCollection,
+  type RecordViewMode,
 } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import type { DatabaseRecords } from "@/project/types";
+import type { DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
 
 let searchRerenderTimer: number | null = null;
 
@@ -46,6 +52,41 @@ const COLLECTION_LABELS: Record<DatabaseCollection, string> = {
   states: "상태",
   battleAnimations: "전투 애니메이션",
 };
+
+// 갤러리 카드 그리드 상수 — 48px 썸네일(recordListThumbnail size 파라미터), 카드 행 높이
+// (가상화 rowHeight), 열 수 분기 기준(모달 창 폭 ≤1100px → 3열, 초과 → 4열).
+const GALLERY_THUMB_SIZE = 48;
+const GALLERY_ROW_HEIGHT = 124;
+const GALLERY_COLUMNS_BREAKPOINT = 1100;
+const GALLERY_COLUMNS_NARROW = 3;
+const GALLERY_COLUMNS_WIDE = 4;
+
+// 카테고리 필터 칩 라벨 — 아이템 종류는 databaseItemRecordView 의 ITEM_TYPES 상수 값과
+// DB 자체 라벨(databaseControls.literalLabel, 아이템 폼 종류 드롭다운과 동일)을 따른다.
+// 장비는 EquipmentRecord.slot 실값(weapon/shield/helmet/armor/accessory) 기준이다.
+// 주의: EQUIPMENT_TYPES 는 ItemType 명명(body/head)이라 slot 도메인(armor/helmet)과
+// 다르므로 칩 id 는 slot 값을 쓴다(부위 라벨은 actorRecordBattlePanels EQUIPMENT_SLOTS 와 동일).
+const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
+  normalGoods: "일반 물품",
+  weapon: "무기",
+  shield: "방패",
+  body: "갑옷",
+  head: "머리",
+  accessory: "장신구",
+  medicine: "약",
+  book: "책",
+  seed: "씨앗",
+  special: "특수",
+  switch: "스위치",
+};
+
+const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; readonly label: string }[] = [
+  { slot: "weapon", label: "무기" },
+  { slot: "shield", label: "방패" },
+  { slot: "helmet", label: "머리" },
+  { slot: "armor", label: "몸" },
+  { slot: "accessory", label: "장신구" },
+];
 
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
@@ -76,9 +117,11 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
 
   const listEl = recordList(collection, records, onSelect);
   const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  const chips = categoryFilterChips(collection, rerender);
   listPane.append(
     el("h3", { text: COLLECTION_LABELS[collection] }),
     recordSearch(collection, rerender),
+    ...(chips ? [chips] : []),
     listEl,
     recordListFooter(records.length),
     toolbar(collection, rerender),
@@ -106,9 +149,15 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
   host.append(workspace);
 }
 
-// 활성 레코드 행만 갱신한다(다른 행은 그대로 두어 스크롤/포커스 유지).
+// 활성 레코드 행/카드만 갱신한다(다른 행/카드는 그대로 두어 스크롤/포커스 유지).
+// 갤러리 카드(.db-gallery-card)와 리스트 행(.db-list-row)을 함께 다룬다. fake DOM 의
+// 단일 클래스 셀렉터 한계 때문에 콤마 셀렉터 대신 별도 query 로 합친다.
 function markActiveRow(listEl: HTMLElement, id: string): void {
-  for (const row of Array.from(listEl.querySelectorAll(".db-list-row"))) {
+  const rows = [
+    ...Array.from(listEl.querySelectorAll(".db-list-row")),
+    ...Array.from(listEl.querySelectorAll(".db-gallery-card")),
+  ];
+  for (const row of rows) {
     if (!(row instanceof HTMLElement)) continue;
     const rowId = row.dataset.recordId;
     if (!rowId) continue;
@@ -119,11 +168,13 @@ function markActiveRow(listEl: HTMLElement, id: string): void {
   }
 }
 
-// 필드 수정 시 해당 레코드 행 라벨만 갱신한다(디테일 폼 재생성 없이 포커스 유지).
+// 필드 수정 시 해당 레코드 행/카드 라벨만 갱신한다(디테일 폼 재생성 없이 포커스 유지).
 function updateRecordRowLabel(listEl: HTMLElement, id: string, name: string): void {
-  const row = listEl.querySelector(`[data-testid='db-record-row-${id}']`);
+  const row =
+    listEl.querySelector(`[data-testid='db-record-row-${id}']`) ??
+    listEl.querySelector(`[data-testid='db-record-card-${id}']`);
   if (!(row instanceof HTMLElement)) return;
-  const nameNode = row.querySelector(".db-list-name");
+  const nameNode = row.querySelector(".db-list-name") ?? row.querySelector(".db-gallery-name");
   if (nameNode instanceof HTMLElement) nameNode.textContent = name || "(이름 없음)";
   row.dataset.recordName = name;
   row.setAttribute("title", `${name} (${id})`);
@@ -162,9 +213,35 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
         },
       },
     }),
-    deleteButton(collection, rerender)
+    deleteButton(collection, rerender),
+    viewToggle(collection, rerender)
   );
   return wrap;
+}
+
+// 갤러리↔리스트 뷰 토글 — 컬렉션별 세션 상태만 전환하고 기존 rerender 경로로 목록 창을
+// 다시 그린다(갤러리 카드 렌더링 자체는 후속 작업 범위). renderRecordTab 내부에서만
+// 생성되므로 record 탭이 아닌 탭(요소/지형/유틸리티)에는 절대 나타나지 않는다.
+function viewToggle(collection: DatabaseCollection, rerender: () => void): HTMLElement {
+  const current = viewModeForCollection(collection);
+  const toggleButton = (mode: RecordViewMode): HTMLElement => {
+    const isActive = current === mode;
+    const label = mode === "gallery" ? "갤러리" : "목록";
+    return el("button", {
+      class: `db-view-toggle${isActive ? " active" : ""}`,
+      attrs: { "aria-pressed": String(isActive), type: "button", title: label },
+      dataset: { testid: mode === "gallery" ? "db-view-toggle-gallery" : "db-view-toggle-list" },
+      text: label,
+      on: {
+        click: () => {
+          if (viewModeForCollection(collection) === mode) return;
+          setViewModeForCollection(collection, mode);
+          rerender();
+        },
+      },
+    });
+  };
+  return el("div", { class: "db-view-toggle-group", children: [toggleButton("gallery"), toggleButton("list")] });
 }
 
 const DELETE_CONFIRM_LABEL = "정말 삭제?";
@@ -276,19 +353,29 @@ function recordList(
   onSelect: (id: string) => void
 ): HTMLElement {
   const searchQuery = searchQueryForCollection(collection);
+  // 저장된 필터 id가 현재 컬렉션의 칩 목록에 없으면 'all'로 취급한다(손상/낡은
+  // localStorage 값에서도 크래시 없이 전체 목록을 보여준다).
+  const categoryFilter = effectiveCategoryFilter(collection);
   const visible: VisibleRow[] = [];
   let visibleIndex = 0;
   for (const [originalIndex, record] of records.entries()) {
+    // 카테고리 필터와 검색어는 AND 결합한다.
+    if (categoryFilter !== "all" && !matchesCategoryFilter(collection, record, categoryFilter)) continue;
     if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
     visibleIndex += 1;
     visible.push({ record, originalIndex, visibleIndex });
   }
 
+  // 갤러리 모드 = 카드 그리드 + columns 가상화, 리스트 모드 = 기존 행 렌더 그대로.
+  const isGallery = viewModeForCollection(collection) === "gallery";
   const virtualList = createVirtualList<VisibleRow>({
     items: visible,
-    className: "db-list",
+    className: isGallery ? "db-list db-gallery" : "db-list",
+    rowHeight: isGallery ? GALLERY_ROW_HEIGHT : undefined,
+    columns: isGallery ? (container) => galleryColumnsFor(container) : undefined,
     onScroll: (scrollTop) => setListScrollTopForCollection(collection, scrollTop),
-    renderRow: (entry) => recordListRow(collection, entry, records.length, onSelect),
+    renderRow: (entry) =>
+      isGallery ? recordGalleryCard(collection, entry, onSelect) : recordListRow(collection, entry, records.length, onSelect),
   });
 
   // 탭 전환 후 되돌아올 때 리스트 스크롤 위치를 복원한다.
@@ -332,6 +419,122 @@ function scheduleFrame(run: () => void): void {
   run();
 }
 
+// 갤러리 카드 — 48px 썸네일 + 이름 + 카테고리 태그(아이템 종류/장비 부위만, 그 외 컬렉션은
+// 태그 없음). 선택은 기존 onSelect 재사용(active 토글 + 디테일 교체, 리스트 재빌드 없음).
+function recordGalleryCard(
+  collection: DatabaseCollection,
+  entry: VisibleRow,
+  onSelect: (id: string) => void
+): HTMLElement {
+  const { record, visibleIndex } = entry;
+  const isSelected = selectedRecordIdForSession(collection) === record.id;
+  const thumb = recordListThumbnail(collection, record, store.getCurrent(), GALLERY_THUMB_SIZE);
+  const tag = galleryCategoryTag(collection, record);
+  return el("button", {
+    class: `db-gallery-card${isSelected ? " active" : ""}`,
+    attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
+    dataset: {
+      recordId: record.id,
+      recordIndex: String(visibleIndex),
+      recordName: record.name,
+      testid: `db-record-card-${record.id}`,
+    },
+    children: [
+      el("span", {
+        class: "db-gallery-thumb",
+        children: [thumb ?? el("span", { class: "db-list-thumb empty", attrs: { "aria-hidden": "true" } })],
+      }),
+      el("span", { class: "db-gallery-name", text: record.name || "(이름 없음)" }),
+      ...(tag ? [tag] : []),
+    ],
+    on: { click: () => onSelect(record.id) },
+  });
+}
+
+// 카테고리 태그 — 기존 필드만 읽는다(아이템: record.type → ITEM_TYPES 라벨, 장비:
+// record.slot → 부위 라벨). 그 외 컬렉션은 태그 없음(subtle/none).
+function galleryCategoryTag(
+  collection: DatabaseCollection,
+  record: DatabaseRecords[DatabaseCollection][number]
+): HTMLElement | null {
+  if (collection === "items") {
+    const label = ITEM_TYPE_CHIP_LABELS[(record as ItemRecord).type];
+    return label ? el("span", { class: "db-gallery-tag", text: label }) : null;
+  }
+  if (collection === "equipment") {
+    const chip = EQUIPMENT_SLOT_CHIPS.find((entry) => entry.slot === (record as EquipmentRecord).slot);
+    return chip ? el("span", { class: "db-gallery-tag", text: chip.label }) : null;
+  }
+  return null;
+}
+
+// 갤러리 열 수 — DB 모달 창 폭 기준(≤1100px → 3열, 초과 → 4열). fake DOM 테스트는
+// .database-modal-window 의 clientWidth 를 주입해 결정적으로 검증하고, 브라우저에서는
+// createVirtualList 내부 ResizeObserver 가 렌더 폭 변화를 render() 로 연결한다.
+function galleryColumnsFor(container: HTMLElement): number {
+  const modal = container.closest<HTMLElement>(".database-modal-window");
+  const width = typeof modal?.clientWidth === "number" ? modal.clientWidth : 0;
+  return width > GALLERY_COLUMNS_BREAKPOINT ? GALLERY_COLUMNS_WIDE : GALLERY_COLUMNS_NARROW;
+}
+
+// 아이템/장비 카테고리 필터 칩 행 — 다른 컬렉션(배우/스킬/스위치 등)에서는 null.
+// 클릭 시 세션 필터를 즉시 갱신하고 rerender 로 목록/갤러리를 다시 그린다(디바운스 없음).
+function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
+  const chips: readonly { readonly id: string; readonly label: string }[] | null =
+    collection === "items"
+      ? ITEM_TYPES.map((type) => ({ id: type, label: ITEM_TYPE_CHIP_LABELS[type] }))
+      : collection === "equipment"
+        ? EQUIPMENT_SLOT_CHIPS.map(({ slot, label }) => ({ id: slot, label }))
+        : null;
+  if (!chips) return null;
+  const current = effectiveCategoryFilter(collection);
+  const row = el("div", { class: "db-filter-chips", attrs: { role: "group", "aria-label": "카테고리 필터" } });
+  row.append(
+    filterChipButton("all", "전체", current === "all", () => {
+      if (categoryFilterForCollection(collection) === "all") return;
+      setCategoryFilterForCollection(collection, "all");
+      rerender();
+    }),
+    ...chips.map(({ id, label }) =>
+      filterChipButton(id, label, current === id, () => {
+        if (categoryFilterForCollection(collection) === id) return;
+        setCategoryFilterForCollection(collection, id);
+        rerender();
+      })
+    )
+  );
+  return row;
+}
+
+function filterChipButton(id: string, label: string, active: boolean, onClick: () => void): HTMLElement {
+  return el("button", {
+    class: `db-filter-chip${active ? " active" : ""}`,
+    attrs: { "aria-pressed": String(active), type: "button" },
+    dataset: { testid: `db-filter-chip-${id}` },
+    text: label,
+    on: { click: onClick },
+  });
+}
+
+// 저장된 필터가 현재 컬렉션의 알려진 칩 id가 아니면 'all'로 취급한다.
+function effectiveCategoryFilter(collection: DatabaseCollection): string {
+  const stored = categoryFilterForCollection(collection);
+  if (stored === "all") return "all";
+  if (collection === "items") return ITEM_TYPES.includes(stored as (typeof ITEM_TYPES)[number]) ? stored : "all";
+  if (collection === "equipment") return EQUIPMENT_SLOT_CHIPS.some((chip) => chip.slot === stored) ? stored : "all";
+  return "all";
+}
+
+function matchesCategoryFilter(
+  collection: DatabaseCollection,
+  record: DatabaseRecords[DatabaseCollection][number],
+  filter: string
+): boolean {
+  if (collection === "items") return (record as ItemRecord).type === filter;
+  if (collection === "equipment") return (record as EquipmentRecord).slot === filter;
+  return true;
+}
+
 function recordForm(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number],
@@ -339,7 +542,16 @@ function recordForm(
   onRename?: (name: string) => void
 ): HTMLElement {
   const form = el("section", { class: `db-detail-form rm2k3-detail-form rm2k3-detail-${collection}`, dataset: { testid: "db-detail-form" } });
-  if (collection !== "classes" && collection !== "enemies" && collection !== "troops") form.append(nameField(collection, record.id, record.name, onRename));
+  // items/equipment 는 모던 인스펙터 헤더가 db-field-name 을 소유한다(T9/T10) — 레거시 이름
+  // 필드를 함께 그리면 동일 testid 가 두 개 생겨 Playwright strict-mode 가 깨진다.
+  if (
+    collection !== "classes" &&
+    collection !== "enemies" &&
+    collection !== "troops" &&
+    collection !== "items" &&
+    collection !== "equipment"
+  )
+    form.append(nameField(collection, record.id, record.name, onRename));
   switch (collection) {
     case "actors": {
       const actor = store.getCurrent().database.actors.find((entry) => entry.id === record.id);

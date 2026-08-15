@@ -8,6 +8,13 @@ import {
 const ITEMS_TAB = { label: "Items", slug: "items", testId: "db-tab-items" } as const;
 const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as const;
 
+// 가상화된 리스트는 렌더 창 안의 행만 DOM 에 두므로, 행 카운트 대신 푸터의 전체
+// 레코드 수("N개")로 증감을 검증한다(T6 가상화 이후).
+async function totalRecordCount(page: Page): Promise<number> {
+  const text = (await page.locator(".rm2k3-record-count").textContent()) ?? "0개";
+  return parseInt(text.replace(/[^0-9]/g, ""), 10);
+}
+
 async function gotoExpert(page: Page): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
@@ -20,8 +27,11 @@ test.describe("QA sweep: items tab", () => {
     await gotoExpert(page);
     await openDatabase(page);
     await switchDatabaseTab(page, ITEMS_TAB);
+    // 갤러리가 기본 뷰(T5) — 행 카운트/CRUD 는 리스트 뷰에서 수행한다.
+    await page.getByTestId("db-view-toggle-list").click();
+    await expect(page.getByTestId("db-view-toggle-list")).toHaveClass(/active/);
 
-    const countBefore = await page.locator("[data-testid^='db-record-row-']").count();
+    const countBefore = await totalRecordCount(page);
 
     await page.getByTestId("db-add-record").click();
 
@@ -31,11 +41,13 @@ test.describe("QA sweep: items tab", () => {
     await page.getByTestId("db-field-scope").selectOption("allAllies");
     await page.getByTestId("db-field-item-description").fill("QA 설명 텍스트 경계값 테스트 30자 이상 아주 길게 길게 길게 작성합니다 반복 반복");
     await page.getByTestId("db-field-item-type").selectOption("medicine");
-    await page.getByTestId("db-field-item-scope").selectOption("allAllies");
+    // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
+    await page.getByTestId("db-field-item-scope").getByText("아군 전체").click();
     await page.getByTestId("db-field-item-consumption-limit").selectOption("3");
-    await page.getByTestId("db-field-item-hp-percent").fill("20");
+    // 회복 % 는 T9 이후 슬라이더+스테퍼 쌍 — 스테퍼(number input)에 값을 입력한다.
+    await page.getByTestId("db-field-item-hp-percent-stepper").fill("20");
     await page.getByTestId("db-field-item-hp-flat").fill("30");
-    await page.getByTestId("db-field-item-mp-percent").fill("10");
+    await page.getByTestId("db-field-item-mp-percent-stepper").fill("10");
     await page.getByTestId("db-field-item-only-menu").check();
 
     await page.getByTestId("database-modal").screenshot({ path: ".superpowers/sdd/qa-shots/items-medicine-filled.png" });
@@ -58,20 +70,20 @@ test.describe("QA sweep: items tab", () => {
       onlyUsableInMenu: true,
     });
 
-    const countAfterAdd = await page.locator("[data-testid^='db-record-row-']").count();
+    const countAfterAdd = await totalRecordCount(page);
     expect(countAfterAdd).toBe(countBefore + 1);
 
     // duplicate
     await page.getByRole("button", { name: "복제", exact: true }).click();
-    const countAfterDuplicate = await page.locator("[data-testid^='db-record-row-']").count();
+    const countAfterDuplicate = await totalRecordCount(page);
     expect(countAfterDuplicate).toBe(countBefore + 2);
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA아이템경계값 사본");
 
     // delete requires a second confirming click (2-step confirm)
     await page.getByTestId("db-delete-selected").click();
-    expect(await page.locator("[data-testid^='db-record-row-']").count(), "single click must not delete yet").toBe(countBefore + 2);
+    expect(await totalRecordCount(page), "single click must not delete yet").toBe(countBefore + 2);
     await page.getByTestId("db-delete-selected").click();
-    expect(await page.locator("[data-testid^='db-record-row-']").count(), "second click confirms delete").toBe(countBefore + 1);
+    expect(await totalRecordCount(page), "second click confirms delete").toBe(countBefore + 1);
   });
 
   test("Item type switch panels swap and boundary values on price/capture-multiplier do not crash", async ({ page }) => {

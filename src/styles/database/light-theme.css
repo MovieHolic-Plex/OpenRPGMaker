@@ -1,0 +1,526 @@
+/* ============================================================================
+   DB 모달 라이트 팔레트 (W1) — .database-modal-backdrop 하위에만 스코프.
+   사용자 결정 C: 데이터베이스 창만 밝은 클래식(크림 기조) — 앱 셸(메뉴/툴바/맵)은
+   현행 다크 유지. 전역 :root / tokens.css 는 건드리지 않는다.
+
+   명명 규약은 tokens.css(--bg-* / --border-* / --text-* / --accent-* / 상태색)를
+   따르되, 값은 크림 기조 rgba(248,245,236) 계열 라이트로 스코프 상수(--db-light-*)로
+   재정의한다. 모든 대비는 WCAG AA(텍스트 4.5:1)를 만족한다:
+     --db-light-text-1  #23262e on #f8f5ec = 13.88:1
+     --db-light-text-2  #4b5162 on #f8f5ec =  7.26:1
+     --db-light-text-3  #5f6779 on #f8f5ec =  5.20:1
+     --db-light-on-accent #ffffff on #4a58c8 = 5.96:1
+     상태색(danger/success/warning) 모두 크림 위 ≥ 4.88:1
+   ========================================================================= */
+
+.database-modal-backdrop {
+  /* 모달 내 네이티브 폼 컨트롤을 라이트로 렌더 — 서브트리에만 영향. */
+  color-scheme: light;
+
+  /* ---- 배경 계층 (크림 기조) -------------------------------------------- */
+  --db-light-bg-base: #f8f5ec;    /* 창 최하층/본문 */
+  --db-light-bg-surface: #f1ecdd; /* 탭 스트립/푸터/헤더 톤 */
+  --db-light-bg-raised: #fdfbf5;  /* 컨트롤/버튼/카드 면 */
+  --db-light-bg-inset: #efe9d8;   /* 인풋 웰 */
+
+  /* ---- 테두리 (라이트면 위 어두운 알파) --------------------------------- */
+  --db-light-border-subtle: rgba(31, 35, 48, 0.16);
+  --db-light-border-default: rgba(31, 35, 48, 0.24);
+  --db-light-border-strong: rgba(31, 35, 48, 0.34);
+
+  /* ---- 텍스트 3단계 ----------------------------------------------------- */
+  --db-light-text-1: #23262e; /* 본문/제목 (primary) */
+  --db-light-text-2: #4b5162; /* 보조 라벨 (secondary) */
+  --db-light-text-3: #5f6779; /* 흐린 힌트 (muted) — AA 4.5:1 보장 */
+  --db-light-text-disabled: #8a8f9c;
+
+  /* ---- 액센트 (인디고 계열 유지 — 라이트면 위 대비) ---------------------- */
+  --db-light-accent: #4a58c8;       /* on-accent 흰 글씨 AA */
+  --db-light-accent-hover: #5a68e8;
+  --db-light-accent-muted: rgba(90, 104, 232, 0.14); /* 선택 행/탭 배경 */
+  --db-light-accent-border: rgba(74, 88, 200, 0.45);
+  --db-light-on-accent: #ffffff;
+
+  /* ---- 상태 색 (라이트면 위 AA) ----------------------------------------- */
+  --db-light-danger: #b33a33;
+  --db-light-danger-muted: rgba(179, 58, 51, 0.12);
+  --db-light-success: #1f7a4d;
+  --db-light-success-muted: rgba(31, 122, 77, 0.12);
+  --db-light-warning: #8a5a00;
+  --db-light-warning-muted: rgba(138, 90, 0, 0.14);
+}
+
+/* ── 창 표면 --------------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window {
+  background: var(--db-light-bg-base);
+  border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
+  box-shadow: 0 2px 0 rgba(31, 35, 48, 0.16), 0 10px 24px rgba(31, 35, 48, 0.14);
+  color: var(--db-light-text-1);
+  outline: 1px solid rgba(31, 35, 48, 0.28);
+}
+
+/* ── 헤더 ------------------------------------------------------------------ */
+
+.database-modal-backdrop .database-modal-window .database-modal-header {
+  background: linear-gradient(180deg, #f5f0e1 0%, #ece5cf 100%);
+  border-bottom: 1px solid var(--db-light-border-default);
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-header h2 {
+  color: var(--db-light-text-1);
+  text-shadow: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-close,
+.database-modal-backdrop .database-modal-window .database-modal-maximize,
+.database-modal-backdrop .database-modal-window .database-modal-dock-toggle,
+.database-modal-backdrop .database-modal-window .database-ai-toggle {
+  background: var(--db-light-bg-raised);
+  border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-close:active,
+.database-modal-backdrop .database-modal-window .database-modal-maximize:active,
+.database-modal-backdrop .database-modal-window .database-modal-dock-toggle:active,
+.database-modal-backdrop .database-modal-window .database-ai-toggle:active {
+  border-color: var(--db-light-border-default) var(--db-light-border-subtle) var(--db-light-border-subtle) var(--db-light-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-toggle[aria-expanded="true"] {
+  background: var(--db-light-accent-muted);
+}
+
+/* ── AI 바 (헤더 아래 인라인 바) ------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-ai-bar {
+  background: var(--db-light-bg-surface);
+  border-bottom: 1px solid var(--db-light-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-input {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-run,
+.database-modal-backdrop .database-modal-window .database-ai-close {
+  background: var(--db-light-bg-raised);
+  border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--db-light-text-1);
+}
+
+/* ── 본문 + 탭 스트립 ------------------------------------------------------ */
+
+.database-modal-backdrop .database-modal-window .database-modal-body {
+  background: var(--db-light-bg-base);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
+  background: var(--db-light-bg-surface);
+  border-bottom: 1px solid var(--db-light-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+  background: var(--db-light-bg-surface);
+  border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {
+  background: var(--db-light-bg-raised);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active {
+  background: linear-gradient(var(--db-light-accent), var(--db-light-accent));
+  border-color: var(--db-light-accent-border) var(--db-light-accent-border) var(--db-light-accent-border) var(--db-light-accent-border);
+  color: var(--db-light-on-accent);
+}
+
+/* ── 푸터 ------------------------------------------------------------------ */
+
+.database-modal-backdrop .database-modal-window .database-modal-footer {
+  background: var(--db-light-bg-surface);
+  border-top: 1px solid var(--db-light-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-status {
+  color: var(--db-light-text-2);
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button {
+  background: var(--db-light-bg-raised);
+  border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
+  border-style: solid;
+  border-width: 1px;
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button.primary {
+  outline: 1px solid var(--db-light-border-strong);
+  outline-offset: -4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button:active {
+  border-color: var(--db-light-border-default) var(--db-light-border-subtle) var(--db-light-border-subtle) var(--db-light-border-default);
+}
+
+/* ── 카테고리 필터 칩 (아이템/장비 목록 상단) -------------------------------- */
+
+.database-modal-backdrop .database-modal-window .db-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 12px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-filter-chip {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  color: var(--db-light-text-2);
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 1px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .db-filter-chip:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .db-filter-chip.active {
+  background: linear-gradient(var(--db-light-accent), var(--db-light-accent));
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-on-accent);
+}
+
+/* ── 아이템 인스펙터 헤더 (W4 P3) ──────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-header {
+  align-items: flex-start;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)
+    var(--db-light-border-default) var(--db-light-border-subtle);
+  display: flex;
+  gap: 14px;
+  padding: 14px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-icon {
+  background-color: var(--db-light-bg-inset);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  flex: 0 0 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  width: 96px;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-title {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field > span {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field input[type="text"] {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-name .db-field input[type="text"]:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 1px;
+}
+
+.database-modal-backdrop .database-modal-window .db-item-inspector-type-tag {
+  align-self: flex-start;
+  background: var(--db-light-accent-muted);
+  border: 1px solid var(--db-light-accent-border);
+  border-radius: 999px;
+  color: var(--db-light-accent);
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
+  padding: 1px 12px;
+}
+
+/* ── 갤러리 카드 그리드 (W3, todo 6) -----------------------------------------
+   레코드 리스트의 갤러리 뷰 — 가상화된 카드 그리드. 열 수는 컨테이너가 심는
+   --db-gallery-columns 커스텀 프로퍼티(databaseListVirtualizer 가 render() 마다 갱신)를
+   따른다. 48px 썸네일은 .db-list-thumb 의 32px 기본 크기를 카드 컨텍스트에서 키운다. */
+
+.database-modal-backdrop .database-modal-window .db-gallery .db-virtual-rows {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(var(--db-gallery-columns, 3), minmax(0, 1fr));
+  padding: 10px 12px;
+}
+
+/* 카드가 있는 갤러리는 빈 리스트 인셋 배경(:not(:has(.db-list-row)) 규칙)을 덮어쓴다. */
+.database-modal-backdrop .database-modal-window .db-gallery:has(.db-gallery-card) {
+  background: var(--db-light-bg-raised);
+  border-color: var(--db-light-border-subtle);
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 6px;
+  color: var(--db-light-text-1);
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  grid-template-rows: 48px auto auto;
+  justify-items: center;
+  min-width: 0;
+  padding: 8px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card.active {
+  background: linear-gradient(var(--db-light-accent), var(--db-light-accent));
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card .db-list-thumb {
+  height: 48px;
+  width: 48px;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-name {
+  font-size: 12px;
+  line-height: 1.3;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-tag {
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 999px;
+  color: var(--db-light-text-2);
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-gallery-card.active .db-gallery-tag {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--db-light-on-accent);
+}
+
+/* ── 장비 인스펙터 헤더 (W4, todo 10) ──────────────────────────────────────
+   아이콘+이름+부위 세그먼트+요약 칩 승격. 아이템 헤더(db-item-inspector-*)와
+   같은 비주얼 언어를 쓰되 장비 전용 클래스로 스코프한다. 요약 칩 호스트는
+   .db-equipment-summary-chips 클래스/refreshSummaryChips 부분 갱신 경로를 그대로
+   유지한 채 헤더 안으로 이동 — 기존 direct-child 규칙은 헤더 컨텍스트로 이식한다. */
+
+.database-modal-backdrop .database-modal-window .rm2k3-detail-equipment > .db-equipment-inspector-header {
+  align-items: flex-start;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)
+    var(--db-light-border-default) var(--db-light-border-subtle);
+  display: flex;
+  gap: 14px;
+  grid-column: 1 / -1;
+  padding: 14px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-icon {
+  background-color: var(--db-light-bg-inset);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  flex: 0 0 96px;
+  height: 96px;
+  image-rendering: pixelated;
+  width: 96px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name {
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field > span {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field input[type="text"] {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  font: inherit;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-name .db-field input[type="text"]:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 1px;
+}
+
+/* 헤더 승격 요약 칩 — 기존 .db-equipment-summary-chips 필 스타일을 헤더 컨텍스트로
+   이식(라이트 팔레트 소비). 순수 함수 equipmentEffectSummaryChips 는 불변. */
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title > .db-equipment-summary-chips {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 28px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip {
+  background: var(--db-light-accent-muted);
+  border: 1px solid var(--db-light-accent-border);
+  border-radius: 999px;
+  color: var(--db-light-accent);
+  font: 600 12px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip-badge {
+  background: var(--db-light-warning-muted);
+  border-color: rgba(138, 90, 0, 0.4);
+  color: var(--db-light-warning);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip.muted,
+.database-modal-backdrop .database-modal-window .db-equipment-inspector-title .db-equipment-summary-chip[data-kind="empty"] {
+  background: transparent;
+  color: var(--db-light-text-3);
+  font-weight: 500;
+}
+
+/* ── 시스템 탭 섹션 내비 (W4.5, todo 11) ────────────────────────────────────
+   시스템 탭을 좌측 섹션 내비(7개) + 우측 섹션 콘텐츠로 분할. 섹션 전환은
+   [hidden] 토글(로컬 상태)이라 store/undo 이력에 영향을 주지 않는다. */
+
+.database-modal-backdrop .database-modal-window .db-system-form {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 168px minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .db-system-section-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  position: sticky;
+  top: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-system-section-nav button.db-system-section-nav {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-left: 3px solid transparent;
+  border-radius: 4px;
+  color: var(--db-light-text-2);
+  cursor: pointer;
+  font: 600 13px/1.3 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .db-system-section-nav button.db-system-section-nav:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .db-system-section-nav button.db-system-section-nav.active {
+  background: linear-gradient(var(--db-light-accent), var(--db-light-accent));
+  border-color: var(--db-light-accent-border);
+  border-left-color: var(--db-light-accent);
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-system-sections {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-system-section[hidden] {
+  display: none;
+}

@@ -1,0 +1,317 @@
+/* ============================================================================
+   DB 모달 모던 컨트롤 (W4) — 슬라이더+스테퍼 / 세그먼티드 / 토글 스위치 / 아바타 칩.
+   값에 맞는 폼 프리미티브(databaseControls.ts 신규 4종)의 시각 계층.
+
+   스코프 규칙은 light-theme.css 와 동일 — 모든 규칙이 `.database-modal-backdrop`
+   하위에만 적용되고, 팔레트는 light-theme.css 가 정의한 --db-light-* 변수만
+   소비한다(:root / 전역 토큰 재정의 금지). 앱 셸은 다크 유지.
+   ========================================================================= */
+
+/* ── 공통: 신규 컨트롤 래퍼(.db-field 내부 2번째 슬롯) ─────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-slider-stepper,
+.database-modal-backdrop .database-modal-window .db-segmented,
+.database-modal-backdrop .database-modal-window .db-toggle-switch,
+.database-modal-backdrop .database-modal-window .db-avatar-chip-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ── 슬라이더 + 스테퍼 쌍 ───────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-slider-input {
+  accent-color: var(--db-light-accent);
+  flex: 1 1 120px;
+  margin: 0;
+  min-width: 90px;
+}
+
+.database-modal-backdrop .database-modal-window .db-stepper-input {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  color: var(--db-light-text-1);
+  flex: 0 0 72px;
+  font: inherit;
+  padding: 3px 6px;
+}
+
+.database-modal-backdrop .database-modal-window .db-slider-unit {
+  color: var(--db-light-text-2);
+  flex: 0 0 auto;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* ── 세그먼티드 컨트롤 (네이티브 radio) ─────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)
+    var(--db-light-border-default) var(--db-light-border-subtle);
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 6px;
+  margin: 0;
+  padding: 3px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill:has(input[type="radio"]:checked) {
+  background: var(--db-light-accent);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill:has(input[type="radio"]:checked) > span {
+  color: var(--db-light-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-segmented-pill > span {
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* radio input 자체는 시각 필(pill)이 선택 상태를 대신 전달한다. */
+.database-modal-backdrop .database-modal-window .db-segmented-pill > input[type="radio"] {
+  accent-color: var(--db-light-on-accent);
+  height: 12px;
+  margin: 0;
+  width: 12px;
+}
+
+/* ── 토글 스위치 (checkbox) ─────────────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-toggle-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input {
+  appearance: none;
+  background: var(--db-light-bg-inset);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  cursor: pointer;
+  height: 18px;
+  margin: 0;
+  position: relative;
+  transition: background-color 120ms ease;
+  width: 34px;
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input::before {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 14px;
+  left: 1px;
+  position: absolute;
+  top: 1px;
+  transition: transform 120ms ease;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input:checked {
+  background: var(--db-light-accent);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input:checked::before {
+  border-color: var(--db-light-accent-border);
+  transform: translateX(16px);
+}
+
+.database-modal-backdrop .database-modal-window .db-toggle-input:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 2px;
+}
+
+/* ── 아바타 칩 행 (faceset 원형 칩) ─────────────────────────────────────── */
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  color: var(--db-light-text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 6px;
+  margin: 0;
+  padding: 3px 10px 3px 3px;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip[aria-pressed="true"] {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip.dimmed {
+  opacity: 0.45;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip-face {
+  background-color: var(--db-light-bg-inset);
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 999px;
+  display: inline-block;
+  height: 40px;
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: 40px;
+}
+
+.database-modal-backdrop .database-modal-window .db-avatar-chip-name {
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+/* ── 타입 상성 칩 매트릭스 + 대미지 미리보기 (W4.5 task 12) ──────────────── */
+
+.database-modal-backdrop .database-modal-window .db-type-chart-wrap {
+  margin-top: 10px;
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-preview {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-preview-legend {
+  color: var(--db-light-text-2);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-preview-line {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 999px;
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  line-height: 18px;
+  padding: 2px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-matrix {
+  border-collapse: collapse;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-matrix th {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-matrix td {
+  padding: 2px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chip {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  color: var(--db-light-text-1);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  min-width: 44px;
+  padding: 4px 6px;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chip:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chip:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 1px;
+}
+
+/* 2.0x↑ 레드 / 0.5x↓ 블루 / 1.0x 중립 / 대각선 딤 */
+.database-modal-backdrop .database-modal-window .db-type-chip[data-state="up"] {
+  background: var(--db-light-danger-muted);
+  border-color: rgba(179, 58, 51, 0.45);
+  color: var(--db-light-danger);
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chip[data-state="down"] {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-accent);
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chip[data-state="diag"],
+.database-modal-backdrop .database-modal-window .db-type-chip:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chip[data-state="diag"]:hover {
+  background: var(--db-light-bg-raised);
+  border-color: var(--db-light-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-popover {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-strong);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(31, 35, 48, 0.18);
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  position: absolute;
+  z-index: 20;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-popover[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .db-type-chart-popover-input {
+  background: var(--db-light-bg-inset);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 4px;
+  color: var(--db-light-text-1);
+  font: inherit;
+  padding: 3px 6px;
+  width: 72px;
+}

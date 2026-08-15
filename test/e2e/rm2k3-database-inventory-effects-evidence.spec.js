@@ -37,6 +37,8 @@ test("T2 inventory/effects evidence packet", async ({ page }) => {
   };
 
   await page.setViewportSize({ width: 1280, height: 800 });
+  // DB 툴바(toolbar-database)는 expert chrome 에서만 노출된다.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
   await openDatabase(page);
   await editInventoryEffects(page);
@@ -99,9 +101,11 @@ async function editInventoryEffects(page) {
   await page.getByTestId("db-field-name").fill("QA 만능약");
   await page.getByTestId("db-field-item-type").selectOption("medicine");
   await page.getByTestId("db-field-item-consumption-limit").selectOption("2");
-  await page.getByTestId("db-field-item-scope").selectOption("allAllies");
+  // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
+  await page.getByTestId("db-field-item-scope").getByText("아군 전체").click();
   await page.getByTestId("db-field-item-state-state_poison").check();
-  await page.getByTestId("db-field-item-hp-percent").fill("15");
+  // 회복 % 는 T9 이후 슬라이더+스테퍼 쌍 — 스테퍼(number input)에 값을 입력한다.
+  await page.getByTestId("db-field-item-hp-percent-stepper").fill("15");
   await page.getByTestId("db-field-item-mp-flat").fill("8");
 
   await page.getByTestId("db-tab-equipment").click();
@@ -130,20 +134,17 @@ async function shellMetrics(page) {
     const modal = document.querySelector('[data-testid="database-modal"]');
     const modalBody = document.querySelector(".database-modal-body");
     const tabs = document.querySelector(".database-modal-body .db-tabs");
-    const manual = document.querySelector(".database-modal-body .db-manual-source");
-    const status = document.querySelector(".database-modal-body .db-workbench-status");
     const body = document.querySelector(".database-modal-body .db-body");
-    if (!(modal instanceof HTMLElement) || !(modalBody instanceof HTMLElement) || !(tabs instanceof HTMLElement) || !(manual instanceof HTMLElement) || !(status instanceof HTMLElement) || !(body instanceof HTMLElement)) {
+    // db-manual-source/db-workbench-status 는 모던화(T5~T15)로 제거된 레거시 표면이다.
+    if (!(modal instanceof HTMLElement) || !(modalBody instanceof HTMLElement) || !(tabs instanceof HTMLElement) || !(body instanceof HTMLElement)) {
       throw new Error("Database shell is missing required layout elements");
     }
     const modalRect = modal.getBoundingClientRect();
     return {
       bodyTop: Math.round(body.getBoundingClientRect().top),
-      manualTop: Math.round(manual.getBoundingClientRect().top),
       modalBodyScrollTop: Math.round(modalBody.scrollTop),
       modalHeight: Math.round(modalRect.height),
       modalWidth: Math.round(modalRect.width),
-      statusTop: Math.round(status.getBoundingClientRect().top),
       tabsTop: Math.round(tabs.getBoundingClientRect().top),
     };
   });

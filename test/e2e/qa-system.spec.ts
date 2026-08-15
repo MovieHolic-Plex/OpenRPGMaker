@@ -19,7 +19,8 @@ test("System tab: field roundtrip, tab-switch persistence, and blurred undo", as
   await page.waitForTimeout(250);
   await page.screenshot({ path: ".superpowers/sdd/qa-shots/system-initial.png", fullPage: true });
 
-  // 게임 타이틀 텍스트 필드 왕복
+  // 게임 타이틀 텍스트 필드 왕복 (타이틀 섹션)
+  await page.getByTestId("db-system-nav-title").click();
   const titleInput = page.getByTestId("db-field-title-screen-title");
   await titleInput.fill("QA 타이틀 테스트");
 
@@ -33,17 +34,18 @@ test("System tab: field roundtrip, tab-switch persistence, and blurred undo", as
   expect(afterTitleUndo.system.titleScreen?.title).not.toBe("QA 타이틀 테스트");
   await titleInput.fill("QA 타이틀 테스트"); // redo the edit for the rest of the test
 
-  // 체크박스 토글(몬스터 수집)
+  // 시작 설정 섹션: 체크박스 토글(몬스터 수집) + 기본 참전 수(숫자 필드)
+  await page.getByTestId("db-system-nav-startup").click();
   const monsterCollection = page.getByTestId("db-field-system-monster-collection");
   await monsterCollection.check();
-
-  // 기본 참전 수(숫자 필드)
   await page.getByTestId("db-field-system-active-slots").fill("3");
 
-  // 다른 탭으로 갔다가 복귀 — 값 보존 확인
+  // 다른 탭으로 갔다가 복귀 — 값 보존 확인 (섹션 상태는 탭 재렌더로 초기화되므로 다시 이동)
   await switchDatabaseTab(page, TERMS_TAB);
   await switchDatabaseTab(page, SYSTEM_TAB);
+  await page.getByTestId("db-system-nav-title").click();
   await expect(page.getByTestId("db-field-title-screen-title")).toHaveValue("QA 타이틀 테스트");
+  await page.getByTestId("db-system-nav-startup").click();
   await expect(page.getByTestId("db-field-system-monster-collection")).toBeChecked();
   await expect(page.getByTestId("db-field-system-active-slots")).toHaveValue("3");
 
@@ -55,16 +57,28 @@ test("System tab: field roundtrip, tab-switch persistence, and blurred undo", as
   expect((project.system as unknown as { activeSlots?: number }).activeSlots).toBe(3);
 
   // 시간 시스템 토글 → 하위 필드 노출
+  await page.getByTestId("db-system-nav-time").click();
   await page.getByTestId("db-field-system-time-enabled").check();
   await expect(page.getByTestId("db-field-system-time-minutes-per-second")).toBeVisible();
   await expect(page.getByTestId("db-field-system-time-day-start")).toBeVisible();
 
-  // 타입 상성: 타입 목록 입력 → 매트릭스 등장
+  // 타입 상성: 타입 목록 입력 → 칩 매트릭스 등장 → 우클릭 팝오버 직접 입력 + 미리보기
+  // (예제 프로젝트 기본 typeChart 가 fire→water=0.5 를 이미 갖고 있어 클릭 사이클은
+  //  시작값에 의존한다 — 팝오버 직접 입력은 어떤 시작값에서도 1.5 로 결정적이다.)
+  await page.getByTestId("db-system-nav-typechart").click();
   await page.getByTestId("db-field-system-type-chart-types").fill("fire, water");
   await page.getByTestId("db-field-system-type-chart-types").blur();
   await expect(page.getByTestId("db-type-chart-matrix")).toBeVisible();
-  await page.getByTestId("db-type-chart-fire-water").fill("150");
-  await page.getByTestId("db-type-chart-fire-water").blur();
+  await expect(page.getByTestId("db-type-preview")).toContainText("공격→방어");
+  const fireWaterChip = page.getByTestId("db-type-chart-fire-water");
+  await fireWaterChip.click({ button: "right" });
+  await page.getByTestId("db-type-chart-popover-input").fill("1.5");
+  await page.getByTestId("db-type-chart-popover-confirm").click();
+  await expect(fireWaterChip).toHaveAttribute("data-value", "1.5");
+  await expect(page.getByTestId("db-type-preview")).toContainText("fire → water 1.5x");
+  await page.waitForTimeout(250);
+  const projectAfterChart = await exportedProject(page);
+  expect(projectAfterChart.system.typeChart?.multipliers?.fire?.water).toBe(1.5);
 
   await page.screenshot({ path: ".superpowers/sdd/qa-shots/system-filled.png", fullPage: true });
 });
@@ -75,11 +89,13 @@ test("System tab: 미리보기 갱신 버튼과 파티 슬롯 피커가 실동�
   await switchDatabaseTab(page, SYSTEM_TAB);
   await page.waitForTimeout(250);
 
+  await page.getByTestId("db-system-nav-resources").click();
   await expect(page.getByTestId("db-system-refresh-previews")).toBeVisible();
   await page.getByTestId("db-system-refresh-previews").click();
   await expect(page.getByTestId("db-detail-form")).toBeVisible();
 
   // 파티 멤버 슬롯 2 를 변경 → 반영 확인
+  await page.getByTestId("db-system-nav-party").click();
   const slot2 = page.getByTestId("db-picker-system-start-actor-2");
   await expect(slot2).toBeVisible();
   const options = await slot2.locator("option").allTextContents();

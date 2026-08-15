@@ -7,6 +7,7 @@ import {
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { setDatabaseActiveTab } from "@/editor/panels/database";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
+import { setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -55,6 +56,8 @@ beforeEach(() => {
   });
   store.replace(createBlankProject());
   resetMapEditHistory();
+  // 이 테스트는 enemies 리스트 행의 live-refresh/포커스 보존을 검증한다 — 갤러리 기본값을 list 로 고정.
+  setViewModeForCollection("enemies", "list");
 });
 
 afterEach(() => {

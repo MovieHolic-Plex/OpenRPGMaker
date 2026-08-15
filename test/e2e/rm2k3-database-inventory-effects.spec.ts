@@ -9,6 +9,8 @@ import {
 test("Database inventory/effects tabs persist skill, item, equipment, and state edits after reopen", async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });
+  // DB 툴바(toolbar-database)는 expert chrome 에서만 노출된다.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await openDatabase(page);
@@ -29,9 +31,11 @@ test("Database inventory/effects tabs persist skill, item, equipment, and state 
   await page.getByTestId("db-field-name").fill("QA 만능약");
   await page.getByTestId("db-field-item-type").selectOption("medicine");
   await page.getByTestId("db-field-item-consumption-limit").selectOption("2");
-  await page.getByTestId("db-field-item-scope").selectOption("allAllies");
+  // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
+  await page.getByTestId("db-field-item-scope").getByText("아군 전체").click();
   await page.getByTestId("db-field-item-state-state_poison").check();
-  await page.getByTestId("db-field-item-hp-percent").fill("15");
+  // 회복 % 는 T9 이후 슬라이더+스테퍼 쌍 — 스테퍼(number input)에 값을 입력한다.
+  await page.getByTestId("db-field-item-hp-percent-stepper").fill("15");
   await page.getByTestId("db-field-item-mp-flat").fill("8");
 
   await page.getByTestId("db-tab-equipment").click();
@@ -65,7 +69,8 @@ test("Database inventory/effects tabs persist skill, item, equipment, and state 
   expect(project.database.items.find((record) => record.name === "QA 만능약")).toMatchObject({
     consumptionLimit: 2,
     healStateIds: ["state_poison"],
-    hpRecovery: { flat: 0, percentMax: 15 },
+    // 기본 선택 레코드는 예제 프로젝트 첫 아이템(회복약, hp flat 50) — 그대로 유지된다.
+    hpRecovery: { flat: 50, percentMax: 15 },
     mpRecovery: { flat: 8, percentMax: 0 },
     scope: "allAllies",
     type: "medicine",

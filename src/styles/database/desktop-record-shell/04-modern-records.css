@@ -263,9 +263,38 @@
     border: 1px solid var(--db-modern-line);
     border-radius: 5px;
     display: grid;
-    grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+    /* h3 / 검색 / 카테고리 필터 칩(아이템·장비만, 없으면 빈 행) / 목록(1fr) / 푸터 / 툴바.
+       칩 행은 컬렉션에 따라 렌더되지 않으므로 각 자식을 명시적 행에 배치한다 — 그래야
+       칩 유무와 무관하게 목록이 항상 1fr 행을 차지한다. flex-wrap 칩 행의 max-content
+       높이를 그리드가 0 으로 읽는 케이스(align-content: normal/stretch)가 있어
+       minmax(max-content, auto) 로 내용 높이를 보장한다(빈 행은 max-content 0 → 0px). */
+    grid-template-rows: auto auto minmax(max-content, auto) minmax(0, 1fr) auto auto;
     min-width: 0;
     padding: 16px 16px 14px;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane > h3 {
+    grid-row: 1;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane > .db-search {
+    grid-row: 2;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane > .db-filter-chips {
+    grid-row: 3;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane > .db-list {
+    grid-row: 4;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane > .rm2k3-record-list-footer {
+    grid-row: 5;
+  }
+
+  .database-modal-body .rm2k3-record-list-pane > .db-toolbar {
+    grid-row: 6;
   }
 
   .database-modal-body .rm2k3-record-list-pane h3 {

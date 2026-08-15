@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { addDatabaseRecord } from "@/editor/databaseActions";
 import { refreshDatabasePanel, renderDatabasePanel } from "@/editor/panels/database";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
+import { setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -40,6 +41,8 @@ beforeEach(() => {
   });
   store.replace(createBlankProject());
   resetDatabaseRecordViewSession();
+  // 스킬 탭은 갤러리 기본값이지만 이 테스트는 리스트 행 부분 렌더 계약을 검증한다 — 명시적으로 list.
+  setViewModeForCollection("skills", "list");
 });
 
 afterEach(() => {

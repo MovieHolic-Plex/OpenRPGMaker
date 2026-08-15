@@ -1,0 +1,178 @@
+/* ============================================================================
+   DB '개요' 밸런스 대시보드 (W5, todo 15) — 통계 칩 + 곡선/산점도/문제 카드/AI 버튼.
+   .database-modal-backdrop 하위에만 스코프(light-theme.css 와 동일한 스코프 경계).
+   --db-light-* 팔레트를 소비한다 — 새 hex 는 추가하지 않는다.
+
+   구조(databaseOverviewView.ts renderOverviewTab):
+     .db-overview-stats        ← 9개 컬렉션 통계 칩 (첫 렌더 즉시)
+     .db-overview-charts       ← 지연 주입 영역 (requestIdleCallback 후 채움)
+       .db-overview-section      ← 곡선/산점도/문제 카드 카드
+         svg.db-overview-curve     ← 파티 전투력 곡선 (path 2개)
+         svg.db-overview-scatter   ← 몬스터 HP vs DPS 산점도 (circle)
+         .db-overview-issue        ← 문제 감지 카드 (.db-overview-issue-jump 점프 버튼)
+       button.db-overview-ai     ← AI 분석 (database-ai-toggle 경로)
+   ========================================================================= */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat {
+  align-items: center;
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  min-width: 86px;
+  padding: 8px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat-label {
+  color: var(--db-light-text-2);
+  font-size: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat-count {
+  color: var(--db-light-text-1);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-charts {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-section {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-section-title {
+  color: var(--db-light-text-1);
+  font-size: 14px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-curve,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-scatter {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-grid {
+  stroke: var(--db-light-border-subtle);
+  stroke-width: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-axis-label {
+  fill: var(--db-light-text-3);
+  font-size: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-curve-attack {
+  fill: none;
+  stroke: var(--db-light-accent);
+  stroke-width: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-curve-hp {
+  fill: none;
+  stroke: var(--db-light-success);
+  stroke-width: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-scatter-dot {
+  fill: var(--db-light-accent);
+  opacity: 0.85;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-scatter-dot-boss {
+  fill: var(--db-light-danger);
+  opacity: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue {
+  align-items: flex-start;
+  background: var(--db-light-warning-muted);
+  border: 1px solid var(--db-light-warning);
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue + .db-overview-issue {
+  margin-top: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-warning-icon {
+  color: var(--db-light-warning);
+  flex: 0 0 16px;
+  margin-top: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue-title {
+  color: var(--db-light-text-1);
+  font-size: 13px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue-detail {
+  color: var(--db-light-text-2);
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue-jump {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 8px;
+  color: var(--db-light-text-1);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-issue-jump:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-ai {
+  align-self: flex-start;
+  background: var(--db-light-accent);
+  border: 1px solid var(--db-light-accent);
+  border-radius: 10px;
+  color: var(--db-light-on-accent);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-ai:hover {
+  background: var(--db-light-accent-hover);
+}

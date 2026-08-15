@@ -1,0 +1,141 @@
+/* ============================================================================
+   DB 사이드바 (W2, todo 3) — 세로 그룹 사이드바 + 도크 아이콘 레일.
+   .database-modal-backdrop 하위에만 스코프(light-theme.css 와 동일한 스코프 경계).
+   light-theme.css 의 --db-light-* 팔레트를 소비한다 — 새 hex 는 추가하지 않는다.
+
+   구조(database.ts renderDatabasePanel):
+     .database-modal-body            ← flex row 로 배선 (이 파일)
+       .db-tabs                      ← 세로 사이드바
+         .db-tab-group               ← 그룹 라벨 (전투/수집/세계/시스템)
+         button.db-tab[data-testid]  ← 탭 행 (.active 토글, G006 계약 유지)
+       .db-body                      ← 세부 패널 (기존 렌더 경로 그대로)
+
+   기존 3겹 수평 탭 스트립 규칙(desktop.css / desktop-record-shell / enemies /
+   troops / tilesets 의 .database-modal-body:has(...) 선택자)은 4클래스 프리픽스
+   .database-modal-backdrop .database-modal-window .database-modal-body 로
+   캐스케이드에서 덮는다(light-theme.css 와 동일한 기법).
+   ========================================================================= */
+
+/* ---- 본문: 세로 사이드바 + 본문 flex 행 (기존 탭 스트립 grid 규칙 대체) ---- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body {
+  align-items: stretch;
+  display: flex;
+  flex-direction: row;
+  grid-template-rows: none;
+  overflow: hidden;
+}
+
+/* ---- 사이드바 컨테이너 (폭 210px — 200-220px 요구사항) -------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
+  background: var(--db-light-bg-surface);
+  border-bottom: none;
+  border-right: 1px solid var(--db-light-border-default);
+  box-shadow: none;
+  box-sizing: border-box;
+  display: flex;
+  flex: 0 0 210px;
+  flex-direction: column;
+  gap: 2px;
+  height: auto;
+  margin: 0;
+  max-height: none;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 8px 8px 12px;
+  width: 210px;
+}
+
+/* ---- 그룹 헤더: 소문자 라벨, 흐린 톤 ------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
+  color: var(--db-light-text-3);
+  font: 700 10px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  padding: 14px 8px 4px;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group:first-of-type {
+  padding-top: 8px;
+}
+
+/* ---- 탭 행 ---------------------------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+  background: transparent;
+  border: 0;
+  border-left: 3px solid transparent;
+  border-radius: 6px;
+  color: var(--db-light-text-2);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  height: auto;
+  margin: 0;
+  max-width: none;
+  min-width: 0;
+  padding: 6px 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {
+  background: var(--db-light-bg-raised);
+  color: var(--db-light-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: -2px;
+}
+
+/* 활성: 좌측 액센트 바 + 틴트 배경 + 액센트 텍스트 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active {
+  background: var(--db-light-accent-muted);
+  border-left-color: var(--db-light-accent);
+  box-shadow: none;
+  color: var(--db-light-accent);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active:hover {
+  background: var(--db-light-accent-muted);
+  color: var(--db-light-accent);
+}
+
+/* ---- 본문 패널: 사이드바 옆 나머지 폭을 채운다 ---------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-body {
+  border-left: none;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ============================================================================
+   도크 레일 모드 — .database-modal-backdrop.is-docked (dock.css 가 40vw 우측
+   레일로 게이트). 사이드바가 아이콘 전용 레일(~48px)로 축소: 라벨 텍스트는
+   font-size:0 으로 숨기고(title 속성 툴팁은 유지), 그룹 헤더는 숨긴다.
+   활성 좌측 액센트 바는 그대로 보인다.
+   ========================================================================= */
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tabs {
+  flex: 0 0 48px;
+  padding: 8px 4px 12px;
+  width: 48px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-group {
+  display: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab {
+  font-size: 0;
+  height: 32px;
+  padding: 0;
+  text-align: center;
+}
