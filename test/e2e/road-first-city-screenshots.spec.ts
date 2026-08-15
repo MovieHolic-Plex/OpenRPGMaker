@@ -27,9 +27,13 @@ test("captures four browser screenshots of the chaotic generated city", async ({
   await seedProjectFromSupabaseCanonical(page, project, APP_URL);
   await page.getByTestId(`map-tree-node-${project.startMapId}`).click();
 
+  // Standard keeps dense zoom buttons behind the ⋯ expand gate, and the canvas toolbar
+  // re-renders (collapses) on every zoom change — re-open the gate before each click.
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-1").click();
   await captureAt(page, "01-overview-zoom1.png", { left: 0, top: 0 });
 
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-2").click();
   await captureAt(page, "02-northwest-houses.png", { left: 0, top: 0 });
   await captureAt(page, "03-chaotic-center.png", { left: 140, top: 180 });
@@ -38,7 +42,10 @@ test("captures four browser screenshots of the chaotic generated city", async ({
 
 async function captureAt(page: Page, name: string, scroll: { readonly left: number; readonly top: number }): Promise<void> {
   await page.evaluate(`
-    import("/src/app/mode.ts").then(({ getGame }) => {
+    const modeUrl = performance.getEntriesByType("resource")
+      .map((e) => e.name)
+      .find((name) => /\\/src\\/app\\/mode\\.ts(\\?|$)/.test(name)) ?? "/src/app/mode.ts";
+    import(modeUrl).then(({ getGame }) => {
     const scene = getGame()?.scene.getScene("EditScene");
     if (!scene) throw new Error("missing EditScene");
       scene.cameras.main.setScroll(${scroll.left}, ${scroll.top});

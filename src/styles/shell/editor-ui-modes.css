@@ -503,7 +503,7 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 }
 
 /* 좌패널 전체: 가로 스크롤 전면 차단 (시트·맵트리·툴바 공통)
-   basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-basic 규칙). */
+   basic 아이콘 레일은 플라이아웃이 우측으로 넘치므로 제외 (위 body.editor-ui-beginner 규칙). */
 body.editor-ui-standard .editor-layout .left-panel,
 body.editor-ui-expert .editor-layout .left-panel {
   min-width: 0;

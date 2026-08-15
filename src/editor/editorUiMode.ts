@@ -1,5 +1,7 @@
 // editor/editorUiMode.ts
 // - 데이터·이벤트 편집·AI 세션은 공유; 노출 밀도만 분기.
+// - 용어 매핑: 모드명 beginner|standard|expert ↔ uiDensity DOM 값 beginner|expert|play|shared.
+//   레거시 데이터 값 "basic"은 폐기됨(심볼/클래스명 BASIC_ZOOM_LEVELS, basic-rail-*, is-basic-chrome은 의도적으로 유지).
 
 export const EDITOR_UI_MODE_STORAGE_KEY = "rpg-zzu:editor-ui-mode";
 export const EDITOR_PRODUCT_BRAND = "AI RPG MAKER";
@@ -15,6 +17,18 @@ export type EditorChromeVisibility = {
   readonly canvasChromeDense: boolean;
   readonly helpMenu: boolean;
   readonly gameMenuLabel: string;
+  // 48px 아이콘 레일 좌패널(basicLeftRail) — 아니면 일반 팔레트/맵트리 컬럼.
+  readonly paletteRail: boolean;
+  // 좌패널 폭 상한(px). null이면 상한 없음(사용자 저장값 그대로).
+  readonly leftPanelMaxWidthPx: number | null;
+  // 레이어 라벨 용어 — plain: 바닥/장식, technical: 하위/상위.
+  readonly layerTermStyle: "plain" | "technical";
+  // 탑바 굵은 '테스트' 플레이 버튼 노출.
+  readonly prominentTestPlay: boolean;
+  // 첫 방문 코치마크 3점 노출.
+  readonly coachMarks: boolean;
+  // 표준 모드용 시작 웰컴 표면 노출.
+  readonly standardWelcome: boolean;
 };
 
 const BEGINNER_CHROME: EditorChromeVisibility = {
@@ -25,14 +39,26 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
   // 도움말(단축키 표)은 초보용 모드에서 더 필요하다 — 기본 모드에서도 노출.
   helpMenu: true,
   gameMenuLabel: "실행",
+  paletteRail: true,
+  leftPanelMaxWidthPx: null,
+  layerTermStyle: "plain",
+  prominentTestPlay: true,
+  coachMarks: true,
+  standardWelcome: false,
 };
 
 const STANDARD_CHROME: EditorChromeVisibility = {
   mapTree: true,
   classicToolbar: false,
-  canvasChromeDense: false,
+  canvasChromeDense: true,
   helpMenu: true,
   gameMenuLabel: "게임",
+  paletteRail: false,
+  leftPanelMaxWidthPx: 380,
+  layerTermStyle: "technical",
+  prominentTestPlay: false,
+  coachMarks: false,
+  standardWelcome: true,
 };
 
 const EXPERT_CHROME: EditorChromeVisibility = {
@@ -41,6 +67,12 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   canvasChromeDense: true,
   helpMenu: true,
   gameMenuLabel: "게임",
+  paletteRail: false,
+  leftPanelMaxWidthPx: null,
+  layerTermStyle: "technical",
+  prominentTestPlay: false,
+  coachMarks: false,
+  standardWelcome: false,
 };
 
 type Listener = () => void;

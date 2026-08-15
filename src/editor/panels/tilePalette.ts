@@ -1,7 +1,7 @@
 import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
-import { getEditorUiMode } from "@/editor/editorUiMode";
+import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
@@ -72,7 +72,7 @@ export function renderTilePalette(container: HTMLElement): void {
   const state = editorState.get();
   activeWorkTab = readWorkTab();
 
-  if (getEditorUiMode() === "beginner") {
+  if (getEditorChrome().paletteRail) {
     renderBasicLeftRail(container);
     return;
   }
@@ -502,7 +502,7 @@ export function selectPaletteTile(index: number): void {
 
 export function revealPaletteTileFromMap(tile: number): void {
   if (typeof document === "undefined") return;
-  if (getEditorUiMode() === "beginner") return;
+  if (getEditorChrome().paletteRail) return;
   if (tile < 0) return;
   // 칠하기 탭에서 셀이 보이도록
   activeWorkTab = "paint";

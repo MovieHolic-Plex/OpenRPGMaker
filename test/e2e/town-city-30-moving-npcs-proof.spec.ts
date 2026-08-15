@@ -57,14 +57,20 @@ test("captures proof for thirty moving city NPCs with dialogue", async ({ page }
   await writeFile(`${EVIDENCE_DIR}/npc-events.json`, `${JSON.stringify(npcEvents, null, 2)}\n`, "utf8");
 
   await page.setViewportSize({ width: 1600, height: 1000 });
+  // Layer buttons and mode-play are classic-toolbar chrome — expert-only.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, project, APP_URL);
   await page.getByTestId(`map-tree-node-${project.startMapId}`).click();
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
 
+  // Dense zoom buttons sit behind the ⋯ expand gate in expert mode, and the canvas
+  // toolbar re-renders (collapses) on every zoom change — re-open the gate per click.
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-1").click();
   await captureEditorAt(page, "01-editor-overview-30-npcs.png", { left: 0, top: 0 });
 
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-2").click();
   await captureEditorAt(page, "02-editor-north-road-npcs.png", { left: 0, top: 0 });
   await captureEditorAt(page, "03-editor-center-road-npcs.png", { left: 100, top: 170 });
@@ -93,8 +99,13 @@ test("captures proof for thirty moving city NPCs with dialogue", async ({ page }
 
 async function captureEditorAt(page: Page, name: string, scroll: { readonly left: number; readonly top: number }): Promise<void> {
   await page.evaluate((position) => {
-    const appModeModulePath = "/src/app/mode.ts";
-    return import(appModeModulePath).then((module: AppModeModule) => {
+    // Vite dev serves the app's mode module with an HMR ?t= query — importing the bare
+    // path yields a second module instance whose getGame() is null. Resolve the real URL.
+    const modeUrl = performance
+      .getEntriesByType("resource")
+      .map((entry) => entry.name)
+      .find((entryName) => /\/src\/app\/mode\.ts(\?|$)/.test(entryName)) ?? "/src/app/mode.ts";
+    return import(modeUrl).then((module: AppModeModule) => {
       const { getGame } = module;
       const scene = getGame()?.scene.getScene("EditScene");
       if (!scene) throw new Error("missing EditScene");

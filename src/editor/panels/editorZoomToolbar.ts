@@ -23,7 +23,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   clearChildren(container);
   const chrome = getEditorChrome();
   const currentZoom = editorState.get().zoom;
-  container.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "basic";
+  container.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "beginner";
   // figma-editor.css hides .zoom-button until .is-expanded (⋯ gate for expert).
   // Basic has no expand control — always expand so 1x/2x/4x/8x stay reachable.
   if (!chrome.canvasChromeDense) {

@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 
 test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
+  // RM2K3 chrome (classic toolbar, layer buttons, dense canvas controls) is expert-only.
+  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
   await page.goto("/");
 
   await expect(page.getByTestId("rm2k3-menu-bar")).toBeVisible();
@@ -17,12 +19,15 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await expect(page.getByTestId("toolbar-resource-manager")).toHaveAttribute("title", "소재 관리자");
   await expect(page.getByTestId("mode-play")).toHaveAttribute("title", "테스트 플레이");
 
-  await expect(page.getByTestId("chipset-sheet")).toBeVisible();
-  const chipsetImage = page.getByTestId("chipset-sheet-image");
+  // Default edit surface is the event layer — switch to a tile layer so the chipset palette renders.
+  await page.getByTestId("layer-lower").click();
+  // The RM2K palette sheet is data-testid="tile-palette" (band UI was removed from the product).
+  await expect(page.getByTestId("tile-palette")).toBeVisible();
+  const chipsetImage = page.locator("[data-testid='tile-palette'] img");
   await expect(chipsetImage).toHaveCount(0);
   const chipsetTileCount = await page.locator("[data-testid^='chipset-tile-']").count();
   expect(chipsetTileCount).toBeGreaterThan(0);
-  const firstChipsetTestId = await page.getByTestId("chipset-sheet").evaluate((node) => {
+  const firstChipsetTestId = await page.getByTestId("tile-palette").evaluate((node) => {
     const cell = node.querySelector("[data-testid^='chipset-tile-']");
     return cell instanceof HTMLElement ? cell.dataset.testid ?? "" : "";
   });
@@ -35,23 +40,26 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   expect(Math.abs(cellWidth - cellHeight)).toBeLessThanOrEqual(1);
   await expect(firstChipsetCell).toHaveCSS("background-image", /easyrpg-chipset-combined-town|rm2k3-original-chipset|chipset/);
 
+  // Dense zoom buttons sit behind the ⋯ expand gate in expert mode, and the canvas
+  // toolbar re-renders (collapses) on every zoom change — re-open the gate per click.
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await expect(page.getByTestId("editor-zoom-controls")).toBeVisible();
   await expect(page.getByTestId("editor-zoom-2")).toHaveClass(/active/);
   await page.getByTestId("editor-zoom-4").click();
   await expect(page.getByTestId("editor-zoom-4")).toHaveClass(/active/);
+  await page.getByTestId("editor-canvas-toolbar-expand").click();
   await page.getByTestId("editor-zoom-2").click();
   await expect(page.getByTestId("editor-zoom-2")).toHaveClass(/active/);
 
   await expect(page.getByTestId("tile-palette")).toBeVisible();
   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("#0 호수 외곽");
-  await page.getByTestId("chipset-band-a2").click();
+  // The RM2K palette lists every tile directly — band filters were removed from the product.
   await page.getByTestId("chipset-tile-360").click();
   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("#360 흙길 중심");
   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("하층 / 통행 가능 / 지형 0");
   await expect(page.getByTestId("tile-mapping-inspector")).toContainText("매핑 확정");
 
   await page.getByTestId("layer-lower").click();
-  await page.getByTestId("chipset-band-a3").click();
   await expect(page.getByTestId("chipset-tile-132")).toBeEnabled();
   await page.getByTestId("chipset-tile-132").click();
   await expect(page.getByTestId("layer-lower")).toHaveClass(/active/);

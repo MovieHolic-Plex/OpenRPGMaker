@@ -43,18 +43,19 @@ async function dragMapFromVisiblePoint(page: Page, dxTiles: number, dyTiles: num
 test("canvas fills chrome-safe area and selection chips overlay without reflow", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1601, height: 769 });
+  // Expert density so side AI dock + dense chrome match the reported layout.
+  await page.addInitScript(() => {
+    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    // AI dock starts collapsed by design — pin it open so the docked layout is measured.
+    localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
+  });
   await page.goto("/?freshProject=1&m1MapEditor=1");
 
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
   await expect(page.getByTestId("editor-canvas-scroll-shell")).toBeVisible();
   await expect(page.getByTestId("editor-statusbar")).toBeVisible();
-
-  // Expert density so side AI dock + dense chrome match the reported layout.
-  await page.evaluate(() => {
-    const toggle = document.querySelector<HTMLButtonElement>("[data-testid='editor-ui-mode-toggle']");
-    if (toggle && !document.body.classList.contains("editor-ui-expert")) toggle.click();
-  });
-  await page.waitForTimeout(300);
+  // Phaser creates the canvas a beat after the container — wait for the real node.
+  await expect(page.getByTestId("edit-canvas").locator("canvas")).toBeVisible();
 
   const metrics = await page.evaluate(() => {
     const area = document.querySelector(".canvas-area") as HTMLElement | null;

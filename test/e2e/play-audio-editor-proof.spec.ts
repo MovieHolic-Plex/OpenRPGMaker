@@ -17,10 +17,7 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
 
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
-  await page.evaluate(() => {
-    const toggle = document.querySelector<HTMLButtonElement>("[data-testid='editor-ui-mode-toggle']");
-    if (toggle && !document.body.classList.contains("editor-ui-expert")) toggle.click();
-  });
+  // Expert mode is pinned by the addInitScript above — toolbar-sound-test is expert chrome.
   await expect(page.getByTestId("toolbar-sound-test")).toBeVisible({ timeout: 20_000 });
 
   await page.getByTestId("toolbar-sound-test").click();
@@ -50,10 +47,12 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
   const editor = page.getByTestId("event-editor-modal");
   await expect(editor).toBeVisible({ timeout: 20_000 });
 
+  // The event editor opens in Storyboard view by default, which hides the command list.
+  await editor.getByTestId("event-view-toggle-list").click();
   // stable catalog button is often hidden; open picker from empty command line
   await editor.getByTestId("event-command-empty-line").dblclick();
   const search = page.locator("[data-testid='event-command-picker-search'], input[placeholder*='검색']").first();
-  if (await search.count()) await search.fill("소리 재생");
+  if (await search.count()) await search.fill("BGM 재생");
   const pickerAdd = page.getByTestId("command-picker-add-playAudio");
   if (await pickerAdd.count()) {
     await pickerAdd.click();
@@ -63,6 +62,8 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
 
   const form = page.getByTestId("play-audio-command-body");
   await expect(form).toBeVisible({ timeout: 20_000 });
+  // New play-audio commands default to the SE channel — switch to BGM for music resources.
+  await page.getByTestId("play-audio-channel-bgm").click();
   await page.getByTestId("play-audio-resource-select").selectOption("cc0-music-field-loop");
   await page.getByTestId("play-audio-preview").click();
   await expect(page.getByTestId("play-audio-status")).toContainText("재생 중");

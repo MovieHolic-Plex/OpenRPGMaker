@@ -52,7 +52,7 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
 
     expect(fake.classList.contains("is-basic-chrome")).toBe(true);
     expect(fake.classList.contains("is-expanded")).toBe(true);
-    expect(fake.dataset.uiDensity).toBe("basic");
+    expect(fake.dataset.uiDensity).toBe("beginner");
     // 기본 모드는 자주 쓰는 배율만 — 1x/2x/4x (e2e가 클릭하는 testid 계약 유지).
     for (const z of [1, 2, 4]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
@@ -60,9 +60,31 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     for (const z of [3, 6, 8]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeNull();
     }
-    // No expand control / map-save in basic path
+    // No expand control / map-save / build palette in basic path
     expect(fake.querySelector('[data-testid="editor-canvas-toolbar-expand"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="editor-map-save-group"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="editor-build-palette-group"]')).toBeNull();
     expect(fake.querySelector('[data-testid="editor-map-screenshot-button"]')).toBeNull();
+  });
+
+  it("renders standard mode with the dense zoom set behind the expand gate", () => {
+    storage = new MemoryStorage();
+    restoreDom = installFakeDom();
+    Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
+    setEditorUiMode("standard", storage);
+
+    const host = document.createElement("div") as unknown as HTMLElement;
+    renderCanvasToolbar(host);
+    const fake = asFake(host);
+
+    expect(fake.classList.contains("is-basic-chrome")).toBe(false);
+    expect(fake.classList.contains("is-expanded")).toBe(false);
+    expect(fake.dataset.uiDensity).toBe("expert");
+    // Dense path: expand gate present, full zoom set rendered behind it.
+    expect(fake.querySelector('[data-testid="editor-canvas-toolbar-expand"]')).toBeTruthy();
+    for (const z of [1, 2, 3, 4, 6, 8]) {
+      expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
+    }
   });
 
   it("keeps expert chrome collapsed by default (⋯ gate still applies)", () => {
