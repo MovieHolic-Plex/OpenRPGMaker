@@ -37,6 +37,7 @@ import {
 } from "../villageTerrainPass";
 import { inferRequirementsFromQuery } from "../villageRequirements";
 import { isPassable } from "@/project/collision";
+import { scrubPlacementConflicts } from "@/project/lint/layoutPlacementValidate";
 import { isCombinedTownTileset } from "@/project/tilesetHarness/combinedTown";
 import { validateBuildSpec, type BuildSpec } from "@/ai/buildSpec";
 import {
@@ -253,6 +254,13 @@ export function buildVillageDomain(
     restoreHouseDoors(map, houses);
   }
   perfLap("landscape");
+  // 배치 충돌 정리 — 이후 스테이지(terrain 물·decor 나무·landscape 수로)가 서로 다른
+  // 시점에 같은 칸을 차지해 생기는 순서 결함(물 위 수관·통행불가 위 수관)을 지운다.
+  // 승인 게이트(validateLayoutPlacement)와 같은 규칙이므로, 지나치면 통과한다.
+  const scrubbed = scrubPlacementConflicts(draft, map);
+  if (scrubbed.propsOnWater > 0 || scrubbed.treesOnImpassable > 0) {
+    warnings.push(`배치 정리: 물 위 ${scrubbed.propsOnWater}칸·통행불가 위 ${scrubbed.treesOnImpassable}칸 소품/수관 제거`);
+  }
 
   // 필수 랜드마크 실측 게이트 — 타일 카운트 기준. warning이 아니라 실패다.
   // ("강촌"인데 물 0칸인 맵이 성공으로 반환되는 것을 막는다. skipTerrain 세션은 water 레이어가 따로 검증.)

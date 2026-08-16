@@ -34,7 +34,7 @@ const HOUSE_PLAN_SCHEMA = {
     door: { type: "boolean" },
     ownerName: { type: "string", description: "주민 이름 (NPC/이벤트용)" },
     windows: WINDOWS_SCHEMA,
-    yard: { type: "array", description: "마당 소품. 예: [\"firewood\",\"mailbox\",\"pot\",\"bench_h\",\"flowers\"]" },
+    yard: { type: "array", items: { type: "string", enum: ["firewood", "mailbox", "pot", "jar", "bench_h", "bench_v", "flowers", "fruit_box", "wood_box", "table_h", "sign"] }, description: "마당 소품. 예: [\"firewood\",\"mailbox\",\"pot\",\"bench_h\",\"flowers\"]" },
   },
   required: ["kitId", "wings", "interior", "door", "yard"],
 } as const;
