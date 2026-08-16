@@ -405,6 +405,15 @@ export default defineConfig(({ mode }) => {
     proxy: Object.keys(proxy).length > 0 ? proxy : undefined,
   },
   build: {
+    // MPA: 루트 index.html(에디터)과 benchmark.html(벤치마크 사이트)을 각각 엔트리로
+    // 빌드한다. dev 서버에서는 /benchmark.html 이 그대로 서빙된다.
+    // `main` 을 명시해야 기본 엔트리(index.html)가 benchmark 추가 시 사라지지 않는다.
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL("./index.html", import.meta.url)),
+        benchmark: fileURLToPath(new URL("./benchmark.html", import.meta.url)),
+      },
+    },
     target: "es2022",
     sourcemap: false,
   },

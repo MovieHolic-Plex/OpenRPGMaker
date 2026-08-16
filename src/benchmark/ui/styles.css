@@ -1,0 +1,243 @@
+// benchmark/ui/styles.css
+// 벤치마크 사이트 전용 스타일 — index.html 의 앱 셸(src/styles/)과 완전히 분리된
+// 자기완결(self-contained) 스타일시트다. 이 페이지는 src/styles/index.css 를 로드하지
+// 않으므로, 레포 토큰(src/styles/tokens.css)의 값을 여기 --bm-* 로 재정의해
+// 같은 다크 IDE 룩을 유지한다(값은 tokens.css 와 동일하게 유지).
+//
+// 컨벤션(src/styles/components/*.css 참조):
+//  - 카드/컨트롤은 --radius-s/m, 4px 기반 스페이싱, 흰색 알파 보더
+//  - 텍스트 3단계(--text-1/2/3), 액센트는 인디고 계열
+//  - 폰트는 외부 로드 없이 시스템 설치분 폴백만
+
+:root {
+  --bm-bg-base: #0f1117;
+  --bm-bg-surface: #151823;
+  --bm-bg-raised: #1c202d;
+  --bm-bg-inset: #0c0e14;
+
+  --bm-border-subtle: rgba(255, 255, 255, 0.1);
+  --bm-border-default: rgba(255, 255, 255, 0.11);
+
+  --bm-text-1: #e9ecf3;
+  --bm-text-2: #9aa3b5;
+  --bm-text-3: #7a8499;
+
+  --bm-accent: #5a68e8;
+  --bm-accent-hover: #6c79f2;
+  --bm-accent-muted: rgba(108, 121, 242, 0.17);
+  --bm-accent-border: rgba(108, 121, 242, 0.55);
+  --bm-on-accent: #ffffff;
+
+  --bm-success: #55d69c;
+  --bm-success-muted: rgba(85, 214, 156, 0.14);
+
+  --bm-radius-s: 6px;
+  --bm-radius-m: 10px;
+  --bm-radius-l: 14px;
+
+  --bm-space-1: 4px;
+  --bm-space-2: 8px;
+  --bm-space-3: 12px;
+  --bm-space-4: 16px;
+  --bm-space-5: 24px;
+  --bm-space-6: 32px;
+
+  --bm-focus-ring: 0 0 0 2px rgba(108, 121, 242, 0.55);
+
+  --bm-font-ui: system-ui, "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic",
+    -apple-system, "Segoe UI", sans-serif;
+}
+
+.bm-page {
+  min-height: 100vh;
+  background: var(--bm-bg-base);
+  color: var(--bm-text-1);
+  font: 400 14px/1.6 var(--bm-font-ui);
+  padding: var(--bm-space-6) var(--bm-space-5) var(--bm-space-6);
+}
+
+.bm-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  display: grid;
+  gap: var(--bm-space-5);
+}
+
+/* ---- 헤더 --------------------------------------------------------------- */
+.bm-header {
+  display: grid;
+  gap: var(--bm-space-2);
+}
+
+.bm-header__eyebrow {
+  font: 600 11px/1.4 var(--bm-font-ui);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bm-text-3);
+}
+
+.bm-header__title {
+  margin: 0;
+  font: 700 24px/1.3 var(--bm-font-ui);
+  color: var(--bm-text-1);
+}
+
+.bm-header__desc {
+  margin: 0;
+  max-width: 62em;
+  color: var(--bm-text-2);
+}
+
+.bm-header__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--bm-space-2);
+  margin-top: var(--bm-space-2);
+}
+
+.bm-header__backlink {
+  color: var(--bm-text-3);
+  text-decoration: none;
+  padding: var(--bm-space-1) 0;
+}
+
+.bm-header__backlink:hover {
+  color: var(--bm-text-2);
+}
+
+/* ---- 버튼/링크 ---------------------------------------------------------- */
+.bm-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bm-space-2);
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--bm-radius-s);
+  padding: 10px 18px;
+  background: var(--bm-accent);
+  color: var(--bm-on-accent);
+  font: 600 13px/1.2 var(--bm-font-ui);
+  text-decoration: none;
+  transition: background 120ms ease;
+}
+
+.bm-cta:hover {
+  background: var(--bm-accent-hover);
+}
+
+.bm-cta:focus-visible {
+  outline: none;
+  box-shadow: var(--bm-focus-ring);
+}
+
+.bm-link {
+  display: inline-flex;
+  align-items: center;
+  appearance: none;
+  border: 1px solid var(--bm-border-default);
+  border-radius: var(--bm-radius-s);
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--bm-text-1);
+  font: 600 13px/1.2 var(--bm-font-ui);
+  text-decoration: none;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.bm-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.17);
+}
+
+.bm-link:focus-visible {
+  outline: none;
+  box-shadow: var(--bm-focus-ring);
+}
+
+/* ---- 차원 카드 그리드 --------------------------------------------------- */
+.bm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--bm-space-3);
+}
+
+.bm-card {
+  display: grid;
+  gap: var(--bm-space-2);
+  align-content: start;
+  padding: var(--bm-space-4);
+  background: var(--bm-bg-raised);
+  border: 1px solid var(--bm-border-subtle);
+  border-radius: var(--bm-radius-m);
+}
+
+.bm-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bm-space-2);
+}
+
+.bm-card__id {
+  font: 700 11px/1.2 var(--bm-font-ui);
+  letter-spacing: 0.06em;
+  color: var(--bm-text-3);
+}
+
+.bm-card__title {
+  margin: 0;
+  font: 700 14px/1.4 var(--bm-font-ui);
+  color: var(--bm-text-1);
+}
+
+.bm-card__desc {
+  margin: 0;
+  color: var(--bm-text-2);
+  font-size: 12.5px;
+}
+
+.bm-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bm-space-1);
+  margin-top: var(--bm-space-1);
+}
+
+/* ---- 배지 --------------------------------------------------------------- */
+.bm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font: 600 11px/1.4 var(--bm-font-ui);
+  white-space: nowrap;
+}
+
+.bm-badge--ready {
+  background: var(--bm-success-muted);
+  color: var(--bm-success);
+}
+
+.bm-badge--kind {
+  background: var(--bm-accent-muted);
+  color: #c9ceff;
+  border: 1px solid var(--bm-accent-border);
+}
+
+/* ---- 푸터 노트 ---------------------------------------------------------- */
+.bm-footer {
+  color: var(--bm-text-3);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .bm-page {
+    padding: var(--bm-space-4) var(--bm-space-3);
+  }
+
+  .bm-header__title {
+    font-size: 20px;
+  }
+}
