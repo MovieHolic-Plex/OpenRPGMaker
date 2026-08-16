@@ -52,6 +52,37 @@ export function layoutValidationBlocking(issues: readonly LintIssue[]): readonly
   return issues.filter((issue) => issue.severity === "error");
 }
 
+/**
+ * 배치 충돌 정리 — validateLayoutPlacement 가 error 로 보는 칸을 실제로 지운다.
+ * 마을 파이프라인 마지막(또는 fill_region 등 후속 지형 시공 직후)에 불러,
+ * "스캐터 시점엔 잔디였는데 나중에 물/벽이 깔려 게이트에 걸리는" 순서 결함을 청소한다.
+ * 규칙 소스는 검증기와 동일(TREE_TILE_IDS·isLakeAutotileTile·isPassable).
+ */
+export function scrubPlacementConflicts(project: Project, map: GameMap): { propsOnWater: number; treesOnImpassable: number } {
+  let propsOnWater = 0;
+  let treesOnImpassable = 0;
+  for (let index = 0; index < map.lowerTiles.length; index += 1) {
+    const lower = map.lowerTiles[index];
+    const upper = map.upperTiles[index];
+    if (upper === TILE.EMPTY || upper < 0) continue;
+    // 1) 물 위 upper 소품/수관 — checkPropsOnWater 규칙.
+    if (isLakeAutotileTile(lower)) {
+      map.upperTiles[index] = TILE.EMPTY;
+      propsOnWater += 1;
+      continue;
+    }
+    // 2) 통행 불가 하층 위 나무 수관 — checkTreesOnImpassable 규칙(밑동 겹침·물 제외 동일).
+    if (!TREE_TILE_IDS.has(upper)) continue;
+    if (TREE_TILE_IDS.has(lower)) continue;
+    const x = index % map.width;
+    const y = Math.floor(index / map.width);
+    if (lower !== TILE.WALL && lower !== TILE.EMPTY && isLowerTerrainPassable(project, map, x, y)) continue;
+    map.upperTiles[index] = TILE.EMPTY;
+    treesOnImpassable += 1;
+  }
+  return { propsOnWater, treesOnImpassable };
+}
+
 export function formatLayoutValidationSummary(issues: readonly LintIssue[]): string {
   if (issues.length === 0) return "배치 검증 통과";
   const errors = issues.filter((i) => i.severity === "error").length;

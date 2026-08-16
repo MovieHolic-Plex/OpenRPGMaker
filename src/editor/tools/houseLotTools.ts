@@ -71,19 +71,11 @@ export const HOUSE_LOT_TOOLS: readonly ToolDefinition[] = [
               door: { type: "boolean", description: "문 자동(기본 true)" },
               yard: {
                 type: "array",
-                description: "마당 꾸밈 의도. 문자열 태그 또는 {kind, count?}",
+                description:
+                  "마당 꾸밈 의도. 각 항목은 문자열 태그(firewood|mailbox|pot|jar|bench_h|bench_v|flowers|fruit_box|wood_box|table_h|sign) 또는 {kind: 태그, count?: 개수}.",
                 items: {
-                  oneOf: [
-                    { type: "string" },
-                    {
-                      type: "object",
-                      properties: {
-                        kind: { type: "string" },
-                        count: { type: "integer" },
-                      },
-                      required: ["kind"],
-                    },
-                  ],
+                  type: "string",
+                  description: "마당 꾸밈 태그. 개수 지정이 필요하면 별도 형식 대신 같은 태그를 여러 번 나열.",
                 },
               },
             },
