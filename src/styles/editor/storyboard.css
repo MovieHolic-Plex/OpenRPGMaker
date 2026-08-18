@@ -5,10 +5,10 @@
   .event-view-toggle-btn.is-active { background: var(--bg-surface); color: var(--text-1); border-color: var(--border-default); box-shadow: 0 1px 6px rgba(0,0,0,.18); }
   .event-view-toggle-btn:hover { color: var(--text-1); }
   .event-storyboard { display: grid; gap: 8px; }
-  .event-storyboard-track { display: flex; gap: 10px; overflow-x: auto; padding: 6px 2px 8px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+  .event-storyboard-track { display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; padding: 6px 2px 8px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
   .event-storyboard-track::-webkit-scrollbar { height: 4px; }
   .event-storyboard-track::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; }
-  .event-storyboard-card { appearance: none; flex: 0 0 168px; display: grid; gap: 6px; justify-items: start; text-align: left; padding: 10px; border-radius: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); cursor: pointer; scroll-snap-align: start; }
+  .event-storyboard-card { appearance: none; flex: 0 0 168px; align-self: flex-start; max-height: 120px; overflow: hidden; display: grid; gap: 6px; justify-items: start; text-align: left; padding: 10px; border-radius: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); cursor: pointer; scroll-snap-align: start; }
   .event-storyboard-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
   .event-storyboard-card-thumb { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: #fff; font: 800 12px var(--font-mono); }
   .event-storyboard-card-title { font: 700 12px var(--font-ui); color: var(--text-1); }
