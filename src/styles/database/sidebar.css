@@ -29,6 +29,7 @@
 /* ---- 사이드바 컨테이너 (폭 210px — 200-220px 요구사항) -------------------- */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
+  align-items: stretch; /* 레거시 탭 스트립의 align-items:end 를 무력화 — 행이 전체 폭을 채운다 */
   background: var(--db-light-bg-surface);
   border-bottom: none;
   border-right: 1px solid var(--db-light-border-default);
@@ -63,24 +64,78 @@
   padding-top: 8px;
 }
 
+/* ---- 탭 검색 (사이드바 상단) ----------------------------------------------- */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
+  background: var(--db-light-bg-raised);
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 6px;
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  flex: 0 0 auto;
+  font: 500 12.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  margin: 0 0 6px;
+  padding: 6px 10px;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
+  color: var(--db-light-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: -1px;
+}
+
+/* 필터로 숨긴 탭/그룹 — 어떤 display 규칙보다 우선 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs [hidden] {
+  display: none !important;
+}
+
 /* ---- 탭 행 ---------------------------------------------------------------- */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
+  align-items: center;
   background: transparent;
   border: 0;
   border-left: 3px solid transparent;
   border-radius: 6px;
   color: var(--db-light-text-2);
   cursor: pointer;
+  display: flex;
   flex: 0 0 auto;
   font: 600 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  gap: 8px;
   height: auto;
+  justify-content: space-between;
   margin: 0;
   max-width: none;
   min-width: 0;
   padding: 6px 12px;
   text-align: left;
   white-space: nowrap;
+}
+
+/* ---- 레코드 카운트 뱃지 — data-count 어트리뷰트만 소비(라벨 textContent 불변) */
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
+  background: rgba(31, 35, 48, 0.06);
+  border: 1px solid var(--db-light-border-subtle);
+  border-radius: 999px;
+  color: var(--db-light-text-3);
+  content: attr(data-count);
+  flex: 0 0 auto;
+  font: 600 10.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  min-width: 14px;
+  padding: 0 7px;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active[data-count]::after {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+  color: var(--db-light-accent);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab:hover {

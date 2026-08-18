@@ -57,9 +57,12 @@ describe("database field support descriptor", () => {
     try {
       const notice = databaseFieldSupportNotice("consumptionLimit", "usageMessage");
       const children = (notice as unknown as FakeElement).childNodes as FakeElement[];
-      expect(children).toHaveLength(2);
-      expect(children[0]!.dataset.runtimeSupport).toBe("runtime");
-      expect(children[1]!.dataset.runtimeSupport).toBe("editorOnly");
+      // 접힌 details: [summary, p, p]
+      expect(children).toHaveLength(3);
+      expect(notice.tagName).toBe("DETAILS");
+      expect(children[0]!.tagName).toBe("SUMMARY");
+      expect(children[1]!.dataset.runtimeSupport).toBe("runtime");
+      expect(children[2]!.dataset.runtimeSupport).toBe("editorOnly");
     } finally {
       restore();
     }

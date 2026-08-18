@@ -95,7 +95,9 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   standardWelcome: false,
   statusbarDensity: "full",
   railLabels: "hover",
-  databaseNav: "all",
+  // 전문가도 그룹 사이드바를 쓴다 — 24개 플랫 리스트보다 그룹 스캔이 빠르다.
+  // "all"(플랫)은 renderDatabasePanel 의 폴백 분기로만 남는다.
+  databaseNav: "grouped",
   eventBeginnerChrome: false,
   jargonStyle: "technical",
 };

@@ -398,6 +398,7 @@ function recordListRow(
   const { record, originalIndex, visibleIndex } = entry;
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent());
+  const sub = recordCategoryLabel(collection, record);
   return el("button", {
     class: `db-list-row${thumb ? " db-list-row-has-thumb" : ""}${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
@@ -406,6 +407,7 @@ function recordListRow(
       el("span", { class: "db-list-number", text: `${ordinalLabel(originalIndex)}:` }),
       ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
+      ...(sub ? [el("span", { class: "db-list-sub", text: sub })] : []),
     ],
     on: { click: () => onSelect(record.id) },
   });
@@ -457,13 +459,20 @@ function galleryCategoryTag(
   collection: DatabaseCollection,
   record: DatabaseRecords[DatabaseCollection][number]
 ): HTMLElement | null {
+  const label = recordCategoryLabel(collection, record);
+  return label ? el("span", { class: "db-gallery-tag", text: label }) : null;
+}
+
+// 카테고리 라벨 — 갤러리 태그와 목록 서브라벨이 같은 소스를 공유한다.
+function recordCategoryLabel(
+  collection: DatabaseCollection,
+  record: DatabaseRecords[DatabaseCollection][number]
+): string | null {
   if (collection === "items") {
-    const label = ITEM_TYPE_CHIP_LABELS[(record as ItemRecord).type];
-    return label ? el("span", { class: "db-gallery-tag", text: label }) : null;
+    return ITEM_TYPE_CHIP_LABELS[(record as ItemRecord).type] ?? null;
   }
   if (collection === "equipment") {
-    const chip = EQUIPMENT_SLOT_CHIPS.find((entry) => entry.slot === (record as EquipmentRecord).slot);
-    return chip ? el("span", { class: "db-gallery-tag", text: chip.label }) : null;
+    return EQUIPMENT_SLOT_CHIPS.find((entry) => entry.slot === (record as EquipmentRecord).slot)?.label ?? null;
   }
   return null;
 }

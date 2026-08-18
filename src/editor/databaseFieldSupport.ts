@@ -110,9 +110,13 @@ export function databaseFieldSupport(field: string): DatabaseFieldSupportDescrip
 
 export function databaseFieldSupportNotice(...fields: readonly string[]): HTMLElement {
   const descriptors = fields.map(databaseFieldSupport);
-  const host = document.createElement("div");
+  // 접힌 <details> — 장문 안내가 폼 한복판을 차지하지 않도록 기본은 요약 한 줄만.
+  const host = document.createElement("details");
   host.className = "db-field-support-notice";
   host.dataset.testid = "db-field-support-notice";
+  const summary = document.createElement("summary");
+  summary.textContent = `필드 적용 범위 안내 (${descriptors.length}개 필드)`;
+  host.append(summary);
   for (const descriptor of descriptors) {
     const row = document.createElement("p");
     row.dataset.field = descriptor.field;

@@ -9,10 +9,11 @@ type RecordViewSessionState = {
 
 export type RecordViewMode = "gallery" | "list";
 
-// 갤러리 기본값 컬렉션 — 아이콘 보유 컬렉션 9종으로 DatabaseCollection 키 전체와 일치한다.
+// 갤러리/목록 토글 지원 컬렉션 — 아이콘 보유 컬렉션 9종으로 DatabaseCollection 키 전체와
+// 일치한다. 기본 뷰는 목록(이름이 잘리지 않는 마스터-디테일 행)이고 갤러리는 옵트인.
 // monsterSpecies는 DatabaseCollection이 아니며 별도 렌더 경로(renderMonsterSpeciesTab)를
 // 쓰므로 여기 포함되지 않는다(후속 갤러리 확장 후보로만 기록).
-const GALLERY_DEFAULT_COLLECTIONS: readonly DatabaseCollection[] = [
+const VIEW_TOGGLE_COLLECTIONS: readonly DatabaseCollection[] = [
   "actors",
   "classes",
   "skills",
@@ -101,13 +102,13 @@ function createRecordViewSessionState(): RecordViewSessionState {
 export function viewModeForCollection(collection: DatabaseCollection): RecordViewMode {
   const mode = viewModes[collection];
   if (mode === "gallery" || mode === "list") return mode;
-  // 갤러리 기본 컬렉션이 아닌 탭은 뷰 모드 상태를 갖지 않는다 — 항상 리스트.
-  return GALLERY_DEFAULT_COLLECTIONS.includes(collection) ? "gallery" : "list";
+  // 기본 뷰는 목록 — 갤러리는 사용자가 토글로 옵트인한다(선택은 localStorage 지속).
+  return "list";
 }
 
 export function setViewModeForCollection(collection: DatabaseCollection, mode: RecordViewMode): void {
   // 비레코드 탭(스위치/변수/용어 등)은 뷰 모드 상태를 저장하지 않는다.
-  if (!GALLERY_DEFAULT_COLLECTIONS.includes(collection)) return;
+  if (!VIEW_TOGGLE_COLLECTIONS.includes(collection)) return;
   viewModes[collection] = mode;
   persistViewModes();
 }
@@ -128,7 +129,7 @@ export function setCategoryFilterForCollection(collection: DatabaseCollection, f
 
 function createDefaultViewModes(): Partial<Record<DatabaseCollection, RecordViewMode>> {
   const modes: Partial<Record<DatabaseCollection, RecordViewMode>> = {};
-  for (const collection of GALLERY_DEFAULT_COLLECTIONS) modes[collection] = "gallery";
+  for (const collection of VIEW_TOGGLE_COLLECTIONS) modes[collection] = "list";
   return modes;
 }
 
@@ -143,7 +144,7 @@ function readStoredViewModes(): Partial<Record<DatabaseCollection, RecordViewMod
     // 컬렉션 키가 아니면 무시하고 기본값을 유지한다.
     if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) return defaults;
     const merged = { ...defaults };
-    for (const collection of GALLERY_DEFAULT_COLLECTIONS) {
+    for (const collection of VIEW_TOGGLE_COLLECTIONS) {
       const mode = (parsed as Record<string, unknown>)[collection];
       if (mode === "gallery" || mode === "list") merged[collection] = mode;
     }

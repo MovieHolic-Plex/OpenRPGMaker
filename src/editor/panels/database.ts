@@ -21,6 +21,7 @@ import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
 import { uiLabel } from "@/editor/uiCopy";
+import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
@@ -164,12 +165,14 @@ export function renderDatabasePanel(container: HTMLElement): void {
     }
     header.append(allTabs);
   } else if (chrome.databaseNav === "grouped") {
+    appendTabSearch(header);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
       header.append(el("div", { class: "db-tab-group", text: group.label }));
       for (const id of group.tabs) appendTabButton(header, body, container, tabFor(id));
     }
   } else {
+    appendTabSearch(header);
     for (const tab of orderedTabs) appendTabButton(header, body, container, tab);
   }
 
@@ -187,9 +190,99 @@ export function refreshDatabasePanel(container: HTMLElement): void {
   const body = container.querySelector(".db-body");
   if (body instanceof HTMLElement) {
     renderActiveTab(body, container);
+    refreshTabCounts(container);
     return;
   }
   renderDatabasePanel(container);
+}
+
+// 사이드바 탭의 레코드 카운트 — 컬렉션이 아닌 탭(개요/시스템/용어 등)은 null.
+// data-count 어트리뷰트로만 노출한다(버튼 textContent 는 라벨 계약 유지 — G006).
+function databaseTabCount(tab: DatabaseTab): number | null {
+  const project = store.getCurrent();
+  const database = project.database;
+  switch (tab) {
+    case "actors":
+    case "classes":
+    case "skills":
+    case "items":
+    case "equipment":
+    case "enemies":
+    case "troops":
+    case "states":
+      return database[tab].length;
+    case "animations":
+      return database.battleAnimations.length;
+    case "monsterSpecies":
+      return database.monsterSpecies?.length ?? 0;
+    case "crops":
+      return database.crops?.length ?? 0;
+    case "characters":
+      return Object.keys(project.characters ?? {}).length;
+    case "switches":
+      return project.switches.length;
+    case "variables":
+      return project.variables.length;
+    case "commonEvents":
+      return project.commonEvents.length;
+    case "tilesets":
+      return Object.keys(project.tilesets).length;
+    case "structureKits":
+      return Object.values(project.tilesets).reduce(
+        (sum, tileset) => sum + (tileset.structureKits?.length ?? 0),
+        0,
+      );
+    default:
+      return null;
+  }
+}
+
+function refreshTabCounts(container: HTMLElement): void {
+  const header = container.querySelector(".db-tabs");
+  if (!(header instanceof HTMLElement)) return;
+  for (const button of Array.from(header.querySelectorAll(".db-tab"))) {
+    if (!(button instanceof HTMLElement)) continue;
+    const tab = orderedTabs.find((entry) => entry.testid === button.dataset.testid);
+    if (!tab) continue;
+    const count = databaseTabCount(tab.id);
+    if (count === null) delete button.dataset.count;
+    else button.dataset.count = String(count);
+  }
+}
+
+// 사이드바 상단 탭 검색 — 라벨 부분 일치로 탭을 거르고, 매치가 없는 그룹 라벨은
+// 함께 숨긴다. DOM 계약(직계 자식 button.db-tab)은 유지 — hidden 토글만 한다.
+function appendTabSearch(header: HTMLElement): void {
+  const input = el("input", {
+    class: "db-tab-search",
+    attrs: { type: "search", placeholder: "탭 검색", "aria-label": "탭 검색" },
+    dataset: { testid: "db-tab-search" },
+    on: { input: () => applyTabFilter(header, input.value) },
+  });
+  header.append(input);
+}
+
+function applyTabFilter(header: HTMLElement, rawQuery: string): void {
+  const query = rawQuery.trim().toLowerCase();
+  let currentGroup: HTMLElement | null = null;
+  let groupHasMatch = false;
+  const closeGroup = (): void => {
+    if (currentGroup) currentGroup.hidden = query !== "" && !groupHasMatch;
+  };
+  for (const child of Array.from(header.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+    if (child.classList.contains("db-tab-group")) {
+      closeGroup();
+      currentGroup = child;
+      groupHasMatch = false;
+      continue;
+    }
+    if (!child.classList.contains("db-tab")) continue;
+    const matches = query === "" || (child.textContent ?? "").toLowerCase().includes(query);
+    child.hidden = !matches;
+    if (matches) groupHasMatch = true;
+  }
+  closeGroup();
 }
 
 function appendTabButton(
@@ -198,11 +291,12 @@ function appendTabButton(
   container: HTMLElement,
   tab: { readonly id: DatabaseTab; readonly label: string; readonly testid: string },
 ): void {
+  const count = databaseTabCount(tab.id);
   header.append(
     el("button", {
       class: `db-tab${activeTab === tab.id ? " active" : ""}`,
       text: tab.label,
-      dataset: { testid: tab.testid },
+      dataset: count === null ? { testid: tab.testid } : { testid: tab.testid, count: String(count) },
       on: {
         click: () => {
           if (activeTab === tab.id) return;

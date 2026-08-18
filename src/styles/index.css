@@ -39,6 +39,8 @@
 @import "./database/dock.css";
 @import "./database/light-theme.css";
 @import "./database/sidebar.css";
+@import "./database/record-list-modern.css";
+@import "./database/form-hierarchy-modern.css";
 @import "./database/modern-controls.css";
 @import "./database/overview-dashboard.css";
 @import "./database/title-workbench.css";

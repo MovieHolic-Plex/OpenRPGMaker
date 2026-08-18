@@ -132,7 +132,7 @@ describe("editorUiMode", () => {
     expect(standard.jargonStyle).toBe("plain");
 
     expect(expert.railLabels).toBe("hover");
-    expect(expert.databaseNav).toBe("all");
+    expect(expert.databaseNav).toBe("grouped");
     expect(expert.eventBeginnerChrome).toBe(false);
     expect(expert.jargonStyle).toBe("technical");
 

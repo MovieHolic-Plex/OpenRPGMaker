@@ -61,11 +61,11 @@ afterEach(() => {
 });
 
 describe("database per-collection view mode session", () => {
-  it("defaults: 9 record collections to gallery, any other tab to list without stored state", async () => {
+  it("defaults: every tab to list without stored state (gallery is opt-in)", async () => {
     const session = await import("@/editor/panels/databaseRecordViewSession");
 
     for (const collection of RECORD_COLLECTIONS) {
-      expect(session.viewModeForCollection(collection)).toBe("gallery");
+      expect(session.viewModeForCollection(collection)).toBe("list");
     }
 
     // 비레코드 탭(스위치/용어/요소 등)은 뷰 모드 상태를 갖지 않는다 — 접근자는 list.
@@ -77,7 +77,7 @@ describe("database per-collection view mode session", () => {
     expect(storage.getItem(VIEW_MODE_STORAGE_KEY)).toBeNull();
   });
 
-  it("clicking db-view-toggle-list on items flips state to list and persists across re-render and localStorage re-read", async () => {
+  it("clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read", async () => {
     const { renderRecordTab, resetDatabaseRecordViewSession } = await import("@/editor/panels/databaseRecordViews");
     resetDatabaseRecordViewSession();
     const session = await import("@/editor/panels/databaseRecordViewSession");
@@ -89,32 +89,32 @@ describe("database per-collection view mode session", () => {
     };
     rerender();
 
-    const listToggle = findByTestId(host, "db-view-toggle-list");
-    if (!listToggle) throw new Error("missing list view toggle");
-    listToggle.click();
+    const galleryToggle = findByTestId(host, "db-view-toggle-gallery");
+    if (!galleryToggle) throw new Error("missing gallery view toggle");
+    galleryToggle.click();
 
     // 클릭은 컬렉션별 세션 상태를 바꾸고 localStorage JSON 맵에 지속한다.
-    expect(session.viewModeForCollection("items")).toBe("list");
-    expect(session.viewModeForCollection("skills")).toBe("gallery");
+    expect(session.viewModeForCollection("items")).toBe("gallery");
+    expect(session.viewModeForCollection("skills")).toBe("list");
     const stored = storage.getItem(VIEW_MODE_STORAGE_KEY);
     expect(stored).not.toBeNull();
-    expect(JSON.parse(stored ?? "{}")).toMatchObject({ items: "list", actors: "gallery" });
+    expect(JSON.parse(stored ?? "{}")).toMatchObject({ items: "gallery", actors: "list" });
 
-    // 기존 rerender 경로로 다시 그려도 list 모드가 유지된다.
-    expect(findByTestId(host, "db-view-toggle-list")?.attrs["aria-pressed"]).toBe("true");
-    expect(findByTestId(host, "db-view-toggle-gallery")?.attrs["aria-pressed"]).toBe("false");
+    // 기존 rerender 경로로 다시 그려도 gallery 모드가 유지된다.
+    expect(findByTestId(host, "db-view-toggle-gallery")?.attrs["aria-pressed"]).toBe("true");
+    expect(findByTestId(host, "db-view-toggle-list")?.attrs["aria-pressed"]).toBe("false");
 
     // 완전히 새 renderRecordTab 호스트에서도 유지된다(탭 전환 후 복귀 시나리오).
     const freshHost = document.createElement("div") as unknown as FakeElement;
     renderRecordTab(freshHost, "items", () => undefined);
-    expect(findByTestId(freshHost, "db-view-toggle-list")?.attrs["aria-pressed"]).toBe("true");
-    expect(findByTestId(freshHost, "db-view-toggle-gallery")?.attrs["aria-pressed"]).toBe("false");
+    expect(findByTestId(freshHost, "db-view-toggle-gallery")?.attrs["aria-pressed"]).toBe("true");
+    expect(findByTestId(freshHost, "db-view-toggle-list")?.attrs["aria-pressed"]).toBe("false");
 
     // localStorage 재읽기: 모듈을 새로 import하면 저장된 상태를 복원한다.
     vi.resetModules();
     const freshSession = await import("@/editor/panels/databaseRecordViewSession");
-    expect(freshSession.viewModeForCollection("items")).toBe("list");
-    expect(freshSession.viewModeForCollection("skills")).toBe("gallery");
+    expect(freshSession.viewModeForCollection("items")).toBe("gallery");
+    expect(freshSession.viewModeForCollection("skills")).toBe("list");
   });
 
   it("toggle buttons exist with correct aria-pressed and active class", async () => {
@@ -125,17 +125,17 @@ describe("database per-collection view mode session", () => {
     const list = findByTestId(host, "db-view-toggle-list");
     if (!gallery || !list) throw new Error("missing view toggle buttons");
 
-    // 기본 gallery: gallery 버튼이 pressed + active, list 버튼은 비활성.
-    expect(gallery.attrs["aria-pressed"]).toBe("true");
-    expect(list.attrs["aria-pressed"]).toBe("false");
-    expect(gallery.className).toContain("db-view-toggle");
-    expect(gallery.className).toContain("active");
+    // 기본 list: list 버튼이 pressed + active, gallery 버튼은 비활성.
+    expect(list.attrs["aria-pressed"]).toBe("true");
+    expect(gallery.attrs["aria-pressed"]).toBe("false");
     expect(list.className).toContain("db-view-toggle");
-    expect(list.className).not.toContain("active");
+    expect(list.className).toContain("active");
+    expect(gallery.className).toContain("db-view-toggle");
+    expect(gallery.className).not.toContain("active");
 
-    // gallery 버튼 클릭은 모드를 바꾸지 않는다(이미 gallery).
-    gallery.click();
-    expect(gallery.attrs["aria-pressed"]).toBe("true");
+    // list 버튼 클릭은 모드를 바꾸지 않는다(이미 list).
+    list.click();
+    expect(list.attrs["aria-pressed"]).toBe("true");
   });
 
   it("elements/terrain/utility tabs never render the view toggle", async () => {

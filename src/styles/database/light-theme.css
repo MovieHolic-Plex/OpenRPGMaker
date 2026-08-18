@@ -48,6 +48,110 @@
   --db-light-success-muted: rgba(31, 122, 77, 0.12);
   --db-light-warning: #8a5a00;
   --db-light-warning-muted: rgba(138, 90, 0, 0.14);
+
+  /* ==== W1 완성: 전역 토큰 리맵 ==============================================
+     본문 컴포넌트(core/tabs-a/tabs-b/actors/enemies/…)는 tokens.css 의 다크 토큰을
+     소비한다. 이 스코프에서 같은 이름을 라이트 값으로 재정의해 모달 서브트리
+     전체를 한 번에 라이트로 뒤집는다. 게임 런타임 미리보기 스킨(--rm2k3-* /
+     --runtime-window-*)은 의도된 인게임 룩이므로 건드리지 않는다. */
+
+  /* 배경 계층 */
+  --bg-base: var(--db-light-bg-base);
+  --bg-surface: var(--db-light-bg-surface);
+  --bg-raised: var(--db-light-bg-raised);
+  --bg-overlay: #ffffff;
+  --bg-inset: var(--db-light-bg-inset);
+  --bg-canvas: #e9e3d2;
+  --bg-glass: rgba(253, 251, 245, 0.9);
+  --bg-well: #ece6d5;
+
+  /* 인터랙션 상태 (라이트면 위 어두운 알파) */
+  --bg-hover: rgba(31, 35, 48, 0.05);
+  --bg-active: rgba(31, 35, 48, 0.09);
+  --control-bg: rgba(31, 35, 48, 0.045);
+  --control-bg-hover: rgba(31, 35, 48, 0.08);
+  --control-bg-active: rgba(31, 35, 48, 0.12);
+
+  /* 테두리 */
+  --border-subtle: var(--db-light-border-subtle);
+  --border-default: var(--db-light-border-default);
+  --border-strong: var(--db-light-border-strong);
+
+  /* 텍스트 */
+  --text-1: var(--db-light-text-1);
+  --text-2: var(--db-light-text-2);
+  --text-3: var(--db-light-text-3);
+  --text-placeholder: var(--db-light-text-3);
+  --text-disabled: var(--db-light-text-disabled);
+
+  /* 액센트 */
+  --accent: var(--db-light-accent);
+  --accent-hover: var(--db-light-accent-hover);
+  --accent-active: #3f4cb5;
+  --accent-muted: var(--db-light-accent-muted);
+  --accent-border: var(--db-light-accent-border);
+  --on-accent: var(--db-light-on-accent);
+
+  /* 상태 색 */
+  --danger: var(--db-light-danger);
+  --danger-muted: var(--db-light-danger-muted);
+  --success: var(--db-light-success);
+  --success-muted: var(--db-light-success-muted);
+  --warning: var(--db-light-warning);
+  --warning-muted: var(--db-light-warning-muted);
+
+  /* 그림자/포커스/스크롤바 — 라이트면에 맞게 옅게 */
+  --shadow-pop: 0 4px 12px rgba(31, 35, 48, 0.14), 0 12px 32px rgba(31, 35, 48, 0.16);
+  --shadow-modal: 0 8px 24px rgba(31, 35, 48, 0.16), 0 24px 64px rgba(31, 35, 48, 0.2);
+  --focus-ring: 0 0 0 2px rgba(74, 88, 200, 0.45);
+  --focus-outline: 2px solid var(--db-light-accent);
+  --scrollbar-thumb: rgba(31, 35, 48, 0.24);
+  --scrollbar-thumb-hover: rgba(31, 35, 48, 0.4);
+  --pixel-grid: rgba(31, 35, 48, 0.12);
+
+  /* 빈 상태 */
+  --empty-icon-bg: rgba(74, 88, 200, 0.1);
+  --empty-icon-border: rgba(74, 88, 200, 0.28);
+  --empty-icon-color: var(--db-light-accent);
+
+  /* 셸 보조색 */
+  --gold: #9a6b00;
+  --gold-soft: #b07d1e;
+  --brand-blue: #2f67c9;
+  --mix-base: #e6e0cf;
+
+  /* 레거시 별칭 re-bridge — :root 별칭은 다크 값으로 이미 굳어 상속되므로
+     이 스코프에서 다시 선언해 라이트 토큰으로 재해석시킨다. */
+  --bg: var(--bg-base);
+  --bg-panel: var(--bg-surface);
+  --bg-panel-2: var(--bg-raised);
+  --bg-elev: var(--bg-raised);
+  --bg-recessed: var(--bg-inset);
+  --border: var(--border-default);
+  --border-soft: var(--border-subtle);
+  --text: var(--text-1);
+  --text-dim: var(--text-2);
+  --text-muted: var(--text-3);
+  --text-primary: var(--text-1);
+  --text-secondary: var(--text-2);
+  --text-inverse: var(--on-accent);
+  --accent-soft: var(--accent-muted);
+  --accent-primary: var(--accent);
+  --accent-secondary: var(--gold);
+  --accent-editor: var(--success);
+  --accent-blue: var(--accent);
+  --surface-app: var(--bg-base);
+  --surface-workbench: var(--bg-surface);
+  --surface-panel: var(--bg-raised);
+  --surface-recessed: var(--bg-inset);
+  --surface-selected: var(--accent-muted);
+  --surface-button: var(--control-bg);
+  --input-bg: var(--bg-inset);
+  --ok: var(--success);
+  --status-error: var(--danger);
+  --status-warning: var(--warning);
+  --status-success: var(--success);
+  --shadow-popover: var(--shadow-pop);
 }
 
 /* ── 창 표면 --------------------------------------------------------------- */
@@ -523,4 +627,39 @@
 
 .database-modal-backdrop .database-modal-window .db-system-section[hidden] {
   display: none;
+}
+
+/* ── 작업 열기(db-config) — 크림 배경 위 다크 토큰 헤딩이 안 보이던 대비 결함 수정
+   (2026-08-18 초보자 UX 리뷰 P2-9). 톤은 기존 --db-light-text-* AA 단계를 재사용. */
+.database-modal-backdrop .db-config-intro h3,
+.database-modal-backdrop .db-config-project-picker-header strong,
+.database-modal-backdrop .db-config-project-empty strong {
+  color: var(--db-light-text-1);
+}
+.database-modal-backdrop .db-config-intro > p:last-child,
+.database-modal-backdrop .db-config-project-picker-header,
+.database-modal-backdrop .db-config-status-line,
+.database-modal-backdrop .db-config-field,
+.database-modal-backdrop .db-config-project-empty p {
+  color: var(--db-light-text-2);
+}
+.database-modal-backdrop .db-config-eyebrow {
+  color: var(--db-light-accent);
+}
+.database-modal-backdrop .db-config-project-picker {
+  border-color: var(--db-light-border-default);
+}
+.database-modal-backdrop .db-config-project-list.empty {
+  color: var(--db-light-text-2);
+}
+.database-modal-backdrop .db-config-project-option {
+  color: var(--db-light-text-2);
+}
+.database-modal-backdrop .db-config-project-option .db-config-project-meta strong {
+  color: var(--db-light-text-1);
+}
+.database-modal-backdrop .db-config-field input {
+  background: var(--db-light-bg-inset);
+  border-color: var(--db-light-border-default);
+  color: var(--db-light-text-1);
 }

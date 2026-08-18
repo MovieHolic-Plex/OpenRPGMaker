@@ -23,6 +23,7 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
     dataset: { testid: "db-detail-form" },
   });
   form.append(
+    actorHeroHeader(actor),
     el("div", {
       class: "actor-classic-sheet",
       dataset: { testid: "actor-classic-sheet" },
@@ -41,9 +42,36 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
   return form;
 }
 
+// 히어로 헤더 — 얼굴 + 이름 인라인 편집 + 직업/레벨 태그. 이름 편집은 identityPanel 에서
+// 여기로 승격됐다(아이템/장비 인스펙터 헤더와 같은 비주얼 언어, db-field-name 계약 유지).
+function actorHeroHeader(actor: ActorRecord): HTMLElement {
+  const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;
+  const face = graphicPreview("얼굴", actor.faceResourceId ?? actor.characterResourceId ?? "(없음)", "faceset", actor.faceIndex ?? 0);
+  face.classList.add("db-record-hero-face");
+  return el("header", {
+    class: "db-record-hero",
+    dataset: { testid: "db-record-hero" },
+    children: [
+      face,
+      el("div", {
+        class: "db-record-hero-title",
+        children: [
+          textControl("이름", "db-field-name", actor.name, (name) => updateDatabaseRecord("actors", actor.id, { name })),
+          el("div", {
+            class: "db-record-hero-tags",
+            children: [
+              ...(className ? [el("span", { class: "db-record-hero-tag", text: className })] : []),
+              el("span", { class: "db-record-hero-tag muted", text: `Lv ${actor.initialLevel}–${actor.maxLevel}` }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
 function identityPanel(actor: ActorRecord): HTMLElement {
   return actorPanel("이름", "actor-identity", [
-    textControl("이름", "db-field-name", actor.name, (name) => updateDatabaseRecord("actors", actor.id, { name })),
     textControl("칭호", "db-field-actor-nickname", actor.nickname, (nickname) =>
       updateDatabaseRecord("actors", actor.id, { nickname })
     ),
