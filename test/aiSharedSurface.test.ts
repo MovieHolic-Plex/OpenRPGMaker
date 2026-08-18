@@ -25,7 +25,7 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  editorState.set({ chatDock: "side" });
+  editorState.set({ chatDock: "float" });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
   document.body.className = "";
@@ -56,16 +56,16 @@ describe("AI shared surface", () => {
     expect(expertPanel.dataset.uiDensity).toBe("shared");
   });
 
-  it("labels dock mode as 사이드/플로팅 and updates menu copy", () => {
+  it("labels the dock toggle by its next action and updates menu copy", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
     const modeBtn = findByTestId(panel, "ai-dock-mode-btn");
     // 헤더 뱃지는 제거 — 커맨드 바 토글 + 더보기 메뉴만 유지.
     expect(findByTestId(panel, "ai-dock-mode-btn-header")).toBeNull();
-    expect(modeBtn?.textContent).toBe("사이드");
-    expect(modeBtn?.dataset.dockMode).toBe("side");
+    expect(modeBtn?.textContent).toBe("옆에 붙이기");
+    expect(modeBtn?.dataset.dockMode).toBe("float");
 
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreDock = findByTestId(panel, "ai-more-dock");
-    expect(moreDock?.textContent).toContain("플로팅");
+    expect(moreDock?.textContent).toContain("옆에 붙이기");
   });
 });
