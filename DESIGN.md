@@ -1,39 +1,46 @@
 # RPG ZZU Design System
 
-> **Status note:** This document describes the editor chrome **as actually shipped** in code. The main editor shell now ships as a modern dark, Figma-like workbench, while runtime game surfaces and selected RM2K3-specific editors keep their retro/pixel presentation. It was reconciled with `src/styles/index.css`, `src/styles/shell/figma-editor.css`, and `src/editor/`. When the code changes, update this file — it is the source of truth for designers and contributors, not an aspirational target.
+> **Status note:** The editor chrome is a Unity-toned **감독 스튜디오** (dark layer stack). Runtime game surfaces and the event-command list keep their retro/pixel presentation. Shell tokens live in `src/styles/shell/studio-tokens.css` and are applied on `body.editor-ui-*`. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
-RPG ZZU is a compact game-making workbench: dense, precise, and readable under repeated use. It aims to feel like a modern browser-native RPG editor with RPG Maker 2003 literacy: dark utility chrome, crisp pixel canvas, and Korean-first tool labels. The signature is a pixel-true canvas surrounded by restrained utility panels: the work surface is crisp and game-like, while the editor chrome is quiet, stable, and optimized for scanning.
+RPG ZZU is a compact game-making workbench. The user directs an agent named **감독**; the pixel map is the stage; the chrome is a Unity-like dark tool shell. Korean-first labels. The signature is a faceset plate (name + presence + a one-line brief of map/layer/selection) plus an `@>` command log that defaults to a **float** over the canvas, a map/tile/event tool sidebar docked as the left column, and a dark canvas well as the stage. The empty start surface is the map briefing (`지금 이 맵`) plus at most three next-move rows. Composer modes are **지시 / 질문 / 계획**. The left drawer uses a tab strip that reweights `left-map-root` / `left-palette-root` without hiding those testids. There is no theme toggle.
 
 The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls wrap Phaser-rendered edit/play surfaces. No framework, no CSS-in-JS. General chrome styles live in `src/styles.css`; Database tileset chrome is split into `src/styles.databaseTilesets.css` and `src/styles.databaseTilesetsTerrain.css` so the large tileset editor stays readable and under the module-size ceiling.
 
 ## 2. Color
 
-### Active editor shell — modern dark
+### Active editor shell — Unity-toned studio
 
-There is **one shipped editor shell theme**: a modern dark workbench defined by `src/styles/shell/figma-editor.css`. The older RM2K3 light palette still exists underneath for legacy/component fallbacks, but the main editor topbar, toolbar, left panel, canvas well, status bar, and context menus are dark. There is no user theme toggle; do not assume dual values.
+There is **one shipped editor shell theme**: a Unity-like dark workbench. `src/styles/shell/studio-tokens.css` remaps foundation tokens on `body.editor-ui-beginner|standard|expert`. The canvas well stays dark. Runtime HUD tokens are untouched. Do not add a user theme toggle.
 
-### Modern editor shell tokens
+### Studio shell tokens
 
-These tokens are defined in `src/styles/shell/figma-editor.css` and are the source of truth for the main editor shell.
+Defined in `src/styles/shell/studio-tokens.css`. New chrome uses these names. `--editor-*` aliases resolve to the same values so existing rules keep working.
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--editor-shell-bg` | `#111318` | App/top menu background |
-| `--editor-toolbar-bg` | `#161920` | Main toolbar and status bar |
-| `--editor-canvas-bg` | `#0b0d12` | Canvas work well |
-| `--editor-panel-bg` | `#1c2028` | Left sidebar panels |
-| `--editor-panel-bg-2` | `#242933` | Secondary panel/list surfaces |
-| `--editor-popover-bg` | `rgba(34, 38, 47, 0.96)` | Context menus and menu popups |
-| `--editor-line` | `rgba(255,255,255,0.1)` | Subtle dividers |
-| `--editor-line-strong` | `rgba(255,255,255,0.16)` | Elevated borders |
-| `--editor-text` | `#edf1f7` | Primary shell text |
-| `--editor-text-muted` | `#a7afbd` | Secondary text and shortcuts |
-| `--editor-text-soft` | `#747d8c` | Disabled text |
-| `--editor-blue` | `#2f8cff` | Active/focus blue |
-| `--editor-blue-soft` | `rgba(47,140,255,0.22)` | Active/hover tint |
-| `--editor-yellow` | `#ffd447` | Start-position/star marker |
+| `--studio-chrome` | `#191919` | App/top menu, toolbar, status |
+| `--studio-chrome-2` | `#383838` | Window/panel layer |
+| `--studio-inset` | `#2a2a2a` | Inputs, command log |
+| `--studio-line` | `#242424` | 1px borders |
+| `--studio-text` | `#d2d2d2` | Primary shell text |
+| `--studio-text-dim` | `#bdbdbd` | Secondary text |
+| `--studio-select` | `#2c5d87` | Selected row |
+| `--studio-play` | `#2c5d87` | The single filled Test Play control |
+| `--studio-command` | `#4c7eff` | `@>` command-log prefix |
+| `--studio-stage` | `#1a1a1a` | Canvas work well only |
+| `--editor-shell-bg` | `--studio-chrome` | Alias |
+| `--editor-toolbar-bg` | `--studio-chrome` | Alias |
+| `--editor-canvas-bg` | `--studio-stage` | Alias |
+| `--editor-panel-bg` | `--studio-chrome` | Alias |
+| `--editor-panel-bg-2` | `--studio-chrome-2` | Alias |
+| `--editor-popover-bg` | `#f0ebe0` | Menus |
+| `--editor-line` | `--studio-line` | Alias |
+| `--editor-text` | `--studio-text` | Alias |
+| `--editor-text-muted` | `--studio-text-dim` | Alias |
+| `--editor-blue` | `--studio-play` | Alias — not a decoration color |
+| `--editor-yellow` | `#7c5e22` | Start-position marker |
 
 ### Primary token set (what the UI is actually built from)
 
@@ -257,11 +264,11 @@ All spacing derives from 4px.
 
 - Root layout: `topbar / body / statusbar` (column).
 - **Topbar**: a stacked RM2K3 chrome — an `rm2k3-menu-bar` (22px) plus one or two `rm2k3-toolbar-row`s. It is **multi-row**, not a single 40px bar.
-- **Body**: left sidebar and center Phaser surface; left sidebar is resizable and the canvas owns the remaining width.
-- **Left sidebar**: `268px` default and min, `380px` max (`editor.ts` resizer clamps). Holds tool palette, tile/chipset palette, layer selector, and map tree. Collapsible via the toolbar.
+- **Body**: with empty storage, the map/tile/event tool sidebar is the left docked column and the 감독 workspace defaults to **float** over the canvas. The saved `chatDock` value is honored on later boots: **side** remains available as a user toggle and adds a docked AI track without replacing the tool sidebar. The canvas must retain the widest usable work area.
+- **Left drawer**: the docked tool column beside the canvas, never a row under the agent log. Empty events are one line (`이벤트 없음 · 더블클릭으로 추가`). Map tree still uses `map-tree-node-*` testids. Beginner substitutes its 48px direct-action rail and opens a requested flyout rather than auto-opening the tile flyout.
 - **Center work area**: fills remaining width, centers the Phaser canvas in a recessed well. Canvas controls must not change canvas dimensions.
 - **Database and Resources**: opened from the topbar as work windows. The Database window has an explicit dock toggle and may become a contained docked panel; Resources remains a modal work window.
-- **Statusbar**: `22px` (`.editor-statusbar`). Shows layer, tile coordinate, current map, zoom, autosave/validation state.
+- **Statusbar**: `54px` (`.editor-statusbar`). Always-visible cells are layer, map name, and save status. Paint hint only on the event tool+layer; blueprint toggle only when `layoutPlan.regions` exist; AI chip only when disconnected/offline. **full** (standard/expert) puts tool/tile/zoom/cursor behind a `statusbar-overflow` details. Empty layout plans do not paint a canvas `layoutPlan` chip.
 
 ### Desktop support floor
 
@@ -272,8 +279,8 @@ All spacing derives from 4px.
 
 ### Editor topbar
 
-- **Structure**: RM2K3 menu bar (프로젝트/맵/도구/게임/도움말) + toolbar rows (title + mode badge, file/undo/DB actions, layer + zoom controls).
-- **Shortcuts**: F5/F6/F7 layers, 1–7 tools, +/- zoom, Ctrl+S save, Ctrl+Z/Y undo/redo, Ctrl+C/V copy/paste (see `src/editor/hotkeys.ts`). Hotkeys are disabled while a form control or modal has focus.
+- **Structure**: RM2K3 menu bar (프로젝트/맵/도구/게임/도움말) + the three-button `editor-ui-mode-toggle` (초보/표준/전문가). Inactive mode buttons stay visible at every supported desktop width; only brand text and the beginner test-play label may collapse below `1320px`. Toolbar rows follow (title + mode badge, file/undo/DB actions, layer + zoom controls).
+- **Shortcuts**: F5/F6/F7 layers, 1–7 tools, +/- zoom, Ctrl+S save, Ctrl+Z/Y undo/redo, Ctrl+C/V copy/paste (see `src/editor/hotkeys.ts`). Hotkeys are disabled while a form control or modal has focus. Ctrl+K opens the integrated palette covering tools, layers, Test Play, Database, World, Resources, current-map PNG, build-palette toggle, map/tile/event drawers, explicit mode selection and mode cycling, AI side/float dock toggle, Help, map navigation, and AI skills.
 
 ### Left palette & map tree
 
@@ -287,13 +294,13 @@ All spacing derives from 4px.
 - **Map editor**: Phaser canvas on a 16×16 logical grid; `image-rendering: pixelated`, nearest-neighbor.
 - **Grid**: grid lines are overlays (`--pixel-grid`), toggleable, default on in Edit mode.
 - **Overlays**: collision, event, start position, hover preview — tokenized, visually distinct.
-- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). No fractional scaling. Toolbar zoom icons render as high-contrast `1x`/`2x`/`4x`/`8x` marks rather than tiny fraction artwork so they remain readable on the dark editor chrome.
+- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top`. Standard/expert keep map-save/build behind the ⋯ gate.
 
 ### Database & resource modals
 
 - **Topbar actions**: Resources (소재) opens `resourceModal`; Database (DB) opens `databaseModal`. They are the canonical editor paths for asset and database work.
 - Map properties and Event editing are not dock tabs: event editing lives in the left palette when the event layer is active and opens as a modal; map properties are edited via the map tree context menu / database.
-- **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`).
+- **Database**: 15 tabs — 주인공/직업/스킬/아이템/장비/몬스터/적그룹/상태/전투애니메이션/타일셋/공통이벤트/시스템/용어/스위치/변수 (`db-tab-*`). Navigation follows the mode chrome contract: Beginner shows the `common` subset, Standard groups the navigation, and Expert exposes `all`.
 - **Event editor**: tree-style nested command list with **drag-to-reorder** (⠿ handle), up/down/delete buttons, command picker, per-page tabs, fork/choices branches.
 - **Event editor top/page controls**: dense RM2K3 modal chrome uses `--rm2k3-event-page-*` tokens for Name width, page button height, tab width, icon size, and condition-row control widths. Keep these controls compact enough for scanning; avoid display-scale button typography inside the modal. The event editor scopes its local `--rm2k3-chrome`/`--rm2k3-face` overrides to a brighter classic-gray range (`#eeeeee`/`#f4f4f4`) so fieldsets and page tabs match the RM2003 event editor reference without changing every other modal.
 - **Event editor sizing**: the event editor is a desktop-default work window at wide widths, but it must remain usable down to roughly `800px` viewport width. It opens with settings and a dominant command canvas; the command inspector is contextual and appears only after command selection. Wide layouts allocate it a fixed right track, while compact layouts overlay it on the right so the canvas does not permanently lose width. Around `900px` and below, the modal clamps to the viewport and compresses the left settings/conditions column while keeping the command contents as a second column; do not stack settings above commands unless the viewport is narrower than the supported editor width.
@@ -375,7 +382,7 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 
 - Mode/play: `test-play-window`, `main-menu-button`, `mode-play`/`mode-edit`
 - Canvas: `edit-canvas`, `editor-canvas-scroll-shell`, `play-canvas`
-- Tiles: `tile-palette`, `quick-tile-grid`, `tool-*`, `layer-*`, `toolbar-zoom-*`
+- Tiles: `tile-palette`, `quick-tile-grid`, `tool-*`, `layer-*`, `editor-zoom-*`, `editor-zoom-stepper`
 - Map tree: `map-tree`, `map-tree-node-${mapId}`
 - Topbar modals: `toolbar-resource-manager`, `toolbar-database`, `resource-modal`, `database-modal`
 - Database: `db-tab-*` (per collection), `db-detail-form`, `db-field-*`, `db-picker-*`
@@ -396,8 +403,8 @@ Stable `data-testid` attributes use the app's **own** kebab-case vocabulary, sco
 
 ## 10. Desktop UI integration truth (2026-08-11)
 
-- Beginner, Standard, and Expert are desktop density presets, not separate products or permission levels. Beginner uses the 48px direct-action rail, Standard exposes the full palette and map tree with simplified chrome, and Expert adds the classic toolbar and dense canvas controls. The AI workspace remains the first column and the same project, history, camera, and AI session continue across mode changes.
-- The AI assistant is map-first collapsed by preference. Its side/float restore rail is keyboard reachable; restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport.
+- Beginner, Standard, and Expert are desktop density presets, not separate products or permission levels. First visit is **Beginner**. The mode toggle is text weight/underline, never a filled plan-picker. Beginner uses the 48px direct-action rail (tool / layer / panel groups with Korean layer labels 바닥·장식·이벤트), does not auto-open the tile flyout, and limits Database navigation to the common subset. Standard exposes the full palette and map tree with simplified chrome and grouped Database navigation. Expert adds the classic toolbar, dense canvas controls, and all Database navigation; every visible expert toolbar button is actionable, while unsupported legacy stubs remain hidden. The chrome contract is carried by `mapTree`, `classicToolbar`, `canvasChromeDense`, `helpMenu`, `gameMenuLabel`, `paletteRail`, `leftPanelMaxWidthPx`, `layerTermStyle`, `prominentTestPlay`, `coachMarks`, `standardWelcome`, `statusbarDensity`, `railLabels`, `databaseNav`, `eventBeginnerChrome`, and `jargonStyle`. The same project, history, camera, and AI session continue across mode changes.
+- With empty storage, the AI assistant boots **open** and its dock defaults to **float** over the canvas; the map/tile/event tool sidebar remains the left docked column. A stored `chatDock` of **float** or **side** is honored, and the side dock remains a user toggle. A user who collapses AI keeps that choice; a turn that started collapsed re-collapses after idle, but an already-open panel stays open. The header is an agent plate (faceset crop + name `감독` + one-line presence). The work log uses RM-style `@>` command rows, not chat bubbles. A pending proposal keeps a command-row pin with 이 맵에 넣기/취소 even while the review modal is open. The collapsed restore control is a 48px button (`aria-label="AI 어시스턴트"`) showing the same face and a status dot — no `AI` wordmark, no vertical hangul, and no emoji. Restoring returns the persistent panel and composer without discarding a draft or leaving the desktop viewport. Default agent mode is **chat** (one turn at a time). Slash skill rows show Korean names. Unconnected send shows a 연결하기 card instead of dumping the settings form.
 - Event-editor ownership is the desktop matrix `1586×992`, `1280×900`, `1024×768`, and `960×900`. Its top strip, two-column workbench, conditions, command list, and footer stay in normal non-overlapping flow, and coachmarks are suppressed while it is open.
 - Test Play uses whole-number fit-without-crop scaling: the `320×240` runtime stays centered, 4:3, fully visible, and nearest-neighbor sharp. Title options expose one roving Tab stop; arrow navigation, keyboard confirmation, and trusted pointer activation share the same selected-option path.
 - Shared `showConfirm`/`showAlert` dialogs expose programmatic title/message relationships, focus the first action deterministically, trap Tab/Shift+Tab, route Escape through the top `modalStack` entry, and restore only an opener that is still attached.
