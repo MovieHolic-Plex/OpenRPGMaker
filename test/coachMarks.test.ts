@@ -56,6 +56,24 @@ function click(testId: string): void {
   node.click();
 }
 
+function appendAnchor(testId: string, rect: Partial<DOMRect>): FakeElement {
+  const anchor = new FakeElement("div");
+  anchor.dataset.testid = testId;
+  anchor.getBoundingClientRect = () => ({
+    bottom: rect.bottom ?? 160,
+    height: rect.height ?? 40,
+    left: rect.left ?? 0,
+    right: rect.right ?? (rect.left ?? 0) + (rect.width ?? 0),
+    top: rect.top ?? 120,
+    width: rect.width ?? 0,
+    x: rect.left ?? 0,
+    y: rect.top ?? 120,
+    toJSON: () => ({}),
+  });
+  fakeBody().append(anchor);
+  return anchor;
+}
+
 describe("coachMarkPosition", () => {
   const viewport = { width: 1280, height: 800 };
   const card = { width: 280, height: 196 };
@@ -100,12 +118,37 @@ describe("기본 모드 코치마크", () => {
   it("첫 방문이면 1단계 카드를 띄우고, '다음'으로 완주하면 플래그를 저장한다", () => {
     maybeStartBasicCoachMarks(storage);
 
+    expect(BASIC_COACH_MARKS).toHaveLength(3);
     expect(findByTestId(fakeBody(), `coach-mark-${BASIC_COACH_MARKS[0]!.id}`)).toBeTruthy();
 
     for (let step = 0; step < BASIC_COACH_MARKS.length; step += 1) click("coach-mark-next");
 
     expect(findByTestId(fakeBody(), "coach-mark-next")).toBeNull();
     expect(storage.getItem(COACH_MARKS_SEEN_KEY)).toBe("1");
+  });
+
+  it("AI 단계는 렌더 시 보이는 입력창, 커맨드 바, 복원 버튼 순으로 앵커를 고른다", () => {
+    const input = appendAnchor("ai-input", { left: 1000, right: 1100, width: 100 });
+    appendAnchor("ai-command-bar", { left: 800, right: 900, width: 100 });
+    appendAnchor("ai-collapsed-restore", { left: 600, right: 700, width: 100 });
+
+    maybeStartBasicCoachMarks(storage);
+    click("coach-mark-next");
+    click("coach-mark-next");
+    let card = findByTestId(fakeBody(), "coach-mark-ai");
+    expect(card?.style.left).toBe("708px");
+    expect(card?.textContent).toContain("위쪽 초보/표준/전문가에서 화면 밀도를 바꿀 수 있어요.");
+
+    dismissCoachMarks();
+    input.getBoundingClientRect = () => ({
+      bottom: 160, height: 40, left: 1000, right: 1000, top: 120, width: 0,
+      x: 1000, y: 120, toJSON: () => ({}),
+    });
+    maybeStartBasicCoachMarks(storage);
+    click("coach-mark-next");
+    click("coach-mark-next");
+    card = findByTestId(fakeBody(), "coach-mark-ai");
+    expect(card?.style.left).toBe("508px");
   });
 
   it("건너뛰기는 즉시 닫고 다시 보지 않는다", () => {

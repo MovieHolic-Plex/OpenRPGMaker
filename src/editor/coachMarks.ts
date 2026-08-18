@@ -31,14 +31,14 @@ export const BASIC_COACH_MARKS: readonly CoachMarkStep[] = [
   {
     id: "canvas",
     title: "맵 캔버스",
-    text: "선택 도구(V)로 영역을 드래그하면 ✨ AI 작업 버튼이 떠요. 이벤트(NPC)는 더블클릭으로 편집합니다.",
+    text: "맵을 드래그해 영역을 고르면 꾸미기 버튼이 떠요. 사람(NPC)은 더블클릭으로 편집합니다.",
     anchorTestId: "edit-canvas",
     side: "below",
   },
   {
     id: "ai",
-    title: "AI 어시스턴트",
-    text: "원하는 걸 그냥 한국어로 부탁하세요. Ctrl+K로 명령·맵·스킬을 검색할 수 있어요.",
+    title: "감독",
+    text: "원하는 걸 그냥 한국어로 부탁하세요. Ctrl+K로 명령·맵·스킬을 검색할 수 있어요. 위쪽 초보/표준/전문가에서 화면 밀도를 바꿀 수 있어요.",
     anchorTestId: "ai-input",
     side: "left",
   },
@@ -113,6 +113,19 @@ function dismiss(): void {
   activeHost = null;
 }
 
+function resolveStepAnchor(step: CoachMarkStep): DOMRect | undefined {
+  const anchorTestIds = step.id === "ai"
+    ? ["ai-input", "ai-command-bar", "ai-collapsed-restore"]
+    : [step.anchorTestId];
+  for (const testId of anchorTestIds) {
+    const rect = document
+      .querySelector<HTMLElement>(`[data-testid="${testId}"]`)
+      ?.getBoundingClientRect?.();
+    if (rect && rect.width > 0) return rect;
+  }
+  return undefined;
+}
+
 function renderStep(stepIndex: number, storage: Storage | null): void {
   dismiss();
   const step = BASIC_COACH_MARKS[stepIndex];
@@ -120,8 +133,7 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
     markSeen(storage, COACH_MARKS_SEEN_KEY);
     return;
   }
-  const anchor = document.querySelector<HTMLElement>(`[data-testid="${step.anchorTestId}"]`);
-  const rect = anchor?.getBoundingClientRect?.();
+  const rect = resolveStepAnchor(step);
   const viewport = {
     width: typeof window !== "undefined" && window.innerWidth ? window.innerWidth : 1280,
     height: typeof window !== "undefined" && window.innerHeight ? window.innerHeight : 800,
@@ -180,7 +192,7 @@ function renderStep(stepIndex: number, storage: Storage | null): void {
     width: cardRect.width || CARD_WIDTH,
     height: Math.max(cardRect.height, card.scrollHeight),
   };
-  const position = rect && (rect.width > 0 || rect.height > 0)
+  const position = rect
     ? coachMarkPosition({ side: step.side, anchor: rect, viewport, card: cardSize })
     : {
         left: Math.max(MARGIN, viewport.width / 2 - cardSize.width / 2),
@@ -206,16 +218,33 @@ export function maybeStartBasicCoachMarks(storage?: Storage | null): void {
   renderStep(0, store);
 }
 
-const STANDARD_WELCOME_BODY =
-  "좌측 팔레트와 맵 트리에서 타일을 고르고 맵을 이동하세요. 상단 토글에서 언제든 초보/전문가 모드로 전환할 수 있어요.";
+export const STANDARD_WELCOME_BODY =
+  "왼쪽 감독에게 한 줄로 부탁하면 맵이 바뀝니다. 타일로 직접 칠하고 싶을 때만 가운데 열을 쓰면 됩니다.";
 
-/** 표준 모드 첫 방문 웰컴 카드 한 장을 띄운다. 앵커 없이 화면 중앙 근처에 배치한다. */
+function placeWelcomeOnCanvas(card: HTMLElement): void {
+  const viewportWidth = typeof window !== "undefined" && window.innerWidth ? window.innerWidth : 1280;
+  const viewportHeight = typeof window !== "undefined" && window.innerHeight ? window.innerHeight : 800;
+  const cardRect = card.getBoundingClientRect();
+  const width = cardRect.width || CARD_WIDTH;
+  const height = Math.max(cardRect.height, card.scrollHeight);
+  const canvas =
+    document.querySelector<HTMLElement>(".canvas-area") ??
+    document.querySelector<HTMLElement>("[data-testid='edit-canvas']");
+  const region = canvas?.getBoundingClientRect();
+  if (region && region.width > 80 && region.height > 80) {
+    const left = Math.min(Math.max(region.left + 12, MARGIN), Math.max(MARGIN, viewportWidth - width - MARGIN));
+    const top = Math.min(Math.max(region.top + 12, MARGIN), Math.max(MARGIN, viewportHeight - height - MARGIN));
+    card.style.left = `${left}px`;
+    card.style.top = `${top}px`;
+    return;
+  }
+  card.style.left = `${Math.max(MARGIN, viewportWidth - width - 24)}px`;
+  card.style.top = `${Math.max(MARGIN, 72)}px`;
+}
+
+/** 표준 모드 첫 방문 웰컴 카드. 칩셋이 아니라 캔버스 열에 붙인다. */
 function renderStandardWelcome(storage: Storage | null): void {
   dismiss();
-  const viewport = {
-    width: typeof window !== "undefined" && window.innerWidth ? window.innerWidth : 1280,
-    height: typeof window !== "undefined" && window.innerHeight ? window.innerHeight : 800,
-  };
   const card = el("div", {
     class: "coach-mark-card",
     attrs: {
@@ -248,13 +277,7 @@ function renderStandardWelcome(storage: Storage | null): void {
   });
   activeHost = card;
   document.body.append(card);
-  const cardRect = card.getBoundingClientRect();
-  const cardSize = {
-    width: cardRect.width || CARD_WIDTH,
-    height: Math.max(cardRect.height, card.scrollHeight),
-  };
-  card.style.left = `${Math.max(MARGIN, viewport.width / 2 - cardSize.width / 2)}px`;
-  card.style.top = `${Math.min(120, Math.max(MARGIN, viewport.height - cardSize.height - MARGIN))}px`;
+  placeWelcomeOnCanvas(card);
   card.style.visibility = "visible";
 }
 

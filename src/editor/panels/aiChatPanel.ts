@@ -1944,19 +1944,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let commandDockItem: HTMLButtonElement | null = null;
   const applyDockModeChrome = (mode: ChatDock): void => {
     const side = mode === "side";
-    const label = side ? "사이드" : "플로팅";
+    const actionLabel = side ? "떠 있기" : "옆에 붙이기";
     const nextHint = side
       ? "현재: 사이드 패널(대화·기록 전체). 클릭하면 플로팅 바로 전환"
       : "현재: 플로팅 바(맵 위 입력). 클릭하면 사이드 패널로 고정";
-    const menuLabel = side ? "플로팅 바로 전환" : "사이드 패널로 고정";
-    dockModeButton.textContent = label;
+    dockModeButton.textContent = actionLabel;
     dockModeButton.dataset.dockMode = mode;
     dockModeButton.setAttribute("title", nextHint);
     dockModeButton.setAttribute("aria-label", nextHint);
-    moreMenuDockItem.textContent = menuLabel;
+    moreMenuDockItem.textContent = actionLabel;
     moreMenuDockItem.setAttribute("title", nextHint);
     if (commandDockItem) {
-      commandDockItem.textContent = menuLabel;
+      commandDockItem.textContent = actionLabel;
       commandDockItem.setAttribute("title", nextHint);
     }
   };
