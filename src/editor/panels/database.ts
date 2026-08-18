@@ -1,4 +1,5 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
+import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews";
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
@@ -19,6 +20,7 @@ import {
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
+import { uiLabel } from "@/editor/uiCopy";
 import { clearChildren, el } from "@/util/dom";
 
 export type DatabaseTab =
@@ -95,6 +97,7 @@ const tabOrder: readonly DatabaseTab[] = [
 ];
 
 const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map(tabFor);
+const COMMON_TAB_IDS: readonly DatabaseTab[] = ["overview", "actors", "items", "enemies", "troops", "system"];
 
 export type DatabaseTabGroup = {
   readonly label: string;
@@ -149,14 +152,25 @@ export function renderDatabasePanel(container: HTMLElement): void {
   clearChildren(container);
   const header = el("div", { class: "db-tabs" });
   const body = el("div", { class: "db-body" });
-  // 세로 사이드바: 상단 고정 '개요' 엔트리(그룹 밖, todo 13) 아래 그룹 라벨(.db-tab-group)과
-  // 기존 .db-tab 버튼이 이어진다. 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 그대로다.
-  appendTabButton(header, body, container, tabFor("overview"));
-  for (const group of TAB_GROUPS) {
-    header.append(el("div", { class: "db-tab-group", text: group.label }));
-    for (const id of group.tabs) {
-      appendTabButton(header, body, container, tabFor(id));
+  // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)은 모드와 무관하게 유지한다.
+  const chrome = getEditorChrome();
+  if (chrome.databaseNav === "common") {
+    for (const id of COMMON_TAB_IDS) appendTabButton(header, body, container, tabFor(id));
+
+    const allTabs = el("details", { dataset: { testid: "db-nav-all" } });
+    allTabs.append(el("summary", { text: `모든 ${uiLabel("databaseShort", chrome.jargonStyle)}` }));
+    for (const tab of orderedTabs) {
+      if (!COMMON_TAB_IDS.includes(tab.id)) appendTabButton(allTabs, body, container, tab);
     }
+    header.append(allTabs);
+  } else if (chrome.databaseNav === "grouped") {
+    appendTabButton(header, body, container, tabFor("overview"));
+    for (const group of TAB_GROUPS) {
+      header.append(el("div", { class: "db-tab-group", text: group.label }));
+      for (const id of group.tabs) appendTabButton(header, body, container, tabFor(id));
+    }
+  } else {
+    for (const tab of orderedTabs) appendTabButton(header, body, container, tab);
   }
 
   renderActiveTab(body, container);
