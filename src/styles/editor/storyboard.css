@@ -8,12 +8,12 @@
   .event-storyboard-track { display: flex; align-items: flex-start; gap: 10px; overflow-x: auto; padding: 6px 2px 8px; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
   .event-storyboard-track::-webkit-scrollbar { height: 4px; }
   .event-storyboard-track::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; }
-  .event-storyboard-card { appearance: none; flex: 0 0 168px; align-self: flex-start; max-height: 120px; overflow: hidden; display: grid; gap: 6px; justify-items: start; text-align: left; padding: 10px; border-radius: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); cursor: pointer; scroll-snap-align: start; }
+  .event-storyboard-card { appearance: none; flex: 0 0 168px; align-self: flex-start; box-sizing: border-box; max-height: 120px; overflow: hidden; display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto auto auto; column-gap: 8px; row-gap: 2px; justify-items: start; align-content: start; text-align: left; padding: 8px; border-radius: 14px; background: var(--bg-surface); border: 1px solid var(--border-subtle); cursor: pointer; scroll-snap-align: start; }
   .event-storyboard-card:hover { border-color: var(--border-strong); transform: translateY(-1px); }
-  .event-storyboard-card-thumb { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: #fff; font: 800 12px var(--font-mono); }
-  .event-storyboard-card-title { font: 700 12px var(--font-ui); color: var(--text-1); }
-  .event-storyboard-card-detail { font: 500 11px/1.4 var(--font-ui); color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .event-storyboard-card-branches { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; max-width: 100%; }
+  .event-storyboard-card-thumb { grid-row: 1 / 3; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: #fff; font: 800 12px var(--font-mono); }
+  .event-storyboard-card-title { grid-column: 2; min-width: 0; max-width: 100%; font: 700 12px var(--font-ui); color: var(--text-1); }
+  .event-storyboard-card-detail { grid-column: 2; min-width: 0; max-width: 100%; font: 500 11px/1.3 var(--font-ui); color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .event-storyboard-card-branches { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; max-width: 100%; }
   .event-storyboard-card-branches .event-storyboard-branch { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; gap: 6px; align-items: center; padding: 4px 8px; border-radius: 9999px; background: var(--bg-inset); border: 1px dashed var(--border-subtle); font: 600 11px var(--font-mono); color: var(--text-2); }
   .event-storyboard-card-branches .event-storyboard-branch-count { color: var(--text-3); }
   .event-storyboard-card-branches .event-storyboard-branch-more { flex: 0 0 auto; padding: 4px 8px; border-radius: 9999px; background: var(--bg-raised); border: 1px solid var(--border-subtle); font: 700 10px var(--font-mono); color: var(--text-2); }
