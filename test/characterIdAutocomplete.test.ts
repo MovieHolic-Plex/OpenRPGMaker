@@ -5,6 +5,7 @@ import {
   invalidateCharacterIdIndexCache,
   listCharacterIdIndex,
 } from "@/project/characterIdIndex";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventCharacterIdField } from "@/editor/panels/eventEditor/pageProps";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -28,7 +29,7 @@ function seedProject(options?: {
 }): { mapId: string; event: GameEvent } {
   const project = createBlankProject();
   const mapId = project.startMapId;
-  const event = baseEvent();
+  const event = baseEvent({ characterId: "alice" });
   project.maps[mapId] = {
     ...project.maps[mapId]!,
     events: [event, ...(options?.extraEvents ?? [])],
@@ -36,6 +37,13 @@ function seedProject(options?: {
   if (options?.characters) project.characters = options.characters;
   store.replace(project);
   return { mapId, event };
+}
+
+function focusCharacterIdInput(field: HTMLElement): HTMLInputElement {
+  const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
+  input.value = "";
+  input.focus();
+  return input;
 }
 
 describe("characterIdIndex cache", () => {
@@ -96,10 +104,12 @@ describe("characterIdIndex cache", () => {
 
 describe("characterIdAutocomplete", () => {
   beforeEach(() => {
+    resetEditorUiModeForTests("expert");
     document.body.replaceChildren();
   });
 
   afterEach(() => {
+    resetEditorUiModeForTests("standard");
     document.body.replaceChildren();
     invalidateCharacterIdIndexCache();
   });
@@ -116,8 +126,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    focusCharacterIdInput(field);
 
     const dropdown = document.querySelector<HTMLElement>('[data-testid="character-id-autocomplete"]')!;
     expect(dropdown.hidden).toBe(false);
@@ -141,8 +150,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    const input = focusCharacterIdInput(field);
     input.value = "ali";
     input.dispatchEvent(new Event("input", { bubbles: true }));
 
@@ -161,8 +169,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    const input = focusCharacterIdInput(field);
     input.value = "zzz_no_match";
     input.dispatchEvent(new Event("input", { bubbles: true }));
 
@@ -178,8 +185,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    const input = focusCharacterIdInput(field);
 
     const row = document.querySelector<HTMLElement>('[data-testid="character-id-autocomplete-row-alice"]')!;
     row.click();
@@ -197,8 +203,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    const input = focusCharacterIdInput(field);
 
     const dropdown = document.querySelector<HTMLElement>('[data-testid="character-id-autocomplete"]')!;
     expect(dropdown.hidden).toBe(false);
@@ -218,8 +223,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    const input = focusCharacterIdInput(field);
 
     input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
@@ -243,8 +247,7 @@ describe("characterIdAutocomplete", () => {
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
 
-    const input = field.querySelector<HTMLInputElement>('[data-testid="event-character-id-input"]')!;
-    input.focus();
+    focusCharacterIdInput(field);
     expect(document.querySelector('[data-testid="character-id-autocomplete"]')).toBeTruthy();
 
     field.remove();
