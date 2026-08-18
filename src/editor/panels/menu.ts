@@ -3,7 +3,7 @@ import { addMap, duplicateMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { showConfirm } from "@/editor/ui/modal";
-import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
+import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -712,11 +712,6 @@ function setEditorLayer(layer: Layer, topbar: HTMLElement): void {
   const state = editorState.get();
   const tool = layer === "event" ? "event" : state.tool === "event" ? "paint" : state.tool;
   editorState.set({ layer, tool });
-  renderTopbar(topbar);
-}
-
-function setEditorZoom(zoom: EditorZoom, topbar: HTMLElement): void {
-  editorState.set({ zoom });
   renderTopbar(topbar);
 }
 
