@@ -116,6 +116,50 @@ describe("editorUiMode", () => {
     expect("aiDenseSections" in expert).toBe(false);
   });
 
+  it("pins beginner/standard/expert chrome flags for rail labels, database nav, event chrome, jargon style", () => {
+    const beginner = chromeForMode("beginner");
+    const standard = chromeForMode("standard");
+    const expert = chromeForMode("expert");
+
+    expect(beginner.railLabels).toBe("persistent");
+    expect(beginner.databaseNav).toBe("common");
+    expect(beginner.eventBeginnerChrome).toBe(true);
+    expect(beginner.jargonStyle).toBe("plain");
+
+    expect(standard.railLabels).toBe("hover");
+    expect(standard.databaseNav).toBe("grouped");
+    expect(standard.eventBeginnerChrome).toBe(true);
+    expect(standard.jargonStyle).toBe("plain");
+
+    expect(expert.railLabels).toBe("hover");
+    expect(expert.databaseNav).toBe("all");
+    expect(expert.eventBeginnerChrome).toBe(false);
+    expect(expert.jargonStyle).toBe("technical");
+
+    expect(parseEditorUiMode("basic")).toBe("beginner");
+  });
+
+  it("characterization: pins current chrome field names before the todo-2 extension", () => {
+    const beginner = chromeForMode("beginner");
+    const expected = [
+      "mapTree",
+      "classicToolbar",
+      "canvasChromeDense",
+      "helpMenu",
+      "gameMenuLabel",
+      "paletteRail",
+      "leftPanelMaxWidthPx",
+      "layerTermStyle",
+      "prominentTestPlay",
+      "coachMarks",
+      "standardWelcome",
+      "statusbarDensity",
+    ];
+    for (const key of expected) {
+      expect(Object.prototype.hasOwnProperty.call(beginner, key)).toBe(true);
+    }
+  });
+
   it("uses AI RPG MAKER as the product brand string", () => {
     expect(EDITOR_PRODUCT_BRAND).toBe("AI RPG MAKER");
   });

@@ -29,6 +29,16 @@ export type EditorChromeVisibility = {
   readonly coachMarks: boolean;
   // 표준 모드용 시작 웰컴 표면 노출.
   readonly standardWelcome: boolean;
+  // 상태바 칸 밀도 — beginner: 레이어·맵·저장(+조건부 힌트/설계도/AI 오류).
+  readonly statusbarDensity: "beginner" | "full";
+  // 아이콘 레일 텍스트 라벨 — persistent: 항상 노출, hover: 호버 시에만.
+  readonly railLabels: "persistent" | "hover";
+  // 데이터베이스 낤비게이션 노출 범위 — common: 자주 쓰는 항목, grouped: 그룹별, all: 전체.
+  readonly databaseNav: "common" | "grouped" | "all";
+  // 이벤트 편집 초보용 크롬(단계별 안내) 노출.
+  readonly eventBeginnerChrome: boolean;
+  // 전반 용어 스타일 — plain: 자료집/바닥/장식, technical: 데이터베이스/하위/상위.
+  readonly jargonStyle: "plain" | "technical";
 };
 
 const BEGINNER_CHROME: EditorChromeVisibility = {
@@ -45,6 +55,11 @@ const BEGINNER_CHROME: EditorChromeVisibility = {
   prominentTestPlay: true,
   coachMarks: true,
   standardWelcome: false,
+  statusbarDensity: "beginner",
+  railLabels: "persistent",
+  databaseNav: "common",
+  eventBeginnerChrome: true,
+  jargonStyle: "plain",
 };
 
 const STANDARD_CHROME: EditorChromeVisibility = {
@@ -54,11 +69,16 @@ const STANDARD_CHROME: EditorChromeVisibility = {
   helpMenu: true,
   gameMenuLabel: "게임",
   paletteRail: false,
-  leftPanelMaxWidthPx: 380,
+  leftPanelMaxWidthPx: 300,
   layerTermStyle: "technical",
   prominentTestPlay: false,
   coachMarks: false,
   standardWelcome: true,
+  statusbarDensity: "full",
+  railLabels: "hover",
+  databaseNav: "grouped",
+  eventBeginnerChrome: true,
+  jargonStyle: "plain",
 };
 
 const EXPERT_CHROME: EditorChromeVisibility = {
@@ -68,11 +88,16 @@ const EXPERT_CHROME: EditorChromeVisibility = {
   helpMenu: true,
   gameMenuLabel: "게임",
   paletteRail: false,
-  leftPanelMaxWidthPx: null,
+  leftPanelMaxWidthPx: 320,
   layerTermStyle: "technical",
   prominentTestPlay: false,
   coachMarks: false,
   standardWelcome: false,
+  statusbarDensity: "full",
+  railLabels: "hover",
+  databaseNav: "all",
+  eventBeginnerChrome: false,
+  jargonStyle: "technical",
 };
 
 type Listener = () => void;
@@ -95,6 +120,31 @@ function resolveStorage(storage?: Storage | null): Storage | null {
     return localStorage;
   } catch {
     return null;
+  }
+}
+
+/** Playwright / ?blankProject 등 — 모드를 안 박은 기존 e2e는 표준 바닥을 유지한다. */
+function isLikelyAutomationBoot(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const search = window.location?.search ?? "";
+    return /(?:^|[?&])(?:blankProject|freshProject|devProject)=/.test(search);
+  } catch {
+    return false;
+  }
+}
+
+/** 저장값이 없는 실제 첫 방문은 초보. 자동화 URL은 표준을 유지한다. */
+export function applyFirstVisitEditorUiMode(storage?: Storage | null): EditorUiMode {
+  const store = resolveStorage(storage);
+  if (!store) return DEFAULT_EDITOR_UI_MODE;
+  try {
+    if (store.getItem(EDITOR_UI_MODE_STORAGE_KEY) != null) return loadEditorUiMode(store);
+    if (isLikelyAutomationBoot()) return DEFAULT_EDITOR_UI_MODE;
+    saveEditorUiMode("beginner", store);
+    return "beginner";
+  } catch {
+    return DEFAULT_EDITOR_UI_MODE;
   }
 }
 
@@ -172,7 +222,7 @@ export function resetEditorUiModeForTests(mode: EditorUiMode = DEFAULT_EDITOR_UI
 function ensureHydrated(): void {
   if (hydrated) return;
   hydrated = true;
-  currentMode = loadEditorUiMode();
+  currentMode = applyFirstVisitEditorUiMode();
   applyEditorUiModeClasses(currentMode);
 }
 
