@@ -1,6 +1,7 @@
 import { getMode, toggleMode } from "@/app/mode";
-import { addMap, setStartMap } from "@/editor/actions";
+import { addMap, duplicateMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { showConfirm } from "@/editor/ui/modal";
 import { editorState, type EditorZoom, type Layer, type Tool } from "@/editor/editorState";
 import {
@@ -36,6 +37,7 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
+import { uiLabel } from "@/editor/uiCopy";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
@@ -86,13 +88,14 @@ export function renderTopbar(topbar: HTMLElement): void {
     menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
   }
   menuBar.append(renderEditorUiModeToggle());
+  if (uiMode === "standard") menuBar.append(...renderStandardMoreTools());
   // History + identity sit as trailing icon buttons (right end), before window chrome.
   const trailing = el("div", {
     class: "editor-topbar-trailing",
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
-    ...(mode === "edit" && chrome.prominentTestPlay ? [renderTestPlayButton()] : []),
+    ...(mode === "edit" ? [renderTestPlayButton()] : []),
     renderQuickBattleTestButton(),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
@@ -201,6 +204,55 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
       },
     },
   });
+}
+
+function renderStandardMoreTools(): readonly HTMLElement[] {
+  const menu = el("div", {
+    class: "rm2k3-menu-popup standard-more-tools-menu",
+    attrs: { role: "menu" },
+    dataset: { testid: "standard-more-tools-menu" },
+  });
+  menu.hidden = true;
+  const button = el("button", {
+    class: "rm2k3-menu-item standard-more-tools",
+    text: "⋯",
+    attrs: {
+      type: "button",
+      title: "더 많은 도구",
+      "aria-label": "더 많은 도구",
+      "aria-expanded": "false",
+      "aria-haspopup": "menu",
+    },
+    dataset: { testid: "standard-more-tools" },
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        const expanded = button.getAttribute("aria-expanded") !== "true";
+        button.setAttribute("aria-expanded", String(expanded));
+        menu.hidden = !expanded;
+      },
+    },
+  });
+  const addItem = (label: string, testId: string, action: () => void): void => {
+    menu.append(el("button", {
+      class: "rm2k3-menu-command",
+      text: label,
+      attrs: { type: "button", role: "menuitem" },
+      dataset: { testid: testId },
+      on: {
+        click: () => {
+          action();
+          button.setAttribute("aria-expanded", "false");
+          menu.hidden = true;
+        },
+      },
+    }));
+  };
+  addItem("세계관", "standard-more-world", () => openWorldPanel());
+  addItem("리소스", "standard-more-resources", () => openResourceModal());
+  addItem(uiLabel("databaseShort"), "standard-more-database", () => openDatabaseModal());
+  addItem("전문가 모드로 전환", "standard-more-switch-expert", () => setEditorUiMode("expert"));
+  return [button, menu];
 }
 
 function renderWindowControls(): HTMLElement {
@@ -444,10 +496,20 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
   const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
   const selectedEvent = selectedEventForState(state);
+  const mapId = state.currentMapId ?? store.getCurrent().startMapId;
   row.append(
     el("span", { class: "visually-hidden", text: `3단 레이어: ${layerShortLabel(state.layer)} / ${toolShortLabel(state.tool)}`, dataset: { testid: "layer-selector" } }),
-    toolbarButton({ testId: "toolbar-new", label: "새 프로젝트", title: "새 프로젝트", icon: "disabled-diamond", disabled: true, onClick: () => void newProject() }),
-    toolbarButton({ testId: "toolbar-map-copy", label: "맵 복사", title: "맵 복사", icon: "disabled-blocks", disabled: true, onClick: () => toast("맵 트리에서 복사할 맵을 선택하세요.", "ok") }),
+    toolbarButton({ testId: "toolbar-new", label: "새 프로젝트", title: "새 프로젝트", icon: "new", onClick: () => void newProject() }),
+    toolbarButton({
+      testId: "toolbar-map-copy",
+      label: "맵 복사",
+      title: "맵 복사",
+      disabled: !mapId,
+      onClick: () => {
+        const copyId = duplicateMap(mapId);
+        if (copyId) selectEditorMap(copyId);
+      },
+    }),
     toolbarButton({
       testId: "toolbar-event-test",
       label: "이벤트 테스트",
@@ -457,7 +519,6 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
       onClick: () => void openSelectedEventTestWindow(),
     }),
     separator(),
-    playModeButton("edit"),
     toolbarButton({
       testId: "toolbar-battle-test",
       label: "전투",
@@ -482,12 +543,7 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "layer-upper", label: "상위", title: "상위 레이어 편집", icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
     toolbarButton({ testId: "layer-event", label: "이벤트", title: "이벤트 레이어 편집", icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
     separator(),
-    toolbarButton({ testId: "toolbar-zoom-1", label: "x1", title: "줌 x1", icon: "zoom-1", active: state.zoom === 1, onClick: () => setEditorZoom(1, topbar) }),
-    toolbarButton({ testId: "toolbar-zoom-2", label: "x2", title: "줌 x2", icon: "zoom-2", active: state.zoom === 2, onClick: () => setEditorZoom(2, topbar) }),
-    toolbarButton({ testId: "toolbar-zoom-4", label: "x4", title: "줌 x4", icon: "zoom-4", active: state.zoom === 4, onClick: () => setEditorZoom(4, topbar) }),
-    toolbarButton({ testId: "toolbar-zoom-8", label: "x8", title: "줌 x8", icon: "zoom-8", active: state.zoom === 8, onClick: () => setEditorZoom(8, topbar) }),
-    separator(),
-    toolbarButton({ testId: "toolbar-database", label: "DB", title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
+    toolbarButton({ testId: "toolbar-database", label: uiLabel("databaseShort", getEditorChrome().jargonStyle), title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
     toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
     toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
@@ -521,23 +577,38 @@ function openSelectedEventTestWindow(): void {
 }
 
 function renderTestPlayButton(): HTMLElement {
-  return el("button", {
-    class: "topbar-test-play",
-    attrs: {
-      type: "button",
-      title: "전체 프로젝트 테스트 플레이",
-      "aria-label": "전체 프로젝트 테스트 플레이",
-    },
+  const play = (): void => {
+    void openTestPlayWindow();
+  };
+  return el("div", {
+    class: "topbar-test-play-wrap",
     dataset: { testid: "topbar-test-play" },
     on: {
       click: (event) => {
         event.stopPropagation();
-        void openTestPlayWindow();
+        play();
       },
     },
     children: [
-      el("span", { class: "topbar-test-play-glyph", text: "▶", attrs: { "aria-hidden": "true" } }),
-      el("span", { class: "topbar-test-play-label", text: "테스트" }),
+      el("button", {
+        class: "topbar-test-play",
+        attrs: {
+          type: "button",
+          title: "테스트 플레이",
+          "aria-label": "전체 프로젝트 테스트 플레이",
+        },
+        dataset: { testid: "mode-play" },
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            play();
+          },
+        },
+        children: [
+          el("span", { class: "topbar-test-play-glyph", text: "▶", attrs: { "aria-hidden": "true" } }),
+          el("span", { class: "topbar-test-play-label", text: "테스트" }),
+        ],
+      }),
     ],
   });
 }

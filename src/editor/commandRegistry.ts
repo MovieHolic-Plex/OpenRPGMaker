@@ -3,8 +3,13 @@
 import { applyLayer } from "@/editor/hotkeys";
 import { editorState, type Tool } from "@/editor/editorState";
 import { getEditorUiMode, setEditorUiMode } from "@/editor/editorUiMode";
+import { activateLeftDrawerTab } from "@/editor/leftDrawerTab";
 import { selectEditorMap } from "@/editor/mapSelection";
+import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
+import { openResourceModal } from "@/editor/panels/resourceModal";
+import { openWorldPanel } from "@/editor/panels/worldPanel";
 import type { MapId, Project } from "@/project/types";
 
 export interface EditorCommand {
@@ -75,6 +80,85 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "화면",
       keywords: ["database", "db", "데이터베이스", "액터", "스킬"],
       run: () => openDatabaseModal(),
+    },
+    {
+      id: "open-world",
+      label: "화면: 세계관 열기",
+      category: "화면",
+      keywords: ["world", "세계", "세계관"],
+      run: () => openWorldPanel(),
+    },
+    {
+      id: "open-resources",
+      label: "화면: 리소스 관리자 열기",
+      category: "화면",
+      keywords: ["resources", "resource", "리소스", "소재"],
+      run: () => openResourceModal(),
+    },
+    {
+      id: "map-screenshot",
+      label: "화면: 현재 맵 PNG 저장",
+      category: "화면",
+      keywords: ["map", "screenshot", "png", "맵", "이미지", "저장"],
+      run: () => { void downloadCurrentMapScreenshot(); },
+    },
+    {
+      id: "build-palette",
+      label: "도구: 건축 팔레트 전환",
+      category: "도구",
+      keywords: ["build", "palette", "건축", "팔레트"],
+      run: () => setBuildPaletteEnabled(!isBuildPaletteEnabled()),
+    },
+    {
+      id: "drawer-map",
+      label: "화면: 맵 서랍",
+      category: "화면",
+      keywords: ["drawer", "map", "서랍", "맵"],
+      run: () => activateLeftDrawerTab("map"),
+    },
+    {
+      id: "drawer-tile",
+      label: "화면: 타일 서랍",
+      category: "화면",
+      keywords: ["drawer", "tile", "서랍", "타일"],
+      run: () => activateLeftDrawerTab("tile"),
+    },
+    {
+      id: "drawer-event",
+      label: "화면: 이벤트 서랍",
+      category: "화면",
+      keywords: ["drawer", "event", "서랍", "이벤트"],
+      run: () => activateLeftDrawerTab("event"),
+    },
+    {
+      id: "mode-beginner",
+      label: "화면: 초보 모드",
+      category: "화면",
+      keywords: ["mode", "beginner", "초보", "모드"],
+      run: () => setEditorUiMode("beginner"),
+    },
+    {
+      id: "mode-standard",
+      label: "화면: 표준 모드",
+      category: "화면",
+      keywords: ["mode", "standard", "표준", "모드"],
+      run: () => setEditorUiMode("standard"),
+    },
+    {
+      id: "mode-expert",
+      label: "화면: 전문가 모드",
+      category: "화면",
+      keywords: ["mode", "expert", "전문가", "모드"],
+      run: () => setEditorUiMode("expert"),
+    },
+    {
+      id: "toggle-chat-dock",
+      label: "화면: AI 채팅 도크 전환",
+      category: "화면",
+      keywords: ["chat", "dock", "ai", "채팅", "도크"],
+      run: () => {
+        void import("@/editor/panels/editor").then((mod) => mod.toggleChatDock());
+      },
     },
     {
       id: "help-shortcuts",

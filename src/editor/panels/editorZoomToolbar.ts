@@ -9,6 +9,8 @@ import { toast } from "@/util/toast";
 
 let mapScreenshotRequestSeq = 0;
 
+export const CANVAS_TOOLBAR_EXPANDED_KEY = "rpg-zzu:canvas-toolbar-expanded";
+
 // 기본 모드는 자주 쓰는 배율만 노출한다 — 7컨트롤(라벨+6버튼)은 초보에게 소음.
 // 현재 배율이 목록 밖(3/6/8x)이면 활성 표시를 위해 끼워 넣는다.
 const BASIC_ZOOM_LEVELS: readonly EditorZoom[] = [1, 2, 4];
@@ -19,38 +21,80 @@ export function visibleZoomLevels(dense: boolean, currentZoom: EditorZoom): read
   return [...BASIC_ZOOM_LEVELS, currentZoom].sort((a, b) => a - b);
 }
 
+export function stepEditorZoom(delta: number, levels: readonly EditorZoom[], current: EditorZoom): EditorZoom {
+  const index = Math.max(0, levels.indexOf(current));
+  const next = index + delta;
+  if (next < 0) return levels[0] ?? current;
+  if (next >= levels.length) return levels[levels.length - 1] ?? current;
+  return levels[next] ?? current;
+}
+
 export function renderCanvasToolbar(container: HTMLElement): void {
   clearChildren(container);
   const chrome = getEditorChrome();
   const currentZoom = editorState.get().zoom;
   container.dataset.uiDensity = chrome.canvasChromeDense ? "expert" : "beginner";
-  // figma-editor.css hides .zoom-button until .is-expanded (⋯ gate for expert).
-  // Basic has no expand control — always expand so 1x/2x/4x/8x stay reachable.
+  container.classList.add("is-zoom-stepper");
   if (!chrome.canvasChromeDense) {
     container.classList.add("is-basic-chrome");
+    container.classList.add("is-docked-chrome");
     container.classList.add("is-expanded");
   } else {
     container.classList.remove("is-basic-chrome");
-    container.classList.remove("is-expanded");
+    container.classList.remove("is-docked-chrome");
+    container.classList.toggle("is-expanded", readCanvasToolbarExpanded());
   }
 
+  const levels = visibleZoomLevels(chrome.canvasChromeDense, currentZoom);
   const zoomGroup = el("div", {
-    class: "canvas-toolbar-zoom-group",
+    class: "canvas-toolbar-zoom-group is-stepper",
     attrs: { "aria-label": "캔버스 확대", role: "group" },
     dataset: { testid: "editor-zoom-group" },
-    children: [el("span", { class: "canvas-toolbar-label", text: "확대" })],
   });
-  for (const zoom of visibleZoomLevels(chrome.canvasChromeDense, currentZoom)) {
-    zoomGroup.append(
+  zoomGroup.append(
+    el("button", {
+      class: "rm2k3-tool-button zoom-stepper-btn",
+      text: "−",
+      attrs: { type: "button", title: "축소", "aria-label": "축소" },
+      dataset: { testid: "editor-zoom-prev" },
+      on: { click: () => editorState.set({ zoom: stepEditorZoom(-1, levels, currentZoom) }) },
+    }),
+    el("button", {
+      class: "rm2k3-tool-button zoom-stepper-current",
+      text: `${currentZoom}x`,
+      attrs: { type: "button", title: "배율 목록", "aria-expanded": "false", "aria-label": `현재 ${currentZoom}배` },
+      dataset: { testid: "editor-zoom-stepper" },
+      on: {
+        click: () => {
+          const open = zoomGroup.classList.toggle("is-menu-open");
+          zoomGroup.querySelector("[data-testid='editor-zoom-stepper']")?.setAttribute("aria-expanded", String(open));
+        },
+      },
+    }),
+    el("button", {
+      class: "rm2k3-tool-button zoom-stepper-btn",
+      text: "+",
+      attrs: { type: "button", title: "확대", "aria-label": "확대" },
+      dataset: { testid: "editor-zoom-next" },
+      on: { click: () => editorState.set({ zoom: stepEditorZoom(1, levels, currentZoom) }) },
+    }),
+  );
+  const menu = el("div", {
+    class: "canvas-toolbar-zoom-menu",
+    dataset: { testid: "editor-zoom-menu" },
+  });
+  for (const zoom of levels) {
+    menu.append(
       el("button", {
         class: "rm2k3-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),
         text: `${zoom}x`,
         attrs: { title: `${zoom}배 확대`, "aria-label": `${zoom}배 확대`, "aria-pressed": String(currentZoom === zoom) },
         dataset: { testid: `editor-zoom-${zoom}` },
         on: { click: () => editorState.set({ zoom }) },
-      })
+      }),
     );
   }
+  zoomGroup.append(menu);
   // Basic: zoom only (always expanded). Expert: ⋯ expand + build palette + map screenshot.
   if (!chrome.canvasChromeDense) {
     container.append(zoomGroup);
@@ -80,7 +124,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       class: "canvas-toolbar-expand",
       text: "⋯",
       // hover 자동 노출을 없앴으므로 이 버튼이 확대/맵저장 컨트롤을 여닫는 유일한 토글이다.
-      attrs: { type: "button", title: "확대·맵 저장 펼치기/접기", "aria-label": "확대·맵 저장 펼치기/접기", "aria-expanded": "false" },
+      attrs: { type: "button", title: "확대·맵 저장 펼치기/접기", "aria-label": "확대·맵 저장 펼치기/접기", "aria-expanded": String(container.classList.contains("is-expanded")) },
       dataset: { testid: "editor-canvas-toolbar-expand", uiDensity: "expert" },
       on: {
         click: () => {
@@ -88,13 +132,32 @@ export function renderCanvasToolbar(container: HTMLElement): void {
           if (expanded) container.classList.add("is-expanded");
           else container.classList.remove("is-expanded");
           expandButton.setAttribute("aria-expanded", String(expanded));
+          writeCanvasToolbarExpanded(expanded);
         },
       },
     });
   container.append(zoomGroup, expandButton, buildGroup, saveAction);
 }
 
-async function downloadCurrentMapScreenshot(): Promise<void> {
+function readCanvasToolbarExpanded(): boolean {
+  try {
+    return typeof localStorage !== "undefined" && localStorage.getItem(CANVAS_TOOLBAR_EXPANDED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function writeCanvasToolbarExpanded(expanded: boolean): void {
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(CANVAS_TOOLBAR_EXPANDED_KEY, expanded ? "1" : "0");
+    }
+  } catch {
+    // Storage may be unavailable in private/restricted browser contexts.
+  }
+}
+
+export async function downloadCurrentMapScreenshot(): Promise<void> {
   const requestSeq = ++mapScreenshotRequestSeq;
   try {
     const project = store.getCurrent();

@@ -52,6 +52,32 @@ describe("commandRegistry", () => {
     expect(picked).toHaveLength(1);
   });
 
+  it("registers the complete expert chrome command set exactly once", () => {
+    const commands = listEditorCommands();
+    const requiredIds = [
+      "open-world",
+      "open-resources",
+      "map-screenshot",
+      "build-palette",
+      "drawer-map",
+      "drawer-tile",
+      "drawer-event",
+      "mode-beginner",
+      "mode-standard",
+      "mode-expert",
+      "toggle-chat-dock",
+    ];
+    expect(commands.filter((command) => requiredIds.includes(command.id)).map((command) => command.id)).toEqual(requiredIds);
+  });
+
+  it("direct mode commands select beginner, standard, and expert chrome", () => {
+    const commands = listEditorCommands();
+    for (const mode of ["beginner", "standard", "expert"] as const) {
+      commands.find((command) => command.id === `mode-${mode}`)!.run();
+      expect(getEditorUiMode()).toBe(mode);
+    }
+  });
+
   it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {
     const commands = listEditorCommands();
     expect(commands.some((c) => c.id === "help-shortcuts")).toBe(true);
