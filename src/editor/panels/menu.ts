@@ -249,7 +249,7 @@ function renderStandardMoreTools(): readonly HTMLElement[] {
     }));
   };
   addItem("세계관", "standard-more-world", () => openWorldPanel());
-  addItem("리소스", "standard-more-resources", () => openResourceModal());
+  addItem(uiLabel("resources"), "standard-more-resources", () => openResourceModal());
   addItem(uiLabel("databaseShort"), "standard-more-database", () => openDatabaseModal());
   addItem("전문가 모드로 전환", "standard-more-switch-expert", () => setEditorUiMode("expert"));
   return [button, menu];

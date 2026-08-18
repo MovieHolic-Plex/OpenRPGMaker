@@ -10,6 +10,7 @@ import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
+import { uiLabel } from "@/editor/uiCopy";
 import type { MapId, Project } from "@/project/types";
 
 export interface EditorCommand {
@@ -90,7 +91,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
     },
     {
       id: "open-resources",
-      label: "화면: 리소스 관리자 열기",
+      label: `화면: ${uiLabel("resources")} 관리자 열기`,
       category: "화면",
       keywords: ["resources", "resource", "리소스", "소재"],
       run: () => openResourceModal(),
