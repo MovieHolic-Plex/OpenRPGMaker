@@ -4,6 +4,8 @@
 import type { AuditEntry } from "@/ai/assistantSession";
 import type { ToolResult } from "@/editor/tools";
 import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
+import { getEditorChrome } from "@/editor/editorUiMode";
+import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
@@ -265,7 +267,20 @@ export function createConversationLogHost(options: {
     }
     toolActivity.writeOrFailCount += 1;
     toolDetailSeq += 1;
-    toolActivity.list.append(renderToolActivityEntry(name, result, { args, index: toolDetailSeq }));
+    const plainToolNames = getEditorChrome().jargonStyle === "plain";
+    const visibleResult = plainToolNames
+      ? { ...result, summary: sanitizeUserFacingToolId(result.summary) }
+      : result;
+    const entry = renderToolActivityEntry(name, visibleResult, { args, index: toolDetailSeq });
+    if (plainToolNames) {
+      const title = result.ok
+        ? entry
+        : entry.querySelector(".ai-tool-failure-summary");
+      if (title?.textContent) {
+        title.textContent = title.textContent.replace(name, sanitizeUserFacingToolId(name));
+      }
+    }
+    toolActivity.list.append(entry);
     refreshToolActivityToggle();
     log.scrollTop = log.scrollHeight;
   };

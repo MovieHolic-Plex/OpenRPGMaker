@@ -23,6 +23,8 @@ import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { ensureGuestIdentityForAiSurface } from "@/editor/teamWorkflowUi";
+import { getEditorChrome } from "@/editor/editorUiMode";
+import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import {
   callsWithVocabularyEdits,
   hasVocabularyEdits,
@@ -354,7 +356,10 @@ export function createProposalHost(options: {
     const warnings = proposalApprovalWarnings(selectedCalls);
     const hasDestructive = selectedCalls.some((c) => c.destructive || c.name === "clear_region" || c.name === "remove_event" || c.name === "remove_map" || c.name === "delete_tile_group" || c.name === "reset_project");
     if (hasDestructive) {
-      const summary = selectedCalls.map((c) => `• ${c.summary || c.name}`).join("\n");
+      const plainToolNames = getEditorChrome().jargonStyle === "plain";
+      const summary = selectedCalls
+        .map((c) => `• ${plainToolNames ? sanitizeUserFacingToolId(c.summary || c.name) : c.summary || c.name}`)
+        .join("\n");
       const msg = `파괴적 작업이 포함되어 있습니다 — 아래 내역을 확인하세요:\n${summary}\n\n체크박스는 기본 해제 상태입니다. 적용하려면 직접 체크 후 [확인 후 적용]을 누르세요.`;
       void showConfirm({ title: "파괴적 변경 — 3단 확인", message: msg, confirmLabel: "확인 후 적용" }).then((ok: boolean) => {
         if (ok) void applyAcceptedProposal(calls, selected, selectedCalls, hasEdits, approveMaterials);
@@ -390,7 +395,10 @@ export function createProposalHost(options: {
     assistantBubble: HTMLElement | null = null,
     presentation: ProposalPresentationMode = "modal",
   ): void => {
-    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings);
+    const plainToolNames = getEditorChrome().jargonStyle === "plain";
+    const userFacingToolText = (text: string): string =>
+      plainToolNames ? sanitizeUserFacingToolId(text) : text;
+    const lines = proposalSummaryLines(result.proposedCalls, extraWarnings).map(userFacingToolText);
     // 제안·경고 모두 없는 턴(순수 채팅 응답)은 기존 대기 카드를 건드리지 않는다.
     // 예전에는 여기서 replaceChildren 후 early return 해서 모달 헤더(N건)만 남고
     // 본문이 빈 껍데기로 남는 버그가 있었다(큐 연속 전송·후속 질문 시 재현).
@@ -470,7 +478,10 @@ export function createProposalHost(options: {
         class: "ai-proposal-item",
         children: [
           checkbox,
-          el("span", { class: "ai-proposal-item-main", text: call.summary || call.name }),
+          el("span", {
+            class: "ai-proposal-item-main",
+            text: userFacingToolText(call.summary || call.name),
+          }),
           el("span", { class: "ai-proposal-item-note", attrs: { hidden: "" } }),
         ],
       });
@@ -537,7 +548,13 @@ export function createProposalHost(options: {
             el("summary", { text: "기술 상세" }),
             el("div", {
               class: "ai-proposal-lines",
-              children: proposalTechnicalDetailLines(result.proposedCalls).map((line) => el("div", { class: "ai-proposal-line", text: line })),
+              children: (plainToolNames
+                ? result.proposedCalls.map((call) => {
+                    const flag = call.destructive ? "⚠️ 파괴적 " : "";
+                    return `${flag}${sanitizeUserFacingToolId(call.name)} — ${userFacingToolText(call.summary)}`;
+                  })
+                : proposalTechnicalDetailLines(result.proposedCalls)
+              ).map((line) => el("div", { class: "ai-proposal-line", text: line })),
             }),
           ],
         }),

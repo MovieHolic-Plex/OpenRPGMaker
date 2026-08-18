@@ -30,3 +30,19 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
 export function uiLabel(key: UiCopyKey, style: UiCopyStyle = "plain"): string {
   return UI_COPY[key][style];
 }
+
+const USER_FACING_TOOL_NAMES: Readonly<Record<string, string>> = {
+  paint_road: "길 그리기",
+  build_house: "마을 짓기",
+  author_village: "마을 짓기",
+  make_villager: "사람 만들기",
+  run_lint: "검사",
+  plan_world: "세계 계획",
+};
+
+/** Replace a bare internal tool id while leaving ordinary user-facing sentences intact. */
+export function sanitizeUserFacingToolId(raw: string): string {
+  const mapped = USER_FACING_TOOL_NAMES[raw];
+  if (mapped) return mapped;
+  return /^[a-z][a-z0-9_]*$/.test(raw) ? "작업" : raw;
+}
