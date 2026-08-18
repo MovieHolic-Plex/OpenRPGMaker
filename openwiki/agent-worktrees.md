@@ -19,7 +19,9 @@
 npm run wt create <name>      # 워크트리 생성 (현재 워킹트리를 스냅샷해서 베이스로 삼음)
 npm run wt adopt [name]       # 이 도구 밖에서 만든 기존 워크트리를 같은 규약으로 보정
 npm run wt list               # 워크트리 + 배정 포트 확인
+npm run wt done <name>        # 체크아웃은 두고 Orca 보드만 completed
 npm run wt remove <name>      # 제거 (--keep-branch 로 브랜치 보존)
+npm run wt orca-sync          # 경로가 사라진 Orca 카드를 completed 로 정리
 npm run wt snapshot           # 현재 워킹트리를 커밋 객체로 박제(HEAD·인덱스 불변)
 ```
 
@@ -35,6 +37,11 @@ npm run wt snapshot           # 현재 워킹트리를 커밋 객체로 박제(H
 3. **node_modules 정션** — 윈도우 junction (관리자 권한 불필요). 수 GB 중복 방지.
 4. **`.env` / `.env.local` 복사** — gitignored 라 워크트리에 따라오지 않는다.
 5. **`DEV_SERVER_PORT` 고유 배정** — 9801부터. 메인이 `--port 9999 --strictPort` 를 점유한다.
+6. **Orca 보드 status** — Orca가 떠 있고 그 경로가 이미 카드로 등록돼 있으면 `in-progress` 로 맞춘다.
+   끝나거나 지우면 `completed`. 메인 체크아웃은 건드리지 않는다. raw `git worktree add` /
+   등록되지 않은 sibling 경로는 카드를 만들지 않고 skip 한다. Orca가 만든 창
+   (`~/orca/workspaces/<repo>/<name>`) 은 `orca.yaml` 의 setup/archive 훅이 같은 id 를 쓴다.
+   보드가 막히면 `npm run wt orca-sync` 로 사라진 경로만 닫는다.
 
 워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. `npm run dev` 는 9999를
 하드코딩하므로 메인과 충돌한다.

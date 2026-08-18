@@ -18,11 +18,14 @@
 //   node scripts/agent-worktree.mjs create <name> [--base <ref>]
 //   node scripts/agent-worktree.mjs list
 //   node scripts/agent-worktree.mjs remove <name> [--keep-branch]
+//   node scripts/agent-worktree.mjs done <name>     # Orca 보드를 completed 로 (체크아웃 유지)
+//   node scripts/agent-worktree.mjs orca-sync       # 경로가 사라진 Orca 카드를 completed 로
 //   node scripts/agent-worktree.mjs snapshot        # 현재 워킹트리를 커밋으로 박제(비침습)
 import { execFileSync } from "node:child_process";
 import { existsSync, copyFileSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, unlinkSync, rmSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
 import { tmpdir } from "node:os";
+import { resolveAgentWorktreePath, resolvePrimaryRepoRoot, syncOrcaWorkspaceStatus } from "./lib/orca-workspace-status-cli.mjs";
 
 const REPO = resolve(process.cwd());
 const REPO_NAME = basename(REPO);
@@ -35,7 +38,12 @@ function git(args, options = {}) {
 }
 
 function worktreePath(name) {
-  return join(PARENT, `${REPO_NAME}-${name}`);
+  return resolveAgentWorktreePath(name, { repoRoot: REPO, repoName: REPO_NAME }) ?? join(PARENT, `${REPO_NAME}-${name}`);
+}
+
+function markOrcaStatus(command, path) {
+  if (!path) return;
+  syncOrcaWorkspaceStatus({ command, targetPath: path, repoRoot: resolvePrimaryRepoRoot(REPO) });
 }
 
 function branchName(name) {
@@ -138,6 +146,7 @@ function create(name, baseRef) {
 
   git(["worktree", "add", "-b", branchName(name), path, base]);
   const { port } = provision(path);
+  markOrcaStatus("create", path);
 
   console.log(`\n워크트리 생성 완료`);
   announce(path, branchName(name), port);
@@ -158,9 +167,23 @@ function adopt(name) {
   }
 }
 
+function done(name) {
+  if (!name) throw new Error("워크트리 이름이 필요합니다: done <name>");
+  const path = worktreePath(name);
+  if (!existsSync(path)) throw new Error(`없습니다: ${path}`);
+  markOrcaStatus("done", path);
+  console.log(`Orca status completed: ${path}`);
+}
+
+function orcaSync() {
+  const result = syncOrcaWorkspaceStatus({ command: "sync", repoRoot: resolvePrimaryRepoRoot(REPO) });
+  if (!result.ok) process.exitCode = 0;
+}
+
 function remove(name, keepBranch) {
   if (!name) throw new Error("워크트리 이름이 필요합니다: remove <name>");
   const path = worktreePath(name);
+  markOrcaStatus("remove", path);
   // node_modules 정션을 먼저 끊는다 — git 은 추적 파일만 지우므로 정션이 남아 디렉터리가
   // 비지 않고, 결과적으로 껍데기 디렉터리가 잔존한다.
   const linkPath = join(path, "node_modules");
@@ -206,6 +229,12 @@ try {
     case "remove":
       remove(positional[0], flags.has("--keep-branch"));
       break;
+    case "done":
+      done(positional[0]);
+      break;
+    case "orca-sync":
+      orcaSync();
+      break;
     case "adopt":
       adopt(positional[0]);
       break;
@@ -216,7 +245,7 @@ try {
       console.log(snapshot("snapshot: manual working-tree snapshot"));
       break;
     default:
-      console.log("사용: agent-worktree.mjs <create|adopt|remove|list|snapshot> [name] [--base <ref>] [--keep-branch]");
+      console.log("사용: agent-worktree.mjs <create|adopt|remove|done|orca-sync|list|snapshot> [name] [--base <ref>] [--keep-branch]");
       process.exit(1);
   }
 } catch (error) {

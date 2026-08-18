@@ -69,7 +69,10 @@ index 에서 제거하고 `.gitignore` 에 `.qoder/` `.qwen/` `.senpi/` `.agents
 미완성 편집을 덮어쓰고, 검증이 움직이는 표적을 쫓게 된다.
 
 1. 병렬이 필요하면 `npm run wt create <name>` 로 **에이전트마다 격리 워크트리**를 만든다.
-   절차·함정은 `openwiki/agent-worktrees.md` 참조.
+   절차·함정은 `openwiki/agent-worktrees.md` 참조. Orca 안에서 작업창을 돌릴 때도 raw
+   `git worktree add` / 상태 없는 `orca worktree create` 로 끝내지 말고, 끝나면
+   `npm run wt done <name>` 또는 `npm run wt remove <name>` 으로 보드 status 를 닫는다.
+   카드가 In progress 에 쌓이면 `npm run wt orca-sync`.
 2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** Supabase 프로젝트 행이
    공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id 를 분리한다.
 3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트의 "테스트 통과했습니다"와 파이프를

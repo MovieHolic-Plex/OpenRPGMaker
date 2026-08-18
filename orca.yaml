@@ -1,0 +1,5 @@
+# Orca work-window status. Setup/archive keep the board off a stuck In-progress pile.
+# `npm run wt` uses the same ids via scripts/lib/orca-workspace-status.mjs.
+scripts:
+  setup: node scripts/orca-worktree-hook.mjs setup
+  archive: node scripts/orca-worktree-hook.mjs archive
