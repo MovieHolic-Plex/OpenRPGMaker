@@ -21,44 +21,50 @@
 
 .editor-ui-mode-toggle {
   align-items: center;
-  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 88%, #000);
-  border: 1px solid var(--editor-line, #2a3550);
-  border-radius: 999px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
   display: inline-flex;
+  flex: 0 0 auto;
   gap: 2px;
   margin-left: 12px;
-  padding: 3px;
+  padding: 0;
 }
 
 .editor-ui-mode-btn {
   background: transparent;
   border: 0;
-  border-radius: 999px;
-  color: var(--editor-text-muted, #9aa8c7);
+  border-radius: 0;
+  color: var(--editor-text-muted, #3c3c3c);
   cursor: pointer;
   font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
   height: 28px;
-  padding: 0 12px;
+  padding: 0 8px;
   white-space: nowrap;
 }
 
 .editor-ui-mode-btn:hover,
 .editor-ui-mode-btn:focus-visible {
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, #111);
   outline: none;
 }
 
 .editor-ui-mode-btn.is-active {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 85%, #1a2744);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 50%, transparent);
-  color: var(--on-accent);
+  background: transparent;
+  box-shadow: none;
+  color: var(--editor-text, #111);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-body.editor-ui-beginner .topbar-test-play {
+body.editor-ui-beginner .topbar-test-play,
+body.editor-ui-standard .topbar-test-play,
+body.editor-ui-expert .topbar-test-play {
   align-items: center;
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 82%, #15213a);
-  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 72%, var(--editor-line));
-  border-radius: var(--radius-s, 6px);
+  background: var(--studio-play, var(--editor-blue, #1e4f9a));
+  border: 1px solid var(--studio-select, #0a246a);
+  border-radius: var(--radius-s, 2px);
   color: var(--on-accent, #fff);
   cursor: pointer;
   display: inline-flex;
@@ -71,7 +77,11 @@ body.editor-ui-beginner .topbar-test-play {
 }
 
 body.editor-ui-beginner .topbar-test-play:hover,
-body.editor-ui-beginner .topbar-test-play:focus-visible {
+body.editor-ui-beginner .topbar-test-play:focus-visible,
+body.editor-ui-standard .topbar-test-play:hover,
+body.editor-ui-standard .topbar-test-play:focus-visible,
+body.editor-ui-expert .topbar-test-play:hover,
+body.editor-ui-expert .topbar-test-play:focus-visible {
   filter: brightness(1.12);
   outline: 2px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 45%, transparent);
   outline-offset: 1px;
@@ -111,22 +121,41 @@ body.editor-ui-standard .canvas-toolbar.is-basic-chrome {
   opacity: 0.95;
 }
 
+body.editor-ui-beginner .canvas-toolbar.is-basic-chrome.is-docked-chrome {
+  align-items: center;
+  backdrop-filter: none;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  height: var(--editor-canvas-chrome-top, 48px);
+  left: auto;
+  max-width: none;
+  padding: 0 8px;
+  right: 8px;
+  top: 0;
+  transform: none;
+}
+
 /* Basic has no ⋯ expand control — never hide zoom buttons behind is-expanded gate. */
 body.editor-ui-beginner .canvas-toolbar.is-basic-chrome .zoom-button,
 .canvas-toolbar.is-basic-chrome.is-expanded .zoom-button {
   display: inline-flex;
 }
 
-/* ── Basic icon rail + flyout ────────────────────────────────────
+/* ── Basic labeled rail + flyout ─────────────────────────────────
    figma-editor.css loads after this file and sets left-palette padding +
-   overflow:hidden for expert sheet scrolling. Basic mode must beat those
-   with higher specificity so the 48px rail stays square and flyouts are
-   not clipped (layer/map toggles open overlays to the right of the rail).
+   overflow:hidden for expert sheet scrolling. Beginner mode must beat those
+   with higher specificity so its narrow labeled rail and flyouts are not
+   clipped (layer/map toggles open overlays to the right of the rail).
 */
+
+body.editor-ui-beginner {
+  --basic-rail-width: 72px;
+}
 
 body.editor-ui-beginner .editor-layout .left-panel,
 body.editor-ui-beginner .left-panel {
-  /* Single-column icon rail — no expert map-tree grid row.
+  /* Single-column labeled rail — no expert map-tree grid row.
      z-index must beat .canvas-area (later sibling, position:relative) so
      flyouts that spill right are clickable and visible over the map. */
   container-type: normal;
@@ -134,13 +163,13 @@ body.editor-ui-beginner .left-panel {
   flex-direction: column;
   gap: 0;
   grid-template-rows: none;
-  min-width: 48px !important;
+  min-width: var(--basic-rail-width) !important;
   overflow: visible !important;
   overflow-x: visible !important;
   overflow-y: visible !important;
   padding: 0 !important;
   position: relative;
-  width: 48px;
+  width: var(--basic-rail-width);
   z-index: var(--z-rail);
 }
 
@@ -170,11 +199,11 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   height: 100%;
-  padding: 10px 0 12px;
+  padding: 6px 0 8px;
   position: relative;
-  width: 48px;
+  width: var(--basic-rail-width, 72px);
 }
 
 .basic-rail-icons {
@@ -203,18 +232,33 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   color: var(--editor-text-muted, #9aa8c7);
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   flex-shrink: 0;
-  height: 36px;
+  gap: 1px;
   justify-content: center;
+  min-height: 48px;
+  min-width: 40px;
+  padding: 3px 2px;
   position: relative;
-  width: 36px;
+  width: 64px;
 }
 
 .basic-rail-btn svg {
   display: block;
   flex: 0 0 auto;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
+}
+
+.basic-rail-label {
+  display: -webkit-box;
+  font: 700 14px/1.2 var(--font-ui, system-ui, sans-serif);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  max-height: 2.4em;
+  overflow: hidden;
+  text-align: center;
+  word-break: keep-all;
 }
 
 .basic-rail-btn:hover,
@@ -236,32 +280,12 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   opacity: 0.45;
 }
 
-/* 아이콘만으로는 초보가 못 알아본다 — hover/focus 즉시 라벨을 오른쪽에 띄운다
-   (네이티브 title 툴팁은 ~1초 지연이라 발견성이 낮다). */
-.basic-rail-btn[data-rail-label]:hover::after,
-.basic-rail-btn[data-rail-label]:focus-visible::after {
-  background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 96%, #000);
-  border: 1px solid var(--editor-line-strong, #3a4a6a);
-  border-radius: 6px;
-  color: var(--editor-text, #e8eefc);
-  content: attr(data-rail-label);
-  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
-  left: calc(100% + 8px);
-  padding: 5px 8px;
-  pointer-events: none;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-  z-index: var(--z-flyout);
-}
-
 .basic-rail-sep {
-  background: var(--editor-line, #2a3550);
+  background: var(--editor-line-strong, #3a4a6a);
   flex-shrink: 0;
   height: 1px;
   margin: 2px 0;
-  width: 22px;
+  width: 40px;
 }
 
 .basic-pending-event-cta {
@@ -323,7 +347,6 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 
 @media (max-width: 1320px) {
   body.editor-ui-beginner .editor-product-brand-text,
-  body.editor-ui-beginner .editor-ui-mode-btn:not(.is-active),
   body.editor-ui-beginner .topbar-test-play-label {
     display: none;
   }
