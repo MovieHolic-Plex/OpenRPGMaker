@@ -72,16 +72,22 @@ export function renderStoryboard(
       });
       track.append(card);
       if (branches.length > 0) {
-        for (const br of branches.slice(0, 2)) {
-          const inner = el("div", {
+        const shown = branches.slice(0, 2);
+        const row = el("div", { class: "event-storyboard-card-branches" });
+        for (const br of shown) {
+          row.append(el("div", {
             class: "event-storyboard-branch",
             children: [
               el("span", { class: "event-storyboard-branch-label", text: br.label }),
               el("span", { class: "event-storyboard-branch-count", text: `${br.commands.length}개` }),
             ],
-          });
-          track.append(inner);
+          }));
         }
+        const remaining = branches.length - shown.length;
+        if (remaining > 0) {
+          row.append(el("span", { class: "event-storyboard-branch-more", text: `+${remaining}` }));
+        }
+        card.append(row);
       }
     });
   }
