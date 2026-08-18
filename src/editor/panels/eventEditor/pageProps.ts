@@ -39,7 +39,13 @@ import {
   openEventMovement,
 } from "./eventEditorOpenState";
 
-export function renderEventNameControl(mapId: MapId, eventId: string, page: EventPage, event: GameEvent): HTMLElement {
+export function renderEventNameControl(
+  mapId: MapId,
+  eventId: string,
+  page: EventPage,
+  event: GameEvent,
+  characterIdControl: HTMLElement = renderEventCharacterIdField(mapId, event),
+): HTMLElement {
   const name = el("input", {
     attrs: { type: "text", placeholder: "이벤트 이름" },
     value: page.name,
@@ -54,7 +60,7 @@ export function renderEventNameControl(mapId: MapId, eventId: string, page: Even
         class: "event-editor-name-field",
         children: [el("span", { text: "이름" }), name],
       }),
-      renderEventCharacterIdField(mapId, event),
+      characterIdControl,
     ],
   });
 }

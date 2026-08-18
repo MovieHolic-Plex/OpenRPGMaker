@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
@@ -57,6 +58,7 @@ describe("event editor UI density", () => {
   let host: HTMLElement;
 
   beforeEach(() => {
+    resetEditorUiModeForTests("standard");
     clearCommandInspector();
     openEventConditions.clear();
     openEventMovement.clear();
@@ -70,6 +72,7 @@ describe("event editor UI density", () => {
   });
 
   afterEach(() => {
+    resetEditorUiModeForTests("standard");
     clearCommandInspector();
     host.remove();
     openEventConditions.clear();
@@ -82,7 +85,8 @@ describe("event editor UI density", () => {
     expect(nameField?.textContent).toContain("이름");
     expect(nameField?.textContent).not.toContain("Name");
 
-    expect(host.querySelector('[data-testid="event-page-add"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-page-tab-add"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-page-add"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-copy"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-page-paste"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-delete"]')).toBeNull();
@@ -116,10 +120,10 @@ describe("event editor UI density", () => {
     expect(movement?.contains(classicTrigger)).toBe(false);
     expect(host.querySelector('[data-testid="event-page-trigger-priority-stack"]')).toBeTruthy();
 
-    // Empty characterId is optional in the top identity row (no connect CTA gate).
-    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    // Beginner chrome does not mount optional identity controls before disclosure.
+    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
     const contents = host.querySelector('[data-testid="event-classic-contents"]');
@@ -128,9 +132,41 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')?.classList.contains("primary")).toBe(true);
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-edit-menu"]')?.open).toBe(false);
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]')?.open).toBe(false);
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(false);
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]')?.open).toBe(false);
+  });
+
+  it("lazy-mounts beginner-only optional chrome when its parent details open", () => {
+    resetEditorUiModeForTests("beginner");
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+
+    const characterDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-character-id-details"]');
+    const legendDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]');
+    expect(characterDetails?.open).toBe(false);
+    expect(legendDetails?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
+
+    expandDetails(characterDetails);
+    expandDetails(legendDetails);
+
+    expect(characterDetails?.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(legendDetails?.querySelector('[data-testid="event-command-legend"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
+  });
+
+  it("mounts expert optional chrome inside closed details", () => {
+    resetEditorUiModeForTests("expert");
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-character-id-details"]')?.open).toBe(false);
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
   });
 
   it("keeps the command inspector hidden until a command is selected", () => {

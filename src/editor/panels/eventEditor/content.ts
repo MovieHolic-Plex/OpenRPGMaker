@@ -1,4 +1,5 @@
 import { editorState } from "@/editor/editorState";
+import { getEditorChrome } from "@/editor/editorUiMode";
 import { moveEvent } from "@/editor/eventActions";
 import {
   buildEventBeginnerTemplate,
@@ -42,6 +43,7 @@ import { branchesOf } from "./previewSimulation";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
 import {
   renderClassicPageTabStrip,
+  renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
   renderEventNameControl,
   renderEventPageProps,
@@ -127,6 +129,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const validation = validateEventDraftBody(store.getCurrent(), mapId, ev);
   const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
+  const beginnerChrome = getEditorChrome().eventBeginnerChrome;
   const commandHistory = createCommandToolbarHistory({
     key: `${mapId}:${ev.id}:${activePage.id}`,
     readCommands: () => activePageCommands(mapId, ev.id, activePage.id),
@@ -234,6 +237,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 스프라이트 실물 + 이름/캐릭터 ID + 좌표를 한 덩어리로 묶는다.
   // top-strip 을 카드 안에 넣는 이유: 이름·캐릭터 ID 가 top-strip 안에 있어야 한다는
   // 기존 계약(eventEditorSettingsLayout.test)을 유지하면서 배치만 목업에 맞추기 위함.
+  const characterIdDetails = lazyDetails({
+    className: "event-character-id-details",
+    testId: "event-character-id-details",
+    summary: "NPC/호감 연결",
+    renderBody: () => renderEventCharacterIdField(mapId, ev),
+    lazy: beginnerChrome,
+  });
   const eventCard = el("div", {
     class: "event-editor-card",
     dataset: { testid: "event-editor-card" },
@@ -248,7 +258,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         children: [
           el("div", {
             class: "event-editor-top-strip",
-            children: [renderEventNameControl(mapId, ev.id, activePage, ev)],
+            children: [renderEventNameControl(mapId, ev.id, activePage, ev, characterIdDetails)],
           }),
           el("div", {
             class: "event-editor-id-row",
@@ -280,7 +290,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         }),
         storyboardHost,
         cmdList,
-        renderCommandCategoryLegend(),
+        lazyDetails({
+          className: "event-command-legend-details",
+          testId: "event-command-legend-details",
+          summary: "색상 범례",
+          renderBody: renderCommandCategoryLegend,
+          lazy: beginnerChrome,
+        }),
       ],
     }),
     // 하단 보조 도구: AI / 미리보기 / 플로우 — 접힘 시 한 줄 칩, 실행 내용 높이 우선.
@@ -450,6 +466,29 @@ const COMMAND_CATEGORY_LEGEND: readonly (readonly [string, string])[] = [
   ["screen", "연출"],
   ["system", "시스템"],
 ];
+
+function lazyDetails(options: {
+  className: string;
+  testId: string;
+  summary: string;
+  renderBody: () => HTMLElement;
+  lazy: boolean;
+}): HTMLDetailsElement {
+  const details = el("details", {
+    class: options.className,
+    dataset: { testid: options.testId },
+    children: [el("summary", { text: options.summary })],
+  }) as HTMLDetailsElement;
+  let mounted = false;
+  const mount = (): void => {
+    if (mounted) return;
+    mounted = true;
+    details.append(options.renderBody());
+  };
+  if (options.lazy) details.addEventListener("toggle", () => { if (details.open) mount(); });
+  else mount();
+  return details;
+}
 
 function renderCommandCategoryLegend(): HTMLElement {
   return el("details", {
