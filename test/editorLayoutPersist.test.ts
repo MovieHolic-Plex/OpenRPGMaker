@@ -201,7 +201,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     document.dispatchEvent(mouseEvent("mouseup", {}));
     toggleLeftPanel();
 
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 626, mapTreeHeight: 160, leftCollapsed: true, chatDock: "side" }));
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 400, mapTreeHeight: 160, leftCollapsed: true, chatDock: "float" }));
 
     vi.resetModules();
     mockEditorDependencies();
@@ -227,24 +227,24 @@ describe("에디터 레이아웃 크기 저장", () => {
     if (!panel || !log || !toggle || !floatHost || !sideHost) throw new Error("chat dock fixtures missing");
     log.textContent = "로그 유지";
 
-    expect(panel.parentElement).toBe(sideHost);
-    expect(editorState.get().chatDock).toBe("side");
-    expect(panel.classList.contains("chat-dock-side")).toBe(true);
+    expect(panel.parentElement).toBe(floatHost);
+    expect(editorState.get().chatDock).toBe("float");
+    expect(panel.classList.contains("chat-dock-float")).toBe(true);
     expect(panel.classList.contains("is-docked")).toBe(false);
+
+    toggle.click();
+
+    expect(panel.parentElement).toBe(sideHost);
+    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
+    expect(log.textContent).toBe("로그 유지");
+    expect(editorState.get().chatDock).toBe("side");
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 300, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
 
     toggle.click();
 
     expect(panel.parentElement).toBe(floatHost);
     expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(log.textContent).toBe("로그 유지");
-    expect(editorState.get().chatDock).toBe("float");
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "float" }));
-
-    toggle.click();
-
-    expect(panel.parentElement).toBe(sideHost);
-    expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
+    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 300, mapTreeHeight: 154, leftCollapsed: false, chatDock: "float" }));
   });
 
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
@@ -258,7 +258,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     renderEditor(main);
 
     const leftPanel = fakeElement(main).querySelector(".left-panel");
-    expect(leftPanel?.style.width).toBe("640px");
+    expect(leftPanel?.style.width).toBe("300px");
     expect(leftPanel?.style["--map-tree-height"]).toBe("112px");
 
     storage.setItem(EDITOR_LAYOUT_KEY, "{broken");
@@ -269,13 +269,15 @@ describe("에디터 레이아웃 크기 저장", () => {
     fresh.renderEditor(freshMain);
 
     const freshLeftPanel = fakeElement(freshMain).querySelector(".left-panel");
-    // 깨진 JSON → 기본 레이아웃(side dock). 좌폭 기본 526은 side 폭 차감으로 줄어들 수 있다.
-    expect(Number.parseInt(String(freshLeftPanel?.style.width), 10)).toBeLessThanOrEqual(526);
+    // 깨진 JSON → 기본 레이아웃(float dock). 좌폭 기본 300이 그대로 적용된다.
+    expect(Number.parseInt(String(freshLeftPanel?.style.width || freshLeftPanel?.parentElement?.style.getPropertyValue?.("--left-drawer-width") || "0"), 10)).toBeLessThanOrEqual(320);
     expect(freshLeftPanel?.style["--map-tree-height"]).toBe("154px");
   });
 
   it("저장된 채팅 side dock을 복원한다", async () => {
-    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
+    // 소스가 읽는 실제 키(v4)에 심는다 — 상단 EDITOR_LAYOUT_KEY 상수는 레거시 키라 저장 dock 복원을 검증하지 못한다.
+    storage.setItem("rpg-zzu:editor-layout-version", "2026-08-18-stage-canvas");
+    storage.setItem("rpg-zzu:editor-layout:v4", JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
     vi.resetModules();
     mockEditorDependencies();
     const { renderEditor } = await import("@/editor/panels/editor");

@@ -30,7 +30,7 @@ function installFakeLocalStorage(): void {
 
 beforeEach(() => {
   store.replace(createBlankProject());
-  editorState.set({ chatDock: "side" });
+  editorState.set({ chatDock: "float" });
   restoreDom = installFakeDom();
   installFakeLocalStorage();
 });
@@ -50,8 +50,8 @@ afterEach(() => {
 });
 
 describe("AI assistant UX P0–P2", () => {
-  it("defaults chatDock preference to side", () => {
-    expect(editorState.get().chatDock).toBe("side");
+  it("defaults chatDock preference to float", () => {
+    expect(editorState.get().chatDock).toBe("float");
   });
 
   it("exposes compact icon chrome: new chat, settings, more menu", () => {

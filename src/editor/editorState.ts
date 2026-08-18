@@ -91,7 +91,7 @@ class EditorStateStore {
     clipboard: null,
     pastePreview: null,
     showGrid: true,
-    chatDock: "side",
+    chatDock: "float",
     showLayoutBboxes: false,
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,

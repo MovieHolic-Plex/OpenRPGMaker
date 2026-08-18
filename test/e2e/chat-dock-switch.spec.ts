@@ -69,25 +69,23 @@ async function assertInputUsable(page: Page, value: string): Promise<void> {
 }
 
 test.describe("chat dock switch", () => {
-  test("side default, float toggle, DOM preservation, focus, and resize bounds", async ({ page }) => {
+  test("float default, side toggle, DOM preservation, focus, and resize bounds", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 920 });
     await openEditor(page);
 
     const canvas = page.locator(".canvas-area");
     const commandBar = page.getByTestId("ai-command-bar");
     const sidePanel = page.getByTestId("chat-side-panel");
-    await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
-    await expect.poll(() => layoutDock(page)).toBe("side");
-    await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-side"))).toBe(true);
+    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
+    await expect.poll(() => layoutDock(page)).toBe("float");
+    await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-float"))).toBe(true);
     await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-panel-docked"))).toBe(false);
-    await assertInputUsable(page, "side input ok");
+    await assertInputUsable(page, "float input ok");
 
-    // 사이드 도크는 에디터 레이아웃 폭의 약 1/3 (전체 높이 컬럼).
-    const sideBox = await box(sidePanel);
-    const layoutBox = await box(page.locator(".editor-layout"));
-    expect(sideBox.width).toBeGreaterThan(layoutBox.width * 0.28);
-    expect(sideBox.width).toBeLessThan(layoutBox.width * 0.4);
-    expect(sideBox.height).toBeGreaterThan(layoutBox.height * 0.7);
+    // float 기본: 커맨드바는 캔버스 안에 떠 있다.
+    const canvasFloat = await box(canvas);
+    const commandFloat = await box(commandBar);
+    expectInside(commandFloat, canvasFloat);
 
     await page.evaluate(() => {
       const log = document.querySelector('[data-testid="ai-chat-log"]');
@@ -98,35 +96,36 @@ test.describe("chat dock switch", () => {
     });
     await expect(page.getByTestId("dock-marker")).toBeAttached();
 
-    const canvasSide = await box(canvas);
-    // 도크 전환은 더보기 메뉴(또는 호환 testid 숨은 버튼 force click)
-    await page.getByTestId("ai-more-menu-toggle").click();
-    await page.getByTestId("ai-more-dock").click();
-    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
+    // float 모드: 커맨드바 ☰ 메뉴로 사이드 전환
+    await page.getByTestId("ai-command-menu-toggle").click();
+    await page.getByTestId("ai-command-menu-dock").click();
+    await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
     await expect(page.getByTestId("dock-marker")).toBeAttached();
-    await expect.poll(() => layoutDock(page)).toBe("float");
-    await assertInputUsable(page, "float input ok");
-    const commandFloat = await box(commandBar);
-    const canvasFloat = await box(canvas);
-    expectInside(commandFloat, canvasFloat);
+    await expect.poll(() => layoutDock(page)).toBe("side");
+    await assertInputUsable(page, "side input ok");
+
+    // 사이드 도크는 브리핑 폭(레이아웃의 약 1/4, 상한 360).
+    const sideBox = await box(sidePanel);
+    const layoutBox = await box(page.locator(".editor-layout"));
+    expect(sideBox.width).toBeGreaterThan(260);
+    expect(sideBox.width).toBeLessThan(layoutBox.width * 0.32);
+    expect(sideBox.height).toBeGreaterThan(layoutBox.height * 0.7);
+    const canvasSide = await box(canvas);
     expect(canvasSide.width).toBeLessThan(canvasFloat.width - 80);
 
     await page.reload();
     await dismissLogin(page);
     await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
-    await expect.poll(() => layoutDock(page)).toBe("float");
-
-    // float 모드: 커맨드바 ☰ 메뉴로 사이드 복귀
-    await page.getByTestId("ai-command-menu-toggle").click();
-    await page.getByTestId("ai-command-menu-dock").click();
-    await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
     await expect.poll(() => layoutDock(page)).toBe("side");
-    await assertInputUsable(page, "side after toggle ok");
 
-    await page.setViewportSize({ width: 1100, height: 820 });
+    // side 모드: 더보기 메뉴로 float 복귀
     await page.getByTestId("ai-more-menu-toggle").click();
     await page.getByTestId("ai-more-dock").click();
+    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
     await expect.poll(() => layoutDock(page)).toBe("float");
+    await assertInputUsable(page, "float after toggle ok");
+
+    await page.setViewportSize({ width: 1100, height: 820 });
     const canvasNarrow = await box(canvas);
     const commandNarrow = await box(commandBar);
     expectInside(commandNarrow, canvasNarrow);

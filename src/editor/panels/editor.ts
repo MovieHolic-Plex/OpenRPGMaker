@@ -1009,7 +1009,7 @@ function defaultEditorLayout(): LoadedEditorLayout {
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
     leftCollapsed: false,
     leftCollapsedStored: false,
-    chatDock: "side",
+    chatDock: "float",
   };
 }
 
