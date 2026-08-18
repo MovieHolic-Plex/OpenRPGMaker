@@ -10,8 +10,8 @@
 
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
-import { commandSummary } from "./commandSummary";
 import { renderCommandBody } from "./commandBody";
+import { inspectorTitle } from "./inspectorChoicesTitle";
 import type { CommandListActions } from "./types";
 
 type InspectorTarget = {
@@ -78,7 +78,7 @@ export function showCommandInspector(target: InspectorTarget): void {
     ],
   });
   const isForm = density === "form";
-  const summary = safeSummary(target.command);
+  const summary = inspectorTitle(target.command);
   const toggleBtn = el("button", {
     class: "event-inspector-density-toggle",
     text: isForm ? "간단히 보기" : "자세히 편집",
@@ -143,12 +143,4 @@ function hideInspector(target: HTMLElement): void {
 function showInspector(target: HTMLElement): void {
   target.hidden = false;
   target.closest(".event-editor-workbench")?.classList.add("has-command-inspector");
-}
-
-function safeSummary(command: Command): string {
-  try {
-    return commandSummary(command);
-  } catch {
-    return command.kind;
-  }
 }
