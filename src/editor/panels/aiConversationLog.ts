@@ -1,5 +1,5 @@
 // editor/panels/aiConversationLog.ts
-// 대화 버블·추론·툴 활동·타일 시각 자료. 패널 클로저에서 팩토리로 상태만 공유한다.
+// RM @> 커맨드 로·추론·툴 활동·타일 시각 자료. 패널 클로저에서 팩토리로 상태만 공유한다.
 
 import type { AuditEntry } from "@/ai/assistantSession";
 import type { ToolResult } from "@/editor/tools";
@@ -27,10 +27,25 @@ import {
 
 export type AiBubbleRole = "user" | "assistant" | "tool" | "system";
 
+const COMMAND_PREFIX = "@>" as const;
+
 function logElements(log: HTMLElement): HTMLElement[] {
   return Array.from(log.childNodes).filter(
     (node): node is HTMLElement => Boolean(node && (node as HTMLElement).classList)
   );
+}
+
+function lastCommandRow(log: HTMLElement): HTMLElement | null {
+  const children = logElements(log);
+  for (let index = children.length - 1; index >= 0; index -= 1) {
+    const child = children[index];
+    if (child?.classList.contains("ai-command-row") && !child.classList.contains("ai-proposal-pin")) return child;
+  }
+  return null;
+}
+
+function attachToLastRow(log: HTMLElement, node: HTMLElement): void {
+  (lastCommandRow(log) ?? log).append(node);
 }
 
 /** 기록 뷰용 날짜 구분선 — 같은 날이면 생략. */
@@ -60,9 +75,14 @@ export function markPriorTurns(log: HTMLElement): void {
   const children = logElements(log);
   const keep: HTMLElement[] = [];
   const toWrap: HTMLElement[] = [];
+  const pins: HTMLElement[] = [];
   for (const child of children) {
     if (child.classList.contains("ai-start-screen") || child.classList.contains("ai-day-divider")) {
       keep.push(child);
+      continue;
+    }
+    if (child.classList.contains("ai-proposal-pin")) {
+      pins.push(child);
       continue;
     }
     if (child.classList.contains("ai-turn-group") || child.classList.contains("is-prior-turn")) {
@@ -76,8 +96,9 @@ export function markPriorTurns(log: HTMLElement): void {
 
   for (const node of toWrap) node.classList.add("is-prior-turn");
 
-  const previewSource = toWrap.find((node) => node.classList.contains("ai-chat-user"));
-  const preview = (previewSource?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim().slice(0, 36) || "이전 턴";
+  const previewSource = toWrap.find((node) => node.dataset.role === "user");
+  const previewBody = previewSource?.querySelector(".ai-command-row-body") ?? previewSource;
+  const preview = (previewBody?.textContent ?? "이전 턴").replace(/\s+/gu, " ").trim().slice(0, 36) || "이전 턴";
 
   const body = el("div", {
     class: "ai-turn-group-body",
@@ -113,6 +134,7 @@ export function markPriorTurns(log: HTMLElement): void {
   });
   group.append(toggle, body);
   log.replaceChildren(...keep, group);
+  for (const pin of pins) log.append(pin);
 }
 
 export function appendConversationBubble(options: {
@@ -130,22 +152,40 @@ export function appendConversationBubble(options: {
     ensureDayDivider(options.log, parseAiDayDate(options.at));
     markPriorTurns(options.log);
   }
-  const bubble = el("div", {
-    class: `ai-chat-bubble ai-chat-${options.role}`,
-    dataset: { testid: `ai-bubble-${options.role}` },
+  const body = el("div", {
+    class: "ai-command-row-body",
+    dataset: { testid: `ai-command-row-${options.role}` },
   });
-  // 어시스턴트/시스템 말풍선은 마크다운을 렌더한다(굵게/목록/코드/링크 — 안전한 DOM 생성).
-  // 사용자·툴 버블은 원문 그대로. 빈 텍스트(스트리밍 자리표시자)는 그대로 두고 완료 시 렌더한다.
-  if (options.text && (options.role === "assistant" || options.role === "system")) bubble.replaceChildren(renderMarkdown(options.text));
-  else if (options.text) bubble.textContent = options.text;
-  options.log.append(bubble);
+  const row = el("div", {
+    class: "ai-command-row",
+    dataset: { testid: "ai-command-row", role: options.role },
+    children: [
+      el("span", {
+        class: "ai-command-prefix",
+        text: COMMAND_PREFIX,
+        attrs: { "aria-hidden": "true" },
+      }),
+      body,
+    ],
+  });
+  // 어시스턴트/시스템 줄은 마크다운, 사용자·툴은 원문. 빈 텍스트는 스트리밍 자리표시자.
+  if (options.text && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderMarkdown(options.text));
+  else if (options.text) body.textContent = options.text;
+  options.log.append(row);
+  const pin = options.log.querySelector("[data-testid=ai-proposal-pin]");
+  if (pin) {
+    pin.remove();
+    options.log.append(pin);
+  }
   options.log.scrollTop = options.log.scrollHeight;
-  return bubble;
+  return body;
 }
 
-export function renderStreamedMarkdown(bubble: HTMLElement | null): void {
-  const raw = bubble?.textContent ?? "";
-  if (bubble && raw.trim()) bubble.replaceChildren(renderMarkdown(raw));
+export function renderStreamedMarkdown(target: HTMLElement | null): void {
+  if (!target) return;
+  const body = target.querySelector(".ai-command-row-body") ?? target;
+  const raw = body.textContent ?? "";
+  if (raw.trim()) body.replaceChildren(renderMarkdown(raw));
 }
 
 export function appendSkillPromptToggle(bubble: HTMLElement, prompt: string): void {
@@ -194,7 +234,11 @@ export function createConversationLogHost(options: {
   const appendReasoning = (): { box: HTMLElement; body: HTMLElement } => {
     revealVolatileZone();
     removeStartScreen();
-    if (lastReasoning?.box.parentNode === log && log.childNodes[log.childNodes.length - 1] === lastReasoning.box) {
+    const lastRow = lastCommandRow(log);
+    const reasoningCurrent = lastReasoning?.box.parentNode === log
+      ? log.childNodes[log.childNodes.length - 1] === lastReasoning.box
+      : Boolean(lastRow && lastReasoning && lastRow.contains(lastReasoning.box));
+    if (lastReasoning && reasoningCurrent) {
       lastReasoning.state.count += 1;
       lastReasoning.toggle.textContent = reasoningToggleText(lastReasoning.state.count, lastReasoning.body.hidden);
       log.scrollTop = log.scrollHeight;
@@ -212,8 +256,8 @@ export function createConversationLogHost(options: {
       body.hidden = !body.hidden;
       toggle.textContent = reasoningToggleText(state.count, body.hidden);
     });
-    const box = el("div", { class: "ai-chat-bubble ai-reasoning", dataset: { testid: "ai-reasoning" }, children: [toggle, body] });
-    log.append(box);
+    const box = el("div", { class: "ai-command-attachment ai-reasoning", dataset: { testid: "ai-reasoning" }, children: [toggle, body] });
+    attachToLastRow(log, box);
     lastReasoning = { box, body, toggle, state };
     log.scrollTop = log.scrollHeight;
     return { box, body: appendReasoningItem(body) };
@@ -248,13 +292,13 @@ export function createConversationLogHost(options: {
         attrs: { type: "button", title: "툴 실행 내역 펼치기/접기", "aria-label": "도구 실행 내역 펼치기/접기" },
         dataset: { testid: "ai-tool-activity-toggle" },
       });
-      const group = el("div", { class: "ai-chat-bubble ai-chat-tool-activity", dataset: { testid: "ai-tool-activity" }, children: [toggle, list] });
+      const group = el("div", { class: "ai-command-attachment ai-tool-activity", dataset: { testid: "ai-tool-activity" }, children: [toggle, list] });
       const current = { list, toggle, count: 0, writeOrFailCount: 0, readOkCount: 0 };
       toggle.addEventListener("click", () => {
         list.hidden = !list.hidden;
         refreshToolActivityToggle();
       });
-      log.append(group);
+      attachToLastRow(log, group);
       toolActivity = current;
     }
     toolActivity.count += 1;
@@ -316,7 +360,7 @@ export function createConversationLogHost(options: {
     const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
     if (!tileset) return;
     const bubble = el("div", {
-      class: "ai-chat-bubble ai-chat-tiles",
+      class: "ai-command-attachment ai-chat-tiles",
       dataset: { testid: "ai-bubble-tiles" },
       children: tiles.map((tile) =>
         el("figure", {
@@ -332,20 +376,20 @@ export function createConversationLogHost(options: {
         })
       ),
     });
-    log.append(bubble);
+    attachToLastRow(log, bubble);
     log.scrollTop = log.scrollHeight;
   };
 
-  // AI 리치 문서(present_doc)를 채팅 버블로 렌더 — 살아있는 타일셋 데이터 기반.
+  // AI 리치 문서(present_doc)를 마지막 커맨드 줄에 붙인다.
   const appendAiDocument = (documentData: AiDocument): void => {
     revealVolatileZone();
     removeStartScreen();
     const bubble = el("div", {
-      class: "ai-chat-bubble ai-chat-doc",
+      class: "ai-command-attachment ai-chat-doc",
       dataset: { testid: "ai-bubble-doc" },
       children: [renderAiDocument(documentData, store.getCurrent().tilesets)],
     });
-    log.append(bubble);
+    attachToLastRow(log, bubble);
     log.scrollTop = log.scrollHeight;
   };
 
@@ -376,14 +420,14 @@ export function createConversationLogHost(options: {
       rows.push(el("div", { class: "ai-tile-grid-row", children: cells }));
     }
     const bubble = el("div", {
-      class: "ai-chat-bubble ai-chat-tile-grid",
+      class: "ai-command-attachment ai-chat-tile-grid",
       dataset: { testid: "ai-bubble-tile-grid" },
       children: [
         el("div", { class: "ai-tile-grid-caption", text: `(${data.x},${data.y}) ${data.w}×${data.h}` }),
         el("div", { class: "ai-tile-grid", children: rows }),
       ],
     });
-    log.append(bubble);
+    attachToLastRow(log, bubble);
     log.scrollTop = log.scrollHeight;
   };
 

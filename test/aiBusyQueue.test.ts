@@ -1,6 +1,9 @@
 // AI busy 중 입력 큐(도그푸딩 결함 ⑨) 회귀 테스트.
 // 처리 중 들어온 메시지는 동시 세션 실행(레이스) 대신 큐에 쌓여 "대기 중 N건"으로 표시되고,
 // 현재 턴이 끝나면 순서대로 전송된다. 가짜 API 키와 지연 fetch로 실제 busy 상태를 만든다.
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { Window } from "happy-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
@@ -42,6 +45,41 @@ async function flushAsync(): Promise<void> {
 }
 
 describe("AI busy 입력 큐", () => {
+  it("empty pending queue is hidden when pendingSends is empty", () => {
+    // Given: a freshly rendered panel (refreshQueueIndicator is the only hidden writer)
+    // When: no sends have been queued
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };
+
+    // Then: empty queue is hidden; deleting this pin would miss a writer that leaves it visible
+    expect(queue).toBeTruthy();
+    expect(queue.hidden).toBe(true);
+  });
+
+  it("empty pending queue used display is none even when author CSS sets display", () => {
+    // Break this names: delete .ai-pending-queue[hidden] { display: none !important; }
+    // and .ai-pending-queue { display: inline-flex } wins, so used display stays inline-flex.
+    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };
+    expect(queue.hidden).toBe(true);
+
+    const css = readFileSync(resolve("src/styles/database/assistant-rising-overlay.css"), "utf8");
+    const window = new Window();
+    try {
+      const style = window.document.createElement("style");
+      style.textContent = css;
+      window.document.head.appendChild(style);
+      const liveQueue = window.document.createElement("div");
+      liveQueue.className = "ai-pending-queue";
+      liveQueue.hidden = queue.hidden;
+      window.document.body.appendChild(liveQueue);
+
+      expect(window.getComputedStyle(liveQueue).display).toBe("none");
+    } finally {
+      window.close();
+    }
+  });
+
   it("처리 중 두 번째 메시지는 큐에 쌓여 '대기 중 1건'으로 표시되고, 턴 종료 후 순서대로 전송된다", async () => {
     const pendingResponses: Array<() => void> = [];
     vi.stubGlobal("fetch", vi.fn(() => new Promise<Response>((resolve) => {
@@ -50,7 +88,7 @@ describe("AI busy 입력 큐", () => {
         headers: { "Content-Type": "text/event-stream" },
       })));
     })));
-    const panel = renderAiChatPanel() as unknown as FakeElement;
+    const panel = renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
     const send = findByTestId(panel, "ai-send") as unknown as HTMLElement;
     const queue = findByTestId(panel, "ai-pending-queue") as unknown as FakeElement & { hidden: boolean };

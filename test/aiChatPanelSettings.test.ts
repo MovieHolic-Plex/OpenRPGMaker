@@ -50,8 +50,10 @@ function renderPanel(): FakeElement {
 describe("패널 접기", () => {
   it("접기 버튼 클릭으로 접히고 상태가 localStorage에 저장된다", () => {
     const panel = renderPanel();
-    // 부팅 기본 접힘 → 펼친 뒤 접기/펼치기 왕복
-    findByTestId(panel, "ai-collapsed-restore")?.click();
+    // First visit boots open; restore click is a no-op if already expanded.
+    if (panel.classList.contains("is-collapsed")) {
+      findByTestId(panel, "ai-collapsed-restore")?.click();
+    }
     const collapse = findByTestId(panel, "ai-collapse");
     expect(collapse).not.toBeNull();
     expect(panel.classList.contains("is-collapsed")).toBe(false);

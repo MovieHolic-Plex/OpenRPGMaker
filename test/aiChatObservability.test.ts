@@ -54,7 +54,7 @@ async function flushAsync(): Promise<void> {
 }
 
 function renderPanel(): FakeElement {
-  return renderAiChatPanel() as unknown as FakeElement;
+  return renderAiChatPanel({ getChatDock: () => "side" }) as unknown as FakeElement;
 }
 
 describe("글자 크기 3단 (V3C ①)", () => {

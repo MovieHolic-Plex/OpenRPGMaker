@@ -107,7 +107,7 @@ function fakeElement(node: HTMLElement | null): FakeElement {
 
 function renderPanel(): FakeElement {
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m" }));
-  return renderAiChatPanel({ clock: () => 1_000 }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => "side" }) as unknown as FakeElement;
 }
 
 async function flushAsync(): Promise<void> {
@@ -261,7 +261,7 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-msg-badge-proposal")?.textContent).toBe("제안");
   });
 
-  it("턴 idle 후 채팅 존만 페이드되고 제안 카드는 sticky로 남는다", async () => {
+  it("사이드 워크 로그는 idle 페이드로 숨기지 않고 제안 카드는 남는다", async () => {
     const mapId = store.getCurrent().startMapId;
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
@@ -274,7 +274,8 @@ describe("UXD proposal panel integration", () => {
     await flushAsync();
 
     expect(findByTestId(panel, "ai-rising-overlay")).toBeTruthy();
-    expect(findByTestId(panel, "ai-rising-volatile-zone")?.className).toContain("is-faded");
+    expect(findByTestId(panel, "ai-rising-volatile-zone")?.className).not.toContain("is-faded");
+    expect(findByTestId(panel, "ai-rising-volatile-zone")?.hidden).toBe(false);
     expect(findByTestId(panel, "ai-proposal-accept")).toBeTruthy();
     expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("변경 제안");
   });
@@ -378,9 +379,10 @@ describe("UXD proposal panel integration", () => {
     expect(priorGroup?.className).toContain("is-collapsed");
     expect(findByTestId(log, "ai-day-divider")).toBeTruthy();
     // 현재 턴 버블은 prior-turn이 아니다.
-    const currentUser = [...(log.querySelectorAll?.(".ai-chat-user") ?? [])].at(-1)
+    const commandRows = [...(log.querySelectorAll?.("[data-testid=ai-command-row]") ?? [])];
+    const currentUser = commandRows.filter((node) => (node as FakeElement).dataset.role === "user").at(-1)
       ?? log.childNodes[log.childNodes.length - 2];
-    const currentAssistant = [...(log.querySelectorAll?.(".ai-chat-assistant") ?? [])].at(-1)
+    const currentAssistant = commandRows.filter((node) => (node as FakeElement).dataset.role === "assistant").at(-1)
       ?? log.childNodes[log.childNodes.length - 1];
     expect((currentUser as FakeElement)?.className ?? "").not.toContain("is-prior-turn");
     expect((currentAssistant as FakeElement)?.className ?? "").not.toContain("is-prior-turn");
@@ -399,7 +401,7 @@ describe("UXD proposal panel integration", () => {
     await flushAsync();
     findByTestId(panel, "ai-proposal-reject")?.click();
 
-    const assistant = findByTestId(panel, "ai-bubble-assistant");
+    const assistant = findByTestId(panel, "ai-command-row-assistant");
     expect(findByTestId(panel, "ai-msg-badge-discarded")?.textContent).toBe("폐기됨");
     expect(assistant?.className).toContain("is-discarded");
     expect(findByTestId(panel, "ai-chat-log")?.textContent).toContain("초안을 폐기했습니다");
@@ -478,10 +480,13 @@ describe("UXD proposal panel integration", () => {
   });
 
   it("스킬 실행 사용자 메시지는 실제 지시 보기 토글을 포함한다", async () => {
+    // Break: slash-running map-audit no longer attaches the raw-prompt toggle.
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "검증하겠습니다." }));
     const panel = renderPanel();
-
-    findByTestId(panel, "ai-start-map-audit")?.click();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "/검증";
+    input.dispatchEvent(new Event("input"));
+    findByTestId(panel, "ai-slash-item-map-audit")?.click();
     await flushAsync();
 
     expect(findByTestId(panel, "ai-skill-prompt-toggle")?.textContent).toBe("실제 지시 보기");

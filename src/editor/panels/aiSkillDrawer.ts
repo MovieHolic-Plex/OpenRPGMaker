@@ -155,9 +155,10 @@ export interface SlashListOptions {
   readonly onViewAll?: () => void;
 }
 
-/** TUI 명령 줄 — `/build-house` 만. 인자 자리표시자(`<width>`)는 쓰지 않는다. */
+/** 보이는 명령 줄 — 아이콘 + 한글 이름. 실행 키는 skill.id. */
 export function skillCommandLine(skill: SkillDef): string {
-  return `/${skill.id}`;
+  const icon = skill.icon.trim();
+  return icon ? `${icon} ${skill.name}` : skill.name;
 }
 
 /**
@@ -193,16 +194,12 @@ export function skillTuiHint(skill: SkillDef): string {
 }
 
 function renderSkillListBody(skill: SkillDef): HTMLElement[] {
-  const hint = skillTuiHint(skill);
-  const lines: HTMLElement[] = [
-    el("span", { class: "ai-slash-item-name", text: skillCommandLine(skill) }),
-  ];
-  if (hint) {
-    lines.push(el("span", { class: "ai-slash-item-hint", text: `# ${hint}`, dataset: { testid: `ai-slash-hint-${skill.id}` } }));
-  }
   return [
     el("span", { class: "ai-slash-item-mark", text: ">", attrs: { "aria-hidden": "true" } }),
-    el("div", { class: "ai-slash-item-body", children: lines }),
+    el("div", {
+      class: "ai-slash-item-body",
+      children: [el("span", { class: "ai-slash-item-name", text: skillCommandLine(skill) })],
+    }),
   ];
 }
 
@@ -214,15 +211,14 @@ export function slashSkillMatches(query: string): SkillDef[] {
 export function renderSlashList(query: string, onPick: (skill: SkillDef) => void, options: SlashListOptions = {}): HTMLElement {
   const matches = slashSkillMatches(query);
   const activeIndex = Math.max(0, Math.min(options.activeIndex ?? 0, Math.max(0, matches.length - 1)));
-  // TUI: `/build-house …` + `# e.g. …` 예시 한 줄. 한글 정식 이름은 title.
   const skillItems = matches.map((skill, index) =>
     el("button", {
       class: `ai-slash-item${index === activeIndex ? " is-active" : ""}`,
       attrs: {
         type: "button",
-        title: `${skill.name} — ${skill.description}`,
+        title: [skill.name, skill.description, skillTuiHint(skill)].filter(Boolean).join(" — "),
         "aria-selected": String(index === activeIndex),
-        "aria-label": `${skillCommandLine(skill)} ${skillTuiHint(skill)}`.trim(),
+        "aria-label": skillCommandLine(skill),
       },
       dataset: { testid: `ai-slash-item-${skill.id}` },
       children: renderSkillListBody(skill),
@@ -317,6 +313,7 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
   const body = el("div", { class: "ai-skill-drawer-body" });
   const element = el("div", { class: "ai-skill-drawer", dataset: { testid: "ai-skill-drawer" } });
   element.hidden = true;
+  element.inert = element.hidden;
   element.append(body);
 
   const runSkill = (skill: SkillDef): void => {
@@ -328,6 +325,7 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
     if (skill.kind === "action") {
       recordSkillUse(skill.id);
       element.hidden = true;
+      element.inert = element.hidden;
       options.onAction(skill.id);
       return;
     }
@@ -339,11 +337,13 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
     if (!prompt.trim()) return;
     recordSkillUse(skill.id);
     element.hidden = true;
+    element.inert = element.hidden;
     options.onRunPrompt(prompt, skillCommandLine(skill));
   };
 
   const openSkill = (skill: SkillDef): void => {
     element.hidden = false;
+    element.inert = element.hidden;
     body.replaceChildren(
       renderSkillParamForm(
         skill,
@@ -351,6 +351,7 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
         (prompt, displayAs) => {
           recordSkillUse(skill.id);
           element.hidden = true;
+          element.inert = element.hidden;
           options.onRunPrompt(prompt, displayAs);
         },
         () => renderCards()
@@ -538,6 +539,7 @@ export function renderSkillDrawer(options: SkillDrawerOptions): SkillDrawerHandl
     element,
     toggle: () => {
       element.hidden = !element.hidden;
+      element.inert = element.hidden;
       if (!element.hidden) renderCards();
     },
     run: runSkill,

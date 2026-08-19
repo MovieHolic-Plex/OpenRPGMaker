@@ -44,6 +44,7 @@
 .ai-proposal-host:empty,
 .ai-quick-replies:empty,
 .ai-context-chips:empty,
+.ai-composer-chips:empty,
 .ai-slash-host:empty {
   display: none;
 }
@@ -96,6 +97,7 @@
   --ai-font-scale: 1.2;
 }
 .ai-chat-bubble,
+.ai-command-row,
 .ai-proposal-card {
   font-size: calc(12px * var(--ai-font-scale, 1));
 }

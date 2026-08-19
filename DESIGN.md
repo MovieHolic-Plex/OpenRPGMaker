@@ -282,6 +282,21 @@ All spacing derives from 4px.
 - **Structure**: RM2K3 menu bar (프로젝트/맵/도구/게임/도움말) + the three-button `editor-ui-mode-toggle` (초보/표준/전문가). Inactive mode buttons stay visible at every supported desktop width; only brand text and the beginner test-play label may collapse below `1320px`. Toolbar rows follow (title + mode badge, file/undo/DB actions, layer + zoom controls).
 - **Shortcuts**: F5/F6/F7 layers, 1–7 tools, +/- zoom, Ctrl+S save, Ctrl+Z/Y undo/redo, Ctrl+C/V copy/paste (see `src/editor/hotkeys.ts`). Hotkeys are disabled while a form control or modal has focus. Ctrl+K opens the integrated palette covering tools, layers, Test Play, Database, World, Resources, current-map PNG, build-palette toggle, map/tile/event drawers, explicit mode selection and mode cycling, AI side/float dock toggle, Help, map navigation, and AI skills.
 
+### AI director plate
+
+- Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 (standard 4×4 / 48px cell) + name `감독` + one-line `readAgentBrief().line`.
+- Face is `role="img"` `aria-label="감독"`, pixelated, no emoji. Name is the header `h2`. Line is `data-testid="ai-director-line"`.
+- Tokens: name `--text-1` 13px/600, line `--text-2` 12px/400, gap `--space-2`, face well `--studio-inset` / `--studio-line` (or `--bg-inset` / `--border-subtle` aliases). No 지시/질문/계획 chips on the plate.
+- Presence line updates from `editorState` / `store` (map, layer, tool, selection).
+
+### AI composer briefing chips
+
+- Idle empty composer shows at most three next-move chips from `directorStartPrompts(readAgentBrief())` inside the command-bar stack (`data-testid="ai-composer-chips"`).
+- Chip click fills the textarea with `prompt.instruction` and focuses it. It does not send.
+- Placeholder is `formatComposerPlaceholder(readAgentBrief())`.
+- Tokens: surface `var(--control-bg)`, border `var(--border-default)`, hover/focus `var(--control-bg-hover)` + `var(--accent-border)`, type 12px/600, padding `var(--space-1)` `var(--space-2)`, radius 8px, gap `var(--space-1)`.
+- The overlay empty kit (`ai-start-visual-gallery`, `ai-empty-cta`, start-history stack) is not the boot empty surface.
+
 ### Left palette & map tree
 
 - **Tool palette**: pencil, fill, eyedropper, pan, select, collision, event, erase. Icon buttons with tooltips and visible active state.

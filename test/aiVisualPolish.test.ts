@@ -41,10 +41,14 @@ describe("AI 기록 날짜/턴 접기(제안 6)", () => {
       expect(findByTestId(log, "ai-day-divider")).toBeTruthy();
 
       const user = document.createElement("div") as unknown as FakeElement;
-      user.className = "ai-chat-bubble ai-chat-user";
+      user.className = "ai-command-row";
+      user.dataset.testid = "ai-command-row";
+      user.dataset.role = "user";
       user.textContent = "호수 만들어줘";
       const assistant = document.createElement("div") as unknown as FakeElement;
-      assistant.className = "ai-chat-bubble ai-chat-assistant";
+      assistant.className = "ai-command-row";
+      assistant.dataset.testid = "ai-command-row";
+      assistant.dataset.role = "assistant";
       assistant.textContent = "초안입니다.";
       log.append(user, assistant);
 
