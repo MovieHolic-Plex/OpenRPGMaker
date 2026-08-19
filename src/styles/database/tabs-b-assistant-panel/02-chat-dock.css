@@ -59,10 +59,16 @@
 }
 
 .ai-chat-panel.chat-dock-float .ai-command-bar,
-.ai-chat-panel.chat-dock-float .ai-rising-overlay,
 .ai-chat-panel.chat-dock-float .ai-proposal-modal-backdrop {
   pointer-events: auto;
 }
+
+/* 주의: .ai-rising-overlay 를 여기에 넣으면 안 된다(실측 재발 사고 2026-08-19).
+   오버레이는 캔버스 폭 전체를 덮는 fixed 밴드라, 컨테이너를 auto 로 뒤집으면
+   보이지 않는 빈 틈이 맵 클릭을 삼키고 z-41 아래의 커맨드 바(보내기 버튼)·
+   슬래시 팝업 클릭까지 죽는다. base(assistant-rising-overlay.css)가 컨테이너
+   none + 인터랙티브 자식만 auto 로 복원하므로 float 에서도 그대로 둔다.
+   회귀 스펙: test/e2e/_ai-assistant-hostile-eval.spec.ts (H 히트테스트). */
 
 /* ?묓옒 ?곹깭: float ??inset:0 ???묓옒 pill ??罹붾쾭???꾩껜 遺덊닾紐??⑤꼸濡??섎젮
    留듭쓣 ?듭㎏濡?媛由щ뜕 ?뚭? ?섏젙 ???묓옒? ?고븯??pill 留??④릿?? */

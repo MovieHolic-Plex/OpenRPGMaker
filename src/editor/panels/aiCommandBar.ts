@@ -10,6 +10,7 @@ export interface CommandBarElements {
 export function createCommandBarElements(options: {
   readonly slashHost: HTMLElement;
   readonly contextChips: HTMLElement;
+  readonly composerChips: HTMLElement;
   readonly queueIndicator: HTMLElement;
   readonly inputRow: HTMLElement;
   readonly statusGroup: HTMLElement;
@@ -56,7 +57,7 @@ export function createCommandBarElements(options: {
       commandMenuToggle,
       el("div", {
         class: "ai-command-input-stack",
-        children: [options.slashHost, options.contextChips, options.queueIndicator, options.inputRow],
+        children: [options.slashHost, options.contextChips, options.composerChips, options.queueIndicator, options.inputRow],
       }),
       options.statusGroup,
     ],

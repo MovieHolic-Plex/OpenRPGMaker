@@ -1,5 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
+import { editorState } from "@/editor/editorState";
 import { getMapEditHistoryState, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
+import {
+  directorStartPrompts,
+  formatComposerPlaceholder,
+  readAgentBrief,
+} from "@/editor/panels/aiAgentBrief";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -27,6 +34,14 @@ beforeEach(() => {
   resetMapEditHistory();
   restoreDom = installFakeDom();
   installFakeLocalStorage();
+  const mapId = store.getCurrent().startMapId;
+  editorState.set({
+    currentMapId: mapId,
+    layer: "lower",
+    tool: "paint",
+    selection: null,
+    chatDock: "float",
+  });
 });
 
 afterEach(() => {
@@ -50,6 +65,42 @@ function findByTag(root: FakeElement, tagName: string): FakeElement | null {
   return null;
 }
 
+function findByAttr(root: FakeElement, name: string, value: string): FakeElement | null {
+  if (root.getAttribute(name) === value) return root;
+  for (const child of root.childNodes) {
+    if (child instanceof FakeElement) {
+      const match = findByAttr(child, name, value);
+      if (match) return match;
+    }
+  }
+  return null;
+}
+
+const TAB_ORDER_TAGS = new Set(["BUTTON", "TEXTAREA", "INPUT"]);
+const IDLE_FLOAT_TAB_STOPS = [
+  "ai-command-menu-toggle",
+  "ai-skill-slash-toggle",
+  "ai-input",
+  "ai-send",
+  "ai-settings-command-bar",
+] as const;
+
+function collectTabOrderableControls(root: FakeElement): FakeElement[] {
+  const stops: FakeElement[] = [];
+  const walk = (node: FakeElement): void => {
+    if (node.inert) return;
+    if (TAB_ORDER_TAGS.has(node.tagName) && !node.disabled) {
+      const rawTabIndex = node.getAttribute("tabindex");
+      if (rawTabIndex === null || Number(rawTabIndex) >= 0) stops.push(node);
+    }
+    for (const child of node.childNodes) {
+      if (child instanceof FakeElement) walk(child);
+    }
+  };
+  walk(root);
+  return stops;
+}
+
 /** 접힌 채 부팅한 경우 복귀 버튼으로 펼침 (이미 펼쳐져 있으면 no-op). */
 function expandPanel(panel: FakeElement): void {
   if (!panel.classList.contains("is-collapsed")) return;
@@ -69,9 +120,53 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
-  it("첫 방문(저장값 없음)은 접힌 채 부팅한다", () => {
+  it("헤더 플레이트는 접근 이름이 감독이고 제목이 AI 어시스턴트가 아니다", () => {
+    // Break: header h2 is still "AI 어시스턴트", or the faceset crop lacks aria-label 감독.
     const panel = renderPanel();
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expandPanel(panel);
+    const header = panel.querySelector(".ai-chat-header");
+    if (!header) throw new Error("AI header missing");
+    const title = findByTag(header, "h2");
+    const face = findByAttr(header, "aria-label", "감독");
+    const plate = findByTestId(panel, "ai-director-plate");
+
+    expect(title?.textContent).toBe("감독");
+    expect(title?.textContent).not.toContain("AI 어시스턴트");
+    expect(face?.getAttribute("role")).toBe("img");
+    expect(face?.getAttribute("aria-label")).toBe("감독");
+    expect(plate?.textContent ?? "").not.toContain("🤖");
+    expect(plate?.textContent ?? "").not.toMatch(/지시|질문|계획/u);
+  });
+
+  it("헤더 존재 줄은 빈 프로젝트 readAgentBrief().line 이다", () => {
+    // Break: plate is missing or the line is not readAgentBrief().line.
+    const panel = renderPanel();
+    expandPanel(panel);
+    const expected = readAgentBrief().line;
+    const line = findByTestId(panel, "ai-director-line");
+
+    expect(expected).toBe("빈 맵 20×15 · 바닥 · 펜");
+    expect(line?.textContent).toBe(expected);
+  });
+
+  it("레이어·도구가 바뀌면 존재 줄이 따라간다", () => {
+    // Break: plate does not subscribe to editorState, so the line stays at boot.
+    const panel = renderPanel();
+    expandPanel(panel);
+    const line = findByTestId(panel, "ai-director-line");
+    if (!line) throw new Error("director line missing");
+
+    editorState.set({ layer: "upper", tool: "fill" });
+
+    expect(line.textContent).toBe("빈 맵 20×15 · 장식 · 채우기");
+    expect(line.textContent).toBe(readAgentBrief().line);
+  });
+
+  it("첫 방문(저장값 없음)은 펼친 채 부팅한다", () => {
+    // Break: loadPanelCollapsed() still returns true when the key is missing.
+    const panel = renderPanel();
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(storage.has("rpg-zzu:ai-panel-collapsed")).toBe(false);
   });
 
   it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {
@@ -93,11 +188,19 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-docked")).toBe(false);
     expect(panel.classList.contains("is-collapsed")).toBe(true);
     const restore = findByTestId(panel, "ai-collapsed-restore");
+    const restoreFace = restore?.querySelector(".ai-director-face");
     expect(restore).toBeTruthy();
     expect(restore?.getAttribute("type")).toBe("button");
-    expect(restore?.getAttribute("aria-label")).toBe("AI 패널 펼치기");
-    expect(restore?.getAttribute("title")).toBe("AI 패널 펼치기");
-    expect(restore?.querySelector(".ai-collapsed-restore-float")?.textContent).toBe("🤖 AI ▸");
+    expect(restore?.getAttribute("aria-label")).toBe("AI 어시스턴트");
+    expect(restore?.style.width).toBe("48px");
+    expect(restore?.style.height).toBe("48px");
+    expect(restore?.textContent ?? "").not.toContain("🤖");
+    expect(restore?.querySelector(".ai-collapsed-restore-float")).toBeNull();
+    expect(restore?.querySelector(".ai-collapsed-restore-rail-icon")).toBeNull();
+    expect(restore?.querySelector(".ai-collapsed-restore-rail-label")).toBeNull();
+    expect(restoreFace).toBeTruthy();
+    expect(restoreFace?.style.width).toBe("48px");
+    expect(restoreFace?.style.height).toBe("48px");
     expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
     expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
@@ -110,7 +213,8 @@ describe("AI 패널 크롬", () => {
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
   });
 
-  it("떠 있는 말풍선으로 접어도 고대비 복귀 알약이 남는다", () => {
+  it("떠 있는 말풍선으로 접어도 48px 얼굴 복귀가 남는다", () => {
+    // Break: restore is still the 🤖 AI ▸ pill, or aria-label is not AI 어시스턴트.
     storage.set("rpg-zzu:ai-panel-docked", "0");
     const panel = renderPanel();
     expandPanel(panel);
@@ -120,10 +224,14 @@ describe("AI 패널 크롬", () => {
     collapse.click();
 
     const restore = findByTestId(panel, "ai-collapsed-restore");
-    const floatPill = restore?.querySelector(".ai-collapsed-restore-float");
     expect(panel.classList.contains("is-docked")).toBe(false);
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(floatPill?.textContent).toBe("🤖 AI ▸");
+    expect(restore?.getAttribute("aria-label")).toBe("AI 어시스턴트");
+    expect(restore?.style.width).toBe("48px");
+    expect(restore?.style.height).toBe("48px");
+    expect(restore?.textContent ?? "").not.toContain("🤖");
+    expect(restore?.querySelector(".ai-collapsed-restore-float")).toBeNull();
+    expect(restore?.querySelector(".ai-director-face")).toBeTruthy();
   });
 
   it("스튜디오에서 접어도 화면 안 복귀 타깃이 남는다", () => {
@@ -142,39 +250,47 @@ describe("AI 패널 크롬", () => {
     expect(restore).toBeTruthy();
   });
 
-  it("시작 화면은 최소 힌트만 두고 카드 갤러리는 있다", () => {
+  it("빈 플로트 부팅은 오버레이 빈 키트 없이 감독 칩만 둔다", () => {
+    // Break: boot still appends ai-start-visual-gallery / ai-empty-cta, or skips ai-composer-chips.
     const panel = renderPanel();
     expandPanel(panel);
-    const startScreen = findByTestId(panel, "ai-start-screen");
-    if (!startScreen) throw new Error("start screen missing");
+    const chips = findByTestId(panel, "ai-composer-chips");
+    const chipButtons = chips?.querySelectorAll("button") ?? [];
+    const expected = directorStartPrompts(readAgentBrief());
+    const input = findByTestId(panel, "ai-input");
 
-    expect(findByTestId(panel, "ai-start-guide")).toBeNull();
-    expect(findByTestId(panel, "ai-start-try-region")).toBeNull();
-    expect(findByTestId(panel, "ai-start-visual-gallery")).not.toBeNull();
-    expect(findByTestId(panel, "ai-start-visual-gallery")?.textContent?.length ?? 0).toBeGreaterThan(0);
-    // 시작 화면은 제목+갤러리+힌트를 렌더한다
-    const title = findByTestId(panel, "ai-start-empty-hint")?.textContent ?? "";
-    expect(title.length).toBeGreaterThan(0);
-    expect(panel.textContent ?? "").toContain("무엇을 만들까요");
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
+    expect(chips).toBeTruthy();
+    expect(chipButtons.length).toBeGreaterThanOrEqual(0);
+    expect(chipButtons.length).toBeLessThanOrEqual(3);
+    expect(chipButtons.length).toBe(expected.length);
+    expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder(readAgentBrief()));
   });
 
-  it("시작 화면 예시 칩은 입력창만 채우고 전송하지 않는다", () => {
+  it("감독 칩 클릭은 입력만 채우고 전송하지 않는다", () => {
+    // Break: chip click calls sendText (user row or settings modal) instead of filling the input.
+    storage.set(
+      AI_CONFIG_STORAGE_KEY,
+      JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }),
+    );
     const panel = renderPanel();
     expandPanel(panel);
-    // 비주얼 갤러리 칩 중 하나를 클릭하면 입력창이 채워진다
-    const gallery = findByTestId(panel, "ai-start-visual-gallery");
-    const chip = findByTestId(panel, "ai-start-build-place") ?? findByTestId(panel, "ai-start-build-house") ?? gallery?.childNodes.find((n: unknown) => n instanceof FakeElement && (n as FakeElement).dataset.testid?.startsWith("ai-start-build-")) as FakeElement | undefined ?? findByTestId(panel, "ai-start-example-0");
-    expect(chip ?? gallery).toBeTruthy();
-
-    (chip ?? gallery)?.click();
-
+    const expected = directorStartPrompts(readAgentBrief());
+    const first = expected[0];
+    if (!first) throw new Error("directorStartPrompts returned no chips");
+    const chips = findByTestId(panel, "ai-composer-chips");
+    const chip = chips?.querySelectorAll("button")[0];
     const input = findByTestId(panel, "ai-input") as unknown as { value: string } | null;
-    // 입력창이 있으면 값이 채워져야 하고, 없으면 최소 시작 화면이 유지되어야 함
-    if (input && input.value) {
-      expect(input.value.length).toBeGreaterThan(0);
-    }
-    expect(findByTestId(panel, "ai-start-screen")).toBeTruthy();
-    expect(findByTestId(panel, "ai-start-shortcut-hint")?.textContent).toContain("Ctrl+K");
+    if (!chip || !input) throw new Error("composer chip or input missing");
+
+    chip.click();
+
+    expect(input.value).toBe(first.instruction);
+    expect(document.activeElement).toBe(input);
+    expect(findByTestId(panel, "ai-command-row-user")).toBeNull();
+    expect(findByTestId(panel, "ai-command-row")).toBeNull();
+    expect(findByTestId(panel, "ai-settings-modal")).toBeNull();
   });
 
   it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {
@@ -204,5 +320,68 @@ describe("AI 패널 크롬", () => {
     undo.click();
 
     expect(getMapEditHistoryState().canUndo).toBe(false);
+  });
+
+  it("펼친 플로트에서 숨은 툴바·서랍 버튼은 tab 순서에 없다", () => {
+    const panel = renderPanel();
+    expandPanel(panel);
+
+    const stops = collectTabOrderableControls(panel);
+    const stopIds = stops.map((stop) => stop.dataset.testid).filter((id): id is string => Boolean(id));
+
+    expect(stops.some((stop) => stop.closest("[data-testid=ai-chat-toolbar]") !== null)).toBe(false);
+    expect(stops.some((stop) => stop.closest("[data-testid=ai-skill-drawer]") !== null)).toBe(false);
+    expect(stopIds).toEqual(expect.arrayContaining([...IDLE_FLOAT_TAB_STOPS]));
+  });
+
+  it("float dock does not mount the work log or rising overlay", () => {
+    // Break: applyComposerViewPolicy still leaves .ai-chat-log / ai-rising-overlay
+    // under the float panel (even if CSS display:none hides them).
+    const panel = renderPanel();
+    expandPanel(panel);
+
+    expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
+    expect(findByTestId(panel, "ai-chat-log")).toBeNull();
+    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+    expect(panel.querySelector(".ai-chat-log")).toBeNull();
+  });
+
+  it("side dock mounts the work log, and switching back to float unmounts it", () => {
+    // Break: dock toggle only flips classes / display:none and never remounts the log.
+    const panel = renderPanel();
+    expandPanel(panel);
+    const toggle = findByTestId(panel, "chat-dock-toggle");
+    if (!toggle) throw new Error("dock toggle missing");
+
+    toggle.click();
+
+    const sideLog = findByTestId(panel, "ai-chat-log");
+    expect(sideLog).toBeTruthy();
+    expect(findByTestId(panel, "ai-rising-overlay")?.contains(sideLog)).toBe(true);
+    expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
+    expect(findByTestId(panel, "ai-director-plate")).toBeTruthy();
+    expect(sideLog?.hidden).toBe(false);
+    expect(findByTestId(panel, "ai-rising-volatile-zone")?.classList.contains("is-faded")).toBe(false);
+    expect(findByTestId(panel, "ai-rising-volatile-zone")?.hidden).toBe(false);
+
+    toggle.click();
+
+    expect(findByTestId(panel, "ai-command-bar")).toBeTruthy();
+    expect(findByTestId(panel, "ai-chat-log")).toBeNull();
+    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+  });
+
+  it("float history remounts the work log outside the rising overlay", () => {
+    // Break: history-open float still keeps the log unmounted, or remounts the overlay.
+    const panel = renderPanel();
+    expandPanel(panel);
+    const history = findByTestId(panel, "ai-dock-toggle");
+    if (!history) throw new Error("history toggle missing");
+
+    history.click();
+
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
+    expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+    expect(panel.classList.contains("is-history-open")).toBe(true);
   });
 });

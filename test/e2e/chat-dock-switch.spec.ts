@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout";
+const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
 const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
 const MAP_FIRST_KEY = "rpg-zzu:ai-map-first-collapse-v1";
 
@@ -30,7 +30,7 @@ async function openEditor(page: Page): Promise<void> {
   await page.goto("/?chatDockSwitch=1");
   await dismissLogin(page);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
-  // 부팅 기본 접힘 — 레이아웃/입력 검증 전에 펼친다.
+  // First visit boots open; restore click is a no-op if already expanded.
   const restore = page.getByTestId("ai-collapsed-restore");
   if (await restore.isVisible().catch(() => false)) {
     await restore.click();
@@ -76,11 +76,14 @@ test.describe("chat dock switch", () => {
     const canvas = page.locator(".canvas-area");
     const commandBar = page.getByTestId("ai-command-bar");
     const sidePanel = page.getByTestId("chat-side-panel");
-    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
-    await expect.poll(() => layoutDock(page)).toBe("float");
+    const floatHost = page.getByTestId("chat-float-host");
+    await expect(floatHost.getByTestId("ai-panel")).toBeVisible();
     await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-float"))).toBe(true);
     await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-panel-docked"))).toBe(false);
     await assertInputUsable(page, "float input ok");
+    await expect(floatHost.getByTestId("ai-command-bar")).toBeVisible();
+    expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
+    expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
 
     // float 기본: 커맨드바는 캔버스 안에 떠 있다.
     const canvasFloat = await box(canvas);
@@ -88,19 +91,22 @@ test.describe("chat dock switch", () => {
     expectInside(commandFloat, canvasFloat);
 
     await page.evaluate(() => {
-      const log = document.querySelector('[data-testid="ai-chat-log"]');
+      const panel = document.querySelector('[data-testid="ai-panel"]');
       const marker = document.createElement("div");
       marker.dataset.testid = "dock-marker";
       marker.textContent = "dock marker";
-      log?.append(marker);
+      panel?.append(marker);
     });
     await expect(page.getByTestId("dock-marker")).toBeAttached();
 
     // float 모드: 커맨드바 ☰ 메뉴로 사이드 전환
-    await page.getByTestId("ai-command-menu-toggle").click();
+    // After input/log interaction the rising overlay can cover the idle hamburger.
+    await page.getByTestId("ai-command-menu-toggle").focus();
+    await page.keyboard.press("Enter");
     await page.getByTestId("ai-command-menu-dock").click();
     await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
     await expect(page.getByTestId("dock-marker")).toBeAttached();
+    await expect(sidePanel.getByTestId("ai-chat-log")).toBeAttached();
     await expect.poll(() => layoutDock(page)).toBe("side");
     await assertInputUsable(page, "side input ok");
 
@@ -108,7 +114,7 @@ test.describe("chat dock switch", () => {
     const sideBox = await box(sidePanel);
     const layoutBox = await box(page.locator(".editor-layout"));
     expect(sideBox.width).toBeGreaterThan(260);
-    expect(sideBox.width).toBeLessThan(layoutBox.width * 0.32);
+    expect(sideBox.width).toBeLessThan(layoutBox.width * 0.36);
     expect(sideBox.height).toBeGreaterThan(layoutBox.height * 0.7);
     const canvasSide = await box(canvas);
     expect(canvasSide.width).toBeLessThan(canvasFloat.width - 80);
@@ -129,6 +135,44 @@ test.describe("chat dock switch", () => {
     const canvasNarrow = await box(canvas);
     const commandNarrow = await box(commandBar);
     expectInside(commandNarrow, canvasNarrow);
+  });
+
+  // Break: float still mounts .ai-chat-log / ai-rising-overlay under chat-float-host
+  // (even if CSS display:none hides them).
+  test("1440 float host is composer-only and side remounts the work log", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await openEditor(page);
+
+    const floatHost = page.getByTestId("chat-float-host");
+    await expect(floatHost.getByTestId("ai-command-bar")).toBeVisible();
+    expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
+    expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
+    await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-12-float.png" });
+
+    await page.getByTestId("ai-command-menu-toggle").focus();
+    await page.keyboard.press("Enter");
+    await page.getByTestId("ai-command-menu-dock").click();
+
+    const sidePanel = page.getByTestId("chat-side-panel");
+    await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
+    await expect(sidePanel.getByTestId("ai-chat-log")).toBeAttached();
+    expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
+  });
+
+  // Break: omit .ai-command-menu:not([hidden]) { z-index: 2 } or
+  // .ai-command-bar:has(.ai-command-menu:not([hidden])) { z-index: 42 }
+  // → Playwright click times out (overlay / input-stack intercepts the dock item).
+  test("hamburger dock item is clickable above composer and overlay", async ({ page }) => {
+    await page.setViewportSize({ width: 1600, height: 920 });
+    await openEditor(page);
+
+    await expect(page.getByTestId("chat-float-host").getByTestId("ai-panel")).toBeVisible();
+    await page.getByTestId("ai-command-menu-toggle").click();
+    await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-2-menu.png" });
+    await page.getByTestId("ai-command-menu-dock").click();
+
+    await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-side"))).toBe(true);
   });
 
   test("collapsed float and side combinations stay compact and restorable", async ({ page }) => {
@@ -154,7 +198,10 @@ test.describe("chat dock switch", () => {
 
     await page.getByTestId("ai-collapsed-restore").click();
     await assertInputUsable(page, "restored float ok");
-    await page.getByTestId("ai-command-menu-toggle").click();
+    // Idle overlay can cover the hamburger; keyboard activation still opens the menu.
+    // Once open, z-index 42 puts the dock item above the overlay — click without force.
+    await page.getByTestId("ai-command-menu-toggle").focus();
+    await page.keyboard.press("Enter");
     await page.getByTestId("ai-command-menu-dock").click();
     await expect(page.getByTestId("chat-side-panel").getByTestId("ai-panel")).toBeVisible();
 

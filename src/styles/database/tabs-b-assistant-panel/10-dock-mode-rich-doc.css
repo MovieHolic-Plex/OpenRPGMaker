@@ -3,8 +3,53 @@
   align-items: center;
   display: inline-flex;
   flex: 1 1 auto;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
+}
+
+.ai-director-plate {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.ai-director-face {
+  background-color: var(--bg-inset);
+  background-repeat: no-repeat;
+  border: 1px solid var(--border-subtle);
+  flex: 0 0 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  overflow: hidden;
+  width: 48px;
+}
+
+.ai-director-copy {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.ai-chat-header h2.ai-director-name {
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.ai-director-line {
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.3;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ai-dock-mode-btn {
@@ -92,7 +137,8 @@
 }
 
 /* ── AI 리치 문서 (present_doc) ─────────────────────────────────────────── */
-.ai-chat-bubble.ai-chat-doc { max-width: 100%; padding: 10px 12px; }
+.ai-chat-bubble.ai-chat-doc,
+.ai-command-attachment.ai-chat-doc { max-width: 100%; padding: 10px 12px; }
 .ai-doc { display: flex; flex-direction: column; gap: 10px; }
 .ai-doc-title { margin: 0; font-size: 14px; font-weight: 800; }
 .ai-doc-block { min-width: 0; }

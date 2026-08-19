@@ -80,7 +80,7 @@
   color: var(--text-1);
 }
 /* ?꾧뎄以???二쇱슂 ?≪뀡??洹몃９?쇰줈 ?뺣━(????붋룸줈洹?| ?ㅼ젙쨌??| ?꾪궧쨌?ㅽ뒠?붿삤). ?ㅻ뜑 ?꾩씠肄?萸됱묠 ?댁냼. */
-.ai-chat-toolbar {
+.ai-chat-toolbar:not([hidden]):not(.is-empty) {
   align-items: center;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
@@ -134,18 +134,23 @@
   align-items: center;
   background: var(--control-bg);
   border: 1px solid var(--accent-border);
-  border-radius: 8px;
+  border-radius: var(--radius-s);
   box-shadow: var(--shadow-pop);
   color: var(--text-1);
   cursor: pointer;
   display: none;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  gap: var(--space-1);
-  min-height: 44px;
-  padding: 0 12px;
-  white-space: nowrap;
+  height: 48px;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 48px;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 48px;
+}
+.ai-collapsed-restore .ai-director-face {
+  border: none;
+  flex: none;
 }
 .ai-chat-panel.is-collapsed > .ai-collapsed-restore {
   display: flex;
@@ -157,10 +162,6 @@
 }
 .ai-collapsed-restore:focus-visible {
   box-shadow: var(--focus-ring);
-}
-.ai-collapsed-restore-rail-icon,
-.ai-collapsed-restore-rail-label {
-  display: none;
 }
 /* ?? ?꾪궧 ?ъ씠?쒕컮 紐⑤뱶(湲곕낯媛? ???ㅻⅨ履??꾩껜 ?믪씠. ???덈뒗 留먰뭾?좎? ??踰꾪듉?쇰줈 ?꾪솚?섎뒗 ?듭뀡. ?? */
 .ai-chat-panel.is-docked {
@@ -199,10 +200,10 @@ body.ai-panel-docked .editor-layout {
   top: 0;
   bottom: 0;
   height: 100vh;
-  max-width: 44px;
-  min-width: 44px;
+  max-width: 48px;
+  min-width: 48px;
   padding: 0;
-  width: 44px;
+  width: 48px;
   border: 1px solid var(--accent-border);
   border-top: none;
   border-right: none;
@@ -210,36 +211,13 @@ body.ai-panel-docked .editor-layout {
   border-radius: 0;
 }
 .ai-chat-panel.is-docked.is-collapsed > .ai-collapsed-restore {
-  align-items: center;
   background: var(--bg-raised);
   border: none;
   border-radius: 0;
   box-shadow: none;
-  flex-direction: column;
-  gap: var(--space-2);
-  height: 100%;
-  justify-content: flex-start;
-  min-height: 100vh;
-  padding: var(--space-3) 0;
-  width: 100%;
-}
-.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-float {
-  display: none;
-}
-.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-icon,
-.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-label {
-  display: inline-block;
-}
-.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-.ai-chat-panel.is-docked.is-collapsed .ai-collapsed-restore-rail-label {
-  color: var(--text-1);
-  font-size: 12px;
-  letter-spacing: 0;
-  line-height: 1.2;
-  writing-mode: vertical-rl;
+  height: 48px;
+  min-height: 48px;
+  width: 48px;
 }
 
 /* ?ъ씠???꾪겕 ?묓옒: 1/3 而щ읆???듭㎏濡??⑤뜕 媛???湲곕줉 ?꾪겕? ?숈씪??44px ?덉씪濡?利됱떆 ?ㅻ깄. */
@@ -252,35 +230,13 @@ body.ai-panel-docked .editor-layout {
   padding: 0;
 }
 .ai-chat-panel.chat-dock-side.is-collapsed > .ai-collapsed-restore {
-  align-items: center;
   background: var(--bg-raised);
   border: none;
   border-radius: 0;
   box-shadow: none;
-  flex-direction: column;
-  gap: var(--space-2);
-  height: 100%;
-  justify-content: flex-start;
-  padding: var(--space-3) 0;
-  width: 100%;
-}
-.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-float {
-  display: none;
-}
-.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-icon,
-.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-label {
-  display: inline-block;
-}
-.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-.ai-chat-panel.chat-dock-side.is-collapsed .ai-collapsed-restore-rail-label {
-  color: var(--text-1);
-  font-size: 12px;
-  letter-spacing: 0;
-  line-height: 1.2;
-  writing-mode: vertical-rl;
+  height: 48px;
+  min-height: 48px;
+  width: 48px;
 }
 /* ?묓옒 ?덉씪 蹂몃Ц ?꾩텧 ?섏젙: float ?묓옒(231?됰?)怨??숈씪?섍쾶 而ㅻ㎤?쒕컮쨌?쇱씠吏??ㅻ쾭?덉씠瑜??④릿??
    鍮좊쑉由щ㈃ 44px ?덉씪???쒖옉 ?붾㈃/?낅젰李쎌씠 吏쒕??쇱졇 ?덉뼱 ?섏삩??2026-07-09 ?ㅼ륫). */
@@ -296,6 +252,9 @@ body.ai-panel-docked .editor-layout {
   display: none;
   flex: none;
   height: 9px;
+  position: absolute;
+  right: var(--space-1);
+  top: var(--space-1);
   width: 9px;
 }
 .ai-chat-panel.is-turn-running .ai-collapsed-restore-dot {
@@ -367,5 +326,8 @@ body.ai-panel-docked .editor-layout {
 .ai-skill-palette-list::-webkit-scrollbar-thumb {
   background: var(--border-strong);
   border-radius: 999px;
+}
+.ai-skill-drawer[hidden] {
+  display: none !important;
 }
 

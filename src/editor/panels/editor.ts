@@ -1,6 +1,7 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
+import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import {
@@ -355,6 +356,12 @@ function startAiConnectionPolling(): void {
   aiConnectionPollTimer = setInterval(() => {
     void refreshAiConnectionStatus(refreshStatusbar);
   }, AI_CONNECTION_POLL_MS);
+  // 실제 LLM 요청 성패가 바뀌면 즉시 칩을 다시 그린다(폴링 대기 없이).
+  // "AI 연결됨"인데 404 나던 거짓말 수정(적대 평가 P0) — llmClient 가 이벤트를 쏜다.
+  if (typeof window !== "undefined") {
+    window.removeEventListener(AI_TRANSPORT_HEALTH_EVENT, refreshStatusbar);
+    window.addEventListener(AI_TRANSPORT_HEALTH_EVENT, refreshStatusbar);
+  }
 }
 
 function stopAiConnectionPolling(): void {

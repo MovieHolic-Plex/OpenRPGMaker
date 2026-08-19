@@ -1,6 +1,9 @@
 .ai-rising-overlay {
   align-items: center;
-  bottom: 76px;
+  /* 커맨드 바 실측 높이(aiChatPanel ResizeObserver 가 --ai-command-bar-clearance 갱신).
+     76px 고정은 칩 행 + 2줄 입력으로 커진 바(~140px)를 덮었다 — 입력창 왼쪽 절반이
+     CTA 카드 뒤에 깔리던 실측 결함(H01). */
+  bottom: var(--ai-command-bar-clearance, 76px);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -65,6 +68,9 @@
   margin: 6px 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.14);
 }
+.ai-pending-queue[hidden] {
+  display: none !important;
+}
 .ai-pending-queue::before {
   content: "";
   width: 7px;
@@ -125,7 +131,9 @@
   border: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
   border-radius: 14px;
   box-shadow: var(--shadow-pop);
-  max-height: min(22vh, 240px);
+  /* 22vh/240px 에서는 시작 화면 CTA 3번째 항목이 중간에서 잘렸다(H01) —
+     스크롤은 되지만 어포던스가 없어 잘림으로 보인다. 시작 화면이 통째로 들어가는 높이로. */
+  max-height: min(40vh, 430px);
   min-height: 72px;
   padding: 8px;
   gap: 8px;

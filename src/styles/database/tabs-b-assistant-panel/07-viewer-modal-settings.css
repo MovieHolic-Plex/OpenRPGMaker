@@ -278,7 +278,7 @@
 }
 
 /* 紐⑤뜽 異붾줎(reasoning) ?곸옄 ??湲곕낯 ?묓옒, ?????됱쑝濡??듬?怨?援щ텇. */
-.ai-chat-bubble.ai-reasoning {
+.ai-reasoning {
   background: color-mix(in srgb, var(--bg-inset) 70%, transparent);
   border: 1px dashed var(--border-subtle);
 }

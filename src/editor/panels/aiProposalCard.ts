@@ -38,6 +38,7 @@ import {
   proposalAcceptButtonLabel,
   proposalAcceptWithMaterialButtonLabel,
 } from "./aiProposalFusion";
+import { clearProposalPin, refreshProposalPinAccept, replaceProposalPin } from "./aiProposalPin";
 import {
   enforceProposalDependencies,
   proposalDependencyIndexes,
@@ -206,6 +207,7 @@ export interface ProposalHostApi {
 
 export function createProposalHost(options: {
   readonly proposalHost: HTMLElement;
+  readonly pinHost: HTMLElement;
   readonly proposalNoticeHost: HTMLElement;
   readonly proposalModalCount: HTMLElement;
   readonly proposalPill: HTMLButtonElement;
@@ -220,6 +222,7 @@ export function createProposalHost(options: {
 }): ProposalHostApi {
   const {
     proposalHost,
+    pinHost,
     proposalNoticeHost,
     proposalModalCount,
     proposalPill,
@@ -312,6 +315,7 @@ export function createProposalHost(options: {
       return;
     }
     proposalHost.replaceChildren();
+    clearProposalPin(pinHost);
     closeProposalModal();
     setStatus("적용됨");
     const messageState = pendingProposalMessage;
@@ -379,6 +383,7 @@ export function createProposalHost(options: {
   const rejectProposal = (): void => {
     clearInlineActionsIfMine();
     proposalHost.replaceChildren();
+    clearProposalPin(pinHost);
     closeProposalModal();
     clearAgentGhostPreview();
     setStatus("제안 거부됨");
@@ -453,6 +458,7 @@ export function createProposalHost(options: {
         const count = selected.filter(Boolean).length;
         acceptButton.disabled = count === 0;
         acceptButton.textContent = proposalAcceptButtonLabel(count, result.proposedCalls.length);
+        refreshProposalPinAccept(pinHost, count, result.proposedCalls.length);
       }
     };
 
@@ -536,7 +542,7 @@ export function createProposalHost(options: {
                 })),
                 el("div", {
                   class: "ai-proposal-soft-vocab-hint",
-                  text: "[맵만 적용]은 배치만 반영합니다. [맵 적용 + 재료 합의]를 눌러야 재료가 origin:user로 영구 합의됩니다.",
+                  text: "[이 맵에 넣기]는 배치만 반영합니다. [맵 적용 + 재료 합의]를 눌러야 재료가 origin:user로 영구 합의됩니다.",
                 }),
               ],
             })]
@@ -563,9 +569,7 @@ export function createProposalHost(options: {
           children: [
             (acceptButton = el("button", {
               class: "ai-assistant-action ai-proposal-accept",
-              text: softConfirms.length > 0
-                ? proposalAcceptButtonLabel(result.proposedCalls.length, result.proposedCalls.length)
-                : "맵만 적용",
+              text: proposalAcceptButtonLabel(result.proposedCalls.length, result.proposedCalls.length),
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-accept" },
               on: {
@@ -597,7 +601,7 @@ export function createProposalHost(options: {
               : []),
             (rejectButton = el("button", {
               class: "ai-assistant-action ai-proposal-reject",
-              text: "거부(초안 폐기)",
+              text: "취소",
               attrs: { type: "button" },
               dataset: { testid: "ai-proposal-reject" },
               on: { click: () => rejectProposal() },
@@ -610,6 +614,23 @@ export function createProposalHost(options: {
     const humanSummary = proposalHumanSummaryLine(result.proposedCalls);
     pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: humanSummary };
     setAssistantMessageBadge(assistantBubble, "proposal");
+    replaceProposalPin(
+      pinHost,
+      {
+        summary: humanSummary,
+        selectedCount: result.proposedCalls.length,
+        total: result.proposedCalls.length,
+      },
+      {
+        onAccept: () => acceptProposal(
+          callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
+          selected,
+          hasVocabularyEdits(vocabEditsByCall),
+          false,
+        ),
+        onReject: () => rejectProposal(),
+      },
+    );
     refreshSelectionUi();
     // 인라인 승인(캔버스 고스트 마커) — 카드의 실제 버튼 경로를 그대로 태운다.
     myInlineActions = {
