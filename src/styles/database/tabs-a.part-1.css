@@ -44,7 +44,7 @@
 
 .tileset-ai-preview-tool.active {
   background: var(--accent-blue);
-  border-color: var(--accent-border) #d9edf8 #d9edf8 var(--accent-border);
+  border-color: var(--accent-border) var(--border-subtle) var(--border-subtle) var(--accent-border);
   color: var(--text-1);
 }
 
@@ -315,7 +315,7 @@
   flex-direction: column;
   height: min(1024px, calc(100vh - 24px));
   max-width: calc(100vw - 24px);
-  outline: 1px solid #2f2f2f;
+  outline: 1px solid var(--border-strong);
   width: min(1530px, calc(100vw - 24px));
 }
 

@@ -62,7 +62,7 @@
 }
 
 .database-footer-button.primary {
-  outline: 1px solid #1f1f1f;
+  outline: 1px solid var(--border-strong);
   outline-offset: -4px;
 }
 
@@ -281,7 +281,7 @@
   width: var(--chipset-cell);
   height: var(--chipset-cell);
   padding: 1px 0 0 2px;
-  border: 1px solid rgba(20, 20, 20, 0.34);
+  border: 1px solid var(--border-strong);
   background: transparent;
   color: var(--text-1);
   font: 700 10px/1 var(--font-mono);

@@ -294,7 +294,7 @@
   background: var(--db-light-bg-raised);
   border: 1px solid var(--db-light-border-strong);
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(31, 35, 48, 0.18);
+  box-shadow: 0 4px 12px rgba(42, 37, 33, 0.10);
   display: flex;
   gap: 6px;
   padding: 8px;

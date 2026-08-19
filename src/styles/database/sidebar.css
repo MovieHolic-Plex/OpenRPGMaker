@@ -120,7 +120,7 @@
 /* ---- 레코드 카운트 뱃지 — data-count 어트리뷰트만 소비(라벨 textContent 불변) */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
-  background: rgba(31, 35, 48, 0.06);
+  background: var(--bg-hover);
   border: 1px solid var(--db-light-border-subtle);
   border-radius: 999px;
   color: var(--db-light-text-3);

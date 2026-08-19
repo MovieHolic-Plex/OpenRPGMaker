@@ -10,7 +10,7 @@
 
 .db-skill-animation-preview-frame {
   flex: 0 0 auto;
-  border: 1px solid rgba(148, 163, 184, 0.35);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.72);
   background-repeat: no-repeat;
@@ -19,7 +19,7 @@
 
 .db-skill-animation-preview-caption {
   overflow: hidden;
-  color: #cbd5e1;
+  color: var(--text-2);
   font-size: 13px;
   font-weight: 700;
   line-height: 1.25;
@@ -29,7 +29,7 @@
 
 .db-skill-animation-preview-empty,
 .db-skill-state-effect-empty {
-  color: #94a3b8;
+  color: var(--text-3);
   font-size: 12px;
   line-height: 1.35;
 }
@@ -41,7 +41,7 @@
   gap: 8px 12px;
   align-items: center;
   padding: 4px 0;
-  border-bottom: 1px dashed rgba(148, 163, 184, 0.18);
+  border-bottom: 1px dashed var(--border-subtle);
 }
 
 .db-skill-state-effect-row .db-field {
