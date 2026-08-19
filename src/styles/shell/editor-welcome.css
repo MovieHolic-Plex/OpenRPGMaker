@@ -1,4 +1,4 @@
-/* First-run editor welcome - cinematic liquid-glass (space-landing tone). */
+/* First-run editor welcome - cream airy gallery (warm cream studio). */
 @layer shell {
   .editor-welcome {
     position: fixed;
@@ -7,16 +7,16 @@
     display: grid;
     grid-template-rows: 1fr auto;
     overflow: hidden;
-    color: #fff;
+    color: var(--text-1);
     font-family: var(--font-ui);
-    background: #000;
+    background: var(--bg-base);
   }
 
   .editor-welcome-slideshow {
     position: absolute;
     inset: 0;
     z-index: var(--z-below);
-    background: #000;
+    background: var(--bg-base);
   }
 
   .editor-welcome-slide {
@@ -48,102 +48,90 @@
     object-position: top center;
     display: block;
     border: 0;
-    filter: saturate(1.05) brightness(0.82);
+    filter: saturate(1.02) brightness(1.02);
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
   }
 
+  /* ONE cream wash — rgba(247,243,234,.88) uniform; strengthens only if contrast probe fails. */
   .editor-welcome-scrim {
     position: absolute;
     inset: 0;
     z-index: var(--z-base);
-    background:
-      radial-gradient(ellipse 90% 70% at 50% 18%, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.72) 100%),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.35) 0%, transparent 28%, transparent 48%, rgba(0, 0, 0, 0.55) 78%, rgba(0, 0, 0, 0.88) 100%);
+    background: rgba(247, 243, 234, 0.88);
     pointer-events: none;
   }
 
+  /* Cream panel for header text — guarantees >=4.5:1 on --bg-raised. */
+  .editor-welcome-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    text-align: center;
+    padding: clamp(var(--space-6), 9vh, 88px) var(--space-5) var(--space-2);
+    pointer-events: none;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
+    margin: var(--space-4) auto 0;
+    max-width: 640px;
+    width: min(640px, calc(100% - var(--space-6) * 2));
+  }
+
+  .editor-welcome-header > * {
+    pointer-events: auto;
+  }
+
+  /* Cards now cream: --bg-raised + --border-default + --radius-m */
   .editor-welcome-genre-item,
-  .editor-welcome-inspiration-item,
-  .editor-welcome-selection,
-  .editor-welcome-custom-panel,
-  .editor-welcome-custom-toggle,
-  .editor-welcome-kicker {
-    background: rgba(255, 255, 255, 0.01);
-    background-blend-mode: luminosity;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    border: none;
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  .editor-welcome-inspiration-item {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
     position: relative;
     overflow: hidden;
   }
 
+  .editor-welcome-selection,
+  .editor-welcome-custom-panel,
+  .editor-welcome-custom-toggle,
+  .editor-welcome-kicker {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-m);
+    box-shadow: var(--shadow-pop);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Remove old white glass rim — replaced by cream border */
   .editor-welcome-genre-item::before,
   .editor-welcome-inspiration-item::before,
   .editor-welcome-selection::before,
   .editor-welcome-custom-panel::before,
   .editor-welcome-custom-toggle::before,
   .editor-welcome-kicker::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.4px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.45) 0%,
-      rgba(255, 255, 255, 0.15) 20%,
-      rgba(255, 255, 255, 0) 40%,
-      rgba(255, 255, 255, 0) 60%,
-      rgba(255, 255, 255, 0.15) 80%,
-      rgba(255, 255, 255, 0.45) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    display: none;
   }
 
   .editor-welcome-genre-start,
   .editor-welcome-start {
-    background: rgba(255, 255, 255, 0.01);
-    background-blend-mode: luminosity;
-    backdrop-filter: blur(50px);
-    -webkit-backdrop-filter: blur(50px);
-    border: none;
-    box-shadow:
-      4px 4px 4px rgba(0, 0, 0, 0.05),
-      inset 0 1px 1px rgba(255, 255, 255, 0.15);
+    background: var(--accent);
+    color: var(--on-accent);
+    border: 1px solid transparent;
+    border-radius: 9999px;
+    box-shadow: var(--shadow-pop);
     position: relative;
     overflow: hidden;
   }
 
   .editor-welcome-genre-start::before,
   .editor-welcome-start::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.4px;
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.5) 0%,
-      rgba(255, 255, 255, 0.2) 20%,
-      rgba(255, 255, 255, 0) 40%,
-      rgba(255, 255, 255, 0) 60%,
-      rgba(255, 255, 255, 0.2) 80%,
-      rgba(255, 255, 255, 0.5) 100%
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    display: none;
   }
 
   .editor-welcome-stage {
@@ -163,28 +151,14 @@
     overflow: hidden;
   }
 
-  .editor-welcome-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-    text-align: center;
-    padding: clamp(36px, 9vh, 88px) 24px 8px;
-    pointer-events: none;
-  }
-
-  .editor-welcome-header > * {
-    pointer-events: auto;
-  }
-
   .editor-welcome-kicker {
     margin: 0;
-    padding: 8px 14px;
+    padding: var(--space-2) var(--space-3);
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 500;
     letter-spacing: 0.04em;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-2);
     text-shadow: none;
     text-transform: none;
   }
@@ -197,8 +171,8 @@
     font-style: italic;
     letter-spacing: -0.04em;
     line-height: 0.92;
-    color: #fff;
-    text-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
+    color: var(--text-1);
+    text-shadow: none;
   }
 
   .editor-welcome-sub {
@@ -207,8 +181,8 @@
     font-size: 14px;
     font-weight: 300;
     line-height: 1.45;
-    color: rgba(255, 255, 255, 0.88);
-    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+    color: var(--text-2);
+    text-shadow: none;
   }
 
   .editor-welcome-dock {
@@ -216,9 +190,9 @@
     z-index: var(--z-canvas-decor);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-3);
     width: 100%;
-    padding: 0 0 22px;
+    padding: 0 0 var(--space-5);
   }
 
   .editor-welcome-selection {
@@ -226,16 +200,13 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--space-3);
     width: min(420px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 0;
-    border-radius: 0;
-    background: transparent !important;
-    background-blend-mode: normal;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
+    padding: var(--space-2);
+    border-radius: var(--radius-m);
+    background: var(--bg-raised) !important;
+    box-shadow: var(--shadow-pop) !important;
   }
 
   .editor-welcome-selection::before {
@@ -257,7 +228,7 @@
     margin: 0;
     font-size: 13px;
     font-weight: 600;
-    color: rgba(255, 255, 255, 0.95);
+    color: var(--text-1);
   }
 
   .editor-welcome-selection-blurb {
@@ -265,24 +236,24 @@
     font-size: 11px;
     font-weight: 300;
     line-height: 1.35;
-    color: rgba(255, 255, 255, 0.65);
+    color: var(--text-2);
   }
 
   .editor-welcome-genre-start {
     appearance: none;
     flex: 0 0 auto;
     margin: 0;
-    padding: 12px 22px;
+    padding: var(--space-3) var(--space-5);
     border-radius: 9999px;
     border: none;
-    background: #fff;
-    color: #000;
+    background: var(--accent);
+    color: var(--on-accent);
     font: inherit;
     font-size: 14px;
     font-weight: 600;
     line-height: 1.3;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    box-shadow: var(--shadow-pop);
     transition: transform 0.15s ease, opacity 0.15s ease, filter 0.15s ease;
   }
 
@@ -302,16 +273,16 @@
   }
 
   .editor-welcome-genre-start:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline: 2px solid var(--accent);
     outline-offset: 3px;
   }
 
   .editor-welcome-worlds {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-2);
     width: 100%;
-    padding: 0 24px;
+    padding: 0 var(--space-5);
     pointer-events: none;
   }
 
@@ -323,13 +294,13 @@
 
   .editor-welcome-worlds-caption {
     margin: 0;
-    padding: 0 4px;
+    padding: 0 var(--space-1);
     pointer-events: none;
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.72);
+    color: var(--text-2);
     text-align: center;
   }
 
@@ -339,18 +310,18 @@
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
-    gap: 12px;
+    gap: var(--space-3);
     width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 4px 2px 8px;
+    padding: var(--space-1) var(--space-1) var(--space-2);
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
   }
 
   .editor-welcome-worlds-track::-webkit-scrollbar { height: 3px; }
   .editor-welcome-worlds-track::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--border-default);
     border-radius: 999px;
   }
 
@@ -362,8 +333,8 @@
     height: 94px;
     margin: 0;
     padding: 0;
-    border-radius: 16px;
-    color: #fff;
+    border-radius: var(--radius-m);
+    color: var(--text-1);
     font: inherit;
     cursor: pointer;
     scroll-snap-align: start;
@@ -374,14 +345,13 @@
   .editor-welcome-genre-item:focus-visible {
     transform: translateY(-3px);
     outline: none;
+    border-color: var(--border-strong);
   }
 
   .editor-welcome-genre-item.is-selected {
     transform: translateY(-4px);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.45),
-      0 12px 28px rgba(0, 0, 0, 0.4),
-      inset 0 1px 1px rgba(255, 255, 255, 0.18);
+    border-color: var(--accent-border);
+    box-shadow: var(--shadow-pop);
   }
 
   .editor-welcome-genre-img {
@@ -395,6 +365,7 @@
     border-radius: inherit;
     pointer-events: none;
     z-index: var(--z-below);
+    opacity: 0.92;
   }
 
   .editor-welcome-genre-label {
@@ -403,17 +374,17 @@
     right: 0;
     bottom: 0;
     z-index: var(--z-base);
-    padding: 18px 7px 7px;
+    padding: var(--space-4) var(--space-2) var(--space-2);
     font-size: 10.5px;
     font-weight: 650;
     line-height: 1.2;
     text-align: center;
-    color: #fff;
-    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.78) 55%);
+    color: var(--text-1);
+    background: linear-gradient(180deg, transparent 0%, rgba(247, 243, 234, 0.92) 55%);
     pointer-events: none;
   }
 
-    .editor-welcome-inspiration-item {
+  .editor-welcome-inspiration-item {
     appearance: none;
     position: relative;
     flex: 0 0 auto;
@@ -421,8 +392,8 @@
     height: 76px;
     margin: 0;
     padding: 0;
-    border-radius: 14px;
-    color: #fff;
+    border-radius: var(--radius-m);
+    color: var(--text-1);
     font: inherit;
     cursor: pointer;
     scroll-snap-align: start;
@@ -431,16 +402,15 @@
 
   .editor-welcome-inspiration-item.is-selected {
     transform: translateY(-3px);
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.4),
-      0 10px 24px rgba(0, 0, 0, 0.35),
-      inset 0 1px 1px rgba(255, 255, 255, 0.16);
+    border-color: var(--accent-border);
+    box-shadow: var(--shadow-pop);
   }
 
   .editor-welcome-inspiration-item:hover,
   .editor-welcome-inspiration-item:focus-visible {
     transform: translateY(-2px);
     outline: none;
+    border-color: var(--border-strong);
   }
 
   .editor-welcome-inspiration-img {
@@ -454,6 +424,7 @@
     border-radius: inherit;
     pointer-events: none;
     z-index: var(--z-below);
+    opacity: 0.92;
   }
 
   .editor-welcome-inspiration-label {
@@ -462,13 +433,13 @@
     right: 0;
     bottom: 0;
     z-index: var(--z-base);
-    padding: 14px 5px 5px;
+    padding: var(--space-3) var(--space-1) var(--space-1);
     font-size: 9.5px;
     font-weight: 600;
     line-height: 1.15;
     text-align: center;
-    color: #fff;
-    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.75) 55%);
+    color: var(--text-1);
+    background: linear-gradient(180deg, transparent 0%, rgba(247, 243, 234, 0.92) 55%);
     pointer-events: none;
   }
 
@@ -476,7 +447,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     width: min(420px, calc(100% - 40px));
     margin: 0 auto;
   }
@@ -484,9 +455,9 @@
   .editor-welcome-custom-toggle {
     appearance: none;
     margin: 0;
-    padding: 6px 12px;
+    padding: var(--space-1) var(--space-3);
     border-radius: 9999px;
-    color: rgba(255, 255, 255, 0.72);
+    color: var(--text-2);
     font: inherit;
     font-size: 12px;
     font-weight: 500;
@@ -495,15 +466,15 @@
   }
 
   .editor-welcome-custom-toggle:hover,
-  .editor-welcome-custom-toggle.is-open { color: #fff; }
+  .editor-welcome-custom-toggle.is-open { color: var(--text-1); border-color: var(--border-strong); }
 
   .editor-welcome-custom-panel {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--space-2);
     width: 100%;
-    padding: 12px;
-    border-radius: 18px;
+    padding: var(--space-3);
+    border-radius: var(--radius-m);
   }
 
   .editor-welcome-custom-panel[hidden] { display: none !important; }
@@ -512,37 +483,37 @@
     width: 100%;
     box-sizing: border-box;
     margin: 0;
-    padding: 11px 12px;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: var(--space-3) var(--space-3);
+    border: 1px solid var(--border-default);
     border-radius: 9999px;
-    background: rgba(0, 0, 0, 0.28);
-    color: #fff;
+    background: var(--bg-inset);
+    color: var(--text-1);
     font: inherit;
     font-size: 14px;
     font-weight: 300;
     line-height: 1.4;
   }
 
-  .editor-welcome-input::placeholder { color: rgba(255, 255, 255, 0.4); }
+  .editor-welcome-input::placeholder { color: var(--text-placeholder); }
 
   .editor-welcome-input:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.35);
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-border);
+    box-shadow: var(--focus-ring);
   }
 
   .editor-welcome-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 10px;
+    gap: var(--space-2);
   }
 
   .editor-welcome-start {
     appearance: none;
     margin: 0;
-    padding: 8px 14px;
+    padding: var(--space-2) var(--space-3);
     border-radius: 9999px;
-    color: #fff;
+    color: var(--on-accent);
     font: inherit;
     font-size: 13px;
     font-weight: 600;
@@ -552,7 +523,7 @@
 
   .editor-welcome-start:hover { filter: brightness(1.08); }
   .editor-welcome-start:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.85);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
@@ -561,8 +532,8 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 14px 18px;
-    padding: 0 16px 2px;
+    gap: var(--space-3) var(--space-4);
+    padding: 0 var(--space-4) var(--space-1);
   }
 
   .editor-welcome-skip {
@@ -571,7 +542,7 @@
     padding: 2px;
     border: 0;
     background: transparent;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-2);
     font: inherit;
     font-size: 12px;
     font-weight: 400;
@@ -579,17 +550,17 @@
     cursor: pointer;
   }
 
-  .editor-welcome-skip:hover { color: rgba(255, 255, 255, 0.92); }
+  .editor-welcome-skip:hover { color: var(--text-1); }
   .editor-welcome-skip:focus-visible {
-    outline: 2px solid rgba(255, 255, 255, 0.75);
+    outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
 
   .editor-welcome-dismiss-label {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    color: rgba(255, 255, 255, 0.42);
+    gap: var(--space-2);
+    color: var(--text-3);
     font-size: 11.5px;
     line-height: 1.3;
     cursor: pointer;
@@ -600,7 +571,7 @@
     width: 12px;
     height: 12px;
     margin: 0;
-    accent-color: #fff;
+    accent-color: var(--accent);
     cursor: pointer;
   }
 
@@ -631,31 +602,29 @@
   .editor-welcome.is-reduced-motion .editor-welcome-slide.is-active { transform: none; }
 
   .editor-welcome.has-world-focus .editor-welcome-scrim {
-    background:
-      radial-gradient(ellipse 90% 70% at 50% 18%, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0.28) 55%, rgba(0, 0, 0, 0.62) 100%),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 30%, transparent 50%, rgba(0, 0, 0, 0.5) 78%, rgba(0, 0, 0, 0.86) 100%);
+    background: rgba(247, 243, 234, 0.88);
   }
 
   .editor-welcome.has-world-focus .editor-welcome-slide-img {
-    filter: saturate(1.08) brightness(0.9);
+    filter: saturate(1.02) brightness(1.02);
   }
 
-  .editor-welcome-prompt-panel { display: grid; gap: 8px; padding: 12px; border-radius: 14px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(12px); }
-  .editor-welcome-prompt-hint { margin: 0; font: 600 11px var(--font-ui); color: rgba(255,255,255,.85); }
-  .editor-welcome-prompt-input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,.16); background: rgba(0,0,0,.28); color: #fff; font: 500 13px var(--font-ui); outline: none; }
-  .editor-welcome-prompt-input::placeholder { color: rgba(255,255,255,.55); }
-  .editor-welcome-prompt-input:focus { border-color: rgba(255,255,255,.28); box-shadow: 0 0 0 3px rgba(255,255,255,.10); }
-  .editor-welcome-quick-picks { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-  .editor-welcome-quick-pick { flex: 0 0 auto; padding: 6px 10px; border-radius: 9999px; border: 1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); font: 600 11px var(--font-ui); cursor: pointer; }
-  .editor-welcome-quick-pick:hover { background: rgba(255,255,255,.14); }
-  .editor-welcome-prompt-actions { display: flex; gap: 8px; align-items: center; }
-  .editor-welcome-prompt-submit { appearance: none; padding: 8px 14px; border-radius: 9999px; border: 1px solid rgba(255,255,255,.18); background: #fff; color: #111; font: 700 12px var(--font-ui); cursor: pointer; }
-  .editor-welcome-prompt-note { font: 500 11px var(--font-ui); color: rgba(255,255,255,.65); }
-  .editor-welcome-template-row { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 4px; }
-  .editor-welcome-template-card { flex: 0 0 148px; display: grid; gap: 6px; text-align: left; padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06); cursor: pointer; }
-  .editor-welcome-template-card:hover { background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.22); }
-  .editor-welcome-template-thumb { height: 72px; border-radius: 8px; background-size: cover; background-position: center; background-color: rgba(0,0,0,.25); }
-  .editor-welcome-template-label { font: 700 11px var(--font-ui); color: #fff; }
-  .editor-welcome-template-blurb { font: 500 10px var(--font-ui); color: rgba(255,255,255,.7); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .editor-welcome-prompt-panel { display: grid; gap: var(--space-2); padding: var(--space-3); border-radius: var(--radius-m); background: var(--bg-raised); border: 1px solid var(--border-default); box-shadow: var(--shadow-pop); }
+  .editor-welcome-prompt-hint { margin: 0; font: 600 11px var(--font-ui); color: var(--text-2); }
+  .editor-welcome-prompt-input { width: 100%; padding: var(--space-2) var(--space-3); border-radius: var(--radius-m); border: 1px solid var(--border-default); background: var(--bg-inset); color: var(--text-1); font: 500 13px var(--font-ui); outline: none; }
+  .editor-welcome-prompt-input::placeholder { color: var(--text-placeholder); }
+  .editor-welcome-prompt-input:focus { border-color: var(--accent-border); box-shadow: var(--focus-ring); }
+  .editor-welcome-quick-picks { display: flex; gap: var(--space-1); overflow-x: auto; padding-bottom: 2px; }
+  .editor-welcome-quick-pick { flex: 0 0 auto; padding: var(--space-1) var(--space-2); border-radius: 9999px; border: 1px solid var(--border-default); background: var(--bg-raised); color: var(--text-2); font: 600 11px var(--font-ui); cursor: pointer; }
+  .editor-welcome-quick-pick:hover { background: var(--bg-hover); border-color: var(--border-strong); }
+  .editor-welcome-prompt-actions { display: flex; gap: var(--space-2); align-items: center; }
+  .editor-welcome-prompt-submit { appearance: none; padding: var(--space-2) var(--space-3); border-radius: 9999px; border: 1px solid transparent; background: var(--accent); color: var(--on-accent); font: 700 12px var(--font-ui); cursor: pointer; }
+  .editor-welcome-prompt-note { font: 500 11px var(--font-ui); color: var(--text-3); }
+  .editor-welcome-template-row { display: flex; gap: var(--space-2); overflow-x: auto; padding: 2px 0 var(--space-1); }
+  .editor-welcome-template-card { flex: 0 0 148px; display: grid; gap: var(--space-1); text-align: left; padding: var(--space-2); border-radius: var(--radius-m); border: 1px solid var(--border-default); background: var(--bg-raised); cursor: pointer; box-shadow: var(--shadow-pop); }
+  .editor-welcome-template-card:hover { background: var(--bg-surface); border-color: var(--border-strong); }
+  .editor-welcome-template-thumb { height: 72px; border-radius: var(--radius-s); background-size: cover; background-position: center; background-color: var(--bg-inset); }
+  .editor-welcome-template-label { font: 700 11px var(--font-ui); color: var(--text-1); }
+  .editor-welcome-template-blurb { font: 500 10px var(--font-ui); color: var(--text-2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 }
