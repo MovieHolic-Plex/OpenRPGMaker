@@ -13,17 +13,17 @@
   --text-muted: var(--text-3);
   --accent-soft: var(--accent-muted);
   --ok: var(--success);
-  --gold: #f5d04a;
+  --gold: #8A6B2F;
   --surface-app: var(--bg-base);
   --accent-secondary: var(--gold);
-  --accent-editor: #86b878;
+  --accent-editor: var(--success);
   --accent-blue: var(--accent);
   --bg-recessed: var(--bg-inset);
   --surface-button: var(--control-bg);
   --mono: var(--font-mono);
   --status-warning: var(--warning);
   --status-success: var(--success);
-  --pixel-grid: rgba(255, 255, 255, 0.15);
+  --pixel-grid: rgba(42, 37, 33, 0.08);
 }
 .topbar {
   align-items: stretch;
@@ -47,7 +47,7 @@
 }
 .rm2k3-menu-bar {
   align-items: center;
-  background: #efe9dc;
+  background: var(--bg-inset);
   border-bottom: 1px solid var(--border-default);
   display: flex;
   height: 22px;
@@ -74,10 +74,10 @@
   outline: none;
 }
 .rm2k3-menu-popup {
-  background: #f8f5ec;
+  background: var(--bg-overlay);
   border: 1px solid;
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.22);
+  box-shadow: 2px 2px 0 rgba(60, 48, 32, 0.14);
   display: none;
   left: 0;
   min-width: 168px;
@@ -193,7 +193,7 @@
 }
 .rm2k3-tool-button.primary:hover:not(:disabled),
 .rm2k3-tool-button.primary:focus-visible {
-  background: #e7f1fb;
+  background: var(--accent-muted);
 }
 .rm2k3-tool-button.primary:active:not(:disabled) {
   background: var(--surface-recessed);
@@ -213,7 +213,7 @@
 }
 .rm2k3-toolbar-status {
   align-items: center;
-  background: #f5f1e8;
+  background: var(--bg-surface);
   border: 1px solid;
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   color: var(--text-primary);
@@ -239,7 +239,7 @@ button.btn:hover:not(:disabled) {
 }
 button.btn:active:not(:disabled) {
   background: var(--surface-selected);
-  box-shadow: inset 0 0 0 1px rgba(46, 111, 158, 0.28);
+  box-shadow: inset 0 0 0 1px var(--accent-border);
   transform: none;
 }
 button.btn.primary {
