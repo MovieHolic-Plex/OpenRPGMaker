@@ -1,7 +1,7 @@
 /* ── Command-bar AI IA (2026-07-07): bottom center bar + rising overlay ── */
 body.ai-command-bar-active {
-  /* 컨텍스트 칩 스택 + 2줄 입력 포함 실측 높이(~110px)를 덮도록 — 88px는 하단과 겹쳤다. */
-  --ai-command-bar-inset: 116px;
+  /* 컨텍스트 칩 + 감독 칩 + 2줄 입력 실측 높이. */
+  --ai-command-bar-inset: 144px;
 }
 
 body.ai-command-bar-active .editor-layout {
@@ -51,6 +51,10 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   position: fixed;
   right: 24px;
   z-index: 40; /* z-layers: bar 40 < overlay 41 */
+}
+
+.ai-command-bar:has(.ai-command-menu:not([hidden])) {
+  z-index: 42;
 }
 
 .ai-chat-panel.chat-dock-float .ai-command-bar {
@@ -463,6 +467,10 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   position: absolute;
 }
 
+.ai-command-menu:not([hidden]) {
+  z-index: 2;
+}
+
 .ai-command-menu[hidden] {
   display: none;
 }
@@ -495,6 +503,37 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   gap: 4px;
   padding: 8px 10px;
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ai-composer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  padding: 0 2px 2px;
+}
+
+.ai-composer-chips:empty,
+.ai-composer-chips[hidden] {
+  display: none;
+}
+
+.ai-composer-chip {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: var(--space-1) var(--space-2);
+}
+
+.ai-composer-chip:hover,
+.ai-composer-chip:focus-visible {
+  background: var(--control-bg-hover);
+  border-color: var(--accent-border);
+  outline: none;
 }
 .ai-command-input-stack:focus-within {
   border-color: color-mix(in srgb, var(--accent, #4c6ef5) 45%, var(--border-strong));

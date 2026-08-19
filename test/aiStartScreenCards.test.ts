@@ -1,4 +1,6 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { directorStartPrompts, readAgentBrief } from "@/editor/panels/aiAgentBrief";
+import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { installFakeDom, findByTestId, renderWithFakeDom } from "./fakeDom";
 import {
   buildRecentAiWorkCard,
@@ -9,10 +11,41 @@ import {
   summarizeActivityResult,
 } from "@/editor/panels/aiStartScreenCards";
 import type { AiActivityLogRecord } from "@/ai/activityLog";
+import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { store } from "@/project/store";
 
-beforeEach(() => installFakeDom());
+let restoreDom: (() => void) | null = null;
+
+beforeEach(() => {
+  store.replace(createBlankProject());
+  restoreDom = installFakeDom();
+  const storage = new Map<string, string>();
+  Object.defineProperty(globalThis, "localStorage", {
+    configurable: true,
+    writable: true,
+    value: {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => void storage.set(key, String(value)),
+      removeItem: (key: string) => void storage.delete(key),
+      clear: () => storage.clear(),
+    },
+  });
+  const mapId = store.getCurrent().startMapId;
+  editorState.set({
+    currentMapId: mapId,
+    layer: "lower",
+    tool: "paint",
+    selection: null,
+  });
+});
+
+afterEach(() => {
+  restoreDom?.();
+  restoreDom = null;
+  Reflect.deleteProperty(globalThis, "localStorage");
+});
 
 const NOW = new Date("2026-07-10T12:00:00Z");
 
@@ -74,24 +107,28 @@ describe("buildRecentAiWorkCard", () => {
 });
 
 describe("buildVisualStartGallery", () => {
-  it("소수 비주얼 카드를 렌더하고 클릭 시 instruction을 넘긴다", () => {
+  it("모자이크 헬퍼는 호출 시에만 썸을 만들고 5열 갤러리를 부팅 빈 면으로 쓰지 않는다", () => {
+    // Break: panel boot still mounts ai-start-visual-gallery as the empty product.
     const project = createBlankProject();
     const tileset = project.tilesets[DEFAULT_TILESET_ID] ?? Object.values(project.tilesets)[0] ?? null;
-    const picked: string[] = [];
     const gallery = renderWithFakeDom(() =>
       buildVisualStartGallery({
         tileset,
-        onPick: (instruction, id) => picked.push(`${id}:${instruction}`),
-      })
+        onPick: () => undefined,
+      }),
     );
-    expect(findByTestId(gallery, "ai-start-visual-gallery")).toBeTruthy();
-    expect(defaultAiVisualStartPrompts()).toHaveLength(5);
-    const place = findByTestId(gallery, "ai-start-visual-place") ?? findByTestId(gallery, "ai-start-build-house");
-    expect(place).toBeTruthy();
     expect(findByTestId(gallery, "ai-start-visual-stage-place")).toBeTruthy();
-    expect(findByTestId(gallery, "ai-start-visual-stage-character") ?? findByTestId(gallery, "ai-start-visual-villager")).toBeTruthy();
-    place?.dispatchEvent(new Event("click"));
-    expect(picked[0]).toMatch(/^place:/);
-    expect(picked[0]).toContain("집");
+    expect(defaultAiVisualStartPrompts().length).toBeGreaterThanOrEqual(3);
+
+    const panel = renderWithFakeDom(() => renderAiChatPanel());
+    if (panel.classList.contains("is-collapsed")) {
+      findByTestId(panel, "ai-collapsed-restore")?.click();
+    }
+    const prompts = directorStartPrompts(readAgentBrief());
+    const chips = findByTestId(panel, "ai-composer-chips");
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
+    expect(chips?.querySelectorAll("button").length).toBe(prompts.length);
+    expect(prompts.length).toBeLessThanOrEqual(3);
   });
 });

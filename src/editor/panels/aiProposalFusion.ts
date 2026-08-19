@@ -3,7 +3,7 @@ import { applyVocabSoftConfirmApprovals, extractVocabSoftConfirm, type VocabSoft
 import type { Project } from "@/project/types";
 
 export function proposalAcceptButtonLabel(selectedCount: number, total: number): string {
-  return selectedCount === total ? "맵만 적용" : `선택 ${selectedCount}건 맵만 적용`;
+  return selectedCount === total ? "이 맵에 넣기" : `선택 ${selectedCount}건 이 맵에 넣기`;
 }
 
 export function proposalAcceptWithMaterialButtonLabel(selectedCount: number, total: number): string {

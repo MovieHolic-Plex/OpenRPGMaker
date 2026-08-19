@@ -153,7 +153,7 @@ describe("AI 패널 브리지", () => {
     storage.set("rpg-zzu:ai-map-first-collapse-v1", "1");
     storage.set("rpg-zzu:ai-panel-collapsed", "1");
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
-    const panel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
+    const panel = renderWithFakeDom(() => renderAiChatPanel({ getChatDock: () => "side" })) as FakeElement;
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
     window.dispatchEvent(new CustomEvent("rpgzzu:ai-assist", {
@@ -167,7 +167,7 @@ describe("AI 패널 브리지", () => {
     expect(assistantMock.sentMessages).toHaveLength(1);
     expect(assistantMock.sentMessages[0]).toContain("클러스터 수정");
     expect(assistantMock.sentMessages[0]).toContain("\"id\": \"wall_group\"");
-    expect(findByTestId(panel, "ai-bubble-user")?.textContent).toContain("클러스터 수정");
+    expect(findByTestId(panel, "ai-command-row-user")?.textContent).toContain("클러스터 수정");
   });
 });
 

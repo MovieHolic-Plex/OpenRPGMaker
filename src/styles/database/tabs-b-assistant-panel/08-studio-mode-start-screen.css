@@ -67,7 +67,8 @@
   max-height: none;
 }
 
-.ai-chat-panel.is-studio .ai-chat-bubble {
+.ai-chat-panel.is-studio .ai-chat-bubble,
+.ai-chat-panel.is-studio .ai-command-row {
   max-width: 780px;
 }
 

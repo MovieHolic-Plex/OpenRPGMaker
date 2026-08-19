@@ -15,7 +15,7 @@ import {
   type SkillRunContext,
 } from "@/ai/skills";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { openSkillPalette, renderSkillDrawer, renderSkillParamForm, renderSlashList } from "@/editor/panels/aiSkillDrawer";
+import { openSkillPalette, renderSkillDrawer, renderSkillParamForm, renderSlashList, skillCommandLine } from "@/editor/panels/aiSkillDrawer";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -160,6 +160,19 @@ describe("스킬 레지스트리", () => {
   });
 });
 
+describe("스킬 명령 줄", () => {
+  it("아이콘과 한글 이름을 붙이고 id 슬래시를 쓰지 않는다", () => {
+    const house = SYSTEM_SKILLS.find((skill) => skill.id === "build-house")!;
+    // Break: skillCommandLine still returns `/${id}`.
+    expect(skillCommandLine(house)).toBe("🏠 집 짓기");
+  });
+
+  it("아이콘이 비면 이름만 남긴다", () => {
+    const house = SYSTEM_SKILLS.find((skill) => skill.id === "build-house")!;
+    expect(skillCommandLine({ ...house, icon: "  " })).toBe("집 짓기");
+  });
+});
+
 describe("사용자 정의 스킬", () => {
   it("저장/조회/삭제가 왕복하고 목록에 합류한다", () => {
     const saved = saveUserSkill({ name: "우물 파기", icon: "🪣", description: "", template: "{{맵}}에 우물을 파줘" });
@@ -273,12 +286,13 @@ describe("스킬 UI(fakeDom)", () => {
     input.value = "/집";
     input.dispatchEvent(new Event("input"));
     expect(findByTestId(panel, "ai-slash-item-build-house")).toBeTruthy();
-    // TUI: `/build-house` + `# 예: …` 구체 예시만. `<width>` 같은 자리표시자 없음.
+    // Visible label is icon + Korean name. Run key stays skill.id on the testid.
     const house = findByTestId(panel, "ai-slash-item-build-house");
-    expect(house?.textContent).toContain("/build-house");
+    expect(house?.textContent).toContain("집 짓기");
+    expect(house?.textContent).not.toContain("/build-house");
+    expect(house?.textContent).not.toContain("#");
     expect(house?.textContent).not.toContain("<");
-    expect(house?.textContent).toContain("예:");
-    expect(findByTestId(panel, "ai-slash-hint-build-house")?.textContent).toContain("회벽");
+    expect(findByTestId(panel, "ai-slash-hint-build-house")).toBeNull();
     expect(house?.getAttribute("title")).toContain("집");
     input.value = "일반 텍스트";
     input.dispatchEvent(new Event("input"));
@@ -320,8 +334,8 @@ describe("스킬 UI(fakeDom)", () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
     const [prompt, displayAs] = onSubmit.mock.calls[0] as [string, string];
     expect(prompt).toContain("14×9");
-    // 채팅 표시는 TUI 명령 줄(`/build-house`) — 앱 라벨("🏠 …")을 쓰지 않는다.
-    expect(displayAs).toBe("/build-house");
+    // User bubble/row shows the Korean command line, not /${id}.
+    expect(displayAs).toBe("🏠 집 짓기");
   });
 
   it("인자 폼 초기값: autoFill이 타일셋 컨텍스트를 채우고, 없으면 placeholder 동작 유지", () => {
@@ -383,15 +397,22 @@ describe("스킬 UI(fakeDom)", () => {
     expect((onPick.mock.calls[0][0] as { id: string }).id).toBe("map-audit");
   });
 
-  it("시작 화면(빈 대화)은 최소 힌트만 두고, 헤더/입력부는 경량 IA를 유지한다", () => {
+  it("빈 대화 부팅은 오버레이 빈 키트 없이 경량 IA와 감독 칩만 둔다", () => {
+    // Break: boot remounts ai-start-screen / empty-hint, or drops slash / export / studio.
     const panel = renderAiChatPanel() as unknown as FakeElement;
-    expect(findByTestId(panel, "ai-start-screen")).toBeTruthy();
-    expect(findByTestId(panel, "ai-start-empty-hint")).toBeTruthy();
+    const chips = findByTestId(panel, "ai-composer-chips");
+    const chipCount = chips?.querySelectorAll("button").length ?? 0;
+    expect(findByTestId(panel, "ai-start-screen")).toBeNull();
+    expect(findByTestId(panel, "ai-start-empty-hint")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(panel, "ai-start-build-house")).toBeNull();
+    expect(chips).toBeTruthy();
+    expect(chipCount).toBeGreaterThanOrEqual(0);
+    expect(chipCount).toBeLessThanOrEqual(3);
     expect(findByTestId(panel, "ai-mode-badge")).toBeNull();
     expect(findByTestId(panel, "ai-skill-pinbar")).toBeNull();
     expect(findByTestId(panel, "ai-skill-slash-toggle")).toBeTruthy();
-    // 헤더: 로그 내보내기 복귀 + 스튜디오 토글.
     expect(findByTestId(panel, "ai-export")).toBeTruthy();
     expect(findByTestId(panel, "ai-studio-toggle")).toBeTruthy();
   });

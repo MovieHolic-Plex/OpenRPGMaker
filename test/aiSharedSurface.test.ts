@@ -38,21 +38,26 @@ afterEach(() => {
 });
 
 describe("AI shared surface", () => {
-  it("shows the same minimal start screen in beginner and expert body classes", () => {
+  it("shows the same empty composer surface in beginner and expert body classes", () => {
+    // Break: either mode remounts start-screen empty kit, or expert gets a private board.
     document.body.classList.add("editor-ui-beginner");
     const basicPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(basicPanel, "ai-start-screen")).toBeTruthy();
-    expect(findByTestId(basicPanel, "ai-start-empty-hint")).toBeTruthy();
+    expect(findByTestId(basicPanel, "ai-start-screen")).toBeNull();
+    expect(findByTestId(basicPanel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(basicPanel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(basicPanel, "ai-expert-board")).toBeNull();
+    expect(findByTestId(basicPanel, "ai-composer-chips")).toBeTruthy();
     expect(basicPanel.dataset.uiDensity).toBe("shared");
 
     document.body.classList.remove("editor-ui-beginner");
     document.body.classList.add("editor-ui-expert");
     setEditorUiMode("expert");
     const expertPanel = renderWithFakeDom(() => renderAiChatPanel()) as FakeElement;
-    expect(findByTestId(expertPanel, "ai-start-screen")).toBeTruthy();
-    expect(findByTestId(expertPanel, "ai-start-empty-hint")).toBeTruthy();
+    expect(findByTestId(expertPanel, "ai-start-screen")).toBeNull();
+    expect(findByTestId(expertPanel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(expertPanel, "ai-empty-cta")).toBeNull();
     expect(findByTestId(expertPanel, "ai-expert-board")).toBeNull();
+    expect(findByTestId(expertPanel, "ai-composer-chips")).toBeTruthy();
     expect(expertPanel.dataset.uiDensity).toBe("shared");
   });
 

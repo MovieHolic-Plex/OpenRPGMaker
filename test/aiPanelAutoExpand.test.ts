@@ -119,6 +119,8 @@ function renderPanel(): FakeElement {
 }
 
 function expandPanel(panel: FakeElement): void {
+  // Restore click is a no-op when first visit already boots open.
+  if (!panel.classList.contains("is-collapsed")) return;
   findByTestId(panel, "ai-collapsed-restore")?.click();
 }
 
@@ -170,12 +172,12 @@ describe("AI 패널 자동 펼침/접기", () => {
     expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
   });
 
-  it("이미 펼친 상태에서도 턴이 끝나면 맵 우선으로 다시 접는다 — 저장값은 불변", async () => {
+  it("이미 펼친 첫 방문은 턴 종료 후 자동으로 접히지 않는다 — 키를 쓰지 않는다", async () => {
+    // Break: first visit still boots collapsed, or an already-open panel auto-collapses after idle.
     const panel = renderPanel();
     expandPanel(panel);
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    // 사용자가 펼치면 저장값은 "0"이 된다.
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(storage.has("rpg-zzu:ai-panel-collapsed")).toBe(false);
 
     const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
     await bridge!.send("지도 그려줘");
@@ -184,9 +186,8 @@ describe("AI 패널 자동 펼침/접기", () => {
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
     await flushAsync();
 
-    expect(panel.classList.contains("is-collapsed")).toBe(true);
-    // 자동 재접기는 저장값을 덮어쓰지 않는다 — 다음 부팅은 여전히 펼침("0").
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(storage.has("rpg-zzu:ai-panel-collapsed")).toBe(false);
   });
 
   it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {

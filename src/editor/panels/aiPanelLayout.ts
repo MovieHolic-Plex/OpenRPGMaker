@@ -107,20 +107,19 @@ export function applyAiFontSize(target: HTMLElement, size: AiFontSize): void {
 
 /**
  * 접힘 상태.
- * 첫 방문(localStorage/쿠키에 저장값 없음)은 **접힘** — 맵 편집 면적을 먼저 보여 준다.
- * 이후에는 사용자가 마지막으로 명시한 접힘/펼침을 복원한다 (`"1"` 접힘, `"0"` 펼침).
- * 자동 펼침/재접기(맵 우선)는 세션 안에서만 동작하고 저장값을 건드리지 않는다.
+ * 첫 방문(저장값 없음 / localStorage 없음 / 읽기 실패)은 **펼침**.
+ * 사용자가 마지막으로 명시한 값만 복원한다 (`"1"` 접힘, 그 외 펼침).
+ * 첫 부팅에서는 키를 쓰지 않는다. 자동 펼침/재접기는 저장값을 건드리지 않는다.
  */
 export const MAP_FIRST_MIGRATION_KEY = "rpg-zzu:ai-map-first-collapse-v1"; // 레거시 키(테스트/정리용)
 
 export function loadPanelCollapsed(): boolean {
-  if (typeof localStorage === "undefined") return true;
+  if (typeof localStorage === "undefined") return false;
   try {
     const raw = localStorage.getItem(PANEL_COLLAPSED_KEY);
-    if (raw === null) return true; // 첫 시작: 접힘
     return raw === "1";
   } catch {
-    return true;
+    return false;
   }
 }
 

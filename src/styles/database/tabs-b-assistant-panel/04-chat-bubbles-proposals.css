@@ -1,3 +1,51 @@
+/* RM @> 커맨드 로 — 인간 로그는 버블이 아니라 명령 줄이다. */
+.ai-command-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 8px;
+  row-gap: 4px;
+  align-items: start;
+  width: 100%;
+  max-width: 100%;
+  padding: 2px 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--studio-text, var(--text-1));
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.ai-command-prefix {
+  color: var(--studio-command, #4c7eff);
+  font-weight: 700;
+  user-select: none;
+}
+.ai-command-row-body {
+  min-width: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ai-command-row-body.is-discarded,
+.ai-command-row-body.is-reverted {
+  opacity: 0.62;
+}
+.ai-command-attachment {
+  grid-column: 2;
+  min-width: 0;
+}
+.ai-proposal-pin .ai-command-row-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  white-space: normal;
+}
+.ai-proposal-pin-actions {
+  display: flex;
+  gap: 6px;
+}
+
 /* 채팅 버블 — 프리미엄 가독성 (여백·대비·꼬리) */
 .ai-chat-bubble {
   border-radius: 14px;

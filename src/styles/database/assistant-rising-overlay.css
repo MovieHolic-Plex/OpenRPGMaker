@@ -65,6 +65,9 @@
   margin: 6px 0;
   box-shadow: 0 2px 10px rgba(0,0,0,0.14);
 }
+.ai-pending-queue[hidden] {
+  display: none !important;
+}
 .ai-pending-queue::before {
   content: "";
   width: 7px;

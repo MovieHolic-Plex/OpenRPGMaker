@@ -49,12 +49,14 @@ async function flushAsync(): Promise<void> {
 }
 
 function renderPanel(options: Parameters<typeof renderAiChatPanel>[0] = {}): FakeElement {
-  return renderAiChatPanel({ clock: () => 37_000, ...options }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 37_000, getChatDock: () => "side", ...options }) as unknown as FakeElement;
 }
 
 function installFakeWindow(): void {
   const previous = Object.getOwnPropertyDescriptor(globalThis, "window");
   const target = new EventTarget() as EventTarget & Partial<Window> & { __rpgzzuSkillHotkey?: boolean };
+  target.setTimeout = ((..._args: Parameters<typeof setTimeout>) => 0) as typeof setTimeout;
+  target.clearTimeout = ((..._args: Parameters<typeof clearTimeout>) => undefined) as typeof clearTimeout;
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     writable: true,
@@ -152,11 +154,13 @@ describe("선택 영역 AI 직결 칩", () => {
       mapId,
       region: { x: 1, y: 2, width: 3, height: 4 },
     });
-    // "영역 작업 시작" 같은 status는 상태줄만 — 채팅 로그에는 안 쌓는다(lean UI).
+    // Status stays off the work log. Tool names are sanitized; the row is a command row, not a bubble.
     expect(findByTestId(panel, "ai-status")?.textContent).not.toBe("영역 작업 시작");
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
     expect(logText).not.toContain("영역 작업 시작");
-    expect(logText).toContain("paint_tiles");
+    expect(findByTestId(panel, "ai-command-row")).toBeTruthy();
+    expect(findByTestId(panel, "ai-tool-activity")).toBeTruthy();
+    expect(logText).toContain("타일 2칸");
     expect(logText).toContain("완료했습니다.");
     expect(logText).toMatch(/완료/);
   });
@@ -259,12 +263,15 @@ describe("대화 복원과 내보내기", () => {
 
     const panel = renderPanel();
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("마을 만들어줘");
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("[컨텍스트]");
     expect(findByTestId(panel, "ai-export")?.disabled).toBe(false);
   });
 
-  it("다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 이어가기 진입점을 보인다", () => {
+  it("다른 프로젝트 컨텍스트의 직전 대화는 자동 복원하지 않고 빈 키트도 안 붙인다", () => {
+    // Break: other-project latest conv remounts start-screen / resume CTA, or auto-restores the log.
     saveConversation({
       id: "conv_other",
       title: "다른 프로젝트",
@@ -275,12 +282,12 @@ describe("대화 복원과 내보내기", () => {
     });
 
     const panel = renderPanel();
-    expect(findByTestId(panel, "ai-start-screen")).toBeTruthy();
-    expect(findByTestId(panel, "ai-resume-conversation")).toBeTruthy();
+    expect(findByTestId(panel, "ai-start-screen")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
+    expect(findByTestId(panel, "ai-resume-conversation")).toBeNull();
+    expect(findByTestId(panel, "ai-composer-chips")).toBeTruthy();
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("다른 요청");
-
-    findByTestId(panel, "ai-resume-conversation")?.click();
-    expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("다른 요청");
   });
 
   it("내보내기는 빈 대화에서 비활성화되고 라벨은 내보내기다", () => {
@@ -307,10 +314,12 @@ describe("키 온보딩과 설정 접근성", () => {
 
     findByTestId(panel, "ai-command-menu-toggle")?.click();
     expect(menu?.hidden).toBe(false);
-    expect(menu?.textContent).toContain("전체 기록");
-    expect(menu?.textContent).toContain("새 대화");
-    expect(menu?.textContent).toContain("설정");
-    expect(menu?.textContent).toContain("스튜디오");
+    expect(findByTestId(menu!, "ai-command-menu-undo")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-export")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-dock")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-command-menu-tools")).toBeTruthy();
+    expect(findByTestId(menu!, "ai-new-session")).toBeNull();
+    expect(findByTestId(menu!, "ai-studio-toggle")).toBeNull();
     expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);
   });
 
@@ -346,17 +355,20 @@ describe("키 온보딩과 설정 접근성", () => {
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("인증 실패");
   });
 
-  it("설정 아이콘은 펼친 상태로 열고 첫 입력에 포커스한다", () => {
+  it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {
+    // Break: settings still expands an inline ai-config details instead of the modal.
     const panel = renderPanel();
     findByTestId(panel, "ai-settings-toggle")?.click();
 
-    expect(findByTestId(panel, "ai-config")?.getAttribute("open")).toBe("");
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(panel, "ai-config-baseurl"));
+    const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
+    expect(modal).not.toBeNull();
+    expect(findByTestId(panel, "ai-config")).toBeNull();
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-chatgpt"));
   });
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {
     const panel = renderPanel();
-    for (const testId of ["ai-settings-toggle", "ai-tools-browser", "ai-collapse", "chat-dock-toggle", "ai-dock-toggle", "ai-studio-toggle", "ai-skill-slash-toggle"]) {
+    for (const testId of ["ai-settings-toggle", "ai-collapse", "ai-studio-toggle", "ai-skill-slash-toggle", "ai-new-session"]) {
       expect(findByTestId(panel, testId)?.getAttribute("aria-label"), testId).toBeTruthy();
     }
   });
