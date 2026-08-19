@@ -15,7 +15,7 @@ import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 // 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
 // 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.
 import type { ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
-import { loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { getAiTransportHealth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { openAiSettingsModal, type AiSettingsFocus } from "./aiSettingsModal";
 import { el } from "@/util/dom";
 
@@ -42,6 +42,25 @@ interface CachedOAuthStatus {
 let aiOAuthCachedStatus: CachedOAuthStatus | null = null;
 let refreshInFlight = false;
 
+/**
+ * 실제 요청이 실패하고 있으면(설정 모양과 무관하게) 그 사실을 우선 보고한다.
+ * 404 = 엔드포인트 없음/프록시 미등록, 401·403 = 인증, 5xx·네트워크 = 게이트웨이 다운.
+ * "AI 연결됨"인데 모든 턴이 404 나던 거짓말(2026-08-19 적대 평가 P0)의 수정.
+ */
+function transportFailureStatus(authMode: AiConfig["authMode"]): AiConnectionStatus | null {
+  const health = getAiTransportHealth();
+  if (!health || health.ok) return null;
+  const s = health.status;
+  const connectivity = s === undefined || s === 401 || s === 403 || s === 404 || s >= 500;
+  if (!connectivity) return null;
+  return {
+    kind: "offline",
+    authMode,
+    label: `AI 응답 오류${s ? `(${s})` : ""}`,
+    title: `마지막 AI 요청이 실패했습니다 — ${health.message ?? "원인 미상"}. 이 칩을 눌러 연결 설정(엔드포인트·키)을 확인하세요. 요청이 다시 성공하면 자동으로 "AI 연결됨"으로 돌아옵니다.`,
+  };
+}
+
 /** apiKey 모드 동기 평가. config 가 주어지지 않으면 loadAiConfig(). */
 export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConnectionStatus {
   if (config.authMode === "apiKey") {
@@ -64,6 +83,8 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
         title: "AI 서버 주소(엔드포인트)가 없어요. 이 칩을 눌러 OpenAI 호환 주소를 입력하세요.",
       };
     }
+    const failure = transportFailureStatus("apiKey");
+    if (failure) return failure;
     return {
       kind: "ready",
       authMode: "apiKey",
@@ -103,6 +124,8 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
     };
   }
   if (aiOAuthCachedStatus.connected) {
+    const failure = transportFailureStatus("chatgpt");
+    if (failure) return failure;
     return {
       kind: "ready",
       authMode: "chatgpt",

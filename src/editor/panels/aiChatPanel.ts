@@ -272,7 +272,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   const hasPendingQuestion = (): boolean => chipsHost.childElementCount > 0;
-  const volatileCtl = createVolatileController(() => turnBusy || !!runningProgress || hasPendingQuestion());
+  // 실패한 턴의 오류·재시도 버튼이 페이드로 증발하지 않게 유지한다(적대 평가 P1 —
+  // 오류 카드가 0.42 로 흐려져 판독 불가였다). 다음 턴 시작 시 해제.
+  let lastTurnFailed = false;
+  const volatileCtl = createVolatileController(() => turnBusy || !!runningProgress || hasPendingQuestion() || lastTurnFailed);
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
   let scheduleCollapseAfterAiWork: () => void = () => {};
@@ -286,7 +289,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     volatileFadeTimer = null;
   };
   const scheduleVolatileFade = (): void => {
-    if (hasPendingQuestion()) {
+    if (hasPendingQuestion() || lastTurnFailed) {
       volatileCtl.clear();
       return;
     }
@@ -763,6 +766,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     turnBusy = true;
+    lastTurnFailed = false; // 새 턴 시작 — 직전 실패의 페이드 금지를 해제한다.
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
@@ -1092,6 +1096,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         /* ignore */
       });
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
+      // 실패 턴은 오류 버블·재시도 버튼이 페이드로 흐려지지 않게 유지한다(적대 평가 P1).
+      lastTurnFailed = turnFailed || Boolean(turnCatchError);
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
       if (pendingSends.length === 0) scheduleVolatileFade();
       // 맵 우선: AI 턴이 끝나면(검토/오류 제외) 잠시 뒤 다시 접는다 — 이미 펼쳐 있던 경우도 동일.
@@ -1116,7 +1122,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const appendErrorWithRetry = (message: string, session: AssistantSession, requestText: string): void => {
     const bubble = appendBubble("system", `오류: ${message}`);
     const actions: HTMLElement[] = [];
-    if (message.includes("API 키") || message.includes("인증 실패") || message.includes("ChatGPT 로그인") || message.includes("동반 서비스") || message.includes("401")) {
+    // 인증(401)뿐 아니라 404(엔드포인트/프록시 없음)·네트워크 오류도 설정에서 고치는 문제다 —
+    // 404 실패에 복구 CTA 가 하나도 없던 결함(적대 평가 P1) 수정.
+    const connectivityIssue =
+      message.includes("404") || message.includes("네트워크 오류") || message.includes("엔드포인트") || message.includes("시간 초과");
+    if (connectivityIssue || message.includes("API 키") || message.includes("인증 실패") || message.includes("ChatGPT 로그인") || message.includes("동반 서비스") || message.includes("401")) {
       const chatGptMode = loadAiConfig().authMode === "chatgpt";
       const settingsAction = el("button", {
         class: "ai-assistant-action ai-error-open-settings",
@@ -1129,6 +1139,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     if (!session.canRetryLastTurn()) {
       if (actions.length > 0) bubble.append(el("div", { class: "ai-retry-row", children: actions }));
+      log.scrollTop = log.scrollHeight;
       return;
     }
     const retry = el("button", {
@@ -1145,6 +1156,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }) as HTMLButtonElement;
     actions.unshift(retry);
     bubble.append(el("div", { class: "ai-retry-row", children: actions }));
+    // 오류·복구 버튼이 로그 하단 잘림으로 반쯤 가려지던 결함(적대 평가 P1) — 끝까지 스크롤.
+    log.scrollTop = log.scrollHeight;
   };
 
   const sendSelectionRegionTask = async (text: string): Promise<void> => {
@@ -1181,6 +1194,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       && activeSelectionRegionKey === selectionKey
       && (allowAborted || !abortController.signal.aborted);
     turnBusy = true;
+    lastTurnFailed = false; // 새 턴 시작 — 직전 실패의 페이드 금지를 해제한다.
     sendButton.disabled = true;
     collapseAfterAiWork = true;
     expandForAiWork();
@@ -1325,6 +1339,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation();
       if (!cancelled) notifyIfObscuredByTestPlay();
+      lastTurnFailed = regionFailed; // 실패 시 오류 표면 페이드 금지(적대 평가 P1).
       drainPendingSends();
       if (pendingSends.length === 0) scheduleVolatileFade();
       if (collapseAfterAiWork) {
@@ -1355,6 +1370,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     lastTypedMessage = text;
     input.value = "";
+    syncInputHeight();
     refreshSlash();
     if (selectionTaskActive && currentSelectionForRegionTask()) await sendSelectionRegionTask(text);
     else await sendText(text);
@@ -1523,6 +1539,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           else toast("먼저 맵에서 꾸밀 영역을 선택하면 그 안에서만 작업합니다.", "info");
         }
         input.value = instruction;
+        syncInputHeight();
         input.focus();
       },
     });
@@ -1647,9 +1664,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     drawer.run(skill);
     return true;
   };
+  // 여러 줄 입력 자동 성장 — rows=2 고정창에 30줄이 갇혀 끝부분만 보이던 결함(적대 평가 P1).
+  // 내용 높이에 맞춰 늘리고, 상한(요소 max-height)부터는 스크롤로 전환한다.
+  const syncInputHeight = (): void => {
+    input.style.height = "auto";
+    input.style.height = `${input.scrollHeight + 2}px`; // +2: 테두리로 인한 1줄 스크롤 잔상 방지
+  };
   input.addEventListener("input", () => {
     slashActiveIndex = 0;
     refreshSlash();
+    syncInputHeight();
   });
   // 입력창 포커스 시 휘발 존(웰컴/대화)을 펼치고, 빈 대화 상태로 포커스를 잃으면 접어 맵을 비운다.
   input.addEventListener("focus", () => revealVolatileZone());
@@ -2138,6 +2162,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     children: [header, toolbar, body, collapsedRestore, risingOverlay, commandBar, proposalModalRoot],
   });
+  // 오버레이가 커맨드 바를 덮지 않도록 바 상단까지의 간격을 실측해 CSS 변수로 흘린다.
+  // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
+  const syncCommandBarClearance = (): void => {
+    const rect = commandBar.getBoundingClientRect();
+    if (rect.height <= 0 || typeof window === "undefined") return;
+    const clearance = Math.max(60, Math.ceil(window.innerHeight - rect.top) + 12);
+    panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
+  };
+  const commandBarClearanceObserver =
+    typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;
+  commandBarClearanceObserver?.observe(commandBar);
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__rpgzzuAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
@@ -2635,6 +2670,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     unsubscribeCompletion();
     completionStripHandle?.dispose();
     completionStripHandle = null;
+    commandBarClearanceObserver?.disconnect();
     disposeCommandBar();
 
     if (typeof window !== "undefined") {

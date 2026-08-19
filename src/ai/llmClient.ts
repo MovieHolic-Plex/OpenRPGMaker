@@ -649,6 +649,38 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// ── 전송 건강 상태(상태바 칩 진실화) ─────────────────────────────
+// "AI 연결됨" 칩이 설정 모양만 보고 판정하면, 프록시 미등록(404)·게이트웨이 다운(5xx)에도
+// 연결됨이라고 거짓말한다(2026-08-19 적대 평가 P0). 실제 요청 결과를 여기 기록하고
+// 칩(getAiConnectionStatus)이 함께 판정한다. 성공 1회면 자동 복구.
+export interface AiTransportHealth {
+  readonly ok: boolean;
+  readonly status?: number;
+  readonly message?: string;
+  readonly at: number;
+}
+
+export const AI_TRANSPORT_HEALTH_EVENT = "rpgzzu:ai-transport-health";
+
+let aiTransportHealth: AiTransportHealth | null = null;
+
+export function getAiTransportHealth(): AiTransportHealth | null {
+  return aiTransportHealth;
+}
+
+/** 테스트용 — 상태를 초기화한다. */
+export function resetAiTransportHealth(): void {
+  aiTransportHealth = null;
+}
+
+export function reportTransportHealth(ok: boolean, status?: number, message?: string): void {
+  const changed = !aiTransportHealth || aiTransportHealth.ok !== ok || aiTransportHealth.status !== status;
+  aiTransportHealth = { ok, status, message, at: Date.now() };
+  if (changed && typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new CustomEvent(AI_TRANSPORT_HEALTH_EVENT));
+  }
+}
+
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
 async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
   // proxyAuth(상대 baseUrl)는 프록시가 서버 측에서 Authorization 을 주입하므로 클라이언트 키 불필요.
@@ -696,11 +728,13 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     // 매달림/응답 지연 — 내부 타임아웃 컨트롤러가 abort 한 경우만 여기(호출자 signal 과 구분).
     if (isLlmTimeoutError(cause) && !req.signal?.aborted) {
       // 공급자 일시 오류로 취급해 재시도 가능하게 한다.
+      reportTransportHealth(false, 504, "요청 시간 초과");
       throw new LlmError(`요청 시간 초과(${LLM_REQUEST_TIMEOUT_MS / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
     }
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
     const target = config.authMode === "chatgpt" ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
     const hint = config.authMode === "chatgpt" ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
+    reportTransportHealth(false, undefined, `네트워크 오류(${target})`);
     throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`);
   }
 
@@ -711,8 +745,13 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     } catch {
       /* ignore */
     }
+    // 429(사용량 제한)는 연결 문제 아님 — 칩까지 붉히지 않는다.
+    if (response.status !== 429) {
+      reportTransportHealth(false, response.status, humanizeStatus(response.status, body, config.authMode));
+    }
     throw new LlmError(humanizeStatus(response.status, body, config.authMode), response.status);
   }
+  reportTransportHealth(true, response.status);
 
   const contentType = response.headers?.get("Content-Type") ?? "";
   if (stream && response.body && !contentType.toLowerCase().includes("application/json")) {
