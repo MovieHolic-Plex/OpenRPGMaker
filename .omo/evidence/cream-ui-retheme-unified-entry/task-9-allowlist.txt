@@ -1,0 +1,49 @@
+cream-ui-retheme-unified-entry todo 9 allowlist — residual pure literals (non-fallback) kept as functional / glyph-identity / resource-kind.
+Rule: functional marker/checker + glyph identity (icon colour IS meaning) + resource-kind badge hues are allowlisted. All others converted to cream tokens.
+Every residual pure literal is listed below; file:line is approximate (rg -n), reason given.
+
+--- src/styles/components/app-modal.css (1 pure) ---
+app-modal.css:6  rgba(42,37,33,0.32)         functional scrim (modal overlay dims background) — functional marker
+
+--- src/styles/components/icons.css (7 lines, 7 pure literals) ---
+icons.css:3   #216c33                        glyph-identity: rm-tool-icon-map-child tree canopy green (icon identity)
+icons.css:4   #216c33 x3                     glyph-identity: same tree canopy shadow stack
+icons.css:12  #f5d04a                        glyph-identity: rm-tool-icon-map-start star fill
+icons.css:21  #7c5e22                        glyph-identity: rm-tool-icon-map-start star shadow/border
+icons.css:71  #7b87f5                        glyph-identity: rm-tool-icon-map-settings indicator hue
+icons.css:72  #7b87f5 x2                     glyph-identity: same settings indicator stack
+icons.css:89  #4c7a43                        glyph-identity: rm-tool-icon-map-screenshot shutter/button hue
+
+--- src/styles/map/resource-system.part-1.css (5 pure) ---
+resource-system.part-1.css:539  #d8b35e      resource-kind badge hue: folder/tab brass (identity)
+resource-system.part-1.css:541  #f0d48c      resource-kind badge highlight (companion to 539)
+resource-system.part-1.css:549  #c79840      resource-kind badge hue: folder tab underlap (identity, darker)
+resource-system.part-1.css:595  #d66b1f      functional marker: export arrow glyph
+resource-system.part-1.css:600  #2f8a43      functional marker: import arrow glyph
+
+--- src/styles/map/resource-system.part-2.css (26 pure; includes rgba drop-shadow) ---
+resource-system.part-2.css:2    #d6e5f2      resource-kind: database cylinder top (distinct kind hue)
+resource-system.part-2.css:4    #b8c9d8      resource-kind: database cylinder shading (companion to 2)
+resource-system.part-2.css:22   #7bc0c8      resource-kind: resources icon inset wash (kind hue)
+resource-system.part-2.css:30   #c43a3a      glyph-identity: resources icon red pin dot
+resource-system.part-2.css:31   #f5d04a + #2f8a43  glyph-identity: resources icon palette dots (yellow + green)
+resource-system.part-2.css:40   #d87b22      functional marker: play triangle glyph (orange, meaning = play)
+resource-system.part-2.css:42   #6f3c12      functional marker: play glyph drop-shadow (darkened companion)
+resource-system.part-2.css:91   #f7d77a      glyph-identity: pencil body wood hue
+resource-system.part-2.css:101  #a13b32      glyph-identity: pencil eraser/ferrule accent (red-brown)
+resource-system.part-2.css:147  #f3c984      glyph-identity: hand tool skin tone base
+resource-system.part-2.css:149-153 #f3c984 / #c88945  glyph-identity: hand tool finger shading (light skin + shadow)
+resource-system.part-2.css:180  rgba(42,37,33,0.35)   functional marker: drop-shadow for select arrow (marker affordance)
+resource-system.part-2.css:230  #f4b6c8      glyph-identity: eraser rubber pink
+resource-system.part-2.css:248  #2f8a43      resource-kind: lower-layer indicator green (kind hue)
+resource-system.part-2.css:250  #66b85b      resource-kind: lower-layer highlight companion
+resource-system.part-2.css:258  #1d5f2b      resource-kind: lower-layer footer stripe (darkened kind hue)
+resource-system.part-2.css:339  #875b2d      glyph-identity: paste clipboard wood/brass accent (brown)
+resource-system.part-2.css:341  #c58e48      glyph-identity: paste clipboard highlight companion
+resource-system.part-2.css:386  #d87b22      functional marker: play-window triangle glyph (reuse of play hue)
+resource-system.part-2.css:393  #d8b35e      resource-kind: folder icon brass (same as part-1 539)
+resource-system.part-2.css:395  #f0d48c      resource-kind: folder highlight companion
+resource-system.part-2.css:403  #c79840      resource-kind: folder tab underlap
+resource-system.part-2.css:413  #d8b35e      resource-kind: map-child folder brass
+
+Summary: 39 pure literals kept. No remaining convertible non-functional literals.

@@ -3,7 +3,7 @@
   .app-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(8, 10, 16, 0.55);
+    background: rgba(42, 37, 33, 0.32);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -50,14 +50,14 @@
   .app-modal-button.is-confirm {
     background: var(--accent);
     border-color: var(--accent-border, var(--accent));
-    color: var(--accent-contrast, #fff);
+    color: var(--on-accent, #fff);
   }
   .app-modal-button.is-confirm:hover {
     background: var(--accent-hover);
   }
   .app-modal-button.is-danger {
-    background: var(--danger, #b3261e);
-    border-color: var(--danger, #b3261e);
-    color: #fff;
+    background: var(--danger, #C6403D);
+    border-color: var(--danger, #C6403D);
+    color: var(--on-accent, #fff);
   }
 }

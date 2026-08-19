@@ -1,0 +1,32 @@
+cream-ui-retheme-unified-entry todo 9 counts
+
+rg command (pure = literal NOT inside var(--x, fallback)):
+  rg -n "#[0-9a-fA-F]{3,8}\b|rgba?\(" <file> | rg -v "var\(--"
+Fallback literals (inside var fallback) counted separately:
+  rg -n "var\(--[^,]+,\s*#[0-9a-fA-F]" <file>
+  rg -n "var\(--[^,]+,\s*rgba?\(" <file>
+
+Before (plan census):
+  pure (non-fallback): 96
+  fallback:            9
+
+After (recount after this todo; pure = non-fallback):
+  src/styles/components/app-modal.css:            pure 1  (fallback 4 hex, 0 rgba) — pure is scrim rgba
+  src/styles/components/icons.css:                pure 7  (fallback 0) — glyph-identity hues
+  src/styles/map/resource-system.part-1.css:      pure 5  (fallback 0) — 3 resource-kind brass + 2 arrow markers
+  src/styles/map/resource-system.part-2.css:      pure 26 (fallback 0) — includes 1 rgba marker shadow
+  src/styles/components/empty-state.css:          pure 0  (fallback 1 hex + 2 rgba)
+  src/styles/components/grid-4.css:               pure 0  (fallback 0)
+  src/styles/resources/resource-manager.css:       pure 0  (fallback 3 hex + 1 rgba, all inside var/color-mix fallbacks)
+
+  Total pure (scope files, this todo):            39
+  Total fallback (scope files):                   11  (8 hex + 3 rgba) — not counted against allowlist
+
+Residual pure == allowlist EXACTLY (39 lines, pure only).
+
+Conversions in this todo:
+  - src/styles/map/resource-system.part-1.css: #f5f0d8 -> var(--bg-raised), #f6f2dc -> var(--bg-surface)
+  - src/styles/map/resource-system.part-2.css: #f6f2dc -> var(--bg-surface), #d8d0ad -> var(--bg-inset)
+Other files: no convertible pure residuals (already tokenized or allowlisted).
+
+Geometry check: git diff contains no width:|grid-template|inset: changes (verified via rg).
