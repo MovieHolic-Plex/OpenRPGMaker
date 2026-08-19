@@ -473,7 +473,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 
 .db-required-panel {
   align-content: center;
-  background: var(--bg-surface);
+  background: var(--bg-base);
   color: var(--text-1);
   display: grid;
   gap: 12px;
@@ -485,9 +485,9 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 .db-required-panel.db-required-hero {
   align-content: stretch;
   background:
-    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent, #5b7cfa) 22%, transparent), transparent 55%),
-    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #7c3aed 18%, transparent), transparent 50%),
-    var(--bg-base, #0b0d14);
+    radial-gradient(ellipse 80% 60% at 20% 20%, color-mix(in srgb, var(--accent, #4A57D6) 10%, transparent), transparent 58%),
+    radial-gradient(ellipse 70% 50% at 90% 80%, color-mix(in srgb, #8A6B2F 8%, transparent), transparent 55%),
+    var(--bg-base, #F7F3EA);
   gap: 0;
   grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
   justify-items: stretch;
@@ -509,7 +509,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .db-required-hero-art::after {
-  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #0b0d14) 88%, transparent) 100%);
+  background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--bg-base, #F7F3EA) 88%, transparent) 100%);
   bottom: 0;
   content: "";
   left: 0;
@@ -528,9 +528,9 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .db-required-kicker {
-  color: var(--accent, #8aa4ff);
-  font-size: 12px;
-  font-weight: 800;
+  color: var(--accent, #4A57D6);
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: 0.14em;
   margin: 0;
   text-transform: uppercase;
@@ -567,13 +567,14 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .db-required-chips li {
-  background: color-mix(in srgb, var(--bg-raised, #1a1f2e) 88%, transparent);
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.12));
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: 999px;
   color: var(--text-2);
   font-size: 12px;
   font-weight: 600;
   padding: 6px 12px;
+  box-shadow: 0 1px 4px rgba(60, 48, 32, 0.06);
 }
 
 @media (max-width: 900px) {
@@ -586,7 +587,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   }
 
   .db-required-hero-art::after {
-    background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #0b0d14) 92%, transparent) 100%);
+    background: linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--bg-base, #F7F3EA) 92%, transparent) 100%);
   }
 
   .db-required-copy {
@@ -594,13 +595,16 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   }
 }
 
-/* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. */
+/* 프로젝트 로드 실패(데이터 무결성) 화면 — 도그푸딩 결함 ②. cream entry language. */
 .project-load-error-message {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  font-family: monospace;
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: var(--radius-s, 6px);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1, #2A2521);
+  font-family: var(--font-mono, monospace);
   font-size: 12px;
+  line-height: 1.6;
   max-width: 640px;
   overflow-wrap: anywhere;
   padding: 10px 12px;
@@ -610,6 +614,34 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+}
+
+.project-load-error-actions .btn.primary,
+.db-required-copy .btn.primary {
+  background: var(--accent, #4A57D6);
+  border-color: transparent;
+  color: var(--on-accent, #fff);
+  border-radius: 9999px;
+  box-shadow: var(--shadow-pop);
+}
+
+.project-load-error-actions .btn.primary:hover,
+.db-required-copy .btn.primary:hover {
+  filter: brightness(0.96);
+}
+
+.db-required-copy .btn,
+.project-load-error-actions .btn {
+  border-radius: 9999px;
+}
+
+/* cream ground + hero image soft veil so JPG edges sit on warm cream */
+.db-required-panel.db-required-hero .db-required-hero-image {
+  filter: saturate(1.02) brightness(1.02);
+}
+
+.db-required-copy {
+  background: transparent;
 }
 
 /* 저장 스킵/로컬 저장 모드 배너 — 도그푸딩 결함 ⑩. */
