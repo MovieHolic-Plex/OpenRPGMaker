@@ -47,7 +47,9 @@ export function openDbConnectionSettings(
   });
   const form = el("form", { class: "db-config-form" });
   const projectPicker = renderProjectPicker(form, {
-    autoLoad: options.autoLoadProjects === true,
+    // 기본적으로 바로 불러온다 — 상태바 경로가 옵션 없이 열려 "불러오는 중" 문구가
+    // 영원히 멈춰 있던 결함 수정(2026-08-18 UX 리뷰 P0-3).
+    autoLoad: options.autoLoadProjects !== false,
     onProjectSelected: async (project) => connectToSelectedProject(form, statusLine, onRefresh, project),
     onStatus: (message) => setStatusLine(statusLine, message),
   });

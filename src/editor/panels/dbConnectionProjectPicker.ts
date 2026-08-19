@@ -25,7 +25,9 @@ export function renderProjectPicker(
 ): ProjectPickerController {
   const list = el("div", {
     class: "db-config-project-list empty",
-    text: "저장된 작업을 불러오는 중입니다.",
+    // autoLoad가 꺼진 호출에서 "불러오는 중"이 영원히 남던 거짓 문구 수정 —
+    // 실제 로딩은 loadProjectOptions가 시작할 때 바꿔 준다.
+    text: "새로고침을 누르면 저장된 작업을 불러옵니다.",
     attrs: { "aria-live": "polite" },
     dataset: { testid: "db-config-project-list" },
   });
@@ -55,7 +57,10 @@ export function renderProjectPicker(
       list,
     ],
   });
-  if (options.autoLoad) window.setTimeout(() => void reload(), 0);
+  // 헤드리스(fakeDom) 환경 가드 — autoLoad 기본화 이후 window 부재에서 터지지 않게.
+  if (options.autoLoad && typeof window !== "undefined" && typeof window.setTimeout === "function") {
+    window.setTimeout(() => void reload(), 0);
+  }
   return { element, reload };
 }
 
@@ -74,7 +79,15 @@ async function loadProjectOptions(
   renderProjectListMessage(list, "작업 목록을 불러오는 중입니다.");
   options.onStatus("저장된 작업을 확인하고 있습니다.");
   try {
-    const projects = await listSupabaseProjects(config);
+    // 15초 상한 — 응답 없는 서버에서 무한 로딩으로 멈추지 않고 오류+재시도로 떨어진다.
+    const projects = typeof window !== "undefined" && typeof window.setTimeout === "function"
+      ? await Promise.race([
+        listSupabaseProjects(config),
+        new Promise<never>((_, reject) => {
+          window.setTimeout(() => reject(new Error("project list timeout")), 15000);
+        }),
+      ])
+      : await listSupabaseProjects(config);
     renderProjectList(form, list, projects, config, options);
     options.onStatus(projects.length > 0 ? "열 작업을 선택하세요." : "아직 저장된 작업이 없습니다.");
   } catch {
