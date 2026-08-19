@@ -38,7 +38,8 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   if (!chrome.canvasChromeDense) {
     container.classList.add("is-basic-chrome");
     container.classList.add("is-docked-chrome");
-    container.classList.add("is-expanded");
+    // is-expanded를 항상 켜둘 때 줄 목록(1x/2x/4x)이 스테퍼와 상시 중복 노출됐다
+    // (2026-08-18 UX 리뷜 P2-11) — 목록은 배율 버튼(is-menu-open)으로만 연다.
   } else {
     container.classList.remove("is-basic-chrome");
     container.classList.remove("is-docked-chrome");
@@ -90,7 +91,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
         text: `${zoom}x`,
         attrs: { title: `${zoom}배 확대`, "aria-label": `${zoom}배 확대`, "aria-pressed": String(currentZoom === zoom) },
         dataset: { testid: `editor-zoom-${zoom}` },
-        on: { click: () => editorState.set({ zoom }) },
+        on: { click: () => { zoomGroup.classList.remove("is-menu-open"); editorState.set({ zoom }); } },
       }),
     );
   }

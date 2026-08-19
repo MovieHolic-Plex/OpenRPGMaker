@@ -924,6 +924,9 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleEventClick(mapId: MapId, x: number, y: number, openEditor = false): void {
     const map = store.getCurrent().maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) {
+      // 더블클릭이 맵 밖으로 뱗나면 아무 일도 안 일어나던 무반응 데드엔드 수정
+      // (2026-08-18 초보자 UX 리뷰 P1-5) — 피드백 없는 실패는 금지.
+      if (openEditor) toast("맵 안쪽 타일을 더블클릭하면 새 이벤트를 만듭니다", "info");
       editorState.set({ pendingEventCoordinate: null });
       return;
     }

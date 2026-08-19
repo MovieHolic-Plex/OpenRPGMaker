@@ -74,10 +74,11 @@ type Listener = (s: EditorState) => void;
 class EditorStateStore {
   private state: EditorState = {
     currentMapId: null,
-    // Event authoring is the default edit surface (faster to open events for QA).
-    tool: "event",
+    // 부팅 기본은 브러시+바닥 — 초보자의 첫 행동(타일 칠하기)이 바로 되게 한다.
+    // (이벤트 기본값은 "타일 칠하려면 전환" 땜빵 힌트가 필요했다 — 2026-08-18 UX 리뷰 P2-7.)
+    tool: "paint",
     zoom: 2,
-    layer: "event",
+    layer: "lower",
     paintShape: "pen",
     selectedTile: 360,
     // Manual by default: free tile placement must not reshape neighbors unless Auto is chosen.

@@ -40,7 +40,7 @@ afterEach(() => {
 });
 
 describe("renderCanvasToolbar basic zoom visibility", () => {
-  it("marks basic chrome as is-expanded so zoom buttons are not gated behind ⋯", () => {
+  it("keeps the basic zoom menu collapsed behind the stepper (no duplicate always-on list)", () => {
     storage = new MemoryStorage();
     restoreDom = installFakeDom();
     Object.defineProperty(globalThis, "localStorage", { configurable: true, value: storage });
@@ -51,7 +51,9 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     const fake = asFake(host);
 
     expect(fake.classList.contains("is-basic-chrome")).toBe(true);
-    expect(fake.classList.contains("is-expanded")).toBe(true);
+    // 2026-08-18 UX 리뷰 P2-11: is-expanded를 항상 켜둘 때 줄 목록(1x/2x/4x)이
+    // 스테퍼 ± 와 상시 중복 노출됐다 — 목록은 배율 버튼(is-menu-open)으로만 열린다.
+    expect(fake.classList.contains("is-expanded")).toBe(false);
     expect(fake.dataset.uiDensity).toBe("beginner");
     // 기본 모드는 자주 쓰는 배율만 — 1x/2x/4x (e2e가 클릭하는 testid 계약 유지).
     for (const z of [1, 2, 4]) {

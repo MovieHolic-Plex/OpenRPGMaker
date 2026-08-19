@@ -29,6 +29,21 @@
   display: inline-flex;
 }
 
+/* 줄 메뉴(1x/2x/4x)는 기본 숨김 — 스테퍼 ± 와 상시 중복 노출되던 결함 수정
+   (2026-08-18 초보자 UX 리뷰 P2-11). 배율 버튼 클릭 시에만 펼친다. */
+.canvas-toolbar .canvas-toolbar-zoom-menu {
+  display: none;
+}
+.canvas-toolbar.is-expanded .canvas-toolbar-zoom-menu,
+.canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .canvas-toolbar-zoom-menu {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+.canvas-toolbar .canvas-toolbar-zoom-group.is-menu-open .zoom-button {
+  display: inline-flex;
+}
+
 .canvas-toolbar-save-group {
   border-left: 1px solid var(--editor-line);
   margin-left: 4px;

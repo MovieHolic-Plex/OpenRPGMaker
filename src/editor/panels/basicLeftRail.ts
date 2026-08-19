@@ -150,6 +150,9 @@ function makeToolsColumn(activeTool: Tool): HTMLElement {
                   ? { tool: "paint", paintShape: "pen", layer: "lower" }
                   : { tool: "paint", paintShape: "pen" },
               );
+              // 2026-08-18 UX 리뷰 P2-8: 브러시를 고르면 칠할 타일이 필요하다 —
+              // 타일 플라이아웃이 닫혀 있으면 바로 열어 발견 비용을 없앤다.
+              if (flyoutState.open !== "tiles") dispatchFlyout({ type: "toggle", id: "tiles" });
             } else if (tool.id === "event") editorState.set({ tool: "event", layer: "event" });
             else if (editorState.get().layer === "event") editorState.set({ tool: tool.id, layer: "lower" });
             else editorState.set({ tool: tool.id });
