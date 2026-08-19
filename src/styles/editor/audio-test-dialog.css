@@ -8,7 +8,7 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(6, 8, 14, 0.62);
+  background: rgba(42, 37, 33, 0.18);
   backdrop-filter: blur(2px);
 }
 
@@ -18,11 +18,11 @@
   width: min(720px, calc(100vw - 24px));
   max-height: min(560px, calc(100vh - 24px));
   overflow: hidden;
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-l, 14px);
-  background: var(--bg-raised, #1c202d);
+  background: var(--bg-raised, #FFFDF8);
   box-shadow: var(--shadow-modal, 0 24px 64px rgba(0, 0, 0, 0.5));
-  color: var(--text-1, #e9ecf3);
+  color: var(--text-1, #2A2521);
   animation: audio-test-pop var(--transition-med, 160ms ease);
 }
 
@@ -43,8 +43,8 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 14px;
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07));
-  background: color-mix(in srgb, var(--bg-raised, #1c202d) 86%, #000);
+  border-bottom: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 86%, #000);
 }
 
 .audio-test-titlebar h2 {
@@ -58,10 +58,10 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-s, 6px);
   background: transparent;
-  color: var(--text-2, #9aa3b5);
+  color: var(--text-2, #5C5348);
   cursor: pointer;
   font-size: 18px;
   line-height: 1;
@@ -70,9 +70,9 @@
 }
 
 .audio-test-close:hover {
-  border-color: var(--accent, #6c79f2);
-  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
-  color: var(--text-1, #e9ecf3);
+  border-color: var(--accent, #4A57D6);
+  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
+  color: var(--text-1, #2A2521);
 }
 
 .audio-test-body {
@@ -100,10 +100,10 @@
 .audio-test-tab {
   flex: 1 1 0;
   padding: 7px 12px;
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-s, 6px);
-  background: var(--control-bg, rgba(255, 255, 255, 0.045));
-  color: var(--text-2, #9aa3b5);
+  background: var(--control-bg, rgba(42, 37, 33, 0.05));
+  color: var(--text-2, #5C5348);
   cursor: pointer;
   font: 600 13px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
   transition: background var(--transition-fast, 120ms ease), color var(--transition-fast, 120ms ease),
@@ -111,14 +111,14 @@
 }
 
 .audio-test-tab:hover {
-  background: var(--control-bg-hover, rgba(255, 255, 255, 0.08));
-  color: var(--text-1, #e9ecf3);
+  background: var(--control-bg-hover, rgba(42, 37, 33, 0.06));
+  color: var(--text-1, #2A2521);
 }
 
 .audio-test-tab.active {
-  background: var(--accent-muted, rgba(108, 121, 242, 0.17));
-  border-color: var(--accent-border, rgba(108, 121, 242, 0.55));
-  color: var(--text-1, #e9ecf3);
+  background: var(--accent-muted, var(--accent-muted));
+  border-color: var(--accent-border, var(--accent-border));
+  color: var(--text-1, #2A2521);
 }
 
 .audio-test-list {
@@ -129,9 +129,9 @@
   min-height: 0;
   overflow-y: auto;
   padding: 6px;
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-m, 10px);
-  background: var(--bg-inset, #0c0e14);
+  background: var(--bg-inset, #EFE9DC);
 }
 
 .audio-test-option {
@@ -143,7 +143,7 @@
   border: 1px solid transparent;
   border-radius: var(--radius-s, 6px);
   background: transparent;
-  color: var(--text-1, #e9ecf3);
+  color: var(--text-1, #2A2521);
   cursor: pointer;
   font: 500 13px/1.35 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
   text-align: left;
@@ -151,12 +151,12 @@
 }
 
 .audio-test-option:hover {
-  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
+  background: var(--bg-hover, rgba(42, 37, 33, 0.06));
 }
 
 .audio-test-option.selected {
-  background: var(--accent-muted, rgba(108, 121, 242, 0.17));
-  border-color: var(--accent-border, rgba(108, 121, 242, 0.55));
+  background: var(--accent-muted, var(--accent-muted));
+  border-color: var(--accent-border, var(--accent-border));
 }
 
 .audio-test-right {
@@ -171,28 +171,28 @@
 .audio-test-fieldset {
   margin: 0;
   padding: 8px 12px 10px;
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-m, 10px);
-  background: var(--bg-inset, #0c0e14);
+  background: var(--bg-inset, #EFE9DC);
 }
 
 .audio-test-fieldset > legend {
   padding: 0 6px;
-  color: var(--accent, #6c79f2);
+  color: var(--accent, #4A57D6);
   font: 700 12px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
 }
 
 .audio-test-fieldset input[type="range"] {
   width: 100%;
   margin: 4px 0 2px;
-  accent-color: var(--accent, #6c79f2);
+  accent-color: var(--accent, #4A57D6);
   cursor: pointer;
 }
 
 .audio-test-scale {
   display: flex;
   justify-content: space-between;
-  color: var(--text-3, #626b7d);
+  color: var(--text-3, #6B5F52);
   font: 500 11px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
 }
 
@@ -203,10 +203,10 @@
 
 .audio-test-button {
   padding: 8px 18px;
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.11));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-s, 6px);
-  background: var(--control-bg, rgba(255, 255, 255, 0.045));
-  color: var(--text-1, #e9ecf3);
+  background: var(--control-bg, rgba(42, 37, 33, 0.05));
+  color: var(--text-1, #2A2521);
   cursor: pointer;
   font: 600 13px/1.2 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
   transition: background var(--transition-fast, 120ms ease), border-color var(--transition-fast, 120ms ease),
@@ -214,12 +214,12 @@
 }
 
 .audio-test-button:hover {
-  background: var(--control-bg-hover, rgba(255, 255, 255, 0.08));
-  border-color: var(--border-strong, rgba(255, 255, 255, 0.17));
+  background: var(--control-bg-hover, rgba(42, 37, 33, 0.06));
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.20));
 }
 
 .audio-test-button:active {
-  background: var(--control-bg-active, rgba(255, 255, 255, 0.12));
+  background: var(--control-bg-active, rgba(42, 37, 33, 0.12));
   transform: translateY(1px);
 }
 
@@ -228,15 +228,15 @@
 .audio-test-option:focus-visible,
 .audio-test-close:focus-visible {
   outline: none;
-  box-shadow: var(--focus-ring, 0 0 0 2px rgba(108, 121, 242, 0.55));
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
 }
 
 .audio-test-status {
   padding: 9px 12px;
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07));
+  border: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
   border-radius: var(--radius-s, 6px);
-  background: var(--bg-inset, #0c0e14);
-  color: var(--text-2, #9aa3b5);
+  background: var(--bg-inset, #EFE9DC);
+  color: var(--text-2, #5C5348);
   font: 500 12.5px/1.4 var(--font-ui, system-ui, "Malgun Gothic", sans-serif);
   min-height: 36px;
 }
@@ -245,8 +245,8 @@
   display: flex;
   justify-content: flex-end;
   padding: 10px 14px;
-  border-top: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07));
-  background: color-mix(in srgb, var(--bg-raised, #1c202d) 86%, #000);
+  border-top: 1px solid var(--border-subtle, rgba(42, 37, 33, 0.12));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 86%, #000);
 }
 
 @media (max-width: 640px) {

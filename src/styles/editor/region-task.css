@@ -1,7 +1,7 @@
 /* 선택 영역 AI 작업 모달 (우클릭 메뉴 / 우클릭 드래그 팝오버). */
 .region-task-backdrop {
   align-items: center;
-  background: rgba(7, 9, 14, 0.62);
+  background: rgba(42, 37, 33, 0.18);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -13,13 +13,13 @@
 /* 우클릭 드래그 직후: 어두운 풀스크린 대신 가벼운 클릭-아웃 레이어 + 포인터 근처 팝오버 */
 .region-task-backdrop-popover {
   align-items: flex-start;
-  background: rgba(7, 9, 14, 0.18);
+  background: rgba(42, 37, 33, 0.08);
   justify-content: flex-start;
   padding: 0;
 }
 
 .region-task-popover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(122, 162, 255, 0.25);
+  box-shadow: 0 12px 40px rgba(42, 37, 33, 0.10), 0 0 0 1px var(--accent-muted);
   /* 결과 로그·before/after 비교가 커져도 뷰포트 밖으로 밀리지 않게 */
   max-height: calc(100vh - 24px);
   max-height: calc(100dvh - 24px);
@@ -78,7 +78,7 @@
 /* 제목 옆 작은 로그 복사 버튼 */
 .region-task-copy-log {
   background: transparent;
-  border: 1px solid var(--editor-line, #3a4150);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: 999px;
   color: var(--editor-text-muted);
   cursor: pointer;
@@ -90,11 +90,11 @@
   padding: 3px 8px;
 }
 .region-task-copy-log:hover:not(:disabled) {
-  border-color: var(--accent, #4a9eff);
-  color: var(--accent, #4a9eff);
+  border-color: var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
 }
 .region-task-copy-log.is-ready:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent, #4a9eff) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
   color: var(--editor-text);
 }
 .region-task-copy-log:disabled {
@@ -103,8 +103,8 @@
 }
 
 .region-task-chip {
-  background: var(--accent-muted, rgba(80, 160, 255, 0.16));
-  border: 1px solid var(--accent-border, rgba(80, 160, 255, 0.4));
+  background: var(--accent-muted, var(--accent-muted));
+  border: 1px solid var(--accent-border, var(--accent-muted));
   border-radius: var(--radius-s);
   color: var(--editor-text);
   font-size: 12px;
@@ -126,7 +126,7 @@
 }
 
 .region-task-input {
-  background: var(--bg-raised, rgba(255, 255, 255, 0.04));
+  background: var(--bg-raised, rgba(42, 37, 33, 0.06));
   border: 1px solid var(--editor-line);
   border-radius: var(--radius-s);
   color: var(--editor-text);
@@ -136,7 +136,7 @@
   width: 100%;
 }
 .region-task-input:focus {
-  border-color: var(--accent, #4a9eff);
+  border-color: var(--accent, #4A57D6);
   outline: none;
 }
 
@@ -159,7 +159,7 @@
   word-break: break-word;
 }
 .region-task-log-line.is-error {
-  color: var(--danger, #f87171);
+  color: var(--danger, #C6403D);
 }
 
 .region-task-summary {
@@ -178,8 +178,8 @@
 }
 
 .region-task-run {
-  background: var(--accent, #4a9eff);
-  border: 1px solid var(--accent-border, #4a9eff);
+  background: var(--accent, #4A57D6);
+  border: 1px solid var(--accent-border, #4A57D6);
   border-radius: var(--radius-s);
   color: var(--on-accent);
   cursor: pointer;
@@ -196,9 +196,9 @@
 
 .region-task-cancel {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, #6b7280);
+  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
-  color: var(--editor-text, #d1d5db);
+  color: var(--editor-text, #2A2521);
   cursor: pointer;
   display: none;
   font: inherit;
@@ -207,18 +207,18 @@
 }
 .region-task-cancel:hover,
 .region-task-cancel:focus-visible {
-  border-color: var(--danger, #f87171);
-  color: var(--danger, #f87171);
+  border-color: var(--danger, #C6403D);
+  color: var(--danger, #C6403D);
   outline: none;
 }
 .region-task-modal[data-stage="running"] .region-task-run { display: none; }
 .region-task-modal[data-stage="running"] .region-task-cancel { display: inline-flex; }
 
 .region-task-direct-room {
-  background: color-mix(in srgb, var(--editor-panel, #18202b) 72%, var(--accent, #4a9eff));
-  border: 1px solid var(--accent-border, #4a9eff);
+  background: color-mix(in srgb, var(--editor-panel, #FFFDF8) 72%, var(--accent, #4A57D6));
+  border: 1px solid var(--accent-border, #4A57D6);
   border-radius: var(--radius-s);
-  color: var(--editor-text, #f3f4f6);
+  color: var(--editor-text, #2A2521);
   cursor: pointer;
   font: inherit;
   font-weight: 600;
@@ -226,10 +226,10 @@
 }
 
 .region-task-direct-select {
-  background: var(--editor-panel, #18202b);
-  border: 1px solid var(--editor-line, #374151);
+  background: var(--editor-panel, #FFFDF8);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
-  color: var(--editor-text, #f3f4f6);
+  color: var(--editor-text, #2A2521);
   font: inherit;
   max-width: 132px;
   padding: var(--space-2);
@@ -241,7 +241,7 @@
 }
 /* ── A: 부분 적용 청크 트리 ── */
 .region-task-chunk-tree {
-  border: 1px solid var(--editor-line, #374151);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
   font-size: 0.85em;
   margin: var(--space-1) 0;
@@ -251,7 +251,7 @@
 }
 .region-task-chunk-tree.hidden { display: none; }
 .region-task-chunk-layer-title {
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   font-size: 0.85em;
   margin-bottom: var(--space-1);
 }
@@ -262,7 +262,7 @@
   margin-bottom: var(--space-1);
 }
 .region-task-chunk-layer-name {
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   font-size: 0.8em;
   font-weight: 600;
   text-transform: uppercase;
@@ -274,13 +274,13 @@
   gap: var(--space-1);
 }
 .region-task-chunk-cb {
-  accent-color: var(--accent, #4a9eff);
+  accent-color: var(--accent, #4A57D6);
   cursor: pointer;
 }
 .region-task-partial-apply {
   background: transparent;
-  border: 1px solid var(--accent, #4a9eff);
-  color: var(--accent, #4a9eff);
+  border: 1px solid var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
 }
 .region-task-partial-apply:disabled {
   cursor: default;
@@ -289,10 +289,10 @@
 
 /* ── F: 영역 통계 칩 ── */
 .region-task-stats-chip {
-  background: var(--editor-panel-bg-accent, rgba(74, 158, 255, 0.08));
-  border: 1px solid var(--editor-line, #374151);
+  background: var(--editor-panel-bg-accent, var(--accent-muted));
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   font-size: 0.8em;
   padding: 1px var(--space-2);
 }
@@ -313,7 +313,7 @@
   min-width: 0;
 }
 .region-task-recap-text {
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   flex: 1 1 auto;
   font-size: 13px;
   min-width: 0;
@@ -323,16 +323,16 @@
 }
 .region-task-recap-edit {
   background: transparent;
-  border: 1px solid var(--editor-line, #374151);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: 999px;
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   cursor: pointer;
   flex: 0 0 auto;
   font: inherit;
   font-size: 11px;
   padding: 3px 10px;
 }
-.region-task-recap-edit:hover { border-color: var(--accent, #4a9eff); color: var(--accent, #4a9eff); }
+.region-task-recap-edit:hover { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
 
 .region-task-prompt {
   display: flex;
@@ -345,15 +345,15 @@
   align-self: flex-start;
   background: transparent;
   border: none;
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   cursor: pointer;
   font: inherit;
   font-size: 12px;
   padding: 2px 0;
 }
-.region-task-advanced-toggle:hover { color: var(--editor-text, #d1d5db); }
+.region-task-advanced-toggle:hover { color: var(--editor-text, #2A2521); }
 .region-task-advanced-body {
-  border-top: 1px solid var(--editor-line, #374151);
+  border-top: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -372,9 +372,9 @@
 
 /* 어시스턴트 문단은 툴 추적 줄과 구분한다 */
 .region-task-log-line.is-assistant {
-  color: var(--editor-text, #d1d5db);
+  color: var(--editor-text, #2A2521);
   padding-left: var(--space-2);
-  border-left: 2px solid var(--editor-line-strong, #6b7280);
+  border-left: 2px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
 }
 
 /* ── 변경 칸 하이라이트 (이후 썸네일 위) ──
@@ -391,18 +391,18 @@
   transition: background-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
 .region-task-change-cell.is-changed {
-  background: color-mix(in srgb, var(--accent, #4a9eff) 22%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 55%, transparent);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
 }
 /* 체크를 푼 덩어리 — 적용되지 않으므로 하이라이트를 걷는다 */
 .region-task-change-cell.is-changed.is-excluded {
   background: transparent;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-text-muted, #9ca3af) 35%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-text-muted, #6B5F52) 35%, transparent);
 }
 /* 체크박스에 마우스/포커스가 있는 동안: 지목된 덩어리만 살리고 나머지는 물러난다 */
 .region-task-change-overlay.is-isolating .region-task-change-cell.is-changed { opacity: 0.25; }
 .region-task-change-overlay .region-task-change-cell.is-focus {
-  background: color-mix(in srgb, var(--accent, #4a9eff) 55%, transparent);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
   box-shadow: inset 0 0 0 2px #fff;
   opacity: 1;
 }
@@ -410,7 +410,7 @@
    반투명 어두운 원을 깐다. 클릭·hover 대상은 아래 변경 목록 행이므로 포인터는 통과시킨다. */
 .region-task-event-marker {
   align-items: center;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(42, 37, 33, 0.12);
   border-radius: 50%;
   display: flex;
   font-size: 11px;
@@ -426,13 +426,13 @@
 .region-task-change-overlay.is-isolating .region-task-event-marker { opacity: 0.25; }
 /* 목록 행이 tabindex 로 포커스를 받는다 — 키보드로도 어느 행을 보고 있는지 보여야 한다. */
 .region-task-change-row:focus-visible {
-  outline: 2px solid var(--accent, #4a9eff);
+  outline: 2px solid var(--accent, #4A57D6);
   outline-offset: 1px;
 }
 
 .region-task-chunk-label { border-radius: 4px; cursor: pointer; padding: 1px 4px; }
-.region-task-chunk-label:hover { background: var(--editor-row-hover, rgba(255, 255, 255, 0.06)); }
-.region-task-chunk-label:focus-within { outline: 2px solid var(--accent, #4a9eff); outline-offset: 1px; }
+.region-task-chunk-label:hover { background: var(--editor-row-hover, rgba(42, 37, 33, 0.06)); }
+.region-task-chunk-label:focus-within { outline: 2px solid var(--accent, #4A57D6); outline-offset: 1px; }
 
 @media (prefers-reduced-motion: reduce) {
   .region-task-change-cell { transition: none; }
@@ -451,9 +451,9 @@
    고른 상태를 강조색으로 드러낸다 — 지금 어느 묶음을 보고 있는지가 보여야 한다. */
 .region-task-category-chip {
   background: transparent;
-  border: 1px solid var(--editor-line, #2a3550);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: 999px;
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, #6B5F52);
   cursor: pointer;
   font: 500 11px/1 var(--font-ui, system-ui, sans-serif);
   padding: 5px 10px;
@@ -461,13 +461,13 @@
 }
 .region-task-category-chip:hover,
 .region-task-category-chip:focus-visible {
-  border-color: var(--editor-blue, #3d6df0);
-  color: var(--editor-text, #e8eefc);
+  border-color: var(--editor-blue, #4A57D6);
+  color: var(--editor-text, #2A2521);
   outline: none;
 }
 .region-task-category-chip.is-active {
-  border-color: var(--accent, #4a9eff);
-  color: var(--accent, #4a9eff);
+  border-color: var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
 }
 
 /* ── 변경 목록 — 타일·이벤트·영역 밖 변경을 한 자리에 ── */
@@ -489,7 +489,7 @@
 .region-task-change-text { min-width: 0; overflow-wrap: anywhere; }
 /* 영역 밖 변경 — clipToRegion 이 되돌리지 않고 통과시키는 것들. 눈에 걸려야 한다. */
 .region-task-change-row.is-outside .region-task-change-text {
-  color: var(--warning, #e8a33d);
+  color: var(--warning, #8A5E00);
 }
 
 /* 액션 1행 — 지금 눌러야 할 것 하나만 강조색 */
@@ -500,8 +500,8 @@
   margin-top: var(--space-2);
 }
 .region-task-apply {
-  background: var(--accent, #4a9eff);
-  border: 1px solid var(--accent-border, #4a9eff);
+  background: var(--accent, #4A57D6);
+  border: 1px solid var(--accent-border, #4A57D6);
   border-radius: var(--radius-s);
   color: var(--on-accent);
   cursor: pointer;
@@ -512,20 +512,20 @@
 .region-task-retry,
 .region-task-discard {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, #6b7280);
+  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
-  color: var(--editor-text, #d1d5db);
+  color: var(--editor-text, #2A2521);
   cursor: pointer;
   font: inherit;
   padding: var(--space-2) var(--space-3);
 }
 .region-task-retry:hover,
-.region-task-discard:hover { border-color: var(--accent, #4a9eff); color: var(--accent, #4a9eff); }
+.region-task-discard:hover { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
 
 /* ── F: 슬래시 자동완성 드롭다운 ── */
 .region-task-autocomplete {
-  background: var(--editor-panel-bg, #1f2937);
-  border: 1px solid var(--editor-line-strong, #6b7280);
+  background: var(--editor-panel-bg, #FCF9F2);
+  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
   display: flex;
   flex-direction: column;
@@ -537,7 +537,7 @@
 .region-task-autocomplete-item {
   background: transparent;
   border: none;
-  color: var(--editor-text, #d1d5db);
+  color: var(--editor-text, #2A2521);
   cursor: pointer;
   font: inherit;
   font-size: 0.9em;
@@ -545,10 +545,10 @@
   text-align: left;
 }
 .region-task-autocomplete-item:hover {
-  background: var(--editor-row-hover, rgba(255, 255, 255, 0.05));
+  background: var(--editor-row-hover, rgba(42, 37, 33, 0.06));
 }
 .region-task-autocomplete-item.is-selected {
-  background: var(--accent, #4a9eff);
+  background: var(--accent, #4A57D6);
   color: var(--on-accent);
 }
 
@@ -564,7 +564,7 @@
 }
 .region-task-checkpoint {
   align-items: center;
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   display: flex;
   font-size: 11px;
   gap: 4px;
@@ -579,12 +579,12 @@
   height: 16px;
   justify-content: center;
 }
-.region-task-checkpoint.is-done { color: var(--success, #61c98b); }
-.region-task-checkpoint.is-blocked { color: var(--danger, #f87171); }
+.region-task-checkpoint.is-done { color: var(--success, #18764F); }
+.region-task-checkpoint.is-blocked { color: var(--danger, #C6403D); }
 .region-task-review-metrics {
-  background: color-mix(in srgb, var(--editor-panel-bg, #1f2937) 80%, var(--accent, #4a9eff));
+  background: color-mix(in srgb, var(--editor-panel-bg, #FCF9F2) 80%, var(--accent, #4A57D6));
   border-radius: var(--radius-s);
-  color: var(--editor-text-muted, #9ca3af);
+  color: var(--editor-text-muted, #6B5F52);
   font-size: 11px;
   line-height: 1.5;
   padding: 6px 8px;
@@ -600,11 +600,11 @@
   gap: 3px;
 }
 .region-task-review-issue.is-error,
-.region-task-blockers { color: var(--danger, #f87171); }
-.region-task-review-issue.is-warning { color: var(--warning, #e8a33d); }
-.region-task-review-clear { color: var(--success, #61c98b); }
+.region-task-blockers { color: var(--danger, #C6403D); }
+.region-task-review-issue.is-warning { color: var(--warning, #8A5E00); }
+.region-task-review-clear { color: var(--success, #18764F); }
 .region-task-room-controls {
-  border: 1px solid var(--editor-line, #374151);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: var(--radius-s);
   display: flex;
   flex-direction: column;
@@ -617,7 +617,7 @@
 .region-task-room-lock,
 .region-task-room-reroll {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, #6b7280);
+  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
   border-radius: 999px;
   color: var(--editor-text);
   cursor: pointer;
@@ -641,21 +641,21 @@
 .region-task-live-progress:empty,
 .region-task-modal[data-stage="compose"] .region-task-live-progress { display: none; }
 .region-task-live-progress span {
-  border: 1px solid var(--editor-line, #374151);
+  border: 1px solid var(--editor-line, rgba(42, 37, 33, 0.20));
   border-radius: 999px;
   color: var(--editor-text-muted);
   font-size: 10px;
   padding: 3px 7px;
 }
-.region-task-live-progress .is-active { border-color: var(--accent, #4a9eff); color: var(--accent, #4a9eff); }
-.region-task-live-progress .is-done { border-color: var(--success, #61c98b); color: var(--success, #61c98b); }
-.region-task-live-progress .is-blocked { border-color: var(--danger, #f87171); color: var(--danger, #f87171); }
+.region-task-live-progress .is-active { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
+.region-task-live-progress .is-done { border-color: var(--success, #18764F); color: var(--success, #18764F); }
+.region-task-live-progress .is-blocked { border-color: var(--danger, #C6403D); color: var(--danger, #C6403D); }
 
 
 /* NPC 일정은 암묵적으로 켜지지 않는다. 승인 전에 실행 방식 세 가지를 명시적으로 고른다. */
 .region-task-npc-decision {
-  background: color-mix(in srgb, var(--warning, #e8a33d) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--warning, #e8a33d) 55%, transparent);
+  background: color-mix(in srgb, var(--warning, #8A5E00) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--warning, #8A5E00) 55%, transparent);
   border-radius: var(--radius-s);
   display: flex;
   flex-direction: column;
@@ -663,13 +663,13 @@
   padding: 8px;
 }
 .region-task-npc-decision.hidden { display: none; }
-.region-task-npc-decision-title { color: var(--warning, #e8a33d); font-size: 12px; font-weight: 700; }
+.region-task-npc-decision-title { color: var(--warning, #8A5E00); font-size: 12px; font-weight: 700; }
 .region-task-npc-decision-help { color: var(--editor-text-muted); font-size: 11px; line-height: 1.45; }
 .region-task-npc-decision-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .region-task-npc-decision-actions button,
 .region-task-room-checkpoint {
   background: transparent;
-  border: 1px solid var(--editor-line-strong, #6b7280);
+  border: 1px solid var(--editor-line-strong, rgba(42, 37, 33, 0.20));
   border-radius: 999px;
   color: var(--editor-text);
   cursor: pointer;
@@ -678,17 +678,17 @@
   padding: 4px 8px;
 }
 .region-task-npc-decision-actions button:hover,
-.region-task-room-checkpoint:hover { border-color: var(--accent, #4a9eff); color: var(--accent, #4a9eff); }
+.region-task-room-checkpoint:hover { border-color: var(--accent, #4A57D6); color: var(--accent, #4A57D6); }
 
 /* 실제 detached map snapshot을 사용한 레이어별 중간 미리보기. */
 .region-task-room-checkpoints { align-items: center; display: flex; flex-wrap: wrap; gap: 5px; }
-.region-task-room-checkpoint.is-failed { border-color: var(--danger, #f87171); color: var(--danger, #f87171); }
-.region-task-room-checkpoint.is-done { border-color: color-mix(in srgb, var(--success, #61c98b) 65%, transparent); }
+.region-task-room-checkpoint.is-failed { border-color: var(--danger, #C6403D); color: var(--danger, #C6403D); }
+.region-task-room-checkpoint.is-done { border-color: color-mix(in srgb, var(--success, #18764F) 65%, transparent); }
 .region-task-room-checkpoint.is-selected {
-  background: color-mix(in srgb, var(--accent, #4a9eff) 22%, transparent);
-  border-color: var(--accent, #4a9eff);
-  color: var(--accent, #4a9eff);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4a9eff) 28%, transparent);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, transparent);
+  border-color: var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
 }
 .region-task-room-checkpoint-preview {
   align-items: center;

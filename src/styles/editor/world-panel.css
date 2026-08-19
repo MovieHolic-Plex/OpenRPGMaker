@@ -10,11 +10,11 @@
     width: min(1180px, calc(100vw - 36px));
     height: min(760px, calc(100vh - 36px));
     overflow: hidden;
-    border: 1px solid rgba(210, 216, 228, 0.24);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    background: #171a20;
-    color: #f1f5f9;
-    box-shadow: 0 22px 64px rgba(0, 0, 0, 0.46);
+    background: var(--bg-surface);
+    color: var(--text-1);
+    box-shadow: 0 22px 64px rgba(42, 37, 33, 0.10);
   }
 
   .world-panel-header {
@@ -23,8 +23,8 @@
     justify-content: space-between;
     gap: 16px;
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(210, 216, 228, 0.14);
-    background: #20242c;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--bg-surface);
   }
 
   .world-panel-title h2 {
@@ -44,10 +44,10 @@
   .world-add-type,
   .world-edit-input,
   .world-edit-body {
-    border: 1px solid rgba(210, 216, 228, 0.22);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    background: #111318;
-    color: #f8fafc;
+    background: var(--bg-overlay);
+    color: var(--text-1);
     font: inherit;
   }
 
@@ -80,8 +80,8 @@
     flex-direction: column;
     gap: 10px;
     padding: 12px;
-    border-right: 1px solid rgba(210, 216, 228, 0.14);
-    background: #13161b;
+    border-right: 1px solid var(--border-subtle);
+    background: var(--bg-base);
   }
 
   .world-tabs {
@@ -94,10 +94,10 @@
   .world-recent-chip,
   .world-relation-chip,
   .world-ref-chip {
-    border: 1px solid rgba(210, 216, 228, 0.2);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    background: #20242c;
-    color: #e2e8f0;
+    background: var(--bg-surface);
+    color: var(--text-2);
     font: inherit;
     cursor: pointer;
   }
@@ -108,22 +108,22 @@
   }
 
   .world-tab.active {
-    border-color: rgba(72, 187, 120, 0.75);
-    background: #183125;
-    color: #effff5;
+    border-color: var(--accent);
+    background: var(--accent-muted);
+    color: var(--success);
   }
 
   .world-overview {
     display: grid;
     gap: 8px;
     padding: 10px;
-    border: 1px solid rgba(210, 216, 228, 0.14);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    background: #1b1f27;
+    background: var(--bg-surface);
   }
 
   .world-counts {
-    color: #cbd5e1;
+    color: var(--text-2);
     font-size: 13px;
     line-height: 1.5;
   }
@@ -156,7 +156,7 @@
   .world-card-grid.empty {
     display: block;
     padding: 24px;
-    color: #94a3b8;
+    color: var(--text-3);
     text-align: center;
   }
 
@@ -165,9 +165,9 @@
     grid-template-rows: 112px minmax(112px, auto);
     min-width: 0;
     overflow: hidden;
-    border: 1px solid rgba(210, 216, 228, 0.16);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    background: #1e232b;
+    background: var(--bg-raised);
     color: inherit;
     text-align: left;
     cursor: pointer;
@@ -175,21 +175,21 @@
 
   .world-card:hover,
   .world-card:focus-visible {
-    border-color: rgba(148, 163, 184, 0.38);
+    border-color: var(--border-default);
     outline: none;
   }
 
   .world-card.active {
-    border-color: rgba(72, 187, 120, 0.85);
-    background: linear-gradient(180deg, #22302a 0%, #1e232b 100%);
+    border-color: var(--accent);
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-raised) 100%);
     box-shadow:
-      0 0 0 1px rgba(72, 187, 120, 0.22) inset,
-      0 8px 22px rgba(0, 0, 0, 0.32);
+      0 0 0 1px var(--accent-muted) inset,
+      0 8px 22px rgba(42, 37, 33, 0.08);
     outline: none;
   }
 
   .world-card.active .world-card-title {
-    color: #ecfdf5;
+    color: var(--success);
   }
 
   .world-card-media {
@@ -197,7 +197,7 @@
     display: grid;
     place-items: center;
     overflow: hidden;
-    background: #0f1217;
+    background: var(--bg-inset);
   }
 
   .world-card-map-thumb {
@@ -223,24 +223,24 @@
     place-items: center;
     width: 56px;
     height: 56px;
-    border: 1px solid rgba(210, 216, 228, 0.2);
+    border: 1px solid var(--border-subtle);
     border-radius: 50%;
-    background: #29313b;
-    color: #f8fafc;
+    background: var(--bg-inset);
+    color: var(--text-1);
     font-size: 24px;
     font-weight: 700;
   }
 
   .world-card-placeholder.faction {
-    background: #263245;
+    background: var(--bg-inset);
   }
 
   .world-card-placeholder.event {
-    background: #3a2b35;
+    background: var(--bg-inset);
   }
 
   .world-card-placeholder.guideline {
-    background: #26372f;
+    background: var(--bg-inset);
   }
 
   .world-lint-badge {
@@ -255,20 +255,20 @@
 
   .world-lint-badge.error,
   .world-lint-item.error {
-    background: #5b1b1b;
-    color: #fecaca;
+    background: var(--danger);
+    color: var(--bg-overlay);
   }
 
   .world-lint-badge.warning,
   .world-lint-item.warning {
-    background: #4a3411;
-    color: #fde68a;
+    background: var(--warning);
+    color: var(--bg-overlay);
   }
 
   .world-lint-badge.info,
   .world-lint-item.info {
-    background: #313946;
-    color: #cbd5e1;
+    background: var(--bg-inset);
+    color: var(--text-2);
   }
 
   .world-card-content {
@@ -295,7 +295,7 @@
     min-width: 0;
     flex: 1 1 auto;
     overflow: hidden;
-    color: #f8fafc;
+    color: var(--text-1);
     font-size: 14px;
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -307,7 +307,7 @@
     min-height: 18px;
     margin: 0;
     overflow: hidden;
-    color: #94a3b8;
+    color: var(--text-3);
     font-size: 12px;
     line-height: 1.45;
     text-overflow: ellipsis;
@@ -315,7 +315,7 @@
   }
 
   .world-card.active .world-card-summary {
-    color: #cbd5e1;
+    color: var(--text-2);
   }
 
   .world-card-badges,
@@ -326,9 +326,9 @@
   }
 
   .world-card.active .world-type-badge {
-    border-color: rgba(72, 187, 120, 0.28);
-    background: #1a2e24;
-    color: #bbf7d0;
+    border-color: var(--accent-muted);
+    background: var(--success-muted);
+    color: var(--success);
   }
 
   .world-type-badge,
@@ -336,10 +336,10 @@
   .world-tag {
     max-width: 100%;
     padding: 3px 7px;
-    border: 1px solid rgba(148, 163, 184, 0.18);
+    border: 1px solid var(--border-default);
     border-radius: 999px;
-    background: #2a3039;
-    color: #dbeafe;
+    background: var(--bg-raised);
+    color: var(--text-2);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.01em;
@@ -347,24 +347,24 @@
   }
 
   .world-origin-badge {
-    color: #dcfce7;
+    color: var(--success);
   }
 
   .world-lock-button {
     flex: 0 0 auto;
     min-width: 42px;
     min-height: 26px;
-    border: 1px solid rgba(210, 216, 228, 0.18);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
-    background: #252b34;
-    color: #cbd5e1;
+    background: var(--bg-surface);
+    color: var(--text-2);
     font: inherit;
     font-size: 12px;
   }
 
   .world-lock-button.locked {
     border-color: rgba(248, 113, 113, 0.55);
-    color: #fecaca;
+    color: var(--bg-overlay);
   }
 
   .world-wiki-view {
@@ -372,11 +372,11 @@
     flex-direction: column;
     gap: 14px;
     padding: 16px;
-    background: #181c23;
+    background: var(--bg-surface);
   }
 
   .world-wiki-view.empty {
-    color: #cbd5e1;
+    color: var(--text-2);
   }
 
   .world-wiki-header {
@@ -398,7 +398,7 @@
 
   .world-wiki-heading p {
     margin: 0;
-    color: #cbd5e1;
+    color: var(--text-2);
   }
 
   .world-wiki-actions {
@@ -412,13 +412,13 @@
     display: grid;
     gap: 8px;
     padding: 10px;
-    border: 1px solid rgba(210, 216, 228, 0.14);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    background: #111318;
+    background: var(--bg-overlay);
   }
 
   .world-lint-list.empty {
-    color: #94a3b8;
+    color: var(--text-3);
   }
 
   .world-lint-list ul {
@@ -449,7 +449,7 @@
     overflow: auto;
     padding: 10px;
     border-radius: 6px;
-    background: #0d1117;
+    background: var(--bg-inset);
   }
 
   .world-relations,
@@ -462,7 +462,7 @@
   .world-relations.empty,
   .world-ref-jumps.empty,
   .world-muted {
-    color: #94a3b8;
+    color: var(--text-3);
   }
 
   .world-edit-fields {
@@ -474,7 +474,7 @@
   .world-edit-field {
     display: grid;
     gap: 5px;
-    color: #cbd5e1;
+    color: var(--text-2);
     font-size: 13px;
   }
 
@@ -496,7 +496,7 @@
 
   .world-edit-section {
     padding-top: 10px;
-    border-top: 1px solid rgba(210, 216, 228, 0.12);
+    border-top: 1px solid var(--border-subtle);
   }
 
   .world-edit-section h4 {
@@ -514,7 +514,7 @@
     min-width: 0;
     padding: 7px 8px;
     border-radius: 6px;
-    background: #20242c;
+    background: var(--bg-surface);
   }
 
   .world-edit-row span {
@@ -537,8 +537,8 @@
   .world-edit-error {
     padding: 8px 10px;
     border-radius: 6px;
-    background: #5b1b1b;
-    color: #fecaca;
+    background: var(--danger);
+    color: var(--bg-overlay);
   }
 
   @media (max-width: 820px) {
@@ -564,7 +564,7 @@
 
     .world-browser {
       border-right: 0;
-      border-bottom: 1px solid rgba(210, 216, 228, 0.14);
+      border-bottom: 1px solid var(--border-subtle);
       max-height: 52vh;
     }
 

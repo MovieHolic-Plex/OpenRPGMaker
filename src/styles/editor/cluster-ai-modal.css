@@ -1,6 +1,6 @@
 .cluster-ai-modal-backdrop {
   align-items: center;
-  background: rgba(7, 9, 14, 0.62);
+  background: rgba(42, 37, 33, 0.18);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -224,8 +224,8 @@
 }
 
 .cluster-ai-tile span {
-  background: rgba(0, 0, 0, 0.58);
-  color: #ffffff;
+  background: rgba(42, 37, 33, 0.12);
+  color: var(--on-accent);
   font: 700 10px/1 var(--font-mono);
   padding: 2px 3px;
 }

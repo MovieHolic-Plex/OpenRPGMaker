@@ -214,7 +214,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   border-width: 16px;
   border-image: url("/assets/dialogue-frame.png") 16 / 16px stretch;
   /* border-image 誘몄????먯뀑 ?꾨씫 ???대갚. */
-  background: rgba(8, 10, 14, 0.88);
+  background: rgba(247, 243, 234, 0.92);
   padding: 10px 14px 6px;
   max-width: 720px;
   margin: 0 auto;
@@ -223,15 +223,15 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   min-height: 88px;
   image-rendering: pixelated;
   /* ?댁쭩 ?쒕∼ ??꾩슦濡?寃뚯엫 ?붾㈃怨?遺꾨━. */
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 4px 10px rgba(42, 37, 33, 0.10));
 }
 .dialogue-box .speaker {
   font-weight: 700;
-  color: #f5d04a;
+  color: #8A6B2F;
   margin-bottom: 6px;
   font-size: 14px;
   /* 텍스트 그림자으로 가독성 보강(테두리 배경 위). */
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
 }
 .dialogue-box .speaker.speaker-nameplate {
   position: absolute;
@@ -265,7 +265,7 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   line-height: 1.6;
   white-space: pre-wrap;
   color: #f0f2f6;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
 }
 .dialogue-box .continue-hint {
   text-align: right;
@@ -282,20 +282,20 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   pointer-events: auto;
 }
 .choices .choice-btn {
-  background: rgba(8, 10, 14, 0.88);
-  border: 2px solid #6b5a3a;
+  background: rgba(247, 243, 234, 0.92);
+  border: 2px solid rgba(42, 37, 33, 0.20);
   color: #f0f2f6;
   padding: 8px 14px;
   border-radius: 2px;
   cursor: pointer;
   text-align: left;
   font-size: 14px;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  text-shadow: 0 1px 2px rgba(42, 37, 33, 0.10);
   transition: border-color 0.12s, background 0.12s;
 }
 .choices .choice-btn:hover {
   background: rgba(245, 208, 74, 0.18);
-  border-color: #f5d04a;
+  border-color: #8A6B2F;
 }
 
 /* ?? ?대깽???몄쭛湲??? */
@@ -623,8 +623,8 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 /* 임시 세션은 오류가 아니다 — 빨강 대신 중립 정보 톤. */
 .persistence-mode-banner.is-save-skipped {
   align-items: center;
-  background: #23324f;
-  color: #cfe0ff;
+  background: var(--bg-inset);
+  color: var(--text-1);
   display: flex;
   gap: 8px;
   justify-content: center;
@@ -681,13 +681,13 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
 }
 
 .persistence-mode-banner.is-local-only {
-  background: #4a4420;
-  color: #f4ecc8;
+  background: var(--bg-inset);
+  color: var(--text-1);
 }
 
 .persistence-mode-banner.is-recovery {
-  background: #58421f;
-  color: #ffe9c7;
+  background: var(--bg-inset);
+  color: var(--text-1);
 }
 
 /* 배너가 있으면 캔버스 위 플로팅 줌 툴바를 아래로 밀어 겹침을 피한다. */
