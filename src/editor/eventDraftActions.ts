@@ -5,6 +5,7 @@ import {
   beginEventEditDraft,
   commitEventDraft,
   discardEventDraft as discardProjectEventDraft,
+  eventWithoutDraft,
   type EventDiff,
 } from "@/project/eventDrafts";
 import {
@@ -27,7 +28,8 @@ export function createEventDraft(
     const map = project.maps[mapId];
     if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return;
     const event = createDefaultGameEvent(x, y, trigger);
-    event.draft = { kind: "new" };
+    // original = 생성 직후 스냅샷: "손댔는가" 판정 기준(eventDraftHasUserChanges).
+    event.draft = { kind: "new", original: eventWithoutDraft(event) };
     map.events.push(event);
     newId = event.id;
     selectedPageId = event.pages?.[event.pages.length - 1]?.id ?? null;

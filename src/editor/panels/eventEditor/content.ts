@@ -179,30 +179,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         if (!cmd) return;
         showCommandInspector({ command: cmd, path, actions });
       },
-      onAddNext: () => {
-        currentMode = "list";
-        applyViewMode();
-        cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
-          new MouseEvent("dblclick", { bubbles: true, cancelable: true })
-        );
-      },
+      // 장면 추가는 뷰를 갈아타지 않고 그 자리에서 명령 피커를 연다 (적대 평가 스펙).
+      onAddNext: () => openCommandPickerForActions(actions),
     });
   let storyboardEl = makeStoryboard();
-  const graphPlaceholder = el("div", {
-    class: "event-graph-placeholder",
-    dataset: { testid: "event-graph-placeholder" },
-    children: [
-      el("div", { class: "event-graph-placeholder-title", text: "Graph \uBDF0 \u2014 Phase 2\uC5D0\uC11C \uC5F0\uACB0\uB429\uB2C8\uB2E4" }),
-      el("div", { class: "event-graph-placeholder-desc", text: "°°\uC740 \uB370\uC774\uD130\uB97C \uB178\uB4DC \uADF8\uB798\uD504\uB85C \uBD05\uB2C8\uB2E4. \uC9C0\uAE08\uC740 Storyboard/List\uB85C \uD3B8\uC9D1\uD558\uC138\uC694." }),
-    ],
-  });
   let viewToggle = renderViewToggle(currentMode, (next) => { currentMode = next; applyViewMode(); });
   function applyViewMode(): void {
     const isStoryboard = currentMode === "storyboard";
-    const isGraph = currentMode === "graph";
-    cmdList.hidden = isStoryboard || isGraph;
+    cmdList.hidden = isStoryboard;
     storyboardEl.hidden = !isStoryboard;
-    graphPlaceholder.hidden = !isGraph;
     const nextToggle = renderViewToggle(currentMode, (n) => { currentMode = n; applyViewMode(); });
     viewToggle.replaceWith(nextToggle);
     viewToggle = nextToggle;
@@ -213,7 +198,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       storyboardEl.hidden = false;
     }
   }
-  storyboardHost.append(storyboardEl, graphPlaceholder);
+  storyboardHost.append(storyboardEl);
   applyViewMode();
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
   // Tool-authored NPC schedules stay compact, but existing rows are editable so
@@ -280,14 +265,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       children: [
         el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
         viewToggle,
-        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
-        renderFollowerPresetBar({
-          insertCommandsAt: (index, commands) => {
-            for (let i = 0; i < commands.length; i += 1)
-              insertEventPageCommandAt(mapId, ev.id, activePage.id, [index + i], commands[i]!);
-          },
-          commandCount: () => activePage.commands.length,
-        }),
+        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id),
         storyboardHost,
         cmdList,
         lazyDetails({
@@ -315,6 +293,22 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
             children: [
               renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
               renderEventScriptModernViews({ mapId, eventId: ev.id, page: activePage }),
+              // 따라오기 프리셋·필드몬스터 템플릿은 특수 저작 도구 — 실행 내용 캔버스가 아니라
+              // 보조 도구 서랍에 속한다(적대 평가 스펙: 캔버스에서 제외).
+              renderFollowerPresetBar({
+                insertCommandsAt: (index, commands) => {
+                  for (let i = 0; i < commands.length; i += 1)
+                    insertEventPageCommandAt(mapId, ev.id, activePage.id, [index + i], commands[i]!);
+                },
+                commandCount: () => activePage.commands.length,
+              }),
+              el("button", {
+                class: "btn event-editor-aux-tool-button",
+                text: "☠ 필드 몬스터 템플릿",
+                attrs: { type: "button", title: "필드 몬스터 템플릿 (전투→승리 소거)" },
+                dataset: { testid: "event-command-toolbar-field-monster" },
+                on: { click: () => openFieldMonsterTemplateDialog(mapId, ev.id, activePage) },
+              }),
             ],
           }),
         ],
@@ -383,8 +377,7 @@ function renderCommandToolbar(
   actions: CommandListActions,
   commandHistory: CommandToolbarHistory,
   mapId: MapId,
-  eventId: string,
-  page: EventPage
+  eventId: string
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected");
@@ -423,12 +416,6 @@ function renderCommandToolbar(
           toolGroup(
             toolbarButton("▣", "복사", "event-command-toolbar-copy", () => runForSelected((path) => commandHistory.copySelected(path))),
             toolbarButton("✂", "잘라내기", "event-command-toolbar-cut", () => runForSelected((path) => commandHistory.cutSelected(path, actions)))
-          ),
-          toolbarButton(
-            "☠",
-            "필드 몬스터 템플릿 (전투→승리 소거)",
-            "event-command-toolbar-field-monster",
-            () => openFieldMonsterTemplateDialog(mapId, eventId, page)
           ),
         ],
       }),
@@ -835,11 +822,26 @@ function renderEventPositionControls(mapId: MapId, event: GameEvent): HTMLElemen
   }) as HTMLInputElement;
   const x = coordinateInput("x", event.x);
   const y = coordinateInput("y", event.y);
+  const clamp = (input: HTMLInputElement, raw: number, maxExclusive: number): number => {
+    const bounded = Math.min(Math.max(Math.trunc(raw), 0), Math.max(0, maxExclusive - 1));
+    if (bounded !== Math.trunc(raw)) {
+      input.value = String(bounded);
+      input.classList.add("is-clamped");
+      input.title = `맵 범위(0~${Math.max(0, maxExclusive - 1)})로 조정됐어요`;
+      window.setTimeout(() => input.classList.remove("is-clamped"), 1200);
+    }
+    return bounded;
+  };
   const apply = (): void => {
     const nextX = Number(x.value);
     const nextY = Number(y.value);
     if (!Number.isFinite(nextX) || !Number.isFinite(nextY)) return;
-    moveEvent(mapId, event.id, Math.trunc(nextX), Math.trunc(nextY));
+    moveEvent(
+      mapId,
+      event.id,
+      clamp(x, nextX, map?.width ?? 1),
+      clamp(y, nextY, map?.height ?? 1)
+    );
   };
   x.addEventListener("change", apply);
   y.addEventListener("change", apply);

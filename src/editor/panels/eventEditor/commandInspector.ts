@@ -11,6 +11,7 @@
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandSummary } from "./commandSummary";
+import { commandKindLabel } from "./options";
 import { renderCommandBody } from "./commandBody";
 import type { CommandListActions } from "./types";
 
@@ -55,7 +56,9 @@ export function resetCommandInspectorView(): void {
 /** 명령을 선택하면 우측 인스펙터가 그 자리에서 바뀐다. 모달은 열리지 않는다. */
 const INSPECTOR_DENSITY_KEY = "rpg-zzu:inspector-density";
 export type InspectorDensity = "card" | "form";
-export function loadInspectorDensity(): InspectorDensity { try { const v = localStorage.getItem(INSPECTOR_DENSITY_KEY); if (v === "form" || v === "card") return v; } catch { /* ignore */ } return "card"; }
+// 기본은 form(바로 편집): 명령을 골랐다는 것은 편집 의도다. card→자세히 편집 2단 홉과
+// 같은 원문을 헤더/카드에 중복 표시하던 구조를 제거했다(2026-08-18 적대 평가 H01/J01).
+export function loadInspectorDensity(): InspectorDensity { try { const v = localStorage.getItem(INSPECTOR_DENSITY_KEY); if (v === "form" || v === "card") return v; } catch { /* ignore */ } return "form"; }
 export function saveInspectorDensity(d: InspectorDensity): void { try { localStorage.setItem(INSPECTOR_DENSITY_KEY, d); } catch { /* ignore */ } }
 
 export function showCommandInspector(target: InspectorTarget): void {
@@ -96,41 +99,19 @@ export function showCommandInspector(target: InspectorTarget): void {
     class: "event-inspector-card",
     dataset: { testid: "event-inspector-card" },
     children: [
-      el("div", { class: "event-inspector-card-title", text: target.command.kind }),
       el("div", { class: "event-inspector-card-hint", text: summary }),
       toggleBtn,
     ],
   });
-  const advanced = el("details", {
-    class: "event-inspector-advanced",
-    attrs: { open: isForm ? "true" : undefined as unknown as string },
-    dataset: { testid: "event-inspector-advanced" },
-    children: [
-      el("summary", { class: "event-inspector-advanced-summary", text: "고급 편집" }),
-      el("div", { class: "event-inspector-advanced-body", children: [formBody] }),
-    ],
-  });
-  (advanced as HTMLDetailsElement).open = isForm;
-  const syncDetails = () => {
-    const wantForm = (advanced as HTMLDetailsElement).open;
-    const cur = loadInspectorDensity();
-    if ((wantForm && cur !== "form") || (!wantForm && cur !== "card")) {
-      saveInspectorDensity(wantForm ? "form" : "card");
-      toggleBtn.textContent = wantForm ? "간단히 보기" : "자세히 편집";
-      toggleBtn.setAttribute("aria-pressed", wantForm ? "true" : "false");
-    }
-  };
-  advanced.addEventListener("toggle", syncDetails);
+  // 헤더는 한글 명령 이름만 — 원문 요약은 (card 모드) 카드 본문 또는 (form 모드) 편집 폼이
+  // 이미 보여주므로 반복하지 않는다.
   host.replaceChildren(
     el("div", {
       class: "event-inspector-head",
-      children: [
-        el("div", { class: "event-inspector-kind", text: target.command.kind }),
-        el("div", { class: "event-inspector-title", text: summary, dataset: { testid: "event-inspector-title" } }),
-      ],
+      children: [el("div", { class: "event-inspector-kind", text: commandKindLabel(target.command.kind) })],
     }),
     isForm ? formBody : card,
-    isForm ? toggleBtn : advanced
+    ...(isForm ? [toggleBtn] : [])
   );
 }
 

@@ -260,7 +260,9 @@
   color: var(--event-modern-text-soft);
   cursor: pointer;
   font: 700 11px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  min-width: 22px;
+  /* 22x19 는 히트타겟 최소선(24px) 미달이었다(2026-08-19 실측 감사). */
+  min-width: 26px;
+  min-height: 24px;
   padding: 4px 6px;
   transition: background 0.12s ease, color 0.12s ease;
 }
@@ -284,6 +286,7 @@
   border-radius: 11px;
   cursor: pointer;
   font: 700 10px/1 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 24px;
   padding: 4px 10px;
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
 }

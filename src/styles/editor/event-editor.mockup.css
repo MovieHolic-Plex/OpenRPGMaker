@@ -980,9 +980,17 @@
   white-space: nowrap;
 }
 
+/* 42px는 Windows Chrome에서 스피너(~20px)가 텍스트를 가려 "15"가 "1"로 보였다(2026-08-18 실측).
+ * 세 자리 좌표 + 스피너가 온전히 보이는 최소 폭으로 확대. */
 .event-editor .event-editor-card .event-editor-id-row input {
-  width: 42px;
+  width: 64px;
   min-width: 0;
+}
+
+/* 범위 밖 값을 클램프했을 때 잠깐 깜빡여 "값이 바뀌었다"를 알린다 */
+.event-position-input.is-clamped {
+  outline: 2px solid var(--warning, #e5a50a);
+  transition: outline-color 0.2s ease;
 }
 
 /* 페이지 액션 버튼은 카드에서 아이콘 위주로 압축 */
@@ -1082,12 +1090,16 @@
   padding: 0;
 }
 
+/* 행 구조: 1 토글 · 2 툴바 · 3 콘텐츠(목록/스토리보드 중 하나, 1fr) · 4 색상 범례.
+ * 따라오기 프리셋은 보조 도구 서랍으로 이사해 행이 줄었다(2026-08-19).
+ * 예전 6행 정의는 범례 details 가 자동 배치로 3행에 끼며 목록 위 ~160px 죽은
+ * 공백을 만들었다(적대 평가 G01 실측). */
 .event-editor .event-contents-fieldset {
   position: relative;
   padding: 10px 12px 12px;
   gap: 8px;
   min-height: 0;
-  grid-template-rows: 32px 32px auto auto minmax(0, 1fr) auto;
+  grid-template-rows: 32px 32px minmax(0, 1fr) auto;
 }
 
 .event-editor .event-contents-fieldset > .event-contents-legend {
@@ -1118,14 +1130,14 @@
 
 .event-editor .event-contents-fieldset > .event-storyboard-host {
   grid-column: 1 / -1;
-  grid-row: 4;
+  grid-row: 3;
   min-height: 0;
   overflow: auto;
 }
 
-.event-editor .event-contents-fieldset:has(.event-storyboard:not([hidden])) > .event-storyboard-host,
-.event-editor .event-contents-fieldset:has(.event-graph-placeholder:not([hidden])) > .event-storyboard-host {
-  grid-row: 4 / 6;
+/* 목록 모드에서는 빈 스토리보드 호스트가 3행을 차지하지 않게 통째로 접는다. */
+.event-editor .event-contents-fieldset:has(.event-storyboard[hidden]) > .event-storyboard-host {
+  display: none;
 }
 
 .event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
@@ -1135,17 +1147,12 @@
 
 .event-editor .event-contents-fieldset > .cmd-list {
   grid-column: 1 / -1;
-  grid-row: 5;
-}
-
-.event-editor .event-contents-fieldset > .event-command-legend {
-  grid-column: 1 / -1;
-  grid-row: 6;
-}
-
-.event-editor .event-contents-fieldset > .event-editor-follower-preset-bar {
-  grid-column: 1 / -1;
   grid-row: 3;
+}
+
+.event-editor .event-contents-fieldset > .event-command-legend-details {
+  grid-column: 1 / -1;
+  grid-row: 4;
 }
 
 .event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
@@ -1377,7 +1384,8 @@
 }
 
 .event-editor .event-contents-fieldset {
-  grid-template-rows: 32px 32px auto minmax(0, 1fr) auto auto;
+  /* 위(1093행 부근)의 4행 정의와 반드시 일치시킬 것 — 여기가 나중이라 항상 이긴다. */
+  grid-template-rows: 32px 32px minmax(0, 1fr) auto;
 }
 
 .event-editor .event-contents-fieldset > .event-editor-command-toolbar {

@@ -8,7 +8,8 @@ import {
   discardEventDraft,
   saveEventDraft,
 } from "@/editor/eventDraftActions";
-import { eventDraftDiffById } from "@/project/eventDrafts";
+import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDrafts";
+import { showConfirm } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
 import { store, type AutoSaveState } from "@/project/store";
@@ -38,17 +39,54 @@ type OpenEventEditorRequest = {
 };
 
 export function openEventEditorModal(mapId: MapId, eventId: string): void {
-  closeExistingEventEditorModal();
-  if (!beginExistingEventDraft(mapId, eventId)) return;
-  openDraftEventEditorModal({ mapId, eventId });
+  guardedCloseExistingEventEditorModal(() => {
+    if (!beginExistingEventDraft(mapId, eventId)) return;
+    openDraftEventEditorModal({ mapId, eventId });
+  });
 }
 
 export function openNewEventEditorModal(mapId: MapId, x: number, y: number): string {
-  closeExistingEventEditorModal();
-  const eventId = createEventDraft(mapId, x, y);
-  if (!eventId) return "";
-  openDraftEventEditorModal({ mapId, eventId });
-  return eventId;
+  // 기존 모달이 없을 때는 동기 규약 유지(반환 eventId). 편집 중 변경이 있으면
+  // 확인 후 비동기로 이어지고 "" 를 반환한다(호출부는 반환값을 쓰지 않는다 — 2026-08-18 확인).
+  let created = "";
+  guardedCloseExistingEventEditorModal(() => {
+    const eventId = createEventDraft(mapId, x, y);
+    if (!eventId) return;
+    created = eventId;
+    openDraftEventEditorModal({ mapId, eventId });
+  });
+  return created;
+}
+
+/** 열린 에디터가 있으면 미적용 변경 여부를 확인하고 나서 next 를 실행한다. */
+function guardedCloseExistingEventEditorModal(next: () => void): void {
+  const existing = document.querySelector<HTMLElement>(`[data-testid='${EVENT_EDITOR_MODAL_TEST_ID}']`);
+  if (!(existing instanceof HTMLElement)) {
+    next();
+    return;
+  }
+  const prevMapId = existing.dataset.mapId as MapId | undefined;
+  const prevEventId = existing.dataset.eventId;
+  flushPendingModalField(existing);
+  const changed = prevMapId && prevEventId
+    ? eventDraftHasUserChanges(store.getCurrent(), prevMapId, prevEventId)
+    : false;
+  if (!changed) {
+    closeExistingEventEditorModal();
+    next();
+    return;
+  }
+  void showConfirm({
+    title: "편집 중인 이벤트",
+    message: "먼저 열린 이벤트에 적용하지 않은 변경이 있어요.\n버리고 다른 이벤트를 열까요?",
+    confirmLabel: "버리고 열기",
+    cancelLabel: "계속 편집",
+    danger: true,
+  }).then((discard) => {
+    if (!discard) return;
+    closeExistingEventEditorModal();
+    next();
+  });
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
@@ -69,6 +107,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   body.append(dynamicBody, stableBody);
   // Layered Escape: topmost modal (command subdialog / picker) closes first.
   let closed = false;
+  let closeGuardOpen = false;
   const closeHandler = (saved = false): void => {
     if (closed) return;
     closed = true;
@@ -82,16 +121,48 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     }
     disposeFocusTrap();
   };
-  registerModal(backdrop, () => closeHandler(false));
-  const header = renderModalHeader(request.mapId, request.eventId, () => closeHandler(false));
+  // ESC/X/취소/백드롭 공용 닫기 요청. 닫기 "전에" 입력 중이던 필드를 blur로 플러시해야
+  // 드래프트가 살아 있는 동안 change 가 커밋된다 — 폐기 후에 change 가 뒤늦게 도착하면
+  // 편집이 드래프트 밖 스토어에 그대로 남는 유령 저장이 된다(2026-08-18 실측).
+  const requestClose = (): void => {
+    if (closed || closeGuardOpen) return;
+    flushPendingModalField(backdrop);
+    if (!eventDraftHasUserChanges(store.getCurrent(), request.mapId, request.eventId)) {
+      closeHandler(false);
+      return;
+    }
+    const isNew = store.getCurrent().maps[request.mapId]?.events
+      .find((event) => event.id === request.eventId)?.draft?.kind === "new";
+    closeGuardOpen = true;
+    void showConfirm({
+      title: "적용하지 않은 변경",
+      message: isNew
+        ? "만들던 새 이벤트가 아직 프로젝트에 반영되지 않았어요.\n버리고 닫을까요?"
+        : "적용하지 않은 변경이 있어요. 버리고 닫을까요?\n반영하려면 [계속 편집]을 누른 뒤 [적용] 또는 [확인]을 누르세요.",
+      confirmLabel: "버리고 닫기",
+      cancelLabel: "계속 편집",
+      danger: true,
+    }).then((discard) => {
+      closeGuardOpen = false;
+      if (discard) {
+        closeHandler(false);
+        return;
+      }
+      // ESC 경로는 modalStack 에서 이미 pop 됐으므로 계속 편집하려면 재등록해야 한다.
+      unregisterModal(backdrop);
+      registerModal(backdrop, requestClose);
+    });
+  };
+  registerModal(backdrop, requestClose);
+  const header = renderModalHeader(request.mapId, request.eventId, requestClose);
   attachWindowDrag(header, windowEl);
   const resizeHandle = renderModalResizeHandle();
   attachWindowResize(resizeHandle, windowEl);
-  const footer = renderModalFooter(request, closeHandler);
+  const footer = renderModalFooter(request, closeHandler, requestClose);
   windowEl.append(header, body, footer, resizeHandle);
   backdrop.append(windowEl);
   backdrop.addEventListener("click", (event) => {
-    if (event.target === backdrop) closeHandler(false);
+    if (event.target === backdrop) requestClose();
   });
   let stableRendered = false;
   const refresh = () => {
@@ -133,6 +204,22 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     unsubscribeEditor();
     unsubscribeAutoSave();
   });
+  // 맵에서 더블클릭으로 열면 그 더블클릭의 잔여 dblclick 이벤트가 방금 열린 모달의
+  // 명령 줄에 떨어져 편집 다이얼로그가 저절로 열린다(2026-08-19 실측) — 오픈 직후 잠깐 삼킨다.
+  // 실측 548ms 지연 사례(2026-08-19)가 있어 350ms 로는 부족했다. 열리고 800ms 안의
+  // 첫 dblclick 은 잔여 입력으로 간주한다 — 사용자가 그 안에 조준해 더블클릭하기는 어렵다.
+  const openedAt = performance.now();
+  let openLeakSwallowed = false;
+  backdrop.addEventListener(
+    "dblclick",
+    (event) => {
+      if (openLeakSwallowed || performance.now() - openedAt >= 800) return;
+      openLeakSwallowed = true;
+      event.stopPropagation();
+      event.preventDefault();
+    },
+    { capture: true },
+  );
   document.body.classList.add("event-editor-modal-open");
   document.body.append(backdrop);
   checkpointEventDraft(request.mapId, request.eventId);
@@ -203,7 +290,22 @@ function eventDisplayNameOf(event: { readonly pages?: readonly { readonly name: 
   return "";
 }
 
-function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: boolean) => void): HTMLElement {
+/** 모달 안에서 편집 중(포커스 유지)인 필드의 change 를 닫기 전에 강제로 커밋한다. */
+function flushPendingModalField(backdrop: HTMLElement): void {
+  const active = document.activeElement;
+  if (!(active instanceof HTMLElement) || !backdrop.contains(active)) return;
+  const tag = active.tagName;
+  // fakeDom(단위 테스트)은 blur 를 구현하지 않는다 — 기능 감지로 방어.
+  if ((tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") && typeof active.blur === "function") {
+    active.blur();
+  }
+}
+
+function renderModalFooter(
+  request: OpenEventEditorRequest,
+  close: (saved?: boolean) => void,
+  requestClose: () => void
+): HTMLElement {
   const draftKind = store.getCurrent().maps[request.mapId]?.events.find((event) => event.id === request.eventId)?.draft?.kind;
   const cancelHint = draftKind === "new"
     ? "취소하면 이 새 이벤트를 삭제합니다."
@@ -240,20 +342,20 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
               el("div", {
                 class: "event-editor-footer-more-menu",
                 children: [
-                  footerButton("이 이벤트 테스트", "event-editor-test", () => {
-                    const validation = validateForModalAction(request, "테스트");
-                    if (!validation.canCommit) return;
-                    void openSelectedEventTestModal(request.mapId, request.eventId);
-                  }),
                   footerButton("도움말", "event-editor-help", () => openEventEditorHelp()),
                   footerButton("삭제", "event-delete", () => {
                     if (requestEditorEventDeletion(request.mapId, request.eventId)) close(true);
                   }),
                 ],
               }),
-            ],
+          ]}),
+          // "만들고 바로 눌러본다"가 초보 루프의 핵심 — 테스트는 오버플로 메뉴에 숨기지 않는다(적대 평가 I03).
+          footerButton("이 이벤트 테스트", "event-editor-test", () => {
+            const validation = validateForModalAction(request, "테스트");
+            if (!validation.canCommit) return;
+            void openSelectedEventTestModal(request.mapId, request.eventId);
           }),
-          footerButton("취소", "event-editor-cancel", () => close()),
+          footerButton("취소", "event-editor-cancel", () => requestClose()),
           footerButton("적용", "event-editor-apply", () => {
             if (!commitValidatedEventDraft(request, "적용")) return;
             footer.dataset.applied = "true";
@@ -263,6 +365,8 @@ function renderModalFooter(request: OpenEventEditorRequest, close: (saved?: bool
           footerButton("확인", "event-editor-ok", () => {
             if (!commitValidatedEventDraft(request, "확인")) return;
             close(true);
+            // 모달이 닫히면서 푸터 상태도 사라지므로, 반영 사실을 토스트로 남긴다(적대 평가 L01).
+            toast("이벤트 변경을 프로젝트에 반영했습니다.", "ok");
           }, true),
         ],
       }),
@@ -299,11 +403,16 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
   if (!local || !remote) return;
   const project = store.getCurrent();
   const event = project.maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
-  const diff = eventDraftDiffById(project, request.mapId, request.eventId);
-  const changed = Boolean(diff && diff.changes.length > 0);
+  // created diff(새 드래프트는 항상 1건)가 아니라 "사용자가 실제로 손댔는가"로 판정 —
+  // 갓 만든 이벤트가 손대기 전부터 "변경사항 있음"으로 시작하지 않게 한다.
+  const changed = eventDraftHasUserChanges(project, request.mapId, request.eventId);
   if (changed) {
     local.textContent = "편집 중 · 변경사항 있음 — [적용]을 눌러 프로젝트에 반영하세요 (닫지 않음)";
     local.dataset.state = "working";
+  } else if (event?.draft?.kind === "new") {
+    // "자동 저장"은 드래프트 볼트(크래시 복구) 사실 고지 — UXC D30 계약.
+    local.textContent = "새 이벤트 · 자동 저장 중 — 편집 없이 닫으면 만들지 않아요";
+    local.dataset.state = "new-pristine";
   } else if (footer.dataset.applied === "true") {
     local.textContent = "적용됨 — [확인]을 누르면 닫히고, 계속 편집할 수 있습니다";
     local.dataset.state = "applied";

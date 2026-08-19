@@ -464,6 +464,7 @@ export interface EventPage {
 
 export interface EventDraftMeta {
   kind: "new" | "edit";
+  /** edit: 열기 전 원본(취소 시 복원). new: 생성 직후 스냅샷(사용자 편집 여부 판정 기준). */
   original?: PersistedGameEvent;
 }
 

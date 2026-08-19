@@ -1,17 +1,21 @@
 import { el } from "@/util/dom";
 import { commandSummary } from "./commandSummary";
+import { commandKindLabel } from "./options";
 import type { Command } from "@/project/types";
 
-export type StoryboardMode = "storyboard" | "list" | "graph";
+// "graph"는 Phase 2 플레이스홀더였다 — 동작하지 않는 토글이 3뷰의 1/3을 차지해
+// 초보 모드에까지 노출됐다(2026-08-18 적대 평가). 기능이 생길 때 다시 추가한다.
+export type StoryboardMode = "storyboard" | "list";
 
 const MODE_KEY = "rpg-zzu:storyboard-mode";
 
 export function loadStoryboardMode(): StoryboardMode {
   try {
     const raw = localStorage.getItem(MODE_KEY);
-    if (raw === "list" || raw === "graph" || raw === "storyboard") return raw;
+    if (raw === "list" || raw === "storyboard") return raw;
   } catch { /* ignore */ }
-  return "storyboard";
+  // 목록이 기본: 명령 추가·편집·컨텍스트 메뉴가 모두 목록에 있고, 스토리보드는 훑어보기용.
+  return "list";
 }
 
 export function saveStoryboardMode(mode: StoryboardMode): void {
@@ -44,7 +48,9 @@ function kindLabel(kind: string): string {
     battleProcessing:"전투", shopProcessing:"상점", innProcessing:"여관",
     changeGold:"골드", changeItem:"아이템", wait:"대기", callCommonEvent:"공통 이벤트",
   };
-  return m[kind] ?? kind;
+  // 커스텀 표에 없으면 명령 사전의 한글 라벨로 — 내부 명령명(setSwitch 등)을
+  // 카드 제목에 그대로 노출하지 않는다(2026-08-18 적대 평가 C03).
+  return m[kind] ?? commandKindLabel(kind as Parameters<typeof commandKindLabel>[0]);
 }
 
 export function renderStoryboard(
@@ -54,7 +60,7 @@ export function renderStoryboard(
   const host = el("div", { class: "event-storyboard", dataset: { testid: "event-storyboard" } });
   const track = el("div", { class: "event-storyboard-track" });
   if (commands.length === 0) {
-    track.append(el("div", { class: "event-storyboard-empty", text: "아직 장면이 없습니다 \u2014 아래에서 시작 유형을 고르세요." }));
+    track.append(el("div", { class: "event-storyboard-empty", text: "아직 장면이 없습니다 \u2014 [장면 추가]를 눌러 시작하세요." }));
   } else {
     commands.forEach((cmd, idx) => {
       const info = summarizeCommand(cmd);
@@ -70,19 +76,29 @@ export function renderStoryboard(
           el("span", { class: "event-storyboard-card-detail", text: info.detail }),
         ],
       });
-      track.append(card);
+      // 분기 pill 은 소속 카드 "아래" 같은 컬럼에 붙인다 — 트랙에 나란히 흘리면
+      // 허공에 떠서 소속을 읽을 수 없고 인스펙터/좁은 뷰포트에서 잘렸다(2026-08-18 A01/O01).
+      const scene = el("div", { class: "event-storyboard-scene", children: [card] });
       if (branches.length > 0) {
-        for (const br of branches.slice(0, 2)) {
-          const inner = el("div", {
-            class: "event-storyboard-branch",
-            children: [
-              el("span", { class: "event-storyboard-branch-label", text: br.label }),
-              el("span", { class: "event-storyboard-branch-count", text: `${br.commands.length}개` }),
-            ],
-          });
-          track.append(inner);
-        }
+        const shown = branches.slice(0, 2);
+        const rest = branches.length - shown.length;
+        scene.append(el("div", {
+          class: "event-storyboard-branches",
+          children: [
+            ...shown.map((br) => el("button", {
+              class: "event-storyboard-branch",
+              attrs: { type: "button", title: "분기 내용을 열어 편집" },
+              on: { click: () => opts?.onSelect?.([idx]) },
+              children: [
+                el("span", { class: "event-storyboard-branch-label", text: br.label }),
+                el("span", { class: "event-storyboard-branch-count", text: `${br.commands.length}개` }),
+              ],
+            })),
+            ...(rest > 0 ? [el("span", { class: "event-storyboard-branch event-storyboard-branch-more", text: `+${rest}개 분기` })] : []),
+          ],
+        }));
       }
+      track.append(scene);
     });
   }
   const addCard = el("button", {
@@ -98,7 +114,7 @@ export function renderStoryboard(
   });
   track.append(addCard);
   host.append(track);
-  host.append(el("div", { class: "event-storyboard-hint", text: "만화처럼 왼쪽\u2192오른쪽으로 읽습니다 \u00B7 카드를 눌러 편집 \u00B7 복잡하면 Graph로 전환" }));
+  host.append(el("div", { class: "event-storyboard-hint", text: "만화처럼 왼쪽→오른쪽으로 읽습니다 · 카드를 눌러 편집" }));
   return host;
 }
 
@@ -131,8 +147,8 @@ export function renderViewToggle(
   current: StoryboardMode,
   onChange: (next: StoryboardMode) => void
 ): HTMLElement {
-  const modes: readonly StoryboardMode[] = ["storyboard","list","graph"];
-  const labels: Record<StoryboardMode,string> = { storyboard:"Storyboard", list:"List", graph:"Graph" };
+  const modes: readonly StoryboardMode[] = ["list","storyboard"];
+  const labels: Record<StoryboardMode,string> = { list:"목록", storyboard:"스토리보드" };
   const bar = el("div", { class: "event-view-toggle", dataset: { testid: "event-view-toggle" } });
   for (const m of modes) {
     const btn = el("button", {

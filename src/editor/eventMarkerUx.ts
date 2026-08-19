@@ -18,8 +18,10 @@ const LIST_MAX_COMMAND_LINES = 8;
 const LIST_MAX_COMMAND_CHARS = 72;
 const LIST_MAX_CONDITIONS = 4;
 
+// 이벤트 에디터(options.ts TRIGGER_OPTIONS/EVENT_PRIORITY_OPTIONS)와 용어를 맞춘다 —
+// 호버 카드와 에디터가 같은 것을 다르게 부르면 초보가 다른 기능으로 오해한다(2026-08-19).
 const TRIGGER_LABELS: Readonly<Record<Trigger["kind"], string>> = {
-  action: "결정키로 시작",
+  action: "확인 키로 조사",
   touch: "플레이어가 접촉",
   playerTouch: "플레이어가 접촉",
   eventTouch: "이벤트가 접촉",
@@ -28,9 +30,9 @@ const TRIGGER_LABELS: Readonly<Record<Trigger["kind"], string>> = {
 };
 
 const PRIORITY_LABELS: Readonly<Record<EventPage["priority"], string>> = {
-  below: "캐릭터 아래",
-  same: "캐릭터와 같음",
-  above: "캐릭터 위",
+  below: "맵 아래",
+  same: "같은 높이",
+  above: "맵 위",
 };
 
 export type EventMarkerTooltipModel = {

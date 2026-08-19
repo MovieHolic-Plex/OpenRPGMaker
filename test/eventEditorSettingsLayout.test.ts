@@ -94,8 +94,9 @@ describe("event editor settings column layout", () => {
     expect(nameRow?.contains(characterId)).toBe(true);
     expect(topStrip?.contains(characterId)).toBe(true);
     expect(main?.contains(characterId)).toBe(false);
-    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    // 2026-08-19 초보 친화 스펙: 연결 전에는 자유 입력 대신 connect 버튼만 노출.
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
     // Empty characterId: no social extras in settings.
     expect(host.querySelector('[data-testid="event-character-social-extras"]')).toBeNull();
 

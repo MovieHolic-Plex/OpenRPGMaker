@@ -50,16 +50,22 @@ describe("characterId picker dialog", () => {
     document.body.replaceChildren();
   });
 
-  it("renders optional free-text characterId field with picker always available", () => {
+  // 2026-08-19 초보 친화 스펙(eventEditorHostileUx): 연결 전에는 빈 입력칸 대신
+  // "NPC/호감 연결" 행동 버튼 하나만 노출하고, 연결된 뒤에 자유 입력+피커를 보여준다.
+  it("shows a connect action until linked, then the free-text field with picker", () => {
     const { mapId, event } = seedProject();
-    const field = renderEventCharacterIdField(mapId, event);
-    document.body.append(field);
+    const unlinked = renderEventCharacterIdField(mapId, event);
+    document.body.append(unlinked);
+    expect(unlinked.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
+    expect(unlinked.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
+    unlinked.remove();
 
-    // Optional inline field: empty is valid (one-shot NPC), picker always present.
-    expect(field.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
-    expect(field.querySelector('[data-testid="event-character-id-picker-open"]')).toBeTruthy();
-    expect(field.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
-    expect((field.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement).placeholder).toContain(
+    const linked = renderEventCharacterIdField(mapId, { ...event, characterId: "char_linked" });
+    document.body.append(linked);
+    expect(linked.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    expect(linked.querySelector('[data-testid="event-character-id-picker-open"]')).toBeTruthy();
+    expect(linked.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    expect((linked.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement).placeholder).toContain(
       "일회용",
     );
   });
@@ -138,7 +144,8 @@ describe("characterId picker dialog", () => {
   });
 
   it("free-type unknown id attaches without auto profile create", () => {
-    const { mapId, event } = seedProject();
+    // 자유 입력은 연결된 상태의 필드에서만 가능(연결 전에는 connect 버튼뿐).
+    const { mapId, event } = seedProject({ characterId: "char_seed" });
     const field = renderEventCharacterIdField(mapId, event);
     document.body.append(field);
     const input = field.querySelector('[data-testid="event-character-id-input"]') as HTMLInputElement;

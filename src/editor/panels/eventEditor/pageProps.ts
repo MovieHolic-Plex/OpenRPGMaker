@@ -1,4 +1,5 @@
 import { hasRecursivePageCondition, type EventDraftValidation } from "@/editor/eventDraftValidator";
+import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 import {
   addEventPage,
@@ -70,8 +71,9 @@ export function renderPageTabs(mapId: MapId, ev: GameEvent, activePage: EventPag
   const pages = ev.pages ?? [];
   const canPaste = hasCopiedEventPage();
   const canDelete = pages.length > 1;
+  // 페이지 추가는 탭 스트립의 [+](event-page-tab-add) 하나로 통일한다 —
+  // 같은 동작이 두 곳에 있으면 초보가 "다른 기능인가?" 하고 헤맨다(적대 평가 스펙).
   const actions: HTMLElement[] = [
-    pageButton("새 페이지", "event-page-add", "페이지 추가", "new", () => addEventPage(mapId, ev.id)),
     pageButton("페이지 복사", "event-page-copy", "페이지 복사", "copy", () => copyEventPageToClipboard(mapId, ev.id, activePage.id)),
   ];
   // 비활성 버튼은 자리만 차지하므로 사용 가능할 때만 노출한다.
@@ -268,8 +270,15 @@ function pageConditionSummary(condition: EventPageCondition): string {
 /** 목업의 축약 조건 표기(SW[0001] ON 등). 나머지 종류는 배지 텍스트를 그대로 쓴다. */
 function pageConditionCompactSummary(condition: EventPageCondition): string {
   switch (condition.kind) {
-    case "switch":
+    case "switch": {
+      // 초보 모드에서는 SW[0001] 같은 기호 대신 스위치 이름을 보여준다 —
+      // 번호는 감독이 검수할 수 없다(2026-08-18 적대 평가, 메모리 '타일 번호엔 항상 그림' 원칙).
+      if (getEditorUiMode() === "beginner") {
+        const named = switchVariableName("switch", condition.switchId).replace(/^\d{4}:\s*/u, "").trim();
+        if (named) return `${named} ${condition.value ? "ON" : "OFF"}`;
+      }
       return `SW[${flagDisplayNumber("switch", condition.switchId)}] ${condition.value ? "ON" : "OFF"}`;
+    }
     case "selfSwitch":
       return `SELF[${condition.key}] ${condition.value ? "ON" : "OFF"}`;
     case "variable":
@@ -396,6 +405,29 @@ const CHARACTER_ID_HELP =
 
 /** Compact optional characterId control for the top identity row (name + characterId). */
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
+  // 프로필이 연결되기 전에는 빈 텍스트 입력 대신 행동 버튼 하나만 보여준다 —
+  // 초보에게 "여기에 뭘 쳐 넣지?"라는 빈칸 공포를 주지 않기 위함(적대 평가 스펙).
+  if (!event.characterId?.trim()) {
+    return el("div", {
+      class: "event-character-id-field event-character-id-field-inline",
+      dataset: { testid: "event-character-id-field" },
+      children: [
+        el("button", {
+          class: "btn small event-character-id-connect",
+          text: "NPC/호감 연결…",
+          attrs: { type: "button", title: CHARACTER_ID_HELP },
+          dataset: { testid: "event-character-id-connect" },
+          on: {
+            click: () => openCharacterIdPicker({
+              mapId,
+              eventId: event.id,
+              currentId: event.characterId,
+            }),
+          },
+        }),
+      ],
+    });
+  }
   const input = el("input", {
     attrs: {
       type: "text",
@@ -696,10 +728,13 @@ function truncateBadgeToken(value: string, max: number): string {
 
 function renderMovementSummaryChips(page: EventPage): HTMLElement {
   const typeLabel = movementTypeChipLabel(page.movement.type);
+  // 정지한 이벤트에 "x2 느림" 속도를 광고하지 않는다 — 움직이지 않는데 속도가 보이면
+  // 초보는 "이거 왜 느리다는 거지?"를 고민하게 된다(적대 평가 스펙).
+  const isStationary = page.movement.type === "fixed";
   const speedLabel = movementSpeedChipLabel(page.movement.speed);
   return el("span", {
     class: "event-movement-summary-chips",
-    text: `${typeLabel} · ${speedLabel}`,
+    text: isStationary ? typeLabel : `${typeLabel} · ${speedLabel}`,
     dataset: { testid: "event-movement-summary-chips" },
   });
 }

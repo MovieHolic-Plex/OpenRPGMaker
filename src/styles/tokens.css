@@ -107,7 +107,9 @@
   --z-flyout: 70;
   --z-status: 80;
   --z-popover: 90;
-  --z-app-modal: 300;
+  /* confirm/alert 는 어떤 모달(이벤트 에디터 1000, proposal 2500) 위에서도 눌려야 한다.
+     300이던 시절 이벤트 에디터 뒤에 깔려 클릭 불가였다(2026-08-19 실측). */
+  --z-app-modal: 2600;
   --z-welcome: 240;
   --z-popover-high: 1200;
   --z-popover-top: 1201;

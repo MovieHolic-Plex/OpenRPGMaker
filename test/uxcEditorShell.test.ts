@@ -123,7 +123,7 @@ describe("UXC D13 이벤트 마커 편집 동선", () => {
     const tip = eventMarkerTooltip(event);
     expect(tip).toContain("장터 상인");
     expect(tip).toContain("(4,5)");
-    expect(tip).toContain("결정키로 시작");
+    expect(tip).toContain("확인 키로 조사");
     expect(tip).toContain("문장 표시");
     expect(tip).toContain("어서 오세요.");
     expect(tip).toContain("+1개 명령 더");
@@ -135,7 +135,7 @@ describe("UXC D13 이벤트 마커 편집 동선", () => {
     const el = renderEventMarkerTooltipElement(model);
     expect(el.dataset.testid).toBe("event-marker-tooltip");
     expect(el.textContent).toContain("장터 상인");
-    expect(el.textContent).toContain("결정키로 시작");
+    expect(el.textContent).toContain("확인 키로 조사");
     expect(el.textContent).toContain("어서 오세요.");
 
     expect(eventLayerSwitchNotice(event)).toContain("장터 상인");

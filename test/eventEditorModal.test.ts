@@ -188,8 +188,8 @@ describe("RPG Maker style event editor entry points", () => {
     renderEventEditorContent(content, project.startMapId, "event-1");
 
     // 붙여넣기는 복사 버퍼가 있을 때만, 삭제는 페이지 2개 이상일 때만 노출.
+    // 페이지 추가는 탭 스트립의 [+](event-page-tab-add) 하나로 통일(2026-08-19 스펙).
     const pageActionExpectations = [
-      ["event-page-add", "새 페이지"],
       ["event-page-copy", "페이지 복사"],
       ["event-page-delete", "페이지 삭제"],
     ] as const;

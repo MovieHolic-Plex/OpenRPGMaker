@@ -135,7 +135,7 @@ describe("event editor trust loop", () => {
     expect(document.activeElement).toBe(document.querySelector('[data-testid="event-schedule-map-0"]'));
   });
 
-  it("discards a working edit on Cancel without changing the canonical event", () => {
+  it("discards a working edit on Cancel without changing the canonical event", async () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
     project.maps[mapId].events = [gameEvent(page([{ kind: "text", body: "canonical" }]))];
@@ -147,6 +147,11 @@ describe("event editor trust loop", () => {
     });
 
     document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
+    // 2026-08-19 닫기 의미론: 미적용 변경이 있으면 확인 다이얼로그를 거친다.
+    // (window 전역이 없는 이 테스트 환경에서는 headless 규약으로 자동 확인될 수 있다.)
+    await Promise.resolve();
+    document.querySelector<HTMLElement>('[data-testid="app-modal-confirm"]')?.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(document.querySelector('[data-testid="event-editor-modal"]')).toBeNull();
     expect(store.getCurrent().maps[mapId].events[0]?.draft).toBeUndefined();

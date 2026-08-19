@@ -13,7 +13,8 @@ export type PageCommandButton = {
 };
 
 export const TRIGGER_OPTIONS = [
-  { value: "action", label: "결정키로 시작" },
+  // "결정키"는 게임패드 세대 용어라 초보가 못 알아듣는다 — 플레이어 행동 기준으로 서술.
+  { value: "action", label: "확인 키로 조사" },
   { value: "playerTouch", label: "플레이어가 접촉" },
   { value: "eventTouch", label: "이벤트가 접촉" },
   { value: "auto", label: "자동 실행" },
@@ -140,9 +141,10 @@ export const PAGE_COMMAND_BUTTONS = [
 ] as const satisfies readonly PageCommandButton[];
 
 export const EVENT_PRIORITY_OPTIONS = [
-  { value: "below", label: "캐릭터 아래" },
-  { value: "same", label: "캐릭터와 같음" },
-  { value: "above", label: "캐릭터 위" },
+  // 기준을 "캐릭터"가 아니라 맵 레이어로 — 초보에게는 그리기 순서가 더 직관적이다.
+  { value: "below", label: "맵 아래" },
+  { value: "same", label: "같은 높이" },
+  { value: "above", label: "맵 위" },
 ] as const satisfies readonly SelectOption<EventPage["priority"]>[];
 
 export const EVENT_ANIMATION_TYPE_OPTIONS = [

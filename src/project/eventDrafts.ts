@@ -129,6 +129,20 @@ export function discardEventDraft(project: Project, mapId: MapId, eventId: strin
   return false;
 }
 
+/**
+ * "사용자가 실제로 손댔는가" — 닫기 가드와 푸터 상태의 단일 판정 기준.
+ * edit 드래프트는 original 대비, new 드래프트는 생성 직후 스냅샷(original에 저장) 대비.
+ * new 드래프트의 created diff(항상 1건)를 그대로 쓰면 갓 만든 이벤트가
+ * 손대기도 전에 "변경사항 있음"이 되므로(2026-08-18 적대 평가 B01) 분리한다.
+ */
+export function eventDraftHasUserChanges(project: Project, mapId: MapId, eventId: string): boolean {
+  const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
+  if (!event?.draft) return false;
+  const baseline = event.draft.original;
+  if (!baseline) return event.draft.kind === "new" ? true : false;
+  return diffValues(baseline, eventWithoutDraft(event), "event").length > 0;
+}
+
 export function eventDraftDiffById(project: Project, mapId: MapId, eventId: string): EventDiff | null {
   const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
   return event ? eventDraftDiff(mapId, event) : null;
