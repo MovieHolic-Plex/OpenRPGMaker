@@ -50,6 +50,10 @@ Database tabs, record views, battle database records, utility records, reference
 - `src/editor/databaseCommandReferences.ts` scans command-bearing database references, including common events and troop battle event pages. Keep `src/editor/databaseReferences.ts` as the message facade for delete blocking, including battle animation references from actors/classes and common-event delete checks.
 
 
+## Beginner-centric adversarial review (2026-08)
+
+`docs/reviews/db-beginner-adversarial-qa.md` is the current beginner-centric review of the whole Database modal: 24 surfaces x beginner/expert x 3 viewports, 289 consolidated findings (`docs/reviews/db-beginner-adversarial-qa-findings.md`), 25-heuristic disposition (met 2 / partial 15 / missing 8), and 14 evidence-linked improvement proposals (P0: timeSystem.onDayEnd delete guard, in-flight edit truncation on system section nav, virtualizer selection loss). A beginner-lane e2e contract now exists: `test/e2e/qa-db-beginner-mode.spec.ts` proves the Tools-menu entry, common-6 nav, plain jargon labels, and dirty guard under beginner chrome (see `openwiki/testing.md` for the full permanent + `_db-audit-*` diagnostic spec families).
+
 ## DB UI modernization (2026-08)
 
 The Database modal was modernized in six waves while keeping every hard contract (G006 in-modal jumps, dirty 3-way guard, AI dock visibility, existing `db-field-*`/`db-tab-*`/`db-type-chart-*`/`db-record-row-*` testids, zero schema changes). New surface styles are scoped to the modal.
