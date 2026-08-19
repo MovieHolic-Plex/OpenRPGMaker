@@ -192,18 +192,18 @@ async function expectModernEditorShell(page: Page): Promise<void> {
     };
   });
 
-  expect(metrics.topbarBg).toBe("rgb(17, 19, 24)");
-  expect(metrics.toolbarBg).toBe("rgb(22, 25, 32)");
-  expect(metrics.canvasAreaBg).toBe("rgb(11, 13, 18)");
-  expect(metrics.leftBg).toBe("rgb(28, 32, 40)");
-  expect(metrics.paletteBg).toBe("rgb(28, 32, 40)");
-  expect(metrics.menuBg).toBe("rgba(34, 38, 47, 0.96)");
-  expect(metrics.statusBg).toBe("rgb(22, 25, 32)");
+  expect(metrics.topbarBg).toBe("rgb(247, 243, 234)");
+  expect(metrics.toolbarBg).toBe("rgb(252, 249, 242)");
+  expect(metrics.canvasAreaBg).toBe("rgb(231, 224, 208)");
+  expect(metrics.leftBg).toBe("rgb(252, 249, 242)");
+  expect(metrics.paletteBg).toBe("rgb(252, 249, 242)");
+  expect(metrics.menuBg).toBe("rgb(255, 255, 255)");
+  expect(metrics.statusBg).toBe("rgb(252, 249, 242)");
   expect(metrics.leftWidth).toBeGreaterThanOrEqual(320);
   expect(metrics.leftWidth).toBeLessThanOrEqual(410);
   expect(metrics.leftPanelHasMockupSections).toBe(true);
   expect(metrics.leftPanelSectionOrder).toBe(true);
-  expect(metrics.menuBorderRadius).toBe("8px");
+  expect(metrics.menuBorderRadius).toBe("10px");
   expect(metrics.menuLabelsOverflow).toEqual([]);
   expect(metrics.menuStaysAboveStatusbar).toBe(true);
   expect(metrics.statusLabelsOverflow).toEqual([]);

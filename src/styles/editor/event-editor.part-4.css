@@ -549,7 +549,8 @@
 
 .event-graphic-preview-panel {
   align-content: center;
-  background: var(--bg-surface);
+  background: #008000;
+  background-color: #008000;
   border: 1px solid var(--event-rm-mid);
   display: grid;
   gap: 8px 12px;
