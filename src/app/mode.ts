@@ -22,6 +22,8 @@ import {
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
+import { hasDeepLinkedProject, isAutomationBootContext } from "@/editor/editorWelcome";
+import { supabaseProjectConfig, supabaseProjectConfigDraftWithSource } from "@/project/supabaseProjectConfig";
 
 export type Mode = "edit" | "play";
 
@@ -37,6 +39,9 @@ let elements: AppElements | null = null;
 let modeMounted = false;
 let modeRun = 0;
 let topbarRefreshQueued = false;
+// 2026-08-18 UX 리뷰 P0-1: store.load()가 주소창에 ?project=를 스스로 써 넣으므로
+// "사용자가 정말 공유 링크로 들어왔는가"는 로드 전에 캡처해야 한다(환영 화면 억제 버그).
+let deepLinkedProjectAtBoot = false;
 
 // 현재 모드 조회.
 export function getMode(): Mode {
@@ -76,7 +81,30 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     setDevProjectFactory(createDevShowcaseProjectForLocation);
     setAiConfigProvider(loadAiConfig);
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
-    await store.load();
+    deepLinkedProjectAtBoot = hasDeepLinkedProject();
+    // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1): URL에 ?project= 없고, 이 기기에 저장된
+    // 연결 설정도 없는 진짜 첫 방문은 env 기본(공유) 프로젝트 행을 편집 대상으로 열지
+    // 않는다 — 새 project id를 발급받은 빈 프로젝트로 시작한다(이후 부팅은 custom
+    // 설정으로 본인 행에 복귀). 자동화/테스트 부팅과 데모 파라미터 부팅은 제외.
+    const mintFirstVisitProject =
+      typeof window !== "undefined"
+      && !deepLinkedProjectAtBoot
+      && !isAutomationBootContext()
+      && createDevShowcaseProjectForLocation() === null
+      && supabaseProjectConfig() !== null
+      && supabaseProjectConfigDraftWithSource().source !== "custom";
+    if (mintFirstVisitProject) {
+      const { createBlankProject } = await import("@/project/defaults");
+      try {
+        await store.loadNewRemoteProject(createBlankProject(), { title: "새 프로젝트" });
+      } catch (mintError) {
+        // 발급 실패가 부팅을 벨려서는 안 된다 — 기존 로드 경로로 폴백.
+        console.error("[app] first-visit project mint failed; falling back to load:", mintError);
+        await store.load();
+      }
+    } else {
+      await store.load();
+    }
   } catch (error) {
     // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
     // 프로젝트 데이터가 무결성 검증에 실패한 경우(벽돌)를 구분해 다른 화면을 보여준다.
@@ -121,7 +149,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    if (shouldPresentEditorWelcome({ modeShellMounted: modeMounted }) && elements) {
+    if (shouldPresentEditorWelcome({ modeShellMounted: modeMounted, deepLinkedProject: deepLinkedProjectAtBoot }) && elements) {
       const result = await presentEditorWelcome(elements.root);
       if (result.dismiss) setEditorWelcomeDismissed(true);
       if (result.replaceWithBlank && result.prompt) {

@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   duplicateMap: vi.fn(() => "map-copy"),
   selectEditorMap: vi.fn(() => true),
   showConfirm: vi.fn(async () => true),
+  showPromptInput: vi.fn(async () => "새 프로젝트"),
 }));
 
 vi.mock("@/editor/actions", async (importOriginal) => {
@@ -22,7 +23,7 @@ vi.mock("@/editor/mapSelection", async (importOriginal) => {
 });
 vi.mock("@/editor/ui/modal", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/editor/ui/modal")>();
-  return { ...actual, showConfirm: mocks.showConfirm };
+  return { ...actual, showConfirm: mocks.showConfirm, showPromptInput: mocks.showPromptInput };
 });
 
 const { renderTopbar } = await import("@/editor/panels/menu");
@@ -89,7 +90,9 @@ afterEach(() => {
 describe("classic toolbar actions", () => {
   it("enables new project without a stub class and runs newProject", async () => {
     resetEditorUiModeForTests("expert");
-    const clearAll = vi.spyOn(store, "clearAll").mockResolvedValue(undefined);
+    // 2026-08-18 UX 리뷰 P0: 새 프로젝트는 clearAll(같은 원격 id 재사용)이 아니라
+    // 새 project id를 발급하는 loadNewRemoteProject 경로를 탄다.
+    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
@@ -98,7 +101,8 @@ describe("classic toolbar actions", () => {
     expect(button?.classList.contains("classic-toolbar-stub")).toBe(false);
 
     button?.click();
-    await vi.waitFor(() => expect(clearAll).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
+    expect(loadNew.mock.calls[0]?.[1]).toMatchObject({ title: "새 프로젝트" });
   });
 
   it("duplicates the current-or-start map and selects the copy", () => {

@@ -285,7 +285,10 @@ class ProjectStore {
       this.remotePersistenceDisabledReason = null;
     }
 
-    await this.normalizeCurrentProject();
+    // 부팅/웰컴 경로에서 즉시 원격 쓰기를 기다리지 않는다 — dbserver(Tailscale) 첫 연결
+    // 플레이크 한 번에 부팅이 벨려졌다(2026-08-18). 쓰기는 아래 scheduleAutoSave의
+    // 재시도/백오프 경로가 책임진다(load()의 부팅 지연 저장과 동일한 원칙).
+    await this.normalizeCurrentProject({ persistIfChanged: false });
     this.emit({ scope: "project" });
     if (this.remotePersistenceEnabled) this.scheduleAutoSave();
     return { projectId };

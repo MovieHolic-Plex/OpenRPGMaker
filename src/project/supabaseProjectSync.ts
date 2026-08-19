@@ -859,6 +859,9 @@ function projectUpsertPayload(projectId: string, project: Project, wire: Project
     schema_version: project.version,
     current_json: wire.json,
     current_sha256: wire.sha256,
+    // DB에 on-update 트리거가 없어 앱이 직접 유지한다 — 안 보내면 작업 목록의
+    // "n분 전" 표시와 저장 시각 감사가 영구히 멈춘다(2026-08-18 UX 리뷰 P0-2).
+    updated_at: new Date().toISOString(),
     map_count: Object.keys(project.maps).length,
     tileset_count: Object.keys(project.tilesets).length,
     // DB NOT NULL — upsert 시 null 금지 (둥근 호수 저장 등 전체 저장 경로).

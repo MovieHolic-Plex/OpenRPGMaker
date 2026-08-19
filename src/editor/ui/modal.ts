@@ -136,6 +136,93 @@ export function showConfirm(opts: ConfirmOptions): Promise<boolean> {
   });
 }
 
+export interface PromptOptions {
+  readonly title?: string;
+  readonly message: string;
+  readonly placeholder?: string;
+  readonly defaultValue?: string;
+  readonly confirmLabel?: string;
+  readonly cancelLabel?: string;
+}
+
+// 이름 입력 모달. resolve(문자열)=확인, resolve(null)=취소.
+// 헤드리스에서는 confirm→true 규약을 승계해 defaultValue(없으면 빈 문자열)로 통과한다.
+export function showPromptInput(opts: PromptOptions): Promise<string | null> {
+  if (!domAvailable()) return Promise.resolve(opts.defaultValue ?? "");
+  return new Promise((resolve) => {
+    const modalId = nextModalId++;
+    const titleId = `app-modal-title-${modalId}`;
+    const messageId = `app-modal-message-${modalId}`;
+    const opener = document.activeElement;
+    const overlay = el("div", {
+      class: "app-modal-overlay",
+      dataset: { testid: "app-prompt-modal" },
+    });
+    let settled = false;
+    const done = (value: string | null): void => {
+      if (settled) return;
+      settled = true;
+      unregisterModal(overlay);
+      overlay.remove();
+      resolve(value);
+      restoreOpener(opener);
+    };
+    const input = el("input", {
+      class: "app-modal-input",
+      attrs: {
+        type: "text",
+        value: opts.defaultValue ?? "",
+        placeholder: opts.placeholder ?? "",
+        "aria-label": opts.title ?? "입력",
+      },
+      dataset: { testid: "app-modal-input" },
+    }) as HTMLInputElement;
+    const confirmButton = el("button", {
+      class: "app-modal-button is-confirm",
+      text: opts.confirmLabel ?? "확인",
+      attrs: { type: "button" },
+      dataset: { testid: "app-modal-confirm" },
+      on: { click: () => done(input.value) },
+    });
+    const cancelButton = el("button", {
+      class: "app-modal-button",
+      text: opts.cancelLabel ?? "취소",
+      attrs: { type: "button" },
+      dataset: { testid: "app-modal-cancel" },
+      on: { click: () => done(null) },
+    });
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        done(input.value);
+      }
+    });
+    const card = el("div", {
+      class: "app-modal-card",
+      attrs: {
+        role: "dialog",
+        "aria-modal": "true",
+        "aria-labelledby": titleId,
+        "aria-describedby": messageId,
+      },
+      children: [
+        el("div", { class: "app-modal-title", text: opts.title ?? "입력", attrs: { id: titleId } }),
+        el("div", { class: "app-modal-message", text: opts.message, attrs: { id: messageId } }),
+        input,
+        el("div", { class: "app-modal-actions", children: [cancelButton, confirmButton] }),
+      ],
+    });
+    card.addEventListener("click", (event) => event.stopPropagation());
+    overlay.append(card);
+    overlay.addEventListener("click", () => done(null));
+    document.body.append(overlay);
+    registerModal(overlay, () => done(null));
+    // fakeDom 테스트 환경에는 select()가 없다 — 기능 존재를 본다.
+    if (typeof input.focus === "function") input.focus();
+    if (typeof input.select === "function") input.select();
+  });
+}
+
 // 알림 모달(확인 버튼 하나).
 export function showAlert(opts: AlertOptions): Promise<void> {
   if (!domAvailable()) return Promise.resolve();
