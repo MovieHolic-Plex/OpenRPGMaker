@@ -71,11 +71,11 @@
 
 .map-lock-banner {
   align-items: center;
-  background: rgba(122, 46, 46, 0.94);
-  border: 1px solid rgba(255, 210, 210, 0.34);
+  background: var(--danger);
+  border: 1px solid rgba(198, 64, 61, 0.24);
   border-radius: var(--radius-s);
   box-shadow: var(--shadow-pop);
-  color: #ffe2e2;
+  color: var(--bg-surface);
   display: flex;
   gap: 8px;
   left: 12px;
@@ -101,7 +101,7 @@
 
 .map-lock-takeover-button {
   background: var(--control-bg);
-  border: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(42, 37, 33, 0.18);
   border-radius: var(--radius-s);
   color: var(--text-1);
   cursor: pointer;
@@ -125,9 +125,9 @@
 }
 
 .event-editor-draft-status[data-state="working"] { color: var(--status-warning, var(--gold)); }
-.event-editor-draft-status[data-state="applied"] { color: var(--status-success, #22c55e); }
-.event-editor-remote-status[data-state="error"] { color: var(--danger, #ef4444); }
-.event-editor-remote-status[data-state="saved"] { color: var(--status-success, #22c55e); }
+.event-editor-draft-status[data-state="applied"] { color: var(--status-success, var(--success)); }
+.event-editor-remote-status[data-state="error"] { color: var(--danger, var(--danger)); }
+.event-editor-remote-status[data-state="saved"] { color: var(--status-success, var(--success)); }
 
 @media (max-width: 1320px) {
   .map-lock-banner {
