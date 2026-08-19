@@ -1,4 +1,5 @@
 /* ---- Page 3 맵·연출 modern forms ---- */
+/* NOTE: functional preview colors kept (weather/tint/flash/picture/scroll stage grounds, chroma/mix accents) */
 .page3-command-body {
   gap: 12px;
   width: 100%;
@@ -38,13 +39,13 @@
 .page3-field-label,
 .page3-presets-label,
 .page3-intent-title {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .page3-intent {
-  background: color-mix(in srgb, var(--accent-soft, #243248) 70%, var(--bg-raised));
-  border: 1px solid var(--border-subtle, #2a2e38);
+  background: color-mix(in srgb, var(--accent-soft, #4A57D6) 70%, var(--bg-raised));
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
   border-radius: 8px;
   display: grid;
   gap: 4px;
@@ -52,7 +53,7 @@
 }
 
 .page3-intent-body {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
@@ -67,8 +68,8 @@
 }
 
 .page3-chip.is-active {
-  border-color: var(--accent, #6ea8ff);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+  border-color: var(--accent, #4A57D6);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
 }
 
 .page3-text-input {
@@ -77,7 +78,7 @@
 
 .page3-check {
   align-items: center;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   display: inline-flex;
   gap: 8px;
   font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
@@ -86,7 +87,7 @@
 .page3-preview,
 .page3-command-preview {
   background: var(--bg-raised);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
   border-radius: 8px;
   display: grid;
   gap: 8px;
@@ -95,21 +96,21 @@
 
 
 .page3-preview-line {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .page3-preview-note {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .page3-preview-stage {
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--bg-sunken, #12151c) 70%, #1a2030), var(--bg-sunken, #12151c));
-  border: 1px solid var(--border-subtle, #2a2e38);
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-sunken, #EFE9DC) 70%, #EFE9DC), var(--bg-sunken, #EFE9DC));
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
   border-radius: 6px;
   min-height: 88px;
   overflow: hidden;
@@ -117,7 +118,7 @@
 }
 
 .page3-preview-stage-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 600 10px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   left: 8px;
   letter-spacing: 0.04em;
@@ -173,7 +174,7 @@
 }
 
 .page3-lighting-preview {
-  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent), transparent 55%);
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent), transparent 55%);
   mix-blend-mode: screen;
   opacity: 0.65;
 }
@@ -202,17 +203,17 @@
 }
 
 .page3-shake-preview {
-  border: 1px dashed color-mix(in srgb, var(--accent, #6ea8ff) 55%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
   border-radius: 4px;
   inset: 18px 22px;
   animation: page3-shake-wobble 0.35s linear infinite;
 }
 
 .page3-picture-preview {
-  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, var(--bg-raised));
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, transparent);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, var(--bg-raised));
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 45%, transparent);
   border-radius: 4px;
-  box-shadow: 0 6px 16px color-mix(in srgb, #000 35%, transparent);
+  box-shadow: 0 6px 16px color-mix(in srgb, rgba(60,48,32,.35) 100%, transparent);
   height: 42px;
   left: 50%;
   top: 50%;
@@ -222,7 +223,7 @@
 
 .page3-scroll-preview {
   background:
-    linear-gradient(90deg, transparent 0 40%, color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent) 40% 60%, transparent 60%),
+    linear-gradient(90deg, transparent 0 40%, color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent) 40% 60%, transparent 60%),
     repeating-linear-gradient(0deg, transparent 0 12px, color-mix(in srgb, #fff 8%, transparent) 12px 13px);
   opacity: 0.75;
 }
@@ -253,14 +254,14 @@
 }
 
 .page3-range-input {
-  accent-color: var(--accent, #6ea8ff);
+  accent-color: var(--accent, #4A57D6);
   flex: 1 1 140px;
   min-width: 120px;
 }
 
 .page3-color-swatch {
   background: transparent;
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.12));
   border-radius: 6px;
   cursor: pointer;
   height: 32px;
@@ -283,12 +284,12 @@
 
 .page3-preview-lighting-label,
 .page3-preview-weather-label {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   left: 8px;
   letter-spacing: 0.05em;
   position: absolute;
-  text-shadow: 0 1px 2px color-mix(in srgb, #000 55%, transparent);
+  text-shadow: 0 1px 2px color-mix(in srgb, rgba(60,48,32,.55) 100%, transparent);
   top: 8px;
 }
 
@@ -356,7 +357,7 @@
 }
 
 .page3-preview-picture-missing {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   left: 50%;
   position: absolute;

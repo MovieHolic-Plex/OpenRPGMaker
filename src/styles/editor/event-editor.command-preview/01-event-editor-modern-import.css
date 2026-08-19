@@ -111,8 +111,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 8px;
   padding: 12px;
   min-height: 160px;
@@ -120,8 +120,8 @@
 
 .ecp-caption {
   font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
-  border-bottom: 1px solid var(--border-subtle, #2a2e38);
+  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
+  border-bottom: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   padding-bottom: 6px;
 }
 
@@ -132,7 +132,7 @@
   place-items: end center;
   aspect-ratio: 4 / 3;
   width: 100%;
-  background: linear-gradient(180deg, #10131c, #1c2233);
+  background: linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
   border-radius: 6px;
   padding: 10px;
   overflow: hidden;
@@ -154,7 +154,7 @@
   border-image: none;
   border-radius: var(--runtime-dialogue-radius);
   background:
-    linear-gradient(180deg, rgba(73, 105, 148, 0.12), rgba(8, 15, 28, 0.04)),
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface)),
     var(--runtime-dialogue-glass-surface);
   color: var(--runtime-window-text);
   font: 400 13px/1.45 "Malgun Gothic", Tahoma, sans-serif;
@@ -204,9 +204,9 @@
   border: 1px solid var(--runtime-dialogue-glass-border);
   border-radius: var(--runtime-dialogue-radius-small);
   background:
-    linear-gradient(180deg, rgba(105, 147, 201, 0.16), rgba(8, 15, 28, 0.02)),
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface)),
     var(--runtime-dialogue-glass-surface-strong);
-  box-shadow: 0 3px 8px rgba(0, 4, 13, 0.42);
+  box-shadow: 0 3px 8px var(--shadow-pop);
   color: var(--runtime-window-text);
   font: 700 12px/1.2 "Malgun Gothic", Tahoma, sans-serif;
   letter-spacing: 0.01em;
@@ -216,5 +216,4 @@
   pointer-events: none;
 }
 .ecp-message-body { white-space: pre-wrap; word-break: break-word; }
-.ecp-message-body.muted { color: #b9c2e0; font-size: 12px; }
-
+.ecp-message-body.muted { color: var(--text-1); font-size: 12px; }

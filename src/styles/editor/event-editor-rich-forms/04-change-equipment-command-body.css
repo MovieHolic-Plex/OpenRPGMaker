@@ -40,14 +40,14 @@
 }
 
 .change-equipment-field-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 /* 검색형 레코드 브라우저 (공용: 장비/아이템 등) */
 .record-browser {
   background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 10px;
   display: grid;
   gap: 8px;
@@ -64,7 +64,7 @@
 
 .record-browser-label,
 .record-browser-filter-meta {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -78,8 +78,8 @@
 
 .record-browser-selected {
   align-items: center;
-  background: var(--bg-inset, #12161f);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, var(--border-subtle, #2a2e38));
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   display: flex;
   gap: 10px;
@@ -89,7 +89,7 @@
 
 .record-browser-selected.is-empty {
   border-style: dashed;
-  border-color: var(--border-subtle, #2a2e38);
+  border-color: var(--border-subtle, rgba(42,37,33,.20));
 }
 
 .record-browser-selected-copy {
@@ -100,12 +100,12 @@
 }
 
 .record-browser-selected-copy strong {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .record-browser-selected-copy > span {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -142,9 +142,9 @@
 .record-browser-card {
   align-items: center;
   background: var(--bg-raised);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 8px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   cursor: pointer;
   display: grid;
   gap: 8px;
@@ -156,8 +156,8 @@
 }
 
 .record-browser-card.is-active {
-  border-color: var(--accent, #6ea8ff);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
+  border-color: var(--accent, #4A57D6);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
 }
 
 .record-browser-card-icon {
@@ -167,9 +167,9 @@
 
 .record-browser-card-icon.empty {
   align-items: center;
-  background: var(--bg-inset, #12161f);
+  background: var(--bg-inset, #EFE9DC);
   border-radius: 6px;
-  color: var(--text-3, #8b93a7);
+  color: var(--text-3, #6B5F52);
   display: inline-flex;
   font-weight: 700;
   height: 24px;
@@ -192,7 +192,7 @@
 
 .record-browser-card-meta,
 .record-browser-grid-empty {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
@@ -206,20 +206,20 @@
 .change-equipment-preview-empty,
 .change-equipment-db-note,
 .change-equipment-preview-bonuses {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .change-equipment-warning {
-  color: #ffb4a2;
+  color: var(--text-1);
   font: 600 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 
 .change-equipment-preview {
   background: var(--bg-raised);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 8px;
   padding: 10px 12px;
 }
@@ -249,12 +249,11 @@
 }
 
 .change-equipment-preview-cell-label {
-  color: var(--text-3, #8b93a7);
+  color: var(--text-3, #6B5F52);
   font: 700 10px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .change-equipment-preview-cell.is-unequip strong {
   color: var(--danger, #ff7b8a);
 }
-
 

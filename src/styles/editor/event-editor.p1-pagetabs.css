@@ -14,12 +14,12 @@
   align-items: flex-end;
   background: linear-gradient(
     to top,
-    color-mix(in srgb, var(--bg-raised, #1a1d26) 88%, transparent) 0%,
-    color-mix(in srgb, var(--bg-raised, #1a1d26) 55%, transparent) 55%,
+    color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, transparent) 0%,
+    color-mix(in srgb, var(--bg-raised, #FFFDF8) 55%, transparent) 55%,
     transparent 100%
   );
   bottom: 0;
-  color: var(--text-1, #e9ecf3);
+  color: var(--text-1, #2A2521);
   display: flex;
   font-size: 13px;
   font-weight: 700;
@@ -31,12 +31,12 @@
   pointer-events: none;
   position: absolute;
   right: 0;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.75);
+  text-shadow: 0 1px 2px var(--shadow-pop);
   z-index: 2;
 }
 
 .event-page-number-tabs .btn.event-page-tab-rich.active .event-page-tab-number {
-  color: var(--event-modern-accent, #6c79f2);
+  color: var(--event-modern-accent, #4A57D6);
 }
 
 .event-page-tab-badges {
@@ -57,7 +57,7 @@
 
 .event-page-tab-badge {
   align-items: center;
-  background: color-mix(in srgb, var(--bg-raised, #1a1d26) 72%, var(--event-modern-accent-soft, rgba(96, 128, 192, 0.45)));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 72%, var(--event-modern-accent-soft, rgba(96, 128, 192, 0.45)));
   border: 1px solid var(--event-modern-border, rgba(96, 128, 192, 0.5));
   border-radius: 2px;
   color: var(--text-1, inherit);
@@ -66,31 +66,31 @@
   justify-content: center;
   min-width: 10px;
   padding: 1px 1px 0;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.55);
+  text-shadow: 0 1px 1px var(--shadow-pop);
 }
 
 .event-page-tab-badge-switch {
-  background: rgba(88, 160, 96, 0.55);
+  background: var(--bg-surface);
 }
 
 .event-page-tab-badge-variable {
-  background: rgba(96, 128, 208, 0.55);
+  background: var(--bg-surface);
 }
 
 .event-page-tab-badge-item {
-  background: rgba(200, 152, 72, 0.55);
+  background: var(--bg-surface);
 }
 
 .event-page-tab-badge-actor {
-  background: rgba(176, 96, 176, 0.55);
+  background: var(--bg-surface);
 }
 
 .event-page-tab-badge-timer {
-  background: rgba(192, 88, 88, 0.55);
+  background: var(--bg-surface);
 }
 
 .event-page-tab-badge-more {
-  background: color-mix(in srgb, var(--bg-raised, #1a1d26) 70%, transparent);
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 70%, transparent);
   border-style: dashed;
   opacity: 0.9;
 }

@@ -16,7 +16,7 @@
 .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] .event-subdialog-window {
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.38);
+  box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--text-1);
   display: grid;
   font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
@@ -357,8 +357,8 @@
 
 .move-route-editor .move-route-list-panel,
 .move-route-editor .move-route-controls-panel {
-  background: color-mix(in srgb, var(--bg-raised, #1a1f2c) 88%, transparent);
-  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, transparent);
+  border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   display: grid;
   gap: 8px;
@@ -384,8 +384,8 @@
 }
 
 .move-route-editor .move-route-command-list {
-  background: var(--bg-inset, rgba(0, 0, 0, 0.18));
-  border: 1px solid var(--border-subtle, #2a2e38);
+  background: var(--bg-inset, rgba(42,37,33,.10));
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 6px;
   display: flex;
   flex-direction: column;
@@ -405,7 +405,7 @@
   background: transparent;
   border: 0;
   border-radius: 5px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 600 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-height: 28px;
   padding: 4px 8px;
@@ -417,13 +417,13 @@
 }
 
 .move-route-editor .move-route-list-row.selected {
-  background: color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
-  color: var(--accent, #6ea8ff);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
+  color: var(--accent, #4A57D6);
 }
 
 .move-route-editor .move-route-path-preview {
-  background: color-mix(in srgb, var(--bg-raised, #1a1f2c) 70%, var(--accent, #6ea8ff));
-  border: 1px solid var(--border-subtle, #2a2e38);
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 70%, var(--accent, #4A57D6));
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 6px;
   max-height: 220px;
   min-height: 96px;
@@ -471,8 +471,8 @@
 }
 
 .move-route-editor .move-route-parameters-details {
-  background: color-mix(in srgb, var(--bg-raised, #1a1f2c) 88%, transparent);
-  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 88%, transparent);
+  border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   min-width: 0;
   padding: 8px 10px;
@@ -540,7 +540,7 @@
 }
 
 .move-route-editor .move-route-add-command-directional .move-route-command-icon {
-  color: var(--accent, #6ea8ff);
+  color: var(--accent, #4A57D6);
   font-weight: 700;
 }
 
@@ -564,7 +564,7 @@
 .event-editor-modal-backdrop {
   align-content: start;
   align-items: start;
-  background: rgba(13, 17, 28, 0.24);
+  background: var(--bg-surface);
   grid-template-columns: minmax(0, 1fr);
   justify-content: safe center;
   justify-items: center;
@@ -583,10 +583,10 @@
   --event-rm-mid: var(--border-default);
   --event-rm-shadow: var(--border-subtle);
   background: var(--event-rm-chrome);
-  border-color: #9db6df var(--accent-border) var(--accent-border) #9db6df;
+  border-color: rgba(42,37,33,.12) var(--accent-border) var(--accent-border) rgba(42,37,33,.12);
   border-style: solid;
   border-width: 2px;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.34);
+  box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--event-rm-text);
   display: grid;
   font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
@@ -606,7 +606,7 @@
 .event-editor-modal-header {
   align-items: center;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 42%),
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface) 42%),
     linear-gradient(180deg, var(--accent) 0%, var(--accent) 48%, var(--accent) 100%);
   border-bottom: 1px solid var(--accent-border);
   color: var(--text-1);
@@ -640,7 +640,7 @@
   font: 700 16px/22px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   letter-spacing: 0;
   margin: 0;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.34);
+  text-shadow: 1px 1px 0 var(--shadow-pop);
 }
 
 .event-editor-modal-header p {
@@ -650,9 +650,9 @@
 .event-editor-modal-header .event-editor-modal-close.btn,
 .event-editor-modal-close {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0) 36%),
-    linear-gradient(180deg, #f69b73, #d64a22);
-  border-color: #ffd3c2 #8e2d15 #8e2d15 #ffd3c2;
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface) 36%),
+    linear-gradient(180deg, var(--bg-surface), var(--bg-surface));
+  border-color: var(--border-default) var(--border-default) var(--border-default) var(--border-default);
   border-radius: 4px;
   border-style: solid;
   border-width: 1px;
@@ -662,7 +662,7 @@
   min-height: 23px;
   min-width: 27px;
   padding: 0;
-  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.35);
+  text-shadow: 1px 1px 0 var(--shadow-pop);
   width: 27px;
 }
 

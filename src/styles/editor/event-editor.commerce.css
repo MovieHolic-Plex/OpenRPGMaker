@@ -40,12 +40,12 @@
 }
 
 .commerce-command-title {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .commerce-command-hint {
-  color: var(--text-dim, var(--text-3, #8b93a7));
+  color: var(--text-dim, var(--text-3, #6B5F52));
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   grid-column: 1 / -1;
   margin: 0;
@@ -53,10 +53,10 @@
 
 .commerce-command-input,
 .shop-processing-message-select {
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 6px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 500 13px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-height: 32px;
   padding: 6px 10px;
@@ -66,8 +66,8 @@
 .commerce-command-input:focus,
 .shop-processing-message-select:focus,
 .shop-processing-item-select:focus {
-  border-color: var(--accent, #6ea8ff);
-  outline: 2px solid color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+  border-color: var(--accent, #4A57D6);
+  outline: 2px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
   outline-offset: 0;
 }
 
@@ -94,10 +94,10 @@
 }
 
 .commerce-command-summary {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.12)) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
   border-radius: 6px;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 8px 10px;
 }
@@ -124,13 +124,13 @@
 }
 
 .shop-processing-merchant-gold-unit {
-  color: #ffe07a;
+  color: var(--text-1);
   font: 700 13px/1 Inter, "Segoe UI", system-ui, sans-serif;
 }
 
 .shop-processing-fieldset {
-  background: var(--bg-raised, #20242e);
-  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   margin: 0;
   min-width: 0;
@@ -138,7 +138,7 @@
 }
 
 .shop-processing-fieldset > legend {
-  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   letter-spacing: 0.02em;
   padding: 0 4px;
@@ -152,10 +152,10 @@
 
 .shop-processing-segment-option {
   align-items: center;
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 6px;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   cursor: pointer;
   display: flex;
   font: 600 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
@@ -167,16 +167,16 @@
 }
 
 .shop-processing-segment-option:hover {
-  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 45%, transparent);
-  color: var(--text-1, #e9ecf5);
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 45%, transparent);
+  color: var(--text-1, #2A2521);
 }
 
 .shop-processing-segment-option.is-selected,
 .shop-processing-segment-option:has(.shop-processing-segment-input:checked) {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.18)) 90%, transparent);
-  border-color: var(--accent, #6ea8ff);
-  color: var(--text-1, #e9ecf5);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.18)) 90%, transparent);
+  border-color: var(--accent, #4A57D6);
+  color: var(--text-1, #2A2521);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent);
 }
 
 .shop-processing-segment-input {
@@ -224,7 +224,7 @@
   min-width: 0;
 }
 .shop-processing-filter-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 .shop-processing-item-search,
@@ -266,15 +266,15 @@
 }
 
 .shop-processing-list-title {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .shop-processing-list-count {
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 999px;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1 Inter, "Segoe UI", system-ui, sans-serif;
   min-width: 22px;
   padding: 3px 7px;
@@ -304,8 +304,8 @@
 }
 
 .shop-processing-item-list {
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 8px;
   display: flex;
   flex: 1 1 auto;
@@ -318,7 +318,7 @@
 }
 
 .shop-processing-item-empty {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: auto;
   padding: 16px 8px;
@@ -330,7 +330,7 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   cursor: pointer;
   display: grid;
   gap: 8px;
@@ -341,13 +341,13 @@
 }
 
 .shop-processing-item-row:hover {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.12)) 80%, transparent);
-  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.12)) 80%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
 }
 
 .shop-processing-item-row.is-selected {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.2)) 90%, transparent);
-  border-color: var(--accent, #6ea8ff);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.2)) 90%, transparent);
+  border-color: var(--accent, #4A57D6);
 }
 
 .shop-processing-item-icon {
@@ -389,7 +389,7 @@
 }
 
 .shop-processing-item-price {
-  color: #ffe07a;
+  color: var(--text-1);
   flex: none;
   font: 700 11px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
   white-space: nowrap;
@@ -403,13 +403,13 @@
 }
 
 .shop-processing-item-type {
-  color: var(--accent, #6ea8ff);
+  color: var(--accent, #4A57D6);
   font: 700 10px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.02em;
 }
 
 .shop-processing-item-desc {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   display: -webkit-box;
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   overflow: hidden;
@@ -418,15 +418,15 @@
 }
 
 .shop-processing-item-detail {
-  background: color-mix(in srgb, var(--bg-raised, #20242e) 92%, var(--accent-muted, rgba(110, 168, 255, 0.12)));
-  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, var(--accent-muted, rgba(74, 87, 214, 0.12)));
+  border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   margin-top: 4px;
   padding: 10px 12px;
 }
 
 .shop-processing-item-detail-empty {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   text-align: center;
 }
@@ -443,8 +443,8 @@
   height: 48px;
   place-items: center;
   width: 48px;
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 8px;
 }
 
@@ -470,7 +470,7 @@
 }
 
 .shop-processing-item-detail-price {
-  color: #ffe07a;
+  color: var(--text-1);
   font: 700 13px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
 }
 
@@ -482,16 +482,16 @@
 }
 
 .shop-processing-badge {
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 999px;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
   padding: 4px 8px;
 }
 
 .shop-processing-item-detail-desc {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 8px 0 0;
 }
@@ -517,8 +517,8 @@
 /* ---- 거래 분기 컨트롤 ---- */
 
 .shop-processing-branch-controls {
-  background: var(--bg-raised, #20242e);
-  border: 1px solid var(--border-soft, var(--border-subtle, #2a2e38));
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-soft, var(--border-subtle, rgba(42,37,33,.20)));
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -539,7 +539,7 @@
 }
 
 .shop-processing-branch-title {
-  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -593,7 +593,7 @@
 }
 
 .shop-processing-search-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -620,7 +620,7 @@
 }
 
 .shop-processing-stock-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -632,10 +632,10 @@
 
 .shop-processing-season-chip {
   align-items: center;
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 999px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   cursor: pointer;
   display: inline-flex;
   font: 600 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
@@ -644,8 +644,8 @@
 }
 
 .shop-processing-season-chip:has(input:checked) {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.18)) 90%, transparent);
-  border-color: var(--accent, #6ea8ff);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.18)) 90%, transparent);
+  border-color: var(--accent, #4A57D6);
 }
 
 .shop-processing-season-chip input {
@@ -660,8 +660,8 @@
 }
 
 .shop-processing-layer-note {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.1)) 85%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 24%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.1)) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 24%, transparent);
   border-radius: 8px;
   display: grid;
   gap: 4px;
@@ -669,12 +669,12 @@
 }
 
 .shop-processing-layer-note strong {
-  color: var(--accent, #6ea8ff);
+  color: var(--accent, #4A57D6);
   font: 700 11px/1.2 Inter, "Segoe UI", system-ui, sans-serif;
 }
 
 .shop-processing-layer-note span {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -730,16 +730,16 @@
 }
 
 .event-command-text-label > span {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .event-command-text-label > input,
 .event-command-text-label > textarea {
-  background: var(--bg-inset, #14161c);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-inset, #EFE9DC);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 6px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 500 13px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-width: 0;
   padding: 8px 10px;
@@ -754,8 +754,8 @@
 
 .event-command-text-label > input:focus,
 .event-command-text-label > textarea:focus {
-  border-color: var(--accent, #6ea8ff);
-  outline: 2px solid color-mix(in srgb, var(--accent, #6ea8ff) 28%, transparent);
+  border-color: var(--accent, #4A57D6);
+  outline: 2px solid color-mix(in srgb, var(--accent, #4A57D6) 28%, transparent);
 }
 
 .event-command-text-body-label {
@@ -763,17 +763,17 @@
 }
 
 .event-command-text-line-guide {
-  color: var(--text-dim, var(--text-3, #8b93a7));
+  color: var(--text-dim, var(--text-3, #6B5F52));
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .event-command-text-line-count {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 600 12px/1.3 var(--font-mono, "Cascadia Mono", Consolas, monospace);
 }
 
 .event-command-text-line-count.invalid {
-  color: var(--danger, #e08a8a);
+  color: var(--danger, #C6403D);
 }
 
 .event-command-text-actions {
@@ -783,14 +783,14 @@
   justify-content: flex-end;
   margin-top: 4px;
   padding-top: 8px;
-  border-top: 1px solid var(--border-subtle, #2a2e38);
+  border-top: 1px solid var(--border-subtle, rgba(42,37,33,.20));
 }
 
 .event-command-text-action {
-  background: var(--surface-button, var(--bg-raised, #20242e));
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--surface-button, var(--bg-raised, #FFFDF8));
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 6px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   cursor: pointer;
   font: 700 12px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-width: 76px;
@@ -798,9 +798,9 @@
 }
 
 .event-command-text-action.primary {
-  background: var(--accent, #6ea8ff);
-  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 86%, black);
-  color: var(--text-inverse, #0b1020);
+  background: var(--accent, #4A57D6);
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 86%, white);
+  color: var(--text-inverse, #E7E0D0);
 }
 
 .event-command-text-action.primary:disabled {
@@ -809,7 +809,7 @@
 }
 
 .event-command-text-action:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
 }
 
 .event-subdialog-window.wide:has(.event-command-text-dialog) {
@@ -827,7 +827,7 @@
 }
 
 .event-command-edit-body .event-command-text-editor .inline-field > span {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding-top: 8px;
 }
@@ -843,8 +843,8 @@
 }
 
 .inn-command-card {
-  background: color-mix(in srgb, var(--bg-raised, #1a1d26) 92%, #0b1220);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: color-mix(in srgb, var(--bg-raised, #FFFDF8) 92%, var(--bg-canvas, #E7E0D0));
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 10px;
   display: grid;
   gap: 10px;
@@ -858,17 +858,17 @@
 }
 
 .inn-command-preset.active {
-  background: color-mix(in srgb, var(--accent, #6ea8ff) 22%, var(--bg-raised, #1a1d26));
-  border-color: var(--accent, #6ea8ff);
-  color: var(--accent, #6ea8ff);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 22%, var(--bg-raised, #FFFDF8));
+  border-color: var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
 }
 
 .inn-command-dialog-mock,
 .ecp-inn-window {
-  background: linear-gradient(180deg, #1a2233 0%, #121826 100%);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, #2a3140);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, rgba(42,37,33,.20));
   border-radius: 10px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 var(--shadow-pop);
   display: grid;
   gap: 8px;
   padding: 12px 14px;
@@ -876,19 +876,19 @@
 
 .inn-command-dialog-title,
 .ecp-inn-title {
-  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
   font: 700 13px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .inn-command-dialog-note,
 .ecp-inn-note {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .inn-command-dialog-question,
 .ecp-inn-question {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 600 13px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin-top: 2px;
 }
@@ -902,10 +902,10 @@
 
 .inn-command-dialog-choice,
 .ecp-inn-choice {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-default, #3a3f4b);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default, rgba(42,37,33,.20));
   border-radius: 6px;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 600 12px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-width: 56px;
   padding: 7px 10px;
@@ -914,9 +914,9 @@
 
 .inn-command-dialog-choice.selected,
 .ecp-inn-choice.selected {
-  background: color-mix(in srgb, var(--accent, #6ea8ff) 18%, transparent);
-  border-color: var(--accent, #6ea8ff);
-  color: var(--accent, #6ea8ff);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 18%, transparent);
+  border-color: var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
 }
 
 .ecp-inn-stage {
@@ -927,7 +927,7 @@
 }
 
 .ecp-inn-price-chip {
-  color: #9ad0ff;
+  color: var(--text-1);
   font: 700 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin-top: 2px;
 }
@@ -950,8 +950,8 @@
 .shop-processing-main,
 .shop-processing-side { display: grid; gap: 8px; min-width: 0; }
 .shop-processing-intent {
-  background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
+  background: color-mix(in srgb, var(--accent-muted, rgba(74, 87, 214, 0.14)) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent);
   border-radius: 8px;
   display: grid;
   gap: 4px;
@@ -964,24 +964,24 @@
   gap: 8px 12px;
 }
 .shop-processing-intent-title {
-  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 .shop-processing-intent-body {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
 .shop-processing-intent-flow {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 600 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   opacity: 0.9;
 }
 .shop-processing-empty-banner {
-  background: color-mix(in srgb, #ff7b8a 18%, transparent);
-  border: 1px solid color-mix(in srgb, #ff7b8a 45%, transparent);
+  background: color-mix(in srgb, var(--bg-surface) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-default) 45%, transparent);
   border-radius: 8px;
-  color: #ffd0d6;
+  color: var(--text-1);
   font: 600 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 8px 10px;
 }
@@ -992,7 +992,7 @@
   gap: 6px;
 }
 .shop-processing-presets-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin-right: 4px;
 }
@@ -1070,25 +1070,25 @@
   width: min(980px, calc(100vw - 24px));
 }
 .shop-stock-editor {
-  border-top: 1px solid var(--border-subtle, #2a2e38);
+  border-top: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   display: grid;
   gap: 8px;
   margin-top: 10px;
   padding-top: 10px;
 }
 .shop-stock-editor-title {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 .shop-stock-season-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .shop-stock-season-chip.is-active {
-  border-color: var(--accent, #6ea8ff);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
-  color: var(--text-1, #e9ecf5);
+  border-color: var(--accent, #4A57D6);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
+  color: var(--text-1, #2A2521);
 }
 .shop-stock-price-field { display: grid; gap: 4px; }
 .shop-stock-price-field > span {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 600 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -1119,23 +1119,23 @@
   font: 700 11px/1 Inter, "Segoe UI", sans-serif;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid var(--border, #1e3350);
+  border: 1px solid var(--border, rgba(42,37,33,.20));
   white-space: nowrap;
 }
 .shop-header-badge-ok {
-  color: #d1ffe0;
-  background: rgba(74, 222, 128, 0.12);
-  border-color: rgba(74, 222, 128, 0.35);
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
 }
 .shop-header-badge-warn {
-  color: #1a1200;
-  background: #ffb84d;
-  border-color: #ffb84d;
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
 }
 .shop-header-badge-empty {
-  color: #ffd2d8;
-  background: rgba(255, 90, 106, 0.12);
-  border-color: rgba(255, 90, 106, 0.35);
+  color: var(--text-1);
+  background: var(--bg-surface);
+  border-color: var(--border-default);
 }
 .shop-empty-illust {
   display: grid;
@@ -1144,8 +1144,8 @@
   align-items: center;
   padding: 14px 16px;
   border-radius: 12px;
-  border: 1px dashed rgba(240, 194, 74, 0.35);
-  background: rgba(240, 194, 74, 0.06);
+  border: 1px dashed var(--border-default);
+  background: var(--bg-surface);
 }
 .shop-empty-illust-icon {
   width: 44px;
@@ -1153,22 +1153,22 @@
   display: grid;
   place-items: center;
   border-radius: 10px;
-  background: #162232;
-  border: 1px solid #1e3350;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   font-size: 18px;
 }
-.shop-empty-illust-title { font: 700 13px/1.2 Inter, sans-serif; color: #e6edf5; }
-.shop-empty-illust-sub { font: 500 11px/1.4 Inter, sans-serif; color: #8aa0b8; margin-top: 2px; }
+.shop-empty-illust-title { font: 700 13px/1.2 Inter, sans-serif; color: var(--text-1); }
+.shop-empty-illust-sub { font: 500 11px/1.4 Inter, sans-serif; color: var(--text-1); margin-top: 2px; }
 .shop-empty-illust-cta {
   font: 800 11px/1 Inter, sans-serif;
-  color: #1a1200;
-  background: #f0c24a;
+  color: var(--text-1);
+  background: var(--bg-surface);
   padding: 8px 12px;
   border-radius: 999px;
   white-space: nowrap;
 }
-.shop-branch-card { border-color: rgba(78, 205, 196, 0.25); }
-.shop-branch-card legend { color: #4ecdc4; }
+.shop-branch-card { border-color: var(--border-default); }
+.shop-branch-card legend { color: var(--text-1); }
 
 .shop-processing-layout {
   display: grid;
@@ -1177,9 +1177,9 @@
   align-items: start;
 }
 .shop-processing-side { position: sticky; top: 12px; }
-.shop-search-row { position: sticky; top: 0; z-index: 1; background: rgba(12,20,30,0.92); backdrop-filter: blur(6px); padding: 6px 0 8px; }
-.shop-item-row:focus-within { outline: 2px solid #4ecdc4; outline-offset: -1px; border-radius: 8px; }
-.shop-processing-list-count { background: #4ecdc4; color: #00201e; font-weight: 800; }
+.shop-search-row { position: sticky; top: 0; z-index: 1; background: var(--bg-surface); backdrop-filter: blur(6px); padding: 6px 0 8px; }
+.shop-item-row:focus-within { outline: 2px solid var(--border-default); outline-offset: -1px; border-radius: 8px; }
+.shop-processing-list-count { background: var(--bg-surface); color: var(--bg-surface); font-weight: 800; }
 
 .shop-processing-layout { gap: 16px; }
 .shop-processing-items { gap: 10px; }

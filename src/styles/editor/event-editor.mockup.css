@@ -7,15 +7,15 @@
 .event-editor {
   /* ── 목업 토큰 ── */
   --mk-accent: #d9a441; /* 황동 — 목업의 유일한 온색 */
-  --mk-accent-ink: #16130a;
+  --mk-accent-ink: #2A2521;
   --mk-accent-wash: rgba(217, 164, 65, 0.14);
-  --mk-line: rgba(255, 255, 255, 0.11);
-  --mk-line-soft: rgba(255, 255, 255, 0.06);
-  --mk-surface: #151823;
-  --mk-raised: #1c202d;
-  --mk-inset: #0f1117;
-  --mk-t1: #e9ecf3;
-  --mk-t2: #9aa3b5;
+  --mk-line: rgba(42,37,33,.12);
+  --mk-line-soft: rgba(42,37,33,.06);
+  --mk-surface: var(--bg-surface);
+  --mk-raised: var(--bg-raised);
+  --mk-inset: var(--bg-inset);
+  --mk-t1: var(--text-1);
+  --mk-t2: var(--text-2);
   --mk-t3: #626b7d;
   --mk-cat-flow: #d95926; /* 흐름·분기 마커 (§3.2) */
   --mk-radius: 6px;
@@ -231,7 +231,7 @@
 .event-command-picker-search-count {
   font-size: 11px;
   font-weight: 600;
-  color: var(--mk-t2, #9aa3b5);
+  color: var(--mk-t2, var(--text-2));
   padding: 6px 10px 2px;
 }
 .event-command-picker-search-results {
@@ -240,7 +240,7 @@
 }
 .event-command-legend {
   font-size: 11px;
-  color: var(--mk-t2, #9aa3b5);
+  color: var(--mk-t2, var(--text-2));
 }
 .event-command-legend-item {
   opacity: 0.95;
@@ -310,7 +310,7 @@
 /* ── 커맨드 팔레트 — 검색 우선 리스트 ───────────────────────────── */
 .event-command-picker-search-row {
   padding: 10px 12px;
-  border-bottom: 1px solid var(--mk-line, rgba(255, 255, 255, 0.11));
+  border-bottom: 1px solid var(--mk-line, rgba(42,37,33,.12));
 }
 
 .event-command-picker-search {
@@ -607,7 +607,7 @@
     z-index: 12;
     inset: 0 0 0 auto;
     width: min(348px, 46vw);
-    box-shadow: -16px 0 32px rgba(2, 6, 16, 0.32);
+    box-shadow: -16px 0 32px var(--shadow-pop);
   }
 }
 
@@ -667,7 +667,7 @@
 [data-testid="event-editor-ok"] {
   background: #d9a441;
   border-color: #d9a441;
-  color: #16130a;
+  color: #2A2521;
   font-weight: 650;
 }
 
@@ -769,7 +769,7 @@
 .event-editor-modal-window .btn.event-editor-footer-button.primary {
   background: #d9a441;
   border-color: #d9a441;
-  color: #16130a;
+  color: #2A2521;
   font-weight: 650;
 }
 
@@ -989,7 +989,7 @@
 
 /* 범위 밖 값을 클램프했을 때 잠깐 깜빡여 "값이 바뀌었다"를 알린다 */
 .event-position-input.is-clamped {
-  outline: 2px solid var(--warning, #e5a50a);
+  outline: 2px solid var(--warning, #8A5E00);
   transition: outline-color 0.2s ease;
 }
 
@@ -1370,7 +1370,7 @@
   background: var(--mk-raised);
   border: 1px solid var(--mk-line);
   border-radius: 6px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .34);
+  box-shadow: 0 12px 28px var(--shadow-pop);
 }
 
 .event-editor .event-page-tabs:not([open]) > .event-page-action-buttons {
@@ -1428,7 +1428,7 @@
   background: var(--mk-raised);
   border: 1px solid var(--mk-line);
   border-radius: 6px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .34);
+  box-shadow: 0 12px 28px var(--shadow-pop);
 }
 
 .event-editor .event-editor-command-edit-menu:not([open]) > .event-editor-command-edit-popover {
@@ -1538,7 +1538,7 @@
   border: 1px solid var(--mk-line);
   border-radius: 6px;
   background: var(--mk-raised);
-  box-shadow: 0 -12px 28px rgba(0, 0, 0, .34);
+  box-shadow: 0 -12px 28px var(--shadow-pop);
 }
 
 .event-editor-footer-more:not([open]) > .event-editor-footer-more-menu {
@@ -1587,8 +1587,8 @@
   padding: 0 13px;
 }
 .event-editor-modal-footer .event-editor-footer-button[data-testid="event-delete"] {
-  border-color: #4a2226;
-  color: var(--danger, #d4553a);
+  border-color: rgba(42,37,33,.20);
+  color: var(--danger, #C6403D);
 }
 .event-editor-modal-footer .event-editor-footer-button[data-testid="event-editor-help"] {
   background: transparent;

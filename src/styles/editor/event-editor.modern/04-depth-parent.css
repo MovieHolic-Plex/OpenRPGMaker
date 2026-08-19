@@ -7,13 +7,13 @@
 .event-contents-fieldset .cmd-line-marker[data-cmd-depth="2"],
 .event-contents-fieldset .cmd-line-marker[data-cmd-depth="3"],
 .event-contents-fieldset .cmd-line-marker[data-cmd-depth="4"] {
-  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 6%, transparent);
+  background-color: color-mix(in srgb, var(--accent, #4A57D6) 6%, transparent);
 }
 
 .event-contents-fieldset .cmd-item[data-cmd-depth="2"] > .cmd-head,
 .event-contents-fieldset .cmd-item[data-cmd-depth="3"] > .cmd-head,
 .event-contents-fieldset .cmd-item[data-cmd-depth="4"] > .cmd-head {
-  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 10%, transparent);
+  background-color: color-mix(in srgb, var(--accent, #4A57D6) 10%, transparent);
 }
 
 /* zebra 줄무늬는 스레드 틴트/레일과 충돌하므로 비활성화(아래 transparent 규칙 없음).
@@ -70,7 +70,7 @@
 
 .event-contents-fieldset .cmd-line-marker.cmd-marker-fork {
   color: var(--event-modern-accent, var(--accent));
-  background-color: color-mix(in srgb, var(--accent, #6ea8ff) 12%, transparent);
+  background-color: color-mix(in srgb, var(--accent, #4A57D6) 12%, transparent);
   background-image: repeating-linear-gradient(
     to right,
     transparent 0,
@@ -86,8 +86,8 @@
 }
 
 .event-contents-fieldset .cmd-line-marker.cmd-marker-shop {
-  color: var(--success, #4caf7a);
-  background-color: color-mix(in srgb, var(--success, #4caf7a) 12%, transparent);
+  color: var(--success, #18764F);
+  background-color: color-mix(in srgb, var(--success, #18764F) 12%, transparent);
 }
 
 /* 명령 추가 빈 줄(◆). */
@@ -147,4 +147,3 @@
   display: grid;
   gap: 14px;
 }
-

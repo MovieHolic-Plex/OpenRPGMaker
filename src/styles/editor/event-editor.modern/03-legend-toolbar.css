@@ -212,12 +212,12 @@
 .event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body,
 .event-editor-aux-tools .event-script-live-preview[open] > .event-script-live-preview-body,
 .event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
-  background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #1a1f2b));
+  background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #FFFDF8));
   border: 1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border));
   border-radius: 10px;
   bottom: calc(100% + 6px);
   box-shadow:
-    0 10px 28px rgba(0, 0, 0, 0.38),
+    0 10px 28px var(--bg-surface),
     0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent);
   left: 0;
   max-height: min(280px, 42vh);
@@ -251,10 +251,10 @@
 .event-contents-fieldset .cmd-list {
   --cmd-indent-step: 18px;
   --cmd-indent-base: 0px;
-  --cmd-rail: color-mix(in srgb, var(--accent, #6ea8ff) 55%, var(--border-default));
+  --cmd-rail: color-mix(in srgb, var(--accent, #4A57D6) 55%, var(--border-default));
   --cmd-rail-choices: color-mix(in srgb, var(--warning, #d9a441) 70%, var(--border-default));
-  --cmd-rail-fork: color-mix(in srgb, var(--accent, #6ea8ff) 70%, var(--border-default));
-  --cmd-rail-shop: color-mix(in srgb, var(--success, #4caf7a) 70%, var(--border-default));
+  --cmd-rail-fork: color-mix(in srgb, var(--accent, #4A57D6) 70%, var(--border-default));
+  --cmd-rail-shop: color-mix(in srgb, var(--success, #18764F) 70%, var(--border-default));
 }
 
 .event-contents-fieldset .cmd-head,
@@ -289,4 +289,3 @@
   background-repeat: no-repeat;
   background-size: calc(var(--cmd-depth, 0) * var(--cmd-indent-step)) 100%;
 }
-

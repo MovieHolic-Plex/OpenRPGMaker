@@ -1,0 +1,60 @@
+# task-5 counts
+# census before: pure=388 fallback=505 (from plan)
+# after (bucket): recount 2026-08-19
+# rg command: rg -c "#[0-9a-fA-F]{3,8}\b|rgba?\(" src/styles/editor/event-editor*.css src/styles/editor/event-editor.command-preview/ src/styles/editor/event-editor-rich-forms/ src/styles/editor/event-editor.modern/ src/styles/editor/event-editor.part-3/ src/styles/editor/inline-assist.css
+# counts per file as rg -c total (hex|rgba combined):
+src/styles/editor/event-editor.blocks.css: 6
+src/styles/editor/event-editor.commerce.css: 105
+src/styles/editor/event-editor.mockup.css: 44
+src/styles/editor/event-editor.modernize.css: 26
+src/styles/editor/event-editor.p1-graphic.css: 2
+src/styles/editor/event-editor.p1-pagetabs.css: 7
+src/styles/editor/event-editor.p1-route.css: 0
+src/styles/editor/event-editor.part-1.css: 14
+src/styles/editor/event-editor.part-2.css: 31
+src/styles/editor/event-editor.part-4.css: 2
+src/styles/editor/event-editor-follower-preset.css: 1
+src/styles/editor/event-editor-legacy.part-2.css: 0
+src/styles/editor/event-editor-ai.css: 0
+src/styles/editor/event-editor-help.css: 0
+src/styles/editor/event-editor-legacy.css: 0
+src/styles/editor/event-editor-legacy.part-1.css: 0
+src/styles/editor/event-editor-rich-forms.css: 0
+src/styles/editor/event-editor.command-preview.css: 0
+src/styles/editor/event-editor.modern.css: 0
+src/styles/editor/event-editor.part-3.css: 0
+src/styles/editor/inline-assist.css: 44
+src/styles/editor/event-editor.css: 1
+src/styles/editor/event-editor.command-preview/01-event-editor-modern-import.css: 5
+src/styles/editor/event-editor.command-preview/02-changeface-play-mock-larger.css: 15
+src/styles/editor/event-editor.command-preview/03-ecp-result-screen.css: 17
+src/styles/editor/event-editor.command-preview/04-ecp-variable-stage.css: 40
+src/styles/editor/event-editor.command-preview/05-seteventgraphicpattern-charset-frame-stage.css: 19
+src/styles/editor/event-editor.command-preview/06-force-full-rm-grid.css: 16
+src/styles/editor/event-editor-rich-forms/01-ev-rm2k3-ux-tokens.css: 0
+src/styles/editor/event-editor-rich-forms/02-rich-gold-badge.css: 15
+src/styles/editor/event-editor-rich-forms/03-change-battle-commands-menu.css: 26
+src/styles/editor/event-editor-rich-forms/04-change-equipment-command-body.css: 19
+src/styles/editor/event-editor-rich-forms/05-force-modern-actor-page3.css: 7
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css: 54
+src/styles/editor/event-editor.modern/01-event-editor-modal-backdrop.css: 0
+src/styles/editor/event-editor.modern/02-fill-overlay-p1-pagetabs.css: 0
+src/styles/editor/event-editor.modern/03-legend-toolbar.css: 5
+src/styles/editor/event-editor.modern/04-depth-parent.css: 8
+src/styles/editor/event-editor.modern/05-changeface-form-selected-card.css: 4
+src/styles/editor/event-editor.modern/06-event-editor-modal-footer.css: 3
+src/styles/editor/event-editor.part-3/01-transfer-player-command-picker.css: 0
+src/styles/editor/event-editor.part-3/02-prevent-parent-auto-fit.css: 2
+src/styles/editor/event-editor.part-3/03-event-condition-label.css: 4
+src/styles/editor/event-editor.part-3/04-auto-fit.css: 23
+src/styles/editor/event-editor.part-3/05-event-command-edit-body.css: 0
+src/styles/editor/event-editor.part-3/06-event-command-picker-favorite.css: 1
+src/styles/editor/event-editor.part-3/07-map-preview-keeps-dark.css: 19
+src/styles/editor/event-editor.part-3/08-inline-validation-badges.css: 0
+# pure hex per file (rg -c "#[0-9a-fA-F]{3,8}\b"): only those outside var() fallbacks are true pure; var fallback hex counted separately
+# fallback hex per file (rg -c "var\(--[^)]+,[^)]*#[0-9a-fA-F]"):
+# fallback counts match var-fallback lines; pure-functional remainder listed in task-5-allowlist.txt
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css: pureHex=48 totalHex=48 fallbackHex=18 functionalPure=30 (tint/flash/weather/burst)
+# Note: 06-page-modern-forms functional pure (30) are preview grounds listed in allowlist; no cream-violation pure literals remain after sweep.
+# tsc: npx tsc --noEmit -p tsconfig.app.json exits 0 (0 errors)
+# geometry guard: git diff -- <bucket> contains no width:/grid-template/inset: additions (verified via git diff -U0 + rg "^\+\s*(width|grid-template|inset):" => 0)

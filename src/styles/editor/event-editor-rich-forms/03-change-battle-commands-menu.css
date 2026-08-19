@@ -1,7 +1,7 @@
 /* 전투 커맨드 변경 메뉴 프리뷰 */
 .change-battle-commands-menu-preview {
-  background: var(--bg-raised, #1a2030);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  background: var(--bg-raised, #F7F3EA);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 8px;
   padding: 10px 12px;
   display: grid;
@@ -16,29 +16,29 @@
   align-items: center;
   padding: 4px 6px;
   border-radius: 6px;
-  border: 1px solid var(--border-subtle, #2a2e38);
-  background: color-mix(in srgb, var(--bg-inset, #14161c) 80%, transparent);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 80%, transparent);
   font-size: 12px;
 }
 
 .change-battle-commands-slot .n {
-  color: var(--text-3, #8b93a7);
+  color: var(--text-3, #6B5F52);
   font-family: ui-monospace, Consolas, monospace;
   font-size: 10px;
 }
 
 .change-battle-commands-slot .muted {
-  color: var(--text-3, #8b93a7);
+  color: var(--text-3, #6B5F52);
   font-size: 10px;
 }
 
 .change-battle-commands-slot .gain {
-  color: var(--success, #5fd38d);
+  color: var(--success, #18764F);
   font-weight: 600;
 }
 
 .change-battle-commands-slot .set {
-  color: var(--accent, #7aa2ff);
+  color: var(--accent, #4A57D6);
   font-weight: 600;
 }
 
@@ -71,7 +71,7 @@
 
 .party-member-intent {
   background: color-mix(in srgb, var(--accent-muted, rgba(110, 168, 255, 0.14)) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, transparent);
   border-radius: 8px;
   display: grid;
   gap: 4px;
@@ -80,12 +80,12 @@
 }
 
 .party-member-intent-title {
-  color: var(--rm2k3-command-blue, var(--accent, #6ea8ff));
+  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .party-member-intent-body {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.45 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
@@ -118,25 +118,25 @@
 }
 
 .party-member-field-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .party-member-followups {
   background: var(--bg-raised);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 8px;
   padding: 10px 12px;
 }
 
 .party-member-followups-title {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .party-member-followups-hint,
 .party-member-db-note {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
@@ -191,7 +191,7 @@
 }
 
 .change-parameters-field-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 11px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -209,14 +209,14 @@
 }
 
 .change-parameters-param-chip.is-active {
-  border-color: var(--accent, #6ea8ff);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 40%, transparent);
-  color: var(--text-1, #e9ecf5);
+  border-color: var(--accent, #4A57D6);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 40%, transparent);
+  color: var(--text-1, #2A2521);
 }
 
 .change-parameters-preview {
   background: var(--bg-raised);
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 8px;
   padding: 10px 12px;
 }
@@ -232,7 +232,7 @@
 .change-parameters-preview-note,
 .change-parameters-db-note,
 .change-parameters-preview-more {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 0;
 }
@@ -256,12 +256,12 @@
 }
 
 .change-parameters-preview-copy strong {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.2 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .change-parameters-preview-copy span {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -270,11 +270,10 @@
 }
 
 .change-parameters-preview-delta.gain {
-  color: var(--success, #5fd38d);
+  color: var(--success, #18764F);
 }
 
 .change-parameters-preview-delta.loss {
-  color: var(--danger, #ff7b8a);
+  color: var(--danger, #C6403D);
 }
-
 

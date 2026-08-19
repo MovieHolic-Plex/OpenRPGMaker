@@ -46,9 +46,9 @@
 }
 .event-command-frame-editor .event-graphic-frame-probe,
 .event-command-frame-editor .npc-walk-preview {
-  background-color: #008000;
+  background-color: var(--bg-surface);
   background-repeat: no-repeat;
-  border: 1px solid var(--event-rm-mid, #3a3f4b);
+  border: 1px solid var(--event-rm-mid, rgba(42,37,33,.20));
   image-rendering: pixelated;
 }
 .event-command-frame-door-seq {
@@ -62,8 +62,8 @@
   gap: 6px;
 }
 .event-command-frame-door-step.active {
-  border-color: var(--accent, #6ea8ff);
-  color: var(--accent, #6ea8ff);
+  border-color: var(--accent, #4A57D6);
+  color: var(--accent, #4A57D6);
   background: var(--accent-muted, rgba(110, 168, 255, 0.16));
 }
 .event-command-frame-absolute-input,
@@ -79,11 +79,11 @@
 
 
 .ecp-message-control-badge {
-  background: rgba(20, 36, 84, 0.92);
-  border: 1px solid rgba(170, 210, 255, 0.78);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 999px;
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-  color: #e8f2ff;
+  box-shadow: 0 1px 0 var(--shadow-pop);
+  color: var(--text-1);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.01em;
@@ -111,7 +111,7 @@
   min-width: 0;
 }
 .m2-erase-event-card .m2-command-intent-title {
-  color: var(--rm2k3-command-blue, #9ec0ff);
+  color: var(--rm2k3-command-blue, #4A57D6);
   font-weight: 700;
 }
 .m2-erase-event-field {
@@ -121,28 +121,28 @@
   grid-template-columns: minmax(72px, 88px) minmax(0, 1fr);
 }
 .m2-erase-event-label {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding-top: 8px;
 }
 .m2-erase-event-preview {
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 35%, var(--border-default, #3a3f4b));
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 35%, var(--border-default, rgba(42,37,33,.20)));
   border-radius: 10px;
   padding: 10px 12px;
-  background: color-mix(in srgb, var(--accent, #6ea8ff) 8%, transparent);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 8%, transparent);
 }
 .m2-erase-event-preview-title {
   font: 700 12px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
 }
 .m2-erase-event-preview-sub {
   margin-top: 4px;
   font: 600 11px/1.4 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--text-dim, #8b93a7);
+  color: var(--text-dim, #6B5F52);
 }
 
 .ecp-shop-empty-warn {
-  color: #ff9aa8;
+  color: var(--text-1);
   font: 700 12px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   margin: 6px 0 4px;
 }
@@ -154,24 +154,24 @@
   max-width: 240px;
   aspect-ratio: 4 / 3;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid var(--border-default);
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: #0b1020;
+  background: var(--bg-surface);
 }
 .ecp-fx-label {
   position: relative;
   z-index: 2;
   font: 700 13px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: #ffe07a;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  color: var(--text-1);
+  text-shadow: 0 1px 3px var(--shadow-pop);
   text-align: center;
   padding: 0 8px;
 }
 .ecp-fx-caption {
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   text-align: center;
   margin-top: 6px;
 }
@@ -188,18 +188,18 @@
 }
 
 .ecp-lighting-screen {
-  background: linear-gradient(180deg, #2a3550 0%, #141c2e 100%);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
 }
 .ecp-lighting-overlay {
   position: absolute;
   inset: 0;
-  background: #000;
+  background: var(--bg-surface);
   pointer-events: none;
   z-index: 1;
 }
 
 .ecp-light-source-screen {
-  background: radial-gradient(circle at 50% 55%, #1a2035 0%, #05070f 75%);
+  background: radial-gradient(circle at 50% 55%, var(--bg-surface) 0%, var(--bg-surface) 75%);
 }
 .ecp-light-glow {
   position: absolute;
@@ -209,7 +209,7 @@
   width: 48%;
   height: 48%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 220, 120, 0.95) 0%, rgba(255, 170, 40, 0.35) 45%, transparent 70%);
+  background: radial-gradient(circle, var(--bg-surface) 0%, var(--bg-surface) 45%, transparent 70%);
   filter: blur(1px);
   z-index: 1;
   pointer-events: none;
@@ -217,15 +217,15 @@
 .ecp-light-glow.off {
   width: 36%;
   height: 36%;
-  background: radial-gradient(circle, rgba(120, 120, 140, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--bg-surface) 0%, transparent 70%);
   opacity: 0.5;
 }
 .ecp-light-source-off .ecp-fx-label {
-  color: #e08a8a;
+  color: var(--text-1);
 }
 
 .ecp-weather-screen {
-  background: linear-gradient(180deg, #1a2438 0%, #0c121f 100%);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
 }
 .ecp-weather-particles {
   position: absolute;
@@ -240,44 +240,44 @@
   width: 2px;
   height: 10px;
   border-radius: 1px;
-  background: rgba(170, 210, 255, 0.75);
+  background: var(--bg-surface);
   opacity: 0.85;
 }
 .ecp-weather-particles-rain .ecp-weather-drop,
 .ecp-weather-particles-storm .ecp-weather-drop {
   width: 2px;
   height: 12px;
-  background: linear-gradient(180deg, transparent, rgba(170, 210, 255, 0.9));
+  background: linear-gradient(180deg, transparent, var(--bg-surface));
   transform: rotate(18deg);
 }
 .ecp-weather-particles-storm .ecp-weather-drop {
   height: 16px;
-  background: linear-gradient(180deg, transparent, rgba(210, 230, 255, 0.95));
-  box-shadow: 0 0 4px rgba(160, 200, 255, 0.4);
+  background: linear-gradient(180deg, transparent, var(--bg-surface));
+  box-shadow: 0 0 4px var(--shadow-pop);
 }
 .ecp-weather-particles-snow .ecp-weather-drop {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(240, 248, 255, 0.9);
+  background: var(--bg-surface);
   box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
 }
 .ecp-weather-particles-fog .ecp-weather-drop {
   width: 28px;
   height: 10px;
   border-radius: 999px;
-  background: rgba(200, 210, 230, 0.18);
+  background: var(--bg-surface);
   filter: blur(2px);
 }
 .ecp-weather-none .ecp-weather-screen {
-  background: linear-gradient(180deg, #3a4a68 0%, #1a2438 100%);
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface) 100%);
 }
 .ecp-weather-none .ecp-fx-label {
-  color: #9ad0ff;
+  color: var(--text-1);
 }
 
 .ecp-animation-screen {
-  background: radial-gradient(circle at 50% 50%, #1c1630 0%, #080a12 75%);
+  background: radial-gradient(circle at 50% 50%, var(--bg-surface) 0%, var(--bg-surface) 75%);
 }
 .ecp-anim-ring {
   position: absolute;
@@ -287,16 +287,16 @@
   height: 56%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 2px solid rgba(255, 215, 110, 0.75);
-  box-shadow: 0 0 12px rgba(255, 180, 60, 0.45), inset 0 0 10px rgba(255, 215, 110, 0.2);
+  border: 2px solid var(--border-default);
+  box-shadow: 0 0 12px var(--shadow-pop), inset 0 0 10px var(--shadow-pop);
   z-index: 1;
   pointer-events: none;
 }
 .ecp-anim-ring-inner {
   width: 32%;
   height: 32%;
-  border-color: rgba(255, 122, 153, 0.85);
-  box-shadow: 0 0 10px rgba(255, 122, 153, 0.4);
+  border-color: var(--border-default);
+  box-shadow: 0 0 10px var(--shadow-pop);
 }
 
 .ecp-tile-card {
@@ -306,8 +306,8 @@
   gap: 8px;
   padding: 12px 16px;
   border-radius: 8px;
-  background: color-mix(in srgb, var(--accent, #6ea8ff) 12%, #10141c);
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 40%, #2a3140);
+  background: color-mix(in srgb, var(--accent, #4A57D6) 12%, var(--bg-inset, #EFE9DC));
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 40%, rgba(42,37,33,.20));
 }
 .ecp-tile-swatch {
   display: grid;
@@ -317,16 +317,16 @@
   border-radius: 6px;
   background: repeating-linear-gradient(
     45deg,
-    #2a3140 0 6px,
-    #1a2030 6px 12px
+    var(--bg-surface) 0 6px,
+    var(--bg-surface) 6px 12px
   );
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffe07a;
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
   font: 700 14px/1 Tahoma, "Malgun Gothic", sans-serif;
 }
 .ecp-tile-meta {
   font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
 }
 
 .ecp-input-wait-stage {
@@ -340,8 +340,8 @@
   width: 52px;
   height: 52px;
   border-radius: 10px;
-  background: #1a2233;
-  border: 1px solid color-mix(in srgb, var(--accent, #6ea8ff) 45%, #2a3140);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--accent, #4A57D6) 45%, rgba(42,37,33,.20));
   font-size: 24px;
   margin-bottom: 6px;
 }

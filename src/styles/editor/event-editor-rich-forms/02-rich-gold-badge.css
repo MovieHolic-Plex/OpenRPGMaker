@@ -166,9 +166,9 @@
   min-width: 28px;
   height: 20px;
   border-radius: 999px;
-  background: color-mix(in srgb, #9b7bff 22%, transparent);
-  border: 1px solid color-mix(in srgb, #9b7bff 50%, transparent);
-  color: #cbb6ff;
+  background: color-mix(in srgb, var(--bg-surface) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border-default) 50%, transparent);
+  color: var(--text-1);
   font: 700 10px/1 Inter, "Segoe UI", system-ui, sans-serif;
   letter-spacing: 0.04em;
 }
@@ -192,12 +192,12 @@
 }
 
 .battle-processing-intent {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 12px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   padding: 6px 10px;
   border-radius: 8px;
-  border: 1px dashed var(--border-subtle, #2a2e38);
-  background: color-mix(in srgb, var(--bg-inset, #14161c) 70%, transparent);
+  border: 1px dashed var(--border-subtle, rgba(42,37,33,.20));
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 70%, transparent);
 }
 
 .battle-processing-preset {
@@ -205,7 +205,7 @@
 }
 
 .battle-processing-preset:hover {
-  border-color: var(--accent, #7aa2ff);
+  border-color: var(--accent, #4A57D6);
 }
 
 .battle-processing-branch-controls {
@@ -214,8 +214,8 @@
   width: 100%;
   padding: 8px 10px;
   border-radius: 8px;
-  border: 1px solid var(--border-subtle, #2a2e38);
-  background: color-mix(in srgb, var(--bg-raised, #1a2030) 90%, transparent);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
+  background: color-mix(in srgb, var(--bg-raised, #F7F3EA) 90%, transparent);
 }
 
 /* 숨김 체크박스/select 는 기존 .rich-native-select 규칙 + HTML hidden 속성으로 처리.
@@ -237,7 +237,7 @@
 }
 
 .battle-processing-warning {
-  color: var(--danger, #ff7b8a);
+  color: var(--danger, #C6403D);
   font: 600 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -246,9 +246,9 @@
 }
 
 .battle-processing-troop-hover {
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 8px;
-  background: var(--bg-raised, #1a2030);
+  background: var(--bg-raised, #F7F3EA);
   padding: 8px 10px;
   display: grid;
   gap: 4px;
@@ -256,13 +256,13 @@
 }
 
 .battle-processing-hover-title {
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .battle-processing-hover-row,
 .battle-processing-hover-more {
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.35 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -270,13 +270,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-1, #e9ecf5);
+  color: var(--text-1, #2A2521);
   font: 500 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
 .battle-processing-branch-hint {
   margin: 0;
-  color: var(--text-2, #aeb6c8);
+  color: var(--text-2, #5C5348);
   font: 500 11px/1.4 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
 }
 
@@ -291,9 +291,8 @@
   grid-template-columns: 24px 1fr auto auto;
   gap: 6px;
   align-items: center;
-  border: 1px solid var(--border-subtle, #2a2e38);
+  border: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   border-radius: 6px;
   padding: 4px 6px;
-  background: color-mix(in srgb, var(--bg-inset, #14161c) 80%, transparent);
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 80%, transparent);
 }
-

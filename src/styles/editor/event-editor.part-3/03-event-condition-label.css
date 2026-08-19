@@ -119,8 +119,8 @@
 .event-subdialog-backdrop {
   align-items: center;
   background:
-    linear-gradient(135deg, rgba(14, 22, 38, 0.42), rgba(36, 42, 55, 0.3)),
-    rgba(16, 19, 26, 0.38);
+    linear-gradient(135deg, var(--bg-surface), var(--bg-surface)),
+    var(--bg-surface);
   backdrop-filter: blur(10px) saturate(1.08);
   display: grid;
   justify-content: center;
@@ -145,8 +145,8 @@
   --event-popup-surface: color-mix(in srgb, var(--surface-panel, var(--bg-raised)) 94%, var(--accent-soft, #dbeafe));
   --event-popup-surface-2: color-mix(in srgb, var(--bg-panel, #f8fafc) 92%, var(--accent-soft, #dbeafe));
   --event-popup-border: color-mix(in srgb, var(--border, var(--border-subtle)) 72%, var(--accent, var(--accent-border)));
-  --event-popup-field: color-mix(in srgb, var(--surface-panel, #ffffff) 96%, var(--accent-soft, #dbeafe));
-  --event-popup-shadow: 0 24px 70px rgba(15, 23, 42, 0.34), 0 2px 10px rgba(15, 23, 42, 0.16);
+  --event-popup-field: color-mix(in srgb, var(--surface-panel, #FFFFFF) 96%, var(--accent-soft, #dbeafe));
+  --event-popup-shadow: 0 24px 70px var(--shadow-pop), 0 2px 10px var(--shadow-pop);
   background: var(--event-popup-surface);
   border: 1px solid var(--event-popup-border);
   border-radius: 8px;
@@ -217,7 +217,7 @@
   background: color-mix(in srgb, var(--surface-button, var(--bg-raised)) 92%, var(--bg-raised));
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px var(--shadow-pop);
   color: var(--text-muted, var(--text-2));
   display: inline-flex;
   font: 700 14px/1 Inter, "Segoe UI", system-ui, sans-serif;
@@ -259,7 +259,7 @@
   background: var(--event-popup-field, var(--bg-raised));
   border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 82%, var(--accent, var(--accent-border)));
   border-radius: 6px;
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  box-shadow: inset 0 1px 2px var(--shadow-pop);
   color: var(--text, var(--text-1));
   font: 500 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-height: 32px;
@@ -295,7 +295,7 @@
   background: color-mix(in srgb, var(--surface-button, var(--bg-raised)) 91%, var(--bg-raised));
   border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 88%, var(--accent, var(--accent-border)));
   border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px var(--shadow-pop);
   color: var(--text, var(--text-1));
   display: inline-flex;
   font: 650 13px/18px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
@@ -344,7 +344,7 @@
 .transfer-player-zoom-button:active,
 .transfer-player-button:active,
 .event-subdialog-backdrop[data-testid="event-graphic-dialog"] .event-graphic-picker-footer .btn:active {
-  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12);
+  box-shadow: inset 0 1px 2px var(--shadow-pop);
   transform: translateY(1px);
 }
 
@@ -368,7 +368,7 @@
   background: color-mix(in srgb, var(--event-popup-surface-2, var(--bg-raised)) 94%, var(--bg-raised));
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 1px 0 var(--shadow-pop);
 }
 
 .event-command-edit-body {
@@ -380,4 +380,3 @@
 .event-command-choices-inline {
   gap: 10px;
 }
-
