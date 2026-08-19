@@ -1,0 +1,137 @@
+REQ-FAILED [A] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [A] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT A01-boot-full
+SHOT A02-panel-start
+ABSENT ai-start-examples
+ABSENT ai-start-visual-gallery
+SHOT A05-connection-status
+ABSENT ai-start-recent-work
+REQ-FAILED [A] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [A] Failed to load resource: net::ERR_CONNECTION_REFUSED
+ABSENT ai-start-history
+PROBE [A-start] PANEL-RECT: x=75 y=49 w=1525 h=951 vw=1600 vh=1000
+REQ-FAILED [B] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [B] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [B] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [B] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT B01-slash-list
+SLASH-VIEW-ALL-CLICK-DEAD: false
+SHOT B04-input-30lines
+SHOT B05-input-600chars-nospace
+INPUT-BOX after 600 chars: {"x":1060,"y":612,"width":369,"height":320}
+PROBE [B-input] PANEL-RECT: x=75 y=49 w=1525 h=951 vw=1600 vh=1000
+REQ-FAILED [C] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [C] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [C] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [C] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT C01-settings-full
+SHOT C02-settings-modal
+SHOT C03-settings-advanced
+ABSENT ai-tools-browser(초보)
+SHOT C06-more-menu
+SHOT C06b-command-menu
+REQ-FAILED [C] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [C] Failed to load resource: net::ERR_CONNECTION_REFUSED
+ABSENT ai-dock-toggle
+ABSENT ai-font-cycle
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT D01-typed
+CONSOLE-ERROR [D] Failed to load resource: the server responded with a status of 404 (Not Found)
+SEND-CLICK-DEAD: false
+CONSOLE-ERROR [D] Failed to load resource: the server responded with a status of 404 (Not Found)
+REQ-FAILED [D] net::ERR_ABORTED http://127.0.0.1:9433/__rpgzzu/ai-activity
+REQ-FAILED [D] net::ERR_ABORTED http://127.0.0.1:9433/__rpgzzu/ai-activity
+SEND-DISABLED-AFTER-CLICK: false | INPUT-VALUE: ""
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT D02-thinking
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [D] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [D] Failed to load resource: net::ERR_CONNECTION_REFUSED
+PANEL-AUTO-COLLAPSED-AFTER-TURN: false
+SHOT D03-answer
+SHOT D04-answer-full
+PROBE [D-answer] PANEL-RECT: x=75 y=49 w=1525 h=951 vw=1600 vh=1000
+CHATLOG >>> 2026년 8월 19일 수 / 지금 이 프로젝트에 맵이 몇 개고 이름이 뭔지 도구로 확인해서 알려줘. /  / 플래너 실패 — 최소 폴백 계획으로 진행 /  / --- / 📋 작업 계획 (0/1) / 목표: 지금 이 프로젝트에 맵이 몇 개고 이름이 뭔지 도구로 확인해서 알려줘. /  / [컨텍스트] 현재 맵: 이슬 장터 마을 (mapvillage30_100x100) / 전략: fallback template (planner parse/API failed) /  / 실행 /  / ▶️ 요청 처리 /  / 다음: 요청 처리 — 지금 이 프로젝트에 맵이 몇 개고 이름이 뭔지 도구로 확인해서 알려줘. /  / [컨텍스트] 현재 맵: 이슬 장터 마을 (mapvillage30_100x100) /  / 오류: 요청 실패(404). /  / 재시도 — 같은 문맥에서 1회 재시도설정 열기
+REQ-FAILED [E] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [E] Failed to load resource: net::ERR_CONNECTION_REFUSED
+ABSENT ai-resize-handle
+ABSENT ai-collapse
+REQ-FAILED [F] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [F] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT F01-1280x800
+PROBE [F-1280] PANEL-RECT: x=75 y=49 w=1205 h=751 vw=1280 vh=800
+SHOT F02-1024x768
+REQ-FAILED [F] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [F] Failed to load resource: net::ERR_CONNECTION_REFUSED
+PROBE [F-1024] PANEL-RECT: x=75 y=49 w=949 h=719 vw=1024 vh=768
+SHOT F03-1920x1080
+PROBE [F-1920] PANEL-RECT: x=75 y=49 w=1845 h=1031 vw=1920 vh=1080
+REQ-FAILED [G] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [G] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT G01-expert-boot
+REQ-FAILED [G] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [G] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT G02-expert-panel
+PROBE [G-expert] PANEL-RECT: x=329 y=116 w=1271 h=884 vw=1600 vh=1000
+REQ-FAILED [G] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [G] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT G03-region-popover-in-place
+SHOT G04-region-popover
+SHOT G06-selection-chip
+REQ-FAILED [H] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [H] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT H01-input-focused-overlay-up
+HITTEST(focused) send-center@(1476,902) -> ai-send
+HITTEST(focused) canvas-30%-85%@(533,819) -> CANVAS
+HITTEST(focused) canvas-50%-80%@(838,776) -> CANVAS
+HITTEST(focused) canvas-90%-85%@(1448,819) -> ai-context-chips
+HITTEST(focused) canvas-50%-40%@(838,437) -> ai-start-visual-charset
+REQ-FAILED [H] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [H] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT H02-after-idle-fade
+HITTEST(idle-faded) send-center -> ai-send
+HITTEST(idle-faded) canvas-50%-80% -> 
+PANEL-CLASS: ai-chat-panel chat-dock-float
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT I01-cta-visible
+CONSOLE-ERROR [I] Failed to load resource: the server responded with a status of 404 (Not Found)
+CTA-CLICK-DEAD: false
+CONSOLE-ERROR [I] Failed to load resource: the server responded with a status of 404 (Not Found)
+REQ-FAILED [I] net::ERR_ABORTED http://127.0.0.1:9433/__rpgzzu/ai-activity
+REQ-FAILED [I] net::ERR_ABORTED http://127.0.0.1:9433/__rpgzzu/ai-activity
+SHOT I02-cta-sent
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT I03-running
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+REQ-FAILED [I] net::ERR_CONNECTION_REFUSED http://127.0.0.1:17831/v1/browser/hello
+CONSOLE-ERROR [I] Failed to load resource: net::ERR_CONNECTION_REFUSED
+SHOT I04-after-turn-full
+ABSENT ai-proposal-pill after CTA turn
+ABSENT ai-proposal-card after CTA turn
+ABSENT ai-completion-strip after CTA turn
+ABSENT ai-proposal-modal after CTA turn
+PROBE [I-proposal] PANEL-RECT: x=75 y=49 w=1525 h=951 vw=1600 vh=1000
