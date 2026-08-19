@@ -37,7 +37,6 @@ export function supabaseProjectConfig(env: SupabaseProjectEnv = import.meta.env)
   const draft = supabaseProjectConfigDraft(env);
   if (!draft.url || !draft.anonKey) return null;
   const url = resolveBrowserSupabaseUrl(draft.url, {
-    isDev: import.meta.env.DEV === true,
     pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol,
   });
   return { anonKey: draft.anonKey, projectId: draft.projectId, url };

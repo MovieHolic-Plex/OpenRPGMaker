@@ -103,7 +103,6 @@ function projectListConfigFromForm(form: HTMLFormElement): SupabaseProjectListCo
   const anonKey = inputValue(form, "anonKey");
   if (raw.length === 0 || anonKey.length === 0) return null;
   const url = resolveBrowserSupabaseUrl(raw, {
-    isDev: import.meta.env.DEV === true,
     pageProtocol: typeof window === "undefined" ? undefined : window.location?.protocol,
   });
   return { anonKey, url };
