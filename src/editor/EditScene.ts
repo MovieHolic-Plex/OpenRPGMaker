@@ -217,7 +217,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   create(): void {
     registerBundledFrames(this, store.getCurrent());
-    this.cameras.main.setBackgroundColor("#0f1115");
+    this.cameras.main.setBackgroundColor("#E7E0D0");
 
     this.tileLayer = this.add.container(0, 0);
     this.hoverPreviewLayer = this.add.container(0, 0);

@@ -462,7 +462,7 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
   game = new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,
     parent,
-    backgroundColor: "#0f1115",
+    backgroundColor: "#E7E0D0",
     roundPixels: true,
     antialias: false,
     pixelArt: true,
