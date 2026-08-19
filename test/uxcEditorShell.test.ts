@@ -10,6 +10,7 @@ import {
   shouldOfferEventLayerSwitch,
 } from "@/editor/eventMarkerUx";
 import { editorState } from "@/editor/editorState";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import {
   isMapEditLockTakeoverImmediate,
   mapEditLockLastActivityText,
@@ -190,18 +191,25 @@ describe("UXC D14/D19/D27/D29 에디터 셸 크롬", () => {
   });
 
   it("캔버스 툴바에서 줌 그룹과 맵 저장 액션을 분리한다", () => {
-    const toolbar = document.createElement("div");
+    // 맵 저장/펼침 버튼은 dense 크롬(표준/전문가)에서만 렌더된다 — 기본(초보) 크롬은 줌 전용.
+    resetEditorUiModeForTests("expert");
+    try {
+      const toolbar = document.createElement("div");
 
-    renderCanvasToolbar(toolbar);
+      renderCanvasToolbar(toolbar);
 
-    const zoomGroup = findByTestId(fakeElement(toolbar), "editor-zoom-group");
-    const saveGroup = findByTestId(fakeElement(toolbar), "editor-map-save-group");
-    const expand = findByTestId(fakeElement(toolbar), "editor-canvas-toolbar-expand");
-    expect(zoomGroup?.textContent).toContain("확대");
-    expect(zoomGroup?.textContent).not.toContain("맵 저장");
-    expect(saveGroup?.textContent).toContain("맵 저장");
-    expand?.click();
-    expect(fakeElement(toolbar).classList.contains("is-expanded")).toBe(true);
+      const zoomGroup = findByTestId(fakeElement(toolbar), "editor-zoom-group");
+      const saveGroup = findByTestId(fakeElement(toolbar), "editor-map-save-group");
+      const expand = findByTestId(fakeElement(toolbar), "editor-canvas-toolbar-expand");
+      // P2-11: 줌 그룹은 스테퍼(−/+)와 배율 버튼(1x/2x/4x)만 노출 — "확대"는 title/aria로 이동.
+      expect(zoomGroup?.textContent).toContain("2x");
+      expect(zoomGroup?.textContent).not.toContain("맵 저장");
+      expect(saveGroup?.textContent).toContain("맵 저장");
+      expand?.click();
+      expect(fakeElement(toolbar).classList.contains("is-expanded")).toBe(true);
+    } finally {
+      resetEditorUiModeForTests();
+    }
   });
 
   it("Ctrl+K 스킬 팔레트가 데이터베이스 모달 백드롭 클래스를 쓰지 않는다", () => {
