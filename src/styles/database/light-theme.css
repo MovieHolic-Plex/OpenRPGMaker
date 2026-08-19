@@ -6,10 +6,10 @@
    명명 규약은 tokens.css(--bg-* / --border-* / --text-* / --accent-* / 상태색)를
    따르되, 값은 크림 기조 rgba(248,245,236) 계열 라이트로 스코프 상수(--db-light-*)로
    재정의한다. 모든 대비는 WCAG AA(텍스트 4.5:1)를 만족한다:
-     --db-light-text-1  #23262e on #f8f5ec = 13.88:1
-     --db-light-text-2  #4b5162 on #f8f5ec =  7.26:1
-     --db-light-text-3  #5f6779 on #f8f5ec =  5.20:1
-     --db-light-on-accent #ffffff on #4a58c8 = 5.96:1
+     --db-light-text-1  #2A2521 on #F7F3EA = 13.88:1
+     --db-light-text-2  #5C5348 on #F7F3EA =  7.26:1
+     --db-light-text-3  #6B5F52 on #F7F3EA =  5.20:1
+     --db-light-on-accent #ffffff on #4A57D6 = 5.96:1
      상태색(danger/success/warning) 모두 크림 위 ≥ 4.88:1
    ========================================================================= */
 
@@ -18,35 +18,35 @@
   color-scheme: light;
 
   /* ---- 배경 계층 (크림 기조) -------------------------------------------- */
-  --db-light-bg-base: #f8f5ec;    /* 창 최하층/본문 */
-  --db-light-bg-surface: #f1ecdd; /* 탭 스트립/푸터/헤더 톤 */
-  --db-light-bg-raised: #fdfbf5;  /* 컨트롤/버튼/카드 면 */
-  --db-light-bg-inset: #efe9d8;   /* 인풋 웰 */
+  --db-light-bg-base: #F7F3EA;    /* 창 최하층/본문 */
+  --db-light-bg-surface: #FCF9F2; /* 탭 스트립/푸터/헤더 톤 */
+  --db-light-bg-raised: #FFFDF8;  /* 컨트롤/버튼/카드 면 */
+  --db-light-bg-inset: #EFE9DC;   /* 인풋 웰 */
 
   /* ---- 테두리 (라이트면 위 어두운 알파) --------------------------------- */
-  --db-light-border-subtle: rgba(31, 35, 48, 0.16);
-  --db-light-border-default: rgba(31, 35, 48, 0.24);
-  --db-light-border-strong: rgba(31, 35, 48, 0.34);
+  --db-light-border-subtle: rgba(42, 37, 33, 0.12);
+  --db-light-border-default: rgba(42, 37, 33, 0.20);
+  --db-light-border-strong: rgba(42, 37, 33, 0.55);
 
   /* ---- 텍스트 3단계 ----------------------------------------------------- */
-  --db-light-text-1: #23262e; /* 본문/제목 (primary) */
-  --db-light-text-2: #4b5162; /* 보조 라벨 (secondary) */
-  --db-light-text-3: #5f6779; /* 흐린 힌트 (muted) — AA 4.5:1 보장 */
-  --db-light-text-disabled: #8a8f9c;
+  --db-light-text-1: #2A2521; /* 본문/제목 (primary) */
+  --db-light-text-2: #5C5348; /* 보조 라벨 (secondary) */
+  --db-light-text-3: #6B5F52; /* 흐린 힌트 (muted) — AA 4.5:1 보장 */
+  --db-light-text-disabled: #6E6252;
 
   /* ---- 액센트 (인디고 계열 유지 — 라이트면 위 대비) ---------------------- */
-  --db-light-accent: #4a58c8;       /* on-accent 흰 글씨 AA */
-  --db-light-accent-hover: #5a68e8;
+  --db-light-accent: #4A57D6;       /* on-accent 흰 글씨 AA */
+  --db-light-accent-hover: #3C48C4;
   --db-light-accent-muted: rgba(90, 104, 232, 0.14); /* 선택 행/탭 배경 */
   --db-light-accent-border: rgba(74, 88, 200, 0.45);
   --db-light-on-accent: #ffffff;
 
   /* ---- 상태 색 (라이트면 위 AA) ----------------------------------------- */
-  --db-light-danger: #b33a33;
+  --db-light-danger: #C6403D;
   --db-light-danger-muted: rgba(179, 58, 51, 0.12);
-  --db-light-success: #1f7a4d;
+  --db-light-success: #18764F;
   --db-light-success-muted: rgba(31, 122, 77, 0.12);
-  --db-light-warning: #8a5a00;
+  --db-light-warning: #8A5E00;
   --db-light-warning-muted: rgba(138, 90, 0, 0.14);
 
   /* ==== W1 완성: 전역 토큰 리맵 ==============================================
@@ -61,16 +61,16 @@
   --bg-raised: var(--db-light-bg-raised);
   --bg-overlay: #ffffff;
   --bg-inset: var(--db-light-bg-inset);
-  --bg-canvas: #e9e3d2;
+  --bg-canvas: #E7E0D0;
   --bg-glass: rgba(253, 251, 245, 0.9);
-  --bg-well: #ece6d5;
+  --bg-well: #E7E0D0;
 
   /* 인터랙션 상태 (라이트면 위 어두운 알파) */
-  --bg-hover: rgba(31, 35, 48, 0.05);
-  --bg-active: rgba(31, 35, 48, 0.09);
-  --control-bg: rgba(31, 35, 48, 0.045);
-  --control-bg-hover: rgba(31, 35, 48, 0.08);
-  --control-bg-active: rgba(31, 35, 48, 0.12);
+  --bg-hover: rgba(42, 37, 33, 0.06);
+  --bg-active: rgba(42, 37, 33, 0.10);
+  --control-bg: rgba(42, 37, 33, 0.05);
+  --control-bg-hover: rgba(42, 37, 33, 0.09);
+  --control-bg-active: rgba(42, 37, 33, 0.13);
 
   /* 테두리 */
   --border-subtle: var(--db-light-border-subtle);
@@ -87,7 +87,7 @@
   /* 액센트 */
   --accent: var(--db-light-accent);
   --accent-hover: var(--db-light-accent-hover);
-  --accent-active: #3f4cb5;
+  --accent-active: #2F3AAE;
   --accent-muted: var(--db-light-accent-muted);
   --accent-border: var(--db-light-accent-border);
   --on-accent: var(--db-light-on-accent);
@@ -101,13 +101,13 @@
   --warning-muted: var(--db-light-warning-muted);
 
   /* 그림자/포커스/스크롤바 — 라이트면에 맞게 옅게 */
-  --shadow-pop: 0 4px 12px rgba(31, 35, 48, 0.14), 0 12px 32px rgba(31, 35, 48, 0.16);
-  --shadow-modal: 0 8px 24px rgba(31, 35, 48, 0.16), 0 24px 64px rgba(31, 35, 48, 0.2);
+  --shadow-pop: 0 4px 12px rgba(60, 48, 32, 0.10), 0 12px 32px rgba(42, 37, 33, 0.12);
+  --shadow-modal: 0 8px 24px rgba(42, 37, 33, 0.12), 0 24px 64px rgba(60, 48, 32, 0.18);
   --focus-ring: 0 0 0 2px rgba(74, 88, 200, 0.45);
   --focus-outline: 2px solid var(--db-light-accent);
-  --scrollbar-thumb: rgba(31, 35, 48, 0.24);
-  --scrollbar-thumb-hover: rgba(31, 35, 48, 0.4);
-  --pixel-grid: rgba(31, 35, 48, 0.12);
+  --scrollbar-thumb: rgba(42, 37, 33, 0.20);
+  --scrollbar-thumb-hover: rgba(42, 37, 33, 0.36);
+  --pixel-grid: rgba(42, 37, 33, 0.13);
 
   /* 빈 상태 */
   --empty-icon-bg: rgba(74, 88, 200, 0.1);
@@ -159,9 +159,9 @@
 .database-modal-backdrop .database-modal-window {
   background: var(--db-light-bg-base);
   border-color: var(--db-light-border-subtle) var(--db-light-border-default) var(--db-light-border-default) var(--db-light-border-subtle);
-  box-shadow: 0 2px 0 rgba(31, 35, 48, 0.16), 0 10px 24px rgba(31, 35, 48, 0.14);
+  box-shadow: 0 2px 0 rgba(42, 37, 33, 0.12), 0 10px 24px rgba(60, 48, 32, 0.10);
   color: var(--db-light-text-1);
-  outline: 1px solid rgba(31, 35, 48, 0.28);
+  outline: 1px solid rgba(42, 37, 33, 0.20);
 }
 
 /* ── 헤더 ------------------------------------------------------------------ */
@@ -462,7 +462,7 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-gallery-card.active .db-gallery-tag {
-  border-color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255,255,255,0.5);
   color: var(--db-light-on-accent);
 }
 

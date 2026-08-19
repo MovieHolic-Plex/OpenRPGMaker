@@ -107,7 +107,7 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   background: var(--bg-raised);
   border: 1.5px solid var(--accent-border);
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 14px rgba(42, 37, 33, 0.08);
   color: var(--text-1);
   cursor: pointer;
   display: grid;
@@ -118,7 +118,7 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   width: 40px;
   transition: transform 0.12s, box-shadow 0.12s;
 }
-.ai-command-menu-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.16); }
+.ai-command-menu-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(42, 37, 33, 0.12); }
 
 .ai-chat-icon-btn,
 .ai-command-settings-button {
@@ -188,7 +188,7 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 
 .ai-more-menu-item:hover,
 .ai-more-menu-item:focus-visible {
-  background: color-mix(in srgb, var(--accent, #6ea8fe) 16%, transparent);
+  background: color-mix(in srgb, var(--accent, var(--accent)) 16%, transparent);
 }
 
 .ai-chat-toolbar.is-empty,
@@ -490,15 +490,15 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   backdrop-filter: blur(10px);
   border: 1.5px solid var(--border-strong);
   border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(42, 37, 33, 0.08);
   display: grid;
   gap: 4px;
   padding: 8px 10px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .ai-command-input-stack:focus-within {
-  border-color: color-mix(in srgb, var(--accent, #4c6ef5) 45%, var(--border-strong));
-  box-shadow: 0 8px 28px rgba(0,0,0,0.16), 0 0 0 3px color-mix(in srgb, var(--accent, #4c6ef5) 14%, transparent);
+  border-color: color-mix(in srgb, var(--accent, var(--accent)) 45%, var(--border-strong));
+  box-shadow: 0 8px 28px rgba(42, 37, 33, 0.12), 0 0 0 3px color-mix(in srgb, var(--accent, var(--accent)) 14%, transparent);
 }
 
 .ai-chat-panel.chat-dock-side .ai-command-input-stack {

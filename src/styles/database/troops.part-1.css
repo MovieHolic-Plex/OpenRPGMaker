@@ -9,7 +9,7 @@
 
 .database-modal-backdrop:has(.rm2k3-record-troops) {
   align-items: flex-start;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(42, 37, 33, 0.06);
   justify-content: flex-start;
   padding: 0;
 }
@@ -363,7 +363,7 @@
 }
 
 .database-modal-body .db-troop-member-sprite.active {
-  filter: drop-shadow(0 0 0 #ffffff) drop-shadow(0 0 4px #fff45f);
+  filter: drop-shadow(0 0 0 var(--bg-overlay)) drop-shadow(0 0 4px #fff45f);
 }
 
 .database-modal-body .db-troop-member-sprite.hidden-member {
@@ -372,7 +372,7 @@
 }
 
 .database-modal-body .db-troop-empty-member {
-  background: #cfe8f8;
+  background: var(--accent-muted);
   bottom: 14px;
   display: grid;
   font: 15px/1 "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;

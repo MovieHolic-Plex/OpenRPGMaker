@@ -194,7 +194,7 @@
 
   .database-modal-body .db-enemy-attack-patterns tr:hover td,
   .database-modal-body .db-enemy-attack-patterns tr.db-enemy-action-context-target td {
-    background: #eaf3ff;
+    background: var(--accent-muted);
     color: var(--accent);
   }
 

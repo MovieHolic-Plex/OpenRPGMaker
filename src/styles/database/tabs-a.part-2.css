@@ -322,7 +322,7 @@
 
 .db-class-dialog-backdrop {
   align-items: center;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(60, 48, 32, 0.10);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -335,7 +335,7 @@
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 10px 24px rgba(42, 37, 33, 0.14);
   max-height: calc(100vh - 32px);
   max-width: calc(100vw - 32px);
   overflow: auto;

@@ -3,7 +3,7 @@
   --rm2k3-enemy-preview-text: var(--text-1);
   --rm2k3-enemy-table-bg: var(--bg-raised);
   --rm2k3-enemy-table-text: var(--text-1);
-  --rm2k3-enemy-table-separator: #d2d2d2;
+  --rm2k3-enemy-table-separator: var(--border-subtle);
   --rm2k3-enemy-menu-ink: var(--text-primary);
   --rm2k3-enemy-menu-muted-ink: var(--text-muted);
   --rm2k3-enemy-menu-danger-ink: var(--danger);
@@ -90,15 +90,15 @@
 }
 
 .database-modal-body .db-enemy-species-status-warn {
-  color: #b45309;
+  color: var(--warning);
 }
 
 .database-modal-body .db-enemy-species-status-info {
-  color: #1d4ed8;
+  color: var(--accent);
 }
 
 .database-modal-body .db-enemy-species-status-error {
-  color: var(--danger, #b91c1c);
+  color: var(--danger, #C6403D);
 }
 
 .database-modal-body .db-enemy-species-mismatch-row {
@@ -191,7 +191,7 @@
 
 .db-enemy-dialog-backdrop {
   align-items: center;
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(42, 37, 33, 0.14);
   display: flex;
   inset: 0;
   justify-content: center;

@@ -2,15 +2,15 @@
   background: var(--bg-raised);
   border: 1.5px solid var(--border-default);
   border-radius: 16px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 28px rgba(42, 37, 33, 0.10), 0 1px 4px rgba(42, 37, 33, 0.06);
   display: grid;
   gap: 12px;
   padding: 14px;
 }
 .ai-proposal-card.is-destructive {
-  border-color: color-mix(in srgb, var(--danger, #e5534b) 70%, var(--border-default));
+  border-color: color-mix(in srgb, var(--danger, #C6403D) 70%, var(--border-default));
   border-width: 2px;
-  background: color-mix(in srgb, var(--danger-muted, #2a1214) 88%, var(--bg-raised));
+  background: color-mix(in srgb, var(--danger-muted, rgba(198, 64, 61, 0.13)) 88%, var(--bg-raised));
   box-shadow: 0 8px 28px rgba(229,83,75,0.18);
 }
 /* AI busy 중 입력 큐 표시(결함 ⑨). */
@@ -71,8 +71,8 @@
   max-width: 100%;
 }
 .ai-proposal-soft-vocab {
-  background: color-mix(in srgb, var(--accent, #7aa2ff) 10%, var(--bg-inset));
-  border: 1px solid color-mix(in srgb, var(--accent, #7aa2ff) 28%, var(--border-subtle));
+  background: color-mix(in srgb, var(--accent, var(--accent)) 10%, var(--bg-inset));
+  border: 1px solid color-mix(in srgb, var(--accent, var(--accent)) 28%, var(--border-subtle));
   border-radius: var(--radius-s);
   display: grid;
   gap: 4px;
@@ -171,8 +171,8 @@
   color: var(--accent);
 }
 .ai-vocab-badge.is-warn {
-  background: color-mix(in srgb, var(--danger, #d66) 15%, transparent);
-  color: var(--danger, #d66);
+  background: color-mix(in srgb, var(--danger, #C6403D) 15%, transparent);
+  color: var(--danger, #C6403D);
 }
 .ai-vocab-thumbs {
   display: flex;
@@ -269,7 +269,7 @@
 .ai-proposal-modal-backdrop {
   align-items: center;
   backdrop-filter: blur(3px);
-  background: color-mix(in srgb, #05070c 62%, transparent);
+  background: color-mix(in srgb, var(--bg-base) 62%, transparent);
   display: flex;
   inset: 0;
   justify-content: center;
@@ -284,10 +284,10 @@
 
 .ai-proposal-modal {
   animation: ai-proposal-modal-in 150ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
-  background: var(--bg-panel, #12141c);
-  border: 1px solid color-mix(in srgb, var(--accent, #7aa2ff) 26%, transparent);
+  background: var(--bg-panel, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--accent, var(--accent)) 26%, transparent);
   border-radius: 16px;
-  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 28px 90px rgba(60, 48, 32, 0.18);
   display: flex;
   flex-direction: column;
   max-height: 86vh;
@@ -302,7 +302,7 @@
 
 .ai-proposal-modal-header {
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid var(--border-subtle);
   display: flex;
   gap: 10px;
   padding: 14px 18px;
@@ -314,9 +314,9 @@
 }
 
 .ai-proposal-modal-count {
-  background: color-mix(in srgb, var(--accent, #7aa2ff) 22%, transparent);
+  background: color-mix(in srgb, var(--accent, var(--accent)) 22%, transparent);
   border-radius: 999px;
-  color: var(--accent, #9db8ff);
+  color: var(--accent, #4A57D6);
   font-size: 12px;
   font-weight: 700;
   padding: 2px 10px;
@@ -362,7 +362,7 @@
 }
 
 .ai-proposal-modal .ai-proposal-actions {
-  background: linear-gradient(to top, var(--bg-panel, #12141c) 82%, transparent);
+  background: linear-gradient(to top, var(--bg-panel, var(--bg-surface)) 82%, transparent);
   bottom: 0;
   display: flex;
   gap: 10px;
@@ -373,9 +373,9 @@
 }
 
 .ai-proposal-modal .ai-proposal-accept {
-  background: var(--accent, #4c7dff);
+  background: var(--accent, #4A57D6);
   border-color: transparent;
-  color: #fff;
+  color: var(--bg-overlay);
   font-weight: 700;
   min-width: 148px;
   padding: 10px 18px;

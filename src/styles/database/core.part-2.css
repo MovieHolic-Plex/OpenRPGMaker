@@ -36,13 +36,13 @@
 }
 
 .tileset-ai-temp-tile.upper {
-  filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.38));
+  filter: drop-shadow(0 1px 0 rgba(60, 48, 32, 0.10));
 }
 
 .tileset-ai-temp-number {
   align-items: center;
   background: rgba(255, 253, 247, 0.86);
-  border: 1px solid rgba(35, 35, 35, 0.32);
+  border: 1px solid rgba(42, 37, 33, 0.14);
   color: var(--text-primary);
   display: inline-flex;
   font: 600 9px/1 var(--font-mono);
@@ -241,7 +241,7 @@
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 0 rgba(0, 0, 0, 0.16);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(42, 37, 33, 0.12);
   height: 34px;
   image-rendering: pixelated;
   justify-self: start;
@@ -251,7 +251,7 @@
 
 .tileset-ai-loading-dot {
   background: var(--accent-primary);
-  box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 0 rgba(42, 37, 33, 0.14);
   height: 5px;
   position: absolute;
   width: 5px;

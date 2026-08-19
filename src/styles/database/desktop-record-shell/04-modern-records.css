@@ -10,20 +10,20 @@
     .db-common-events-workspace,
     .tileset-db-workspace
   )) {
-    --db-modern-accent: #2f67c9;
-    --db-modern-accent-strong: #255ab8;
+    --db-modern-accent: var(--accent);
+    --db-modern-accent-strong: var(--accent-hover);
     --db-modern-bg: var(--bg-raised);
-    --db-modern-chrome: #ffffff;
+    --db-modern-chrome: var(--bg-overlay);
     --db-modern-panel: var(--bg-raised);
     --db-modern-panel-alt: var(--bg-raised);
     --db-modern-line: var(--border-subtle);
     --db-modern-line-soft: var(--border-subtle);
     --db-modern-text: var(--text-1);
-    --db-modern-muted: #5f5a52;
+    --db-modern-muted: var(--text-2);
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 7px;
-    box-shadow: 0 18px 48px rgba(33, 35, 38, 0.18);
+    box-shadow: 0 18px 48px rgba(60, 48, 32, 0.12);
     color: var(--db-modern-text);
     font-family: "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     height: min(1118px, calc(100vh - 24px));
@@ -408,7 +408,7 @@
   }
 
   .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn.danger {
-    color: #a1282a;
+    color: var(--danger);
   }
 
   .database-modal-body .rm2k3-record-detail-pane {
@@ -659,7 +659,7 @@
   }
 
   .database-modal-body .db-field-support-notice {
-    background: color-mix(in srgb, var(--bg-raised, #fff) 94%, var(--db-modern-accent, #2f67c9) 6%);
+    background: color-mix(in srgb, var(--bg-raised, var(--bg-overlay)) 94%, var(--db-modern-accent, var(--accent)) 6%);
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 4px;
     color: var(--text-2, var(--text-secondary));
@@ -760,7 +760,7 @@
   }
 
   .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip {
-    background: color-mix(in srgb, var(--bg-raised, #fff) 88%, var(--db-modern-accent, #2f67c9) 12%);
+    background: color-mix(in srgb, var(--bg-raised, var(--bg-overlay)) 88%, var(--db-modern-accent, var(--accent)) 12%);
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 999px;
     color: var(--text-1);
@@ -770,13 +770,13 @@
   }
 
   .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip-badge {
-    background: color-mix(in srgb, var(--bg-raised, #fff) 82%, #c97a2f 18%);
+    background: color-mix(in srgb, var(--bg-raised, var(--bg-overlay)) 82%, #c97a2f 18%);
   }
 
   .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip.muted,
   .database-modal-body .rm2k3-detail-equipment .db-equipment-summary-chip[data-kind="empty"] {
     background: transparent;
-    color: var(--text-2, #5f5a52);
+    color: var(--text-2, var(--text-2));
     font-weight: 500;
   }
 

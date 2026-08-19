@@ -109,7 +109,7 @@
 /* 비활성 쪽 커서 — 잔상만. ::before 마커도 제거해 "활성 커서는 하나" 를 지킨다. */
 .rm2k3-status-menu.status-menu-detail-focus .status-menu-command.selected,
 .rm2k3-status-menu:not(.status-menu-detail-focus) .status-menu-detail-action.selected {
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--border-subtle);
   border-color: transparent;
   box-shadow: none;
 }

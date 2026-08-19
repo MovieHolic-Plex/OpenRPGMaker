@@ -13,7 +13,7 @@
 
 .db-list-thumb {
   align-self: center;
-  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
   background-position: center;
   background-repeat: no-repeat;
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
@@ -121,7 +121,7 @@
 }
 
 .db-actor-resource-list {
-  background: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background: var(--bg-inset, rgba(42, 37, 33, 0.14));
   border: 1px inset var(--border-default, rgba(255, 255, 255, 0.2));
   display: grid;
   max-height: 260px;
@@ -164,7 +164,7 @@
 
 .db-actor-resource-option-thumb,
 .db-actor-resource-preview-visual {
-  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   box-sizing: border-box;
   display: block;
@@ -194,7 +194,7 @@
 }
 
 .db-actor-resource-empty {
-  color: var(--text-3, rgba(255, 255, 255, 0.5));
+  color: var(--text-3, rgba(255,255,255,0.5));
   display: grid;
   min-height: 36px;
   place-items: center;
@@ -215,7 +215,7 @@
 }
 
 .db-resource-picker-list {
-  background: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background: var(--bg-inset, rgba(42, 37, 33, 0.14));
   border: 1px inset var(--border-default, rgba(255, 255, 255, 0.2));
   display: grid;
   max-height: 280px;
@@ -259,7 +259,7 @@
 .db-resource-picker-option-thumb,
 .db-resource-picker-preview-visual,
 .db-resource-picker-inline-thumb {
-  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   box-sizing: border-box;
   display: block;
@@ -290,7 +290,7 @@
 }
 
 .db-resource-picker-empty {
-  color: var(--text-3, rgba(255, 255, 255, 0.5));
+  color: var(--text-3, rgba(255,255,255,0.5));
   display: grid;
   min-height: 36px;
   place-items: center;
@@ -351,7 +351,7 @@
 }
 
 .db-system-party-face {
-  background-color: var(--bg-inset, rgba(0, 0, 0, 0.18));
+  background-color: var(--bg-inset, rgba(42, 37, 33, 0.14));
   background-repeat: no-repeat;
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   box-sizing: border-box;

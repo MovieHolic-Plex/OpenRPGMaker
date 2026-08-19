@@ -7,7 +7,7 @@
 
   .database-modal-body .rm2k3-record-list-pane .db-list:empty,
   .database-modal-body .rm2k3-record-list-pane .db-list:not(:has(.db-list-row)) {
-    background: var(--bg-inset, rgba(0, 0, 0, 0.12));
+    background: var(--bg-inset, rgba(42, 37, 33, 0.08));
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
   }
@@ -42,7 +42,7 @@
   /* Detail empty state card */
   .database-modal-body .rm2k3-record-detail-pane > .db-detail-form:only-child {
     align-content: start;
-    background: var(--bg-inset, rgba(0, 0, 0, 0.14));
+    background: var(--bg-inset, rgba(42, 37, 33, 0.10));
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     color: var(--text-2, var(--text-primary));
