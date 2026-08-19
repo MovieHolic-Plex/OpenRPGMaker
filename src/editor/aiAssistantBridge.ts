@@ -181,6 +181,15 @@ function stopBridgeClient(): void {
   bridgeConnected = false;
 }
 
+// 브리지 서버가 없는 개발 부팅에서 1.5~2초 재시도가 콘솔을 ERR_CONNECTION_REFUSED로
+// 도배했다(2026-08-18 UX 리뷰 P2-10). 연속 실패 시 지수 백오프(최대 60초)하고,
+// 한 번이라도 연결되면 빠른 재시도로 복귀한다.
+let consecutivePollFailures = 0;
+
+function pollRetryDelayMs(base: number): number {
+  return Math.min(base * 2 ** Math.min(consecutivePollFailures, 5), 60000);
+}
+
 async function pollLoop(): Promise<void> {
   if (typeof window === "undefined") return;
   pollAbort?.abort();
@@ -211,9 +220,11 @@ async function pollLoop(): Promise<void> {
     });
     if (!res.ok) {
       bridgeConnected = false;
-      schedule(1500);
+      consecutivePollFailures += 1;
+      schedule(pollRetryDelayMs(1500));
       return;
     }
+    consecutivePollFailures = 0;
     const payload = (await res.json()) as { command?: BridgeCommand | null };
     const command = payload.command;
     if (!command) {
@@ -230,7 +241,8 @@ async function pollLoop(): Promise<void> {
     schedule(20);
   } catch {
     bridgeConnected = false;
-    schedule(2000);
+    consecutivePollFailures += 1;
+    schedule(pollRetryDelayMs(2000));
   }
 }
 

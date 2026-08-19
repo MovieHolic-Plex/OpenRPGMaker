@@ -66,3 +66,16 @@ export function parseQuickReplies(text: string): string[] {
   }
   return [];
 }
+
+/** 말풍선에는 선택지 줄을 남기지 않는다 — 칩이 그 자리를 대신한다. */
+export function stripQuickReplyLine(text: string): string {
+  const lines = text.split("\n");
+  for (let i = lines.length - 1; i >= 0; i -= 1) {
+    if (lines[i].trim().startsWith(QUICK_REPLY_MARKER)) {
+      lines.splice(i, 1);
+      while (lines.length > 0 && lines[lines.length - 1].trim() === "") lines.pop();
+      return lines.join("\n");
+    }
+  }
+  return text;
+}

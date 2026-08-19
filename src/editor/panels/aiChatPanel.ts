@@ -34,6 +34,7 @@ import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { renderMarkdown } from "@/util/markdown";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import {
@@ -58,7 +59,7 @@ import {
   type ConversationRecord,
 } from "@/ai/conversationStore";
 import { recordAiActivity } from "@/ai/activityLog";
-import { parseQuickReplies } from "@/ai/interviewPrompt";
+import { parseQuickReplies, QUICK_REPLY_MARKER, stripQuickReplyLine } from "@/ai/interviewPrompt";
 import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type SkillRunContext } from "@/ai/skills";
 import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { loadAiConfig } from "@/ai/llmClient";
@@ -268,7 +269,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let autoCollapseTimer: number | null = null;
   let volatileFadeTimer: number | null = null;
   let volatileZone: HTMLElement | null = null;
-  const volatileCtl = createVolatileController(() => turnBusy || !!runningProgress);
+  // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
+  const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
+  const hasPendingQuestion = (): boolean => chipsHost.childElementCount > 0;
+  const volatileCtl = createVolatileController(() => turnBusy || !!runningProgress || hasPendingQuestion());
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
   let scheduleCollapseAfterAiWork: () => void = () => {};
@@ -282,6 +286,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     volatileFadeTimer = null;
   };
   const scheduleVolatileFade = (): void => {
+    if (hasPendingQuestion()) {
+      volatileCtl.clear();
+      return;
+    }
     volatileCtl.schedule();
     if (!volatileZone || turnBusy || runningProgress) return;
     if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
@@ -289,11 +297,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     volatileFadeTimer = window.setTimeout(() => {
       volatileFadeTimer = null;
       if (turnBusy || runningProgress || !volatileZone) return;
+      if (hasPendingQuestion()) return;
       volatileZone.classList.add("is-faded");
     }, VOLATILE_OVERLAY_IDLE_MS);
   };
-  // 원탭 답변 칩(맵 인터뷰 등 "[선택지] a | b" 마커가 있는 응답에 표시).
-  const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   let exportButton: HTMLButtonElement | null = null;
   const hasExportableConversation = (): boolean =>
     [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length > 0;
@@ -455,7 +462,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const renderQuickReplies = (assistantText: string): void => {
     chipsHost.replaceChildren();
     const options = parseQuickReplies(assistantText);
-    if (options.length === 0) return;
+    if (options.length === 0) {
+      chipsHost.remove();
+      return;
+    }
     chipsHost.classList.add("ai-choice-block");
     for (const [index, option] of options.entries()) {
       chipsHost.append(
@@ -473,6 +483,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         })
       );
     }
+    // 말풍선 클래스는 ai-chat-assistant(aiConversationLog.appendConversationBubble 계약).
+    // 마커 줄은 말풍선에서 지우고(칩이 대신한다) 칩을 말풍선 바로 아래에 붙인다.
+    const lastAssistant = [...log.querySelectorAll(".ai-chat-bubble.ai-chat-assistant")].at(-1);
+    if (lastAssistant) {
+      const displayed = lastAssistant.textContent ?? "";
+      if (displayed.includes(QUICK_REPLY_MARKER)) {
+        lastAssistant.replaceChildren(renderMarkdown(stripQuickReplyLine(assistantText)));
+      }
+      lastAssistant.after(chipsHost);
+    } else {
+      log.append(chipsHost);
+    }
+    // 칩이 로그 하단에 걸려 잘리지 않게 맨 아래로 스크롤.
+    log.scrollTop = log.scrollHeight;
   };
 
   let selectionTaskActive = false;
@@ -1076,6 +1100,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           collapseAfterAiWork = false;
         } else if ((status.textContent ?? "") === "검토 대기") {
           /* stay open until onProposalSettled */
+        } else if (hasPendingQuestion()) {
+          /* AI가 답을 기다리는 중 — 사용자가 답하거나 직접 접을 때까지 열어 둔다
+             (2026-08-18 UX 리뷰 P1-4: 질문이 자동 접힘으로 증발하던 결함) */
         } else {
           scheduleCollapseAfterAiWork();
         }
