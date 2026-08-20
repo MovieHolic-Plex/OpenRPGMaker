@@ -123,6 +123,10 @@ export interface BattleSessionState {
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  // 레거시 호환 플래그(setFlag 커맨드 기준 상태).
+  readonly flags?: Readonly<Record<string, boolean>>;
+  // 타이머 잔여 초(timer 커맨드/timer 조건 기준 상태).
+  readonly timers?: Readonly<Record<string, number>>;
   readonly gameTime?: GameTime;
   readonly friendship?: Readonly<Record<string, number>>;
 }
@@ -347,6 +351,10 @@ export interface BattleEventStateSnapshot {
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;
   readonly actorBattleCommands?: Readonly<Record<string, readonly string[]>>;
+  // 레거시 호환 플래그(setFlag) — applyBattleRewardsToSession 이 세션 flags 로 되돌려 쓴다.
+  readonly flags?: Readonly<Record<string, boolean>>;
+  // 타이머 잔여 초(timer 커맨드) — applyBattleRewardsToSession 이 세션 timers 로 되돌려 쓴다.
+  readonly timers?: Readonly<Record<string, number>>;
 }
 
 export interface BattleSnapshot {

@@ -110,6 +110,13 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
       session.selfSwitches[eventId] = { ...session.selfSwitches[eventId], ...keys };
     }
   }
+  // 레거시 호환 flags / 타이머 잔여 초: 셀프 스위치와 같은 병합 write-back 패턴(Step 3 2026-08-20).
+  if (eventState.flags) {
+    for (const [key, value] of Object.entries(eventState.flags)) session.flags[key] = value;
+  }
+  if (eventState.timers) {
+    for (const [timerId, seconds] of Object.entries(eventState.timers)) session.timers[timerId] = seconds;
+  }
   session.inventory = { ...eventState.inventory };
   session.itemUseCharges = { ...(eventState.itemUseCharges ?? {}) };
   if (typeof eventState.gold === "number") session.gold = Math.max(0, Math.trunc(eventState.gold));

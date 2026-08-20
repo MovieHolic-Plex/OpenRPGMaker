@@ -255,6 +255,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           ?? {}
       ).map(([id, cmds]) => [id, [...cmds]])
     ),
+    // 레거시 호환 flags / 타이머 잔여 초: setFlag·timer 커맨드가 쓰고 timer 조건이 읽는
+    // 세션 스냅샷 사본. 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+    flags: { ...(sessionState.flags ?? {}) },
+    timers: { ...(sessionState.timers ?? {}) },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
@@ -287,6 +291,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       escaped = true;
       result = "escape";
       phase = "resolved";
+    },
+    endBattleAsDefeat: () => {
+      // 배틀 이벤트 gameOver/killPlayer: 전투를 패배로 즉시 종결(abortBattle 의 defeat 대칭).
+      // defeat 이후 처리는 canLose 의미론을 따른다 — canLose=false 면 호스트가 게임 오버 경로,
+      // canLose=true 면 패배 복귀(+세션 write-back). 자연 패배(resolveOutcome)와 동일 정리 수행.
+      result = "defeat";
+      phase = "resolved";
+      clearEndOfBattleStates();
     },
     wait: (ms) => {
       // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,

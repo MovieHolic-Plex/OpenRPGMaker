@@ -1,10 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { createBattleRuntime } from "@/battle/runtime";
 import { simulateBattle } from "@/battle/simulate";
+import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { deserialize } from "@/project/io";
-import type { ActorParameterKey, Project } from "@/project/types";
+import { startSession } from "@/project/session";
+import type { ActorParameterKey, Command, Project } from "@/project/types";
 import strictFixture from "./fixtures/projects/battle-strict-v3.json";
 import bossFixture from "./fixtures/projects/battle-active-slots-boss-v3.json";
+import battleFixture from "./fixtures/projects/battle-v3.json";
 
 const PARTY4 = ["actor_warrior", "actor_mage", "actor_rogue", "actor_priest"] as const;
 
@@ -315,5 +318,185 @@ describe("battle active slots, switching, and battle events", () => {
       kind: "message",
       detail: "보스: 아직 끝나지 않았다",
     }));
+  });
+});
+
+// Step 3(2026-08-20) Tier-1 배틀 이벤트 커맨드 회귀 스펙.
+// 하네스는 battleEventsSelfSwitch.test.ts 관례(battle-v3 + troop_slime + defend 1액션)와 동일.
+describe("battle event Tier-1 commands (Step 3)", () => {
+  const PAGE_ID = "page_tier1";
+
+  function tier1Project(): Project {
+    return deserialize(JSON.stringify(battleFixture));
+  }
+
+  function runPage(project: Project, commands: readonly Command[]) {
+    const troop = project.database.troops.find((record) => record.id === "troop_slime");
+    if (!troop) throw new Error("missing troop_slime");
+    troop.battleEventPages = [{
+      id: PAGE_ID,
+      name: "Tier-1",
+      conditions: [{ kind: "actorCommand", actorId: "actor_hero", commandId: "defend" }],
+      span: "battle",
+      commands: [...commands],
+    }];
+    const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true });
+    runtime.tick(1_000);
+    runtime.performActorCommand({ kind: "defend" });
+    return runtime;
+  }
+
+  it("gotoLabel 은 라벨까지의 명령을 건너뛰고 라벨 이후를 실행한다", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [
+      { kind: "setSwitch", switchId: "sw_a", value: true },
+      { kind: "gotoLabel", name: "skip" },
+      { kind: "setSwitch", switchId: "sw_b", value: true },
+      { kind: "label", name: "skip" },
+      { kind: "setSwitch", switchId: "sw_c", value: true },
+    ]);
+    const switches = runtime.snapshot().eventState.switches;
+    expect(switches.sw_a).toBe(true);
+    expect(switches.sw_b).toBeUndefined();
+    expect(switches.sw_c).toBe(true);
+  });
+
+  it("fork 분기 안에서 페이지 최상위 라벨로 점프한다(맵 gotoLabel 과 동형의 스택 탐색)", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [
+      {
+        kind: "fork",
+        // 미설정 스위치는 false → value:false 조건은 참(분기 진입).
+        condition: { kind: "switch", switchId: "sw_unset", value: false },
+        then: [
+          { kind: "gotoLabel", name: "out" },
+          { kind: "setSwitch", switchId: "sw_skipped_inside", value: true },
+        ],
+      },
+      { kind: "setSwitch", switchId: "sw_skipped_mid", value: true },
+      { kind: "label", name: "out" },
+      { kind: "setSwitch", switchId: "sw_end", value: true },
+    ]);
+    const switches = runtime.snapshot().eventState.switches;
+    expect(switches.sw_end).toBe(true);
+    expect(switches.sw_skipped_inside).toBeUndefined();
+    expect(switches.sw_skipped_mid).toBeUndefined();
+  });
+
+  it("미진입 fork 분기 안의 라벨은 찾지 못하고 unsupported 로그 후 계속 진행한다(보수적 스코프)", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [
+      {
+        kind: "fork",
+        condition: { kind: "switch", switchId: "sw_unset", value: true },
+        then: [{ kind: "label", name: "inner" }],
+      },
+      { kind: "gotoLabel", name: "inner" },
+      { kind: "setSwitch", switchId: "sw_after", value: true },
+    ]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.eventState.switches.sw_after).toBe(true);
+    expect(snapshot.eventLogs.some((log) => log.kind === "unsupported" && log.detail === "missing label: inner")).toBe(true);
+  });
+
+  it("loop 는 breakLoop 로 탈출하고 루프 다음 명령을 이어 실행한다", () => {
+    const project = tier1Project();
+    project.variables.push({ id: "var_count", name: "카운트" });
+    const runtime = runPage(project, [
+      {
+        kind: "loop",
+        body: [
+          { kind: "setVariable", variableId: "var_count", op: "+=", value: 1 },
+          {
+            kind: "fork",
+            condition: { kind: "variable", variableId: "var_count", op: ">=", value: 3 },
+            then: [{ kind: "breakLoop" }],
+          },
+        ],
+      },
+      { kind: "setSwitch", switchId: "sw_after_loop", value: true },
+    ]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.eventState.variables.var_count).toBe(3);
+    expect(snapshot.eventState.switches.sw_after_loop).toBe(true);
+  });
+
+  it("탈출 없는 loop 는 반복 상한 가드로 종료하고 unsupported 로그를 남긴다", () => {
+    const project = tier1Project();
+    project.variables.push({ id: "var_guard", name: "가드" });
+    const runtime = runPage(project, [
+      { kind: "loop", body: [{ kind: "setVariable", variableId: "var_guard", op: "+=", value: 1 }] },
+      { kind: "setSwitch", switchId: "sw_after_guard", value: true },
+    ]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.eventState.variables.var_guard).toBe(10_000);
+    expect(snapshot.eventState.switches.sw_after_guard).toBe(true);
+    expect(snapshot.eventLogs.some((log) => log.kind === "unsupported" && log.detail === "loop iteration limit reached")).toBe(true);
+  });
+
+  it("setFlag/timer 는 배틀 이벤트 state 에 기록되고 전투 종료 시 세션으로 write-back 된다", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [
+      { kind: "setFlag", flag: "flag_boss_seen", value: true },
+      { kind: "timer", action: "set", seconds: 90, timerId: "timer1" },
+      { kind: "timer", action: "start", seconds: 45, timerId: "timer2" },
+      { kind: "timer", action: "stop", timerId: "timer2" },
+    ]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.eventState.flags?.flag_boss_seen).toBe(true);
+    expect(snapshot.eventState.timers?.timer1).toBe(90);
+    // stop 은 남은 초를 유지한다(진행/정지는 맵 씬 소관).
+    expect(snapshot.eventState.timers?.timer2).toBe(45);
+
+    const session = startSession(project);
+    applyBattleRewardsToSession(
+      session,
+      { result: "victory", rewards: snapshot.rewards, actors: snapshot.actors, eventState: snapshot.eventState },
+      project
+    );
+    expect(session.flags.flag_boss_seen).toBe(true);
+    expect(session.timers.timer1).toBe(90);
+    expect(session.timers.timer2).toBe(45);
+  });
+
+  it("showAnimation 은 showBattleAnimation 콜백으로 라우팅되어 lastAnimation 을 세팅한다", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [
+      { kind: "showAnimation", target: "player", animationId: "anim_hit" },
+    ]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.lastAnimation?.animationId).toBe("anim_hit");
+    // "player" 타깃은 행동 중 액터(방어한 영웅)의 배틀러 id 로 해석된다.
+    expect(snapshot.lastAnimation?.targetId).toBe(snapshot.actors[0]?.id);
+    expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "showAnimation anim_hit")).toBe(true);
+  });
+
+  it("gameOver 는 defeat 결과로 매핑되어 전투를 즉시 종결한다(후처리는 canLose 의미론)", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [{ kind: "gameOver" }]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.result).toBe("defeat");
+    expect(snapshot.phase).toBe("resolved");
+    expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "gameOver→defeat")).toBe(true);
+  });
+
+  it("killPlayer 는 액터 HP 를 0 으로 만들고 defeat 로 종결한다", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [{ kind: "killPlayer", message: "쓰러졌다" }]);
+    const snapshot = runtime.snapshot();
+    expect(snapshot.result).toBe("defeat");
+    expect(snapshot.actors.every((actor) => actor.hp === 0)).toBe(true);
+    expect(snapshot.eventLogs.some((log) => log.kind === "message" && log.detail === "killPlayer→defeat 쓰러졌다")).toBe(true);
+  });
+
+  it("changeFace/displayTextSettings 는 메시지 스트립 프레젠테이션 로그를 남긴다", () => {
+    const project = tier1Project();
+    const runtime = runPage(project, [
+      { kind: "changeFace", resourceId: "easyrpg-faceset-actor1", faceIndex: 2, position: "left", flipHorizontally: false },
+      { kind: "displayTextSettings", format: "normal", position: "bottom", preventObscuringPlayer: false, allowEventMovementDuringWait: false },
+    ]);
+    const logs = runtime.snapshot().eventLogs;
+    expect(logs.some((log) => log.kind === "message" && log.detail === "changeFace easyrpg-faceset-actor1#2")).toBe(true);
+    expect(logs.some((log) => log.kind === "message" && log.detail === "displayTextSettings normal/bottom")).toBe(true);
   });
 });

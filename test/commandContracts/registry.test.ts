@@ -91,6 +91,10 @@ describe("native command guarantee registry", () => {
     // 이미 구현돼 있던 changeGold/changeExp/changeLevel/learnSkill/changeParty/changeFriendship/
     // getFriendship/wait/playAudio/stopAudio 10종을 troop-full 로 승격했다.
     // 실행 22종 중 m2Command(commandId 별 동적 판정)와 inputWait(acknowledged 로그만)는 제외.
+    // Step 2(2026-08-20): setSelfSwitch — ownerEventId 셀프 스위치 기록/write-back.
+    // Step 3(2026-08-20): Tier-1 11종 — label/gotoLabel/loop/breakLoop(프레임 머신),
+    // setFlag/timer(state write-back), showAnimation/gameOver/killPlayer/changeFace/
+    // displayTextSettings(콜백·defeat 매핑·프레젠테이션 로그).
     const expected = [
       "text",
       "choices",
@@ -112,6 +116,18 @@ describe("native command guarantee registry", () => {
       "wait",
       "playAudio",
       "stopAudio",
+      "setSelfSwitch",
+      "label",
+      "gotoLabel",
+      "loop",
+      "breakLoop",
+      "setFlag",
+      "timer",
+      "showAnimation",
+      "gameOver",
+      "killPlayer",
+      "changeFace",
+      "displayTextSettings",
     ].sort();
     const actual = COMMAND_KINDS.filter(
       (kind) => COMMAND_GUARANTEES[kind].supportByContext.troop === "full"

@@ -99,20 +99,24 @@ const scopedPartial = { map: "partial", common: "partial", troop: "partial" } as
 
 export const COMMAND_GUARANTEES = {
   text: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
-  changeFace: guarantee("dialogue"),
+  // changeFace: battleEvents.ts 가 메시지 스트립 프레젠테이션 상태를 이벤트 로그로 실행(Step 3 2026-08-20).
+  changeFace: guarantee("dialogue", { support: troopFull }),
   choices: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
   fork: guarantee("controlFlow", { quick: true, support: troopFull }),
   // wait: battleEvents.ts 가 pendingWaitMs 적립으로 실제 실행(2026-08-20 executor 실측 대조).
   wait: guarantee("controlFlow", { ...playerPause, support: troopFull }),
   inputWait: guarantee("dialogue", playerPause),
   inputNumber: guarantee("dialogue", playerPause),
-  label: guarantee("controlFlow"),
-  gotoLabel: guarantee("controlFlow"),
-  loop: guarantee("controlFlow"),
-  breakLoop: guarantee("controlFlow"),
+  // label/gotoLabel/loop/breakLoop: battleEvents.ts pc 기반 프레임 머신이 페이지 로컬로
+  // 실제 실행(Step 3 2026-08-20). 라벨 탐색은 맵 gotoLabel(stack.ts)과 동형(활성 프레임 스택).
+  label: guarantee("controlFlow", { support: troopFull }),
+  gotoLabel: guarantee("controlFlow", { support: troopFull }),
+  loop: guarantee("controlFlow", { support: troopFull }),
+  breakLoop: guarantee("controlFlow", { support: troopFull }),
   setSwitch: guarantee("state", { quick: true, support: troopFull }),
   setVariable: guarantee("state", { quick: true, support: troopFull }),
-  timer: guarantee("time", { ...playerPause, quick: true }),
+  // timer: battleEvents.ts 가 배틀 이벤트 timers state 를 실제 변경(Step 3, write-back 포함).
+  timer: guarantee("time", { ...playerPause, quick: true, support: troopFull }),
   advanceTime: guarantee("time", { ...playerPause, direct: false, quick: true, support: scopedPartial }),
   advanceCropGrowth: guarantee("time", { direct: false, quick: true, support: scopedPartial }),
   setTime: guarantee("time", { ...playerPause, direct: false, support: scopedPartial }),
@@ -183,23 +187,28 @@ export const COMMAND_GUARANTEES = {
   addLight: guarantee("atmosphere"),
   removeLight: guarantee("atmosphere"),
   setWeather: guarantee("atmosphere", { ...playerPause, quick: true }),
-  showAnimation: guarantee("media", { ...playerPause, quick: true }),
+  // showAnimation: battleEvents.ts 가 showBattleAnimation 콜백(m2-103 동일 경로)으로 실제 실행(Step 3).
+  showAnimation: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   showPicture: guarantee("media", { ...playerPause, quick: true }),
   erasePicture: guarantee("media", playerPause),
   // playAudio/stopAudio: battleEvents.ts 가 호스트 오디오 콜백으로 실제 실행(troop-full).
   playAudio: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
   stopAudio: guarantee("media", { ...playerPause, support: troopFull }),
   cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
-  displayTextSettings: guarantee("dialogue"),
+  // displayTextSettings: battleEvents.ts 가 메시지 표시 설정을 이벤트 로그로 실행(Step 3).
+  displayTextSettings: guarantee("dialogue", { support: troopFull }),
   shop: guarantee("commerce", playerPause),
   inn: guarantee("commerce", playerPause),
   checkpointSave: guarantee("system", { direct: false, quick: true, support: scopedPartial }),
+  // killPlayer: battleEvents.ts 가 액터 HP 0 + endBattleAsDefeat 로 defeat 종결(Step 3).
+  // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
   killPlayer: guarantee("system", {
     executionOwner: "player",
     completion: "terminalHandoff",
     direct: false,
     quick: true,
-    support: scopedPartial,
+    troopAuthoring: true,
+    support: { ...scopedPartial, troop: "full" },
   }),
   triggerEnding: guarantee("system", {
     executionOwner: "player",
@@ -208,10 +217,12 @@ export const COMMAND_GUARANTEES = {
     quick: true,
     support: scopedPartial,
   }),
+  // gameOver: battleEvents.ts 가 endBattleAsDefeat 콜백으로 defeat 결과 매핑(Step 3).
   gameOver: guarantee("system", {
     executionOwner: "player",
     completion: "terminalHandoff",
     quick: true,
+    support: troopFull,
   }),
   ending: guarantee("system", {
     executionOwner: "player",
@@ -222,7 +233,13 @@ export const COMMAND_GUARANTEES = {
     executionOwner: "player",
     completion: "terminalHandoff",
   }),
-  setFlag: guarantee("compatibility", { direct: false, support: scopedPartial }),
+  // setFlag: battleEvents.ts 가 배틀 이벤트 flags state 를 실제 변경(Step 3, write-back 포함).
+  // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
+  setFlag: guarantee("compatibility", {
+    direct: false,
+    troopAuthoring: true,
+    support: { ...scopedPartial, troop: "full" },
+  }),
   // setSelfSwitch: battleEvents.ts 가 ownerEventId(전투 기동 이벤트)의 셀프 스위치를
   // 스냅샷에 실제 기록하고 전투 종료 시 세션에 되돌려 쓴다(troop-full, Step 2 2026-08-20).
   // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
