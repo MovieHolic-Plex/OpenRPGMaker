@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { actorCurveCards, actorExperiencePanel } from "@/editor/panels/actorRecordCurveEditors";
 import { classCurveCards } from "@/editor/panels/databaseClassCurveEditors";
-import { renderClassExperiencePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
+import { renderExperienceCurvePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
+import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -80,7 +81,17 @@ describe("class experience curve dialog draft + delta tab (P7)", () => {
     const record = store.getCurrent().database.classes[0];
     if (!record) throw new Error("expected default class");
     const host = el("div") as unknown as FakeElement;
-    const refresh = (): void => renderClassExperiencePanel(record, host as unknown as HTMLElement, refresh);
+    const refresh = (): void =>
+      renderExperienceCurvePanel(
+        {
+          testidPrefix: "db-class-exp",
+          dialogLabel: "경험치 곡선 설정",
+          readCurve: () => store.getCurrent().database.classes.find((entry) => entry.id === record.id)?.expCurve ?? record.expCurve,
+          onCommit: (expCurve) => updateDatabaseRecord("classes", record.id, { expCurve }),
+          refresh,
+        },
+        host as unknown as HTMLElement
+      );
     refresh();
     const edit = findByTestId(host, "db-class-exp-edit");
     if (!edit) throw new Error("missing exp edit button");

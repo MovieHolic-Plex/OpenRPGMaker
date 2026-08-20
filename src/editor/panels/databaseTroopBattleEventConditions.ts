@@ -84,25 +84,15 @@ export function initialBattleEventConditions(kind: TroopEventConditionKind): Bat
   }
 }
 
-export function kindOfBattleEventCondition(condition: BattleEventCondition | undefined): TroopEventConditionKind {
+/**
+ * 첫 조건의 편집 가능한 종류. 이 화면에 전용 폼이 없는 종류
+ * (selfSwitch/gold/timer/item/actor/actorTurn/enemyTurn 등)는 undefined 를 반환해
+ * 호출부가 값을 덮어쓰지 않고 잠그도록 한다.
+ */
+export function kindOfBattleEventCondition(condition: BattleEventCondition | undefined): TroopEventConditionKind | undefined {
   if (!condition) return "none";
-  if (condition.kind === "actorTurn" || condition.kind === "enemyTurn") return "turn";
-  switch (condition.kind) {
-    case "switch":
-    case "variable":
-    case "turn":
-    case "onRound":
-    case "everyRound":
-    case "enemyHp":
-    case "enemyHpBelow":
-    case "actorHp":
-    case "actorCommand":
-      return condition.kind;
-    // selfSwitch/gold/timer/actor/item 은 배틀 조건 UI가 전용 폼이 없으므로
-    // 가장 가까운 기본 폼(switch)으로 매핑한다.
-    default:
-      return "switch";
-  }
+  const supported = TROOP_EVENT_CONDITION_KINDS.find((kind) => kind === condition.kind);
+  return supported;
 }
 
 function switchControls(record: TroopRecord, page: BattleEventPageRecord, condition: BattleEventCondition | undefined): HTMLElement[] {
@@ -220,14 +210,13 @@ function setFreshCondition(
   page: BattleEventPageRecord,
   update: (condition: BattleEventCondition | undefined) => BattleEventCondition
 ): void {
-  updateTroopBattleEventPage(record, page, { conditions: [update(currentCondition(record, page))] });
-}
-
-function currentCondition(record: TroopRecord, page: BattleEventPageRecord): BattleEventCondition | undefined {
-  return store.getCurrent().database.troops
-    .find((entry) => entry.id === record.id)
-    ?.battleEventPages.find((entry) => entry.id === page.id)
-    ?.conditions[0];
+  // 런타임은 conditions 를 전부 AND 로 평가한다(battleEvents.ts). 첫 조건만 편집하고
+  // 나머지는 그대로 보존해야 2번째 이후 조건이 무경고로 사라지지 않는다.
+  const stored =
+    store.getCurrent().database.troops
+      .find((entry) => entry.id === record.id)
+      ?.battleEventPages.find((entry) => entry.id === page.id)?.conditions ?? [];
+  updateTroopBattleEventPage(record, page, { conditions: [update(stored[0]), ...stored.slice(1)] });
 }
 
 function labelField(label: string, control: HTMLElement): HTMLElement {

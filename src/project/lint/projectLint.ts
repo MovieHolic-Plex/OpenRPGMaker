@@ -789,6 +789,10 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   if (system.monsterCollection === true && monsterSpecies.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:monster-collection-empty", message: "포획이 활성인데 몬스터 종족이 0 — 전투에 포획 명령이 나타나지 않습니다." });
   }
+  // 수집 게이트 OFF + 종족 데이터 조합은 여기서 경고하지 않는다: 출하 기본 프로젝트가 이미
+  // 종족 120개·포획 아이템 3개를 수집 OFF 상태로 싣고 있어 모든 프로젝트에서 발화한다(노이즈).
+  // 대신 수집 3개 탭 상단 배너(db-collection-gate-warn)가 맥락 안에서 알린다.
+  // 상성표에 없는 타입도 같은 이유로 여기서 경고하지 않는다(종족 탭 db-monster-species-type-warn 칩이 담당).
   // 2. monsterBattleParty && no species
   if (system.monsterBattleParty === true && monsterSpecies.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:monster-battle-party-empty", message: "몬스터 파티 전투가 활성인데 종족이 0 — 파티에 몬스터를 넣을 수 없습니다." });

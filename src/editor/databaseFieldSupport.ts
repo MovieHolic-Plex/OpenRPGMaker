@@ -2,7 +2,7 @@ export type DatabaseFieldRuntimeSupport = "runtime" | "editorOnly" | "authoringO
 
 export type DatabaseFieldSupportDescriptor = Readonly<{
   field: string;
-  owner: "item" | "equipment" | "itemAndEquipment";
+  owner: "item" | "equipment" | "itemAndEquipment" | "enemy";
   support: DatabaseFieldRuntimeSupport;
   label: string;
   help: string;
@@ -99,6 +99,27 @@ export const DATABASE_FIELD_SUPPORT = Object.freeze([
     support: "runtime",
     label: "상태 저항률",
     help: "장비가 제공하는 상태 저항 판정에 적용합니다.",
+  },
+  {
+    field: "transparent",
+    owner: "enemy",
+    support: "authoringOnly",
+    label: "투명",
+    help: "데이터베이스 미리보기에서만 반투명하게 보입니다. 전투 렌더링에는 적용되지 않습니다.",
+  },
+  {
+    field: "flying",
+    owner: "enemy",
+    support: "authoringOnly",
+    label: "비행",
+    help: "현재 전투·필드 런타임이 읽지 않습니다. 분류용 메모로만 쓰입니다.",
+  },
+  {
+    field: "graphicHue",
+    owner: "enemy",
+    support: "authoringOnly",
+    label: "색조",
+    help: "데이터베이스 미리보기 색조입니다. 전투 스프라이트 색조는 지원하지 않습니다.",
   },
 ] as const satisfies readonly DatabaseFieldSupportDescriptor[]);
 

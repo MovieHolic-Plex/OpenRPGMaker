@@ -1,7 +1,8 @@
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { renderDatabaseCommandListEditor } from "@/editor/panels/databaseCommandListAdapter";
 import { battleEventCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
-import { selectLiteral } from "@/editor/panels/databaseControls";
+import { selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { checkboxField } from "@/editor/panels/databaseEnemyRecordSupport";
 import { battleEventCommandControls } from "@/editor/panels/databaseTroopBattleEventCommands";
 import {
   battleEventConditionControls,
@@ -54,11 +55,31 @@ function emptyPageControls(): HTMLElement[] {
   return [el("div", { class: "db-preview", text: "페이지: 0 / 조건: 없음" })];
 }
 
+const EVENT_SPAN_OPTIONS = [
+  { id: "battle", name: "전투 중 1회" },
+  { id: "turn", name: "매 라운드" },
+  { id: "moment", name: "매 라운드(구 moment)" },
+] as const;
+
 function pageControls(record: TroopRecord, page: BattleEventPageRecord, rerender: () => void): HTMLElement[] {
   const conditionKind = kindOfBattleEventCondition(page.conditions[0]);
+  const runOnce = checkboxField("1회만 발동", "db-field-troop-event-run-once", page.runOnce ?? page.span === "battle", (value) => {
+    // 해제는 undefined 로 되돌려 런타임 기본값(runOnce ?? span === "battle")을 유지한다.
+    updateTroopBattleEventPage(record, page, { runOnce: value ? true : undefined });
+    rerender();
+  });
+  runOnce.title = '스팬이 "전투 중 1회"면 기본으로 1회만 발동합니다.';
   return [
-    selectLiteral("스팬", "db-field-troop-event-span", page.span, EVENT_SPANS, (span) => updateTroopBattleEventPage(record, page, { span })),
-    ...battleEventConditionControls(record, page, conditionKind),
+    textField("페이지 이름", "db-field-troop-event-page-name", page.name ?? "", (name) => {
+      updateTroopBattleEventPage(record, page, { name });
+    }),
+    selectField("스팬", "db-field-troop-event-span", page.span, EVENT_SPAN_OPTIONS, (span) => {
+      const next = EVENT_SPANS.find((entry) => entry === span);
+      if (next) updateTroopBattleEventPage(record, page, { span: next });
+      rerender();
+    }),
+    runOnce,
+    ...(conditionKind ? battleEventConditionControls(record, page, conditionKind) : []),
     battleEventCommandControls(record, page, rerender),
   ];
 }
@@ -79,10 +100,19 @@ function eventToolbar(record: TroopRecord, page: BattleEventPageRecord | undefin
 }
 
 function qualityStrip(page: BattleEventPageRecord | undefined): HTMLElement {
-  const hasTemplate = page?.commands.some((command) => command.kind === "m2Command" && command.commandId === RESULT_SUMMARY_ID) ?? false;
+  // 후속 연출 판정은 결과 요약 템플릿에 한정하지 않는다 — 텍스트/아이템/골드 지급도
+  // 전투 후 연출이므로 "없음" 경고를 내면 오탐이 된다.
+  const hasPayoff =
+    page?.commands.some(
+      (command) =>
+        (command.kind === "m2Command" && command.commandId === RESULT_SUMMARY_ID) ||
+        command.kind === "text" ||
+        command.kind === "changeItem" ||
+        command.kind === "changeGold"
+    ) ?? false;
   return el("div", {
     class: "db-troop-event-quality",
-    text: hasTemplate ? "템플릿 적용됨" : "전투 후 보상/후속 연출 없음",
+    text: hasPayoff ? "후속 연출 있음" : "전투 후 보상/후속 연출 없음",
     dataset: { testid: "db-troop-event-quality" },
   });
 }
@@ -101,7 +131,7 @@ function pageTab(record: TroopRecord, entry: BattleEventPageRecord, index: numbe
     class: `db-troop-event-page-tab${active ? " active" : ""}`,
     attrs: { type: "button", "aria-pressed": String(active) },
     dataset: { testid: `db-troop-event-page-tab-${index + 1}` },
-    text: String(index + 1),
+    text: entry.name || String(index + 1),
     on: {
       click: () => {
         activeBattleEventPageIds.set(record.id, entry.id);
@@ -119,6 +149,35 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
     });
   }
   const conditionKind = kindOfBattleEventCondition(page.conditions[0]);
+  const extras =
+    page.conditions.length > 1
+      ? [
+          el("span", {
+            class: "db-troop-event-condition-note",
+            dataset: { testid: "db-troop-event-extra-conditions" },
+            text: `추가 조건 ${page.conditions.length - 1}개는 이 화면에서 편집할 수 없습니다(런타임은 모두 AND).`,
+          }),
+        ]
+      : [];
+  if (!conditionKind) {
+    const kind = page.conditions[0]?.kind ?? "unknown";
+    return el("div", {
+      class: "db-troop-event-condition-strip",
+      children: [
+        el("span", { text: "조건" }),
+        el("span", {
+          class: "db-troop-event-condition-note",
+          dataset: { testid: "db-troop-event-condition-unsupported" },
+          text: `이 조건 종류(${kind})는 여기서 편집할 수 없습니다 — 값이 지워지지 않도록 잠갔습니다.`,
+        }),
+        button("조건 교체", "db-troop-event-condition-replace", () => {
+          updateTroopBattleEventPage(record, page, { conditions: initialBattleEventConditions("turn") });
+          rerender();
+        }),
+        ...extras,
+      ],
+    });
+  }
   return el("div", {
     class: "db-troop-event-condition-strip",
     children: [
@@ -128,6 +187,7 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
         rerender();
       }),
       inertButton("...", "condition"),
+      ...extras,
     ],
   });
 }

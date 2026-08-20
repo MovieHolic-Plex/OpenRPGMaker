@@ -8,7 +8,7 @@ import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommand, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { classCurveCards } from "./databaseClassCurveEditors";
-import { renderClassExperiencePanel } from "./databaseClassExperienceCurveEditor";
+import { renderExperienceCurvePanel } from "./databaseClassExperienceCurveEditor";
 
 const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"];
 const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
@@ -49,7 +49,17 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
   const curveGrid = el("div", { class: "db-class-curves-grid" });
   const expPanel = el("div", { class: "db-class-exp-content" });
   const refreshCurves = (): void => curveGrid.replaceChildren(...classCurveCards(record, refreshCurves));
-  const refreshExp = (): void => renderClassExperiencePanel(record, expPanel, refreshExp);
+  const refreshExp = (): void =>
+    renderExperienceCurvePanel(
+      {
+        testidPrefix: "db-class-exp",
+        dialogLabel: "경험치 곡선 설정",
+        readCurve: () => store.getCurrent().database.classes.find((entry) => entry.id === record.id)?.expCurve ?? record.expCurve,
+        onCommit: (expCurve) => updateDatabaseRecord("classes", record.id, { expCurve }),
+        refresh: refreshExp,
+      },
+      expPanel
+    );
   refreshCurves();
   refreshExp();
 

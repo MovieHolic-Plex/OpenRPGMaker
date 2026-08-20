@@ -132,7 +132,12 @@ export function monsterSpeciesReferenceMessage(speciesId: string): string | null
   const project = store.getCurrent();
   const enemies = project.database.enemies.filter((record) => record.speciesId === speciesId);
   if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 species를 포획 species로 사용 중입니다.");
-  return null;
+  const referrers = (project.database.monsterSpecies ?? []).filter(
+    (record) => record.id !== speciesId && (record.evolutions ?? []).some((evolution) => evolution.toSpeciesId === speciesId)
+  );
+  if (referrers.length) return namedReferenceMessage("종족", referrers, "이 종족으로 진화합니다.");
+  // giveMonster/evolveMonster 이벤트 명령도 종족 id 를 들고 있다.
+  return commandLocationMessage(project, "monsterSpecies", speciesId, "종족");
 }
 
 // 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)

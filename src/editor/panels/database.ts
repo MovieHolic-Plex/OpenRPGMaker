@@ -329,6 +329,10 @@ function revealActiveTab(header: HTMLElement): void {
 function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
   clearChildren(body);
   const rerender = (): void => renderActiveTab(body, container);
+  if (activeTab === "enemies" || activeTab === "monsterSpecies" || activeTab === "troops") {
+    const banner = collectionGateBanner(container);
+    if (banner) body.append(banner);
+  }
   switch (activeTab) {
     case "actors":
     case "classes":
@@ -389,6 +393,32 @@ function renderActiveTab(body: HTMLElement, container: HTMLElement): void {
       renderOverviewTab(body, rerender);
       return;
   }
+}
+
+/**
+ * 수집 데이터를 저작했는데 시스템 탭에서 몬스터 수집이 꺼져 있으면 포획 명령이 전투에
+ * 나오지 않는다 — 세 수집 탭 상단에 경고와 시스템 탭 점프를 준다.
+ */
+function collectionGateBanner(container: HTMLElement): HTMLElement | null {
+  const project = store.getCurrent();
+  if (project.system.monsterCollection === true) return null;
+  const hasSpecies = (project.database.monsterSpecies?.length ?? 0) > 0;
+  const hasCaptureItem = project.database.items.some((item) => item.captureProfile !== undefined);
+  if (!hasSpecies && !hasCaptureItem) return null;
+  return el("div", {
+    class: "db-collection-gate-warn",
+    dataset: { testid: "db-collection-gate-warn" },
+    children: [
+      el("span", { text: "몬스터 수집이 시스템 탭에서 꺼져 있어 포획 명령이 전투에 나오지 않습니다." }),
+      el("button", {
+        class: "btn small",
+        attrs: { type: "button" },
+        text: "시스템 탭 열기",
+        dataset: { testid: "db-collection-gate-open-system" },
+        on: { click: () => switchDatabaseActiveTab("system", container) },
+      }),
+    ],
+  });
 }
 
 function readStoredActiveTab(): DatabaseTab {
