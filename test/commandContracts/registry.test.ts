@@ -87,6 +87,10 @@ describe("native command guarantee registry", () => {
   });
 
   it("declares only battle-executor-proven native kinds as full in troop context", () => {
+    // 2026-08-20 오표시 정정: battleEvents.ts executor 실측(스위치 실행 22종) 전수 대조 결과,
+    // 이미 구현돼 있던 changeGold/changeExp/changeLevel/learnSkill/changeParty/changeFriendship/
+    // getFriendship/wait/playAudio/stopAudio 10종을 troop-full 로 승격했다.
+    // 실행 22종 중 m2Command(commandId 별 동적 판정)와 inputWait(acknowledged 로그만)는 제외.
     const expected = [
       "text",
       "choices",
@@ -98,6 +102,16 @@ describe("native command guarantee registry", () => {
       "changeActorMp",
       "recoverAll",
       "changeItem",
+      "changeGold",
+      "changeExp",
+      "changeLevel",
+      "learnSkill",
+      "changeParty",
+      "changeFriendship",
+      "getFriendship",
+      "wait",
+      "playAudio",
+      "stopAudio",
     ].sort();
     const actual = COMMAND_KINDS.filter(
       (kind) => COMMAND_GUARANTEES[kind].supportByContext.troop === "full"

@@ -410,10 +410,30 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "displayTextSettings":
       case "addFollower":
       case "removeFollower":
+      // Step 0(2026-08-20): 스위치 fall-through 로 무음 스킵되던 16종을 명시적 unsupported 편입.
+      // (openwiki/runtime-battle.md — 미지원 배틀 커맨드는 반드시 unsupported 로그를 남긴다.)
+      case "promoteActor":
+      case "giveMonster":
+      case "evolveMonster":
+      case "openChest":
+      case "advanceTime":
+      case "setTime":
+      case "sleepUntilMorning":
+      case "craftRecipe":
+      case "applyItemUpgrade":
+      case "equipTool":
+      case "changeLifeSkillExp":
+      case "moveMonster":
+      case "openSaveMenu":
+      case "spawnFieldEnemy":
+      case "despawnFieldEnemy":
+      case "advanceCropGrowth":
         logUnsupported(page, context, command.kind);
         return false;
+      default:
+        // 컴파일 타임 전수 분류: 새 Command kind 는 여기서 배틀 분류(실행/미지원)를 강제받는다.
+        return assertNever(command);
     }
-    return false;
   }
 
   function addExtraActorAction(actorId: string, amount: number): void {
@@ -576,4 +596,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   return { applyTroopEvents, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
+}
+
+// playSceneInterpreter 의 default: assertNever(step) 전례를 따르는 로컬 전수 검증 헬퍼.
+// (src/battle 은 자립 모듈이므로 @/player/playSceneTypes 를 역참조하지 않는다.)
+function assertNever(value: never): never {
+  void value;
+  throw new Error("Unhandled battle event command kind");
 }

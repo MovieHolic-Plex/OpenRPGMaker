@@ -56,6 +56,9 @@ type GuaranteeOverrides = {
   readonly quick?: boolean;
   readonly ai?: boolean;
   readonly direct?: boolean;
+  // direct:false 라 mainPicker/common/troop 묶음 표면이 빠진 명령이라도,
+  // 배틀 executor 가 실제 실행하는 troop-full 명령은 troop 저작 표면을 개별 선언한다.
+  readonly troopAuthoring?: boolean;
   readonly support?: Readonly<Partial<Record<CommandContext, CommandSupport>>>;
 };
 
@@ -75,6 +78,9 @@ function guarantee(family: CommandFamily, overrides: GuaranteeOverrides = {}): C
     authoringSurfaces.push("mainPicker", "common", "troop");
   }
   if (overrides.quick === true) authoringSurfaces.push("quick");
+  if (overrides.troopAuthoring === true && !authoringSurfaces.includes("troop")) {
+    authoringSurfaces.push("troop");
+  }
   if (overrides.ai !== false) authoringSurfaces.push("ai");
   return {
     family,
@@ -96,7 +102,8 @@ export const COMMAND_GUARANTEES = {
   changeFace: guarantee("dialogue"),
   choices: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
   fork: guarantee("controlFlow", { quick: true, support: troopFull }),
-  wait: guarantee("controlFlow", playerPause),
+  // wait: battleEvents.ts 가 pendingWaitMs 적립으로 실제 실행(2026-08-20 executor 실측 대조).
+  wait: guarantee("controlFlow", { ...playerPause, support: troopFull }),
   inputWait: guarantee("dialogue", playerPause),
   inputNumber: guarantee("dialogue", playerPause),
   label: guarantee("controlFlow"),
@@ -125,9 +132,10 @@ export const COMMAND_GUARANTEES = {
     completion: "pause",
     quick: true,
   }),
-  learnSkill: guarantee("actor"),
-  changeExp: guarantee("actor"),
-  changeLevel: guarantee("actor"),
+  // learnSkill/changeExp/changeLevel: battleEvents.ts 배틀 이벤트 state 에 실제 반영(troop-full).
+  learnSkill: guarantee("actor", { support: troopFull }),
+  changeExp: guarantee("actor", { support: troopFull }),
+  changeLevel: guarantee("actor", { support: troopFull }),
   // 생활 스킬 XP — changeExp/changeLevel 과 동일 계열(액터 상태 변경, 즉시 완료).
   changeLifeSkillExp: guarantee("actor"),
   promoteActor: guarantee("actor", { direct: false, support: scopedPartial }),
@@ -136,7 +144,8 @@ export const COMMAND_GUARANTEES = {
   changeActorMp: guarantee("actor", { support: troopFull }),
   recoverAll: guarantee("actor", { support: troopFull }),
   enterHeroName: guarantee("dialogue", playerPause),
-  changeGold: guarantee("economy", { quick: true }),
+  // changeGold: battleEvents.ts 가 배틀 이벤트 gold state 를 실제 변경(troop-full).
+  changeGold: guarantee("economy", { quick: true, support: troopFull }),
   changeItem: guarantee("economy", { quick: true, support: troopFull }),
   craftRecipe: guarantee("economy", { stability: "experimental", quick: true }),
   applyItemUpgrade: guarantee("economy", { stability: "experimental", quick: true }),
@@ -146,9 +155,21 @@ export const COMMAND_GUARANTEES = {
     stability: "experimental",
     quick: true,
   }),
-  changeFriendship: guarantee("social", { direct: false, quick: true, support: scopedPartial }),
-  getFriendship: guarantee("social", { direct: false, support: scopedPartial }),
-  changeParty: guarantee("actor", { quick: true }),
+  // changeFriendship/getFriendship: battleEvents.ts 가 friendship state 를 실제 실행(troop-full).
+  // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
+  changeFriendship: guarantee("social", {
+    direct: false,
+    quick: true,
+    troopAuthoring: true,
+    support: { ...scopedPartial, troop: "full" },
+  }),
+  getFriendship: guarantee("social", {
+    direct: false,
+    troopAuthoring: true,
+    support: { ...scopedPartial, troop: "full" },
+  }),
+  // changeParty: battleEvents.ts 가 partyActorIds state 를 실제 변경(troop-full).
+  changeParty: guarantee("actor", { quick: true, support: troopFull }),
   giveMonster: guarantee("monster", { direct: false, quick: true, support: scopedPartial }),
   moveMonster: guarantee("monster", { direct: false, support: scopedPartial }),
   evolveMonster: guarantee("monster", { direct: false, quick: true, support: scopedPartial }),
@@ -165,8 +186,9 @@ export const COMMAND_GUARANTEES = {
   showAnimation: guarantee("media", { ...playerPause, quick: true }),
   showPicture: guarantee("media", { ...playerPause, quick: true }),
   erasePicture: guarantee("media", playerPause),
-  playAudio: guarantee("media", { ...playerPause, quick: true }),
-  stopAudio: guarantee("media", playerPause),
+  // playAudio/stopAudio: battleEvents.ts 가 호스트 오디오 콜백으로 실제 실행(troop-full).
+  playAudio: guarantee("media", { ...playerPause, quick: true, support: troopFull }),
+  stopAudio: guarantee("media", { ...playerPause, support: troopFull }),
   cutsceneControl: guarantee("controlFlow", { direct: false, support: scopedPartial }),
   displayTextSettings: guarantee("dialogue"),
   shop: guarantee("commerce", playerPause),
