@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import { normalizeTypeChart } from "@/project/databaseRecordModel";
@@ -41,6 +41,7 @@ describe("database type chart chip matrix", () => {
   afterEach(() => {
     cleanupDom?.();
     cleanupDom = undefined;
+    vi.unstubAllGlobals();
   });
 
   it("chip click cycles 0→0.25→0.5→1→1.5→2→3→4→0 with normalized writes and no rerender storm", () => {
@@ -135,17 +136,37 @@ describe("database type chart chip matrix", () => {
     expect(multiplier("fire", "water")).toBe(1.25);
   });
 
-  it("blank type list still deletes system.typeChart", () => {
+  it("blank type list still deletes system.typeChart after confirm", () => {
+    const confirm = vi.fn(() => true);
+    vi.stubGlobal("confirm", confirm);
     const host = renderSystem();
     expect(findByTestId(host, "db-type-chart-matrix")).not.toBeNull();
+    expect(host.textContent).toContain("칸을 누르면 배율이 바로 바뀝니다");
 
     const types = findByTestId(host, "db-field-system-type-chart-types");
     if (!types) throw new Error("missing types input");
     types.value = "";
     types.dispatchEvent(new Event("change"));
 
+    expect(confirm).toHaveBeenCalled();
     expect(store.getCurrent().system.typeChart).toBeUndefined();
     expect(findByTestId(host, "db-type-chart-matrix")).toBeNull();
+    vi.unstubAllGlobals();
+  });
+
+  it("canceling the empty-list confirm keeps the type chart", () => {
+    const confirm = vi.fn(() => false);
+    vi.stubGlobal("confirm", confirm);
+    const host = renderSystem();
+    const types = findByTestId(host, "db-field-system-type-chart-types");
+    if (!types) throw new Error("missing types input");
+    types.value = "";
+    types.dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.typeChart?.types).toEqual(["fire", "water", "grass"]);
+    expect(findByTestId(host, "db-type-chart-matrix")).not.toBeNull();
+    expect(types.value).toBe("fire, water, grass");
+    vi.unstubAllGlobals();
   });
 
   it("diagonal cells are disabled and dimmed, and clicks on them do not write", () => {

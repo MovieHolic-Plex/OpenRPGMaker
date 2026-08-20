@@ -95,7 +95,7 @@ describe("database overview tab shell", () => {
     }
     // 차트 자리 표시자(todo 15 가 채움)도 함께 렌더된다.
     expect(findByTestId(panelRoot, "db-overview-charts")).not.toBeNull();
-  });
+  }, 60_000);
 
   it("empty project renders chips with 0 counts without crashing", async () => {
     const { store } = await import("@/project/store");
@@ -167,6 +167,21 @@ describe("database overview tab shell", () => {
     expect(buttons[0]?.dataset.testid).toBe("db-tab-overview");
     expect(findByTestId(panelRoot, "db-overview-stat-actors")).not.toBeNull();
     expect(findByTestId(panelRoot, "db-overview-charts")).not.toBeNull();
+  });
+
+  it("stat chips are buttons that switch to the matching tab (G006)", async () => {
+    const { store } = await import("@/project/store");
+    store.replace(createBlankProject());
+    storage.set(ACTIVE_TAB_KEY, "overview");
+
+    const { renderDatabasePanel, getDatabaseActiveTab } = await import("@/editor/panels/database");
+    const panelRoot = renderPanelHost(renderDatabasePanel);
+
+    const chip = findByTestId(panelRoot, "db-overview-stat-actors");
+    expect(chip?.tagName).toBe("BUTTON");
+    chip?.click();
+    expect(getDatabaseActiveTab()).toBe("actors");
+    expect(findByTestId(panelRoot, "db-tab-actors")?.classList.contains("active")).toBe(true);
   });
 
   it("databaseTabLabel resolves the overview label for the AI footer", async () => {

@@ -38,7 +38,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
   await page.getByTestId("db-field-element-damage-E").fill("-100");
 
   await page.getByTestId("db-tab-terrain").click();
-  await expect(page.getByTestId("db-detail-form")).toContainText("database.terrains");
+  await expect(page.getByTestId("db-detail-form")).not.toContainText("database.terrains");
   await expect(page.getByTestId("db-field-terrain-name-0")).toHaveValue("초원");
   await page.getByTestId("db-field-terrain-damage-0").fill("7");
   await page.getByTestId("db-field-terrain-encounter-0").fill("33");
@@ -48,7 +48,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
   await page.getByTestId("db-field-terrain-ship-0").check();
 
   await page.getByTestId("db-tab-battle-commands").click();
-  await expect(page.getByTestId("db-detail-form")).toContainText("database.battleCommands");
+  await expect(page.getByTestId("db-detail-form")).not.toContainText("database.battleCommands");
   await expect(page.getByTestId("db-field-battle-command-name-0")).toHaveValue("공격");
   await page.getByTestId("db-field-battle-command-name-1").focus();
   await expect(page.getByTestId("db-workbench-status")).toHaveCount(0);

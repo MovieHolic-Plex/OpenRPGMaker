@@ -25,10 +25,23 @@
   background: var(--db-light-bg-raised);
   border: 1px solid var(--db-light-border-subtle);
   border-radius: 10px;
+  color: inherit;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
+  font: inherit;
   min-width: 86px;
   padding: 8px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat:hover {
+  background: var(--db-light-accent-muted);
+  border-color: var(--db-light-accent-border);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat:focus-visible {
+  outline: 2px solid var(--db-light-accent);
+  outline-offset: 2px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-stat-label {
@@ -63,6 +76,37 @@
   font-size: 14px;
   font-weight: 700;
   margin: 0 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend {
+  color: var(--db-light-text-2);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 12px;
+  margin: 0 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-hp::before,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack::before {
+  border-radius: 99px;
+  content: "";
+  display: inline-block;
+  height: 8px;
+  margin-right: 6px;
+  width: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-hp::before {
+  background: var(--db-light-success);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-attack::before {
+  background: var(--db-light-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-overview-legend-note {
+  color: var(--db-light-text-3);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-overview-curve,

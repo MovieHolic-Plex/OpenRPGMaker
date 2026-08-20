@@ -45,7 +45,19 @@ const PARTY_CURVE_MAX_LEVEL = 50;
 const ISSUE_JUMP_TAB: Partial<Record<BalanceIssueKind, DatabaseTab>> = {
   overheal: "items",
   "boss-hp-spike": "enemies",
-  "skill-stagnation": "skills",
+  "skill-stagnation": "classes",
+};
+
+const STAT_TAB: Record<DatabaseCollection, DatabaseTab> = {
+  actors: "actors",
+  classes: "classes",
+  skills: "skills",
+  items: "items",
+  equipment: "equipment",
+  enemies: "enemies",
+  troops: "troops",
+  states: "states",
+  battleAnimations: "animations",
 };
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -57,9 +69,11 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
   for (const { collection, label } of STAT_COLLECTIONS) {
     const count = database[collection].length;
     statsRow.append(
-      el("div", {
+      el("button", {
         class: "db-overview-stat",
+        attrs: { type: "button", title: `해당 탭: ${label}` },
         dataset: { testid: `db-overview-stat-${collection}` },
+        on: { click: () => jumpToTab(host, STAT_TAB[collection]) },
         children: [
           el("span", { class: "db-overview-stat-label", text: label }),
           el("span", { class: "db-overview-stat-count", text: String(count) }),
@@ -138,7 +152,18 @@ function renderDashboardContent(host: HTMLElement, compute: BalanceComputeModule
 
 function renderCurveSection(curve: readonly PartyPowerCurvePoint[]): HTMLElement {
   const section = el("section", { class: "db-overview-section" });
-  section.append(el("h3", { class: "db-overview-section-title", text: "파티 전투력 곡선" }));
+  section.append(el("h3", { class: "db-overview-section-title", text: "시작 파티 성장" }));
+  section.append(
+    el("div", {
+      class: "db-overview-legend",
+      dataset: { testid: "db-overview-curve-legend" },
+      children: [
+        el("span", { class: "db-overview-legend-hp", text: "체력" }),
+        el("span", { class: "db-overview-legend-attack", text: "공격" }),
+        el("span", { class: "db-overview-legend-note", text: "시작 파티 · 1–50레벨" }),
+      ],
+    }),
+  );
   section.append(curveChart(curve));
   return section;
 }
@@ -149,7 +174,7 @@ function curveChart(curve: readonly PartyPowerCurvePoint[]): SVGElement {
   const width = 480;
   const height = 200;
   const padLeft = 8;
-  const padRight = 8;
+  const padRight = 22;
   const padTop = 10;
   const padBottom = 24;
   const plotWidth = width - padLeft - padRight;

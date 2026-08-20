@@ -51,26 +51,9 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
   });
 
   await page.getByTestId("db-field-item-type").selectOption("weapon");
-  await page.getByTestId("db-field-item-wield-type").selectOption("twoHanded");
-  await page.getByTestId("db-field-item-equipment-attack").fill("7");
-  await page.getByTestId("db-field-item-equipment-defense").fill("3");
-  await page.getByTestId("db-field-item-mp-cost").fill("2");
-  await page.getByTestId("db-field-item-accuracy").fill("95");
-  await page.getByTestId("db-field-item-usable-actor-actor_hero").check();
-  await page.getByTestId("db-field-item-usable-actor-actor_guardian").check();
-  await page.getByTestId("db-field-item-attackElementIds-sword").check();
-  await page.getByTestId("db-field-item-attackElementIds-fire").check();
-  await page.getByTestId("db-field-item-stateInflictIds-state_poison").check();
-  await page.getByTestId("db-field-item-stateInflictIds-state_sleep").check();
-
-  // project export JSON 은 150ms trailing 디바운스(editor.ts updateProjectExport) — 마지막
-  // 체크박스 변경이 반영될 때까지 폴링해 확정 상태를 읽는다(플레이크 방지).
-  await expect
-    .poll(async () => {
-      const current = await exportedProject(page);
-      return current.database.items.find((record) => record.name === "QA 회복약")?.equipmentProfile?.stateInflictIds;
-    }, { timeout: 5_000 })
-    .toEqual(["state_poison", "state_sleep"]);
+  await expect(page.getByTestId("db-item-open-equipment-tab")).toBeVisible();
+  await page.getByTestId("db-item-open-equipment-tab").click();
+  await expect(page.getByTestId("db-tab-equipment")).toHaveClass(/active/);
 
   const project = await exportedProject(page);
   const item = project.database.items.find((record) => record.name === "QA 회복약");
@@ -86,15 +69,6 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
   });
   expect(item?.skillId).toBe("skill_heal");
   expect(item?.switchId).toBeTruthy();
-  expect(item?.equipmentProfile).toMatchObject({
-    twoHanded: true,
-    mpCost: 2,
-    accuracy: 95,
-    statBonuses: { attack: 7, defense: 3 },
-    equippableActorIds: ["actor_hero", "actor_guardian"],
-    attackElementIds: ["sword", "fire"],
-    stateInflictIds: ["state_poison", "state_sleep"],
-  });
 
   await page.getByTestId("database-modal").screenshot({
     path: testInfo.outputPath("items-tab-weapon-panel.png"),

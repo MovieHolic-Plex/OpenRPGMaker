@@ -213,6 +213,29 @@ describe("database item inspector form", () => {
     expect(findByTestId(secondForm, "db-items-medicine-panel")).toBeNull();
     expect(findByTestId(secondForm, "db-items-special-panel")).not.toBeNull();
   });
+
+  it("weapon type shows an equipment-tab door instead of the legacy equipment form", () => {
+    updateDatabaseRecord("items", firstItem().id, { type: "weapon" });
+    const form = document.createElement("section") as unknown as FakeElement;
+    const panelRoot = document.createElement("div") as unknown as FakeElement;
+    panelRoot.className = "database-modal-body";
+    panelRoot.append(form as unknown as HTMLElement);
+    renderItemRecordForm(form as unknown as HTMLElement, currentItem(), () => undefined);
+
+    expect(findByTestId(form, "db-field-item-wield-type")).toBeNull();
+    expect(findByTestId(form, "db-item-open-equipment-tab")).not.toBeNull();
+    expect(findByTestId(form, "db-item-equipment-redirect")?.textContent).toContain("장비 탭");
+  });
+
+  it("weapon type record tab drops stacked price/scope/capture fields", async () => {
+    const { renderRecordTab } = await import("@/editor/panels/databaseRecordViews");
+    updateDatabaseRecord("items", firstItem().id, { type: "weapon" });
+    const host = document.createElement("div") as unknown as FakeElement;
+    renderRecordTab(host as unknown as HTMLElement, "items", () => undefined);
+    expect(findByTestId(host, "db-item-open-equipment-tab")).not.toBeNull();
+    expect(findByTestId(host, "db-field-price")).toBeNull();
+    expect(findByTestId(host, "db-field-item-capture-multiplier")).toBeNull();
+  });
 });
 
 function renderForm(rerender: () => void = () => undefined): FakeElement {

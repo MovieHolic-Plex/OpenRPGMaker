@@ -18,7 +18,7 @@ import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
-import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
+import { ITEM_TYPES, isEquipmentItemType } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import {
   categoryFilterForCollection,
@@ -573,10 +573,12 @@ function recordForm(
       skillFields(form, record.id);
       renderSkillRecordForm(form, store.getCurrent().database.skills.find((entry) => entry.id === record.id) ?? store.getCurrent().database.skills[0]);
       return form;
-    case "items":
-      itemFields(form, record.id);
-      renderItemRecordForm(form, store.getCurrent().database.items.find((entry) => entry.id === record.id) ?? store.getCurrent().database.items[0], rerender);
+    case "items": {
+      const item = store.getCurrent().database.items.find((entry) => entry.id === record.id) ?? store.getCurrent().database.items[0];
+      if (item && !isEquipmentItemType(item.type)) itemFields(form, record.id);
+      renderItemRecordForm(form, item, rerender);
       return form;
+    }
     case "equipment":
       equipmentFields(form, record.id);
       renderEquipmentRecordForm(

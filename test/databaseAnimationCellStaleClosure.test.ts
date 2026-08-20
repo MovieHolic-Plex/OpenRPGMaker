@@ -13,6 +13,10 @@ let restoreDom: (() => void) | undefined;
 
 beforeEach(() => {
   restoreDom = installFakeDom();
+  (globalThis as unknown as { Image: new () => object }).Image = class {
+    addEventListener(): void {}
+    set src(_value: string) {}
+  };
   store.replace(createBlankProject());
   resetMapEditHistory();
   editorState.set({ selectedAnimationFrameIndex: 0, selectedAnimationCellIndex: 0 });

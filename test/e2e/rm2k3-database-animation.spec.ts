@@ -20,7 +20,7 @@ test("RM2K3 animation tab exposes sheet frames cells timings", async ({ page }, 
   await expect(page.getByTestId("db-animation-stage-target")).toBeVisible();
   await expect(page.getByTestId("db-animation-timing-table")).toContainText("SE 및 플래시 타이밍");
   await expect(page.getByTestId("db-animation-pattern-strip")).toContainText("001");
-  await expect(page.getByTestId("db-field-animation-resource")).toBeVisible();
+  await expect(page.getByTestId("db-field-animation-resource-set")).toBeVisible();
   await expect(page.getByTestId("db-field-animation-scope")).toBeVisible();
   await expect(page.getByTestId("db-field-animation-position")).toBeVisible();
   await expect(page.getByTestId("db-field-animation-large")).toBeVisible();

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>자료집이 이렇게 바뀌었습니다 — 웨이브 1–4 보고서</title>
+  <style>
+    :root {
+      --cream: #f7f3ea;
+      --inset: #efe9dc;
+      --raised: #fffdf8;
+      --ink: #2a2521;
+      --muted: #5c5348;
+      --faint: #6b5f52;
+      --line: rgba(42, 37, 33, 0.14);
+      --accent: #4a57d6;
+      --accent-soft: rgba(74, 87, 214, 0.12);
+      --danger: #c6403d;
+      --ok: #18764f;
+      --warn: #8a5e00;
+      --shadow: 0 22px 50px rgba(42, 37, 33, 0.12);
+      --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Songti SC", serif;
+      --sans: "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font: 16px/1.6 var(--sans);
+    }
+    a { color: var(--accent); }
+    img { max-width: 100%; display: block; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    header.top {
+      position: sticky; top: 0; z-index: 20;
+      backdrop-filter: blur(14px);
+      background: rgba(247, 243, 234, 0.86);
+      border-bottom: 1px solid var(--line);
+    }
+    header.top .wrap {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px; gap: 16px;
+    }
+    .brand { font-weight: 800; letter-spacing: -0.03em; }
+    nav { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; }
+    nav a { color: var(--muted); text-decoration: none; }
+    nav a:hover { color: var(--ink); }
+    .hero {
+      position: relative;
+      min-height: 78vh;
+      display: grid;
+      place-items: end start;
+      overflow: hidden;
+      background: #d9d0bd;
+    }
+    .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .hero::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(42,37,33,0.12), rgba(42,37,33,0.74) 72%);
+    }
+    .hero-copy {
+      position: relative; z-index: 1;
+      padding: 48px 0 56px;
+      color: #fffdf8;
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+    .kicker {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    h1 {
+      font: 700 50px/1.12 var(--serif);
+      letter-spacing: -0.035em;
+      margin: 0 0 14px;
+      max-width: 14ch;
+    }
+    .lede { font-size: 20px; max-width: 44ch; color: #f3ead8; }
+    section { padding: 72px 0; }
+    h2 { font: 700 34px/1.2 var(--serif); letter-spacing: -0.03em; margin: 0 0 12px; }
+    h3 { font: 700 20px/1.3 var(--serif); margin: 0 0 8px; }
+    .sub { color: var(--muted); margin: 0 0 28px; max-width: 62ch; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .card {
+      background: var(--raised);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .card.flat { box-shadow: none; background: var(--inset); }
+    .photo {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      background: #ddd4c4;
+    }
+    .photo figcaption {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--raised);
+    }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 0; overflow: hidden; border-radius: 16px; border: 1px solid var(--line); }
+    .compare > div { padding: 18px; }
+    .was { background: #f4e8e6; }
+    .now { background: #e8f3ec; }
+    .was h3 { color: var(--danger); }
+    .now h3 { color: var(--ok); }
+    .compare ul { margin: 8px 0 0; padding-left: 18px; }
+    .keep { display: flex; flex-wrap: wrap; gap: 8px; }
+    .keep span {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 13px;
+    }
+    .wave-block { margin-bottom: 56px; }
+    .wave-head {
+      display: flex; gap: 16px; align-items: flex-start;
+      margin-bottom: 18px;
+    }
+    .num {
+      display: grid; place-items: center;
+      width: 56px; height: 56px; flex: 0 0 56px;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font: 700 22px/1 var(--serif);
+    }
+    footer {
+      padding: 40px 0 60px;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid var(--line);
+    }
+    code { font-size: 12px; background: var(--inset); padding: 1px 6px; border-radius: 6px; }
+    @media (max-width: 860px) {
+      h1 { font-size: 34px; }
+      .grid-2, .grid-4, .compare { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">AI RPG MAKER · 자료집 변경 보고</div>
+      <nav>
+        <a href="#keep">안 건드린 것</a>
+        <a href="#w1">1 문</a>
+        <a href="#w2">2 짐</a>
+        <a href="#w3">3 싸움</a>
+        <a href="#w4">4 설정</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero">
+    <img src="db-modern-wave-report/db-report-hero.png" alt="크림 자료집 모달이 스프레드시트에서 문과 인스펙터로 바뀌는 장면" />
+    <div class="hero-copy">
+      <span class="kicker">2026-08-20 · 웨이브 1–4 반영</span>
+      <h1>스프레드시트가 아니라 문으로</h1>
+      <p class="lede">RM 폼을 복원하는 대신, 사람이 매일 만지는 칸을 클릭·점프·한글로 갈아끼웠습니다. 저장 모양과 탭 이름은 그대로입니다.</p>
+    </div>
+  </div>
+
+  <section id="keep">
+    <div class="wrap">
+      <h2>바뀌지 않은 바닥</h2>
+      <p class="sub">화면만 바꿨습니다. 프로젝트 JSON, 더티 세 버튼, 모달을 다시 열지 않는 점프, 기존 필드 이름은 계약입니다.</p>
+      <div class="keep">
+        <span>스키마 그대로</span>
+        <span>저장하고 닫기 / 열 때 상태로 되돌리고 닫기 / 계속 편집</span>
+        <span>모달 안 점프</span>
+        <span>24개 탭</span>
+        <span>db-tab-* · db-field-*</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="w1">
+    <div class="wrap wave-block">
+      <div class="wave-head">
+        <div class="num">1</div>
+        <div>
+          <h2>문과 레일</h2>
+          <p class="sub">개요는 장식이 아니라 입구입니다. 접힌 도크에도 이름이 남습니다.</p>
+        </div>
+      </div>
+      <figure class="photo">
+        <img src="db-modern-wave-report/db-report-wave1.png" alt="개요 칩과 시작 파티 성장 곡선, 직업으로 가는 이슈 카드" />
+        <figcaption>칩을 누르면 해당 탭으로 갑니다. 곡선은 테스트플레이 잔여 파티가 아니라 시작 파티입니다.</figcaption>
+      </figure>
+      <div class="compare" style="margin-top: 22px;">
+        <div class="was">
+          <h3>이전</h3>
+          <ul>
+            <li>통계 칩이 눌러지지 않는 상자</li>
+            <li>성장 곡선이 세션 파티를 읽음</li>
+            <li>공격 정체 이슈가 스킬 탭으로 점프</li>
+            <li>도크에 첫 글자만 있고 이름 없음</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h3>지금</h3>
+          <ul>
+            <li>칩이 버튼 — 누르면 그 탭</li>
+            <li>곡선 제목 <strong>시작 파티 성장</strong>, 체력/공격 범례</li>
+            <li>정체 이슈는 <strong>직업</strong>으로</li>
+            <li>도크에 짧은 글자 + 호버 이름</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="w2">
+    <div class="wrap wave-block">
+      <div class="wave-head">
+        <div class="num">2</div>
+        <div>
+          <h2>파티 짐</h2>
+          <p class="sub">아이템 탭의 가짜 장비 폼을 치우고, 직업 습득 스킬을 진짜 행으로 고칩니다.</p>
+        </div>
+      </div>
+      <figure class="photo">
+        <img src="db-modern-wave-report/db-report-wave2.png" alt="장비 탭으로 가는 문과 직업 습득 스킬 표" />
+        <figcaption>무기 종류를 골라도 전투 스탯은 여기서 안 먹습니다. 장비는 장비 탭에서 만듭니다.</figcaption>
+      </figure>
+      <div class="compare" style="margin-top: 22px;">
+        <div class="was">
+          <h3>이전</h3>
+          <ul>
+            <li>아이템 종류가 무기면 장비처럼 보이는 폼</li>
+            <li>직업 습득 스킬 첫 행을 고치면 목록이 한 칸으로 덮임</li>
+            <li>빈 장식 12행</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h3>지금</h3>
+          <ul>
+            <li><strong>장비 탭 열기</strong> 문만 남김</li>
+            <li>어느 행을 고쳐도 그 칸만 바뀜</li>
+            <li>추가 / 삭제로 실제 목록만 보임</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="w3">
+    <div class="wrap wave-block">
+      <div class="wave-head">
+        <div class="num">3</div>
+        <div>
+          <h2>싸움</h2>
+          <p class="sub">프레임을 눌러도 그림이 안 바뀌던 길을 고쳤고, 전투 명령 탭을 한글로 직업에 연결했습니다.</p>
+        </div>
+      </div>
+      <figure class="photo">
+        <img src="db-modern-wave-report/db-report-wave3.png" alt="선택 프레임이 켜지고 셀 표가 따라가며 직업 탭 문이 있는 전투 명령" />
+        <figcaption>이전·다음·행 클릭이 선택 표시와 셀 표를 같이 바꿉니다. 명령 종류는 공격·특수기능처럼 직업과 같은 말.</figcaption>
+      </figure>
+      <div class="compare" style="margin-top: 22px;">
+        <div class="was">
+          <h3>이전</h3>
+          <ul>
+            <li>프레임을 눌러도 상태만 바뀌고 화면은 그대로</li>
+            <li>전투 명령에 RM 경로와 영어 종류</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h3>지금</h3>
+          <ul>
+            <li>누르면 활성 행과 셀이 따라감</li>
+            <li><strong>직업 탭에서 메뉴 순서 정하기</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="w4">
+    <div class="wrap wave-block">
+      <div class="wave-head">
+        <div class="num">4</div>
+        <div>
+          <h2>설정이 말로</h2>
+          <p class="sub">상성표는 미리보기가 아닙니다. 하루 끝 이벤트는 함부로 지워지지 않습니다.</p>
+        </div>
+      </div>
+      <figure class="photo">
+        <img src="db-modern-wave-report/db-report-wave4.png" alt="상성표 클릭, 타입 비우기 확인, 하루 끝 삭제 차단, 지형 피커" />
+        <figcaption>칸을 누르면 배율이 바뀝니다. 타입을 비우면 확인창. 시간 시스템이 쓰는 공용 이벤트는 삭제 차단. 지형 배경·발소리는 그림 고르기.</figcaption>
+      </figure>
+      <div class="compare" style="margin-top: 22px;">
+        <div class="was">
+          <h3>이전</h3>
+          <ul>
+            <li>“미리 본다”고 써 놓고 클릭이 배율을 바꿈</li>
+            <li>타입 목록을 비우면 표가 경고 없이 사라짐</li>
+            <li>하루 끝 공용 이벤트를 지워도 막지 않음</li>
+            <li>지형에 RM 경로와 raw id 칸</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h3>지금</h3>
+          <ul>
+            <li><strong>칸을 누르면 배율이 바로 바뀝니다</strong></li>
+            <li>비우기 전에 확인, 취소하면 표 유지</li>
+            <li>「시간 시스템(하루 끝)」이 막고 이유를 말함</li>
+            <li>전투 배경·발소리 <strong>설정…</strong> 피커</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>이어서 닫은 것</h2>
+      <p class="sub">타일셋 그래픽은 설정… 피커로 고르고, EasyRPG 칩셋·업로드 chipset/tileset은 480칸·통과 배열을 맞춥니다. 사이드바 그룹(파티 / 전투 / 수집 / 맵 / 시스템)은 표준·전문가 모드입니다. 초보자는 짧은 공통 탭만 둡니다. 몬스터·적 무리·전투 지형은 전투에, 종족은 수집에 있습니다.</p>
+      <div class="grid-4">
+        <div class="card flat"><h3>1</h3><p>개요 칩 · 도크 이름 · 시작 파티</p></div>
+        <div class="card flat"><h3>2</h3><p>아이템 문 · 직업 스킬 행</p></div>
+        <div class="card flat"><h3>3</h3><p>애니메이션 프레임 · 전투 명령</p></div>
+        <div class="card flat"><h3>4</h3><p>상성 · 하루 끝 · 지형</p></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      그림은 분위기용 컨셉입니다. 제품 크롬은 크림 토큰을 유지합니다.
+      파일: <code>docs/reviews/db-modern-wave-report.html</code>
+      · 방향 제안서: <a href="db-modern-ux-proposal.html">db-modern-ux-proposal.html</a>
+    </div>
+  </footer>
+</body>
+</html>

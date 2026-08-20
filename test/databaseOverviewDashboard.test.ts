@@ -245,8 +245,34 @@ describe("database overview dashboard", () => {
     expect(getDatabaseActiveTab()).toBe("items");
     const itemsTab = findByTestId(panelRoot, "db-tab-items");
     expect(itemsTab?.classList.contains("active")).toBe(true);
-    // 아이템 탭 본문이 실제로 렌더됐다(모달 재오픈 없이 switchDatabaseActiveTab 경로).
     expect(panelRoot.querySelector(".db-search")).not.toBeNull();
+  });
+
+  it("attack-stagnation jump opens the classes tab, not skills", async () => {
+    const { store } = await import("@/project/store");
+    store.replace(plantedAnomalies());
+    storage.set(ACTIVE_TAB_KEY, "overview");
+
+    const { renderDatabasePanel, getDatabaseActiveTab } = await import("@/editor/panels/database");
+    const panelRoot = renderPanelHost(renderDatabasePanel);
+    await vi.advanceTimersByTimeAsync(IDLE_FALLBACK_MS);
+
+    findByTestId(panelRoot, "db-overview-issue-jump-skill-stagnation")?.click();
+    expect(getDatabaseActiveTab()).toBe("classes");
+  });
+
+  it("curve section shows a visible HP/attack legend", async () => {
+    const { store } = await import("@/project/store");
+    store.replace(createEmberQuestProject());
+    storage.set(ACTIVE_TAB_KEY, "overview");
+
+    const { renderDatabasePanel } = await import("@/editor/panels/database");
+    const panelRoot = renderPanelHost(renderDatabasePanel);
+    await vi.advanceTimersByTimeAsync(IDLE_FALLBACK_MS);
+
+    const legend = findByTestId(panelRoot, "db-overview-curve-legend");
+    expect(legend?.textContent).toContain("체력");
+    expect(legend?.textContent).toContain("공격");
   });
 
   it("AI 분석 button dispatches the modal's database-ai-toggle click (aria-expanded)", async () => {

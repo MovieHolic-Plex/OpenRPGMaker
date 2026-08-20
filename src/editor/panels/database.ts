@@ -77,10 +77,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "skills",
   "items",
   "equipment",
-  "crops",
-  "characters",
   "enemies",
-  "monsterSpecies",
   "troops",
   "elements",
   "states",
@@ -88,6 +85,9 @@ const tabOrder: readonly DatabaseTab[] = [
   "battleScreen",
   "battleCommands",
   "terrain",
+  "monsterSpecies",
+  "crops",
+  "characters",
   "tilesets",
   "structureKits",
   "commonEvents",
@@ -108,12 +108,13 @@ export type DatabaseTabGroup = {
 // 사이드바 그룹 라벨/순서만 정의한다 — 탭 id는 tabs/tabOrder 레지스트리에서 역참조하므로
 // 라벨·testid는 여기서 중복 정의하지 않는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
+  { label: "파티", tabs: ["actors", "classes", "skills", "items", "equipment"] },
   {
     label: "전투",
-    tabs: ["actors", "classes", "skills", "items", "equipment", "elements", "states", "animations", "battleScreen", "battleCommands"],
+    tabs: ["enemies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
-  { label: "수집", tabs: ["enemies", "monsterSpecies", "troops", "crops", "characters"] },
-  { label: "세계", tabs: ["terrain", "tilesets", "structureKits", "commonEvents"] },
+  { label: "수집", tabs: ["monsterSpecies", "crops", "characters"] },
+  { label: "맵", tabs: ["tilesets", "structureKits", "commonEvents"] },
   { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
 ];
 
@@ -296,7 +297,11 @@ function appendTabButton(
     el("button", {
       class: `db-tab${activeTab === tab.id ? " active" : ""}`,
       text: tab.label,
-      dataset: count === null ? { testid: tab.testid } : { testid: tab.testid, count: String(count) },
+      attrs: { type: "button", title: tab.label, "aria-label": tab.label },
+      dataset:
+        count === null
+          ? { testid: tab.testid, short: tab.label.slice(0, 1) }
+          : { testid: tab.testid, short: tab.label.slice(0, 1), count: String(count) },
       on: {
         click: () => {
           if (activeTab === tab.id) return;

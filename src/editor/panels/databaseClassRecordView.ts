@@ -294,33 +294,72 @@ function optionControls(record: ClassRecord): HTMLElement[] {
 }
 
 function skillTable(record: ClassRecord): HTMLElement {
-  const skills = store.getCurrent().database.skills;
-  const rows = record.learnedSkills.length > 0 ? record.learnedSkills : [{ level: 1, skillId: "" }];
-  const body = rows.map((entry, index) => {
-    const level = el("input", {
-      value: entry.level,
-      dataset: index === 0 ? { testid: "db-field-class-skill-level" } : undefined,
-      attrs: { min: "1", max: "99", type: "number" },
-    }) as HTMLInputElement;
-    const skill = recordSelect(entry.skillId, skills, index === 0 ? "db-picker-class-skill" : undefined);
-    const saveSkill = (): void => {
-      const nextSkill = { ...entry, level: numericValue(level, 1), skillId: skill.value };
-      updateDatabaseRecord("classes", record.id, { learnedSkills: index === 0 ? [nextSkill] : replaceSkill(record, index, nextSkill) });
-    };
-    level.addEventListener("input", saveSkill);
-    level.addEventListener("change", saveSkill);
-    skill.addEventListener("input", saveSkill);
-    skill.addEventListener("change", saveSkill);
-    return el("div", { class: "db-class-skill-table-row", children: [level, skill] });
-  });
-  const fillerRows = Array.from({ length: Math.max(0, 12 - body.length) }, () =>
-    el("div", { class: "db-class-skill-table-row db-class-skill-table-row-empty", children: [el("span"), el("span")] })
-  );
-  body.push(...fillerRows);
-  return el("div", {
-    class: "db-class-skill-table",
-    children: [el("div", { class: "db-class-skill-table-head", children: [el("span", { text: "레벨" }), el("span", { text: "스킬" })] }), ...body],
-  });
+  const root = el("div", { class: "db-class-skill-table" });
+  const refresh = (): void => {
+    const live = currentClass(record);
+    const catalog = store.getCurrent().database.skills;
+    const rows = live.learnedSkills.map((entry, index) => {
+      const saveSkill = (levelInput: HTMLInputElement, skillInput: HTMLSelectElement): void => {
+        const nextSkill = { level: numericValue(levelInput, 1), skillId: skillInput.value };
+        updateDatabaseRecord("classes", record.id, { learnedSkills: replaceSkill(currentClass(record), index, nextSkill) });
+      };
+      const level = el("input", {
+        value: entry.level,
+        dataset: index === 0 ? { testid: "db-field-class-skill-level" } : { testid: `db-field-class-skill-level-${index}` },
+        attrs: { min: "1", max: "99", type: "number", "aria-label": "습득 레벨" },
+        on: {
+          input: () => saveSkill(level, skill),
+          change: () => saveSkill(level, skill),
+        },
+      }) as HTMLInputElement;
+      const skill = recordSelect(entry.skillId, catalog, index === 0 ? "db-picker-class-skill" : `db-picker-class-skill-${index}`);
+      skill.addEventListener("input", () => saveSkill(level, skill));
+      skill.addEventListener("change", () => saveSkill(level, skill));
+      return el("div", {
+        class: "db-class-skill-table-row",
+        children: [
+          level,
+          skill,
+          el("button", {
+            class: "db-class-skill-remove",
+            text: "삭제",
+            attrs: { type: "button" },
+            dataset: { testid: `db-remove-class-skill-${index}` },
+            on: {
+              click: () => {
+                updateDatabaseRecord("classes", record.id, {
+                  learnedSkills: currentClass(record).learnedSkills.filter((_, entryIndex) => entryIndex !== index),
+                });
+                refresh();
+              },
+            },
+          }),
+        ],
+      });
+    });
+    root.replaceChildren(
+      el("div", { class: "db-class-skill-table-head", children: [el("span", { text: "레벨" }), el("span", { text: "스킬" }), el("span")] }),
+      ...rows,
+      el("button", {
+        class: "db-class-skill-add",
+        text: "스킬 추가",
+        attrs: { type: "button" },
+        dataset: { testid: "db-add-class-skill" },
+        on: {
+          click: () => {
+            const skillId = catalog[0]?.id;
+            if (!skillId) return;
+            updateDatabaseRecord("classes", record.id, {
+              learnedSkills: [...currentClass(record).learnedSkills, { level: 1, skillId }],
+            });
+            refresh();
+          },
+        },
+      }),
+    );
+  };
+  refresh();
+  return root;
 }
 
 // 허용 장비는 배열 필드(equipmentIds[])다 — 단일 select 는 상호작용 즉시 6→1 로 배열을
@@ -504,5 +543,7 @@ function readCommandKind(value: string): ClassBattleCommandKind {
 }
 
 function numericValue(input: HTMLInputElement, fallback: number): number {
-  return Number.isFinite(input.valueAsNumber) ? Math.trunc(input.valueAsNumber) : fallback;
+  if (Number.isFinite(input.valueAsNumber)) return Math.trunc(input.valueAsNumber);
+  const parsed = Number.parseInt(input.value, 10);
+  return Number.isFinite(parsed) ? parsed : fallback;
 }

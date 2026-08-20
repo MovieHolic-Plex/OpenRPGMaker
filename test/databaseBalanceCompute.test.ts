@@ -13,7 +13,11 @@ import { DEFAULT_ACTOR_ID, DEFAULT_CLASS_ID, DEFAULT_EQUIPMENT_ID, DEFAULT_ITEM_
 import type { Project } from "@/project/types";
 
 function emptyParty(project: Project): Project {
-  return { ...project, session: { ...project.session, partyActorIds: [] } };
+  return {
+    ...project,
+    system: { ...project.system, startActorIds: [] },
+    session: { ...project.session, partyActorIds: [] },
+  };
 }
 
 function emptyEnemies(project: Project): Project {
@@ -80,6 +84,16 @@ describe("partyPowerCurve", () => {
     // 깨끗한 픽스처: HP 는 레벨에 따라 단조 증가(또는 명시적 평탄).
     const hp = curve.map((point) => point.hp);
     expect(hp.every((value, index) => index === 0 || value >= hp[index - 1])).toBe(true);
+  });
+
+  it("uses authored startActorIds even when the play session party is empty", () => {
+    const project = createEmberQuestProject();
+    const sessionEmpty: Project = {
+      ...project,
+      session: { ...project.session, partyActorIds: [] },
+    };
+    const curve = partyPowerCurve(sessionEmpty);
+    expect(curve[0]?.hp).toBeGreaterThan(0);
   });
 
   it("파티가 비면 50개 전부 0 항목을 돌려준다", () => {

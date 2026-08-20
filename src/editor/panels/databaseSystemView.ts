@@ -577,12 +577,21 @@ function timeSystemFieldset(
 function typeChartFieldset(chart: TypeChartRecord | undefined, rerender: () => void): HTMLElement {
   const types = chart?.types ?? [];
   const typeInput = el("input", {
-    attrs: { type: "text", placeholder: "fire, water, grass" },
+    attrs: { type: "text", placeholder: "불, 물, 풀 — 또는 fire, water, grass" },
     value: types.join(", "),
     dataset: { testid: "db-field-system-type-chart-types" },
   }) as HTMLInputElement;
   typeInput.addEventListener("change", () => {
     const nextTypes = parseTypes(typeInput.value);
+    if (types.length > 0 && nextTypes.length === 0) {
+      const ok = globalThis.confirm(
+        "타입 목록을 비우면 상성표 전체가 삭제되고, 타입 배율은 전부 1배가 됩니다. 비울까요?"
+      );
+      if (!ok) {
+        typeInput.value = types.join(", ");
+        return;
+      }
+    }
     updateSystem((draft) => {
       const normalized = normalizeTypeChart({ types: nextTypes, multipliers: draft.system.typeChart?.multipliers ?? {} });
       if (normalized) draft.system.typeChart = normalized;
@@ -591,6 +600,11 @@ function typeChartFieldset(chart: TypeChartRecord | undefined, rerender: () => v
     rerender();
   });
   const children: HTMLElement[] = [
+    el("p", {
+      class: "db-type-chart-help",
+      text: "상성표는 배율을 고치는 표입니다. 칸을 누르면 배율이 바로 바뀝니다. 타입 목록을 비우면 표 전체가 사라집니다.",
+      dataset: { testid: "db-type-chart-help" },
+    }),
     el("label", { class: "db-field", children: [el("span", { text: "타입 목록" }), typeInput] }),
   ];
   if (types.length > 0) children.push(typeChartMatrix(chart));
@@ -608,7 +622,7 @@ function typeChartMatrix(chart: TypeChartRecord | undefined): HTMLElement {
   // 타입차트 × 장비(elementalDefenseIds) 3중 컴파운딩은 openwiki/editor-database.md B5
   // 문서가 다루며(런타임 elementMultiplierFor), 셀 하나의 예상 배율로 과잉 정밀하게
   // 보여주지 않는다.
-  const previewLine = el("span", { class: "db-type-chart-preview-line", text: "셀을 클릭하면 배율을 미리 봅니다" });
+  const previewLine = el("span", { class: "db-type-chart-preview-line", text: "칸을 누르면 배율이 바로 바뀝니다" });
   const preview = el("div", {
     class: "db-type-chart-preview",
     dataset: { testid: "db-type-preview" },
