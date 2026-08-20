@@ -16,8 +16,8 @@ const PAGE_ID = "page_exhaustive";
 
 // battleEvents.ts:416 fall-through(return false)로 무음 스킵되던 16종 — Step 0 에서 명시적
 // logUnsupported case 로 편입했다. 이 목록은 회귀 방지용 고정 스냅샷이다.
+// Step 3d(2026-08-20): promoteActor 는 실제 실행(troop-full)으로 승격되어 목록에서 빠짐.
 const PREVIOUSLY_SILENT_KINDS = [
-  "promoteActor",
   "giveMonster",
   "evolveMonster",
   "openChest",

@@ -127,6 +127,10 @@ export interface BattleSessionState {
   readonly flags?: Readonly<Record<string, boolean>>;
   // 타이머 잔여 초(timer 커맨드/timer 조건 기준 상태).
   readonly timers?: Readonly<Record<string, number>>;
+  // 세션 장비 상태(changeEquipment 커맨드 기준 상태). 없으면 party.equipment 폴백.
+  readonly actorEquipment?: Readonly<Record<string, ActorInitialEquipment>>;
+  // 런타임 직업 오버라이드(promoteActor 커맨드 기준 상태). 없으면 party.classOverrides 폴백.
+  readonly classOverrides?: Readonly<Record<string, string>>;
   readonly gameTime?: GameTime;
   readonly friendship?: Readonly<Record<string, number>>;
 }
@@ -355,6 +359,11 @@ export interface BattleEventStateSnapshot {
   readonly flags?: Readonly<Record<string, boolean>>;
   // 타이머 잔여 초(timer 커맨드) — applyBattleRewardsToSession 이 세션 timers 로 되돌려 쓴다.
   readonly timers?: Readonly<Record<string, number>>;
+  // 전투 중 changeEquipment 가 갱신한 장비 스냅샷 — 세션 actorEquipment 로 되돌려 쓴다.
+  readonly actorEquipment?: Readonly<Record<string, ActorInitialEquipment>>;
+  // 전투 중 promoteActor 가 갱신한 직업 오버라이드 — 세션 classOverrides 로 되돌려 쓴다
+  // (write-back 은 맵과 같은 changeActorClass 경로로 세션 바이탈을 새 클래스 최대치에 클램프).
+  readonly classOverrides?: Readonly<Record<string, string>>;
 }
 
 export interface BattleSnapshot {

@@ -86,6 +86,9 @@ export function playBattle(
       actorExperience: scene.session.actorExperience,
       actorLevels: scene.session.actorLevels,
       actorBattleCommands: scene.session.actorBattleCommands,
+      // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
+      actorEquipment: scene.session.actorEquipment,
+      classOverrides: scene.session.classOverrides,
       gameTime: scene.session.gameTime,
     },
     partyMonsters,

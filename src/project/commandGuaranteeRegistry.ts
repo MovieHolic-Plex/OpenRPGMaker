@@ -142,8 +142,17 @@ export const COMMAND_GUARANTEES = {
   changeLevel: guarantee("actor", { support: troopFull }),
   // 생활 스킬 XP — changeExp/changeLevel 과 동일 계열(액터 상태 변경, 즉시 완료).
   changeLifeSkillExp: guarantee("actor"),
-  promoteActor: guarantee("actor", { direct: false, support: scopedPartial }),
-  changeEquipment: guarantee("actor"),
+  // promoteActor: battleEvents.ts 가 맵과 같은 sessionClass.promoteActor 권위자로 전직을 실제
+  // 실행하고(요건 검증/아이템 소모/클래스 스킬 학습) 배틀러 파생 스탯을 재계산한다(Step 3d 2026-08-20).
+  // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
+  promoteActor: guarantee("actor", {
+    direct: false,
+    troopAuthoring: true,
+    support: { ...scopedPartial, troop: "full" },
+  }),
+  // changeEquipment: battleEvents.ts 가 맵과 같은 transitionActorEquipment 권위자로 장비를 실제
+  // 변경하고 배틀러 파생 스탯을 재계산한다(Step 3d 2026-08-20, 전투 종료 시 세션 write-back).
+  changeEquipment: guarantee("actor", { support: troopFull }),
   changeActorHp: guarantee("actor", { support: troopFull }),
   changeActorMp: guarantee("actor", { support: troopFull }),
   recoverAll: guarantee("actor", { support: troopFull }),

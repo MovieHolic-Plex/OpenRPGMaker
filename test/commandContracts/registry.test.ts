@@ -95,6 +95,8 @@ describe("native command guarantee registry", () => {
     // Step 3(2026-08-20): Tier-1 11종 — label/gotoLabel/loop/breakLoop(프레임 머신),
     // setFlag/timer(state write-back), showAnimation/gameOver/killPlayer/changeFace/
     // displayTextSettings(콜백·defeat 매핑·프레젠테이션 로그).
+    // Step 3d(2026-08-20): changeEquipment/promoteActor — 맵과 같은 전이 권위자
+    // (transitionActorEquipment/sessionClass.promoteActor) + 배틀러 파생 스탯 재계산 + write-back.
     const expected = [
       "text",
       "choices",
@@ -128,6 +130,8 @@ describe("native command guarantee registry", () => {
       "killPlayer",
       "changeFace",
       "displayTextSettings",
+      "changeEquipment",
+      "promoteActor",
     ].sort();
     const actual = COMMAND_KINDS.filter(
       (kind) => COMMAND_GUARANTEES[kind].supportByContext.troop === "full"

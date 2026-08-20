@@ -6,7 +6,7 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
-import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, type MutableBattler } from "@/battle/battleBattlers";
+import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import { applySkillLike, usesMagicalDefense } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
@@ -259,6 +259,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 세션 스냅샷 사본. 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
     flags: { ...(sessionState.flags ?? {}) },
     timers: { ...(sessionState.timers ?? {}) },
+    // 세션 장비/직업 오버라이드 스냅샷 사본(Step 3d): changeEquipment/promoteActor 가 여기 기록하고
+    // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다(canLose=false 패배는 미반영).
+    actorEquipment: Object.fromEntries(
+      Object.entries(sessionState.actorEquipment ?? options.party?.equipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
+    ),
+    classOverrides: { ...(sessionState.classOverrides ?? options.party?.classOverrides ?? {}) },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
@@ -306,6 +312,18 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       pendingWaitMs = Math.max(pendingWaitMs, Math.max(0, Math.trunc(ms)));
     },
     canGrantExtraAction: () => battleFlow !== "strict",
+    // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
+    // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
+    refreshActorDerivedStats: (battler, refreshOptions) => {
+      refreshActorBattlerDerivedStats(options.project, battler, {
+        classOverrides: battleEventState.classOverrides,
+        paramBonuses: options.party?.paramBonuses?.[battler.recordId],
+        equipment: battleEventState.actorEquipment?.[battler.recordId],
+        skills: refreshOptions?.refreshSkills
+          ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
+          : undefined,
+      });
+    },
     playAudio: (resourceId, loop) => {
       // 오디오 재생 자체는 호스트가 담당. 런타임은 옵션 콜백으로 위임만 한다.
       options.playAudio?.(resourceId, loop);
