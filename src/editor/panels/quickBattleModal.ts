@@ -46,8 +46,8 @@ export function openQuickBattleModal(troopId: string): void {
   const modalHeader = el("div", { class: "quick-battle-modal-header" });
   modalHeader.style.cssText = `
     width: 640px;
-    background: #1742a5;
-    border: 2px solid #e7f2ff;
+    background: #4A57D6;
+    border: 2px solid #E7E0D0;
     border-bottom: 0;
     color: #fff;
     padding: 6px 12px;
@@ -61,7 +61,7 @@ export function openQuickBattleModal(troopId: string): void {
   const title = el("span", { text: `⚔️ 퀵 전투 시뮬레이션: [${troop.name}]` });
   const closeBtn = el("button", { text: "✕ 닫기 (ESC)", dataset: { testid: "quick-battle-close-btn" } });
   closeBtn.style.cssText = `
-    background: #e76f51;
+    background: #C6403D;
     border: 1px solid #fff;
     color: #fff;
     font-size: 10px;
@@ -78,7 +78,7 @@ export function openQuickBattleModal(troopId: string): void {
     height: 480px;
     position: relative;
     background: #000;
-    border: 2px solid #e7f2ff;
+    border: 2px solid #E7E0D0;
     box-sizing: border-box;
     overflow: hidden;
   `;

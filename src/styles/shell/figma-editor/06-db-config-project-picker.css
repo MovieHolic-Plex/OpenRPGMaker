@@ -201,7 +201,7 @@
 
   .db-config-project-cover {
     aspect-ratio: 8 / 5;
-    background: #22252c;
+    background: var(--bg-inset);
     border-bottom: 1px solid var(--editor-line-strong);
     display: block;
     overflow: hidden;
@@ -218,10 +218,10 @@
   }
 
   .db-config-project-cover-tag {
-    background: rgb(0 0 0 / 62%);
+    background: rgba(42, 37, 33, 0.62);
     border-radius: 3px;
     bottom: 5px;
-    color: #fff;
+    color: var(--text-1);
     font: 9px var(--font-mono);
     left: 5px;
     letter-spacing: 0.08em;
@@ -231,7 +231,7 @@
   }
 
   .db-config-project-cover-tag.is-fallback {
-    color: #d8d2c4;
+    color: var(--text-2);
   }
 
   .db-config-project-meta {

@@ -20,7 +20,7 @@
   /* 미분류 폴백. 반드시 부모에 둔다 — .cmd-item 에 두면 카테고리 규칙과 특이도가
      같아 소스 순서로 폴백이 이겨 버린다(실제로 그렇게 깨졌다). 커스텀 속성은
      상속되므로 부모 선언은 자식의 카테고리 선언에 항상 진다. */
-  --blk-cat: #626b7d;
+  --blk-cat: var(--bg-surface);
   display: grid;
   gap: 3px;
   align-content: start;
@@ -41,16 +41,16 @@
 }
 
 /* ── 카테고리 색 (dataviz 검증 통과 · 다크 서피스 기준) ───────────── */
-.event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: #3987e5; }
-.event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: #d95926; }
-.event-contents-fieldset .cmd-item[data-command-category="reward"]   { --blk-cat: #199e70; }
+.event-contents-fieldset .cmd-item[data-command-category="dialogue"] { --blk-cat: var(--bg-surface); }
+.event-contents-fieldset .cmd-item[data-command-category="flow"]     { --blk-cat: var(--bg-surface); }
+.event-contents-fieldset .cmd-item[data-command-category="reward"]   { --blk-cat: var(--bg-surface); }
 .event-contents-fieldset .cmd-item[data-command-category="map"],
-.event-contents-fieldset .cmd-item[data-command-category="actor"]    { --blk-cat: #9085e9; }
+.event-contents-fieldset .cmd-item[data-command-category="actor"]    { --blk-cat: var(--bg-surface); }
 .event-contents-fieldset .cmd-item[data-command-category="screen"],
-.event-contents-fieldset .cmd-item[data-command-category="sound"]    { --blk-cat: #d55181; }
+.event-contents-fieldset .cmd-item[data-command-category="sound"]    { --blk-cat: var(--bg-surface); }
 .event-contents-fieldset .cmd-item[data-command-category="battle"],
 .event-contents-fieldset .cmd-item[data-command-category="system"],
-.event-contents-fieldset .cmd-item[data-command-category="modern"]   { --blk-cat: #c98500; }
+.event-contents-fieldset .cmd-item[data-command-category="modern"]   { --blk-cat: var(--bg-surface); }
 
 /* 2차 채널 — 색만으로 갈리지 않는 후순위 3종에 사선 텍스처. */
 .event-contents-fieldset .cmd-item[data-command-category="map"] > .cmd-head > .cmd-prefix,
@@ -111,8 +111,8 @@
 .event-contents-fieldset .cmd-list .cmd-item.selected > .cmd-head {
   border-color: var(--accent);
   border-width: 2px;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(0, 0, 0, 0.22);
-  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #1c202d)));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 32%, transparent), 0 2px 10px rgba(42,37,33,.10);
+  background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 7%, var(--bg-raised, var(--mk-raised, #FFFDF8)));
 }
 
 /* ── ◆ 접두 문자를 색 거터로 ─────────────────────────────────────── */
@@ -154,7 +154,7 @@
 }
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:hover {
   background: color-mix(in srgb, var(--accent, var(--mk-accent, #d9a441)) 12%, transparent);
-  color: var(--text-1, var(--mk-t1, #e9ecf3));
+  color: var(--text-1, var(--mk-t1, #2A2521));
 }
 .event-contents-fieldset .cmd-list .cmd-item > .cmd-head > .cmd-drag-handle:active {
   cursor: grabbing;

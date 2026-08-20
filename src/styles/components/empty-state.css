@@ -30,9 +30,9 @@
     border-radius: 10px;
     display: grid;
     place-items: center;
-    background: var(--empty-icon-bg, rgba(108, 121, 242, 0.10));
-    border: 1px solid var(--empty-icon-border, rgba(108, 121, 242, 0.28));
-    color: var(--empty-icon-color, #c9ceff);
+    background: var(--empty-icon-bg, rgba(74, 87, 214, 0.10));
+    border: 1px solid var(--empty-icon-border, rgba(74, 87, 214, 0.28));
+    color: var(--empty-icon-color, #4A57D6);
     font-size: 18px;
     line-height: 1;
   }
@@ -71,11 +71,11 @@
   }
   .empty-state__action--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
   .empty-state__action--ghost {
-    background: rgba(255,255,255,0.06);
+    background: var(--control-bg);
     color: var(--text-2);
     border-color: var(--border-default);
   }
-  .empty-state__action--ghost:hover { background: rgba(255,255,255,0.10); color: var(--text-1); border-color: var(--border-strong); }
+  .empty-state__action--ghost:hover { background: var(--control-bg-hover); color: var(--text-1); border-color: var(--border-strong); }
   .empty-state__action:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
 
   .event-list-empty,

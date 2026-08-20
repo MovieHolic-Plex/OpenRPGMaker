@@ -28,7 +28,7 @@
 .event-subdialog-backdrop[data-testid="event-transfer-player-dialog"] .event-subdialog-window {
   background: var(--bg-raised);
   border: 1px solid var(--border-default);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 18px 48px var(--shadow-pop);
   color: var(--text-1);
   font-family: Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   width: min(920px, calc(100vw - 24px));
@@ -96,8 +96,8 @@
 }
 
 .transfer-player-project::before {
-  background: #f4d774;
-  border: 1px solid #7b6b20;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 3px;
   content: "";
   height: 14px;
@@ -130,8 +130,8 @@
 }
 
 .transfer-player-map-row::before {
-  background: #7fffd4;
-  border: 1px solid #008060;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
   border-radius: 3px;
   content: "";
   height: 14px;
@@ -148,7 +148,7 @@
 
 .transfer-player-preview {
   align-items: center;
-  background: #0b1220;
+  background: var(--bg-surface);
   display: flex;
   justify-content: center;
   overflow: hidden;

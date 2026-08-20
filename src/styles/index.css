@@ -72,7 +72,7 @@
    ========================================================================= */
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -83,7 +83,7 @@ body {
 }
 
 ::selection {
-  background: rgba(108, 121, 242, 0.35);
+  background: rgba(74, 87, 214, 0.22);
   color: var(--text-1);
 }
 

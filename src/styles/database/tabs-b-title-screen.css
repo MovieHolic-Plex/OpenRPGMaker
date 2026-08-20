@@ -1,6 +1,6 @@
 .rm-title-screen {
   --rm2k3-title-sky-glow: rgba(255, 255, 255, 0.12);
-  --rm2k3-title-vignette: rgba(0, 0, 0, 0.28);
+  --rm2k3-title-vignette: rgba(42, 37, 33, 0.14);
   --rm2k3-title-window-hi: #4a5a8a;
   --rm2k3-title-window: #243058;
   --rm2k3-title-window-deep: #121a34;
@@ -10,10 +10,10 @@
   --rm2k3-title-highlight: #3a5a9a;
   --rm2k3-title-highlight-deep: #1e3468;
   --rm2k3-title-highlight-ring: rgba(255, 255, 255, 0.55);
-  --rm2k3-title-cursor: #ffffff;
+  --rm2k3-title-cursor: var(--bg-overlay);
   --rm2k3-title-ornament: rgba(255, 245, 210, 0.9);
-  --rm2k3-title-ornament-shadow: rgba(0, 0, 0, 0.45);
-  --rm2k3-title-text: #ffffff;
+  --rm2k3-title-ornament-shadow: rgba(60, 48, 32, 0.12);
+  --rm2k3-title-text: var(--bg-overlay);
   --rm2k3-title-shadow: #101828;
   background-color: #101820;
   background-position: center;
@@ -37,13 +37,13 @@
 .rm-title-screen::before {
   background:
     radial-gradient(circle at 50% 12%, rgba(255, 255, 255, 0.05), transparent 30%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 42%);
+    linear-gradient(180deg, rgba(42, 37, 33, 0.06), transparent 42%);
   opacity: 0.4;
 }
 .rm-title-screen::after {
   background:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.18), transparent 12%, transparent 88%, rgba(0, 0, 0, 0.18)),
-    linear-gradient(180deg, transparent 72%, rgba(0, 0, 0, 0.28));
+    linear-gradient(90deg, rgba(42, 37, 33, 0.14), transparent 12%, transparent 88%, rgba(42, 37, 33, 0.14)),
+    linear-gradient(180deg, transparent 72%, rgba(42, 37, 33, 0.14));
   opacity: 0.55;
 }
 .rm-title-screen .rm-title-screen-title {
@@ -274,7 +274,7 @@
   --rm2k3-status-mid: var(--rm2k3-title-window-mid, #7da7ff);
   --rm2k3-status-highlight: var(--rm2k3-title-highlight, #397ddd);
   --rm2k3-status-highlight-deep: var(--rm2k3-title-highlight-deep, #1b54bd);
-  --rm2k3-status-text: var(--rm2k3-title-text, #ffffff);
+  --rm2k3-status-text: var(--rm2k3-title-text, var(--bg-overlay));
   background: var(--runtime-window-fill-fallback);
   border: var(--runtime-window-border) solid transparent;
   border-image-repeat: stretch;

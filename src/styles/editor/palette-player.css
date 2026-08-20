@@ -14,7 +14,7 @@
   display: grid;
   place-items: center;
   padding: var(--space-4);
-  background: rgba(24, 22, 18, 0.48);
+  background: rgba(42, 37, 33, 0.18);
 }
 
 .event-editor-modal-window {
@@ -130,7 +130,7 @@
   display: grid;
   place-items: center;
   padding: var(--space-4);
-  background: rgba(10, 10, 10, 0.46);
+  background: rgba(42, 37, 33, 0.18);
 }
 
 .event-subdialog-window {
@@ -279,7 +279,7 @@
 .npc-character-cell {
   padding: 0;
   cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(42, 37, 33, 0.12);
 }
 
 .npc-character-cell:hover,
@@ -290,7 +290,7 @@
 .npc-character-cell.active,
 .npc-option-button.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px var(--accent), inset 0 1px 0 rgba(42, 37, 33, 0.12);
 }
 
 .npc-labeled-options {
@@ -541,7 +541,7 @@
   z-index: 1000;
   opacity: 0;
   transition: opacity 0.2s, transform 0.2s;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 20px rgba(42, 37, 33, 0.10);
   pointer-events: none;
   /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
      너비를 제한하고 2줄까지만 보여준 뒤 자른다. */

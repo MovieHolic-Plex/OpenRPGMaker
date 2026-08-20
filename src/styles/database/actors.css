@@ -453,7 +453,7 @@
 }
 
 .rm2k3-record-actors .actor-curve {
-  background: #fbfaf4;
+  background: var(--bg-raised);
   color: var(--text-1);
 }
 
@@ -572,7 +572,7 @@
   }
 
   .rm2k3-record-actors .db-toolbar .btn.danger {
-    color: #a1282a;
+    color: var(--danger);
   }
 
   .rm2k3-record-actors .rm2k3-record-detail-pane {
@@ -697,7 +697,7 @@
   }
 
   .rm2k3-record-actors .actor-classic-sheet input[type="checkbox"] {
-    accent-color: #2f67c9;
+    accent-color: var(--accent);
     height: 18px;
     width: 18px;
   }
@@ -884,7 +884,7 @@
   }
 
   .rm2k3-record-actors .actor-curve {
-    background: #fbfaf4;
+    background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     color: var(--text-1);
     min-height: 72px;

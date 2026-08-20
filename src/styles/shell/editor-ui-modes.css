@@ -1,6 +1,6 @@
 .editor-product-brand {
   align-items: center;
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, var(--text-1));
   display: inline-flex;
   flex: 0 0 auto;
   font: 700 13px/1 var(--font-ui, system-ui, sans-serif);
@@ -35,7 +35,7 @@
   background: transparent;
   border: 0;
   border-radius: 0;
-  color: var(--editor-text-muted, #3c3c3c);
+  color: var(--editor-text-muted, #5C5348);
   cursor: pointer;
   font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
   height: 28px;
@@ -45,14 +45,14 @@
 
 .editor-ui-mode-btn:hover,
 .editor-ui-mode-btn:focus-visible {
-  color: var(--editor-text, #111);
+  color: var(--editor-text, var(--text-1));
   outline: none;
 }
 
 .editor-ui-mode-btn.is-active {
   background: transparent;
   box-shadow: none;
-  color: var(--editor-text, #111);
+  color: var(--editor-text, var(--text-1));
   font-weight: 800;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -62,8 +62,8 @@ body.editor-ui-beginner .topbar-test-play,
 body.editor-ui-standard .topbar-test-play,
 body.editor-ui-expert .topbar-test-play {
   align-items: center;
-  background: var(--studio-play, var(--editor-blue, #1e4f9a));
-  border: 1px solid var(--studio-select, #0a246a);
+  background: var(--studio-play, var(--editor-blue, #4A57D6));
+  border: 1px solid var(--studio-select, var(--accent-border));
   border-radius: var(--radius-s, 2px);
   color: var(--on-accent, #fff);
   cursor: pointer;
@@ -83,7 +83,7 @@ body.editor-ui-standard .topbar-test-play:focus-visible,
 body.editor-ui-expert .topbar-test-play:hover,
 body.editor-ui-expert .topbar-test-play:focus-visible {
   filter: brightness(1.12);
-  outline: 2px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 45%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--editor-blue, #4A57D6) 45%, transparent);
   outline-offset: 1px;
 }
 
@@ -94,7 +94,7 @@ body.editor-ui-expert .topbar-test-play:focus-visible {
 /* Classic RM toolbar is a legacy surface — expert only. */
 .classic-toolbar.is-legacy-surface {
   opacity: 0.96;
-  border-top: 1px solid color-mix(in srgb, var(--editor-line, #2a3550) 70%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--editor-line, var(--border-subtle)) 70%, transparent);
 }
 
 /* Basic이 숨기는 건 expert 편집 툴바뿐 — play 복귀 툴바(uiDensity="play", menu.ts)는 양쪽 모드 표시. */
@@ -229,7 +229,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 9px;
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -263,15 +263,15 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 
 .basic-rail-btn:hover,
 .basic-rail-btn:focus-visible {
-  border-color: var(--editor-line-strong, #3a4a6a);
-  color: var(--editor-text, #e8eefc);
+  border-color: var(--editor-line-strong, var(--border-strong));
+  color: var(--editor-text, var(--text-1));
   outline: none;
 }
 
 .basic-rail-btn.is-active,
 .basic-rail-btn.is-open {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, var(--mix-base));
-  border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 55%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 28%, var(--mix-base));
+  border-color: color-mix(in srgb, var(--editor-blue, #4A57D6) 55%, transparent);
   color: var(--on-accent);
 }
 
@@ -281,7 +281,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 }
 
 .basic-rail-sep {
-  background: var(--editor-line-strong, #3a4a6a);
+  background: var(--editor-line-strong, var(--border-strong));
   flex-shrink: 0;
   height: 1px;
   margin: 2px 0;
@@ -290,8 +290,8 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 
 .basic-pending-event-cta {
   align-items: center;
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 26%, var(--mix-base));
-  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 58%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 26%, var(--mix-base));
+  border: 1px solid color-mix(in srgb, var(--editor-blue, #4A57D6) 58%, transparent);
   border-radius: 9px;
   color: var(--on-accent);
   cursor: pointer;
@@ -307,9 +307,9 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 }
 
 .basic-pending-event-cta > span:not(.basic-pending-event-cta-mark) {
-  background: var(--editor-popover-bg, #151b2c);
-  border: 1px solid var(--editor-line-strong, #3a4a6a);
-  color: var(--editor-text, #e8eefc);
+  background: var(--editor-popover-bg, var(--bg-overlay));
+  border: 1px solid var(--editor-line-strong, var(--border-strong));
+  color: var(--editor-text, var(--text-1));
   display: none;
   left: calc(100% + 8px);
   padding: 7px 8px;
@@ -325,7 +325,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 
 .basic-pending-event-cta-coord {
   border-radius: 0 0 7px 7px;
-  color: var(--editor-text-muted, #9aa8c7) !important;
+  color: var(--editor-text-muted, var(--text-2)) !important;
   top: 50%;
 }
 
@@ -336,7 +336,7 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 
 .basic-pending-event-cta:hover,
 .basic-pending-event-cta:focus-visible {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 42%, var(--mix-base));
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 42%, var(--mix-base));
   outline: none;
 }
 
@@ -369,13 +369,10 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
 /* ── 첫 방문 코치마크 (기본 모드) ─────────────────────────────── */
 
 .coach-mark-card {
-  /* --control-bg 는 rgba(255,255,255,0.045) 라 color-mix 로 섞어도 알파가 남아
-     카드가 4.5% 불투명으로 보였다(반투명 원인). 온보딩 카드는 뒤 UI 를 가려야 하므로
-     불투명 색을 직접 지정한다. */
-  background: var(--mix-base, #1a2236);
-  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 60%, transparent);
-  border-radius: 10px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  border-radius: var(--radius-m, 10px);
+  box-shadow: var(--shadow-pop, 0 12px 32px rgba(60, 48, 32, 0.14));
   padding: 12px 14px;
   position: fixed;
   /* 첫 방문 안내라 어떤 셸 레이어보다 앞에 와야 한다 — z-popover(90) 는
@@ -391,13 +388,13 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 }
 
 .coach-mark-head {
-  color: var(--editor-text, #e8eefc);
+  color: var(--text-1, #2A2521);
   font: 700 12px/1.3 var(--font-ui, system-ui, sans-serif);
   margin-bottom: 6px;
 }
 
 .coach-mark-body {
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--text-2, #5C5348);
   font: 400 12px/1.55 var(--font-ui, system-ui, sans-serif);
   margin-bottom: 10px;
 }
@@ -417,29 +414,29 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 }
 
 .coach-mark-skip {
-  background: transparent;
-  border: 1px solid var(--editor-line, #2a3550);
-  color: var(--editor-text-muted, #9aa8c7);
+  background: var(--bg-raised, #FFFDF8);
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.12));
+  color: var(--text-2, #5C5348);
 }
 
 .coach-mark-next {
-  background: var(--editor-blue, #3d6df0);
+  background: var(--accent, #4A57D6);
   border: 1px solid transparent;
-  color: var(--on-accent);
+  color: var(--on-accent, #fff);
 }
 
 .coach-mark-skip:hover {
-  border-color: var(--editor-line-strong, #3a4a6a);
-  color: var(--editor-text, #e8eefc);
+  border-color: var(--border-strong, rgba(42, 37, 33, 0.26));
+  color: var(--text-1, #2A2521);
 }
 
 .coach-mark-next:hover {
-  filter: brightness(1.12);
+  filter: brightness(0.96);
 }
 
 .basic-rail-tile-thumb {
   background-color: var(--bg-well);
-  border: 1px solid var(--editor-line, #2a3550);
+  border: 1px solid var(--editor-line, var(--border-subtle));
   border-radius: 5px;
   display: block;
   image-rendering: pixelated;
@@ -447,11 +444,11 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 
 /* Layer badge: compact corner chip that does not unbalance the 36px icon. */
 .basic-rail-badge {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 88%, #0a1020);
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 88%, var(--bg-surface));
   border: 1px solid color-mix(in srgb, var(--on-accent) 22%, transparent);
   border-radius: 6px;
   bottom: 1px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 1px 2px rgba(60, 48, 32, 0.10);
   color: var(--on-accent);
   font: 700 8px/1 var(--font-ui, system-ui, sans-serif);
   letter-spacing: -0.02em;
@@ -463,10 +460,10 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
 }
 
 .basic-rail-flyout {
-  background: var(--editor-popover-bg, #151b2c);
-  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  background: var(--editor-popover-bg, var(--bg-overlay));
+  border: 1px solid var(--editor-line-strong, var(--border-strong));
   border-radius: 12px;
-  box-shadow: var(--shadow-pop, 0 12px 32px rgba(0, 0, 0, 0.45));
+  box-shadow: var(--shadow-pop, 0 12px 32px rgba(60, 48, 32, 0.12));
   display: flex;
   flex-direction: column;
   left: calc(100% + 6px);
@@ -607,17 +604,17 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 /* 시트 크게 보기 팝오버 */
 .chipset-sheet-popout-backdrop {
-  background: rgba(6, 10, 20, 0.55);
+  background: rgba(42, 37, 33, 0.08);
   inset: 0;
   position: fixed;
   z-index: var(--z-popover-high);
 }
 
 .chipset-sheet-popout {
-  background: var(--editor-popover-bg, #151b2c);
-  border: 1px solid var(--editor-line-strong, #3a4a6a);
+  background: var(--editor-popover-bg, var(--bg-overlay));
+  border: 1px solid var(--editor-line-strong, var(--border-strong));
   border-radius: 14px;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 18px 48px rgba(60, 48, 32, 0.14);
   display: flex;
   flex-direction: column;
   left: 50%;
@@ -632,14 +629,14 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .chipset-sheet-popout-head {
   align-items: center;
-  border-bottom: 1px solid var(--editor-line, #2a3550);
+  border-bottom: 1px solid var(--editor-line, var(--border-subtle));
   display: flex;
   gap: 8px;
   padding: 10px 12px;
 }
 
 .chipset-sheet-popout-head h2 {
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, var(--text-1));
   flex: 1 1 auto;
   font: 700 14px/1.2 var(--font-ui, system-ui, sans-serif);
   margin: 0;
@@ -684,14 +681,14 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-head {
   align-items: center;
-  border-bottom: 1px solid var(--editor-line, #2a3550);
+  border-bottom: 1px solid var(--editor-line, var(--border-subtle));
   display: flex;
   gap: 6px;
   padding: 8px 10px;
 }
 
 .basic-flyout-title {
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, var(--text-1));
   flex: 1 1 auto;
   font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
 }
@@ -701,7 +698,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 7px;
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   cursor: pointer;
   font-size: 12px;
   height: 24px;
@@ -710,12 +707,12 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-pin:hover,
 .basic-flyout-close:hover {
-  border-color: var(--editor-line-strong, #3a4a6a);
-  color: var(--editor-text, #e8eefc);
+  border-color: var(--editor-line-strong, var(--border-strong));
+  color: var(--editor-text, var(--text-1));
 }
 
 .basic-flyout-pin.is-pinned {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 30%, var(--mix-base));
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 30%, var(--mix-base));
   color: var(--on-accent);
 }
 
@@ -756,18 +753,18 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-flyout-map-host .map-tree-basic-count {
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, var(--text-1));
   font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
 }
 
 .basic-flyout-map-host .map-tree-basic-hint {
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
 }
 
 .basic-flyout-map-host .map-tree-basic-add {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 22%, var(--mix-base));
-  border: 1px solid color-mix(in srgb, var(--editor-blue, #3d6df0) 50%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 22%, var(--mix-base));
+  border: 1px solid color-mix(in srgb, var(--editor-blue, #4A57D6) 50%, transparent);
   border-radius: 9px;
   color: var(--on-accent);
   cursor: pointer;
@@ -780,7 +777,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-map-host .map-tree-basic-add:hover,
 .basic-flyout-map-host .map-tree-basic-add:focus-visible {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 38%, var(--mix-base));
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 38%, var(--mix-base));
   outline: none;
 }
 
@@ -798,7 +795,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 88%, #000);
   border: 1px solid transparent;
   border-radius: 10px;
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, var(--text-1));
   cursor: pointer;
   display: grid;
   gap: 6px;
@@ -809,14 +806,14 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-map-host .map-item.map-item-basic:hover,
 .basic-flyout-map-host .map-item.map-item-basic:focus-visible {
-  border-color: var(--editor-line-strong, #3a4a6a);
+  border-color: var(--editor-line-strong, var(--border-strong));
   outline: none;
 }
 
 .basic-flyout-map-host .map-item.map-item-basic.active {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 28%, var(--mix-base));
-  border-color: color-mix(in srgb, var(--editor-blue, #3d6df0) 55%, transparent);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-blue, #3d6df0) 30%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 28%, var(--mix-base));
+  border-color: color-mix(in srgb, var(--editor-blue, #4A57D6) 55%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--editor-blue, #4A57D6) 30%, transparent);
   font-weight: 600;
 }
 
@@ -840,7 +837,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   cursor: pointer;
   display: inline-flex;
   height: 26px;
@@ -851,7 +848,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 .basic-flyout-map-host .map-item.map-item-basic .map-tree-toggle:hover:not(:disabled) {
   background: color-mix(in srgb, var(--on-accent) 8%, transparent);
-  color: var(--editor-text, #e8eefc);
+  color: var(--editor-text, var(--text-1));
 }
 
 .basic-flyout-map-host .map-item.map-item-basic .start-mark.is-start {
@@ -869,7 +866,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   cursor: pointer;
   font: 700 16px/1 var(--font-ui, system-ui, sans-serif);
   height: 28px;
@@ -880,14 +877,14 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .basic-flyout-map-host .map-item.map-item-basic .map-tree-more:hover,
 .basic-flyout-map-host .map-item.map-item-basic .map-tree-more:focus-visible {
   background: color-mix(in srgb, var(--on-accent) 10%, transparent);
-  border-color: var(--editor-line-strong, #3a4a6a);
-  color: var(--editor-text, #e8eefc);
+  border-color: var(--editor-line-strong, var(--border-strong));
+  color: var(--editor-text, var(--text-1));
   outline: none;
 }
 
 .basic-flyout-map-host .map-item.map-item-basic.drop-target {
-  background: color-mix(in srgb, var(--editor-blue, #3d6df0) 18%, var(--mix-base));
-  outline: 1px dashed color-mix(in srgb, var(--editor-blue, #3d6df0) 70%, transparent);
+  background: color-mix(in srgb, var(--editor-blue, #4A57D6) 18%, var(--mix-base));
+  outline: 1px dashed color-mix(in srgb, var(--editor-blue, #4A57D6) 70%, transparent);
   outline-offset: -2px;
 }
 
@@ -902,7 +899,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 .basic-selected-tile {
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
 }
 
@@ -915,7 +912,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .basic-tile-cell {
   background-color: var(--bg-well);
   background-repeat: no-repeat;
-  border: 1px solid var(--editor-line, #2a3550);
+  border: 1px solid var(--editor-line, var(--border-subtle));
   border-radius: 6px;
   cursor: pointer;
   image-rendering: pixelated;
@@ -925,16 +922,16 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .basic-tile-cell.is-active,
 .basic-tile-cell:hover,
 .basic-tile-cell:focus-visible {
-  border-color: var(--editor-blue, #3d6df0);
-  box-shadow: 0 0 0 1px var(--editor-blue, #3d6df0);
+  border-color: var(--editor-blue, #4A57D6);
+  box-shadow: 0 0 0 1px var(--editor-blue, #4A57D6);
   outline: none;
 }
 
 .basic-rail-hint {
   background: color-mix(in srgb, var(--control-bg, var(--mix-base)) 85%, #000);
-  border: 1px dashed var(--editor-line, #2a3550);
+  border: 1px dashed var(--editor-line, var(--border-subtle));
   border-radius: 10px;
-  color: var(--editor-text-muted, #9aa8c7);
+  color: var(--editor-text-muted, var(--text-2));
   font: 500 12px/1.4 var(--font-ui, system-ui, sans-serif);
   padding: 10px 12px;
 }

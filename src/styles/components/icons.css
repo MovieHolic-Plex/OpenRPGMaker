@@ -26,9 +26,9 @@
 }
 
 .rm-tool-icon-trash::before {
-  background: #dfe4ec;
+  background: var(--border-default);
   border: 1px solid var(--bg-raised);
-  box-shadow: inset 3px 0 0 var(--text-2), inset 6px 0 0 #dfe4ec;
+  box-shadow: inset 3px 0 0 var(--text-2), inset 6px 0 0 var(--border-default);
   height: 10px;
   left: 4px;
   top: 5px;
@@ -36,8 +36,8 @@
 }
 
 .rm-tool-icon-trash::after {
-  background: #c3cbd9;
-  box-shadow: 3px -2px 0 #c3cbd9;
+  background: var(--border-default);
+  box-shadow: 3px -2px 0 var(--border-default);
   height: 2px;
   left: 3px;
   top: 2px;
@@ -45,8 +45,8 @@
 }
 
 .rm-tool-icon-map-menu::before {
-  background: #dfe4ec;
-  box-shadow: 0 5px 0 #dfe4ec, 0 10px 0 #dfe4ec;
+  background: var(--border-default);
+  box-shadow: 0 5px 0 var(--border-default), 0 10px 0 var(--border-default);
   height: 2px;
   left: 7px;
   top: 2px;
@@ -58,9 +58,9 @@
 }
 
 .rm-tool-icon-map-settings::before {
-  background: #c8d0d8;
-  border: 1px solid #2f3b45;
-  box-shadow: inset 0 2px 0 #f6f2dc;
+  background: var(--border-default);
+  border: 1px solid var(--border-strong);
+  box-shadow: inset 0 2px 0 var(--bg-inset);
   height: 11px;
   left: 2px;
   top: 3px;
@@ -77,8 +77,8 @@
 }
 
 .rm-tool-icon-map-screenshot::before {
-  background: #f6f2dc;
-  border: 1px solid #2f3b45;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
   height: 10px;
   left: 2px;
   top: 4px;
@@ -87,7 +87,7 @@
 
 .rm-tool-icon-map-screenshot::after {
   background: #4c7a43;
-  border: 1px solid #2f3b45;
+  border: 1px solid var(--border-strong);
   height: 4px;
   left: 5px;
   top: 7px;
@@ -289,7 +289,7 @@
 }
 
 .rm-tool-icon-select::before {
-  background: #edf1f7;
+  background: var(--text-2);
   clip-path: polygon(0 0, 0 15px, 5px 11px, 8px 16px, 11px 14px, 8px 9px, 14px 9px);
   height: 16px;
   left: 1px;
@@ -298,8 +298,8 @@
 }
 
 .rm-tool-icon-eraser::before {
-  background: #f2f4f8;
-  border: 1px solid #2b313a;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
   height: 7px;
   left: 2px;
   top: 6px;
@@ -308,7 +308,7 @@
 }
 
 .rm-tool-icon-eraser::after {
-  background: #9aa6b6;
+  background: var(--text-3);
   height: 2px;
   left: 8px;
   top: 9px;
@@ -317,8 +317,8 @@
 }
 
 .rm-tool-icon-bucket::before {
-  background: #eef2f7;
-  border: 1px solid #2b313a;
+  background: var(--text-2);
+  border: 1px solid var(--border-strong);
   height: 9px;
   left: 3px;
   top: 3px;
@@ -327,7 +327,7 @@
 }
 
 .rm-tool-icon-bucket::after {
-  background: #d7e1ec;
+  background: var(--border-subtle);
   border-radius: 50%;
   height: 4px;
   left: 10px;
@@ -337,7 +337,7 @@
 
 .rm-tool-icon-rectangle::before {
   background: transparent;
-  border: 2px solid #edf1f7;
+  border: 2px solid var(--text-2);
   border-radius: 2px;
   height: 10px;
   left: 2px;
@@ -347,12 +347,12 @@
 
 .rm-tool-icon-grid::before {
   background:
-    linear-gradient(#edf1f7, #edf1f7) 0 0 / 16px 1px,
-    linear-gradient(#edf1f7, #edf1f7) 0 7px / 16px 1px,
-    linear-gradient(#edf1f7, #edf1f7) 0 15px / 16px 1px,
-    linear-gradient(90deg, #edf1f7, #edf1f7) 0 0 / 1px 16px,
-    linear-gradient(90deg, #edf1f7, #edf1f7) 7px 0 / 1px 16px,
-    linear-gradient(90deg, #edf1f7, #edf1f7) 15px 0 / 1px 16px;
+    linear-gradient(var(--text-2), var(--text-2)) 0 0 / 16px 1px,
+    linear-gradient(var(--text-2), var(--text-2)) 0 7px / 16px 1px,
+    linear-gradient(var(--text-2), var(--text-2)) 0 15px / 16px 1px,
+    linear-gradient(90deg, var(--text-2), var(--text-2)) 0 0 / 1px 16px,
+    linear-gradient(90deg, var(--text-2), var(--text-2)) 7px 0 / 1px 16px,
+    linear-gradient(90deg, var(--text-2), var(--text-2)) 15px 0 / 1px 16px;
   background-repeat: no-repeat;
   height: 16px;
   left: 0;
@@ -362,7 +362,7 @@
 
 .rm-tool-icon-pin::before {
   background: transparent;
-  border: 2px solid #edf1f7;
+  border: 2px solid var(--text-2);
   border-radius: 50%;
   height: 8px;
   left: 3px;
@@ -371,7 +371,7 @@
 }
 
 .rm-tool-icon-pin::after {
-  background: #edf1f7;
+  background: var(--text-2);
   clip-path: polygon(50% 100%, 0 0, 100% 0);
   height: 7px;
   left: 5px;
@@ -382,7 +382,7 @@
 .rm-tool-icon-link::before,
 .rm-tool-icon-link::after {
   background: transparent;
-  border: 2px solid #edf1f7;
+  border: 2px solid var(--text-2);
   border-radius: 5px;
   height: 6px;
   width: 10px;
@@ -401,7 +401,7 @@
 }
 
 .rm-tool-icon-layers::before {
-  background: #edf1f7;
+  background: var(--text-2);
   clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
   height: 14px;
   left: 1px;
@@ -410,7 +410,7 @@
 }
 
 .rm-tool-icon-layers::after {
-  background: #aeb8c6;
+  background: var(--text-3);
   clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
   height: 14px;
   left: 1px;
@@ -419,13 +419,13 @@
 }
 
 .rm-tool-icon-settings::before {
-  background: #edf1f7;
+  background: var(--text-2);
   border-radius: 50%;
   box-shadow:
-    0 -6px 0 -2px #edf1f7,
-    0 6px 0 -2px #edf1f7,
-    6px 0 0 -2px #edf1f7,
-    -6px 0 0 -2px #edf1f7;
+    0 -6px 0 -2px var(--text-2),
+    0 6px 0 -2px var(--text-2),
+    6px 0 0 -2px var(--text-2),
+    -6px 0 0 -2px var(--text-2);
   height: 10px;
   left: 3px;
   top: 3px;
@@ -433,7 +433,7 @@
 }
 
 .rm-tool-icon-settings::after {
-  background: #151a22;
+  background: var(--bg-inset);
   border-radius: 50%;
   height: 4px;
   left: 6px;
@@ -443,7 +443,7 @@
 
 .rm-tool-icon-close::before,
 .rm-tool-icon-close::after {
-  background: #edf1f7;
+  background: var(--text-2);
   height: 14px;
   left: 7px;
   top: 1px;

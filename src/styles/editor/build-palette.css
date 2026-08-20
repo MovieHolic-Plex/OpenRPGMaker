@@ -11,11 +11,11 @@
   z-index: 40;
   width: 228px;
   padding: 8px;
-  border: 1px solid rgba(148, 163, 184, 0.45);
+  border: 1px solid var(--border-default);
   border-radius: 8px;
-  background: rgba(15, 23, 42, 0.96);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.28);
-  color: #f8fafc;
+  background: var(--bg-surface);
+  box-shadow: 0 10px 26px rgba(60, 48, 32, 0.10);
+  color: var(--text-1);
 }
 
 /* 캔버스 위 플로팅(건축 팔레트·선택 칩 공용 슬롯). */
@@ -34,7 +34,7 @@
   margin: 0 0 6px;
   font-size: 11px;
   line-height: 1.25;
-  color: #cbd5e1;
+  color: var(--text-2);
 }
 
 .build-palette-grid {
@@ -70,10 +70,10 @@
   min-width: 0;
   min-height: 26px;
   padding: 4px;
-  border: 1px solid rgba(148, 163, 184, 0.45);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
-  background: rgba(15, 23, 42, 0.9);
-  color: #cbd5e1;
+  background: var(--bg-surface);
+  color: var(--text-2);
   font: inherit;
   font-size: 11px;
   line-height: 1.1;
@@ -89,9 +89,9 @@
 .build-house-preset-button.active,
 .build-house-kit-button.active,
 .build-house-option-button.active {
-  border-color: rgba(45, 212, 191, 0.9);
-  background: rgba(20, 83, 76, 0.95);
-  color: #f8fafc;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--text-1);
 }
 
 .build-house-preset-button:hover,
@@ -100,7 +100,7 @@
 .build-house-kit-button:focus-visible,
 .build-house-option-button:hover,
 .build-house-option-button:focus-visible {
-  border-color: rgba(45, 212, 191, 0.85);
+  border-color: var(--border-strong);
   outline: none;
 }
 
@@ -108,10 +108,10 @@
   min-width: 0;
   min-height: 30px;
   padding: 5px 6px;
-  border: 1px solid rgba(148, 163, 184, 0.45);
+  border: 1px solid var(--border-default);
   border-radius: 6px;
-  background: rgba(30, 41, 59, 0.96);
-  color: #f8fafc;
+  background: var(--bg-surface);
+  color: var(--text-1);
   font: inherit;
   font-size: 12px;
   line-height: 1.2;
@@ -120,8 +120,8 @@
 
 .build-palette-button:hover,
 .build-palette-button:focus-visible {
-  border-color: rgba(45, 212, 191, 0.85);
-  background: rgba(20, 83, 76, 0.95);
+  border-color: var(--border-strong);
+  background: var(--accent);
   outline: none;
 }
 

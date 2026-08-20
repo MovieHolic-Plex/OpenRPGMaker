@@ -18,7 +18,7 @@
 }
 
 .event-command-menu-icon.insert::before {
-  background: #fff7b2;
+  background: var(--bg-surface);
   border: 1px solid var(--border-default);
   box-shadow: inset 2px 0 0 var(--border-subtle);
   content: "";
@@ -30,7 +30,7 @@
 }
 
 .event-command-menu-icon.insert::after {
-  background: #1f7a1f;
+  background: var(--bg-surface);
   content: "";
   height: 2px;
   left: 5px;
@@ -57,7 +57,7 @@
 }
 
 .event-command-menu-icon.edit::after {
-  background: linear-gradient(135deg, var(--accent) 0 45%, #fbf58f 45% 70%, var(--bg-inset) 70%);
+  background: linear-gradient(135deg, var(--accent) 0 45%, #E8D9A8 45% 70%, var(--bg-inset) 70%);
   content: "";
   height: 9px;
   left: 7px;
@@ -69,7 +69,7 @@
 
 .event-command-menu-icon.cut::before,
 .event-command-menu-icon.cut::after {
-  background: #2c2c2c;
+  background: var(--bg-surface);
   content: "";
   height: 13px;
   left: 7px;
@@ -120,7 +120,7 @@
 
 .event-command-menu-icon.delete::before,
 .event-command-menu-icon.delete::after {
-  background: #ff0000;
+  background: var(--bg-surface);
   content: "";
   height: 17px;
   left: 7px;
@@ -139,7 +139,7 @@
 
 .event-command-menu-icon.select-all::before {
   background: var(--bg-raised);
-  border: 1px dotted #404040;
+  border: 1px dotted var(--border-default);
   content: "";
   height: 13px;
   left: 1px;
@@ -368,7 +368,7 @@
 
 .event-graphic-preview.moving {
   animation: event-graphic-preview-walk 660ms steps(1, end) infinite;
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.65), inset -1px -1px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: inset 1px 1px 0 var(--shadow-pop), inset -1px -1px 0 var(--shadow-pop);
 }
 
 @keyframes event-graphic-preview-walk {
@@ -385,10 +385,10 @@
 .event-graphic-preview[data-empty="true"],
 .event-graphic-preview[data-unsupported="true"] {
   background:
-    linear-gradient(45deg, #1a1f2e 25%, transparent 25%),
-    linear-gradient(-45deg, #1a1f2e 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #1a1f2e 75%),
-    linear-gradient(-45deg, transparent 75%, #1a1f2e 75%),
+    linear-gradient(45deg, var(--bg-surface) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--bg-surface) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--bg-surface) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--bg-surface) 75%),
     var(--event-rm-field);
   background-size: 12px 12px;
   background-position: 0 0, 0 6px, 6px -6px, -6px 0;
@@ -441,7 +441,7 @@
   border-color: var(--event-rm-light) var(--event-rm-shadow) var(--event-rm-shadow) var(--event-rm-light);
   border-style: solid;
   border-width: 2px;
-  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.34);
+  box-shadow: 2px 2px 0 var(--shadow-pop);
   color: var(--event-rm-text);
   font-family: Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   width: min(628px, calc(100vw - 20px));
@@ -531,7 +531,7 @@
 
 .event-graphic-resource-icon {
   background:
-    linear-gradient(90deg, #e53935 0 25%, #ffd83d 25% 50%, #22a844 50% 75%, var(--accent) 75%),
+    linear-gradient(90deg, #C6403D 0 25%, #E8D9A8 25% 50%, #18764F 50% 75%, var(--accent) 75%),
     var(--bg-raised);
   border: 1px solid var(--border-default);
   box-shadow: inset 0 0 0 1px var(--border-subtle);
@@ -550,6 +550,7 @@
 .event-graphic-preview-panel {
   align-content: center;
   background: #008000;
+  background-color: #008000;
   border: 1px solid var(--event-rm-mid);
   display: grid;
   gap: 8px 12px;
@@ -679,7 +680,7 @@
 
 .event-graphic-frame-probe {
   align-self: start;
-  background-color: #008000;
+  background-color: var(--bg-surface);
   background-repeat: no-repeat;
   border: 1px solid var(--event-rm-mid);
   grid-column: 2;

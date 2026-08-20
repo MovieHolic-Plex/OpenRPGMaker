@@ -177,7 +177,7 @@
   border-bottom: 5px solid transparent;
   border-left: 7px solid var(--border-subtle);
   border-top: 5px solid transparent;
-  filter: drop-shadow(1px 1px 0 #111111);
+  filter: drop-shadow(1px 1px 0 rgba(42, 37, 33, 0.35));
   height: 0;
   left: 7px;
   top: 7px;
@@ -246,7 +246,7 @@
 
 .rm-tool-icon-lower::before {
   background: #2f8a43;
-  border: 1px solid #11471f;
+  border: 1px solid var(--border-strong);
   box-shadow: inset 0 0 0 2px #66b85b;
   height: 11px;
   left: 2px;
@@ -264,7 +264,7 @@
 
 .rm-tool-icon-upper::before {
   background: var(--accent);
-  border: 1px solid #1e354b;
+  border: 1px solid var(--border-strong);
   box-shadow: 3px -3px 0 var(--border-subtle), inset 0 0 0 2px var(--accent-border);
   height: 9px;
   left: 2px;
@@ -318,8 +318,8 @@
 
 .rm-tool-icon-copy::before,
 .rm-tool-icon-paste::before {
-  background: #f6f2dc;
-  border: 1px solid #2c2c2c;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
   height: 10px;
   left: 5px;
   top: 3px;
@@ -327,8 +327,8 @@
 }
 
 .rm-tool-icon-copy::after {
-  background: #d8d0ad;
-  border: 1px solid #2c2c2c;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-strong);
   height: 10px;
   left: 2px;
   top: 6px;
@@ -337,7 +337,7 @@
 
 .rm-tool-icon-paste::after {
   background: #875b2d;
-  border: 1px solid #2c2c2c;
+  border: 1px solid var(--border-strong);
   box-shadow: inset 0 2px 0 #c58e48;
   height: 4px;
   left: 4px;
@@ -348,7 +348,7 @@
 .rm-tool-icon-panel-left::before,
 .rm-tool-icon-panel-right::before {
   background: var(--bg-raised);
-  border: 1px solid #2f3b45;
+  border: 1px solid var(--border-strong);
   height: 11px;
   left: 2px;
   top: 3px;
@@ -373,7 +373,7 @@
 
 .rm-tool-icon-play-window::before {
   background: var(--bg-raised);
-  border: 1px solid #2f3b45;
+  border: 1px solid var(--border-strong);
   box-shadow: inset 0 2px 0 var(--accent-border);
   height: 12px;
   left: 1px;

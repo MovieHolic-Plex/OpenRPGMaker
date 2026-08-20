@@ -625,7 +625,7 @@
   }
 
   .database-modal-body .db-common-event-editor .btn.danger {
-    color: #a1282a;
+    color: var(--danger);
   }
 
   .database-modal-body .db-common-event-editor .db-meta,

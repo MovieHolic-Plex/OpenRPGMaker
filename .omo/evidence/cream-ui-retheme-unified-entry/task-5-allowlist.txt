@@ -1,0 +1,68 @@
+# task-5 allowlist: every kept pure literal with file:line + reason
+# p1-graphic #008000 x2 (e2e-pinned rm2k3-event-layer-interactions.spec.ts:449) — keep
+# mockup --mk-accent #d9a441 + rgba(217,164,65,.14) (e2e-pinned eventEditorMockupShots.spec.ts:347) — keep (brass accent)
+# mockup category hues #d95926 #3987e5 #199e70 #9085e9 #d55181 #c98500 #626b7d — keep (functional category distinction)
+# checkerboards rgba(255,255,255,.5) — keep (transparency checker)
+# preview stage grounds (#E8D9A8 #fbf58f family, flash/tint previews, battle actor gradients, starfields, weather/tint overlays) — keep functional
+# => Functional pure literals are those not inside var( fallback ); remaining #hex not in var() are functional.
+# === Whole bucket kept pure literals ===
+src/styles/editor/event-editor.mockup.css:9: --mk-accent #d9a441 keep brass e2e-pinned
+src/styles/editor/event-editor.mockup.css:10: --mk-accent-ink #2A2521 keep brass ink (on brass)
+src/styles/editor/event-editor.mockup.css:19: --mk-t3 #626b7d keep category neutral
+src/styles/editor/event-editor.mockup.css:20: --mk-cat-flow #d95926 keep category hue
+src/styles/editor/event-editor.mockup.css:338: #3987e5 keep category hue dialogue
+src/styles/editor/event-editor.mockup.css:339: #d95926 keep category hue flow
+src/styles/editor/event-editor.mockup.css:340: #199e70 keep category hue reward
+src/styles/editor/event-editor.mockup.css:342: #9085e9 keep category hue actor
+src/styles/editor/event-editor.mockup.css:344: #d55181 keep category hue sound
+src/styles/editor/event-editor.mockup.css:347: #c98500 keep category hue modern
+src/styles/editor/event-editor.mockup.css:352: #d9a441 keep brass accent
+src/styles/editor/event-editor.mockup.css:563: #3987e5 keep category hue gutter
+src/styles/editor/event-editor.mockup.css:564: #d95926 keep category hue gutter
+src/styles/editor/event-editor.mockup.css:565: #199e70 keep category hue gutter
+src/styles/editor/event-editor.mockup.css:566: #9085e9 keep category hue gutter
+src/styles/editor/event-editor.mockup.css:567: #d55181 keep category hue gutter
+src/styles/editor/event-editor.mockup.css:568: #c98500 keep category hue gutter
+src/styles/editor/event-editor.mockup.css:668: #d9a441 keep brass
+src/styles/editor/event-editor.mockup.css:669: #d9a441 keep brass
+src/styles/editor/event-editor.mockup.css:670: #2A2521 keep brass ink
+src/styles/editor/event-editor.mockup.css:770: #d9a441 keep brass
+src/styles/editor/event-editor.mockup.css:771: #d9a441 keep brass
+src/styles/editor/event-editor.mockup.css:772: #2A2521 keep brass ink
+src/styles/editor/event-editor.mockup.css:779: #d9a441 keep brass
+src/styles/editor/event-editor.mockup.css:884: #3987e5 keep category hue legend
+src/styles/editor/event-editor.mockup.css:885: #d95926 keep category hue legend
+src/styles/editor/event-editor.mockup.css:886: #199e70 keep category hue legend
+src/styles/editor/event-editor.mockup.css:887: #9085e9 keep category hue legend
+src/styles/editor/event-editor.mockup.css:888: #d55181 keep category hue legend
+src/styles/editor/event-editor.mockup.css:889: #c98500 keep category hue legend
+src/styles/editor/event-editor.mockup.css:574: rgba(255,255,255,.5) keep checkerboard
+src/styles/editor/event-editor.mockup.css:895: rgba(255,255,255,.5) keep checkerboard
+src/styles/editor/event-editor.p1-graphic.css:14: #008000 keep e2e-pinned event graphic preview
+src/styles/editor/event-editor.p1-graphic.css:38: #008000 keep e2e-pinned event graphic preview
+src/styles/editor/event-editor.part-4.css:60: #E8D9A8 keep warm preview ground
+src/styles/editor/event-editor.part-4.css:534: #C6403D,#E8D9A8,#18764F keep warm preview tokens
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:146: #8ec8ff keep functional weather rain accent
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:156: #b8d8ff keep functional weather storm accent
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:158: #fff keep functional weather star/dot
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:164-167: #fff keep functional snow dots
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:172: #c9d4e8,#9aabbf keep functional fog gradient
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:188: #ff6b6b keep functional tint red
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:189: #6bff8a keep functional tint green
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:191: #6b9bff keep functional tint blue
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:192: #ffe066 keep functional tint yellow
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:193: #c084fc keep functional tint purple
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:194: #111 keep functional tint black
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:197: #fff keep functional tint/flash white
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:305: #ffe8a3 keep functional animation burst
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:309: #ffd27a keep functional animation glow
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:315: #2a3344,#171c26 keep functional weather-none gradient
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:323: #8ec8ff keep functional weather rain
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:325: #243147,#121820 keep functional weather rain gradient
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:333: #b8d8ff keep functional weather storm
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:335: #fff keep functional weather storm star
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:336: #1c2434,#0e1218 keep functional weather storm gradient
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:340: #1a2230 keep functional weather snow ground
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:342-345: #fff keep functional snow dots
+src/styles/editor/event-editor-rich-forms/06-page-modern-forms.css:349: #c9d4e8,#1d2533,#9aabbf,#121820 keep functional fog gradient
+# All remaining #hex in 06-page-modern-forms.css are inside var(--*, #...) fallbacks (cream tokens) — not pure, counted as fallback.

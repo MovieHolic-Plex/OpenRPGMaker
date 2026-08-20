@@ -87,7 +87,7 @@
 .event-command-picker-command:hover {
   background: color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 58%, var(--bg-raised));
   border-color: color-mix(in srgb, var(--accent, var(--accent-border)) 48%, var(--border-soft, var(--border-subtle)));
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  box-shadow: 0 4px 12px var(--shadow-pop);
 }
 
 .event-command-picker-command:active {
@@ -111,7 +111,7 @@
   background: color-mix(in srgb, var(--surface-panel, var(--bg-raised)) 95%, var(--accent-soft, var(--accent-muted)));
   border: 1px solid color-mix(in srgb, var(--border, var(--border-default)) 78%, var(--accent, var(--accent-border)));
   border-radius: 8px;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.28), 0 2px 8px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 18px 42px var(--shadow-pop), 0 2px 8px var(--shadow-pop);
   display: grid;
   font: 600 13px/19px Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
   min-width: 236px;
@@ -161,7 +161,7 @@
 
 .event-command-context-menu button:hover .event-command-menu-icon,
 .event-command-context-menu button:focus .event-command-menu-icon {
-  background: rgba(255, 255, 255, 0.26);
+  background: var(--bg-surface);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -173,7 +173,7 @@
 
 .event-command-context-menu button:hover .event-command-menu-shortcut,
 .event-command-context-menu button:focus .event-command-menu-shortcut {
-  color: rgba(255, 255, 255, 0.86);
+  color: var(--text-1);
 }
 
 .event-subdialog-backdrop[data-testid="event-record-picker"] .event-subdialog-window.narrow {
@@ -397,4 +397,3 @@
   border: 1px solid var(--border-soft, var(--border-subtle));
   border-radius: 8px;
 }
-

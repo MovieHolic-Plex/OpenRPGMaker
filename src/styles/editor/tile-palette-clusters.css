@@ -199,8 +199,8 @@
 }
 
 .tile-cluster-complete-badge {
-  background: rgba(31, 111, 56, 0.16);
-  border: 1px solid rgba(31, 111, 56, 0.36);
+  background: var(--success-muted);
+  border: 1px solid var(--success-muted);
   border-radius: var(--radius-s);
   color: var(--status-success);
   flex: 0 0 auto;
@@ -250,20 +250,20 @@
 
 /* DB 연동 칩(결함 ⑫): 항상 클릭 가능한 버튼 — 맵 잠금 '가져오기'와 시각 구분. */
 .db-connection-chip-button {
-  border: 1px solid var(--border-default, rgba(255, 255, 255, 0.18));
+  border: 1px solid var(--border-default, rgba(42, 37, 33, 0.20));
   border-radius: 4px;
   cursor: pointer;
 }
 
 .db-connection-chip-button:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(42, 37, 33, 0.06);
 }
 
 .db-autosave-retry-button {
-  background: var(--status-error, #b3453f);
+  background: var(--status-error, #C6403D);
   border: none;
   border-radius: 3px;
-  color: #fff;
+  color: var(--on-accent);
   cursor: pointer;
   font-size: 10px;
   line-height: 16px;

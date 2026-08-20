@@ -220,7 +220,7 @@
 
 .event-command-face-index-cell {
   align-items: center;
-  background: color-mix(in srgb, var(--bg-inset, #0f1420) 70%, transparent);
+  background: color-mix(in srgb, var(--bg-inset, #EFE9DC) 70%, transparent);
   border: 2px solid transparent;
   border-radius: 6px;
   cursor: pointer;
@@ -232,12 +232,12 @@
 }
 
 .event-command-face-index-cell:hover {
-  border-color: color-mix(in srgb, var(--accent, #6ea8ff) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #4A57D6) 55%, transparent);
 }
 
 .event-command-face-index-cell.is-selected {
-  border-color: var(--accent, #6ea8ff);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #6ea8ff) 45%, transparent);
+  border-color: var(--accent, #4A57D6);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent, #4A57D6) 45%, transparent);
 }
 
 .event-command-face-index-cell.flipped .event-command-face-crop {
@@ -309,4 +309,3 @@
   margin: 0;
   padding: 10px 14px 12px;
 }
-

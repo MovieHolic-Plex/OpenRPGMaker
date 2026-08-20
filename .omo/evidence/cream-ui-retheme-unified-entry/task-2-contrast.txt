@@ -1,0 +1,17 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/Users/USER/.herdr/worktrees/rpg-zzu/worktree-lucky-valley-fcfc[39m
+
+ [32m✓[39m test/tokensContrast.test.ts [2m([22m[2m28 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m28 passed[39m[22m[90m (28)[39m
+[2m   Start at [22m 19:24:42
+[2m   Duration [22m 905ms[2m (transform 39ms, setup 0ms, collect 41ms, tests 7ms, environment 0ms, prepare 142ms)[22m
+
+--- appended iterations note ---
+Iterations:
+- Initial cream direction (#7D7264 text-3 vs inset 3.89:1 FAIL) -> darkened to #6B5F52 (5.13:1 pass)
+- Placeholder #8C8172 (3.16:1 fail) -> #6E6252 (4.91:1 pass)
+- Success #1F8A5D (4.12:1 fail) -> #18764F (5.34:1 pass)
+- Warning #9A6B0F (4.45:1 borderline) -> #8A5E00 (5.42:1 pass)
+- Border-default alpha 0.17 (1.36:1) -> 0.20 (1.47:1 visible), border-strong 0.26 (1.63:1 fail 3:1) -> 0.55 (3.45:1 pass) using fg #2A2521

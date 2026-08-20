@@ -42,7 +42,7 @@
 .event-editor-footer-button.primary {
   background: var(--accent);
   border-color: var(--accent-border, var(--accent));
-  color: var(--text-on-accent, #fff);
+  color: var(--text-on-accent, #2A2521);
   font-weight: 700;
 }
 
@@ -278,7 +278,7 @@
 
 .self-switch-key.active {
   background: var(--event-modern-accent);
-  color: #fff;
+  color: var(--text-1);
 }
 
 .self-switch-value {
@@ -292,9 +292,9 @@
 }
 
 .self-switch-value.on {
-  background: var(--event-modern-success, #4caf50);
-  border-color: var(--event-modern-success, #4caf50);
-  color: #fff;
+  background: var(--event-modern-success, #18764F);
+  border-color: var(--event-modern-success, #18764F);
+  color: var(--text-1);
 }
 
 .self-switch-value.off {

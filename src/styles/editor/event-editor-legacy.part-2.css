@@ -82,7 +82,7 @@
 }
 
 .tileset-db-list-row:hover {
-  background: #e5eef8;
+  background: var(--bg-surface);
 }
 
 .tileset-db-list-row.active {

@@ -1,58 +1,61 @@
 /* ============================================================================
    rpg-zzu 디자인 토큰 (UI-0 파운데이션) — 단일 진실 공급원(Single Source of Truth)
-   모던 다크 IDE 계열 (VS Code / Figma / Linear 방향).
+   웜 크림 스튜디오 (warm cream studio).
    전 영역(shell/editor/database/map/resources)은 여기 정의된 변수만 사용한다.
    가이드: src/styles/TOKENS.md
    주의: 이 파일은 index.css 최상단에서 가장 먼저 import 된다.
          레거시 변수(--bg, --surface-panel, --editor-shell-bg 등)는
          editor/core.part-1.css · database/tabs-b-shell-layout.css ·
-         shell/figma-editor.css 의 :root 에서 이 토큰의 별칭으로 리매핑돼 있다.
+         shell/figma-editor/01-shell-topbar-team.css 의 :root 에서 이 토큰의 별칭으로 리매핑돼 있다.
+   크림 elevation 순서: canvas < inset < base < surface < raised < overlay
+     (canvas = 가장 깊은 웰; inset과 canvas는 필요 없으면 같은 값으로 수렴 가능하나 이름은 유지)
    ========================================================================= */
 
 :root {
   /* ---- 배경 계층 (base → surface → raised → overlay) ------------------- */
-  --bg-base: #0f1117;    /* 앱 셸 최하층: 메뉴바/툴바 뒤, body */
-  --bg-surface: #151823; /* 패널/사이드바/스테이터스바 */
-  --bg-raised: #1c202d;  /* 카드, 다이얼로그 본문, 떠 있는 패널 */
-  --bg-overlay: #232838; /* 팝오버/드롭다운/컨텍스트 메뉴 (최상층) */
-  --bg-inset: #0c0e14;   /* 인풋 웰, 리스트 웰, 움푹 들어간 영역 */
-  --bg-canvas: #0a0c11;  /* 맵/게임 캔버스 뒤 가장 어두운 우물 */
-  --bg-glass: rgba(24, 28, 40, 0.88); /* 캔버스 위 반투명 플로팅 툴바 */
+  /* elevation: canvas(깊은 웰) < inset(움푹) < base(셸 바닥) < surface(패널) < raised(카드) < overlay(팝오버) */
+  --bg-base: #F7F3EA;    /* 앱 셸 최하층: 메뉴바/툴바 뒤, body */
+  --bg-surface: #FCF9F2; /* 패널/사이드바/스테이터스바 — base보다 밝음 */
+  --bg-raised: #FFFDF8;  /* 카드, 다이얼로그 본문, 떠 있는 패널 */
+  --bg-overlay: #FFFFFF; /* 팝오버/드롭다운/컨텍스트 메뉴 (최상층) */
+  --bg-inset: #EFE9DC;   /* 인풋 웰, 리스트 웰, 움푹 들어간 영역 */
+  --bg-canvas: #E7E0D0;  /* 맵/게임 캔버스 뒤 웜 크림 우물 */
+  --bg-glass: rgba(252, 249, 242, 0.86); /* 캔버스 위 반투명 플로팅 툴바 */
 
   /* ---- 인터랙션 상태 (배경 위에 얹는 반투명 레이어) --------------------- */
-  --bg-hover: rgba(255, 255, 255, 0.05);  /* 리스트행/메뉴항목 hover */
-  --bg-active: rgba(255, 255, 255, 0.09); /* pressed/선택 유사 상태 */
-  --control-bg: rgba(255, 255, 255, 0.045);      /* 버튼 등 컨트롤 기본면 */
-  --control-bg-hover: rgba(255, 255, 255, 0.08); /* 컨트롤 hover */
-  --control-bg-active: rgba(255, 255, 255, 0.12);/* 컨트롤 active(눌림) */
+  --bg-hover: rgba(42, 37, 33, 0.06);  /* 리스트행/메뉴항목 hover — dark-alpha on cream */
+  --bg-active: rgba(42, 37, 33, 0.10); /* pressed/선택 유사 상태 */
+  --control-bg: rgba(42, 37, 33, 0.05);      /* 버튼 등 컨트롤 기본면 */
+  --control-bg-hover: rgba(42, 37, 33, 0.09); /* 컨트롤 hover */
+  --control-bg-active: rgba(42, 37, 33, 0.13);/* 컨트롤 active(눌림) */
 
-  /* ---- 테두리 (밝은 선 대신 은은한 흰색 알파) --------------------------- */
-  --border-subtle: rgba(255, 255, 255, 0.10);  /* 패널 구분선, 섹션 경계 — 0.07→0.10 AA 가시성 확보 */
-  --border-default: rgba(255, 255, 255, 0.11); /* 컨트롤/카드 기본 보더 */
-  --border-strong: rgba(255, 255, 255, 0.17);  /* hover 보더, 강조 구분 */
+  /* ---- 테두리 (크림 위 웜 다크 알파) ------------------------------------ */
+  --border-subtle: rgba(42, 37, 33, 0.12);  /* 패널 구분선, 섹션 경계 */
+  --border-default: rgba(42, 37, 33, 0.20); /* 컨트롤/카드 기본 보더 — composited 1.47:1 */
+  --border-strong: rgba(42, 37, 33, 0.55);  /* hover 보더, 강조 구분 — composited 3.45:1 (WCAG 1.4.11 >=3) */
 
   /* ---- 텍스트 3단계 ----------------------------------------------------- */
-  --text-1: #e9ecf3; /* 본문/제목 (primary) */
-  --text-2: #9aa3b5; /* 보조 라벨 (secondary) */
-  --text-3: #7a8499; /* 흐린 힌트/비활성 (muted) — #626b7d(3.52:1) → #7a8499(5.02:1) WCAG AA */
-  --text-placeholder: #7a8499; /* placeholder/disabled 전용 — 4.5:1 보장 */
-  --text-disabled: #7a8499;
+  --text-1: #2A2521; /* 본문/제목 (primary) — 13.7:1 on base */
+  --text-2: #5C5348; /* 보조 라벨 (secondary) — 6.8:1 on base */
+  --text-3: #6B5F52; /* 흐린 힌트/비활성 (muted) — 5.13:1 on bg-inset (worst), tuned from #7D7264(3.89:1 fail) */
+  --text-placeholder: #6E6252; /* placeholder/disabled 전용 — 4.91:1 on inset (tuned from #8C8172 3.16:1 fail) */
+  --text-disabled: #6E6252;
 
-  /* ---- 액센트 (인디고/바이올렛) ----------------------------------------- */
-  --accent: #5a68e8; /* #6c79f2(3.71:1) → #5a68e8(4.59:1) — on-accent 흰 글씨 AA */
-  --accent-hover: #6c79f2;
-  --accent-active: #4f5dd8;
-  --accent-muted: rgba(108, 121, 242, 0.17);  /* 선택 행/탭 배경 */
-  --accent-border: rgba(108, 121, 242, 0.55); /* 선택 컨트롤 보더 */
+  /* ---- 액센트 (인디고 — 크림 위 AA) ------------------------------------- */
+  --accent: #4A57D6; /* on-accent #fff 5.79:1 */
+  --accent-hover: #3C48C4;
+  --accent-active: #2F3AAE;
+  --accent-muted: rgba(74, 87, 214, 0.12);  /* 선택 행/탭 배경 */
+  --accent-border: rgba(74, 87, 214, 0.45); /* 선택 컨트롤 보더 */
   --on-accent: #ffffff;                       /* 액센트 배경 위 텍스트 */
 
-  /* ---- 상태 색 ----------------------------------------------------------- */
-  --danger: #f0716f;
-  --danger-muted: rgba(240, 113, 111, 0.14);
-  --success: #55d69c;
-  --success-muted: rgba(85, 214, 156, 0.14);
-  --warning: #f2b74e;
-  --warning-muted: rgba(242, 183, 78, 0.14);
+  /* ---- 상태 색 (크림 위 AA) --------------------------------------------- */
+  --danger: #C6403D; /* 4.75:1 vs bg-surface */
+  --danger-muted: rgba(198, 64, 61, 0.13);
+  --success: #18764F; /* 5.34:1 vs bg-surface (tuned from #1F8A5D 4.12:1 fail) */
+  --success-muted: rgba(24, 118, 79, 0.13);
+  --warning: #8A5E00; /* 5.42:1 vs bg-surface (tuned from #9A6B0F 4.45:1 borderline) */
+  --warning-muted: rgba(138, 94, 0, 0.13);
 
   /* ---- 라운드 3단계 ------------------------------------------------------ */
   --radius-s: 6px;  /* 버튼/인풋/리스트행 */
@@ -67,13 +70,13 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  /* ---- 그림자 2단계 ------------------------------------------------------ */
-  --shadow-pop: 0 4px 12px rgba(0, 0, 0, 0.28), 0 12px 32px rgba(0, 0, 0, 0.38);
-  --shadow-modal: 0 8px 24px rgba(0, 0, 0, 0.36), 0 24px 64px rgba(0, 0, 0, 0.5);
+  /* ---- 그림자 2단계 (웜 low-alpha) -------------------------------------- */
+  --shadow-pop: 0 4px 12px rgba(60, 48, 32, 0.10), 0 12px 32px rgba(60, 48, 32, 0.14);
+  --shadow-modal: 0 8px 24px rgba(60, 48, 32, 0.14), 0 24px 64px rgba(60, 48, 32, 0.18);
 
   /* ---- 포커스 링 --------------------------------------------------------- */
   /* box-shadow 형: box-shadow: var(--focus-ring); */
-  --focus-ring: 0 0 0 2px rgba(108, 121, 242, 0.55);
+  --focus-ring: 0 0 0 2px rgba(74, 87, 214, 0.45);
   /* outline 형: outline: var(--focus-outline); outline-offset: 1px; */
   --focus-outline: 2px solid var(--accent);
 
@@ -118,18 +121,18 @@
   --z-modal-top: 2300;
   --z-proposal: 2500;
 
-  /* ---- 추가 셸 색 (기존 raw hex 통합 — 값 동일, 시각 변화 없음) --------- */
-  --brand-blue: #7aa2ff;
-  --mix-base: #1a2236;
-  --gold: #e8b84a;
-  --gold-soft: #f3d98a;
-  --bg-well: #0d1424;
+  /* ---- 추가 셸 색 (크림 리튠) -------------------------------------------- */
+  --brand-blue: #4A57D6;
+  --mix-base: #F7F3EA;
+  --gold: #8A6B2F;
+  --gold-soft: #E8D9A8;
+  --bg-well: #E7E0D0;
   /* ---- 얇은 라운드 스크롤바 (전역 기본은 index.css 하단) ----------------- */
-  --scrollbar-thumb: rgba(255, 255, 255, 0.16);
-  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.28);
+  --scrollbar-thumb: rgba(42, 37, 33, 0.22);
+  --scrollbar-thumb-hover: rgba(42, 37, 33, 0.36);
 
-  /* ---- 빈 상태 토큰 ----------------------------------------------- */
-  --empty-icon-bg: rgba(108, 121, 242, 0.10);
-  --empty-icon-border: rgba(108, 121, 242, 0.28);
-  --empty-icon-color: #c9ceff;
+  /* ---- 빈 상태 토큰 (크림 리튠) ------------------------------------------ */
+  --empty-icon-bg: rgba(74, 87, 214, 0.10);
+  --empty-icon-border: rgba(74, 87, 214, 0.28);
+  --empty-icon-color: #4A57D6;
 }

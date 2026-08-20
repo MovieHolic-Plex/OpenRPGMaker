@@ -7,7 +7,8 @@ import { renderMarkdown } from "@/util/markdown";
 import { el } from "@/util/dom";
 import type { AiDocBlock, AiDocument, TilesetDef } from "@/project/types";
 
-const ZONE_COLORS = ["#2e8b57", "#4f86c6", "#c68b4f", "#9a6bb0", "#c65f5f", "#5fa8a0"];
+const ZONE_COLORS = ["#18764F", "#2E5A8A", "#8A5E00", "#6B3D8A", "#A03030", "#2E7A6E"];
+// Darkened for AA on cream (#FCF9F2) — hue distinctions preserved, luminance lowered vs original greens/blues/oranges.
 
 export function renderAiDocument(doc: AiDocument, tilesets: Record<string, TilesetDef>): HTMLElement {
   return el("article", {

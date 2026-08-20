@@ -1,46 +1,46 @@
 # RPG ZZU Design System
 
-> **Status note:** The editor chrome is a Unity-toned **감독 스튜디오** (dark layer stack). Runtime game surfaces and the event-command list keep their retro/pixel presentation. Shell tokens live in `src/styles/shell/studio-tokens.css` and are applied on `body.editor-ui-*`. When the code changes, update this file — it is the source of truth, not an aspirational target.
+> **Status note:** The editor chrome is a warm cream studio. Runtime game surfaces and the event-command list keep their retro/pixel presentation. Shell tokens live in `src/styles/tokens.css` (single source of truth, imported first in `src/styles/index.css`) with `html { color-scheme: light; }` (`src/styles/index.css:75`); legacy names are aliased in `src/styles/editor/core.part-1.css`, `src/styles/database/tabs-b-shell-layout.css`, and `src/styles/shell/figma-editor/01-shell-topbar-team.css`. Warm cream elevation is `canvas < inset < base < surface < raised < overlay`. Previous dark values live in git history only. When the code changes, update this file — it is the source of truth, not an aspirational target.
 
 ## 1. Atmosphere & Identity
 
-RPG ZZU is a compact game-making workbench. The user directs an agent named **감독**; the pixel map is the stage; the chrome is a Unity-like dark tool shell. Korean-first labels. The signature is a faceset plate (name + presence + a one-line brief of map/layer/selection) plus an `@>` command log that defaults to a **float** over the canvas, a map/tile/event tool sidebar docked as the left column, and a dark canvas well as the stage. The empty start surface is the map briefing (`지금 이 맵`) plus at most three next-move rows. Composer modes are **지시 / 질문 / 계획**. The left drawer uses a tab strip that reweights `left-map-root` / `left-palette-root` without hiding those testids. There is no theme toggle.
+RPG ZZU is a compact game-making workbench. The user directs an agent named **감독**; the pixel map is the stage; the chrome is a warm cream tool shell. Korean-first labels. The signature is a faceset plate (name + presence + a one-line brief of map/layer/selection) plus an `@>` command log that defaults to a **float** over the canvas, a map/tile/event tool sidebar docked as the left column, and a recessed cream canvas well as the stage. The empty start surface is the map briefing (`지금 이 맵`) plus at most three next-move rows. Composer modes are **지시 / 질문 / 계획**. The left drawer uses a tab strip that reweights `left-map-root` / `left-palette-root` without hiding those testids. There is no theme toggle.
 
 The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls wrap Phaser-rendered edit/play surfaces. No framework, no CSS-in-JS. General chrome styles live in `src/styles.css`; Database tileset chrome is split into `src/styles.databaseTilesets.css` and `src/styles.databaseTilesetsTerrain.css` so the large tileset editor stays readable and under the module-size ceiling.
 
 ## 2. Color
 
-### Active editor shell — Unity-toned studio
+### Active editor shell — warm cream studio
 
-There is **one shipped editor shell theme**: a Unity-like dark workbench. `src/styles/shell/studio-tokens.css` remaps foundation tokens on `body.editor-ui-beginner|standard|expert`. The canvas well stays dark. Runtime HUD tokens are untouched. Do not add a user theme toggle.
+There is **one shipped editor shell theme**: a warm cream workbench defined in `src/styles/tokens.css`. The cream ladder is `canvas #E7E0D0 < inset #EFE9DC < base #F7F3EA < surface #FCF9F2 < raised #FFFDF8 < overlay #FFFFFF`; borders/hover/active are warm dark-alpha `rgba(42,37,33,.12/.20/.55)` and `rgba(42,37,33,.06/.10)` (controls `.05/.09/.13`); text `#2A2521/#5C5348/#6B5F52` with placeholder `#6E6252`; accent `#4A57D6/#3C48C4/#2F3AAE`; status `danger #C6403D, success #18764F, warning #8A5E00`; gold `#8A6B2F`; `color-scheme: light`. Previous dark values live in git history only. Runtime HUD tokens are untouched. Do not add a user theme toggle.
 
-### Studio shell tokens
+### Cream shell tokens (SoT: `src/styles/tokens.css`)
 
-Defined in `src/styles/shell/studio-tokens.css`. New chrome uses these names. `--editor-*` aliases resolve to the same values so existing rules keep working.
+Defined in `src/styles/tokens.css` (`src/styles/index.css:75` sets `color-scheme: light`). New chrome uses these names. Legacy `--editor-*` / `--bg` / `--surface-*` aliases in the three bridges resolve to the same values so existing rules keep working.
 
 | Token | Value | Usage |
 |------|-------|-------|
-| `--studio-chrome` | `#191919` | App/top menu, toolbar, status |
-| `--studio-chrome-2` | `#383838` | Window/panel layer |
-| `--studio-inset` | `#2a2a2a` | Inputs, command log |
-| `--studio-line` | `#242424` | 1px borders |
-| `--studio-text` | `#d2d2d2` | Primary shell text |
-| `--studio-text-dim` | `#bdbdbd` | Secondary text |
-| `--studio-select` | `#2c5d87` | Selected row |
-| `--studio-play` | `#2c5d87` | The single filled Test Play control |
-| `--studio-command` | `#4c7eff` | `@>` command-log prefix |
-| `--studio-stage` | `#1a1a1a` | Canvas work well only |
-| `--editor-shell-bg` | `--studio-chrome` | Alias |
-| `--editor-toolbar-bg` | `--studio-chrome` | Alias |
-| `--editor-canvas-bg` | `--studio-stage` | Alias |
-| `--editor-panel-bg` | `--studio-chrome` | Alias |
-| `--editor-panel-bg-2` | `--studio-chrome-2` | Alias |
-| `--editor-popover-bg` | `#f0ebe0` | Menus |
-| `--editor-line` | `--studio-line` | Alias |
-| `--editor-text` | `--studio-text` | Alias |
-| `--editor-text-muted` | `--studio-text-dim` | Alias |
-| `--editor-blue` | `--studio-play` | Alias — not a decoration color |
-| `--editor-yellow` | `#7c5e22` | Start-position marker |
+| `--bg-base` | `#F7F3EA` | App shell base (body, menu bar) |
+| `--bg-surface` | `#FCF9F2` | Panels, sidebars, toolbars, statusbar |
+| `--bg-raised` | `#FFFDF8` | Cards, dialogs, floating panels |
+| `--bg-overlay` | `#FFFFFF` | Popovers, dropdowns, context menus |
+| `--bg-inset` | `#EFE9DC` | Input/list wells (recessed) |
+| `--bg-canvas` / `--bg-well` | `#E7E0D0` | Canvas well behind map/game |
+| `--bg-glass` | `rgba(252,249,242,0.86)` | Floating toolbar over canvas |
+| `--border-subtle` | `rgba(42,37,33,0.12)` | Panel/section dividers |
+| `--border-default` | `rgba(42,37,33,0.20)` | Control/card borders |
+| `--border-strong` | `rgba(42,37,33,0.55)` | Hover/emphasis borders |
+| `--text-1` | `#2A2521` | Primary text |
+| `--text-2` | `#5C5348` | Secondary text |
+| `--text-3` | `#6B5F52` | Muted/hint |
+| `--text-placeholder` | `#6E6252` | Placeholder/disabled |
+| `--accent` | `#4A57D6` | Primary/accent |
+| `--accent-hover` | `#3C48C4` | Accent hover |
+| `--accent-active` | `#2F3AAE` | Accent active |
+| `--danger` | `#C6403D` | Destructive |
+| `--success` | `#18764F` | Success |
+| `--warning` | `#8A5E00` | Warning |
+| `--gold` | `#8A6B2F` | Gold/attention |
 
 ### Primary token set (what the UI is actually built from)
 

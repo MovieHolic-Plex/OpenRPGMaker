@@ -51,7 +51,7 @@ npm run gates -- --only typecheck
 ### 왜 기준선 방식인가
 
 이 저장소의 테스트 기준선은 **이미 빨간불**이다(기록 시점: `typecheck:app` 초록, `vitest`
-282 실패 / 4453 통과 / 119개 파일). "전부 초록"을 요구하면 게이트가 무용지물이 되므로,
+205 failed / 5600 passed / 5809 total / 90 failed files (captured 2026-08-19, `.omo/gates-baseline.json`). "전부 초록"을 요구하면 게이트가 무용지물이 되므로,
 기준선 대비 **새로 생긴** 실패만 회귀로 취급한다.
 
 - typecheck: 파일별 오류 수가 기준선보다 **늘어난** 파일만 회귀

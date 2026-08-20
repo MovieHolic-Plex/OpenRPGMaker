@@ -156,7 +156,7 @@
 
   .team-login-backdrop {
     align-items: center;
-    background: rgba(0, 0, 0, 0.58);
+    background: rgba(42, 37, 33, 0.14);
     display: flex;
     inset: 0;
     justify-content: center;
@@ -172,7 +172,7 @@
     background: var(--editor-popover-bg);
     border: 1px solid var(--editor-line-strong);
     border-radius: 8px;
-    box-shadow: 0 18px 56px rgba(0, 0, 0, 0.38);
+    box-shadow: var(--shadow-modal);
     color: var(--editor-text);
   }
 
@@ -288,7 +288,7 @@
 
   .team-commit-row {
     align-items: center;
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(42, 37, 33, 0.06);
     border: 1px solid var(--editor-line);
     border-radius: 6px;
     display: grid;
