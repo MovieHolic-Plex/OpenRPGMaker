@@ -3,12 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   EDITOR_WELCOME_DISMISSED_KEY,
   EDITOR_WELCOME_TESTIDS,
-  WELCOME_CHIPS,
-  WELCOME_SLIDE_INTERVAL_MS,
-  WELCOME_SLIDE_URLS,
   isAutomationBootContext,
   isEditorWelcomeDismissed,
-  prefersReducedMotion,
   presentEditorWelcome,
   setEditorWelcomeDismissed,
   shouldPresentEditorWelcome,
@@ -57,6 +53,7 @@ afterEach(() => {
   vi.useRealTimers();
   clearStorage();
   document.body.replaceChildren();
+  document.body.classList.remove("director-briefing-open");
   delete (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__;
   window.history.replaceState({}, "", "/");
 });
@@ -124,132 +121,82 @@ describe("automation boot context", () => {
 });
 
 describe("presentEditorWelcome", () => {
-  it("chip click confirms blank pipeline and resolves with auto-send prompt", async () => {
+  it("mounts a canvas briefing with one question, one input, and three result cards", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    void presentEditorWelcome(host);
+
+    const root = host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`);
+    expect(root).toBeTruthy();
+    expect(root?.classList.contains("editor-welcome-briefing")).toBe(true);
+    expect(host.textContent).toContain("어떤 게임을 만들까요?");
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)).toBeTruthy();
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.textContent).toContain("만들기");
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.textContent).toContain("빈 맵으로 시작");
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(3);
+    expect(host.textContent).toContain("모험 마을");
+    expect(host.textContent).toContain("농장 하루");
+    expect(host.textContent).toContain("몬스터 수집");
+    expect(host.querySelector("[data-testid='editor-welcome-inspiration']")).toBeNull();
+    expect(host.querySelector("[data-testid='editor-welcome-slide']")).toBeNull();
+    expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
+  });
+
+  it("sends free-text to the current map without replacing the project", async () => {
     const host = document.createElement("div");
     document.body.append(host);
     const pending = presentEditorWelcome(host);
-
-    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeTruthy();
-    expect(WELCOME_SLIDE_URLS.length).toBeGreaterThanOrEqual(4);
-    expect(WELCOME_CHIPS).toHaveLength(7);
-    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.inspirationStrip}']`)).toBeTruthy();
-    expect(host.querySelectorAll(".editor-welcome-inspiration-item").length).toBeGreaterThanOrEqual(6);
-
-    const chip = host.querySelector<HTMLButtonElement>(
-      `[data-testid='${EDITOR_WELCOME_TESTIDS.chips[0]}']`
+    const input = host.querySelector<HTMLInputElement>(
+      `[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`,
     );
-    expect(chip?.textContent).toContain(WELCOME_CHIPS[0].label);
-    expect(chip?.querySelector(".editor-welcome-genre-img")?.getAttribute("src")).toContain(
-      "/assets/generated/welcome/"
-    );
-    // Select poster then confirm via hub CTA (double-click also works).
-    chip?.click();
-    const genreStart = host.querySelector<HTMLButtonElement>(
-      `[data-testid='${EDITOR_WELCOME_TESTIDS.genreStart}']`
-    );
-    expect(genreStart).toBeTruthy();
-    expect(genreStart?.disabled).toBe(false);
-    genreStart?.click();
-
-    // Confirm modal from showConfirm
-    const confirm = document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']")
-      ?? [...document.querySelectorAll("button")].find((b) => b.textContent?.includes("새 뼈대"));
-    expect(confirm).toBeTruthy();
-    confirm?.click();
+    expect(input).toBeTruthy();
+    if (input) input.value = "눈 내리는 마을에 여관이 있고, 여관 주인이 잠을 팔아요";
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.click();
+    expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
 
     const result = await pending;
     expect(result.action).toBe("start");
-    expect(result.replaceWithBlank).toBe(true);
+    expect(result.replaceWithBlank).toBe(false);
     expect(result.autoSend).toBe(true);
-    expect(result.intent).toBe(WELCOME_CHIPS[0].label);
-    expect(result.prompt).toContain(WELCOME_CHIPS[0].label);
+    expect(result.dismiss).toBe(true);
+    expect(result.source).toBe("free-text");
+    expect(result.intent).toContain("눈 내리는 마을");
+    expect(result.prompt).toContain("눈 내리는 마을");
     expect(result.prompt).toContain("승인 전 커밋 금지");
-    expect(result.presetId).toBe(WELCOME_CHIPS[0].id);
-    expect(result.source).toBe("chip");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
-  });
-
-  it("resolves skip with null pipeline and empty start as skip", async () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-
-    const skipPending = presentEditorWelcome(host);
-    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
-    await expect(skipPending).resolves.toMatchObject({
-      intent: null,
-      prompt: null,
-      autoSend: false,
-      replaceWithBlank: false,
-      dismiss: false,
-      action: "skip",
-    });
-
-    const startPending = presentEditorWelcome(host);
-    // Free-text path is collapsed by default (cinematic poster layout).
-    const customToggle = [...host.querySelectorAll("button")].find((b) =>
-      b.textContent?.includes("직접 쓰기")
-    );
-    customToggle?.click();
-    const input = host.querySelector<HTMLInputElement>(
-      `[data-testid='${EDITOR_WELCOME_TESTIDS.input}']`
-    );
-    if (input) input.value = "   ";
-    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.start}']`)?.click();
-    await expect(startPending).resolves.toMatchObject({
-      intent: null,
-      prompt: null,
-      autoSend: false,
-      replaceWithBlank: false,
-      action: "skip",
-    });
-  });
-
-  it("persists dismiss when checkbox is checked", async () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-    const pending = presentEditorWelcome(host);
-    const checkbox = host.querySelector<HTMLInputElement>(
-      `[data-testid='${EDITOR_WELCOME_TESTIDS.dismiss}']`
-    );
-    expect(checkbox).toBeTruthy();
-    if (checkbox) {
-      checkbox.checked = true;
-      checkbox.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
-    await expect(pending).resolves.toMatchObject({
-      intent: null,
-      dismiss: true,
-      action: "skip",
-    });
     expect(isEditorWelcomeDismissed()).toBe(true);
   });
 
-  it("advances slides on interval even under reduced motion", () => {
-    vi.useFakeTimers();
+  it("does not skip when 만들기 is empty", async () => {
     const host = document.createElement("div");
     document.body.append(host);
+    const pending = presentEditorWelcome(host);
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.click();
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeTruthy();
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
+    await expect(pending).resolves.toMatchObject({
+      action: "skip",
+      prompt: null,
+      autoSend: false,
+      replaceWithBlank: false,
+      dismiss: true,
+    });
+  });
 
-    void presentEditorWelcome(host);
-    const slides = () =>
-      [...host.querySelectorAll<HTMLElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.slide}']`)];
-
-    expect(slides()[0]?.classList.contains("is-active")).toBe(true);
-    expect(slides()[0]?.querySelector("img")?.getAttribute("src")).toContain("/assets/generated/welcome/");
-    vi.advanceTimersByTime(WELCOME_SLIDE_INTERVAL_MS);
-    expect(slides()[1]?.classList.contains("is-active")).toBe(true);
-    expect(slides()[0]?.classList.contains("is-active")).toBe(false);
-
-    // Reduced motion only softens CSS transitions — carousel still advances.
-    host.replaceChildren();
-    setMatchMedia(true);
-    expect(prefersReducedMotion()).toBe(true);
-
-    void presentEditorWelcome(host);
-    expect(host.querySelector(".editor-welcome")?.classList.contains("is-reduced-motion")).toBe(true);
-    expect(slides()[0]?.classList.contains("is-active")).toBe(true);
-    vi.advanceTimersByTime(WELCOME_SLIDE_INTERVAL_MS);
-    expect(slides()[1]?.classList.contains("is-active")).toBe(true);
-    expect(slides()[0]?.classList.contains("is-active")).toBe(false);
+  it("card click auto-sends that world's prompt on the current map", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const pending = presentEditorWelcome(host);
+    host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-template-card-0']")?.click();
+    expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
+    const result = await pending;
+    expect(result.action).toBe("start");
+    expect(result.replaceWithBlank).toBe(false);
+    expect(result.autoSend).toBe(true);
+    expect(result.source).toBe("chip");
+    expect(result.intent).toBe("모험 마을");
+    expect(result.presetId).toBe("adventure-jrpg");
+    expect(result.prompt).toContain("모험 JRPG");
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeNull();
   });
 });

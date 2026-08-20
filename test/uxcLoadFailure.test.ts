@@ -42,13 +42,23 @@ function mockModeDependencies(): {
     applyPendingAiBootIntent: vi.fn(),
     clearPendingAiBootIntent: vi.fn(),
     clearWelcomeIntentBootFlags: vi.fn(),
+    markWelcomeIntentAppliedThisBoot: vi.fn(),
     peekPendingAiBootIntent: vi.fn(() => null),
     setPendingAiBootIntent: vi.fn(),
     setPendingWelcomePipeline: vi.fn(),
     wasWelcomeIntentAppliedThisBoot: vi.fn(() => false),
   }));
   vi.doMock("@/editor/editorWelcome", () => ({
-    presentEditorWelcome: vi.fn(),
+    hasDeepLinkedProject: vi.fn(() => false),
+    isAutomationBootContext: vi.fn(() => true),
+    presentEditorWelcome: vi.fn(async () => ({
+      intent: null,
+      prompt: null,
+      autoSend: false,
+      replaceWithBlank: false,
+      dismiss: false,
+      action: "skip",
+    })),
     setEditorWelcomeDismissed: vi.fn(),
     shouldPresentEditorWelcome: vi.fn(() => false),
   }));

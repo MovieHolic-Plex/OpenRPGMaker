@@ -219,6 +219,35 @@ export const WELCOME_QUICK_PICKS: readonly { readonly label: string; readonly in
   { label: "달빛 호수 마을", intent: "달빛 호수 옆 작은 마을 — 고요한 분위기와 호수 던전" },
 ] as const;
 
+/** First-visit canvas briefing — three visual results, not a genre catalog. */
+export type DirectorBriefingCard = {
+  readonly id: WelcomeGenrePresetId;
+  readonly label: string;
+  readonly blurb: string;
+  readonly thumb: string;
+};
+
+export const DIRECTOR_BRIEFING_CARDS: readonly DirectorBriefingCard[] = [
+  {
+    id: "adventure-jrpg",
+    label: "모험 마을",
+    blurb: "집과 길, 던전 입구",
+    thumb: "/assets/generated/welcome/slide-04.png",
+  },
+  {
+    id: "farm-life",
+    label: "농장 하루",
+    blurb: "밭과 주민, 일상",
+    thumb: "/assets/generated/welcome/slide-03.png",
+  },
+  {
+    id: "monster-collect",
+    label: "몬스터 수집",
+    blurb: "풀숲 조우와 도감",
+    thumb: "/assets/generated/welcome/slide-01.png",
+  },
+] as const;
+
 export type WelcomeStarterTemplateId = "snow-village-inn" | "forest-dungeon" | "reunion-cutscene" | "harbor-market";
 
 export type WelcomeStarterTemplate = {

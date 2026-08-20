@@ -46,10 +46,10 @@ output/evidence/genre-presets/
 
 - Clear `localStorage["rpg-zzu:editor-welcome-dismissed"]` before welcome flows.
 - Use `?forceWelcome=1` so Playwright `navigator.webdriver` does not suppress the welcome overlay (`isAutomationBootContext` override).
-- Prefer `data-testid` (`editor-welcome`, `editor-welcome-chip-*`, `app-modal-confirm`, `ai-input`).
+- Prefer `data-testid` (`editor-welcome`, `editor-welcome-prompt-input`, `editor-welcome-prompt-submit`, `editor-welcome-template-card-0`, `editor-welcome-skip`, `ai-input`).
 - Do not set `blankProject` / e2e project inject when testing welcome.
 - Exit 0 only when at least 50 successful screenshots exist.
-- Confirm modal must sit above welcome (`.app-modal-overlay` z-index > 240).
+- Confirm modal is no longer part of first-visit briefing (start writes to the current map).
 
 ## Related code
 
