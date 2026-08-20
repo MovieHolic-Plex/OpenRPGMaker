@@ -28,7 +28,14 @@ export function validateDatabase(value: unknown): void {
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
-  if (system.titleScreen !== undefined) requireRecord("system.titleScreen", system.titleScreen);
+  if (system.titleScreen !== undefined) {
+    const titleScreen = requireRecord("system.titleScreen", system.titleScreen);
+    // additive optional 배열 — 있으면 배열이기만 하면 된다. 요소 정합은 normalize 가 관대하게 거른다
+    // (무효 레이어는 drop). 배열이 아니면 normalize 의 순회가 TypeError 로 터지므로 여기서 가드한다.
+    if (titleScreen.backgroundLayers !== undefined) {
+      requireArray("system.titleScreen.backgroundLayers", titleScreen.backgroundLayers);
+    }
+  }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);

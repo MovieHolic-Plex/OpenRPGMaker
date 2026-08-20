@@ -453,6 +453,173 @@ describe("title screen", () => {
     }
   });
 
+  it("renders background layers in authored order with injected scroll animations", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundLayers: [
+          { resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 },
+          { resourceId: "easyrpg-title-title1", scrollYPerSec: -12, opacity: 0.5 },
+        ],
+      });
+
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      const fx = findByTestId(screen, "title-fx");
+      expect(fx).toBeTruthy();
+      const layers = screen.querySelectorAll("[data-testid='title-bg-layer']");
+      expect(layers).toHaveLength(2);
+      expect(layers[0]?.dataset.titleLayerResource).toBe("rpg-zzu-title-field");
+      expect(layers[0]?.dataset.titleLayerIndex).toBe("0");
+      // 320px 타일 / 16px/s = 20s 무한 스크롤 주기.
+      expect(layers[0]?.style.animation).toBe("rm-title-layer-scroll-x 20s linear infinite");
+      expect(layers[1]?.dataset.titleLayerResource).toBe("easyrpg-title-title1");
+      // 240px / 12px/s = 20s, 음수 속도는 reverse.
+      expect(layers[1]?.style.animation).toBe("rm-title-layer-scroll-y 20s linear infinite reverse");
+      expect(layers[1]?.style.opacity).toBe("0.5");
+      // 파티클 설정이 없으면 canvas 는 만들지 않는다.
+      expect(findByTestId(screen, "title-particles")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps the legacy title DOM unchanged when no fx settings exist", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      expect(findByTestId(screen, "title-fx")).toBeNull();
+      expect(findByTestId(screen, "title-particles")).toBeNull();
+      expect(findByTestId(screen, "title-bg-layer")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("mounts the particle canvas only when particles are configured", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        particles: { preset: "fireflies", density: 80 },
+      });
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      const canvas = findByTestId(screen, "title-particles");
+      expect(canvas).toBeTruthy();
+      expect(canvas?.tagName).toBe("CANVAS");
+      expect(canvas?.dataset.titleParticlePreset).toBe("fireflies");
+      expect(canvas?.dataset.titleParticleDensity).toBe("80");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("applies intro classes with delays on first entry only", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        titleGraphic: undefined,
+        intro: { logo: "fadeIn", menu: "slideUp", delayMs: 100, staggerMs: 50 },
+      });
+      const actions = {
+        onNewGame: () => undefined,
+        onResume: () => undefined,
+        onContinue: () => undefined,
+        onQuit: () => undefined,
+      };
+
+      // 최초 진입(playIntro 생략 = true): intro 클래스 + 지연 부여.
+      const first = renderWithFakeDom(() => renderTitleScreen(project, actions));
+      const title = first.querySelector(".rm-title-screen-title");
+      expect(title?.classList.contains("rm-title-intro-fade-in")).toBe(true);
+      expect(title?.style.animationDelay).toBe("100ms");
+      const buttons = first.querySelectorAll(".rm-title-menu-button");
+      expect(buttons.length).toBeGreaterThan(1);
+      expect(buttons.every((button) => button.classList.contains("rm-title-intro-slide-up"))).toBe(true);
+      expect(buttons[0]?.style.animationDelay).toBe("100ms");
+      expect(buttons[1]?.style.animationDelay).toBe("150ms");
+
+      // 방향키 재렌더(playIntro:false): intro 클래스가 다시 붙지 않는다.
+      const rerendered = renderWithFakeDom(() =>
+        renderTitleScreen(project, actions, 1, { playIntro: false }),
+      );
+      expect(rerendered.querySelector(".rm-title-intro-fade-in")).toBeNull();
+      expect(rerendered.querySelector(".rm-title-intro-slide-up")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("reuses the fx stack node across re-renders when the fx signature matches", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 }],
+        particles: { preset: "snow", density: 40 },
+      });
+      const actions = {
+        onNewGame: () => undefined,
+        onResume: () => undefined,
+        onContinue: () => undefined,
+        onQuit: () => undefined,
+      };
+
+      const first = renderWithFakeDom(() => renderTitleScreen(project, actions));
+      const firstFx = findByTestId(first, "title-fx");
+      expect(firstFx).toBeTruthy();
+
+      // 서명이 같으면 같은 노드가 새 루트로 move 된다(canvas 상태 보존).
+      const second = renderWithFakeDom(() =>
+        renderTitleScreen(project, actions, 1, { playIntro: false, reuseFx: firstFx as unknown as HTMLElement }),
+      );
+      expect(findByTestId(second, "title-fx")).toBe(firstFx);
+
+      // 설정이 바뀌면(서명 불일치) 새 노드를 만든다.
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 32 }],
+        particles: { preset: "snow", density: 40 },
+      });
+      const third = renderWithFakeDom(() =>
+        renderTitleScreen(project, actions, 0, { playIntro: false, reuseFx: firstFx as unknown as HTMLElement }),
+      );
+      const thirdFx = findByTestId(third, "title-fx");
+      expect(thirdFx).toBeTruthy();
+      expect(thirdFx).not.toBe(firstFx);
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("renders title graphic logo without using applyTitleGraphic", () => {
     const restoreDom = installFakeDom();
     try {

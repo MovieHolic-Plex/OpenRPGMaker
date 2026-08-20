@@ -76,6 +76,9 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateOptionalResource("system.titleScreen.sounds.confirmSeResourceId", system.titleScreen?.sounds?.confirmSeResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.sounds.cancelSeResourceId", system.titleScreen?.sounds?.cancelSeResourceId, resourceIds);
   validateOptionalResource("system.titleScreen.titleGraphic.resourceId", system.titleScreen?.titleGraphic?.resourceId, resourceIds);
+  for (const [index, layer] of (system.titleScreen?.backgroundLayers ?? []).entries()) {
+    validateOptionalResource(`system.titleScreen.backgroundLayers[${index}].resourceId`, layer.resourceId, resourceIds);
+  }
 }
 
 export function validateOptionalResource(

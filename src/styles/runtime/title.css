@@ -1,3 +1,81 @@
+/* ---- 데이터 구동 타이틀 연출: 배경 레이어 · 파티클 · 등장 애니메이션 ---- */
+/* fx 스택은 배경(루트 background-image) 위, UI(z-index:2 타이틀/로고/메뉴/힌트) 아래. */
+.rm-title-screen .rm-title-fx {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.rm-title-screen .rm-title-bg-layer {
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: 320px 240px;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.rm-title-screen .rm-title-particles {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+/* 한 주기 = 논리 타일 한 장(320×240) 이동. 주기(duration)는 저작 속도로 인라인 주입된다. */
+@keyframes rm-title-layer-scroll-x {
+  from { background-position-x: 0; }
+  to { background-position-x: -320px; }
+}
+
+@keyframes rm-title-layer-scroll-y {
+  from { background-position-y: 0; }
+  to { background-position-y: -240px; }
+}
+
+/* 등장 연출 — both(backwards)로 delay 동안 from 상태를 유지한다. */
+@keyframes rm-title-intro-fade-in {
+  from { opacity: 0; }
+}
+
+/* 타이틀/로고는 translate(-50%, -50%) 기준 배치 — rise 는 그 기준점에서 시작해야 한다. */
+@keyframes rm-title-intro-rise-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px));
+  }
+}
+
+@keyframes rm-title-intro-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.rm-title-screen .rm-title-intro-fade-in {
+  animation: rm-title-intro-fade-in 420ms ease-out both;
+}
+
+.rm-title-screen .rm-title-intro-rise-in {
+  animation: rm-title-intro-rise-in 480ms ease-out both;
+}
+
+.rm-title-screen .rm-title-intro-slide-up {
+  animation: rm-title-intro-slide-up 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen .rm-title-bg-layer,
+  .rm-title-screen .rm-title-intro-fade-in,
+  .rm-title-screen .rm-title-intro-rise-in,
+  .rm-title-screen .rm-title-intro-slide-up {
+    animation: none !important;
+  }
+}
+
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title {
   font-size: var(--runtime-font-size-22);
   max-width: 280px;

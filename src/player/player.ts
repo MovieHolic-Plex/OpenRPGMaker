@@ -441,11 +441,20 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const renderTitle = (titleOptions: { readonly emitEnterJuice?: boolean } = {}): void => {
     titleConfirming = false;
+    const firstEnter = titleOptions.emitEnterJuice ?? true;
+    // 방향키 재렌더가 파티클 canvas/레이어 스택을 파괴하지 않도록, 지우기 전에 기존 fx 노드를
+    // 붙잡아 renderTitleScreen 에 넘긴다(설정 서명이 같으면 같은 노드가 새 루트로 move 된다).
+    const previousFx = layout.querySelector<HTMLElement>("[data-testid='title-fx']");
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
-    const titleContext = { autosaveAvailable: isAutosaveAvailable() };
+    const titleContext = {
+      autosaveAvailable: isAutosaveAvailable(),
+      // intro 등장 연출은 최초 진입에만 — 방향키 이동(emitEnterJuice:false)에는 재생하지 않는다.
+      playIntro: firstEnter,
+      reuseFx: previousFx,
+    };
     const options = listTitleMenuOptions(settings, titleContext);
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
@@ -467,7 +476,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     focusSelectedTitleOption(title);
     surface.sync();
     startTitleBgm(project);
-    if (titleOptions.emitEnterJuice ?? true) emitTitleJuice("title-enter");
+    if (firstEnter) emitTitleJuice("title-enter");
   };
 
   const activateTitleOption = (id: TitleMenuOptionId | undefined): void => {

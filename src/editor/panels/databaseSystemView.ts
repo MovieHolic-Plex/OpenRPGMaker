@@ -16,7 +16,7 @@ import {
 } from "@/editor/panels/databaseControls";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
-import { normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
+import { MAX_TITLE_BACKGROUND_LAYERS, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
   DEFAULT_DAY_END_HOUR,
@@ -24,15 +24,29 @@ import {
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import { store } from "@/project/store";
-import type { ActorRecord, BattleFlow, Project, TitleScreenSettings, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type {
+  ActorRecord,
+  BattleFlow,
+  Project,
+  TitleBackgroundLayer,
+  TitleIntroLogoAnimation,
+  TitleIntroMenuAnimation,
+  TitleParticlePreset,
+  TitleScreenSettings,
+  TitleScreenTitleMode,
+  TypeChartRecord,
+} from "@/project/types";
 import { el } from "@/util/dom";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
-import { listTitleMenuOptions } from "@/player/titleScreen";
+import { listTitleMenuOptions, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
 
 const START_PARTY_SLOTS = 4;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
 const BATTLE_UI_STYLE_OPTIONS = listBattleSkinIds();
 const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies readonly TitleScreenTitleMode[];
+const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies"] as const satisfies readonly ("none" | TitleParticlePreset)[];
+const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
+const TITLE_INTRO_MENU_OPTIONS = ["none", "fadeIn", "slideUp"] as const satisfies readonly TitleIntroMenuAnimation[];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
 type SystemSectionSlug = "party" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
@@ -310,6 +324,7 @@ function systemSectionNodes(
                 titleScreenDisplayFieldset(titleScreen, titleBackgroundResourceId, project.system.titleResourceId, rerender),
                 titleScreenAudioFieldset(titleScreen, rerender),
                 titleScreenMenuFieldset(titleScreen, rerender),
+                titleScreenEffectsFieldset(titleScreen, rerender),
               ],
             }),
             titleScreenWorkbenchPreview(project, titleScreen, titleBackgroundResourceId),
@@ -1172,57 +1187,297 @@ function patchTitleSounds(
   else settings.sounds = cleaned;
 }
 
+/** 배경 레이어 · 파티클 · 등장 연출 — 데이터 구동 타이틀 연출 3필드셋. */
+function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: () => void): HTMLElement {
+  const layers = titleScreen.backgroundLayers ?? [];
+  const layerRows = layers.map((layer, index) => titleLayerRow(layer, index, rerender));
+  const addLayer = el("button", {
+    class: "btn small",
+    text: "레이어 추가",
+    attrs: { type: "button", ...(layers.length >= MAX_TITLE_BACKGROUND_LAYERS ? { disabled: "true" } : {}) },
+    dataset: { testid: "db-title-layer-add" },
+    on: {
+      click: () => {
+        updateTitleScreen((settings) => {
+          const current = settings.backgroundLayers ?? [];
+          if (current.length >= MAX_TITLE_BACKGROUND_LAYERS) return;
+          // 새 레이어는 항상 유효한 번들 리소스로 시작한다(참조 검증이 error 를 내지 않도록).
+          settings.backgroundLayers = [
+            ...current,
+            { resourceId: settings.backgroundResourceId ?? "rpg-zzu-title-field" },
+          ];
+        });
+        rerender();
+      },
+    },
+  });
+
+  const preset = titleScreen.particles?.preset ?? "none";
+  const particleControls = [
+    selectLiteral(
+      "파티클 프리셋",
+      "db-field-title-screen-particle-preset",
+      preset,
+      TITLE_PARTICLE_PRESET_OPTIONS,
+      (value) => {
+        updateTitleScreen((settings) => {
+          if (value === "none") {
+            delete settings.particles;
+            return;
+          }
+          settings.particles = {
+            preset: value,
+            ...(settings.particles?.density !== undefined ? { density: settings.particles.density } : {}),
+          };
+        });
+        rerender();
+      },
+    ),
+    densitySliderField(
+      "파티클 밀도",
+      "db-field-title-screen-particle-density",
+      titleScreen.particles?.density ?? 50,
+      preset === "none",
+      (value) => {
+        updateTitleScreen((settings) => {
+          if (!settings.particles) return;
+          settings.particles = { ...settings.particles, density: Math.max(0, Math.min(100, Math.trunc(value))) };
+        }, "system:title-screen:particle-density");
+        rerender();
+      },
+    ),
+  ];
+
+  const introControls = [
+    selectLiteral(
+      "로고 등장",
+      "db-field-title-screen-intro-logo",
+      titleScreen.intro?.logo ?? "none",
+      TITLE_INTRO_LOGO_OPTIONS,
+      (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleIntro(settings, { logo: value });
+        });
+        rerender();
+      },
+    ),
+    selectLiteral(
+      "메뉴 등장",
+      "db-field-title-screen-intro-menu",
+      titleScreen.intro?.menu ?? "none",
+      TITLE_INTRO_MENU_OPTIONS,
+      (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleIntro(settings, { menu: value });
+        });
+        rerender();
+      },
+    ),
+    numberField("등장 지연(ms)", "db-field-title-screen-intro-delay", titleScreen.intro?.delayMs ?? 0, (value) => {
+      updateTitleScreen((settings) => {
+        patchTitleIntro(settings, { delayMs: value });
+      }, "system:title-screen:intro-delay");
+      rerender();
+    }),
+    numberField("메뉴 시차(ms)", "db-field-title-screen-intro-stagger", titleScreen.intro?.staggerMs ?? 90, (value) => {
+      updateTitleScreen((settings) => {
+        patchTitleIntro(settings, { staggerMs: value });
+      }, "system:title-screen:intro-stagger");
+      rerender();
+    }),
+  ];
+
+  return el("fieldset", {
+    class: "rm2k3-db-fieldset db-title-workbench-group",
+    dataset: { testid: "db-title-workbench-effects" },
+    children: [
+      el("legend", { text: "연출" }),
+      el("div", {
+        class: "db-title-effects-layers",
+        dataset: { testid: "db-title-effects-layers" },
+        children: [...layerRows, addLayer],
+      }),
+      ...particleControls,
+      ...introControls,
+    ],
+  });
+}
+
+function titleLayerRow(layer: TitleBackgroundLayer, index: number, rerender: () => void): HTMLElement {
+  return el("div", {
+    class: "db-title-layer-row",
+    dataset: { testid: `db-title-layer-row-${index}` },
+    children: [
+      resourcePickerControl({
+        label: `레이어 ${index + 1}`,
+        resourceId: layer.resourceId,
+        kind: "title",
+        testid: `db-field-title-screen-layer-${index}`,
+        dialogTitle: "배경 레이어",
+        onChange: (result) => {
+          updateTitleScreen((settings) => {
+            patchTitleLayer(settings, index, { resourceId: result.resourceId });
+          }, `system:title-screen:layer-${index}`);
+        },
+        rerender,
+      }),
+      numberField("스크롤X(px/s)", `db-field-title-screen-layer-${index}-scroll-x`, layer.scrollXPerSec ?? 0, (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleLayer(settings, index, { scrollXPerSec: value });
+        }, `system:title-screen:layer-${index}-scroll-x`);
+        rerender();
+      }),
+      numberField("스크롤Y(px/s)", `db-field-title-screen-layer-${index}-scroll-y`, layer.scrollYPerSec ?? 0, (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleLayer(settings, index, { scrollYPerSec: value });
+        }, `system:title-screen:layer-${index}-scroll-y`);
+        rerender();
+      }),
+      numberField("불투명도(%)", `db-field-title-screen-layer-${index}-opacity`, Math.round((layer.opacity ?? 1) * 100), (value) => {
+        updateTitleScreen((settings) => {
+          patchTitleLayer(settings, index, { opacityPercent: value });
+        }, `system:title-screen:layer-${index}-opacity`);
+        rerender();
+      }),
+      el("button", {
+        class: "btn small",
+        text: "삭제",
+        attrs: { type: "button" },
+        dataset: { testid: `db-title-layer-remove-${index}` },
+        on: {
+          click: () => {
+            updateTitleScreen((settings) => {
+              const next = [...(settings.backgroundLayers ?? [])];
+              next.splice(index, 1);
+              if (next.length === 0) delete settings.backgroundLayers;
+              else settings.backgroundLayers = next;
+            });
+            rerender();
+          },
+        },
+      }),
+    ],
+  });
+}
+
+/** normalize 와 같은 규칙(0/기본값 생략, 클램프)으로 레이어 한 장을 갱신한다. */
+function patchTitleLayer(
+  settings: TitleScreenSettings,
+  index: number,
+  patch: {
+    readonly resourceId?: string;
+    readonly scrollXPerSec?: number;
+    readonly scrollYPerSec?: number;
+    readonly opacityPercent?: number;
+  },
+): void {
+  const layers = [...(settings.backgroundLayers ?? [])];
+  const current = layers[index];
+  if (!current) return;
+  const resourceId = (patch.resourceId ?? current.resourceId).trim();
+  if (!resourceId) {
+    // 리소스를 비우면 레이어를 지운 것과 같다.
+    layers.splice(index, 1);
+    if (layers.length === 0) delete settings.backgroundLayers;
+    else settings.backgroundLayers = layers;
+    return;
+  }
+  const next: TitleBackgroundLayer = { resourceId };
+  const scrollX = patch.scrollXPerSec ?? current.scrollXPerSec;
+  if (typeof scrollX === "number" && Number.isFinite(scrollX) && scrollX !== 0) {
+    next.scrollXPerSec = Math.max(-480, Math.min(480, scrollX));
+  }
+  const scrollY = patch.scrollYPerSec ?? current.scrollYPerSec;
+  if (typeof scrollY === "number" && Number.isFinite(scrollY) && scrollY !== 0) {
+    next.scrollYPerSec = Math.max(-480, Math.min(480, scrollY));
+  }
+  const opacity = patch.opacityPercent !== undefined ? patch.opacityPercent / 100 : current.opacity;
+  if (typeof opacity === "number" && Number.isFinite(opacity) && opacity < 1) {
+    next.opacity = Math.max(0, Math.min(1, opacity));
+  }
+  // UI 에 노출하지 않는 parallax 저작값은 보존한다.
+  if (current.parallax !== undefined) next.parallax = current.parallax;
+  layers[index] = next;
+  settings.backgroundLayers = layers;
+}
+
+/** intro 를 normalize 와 같은 규칙(none/무연출이면 필드 생략)으로 갱신한다. */
+function patchTitleIntro(
+  settings: TitleScreenSettings,
+  patch: {
+    readonly logo?: TitleIntroLogoAnimation;
+    readonly menu?: TitleIntroMenuAnimation;
+    readonly delayMs?: number;
+    readonly staggerMs?: number;
+  },
+): void {
+  const current = settings.intro ?? {};
+  const logo = patch.logo ?? current.logo ?? "none";
+  const menu = patch.menu ?? current.menu ?? "none";
+  if (logo === "none" && menu === "none") {
+    delete settings.intro;
+    return;
+  }
+  const delayMs = patch.delayMs ?? current.delayMs;
+  const staggerMs = patch.staggerMs ?? current.staggerMs;
+  settings.intro = {
+    ...(logo !== "none" ? { logo } : {}),
+    ...(menu !== "none" ? { menu } : {}),
+    ...(typeof delayMs === "number" && Number.isFinite(delayMs)
+      ? { delayMs: Math.max(0, Math.min(10000, Math.trunc(delayMs))) }
+      : {}),
+    ...(typeof staggerMs === "number" && Number.isFinite(staggerMs)
+      ? { staggerMs: Math.max(0, Math.min(2000, Math.trunc(staggerMs))) }
+      : {}),
+  };
+}
+
+function densitySliderField(
+  label: string,
+  testid: string,
+  value: number,
+  disabled: boolean,
+  onChange: (value: number) => void,
+): HTMLElement {
+  const input = el("input", {
+    attrs: { type: "range", min: "0", max: "100", step: "5", ...(disabled ? { disabled: "true" } : {}) },
+    dataset: { testid },
+  }) as HTMLInputElement;
+  input.value = String(value);
+  input.disabled = disabled;
+  const valueLabel = el("span", { class: "db-title-density-value", text: String(value) });
+  input.addEventListener("input", () => {
+    valueLabel.textContent = input.value;
+  });
+  input.addEventListener("change", () => {
+    valueLabel.textContent = input.value;
+    onChange(Number(input.value));
+  });
+  return el("label", { class: "db-field", children: [el("span", { text: label }), input, valueLabel] });
+}
+
 function titleScreenWorkbenchPreview(
   project: Project,
   titleScreen: TitleScreenSettings,
   backgroundResourceId: string | undefined,
 ): HTMLElement {
-  const bgUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
-  const stage = el("div", {
-    class: "db-title-workbench-stage",
-    dataset: { testid: "db-title-workbench-stage" },
-    attrs: bgUrl
-      ? {
-          style: [
-            `background-image:url("${bgUrl}")`,
-            "background-size:100% 100%",
-            "background-repeat:no-repeat",
-            "background-position:center",
-            "image-rendering:pixelated",
-          ].join(";"),
-        }
-      : {},
-  });
+  const introLogoClass = titleIntroClass("logo", titleScreen.intro);
+  const introMenuClass = titleIntroClass("menu", titleScreen.intro);
+  const introDelayMs = titleScreen.intro?.delayMs ?? 0;
+  const introStaggerMs = titleScreen.intro?.staggerMs ?? 90;
 
-  const presentationMode = titleScreen.titleGraphic?.mode ?? "text";
-  const showText = presentationMode === "text" || presentationMode === "both" || !titleScreen.titleGraphic;
-  const showLogo = (presentationMode === "graphic" || presentationMode === "both") && !!titleScreen.titleGraphic?.resourceId;
-
-  if (showText) {
-    const titleNode = el("div", {
-      class: "db-title-workbench-title",
-      text: titleScreen.title || "(제목 없음)",
-      dataset: { testid: "db-title-workbench-title-text" },
-    });
-    titleNode.style.left = `${(titleScreen.layout.titleX / 320) * 100}%`;
-    titleNode.style.top = `${(titleScreen.layout.titleY / 240) * 100}%`;
-    stage.append(titleNode);
-  }
-
-  if (showLogo && titleScreen.titleGraphic) {
-    const logo = titleScreen.titleGraphic;
-    const logoUrl = resolveAssetResourceUrl(logo.resourceId, { project });
-    const logoNode = el("div", {
-      class: "db-title-workbench-logo",
-      dataset: {
-        testid: "db-title-workbench-logo",
-        ...(logo.resourceId ? { titleLogoResource: logo.resourceId } : {}),
-      },
-      attrs: logoUrl
+  // 스테이지 전체를 다시 만들면 CSS 애니메이션(레이어 스크롤 시작·등장 연출)이 처음부터
+  // 재생된다 — "연출 다시 재생" 버튼이 이 함수를 재호출해 노드를 갈아끼운다.
+  const buildStage = (): HTMLElement => {
+    const bgUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
+    const stage = el("div", {
+      class: "db-title-workbench-stage",
+      dataset: { testid: "db-title-workbench-stage" },
+      attrs: bgUrl
         ? {
             style: [
-              `background-image:url("${logoUrl}")`,
-              "background-size:contain",
+              `background-image:url("${bgUrl}")`,
+              "background-size:100% 100%",
               "background-repeat:no-repeat",
               "background-position:center",
               "image-rendering:pixelated",
@@ -1230,38 +1485,104 @@ function titleScreenWorkbenchPreview(
           }
         : {},
     });
-    logoNode.style.left = `${(logo.x / 320) * 100}%`;
-    logoNode.style.top = `${(logo.y / 240) * 100}%`;
-    stage.append(logoNode);
-  }
 
-  // graphic mode without logo still needs a stable title node for layout tests.
-  if (!showText && !showLogo) {
-    const fallback = el("div", {
-      class: "db-title-workbench-title",
-      text: titleScreen.title || "(제목 없음)",
-      dataset: { testid: "db-title-workbench-title-text" },
-    });
-    fallback.style.left = `${(titleScreen.layout.titleX / 320) * 100}%`;
-    fallback.style.top = `${(titleScreen.layout.titleY / 240) * 100}%`;
-    stage.append(fallback);
-  }
+    // 배경 레이어 + 파티클은 런타임과 **같은 렌더러**(renderTitleFxStack)를 그대로 마운트한다
+    // — 에디터 전용 복제가 낡을 수 없다. rAF 는 스테이지 교체 시 canvas 분리로 자체 해제된다.
+    const fx = renderTitleFxStack(titleScreen, project, null);
+    if (fx) stage.append(fx);
 
-  const visibleOptions = listTitleMenuOptions(titleScreen);
-  const menu = el("div", {
-    class: "db-title-workbench-menu",
-    dataset: { testid: "db-title-workbench-menu-preview" },
-    children: visibleOptions.map((option) =>
-      el("div", {
-        class: "db-title-workbench-menu-item",
-        text: option.label,
-        dataset: { titleMenuOption: option.id },
+    const presentationMode = titleScreen.titleGraphic?.mode ?? "text";
+    const showText = presentationMode === "text" || presentationMode === "both" || !titleScreen.titleGraphic;
+    const showLogo = (presentationMode === "graphic" || presentationMode === "both") && !!titleScreen.titleGraphic?.resourceId;
+
+    const appendTitleText = (): void => {
+      const titleNode = el("div", {
+        class: "db-title-workbench-title",
+        text: titleScreen.title || "(제목 없음)",
+        dataset: { testid: "db-title-workbench-title-text" },
+      });
+      titleNode.style.left = `${(titleScreen.layout.titleX / 320) * 100}%`;
+      titleNode.style.top = `${(titleScreen.layout.titleY / 240) * 100}%`;
+      if (introLogoClass) {
+        titleNode.classList.add(introLogoClass);
+        if (introDelayMs > 0) titleNode.style.animationDelay = `${introDelayMs}ms`;
+      }
+      stage.append(titleNode);
+    };
+
+    if (showText) appendTitleText();
+
+    if (showLogo && titleScreen.titleGraphic) {
+      const logo = titleScreen.titleGraphic;
+      const logoUrl = resolveAssetResourceUrl(logo.resourceId, { project });
+      const logoNode = el("div", {
+        class: "db-title-workbench-logo",
+        dataset: {
+          testid: "db-title-workbench-logo",
+          ...(logo.resourceId ? { titleLogoResource: logo.resourceId } : {}),
+        },
+        attrs: logoUrl
+          ? {
+              style: [
+                `background-image:url("${logoUrl}")`,
+                "background-size:contain",
+                "background-repeat:no-repeat",
+                "background-position:center",
+                "image-rendering:pixelated",
+              ].join(";"),
+            }
+          : {},
+      });
+      logoNode.style.left = `${(logo.x / 320) * 100}%`;
+      logoNode.style.top = `${(logo.y / 240) * 100}%`;
+      if (introLogoClass) {
+        logoNode.classList.add(introLogoClass);
+        if (introDelayMs > 0) logoNode.style.animationDelay = `${introDelayMs}ms`;
+      }
+      stage.append(logoNode);
+    }
+
+    // graphic mode without logo still needs a stable title node for layout tests.
+    if (!showText && !showLogo) appendTitleText();
+
+    const visibleOptions = listTitleMenuOptions(titleScreen);
+    const menu = el("div", {
+      class: "db-title-workbench-menu",
+      dataset: { testid: "db-title-workbench-menu-preview" },
+      children: visibleOptions.map((option, index) => {
+        const item = el("div", {
+          class: "db-title-workbench-menu-item",
+          text: option.label,
+          dataset: { titleMenuOption: option.id },
+        });
+        if (introMenuClass) {
+          item.classList.add(introMenuClass);
+          const delay = introDelayMs + index * introStaggerMs;
+          if (delay > 0) item.style.animationDelay = `${delay}ms`;
+        }
+        return item;
       }),
-    ),
+    });
+    menu.style.left = `${(titleScreen.layout.menuX / 320) * 100}%`;
+    menu.style.top = `${(titleScreen.layout.menuY / 240) * 100}%`;
+    stage.append(menu);
+    return stage;
+  };
+
+  let stage = buildStage();
+  const replay = el("button", {
+    class: "btn small",
+    text: "연출 다시 재생",
+    attrs: { type: "button" },
+    dataset: { testid: "db-title-fx-replay" },
+    on: {
+      click: () => {
+        const next = buildStage();
+        stage.replaceWith(next);
+        stage = next;
+      },
+    },
   });
-  menu.style.left = `${(titleScreen.layout.menuX / 320) * 100}%`;
-  menu.style.top = `${(titleScreen.layout.menuY / 240) * 100}%`;
-  stage.append(menu);
 
   const musicId = titleScreen.musicResourceId;
   const play = el("button", {
@@ -1298,6 +1619,7 @@ function titleScreenWorkbenchPreview(
         children: [
           play,
           stop,
+          replay,
           el("code", {
             class: "db-title-workbench-music-id",
             text: musicId ?? "(BGM 없음)",

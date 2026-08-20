@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_TROOP_ID } from "@/project/defaults";
 import { battle, firstMapId, referenceIssues, scene } from "./parityRig";
-import { createGoldenParityProject, GOLDEN_SWITCH, GOLDEN_SWITCH_EVENT, GOLDEN_TRANSFER_DEST, GOLDEN_TRANSFER_EVENT } from "./goldenProject";
+import { createGoldenParityProject, GOLDEN_SWITCH, GOLDEN_SWITCH_EVENT, GOLDEN_TITLE_EFFECTS, GOLDEN_TRANSFER_DEST, GOLDEN_TRANSFER_EVENT } from "./goldenProject";
 
 describe("golden project headless playthrough", () => {
   it("is reference-valid and exercises every database collection", () => {
@@ -21,6 +21,14 @@ describe("golden project headless playthrough", () => {
     expect(project.database.battleAnimations.length).toBeGreaterThan(0);
     expect((project.database.monsterSpecies ?? []).length).toBeGreaterThan(0);
     expect((project.database.crops ?? []).length).toBeGreaterThan(0);
+  });
+
+  it("preserves authored titleScreen effect fields through the editor round-trip", () => {
+    // editorProject 는 serialize→deserialize 라운드트립을 포함한다 — 확장 필드가 그대로 남아야 한다.
+    const project = createGoldenParityProject();
+    expect(project.system.titleScreen?.backgroundLayers).toEqual(GOLDEN_TITLE_EFFECTS.backgroundLayers);
+    expect(project.system.titleScreen?.particles).toEqual(GOLDEN_TITLE_EFFECTS.particles);
+    expect(project.system.titleScreen?.intro).toEqual(GOLDEN_TITLE_EFFECTS.intro);
   });
 
   it("plays a scripted battle to a deterministic result", () => {
