@@ -7,7 +7,8 @@
 // document 에 합성 KeyboardEvent(방향키/Enter/Escape)를 디스패치한다.
 // 이동(Input), 대사 진행/선택지(dialogue), 메뉴/타이틀 모두 이미 document keydown
 // 을 event.key 로 처리하므로, 키 합성만으로 데스크톱과 동일한 경로를 재사용한다.
-// 데스크톱(포인터 fine)에서는 아무 것도 렌더링하지 않아 영향이 0 이다.
+// 데스크톱(포인터 fine)에서는 env 로 강제 활성화하지 않는 한 아무 것도 렌더링하지
+// 않아 영향이 0 이다.
 
 import { el } from "@/util/dom";
 
@@ -26,11 +27,21 @@ function safeKnobTravel(baseElement: HTMLElement, knobElement: HTMLElement): num
   return Math.max(0, (baseDiameter - knobDiameter) / 2);
 }
 
-// 지원 기기에서는 기본 활성화한다. 배포 호스트가 명시적으로 끄려는 경우에만
-// VITE_TOUCH_CONTROLS=1|true|on 으로 명시적으로 켜지 않는 한 비활성.
-function touchControlsEnabled(): boolean {
-  const setting = import.meta.env.VITE_TOUCH_CONTROLS?.trim().toLowerCase();
-  return setting === "1" || setting === "true" || setting === "on";
+// 터치 지원 기기에서는 기본 자동 활성화한다. env 로 강제 오버라이드할 수 있다:
+// - VITE_TOUCH_CONTROLS(에디터 dev 빌드), OPENRPG_PLAYER_TOUCH_CONTROLS(플레이어 익스포트 빌드)
+// - "1|true|on" → 기기와 무관하게 강제 활성, "0|false|off" → 강제 비활성,
+//   미설정 → 기기 자동 감지(isTouchDevice).
+function touchControlsOverride(): boolean | null {
+  const overrides = [
+    import.meta.env.VITE_TOUCH_CONTROLS,
+    import.meta.env.OPENRPG_PLAYER_TOUCH_CONTROLS,
+  ];
+  for (const raw of overrides) {
+    const setting = raw?.trim().toLowerCase();
+    if (setting === "1" || setting === "true" || setting === "on") return true;
+    if (setting === "0" || setting === "false" || setting === "off") return false;
+  }
+  return null;
 }
 
 // 터치/coarse 포인터 기기 감지.
@@ -46,9 +57,10 @@ function dispatchKey(type: "keydown" | "keyup", key: string): void {
   document.dispatchEvent(new KeyboardEvent(type, { key, bubbles: true }));
 }
 
-// host(플레이 스테이지)에 가상 패드를 부착한다. 터치 기기가 아니면 no-op.
+// host(플레이 스테이지)에 가상 패드를 부착한다.
+// env 오버라이드가 있으면 그 값을, 없으면 터치 기기 자동 감지를 따른다. 비활성이면 no-op.
 export function createTouchPad(host: HTMLElement): TouchPadHandle {
-  if (!touchControlsEnabled() || !isTouchDevice()) {
+  if (!(touchControlsOverride() ?? isTouchDevice())) {
     return { cleanup: () => {} };
   }
 
