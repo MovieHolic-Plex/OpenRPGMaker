@@ -52,6 +52,7 @@ import {
   recordPlayBootDiagnostic,
   type PlayBootDiagnosticSink,
 } from "@/player/playBootDiagnostics";
+import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
 
 let teardownShell: (() => void) | null = null;
 
@@ -63,6 +64,8 @@ export type RenderPlayerOptions = {
   readonly diagnosticSink?: PlayBootDiagnosticSink;
   // "여기서 테스트": 지정 맵/좌표에서 바로 플레이 시작(타이틀 건너뜀).
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
+  // 커뮤니티 호스팅 셸이 주입한 기능(전체화면 토글 등). 에디터 테스트플레이에서는 없다 → 아무것도 렌더되지 않음.
+  readonly hostBridge?: HostBridge;
 };
 
 const MENU_CLOSE_JUICE_MS = 250;
@@ -81,6 +84,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let cleanupPlaySurface: (() => void) | null = null;
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
+  let hostFullscreenCleanup: (() => void) | null = null;
   const layout = el("div", { class: "player-layout system-shell" });
   const cleanupPointerBlocker = installPlayPointerBlocker(layout);
   main.append(layout);
@@ -94,6 +98,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 전투가 끝나기 전에 플레이를 닫으면(편집으로/x) battleScene 지역변수가 도달 불가가 되어
     // 틱·keydown·ResizeObserver 가 새어나간다. host 기준으로 컨트롤러를 정리한다(결함 1c).
     if (playStage) destroyBattleSceneOnHost(playStage);
+    hostFullscreenCleanup?.();
+    hostFullscreenCleanup = null;
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
     playStage = null;
@@ -107,6 +113,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       }
       game = null;
     }
+  };
+
+  // 호스트 셸 컨트롤(전체화면 ⛶)을 새 플레이 서피스에 마운트. hostBridge 가 없거나
+  // Fullscreen API 부재면 no-op(null) — 에디터 테스트플레이에는 아무것도 렌더되지 않는다.
+  const mountHostControls = (viewport: HTMLElement): void => {
+    hostFullscreenCleanup?.();
+    hostFullscreenCleanup = mountHostFullscreenToggle({
+      bridge: options.hostBridge,
+      viewport,
+      fullscreenRoot: main,
+    });
   };
 
   const activeScene = (): PlayScene | undefined => {
@@ -135,6 +152,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const surface = createPlaySurface();
     playStage = surface.stage;
     layout.append(surface.viewport);
+    mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
     const loading = mountPlayLoadingOverlay(layout, "engine");
     surface.sync();
@@ -430,6 +448,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onQuit: () => confirmTitleThen(() => activateTitleOption("quit")),
     }, titleMenuIndex);
     layout.append(surface.viewport);
+    mountHostControls(surface.viewport);
     surface.stage.append(title);
     focusSelectedTitleOption(title);
     surface.sync();
