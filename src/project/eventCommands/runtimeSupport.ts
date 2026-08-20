@@ -1,4 +1,5 @@
 import type { Command } from "@/project/types";
+import { COMMAND_GUARANTEES, type CommandSupport } from "@/project/commandGuaranteeRegistry";
 import {
   M2_MAP_COMMON_FULL_IDS,
   M2_PERSISTED_BEHAVIOR_IDS,
@@ -51,33 +52,23 @@ class M2PartialEffectDeclarationError extends Error {
   }
 }
 
-const BATTLE_EVENT_RUNTIME_FULL_KINDS: ReadonlySet<Command["kind"]> = new Set([
-  "text",
-  "choices",
-  "fork",
-  "setSwitch",
-  "setVariable",
-  "changeItem",
-  "changeFriendship",
-  "getFriendship",
-  "callCommonEvent",
-  "changeActorHp",
-  "changeActorMp",
-  "recoverAll",
-  "m2Command",
-]);
+// 배틀(troop) 네이티브 kind 배지의 SSOT 는 commandGuaranteeRegistry.supportByContext.troop 다.
+// (2026-08-20 정직화: 기존 하드코딩 13종 배열이 executor 실측 22종과 어긋나 changeGold/changeExp/
+//  changeLevel/learnSkill/changeParty/wait/playAudio/stopAudio 를 "부분 실행"으로 오표시했다.)
+const NATIVE_SUPPORT_TO_RUNTIME_SUPPORT: Readonly<Record<CommandSupport, CommandRuntimeSupport>> = {
+  full: "runtime-full",
+  partial: "runtime-partial",
+  editorOnly: "editor-only",
+};
 
 export function commandRuntimeSupport(command: Command, context?: M2RuntimeContext): CommandRuntimeSupport {
   if (command.kind !== "m2Command") return "runtime-full";
-  if (!context && m2CommandRuntimeClassification(command.commandId).behaviorClass === "nativeAlias") {
-    return m2CommandRuntimeSupport(command.commandId, "map");
-  }
   return m2CommandRuntimeSupport(command.commandId, context);
 }
 
 export function battleEventCommandRuntimeSupport(command: Command): CommandRuntimeSupport {
   if (command.kind === "m2Command") return m2CommandRuntimeSupport(command.commandId, "troop");
-  return BATTLE_EVENT_RUNTIME_FULL_KINDS.has(command.kind) ? "runtime-full" : "runtime-partial";
+  return NATIVE_SUPPORT_TO_RUNTIME_SUPPORT[COMMAND_GUARANTEES[command.kind].supportByContext.troop];
 }
 
 export function m2CommandRuntimeClassification(commandId: string): M2RuntimeClassification {
@@ -109,20 +100,34 @@ export function m2CommandRuntimeSupport(
 ): CommandRuntimeSupport {
   const classification = m2CommandRuntimeClassification(commandId);
   if (context) return classification.supportByContext[context];
-  switch (classification.behaviorClass) {
-    case "nativeAlias":
-    case "full":
-      return "runtime-full";
-    case "partial":
-      return "runtime-partial";
-    case "editorOnly":
-      return "editor-only";
-  }
+  // 컨텍스트를 모르면 세 컨텍스트(map/common/troop) 중 최저 지원으로 보수 판정한다.
+  // behaviorClass "full" 이라도 M2_MAP_COMMON_FULL_IDS / M2_TROOP_FULL_IDS 밖이면
+  // 해당 컨텍스트에서는 partial 이므로, 무컨텍스트 판정이 runtime-full 을 주장하면 거짓이 된다.
+  return conservativeM2CommandRuntimeSupport(classification);
 }
 
-export function catalogRowRuntimeSupport(commandId: string, existingKind: Command["kind"] | undefined): CommandRuntimeSupport {
+const RUNTIME_SUPPORT_RANK: Readonly<Record<CommandRuntimeSupport, number>> = {
+  "runtime-full": 2,
+  "runtime-partial": 1,
+  "editor-only": 0,
+};
+
+function conservativeM2CommandRuntimeSupport(classification: M2RuntimeClassification): CommandRuntimeSupport {
+  const { map, common, troop } = classification.supportByContext;
+  return [common, troop].reduce(
+    (worst, candidate) => (RUNTIME_SUPPORT_RANK[candidate] < RUNTIME_SUPPORT_RANK[worst] ? candidate : worst),
+    map
+  );
+}
+
+export function catalogRowRuntimeSupport(
+  commandId: string,
+  existingKind: Command["kind"] | undefined,
+  context?: M2RuntimeContext
+): CommandRuntimeSupport {
+  // 네이티브 kind 로 변환되어 삽입되는 행은 실제 실행이 네이티브 인터프리터 경로다.
   if (existingKind) return "runtime-full";
-  return m2CommandRuntimeSupport(commandId);
+  return m2CommandRuntimeSupport(commandId, context);
 }
 
 function behaviorClassFor(commandId: string): M2PersistedBehaviorClass {

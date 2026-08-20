@@ -828,7 +828,7 @@ const upsertCommonEvent: ToolDefinition = {
       commands: [...commands],
     };
     const outcome = upsertById(draft.commonEvents, record);
-    const unsupportedCommands = countLimitedRuntimeSupportCommands(record.commands);
+    const unsupportedCommands = countLimitedRuntimeSupportCommands(record.commands, "common");
     return {
       summary: `커먼 이벤트 '${record.name}'(${trigger}) ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건`,
       data: { id: record.id, unsupportedCommands },

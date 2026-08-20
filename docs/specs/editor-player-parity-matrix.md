@@ -6,6 +6,8 @@ Each row maps an authored field to the player module that consumes it, the headl
 
 Summary: 67 rows — covered 0, planned 51, gap 16.
 
+Since 2026-08-20 this distribution is ratchet-gated by `test/parity/parityMatrix.test.ts` (`RATCHET` constant): gap may only shrink and covered may only grow; new rows must land as `planned-*`, not `gap`.
+
 ## actors
 
 | field | playerConsumer | harness | status |

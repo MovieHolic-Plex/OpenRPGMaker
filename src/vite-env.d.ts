@@ -8,6 +8,8 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_PROJECT_ID?: string;
   readonly VITE_SUPABASE_URL?: string;
   readonly VITE_TOUCH_CONTROLS?: string;
+  // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
+  readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
 }
 
 interface ImportMeta {

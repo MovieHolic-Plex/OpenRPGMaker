@@ -5,12 +5,19 @@ import { compareVariableValue } from "@/project/conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "@/project/gameTime";
 import { clampFriendship } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
-import type { ActorId, Command, Condition, Project, VariableOperand } from "@/project/types";
+import { transitionActorEquipment } from "@/project/equipmentRules";
+import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
+import type { ActorId, ActorInitialEquipment, Command, Condition, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
 export type BattleEventRuntimeState = {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
+  // 세션 셀프 스위치 스냅샷 사본(eventId → key → on). setSelfSwitch 가 여기 기록하고
+  // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+  readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
+  // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷). battleResult 조건 평가 기준.
+  readonly battleResult?: "victory" | "defeat" | "escape";
   inventory: Record<string, number>;
   itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
@@ -19,7 +26,16 @@ export type BattleEventRuntimeState = {
   actorExperience?: Record<string, number>;
   actorLevels?: Record<string, number>;
   actorBattleCommands?: Record<string, string[]>;
-  readonly timers?: Record<string, number>;
+  // 레거시 호환 플래그(setFlag) — 세션 flags 스냅샷 사본. 전투 종료 시 write-back.
+  flags?: Record<string, boolean>;
+  // 타이머 잔여 초(timer 커맨드가 쓰고 timer 조건이 읽음). 전투 종료 시 write-back.
+  timers?: Record<string, number>;
+  // 세션 장비 스냅샷 사본(actorId → 장비). changeEquipment 가 여기 기록하고
+  // 전투 종료 시 applyBattleRewardsToSession 이 세션 actorEquipment 로 write-back.
+  actorEquipment?: Record<string, ActorInitialEquipment>;
+  // 런타임 직업 오버라이드 사본(actorId → classId). promoteActor 가 여기 기록하고
+  // 전투 종료 시 세션 classOverrides 로 write-back(맵 changeActorClass 와 동일 의미).
+  classOverrides?: Record<string, string>;
   readonly gameTime?: GameTime;
   readonly friendship?: Record<string, number>;
 };
@@ -33,6 +49,9 @@ export type BattleEventContext = {
 export type BattleEventRuntimeOptions = {
   readonly project: Project;
   readonly troopRecord: TroopRecord;
+  // 이 전투를 기동한 맵 이벤트 id. selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트.
+  // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined(조건 false + 추적 로그).
+  readonly ownerEventId?: string;
   readonly actors: readonly MutableBattler[];
   readonly enemies: readonly MutableBattler[];
   readonly stateIds: readonly string[];
@@ -43,6 +62,10 @@ export type BattleEventRuntimeOptions = {
   readonly showBattleAnimation?: (target: string, animationId: string) => void;
   // m2-105 Abort Battle: 전투 즉시 중단(런타임이 result/phase 갱신).
   readonly abortBattle?: () => void;
+  // gameOver/killPlayer: 전투를 패배(defeat)로 즉시 종결(abortBattle 의 defeat 대칭).
+  // defeat 이후 처리(게임오버 vs 패배 복귀)는 canLose 의미론에 따라 호스트 파이프라인
+  // (applyBattleRewardsToSession/playSceneBattle)이 결정한다.
+  readonly endBattleAsDefeat?: () => void;
   // playAudio/stopAudio 명령: 호스트가 실제 오디오 엔진으로 라우팅.
   readonly playAudio?: (resourceId: string, loop: boolean) => void;
   readonly stopAudio?: () => void;
@@ -53,6 +76,11 @@ export type BattleEventRuntimeOptions = {
   // SC4 (H3): strict 흐름에서는 extra actor action 을 부여할 수 없다(동기식 라운드).
   // 이 콜백이 false 를 반환하면 actionTimes 명령은 unsupported 로그를 남긴다.
   readonly canGrantExtraAction?: () => boolean;
+  // changeEquipment/promoteActor 가 오버레이(state.actorEquipment/classOverrides)를 갱신한 뒤
+  // 해당 액터 배틀러의 파생 스탯을 재계산한다. 산식은 battleBattlers 생성 로직과 공유
+  // (refreshActorBattlerDerivedStats) — 런타임이 세션 paramBonuses 를 닫아 주입한다.
+  // refreshSkills 는 전직처럼 클래스 스킬 셋이 바뀔 때만 true(장비 변경은 스킬 불변).
+  readonly refreshActorDerivedStats?: (battler: MutableBattler, options?: { readonly refreshSkills?: boolean }) => void;
 };
 
 export type BattleEventRuntimeResult = {
@@ -67,11 +95,45 @@ export type BattleEventRuntime = {
   logs(): readonly BattleEventLogSnapshot[];
 };
 
+// 제어 흐름 kind 는 프레임 머신(executeBattleEventCommands)이 직접 처리한다.
+// promoteActor 는 잎이 아니라 여기 속한다 — success/failure 분기를 fork 와 같은 활성 프레임으로
+// 쌓아야 분기 안 gotoLabel 이 상위 라벨로 점프할 수 있다(맵 인터프리터 pushFrame 과 동형).
+// 나머지(잎) kind 만 executeBattleEventCommand 로 위임 — assertNever 전수 분류는 잎 유니온 기준.
+type BattleControlFlowKind = "fork" | "choices" | "label" | "gotoLabel" | "loop" | "breakLoop" | "promoteActor";
+type BattleLeafCommand = Exclude<Command, { kind: BattleControlFlowKind }>;
+
+// pc 기반 실행 프레임: 트룹 페이지/커먼 이벤트 본문과 fork/choices 분기, 루프 본문이 쌓인다.
+type BattleExecFrame = {
+  readonly commands: readonly Command[];
+  pc: number;
+  readonly loopBody?: boolean;
+};
+
+// 배틀 이벤트는 한 액션 비트 안에서 동기 실행되므로 맵 인터프리터(maxLoopIterations=100000,
+// 프레임 단위 yield)보다 엄격한 상한을 둔다. 도달 시 unsupported 로그 후 해당 흐름을 끝낸다.
+const MAX_BATTLE_LOOP_ITERATIONS = 10_000;
+const MAX_BATTLE_LABEL_JUMPS = 10_000;
+
 export function createBattleEventRuntime(options: BattleEventRuntimeOptions): BattleEventRuntime {
   const firedBattleEventPageIds = new Set<string>();
   const firedBattleEventPageRoundKeys = new Set<string>();
   const extraActorActions: Record<string, number> = {};
   const logs: BattleEventLogSnapshot[] = [];
+  // 소유 이벤트 없는 전투에서 selfSwitch 조건이 평가되면 1회만 추적 로그를 남긴다
+  // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
+  let loggedSelfSwitchWithoutOwner = false;
+
+  function logSelfSwitchWithoutOwnerOnce(): void {
+    if (loggedSelfSwitchWithoutOwner) return;
+    loggedSelfSwitchWithoutOwner = true;
+    logs.push({
+      pageId: "external",
+      round: 0,
+      triggerId: "external",
+      kind: "unsupported",
+      detail: "selfSwitch condition without owner event (treated as OFF)",
+    });
+  }
 
   function applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult {
     let forceEscape = false;
@@ -101,6 +163,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return {
       switches: options.state.switches,
       variables: options.state.variables,
+      selfSwitches: Object.fromEntries(
+        Object.entries(options.state.selfSwitches ?? {}).map(([eventId, keys]) => [eventId, { ...keys }])
+      ),
       inventory: options.state.inventory,
       itemUseCharges: { ...(options.state.itemUseCharges ?? {}) },
       gold: options.state.gold ?? 0,
@@ -109,6 +174,12 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       actorExperience: { ...(options.state.actorExperience ?? {}) },
       actorLevels: { ...(options.state.actorLevels ?? {}) },
       actorBattleCommands: { ...(options.state.actorBattleCommands ?? {}) },
+      flags: { ...(options.state.flags ?? {}) },
+      timers: { ...(options.state.timers ?? {}) },
+      actorEquipment: Object.fromEntries(
+        Object.entries(options.state.actorEquipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
+      ),
+      classOverrides: { ...(options.state.classOverrides ?? {}) },
     };
   }
 
@@ -189,13 +260,164 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       logUnsupported(page, context, "common event recursion limit");
       return false;
     }
-    for (const command of commands) {
-      forceEscape = executeBattleEventCommand(page, command, context, depth) || forceEscape;
+    // pc(program counter) 기반 프레임 머신: label/gotoLabel/loop/breakLoop 를 이 호출 본문
+    // (트룹 페이지 또는 커먼 이벤트 본문) 로컬로 실행한다. 라벨 탐색 범위는 맵 인터프리터
+    // gotoLabel(src/player/interpreter/stack.ts)과 동형 — "현재 활성 프레임 스택"이다.
+    const frames: BattleExecFrame[] = [{ commands, pc: 0 }];
+    let loopIterations = 0;
+    let labelJumps = 0;
+    while (frames.length > 0) {
+      const frame = frames[frames.length - 1];
+      if (!frame) break;
+      if (frame.pc >= frame.commands.length) {
+        frames.pop();
+        if (frame.loopBody) {
+          // 루프 본문이 정상 완료(breakLoop/gotoLabel 이탈 없이)되면 재진입한다.
+          loopIterations += 1;
+          if (loopIterations >= MAX_BATTLE_LOOP_ITERATIONS) {
+            logUnsupported(page, context, "loop iteration limit reached");
+          } else {
+            frames.push({ commands: frame.commands, pc: 0, loopBody: true });
+          }
+        }
+        continue;
+      }
+      const command = frame.commands[frame.pc];
+      if (!command) {
+        frame.pc += 1;
+        continue;
+      }
+      frame.pc += 1;
+      switch (command.kind) {
+        case "fork": {
+          const branch = evaluateCondition(command.condition) ? command.then : command.else ?? [];
+          if (branch.length > 0) frames.push({ commands: branch, pc: 0 });
+          break;
+        }
+        case "choices": {
+          logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "choices", detail: [command.prompt, command.options.map((option) => option.text).join("/")].filter(Boolean).join(" ") });
+          const firstOption = command.options[0];
+          if (firstOption && firstOption.branch.length > 0) frames.push({ commands: firstOption.branch, pc: 0 });
+          break;
+        }
+        case "label":
+          // 라벨 자체는 no-op(맵 인터프리터와 동일). gotoLabel 의 착지점.
+          break;
+        case "gotoLabel": {
+          labelJumps += 1;
+          if (labelJumps >= MAX_BATTLE_LABEL_JUMPS) {
+            // label↔gotoLabel 역방향 순환 가드: 페이지 실행을 여기서 종료한다.
+            logUnsupported(page, context, "gotoLabel jump limit reached");
+            return forceEscape;
+          }
+          if (!jumpToLabel(frames, command.name)) {
+            logUnsupported(page, context, `missing label: ${command.name}`);
+          }
+          break;
+        }
+        case "loop":
+          // 빈 본문 루프는 무의미하므로 건너뛴다(맵 commandCatalog 와 동일).
+          if (command.body.length > 0) frames.push({ commands: command.body, pc: 0, loopBody: true });
+          break;
+        case "promoteActor": {
+          // 전직 판정/전이 후 success/failure 분기를 fork 와 같은 프레임으로 쌓는다
+          // (맵 commandCatalog 의 pushFrame(branch) 대응 — 분기 내 gotoLabel 스코프 유지).
+          const promoted = executePromoteActor(page, command, context);
+          const branch = (promoted ? command.successBranch : command.failureBranch) ?? [];
+          if (branch.length > 0) frames.push({ commands: branch, pc: 0 });
+          break;
+        }
+        case "breakLoop": {
+          let loopIndex = -1;
+          for (let i = frames.length - 1; i >= 0; i -= 1) {
+            if (frames[i]?.loopBody) {
+              loopIndex = i;
+              break;
+            }
+          }
+          if (loopIndex < 0) {
+            logUnsupported(page, context, "breakLoop outside loop");
+          } else {
+            // 루프 본문 프레임과 그 자식 프레임을 제거하면 부모 프레임의 pc 는
+            // 이미 loop 다음 명령을 가리킨다(프레임별 pc 보존).
+            frames.length = loopIndex;
+          }
+          break;
+        }
+        default:
+          forceEscape = executeBattleEventCommand(page, command, context, depth) || forceEscape;
+      }
     }
     return forceEscape;
   }
 
-  function executeBattleEventCommand(page: BattleEventPageRecord, command: Command, context: BattleEventContext, depth: number): boolean {
+  // 맵 인터프리터 gotoLabel(stack.ts)과 동형: 활성 프레임 스택을 위에서부터 훑어
+  // 라벨을 가진 프레임까지 스택을 자르고 그 프레임의 pc 를 라벨 위치로 옮긴다.
+  // (라벨은 no-op 이므로 다음 스텝에서 라벨 다음 명령부터 실행된다.)
+  function jumpToLabel(frames: BattleExecFrame[], name: string): boolean {
+    for (let i = frames.length - 1; i >= 0; i -= 1) {
+      const frame = frames[i];
+      if (!frame) continue;
+      for (let j = 0; j < frame.commands.length; j += 1) {
+        const candidate = frame.commands[j];
+        if (candidate?.kind === "label" && candidate.name === name) {
+          frames.length = i + 1;
+          frame.pc = j;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // RM2K3 배틀 허용 커맨드 Change Class(전직): 맵 promoteActor(sessionClass)와 같은
+  // 검증/전이 권위자를 배틀 이벤트 state 뷰로 실행한다. 배틀러 HP/MP 는 전투 SSOT 라
+  // 뷰의 actorVitals 는 버림 객체 — 배틀러 쪽은 refreshActorDerivedStats 가 새 최대치로 클램프.
+  function executePromoteActor(
+    page: BattleEventPageRecord,
+    command: Extract<Command, { kind: "promoteActor" }>,
+    context: BattleEventContext
+  ): boolean {
+    const state = options.state;
+    state.classOverrides ??= {};
+    state.actorLevels ??= {};
+    state.actorSkillIds ??= {};
+    const battler = options.actors.find((entry) => entry.recordId === command.actorId || entry.id === command.actorId);
+    // 세션 레벨 스냅샷이 비어 있으면 전투 중 레벨(배틀러)이 판정 기준이다(맵 actorLevels 와 동일 SSOT).
+    if (battler?.level !== undefined && state.actorLevels[command.actorId] === undefined) {
+      state.actorLevels[command.actorId] = battler.level;
+    }
+    const view: ClassOverrideSession = {
+      classOverrides: state.classOverrides,
+      actorLevels: state.actorLevels,
+      actorSkillIds: state.actorSkillIds,
+      actorVitals: {},
+      switches: state.switches,
+      variables: state.variables,
+      inventory: state.inventory,
+      itemUseCharges: state.itemUseCharges,
+    };
+    const result = promoteActorClass(view, options.project, command.actorId, command.toClassId || undefined);
+    // promoteActor 는 아이템 소모 시 inventory/itemUseCharges 참조를 교체한다 — state 로 되받는다.
+    state.inventory = view.inventory;
+    state.itemUseCharges = view.itemUseCharges;
+    // 맵 인터프리터와 동일한 성공 플래그(session.flags.promoteActorSuccess 대응, write-back 포함).
+    state.flags ??= {};
+    state.flags.promoteActorSuccess = result.ok;
+    if (result.ok && battler) {
+      options.refreshActorDerivedStats?.(battler, { refreshSkills: true });
+    }
+    logs.push({
+      pageId: page.id,
+      round: context.turn,
+      triggerId: page.id,
+      kind: "message",
+      detail: result.ok ? `promoteActor ${command.actorId}→${result.classId}` : `promoteActor failed: ${result.reason}`,
+    });
+    return result.ok;
+  }
+
+  function executeBattleEventCommand(page: BattleEventPageRecord, command: BattleLeafCommand, context: BattleEventContext, depth: number): boolean {
     switch (command.kind) {
       case "text":
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: [command.speaker, command.body].filter(Boolean).join(": ") });
@@ -247,13 +469,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const npcKey = command.npcKey?.trim();
         options.state.variables[command.variableId] = npcKey ? clampFriendship(options.state.friendship?.[npcKey] ?? 0) : 0;
         return false;
-      }
-      case "fork":
-        return executeBattleEventCommands(page, evaluateCondition(command.condition) ? command.then : command.else ?? [], context, depth);
-      case "choices": {
-        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "choices", detail: [command.prompt, command.options.map((option) => option.text).join("/")].filter(Boolean).join(" ") });
-        const firstOption = command.options[0];
-        return firstOption ? executeBattleEventCommands(page, firstOption.branch, context, depth) : false;
       }
       case "callCommonEvent": {
         const commonEvent = options.project.commonEvents.find((entry) => entry.id === command.commonEventId);
@@ -356,6 +571,20 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         if (!result.handled) logUnsupported(page, context, command.commandId);
         return result.forceEscape;
       }
+      case "setSelfSwitch": {
+        // 소유 이벤트(ownerEventId)의 셀프 스위치를 스냅샷 사본에 기록.
+        // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+        const ownerEventId = options.ownerEventId;
+        const selfSwitches = options.state.selfSwitches;
+        if (!ownerEventId || !selfSwitches) {
+          logUnsupported(page, context, `${command.kind} (no owner event)`);
+          return false;
+        }
+        selfSwitches[ownerEventId] ??= {};
+        selfSwitches[ownerEventId][command.key] = command.value;
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `selfSwitch ${command.key}=${command.value}` });
+        return false;
+      }
       case "wait": {
         const ms = "ms" in command ? command.ms : 0;
         options.wait?.(ms);
@@ -374,8 +603,77 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.stopAudio?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "stopAudio" });
         return false;
-      case "label":
-      case "gotoLabel":
+      case "setFlag":
+        // 레거시 호환 플래그 — 맵 인터프리터(commandCatalog)의 session.flags 쓰기와 동일 의미.
+        // 세션 스냅샷 사본에 기록하고 전투 종료 시 applyBattleRewardsToSession 이 되돌려 쓴다.
+        options.state.flags ??= {};
+        options.state.flags[command.flag] = command.value;
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `flag ${command.flag}=${command.value}` });
+        return false;
+      case "timer": {
+        // 맵 timer 커맨드 스키마와 동일: set → seconds 로 설정, start → seconds 지정 시 설정.
+        // 배틀 이벤트 상태는 남은 초만 가진다 — 진행(tick)/정지는 맵 씬(playSceneTimers) 소관이라
+        // stop 은 남은 초를 유지한 채 기록만 남기고, write-back 시 세션 timers 로 병합된다.
+        const timerId = command.timerId ?? "timer1";
+        options.state.timers ??= {};
+        if (command.action === "set") options.state.timers[timerId] = command.seconds ?? 0;
+        if (command.action === "start" && command.seconds !== undefined) options.state.timers[timerId] = command.seconds;
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `timer ${command.action} ${timerId}${command.seconds !== undefined ? ` ${command.seconds}s` : ""}` });
+        return false;
+      }
+      case "showAnimation": {
+        // m2-103 과 동일한 showBattleAnimation 콜백 라우팅(런타임이 lastAnimation 세팅).
+        options.showBattleAnimation?.(resolveShowAnimationTargetId(command.target, context), command.animationId);
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `showAnimation ${command.animationId}` });
+        return false;
+      }
+      case "gameOver":
+        // RM2K3 Game Over: 전투를 패배로 즉시 종결. defeat 이후 처리(게임오버 vs 패배 복귀)는
+        // canLose 의미론에 따라 호스트가 결정한다(battleRewardsToSession/playSceneBattle).
+        options.endBattleAsDefeat?.();
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "gameOver→defeat" });
+        return false;
+      case "killPlayer":
+        // killPlayer: 파티 전멸과 동일 의미 — 액터 HP 0 + defeat 종결(자연 패배 경로와 정합).
+        for (const actor of options.actors) actor.hp = 0;
+        options.endBattleAsDefeat?.();
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: ["killPlayer→defeat", command.message].filter(Boolean).join(" ") });
+        return false;
+      case "changeEquipment": {
+        // RM2K3 배틀 허용 커맨드 Change Equipment: 맵 changeActorEquipment 와 동일한
+        // 원자적 전이 권위자(transitionActorEquipment)를 배틀 이벤트 state 오버레이로 실행.
+        const state = options.state;
+        state.actorEquipment ??= {};
+        const transition = transitionActorEquipment({
+          project: options.project,
+          actorId: command.actorId,
+          classId: effectiveActorClassId(options.project, { classOverrides: state.classOverrides }, command.actorId),
+          equipment: state.actorEquipment[command.actorId],
+          inventory: state.inventory,
+          slot: command.slot,
+          equipmentId: command.equipmentId || undefined,
+        });
+        if (transition.kind === "rejected") {
+          // 맵 경로는 거부를 무시하지만, 배틀 이벤트는 관측 가능해야 한다(무음 스킵 금지 규율).
+          logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeEquipment rejected: ${transition.reason}` });
+          return false;
+        }
+        state.actorEquipment[command.actorId] = transition.equipment;
+        state.inventory = transition.inventory;
+        const battler = options.actors.find((entry) => entry.recordId === command.actorId || entry.id === command.actorId);
+        if (battler) options.refreshActorDerivedStats?.(battler);
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeEquipment ${command.actorId} ${command.slot}=${command.equipmentId || "none"}` });
+        return false;
+      }
+      case "changeFace":
+        // 메시지 스트립 프레젠테이션 상태 — 이벤트 로그 detail 로 반영
+        // (battleDirectorDom 의 message 소비 경로와 동일한 채널, DOM 수정 없음).
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: command.resourceId ? `changeFace ${command.resourceId}#${command.faceIndex}` : "changeFace clear" });
+        return false;
+      case "displayTextSettings":
+        // 메시지 표시 설정 프레젠테이션 상태 — 이벤트 로그 detail 로 반영.
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `displayTextSettings ${command.format}/${command.position}` });
+        return false;
       case "transfer":
       case "moveEvent":
       case "setEventGraphicPattern":
@@ -385,35 +683,44 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "erasePicture":
       case "shop":
       case "inn":
-      case "gameOver":
       case "ending":
       case "returnToTitle":
-      case "setFlag":
-      case "loop":
-      case "breakLoop":
-      case "timer":
       case "inputNumber":
-      case "changeFace":
-      case "changeEquipment":
       case "enterHeroName":
-      case "setSelfSwitch":
       case "callMapEvent":
       case "cutsceneControl":
       case "checkpointSave":
-      case "killPlayer":
       case "triggerEnding":
       case "setLighting":
       case "addLight":
       case "removeLight":
       case "setWeather":
-      case "showAnimation":
-      case "displayTextSettings":
       case "addFollower":
       case "removeFollower":
+      // Step 0(2026-08-20): 스위치 fall-through 로 무음 스킵되던 16종을 명시적 unsupported 편입.
+      // (openwiki/runtime-battle.md — 미지원 배틀 커맨드는 반드시 unsupported 로그를 남긴다.)
+      // Step 3d(2026-08-20): promoteActor/changeEquipment 는 실제 실행으로 승격되어 목록에서 빠짐.
+      case "giveMonster":
+      case "evolveMonster":
+      case "openChest":
+      case "advanceTime":
+      case "setTime":
+      case "sleepUntilMorning":
+      case "craftRecipe":
+      case "applyItemUpgrade":
+      case "equipTool":
+      case "changeLifeSkillExp":
+      case "moveMonster":
+      case "openSaveMenu":
+      case "spawnFieldEnemy":
+      case "despawnFieldEnemy":
+      case "advanceCropGrowth":
         logUnsupported(page, context, command.kind);
         return false;
+      default:
+        // 컴파일 타임 전수 분류: 새 Command kind 는 여기서 배틀 분류(실행/미지원)를 강제받는다.
+        return assertNever(command);
     }
-    return false;
   }
 
   function addExtraActorAction(actorId: string, amount: number): void {
@@ -436,9 +743,17 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const current = options.state.variables[condition.variableId] ?? 0;
         return compareVariableValue(current, condition.op, condition.value);
       }
-      case "selfSwitch":
-        // 배틀 이벤트에는 셀프 스위치 컨텍스트가 없으므로 항상 false(OFF) 취급.
-        return condition.value === false;
+      case "selfSwitch": {
+        // ownerEventId(전투를 기동한 맵 이벤트)가 있으면 그 이벤트의 셀프 스위치로 실제 평가.
+        // 소유 이벤트가 없는 전투(랜덤 인카운터/필드 스폰)는 종전대로 OFF 취급하되 추적 로그를 남긴다.
+        const ownerEventId = options.ownerEventId;
+        if (!ownerEventId) {
+          logSelfSwitchWithoutOwnerOnce();
+          return condition.value === false;
+        }
+        const own = (options.state.selfSwitches ?? {})[ownerEventId];
+        return (own?.[condition.key] ?? false) === condition.value;
+      }
       case "actor":
         return (options.state.partyActorIds ?? []).includes(condition.actorId) === condition.present;
       case "item":
@@ -461,8 +776,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return clampFriendship(options.state.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
       }
       case "battleResult":
-        // 배틀 이벤트 컨텍스트에는 직전 전투 결과가 없으므로 항상 false(포크 명령은 별도 경로로 처리됨).
-        return false;
+        // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷)로 실제 평가.
+        // 진행 중인 이 전투의 결과가 아니라 "직전" 전투의 결과다(RM2K3 정합).
+        return options.state.battleResult === condition.result;
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":
@@ -504,6 +820,21 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function resolveEnemy(enemyId: string): MutableBattler | undefined {
     return options.enemies.find((entry) => entry.id === enemyId || entry.recordId === enemyId);
+  }
+
+  // showAnimation 타깃을 배틀러 id 로 해석: "player" → 현재 행동 액터(없으면 선두),
+  // eventId → 해당 id/recordId 의 배틀러(적 우선), 좌표 타깃 → 화면("screen").
+  function resolveShowAnimationTargetId(target: ShowAnimationTarget, context: BattleEventContext): string {
+    if (target === "player") {
+      const active = options.actors.find((actor) => actor.recordId === context.activeActorId) ?? options.actors[0];
+      return active?.id ?? "screen";
+    }
+    if ("eventId" in target) {
+      const battler = resolveEnemy(target.eventId)
+        ?? options.actors.find((entry) => entry.id === target.eventId || entry.recordId === target.eventId);
+      return battler?.id ?? target.eventId;
+    }
+    return "screen";
   }
 
   function resolveActorTargets(actorId: string | undefined): readonly MutableBattler[] {
@@ -576,4 +907,11 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   }
 
   return { applyTroopEvents, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
+}
+
+// playSceneInterpreter 의 default: assertNever(step) 전례를 따르는 로컬 전수 검증 헬퍼.
+// (src/battle 은 자립 모듈이므로 @/player/playSceneTypes 를 역참조하지 않는다.)
+function assertNever(value: never): never {
+  void value;
+  throw new Error("Unhandled battle event command kind");
 }

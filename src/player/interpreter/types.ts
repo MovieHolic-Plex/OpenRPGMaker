@@ -70,6 +70,9 @@ export type StepResult =
       troopSource?: "fixed" | "variable";
       troopVariableId?: string;
       branchOnResult?: boolean;
+      // 이 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 의 소유 이벤트).
+      // 랜덤 인카운터/필드 스폰 전투는 undefined.
+      ownerEventId?: string;
     }
   | {
       kind: "showPicture";

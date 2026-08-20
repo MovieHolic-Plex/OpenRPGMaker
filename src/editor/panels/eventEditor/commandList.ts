@@ -30,7 +30,7 @@ import {
 import { applyTransparentColorKeyBackground } from "@/assets/transparentColorKeyBackground";
 import { sameInspectorPath, selectedCommandPath, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
-import { commandRuntimeSupport, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
+import { commandRuntimeSupport, type CommandRuntimeSupport, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandListActions } from "./types";
@@ -40,6 +40,8 @@ import type { EventDraftIssue } from "@/editor/eventDraftValidator";
 type CommandListRenderOptions = {
   readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
   readonly issues?: readonly EventDraftIssue[];
+  /** 컨텍스트 메뉴 "삽입..." 피커에 넘길 편집 컨텍스트(맵/공통/배틀). 없으면 보수 배지. */
+  readonly pickerContext?: M2RuntimeContext;
 };
 
 // 이벤트 명령 리스트 렌더링. RM2K3 처럼 트리 들여쓰기 + 드래그 재정렬 + 위/아래/삭제 버튼.
@@ -174,7 +176,7 @@ function renderCommandItem(
   head.addEventListener("contextmenu", (event) => {
     event.preventDefault();
     selectCommandLine(item);
-    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor });
+    openCommandContextMenu({ x: event.clientX, y: event.clientY, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
   });
   head.addEventListener("dblclick", (event) => {
     // 버튼(↑↓x)·드래그 핸들 더블클릭은 편집 모달을 열지 않는다(각자 동작을 유지한다).
@@ -188,7 +190,7 @@ function renderCommandItem(
     // fakeDom 에는 KeyboardEvent 생성자가 없을 수 있다 — duck-type 으로 키 이벤트를 받는다.
     if (!isKeyboardLike(event)) return;
     selectCommandLine(item);
-    handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor });
+    handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext });
   });
   item.append(head);
   ensureTerminalRowHint(item, cmd);

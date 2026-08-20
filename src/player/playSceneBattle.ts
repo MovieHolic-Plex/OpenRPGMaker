@@ -71,10 +71,15 @@ export function playBattle(
       monsterParty: monsterPartyMode ? monsterParty : undefined,
       battleCommands: scene.session.actorBattleCommands,
     },
+    // battleProcessing 스텝을 만든 맵 이벤트. 트룹 배틀 이벤트의 selfSwitch 소유 이벤트가 된다.
+    // 랜덤 인카운터/필드 스폰(playSceneMovement/playSceneFieldSpawns) 스텝에는 없어 undefined 유지.
+    ownerEventId: step.ownerEventId,
     sessionState: {
       switches: scene.session.switches,
       variables: scene.session.variables,
       inventory: scene.session.inventory,
+      selfSwitches: scene.session.selfSwitches,
+      battleResult: scene.session.battleResult,
       itemUseCharges: scene.session.itemUseCharges,
       gold: scene.session.gold,
       partyActorIds: scene.session.partyActorIds,
@@ -82,6 +87,9 @@ export function playBattle(
       actorExperience: scene.session.actorExperience,
       actorLevels: scene.session.actorLevels,
       actorBattleCommands: scene.session.actorBattleCommands,
+      // Step 3d: 전투 이벤트 changeEquipment/promoteActor 의 기준 상태(오버레이 시드).
+      actorEquipment: scene.session.actorEquipment,
+      classOverrides: scene.session.classOverrides,
       gameTime: scene.session.gameTime,
     },
     partyMonsters,

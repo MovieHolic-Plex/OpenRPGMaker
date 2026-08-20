@@ -2,10 +2,13 @@ import { newCommand, newM2Command } from "@/editor/eventActions";
 import {
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
+  m2CommandById,
+  m2CatalogEntryRuntimeSupport,
   type CommandRuntimeSupport,
   type M2CommandCatalogEntry,
   type M2CommandPickerGroup,
   type M2CommandPickerPage,
+  type M2RuntimeContext,
 } from "@/project/eventCommands/m2Catalog";
 import { M2_COMMAND_PICKER_GROUP_ORDER } from "@/project/eventCommands/m2PickerLayout";
 import type { Command } from "@/project/types";
@@ -199,6 +202,12 @@ function commandEntryFromCatalog(entry: M2CommandCatalogEntry): CommandEntry {
 
 type EventCommandPickerRequest = {
   readonly title: string;
+  /**
+   * 지금 편집 중인 이벤트의 실행 컨텍스트(map=맵 이벤트, common=공통 이벤트, troop=배틀 이벤트).
+   * m2 카탈로그 행의 런타임 지원 배지는 컨텍스트에 따라 달라진다. 생략하면 세 컨텍스트 중
+   * 최저 지원으로 보수 표시한다.
+   */
+  readonly context?: M2RuntimeContext;
   readonly onSelect: (command: Command, closePicker: () => void) => EventCommandPickerSelectResult;
 };
 
@@ -237,12 +246,12 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         gridToggle.textContent = viewMode === "grid" ? "▤ 리스트" : "▦ 그리드";
         gridToggle.setAttribute("aria-pressed", viewMode === "grid" ? "true" : "false");
         if (query.trim().length > 0) {
-          commandArea.append(renderSearchResults(query, request.onSelect, close, viewMode, render));
+          commandArea.append(renderSearchResults(query, request.onSelect, close, viewMode, render, request.context));
           restoreCommandPickerFocus(commandArea, focusSnapshot);
           return;
         }
         const page = COMMAND_PAGES.find((candidate) => candidate.page === activePage) ?? COMMAND_PAGES[0];
-        commandArea.append(renderPickerPage(page.entries, request.onSelect, close, viewMode, render));
+        commandArea.append(renderPickerPage(page.entries, request.onSelect, close, viewMode, render, request.context));
         restoreCommandPickerFocus(commandArea, focusSnapshot);
       };
       search.addEventListener("input", () => {
@@ -355,6 +364,7 @@ function renderPickerPage(
   close: () => void,
   viewMode: PickerViewMode,
   onPreferencesChanged: () => void,
+  context: M2RuntimeContext | undefined,
 ): HTMLElement {
   const preferences = readEventCommandPickerPreferences();
   const byId = new Map(ALL_COMMAND_ENTRIES.map((entry) => [entry.commandId, entry]));
@@ -364,12 +374,12 @@ function renderPickerPage(
     .flatMap((id) => byId.get(id) ?? []);
   const wrap = el("div", { class: "event-command-picker-page" });
   if (favorites.length > 0) {
-    wrap.append(renderQuickCommandSection("즐겨찾기", "event-command-picker-favorites", favorites, onSelect, close, viewMode, onPreferencesChanged));
+    wrap.append(renderQuickCommandSection("즐겨찾기", "event-command-picker-favorites", favorites, onSelect, close, viewMode, onPreferencesChanged, context));
   }
   if (recents.length > 0) {
-    wrap.append(renderQuickCommandSection("최근 명령", "event-command-picker-recents", recents, onSelect, close, viewMode, onPreferencesChanged));
+    wrap.append(renderQuickCommandSection("최근 명령", "event-command-picker-recents", recents, onSelect, close, viewMode, onPreferencesChanged, context));
   }
-  wrap.append(renderCommandGrid(entries, onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged }));
+  wrap.append(renderCommandGrid(entries, onSelect, close, { showPageChip: false, viewMode, onPreferencesChanged, context }));
   return wrap;
 }
 
@@ -381,6 +391,7 @@ function renderQuickCommandSection(
   close: () => void,
   viewMode: PickerViewMode,
   onPreferencesChanged: () => void,
+  context: M2RuntimeContext | undefined,
 ): HTMLElement {
   return el("section", {
     class: "event-command-picker-quick-section",
@@ -393,6 +404,7 @@ function renderQuickCommandSection(
         onPreferencesChanged,
         showGroupHeadings: false,
         preserveOrder: true,
+        context,
       }),
     ],
   });
@@ -405,6 +417,7 @@ function renderSearchResults(
   close: () => void,
   viewMode: PickerViewMode,
   onPreferencesChanged: () => void,
+  context: M2RuntimeContext | undefined,
 ): HTMLElement {
   const needle = query.trim().toLowerCase();
   const matches = COMMAND_PAGES.flatMap((page) => page.entries).filter(
@@ -424,7 +437,7 @@ function renderSearchResults(
     dataset: { testid: "event-command-picker-search-count" },
     text: `검색 결과 ${matches.length}개`,
   });
-  const grid = renderCommandGrid(matches, onSelect, close, { showPageChip: true, viewMode, onPreferencesChanged });
+  const grid = renderCommandGrid(matches, onSelect, close, { showPageChip: true, viewMode, onPreferencesChanged, context });
   return el("div", {
     class: "event-command-picker-search-results",
     dataset: { testid: "event-command-picker-search-results" },
@@ -442,6 +455,7 @@ function renderCommandGrid(
     readonly onPreferencesChanged: () => void;
     readonly showGroupHeadings?: boolean;
     readonly preserveOrder?: boolean;
+    readonly context?: M2RuntimeContext;
   }
 ): HTMLElement {
   const grid = el("div", {
@@ -467,13 +481,24 @@ function renderCommandGrid(
   return grid;
 }
 
+/**
+ * 배지에 쓸 컨텍스트 반영 런타임 지원. 네이티브 kind 항목은 카탈로그/디스크립터 판정을
+ * 그대로 쓰고(컨텍스트 무관), 순수 m2 항목만 편집 컨텍스트로 재판정한다.
+ */
+function entryRuntimeSupport(entry: CommandEntry, context: M2RuntimeContext | undefined): CommandRuntimeSupport {
+  if (entry.kind !== undefined) return entry.runtimeSupport;
+  const catalogEntry = m2CommandById(entry.commandId);
+  return catalogEntry ? m2CatalogEntryRuntimeSupport(catalogEntry, context) : entry.runtimeSupport;
+}
+
 function renderCommandButton(
   entry: CommandEntry,
   onSelect: EventCommandPickerRequest["onSelect"],
   close: () => void,
-  options: { readonly showPageChip: boolean; readonly onPreferencesChanged: () => void },
+  options: { readonly showPageChip: boolean; readonly onPreferencesChanged: () => void; readonly context?: M2RuntimeContext },
 ): HTMLElement {
   const visual = groupVisual(entry.group);
+  const runtimeSupport = entryRuntimeSupport(entry, options.context);
   // 카테고리 아이콘: aria-hidden 스팬의 ::before(attr(data-glyph)) — 버튼 textContent 와
   // 접근성 이름(getByRole name, exact:true 포함)을 오염시키지 않는다.
   const children: HTMLElement[] = [
@@ -487,7 +512,7 @@ function renderCommandButton(
   if (options.showPageChip) {
     children.push(el("span", { class: "event-command-picker-page-chip", text: `탭${entry.page}`, attrs: { "aria-hidden": "true" } }));
   }
-  const badge = renderRuntimeSupportBadge(entry.runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`);
+  const badge = renderRuntimeSupportBadge(runtimeSupport, `command-runtime-badge-picker-${entry.commandId}`);
   if (badge) children.push(badge);
   if (!entry.selectable) {
     const guidanceId = `command-picker-guidance-${entry.commandId}`;
@@ -510,7 +535,7 @@ function renderCommandButton(
     },
     dataset: {
       category: visual.key,
-      runtimeSupport: entry.runtimeSupport,
+      runtimeSupport,
       runtimeOwner: entry.runtimeOwner,
       // 검색창에서 ↑↓/Enter 로 훑을 대상 표식. 즐겨찾기 별 버튼과 구분된다.
       ...(entry.selectable ? { commandEntry: entry.commandId } : {}),

@@ -8,7 +8,7 @@ import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPatt
 import { resolveBattlerPose } from "@/battle/battlePose";
 import type { BattleActionResultSnapshot, BattleBattlerSnapshot } from "@/battle/types";
 import type { TroopRecord } from "@/project/types/database";
-import { logicalEquipmentIds } from "@/project/equipmentRules";
+import { effectiveActorEquipment, logicalEquipmentIds } from "@/project/equipmentRules";
 
 const CHARGE_PER_AGILITY = 0.1 / 43;
 const CHARGE_FLOOR = 0.02;
@@ -43,7 +43,8 @@ export interface ActorBattlerOverrides {
 export interface MutableBattler {
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
-  readonly classId?: string;
+  // 전투 중 전직(promoteActor)이 클래스를 갱신할 수 있어 mutable.
+  classId?: string;
   readonly level?: number;
   readonly faceResourceId?: string;
   readonly faceIndex?: number;
@@ -53,13 +54,15 @@ export interface MutableBattler {
   readonly monsterInstanceId?: string;
   readonly speciesId?: string;
   readonly name: string;
-  readonly maxHp: number;
-  readonly maxMp: number;
-  readonly attackPower: number;
-  readonly defense: number;
-  readonly mind: number;
-  readonly agility: number;
-  readonly chargeRate: number;
+  // 파생 스탯: 전투 중 changeEquipment/promoteActor 가 refreshActorBattlerDerivedStats 로
+  // 재계산할 수 있어 mutable. 생성 산식과 같은 actorDerivedStats 를 공유한다.
+  maxHp: number;
+  maxMp: number;
+  attackPower: number;
+  defense: number;
+  mind: number;
+  agility: number;
+  chargeRate: number;
   skillIds: SkillId[];
   readonly enemyActions?: readonly EnemyActionPattern[];
   readonly battleX?: number;
@@ -85,56 +88,151 @@ export function actorBattlers(
     const actor = project.database.actors.find((record) => record.id === actorId);
     if (!actor) throw new Error(`Missing actor: ${actorId}`);
     const normalizedActor = normalizeActorRecord(actor);
-    const effectiveClassId = effectiveActorClassId(project, { classOverrides: overrides?.classOverrides ? { ...overrides.classOverrides } : undefined }, actorId);
-    const effectiveClass = project.database.classes.find((record) => record.id === effectiveClassId);
-    const usesOverrideCurves = hasActorClassOverride({ classOverrides: overrides?.classOverrides ? { ...overrides.classOverrides } : undefined }, actorId) && effectiveClass !== undefined;
-    const curves = usesOverrideCurves && effectiveClass ? effectiveClass.parameterCurves : normalizedActor.parameterCurves;
     // 세션 레벨(레벨업 반영값)이 있으면 그 레벨로 파라미터 곡선을 조회. 없으면 DB initialLevel.
     const level = clampLevel(overrides?.levels?.[actorId] ?? normalizedActor.initialLevel);
-    const bonuses = overrides?.paramBonuses?.[actorId];
     const actorEquipment = overrides?.equipment?.[actorId] ?? normalizedActor.initialEquipment;
-    const equipmentBonuses = totalEquipmentBonuses(project, actorEquipment);
-    const maxHp = parameterWithBonus(curves.maxHp, level, bonuses?.maxHp, 1);
-    const maxMp = parameterWithBonus(curves.maxMp, level, bonuses?.maxMp, 0);
-    const attack = parameterWithBonus(curves.attack, level, (bonuses?.attack ?? 0) + equipmentBonuses.attack, 1);
-    const defense = parameterWithBonus(curves.defense, level, (bonuses?.defense ?? 0) + equipmentBonuses.defense, 1);
-    const mind = parameterWithBonus(curves.mind, level, (bonuses?.mind ?? 0) + equipmentBonuses.mind, 1);
-    const agility = parameterWithBonus(curves.agility, level, (bonuses?.agility ?? 0) + equipmentBonuses.agility, 1);
+    const derived = actorDerivedStats(project, normalizedActor, {
+      level,
+      classOverrides: overrides?.classOverrides,
+      paramBonuses: overrides?.paramBonuses?.[actorId],
+      equipment: actorEquipment,
+    });
     // 세션 현재 바이탈이 있으면 그 값을 이어받되(필드에서 이어지는 부상 상태 유지),
     // 이 전투 레벨 기준 최대치로 클램프. 없으면 완충 상태로 시작.
     const sessionVitals = overrides?.vitals?.[actorId];
-    const hp = sessionVitals ? clampVital(sessionVitals.hp, maxHp) : maxHp;
-    const mp = sessionVitals ? clampVital(sessionVitals.mp, maxMp) : maxMp;
+    const hp = sessionVitals ? clampVital(sessionVitals.hp, derived.maxHp) : derived.maxHp;
+    const mp = sessionVitals ? clampVital(sessionVitals.mp, derived.maxMp) : derived.maxMp;
     return {
       id: actor.id,
       recordId: actor.id,
-      classId: effectiveClassId,
+      classId: derived.effectiveClassId,
       level,
       faceResourceId: overrides?.faceResourceIds?.[actorId] ?? normalizedActor.faceResourceId,
       faceIndex: overrides?.faceIndices?.[actorId] ?? normalizedActor.faceIndex ?? 0,
       battleCharacterResourceId: normalizedActor.battleCharacterResourceId,
       name: overrides?.names?.[actorId] ?? normalizedActor.name,
-      maxHp,
+      maxHp: derived.maxHp,
       hp,
-      maxMp,
+      maxMp: derived.maxMp,
       mp,
-      attackPower: attack,
-      defense,
-      mind,
-      agility,
-      chargeRate: chargeRateFor(agility),
+      attackPower: derived.attack,
+      defense: derived.defense,
+      mind: derived.mind,
+      agility: derived.agility,
+      chargeRate: derived.chargeRate,
       // RM2k3 side-view: party stacks on the RIGHT, facing left into the field.
       battleX: 252,
       battleY: 96 + index * 36,
       gauge: 0,
       stateIds: [...(overrides?.stateIds?.[actorId] ?? [])],
-      equipmentEffects: equipmentRuntimeEffects(project, actorEquipment),
+      equipmentEffects: derived.equipmentEffects,
       stateTurns: {},
       defending: false,
-      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], effectiveClassId, usesOverrideCurves),
+      skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves),
       hidden: false,
     };
   });
+}
+
+// 액터 배틀러의 파생 스탯 단일 산식(장비/클래스/영구 보정 기여 포함).
+// actorBattlers 생성과 전투 중 재계산(refreshActorBattlerDerivedStats)이 이 함수를 공유해
+// 이중 구현을 막는다 — 산식 변경은 반드시 여기서만 한다.
+export interface ActorDerivedStats {
+  readonly effectiveClassId?: string;
+  readonly usesOverrideCurves: boolean;
+  readonly maxHp: number;
+  readonly maxMp: number;
+  readonly attack: number;
+  readonly defense: number;
+  readonly mind: number;
+  readonly agility: number;
+  readonly chargeRate: number;
+  readonly equipmentEffects: EquipmentRuntimeEffects;
+}
+
+export function actorDerivedStats(
+  project: Project,
+  normalizedActor: ReturnType<typeof normalizeActorRecord>,
+  input: {
+    readonly level: number;
+    readonly classOverrides?: Readonly<Record<string, string>>;
+    readonly paramBonuses?: Readonly<Partial<Record<ActorParameterKey, number>>>;
+    // 유효 장비 프로젝션(effectiveActorEquipment 통과 값 또는 initialEquipment).
+    readonly equipment: ActorInitialEquipment;
+  }
+): ActorDerivedStats {
+  const session = { classOverrides: input.classOverrides ? { ...input.classOverrides } : undefined };
+  const effectiveClassId = effectiveActorClassId(project, session, normalizedActor.id);
+  const effectiveClass = project.database.classes.find((record) => record.id === effectiveClassId);
+  const usesOverrideCurves = hasActorClassOverride(session, normalizedActor.id) && effectiveClass !== undefined;
+  const curves = usesOverrideCurves && effectiveClass ? effectiveClass.parameterCurves : normalizedActor.parameterCurves;
+  const bonuses = input.paramBonuses;
+  const equipmentBonuses = totalEquipmentBonuses(project, input.equipment);
+  const agility = parameterWithBonus(curves.agility, input.level, (bonuses?.agility ?? 0) + equipmentBonuses.agility, 1);
+  return {
+    effectiveClassId,
+    usesOverrideCurves,
+    maxHp: parameterWithBonus(curves.maxHp, input.level, bonuses?.maxHp, 1),
+    maxMp: parameterWithBonus(curves.maxMp, input.level, bonuses?.maxMp, 0),
+    attack: parameterWithBonus(curves.attack, input.level, (bonuses?.attack ?? 0) + equipmentBonuses.attack, 1),
+    defense: parameterWithBonus(curves.defense, input.level, (bonuses?.defense ?? 0) + equipmentBonuses.defense, 1),
+    mind: parameterWithBonus(curves.mind, input.level, (bonuses?.mind ?? 0) + equipmentBonuses.mind, 1),
+    agility,
+    chargeRate: chargeRateFor(agility),
+    equipmentEffects: equipmentRuntimeEffects(project, input.equipment),
+  };
+}
+
+// 전투 중 장비 변경(changeEquipment)/전직(promoteActor) 후 해당 액터 배틀러의
+// 파생 스탯 필드만 갱신한다 — 재생성이 아니라서 현재 HP/MP·게이지·상태이상·상태턴을 보존하고,
+// 새 최대치로만 클램프한다. 산식은 생성 로직(actorDerivedStats)과 100% 공유.
+export function refreshActorBattlerDerivedStats(
+  project: Project,
+  battler: MutableBattler,
+  input: {
+    readonly classOverrides?: Readonly<Record<string, string>>;
+    readonly paramBonuses?: Readonly<Partial<Record<ActorParameterKey, number>>>;
+    // 세션형(raw) 장비 스냅샷. 유효 프로젝션은 이 함수가 생성 경로와 동일하게 계산한다.
+    readonly equipment?: ActorInitialEquipment;
+    // 전직처럼 클래스 스킬 셋이 바뀔 때만 지정: 생성 로직(learnedSkillIds)으로 skillIds 재계산.
+    readonly skills?: { readonly sessionSkillIds?: readonly SkillId[] };
+  }
+): void {
+  const actor = project.database.actors.find((record) => record.id === battler.recordId);
+  if (!actor) return;
+  const normalizedActor = normalizeActorRecord(actor);
+  const level = clampLevel(battler.level ?? normalizedActor.initialLevel);
+  const classOverrideSession = { classOverrides: input.classOverrides ? { ...input.classOverrides } : undefined };
+  const effectiveClassId = effectiveActorClassId(project, classOverrideSession, actor.id);
+  // 생성 경로(runtime.ts)와 동일: raw 세션 장비를 유효 프로젝션으로 통과시킨 뒤 산식에 넣는다.
+  const effectiveEquipment = effectiveActorEquipment(project, actor, input.equipment, effectiveClassId ?? actor.classId);
+  const derived = actorDerivedStats(project, normalizedActor, {
+    level,
+    classOverrides: input.classOverrides,
+    paramBonuses: input.paramBonuses,
+    equipment: effectiveEquipment,
+  });
+  battler.classId = derived.effectiveClassId;
+  battler.maxHp = derived.maxHp;
+  battler.maxMp = derived.maxMp;
+  battler.hp = clampVital(battler.hp, derived.maxHp);
+  battler.mp = clampVital(battler.mp, derived.maxMp);
+  battler.attackPower = derived.attack;
+  battler.defense = derived.defense;
+  battler.mind = derived.mind;
+  battler.agility = derived.agility;
+  battler.chargeRate = derived.chargeRate;
+  battler.equipmentEffects = derived.equipmentEffects;
+  if (input.skills) {
+    battler.skillIds = learnedSkillIds(
+      project,
+      normalizedActor,
+      level,
+      input.skills.sessionSkillIds,
+      derived.effectiveClassId,
+      derived.usesOverrideCurves
+    );
+  }
 }
 
 export function learnedSkillIds(

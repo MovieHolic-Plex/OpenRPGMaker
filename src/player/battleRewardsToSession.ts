@@ -3,6 +3,7 @@ import type { BattleBattlerSnapshot, BattleEventStateSnapshot, BattleRewardsSnap
 import { computeActorLevelUp, type BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { changeGold, type PlaySession } from "@/project/session";
+import { changeActorClass } from "@/project/sessionClass";
 import { applyMonsterExperienceAndEvolution } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { transitionItemStates } from "@/project/itemTransitions";
@@ -33,6 +34,9 @@ export function applyBattleRewardsToSession(
   // RM2K3 관례: 승리/도주와 패배 분기 복귀 모두 전투 중 변경된 상태를 유지한다.
   // canLose=false 패배는 게임 오버 경로이므로 라이브 세션에 되돌려 쓰지 않는다.
   if (outcome.result === "victory" || outcome.result === "escape" || (outcome.result === "defeat" && outcome.canLose === true)) {
+    // 전직(promoteActor) write-back 은 바이탈 write-back 보다 먼저 — changeActorClass 가
+    // 세션 바이탈 최대치를 새 클래스 곡선으로 갱신해야 아래 전투 HP/MP 클램프가 새 최대치를 쓴다.
+    applyBattleClassOverridesToSession(session, project, outcome.eventState);
     applyBattleVitalsToSession(session, outcome.actors ?? []);
     // 파티 몬스터가 싸운 경우, 전투 종료 HP를 인스턴스에 되돌려쓴다(경험치 가산보다 먼저).
     applyBattleMonsterVitalsToSession(session, outcome.actors ?? []);
@@ -95,12 +99,51 @@ function applyBattleStatesToSession(session: PlaySession, actors: readonly Battl
   }
 }
 
+// 전투 중 promoteActor 가 갱신한 직업 오버라이드를 세션에 반영한다(Step 3d 2026-08-20).
+// 시드값과 같은 항목은 건너뛰고, 바뀐 액터만 맵 경로와 동일한 changeActorClass 로 적용해
+// 세션 classOverrides/클래스 스킬 학습/바이탈 클램프를 한 번에 맞춘다.
+function applyBattleClassOverridesToSession(
+  session: PlaySession,
+  project: Project,
+  eventState: BattleEventStateSnapshot | undefined
+): void {
+  if (!eventState?.classOverrides) return;
+  for (const [actorId, classId] of Object.entries(eventState.classOverrides)) {
+    if (session.classOverrides?.[actorId] === classId) continue;
+    changeActorClass(session, project, actorId, classId);
+  }
+}
+
 // 전투 이벤트 상태(아이템 소모, 전투 이벤트가 바꾼 스위치/변수/골드/파티/스킬)를 세션에 되돌려 쓴다.
 // 전투 개시 때 세션에서 시드된 사본이므로 그대로 덮어써도 안전하다.
 function applyBattleEventStateToSession(session: PlaySession, eventState: BattleEventStateSnapshot | undefined): void {
   if (!eventState) return;
   for (const [key, value] of Object.entries(eventState.switches)) session.switches[key] = value;
   for (const [key, value] of Object.entries(eventState.variables)) session.variables[key] = value;
+  // 셀프 스위치: 스위치/변수와 동일한 RM2K3 관례 — 승리/도주/losable 패배 복귀 모두
+  // 전투 이벤트가 바꾼 상태를 유지한다(canLose=false 패배는 게임 오버라 호출 자체가 없음).
+  // 전투 개시 때 세션에서 시드된 사본이므로 이벤트 단위로 키를 병합해 되돌려 쓴다.
+  if (eventState.selfSwitches) {
+    session.selfSwitches ??= {};
+    for (const [eventId, keys] of Object.entries(eventState.selfSwitches)) {
+      session.selfSwitches[eventId] = { ...session.selfSwitches[eventId], ...keys };
+    }
+  }
+  // 레거시 호환 flags / 타이머 잔여 초: 셀프 스위치와 같은 병합 write-back 패턴(Step 3 2026-08-20).
+  if (eventState.flags) {
+    for (const [key, value] of Object.entries(eventState.flags)) session.flags[key] = value;
+  }
+  if (eventState.timers) {
+    for (const [timerId, seconds] of Object.entries(eventState.timers)) session.timers[timerId] = seconds;
+  }
+  // 전투 중 changeEquipment 오버레이 write-back(Step 3d): 시드가 세션 사본이라 액터 단위
+  // 병합이 idempotent 하다. 장비 전이의 인벤토리 증감은 아래 inventory 덮어쓰기에 포함된다.
+  if (eventState.actorEquipment) {
+    session.actorEquipment ??= {};
+    for (const [actorId, equipment] of Object.entries(eventState.actorEquipment)) {
+      session.actorEquipment[actorId] = { ...equipment };
+    }
+  }
   session.inventory = { ...eventState.inventory };
   session.itemUseCharges = { ...(eventState.itemUseCharges ?? {}) };
   if (typeof eventState.gold === "number") session.gold = Math.max(0, Math.trunc(eventState.gold));

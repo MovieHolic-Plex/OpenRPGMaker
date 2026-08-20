@@ -94,8 +94,10 @@ function expectRectContained(inner: DOMRect, outer: DOMRect): void {
   expect(inner.top + inner.height / 2).toBeLessThanOrEqual(outer.bottom);
 }
 
-async function loadTouchPad(touchControlsEnv: string) {
-  vi.stubEnv("VITE_TOUCH_CONTROLS", touchControlsEnv);
+async function loadTouchPad(env: Record<string, string> = {}) {
+  // 명시하지 않은 키는 빈 문자열로 고정해 외부 환경의 값이 새어들지 않게 한다.
+  vi.stubEnv("VITE_TOUCH_CONTROLS", env.VITE_TOUCH_CONTROLS ?? "");
+  vi.stubEnv("OPENRPG_PLAYER_TOUCH_CONTROLS", env.OPENRPG_PLAYER_TOUCH_CONTROLS ?? "");
   vi.resetModules();
   return import("@/player/touchPad");
 }
@@ -115,34 +117,13 @@ afterEach(() => {
   } else {
     delete (navigator as { maxTouchPoints?: number }).maxTouchPoints;
   }
-  delete (document as Document & { visibilityState?: DocumentVisibilityState }).visibilityState;
+  delete (document as unknown as { visibilityState?: DocumentVisibilityState }).visibilityState;
   document.body.replaceChildren();
 });
 
 describe("touch pad capability and input parity", () => {
-  it("does not mount for a coarse pointer without explicit opt-in", async () => {
-    const { createTouchPad } = await loadTouchPad("");
-    const host = document.createElement("div");
-
-    const handle = createTouchPad(host);
-
-    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
-    handle.cleanup();
-  });
-
-  it("does not mount when maxTouchPoints reports touch capability without explicit opt-in", async () => {
-    setTouchCapabilities(false, 2);
-    const { createTouchPad } = await loadTouchPad("");
-    const host = document.createElement("div");
-
-    const handle = createTouchPad(host);
-
-    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
-    handle.cleanup();
-  });
-
-  it("mounts for a coarse pointer when explicitly opted in via env", async () => {
-    const { createTouchPad } = await loadTouchPad("1");
+  it("mounts automatically on a coarse-pointer device without env config", async () => {
+    const { createTouchPad } = await loadTouchPad();
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
@@ -151,9 +132,20 @@ describe("touch pad capability and input parity", () => {
     handle.cleanup();
   });
 
-  it("does not mount on a fine-pointer desktop", async () => {
+  it("mounts automatically when only maxTouchPoints reports touch capability", async () => {
+    setTouchCapabilities(false, 2);
+    const { createTouchPad } = await loadTouchPad();
+    const host = document.createElement("div");
+
+    const handle = createTouchPad(host);
+
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    handle.cleanup();
+  });
+
+  it("does not mount on a fine-pointer desktop without env config", async () => {
     setTouchCapabilities(false, 0);
-    const { createTouchPad } = await loadTouchPad("");
+    const { createTouchPad } = await loadTouchPad();
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
@@ -162,8 +154,67 @@ describe("touch pad capability and input parity", () => {
     handle.cleanup();
   });
 
-  it("honors the explicit false opt-out on touch-capable devices", async () => {
-    const { createTouchPad } = await loadTouchPad("false");
+  it("detects touch via maxTouchPoints when matchMedia is unavailable", async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(window, "matchMedia");
+    Object.defineProperty(window, "matchMedia", { configurable: true, value: undefined });
+    Object.defineProperty(navigator, "maxTouchPoints", { configurable: true, value: 2 });
+    try {
+      const { createTouchPad } = await loadTouchPad();
+      const host = document.createElement("div");
+
+      const handle = createTouchPad(host);
+
+      expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+      handle.cleanup();
+    } finally {
+      if (descriptor) {
+        Object.defineProperty(window, "matchMedia", descriptor);
+      } else {
+        Object.defineProperty(window, "matchMedia", { configurable: true, value: originalMatchMedia });
+      }
+    }
+  });
+
+  it.each(["1", "true", "on"])(
+    "force-enables via VITE_TOUCH_CONTROLS=%s even on a fine-pointer desktop",
+    async (value) => {
+      setTouchCapabilities(false, 0);
+      const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: value });
+      const host = document.createElement("div");
+
+      const handle = createTouchPad(host);
+
+      expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+      handle.cleanup();
+    },
+  );
+
+  it.each(["0", "false", "off"])(
+    "force-disables via VITE_TOUCH_CONTROLS=%s on touch-capable devices",
+    async (value) => {
+      const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: value });
+      const host = document.createElement("div");
+
+      const handle = createTouchPad(host);
+
+      expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
+      handle.cleanup();
+    },
+  );
+
+  it("recognizes the OPENRPG_PLAYER_ prefix for force-enable", async () => {
+    setTouchCapabilities(false, 0);
+    const { createTouchPad } = await loadTouchPad({ OPENRPG_PLAYER_TOUCH_CONTROLS: "on" });
+    const host = document.createElement("div");
+
+    const handle = createTouchPad(host);
+
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    handle.cleanup();
+  });
+
+  it("recognizes the OPENRPG_PLAYER_ prefix for force-disable", async () => {
+    const { createTouchPad } = await loadTouchPad({ OPENRPG_PLAYER_TOUCH_CONTROLS: "0" });
     const host = document.createElement("div");
 
     const handle = createTouchPad(host);
@@ -173,7 +224,7 @@ describe("touch pad capability and input parity", () => {
   });
 
   it("keeps an extreme scaled D-pad drag contained while preserving blocker-delivered direction edges", async () => {
-    const { createTouchPad } = await loadTouchPad("1");
+    const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: "1" });
     const root = document.createElement("div");
     const stage = document.createElement("div");
     root.append(stage);
@@ -230,7 +281,7 @@ describe("touch pad capability and input parity", () => {
   });
 
   it.each(["pointerup", "pointercancel"])("releases a held D-pad key on %s", async (releaseType) => {
-    const { createTouchPad } = await loadTouchPad("1");
+    const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: "1" });
     const host = document.createElement("div");
     const handle = createTouchPad(host);
     const base = host.querySelector<HTMLElement>(".touch-dpad-base");
@@ -249,7 +300,7 @@ describe("touch pad capability and input parity", () => {
   });
 
   it.each(["blur", "visibilitychange", "cleanup"])("releases A on %s", async (releaseType) => {
-    const { createTouchPad } = await loadTouchPad("1");
+    const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: "1" });
     const host = document.createElement("div");
     const handle = createTouchPad(host);
     const actionA = host.querySelector<HTMLElement>("[data-testid='touch-action-a']");
@@ -274,7 +325,7 @@ describe("touch pad capability and input parity", () => {
   });
 
   it("emits one action-key edge for repeated pointerdown and removes listeners on cleanup", async () => {
-    const { createTouchPad } = await loadTouchPad("1");
+    const { createTouchPad } = await loadTouchPad({ VITE_TOUCH_CONTROLS: "1" });
     const host = document.createElement("div");
     const handle = createTouchPad(host);
     const actionB = host.querySelector<HTMLElement>("[data-testid='touch-action-b']");

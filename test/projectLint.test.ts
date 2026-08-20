@@ -177,6 +177,64 @@ describe("projectLint", () => {
     expect(issues.some((issue) => issue.code === "command-shape" && issue.message.includes("ev_malformed/p_bad.commands"))).toBe(true);
   });
 
+  describe("playerTouch-impassable", () => {
+    // 밟기형 접촉 이벤트 픽스처: 지정한 priority의 playerTouch 페이지 하나짜리 이벤트를 만든다.
+    function pushTouchEvent(project: Project, x: number, y: number, priority: "below" | "same"): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.events.push({
+        id: "ev_touch_fixture",
+        x,
+        y,
+        trigger: { kind: "playerTouch" },
+        commands: [],
+        pages: [
+          {
+            id: "p_touch",
+            name: "접촉",
+            conditions: [],
+            graphic: { transparent: true },
+            trigger: { kind: "playerTouch" },
+            priority,
+            overlapForbidden: priority === "same",
+            movement: { type: "fixed", speed: 3, frequency: 3 },
+            commands: [{ kind: "text", body: "touch" }],
+          },
+        ],
+      });
+    }
+
+    function makeImpassable(project: Project, x: number, y: number): void {
+      const map = project.maps[project.startMapId];
+      if (!map) throw new Error("start map missing");
+      map.lowerTiles[y * map.width + x] = TILE_FLOOR_IMPASSABLE;
+      map.upperTiles[y * map.width + x] = -1;
+    }
+
+    it("통행 불가 타일 위의 밟기형(priority below) playerTouch 이벤트를 warning으로 보고한다", () => {
+      const project = cloneProject(createBlankProject());
+      makeImpassable(project, 5, 5);
+      pushTouchEvent(project, 5, 5, "below");
+      const issues = projectLint(project).filter((issue) => issue.code === "playerTouch-impassable");
+      expect(issues).toHaveLength(1);
+      expect(issues[0]).toMatchObject({ severity: "warning", x: 5, y: 5 });
+      expect(issues[0]?.message).toContain("ev_touch_fixture");
+    });
+
+    it("통행 가능한 타일 위의 playerTouch 이벤트는 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      pushTouchEvent(project, 5, 5, "below");
+      expect(projectLint(project).filter((issue) => issue.code === "playerTouch-impassable")).toHaveLength(0);
+    });
+
+    it("통행 불가 타일이라도 priority same(차단형·부딪힘 발동)은 진단하지 않는다", () => {
+      const project = cloneProject(createBlankProject());
+      makeImpassable(project, 5, 5);
+      pushTouchEvent(project, 5, 5, "same");
+      expect(projectLint(project).filter((issue) => issue.code === "playerTouch-impassable")).toHaveLength(0);
+    });
+  });
+
   it("256x256 초과 맵을 warning으로 보고한다", () => {
     const project = cloneProject(createBlankProject());
     const huge = createBlankMap("임포트 초대형", 257, 12);

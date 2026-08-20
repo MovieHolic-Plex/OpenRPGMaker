@@ -4,6 +4,7 @@ import { openNewEventCommandDialog } from "./commandEditDialog";
 import { newM2Command } from "@/editor/eventCommandFactory";
 import { copyEventCommandToClipboard, hasEventCommandClipboard, readEventCommandClipboard } from "./commandClipboard";
 import { openEventCommandPicker } from "./commandPicker";
+import type { M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import type { CommandListActions } from "./types";
 
 type CommandShortcutRequest = {
@@ -15,6 +16,8 @@ type CommandShortcutRequest = {
   readonly actions: CommandListActions;
   // 편집 진입점(모달). commandList 가 lockKind:true 로 구성해 넘긴다.
   readonly openEditor: () => void;
+  // 삽입 피커 배지용 편집 컨텍스트(맵/공통/배틀). 없으면 보수 배지.
+  readonly pickerContext?: M2RuntimeContext;
 };
 
 type ContextMenuItem =
@@ -235,6 +238,7 @@ function openInsertPicker(request: CommandShortcutRequest, closeMenu: () => void
   closeMenu();
   openEventCommandPicker({
     title: "이벤트 명령 삽입",
+    context: request.pickerContext,
     onSelect: (command, closePicker) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         request.actions.insertCommand(request.path, editedCommand);

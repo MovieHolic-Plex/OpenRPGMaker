@@ -3,7 +3,7 @@ import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEdit
 import { openNewEventCommandDialog } from "@/editor/panels/eventEditor/commandEditDialog";
 import { renderCommandList } from "@/editor/panels/eventEditor/commandList";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
-import type { CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
+import type { CommandRuntimeSupport, M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import type { CommandListActions } from "./eventEditor/types";
@@ -13,6 +13,8 @@ export type DatabaseCommandArrayAdapter = {
   readonly replaceCommands: (commands: Command[]) => void;
   readonly rerender?: () => void;
   readonly runtimeSupport?: (command: Command) => CommandRuntimeSupport;
+  /** 명령 피커 배지용 편집 컨텍스트: 공통 이벤트 "common", 트룹 배틀 이벤트 "troop". */
+  readonly pickerContext?: M2RuntimeContext;
 };
 
 export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAdapter): CommandListActions {
@@ -88,9 +90,12 @@ export function createDatabaseCommandListActions(adapter: DatabaseCommandArrayAd
 
 export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: DatabaseCommandArrayAdapter): void {
   const actions = createDatabaseCommandListActions(adapter);
-  renderCommandList(host, adapter.commands, [], actions, { runtimeSupport: adapter.runtimeSupport });
+  renderCommandList(host, adapter.commands, [], actions, {
+    runtimeSupport: adapter.runtimeSupport,
+    pickerContext: adapter.pickerContext,
+  });
   if (host.firstElementChild?.classList.contains("empty-hint")) host.firstElementChild.remove();
-  host.append(renderEmptyCommandLine(actions));
+  host.append(renderEmptyCommandLine(actions, adapter.pickerContext));
   host.addEventListener("dblclick", (event) => {
     if (event.target !== host) return;
     host.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -99,11 +104,12 @@ export function renderDatabaseCommandListEditor(host: HTMLElement, adapter: Data
   });
 }
 
-function renderEmptyCommandLine(actions: CommandListActions): HTMLElement {
+function renderEmptyCommandLine(actions: CommandListActions, pickerContext?: M2RuntimeContext): HTMLElement {
   const openPicker = () => {
     if (document.querySelector('[data-testid="event-command-picker"]')) return;
     openEventCommandPicker({
       title: "공통 이벤트 명령",
+      context: pickerContext,
       onSelect: (command, closePicker) => {
         openNewEventCommandDialog(command, (editedCommand) => {
           actions.addCommand([], editedCommand);

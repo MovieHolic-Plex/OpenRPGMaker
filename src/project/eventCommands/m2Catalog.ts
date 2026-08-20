@@ -14,10 +14,15 @@ import {
   type M2CommandPickerGroup,
   type M2CommandPickerPage,
 } from "./m2PickerLayout";
-import { catalogRowRuntimeSupport, type CommandRuntimeSupport } from "./runtimeSupport";
+import {
+  catalogRowRuntimeSupport,
+  m2CommandRuntimeClassification,
+  type CommandRuntimeSupport,
+  type M2RuntimeContext,
+} from "./runtimeSupport";
 
 export type { M2CommandPickerGroup, M2CommandPickerPage } from "./m2PickerLayout";
-export type { CommandRuntimeSupport } from "./runtimeSupport";
+export type { CommandRuntimeSupport, M2RuntimeContext } from "./runtimeSupport";
 
 export type M2CommandSupportStatus = CommandRuntimeSupport;
 export type M2RuntimeClassification = CommandRuntimeSupport;
@@ -135,7 +140,24 @@ export function isM2CatalogEntrySelectableInMap(entry: M2CommandCatalogEntry): b
 }
 
 export function isM2CatalogEntrySelectableInBattleEvent(entry: M2CommandCatalogEntry): boolean {
-  return (entry.index >= 98 && entry.index <= 108) || entry.runtimeSupport === "runtime-full";
+  if (entry.index >= 98 && entry.index <= 108) return true;
+  // 선택 가능 집합은 배지 정직성 수정 이전과 동일하게 유지한다:
+  // 네이티브 변환 행 + 행동 클래스 nativeAlias/full. (배지는 컨텍스트별로 별도 판정.)
+  if (entry.existingKind) return true;
+  const behaviorClass = m2CommandRuntimeClassification(entry.id).behaviorClass;
+  return behaviorClass === "nativeAlias" || behaviorClass === "full";
+}
+
+/**
+ * 편집 중인 이벤트 컨텍스트(맵/공통/배틀)를 반영한 카탈로그 행 런타임 지원 판정.
+ * 피커·커맨드 리스트 배지는 반드시 이 함수를 쓰고, 컨텍스트를 모르면 생략해
+ * 보수 판정(세 컨텍스트 중 최저)을 받는다.
+ */
+export function m2CatalogEntryRuntimeSupport(
+  entry: M2CommandCatalogEntry,
+  context?: M2RuntimeContext
+): CommandRuntimeSupport {
+  return catalogRowRuntimeSupport(entry.id, entry.existingKind, context);
 }
 
 function buildCatalogEntry(row: M2PdfCommandRow): M2CommandCatalogEntry {
@@ -143,6 +165,8 @@ function buildCatalogEntry(row: M2PdfCommandRow): M2CommandCatalogEntry {
   const label = KOREAN_LABEL_BY_TITLE[row.title] ?? row.title;
   const fields = existingKind ? [] : genericFieldsFor(row.title);
   const id = stableCommandId(row);
+  // 카탈로그는 컨텍스트를 모르는 정적 테이블이므로 보수 판정(세 컨텍스트 중 최저)을 굽는다.
+  // 컨텍스트를 아는 표면(피커/리스트)은 m2CatalogEntryRuntimeSupport(entry, context)로 재판정한다.
   const runtimeSupport = catalogRowRuntimeSupport(id, existingKind);
   return {
     ...row,

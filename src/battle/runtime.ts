@@ -6,7 +6,7 @@ import { transitionItemState } from "@/project/itemTransitions";
 import { isItemActorEligible } from "@/project/itemEligibility";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
-import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, type MutableBattler } from "@/battle/battleBattlers";
+import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
 import { applySkillLike, usesMagicalDefense } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
@@ -232,6 +232,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const battleEventState: BattleEventRuntimeState = {
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
+    // 세션 셀프 스위치 스냅샷 사본(깊은 복사). setSelfSwitch 가 여기 기록하고
+    // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+    selfSwitches: Object.fromEntries(
+      Object.entries(sessionState.selfSwitches ?? {}).map(([eventId, keys]) => [eventId, { ...keys }])
+    ),
+    // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
+    battleResult: sessionState.battleResult,
     inventory: { ...sessionState.inventory },
     itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
@@ -248,12 +255,23 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           ?? {}
       ).map(([id, cmds]) => [id, [...cmds]])
     ),
+    // 레거시 호환 flags / 타이머 잔여 초: setFlag·timer 커맨드가 쓰고 timer 조건이 읽는
+    // 세션 스냅샷 사본. 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+    flags: { ...(sessionState.flags ?? {}) },
+    timers: { ...(sessionState.timers ?? {}) },
+    // 세션 장비/직업 오버라이드 스냅샷 사본(Step 3d): changeEquipment/promoteActor 가 여기 기록하고
+    // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다(canLose=false 패배는 미반영).
+    actorEquipment: Object.fromEntries(
+      Object.entries(sessionState.actorEquipment ?? options.party?.equipment ?? {}).map(([actorId, equipment]) => [actorId, { ...equipment }])
+    ),
+    classOverrides: { ...(sessionState.classOverrides ?? options.party?.classOverrides ?? {}) },
     gameTime: "gameTime" in sessionState ? sessionState.gameTime : undefined,
     friendship: "friendship" in sessionState ? { ...(sessionState.friendship ?? {}) } : undefined,
   };
   const battleEvents = createBattleEventRuntime({
     project: options.project,
     troopRecord,
+    ownerEventId: options.ownerEventId,
     actors,
     enemies,
     stateIds: options.project.database.states.map((state) => state.id),
@@ -280,12 +298,32 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result = "escape";
       phase = "resolved";
     },
+    endBattleAsDefeat: () => {
+      // 배틀 이벤트 gameOver/killPlayer: 전투를 패배로 즉시 종결(abortBattle 의 defeat 대칭).
+      // defeat 이후 처리는 canLose 의미론을 따른다 — canLose=false 면 호스트가 게임 오버 경로,
+      // canLose=true 면 패배 복귀(+세션 write-back). 자연 패배(resolveOutcome)와 동일 정리 수행.
+      result = "defeat";
+      phase = "resolved";
+      clearEndOfBattleStates();
+    },
     wait: (ms) => {
       // 배틀 이벤트 wait: 전투 흐름을 ms 동안 일시정지. 동기식 실행이라 명령 자체는 계속되지만,
       // tick 이 pendingWaitMs 를 소진하기 전까지 게이지 충전/턴 진행이 멈춘다.
       pendingWaitMs = Math.max(pendingWaitMs, Math.max(0, Math.trunc(ms)));
     },
     canGrantExtraAction: () => battleFlow !== "strict",
+    // changeEquipment/promoteActor 후 파생 스탯 재계산 — battleBattlers 생성 산식과 공유.
+    // HP/MP/게이지/상태이상은 refreshActorBattlerDerivedStats 가 보존(새 최대치 클램프만).
+    refreshActorDerivedStats: (battler, refreshOptions) => {
+      refreshActorBattlerDerivedStats(options.project, battler, {
+        classOverrides: battleEventState.classOverrides,
+        paramBonuses: options.party?.paramBonuses?.[battler.recordId],
+        equipment: battleEventState.actorEquipment?.[battler.recordId],
+        skills: refreshOptions?.refreshSkills
+          ? { sessionSkillIds: battleEventState.actorSkillIds?.[battler.recordId] }
+          : undefined,
+      });
+    },
     playAudio: (resourceId, loop) => {
       // 오디오 재생 자체는 호스트가 담당. 런타임은 옵션 콜백으로 위임만 한다.
       options.playAudio?.(resourceId, loop);

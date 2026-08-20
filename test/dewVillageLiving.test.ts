@@ -9,6 +9,8 @@ import { enlivenDewVillage } from "@/project/defaults/dewVillageLiving";
 import { isPassable } from "@/project/collision";
 import { resolveTimeSystem } from "@/project/gameTime";
 import { runTool, type ToolContext } from "@/editor/tools";
+import { projectLint } from "@/project/lint/projectLint";
+import { runSceneTest } from "@/testing/sceneTestRunner";
 
 describe("데모 마을 하루 일과", () => {
   const project = createSampleAdventureProject();
@@ -108,5 +110,46 @@ describe("시간 시스템이 꺼진 프로젝트 경고", () => {
       { dryRun: true },
     );
     expect([...(result.warnings ?? []), ...(result.diff?.warnings ?? [])].join(" ")).not.toContain("시간 시스템이 꺼져 있어");
+  });
+});
+
+// 실측 배경(2026-08-20): ev_to_mine 이 (4,50)에 있었는데 서쪽 x=0..5 밴드 전체가
+// 물 오토타일(120, 전방향 통행 불가)이라 밟기형 transfer 가 영구 미발동이었다
+// (playerTouch-impassable 린트가 검출). 최근접 통행 타일이자 폐광 귀환 착지점이던
+// (6,50)으로 옮기고, 귀환 착지는 재전이를 피해 (8,50)으로 2칸 간격을 둔다
+// (숲 3→5, 사당 96→94 와 같은 규약).
+describe("폐광 입구 도달성", () => {
+  const VILLAGE = "map_village_30_100x100";
+  const MINE = "map_mine_entrance";
+
+  it("playerTouch-impassable 경고가 없다 — 밟기형 이벤트가 물 위에 있으면 영구 미발동", () => {
+    const issues = projectLint(createSampleAdventureProject())
+      .filter((issue) => issue.code === "playerTouch-impassable");
+    expect(issues, JSON.stringify(issues, null, 2)).toEqual([]);
+  });
+
+  it("서쪽 길에서 실보행으로 폐광 입구를 밟으면 transfer 가 발동한다", () => {
+    const project = createSampleAdventureProject();
+    // (8,50)은 서쪽 길 타일(453) — 폐광 이정표 방향으로 두 칸 걸어 (6,50)을 밟는다.
+    const result = runSceneTest(project, {
+      mapId: VILLAGE,
+      start: { x: 8, y: 50 },
+      steps: [
+        { kind: "move", dir: "left" },
+        { kind: "move", dir: "left" },
+        { kind: "expect", playerAt: { mapId: MINE, x: 32, y: 18 } },
+      ],
+    });
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.session.currentMapId).toBe(MINE);
+  });
+
+  it("폐광 귀환 착지(8,50)에는 밟기형 이벤트가 없다 — 입구 위에 내리면 무한 재전이된다", () => {
+    const project = createSampleAdventureProject();
+    const village = project.maps[VILLAGE]!;
+    const landing = village.events.filter((event) => event.x === 8 && event.y === 50);
+    expect(landing).toEqual([]);
+    // 착지 타일 자체도 통행 가능해야 한다(transfer-impassable).
+    expect(isPassable(project, village, 8, 50)).toBe(true);
   });
 });

@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { M2_COMMAND_CATALOG, m2CommandById } from "@/project/eventCommands/m2Catalog";
 import {
   M2_PERSISTED_BEHAVIOR_IDS,
   M2_PARTIAL_EFFECT_DECLARATIONS,
   M2RuntimeClassificationError,
+  catalogRowRuntimeSupport,
   m2CommandRuntimeClassification,
   m2CommandRuntimeSupport,
   runtimeSupportBadge,
 } from "@/project/eventCommands/runtimeSupport";
+import { M2_MAP_COMMON_FULL_IDS, M2_TROOP_FULL_IDS } from "@/project/eventCommands/m2RuntimeClassificationData";
 import { createBlankProject } from "@/project/defaults";
 import { projectLint } from "@/project/lint/projectLint";
 
@@ -150,6 +152,87 @@ describe("M2 persisted runtime classification completeness", () => {
     // Then: the alias cannot inherit runtime-full from picker conversion.
     expect(supportIssues).toHaveLength(1);
     expect(supportIssues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 3, y: 3 });
+  });
+
+  // --- 배지 정직성 회귀(2026-08-20): catalogRowRuntimeSupport 가 컨텍스트를 반영한다 ---
+
+  it("demotes full-class commands outside M2_MAP_COMMON_FULL_IDS to runtime-partial in the map context", () => {
+    // Given: behaviorClass "full" 인데 map/common full 목록에 없는 모든 커맨드(66종).
+    const demotedIds = M2_PERSISTED_BEHAVIOR_IDS.full.filter(
+      (commandId) => !M2_MAP_COMMON_FULL_IDS.some((fullId) => fullId === commandId)
+    );
+    expect(demotedIds).toHaveLength(66);
+
+    for (const commandId of demotedIds) {
+      // When: 피커/리스트가 카탈로그 행을 map 컨텍스트로 판정한다.
+      // Then: runtime-full 이 아니라 runtime-partial 이다 (기존 버그: 컨텍스트 무시 → full).
+      expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-partial");
+      expect(catalogRowRuntimeSupport(commandId, undefined, "common"), commandId).toBe("runtime-partial");
+      // 컨텍스트를 모르는 호출부는 보수 판정(최저 지원)이어야 한다.
+      expect(catalogRowRuntimeSupport(commandId, undefined), commandId).toBe("runtime-partial");
+    }
+
+    // 그리고 map/common full 목록의 19종은 map 컨텍스트에서 full 을 유지한다.
+    for (const commandId of M2_MAP_COMMON_FULL_IDS) {
+      expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-full");
+    }
+  });
+
+  it("keeps troop-context judgments for battle-only commands", () => {
+    for (const commandId of M2_TROOP_FULL_IDS) {
+      // Then: 배틀 전용 커맨드는 troop 컨텍스트에서 full 판정을 유지하고,
+      // map 컨텍스트에서는 partial 로 정직하게 표시된다.
+      expect(catalogRowRuntimeSupport(commandId, undefined, "troop"), commandId).toBe("runtime-full");
+      expect(catalogRowRuntimeSupport(commandId, undefined, "map"), commandId).toBe("runtime-partial");
+    }
+    // 네이티브 kind 변환 행은 컨텍스트와 무관하게 네이티브 실행 경로라 full 이다.
+    const nativeAliasEntry = m2CommandById("m2-001-show-text");
+    if (!nativeAliasEntry?.existingKind) throw new Error("Missing Show Text native alias entry");
+    expect(catalogRowRuntimeSupport(nativeAliasEntry.id, nativeAliasEntry.existingKind, "troop")).toBe("runtime-full");
+  });
+
+  it("lints a map event containing a map-partial full-class m2 command", () => {
+    // Given: behaviorClass full 이지만 M2_MAP_COMMON_FULL_IDS 밖인 대표 커맨드가 든 맵 이벤트.
+    const commandId = "m2-068-change-tileset";
+    expect(M2_PERSISTED_BEHAVIOR_IDS.full).toContain(commandId);
+    expect((M2_MAP_COMMON_FULL_IDS as readonly string[]).includes(commandId)).toBe(false);
+
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("Blank project start map is missing");
+    map.events.push({
+      id: "event_map_partial_m2_contract",
+      x: 4,
+      y: 4,
+      trigger: { kind: "action" },
+      commands: [{ kind: "m2Command", commandId, fields: {} }],
+    });
+
+    // When: project lint 가 map 컨텍스트로 런타임 지원을 판정한다.
+    const supportIssues = projectLint(project).filter((issue) => issue.code === `runtime-support:${commandId}`);
+
+    // Then: 부분지원 경고가 정확히 한 건, error 가 아닌 warning 으로 나타난다.
+    expect(supportIssues).toHaveLength(1);
+    expect(supportIssues[0]).toMatchObject({ severity: "warning", mapId: map.id, x: 4, y: 4 });
+  });
+
+  it("does not warn for a map/common-full m2 command in a map event", () => {
+    // Given: M2_MAP_COMMON_FULL_IDS 멤버(맵 런타임 완전 지원) 커맨드가 든 맵 이벤트.
+    const commandId = "m2-046-tint-screen" as const;
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("Blank project start map is missing");
+    map.events.push({
+      id: "event_map_full_m2_contract",
+      x: 5,
+      y: 5,
+      trigger: { kind: "action" },
+      commands: [{ kind: "m2Command", commandId, fields: {} }],
+    });
+
+    // When/Then: map 컨텍스트 full 이므로 경고가 없다 (보수 판정을 lint 에 쓰면 여기서 오탐이 난다).
+    const supportIssues = projectLint(project).filter((issue) => issue.code === `runtime-support:${commandId}`);
+    expect(supportIssues).toHaveLength(0);
   });
 });
 
