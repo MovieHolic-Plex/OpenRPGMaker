@@ -1,9 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { formatSavedAt, renderPlayerLoadPanel, saveSlotCardModel } from "@/player/playerLoadPanel";
+import {
+  autosaveCardModel,
+  autosaveTriggerLabel,
+  formatSavedAt,
+  renderPlayerLoadPanel,
+  saveSlotCardModel,
+} from "@/player/playerLoadPanel";
 import {
   createSaveSnapshot,
   saveSlotKey,
   saveToSlot,
+  writeAutosave,
   type SaveSlotReadResult,
   type SaveSnapshot,
 } from "@/player/saveSlots";
@@ -52,7 +59,10 @@ function presentSnapshot(): SaveSnapshot {
   };
 }
 
-function renderPanelWithStorage(storage: Storage): FakeElement {
+function renderPanelWithStorage(
+  storage: Storage,
+  extra: { readonly onLoadAutosave?: () => void } = {},
+): FakeElement {
   const previousWindow = globalThis.window;
   Object.defineProperty(globalThis, "window", {
     configurable: true,
@@ -64,10 +74,19 @@ function renderPanelWithStorage(storage: Storage): FakeElement {
       fromTitle: true,
       onBack: () => undefined,
       onLoadSlot: () => undefined,
+      ...extra,
     }));
   } finally {
     restoreWindow(previousWindow);
   }
+}
+
+function autosaveSnapshot(trigger: "transfer" | "battleVictory"): SaveSnapshot {
+  return {
+    ...presentSnapshot(),
+    savedBy: "auto",
+    autosaveTrigger: trigger,
+  };
 }
 
 describe("player load panel", () => {
@@ -149,6 +168,65 @@ describe("player load panel", () => {
     } finally {
       restoreDom();
     }
+  });
+
+  it("renders a read-only autosave card on top when an autosave exists and the callback is wired", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const storage = new MemoryStorage();
+      writeAutosave(storage, autosaveSnapshot("transfer"));
+      saveToSlot(storage, 1, presentSnapshot());
+      let loaded = 0;
+      const panel = renderPanelWithStorage(storage, { onLoadAutosave: () => { loaded += 1; } });
+
+      const card = findByTestId(panel, "save-slot-auto");
+      expect(card).not.toBeNull();
+      expect(card?.tagName).toBe("BUTTON");
+      expect(card?.className).toContain("is-autosave");
+      expect(card?.querySelector(".rm2k3-load-slot-title")?.textContent).toBe("자동 저장");
+      expect(card?.querySelector(".rm2k3-load-slot-trigger")?.textContent).toBe("맵 이동");
+      // 최상단: 수동 1번 슬롯보다 앞에 온다.
+      const slots = findByTestId(panel, "player-load-slots");
+      const first = slots?.childNodes[0];
+      expect(first && (first as FakeElement).dataset?.testid).toBe("save-slot-auto");
+
+      card?.dispatchEvent?.(new Event("click", { bubbles: true }));
+      expect(loaded).toBe(1);
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("renders no autosave card when the autosave slot is empty or the callback is omitted", () => {
+    const restoreDom = installFakeDom();
+    try {
+      // 오토세이브 없음 + 콜백 있음 → 카드 없음.
+      const empty = renderPanelWithStorage(new MemoryStorage(), { onLoadAutosave: () => undefined });
+      expect(findByTestId(empty, "save-slot-auto")).toBeNull();
+
+      // 오토세이브 있음 + 콜백 없음(레거시 호출부) → 카드 없음.
+      const storage = new MemoryStorage();
+      writeAutosave(storage, autosaveSnapshot("battleVictory"));
+      const noCallback = renderPanelWithStorage(storage);
+      expect(findByTestId(noCallback, "save-slot-auto")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("maps autosave snapshots to a card model with the trigger label", () => {
+    expect(autosaveCardModel(autosaveSnapshot("battleVictory"))).toEqual({
+      title: "자동 저장",
+      mapName: "아주 긴 시작의 마을 바깥 평원 지도",
+      level: "Lv 7",
+      playTime: "1:11:02",
+      savedAt: "2026.08.21 14:05",
+      trigger: "전투 승리",
+    });
+    // 구 스냅샷(트리거 없음)은 표기를 생략한다.
+    expect(autosaveCardModel(presentSnapshot()).trigger).toBeUndefined();
+    expect(autosaveTriggerLabel("transfer")).toBe("맵 이동");
+    expect(autosaveTriggerLabel(undefined)).toBeUndefined();
   });
 
   it("formats saved-at as local 'YYYY.MM.DD HH:mm' and returns empty string for invalid ISO", () => {

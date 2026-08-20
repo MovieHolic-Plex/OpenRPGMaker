@@ -37,6 +37,8 @@ import {
   isRuntimeRemovedEventIds,
   isRuntimeSpawnedEventRecord,
   isRngState,
+  isSaveOrigin,
+  isAutosaveTrigger,
   isSelfSwitchesRecord,
   isStringArray,
   parseAudioState,
@@ -59,6 +61,11 @@ let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;
 
+/** 스냅샷 출처. 생략(구 세이브)은 수동 저장과 동일하게 취급한다. */
+export type SaveOrigin = "manual" | "auto";
+/** 오토세이브를 일으킨 트리거. 수동 저장에는 없다. */
+export type AutosaveTrigger = "transfer" | "battleVictory";
+
 export type SaveSnapshot = {
   readonly schemaVersion: typeof SCHEMA_VERSION;
   readonly projectTitle: string;
@@ -66,6 +73,9 @@ export type SaveSnapshot = {
   readonly mapName?: string;
   readonly partyLevel?: number;
   readonly playTimeSeconds?: number;
+  /** optional 확장 — 알려진-필드 픽 파싱이라 구 스냅샷(schemaVersion 3)과 전후방 호환. */
+  readonly savedBy?: SaveOrigin;
+  readonly autosaveTrigger?: AutosaveTrigger;
   readonly session: {
     readonly switches: Record<string, boolean>;
     readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
@@ -143,6 +153,35 @@ export type SaveSlotReadResult =
 export function saveSlotKey(slot: SaveSlotIndex): string {
   if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:${slot}`;
   return `${SAVE_SLOT_PREFIX}${slot}`;
+}
+
+/** 전용 오토세이브 키 — 수동 3슬롯(SaveSlotIndex)과 완전히 분리된 별도 칸. */
+export function autosaveKey(): string {
+  if (saveSlotStorageNamespace) return `${saveSlotStorageNamespace}:save-slot:auto`;
+  return `${SAVE_SLOT_PREFIX}auto`;
+}
+
+export type AutosaveReadResult =
+  | { readonly kind: "empty" }
+  | { readonly kind: "corrupt"; readonly message: string }
+  | { readonly kind: "present"; readonly snapshot: SaveSnapshot };
+
+export function writeAutosave(storage: Storage, snapshot: SaveSnapshot): void {
+  storage.setItem(autosaveKey(), JSON.stringify(snapshot));
+}
+
+export function readAutosave(storage: Storage): AutosaveReadResult {
+  const text = storage.getItem(autosaveKey());
+  if (!text) return { kind: "empty" };
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch (error) {
+    return { kind: "corrupt", message: error instanceof Error ? error.message : "Invalid save data" };
+  }
+  const parsed = parseSnapshotValue(value);
+  if (!parsed.ok) return { kind: "corrupt", message: parsed.message };
+  return { kind: "present", snapshot: parsed.snapshot };
 }
 
 export function setSaveSlotStorageNamespace(namespace: string | null): void {
@@ -345,16 +384,26 @@ function applyScreenState(session: PlaySession, screen: SaveScreenState): void {
 }
 
 function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadResult {
-  if (!isRecord(value)) return corrupt(slot, "Save slot is not an object");
-  if (value.schemaVersion !== SCHEMA_VERSION) return corrupt(slot, "Unsupported save schema");
-  if (typeof value.projectTitle !== "string") return corrupt(slot, "Missing project title");
-  if (typeof value.savedAt !== "string") return corrupt(slot, "Missing saved time");
-  if (!isRecord(value.session)) return corrupt(slot, "Missing session");
-  const parsed = parseSessionRecord(value.session);
+  const parsed = parseSnapshotValue(value);
   if (!parsed.ok) return corrupt(slot, parsed.message);
+  return { kind: "present", slot, snapshot: parsed.snapshot };
+}
+
+type ParsedSnapshotResult =
+  | { readonly ok: true; readonly snapshot: SaveSnapshot }
+  | { readonly ok: false; readonly message: string };
+
+// 수동 슬롯/오토세이브 공용 코어 파서 — 알려진 필드만 골라 담아 전후방 호환을 유지한다.
+function parseSnapshotValue(value: unknown): ParsedSnapshotResult {
+  if (!isRecord(value)) return { ok: false, message: "Save slot is not an object" };
+  if (value.schemaVersion !== SCHEMA_VERSION) return { ok: false, message: "Unsupported save schema" };
+  if (typeof value.projectTitle !== "string") return { ok: false, message: "Missing project title" };
+  if (typeof value.savedAt !== "string") return { ok: false, message: "Missing saved time" };
+  if (!isRecord(value.session)) return { ok: false, message: "Missing session" };
+  const parsed = parseSessionRecord(value.session);
+  if (!parsed.ok) return { ok: false, message: parsed.message };
   return {
-    kind: "present",
-    slot,
+    ok: true,
     snapshot: {
       schemaVersion: SCHEMA_VERSION,
       projectTitle: value.projectTitle,
@@ -362,6 +411,8 @@ function parseSaveSnapshot(value: unknown, slot: SaveSlotIndex): SaveSlotReadRes
       mapName: typeof value.mapName === "string" ? value.mapName : undefined,
       partyLevel: typeof value.partyLevel === "number" ? Math.floor(value.partyLevel) : undefined,
       playTimeSeconds: typeof value.playTimeSeconds === "number" ? Math.floor(value.playTimeSeconds) : undefined,
+      savedBy: isSaveOrigin(value.savedBy) ? value.savedBy : undefined,
+      autosaveTrigger: isAutosaveTrigger(value.autosaveTrigger) ? value.autosaveTrigger : undefined,
       session: parsed.session,
     },
   };

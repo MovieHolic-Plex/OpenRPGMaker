@@ -216,6 +216,10 @@ function normalizeTitleScreenSettings(
       newGame: textOrDefault(settings?.menuLabels?.newGame, defaults.menuLabels.newGame),
       continueGame: textOrDefault(settings?.menuLabels?.continueGame, defaults.menuLabels.continueGame),
       quit: textOrDefault(settings?.menuLabels?.quit, defaults.menuLabels.quit),
+      // resume 은 optional 확장 — 저작된 값이 있을 때만 유지해 구 JSON 을 그대로 보존한다.
+      ...(typeof settings?.menuLabels?.resume === "string" && settings.menuLabels.resume.trim()
+        ? { resume: settings.menuLabels.resume.trim() }
+        : {}),
     },
     menuVisibility,
     ...(sounds ? { sounds } : {}),
@@ -231,6 +235,8 @@ function normalizeTitleScreenMenuVisibility(
     newGame: true,
     continueGame: visibility?.continueGame !== false,
     quit: visibility?.quit !== false,
+    // resume 생략은 true 로 읽힌다(!== false). 명시된 boolean 만 보존해 구 JSON 을 바꾸지 않는다.
+    ...(typeof visibility?.resume === "boolean" ? { resume: visibility.resume } : {}),
   };
 }
 

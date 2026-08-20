@@ -1056,6 +1056,30 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
                 newGame: true,
                 continueGame: checked,
                 quit: settings.menuVisibility?.quit !== false,
+                ...(typeof settings.menuVisibility?.resume === "boolean" ? { resume: settings.menuVisibility.resume } : {}),
+              };
+            });
+            rerender();
+          }),
+        ],
+      }),
+      el("div", {
+        class: "db-title-menu-option-row",
+        dataset: { testid: "db-title-menu-option-resume" },
+        children: [
+          textControl("이어하기(자동 저장)", titleScreen.menuLabels.resume ?? "이어하기", (value) => {
+            updateTitleScreen((settings) => {
+              settings.menuLabels.resume = value;
+            }, "system:title-screen:menu-resume");
+            rerender();
+          }, "db-field-title-screen-resume"),
+          checkboxField("표시", "db-field-title-screen-visible-resume", visibility.resume !== false, (checked) => {
+            updateTitleScreen((settings) => {
+              settings.menuVisibility = {
+                newGame: true,
+                continueGame: settings.menuVisibility?.continueGame !== false,
+                quit: settings.menuVisibility?.quit !== false,
+                resume: checked,
               };
             });
             rerender();
@@ -1078,6 +1102,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
                 newGame: true,
                 continueGame: settings.menuVisibility?.continueGame !== false,
                 quit: checked,
+                ...(typeof settings.menuVisibility?.resume === "boolean" ? { resume: settings.menuVisibility.resume } : {}),
               };
             });
             rerender();

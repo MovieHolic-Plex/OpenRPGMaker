@@ -7,6 +7,7 @@ import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { createSkinBattleTransition } from "@/player/battleTransition";
 import { resolveSkinId, getBattleSkin } from "@/battle/skins/registry";
 import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
+import { maybeAutosave } from "@/player/autosave";
 import { dialogueHost } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
@@ -125,6 +126,10 @@ export function playBattle(
               { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode },
               project
             );
+            // 오토세이브 훅(PlayScene 경로 전용): 승리 보상이 세션에 반영된 직후.
+            // sceneTestRunner/walkthroughRunner 는 applyBattleRewardsToSession 을 직접 부르므로
+            // 헤드리스 테스트가 localStorage 를 오염시키지 않는다.
+            if (result === "victory") maybeAutosave(project, scene.session, "battleVictory");
             battleScene?.destroy();
             void exitTransition.reveal().then(() => resolve(result));
           });

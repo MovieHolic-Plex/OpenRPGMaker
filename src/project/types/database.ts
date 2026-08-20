@@ -706,11 +706,15 @@ export interface TitleScreenMenuLabels {
   newGame: string;
   continueGame: string;
   quit: string;
+  /** 오토세이브 "이어하기" 라벨. 생략 시 런타임 기본 라벨("이어하기"). */
+  resume?: string;
 }
 export interface TitleScreenMenuVisibility {
   newGame: boolean;
   continueGame: boolean;
   quit: boolean;
+  /** 오토세이브 "이어하기" 표시 여부. 생략은 true(!== false 패턴) — 구 JSON 전후방 호환. */
+  resume?: boolean;
 }
 
 export interface TitleScreenSounds {

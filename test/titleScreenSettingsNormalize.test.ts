@@ -46,6 +46,48 @@ describe("titleScreen settings normalize expansion", () => {
     });
   });
 
+  it("keeps legacy JSON without resume fields byte-identical (default = visible, no label)", () => {
+    // 구 JSON: resume 필드가 아예 없다 → normalize 가 키를 만들어 넣지 않는다.
+    const system = normalizeSystemRecords({
+      ...defaultSystem(),
+      titleScreen: {
+        title: "레거시 타이틀",
+        layout: { titleX: 160, titleY: 70, menuX: 160, menuY: 118 },
+        menuLabels: { newGame: "새 게임", continueGame: "계속", quit: "게임 종료" },
+      } as TitleScreenSettings,
+    });
+    expect(system.titleScreen?.menuVisibility).toEqual({
+      newGame: true,
+      continueGame: true,
+      quit: true,
+    });
+    expect("resume" in (system.titleScreen?.menuVisibility ?? {})).toBe(false);
+    expect("resume" in (system.titleScreen?.menuLabels ?? {})).toBe(false);
+  });
+
+  it("preserves an explicit resume visibility boolean and a trimmed resume label", () => {
+    const explicit = normalizeSystemRecords({
+      ...defaultSystem(),
+      titleScreen: {
+        ...defaultTitleScreenSettings(),
+        menuLabels: { ...defaultTitleScreenSettings().menuLabels, resume: "  지난 모험 계속  " },
+        menuVisibility: { newGame: true, continueGame: true, quit: true, resume: false },
+      },
+    });
+    expect(explicit.titleScreen?.menuVisibility?.resume).toBe(false);
+    expect(explicit.titleScreen?.menuLabels?.resume).toBe("지난 모험 계속");
+
+    // 공백뿐인 라벨은 버려서 런타임 기본 라벨("이어하기")로 떨어지게 한다.
+    const blank = normalizeSystemRecords({
+      ...defaultSystem(),
+      titleScreen: {
+        ...defaultTitleScreenSettings(),
+        menuLabels: { ...defaultTitleScreenSettings().menuLabels, resume: "   " },
+      },
+    });
+    expect(blank.titleScreen?.menuLabels?.resume).toBeUndefined();
+  });
+
   it("cleans empty SE ids and omits sounds when all empty", () => {
     const cleaned = normalizeSystemRecords({
       ...defaultSystem(),

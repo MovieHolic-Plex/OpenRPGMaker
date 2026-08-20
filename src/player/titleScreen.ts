@@ -15,21 +15,36 @@ const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
  */
 export type TitleScreenActions = {
   readonly onNewGame: () => void;
+  readonly onResume: () => void;
   readonly onContinue: () => void;
   readonly onQuit: () => void;
 };
 
-export type TitleMenuOptionId = "newGame" | "continueGame" | "quit";
+export type TitleMenuOptionId = "newGame" | "resume" | "continueGame" | "quit";
 
 export type TitleMenuOption = {
   readonly id: TitleMenuOptionId;
-  readonly testId: "title-new-game" | "title-load-game" | "title-quit-game";
-  readonly elementId: "title-option-new-game" | "title-option-load-game" | "title-option-quit-game";
+  readonly testId: "title-new-game" | "title-resume-game" | "title-load-game" | "title-quit-game";
+  readonly elementId:
+    | "title-option-new-game"
+    | "title-option-resume-game"
+    | "title-option-load-game"
+    | "title-option-quit-game";
   readonly label: string;
 };
 
-/** Visible title options in fixed order New → Continue → Quit. newGame is always present. */
-export function listTitleMenuOptions(settings: TitleScreenSettings): TitleMenuOption[] {
+/** 오토세이브 유무 등 세션 밖 상태. 순수 함수 유지를 위해 호출자가 주입한다. */
+export type TitleMenuContext = {
+  readonly autosaveAvailable?: boolean;
+};
+
+const DEFAULT_RESUME_LABEL = "이어하기";
+
+/**
+ * Visible title options in fixed order New → Resume → Continue → Quit. newGame is always present.
+ * "이어하기"(resume)는 오토세이브가 실제로 존재하고 menuVisibility.resume !== false 일 때만 노출된다.
+ */
+export function listTitleMenuOptions(settings: TitleScreenSettings, context?: TitleMenuContext): TitleMenuOption[] {
   const visibility = settings.menuVisibility;
   const options: TitleMenuOption[] = [
     {
@@ -39,6 +54,14 @@ export function listTitleMenuOptions(settings: TitleScreenSettings): TitleMenuOp
       label: settings.menuLabels.newGame,
     },
   ];
+  if (context?.autosaveAvailable === true && visibility?.resume !== false) {
+    options.push({
+      id: "resume",
+      testId: "title-resume-game",
+      elementId: "title-option-resume-game",
+      label: settings.menuLabels.resume?.trim() || DEFAULT_RESUME_LABEL,
+    });
+  }
   if (visibility?.continueGame !== false) {
     options.push({
       id: "continueGame",
@@ -71,10 +94,15 @@ export function focusSelectedTitleOption(title: HTMLElement): void {
   option?.focus({ preventScroll: true });
 }
 
-export function renderTitleScreen(project: Project, actions: TitleScreenActions, selectedIndex = 0): HTMLElement {
+export function renderTitleScreen(
+  project: Project,
+  actions: TitleScreenActions,
+  selectedIndex = 0,
+  context?: TitleMenuContext,
+): HTMLElement {
   const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
   const backgroundResourceId = settings.backgroundResourceId ?? project.system.titleResourceId;
-  const options = listTitleMenuOptions(settings);
+  const options = listTitleMenuOptions(settings, context);
   const clampedIndex = clampTitleMenuIndex(selectedIndex, options.length);
   const title = el("div", {
     class: "title-screen rm-title-screen",
@@ -222,6 +250,8 @@ function activateForOption(id: TitleMenuOptionId, actions: TitleScreenActions): 
   switch (id) {
     case "newGame":
       return actions.onNewGame;
+    case "resume":
+      return actions.onResume;
     case "continueGame":
       return actions.onContinue;
     case "quit":

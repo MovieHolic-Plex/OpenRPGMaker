@@ -50,6 +50,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -95,6 +96,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -142,6 +144,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -161,6 +164,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -190,6 +194,9 @@ describe("title screen", () => {
           onNewGame: () => {
             activated = "new";
           },
+          onResume: () => {
+            activated = "resume";
+          },
           onContinue: () => {
             activated = "continue";
           },
@@ -214,6 +221,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }, 1),
@@ -274,6 +282,102 @@ describe("title screen", () => {
     ]);
   });
 
+  it("shows resume only when an autosave exists, ordered New→Resume→Continue→Quit", () => {
+    const defaults = defaultTitleScreenSettings();
+    // 컨텍스트 생략/오토세이브 없음 → resume 미노출(기존 3항목 그대로).
+    expect(listTitleMenuOptions(defaults).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+    expect(listTitleMenuOptions(defaults, { autosaveAvailable: false }).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+
+    const withAutosave = listTitleMenuOptions(defaults, { autosaveAvailable: true });
+    expect(withAutosave.map((option) => option.id)).toEqual([
+      "newGame",
+      "resume",
+      "continueGame",
+      "quit",
+    ]);
+    const resume = withAutosave[1];
+    expect(resume).toEqual({
+      id: "resume",
+      testId: "title-resume-game",
+      elementId: "title-option-resume-game",
+      label: "이어하기",
+    });
+  });
+
+  it("respects menuVisibility.resume and the authored resume label", () => {
+    const defaults = defaultTitleScreenSettings();
+    const hidden = fullVisibilitySettings({
+      ...defaults,
+      menuVisibility: { newGame: true, continueGame: true, quit: true, resume: false },
+    });
+    expect(listTitleMenuOptions(hidden, { autosaveAvailable: true }).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+
+    const labeled = fullVisibilitySettings({
+      ...defaults,
+      menuLabels: { ...defaults.menuLabels, resume: "지난 모험 계속" },
+    });
+    const resume = listTitleMenuOptions(labeled, { autosaveAvailable: true })
+      .find((option) => option.id === "resume");
+    expect(resume?.label).toBe("지난 모험 계속");
+  });
+
+  it("keeps a 4-option menu above the input hint without overlap", () => {
+    const optionCount = 4;
+    // 기본 저작값 menuY=148 은 4항목이면 반드시 겹치므로 끌어올려진다.
+    const top = titleMenuTop(148, optionCount, true);
+    expect(top).toBe(240 - 40 - titleMenuHeight(optionCount));
+    // 메뉴 아래끝이 안내 창 예약 영역(200) 위에서 끝난다.
+    expect(top + titleMenuHeight(optionCount)).toBeLessThanOrEqual(200);
+    // 안내 창이 없으면 저작값 그대로.
+    expect(titleMenuTop(148, optionCount, false)).toBe(148);
+  });
+
+  it("renders the resume option between new game and load when context says autosave exists", () => {
+    const restoreDom = installFakeDom();
+    try {
+      let resumed = 0;
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(
+          project,
+          {
+            onNewGame: () => undefined,
+            onResume: () => {
+              resumed += 1;
+            },
+            onContinue: () => undefined,
+            onQuit: () => undefined,
+          },
+          1,
+          { autosaveAvailable: true },
+        ),
+      );
+
+      const resume = findByTestId(screen, "title-resume-game");
+      expect(resume).toBeTruthy();
+      expect(resume?.textContent).toBe("이어하기");
+      expect(resume?.attrs.id).toBe("title-option-resume-game");
+      // selectedIndex 1 은 이제 resume 을 가리킨다(new → resume → load → quit).
+      expect(resume?.attrs["aria-selected"]).toBe("true");
+      resume?.dispatchEvent?.(new Event("click", { bubbles: true }));
+      expect(resumed).toBe(1);
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("clamps title menu index into the visible range", () => {
     expect(clampTitleMenuIndex(2, 2)).toBe(1);
     expect(clampTitleMenuIndex(2, 1)).toBe(0);
@@ -296,6 +400,7 @@ describe("title screen", () => {
           project,
           {
             onNewGame: () => undefined,
+            onResume: () => undefined,
             onContinue: () => undefined,
             onQuit: () => undefined,
           },
@@ -330,6 +435,7 @@ describe("title screen", () => {
           project,
           {
             onNewGame: () => undefined,
+            onResume: () => undefined,
             onContinue: () => undefined,
             onQuit: () => undefined,
           },
@@ -366,6 +472,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),

@@ -22,6 +22,15 @@ export function isActorEquipmentRecord(value: unknown): value is Record<string, 
   });
 }
 
+// 오토세이브 메타(optional enum) 가드 — 스냅샷 최상위 savedBy / autosaveTrigger.
+export function isSaveOrigin(value: unknown): value is "manual" | "auto" {
+  return value === "manual" || value === "auto";
+}
+
+export function isAutosaveTrigger(value: unknown): value is "transfer" | "battleVictory" {
+  return value === "transfer" || value === "battleVictory";
+}
+
 export function isActorRowsRecord(value: unknown): value is Record<string, "front" | "back"> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((row) => row === "front" || row === "back");

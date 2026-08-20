@@ -107,4 +107,5 @@ export const PARITY_MATRIX: readonly ParityRow[] = [
   { contentType: "system", field: "monsterCollection", playerConsumer: "src/player#monsterCollection", harness: "simulateBattle", status: "gap" },
   { contentType: "system", field: "actionCombat", playerConsumer: "src/project/actionCombat.ts#isActionCombatMap", harness: "runSceneTest", status: "gap" },
   { contentType: "system", field: "saveSlots", playerConsumer: "src/player/saveSlots.ts#saveSlot", harness: "roundTrip", status: "planned-T6" },
+  { contentType: "system", field: "autosave", playerConsumer: "src/player/autosave.ts#performAutosave", harness: "roundTrip", status: "covered" },
 ];

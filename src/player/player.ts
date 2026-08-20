@@ -7,9 +7,11 @@ import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
 import {
   applySaveSnapshot,
+  readAutosave,
   readSaveSlot,
   type SaveSlotIndex,
 } from "@/player/saveSlots";
+import { resetAutosaveDebounce } from "@/player/autosave";
 import { createDialogueUI } from "@/player/dialogue";
 import { destroyBattleSceneOnHost } from "@/player/battleDom";
 import { markPlayRender } from "@/app/perfMetrics";
@@ -127,6 +129,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 
   const startGame = (session?: PlaySession, eventTestId = ""): void => {
     stopGame();
+    // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
+    resetAutosaveDebounce();
     warnIfPlayBootIssues(store.getCurrent());
     const run = ++startRun;
     const startedAt = performance.now();
@@ -277,6 +281,32 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     closeMenu();
   };
 
+  // 타이틀 "이어하기" / 로드 패널 오토세이브 카드 — loadSlot 과 동형: 파싱 성공 시
+  // applySaveSnapshot → startGame(restored), 실패 시 로드 패널로 안내한다.
+  const loadAutosave = (fromTitle: boolean): void => {
+    const result = readAutosave(window.localStorage);
+    if (result.kind !== "present") {
+      renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
+      return;
+    }
+    const restored = applySaveSnapshot(store.getCurrent(), result.snapshot);
+    if (fromTitle || !game) {
+      startGame(restored);
+      return;
+    }
+    activeScene()?.applySession(restored);
+    closeMenu();
+  };
+
+  // 타이틀 메뉴에 "이어하기"를 노출할지 — 오토세이브가 실제 파싱 가능한 상태일 때만.
+  const isAutosaveAvailable = (): boolean => {
+    try {
+      return readAutosave(window.localStorage).kind === "present";
+    } catch {
+      return false;
+    }
+  };
+
   const renderLoad = (fromTitle: boolean, message?: string): void => {
     if (fromTitle) {
       stopGame();
@@ -287,6 +317,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       message,
       onBack: () => (fromTitle ? renderTitle() : closeMenu()),
       onLoadSlot: (slot) => loadSlot(slot, fromTitle),
+      onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
       layout.append(panel);
@@ -350,7 +381,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (titleConfirming) return true;
     const project = store.getCurrent();
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
-    const options = listTitleMenuOptions(settings);
+    const options = listTitleMenuOptions(settings, { autosaveAvailable: isAutosaveAvailable() });
     const visibleCount = options.length;
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, visibleCount);
     const titleDir = directionForKey(key);
@@ -414,7 +445,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     clearChildren(layout);
     const project = store.getCurrent();
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
-    const options = listTitleMenuOptions(settings);
+    const titleContext = { autosaveAvailable: isAutosaveAvailable() };
+    const options = listTitleMenuOptions(settings, titleContext);
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
@@ -426,9 +458,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 키보드 + 클릭 모두 동일 확인 연출 후 분기.
     const title = renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
+      onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
       onContinue: () => confirmTitleThen(() => activateTitleOption("continueGame")),
       onQuit: () => confirmTitleThen(() => activateTitleOption("quit")),
-    }, titleMenuIndex);
+    }, titleMenuIndex, titleContext);
     layout.append(surface.viewport);
     surface.stage.append(title);
     focusSelectedTitleOption(title);
@@ -441,6 +474,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     switch (id) {
       case "newGame":
         startGame(newSession());
+        return;
+      case "resume":
+        loadAutosave(true);
         return;
       case "continueGame":
         renderLoad(true);
