@@ -232,6 +232,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const battleEventState: BattleEventRuntimeState = {
     switches: { ...sessionState.switches },
     variables: { ...sessionState.variables },
+    // 세션 셀프 스위치 스냅샷 사본(깊은 복사). setSelfSwitch 가 여기 기록하고
+    // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+    selfSwitches: Object.fromEntries(
+      Object.entries(sessionState.selfSwitches ?? {}).map(([eventId, keys]) => [eventId, { ...keys }])
+    ),
+    // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
+    battleResult: sessionState.battleResult,
     inventory: { ...sessionState.inventory },
     itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
@@ -254,6 +261,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const battleEvents = createBattleEventRuntime({
     project: options.project,
     troopRecord,
+    ownerEventId: options.ownerEventId,
     actors,
     enemies,
     stateIds: options.project.database.states.map((state) => state.id),

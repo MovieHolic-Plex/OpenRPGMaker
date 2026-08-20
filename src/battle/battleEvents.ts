@@ -11,6 +11,11 @@ import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@
 export type BattleEventRuntimeState = {
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
+  // 세션 셀프 스위치 스냅샷 사본(eventId → key → on). setSelfSwitch 가 여기 기록하고
+  // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+  readonly selfSwitches?: Record<string, Partial<Record<string, boolean>>>;
+  // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷). battleResult 조건 평가 기준.
+  readonly battleResult?: "victory" | "defeat" | "escape";
   inventory: Record<string, number>;
   itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
@@ -33,6 +38,9 @@ export type BattleEventContext = {
 export type BattleEventRuntimeOptions = {
   readonly project: Project;
   readonly troopRecord: TroopRecord;
+  // 이 전투를 기동한 맵 이벤트 id. selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트.
+  // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined(조건 false + 추적 로그).
+  readonly ownerEventId?: string;
   readonly actors: readonly MutableBattler[];
   readonly enemies: readonly MutableBattler[];
   readonly stateIds: readonly string[];
@@ -72,6 +80,21 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const firedBattleEventPageRoundKeys = new Set<string>();
   const extraActorActions: Record<string, number> = {};
   const logs: BattleEventLogSnapshot[] = [];
+  // 소유 이벤트 없는 전투에서 selfSwitch 조건이 평가되면 1회만 추적 로그를 남긴다
+  // (조건 평가는 tick/라운드마다 반복되므로 매번 기록하면 eventLogs 가 범람한다).
+  let loggedSelfSwitchWithoutOwner = false;
+
+  function logSelfSwitchWithoutOwnerOnce(): void {
+    if (loggedSelfSwitchWithoutOwner) return;
+    loggedSelfSwitchWithoutOwner = true;
+    logs.push({
+      pageId: "external",
+      round: 0,
+      triggerId: "external",
+      kind: "unsupported",
+      detail: "selfSwitch condition without owner event (treated as OFF)",
+    });
+  }
 
   function applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult {
     let forceEscape = false;
@@ -101,6 +124,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return {
       switches: options.state.switches,
       variables: options.state.variables,
+      selfSwitches: Object.fromEntries(
+        Object.entries(options.state.selfSwitches ?? {}).map(([eventId, keys]) => [eventId, { ...keys }])
+      ),
       inventory: options.state.inventory,
       itemUseCharges: { ...(options.state.itemUseCharges ?? {}) },
       gold: options.state.gold ?? 0,
@@ -356,6 +382,20 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         if (!result.handled) logUnsupported(page, context, command.commandId);
         return result.forceEscape;
       }
+      case "setSelfSwitch": {
+        // 소유 이벤트(ownerEventId)의 셀프 스위치를 스냅샷 사본에 기록.
+        // 전투 종료 시 applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+        const ownerEventId = options.ownerEventId;
+        const selfSwitches = options.state.selfSwitches;
+        if (!ownerEventId || !selfSwitches) {
+          logUnsupported(page, context, `${command.kind} (no owner event)`);
+          return false;
+        }
+        selfSwitches[ownerEventId] ??= {};
+        selfSwitches[ownerEventId][command.key] = command.value;
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `selfSwitch ${command.key}=${command.value}` });
+        return false;
+      }
       case "wait": {
         const ms = "ms" in command ? command.ms : 0;
         options.wait?.(ms);
@@ -396,7 +436,6 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "changeFace":
       case "changeEquipment":
       case "enterHeroName":
-      case "setSelfSwitch":
       case "callMapEvent":
       case "cutsceneControl":
       case "checkpointSave":
@@ -456,9 +495,17 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const current = options.state.variables[condition.variableId] ?? 0;
         return compareVariableValue(current, condition.op, condition.value);
       }
-      case "selfSwitch":
-        // 배틀 이벤트에는 셀프 스위치 컨텍스트가 없으므로 항상 false(OFF) 취급.
-        return condition.value === false;
+      case "selfSwitch": {
+        // ownerEventId(전투를 기동한 맵 이벤트)가 있으면 그 이벤트의 셀프 스위치로 실제 평가.
+        // 소유 이벤트가 없는 전투(랜덤 인카운터/필드 스폰)는 종전대로 OFF 취급하되 추적 로그를 남긴다.
+        const ownerEventId = options.ownerEventId;
+        if (!ownerEventId) {
+          logSelfSwitchWithoutOwnerOnce();
+          return condition.value === false;
+        }
+        const own = (options.state.selfSwitches ?? {})[ownerEventId];
+        return (own?.[condition.key] ?? false) === condition.value;
+      }
       case "actor":
         return (options.state.partyActorIds ?? []).includes(condition.actorId) === condition.present;
       case "item":
@@ -481,8 +528,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         return clampFriendship(options.state.friendship?.[npcKey] ?? 0) >= clampFriendship(condition.value);
       }
       case "battleResult":
-        // 배틀 이벤트 컨텍스트에는 직전 전투 결과가 없으므로 항상 false(포크 명령은 별도 경로로 처리됨).
-        return false;
+        // 직전 전투 처리 결과(전투 개시 시점 세션 battleResult 스냅샷)로 실제 평가.
+        // 진행 중인 이 전투의 결과가 아니라 "직전" 전투의 결과다(RM2K3 정합).
+        return options.state.battleResult === condition.result;
       case "all":
         return condition.conditions.every((child) => evaluateCondition(child));
       case "any":

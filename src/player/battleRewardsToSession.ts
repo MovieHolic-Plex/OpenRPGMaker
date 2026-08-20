@@ -101,6 +101,15 @@ function applyBattleEventStateToSession(session: PlaySession, eventState: Battle
   if (!eventState) return;
   for (const [key, value] of Object.entries(eventState.switches)) session.switches[key] = value;
   for (const [key, value] of Object.entries(eventState.variables)) session.variables[key] = value;
+  // 셀프 스위치: 스위치/변수와 동일한 RM2K3 관례 — 승리/도주/losable 패배 복귀 모두
+  // 전투 이벤트가 바꾼 상태를 유지한다(canLose=false 패배는 게임 오버라 호출 자체가 없음).
+  // 전투 개시 때 세션에서 시드된 사본이므로 이벤트 단위로 키를 병합해 되돌려 쓴다.
+  if (eventState.selfSwitches) {
+    session.selfSwitches ??= {};
+    for (const [eventId, keys] of Object.entries(eventState.selfSwitches)) {
+      session.selfSwitches[eventId] = { ...session.selfSwitches[eventId], ...keys };
+    }
+  }
   session.inventory = { ...eventState.inventory };
   session.itemUseCharges = { ...(eventState.itemUseCharges ?? {}) };
   if (typeof eventState.gold === "number") session.gold = Math.max(0, Math.trunc(eventState.gold));

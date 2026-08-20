@@ -223,7 +223,14 @@ export const COMMAND_GUARANTEES = {
     completion: "terminalHandoff",
   }),
   setFlag: guarantee("compatibility", { direct: false, support: scopedPartial }),
-  setSelfSwitch: guarantee("state", { direct: false, support: scopedPartial }),
+  // setSelfSwitch: battleEvents.ts 가 ownerEventId(전투 기동 이벤트)의 셀프 스위치를
+  // 스냅샷에 실제 기록하고 전투 종료 시 세션에 되돌려 쓴다(troop-full, Step 2 2026-08-20).
+  // map/common 은 종전 partial 유지, troop 저작 표면은 개별 선언(direct:false 유지).
+  setSelfSwitch: guarantee("state", {
+    direct: false,
+    troopAuthoring: true,
+    support: { ...scopedPartial, troop: "full" },
+  }),
   m2Command: guarantee("compatibility", {
     ai: false,
     executionOwner: "player",

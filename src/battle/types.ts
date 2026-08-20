@@ -90,6 +90,10 @@ export interface BattleRuntimeOptions {
   // 현재 플레이 세션의 스위치/변수/인벤토리. 전투 이벤트 조건과 아이템 목록/소모의 기준.
   // 없으면 project.session(에디터 시작 상태)을 사용한다 — 에디터 전투 테스트 경로용.
   readonly sessionState?: BattleSessionState;
+  // 이 전투를 기동한 맵 이벤트 id(battleProcessing 소유 이벤트). 트룹 배틀 이벤트의
+  // selfSwitch 조건/`setSelfSwitch` 커맨드가 이 이벤트의 셀프 스위치를 읽고 쓴다.
+  // 랜덤 인카운터/필드 스폰 등 소유 이벤트가 없는 전투는 undefined 유지(조건은 false).
+  readonly ownerEventId?: string;
   readonly captureLocation?: MonsterCaughtAt;
   readonly onMonsterCaptured?: (capture: BattleCapturedMonsterSnapshot) => void;
   // 아군측을 파티 몬스터로 구성할 때 필드 순서대로의 인스턴스 목록.
@@ -106,6 +110,12 @@ export interface BattleSessionState {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  // 세션 셀프 스위치(eventId → key → on). ownerEventId 가 있는 전투에서
+  // 트룹 배틀 이벤트의 selfSwitch 조건/setSelfSwitch 커맨드의 기준 상태.
+  readonly selfSwitches?: Readonly<Record<string, Readonly<Partial<Record<string, boolean>>>>>;
+  // 직전 전투 처리 결과(세션 SSOT — openwiki/runtime-battle.md §battleResult).
+  // 트룹 배틀 이벤트의 battleResult 조건이 이 스냅샷 값으로 평가된다.
+  readonly battleResult?: BattleResult;
   readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
@@ -327,6 +337,9 @@ export interface BattleEventStateSnapshot {
   readonly switches: Readonly<Record<string, boolean>>;
   readonly variables: Readonly<Record<string, number>>;
   readonly inventory: Readonly<Record<string, number>>;
+  // 전투 중 setSelfSwitch 가 변경한 셀프 스위치 포함 스냅샷.
+  // applyBattleRewardsToSession 이 세션에 되돌려 쓴다.
+  readonly selfSwitches?: Readonly<Record<string, Readonly<Partial<Record<string, boolean>>>>>;
   readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];

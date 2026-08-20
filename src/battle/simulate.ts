@@ -36,6 +36,12 @@ export interface SimulateBattleInput {
   readonly activeSlots?: number;
   readonly strictScript?: readonly (readonly StrictBattleScriptCommand[])[];
   readonly maxSteps?: number; // 무한 루프 방지 tick 상한(기본 4000)
+  // 프로덕션(playSceneBattle)과 동일 계약: 전투를 기동한 맵 이벤트 id.
+  // 트룹 배틀 이벤트의 selfSwitch 조건/setSelfSwitch 커맨드의 소유 이벤트.
+  readonly ownerEventId?: string;
+  // 세션 셀프 스위치 시드(eventId → key → on)와 직전 전투 결과 시드.
+  readonly selfSwitches?: Readonly<Record<string, Readonly<Partial<Record<string, boolean>>>>>;
+  readonly battleResult?: "victory" | "defeat" | "escape";
 }
 
 export interface SimulateBattleResult {
@@ -95,7 +101,8 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
       ? { levels: {}, experience: {}, monsterParty: input.monsterParty, partyActorIds: input.monsterParty!.map((m) => m.instanceId) }
       : { levels, experience: {}, partyActorIds: [...partyActorIds] },
     partyMonsters: monsterMode ? input.monsterParty : undefined,
-    sessionState: { switches: {}, variables: {}, inventory },
+    ownerEventId: input.ownerEventId,
+    sessionState: { switches: {}, variables: {}, inventory, selfSwitches: input.selfSwitches, battleResult: input.battleResult },
     captureLocation: { mapId: input.project.startMapId, x: input.project.startPos.x, y: input.project.startPos.y },
     onMonsterCaptured: (capture) => {
       capturedMonsters.push(capture);

@@ -1526,6 +1526,9 @@ function runHeadlessBattle(
     canEscape: step.canEscape,
     canLose: step.canLose,
     battleFlow: step.battleFlow,
+    // 프로덕션(playSceneBattle)과 동일 계약: battleProcessing 스텝의 소유 이벤트를 그대로 전달.
+    // 인카운터/필드 스폰 경로가 만드는 스텝에는 없으므로 자연히 undefined.
+    ownerEventId: step.ownerEventId,
     party: {
       levels: state.session.actorLevels,
       experience: state.session.actorExperience,
@@ -1542,6 +1545,8 @@ function runHeadlessBattle(
       switches: state.session.switches,
       variables: state.session.variables,
       inventory: state.session.inventory,
+      selfSwitches: state.session.selfSwitches,
+      battleResult: state.session.battleResult,
       gameTime: state.session.gameTime,
       friendship: state.session.friendship,
     },

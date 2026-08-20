@@ -193,6 +193,8 @@ export interface PlaySceneContext extends Phaser.Scene {
     canEscape: boolean;
     canLose: boolean;
     battleFlow?: "gauge" | "strict";
+    // 전투를 기동한 맵 이벤트 id(트룹 배틀 이벤트 selfSwitch 소유 이벤트). 인카운터/스폰은 없음.
+    ownerEventId?: string;
   }): Promise<"victory" | "defeat" | "escape">;
   showBattleScene(troopId: string): void;
   showRuntimeOverlay(testId: string, text: string): void;
