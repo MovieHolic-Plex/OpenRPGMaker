@@ -5,9 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
+import { OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
+import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
@@ -93,10 +94,13 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
     expect(findByTestId(modal, "ai-auth-chatgpt")).not.toBeNull();
     expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
+    const providers = findByTestId(modal, "ai-oh-my-pi-provider");
+    expect(providers).not.toBeNull();
+    expect(providers?.querySelectorAll("option").length).toBeGreaterThanOrEqual(60);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
-    expect(modal.textContent).toContain("ChatGPT 구독으로 작업");
+    expect(modal.textContent).toContain("제공자 로그인 또는 키");
     const apiKey = findByTestId(modal, "ai-config-apikey");
     expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(true);
   });
@@ -114,6 +118,30 @@ describe("설정 자동 저장", () => {
     expect(stored.authMode).toBe("apiKey");
     const apiKey = findByTestId(modal, "ai-config-apikey");
     expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(false);
+  });
+
+  it("설정 제공자 목록은 oh-my-pi 카탈로그 id 전부를 담는다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const select = findByTestId(modal, "ai-oh-my-pi-provider");
+    if (!select) throw new Error("provider select missing");
+    const values = select.childNodes
+      .filter((node): node is FakeElement => node instanceof FakeElement)
+      .map((node) => node.attrs.value)
+      .filter((value): value is string => Boolean(value));
+    expect(values).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
+  });
+
+  it("oh-my-pi 제공자를 바꾸면 그 기본 모델과 함께 저장된다", () => {
+    const panel = renderPanel();
+    const modal = openSettingsSurface(panel);
+    const select = findByTestId(modal, "ai-oh-my-pi-provider") as unknown as HTMLSelectElement;
+    if (!select) throw new Error("provider select missing");
+    select.value = "anthropic";
+    select.dispatchEvent(new Event("change"));
+    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
+    expect(stored.providerId).toBe("anthropic");
+    expect(stored.model).toBe("claude-opus-4-8");
   });
 
   it("API 키 입력만으로 즉시 localStorage에 저장된다 (저장 버튼 불필요)", () => {

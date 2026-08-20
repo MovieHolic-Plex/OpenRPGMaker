@@ -5,6 +5,7 @@ import { getMapEditHistoryState, recordProjectSnapshot, resetMapEditHistory } fr
 import {
   directorStartPrompts,
   formatComposerPlaceholder,
+  nextStepHint,
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -266,6 +267,22 @@ describe("AI 패널 크롬", () => {
     expect(chipButtons.length).toBeLessThanOrEqual(3);
     expect(chipButtons.length).toBe(expected.length);
     expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder(readAgentBrief()));
+    expect(findByTestId(panel, "ai-next-steps")?.hidden).toBe(true);
+  });
+
+  it("유리·사이드 빈 화면은 다음 할 일을 큰 버튼으로 보여 준다", () => {
+    editorState.set({ chatDock: "glass" });
+    const panel = renderPanel();
+    expandPanel(panel);
+    const steps = findByTestId(panel, "ai-next-steps");
+    const buttons = steps?.querySelectorAll("button") ?? [];
+    const expected = directorStartPrompts(readAgentBrief());
+
+    expect(steps?.hidden).toBe(false);
+    expect(findByTestId(panel, "ai-next-steps-hint")?.textContent).toBe(nextStepHint(readAgentBrief()));
+    expect(buttons.length).toBe(expected.length);
+    expect(buttons[0]?.textContent).toBe(expected[0]?.label);
+    expect(findByTestId(panel, `ai-start-visual-stage-${expected[0]?.id ?? "place"}`)).toBeTruthy();
   });
 
   it("감독 칩 클릭은 입력만 채우고 전송하지 않는다", () => {
@@ -352,6 +369,10 @@ describe("AI 패널 크롬", () => {
     expandPanel(panel);
     const toggle = findByTestId(panel, "chat-dock-toggle");
     if (!toggle) throw new Error("dock toggle missing");
+
+    toggle.click();
+    expect(findByTestId(panel, "ai-glass-log")).toBeTruthy();
+    expect(findByTestId(panel, "ai-chat-log")).toBeTruthy();
 
     toggle.click();
 

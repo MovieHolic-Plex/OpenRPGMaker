@@ -133,7 +133,17 @@ export function readAgentBrief(): AgentBrief {
 
 export function formatComposerPlaceholder(brief: AgentBrief): string {
   if (brief.selectionLabel) return `무엇을 만들까?  ${brief.selectionLabel}  ·  Enter로 보내기`;
-  return "무엇을 만들까?  Enter로 보내기";
+  return "또는 직접 적어 보세요. Enter로 보내기";
+}
+
+export function nextStepHint(brief: AgentBrief): string {
+  if (brief.selectionLabel) return "선택한 칸에 무엇을 둘지 골라 보세요.";
+  if (!brief.hasPath && brief.eventCount === 0) {
+    return "빈 맵이에요. 아래 중 하나를 누르면 바로 시작합니다.";
+  }
+  if (!brief.hasPath) return "길이 없어요. 장소를 만들어 길이 이어지게 해 보세요.";
+  if (brief.eventCount === 0) return "아직 사람이 없어요. 등장인물을 만들어 보세요.";
+  return "이어서 부탁하거나, 맵에 문제가 없는지 검사해 보세요.";
 }
 
 export function directorStartPrompts(brief: AgentBrief): readonly AiVisualStartPrompt[] {

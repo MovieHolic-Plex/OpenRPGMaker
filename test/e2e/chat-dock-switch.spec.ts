@@ -69,7 +69,7 @@ async function assertInputUsable(page: Page, value: string): Promise<void> {
 }
 
 test.describe("chat dock switch", () => {
-  test("float default, side toggle, DOM preservation, focus, and resize bounds", async ({ page }) => {
+  test("glass default, side then float toggle, DOM preservation, focus, and resize bounds", async ({ page }) => {
     await page.setViewportSize({ width: 1600, height: 920 });
     await openEditor(page);
 
@@ -78,14 +78,15 @@ test.describe("chat dock switch", () => {
     const sidePanel = page.getByTestId("chat-side-panel");
     const floatHost = page.getByTestId("chat-float-host");
     await expect(floatHost.getByTestId("ai-panel")).toBeVisible();
-    await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-float"))).toBe(true);
+    await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-chat-dock-glass"))).toBe(true);
     await expect.poll(() => page.evaluate(() => document.body.classList.contains("ai-panel-docked"))).toBe(false);
-    await assertInputUsable(page, "float input ok");
+    await assertInputUsable(page, "glass input ok");
     await expect(floatHost.getByTestId("ai-command-bar")).toBeVisible();
-    expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
+    await expect(floatHost.getByTestId("ai-director-plate")).toBeVisible();
+    await expect(floatHost.getByTestId("ai-director-plate")).toContainText("조수");
     expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
 
-    // float 기본: 커맨드바는 캔버스 안에 떠 있다.
+    // glass 기본: 카드는 캔버스 안에 떠 있다.
     const canvasFloat = await box(canvas);
     const commandFloat = await box(commandBar);
     expectInside(commandFloat, canvasFloat);
@@ -139,13 +140,13 @@ test.describe("chat dock switch", () => {
 
   // Break: float still mounts .ai-chat-log / ai-rising-overlay under chat-float-host
   // (even if CSS display:none hides them).
-  test("1440 float host is composer-only and side remounts the work log", async ({ page }) => {
+  test("1440 glass host has the short log and no rising overlay", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await openEditor(page);
 
     const floatHost = page.getByTestId("chat-float-host");
     await expect(floatHost.getByTestId("ai-command-bar")).toBeVisible();
-    expect(await floatHost.locator(".ai-chat-log").count()).toBe(0);
+    await expect(floatHost.getByTestId("ai-glass-log")).toBeAttached();
     expect(await floatHost.getByTestId("ai-rising-overlay").count()).toBe(0);
     await page.screenshot({ path: ".omo/evidence/ai-assistant-ux-overhaul/task-12-float.png" });
 

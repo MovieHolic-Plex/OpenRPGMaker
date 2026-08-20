@@ -86,7 +86,7 @@ async function openPaletteResult(page: Page, query: string, commandId: string): 
 
 async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<void> {
   const layout = page.getByTestId("editor-layout");
-  await expect(layout).toHaveClass(/chat-dock-float/);
+  await expect(layout).toHaveClass(/chat-dock-glass/);
   await expect(page.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode}`));
   await expect(page.getByTestId(`editor-ui-mode-${mode}`)).toHaveAttribute("aria-pressed", "true");
 

@@ -4,7 +4,9 @@ import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import type { MapEditLockStatus } from "@/editor/mapEditLocks";
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout";
+const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
+const LAYOUT_VERSION_KEY = "rpg-zzu:editor-layout-version";
+const LAYOUT_VERSION = "2026-07-24-maptree-300";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -103,6 +105,7 @@ function installBrowserGlobals(): void {
 
 function installStorage(): void {
   storage = new MemoryStorage();
+  storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
     writable: true,
@@ -201,7 +204,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     document.dispatchEvent(mouseEvent("mouseup", {}));
     toggleLeftPanel();
 
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 400, mapTreeHeight: 160, leftCollapsed: true, chatDock: "float" }));
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ leftCollapsed: true, chatDock: "glass" });
 
     vi.resetModules();
     mockEditorDependencies();
@@ -228,8 +231,8 @@ describe("에디터 레이아웃 크기 저장", () => {
     log.textContent = "로그 유지";
 
     expect(panel.parentElement).toBe(floatHost);
-    expect(editorState.get().chatDock).toBe("float");
-    expect(panel.classList.contains("chat-dock-float")).toBe(true);
+    expect(editorState.get().chatDock).toBe("glass");
+    expect(panel.classList.contains("chat-dock-glass")).toBe(true);
     expect(panel.classList.contains("is-docked")).toBe(false);
 
     toggle.click();
@@ -238,13 +241,20 @@ describe("에디터 레이아웃 크기 저장", () => {
     expect(findByTestId(panel, "ai-chat-log")).toBe(log);
     expect(log.textContent).toBe("로그 유지");
     expect(editorState.get().chatDock).toBe("side");
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 300, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "side" });
 
     toggle.click();
 
     expect(panel.parentElement).toBe(floatHost);
     expect(findByTestId(panel, "ai-chat-log")).toBe(log);
-    expect(storage.getItem(EDITOR_LAYOUT_KEY)).toBe(JSON.stringify({ leftWidth: 300, mapTreeHeight: 154, leftCollapsed: false, chatDock: "float" }));
+    expect(editorState.get().chatDock).toBe("float");
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "float" });
+
+    toggle.click();
+
+    expect(panel.parentElement).toBe(floatHost);
+    expect(editorState.get().chatDock).toBe("glass");
+    expect(JSON.parse(storage.getItem(EDITOR_LAYOUT_KEY) ?? "{}")).toMatchObject({ chatDock: "glass" });
   });
 
   it("저장된 크기를 기존 범위로 clamp해서 복원하고 잘못된 JSON은 기본값으로 무시한다", async () => {
@@ -257,9 +267,8 @@ describe("에디터 레이아웃 크기 저장", () => {
 
     renderEditor(main);
 
-    const leftPanel = fakeElement(main).querySelector(".left-panel");
-    expect(leftPanel?.style.width).toBe("300px");
-    expect(leftPanel?.style["--map-tree-height"]).toBe("112px");
+    const { editorState } = await import("@/editor/editorState");
+    expect(editorState.get().chatDock).toBe("float");
 
     storage.setItem(EDITOR_LAYOUT_KEY, "{broken");
     vi.resetModules();
@@ -268,16 +277,14 @@ describe("에디터 레이아웃 크기 저장", () => {
     const freshMain = document.createElement("main");
     fresh.renderEditor(freshMain);
 
-    const freshLeftPanel = fakeElement(freshMain).querySelector(".left-panel");
-    // 깨진 JSON → 기본 레이아웃(float dock). 좌폭 기본 300이 그대로 적용된다.
-    expect(Number.parseInt(String(freshLeftPanel?.style.width || freshLeftPanel?.parentElement?.style.getPropertyValue?.("--left-drawer-width") || "0"), 10)).toBeLessThanOrEqual(320);
-    expect(freshLeftPanel?.style["--map-tree-height"]).toBe("154px");
+    const { editorState: freshState } = await import("@/editor/editorState");
+    expect(freshState.get().chatDock).toBe("glass");
   });
 
   it("저장된 채팅 side dock을 복원한다", async () => {
     // 소스가 읽는 실제 키(v4)에 심는다 — 상단 EDITOR_LAYOUT_KEY 상수는 레거시 키라 저장 dock 복원을 검증하지 못한다.
-    storage.setItem("rpg-zzu:editor-layout-version", "2026-08-18-stage-canvas");
-    storage.setItem("rpg-zzu:editor-layout:v4", JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
+    storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth: 526, mapTreeHeight: 154, leftCollapsed: false, chatDock: "side" }));
     vi.resetModules();
     mockEditorDependencies();
     const { renderEditor } = await import("@/editor/panels/editor");

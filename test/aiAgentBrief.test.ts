@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   directorStartPrompts,
   formatComposerPlaceholder,
+  nextStepHint,
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
 import { editorState } from "@/editor/editorState";
@@ -69,5 +70,17 @@ describe("readAgentBrief", () => {
     const prompts = directorStartPrompts(readAgentBrief());
     expect(prompts[0]?.id).toBe("character");
     expect(prompts[0]?.instruction).toContain("빈 맵");
+  });
+
+  it("빈 맵은 버튼을 누르라고 안내한다", () => {
+    expect(nextStepHint(readAgentBrief())).toBe("빈 맵이에요. 아래 중 하나를 누르면 바로 시작합니다.");
+  });
+
+  it("선택이 있으면 그 칸을 고르라고 안내한다", () => {
+    const mapId = store.getCurrent().startMapId;
+    editorState.set({
+      selection: { mapId, x: 1, y: 1, width: 2, height: 2 },
+    });
+    expect(nextStepHint(readAgentBrief())).toBe("선택한 칸에 무엇을 둘지 골라 보세요.");
   });
 });

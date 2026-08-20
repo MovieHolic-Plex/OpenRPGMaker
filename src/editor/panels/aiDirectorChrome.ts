@@ -20,6 +20,7 @@ const DIRECTOR_FACE_SIZE_PX = FACESET_FACE_WIDTH;
 
 export type DirectorPlateHandle = {
   readonly element: HTMLElement;
+  readonly setName: (name: string) => void;
   readonly dispose: () => void;
 };
 
@@ -103,6 +104,10 @@ export function createDirectorPlate(): DirectorPlateHandle {
 
   return {
     element,
+    setName: (nextName: string) => {
+      name.textContent = nextName;
+      face.setAttribute("aria-label", nextName);
+    },
     dispose: () => {
       unsubscribeEditor();
       unsubscribeStore();

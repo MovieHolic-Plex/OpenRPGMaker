@@ -7,6 +7,7 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -32,6 +33,8 @@ export interface ChatMessage {
 
 export interface AiConfig {
   authMode: "chatgpt" | "apiKey";
+  /** oh-my-pi 제공자 id. 토큰/키는 브라우저에 두지 않고 동반 서비스가 보관한다. */
+  providerId?: string;
   baseUrl: string;
   // 감독 모델: 계획/공간추론/스펙 작성/검수 AssistantSession 대화 루프.
   model: string;
@@ -120,6 +123,7 @@ export function defaultAiConfig(): AiConfig {
   // 클라이언트에 키가 없어도 된다(proxyAuth). 절대 URL(https://...)은 클라이언트 키 필요.
   return {
     authMode: wantsGateway ? "apiKey" : "chatgpt",
+    providerId: wantsGateway ? "openai" : DEFAULT_OH_MY_PI_PROVIDER,
     baseUrl: envUrl || DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
@@ -159,24 +163,25 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    // authMode 와 모델이 어긋나면 요청이 400 으로 실패한다(실측: ChatGPT 구독/Codex 는 `gpt-` 가 아닌
-    // 모델을 거부 — "The 'z-ai/glm-5.2-ultrafast' model is not supported when using Codex with a
-    // ChatGPT account"). 옛 기본값이 localStorage 에 남아 새 기본값을 계속 덮는 사례가 있어, 로드 시점에
-    // 그 authMode 의 권장 기본 모델로 교정한다. authMode/baseUrl 해석은 검증을 통과한 상태이므로 건드리지
-    // 않고 모델 필드만 고친다. 교정 사실은 무엇이 무엇으로 바뀌었는지 console.warn 으로 한 번만 알린다.
-    if (!isModelValidForAuthMode(authMode, model) || !isModelValidForAuthMode(authMode, liteModel)) {
-      const fallback = defaultModelForAuthMode(authMode) || base.model;
-      if (!isModelValidForAuthMode(authMode, model)) {
+    const providerId = parseOhMyPiProvider(
+      parsed.providerId,
+      authMode === "chatgpt" ? DEFAULT_OH_MY_PI_PROVIDER : "openai",
+    );
+    // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
+    if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
+      const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
+      if (!isModelValidForAuthMode(authMode, model, providerId)) {
         console.warn(`[llmClient] authMode(${authMode})에서 쓸 수 없는 모델 '${model}' 을(를) 권장 기본 '${fallback}' 으로 바꿨습니다.`);
         model = fallback;
       }
-      if (!isModelValidForAuthMode(authMode, liteModel)) {
+      if (!isModelValidForAuthMode(authMode, liteModel, providerId)) {
         console.warn(`[llmClient] authMode(${authMode})에서 쓸 수 없는 실행 모델 '${liteModel}' 을(를) 권장 기본 '${fallback}' 으로 바꿨습니다.`);
         liteModel = fallback;
       }
     }
     return {
       authMode,
+      providerId,
       baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
       model,
       liteModel,
@@ -291,8 +296,21 @@ function humanizeStatus(status: number, body: string, authMode: AiConfig["authMo
   }
 }
 
+export function isCompanionBaseUrl(url: string): boolean {
+  const trimmed = url.trim().replace(/\/$/, "");
+  return trimmed === "/v1"
+    || trimmed === "http://127.0.0.1:17832/v1"
+    || trimmed === "http://localhost:17832/v1";
+}
+
+/** ChatGPT 모드이거나 동반 서비스 baseUrl 이면 oh-my-pi 동반 경로를 탄다. */
+export function usesOhMyPiCompanion(config: AiConfig): boolean {
+  if (config.authMode === "chatgpt") return true;
+  return isCompanionBaseUrl(config.baseUrl);
+}
+
 function endpoint(config: AiConfig): string {
-  const baseUrl = config.authMode === "chatgpt" ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
+  const baseUrl = usesOhMyPiCompanion(config) ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
   return `${baseUrl.replace(/\/$/, "")}/chat/completions`;
 }
 
@@ -308,6 +326,10 @@ export function isProxyAuth(config: AiConfig): boolean {
 
 function headers(config: AiConfig): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json" };
+  if (usesOhMyPiCompanion(config)) {
+    h["X-Rpgzzu-Provider"] = parseOhMyPiProvider(config.providerId);
+    return h;
+  }
   // proxyAuth: 프록시가 서버 측에서 Authorization 을 주입한다 — 클라이언트는 키를 보내지 않는다.
   if (config.authMode === "apiKey" && !isProxyAuth(config)) {
     h.Authorization = `Bearer ${config.apiKey}`;
@@ -683,11 +705,12 @@ export function reportTransportHealth(ok: boolean, status?: number, message?: st
 
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
 async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
+  const companion = usesOhMyPiCompanion(config);
   // proxyAuth(상대 baseUrl)는 프록시가 서버 측에서 Authorization 을 주입하므로 클라이언트 키 불필요.
-  if (config.authMode === "apiKey" && !isProxyAuth(config) && (!config.apiKey || !config.apiKey.trim())) {
+  if (!companion && config.authMode === "apiKey" && !isProxyAuth(config) && (!config.apiKey || !config.apiKey.trim())) {
     throw new LlmError("API 키가 설정되지 않았습니다. 어시스턴트 설정에서 API 키를 입력하세요.", 401);
   }
-  if (config.authMode === "apiKey" && (!config.baseUrl || !config.baseUrl.trim())) {
+  if (!companion && config.authMode === "apiKey" && (!config.baseUrl || !config.baseUrl.trim())) {
     throw new LlmError("LLM 엔드포인트(baseUrl)가 설정되지 않았습니다. 어시스턴트 설정에서 OpenAI 호환 baseUrl을 입력하세요.", 400);
   }
   const wantsStream = req.stream ?? Boolean(req.onToken || req.onReasoning);
@@ -732,8 +755,8 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
       throw new LlmError(`요청 시간 초과(${LLM_REQUEST_TIMEOUT_MS / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
     }
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
-    const target = config.authMode === "chatgpt" ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
-    const hint = config.authMode === "chatgpt" ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
+    const target = usesOhMyPiCompanion(config) ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
+    const hint = usesOhMyPiCompanion(config) ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
     reportTransportHealth(false, undefined, `네트워크 오류(${target})`);
     throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`);
   }

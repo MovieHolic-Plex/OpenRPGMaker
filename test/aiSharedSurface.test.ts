@@ -66,11 +66,11 @@ describe("AI shared surface", () => {
     const modeBtn = findByTestId(panel, "ai-dock-mode-btn");
     // 헤더 뱃지는 제거 — 커맨드 바 토글 + 더보기 메뉴만 유지.
     expect(findByTestId(panel, "ai-dock-mode-btn-header")).toBeNull();
-    expect(modeBtn?.textContent).toBe("옆에 붙이기");
+    expect(modeBtn?.textContent).toBe("왼쪽 유리");
     expect(modeBtn?.dataset.dockMode).toBe("float");
 
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreDock = findByTestId(panel, "ai-more-dock");
-    expect(moreDock?.textContent).toContain("옆에 붙이기");
+    expect(moreDock?.textContent).toContain("왼쪽 유리");
   });
 });

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { DEFAULT_CHAT_DOCK } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import {
@@ -50,8 +51,8 @@ afterEach(() => {
 });
 
 describe("AI assistant UX P0–P2", () => {
-  it("defaults chatDock preference to float", () => {
-    expect(editorState.get().chatDock).toBe("float");
+  it("defaults chatDock preference to glass", () => {
+    expect(DEFAULT_CHAT_DOCK).toBe("glass");
   });
 
   it("exposes compact icon chrome: new chat, settings, more menu", () => {

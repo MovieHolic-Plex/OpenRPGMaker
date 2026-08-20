@@ -5,13 +5,15 @@
 
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import { DEFAULT_CHAT_DOCK, type ChatDock } from "@/editor/chatDock";
+
+export type { ChatDock };
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
 export type PaintShape = "pen" | "rect" | "round";
 export type Layer = "lower" | "upper" | "event";
 export type AutoConnectMode = boolean;
 export type ActivePaletteStamp = PaletteStamp | null;
-export type ChatDock = "float" | "side";
 export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
 export const EDITOR_BRUSH_SIZES = [1, 2, 3, 4] as const;
@@ -92,7 +94,7 @@ class EditorStateStore {
     clipboard: null,
     pastePreview: null,
     showGrid: true,
-    chatDock: "float",
+    chatDock: DEFAULT_CHAT_DOCK,
     showLayoutBboxes: false,
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,

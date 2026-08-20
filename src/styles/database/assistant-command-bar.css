@@ -9,11 +9,12 @@ body.ai-command-bar-active .editor-layout {
 }
 
 body.ai-chat-dock-float.ai-command-bar-active .editor-layout,
+body.ai-chat-dock-glass.ai-command-bar-active .editor-layout,
 body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   padding-bottom: 0;
 }
 
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) {
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) {
   background: transparent;
   border: none;
   box-shadow: none;
@@ -30,11 +31,11 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   width: auto;
 }
 
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-header,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-toolbar,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-body,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-chat-resize-handle,
-.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side) > .ai-collapsed-restore {
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-header,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-toolbar,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-body,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-chat-resize-handle,
+.ai-chat-panel:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) > .ai-collapsed-restore {
   display: none;
 }
 
@@ -62,6 +63,20 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   left: 12px;
   position: absolute;
   right: 12px;
+}
+
+.ai-chat-panel.chat-dock-glass .ai-command-bar {
+  align-items: stretch;
+  bottom: auto;
+  flex: 0 0 auto;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: stretch;
+  left: auto;
+  position: relative;
+  right: auto;
+  z-index: 1;
+  gap: 6px;
+  padding: 8px 4px 4px;
 }
 
 .ai-chat-panel.chat-dock-side .ai-command-bar {

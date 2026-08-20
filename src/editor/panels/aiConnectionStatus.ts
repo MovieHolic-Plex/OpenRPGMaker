@@ -160,7 +160,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
   if (refreshInFlight) return;
   refreshInFlight = true;
   try {
-    const auth = await fetchChatGptAuthStatus();
+    const auth = await fetchChatGptAuthStatus(config.providerId);
     const next: CachedOAuthStatus = { connected: auth.connected, planType: auth.planType };
     const changed =
       !aiOAuthCachedStatus ||

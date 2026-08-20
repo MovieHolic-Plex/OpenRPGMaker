@@ -1,6 +1,13 @@
 import { DEFAULT_CHATGPT_BASE_URL } from "@/ai/llmClient";
+import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 const companionOrigin = DEFAULT_CHATGPT_BASE_URL.replace(/\/v1\/?$/u, "");
+
+export function companionAuthUrl(path: string, providerId?: string): string {
+  const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
+  const query = new URLSearchParams({ provider });
+  return `${companionOrigin}${path}?${query.toString()}`;
+}
 
 export interface ChatGptAuthStatus {
   readonly connected: boolean;
@@ -69,10 +76,15 @@ async function readErrorBody(response: Response): Promise<string | undefined> {
   }
 }
 
-export async function fetchChatGptAuthStatus(): Promise<ChatGptAuthStatus> {
-  const response = await companionFetch(`${companionOrigin}/auth/status`);
+export interface CompanionLoginStart extends ChatGptLoginStart {
+  readonly needsApiKey?: boolean;
+  readonly instructions?: string;
+  readonly connected?: boolean;
+}
+
+export async function fetchChatGptAuthStatus(providerId?: string): Promise<ChatGptAuthStatus> {
+  const response = await companionFetch(companionAuthUrl("/auth/status", providerId));
   if (!response.ok) {
-    // 상태 코드만 던지면 호출자가 서버가 알려준 원인을 버리게 된다 — 본문의 error 를 함께 담는다.
     throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
   }
   const payload = objectValue(await response.json());
@@ -82,14 +94,61 @@ export async function fetchChatGptAuthStatus(): Promise<ChatGptAuthStatus> {
   };
 }
 
-export async function startChatGptLogin(): Promise<ChatGptLoginStart> {
-  const response = await companionFetch(`${companionOrigin}/auth/login`, { method: "POST" });
+export async function startChatGptLogin(providerId?: string, apiKey?: string): Promise<CompanionLoginStart> {
+  const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
+  const response = await companionFetch(companionAuthUrl("/auth/login", provider), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ provider, apiKey: apiKey?.trim() || undefined }),
+  });
   if (!response.ok) {
     throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
   }
   const payload = objectValue(await response.json());
-  if (typeof payload?.verificationUrl !== "string" || typeof payload.userCode !== "string") {
-    throw new Error("OAuth companion returned an invalid device-login response");
+  const verificationUrl = typeof payload?.verificationUrl === "string" ? payload.verificationUrl : "";
+  const userCode = typeof payload?.userCode === "string" ? payload.userCode : "";
+  if (!verificationUrl && payload?.needsApiKey !== true && payload?.connected !== true) {
+    throw new Error("OAuth companion returned an invalid login response");
   }
-  return { verificationUrl: payload.verificationUrl, userCode: payload.userCode };
+  return {
+    verificationUrl,
+    userCode,
+    needsApiKey: payload?.needsApiKey === true,
+    instructions: typeof payload?.instructions === "string" ? payload.instructions : undefined,
+    connected: payload?.connected === true,
+  };
+}
+
+export async function refreshCompanionAuth(providerId?: string): Promise<ChatGptAuthStatus> {
+  const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
+  const response = await companionFetch(companionAuthUrl("/auth/refresh", provider), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ provider }),
+  });
+  if (!response.ok) {
+    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  }
+  const payload = objectValue(await response.json());
+  return {
+    connected: payload?.connected === true,
+    planType: typeof payload?.planType === "string" ? payload.planType : undefined,
+  };
+}
+
+export async function saveCompanionApiKey(providerId: string, apiKey: string): Promise<ChatGptAuthStatus> {
+  const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
+  const response = await companionFetch(companionAuthUrl("/auth/key", provider), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ provider, apiKey }),
+  });
+  if (!response.ok) {
+    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  }
+  const payload = objectValue(await response.json());
+  return {
+    connected: payload?.connected === true,
+    planType: typeof payload?.planType === "string" ? payload.planType : undefined,
+  };
 }
