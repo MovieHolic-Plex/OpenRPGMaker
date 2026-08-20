@@ -13,7 +13,8 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { AiDocument } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { editorState, type ChatDock } from "@/editor/editorState";
+import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
+import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
@@ -70,8 +71,10 @@ import { openAiSettingsModal } from "./aiSettingsModal";
 import {
   directorStartPrompts,
   formatComposerPlaceholder,
+  nextStepHint,
   readAgentBrief,
 } from "./aiAgentBrief";
+import { buildVisualStartGallery } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
@@ -698,6 +701,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 접힘 레일의 상태 점: 진행 중 표시를 켜고 직전 턴의 알림 점은 지운다.
     panel.classList.add("is-turn-running");
     panel.classList.remove("is-turn-attention", "is-turn-error");
+    syncGlassIdle();
     refreshRunningStatus(true);
     if (typeof window !== "undefined" && typeof window.setInterval === "function") {
       progressTimer = window.setInterval(() => refreshRunningStatus(false), 1000);
@@ -714,6 +718,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     runningProgress = null;
     runningPhaseStatus = null;
     panel.classList.remove("is-turn-running");
+    syncGlassIdle();
   };
   const abortActiveTurn = (): void => {
     if (!activeAbortController || activeAbortController.signal.aborted) return;
@@ -1582,6 +1587,49 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
   const composerChips = el("div", { class: "ai-composer-chips", dataset: { testid: "ai-composer-chips" } });
+  const nextSteps = el("div", {
+    class: "ai-next-steps",
+    dataset: { testid: "ai-next-steps" },
+  });
+  const refreshNextSteps = (): void => {
+    if (typeof document === "undefined") return;
+    const brief = readAgentBrief();
+    const hasLog = Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
+      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
+      || Boolean(log.querySelector("[data-testid=ai-command-row]"));
+    const busy = hasLog || Boolean(turnBusy || runningProgress);
+    const dock = readChatDock();
+    const show = (dock === "glass" || dock === "side") && !busy && input.value.trim() === "";
+    nextSteps.hidden = !show;
+    if (!show) {
+      nextSteps.replaceChildren();
+      return;
+    }
+    const prompts = directorStartPrompts(brief).slice(0, 3);
+    const project = store.getCurrent();
+    const mapId = editorState.get().currentMapId ?? project.startMapId;
+    const map = mapId ? project.maps[mapId] : undefined;
+    const tileset = map ? project.tilesets[map.tilesetId] ?? null : null;
+    const gallery = buildVisualStartGallery({
+      tileset,
+      prompts,
+      tileSize: 28,
+      charsetHeight: 64,
+      onPick: (instruction, id) => {
+        const picked = prompts.find((prompt) => prompt.id === id);
+        void sendText(instruction, picked?.label ?? instruction);
+      },
+    });
+    gallery.classList.add("ai-next-steps-list");
+    nextSteps.replaceChildren(
+      el("p", {
+        class: "ai-next-steps-hint",
+        dataset: { testid: "ai-next-steps-hint" },
+        text: nextStepHint(brief),
+      }),
+      gallery,
+    );
+  };
   const refreshComposerChips = (): void => {
     if (typeof document === "undefined") return;
     const brief = readAgentBrief();
@@ -1589,6 +1637,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (input.value.trim() !== "") {
       composerChips.replaceChildren();
       composerChips.hidden = true;
+      refreshNextSteps();
       return;
     }
     const prompts = directorStartPrompts(brief).slice(0, 3);
@@ -1610,6 +1659,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         }),
       ),
     );
+    refreshNextSteps();
   };
   const clearSelectionTaskContext = (): void => {
     abortActiveSelectionRegionTask();
@@ -1753,9 +1803,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const currentChatDock = (): ChatDock => readChatDock();
   let refreshDockLabels: () => void = () => {};
+  let syncGlassIdle: () => void = () => {};
   const onDockToggleClick = (): void => {
     if (options.onChatDockToggle) options.onChatDockToggle();
-    else editorState.set({ chatDock: currentChatDock() === "side" ? "float" : "side" });
+    else editorState.set({ chatDock: cycleChatDock(currentChatDock()) });
     refreshDockLabels();
   };
   // testid 호환용 숨은 토글(레이아웃 테스트·E2E).
@@ -1913,11 +1964,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   }) as HTMLButtonElement;
   let commandDockItem: HTMLButtonElement | null = null;
   const applyDockModeChrome = (mode: ChatDock): void => {
-    const side = mode === "side";
-    const actionLabel = side ? "떠 있기" : "옆에 붙이기";
-    const nextHint = side
-      ? "현재: 사이드 패널(대화·기록 전체). 클릭하면 플로팅 바로 전환"
-      : "현재: 플로팅 바(맵 위 입력). 클릭하면 사이드 패널로 고정";
+    const actionLabel = nextChatDockActionLabel(mode);
+    const nextHint = chatDockHint(mode);
+    directorPlate.setName(mode === "glass" ? "조수" : "감독");
     dockModeButton.textContent = actionLabel;
     dockModeButton.dataset.dockMode = mode;
     dockModeButton.setAttribute("title", nextHint);
@@ -2067,9 +2116,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   const historyLogMount = el("div", { class: "ai-history-log-mount" });
   // AI 표면은 기본/전문가 공통 — expert-only board 없음. 시작 화면·스킬·기록이 동일.
+  const glassLogMount = el("div", {
+    class: "ai-glass-log",
+    dataset: { testid: "ai-glass-log" },
+  });
   const mainColumn = el("div", {
     class: "ai-chat-main",
-    children: [historyLogMount, chipsHost],
+    children: [nextSteps, glassLogMount, historyLogMount, chipsHost],
   });
   const body = el("div", { class: "ai-chat-body", children: [mainColumn, drawer.element] });
 
@@ -2111,6 +2164,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       panel.classList.contains("is-studio") ||
       panel.classList.contains("is-docked") ||
       panel.classList.contains("chat-dock-float") ||
+      panel.classList.contains("chat-dock-glass") ||
       panel.classList.contains("chat-dock-side")
     ) {
       panel.setAttribute("style", "");
@@ -2161,12 +2215,35 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     for (const node of tail) node.remove();
     panel.append(...tail);
   };
+  syncGlassIdle = (): void => {
+    if (readChatDock() !== "glass") {
+      panel.classList.remove("is-glass-idle");
+      refreshNextSteps();
+      return;
+    }
+    const busy = panel.classList.contains("is-turn-running")
+      || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
+      || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"));
+    panel.classList.toggle("is-glass-idle", !busy);
+    refreshNextSteps();
+  };
   const applyComposerViewPolicy = (): void => {
     const mode = readChatDock();
     switch (mode) {
       case "float":
         if (!historyOpen && !studio) removeStartScreen();
         risingOverlay.remove();
+        panel.classList.remove("is-glass-idle");
+        refreshNextSteps();
+        return;
+      case "glass":
+        if (!historyOpen && !studio) {
+          removeStartScreen();
+          log.remove();
+          glassLogMount.append(log);
+        }
+        risingOverlay.remove();
+        syncGlassIdle();
         return;
       case "side":
         if (!panel.contains(risingOverlay)) remountComposerTail(true);
@@ -2178,6 +2255,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           volatileZone.hidden = false;
           volatileZone.classList.remove("is-faded");
         }
+        panel.classList.remove("is-glass-idle");
+        refreshNextSteps();
         return;
       default: {
         const unreachable: never = mode;

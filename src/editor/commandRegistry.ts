@@ -156,7 +156,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
       id: "toggle-chat-dock",
       label: "화면: AI 채팅 도크 전환",
       category: "화면",
-      keywords: ["chat", "dock", "ai", "채팅", "도크"],
+      keywords: ["chat", "dock", "ai", "채팅", "도크", "glass", "조수", "유리"],
       run: () => {
         void import("@/editor/panels/editor").then((mod) => mod.toggleChatDock());
       },

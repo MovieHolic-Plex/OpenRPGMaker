@@ -26,4 +26,12 @@ describe("modelCatalog", () => {
     const all = groups.flatMap((g) => g.models);
     expect(all).not.toContain("glm-5.2-ultrafast");
   });
+
+  it("oh-my-pi 제공자를 고르면 그 기본 모델이 목록 앞에 온다", async () => {
+    const { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
+    expect(defaultModelForAuthMode("chatgpt", "anthropic")).toBe("claude-opus-4-8");
+    expect(isModelValidForAuthMode("chatgpt", "claude-opus-4-8", "anthropic")).toBe(true);
+    expect(isModelValidForAuthMode("chatgpt", "claude-opus-4-8", "openai-codex")).toBe(false);
+    expect(modelCatalogForAuthMode("chatgpt", "groq")[0]?.models[0]).toBe("openai/gpt-oss-120b");
+  });
 });

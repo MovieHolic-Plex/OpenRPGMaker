@@ -283,8 +283,8 @@ describe("대화 복원과 내보내기", () => {
 
     const panel = renderPanel();
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
-    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")?.parentElement).toBe(findByTestId(panel, "ai-next-steps"));
     expect(findByTestId(panel, "ai-resume-conversation")).toBeNull();
     expect(findByTestId(panel, "ai-composer-chips")).toBeTruthy();
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("다른 요청");
@@ -343,6 +343,7 @@ describe("키 온보딩과 설정 접근성", () => {
   });
 
   it("401 오류 버블에도 설정 열기 버튼을 붙인다", async () => {
+    editorState.set({ chatDock: "float" });
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "bad-key" }));
     vi.stubGlobal("fetch", vi.fn(async () => new Response("no key", { status: 401 })));
     const panel = renderPanel();

@@ -11,6 +11,7 @@ import {
   type AiConfig,
 } from "@/ai/llmClient";
 import { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } from "@/ai/modelCatalog";
+import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import {
   applyAiFontSize,
   loadAiFontSize,
@@ -103,15 +104,17 @@ export function renderAiSettingsForm(options: {
   const onFontSizeChange = options.onFontSizeChange ?? (() => undefined);
   const config = loadAiConfig();
   let authMode = config.authMode;
+  let providerId = parseOhMyPiProvider(config.providerId);
   const baseUrl = textField("엔드포인트", config.baseUrl, "ai-config-baseurl", "text", DEFAULT_BASE_URL);
-  const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL);
+  const model = modelField("감독 모델(계획·검수)", config.model, "ai-config-model", "ai-config-model-preset", authMode, DEFAULT_MODEL, providerId);
   const liteModel = modelField(
     "실행 모델(툴 작업)",
     config.liteModel ?? DEFAULT_LITE_MODEL,
     "ai-config-lite-model",
     "ai-config-lite-model-preset",
     authMode,
-    DEFAULT_LITE_MODEL
+    DEFAULT_LITE_MODEL,
+    providerId,
   );
   const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
   let persistAuthMode = (): void => undefined;
@@ -123,16 +126,31 @@ export function renderAiSettingsForm(options: {
     // 현재 값이 무효하면 권장 기본값으로 따라오게 한다. 유효하면 사용자 선택을 존중해 그대로 둔다.
     // setValue 를 써야 드롭다운 하이라이트 동기화와 경고 재평가가 함께 일어난다.
     // defaultModelForAuthMode 는 방어적으로 "" 를 줄 수 있어(카탈로그 빈 경우) DEFAULT_* 로 폴백한다.
-    const recommended = defaultModelForAuthMode(authMode);
-    if (!isModelValidForAuthMode(authMode, model.input.value.trim())) {
+    const recommended = defaultModelForAuthMode(authMode, providerId);
+    if (!isModelValidForAuthMode(authMode, model.input.value.trim(), providerId)) {
       model.setValue(recommended || DEFAULT_MODEL, authMode);
     }
-    if (!isModelValidForAuthMode(authMode, liteModel.input.value.trim())) {
+    if (!isModelValidForAuthMode(authMode, liteModel.input.value.trim(), providerId)) {
       liteModel.setValue(recommended || DEFAULT_LITE_MODEL, authMode);
     }
-    model.refresh(authMode);
-    liteModel.refresh(authMode);
+    model.refresh(authMode, providerId);
+    liteModel.refresh(authMode, providerId);
     persistAuthMode();
+  }, {
+    initialProviderId: providerId,
+    onProviderChange: (next) => {
+      providerId = next;
+      const recommended = defaultModelForAuthMode(authMode, next);
+      if (recommended && !isModelValidForAuthMode(authMode, model.input.value.trim(), next)) {
+        model.setValue(recommended, authMode);
+      } else if (recommended) {
+        model.setValue(recommended, authMode);
+        liteModel.setValue(recommended, authMode);
+      }
+      model.refresh(authMode, next);
+      liteModel.refresh(authMode, next);
+      persistAuthMode();
+    },
   });
   const updateAuthVisibility = (): void => {
     const apiMode = authMode === "apiKey";
@@ -235,6 +253,7 @@ export function renderAiSettingsForm(options: {
 
   const collect = (): AiConfig => ({
     authMode,
+    providerId,
     baseUrl: baseUrl.input.value.trim() || DEFAULT_BASE_URL,
     model: model.input.value.trim() || DEFAULT_MODEL,
     liteModel: liteModel.input.value.trim() || DEFAULT_LITE_MODEL,
@@ -254,8 +273,8 @@ export function renderAiSettingsForm(options: {
     // 로드 시점에 권장 기본으로 교정(원인 1 수정)하므로 실제로 400 요청이 나가지는 않기 때문이다.
     // 여기서 저장을 막으면 사용자 입력을 되돌리는 부작용이 생기고, 교정 안전망이 이미 있으므로
     // 경고(인라인 + 토스트)만으로 충분하다고 판단했다.
-    const modelValid = model.validate(authMode);
-    const liteValid = liteModel.validate(authMode);
+    const modelValid = model.validate(authMode, providerId);
+    const liteValid = liteModel.validate(authMode, providerId);
     saveAiConfig(next);
     onSaved(next);
     savedHint.textContent = "자동 저장됨";
@@ -283,7 +302,7 @@ export function renderAiSettingsForm(options: {
   }
   for (const field of [model, liteModel]) {
     // 입력 즉시 유효성을 보여준다(저장까지 기다리지 않음). authMode 는 클로저의 현재 값을 쓴다.
-    field.input.addEventListener("input", () => field.validate(authMode));
+    field.input.addEventListener("input", () => field.validate(authMode, providerId));
     field.preset.addEventListener("change", () => {
       if (field.preset.value) field.input.value = field.preset.value;
       persist(false);
@@ -363,14 +382,15 @@ function modelField(
   inputTestid: string,
   presetTestid: string,
   authMode: AiConfig["authMode"],
-  placeholder: string
+  placeholder: string,
+  providerId?: string,
 ): {
   row: HTMLElement;
   input: HTMLInputElement;
   preset: HTMLSelectElement;
-  refresh: (mode: AiConfig["authMode"]) => void;
-  validate: (mode: AiConfig["authMode"]) => boolean;
-  setValue: (value: string, mode: AiConfig["authMode"]) => void;
+  refresh: (mode: AiConfig["authMode"], providerId?: string) => void;
+  validate: (mode: AiConfig["authMode"], providerId?: string) => boolean;
+  setValue: (value: string, mode: AiConfig["authMode"], providerId?: string) => void;
 } {
   const input = el("input", {
     class: "ai-config-input",
@@ -395,8 +415,8 @@ function modelField(
   warning.style.color = "var(--danger, #d85c5c)";
   warning.style.fontSize = "11px";
   warning.style.marginTop = "4px";
-  const refresh = (nextMode: AiConfig["authMode"]): void => {
-    const groups = modelCatalogForAuthMode(nextMode);
+  const refresh = (nextMode: AiConfig["authMode"], providerId?: string): void => {
+    const groups = modelCatalogForAuthMode(nextMode, providerId);
     const options = [
       el("option", { attrs: { value: "" }, text: "GJC 모델 목록에서 선택" }),
       ...groups.map((group) => el("optgroup", {
@@ -409,9 +429,9 @@ function modelField(
   };
   // 현재 입력값이 해당 authMode 에서 유효한지 판정하고, 무효하면 경고 문구를 보여준다.
   // 유효하면 경고를 숨긴다. true = 유효.
-  const validate = (mode: AiConfig["authMode"]): boolean => {
+  const validate = (mode: AiConfig["authMode"], providerId?: string): boolean => {
     const value = input.value.trim();
-    if (isModelValidForAuthMode(mode, value)) {
+    if (isModelValidForAuthMode(mode, value, providerId)) {
       warning.hidden = true;
       warning.textContent = "";
       return true;
@@ -428,10 +448,10 @@ function modelField(
   // (authMode 전환 시 무효 모델을 권장 기본으로 교정할 때 이 setter 를 쓴다.)
   // mode 를 인자로 받는 이유: 이 함수의 authMode 매개변수는 생성 시점 초기값이라 전환 후엔
   // stale 하다 — 호출 쪽이 현재 authMode 를 넘겨야 경고가 올바른 기준으로 재평가된다.
-  const setValue = (value: string, mode: AiConfig["authMode"]): void => {
+  const setValue = (value: string, mode: AiConfig["authMode"], providerId?: string): void => {
     input.value = value;
     preset.value = value;
-    validate(mode);
+    validate(mode, providerId);
   };
   const row = el("label", {
     class: "ai-config-row ai-model-row",
@@ -442,6 +462,6 @@ function modelField(
       warning,
     ],
   });
-  refresh(authMode);
+  refresh(authMode, providerId);
   return { row, input, preset, refresh, validate, setValue };
 }

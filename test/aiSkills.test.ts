@@ -404,8 +404,8 @@ describe("스킬 UI(fakeDom)", () => {
     const chipCount = chips?.querySelectorAll("button").length ?? 0;
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
     expect(findByTestId(panel, "ai-start-empty-hint")).toBeNull();
-    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
+    expect(findByTestId(panel, "ai-start-visual-gallery")?.parentElement).toBe(findByTestId(panel, "ai-next-steps"));
     expect(findByTestId(panel, "ai-start-build-house")).toBeNull();
     expect(chips).toBeTruthy();
     expect(chipCount).toBeGreaterThanOrEqual(0);

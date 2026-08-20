@@ -1,5 +1,6 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
-import { editorState, type ChatDock, type Layer } from "@/editor/editorState";
+import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
+import { editorState, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
@@ -101,7 +102,7 @@ export function renderEditor(main: HTMLElement): void {
 
   // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
   const layout = el("div", {
-    class: `editor-layout ${chatDock === "side" ? "chat-dock-side" : "chat-dock-float"}`,
+    class: `editor-layout ${layoutDockClass(chatDock)}`,
     dataset: { testid: "editor-layout" },
   });
   // applyLayout 전에도 1/3 폭 폴백을 심어 사이드 컬럼이 420→재계산으로 점프하지 않게 한다.
@@ -113,11 +114,11 @@ export function renderEditor(main: HTMLElement): void {
     layout.style.setProperty("--ai-chat-side-width", `${bootWidth}px`);
     document.documentElement?.style?.setProperty?.("--ai-chat-side-width", `${bootWidth}px`);
     document.body?.classList?.add?.("ai-chat-dock-side");
-    document.body?.classList?.remove?.("ai-chat-dock-float", "ai-panel-docked");
+    document.body?.classList?.remove?.("ai-chat-dock-float", "ai-chat-dock-glass", "ai-panel-docked");
   } else {
     layout.style.setProperty("--ai-chat-side-width", "0px");
-    document.body?.classList?.add?.("ai-chat-dock-float");
-    document.body?.classList?.remove?.("ai-chat-dock-side");
+    document.body?.classList?.add?.(chatDock === "glass" ? "ai-chat-dock-glass" : "ai-chat-dock-float");
+    document.body?.classList?.remove?.("ai-chat-dock-side", chatDock === "glass" ? "ai-chat-dock-float" : "ai-chat-dock-glass");
   }
   const left = el("div", { class: "left-panel" });
   const canvasArea = el("div", { class: "canvas-area" });
@@ -176,7 +177,7 @@ export function renderEditor(main: HTMLElement): void {
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
   canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar, chatFloatHost);
-  layout.append(chatSidePanel, left, leftResizer, canvasArea);
+  layout.append(left, leftResizer, canvasArea, chatSidePanel);
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
     onChatDockToggle: toggleChatDock,
@@ -333,7 +334,7 @@ export function teardownEditor(): void {
   mapLockBannerRoot = null;
   statusBarRoot = null;
   projectExportNode = null;
-  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
+  document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
 
 export function toggleLeftPanel(): void {
@@ -375,21 +376,29 @@ export function isLeftCollapsed(): boolean {
 }
 
 export function toggleChatDock(): void {
-  chatDock = chatDock === "side" ? "float" : "side";
+  chatDock = cycleChatDock(chatDock);
   applyChatDockLayout();
   applyLayout();
   saveEditorLayout();
   scheduleFitCanvas();
 }
 
+function layoutDockClass(dock: ChatDock): string {
+  if (dock === "side") return "chat-dock-side";
+  if (dock === "glass") return "chat-dock-glass";
+  return "chat-dock-float";
+}
+
 function applyChatDockLayout(): void {
   if (!chatFloatRoot || !chatSideRoot || !aiChatPanelRoot) return;
   editorState.set({ chatDock });
   const layoutEl = chatFloatRoot.parentElement?.parentElement ?? null;
-  layoutEl?.classList[chatDock === "side" ? "add" : "remove"]("chat-dock-side");
-  layoutEl?.classList[chatDock === "float" ? "add" : "remove"]("chat-dock-float");
-  aiChatPanelRoot.classList[chatDock === "side" ? "add" : "remove"]("chat-dock-side");
-  aiChatPanelRoot.classList[chatDock === "float" ? "add" : "remove"]("chat-dock-float");
+  layoutEl?.classList.toggle("chat-dock-side", chatDock === "side");
+  layoutEl?.classList.toggle("chat-dock-float", chatDock === "float");
+  layoutEl?.classList.toggle("chat-dock-glass", chatDock === "glass");
+  aiChatPanelRoot.classList.toggle("chat-dock-side", chatDock === "side");
+  aiChatPanelRoot.classList.toggle("chat-dock-float", chatDock === "float");
+  aiChatPanelRoot.classList.toggle("chat-dock-glass", chatDock === "glass");
   // side flex 도크는 is-docked(fixed 오버레이)와 섞지 않는다 — body inset 이중 적용/흔들림 방지.
   if (chatDock === "side") {
     aiChatPanelRoot.classList.remove("is-docked");
@@ -397,12 +406,9 @@ function applyChatDockLayout(): void {
   } else if (aiChatPanelRoot.classList.contains("is-history-open")) {
     aiChatPanelRoot.classList.add("is-docked");
   }
-  document.body.classList[chatDock === "side" ? "add" : "remove"]("ai-chat-dock-side");
-  document.body.classList[chatDock === "float" ? "add" : "remove"]("ai-chat-dock-float");
-  // 패널 생성 직후 첫 적용에서도 side class가 있도록 마운트 전에 반영한다.
-  if (chatDock === "side" && !aiChatPanelRoot.classList.contains("chat-dock-side")) {
-    aiChatPanelRoot.classList.add("chat-dock-side");
-  }
+  document.body.classList.toggle("ai-chat-dock-side", chatDock === "side");
+  document.body.classList.toggle("ai-chat-dock-float", chatDock === "float");
+  document.body.classList.toggle("ai-chat-dock-glass", chatDock === "glass");
   const target = chatDock === "side" ? chatSideRoot : chatFloatRoot;
   if (aiChatPanelRoot.parentElement !== target) {
     aiChatPanelRoot.remove();
@@ -1002,7 +1008,7 @@ function loadEditorLayout(): LoadedEditorLayout {
         typeof parsed.mapTreeHeight === "number" ? clamp(parsed.mapTreeHeight, MAP_TREE_MIN_HEIGHT, MAP_TREE_MAX_HEIGHT) : fallback.mapTreeHeight,
       leftCollapsed: leftCollapsedStored ? parsed.leftCollapsed === true : fallback.leftCollapsed,
       leftCollapsedStored,
-      chatDock: parsed.chatDock === "side" || parsed.chatDock === "float" ? parsed.chatDock : fallback.chatDock,
+      chatDock: parseChatDock(parsed.chatDock, fallback.chatDock),
     };
   } catch (error) {
     if (error instanceof SyntaxError) return fallback;
@@ -1016,7 +1022,7 @@ function defaultEditorLayout(): LoadedEditorLayout {
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
     leftCollapsed: false,
     leftCollapsedStored: false,
-    chatDock: "float",
+    chatDock: "glass",
   };
 }
 

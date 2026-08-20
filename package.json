@@ -36,6 +36,7 @@
     "test:parity": "node scripts/run-vitest.mjs run test/parity --configLoader bundle",
     "test:node": "node scripts/run-node-tests.mjs",
     "test:ai-oauth": "node scripts/run-node-tests.mjs chatgptOAuthProtocol codexProcess",
+    "test:oh-my-pi": "node scripts/run-node-tests.mjs ohMyPi && bun test test/ohMyPiComplete.bun.test.ts",
     "test:e2e": "playwright test",
     "construction:harness": "node scripts/run-construction-harness.mjs",
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
@@ -46,6 +47,7 @@
     "phaser": "^3.90.0"
   },
   "devDependencies": {
+    "@oh-my-pi/pi-ai": "^17.4.0",
     "@playwright/test": "^1.61.0",
     "happy-dom": "^20.10.6",
     "typescript": "^5.7.0",

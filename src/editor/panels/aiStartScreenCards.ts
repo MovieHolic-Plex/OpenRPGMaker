@@ -179,15 +179,20 @@ function renderCharsetThumb(charset: NonNullable<AiVisualStartPrompt["charset"]>
   });
 }
 
-function renderVisualPreview(prompt: AiVisualStartPrompt, tileset: TilesetDef | null): HTMLElement {
+function renderVisualPreview(
+  prompt: AiVisualStartPrompt,
+  tileset: TilesetDef | null,
+  tileSize = 20,
+  charsetHeight = 48,
+): HTMLElement {
   const stage = el("div", { class: "ai-start-visual-stage", dataset: { testid: `ai-start-visual-stage-${prompt.id}` } });
   if (prompt.charset) {
-    stage.append(renderCharsetThumb(prompt.charset));
+    stage.append(renderCharsetThumb(prompt.charset, charsetHeight));
     return stage;
   }
   const tiles = prompt.mosaicTiles ?? [];
   const cols = Math.max(1, prompt.mosaicCols ?? 3);
-  const size = 20;
+  const size = tileSize;
   const grid = el("div", {
     class: "ai-start-visual-mosaic",
     attrs: {
@@ -208,6 +213,8 @@ export function buildVisualStartGallery(opts: {
   readonly tileset: TilesetDef | null;
   readonly prompts?: readonly AiVisualStartPrompt[];
   readonly onPick: (instruction: string, id: string) => void;
+  readonly tileSize?: number;
+  readonly charsetHeight?: number;
 }): HTMLElement {
   const prompts = opts.prompts ?? defaultAiVisualStartPrompts();
   const cards = prompts.map((prompt) =>
@@ -222,7 +229,7 @@ export function buildVisualStartGallery(opts: {
         testid: prompt.id === "house" ? "ai-start-build-house" : `ai-start-visual-${prompt.id}`,
       },
       children: [
-        renderVisualPreview(prompt, opts.tileset),
+        renderVisualPreview(prompt, opts.tileset, opts.tileSize, opts.charsetHeight),
         el("span", { class: "ai-start-visual-label", text: prompt.label }),
       ],
       on: {

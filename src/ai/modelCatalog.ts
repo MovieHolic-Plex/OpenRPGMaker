@@ -1,3 +1,5 @@
+import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+
 export interface AiModelCatalogGroup {
   readonly label: string;
   readonly models: readonly string[];
@@ -76,8 +78,21 @@ const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
   },
 ];
 
-export function modelCatalogForAuthMode(authMode: "chatgpt" | "apiKey"): readonly AiModelCatalogGroup[] {
-  return authMode === "chatgpt" ? CHATGPT_OAUTH_MODELS : API_GATEWAY_MODELS;
+export function modelCatalogForAuthMode(
+  authMode: "chatgpt" | "apiKey",
+  providerId?: string,
+): readonly AiModelCatalogGroup[] {
+  const provider = getOhMyPiProvider(parseOhMyPiProvider(providerId));
+  if (authMode === "chatgpt" && (!provider || provider.id === "openai-codex")) {
+    return CHATGPT_OAUTH_MODELS;
+  }
+  if (provider && provider.id !== "openai-codex") {
+    return [
+      { label: `${provider.label} · oh-my-pi`, models: [provider.defaultModel] },
+      ...API_GATEWAY_MODELS,
+    ];
+  }
+  return API_GATEWAY_MODELS;
 }
 
 /**
@@ -85,8 +100,8 @@ export function modelCatalogForAuthMode(authMode: "chatgpt" | "apiKey"): readonl
  * connectionPresets 의 chatgpt 프리셋 기본 모델(gpt-5.6-sol)과 같은 출처다.
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */
-export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey"): string {
-  const groups = modelCatalogForAuthMode(authMode);
+export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {
+  const groups = modelCatalogForAuthMode(authMode, providerId);
   return groups[0]?.models[0] ?? "";
 }
 
@@ -105,7 +120,13 @@ export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey"): string 
  * 그 밖의 규칙은 실측 근거가 없으므로 추측해서 추가하지 않는다.
  * apiKey 모드는 공급자가 다양하므로 어떤 ID 든 허용한다.
  */
-export function isModelValidForAuthMode(authMode: "chatgpt" | "apiKey", model: string): boolean {
+export function isModelValidForAuthMode(
+  authMode: "chatgpt" | "apiKey",
+  model: string,
+  providerId?: string,
+): boolean {
   if (authMode !== "chatgpt") return true;
+  const provider = parseOhMyPiProvider(providerId);
+  if (provider !== "openai-codex") return true;
   return model.trim().toLowerCase().startsWith("gpt-");
 }

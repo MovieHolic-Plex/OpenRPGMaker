@@ -1,5 +1,6 @@
-import { fetchChatGptAuthStatus, isChatGptCompanionResponseError, startChatGptLogin } from "@/ai/chatgptOAuthClient";
+import { fetchChatGptAuthStatus, isChatGptCompanionResponseError, refreshCompanionAuth, saveCompanionApiKey, startChatGptLogin } from "@/ai/chatgptOAuthClient";
 import type { AiConfig } from "@/ai/llmClient";
+import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider, OH_MY_PI_PROVIDERS, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { el } from "@/util/dom";
 
 export interface AiAuthSettingsView {
@@ -10,7 +11,11 @@ export interface AiAuthSettingsView {
 
 export function renderAiAuthSettings(
   initialMode: AiConfig["authMode"],
-  onModeChange: (mode: AiConfig["authMode"]) => void
+  onModeChange: (mode: AiConfig["authMode"]) => void,
+  options?: {
+    readonly initialProviderId?: string;
+    readonly onProviderChange?: (providerId: string) => void;
+  },
 ): AiAuthSettingsView {
   const status = el("span", {
     class: "ai-oauth-status",
@@ -43,15 +48,32 @@ export function renderAiAuthSettings(
   });
   // 서버가 준 원인은 공백 없는 긴 문자열일 수 있다 — 패널 폭을 넘지 않게 어디서든 줄바꿈 허용.
   serverError.style.overflowWrap = "anywhere";
+  const providerCopy = el("span", { text: "선택한 제공자의 토큰·키는 로컬 동반 서비스가 보관·갱신합니다. 브라우저에는 두지 않습니다." });
+  const companionKey = el("input", {
+    class: "ai-companion-key",
+    attrs: { type: "password", placeholder: "제공자 키 (동반 서비스에만 저장)", "aria-label": "동반 서비스 API 키" },
+    dataset: { testid: "ai-companion-api-key" },
+  }) as HTMLInputElement;
+  const saveKeyButton = el("button", {
+    class: "ai-assistant-action",
+    text: "키 저장",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-companion-save-key" },
+  });
+  const companionKeyRow = el("div", {
+    class: "ai-oauth-actions",
+    children: [companionKey, saveKeyButton],
+  });
   const chatGptPanel = el("div", {
     class: "ai-auth-panel",
     children: [
       el("div", { class: "ai-auth-panel-copy", children: [
-        el("span", { class: "ai-auth-kicker", text: "CHATGPT · OAUTH" }),
-        el("strong", { text: "ChatGPT 구독으로 작업" }),
-        el("span", { text: "Codex가 토큰을 보관·갱신합니다. 브라우저에는 토큰을 저장하지 않습니다." }),
+        el("span", { class: "ai-auth-kicker", text: "OH-MY-PI · 로컬 인증" }),
+        el("strong", { text: "제공자 로그인 또는 키" }),
+        providerCopy,
       ] }),
       el("div", { class: "ai-oauth-actions", children: [status, loginButton] }),
+      companionKeyRow,
       deviceCode,
       companionHint,
       serverError,
@@ -68,10 +90,37 @@ export function renderAiAuthSettings(
       el("span", { class: "ai-auth-api-cost", text: "요청 비용은 연결한 공급자 계정에 청구됩니다." }),
     ],
   });
+  const providerSelect = el("select", {
+    class: "ai-oh-my-pi-provider",
+    attrs: { "aria-label": "oh-my-pi 제공자" },
+    dataset: { testid: "ai-oh-my-pi-provider" },
+    children: OH_MY_PI_PROVIDERS.map((provider) =>
+      el("option", {
+        text: `${provider.label} · ${provider.authKind}`,
+        attrs: { value: provider.id },
+      }),
+    ),
+  }) as HTMLSelectElement;
+  let providerId = parseOhMyPiProvider(options?.initialProviderId, DEFAULT_OH_MY_PI_PROVIDER);
+  let connected = false;
+  providerSelect.value = providerId;
+  const applyProviderChrome = (): void => {
+    const meta = getOhMyPiProvider(providerId);
+    companionKeyRow.hidden = meta?.id === "openai-codex";
+    loginButton.textContent = connected ? "상태 확인" : (meta?.authKind === "oauth" ? "로그인" : "연결");
+    providerCopy.textContent = meta
+      ? `${meta.label} · ${meta.authKind === "oauth" ? "OAuth/로그인" : meta.authKind === "local" ? "로컬 서버" : "API 키"} — 시크릿은 이 PC의 동반 서비스만 보관합니다.`
+      : providerCopy.textContent;
+  };
+  providerSelect.addEventListener("change", () => {
+    providerId = parseOhMyPiProvider(providerSelect.value);
+    options?.onProviderChange?.(providerId);
+    applyProviderChrome();
+    void refreshStatus();
+  });
   const chatGptButton = authButton("ChatGPT 구독", "ai-auth-chatgpt");
   const apiKeyButton = authButton("API / 게이트웨이", "ai-auth-api-key");
   let mode = initialMode;
-  let connected = false;
 
   const applyMode = (next: AiConfig["authMode"]): void => {
     mode = next;
@@ -113,13 +162,13 @@ export function renderAiAuthSettings(
   };
   const refreshStatus = async (): Promise<void> => {
     try {
-      const auth = await fetchChatGptAuthStatus();
+      const auth = await fetchChatGptAuthStatus(providerId);
       connected = auth.connected;
       status.textContent = auth.connected
         ? `연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`
         : "로그인 필요";
       status.dataset.tone = auth.connected ? "connected" : "disconnected";
-      loginButton.textContent = auth.connected ? "상태 확인" : "구독 연결";
+      applyProviderChrome();
       companionHint.hidden = auth.connected;
       serverError.hidden = true;
     } catch (error) {
@@ -137,17 +186,36 @@ export function renderAiAuthSettings(
   };
   loginButton.addEventListener("click", () => {
     if (connected) {
-      void refreshStatus();
+      void refreshCompanionAuth(providerId)
+        .then(() => refreshStatus())
+        .catch(() => void refreshStatus());
       return;
     }
     loginButton.disabled = true;
     status.textContent = "로그인 준비 중…";
-    void startChatGptLogin()
+    void startChatGptLogin(providerId, companionKey.value)
       .then((login) => {
+        if (login.connected) {
+          status.textContent = "연결됨";
+          status.dataset.tone = "connected";
+          connected = true;
+          applyProviderChrome();
+          return;
+        }
+        if (login.needsApiKey) {
+          deviceCode.hidden = false;
+          deviceCode.textContent = login.instructions || "이 제공자는 아래 칸에 키를 넣고 키 저장 또는 연결을 누르세요.";
+          status.textContent = "키 필요";
+          return;
+        }
         deviceCode.hidden = false;
-        deviceCode.textContent = `코드 ${login.userCode} · ${login.verificationUrl}`;
-        if (typeof window.open === "function") window.open(login.verificationUrl, "_blank", "noopener,noreferrer");
-        status.textContent = "브라우저에서 코드 입력 대기 중";
+        deviceCode.textContent = login.userCode
+          ? `코드 ${login.userCode} · ${login.verificationUrl}`
+          : login.verificationUrl || login.instructions || "브라우저에서 로그인을 마치면 연결됩니다.";
+        if (login.verificationUrl && typeof window.open === "function") {
+          window.open(login.verificationUrl, "_blank", "noopener,noreferrer");
+        }
+        status.textContent = "브라우저에서 로그인 대기 중";
         if (typeof window.setTimeout === "function") window.setTimeout(() => void refreshStatus(), 5000);
       })
       .catch((error: unknown) => {
@@ -167,7 +235,36 @@ export function renderAiAuthSettings(
       });
   });
 
+  saveKeyButton.addEventListener("click", () => {
+    const key = companionKey.value.trim();
+    if (!key) {
+      status.textContent = "키를 입력하세요";
+      return;
+    }
+    saveKeyButton.disabled = true;
+    void saveCompanionApiKey(providerId, key)
+      .then((auth) => {
+        connected = auth.connected;
+        status.textContent = auth.connected ? "연결됨 · 키 저장됨" : "키 저장 실패";
+        status.dataset.tone = auth.connected ? "connected" : "disconnected";
+        applyProviderChrome();
+      })
+      .catch((error: unknown) => {
+        if (isChatGptCompanionResponseError(error)) {
+          showServerError(error);
+          return;
+        }
+        status.textContent = "로컬 연결 서비스를 먼저 실행하세요";
+        status.dataset.tone = "offline";
+        companionHint.hidden = false;
+      })
+      .finally(() => {
+        saveKeyButton.disabled = false;
+      });
+  });
+
   applyMode(initialMode);
+  applyProviderChrome();
   void refreshStatus();
   return {
     element: el("section", {
@@ -175,6 +272,8 @@ export function renderAiAuthSettings(
       attrs: { "aria-label": "AI 연결 방식" },
       children: [
         el("span", { class: "ai-config-label", text: "연결 방식" }),
+        el("span", { class: "ai-config-label", text: "oh-my-pi 제공자" }),
+        providerSelect,
         el("div", { class: "ai-auth-mode", attrs: { role: "group" }, children: [chatGptButton, apiKeyButton] }),
         chatGptPanel,
         apiPanel,

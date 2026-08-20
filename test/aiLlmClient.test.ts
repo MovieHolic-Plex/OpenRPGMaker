@@ -102,6 +102,22 @@ describe("aiConfig 저장/로드", () => {
     expect(loaded.liteModel?.startsWith("gpt-")).toBe(true);
   });
 
+  it("chatgpt 모드라도 다른 oh-my-pi 제공자 모델은 교정하지 않는다", async () => {
+    vi.stubEnv("VITE_LLM_API_URL", "");
+    vi.stubEnv("VITE_LLM_API_KEY", "");
+    const store = installLocalStorage();
+    const { loadAiConfig, AI_CONFIG_STORAGE_KEY } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "chatgpt",
+      providerId: "anthropic",
+      model: "claude-opus-4-8",
+      liteModel: "claude-opus-4-8",
+    }));
+    const loaded = loadAiConfig();
+    expect(loaded.providerId).toBe("anthropic");
+    expect(loaded.model).toBe("claude-opus-4-8");
+  });
+
   it("apiKey 모드는 카탈로그에 없는 공급자 모델 ID 도 그대로 존중한다", async () => {
     // 카탈로그는 추천 목록이지 화이트리스트가 아니다 — 직접 입력한 ID 를 교정하면 정상 사용을 깬다.
     vi.stubEnv("VITE_LLM_API_URL", "");
@@ -228,7 +244,10 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     // 요점은 "게이트웨이 baseUrl 이 아니라 OAuth 경로로 간다" 이므로 그 상수 기준으로 본다.
     expect(String(url)).toBe(`${DEFAULT_CHATGPT_BASE_URL}/chat/completions`);
     expect(String(url)).not.toContain(config.baseUrl || " 없음");
-    expect((init as RequestInit | undefined)?.headers).toEqual({ "Content-Type": "application/json" });
+    expect((init as RequestInit | undefined)?.headers).toEqual({
+      "Content-Type": "application/json",
+      "X-Rpgzzu-Provider": "openai-codex",
+    });
   });
 
   it("cpen 은 툴이 붙으면 gpt- 모델이라도 스트리밍을 끈다", async () => {
@@ -344,6 +363,23 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
 
     const result = await chatCompletion(CONFIG_BASE, { messages: [{ role: "user", content: "hi" }], stream: false });
     expect(result.message.tool_calls?.[0].function.name).toBe("create_map");
+  });
+
+  it("chatgpt 모드는 선택한 oh-my-pi 제공자를 동반 서비스 헤더로 보낸다", async () => {
+    const { chatCompletion, usesOhMyPiCompanion } = await loadClient();
+    expect(usesOhMyPiCompanion({ ...CONFIG_BASE, authMode: "chatgpt", providerId: "groq" })).toBe(true);
+    mockFetchOnce(new Response(JSON.stringify({
+      choices: [{ message: { content: "ok" }, finish_reason: "stop" }],
+    }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    await chatCompletion(
+      { ...CONFIG_BASE, authMode: "chatgpt", providerId: "groq", apiKey: "" },
+      { messages: [{ role: "user", content: "hi" }], stream: false },
+    );
+    const fetchMock = (globalThis as unknown as { fetch: ReturnType<typeof vi.fn> }).fetch;
+    const init = fetchMock.mock.calls[0]?.[1] as RequestInit | undefined;
+    const sent = init?.headers as Record<string, string>;
+    expect(sent["X-Rpgzzu-Provider"]).toBe("groq");
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("/chat/completions");
   });
 });
 

@@ -2,8 +2,11 @@ import { defineConfig, loadEnv, type Plugin, type ProxyOptions } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync, realpathSync } from "node:fs";
 import { join } from "node:path";
-import { spawnCodexSession, accountStatus, startDeviceLogin, proxyCompletion } from "./scripts/lib/codexOAuthSession.mjs";
+import { spawnCodexSession } from "./scripts/lib/codexOAuthSession.mjs";
 import type { CodexSession } from "./scripts/lib/codexOAuthSession.mjs";
+import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
+import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
+import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHttpUtil.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
 
@@ -201,6 +204,7 @@ function aiActivityDiskPlugin(): Plugin {
 function codexOAuthPlugin(): Plugin {
   let session: CodexSession | null = null;
   let sessionPromise: Promise<CodexSession> | null = null;
+  let adaptersPromise: ReturnType<typeof createOhMyPiAdapters> | null = null;
   function getSession(): Promise<CodexSession> {
     if (!sessionPromise) {
       sessionPromise = (async () => {
@@ -214,6 +218,10 @@ function codexOAuthPlugin(): Plugin {
     }
     return sessionPromise;
   }
+  function getAdapters() {
+    if (!adaptersPromise) adaptersPromise = createOhMyPiAdapters({ getCodexSession: getSession });
+    return adaptersPromise;
+  }
   function errorStatus(error: unknown): number {
     if (error && typeof error === "object" && "status" in error) {
       const status = (error as { status: unknown }).status;
@@ -226,57 +234,21 @@ function codexOAuthPlugin(): Plugin {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = req.url ?? "";
-        const isOAuthPath =
-          url === "/auth/status" ||
-          url === "/auth/login" ||
-          url === "/v1/chat/completions";
-        if (!isOAuthPath) return next();
+        if (!isCompanionPath(url)) return next();
         try {
-          const sess = await getSession();
           if (req.method === "OPTIONS") {
             res.statusCode = 204;
             res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-            res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Rpgzzu-Provider");
             res.end();
             return;
           }
-          if (req.method === "GET" && url === "/auth/status") {
-            res.setHeader("Content-Type", "application/json; charset=utf-8");
-            res.end(JSON.stringify(await accountStatus(sess, false)));
-            return;
-          }
-          if (req.method === "POST" && url === "/auth/login") {
-            res.setHeader("Content-Type", "application/json; charset=utf-8");
-            res.end(JSON.stringify(await startDeviceLogin(sess)));
-            return;
-          }
-          if (req.method === "POST" && url === "/v1/chat/completions") {
-            const chunks: Buffer[] = [];
-            let size = 0;
-            for await (const chunk of req) {
-              size += chunk.length;
-              if (size > 64 * 1024 * 1024) throw new Error("Request body is too large");
-              chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-            }
-            const body: unknown = JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
-            const clientBody = body && typeof body === "object" ? { ...(body as Record<string, unknown>) } : {};
-            const result = await proxyCompletion(sess, clientBody);
-            if (!result.stream) {
-              res.setHeader("Content-Type", "application/json; charset=utf-8");
-              res.end(JSON.stringify(result.completion));
-              return;
-            }
-            res.writeHead(200, {
-              "Content-Type": "text/event-stream; charset=utf-8",
-              "Cache-Control": "no-cache",
-              Connection: "keep-alive",
-            });
-            for (const chunk of result.chunks) res.write(`data: ${JSON.stringify(chunk)}\n\n`);
-            res.end("data: [DONE]\n\n");
-            return;
-          }
-          res.statusCode = 404;
-          res.end(JSON.stringify({ error: "Not found" }));
+          const body = await readRequestJson(req);
+          const result = await handleCompanionRequest(
+            { method: req.method, url, headers: req.headers as Record<string, string>, body },
+            await getAdapters(),
+          );
+          writeCompanionResult(res, result);
         } catch (error) {
           res.statusCode = errorStatus(error);
           res.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -287,6 +259,8 @@ function codexOAuthPlugin(): Plugin {
         session?.kill();
         session = null;
         sessionPromise = null;
+        adaptersPromise = null;
+        stopOhMyPiWorker();
       });
     },
   };
