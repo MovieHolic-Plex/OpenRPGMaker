@@ -46,7 +46,7 @@
      figma-editor.css가 이 파일보다 나중에 import되어 동일 특이도에서 캐스케이드를
      이기므로, body 접두사로 특이도를 한 단계 올려 폭 붕괴 규칙이 항상 이기게 한다. */
   body .left-panel-stack[data-testid="left-map-root"] .map-item {
-    grid-template-columns: 10px 16px minmax(0, 1fr) 14px 18px;
+    grid-template-columns: 10px 10px 16px minmax(0, 1fr) auto 18px;
   }
 
   body .left-panel-stack[data-testid="left-map-root"] .map-item .map-tree-action:not(.map-context-trigger),

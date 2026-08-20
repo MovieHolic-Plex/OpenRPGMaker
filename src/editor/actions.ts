@@ -13,7 +13,20 @@ import { store } from "@/project/store";
 import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
-import { appendToTree, removeFromTree } from "@/project/mapTree";
+import { cloneGameMap } from "@/project/mapClone";
+import { clampMapSize, INTERIOR_FLOOR_TILE, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
+import {
+  appendToTree,
+  canReparentMap,
+  dissolveFolderKeepChildren,
+  extractTreeNode,
+  findParentMapId,
+  findTreeNode,
+  insertTreeNode,
+  isMapTreeFolder,
+  selectionRoots,
+  siblingIndex,
+} from "@/project/mapTree";
 import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 export {
@@ -30,10 +43,11 @@ export type { TileStrokeCell } from "@/editor/tileActions";
 import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
-export function addMap(name: string, width = 16, height = 16): MapId {
+export function addMap(name: string, width = 16, height = 16, tilesetId?: string, fillTile?: number): MapId {
   let newId: MapId = "";
   store.update((p) => {
-    const m = createBlankMap(name || "새 맵", width, height);
+    const m = createBlankMap(name || "새 맵", width, height, tilesetId);
+    if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
     p.maps[m.id] = m;
     // mapTree에 루트 자식으로 추가.
     appendToTree(p.mapTree, m.id);
@@ -47,11 +61,13 @@ type AddChildMapSize = {
   readonly width: number;
 };
 
-export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }): MapId {
+export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }, tilesetId?: string, fillTile?: number): MapId {
   let newId: MapId = "";
   store.update((p) => {
-    if (!p.maps[parentId]) return;
-    const m = createBlankMap(name || "새 맵", size.width, size.height);
+    const parent = findTreeNode(p.mapTree, parentId);
+    if (!p.maps[parentId] && !parent) return;
+    const m = createBlankMap(name || "새 맵", size.width, size.height, tilesetId ?? p.maps[parentId]?.tilesetId);
+    if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);
     newId = m.id;
@@ -59,19 +75,52 @@ export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize
   return newId;
 }
 
+export function createMapFromSpec(spec: MapCreateSpec): MapId {
+  const width = clampMapSize(spec.width, 20);
+  const height = clampMapSize(spec.height, 15);
+  const name = spec.name.trim() || "새 맵";
+  const fillTile = spec.preset === "interior" || spec.tilesetId === INTERIOR_TILESET_ID
+    ? INTERIOR_FLOOR_TILE
+    : undefined;
+  if (spec.parentId) return addChildMap(spec.parentId, name, { width, height }, spec.tilesetId, fillTile);
+  return addMap(name, width, height, spec.tilesetId, fillTile);
+}
+
+export function addMapFolder(parentId: MapId | "", name = "새 분류"): MapId {
+  const id = genId("folder");
+  store.update((p) => {
+    const node = { mapId: id, kind: "folder" as const, name: name.trim() || "새 분류", children: [] };
+    if (!insertTreeNode(p.mapTree, node, parentId || "", undefined)) {
+      insertTreeNode(p.mapTree, node, "", undefined);
+    }
+  }, { scope: "project" });
+  return id;
+}
+
+export function dissolveMapFolder(folderId: MapId): void {
+  store.update((p) => {
+    dissolveFolderKeepChildren(p.mapTree, folderId);
+  }, { scope: "project" });
+}
+
 export function duplicateMap(mapId: MapId): MapId {
   let newId: MapId = "";
   store.update((p) => {
     const source = p.maps[mapId];
     if (!source) return;
-    const copy = createBlankMap(`${source.name} 복사`, source.width, source.height, source.tilesetId, source.tileSize);
-    copy.lowerTiles = [...source.lowerTiles];
-    copy.upperTiles = [...source.upperTiles];
-    copy.events = structuredClone(source.events);
-    if (source.lowerTileStacks) copy.lowerTileStacks = structuredClone(source.lowerTileStacks);
-    if (source.upperTileStacks) copy.upperTileStacks = structuredClone(source.upperTileStacks);
+    const copy = cloneGameMap(source, {
+      newId: genId("map"),
+      newName: `${source.name} 복사`,
+      nextEventId: () => genId("ev"),
+    });
     p.maps[copy.id] = copy;
-    appendToTree(p.mapTree, copy.id, mapId);
+    const parentId = findParentMapId(p.mapTree, mapId);
+    const insertParent = parentId ?? "";
+    const after = siblingIndex(p.mapTree, mapId);
+    const at = after >= 0 ? after + 1 : undefined;
+    if (!insertTreeNode(p.mapTree, { mapId: copy.id, children: [] }, insertParent, at)) {
+      appendToTree(p.mapTree, copy.id);
+    }
     newId = copy.id;
   }, { scope: "project" });
   return newId;
@@ -94,7 +143,32 @@ export function deleteMap(mapId: MapId): DeleteMapResult {
   return { ok: true, impact: plan.impact };
 }
 
+export function deleteMapsInOrder(mapIds: readonly MapId[]): DeleteMapResult {
+  const remaining = mapIds.filter((mapId) => store.getCurrent().maps[mapId]);
+  if (remaining.length === 0) return { ok: false, message: "맵을 찾을 수 없습니다." };
+  let lastImpact: MapDeletionImpact | null = null;
+  store.update((p) => {
+    for (const mapId of remaining) {
+      if (!p.maps[mapId] || Object.keys(p.maps).length <= 1) continue;
+      const plan = planMapDeletion(p, mapId);
+      if (plan.ok) lastImpact = plan.impact;
+      applyMapDeletion(p, mapId);
+    }
+  }, { scope: "project" });
+  if (!lastImpact) return { ok: false, message: "맵을 삭제할 수 없습니다." };
+  return { ok: true, impact: lastImpact };
+}
+
 export function renameMap(mapId: MapId, name: string): void {
+  const project = store.getCurrent();
+  const folder = findTreeNode(project.mapTree, mapId);
+  if (folder && isMapTreeFolder(folder)) {
+    store.update((p) => {
+      const node = findTreeNode(p.mapTree, mapId);
+      if (node && isMapTreeFolder(node)) node.name = name;
+    }, { scope: "project" });
+    return;
+  }
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {
     const m = p.maps[mapId];
@@ -295,11 +369,32 @@ function allowMapMutation(mapId: MapId): boolean {
 }
 
 // ── Map Tree 조작 ──
-export function moveMapInTree(mapId: MapId, newParentId: MapId): void {
+export function moveMapInTree(mapId: MapId, newParentId: MapId | "", index?: number): void {
+  moveMapsInTree([mapId], newParentId, index);
+}
+
+export function moveMapsInTree(mapIds: readonly MapId[], newParentId: MapId | "", index?: number): void {
   store.update((p) => {
-    if (mapId === newParentId) return;
-    removeFromTree(p.mapTree, mapId);
-    appendToTree(p.mapTree, mapId, newParentId);
+    const roots = selectionRoots(p.mapTree, mapIds);
+    let at = index;
+    for (const mapId of roots) {
+      if (!canReparentMap(p.mapTree, mapId, newParentId)) continue;
+      const currentParent = findParentMapId(p.mapTree, mapId);
+      const currentIndex = siblingIndex(p.mapTree, mapId);
+      const extracted = extractTreeNode(p.mapTree, mapId);
+      if (!extracted) continue;
+      const sameParent =
+        (newParentId === "" && (currentParent === p.mapTree.mapId || currentParent === null)) ||
+        currentParent === newParentId ||
+        (newParentId === p.mapTree.mapId && currentParent === p.mapTree.mapId);
+      let insertAt = at;
+      if (insertAt !== undefined && sameParent && currentIndex >= 0 && currentIndex < insertAt) insertAt -= 1;
+      if (!insertTreeNode(p.mapTree, extracted, newParentId, insertAt)) {
+        insertTreeNode(p.mapTree, extracted, currentParent === p.mapTree.mapId ? "" : currentParent ?? "", currentIndex);
+      } else if (at !== undefined) {
+        at = insertAt === undefined ? at : insertAt + 1;
+      }
+    }
   }, { scope: "project" });
 }
 

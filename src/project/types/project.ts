@@ -189,6 +189,10 @@ export interface Rect {
 export interface MapTreeNode {
   mapId: MapId;
   children: MapTreeNode[];
+  /** 플레이 맵이 아닌 트리 분류. `maps`에 행이 없다. */
+  kind?: "map" | "folder";
+  /** 분류 표시 이름. 맵 노드는 `maps[id].name`을 쓴다. */
+  name?: string;
 }
 
 export interface ProjectSession {

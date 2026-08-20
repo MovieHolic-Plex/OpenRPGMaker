@@ -1,9 +1,10 @@
 // editor/mapDeleteConfirm.ts
 // 맵 삭제 확인(도그푸딩 결함 ⑦): 원클릭 파괴 대신 이벤트 수/참조 정리 등 임팩트 요약을
 // 확인 다이얼로그로 보여준 뒤 삭제한다. mapList 트리 메뉴와 상단 메뉴가 공유한다.
-import { deleteMap, type DeleteMapResult } from "@/editor/actions";
+import { deleteMap, deleteMapsInOrder, dissolveMapFolder, type DeleteMapResult } from "@/editor/actions";
 import { showConfirm } from "@/editor/ui/modal";
 import { collectMapDeletionImpact, type MapDeletionImpact } from "@/project/mapDeletion";
+import { findTreeNode, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
@@ -28,7 +29,7 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
 export function mapDeletionRecursiveMessage(impact: MapDeletionImpact, childNames: string[]): string {
   const lines = [`'${impact.mapName}' 맵과 하위 맵 ${childNames.length}개를 모두 삭제할까요?`, ""];
   lines.push(`삭제 대상: ${childNames.join(", ")}`);
-  lines.push("", "이 작업은 되돌릴 수 없습니다.");
+  lines.push("", "한 번의 실행 취소로 이 묶음 삭제를 되돌릴 수 있습니다.");
   return lines.join("\n");
 }
 
@@ -36,6 +37,54 @@ export type ConfirmDeleteMapResult = DeleteMapResult | { readonly ok: false; rea
 
 // 임팩트 요약 확인 → 삭제. 사용자가 취소하면 아무것도 하지 않는다.
 // 커스텀 인앱 모달(§2.4) — 헤드리스에서는 자동 통과(기존 window.confirm 부재 규약 승계).
+export async function confirmAndDissolveFolder(folderId: MapId): Promise<ConfirmDeleteMapResult> {
+  const project = store.getCurrent();
+  const node = findTreeNode(project.mapTree, folderId);
+  if (!node || !isMapTreeFolder(node)) return { ok: false, message: "분류를 찾을 수 없습니다." };
+  const label = mapTreeNodeLabel(node, project.maps);
+  const confirmed = await showConfirm({
+    title: "분류 삭제",
+    message: `'${label}' 분류만 지울까요? 안의 맵은 한 단계 위로 남습니다.`,
+    confirmLabel: "분류만 삭제",
+    danger: true,
+  });
+  if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
+  dissolveMapFolder(folderId);
+  return {
+    ok: true,
+    impact: {
+      mapId: folderId,
+      mapName: label,
+      eventCount: 0,
+      isStartMap: false,
+      isTreeRoot: false,
+      treeChildCount: node.children.length,
+      incomingCommandCount: 0,
+      connectionCount: 0,
+      worldRefCount: 0,
+      worldGraphEdgeCount: 0,
+      villageInfoCount: 0,
+      questCount: 0,
+      testPresetCount: 0,
+    },
+  };
+}
+
+export async function confirmAndDeleteMaps(mapIds: readonly MapId[]): Promise<ConfirmDeleteMapResult> {
+  const unique = [...new Set(mapIds)].filter((id) => store.getCurrent().maps[id]);
+  if (unique.length === 0) return { ok: false, message: "맵을 찾을 수 없습니다." };
+  if (unique.length === 1) return confirmAndDeleteMap(unique[0]!);
+  const names = unique.map((id) => store.getCurrent().maps[id]?.name ?? id);
+  const confirmed = await showConfirm({
+    title: "맵 여러 개 삭제",
+    message: `${unique.length}개 맵을 삭제할까요?\n\n${names.join(", ")}\n\n삭제 후 Ctrl+Z로 되돌릴 수 있습니다.`,
+    confirmLabel: `${unique.length}개 삭제`,
+    danger: true,
+  });
+  if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
+  return deleteMapsInOrder(unique);
+}
+
 export async function confirmAndDeleteMap(mapId: MapId): Promise<ConfirmDeleteMapResult> {
   const impact = collectMapDeletionImpact(store.getCurrent(), mapId);
   if (impact) {
@@ -79,12 +128,8 @@ export async function confirmAndDeleteMapRecursive(mapId: MapId): Promise<Confir
   });
   if (!confirmed) return { ok: false, message: "사용자가 삭제를 취소했습니다.", cancelled: true };
 
-  // 리프부터 삭제 (자식 → 부모 순서)
   const reversed = [...childIds].reverse();
-  for (const childId of reversed) {
-    deleteMap(childId);
-  }
-  return deleteMap(mapId);
+  return deleteMapsInOrder([...reversed, mapId]);
 }
 
 /** 맵 트리에서 해당 맵의 직계 자식 맵 이름을 수집. */

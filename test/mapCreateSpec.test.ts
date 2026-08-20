@@ -1,0 +1,76 @@
+import { describe, expect, it } from "vitest";
+import { createMapFromSpec } from "@/editor/actions";
+import { addParentChildTransfers, firstFreeCell } from "@/editor/mapParentLink";
+import { INTERIOR_FLOOR_TILE, resolveMapCreateDefaults } from "@/project/mapCreateSpec";
+import { collectMapLinkStats } from "@/project/mapLinkStats";
+import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { store } from "@/project/store";
+import { editorState } from "@/editor/editorState";
+
+describe("resolveMapCreateDefaults", () => {
+  it("inherits parent size and tileset", () => {
+    const project = createBlankProject();
+    const parentId = project.startMapId;
+    project.maps[parentId]!.width = 40;
+    project.maps[parentId]!.height = 30;
+    project.maps[parentId]!.tilesetId = DEFAULT_TILESET_ID;
+    const spec = resolveMapCreateDefaults(project, { parentId, preset: "inherit-parent" });
+    expect(spec.width).toBe(40);
+    expect(spec.height).toBe(30);
+    expect(spec.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(spec.parentId).toBe(parentId);
+  });
+
+  it("creates a map from a spec onto the store", () => {
+    store.replace(createBlankProject());
+    editorState.set({ currentMapId: store.getCurrent().startMapId, selectedEventId: null, selectedEventPageId: null });
+    const parentId = store.getCurrent().startMapId;
+    const id = createMapFromSpec({
+      name: "다락",
+      width: 18,
+      height: 12,
+      tilesetId: "easyrpg_chipset_interior",
+      parentId,
+      preset: "interior",
+    });
+    const project = store.getCurrent();
+    expect(project.maps[id]?.width).toBe(18);
+    expect(project.maps[id]?.tilesetId).toBe("easyrpg_chipset_interior");
+    expect(project.maps[id]?.lowerTiles.every((tile) => tile === INTERIOR_FLOOR_TILE)).toBe(true);
+    expect(project.mapTree.children.some((child) => child.mapId === id) || Boolean(project.mapTree.mapId)).toBe(true);
+  });
+
+  it("uses the interior tileset and a room size for the interior preset", () => {
+    const project = createBlankProject();
+    const spec = resolveMapCreateDefaults(project, { parentId: project.startMapId, preset: "interior" });
+    expect(spec.tilesetId).toBe("easyrpg_chipset_interior");
+    expect(spec.width).toBe(20);
+    expect(spec.height).toBe(15);
+    expect(spec.parentId).toBe(project.startMapId);
+  });
+});
+
+describe("parent-child transfer pair", () => {
+  it("adds reciprocal transfer events on free cells", () => {
+    store.replace(createBlankProject());
+    const parentId = store.getCurrent().startMapId;
+    const childId = createMapFromSpec({
+      name: "방",
+      width: 12,
+      height: 10,
+      tilesetId: DEFAULT_TILESET_ID,
+      parentId,
+      preset: "inherit-parent",
+    });
+    const beforeParentOut = collectMapLinkStats(store.getCurrent(), parentId).outgoingTransfers;
+    expect(addParentChildTransfers(parentId, childId)).toBe(true);
+    const project = store.getCurrent();
+    const parent = project.maps[parentId]!;
+    const child = project.maps[childId]!;
+    expect(firstFreeCell(parent)).not.toEqual({ x: parent.events[parent.events.length - 1]!.x, y: parent.events[parent.events.length - 1]!.y });
+    expect(collectMapLinkStats(project, parentId).outgoingTransfers).toBe(beforeParentOut + 1);
+    expect(collectMapLinkStats(project, childId).outgoingTransfers).toBe(1);
+    expect(collectMapLinkStats(project, childId).incomingTransfers).toBe(1);
+  });
+});

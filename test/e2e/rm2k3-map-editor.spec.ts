@@ -126,6 +126,7 @@ test("map chipset picker changes only the active map", async ({ page }) => {
   await expect(page.getByLabel(`${startMapName} 칩셋`)).toBeVisible();
 
   await page.getByTestId("map-add").click();
+  await page.getByTestId("map-create-confirm").click();
   const addedState = await debugState(page);
   const addedMapId = addedState.editor.currentMapId;
   if (!addedMapId || addedMapId === startMapId) throw new Error("new map was not selected");

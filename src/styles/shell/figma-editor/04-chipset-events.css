@@ -260,8 +260,13 @@
   }
 
   .left-panel-stack[data-testid="left-map-root"] .start-mark {
-    color: var(--editor-yellow);
-    font-size: 18px;
+    background: #1f2937;
+    border: 1px solid #111827;
+    border-radius: 999px;
+    color: #fff7d6;
+    font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
+    padding: 3px 6px;
+    width: auto;
   }
 
   .canvas-area {

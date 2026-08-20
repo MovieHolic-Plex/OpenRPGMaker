@@ -28,7 +28,7 @@
   font-size: 12px;
   gap: 3px;
   /* 가로 스크롤 유발하는 과다 컬럼 제거 */
-  grid-template-columns: 14px 14px minmax(0, 1fr) 14px auto;
+  grid-template-columns: 14px 10px 14px minmax(0, 1fr) auto 14px;
   max-width: 100%;
   min-height: 20px;
   min-width: 0;
@@ -92,11 +92,25 @@
 }
 
 .left-panel-stack[data-testid="left-map-root"] .start-mark {
-  display: inline-block;
-  font-size: 10px;
-  line-height: 1;
+  align-items: center;
+  background: #1f2937;
+  border: 1px solid #111827;
+  border-radius: 999px;
+  color: #fff7d6;
+  display: inline-flex;
+  font: 700 10px/1 var(--font-ui, system-ui, sans-serif);
+  justify-content: center;
+  letter-spacing: 0.02em;
+  padding: 2px 6px;
   text-align: center;
-  width: 14px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.left-panel-stack[data-testid="left-map-root"] .map-item.active .start-mark {
+  background: #fff7d6;
+  border-color: #f5e6a8;
+  color: #1f2937;
 }
 
 .left-panel-stack[data-testid="left-map-root"] .map-tree-icon {
@@ -135,12 +149,6 @@
 .left-panel-stack[data-testid="left-map-root"] .map-tree-toggle:disabled {
   cursor: default;
   opacity: 0.55;
-}
-
-.left-panel-stack[data-testid="left-map-root"] .map-item[draggable="true"] .map-tree-name::after {
-  color: var(--text-3);
-  content: " :::";
-  font: 700 10px/1 var(--font-mono);
 }
 
 .left-panel-stack[data-testid="left-map-root"] .map-item.dragging {
