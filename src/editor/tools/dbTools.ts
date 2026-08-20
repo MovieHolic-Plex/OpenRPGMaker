@@ -539,7 +539,11 @@ const defineMonsterSpecies: ToolDefinition = {
       throw new ToolError(`존재하지 않는 species skillId: ${[...new Set(missingSkills)].join(", ")} — 허용 예시: ${knownIds(draft.database.skills)}`, { code: "skill-not-found" });
     }
     const speciesIds = new Set(draft.database.monsterSpecies.map((species) => species.id));
-    const missingEvolutionSpecies = (record.evolutions ?? []).filter((evolution) => !speciesIds.has(evolution.toSpeciesId) && evolution.toSpeciesId !== record.id).map((evolution) => evolution.toSpeciesId);
+    // 자기 자신 진화는 레벨업마다 무한 재적용되므로 tool 경로에서도 거부한다(UI 드롭다운엔 옵션이 없어 복구 불가).
+    if ((record.evolutions ?? []).some((evolution) => evolution.toSpeciesId === record.id)) {
+      throw new ToolError(`종족 ${record.id}: 자기 자신으로 진화할 수 없습니다`, { code: "species-self-evolution" });
+    }
+    const missingEvolutionSpecies = (record.evolutions ?? []).filter((evolution) => !speciesIds.has(evolution.toSpeciesId)).map((evolution) => evolution.toSpeciesId);
     if (missingEvolutionSpecies.length > 0) {
       throw new ToolError(`존재하지 않는 진화 toSpeciesId: ${[...new Set(missingEvolutionSpecies)].join(", ")} — 허용 예시: ${knownIds(draft.database.monsterSpecies)}`, { code: "species-not-found" });
     }

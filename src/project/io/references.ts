@@ -17,6 +17,7 @@ import {
   validateOptionalResource,
   validateSystemResources,
 } from "./resourceReferenceValidation";
+import { monsterEvolutionCycleSpeciesIds } from "../monsterCollection";
 
 export function validateProjectReferences(project: Project): void {
   const issues = collectProjectReferenceIssues(project);
@@ -329,9 +330,15 @@ function validateMonsterSpeciesRecords(
 ): void {
   const speciesIds = new Set((project.database.monsterSpecies ?? []).map((record) => record.id));
   const itemIds = new Set(project.database.items.map((record) => record.id));
+  const cycleIds = monsterEvolutionCycleSpeciesIds(project.database.monsterSpecies ?? []);
+  // 사이클은 레벨업마다 두 종족을 왕복시킨다 — 그래프 전체에 한 번만 보고한다.
+  // 타입 멤버십은 여기서 보고하지 않는다: 이 파이프라인의 이슈는 로드를 막는 하드 에러이고,
+  // 상성표에 없는 타입은 정상적인 작업 중간 상태다(경고는 projectLint 가 낸다).
+  if (cycleIds.length > 0) issues.push(`종족 진화 그래프에 사이클이 있습니다: ${cycleIds.join(" → ")}`);
   for (const species of project.database.monsterSpecies ?? []) {
     collectExistingIdIssues(`monsterSpecies ${species.id}: skill`, (species.skillsByLevel ?? []).map((entry) => entry.skillId), skillIds, issues);
     for (const evolution of species.evolutions ?? []) {
+      if (evolution.toSpeciesId === species.id) issues.push(`종족 ${species.id}: 자기 자신으로 진화할 수 없습니다`);
       if (!speciesIds.has(evolution.toSpeciesId)) issues.push(`monsterSpecies ${species.id}: evolution toSpeciesId does not exist: ${evolution.toSpeciesId}`);
       if (evolution.requires.itemId && !itemIds.has(evolution.requires.itemId)) issues.push(`monsterSpecies ${species.id}: evolution itemId does not exist: ${evolution.requires.itemId}`);
     }

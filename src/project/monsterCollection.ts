@@ -72,7 +72,14 @@ export type MonsterExperienceResult = {
   readonly evolution?: EvolveMonsterResult;
 };
 
-const DEFAULT_MONSTER_EXP_CURVE: ActorExperienceCurve = { base: 30, extra: 20, acceleration: 30 };
+export const DEFAULT_MONSTER_EXP_CURVE: ActorExperienceCurve = { base: 30, extra: 20, acceleration: 30 };
+
+// 0~255 스케일(포켓몬식)로 저작된 레거시 값을 0~1로 이관한다.
+// 1을 넘는 값은 0~1 스케일에서 의미가 없으므로 100 분모 환산으로만 해석한다.
+function normalizeCaptureRateScale(value: number | undefined): number {
+  if (typeof value !== "number" || !Number.isFinite(value)) return 0.3;
+  return value > 1 ? value / 100 : value;
+}
 
 export function normalizeMonsterSpeciesRecord(
   record: Partial<MonsterSpeciesRecord> & Pick<MonsterSpeciesRecord, "id" | "name">
@@ -87,7 +94,7 @@ export function normalizeMonsterSpeciesRecord(
     types: types.length > 0 ? types : undefined,
     baseStats: normalizeSpeciesStats(record.baseStats),
     expCurve: normalizeExpCurve(record.expCurve),
-    captureRate: clampNumber(record.captureRate ?? 0.3, 0, 1),
+    captureRate: clampNumber(normalizeCaptureRateScale(record.captureRate), 0, 1),
     skillsByLevel: skillsByLevel.length > 0 ? skillsByLevel : undefined,
     evolutions: evolutions.length > 0 ? evolutions : undefined,
   };
@@ -209,6 +216,38 @@ export function monsterSkillIds(project: Project, instance: MonsterInstance | un
   if (!instance) return [];
   const species = monsterSpeciesById(project, instance.speciesId);
   return mergeSkillIds(instance.skillIds ?? [], species ? monsterSkillIdsForSpecies(species, instance.level) : []);
+}
+
+/**
+ * 진화 그래프에서 사이클(A→B→A, 자기 진화 포함)에 속한 종족 id를 정렬해 반환한다.
+ * 레벨업마다 evolveMonster 가 호출되므로 사이클은 두 종족을 무한 왕복시킨다.
+ */
+export function monsterEvolutionCycleSpeciesIds(species: readonly MonsterSpeciesRecord[]): string[] {
+  const targets = new Map<string, readonly string[]>();
+  for (const record of species) targets.set(record.id, (record.evolutions ?? []).map((entry) => entry.toSpeciesId));
+  const state = new Map<string, "visiting" | "done">();
+  const cycled = new Set<string>();
+  const stack: string[] = [];
+  const visit = (id: string): void => {
+    if (state.get(id) === "done") return;
+    if (state.get(id) === "visiting") {
+      // 스택에서 이 노드까지 되짚어 올라간 구간이 사이클이다.
+      for (let index = stack.lastIndexOf(id); index >= 0 && index < stack.length; index += 1) {
+        const member = stack[index];
+        if (member) cycled.add(member);
+      }
+      return;
+    }
+    state.set(id, "visiting");
+    stack.push(id);
+    for (const target of targets.get(id) ?? []) {
+      if (targets.has(target)) visit(target);
+    }
+    stack.pop();
+    state.set(id, "done");
+  };
+  for (const record of species) visit(record.id);
+  return [...cycled].sort();
 }
 
 export function applyMonsterExperienceAndEvolution(

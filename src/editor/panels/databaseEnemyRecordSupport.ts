@@ -9,20 +9,6 @@ import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 export { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
 export { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
 
-export const ELEMENT_RATE_LABELS: readonly { readonly id: string; readonly name: string }[] = [
-  { id: "sword", name: "검" },
-  { id: "spear", name: "창" },
-  { id: "hit", name: "타격" },
-  { id: "bow", name: "활" },
-  { id: "fire", name: "불" },
-  { id: "ice", name: "얼음" },
-  { id: "thunder", name: "번개" },
-  { id: "water", name: "물" },
-  { id: "earth", name: "대지" },
-  { id: "wind", name: "바람" },
-  { id: "holy", name: "성" },
-];
-
 // Always run magenta chroma-key on enemy previews. DB art is authored with #FF00FF key
 // (or postprocessed to pure magenta then alpha). Non-keyed assets without magenta are unchanged.
 export function enemyGraphicVisual(record: EnemyRecord): HTMLElement {

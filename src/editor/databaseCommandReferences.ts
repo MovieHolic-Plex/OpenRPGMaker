@@ -120,6 +120,8 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
         (collection === "classes" && command.toClassId === id) ||
         commandListReferences(command.successBranch ?? [], collection, id) ||
         commandListReferences(command.failureBranch ?? [], collection, id);
+    case "giveMonster":
+      return collection === "monsterSpecies" && command.speciesId === id;
     case "evolveMonster":
       return (collection === "monsterSpecies" && command.toSpeciesId === id) ||
         commandListReferences(command.successBranch ?? [], collection, id) ||

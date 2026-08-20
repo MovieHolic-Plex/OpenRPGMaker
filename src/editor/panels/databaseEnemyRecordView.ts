@@ -1,6 +1,8 @@
 ﻿import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, numberField, selectField, sliderStepperField, textField } from "@/editor/panels/databaseControls";
+import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
+import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { openActionContextMenu, openActionDialog } from "@/editor/panels/databaseEnemyActionDialog";
 import { openGraphicDialog } from "@/editor/panels/databaseEnemyGraphicDialog";
@@ -16,13 +18,15 @@ import {
   conditionLabel,
   currentEnemy,
   defaultAction,
-  ELEMENT_RATE_LABELS,
   enemyGraphicVisual,
   panel,
   rateField,
   replaceAction,
   skillName,
 } from "@/editor/panels/databaseEnemyRecordSupport";
+
+/** 공격 패턴 표에서 편집 대상 행. 레코드 id → 원본 배열 인덱스(정렬 인덱스가 아니다). */
+const selectedActionIndexes = new Map<string, number>();
 
 export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, rerender: () => void = () => undefined): void {
   form.append(
@@ -91,6 +95,11 @@ function speciesFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         })
       );
     }
+  }
+
+  if (speciesId) {
+    const species = speciesList.find((entry) => entry.id === speciesId);
+    if (species) fields.push(capturePreviewLine(species.captureRate, "db-enemy-capture-preview"));
   }
 
   // G006: append open/create species actions (panel structure owned by G002).
@@ -225,19 +234,32 @@ function speciesStatusChip(kind: "warn" | "info" | "error", testid: string, text
 }
 
 function statFields(record: EnemyRecord): HTMLElement[] {
+  const level = numberField("레벨", "db-field-enemy-level", record.level ?? 1, (value) =>
+    updateDatabaseRecord("enemies", record.id, { level: value }),
+    { min: 1, max: 99 }
+  );
+  level.title = "경험치 레벨갭 보정과 포획 몬스터의 시작 레벨에 쓰입니다.";
   return [
-    enemyStatField(record, "최대 HP", "maxHp", "db-field-enemy-max-hp"),
-    enemyStatField(record, "공격력", "attack", "db-field-enemy-attack"),
-    enemyStatField(record, "정신력", "mind", "db-field-enemy-mind"),
-    enemyStatField(record, "최대 MP", "maxMp", "db-field-enemy-max-mp"),
-    enemyStatField(record, "방어력", "defense", "db-field-enemy-defense"),
-    enemyStatField(record, "민첩성", "agility", "db-field-enemy-agility"),
+    level,
+    enemyStatField(record, "최대 HP", "maxHp", "db-field-enemy-max-hp", { min: 1, max: 99999 }),
+    enemyStatField(record, "공격력", "attack", "db-field-enemy-attack", { min: 1, max: 999 }),
+    enemyStatField(record, "정신력", "mind", "db-field-enemy-mind", { min: 1, max: 999 }),
+    enemyStatField(record, "최대 MP", "maxMp", "db-field-enemy-max-mp", { min: 0, max: 9999 }),
+    enemyStatField(record, "방어력", "defense", "db-field-enemy-defense", { min: 1, max: 999 }),
+    enemyStatField(record, "민첩성", "agility", "db-field-enemy-agility", { min: 1, max: 999 }),
   ];
 }
 
-function enemyStatField(record: EnemyRecord, label: string, key: keyof EnemyRecord["stats"], testid: string): HTMLElement {
+function enemyStatField(
+  record: EnemyRecord,
+  label: string,
+  key: keyof EnemyRecord["stats"],
+  testid: string,
+  bounds: { readonly min: number; readonly max: number }
+): HTMLElement {
   return numberField(label, testid, record.stats[key], (value) =>
-    updateDatabaseRecord("enemies", record.id, { stats: { ...currentEnemy(record).stats, [key]: value } })
+    updateDatabaseRecord("enemies", record.id, { stats: { ...currentEnemy(record).stats, [key]: value } }),
+    bounds
   );
 }
 
@@ -258,6 +280,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
     textField("리소스", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
       updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
     ),
+    databaseFieldSupportNotice("transparent", "flying", "graphicHue"),
   ];
 }
 
@@ -271,16 +294,19 @@ function updateGraphicPreviewState(transparent: boolean, flying: boolean): void 
 function rewardFields(record: EnemyRecord): HTMLElement[] {
   return [
     numberField("경험치", "db-field-enemy-exp", record.rewards.exp, (exp) =>
-      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, exp } })
+      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, exp } }),
+      { min: 0, max: 9999999 }
     ),
     numberField("돈", "db-field-enemy-gold", record.rewards.gold, (gold) =>
-      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, gold } })
+      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, gold } }),
+      { min: 0, max: 999999 }
     ),
     selectField("아이템", "db-picker-enemy-drop", record.rewards.dropItemId ?? "", store.getCurrent().database.items, (dropItemId) =>
       updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, dropItemId: emptyToUndefined(dropItemId) } })
     ),
     numberField("드롭률", "db-field-enemy-drop-rate", record.rewards.dropRatePercent, (dropRatePercent) =>
-      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, dropRatePercent } })
+      updateDatabaseRecord("enemies", record.id, { rewards: { ...currentEnemy(record).rewards, dropRatePercent } }),
+      { min: 0, max: 100 }
     ),
   ];
 }
@@ -291,7 +317,8 @@ function criticalFields(record: EnemyRecord): HTMLElement[] {
       updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, enabled } })
     ),
     numberField("1 /", "db-field-enemy-critical-one-in", record.criticalHit.oneIn, (oneIn) =>
-      updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, oneIn } })
+      updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, oneIn } }),
+      { min: 1, max: 999 }
     ),
   ];
 }
@@ -305,8 +332,15 @@ function optionFields(record: EnemyRecord): HTMLElement[] {
 }
 
 function rateRows(record: EnemyRecord, kind: "state" | "element"): HTMLElement[] {
-  const source = kind === "state" ? [{ id: "state_death", name: "전투불능" }, ...store.getCurrent().database.states] : ELEMENT_RATE_LABELS;
-  return source.map((entry) => {
+  const database = store.getCurrent().database;
+  // 속성 행은 하드코딩 목록 대신 프로젝트 데이터를 쓴다 — 런타임(runtime.ts elementMultiplierFor)이
+  // database.elements 를 권위로 본다. 상태 행의 state_death 는 데이터에 없어도 런타임이 인정하는
+  // 암묵 상태이므로(references.ts isKnownStateId, commandCatalog) 항상 앞에 붙인다.
+  const source: readonly { readonly id: string; readonly name: string }[] =
+    kind === "state"
+      ? [{ id: "state_death", name: "전투불능" }, ...database.states.filter((state) => state.id !== "state_death")]
+      : database.elements ?? [];
+  const rows = source.map((entry) => {
     const value = (kind === "state" ? record.stateRates[entry.id] : record.elementRates[entry.id]) ?? "C";
     const testid = kind === "state" ? `db-picker-enemy-state-rate-${entry.id}` : `db-picker-enemy-element-rate-${entry.id}`;
     return rateField(entry.name, testid, value, (grade) => {
@@ -315,17 +349,100 @@ function rateRows(record: EnemyRecord, kind: "state" | "element"): HTMLElement[]
       if (kind === "element") updateDatabaseRecord("enemies", record.id, { elementRates: { ...current.elementRates, [entry.id]: grade } });
     });
   });
+  if (kind !== "element") return rows;
+  // 속성 목록에서 사라졌는데 등급이 남아 있는 키 — 런타임은 무시하므로 정리 경로를 준다.
+  const known = new Set((database.elements ?? []).map((element) => element.id));
+  for (const danglingId of Object.keys(record.elementRates).filter((id) => !known.has(id))) {
+    rows.push(danglingElementRateRow(record, danglingId));
+  }
+  return rows;
+}
+
+function danglingElementRateRow(record: EnemyRecord, elementId: string): HTMLElement {
+  return el("div", {
+    class: "db-enemy-rate-row is-dangling",
+    dataset: { testid: `db-enemy-element-rate-dangling-${elementId}` },
+    children: [
+      el("span", { text: `속성 목록에 없는 등급: ${elementId} (${record.elementRates[elementId]})` }),
+      el("button", {
+        class: "btn small",
+        attrs: { type: "button" },
+        text: "삭제",
+        dataset: { testid: `db-enemy-element-rate-dangling-delete-${elementId}` },
+        on: {
+          click: () => {
+            const current = currentEnemy(record);
+            const next = { ...current.elementRates };
+            delete next[elementId];
+            updateDatabaseRecord("enemies", record.id, { elementRates: next });
+          },
+        },
+      }),
+    ],
+  });
 }
 
 function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElement {
+  const actions = record.actions;
+  const selectedIndex = Math.min(selectedActionIndexes.get(record.id) ?? 0, Math.max(0, actions.length - 1));
+  const toolbar = el("div", {
+    class: "db-enemy-action-toolbar",
+    children: [
+      actionButton("행 추가", "db-enemy-action-add", () => {
+        const current = currentEnemy(record);
+        updateDatabaseRecord("enemies", record.id, { actions: [...current.actions, defaultAction()] });
+        selectedActionIndexes.set(record.id, current.actions.length);
+        rerender();
+      }),
+      actionButton("행 복사", "db-enemy-action-duplicate", () => {
+        const current = currentEnemy(record);
+        const source = current.actions[selectedIndex];
+        if (!source) return;
+        const next = [...current.actions];
+        next.splice(selectedIndex + 1, 0, { ...source });
+        updateDatabaseRecord("enemies", record.id, { actions: next });
+        selectedActionIndexes.set(record.id, selectedIndex + 1);
+        rerender();
+      }, actions.length === 0),
+      actionButton("행 제거", "db-enemy-action-delete", () => {
+        const current = currentEnemy(record);
+        if (current.actions.length === 0) return;
+        updateDatabaseRecord("enemies", record.id, { actions: current.actions.filter((_, index) => index !== selectedIndex) });
+        selectedActionIndexes.set(record.id, Math.max(0, selectedIndex - 1));
+        rerender();
+      }, actions.length === 0),
+    ],
+  });
+  if (actions.length === 0) {
+    return el("div", {
+      class: "db-enemy-attack-patterns",
+      children: [
+        toolbar,
+        el("p", {
+          class: "db-enemy-actions-empty",
+          dataset: { testid: "db-enemy-actions-empty" },
+          text: "행동이 없습니다 — 전투에서 일반 공격만 사용합니다.",
+        }),
+      ],
+    });
+  }
   const body = el("tbody");
-  const actions = record.actions.length > 0 ? record.actions : [defaultAction()];
-  actions.forEach((action, index) => {
+  // 런타임 선택 순서(priority*10 + 상황 점수)를 흉내내 우선도 내림차순으로 보여준다.
+  // 편집은 정렬 순서가 아니라 원본 배열 인덱스를 써야 한다.
+  const sorted = actions.map((action, index) => ({ action, index })).sort((left, right) => right.action.priority - left.action.priority);
+  for (const { action, index } of sorted) {
+    const dangling = action.skillId.length > 0 && !store.getCurrent().database.skills.some((skill) => skill.id === action.skillId);
+    const label = action.skillId.length === 0 ? "일반 공격" : dangling ? `삭제된 스킬(${action.skillId})` : skillName(action.skillId);
     body.append(
       el("tr", {
-        attrs: { role: "button", tabindex: "0", "aria-label": `${skillName(action.skillId)} 공격 패턴 편집` },
-        dataset: { testid: `db-enemy-action-row-${index}` },
+        class: `${index === selectedIndex ? "active" : ""}${dangling ? " is-dangling" : ""}`.trim(),
+        attrs: { role: "button", tabindex: "0", "aria-label": `${label} 공격 패턴 편집` },
+        dataset: { testid: `db-enemy-action-row-${index}`, actionIndex: String(index) },
         on: {
+          click: () => {
+            selectedActionIndexes.set(record.id, index);
+            rerender();
+          },
           contextmenu: (event) => openActionContextMenu(record, index, action, event as MouseEvent, rerender),
           dblclick: () => openActionDialog(record, index, action, rerender),
           keydown: (event) => {
@@ -336,24 +453,34 @@ function attackPatternTable(record: EnemyRecord, rerender: () => void): HTMLElem
           },
         },
         children: [
-          el("td", { text: skillName(action.skillId) }),
+          el("td", { text: label }),
           el("td", { text: conditionLabel(action.condition) }),
           el("td", { text: String(action.priority) }),
         ],
       })
     );
-  });
+  }
+  const priorityHeader = el("th", { text: "우선도" });
+  priorityHeader.title = "우선도 × 10 + 상황 점수로 행동을 고릅니다. 우선도가 낮아도 상황에 따라 선택될 수 있습니다.";
   return el("div", {
     class: "db-enemy-attack-patterns",
     children: [
+      toolbar,
       el("table", {
         children: [
-          el("thead", { children: [el("tr", { children: [el("th", { text: "행동" }), el("th", { text: "조건" }), el("th", { text: "우선도" })] })] }),
+          el("thead", { children: [el("tr", { children: [el("th", { text: "행동" }), el("th", { text: "조건" }), priorityHeader] })] }),
           body,
         ],
       }),
     ],
   });
+}
+
+function actionButton(label: string, testid: string, onClick: () => void, disabled = false): HTMLElement {
+  const button = el("button", { class: "btn small", attrs: { type: "button" }, text: label, dataset: { testid }, on: { click: onClick } }) as HTMLButtonElement;
+  button.disabled = disabled;
+  if (disabled) button.title = "행동을 추가하면 사용할 수 있습니다";
+  return button;
 }
 
 function actionSkillField(record: EnemyRecord): HTMLElement {
@@ -383,7 +510,26 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
     numberField("접촉 데미지", "db-field-enemy-contact-damage", profile?.contactDamage ?? 0, (value) =>
       patchProfile((draft) => {
         draft.contactDamage = value;
-      })
+      }),
+      { min: 0, max: 9999 }
+    ),
+    numberField("어그로 거리", "db-field-enemy-aggro-range", profile?.aggroRange ?? 5, (value) =>
+      patchProfile((draft) => {
+        draft.aggroRange = value;
+      }),
+      { min: 1, max: 30 }
+    ),
+    numberField("이동 간격(ms)", "db-field-enemy-move-interval-ms", profile?.moveIntervalMs ?? 500, (value) =>
+      patchProfile((draft) => {
+        draft.moveIntervalMs = value;
+      }),
+      { min: 50, max: 10000 }
+    ),
+    sliderStepperField("넉백 저항", "db-field-enemy-knockback-resist", profile?.knockbackResist ?? 0, (value) =>
+      patchProfile((draft) => {
+        draft.knockbackResist = value;
+      }),
+      { min: 0, max: 1, step: 0.05 }
     ),
     selectField("공격 종류", "db-field-enemy-action-kind", attack?.kind ?? "", attackKindOptions, (value) => {
       if (!value) {
@@ -404,12 +550,22 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
     }),
   ];
   if (attack) {
-    const patchAttack = (key: "windupMs" | "recoverMs" | "damage" | "range" | "cooldownMs" | "projectileSpeedTilesPerSec", label: string, testid: string): HTMLElement =>
+    // bounds 는 normalizeEnemyActionAttack(actionCombat.ts)의 clampInt 범위와 숫자까지 일치해야 한다.
+    const attackBounds = {
+      windupMs: { min: 100, max: 5000 },
+      recoverMs: { min: 0, max: 5000 },
+      damage: { min: 1, max: 9999 },
+      range: { min: 1, max: 20 },
+      cooldownMs: { min: 0, max: 30000 },
+      projectileSpeedTilesPerSec: { min: 1, max: 30 },
+    } as const;
+    const patchAttack = (key: keyof typeof attackBounds, label: string, testid: string): HTMLElement =>
       numberField(label, testid, attack[key] ?? 0, (value) =>
         patchProfile((draft) => {
           if (!draft.attack) return;
           (draft.attack as unknown as Record<string, number>)[key] = value;
-        })
+        }),
+        attackBounds[key]
       );
     fields.push(
       patchAttack("windupMs", "선딜(ms)", "db-field-enemy-windup-ms"),

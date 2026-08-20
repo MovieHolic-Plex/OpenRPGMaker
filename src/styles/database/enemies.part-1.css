@@ -439,3 +439,44 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.database-modal-body .db-enemy-action-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.database-modal-body .db-enemy-actions-empty,
+.database-modal-body .db-capture-preview {
+  color: var(--text-2);
+  font-size: 12px;
+  margin: 2px 0;
+}
+
+.database-modal-body .db-enemy-attack-patterns tr.is-dangling td,
+.database-modal-body .db-enemy-rate-row.is-dangling {
+  color: #ff6b6b;
+}
+
+.database-modal-body .db-enemy-rate-row {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.database-modal-body .db-collection-gate-warn {
+  align-items: center;
+  background: rgba(255, 107, 107, 0.14);
+  border: 1px solid rgba(255, 107, 107, 0.5);
+  border-radius: 4px;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+}
+
+.database-modal-body .db-monster-species-evolution-cycle-warn {
+  color: #ff6b6b;
+}
