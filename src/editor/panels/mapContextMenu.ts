@@ -32,7 +32,7 @@ export function openMapContextMenu(request: MapContextMenuRequest): void {
   const menu = el("div", {
     class: "map-context-menu",
     attrs: {
-      "aria-label": `${request.mapName} map actions`,
+      "aria-label": `${request.mapName} 맵 메뉴`,
       role: "menu",
       tabindex: "-1",
     },

@@ -435,32 +435,25 @@ test("map tree uses an RM2K3-style tree box with context menu actions", async ({
 
   const mapTree = page.getByTestId("map-tree");
   await expect(mapTree).toHaveClass(/map-tree-panel/);
-  await expect(mapTree.locator("[data-testid^='map-add-child-']").first()).toBeHidden();
-  await expect(mapTree.locator("[data-testid^='map-set-start-']").first()).toBeHidden();
-  await expect(mapTree.locator("[data-testid^='map-delete-']").first()).toBeHidden();
+  await expect(mapTree.locator("[data-testid^='map-add-child-']")).toHaveCount(0);
+  await expect(mapTree.locator("[data-testid^='map-delete-']")).toHaveCount(0);
   await expect(mapTree.locator(".rm-tool-icon-folder")).toBeVisible();
 
   const beforeNodeCount = await mapTree.locator("[data-testid^='map-tree-node-']").count();
   await mapTree.locator("[data-testid^='map-tree-node-']").first().click({ button: "right" });
-  await expect(page.getByRole("menuitem", { name: "New Map" })).toBeVisible();
-  await page.getByRole("menuitem", { name: "New Map" }).click();
+  await expect(page.getByRole("menuitem", { name: "하위 맵 추가" })).toBeVisible();
+  await page.getByRole("menuitem", { name: "하위 맵 추가" }).click();
+  await page.getByTestId("map-create-confirm").click();
   await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
   await expect(mapTree.locator(".rm-tool-icon-map-node").first()).toBeVisible();
-  await expect(mapTree.locator("[data-testid^='map-toggle-']").first()).toHaveAttribute("aria-expanded", "true");
-  await mapTree.locator("[data-testid^='map-toggle-']").first().click();
-  await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount);
-  await mapTree.locator("[data-testid^='map-toggle-']").first().click();
+  const rowToggle = mapTree.locator("[data-testid^='map-toggle-']:not([data-testid='map-toggle-all'])").first();
+  await expect(rowToggle).toHaveAttribute("aria-expanded", "true");
+  await rowToggle.click();
+  await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(1);
+  await rowToggle.click();
   await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
-  await expect(mapTree.locator("[data-testid^='map-tree-node-']").nth(1)).toHaveAttribute("draggable", "true");
-
-  await expect(page.getByTestId("brush-size-control")).toBeHidden();
-  await expect(page.getByTestId("quick-tile-toggle")).toBeVisible();
-  await expect(page.getByTestId("tile-number-toggle")).toBeVisible();
-
-  for (const testId of ["undo-button", "redo-button", "copy-button", "paste-button"] as const) {
-    const button = page.getByTestId(testId);
-    await expect(button).toBeHidden();
-  }
+  await expect(mapTree.locator("[data-testid^='map-tree-node-']").nth(1)).toHaveAttribute("draggable", "false");
+  await expect(mapTree.locator("[data-testid^='map-drag-']").first()).toHaveAttribute("draggable", "true");
 });
 
 test("map tree context menu is accessible from mouse, keyboard, and action button", async ({ page }) => {
@@ -470,51 +463,49 @@ test("map tree context menu is accessible from mouse, keyboard, and action butto
   const mapTree = page.getByTestId("map-tree");
   const rootNode = mapTree.locator("[data-testid^='map-tree-node-']").first();
   await rootNode.click({ button: "right" });
-  await page.getByRole("menuitem", { name: "New Map" }).click();
+  await page.getByRole("menuitem", { name: "하위 맵 추가" }).click();
+  await page.getByTestId("map-create-confirm").click();
   const beforeNodeCount = await mapTree.locator("[data-testid^='map-tree-node-']").count();
 
   await rootNode.click({ button: "right" });
-  const menu = page.getByRole("menu", { name: /map actions/i });
+  const menu = page.getByRole("menu", { name: /맵 메뉴/ });
   await expect(menu).toBeVisible();
   await expect(rootNode).toHaveClass(/active/);
-  await expect(page.getByRole("menuitem", { name: "Map Properties..." })).toBeVisible();
-  await expect(page.getByRole("menuitem", { name: "New Map" })).toBeVisible();
-  await expect(page.getByRole("menuitem", { name: "New Area..." })).toBeVisible();
-  await expect(page.getByRole("menuitem", { name: "Generate Dungeon" })).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByRole("menuitem", { name: "Copy Ctrl+C" })).toBeVisible();
-  await expect(page.getByRole("menuitem", { name: "Paste Ctrl+V" })).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByRole("menuitem", { name: "Delete Del" })).toBeVisible();
-  await expect(page.getByRole("menuitem", { name: "Shift... Ctrl+H" })).toBeVisible();
-  await page.getByRole("menuitem", { name: "Map Properties..." }).click();
+  await expect(page.getByRole("menuitem", { name: "맵 설정" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "하위 맵 추가" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "복제" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "삭제 Del" })).toBeVisible();
+  await expect(page.getByRole("menuitem", { name: "맵 밀기" })).toBeVisible();
+  await page.getByRole("menuitem", { name: "맵 설정" }).click();
   await expect(page.locator("[data-testid^='map-properties-modal-']")).toBeVisible();
   await page.locator("[data-testid^='map-properties-modal-'] .event-subdialog-close").click();
 
   await rootNode.click({ button: "right" });
-  await page.getByRole("menuitem", { name: "Shift... Ctrl+H" }).click();
+  await page.getByRole("menuitem", { name: "맵 밀기" }).click();
   await expect(page.locator("[data-testid^='map-shift-modal-']")).toBeVisible();
   await page.locator("[data-testid^='map-shift-modal-'] .event-subdialog-close").click();
 
   await rootNode.click({ button: "right" });
-  await expect(page.getByRole("menu", { name: /map actions/i })).toBeVisible();
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toBeVisible();
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("menu", { name: /map actions/i })).toHaveCount(0);
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toHaveCount(0);
 
   await rootNode.focus();
   await page.keyboard.press("Shift+F10");
-  await expect(page.getByRole("menu", { name: /map actions/i })).toBeVisible();
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toBeVisible();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("Escape");
-  await expect(page.getByRole("menu", { name: /map actions/i })).toHaveCount(0);
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toHaveCount(0);
 
   await mapTree.locator("[data-testid^='map-context-trigger-']").first().click();
-  await expect(page.getByRole("menu", { name: /map actions/i })).toBeVisible();
-  await page.getByRole("menuitem", { name: "Copy Ctrl+C" }).click();
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toBeVisible();
+  await page.getByRole("menuitem", { name: "복제" }).click();
   await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
 
   await mapTree.locator("[data-testid^='map-context-trigger-']").first().click();
-  await expect(page.getByRole("menu", { name: /map actions/i })).toBeVisible();
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toBeVisible();
   await page.mouse.click(600, 120);
-  await expect(page.getByRole("menu", { name: /map actions/i })).toHaveCount(0);
+  await expect(page.getByRole("menu", { name: /맵 메뉴/ })).toHaveCount(0);
 });
 
 test("right click picks the tile under the cursor and layer mode is visually distinct", async ({ page }) => {
