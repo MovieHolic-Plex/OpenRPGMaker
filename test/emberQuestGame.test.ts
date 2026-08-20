@@ -4,6 +4,7 @@ import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
 import { deserialize, resolveEventPage, serialize } from "@/project/io";
 import { validateProjectReferences } from "@/project/io/references";
+import { runSceneTest } from "@/testing/sceneTestRunner";
 import { createEmberQuestProject, EMBER_MAP, EMBER_SWITCH } from "@/project/defaults/emberQuestGame";
 
 const NPC_EVENT_IDS = [
@@ -106,6 +107,42 @@ describe("emberQuestGame", () => {
     expect(page?.commands).toEqual([
       { kind: "transfer", mapId: EMBER_MAP.forest, x: 2, y: 14, fade: "black" },
     ]);
+  });
+
+  // #19 재검증(2026-08-20): "playerTouch 성문 전이가 걸어 들어가도 발동 안 됨" 의심은 오탐.
+  // 텔레포트({kind:"move", to})가 아니라 실제 한 칸 걷기({kind:"move", dir})로 밟기 경로를 고정한다.
+  it("q1Started ON 상태에서 성문(30,12)으로 걸어 들어가면 안개 숲 (2,14)로 전이된다", () => {
+    const result = runSceneTest(project, {
+      mapId: EMBER_MAP.village,
+      start: { x: 29, y: 12 },
+      steps: [
+        { kind: "set", switches: [EMBER_SWITCH.q1Started], manualHint: "Q1 시작 스위치 ON" },
+        { kind: "move", dir: "right" },
+      ],
+    });
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.log).toContain("event ev_ember_gate_a start");
+    expect(result.session.currentMapId).toBe(EMBER_MAP.forest);
+    expect(result.session.x).toBe(2);
+    expect(result.session.y).toBe(14);
+  });
+
+  it("q1Started OFF 상태에서 성문을 밟으면 _closed 대사 페이지만 발화하고 마을에 남는다", () => {
+    const result = runSceneTest(project, {
+      mapId: EMBER_MAP.village,
+      start: { x: 29, y: 12 },
+      steps: [{ kind: "move", dir: "right" }],
+    });
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.log).toContain("event ev_ember_gate_a start");
+    expect(result.session.currentMapId).toBe(EMBER_MAP.village);
+    // 스위치 OFF 시 해석되는 페이지가 _closed(대사)임을 함께 고정한다.
+    const gate = project.maps[EMBER_MAP.village]?.events.find((event) => event.id === "ev_ember_gate_a");
+    expect(gate).toBeTruthy();
+    if (!gate) return;
+    const page = resolveEventPage(gate, result.session);
+    expect(page?.id).toBe("ev_ember_gate_a_closed");
+    expect(page?.commands.every((command) => command.kind === "text")).toBe(true);
   });
 
   it("모든 맵에서 시작/입장 지점으로부터 주요 이벤트에 도달할 수 있다", () => {

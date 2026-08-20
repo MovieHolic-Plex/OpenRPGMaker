@@ -145,6 +145,7 @@ function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefine
     commands: page.commands,
     rerender,
     runtimeSupport: battleEventCommandRuntimeSupport,
+    pickerContext: "troop",
     replaceCommands: (commands: Command[]) => updateTroopBattleEventPage(record, page, { commands }),
   });
   return el("div", {

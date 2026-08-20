@@ -24,6 +24,7 @@ import {
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
 import { eventDraftDiffById, type EventDiff } from "@/project/eventDrafts";
+import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
 import { el } from "@/util/dom";
@@ -159,7 +160,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const storyboardMode = loadStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
-  renderCommandList(cmdList, activePage.commands, [], actions, { issues: activePageIssues });
+  // 맵 이벤트 편집기 — 배지/삽입 피커 모두 맵 컨텍스트 판정을 쓴다.
+  renderCommandList(cmdList, activePage.commands, [], actions, {
+    issues: activePageIssues,
+    runtimeSupport: (command) => commandRuntimeSupport(command, "map"),
+    pickerContext: "map",
+  });
   cmdList.querySelector(".empty-hint")?.remove();
   cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id));
   cmdList.append(renderAiNextSteps(activePage.commands.length));
@@ -668,6 +674,7 @@ function openCommandPickerForActions(actions: CommandListActions): void {
   if (document.querySelector('[data-testid="event-command-picker"]')) return;
   openEventCommandPicker({
     title: "이벤트 명령",
+    context: "map",
     onSelect: (command, closePicker) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         actions.addCommand([], editedCommand);
@@ -683,6 +690,7 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
   if (!pageId || document.querySelector('[data-testid="event-command-picker"]')) return false;
   openEventCommandPicker({
     title: "이벤트 명령",
+    context: "map",
     onSelect: (command, closePicker) => {
       openNewEventCommandDialog(command, (editedCommand) => {
         addEventPageCommand(mapId, eventId, pageId, editedCommand);

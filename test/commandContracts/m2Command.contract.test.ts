@@ -166,9 +166,9 @@ describe("m2Command persisted semantic contracts", () => {
 
     // Then: conversion stays native and persisted execution has an explicit, non-inherited context contract.
     expect(pickerCommand.kind).toBe(entry.existingKind);
-    expect(commandRuntimeSupport(persistedCommand)).toBe(
-      commandId === "m2-002-display-text-settings" ? "runtime-full" : "runtime-partial"
-    );
+    // 배지 정직성(2026-08-20): 컨텍스트 없는 판정은 세 컨텍스트 중 최저(보수)다.
+    // m2-002 는 map/common full 이지만 troop partial 이므로 무컨텍스트 값도 partial 이다.
+    expect(commandRuntimeSupport(persistedCommand)).toBe("runtime-partial");
     expect(commandRuntimeSupport(persistedCommand, "map")).toBe(
       commandId === "m2-002-display-text-settings" ? "runtime-full" : "runtime-partial"
     );

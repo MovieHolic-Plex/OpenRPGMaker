@@ -4,6 +4,7 @@ import {
   isM2CatalogEntrySelectableInBattleEvent,
   isM2CatalogEntrySelectableInMap,
   M2_COMMAND_CATALOG,
+  m2CatalogEntryRuntimeSupport,
   m2CommandById,
 } from "@/project/eventCommands/m2Catalog";
 import { commandRuntimeSupport, m2CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
@@ -50,17 +51,26 @@ describe("m2 event command catalog", () => {
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Comment"))).toBe(true);
     expect(requireEntry("Display Text Settings").runtimeSupport).toBe("runtime-full");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Display Text Settings"))).toBe(true);
-    expect(requireEntry("Open Load Menu").runtimeSupport).toBe("runtime-full");
+    // 배지 정직성(2026-08-20): 카탈로그의 정적 runtimeSupport 는 컨텍스트를 모르는
+    // 보수 판정(세 컨텍스트 중 최저)이다. Open Load Menu(m2-093)는 behaviorClass full
+    // 이지만 M2_MAP_COMMON_FULL_IDS 밖이므로 map 컨텍스트에서도 partial 이다.
+    expect(requireEntry("Open Load Menu").runtimeSupport).toBe("runtime-partial");
+    expect(m2CatalogEntryRuntimeSupport(requireEntry("Open Load Menu"), "map")).toBe("runtime-partial");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Open Load Menu"))).toBe(true);
     expect(requireEntry("Break Loop").runtimeSupport).toBe("runtime-full");
     expect(requireEntry("Break Loop").existingKind).toBe("breakLoop");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Break Loop"))).toBe(true);
     expect(requireEntry("Loop").existingKind).toBe("loop");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Loop"))).toBe(true);
-    expect(requireEntry("Move Picture").runtimeSupport).toBe("runtime-full");
+    // Move Picture(m2-052)는 map/common full, troop partial — 정적 값은 보수 partial,
+    // 실제 편집 컨텍스트(map)에서는 full 로 표시된다.
+    expect(requireEntry("Move Picture").runtimeSupport).toBe("runtime-partial");
+    expect(m2CatalogEntryRuntimeSupport(requireEntry("Move Picture"), "map")).toBe("runtime-full");
     expect(requireEntry("Move Picture").bodyStrategy).toBe("generic");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Move Picture"))).toBe(true);
-    expect(requireEntry("Change Enemy HP").runtimeSupport).toBe("runtime-full");
+    // Change Enemy HP(m2-098)는 troop 전용 full — 정적 보수 값은 partial.
+    expect(requireEntry("Change Enemy HP").runtimeSupport).toBe("runtime-partial");
+    expect(m2CatalogEntryRuntimeSupport(requireEntry("Change Enemy HP"), "troop")).toBe("runtime-full");
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Change Enemy HP"))).toBe(false);
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Change Skills"))).toBe(true);
     expect(isM2CatalogEntrySelectableInMap(requireEntry("Change Equipment"))).toBe(true);
@@ -173,9 +183,17 @@ describe("m2 event command catalog", () => {
       "Data Query",
     ];
 
+    // 배지 정직성(2026-08-20): 정적 runtimeSupport 는 보수 판정. 모던 커맨드 중
+    // Advanced Dialogue 만 네이티브 text 변환(runtime-full)이고, 나머지는 troop(및 일부는
+    // map/common) 컨텍스트에서 partial 이므로 보수 값이 runtime-partial 이다.
+    // map 컨텍스트 full 여부는 M2_MAP_COMMON_FULL_IDS 멤버십이 정본이다.
+    const mapFullModernTitles = new Set(["Camera Control", "Spawn Event", "Remove Event"]);
     for (const title of modernTitles) {
       const entry = requireEntry(title);
-      expect(entry.runtimeSupport).toBe("runtime-full");
+      expect(entry.runtimeSupport).toBe(title === "Advanced Dialogue" ? "runtime-full" : "runtime-partial");
+      expect(m2CatalogEntryRuntimeSupport(entry, "map")).toBe(
+        title === "Advanced Dialogue" || mapFullModernTitles.has(title) ? "runtime-full" : "runtime-partial"
+      );
       if (title === "Advanced Dialogue") {
         expect(entry.bodyStrategy).toBe("existing");
         expect(entry.existingKind).toBe("text");
@@ -191,8 +209,10 @@ describe("m2 event command catalog", () => {
   });
 
   it("publishes only the three runtime support grades", () => {
+    // 배지 정직성(2026-08-20): 정적 카탈로그 값은 보수 판정이므로 세 등급이 모두 나타난다.
+    // (M2_MAP_COMMON_FULL_IDS 와 M2_TROOP_FULL_IDS 는 서로소라 순수 m2 행은 모두 partial.)
     const grades = new Set(M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport));
-    expect(grades).toEqual(new Set(["runtime-full", "editor-only"]));
+    expect(grades).toEqual(new Set(["runtime-full", "runtime-partial", "editor-only"]));
     expect(M2_COMMAND_CATALOG.map((entry) => entry.supportStatus)).toEqual(
       M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport)
     );
@@ -200,16 +220,20 @@ describe("m2 event command catalog", () => {
     // 6A-1 머지로 Key Input Processing이 네이티브 inputWait에 매핑되어 runtime-full로 승격됨.
     expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-full");
     expect(requireEntry("Show Text").supportStatus).toBe("runtime-full");
-    expect(requireEntry("Change Parameters").supportStatus).toBe("runtime-full");
-    expect(requireEntry("Change State").supportStatus).toBe("runtime-full");
-    expect(requireEntry("Damage Processing").supportStatus).toBe("runtime-full");
-    expect(requireEntry("Change Actor Graphic").supportStatus).toBe("runtime-full");
-    expect(requireEntry("Scroll Map").supportStatus).toBe("runtime-full");
+    // 아래 다섯 개는 M2_MAP_COMMON_FULL_IDS 멤버 — map/common 에서는 full 이지만
+    // troop 에서는 partial 이므로 컨텍스트 없는 정적 값은 보수적으로 partial 이다.
+    for (const title of ["Change Parameters", "Change State", "Damage Processing", "Change Actor Graphic", "Scroll Map"]) {
+      expect(requireEntry(title).supportStatus).toBe("runtime-partial");
+      expect(m2CatalogEntryRuntimeSupport(requireEntry(title), "map")).toBe("runtime-full");
+      expect(m2CatalogEntryRuntimeSupport(requireEntry(title), "common")).toBe("runtime-full");
+      expect(m2CatalogEntryRuntimeSupport(requireEntry(title), "troop")).toBe("runtime-partial");
+    }
   });
 
   it("keeps the support table aligned with implemented battle M2 ids", () => {
+    // 배틀 전용 커맨드의 full 판정은 troop 컨텍스트로 확인한다(정적 값은 보수 partial).
     const fullBattleIds = M2_COMMAND_CATALOG
-      .filter((entry) => entry.index >= 98 && entry.index <= 108 && entry.runtimeSupport === "runtime-full")
+      .filter((entry) => entry.index >= 98 && entry.index <= 108 && m2CatalogEntryRuntimeSupport(entry, "troop") === "runtime-full")
       .map((entry) => entry.id);
 
     expect(fullBattleIds).toEqual([

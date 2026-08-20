@@ -9,6 +9,7 @@
 //  - transfer-bounds       (error)   transfer 목적지가 맵 경계 밖
 //  - transfer-impassable   (error)   transfer 목적지 타일이 통행 불가
 //  - transfer-retrigger    (warning) transfer 목적지에 playerTouch 이벤트(무한 재전이 위험)
+//  - playerTouch-impassable (warning) 밟기형(priority≠same) touch/playerTouch 이벤트가 통행 불가 타일 위(영구 미발동)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 좌표 중복
 //  - map-size              (warning) 256×256 초과 맵
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
@@ -19,7 +20,12 @@
 //  - world-graph/world-transfer/world-adjacent:* (error|warning) 선언형 월드 그래프/맵 경계/transfer 정합 문제
 
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
-import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
+import {
+  battleEventCommandRuntimeSupport,
+  commandRuntimeSupport,
+  type CommandRuntimeSupport,
+  type M2RuntimeContext,
+} from "@/project/eventCommands/runtimeSupport";
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
@@ -57,6 +63,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkReferences(project, issues);
   checkStartPosition(project, issues);
   checkTransfers(project, issues);
+  checkPlayerTouchTilePassability(project, issues);
   checkDuplicateEventPositions(project, issues);
   checkMapSizes(project, issues);
   checkRuntimeSupportCommands(project, issues);
@@ -231,6 +238,34 @@ function checkTransfers(project: Project, issues: LintIssue[]): void {
   }
 }
 
+// (e') 밟기형 touch/playerTouch 이벤트가 통행 불가 타일 위에 있으면 영구 미발동(warning).
+// 근거: 플레이어 이동은 지형 통행성(canMove)에서 먼저 막히므로(playSceneMovement)
+// priority가 "same"이 아닌(=차단하지 않고 밟아서 발동하는) 페이지는 절대 실행될 수 없다.
+// priority "same"(차단형)은 부딪힘(bump)으로 발동하므로 이 규칙 대상이 아니다.
+// RM2K3 정합 동작이라 런타임을 고치지 않고 저작 함정으로만 잡는다.
+function checkPlayerTouchTilePassability(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      const steppablePage = (event.pages ?? []).find(
+        (page) => isSteppableTouch(page.trigger) && page.priority !== "same"
+      );
+      if (!steppablePage) continue;
+      if (isPassable(project, map, event.x, event.y)) continue;
+      issues.push({
+        severity: "warning",
+        code: "playerTouch-impassable",
+        mapId: map.id,
+        x: event.x,
+        y: event.y,
+        message:
+          `밟기형 ${steppablePage.trigger.kind} 이벤트가 통행 불가 타일 위에 있어 발동될 수 없습니다: ` +
+          `${map.id} ${event.id}/${steppablePage.id} (${event.x}, ${event.y}) — ` +
+          `통행 가능한 타일로 옮기거나, 부딪힘 발동을 원하면 priority를 "same"으로 바꾸세요.`,
+      });
+    }
+  }
+}
+
 // (f) 같은 맵 내 이벤트 좌표 중복.
 function checkDuplicateEventPositions(project: Project, issues: LintIssue[]): void {
   for (const map of Object.values(project.maps)) {
@@ -271,7 +306,16 @@ function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): voi
     for (const event of map.events) {
       visitCommands(
         event.commands,
-        (command) => pushRuntimeSupportCommandIssue(command, issues, { mapId: map.id, x: event.x, y: event.y, owner: `맵 이벤트 ${event.id}` }),
+        // 맵 이벤트는 map 컨텍스트로 판정한다 — behaviorClass "full" 이라도
+        // M2_MAP_COMMON_FULL_IDS 밖이면 맵 런타임에서는 부분 지원이다.
+        (command) =>
+          pushRuntimeSupportCommandIssue(command, issues, {
+            mapId: map.id,
+            x: event.x,
+            y: event.y,
+            owner: `맵 이벤트 ${event.id}`,
+            support: commandRuntimeSupport(command, "map"),
+          }),
         issues,
         `맵 이벤트 ${event.id}.commands`
       );
@@ -284,6 +328,7 @@ function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): voi
               x: event.x,
               y: event.y,
               owner: `맵 이벤트 ${event.id}/${page.id}`,
+              support: commandRuntimeSupport(command, "map"),
             }),
           issues,
           `맵 이벤트 ${event.id}/${page.id}.commands`
@@ -294,7 +339,11 @@ function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): voi
   for (const commonEvent of project.commonEvents) {
     visitCommands(
       commonEvent.commands,
-      (command) => pushRuntimeSupportCommandIssue(command, issues, { owner: `커먼 이벤트 ${commonEvent.id}` }),
+      (command) =>
+        pushRuntimeSupportCommandIssue(command, issues, {
+          owner: `커먼 이벤트 ${commonEvent.id}`,
+          support: commandRuntimeSupport(command, "common"),
+        }),
       issues,
       `커먼 이벤트 ${commonEvent.id}.commands`
     );
@@ -315,18 +364,22 @@ function checkRuntimeSupportCommands(project: Project, issues: LintIssue[]): voi
   }
 }
 
-export function countLimitedRuntimeSupportCommands(commands: readonly Command[]): number {
+export function countLimitedRuntimeSupportCommands(
+  commands: readonly Command[],
+  context?: M2RuntimeContext
+): number {
   let count = 0;
   visitCommands(commands, (command) => {
-    if (limitedRuntimeSupport(commandRuntimeSupport(command))) count += 1;
+    if (limitedRuntimeSupport(commandRuntimeSupport(command, context))) count += 1;
   });
   return count;
 }
 
+// GameEvent 는 맵 이벤트다 — 기본 판정 컨텍스트는 map.
 export function countLimitedRuntimeSupportCommandsForEvent(event: GameEvent): number {
-  let count = countLimitedRuntimeSupportCommands(event.commands);
+  let count = countLimitedRuntimeSupportCommands(event.commands, "map");
   for (const page of event.pages ?? []) {
-    count += countLimitedRuntimeSupportCommands(page.commands);
+    count += countLimitedRuntimeSupportCommands(page.commands, "map");
   }
   return count;
 }
@@ -570,6 +623,11 @@ function hasPlayerTouchEventAt(map: GameMap, x: number, y: number): boolean {
 
 function isPlayerTouch(trigger: Trigger): boolean {
   return trigger.kind === "playerTouch";
+}
+
+// 밟기(step-on)로도 발동하는 접촉 트리거인가? (touch/playerTouch 둘 다)
+function isSteppableTouch(trigger: Trigger): boolean {
+  return trigger.kind === "playerTouch" || trigger.kind === "touch";
 }
 
 function errorMessage(cause: unknown): string {
