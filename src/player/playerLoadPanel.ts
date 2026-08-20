@@ -13,9 +13,17 @@ type PlayerLoadPanelOptions = {
 
 type SlotButtonOptions = {
   readonly slot: SaveSlotReadResult;
-  readonly label: string;
   readonly testId: string;
   readonly onClick: () => void;
+};
+
+// 세이브 슬롯 카드 뷰모델 — 렌더와 분리된 순수 함수의 출력.
+export type SaveSlotCardModel = {
+  readonly title: string;
+  readonly mapName?: string;
+  readonly level?: string;
+  readonly playTime?: string;
+  readonly savedAt?: string;
 };
 
 export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElement {
@@ -41,7 +49,6 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     if (slot.kind === "corrupt") slots.append(renderCorruptSlot(slot));
     slots.append(renderSlotButton({
       slot,
-      label: `${slot.slot}번 저장`,
       testId: `save-slot-${slot.slot}`,
       onClick: () => options.onLoadSlot(slot.slot),
     }));
@@ -76,34 +83,62 @@ function renderCorruptSlot(slot: Extract<SaveSlotReadResult, { readonly kind: "c
   });
 }
 
+// 슬롯 버튼(BUTTON + data-testid=save-slot-N 계약 유지) 안에 카드 구조를 채운다.
+// 1행: 슬롯 제목 + 맵 이름, 2행: Lv · 플레이타임 · 저장시각. 빈/손상 슬롯은 1행만.
 function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
-  return el("button", {
+  const model = saveSlotCardModel(options.slot);
+  const button = el("button", {
     class: `rm2k3-load-slot system-shell-button ${slotStateClass(options.slot)}`,
-    text: slotButtonText(options.slot, options.label),
     dataset: { testid: options.testId },
     on: { click: options.onClick },
   });
+  const head = el("span", { class: "rm2k3-load-slot-row rm2k3-load-slot-head" });
+  head.append(el("span", { class: "rm2k3-load-slot-title", text: model.title }));
+  if (model.mapName) head.append(el("span", { class: "rm2k3-load-slot-map", text: model.mapName }));
+  button.append(head);
+  const metaParts = [
+    { className: "rm2k3-load-slot-level", text: model.level },
+    { className: "rm2k3-load-slot-playtime", text: model.playTime },
+    { className: "rm2k3-load-slot-saved-at", text: model.savedAt },
+  ].filter((part): part is { readonly className: string; readonly text: string } => Boolean(part.text));
+  if (metaParts.length > 0) {
+    const meta = el("span", { class: "rm2k3-load-slot-row rm2k3-load-slot-meta" });
+    for (const part of metaParts) meta.append(el("span", { class: part.className, text: part.text }));
+    button.append(meta);
+  }
+  return button;
 }
 
-function slotButtonText(slot: SaveSlotReadResult, label: string): string {
+// 슬롯 읽기 결과 → 카드 뷰모델. DOM/스토리지/현재 시각에 의존하지 않는 순수 함수.
+export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
+  const title = `${slot.slot}번 저장`;
   switch (slot.kind) {
-    case "present":
-      return `${label}: ${saveSlotStatus(slot)}`;
+    case "present": {
+      const snapshot = slot.snapshot;
+      return {
+        title,
+        // 맵 이름이 비어 있으면 프로젝트 제목으로 대체해 1행이 허전하지 않게 한다.
+        mapName: snapshot.mapName || snapshot.projectTitle || undefined,
+        level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
+        playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
+        savedAt: formatSavedAt(snapshot.savedAt) || undefined,
+      };
+    }
     case "corrupt":
-      return `${label}: 이상함`;
+      return { title: `${title}: 이상함` };
     case "empty":
-      return `${label}: 비어 있음`;
+      return { title: `${title}: 비어 있음` };
     default:
       return assertNever(slot);
   }
 }
 
-function saveSlotStatus(slot: Extract<SaveSlotReadResult, { readonly kind: "present" }>): string {
-  const parts = [slot.snapshot.projectTitle];
-  if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
-  if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
-  if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
-  return parts.join(" / ");
+// ISO 저장시각 → 'YYYY.MM.DD HH:mm' 로컬 시각. 무효 ISO 는 빈 문자열.
+export function formatSavedAt(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad2 = (value: number): string => String(value).padStart(2, "0");
+  return `${date.getFullYear()}.${pad2(date.getMonth() + 1)}.${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 }
 
 function formatPlayTime(seconds: number): string {

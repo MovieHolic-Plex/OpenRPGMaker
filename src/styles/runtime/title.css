@@ -121,7 +121,8 @@
   text-shadow:
     1px 0 0 var(--rm2k3-title-window-shadow),
     0 1px 0 var(--rm2k3-title-window-shadow);
-  width: min(236px, calc(100% - 28px));
+  /* 세이브 카드 2행(Lv · 플레이타임 · 저장시각)이 잘리지 않는 폭. 320 논리폭 안에서 유지. */
+  width: min(264px, calc(100% - 28px));
   z-index: 2;
 }
 
@@ -150,7 +151,7 @@
 
 .player-layout.system-shell .rm2k3-load-slots {
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
 
 .player-layout.system-shell .rm2k3-load-slot,
@@ -167,17 +168,64 @@
   padding: 2px 5px 2px 18px;
   position: relative;
   text-align: left;
-  text-overflow: ellipsis;
   text-shadow:
     1px 0 0 var(--rm2k3-title-window-shadow),
     0 1px 0 var(--rm2k3-title-window-shadow);
+}
+
+/* 세이브 슬롯 카드 — 중첩 tight 9-slice 윈도우 + 2행 그리드.
+   border-image-slice 에 fill 을 쓰지 않는 이유: 중앙 채움이 hover/focus 하이라이트
+   배경(var(--runtime-window-selected-bg))을 덮어 커서 상태가 보이지 않게 되기 때문. */
+.player-layout.system-shell .rm2k3-load-slot {
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: 24;
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 2px 6px 2px 18px;
+}
+
+.player-layout.system-shell .rm2k3-load-slot-row {
+  align-items: baseline;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
   white-space: nowrap;
+}
+
+.player-layout.system-shell .rm2k3-load-slot-title {
+  flex: none;
+}
+
+/* 320px 논리폭 스테이지 안에서 긴 맵 이름은 말줄임 처리. */
+.player-layout.system-shell .rm2k3-load-slot-map {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-layout.system-shell .rm2k3-load-slot-meta {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--runtime-font-size-9);
+}
+
+.player-layout.system-shell .rm2k3-load-slot-meta > span + span::before {
+  content: "\00b7";
+  margin-right: 4px;
+  opacity: 0.7;
 }
 
 .player-layout.system-shell .rm2k3-load-back {
   border-top: 1px solid rgba(255, 255, 255, 0.38);
   margin-top: 2px;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player-layout.system-shell .rm2k3-load-slot:hover,
