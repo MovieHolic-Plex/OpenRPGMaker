@@ -1,3 +1,81 @@
+/* ---- 데이터 구동 타이틀 연출: 배경 레이어 · 파티클 · 등장 애니메이션 ---- */
+/* fx 스택은 배경(루트 background-image) 위, UI(z-index:2 타이틀/로고/메뉴/힌트) 아래. */
+.rm-title-screen .rm-title-fx {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.rm-title-screen .rm-title-bg-layer {
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: 320px 240px;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.rm-title-screen .rm-title-particles {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+/* 한 주기 = 논리 타일 한 장(320×240) 이동. 주기(duration)는 저작 속도로 인라인 주입된다. */
+@keyframes rm-title-layer-scroll-x {
+  from { background-position-x: 0; }
+  to { background-position-x: -320px; }
+}
+
+@keyframes rm-title-layer-scroll-y {
+  from { background-position-y: 0; }
+  to { background-position-y: -240px; }
+}
+
+/* 등장 연출 — both(backwards)로 delay 동안 from 상태를 유지한다. */
+@keyframes rm-title-intro-fade-in {
+  from { opacity: 0; }
+}
+
+/* 타이틀/로고는 translate(-50%, -50%) 기준 배치 — rise 는 그 기준점에서 시작해야 한다. */
+@keyframes rm-title-intro-rise-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px));
+  }
+}
+
+@keyframes rm-title-intro-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.rm-title-screen .rm-title-intro-fade-in {
+  animation: rm-title-intro-fade-in 420ms ease-out both;
+}
+
+.rm-title-screen .rm-title-intro-rise-in {
+  animation: rm-title-intro-rise-in 480ms ease-out both;
+}
+
+.rm-title-screen .rm-title-intro-slide-up {
+  animation: rm-title-intro-slide-up 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rm-title-screen .rm-title-bg-layer,
+  .rm-title-screen .rm-title-intro-fade-in,
+  .rm-title-screen .rm-title-intro-rise-in,
+  .rm-title-screen .rm-title-intro-slide-up {
+    animation: none !important;
+  }
+}
+
 .player-layout.system-shell .rm-title-screen .rm-title-screen-title {
   font-size: var(--runtime-font-size-22);
   max-width: 280px;
@@ -121,7 +199,8 @@
   text-shadow:
     1px 0 0 var(--rm2k3-title-window-shadow),
     0 1px 0 var(--rm2k3-title-window-shadow);
-  width: min(236px, calc(100% - 28px));
+  /* 세이브 카드 2행(Lv · 플레이타임 · 저장시각)이 잘리지 않는 폭. 320 논리폭 안에서 유지. */
+  width: min(264px, calc(100% - 28px));
   z-index: 2;
 }
 
@@ -150,7 +229,7 @@
 
 .player-layout.system-shell .rm2k3-load-slots {
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
 
 .player-layout.system-shell .rm2k3-load-slot,
@@ -167,17 +246,64 @@
   padding: 2px 5px 2px 18px;
   position: relative;
   text-align: left;
-  text-overflow: ellipsis;
   text-shadow:
     1px 0 0 var(--rm2k3-title-window-shadow),
     0 1px 0 var(--rm2k3-title-window-shadow);
+}
+
+/* 세이브 슬롯 카드 — 중첩 tight 9-slice 윈도우 + 2행 그리드.
+   border-image-slice 에 fill 을 쓰지 않는 이유: 중앙 채움이 hover/focus 하이라이트
+   배경(var(--runtime-window-selected-bg))을 덮어 커서 상태가 보이지 않게 되기 때문. */
+.player-layout.system-shell .rm2k3-load-slot {
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image-repeat: stretch;
+  border-image-slice: 24;
+  border-image-source: var(--runtime-window-skin);
+  border-image-width: var(--runtime-window-border-tight);
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding: 2px 6px 2px 18px;
+}
+
+.player-layout.system-shell .rm2k3-load-slot-row {
+  align-items: baseline;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
   white-space: nowrap;
+}
+
+.player-layout.system-shell .rm2k3-load-slot-title {
+  flex: none;
+}
+
+/* 320px 논리폭 스테이지 안에서 긴 맵 이름은 말줄임 처리. */
+.player-layout.system-shell .rm2k3-load-slot-map {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-layout.system-shell .rm2k3-load-slot-meta {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: var(--runtime-font-size-9);
+}
+
+.player-layout.system-shell .rm2k3-load-slot-meta > span + span::before {
+  content: "\00b7";
+  margin-right: 4px;
+  opacity: 0.7;
 }
 
 .player-layout.system-shell .rm2k3-load-back {
   border-top: 1px solid rgba(255, 255, 255, 0.38);
   margin-top: 2px;
   text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player-layout.system-shell .rm2k3-load-slot:hover,

@@ -73,6 +73,81 @@
   width: 100%;
 }
 
+/* 런타임 fx 스택(renderTitleFxStack)을 그대로 마운트 — 배경 위, 프리뷰 UI 아래. */
+.db-title-workbench-stage .rm-title-fx {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.db-title-workbench-stage .rm-title-bg-layer {
+  background-position: 0 0;
+  background-repeat: repeat;
+  background-size: 320px 240px;
+  image-rendering: pixelated;
+  inset: 0;
+  position: absolute;
+}
+
+.db-title-workbench-stage .rm-title-particles {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.db-title-workbench-stage .db-title-workbench-title,
+.db-title-workbench-stage .db-title-workbench-logo,
+.db-title-workbench-stage .db-title-workbench-menu {
+  z-index: 1;
+}
+
+/* 등장 연출 미러 — 키프레임은 runtime/title.css 전역 정의를 공유한다. */
+.db-title-workbench-stage .rm-title-intro-fade-in {
+  animation: rm-title-intro-fade-in 420ms ease-out both;
+}
+
+.db-title-workbench-stage .rm-title-intro-rise-in {
+  animation: rm-title-intro-rise-in 480ms ease-out both;
+}
+
+.db-title-workbench-stage .rm-title-intro-slide-up {
+  animation: rm-title-intro-slide-up 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .db-title-workbench-stage .rm-title-bg-layer,
+  .db-title-workbench-stage .rm-title-intro-fade-in,
+  .db-title-workbench-stage .rm-title-intro-rise-in,
+  .db-title-workbench-stage .rm-title-intro-slide-up {
+    animation: none !important;
+  }
+}
+
+.db-title-effects-layers {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.db-title-layer-row {
+  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.14));
+  border-radius: 4px;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 6px;
+}
+
+.db-title-density-value {
+  color: var(--text-2, var(--text-primary));
+  font-size: 11px;
+  min-width: 24px;
+  text-align: right;
+}
+
 .db-title-workbench-title {
   color: #fff8e7;
   font: 800 16px/1.15 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;

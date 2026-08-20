@@ -11,6 +11,7 @@ import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
 import { resetFollowerTrailNearPlayer } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
+import { maybeAutosave } from "@/player/autosave";
 
 type FlashScreenStep = Extract<StepResult, { kind: "flashScreen" }>;
 type ShakeScreenStep = Extract<StepResult, { kind: "shakeScreen" }>;
@@ -71,6 +72,9 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   } else if (fadeColor) {
     await fadeCamera(scene, "in", fadeColor);
   }
+  // 오토세이브 훅(PlayScene 경로 전용): 전이 좌표/맵이 세션에 커밋된 뒤, 도착 맵의
+  // 자동 트리거가 상태를 바꾸기 전 시점을 굽는다. 정책(save 금지·디바운스·컷신)은 maybeAutosave 가 판정.
+  maybeAutosave(project, scene.session, "transfer");
   void fireAutoTriggers(scene);
 }
 

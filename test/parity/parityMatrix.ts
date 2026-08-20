@@ -102,9 +102,13 @@ export const PARITY_MATRIX: readonly ParityRow[] = [
   { contentType: "system", field: "typeChart", playerConsumer: "src/battle/runtime.ts#typeChart", harness: "simulateBattle", status: "planned-T4" },
   { contentType: "system", field: "startActorIds", playerConsumer: "src/battle/battleBattlers.ts#classId", harness: "roundTrip", status: "planned-T6" },
   { contentType: "system", field: "titleScreen", playerConsumer: "src/player/titleScreen.ts#titleScreen", harness: "runSceneTest", status: "gap" },
+  { contentType: "system", field: "titleScreen.backgroundLayers", playerConsumer: "src/player/titleScreen.ts#renderTitleBackgroundLayers", harness: "roundTrip", status: "covered" },
+  { contentType: "system", field: "titleScreen.particles", playerConsumer: "src/player/titleParticles.ts#titleParticlePositions", harness: "roundTrip", status: "covered" },
+  { contentType: "system", field: "titleScreen.intro", playerConsumer: "src/player/titleScreen.ts#titleIntroClass", harness: "roundTrip", status: "covered" },
   { contentType: "system", field: "timeSystem", playerConsumer: "src/player/playSceneTime.ts#advanceGameTime", harness: "runSceneTest", status: "gap" },
   { contentType: "system", field: "giftSystem", playerConsumer: "src/player#giftSystem", harness: "runSceneTest", status: "gap" },
   { contentType: "system", field: "monsterCollection", playerConsumer: "src/player#monsterCollection", harness: "simulateBattle", status: "gap" },
   { contentType: "system", field: "actionCombat", playerConsumer: "src/project/actionCombat.ts#isActionCombatMap", harness: "runSceneTest", status: "gap" },
   { contentType: "system", field: "saveSlots", playerConsumer: "src/player/saveSlots.ts#saveSlot", harness: "roundTrip", status: "planned-T6" },
+  { contentType: "system", field: "autosave", playerConsumer: "src/player/autosave.ts#performAutosave", harness: "roundTrip", status: "covered" },
 ];

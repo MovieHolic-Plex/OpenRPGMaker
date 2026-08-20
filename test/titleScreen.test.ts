@@ -50,6 +50,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -95,6 +96,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -142,6 +144,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -161,6 +164,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),
@@ -190,6 +194,9 @@ describe("title screen", () => {
           onNewGame: () => {
             activated = "new";
           },
+          onResume: () => {
+            activated = "resume";
+          },
           onContinue: () => {
             activated = "continue";
           },
@@ -214,6 +221,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }, 1),
@@ -274,6 +282,102 @@ describe("title screen", () => {
     ]);
   });
 
+  it("shows resume only when an autosave exists, ordered New→Resume→Continue→Quit", () => {
+    const defaults = defaultTitleScreenSettings();
+    // 컨텍스트 생략/오토세이브 없음 → resume 미노출(기존 3항목 그대로).
+    expect(listTitleMenuOptions(defaults).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+    expect(listTitleMenuOptions(defaults, { autosaveAvailable: false }).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+
+    const withAutosave = listTitleMenuOptions(defaults, { autosaveAvailable: true });
+    expect(withAutosave.map((option) => option.id)).toEqual([
+      "newGame",
+      "resume",
+      "continueGame",
+      "quit",
+    ]);
+    const resume = withAutosave[1];
+    expect(resume).toEqual({
+      id: "resume",
+      testId: "title-resume-game",
+      elementId: "title-option-resume-game",
+      label: "이어하기",
+    });
+  });
+
+  it("respects menuVisibility.resume and the authored resume label", () => {
+    const defaults = defaultTitleScreenSettings();
+    const hidden = fullVisibilitySettings({
+      ...defaults,
+      menuVisibility: { newGame: true, continueGame: true, quit: true, resume: false },
+    });
+    expect(listTitleMenuOptions(hidden, { autosaveAvailable: true }).map((option) => option.id)).toEqual([
+      "newGame",
+      "continueGame",
+      "quit",
+    ]);
+
+    const labeled = fullVisibilitySettings({
+      ...defaults,
+      menuLabels: { ...defaults.menuLabels, resume: "지난 모험 계속" },
+    });
+    const resume = listTitleMenuOptions(labeled, { autosaveAvailable: true })
+      .find((option) => option.id === "resume");
+    expect(resume?.label).toBe("지난 모험 계속");
+  });
+
+  it("keeps a 4-option menu above the input hint without overlap", () => {
+    const optionCount = 4;
+    // 기본 저작값 menuY=148 은 4항목이면 반드시 겹치므로 끌어올려진다.
+    const top = titleMenuTop(148, optionCount, true);
+    expect(top).toBe(240 - 40 - titleMenuHeight(optionCount));
+    // 메뉴 아래끝이 안내 창 예약 영역(200) 위에서 끝난다.
+    expect(top + titleMenuHeight(optionCount)).toBeLessThanOrEqual(200);
+    // 안내 창이 없으면 저작값 그대로.
+    expect(titleMenuTop(148, optionCount, false)).toBe(148);
+  });
+
+  it("renders the resume option between new game and load when context says autosave exists", () => {
+    const restoreDom = installFakeDom();
+    try {
+      let resumed = 0;
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(
+          project,
+          {
+            onNewGame: () => undefined,
+            onResume: () => {
+              resumed += 1;
+            },
+            onContinue: () => undefined,
+            onQuit: () => undefined,
+          },
+          1,
+          { autosaveAvailable: true },
+        ),
+      );
+
+      const resume = findByTestId(screen, "title-resume-game");
+      expect(resume).toBeTruthy();
+      expect(resume?.textContent).toBe("이어하기");
+      expect(resume?.attrs.id).toBe("title-option-resume-game");
+      // selectedIndex 1 은 이제 resume 을 가리킨다(new → resume → load → quit).
+      expect(resume?.attrs["aria-selected"]).toBe("true");
+      resume?.dispatchEvent?.(new Event("click", { bubbles: true }));
+      expect(resumed).toBe(1);
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("clamps title menu index into the visible range", () => {
     expect(clampTitleMenuIndex(2, 2)).toBe(1);
     expect(clampTitleMenuIndex(2, 1)).toBe(0);
@@ -296,6 +400,7 @@ describe("title screen", () => {
           project,
           {
             onNewGame: () => undefined,
+            onResume: () => undefined,
             onContinue: () => undefined,
             onQuit: () => undefined,
           },
@@ -330,6 +435,7 @@ describe("title screen", () => {
           project,
           {
             onNewGame: () => undefined,
+            onResume: () => undefined,
             onContinue: () => undefined,
             onQuit: () => undefined,
           },
@@ -342,6 +448,173 @@ describe("title screen", () => {
       expect(findByTestId(screen, "title-selection-json")?.textContent).toBe(
         JSON.stringify({ selectedIndex: 1 }),
       );
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("renders background layers in authored order with injected scroll animations", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundLayers: [
+          { resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 },
+          { resourceId: "easyrpg-title-title1", scrollYPerSec: -12, opacity: 0.5 },
+        ],
+      });
+
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+
+      const fx = findByTestId(screen, "title-fx");
+      expect(fx).toBeTruthy();
+      const layers = screen.querySelectorAll("[data-testid='title-bg-layer']");
+      expect(layers).toHaveLength(2);
+      expect(layers[0]?.dataset.titleLayerResource).toBe("rpg-zzu-title-field");
+      expect(layers[0]?.dataset.titleLayerIndex).toBe("0");
+      // 320px 타일 / 16px/s = 20s 무한 스크롤 주기.
+      expect(layers[0]?.style.animation).toBe("rm-title-layer-scroll-x 20s linear infinite");
+      expect(layers[1]?.dataset.titleLayerResource).toBe("easyrpg-title-title1");
+      // 240px / 12px/s = 20s, 음수 속도는 reverse.
+      expect(layers[1]?.style.animation).toBe("rm-title-layer-scroll-y 20s linear infinite reverse");
+      expect(layers[1]?.style.opacity).toBe("0.5");
+      // 파티클 설정이 없으면 canvas 는 만들지 않는다.
+      expect(findByTestId(screen, "title-particles")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("keeps the legacy title DOM unchanged when no fx settings exist", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      expect(findByTestId(screen, "title-fx")).toBeNull();
+      expect(findByTestId(screen, "title-particles")).toBeNull();
+      expect(findByTestId(screen, "title-bg-layer")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("mounts the particle canvas only when particles are configured", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        particles: { preset: "fireflies", density: 80 },
+      });
+      const screen = renderWithFakeDom(() =>
+        renderTitleScreen(project, {
+          onNewGame: () => undefined,
+          onResume: () => undefined,
+          onContinue: () => undefined,
+          onQuit: () => undefined,
+        }),
+      );
+      const canvas = findByTestId(screen, "title-particles");
+      expect(canvas).toBeTruthy();
+      expect(canvas?.tagName).toBe("CANVAS");
+      expect(canvas?.dataset.titleParticlePreset).toBe("fireflies");
+      expect(canvas?.dataset.titleParticleDensity).toBe("80");
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("applies intro classes with delays on first entry only", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        titleGraphic: undefined,
+        intro: { logo: "fadeIn", menu: "slideUp", delayMs: 100, staggerMs: 50 },
+      });
+      const actions = {
+        onNewGame: () => undefined,
+        onResume: () => undefined,
+        onContinue: () => undefined,
+        onQuit: () => undefined,
+      };
+
+      // 최초 진입(playIntro 생략 = true): intro 클래스 + 지연 부여.
+      const first = renderWithFakeDom(() => renderTitleScreen(project, actions));
+      const title = first.querySelector(".rm-title-screen-title");
+      expect(title?.classList.contains("rm-title-intro-fade-in")).toBe(true);
+      expect(title?.style.animationDelay).toBe("100ms");
+      const buttons = first.querySelectorAll(".rm-title-menu-button");
+      expect(buttons.length).toBeGreaterThan(1);
+      expect(buttons.every((button) => button.classList.contains("rm-title-intro-slide-up"))).toBe(true);
+      expect(buttons[0]?.style.animationDelay).toBe("100ms");
+      expect(buttons[1]?.style.animationDelay).toBe("150ms");
+
+      // 방향키 재렌더(playIntro:false): intro 클래스가 다시 붙지 않는다.
+      const rerendered = renderWithFakeDom(() =>
+        renderTitleScreen(project, actions, 1, { playIntro: false }),
+      );
+      expect(rerendered.querySelector(".rm-title-intro-fade-in")).toBeNull();
+      expect(rerendered.querySelector(".rm-title-intro-slide-up")).toBeNull();
+    } finally {
+      restoreDom();
+    }
+  });
+
+  it("reuses the fx stack node across re-renders when the fx signature matches", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const project = createBlankProject();
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 }],
+        particles: { preset: "snow", density: 40 },
+      });
+      const actions = {
+        onNewGame: () => undefined,
+        onResume: () => undefined,
+        onContinue: () => undefined,
+        onQuit: () => undefined,
+      };
+
+      const first = renderWithFakeDom(() => renderTitleScreen(project, actions));
+      const firstFx = findByTestId(first, "title-fx");
+      expect(firstFx).toBeTruthy();
+
+      // 서명이 같으면 같은 노드가 새 루트로 move 된다(canvas 상태 보존).
+      const second = renderWithFakeDom(() =>
+        renderTitleScreen(project, actions, 1, { playIntro: false, reuseFx: firstFx as unknown as HTMLElement }),
+      );
+      expect(findByTestId(second, "title-fx")).toBe(firstFx);
+
+      // 설정이 바뀌면(서명 불일치) 새 노드를 만든다.
+      project.system.titleScreen = fullVisibilitySettings({
+        ...defaultTitleScreenSettings(),
+        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 32 }],
+        particles: { preset: "snow", density: 40 },
+      });
+      const third = renderWithFakeDom(() =>
+        renderTitleScreen(project, actions, 0, { playIntro: false, reuseFx: firstFx as unknown as HTMLElement }),
+      );
+      const thirdFx = findByTestId(third, "title-fx");
+      expect(thirdFx).toBeTruthy();
+      expect(thirdFx).not.toBe(firstFx);
     } finally {
       restoreDom();
     }
@@ -366,6 +639,7 @@ describe("title screen", () => {
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
           onNewGame: () => undefined,
+          onResume: () => undefined,
           onContinue: () => undefined,
           onQuit: () => undefined,
         }),

@@ -1,4 +1,11 @@
-import { listSaveSlots, type SaveSlotIndex, type SaveSlotReadResult } from "@/player/saveSlots";
+import {
+  listSaveSlots,
+  readAutosave,
+  type AutosaveTrigger,
+  type SaveSlotIndex,
+  type SaveSlotReadResult,
+  type SaveSnapshot,
+} from "@/player/saveSlots";
 import { applyTitleScreenBackground } from "@/player/systemGraphics";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { store } from "@/project/store";
@@ -9,13 +16,25 @@ type PlayerLoadPanelOptions = {
   readonly message?: string;
   readonly onBack: () => void;
   readonly onLoadSlot: (slot: SaveSlotIndex) => void;
+  /** 오토세이브 카드 불러오기. 생략 시 카드는 렌더되지 않는다(레거시 호출부 호환). */
+  readonly onLoadAutosave?: () => void;
 };
 
 type SlotButtonOptions = {
   readonly slot: SaveSlotReadResult;
-  readonly label: string;
   readonly testId: string;
   readonly onClick: () => void;
+};
+
+// 세이브 슬롯 카드 뷰모델 — 렌더와 분리된 순수 함수의 출력.
+export type SaveSlotCardModel = {
+  readonly title: string;
+  readonly mapName?: string;
+  readonly level?: string;
+  readonly playTime?: string;
+  readonly savedAt?: string;
+  /** 오토세이브 카드 전용: 저장을 일으킨 트리거 표기("맵 이동"/"전투 승리"). */
+  readonly trigger?: string;
 };
 
 export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElement {
@@ -37,11 +56,15 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     class: "rm2k3-load-slots",
     dataset: { testid: "player-load-slots" },
   });
+  // 오토세이브 카드: 최상단, 불러오기 전용(수동 저장 메뉴의 덮어쓰기 대상이 아니다).
+  const autosave = readAutosave(window.localStorage);
+  if (autosave.kind === "present" && options.onLoadAutosave) {
+    slots.append(renderAutosaveButton(autosave.snapshot, options.onLoadAutosave));
+  }
   for (const slot of listSaveSlots(window.localStorage)) {
     if (slot.kind === "corrupt") slots.append(renderCorruptSlot(slot));
     slots.append(renderSlotButton({
       slot,
-      label: `${slot.slot}번 저장`,
       testId: `save-slot-${slot.slot}`,
       onClick: () => options.onLoadSlot(slot.slot),
     }));
@@ -76,34 +99,110 @@ function renderCorruptSlot(slot: Extract<SaveSlotReadResult, { readonly kind: "c
   });
 }
 
+// 슬롯 버튼(BUTTON + data-testid=save-slot-N 계약 유지) 안에 카드 구조를 채운다.
+// 1행: 슬롯 제목 + 맵 이름, 2행: Lv · 플레이타임 · 저장시각. 빈/손상 슬롯은 1행만.
 function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
-  return el("button", {
-    class: `rm2k3-load-slot system-shell-button ${slotStateClass(options.slot)}`,
-    text: slotButtonText(options.slot, options.label),
-    dataset: { testid: options.testId },
-    on: { click: options.onClick },
-  });
+  return renderCardButton(
+    saveSlotCardModel(options.slot),
+    `rm2k3-load-slot system-shell-button ${slotStateClass(options.slot)}`,
+    options.testId,
+    options.onClick,
+  );
 }
 
-function slotButtonText(slot: SaveSlotReadResult, label: string): string {
+// 오토세이브 카드 — 수동 슬롯과 같은 카드 구조 + is-autosave 상태 클래스 + 트리거 표기.
+function renderAutosaveButton(snapshot: SaveSnapshot, onClick: () => void): HTMLButtonElement {
+  return renderCardButton(
+    autosaveCardModel(snapshot),
+    "rm2k3-load-slot system-shell-button is-present is-autosave",
+    "save-slot-auto",
+    onClick,
+  );
+}
+
+function renderCardButton(
+  model: SaveSlotCardModel,
+  className: string,
+  testId: string,
+  onClick: () => void,
+): HTMLButtonElement {
+  const button = el("button", {
+    class: className,
+    dataset: { testid: testId },
+    on: { click: onClick },
+  });
+  const head = el("span", { class: "rm2k3-load-slot-row rm2k3-load-slot-head" });
+  head.append(el("span", { class: "rm2k3-load-slot-title", text: model.title }));
+  if (model.mapName) head.append(el("span", { class: "rm2k3-load-slot-map", text: model.mapName }));
+  button.append(head);
+  const metaParts = [
+    { className: "rm2k3-load-slot-trigger", text: model.trigger },
+    { className: "rm2k3-load-slot-level", text: model.level },
+    { className: "rm2k3-load-slot-playtime", text: model.playTime },
+    { className: "rm2k3-load-slot-saved-at", text: model.savedAt },
+  ].filter((part): part is { readonly className: string; readonly text: string } => Boolean(part.text));
+  if (metaParts.length > 0) {
+    const meta = el("span", { class: "rm2k3-load-slot-row rm2k3-load-slot-meta" });
+    for (const part of metaParts) meta.append(el("span", { class: part.className, text: part.text }));
+    button.append(meta);
+  }
+  return button;
+}
+
+// 오토세이브 스냅샷 → 카드 뷰모델(순수 함수). 제목은 "자동 저장", 트리거를 함께 표기한다.
+export function autosaveCardModel(snapshot: SaveSnapshot): SaveSlotCardModel {
+  return {
+    title: "자동 저장",
+    mapName: snapshot.mapName || snapshot.projectTitle || undefined,
+    level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
+    playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
+    savedAt: formatSavedAt(snapshot.savedAt) || undefined,
+    trigger: autosaveTriggerLabel(snapshot.autosaveTrigger),
+  };
+}
+
+// 트리거 한글 표기. 구 스냅샷(트리거 없음)은 표기 자체를 생략한다.
+export function autosaveTriggerLabel(trigger: AutosaveTrigger | undefined): string | undefined {
+  switch (trigger) {
+    case "transfer":
+      return "맵 이동";
+    case "battleVictory":
+      return "전투 승리";
+    default:
+      return undefined;
+  }
+}
+
+// 슬롯 읽기 결과 → 카드 뷰모델. DOM/스토리지/현재 시각에 의존하지 않는 순수 함수.
+export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
+  const title = `${slot.slot}번 저장`;
   switch (slot.kind) {
-    case "present":
-      return `${label}: ${saveSlotStatus(slot)}`;
+    case "present": {
+      const snapshot = slot.snapshot;
+      return {
+        title,
+        // 맵 이름이 비어 있으면 프로젝트 제목으로 대체해 1행이 허전하지 않게 한다.
+        mapName: snapshot.mapName || snapshot.projectTitle || undefined,
+        level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
+        playTime: typeof snapshot.playTimeSeconds === "number" ? formatPlayTime(snapshot.playTimeSeconds) : undefined,
+        savedAt: formatSavedAt(snapshot.savedAt) || undefined,
+      };
+    }
     case "corrupt":
-      return `${label}: 이상함`;
+      return { title: `${title}: 이상함` };
     case "empty":
-      return `${label}: 비어 있음`;
+      return { title: `${title}: 비어 있음` };
     default:
       return assertNever(slot);
   }
 }
 
-function saveSlotStatus(slot: Extract<SaveSlotReadResult, { readonly kind: "present" }>): string {
-  const parts = [slot.snapshot.projectTitle];
-  if (typeof slot.snapshot.partyLevel === "number") parts.push(`L${slot.snapshot.partyLevel}`);
-  if (slot.snapshot.mapName) parts.push(slot.snapshot.mapName);
-  if (typeof slot.snapshot.playTimeSeconds === "number") parts.push(formatPlayTime(slot.snapshot.playTimeSeconds));
-  return parts.join(" / ");
+// ISO 저장시각 → 'YYYY.MM.DD HH:mm' 로컬 시각. 무효 ISO 는 빈 문자열.
+export function formatSavedAt(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad2 = (value: number): string => String(value).padStart(2, "0");
+  return `${date.getFullYear()}.${pad2(date.getMonth() + 1)}.${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 }
 
 function formatPlayTime(seconds: number): string {

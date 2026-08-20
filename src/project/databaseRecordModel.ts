@@ -23,7 +23,7 @@ import {
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
-import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -207,6 +207,9 @@ function normalizeTitleScreenSettings(
     menuY: clampInteger(settings?.layout?.menuY ?? defaults.layout.menuY, 0, 240),
   };
   const titleGraphic = normalizeTitleScreenGraphic(settings?.titleGraphic, layout);
+  const backgroundLayers = normalizeTitleBackgroundLayers(settings?.backgroundLayers);
+  const particles = normalizeTitleParticles(settings?.particles);
+  const intro = normalizeTitleIntro(settings?.intro);
   return {
     title: textOrDefault(settings?.title, defaults.title),
     backgroundResourceId: cleanOptionalId(settings?.backgroundResourceId) ?? titleResourceId ?? defaults.backgroundResourceId,
@@ -216,11 +219,100 @@ function normalizeTitleScreenSettings(
       newGame: textOrDefault(settings?.menuLabels?.newGame, defaults.menuLabels.newGame),
       continueGame: textOrDefault(settings?.menuLabels?.continueGame, defaults.menuLabels.continueGame),
       quit: textOrDefault(settings?.menuLabels?.quit, defaults.menuLabels.quit),
+      // resume 은 optional 확장 — 저작된 값이 있을 때만 유지해 구 JSON 을 그대로 보존한다.
+      ...(typeof settings?.menuLabels?.resume === "string" && settings.menuLabels.resume.trim()
+        ? { resume: settings.menuLabels.resume.trim() }
+        : {}),
     },
     menuVisibility,
     ...(sounds ? { sounds } : {}),
     ...(titleGraphic ? { titleGraphic } : {}),
     showInputHint: settings?.showInputHint !== false,
+    // 확장 연출 3종은 전부 omit-when-empty — 레거시 JSON 은 필드가 아예 생기지 않는다(byte-stable).
+    ...(backgroundLayers ? { backgroundLayers } : {}),
+    ...(particles ? { particles } : {}),
+    ...(intro ? { intro } : {}),
+  };
+}
+
+/** 타이틀 배경 레이어 상한 — 그 이상은 감독 검수가 불가능한 시각 노이즈다. */
+export const MAX_TITLE_BACKGROUND_LAYERS = 4;
+
+function normalizeTitleBackgroundLayers(
+  layers: readonly Partial<TitleBackgroundLayer>[] | undefined,
+): TitleBackgroundLayer[] | undefined {
+  if (!Array.isArray(layers) || layers.length === 0) return undefined;
+  const normalized: TitleBackgroundLayer[] = [];
+  for (const layer of layers) {
+    if (normalized.length >= MAX_TITLE_BACKGROUND_LAYERS) break;
+    const resourceId = cleanOptionalId(layer?.resourceId);
+    if (!resourceId) continue; // 리소스 없는 레이어는 그릴 것이 없다 — 통째로 버린다.
+    const scrollXPerSec = normalizeTitleScrollSpeed(layer.scrollXPerSec);
+    const scrollYPerSec = normalizeTitleScrollSpeed(layer.scrollYPerSec);
+    const parallax = normalizeTitleParallax(layer.parallax);
+    const opacity = normalizeTitleLayerOpacity(layer.opacity);
+    normalized.push({
+      resourceId,
+      ...(scrollXPerSec !== undefined ? { scrollXPerSec } : {}),
+      ...(scrollYPerSec !== undefined ? { scrollYPerSec } : {}),
+      ...(parallax !== undefined ? { parallax } : {}),
+      ...(opacity !== undefined ? { opacity } : {}),
+    });
+  }
+  return normalized.length > 0 ? normalized : undefined;
+}
+
+/** 0/무효는 생략(정지와 동일), 유효 값은 -480..480 px/s 로 클램프. */
+function normalizeTitleScrollSpeed(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value === 0) return undefined;
+  return clampNumber(value, -480, 480);
+}
+
+/** 기본값 1(또는 무효)은 생략, 유효 값은 0..4 클램프. */
+function normalizeTitleParallax(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value === 1) return undefined;
+  return clampNumber(value, 0, 4);
+}
+
+/** 기본값(불투명, ≥1)과 무효는 생략, 유효 값은 0..1 클램프. */
+function normalizeTitleLayerOpacity(value: unknown): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value >= 1) return undefined;
+  return clampNumber(value, 0, 1);
+}
+
+function normalizeTitleParticles(
+  particles: Partial<TitleParticleSettings> | undefined,
+): TitleParticleSettings | undefined {
+  if (!particles) return undefined;
+  const preset = particles.preset;
+  // preset enum 가드 — 무효 프리셋은 파티클 설정 전체를 버린다(런타임이 모르는 값을 그리지 않는다).
+  if (preset !== "snow" && preset !== "rain" && preset !== "fireflies") return undefined;
+  const density =
+    typeof particles.density === "number" && Number.isFinite(particles.density)
+      ? clampInteger(particles.density, 0, 100)
+      : undefined;
+  return { preset, ...(density !== undefined ? { density } : {}) };
+}
+
+function normalizeTitleIntro(intro: Partial<TitleIntroSettings> | undefined): TitleIntroSettings | undefined {
+  if (!intro) return undefined;
+  // "none" 은 생략과 동일(런타임 기본이 무연출)이라 저장하지 않는다.
+  const logo = intro.logo === "fadeIn" || intro.logo === "riseIn" ? intro.logo : undefined;
+  const menu = intro.menu === "fadeIn" || intro.menu === "slideUp" ? intro.menu : undefined;
+  if (!logo && !menu) return undefined; // 연출이 없으면 delay/stagger 도 의미가 없다.
+  const delayMs =
+    typeof intro.delayMs === "number" && Number.isFinite(intro.delayMs)
+      ? clampInteger(intro.delayMs, 0, 10000)
+      : undefined;
+  const staggerMs =
+    typeof intro.staggerMs === "number" && Number.isFinite(intro.staggerMs)
+      ? clampInteger(intro.staggerMs, 0, 2000)
+      : undefined;
+  return {
+    ...(logo ? { logo } : {}),
+    ...(menu ? { menu } : {}),
+    ...(delayMs !== undefined ? { delayMs } : {}),
+    ...(staggerMs !== undefined ? { staggerMs } : {}),
   };
 }
 
@@ -231,6 +323,8 @@ function normalizeTitleScreenMenuVisibility(
     newGame: true,
     continueGame: visibility?.continueGame !== false,
     quit: visibility?.quit !== false,
+    // resume 생략은 true 로 읽힌다(!== false). 명시된 boolean 만 보존해 구 JSON 을 바꾸지 않는다.
+    ...(typeof visibility?.resume === "boolean" ? { resume: visibility.resume } : {}),
   };
 }
 

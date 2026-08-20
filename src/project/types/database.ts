@@ -706,11 +706,15 @@ export interface TitleScreenMenuLabels {
   newGame: string;
   continueGame: string;
   quit: string;
+  /** 오토세이브 "이어하기" 라벨. 생략 시 런타임 기본 라벨("이어하기"). */
+  resume?: string;
 }
 export interface TitleScreenMenuVisibility {
   newGame: boolean;
   continueGame: boolean;
   quit: boolean;
+  /** 오토세이브 "이어하기" 표시 여부. 생략은 true(!== false 패턴) — 구 JSON 전후방 호환. */
+  resume?: boolean;
 }
 
 export interface TitleScreenSounds {
@@ -728,6 +732,38 @@ export interface TitleScreenGraphic {
   y: number;
 }
 
+/** 배경 위에 얹는 무한 스크롤 레이어(최대 4장). additive optional — 구 JSON 은 필드 자체가 없다. */
+export interface TitleBackgroundLayer {
+  resourceId: string;
+  /** 초당 스크롤 px(320×240 논리 좌표계). 음수 = 반대 방향. 생략/0 = 정지. */
+  scrollXPerSec?: number;
+  scrollYPerSec?: number;
+  /** 스크롤 속도 배율(깊이감). 생략 = 1. */
+  parallax?: number;
+  /** 0..1. 생략 = 1(불투명). */
+  opacity?: number;
+}
+
+export type TitleParticlePreset = "snow" | "rain" | "fireflies";
+
+export interface TitleParticleSettings {
+  preset: TitleParticlePreset;
+  /** 밀도 0..100. 생략 시 런타임 기본 50. */
+  density?: number;
+}
+
+export type TitleIntroLogoAnimation = "none" | "fadeIn" | "riseIn";
+export type TitleIntroMenuAnimation = "none" | "fadeIn" | "slideUp";
+
+/** 로고/메뉴 등장 연출. 로고·메뉴가 모두 없으면(none 포함) normalize 가 필드를 통째로 생략한다. */
+export interface TitleIntroSettings {
+  logo?: TitleIntroLogoAnimation;
+  menu?: TitleIntroMenuAnimation;
+  /** 첫 등장 전 지연 ms (0..10000). */
+  delayMs?: number;
+  /** 메뉴 항목 간 시차 ms (0..2000). */
+  staggerMs?: number;
+}
 
 export interface TitleScreenSettings {
   title: string;
@@ -743,6 +779,12 @@ export interface TitleScreenSettings {
   titleGraphic?: TitleScreenGraphic;
   /** Default true after normalize. */
   showInputHint?: boolean;
+  /** 배경 스크롤 레이어(최대 4). 빈/무효면 normalize 가 필드를 생략한다(레거시 JSON byte-stable). */
+  backgroundLayers?: TitleBackgroundLayer[];
+  /** 타이틀 파티클. 무효 preset 이면 normalize 가 필드를 생략한다. */
+  particles?: TitleParticleSettings;
+  /** 로고/메뉴 등장 연출. 유효한 연출이 하나도 없으면 normalize 가 필드를 생략한다. */
+  intro?: TitleIntroSettings;
 }
 
 export interface SystemRecords {
