@@ -1,5 +1,6 @@
 import { renderAnimationPatternStripPanel, renderAnimationStagePanel } from "@/editor/panels/databaseAnimationPreview";
-import { emptyToUndefined, field, numberField, selectLiteral, textField } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, field, numberField, selectLiteral } from "@/editor/panels/databaseControls";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
@@ -48,7 +49,7 @@ export function renderBattleAnimationRecordForm(form: HTMLElement, animation: Ba
   const selectedFrameIndex = clampFrameIndex(editorState.get().selectedAnimationFrameIndex, frames.length);
   const selectedFrame = frames[selectedFrameIndex] ?? DEFAULT_FRAME;
   const rerender = () => {
-    form.innerHTML = "";
+    form.replaceChildren();
     const next = store.getCurrent().database.battleAnimations.find((entry) => entry.id === animation.id) ?? animation;
     renderBattleAnimationRecordForm(form, next);
   };
@@ -94,9 +95,18 @@ function animationEditor(context: AnimationEditorContext): HTMLElement {
 function topFieldGrid(context: AnimationEditorContext): HTMLElement {
   const grid = el("div", { class: "db-animation-top-grid" });
   grid.append(
-    textField("애니메이션 그래픽", "db-field-animation-resource", context.animation.resourceId ?? "", (value) =>
-      updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(value) })
-    ),
+    resourcePickerControl({
+      label: "애니메이션 그래픽",
+      resourceId: context.animation.resourceId,
+      kind: "battle",
+      testid: "db-field-animation-resource",
+      allowClear: true,
+      dialogTitle: "애니메이션 그래픽",
+      onChange: (result) => {
+        updateDatabaseRecord("battleAnimations", context.animation.id, { resourceId: emptyToUndefined(result.resourceId) });
+      },
+      rerender: context.rerender,
+    }),
     readonlyField("대상", animationReferenceTarget(context.animation)),
     maxFrameField(context),
     animationFlagsPanel(context.animation, context.sheet)
@@ -176,13 +186,13 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
     text: "↑ 이전",
     attrs: { type: "button", ...disabledAttr(context.selectedFrameIndex <= 0) },
     dataset: { testid: "db-animation-frame-prev" },
-    on: { click: () => selectFrame(context.selectedFrameIndex - 1) },
+    on: { click: () => selectFrame(context.selectedFrameIndex - 1, context.rerender) },
   });
   const next = el("button", {
     text: "↓ 다음",
     attrs: { type: "button", ...disabledAttr(context.selectedFrameIndex >= context.frames.length - 1) },
     dataset: { testid: "db-animation-frame-next" },
-    on: { click: () => selectFrame(context.selectedFrameIndex + 1) },
+    on: { click: () => selectFrame(context.selectedFrameIndex + 1, context.rerender) },
   });
   const list = el("div", { class: "db-animation-frame-list", dataset: { testid: "db-animation-frame-list" } });
   context.frames.forEach((frame, index) => {
@@ -191,7 +201,7 @@ function frameListPanel(context: AnimationEditorContext): HTMLElement {
       text: `< ${index + 1}>`,
       attrs: { type: "button", title: `${frame.cells.length}개 셀` },
       dataset: { testid: `db-animation-frame-${index}` },
-      on: { click: () => selectFrame(index) },
+      on: { click: () => selectFrame(index, context.rerender) },
     });
     list.append(row);
   });
@@ -366,9 +376,11 @@ function timingTablePanel(context: AnimationEditorContext): HTMLElement {
   return panel;
 }
 
-// 프레임 선택 — editorState에 저장하고 셀 인덱스 초기화.
-function selectFrame(index: number): void {
+// 프레임 선택 — editorState에 저장하고 셀 인덱스 초기화한 뒤 폼을 다시 그린다.
+// 상태만 바꾸면 목록 .active / 셀 테이블이 이전 프레임에 남는다.
+function selectFrame(index: number, rerender: () => void): void {
   editorState.set({ selectedAnimationFrameIndex: Math.max(0, index), selectedAnimationCellIndex: 0 });
+  rerender();
 }
 
 // 프레임 추가 — 마지막 프레임을 복제하거나 빈 프레임.

@@ -13,25 +13,26 @@ type FakeBrowserGlobals = {
 const EXPECTED_TABS = [
   // 상단 고정 (그룹 밖)
   "db-tab-overview",
-  // 전투
+  // 파티
   "db-tab-actors",
   "db-tab-classes",
   "db-tab-skills",
   "db-tab-items",
   "db-tab-equipment",
+  // 전투 — 배틀러는 수집이 아님
+  "db-tab-enemies",
+  "db-tab-troops",
   "db-tab-elements",
   "db-tab-states",
   "db-tab-animations",
   "db-tab-battle-screen",
   "db-tab-battle-commands",
+  "db-tab-terrain",
   // 수집
-  "db-tab-enemies",
   "db-tab-monster-species",
-  "db-tab-troops",
   "db-tab-crops",
   "db-tab-characters",
-  // 세계
-  "db-tab-terrain",
+  // 맵
   "db-tab-tilesets",
   "db-tab-structure-kits",
   "db-tab-common-events",
@@ -42,7 +43,7 @@ const EXPECTED_TABS = [
   "db-tab-variables",
 ];
 
-const EXPECTED_GROUPS = ["전투", "수집", "세계", "시스템"];
+const EXPECTED_GROUPS = ["파티", "전투", "수집", "맵", "시스템"];
 const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
 
 let restoreDom: (() => void) | undefined;
@@ -96,13 +97,13 @@ function findTab(panelRoot: FakeElement, testId: string): FakeElement {
 }
 
 describe("database sidebar navigation", () => {
-  it("renders the nav as a .db-tabs sidebar with 4 group headers in order", () => {
+  it("renders the nav as a .db-tabs sidebar with honest group headers in order", () => {
     const panelRoot = renderPanelHost();
     const nav = panelRoot.querySelector(".db-tabs");
     expect(nav).not.toBeNull();
 
     const groups = panelRoot.querySelectorAll(".db-tab-group");
-    expect(groups.length).toBe(4);
+    expect(groups.length).toBe(EXPECTED_GROUPS.length);
     expect(groups.map((group) => group.textContent)).toEqual(EXPECTED_GROUPS);
   });
 
@@ -116,6 +117,10 @@ describe("database sidebar navigation", () => {
     expect(new Set(EXPECTED_TABS).size).toBe(24);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
+      const label = (button.textContent ?? "").trim();
+      expect(button.getAttribute("title"), `${button.dataset.testid} title`).toBe(label);
+      expect(button.getAttribute("aria-label"), `${button.dataset.testid} aria-label`).toBe(label);
+      expect(button.dataset.short, `${button.dataset.testid} data-short`).toBe(label.slice(0, 1));
     }
   });
 

@@ -64,7 +64,7 @@ test.describe("QA sweep: tilesets tab", () => {
     await expect(page.getByTestId(DUNGEON_ROW)).toBeEnabled();
     await expect(page.getByTestId("tileset-rm2k3-name-input")).toBeEnabled();
     await expect(page.getByTestId("tileset-rm2k3-maximum-count")).toBeDisabled();
-    await expect(page.getByTestId("tileset-rm2k3-graphic-browse")).toBeDisabled();
+    await expect(page.getByTestId("tileset-rm2k3-graphic-browse")).toBeEnabled();
     await expect(page.getByTestId("tileset-section-tab-rules")).toBeEnabled();
     await expect(page.getByTestId("tileset-settings-open")).toBeEnabled();
     await expect(page.getByTestId("tileset-db-preview")).toBeVisible();

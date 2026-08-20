@@ -13,6 +13,7 @@ import {
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -24,7 +25,6 @@ import type {
   ClassId,
   EquipmentStatBonuses,
   ItemConsumptionLimit,
-  ItemEquipmentEffectFlags,
   ItemEquipmentProfile,
   ItemRecord,
   ItemScope,
@@ -91,14 +91,14 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
           consumptionLimitField(record),
           farmToolField(record),
         ]),
-        ...typePanels(record),
+        ...typePanels(record, form),
       ],
     })
   );
 }
 
-function typePanels(record: ItemRecord): HTMLElement[] {
-  if (isEquipmentItemType(record.type)) return equipmentPanels(record);
+function typePanels(record: ItemRecord, form: HTMLElement): HTMLElement[] {
+  if (isEquipmentItemType(record.type)) return [equipmentRedirect(form)];
   if (record.type === "medicine") return medicinePanels(record);
   if (record.type === "book") return bookPanels(record);
   if (record.type === "seed") return seedPanels(record);
@@ -107,36 +107,31 @@ function typePanels(record: ItemRecord): HTMLElement[] {
   return [panel("일반 물품", [el("div", { class: "db-preview", text: "효과가 없는 이벤트 제어용 아이템입니다." })])];
 }
 
-function equipmentPanels(record: ItemRecord): HTMLElement[] {
-  const profile = record.equipmentProfile;
-  return [
-    panel("장비 설정", [
-      choiceList("사용 가능", actorClassChoices(record)),
-      selectLiteral("장착 방식", "db-field-item-wield-type", profile.twoHanded ? "twoHanded" : "oneHanded", ["oneHanded", "twoHanded"], (wieldType) =>
-        updateCurrentEquipmentProfile(record, { twoHanded: wieldType === "twoHanded" })
-      ),
-    ]),
-    panel("능력치 보정", statBonusFields(record, profile.statBonuses, "equipmentProfile", "db-field-item-equipment")),
-    panel("효과", equipmentEffectFields(record, profile.effectFlags)),
-    panel("공격/방어 속성", [
-      choiceList("공격 속성", elementChoices(record, "attackElementIds")),
-      choiceList("속성 방어", elementChoices(record, "elementalDefenseIds")),
-    ]),
-    panel("상태", [
-      choiceList("상태", stateChoices(record, "stateInflictIds")),
-      numberField("상태 부여율", "db-field-item-state-infliction", profile.stateInflictionChance, (stateInflictionChance) =>
-        updateCurrentEquipmentProfile(record, { stateInflictionChance }), { min: 0, max: 100 }
-      ),
-    ]),
-    panel("전투", [
-      numberField("MP 소모", "db-field-item-mp-cost", profile.mpCost, (mpCost) => updateCurrentEquipmentProfile(record, { mpCost }), { min: 0, max: 999 }),
-      numberField("명중률", "db-field-item-accuracy", profile.accuracy, (accuracy) => updateCurrentEquipmentProfile(record, { accuracy }), { min: 0, max: 100 }),
-      numberField("치명타율", "db-field-item-critical-rate", profile.criticalRate, (criticalRate) => updateCurrentEquipmentProfile(record, { criticalRate }), { min: 0, max: 100 }),
-      selectField("발동 스킬", "db-picker-item-invoke-skill", record.skillId ?? "", store.getCurrent().database.skills, (skillId) =>
-        updateDatabaseRecord("items", record.id, { skillId: emptyToUndefined(skillId) })
-      ),
-    ]),
-  ];
+function equipmentRedirect(form: HTMLElement): HTMLElement {
+  return el("div", {
+    class: "db-item-equipment-redirect",
+    dataset: { testid: "db-item-equipment-redirect" },
+    children: [
+      panel("장비는 장비 탭에서", [
+        el("p", {
+          class: "db-item-equipment-redirect-copy",
+          text: "무기·방패·갑옷·머리·장신구의 전투 스탯은 이 탭에서 적용되지 않습니다. 장비 탭에서 만듭니다.",
+        }),
+        el("button", {
+          class: "db-toolbar-button",
+          text: "장비 탭 열기",
+          attrs: { type: "button" },
+          dataset: { testid: "db-item-open-equipment-tab" },
+          on: {
+            click: () => {
+              const root = databasePanelRootFrom(form);
+              if (root) switchDatabaseActiveTab("equipment", root);
+            },
+          },
+        }),
+      ]),
+    ],
+  });
 }
 
 function itemHeader(record: ItemRecord): HTMLElement {
@@ -344,37 +339,7 @@ function percentRecoveryField(record: ItemRecord, key: "hpRecovery" | "mpRecover
   return fieldNode;
 }
 
-function equipmentEffectFields(record: ItemRecord, flags: ItemEquipmentEffectFlags): HTMLElement[] {
-  return [
-    equipmentFlag(record, flags, "preemptive", "선제 공격", "db-field-item-effect-preemptive"),
-    equipmentFlag(record, flags, "doubleAttack", "2회 공격", "db-field-item-effect-double"),
-    equipmentFlag(record, flags, "attackAll", "전체 공격", "db-field-item-effect-all"),
-    equipmentFlag(record, flags, "ignoreDodge", "회피 무시", "db-field-item-effect-ignore-dodge"),
-    equipmentFlag(record, flags, "preventCriticalHits", "치명타 방지", "db-field-item-effect-prevent-critical"),
-    equipmentFlag(record, flags, "increasePhysicalDodge", "물리 회피율 증가", "db-field-item-effect-dodge"),
-    equipmentFlag(record, flags, "halfMpCost", "MP 소모 절반", "db-field-item-effect-half-mp"),
-    equipmentFlag(record, flags, "negateTerrainDamage", "지형 피해 무효", "db-field-item-effect-terrain"),
-    equipmentFlag(record, flags, "fixedEquipment", "장비 해제 불가", "db-field-item-effect-fixed"),
-  ];
-}
-
-function equipmentFlag(
-  record: ItemRecord,
-  flags: ItemEquipmentEffectFlags,
-  key: keyof ItemEquipmentEffectFlags,
-  label: string,
-  testid: string,
-): HTMLElement {
-  return checkboxField(label, testid, flags[key], (value) =>
-    updateEquipmentProfile(record, {
-      ...currentItem(record).equipmentProfile,
-      effectFlags: { ...currentItem(record).equipmentProfile.effectFlags, [key]: value },
-    })
-  );
-}
-
 function actorClassChoices(record: ItemRecord): HTMLElement[] {
-  if (isEquipmentItemType(record.type)) return equipmentActorClassChoices(record);
   const project = store.getCurrent();
   return [
     avatarChipRow("사용 가능 배우", "db-field-item-usable-actors", actorChips(project.database.actors), record.usableActorIds, (actorId, checked) =>
@@ -399,46 +364,10 @@ function actorChips(actors: readonly ActorRecord[]): AvatarChipActor[] {
   }));
 }
 
-function equipmentActorClassChoices(record: ItemRecord): HTMLElement[] {
-  const project = store.getCurrent();
-  return [
-    ...project.database.actors.map((actor) =>
-      checkboxField(actor.name, `db-field-item-usable-actor-${actor.id}`, record.equipmentProfile.equippableActorIds.includes(actor.id), (checked) =>
-        updateCurrentEquipmentProfile(record, {
-          equippableActorIds: toggleActorIds(currentItem(record).equipmentProfile.equippableActorIds, actor.id, checked),
-        })
-      )
-    ),
-    ...project.database.classes.map((klass) =>
-      checkboxField(klass.name, `db-field-item-usable-class-${klass.id}`, record.equipmentProfile.equippableClassIds.includes(klass.id), (checked) =>
-        updateCurrentEquipmentProfile(record, {
-          equippableClassIds: toggleClassIds(currentItem(record).equipmentProfile.equippableClassIds, klass.id, checked),
-        })
-      )
-    ),
-  ];
-}
-
 function healStateChoices(record: ItemRecord): HTMLElement[] {
   return store.getCurrent().database.states.map((state) =>
     checkboxField(state.name, `db-field-item-state-${state.id}`, record.healStateIds.includes(state.id), (checked) =>
       updateDatabaseRecord("items", record.id, { healStateIds: toggleStateIds(currentItem(record).healStateIds, state.id, checked) })
-    )
-  );
-}
-
-function stateChoices(record: ItemRecord, key: "stateInflictIds" | "stateDefenseIds"): HTMLElement[] {
-  return store.getCurrent().database.states.map((state) =>
-    checkboxField(state.name, `db-field-item-${key}-${state.id}`, record.equipmentProfile[key].includes(state.id), (checked) =>
-      updateCurrentEquipmentProfile(record, { [key]: toggleStateIds(currentItem(record).equipmentProfile[key], state.id, checked) })
-    )
-  );
-}
-
-function elementChoices(record: ItemRecord, key: "attackElementIds" | "elementalDefenseIds"): HTMLElement[] {
-  return (store.getCurrent().database.elements ?? []).map((element) =>
-    checkboxField(element.name, `db-field-item-${key}-${element.id}`, record.equipmentProfile[key].includes(element.id), (checked) =>
-      updateCurrentEquipmentProfile(record, { [key]: toggleId(currentItem(record).equipmentProfile[key], element.id, checked) })
     )
   );
 }
@@ -484,11 +413,6 @@ function updateEquipmentProfile(record: ItemRecord, equipmentProfile: ItemEquipm
   updateDatabaseRecord("items", record.id, { equipmentProfile });
 }
 
-function updateCurrentEquipmentProfile(record: ItemRecord, patch: Partial<ItemEquipmentProfile>): void {
-  const equipmentProfile = currentItem(record).equipmentProfile;
-  updateEquipmentProfile(record, { ...equipmentProfile, ...patch });
-}
-
 function currentItem(record: ItemRecord): ItemRecord {
   return store.getCurrent().database.items.find((item) => item.id === record.id) ?? record;
 }
@@ -530,7 +454,19 @@ function toggleId(source: readonly string[], id: string, checked: boolean): stri
   return source.filter((entry) => entry !== id);
 }
 
-function isEquipmentItemType(type: ItemType): type is typeof EQUIPMENT_TYPES[number] {
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
+}
+
+export function isEquipmentItemType(type: ItemType): type is typeof EQUIPMENT_TYPES[number] {
   return type === "weapon" || type === "shield" || type === "body" || type === "head" || type === "accessory";
 }
 

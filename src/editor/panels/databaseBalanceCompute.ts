@@ -59,8 +59,8 @@ export interface BalanceIssue {
 // 인덱스가 비면 1을 돌려주므로 "전 구간 0"을 표현하려면 0으로 채운 배열을 넘겨야 한다.
 const ZERO_CURVE: readonly number[] = Array.from({ length: ACTOR_LEVEL_MAX }, () => 0);
 
-// 파티 첫 4배우의 클래스 parameterCurves 합 + 초기 장비 statBonuses 합을 레벨별로 반환.
-// 파티가 비었거나 클래스가 없으면 해당 배우의 기여는 0이고, 항상 50개(1..50) 항목을 돌려준다.
+// 시작 파티(system.startActorIds) 첫 4배우의 클래스 parameterCurves 합 + 초기 장비
+// statBonuses 합을 레벨별로 반환. 세션 파티가 아니라 저작된 시작 편성을 본다.
 export function partyPowerCurve(project: Project): PartyPowerCurvePoint[] {
   const actors = partyActorRecords(project);
   const points: PartyPowerCurvePoint[] = [];
@@ -115,7 +115,7 @@ export function detectBalanceIssues(project: Project): BalanceIssue[] {
 // --- 파티 곡선 헬퍼 ---
 
 function partyActorRecords(project: Project) {
-  const partyIds = project.session.partyActorIds.slice(0, PARTY_CURVE_ACTORS);
+  const partyIds = project.system.startActorIds.slice(0, PARTY_CURVE_ACTORS);
   const records = [];
   for (const actorId of partyIds) {
     const actor = project.database.actors.find((record) => record.id === actorId);

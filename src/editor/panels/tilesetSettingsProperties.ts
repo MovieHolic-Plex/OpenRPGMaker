@@ -1,18 +1,15 @@
+import { BUNDLED_EASYRPG_CHIPSET_ASSETS, TILE_FRAME_COUNT } from "@/assets/bundled";
+import { CHIPSET_SLICING } from "@/assets/easyrpgRtp";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { textControl } from "@/editor/panels/databaseControls";
+import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { getTilesetSectionTab, setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
 import { TILESET_SECTION_TABS } from "@/editor/panels/tilesetUsageGuide";
+import { unregisterModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
-
-type DisabledButtonSpec = {
-  readonly extraClass?: string;
-  readonly label: string;
-  readonly testid: string;
-  readonly title: string;
-};
 
 const DEFAULT_TRANSPARENT_COLOR = "#ff00ff";
 
@@ -30,12 +27,17 @@ export function renderTilesetProperties(tileset: TilesetDef, rerender: () => voi
         dataset: { testid: "tileset-rm2k3-graphic" },
         children: [
           el("legend", { text: "타일셋 그래픽" }),
-          el("div", { class: "rm2k3-tileset-graphic-value", text: tileset.image.id }),
-          disabledButton({
-            extraClass: "rm2k3-browse-button",
-            label: "...",
-            testid: "tileset-rm2k3-graphic-browse",
-            title: "타일셋 그래픽 교체는 리소스 관리자에서 처리합니다.",
+          el("div", {
+            class: "rm2k3-tileset-graphic-value",
+            text: chipsetDisplayName(tileset.image.id),
+            attrs: { title: tileset.image.id },
+          }),
+          el("button", {
+            class: "database-footer-button rm2k3-browse-button",
+            text: "설정...",
+            attrs: { type: "button", title: "타일셋 그래픽 고르기" },
+            dataset: { testid: "tileset-rm2k3-graphic-browse" },
+            on: { click: () => openTilesetGraphicPicker(tileset, rerender) },
           }),
         ],
       }),
@@ -124,6 +126,110 @@ function renderTransparentColorField(tileset: TilesetDef, rerender: () => void):
   });
 }
 
+const CHIPSET_KO: Record<string, string> = {
+  tex_easyrpg_chipset_dungeon: "던전",
+  tex_easyrpg_chipset_interior: "실내",
+  tex_easyrpg_chipset_ship: "배",
+  tex_easyrpg_chipset_world: "월드맵",
+  tex_easyrpg_chipset_retro_dungeon: "레트로 던전",
+  tex_easyrpg_chipset_retro_exterior: "레트로 바깥",
+  tex_easyrpg_chipset_retro_house: "레트로 집",
+  tex_easyrpg_chipset_combined_town: "마을",
+  tex_easyrpg_chipset_retro_world: "레트로 월드맵",
+};
+
+function chipsetDisplayName(imageId: string): string {
+  return CHIPSET_KO[imageId] ?? BUNDLED_EASYRPG_CHIPSET_ASSETS.find((asset) => asset.textureKey === imageId)?.name ?? imageId;
+}
+
+function openTilesetGraphicPicker(tileset: TilesetDef, rerender: () => void): void {
+  const applyImage = (image: TilesetDef["image"]): void => {
+    const sameId = tileset.image.type === image.type && tileset.image.id === image.id;
+    if (sameId && !needsChipsetGeometry(tileset)) {
+      closeTilesetGraphicPicker();
+      return;
+    }
+    recordProjectSnapshot();
+    store.update((project) => {
+      const target = project.tilesets[tileset.id];
+      if (!target) return;
+      if (!sameId) target.image = image;
+      if (isChipsetSource(image, project)) applyChipsetGeometry(target);
+    });
+    closeTilesetGraphicPicker();
+    rerender();
+  };
+  const bundled = BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) =>
+    graphicChoiceButton(chipsetDisplayName(asset.textureKey), asset.textureKey, tileset.image.id, () =>
+      applyImage({ type: "bundled", id: asset.textureKey }),
+    ),
+  );
+  const uploaded = Object.entries(store.getCurrent().assets.uploaded ?? {})
+    .filter(([, asset]) => asset.kind === "chipset" || asset.kind === "tileset")
+    .map(([id, asset]) =>
+      graphicChoiceButton(asset.name || id, id, tileset.image.id, () => applyImage({ type: "uploaded", id })),
+    );
+  openDialog("tileset-graphic-picker", "타일셋 그래픽", [el("div", { class: "tileset-graphic-picker-list", children: [...bundled, ...uploaded] })], [
+    { label: "닫기", testid: "tileset-graphic-picker-close" },
+  ]);
+}
+
+function closeTilesetGraphicPicker(): void {
+  const overlay = document.querySelector("[data-testid='tileset-graphic-picker']");
+  if (overlay) {
+    unregisterModal(overlay);
+    overlay.remove();
+  }
+}
+
+function isChipsetSource(image: TilesetDef["image"], project: ReturnType<typeof store.getCurrent>): boolean {
+  if (image.type === "bundled") {
+    return BUNDLED_EASYRPG_CHIPSET_ASSETS.some((asset) => asset.textureKey === image.id);
+  }
+  const kind = project.assets.uploaded?.[image.id]?.kind;
+  return kind === "chipset" || kind === "tileset";
+}
+
+function applyChipsetGeometry(tileset: TilesetDef): void {
+  tileset.tilesPerRow = CHIPSET_SLICING.columns;
+  tileset.tileSize = CHIPSET_SLICING.cellWidth;
+  resizeTilesetSlotArrays(tileset, TILE_FRAME_COUNT);
+}
+
+function needsChipsetGeometry(tileset: TilesetDef): boolean {
+  return (
+    tileset.tilesPerRow !== CHIPSET_SLICING.columns ||
+    tileset.tileSize !== CHIPSET_SLICING.cellWidth ||
+    tileset.count !== TILE_FRAME_COUNT ||
+    tileset.passability.length !== TILE_FRAME_COUNT
+  );
+}
+
+function resizeTilesetSlotArrays(tileset: TilesetDef, newCount: number): void {
+  const open = { up: true, down: true, left: true, right: true };
+  while (tileset.passability.length < newCount) tileset.passability.push({ ...open });
+  while (tileset.priority.length < newCount) tileset.priority.push("lower");
+  while (tileset.terrain.length < newCount) tileset.terrain.push(0);
+  if (tileset.tileMeta) {
+    while (tileset.tileMeta.length < newCount) tileset.tileMeta.push({ label: "", description: "", source: "unknown" });
+  }
+  tileset.passability.length = newCount;
+  tileset.priority.length = newCount;
+  tileset.terrain.length = newCount;
+  if (tileset.tileMeta) tileset.tileMeta.length = Math.min(tileset.tileMeta.length, newCount);
+  tileset.count = newCount;
+}
+
+function graphicChoiceButton(label: string, id: string, selectedId: string, onPick: () => void): HTMLElement {
+  return el("button", {
+    class: `btn small${id === selectedId ? " active" : ""}`,
+    text: label,
+    attrs: { type: "button", title: id },
+    dataset: { testid: `tileset-graphic-option-${id}` },
+    on: { click: onPick },
+  });
+}
+
 function updateTilesetName(tilesetId: string, value: string): void {
   recordCoalescedSnapshot(`tileset-name:${tilesetId}`);
   store.update((project) => {
@@ -145,15 +251,6 @@ function clearTilesetTransparentColor(tilesetId: string): void {
   store.update((project) => {
     const target = project.tilesets[tilesetId];
     if (target) delete target.transparentColor;
-  });
-}
-
-function disabledButton(spec: DisabledButtonSpec): HTMLButtonElement {
-  return el("button", {
-    class: `database-footer-button ${spec.extraClass ?? ""} disabled`.trim(),
-    text: spec.label,
-    attrs: { type: "button", disabled: "true", title: spec.title },
-    dataset: { testid: spec.testid },
   });
 }
 

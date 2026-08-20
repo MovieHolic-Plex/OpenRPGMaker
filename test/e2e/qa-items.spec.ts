@@ -117,13 +117,9 @@ test.describe("QA sweep: items tab", () => {
     await page.getByTestId("db-field-item-capture-multiplier").fill("-2");
     await page.getByTestId("db-field-item-capture-multiplier").blur();
 
-    // Weapon-material type: equipment fields
     await page.getByTestId("db-field-item-type").selectOption("weapon");
-    await expect(page.getByTestId("db-field-item-wield-type")).toBeVisible();
-    await page.getByTestId("db-field-item-equipment-attack").fill("-10");
-    await page.getByTestId("db-field-item-equipment-attack").blur();
-    await page.getByTestId("db-field-item-accuracy").fill("500");
-    await page.getByTestId("db-field-item-accuracy").blur();
+    await expect(page.getByTestId("db-item-open-equipment-tab")).toBeVisible();
+    await expect(page.getByTestId("db-field-item-wield-type")).toHaveCount(0);
 
     await page.getByTestId("database-modal").screenshot({ path: ".superpowers/sdd/qa-shots/items-weapon-boundary.png" });
 

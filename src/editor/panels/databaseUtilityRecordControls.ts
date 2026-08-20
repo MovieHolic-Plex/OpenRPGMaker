@@ -75,17 +75,23 @@ function utilityOptionLabel(value: string): string {
     case "attack":
       return "공격";
     case "skill":
-      return "스킬";
+      return "특수기능";
     case "skillSubset":
-      return "스킬 계열";
+      return "특수계열";
     case "defend":
       return "방어";
+    case "guard":
+      return "방어(구형)";
     case "item":
       return "아이템";
+    case "capture":
+      return "포획";
     case "escape":
-      return "도주";
+      return "도망";
+    case "switch":
+      return "교체";
     case "event":
-      return "이벤트";
+      return "교체(구형)";
     default:
       return value;
   }

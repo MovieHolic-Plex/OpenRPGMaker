@@ -1,5 +1,6 @@
-import { emptyToUndefined, numberField, selectField, selectLiteral, textControl } from "@/editor/panels/databaseControls";
+import { emptyToUndefined, numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { ordinalLabel } from "@/editor/panels/databaseDisplay";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 export { renderElementsTab } from "@/editor/panels/databaseElementsClassic";
@@ -17,6 +18,7 @@ import {
   utilitySelectRow,
   utilityTextRow,
 } from "@/editor/panels/databaseUtilityRecordControls";
+import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { store } from "@/project/store";
 import type {
   BattleFlow,
@@ -31,19 +33,21 @@ const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly Batt
 export function renderTerrainTab(host: HTMLElement): void {
   const terrains = store.getCurrent().database.terrains ?? [];
   const selected = selectedTerrain(terrains);
+  const rerender = (): void => {
+    host.replaceChildren();
+    renderTerrainTab(host);
+  };
   const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
   form.append(
     rm2k3Fieldset("지형", [
-      readonlyValue("편집 위치", "RM2003 데이터베이스 > 지형"),
       readonlyValue("레코드", countText(terrains.length)),
-      readonlyValue("저장 위치", "database.terrains"),
     ]),
-    rm2k3Fieldset("지형 레코드", terrains.length > 0 ? terrainEditorRows(terrains) : [readonlyValue("0001", "지형 레코드 없음")]),
+    rm2k3Fieldset("지형 레코드", terrains.length > 0 ? terrainEditorRows(terrains, rerender) : [readonlyValue("0001", "지형 레코드 없음")]),
     rm2k3Fieldset("전투와 이동", [
-      readonlyValue("전투 배경", selected?.battleBackgroundResourceId ?? "(미설정)"),
-      readonlyValue("발소리", selected?.footstepSoundResourceId ?? "(미설정)"),
+      readonlyValue("전투 배경", resourceDisplayName(selected?.battleBackgroundResourceId)),
+      readonlyValue("발소리", resourceDisplayName(selected?.footstepSoundResourceId)),
       readonlyValue("탈것", terrainVehicleText(selected)),
-      readonlyValue("캐릭터", selected?.characterDisplay ?? "normal"),
+      readonlyValue("캐릭터", selected?.characterDisplay === "transparent" ? "투명" : "일반"),
     ]),
   );
   host.append(el("h3", { text: "지형" }), form);
@@ -59,13 +63,21 @@ export function renderBattleScreenTab(host: HTMLElement): void {
   };
   form.append(
     rm2k3Fieldset("전투 화면", [
-      readonlyValue("편집 위치", "RM2003 데이터베이스 > 전투 화면"),
-      textControl("전투 시스템", project.system.battleSystemResourceId ?? "", (value) => {
-        recordCoalescedSnapshot("db-utility:battle-screen:battle-system-resource");
-        store.update((draft) => {
-          draft.system.battleSystemResourceId = emptyToUndefined(value);
-        }, { scope: "system" });
-      }, "db-field-battle-system-resource"),
+      resourcePickerControl({
+        label: "전투 시스템",
+        resourceId: project.system.battleSystemResourceId,
+        kind: "system2",
+        testid: "db-field-battle-system-resource",
+        allowClear: true,
+        dialogTitle: "전투 시스템 그래픽",
+        onChange: (result) => {
+          recordCoalescedSnapshot("db-utility:battle-screen:battle-system-resource");
+          store.update((draft) => {
+            draft.system.battleSystemResourceId = emptyToUndefined(result.resourceId);
+          }, { scope: "system" });
+        },
+        rerender,
+      }),
       selectField("초기 적 그룹", "db-picker-battle-initial-troop", project.system.initialTroopId ?? "", project.database.troops, (value) => {
         recordProjectSnapshot();
         store.update((draft) => {
@@ -95,13 +107,13 @@ export function renderBattleScreenTab(host: HTMLElement): void {
     rm2k3Fieldset("선택 적 그룹 미리보기", [
       readonlyValue("이름", selectedTroop?.name ?? "(없음)"),
       readonlyValue("멤버", String(selectedTroop?.members?.length ?? selectedTroop?.enemyIds.length ?? 0)),
-      readonlyValue("배경", selectedTroop?.previewBackgroundResourceId ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID),
+      readonlyValue("배경", resourceDisplayName(selectedTroop?.previewBackgroundResourceId ?? DEFAULT_BATTLE_FIELD_BACKGROUND_ID)),
     ]),
     rm2k3Fieldset("적 그룹 목록", project.database.troops.slice(0, 8).map((troop, index) => {
       const memberCount = troop.members?.length ?? troop.enemyIds.length;
       return readonlyValue(ordinalLabel(index), `${troop.name} / 적 ${memberCount}개`);
     })),
-    rm2k3Fieldset("RM2003 배치 규칙", [
+    rm2k3Fieldset("배치 규칙", [
       readonlyValue("적", "x/y/숨김 멤버는 적 그룹에서 편집"),
       readonlyValue("배경", "적 그룹 배경 → 지형 전투 배경 → 기본 전장 (System2 게이지 시트 제외)"),
       readonlyValue("배치 편집", "적 그룹 멤버 위치는 적 그룹에서 편집"),
@@ -116,31 +128,41 @@ export function renderBattleCommandsTab(host: HTMLElement): void {
   const form = el("section", { class: "db-detail-form db-parity-form", dataset: { testid: "db-detail-form" } });
   form.append(
     rm2k3Fieldset("전투 명령", [
-      readonlyValue("편집 위치", "RM2003 데이터베이스 > 전투 명령"),
       readonlyValue("레코드", countText(commands.length)),
-      readonlyValue("저장 위치", "database.battleCommands"),
+      el("button", {
+        class: "db-toolbar-button",
+        text: "직업 탭에서 메뉴 순서 정하기",
+        attrs: { type: "button" },
+        dataset: { testid: "db-open-classes-tab" },
+        on: {
+          click: (event) => {
+            const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+            if (panelRoot) switchDatabaseActiveTab("classes", panelRoot);
+          },
+        },
+      }),
     ]),
     rm2k3Fieldset("전체 명령 목록", commands.length > 0 ? battleCommandEditorRows(commands) : [readonlyValue("0001", "전투 명령 없음")]),
-    rm2k3Fieldset("직업 연결", [
+    rm2k3Fieldset("직업에서 쓰는 방식", [
       readonlyValue("직업 수", countText(project.database.classes.length)),
-      readonlyValue("직업별", "classes[].battleCommands가 이 명령 의미를 참조"),
-      readonlyValue("명령 종류", "attack / skill / defend / item / escape / event"),
+      readonlyValue("연결", "각 직업의 전투 메뉴가 이 목록의 이름과 종류를 참조합니다."),
+      readonlyValue("종류", "공격, 특수기능, 특수계열, 방어, 아이템, 도망, 교체"),
     ]),
   );
   host.append(el("h3", { text: "전투 명령" }), form);
 }
 
-function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[]): HTMLElement[] {
+function terrainEditorRows(terrains: readonly DatabaseTerrainRecord[], rerender: () => void): HTMLElement[] {
   // 레코드마다 래퍼 div로 감싸 grid-column:1/-1 을 부여한다 — 그렇지 않으면 필드(9개, 홀수)가
   // 부모 2열 그리드에 flat하게 흘러 들어가 레코드 경계 없이 다음 레코드 필드와 뒤섞였다(P9).
   return terrains.map((terrain, index) => el("div", {
     class: "db-terrain-record",
     dataset: { testid: `db-terrain-record-${index}` },
-    children: terrainRecordFields(terrain, index),
+    children: terrainRecordFields(terrain, index, rerender),
   }));
 }
 
-function terrainRecordFields(terrain: DatabaseTerrainRecord, index: number): HTMLElement[] {
+function terrainRecordFields(terrain: DatabaseTerrainRecord, index: number, rerender: () => void): HTMLElement[] {
   return [
     utilityTextRow({ label: ordinalLabel(index), value: terrain.name, testid: `db-field-terrain-name-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
       recordCoalescedSnapshot(`db-utility:terrain:${index}:name`);
@@ -163,20 +185,40 @@ function terrainRecordFields(terrain: DatabaseTerrainRecord, index: number): HTM
         if (target) target.encounterRatePercent = Math.max(0, Math.min(500, Math.trunc(value)));
       });
     } }),
-    utilityTextRow({ label: "전투 배경", value: terrain.battleBackgroundResourceId ?? "", testid: `db-field-terrain-backdrop-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
-      recordCoalescedSnapshot(`db-utility:terrain:${index}:backdrop`);
-      store.update((project) => {
-        const target = project.database.terrains?.[index];
-        if (target) target.battleBackgroundResourceId = emptyToUndefined(value);
-      });
-    } }),
-    utilityTextRow({ label: "발소리", value: terrain.footstepSoundResourceId ?? "", testid: `db-field-terrain-footstep-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
-      recordCoalescedSnapshot(`db-utility:terrain:${index}:footstep`);
-      store.update((project) => {
-        const target = project.database.terrains?.[index];
-        if (target) target.footstepSoundResourceId = emptyToUndefined(value);
-      });
-    } }),
+    resourcePickerControl({
+      label: "전투 배경",
+      resourceId: terrain.battleBackgroundResourceId,
+      kind: "backdrop",
+      testid: `db-field-terrain-backdrop-${index}`,
+      allowClear: true,
+      dialogTitle: "전투 배경",
+      onChange: (result) => {
+        selectUtilityRecord("terrain", index);
+        recordCoalescedSnapshot(`db-utility:terrain:${index}:backdrop`);
+        store.update((project) => {
+          const target = project.database.terrains?.[index];
+          if (target) target.battleBackgroundResourceId = emptyToUndefined(result.resourceId);
+        });
+      },
+      rerender,
+    }),
+    resourcePickerControl({
+      label: "발소리",
+      resourceId: terrain.footstepSoundResourceId,
+      kind: "sound",
+      testid: `db-field-terrain-footstep-${index}`,
+      allowClear: true,
+      dialogTitle: "발소리",
+      onChange: (result) => {
+        selectUtilityRecord("terrain", index);
+        recordCoalescedSnapshot(`db-utility:terrain:${index}:footstep`);
+        store.update((project) => {
+          const target = project.database.terrains?.[index];
+          if (target) target.footstepSoundResourceId = emptyToUndefined(result.resourceId);
+        });
+      },
+      rerender,
+    }),
     utilitySelectRow({ label: "표시", value: terrain.characterDisplay, options: ["normal", "transparent"], testid: `db-field-terrain-display-${index}`, onFocus: () => selectUtilityRecord("terrain", index), onInput: (value) => {
       recordProjectSnapshot();
       store.update((project) => {
@@ -232,12 +274,65 @@ function battleCommandEditorRows(commands: readonly DatabaseBattleCommandRecord[
         if (target) target.skillSubsetName = emptyToUndefined(value);
       });
     } }),
-    utilityTextRow({ label: "스킬", value: command.skillId ?? "", testid: `db-field-battle-command-skill-${index}`, onFocus: () => selectUtilityRecord("battleCommands", index), onInput: (value) => {
-      recordCoalescedSnapshot(`db-utility:battle-command:${index}:skill`);
-      store.update((project) => {
-        const target = project.database.battleCommands?.[index];
-        if (target) target.skillId = emptyToUndefined(value);
-      });
-    } }),
+    battleCommandSkillRow(command, index),
   ]);
+}
+
+function battleCommandSkillRow(command: DatabaseBattleCommandRecord, index: number): HTMLElement {
+  const skills = store.getCurrent().database.skills;
+  const current = command.skillId ?? "";
+  const options = [
+    { id: "", name: "(없음)" },
+    ...skills.map((skill) => ({ id: skill.id, name: skill.name })),
+  ];
+  if (current && !skills.some((skill) => skill.id === current)) {
+    options.push({ id: current, name: current });
+  }
+  const select = el("select", {
+    class: "db-battle-command-skill-select",
+    dataset: { testid: `db-picker-battle-command-skill-${index}` },
+    children: options.map((option) => el("option", { attrs: { value: option.id }, text: option.name })),
+  }) as HTMLSelectElement;
+  select.value = current;
+  const writeSkill = (value: string): void => {
+    recordCoalescedSnapshot(`db-utility:battle-command:${index}:skill`);
+    store.update((project) => {
+      const target = project.database.battleCommands?.[index];
+      if (target) target.skillId = emptyToUndefined(value);
+    });
+  };
+  select.addEventListener("focus", () => selectUtilityRecord("battleCommands", index));
+  select.addEventListener("change", () => writeSkill(select.value));
+  const hidden = el("input", {
+    class: "db-authoring-id",
+    attrs: { type: "text", "aria-hidden": "true", tabindex: "-1" },
+    dataset: { testid: `db-field-battle-command-skill-${index}` },
+    value: current,
+  }) as HTMLInputElement;
+  hidden.addEventListener("focus", () => selectUtilityRecord("battleCommands", index));
+  hidden.addEventListener("input", () => writeSkill(hidden.value));
+  return el("label", {
+    class: "db-readonly-row",
+    children: [el("span", { text: "스킬" }), select, hidden],
+  });
+}
+
+function resourceDisplayName(resourceId: string | undefined): string {
+  if (!resourceId) return "(미설정)";
+  const pretty = resourceId.split(/[-_/]/).filter(Boolean).at(-1);
+  return pretty ?? resourceId;
+}
+
+// G006: 모달 내 점프는 switchDatabaseActiveTab. fakeDom 에서는 closest가 HTMLElement가
+// 아니라서 .db-body 부모를 걸어 올라간다(개요/적 탭과 동일).
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }

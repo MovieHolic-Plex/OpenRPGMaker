@@ -261,7 +261,7 @@
     align-items: center;
     display: grid;
     gap: 6px;
-    grid-template-columns: 62px minmax(0, 1fr);
+    grid-template-columns: 62px minmax(0, 1fr) auto;
     min-height: 28px;
     padding: 2px 7px;
   }
@@ -281,8 +281,14 @@
     border-bottom: 1px solid var(--db-modern-line-soft);
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table-row-empty {
-    min-height: 24px;
+  .database-modal-body .rm2k3-record-classes .db-class-skill-add {
+    background: var(--bg-raised);
+    border: 0;
+    border-top: 1px solid var(--db-modern-line-soft);
+    color: var(--db-light-accent, #4a57d6);
+    cursor: pointer;
+    padding: 8px;
+    width: 100%;
   }
 
   .database-modal-body .rm2k3-record-classes .db-class-rate-row {

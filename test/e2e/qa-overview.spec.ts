@@ -26,7 +26,7 @@ const STAT_CHIPS = [
 const ISSUE_JUMP_TAB: Record<string, string> = {
   overheal: "db-tab-items",
   "boss-hp-spike": "db-tab-enemies",
-  "skill-stagnation": "db-tab-skills",
+  "skill-stagnation": "db-tab-classes",
 };
 
 const EMPTY_ISSUES_TEXT = "감지된 밸런스 문제가 없습니다.";

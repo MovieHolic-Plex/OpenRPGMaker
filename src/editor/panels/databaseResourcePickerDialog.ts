@@ -6,6 +6,7 @@ import {
   CHARSET_SHEET_COLUMNS,
   CHARSET_SHEET_ROWS,
   EASYRPG_BACKDROP_ASSETS,
+  EASYRPG_BATTLE_ASSETS,
   EASYRPG_FACESET_ASSETS,
   EASYRPG_MONSTER_ASSETS,
   EASYRPG_SYSTEM2_ASSETS,
@@ -48,7 +49,8 @@ export type DatabaseResourcePickerKind =
   | "sound"
   | "system"
   | "system2"
-  | "backdrop";
+  | "backdrop"
+  | "battle";
 
 export type DatabaseResourcePickerResult = {
   readonly resourceId: string;
@@ -236,10 +238,12 @@ export function resourcePickerControl(input: {
       hue: input.allowHue ? input.currentHue : undefined,
     }
   );
+  const optionName = listResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
+  const displayName = input.resourceId ? optionName ?? prettyId(input.resourceId) : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
-    class: "db-resource-picker-inline-id",
-    attrs: { type: "text", spellcheck: "false" },
+    class: "db-resource-picker-inline-id db-authoring-id",
+    attrs: { type: "text", spellcheck: "false", "aria-hidden": "true", tabindex: "-1" },
     value: input.resourceId ?? "",
     dataset: { testid: input.testid },
   }) as HTMLInputElement;
@@ -284,6 +288,11 @@ export function resourcePickerControl(input: {
           el("div", {
             class: "db-resource-picker-control-meta",
             children: [
+              el("span", {
+                class: "db-resource-picker-inline-name",
+                text: displayName,
+                attrs: { title: input.resourceId ?? "" },
+              }),
               idInput,
               el("button", {
                 class: "btn small",
@@ -361,6 +370,9 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       break;
+    case "battle":
+      for (const asset of EASYRPG_BATTLE_ASSETS) add(asset.id, asset.name);
+      break;
     case "icon":
     case "image":
       for (const asset of CC0_ICON_ASSETS) add(asset.id, asset.name);
@@ -401,6 +413,7 @@ function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: Re
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";
   if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview");
+  if (kind === "battle") return resourceKind === "battle" || id.startsWith("easyrpg-battle-") || id.includes("battle-anim");
   if (kind === "icon") {
     return (
       id.includes("-icon") ||
@@ -440,6 +453,7 @@ function uploadedMatchesKind(
   if (kind === "system") return uploadedKind === "system";
   if (kind === "system2") return uploadedKind === "system2";
   if (kind === "backdrop") return uploadedKind === "backdrop" || uploadedKind === "picture";
+  if (kind === "battle") return uploadedKind === "battle" || uploadedKind === "picture";
   return false;
 }
 

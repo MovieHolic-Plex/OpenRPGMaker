@@ -335,12 +335,25 @@
   gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
   min-width: 0;
+  position: relative;
 }
 
-.db-resource-picker-inline-id {
+.db-resource-picker-inline-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.db-authoring-id,
+.db-resource-picker-inline-id {
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
 }
 
 .db-system-party-face-strip {

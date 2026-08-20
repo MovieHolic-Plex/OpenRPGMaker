@@ -152,6 +152,9 @@ export function cropReferenceMessage(_cropId: string): string | null {
 
 export function commonEventReferenceMessage(id: string): string | null {
   const project = store.getCurrent();
+  if (project.system.timeSystem?.onDayEnd === id) {
+    return "시간 시스템(하루 끝)이 이 이벤트를 사용합니다.";
+  }
   if (
     project.commonEvents.some((event) => event.id !== id && commandListReferencesCommonEvent(event.commands, id)) ||
     Object.values(project.maps).some((map) =>

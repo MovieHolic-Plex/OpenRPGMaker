@@ -16,7 +16,8 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await expect(page.getByTestId("tileset-section-tabs")).toContainText("구성");
 
   await expectDisabledReadable(page.getByTestId("tileset-rm2k3-maximum-count"), "tileset maximum count");
-  await expectDisabledReadable(page.getByTestId("tileset-rm2k3-graphic-browse"), "tileset graphic browse");
+  await expectReadableControl(page.getByTestId("tileset-rm2k3-graphic-browse"), "tileset graphic browse");
+  await expect(page.getByTestId("tileset-rm2k3-graphic-browse")).toBeEnabled();
 
   // ── 타일 규칙 탭(기본): 레이어/통행/지형만 보인다 ───────────────
   await expect(page.getByTestId("tileset-section-tab-rules")).toHaveAttribute("aria-selected", "true");

@@ -194,3 +194,9 @@
   padding: 0;
   text-align: center;
 }
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab::before {
+  color: inherit;
+  content: attr(data-short);
+  font: 700 12px/32px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+}
