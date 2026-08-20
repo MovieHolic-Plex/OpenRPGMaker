@@ -8,7 +8,6 @@ import type { PlaySession } from "@/project/session";
 import { DbConnectionRequiredError, setDevProjectFactory, store } from "@/project/store";
 import { createDevShowcaseProjectForLocation } from "@/editor/devShowcaseProjects";
 import { setAiConfigProvider } from "@/project/editorIdentity";
-import { applyGenrePreset, welcomePresetToGenrePreset } from "@/project/genrePresets";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
 import { recordAiActivity } from "@/ai/activityLog";
@@ -22,7 +21,7 @@ import {
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
-import { hasDeepLinkedProject, isAutomationBootContext } from "@/editor/editorWelcome";
+import { hasDeepLinkedProject, isAutomationBootContext, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { supabaseProjectConfig, supabaseProjectConfigDraftWithSource } from "@/project/supabaseProjectConfig";
 
 export type Mode = "edit" | "play";
@@ -132,48 +131,24 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     clearWelcomeIntentBootFlags,
     applyPendingAiBootIntent,
     peekPendingAiBootIntent,
-    setPendingAiBootIntent,
+    markWelcomeIntentAppliedThisBoot,
     setPendingWelcomePipeline,
     wasWelcomeIntentAppliedThisBoot,
   } = await import("@/editor/aiBootIntent");
-  const {
-    presentEditorWelcome,
-    setEditorWelcomeDismissed,
-    shouldPresentEditorWelcome,
-  } = await import("@/editor/editorWelcome");
 
-  let runGenrePipeline = false;
+  let showBriefing = false;
 
-  // Cold-boot welcome only. Re-entry while edit/play shell is live must not overlay.
+  // Cold-boot briefing only. Re-entry while edit/play shell is live must not overlay.
   if (modeMounted) {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    if (shouldPresentEditorWelcome({ modeShellMounted: modeMounted, deepLinkedProject: deepLinkedProjectAtBoot }) && elements) {
-      const result = await presentEditorWelcome(elements.root);
-      if (result.dismiss) setEditorWelcomeDismissed(true);
-      if (result.replaceWithBlank && result.prompt) {
-        const { createBlankProject } = await import("@/project/defaults");
-        // Genre start must keep remote persistence and mint a new project id.
-        // loadFallbackProject turns remote OFF (load-failure recovery only) and
-        // would also risk overwriting the previously opened DB project row.
-        const title = (result.intent || result.prompt || "새 세계").slice(0, 48);
-        const genreProject = createBlankProject();
-        const genrePresetId = welcomePresetToGenrePreset(result.presetId);
-        if (genrePresetId) applyGenrePreset(genreProject, genrePresetId);
-        await store.loadNewRemoteProject(genreProject, { title });
-        setPendingWelcomePipeline({
-          prompt: result.prompt,
-          autoSend: result.autoSend,
-          replaceWithBlank: true,
-          presetId: result.presetId,
-          source: result.source ?? "free-text",
-        });
-        runGenrePipeline = true;
-      } else if (result.intent) {
-        setPendingAiBootIntent(result.intent, { autoSend: false });
-      }
-    }
+    showBriefing = shouldPresentEditorWelcome({
+      modeShellMounted: false,
+      deepLinkedProject: deepLinkedProjectAtBoot,
+    });
+    // Suppress brush/standard coach while the briefing owns the first visit.
+    if (showBriefing) markWelcomeIntentAppliedThisBoot();
   }
 
   // 맵 URL 동기화: URL의 ?map= 파라미터로 맵 복원 + 뒤로가기/앞으로가기 설치
@@ -188,9 +163,27 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   await renderTopbar();
   await enterMode("edit");
 
+  if (showBriefing && elements) {
+    const result = await presentEditorWelcome(elements.root);
+    if (result.dismiss) setEditorWelcomeDismissed(true);
+    if (result.prompt) {
+      setPendingWelcomePipeline({
+        prompt: result.prompt,
+        autoSend: result.autoSend,
+        replaceWithBlank: false,
+        presetId: result.presetId,
+        source: result.source ?? "free-text",
+      });
+    } else {
+      clearWelcomeIntentBootFlags();
+      const { maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } = await import("@/editor/coachMarks");
+      maybeStartBasicCoachMarks();
+      maybeStartStandardWelcomeCard();
+    }
+  }
+
   const hadWelcomeIntent =
-    runGenrePipeline
-    || wasWelcomeIntentAppliedThisBoot()
+    wasWelcomeIntentAppliedThisBoot()
     || peekPendingAiBootIntent() !== null;
   if (hadWelcomeIntent) {
     const { ensureGuestIdentityForAiSurface } = await import("@/editor/teamWorkflowUi");

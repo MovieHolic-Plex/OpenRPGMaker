@@ -41,6 +41,11 @@ function deferred<T>(): Deferred<T> {
 function installDocument(): void {
   vi.stubGlobal("document", {
     createElement: (tagName: string) => new TestElement(tagName),
+    body: {
+      setAttribute: vi.fn(),
+      classList: { add: vi.fn(), remove: vi.fn() },
+      dataset: {},
+    },
   });
 }
 
@@ -68,14 +73,19 @@ describe("mode transitions", () => {
     const editorPlayBootDiagnosticSink = vi.fn();
 
     vi.doMock("@/project/store", () => ({
+      DbConnectionRequiredError: class DbConnectionRequiredError extends Error {},
       store: {
         load: vi.fn(async () => {}),
-        getCurrent: vi.fn(() => ({ startMapId: "map_town" })),
+        getCurrent: vi.fn(() => ({ startMapId: "map_town", system: { battleModel: "rm2k3" } })),
+        subscribe: vi.fn(),
+        getDbPersistenceStatus: vi.fn(() => ({ kind: "ok" })),
       },
+      setDevProjectFactory: vi.fn(),
     }));
     vi.doMock("@/editor/editorState", () => ({
       editorState: {
         set: vi.fn(),
+        subscribe: vi.fn(() => () => {}),
       },
     }));
     vi.doMock("@/editor/panels/menu", () => ({
@@ -91,7 +101,16 @@ describe("mode transitions", () => {
       teardownEditor,
     }));
     vi.doMock("@/editor/editorWelcome", () => ({
-      presentEditorWelcome: vi.fn(),
+      hasDeepLinkedProject: vi.fn(() => false),
+      isAutomationBootContext: vi.fn(() => true),
+      presentEditorWelcome: vi.fn(async () => ({
+        intent: null,
+        prompt: null,
+        autoSend: false,
+        replaceWithBlank: false,
+        dismiss: false,
+        action: "skip" as const,
+      })),
       setEditorWelcomeDismissed: vi.fn(),
       shouldPresentEditorWelcome: vi.fn(() => false),
     }));
@@ -99,6 +118,7 @@ describe("mode transitions", () => {
       applyPendingAiBootIntent: vi.fn(),
       clearPendingAiBootIntent: vi.fn(),
       clearWelcomeIntentBootFlags: vi.fn(),
+      markWelcomeIntentAppliedThisBoot: vi.fn(),
       peekPendingAiBootIntent: vi.fn(() => null),
       setPendingAiBootIntent: vi.fn(),
       setPendingWelcomePipeline: vi.fn(),
@@ -106,6 +126,21 @@ describe("mode transitions", () => {
     }));
     vi.doMock("@/editor/mapSelection", () => ({
       focusProjectStartMap: vi.fn(),
+    }));
+    vi.doMock("@/editor/mapUrlSync", () => ({
+      installMapUrlSync: vi.fn(),
+      restoreMapFromUrl: vi.fn(() => false),
+    }));
+    vi.doMock("@/editor/coachMarks", () => ({
+      maybeStartBasicCoachMarks: vi.fn(),
+      maybeStartStandardWelcomeCard: vi.fn(),
+    }));
+    vi.doMock("@/editor/editorUiMode", () => ({
+      subscribeEditorUiMode: vi.fn(() => () => {}),
+      applyEditorUiModeClasses: vi.fn(),
+      applyFirstVisitEditorUiMode: vi.fn(() => "standard"),
+      getEditorUiMode: vi.fn(() => "standard"),
+      getEditorChrome: vi.fn(() => ({ coachMarks: false, standardWelcome: false })),
     }));
     vi.doMock("@/editor/teamWorkflowUi", () => ({
       ensureGuestIdentityForAiSurface: vi.fn(),
