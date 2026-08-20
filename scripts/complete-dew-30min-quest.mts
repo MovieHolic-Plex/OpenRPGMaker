@@ -249,7 +249,9 @@ village.events = [
       priority: "below",
     }),
   ], { kind: "playerTouch" }),
-  ev("ev_to_mine", 4, 50, [
+  // (6,50): 서쪽 강(물 오토타일 120, x=0..5)이 전부 통행 불가라 (4,50)은 영구 미발동이었다.
+  // 최근접 통행 타일이자 ev_mine_return 예전 착지점인 (6,50)이 마을 쪽 폐광 어귀다.
+  ev("ev_to_mine", 6, 50, [
     page("tm", "폐광으로", [], [{ kind: "transfer", mapId: MINE, x: 32, y: 18, direction: "left", fade: "black" }], {
       graphic: { transparent: true },
       trigger: { kind: "playerTouch" },
@@ -329,8 +331,10 @@ forest.events = [
 // 광산
 mine.events = [
   ...(mine.events ?? []).filter((e) => (e.pages?.[0]?.commands?.[0] as { kind?: string } | undefined)?.kind === "changeGold" || e.id.includes("chest")),
+  // 착지 (8,50): 입구 이벤트가 (6,50)으로 오면서 같은 칸에 내리면 즉시 재전이(transfer-retrigger)
+  // 되므로 숲(3→5)·사당(96→94)과 같은 2칸 간격을 둔다. (8,50)은 길 타일(453)이다.
   ev("ev_mine_return", 34, 18, [
-    page("mr", "마을로", [], [{ kind: "transfer", mapId: VILLAGE, x: 6, y: 50, direction: "right", fade: "black" }], {
+    page("mr", "마을로", [], [{ kind: "transfer", mapId: VILLAGE, x: 8, y: 50, direction: "right", fade: "black" }], {
       graphic: { transparent: true },
       trigger: { kind: "playerTouch" },
       priority: "below",
