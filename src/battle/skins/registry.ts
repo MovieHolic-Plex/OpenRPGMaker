@@ -11,13 +11,18 @@
 // 전투 설정이 깨진다. 그래서 일부 id 에는 옛 계보 이름이 남아 있고, 식별자 개명은
 // 저장 데이터 마이그레이션과 함께 별도 라운드에서 다룬다.
 //
-// 미결(감독 판단 대기): 아래 라벨 8개는 여전히 타사 프랜차이즈 이름이다. 이번
-// 라운드는 변호사가 지적한 계열 4개만 중립 서술어로 바꿨다. 자세한 경위는 위 스펙 주석.
+// 2026-08-21: 12개 라벨 전부 교체 완료. 예전에는 타사 프랜차이즈 이름을 그대로 썼다.
+// 라벨은 이제 **창 색 + 레이아웃/HUD 특징**을 말하고 12개가 서로 구분된다:
+//   흰 창·박스 HUD / 군청 창·사이드뷰 / 감청 창·정면 / 먹빛 창·최소 HUD /
+//   청람 창·링 게이지 / 세피아 창·주황 강조 / 검은 창·1인칭 시점 /
+//   코발트 창·청록 강조 / 암전 창·형광 분홍 / 금갈색 창·박스 HUD /
+//   밝은 창·정면 / 심야 창·박스 HUD
+// 새 스킨을 추가할 때도 같은 규칙을 따를 것 — 스펙이 라벨을 검사한다.
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 
 export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
   pokemon: {
-    id: "pokemon", defaultBackdropResourceId: "battle-skin-pokemon-backdrop", label: "포켓몬", layout: "frontview", showAllySprites: true,
+    id: "pokemon", defaultBackdropResourceId: "battle-skin-pokemon-backdrop", label: "흰 창 · 박스 HUD", layout: "frontview", showAllySprites: true,
     hudTemplate: "boxes", transition: "slide-pokemon",
     themeVars: {
       "--battle-window-bg": "#f8f8f8",
@@ -74,7 +79,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   octopath: {
-    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "옥토패스", layout: "sideview", showAllySprites: true,
+    id: "octopath", defaultBackdropResourceId: "battle-skin-octopath-backdrop", label: "먹빛 창 · 최소 HUD", layout: "sideview", showAllySprites: true,
     hudTemplate: "minimal", transition: "focus-blur",
     themeVars: {
       "--battle-window-bg": "#0a1020",
@@ -93,7 +98,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   chrono: {
-    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "크로노 트리거", layout: "active", showAllySprites: true,
+    id: "chrono", defaultBackdropResourceId: "battle-skin-chrono-backdrop", label: "청람 창 · 링 게이지", layout: "active", showAllySprites: true,
     hudTemplate: "ring", transition: "sweep-cyan",
     themeVars: {
       "--battle-window-bg": "#071a33",
@@ -112,7 +117,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   bravely: {
-    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "브레이블리", layout: "sideview", showAllySprites: true,
+    id: "bravely", defaultBackdropResourceId: "battle-skin-bravely-backdrop", label: "세피아 창 · 주황 강조", layout: "sideview", showAllySprites: true,
     hudTemplate: "minimal", transition: "brave-shift",
     themeVars: {
       "--battle-window-bg": "#1a1206",
@@ -131,7 +136,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   dragonquest: {
-    id: "dragonquest", defaultBackdropResourceId: "battle-skin-dragonquest-backdrop", label: "드퀘", layout: "firstperson", showAllySprites: false,
+    id: "dragonquest", defaultBackdropResourceId: "battle-skin-dragonquest-backdrop", label: "검은 창 · 1인칭 시점", layout: "firstperson", showAllySprites: false,
     hudTemplate: "rows", transition: "curtain-dq",
     themeVars: {
       "--battle-window-bg": "#000810",
@@ -150,7 +155,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   ff: {
-    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "FF 정통", layout: "sideview", showAllySprites: true,
+    id: "ff", defaultBackdropResourceId: "battle-skin-ff-backdrop", label: "코발트 창 · 청록 강조", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue",
     themeVars: {
       "--battle-window-bg": "#0f1e7a",
@@ -169,7 +174,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   mother: {
-    id: "mother", defaultBackdropResourceId: "battle-skin-mother-backdrop", label: "마더/언더", layout: "frontview", showAllySprites: false,
+    id: "mother", defaultBackdropResourceId: "battle-skin-mother-backdrop", label: "암전 창 · 형광 분홍", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "psychedelic",
     themeVars: {
       "--battle-window-bg": "#0a0a0a",
@@ -188,7 +193,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   goldensun: {
-    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "골든선", layout: "sideview", showAllySprites: true,
+    id: "goldensun", defaultBackdropResourceId: "battle-skin-goldensun-backdrop", label: "금갈색 창 · 박스 HUD", layout: "sideview", showAllySprites: true,
     hudTemplate: "boxes", transition: "sweep-cyan",
     themeVars: {
       "--battle-window-bg": "#1a0f02",

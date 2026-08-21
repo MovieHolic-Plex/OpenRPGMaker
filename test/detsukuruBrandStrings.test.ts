@@ -102,6 +102,30 @@ const LABEL_LIKE_FORBIDDEN: readonly { readonly label: string; readonly re: RegE
   { label: "라벨에 VX Ace", re: /(?:label|text|title|aria-label)\s*:\s*"[^"]*VX\s*Ace[^"]*"/i },
 ];
 
+/**
+ * 타사 프랜차이즈 이름 — **라벨에만** 금지한다.
+ *
+ * 2026-08-21 적대 스캔에서 발견: 자료집→시스템의 전투 스킨 드롭다운이 이 이름 12개를
+ * 사용자에게 그대로 뿌리고 있었다. 변호사 지적은 RPG Maker 계열이었지만 노출의 성격이
+ * 같으므로 전부 창 색·레이아웃 서술어로 바꿨다.
+ *
+ * 왜 라벨 형태만 잡나 — 이 단어들은 **정당한 문맥**에도 나온다. 데모 프로젝트 이름
+ * (`Scarloxy 포켓몬풍 데모`), 파일·리소스 id(`battle-skin-dragonquest-backdrop`),
+ * 그리고 "포켓몬풍 전투를 만들어 달라" 같은 사용자 의도 문구. 전면 금지하면 그런
+ * 정상 사용까지 막히고 그물이 무력해진다.
+ */
+const FRANCHISE_LABEL_FORBIDDEN: readonly { readonly label: string; readonly re: RegExp }[] = [
+  { label: "라벨에 포켓몬", re: /label\s*:\s*"[^"]*포켓몬[^"]*"/ },
+  { label: "라벨에 옥토패스", re: /label\s*:\s*"[^"]*옥토패스[^"]*"/ },
+  { label: "라벨에 크로노 트리거", re: /label\s*:\s*"[^"]*크로노[^"]*"/ },
+  { label: "라벨에 브레이블리", re: /label\s*:\s*"[^"]*브레이블리[^"]*"/ },
+  { label: "라벨에 드퀘/드래곤 퀘스트", re: /label\s*:\s*"[^"]*(?:드퀘|드래곤\s*퀘스트|Dragon\s*Quest)[^"]*"/i },
+  // `FF` 는 단어 시작에서만 잡는다 — "OFF / 금지" 처럼 다른 단어 끝의 FF 는 오탐이다(실측).
+  { label: "라벨에 FF/파이널 판타지", re: /label\s*:\s*"(?:[^"]*\s)?(?:FF\s|파이널\s*판타지|Final\s*Fantasy)[^"]*"/i },
+  { label: "라벨에 마더/언더테일", re: /label\s*:\s*"[^"]*(?:마더\/|언더테일|Undertale)[^"]*"/i },
+  { label: "라벨에 골든선", re: /label\s*:\s*"[^"]*골든선[^"]*"/ },
+];
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
@@ -197,13 +221,51 @@ describe("탈-쯔구르: 출하 문자열", () => {
 
   // 전투 스킨 라벨은 자료집→시스템 드롭다운에 그대로 뿌려진다(databaseSystemView.ts).
   // id 는 저장 데이터라 못 바꾸지만 라벨은 사용자에게 보이는 문자열이므로 여기서 지킨다.
-  it("전투 스킨 라벨에 RPG Maker 계열 이름이 없다", async () => {
+  it("전투 스킨 라벨에 타사 제품·프랜차이즈 이름이 없다", async () => {
     const { BATTLE_SKINS } = await import("@/battle/skins/registry");
-    const patterns = [...FORBIDDEN_PATTERNS, { label: "RM2000/RM2003", re: /RM\s*200[03]/i }, { label: "VX Ace", re: /VX\s*Ace/i }];
+    const patterns = [
+      ...FORBIDDEN_PATTERNS,
+      { label: "RM2000/RM2003", re: /RM\s*200[03]/i },
+      { label: "VX Ace", re: /VX\s*Ace/i },
+      { label: "포켓몬", re: /포켓몬/ },
+      { label: "옥토패스", re: /옥토패스/ },
+      { label: "크로노", re: /크로노/ },
+      { label: "브레이블리", re: /브레이블리/ },
+      { label: "드퀘/드래곤 퀘스트", re: /드퀘|드래곤\s*퀘스트/ },
+      { label: "FF/파이널 판타지", re: /^FF\s|파이널\s*판타지/i },
+      { label: "마더/언더테일", re: /마더\/|언더테일/ },
+      { label: "골든선", re: /골든선/ },
+    ];
     const offenders = Object.values(BATTLE_SKINS)
       .map((skin) => skin.label)
       .filter((label) => patterns.some(({ re }) => re.test(label)));
     expect(offenders, `금지 라벨: ${offenders.join(", ")}`).toEqual([]);
+  });
+
+  // 12개가 서로 구분돼야 한다 — 같은 이름이 둘이면 감독이 드롭다운에서 못 고른다.
+  it("전투 스킨 라벨 12개가 모두 다르다", async () => {
+    const { BATTLE_SKINS } = await import("@/battle/skins/registry");
+    const labels = Object.values(BATTLE_SKINS).map((skin) => skin.label);
+    expect(new Set(labels).size, `중복: ${labels.join(", ")}`).toBe(labels.length);
+    for (const label of labels) expect(label.trim()).not.toBe("");
+  });
+
+  // 라벨 형태의 프랜차이즈 이름은 registry 밖(다른 패널 라벨)에도 들어오면 안 된다.
+  it("어떤 UI 라벨에도 타사 프랜차이즈 이름이 없다", () => {
+    const offenders: string[] = [];
+    for (const file of walk(SRC_ROOT)) {
+      const rel = relative(REPO_ROOT, file).replace(/\\/g, "/");
+      if (isExempt(rel)) continue;
+      readFileSync(file, "utf8")
+        .split(/\r?\n/)
+        .forEach((line, index) => {
+          if (ASSET_PATH_LINE.test(line)) return;
+          for (const { label, re } of FRANCHISE_LABEL_FORBIDDEN) {
+            if (re.test(line)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 110)}`);
+          }
+        });
+    }
+    expect(offenders, `금지 라벨 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
   });
 
   // 주석·CSS 파일명의 RM2000/RM2003 은 Phase 2b·3 범위지만, **라벨**에 들어가면 즉시 문제다.
