@@ -31,7 +31,12 @@ const REPO_ROOT = path.resolve(import.meta.dirname, "..");
  * `tiot/images/` 를 쓴다). 프로젝트 접두사가 없으면 남의 키를 덮어쓸 위험이 있다.
  */
 const KEY_PREFIX = "rpg-zzu/bgm/v1";
-const CONCURRENCY = 4;
+/**
+ * 기본 동시 업로드 수. 실측(2026-08-21): 4로 올리면 40MB WAV 가 섞인 구간에서
+ * `TypeError: fetch failed` 가 무리로 터진다. 재시도로 대부분 복구되지만 회차마다
+ * 10\~40건이 남아 여러 번 돌려야 했다. 느려도 2가 한 번에 끝난다. `--concurrency` 로 조절.
+ */
+const DEFAULT_CONCURRENCY = 2;
 /** 콘텐츠 해시가 파일명에 박혀 있으므로 영구 캐시로 둔다. */
 const CACHE_CONTROL = "public, max-age=31536000, immutable";
 
@@ -48,6 +53,7 @@ function parseArgs(argv) {
     dryRun: false,
     verify: false,
     force: false,
+    concurrency: DEFAULT_CONCURRENCY,
   };
   for (let i = 0; i < argv.length; i += 1) {
     const flag = argv[i];
@@ -55,6 +61,7 @@ function parseArgs(argv) {
     else if (flag === "--dry-run") args.dryRun = true;
     else if (flag === "--verify") args.verify = true;
     else if (flag === "--force") args.force = true;
+    else if (flag === "--concurrency") args.concurrency = Math.max(1, Number(argv[++i]) || DEFAULT_CONCURRENCY);
   }
   return args;
 }
@@ -250,7 +257,7 @@ async function main() {
   }
 
   let done = 0;
-  const results = await runPool(files, CONCURRENCY, async (file) => {
+  const results = await runPool(files, args.concurrency, async (file) => {
     const key = `${KEY_PREFIX}/${file.fileName}`;
     const bytes = statSync(file.local).size;
     const remote = await withRetry(`HEAD ${file.fileName}`, 3, () => headObject(config, key));
