@@ -16,9 +16,12 @@
 //
 // 사용:
 //   node scripts/agent-worktree.mjs create <name> [--base <ref>]
-//   node scripts/agent-worktree.mjs list
-//   node scripts/agent-worktree.mjs remove <name> [--keep-branch]
-//   node scripts/agent-worktree.mjs snapshot        # 현재 워킹트리를 커밋으로 박제(비침습)
+//   node scripts/agent-worktree.mjs list                 # 포트 + dirty/unmerged 표시
+//   node scripts/agent-worktree.mjs remove <name> [--keep-branch] [--force-dirty]
+//   node scripts/agent-worktree.mjs snapshot             # 현재 워킹트리를 커밋으로 박제(비침습)
+//
+// remove 는 미커밋 변경이나 미병합 커밋이 있으면 거부한다. 커밋되지 않은 작업은 reflog 로도
+// 회수할 수 없으므로, 정말 버릴 때만 --force-dirty 를 명시한다.
 import { execFileSync } from "node:child_process";
 import { existsSync, copyFileSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, unlinkSync, rmSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
@@ -87,13 +90,26 @@ function snapshot(message) {
   return commit;
 }
 
+/** 워크트리에서 실행돼도 본체 체크아웃을 가리킨다 (Herd 훅 cwd = 새 폴더). */
+function sourceRepoRoot(fromPath) {
+  try {
+    const common = execFileSync("git", ["-C", fromPath, "rev-parse", "--path-format=absolute", "--git-common-dir"], {
+      encoding: "utf8",
+    }).trim();
+    return dirname(common);
+  } catch {
+    return REPO;
+  }
+}
+
 // 워크트리에 격리 실행에 필요한 것들을 채운다(생성·기존 보정 공용).
 // git worktree 는 추적 파일만 체크아웃하므로 node_modules 와 gitignored env 는 직접 넣어야 한다.
 function provision(path, { force = false } = {}) {
   const applied = [];
+  const source = sourceRepoRoot(path);
 
   const linkPath = join(path, "node_modules");
-  const linkTarget = join(REPO, "node_modules");
+  const linkTarget = join(source, "node_modules");
   if (!existsSync(linkPath) && existsSync(linkTarget)) {
     symlinkSync(linkTarget, linkPath, process.platform === "win32" ? "junction" : "dir");
     applied.push("node_modules 정션");
@@ -101,8 +117,8 @@ function provision(path, { force = false } = {}) {
 
   for (const file of COPIED_ENV_FILES) {
     const destination = join(path, file);
-    if ((force || !existsSync(destination)) && existsSync(join(REPO, file))) {
-      copyFileSync(join(REPO, file), destination);
+    if ((force || !existsSync(destination)) && existsSync(join(source, file))) {
+      copyFileSync(join(source, file), destination);
       applied.push(`${file} 복사`);
     }
   }
@@ -145,36 +161,123 @@ function create(name, baseRef) {
 
 // 이 도구 밖에서 만들어진 기존 워크트리를 같은 규약으로 보정한다.
 // (node_modules 누락 → 실행 불가, DEV_SERVER_PORT 누락 → 전부 9999 충돌)
-function adopt(name) {
+function adoptOne(path, label = "") {
+  const { port, applied } = provision(path);
+  console.log(`${label || basename(path)}  port=${port}  ${path}`);
+  console.log(applied.length ? `   보정: ${applied.join(", ")}` : "   보정 없음(이미 정상)");
+}
+
+function adopt(name, explicitPath) {
+  const path = explicitPath || process.env.WT_WORKTREE_PATH;
+  if (path) {
+    if (!existsSync(path)) throw new Error(`경로가 없습니다: ${path}`);
+    adoptOne(resolve(path), name || basename(path));
+    return;
+  }
+
   const targets = name
     ? listWorktrees().filter((entry) => basename(entry.path) === `${REPO_NAME}-${name}` || entry.branch === name)
     : listWorktrees();
   if (targets.length === 0) throw new Error("보정할 워크트리를 찾지 못했습니다.");
 
   for (const entry of targets) {
-    const { port, applied } = provision(entry.path);
-    console.log(`${entry.branch ?? "(detached)"}  port=${port}  ${entry.path}`);
-    console.log(applied.length ? `   보정: ${applied.join(", ")}` : "   보정 없음(이미 정상)");
+    adoptOne(entry.path, entry.branch ?? "(detached)");
   }
 }
 
-function remove(name, keepBranch) {
+/**
+ * 이름으로 워크트리를 푼다. 브랜치는 **등록된 목록에서 읽는다** — 이름에서
+ * `agent/<name>` 을 재구성하면 안 된다. Herd 가 만든 워크트리는 `worktree/<name>` 규약을
+ * 쓰고 디렉터리명과 브랜치명이 어긋난다(`worktree-silver-meadow-6a2f` ↔
+ * `worktree/silver-meadow-6a2f`). 재구성한 이름으로 rev-list 를 돌리면 항상 실패해
+ * 미병합 가드가 조용히 통과한다.
+ */
+function resolveWorktree(name) {
+  const entries = listWorktrees();
+  const hit = entries.find(
+    (entry) =>
+      basename(entry.path) === name ||
+      entry.path === resolve(name) ||
+      entry.branch === name ||
+      entry.branch === branchName(name),
+  );
+  if (hit) return { path: hit.path, branch: hit.branch ?? null };
+  const conventional = worktreePath(name);
+  if (existsSync(conventional)) return { path: conventional, branch: branchName(name) };
+  throw new Error(`워크트리를 찾을 수 없습니다: ${name}`);
+}
+
+/** 워크트리에 미커밋 변경이 있으면 목록을, 없으면 빈 배열을 준다. */
+function dirtyFiles(path) {
+  const raw = git(["status", "--porcelain"], { cwd: path });
+  return raw ? raw.split("\n") : [];
+}
+
+/**
+ * 브랜치에 main 으로 안 들어간 커밋 수. 세어보지 못하면 **0 이 아니라 예외** — 셀 수 없다는
+ * 것은 안전하다는 뜻이 아니다. 조용히 0 을 주면 가드가 무력화된다.
+ */
+function unmergedCommits(branch) {
+  return Number(git(["rev-list", "--count", `main..${branch}`]));
+}
+
+/** list 표시용 — 셀 수 없으면 물음표. 여기서는 판단을 하지 않으므로 관용적으로 처리한다. */
+function unmergedForDisplay(branch) {
+  try {
+    return unmergedCommits(branch);
+  } catch {
+    return null;
+  }
+}
+
+function remove(name, keepBranch, forceDirty) {
   if (!name) throw new Error("워크트리 이름이 필요합니다: remove <name>");
-  const path = worktreePath(name);
+  const { path, branch } = resolveWorktree(name);
+
+  // git worktree remove --force 는 미커밋 변경을 확인 없이 버린다. 커밋되지 않은 작업은
+  // reflog 로도 회수할 수 없는 유일한 상태이므로 기본적으로 거부한다.
+  // 실측: 워크트리 5개에 최대 34개 파일의 미커밋 작업이 방치돼 있었다.
+  if (!forceDirty) {
+    const dirty = dirtyFiles(path);
+    if (dirty.length > 0) {
+      throw new Error(
+        `${path} 에 미커밋 변경 ${dirty.length}건이 있습니다. 커밋해서 회수하거나 정말 버리려면 --force-dirty 를 주십시오.\n` +
+          dirty.slice(0, 10).map((line) => `  ${line}`).join("\n") +
+          (dirty.length > 10 ? `\n  ... 외 ${dirty.length - 10}건` : ""),
+      );
+    }
+  }
+
+  if (!keepBranch && !forceDirty) {
+    if (!branch) {
+      throw new Error(
+        `${path} 는 detached HEAD 입니다. 커밋 유실 여부를 판정할 수 없으므로 --force-dirty 로만 제거할 수 있습니다.`,
+      );
+    }
+    const ahead = unmergedCommits(branch);
+    if (ahead > 0) {
+      throw new Error(
+        `브랜치 ${branch} 에 main 으로 병합되지 않은 커밋 ${ahead}건이 있습니다. 병합하거나 --keep-branch 를 주십시오.`,
+      );
+    }
+  }
+
   // node_modules 정션을 먼저 끊는다 — git 은 추적 파일만 지우므로 정션이 남아 디렉터리가
   // 비지 않고, 결과적으로 껍데기 디렉터리가 잔존한다.
   const linkPath = join(path, "node_modules");
   if (existsSync(linkPath)) unlinkSync(linkPath);
   git(["worktree", "remove", "--force", path]);
   if (existsSync(path)) rmSync(path, { recursive: true, force: true });
-  if (!keepBranch) {
+  if (!keepBranch && branch) {
     try {
-      git(["branch", "-D", branchName(name)]);
+      git(["branch", "-D", branch]);
     } catch {
-      console.warn(`[warn] 브랜치 ${branchName(name)} 삭제 실패 — 수동 확인 필요.`);
+      console.warn(`[warn] 브랜치 ${branch} 삭제 실패 — 수동 확인 필요.`);
     }
   }
-  console.log(`제거 완료: ${path}${keepBranch ? ` (브랜치 ${branchName(name)} 유지)` : ""}`);
+  console.log(
+    `제거 완료: ${path}${keepBranch && branch ? ` (브랜치 ${branch} 유지)` : ""}`,
+  );
 }
 
 function list() {
@@ -188,15 +291,31 @@ function list() {
     const port = existsSync(envLocal)
       ? (/^DEV_SERVER_PORT=(\d+)$/m.exec(readFileSync(envLocal, "utf8"))?.[1] ?? "?")
       : "?";
-    console.log(`${entry.branch ?? "(detached)"}\tport=${port}\t${entry.path}`);
+    // 미커밋 변경과 main 대비 뒤처짐은 워크트리 안에만 보여서 `git branch -vv` 로는 안 보인다.
+    // 회수되지 않은 작업을 상시 드러내려고 함께 출력한다.
+    const dirty = dirtyFiles(entry.path).length;
+    const behind = entry.branch ? unmergedForDisplay(entry.branch) : null;
+    const flagged = [
+      dirty > 0 ? `dirty=${dirty}` : null,
+      behind === null ? "unmerged=?" : behind > 0 ? `unmerged=${behind}` : null,
+    ].filter(Boolean);
+    const suffix = flagged.length > 0 ? `\t${flagged.join(" ")}` : "\tclean";
+    console.log(`${entry.branch ?? "(detached)"}\tport=${port}${suffix}\t${entry.path}`);
   }
 }
 
 const [command, ...rest] = process.argv.slice(2);
 const flags = new Set(rest.filter((arg) => arg.startsWith("--")));
-const positional = rest.filter((arg) => !arg.startsWith("--"));
 const baseIndex = rest.indexOf("--base");
 const baseRef = baseIndex >= 0 ? rest[baseIndex + 1] : undefined;
+const pathIndex = rest.indexOf("--path");
+const pathRef = pathIndex >= 0 ? rest[pathIndex + 1] : undefined;
+const skipValues = new Set([baseRef, pathRef].filter(Boolean));
+const positional = rest.filter((arg, index) => {
+  if (arg.startsWith("--")) return false;
+  if (rest[index - 1] === "--base" || rest[index - 1] === "--path") return false;
+  return !skipValues.has(arg);
+});
 
 try {
   switch (command) {
@@ -204,10 +323,10 @@ try {
       create(positional[0], baseRef);
       break;
     case "remove":
-      remove(positional[0], flags.has("--keep-branch"));
+      remove(positional[0], flags.has("--keep-branch"), flags.has("--force-dirty"));
       break;
     case "adopt":
-      adopt(positional[0]);
+      adopt(positional[0], pathRef);
       break;
     case "list":
       list();
@@ -216,7 +335,7 @@ try {
       console.log(snapshot("snapshot: manual working-tree snapshot"));
       break;
     default:
-      console.log("사용: agent-worktree.mjs <create|adopt|remove|list|snapshot> [name] [--base <ref>] [--keep-branch]");
+      console.log("사용: agent-worktree.mjs <create|adopt|remove|list|snapshot> [name] [--base <ref>] [--path <dir>] [--keep-branch] [--force-dirty]");
       process.exit(1);
   }
 } catch (error) {
