@@ -107,6 +107,21 @@ npx tsx scripts/town-bench.mts report   --in output/town-bench   # 9축 리더�
 npx tsx scripts/town-bench.mts evidence --in output/town-bench   # PNG + HTML 증거 시트
 ```
 
+## 감독용 보고서
+
+```bash
+npx tsx scripts/gen-town-bench-report.mts   # -> town-bench-report.html (루트, git 미추적 산출물)
+```
+
+칩셋 하네스 보고서(`combined-town-chipset-report.html`)와 같은 시각 언어·같은 규약(칩셋 PNG
+하나를 base64 인라인 → `background-position` 으로 잘라 쓰기, 번호에는 항상 그림)을 따른다.
+문항마다 **모델이 받는 입력 이미지 + 엔진이 만든 정본 렌더 + 팔레트 + 채점 항목 + 하네스 대응
+코드**를 나란히 싣는다.
+
+보고서의 축은 "점수표"가 아니라 **하네스가 대신 지고 있는 짐의 무게**다. 이 저장소의 제1원칙은
+"LLM에게 타일 번호를 고르게 하지 않는다"이므로(하네스 보고서 §09), 이 벤치마크의 낮은 점수는
+모델 결함이 아니라 **하네스를 걷어내면 안 되는 지점**을 뜻한다.
+
 ## 증거 시트
 
 숫자만으로는 6·8·9번을 검수할 수 없다 — 점수가 높아도 그림이 엉망일 수 있다.

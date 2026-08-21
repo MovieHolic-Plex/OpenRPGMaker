@@ -34,6 +34,7 @@ import {
 import { COBBLE_TILE, DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
+import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import type { AutotileGroup, GameMap, PassFlag, TilesetDef } from "@/project/types";
 import { digestOf } from "../interior/hash";
 import {
@@ -562,6 +563,22 @@ function villagePlacement(): PlacementReference {
   );
 }
 
+/**
+ * 전역 금지 타일. `BANNED_STONE_TILES`(411/412/413/443)만 보면 **감독이 2026-07-17 에
+ * 전역 밴한 바위 441/442 를 놓친다** — 그 밴은 상수가 아니라 시맨틱 테이블의
+ * 라벨("바위(사용 금지)")과 `banned` 태그로만 표현돼 있다(칩셋 보고서 §08).
+ * 그래서 태그에서 파생하고 상수와 합집합을 취한다. 대체재는 석상(266/296)·돌기둥(267/297).
+ */
+function bannedTiles(): ReadonlySet<number> {
+  const tagged = COMBINED_TOWN_TILE_SEMANTICS.filter((entry) => entry.tags.includes("banned")).map(
+    (entry) => entry.index,
+  );
+  if (tagged.length === 0) {
+    throw new Error("town groundTruth: 시맨틱 테이블에 banned 태그가 하나도 없다 — 밴 목록 파생이 깨졌다");
+  }
+  return freezeSet([...tagged, ...BANNED_STONE_TILES]);
+}
+
 // ── 조립 ──────────────────────────────────────────────────────────────────
 
 export function buildTownGroundTruth(): TownGroundTruth {
@@ -584,7 +601,7 @@ export function buildTownGroundTruth(): TownGroundTruth {
   const passability = passabilityProbe(passFlags);
   const layer = layerProbe(priority);
   const autotile = buildAutotileReference();
-  const banned = freezeSet(BANNED_STONE_TILES);
+  const banned = bannedTiles();
 
   const digest = digestOf({
     wall,
