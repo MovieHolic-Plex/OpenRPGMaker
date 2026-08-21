@@ -7,6 +7,7 @@ import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceReso
 import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
+import { SE_CATALOG } from "@/assets/seCatalog";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
 import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
@@ -234,11 +235,19 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
         })),
       ];
     case "se":
-      return EASYRPG_SOUND_ASSETS.map((asset) => ({
-        id: `se:${asset.id}`,
-        label: asset.name,
-        tags: moodTagsForAsset(asset),
-      }));
+      return [
+        // 456개 CC0 카탈로그가 기본 효과음 세트다. BGM 과 같은 이유로 RTP 앞에 둔다.
+        ...SE_CATALOG.map((entry) => ({
+          id: `se:${entry.id}`,
+          label: `${entry.title} — ${entry.category} (${entry.seconds.toFixed(2)}s)`,
+          tags: [...entry.tags, entry.category, entry.baseName].filter((tag) => tag.length > 0),
+        })),
+        ...EASYRPG_SOUND_ASSETS.map((asset) => ({
+          id: `se:${asset.id}`,
+          label: asset.name,
+          tags: moodTagsForAsset(asset),
+        })),
+      ];
     default:
       return [];
   }

@@ -15,6 +15,7 @@ import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
+import { seCatalogResourceIds } from "@/assets/seCatalogRuntime";
 import { assert } from "./guards";
 
 export function collectResourceIds(project: Project): Set<string> {
@@ -36,6 +37,9 @@ export function collectResourceIds(project: Project): Set<string> {
   // 281곡 BGM 카탈로그. 여기서 빠지면 이 곡을 지정한 프로젝트가 **역직렬화 자체에 실패**한다
   // (validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다).
   for (const id of bgmCatalogResourceIds()) ids.add(id);
+  // 456개 효과음 카탈로그. BGM 과 같은 이유로 반드시 등록해야 한다 — 빠지면 이 효과음을
+  // 지정한 프로젝트가 오디오만 무음이 되는 게 아니라 역직렬화 자체에 실패한다.
+  for (const id of seCatalogResourceIds()) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
   return ids;

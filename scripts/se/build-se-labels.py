@@ -178,10 +178,15 @@ for p in placed:
     else:
         unmatched.append(key)
 
+CAT_ORDER = [CUR_SEL, CUR_OK, CUR_WIN, CUR_WARN, CUR_TEX, BTL_HIT, BTL_MAG, MON, ITEM, DOOR, FOLEY, JINGLE]
+
+# 카탈로그 순서 = 피커 그룹 순서. build-se-catalog.py 가 등장 순서를 그대로 쓰므로
+# 여기서 정렬해 두지 않으면 그룹 헤더가 파일 순서대로 뒤섞인다.
+labeled.sort(key=lambda x: (CAT_ORDER.index(x['category']), x['baseName'],
+                            x['variant'] if x['variant'] is not None else -1))
+
 json.dump(labeled, open(os.path.join(HERE, 'labels.json'), 'w', encoding='utf-8'),
           ensure_ascii=False, indent=1)
-
-CAT_ORDER = [CUR_SEL, CUR_OK, CUR_WIN, CUR_WARN, CUR_TEX, BTL_HIT, BTL_MAG, MON, ITEM, DOOR, FOLEY, JINGLE]
 print('라벨 %d개 / 미매칭 %d개' % (len(labeled), len(unmatched)))
 for c in CAT_ORDER:
     rs = [x for x in labeled if x['category'] == c]
