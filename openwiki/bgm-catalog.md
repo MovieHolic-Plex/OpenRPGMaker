@@ -24,6 +24,12 @@ map/battle/menu can each get a fitting cue without the author sourcing music the
 - **Exception — three starter tracks are committed** (`public/assets/cc0/audio/catalog/`, ~10MB).
   The default project's map/battle/title BGM point at these, so a fresh clone with no CDN
   configured still makes sound. `.gitignore` ignores that directory except those three files.
+- **The default title screen now has music** (`cc0-bgm-rtp-ttl-001`). This replaced an older
+  "silent title" default. Because `normalizeTitleScreenSettings` uses `defaultTitleScreenSettings()`
+  as its backfill source, an absent `musicResourceId` is filled with that default — so silence is
+  expressed by an **empty string**, not by omitting the key. `hasExplicitSilence()` in
+  `src/project/databaseRecordModel.ts` draws that line; without it, adding a default would have
+  made a silent title impossible to author at all.
 - 273 mp3 (918MB) + 8 wav loop masters (326MB). The wav masters are ~40MB each — there is no
   ffmpeg in this environment, so they were uploaded as-is rather than transcoded. Prefer an mp3
   track for anything that must stream quickly.
@@ -36,7 +42,7 @@ map/battle/menu can each get a fitting cue without the author sourcing music the
 | --- | --- |
 | `src/assets/bgmCatalogRuntime.ts` | **Generated.** id → file name + loop flag. Runtime-only, so editor metadata does not leak into the player bundle. |
 | `src/assets/bgmCatalog.ts` | **Generated.** Editor metadata: title, category, BPM, musical key, sha256, creative brief, search tags. |
-| `src/assets/bgmCdn.ts` | Builds the playback URL. `VITE_BGM_CDN_BASE` + `bgm/v1/` prefix, else same-origin local fallback. |
+| `src/assets/bgmCdn.ts` | Builds the playback URL. `VITE_BGM_CDN_BASE` + `rpg-zzu/bgm/v1/` prefix, else same-origin local fallback. |
 | `src/assets/bgmCatalogResolver.ts` | id → URL glue used by the shared resource resolver. |
 | `src/assets/bgmStarterTracks.ts` | Hand-written. The three ids whose files are committed. |
 | `scripts/fetch-bgm-catalog.mjs` | Downloads the catalog + audio into a staging directory, verifies sha256. |
@@ -67,11 +73,17 @@ hash instead — otherwise 60 perfectly good files report as corrupt and the scr
 ## CDN wiring
 
 ```
-VITE_BGM_CDN_BASE=https://<space>.<region>.cdn.digitaloceanspaces.com
+VITE_BGM_CDN_BASE=https://cheapcdn.sgp1.cdn.digitaloceanspaces.com
 ```
 
-- Object keys are `bgm/v1/<original file name>`. `BGM_CDN_PREFIX` in `bgmCdn.ts` and `KEY_PREFIX`
-  in the upload script must stay in sync — a mismatch 404s all 281 tracks.
+- Live configuration: Space `cheapcdn`, region `sgp1`. Credentials live in the team Notion page
+  「각종 환경 변수들 (DO, IP 등)」 and are mirrored into the gitignored `.env.local`. The script
+  accepts either `DO_SPACES_KEY`/`DO_SPACES_SECRET` or the org's
+  `DO_SPACES_ACCESS_KEY`/`DO_SPACES_SECRET_KEY` names.
+- Object keys are `rpg-zzu/bgm/v1/<original file name>`. **The Space is shared** — the tiot image
+  CDN uses `tiot/images/`, so the `rpg-zzu/` prefix is what keeps this project from writing over
+  someone else's keys. `BGM_CDN_PREFIX` in `bgmCdn.ts` and `KEY_PREFIX` in the upload script must
+  stay in sync — a mismatch 404s all 281 tracks.
 - Unset (or a non-`http(s)` value) falls back to `/assets/cc0/audio/catalog/<file>`. That is
   deliberate: emitting an absolute URL against a wrong origin would fire 281 cross-origin requests
   that are hard to diagnose. Same-origin 404s are obvious.

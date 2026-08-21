@@ -213,7 +213,14 @@ function normalizeTitleScreenSettings(
   return {
     title: textOrDefault(settings?.title, defaults.title),
     backgroundResourceId: cleanOptionalId(settings?.backgroundResourceId) ?? titleResourceId ?? defaults.backgroundResourceId,
-    musicResourceId: cleanOptionalId(settings?.musicResourceId) ?? cleanOptionalId(defaults.musicResourceId),
+    // 타이틀 BGM 은 "생략" 과 "명시적 무음" 을 구분한다.
+    //   키 없음  → 기본 곡을 채운다(새 프로젝트가 무음으로 시작하지 않게).
+    //   빈 문자열 → 저작자가 무음을 고른 것으로 보고 그대로 비운다.
+    // 구분하지 않으면 기본곡이 생긴 순간 무음 타이틀을 **표현할 방법이 사라진다**(실측):
+    // cleanOptionalId 가 ""를 undefined 로 바꿔 버려 곧바로 기본곡으로 덮인다.
+    musicResourceId: hasExplicitSilence(settings, "musicResourceId")
+      ? undefined
+      : cleanOptionalId(settings?.musicResourceId) ?? cleanOptionalId(defaults.musicResourceId),
     layout,
     menuLabels: {
       newGame: textOrDefault(settings?.menuLabels?.newGame, defaults.menuLabels.newGame),
@@ -726,6 +733,21 @@ function cleanOptionalId(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * 저작자가 이 슬롯을 "빈 값" 으로 명시했는가 — 키가 있고 내용이 공백뿐인 문자열일 때.
+ *
+ * 기본값이 있는 리소스 슬롯에서 "생략(기본값 원함)" 과 "무음/없음 선택" 을 갈라내는 데 쓴다.
+ * 키 자체가 없으면 false — 그건 구 JSON 이거나 신경 쓰지 않은 것이므로 기본값을 채워야 한다.
+ */
+function hasExplicitSilence<K extends string>(
+  settings: Partial<Record<K, unknown>> | undefined,
+  key: K,
+): boolean {
+  if (settings === undefined || !(key in settings)) return false;
+  const value = settings[key];
+  return typeof value === "string" && value.trim().length === 0;
 }
 
 function textOrDefault(value: string | undefined, fallback: string): string {
