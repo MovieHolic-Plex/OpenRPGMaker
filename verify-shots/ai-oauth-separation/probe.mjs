@@ -77,7 +77,7 @@ say(`[oauth] keyRow hidden=${oauth.keyRowHidden} boxH=${oauth.keyRowBoxHeight} |
 say(`[oauth] status="${oauth.statusText}" tone=${oauth.statusTone} badge="${oauth.badge}"`);
 if (oauth.keyRowBoxHeight !== 0 || oauth.deviceBoxHeight !== 0) say("[FAIL] 구독 로그인 종류인데 키 칸/기기 블록이 화면에 보인다");
 say(`[oauth] hintHidden=${oauth.hintHidden} errorHidden=${oauth.errorHidden} checked=${oauth.oauthChecked}/${oauth.apiKeyChecked}`);
-await page.locator("[data-testid='ai-settings-modal']").screenshot({ path: join(OUT, "kind-oauth.png") });
+await page.locator(".ai-settings-window").screenshot({ path: join(OUT, "kind-oauth.png") });
 
 await page.getByTestId("ai-auth-api-key").click();
 await page.waitForTimeout(1200);
@@ -89,7 +89,7 @@ if (!apiKey.keyRowBoxHeight) say("[FAIL] API 키 종류인데 키 칸이 보이�
 if (apiKey.deviceBoxHeight !== 0) say("[FAIL] 기기 로그인 블록이 시작 전에 보인다");
 say(`[apiKey] checked=${apiKey.oauthChecked}/${apiKey.apiKeyChecked}`);
 say(`[apiKey] storedBlob=${apiKey.storedBlob}`);
-await page.locator("[data-testid='ai-settings-modal']").screenshot({ path: join(OUT, "kind-apikey.png") });
+await page.locator(".ai-settings-window").screenshot({ path: join(OUT, "kind-apikey.png") });
 
 say(`[legacy] ai-config-apikey=${apiKey.legacyApiKeyField} ai-config-baseurl=${apiKey.legacyBaseUrlField} (C4 에서 제거 예정)`);
 
