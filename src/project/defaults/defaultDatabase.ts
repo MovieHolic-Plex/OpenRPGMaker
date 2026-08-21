@@ -96,8 +96,10 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
     backgroundResourceId: "rpg-zzu-title-field",
-    // 타이틀 화면도 기본으로 소리가 나야 한다 — 지정이 없으면 첫 화면이 무음이었다.
-    musicResourceId: STARTER_TITLE_BGM_ID,
+    // musicResourceId 는 여기서 지정하지 않는다. 이 함수는 빈 프로젝트와 에디터 폴백
+    // (`system.titleScreen ?? defaultTitleScreenSettings()`)이 공유하는 중립 기본값이라,
+    // 값을 넣으면 "무음 타이틀"을 표현할 수 없고 빈 프로젝트가 빈 상태가 아니게 된다.
+    // 출하 데모의 타이틀 BGM 은 fixtures/dew-village-demo.json 의 titleScreen 이 직접 지정한다.
     layout: {
       titleX: 160,
       titleY: 92,

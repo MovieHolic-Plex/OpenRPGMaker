@@ -33085,7 +33085,8 @@
         "newGame": "여정을 시작",
         "continueGame": "이어 하기",
         "quit": "그만두기"
-      }
+      },
+      "musicResourceId": "cc0-bgm-rtp-ttl-001"
     }
   },
   "mapTree": {
