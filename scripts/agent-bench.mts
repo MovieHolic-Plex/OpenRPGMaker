@@ -330,16 +330,123 @@ async function commandEvidence(flags: Record<string, string>): Promise<number> {
     }),
   );
   let count = 1;
-  for (const file of fs.existsSync(dir) ? fs.readdirSync(dir) : []) {
+  const cards: string[] = [];
+  const records = readRecords(dir);
+  for (const file of (fs.existsSync(dir) ? fs.readdirSync(dir) : []).sort()) {
     if (!file.endsWith(".submission.json")) continue;
     const parsed = parseSubmission(fs.readFileSync(path.join(dir, file), "utf8"));
     if (!parsed.ok) continue;
     const name = file.replace(".submission.json", "");
     fs.writeFileSync(path.join(outDir, `${name}.png`), await renderTileGridPng(parsed.map));
     count += 1;
+    const record = records.find((entry) => `${entry.model}-${entry.run}` === name);
+    cards.push(evidenceCard(name, `${name}.png`, record));
   }
+  // 제출물이 없는 실행도 카드로 남긴다 — 왜 없는지가 결과의 일부다.
+  for (const record of records) {
+    if (record.score !== null) continue;
+    cards.push(evidenceCard(`${record.model}-${record.run}`, null, record));
+  }
+  fs.writeFileSync(path.join(outDir, "index.html"), evidenceHtml(cards, records), "utf8");
   console.log(`${count} shots -> ${outDir}`);
+  console.log(`open ${path.join(outDir, "index.html")}`);
   return 0;
+}
+
+const EVIDENCE_ITEMS: readonly (readonly [string, string, boolean])[] = [
+  ["housesWithDoor", "집에 문", false],
+  ["doorsWithRoad", "문앞 길", false],
+  ["roadOneNetwork", "길 단일망", false],
+  ["doorsReachable", "문 도달", false],
+  ["fenceGrammar", "울타리 문법", false],
+  ["roadAutotileLegality", "오토타일 합법성", false],
+  ["doorFamilies", "문 짝", false],
+  ["layerDiscipline", "레이어 규율", true],
+  ["noBanned", "금지 타일 없음", true],
+  ["treesIntact", "나무 온전", true],
+];
+
+function evidenceCard(name: string, png: string | null, record: RunRecord | undefined): string {
+  const score = record?.score ?? null;
+  const process = record?.process;
+  const terminal = process?.terminal ?? "completed";
+  const banner =
+    terminal === "infra-error"
+      ? `<div class="bad">인프라 실패 — HTTP ${process?.apiErrorStatus ?? "?"}. 점수가 아니다(재시도 대상)</div>`
+      : terminal === "budget-exhausted"
+        ? `<div class="warn">턴 예산 소진 (${process?.turns ?? "?"}턴) — 미완성물이다</div>`
+        : "";
+  const items = score
+    ? EVIDENCE_ITEMS.map(([key, label, isPenalty]) => {
+        const value = score.detail[key] ?? 0;
+        const cls = value >= 0.999 ? "ok" : value >= 0.7 ? "mid" : "low";
+        return `<tr><td>${isPenalty ? "× " : ""}${esc(label)}</td><td class="n ${cls}">${value.toFixed(2)}</td></tr>`;
+      }).join("")
+    : "";
+  const d = score?.detail ?? {};
+  return `<section class="card">
+    <h2>${esc(name)} <small>${esc((process?.resolvedModels ?? []).join(", ") || "?")}</small></h2>
+    ${banner}
+    <div class="nums">
+      <span><b>${score ? score.quality.toFixed(3) : "—"}</b>quality</span>
+      <span><b>${score ? score.workMean.toFixed(3) : "—"}</b>일한 항목</span>
+      <span><b>${score ? score.scale.toFixed(2) : "—"}</b>규모</span>
+      <span><b>${process?.turns ?? "—"}</b>턴</span>
+      <span><b>$${(process?.costUsd ?? 0).toFixed(2)}</b>비용</span>
+      <span><b>${((process?.durationMs ?? 0) / 60000).toFixed(1)}</b>분</span>
+    </div>
+    ${png ? `<img src="${png}" alt="">` : `<div class="none">제출물 없음</div>`}
+    ${score ? `<p class="facts">${d.width}×${d.height} · 집 ${d.houses}/${d.buildings} · 문 ${d.doors} · 길 ${d.roadCells}(성분 ${d.roadComponents}) · 울타리 ${d.fenceCells} · 나무 ${d.trees}(조각 ${d.brokenTrees}) · 타일 ${d.distinctTiles}종</p>` : ""}
+    ${items ? `<table class="items">${items}</table>` : ""}
+  </section>`;
+}
+
+function esc(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function evidenceHtml(cards: readonly string[], records: readonly RunRecord[]): string {
+  const budgets = [...new Set(records.map((r) => r.process.turns ?? 0))];
+  return `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>코딩 에이전트 벤치마크 — 증거 시트</title>
+<style>
+ :root{color-scheme:dark}
+ body{background:#0e1014;color:#e8ebf0;font:14px/1.6 -apple-system,"Segoe UI","Malgun Gothic",system-ui,sans-serif;margin:0;padding:28px 32px 80px}
+ h1{font-size:22px;margin:0 0 6px}
+ p.lede{color:#9aa3b0;margin:0 0 26px;max-width:90ch}
+ .grid{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+ .card{background:#191d24;border:1px solid #272c35;border-radius:12px;padding:16px 18px;max-width:min(760px,96vw)}
+ .card h2{font-size:16px;margin:0 0 10px}
+ .card h2 small{color:#6b7480;font-weight:400;font-size:11px;margin-left:6px}
+ .nums{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 12px}
+ .nums span{display:flex;flex-direction:column;font-size:11px;color:#9aa3b0}
+ .nums b{font-size:19px;color:#e8ebf0;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+ .card img{display:block;image-rendering:pixelated;border:1px solid #272c35;border-radius:6px;max-width:100%;height:auto;background:#0a0c10}
+ .none{width:280px;height:160px;border:1px dashed #3a3f4b;border-radius:6px;color:#6b7480;display:flex;align-items:center;justify-content:center}
+ .facts{color:#9aa3b0;font-size:12px;margin:8px 0 0}
+ table.items{border-collapse:collapse;margin:12px 0 0;font-size:12px}
+ table.items td{border-bottom:1px solid #23272f;padding:3px 10px 3px 0}
+ td.n{font-variant-numeric:tabular-nums;text-align:right}
+ td.ok{color:#5ddba0} td.mid{color:#ffb454} td.low{color:#ff6b6b}
+ .bad{background:#ff6b6b18;border-left:3px solid #ff6b6b;color:#ffcbcb;padding:8px 12px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:12.5px}
+ .warn{background:#ffb45418;border-left:3px solid #ffb454;color:#ffe2bb;padding:8px 12px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:12.5px}
+</style></head><body>
+<h1>코딩 에이전트 벤치마크 — 증거 시트</h1>
+<p class="lede">같은 생짜 지시("이 칩셋으로 마을을 만들어라")를 모델만 바꿔 <code>claude -p</code> 로 돌린 결과다.
+크기·집 수·도구 이름을 알려주지 않았다. <b>quality</b> 는 감사 통과율(이대로 납품 가능한가),
+<b>일한 항목</b> 은 감점을 곱하기 전 평균, <b>규모</b> 는 하네스가 만든 정본 마을 대비다.
+턴 예산: ${budgets.join(", ")}턴 사용.</p>
+<div class="grid">
+<section class="card"><h2>기준선 — 하네스가 만든 마을 <small>build_village 계열 엔진</small></h2>
+  <div class="nums"><span><b>1.000</b>quality</span><span><b>1.000</b>일한 항목</span><span><b>1.00</b>규모</span></div>
+  <img src="baseline-harness.png" alt="">
+  <p class="facts">이 그림이 1.000 의 정의다. 에이전트가 저장소의 하네스를 찾아 쓰면 여기에 수렴한다.</p>
+</section>
+${cards.join("\n")}
+</div>
+</body></html>
+`;
 }
 
 /** 하네스 정본이 quality/scale 1.000 인지 — 채점기 배선 점검. */
