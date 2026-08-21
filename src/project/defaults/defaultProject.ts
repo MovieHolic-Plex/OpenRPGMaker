@@ -32,6 +32,9 @@ import { SNOW_MOUNTAIN_START, buildSnowMountainMap } from "./snowMountain60";
 import { ICE_PLAIN_MAP_NAME, ICE_PLAIN_START, buildIcePlainMap } from "./iceGrandPlain64";
 import { enlivenDewVillage } from "./dewVillageLiving";
 import { layerDewVillageDialogue } from "./dewVillageDialogue";
+import { DEFAULT_ROAD_AUTOTILE_GROUP } from "./autotileGroups";
+import { shapeAutotileGroupAround } from "./autotileEngine";
+import { DIRT_ROAD_TILE } from "./chipsetMapping";
 import { repairLegacyRateKeys } from "./legacyRateKeyRepair";
 import { repairUnplayableSystemBgm } from "./legacyAudioRepair";
 import {
@@ -235,10 +238,35 @@ export function createShopShowcaseProject(): Project {
   return project;
 }
 
+/**
+ * 밭 가능 영역을 맨흙으로 깔아 **괭이를 대기 전에도 어디가 밭인지 보이게** 한다.
+ * 브라우저 실측에서 데모의 밭은 주변과 똑같은 풀밭이라, 어디를 갈 수 있는지 화면에 단서가
+ * 하나도 없었다(`farmableArea` 는 저작 데이터일 뿐 그려지지 않는다).
+ *
+ * 흙은 `builtin_dirt_road`(맨흙)를 쓴다. 갈린 흙 오버레이가 `builtin_farmland` 를 그리므로
+ * 바닥에 같은 그룹을 깔면 갈기 전과 후가 같은 그림이 되어 경작 여부를 구별할 수 없다.
+ */
+function paintFarmableGround(map: GameMap): void {
+  const points: { readonly x: number; readonly y: number }[] = [];
+  for (const rect of map.farmableArea ?? []) {
+    for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+      for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+        if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+        map.lowerTiles[y * map.width + x] = DIRT_ROAD_TILE.BODY;
+        points.push({ x, y });
+      }
+    }
+  }
+  if (points.length === 0) return;
+  // 몸통 타일만 깔면 경계가 각지므로 그룹 셰이핑으로 테두리를 정리한다.
+  shapeAutotileGroupAround(map, DEFAULT_ROAD_AUTOTILE_GROUP, points);
+}
+
 export function createFarmingDemoProject(): Project {
   const map = createBlankMap("봄 밭", 20, 20);
   map.id = "map_farming_demo";
   map.farmableArea = [{ x: 4, y: 5, w: 6, h: 4 }];
+  paintFarmableGround(map);
   const project = createProjectWithMaps([map], 0);
   project.meta = { ...project.meta, title: "농사 데모" };
   project.startPos = { x: 4, y: 4 };
