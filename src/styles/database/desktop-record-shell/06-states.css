@@ -10,9 +10,13 @@
   .database-modal-body .rm2k3-detail-states > .db-state-rm2k3-workbench {
     align-content: start;
     gap: 8px;
+    /* runtime = Gen1 knob 패널. 이 파일이 states.css 의 8열 그리드를 16열로 덮어쓰므로
+       영역을 여기에도 선언해야 한다 — 빠뜨리면 패널이 grid-area 를 못 찾아 마지막 칸으로
+       자동 배치되고 세로로 찌그러진다(실제로 그렇게 깨졌다). */
     grid-template-areas:
       "base base base base acc acc special special anim anim anim anim anim anim anim anim"
       "rate rate rate heal heal heal restrict restrict restrict restrict hp hp hp mp mp mp"
+      "runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime runtime"
       "summary summary summary summary refs refs refs refs refs refs refs refs refs refs refs refs";
     grid-template-columns: repeat(16, minmax(38px, 1fr));
     height: auto;

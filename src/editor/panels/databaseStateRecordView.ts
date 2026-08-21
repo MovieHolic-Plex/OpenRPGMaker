@@ -65,7 +65,6 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           readonlyControl("스킬 제한", ontology.skillLimit, "db-state-skill-limit"),
           readonlyControl("고정 항목", ontology.lockedParameters.join(", ") || "없음", "db-state-locked-params"),
         ]),
-        runtimeEffectsPanel(state, update),
         panel("HP", [
           numberField("전투 중(턴당%)", "db-state-hp-turn", numericRelease(state.hpReleaseTurn, baseOntology.hpTurn), (hpReleaseTurn) =>
             update({ hpReleaseTurn }), { min: -100, max: 100 }
@@ -84,6 +83,10 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
         ]),
         animationPanel(state, ontology, update),
         referencePanel(referencingSkills.map((skill) => `${skill.name} (${skill.id})`), referencingItems.map((item) => `${item.name} (${item.id})`)),
+        // 맨 뒤에 둔다 — states.css 가 nth-child(1..9) → grid-area 로 패널 위치를 잡으므로
+        // 중간에 끼우면 이후 패널 전부가 다른 영역으로 밀린다(실제로 그렇게 깨졌다).
+        // 화면상의 자리는 DOM 순서와 무관하게 grid-area: runtime 이 정한다.
+        runtimeEffectsPanel(state, update),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),
@@ -99,9 +102,9 @@ function numericRelease(value: number | undefined, ontologyText: string): number
   return match ? Number(match[0]) : 0;
 }
 
-function panel(title: string, children: readonly HTMLElement[]): HTMLElement {
+function panel(title: string, children: readonly HTMLElement[], extraClass?: string): HTMLElement {
   return el("fieldset", {
-    class: "db-advanced-panel db-state-panel",
+    class: `db-advanced-panel db-state-panel${extraClass ? ` ${extraClass}` : ""}`,
     children: [el("legend", { text: title }), ...children],
   });
 }
@@ -131,12 +134,14 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
       patchEffects({ removeOnBattleEnd })
     ),
     el("div", {
-      class: "db-state-summary",
+      // db-state-summary 를 쓰면 안 된다 — 그 클래스에 grid-area: summary 가 박혀 있어
+      // 온톨로지 요약 칸과 겹쳐 찌그러진다(실제로 그렇게 깨졌다).
+      class: "db-state-runtime-hint",
       dataset: { testid: "db-state-runtime-hint" },
       // 위 "HP > 전투 중(턴당%)" 필드는 정수 파서를 타서 6.25 가 0 으로 뭉개진다. 소수는 여기로.
       text: "Gen1 화상 = 공격 배율 0.5 + 턴당 HP 6.25%(=1/16). 독도 6.25%. 배율은 런타임에서 0.4~2.5 로 clamp 된다.",
     }),
-  ]);
+  ], "db-state-runtime-panel");
 }
 
 function checkControl(label: string, testid: string, checked: boolean, onChange: (value: boolean) => void): HTMLElement {
