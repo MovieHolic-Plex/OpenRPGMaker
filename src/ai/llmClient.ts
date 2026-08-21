@@ -291,6 +291,10 @@ function humanizeStatus(status: number, body: string, authMode: AiConfig["authMo
   }
 }
 
+/**
+ * 이 URL 이 동반 서비스 주소인가. **전송 축 판정에는 더 이상 쓰이지 않는다**(aiTransport 참고) —
+ * 저장돼 있던 baseUrl 이 사실 동반 서비스였는지 사후 식별하는 진단·마이그레이션 용도로만 남긴다.
+ */
 export function isCompanionBaseUrl(url: string): boolean {
   const trimmed = url.trim().replace(/\/$/, "");
   return trimmed === "/v1"
@@ -298,10 +302,36 @@ export function isCompanionBaseUrl(url: string): boolean {
     || trimmed === "http://localhost:17832/v1";
 }
 
-/** ChatGPT 모드이거나 동반 서비스 baseUrl 이면 oh-my-pi 동반 경로를 탄다. */
+/**
+ * 전송 축 — 요청이 어디로 나가는가.
+ *
+ * - `companion`: 로컬 동반 서비스(oh-my-pi). 자격 증명은 그쪽이 보관하고, 브라우저는
+ *   `X-Rpgzzu-Provider` 로 제공자만 지목한다. **에디터 UI 는 항상 이쪽이다.**
+ * - `gateway`: `config.baseUrl` 로 직접 나간다(`Authorization: Bearer`). 노드 스크립트·evals·
+ *   벤치마크처럼 **설정을 직접 주입하는 소비자 전용**이고 사용자 UI 는 없다.
+ *
+ * 자격 증명 종류(oauth/apiKey/local)는 이 축과 **무관**하다 — 그건 providerId 에서 파생한다
+ * (`ohMyPiAuthKind`). 동반 서비스는 OAuth 토큰도 API 키도 자기 저장소에 보관하기 때문에,
+ * "API 키를 쓴다"가 "게이트웨이로 나간다"를 뜻하지 않는다.
+ *
+ * `authMode` 값 이름(`"chatgpt"`)은 역사적 잔재다. 영속 포맷이자 주입 와이어 포맷이라
+ * 개명하지 않고 뜻만 여기서 고정한다.
+ */
+export type AiTransport = "companion" | "gateway";
+
+export function aiTransport(config: AiConfig): AiTransport {
+  return config.authMode === "chatgpt" ? "companion" : "gateway";
+}
+
+/**
+ * 동반 서비스 전송인가. `aiTransport(config) === "companion"` 의 별칭이다.
+ *
+ * 예전에는 `isCompanionBaseUrl(config.baseUrl)` 도 함께 봐서 **baseUrl 문자열이 선언된
+ * authMode 를 덮어썼다.** 주입 설정(`authMode:"apiKey"`)의 의도를 조용히 뒤집는 구조라
+ * 걷어냈다 — 전송 축은 authMode 하나만 정한다.
+ */
 export function usesOhMyPiCompanion(config: AiConfig): boolean {
-  if (config.authMode === "chatgpt") return true;
-  return isCompanionBaseUrl(config.baseUrl);
+  return aiTransport(config) === "companion";
 }
 
 function endpoint(config: AiConfig): string {
