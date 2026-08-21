@@ -1,0 +1,26 @@
+H idle=132 | .ai-command-bar=640x132 .ai-composer=614x110 .ai-composer-rail=28x92 .ai-assistant-input=556x60 .ai-composer-actions=556x28
+SHOT h1-idle
+H focused=132 suggestVisible=true
+SHOT h2-focus-suggest
+H typed1=132
+H slash=132 slashListVisible=true
+SHOT h3-slash-popover
+H menu=132 menuVisible=true
+SHOT h4-action-menu
+H multiline=168
+SHOT h5-multiline
+P canvas-center -> CANVAS.|swallowedBy=no
+P canvas-lower -> CANVAS.|swallowedBy=no
+SHOT p1-slash-open-hittest
+C caret 12 -> 5
+C slash active ai-slash-item-build-house -> ai-slash-item-map-audit
+SHOT c1-slash-keyboard
+DOCK side barHeight=113 | .ai-command-bar=513x113 .ai-composer=513x104 .ai-composer-rail=28x86 .ai-assistant-input=455x54 .ai-composer-actions=455x28
+SHOT dock-side-full
+SHOT dock-side-bar
+DOCK float barHeight=132 | .ai-command-bar=640x132 .ai-composer=614x110 .ai-composer-rail=28x92 .ai-assistant-input=556x60 .ai-composer-actions=556x28
+SHOT dock-float-full
+SHOT dock-float-bar
+DOCK glass barHeight=116 | .ai-command-bar=278x116 .ai-composer=270x104 .ai-composer-rail=28x86 .ai-assistant-input=212x54 .ai-composer-actions=212x28
+SHOT dock-glass-full
+SHOT dock-glass-bar
