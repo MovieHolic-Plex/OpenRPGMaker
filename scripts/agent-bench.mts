@@ -45,9 +45,18 @@ interface RunRecord {
     readonly stopReason: string | null;
     /** 별칭이 실제로 어떤 모델로 해석됐는가 — 별칭은 시간이 지나면 옮겨간다. */
     readonly resolvedModels: readonly string[];
+    readonly apiErrorStatus: number | null;
+    readonly resultMessage: string | null;
   };
   readonly submission: { readonly found: boolean; readonly reason: string | null; readonly bytes: number };
-  readonly score: { readonly quality: number; readonly scale: number; readonly detail: Record<string, number> } | null;
+  readonly score: {
+    readonly quality: number;
+    readonly workMean: number;
+    readonly scale: number;
+    readonly detail: Record<string, number>;
+  } | null;
+  /** 턴 상한에 걸려 작업 중 잘렸는가 — 걸렸으면 그 실행은 "완성물"이 아니다. */
+  readonly cappedTurns: boolean;
 }
 
 function parseArgs(argv: readonly string[]): { command: string; flags: Record<string, string> } {
@@ -136,7 +145,12 @@ async function commandRun(flags: Record<string, string>): Promise<number> {
         if (parsed.ok) {
           submission = { found: true, reason: null, bytes: text.length };
           const scored = scoreAgentMap({ map: parsed.map, groundTruth });
-          score = { quality: scored.quality, scale: scored.scale, detail: { ...scored.detail } };
+          score = {
+            quality: scored.quality,
+            workMean: scored.workMean,
+            scale: scored.scale,
+            detail: { ...scored.detail },
+          };
           // 제출물을 보관한다 — 워크트리가 사라져도 재채점·렌더가 가능해야 한다.
           fs.writeFileSync(path.join(outDir, `${name}.submission.json`), text, "utf8");
         } else {
@@ -154,6 +168,8 @@ async function commandRun(flags: Record<string, string>): Promise<number> {
         process: { ...metrics, durationMs: elapsed },
         submission,
         score,
+        // stop_reason 이 end_turn 이 아니면 모델이 아직 일하는 중에 상한으로 끊긴 것이다.
+        cappedTurns: metrics.stopReason !== null && metrics.stopReason !== "end_turn",
       };
       fs.writeFileSync(path.join(outDir, `${name}.json`), JSON.stringify(record, null, 2), "utf8");
       fs.writeFileSync(path.join(outDir, `${name}.stdout.txt`), result.out, "utf8");
@@ -172,11 +188,19 @@ function printRecord(record: RunRecord): void {
       `${((p.durationMs ?? 0) / 60000).toFixed(1)}min`,
   );
   if (!record.score) {
-    console.log(`  제출 실패 — ${record.submission.reason ?? "이유 미보고"}`);
+    const api = record.process.apiErrorStatus;
+    if (api !== null || record.process.isError) {
+      console.log(`  실행 실패(인프라) — HTTP ${api ?? "?"} ${record.process.resultMessage ?? ""}`);
+    } else {
+      console.log(`  제출 실패(모델) — ${record.submission.reason ?? "이유 미보고"}`);
+    }
     return;
   }
   const d = record.score.detail;
-  console.log(`  quality=${record.score.quality.toFixed(3)} scale=${record.score.scale.toFixed(2)}`);
+  console.log(
+    `  quality=${record.score.quality.toFixed(3)} (일한 항목 ${record.score.workMean.toFixed(3)}) ` +
+      `scale=${record.score.scale.toFixed(2)}${record.cappedTurns ? "  ⚠ 턴 상한에 걸려 잘림" : ""}`,
+  );
   console.log(
     `  ${d.width}x${d.height} · 집 ${d.houses}/${d.buildings} · 문 ${d.doors} · 길 ${d.roadCells}(성분 ${d.roadComponents}) · ` +
       `울타리 ${d.fenceCells} · 나무 ${d.trees}(조각 ${d.brokenTrees}) · 타일종류 ${d.distinctTiles}`,
@@ -219,7 +243,7 @@ function commandReport(flags: Record<string, string>): number {
     console.log(`no records in ${dir}`);
     return 0;
   }
-  const header = ["model/run".padEnd(14), "quality".padStart(8), "scale".padStart(7), "houses".padStart(7), "turns".padStart(6), "cost".padStart(8), "min".padStart(6)].join(" ");
+  const header = ["model/run".padEnd(14), "quality".padStart(8), "일한항목".padStart(8), "scale".padStart(7), "houses".padStart(7), "turns".padStart(6), "cost".padStart(8), "min".padStart(6)].join(" ");
   console.log(header);
   console.log("-".repeat(header.length));
   for (const record of [...records].sort((a, b) => (b.score?.quality ?? -1) - (a.score?.quality ?? -1))) {
@@ -227,15 +251,54 @@ function commandReport(flags: Record<string, string>): number {
     console.log(
       [
         `${record.model}-${record.run}`.padEnd(14),
-        (record.score ? record.score.quality.toFixed(3) : "제출X").padStart(8),
+        (record.score ? record.score.quality.toFixed(3) : record.process.apiErrorStatus !== null ? "API오류" : "제출X").padStart(8),
+        (record.score ? record.score.workMean.toFixed(3) : "-").padStart(8),
         (record.score ? record.score.scale.toFixed(2) : "-").padStart(7),
         String(d.houses ?? "-").padStart(7),
         String(record.process.turns ?? "-").padStart(6),
         `$${(record.process.costUsd ?? 0).toFixed(2)}`.padStart(8),
         ((record.process.durationMs ?? 0) / 60000).toFixed(1).padStart(6),
+        record.cappedTurns ? " ⚠상한" : "",
       ].join(" "),
     );
   }
+  // 항목별 비교 — 종합 점수만 보면 "어디서 갈렸는가"를 알 수 없다.
+  const WORK_ITEMS: readonly (readonly [string, string])[] = [
+    ["housesWithDoor", "집에 문"],
+    ["doorsWithRoad", "문앞 길"],
+    ["roadOneNetwork", "길 단일망"],
+    ["doorsReachable", "문 도달"],
+    ["fenceGrammar", "울타리 문법"],
+    ["roadAutotileLegality", "오토타일"],
+    ["doorFamilies", "문 짝"],
+  ];
+  const PENALTIES: readonly (readonly [string, string])[] = [
+    ["layerDiscipline", "레이어"],
+    ["noBanned", "밴 없음"],
+    ["treesIntact", "나무 온전"],
+  ];
+  const scored = records.filter((record) => record.score !== null);
+  if (scored.length > 0) {
+    console.log("\n항목별 (× = 감점 배수)");
+    const nameWidth = 14;
+    const columns = ["정본", ...scored.map((record) => `${record.model}-${record.run}`)];
+    console.log(["항목".padEnd(nameWidth), ...columns.map((c) => c.slice(0, 9).padStart(10))].join(""));
+    for (const [key, label] of WORK_ITEMS) {
+      const cells = scored.map((record) => (record.score!.detail[key] ?? 0).toFixed(2).padStart(10));
+      console.log([label.padEnd(nameWidth), "1.00".padStart(10), ...cells].join(""));
+    }
+    for (const [key, label] of PENALTIES) {
+      const cells = scored.map((record) => (record.score!.detail[key] ?? 0).toFixed(2).padStart(10));
+      console.log([`× ${label}`.padEnd(nameWidth), "1.00".padStart(10), ...cells].join(""));
+    }
+    console.log(
+      ["규모 내역".padEnd(nameWidth), "".padStart(10), ...scored.map((r) => `${r.score!.detail.width}x${r.score!.detail.height}`.padStart(10))].join(""),
+    );
+    console.log(
+      ["실제 모델".padEnd(nameWidth), "".padStart(10), ...scored.map((r) => (r.process.resolvedModels?.[0] ?? "?").replace("claude-", "").slice(0, 9).padStart(10))].join(""),
+    );
+  }
+
   console.log("\n하네스 정본 기준선: quality 1.000 / scale 1.000 (agent-bench baseline 으로 확인)");
   return 0;
 }

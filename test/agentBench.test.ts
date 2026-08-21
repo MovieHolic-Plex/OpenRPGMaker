@@ -186,6 +186,23 @@ describe("과정 지표 파싱", () => {
     expect(processMetrics("{}").resolvedModels).toEqual([]);
   });
 
+  it("인프라 실패와 모델 실패를 구분한다", () => {
+    // 2026-08-21 실측: opus 첫 실행이 게이트웨이 503 으로 죽었고 비용은 $0 이었다.
+    // 이유를 적어 두지 않으면 리더보드가 인프라 장애를 모델 실력으로 기록한다.
+    const failed = processMetrics(
+      '{"is_error":true,"num_turns":1,"total_cost_usd":0,"api_error_status":503,' +
+        '"result":"API Error: 503 Live Team Swap routing is unavailable.","modelUsage":{}}',
+    );
+    expect(failed.isError).toBe(true);
+    expect(failed.apiErrorStatus).toBe(503);
+    expect(failed.resultMessage).toMatch(/503/);
+    expect(failed.resolvedModels).toEqual([]);
+
+    const succeeded = processMetrics('{"is_error":false,"num_turns":20,"result":"done","modelUsage":{"claude-haiku-4-5-20251001":{}}}');
+    expect(succeeded.apiErrorStatus).toBeNull();
+    expect(succeeded.resultMessage).toBeNull();
+  });
+
   it("JSON 이 없으면 전부 null 이고 throw 하지 않는다", () => {
     const metrics = processMetrics("경고만 있고 결과가 없다");
     expect(metrics.turns).toBeNull();

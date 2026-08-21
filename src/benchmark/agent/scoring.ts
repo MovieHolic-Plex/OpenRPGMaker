@@ -53,8 +53,18 @@ export function scaleBaseline(groundTruth: TownGroundTruth): { houses: number; a
 }
 
 export interface AgentScore {
-  /** 감사 통과율 0..1 — 일한 항목 평균 × 감점 배수. */
+  /** 감사 통과율 0..1 — 일한 항목 평균 × 감점 배수. "이대로 납품 가능한가". */
   readonly quality: number;
+  /**
+   * 감점을 곱하기 **전** 일한 항목의 평균.
+   *
+   * 왜 따로 내는가: 감점 배수(금지 타일·조각난 나무)는 하나만 걸려도 0 이 되고,
+   * 그러면 quality 하나로는 "아무것도 못 한 답"과 "거의 다 잘했는데 치명적 결함이
+   * 하나 있는 답"이 같은 0.000 이 된다. 2026-08-21 실측: sonnet 은 일한 항목
+   * 0.987(오토타일 합법성 1.00 — 하네스를 실제로 찾아 썼다는 증거)인데 금지 타일과
+   * 조각난 나무 때문에 quality 0.000 이었다. 두 사실을 한 숫자에 담을 수 없다.
+   */
+  readonly workMean: number;
   /** 규모 — 정본 마을 대비. 1.0 을 넘을 수 있다(더 크게 만들었으면 그대로 보여준다). */
   readonly scale: number;
   readonly detail: Readonly<Record<string, number>>;
@@ -178,7 +188,7 @@ export function scoreAgentMap(input: {
   const placed = map.lower.filter((tile) => tile !== EMPTY_CELL).length
     + map.upper.filter((tile) => tile !== EMPTY_CELL).length;
   if (placed === 0) {
-    return Object.freeze({ quality: 0, scale: 0, detail: Object.freeze({ placedCells: 0 }) });
+    return Object.freeze({ quality: 0, workMean: 0, scale: 0, detail: Object.freeze({ placedCells: 0 }) });
   }
 
   // ── 일한 항목 ──
@@ -259,7 +269,8 @@ export function scoreAgentMap(input: {
     treesIntact: ratio(detection.trees - detection.brokenTrees, detection.trees),
   };
 
-  const quality = Object.values(penalties).reduce((acc, penalty) => acc * penalty, mean(Object.values(work)));
+  const workMean = mean(Object.values(work));
+  const quality = Object.values(penalties).reduce((acc, penalty) => acc * penalty, workMean);
 
   // ── 규모 — 정본 마을 대비. clamp 하지 않는다(더 크게 만들었으면 그대로 보고한다). ──
   const area = map.width * map.height;
@@ -272,6 +283,7 @@ export function scoreAgentMap(input: {
 
   return Object.freeze({
     quality: clamp01(quality),
+    workMean: clamp01(workMean),
     scale,
     detail: Object.freeze({
       ...work,

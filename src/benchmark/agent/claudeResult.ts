@@ -16,6 +16,14 @@ export interface AgentProcessMetrics {
    * 서브에이전트가 다른 모델을 썼으면 여기 둘 이상이 들어온다.
    */
   readonly resolvedModels: readonly string[];
+  /**
+   * 게이트웨이·API 실패 사유. 인프라 실패("503 routing unavailable")와 "모델이
+   * 아무것도 만들지 못했다"는 완전히 다른 사실인데, 둘 다 제출물 부재로 나타난다.
+   * 이유를 적어 두지 않으면 리더보드가 인프라 장애를 모델 실력으로 기록한다
+   * (2026-08-21 실측: opus 첫 실행이 503 으로 죽었고 비용은 $0 이었다).
+   */
+  readonly apiErrorStatus: number | null;
+  readonly resultMessage: string | null;
 }
 
 /**
@@ -48,6 +56,9 @@ export function processMetrics(stdout: string): AgentProcessMetrics {
       : [];
   return {
     resolvedModels,
+    apiErrorStatus: typeof json?.api_error_status === "number" ? json.api_error_status : null,
+    resultMessage:
+      json?.is_error === true && typeof json?.result === "string" ? (json.result as string).slice(0, 300) : null,
     turns: typeof json?.num_turns === "number" ? json.num_turns : null,
     costUsd: typeof json?.total_cost_usd === "number" ? json.total_cost_usd : null,
     outputTokens: typeof usage.output_tokens === "number" ? (usage.output_tokens as number) : null,
