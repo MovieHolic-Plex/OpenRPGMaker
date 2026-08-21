@@ -24,6 +24,26 @@ const SUPPRESSING_TEST_IDS = [
   "ending-screen",
 ] as const;
 
+// ── 씬 로컬 농사 안내 채널 ──
+// session.m2Runtime.ui 를 쓰면 안 된다: updateZoneFeedback 은 surface+message 로
+// 세션 전체를 중복 제거하므로 "괭이가 필요합니다" 가 평생 한 번만 보이고,
+// 그 항목은 세이브 파일에까지 직렬화된다. 그래서 세션을 건드리지 않는 별도 채널을 둔다.
+// 씬 객체를 키로 하는 WeakMap 이라 씬이 죽으면 같이 사라진다.
+const FARM_MESSAGE_DURATION_MS = 1600;
+
+type FarmMessage = { message: string; remainingMs: number };
+
+const farmMessages = new WeakMap<object, FarmMessage>();
+
+/** 반복 가능한 농사 실패 안내를 띄운다. 같은 문구를 몇 번이든 다시 띄울 수 있다. */
+export function showFarmFeedbackMessage(scene: object, message: string): void {
+  farmMessages.set(scene, { message, remainingMs: FARM_MESSAGE_DURATION_MS });
+}
+
+export function peekFarmFeedbackMessage(scene: object): string | null {
+  return farmMessages.get(scene)?.message ?? null;
+}
+
 export type ZoneFeedbackScene = {
   session: PlaySession;
   facing: PlaySceneContext["facing"];
@@ -81,12 +101,19 @@ export function syncPlaySceneZoneFeedback(
     feedback.dom = host ? createZoneFeedbackDom(host) : null;
   }
 
+  const farm = farmMessages.get(scene);
+  if (farm) {
+    farm.remainingMs -= Math.max(0, deltaMs);
+    if (farm.remainingMs <= 0) farmMessages.delete(scene);
+  }
+
   const entries = scene.session.m2Runtime?.ui ?? [];
   const update = updateZoneFeedback(feedback.model, {
     entries,
     nowMs: feedback.elapsedMs,
     prompt: facingPrompt(scene),
     suppressed: feedbackSuppressedByOverlay(host),
+    transientToast: farmMessages.get(scene)?.message ?? null,
   });
   feedback.model = update.model;
   feedback.dom?.render(update.view, update.effects);

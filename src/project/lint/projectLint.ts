@@ -22,6 +22,7 @@ import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { battleEventCommandRuntimeSupport, commandRuntimeSupport, type CommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { autoCropSpriteAsset } from "@/project/farmModel";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { inBounds, isPassable } from "../collision";
 import { deserialize, serialize } from "../io";
@@ -795,5 +796,17 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
     if (crops.length === 0) {
       issues.push({ severity: "warning", code: "opt-in:genre-farm-life-no-crops", message: "장르가 농장 생활이나 정의된 작물이 없습니다." });
     }
+  }
+  // 15. crop growth stages exceed the auto-wired sprite's frame count
+  for (const crop of crops) {
+    // 저작 graphicStages 가 있으면 자동 배선 스프라이트를 쓰지 않는다 — 프레임 수 경고는 거짓이 된다.
+    if (crop.graphicStages !== undefined) continue;
+    const asset = autoCropSpriteAsset(crop.id, crop.harvestItemId);
+    if (!asset || crop.stages.length <= asset.frameCount) continue;
+    issues.push({
+      severity: "warning",
+      code: "opt-in:crop-stages-exceed-sprite-frames",
+      message: `작물 ${crop.id} 의 성장 단계 ${crop.stages.length} 개가 스프라이트 ${asset.id} 의 프레임 ${asset.frameCount} 개보다 많아 마지막 프레임이 반복됩니다 — 남는 단계는 화면상 구분되지 않습니다.`,
+    });
   }
 }

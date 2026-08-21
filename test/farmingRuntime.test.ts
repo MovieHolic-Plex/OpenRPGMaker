@@ -3,10 +3,29 @@ import { DB_TOOLS } from "@/editor/tools/dbTools";
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
-import { cropReady, farmPlotAt, interactWithFarmPlot, advanceFarmPlotsForDay } from "@/player/farming";
+import {
+  advanceGameDays,
+  advanceGameTime,
+  resolveTimeSystem,
+  sleepGameTimeUntilMorning,
+  type ResolvedTimeSystemConfig,
+} from "@/project/gameTime";
+import {
+  cropReady,
+  farmIgnoreMessage,
+  farmIntentForHand,
+  farmPlotAt,
+  interactWithFarmPlot,
+  advanceFarmPlotsForDay,
+  syncFarmPlotsToDate,
+  type FarmIgnoreReason,
+} from "@/player/farming";
+import { handSlotIndex } from "@/player/handSlot";
+import { setEquippedTool } from "@/project/toolActions";
 import { createInterpreter } from "@/player/interpreter";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
-import { startSession } from "@/project/session";
+import { startSession, type PlaySession } from "@/project/session";
+import type { GameMap, Project } from "@/project/types";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 
 function demoRuntime() {
@@ -15,6 +34,18 @@ function demoRuntime() {
   const map = project.maps[project.startMapId];
   if (!map) throw new Error("missing farming demo map");
   return { project, session, map };
+}
+
+function timeSystemOf(project: Project): ResolvedTimeSystemConfig {
+  const system = resolveTimeSystem(project);
+  if (!system) throw new Error("farming demo must enable timeSystem");
+  return system;
+}
+
+function plantAndWater(project: Project, session: PlaySession, map: GameMap): void {
+  interactWithFarmPlot(project, session, map, 4, 5);
+  interactWithFarmPlot(project, session, map, 4, 5);
+  interactWithFarmPlot(project, session, map, 4, 5);
 }
 
 describe("Phase 10b 농사 런타임", () => {
@@ -155,5 +186,258 @@ describe("Phase 10b 농사 런타임", () => {
     });
     expect(result.ok, result.failureReason).toBe(true);
     expect(result.log.some((entry) => entry.includes("farm harvested"))).toBe(true);
+  });
+
+  it("잠을 자지 않고 시계가 날짜를 넘겨도 하루치만 성장하고 watered가 리셋된다", () => {
+    const { project, session, map } = demoRuntime();
+    const system = timeSystemOf(project);
+    plantAndWater(project, session, map);
+    // dayStartHour 6 → dayEndHour 26: 하루는 1200분이다.
+    const advanced = advanceGameTime(session.gameTime!, 1200, system);
+    expect(advanced.dayEnds).toBe(1);
+    session.gameTime = advanced.time;
+    syncFarmPlotsToDate(project, session, system);
+    expect(farmPlotAt(session, map.id, 4, 5)?.growthDays).toBe(1);
+    expect(farmPlotAt(session, map.id, 4, 5)?.stage).toBe(1);
+    expect(farmPlotAt(session, map.id, 4, 5)?.watered).toBe(false);
+    expect(session.farmPlotsAdvancedThrough).toEqual({ day: 2, season: "spring", year: 1 });
+  });
+
+  it("여러 날을 한 번에 넘기면 그만큼 틱이 적용되고 재호출은 무동작이다", () => {
+    const { project, session, map } = demoRuntime();
+    const system = timeSystemOf(project);
+    plantAndWater(project, session, map);
+    session.gameTime = advanceGameDays(session.gameTime!, 3, system).time;
+    syncFarmPlotsToDate(project, session, system);
+    // 물을 준 날은 첫날뿐이므로 성장은 1일치, 커서는 3일 전진해야 한다.
+    expect(farmPlotAt(session, map.id, 4, 5)?.growthDays).toBe(1);
+    expect(session.farmPlotsAdvancedThrough).toEqual({ day: 4, season: "spring", year: 1 });
+    const before = structuredClone(session.farmPlots);
+    syncFarmPlotsToDate(project, session, system);
+    expect(session.farmPlots).toEqual(before);
+  });
+
+  it("계절 경계를 넘기면 제철 외 작물이 죽는다", () => {
+    const { project, session, map } = demoRuntime();
+    const system = timeSystemOf(project);
+    session.gameTime = { ...session.gameTime!, day: 28 };
+    session.farmPlotsAdvancedThrough = { day: 28, season: "spring", year: 1 };
+    plantAndWater(project, session, map);
+    session.gameTime = advanceGameDays(session.gameTime, 1, system).time;
+    expect(session.gameTime.season).toBe("summer");
+    syncFarmPlotsToDate(project, session, system);
+    expect(farmPlotAt(session, map.id, 4, 5)?.dead).toBe(true);
+    expect(farmPlotAt(session, map.id, 4, 5)?.watered).toBe(false);
+  });
+
+  it("취침은 하루치만 성장시킨다(이중 계산 없음)", () => {
+    const { project, session, map } = demoRuntime();
+    const system = timeSystemOf(project);
+    plantAndWater(project, session, map);
+    session.gameTime = sleepGameTimeUntilMorning(session.gameTime!, system).time;
+    syncFarmPlotsToDate(project, session, system);
+    expect(farmPlotAt(session, map.id, 4, 5)?.growthDays).toBe(1);
+    expect(farmPlotAt(session, map.id, 4, 5)?.stage).toBe(1);
+  });
+
+  it("advanceCropGrowth 는 커서를 옮기지 않아 다음 날 자연 성장을 삼키지 않는다", () => {
+    const { project, session, map } = demoRuntime();
+    const system = timeSystemOf(project);
+    plantAndWater(project, session, map);
+    // 달력과 무관한 보너스 성장 1일
+    advanceFarmPlotsForDay(project, session, 1);
+    expect(farmPlotAt(session, map.id, 4, 5)?.growthDays).toBe(1);
+    // 다시 물을 주고 실제로 하루를 잔다 → 자연 성장 1일이 더 붙어야 한다
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("watered");
+    session.gameTime = sleepGameTimeUntilMorning(session.gameTime!, system).time;
+    syncFarmPlotsToDate(project, session, system);
+    expect(farmPlotAt(session, map.id, 4, 5)?.growthDays).toBe(2);
+  });
+
+  it("세이브/로드가 성장 커서를 보존하고 경과일을 재적용하지 않는다", () => {
+    const { project, session, map } = demoRuntime();
+    const system = timeSystemOf(project);
+    plantAndWater(project, session, map);
+    session.gameTime = advanceGameDays(session.gameTime!, 2, system).time;
+    syncFarmPlotsToDate(project, session, system);
+    const restored = applySaveSnapshot(project, createSaveSnapshot(project, session));
+    expect(restored.farmPlotsAdvancedThrough).toEqual(session.farmPlotsAdvancedThrough);
+    const before = structuredClone(restored.farmPlots);
+    syncFarmPlotsToDate(project, restored, system);
+    expect(restored.farmPlots).toEqual(before);
+  });
+
+  it("죽은 작물은 괭이질로 정리되고 다시 심을 수 있다", () => {
+    const { project, session, map } = demoRuntime();
+    plantAndWater(project, session, map);
+    advanceFarmPlotsForDay(project, session, 1, "summer");
+    expect(farmPlotAt(session, map.id, 4, 5)?.dead).toBe(true);
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("tilled");
+    expect(farmPlotAt(session, map.id, 4, 5)).toEqual({ tilled: true, watered: false });
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("planted");
+  });
+});
+
+describe("손 슬롯 의도 계약", () => {
+  // Record<FarmIgnoreReason, ...> 이므로 사유를 추가하면 이 리터럴이 타입 에러로 깨진다.
+  const IGNORE_REASON_SILENCE: Readonly<Record<FarmIgnoreReason, boolean>> = {
+    "not-farmable": true,
+    "missing-crop": false,
+    "missing-hoe": false,
+    "missing-seed": false,
+    "missing-watering-can": false,
+    "already-watered": false,
+    "missing-axe": false,
+    "missing-pickaxe": false,
+    "missing-placeable": true,
+    "plot-needs-clearing": false,
+    "plot-needs-tilling": false,
+    "wrong-tool-for-plot": false,
+    "nothing-to-harvest": false,
+  };
+
+  it("손이 비면 기존 캐스케이드가 그대로 동작한다", () => {
+    const { project, session, map } = demoRuntime();
+    expect(farmIntentForHand(project, session)).toBeUndefined();
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("tilled");
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("planted");
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("watered");
+  });
+
+  it("괭이를 들면 이미 경작된 살아있는 밭은 다시 갈지 않는다", () => {
+    const { project, session, map } = demoRuntime();
+    setEquippedTool(session, "item_hoe");
+    expect(farmIntentForHand(project, session)).toBe("till");
+    expect(interactWithFarmPlot(project, session, map, 4, 5, "till").kind).toBe("tilled");
+    const again = interactWithFarmPlot(project, session, map, 4, 5, "till");
+    expect(again.kind).toBe("ignored");
+    expect(again.reason).toBe("wrong-tool-for-plot");
+  });
+
+  it("물뿌리개를 들고 갈지 않은 밭을 누르면 사유를 돌려준다", () => {
+    const { project, session, map } = demoRuntime();
+    setEquippedTool(session, "item_watering_can");
+    expect(farmIntentForHand(project, session)).toBe("water");
+    const result = interactWithFarmPlot(project, session, map, 4, 5, "water");
+    expect(result.kind).toBe("ignored");
+    expect(result.reason).toBe("wrong-tool-for-plot");
+  });
+
+  it("토마토 씨앗을 들면 crops 배열 앞의 감자가 아니라 토마토를 심는다", () => {
+    const { project, session, map } = demoRuntime();
+    // 버그 재현 근거: 감자가 crops 배열의 첫 봄 작물이다.
+    expect(project.database.crops?.[0]?.id).toBe("crop_potato");
+    setEquippedTool(session, "item_hoe");
+    expect(interactWithFarmPlot(project, session, map, 4, 5, "till").kind).toBe("tilled");
+    setEquippedTool(session, "item_tomato_seed");
+    expect(farmIntentForHand(project, session)).toBe("plant");
+    const planted = interactWithFarmPlot(project, session, map, 4, 5, "plant");
+    expect(planted.kind).toBe("planted");
+    expect(planted.cropId).toBe("crop_tomato");
+    expect(session.inventory.item_tomato_seed).toBe(1);
+    expect(session.inventory.item_potato_seed).toBe(3);
+  });
+
+  it("계절이 맞지 않는 씨앗은 심기지 않고 소모되지 않는다", () => {
+    const { project, session, map } = demoRuntime();
+    setEquippedTool(session, "item_hoe");
+    interactWithFarmPlot(project, session, map, 4, 5, "till");
+    session.gameTime = { ...session.gameTime!, season: "summer" };
+    setEquippedTool(session, "item_tomato_seed");
+    const result = interactWithFarmPlot(project, session, map, 4, 5, "plant");
+    expect(result.kind).toBe("ignored");
+    expect(result.reason).toBe("wrong-tool-for-plot");
+    expect(session.inventory.item_tomato_seed).toBe(2);
+    expect(farmPlotAt(session, map.id, 4, 5)?.cropId).toBeUndefined();
+  });
+
+  it("마지막 씨앗을 심으면 손이 비고 의도도 같이 사라진다", () => {
+    const { project, session, map } = demoRuntime();
+    session.inventory.item_tomato_seed = 1;
+    setEquippedTool(session, "item_hoe");
+    interactWithFarmPlot(project, session, map, 4, 5, "till");
+    setEquippedTool(session, "item_tomato_seed");
+    expect(interactWithFarmPlot(project, session, map, 4, 5, farmIntentForHand(project, session)).kind).toBe("planted");
+
+    // 씨앗을 다 썼다 — HUD 는 이미 「빈 손」이므로 의도도 비어야 한다.
+    expect(session.inventory.item_tomato_seed ?? 0).toBe(0);
+    expect(handSlotIndex(project, session)).toBe(0);
+    expect(farmIntentForHand(project, session)).toBeUndefined();
+    // 의도가 plant 로 남아 있었다면 방금 심은 밭은 물을 줄 수 없다.
+    expect(interactWithFarmPlot(project, session, map, 4, 5, farmIntentForHand(project, session)).kind).toBe("watered");
+  });
+
+  it("다 자란 작물은 씨앗·괭이·물뿌리개 어느 것을 들어도 수확된다", () => {
+    for (const hand of ["item_potato_seed", "item_hoe", "item_watering_can"]) {
+      const { project, session, map } = demoRuntime();
+      plantAndWater(project, session, map);
+      advanceFarmPlotsForDay(project, session, 1, "spring");
+      // 성장은 물을 준 다음 날에만 진행하므로 다시 물을 주고 하룰을 더 보낸다.
+      interactWithFarmPlot(project, session, map, 4, 5);
+      advanceFarmPlotsForDay(project, session, 1, "spring");
+      expect(cropReady(project, farmPlotAt(session, map.id, 4, 5)), hand).toBe(true);
+
+      setEquippedTool(session, hand);
+      const result = interactWithFarmPlot(project, session, map, 4, 5, farmIntentForHand(project, session));
+
+      expect(result.kind, hand).toBe("harvested");
+      expect(session.inventory.item_potato, hand).toBe(1);
+    }
+  });
+
+  it("고사 작물은 괭이로 정리되고, 씨앗을 들면 도구 탓을 하지 않는 사유를 돌려준다", () => {
+    const { project, session, map } = demoRuntime();
+    plantAndWater(project, session, map);
+    advanceFarmPlotsForDay(project, session, 1, "summer");
+    expect(farmPlotAt(session, map.id, 4, 5)?.dead).toBe(true);
+
+    setEquippedTool(session, "item_potato_seed");
+    const blocked = interactWithFarmPlot(project, session, map, 4, 5, "plant");
+    // 괭이를 가지고 있으므로 "괭이가 필요합니다" 는 거짓이다.
+    expect(blocked.reason).toBe("plot-needs-clearing");
+    expect(farmIgnoreMessage(blocked.reason)).toContain("괭이로 정리");
+
+    setEquippedTool(session, "item_hoe");
+    expect(interactWithFarmPlot(project, session, map, 4, 5, "till").kind).toBe("tilled");
+  });
+
+  it("DB 에서 사라진 작물은 안내대로 괭이로 정리된다", () => {
+    const { project, session, map } = demoRuntime();
+    plantAndWater(project, session, map);
+    project.database.crops = (project.database.crops ?? []).filter((crop) => crop.id !== "crop_potato");
+
+    const probe = interactWithFarmPlot(project, session, map, 4, 5, "plant");
+    expect(probe.reason).toBe("missing-crop");
+    expect(farmIgnoreMessage(probe.reason)).toContain("괭이로 정리");
+
+    // 안내가 실제로 통해야 한다 — 괭이질로 밭이 초기화되고 다시 쓸 수 있다.
+    expect(interactWithFarmPlot(project, session, map, 4, 5, "till").kind).toBe("tilled");
+    expect(farmPlotAt(session, map.id, 4, 5)).toEqual({ tilled: true, watered: false });
+    // 손을 비운 캐스케이드도 막히지 않는다.
+    expect(interactWithFarmPlot(project, session, map, 4, 5).kind).toBe("planted");
+  });
+
+  it("갈지 않은 밭에 씨앗을 쓰면 도구가 아니라 경작이 필요하다고 안내한다", () => {
+    const { project, session, map } = demoRuntime();
+    setEquippedTool(session, "item_potato_seed");
+
+    const result = interactWithFarmPlot(project, session, map, 4, 5, "plant");
+
+    expect(result.reason).toBe("plot-needs-tilling");
+    expect(session.inventory.item_hoe).toBeGreaterThan(0);
+  });
+
+  it("열린 세계 사유는 침묵하고 나머지 사유는 한국어 문구를 가진다", () => {
+    expect(farmIgnoreMessage(undefined)).toBeNull();
+    expect(farmIgnoreMessage("unknown-reason")).toBeNull();
+    for (const [reason, silent] of Object.entries(IGNORE_REASON_SILENCE)) {
+      const message = farmIgnoreMessage(reason);
+      if (silent) {
+        expect(message, reason).toBeNull();
+        continue;
+      }
+      expect(message, reason).toBeTruthy();
+      expect(message!.trim().length, reason).toBeGreaterThan(0);
+    }
   });
 });

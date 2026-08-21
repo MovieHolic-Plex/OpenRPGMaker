@@ -77,6 +77,8 @@ import {
   syncPlaySceneZoneFeedback,
   type PlaySceneZoneFeedback,
 } from "@/player/playSceneZoneFeedback";
+import { mountHandSlotChip, type HandSlotChip } from "@/player/handSlotChip";
+import { dialogueHost } from "@/player/playSceneDom";
 import {
   createMinimap,
   destroyMinimap,
@@ -127,6 +129,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   actionCombatState: import("@/player/actionCombatTypes").ActionCombatSceneState | null = null;
   private zoneFeedback: PlaySceneZoneFeedback | null = null;
   private minimap: MinimapRuntimeState | null = null;
+  private handSlotChip: HandSlotChip | null = null;
+  private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
   lightingOverlayImage?: Phaser.GameObjects.Image;
   lightingMaskTexture?: Phaser.Textures.CanvasTexture;
@@ -188,6 +192,9 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     });
     this.session = this.initialSession(project);
     this.zoneFeedback = createPlaySceneZoneFeedback(this.session);
+    // dialogueHost 는 player.ts 가 게임 생성 후 registry 에 넣으므로 여기선 아직 없을 수 있다.
+    // zoneFeedback 과 동일하게 update 에서 host 를 다시 해석해 붙인다.
+    this.syncHandSlotChip();
     this.playerSprite = resolvePlayerSpriteResource(project, this.session);
     this.loadMap(this.session.currentMapId, { preserveErasedEvents: true, applyDefaultLighting: false, applyMapBgm: false });
     this.tileX = this.session.x;
@@ -249,6 +256,13 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
       destroyPlaySceneZoneFeedback(this.zoneFeedback);
       this.zoneFeedback = null;
     };
+    const destroyHandSlotChip = (): void => {
+      this.handSlotChip?.destroy();
+      this.handSlotChip = null;
+      this.handSlotHost = null;
+    };
+    this.events.once("shutdown", destroyHandSlotChip);
+    this.events.once("destroy", destroyHandSlotChip);
     const destroyMinimapLocal = (): void => {
       if (!this.minimap) return;
       destroyMinimap(this.minimap);
@@ -278,11 +292,22 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     // 맵 크기만큼 부풀고, 마커 클릭이 무대를 스크롤시켜 재생 화면이 검게 된다(runtimeDom 주석).
     this.runtimeDom.syncCameraOffset(this.cameras.main.scrollX, this.cameras.main.scrollY);
     if (this.zoneFeedback) syncPlaySceneZoneFeedback(this, this.zoneFeedback, deltaMs);
+    this.syncHandSlotChip();
     if (this.minimap) {
       syncMinimapPosition(this.minimap, this.tileX, this.tileY, this.map);
       const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
       syncMinimapVisibility(this.minimap, host ?? null, this.minimapUserHidden);
     }
+  }
+
+  private syncHandSlotChip(): void {
+    const host = dialogueHost(this) ?? null;
+    if (host !== this.handSlotHost) {
+      this.handSlotChip?.destroy();
+      this.handSlotHost = host;
+      this.handSlotChip = mountHandSlotChip(host);
+    }
+    this.handSlotChip?.update(store.getCurrent(), this.session);
   }
 
   getMapId(): MapId {

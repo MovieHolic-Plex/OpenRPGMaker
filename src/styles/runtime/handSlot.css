@@ -1,0 +1,34 @@
+/* 손 슬롯 칩. 좌하단 — bottom-center 는 .zone-feedback-prompt,
+   top-left 은 .action-hud(z-index 40), top-right 은 .zone-feedback-objective 가 이미 쓴다.
+   z-index 는 action-hud 아래로 둬서 전투 HUD 가 항상 위에 오게 한다.
+   토큰은 zoneFeedback.css 를 따른다(actionHud.css 의 하드코딩 px/hex 는 답습하지 않는다). */
+.hand-slot {
+  background: var(--runtime-window-fill-fallback);
+  border: var(--runtime-window-border-tight) solid transparent;
+  border-image: var(--runtime-window-skin) var(--runtime-window-slice);
+  bottom: var(--space-2);
+  box-sizing: border-box;
+  color: var(--runtime-window-text);
+  font-family: var(--runtime-pixel-font);
+  font-size: var(--runtime-font-size-9);
+  left: var(--space-2);
+  line-height: 1.4;
+  max-width: 40%;
+  padding: var(--space-1) var(--space-2);
+  pointer-events: none;
+  position: absolute;
+  text-shadow: 1px 1px 0 var(--runtime-window-shadow);
+  white-space: nowrap;
+  z-index: 30;
+}
+
+.hand-slot.is-empty {
+  opacity: 0.75;
+}
+
+/* 메뉴·대화창이 열려 있으면 숨긴다(actionHud.css 의 :has() 관례).
+   .dialogue-overlay 는 항상 DOM 에 남고 내용만 비우므로 :empty 로 걸러야 한다. */
+.play-stage:has(> [data-testid="main-menu"]) > .hand-slot,
+.play-stage:has(> .dialogue-overlay:not(:empty)) > .hand-slot {
+  display: none;
+}

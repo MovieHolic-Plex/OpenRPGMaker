@@ -11,6 +11,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderItemRecordForm } from "@/editor/panels/databaseItemRecordView";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { createBlankProject } from "@/project/defaults";
+import { FARM_TOOLS } from "@/project/farmModel";
 import { store } from "@/project/store";
 import type { ItemRecord } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
@@ -212,6 +213,23 @@ describe("database item inspector form", () => {
     renderItemRecordForm(secondForm as unknown as HTMLElement, item, () => undefined);
     expect(findByTestId(secondForm, "db-items-medicine-panel")).toBeNull();
     expect(findByTestId(secondForm, "db-items-special-panel")).not.toBeNull();
+  });
+
+  // 농사 도구 드롭다운은 FARM_TOOLS 정본에서 파생되어야 한다. 하드코딩이면 axe/pickaxe 가
+  // 빠져 나무 베기·채굴이 저작 불가가 된다(회귀 방지).
+  it("farm tool dropdown offers every canonical FARM_TOOLS value with Korean labels", () => {
+    const form = renderForm();
+    const select = byTestId(form, "db-field-item-farm-tool");
+    expect(select.children.map((option) => option.attrs.value)).toEqual(["", ...FARM_TOOLS]);
+    expect(select.children.map((option) => option.textContent)).toEqual(["(없음)", "괭이", "물뿌리개", "도끼", "곡괭이"]);
+
+    select.value = "pickaxe";
+    select.dispatchEvent(new Event("change"));
+    expect(currentItem().farmTool).toBe("pickaxe");
+
+    select.value = "";
+    select.dispatchEvent(new Event("change"));
+    expect(currentItem().farmTool).toBeUndefined();
   });
 });
 

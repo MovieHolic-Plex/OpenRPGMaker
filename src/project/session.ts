@@ -189,6 +189,8 @@ export interface PlaySession {
   // 런타임 맵 상태(changeTile 반영). mapId → { lower, upper } 오버라이드.
   mapOverrides: Record<MapId, { lower: Record<number, number>; upper: Record<number, number> }>;
   farmPlots?: FarmPlots;
+  // farmPlots 성장 틱이 적용된 마지막 달력 날짜. 시계가 날짜를 넘길 때마다 여기까지의 차이만큼만 성장시킨다.
+  farmPlotsAdvancedThrough?: { readonly day: number; readonly season: Season; readonly year: number };
   friendship?: Record<string, number>;
   dailyGifts?: DailyGiftLog;
   dailyTalks?: DailyTalkLog;
@@ -242,6 +244,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
   for (const v of project.variables) {
     variables[v.id] = 0;
   }
+  const gameTime = initialGameTime(project.system.timeSystem);
   return {
     switches,
     selfSwitches: {},
@@ -283,6 +286,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     y: project.startPos.y,
     mapOverrides: {},
     farmPlots: {},
+    farmPlotsAdvancedThrough: gameTime && { day: gameTime.day, season: gameTime.season, year: gameTime.year },
     friendship: {},
     dailyGifts: {},
     dailyTalks: {},
@@ -292,7 +296,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     messageWindowSettings: { ...DEFAULT_MESSAGE_WINDOW_SETTINGS },
     playTimeSeconds: 0,
     rng: createRngState(seed),
-    gameTime: initialGameTime(project.system.timeSystem),
+    gameTime,
   };
 }
 

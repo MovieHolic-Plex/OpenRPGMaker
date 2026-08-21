@@ -22,6 +22,7 @@ import {
   isBooleanRecord,
   isLightingState,
   isGameTime,
+  isFarmPlotDate,
   isFarmPlotsRecord,
   isMonsterInstancesRecord,
   isNestedNumberRecord,
@@ -93,6 +94,7 @@ export type SaveSnapshot = {
     readonly npcActivities?: PlaySession["npcActivities"];
     readonly npcScheduleStates?: PlaySession["npcScheduleStates"];
     readonly farmPlots?: PlaySession["farmPlots"];
+    readonly farmPlotsAdvancedThrough?: PlaySession["farmPlotsAdvancedThrough"];
     readonly friendship?: PlaySession["friendship"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
@@ -185,6 +187,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       npcActivities: structuredClone(session.npcActivities ?? {}),
       npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
       farmPlots: structuredClone(session.farmPlots ?? {}),
+      farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
@@ -294,6 +297,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
+  session.farmPlotsAdvancedThrough = structuredClone(snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
@@ -423,6 +427,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       npcActivities: isStringRecord(session.npcActivities) ? session.npcActivities : undefined,
       npcScheduleStates: isRuntimeNpcScheduleStateRecord(session.npcScheduleStates) ? session.npcScheduleStates : undefined,
       farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
+      farmPlotsAdvancedThrough: isFarmPlotDate(session.farmPlotsAdvancedThrough) ? session.farmPlotsAdvancedThrough : undefined,
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,

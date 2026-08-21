@@ -15,6 +15,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
@@ -23,6 +24,7 @@ import type {
   ActorRecord,
   ClassId,
   EquipmentStatBonuses,
+  FarmTool,
   ItemConsumptionLimit,
   ItemEquipmentEffectFlags,
   ItemEquipmentProfile,
@@ -63,6 +65,13 @@ const ITEM_TYPE_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
   seed: "씨앗",
   special: "특수",
   switch: "스위치",
+};
+
+const FARM_TOOL_LABELS: Record<FarmTool, string> = {
+  hoe: "괭이",
+  wateringCan: "물뿌리개",
+  axe: "도끼",
+  pickaxe: "곡괭이",
 };
 
 // 약 계열 아이템의 대상(scope) 배타 선택 — 저장 필드는 ItemScope enum 그대로(스키마 불변).
@@ -454,9 +463,13 @@ function consumptionLimitField(record: ItemRecord): HTMLElement {
   return field("사용 횟수", select);
 }
 
+// 농사 도구 옵션은 FARM_TOOLS(정본)에서 파생한다 — 하드코딩하면 axe/pickaxe 처럼
+// 런타임 규칙(toolActions legacy-axe-chop/legacy-pick-mine)은 있는데 저작이 불가능한
+// 드리프트가 생긴다. 라벨만 한글이고 저장값은 영문 정본 id 그대로다.
 function farmToolField(record: ItemRecord): HTMLElement {
-  return selectLiteral("농사 도구", "db-field-item-farm-tool", record.farmTool ?? "", ["", "hoe", "wateringCan"] as const, (farmTool) => {
-    updateDatabaseRecord("items", record.id, { farmTool: farmTool || undefined });
+  const options = FARM_TOOLS.map((tool) => ({ id: tool, name: FARM_TOOL_LABELS[tool] }));
+  return selectField("농사 도구", "db-field-item-farm-tool", record.farmTool ?? "", options, (farmTool) => {
+    updateDatabaseRecord("items", record.id, { farmTool: isFarmTool(farmTool) ? farmTool : undefined });
   });
 }
 

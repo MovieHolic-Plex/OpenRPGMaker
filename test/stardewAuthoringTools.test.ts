@@ -172,7 +172,12 @@ describe("P6 upgrades and sell prices", () => {
 
   it("resolves sell price from table or half item price", () => {
     const project = createBlankProject();
-    project.database.items.push(normalizeItemRecord({ id: "item_potato", name: "감자", scope: "none", price: 40 }));
+    // 기본 CC0 카탈로그에 item_potato 가 이미 있다. push 하면 items.find() 가 카탈로그의
+    // 낡은 레코드를 먼저 집어 가격이 40 이 아닌 20 으로 읽힌다 — 반드시 upsert 해야 한다.
+    const potato = normalizeItemRecord({ id: "item_potato", name: "감자", scope: "none", price: 40 });
+    const existing = project.database.items.findIndex((item) => item.id === potato.id);
+    if (existing >= 0) project.database.items[existing] = potato;
+    else project.database.items.push(potato);
     project.system.sellPrices = [{ itemId: "item_potato", price: 30 }];
     expect(resolveSellPrice(project, "item_potato")).toBe(30);
     project.system.sellPrices = [];

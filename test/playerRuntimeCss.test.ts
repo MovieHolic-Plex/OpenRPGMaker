@@ -42,13 +42,14 @@ const RUNTIME_IMPORTS = [
   "./timer.css",
   "./touchpad.css",
   "./pictures.css",
-  "./weather.css",
   "./transitions.css",
   "./nameEntry.css",
   "./keyboardNav.css",
   "../dialogue.css",
   "./playSurface.css",
   "./zoneFeedback.css",
+  "./handSlot.css",
+  "./minimap.css",
 ] as const;
 
 describe("exported player runtime CSS", () => {
@@ -160,7 +161,13 @@ async function buildDisposableClosureWithout(importStatement: string): Promise<s
     await cp(resolve("src/styles"), fixtureStyles, { recursive: true });
     const fixtureAggregator = join(fixtureStyles, "runtime", "playerRuntime.css");
     const source = await readFile(fixtureAggregator, "utf8");
-    const mutated = source.replace(importStatement, "");
+    // 집합기 CSS 는 CRLF 다. importStatement 리터럴은 "\n" 로 끝나므로 문자열 replace 는
+    // Windows 체크아웃에서 절대 매치되지 않아 이 가드가 통째로 무력화된다(실측). 줄끝 무관 매치.
+    const importPattern = new RegExp(
+      `${importStatement.trimEnd().replace(/[.*+?^${}()|[\]\\]/gu, "\\$&")}\\r?\\n`,
+      "u",
+    );
+    const mutated = source.replace(importPattern, "");
     expect(mutated).not.toBe(source);
     await writeFile(fixtureAggregator, mutated, "utf8");
     await writeFile(

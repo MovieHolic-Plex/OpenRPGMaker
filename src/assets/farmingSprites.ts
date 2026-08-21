@@ -46,6 +46,38 @@ export const FARMING_CROP_SPRITE_ASSETS = [
     frameHeight: 16,
     frameCount: 3,
   },
+  {
+    id: "farming-crop-blueberry",
+    name: "블루베리 성장 스프라이트",
+    path: "assets/farming/crops/crop_blueberry.png",
+    frameWidth: 16,
+    frameHeight: 16,
+    frameCount: 2,
+  },
+  {
+    id: "farming-crop-melon",
+    name: "멜론 성장 스프라이트",
+    path: "assets/farming/crops/crop_melon.png",
+    frameWidth: 16,
+    frameHeight: 16,
+    frameCount: 3,
+  },
+  {
+    id: "farming-crop-pumpkin",
+    name: "호박 성장 스프라이트",
+    path: "assets/farming/crops/crop_pumpkin.png",
+    frameWidth: 16,
+    frameHeight: 16,
+    frameCount: 3,
+  },
+  {
+    id: "farming-crop-eggplant",
+    name: "가지 성장 스프라이트",
+    path: "assets/farming/crops/crop_eggplant.png",
+    frameWidth: 16,
+    frameHeight: 16,
+    frameCount: 2,
+  },
 ] as const satisfies readonly FarmingCropSpriteAsset[];
 
 // 농장 동물 캐릭셋 — RM2K3 규격 288x256, 캐릭터 슬롯 0 사용.
