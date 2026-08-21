@@ -10,8 +10,8 @@ import {
 } from "./remoteProjectCertificate";
 import { startNewGameFromTitle } from "./runtimeInput";
 
-const CONFIG_KEY = "rpg-zzu:supabase-project-config";
-const BOOTSTRAP_KEY = "rpg-zzu.project-e2e.bootstrap";
+const CONFIG_KEY = "oprn:supabase-project-config";
+const BOOTSTRAP_KEY = "oprn:project-e2e.bootstrap";
 const DEDICATED_INPUTS = [
   "RPGZZU_E2E_REMOTE_CERTIFICATE",
   "RPGZZU_E2E_REMOTE_ISOLATION_MARKER",

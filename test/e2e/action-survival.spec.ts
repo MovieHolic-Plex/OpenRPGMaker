@@ -117,7 +117,7 @@ function hooks(page: Page) {
 }
 
 test("survival: ammo economy, typewriter save menu, persistent kill", async ({ page }, testInfo) => {
-  await page.addInitScript(() => window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1280, height: 900 });
   const { project, start, mapId } = buildSurvivalProject();
   await seedProjectFromSupabaseCanonical(page, project);

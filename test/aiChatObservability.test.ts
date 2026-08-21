@@ -58,7 +58,7 @@ function renderPanel(): FakeElement {
 }
 
 describe("글자 크기 3단 (V3C ①)", () => {
-  it("기본값은 '보통'이고 저장하면 localStorage(rpg-zzu:ai-font-size)에 영속된다 — 무효값은 보통으로 방어", () => {
+  it("기본값은 '보통'이고 저장하면 localStorage(oprn:ai-font-size)에 영속된다 — 무효값은 보통으로 방어", () => {
     expect(loadAiFontSize()).toBe("normal");
     saveAiFontSize("large");
     expect(storage.get(AI_FONT_SIZE_KEY)).toBe("large");

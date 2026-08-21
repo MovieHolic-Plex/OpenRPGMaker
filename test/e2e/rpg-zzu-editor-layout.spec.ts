@@ -159,7 +159,7 @@ test("editor shell contains Basic and Expert regions at every supported viewport
       const errorText = request.failure()?.errorText ?? "unknown";
       if (!request.url().includes("127.0.0.1:17831") && errorText !== "net::ERR_ABORTED") browserIssues.push(`requestfailed: ${request.url()} ${errorText}`);
     });
-    await modePage.addInitScript((editorUiMode) => localStorage.setItem("rpg-zzu:editor-ui-mode", editorUiMode), mode);
+    await modePage.addInitScript((editorUiMode) => localStorage.setItem("oprn:editor-ui-mode", editorUiMode), mode);
     for (const viewport of COMPACT_SHELL_VIEWPORTS) {
       await modePage.setViewportSize(viewport);
       await modePage.goto(`/?freshProject=1&layoutContract=${viewport.width}`);
@@ -192,7 +192,7 @@ test("editor shell contains Basic and Expert regions at every supported viewport
     await modePage.close();
   }
 
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&layoutContract=clickability");
   await expectCenterClickable(page, "[data-testid='toolbar-left-panel']");

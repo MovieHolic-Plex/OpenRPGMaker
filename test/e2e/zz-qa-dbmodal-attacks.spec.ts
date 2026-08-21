@@ -9,7 +9,7 @@ const ITEMS = DATABASE_TAB_SPECS.find((tab) => tab.slug === "items")!;
 const TROOPS = DATABASE_TAB_SPECS.find((tab) => tab.slug === "troops")!;
 
 async function gotoExpert(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
@@ -196,7 +196,7 @@ test("E: rapid open/edit/close x10 leaves no stray timers; single update = singl
           .map(([t, rec]) => ({ tag: t, ms: rec.ms, stack: rec.stack })),
     };
   });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });

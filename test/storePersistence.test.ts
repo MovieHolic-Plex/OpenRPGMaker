@@ -84,7 +84,7 @@ describe("Project store remote persistence", () => {
     if (staleProject.system.titleScreen) {
       staleProject.system.titleScreen.backgroundResourceId = "rpg-zzu-title-blue";
     }
-    storage.set("rpg-zzu:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
+    storage.set("oprn:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
 
     vi.resetModules();
     const { store } = await import("@/project/store");

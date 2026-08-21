@@ -30,7 +30,7 @@ function collectErrors(page: Page, tag: string): void {
 
 async function boot(page: Page, mode: "basic" | "expert" = "basic", vp = { width: 1600, height: 1000 }): Promise<void> {
   await page.setViewportSize(vp);
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();

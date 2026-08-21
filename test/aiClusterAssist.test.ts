@@ -150,8 +150,8 @@ describe("클러스터 AI 스킬", () => {
 
 describe("AI 패널 브리지", () => {
   it("cluster-edit 이벤트가 접힌 패널을 펼치고 스킬 킥오프를 전송 경로로 보낸다", async () => {
-    storage.set("rpg-zzu:ai-map-first-collapse-v1", "1");
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-map-first-collapse-v1", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-or-test" }));
     const panel = renderWithFakeDom(() => renderAiChatPanel({ getChatDock: () => "side" })) as FakeElement;
     expect(panel.classList.contains("is-collapsed")).toBe(true);
@@ -163,7 +163,7 @@ describe("AI 패널 브리지", () => {
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     // 자동 펼침은 사용자의 저장된 접힘 선택("1")을 덮어쓰지 않는다.
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
     expect(assistantMock.sentMessages).toHaveLength(1);
     expect(assistantMock.sentMessages[0]).toContain("클러스터 수정");
     expect(assistantMock.sentMessages[0]).toContain("\"id\": \"wall_group\"");

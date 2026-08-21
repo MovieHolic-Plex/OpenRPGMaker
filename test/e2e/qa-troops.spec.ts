@@ -31,7 +31,7 @@ async function troopsFromExport(page: Page): Promise<ExportedTroop[]> {
 }
 
 async function gotoTroopsTab(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await openDatabase(page);

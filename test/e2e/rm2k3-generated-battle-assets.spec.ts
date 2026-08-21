@@ -36,7 +36,7 @@ test("generated battle assets load with magenta-keyed transparent corners", asyn
 test("generated hero and slime assets render inside the battle scene", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   // `mode-play` belongs to the expert classic toolbar; make that test dependency explicit.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedGeneratedBattleProject(page);
   await page.click('[data-testid="mode-play"]');
   await startNewGameFromTitle(page);

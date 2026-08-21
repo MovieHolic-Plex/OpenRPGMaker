@@ -118,7 +118,7 @@ test("농사 한 사이클을 화면으로 검수한다 — 갈기·심기·물�
   mkdirSync(OUT, { recursive: true });
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, projectWithGrowthLever());

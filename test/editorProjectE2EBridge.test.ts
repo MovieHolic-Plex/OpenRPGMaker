@@ -7,8 +7,8 @@ const URL = "https://abcdefghijklmnopqrst.supabase.co";
 const KEY = "aaa.bbb.ccc";
 const PROJECT_ID = "ed0ed8e2-50b6-4a3a-a884-c2f46fcbf431";
 const CAPABILITY = "capability-value-with-more-than-thirty-two-characters";
-const CONFIG_KEY = "rpg-zzu:supabase-project-config";
-const BOOTSTRAP = Symbol.for("rpg-zzu.project-e2e.bootstrap");
+const CONFIG_KEY = "oprn:supabase-project-config";
+const BOOTSTRAP = Symbol.for("oprn:project-e2e.bootstrap");
 
 type TestWindow = Window & { [BOOTSTRAP]?: unknown };
 

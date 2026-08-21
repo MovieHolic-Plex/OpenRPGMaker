@@ -33,8 +33,8 @@ test.describe("glm-5.2-ultrafast as default model", () => {
     });
 
     await page.addInitScript(() => {
-      localStorage.removeItem("rpg-zzu:ai-config");
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+      localStorage.removeItem("oprn:ai-config");
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
     });
     await page.setViewportSize({ width: 1600, height: 920 });
     await page.goto("/?glmDefaultVerify=1");

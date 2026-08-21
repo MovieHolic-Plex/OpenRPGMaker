@@ -5,7 +5,7 @@ import type { Project } from "@/project/types";
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
 export interface ConversationSummary { id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; }
 
-const STORAGE_KEY = "rpg-zzu:ai-conversations";
+const STORAGE_KEY = "oprn:ai-conversations";
 const MAX_CONVERSATIONS = 50;
 const TITLE_LIMIT = 40;
 

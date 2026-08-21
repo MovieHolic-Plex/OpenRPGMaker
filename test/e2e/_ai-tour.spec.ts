@@ -44,7 +44,7 @@ async function boot(page: Page, mode: "basic" | "expert" = "basic"): Promise<voi
     }
   });
   // 전문가 모드는 코치마크도 뜨지 않고 도구/하네스 진입점이 모두 노출된다.
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.goto("/?freshProject=1");
   const guest = page.getByTestId("login-guest");
   if (await guest.isVisible().catch(() => false)) await guest.click();

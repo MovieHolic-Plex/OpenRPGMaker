@@ -54,7 +54,7 @@ export function resetCommandInspectorView(): void {
 }
 
 /** 명령을 선택하면 우측 인스펙터가 그 자리에서 바뀐다. 모달은 열리지 않는다. */
-const INSPECTOR_DENSITY_KEY = "rpg-zzu:inspector-density";
+const INSPECTOR_DENSITY_KEY = "oprn:inspector-density";
 export type InspectorDensity = "card" | "form";
 // 기본은 form(바로 편집): 명령을 골랐다는 것은 편집 의도다. card→자세히 편집 2단 홉과
 // 같은 원문을 헤더/카드에 중복 표시하던 구조를 제거했다(2026-08-18 적대 평가 H01/J01).

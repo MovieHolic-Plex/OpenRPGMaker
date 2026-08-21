@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("RM2K3 database record list resets modal state and has no decorative fillers", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();

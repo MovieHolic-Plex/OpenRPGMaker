@@ -6,7 +6,7 @@ import { expect, test, type Page } from "@playwright/test";
 // 그것 자체가 파이프라인 도달의 증거다).
 
 async function gotoExpertEditor(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
 }

@@ -44,7 +44,7 @@ const EXPECTED_TABS = [
 ];
 
 const EXPECTED_GROUPS = ["파티", "전투", "수집", "맵", "시스템"];
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
 let previousWindow: FakeBrowserGlobals["window"];

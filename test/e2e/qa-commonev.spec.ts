@@ -7,7 +7,7 @@ const ACTORS_TAB = { label: "Actors", slug: "actors", testId: "db-tab-actors" } 
 const LONG_NAME = "QA공통이벤트경계값이름아주길게길게길게삼십자이상테스트";
 
 async function gotoExpert(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
 }

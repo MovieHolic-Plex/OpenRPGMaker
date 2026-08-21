@@ -20,8 +20,8 @@ if (events.length === 0) throw new Error("events.json 이 비어 있습니다");
   const ctx = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1680, height: 1000 } });
   const page = await ctx.newPage();
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "seen");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
   });
 
   await page.goto(`${BASE}/?devProject=1&icePlain64=1&map=${MAP_ID}`, { waitUntil: "load", timeout: 60000 });

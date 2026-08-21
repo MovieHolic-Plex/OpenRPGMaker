@@ -160,10 +160,10 @@ async function main() {
   await page.addInitScript(
     ({ supabaseDraft, aiConfig }) => {
       localStorage.clear();
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-      localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
-      localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(supabaseDraft));
-      localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(aiConfig));
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:ai-panel-collapsed", "0");
+      localStorage.setItem("oprn:supabase-project-config", JSON.stringify(supabaseDraft));
+      localStorage.setItem("oprn:ai-config", JSON.stringify(aiConfig));
     },
     { supabaseDraft, aiConfig }
   );
@@ -203,12 +203,12 @@ async function main() {
 
   // Ensure remote project is dew-village (reconnect if needed)
   await page.evaluate(async (projectId) => {
-    const draftRaw = localStorage.getItem("rpg-zzu:supabase-project-config");
+    const draftRaw = localStorage.getItem("oprn:supabase-project-config");
     if (draftRaw) {
       const draft = JSON.parse(draftRaw);
       if (draft.projectId !== projectId) {
         draft.projectId = projectId;
-        localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(draft));
+        localStorage.setItem("oprn:supabase-project-config", JSON.stringify(draft));
       }
     }
   }, PROJECT_ID);

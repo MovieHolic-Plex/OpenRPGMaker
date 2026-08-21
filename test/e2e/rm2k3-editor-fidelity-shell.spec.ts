@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   // RM2K3 chrome (classic toolbar, layer buttons, dense canvas controls) is expert-only.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/");
 
   await expect(page.getByTestId("rm2k3-menu-bar")).toBeVisible();

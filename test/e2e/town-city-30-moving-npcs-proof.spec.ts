@@ -58,7 +58,7 @@ test("captures proof for thirty moving city NPCs with dialogue", async ({ page }
 
   await page.setViewportSize({ width: 1600, height: 1000 });
   // Layer buttons and mode-play are classic-toolbar chrome — expert-only.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, project, APP_URL);
   await page.getByTestId(`map-tree-node-${project.startMapId}`).click();
   await page.getByTestId("layer-event").click();

@@ -11,7 +11,7 @@ const STATES_TAB = { label: "States", slug: "states", testId: "db-tab-states" } 
 const SKILLS_TAB = { label: "Skills", slug: "skills", testId: "db-tab-skills" } as const;
 
 async function gotoExpert(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
 }

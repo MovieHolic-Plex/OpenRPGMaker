@@ -4,13 +4,13 @@ const fs = require("fs");
 const path = require("path");
 const OUT = path.join(__dirname, "..", "evidence", "playtest-rm2003");
 const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
-const DEV_KEY = "rpg-zzu:dev-project:127.0.0.1/?devProject=1";
+const DEV_KEY = "oprn:dev-project:127.0.0.1/?devProject=1";
 const URL = "http://127.0.0.1:5199/?devProject=1";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function freshGame(browser) {
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
-  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
+  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1200);
@@ -54,14 +54,14 @@ function makeHelpers(page) {
     await sleep(700);
     if (!(await clickTestId("save-slot-1"))) await key("Enter", 1, 900);
     await sleep(800);
-    const okSave = await page.evaluate(() => !!localStorage.getItem("rpg-zzu:save-slot:1"));
+    const okSave = await page.evaluate(() => !!localStorage.getItem("oprn:save-slot:1"));
     if (!okSave) { console.log("SAVE FAILED"); return false; }
     await page.evaluate(([m, px, py, sw]) => {
-      const raw = JSON.parse(localStorage.getItem("rpg-zzu:save-slot:1"));
+      const raw = JSON.parse(localStorage.getItem("oprn:save-slot:1"));
       const sess = raw.session ?? raw.snapshot?.session ?? raw;
       sess.currentMapId = m; sess.x = px; sess.y = py;
       for (const [k, v] of Object.entries(sw)) sess.switches[k] = v;
-      localStorage.setItem("rpg-zzu:save-slot:1", JSON.stringify(raw));
+      localStorage.setItem("oprn:save-slot:1", JSON.stringify(raw));
     }, [mapId, x, y, switches]);
     await key("Escape", 1, 700);
     if (!(await clickMenuText("로드"))) { await key("Escape", 1, 600); await clickMenuText("로드"); }

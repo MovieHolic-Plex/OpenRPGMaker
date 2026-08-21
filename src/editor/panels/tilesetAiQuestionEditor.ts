@@ -72,7 +72,7 @@ export function renderAiQuestionPanel(tileset: TilesetDef, rerender: () => void,
             class: "tileset-ai-api-status",
             text: hasApiKey
               ? "외부 AI 연결됨"
-              : "외부 AI 미연결: VITE_LLM_API_KEY 또는 rpg-zzu.llmApiKey 필요",
+              : "외부 AI 미연결: VITE_LLM_API_KEY 또는 oprn:llmApiKey 필요",
           }),
           el("button", {
             class: "tileset-db-small-button",

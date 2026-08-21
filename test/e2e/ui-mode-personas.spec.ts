@@ -5,13 +5,13 @@ import path from "node:path";
 const EVIDENCE_DIR = path.resolve(
   "../rpg-zzu/.omo/evidence/beginner-friendly-ui-modes/task-11-beginner-friendly-ui-modes",
 );
-const UI_MODE_KEY = "rpg-zzu:editor-ui-mode";
+const UI_MODE_KEY = "oprn:editor-ui-mode";
 const LAYOUT_KEYS = [
-  "rpg-zzu:editor-layout",
-  "rpg-zzu:editor-layout:v2",
-  "rpg-zzu:editor-layout:v3",
-  "rpg-zzu:editor-layout:v4",
-  "rpg-zzu:editor-layout-version",
+  "oprn:editor-layout",
+  "oprn:editor-layout:v2",
+  "oprn:editor-layout:v3",
+  "oprn:editor-layout:v4",
+  "oprn:editor-layout-version",
 ] as const;
 const COMMON_DB_TABS = [
   "db-tab-overview",
@@ -50,7 +50,7 @@ async function bootPersona(page: Page, mode: Persona, width: number, height: num
   await page.addInitScript(({ layoutKeys, modeKey, persona }) => {
     localStorage.setItem(modeKey, persona);
     for (const key of layoutKeys) localStorage.removeItem(key);
-    localStorage.removeItem("rpg-zzu:ai-panel-collapsed");
+    localStorage.removeItem("oprn:ai-panel-collapsed");
   }, { layoutKeys: LAYOUT_KEYS, modeKey: UI_MODE_KEY, persona: mode });
   await page.goto(`/?freshProject=1&persona=${mode}-${width}x${height}`);
   await dismissLogin(page);

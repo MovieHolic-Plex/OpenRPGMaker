@@ -40,8 +40,8 @@ page.on("requestfailed", (request) => {
   process.stderr.write(`[browser-request-failed] ${request.failure()?.errorText ?? "unknown"} ${request.url()}\n`);
 });
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-  localStorage.removeItem("rpg-zzu:supabase-project-config");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
+  localStorage.removeItem("oprn:supabase-project-config");
 });
 
 async function openMap(mapId: string, focus?: { readonly x: number; readonly y: number }): Promise<void> {

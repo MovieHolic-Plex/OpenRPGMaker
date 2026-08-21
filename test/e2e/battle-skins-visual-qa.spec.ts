@@ -143,7 +143,7 @@ for (const skin of listBattleSkinIds()) {
     const dir = `${OUT}/${skin}`;
     await mkdir(dir, { recursive: true });
     await page.setViewportSize({ width: 1360, height: 768 });
-    await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+    await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 
     // seedReferenceBattleProject performs its own page.goto("/")
     await seedReferenceBattleProject(page);

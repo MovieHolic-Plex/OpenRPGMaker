@@ -3,7 +3,7 @@ import { exportedProject } from "./rm2k3-database-helpers";
 
 test("RM2K3 database modal exposes footer status without duplicate workbench text row", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
@@ -17,7 +17,7 @@ test("RM2K3 database modal exposes footer status without duplicate workbench tex
 test("BM88 Classes tab exposes Korean ontology fields and persists class settings", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
@@ -82,7 +82,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   // 전체 컬렉션을 한 번에 편집하는 긴 흐름 — 갤러리/섹션 내비 추가 이후 60s 로는 부족하다.
   test.setTimeout(150_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();

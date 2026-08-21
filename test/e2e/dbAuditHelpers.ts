@@ -12,13 +12,13 @@ export type BootDbLaneOpts = {
   readonly localStorageSeed?: Readonly<Record<string, string | null>>;
 };
 
-export const EDITOR_UI_MODE_KEY = "rpg-zzu:editor-ui-mode";
+export const EDITOR_UI_MODE_KEY = "oprn:editor-ui-mode";
 export const ONBOARDING_STORAGE_KEYS = [
-  "rpg-zzu:coachmarks-basic-v1",
+  "oprn:coachmarks-basic-v1",
   "rpgzzu:standard-welcome-seen",
-  "rpg-zzu:editor-welcome-dismissed",
-  "rpg-zzu:db-dock-mode",
-  "rpg-zzu.database.activeTab",
+  "oprn:editor-welcome-dismissed",
+  "oprn:db-dock-mode",
+  "oprn:database.activeTab",
 ] as const;
 
 export const COMMON_DB_TAB_TEST_IDS = [

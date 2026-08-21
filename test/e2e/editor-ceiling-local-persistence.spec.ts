@@ -7,7 +7,7 @@ const TITLE = `로컬 영속 ${NONCE}`;
 
 test("authoring flushes to local storage, survives reload, and enters test play", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "basic"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "basic"));
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
 
@@ -30,7 +30,7 @@ test("authoring flushes to local storage, survives reload, and enters test play"
   const flushResult = await page.evaluate(async () => window.__rpgzzuProjectE2E?.flush());
   expect(flushResult).toEqual({ kind: "saved-local" });
   const storedBeforeReload = await page.evaluate(() => {
-    const key = Object.keys(localStorage).find((candidate) => candidate.startsWith("rpg-zzu:dev-project:"));
+    const key = Object.keys(localStorage).find((candidate) => candidate.startsWith("oprn:dev-project:"));
     return key ? { key, payload: localStorage.getItem(key) } : null;
   });
   expect(storedBeforeReload?.payload).toContain(TITLE);

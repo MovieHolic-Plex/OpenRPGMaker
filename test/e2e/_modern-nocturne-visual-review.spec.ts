@@ -18,7 +18,7 @@ type RuntimeState = {
 type Direction = "down" | "left" | "right" | "up";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("plays the live Modern Exteriors investigation through its ending", async ({ page }) => {

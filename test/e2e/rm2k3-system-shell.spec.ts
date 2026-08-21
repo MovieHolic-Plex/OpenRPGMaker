@@ -106,7 +106,7 @@ test("system shell supports title, menu, saves, audio, pictures, game over, and 
   await expect(page.locator('[data-testid="title-screen"]')).toBeVisible();
 
   await page.evaluate(() => {
-    localStorage.setItem("rpg-zzu:save-slot:1", "{not-json");
+    localStorage.setItem("oprn:save-slot:1", "{not-json");
   });
   await page.click('[data-testid="title-load-game"]');
   await expect(page.getByTestId("save-slot-corrupt-1")).toBeVisible();

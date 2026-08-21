@@ -102,7 +102,7 @@ describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
     document.body.append(root);
     editorState.set({ selectedTile: 105, layer: "lower" });
     revealPaletteTileFromMap(105);
-    expect(localStorage.getItem("rpg-zzu:palette-work-tab")).toBeNull();
+    expect(localStorage.getItem("oprn:palette-work-tab")).toBeNull();
     expect([...storage.keys()].filter((key) => key.includes("palette-work-tab"))).toEqual([]);
   });
 });

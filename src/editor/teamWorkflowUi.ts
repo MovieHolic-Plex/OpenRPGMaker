@@ -5,7 +5,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { readProjectFromUrl } from "@/project/projectUrl";
 
-const LAST_LOGIN_METHOD_KEY = "rpg-zzu-editor-last-login-method";
+const LAST_LOGIN_METHOD_KEY = "oprn:editor-last-login-method";
 
 type LoginMethod = "email" | "google" | "github" | "guest";
 

@@ -51,7 +51,7 @@ const MENU_ITEMS = [
   { id: "help", label: "도움말" },
 ] as const;
 
-const TOOLBAR_COLLAPSED_KEY = "rpg-zzu:toolbar-collapsed";
+const TOOLBAR_COLLAPSED_KEY = "oprn:toolbar-collapsed";
 
 type MenuId = (typeof MENU_ITEMS)[number]["id"];
 

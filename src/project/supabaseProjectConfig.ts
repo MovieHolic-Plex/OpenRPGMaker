@@ -3,7 +3,7 @@ import { resolveBrowserSupabaseUrl } from "./supabaseProxyPath";
 
 export const DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
-const STORAGE_KEY = "rpg-zzu:supabase-project-config";
+const STORAGE_KEY = "oprn:supabase-project-config";
 
 export type SupabaseProjectConfig = {
   readonly anonKey: string;

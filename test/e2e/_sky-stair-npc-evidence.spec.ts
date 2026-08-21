@@ -32,7 +32,7 @@ test("재배치된 NPC 와 얼굴 증빙 스크린샷", async ({ browser }) => {
       project.startMapId = shot.mapId;
       project.startPos = { x: shot.x, y: shot.y };
       await page.addInitScript(() => {
-        window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+        window.localStorage.setItem("oprn:editor-ui-mode", "expert");
       });
       await page.setViewportSize({ width: 1280, height: 900 });
       await seedProjectFromSupabaseCanonical(page, project);

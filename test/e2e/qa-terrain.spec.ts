@@ -9,7 +9,7 @@ const TERRAIN_TAB = { label: "Terrain", slug: "terrain", testId: "db-tab-terrain
 const TILESETS_TAB = { label: "Tilesets", slug: "tilesets", testId: "db-tab-tilesets" } as const;
 
 async function gotoExpert(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
 }

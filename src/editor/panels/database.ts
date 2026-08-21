@@ -124,7 +124,7 @@ function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: st
   return tab;
 }
 
-const DATABASE_ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
 

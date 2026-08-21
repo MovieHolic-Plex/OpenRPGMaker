@@ -641,7 +641,7 @@ export interface UserSkill {
   readonly needsSelection?: boolean;
 }
 
-const USER_SKILLS_KEY = "rpg-zzu:user-skills";
+const USER_SKILLS_KEY = "oprn:user-skills";
 const USER_PARAM_TYPES: readonly SkillParamType[] = ["text", "number", "enum"];
 
 // 사용자 스킬 파라미터 정화 — 저장 포맷이 손상됐어도 유효한 행만 살린다(하위호환).
@@ -781,7 +781,7 @@ export function listDefaultSkills(): SkillDef[] {
 }
 
 // ── 스킬 사용 이력(핀 바 최근 사용순 정렬) ────────────────────────
-const RECENT_SKILLS_KEY = "rpg-zzu:skill-recent";
+const RECENT_SKILLS_KEY = "oprn:skill-recent";
 // 사용 이력이 없을 때의 기본 핀 — 가장 자주 쓰일 흐름 순.
 // 기본 핀 — 게임을 만드는 흐름만. 예전엔 "interview" 가 맨 앞이라 첫 화면이 타일 학습
 // 도구로 채워졌다(그 계열은 advanced 로 내렸다).

@@ -38,7 +38,7 @@ for (const { width, height } of VIEWPORTS) {
 
     await page.setViewportSize({ width, height });
     // DB 툴바(toolbar-database)는 expert chrome 에서만 노출된다.
-    await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+    await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
     // 뷰포트당 하드 리로드 — 세션/로컬스토리지 스테일 상태를 배제한다.
     await page.goto("/?freshProject=1");
 

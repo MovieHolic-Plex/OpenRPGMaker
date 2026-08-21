@@ -15,8 +15,8 @@ for (const viewport of desktopViewports) {
     const fixtureStubs = optionalFixtureDescriptions();
     await page.addInitScript(() => {
       (globalThis as { __rpgzzuForcePointerBlock?: boolean }).__rpgzzuForcePointerBlock = true;
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-      localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:coachmarks-basic-v1", "1");
       Object.defineProperty(window, "Audio", {
         configurable: true,
         value: function titlePlayFixtureAudio(): HTMLAudioElement {

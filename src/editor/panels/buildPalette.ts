@@ -30,12 +30,12 @@ const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly
   { id: "ai", label: "✨AI로 채우기", title: "기존 영역 AI 작업 경로로 보내기" },
 ];
 
-const HOUSE_SHAPE_STORAGE_KEY = "rpg-zzu:build-palette:house-shape";
-const HOUSE_KIT_STORAGE_KEY = "rpg-zzu:build-palette:house-kit";
+const HOUSE_SHAPE_STORAGE_KEY = "oprn:build-palette:house-shape";
+const HOUSE_KIT_STORAGE_KEY = "oprn:build-palette:house-kit";
 const HOUSE_OPTION_STORAGE_KEYS = {
-  doorEvent: "rpg-zzu:build-palette:door-event",
-  interior: "rpg-zzu:build-palette:interior",
-  windows: "rpg-zzu:build-palette:windows",
+  doorEvent: "oprn:build-palette:door-event",
+  interior: "oprn:build-palette:interior",
+  windows: "oprn:build-palette:windows",
 } as const;
 
 export type HouseOptionKey = keyof typeof HOUSE_OPTION_STORAGE_KEYS;

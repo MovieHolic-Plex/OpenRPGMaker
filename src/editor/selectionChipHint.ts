@@ -5,7 +5,7 @@
 import { editorState } from "@/editor/editorState";
 import { toast } from "@/util/toast";
 
-export const SELECTION_CHIP_HINT_KEY = "rpg-zzu:hint-selection-chips-v1";
+export const SELECTION_CHIP_HINT_KEY = "oprn:hint-selection-chips-v1";
 export const SELECTION_CHIP_HINT_TEXT = "영역을 드래그하면 복사·붙여넣기·✨ AI 작업 버튼이 나타나요 — 선택한 곳을 자유롭게 다루세요.";
 
 let installed = false;

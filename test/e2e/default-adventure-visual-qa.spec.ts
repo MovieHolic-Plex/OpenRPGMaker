@@ -12,7 +12,7 @@ test.describe("default adventure visual QA", () => {
     test(`renders title and village without blank or clipped surfaces on ${viewport.name}`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.addInitScript(() => {
-        window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+        window.localStorage.setItem("oprn:editor-ui-mode", "expert");
       });
       await page.goto(`/?freshProject=1&defaultAdventureVisual=${viewport.name}`, { waitUntil: "domcontentloaded" });
       await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });

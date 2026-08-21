@@ -9,7 +9,7 @@ test("battle UI dogfood repro with diagnostics", async ({ page }) => {
   await mkdir(OUT, { recursive: true });
   await page.setViewportSize({ width: 1360, height: 900 });
   // `startReferenceBattle` uses the expert classic toolbar's `mode-play` control.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
 

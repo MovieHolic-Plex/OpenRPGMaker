@@ -56,7 +56,7 @@ type MapActionContext = {
 
 export type MapListVariant = "panel" | "basic";
 
-const COLLAPSED_STORAGE_KEY = "rpg-zzu:map-tree-collapsed";
+const COLLAPSED_STORAGE_KEY = "oprn:map-tree-collapsed";
 const collapsedMapIds = loadCollapsedMapIds();
 let currentMapListContainer: HTMLElement | null = null;
 let currentMapListVariant: MapListVariant = "panel";

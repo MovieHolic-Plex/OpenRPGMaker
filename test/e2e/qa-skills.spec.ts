@@ -6,7 +6,7 @@ const ITEMS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "items")!;
 
 test.describe("Database skills tab", () => {
   test.beforeEach(async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+    await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
     await page.goto("/?freshProject=1");
     await openDatabase(page);
     await switchDatabaseTab(page, SKILLS_TAB);

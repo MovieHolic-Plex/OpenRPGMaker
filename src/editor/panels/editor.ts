@@ -55,7 +55,7 @@ const MAP_TREE_DEFAULT_HEIGHT = 300;
 const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 const RESPONSIVE_BREAKPOINT = 720;
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
 // AI 연동 칩 주기 재조회 — chatgpt OAuth 토큰 만료·companion 장애를 감지해 칩을 다시 그린다.
 const AI_CONNECTION_POLL_MS = 60_000;
 
@@ -987,12 +987,12 @@ function loadEditorLayout(): LoadedEditorLayout {
   const LAYOUT_CACHE_VERSION = "2026-07-24-maptree-300";
   const ls = browserLocalStorage();
   if (ls) {
-    const storedVersion = ls.getItem("rpg-zzu:editor-layout-version");
+    const storedVersion = ls.getItem("oprn:editor-layout-version");
     if (storedVersion !== LAYOUT_CACHE_VERSION) {
-      for (const k of ["rpg-zzu:editor-layout", "rpg-zzu:editor-layout:v2", "rpg-zzu:editor-layout:v3", "rpg-zzu:editor-layout:v4"]) {
+      for (const k of ["oprn:editor-layout", "oprn:editor-layout:v2", "oprn:editor-layout:v3", "oprn:editor-layout:v4"]) {
         ls.removeItem(k);
       }
-      ls.setItem("rpg-zzu:editor-layout-version", LAYOUT_CACHE_VERSION);
+      ls.setItem("oprn:editor-layout-version", LAYOUT_CACHE_VERSION);
     }
   }
   const fallback = defaultEditorLayout();

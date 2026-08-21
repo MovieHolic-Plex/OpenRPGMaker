@@ -9,9 +9,9 @@ const SIZES = [
   { name: "1440", width: 1440, height: 900 },
 ] as const;
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
-const EDITOR_LAYOUT_VERSION_KEY = "rpg-zzu:editor-layout-version";
-const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
+const EDITOR_LAYOUT_VERSION_KEY = "oprn:editor-layout-version";
+const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
 const EDITOR_LAYOUT_VERSION = "2026-07-24-maptree-300";
 
 for (const size of SIZES) {
@@ -21,9 +21,9 @@ for (const size of SIZES) {
       await page.setViewportSize({ width: size.width, height: size.height });
       await page.addInitScript(
         ({ layoutKey, layoutVersionKey, layoutVersion, collapsedKey, chatDock }) => {
-          localStorage.removeItem("rpg-zzu:editor-layout");
-          localStorage.removeItem("rpg-zzu:editor-layout:v2");
-          localStorage.removeItem("rpg-zzu:editor-layout:v3");
+          localStorage.removeItem("oprn:editor-layout");
+          localStorage.removeItem("oprn:editor-layout:v2");
+          localStorage.removeItem("oprn:editor-layout:v3");
           localStorage.setItem(layoutVersionKey, layoutVersion);
           localStorage.setItem(layoutKey, JSON.stringify({ chatDock }));
           localStorage.setItem(collapsedKey, "1");

@@ -29,7 +29,7 @@ for (const shot of SHOTS) {
       project.startMapId = SKY_MAP.snowgate;
       project.startPos = { x: shot.x, y: shot.y };
       await page.addInitScript(() => {
-        window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+        window.localStorage.setItem("oprn:editor-ui-mode", "expert");
       });
       await page.setViewportSize({ width: 1280, height: 900 });
       await seedProjectFromSupabaseCanonical(page, project);

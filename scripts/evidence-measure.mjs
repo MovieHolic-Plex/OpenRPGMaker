@@ -10,13 +10,13 @@ const context = await browser.newContext({ viewport: { width: 1440, height: 900 
 const page = await context.newPage();
 
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-  localStorage.setItem("rpg-zzu:editor-welcome-dismissed", "1");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:editor-welcome-dismissed", "1");
   const layout = JSON.stringify({ leftWidth: 340, mapTreeHeight: 120, leftCollapsed: false, chatDock: "side" });
-  localStorage.setItem("rpg-zzu:editor-layout", layout);
-  localStorage.setItem("rpg-zzu:editor-layout:v2", layout);
-  localStorage.setItem("rpg-zzu:editor-layout:v3", layout);
-  localStorage.setItem("rpg-zzu:editor-layout:v4", layout);
+  localStorage.setItem("oprn:editor-layout", layout);
+  localStorage.setItem("oprn:editor-layout:v2", layout);
+  localStorage.setItem("oprn:editor-layout:v3", layout);
+  localStorage.setItem("oprn:editor-layout:v4", layout);
 });
 
 await page.goto(URL, { waitUntil: "networkidle", timeout: 30000 });
@@ -45,8 +45,8 @@ const m = await page.evaluate(() => {
     paletteHeight: lpr ? lpr.getBoundingClientRect().height : -1,
     resizerHeight: res ? res.getBoundingClientRect().height : -1,
     mapRootHeight: lmr ? lmr.getBoundingClientRect().height : -1,
-    layoutKey: localStorage.getItem("rpg-zzu:editor-layout:v3"),
-    layoutKeyOld: localStorage.getItem("rpg-zzu:editor-layout"),
+    layoutKey: localStorage.getItem("oprn:editor-layout:v3"),
+    layoutKeyOld: localStorage.getItem("oprn:editor-layout"),
   };
 });
 console.log(JSON.stringify(m, null, 2));

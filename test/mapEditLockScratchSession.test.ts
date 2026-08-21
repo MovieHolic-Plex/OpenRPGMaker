@@ -18,10 +18,10 @@ beforeEach(() => {
   restoreDom = installFakeDom();
   const storage = new MemoryStorage();
   storage.setItem(
-    "rpg-zzu:supabase-project-config",
+    "oprn:supabase-project-config",
     JSON.stringify({ anonKey: "anon", projectId: "proj", source: "custom", url: "https://db.test" }),
   );
-  storage.setItem("rpg-zzu-editor-session-id", "session-self");
+  storage.setItem("oprn:editor-session-id", "session-self");
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     writable: true,

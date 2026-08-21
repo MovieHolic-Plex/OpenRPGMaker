@@ -120,7 +120,7 @@ export async function saveSnapshot(page: Page, slot: 1 | 2 | 3): Promise<{
   };
 }> {
   return page.evaluate((slotIndex) => {
-    const text = window.localStorage.getItem(`rpg-zzu:save-slot:${slotIndex}`);
+    const text = window.localStorage.getItem(`oprn:save-slot:${slotIndex}`);
     if (!text) throw new Error("missing save snapshot");
     return JSON.parse(text) as Awaited<ReturnType<typeof saveSnapshot>>;
   }, slot);

@@ -5,7 +5,7 @@
 
 import { PRODUCT_BRAND } from "@/brand";
 
-export const EDITOR_UI_MODE_STORAGE_KEY = "rpg-zzu:editor-ui-mode";
+export const EDITOR_UI_MODE_STORAGE_KEY = "oprn:editor-ui-mode";
 /** 표시 브랜드는 src/brand.ts 가 단일 원천 — 여기서 문자열을 다시 적지 않는다. */
 export const EDITOR_PRODUCT_BRAND = PRODUCT_BRAND;
 export type EditorUiMode = "beginner" | "standard" | "expert";

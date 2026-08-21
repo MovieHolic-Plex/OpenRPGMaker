@@ -187,7 +187,7 @@ afterEach(() => {
 
 describe("AI 연동 칩 상태바 배선", () => {
   it("renderEditor 가 렌더한 상태바에 AI 연동 칩(testid: ai-connection-status)이 나타난다", async () => {
-    storage.setItem("rpg-zzu:ai-config", JSON.stringify(APIKEY_READY));
+    storage.setItem("oprn:ai-config", JSON.stringify(APIKEY_READY));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
 
@@ -204,7 +204,7 @@ describe("AI 연동 칩 상태바 배선", () => {
   });
 
   it("API 키가 없으면 상태바 칩이 '키 없음' 상태를 알린다", async () => {
-    storage.setItem("rpg-zzu:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
+    storage.setItem("oprn:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
 

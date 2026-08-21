@@ -10,7 +10,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 // DatabaseRecords 의 9개 컬렉션 — DatabaseCollection(= keyof DatabaseRecords) 전체.
 const STAT_COLLECTIONS: readonly DatabaseCollection[] = [

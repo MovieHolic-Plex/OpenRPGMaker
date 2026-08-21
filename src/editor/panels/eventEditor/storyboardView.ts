@@ -7,7 +7,7 @@ import type { Command } from "@/project/types";
 // 초보 모드에까지 노출됐다(2026-08-18 적대 평가). 기능이 생길 때 다시 추가한다.
 export type StoryboardMode = "storyboard" | "list";
 
-const MODE_KEY = "rpg-zzu:storyboard-mode";
+const MODE_KEY = "oprn:storyboard-mode";
 
 export function loadStoryboardMode(): StoryboardMode {
   try {

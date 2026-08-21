@@ -8,7 +8,7 @@ import {
 import { DATABASE_TAB_SPECS, exportedProject } from "./rm2k3-database-helpers";
 
 const ELEMENTS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "elements")!;
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const HELP_TOAST = "데이터베이스에서 레코드와 시스템 설정을 조정합니다.";
 
 // Observed beginner common-nav labels (database.ts COMMON_TAB_IDS + uiLabel).
@@ -158,7 +158,7 @@ test.describe("QA — beginner Database mode", () => {
     expect(errors).toEqual([]);
   });
 
-  test("malformed rpg-zzu.database.activeTab still opens the beginner modal", async ({ page }) => {
+  test("malformed oprn:database.activeTab still opens the beginner modal", async ({ page }) => {
     const errors = collectConsoleErrors(page);
     await bootDbLane(page, {
       mode: "beginner",

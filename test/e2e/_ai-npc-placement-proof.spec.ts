@@ -64,9 +64,9 @@ test.describe("내부 AI NPC 배치", () => {
     });
 
     await page.addInitScript(() => {
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
       // 코치마크가 AI 패널을 덮지 않게 첫 방문 플래그를 미리 소진시킨다.
-      localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "seen");
+      localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
       // ai-config 는 건드리지 않는다 — autoApprove 를 주입해 덮어쓰면 대화 세션이
       // 초기화되어 로그가 시작 화면으로 돌아간다(실측: 242초 대기 후 이벤트 0건).
       // 대신 제안 카드를 명시적으로 수락한다.

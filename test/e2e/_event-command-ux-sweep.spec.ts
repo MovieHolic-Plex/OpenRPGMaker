@@ -9,7 +9,7 @@ import type { Command } from "@/project/types";
 const DIR = "output/evidence/event-command-ux-sweep";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 test.setTimeout(120_000);
 

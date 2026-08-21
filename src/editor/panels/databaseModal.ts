@@ -406,7 +406,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
   closeButton.focus();
 }
 
-const DB_DOCK_MODE_KEY = "rpg-zzu:db-dock-mode";
+const DB_DOCK_MODE_KEY = "oprn:db-dock-mode";
 
 function readStoredDockMode(): boolean {
   if (typeof window === "undefined") return false;

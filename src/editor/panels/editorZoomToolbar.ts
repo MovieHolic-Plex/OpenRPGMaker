@@ -9,7 +9,7 @@ import { toast } from "@/util/toast";
 
 let mapScreenshotRequestSeq = 0;
 
-export const CANVAS_TOOLBAR_EXPANDED_KEY = "rpg-zzu:canvas-toolbar-expanded";
+export const CANVAS_TOOLBAR_EXPANDED_KEY = "oprn:canvas-toolbar-expanded";
 
 // 기본 모드는 자주 쓰는 배율만 노출한다 — 7컨트롤(라벨+6버튼)은 초보에게 소음.
 // 현재 배율이 목록 밖(3/6/8x)이면 활성 표시를 위해 끼워 넣는다.

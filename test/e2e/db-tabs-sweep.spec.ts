@@ -83,7 +83,7 @@ test("DB modal all-tabs sweep: render, no console errors, no stubs", async ({ pa
     consoleErrors.push(`console: ${text}`);
   });
 
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
   await openDatabase(page);

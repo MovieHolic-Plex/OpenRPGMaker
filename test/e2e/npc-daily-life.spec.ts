@@ -26,7 +26,7 @@ test.use({ serviceWorkers: "block" });
 
 test("주민이 시간표대로 낮 활동으로 옮겨간다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
 

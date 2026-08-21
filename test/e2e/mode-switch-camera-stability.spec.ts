@@ -14,7 +14,7 @@ async function getCamera(page: Page): Promise<{ scrollX: number; scrollY: number
 test("mode switch basic↔expert preserves camera center", async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1601, height: 900 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&m1MapEditor=1");
 
   await page.waitForLoadState("networkidle");

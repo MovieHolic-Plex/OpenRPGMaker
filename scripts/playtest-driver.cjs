@@ -6,7 +6,7 @@ const path = require("path");
 
 const OUT = path.join(__dirname, "..", "evidence", "playtest-rm2003");
 const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
-const DEV_KEY = "rpg-zzu:dev-project:127.0.0.1/?devProject=1";
+const DEV_KEY = "oprn:dev-project:127.0.0.1/?devProject=1";
 const URL = "http://127.0.0.1:5199/?devProject=1";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

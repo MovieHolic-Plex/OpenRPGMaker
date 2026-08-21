@@ -15,7 +15,7 @@ page.setDefaultTimeout(45_000);
 
 const base = process.env.RPG_ZZU_URL || "http://127.0.0.1:9999/";
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
 });
 await page.goto(`${base}?blankProject=1&cb=${Date.now()}`, { waitUntil: "networkidle", timeout: 90_000 });
 await page.waitForTimeout(1500);

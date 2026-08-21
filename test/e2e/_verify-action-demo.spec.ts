@@ -10,7 +10,7 @@ test("action demo loads from supabase and spawns field enemies", async ({ page }
   });
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/?project=rpg-zzu-action-demo");

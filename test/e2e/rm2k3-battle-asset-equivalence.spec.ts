@@ -7,7 +7,7 @@ const evidenceDir = "output/evidence/battle-asset-equivalence-20260630/red-green
 test("battle reference scene uses equivalent enemy, party, portrait, and icon assets", async ({ page }) => {
   await page.setViewportSize({ width: 1360, height: 768 });
   // `startReferenceBattle` uses the expert classic toolbar's `mode-play` control.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await mkdir(evidenceDir, { recursive: true });
   await seedLayoutResultBattleProject(page, { battleUiStyle: "rm2003" });
   await startReferenceBattle(page);

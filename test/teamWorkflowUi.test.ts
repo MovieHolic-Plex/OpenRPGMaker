@@ -22,8 +22,8 @@ vi.mock("@/project/supabaseProjectSync", () => ({
   ]),
 }));
 
-const OWNER_LABEL_KEY = "rpg-zzu-editor-owner-label";
-const LAST_LOGIN_METHOD_KEY = "rpg-zzu-editor-last-login-method";
+const OWNER_LABEL_KEY = "oprn:editor-owner-label";
+const LAST_LOGIN_METHOD_KEY = "oprn:editor-last-login-method";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();

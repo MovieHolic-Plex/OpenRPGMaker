@@ -25,7 +25,7 @@ test.use({ serviceWorkers: "block" });
 
 test("칠하기 탭은 타일 팔레트를 집 킷 선반보다 먼저·넓게 보여준다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1440, height: 950 });
   await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
@@ -66,7 +66,7 @@ test("칠하기 탭은 타일 팔레트를 집 킷 선반보다 먼저·넓게 �
 
 test("접힌 집 킷 선반은 펼치면 킷 버튼을 보여준다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1440, height: 950 });
   await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());

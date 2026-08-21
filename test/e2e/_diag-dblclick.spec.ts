@@ -5,7 +5,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 test("capture positionToCamera transform", async ({ page }) => {
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
 
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();

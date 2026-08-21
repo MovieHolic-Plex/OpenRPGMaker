@@ -25,7 +25,7 @@ type PreviewReportOptions = {
 };
 
 const PANEL_MARGIN = 8;
-const PANEL_POSITION_KEY = "rpg-zzu.aiAssistant.position";
+const PANEL_POSITION_KEY = "oprn:aiAssistant.position";
 
 export function renderAiAssistantPanel(): HTMLElement {
   let dragState: DragState | null = null;

@@ -1,4 +1,6 @@
 import "@/player/player.css";
+// 세이브 슬롯 키(oprn:save-slot:*)를 읽기 전에 구 접두사를 옮긴다. src/storageBoot.ts 참고.
+import "@/storageBoot";
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize } from "@/project/io";
 import { renderPlayer } from "@/player/player";

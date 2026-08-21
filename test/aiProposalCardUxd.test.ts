@@ -500,7 +500,7 @@ describe("UXD topbar identity chip", () => {
   });
 
   it("menu.ts 상단바 렌더에서 사람 토큰 반복을 제거한다", () => {
-    storage.setItem("rpg-zzu-editor-session-id", "4547-session");
+    storage.setItem("oprn:editor-session-id", "4547-session");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);

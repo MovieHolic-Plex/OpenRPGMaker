@@ -11,7 +11,7 @@ const ACTORS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "actors")!;
 const CLASSES_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "classes")!;
 
 async function gotoExpertDatabase(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await openDatabase(page);

@@ -6,7 +6,7 @@ const CLASSES_TAB = { label: "Classes", slug: "classes", testId: "db-tab-classes
 test.setTimeout(90_000);
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("classes 탭 CRUD 왕복 — 정체성/전투명령/옵션/스킬/승급/유효도/장비/곡선이 저장·복원·내보내기까지 보존된다", async ({ page }) => {

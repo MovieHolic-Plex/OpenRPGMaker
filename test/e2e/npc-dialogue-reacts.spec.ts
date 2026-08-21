@@ -52,7 +52,7 @@ async function talkTo(page: Page, eventId: string): Promise<string> {
 
 test("종을 되살리면 마을 사람 대사가 바뀐다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
 

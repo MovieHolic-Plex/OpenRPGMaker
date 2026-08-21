@@ -4,7 +4,7 @@ import { expect, test, type Page } from "@playwright/test";
 // 실행: npx playwright test capture-event-editor-help-images.spec.ts
 // 결과물: public/assets/help/event-editor/*.png
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test.setTimeout(90_000);

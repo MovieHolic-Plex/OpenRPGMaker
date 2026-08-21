@@ -70,7 +70,7 @@ export function renderSettingsForm(
     children: [el("span", { class: "ai-config-label", text: "작업 모드" }), agentModeSelect],
   });
 
-  // 글자 크기 3단(V3C) — AiConfig와 별개로 localStorage(rpg-zzu:ai-font-size)에 즉시 영속.
+  // 글자 크기 3단(V3C) — AiConfig와 별개로 localStorage(oprn:ai-font-size)에 즉시 영속.
   const fontSizeSelect = el("select", {
     class: "ai-config-select",
     dataset: { testid: "ai-font-size" },

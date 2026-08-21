@@ -237,10 +237,10 @@ page.on("console", (m) => {
 await page.addInitScript(
   ({ supabaseDraft, aiConfig }) => {
     localStorage.clear();
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
-    localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(supabaseDraft));
-    localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(aiConfig));
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:ai-panel-collapsed", "0");
+    localStorage.setItem("oprn:supabase-project-config", JSON.stringify(supabaseDraft));
+    localStorage.setItem("oprn:ai-config", JSON.stringify(aiConfig));
   },
   { supabaseDraft, aiConfig }
 );
@@ -299,10 +299,10 @@ for (const step of STEPS) {
     if (attempt >= 2 && currentModel !== FALLBACK_MODEL) {
       currentModel = FALLBACK_MODEL;
       await page.evaluate((m) => {
-        const cfg = JSON.parse(localStorage.getItem("rpg-zzu:ai-config") ?? "{}");
+        const cfg = JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}");
         cfg.model = m;
         cfg.liteModel = m;
-        localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(cfg));
+        localStorage.setItem("oprn:ai-config", JSON.stringify(cfg));
         window.location.reload();
       }, currentModel);
       await page.waitForTimeout(6000);

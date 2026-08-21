@@ -63,7 +63,7 @@ describe("devProjectPersistence — 로컬 사본 폐기(복구 액션)", () => 
 
     expect(hasDevProjectOverride()).toBe(false);
     // 손상된(파싱 불가) 사본을 심는다 — loadDevProjectOverride가 throw하는 벽돌 상황.
-    storage.set("rpg-zzu:dev-project:127.0.0.1/?devProject=1", "{broken json");
+    storage.set("oprn:dev-project:127.0.0.1/?devProject=1", "{broken json");
     expect(hasDevProjectOverride()).toBe(true);
 
     discardDevProjectOverride();

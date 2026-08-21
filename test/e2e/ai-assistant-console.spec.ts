@@ -9,14 +9,14 @@ import { mkdirSync } from "node:fs";
 import path from "node:path";
 
 const EVIDENCE = path.resolve(".omo/evidence/ai-assistant-ux-overhaul");
-const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
-const COACH_KEY = "rpg-zzu:coachmarks-basic-v1";
-const UI_MODE_KEY = "rpg-zzu:editor-ui-mode";
+const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
+const COACH_KEY = "oprn:coachmarks-basic-v1";
+const UI_MODE_KEY = "oprn:editor-ui-mode";
 const LAYOUT_KEYS = [
-  "rpg-zzu:editor-layout",
-  "rpg-zzu:editor-layout:v2",
-  "rpg-zzu:editor-layout:v3",
-  "rpg-zzu:editor-layout:v4",
+  "oprn:editor-layout",
+  "oprn:editor-layout:v2",
+  "oprn:editor-layout:v3",
+  "oprn:editor-layout:v4",
 ] as const;
 const VIEWPORTS = [
   { name: "1024", width: 1024, height: 768 },

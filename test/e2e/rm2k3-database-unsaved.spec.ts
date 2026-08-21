@@ -4,7 +4,7 @@ import { exportedProject } from "./rm2k3-database-helpers";
 test("RM2K3 database modal prompts before closing dirty DB edits", async ({ page }) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();

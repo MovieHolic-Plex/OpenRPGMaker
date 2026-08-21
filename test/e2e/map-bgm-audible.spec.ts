@@ -37,7 +37,7 @@ test("게임을 시작하면 재생 가능한 BGM 이 실제로 요청된다", a
     window.Audio.prototype = NativeAudio.prototype;
   });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
 

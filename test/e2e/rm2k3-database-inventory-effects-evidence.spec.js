@@ -38,7 +38,7 @@ test("T2 inventory/effects evidence packet", async ({ page }) => {
 
   await page.setViewportSize({ width: 1280, height: 800 });
   // DB 툴바(toolbar-database)는 expert chrome 에서만 노출된다.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
   await openDatabase(page);
   await editInventoryEffects(page);

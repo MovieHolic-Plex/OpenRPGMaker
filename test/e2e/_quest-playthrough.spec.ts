@@ -149,7 +149,7 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
     errors.push(text.slice(0, 200));
   });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/?project=rpg-zzu-quest-demo");
@@ -352,7 +352,7 @@ test("완주: 마을 → 폐허 → 보스 → 엔딩", async ({ page }, testInf
       await slot.click({ force: true });
       await page.waitForTimeout(1200);
       const saved = await page.evaluate(() => {
-        const raw = window.localStorage.getItem("rpg-zzu:save-slot:1");
+        const raw = window.localStorage.getItem("oprn:save-slot:1");
         if (!raw) return null;
         try {
           const parsed = JSON.parse(raw) as { session?: { switches?: Record<string, boolean> } };

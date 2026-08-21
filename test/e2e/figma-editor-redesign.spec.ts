@@ -22,7 +22,7 @@ async function debugState(page: Page): Promise<DebugState> {
 async function openEventLayerContextMenu(page: Page, width: number, height: number): Promise<void> {
   await page.setViewportSize({ width, height });
   // Dark figma shell + classic toolbar + dense zoom controls are expert-only.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.route("**/rest/v1/map_edit_locks**", async (route) => {
     await route.fulfill({ status: 404, contentType: "text/plain", body: "PGRST205" });
   });

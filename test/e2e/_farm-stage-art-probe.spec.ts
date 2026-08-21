@@ -86,7 +86,7 @@ async function growOneDay(page: Page): Promise<void> {
 test("1일차 감자는 수확기 그림인데 수확이 되는가", async ({ page }) => {
   mkdirSync(OUT, { recursive: true });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, projectWithGrowthLever());

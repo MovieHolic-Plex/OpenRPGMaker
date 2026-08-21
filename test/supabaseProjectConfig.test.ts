@@ -8,7 +8,7 @@ describe("Supabase project runtime config", () => {
   it("uses legacy browser DB config only when Vite env is empty", async () => {
     const storage = new Map<string, string>();
     storage.set(
-      "rpg-zzu:supabase-project-config",
+      "oprn:supabase-project-config",
       JSON.stringify({ url: "http://dbserver:8100/", anonKey: "runtime-key", projectId: "runtime-project" }),
     );
     vi.stubGlobal("window", {
@@ -33,7 +33,7 @@ describe("Supabase project runtime config", () => {
   it("uses Vite env as the default when stale legacy browser config exists", async () => {
     const storage = new Map<string, string>();
     storage.set(
-      "rpg-zzu:supabase-project-config",
+      "oprn:supabase-project-config",
       JSON.stringify({ url: "http://127.0.0.1:1", anonKey: "stale-key", projectId: "stale-project" }),
     );
     vi.stubGlobal("window", {
@@ -86,13 +86,13 @@ describe("Supabase project runtime config", () => {
       url: "http://dbserver:8100",
     });
     expect(supabaseProjectConfigDraftWithSource({}).source).toBe("custom");
-    expect(storage.get("rpg-zzu:supabase-project-config")).toContain('"source":"custom"');
+    expect(storage.get("oprn:supabase-project-config")).toContain('"source":"custom"');
   });
 
   it("fills empty custom fields from Vite env so the connect form is not blank", async () => {
     const storage = new Map<string, string>();
     storage.set(
-      "rpg-zzu:supabase-project-config",
+      "oprn:supabase-project-config",
       JSON.stringify({ source: "custom", url: "", anonKey: "", projectId: "" }),
     );
     vi.stubGlobal("window", {
@@ -119,7 +119,7 @@ describe("Supabase project runtime config", () => {
       url: "http://dbserver:8100",
     });
     const reset = resetSupabaseProjectConfigToEnv(env);
-    expect(storage.has("rpg-zzu:supabase-project-config")).toBe(false);
+    expect(storage.has("oprn:supabase-project-config")).toBe(false);
     expect(reset.source).toBe("env");
     expect(reset.url).toBe("http://dbserver:8100");
   });

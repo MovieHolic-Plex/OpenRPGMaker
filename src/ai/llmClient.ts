@@ -2,7 +2,7 @@
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
 // - 스트리밍 SSE 파서(data: 라인 / [DONE] / tool_calls delta 조립) 포함.
-// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(rpg-zzu:ai-config).
+// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(oprn:ai-config).
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
@@ -138,7 +138,7 @@ export function defaultAiConfig(): AiConfig {
   };
 }
 
-export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
+export const AI_CONFIG_STORAGE_KEY = "oprn:ai-config";
 
 // localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
 // apiKey가 빈 문자열로 저장된 경우(미설정) env 폴백을 허용한다.

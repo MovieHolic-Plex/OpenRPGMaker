@@ -199,7 +199,7 @@ describe("사용자 정의 스킬", () => {
 
   it("loadUserSkills는 params 있는/없는 레코드를 모두 수용한다(하위호환 + 정화)", () => {
     localStorage.setItem(
-      "rpg-zzu:user-skills",
+      "oprn:user-skills",
       JSON.stringify([
         { id: "u-old", icon: "⭐", name: "옛 스킬", description: "", template: "{{맵}} 정리" },
         {

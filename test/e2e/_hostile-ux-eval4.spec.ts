@@ -6,7 +6,7 @@ const TILE = 16;
 
 test("P. proposal backdrop after OK: does it block input?", async ({ page }) => {
   test.setTimeout(240_000);
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "standard"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "standard"));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
   await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });

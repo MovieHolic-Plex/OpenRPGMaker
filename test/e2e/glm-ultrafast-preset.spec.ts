@@ -11,7 +11,7 @@ async function dismissLogin(page: Page): Promise<void> {
 test.describe("glm-5.2-ultrafast preset", () => {
   test("appears in apiKey model preset dropdown", async ({ page }) => {
     await page.addInitScript(() => {
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
     });
     await page.setViewportSize({ width: 1600, height: 920 });
     await page.goto("/?glmPresetVerify=1");

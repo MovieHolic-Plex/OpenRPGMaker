@@ -13,7 +13,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
   const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
   await page.addInitScript((json) => {
-    for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i);
+    for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i);
     window.__RPG_ZZU_E2E_PROJECT__ = JSON.parse(json);
   }, PROJECT_JSON);
   await page.goto(`http://127.0.0.1:${PORT}/?devProject=1`, { waitUntil: "domcontentloaded" });

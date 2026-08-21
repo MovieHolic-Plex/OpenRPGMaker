@@ -12,7 +12,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
   const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
   await page.addInitScript((json) => {
-    for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i);
+    for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i);
     window.__RPG_ZZU_E2E_PROJECT__ = JSON.parse(json);
   }, PROJECT_JSON);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
@@ -53,11 +53,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await sleep(700);
     if (!(await clickPlay("#save-slot-1"))) await key("Enter", 1, 900);
     await sleep(800);
-    if (!(await page.evaluate(() => !!localStorage.getItem("rpg-zzu:save-slot:1")))) { console.log("SAVE FAIL"); return false; }
+    if (!(await page.evaluate(() => !!localStorage.getItem("oprn:save-slot:1")))) { console.log("SAVE FAIL"); return false; }
     await page.evaluate(([mm, px, py]) => {
-      const raw = JSON.parse(localStorage.getItem("rpg-zzu:save-slot:1"));
+      const raw = JSON.parse(localStorage.getItem("oprn:save-slot:1"));
       raw.session.currentMapId = mm; raw.session.x = px; raw.session.y = py;
-      localStorage.setItem("rpg-zzu:save-slot:1", JSON.stringify(raw));
+      localStorage.setItem("oprn:save-slot:1", JSON.stringify(raw));
     }, [m, x, y]);
     await key("Escape", 1, 700);
     if (!(await clickPlay("로드"))) { await key("Escape", 1, 600); await clickPlay("로드"); }

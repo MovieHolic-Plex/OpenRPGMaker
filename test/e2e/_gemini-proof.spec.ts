@@ -56,9 +56,9 @@ test("에디터 AI 가 cpen/gemini-3-flash 로 응답한다", async ({ page }) =
   // localStorage 의 기존 설정이 기본값을 덮으므로, 이번 프리셋을 명시적으로 심는다.
   // (apiKey 는 넣지 않는다 — 상대 baseUrl 이면 vite 프록시가 서버에서 Authorization 을 주입한다.)
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     localStorage.setItem(
-      "rpg-zzu:ai-config",
+      "oprn:ai-config",
       JSON.stringify({
         authMode: "apiKey",
         baseUrl: "/api/cpen",

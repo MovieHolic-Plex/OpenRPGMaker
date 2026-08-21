@@ -122,7 +122,7 @@ async function runDesktopScenario(
   const browserIssues: string[] = [];
   await context.addInitScript(({ editorMode, seededProject }) => {
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", editorMode);
+    window.localStorage.setItem("oprn:editor-ui-mode", editorMode);
     window.__RPG_ZZU_E2E_PROJECT__ = seededProject;
     Object.defineProperty(window, "Audio", {
       configurable: true,

@@ -4,7 +4,7 @@ import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
-const TILESET_SELECTION_KEY = "rpg-zzu.database.selectedTilesetId";
+const TILESET_SELECTION_KEY = "oprn:database.selectedTilesetId";
 
 let selectedTilesetId: string | null = null;
 

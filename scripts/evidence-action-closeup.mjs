@@ -7,7 +7,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 await page.addInitScript(() => {
-  window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  window.localStorage.setItem("oprn:editor-ui-mode", "expert");
 });
 await page.goto("http://localhost:9999/?project=rpg-zzu-dungeon-example", { waitUntil: "domcontentloaded" });
 await page.getByTestId("edit-canvas").waitFor({ timeout: 30_000 });

@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 test("editor database edit persists into the project the player runs", async ({ page }) => {
   test.setTimeout(60_000);
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();

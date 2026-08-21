@@ -8,7 +8,7 @@ import {
 import { exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
 
 const OVERVIEW_TAB = { label: "Overview", slug: "overview", testId: "db-tab-overview" } as const satisfies DatabaseTabSpec;
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 // STAT_COLLECTIONS in databaseOverviewView.ts — 9 chips, testid suffix = collection key.
 const STAT_CHIPS = [
@@ -39,7 +39,7 @@ test.describe("QA — Database Overview dashboard", () => {
     await bootDbLane(page, { mode: "expert" });
 
     // W5: overview is never the default open tab when no last-used tab is stored.
-    // bootDbLane clears rpg-zzu.database.activeTab, so readStoredActiveTab falls back to actors.
+    // bootDbLane clears oprn:database.activeTab, so readStoredActiveTab falls back to actors.
     await expect(page.getByTestId("db-tab-actors")).toHaveClass(/active/);
     await expect(page.getByTestId("db-tab-overview")).not.toHaveClass(/active/);
     await expect(page.getByTestId("db-overview-stat-items")).toHaveCount(0);
@@ -68,7 +68,7 @@ test.describe("QA — Database Overview dashboard", () => {
     expect(errors).toEqual([]);
   });
 
-  test("seeded rpg-zzu.database.activeTab=overview persists as last-used tab", async ({ page }) => {
+  test("seeded oprn:database.activeTab=overview persists as last-used tab", async ({ page }) => {
     const errors = collectConsoleErrors(page);
     await bootDbLane(page, {
       mode: "expert",

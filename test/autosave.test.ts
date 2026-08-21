@@ -121,7 +121,7 @@ describe("performAutosave / round trip", () => {
   });
 
   it("keeps the autosave key fully separate from the 3 manual slots (namespace included)", () => {
-    expect(autosaveKey()).toBe("rpg-zzu:save-slot:auto");
+    expect(autosaveKey()).toBe("oprn:save-slot:auto");
     for (const slot of [1, 2, 3] as const) expect(autosaveKey()).not.toBe(saveSlotKey(slot));
     setSaveSlotStorageNamespace("proj-x");
     expect(autosaveKey()).toBe("proj-x:save-slot:auto");

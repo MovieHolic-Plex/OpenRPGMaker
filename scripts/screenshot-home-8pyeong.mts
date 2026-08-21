@@ -33,7 +33,7 @@ async function main() {
   await page.addInitScript(
     ({ url, anonKey, projectId }) => {
       localStorage.setItem(
-        "rpg-zzu:supabase-project-config",
+        "oprn:supabase-project-config",
         JSON.stringify({ url, anonKey, projectId, source: "custom" }),
       );
     },
@@ -96,11 +96,11 @@ async function main() {
       const storeMod = await import("/src/project/store.ts");
       const sync = await import("/src/project/supabaseProjectSync.ts");
       const cfg = {
-        url: localStorage.getItem("rpg-zzu:supabase-project-config")
-          ? JSON.parse(localStorage.getItem("rpg-zzu:supabase-project-config")!).url
+        url: localStorage.getItem("oprn:supabase-project-config")
+          ? JSON.parse(localStorage.getItem("oprn:supabase-project-config")!).url
           : "",
-        anonKey: localStorage.getItem("rpg-zzu:supabase-project-config")
-          ? JSON.parse(localStorage.getItem("rpg-zzu:supabase-project-config")!).anonKey
+        anonKey: localStorage.getItem("oprn:supabase-project-config")
+          ? JSON.parse(localStorage.getItem("oprn:supabase-project-config")!).anonKey
           : "",
         projectId,
       };

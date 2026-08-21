@@ -4,13 +4,13 @@ const fs = require("fs");
 const path = require("path");
 const OUT = path.join(__dirname, "..", "evidence", "playtest-rm2003");
 const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
-const DEV_KEY = "rpg-zzu:dev-project:127.0.0.1/?devProject=1";
+const DEV_KEY = "oprn:dev-project:127.0.0.1/?devProject=1";
 const URL = "http://127.0.0.1:5199/?devProject=1";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function freshGame(browser) {
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
-  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
+  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1200);

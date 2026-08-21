@@ -21,8 +21,8 @@ type RuntimeState = {
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    window.localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:coachmarks-basic-v1", "1");
   });
 });
 

@@ -9,7 +9,7 @@ const SWITCHES_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "switches")!;
 const VARIABLES_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "variables")!;
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("System tab: field roundtrip, tab-switch persistence, and blurred undo", async ({ page }) => {

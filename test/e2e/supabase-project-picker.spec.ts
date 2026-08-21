@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { createHouseTemplateGalleryProject } from "@/project/defaults";
 import { serialize } from "@/project/io";
 
-const STORAGE_KEY = "rpg-zzu:supabase-project-config";
+const STORAGE_KEY = "oprn:supabase-project-config";
 const TEST_CONFIG = {
   anonKey: "test-anon-key",
   projectId: "initial-project",

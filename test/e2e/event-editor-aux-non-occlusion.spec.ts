@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-    window.localStorage.setItem("rpg-zzu-editor-session-id", "e2e-event-aux-non-occlusion");
+    window.localStorage.setItem("oprn:editor-session-id", "e2e-event-aux-non-occlusion");
   });
 });
 

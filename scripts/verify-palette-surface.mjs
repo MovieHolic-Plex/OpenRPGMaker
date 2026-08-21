@@ -28,9 +28,9 @@ page.on("console", (msg) => {
 });
 
 await page.addInitScript(() => {
-  window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   // 옛 탭 저장값이 남아 있어도 새 화면에 영향이 없어야 한다.
-  window.localStorage.setItem("rpg-zzu:palette-work-tab", "props");
+  window.localStorage.setItem("oprn:palette-work-tab", "props");
 });
 await page.goto(`${BASE}/?freshProject=1`, { waitUntil: "domcontentloaded" });
 await page.getByTestId("edit-canvas").waitFor({ timeout: 30_000 });

@@ -83,7 +83,7 @@ describe("T12 save slots", () => {
     const project = createBlankProject();
     const session = startSession(project);
     const storage = new MemoryStorage();
-    storage.setItem("rpg-zzu:save-slot:1", "{not-json");
+    storage.setItem("oprn:save-slot:1", "{not-json");
     session.variables.var_score = 2;
     saveToSlot(storage, 2, createSaveSnapshot(project, session));
 

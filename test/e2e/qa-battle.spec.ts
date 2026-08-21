@@ -24,7 +24,7 @@ function collectConsole(page: Page): string[] {
 }
 
 async function boot(page: Page): Promise<void> {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
   await openDatabase(page);
 }

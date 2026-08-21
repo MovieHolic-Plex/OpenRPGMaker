@@ -95,7 +95,7 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
   test.setTimeout(45_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   // 기본(basic) UI 모드는 상단 메뉴(mode-play)를 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, makePokemonProject());
   await page.getByTestId("mode-play").click();
   await startTitle(page);
@@ -160,7 +160,7 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
 // 모드A 결함인지 헤드리스 렌더 아티팩트인지 시각 비교용.
 test("control: battleParty off이면 영웅이 그대로 출전한다(액터 경로 불변)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   const project = createBlankProject();
   const sx = project.startPos.x;
   const sy = project.startPos.y;

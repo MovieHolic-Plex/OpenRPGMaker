@@ -4,7 +4,7 @@ import { exportedProject } from "./rm2k3-database-helpers";
 test("Database Items tab follows RM2K3 item types and Korean type-specific panels", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   // DB 툴바(toolbar-database)는 expert chrome 에서만 노출된다.
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();

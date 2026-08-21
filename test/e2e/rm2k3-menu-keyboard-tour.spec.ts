@@ -7,7 +7,7 @@ import {
 test.setTimeout(120_000);
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("RM2K3 play menu keyboard tour mutates and restores runtime state", async ({ page }) => {
@@ -189,6 +189,6 @@ async function mutatePositionAndInventory(page: Page, mapId: string, x: number, 
 
 async function clearSaveSlots(page: Page): Promise<void> {
   await page.evaluate(() => {
-    for (const slot of [1, 2, 3]) window.localStorage.removeItem(`rpg-zzu:save-slot:${slot}`);
+    for (const slot of [1, 2, 3]) window.localStorage.removeItem(`oprn:save-slot:${slot}`);
   });
 }

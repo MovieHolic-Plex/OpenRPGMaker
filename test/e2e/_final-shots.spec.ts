@@ -8,7 +8,7 @@ mkdirSync(SHOT_DIR, { recursive: true });
 const TILE = 16;
 
 async function openApp(page: Page, mode = "standard", w = 1440, h = 1000) {
-  await page.addInitScript((m) => localStorage.setItem("rpg-zzu:editor-ui-mode", m), mode);
+  await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
   await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });

@@ -11,7 +11,7 @@
 //
 // 보안: 사용자 프리셋에 apiKey 는 절대 저장하지 않는다 — localStorage 에 평문 키가 남기 때문.
 // 상대 baseUrl(/api/...) 프록시는 서버가 키를 주입하므로 클라이언트 키 자체가 불필요하고,
-// 절대 URL 게이트웨이 키는 기존 rpg-zzu:ai-config 의 apiKey 필드가 계속 맡는다(이 파일이 안 건드림).
+// 절대 URL 게이트웨이 키는 기존 oprn:ai-config 의 apiKey 필드가 계속 맡는다(이 파일이 안 건드림).
 
 import type { AiConfig } from "@/ai/llmClient";
 import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
@@ -275,16 +275,16 @@ export async function probeAllPresets(
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * 사용자 프리셋 저장 키. 기존 설정 저장소(rpg-zzu:ai-config) 와 별도다 — 기존 저장 동작을 깨지 않는다.
+ * 사용자 프리셋 저장 키. 기존 설정 저장소(oprn:ai-config) 와 별도다 — 기존 저장 동작을 깨지 않는다.
  */
-export const AI_PRESETS_STORAGE_KEY = "rpg-zzu:ai-presets";
+export const AI_PRESETS_STORAGE_KEY = "oprn:ai-presets";
 
 /**
  * localStorage 에 저장되는 사용자 프리셋 항목. AiConfig 의 사용자 설정 필드 전체 + 이름.
  *
  * **apiKey 는 의도적으로 없다.** 프리셋에 키를 담으면 localStorage 에 평문 키가 남는다.
  * 상대 baseUrl 프록시는 서버가 키를 주입해 클라이언트 키가 필요 없고, 절대 URL 키는 기존
- * rpg-zzu:ai-config 가 맡는다. 저장/적용 어느 쪽에서도 이 타입은 키를 운반하지 않는다.
+ * oprn:ai-config 가 맡는다. 저장/적용 어느 쪽에서도 이 타입은 키를 운반하지 않는다.
  */
 export interface SavedAiPreset {
   /** 사용자 지정 이름. 동일 이름은 덮어쓰기 키로 쓴다. */

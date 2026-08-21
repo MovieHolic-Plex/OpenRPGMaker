@@ -58,10 +58,10 @@ page.on("dialog", (d) => d.accept());
 await page.addInitScript(
   ({ supabaseDraft, aiConfig }) => {
     localStorage.clear();
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
-    localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(supabaseDraft));
-    localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(aiConfig));
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:ai-panel-collapsed", "0");
+    localStorage.setItem("oprn:supabase-project-config", JSON.stringify(supabaseDraft));
+    localStorage.setItem("oprn:ai-config", JSON.stringify(aiConfig));
   },
   { supabaseDraft, aiConfig }
 );

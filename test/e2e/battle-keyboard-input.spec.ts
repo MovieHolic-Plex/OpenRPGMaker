@@ -4,7 +4,7 @@ import { seedReferenceBattleProject, startReferenceBattle, waitForActorCommand }
 test("battle keyboard controls work in the real test-play window", async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1360, height: 768 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedReferenceBattleProject(page);
   await startReferenceBattle(page);
   await waitForActorCommand(page);

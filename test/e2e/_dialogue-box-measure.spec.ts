@@ -18,7 +18,7 @@ test("대사창 실측", async ({ page }) => {
   project.startPos = { x: 15, y: 15 };
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, project);

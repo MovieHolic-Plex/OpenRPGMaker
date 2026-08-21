@@ -81,7 +81,7 @@ async function stepDir(page: Page, dir: "down" | "left" | "right" | "up"): Promi
 
 test("action combat: HUD, contact damage, swing kill, EXP grant", async ({ page }, testInfo) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, buildActionProject());

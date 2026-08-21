@@ -127,7 +127,7 @@ describe("classic toolbar actions", () => {
     const expand = findByTestId(fake(firstHost), "editor-canvas-toolbar-expand");
 
     expand?.click();
-    expect(localStorage.getItem("rpg-zzu:canvas-toolbar-expanded")).toBe("1");
+    expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("1");
     expect(expand?.getAttribute("aria-expanded")).toBe("true");
 
     const secondHost = document.createElement("div");
@@ -137,7 +137,7 @@ describe("classic toolbar actions", () => {
     expect(secondExpand?.getAttribute("aria-expanded")).toBe("true");
 
     secondExpand?.click();
-    expect(localStorage.getItem("rpg-zzu:canvas-toolbar-expanded")).toBe("0");
+    expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("0");
   });
 
   it("places the standard-only more-tools menu immediately after the mode toggle", () => {

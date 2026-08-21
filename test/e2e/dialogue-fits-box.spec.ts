@@ -40,7 +40,7 @@ test("대사창이 담을 수 있는 만큼만 넣는다 — 잘린 줄·가려�
   project.startPos = { x: 15, y: 15 };
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, project);

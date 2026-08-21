@@ -73,7 +73,7 @@ async function startAtExpanseEntry(page: Page): Promise<string> {
   await page.addInitScript(({ project }) => {
     window.__RPG_ZZU_E2E_PROJECT__ = project;
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, { project: local.project });
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto(`/?focusX=${ICE_GRAND_EXPANSE_START.x}&focusY=${ICE_GRAND_EXPANSE_START.y}`);

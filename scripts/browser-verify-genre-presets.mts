@@ -52,7 +52,7 @@ async function shot(page: Page, dir: string, name: string, note: string): Promis
 async function clearWelcomeDismiss(page: Page): Promise<void> {
   await page.evaluate(() => {
     try {
-      localStorage.removeItem("rpg-zzu:editor-welcome-dismissed");
+      localStorage.removeItem("oprn:editor-welcome-dismissed");
     } catch {
       /* ignore */
     }

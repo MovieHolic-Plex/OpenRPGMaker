@@ -1655,7 +1655,7 @@ async function probeX6(page: Page): Promise<void> {
     const visible = await chipAfter.isVisible().catch(() => false);
     const pressed = visible ? await chipAfter.getAttribute("aria-pressed") : null;
     const cls = visible ? ((await chipAfter.getAttribute("class")) ?? "") : "";
-    const stored = await page.evaluate(() => localStorage.getItem("rpg-zzu.database.categoryFilter"));
+    const stored = await page.evaluate(() => localStorage.getItem("oprn:database.categoryFilter"));
     const persisted = Boolean(stored && stored.includes("medicine"));
     const visuallyActive = pressed === "true" && cls.includes("active");
     const galleryCards = await page.locator("[data-testid^='db-record-card-']").count();

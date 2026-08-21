@@ -12,7 +12,7 @@ async function boot(browser) {
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
   const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
   await page.addInitScript((json) => {
-    for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i);
+    for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i);
     window.__RPG_ZZU_E2E_PROJECT__ = JSON.parse(json);
   }, PROJECT_JSON);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
@@ -73,7 +73,7 @@ async function walkTo(page, tx, ty, maxSteps = 40) {
   await page.keyboard.press("Escape"); await sleep(900);
   await clickBtn("저장"); await sleep(700);
   await clickBtn("#save-slot-1"); await sleep(900);
-  const saved = await page.evaluate(() => !!localStorage.getItem("rpg-zzu:save-slot:1"));
+  const saved = await page.evaluate(() => !!localStorage.getItem("oprn:save-slot:1"));
   console.log("phase2 saved:", saved);
   await page.keyboard.press("Escape"); await sleep(700);
   await clickBtn("로드"); await sleep(700);

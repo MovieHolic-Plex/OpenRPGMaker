@@ -81,7 +81,7 @@ type ProjectE2EBootstrap = {
 
 // The dev server injects this Symbol-keyed, one-run envelope before app startup.
 // It is consumed and deleted on install; capability and credential proof stay closure-private.
-const PROJECT_E2E_BOOTSTRAP = Symbol.for("rpg-zzu.project-e2e.bootstrap");
+const PROJECT_E2E_BOOTSTRAP = Symbol.for("oprn:project-e2e.bootstrap");
 const MIN_PROJECT_E2E_CAPABILITY_LENGTH = 32;
 let projectE2EBootstrap: ProjectE2EBootstrap | null = null;
 

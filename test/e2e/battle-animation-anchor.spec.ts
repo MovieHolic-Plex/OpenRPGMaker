@@ -182,7 +182,7 @@ const installAnchorProbe = (options: { readonly enemyTestId: string; readonly lo
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1280, height: 900 });
 });
 

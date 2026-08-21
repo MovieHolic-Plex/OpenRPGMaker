@@ -6,7 +6,7 @@ import { randomUuid } from "@/util/id";
 import type { AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 export type { AiActivityChannel, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
-const STORAGE_KEY = "rpg-zzu:ai-activity-logs";
+const STORAGE_KEY = "oprn:ai-activity-logs";
 const MAX_LOGS = 100;
 const MAX_TEXT = 4000;
 const MAX_ARGS_JSON = 12_000;
