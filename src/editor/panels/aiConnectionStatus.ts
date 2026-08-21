@@ -10,7 +10,7 @@
 //   모듈 캐시(aiOAuthCachedStatus)에 마지막 조회 결과를 보관하고 동기 평가는 캐시를 쓴다.
 //   캐시가 없으면 checking. companion 자체가 안 되면 offline. companion 이 응답했지만
 //   내부 오류(4xx/5xx)면 offline + serverMessage — 툴팁은 "보조 프로그램 실행" 안내 대신
-//   서버가 알려준 원인을 보여준다(같은 spawnCodexSession 을 쓰므로 npm run ai:oauth 는 해결책이 아님).
+//   서버가 알려준 원인을 보여준다(같은 pi-ai 워커를 쓰므로 npm run ai:oauth 는 해결책이 아님).
 import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 // 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
 // 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.

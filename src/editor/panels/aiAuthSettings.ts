@@ -141,7 +141,7 @@ export function renderAiAuthSettings(
 
   // (B) 서버가 응답했지만 내부 오류인 경우의 표시. 서버가 준 원인을 그대로 보여준다.
   // npm run ai:oauth 힌트는 숨긴다 — dev 서버(codexOAuthPlugin)와 단독 동반 서비스
-  // (scripts/chatgpt-oauth-companion.mjs)는 같은 spawnCodexSession() 을 쓰므로, 동반 서비스를
+  // (scripts/chatgpt-oauth-companion.mjs)는 같은 @oh-my-pi/pi-ai 워커를 쓰므로, 동반 서비스를
   // 따로 실행해도 같은 지점에서 똑같이 죽는다. 안내를 따르면 시간만 버린다.
   const showServerError = (error: unknown): void => {
     const detail = isChatGptCompanionResponseError(error) && error.serverMessage
@@ -220,7 +220,7 @@ export function renderAiAuthSettings(
       })
       .catch((error: unknown) => {
         if (isChatGptCompanionResponseError(error)) {
-          // (B) 서버가 응답했지만 실패 — 로그인도 같은 spawnCodexSession 을 쓰므로 여기서 깨진 것이다.
+          // (B) 서버가 응답했지만 실패 — 로그인도 같은 pi-ai 워커를 쓰므로 여기서 깨진 것이다.
           showServerError(error);
           return;
         }

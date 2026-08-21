@@ -20,13 +20,18 @@ describe("oh-my-pi live login (real GitHub device OAuth)", () => {
   });
 
   it("github-copilot 로그인이 GitHub device URL 과 코드를 돌려준다", { timeout: 25_000 }, async () => {
-    const adapters = await createOhMyPiAdapters({
-      getCodexSession: async () => {
-        throw new Error("codex should not start");
-      },
-    });
+    const adapters = await createOhMyPiAdapters();
     const login = await adapters.login("github-copilot", {});
     assert.match(String(login.verificationUrl), /github\.com/i);
+    assert.ok(String(login.userCode).length >= 4, `userCode=${login.userCode}`);
+  });
+
+  it("openai-codex 로그인이 device 변형을 타고 ChatGPT 코드를 돌려준다", { timeout: 25_000 }, async () => {
+    // pi-ai 의 `openai-codex` 정의는 paste-code 브라우저 흐름이라 이 화면에서 완결되지 않는다.
+    // 어댑터가 `openai-codex-device` 로 갈아타는지 — verificationUrl + userCode 로 확인한다.
+    const adapters = await createOhMyPiAdapters();
+    const login = await adapters.login("openai-codex", {});
+    assert.match(String(login.verificationUrl), /openai\.com/i);
     assert.ok(String(login.userCode).length >= 4, `userCode=${login.userCode}`);
   });
 });

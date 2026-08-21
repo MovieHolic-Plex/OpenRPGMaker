@@ -1,8 +1,8 @@
-// Standalone oh-my-pi + ChatGPT OAuth companion (127.0.0.1:17832).
+// Standalone oh-my-pi companion (127.0.0.1:17832). Every provider — openai-codex
+// included — authenticates and completes through @oh-my-pi/pi-ai.
 // DEV uses vite.config.ts same-origin middleware. preview/dist needs this process.
 
 import { createServer } from "node:http";
-import { spawnCodexSession } from "./lib/codexOAuthSession.mjs";
 import { handleCompanionRequest, isCompanionPath } from "./lib/ohMyPiHttp.mjs";
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./lib/companionHttpUtil.mjs";
@@ -10,23 +10,7 @@ import { readRequestJson, writeCompanionResult } from "./lib/companionHttpUtil.m
 const host = "127.0.0.1";
 const port = Number(process.env.RPG_ZZU_OAUTH_PORT || 17832);
 
-let session = null;
-let sessionPromise = null;
-function getCodexSession() {
-  if (!sessionPromise) {
-    sessionPromise = (async () => {
-      session = spawnCodexSession();
-      await session.ready();
-      return session;
-    })();
-    sessionPromise.catch(() => {
-      sessionPromise = null;
-    });
-  }
-  return sessionPromise;
-}
-
-const adapters = await createOhMyPiAdapters({ getCodexSession });
+const adapters = await createOhMyPiAdapters();
 
 function allowedOrigin(origin) {
   if (!origin) return "*";
@@ -74,7 +58,6 @@ const server = createServer(async (request, response) => {
 server.listen(port, host, () => console.log(`[rpg-zzu] AI companion (oh-my-pi): http://${host}:${port}`));
 function shutdown() {
   server.close();
-  session?.kill();
   stopOhMyPiWorker();
 }
 process.on("SIGINT", shutdown);

@@ -21,11 +21,7 @@ describe("oh-my-pi bun worker", () => {
   });
 
   it("키 저장·OAuth 로그인 URL·갱신·complete 가 고른 제공자를 탄다", async () => {
-    const adapters = await createOhMyPiAdapters({
-      getCodexSession: async () => {
-        throw new Error("codex should not start");
-      },
-    });
+    const adapters = await createOhMyPiAdapters();
     const saved = await adapters.saveKey("groq", "gsk-worker-test");
     assert.equal(saved.connected, true);
     assert.equal(saved.provider, "groq");

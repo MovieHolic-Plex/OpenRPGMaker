@@ -2,10 +2,9 @@ import { defineConfig, loadEnv, type Plugin, type ProxyOptions } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { mkdirSync, writeFileSync, appendFileSync, readFileSync, existsSync, realpathSync } from "node:fs";
 import { join } from "node:path";
-import { spawnCodexSession } from "./scripts/lib/codexOAuthSession.mjs";
-import type { CodexSession } from "./scripts/lib/codexOAuthSession.mjs";
 import { handleCompanionRequest, isCompanionPath } from "./scripts/lib/ohMyPiHttp.mjs";
 import { createOhMyPiAdapters, stopOhMyPiWorker } from "./scripts/lib/ohMyPiPiAi.mjs";
+import type { OhMyPiAdapters } from "./scripts/lib/ohMyPiPiAi.mjs";
 import { readRequestJson, writeCompanionResult } from "./scripts/lib/companionHttpUtil.mjs";
 
 const DEFAULT_DEV_SERVER_PORT = 9999;
@@ -197,29 +196,14 @@ function aiActivityDiskPlugin(): Plugin {
   };
 }
 
-// DEV-only same-origin bridge to the local codex app-server (ChatGPT OAuth).
+// DEV-only same-origin bridge to the oh-my-pi companion router (provider auth + completions).
 // Removes the need to run `npm run ai:oauth` alongside `npm run dev` — the browser
 // hits /auth/* and /v1/chat/completions on the same dev port. preview/dist still
 // route to the standalone 127.0.0.1:17832 companion (npm run ai:oauth).
 function codexOAuthPlugin(): Plugin {
-  let session: CodexSession | null = null;
-  let sessionPromise: Promise<CodexSession> | null = null;
-  let adaptersPromise: ReturnType<typeof createOhMyPiAdapters> | null = null;
-  function getSession(): Promise<CodexSession> {
-    if (!sessionPromise) {
-      sessionPromise = (async () => {
-        session = spawnCodexSession();
-        await session.ready();
-        return session;
-      })();
-      sessionPromise.catch(() => {
-        sessionPromise = null;
-      });
-    }
-    return sessionPromise;
-  }
+  let adaptersPromise: Promise<OhMyPiAdapters> | null = null;
   function getAdapters() {
-    if (!adaptersPromise) adaptersPromise = createOhMyPiAdapters({ getCodexSession: getSession });
+    if (!adaptersPromise) adaptersPromise = createOhMyPiAdapters();
     return adaptersPromise;
   }
   function errorStatus(error: unknown): number {
@@ -256,9 +240,6 @@ function codexOAuthPlugin(): Plugin {
         }
       });
       server.httpServer?.on("close", () => {
-        session?.kill();
-        session = null;
-        sessionPromise = null;
         adaptersPromise = null;
         stopOhMyPiWorker();
       });

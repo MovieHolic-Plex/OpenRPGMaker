@@ -100,7 +100,7 @@ describe("oh-my-pi companion HTTP", () => {
     ]);
   });
 
-  it("openai-codex 가 아니면 Codex 세션을 요구하지 않는다", async () => {
+  it("고른 제공자를 기본값(openai-codex)으로 덮어쓰지 않는다", async () => {
     let codex = 0;
     const adapters = {
       status: async (provider) => {

@@ -1,5 +1,5 @@
-// Node adapter: Codex stays in-process; every other provider is a Bun worker
-// because @oh-my-pi/pi-ai is Bun TypeScript (bun:sqlite, type:text imports).
+// Node adapter: every provider (including openai-codex) resolves through the
+// @oh-my-pi/pi-ai Bun worker — the package is Bun TypeScript (bun:sqlite, type:text imports).
 
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -75,10 +75,7 @@ export function stopOhMyPiWorker() {
   workerPortPromise = null;
 }
 
-export async function createOhMyPiAdapters({ getCodexSession }) {
-  const { accountStatus, startDeviceLogin, proxyCompletion } = await import("./codexOAuthSession.mjs");
-  const isCodex = (provider) => provider === "openai-codex";
-
+export async function createOhMyPiAdapters() {
   return {
     listProviders: async () => {
       const port = await startWorker();
@@ -87,25 +84,21 @@ export async function createOhMyPiAdapters({ getCodexSession }) {
       return payload.providers ?? [];
     },
     async status(provider) {
-      if (isCodex(provider)) return accountStatus(await getCodexSession(), false);
       return workerJson("/status", { provider });
     },
     async login(provider, body) {
-      if (isCodex(provider)) return startDeviceLogin(await getCodexSession());
       return workerJson("/login", { provider, ...(body ?? {}) });
     },
     async saveKey(provider, apiKey) {
       return workerJson("/key", { provider, apiKey });
     },
     async refresh(provider) {
-      if (isCodex(provider)) return accountStatus(await getCodexSession(), false);
       return workerJson("/refresh", { provider });
     },
     async seedOAuth(provider, creds) {
       return workerJson("/seed-oauth", { provider, ...creds });
     },
     async complete(provider, body) {
-      if (isCodex(provider)) return proxyCompletion(await getCodexSession(), body);
       return workerJson("/complete", { provider, body });
     },
   };

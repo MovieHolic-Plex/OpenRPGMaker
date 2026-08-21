@@ -5,6 +5,18 @@ export interface AiModelCatalogGroup {
   readonly models: readonly string[];
 }
 
+/**
+ * Codex(ChatGPT 구독) 경로에서 실제로 고를 수 있는 모델.
+ *
+ * 이 경로는 @oh-my-pi/pi-ai 가 전송을 맡고, 모델은 @oh-my-pi/pi-catalog 의
+ * `getBundledModels("openai-codex")` 에서만 해석된다. 카탈로그에 없는 ID 를 보내면 오류가 아니라
+ * **조용히 제공자 기본 모델로 떨어진다** — 실측(2026-08-21, 동반 서비스에 같은 본문을 모델만 바꿔 재생):
+ *   gpt-5.5           → model=gpt-5.5  "OK"
+ *   gpt-5.1-codex-max → model=gpt-5.5  "OK"   ← 카탈로그 밖. 요청한 모델이 무시됐다.
+ *   cpen/gpt-5-6-luna → model=gpt-5.5  "OK"   ← 마찬가지
+ * 그래서 목록은 pi-catalog 와 동일해야 한다. 옛 목록에는 codex 계열 11개가 더 있었지만
+ * 전부 이 조용한 강등에 걸렸다. 첫 항목은 기존 기본값(gpt-5.6-sol)을 유지한다.
+ */
 const CHATGPT_OAUTH_MODELS: readonly AiModelCatalogGroup[] = [
   {
     label: "ChatGPT 구독 · Codex",
@@ -15,25 +27,40 @@ const CHATGPT_OAUTH_MODELS: readonly AiModelCatalogGroup[] = [
       "gpt-5.5",
       "gpt-5.4",
       "gpt-5.4-mini",
-      "gpt-5.4-nano",
-      "gpt-5.3-codex",
       "gpt-5.3-codex-spark",
-      "gpt-5.2-codex",
-      "gpt-5.2",
-      "gpt-5.1-codex-max",
-      "gpt-5.1-codex",
-      "gpt-5.1-codex-mini",
-      "gpt-5.1",
-      "gpt-5-codex",
-      "gpt-5-codex-mini",
-      "gpt-5",
-      "codex-auto-review",
+      "gpt-daybreak-blue-latest",
     ],
   },
 ];
 
+/** 게이트웨이/직접 API 는 pi-catalog 제약을 받지 않으므로 OpenAI 계열을 넓게 유지한다. */
+const OPENAI_GATEWAY_MODELS: AiModelCatalogGroup = {
+  label: "OpenAI · API/게이트웨이",
+  models: [
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-5.5",
+    "gpt-5.4",
+    "gpt-5.4-mini",
+    "gpt-5.4-nano",
+    "gpt-5.3-codex",
+    "gpt-5.3-codex-spark",
+    "gpt-5.2-codex",
+    "gpt-5.2",
+    "gpt-5.1-codex-max",
+    "gpt-5.1-codex",
+    "gpt-5.1-codex-mini",
+    "gpt-5.1",
+    "gpt-5-codex",
+    "gpt-5-codex-mini",
+    "gpt-5",
+    "codex-auto-review",
+  ],
+};
+
 const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
-  ...CHATGPT_OAUTH_MODELS,
+  OPENAI_GATEWAY_MODELS,
   {
     label: "Anthropic · API/게이트웨이",
     models: ["claude-opus-4-8", "claude-opus-4-7", "claude-opus-4-6", "claude-sonnet-4-6", "claude-sonnet-4-5", "claude-haiku-4-5"],
@@ -108,17 +135,14 @@ export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", provider
 /**
  * 모델 ID 가 해당 authMode 에서 실제로 쓸 수 있는지 판정한다.
  *
- * modelCatalogForAuthMode 는 '추천 목록'이지 전체 허용 목록이 아니다. 설정 UI 문구
- * ("목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요")가 안내하듯, 사용자가 목록에 없는
- * 공급자별 ID 를 직접 입력하는 것은 정상 사용이다. 그래서 '카탈로그에 없으면 무효' 로 판정하면
- * 정상 입력을 잘못 거부한다 — 이 함수는 절대 카탈로그를 화이트리스트로 쓰지 않는다.
+ * 일반 원칙은 그대로다 — 카탈로그는 '추천 목록'이지 화이트리스트가 아니고, 사용자가 공급자별
+ * ID 를 직접 입력하는 것은 정상 사용이다. apiKey 모드는 어떤 ID 든 허용한다.
  *
- * 대신 실측으로 확인된 명백한 불일치만 잡는다. 판정 근거는 다음 하나뿐이다:
- *   요청 실패(400) — {"detail":"The 'z-ai/glm-5.2-ultrafast' model is not supported when
- *   using Codex with a ChatGPT account."}
- * 즉 authMode === "chatgpt"(Codex)는 `gpt-` 로 시작하지 않는 모델을 거부한다.
- * 그 밖의 규칙은 실측 근거가 없으므로 추측해서 추가하지 않는다.
- * apiKey 모드는 공급자가 다양하므로 어떤 ID 든 허용한다.
+ * 예외는 Codex(ChatGPT 구독) 하나다. 이 경로는 pi-catalog 에 등재된 ID 만 해석되고,
+ * 나머지는 오류 없이 제공자 기본 모델로 강등된다(근거는 CHATGPT_OAUTH_MODELS 주석의 실측).
+ * 조용히 다른 모델이 답하는 편보다 미리 거부하는 편이 낫기 때문에, 여기서만 카탈로그를
+ * 허용 목록으로 쓴다. 옛 판정("gpt- 로 시작하면 통과")은 gpt-5.1-codex 같은 강등 대상을
+ * 그대로 통과시켰다.
  */
 export function isModelValidForAuthMode(
   authMode: "chatgpt" | "apiKey",
@@ -126,7 +150,7 @@ export function isModelValidForAuthMode(
   providerId?: string,
 ): boolean {
   if (authMode !== "chatgpt") return true;
-  const provider = parseOhMyPiProvider(providerId);
-  if (provider !== "openai-codex") return true;
-  return model.trim().toLowerCase().startsWith("gpt-");
+  if (parseOhMyPiProvider(providerId) !== "openai-codex") return true;
+  const wanted = model.trim().toLowerCase();
+  return CHATGPT_OAUTH_MODELS.some((group) => group.models.some((id) => id.toLowerCase() === wanted));
 }

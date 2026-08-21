@@ -34,4 +34,28 @@ describe("modelCatalog", () => {
     expect(isModelValidForAuthMode("chatgpt", "claude-opus-4-8", "openai-codex")).toBe(false);
     expect(modelCatalogForAuthMode("chatgpt", "groq")[0]?.models[0]).toBe("openai/gpt-oss-120b");
   });
+
+  it("codex 목록은 pi-catalog 와 일치하고, 조용히 강등되는 ID 는 거부한다", async () => {
+    const { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
+    // pi-catalog 의 getBundledModels("openai-codex") 집합. 여기 없는 ID 는 Codex 경로에서
+    // 오류 없이 제공자 기본 모델로 강등되므로(modelCatalog.ts 실측 주석) 무효로 본다.
+    const codex = modelCatalogForAuthMode("chatgpt", "openai-codex").flatMap((group) => group.models);
+    expect([...codex].sort()).toEqual([
+      "gpt-5.4",
+      "gpt-5.4-mini",
+      "gpt-5.5",
+      "gpt-5.6-luna",
+      "gpt-5.6-sol",
+      "gpt-5.6-terra",
+      "gpt-5.3-codex-spark",
+      "gpt-daybreak-blue-latest",
+    ].sort());
+    expect(defaultModelForAuthMode("chatgpt", "openai-codex")).toBe("gpt-5.6-sol");
+    expect(isModelValidForAuthMode("chatgpt", "gpt-5.6-sol", "openai-codex")).toBe(true);
+    // 옛 판정은 "gpt- 로 시작하면 통과" 라서 이 둘을 그대로 통과시켰다.
+    expect(isModelValidForAuthMode("chatgpt", "gpt-5.1-codex", "openai-codex")).toBe(false);
+    expect(isModelValidForAuthMode("chatgpt", "cpen/gpt-5-6-luna", "openai-codex")).toBe(false);
+    // 게이트웨이 경로는 좁히지 않는다.
+    expect(isModelValidForAuthMode("apiKey", "gpt-5.1-codex", "openai")).toBe(true);
+  });
 });
