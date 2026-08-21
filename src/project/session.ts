@@ -232,9 +232,16 @@ export function startStateOf(project: Project): ProjectStartState {
 // 스위치/변수는 Database 정의에서 0/false 로 초기화(Project.flags는 레거시).
 export function startSession(project: Project, seed?: number): PlaySession {
   const start = startStateOf(project);
+  /**
+   * 저작된 시작 상태를 **존중한다**. `ProjectStartState` 는 그 타입 주석부터
+   * "에디터가 정의하는 초기 스위치/변수 … 새 세션의 시드로만 쓰인다" 라고 선언하는데,
+   * 예전에는 여기서 전부 false/0 으로 덮어써 저작값이 조용히 버려졌다 — 농사 데모가
+   * `var_stamina: 100` 을 저작했는데 런타임에서 0 으로 시작하는 것을 브라우저에서 실측했다.
+   * 선언된 id 만 시드한다(시작 상태에만 있는 미선언 id 는 무시 — 옛 세이브 잔재를 되살리지 않는다).
+   */
   const switches: Record<string, boolean> = {};
   for (const sw of project.switches) {
-    switches[sw.id] = false;
+    switches[sw.id] = start.switches?.[sw.id] ?? false;
   }
   // 레거시 flags도 스위치로 보정(마이그레이션 잔여 대비).
   for (const [k, v] of Object.entries(project.flags)) {
@@ -242,7 +249,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
   }
   const variables: Record<string, number> = {};
   for (const v of project.variables) {
-    variables[v.id] = 0;
+    variables[v.id] = start.variables?.[v.id] ?? 0;
   }
   const gameTime = initialGameTime(project.system.timeSystem);
   return {
