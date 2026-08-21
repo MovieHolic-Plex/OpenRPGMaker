@@ -124,7 +124,7 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 authMode 의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * connectionPresets 의 chatgpt 프리셋 기본 모델(gpt-5.6-sol)과 같은 출처다.
+ * llmClient.DEFAULT_MODEL(gpt-5.6-sol)과 같은 출처다.
  * 카탈로그가 비어 있을 리 없지만(방어), 비어 있으면 빈 문자열을 돌려 호출자가 자기 폴백을 쓰게 한다.
  */
 export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", providerId?: string): string {

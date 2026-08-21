@@ -18,8 +18,8 @@ type ChatCompletionResponse = {
   }[];
 };
 
-// CPEN 타일셋 매핑은 감독 모델 설정을 재사용하고, 아래 값은 폴백일 뿐이다.
-// baseUrl 폴백 없음 — loadAiConfig().baseUrl 또는 VITE_LLM_API_URL 필수.
+// 타일셋 매핑은 감독 모델 설정을 재사용하고, 아래 값은 폴백일 뿐이다.
+// 자격 증명은 동반 서비스가 보관한다 — 이 파일은 키를 읽지 않는다(아래 readApiKey 주석 참고).
 const DEFAULT_LLM_MODEL = "google/gemini-3.1-flash-lite";
 const MAX_INPUT_PER_1M = 0.1;
 const MAX_OUTPUT_TOKENS = 8192;
@@ -108,18 +108,25 @@ function messageContent(request: CpenTilesetRequest): string | readonly CpenTile
   ];
 }
 
+/**
+ * 옛 브라우저 보관 키를 읽던 자리. **env 키 폴백을 걷었다.**
+ *
+ * `VITE_YUNWU_API_KEY`/`VITE_LLM_API_KEY` 는 값을 클라이언트 번들에 인라인하는 통로였고,
+ * 인증이 동반 서비스 전용이 된 뒤로는 쓸 데도 없다. 남긴 것은 레거시 localStorage 키
+ * 하나뿐이며, 주입 설정(노드 스크립트)이 config.apiKey 로 넘기는 경로는 그대로 산다.
+ */
 function readApiKey(): string {
-  const yunwuKey = import.meta.env.VITE_YUNWU_API_KEY?.trim();
-  if (yunwuKey) return yunwuKey;
-  const viteKey = import.meta.env.VITE_LLM_API_KEY?.trim();
-  if (viteKey) return viteKey;
   if (typeof window === "undefined") return "";
   return window.localStorage.getItem(LOCAL_STORAGE_KEY)?.trim() ?? "";
 }
 
+/**
+ * 옛 env baseUrl 을 읽던 자리. **걷었다** — `VITE_LLM_API_URL` 이 에디터의 인증 모드를
+ * 정하던 통로였고 그게 AI 를 반복적으로 죽인 원인이다(llmClient.defaultAiConfig 주석).
+ * 동반 서비스 경로는 DEFAULT_CHATGPT_BASE_URL 로 고정이고, 주입 설정은 자기 baseUrl 을 든다.
+ */
 function readApiUrl(): string {
-  const configured = import.meta.env.VITE_LLM_API_URL?.trim();
-  return configured ? configured.replace(/\/$/, "") : "";
+  return "";
 }
 
 async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
