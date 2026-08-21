@@ -29,6 +29,7 @@ import {
   paletteFor,
 } from "../src/benchmark/town/palettes.ts";
 import { TOWN_TASKS } from "../src/benchmark/town/tasks.ts";
+import { parseSubmission } from "../src/benchmark/agent/spec.ts";
 import { TOWN_PROMPT_VERSION } from "../src/benchmark/town/prompts.ts";
 import { TOWN_SCORING_VERSION } from "../src/benchmark/town/manifest.ts";
 import {
@@ -334,6 +335,59 @@ function templateBlockCard(): string {
         .join("")}
     </div>
   </div>`;
+}
+
+// ── agent 트랙 실측 결과(있으면 싣는다) ────────────────────────────────────
+
+interface AgentRunFile {
+  readonly model: string;
+  readonly run: number;
+  readonly process: { readonly turns: number | null; readonly costUsd: number | null; readonly durationMs: number | null };
+  readonly score: { readonly quality: number; readonly scale: number; readonly detail: Record<string, number> } | null;
+}
+
+let agentShot: string | null = null;
+let agentRow = "";
+{
+  const dir = path.resolve("output/agent-bench");
+  const records: AgentRunFile[] = fs.existsSync(dir)
+    ? fs
+        .readdirSync(dir)
+        .filter((name) => name.endsWith(".json") && !name.endsWith(".submission.json"))
+        .map((name) => JSON.parse(fs.readFileSync(path.join(dir, name), "utf8")) as AgentRunFile)
+    : [];
+  agentRow = records
+    .map((record) => {
+      const detail = record.score?.detail ?? {};
+      const cells = [
+        record.score ? record.score.quality.toFixed(3) : "제출X",
+        record.score ? record.score.scale.toFixed(2) : "—",
+        String(detail.houses ?? "—"),
+        String(detail.doors ?? "—"),
+        String(record.process.turns ?? "—"),
+        record.process.costUsd === null ? "—" : `$${record.process.costUsd.toFixed(2)}`,
+        record.process.durationMs === null ? "—" : (record.process.durationMs / 60000).toFixed(1),
+      ];
+      const weak = (record.score?.quality ?? 0) < 0.7 ? ' style="color:#ff8f7a"' : "";
+      return `<tr><td class="c">${esc(record.model)}-${record.run}</td>${cells
+        .map((cell, index) => `<td class="n"${index === 0 ? weak : ""}>${esc(cell)}</td>`)
+        .join("")}</tr>`;
+    })
+    .join("");
+
+  const submissions = fs.existsSync(dir) ? fs.readdirSync(dir).filter((name) => name.endsWith(".submission.json")) : [];
+  const first = submissions[0];
+  if (first) {
+    const parsed = parseSubmission(fs.readFileSync(path.join(dir, first), "utf8"));
+    if (parsed.ok) {
+      const label = first.replace(".submission.json", "");
+      const record = records.find((entry) => `${entry.model}-${entry.run}` === label);
+      agentShot = pngTag(
+        await renderTileGridPng(parsed.map),
+        `${label} — 생짜 지시로 만든 것 (quality ${record?.score?.quality.toFixed(3) ?? "?"} / scale ${record?.score?.scale.toFixed(2) ?? "?"})`,
+      );
+    }
+  }
 }
 
 const html = `<!doctype html>
@@ -686,7 +740,54 @@ ${namedChips([...groundTruth.banned].sort((a, b) => a - b))}
 <code>max_tokens ${TOWN_DETERMINISTIC_PARAMS.maxTokens}</code> 에 닿아 <b>절단이 실력이 아닌 이유로</b>
 점수를 갈라 버린다 — 절단은 계약 오류로 기록되고 0점과 구분된다.</p>
 
-<h2><span class="num">09</span>요약 — 설계 판단 5개</h2>
+<h2><span class="num">09</span>두 번째 트랙 — 코딩 에이전트에게 리포를 던진다</h2>
+<p class="lede">위 8개 섹션은 <b>하네스를 뗀 모델 단독</b>을 단발 호출로 잰다. 그런데 실제로 알고 싶은 것이
+"코딩 에이전트에게 이 저장소와 칩셋을 던져 주면 <b>얼마나·어떻게</b> 만들어지는가"라면, 재는 단위가 달라진다 —
+한 번의 JSON 답변이 아니라, 저장소를 뒤지고 도구를 찾아 쓰고 고쳐 가는 <b>에이전트 실행</b>이다.
+그래서 트랙을 하나 더 뒀다(<code>src/benchmark/agent/</code> · <code>scripts/agent-bench.mts</code>).</p>
+
+<table>
+  <thead><tr><th></th><th>town 트랙 (§01~§08)</th><th>agent 트랙</th></tr></thead>
+  <tbody>
+    <tr><td class="c">재는 단위</td><td class="dim">단발 API 호출 1회</td><td><b>코딩 에이전트 실행</b>(<code>claude -p</code>, 도구·반복 허용)</td></tr>
+    <tr><td class="c">지시</td><td class="dim">문항별 고정 프롬프트 + 팔레트</td><td><b>생짜</b> — "이 칩셋으로 마을을 만들어라". 크기·집 수·도구 이름을 말하지 않는다</td></tr>
+    <tr><td class="c">하네스를 쓰면</td><td class="dim">불가능(도구가 없다)</td><td><b>그게 실력이다</b> — 찾아 쓰면 만점, 타일을 손으로 하드코딩하면 문법 항목에서 갈린다</td></tr>
+    <tr><td class="c">채점</td><td class="dim">9축</td><td><b>quality</b>(감사 통과율) + <b>scale</b>(얼마나 만들었나) — 합치지 않는다</td></tr>
+    <tr><td class="c">1.000 의 뜻</td><td class="dim">하네스를 재현했다</td><td><b>하네스 수준</b> — 정본 마을을 실제로 탐지해 기준선을 뽑는다</td></tr>
+  </tbody>
+</table>
+
+<div class="note"><b>채점이 픽스처에서 독립해야 한다.</b> 생짜 지시는 맵 크기도 집 위치도 정하지 않으므로,
+채점 전에 <b>탐지</b>가 온다(<code>agent/detect.ts</code>): 벽·지붕 계열의 8방향 성분으로 건물을 찾고,
+그 벽에 난 문 두 칸으로 집을 판별하고, 길 성분·울타리 런·조각난 나무를 센다.
+문 타일은 벽 계열이 아니어서 "문 칸이 건물에 속하는가"로 물으면 어느 집도 자기 문을 못 찾는다 —
+문은 벽을 뚫고 난 구멍이므로 <b>주위 8칸에 그 건물의 벽이 있는가</b>로 묶는다(2026-08-21 실측 버그).</div>
+
+<h3>첫 실측 — haiku, 생짜 지시, 20턴</h3>
+<div class="shots">
+  ${pngTag(
+    await renderTileGridPng({
+      width: groundTruth.placements.villageGrid.width,
+      height: groundTruth.placements.villageGrid.height,
+      lower: groundTruth.placements.villageGrid.lower,
+      upper: groundTruth.placements.villageGrid.upper,
+    }),
+    "기준선 — 하네스가 만든 마을 (quality 1.000 / scale 1.000)",
+  )}
+  ${agentShot ?? ""}
+</div>
+<table>
+  <thead><tr><th>실행</th><th class="n">quality</th><th class="n">scale</th><th class="n">집</th><th class="n">문</th><th class="n">턴</th><th class="n">비용</th><th class="n">분</th></tr></thead>
+  <tbody>
+    <tr><td class="c">하네스 정본</td><td class="n">1.000</td><td class="n">1.00</td><td class="n">3</td><td class="n">3</td><td class="n">—</td><td class="n">—</td><td class="n">—</td></tr>
+    ${agentRow}
+  </tbody>
+</table>
+<p class="dim">haiku 는 잔디를 깔고 십자 길을 내고 나무를 심었지만 <b>길을 몸통 타일로만</b> 깔았고
+(오토타일 성형 없음), 벽 조각 3개에 <b>지붕도 문도 울타리도 없다</b> — 들어갈 수 있는 집이 0채다.
+숫자가 아니라 이 그림이 그 사실을 즉시 보여 준다.</p>
+
+<h2><span class="num">10</span>요약 — 설계 판단 5개</h2>
 <table>
   <tbody>
     <tr><td class="c"><b>1</b></td><td><b>점수보다 "누가 하는가"가 먼저다.</b> 제품은 모델에게 번호를 고르게 하지 않는다.
