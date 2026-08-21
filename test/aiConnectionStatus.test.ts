@@ -211,8 +211,77 @@ describe("renderAiConnectionStatus — 상태바 칩", () => {
     openAiSettingsModal.mockClear();
     chip.click();
     expect(openAiSettingsModal).toHaveBeenCalledTimes(1);
-    const opts = openAiSettingsModal.mock.calls[0]?.[0] as { focusTarget?: string } | undefined;
-    // OAuth 는 키 입력란이 없다 — 포커스 대상을 지정하지 않고 모달 기본 위치(로그인)로 보낸다.
-    expect(opts?.focusTarget).toBeUndefined();
+    const opts = openAiSettingsModal.mock.calls[0]?.[0] as { focusTarget?: string; onSaved?: unknown } | undefined;
+    // 미연결이면 "지금 키를 넣어야 하는가"는 인증 패널이 판단한다 — 칩은 의도만 넘긴다.
+    expect(opts?.focusTarget).toBe("apiKey");
+    // 칩에서 로그인·키 저장을 마치면 칩 자신이 즉시 진실해져야 한다(예전에는 onSaved 를 안 넘겨
+    // 로그인 후에도 낡은 캐시를 보여 줬다).
+    expect(typeof opts?.onSaved).toBe("function");
+  });
+});
+
+describe("다섯 상태를 서로 다르게 말한다", () => {
+  it("도달 불가(A)와 응답 오류(B)와 로그아웃이 각각 다른 kind·라벨·이모지다", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+
+    // (A) 닿지 못함 — 일반 Error 는 이름이 ChatGptCompanionResponseError 가 아니다.
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockRejectedValue(new Error("connect ECONNREFUSED"));
+    await refreshAiConnectionStatus(() => undefined);
+    const unreachable = getAiConnectionStatus();
+    expect(unreachable.kind).toBe("offline");
+    expect(unreachable.label).toContain("꺼짐");
+
+    // (B) 응답했지만 실패 — serverMessage 를 담아 error 로 간다.
+    resetAiConnectionStatusCache();
+    const responded = Object.assign(new Error("boom"), {
+      name: "ChatGptCompanionResponseError",
+      serverMessage: "codex exited",
+    });
+    fetchChatGptAuthStatus.mockRejectedValue(responded);
+    await refreshAiConnectionStatus(() => undefined);
+    const errored = getAiConnectionStatus();
+    expect(errored.kind).toBe("error");
+    expect(errored.label).toContain("오류");
+    expect(errored.title).toContain("codex exited");
+
+    // 그냥 로그아웃 — 위 둘과 달라야 한다.
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+    await refreshAiConnectionStatus(() => undefined);
+    const loggedOut = getAiConnectionStatus();
+    expect(loggedOut.kind).toBe("disconnected");
+    expect(loggedOut.label).toContain("로그인");
+
+    // 세 라벨이 서로 겹치지 않는다 — 예전에는 전부 "AI 로그인" 이었다.
+    expect(new Set([unreachable.label, errored.label, loggedOut.label]).size).toBe(3);
+  });
+
+  it("env 자격만 있으면 연결됨이 아니다 (감독 결정)", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true });
+
+    await refreshAiConnectionStatus(() => undefined);
+
+    const status = getAiConnectionStatus();
+    expect(status.kind).toBe("disconnected");
+    expect(status.title).toContain("환경 변수");
+  });
+
+  it("만료된 자격도 연결됨이 아니다", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, expired: true });
+
+    await refreshAiConnectionStatus(() => undefined);
+
+    expect(getAiConnectionStatus().kind).toBe("disconnected");
   });
 });

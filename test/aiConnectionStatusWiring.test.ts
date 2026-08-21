@@ -216,7 +216,11 @@ describe("AI 연동 칩 상태바 배선", () => {
     const chip = findByTestId(fakeElement(main), "ai-connection-status");
     expect(chip).not.toBeNull();
     expect(chip?.textContent).not.toContain("키 없음");
-    expect(chip?.className).toContain("auth-chatgpt");
+    // auth-${authMode} 클래스는 걷었다(소비하는 스타일시트가 없었다). 대신 상태 kind 클래스가
+    // 실제로 색을 입는다 — styles/editor/ai-auth-connection.css 가 그것을 소비한다.
+    expect(chip?.className).not.toContain("auth-");
+    const kinds = ["ready", "checking", "disconnected", "offline", "error"];
+    expect(kinds.filter((kind) => chip?.classList.contains(kind))).toHaveLength(1);
 
     teardownEditor();
   });
