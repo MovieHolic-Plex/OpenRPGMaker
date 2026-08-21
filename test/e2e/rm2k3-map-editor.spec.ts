@@ -163,10 +163,18 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
   const beforeFillTileCount = countTiles(beforeFillMap.lowerTiles, FILL_TILE);
 
   await page.getByTestId(`chipset-tile-${FILL_TILE}`).click();
-  await page.getByTestId("quick-tile-toggle").click();
-  await expect(page.getByTestId("terrain-tag-input")).toBeVisible();
-  await page.getByTestId("terrain-tag-input").fill("7");
-  await page.getByTestId("terrain-tag-apply").click();
+  // 좌패널 1면 통합(2026-08-21): 「찾기」 탭을 눌러 「속성」으로 가는 경로가 없어졌다.
+  // 속성은 선택칩의 ⚙ 로 창을 띄운다(인라인은 인스펙터 346px 가 팔레트를 2px 로 눌렀다).
+  // 지면 종류 입력은 **하나만** 있다 — 예전에는 인스펙터 안(inspector-terrain-tag-input)과
+  // 탭 하단(terrain-tag-input)에 같은 필드를 쓰는 입력이 두 개였다.
+  await page.getByTestId("selected-tile-props-open").click();
+  await expect(page.getByTestId("tile-props-dialog")).toBeVisible();
+  await expect(page.getByTestId("inspector-terrain-tag-input")).toBeVisible();
+  await expect(page.getByTestId("terrain-tag-input")).toHaveCount(0);
+  await page.getByTestId("inspector-terrain-tag-input").fill("7");
+  await page.getByTestId("inspector-terrain-tag-apply").click();
+  await page.getByTestId("tile-props-dialog-close").click();
+  await expect(page.getByTestId("tile-props-dialog")).toHaveCount(0);
   await expect.poll(async () => {
     const state = await debugState(page);
     return state.project.tilesets[currentMap(state).tilesetId].terrain[FILL_TILE];

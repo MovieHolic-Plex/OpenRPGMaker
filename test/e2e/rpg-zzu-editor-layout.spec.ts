@@ -316,7 +316,9 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
     const panel = document.querySelector(".left-panel");
     const palette = document.querySelector('[data-testid="left-palette-root"]');
     const map = document.querySelector('[data-testid="left-map-root"]');
-    const quickToggle = document.querySelector('[data-testid="quick-tile-toggle"]');
+    // 구 quick-tile-toggle(「찾기」 탭 버튼)은 좌패널 1면 통합으로 사라졌다 —
+    // 이제 검색은 상시 노출되는 필터 바다. (2026-08-21)
+    const filterBar = document.querySelector('[data-testid="palette-filter-bar"]');
     const chipsetPalette = document.querySelector('[data-testid="tile-palette"]');
     const chipsetGrid = document.querySelector('[data-testid="chipset-sheet"]');
     const firstChipsetTile = document.querySelector("[data-testid^='chipset-tile-']");
@@ -324,7 +326,7 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
       !(panel instanceof HTMLElement) ||
       !(palette instanceof HTMLElement) ||
       !(map instanceof HTMLElement) ||
-      !(quickToggle instanceof HTMLElement) ||
+      !(filterBar instanceof HTMLElement) ||
       !(chipsetPalette instanceof HTMLElement) ||
       !(chipsetGrid instanceof HTMLElement) ||
       !(firstChipsetTile instanceof HTMLElement)
@@ -334,7 +336,7 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
     const panelBox = panel.getBoundingClientRect();
     const paletteBox = palette.getBoundingClientRect();
     const mapBox = map.getBoundingClientRect();
-    const quickToggleBox = quickToggle.getBoundingClientRect();
+    const filterBarBox = filterBar.getBoundingClientRect();
     const gridBox = chipsetGrid.getBoundingClientRect();
     const cellBox = firstChipsetTile.getBoundingClientRect();
     const cellStyle = getComputedStyle(firstChipsetTile);
@@ -346,7 +348,7 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
       cellWidth: cellBox.width,
       gridContentWidth: gridBox.width - 4,
       panelWidth: panelBox.width,
-      paletteTopOffset: quickToggleBox.top - paletteBox.top,
+      paletteTopOffset: filterBarBox.top - paletteBox.top,
       paletteHeight: paletteBox.height,
       mapHeight: mapBox.height,
       chipsetColumnCount: getComputedStyle(chipsetGrid).gridTemplateColumns.split(" ").length,
@@ -365,41 +367,64 @@ test("left sidebar keeps an RM2000-style compact palette over map tree", async (
   expect(metrics?.mapHeight).toBeGreaterThanOrEqual(150);
 });
 
-test("quick tile picker filters AI-labeled tiles without horizontal scrolling", async ({ page }) => {
+// 좌패널 1면 통합(2026-08-21). 예전 이름은 "quick tile picker" — 「찾기」 탭이 별개
+// 그리드(quick-tile-*)로 타일셋을 두 번째로 그렸고, 거기서 고른 타일은 그 자리에서
+// 칠할 수 없었다(그리기 툴바가 「칠하기」 탭에만 있었다). 이제 검색·분류는 상시 노출
+// 필터 바이고 **본 팔레트(chipset-tile-*)** 를 직접 걸러낸다.
+test("검색·분류 필터가 본 팔레트를 직접 걸러낸다 (별개 그리드 없음)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 560 });
   await page.goto("/?freshProject=1&quickTilePicker=1");
 
-  await expect(page.getByTestId("quick-tile-picker")).toBeHidden();
-  await page.getByTestId("quick-tile-toggle").click();
-  await expect(page.getByTestId("quick-tile-picker")).toBeVisible();
+  // 별개 그리드는 더 이상 존재하지 않는다.
+  await expect(page.getByTestId("quick-tile-picker")).toHaveCount(0);
+  await expect(page.getByTestId("quick-tile-toggle")).toHaveCount(0);
+  // 작업 탭도 사라졌다.
+  await expect(page.getByTestId("palette-work-tab-paint")).toHaveCount(0);
+  await expect(page.getByTestId("palette-work-tab-props")).toHaveCount(0);
+
+  // 필터 바는 탭을 누르지 않아도 처음부터 보인다.
+  await expect(page.getByTestId("palette-filter-bar")).toBeVisible();
   await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
   await expect(page.getByTestId("layer-lower")).toContainText("하위");
   await expect(page.getByTestId("layer-upper")).toContainText("상위");
   await expect(page.getByTestId("layer-event")).toContainText("이벤트");
-  await page.getByTestId("tile-category-house").click();
-  await page.getByTestId("tile-search-input").fill("132");
-  await expect(page.getByTestId("quick-tile-132")).toBeVisible();
-  await page.getByTestId("quick-tile-132").click();
-  await expect(page.getByTestId("selected-tile-status")).toContainText("132");
-  await page.waitForTimeout(80);
+
+  // 그리기 툴바가 팔레트와 같은 면에 있다 — 고른 타일을 탭 전환 없이 칠할 수 있다.
+  await expect(page.getByTestId("tile-palette")).toBeVisible();
+  await expect(page.getByTestId("tool-paint")).toBeVisible();
 
   const paletteRoot = page.getByTestId("left-palette-root");
+  const visibleChipsetTiles = () => page.locator("[data-testid^='chipset-tile-']").count();
+  const unfilteredCount = await visibleChipsetTiles();
+  expect(unfilteredCount).toBeGreaterThan(20);
+
+  // 검색은 팔레트 자체를 줄인다.
+  await page.getByTestId("tile-search-input").fill("132");
+  await expect(page.getByTestId("chipset-tile-132")).toBeVisible();
+  await expect.poll(visibleChipsetTiles).toBeLessThan(unfilteredCount);
+  await expect(page.getByTestId("palette-filter-status")).toBeVisible();
+
+  await page.getByTestId("chipset-tile-132").click();
+  await expect(page.getByTestId("selected-tile-status")).toContainText("132");
+
+  // 번호 오버레이 토글 — 셀이 400개를 넘어 span 대신 CSS(::before)로 그린다.
+  await expect(page.getByTestId("tile-palette")).not.toHaveClass(/show-index/);
+  await page.getByTestId("tile-number-toggle").click();
+  await expect(page.getByTestId("tile-palette")).toHaveClass(/show-index/);
+
+  // 필터 해제로 전량 복귀.
+  await page.getByTestId("palette-filter-clear").click();
+  await expect(page.getByTestId("palette-filter-status")).toHaveCount(0);
+  await expect.poll(visibleChipsetTiles).toBe(unfilteredCount);
+
+  // 타일을 골라도 팔레트 스크롤이 튀지 않는다 (기존 계약 유지).
   await paletteRoot.evaluate((node) => {
     node.scrollTop = node.scrollHeight - node.clientHeight;
   });
-  const beforeRootScroll = await paletteRoot.evaluate((node) => node.scrollTop);
-  expect(beforeRootScroll).toBeGreaterThan(0);
-
-  await page.getByTestId("tile-category-fence").click();
-  await page.getByTestId("tile-search-input").fill("379");
-  await expect(page.getByTestId("quick-tile-379")).toBeVisible();
-  await expect(page.getByTestId("quick-tile-379").locator(".quick-tile-index")).toBeHidden();
-  await page.getByTestId("tile-number-toggle").click();
-  await expect(page.getByTestId("quick-tile-379").locator(".quick-tile-index")).toBeVisible();
   const beforeSelectScroll = await paletteRoot.evaluate((node) => node.scrollTop);
-  await page.getByTestId("quick-tile-379").click();
+  await page.getByTestId("chipset-tile-379").click();
   await expect(page.getByTestId("selected-tile-status")).toContainText("379");
-  await expect.poll(() => page.getByTestId("left-palette-root").evaluate((node) => node.scrollTop)).toBe(beforeSelectScroll);
+  await expect.poll(() => paletteRoot.evaluate((node) => node.scrollTop)).toBe(beforeSelectScroll);
 });
 
 test("left sidebar tool buttons use visible icons with accessible names", async ({ page }) => {

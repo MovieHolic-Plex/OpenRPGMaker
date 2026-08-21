@@ -5,28 +5,33 @@ import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
-import { setTerrainTag } from "@/editor/tilesetActions";
-import { TILE_SIZE } from "@/assets/bundled";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { renderTileMappingInspector } from "@/editor/panels/tileMappingInspector";
+import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeCustomPalette, makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
-import { describeChipsetTile, tileAiLabelForIndex, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
+import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
-import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
+import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { isCustomTileset } from "@/project/tilesetKind";
+import { uiLabel } from "@/editor/uiCopy";
 import { toast } from "@/util/toast";
 
-const CHIPSET_CELL_SIZE = TILE_SIZE * 2;
-/** 작업 모드 탭: 칠하기 | 찾기 | 속성 */
-const PALETTE_WORK_TAB_KEY = "rpg-zzu:palette-work-tab";
-/** 구 advanced 플래그 — 있으면 find 탭으로 마이그레이션 */
-const PALETTE_ADVANCED_STORAGE_KEY = "rpg-zzu:palette-advanced";
+// ── 좌패널 1면 통합 (2026-08-21) ──────────────────────────────────────────────
+// 예전에는 「칠하기 | 찾기 | 속성」 3탭이었다. 감독 지적("칠하기만 있으면 되는 거
+// 아닌가")대로 3탭 중 2개가 칠하기가 아니었고, 실측 결함이 붙어 있었다:
+//   · 찾기  = 팔레트 2차 구현. 별개 셀·별개 그리드·96개 상한, 오토타일 대표 1칸
+//             규칙 미적용 → 같은 칩셋이 탭에 따라 다르게 보였다. 게다가 고른 타일을
+//             그 자리에서 칠할 수 없었다(그리기 툴바가 칠하기 탭에만 있었다).
+//   · 속성  = 타일셋 저작 표면. 지형 태그 입력이 **두 개**였고(인스펙터 안 + 탭 하단),
+//             `describeChipsetTile` 가드가 없어 기본 칩셋이 아닌 타일셋에서 메타가
+//             전부 오답이었다. 빈 상태 안내는 "다른 탭으로 가라"였다.
+//   · 붓의 동작을 바꾸는 연결 Auto/Manual 토글이 칠할 때 보이지 않았다.
+// 이제 한 면이다: 선택칩 → 도구 → 필터 한 줄 → 팔레트 → 붓 보조 → 타일 속성 → 킷.
+// 탭 전환 0회. 검색·카테고리는 팔레트 자체를 필터링한다.
 
-type PaletteWorkTab = "paint" | "find" | "props";
-type TileCategoryId = "recent" | "terrain" | "water" | "house" | "fence" | "decor" | "all";
+type TileCategoryId = "all" | "recent" | "terrain" | "water" | "house" | "fence" | "decor";
 
 type TileCategory = {
   readonly id: TileCategoryId;
@@ -34,26 +39,21 @@ type TileCategory = {
 };
 
 const TILE_CATEGORIES: readonly TileCategory[] = [
+  // 기본은 "전체" — 단일 면에서 "최근"을 기본으로 두면 첫 페인트에 팔레트가 거의 비어 보인다.
+  { id: "all", label: "전체" },
   { id: "recent", label: "최근" },
   { id: "terrain", label: "지형" },
   { id: "water", label: "물" },
   { id: "house", label: "집" },
   { id: "fence", label: "울타리" },
   { id: "decor", label: "장식" },
-  { id: "all", label: "전체" },
 ] as const;
 
-const WORK_TABS: readonly { readonly id: PaletteWorkTab; readonly label: string; readonly title: string; readonly testid: string }[] = [
-  { id: "paint", label: "칠하기", title: "도구 + 타일 팔레트", testid: "palette-work-tab-paint" },
-  // quick-tile-toggle: 레거시 e2e/단축 호환 (찾기 탭 = 예전 빠른 선택)
-  { id: "find", label: "찾기", title: "검색·카테고리로 타일 찾기", testid: "quick-tile-toggle" },
-  { id: "props", label: "속성", title: "선택 타일 메타·통행·지형", testid: "palette-work-tab-props" },
-] as const;
-
-let activeTileCategory: TileCategoryId = "recent";
+let activeTileCategory: TileCategoryId = "all";
 let tileSearchQuery = "";
 let showQuickTileNumbers = false;
-let activeWorkTab: PaletteWorkTab = "paint";
+/** 붓 보조 펼침 상태 — 팔레트는 붓질마다 재렌더되므로 DOM 에 맡기면 매번 닫힌다. */
+let brushAssistOpen = false;
 /** 맵 우클릭 스포이트 후 팔레트 칩셋 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
@@ -70,7 +70,6 @@ export function renderTilePalette(container: HTMLElement): void {
   const previousPaletteScroll = readPaletteScroll(container);
   clearChildren(container);
   const state = editorState.get();
-  activeWorkTab = readWorkTab();
 
   if (getEditorChrome().paletteRail) {
     renderBasicLeftRail(container);
@@ -96,8 +95,8 @@ export function renderTilePalette(container: HTMLElement): void {
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
   const shell = el("div", {
-    class: "panel-section palette-work-shell",
-    dataset: { testid: "palette-work-shell", workTab: activeWorkTab },
+    class: "panel-section palette-work-shell is-single-surface",
+    dataset: { testid: "palette-work-shell" },
   });
   if (!map) {
     shell.append(el("div", { class: "empty-hint", text: "맵을 선택하세요." }));
@@ -106,34 +105,14 @@ export function renderTilePalette(container: HTMLElement): void {
   }
   const tileset = project.tilesets[map.tilesetId];
   if (!tileset) {
-    shell.append(el("div", { class: "empty-hint", text: "타일셋이 없습니다." }));
+    shell.append(el("div", { class: "empty-hint", text: uiLabel("tilesetMissing") }));
     container.append(shell);
     return;
   }
 
-  shell.append(makeWorkTabBar());
-  shell.append(makeSelectedTileStatus(state.selectedTile, tileset));
-
-  let palette: HTMLElement | null = null;
-  if (activeWorkTab === "paint") {
-    const paintBody = makePaintTabBody({
-      map,
-      state,
-      tileLayer,
-      tileset,
-    });
-    palette = paintBody.palette;
-    shell.append(paintBody.root);
-  } else if (activeWorkTab === "find") {
-    shell.append(makeQuickTilePicker(state.selectedTile, tileLayer, tileset));
-  } else {
-    shell.append(makePropsTabBody({
-      mapId: map.id,
-      selectedTile: state.selectedTile,
-      state,
-      tileset,
-    }));
-  }
+  const body = makePaletteSurface({ map, state, tileLayer, tileset });
+  shell.append(body.root);
+  const palette: HTMLElement | null = body.palette;
 
   container.append(shell);
   if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
@@ -142,39 +121,6 @@ export function renderTilePalette(container: HTMLElement): void {
     const tile = state.selectedTile;
     window.requestAnimationFrame(() => revealChipsetTileInPalette(tile));
   }
-}
-
-function makeWorkTabBar(): HTMLElement {
-  const bar = el("div", {
-    class: "palette-work-tabs",
-    attrs: { role: "tablist", "aria-label": "타일 작업 모드" },
-    dataset: { testid: "palette-work-tabs" },
-  });
-  for (const tab of WORK_TABS) {
-    const active = activeWorkTab === tab.id;
-    bar.append(
-      el("button", {
-        class: "btn palette-work-tab" + (active ? " active" : ""),
-        text: tab.label,
-        attrs: {
-          role: "tab",
-          "aria-selected": String(active),
-          title: tab.title,
-          type: "button",
-        },
-        dataset: { testid: tab.testid },
-        on: {
-          click: () => {
-            if (activeWorkTab === tab.id) return;
-            activeWorkTab = tab.id;
-            writePaletteStorage(PALETTE_WORK_TAB_KEY, tab.id);
-            renderPalettePreservingViewport();
-          },
-        },
-      })
-    );
-  }
-  return bar;
 }
 
 /** 선택 타일 + 타일셋 이름을 한 줄 칩으로 — 구 palette-tileset-badge(별도 줄)를 흡수했다. */
@@ -205,10 +151,29 @@ function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTML
       dataset: { testid: "palette-tileset-name" },
     })
   );
+  // 속성 진입 — 예전 「속성」 탭의 자리. 창으로 열어 팔레트 높이를 건드리지 않는다.
+  chip.append(
+    el("button", {
+      class: "selected-tile-props-button",
+      text: "⚙",
+      attrs: {
+        type: "button",
+        title: hasTile ? "타일 속성 (통행 · 지면 종류)" : "타일을 먼저 고르세요",
+        "aria-label": "타일 속성 열기",
+      },
+      dataset: { testid: "selected-tile-props-open" },
+      on: { click: () => openTilePropsDialog(selectedTile, tileset) },
+    })
+  );
   return chip;
 }
 
-function makePaintTabBody(input: {
+/**
+ * 좌패널 단일 면. 위에서 아래로 한 흐름이다 —
+ * 무엇을 골랐나(칩) → 무엇으로 칠하나(도구) → 무엇을 찾나(필터) → 고르기(팔레트)
+ * → 붓 보조 → 이 타일의 속성 → 구조 킷.
+ */
+function makePaletteSurface(input: {
   readonly map: { readonly id: string; readonly tilesetId: string };
   readonly state: ReturnType<typeof editorState.get>;
   readonly tileLayer: Exclude<Layer, "event">;
@@ -219,28 +184,39 @@ function makePaintTabBody(input: {
     class: "palette-work-pane is-paint",
     dataset: { testid: "palette-work-pane-paint" },
   });
+
+  root.append(makeSelectedTileStatus(state.selectedTile, tileset));
   root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
+  root.append(makePaletteFilterBar(tileset));
 
+  const visibleTiles = filteredTileIdSet(tileset);
   const palette = isCustomTileset(tileset)
     ? makeCustomPalette({
         layer: tileLayer,
         onSelectTile: selectPaletteTile,
         selectedTile: state.selectedTile,
         tileset,
+        visibleTiles,
       })
     : makeRm2kPalette({
         layer: tileLayer,
         onSelectTile: selectPaletteTile,
         selectedTile: state.selectedTile,
         tileset,
+        visibleTiles,
       });
+  if (showQuickTileNumbers) palette.classList.add("show-index");
   root.append(palette);
+
+  root.append(makeBrushAssistSection(map.id, state, tileset));
+  // 타일 속성은 인라인이 아니라 창이다 — 인스펙터 본문 346px 가 좌패널(526px)에서
+  // 팔레트를 2px 로 눌렀다. 진입은 위 선택칩의 ⚙. (tilePropsDialog.ts 헤더 주석)
 
   // 구조 킷 선반은 팔레트 **아래**. 원래 위였는데, 당시 주석("등록 전에는 렌더 안 됨")대로
   // 보통 비어 있어서 공짜였다. 2026-07-20 에 내장 집 킷이 합류하면서 선반이 상시 렌더로 바뀌었고
   // 실측 팔레트 창 446px 중 192px(43%)을 점거해 타일 팔레트를 접힘선 아래로 밀어냈다.
-  // 타일 선택이 이 탭의 주 작업이므로 순서를 뒤집고, 내장 킷은 기본 접힘으로 둔다.
+  // 타일 선택이 이 면의 주 작업이므로 순서를 뒤집고, 내장 킷은 기본 접힘으로 둔다.
   const kitShelf = makeStructureKitShelf({
     tileset,
     activeKitId: state.activePaletteStamp?.kitId ?? null,
@@ -251,74 +227,22 @@ function makePaintTabBody(input: {
   return { root, palette };
 }
 
-function makePropsTabBody(input: {
-  readonly mapId: string;
-  readonly selectedTile: number;
-  readonly state: ReturnType<typeof editorState.get>;
-  readonly tileset: TilesetDef;
-}): HTMLElement {
-  const { mapId, selectedTile, state, tileset } = input;
-  const root = el("div", {
-    class: "palette-work-pane is-props",
-    dataset: { testid: "palette-work-pane-props" },
+/**
+ * 검색 + 카테고리 한 줄. 예전 「찾기」 탭의 알맹이지만 별개 그리드를 만들지 않고
+ * 위의 팔레트 하나를 필터링한다 — 같은 칩셋을 두 방식으로 보여주지 않는다.
+ */
+function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
+  const bar = el("div", {
+    class: "palette-filter-bar",
+    dataset: { testid: "palette-filter-bar" },
   });
-  if (selectedTile < 0) {
-    root.append(el("div", { class: "empty-hint", text: "타일을 선택하세요. (칠하기·찾기 탭)" }));
-    return root;
-  }
-  root.append(
-    makeTileBrushAssistPanel({
-      autoConnectMode: state.autoConnectMode,
-      mapId,
-      onSelectTile: selectPaletteTile,
-      rerender: renderPalettePreservingViewport,
-      selectedTile,
-      tileset,
-    })
-  );
-  root.append(renderTileMappingInspector(selectedTile, tileset));
-  root.append(makeTerrainEditor(tileset.id, selectedTile, tileset.terrain[selectedTile] ?? 0));
-  return root;
-}
-
-function makeQuickTilePicker(
-  selectedTile: number,
-  layer: Exclude<Layer, "event">,
-  tileset: TilesetDef
-): HTMLElement {
-  const root = el("div", {
-    class: "quick-tile-picker" + (showQuickTileNumbers ? " show-index" : ""),
-    attrs: { id: "quick-tile-picker" },
-    dataset: { testid: "quick-tile-picker" },
-  });
-  const tabs = el("div", { class: "tile-category-tabs", attrs: { role: "tablist", "aria-label": "타일 카테고리" } });
-  for (const category of TILE_CATEGORIES) {
-    tabs.append(
-      el("button", {
-        class: "btn tile-category-tab" + (activeTileCategory === category.id ? " active" : ""),
-        text: category.label,
-        attrs: {
-          role: "tab",
-          "aria-selected": String(activeTileCategory === category.id),
-          title: `${category.label} 타일 보기`,
-        },
-        dataset: { testid: `tile-category-${category.id}` },
-        on: {
-          click: () => {
-            activeTileCategory = category.id;
-            renderPalettePreservingViewport();
-          },
-        },
-      })
-    );
-  }
 
   const search = el("input", {
     class: "tile-search-input",
     attrs: {
       type: "search",
-      placeholder: "번호, 이름, AI 태그 검색",
-      "aria-label": "타일 검색",
+      placeholder: "번호·이름·태그로 타일 찾기",
+      "aria-label": "타일 찾기",
     },
     value: tileSearchQuery,
     dataset: { testid: "tile-search-input" },
@@ -333,11 +257,12 @@ function makeQuickTilePicker(
   });
   const numberToggle = el("button", {
     class: "btn tile-number-toggle" + (showQuickTileNumbers ? " active" : ""),
-    text: showQuickTileNumbers ? "# ON" : "#",
+    text: "#",
     attrs: {
       type: "button",
-      title: "타일 번호 표시",
+      title: showQuickTileNumbers ? "타일 번호 숨기기" : "타일 번호 보이기",
       "aria-pressed": String(showQuickTileNumbers),
+      "aria-label": "타일 번호 표시",
     },
     dataset: { testid: "tile-number-toggle" },
     on: {
@@ -347,22 +272,126 @@ function makeQuickTilePicker(
       },
     },
   });
-  const toolbar = el("div", { class: "quick-tile-toolbar" });
-  toolbar.append(search, numberToggle);
+  bar.append(el("div", { class: "palette-filter-search-row", children: [search, numberToggle] }));
 
-  const grid = el("div", { class: "quick-tile-grid", dataset: { testid: "quick-tile-grid" } });
-  const matches = quickTileIndexes(tileset).slice(0, 96);
-  for (const index of matches) {
-    // 빠른 선택은 검색 편의상 전 레이어를 보여 주되, 다른 레이어 타일은 흐리게 표시한다.
-    grid.append(makeQuickTileCell(tileset, index, selectedTile === index, tileVisibleOnLayer(tileset, index, layer)));
+  const chips = el("div", {
+    class: "tile-category-tabs",
+    attrs: { role: "group", "aria-label": "타일 분류" },
+    dataset: { testid: "palette-category-chips" },
+  });
+  for (const category of TILE_CATEGORIES) {
+    const active = activeTileCategory === category.id;
+    chips.append(
+      el("button", {
+        class: "btn tile-category-tab" + (active ? " active" : ""),
+        text: category.label,
+        attrs: {
+          type: "button",
+          "aria-pressed": String(active),
+          title: category.id === "all" ? "분류 필터 끄기" : `${category.label} 타일만 보기`,
+        },
+        dataset: { testid: `tile-category-${category.id}` },
+        on: {
+          click: () => {
+            // 켜져 있는 분류를 다시 누르면 필터가 풀린다 — 되돌리려고 "전체"를 찾지 않게.
+            activeTileCategory = active && category.id !== "all" ? "all" : category.id;
+            renderPalettePreservingViewport();
+          },
+        },
+      })
+    );
   }
-  if (matches.length === 0) {
-    grid.append(el("div", { class: "empty-hint quick-tile-empty", text: "검색 결과 없음" }));
-  }
+  bar.append(chips);
 
-  root.append(tabs, toolbar, grid);
-  return root;
+  if (isFilterActive()) {
+    const matched = filteredTileIndexes(tileset).length;
+    bar.append(
+      el("div", {
+        class: "palette-filter-status",
+        dataset: { testid: "palette-filter-status" },
+        children: [
+          el("span", { text: `${matched}개 일치` }),
+          el("button", {
+            class: "btn btn-mini palette-filter-clear",
+            text: "필터 해제",
+            attrs: { type: "button", title: "검색어와 분류 필터를 지운다" },
+            dataset: { testid: "palette-filter-clear" },
+            on: {
+              click: () => {
+                tileSearchQuery = "";
+                activeTileCategory = "all";
+                renderPalettePreservingViewport();
+              },
+            },
+          }),
+        ],
+      })
+    );
+  }
+  return bar;
 }
+
+/**
+ * 붓 보조. 이웃 연결 자동/수동은 **붓의 동작을 바꾸는 토글**이므로 접이식이 닫혀 있어도
+ * 보여야 한다 — 예전에는 「속성」 탭에 있어서 이웃 성형 여부를 모르고 칠하게 됐다.
+ * 그래서 별도 줄을 만들지 않고 **요약줄 안에** 얹는다. 실측에서 별도 줄은 33px 를
+ * 먹어 팔레트를 252px 로 눌렀다(스펙 하한 260px). 요약줄에 합치면 그 줄이 공짜가 된다.
+ * 즐겨찾기·닮은 타일·쓴 곳은 참고 정보라 펼쳤을 때만 나온다.
+ */
+function makeBrushAssistSection(
+  mapId: string,
+  state: ReturnType<typeof editorState.get>,
+  tileset: TilesetDef
+): HTMLElement {
+  const panel = makeTileBrushAssistPanel({
+    autoConnectMode: state.autoConnectMode,
+    mapId,
+    onSelectTile: selectPaletteTile,
+    rerender: renderPalettePreservingViewport,
+    selectedTile: state.selectedTile,
+    tileset,
+  });
+  const modeRow = panel.querySelector<HTMLElement>(".tile-brush-mode-row");
+
+  // <details>/<summary> 를 쓰지 않는다 — 요약줄 안에 버튼을 넣으면 그 클릭이 summary 의
+  // 기본 동작(접기/펴기)과 싸운다. stopPropagation+preventDefault 로 막을 수는 있지만
+  // 버튼 핸들러가 그 사이에 팔레트를 재렌더해 노드가 분리되므로 순서가 취약하다.
+  // 직접 제어하는 헤더 줄이 더 단순하고 확실하다.
+  const section = el("div", {
+    class: "palette-inline-section palette-brush-assist" + (brushAssistOpen ? " is-open" : ""),
+    dataset: { testid: "palette-brush-assist-section", open: String(brushAssistOpen) },
+  });
+  const header = el("div", { class: "palette-inline-header" });
+  header.append(
+    el("button", {
+      class: "palette-inline-toggle",
+      attrs: {
+        type: "button",
+        "aria-expanded": String(brushAssistOpen),
+        title: brushAssistOpen ? "붓 보조 접기" : "즐겨찾기 · 닮은 타일 · 이 맵에서 쓴 곳 펼치기",
+      },
+      dataset: { testid: "palette-brush-assist-toggle" },
+      on: {
+        click: () => {
+          brushAssistOpen = !brushAssistOpen;
+          renderPalettePreservingViewport();
+        },
+      },
+      children: [
+        el("span", { class: "palette-inline-caret", text: brushAssistOpen ? "▾" : "▸", attrs: { "aria-hidden": "true" } }),
+        el("span", { text: "붓 보조" }),
+      ],
+    })
+  );
+  // 이웃 연결은 접혀 있어도 이 줄에 남는다.
+  if (modeRow) header.append(modeRow);
+  section.append(header);
+  if (brushAssistOpen) section.append(panel);
+  return section;
+}
+
+// makeTilePropsSection 은 삭제됨 — src/editor/panels/tilePropsDialog.ts 의 창으로 대체.
+// 인라인 접이식으로 시도했다가 실측에서 되돌렸다(팔레트 273px → 2px). 이유는 그 파일 헤더에.
 
 function renderCurrentPalette(): void {
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
@@ -375,24 +404,6 @@ function renderPalettePreservingViewport(): void {
 
 
 
-function readWorkTab(): PaletteWorkTab {
-  const stored = readPaletteStorage(PALETTE_WORK_TAB_KEY);
-  if (stored === "paint" || stored === "find" || stored === "props") return stored;
-  // 구 advanced=1 이면 찾기 탭으로 승격
-  if (readPaletteStorage(PALETTE_ADVANCED_STORAGE_KEY) === "1") return "find";
-  return "paint";
-}
-
-function readPaletteStorage(key: string): string | null {
-  if (typeof localStorage === "undefined") return null;
-  return localStorage.getItem(key);
-}
-
-function writePaletteStorage(key: string, value: string): void {
-  if (typeof localStorage === "undefined") return;
-  localStorage.setItem(key, value);
-}
-
 // combined_town 전용 정적 테이블(describeChipsetTile)을 다른 칩셋에 쓰면 오답 —
 // 비기본 칩셋(실내 등)은 프로젝트 tileMeta 라벨을 쓴다. (2026-07-12 라벨 통일 라운드)
 function quickTileName(tileset: TilesetDef, index: number): string {
@@ -400,7 +411,21 @@ function quickTileName(tileset: TilesetDef, index: number): string {
   return tileset.tileMeta?.[index]?.label?.trim() || `타일 ${index}`;
 }
 
-function quickTileIndexes(tileset: TilesetDef): readonly number[] {
+/** 검색어나 분류 필터가 실제로 걸려 있는가. 아니면 팔레트를 건드리지 않는다. */
+function isFilterActive(): boolean {
+  return tileSearchQuery.trim().length > 0 || activeTileCategory !== "all";
+}
+
+/**
+ * 필터 결과를 Set 으로 — 팔레트가 칸마다 조회하므로 배열 순회는 O(n²)가 된다.
+ * 필터가 없으면 `null` 을 돌려 팔레트가 전량 노출 경로를 타게 한다.
+ */
+function filteredTileIdSet(tileset: TilesetDef): ReadonlySet<number> | null {
+  if (!isFilterActive()) return null;
+  return new Set(filteredTileIndexes(tileset));
+}
+
+function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
   const normalizedQuery = tileSearchQuery.trim().toLowerCase();
   const source =
     activeTileCategory === "recent"
@@ -446,29 +471,6 @@ function matchesCategory(
   return usage === "decoration" || layer === "upper";
 }
 
-function makeQuickTileCell(tileset: TilesetDef, index: number, active: boolean, currentLayer: boolean): HTMLButtonElement {
-  const name = isDefaultTilesetTexture(tileset)
-    ? `${tileDisplayLabelForIndex(index)} / AI: ${tileAiLabelForIndex(index)}`
-    : quickTileName(tileset, index);
-  return el("button", {
-    class: "quick-tile-cell" + (active ? " active" : "") + (currentLayer ? "" : " muted"),
-    attrs: {
-      title: name,
-      "aria-label": name,
-      style: tilePreviewStyle(index, CHIPSET_CELL_SIZE),
-    },
-    children: [el("span", { class: "quick-tile-index", text: String(index) })],
-    dataset: { testid: `quick-tile-${index}` },
-    on: {
-      pointerdown: (event) => {
-        event.preventDefault();
-        selectPaletteTile(index);
-      },
-      click: (event) => event.preventDefault(),
-    },
-  });
-}
-
 export function selectPaletteTile(index: number): void {
   preservePaletteViewport(() => {
     const existingIndex = recentTiles.indexOf(index);
@@ -504,9 +506,11 @@ export function revealPaletteTileFromMap(tile: number): void {
   if (typeof document === "undefined") return;
   if (getEditorChrome().paletteRail) return;
   if (tile < 0) return;
-  // 칠하기 탭에서 셀이 보이도록
-  activeWorkTab = "paint";
-  writePaletteStorage(PALETTE_WORK_TAB_KEY, "paint");
+  // 예전에는 여기서 작업 탭을 "칠하기"로 강제하고 localStorage 에도 썼다 — 맵에서
+  // 스포이트를 쓰면 감독이 고른 탭이 조용히 덮였다. 이제 탭이 없으니 스크롤 리빌만 한다.
+  //
+  // 필터가 걸려 있으면 집은 타일이 팔레트에서 숨어 있을 수 있다. rm2k 팔레트는
+  // 선택 타일을 필터 예외로 항상 그리므로(passesFilter) 리빌 대상은 존재한다.
   pendingRevealSelectedTile = true;
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   if (root) renderTilePalette(root);
@@ -592,13 +596,6 @@ function applyPaletteScroll(container: HTMLElement, palette: HTMLElement, scroll
   container.scrollTop = scroll.containerTop;
 }
 
-function tilePreviewStyle(selectedTile: number, previewSize: number | string): string {
-  if (selectedTile < 0) return "";
-  const tileset = currentTilesetForPalette();
-  if (!tileset || selectedTile >= tileset.count) return "";
-  return tilesetTileBackgroundStyle(tileset, selectedTile, previewSize);
-}
-
 function currentMapId(): string {
   const project = store.getCurrent();
   return editorState.get().currentMapId ?? project.startMapId;
@@ -611,23 +608,7 @@ function currentTilesetForPalette(): TilesetDef | undefined {
   return project.tilesets[map.tilesetId];
 }
 
-function makeTerrainEditor(tilesetId: string, selectedTile: number, terrain: number): HTMLElement {
-  const row = el("div", { class: "field compact-field" });
-  row.append(el("label", { text: "지형" }));
-  const input = el("input", {
-    attrs: { type: "number", min: "0", max: "99" },
-    value: String(terrain),
-    dataset: { testid: "terrain-tag-input" },
-  }) as HTMLInputElement;
-  const button = el("button", {
-    class: "btn",
-    text: "적용",
-    dataset: { testid: "terrain-tag-apply" },
-    on: {
-      click: () => setTerrainTag(tilesetId, selectedTile, parseInt(input.value, 10) || 0),
-    },
-  });
-  row.append(input, button);
-  return row;
-}
+// makeTerrainEditor 는 삭제됨 (2026-08-21). 「속성」 탭이 renderTileMappingInspector
+// (안에 이미 terrainEditor 가 있다)와 이 함수를 **둘 다** 붙여, 같은 tileset.terrain[tile]
+// 필드를 쓰는 입력이 화면에 두 개였다. 인스펙터 쪽(inspector-terrain-tag-input)만 남긴다.
 

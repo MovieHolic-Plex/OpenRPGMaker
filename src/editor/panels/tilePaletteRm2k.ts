@@ -35,9 +35,24 @@ type MakeRm2kPaletteArgs = {
   readonly onSelectTile: (index: number) => void;
   readonly selectedTile: number;
   readonly tileset: TilesetDef;
+  /**
+   * 검색·카테고리 필터 결과. `null`(기본)이면 필터 없음 — 전량 노출.
+   *
+   * 2026-08-21 좌패널 1면 통합: 예전에는 「찾기」 탭이 별개 그리드(`quick-tile-cell`)로
+   * 타일셋을 두 번째로 그렸다. 같은 칩셋이 탭에 따라 다르게 보이고(오토타일 대표 1칸
+   * 규칙을 안 따랐다), 96개 상한이 있었고, 고른 타일을 그 자리에서 칠할 수도 없었다.
+   * 이제 필터는 **이 팔레트 하나**에 적용된다.
+   */
+  readonly visibleTiles?: ReadonlySet<number> | null;
 };
 
 type MakeCustomPaletteArgs = MakeRm2kPaletteArgs;
+
+/** 선택 타일은 필터에 안 걸려도 항상 보여야 한다 — 안 그러면 "선택 중"인 칸이 사라진다. */
+function passesFilter(args: MakeRm2kPaletteArgs, tileId: number): boolean {
+  if (!args.visibleTiles) return true;
+  return args.visibleTiles.has(tileId) || args.selectedTile === tileId;
+}
 
 
 /** 그룹의 대표(anchor) 타일 — 이웃이 전혀 없는 mask 0 변형(외딴 점). 없으면 첫 멤버. */
@@ -154,13 +169,23 @@ export function makeRm2kPalette(args: MakeRm2kPaletteArgs): HTMLElement {
       style: `grid-template-columns:repeat(${RM2K_PALETTE_COLUMNS}, var(--chipset-cell))`,
     },
   });
+  // 6열 리플로우 팔레트라 필터는 **숨김**이 맞다 — 위치가 정보가 아니고, 결과가
+  // 위로 몰려 스크롤 없이 보인다. (커스텀 아틀라스는 반대 — makeCustomPalette 주석 참고)
+  let shown = 0;
   for (const entry of model.autotiles) {
+    if (!passesFilter(args, entry.representativeTile)) continue;
     grid.append(makeRm2kCell(args, entry.representativeTile, entry.name));
+    shown += 1;
   }
   for (const tileId of model.tileIds) {
+    if (!passesFilter(args, tileId)) continue;
     grid.append(makeRm2kCell(args, tileId));
+    shown += 1;
   }
   sheet.append(grid);
+  if (shown === 0) {
+    sheet.append(el("div", { class: "empty-hint palette-filter-empty", text: "조건에 맞는 타일이 없습니다.", dataset: { testid: "palette-filter-empty" } }));
+  }
   return sheet;
 }
 
@@ -182,8 +207,12 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     dataset: { testid: "custom-palette-grid" },
     attrs: { style: `grid-template-columns:repeat(${columns}, var(--chipset-cell))` },
   });
+  // 커스텀 아틀라스는 **칸의 위치가 정보**다(원본 시트의 행·열을 그대로 유지).
+  // 숨기면 아틀라스 모양이 깨져 감독이 "어디쯤 타일"인지 못 찾으므로 흐리게만 한다.
   for (const tileId of buildCustomPaletteModel(args.tileset)) {
-    grid.append(makePaletteCell(args, tileId));
+    const cell = makePaletteCell(args, tileId);
+    if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
+    grid.append(cell);
   }
   sheet.append(grid);
   return sheet;

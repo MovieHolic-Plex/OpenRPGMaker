@@ -5,6 +5,7 @@ import {
   buildRm2kPaletteModel,
   CUSTOM_PALETTE_MIN_CELL_SIZE,
   makeCustomPalette,
+  makeRm2kPalette,
   RM2K_PALETTE_COLUMNS,
   rm2kPaletteDisplayTile,
 } from "@/editor/panels/tilePaletteRm2k";
@@ -185,6 +186,115 @@ describe("custom atlas palette", () => {
       expect(root.getAttribute("style")).toContain("--custom-cols:30");
       expect(root.getAttribute("style")).toContain(`--custom-min-cell:${CUSTOM_PALETTE_MIN_CELL_SIZE}px`);
       expect(root.querySelectorAll("button")).toHaveLength(480);
+    } finally {
+      restore();
+    }
+  });
+});
+
+// 좌패널 1면 통합(2026-08-21): 검색·분류 필터가 **이 팔레트 하나**에 걸린다.
+// 예전에는 「찾기」 탭이 별개 그리드로 타일셋을 두 번째로 그렸고, 오토타일 대표 1칸
+// 규칙을 안 따라 같은 칩셋이 탭에 따라 다르게 보였다.
+describe("팔레트 필터 (visibleTiles)", () => {
+  it("필터가 없으면(null) 전량 노출한다", () => {
+    const restore = installFakeDom();
+    try {
+      const tileset = makeDefaultTileset();
+      const unfiltered = renderWithFakeDom(() =>
+        makeRm2kPalette({ layer: "lower", onSelectTile: () => undefined, selectedTile: 0, tileset })
+      );
+      const explicitNull = renderWithFakeDom(() =>
+        makeRm2kPalette({ layer: "lower", onSelectTile: () => undefined, selectedTile: 0, tileset, visibleTiles: null })
+      );
+      expect(explicitNull.querySelectorAll("button").length).toBe(unfiltered.querySelectorAll("button").length);
+      expect(unfiltered.querySelectorAll("button").length).toBeGreaterThan(20);
+    } finally {
+      restore();
+    }
+  });
+
+  it("6열 리플로우 팔레트는 걸러진 칸을 숨긴다 — 위치가 정보가 아니므로", () => {
+    const restore = installFakeDom();
+    try {
+      const tileset = makeDefaultTileset();
+      const root = renderWithFakeDom(() =>
+        makeRm2kPalette({
+          layer: "lower",
+          onSelectTile: () => undefined,
+          selectedTile: 342,
+          tileset,
+          visibleTiles: new Set([342]),
+        })
+      );
+      // 선택 타일 하나만 남는다(선택은 항상 예외로 그려진다).
+      expect(root.querySelectorAll("button")).toHaveLength(1);
+      expect(root.querySelector('[data-testid="chipset-tile-342"]')).not.toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
+  it("선택 타일은 필터에 안 걸려도 항상 그린다 — 안 그러면 '선택 중'인 칸이 사라진다", () => {
+    const restore = installFakeDom();
+    try {
+      const tileset = makeDefaultTileset();
+      const root = renderWithFakeDom(() =>
+        makeRm2kPalette({
+          layer: "lower",
+          onSelectTile: () => undefined,
+          selectedTile: 342,
+          tileset,
+          // 342 는 필터 밖이다.
+          visibleTiles: new Set([465]),
+        })
+      );
+      expect(root.querySelector('[data-testid="chipset-tile-342"]')).not.toBeNull();
+      expect(root.querySelector('[data-testid="chipset-tile-465"]')).not.toBeNull();
+      expect(root.querySelectorAll("button")).toHaveLength(2);
+    } finally {
+      restore();
+    }
+  });
+
+  it("결과가 0이면 빈 안내를 남긴다", () => {
+    const restore = installFakeDom();
+    try {
+      const tileset = makeDefaultTileset();
+      const root = renderWithFakeDom(() =>
+        makeRm2kPalette({
+          layer: "lower",
+          onSelectTile: () => undefined,
+          selectedTile: -1,
+          tileset,
+          visibleTiles: new Set<number>(),
+        })
+      );
+      expect(root.querySelectorAll("button")).toHaveLength(0);
+      expect(root.querySelector('[data-testid="palette-filter-empty"]')).not.toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
+  it("커스텀 아틀라스는 숨기지 않고 흐리게 한다 — 칸의 위치가 원본 시트 좌표다", () => {
+    const restore = installFakeDom();
+    try {
+      const tileset = makeCustomTileset([]);
+      const root = renderWithFakeDom(() =>
+        makeCustomPalette({
+          layer: "lower",
+          onSelectTile: () => undefined,
+          selectedTile: 0,
+          tileset,
+          visibleTiles: new Set([5]),
+        })
+      );
+      // 32칸 전부 남아 아틀라스 모양이 유지된다.
+      expect(root.querySelectorAll("button")).toHaveLength(32);
+      const kept = root.querySelector('[data-testid="chipset-tile-5"]');
+      const dimmed = root.querySelector('[data-testid="chipset-tile-9"]');
+      expect(kept?.className).not.toContain("is-filtered-out");
+      expect(dimmed?.className).toContain("is-filtered-out");
     } finally {
       restore();
     }
