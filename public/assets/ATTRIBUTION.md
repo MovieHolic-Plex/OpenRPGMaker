@@ -97,3 +97,38 @@
 - Notes: "8-bit Music Pack (Loopable)" by CodeManu 는 **CC-BY 3.0 이라 채택하지 않았다**.
   "Boss Battle Music" (SubspaceAudio, CC0) 는 CC0 지만 원본이 21.8MB WAV 이고 이 환경에 ffmpeg 가
   없어 트랜스코딩할 수 없어 보류했다 — 보스 곡은 아직 비어 있다.
+
+
+## CC0 오리지널 BGM 카탈로그 (281곡) — 2026-08-21 추가
+
+**왜 추가했는가:** 기존 재생 가능한 BGM 은 위 OpenGameArt 5곡뿐이었다. 장면 수는 수십 개인데
+곡이 5개면 감독은 같은 곡을 계속 재사용할 수밖에 없다. 이 카탈로그는 장면 분류별로 곡을 갖춘
+**에디터의 기본 BGM 세트**다.
+
+- License: **CC0 1.0 Universal** (public domain dedication). 표기 의무는 없으나 출처 재검증을 위해 남긴다.
+- 전곡 무보컬 오리지널 창작(`vocals: none`, `originalComposition: true`) — 제3자 샘플/기성곡 없음.
+- 원본 리뷰 카탈로그: `https://bgmreview-h4zeq64k.manus.space/` (승인 비밀번호 필요)
+- 규모: 281곡 / 총 11시간 32분 / 1.21GB. mp3 273곡(918MB) + wav 루프 마스터 8곡(326MB).
+  266곡은 심리스 루프 마스터, 15곡은 앞뒤 페이드가 있는 컷.
+- 릴리스 구성:
+  - `first-fifteen-2026-08-18.4` — 15곡
+  - `first-twenty-2026-08-18.5` — 5곡
+  - `first-thirty-five-2026-08-18.6` — 15곡
+  - `ambient-fifty-five-2026-08-19.7` — 20곡
+  - `expansion-eighty-five-2026-08-19.8` — 30곡
+  - `completion-one-fifteen-2026-08-19.9` — 30곡
+  - `main-theme-one-2026-08-20.1` — 1곡
+  - `main-theme-variations-one-2026-08-20.2` — 7곡
+  - `queue-q0116-q0282-2026-08-21.1` — 158곡
+
+**파일은 이 레포에 없다.** 1.21GB 를 git 에 담을 수 없어 정본은 CDN(DigitalOcean Spaces)이고,
+레포에는 카탈로그(`src/assets/bgmCatalog.ts` — 파일명·길이·BPM·조성·sha256·태그)만 둔다.
+예외로 기본 프로젝트가 CDN 없이도 소리를 내야 하므로 스타터 3곡만 함께 커밋한다
+(`public/assets/cc0/audio/catalog/`, `src/assets/bgmStarterTracks.ts`).
+
+- sha256: 221곡은 원본이 준 해시를 대조해 검증했다. 나머지 60곡
+  (`expansion-eighty-five` / `completion-one-fifteen` 릴리스)은 원본 카탈로그의 `sha256` 필드에
+  해시 대신 `"release-manifest"` 리터럴이 들어 있어 대조할 수 없다 — 이 곡들은 다운로드 시점에
+  계산한 해시를 카탈로그에 남겨 이후 변조는 잡을 수 있게 했다.
+- 재현 경로: `scripts/fetch-bgm-catalog.mjs` → `scripts/build-bgm-catalog.mjs` → `scripts/upload-bgm-to-spaces.mjs`
+- 배선 문서: `openwiki/bgm-catalog.md`

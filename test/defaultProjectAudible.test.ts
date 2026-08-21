@@ -10,9 +10,22 @@ import { defaultSystem } from "@/project/defaults/defaultDatabase";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
+import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
+import { bgmTrackUrl } from "@/assets/bgmCdn";
 
-/** resourceId → 번들 자산 경로. 두 레지스트리만 보면 되므로 리졸버를 통째로 끌어오지 않는다. */
+/**
+ * resourceId → 번들 자산 경로(public/ 기준 상대 경로).
+ *
+ * BGM 카탈로그(281곡)는 CDN 에서 오지만, 기본값으로 쓰는 스타터 곡만은 레포에 함께 커밋돼
+ * CDN 없이도 들려야 한다. 그래서 카탈로그 곡은 **환경변수를 명시적으로 비워** 로컬 폴백 경로로
+ * 해석한다 — 개발자의 .env.local 에 VITE_BGM_CDN_BASE 가 있어도 이 테스트가 흔들리지 않게.
+ */
 function bundledPathFor(resourceId: string): string | null {
+  const catalog = findBgmRuntimeEntry(resourceId);
+  if (catalog) {
+    const url = bgmTrackUrl(catalog.fileName, {});
+    return url === null ? null : decodeURIComponent(url.replace(/^\//, ""));
+  }
   const cc0 = CC0_AUDIO_ASSETS.find((asset) => asset.id === resourceId);
   if (cc0) return cc0.path;
   const rtp = EASYRPG_RTP_ASSETS.find((asset) => asset.id === resourceId);

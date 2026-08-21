@@ -23,6 +23,7 @@ import {
 } from "@/assets/easyrpgRtp";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
+import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ASSETS,
@@ -75,6 +76,11 @@ export type OpenDatabaseResourcePickerOptions = {
 type ResourceOption = {
   readonly id: string;
   readonly name: string;
+  /**
+   * 검색 전용 보조 낱말(카테고리·감정·악기 등). 라벨에 다 적으면 목록이 읽히지 않으므로
+   * 표시에서 빼고 검색에만 쓴다. BGM 카탈로그 281곡을 "던전"/"보스"로 찾게 하는 배선이다.
+   */
+  readonly searchTerms?: readonly string[];
 };
 
 const GENERATED_BATTLE_CHARSET_FRAME_WIDTH = 48;
@@ -107,7 +113,8 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     const query = search.value.trim().toLowerCase();
     const filtered = catalog.filter((entry) => {
       if (!query) return true;
-      return entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query);
+      if (entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query)) return true;
+      return entry.searchTerms?.some((term) => term.toLowerCase().includes(query)) ?? false;
     });
     list.replaceChildren(
       ...filtered.map((entry) =>
@@ -333,9 +340,9 @@ function resourceButton(
 
 function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project): ResourceOption[] {
   const options = new Map<string, ResourceOption>();
-  const add = (id: string, name: string): void => {
+  const add = (id: string, name: string, searchTerms?: readonly string[]): void => {
     if (!id || options.has(id)) return;
-    options.set(id, { id, name });
+    options.set(id, { id, name, searchTerms });
   };
 
   switch (kind) {
@@ -353,6 +360,11 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       for (const asset of EASYRPG_TITLE_ASSETS) add(asset.id, asset.name);
       break;
     case "music":
+      // 카탈로그(281곡)를 맨 앞에 둔다 — 이게 이 에디터의 기본 BGM 세트다.
+      // brief 를 검색어에 넣어야 "비 오는 실내" 처럼 장면 문장으로 곡을 찾을 수 있다.
+      for (const track of BGM_CATALOG) {
+        add(track.id, bgmTrackLabel(track), [...track.tags, track.titleEn, track.trackCode, track.brief]);
+      }
       for (const asset of CC0_MUSIC_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
       break;
@@ -408,7 +420,9 @@ function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: Re
   }
   if (kind === "monster") return resourceKind === "monster" || id.startsWith("generated-enemy-");
   if (kind === "title") return resourceKind === "title" || id.includes("title");
-  if (kind === "music") return resourceKind === "music" || id.startsWith("easyrpg-music-") || id.startsWith("cc0-music-");
+  if (kind === "music") {
+    return resourceKind === "music" || id.startsWith("easyrpg-music-") || id.startsWith("cc0-music-") || id.startsWith("cc0-bgm-");
+  }
   if (kind === "sound") return resourceKind === "sound" || id.startsWith("easyrpg-sound-") || id.startsWith("cc0-sound-");
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";

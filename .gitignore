@@ -104,3 +104,12 @@ node_modules
 db_ui_mockup.png
 docs/2026-08-05-house-harness-adversarial-review.md
 new-editor/COMPREHENSIVE.html
+
+# CC0 BGM 카탈로그 오디오. 281곡/1.21GB 는 레포에 담지 않는다 —
+# 정본은 CDN(DigitalOcean Spaces)이고 레포에는 카탈로그(파일명+sha256)만 둔다.
+# 예외: 기본 프로젝트가 CDN 없이도 소리를 내야 하므로 스타터 3곡은 추적한다
+# (src/assets/bgmStarterTracks.ts 와 짝이며 test/bgmCatalog.test.ts 가 존재를 검사한다).
+/public/assets/cc0/audio/catalog/*
+!/public/assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3
+!/public/assets/cc0/audio/catalog/rtp-btl-001-vanguard-signal_fc54007f.mp3
+!/public/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3

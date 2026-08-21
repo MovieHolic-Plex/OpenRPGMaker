@@ -3,6 +3,7 @@ import {
   setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
+import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { editorState } from "@/editor/editorState";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
@@ -239,16 +240,24 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
   section.append(fieldRow("BGM 모드", modeSelect));
 
   if (mode === "custom") {
-    section.append(fieldRow("리소스 ID", el("input", {
-      attrs: { type: "text", placeholder: "BGM 리소스 ID" },
-      value: bgm?.resourceId ?? "",
-      dataset: { testid: "map-bgm-resource" },
-      on: {
-        change: (e: Event) => {
-          setMapBgm(map.id, { mode: "custom", resourceId: (e.target as HTMLInputElement).value, fadeInMs: bgm?.fadeInMs });
-        },
+    // 생 텍스트 입력에서 리소스 피커로 바꿨다. 기본 BGM 카탈로그가 281곡이라
+    // 리소스 id 를 외워 타이핑하는 건 실질적으로 불가능하다 — 피커에서 검색·미리듣기로 고른다.
+    // resourcePickerControl 은 같은 testid 의 숨은 텍스트 입력을 유지하므로 기존 e2e 는 그대로 통한다.
+    const rerender = (): void => {
+      renderMapProps(host.closest(".map-props-dialog")?.parentElement ?? host);
+    };
+    section.append(resourcePickerControl({
+      label: "BGM",
+      resourceId: bgm?.resourceId,
+      kind: "music",
+      testid: "map-bgm-resource",
+      dialogTitle: "맵 BGM",
+      allowClear: true,
+      onChange: (result) => {
+        setMapBgm(map.id, { mode: "custom", resourceId: result.resourceId, fadeInMs: bgm?.fadeInMs });
       },
-    })));
+      rerender,
+    }));
     section.append(fieldRow("페이드인 (ms)", el("input", {
       attrs: { type: "number", min: "0", max: "10000", step: "100" },
       value: String(bgm?.fadeInMs ?? 0),

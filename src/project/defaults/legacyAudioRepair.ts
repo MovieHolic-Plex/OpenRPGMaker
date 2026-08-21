@@ -10,6 +10,7 @@
 // projectLint 의 `audio-unplayable` 경고로 알린다 — 판단은 저작자 몫이다.
 
 import { CC0_AUDIO_ASSETS, isBrowserPlayableAudioPath } from "@/assets/cc0AudioAssets";
+import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID } from "@/assets/bgmStarterTracks";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { Project } from "@/project/types";
 
@@ -43,7 +44,9 @@ export function repairUnplayableSystemBgm(project: Project): AudioRepairResult {
     project.system = { ...project.system, [slot]: to };
     replaced.push({ slot, from: from!, to });
   };
-  swap("battleBgmResourceId", "cc0-bgm-battle");
-  swap("defaultBgmResourceId", "cc0-bgm-field");
+  // 교체 대상은 기본 프로젝트와 같은 스타터 곡이다 — 레포에 파일이 있어 CDN 없이도 들린다.
+  // (카탈로그의 나머지 280곡은 CDN 에서 오므로 수리 대상으로 쓰면 환경에 따라 또 무음이 된다.)
+  swap("battleBgmResourceId", STARTER_BATTLE_BGM_ID);
+  swap("defaultBgmResourceId", STARTER_DEFAULT_BGM_ID);
   return { replaced };
 }

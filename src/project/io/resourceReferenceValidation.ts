@@ -8,6 +8,7 @@ import type {
   SystemRecords,
 } from "../types";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
+import { bgmCatalogResourceIds } from "@/assets/bgmCatalogRuntime";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
@@ -32,6 +33,9 @@ export function collectResourceIds(project: Project): Set<string> {
   }
   for (const asset of CC0_ICON_ASSETS) ids.add(asset.id);
   for (const asset of CC0_AUDIO_ASSETS) ids.add(asset.id);
+  // 281곡 BGM 카탈로그. 여기서 빠지면 이 곡을 지정한 프로젝트가 **역직렬화 자체에 실패**한다
+  // (validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다).
+  for (const id of bgmCatalogResourceIds()) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
   return ids;
