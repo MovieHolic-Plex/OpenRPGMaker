@@ -24,6 +24,7 @@ Before making code changes, read:
    - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
+   - LLM tile-placement benchmark (interior chipset as ground truth, reproducibility spine, 6 scoring schemes): `openwiki/interior-tile-benchmark.md`
    - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
    - `openwiki/cpen-openwiki.md` for refreshing wiki content through CPEN/OpenWiki.
 
