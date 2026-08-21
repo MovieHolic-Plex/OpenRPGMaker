@@ -64,6 +64,22 @@ def frame_f0(frame, rate, fmin=70.0, fmax=1600.0):
     return float(rate / (lo + k))
 
 
+def onset_count(mag):
+    """스펙트럼 플럭스 피크 = 음 이벤트 개수. 몇 음짜리 징글인지 알려준다."""
+    flux = np.maximum(0, np.diff(mag, axis=0)).sum(axis=1)
+    if len(flux) < 3 or flux.max() <= 0:
+        return 0
+    f = flux / flux.max()
+    thr = max(0.18, float(np.median(f) * 2.5))
+    peaks = 0
+    last = -99
+    for i in range(1, len(f) - 1):
+        if f[i] >= thr and f[i] >= f[i - 1] and f[i] > f[i + 1] and i - last >= 4:
+            peaks += 1
+            last = i
+    return peaks
+
+
 def features(x, rate):
     db = stft_db(x)
     mag = 10 ** (db / 20)
@@ -101,7 +117,13 @@ def features(x, rate):
     flatness = float(np.exp(np.log(ref).mean()) / ref.mean())
     env = np.abs(x)
     attack = float(np.argmax(env) / rate) if len(env) else 0.0
+    # 장/단조(조성) 판별은 **의도적으로 넣지 않았다.** Krumhansl-Schmuckler 크로마 상관으로
+    # 시도했으나 이 자산에서는 성립하지 않는다(2026-08-21 실측): 징글이 1~6음뿐이라 12음
+    # 분포라는 전제가 없고, 사각파 배음이 피치클래스로 접혀 음 1개짜리 클립이 "장조 A" 로
+    # 나왔다. 타악 클립도 게이트를 통과했다. 밝다/어둡다는 사람 귀나 음악 오디오로 학습된
+    # 모델의 몫이다 — 여기서 추정치를 내면 잘못된 라벨의 근거로 쓰인다.
     return dict(
+        onsets=onset_count(mag),
         seconds=round(len(x) / rate, 3),
         attackSeconds=round(attack, 3),
         centroidHz=round(float(np.median(centroid[idx])), 1),
