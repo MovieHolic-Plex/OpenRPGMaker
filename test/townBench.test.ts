@@ -160,6 +160,52 @@ describe("아무것도 하지 않은 답과 도배한 답은 0점", () => {
   });
 });
 
+describe("정답이 여럿인 문항은 정본 일치를 점수에 넣지 않는다", () => {
+  /** 문 그리드에 상단/하단 두 칸만 채운 답. */
+  function doorAnswer(top: number, bottom: number, x = 4, bottomY = 6): { grid: number[][] } {
+    const reference = groundTruth.placements.doorGrid;
+    const grid = filled(reference.width, reference.height, EMPTY_CELL);
+    grid[bottomY - 1]![x] = top;
+    grid[bottomY]![x] = bottom;
+    return { grid };
+  }
+  const scoreDoor = (answer: { grid: number[][] }) =>
+    scoreTownPlacement({ answer, reference: groundTruth.placements.doorGrid, groundTruth });
+
+  it("7번: 팔레트가 준 두 벌 중 어느 쪽이든 옳게 짝지으면 만점", () => {
+    // 정본은 나무 문이지만 석재 문도 팔레트에 있고 프롬프트는 어느 쪽인지 말하지 않는다.
+    // 팔레트가 허용한 선택을 반값으로 깎으면 측정이 아니라 함정이 된다.
+    expect(scoreDoor(doorAnswer(116, 146)).score).toBeCloseTo(1, 6);
+    const stone = scoreDoor(doorAnswer(329, 359));
+    expect(stone.score).toBeCloseTo(1, 6);
+    expect(stone.detail.identity).toBe(0); // 정본과 다르지만 점수에는 안 들어간다
+  });
+
+  it("7번: 짝을 섞거나 상하를 뒤집으면 깎이고, 자리를 틀리면 0", () => {
+    expect(scoreDoor(doorAnswer(116, 359)).score).toBeLessThan(0.7);
+    expect(scoreDoor(doorAnswer(146, 116)).score).toBeLessThan(0.7);
+    expect(scoreDoor(doorAnswer(116, 146, 1, 3)).score).toBe(0);
+  });
+
+  it("4·9번: 정본과 전혀 다른 배치라도 구조가 성립하면 identity 와 무관하게 채점된다", () => {
+    for (const key of ["roadGrid", "villageGrid"] as const) {
+      const reference = groundTruth.placements[key];
+      const detailKeys = Object.keys(
+        scoreTownPlacement({
+          answer:
+            key === "roadGrid"
+              ? { grid: rows(reference.lower, reference.width) }
+              : { lower: rows(reference.lower, reference.width), upper: rows(reference.upper, reference.width) },
+          reference,
+          groundTruth,
+        }).detail,
+      );
+      // identity 는 진단용으로만 남는다 — 점수 항목 이름에 섞여 있으면 안 된다.
+      expect(detailKeys).toContain("identity");
+    }
+  });
+});
+
 describe("정답표는 엔진에서 파생된다", () => {
   it("오토타일 도형이 11역할을 전부 만든다", () => {
     const counts: Record<string, number> = {};

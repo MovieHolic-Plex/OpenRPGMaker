@@ -8,8 +8,8 @@
 // 정본 타일을 흩뿌려 놓기만 한 모델은 그 반대다. 한 숫자로는 이 둘을 구분할 수 없다.
 //
 // 다만 **문항마다 그 둘을 섞는 비율이 다르다**:
-//   5·6·7번  정본이 유일한 정답에 가깝다 → score = mean(identity, structural)
-//   4·9번    정답 경로가 여럿이다        → score = structural 만 (identity 는 참고)
+//   5·6번    정본이 유일한 정답이다      → score = mean(identity, structural)
+//   4·7·9번  정답이 여럿이다            → score = structural 만 (identity 는 참고)
 //   8번      문법 규칙표가 정답이다      → score = 규칙 통과율 (identity 는 참고)
 //   3번      수종은 자유다              → score = 쌍 규칙 통과율
 // 정답이 하나가 아닌 문항에서 정본 일치를 점수에 넣으면 "정본을 외웠는가"를
@@ -633,7 +633,11 @@ function scoreDoor(layers: Layers, reference: PlacementReference, groundTruth: T
   const match = identity(reference, layers);
   return Object.freeze({
     axis: "door" as const,
-    score: mean([match.score, structural]),
+    // 정본 일치는 점수에 넣지 않는다. 팔레트가 문 **두 벌**(나무·석재)을 주고 프롬프트는
+    // 어느 쪽인지 말하지 않으므로 정답이 둘이다 — 석재 문을 옳게 짝지은 답을 반값으로
+    // 깎으면 팔레트가 허용한 선택을 벌하는 함정이 된다(2026-08-21 교정).
+    // 짝을 섞었는지는 sameFamily 가 이미 본다.
+    score: structural,
     method: "structural" as const,
     detail: Object.freeze({
       identity: match.score,

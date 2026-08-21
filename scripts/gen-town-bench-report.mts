@@ -228,8 +228,8 @@ const AXIS_NOTES: readonly AxisNote[] = [
     axis: "door",
     whoDoesItInProduct: "코드",
     harnessCode: "village/houses.ts 문 규약 · v3 place_door",
-    measures: "문은 세로 두 칸 한 벌이고 두 벌(나무·석재)이 섞이면 안 된다. 문 앞은 걸을 수 있어야 하고 벽의 다른 곳은 뚫려선 안 된다.",
-    items: ["identity", "pairAtSlot", "sameFamily", "×onlyDoorCells", "×frontWalkable", "×paletteClean"],
+    measures: "문은 세로 두 칸 한 벌이고 두 벌(나무·석재)이 섞이면 안 된다. 문 앞은 걸을 수 있어야 하고 벽의 다른 곳은 뚫려선 안 된다. 어느 벌을 골랐는지는 묻지 않는다.",
+    items: ["pairAtSlot", "sameFamily", "×onlyDoorCells", "×frontWalkable", "×paletteClean", "(참고) identity"],
   },
   {
     axis: "fenceEnd",
@@ -592,6 +592,42 @@ ${templateBlockCard()}
 <div class="note bad">수정: 채점을 <code>combine(일한 항목 평균, 감점 항목 배수)</code> 로 바꾸고,
 한 칸도 놓지 않은 답은 채점 전에 0점으로 못 박았다. 위 표의 문항 카드에서 <b>×</b> 로 표시된 항목이
 감점 배수다.</div>
+
+<h3>③ 정답이 여럿인 문항에서는 정본 일치를 점수에 넣지 않는다</h3>
+<p class="dim">"정본에 가까울수록 고득점"이라면 이 벤치마크는 <b>하네스 출력을 외웠는가</b>를 재는 것이 된다.
+그건 우리가 알고 싶은 것이 아니다. 그래서 문항마다 정본 일치(<code>identity</code>)의 비중을 달리 잡았다 —
+정답이 하나인 문항에서만 점수로 쓰고, 나머지는 <code>detail</code> 에만 남겨 진단용으로 본다.</p>
+<table>
+  <thead><tr><th>#</th><th>문항</th><th>정본 일치가 점수에</th><th>이유</th></tr></thead>
+  <tbody>
+    <tr><td class="n">1</td><td class="c">오토타일</td><td class="c"><span class="pill hard">전부</span></td>
+      <td class="dim">엔진 <code>variantMap</code> 이 마스크당 타일 <b>하나</b>를 준다 — 정답이 물리적으로 하나뿐이다</td></tr>
+    <tr><td class="n">5 · 6</td><td class="c">벽 외곽 · 지붕 대각</td><td class="c"><span class="pill warn">절반</span></td>
+      <td class="dim">나인슬라이스·피라미드는 그 키트의 <b>문법 자체</b>이고 키트 혼합은 규약상 금지다. 나머지 절반은 구조로 준다</td></tr>
+    <tr><td class="n">3</td><td class="c">레이어(나무)</td><td class="c"><span class="pill soft">안 넣음</span></td>
+      <td class="dim">수종은 자유 — "줄기=하위 / 같은 나무 캐노피=상위" 쌍 규칙만 본다</td></tr>
+    <tr><td class="n">4</td><td class="c">길</td><td class="c"><span class="pill soft">안 넣음</span></td>
+      <td class="dim">경로가 여럿이다. <code>autotileLegality</code> 는 "정본 경로와 같은가"가 아니라
+      <b>제 이웃 관계에 맞는 변형 타일인가</b> — 전혀 다른 길도 자기 자신과 일관되면 만점이다</td></tr>
+    <tr><td class="n">7</td><td class="c">문</td><td class="c"><span class="pill soft">안 넣음</span></td>
+      <td class="dim">팔레트가 문 두 벌을 주고 프롬프트는 어느 쪽인지 말하지 않으므로 정답이 둘이다.
+      짝을 섞었는지는 <code>sameFamily</code> 가 본다</td></tr>
+    <tr><td class="n">8</td><td class="c">울타리 끝</td><td class="c"><span class="pill soft">안 넣음</span></td>
+      <td class="dim">규칙 8개 통과율. 정본과 다른 배치라도 규칙을 지키면 만점</td></tr>
+    <tr><td class="n">9</td><td class="c">마을</td><td class="c"><span class="pill soft">안 넣음</span></td>
+      <td class="dim">감사 항목만. 집·길·광장이 다르게 놓여도 감사를 통과하면 만점</td></tr>
+  </tbody>
+</table>
+<div class="note warn"><b>이 원칙을 어기고 있던 곳을 하나 고쳤다.</b> 7번 문은 팔레트로 두 벌
+(나무 ${inlineRef(116)}${inlineRef(146)} · 석재 ${inlineRef(329)}${inlineRef(359)})을 주면서
+정본 일치를 점수 절반으로 쓰고 있었다 — 석재 문을 <b>올바르게 짝지어</b> 설치한 답이 0.500 을 받았다.
+팔레트가 허용한 선택을 벌하는 것은 측정이 아니라 함정이다. 지금은 구조만 점수로 쓴다:
+정본 나무 문 <b>1.000</b> · 석재 문 <b>1.000</b> · 짝 섞음 <b>0.500</b> · 자리 틀림 <b>0.000</b>.</div>
+
+<div class="note"><b>그래서 "AI + 하네스가 만들면 고득점"은 참이지만 자명하게 참이다.</b>
+정본을 만든 것이 바로 그 하네스이므로 <code>demo</code> 명령은 9축 만점을 낸다 — 그건 채점기가
+제대로 배선됐다는 점검일 뿐 성과가 아니다. 의미 있는 숫자는 절대값이 아니라 <b>차이</b>다:
+하네스 1.000 − 모델 단독 X = 하네스가 지고 있는 짐의 무게.</div>
 
 <h2><span class="num">06</span>함정과 금지 — 앞 보고서 §08 을 그대로 상속한다</h2>
 <p class="lede">앞 보고서가 "실측이 남긴 흉터"로 기록한 반례들이 이 벤치마크의 <b>함정 프로브</b>가 됐다.
