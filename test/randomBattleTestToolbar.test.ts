@@ -91,7 +91,7 @@ describe("topbar random battle button", () => {
     const handler = (event: Event): void => {
       events.push(event as CustomEvent);
     };
-    window.addEventListener("rpgzzu:test-play-window", handler);
+    window.addEventListener("oprn:test-play-window", handler);
 
     renderTopbar(topbar as unknown as HTMLElement);
     const button = findByTestId(topbar, "topbar-battle-test");
@@ -101,6 +101,6 @@ describe("topbar random battle button", () => {
     expect(events).toHaveLength(1);
     expect(events[0]?.detail).toEqual({ kind: "random-battle" });
 
-    window.removeEventListener("rpgzzu:test-play-window", handler);
+    window.removeEventListener("oprn:test-play-window", handler);
   });
 });

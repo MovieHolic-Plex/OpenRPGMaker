@@ -7,18 +7,18 @@ import {
   createFakeGeneratedAsset,
   validateGeneratedAssetBytes,
 } from "@/assets/generatedAssetHarness";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { createFakePngBytes } from "@/assets/pngFake";
 
 describe("generatedAssetHarness", () => {
   it("creates deterministic dry-run fake PNG validation and promotion metadata", async () => {
-    const entry = RM2K3_GENERATED_ASSET_PLAN.assets[1];
-    const plan = buildDryRunPathPlan(RM2K3_GENERATED_ASSET_PLAN, ".omo/evidence/rm2k3-generated-assets-execution/raw");
+    const entry = GENERATED_ASSET_PLAN.assets[1];
+    const plan = buildDryRunPathPlan(GENERATED_ASSET_PLAN, ".omo/evidence/oprn-generated-assets-execution/raw");
     const bytes = createFakeGeneratedAsset(entry);
 
     const validation = await validateGeneratedAssetBytes({ entry, path: plan[1]?.rawPath ?? "", bytes });
     const promotion = buildPromotionMetadata(entry, validation);
-    const contactSheet = buildContactSheetMetadata(RM2K3_GENERATED_ASSET_PLAN);
+    const contactSheet = buildContactSheetMetadata(GENERATED_ASSET_PLAN);
     const command = buildLiveAgyCommand(entry, "C:/tmp/generated.png");
 
     expect(plan[1]?.rawPath).toMatch(/hero-01-charset-[0-9a-f]{8}\.png$/);
@@ -29,11 +29,11 @@ describe("generatedAssetHarness", () => {
     expect(validation.inspection?.height).toBe(256);
     expect(validation.sha256).toMatch(/^[0-9a-f]{64}$/);
     expect(promotion?.promotedPath).toBe("public/assets/generated/rm2k3/hero-01-charset.png");
-    expect(contactSheet.cells).toHaveLength(RM2K3_GENERATED_ASSET_PLAN.assets.length);
+    expect(contactSheet.cells).toHaveLength(GENERATED_ASSET_PLAN.assets.length);
   });
 
   it("rejects missing, non-PNG, wrong-size, blank, and unsafe generated outputs", async () => {
-    const entry = RM2K3_GENERATED_ASSET_PLAN.assets.find((asset) => asset.id === "potion-red-icon");
+    const entry = GENERATED_ASSET_PLAN.assets.find((asset) => asset.id === "potion-red-icon");
     expect(entry).toBeDefined();
     if (!entry) return;
     const missing = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/rm2k3/item-a1b2c3d4.png", bytes: null });

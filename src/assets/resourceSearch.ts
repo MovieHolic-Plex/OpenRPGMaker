@@ -5,7 +5,7 @@ import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_BACKDROP_ASSETS, SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { moodTagsForAsset } from "@/assets/resourceMoodTags";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
@@ -100,7 +100,7 @@ function idWords(id: string): string[] {
 }
 
 function monsterCandidates(): ResourceCandidate[] {
-  const generated = RM2K3_GENERATED_ASSET_PLAN.assets
+  const generated = GENERATED_ASSET_PLAN.assets
     .filter((asset) => asset.status === "promoted" && asset.resourceKind === "monster")
     .map((asset) => ({
       id: asset.resourceId,

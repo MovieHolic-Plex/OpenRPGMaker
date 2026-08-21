@@ -28,7 +28,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (target.isContentEditable) return true;
     // 모달/팝업/메뉴가 열려 있으면 충돌 방지를 위해 단축키를 끈다.
     if (target.closest("[data-testid^='menu-popup-']")) return true;
-    if (target.closest(".rm2k3-modal") || target.closest(".modal-backdrop")) return true;
+    if (target.closest(".oprn-modal") || target.closest(".modal-backdrop")) return true;
   }
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
   if (typeof document !== "undefined") {

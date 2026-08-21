@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 test.setTimeout(300_000);
 test.use({ serviceWorkers: "block" });

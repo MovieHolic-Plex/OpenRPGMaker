@@ -72,7 +72,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "화면",
       keywords: ["play", "run", "실행", "테스트"],
       run: () => {
-        if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
+        if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
       },
     },
     {

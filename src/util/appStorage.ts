@@ -10,7 +10,7 @@
 // 부팅 시 **한 번** 전체 키를 훑어 구 접두사를 새 접두사로 옮긴다. 키마다 폴백 분기를
 // 심는 방식은 호출부 48곳을 다 고쳐야 하고 빠뜨리기 쉽다.
 //
-// 구 접두사는 두 형태였다 — `rpg-zzu:` (대부분) 와 `rpg-zzu.` (데이터베이스·AI 위치 등).
+// 구 접두사는 네 형태가 뒤섞여 있었다(아래 LEGACY_PREFIXES 주석 참고).
 // 새 접두사는 `oprn:` 하나로 정규화한다.
 
 import { PRODUCT_SLUG } from "@/brand";
@@ -19,14 +19,16 @@ import { PRODUCT_SLUG } from "@/brand";
 export const STORAGE_PREFIX = `${PRODUCT_SLUG}:`;
 
 /**
- * 구 접두사. 세 형태가 있었다 — 콜론(대부분), 점(데이터베이스·AI 위치), 하이픈(세션 id).
- * 하이픈 형태는 실측에서 발견했다: 부팅 후 `rpg-zzu-editor-session-id` 만 남아 있었다.
+ * 구 접두사. 네 형태가 뒤섞여 있었다 —
+ *   `rpg-zzu:`  대부분의 키
+ *   `rpg-zzu.`  데이터베이스 탭·AI 패널 위치
+ *   `rpg-zzu-`  세션 id·소유자 라벨·최근 로그인 수단 (실브라우저 부팅에서 발견)
+ *   `rpgzzu.`   이벤트 명령 피커 설정 3개 (하이픈이 없어 앞선 스캔에서 빠졌다)
  *
- * ⚠ 순서 주의: `rpg-zzu-` 가 마지막이어야 한다. 만약 먼저 오면 `rpg-zzu-editor-...` 를
- * 잡기 전에 다른 형태를 가로챌 일은 없지만, 접두사가 서로의 부분집합이 되는 경우를
- * 대비해 더 구체적인(구분자가 명확한) 것부터 검사한다.
+ * ⚠ 구 `rpgzzu:` (하이픈 없는 콜론)은 **CustomEvent 이름**이었고 저장 키가 아니다 —
+ * 이 목록에 넣으면 안 된다. 저장소에는 그 형태의 키가 없었다.
  */
-const LEGACY_PREFIXES = ["rpg-zzu:", "rpg-zzu.", "rpg-zzu-"] as const;
+const LEGACY_PREFIXES = ["rpg-zzu:", "rpg-zzu.", "rpg-zzu-", "rpgzzu."] as const;
 
 /** 마이그레이션을 이미 돌렸는지 표시 — 매 부팅마다 전체 키를 훑지 않는다. */
 const MIGRATION_DONE_KEY = `${STORAGE_PREFIX}storage-migrated`;

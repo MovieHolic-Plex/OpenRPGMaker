@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { applyDatabaseChanges, closeAndReopenDatabase, exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { applyDatabaseChanges, closeAndReopenDatabase, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 const CLASSES_TAB = { label: "Classes", slug: "classes", testId: "db-tab-classes" } as const;
 

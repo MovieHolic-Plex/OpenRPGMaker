@@ -60,7 +60,7 @@ describe("debugSession — 런타임 디버그 조작", () => {
   it("PlayScene 테스트 훅은 세션 교체 후 라이브 세션을 읽고 쓴다", async () => {
     const { hooks, startSession, createEmberQuestProject, EMBER_SWITCH, EMBER_MAP } = await load();
     const previousWindow = globalThis.window;
-    const testWindow = { location: { search: "" } } as Window & { __rpgzzuDebug?: RuntimeDebugHook };
+    const testWindow = { location: { search: "" } } as Window & { __oprnDebug?: RuntimeDebugHook };
     const project = createEmberQuestProject();
     const originalSession = startSession(project);
     let liveSession = originalSession;
@@ -88,9 +88,9 @@ describe("debugSession — 런타임 디버그 조작", () => {
       restoredSession.y = 14;
       liveSession = restoredSession;
 
-      expect(testWindow.__rpgzzuDebug?.readState().currentMapId).toBe(EMBER_MAP.forest);
+      expect(testWindow.__oprnDebug?.readState().currentMapId).toBe(EMBER_MAP.forest);
 
-      testWindow.__rpgzzuDebug?.setSwitch(EMBER_SWITCH.q1Started, true);
+      testWindow.__oprnDebug?.setSwitch(EMBER_SWITCH.q1Started, true);
 
       expect(restoredSession.switches[EMBER_SWITCH.q1Started]).toBe(true);
       expect(originalSession.switches[EMBER_SWITCH.q1Started]).toBe(false);

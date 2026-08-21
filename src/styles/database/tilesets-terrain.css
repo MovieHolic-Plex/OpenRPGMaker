@@ -1,30 +1,30 @@
-.database-modal-body .rm2k3-tileset-terrain-pane {
+.database-modal-body .oprn-tileset-terrain-pane {
   align-content: start;
   display: grid;
   gap: 6px;
   min-height: 0;
 }
 
-.database-modal-body .rm2k3-tileset-edit-mode {
+.database-modal-body .oprn-tileset-edit-mode {
   display: grid;
   gap: 6px;
 }
 
-.database-modal-body .rm2k3-tileset-autotile {
+.database-modal-body .oprn-tileset-autotile {
   display: grid;
   gap: 6px;
   grid-template-columns: 36px minmax(0, 1fr);
 }
 
-.database-modal-body .rm2k3-tileset-autotile legend {
+.database-modal-body .oprn-tileset-autotile legend {
   grid-column: 1 / -1;
 }
 
-.database-modal-body .rm2k3-tileset-autotile .tileset-db-resource {
+.database-modal-body .oprn-tileset-autotile .tileset-db-resource {
   align-self: center;
 }
 
-.database-modal-body .rm2k3-tileset-checker {
+.database-modal-body .oprn-tileset-checker {
   display: grid;
   gap: 5px;
 }
@@ -75,11 +75,11 @@
   color: var(--danger, #9d1f1f);
 }
 
-.database-modal-body .rm2k3-tileset-terrain-list-wrap {
+.database-modal-body .oprn-tileset-terrain-list-wrap {
   min-height: 0;
 }
 
-.database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-list {
+.database-modal-body .oprn-tileset-terrain-list-wrap .tileset-db-terrain-list {
   background: var(--bg-raised);
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
@@ -89,7 +89,7 @@
   padding: 2px;
 }
 
-.database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-row {
+.database-modal-body .oprn-tileset-terrain-list-wrap .tileset-db-terrain-row {
   background: var(--bg-raised);
   color: var(--text-1);
   font: 400 12px/17px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
@@ -101,34 +101,34 @@
   white-space: nowrap;
 }
 
-.database-modal-body .rm2k3-tileset-terrain-list-wrap .tileset-db-terrain-row.active {
+.database-modal-body .oprn-tileset-terrain-list-wrap .tileset-db-terrain-row.active {
   background: var(--accent);
   color: var(--text-1);
 }
 
 @media (max-width: 1050px) {
-  .database-modal-body .rm2k3-tileset-workspace,
-  .database-modal-body .rm2k3-tileset-main {
+  .database-modal-body .oprn-tileset-workspace,
+  .database-modal-body .oprn-tileset-main {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-tileset-properties {
+  .database-modal-body .oprn-tileset-properties {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-tileset-layer-tabs {
+  .database-modal-body .oprn-tileset-layer-tabs {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body .rm2k3-global-terrain-button {
+  .database-modal-body .oprn-global-terrain-button {
     grid-row: auto;
   }
 
-  .database-modal-body .rm2k3-tileset-list-pane {
+  .database-modal-body .oprn-tileset-list-pane {
     min-height: 180px;
   }
 
-  .database-modal-body .rm2k3-tileset-main .tileset-db-edit-area {
+  .database-modal-body .oprn-tileset-main .tileset-db-edit-area {
     grid-template-columns: minmax(0, 1fr);
   }
 }

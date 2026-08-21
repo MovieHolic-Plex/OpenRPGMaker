@@ -321,8 +321,8 @@ function runtimeSession(project: Project): { session: PlaySessionLike; source: "
 function liveDebugState(): Partial<PlaySessionLike> | undefined {
   if (typeof window === "undefined") return undefined;
   const debug = (window as Window & {
-    __rpgzzuDebug?: { readState?: () => Partial<PlaySessionLike> };
-  }).__rpgzzuDebug;
+    __oprnDebug?: { readState?: () => Partial<PlaySessionLike> };
+  }).__oprnDebug;
   if (!debug?.readState) return undefined;
   try {
     const state = debug.readState();

@@ -13,7 +13,7 @@ const PASSABLE = { up: true, down: true, left: true, right: true } as const;
 
 async function cameraMetrics(page: Page): Promise<CameraMetrics> {
   const parsed = await page.evaluate(() => {
-    const camera = window.__rpgzzuCamera?.();
+    const camera = window.__oprnCamera?.();
     return camera ? { width: camera.width, height: camera.height, zoom: camera.zoom } : null;
   });
   if (!isCameraMetrics(parsed)) throw new Error("invalid camera metrics");

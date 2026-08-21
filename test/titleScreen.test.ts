@@ -33,7 +33,7 @@ describe("title screen", () => {
       const project = createBlankProject();
       project.system.titleScreen = fullVisibilitySettings({
         title: "용사의 밤",
-        backgroundResourceId: "rpg-zzu-title-blue",
+        backgroundResourceId: "oprn-title-blue",
         layout: {
           titleX: 144,
           titleY: 64,
@@ -91,7 +91,7 @@ describe("title screen", () => {
       const project = createBlankProject();
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
-        backgroundResourceId: "rpg-zzu-title-blue",
+        backgroundResourceId: "oprn-title-blue",
       });
       const screen = renderWithFakeDom(() =>
         renderTitleScreen(project, {
@@ -460,7 +460,7 @@ describe("title screen", () => {
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
         backgroundLayers: [
-          { resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 },
+          { resourceId: "oprn-title-field", scrollXPerSec: 16 },
           { resourceId: "easyrpg-title-title1", scrollYPerSec: -12, opacity: 0.5 },
         ],
       });
@@ -478,7 +478,7 @@ describe("title screen", () => {
       expect(fx).toBeTruthy();
       const layers = screen.querySelectorAll("[data-testid='title-bg-layer']");
       expect(layers).toHaveLength(2);
-      expect(layers[0]?.dataset.titleLayerResource).toBe("rpg-zzu-title-field");
+      expect(layers[0]?.dataset.titleLayerResource).toBe("oprn-title-field");
       expect(layers[0]?.dataset.titleLayerIndex).toBe("0");
       // 320px 타일 / 16px/s = 20s 무한 스크롤 주기.
       expect(layers[0]?.style.animation).toBe("rm-title-layer-scroll-x 20s linear infinite");
@@ -583,7 +583,7 @@ describe("title screen", () => {
       const project = createBlankProject();
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
-        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 16 }],
+        backgroundLayers: [{ resourceId: "oprn-title-field", scrollXPerSec: 16 }],
         particles: { preset: "snow", density: 40 },
       });
       const actions = {
@@ -606,7 +606,7 @@ describe("title screen", () => {
       // 설정이 바뀌면(서명 불일치) 새 노드를 만든다.
       project.system.titleScreen = fullVisibilitySettings({
         ...defaultTitleScreenSettings(),
-        backgroundLayers: [{ resourceId: "rpg-zzu-title-field", scrollXPerSec: 32 }],
+        backgroundLayers: [{ resourceId: "oprn-title-field", scrollXPerSec: 32 }],
         particles: { preset: "snow", density: 40 },
       });
       const third = renderWithFakeDom(() =>

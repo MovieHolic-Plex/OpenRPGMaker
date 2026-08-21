@@ -131,7 +131,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab): void {
     // INTENT_KEYWORDS의 db/battle 도메인 강키워드라 도구 노출도 함께 보장된다.
     const message = `${text}\n\n[컨텍스트] 데이터베이스 DB 탭: ${databaseTabLabel(getDatabaseActiveTab())}${describeSelectedDatabaseRecord()}`;
     if (typeof window !== "undefined") {
-      window.__rpgzzuDbAiLastRequest = { message, at: new Date().toISOString() };
+      window.__oprnDbAiLastRequest = { message, at: new Date().toISOString() };
     }
     aiInput.value = "";
     // fire-and-forget: 턴 완료를 기다리지 않는다. 실패(키 미설정/패널 미마운트)만 뒤늦게 알린다.

@@ -32,7 +32,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     waitModeEnabled,
   });
   const panel = el("div", {
-    class: "main-menu rm2k3-status-menu system-panel",
+    class: "main-menu oprn-status-menu system-panel",
     attrs: {
       "aria-label": "플레이어 상태 메뉴",
       role: "dialog",

@@ -53,7 +53,7 @@ const readEvents = (page) =>
   if (seed.length > 0) {
     const restored = await page.evaluate(
       ({ mapId, events }) => {
-        const hook = window.__rpgzzuEditorTool;
+        const hook = window.__oprnEditorTool;
         if (typeof hook !== "function") return -1;
         let n = 0;
         for (const ev of events) {

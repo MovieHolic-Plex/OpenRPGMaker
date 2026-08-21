@@ -46,12 +46,12 @@ describe("지형 템플릿 앵커 카탈로그", () => {
     }
   });
 
-  it("신규 7종 블록은 위저드 rm2k-3x4 템플릿과 완전히 같은 그룹을 만든다 (공식 상호 대조)", () => {
+  it("신규 7종 블록은 위저드 oprn-3x4 템플릿과 완전히 같은 그룹을 만든다 (공식 상호 대조)", () => {
     const anchors = [6, 9, 243, 246, 249, 366, 369];
     for (const anchor of anchors) {
       const entry = TERRAIN_TEMPLATE_ANCHORS.find((candidate) => candidate.anchor === anchor);
       const builtin = DEFAULT_AUTOTILE_GROUPS.find((group) => group.id === entry?.groupId);
-      const template = buildTemplateGroup("rm2k-3x4", anchor, DEFAULT_TILES_PER_ROW, 480);
+      const template = buildTemplateGroup("oprn-3x4", anchor, DEFAULT_TILES_PER_ROW, 480);
       expect(builtin).toBeDefined();
       if (!builtin || "error" in template) throw new Error(`앵커 ${anchor} 템플릿 생성 실패`);
       expect(new Set(builtin.memberTileIds)).toEqual(new Set(template.memberTileIds));

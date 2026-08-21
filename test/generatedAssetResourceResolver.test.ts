@@ -5,7 +5,7 @@ import {
   resolveEasyRpgRuntimeAssetUrl,
   resolveGeneratedAssetResourceUrl,
 } from "@/assets/generatedAssetResourceResolver";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { createBlankProject } from "@/project/defaults";
 import type { GeneratedAssetManifest } from "@/assets/generatedAssetManifest";
 
@@ -20,7 +20,7 @@ const PROMOTED_MANIFEST = {
       prompt: "Original face set",
       negativePrompt: "watermarks",
       status: "promoted",
-      rawPath: ".omo/evidence/rm2k3-generated-assets-execution/raw/hero-01-face-12345678.png",
+      rawPath: ".omo/evidence/oprn-generated-assets-execution/raw/hero-01-face-12345678.png",
       promotedPath: "public/assets/generated/rm2k3/hero-01-face.png",
       resourceId: "generated-actor-hero-01-face",
       sha256: "a".repeat(64),
@@ -45,7 +45,7 @@ const EASYRPG_MANIFEST = {
       prompt: "Original monster",
       negativePrompt: "watermarks",
       status: "promoted",
-      rawPath: ".omo/evidence/rm2k3-generated-assets-execution/raw/bad-easyrpg-12345678.png",
+      rawPath: ".omo/evidence/oprn-generated-assets-execution/raw/bad-easyrpg-12345678.png",
       promotedPath: "public/assets/easyrpg/monster/bad-easyrpg.png",
       resourceId: "generated-enemy-bad-easyrpg",
       sha256: "b".repeat(64),
@@ -82,7 +82,7 @@ describe("generatedAssetResourceResolver", () => {
   it("resolves the generated dragon monster registered in the runtime manifest", () => {
     // Given: the project runtime manifest includes the generated dragon enemy art.
     // When: the dragon resource id is resolved through the generated asset resolver.
-    const url = resolveGeneratedAssetResourceUrl("generated-enemy-dragon-01", RM2K3_GENERATED_ASSET_PLAN);
+    const url = resolveGeneratedAssetResourceUrl("generated-enemy-dragon-01", GENERATED_ASSET_PLAN);
 
     // Then: battle previews can load the promoted monster PNG from public assets.
     expect(url).toBe("/assets/generated/rm2k3/monster-dragon-01.png");

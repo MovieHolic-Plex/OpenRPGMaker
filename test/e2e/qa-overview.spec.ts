@@ -5,7 +5,7 @@ import {
   dirtyGuardOracle,
   switchTabAnyMode,
 } from "./dbAuditHelpers";
-import { exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 const OVERVIEW_TAB = { label: "Overview", slug: "overview", testId: "db-tab-overview" } as const satisfies DatabaseTabSpec;
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";

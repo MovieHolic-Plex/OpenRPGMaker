@@ -8,12 +8,12 @@ test("probe: dblclick witness opens event editor", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();
-  await page.waitForFunction(() => typeof (window as unknown as { __rpgzzuEditCamera?: unknown }).__rpgzzuEditCamera === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as unknown as { __oprnEditCamera?: unknown }).__oprnEditCamera === "function", undefined, { timeout: 20_000 });
   await page.getByTestId("layer-lower").click();
   await page.waitForTimeout(500);
 
   const diag = await page.evaluate(() => {
-    const cam = (window as unknown as { __rpgzzuEditCamera: () => { scrollX: number; scrollY: number; zoom: number } }).__rpgzzuEditCamera();
+    const cam = (window as unknown as { __oprnEditCamera: () => { scrollX: number; scrollY: number; zoom: number } }).__oprnEditCamera();
     const worldX = 10 * 16 + 8;
     const worldY = 8 * 16 + 8;
     const screenX = (worldX - cam.scrollX) * cam.zoom;

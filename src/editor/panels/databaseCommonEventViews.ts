@@ -143,7 +143,7 @@ function commonEventEditor(commonEvent: CommonEvent, index: number, rerender: ()
     replaceCommands: (next: Command[]) => updateCommonEventCommands(commonEvent.id, next),
   });
   block.append(el("fieldset", {
-    class: "rm2k3-db-fieldset db-common-event-command-shell event-contents-fieldset",
+    class: "oprn-db-fieldset db-common-event-command-shell event-contents-fieldset",
     children: [el("legend", { text: "이벤트 명령" }), commands],
   }));
   return block;

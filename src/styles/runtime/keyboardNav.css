@@ -21,11 +21,11 @@
   line-height: 1;
   filter: drop-shadow(1px 1px 0 #061038);
   transform: translateY(-50%);
-  animation: rm2k3-cursor-bounce 450ms infinite ease-in-out alternate;
+  animation: oprn-cursor-bounce 450ms infinite ease-in-out alternate;
   pointer-events: none;
 }
 
-@keyframes rm2k3-cursor-bounce {
+@keyframes oprn-cursor-bounce {
   0% {
     transform: translateY(-50%) translateX(0);
   }

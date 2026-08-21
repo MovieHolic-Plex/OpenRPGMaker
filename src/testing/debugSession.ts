@@ -1,6 +1,6 @@
 // testing/debugSession.ts
 // 런타임 디버그 조작(스위치/변수/아이템/골드/회복/텔레포트)과 상태 프리셋을 순수 함수로 제공한다.
-// Phase 4-1. 브라우저 디버그 패널과 __rpgzzuDebug 훅, 헤드리스 테스트가 공용으로 사용한다.
+// Phase 4-1. 브라우저 디버그 패널과 __oprnDebug 훅, 헤드리스 테스트가 공용으로 사용한다.
 // 프리셋은 프로젝트 JSON을 건드리지 않고 localStorage(oprn:test-presets)에 저장한다.
 
 import { changeGold, changeItem, setSwitch, setVariable, type PlaySession } from "@/project/session";

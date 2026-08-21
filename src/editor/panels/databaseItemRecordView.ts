@@ -83,8 +83,8 @@ const MEDICINE_SCOPE_OPTIONS: readonly { readonly id: ItemScope; readonly name: 
 export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rerender: () => void): void {
   form.append(
     el("div", {
-      class: "db-items-rm2k3-workbench",
-      dataset: { testid: "db-items-rm2k3-workbench" },
+      class: "db-items-oprn-workbench",
+      dataset: { testid: "db-items-oprn-workbench" },
       children: [
         itemHeader(record),
         resourcePanel(record, rerender),

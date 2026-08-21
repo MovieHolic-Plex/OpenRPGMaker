@@ -67,7 +67,7 @@ async function readCompactShellMetric(page: Page, mode: CompactShellMode, viewpo
     const longKoreanName = "달빛이 머무는 아주 긴 한국어 프로젝트와 지도 이름".repeat(4);
     const mapLabel = document.querySelector<HTMLElement>('[data-testid="editor-statusbar"] .editor-statusbar-cell:nth-child(2)');
     if (mapLabel) mapLabel.textContent = `맵: ${longKoreanName}`;
-    const title = document.querySelector<HTMLElement>(".rm2k3-toolbar .title");
+    const title = document.querySelector<HTMLElement>(".oprn-toolbar .title");
     if (title) title.textContent = longKoreanName;
 
     const regions = Object.fromEntries(
@@ -431,7 +431,7 @@ test("left sidebar tool buttons use visible icons with accessible names", async 
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/?freshProject=1&leftSidebarIcons=1");
 
-  // 2026-07-18: 구 tool-grid 8버튼 섹션은 통합 툴바(rpg-maker-tile-toolbar)로 흡수됨.
+  // 2026-07-18: 구 tool-grid 8버튼 섹션은 통합 툴바(oprn-tile-toolbar)로 흡수됨.
   // testid는 승계, 아이콘은 rm-tool-icon(CSS) → SVG.
   const expectedTools = [
     { testId: "tool-paint", label: "펜" },
@@ -462,7 +462,7 @@ test("map tree uses an RM2K3-style tree box with context menu actions", async ({
   await expect(mapTree).toHaveClass(/map-tree-panel/);
   await expect(mapTree.locator("[data-testid^='map-add-child-']")).toHaveCount(0);
   await expect(mapTree.locator("[data-testid^='map-delete-']")).toHaveCount(0);
-  await expect(mapTree.locator(".rm-tool-icon-folder")).toBeVisible();
+  await expect(mapTree.locator(".oprn-icon-folder")).toBeVisible();
 
   const beforeNodeCount = await mapTree.locator("[data-testid^='map-tree-node-']").count();
   await mapTree.locator("[data-testid^='map-tree-node-']").first().click({ button: "right" });
@@ -470,7 +470,7 @@ test("map tree uses an RM2K3-style tree box with context menu actions", async ({
   await page.getByRole("menuitem", { name: "하위 맵 추가" }).click();
   await page.getByTestId("map-create-confirm").click();
   await expect.poll(async () => mapTree.locator("[data-testid^='map-tree-node-']").count()).toBe(beforeNodeCount + 1);
-  await expect(mapTree.locator(".rm-tool-icon-map-node").first()).toBeVisible();
+  await expect(mapTree.locator(".oprn-icon-map-node").first()).toBeVisible();
   const rowToggle = mapTree.locator("[data-testid^='map-toggle-']:not([data-testid='map-toggle-all'])").first();
   await expect(rowToggle).toHaveAttribute("aria-expanded", "true");
   await rowToggle.click();

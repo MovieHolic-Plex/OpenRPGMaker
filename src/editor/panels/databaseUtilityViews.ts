@@ -453,7 +453,7 @@ function utilityDetail(options: UtilityDetailOptions): HTMLElement {
 }
 
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "rm2k3-db-fieldset", children: [el("legend", { text: title }), ...children] });
+  return el("fieldset", { class: "oprn-db-fieldset", children: [el("legend", { text: title }), ...children] });
 }
 
 function termField(options: TermFieldOptions): HTMLElement {

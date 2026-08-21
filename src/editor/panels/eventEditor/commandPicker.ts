@@ -66,7 +66,7 @@ type CommandPage = {
 
 // 리스트(RM2003 기본) ↔ 아이콘 그리드 표시 모드. 세션 간 유지하되 기본은 리스트.
 type PickerViewMode = "list" | "grid";
-const PICKER_VIEW_MODE_KEY = "rpgzzu.eventCommandPicker.viewMode";
+const PICKER_VIEW_MODE_KEY = "oprn:eventCommandPicker.viewMode";
 
 const PICKER_PAGES: readonly M2CommandPickerPage[] = [1, 2, 3, 4];
 

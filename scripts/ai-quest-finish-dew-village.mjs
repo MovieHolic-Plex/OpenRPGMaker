@@ -84,7 +84,7 @@ try {
   /* ok */
 }
 
-await page.waitForFunction(() => typeof window.__rpgzzuAiBridge?.send === "function", null, { timeout: 60_000 });
+await page.waitForFunction(() => typeof window.__oprnAiBridge?.send === "function", null, { timeout: 60_000 });
 await page.evaluate(() => {
   const r = document.querySelector('[data-testid="ai-collapsed-restore"]');
   if (r instanceof HTMLElement) r.click();
@@ -92,7 +92,7 @@ await page.evaluate(() => {
 
 console.log("AI quest turn…");
 const result = await page.evaluate(async (msg) => {
-  const p = window.__rpgzzuAiBridge.send(msg);
+  const p = window.__oprnAiBridge.send(msg);
   const t = new Promise((res) => setTimeout(() => res({ ok: false, error: "timeout" }), 420_000));
   return Promise.race([p, t]);
 }, MSG);

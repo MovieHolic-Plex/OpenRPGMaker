@@ -4,7 +4,7 @@
  * - `?project=<projectId>`  : 로드 대상 (정본)
  * - `?name=<title>`         : 사람이 읽는 제목 (공유/북마크용, 로드에는 불필요)
  *
- * 예: /?project=rpg-zzu-editor-demo-village&name=%EC%97%90%EB%94%94%ED%84%B0%20%EB%8D%B0%EB%AA%A8%20%EB%A7%88%EC%9D%84
+ * 예: /?project=oprn-editor-demo-village&name=%EC%97%90%EB%94%94%ED%84%B0%20%EB%8D%B0%EB%AA%A8%20%EB%A7%88%EC%9D%84
  */
 
 export const PROJECT_URL_PARAM = "project";

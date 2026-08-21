@@ -16,7 +16,7 @@ import {
   type AuditFinding,
   type EditorLaneMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 /**
  * Diagnostic adversarial audit of battle-group record-CRUD tabs.
@@ -597,7 +597,7 @@ async function probeA2(page: Page, tab: DatabaseTabSpec & { slug: BattleSlug }, 
         defects.push(`${label} gallery name overflows (${galleryOverflow.scrollWidth}>${galleryOverflow.clientWidth}+1)`);
       }
       const headerBits = page.locator(
-        ".db-record-hero-title, .db-item-inspector-name, .db-equipment-inspector-name, .rm2k3-record-identity",
+        ".db-record-hero-title, .db-item-inspector-name, .db-equipment-inspector-name, .oprn-record-identity",
       ).first();
       const headerOverflow = await overflowOf(headerBits);
       if (headerOverflow?.overflow && maxLength === null) defects.push(`${label} inspector header overflows`);

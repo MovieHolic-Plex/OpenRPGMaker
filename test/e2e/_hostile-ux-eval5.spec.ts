@@ -9,11 +9,11 @@ test("Q. ESC with context menu open", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "standard"));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
   const skip = page.getByText("건너뛰기", { exact: true }).first();
   if (await skip.isVisible().catch(() => false)) { await skip.click(); await page.waitForTimeout(300); }
-  const pt = await page.evaluate(([x, y]) => (window as any).__rpgzzuEditWorldToClient(x, y), [17 * TILE + 8, 16 * TILE + 8]);
+  const pt = await page.evaluate(([x, y]) => (window as any).__oprnEditWorldToClient(x, y), [17 * TILE + 8, 16 * TILE + 8]);
   await page.mouse.click(pt.x, pt.y, { clickCount: 2, delay: 60 });
   await page.waitForTimeout(1200);
   await page.getByTestId("event-editor-modal").getByTestId("event-view-toggle-list").click();

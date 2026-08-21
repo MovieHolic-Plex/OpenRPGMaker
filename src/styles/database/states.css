@@ -1,4 +1,4 @@
-.database-modal-body .rm2k3-detail-states > .db-state-rm2k3-workbench {
+.database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
   display: grid;
   gap: 6px;
   grid-column: span 12;
@@ -11,21 +11,21 @@
   min-width: 0;
 }
 
-.database-modal-body:has(.rm2k3-record-states) .rm2k3-record-identity {
+.database-modal-body:has(.oprn-record-states) .oprn-record-identity {
   display: none;
 }
 
-.database-modal-body .rm2k3-record-states .rm2k3-record-detail-pane {
+.database-modal-body .oprn-record-states .oprn-record-detail-pane {
   grid-template-rows: minmax(0, 1fr);
 }
 
-.database-modal-body .rm2k3-detail-states {
+.database-modal-body .oprn-detail-states {
   display: grid;
   gap: 10px;
   grid-template-rows: 54px minmax(0, 1fr);
 }
 
-.database-modal-body .rm2k3-detail-states > .db-field:first-child {
+.database-modal-body .oprn-detail-states > .db-field:first-child {
   align-items: center;
   background: var(--bg-raised);
   border: 1px solid var(--db-modern-line, var(--border-subtle));
@@ -40,33 +40,33 @@
   width: min(620px, 100%);
 }
 
-.database-modal-body .rm2k3-detail-states > .db-field:first-child > span {
+.database-modal-body .oprn-detail-states > .db-field:first-child > span {
   color: var(--text-1);
   font: 700 14px/20px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
 }
 
-.database-modal-body .rm2k3-detail-states > .db-field:first-child > input {
+.database-modal-body .oprn-detail-states > .db-field:first-child > input {
   height: 32px;
   min-width: 240px;
 }
 
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel {
+.database-modal-body .db-state-oprn-workbench > .db-state-panel {
   gap: 4px;
   margin: 0;
   overflow: hidden;
   padding: 12px 6px 6px;
 }
 
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(1) { grid-area: base; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(2) { grid-area: acc; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(3) { grid-area: special; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(4) { grid-area: rate; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(5) { grid-area: heal; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(6) { grid-area: restrict; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(7) { grid-area: hp; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(8) { grid-area: mp; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(9) { grid-area: anim; }
-.database-modal-body .db-state-rm2k3-workbench > .db-state-reference-panel { grid-area: refs; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(1) { grid-area: base; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(2) { grid-area: acc; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(3) { grid-area: special; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(4) { grid-area: rate; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(5) { grid-area: heal; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(6) { grid-area: restrict; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7) { grid-area: hp; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) { grid-area: mp; }
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(9) { grid-area: anim; }
+.database-modal-body .db-state-oprn-workbench > .db-state-reference-panel { grid-area: refs; }
 
 .database-modal-body .db-state-control,
 .database-modal-body .db-state-rate-row {
@@ -78,7 +78,7 @@
 }
 
 .database-modal-body .db-state-control > span {
-  color: var(--rm2k3-text);
+  color: var(--oprn-text);
   font: 400 12px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -87,11 +87,11 @@
 
 .database-modal-body .db-state-control input,
 .database-modal-body .db-state-rate-row input {
-  background: var(--rm2k3-field);
-  border-color: var(--rm2k3-mid) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-mid);
+  background: var(--oprn-field);
+  border-color: var(--oprn-mid) var(--oprn-light) var(--oprn-light) var(--oprn-mid);
   border-style: solid;
   border-width: 1px;
-  color: var(--rm2k3-text);
+  color: var(--oprn-text);
   font: 400 12px/16px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
   min-height: 20px;
   min-width: 0;
@@ -99,11 +99,11 @@
   width: 100%;
 }
 
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(2) .db-state-control {
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(2) .db-state-control {
   grid-template-columns: 60px minmax(58px, 1fr);
 }
 
-.database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(6) .db-state-control {
+.database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(6) .db-state-control {
   grid-template-columns: 64px minmax(190px, 1fr);
 }
 
@@ -120,7 +120,7 @@
 }
 
 .database-modal-body .db-state-color-control i {
-  border-color: var(--rm2k3-light) var(--rm2k3-mid) var(--rm2k3-mid) var(--rm2k3-light);
+  border-color: var(--oprn-light) var(--oprn-mid) var(--oprn-mid) var(--oprn-light);
   border-style: solid;
   border-width: 1px;
   display: block;
@@ -146,7 +146,7 @@
   margin: 2px 0 0;
 }
 
-.database-modal-body .db-state-rm2k3-workbench > .db-state-reference-panel {
+.database-modal-body .db-state-oprn-workbench > .db-state-reference-panel {
   height: 112px;
   overflow: auto;
 }
@@ -160,20 +160,20 @@
   text-align: center;
 }
 
-.database-modal-body .db-state-rate-row.grade-a b { color: var(--rm2k3-state-rate-a); }
-.database-modal-body .db-state-rate-row.grade-b b { color: var(--rm2k3-state-rate-b); }
-.database-modal-body .db-state-rate-row.grade-c b { color: var(--rm2k3-state-rate-c); }
-.database-modal-body .db-state-rate-row.grade-d b { color: var(--rm2k3-state-rate-d); }
-.database-modal-body .db-state-rate-row.grade-e b { color: var(--rm2k3-state-rate-e); }
+.database-modal-body .db-state-rate-row.grade-a b { color: var(--oprn-state-rate-a); }
+.database-modal-body .db-state-rate-row.grade-b b { color: var(--oprn-state-rate-b); }
+.database-modal-body .db-state-rate-row.grade-c b { color: var(--oprn-state-rate-c); }
+.database-modal-body .db-state-rate-row.grade-d b { color: var(--oprn-state-rate-d); }
+.database-modal-body .db-state-rate-row.grade-e b { color: var(--oprn-state-rate-e); }
 
 .database-modal-body .db-state-animation-preview {
   align-items: center;
   background:
-    linear-gradient(45deg, var(--rm2k3-state-preview-a) 25%, transparent 25% 75%, var(--rm2k3-state-preview-a) 75%),
-    linear-gradient(45deg, var(--rm2k3-state-preview-b) 25%, var(--rm2k3-state-preview-c) 25% 75%, var(--rm2k3-state-preview-b) 75%);
+    linear-gradient(45deg, var(--oprn-state-preview-a) 25%, transparent 25% 75%, var(--oprn-state-preview-a) 75%),
+    linear-gradient(45deg, var(--oprn-state-preview-b) 25%, var(--oprn-state-preview-c) 25% 75%, var(--oprn-state-preview-b) 75%);
   background-position: 0 0, 6px 6px;
   background-size: 12px 12px;
-  border-color: var(--rm2k3-mid) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-mid);
+  border-color: var(--oprn-mid) var(--oprn-light) var(--oprn-light) var(--oprn-mid);
   border-style: solid;
   border-width: 1px;
   display: grid;
@@ -183,8 +183,8 @@
 }
 
 .database-modal-body .db-state-summary {
-  background: var(--rm2k3-face);
-  border-color: var(--rm2k3-mid) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-mid);
+  background: var(--oprn-face);
+  border-color: var(--oprn-mid) var(--oprn-light) var(--oprn-light) var(--oprn-mid);
   border-style: solid;
   border-width: 1px;
   grid-area: summary;
@@ -194,7 +194,7 @@
 }
 
 @media (max-width: 980px) {
-  .database-modal-body .rm2k3-detail-states > .db-state-rm2k3-workbench {
+  .database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
     grid-template-areas:
       "base base"
       "acc special"

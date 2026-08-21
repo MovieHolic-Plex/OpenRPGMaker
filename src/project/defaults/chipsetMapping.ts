@@ -531,7 +531,7 @@ export function isSolidChipsetTile(index: number): boolean {
  * RM2k3 식 데크/절벽 가장자리 칩 — woodFloorBody 변형의 4방향 통행.
  * 본체 222는 전방향, 가장자리는 바깥 방향만 닫아 “층”을 흉내 낸다.
  */
-export const RM2K3_WOOD_FLOOR_PASSABILITY = {
+export const WOOD_FLOOR_PASSABILITY = {
   body: 222,
   edgeWest: 228, // left 닫힘 — 데크 서측
   edgeEast: 229, // right 닫힘
@@ -541,15 +541,15 @@ export const RM2K3_WOOD_FLOOR_PASSABILITY = {
 
 export function rm2k3WoodFloorPassFlag(tile: number): PassFlag | null {
   switch (tile) {
-    case RM2K3_WOOD_FLOOR_PASSABILITY.body:
+    case WOOD_FLOOR_PASSABILITY.body:
       return { up: true, down: true, left: true, right: true };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest:
+    case WOOD_FLOOR_PASSABILITY.edgeWest:
       return { up: true, down: true, left: false, right: true };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast:
+    case WOOD_FLOOR_PASSABILITY.edgeEast:
       return { up: true, down: true, left: true, right: false };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth:
+    case WOOD_FLOOR_PASSABILITY.edgeNorth:
       return { up: false, down: true, left: true, right: true };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth:
+    case WOOD_FLOOR_PASSABILITY.edgeSouth:
       return { up: true, down: false, left: true, right: true };
     default:
       return null;

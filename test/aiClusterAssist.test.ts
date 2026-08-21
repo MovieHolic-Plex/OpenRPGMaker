@@ -156,7 +156,7 @@ describe("AI 패널 브리지", () => {
     const panel = renderWithFakeDom(() => renderAiChatPanel({ getChatDock: () => "side" })) as FakeElement;
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
-    window.dispatchEvent(new CustomEvent("rpgzzu:ai-assist", {
+    window.dispatchEvent(new CustomEvent("oprn:ai-assist", {
       detail: { kind: "cluster-edit", tilesetId: DEFAULT_TILESET_ID, groupId: "wall_group" },
     }));
     await flushMicrotasks();

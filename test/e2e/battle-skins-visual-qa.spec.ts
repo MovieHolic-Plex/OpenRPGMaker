@@ -11,7 +11,7 @@ import {
   applyDatabaseChanges,
   openDatabase,
   switchDatabaseTab,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 
 const OUT = "output/evidence/battle-skins";
 const SYSTEM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "system")!;

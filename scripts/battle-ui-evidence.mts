@@ -176,7 +176,7 @@ async function main(): Promise<void> {
   await page.getByTestId("mode-play").click();
   await page.waitForTimeout(300);
   if (!(await page.getByTestId("test-play-window").isVisible())) {
-    await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
   }
   await page.getByTestId("test-play-window").waitFor({ state: "visible", timeout: 15_000 });
   await page.getByTestId("title-screen").waitFor({ state: "visible", timeout: 15_000 });

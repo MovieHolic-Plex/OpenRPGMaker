@@ -33,20 +33,20 @@ export type RuntimeDebugHook = {
 };
 
 type TestHookWindow = Window & {
-  __rpgzzuInput?: {
+  __oprnInput?: {
     action: () => void;
     attack: () => void;
     skill: () => void;
     dir: (d: string | null) => void;
     face: (d: string) => void;
   };
-  __rpgzzuActionCombat?: () => ActionCombatDebug | null;
-  __rpgzzuPlayerSprite?: () => PlayerSpriteDebug | null;
-  __rpgzzuCharacterSprites?: () => CharacterSpriteDebug | null;
-  __rpgzzuCamera?: () => CameraDebug;
-  __rpgzzuSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
-  __rpgzzuSetMediaState?: (state: MediaStateDebug) => void;
-  __rpgzzuDebug?: RuntimeDebugHook;
+  __oprnActionCombat?: () => ActionCombatDebug | null;
+  __oprnPlayerSprite?: () => PlayerSpriteDebug | null;
+  __oprnCharacterSprites?: () => CharacterSpriteDebug | null;
+  __oprnCamera?: () => CameraDebug;
+  __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
+  __oprnSetMediaState?: (state: MediaStateDebug) => void;
+  __oprnDebug?: RuntimeDebugHook;
 };
 
 type ActionCombatDebug = {
@@ -122,7 +122,7 @@ export function installPlaySceneTestHooks(
   syncRuntimeState: () => void
 ): void {
   const w = window as TestHookWindow;
-  w.__rpgzzuInput = {
+  w.__oprnInput = {
     action: () => input.injectActionEdge(),
     attack: () => input.injectAttackEdge(),
     skill: () => input.injectSkillEdge(),
@@ -136,16 +136,16 @@ export function installPlaySceneTestHooks(
       syncRuntimeState();
     },
   };
-  w.__rpgzzuPlayerSprite = () => playerSpriteDebug(scene);
-  w.__rpgzzuCharacterSprites = () => characterSpritesDebug(scene);
-  w.__rpgzzuCamera = () => cameraDebug(scene);
-  w.__rpgzzuActionCombat = () => actionCombatDebug(scene);
+  w.__oprnPlayerSprite = () => playerSpriteDebug(scene);
+  w.__oprnCharacterSprites = () => characterSpritesDebug(scene);
+  w.__oprnCamera = () => cameraDebug(scene);
+  w.__oprnActionCombat = () => actionCombatDebug(scene);
   // 런타임 디버그 쓰기 훅(항상 활성). 조작 후 syncRuntimeState로 화면/상태 JSON을 갱신한다.
   const applyAndSync = (op: DebugOp): void => {
     applyDebugOp(getSession(), op);
     syncRuntimeState();
   };
-  w.__rpgzzuDebug = {
+  w.__oprnDebug = {
     setSwitch: (switchId, value) => applyAndSync({ kind: "setSwitch", switchId, value }),
     setVariable: (variableId, value) => applyAndSync({ kind: "setVariable", variableId, value }),
     giveItem: (itemId, amount) => applyAndSync({ kind: "giveItem", itemId, amount }),
@@ -194,17 +194,17 @@ export function installPlaySceneTestHooks(
     },
   };
   scene.events.once("shutdown", () => {
-    delete w.__rpgzzuInput;
-    delete w.__rpgzzuPlayerSprite;
-    delete w.__rpgzzuCharacterSprites;
-    delete w.__rpgzzuCamera;
-    delete w.__rpgzzuSetActorVitals;
-    delete w.__rpgzzuSetMediaState;
-    delete w.__rpgzzuDebug;
+    delete w.__oprnInput;
+    delete w.__oprnPlayerSprite;
+    delete w.__oprnCharacterSprites;
+    delete w.__oprnCamera;
+    delete w.__oprnSetActorVitals;
+    delete w.__oprnSetMediaState;
+    delete w.__oprnDebug;
   });
   const params = new URLSearchParams(window.location.search);
   if (params.get("e2eMedia") === "1") {
-    w.__rpgzzuSetMediaState = (state) => {
+    w.__oprnSetMediaState = (state) => {
       const session = getSession();
       if (state.audioResourceId) {
         session.audio.bgm = { resourceId: state.audioResourceId, loop: true };
@@ -223,13 +223,13 @@ export function installPlaySceneTestHooks(
       syncRuntimeState();
     };
   } else {
-    delete w.__rpgzzuSetMediaState;
+    delete w.__oprnSetMediaState;
   }
   if (params.get("e2eVitals") !== "1") {
-    delete w.__rpgzzuSetActorVitals;
+    delete w.__oprnSetActorVitals;
     return;
   }
-  w.__rpgzzuSetActorVitals = (actorId, hp, mp) => {
+  w.__oprnSetActorVitals = (actorId, hp, mp) => {
     const session = getSession();
     const vitals = session.actorVitals[actorId];
     if (!vitals) return;

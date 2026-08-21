@@ -5,7 +5,7 @@ import {
   COMMON_DB_TAB_TEST_IDS,
   switchTabAnyMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject } from "./oprn-database-helpers";
 
 const ELEMENTS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "elements")!;
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";

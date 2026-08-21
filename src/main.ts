@@ -53,7 +53,7 @@ if (!app) {
 // DEV 전용 검증 훅: e2e/비주얼 QA가 스토어 상태(드래프트 수명주기 등)를 실측할 수 있게 한다.
 // 동적 import는 별도 모듈 인스턴스를 만들어 앱 스토어를 못 보므로(2026-08-18 실측) 여기서 노출한다.
 if (import.meta.env.DEV && typeof window !== "undefined") {
-  (window as unknown as { __rpgzzuEditorStore?: typeof store }).__rpgzzuEditorStore = store;
+  (window as unknown as { __oprnEditorStore?: typeof store }).__oprnEditorStore = store;
 }
 
 void registerPwaIfEnabled();

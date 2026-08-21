@@ -266,7 +266,7 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
 
   return [
     el("fieldset", {
-      class: "rm2k3-db-fieldset tileset-rule-layer",
+      class: "oprn-db-fieldset tileset-rule-layer",
       dataset: { testid: "tileset-rule-layer" },
       children: [
         el("legend", { text: "레이어" }),
@@ -286,7 +286,7 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
       ],
     }),
     el("fieldset", {
-      class: "rm2k3-db-fieldset tileset-rule-passage",
+      class: "oprn-db-fieldset tileset-rule-passage",
       dataset: { testid: "tileset-rule-passage" },
       children: [
         el("legend", { text: "통행" }),
@@ -301,7 +301,7 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
 function renderTileMeaningEditors(tileset: TilesetDef, meta: TileAiMetadata): HTMLElement[] {
   return [
     el("fieldset", {
-      class: "rm2k3-db-fieldset tileset-tile-meaning-edit",
+      class: "oprn-db-fieldset tileset-tile-meaning-edit",
       dataset: { testid: "tileset-tile-meaning-edit" },
       children: [
         el("legend", { text: "의미 (라벨·설명)" }),

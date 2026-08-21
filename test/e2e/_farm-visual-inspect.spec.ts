@@ -44,7 +44,7 @@ type Probe = { readonly x: number; readonly y: number; readonly inventory: Recor
 
 async function probe(page: Page): Promise<Probe> {
   return page.evaluate(() => {
-    const debug = (window as never as { __rpgzzuDebug: { readState: () => Probe } }).__rpgzzuDebug;
+    const debug = (window as never as { __oprnDebug: { readState: () => Probe } }).__oprnDebug;
     const state = debug.readState();
     return { x: state.x, y: state.y, inventory: state.inventory };
   });
@@ -75,13 +75,13 @@ async function equipSlot(page: Page, digit: string, why: string): Promise<void> 
 async function actOn(page: Page, x: number, y: number, what: string): Promise<void> {
   await page.evaluate(
     ([mapId, tx, ty]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (m: string, a: number, b: number) => void } })
-        .__rpgzzuDebug.teleport(mapId as string, tx as number, ty as number),
+      (window as never as { __oprnDebug: { teleport: (m: string, a: number, b: number) => void } })
+        .__oprnDebug.teleport(mapId as string, tx as number, ty as number),
     [MAP_ID, x, y - 1] as const,
   );
   await page.waitForTimeout(260);
   await page.evaluate(() =>
-    (window as never as { __rpgzzuInput: { face: (d: string) => void } }).__rpgzzuInput.face("down"),
+    (window as never as { __oprnInput: { face: (d: string) => void } }).__oprnInput.face("down"),
   );
   await page.waitForTimeout(120);
   await tapKey(page, "Space", 220);
@@ -97,13 +97,13 @@ async function actOn(page: Page, x: number, y: number, what: string): Promise<vo
 async function growOneDay(page: Page, label: string): Promise<void> {
   await page.evaluate(
     ([mapId]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (m: string, a: number, b: number) => void } })
-        .__rpgzzuDebug.teleport(mapId as string, 8, 4),
+      (window as never as { __oprnDebug: { teleport: (m: string, a: number, b: number) => void } })
+        .__oprnDebug.teleport(mapId as string, 8, 4),
     [MAP_ID] as const,
   );
   await page.waitForTimeout(260);
   await page.evaluate(() =>
-    (window as never as { __rpgzzuInput: { face: (d: string) => void } }).__rpgzzuInput.face("right"),
+    (window as never as { __oprnInput: { face: (d: string) => void } }).__oprnInput.face("right"),
   );
   await page.waitForTimeout(120);
   await tapKey(page, "Space", 260);

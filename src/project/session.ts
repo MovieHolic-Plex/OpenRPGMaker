@@ -1,7 +1,7 @@
 // project/session.ts
 // PlaySession: 플레이 중 런타임 상태. Project는 읽기 전용, 가변 상태는 여기에.
 // v2: switches/variables/timers/mapOverrides 포함.
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.2.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
 import type { M2RuntimeState,

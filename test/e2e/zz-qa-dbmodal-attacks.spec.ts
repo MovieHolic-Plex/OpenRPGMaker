@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { exportedProject, openDatabase, switchDatabaseTab, DATABASE_TAB_SPECS } from "./rm2k3-database-helpers";
+import { exportedProject, openDatabase, switchDatabaseTab, DATABASE_TAB_SPECS } from "./oprn-database-helpers";
 
 // Adversarial QA for the DB modal refresh-deferral fix (interaction grace + rAF recheck + graceFlush).
 // Goal: BREAK the fix — lose a click, lose typed input, stale modal after external update, timer leaks.

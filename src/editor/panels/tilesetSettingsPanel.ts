@@ -30,7 +30,7 @@ function renderTilesetDatabaseWorkspace(
   rerender: () => void,
 ): HTMLElement {
   return el("section", {
-    class: "db-detail-form tileset-db-workspace compact rm2k3-tileset-workspace",
+    class: "db-detail-form tileset-db-workspace compact oprn-tileset-workspace",
     dataset: { testid: "db-detail-form" },
     children: [renderTilesetList(tilesets, selected.id, rerender), renderTilesetEditor(selected, rerender)],
   });
@@ -58,15 +58,15 @@ function renderTilesetList(tilesets: readonly TilesetDef[], selectedId: string, 
     observer.observe(listbox);
   }
   return el("aside", {
-    class: "tileset-db-list rm2k3-tileset-list-pane",
+    class: "tileset-db-list oprn-tileset-list-pane",
     children: [
       el("div", { class: "tileset-db-panel-title", text: "타일셋" }),
       listbox,
       el("button", {
-        class: "database-footer-button rm2k3-maximum-button disabled",
+        class: "database-footer-button oprn-maximum-button disabled",
         text: "최대 개수",
         attrs: { type: "button", disabled: "true", title: "타일셋 최대 개수 조정은 아직 지원하지 않습니다." },
-        dataset: { testid: "tileset-rm2k3-maximum-count" },
+        dataset: { testid: "tileset-oprn-maximum-count" },
       }),
     ],
   });

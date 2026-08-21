@@ -14,7 +14,7 @@ import {
   type AuditFinding,
   type EditorLaneMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 /**
  * Diagnostic adversarial audit of Database chrome + Overview (todo 13).

@@ -6,7 +6,7 @@ import {
   dirtyGuardOracle,
   switchTabAnyMode,
 } from "./dbAuditHelpers";
-import { exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 const CHARACTERS_TAB: DatabaseTabSpec = {
   label: "Characters",

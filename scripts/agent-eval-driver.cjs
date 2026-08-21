@@ -87,7 +87,7 @@ const API_KEY = (() => {
   for (let i = 0; i < 6; i++) {
     await page.keyboard.press("Enter");
     await sleep(1200);
-    const started = await page.evaluate(() => !!window.__rpgzzuPlayerSprite?.());
+    const started = await page.evaluate(() => !!window.__oprnPlayerSprite?.());
     if (started) break;
   }
   await sleep(1500);

@@ -120,7 +120,7 @@
 
 .ecp-caption {
   font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent, #4A57D6));
   border-bottom: 1px solid var(--border-subtle, rgba(42,37,33,.20));
   padding-bottom: 6px;
 }
@@ -191,7 +191,7 @@
   justify-content: center;
   min-width: 0;
 }
-.ecp-message-speaker { font-weight: 700; color: var(--rm2k3-command-teal, #ffd76e); font-size: 12px; }
+.ecp-message-speaker { font-weight: 700; color: var(--oprn-command-teal, #ffd76e); font-size: 12px; }
 .ecp-message-speaker-nameplate {
   position: absolute;
   left: 10px;

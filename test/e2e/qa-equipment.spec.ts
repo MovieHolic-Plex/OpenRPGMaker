@@ -5,7 +5,7 @@ import {
   exportedProject,
   openDatabase,
   switchDatabaseTab,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 
 const EQUIPMENT_TAB = { label: "Equipment", slug: "equipment", testId: "db-tab-equipment" } as const;
 const ACTORS_TAB = { label: "Actors", slug: "actors", testId: "db-tab-actors" } as const;

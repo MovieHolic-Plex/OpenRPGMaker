@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
 // DB 3파 — M7(모달 안 AI 연결) · M8(사이드 도킹) E2E.
-// 실 LLM 호출은 하지 않는다: 전송 함수 도달은 window.__rpgzzuDbAiLastRequest 훅과
+// 실 LLM 호출은 하지 않는다: 전송 함수 도달은 window.__oprnDbAiLastRequest 훅과
 // 토스트로 검증한다(API 키 미설정 환경에서는 채팅 파이프라인이 설정 모달을 연다 —
 // 그것 자체가 파이프라인 도달의 증거다).
 
@@ -31,7 +31,7 @@ test.describe("QA — DB 모달 AI 바 (M7)", () => {
 
     // 전송 함수 도달 훅: 사용자 텍스트 + 컨텍스트 풋터(탭 라벨/선택 레코드) 한 줄.
     const message = await page.evaluate(
-      () => (window as { __rpgzzuDbAiLastRequest?: { message: string } }).__rpgzzuDbAiLastRequest?.message ?? ""
+      () => (window as { __oprnDbAiLastRequest?: { message: string } }).__oprnDbAiLastRequest?.message ?? ""
     );
     expect(message).toContain("이 몬스터 스탯을 중반 밸런스로 맞춰줘");
     expect(message).toContain("[컨텍스트] 데이터베이스 DB 탭: 몬스터");

@@ -23,19 +23,19 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   let ready = false;
   for (let i = 0; i < 8 && !ready; i++) {
     await page.keyboard.press("Enter");
-    for (let j = 0; j < 8; j++) { await sleep(500); if (await page.evaluate(() => !!(window.__rpgzzuPlayerSprite?.() && window.__rpgzzuCharacterSprites?.()))) { ready = true; break; } }
+    for (let j = 0; j < 8; j++) { await sleep(500); if (await page.evaluate(() => !!(window.__oprnPlayerSprite?.() && window.__oprnCharacterSprites?.()))) { ready = true; break; } }
   }
   console.log("ready:", ready);
 
   const shot = async (n) => { await page.screenshot({ path: path.join(OUT, n + ".png") }); console.log("shot:", n); };
   const key = async (k, t = 1, d = 500) => { for (let i = 0; i < t; i++) { await page.keyboard.press(k); await sleep(d); } };
   const tileOf = (px) => ({ x: Math.floor(px.x / 16), y: Math.floor(px.y / 16) - 1 });
-  const playerTile = async () => { const s = await page.evaluate(() => window.__rpgzzuPlayerSprite?.()); return s ? tileOf(s) : null; };
-  const evTile = async (id) => { const s = await page.evaluate((e) => window.__rpgzzuCharacterSprites?.()?.events?.[e], id); return s ? tileOf(s) : null; };
+  const playerTile = async () => { const s = await page.evaluate(() => window.__oprnPlayerSprite?.()); return s ? tileOf(s) : null; };
+  const evTile = async (id) => { const s = await page.evaluate((e) => window.__oprnCharacterSprites?.()?.events?.[e], id); return s ? tileOf(s) : null; };
   const dlg = () => page.evaluate(() => !!document.querySelector(".dialogue-box"));
   const isAdj = (a, b) => a && b && Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
-  const mapId = () => page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId);
-  const setSwitch = (id, v) => page.evaluate(([a, b]) => window.__rpgzzuDebug?.setSwitch(a, b), [id, v]);
+  const mapId = () => page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId);
+  const setSwitch = (id, v) => page.evaluate(([a, b]) => window.__oprnDebug?.setSwitch(a, b), [id, v]);
   const clickPlay = async (sel) => page.evaluate((q) => { const root = document.querySelector('[data-testid="test-play-window"]') ?? document; const el = q.startsWith("#") ? root.querySelector(`[data-testid="${q.slice(1)}"]`) : [...root.querySelectorAll("button")].find((b) => b.textContent.trim() === q); if (el) el.click(); return !!el; }, sel);
 
   const drainDialogue = async () => { for (let i = 0; i < 10; i++) { if (!(await dlg())) return; await page.keyboard.press("Enter"); await sleep(500); } };

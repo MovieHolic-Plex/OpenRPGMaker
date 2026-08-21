@@ -560,12 +560,12 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 }
 
 /* 전문가 좌측 RM2003 팔레트: 가로 6칸 고정 */
-.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.rm2k-palette {
+.left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.oprn-palette {
   container-type: inline-size;
 }
 
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.rm2k-palette-grid {
-  --rm2k-cols: 6;
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid {
+  --oprn-cols: 6;
   --chipset-cell: min(32px, calc((100cqi - 12px) / 6));
   grid-auto-rows: var(--chipset-cell);
   grid-template-columns: repeat(6, var(--chipset-cell)) !important;
@@ -574,7 +574,7 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
   width: max-content !important;
 }
 
-.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.rm2k-palette-grid .chipset-tile {
+.left-panel-stack[data-testid="left-palette-root"] .chipset-grid.oprn-palette-grid .chipset-tile {
   height: var(--chipset-cell);
   min-width: 0;
   width: var(--chipset-cell);

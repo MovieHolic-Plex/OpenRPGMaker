@@ -17,9 +17,9 @@ type DebugState = {
   readonly npcActivities: Record<string, string>;
 };
 
-// window.__rpgzzuDebug 는 런타임이 이미 선언한다(playSceneTestHooks). 여기서 다시 declare 하면
+// window.__oprnDebug 는 런타임이 이미 선언한다(playSceneTestHooks). 여기서 다시 declare 하면
 // 실제 타입과 충돌해 프로젝트 전체 타입 검사를 깨뜨린다(실측) — 그래서 evaluate 결과만 캐스팅한다.
-type DebugWindow = { __rpgzzuDebug?: { readState(): DebugState } };
+type DebugWindow = { __oprnDebug?: { readState(): DebugState } };
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -50,7 +50,7 @@ test("주민이 시간표대로 낮 활동으로 옮겨간다", async ({ page })
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15_000 });
 
   const readState = async (): Promise<DebugState | null> =>
-    await page.evaluate(() => (window as unknown as DebugWindow).__rpgzzuDebug?.readState() ?? null);
+    await page.evaluate(() => (window as unknown as DebugWindow).__oprnDebug?.readState() ?? null);
 
   // 시계가 실제로 흐르는지 먼저 확인한다 — 멈춰 있으면 시간표 검증이 무의미하다.
   const first = await expect

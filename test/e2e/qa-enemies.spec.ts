@@ -1,9 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
-import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 const ENEMIES_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "enemies")!;
 const ITEMS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "items")!;
-// 종족 탭은 rm2k3-database-helpers의 DATABASE_TAB_SPECS에 아직 없어 직접 정의한다(database.ts orderedTabs 기준).
+// 종족 탭은 oprn-database-helpers의 DATABASE_TAB_SPECS에 아직 없어 직접 정의한다(database.ts orderedTabs 기준).
 const SPECIES_TAB = { label: "종족", slug: "monster-species", testId: "db-tab-monster-species" };
 
 type ExportedEnemy = {

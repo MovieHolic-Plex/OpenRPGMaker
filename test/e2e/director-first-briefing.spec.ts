@@ -30,7 +30,7 @@ async function bootBriefing(page: Page): Promise<void> {
     localStorage.removeItem("oprn:editor-ui-mode");
     localStorage.removeItem("oprn:ai-panel-collapsed");
     localStorage.removeItem("oprn:coachmarks-basic-v1");
-    localStorage.removeItem("rpgzzu:standard-welcome-seen");
+    localStorage.removeItem("oprn:standard-welcome-seen");
     localStorage.removeItem("oprn:editor-welcome-dismissed");
     for (const key of keys) localStorage.removeItem(key);
   }, LAYOUT_KEYS);

@@ -12,14 +12,14 @@
 
 /* ── (1) 데스크톱에서 곡선 컬럼 복원 ───────────────────────────────── */
 @media (min-width: 901px) {
-  .rm2k3-record-actors .actor-editor-grid {
+  .oprn-record-actors .actor-editor-grid {
     grid-template-areas:
       "basic inspector"
       "curves inspector";
     grid-template-rows: minmax(0, 1fr) minmax(220px, auto);
   }
 
-  .rm2k3-record-actors .actor-center-stack {
+  .oprn-record-actors .actor-center-stack {
     align-content: start;
     display: grid;
     gap: 10px;
@@ -29,13 +29,13 @@
     overflow: auto;
   }
 
-  .rm2k3-record-actors .actor-center-stack > .actor-panel {
+  .oprn-record-actors .actor-center-stack > .actor-panel {
     min-height: 0;
     min-width: 0;
   }
 
   /* 좁은 곡선 컬럼에서 요약 텍스트가 세로 한 글자씩 꺾이지 않게 세로 스택으로. */
-  .rm2k3-record-actors .actor-center-stack .actor-exp-row {
+  .oprn-record-actors .actor-center-stack .actor-exp-row {
     align-items: start;
     display: grid;
     gap: 6px;

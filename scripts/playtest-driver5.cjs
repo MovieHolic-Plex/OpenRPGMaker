@@ -19,15 +19,15 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   let ready = false;
   for (let i = 0; i < 8 && !ready; i++) {
     await page.keyboard.press("Enter");
-    for (let j = 0; j < 8; j++) { await sleep(500); if (await page.evaluate(() => !!(window.__rpgzzuPlayerSprite?.() && window.__rpgzzuCharacterSprites?.()))) { ready = true; break; } }
+    for (let j = 0; j < 8; j++) { await sleep(500); if (await page.evaluate(() => !!(window.__oprnPlayerSprite?.() && window.__oprnCharacterSprites?.()))) { ready = true; break; } }
   }
   console.log("ready:", ready);
 
   const shot = async (n) => { await page.screenshot({ path: path.join(OUT, n + ".png") }); console.log("shot:", n); };
   const key = async (k, t = 1, d = 500) => { for (let i = 0; i < t; i++) { await page.keyboard.press(k); await sleep(d); } };
   const tileOf = (px) => ({ x: Math.floor(px.x / 16), y: Math.floor(px.y / 16) - 1 });
-  const playerTile = async () => { const s = await page.evaluate(() => window.__rpgzzuPlayerSprite?.()); return s ? tileOf(s) : null; };
-  const evTile = async (id) => { const s = await page.evaluate((e) => window.__rpgzzuCharacterSprites?.()?.events?.[e], id); return s ? tileOf(s) : null; };
+  const playerTile = async () => { const s = await page.evaluate(() => window.__oprnPlayerSprite?.()); return s ? tileOf(s) : null; };
+  const evTile = async (id) => { const s = await page.evaluate((e) => window.__oprnCharacterSprites?.()?.events?.[e], id); return s ? tileOf(s) : null; };
   const dlg = () => page.evaluate(() => !!document.querySelector(".dialogue-box"));
   const isAdj = (a, b) => a && b && Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
 
@@ -78,7 +78,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   await sleep(1800); await key("Enter", 3, 550); await shot("131-inn-after");
 
   // ── D. 성문 → 숲 전이 ──
-  const before = await page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId);
+  const before = await page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId);
   const gateWalk = await walkAdj(() => evTile("ev_ember_gate_a"));
   console.log("gate adj:", gateWalk);
   // 성문 방향으로 한 걸음 더(playerTouch)
@@ -88,7 +88,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await page.keyboard.down(fk); await sleep(350); await shot("132-transfer-fade"); await sleep(600); await page.keyboard.up(fk);
   }
   await sleep(1800); await shot("133-forest-arrival");
-  console.log("map:", before, "→", await page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId));
+  console.log("map:", before, "→", await page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId));
 
   // ── E. 슬라임 전투 ──
   await interact("ev_forest_slime");

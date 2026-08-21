@@ -8,7 +8,7 @@ import { el } from "@/util/dom";
 
 export const COACH_MARKS_SEEN_KEY = "oprn:coachmarks-basic-v1";
 // 표준 모드 첫 방문 웰컴 카드 전용 키 — 초보 코치마크 키와 분리.
-export const STANDARD_WELCOME_SEEN_KEY = "rpgzzu:standard-welcome-seen";
+export const STANDARD_WELCOME_SEEN_KEY = "oprn:standard-welcome-seen";
 
 export interface CoachMarkStep {
   readonly id: string;

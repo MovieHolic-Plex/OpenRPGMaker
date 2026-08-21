@@ -1,6 +1,6 @@
 ---
 name: map-purpose-stamps
-description: Use this RPG Maker authoring skill when designing maps with purposeful traversal, landmarks, blockers, keys, treasure, routes, safe zones, encounter zones, and return paths instead of decorative terrain only.
+description: Use this authoring skill when designing maps with purposeful traversal, landmarks, blockers, keys, treasure, routes, safe zones, encounter zones, and return paths instead of decorative terrain only.
 ---
 
 # Map Purpose Stamps

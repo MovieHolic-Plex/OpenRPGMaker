@@ -54,14 +54,14 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   });
   zoomGroup.append(
     el("button", {
-      class: "rm2k3-tool-button zoom-stepper-btn",
+      class: "oprn-tool-button zoom-stepper-btn",
       text: "−",
       attrs: { type: "button", title: "축소", "aria-label": "축소" },
       dataset: { testid: "editor-zoom-prev" },
       on: { click: () => editorState.set({ zoom: stepEditorZoom(-1, levels, currentZoom) }) },
     }),
     el("button", {
-      class: "rm2k3-tool-button zoom-stepper-current",
+      class: "oprn-tool-button zoom-stepper-current",
       text: `${currentZoom}x`,
       attrs: { type: "button", title: "배율 목록", "aria-expanded": "false", "aria-label": `현재 ${currentZoom}배` },
       dataset: { testid: "editor-zoom-stepper" },
@@ -73,7 +73,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
       },
     }),
     el("button", {
-      class: "rm2k3-tool-button zoom-stepper-btn",
+      class: "oprn-tool-button zoom-stepper-btn",
       text: "+",
       attrs: { type: "button", title: "확대", "aria-label": "확대" },
       dataset: { testid: "editor-zoom-next" },
@@ -87,7 +87,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
   for (const zoom of levels) {
     menu.append(
       el("button", {
-        class: "rm2k3-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),
+        class: "oprn-tool-button zoom-button" + (currentZoom === zoom ? " active" : ""),
         text: `${zoom}x`,
         attrs: { title: `${zoom}배 확대`, "aria-label": `${zoom}배 확대`, "aria-pressed": String(currentZoom === zoom) },
         dataset: { testid: `editor-zoom-${zoom}` },
@@ -107,7 +107,7 @@ export function renderCanvasToolbar(container: HTMLElement): void {
     dataset: { testid: "editor-map-save-group", uiDensity: "expert" },
     children: [
       el("button", {
-        class: "rm2k3-tool-button map-save-button",
+        class: "oprn-tool-button map-save-button",
         text: "맵 저장",
         attrs: { title: "현재 맵만 PNG로 저장", "aria-label": "현재 맵만 PNG로 저장" },
         dataset: { testid: "editor-map-screenshot-button" },

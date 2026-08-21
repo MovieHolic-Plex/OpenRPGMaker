@@ -13,11 +13,11 @@ import { el } from "@/util/dom";
 export function renderTilesetEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
   return el("section", {
-    class: "tileset-db-editor simplified rm2k3-tileset-editor",
+    class: "tileset-db-editor simplified oprn-tileset-editor",
     children: [
       renderTilesetProperties(tileset, rerender),
       el("div", {
-        class: "rm2k3-tileset-main",
+        class: "oprn-tileset-main",
         children: [renderTilesetMetadataEditor(tileset, rerender), renderTabSidePanel(tileset, tab, rerender)],
       }),
       renderTilesetAiLauncher(tileset, rerender),
@@ -50,10 +50,10 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
   if (tab === "rules") {
     const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
     return el("aside", {
-      class: "rm2k3-tileset-terrain-pane tileset-rules-legend-pane",
+      class: "oprn-tileset-terrain-pane tileset-rules-legend-pane",
       children: [
         el("fieldset", {
-          class: "rm2k3-db-fieldset",
+          class: "oprn-db-fieldset",
           dataset: { testid: "tileset-rules-side" },
           children: [
             el("legend", { text: "칩셋 범례" }),
@@ -96,7 +96,7 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
               ],
             }),
             el("button", {
-              class: "database-footer-button rm2k3-global-terrain-button",
+              class: "database-footer-button oprn-global-terrain-button",
               text: "전체 칩셋 창 · 통행 (O/X/★)",
               attrs: { type: "button", title: "칩셋 그래픽 전체 시트를 별도 창에서 보고 통행을 편집" },
               dataset: { testid: "tileset-settings-open" },
@@ -113,7 +113,7 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
   }
   if (tab === "knowledge") {
     return el("aside", {
-      class: "rm2k3-tileset-terrain-pane",
+      class: "oprn-tileset-terrain-pane",
       children: [
         renderTilesetCheckerSummary(tileset),
         el("button", {
@@ -128,10 +128,10 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
     });
   }
   return el("aside", {
-    class: "rm2k3-tileset-terrain-pane",
+    class: "oprn-tileset-terrain-pane",
     children: [
       el("fieldset", {
-        class: "rm2k3-db-fieldset rm2k3-tileset-autotile",
+        class: "oprn-db-fieldset oprn-tileset-autotile",
         children: [
           el("legend", { text: "자동타일 애니메이션" }),
           el("div", { class: "tileset-db-autotile-swatch" }),

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as const;
 const ITEMS_TAB = { label: "Items", slug: "items", testId: "db-tab-items" } as const;

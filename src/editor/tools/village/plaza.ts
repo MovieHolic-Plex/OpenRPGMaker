@@ -1,7 +1,7 @@
 // editor/tools/village/plaza.ts
 // 광장 — 위치·크기 산출, 장터 데크/소품, 정원 울타리, 꽃밭.
 
-import { RM2K3_WOOD_FLOOR_PASSABILITY } from "@/project/defaults/chipsetMapping";
+import { WOOD_FLOOR_PASSABILITY } from "@/project/defaults/chipsetMapping";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
 import type { Rng } from "@/util/rng";
@@ -72,11 +72,11 @@ export function villagePlaza(
 export function paintMarketDeck(map: GameMap, rect: Rect): void {
   for (let y = rect.y; y < rect.y + rect.h; y += 1) {
     for (let x = rect.x; x < rect.x + rect.w; x += 1) {
-      let tile: number = RM2K3_WOOD_FLOOR_PASSABILITY.body;
-      if (x === rect.x) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest;
-      else if (x === rect.x + rect.w - 1) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast;
-      else if (y === rect.y) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth;
-      else if (y === rect.y + rect.h - 1) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth;
+      let tile: number = WOOD_FLOOR_PASSABILITY.body;
+      if (x === rect.x) tile = WOOD_FLOOR_PASSABILITY.edgeWest;
+      else if (x === rect.x + rect.w - 1) tile = WOOD_FLOOR_PASSABILITY.edgeEast;
+      else if (y === rect.y) tile = WOOD_FLOOR_PASSABILITY.edgeNorth;
+      else if (y === rect.y + rect.h - 1) tile = WOOD_FLOOR_PASSABILITY.edgeSouth;
       const index = y * map.width + x;
       map.lowerTiles[index] = tile;
       map.upperTiles[index] = TILE.EMPTY;

@@ -185,7 +185,7 @@ function samplePlan(overrides: Partial<WorkPlan> = {}): WorkPlan {
 }
 
 function bridgeSend(text: string): Promise<unknown> {
-  const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+  const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
   if (!bridge) throw new Error("bridge missing");
   return bridge.send(text);
 }

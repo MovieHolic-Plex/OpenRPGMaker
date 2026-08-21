@@ -165,7 +165,7 @@
   display: grid;
 }
 
-.event-editor-modal-body [data-testid="event-classic-conditions"].event-rm2k3-fieldset {
+.event-editor-modal-body [data-testid="event-classic-conditions"].event-oprn-fieldset {
   padding: 4px 5px 3px;
 }
 
@@ -883,7 +883,7 @@
     gap: 3px;
   }
 
-  .event-rm2k3-fieldset {
+  .event-oprn-fieldset {
     padding: 5px 5px 3px;
   }
 

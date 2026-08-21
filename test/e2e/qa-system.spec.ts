@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 test.setTimeout(120_000);
 

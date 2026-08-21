@@ -25,13 +25,14 @@ const SCANNED_EXTENSIONS = new Set([".ts", ".tsx", ".css", ".html", ".json", ".w
  * 상표·계보 표현. 개별 단어는 일반명사일 수 있으나(예: "maker") 아래 형태는
  * RPG Maker 제품군을 특정한다.
  *
- * **표시형만 잡는다.** 공백으로 띄운 "RPG MAKER" / "RPG ZZU" 는 사람이 읽는 문자열이라
- * 여기서 막고, 식별자형(`rpgMakerTileToolbar`, `__rpgzzuCamera`, `rm2k3-tool-button`,
- * `rpg-zzu:` 저장 키)은 **Phase 2b(DOM 지문 개명)** 범위다. 지금 막으면 그 라운드까지
- * 상시 빨강이 되어 그물이 무력해지므로, 2b 가 끝나면 아래에 식별자 패턴을 추가한다.
+ * 표시형(공백으로 띄운 "RPG MAKER" / "RPG ZZU")과 **식별자형**을 모두 잡는다.
+ * 식별자형은 Phase 2b(DOM 지문 개명, 2026-08-21)가 끝난 뒤 활성화했다 — 그 전에 켜면
+ * 1,800줄이 상시 빨강이라 그물이 무력해진다. 활성화 시점 실측: 잔여 0건.
  *
  * 그 밖의 의도적 제외:
  * - `RTP` 단독 — EasyRPG RTP 대체본 출처 표기에 쓰인다(Phase 5 에서 표시명 정리 예정).
+ * - 에셋 경로(`/assets/…/rm2k3/…png`) — 파일을 옮겨야 하므로 Phase 5 범위. 아래
+ *   isExempt 가 아니라 스캔 시 경로 줄을 건너뛰는 방식으로 처리한다.
  */
 const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp }[] = [
   { label: "RPG Maker 제품명", re: /RPG\s+MAKER/i },
@@ -40,7 +41,36 @@ const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp
   { label: "ツクール", re: /ツクール/ },
   { label: "tkool", re: /tkool/i },
   { label: "구 제품명 RPG ZZU", re: /RPG\s+ZZU/i },
+  // ── 식별자형 (Phase 2b 완료 후 활성) ──────────────────────────────
+  { label: "CSS 클래스·testid 접두사 rm2k3-", re: /rm2k3-/ },
+  { label: "CSS 클래스·testid 접두사 rpg-maker-", re: /rpg-maker-/ },
+  { label: "아이콘 클래스 접두사 rm-tool-icon-", re: /rm-tool-icon-/ },
+  { label: "심볼 접두사 rpgMaker", re: /rpgMaker/ },
+  { label: "window 전역 __rpgzzu", re: /__rpgzzu/ },
+  { label: "구 저장 키 접두사 rpg-zzu", re: /rpg-zzu[:.]/ },
+  { label: "심볼 접두사 RM2K3_", re: /RM2K3_/ },
 ];
+
+/**
+ * `rpg-zzu-` (하이픈)은 **데이터 식별자**여서 위 패턴에 넣지 않았다. 남아 있는 것과 이유 —
+ *
+ * · `DEFAULT_SUPABASE_PROJECT_ID = "rpg-zzu-house-template-gallery"` 와
+ *   `iceDiagonalTerrain` 의 `projectId` — **원격 Supabase 레코드를 가리킨다.** 바꾸면
+ *   그 프로젝트를 못 찾는다. 서버 쪽 마이그레이션과 함께 다뤄야 한다.
+ * · 타이틀 리소스 id 구 이름(`rpg-zzu-title-*`) — generatedAssetResourceResolver 에
+ *   **읽기 별칭으로만** 남아 있다. 새로 쓰는 곳은 모두 `oprn-title-*` 를 쓴다.
+ *   지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
+ *
+ * 사용자에게 보이던 것(내보내기 기본 파일명 `rpg-zzu-project.oprn` / `rpg-zzu-game-web.zip`)은
+ * 2026-08-21 에 교체했다.
+ */
+const DATA_ID_NOTE = "rpg-zzu- 데이터 식별자는 서버·프로젝트 파일 호환 때문에 남는다";
+
+/**
+ * 에셋 경로가 있는 줄은 건너뛴다 — 파일을 옮기지 않으면 로드가 깨진다(Phase 5).
+ * 예: `/assets/generated/rm2k3/hero-01-battle.png`, `assets/rm2k3-original-chipset.png`
+ */
+const ASSET_PATH_LINE = /\/assets\/|assets\/|\.png|\.jpe?g|\.webp/;
 
 /**
  * 아직 켜지 않은 패턴 — 켜는 순간 상시 빨강이 되므로 해당 라운드가 끝난 뒤 위로 옮긴다.
@@ -53,7 +83,7 @@ const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp
  * | /rm2k3/i (식별자)      | 1889 | CSS 클래스·testid·파일명                        | Phase 2b    |
  * | /rpgMaker/ (식별자)    | —    | `rpgMakerTileToolbar*.ts` 심볼·파일명            | Phase 2b    |
  * | /rpg-zzu:/ (저장 키)   | 43   | localStorage 키 접두사                          | Phase 2b    |
- * | /__rpgzzu/ (전역)      | ~30  | window 디버그·e2e 훅                            | Phase 2b    |
+ * | /__oprn/ (전역)      | ~30  | window 디버그·e2e 훅                            | Phase 2b    |
  *
  * 특히 `windowskin-rm2003.png` 은 **모든 게임의 기본 대사창 스킨**이다 — 이름만 문제가
  * 아니라 그림 자체가 RM2003 창을 재현하는지 Phase 5 출처 조사에서 함께 확인해야 한다.
@@ -94,14 +124,19 @@ function walk(dir: string, out: string[] = []): string[] {
  *    바꾸면 사용자 설정이 깨지므로 Phase 2b(식별자 개명 + 마이그레이션) 범위다.
  *    라벨(사용자에게 보이는 문자열)은 이미 중립화됐고 registry.ts 는 면제하지 않는다.
  *
+ * 3. `src/util/appStorage.ts` — 구 저장 키 접두사 4종을 **값으로** 들고 있다. 그게 이
+ *    파일의 존재 이유(기존 사용자 데이터 이관)이므로 영구 면제. 접두사가 실제로 코드에서
+ *    쓰이는지는 test/appStorageMigration.test.ts 가 형태별로 검증한다.
+ *
  * 미결(감독 판단 대기): 전투 스킨 라벨 8개가 여전히 닌텐도·스퀘어에닉스 계열
  * 프랜차이즈 이름이다 — 포켓몬·옥토패스·크로노 트리거·브레이블리·드퀘·FF 정통·
  * 마더/언더·골든선. 변호사 지적은 RPG Maker 계열이었고 그 4개(RM2003·RM2000·
- * RPG Maker MV·VX Ace)는 2026-08-21 에 중립 서술어로 교체했다. 아래 패턴은 RPG Maker
+ * RPG Maker MV·VX Ace)는 2026-08-21 에 중립 서술어로 교체했다. 위 패턴은 RPG Maker
  * 계열만 잡으므로 8개는 걸리지 않는다 — 감독이 정하면 패턴을 추가할 자리다.
  */
 const EXEMPT_PREFIXES: readonly string[] = [
   "src/brand.ts",
+  "src/util/appStorage.ts",
   "src/styles/runtime/battle-skins/",
 ];
 
@@ -118,6 +153,7 @@ describe("탈-쯔구르: 출하 문자열", () => {
       if (isExempt(rel)) continue;
       const lines = readFileSync(file, "utf8").split(/\r?\n/);
       lines.forEach((line, index) => {
+        if (ASSET_PATH_LINE.test(line)) return;
         for (const { label, re } of FORBIDDEN_PATTERNS) {
           if (re.test(line)) offenders.push(`${rel.replace(/\\/g, "/")}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
         }
@@ -155,7 +191,8 @@ describe("탈-쯔구르: 출하 문자열", () => {
   // 아직 못 잡는 것을 눈에 보이게 남긴다 — 면제 목록이 조용히 늘어나면 그물이 무력해진다.
   it("면제·미활성 목록이 문서화되어 있다", () => {
     expect(STAGED_PATTERN_NOTE).toContain("Phase");
-    expect(EXEMPT_PREFIXES.length).toBeLessThanOrEqual(2);
+    expect(DATA_ID_NOTE).toContain("데이터 식별자");
+    expect(EXEMPT_PREFIXES.length).toBeLessThanOrEqual(3);
   });
 
   // 전투 스킨 라벨은 자료집→시스템 드롭다운에 그대로 뿌려진다(databaseSystemView.ts).

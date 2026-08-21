@@ -164,7 +164,7 @@ describe("database system view", () => {
         layout: { titleX: 160, titleY: 70, menuX: 160, menuY: 118 },
         menuLabels: { newGame: "새 게임", continueGame: "계속", quit: "종료" },
         menuVisibility: { newGame: true, continueGame: true, quit: true },
-        backgroundResourceId: "rpg-zzu-title-field",
+        backgroundResourceId: "oprn-title-field",
       };
     });
     const host = renderSystem();
@@ -203,7 +203,7 @@ describe("database system view", () => {
     const host = renderSystem();
     // Defaults now ship a crest logo in both mode, so logo controls are already visible.
     expect(findByTestId(host, "db-field-title-screen-logo")).not.toBeNull();
-    expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBe("rpg-zzu-title-logo-crest");
+    expect(store.getCurrent().system.titleScreen?.titleGraphic?.resourceId).toBe("oprn-title-logo-crest");
     expect(findByTestId(host, "db-title-workbench-logo")).not.toBeNull();
 
     setSelectValue(host, "db-field-title-screen-presentation", "graphic");

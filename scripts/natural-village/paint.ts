@@ -1,6 +1,6 @@
 import { HOUSE_KITS, stampFootprintHouseKit } from "../../src/editor/houseKit";
 import { TILE } from "../../src/project/defaults/constants";
-import { DIRT_ROAD_TILE, RM2K3_WOOD_FLOOR_PASSABILITY } from "../../src/project/defaults/chipsetMapping";
+import { DIRT_ROAD_TILE, WOOD_FLOOR_PASSABILITY } from "../../src/project/defaults/chipsetMapping";
 import { LAKE_AUTOTILE_TILE } from "../../src/project/defaults/lakeAutotile";
 import { shapeRoadAround } from "../../src/project/defaults/roadAutotile";
 import type { GameMap, MapLayoutRegion } from "../../src/project/types";
@@ -180,11 +180,11 @@ function rasterLine(from: Point, to: Point): Point[] {
 function paintWoodRect(map: GameMap, x0: number, y0: number, width: number, height: number): void {
   for (let y = y0; y < y0 + height; y += 1) {
     for (let x = x0; x < x0 + width; x += 1) {
-      let tile: number = RM2K3_WOOD_FLOOR_PASSABILITY.body;
-      if (x === x0) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest;
-      else if (x === x0 + width - 1) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast;
-      else if (y === y0) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth;
-      else if (y === y0 + height - 1) tile = RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth;
+      let tile: number = WOOD_FLOOR_PASSABILITY.body;
+      if (x === x0) tile = WOOD_FLOOR_PASSABILITY.edgeWest;
+      else if (x === x0 + width - 1) tile = WOOD_FLOOR_PASSABILITY.edgeEast;
+      else if (y === y0) tile = WOOD_FLOOR_PASSABILITY.edgeNorth;
+      else if (y === y0 + height - 1) tile = WOOD_FLOOR_PASSABILITY.edgeSouth;
       setLower(map, x, y, tile);
       setUpper(map, x, y, TILE.EMPTY);
     }

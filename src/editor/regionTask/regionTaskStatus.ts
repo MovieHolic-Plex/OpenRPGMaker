@@ -1,7 +1,7 @@
 // 영역 AI 작업 진행 상태 브로드캐스트 — EditScene 배지(스펙 §3 2-C)가 구독한다.
 import type { RegionRect } from "./clipToRegion";
 
-export const REGION_TASK_STATUS_EVENT = "rpgzzu:region-task-status";
+export const REGION_TASK_STATUS_EVENT = "oprn:region-task-status";
 
 export interface RegionTaskStatusDetail {
   readonly mapId: string;

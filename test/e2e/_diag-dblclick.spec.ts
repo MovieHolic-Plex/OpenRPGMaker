@@ -9,7 +9,7 @@ test("capture positionToCamera transform", async ({ page }) => {
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
 
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();
-  await page.waitForFunction(() => typeof (window as unknown as { __rpgzzuEditCamera?: unknown }).__rpgzzuEditCamera === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as unknown as { __oprnEditCamera?: unknown }).__oprnEditCamera === "function", undefined, { timeout: 20_000 });
   await page.getByTestId("layer-lower").click();
   await page.waitForTimeout(300);
 
@@ -32,7 +32,7 @@ test("capture positionToCamera transform", async ({ page }) => {
   });
 
   const cam = await page.evaluate(() => {
-    const c = (window as unknown as { __rpgzzuEditCamera: () => { scrollX: number; scrollY: number; zoom: number; width: number; height: number } }).__rpgzzuEditCamera();
+    const c = (window as unknown as { __oprnEditCamera: () => { scrollX: number; scrollY: number; zoom: number; width: number; height: number } }).__oprnEditCamera();
     const canvas = document.querySelector<HTMLCanvasElement>('[data-testid="edit-canvas"] canvas');
     const rect = canvas?.getBoundingClientRect();
     return { ...c, rect: rect ? { x: rect.x, y: rect.y, width: rect.width, height: rect.height } : null };

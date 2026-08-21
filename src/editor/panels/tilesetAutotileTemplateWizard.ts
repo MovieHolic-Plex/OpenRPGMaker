@@ -14,7 +14,7 @@ import { el } from "@/util/dom";
 // 순수 계산은 tilesetAutotileTemplates.ts, 커밋은 tilesetActions.ts 에 위임한다.
 
 // 위저드 초안 상태(리렌더에도 유지되는 모듈 상태 — tilesetAutotileEditor.ts 의 groupDraftName 선례).
-let draftKind: AutotileTemplateKind = "rm2k-3x4";
+let draftKind: AutotileTemplateKind = "oprn-3x4";
 let draftAnchorText = "";
 let resultLines: string[] = [];
 let resultIsError = false;
@@ -30,7 +30,7 @@ export function renderAutotileTemplateWizard(tileset: TilesetDef, rerender: () =
   });
   kindSelect.dataset.testid = "autotile-template-kind";
   kindSelect.addEventListener("change", () => {
-    draftKind = (AUTOTILE_TEMPLATE_KIND_GUIDES.find((guide) => guide.id === kindSelect.value)?.id ?? "rm2k-3x4");
+    draftKind = (AUTOTILE_TEMPLATE_KIND_GUIDES.find((guide) => guide.id === kindSelect.value)?.id ?? "oprn-3x4");
   });
 
   // TODO(후속): 칩셋 미리보기 시트 클릭으로 앵커를 고르는 연동(renderChipsetPreviewPanel

@@ -206,7 +206,7 @@ export function setEditorUiMode(mode: EditorUiMode, storage?: Storage | null): v
   applyEditorUiModeClasses(next);
   for (const listener of listeners) listener();
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("rpgzzu:editor-ui-mode", { detail: { mode: next } }));
+    window.dispatchEvent(new CustomEvent("oprn:editor-ui-mode", { detail: { mode: next } }));
   }
 }
 
@@ -238,7 +238,7 @@ if (typeof document !== "undefined") {
 
 // Headless/browser agent hook (tests + bridge) — not a product UI control.
 if (typeof window !== "undefined") {
-  window.__rpgzzuEditorUiMode = {
+  window.__oprnEditorUiMode = {
     get: () => getEditorUiMode(),
     set: (mode: EditorUiMode) => setEditorUiMode(mode),
     chrome: () => chromeForMode(getEditorUiMode()),

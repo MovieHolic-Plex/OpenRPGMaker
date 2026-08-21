@@ -79,8 +79,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   const state = editorState.get();
   const history = getMapEditHistoryState();
   const menuBar = el("div", {
-    class: "rm2k3-menu-bar editor-studio-menubar",
-    dataset: { testid: "rm2k3-menu-bar", editorUiMode: uiMode },
+    class: "oprn-menu-bar editor-studio-menubar",
+    dataset: { testid: "oprn-menu-bar", editorUiMode: uiMode },
   });
   menuBar.append(renderProductBrand());
   for (const item of MENU_ITEMS) {
@@ -108,8 +108,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   topbar.append(menuBar);
   if (showClassic) {
     const toolbar = el("div", {
-      class: "rm2k3-toolbar classic-toolbar is-legacy-surface",
-      dataset: { testid: "rm2k3-toolbar", uiDensity: chrome.classicToolbar ? "expert" : "play" },
+      class: "oprn-toolbar classic-toolbar is-legacy-surface",
+      dataset: { testid: "oprn-toolbar", uiDensity: chrome.classicToolbar ? "expert" : "play" },
     });
     toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
     topbar.append(toolbar);
@@ -187,7 +187,7 @@ function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
 
 function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[]): HTMLElement {
   return el("button", {
-    class: "rm2k3-menu-item",
+    class: "oprn-menu-item",
     text: label,
     attrs: { "aria-haspopup": "menu", "aria-expanded": "false" },
     dataset: { testid: `menu-${id}` },
@@ -209,13 +209,13 @@ function renderMenu(id: MenuId, label: string, commands: readonly MenuCommand[])
 
 function renderStandardMoreTools(): readonly HTMLElement[] {
   const menu = el("div", {
-    class: "rm2k3-menu-popup standard-more-tools-menu",
+    class: "oprn-menu-popup standard-more-tools-menu",
     attrs: { role: "menu" },
     dataset: { testid: "standard-more-tools-menu" },
   });
   menu.hidden = true;
   const button = el("button", {
-    class: "rm2k3-menu-item standard-more-tools",
+    class: "oprn-menu-item standard-more-tools",
     text: "⋯",
     attrs: {
       type: "button",
@@ -236,7 +236,7 @@ function renderStandardMoreTools(): readonly HTMLElement[] {
   });
   const addItem = (label: string, testId: string, action: () => void): void => {
     menu.append(el("button", {
-      class: "rm2k3-menu-command",
+      class: "oprn-menu-command",
       text: label,
       attrs: { type: "button", role: "menuitem" },
       dataset: { testid: testId },
@@ -257,10 +257,10 @@ function renderStandardMoreTools(): readonly HTMLElement[] {
 }
 
 function renderWindowControls(): HTMLElement {
-  const controls = el("div", { class: "rm2k3-window-controls" });
+  const controls = el("div", { class: "oprn-window-controls" });
   const collapsed = document.body.classList.contains("toolbar-collapsed");
   const collapse = el("button", {
-    class: "rm2k3-window-control",
+    class: "oprn-window-control",
     text: collapsed ? "▾" : "─",
     attrs: { type: "button", title: "툴바 접기/펼치기", "aria-pressed": collapsed ? "true" : "false" },
     dataset: { testid: "window-toolbar-collapse" },
@@ -276,7 +276,7 @@ function renderWindowControls(): HTMLElement {
     },
   });
   const fullscreen = el("button", {
-    class: "rm2k3-window-control",
+    class: "oprn-window-control",
     text: document.fullscreenElement ? "◱" : "□",
     attrs: { type: "button", title: "전체화면 전환" },
     dataset: { testid: "window-fullscreen" },
@@ -341,14 +341,14 @@ function openMenuPopup(id: MenuId, button: HTMLElement, commands: readonly MenuC
   closeMenuPopup();
   if (alreadyOpen) return;
   button.setAttribute("aria-expanded", "true");
-  const popup = el("div", { class: "rm2k3-menu-popup open", attrs: { role: "menu" }, dataset: { testid: `menu-popup-${id}` } });
+  const popup = el("div", { class: "oprn-menu-popup open", attrs: { role: "menu" }, dataset: { testid: `menu-popup-${id}` } });
   for (const command of commands) {
     if (command.kind === "separator") {
-      popup.append(el("div", { class: "rm2k3-menu-separator", attrs: { role: "separator" } }));
+      popup.append(el("div", { class: "oprn-menu-separator", attrs: { role: "separator" } }));
       continue;
     }
     const item = el("button", {
-      class: "rm2k3-menu-command",
+      class: "oprn-menu-command",
       text: command.label,
       attrs: { role: "menuitem" },
       dataset: { testid: command.testId },
@@ -406,7 +406,7 @@ function closeMenuPopup(options: { readonly restoreFocus?: boolean } = {}): void
   activeMenuTrigger = null;
   activeMenuPopup?.remove();
   activeMenuPopup = null;
-  document.querySelectorAll<HTMLElement>(".rm2k3-menu-item[aria-expanded='true']").forEach((node) => {
+  document.querySelectorAll<HTMLElement>(".oprn-menu-item[aria-expanded='true']").forEach((node) => {
     node.setAttribute("aria-expanded", "false");
   });
   if (options.restoreFocus && trigger?.isConnected) trigger.focus();
@@ -495,7 +495,7 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
 }
 
 function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
-  const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-edit" } });
+  const row = el("div", { class: "oprn-toolbar-row classic-row", dataset: { testid: "oprn-toolbar-row-edit" } });
   const selectedEvent = selectedEventForState(state);
   const mapId = state.currentMapId ?? store.getCurrent().startMapId;
   row.append(
@@ -572,7 +572,7 @@ function openSelectedEventTestWindow(): void {
     toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok");
     return;
   }
-  window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+  window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
     detail: { kind: "selected-event", ...selectedEvent },
   }));
 }
@@ -640,13 +640,13 @@ function renderQuickBattleTestButton(): HTMLElement {
 
 function openRandomBattleTestWindow(): void {
   window.dispatchEvent(
-    new CustomEvent("rpgzzu:test-play-window", {
+    new CustomEvent("oprn:test-play-window", {
       detail: { kind: "random-battle" },
     })
   );
 }
 function classicPlayToolbarRow(mode: string): HTMLElement {
-  const row = el("div", { class: "rm2k3-toolbar-row classic-row", dataset: { testid: "rm2k3-toolbar-row-primary" } });
+  const row = el("div", { class: "oprn-toolbar-row classic-row", dataset: { testid: "oprn-toolbar-row-primary" } });
   row.append(playModeButton(mode));
   disposeToolbarOverflows.push(installToolbarOverflow(row));
   return row;
@@ -837,7 +837,7 @@ async function togglePlayMode(): Promise<void> {
 
 async function openTestPlayWindow(): Promise<void> {
   // flush 는 openTestPlayModal 이 창을 먼저 띄운 뒤 진행(로딩 UI 표시).
-  window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window"));
+  window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
 }
 async function reloadProjectFromDb(_topbar: HTMLElement): Promise<void> {
   if (store.hasUnsavedChanges()) {

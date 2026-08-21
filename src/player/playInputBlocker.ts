@@ -41,7 +41,7 @@ export function installPlayPointerBlocker(root: HTMLElement): () => void {
 export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
   // 자동화(Playwright 등, navigator.webdriver=true)에서는 레거시 e2e 스펙들이
   // 타이틀/메뉴를 신뢰 클릭으로 조작하므로 차단하지 않는다. 단 키보드 전용
-  // 동작 자체를 검증하는 스펙은 __rpgzzuForcePointerBlock 훅으로 실차단을 강제한다.
+  // 동작 자체를 검증하는 스펙은 __oprnForcePointerBlock 훅으로 실차단을 강제한다.
   // 실사용자(webdriver 부재)는 필드 플레이 중 마우스를 막되, 타이틀 메뉴 항목은
   // 클릭으로 시작/이어하기/종료가 되게 예외를 둔다.
   if (isAutomationPointerAllowed()) return false;
@@ -58,7 +58,7 @@ export function isTouchControlPointerTarget(target: EventTarget | null | undefin
 }
 
 function isAutomationPointerAllowed(): boolean {
-  const forced = (globalThis as { __rpgzzuForcePointerBlock?: boolean }).__rpgzzuForcePointerBlock === true;
+  const forced = (globalThis as { __oprnForcePointerBlock?: boolean }).__oprnForcePointerBlock === true;
   if (forced) return false;
   return typeof navigator !== "undefined" && navigator.webdriver === true;
 }

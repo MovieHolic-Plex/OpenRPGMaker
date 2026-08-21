@@ -1,5 +1,5 @@
 @media (min-width: 981px) {
-  .database-modal-body .rm2k3-detail-states {
+  .database-modal-body .oprn-detail-states {
     box-sizing: border-box;
     max-height: 100%;
     min-height: 0;
@@ -7,7 +7,7 @@
     padding-bottom: 28px;
   }
 
-  .database-modal-body .rm2k3-detail-states > .db-state-rm2k3-workbench {
+  .database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
     align-content: start;
     gap: 8px;
     grid-template-areas:
@@ -21,24 +21,24 @@
     padding-bottom: 18px;
   }
 
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel {
     background: var(--bg-raised);
     border-color: var(--db-modern-line, var(--border-subtle));
     padding: 12px 12px 10px;
   }
 
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(7),
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(8) {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7),
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) {
     min-height: 136px;
   }
 
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(7) .db-state-control,
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(8) .db-state-control {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7) .db-state-control,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) .db-state-control {
     grid-template-columns: 52px minmax(0, 1fr);
   }
 
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(7) .db-state-control input,
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel:nth-child(8) .db-state-control input {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(7) .db-state-control input,
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel:nth-child(8) .db-state-control input {
     font-size: 12px;
     padding-left: 5px;
     padding-right: 5px;
@@ -49,7 +49,7 @@
     min-height: 28px;
   }
 
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-reference-panel,
+  .database-modal-body .db-state-oprn-workbench > .db-state-reference-panel,
   .database-modal-body .db-state-summary {
     height: auto;
     min-height: 82px;

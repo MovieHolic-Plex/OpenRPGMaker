@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 export const DEFAULT_EVIDENCE_DIR = "output/evidence/supabase-root-cache";
 export const DEFAULT_PROJECT_ID = "rpg-zzu-house-template-gallery";
 
-const GENERATED_PLAN_PATH = "src/assets/rm2k3GeneratedAssetPlan.json";
+const GENERATED_PLAN_PATH = "src/assets/oprnGeneratedAssetPlan.json";
 
 export const RESOURCE_SLICING = {
   chipset: {

@@ -60,9 +60,9 @@ export function buildAiCompletionStrip(options: {
         if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
         const detail = { kind: "map", mapId: context.mapId };
         if (typeof CustomEvent === "function") {
-          window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", { detail }));
+          window.dispatchEvent(new CustomEvent("oprn:test-play-window", { detail }));
         } else {
-          const event = new Event("rpgzzu:test-play-window");
+          const event = new Event("oprn:test-play-window");
           Object.defineProperty(event, "detail", { configurable: true, value: detail });
           window.dispatchEvent(event);
         }

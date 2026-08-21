@@ -1,0 +1,489 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "hero-01-face",
+      "target": "actorFace",
+      "resourceKind": "faceset",
+      "expectedDimensions": {
+        "width": 192,
+        "height": 192
+      },
+      "prompt": "Original young field scout face set with varied expressions, warm cloak, readable 48 pixel portrait tiles",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/hero-01-face-8cf57527.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-01-face.png",
+      "resourceId": "generated-actor-hero-01-face",
+      "sha256": "e0a23ce88fdc75c622ddc1bee331e869cdcba3bb1a4c61812b9824656489ec7c",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-01-charset",
+      "target": "actorCharset",
+      "resourceKind": "charset",
+      "expectedDimensions": {
+        "width": 288,
+        "height": 256
+      },
+      "prompt": "Original young field scout walking character sheet with four directions and distinct step frames",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/hero-01-charset-06d4ea2a.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-01-charset.png",
+      "resourceId": "generated-actor-hero-01-charset",
+      "sha256": "7baf01d85b960055402a31507bf1e5e8585070bbdaabc6b6a5570854feede953",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-01-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "Battle charset extracted from bundled actor charset 1, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
+      "status": "promoted",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-01-battle-from-actor1.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-01-battle.png",
+      "resourceId": "generated-actor-hero-01-battle",
+      "sha256": "5748ad849d7c18cb31db0e3e6a1f20239e99b4bd45db1728ba8317eee49f8de1",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "monster-slime-01",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt": "Original green-blue meadow slime monster generated from a magenta chroma-key source and promoted with alpha transparency",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
+      "promotedPath": "public/assets/generated/rm2k3/monster-slime-01.png",
+      "resourceId": "generated-enemy-slime-01",
+      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "live",
+        "promptVersion": "battle-magenta-v2",
+        "createdAt": "2026-06-26T15:57:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-02-face",
+      "target": "actorFace",
+      "resourceKind": "faceset",
+      "expectedDimensions": {
+        "width": 192,
+        "height": 192
+      },
+      "prompt": "Original wandering herbalist face set with calm expressions, green travel hood, readable 48 pixel portrait tiles",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/hero-02-face-506c9338.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-02-face.png",
+      "resourceId": "generated-actor-hero-02-face",
+      "sha256": "575c64e0353ade358bc28ab9d0c630ff4660c00e4ca199fad74ec8fddcff286d",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-02-charset",
+      "target": "actorCharset",
+      "resourceKind": "charset",
+      "expectedDimensions": {
+        "width": 288,
+        "height": 256
+      },
+      "prompt": "Original wandering herbalist walking character sheet with four directions and distinct step frames",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/hero-02-charset-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-02-charset.png",
+      "resourceId": "generated-actor-hero-02-charset",
+      "sha256": "d8a680706e68f66ce053bece406f73156426e0799a1bec429f184d8dc2d45b14",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-02-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "Battle charset extracted from bundled actor charset 2, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
+      "status": "promoted",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-02-battle-from-actor2.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-02-battle.png",
+      "resourceId": "generated-actor-hero-02-battle",
+      "sha256": "7ee0ea5f875de899dc765e5e872a30d156bdbe535d0a71d541b175c58102fad8",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-03-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "Battle charset extracted from bundled actor charset 3, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
+      "status": "promoted",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-03-battle-from-actor3.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-03-battle.png",
+      "resourceId": "generated-actor-hero-03-battle",
+      "sha256": "ff5d5bb0486080f627adb995bcb4bbc5861157dc896be2642cd984cc53494948",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "hero-04-battle",
+      "target": "actorBattleCharset",
+      "resourceKind": "battleCharset",
+      "expectedDimensions": {
+        "width": 144,
+        "height": 384
+      },
+      "prompt": "Battle charset extracted from bundled actor charset 4, chroma-key background removed, packed into a 3x8 battle sheet",
+      "negativePrompt": "opaque background pixels, copied proprietary battlers, logos, readable text, watermarks, blurry edges",
+      "status": "promoted",
+      "rawPath": "output/evidence/rm2k3-battle-supabase-charset/raw/hero-04-battle-from-actor4.png",
+      "promotedPath": "public/assets/generated/rm2k3/hero-04-battle.png",
+      "resourceId": "generated-actor-hero-04-battle",
+      "sha256": "2ab49b10fe9dbf4af9f5d8bdbb74ca4fad640c536afa65625ca0731a85af39b7",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "fake",
+        "promptVersion": "bundled-charset-extract-v1",
+        "createdAt": "2026-06-28T00:00:00.000+09:00"
+      }
+    },
+    {
+      "id": "monster-bat-01",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt": "Original dusk cave bat monster, angular wings, readable compact silhouette, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/monster-bat-01-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/monster-bat-01.png",
+      "resourceId": "generated-enemy-bat-01",
+      "sha256": "df72bb9f93f3d7bc8c815a4058048cec1fbbc1f1b5053214da39d0c55f8aae72",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "monster-golem-01",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt": "Original cracked stone golem monster, squat heavy silhouette, moss highlights, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/monster-golem-01-5b9ad99c.png",
+      "promotedPath": "public/assets/generated/rm2k3/monster-golem-01.png",
+      "resourceId": "generated-enemy-golem-01",
+      "sha256": "56d262a129989be7f91fc7fdbc8ea53642eb7d6fb9ee7b717b5bb12e9a2cd402",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "monster-dragon-01",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt": "Original compact crimson-and-charcoal dragon monster generated from a green chroma-key source and promoted with alpha transparency",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, green pixels in visible subject",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/battle-implementation-readiness/raw/monster-dragon-01-chroma-source.png",
+      "promotedPath": "public/assets/generated/rm2k3/monster-dragon-01.png",
+      "resourceId": "generated-enemy-dragon-01",
+      "sha256": "5c9a2bae2b82a18e518d1c42f558e8f5ecbb19e175816195461a8b75041e1041",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "live",
+        "promptVersion": "battle-green-dragon-v1",
+        "createdAt": "2026-06-27T15:04:22.000+09:00"
+      }
+    },
+    {
+      "id": "monster-sylph-hornet",
+      "target": "enemyMonster",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt": "Original sylph hornet monster, wasp-like winged sprite, readable compact silhouette, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/monster-sylph-hornet-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/sylph-hornet-transparent.png",
+      "resourceId": "generated-enemy-sylph-hornet",
+      "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-29T09:06:00.000+09:00"
+      }
+    },
+    {
+      "id": "potion-red-image",
+      "target": "itemImage",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt": "Original red healing potion item image, corked glass bottle, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/potion-red-image-68d8c0d8.png",
+      "promotedPath": "public/assets/generated/rm2k3/potion-red-image.png",
+      "resourceId": "generated-item-potion-red-image",
+      "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "potion-red-icon",
+      "target": "itemIcon",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 32,
+        "height": 32
+      },
+      "prompt": "Original red healing potion compact icon, clear silhouette at small size",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/potion-red-icon-80e19f42.png",
+      "promotedPath": "public/assets/generated/rm2k3/potion-red-icon.png",
+      "resourceId": "generated-item-potion-red-icon",
+      "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "bronze-sword-image",
+      "target": "equipmentImage",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt": "Original bronze short sword equipment image, diagonal blade pose, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/bronze-sword-image-5a58854d.png",
+      "promotedPath": "public/assets/generated/rm2k3/bronze-sword-image.png",
+      "resourceId": "generated-equipment-bronze-sword-image",
+      "sha256": "c245de3b0c4148aef32fb8f22e069cbbf5f9a409a377069c3ca515676334a006",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "bronze-sword-icon",
+      "target": "equipmentIcon",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 32,
+        "height": 32
+      },
+      "prompt": "Original bronze short sword compact icon, simple diagonal blade",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/bronze-sword-icon-17916c11.png",
+      "promotedPath": "public/assets/generated/rm2k3/bronze-sword-icon.png",
+      "resourceId": "generated-equipment-bronze-sword-icon",
+      "sha256": "5ef64d6194b5e1a2ae876b52599beb109778d6057f4cfe4bcfb0950907803de1",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "ether-blue-image",
+      "target": "itemImage",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt": "Original blue mana ether item image, small crystal vial, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/ether-blue-image-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/ether-blue-image.png",
+      "resourceId": "generated-item-ether-blue-image",
+      "sha256": "57b2f33f94a962fbb48f0c8a9e0876a110236a4f666b8780dd37614fadfbe32b",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "ether-blue-icon",
+      "target": "itemIcon",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 32,
+        "height": 32
+      },
+      "prompt": "Original blue mana ether compact icon, simple crystal vial silhouette",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/ether-blue-icon-8d5bc2bf.png",
+      "promotedPath": "public/assets/generated/rm2k3/ether-blue-icon.png",
+      "resourceId": "generated-item-ether-blue-icon",
+      "sha256": "32b3926473045f6d3ba881395a5ce3862bf3c890f1873ddb1b1e3e745b53947e",
+      "provenance": {
+        "generator": "agy",
+        "mode": "live",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "oak-shield-image",
+      "target": "equipmentImage",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 64,
+        "height": 64
+      },
+      "prompt": "Original oak round shield equipment image, brass rim, transparent background",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/oak-shield-image-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/oak-shield-image.png",
+      "resourceId": "generated-equipment-oak-shield-image",
+      "sha256": "bcee03e5d33f37486bc914b9f448d8f6d6909ec520e2c0c6cdada56f85ffa3f0",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "oak-shield-icon",
+      "target": "equipmentIcon",
+      "resourceKind": "picture",
+      "expectedDimensions": {
+        "width": 32,
+        "height": 32
+      },
+      "prompt": "Original oak round shield compact icon, brass rim, clean silhouette",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/oak-shield-icon-fallback.png",
+      "promotedPath": "public/assets/generated/rm2k3/oak-shield-icon.png",
+      "resourceId": "generated-equipment-oak-shield-icon",
+      "sha256": "2b3e0478d6dc2851c75ac74e276b8f8a911253ca0e9eebfc3257421ff0aec0f3",
+      "provenance": {
+        "generator": "agy",
+        "mode": "fake",
+        "promptVersion": "oprn-generated-assets-wave1-v1",
+        "createdAt": "2026-06-22T21:30:00.000+09:00"
+      }
+    },
+    {
+      "id": "troop-preview-slime",
+      "target": "troopPreview",
+      "resourceKind": "monster",
+      "expectedDimensions": {
+        "width": 96,
+        "height": 96
+      },
+      "prompt": "Troop preview reuses the generated green-blue slime monster promoted from the magenta chroma-key source",
+      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines, magenta pixels in visible subject",
+      "status": "promoted",
+      "rawPath": ".omo/evidence/battle-generated-magenta-20260626/raw/monster-slime-01-magenta-source.png",
+      "promotedPath": "public/assets/generated/rm2k3/troop-preview-slime.png",
+      "resourceId": "generated-troop-preview-slime",
+      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33",
+      "provenance": {
+        "generator": "imagegen",
+        "mode": "live",
+        "promptVersion": "battle-magenta-v2",
+        "createdAt": "2026-06-26T15:57:00.000+09:00"
+      }
+    }
+  ]
+}

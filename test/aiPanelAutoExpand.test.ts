@@ -155,7 +155,7 @@ describe("AI 패널 자동 펼침/접기", () => {
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
-    const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+    const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     expect(bridge).toBeTruthy();
     await bridge!.send("안녕");
     await flushAsync();
@@ -179,7 +179,7 @@ describe("AI 패널 자동 펼침/접기", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
 
-    const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+    const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     await bridge!.send("지도 그려줘");
     await flushAsync();
 
@@ -196,7 +196,7 @@ describe("AI 패널 자동 펼침/접기", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
     window.dispatchEvent(
-      new CustomEvent("rpgzzu:ai-assist", {
+      new CustomEvent("oprn:ai-assist", {
         detail: { kind: "cluster-edit", tilesetId: "ts_default", groupId: "wall_group" },
       })
     );

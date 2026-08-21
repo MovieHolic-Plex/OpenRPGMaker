@@ -5,7 +5,7 @@ import { el } from "@/util/dom";
 export function renderTilesetCheckerSummary(tileset: TilesetDef): HTMLElement {
   const summary = summarizeTilesetGenerationReadiness(tileset);
   return el("fieldset", {
-    class: "rm2k3-db-fieldset rm2k3-tileset-checker",
+    class: "oprn-db-fieldset oprn-tileset-checker",
     dataset: { testid: "tileset-generation-checker" },
     children: [
       el("legend", { text: "Checker" }),

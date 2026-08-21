@@ -683,7 +683,7 @@ export interface AiTransportHealth {
   readonly at: number;
 }
 
-export const AI_TRANSPORT_HEALTH_EVENT = "rpgzzu:ai-transport-health";
+export const AI_TRANSPORT_HEALTH_EVENT = "oprn:ai-transport-health";
 
 let aiTransportHealth: AiTransportHealth | null = null;
 

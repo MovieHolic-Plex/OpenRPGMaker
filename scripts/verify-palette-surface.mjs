@@ -59,11 +59,11 @@ const together = await page.evaluate(() => {
   };
   return {
     chip: vis("selected-tile-status"),
-    toolbar: vis("rpg-maker-tile-toolbar"),
+    // testid 는 Phase 2b(DOM 지문 개명)에서 rpg-maker-* → oprn-* 로 바뀌었다.
+    toolbar: vis("oprn-tile-toolbar"),
     filter: vis("palette-filter-bar"),
     palette: vis("tile-palette"),
     brush: vis("palette-brush-assist-section"),
-    props: vis("palette-tile-props-section"),
   };
 });
 say(`한 면 배치(top/height): ${JSON.stringify(together)}`);
@@ -148,7 +148,7 @@ if (paletteHeight <= 260) {
 
 // ── 계약 8: 비기본 칩셋에서 속성 메타가 거짓이 아니다 ───────────────────
 const interior = await page.evaluate(() => {
-  const hook = window.__rpgzzuEditorTool;
+  const hook = window.__oprnEditorTool;
   return typeof hook?.listTilesets === "function" ? hook.listTilesets() : null;
 });
 say(`타일셋 훅: ${interior ? "사용 가능" : "없음(수동 확인 필요)"}`);

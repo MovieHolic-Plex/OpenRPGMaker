@@ -45,20 +45,20 @@ async function startTitle(page: Page): Promise<void> {
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15_000 });
   await expect
-    .poll(async () => page.evaluate(() => typeof (window as unknown as { __rpgzzuInput?: unknown }).__rpgzzuInput))
+    .poll(async () => page.evaluate(() => typeof (window as unknown as { __oprnInput?: unknown }).__oprnInput))
     .toBe("object");
 }
 
 // 방향 탭(90ms) — 막힌 타일(이벤트)을 향하면 제자리에서 방향만 튼다.
 async function tapDir(page: Page, dir: "left" | "right"): Promise<void> {
-  await page.evaluate((d) => (window as unknown as { __rpgzzuInput: { dir(v: string | null): void } }).__rpgzzuInput.dir(d), dir);
+  await page.evaluate((d) => (window as unknown as { __oprnInput: { dir(v: string | null): void } }).__oprnInput.dir(d), dir);
   await page.waitForTimeout(120);
-  await page.evaluate(() => (window as unknown as { __rpgzzuInput: { dir(v: string | null): void } }).__rpgzzuInput.dir(null));
+  await page.evaluate(() => (window as unknown as { __oprnInput: { dir(v: string | null): void } }).__oprnInput.dir(null));
   await page.waitForTimeout(320);
 }
 
 async function pressAction(page: Page): Promise<void> {
-  await page.evaluate(() => (window as unknown as { __rpgzzuInput: { action(): void } }).__rpgzzuInput.action());
+  await page.evaluate(() => (window as unknown as { __oprnInput: { action(): void } }).__oprnInput.action());
   await page.waitForTimeout(450);
 }
 

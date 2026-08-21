@@ -11,7 +11,7 @@ import {
   shapeAllTownPaths,
 } from "./townPathAutotile";
 import { DEFAULT_TILE_SIZE, TILE } from "./constants";
-import { RM2K3_WOOD_FLOOR_PASSABILITY, SAND_TILE } from "./chipsetMapping";
+import { WOOD_FLOOR_PASSABILITY, SAND_TILE } from "./chipsetMapping";
 import { addMarketTownEvents } from "./marketTownEvents";
 
 const TOWN_PATH_TILE_SET = new Set<number>(Object.values(SAND_TILE));
@@ -34,11 +34,11 @@ const BENCH_RIGHT = 328;
 const QUEST_BOARD_SIGN = 320;
 const STATUE_A = 382;
 const TORCH = 381;
-const WOOD_FLOOR = RM2K3_WOOD_FLOOR_PASSABILITY.body;
-const WOOD_EDGE_W = RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest;
-const WOOD_EDGE_E = RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast;
-const WOOD_EDGE_N = RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth;
-const WOOD_EDGE_S = RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth;
+const WOOD_FLOOR = WOOD_FLOOR_PASSABILITY.body;
+const WOOD_EDGE_W = WOOD_FLOOR_PASSABILITY.edgeWest;
+const WOOD_EDGE_E = WOOD_FLOOR_PASSABILITY.edgeEast;
+const WOOD_EDGE_N = WOOD_FLOOR_PASSABILITY.edgeNorth;
+const WOOD_EDGE_S = WOOD_FLOOR_PASSABILITY.edgeSouth;
 const TIMBER_RAIL = 223;
 const TIMBER_POST = 193;
 const RAIL_L = 468;

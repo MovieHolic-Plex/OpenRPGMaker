@@ -26,7 +26,7 @@ import { TILE_SIZE as PREVIEW_TILE_SIZE } from "@/assets/tilePreview";
 import { serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import { SCHEMA_VERSION } from "@/project/types";
-import sampleProject from "./fixtures/projects/rm2k3-sample-v3.json";
+import sampleProject from "./fixtures/projects/oprn-sample-v3.json";
 
 const STARTER_VILLAGE_SMALL_HOUSE_PATTERN = [
   [374, 375, 374, 375, 374],

@@ -258,7 +258,7 @@ class ProjectStore {
     const configured = Boolean(draft.url && draft.anonKey);
     const projectId =
       options.projectId?.trim()
-      || (configured ? `rpg-zzu-${randomUuid().replace(/-/g, "").slice(0, 10)}` : null);
+      || (configured ? `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}` : null);
 
     // Full project switch — drop previous event drafts; new world starts clean.
     clearEventDraftVault();

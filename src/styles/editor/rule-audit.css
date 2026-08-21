@@ -8,11 +8,11 @@
   padding: var(--space-2);
 }
 
-.rpg-maker-tile-tool {
+.oprn-tile-tool {
   position: relative;
 }
 
-.rpg-maker-menu-glyph {
+.oprn-menu-glyph {
   display: inline-flex;
   font-size: 15px;
   line-height: 1;
@@ -41,11 +41,11 @@
   color: var(--text-inverse);
 }
 
-.rpg-maker-rule-audit-dropdown {
+.oprn-rule-audit-dropdown {
   min-width: 260px;
 }
 
-.rpg-maker-rule-audit-dropdown .rule-audit-panel {
+.oprn-rule-audit-dropdown .rule-audit-panel {
   background: transparent;
   border: 0;
   margin: 0;

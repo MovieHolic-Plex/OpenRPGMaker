@@ -111,7 +111,7 @@
   min-width: 0;
 }
 .m2-erase-event-card .m2-command-intent-title {
-  color: var(--rm2k3-command-blue, #4A57D6);
+  color: var(--oprn-command-blue, #4A57D6);
   font-weight: 700;
 }
 .m2-erase-event-field {

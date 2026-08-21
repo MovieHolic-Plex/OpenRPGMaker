@@ -1,5 +1,5 @@
 /* Shared RM2K3 icon primitives and toolbar PNG bindings. */
-.rm-tool-icon-map-child::after {
+.oprn-icon-map-child::after {
   background: #216c33;
   box-shadow: 0 4px 0 #216c33, -2px 2px 0 #216c33, 2px 2px 0 #216c33;
   height: 2px;
@@ -8,7 +8,7 @@
   width: 2px;
 }
 
-.rm-tool-icon-map-start::before {
+.oprn-icon-map-start::before {
   background: #f5d04a;
   clip-path: polygon(50% 0, 62% 34%, 98% 34%, 68% 55%, 82% 94%, 50% 70%, 18% 94%, 32% 55%, 2% 34%, 38% 34%);
   height: 14px;
@@ -17,7 +17,7 @@
   width: 14px;
 }
 
-.rm-tool-icon-map-start::after {
+.oprn-icon-map-start::after {
   background: #7c5e22;
   height: 2px;
   left: 5px;
@@ -25,7 +25,7 @@
   width: 6px;
 }
 
-.rm-tool-icon-trash::before {
+.oprn-icon-trash::before {
   background: var(--border-default);
   border: 1px solid var(--bg-raised);
   box-shadow: inset 3px 0 0 var(--text-2), inset 6px 0 0 var(--border-default);
@@ -35,7 +35,7 @@
   width: 8px;
 }
 
-.rm-tool-icon-trash::after {
+.oprn-icon-trash::after {
   background: var(--border-default);
   box-shadow: 3px -2px 0 var(--border-default);
   height: 2px;
@@ -44,7 +44,7 @@
   width: 10px;
 }
 
-.rm-tool-icon-map-menu::before {
+.oprn-icon-map-menu::before {
   background: var(--border-default);
   box-shadow: 0 5px 0 var(--border-default), 0 10px 0 var(--border-default);
   height: 2px;
@@ -53,11 +53,11 @@
   width: 2px;
 }
 
-.rm-tool-icon-map-menu::after {
+.oprn-icon-map-menu::after {
   background: transparent;
 }
 
-.rm-tool-icon-map-settings::before {
+.oprn-icon-map-settings::before {
   background: var(--border-default);
   border: 1px solid var(--border-strong);
   box-shadow: inset 0 2px 0 var(--bg-inset);
@@ -67,7 +67,7 @@
   width: 12px;
 }
 
-.rm-tool-icon-map-settings::after {
+.oprn-icon-map-settings::after {
   background: #7b87f5;
   box-shadow: 4px 0 0 #7b87f5, 8px 0 0 #7b87f5;
   height: 2px;
@@ -76,7 +76,7 @@
   width: 2px;
 }
 
-.rm-tool-icon-map-screenshot::before {
+.oprn-icon-map-screenshot::before {
   background: var(--bg-inset);
   border: 1px solid var(--border-strong);
   height: 10px;
@@ -85,7 +85,7 @@
   width: 12px;
 }
 
-.rm-tool-icon-map-screenshot::after {
+.oprn-icon-map-screenshot::after {
   background: #4c7a43;
   border: 1px solid var(--border-strong);
   height: 4px;
@@ -94,201 +94,201 @@
   width: 6px;
 }
 
-.rm-tool-icon-new,
-.rm-tool-icon-open,
-.rm-tool-icon-save,
-.rm-tool-icon-import,
-.rm-tool-icon-export,
-.rm-tool-icon-undo,
-.rm-tool-icon-redo,
-.rm-tool-icon-database,
-.rm-tool-icon-resources,
-.rm-tool-icon-disabled-diamond,
-.rm-tool-icon-disabled-blocks,
-.rm-tool-icon-event-test,
-.rm-tool-icon-lower,
-.rm-tool-icon-upper,
-.rm-tool-icon-event,
-.rm-tool-icon-manual,
-.rm-tool-icon-sound,
-.rm-tool-icon-search,
-.rm-tool-icon-window,
-.rm-tool-icon-title,
-.rm-tool-icon-zoom-1,
-.rm-tool-icon-zoom-2,
-.rm-tool-icon-zoom-4,
-.rm-tool-icon-zoom-8,
-.rm-tool-icon-pencil,
-.rm-tool-icon-play,
-.rm-tool-icon-play-window {
+.oprn-icon-new,
+.oprn-icon-open,
+.oprn-icon-save,
+.oprn-icon-import,
+.oprn-icon-export,
+.oprn-icon-undo,
+.oprn-icon-redo,
+.oprn-icon-database,
+.oprn-icon-resources,
+.oprn-icon-disabled-diamond,
+.oprn-icon-disabled-blocks,
+.oprn-icon-event-test,
+.oprn-icon-lower,
+.oprn-icon-upper,
+.oprn-icon-event,
+.oprn-icon-manual,
+.oprn-icon-sound,
+.oprn-icon-search,
+.oprn-icon-window,
+.oprn-icon-title,
+.oprn-icon-zoom-1,
+.oprn-icon-zoom-2,
+.oprn-icon-zoom-4,
+.oprn-icon-zoom-8,
+.oprn-icon-pencil,
+.oprn-icon-play,
+.oprn-icon-play-window {
   background-position: center;
   background-repeat: no-repeat;
   background-size: 16px 16px;
 }
 
-.rm-tool-icon-new::before,
-.rm-tool-icon-new::after,
-.rm-tool-icon-open::before,
-.rm-tool-icon-open::after,
-.rm-tool-icon-save::before,
-.rm-tool-icon-save::after,
-.rm-tool-icon-import::before,
-.rm-tool-icon-import::after,
-.rm-tool-icon-export::before,
-.rm-tool-icon-export::after,
-.rm-tool-icon-undo::before,
-.rm-tool-icon-undo::after,
-.rm-tool-icon-redo::before,
-.rm-tool-icon-redo::after,
-.rm-tool-icon-database::before,
-.rm-tool-icon-database::after,
-.rm-tool-icon-resources::before,
-.rm-tool-icon-resources::after,
-.rm-tool-icon-disabled-diamond::before,
-.rm-tool-icon-disabled-diamond::after,
-.rm-tool-icon-disabled-blocks::before,
-.rm-tool-icon-disabled-blocks::after,
-.rm-tool-icon-event-test::before,
-.rm-tool-icon-event-test::after,
-.rm-tool-icon-lower::before,
-.rm-tool-icon-lower::after,
-.rm-tool-icon-upper::before,
-.rm-tool-icon-upper::after,
-.rm-tool-icon-event::before,
-.rm-tool-icon-event::after,
-.rm-tool-icon-manual::before,
-.rm-tool-icon-manual::after,
-.rm-tool-icon-sound::before,
-.rm-tool-icon-sound::after,
-.rm-tool-icon-search::before,
-.rm-tool-icon-search::after,
-.rm-tool-icon-window::before,
-.rm-tool-icon-window::after,
-.rm-tool-icon-title::before,
-.rm-tool-icon-title::after,
-.rm-tool-icon-zoom-1::before,
-.rm-tool-icon-zoom-1::after,
-.rm-tool-icon-zoom-2::before,
-.rm-tool-icon-zoom-2::after,
-.rm-tool-icon-zoom-4::before,
-.rm-tool-icon-zoom-4::after,
-.rm-tool-icon-zoom-8::before,
-.rm-tool-icon-zoom-8::after,
-.rm-tool-icon-pencil::before,
-.rm-tool-icon-pencil::after,
-.rm-tool-icon-play::before,
-.rm-tool-icon-play::after,
-.rm-tool-icon-play-window::before,
-.rm-tool-icon-play-window::after {
+.oprn-icon-new::before,
+.oprn-icon-new::after,
+.oprn-icon-open::before,
+.oprn-icon-open::after,
+.oprn-icon-save::before,
+.oprn-icon-save::after,
+.oprn-icon-import::before,
+.oprn-icon-import::after,
+.oprn-icon-export::before,
+.oprn-icon-export::after,
+.oprn-icon-undo::before,
+.oprn-icon-undo::after,
+.oprn-icon-redo::before,
+.oprn-icon-redo::after,
+.oprn-icon-database::before,
+.oprn-icon-database::after,
+.oprn-icon-resources::before,
+.oprn-icon-resources::after,
+.oprn-icon-disabled-diamond::before,
+.oprn-icon-disabled-diamond::after,
+.oprn-icon-disabled-blocks::before,
+.oprn-icon-disabled-blocks::after,
+.oprn-icon-event-test::before,
+.oprn-icon-event-test::after,
+.oprn-icon-lower::before,
+.oprn-icon-lower::after,
+.oprn-icon-upper::before,
+.oprn-icon-upper::after,
+.oprn-icon-event::before,
+.oprn-icon-event::after,
+.oprn-icon-manual::before,
+.oprn-icon-manual::after,
+.oprn-icon-sound::before,
+.oprn-icon-sound::after,
+.oprn-icon-search::before,
+.oprn-icon-search::after,
+.oprn-icon-window::before,
+.oprn-icon-window::after,
+.oprn-icon-title::before,
+.oprn-icon-title::after,
+.oprn-icon-zoom-1::before,
+.oprn-icon-zoom-1::after,
+.oprn-icon-zoom-2::before,
+.oprn-icon-zoom-2::after,
+.oprn-icon-zoom-4::before,
+.oprn-icon-zoom-4::after,
+.oprn-icon-zoom-8::before,
+.oprn-icon-zoom-8::after,
+.oprn-icon-pencil::before,
+.oprn-icon-pencil::after,
+.oprn-icon-play::before,
+.oprn-icon-play::after,
+.oprn-icon-play-window::before,
+.oprn-icon-play-window::after {
   display: none;
 }
 
-.rm-tool-icon-new {
+.oprn-icon-new {
   background-image: url("/ui/rm2k3-toolbar/new.png");
 }
 
-.rm-tool-icon-open {
+.oprn-icon-open {
   background-image: url("/ui/rm2k3-toolbar/open.png");
 }
 
-.rm-tool-icon-save {
+.oprn-icon-save {
   background-image: url("/ui/rm2k3-toolbar/save.png");
 }
 
-.rm-tool-icon-import {
+.oprn-icon-import {
   background-image: url("/ui/rm2k3-toolbar/import.png");
 }
 
-.rm-tool-icon-export {
+.oprn-icon-export {
   background-image: url("/ui/rm2k3-toolbar/export.png");
 }
 
-.rm-tool-icon-undo {
+.oprn-icon-undo {
   background-image: url("/ui/rm2k3-toolbar/undo.png");
 }
 
-.rm-tool-icon-redo {
+.oprn-icon-redo {
   background-image: url("/ui/rm2k3-toolbar/redo.png");
 }
 
-.rm-tool-icon-database {
+.oprn-icon-database {
   background-image: url("/ui/rm2k3-toolbar/database.png");
 }
 
-.rm-tool-icon-resources {
+.oprn-icon-resources {
   background-image: url("/ui/rm2k3-toolbar/resources.png");
 }
 
-.rm-tool-icon-disabled-diamond {
+.oprn-icon-disabled-diamond {
   background-image: url("/ui/rm2k3-toolbar/disabled-diamond.png");
 }
 
-.rm-tool-icon-disabled-blocks {
+.oprn-icon-disabled-blocks {
   background-image: url("/ui/rm2k3-toolbar/disabled-blocks.png");
 }
 
-.rm-tool-icon-event-test {
+.oprn-icon-event-test {
   background-image: url("/ui/rm2k3-toolbar/event-test.png");
 }
 
-.rm-tool-icon-lower {
+.oprn-icon-lower {
   background-image: url("/ui/rm2k3-toolbar/lower.png");
 }
 
-.rm-tool-icon-upper {
+.oprn-icon-upper {
   background-image: url("/ui/rm2k3-toolbar/upper.png");
 }
 
-.rm-tool-icon-event {
+.oprn-icon-event {
   background-image: url("/ui/rm2k3-toolbar/event.png");
 }
 
-.rm-tool-icon-manual {
+.oprn-icon-manual {
   background-image: url("/ui/rm2k3-toolbar/manual.png");
 }
 
-.rm-tool-icon-sound {
+.oprn-icon-sound {
   background-image: url("/ui/rm2k3-toolbar/sound.png");
 }
 
-.rm-tool-icon-search {
+.oprn-icon-search {
   background-image: url("/ui/rm2k3-toolbar/search.png");
 }
 
-.rm-tool-icon-window {
+.oprn-icon-window {
   background-image: url("/ui/rm2k3-toolbar/window.png");
 }
 
-.rm-tool-icon-title {
+.oprn-icon-title {
   background-image: url("/ui/rm2k3-toolbar/title.png");
 }
 
-.rm-tool-icon-zoom-1 {
+.oprn-icon-zoom-1 {
   background-image: url("/ui/rm2k3-toolbar/zoom-1.png");
 }
 
-.rm-tool-icon-zoom-2 {
+.oprn-icon-zoom-2 {
   background-image: url("/ui/rm2k3-toolbar/zoom-2.png");
 }
 
-.rm-tool-icon-zoom-4 {
+.oprn-icon-zoom-4 {
   background-image: url("/ui/rm2k3-toolbar/zoom-4.png");
 }
 
-.rm-tool-icon-zoom-8 {
+.oprn-icon-zoom-8 {
   background-image: url("/ui/rm2k3-toolbar/zoom-8.png");
 }
 
-.rm-tool-icon-pencil {
+.oprn-icon-pencil {
   background-image: url("/ui/rm2k3-toolbar/pencil.png");
 }
 
-.rm-tool-icon-play,
-.rm-tool-icon-play-window {
+.oprn-icon-play,
+.oprn-icon-play-window {
   background-image: url("/ui/rm2k3-toolbar/play.png");
 }
 
-.rm-tool-icon-select::before {
+.oprn-icon-select::before {
   background: var(--text-2);
   clip-path: polygon(0 0, 0 15px, 5px 11px, 8px 16px, 11px 14px, 8px 9px, 14px 9px);
   height: 16px;
@@ -297,7 +297,7 @@
   width: 14px;
 }
 
-.rm-tool-icon-eraser::before {
+.oprn-icon-eraser::before {
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   height: 7px;
@@ -307,7 +307,7 @@
   width: 13px;
 }
 
-.rm-tool-icon-eraser::after {
+.oprn-icon-eraser::after {
   background: var(--text-3);
   height: 2px;
   left: 8px;
@@ -316,7 +316,7 @@
   width: 5px;
 }
 
-.rm-tool-icon-bucket::before {
+.oprn-icon-bucket::before {
   background: var(--text-2);
   border: 1px solid var(--border-strong);
   height: 9px;
@@ -326,7 +326,7 @@
   width: 9px;
 }
 
-.rm-tool-icon-bucket::after {
+.oprn-icon-bucket::after {
   background: var(--border-subtle);
   border-radius: 50%;
   height: 4px;
@@ -335,7 +335,7 @@
   width: 4px;
 }
 
-.rm-tool-icon-rectangle::before {
+.oprn-icon-rectangle::before {
   background: transparent;
   border: 2px solid var(--text-2);
   border-radius: 2px;
@@ -345,7 +345,7 @@
   width: 12px;
 }
 
-.rm-tool-icon-grid::before {
+.oprn-icon-grid::before {
   background:
     linear-gradient(var(--text-2), var(--text-2)) 0 0 / 16px 1px,
     linear-gradient(var(--text-2), var(--text-2)) 0 7px / 16px 1px,
@@ -360,7 +360,7 @@
   width: 16px;
 }
 
-.rm-tool-icon-pin::before {
+.oprn-icon-pin::before {
   background: transparent;
   border: 2px solid var(--text-2);
   border-radius: 50%;
@@ -370,7 +370,7 @@
   width: 8px;
 }
 
-.rm-tool-icon-pin::after {
+.oprn-icon-pin::after {
   background: var(--text-2);
   clip-path: polygon(50% 100%, 0 0, 100% 0);
   height: 7px;
@@ -379,8 +379,8 @@
   width: 6px;
 }
 
-.rm-tool-icon-link::before,
-.rm-tool-icon-link::after {
+.oprn-icon-link::before,
+.oprn-icon-link::after {
   background: transparent;
   border: 2px solid var(--text-2);
   border-radius: 5px;
@@ -388,19 +388,19 @@
   width: 10px;
 }
 
-.rm-tool-icon-link::before {
+.oprn-icon-link::before {
   left: 0;
   top: 5px;
   transform: rotate(-35deg);
 }
 
-.rm-tool-icon-link::after {
+.oprn-icon-link::after {
   left: 6px;
   top: 5px;
   transform: rotate(-35deg);
 }
 
-.rm-tool-icon-layers::before {
+.oprn-icon-layers::before {
   background: var(--text-2);
   clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
   height: 14px;
@@ -409,7 +409,7 @@
   width: 14px;
 }
 
-.rm-tool-icon-layers::after {
+.oprn-icon-layers::after {
   background: var(--text-3);
   clip-path: polygon(50% 0, 100% 28%, 50% 56%, 0 28%);
   height: 14px;
@@ -418,7 +418,7 @@
   width: 14px;
 }
 
-.rm-tool-icon-settings::before {
+.oprn-icon-settings::before {
   background: var(--text-2);
   border-radius: 50%;
   box-shadow:
@@ -432,7 +432,7 @@
   width: 10px;
 }
 
-.rm-tool-icon-settings::after {
+.oprn-icon-settings::after {
   background: var(--bg-inset);
   border-radius: 50%;
   height: 4px;
@@ -441,8 +441,8 @@
   width: 4px;
 }
 
-.rm-tool-icon-close::before,
-.rm-tool-icon-close::after {
+.oprn-icon-close::before,
+.oprn-icon-close::after {
   background: var(--text-2);
   height: 14px;
   left: 7px;
@@ -450,10 +450,10 @@
   width: 2px;
 }
 
-.rm-tool-icon-close::before {
+.oprn-icon-close::before {
   transform: rotate(45deg);
 }
 
-.rm-tool-icon-close::after {
+.oprn-icon-close::after {
   transform: rotate(-45deg);
 }

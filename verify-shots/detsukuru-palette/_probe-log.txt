@@ -1,5 +1,5 @@
 탭 잔존: {"paint":0,"find":0,"props":0,"tablist":0,"oldGrid":0}  → 전부 0이어야 함
-한 면 배치(top/height): {"chip":{"top":119,"height":24},"toolbar":{"top":147,"height":30},"filter":{"top":187,"height":57},"palette":{"top":248,"height":301},"brush":{"top":553,"height":32},"props":null}
+한 면 배치(top/height): {"chip":{"top":119,"height":24},"toolbar":{"top":147,"height":30},"filter":{"top":187,"height":57},"palette":{"top":248,"height":301},"brush":{"top":553,"height":32}}
 지형 입력 개수: {"legacy":0,"inspector":1}  → legacy 0, inspector 1
 속성 창 열림 전/후 팔레트 높이: 301 → 301 (같아야 함)
 Esc 로 속성 창 닫힘 확인

@@ -96,54 +96,54 @@
   padding: 0;
 }
 
-.rm2k3-menu-bar {
+.oprn-menu-bar {
   min-height: 22px;
   padding-left: 4px;
 }
 
-.rm2k3-menu-item {
+.oprn-menu-item {
   min-height: 22px;
   padding: 0 12px;
 }
 
-.rm2k3-toolbar {
+.oprn-toolbar {
   border-top: 1px solid var(--border-default);
   gap: 1px;
   padding: 1px 4px 2px;
 }
 
-.rm2k3-toolbar-row {
+.oprn-toolbar-row {
   gap: 2px;
   min-height: 23px;
 }
 
-.rm2k3-toolbar-row.primary-row {
+.oprn-toolbar-row.primary-row {
   min-height: 23px;
 }
 
-.rm2k3-toolbar-row.edit-row {
+.oprn-toolbar-row.edit-row {
   min-height: 23px;
   padding-top: 1px;
 }
 
-.rm2k3-tool-button {
+.oprn-tool-button {
   height: 22px;
   min-width: 26px;
 }
 
-.rm2k3-tool-button.icon-only {
+.oprn-tool-button.icon-only {
   width: 26px;
 }
 
-.rm2k3-tool-button.primary {
+.oprn-tool-button.primary {
   min-width: 34px;
 }
 
-.rm2k3-toolbar .title {
+.oprn-toolbar .title {
   margin-right: 10px;
 }
 
-.rm2k3-toolbar-status {
+.oprn-toolbar-status {
   height: 22px;
 }
 

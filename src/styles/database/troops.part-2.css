@@ -192,17 +192,17 @@
 }
 
 @media (max-width: 1100px) {
-  .database-modal-window:has(.rm2k3-record-troops) {
+  .database-modal-window:has(.oprn-record-troops) {
     height: calc(100vh - 8px);
     width: calc(100vw - 8px);
   }
 
-  .database-modal-body:has(.rm2k3-record-troops) .db-body {
+  .database-modal-body:has(.oprn-record-troops) .db-body {
     height: calc(100vh - 130px);
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-troops {
+  .database-modal-body .oprn-record-troops {
     grid-template-columns: 220px minmax(920px, 1fr);
   }
 }

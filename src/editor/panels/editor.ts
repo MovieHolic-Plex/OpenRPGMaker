@@ -97,7 +97,7 @@ let aiConnectionPollTimer: ReturnType<typeof setInterval> | null = null;
 
 export function renderEditor(main: HTMLElement): void {
   clearChildren(main);
-  installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__rpgzzuEditorTool.
+  installEditorToolHook(); // 헤드리스(Playwright) 에디터 조작용 window.__oprnEditorTool.
   applyEditorUiModeClasses(getEditorUiMode());
 
   // 첫 페인트부터 dock class를 붙여 0폭→목표폭 애니메이션/리플로우를 막는다.
@@ -212,10 +212,10 @@ export function renderEditor(main: HTMLElement): void {
     });
     const layoutHost = document.querySelector<HTMLElement>(".editor-layout");
     if (layoutHost) ro.observe(layoutHost);
-    (window as unknown as Record<string, unknown>)["__rpgzzuLayoutRO"] = ro;
+    (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] = ro;
   }
   window.addEventListener("resize", onWindowResize);
-  window.addEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
+  window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
 
@@ -315,10 +315,10 @@ export function teardownEditor(): void {
   unsubMapLocks = null;
   unsubUiMode = null;
   unsubLayoutBbox = null;
-  const ro2 = (window as unknown as Record<string, unknown>)["__rpgzzuLayoutRO"] as ResizeObserver | undefined;
+  const ro2 = (window as unknown as Record<string, unknown>)["__oprnLayoutRO"] as ResizeObserver | undefined;
   ro2?.disconnect?.();
   window.removeEventListener("resize", onWindowResize);
-  window.removeEventListener("rpgzzu:test-play-window", onTestPlayWindowRequest);
+  window.removeEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   closeTestPlayModal();
   destroyGame();
   leftRoot = null;

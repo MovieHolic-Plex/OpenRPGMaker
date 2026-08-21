@@ -824,7 +824,7 @@ function nextRewardPolicy(
 }
 
 function rm2k3Fieldset(title: string, children: readonly HTMLElement[]): HTMLElement {
-  return el("fieldset", { class: "rm2k3-db-fieldset", children: [el("legend", { text: title }), ...children] });
+  return el("fieldset", { class: "oprn-db-fieldset", children: [el("legend", { text: title }), ...children] });
 }
 
 function clampStageCoordinate(value: number, max: number): number {
@@ -973,7 +973,7 @@ function titleScreenDisplayFieldset(
   );
 
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-display" },
     children: [el("legend", { text: "표시" }), ...children],
   });
@@ -981,7 +981,7 @@ function titleScreenDisplayFieldset(
 
 function titleScreenAudioFieldset(titleScreen: TitleScreenSettings, rerender: () => void): HTMLElement {
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-audio" },
     children: [
       el("legend", { text: "오디오" }),
@@ -1052,7 +1052,7 @@ function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: () 
     quit: true,
   };
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-menu" },
     children: [
       el("legend", { text: "메뉴" }),
@@ -1218,7 +1218,7 @@ function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: 
           // 새 레이어는 항상 유효한 번들 리소스로 시작한다(참조 검증이 error 를 내지 않도록).
           settings.backgroundLayers = [
             ...current,
-            { resourceId: settings.backgroundResourceId ?? "rpg-zzu-title-field" },
+            { resourceId: settings.backgroundResourceId ?? "oprn-title-field" },
           ];
         });
         rerender();
@@ -1302,7 +1302,7 @@ function titleScreenEffectsFieldset(titleScreen: TitleScreenSettings, rerender: 
   ];
 
   return el("fieldset", {
-    class: "rm2k3-db-fieldset db-title-workbench-group",
+    class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-effects" },
     children: [
       el("legend", { text: "연출" }),

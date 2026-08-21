@@ -570,7 +570,7 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
 
   wrap.append(
     el("fieldset", {
-      class: "event-rm2k3-fieldset event-command-wait-mode",
+      class: "event-oprn-fieldset event-command-wait-mode",
       children: [
         el("legend", { text: "대기 방식" }),
         el("label", {

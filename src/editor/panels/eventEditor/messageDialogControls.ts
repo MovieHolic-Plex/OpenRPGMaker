@@ -19,7 +19,7 @@ export function nextGroupName(prefix: string): string {
 
 export function fieldset(legend: string, controls: HTMLElement[]): HTMLElement {
   return el("fieldset", {
-    class: "event-rm2k3-fieldset event-command-modal-fieldset",
+    class: "event-oprn-fieldset event-command-modal-fieldset",
     children: [el("legend", { text: legend }), ...controls],
   });
 }

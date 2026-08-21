@@ -2,7 +2,7 @@
    레코드 목록(마스터-디테일) 모던 행 — C 단계.
    기본 뷰가 목록으로 바뀌면서(databaseRecordViewSession) 행을 [번호] [썸네일]
    [이름] [카테고리]로 재구성한다. 이름은 flex:1 로 최대 폭을 얻는다(잘림 최소화).
-   레거시 rm2k3-* 스코프 규칙(actors/enemies/troops/desktop 의 3클래스 선택자)은
+   레거시 oprn-* 스코프 규칙(actors/enemies/troops/desktop 의 3클래스 선택자)은
    sidebar.css 와 같은 4클래스 프리픽스로 캐스케이드에서 덮는다.
    light-theme.css 의 --db-light-* 팔레트만 소비한다 — 새 hex 금지.
    ========================================================================= */

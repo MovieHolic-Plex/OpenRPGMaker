@@ -1,6 +1,6 @@
 import type { Project, UploadedAsset } from "@/project/types";
 
-export const SUPABASE_RESOURCE_CACHE_NAME = "rpg-zzu-supabase-resource-cache-v2";
+export const SUPABASE_RESOURCE_CACHE_NAME = "oprn-supabase-resource-cache-v3";
 
 export type SupabaseResourceCacheEntry = {
   readonly byteLength: number;
@@ -41,7 +41,7 @@ type ParsedDataUrl = {
 const BASE64_DATA_URL = /^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/;
 
 export function supabaseResourceCacheRequestUrl(resourceId: string): string {
-  return `/__rpg-zzu-cache__/resources/${encodeURIComponent(resourceId)}`;
+  return `/__oprn-cache__/resources/${encodeURIComponent(resourceId)}`;
 }
 
 export async function cacheSupabaseRootResources(

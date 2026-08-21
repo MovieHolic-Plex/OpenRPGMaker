@@ -65,7 +65,7 @@ const STEPS = [
 
 async function waitBridge(page, timeoutMs = 90_000) {
   await page.waitForFunction(
-    () => typeof window.__rpgzzuAiBridge?.send === "function",
+    () => typeof window.__oprnAiBridge?.send === "function",
     null,
     { timeout: timeoutMs }
   );
@@ -80,7 +80,7 @@ async function sendTurn(page, step) {
   log(step.text.slice(0, 220) + "…");
   const result = await page.evaluate(
     async ({ msg, timeoutMs }) => {
-      const bridge = window.__rpgzzuAiBridge;
+      const bridge = window.__oprnAiBridge;
       if (!bridge?.send) return { ok: false, error: "no bridge" };
       const st = bridge.status?.();
       if (st && st.configReady === false) return { ok: false, error: "config not ready", status: st };
@@ -190,7 +190,7 @@ async function main() {
   await page.screenshot({ path: path.join(EVIDENCE, "01-editor.png"), fullPage: true });
 
   await waitBridge(page);
-  log("bridge " + JSON.stringify(await page.evaluate(() => window.__rpgzzuAiBridge?.status?.())));
+  log("bridge " + JSON.stringify(await page.evaluate(() => window.__oprnAiBridge?.status?.())));
 
   for (const step of STEPS) {
     const r = await sendTurn(page, step);

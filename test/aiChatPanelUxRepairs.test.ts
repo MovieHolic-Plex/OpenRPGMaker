@@ -54,7 +54,7 @@ function renderPanel(options: Parameters<typeof renderAiChatPanel>[0] = {}): Fak
 
 function installFakeWindow(): void {
   const previous = Object.getOwnPropertyDescriptor(globalThis, "window");
-  const target = new EventTarget() as EventTarget & Partial<Window> & { __rpgzzuSkillHotkey?: boolean };
+  const target = new EventTarget() as EventTarget & Partial<Window> & { __oprnSkillHotkey?: boolean };
   target.setTimeout = ((..._args: Parameters<typeof setTimeout>) => 0) as typeof setTimeout;
   target.clearTimeout = ((..._args: Parameters<typeof clearTimeout>) => undefined) as typeof clearTimeout;
   Object.defineProperty(globalThis, "window", {

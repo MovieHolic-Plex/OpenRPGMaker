@@ -34,7 +34,7 @@ await page.evaluate(async () => {
   });
 });
 
-await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
 await page.waitForTimeout(900);
 await page.keyboard.press("Enter").catch(() => {});
 await page.waitForTimeout(700);

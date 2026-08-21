@@ -79,6 +79,18 @@ describe("migrateLegacyStorageKeys", () => {
     expect(storage.getItem("rpg-zzu-editor-session-id")).toBeNull();
   });
 
+  // `rpgzzu.` (제품명에 하이픈이 없는 형태) — 이벤트 명령 피커 설정 3개가 이 형태였고
+  // `rpg-zzu` 로 스캔하던 앞선 치환에서 통째로 빠졌다.
+  it("하이픈 없는 점 형태(rpgzzu.) 구 키도 옮긴다", () => {
+    storage.setItem("rpgzzu.eventCommandPicker.favorites", '["show_message"]');
+    storage.setItem("rpgzzu.eventCommandPicker.viewMode", "grid");
+    migrateLegacyStorageKeys(storage);
+
+    expect(storage.getItem("oprn:eventCommandPicker.favorites")).toBe('["show_message"]');
+    expect(storage.getItem("oprn:eventCommandPicker.viewMode")).toBe("grid");
+    expect(storage.getItem("rpgzzu.eventCommandPicker.favorites")).toBeNull();
+  });
+
   it("여러 키를 한 번에 옮긴다", () => {
     storage.setItem("rpg-zzu:editor-layout:v4", "{}");
     storage.setItem("rpg-zzu:ai-config", '{"model":"x"}');

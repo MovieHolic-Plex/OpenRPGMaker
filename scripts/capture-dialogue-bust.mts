@@ -33,8 +33,8 @@ async function main(): Promise<void> {
     // Dynamic import of dialogue module from the bundled app is hard.
     // Prefer existing global debug/play hooks.
     const w = window as unknown as {
-      __rpgzzuShowDialogue?: (req: unknown) => Promise<void>;
-      __rpgzzuDebug?: { readState: () => unknown };
+      __oprnShowDialogue?: (req: unknown) => Promise<void>;
+      __oprnDebug?: { readState: () => unknown };
     };
 
     // Build a minimal overlay matching runtime classes for visual proof if hooks missing.
@@ -91,7 +91,7 @@ async function main(): Promise<void> {
     return {
       hasFace: Boolean(document.querySelector('[data-testid="dialogue-face"]')),
       faceMode: document.querySelector('[data-testid="dialogue-face"]')?.getAttribute("data-face-mode"),
-      hook: typeof w.__rpgzzuShowDialogue,
+      hook: typeof w.__oprnShowDialogue,
     };
   });
 

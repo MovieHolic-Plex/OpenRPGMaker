@@ -128,7 +128,7 @@ async function sendTurn(page, step) {
   logLine(step.text.slice(0, 200) + "…");
   const result = await page.evaluate(
     async ({ msg, timeoutMs }) => {
-      const bridge = window.__rpgzzuAiBridge;
+      const bridge = window.__oprnAiBridge;
       if (!bridge?.send) return { ok: false, error: "no bridge" };
       const st = bridge.status?.();
       if (st && st.configReady === false) return { ok: false, error: "config not ready", status: st };
@@ -256,11 +256,11 @@ try {
   /* */
 }
 
-await page.waitForFunction(() => typeof window.__rpgzzuAiBridge?.send === "function", null, { timeout: 60_000 });
+await page.waitForFunction(() => typeof window.__oprnAiBridge?.send === "function", null, { timeout: 60_000 });
 await page.evaluate(() => {
   document.querySelector('[data-testid="ai-collapsed-restore"]')?.click?.();
 });
-logLine("bridge " + JSON.stringify(await page.evaluate(() => window.__rpgzzuAiBridge?.status?.())));
+logLine("bridge " + JSON.stringify(await page.evaluate(() => window.__oprnAiBridge?.status?.())));
 await page.screenshot({ path: path.join(EVIDENCE, "00-loaded.png"), fullPage: true });
 
 for (const step of STEPS) {

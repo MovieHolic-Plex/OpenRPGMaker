@@ -71,7 +71,7 @@ async function main() {
   await page.waitForTimeout(1500);
 
   const probe = await page.evaluate(() => {
-    const store = (window as unknown as { __rpgzzuStore?: { getCurrent: () => any } }).__rpgzzuStore;
+    const store = (window as unknown as { __oprnStore?: { getCurrent: () => any } }).__oprnStore;
     // fallback via export dump if available
     const pre = document.querySelector("#project-export, [data-testid='project-export']");
     return {

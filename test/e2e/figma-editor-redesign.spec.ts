@@ -188,7 +188,7 @@ async function expectModernEditorShell(page: Page): Promise<void> {
         && toolbarRect.right <= canvasAreaRect.right + 1
         && toolbarRect.top >= canvasAreaRect.top - 1
         && toolbarRect.bottom < statusRect.top,
-      toolbarBg: styleOf("[data-testid='rm2k3-toolbar']").backgroundColor,
+      toolbarBg: styleOf("[data-testid='oprn-toolbar']").backgroundColor,
     };
   });
 

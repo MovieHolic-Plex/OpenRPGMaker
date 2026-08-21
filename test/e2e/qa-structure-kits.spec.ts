@@ -7,7 +7,7 @@ import {
   SEEDING_PROVEN,
   switchTabAnyMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS } from "./oprn-database-helpers";
 
 test.setTimeout(90_000);
 test.use({ serviceWorkers: "block" });

@@ -3,7 +3,7 @@ import {
   exportedProject,
   openDatabase,
   switchDatabaseTab,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 
 const ITEMS_TAB = { label: "Items", slug: "items", testId: "db-tab-items" } as const;
 const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as const;
@@ -11,7 +11,7 @@ const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as c
 // 가상화된 리스트는 렌더 창 안의 행만 DOM 에 두므로, 행 카운트 대신 푸터의 전체
 // 레코드 수("N개")로 증감을 검증한다(T6 가상화 이후).
 async function totalRecordCount(page: Page): Promise<number> {
-  const text = (await page.locator(".rm2k3-record-count").textContent()) ?? "0개";
+  const text = (await page.locator(".oprn-record-count").textContent()) ?? "0개";
   return parseInt(text.replace(/[^0-9]/g, ""), 10);
 }
 

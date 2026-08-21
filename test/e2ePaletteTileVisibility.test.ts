@@ -3,7 +3,7 @@ import { tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import { createBlankProject } from "@/project/defaults";
 import type { TilesetDef } from "@/project/types";
 
-// e2e 스펙(rm2k3-map-editor.spec.ts)이 클릭하는 타일이 엄격 레이어 필터 후에도
+// e2e 스펙(oprn-map-editor.spec.ts)이 클릭하는 타일이 엄격 레이어 필터 후에도
 // 해당 레이어 팔레트 시트에 존재하는지 고정한다. 여기가 깨지면 e2e도 깨진다.
 
 function bundledTileset(): TilesetDef {

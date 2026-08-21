@@ -95,9 +95,9 @@ describe("player load panel", () => {
     try {
       const panel = renderPanelWithStorage(new MemoryStorage());
 
-      expect(panel.className).toContain("rm2k3-load-panel");
-      expect(findByTestId(panel, "player-load-window")?.className).toContain("rm2k3-load-window");
-      expect(findByTestId(panel, "save-slot-1")?.className).toContain("rm2k3-load-slot");
+      expect(panel.className).toContain("oprn-load-panel");
+      expect(findByTestId(panel, "player-load-window")?.className).toContain("oprn-load-window");
+      expect(findByTestId(panel, "save-slot-1")?.className).toContain("oprn-load-slot");
       expect(findByTestId(panel, "player-load-back")).not.toBeNull();
       expect(panel.dataset.systemResource).toBeUndefined();
       expect(panel.style.backgroundImage).toMatch(/^url\("/);
@@ -116,11 +116,11 @@ describe("player load panel", () => {
       const slot = findByTestId(panel, "save-slot-1");
       expect(slot).not.toBeNull();
       expect(slot?.className).toContain("is-present");
-      expect(slot?.querySelector(".rm2k3-load-slot-title")?.textContent).toBe("1번 저장");
-      expect(slot?.querySelector(".rm2k3-load-slot-map")?.textContent).toBe("아주 긴 시작의 마을 바깥 평원 지도");
-      expect(slot?.querySelector(".rm2k3-load-slot-level")?.textContent).toBe("Lv 7");
-      expect(slot?.querySelector(".rm2k3-load-slot-playtime")?.textContent).toBe("1:11:02");
-      expect(slot?.querySelector(".rm2k3-load-slot-saved-at")?.textContent).toBe("2026.08.21 14:05");
+      expect(slot?.querySelector(".oprn-load-slot-title")?.textContent).toBe("1번 저장");
+      expect(slot?.querySelector(".oprn-load-slot-map")?.textContent).toBe("아주 긴 시작의 마을 바깥 평원 지도");
+      expect(slot?.querySelector(".oprn-load-slot-level")?.textContent).toBe("Lv 7");
+      expect(slot?.querySelector(".oprn-load-slot-playtime")?.textContent).toBe("1:11:02");
+      expect(slot?.querySelector(".oprn-load-slot-saved-at")?.textContent).toBe("2026.08.21 14:05");
     } finally {
       restoreDom();
     }
@@ -135,14 +135,14 @@ describe("player load panel", () => {
 
       const empty = findByTestId(panel, "save-slot-1");
       expect(empty?.className).toContain("is-empty");
-      expect(empty?.querySelector(".rm2k3-load-slot-title")?.textContent).toBe("1번 저장: 비어 있음");
-      expect(empty?.querySelector(".rm2k3-load-slot-map")).toBeNull();
-      expect(empty?.querySelector(".rm2k3-load-slot-meta")).toBeNull();
+      expect(empty?.querySelector(".oprn-load-slot-title")?.textContent).toBe("1번 저장: 비어 있음");
+      expect(empty?.querySelector(".oprn-load-slot-map")).toBeNull();
+      expect(empty?.querySelector(".oprn-load-slot-meta")).toBeNull();
 
       const corrupt = findByTestId(panel, "save-slot-2");
       expect(corrupt?.className).toContain("is-corrupt");
-      expect(corrupt?.querySelector(".rm2k3-load-slot-title")?.textContent).toBe("2번 저장: 이상함");
-      expect(corrupt?.querySelector(".rm2k3-load-slot-meta")).toBeNull();
+      expect(corrupt?.querySelector(".oprn-load-slot-title")?.textContent).toBe("2번 저장: 이상함");
+      expect(corrupt?.querySelector(".oprn-load-slot-meta")).toBeNull();
       // 손상 안내 문구는 버튼 밖 별도 알림으로 유지된다.
       expect(findByTestId(panel, "save-slot-corrupt-2")?.textContent).toContain("2번 저장 칸 이상");
     } finally {
@@ -183,8 +183,8 @@ describe("player load panel", () => {
       expect(card).not.toBeNull();
       expect(card?.tagName).toBe("BUTTON");
       expect(card?.className).toContain("is-autosave");
-      expect(card?.querySelector(".rm2k3-load-slot-title")?.textContent).toBe("자동 저장");
-      expect(card?.querySelector(".rm2k3-load-slot-trigger")?.textContent).toBe("맵 이동");
+      expect(card?.querySelector(".oprn-load-slot-title")?.textContent).toBe("자동 저장");
+      expect(card?.querySelector(".oprn-load-slot-trigger")?.textContent).toBe("맵 이동");
       // 최상단: 수동 1번 슬롯보다 앞에 온다.
       const slots = findByTestId(panel, "player-load-slots");
       const first = slots?.childNodes[0];

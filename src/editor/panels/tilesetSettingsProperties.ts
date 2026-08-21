@@ -15,28 +15,28 @@ const DEFAULT_TRANSPARENT_COLOR = "#ff00ff";
 
 export function renderTilesetProperties(tileset: TilesetDef, rerender: () => void): HTMLElement {
   return el("div", {
-    class: "tileset-db-properties rm2k3-tileset-properties",
+    class: "tileset-db-properties oprn-tileset-properties",
     children: [
       el("fieldset", {
-        class: "rm2k3-db-fieldset rm2k3-tileset-name-field",
-        dataset: { testid: "tileset-rm2k3-name" },
-        children: [el("legend", { text: "이름" }), textControl("", tileset.name, (value) => updateTilesetName(tileset.id, value), "tileset-rm2k3-name-input")],
+        class: "oprn-db-fieldset oprn-tileset-name-field",
+        dataset: { testid: "tileset-oprn-name" },
+        children: [el("legend", { text: "이름" }), textControl("", tileset.name, (value) => updateTilesetName(tileset.id, value), "tileset-oprn-name-input")],
       }),
       el("fieldset", {
-        class: "rm2k3-db-fieldset rm2k3-tileset-graphic-field",
-        dataset: { testid: "tileset-rm2k3-graphic" },
+        class: "oprn-db-fieldset oprn-tileset-graphic-field",
+        dataset: { testid: "tileset-oprn-graphic" },
         children: [
           el("legend", { text: "타일셋 그래픽" }),
           el("div", {
-            class: "rm2k3-tileset-graphic-value",
+            class: "oprn-tileset-graphic-value",
             text: chipsetDisplayName(tileset.image.id),
             attrs: { title: tileset.image.id },
           }),
           el("button", {
-            class: "database-footer-button rm2k3-browse-button",
+            class: "database-footer-button oprn-browse-button",
             text: "설정...",
             attrs: { type: "button", title: "타일셋 그래픽 고르기" },
-            dataset: { testid: "tileset-rm2k3-graphic-browse" },
+            dataset: { testid: "tileset-oprn-graphic-browse" },
             on: { click: () => openTilesetGraphicPicker(tileset, rerender) },
           }),
         ],
@@ -68,13 +68,13 @@ function renderSectionTabs(rerender: () => void): HTMLElement {
 function renderTransparentColorField(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const current = colorInputValue(tileset);
   const colorInput = el("input", {
-    class: "rm2k3-transparent-color",
+    class: "oprn-transparent-color",
     attrs: { type: "color", title: "타일셋의 투명 처리할 색(색 키)", "aria-label": "투명색" },
     value: current,
     dataset: { testid: "tileset-transparent-color" },
   });
   const hexInput = el("input", {
-    class: "rm2k3-transparent-hex",
+    class: "oprn-transparent-hex",
     attrs: {
       type: "text",
       inputmode: "text",
@@ -117,11 +117,11 @@ function renderTransparentColorField(tileset: TilesetDef, rerender: () => void):
   });
   resetButton.disabled = !tileset.transparentColor;
   return el("fieldset", {
-    class: "rm2k3-db-fieldset rm2k3-tileset-transparent-field",
+    class: "oprn-db-fieldset oprn-tileset-transparent-field",
     dataset: { testid: "tileset-transparent-field" },
     children: [
       el("legend", { text: "투명색" }),
-      el("div", { class: "rm2k3-transparent-row", children: [colorInput, hexInput, resetButton] }),
+      el("div", { class: "oprn-transparent-row", children: [colorInput, hexInput, resetButton] }),
     ],
   });
 }

@@ -16,7 +16,7 @@ import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-import { makeSvgIcon, type SvgIconName } from "@/editor/panels/rpgMakerTileToolbarIcons";
+import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { renderMapList } from "@/editor/panels/mapList";
 import {
   basicFlyoutReducer,

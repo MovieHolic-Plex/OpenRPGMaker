@@ -57,7 +57,7 @@ export interface ToolbarButtonSpec {
 export function toolbarButton(spec: ToolbarButtonSpec): HTMLButtonElement {
   return el("button", {
     class:
-      "rm2k3-tool-button" +
+      "oprn-tool-button" +
       (spec.primary ? " primary" : "") +
       (spec.icon ? " icon-only" : "") +
       (spec.active ? " active" : ""),
@@ -70,7 +70,7 @@ export function toolbarButton(spec: ToolbarButtonSpec): HTMLButtonElement {
     },
     children: spec.icon
       ? [
-          el("span", { class: `rm-tool-icon rm-tool-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
+          el("span", { class: `rm-tool-icon oprn-icon-${spec.icon}`, attrs: { "aria-hidden": "true" } }),
           el("span", { class: "visually-hidden", text: spec.label }),
         ]
       : undefined,
@@ -80,5 +80,5 @@ export function toolbarButton(spec: ToolbarButtonSpec): HTMLButtonElement {
 }
 
 export function separator(): HTMLElement {
-  return el("span", { class: "rm2k3-toolbar-separator" });
+  return el("span", { class: "oprn-toolbar-separator" });
 }

@@ -63,7 +63,7 @@ export function choicesBody(context: CommandEditContext, cmd: ChoicesCommand): H
       children: [
         optionsPanel,
         el("fieldset", {
-          class: "event-rm2k3-fieldset event-command-cancel-fieldset",
+          class: "event-oprn-fieldset event-command-cancel-fieldset",
           attrs: { title: "Esc / 우클릭 시 동작" },
           children: [
             el("legend", { text: "취소" }),

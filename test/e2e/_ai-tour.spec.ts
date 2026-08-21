@@ -17,7 +17,7 @@ async function shot(target: Page | Locator, name: string): Promise<void> {
 
 declare global {
   interface Window {
-    __rpgzzuRegionTaskHarness?: {
+    __oprnRegionTaskHarness?: {
       currentMapId: () => string;
       openModal: (mapId: string, region: { x: number; y: number; width: number; height: number }) => void;
     };
@@ -191,7 +191,7 @@ test("⑤ 실제 영역 작업 — 지정한 사각형만 고쳐 준다", async 
   await boot(page);
 
   await page.evaluate(() => {
-    const harness = window.__rpgzzuRegionTaskHarness!;
+    const harness = window.__oprnRegionTaskHarness!;
     harness.openModal(harness.currentMapId(), { x: 4, y: 4, width: 10, height: 8 });
   });
   const modal = page.getByTestId("region-task-modal");

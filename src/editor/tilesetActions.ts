@@ -205,7 +205,7 @@ export function seedDefaultAutotileGroups(tilesetId: TilesetId): void {
 export type AutotileTemplateActionResult = { ok: true; groupId?: string } | { ok: false; error: string };
 
 // 템플릿 위저드(tilesetAutotileTemplateWizard.ts)의 커밋 액션.
-// - 오토타일 템플릿(rm2k-3x4/grid-3x3/grid-3x2): buildTemplateGroup 결과를 autotileGroups 에 push.
+// - 오토타일 템플릿(oprn-3x4/grid-3x3/grid-3x2): buildTemplateGroup 결과를 autotileGroups 에 push.
 //   이때 rmTypeExpander.ts registerAutotileGroup 의 "내장 폴백 승계" 규약을 적용한다 —
 //   autotileGroupsForTileset 은 자체 정의가 있으면 내장 그룹 중 멤버가 겹치지 않는 것만 폴백으로
 //   남기므로, 첫 커스텀 그룹을 넣기 전에 내장(흙길/모래/포석/경작지)을 편집 가능한 사본으로 승계해

@@ -22,13 +22,13 @@ const SHOT = process.argv[4];
     await p.keyboard.press("Enter");
     for (let j = 0; j < 8; j++) {
       await sleep(500);
-      ready = await p.evaluate(() => !!(window.__rpgzzuPlayerSprite?.() && window.__rpgzzuCharacterSprites?.()?.events?.ev_ember_chief));
+      ready = await p.evaluate(() => !!(window.__oprnPlayerSprite?.() && window.__oprnCharacterSprites?.()?.events?.ev_ember_chief));
       if (ready) break;
     }
   }
   console.log("ready:", ready);
   const dump = () => p.evaluate(() => {
-    const ps = window.__rpgzzuPlayerSprite?.(); const ev = window.__rpgzzuCharacterSprites?.()?.events?.ev_ember_chief;
+    const ps = window.__oprnPlayerSprite?.(); const ev = window.__oprnCharacterSprites?.()?.events?.ev_ember_chief;
     return { p: ps ? { x: Math.floor(ps.x / 16), y: Math.floor(ps.y / 16) - 1 } : null, c: ev ? { x: Math.floor(ev.x / 16), y: Math.floor(ev.y / 16) - 1 } : null, dlg: !!document.querySelector(".dialogue-box") };
   });
   let d = await dump();
@@ -49,7 +49,7 @@ const SHOT = process.argv[4];
   await p.keyboard.press("ArrowUp"); await sleep(350);
   await p.keyboard.press("Space"); await sleep(1200);
   d = await dump(); console.log("dlg after Space:", d.dlg);
-  if (!d.dlg) { await p.evaluate(() => window.__rpgzzuInput?.action()); await sleep(1100); d = await dump(); console.log("dlg after hook:", d.dlg); }
+  if (!d.dlg) { await p.evaluate(() => window.__oprnInput?.action()); await sleep(1100); d = await dump(); console.log("dlg after hook:", d.dlg); }
   if (SHOT) await p.screenshot({ path: SHOT });
   console.log("VERDICT:", d.dlg ? "DIALOGUE WORKS" : "DIALOGUE BROKEN");
   await b.close();

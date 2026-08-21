@@ -64,13 +64,13 @@ const PROMPTS = [
 
 async function waitBridge(page, timeoutMs = 60_000) {
   await page.waitForFunction(
-    () => typeof window.__rpgzzuAiBridge?.send === "function" && window.__rpgzzuAiBridge.status?.()?.panelMounted !== false,
+    () => typeof window.__oprnAiBridge?.send === "function" && window.__oprnAiBridge.status?.()?.panelMounted !== false,
     null,
     { timeout: timeoutMs }
   );
   // expand panel if needed
   await page.evaluate(() => {
-    const s = window.__rpgzzuAiBridge?.status?.();
+    const s = window.__oprnAiBridge?.status?.();
     if (s && !s.ready) return;
     // open via restore button if collapsed
     const restore = document.querySelector('[data-testid="ai-collapsed-restore"]');
@@ -83,7 +83,7 @@ async function sendTurn(page, text, label) {
   console.log(text.slice(0, 160) + (text.length > 160 ? "…" : ""));
   const result = await page.evaluate(
     async ({ msg, timeoutMs }) => {
-      const bridge = window.__rpgzzuAiBridge;
+      const bridge = window.__oprnAiBridge;
       if (!bridge?.send) return { ok: false, error: "no bridge" };
       const status0 = bridge.status?.();
       if (status0 && status0.configReady === false) {
@@ -229,7 +229,7 @@ async function main() {
   }
 
   await waitBridge(page);
-  console.log("AI bridge ready", await page.evaluate(() => window.__rpgzzuAiBridge?.status?.()));
+  console.log("AI bridge ready", await page.evaluate(() => window.__oprnAiBridge?.status?.()));
 
   // Wipe / reset content instruction first so AI rebuilds rather than patches junk
   await sendTurn(

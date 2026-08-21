@@ -145,7 +145,7 @@ describe("classic toolbar actions", () => {
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
-    const menuBar = findByTestId(fake(topbar), "rm2k3-menu-bar");
+    const menuBar = findByTestId(fake(topbar), "oprn-menu-bar");
     const toggleIndex = menuBar?.children.findIndex((child) => child.dataset.testid === "editor-ui-mode-toggle") ?? -1;
     expect(menuBar?.children[toggleIndex + 1]?.dataset.testid).toBe("standard-more-tools");
     expect(menuBar?.children[toggleIndex + 2]?.dataset.testid).toBe("standard-more-tools-menu");

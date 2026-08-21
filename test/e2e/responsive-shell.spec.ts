@@ -38,7 +38,7 @@ for (const size of SIZES) {
       );
       await page.goto("/?freshProject=1");
       await page.waitForSelector("[data-testid='editor-layout']");
-      await page.evaluate((m) => (window as never as { __rpgzzuEditorUiMode: { set(v: string): void } }).__rpgzzuEditorUiMode.set(m), mode);
+      await page.evaluate((m) => (window as never as { __oprnEditorUiMode: { set(v: string): void } }).__oprnEditorUiMode.set(m), mode);
       await page.waitForTimeout(300);
 
       // 1) 문서 가로 스크롤 없음
@@ -46,7 +46,7 @@ for (const size of SIZES) {
       expect(overflow).toBeLessThanOrEqual(0);
 
       // 2) 메뉴바 한 줄 (두 줄 꺾임이면 높이가 커진다)
-      const menuBar = page.locator(".rm2k3-menu-bar");
+      const menuBar = page.locator(".oprn-menu-bar");
       await expect(menuBar).toBeVisible();
       const menuBox = await menuBar.boundingBox();
       expect(menuBox?.height).toBeLessThanOrEqual(48);

@@ -7,8 +7,16 @@ import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import type { Project } from "@/project/types";
 
+// 타이틀 리소스 id 개명(2026-08-21) — 새 id 를 정본으로 쓰고, 구 id 는 **별칭으로
+// 남긴다**. 이 값은 프로젝트 파일의 titleResourceId/backgroundResourceId 에 저장되므로
+// 구 id 를 지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
+// 파일 경로(*.png) 자체는 안 옮겼다 — 에셋 파일 개명은 별도 라운드(Phase 5).
 const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   hero: "/assets/generated/rm2k3/hero-01-battle.png",
+  "oprn-title-bright": "/assets/generated/title/bright-rpg-maker-title-v2.png",
+  "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
+  "oprn-title-field": "/assets/generated/title/rm2k3-title-field.png",
+  // ── 구 id 별칭 (읽기 호환. 새로 쓸 때는 위 id 를 쓴다) ──────────────
   "rpg-zzu-title-bright": "/assets/generated/title/bright-rpg-maker-title-v2.png",
   "rpg-zzu-title-blue": "/assets/generated/title/default-title-blue.png",
   "rpg-zzu-title-field": "/assets/generated/title/rm2k3-title-field.png",
@@ -16,6 +24,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "modern-nocturne-logo": "/assets/modern-exteriors/modern-nocturne-logo.png",
   "modern-nocturne-battle-city": "/assets/modern-exteriors/modern-nocturne-battle-city.png",
   "modern-nocturne-battle-rooftop": "/assets/modern-exteriors/modern-nocturne-battle-rooftop.png",
+  "oprn-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
   "rpg-zzu-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
   "generated-actor-hero-01-battle": "/assets/generated/rm2k3/hero-01-battle.png",
   "generated-actor-hero-01-charset": "/assets/generated/rm2k3/hero-01-charset.png",

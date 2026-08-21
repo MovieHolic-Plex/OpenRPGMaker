@@ -32,7 +32,7 @@ import {
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { store } from "@/project/store";
 import type { Project, ResourceKind } from "@/project/types";
@@ -395,7 +395,7 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       break;
   }
 
-  for (const asset of RM2K3_GENERATED_ASSET_PLAN.assets) {
+  for (const asset of GENERATED_ASSET_PLAN.assets) {
     if (asset.status !== "promoted") continue;
     if (matchesGeneratedKind(kind, asset.resourceKind, asset.resourceId)) {
       add(asset.resourceId, `${prettyId(asset.resourceId)} <생성>`);

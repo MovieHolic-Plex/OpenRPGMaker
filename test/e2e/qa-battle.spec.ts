@@ -4,7 +4,7 @@ import {
   openDatabase,
   switchDatabaseTab,
   DATABASE_TAB_SPECS,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 import type { Page } from "@playwright/test";
 
 const ANIM_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "animations")!;
@@ -96,7 +96,7 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
         timing: pick("[data-testid='db-animation-timing-panel']"),
         cells: pick("[data-testid='db-animation-cell-table']"),
         strip: pick("[data-testid='db-animation-pattern-strip']"),
-        detailForm: pick(".rm2k3-detail-battleAnimations"),
+        detailForm: pick(".oprn-detail-battleAnimations"),
       };
     });
     console.log("ANIM_LAYOUT_GEOMETRY", JSON.stringify(geometry));
@@ -328,7 +328,7 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
       const metrics = await page.evaluate(() => {
         const form = document.querySelector(".db-parity-form");
         if (!(form instanceof HTMLElement)) return null;
-        const fieldsets = Array.from(form.querySelectorAll(":scope > .rm2k3-db-fieldset")).map((node) => {
+        const fieldsets = Array.from(form.querySelectorAll(":scope > .oprn-db-fieldset")).map((node) => {
           const elx = node as HTMLElement;
           const r = elx.getBoundingClientRect();
           const legend = elx.querySelector("legend")?.textContent ?? "";

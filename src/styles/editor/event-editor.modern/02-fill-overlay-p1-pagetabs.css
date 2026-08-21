@@ -95,7 +95,7 @@
   padding-right: 0;
 }
 
-.event-rm2k3-fieldset {
+.event-oprn-fieldset {
   background: color-mix(in srgb, var(--bg-raised) 92%, var(--event-modern-field));
   border: 1px solid var(--event-modern-border);
   border-radius: 8px;
@@ -109,12 +109,12 @@
   padding: 12px 14px;
 }
 
-.event-rm2k3-fieldset.event-collapsible-section {
+.event-oprn-fieldset.event-collapsible-section {
   /* 조건 접이식: 요약+본문이 자연 높이로 펼쳐지도록 */
   overflow: visible;
 }
 
-.event-rm2k3-fieldset legend {
+.event-oprn-fieldset legend {
   background: transparent;
   color: var(--text-1);
   font: 700 13px/1.2 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;

@@ -1,13 +1,13 @@
 ---
 name: small-house-01
-description: Use this RPG Maker building reference when recreating or adapting the small_house_01 user-built house template, including its screenshot, tile roles, and lower/upper layer split.
+description: Use this building reference when recreating or adapting the small_house_01 user-built house template, including its screenshot, tile roles, and lower/upper layer split.
 ---
 
 # Small House 01
 
 ## Overview
 
-This package captures the user-built small house template from the RPG Zzu database map.
+This package captures the user-built small house template from the editor database map.
 
 Map-only reference screenshot: `assets/small_house_01.png`
 

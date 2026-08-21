@@ -177,7 +177,7 @@ describe("editorUiMode", () => {
     // Structural: shipped toolbar always includes event (basic only reduces chrome density).
     // 구 tilePaletteToolbar.ts는 통합 툴바(rpgMakerTileToolbar.ts)로 흡수됨 (2026-07-18).
     const source = await import("node:fs/promises").then((fs) =>
-      fs.readFile(new URL("../src/editor/panels/rpgMakerTileToolbar.ts", import.meta.url), "utf8"),
+      fs.readFile(new URL("../src/editor/panels/tileToolbar.ts", import.meta.url), "utf8"),
     );
     expect(source).toMatch(/id:\s*"event"/);
     expect(source).toMatch(/testid:\s*`tool-\$\{item\.id\}`|tool-event/);

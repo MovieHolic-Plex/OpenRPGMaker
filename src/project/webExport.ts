@@ -76,7 +76,7 @@ export function prepareWebExport(project: Project): PreparedWebExport {
 }
 
 export function webExportFileName(project: Project): string {
-  return `${safeFileName(project.meta.title || "rpg-zzu-game")}-web.zip`;
+  return `${safeFileName(project.meta.title || "oprn-game")}-web.zip`;
 }
 
 export async function createWebPlayerExportPackage(

@@ -5,7 +5,7 @@ import {
   exportedProject,
   openDatabase,
   switchDatabaseTab,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 
 const ACTORS_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "actors")!;
 const CLASSES_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "classes")!;

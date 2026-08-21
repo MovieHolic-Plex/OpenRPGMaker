@@ -134,8 +134,8 @@
 .tileset-unlabeled-queue {
   margin: 0 0 10px;
   padding: 8px 10px;
-  border: 1px solid var(--rm2k3-border, var(--border-default));
-  background: var(--rm2k3-panel-inset, var(--bg-raised));
+  border: 1px solid var(--oprn-border, var(--border-default));
+  background: var(--oprn-panel-inset, var(--bg-raised));
   font-size: 12px;
 }
 .tileset-unlabeled-queue-header {

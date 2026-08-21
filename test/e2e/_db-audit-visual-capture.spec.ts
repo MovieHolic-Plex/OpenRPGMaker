@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { DATABASE_TAB_SPECS, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, type DatabaseTabSpec } from "./oprn-database-helpers";
 import {
   bootDbLane,
   COMMON_DB_TAB_TEST_IDS,

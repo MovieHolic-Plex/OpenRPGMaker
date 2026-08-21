@@ -12,13 +12,13 @@ import type { AutotileNeighborhood, TilesetAnimationStrip } from "@/project/type
 // DOM/스토어 의존 없음 — 단위 테스트(test/autotileTemplates.test.ts)로 고정.
 
 // 오토타일 그룹을 생성하는 템플릿 종류.
-export type AutotileTemplateGroupKind = "rm2k-3x4" | "grid-3x3" | "grid-3x2";
+export type AutotileTemplateGroupKind = "oprn-3x4" | "grid-3x3" | "grid-3x2";
 // 위저드가 다루는 전체 템플릿 종류(애니메이션 물은 그룹 대신 animationStrips 를 만든다).
 export type AutotileTemplateKind = AutotileTemplateGroupKind | "animated-water";
 
 // UI 선택지 노출용 안내(라벨은 위저드 select 에서 그대로 사용).
 export const AUTOTILE_TEMPLATE_KIND_GUIDES: readonly { id: AutotileTemplateKind; label: string }[] = [
-  { id: "rm2k-3x4", label: "RM2K식 3×4 (외딴·오목 + 3×3)" },
+  { id: "oprn-3x4", label: "RM2K식 3×4 (외딴·오목 + 3×3)" },
   { id: "grid-3x3", label: "3×3 격자 (모서리·변·몸통)" },
   { id: "grid-3x2", label: "3×2 격자 (상단·하단 행)" },
   { id: "animated-water", label: "애니메이션 물 (가로 3프레임)" },
@@ -38,7 +38,7 @@ export interface AutotileTemplateError {
 
 // 템플릿 블록 크기(행×열). 앵커 열 넘침/시트 범위 검증에 사용.
 const TEMPLATE_BLOCK_SIZE: Record<AutotileTemplateKind, { rows: number; cols: number }> = {
-  "rm2k-3x4": { rows: 4, cols: 3 },
+  "oprn-3x4": { rows: 4, cols: 3 },
   "grid-3x3": { rows: 3, cols: 3 },
   "grid-3x2": { rows: 2, cols: 3 },
   "animated-water": { rows: 1, cols: 3 },
@@ -154,7 +154,7 @@ export function buildTemplateGroup(
 ): AutotileTemplateGroup | AutotileTemplateError {
   const invalid = validateBlock(kind, anchorTile, tilesPerRow, tileCount);
   if (invalid !== null) return { error: invalid };
-  if (kind === "rm2k-3x4") {
+  if (kind === "oprn-3x4") {
     const tiles = rm2kTiles(anchorTile, tilesPerRow);
     const members = rm2kMemberTiles(tiles);
     return {
@@ -226,13 +226,13 @@ export function previewTemplateTiles(
       ],
     };
   }
-  const tiles = kind === "rm2k-3x4"
+  const tiles = kind === "oprn-3x4"
     ? rm2kTiles(anchorTile, tilesPerRow)
     : kind === "grid-3x3"
       ? grid3x3Tiles(anchorTile, tilesPerRow)
       : grid3x2Tiles(anchorTile, tilesPerRow);
   const entries: { role: string; tileId: number }[] = [];
-  if (kind === "rm2k-3x4") {
+  if (kind === "oprn-3x4") {
     const inner = tiles as EdgeCornerInnerTileSet;
     entries.push({ role: "외딴 점", tileId: inner.isolated }, { role: "오목 코너", tileId: inner.inner });
   }

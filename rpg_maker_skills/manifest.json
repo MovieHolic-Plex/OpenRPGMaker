@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "purpose": "RPG Maker-style authoring packages and editor feature specs for turning RPG Zzu demos into playable RPG loops.",
+  "purpose": "Authoring packages and editor feature specs for turning demo maps into playable RPG loops.",
   "skills": [
     {
       "id": "quest-loop-template",

@@ -22,8 +22,8 @@ async function freshGame(browser) {
     for (let j = 0; j < 10; j++) {
       await sleep(500);
       const ready = await page.evaluate(() => {
-        const sp = window.__rpgzzuCharacterSprites?.();
-        return !!(window.__rpgzzuDebug?.readState() && sp && Object.keys(sp.events ?? {}).length > 0);
+        const sp = window.__oprnCharacterSprites?.();
+        return !!(window.__oprnDebug?.readState() && sp && Object.keys(sp.events ?? {}).length > 0);
       });
       if (ready) { ok = true; break; }
     }
@@ -37,20 +37,20 @@ const helpers = (page) => ({
   key: async (k, t = 1, d = 450) => { for (let i = 0; i < t; i++) { await page.keyboard.press(k); await sleep(d); } },
   teleport: async (m, x, y) => {
     for (let i = 0; i < 4; i++) {
-      await page.evaluate(([a, b, c]) => window.__rpgzzuDebug?.teleport(a, b, c), [m, x, y]);
+      await page.evaluate(([a, b, c]) => window.__oprnDebug?.teleport(a, b, c), [m, x, y]);
       await sleep(500);
-      const st = await page.evaluate(() => window.__rpgzzuDebug?.readState());
+      const st = await page.evaluate(() => window.__oprnDebug?.readState());
       if (st && st.currentMapId === m && st.x === x && st.y === y) return true;
       await sleep(400);
     }
     console.log("TELEPORT UNSTABLE:", m, x, y);
     return false;
   },
-  action: () => page.evaluate(() => window.__rpgzzuInput?.action()),
-  face: async (d) => { await page.evaluate((x) => window.__rpgzzuInput?.dir(x), d); await sleep(120); await page.evaluate(() => window.__rpgzzuInput?.dir(null)); await sleep(250); },
-  mapId: () => page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId),
-  setSwitch: (id, v) => page.evaluate(([a, b]) => window.__rpgzzuDebug?.setSwitch(a, b), [id, v]),
-  spriteTile: (id) => page.evaluate((e) => { const s = window.__rpgzzuCharacterSprites?.().events?.[e]; return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) } : null; }, id),
+  action: () => page.evaluate(() => window.__oprnInput?.action()),
+  face: async (d) => { await page.evaluate((x) => window.__oprnInput?.dir(x), d); await sleep(120); await page.evaluate(() => window.__oprnInput?.dir(null)); await sleep(250); },
+  mapId: () => page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId),
+  setSwitch: (id, v) => page.evaluate(([a, b]) => window.__oprnDebug?.setSwitch(a, b), [id, v]),
+  spriteTile: (id) => page.evaluate((e) => { const s = window.__oprnCharacterSprites?.().events?.[e]; return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) } : null; }, id),
 });
 
 (async () => {

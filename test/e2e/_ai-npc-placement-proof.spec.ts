@@ -38,7 +38,7 @@ async function dismissLogin(page: Page): Promise<void> {
  * 에디터가 들고 있는 현재 프로젝트의 이벤트 목록을 읽는다.
  *
  * `project-export-json` 은 숨은 <pre> 로 상주하며 store 가 바뀔 때마다 갱신된다
- * (editor.ts updateProjectExport — 150ms 디바운스). 처음 가정했던 window.__rpgzzu
+ * (editor.ts updateProjectExport — 150ms 디바운스). 처음 가정했던 window.__oprn
  * 프로브는 이 앱에 없어 항상 빈 배열을 돌려줬다.
  */
 async function readEvents(page: Page): Promise<RuntimeEvent[]> {

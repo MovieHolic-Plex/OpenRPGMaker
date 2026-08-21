@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
-import type { RpgMakerToolbarModel } from "@/editor/panels/rpgMakerTileToolbarMenus";
+import type { TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -45,7 +45,7 @@ vi.mock("@/project/lint/projectLint", () => ({
 }));
 
 vi.mock("@/editor/mapEditHistory", () => ({
-  MAP_EDIT_HISTORY_EVENT: "rpgzzu:map-edit-history-change",
+  MAP_EDIT_HISTORY_EVENT: "oprn:map-edit-history-change",
   getMapEditHistoryEntries: () => historyMock.entries,
   getMapEditHistoryState: () => historyMock.state,
   undoMapEdit: historyMock.undoMapEdit,
@@ -58,7 +58,7 @@ import { ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
 import {
   makeHistoryDropdown,
   makeRuleAuditDropdown,
-} from "@/editor/panels/rpgMakerTileToolbarMenus";
+} from "@/editor/panels/tileToolbarMenus";
 
 let restoreDom: (() => void) | null = null;
 
@@ -95,7 +95,7 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "window");
 });
 
-function toolbarModel(rerender = vi.fn()): RpgMakerToolbarModel {
+function toolbarModel(rerender = vi.fn()): TileToolbarModel {
   const project = store.getCurrent();
   const map = project.maps[project.startMapId];
   if (!map) throw new Error("missing start map");

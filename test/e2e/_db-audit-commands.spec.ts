@@ -15,7 +15,7 @@ import {
   validateFinding,
   type AuditFinding,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject } from "./oprn-database-helpers";
 
 const SPEC = "_db-audit-commands";
 const SHOT_DIR = "output/evidence/db-beginner-audit/shots";

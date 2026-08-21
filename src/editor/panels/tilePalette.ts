@@ -4,12 +4,12 @@ import type { Layer } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
-import { makeRpgMakerTileToolbar } from "@/editor/panels/rpgMakerTileToolbar";
+import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
 import { makePaletteStampStatus, makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
-import { makeCustomPalette, makeRm2kPalette, rm2kPaletteDisplayTile } from "@/editor/panels/tilePaletteRm2k";
+import { makeCustomPalette, makeGridPalette, gridPaletteDisplayTile } from "@/editor/panels/tilePaletteGrid";
 import { describeChipsetTile, tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
@@ -82,7 +82,7 @@ export function renderTilePalette(container: HTMLElement): void {
     const map = project.maps[mapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
     if (map && tileset) {
-      container.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+      container.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
     }
     renderEventEditor(container);
     return;
@@ -186,7 +186,7 @@ function makePaletteSurface(input: {
   });
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset));
-  root.append(makeRpgMakerTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
+  root.append(makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset }));
   root.append(makePaletteStampStatus(state.activePaletteStamp, renderPalettePreservingViewport));
   root.append(makePaletteFilterBar(tileset));
 
@@ -199,7 +199,7 @@ function makePaletteSurface(input: {
         tileset,
         visibleTiles,
       })
-    : makeRm2kPalette({
+    : makeGridPalette({
         layer: tileLayer,
         onSelectTile: selectPaletteTile,
         selectedTile: state.selectedTile,
@@ -528,7 +528,7 @@ function revealChipsetTileInPalette(tile: number): void {
   if (!root) return;
   // Custom atlases expose exact source cells; RM2K chipsets collapse authored autotile variants.
   const tileset = currentTilesetForPalette();
-  const displayTile = tileset && !isCustomTileset(tileset) ? rm2kPaletteDisplayTile(tileset, tile) : tile;
+  const displayTile = tileset && !isCustomTileset(tileset) ? gridPaletteDisplayTile(tileset, tile) : tile;
   const cell =
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + displayTile + '"]') ??
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + tile + '"]') ??

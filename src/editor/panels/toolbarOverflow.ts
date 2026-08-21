@@ -29,13 +29,13 @@ export function installToolbarOverflow(row: HTMLElement): () => void {
   if (typeof ResizeObserver === "undefined") return () => {};
 
   const moreButton = el("button", {
-    class: "rm2k3-tool-button toolbar-overflow-toggle",
+    class: "oprn-tool-button toolbar-overflow-toggle",
     text: "⋯",
     attrs: { type: "button", title: "더 보기", "aria-label": "가려진 툴바 버튼", "aria-expanded": "false" },
     dataset: { testid: "toolbar-overflow-toggle" },
   }) as HTMLButtonElement;
   const popup = el("div", {
-    class: "rm2k3-menu-popup toolbar-overflow-popup",
+    class: "oprn-menu-popup toolbar-overflow-popup",
     attrs: { role: "menu" },
     dataset: { testid: "toolbar-overflow-popup" },
   });

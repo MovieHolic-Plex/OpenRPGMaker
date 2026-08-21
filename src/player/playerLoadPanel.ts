@@ -39,21 +39,21 @@ export type SaveSlotCardModel = {
 
 export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElement {
   const panel = el("div", {
-    class: "title-screen rm-title-screen rm2k3-load-panel system-panel",
+    class: "title-screen rm-title-screen oprn-load-panel system-panel",
     dataset: { testid: "title-screen", screen: "load" },
   });
   applyLoadPanelBackground(panel);
 
   const loadWindow = el("section", {
-    class: "rm2k3-load-window",
+    class: "oprn-load-window",
     attrs: { "aria-label": "불러오기" },
     dataset: { testid: "player-load-window", playInputOwner: "title-controls" },
   });
-  loadWindow.append(el("h2", { class: "rm2k3-load-title", text: "불러오기" }));
+  loadWindow.append(el("h2", { class: "oprn-load-title", text: "불러오기" }));
   if (options.message) loadWindow.append(renderSlotMessage(options.message));
 
   const slots = el("div", {
-    class: "rm2k3-load-slots",
+    class: "oprn-load-slots",
     dataset: { testid: "player-load-slots" },
   });
   // 오토세이브 카드: 최상단, 불러오기 전용(수동 저장 메뉴의 덮어쓰기 대상이 아니다).
@@ -73,7 +73,7 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   loadWindow.append(
     slots,
     el("button", {
-      class: "rm2k3-load-back system-shell-button",
+      class: "oprn-load-back system-shell-button",
       text: options.fromTitle ? "뒤로" : "닫기",
       dataset: { testid: "player-load-back" },
       on: { click: options.onBack },
@@ -85,7 +85,7 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
 
 function renderSlotMessage(message: string): HTMLElement {
   return el("div", {
-    class: "rm2k3-load-message",
+    class: "oprn-load-message",
     text: message,
     attrs: { role: "status" },
   });
@@ -93,7 +93,7 @@ function renderSlotMessage(message: string): HTMLElement {
 
 function renderCorruptSlot(slot: Extract<SaveSlotReadResult, { readonly kind: "corrupt" }>): HTMLElement {
   return el("div", {
-    class: "rm2k3-load-corrupt",
+    class: "oprn-load-corrupt",
     text: `${slot.slot}번 저장 칸 이상: ${slot.message}`,
     dataset: { testid: `save-slot-corrupt-${slot.slot}` },
   });
@@ -104,7 +104,7 @@ function renderCorruptSlot(slot: Extract<SaveSlotReadResult, { readonly kind: "c
 function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
   return renderCardButton(
     saveSlotCardModel(options.slot),
-    `rm2k3-load-slot system-shell-button ${slotStateClass(options.slot)}`,
+    `oprn-load-slot system-shell-button ${slotStateClass(options.slot)}`,
     options.testId,
     options.onClick,
   );
@@ -114,7 +114,7 @@ function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
 function renderAutosaveButton(snapshot: SaveSnapshot, onClick: () => void): HTMLButtonElement {
   return renderCardButton(
     autosaveCardModel(snapshot),
-    "rm2k3-load-slot system-shell-button is-present is-autosave",
+    "oprn-load-slot system-shell-button is-present is-autosave",
     "save-slot-auto",
     onClick,
   );
@@ -131,18 +131,18 @@ function renderCardButton(
     dataset: { testid: testId },
     on: { click: onClick },
   });
-  const head = el("span", { class: "rm2k3-load-slot-row rm2k3-load-slot-head" });
-  head.append(el("span", { class: "rm2k3-load-slot-title", text: model.title }));
-  if (model.mapName) head.append(el("span", { class: "rm2k3-load-slot-map", text: model.mapName }));
+  const head = el("span", { class: "oprn-load-slot-row oprn-load-slot-head" });
+  head.append(el("span", { class: "oprn-load-slot-title", text: model.title }));
+  if (model.mapName) head.append(el("span", { class: "oprn-load-slot-map", text: model.mapName }));
   button.append(head);
   const metaParts = [
-    { className: "rm2k3-load-slot-trigger", text: model.trigger },
-    { className: "rm2k3-load-slot-level", text: model.level },
-    { className: "rm2k3-load-slot-playtime", text: model.playTime },
-    { className: "rm2k3-load-slot-saved-at", text: model.savedAt },
+    { className: "oprn-load-slot-trigger", text: model.trigger },
+    { className: "oprn-load-slot-level", text: model.level },
+    { className: "oprn-load-slot-playtime", text: model.playTime },
+    { className: "oprn-load-slot-saved-at", text: model.savedAt },
   ].filter((part): part is { readonly className: string; readonly text: string } => Boolean(part.text));
   if (metaParts.length > 0) {
-    const meta = el("span", { class: "rm2k3-load-slot-row rm2k3-load-slot-meta" });
+    const meta = el("span", { class: "oprn-load-slot-row oprn-load-slot-meta" });
     for (const part of metaParts) meta.append(el("span", { class: part.className, text: part.text }));
     button.append(meta);
   }

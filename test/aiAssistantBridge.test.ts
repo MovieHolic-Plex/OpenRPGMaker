@@ -50,12 +50,12 @@ describe("aiAssistantBridge", () => {
     });
 
     setAiBridgeLastStatus("검토 대기");
-    expect(window.__rpgzzuAiBridge).toBeDefined();
-    expect(window.__rpgzzuAiBridge?.status().lastStatus).toBe("검토 대기");
-    expect(window.__rpgzzuAiBridge?.audit()).toEqual([{ kind: "status", text: "대기" }]);
-    expect(window.__rpgzzuAiBridge?.harness()).toEqual({ messages: [1] });
+    expect(window.__oprnAiBridge).toBeDefined();
+    expect(window.__oprnAiBridge?.status().lastStatus).toBe("검토 대기");
+    expect(window.__oprnAiBridge?.audit()).toEqual([{ kind: "status", text: "대기" }]);
+    expect(window.__oprnAiBridge?.harness()).toEqual({ messages: [1] });
 
-    const result = await window.__rpgzzuAiBridge!.send("숲을 다듬어줘");
+    const result = await window.__oprnAiBridge!.send("숲을 다듬어줘");
     expect(result).toMatchObject({ ok: true, lastAssistantText: "ok" });
     expect(isAiAssistantBridgeConnected()).toBe(false);
   });

@@ -62,7 +62,7 @@ remoteCertificateTest("live remote project certificate owns its complete lifecyc
         await expectExactBridge(page);
 
         const initialized = await page.evaluate(
-          async ({ blank, ownedReceipt, remoteProof }) => window.__rpgzzuProjectE2E!.initializeRemoteFixture(
+          async ({ blank, ownedReceipt, remoteProof }) => window.__oprnProjectE2E!.initializeRemoteFixture(
             { blankProject: blank, projectId: ownedReceipt.projectId, title: ownedReceipt.title },
             remoteProof,
           ),
@@ -74,9 +74,9 @@ remoteCertificateTest("live remote project certificate owns its complete lifecyc
           evidence: { effectiveTarget: { projectId: receipt.projectId, url: certificate.url } },
         });
 
-        const flushResult = await page.evaluate(async () => window.__rpgzzuProjectE2E!.flush());
+        const flushResult = await page.evaluate(async () => window.__oprnProjectE2E!.flush());
         expect(flushResult).toEqual({ kind: "saved" });
-        const savedSnapshot = await page.evaluate(() => window.__rpgzzuProjectE2E!.currentProject());
+        const savedSnapshot = await page.evaluate(() => window.__oprnProjectE2E!.currentProject());
         expect(savedSnapshot.effectiveTarget).toMatchObject({ projectId: receipt.projectId, url: certificate.url });
         expect(savedSnapshot.project.meta.title).toBe(receipt.title);
         canonicalPayload = savedSnapshot.canonicalPayload;
@@ -93,7 +93,7 @@ remoteCertificateTest("live remote project certificate owns its complete lifecyc
 
         const reloadProof = { ...proof, expectedCanonicalPayload: canonicalPayload };
         const reloaded = await page.evaluate(
-          async (remoteProof) => window.__rpgzzuProjectE2E!.reloadRemote(remoteProof),
+          async (remoteProof) => window.__oprnProjectE2E!.reloadRemote(remoteProof),
           reloadProof,
         );
         expect(reloaded).toMatchObject({
@@ -101,7 +101,7 @@ remoteCertificateTest("live remote project certificate owns its complete lifecyc
           result: { kind: "reloaded", projectId: receipt.projectId, title: receipt.title },
           evidence: { canonicalPayload },
         });
-        const reloadedSnapshot = await page.evaluate(() => window.__rpgzzuProjectE2E!.currentProject());
+        const reloadedSnapshot = await page.evaluate(() => window.__oprnProjectE2E!.currentProject());
         expect(reloadedSnapshot.canonicalPayload).toBe(canonicalPayload);
         expect(reloadedSnapshot.project.meta.title).toBe(receipt.title);
 
@@ -155,6 +155,6 @@ async function createCertifiedContext(
 }
 
 async function expectExactBridge(page: Page): Promise<void> {
-  const methods = await page.evaluate(() => Object.keys(window.__rpgzzuProjectE2E ?? {}).sort());
+  const methods = await page.evaluate(() => Object.keys(window.__oprnProjectE2E ?? {}).sort());
   expect(methods).toEqual(["currentProject", "flush", "initializeRemoteFixture", "reloadRemote"]);
 }

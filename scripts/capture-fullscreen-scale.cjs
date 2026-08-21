@@ -24,7 +24,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   for (let i = 0; i < 6; i++) {
     await page.keyboard.press("Enter");
     await sleep(700);
-    if (await page.evaluate(() => !!window.__rpgzzuPlayerSprite?.())) break;
+    if (await page.evaluate(() => !!window.__oprnPlayerSprite?.())) break;
   }
   // 풀스크린 토글 (Alt+Enter)
   await page.keyboard.press("Alt+Enter");

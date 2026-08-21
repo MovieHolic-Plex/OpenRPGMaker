@@ -196,7 +196,7 @@
   }
 
   .map-context-menu,
-  .rm2k3-menu-popup {
+  .oprn-menu-popup {
     background: var(--editor-popover-bg);
     border: 1px solid var(--editor-line-strong);
     border-radius: var(--radius-m);
@@ -210,7 +210,7 @@
     padding: 12px;
   }
 
-  .rm2k3-menu-command {
+  .oprn-menu-command {
     max-width: 100%;
     min-width: 0;
     overflow-wrap: anywhere;

@@ -2,7 +2,7 @@
 // 슬래시 자동완성 소스로 사용. 5개 cap, 중복 제거, 최신 우선.
 // localStorage 접근 불가(프라이빗 모드 등)시 조용히 빈 배열 반환.
 
-const STORAGE_KEY = "rpgzzu:region-recent-instructions";
+const STORAGE_KEY = "oprn:region-recent-instructions";
 const MAX_RECENT = 5;
 
 export function loadRecentInstructions(): readonly string[] {

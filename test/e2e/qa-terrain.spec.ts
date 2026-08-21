@@ -3,7 +3,7 @@ import {
   exportedProject,
   openDatabase,
   switchDatabaseTab,
-} from "./rm2k3-database-helpers";
+} from "./oprn-database-helpers";
 
 const TERRAIN_TAB = { label: "Terrain", slug: "terrain", testId: "db-tab-terrain" } as const;
 const TILESETS_TAB = { label: "Tilesets", slug: "tilesets", testId: "db-tab-tilesets" } as const;
@@ -171,11 +171,11 @@ test.describe("QA sweep: tilesets tab", () => {
     await switchDatabaseTab(page, TILESETS_TAB);
     await page.getByTestId(TOWN_TILESET_ROW).click();
 
-    const nameInput = page.locator('[data-testid="tileset-rm2k3-name"] input');
+    const nameInput = page.locator('[data-testid="tileset-oprn-name"] input');
     await nameInput.fill("QA타일셋이름변경됨");
     await switchDatabaseTab(page, TERRAIN_TAB);
     await switchDatabaseTab(page, TILESETS_TAB);
-    await expect(page.locator('[data-testid="tileset-rm2k3-name"] input')).toHaveValue("QA타일셋이름변경됨");
+    await expect(page.locator('[data-testid="tileset-oprn-name"] input')).toHaveValue("QA타일셋이름변경됨");
 
     const project = await exportedProject(page);
     expect(project.tilesets["easyrpg_chipset_combined_town"]?.name).toBe("QA타일셋이름변경됨");

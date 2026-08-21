@@ -1,6 +1,6 @@
 ---
 name: npc-role-kit
-description: Use this RPG Maker authoring skill when creating NPCs with functional game roles such as quest giver, guide, merchant, gatekeeper, trainer, healer, rumor source, or encounter trigger.
+description: Use this authoring skill when creating NPCs with functional game roles such as quest giver, guide, merchant, gatekeeper, trainer, healer, rumor source, or encounter trigger.
 ---
 
 # NPC Role Kit

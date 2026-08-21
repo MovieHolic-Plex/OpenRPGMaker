@@ -13,7 +13,7 @@ import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
-import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
 import { assert } from "./guards";
 
@@ -23,7 +23,7 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of Object.keys(project.assets.uploaded)) ids.add(id);
   for (const profile of project.resourceProfiles) if (profile.assetId) ids.add(profile.assetId);
   for (const tileset of Object.values(project.tilesets)) ids.add(tileset.image.id);
-  for (const asset of RM2K3_GENERATED_ASSET_PLAN.assets) {
+  for (const asset of GENERATED_ASSET_PLAN.assets) {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
   for (const id of builtinGeneratedResourceIds()) ids.add(id);

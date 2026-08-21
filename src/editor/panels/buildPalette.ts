@@ -16,7 +16,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 let buildPaletteEnabled = false;
-export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
+export const BUILD_PALETTE_VISIBILITY_EVENT = "oprn:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
   { id: "house", label: "🏠집", title: "선택한 집 키트와 형태로 집을 시공" },
@@ -42,7 +42,7 @@ export type HouseOptionKey = keyof typeof HOUSE_OPTION_STORAGE_KEYS;
 
 export function renderBuildPaletteToggle(): HTMLElement {
   return el("button", {
-    class: "rm2k3-tool-button build-palette-toggle" + (buildPaletteEnabled ? " active" : ""),
+    class: "oprn-tool-button build-palette-toggle" + (buildPaletteEnabled ? " active" : ""),
     text: "🏗️건축▾",
     attrs: {
       type: "button",

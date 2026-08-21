@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, Project } from "@/project/types";
-import { applyDatabaseChanges, exportedProject, openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { applyDatabaseChanges, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/task-10-db-playwright";

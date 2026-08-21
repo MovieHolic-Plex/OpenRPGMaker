@@ -21,7 +21,7 @@ async function freshGame(browser) {
     let ok = false;
     for (let j = 0; j < 10; j++) {
       await sleep(500);
-      if (await page.evaluate(() => { const sp = window.__rpgzzuCharacterSprites?.(); return !!(window.__rpgzzuDebug?.readState() && sp && Object.keys(sp.events ?? {}).length > 0); })) { ok = true; break; }
+      if (await page.evaluate(() => { const sp = window.__oprnCharacterSprites?.(); return !!(window.__oprnDebug?.readState() && sp && Object.keys(sp.events ?? {}).length > 0); })) { ok = true; break; }
     }
     if (ok) break;
   }
@@ -32,8 +32,8 @@ async function freshGame(browser) {
 function makeHelpers(page) {
   const shot = async (n) => { await page.screenshot({ path: path.join(OUT, n + ".png") }); console.log("shot:", n); };
   const key = async (k, t = 1, d = 450) => { for (let i = 0; i < t; i++) { await page.keyboard.press(k); await sleep(d); } };
-  const playerTile = () => page.evaluate(() => { const s = window.__rpgzzuPlayerSprite?.(); return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; });
-  const spriteTile = (id) => page.evaluate((e) => { const s = window.__rpgzzuCharacterSprites?.().events?.[e]; return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; }, id);
+  const playerTile = () => page.evaluate(() => { const s = window.__oprnPlayerSprite?.(); return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; });
+  const spriteTile = (id) => page.evaluate((e) => { const s = window.__oprnCharacterSprites?.().events?.[e]; return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; }, id);
   const realDialogue = () => page.evaluate(() => !!document.querySelector(".dialogue-box"));
   // 세이브 슬롯1 생성 → JSON 조작 → 인게임 로드로 씬 재배치
   const clickTestId = async (tid) => page.evaluate((t) => {
@@ -70,7 +70,7 @@ function makeHelpers(page) {
     await sleep(1000);
     await key("Enter", 1, 800);      // 확인(있다면)
     for (let i = 0; i < 15; i++) {
-      const t = await playerTile(); const st = await page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId);
+      const t = await playerTile(); const st = await page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId);
       if (st === mapId && t && Math.abs(t.x - x) <= 1 && Math.abs(t.y - y) <= 1) { console.log("WARP OK", mapId, JSON.stringify(t)); return true; }
       await sleep(500);
     }
@@ -95,9 +95,9 @@ function makeHelpers(page) {
     const ev = await spriteTile(eventId);
     if (!ev) { console.log("NO SPRITE:", eventId); return false; }
     if (!(await walkTo(ev.x, ev.y + 1))) console.log("walk imperfect", eventId);
-    await page.evaluate(() => window.__rpgzzuInput?.dir("up")); await sleep(130);
-    await page.evaluate(() => window.__rpgzzuInput?.dir(null)); await sleep(300);
-    await page.evaluate(() => window.__rpgzzuInput?.action()); await sleep(1000);
+    await page.evaluate(() => window.__oprnInput?.dir("up")); await sleep(130);
+    await page.evaluate(() => window.__oprnInput?.dir(null)); await sleep(300);
+    await page.evaluate(() => window.__oprnInput?.action()); await sleep(1000);
     let ok = await realDialogue();
     if (!ok) { await page.keyboard.press("Space"); await sleep(900); ok = await realDialogue(); }
     console.log("dialogue:", eventId, ok);
@@ -152,7 +152,7 @@ function makeHelpers(page) {
     await page.keyboard.down("ArrowRight"); await sleep(520); await h.shot("103-transfer-fade");
     await sleep(1200); await page.keyboard.up("ArrowRight"); await sleep(1300);
     await h.shot("104-forest-arrival");
-    console.log("map:", await page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId));
+    console.log("map:", await page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId));
     await page.context().close();
   }
 

@@ -92,7 +92,7 @@ describe("event editor modal close draft cleanup", () => {
     seedOpenEventEditor();
     const node = modal();
     let attachedDuringClose = false;
-    node.addEventListener("rpgzzu:event-editor-close", () => {
+    node.addEventListener("oprn:event-editor-close", () => {
       attachedDuringClose = document.querySelector('[data-testid="event-editor-modal"]') === node;
     });
 

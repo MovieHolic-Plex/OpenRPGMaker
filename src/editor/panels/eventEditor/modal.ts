@@ -31,7 +31,7 @@ import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 import { toast } from "@/util/toast";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
-const EVENT_EDITOR_CLOSE_EVENT = "rpgzzu:event-editor-close";
+const EVENT_EDITOR_CLOSE_EVENT = "oprn:event-editor-close";
 const EVENT_EDITOR_CHECKPOINT_MS = 1500;
 
 type OpenEventEditorRequest = {

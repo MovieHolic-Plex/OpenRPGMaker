@@ -1,19 +1,19 @@
 /* Shared DB tab chrome: empty lists, list actions, intro banners, tab underline family. */
 @media (min-width: 800px) {
   /* Empty list panes still reserve a real list region (crops/characters gold gap). */
-  .database-modal-body .rm2k3-record-list-pane .db-list {
+  .database-modal-body .oprn-record-list-pane .db-list {
     min-height: 220px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list:empty,
-  .database-modal-body .rm2k3-record-list-pane .db-list:not(:has(.db-list-row)) {
+  .database-modal-body .oprn-record-list-pane .db-list:empty,
+  .database-modal-body .oprn-record-list-pane .db-list:not(:has(.db-list-row)) {
     background: var(--bg-inset, rgba(42, 37, 33, 0.08));
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
   }
 
   /* List action toolbar sits at bottom of list pane — match actors density. */
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar {
+  .database-modal-body .oprn-record-list-pane .db-toolbar {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
@@ -21,8 +21,8 @@
     margin-top: 6px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar .db-toolbar-button,
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn {
+  .database-modal-body .oprn-record-list-pane .db-toolbar .db-toolbar-button,
+  .database-modal-body .oprn-record-list-pane .db-toolbar .btn {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
@@ -32,15 +32,15 @@
     padding: 4px 10px;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-list-footer,
-  .database-modal-body .rm2k3-record-list-pane .rm2k3-record-count {
+  .database-modal-body .oprn-record-list-pane .db-list-footer,
+  .database-modal-body .oprn-record-list-pane .oprn-record-count {
     color: var(--text-2, var(--text-primary));
     font: 400 12px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin-top: 4px;
   }
 
   /* Detail empty state card */
-  .database-modal-body .rm2k3-record-detail-pane > .db-detail-form:only-child {
+  .database-modal-body .oprn-record-detail-pane > .db-detail-form:only-child {
     align-content: start;
     background: var(--bg-inset, rgba(42, 37, 33, 0.10));
     border: 1px solid var(--border-subtle);
@@ -64,9 +64,9 @@
   }
 
   /* Crops / characters / monster-species: same 2-col workspace as core records */
-  .database-modal-body .rm2k3-record-crops,
-  .database-modal-body .rm2k3-record-characters,
-  .database-modal-body .rm2k3-record-monster-species {
+  .database-modal-body .oprn-record-crops,
+  .database-modal-body .oprn-record-characters,
+  .database-modal-body .oprn-record-monster-species {
     display: grid;
     gap: 12px;
     grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
@@ -74,12 +74,12 @@
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-crops .rm2k3-record-list-pane,
-  .database-modal-body .rm2k3-record-characters .rm2k3-record-list-pane,
-  .database-modal-body .rm2k3-record-monster-species .rm2k3-record-list-pane,
-  .database-modal-body .rm2k3-record-crops .rm2k3-record-detail-pane,
-  .database-modal-body .rm2k3-record-characters .rm2k3-record-detail-pane,
-  .database-modal-body .rm2k3-record-monster-species .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-crops .oprn-record-list-pane,
+  .database-modal-body .oprn-record-characters .oprn-record-list-pane,
+  .database-modal-body .oprn-record-monster-species .oprn-record-list-pane,
+  .database-modal-body .oprn-record-crops .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-characters .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-monster-species .oprn-record-detail-pane {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
@@ -89,8 +89,8 @@
   }
 
   /* Characters intro sits above workspace — fill remaining body height */
-  .database-modal-body .db-body:has(.rm2k3-record-characters),
-  .database-modal-body .db-body:has(.rm2k3-record-monster-species) {
+  .database-modal-body .db-body:has(.oprn-record-characters),
+  .database-modal-body .db-body:has(.oprn-record-monster-species) {
     display: grid;
     gap: 8px;
     grid-template-rows: auto minmax(0, 1fr);
@@ -98,16 +98,16 @@
     min-height: 0;
   }
 
-  .database-modal-body .db-body:has(.rm2k3-record-characters) > .rm2k3-record-workspace,
-  .database-modal-body .db-body:has(.rm2k3-record-monster-species) > .rm2k3-record-workspace,
-  .database-modal-body .db-body:has(.rm2k3-record-crops) > .rm2k3-record-workspace {
+  .database-modal-body .db-body:has(.oprn-record-characters) > .oprn-record-workspace,
+  .database-modal-body .db-body:has(.oprn-record-monster-species) > .oprn-record-workspace,
+  .database-modal-body .db-body:has(.oprn-record-crops) > .oprn-record-workspace {
     min-height: 0;
   }
 
   /* Prefer underline-ish active tab for generic workspace family (when enemies/troops overrides absent) */
-  .database-modal-body:has(.rm2k3-record-crops) .db-tab.active,
-  .database-modal-body:has(.rm2k3-record-characters) .db-tab.active,
-  .database-modal-body:has(.rm2k3-record-monster-species) .db-tab.active {
+  .database-modal-body:has(.oprn-record-crops) .db-tab.active,
+  .database-modal-body:has(.oprn-record-characters) .db-tab.active,
+  .database-modal-body:has(.oprn-record-monster-species) .db-tab.active {
     background: linear-gradient(var(--accent), var(--accent));
     border-bottom-color: var(--accent-border);
     color: var(--text-1);

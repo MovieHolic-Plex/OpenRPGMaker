@@ -152,7 +152,7 @@ export type AuditEntry =
   | { kind: "status"; text: string; at?: string };
 
 // 하네스 스냅샷 — 오케스트레이션 주입을 포함한 세션 원본 메시지와 감사 로그를 한 번에 관측한다.
-// 🔬 하네스 뷰어와 window.__rpgzzuAiHarness(헤드리스 디버깅)가 소비한다.
+// 🔬 하네스 뷰어와 window.__oprnAiHarness(헤드리스 디버깅)가 소비한다.
 export interface HarnessSnapshot {
   readonly model: string;
   readonly liteModel?: string;

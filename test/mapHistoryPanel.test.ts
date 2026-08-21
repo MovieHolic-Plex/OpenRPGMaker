@@ -23,7 +23,7 @@ const historyMock = vi.hoisted(() => ({
 }));
 
 vi.mock("@/editor/mapEditHistory", () => ({
-  MAP_EDIT_HISTORY_EVENT: "rpgzzu:map-edit-history-change",
+  MAP_EDIT_HISTORY_EVENT: "oprn:map-edit-history-change",
   getMapEditHistoryEntries: () => historyMock.entries,
   getMapEditHistoryState: () => historyMock.state,
   undoMapEdit: historyMock.undoMapEdit,

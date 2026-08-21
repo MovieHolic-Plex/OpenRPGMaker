@@ -12,15 +12,15 @@ async function openApp(page: Page, mode = "standard", w = 1440, h = 1000) {
   await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
   await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
   const skip = page.getByText("건너뛰기", { exact: true }).first();
   if (await skip.isVisible().catch(() => false)) { await skip.click(); await page.waitForTimeout(300); }
 }
 
 async function dblclickTile(page: Page, tx: number, ty: number) {
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditWorldToClient === "function", undefined, { timeout: 15_000 });
-  const pt = await page.evaluate(([x, y]) => (window as any).__rpgzzuEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
+  await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 15_000 });
+  const pt = await page.evaluate(([x, y]) => (window as any).__oprnEditWorldToClient(x, y), [tx * TILE + 8, ty * TILE + 8]);
   await page.mouse.click(pt.x, pt.y, { clickCount: 2, delay: 60 });
   await page.waitForTimeout(1200);
 }
@@ -44,7 +44,7 @@ test("V1. xy input shows two digits + clamps out-of-range", async ({ page }) => 
   await page.waitForTimeout(600);
   const xv = await x.inputValue();
   const stored = await page.evaluate(() => {
-    const s = (window as any).__rpgzzuEditorStore;
+    const s = (window as any).__oprnEditorStore;
     const p = s.getCurrent();
     const entry = Object.entries(p.maps).find(([, m]: any) => m.events?.some((e: any) => e.id)) as any;
     const ev = Object.values(p.maps).flatMap((m: any) => m.events).find((e: any) => e.y === 15 || e.x === 999 || e.x === 29);
@@ -75,7 +75,7 @@ test("V2. dirty escape shows guard dialog; discard restores", async ({ page }) =
   await discard.click();
   await page.waitForTimeout(700);
   const st = await page.evaluate(() => {
-    const s = (window as any).__rpgzzuEditorStore;
+    const s = (window as any).__oprnEditorStore;
     const ev = Object.values(s.getCurrent().maps).flatMap((m: any) => m.events).find((e: any) => e.x === 17 && e.y === 16);
     return { name: ev?.pages?.[0]?.name, draft: ev?.draft?.kind ?? null, modal: !!document.querySelector("[data-testid='event-editor-modal']") };
   });
@@ -119,7 +119,7 @@ test("V4. new event opens pristine; untouched close is silent", async ({ page })
   const st = await page.evaluate(() => ({
     modal: !!document.querySelector("[data-testid='event-editor-modal']"),
     dialog: !!document.querySelector(".app-modal-overlay"),
-    evCount: Object.values(((window as any).__rpgzzuEditorStore).getCurrent().maps).reduce((n: number, m: any) => n + m.events.length, 0),
+    evCount: Object.values(((window as any).__oprnEditorStore).getCurrent().maps).reduce((n: number, m: any) => n + m.events.length, 0),
   }));
   console.log("NEW_CLOSE " + JSON.stringify(st));
   expect(st.modal).toBe(false);
