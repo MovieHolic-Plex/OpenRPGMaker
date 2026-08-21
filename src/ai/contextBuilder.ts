@@ -59,7 +59,7 @@ const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
 ].join("\n");
 
 const INTRO = [
-  "당신은 브라우저 기반 2D RPG 에디터(RPG ZZU)의 개발 어시스턴트입니다.",
+  "당신은 브라우저 기반 2D RPG 에디터의 개발 어시스턴트입니다.",
   "맵·이벤트·데이터베이스(아이템/장비/스킬/클래스/상태/적/액터/트룹/커먼이벤트)·퀘스트를 '툴 호출'로 편집합니다.",
   "",
   AGENT_UX_POLICY_LINES,

@@ -1,3 +1,4 @@
+import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, serialize } from "./io";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { projectWithoutEventDrafts } from "./eventDrafts";
@@ -9,7 +10,7 @@ import type { EditorIdentity } from "./editorIdentity";
 import type { GameMap, MapTreeNode, Project, TilesetDef } from "./types";
 
 const SUPABASE_SCHEMA = "rpg_zzu";
-const DEFAULT_PROJECT_TITLE = "RPG Zzu";
+const DEFAULT_PROJECT_TITLE = PRODUCT_BRAND;
 export { DEFAULT_SUPABASE_PROJECT_ID } from "./supabaseProjectConfig";
 
 type SupabaseProjectRow = {

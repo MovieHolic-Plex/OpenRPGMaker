@@ -4,6 +4,7 @@
 // 타일 인덱스는 scripts/import-scarloxy-pack.py 가 만든 칩셋 시트 기준이며
 // (src/assets/scarloxyPackManifest.json 블록 배치), 인덱스 상수에 블록 이름을 병기한다.
 
+import { PRODUCT_BRAND } from "@/brand";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeEnemyRecord, normalizeSkillRecord, normalizeTroopRecord } from "@/project/databaseRecordModel";
@@ -83,7 +84,7 @@ export function createScarloxyDemoMaps(): readonly GameMap[] {
 }
 
 export function configureScarloxyDemoProject(project: Project): void {
-  project.meta = { ...project.meta, title: "Scarloxy 몬스터 초원 데모", author: "RPG ZZU" };
+  project.meta = { ...project.meta, title: "Scarloxy 몬스터 초원 데모", author: PRODUCT_BRAND };
   const titleScreen = project.system.titleScreen;
   if (titleScreen) {
     project.system = {

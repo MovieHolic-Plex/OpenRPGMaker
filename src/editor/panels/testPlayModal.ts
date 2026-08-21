@@ -1,4 +1,5 @@
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
+import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
@@ -25,12 +26,12 @@ let battleSceneController: BattleDomController | null = null;
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
-  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — "RPG 쯔꾸르" 고정 문구는
+  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
   const title = startOverride
     ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
-    : `테스트 플레이 - ${projectTitle || "RPG 쯔꾸르"}`;
+    : `테스트 플레이 - ${projectTitle || PRODUCT_BRAND}`;
   const body = openTestPlayShell(title);
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {

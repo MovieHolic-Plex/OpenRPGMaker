@@ -256,7 +256,7 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
   one(416, "부서진 벽돌 더미", "decoration", "solid", ["brick", "rubble", "벽돌", "잔해", "부서진", "폐허"]),
   one(417, "깨진 유리 조각", "decoration", "passable", ["broken glass", "깨진 유리", "파편", "잔해"]),
   // 2026-07-12 재확정(사용자 판정 + ×20 재판독): 진열장이 아니라 1칸짜리 계단 4종.
-  // 절벽/단차/지하 입구에 한 칸씩 놓는 전형적인 쯔꾸르식 계단 타일.
+  // 절벽/단차/지하 입구에 한 칸씩 놓는 전형적인 탑다운 계단 타일.
   one(444, "대각 계단(오르막·우상향)", "stairs", "passable", ["stairs", "계단", "대각", "오르막", "단차"]),
   one(445, "대각 계단(내리막·우하향)", "stairs", "passable", ["stairs", "계단", "대각", "내리막", "단차"]),
   one(474, "어둠 하강 계단(좌)", "stairs", "passable", ["stairs", "계단", "지하", "하강", "내려가기"]),

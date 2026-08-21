@@ -8,6 +8,7 @@
 // 알려진 엔진 제약: 잡은 몬스터가 전투에 직접 나서지는 않는다(전투는 트레이너가 수행).
 // 지형/이벤트 헬퍼는 scarloxyDemoGame.ts 의 것을 재사용한다.
 
+import { PRODUCT_BRAND } from "@/brand";
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
@@ -66,7 +67,7 @@ export function createScarloxyPokemonDemoMaps(): readonly GameMap[] {
 }
 
 export function configureScarloxyPokemonDemoProject(project: Project): void {
-  project.meta = { ...project.meta, title: "Scarloxy 포켓몬풍 데모", author: "RPG ZZU" };
+  project.meta = { ...project.meta, title: "Scarloxy 포켓몬풍 데모", author: PRODUCT_BRAND };
   const titleScreen = project.system.titleScreen;
   project.system = {
     ...project.system,

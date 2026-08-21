@@ -12,8 +12,14 @@ test("Given PWA opt-in When the app loads Then it exposes an installable manifes
   const manifestResponse = await page.request.get("/manifest.webmanifest");
   expect(manifestResponse.ok()).toBe(true);
   const manifest: unknown = await manifestResponse.json();
-  expect(stringField(manifest, "name")).toBe("RPG ZZU");
-  expect(stringField(manifest, "short_name")).toBe("RPG ZZU");
+  // 이름 리터럴을 못박지 않는다 — 브랜드는 바뀔 수 있고, 계약은 "비어 있지 않다 +
+  // 상표 인접 표현이 없다" 다. (탈-쯔구르 라운드 2026-08-21)
+  const forbidden = /rpg\s*maker|rm2k|tkool|ツクール|쯔꾸르|쯔구르|RPG\s*만들기/i;
+  expect(stringField(manifest, "name")).not.toBe("");
+  expect(stringField(manifest, "name")).not.toMatch(forbidden);
+  expect(stringField(manifest, "short_name")).not.toBe("");
+  expect(stringField(manifest, "short_name")).not.toMatch(forbidden);
+  expect(stringField(manifest, "description")).not.toMatch(forbidden);
   expect(stringField(manifest, "start_url")).toBe("/");
   expect(stringField(manifest, "display")).toBe("standalone");
   expect(iconList(manifest)).toEqual(

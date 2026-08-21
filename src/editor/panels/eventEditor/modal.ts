@@ -1,3 +1,4 @@
+import { PRODUCT_BRAND } from "@/brand";
 import { editorState } from "@/editor/editorState";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { handleHistoryHotkey } from "@/editor/hotkeys";
@@ -268,7 +269,7 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
 }
 
 function eventEditorTitleParts(mapId: MapId, eventId: string): { readonly eyebrow: string; readonly title: string } {
-  return { eyebrow: "RPG ZZU ENGINE IDE  ·  이벤트 에디터", title: eventEditorTitle(mapId, eventId) };
+  return { eyebrow: `${PRODUCT_BRAND}  ·  이벤트 에디터`, title: eventEditorTitle(mapId, eventId) };
 }
 
 function eventEditorTitle(mapId: MapId, eventId: string): string {

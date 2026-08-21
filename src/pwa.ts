@@ -9,7 +9,7 @@ export function registerPwa(): void {
     "load",
     () => {
       void navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: "/" }).catch((error: unknown) => {
-        console.warn("RPG ZZU PWA service worker registration failed", error);
+        console.warn("PWA service worker registration failed", error);
       });
     },
     { once: true },

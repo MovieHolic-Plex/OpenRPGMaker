@@ -17,6 +17,7 @@
 // generated-enemy-slime-01 을 가리켜(리치·메두사·키메라·발키리…) 이름만 다르고 전부
 // 슬라임으로 보인다. 비주얼 중심 게임에서는 치명적이라 25종을 **서로 다른 스프라이트**로
 // 새로 정의했다(디스크의 138개 monster-*.png 중에서 골랐다).
+import { PRODUCT_BRAND } from "@/brand";
 import type { ActorParameterCurves, EnemyRecord, ItemRecord, Project, TroopRecord } from "@/project/types";
 import { SCHEMA_VERSION } from "@/project/types";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
@@ -249,7 +250,7 @@ export function createSkyStairProject(): Project {
 
   const project: Project = {
     version: SCHEMA_VERSION,
-    meta: { title: SKY_TITLE, author: "RPG ZZU", terms: defaultTerms() },
+    meta: { title: SKY_TITLE, author: PRODUCT_BRAND, terms: defaultTerms() },
     assets: defaultAssetSet(),
     resourceProfiles: defaultResourceProfiles(),
     tilesets: defaultTilesets(),

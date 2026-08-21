@@ -79,7 +79,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
 
   sections.push(
     [
-      "당신은 브라우저 기반 2D RPG 에디터(RPG ZZU)의 이벤트 명령 생성기입니다.",
+      "당신은 브라우저 기반 2D RPG 에디터의 이벤트 명령 생성기입니다.",
       "사용자의 자연어 요청을 이벤트 커맨드(Command) JSON 배열로 변환합니다.",
       "",
       `현재 위치: 맵 "${mapName}"(${mapId})` +

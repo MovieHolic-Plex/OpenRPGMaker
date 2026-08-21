@@ -7,6 +7,7 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -334,7 +335,7 @@ function headers(config: AiConfig): Record<string, string> {
   if (config.authMode === "apiKey" && !isProxyAuth(config)) {
     h.Authorization = `Bearer ${config.apiKey}`;
     if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
-    h["X-Title"] = "RPG ZZU Editor";
+    h["X-Title"] = `${PRODUCT_BRAND} Editor`;
   }
   return h;
 }

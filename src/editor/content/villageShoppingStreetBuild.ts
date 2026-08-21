@@ -90,7 +90,7 @@ export function buildVillageShoppingStreetProject(options: {
   // 상점 itemIds 검증용 — empty 툴 프로젝트는 items를 비우므로 기본 DB 복원
   project.database = defaultDatabase();
   project.meta = { ...project.meta, title: VILLAGE_SHOPPING_STREET_MAP_NAME };
-  // 타이틀 배경: 쯔꾸르풍 필드 타이틀(rpg-zzu-title-field)
+  // 타이틀 배경: 도트 필드 타이틀(rpg-zzu-title-field)
   applyDefaultTitleScreen(project, VILLAGE_SHOPPING_STREET_MAP_NAME);
   ensureTilesetHarnesses(project);
 

@@ -3,8 +3,11 @@
 // - 용어 매핑: 모드명 beginner|standard|expert ↔ uiDensity DOM 값 beginner|expert|play|shared.
 //   레거시 데이터 값 "basic"은 폐기됨(심볼/클래스명 BASIC_ZOOM_LEVELS, basic-rail-*, is-basic-chrome은 의도적으로 유지).
 
+import { PRODUCT_BRAND } from "@/brand";
+
 export const EDITOR_UI_MODE_STORAGE_KEY = "rpg-zzu:editor-ui-mode";
-export const EDITOR_PRODUCT_BRAND = "AI RPG MAKER";
+/** 표시 브랜드는 src/brand.ts 가 단일 원천 — 여기서 문자열을 다시 적지 않는다. */
+export const EDITOR_PRODUCT_BRAND = PRODUCT_BRAND;
 export type EditorUiMode = "beginner" | "standard" | "expert";
 export const DEFAULT_EDITOR_UI_MODE: EditorUiMode = "standard";
 

@@ -11,6 +11,7 @@ import { setAiConfigProvider } from "@/project/editorIdentity";
 import { setAiActivityRecorder } from "@/project/tileMetadataDb";
 import { loadAiConfig } from "@/ai/llmClient";
 import { recordAiActivity } from "@/ai/activityLog";
+import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
@@ -203,7 +204,7 @@ export function isModeShellMounted(): boolean {
 
 function renderDbRequiredScreen(_error: unknown): void {
   if (!elements) return;
-  elements.topbar.textContent = "AI RPG MAKER";
+  elements.topbar.textContent = PRODUCT_BRAND;
   while (elements.main.firstChild) {
     elements.main.removeChild(elements.main.firstChild);
   }
@@ -217,7 +218,7 @@ function renderDbRequiredScreen(_error: unknown): void {
   const heroImg = document.createElement("img");
   heroImg.className = "db-required-hero-image";
   heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
-  heroImg.alt = "AI RPG Maker";
+  heroImg.alt = PRODUCT_BRAND;
   heroImg.decoding = "async";
   // 생성 히어로 로드 실패 시 기존 타이틀 아트로 폴백
   heroImg.addEventListener("error", () => {
@@ -231,7 +232,7 @@ function renderDbRequiredScreen(_error: unknown): void {
   copy.className = "db-required-copy";
   const kicker = document.createElement("p");
   kicker.className = "db-required-kicker";
-  kicker.textContent = "AI RPG MAKER";
+  kicker.textContent = PRODUCT_BRAND;
   const title = document.createElement("h1");
   title.textContent = "세계를 설계하고, 바로 플레이하세요";
   const body = document.createElement("p");
@@ -270,7 +271,7 @@ function openRequiredDbSettings(): void {
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
 function renderLoadFailureScreen(_error: unknown): void {
   if (!elements) return;
-  elements.topbar.textContent = "RPG ZZU - 작업을 불러올 수 없음";
+  elements.topbar.textContent = `${PRODUCT_BRAND} - 작업을 불러올 수 없음`;
   while (elements.main.firstChild) {
     elements.main.removeChild(elements.main.firstChild);
   }
@@ -284,7 +285,7 @@ function renderLoadFailureScreen(_error: unknown): void {
   const heroImg = document.createElement("img");
   heroImg.className = "db-required-hero-image";
   heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
-  heroImg.alt = "AI RPG Maker";
+  heroImg.alt = PRODUCT_BRAND;
   heroImg.decoding = "async";
   heroImg.addEventListener("error", () => {
     if (heroImg.dataset.fallback === "1") return;
@@ -297,7 +298,7 @@ function renderLoadFailureScreen(_error: unknown): void {
   copy.className = "db-required-copy";
   const kicker = document.createElement("p");
   kicker.className = "db-required-kicker";
-  kicker.textContent = "RPG ZZU";
+  kicker.textContent = PRODUCT_BRAND;
   const title = document.createElement("h1");
   title.textContent = "저장된 작업을 바로 열 수 없습니다";
   const body = document.createElement("p");

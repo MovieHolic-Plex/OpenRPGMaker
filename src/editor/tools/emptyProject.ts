@@ -3,6 +3,7 @@
 // 유효한 에셋/타일셋/액터·클래스·스킬·장비는 유지하되, 맵/아이템/적/트룹은 비운다.
 // (아이템/적/트룹은 upsert 툴로 채워야 카운트가 정확히 맞는다.)
 
+import { PRODUCT_BRAND } from "@/brand";
 import { SCHEMA_VERSION } from "@/project/types";
 import type { Project } from "@/project/types";
 import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "@/project/defaults/defaultAssets";
@@ -24,7 +25,7 @@ export function createEmptyToolProject(title = "빈 프로젝트"): Project {
 
   const project: Project = {
     version: SCHEMA_VERSION,
-    meta: { title, author: "RPG ZZU", terms: defaultTerms() },
+    meta: { title, author: PRODUCT_BRAND, terms: defaultTerms() },
     assets: defaultAssetSet(),
     resourceProfiles: defaultResourceProfiles(),
     tilesets: defaultTilesets(),

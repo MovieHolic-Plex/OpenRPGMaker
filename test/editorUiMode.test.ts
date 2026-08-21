@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { PRODUCT_BRAND } from "@/brand";
 import {
   DEFAULT_EDITOR_UI_MODE,
   EDITOR_PRODUCT_BRAND,
@@ -160,8 +161,16 @@ describe("editorUiMode", () => {
     }
   });
 
-  it("uses AI RPG MAKER as the product brand string", () => {
-    expect(EDITOR_PRODUCT_BRAND).toBe("AI RPG MAKER");
+  // 탈-쯔구르 라운드(2026-08-21): 예전 계약은 "AI RPG MAKER" 리터럴을 못박고 있었다 —
+  // 즉 침해 문자열을 테스트가 지키고 있었다. 이제 브랜드는 src/brand.ts 단일 원천이고,
+  // 계약은 "그 원천에서 온다 + 금지어가 없다" 두 가지다.
+  it("derives the product brand from the single brand source", () => {
+    expect(EDITOR_PRODUCT_BRAND).toBe(PRODUCT_BRAND);
+    expect(EDITOR_PRODUCT_BRAND.trim().length).toBeGreaterThan(0);
+  });
+
+  it("keeps trademark-adjacent wording out of the product brand", () => {
+    expect(EDITOR_PRODUCT_BRAND).not.toMatch(/rpg\s*maker|rm2k|tkool|ツクール|쯔꾸르|쯔구르|RPG\s*만들기/i);
   });
 
   it("keeps event tool id available in shared palette tool list (basic does not gate events)", async () => {

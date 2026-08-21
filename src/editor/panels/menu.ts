@@ -1,4 +1,5 @@
 import { getMode, toggleMode } from "@/app/mode";
+import { PRODUCT_TAGLINE } from "@/brand";
 import { addMap, duplicateMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -484,7 +485,7 @@ function menuCommands(
     case "help":
       return [
         item("단축키 · 도움말", "menu-help-shortcuts", () => openHelpModal()),
-        item("정보", "menu-help-about", () => toast("RPG 쯔꾸르 - RM2000/2003 스타일 웹 에디터", "ok")),
+        item("정보", "menu-help-about", () => toast(`${EDITOR_PRODUCT_BRAND} — ${PRODUCT_TAGLINE}`, "ok")),
       ];
   }
 }
