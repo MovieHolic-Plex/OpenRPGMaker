@@ -36,7 +36,7 @@ import {
 import { CHIPSET_ANIMATION_STRIPS } from "../src/project/defaults/chipsetAnimation.ts";
 import { isTransparentChipsetTile, TERRAIN_TAG } from "../src/project/defaults/chipsetMapping.ts";
 import { TILE } from "../src/project/defaults/constants.ts";
-import { approvedVocabulary } from "../src/project/tileVocabulary.ts";
+import { approvedVocabulary, resolveMaterialByLabel } from "../src/project/tileVocabulary.ts";
 
 // ── 기하 ────────────────────────────────────────────────────────────────────
 const SHEET = RESOURCE_SLICING.chipset;
@@ -299,6 +299,45 @@ const treeRows = [
   { top: 263, bottom: 293, name: "활엽수 우열" },
 ];
 
+// ── 섹션: material 라벨 해석 실측 ───────────────────────────────────────────
+// LLM이 실제로 넣는 문자열을 그대로 resolveMaterialByLabel에 통과시켜 결과를 그림으로 보여준다.
+const MATERIAL_PROBES: readonly { readonly query: string; readonly note: string; readonly opts?: Parameters<typeof resolveMaterialByLabel>[2] }[] = [
+  { query: "흙길 오토타일", note: "오토타일 그룹 정확 일치 — fill_region/lay_path" , opts: { requireAutotileGroup: true } },
+  { query: "물", note: "애니메이션 수면 — 그룹 전개" },
+  { query: "침엽수", note: "2칸 세로 원자 — place_props" },
+  { query: "나무 상자", note: "낱개 소품" },
+  { query: "탁자", note: "모호 질의 → 동의어 확장" },
+  { query: "마을 소품", note: "가방(bag) 라벨 → 거절" },
+  { query: "harness-combined-town-fence", note: "그룹 id 직접 입력 → 거절" },
+];
+
+function materialProbeRow(probe: (typeof MATERIAL_PROBES)[number]): string {
+  const result = resolveMaterialByLabel(tileset, probe.query, probe.opts ?? {});
+  if (result.status === "missing") {
+    const suggestions = result.suggestions.slice(0, 4);
+    return `<tr class="reject">
+      <td><code>"${esc(probe.query)}"</code><br><span class="faint" style="font-size:11.5px">${esc(probe.note)}</span></td>
+      <td><span class="pill hard">거절 missing</span></td>
+      <td>
+        <p style="margin:0 0 6px;font-size:12.5px;color:#ffcbcb">${esc(result.message)}</p>
+        ${suggestions.length ? `<div class="dim" style="font-size:11.5px">대안 제시:</div>${chips(suggestions.map((s) => s.tileId), 2, (tile) => String(tile))}` : ""}
+      </td>
+    </tr>`;
+  }
+  const tiles = result.kind === "group" ? result.group.tileIds.slice(0, 12) : [result.tileId];
+  return `<tr>
+    <td><code>"${esc(probe.query)}"</code><br><span class="faint" style="font-size:11.5px">${esc(probe.note)}</span></td>
+    <td>
+      <span class="pill ${result.status === "approved" ? "soft" : ""}">${esc(result.status)}</span>
+      <span class="pill">${esc(result.kind)}</span>
+      ${result.kind === "group" ? `<br><span class="faint" style="font-size:11px">${esc(result.group.name)}</span>` : ""}
+    </td>
+    <td>${chips(tiles, 2, String)}${result.kind === "group" && result.group.tileIds.length > 12 ? `<span class="faint" style="font-size:11px">+${result.group.tileIds.length - 12}칸</span>` : ""}</td>
+  </tr>`;
+}
+
+const materialProbeRows = MATERIAL_PROBES.map(materialProbeRow).join("");
+
 const semanticRoleCounts = new Map<string, number>();
 for (const entry of COMBINED_TOWN_TILE_SEMANTICS) {
   semanticRoleCounts.set(entry.role, (semanticRoleCounts.get(entry.role) ?? 0) + 1);
@@ -369,9 +408,10 @@ const html = `<!doctype html>
   .pill.hard{background:#ff6b6b26;border-color:#ff6b6b55;color:#ffb3b3}
   .pill.soft{background:#5ddba022;border-color:#5ddba055;color:#a6e9c9}
 
-  .gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+  .gcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px;
+    justify-content:start;align-items:start}
   .gcard{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--role);
-    border-radius:10px;padding:14px 16px 16px}
+    border-radius:10px;padding:14px 16px 16px;max-width:560px}
   .gcard header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:8px}
   .gcard .gid{font-size:10.5px;color:var(--faint);background:none;border:0;padding:0}
   .gcard .badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
@@ -701,6 +741,17 @@ const html = `<!doctype html>
     <div class="step"><div class="n">⑥ 보고</div><h5>show_tiles / show_tile_grid</h5>
       <p>번호만 말하지 않는다. 타일 스와치(6× 확대 + 번호 캡션)와 영역 합성 이미지를 채팅에 렌더해 감독이 눈으로 검수한다.</p></div>
   </div>
+
+  <h3>실측 — LLM이 넣는 문자열을 실제로 통과시켜 봤다</h3>
+  <p class="dim" style="font-size:13px;margin:0 0 6px">
+    아래 표는 <code>resolveMaterialByLabel(defaultTileset(), query)</code>를 이 보고서 생성 시점에
+    실제로 호출한 결과다 — 손으로 적은 예시가 아니다. 승인되면 어떤 타일들로 전개되는지,
+    거절되면 어떤 메시지와 대안이 모델에게 되돌아가는지 그대로 보인다.
+  </p>
+  <table>
+    <thead><tr><th style="width:26%">material 질의</th><th style="width:16%">판정</th><th>해석 결과</th></tr></thead>
+    <tbody>${materialProbeRows}</tbody>
+  </table>
 
   <h3>매 턴 주입되는 하네스 규칙 (<code>combinedTownHarnessPrompt()</code>)</h3>
   <p class="dim" style="font-size:13px;margin:0 0 10px">
