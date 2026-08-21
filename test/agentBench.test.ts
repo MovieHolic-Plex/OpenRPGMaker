@@ -9,6 +9,7 @@ import { describe, expect, it } from "vitest";
 import { processMetrics } from "@/benchmark/agent/claudeResult";
 import { measureComposition } from "@/benchmark/agent/composition";
 import { detectVillage } from "@/benchmark/agent/detect";
+import { collectDefects } from "@/benchmark/agent/defects";
 import { scaleBaseline, scoreAgentMap } from "@/benchmark/agent/scoring";
 import { AGENT_SPEC_VERSION, SUBMISSION_PATH, buildAgentInstruction, parseSubmission } from "@/benchmark/agent/spec";
 import { buildTownGroundTruth } from "@/benchmark/town/groundTruth";
@@ -31,11 +32,21 @@ function score(lower: readonly number[], upper: readonly number[]) {
   return scoreAgentMap({ map: { width: reference.width, height: reference.height, lower, upper }, groundTruth });
 }
 
-describe("하네스 정본이 기준점 1.000 / 1.000", () => {
-  it("정본 마을은 quality 1.000, scale 1.000", () => {
+describe("하네스 정본이 기준점 — 결함 0", () => {
+  it("정본 마을은 결함 0, 통과율 1.000, scale 1.000", () => {
     const scored = score(reference.lower, reference.upper);
+    expect(scored.defects).toBe(0);
+    expect(scored.defectsPerThousand).toBe(0);
     expect(scored.quality).toBeCloseTo(1, 6);
     expect(scored.scale).toBeCloseTo(1, 6);
+    // 결정 수가 0 이면 "결함 0" 은 아무 의미가 없다 — 실제로 판정이 일어났는지 확인한다.
+    expect(scored.decisions).toBeGreaterThan(100);
+  });
+
+  it("검사마다 결함 0 이다(어느 검사도 정본을 벌하지 않는다)", () => {
+    for (const item of collectDefects({ map: referenceMap, groundTruth }).items) {
+      expect(item.defects, `${item.label} 이 정본을 벌한다`).toBe(0);
+    }
   });
 
   it("규모 기준선은 손으로 적지 않고 정본 탐지에서 뽑는다", () => {
@@ -58,24 +69,40 @@ describe("하네스 정본이 기준점 1.000 / 1.000", () => {
 });
 
 describe("아무것도 안 한 답과 들어갈 수 없는 마을은 0점", () => {
-  it("빈 맵은 0", () => {
+  it("빈 맵은 채점하지 않는다(결정 0)", () => {
     const scored = score(blank(), blank());
     expect(scored.quality).toBe(0);
     expect(scored.scale).toBe(0);
+    expect(scored.decisions).toBe(0);
   });
 
-  it("한 타일로 도배하면 0", () => {
+  it("한 타일로 도배하면 건물 단면이 전부 결함이다", () => {
     const flooded = new Array<number>(reference.width * reference.height).fill(306);
-    expect(score(flooded, blank()).quality).toBe(0);
+    const scored = score(flooded, blank());
+    expect(scored.detail.buildingSectionDefects).toBe(scored.detail.buildingSectionDecisions);
+    expect(scored.defectsPerThousand).toBeGreaterThan(500);
   });
 
-  it("문 없는 집만 세운 답은 크게 깎인다 — 분모 0 을 만점으로 두면 안 된다", () => {
+  it("문 없는 집은 건물마다 결함 하나로 센다", () => {
     // 문 두 칸만 지운 정본. 나머지는 전부 그대로다.
     const noDoors = reference.lower.map((tile) => (tile === 116 || tile === 146 ? EMPTY_CELL : tile));
     const scored = score(noDoors, reference.upper);
     expect(scored.detail.doors).toBe(0);
-    // 문 관련 항목 3개가 0 이 되므로 절반을 넘길 수 없다 — 들어갈 수 없는 마을이다.
-    expect(scored.quality).toBeLessThanOrEqual(0.5);
+    expect(scored.detail.houseDoorDefects).toBe(3); // 집 3채 전부
+    expect(scored.defects).toBeGreaterThan(0);
+  });
+
+  it("적게·쉽게 만들어 만점을 받을 수 없다 — 분모가 결정 수다", () => {
+    // 이전 채점의 최악 허점: 분모를 모델이 골랐다. 하찮은 건물 3개로 네 항목이 만점이었다.
+    // 지금은 그 3개가 만드는 결정 수만큼만 기여하므로, 큰 결함이 밀도로 드러난다.
+    const small = blank();
+    const W = reference.width;
+    for (let y = 1; y <= 4; y += 1) for (let x = 2; x <= 6; x += 1) small[y * W + x] = 374; // 지붕만
+    small[5 * W + 4] = 116;
+    small[6 * W + 4] = 146;
+    const scored = score(small, blank());
+    expect(scored.decisions).toBeLessThan(60); // 적게 만들면 결정도 적다
+    expect(scored.defectsPerThousand).toBeGreaterThan(200); // 그리고 결함 밀도가 그대로 드러난다
   });
 
   it("지붕 타일로 채운 블록은 집이 아니다 — 벽 위에 지붕 검사", () => {
@@ -88,29 +115,47 @@ describe("아무것도 안 한 답과 들어갈 수 없는 마을은 0점", () =
     lower[5 * W + 4] = 116;
     lower[6 * W + 4] = 146;
     const scored = score(lower, blank());
-    expect(scored.detail.buildingGrammar).toBe(0);
-    expect(scored.quality).toBeLessThan(0.6);
+    expect(scored.detail.buildingSectionDefects).toBe(scored.detail.buildingSectionDecisions);
+    expect(scored.detail.buildingSectionDecisions).toBeGreaterThan(0);
   });
 
   it("정본은 벽 위에 지붕 검사를 통과한다(계열이 겹쳐도)", () => {
     // 404/405 는 라벨이 "지붕-벽 경계"라 벽 파생에도 들어간다. 계열을 겹친 채로
     // 판정하면 정본조차 실패한다(실측: 기준선 0.917).
-    expect(score(reference.lower, reference.upper).detail.buildingGrammar).toBe(1);
+    expect(score(reference.lower, reference.upper).detail.buildingSectionDefects).toBe(0);
   });
 
-  it("금지 타일을 쓰면 0 (감점 배수)", () => {
+  it("금지 타일은 칸마다 결함 하나다(절벽이 아니다)", () => {
+    // 이전 채점은 0/1 배수라 한 칸이 전체를 0.000 으로 만들었다 — 일한 항목 0.987 인
+    // 답과 아무것도 못 한 답이 같은 칸에 들어갔다.
     const banned = [...reference.lower];
     banned[0] = 441; // 바위(사용 금지) — 감독이 전역 밴한 타일
-    expect(score(banned, reference.upper).quality).toBe(0);
+    const scored = score(banned, reference.upper);
+    expect(scored.detail.bannedTilesDefects).toBe(1);
+    expect(scored.quality).toBeGreaterThan(0.9); // 나머지는 여전히 멀쩡하다
+    expect(scored.defects).toBe(1);
   });
 
-  it("길을 몸통 타일로만 깔면 오토타일 합법성이 떨어진다", () => {
+  it("길을 몸통 타일로만 깔면 오토타일 결함이 잡힌다", () => {
     const bodyOnly = reference.lower.map((tile) =>
       [391, 451, 420, 422, 390, 392, 450, 452, 360, 362].includes(tile) ? 421 : tile,
     );
     const scored = score(bodyOnly, reference.upper);
-    expect(scored.detail.roadAutotileLegality as number).toBeLessThan(0.6);
-    expect(scored.quality).toBeLessThan(1);
+    expect(scored.detail.roadAutotileDefects).toBeGreaterThan(0);
+    expect(scored.defects).toBeGreaterThan(0);
+  });
+
+  it("통과율이 아니라 결함 밀도가 상위를 가른다", () => {
+    // 실측 근거: opus 통과율 0.9974 vs sonnet 0.9907 은 무승부처럼 보이지만
+    // 결함은 5개 대 22개(3.6배)다. 밀도는 2.6 대 9.3 으로 그 차이를 보존한다.
+    const oneDefect = [...reference.lower];
+    oneDefect[0] = 441;
+    const a = score(oneDefect, reference.upper);
+    const many = [...reference.lower];
+    for (let i = 0; i < 10; i += 1) many[i] = 441;
+    const b = score(many, reference.upper);
+    expect(b.quality).toBeLessThan(a.quality);
+    expect(b.defectsPerThousand / a.defectsPerThousand).toBeGreaterThan(5);
   });
 });
 
@@ -250,7 +295,7 @@ describe("구성 지표는 quality 와 분리한다", () => {
     const composition = measureComposition(referenceMap);
     expect(composition.straightRunRatio).toBe(1);
     expect(composition.propDensity).toBe(0);
-    expect(score(reference.lower, reference.upper).quality).toBeCloseTo(1, 6);
+    expect(score(reference.lower, reference.upper).defects).toBe(0);
   });
 
   it("한 키트만 복붙하면 키트 다양성이 0 이다", () => {

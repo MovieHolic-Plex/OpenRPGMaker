@@ -1,45 +1,27 @@
 // benchmark/agent/scoring.ts
-// 코딩 에이전트가 만든 마을 맵을 채점한다 — 품질과 규모를 따로 낸다.
-//
-// 왜 종합 점수 하나로 합치지 않는가: "작지만 완벽한 마을"과 "크지만 엉망인 마을"은
-// 서로 다른 실패이고, 한 숫자로 합치면 그 둘이 같은 칸에 들어간다. 감독이 보고
-// 판단할 것은 두 숫자다 — quality(감사 통과율)와 scale(얼마나 만들었나).
+// 코딩 에이전트가 만든 마을 맵을 채점한다 — 결함 밀도 · 통과율 · 규모.
 //
 // 이 트랙에서는 **하네스를 쓰는 것이 정답이다.** town/ 트랙은 하네스를 뗀 모델을
 // 재지만, 여기서는 에이전트가 저장소를 뒤져 build_village·stampRectHouseKit·
-// 오토타일 엔진을 찾아 쓰는 것 자체가 실력이다. 타일을 손으로 하드코딩한 답은
-// 오토타일 합법성과 문법 항목에서 갈린다.
+// 오토타일 엔진을 찾아 쓰는 것 자체가 실력이다.
+//
+// 채점의 헤드라인은 **결함 밀도(1000 결정당 결함 수)** 이고 통과율이 아니다.
+// 2026-08-21 실측: opus 통과율 0.997 vs sonnet 0.991 은 무승부처럼 보이지만 실제로는
+// 결함 5개 대 22개(3.6배)다. 통과율은 1.0 근처에서 압축돼 상위를 못 가른다 —
+// 고품질 공정을 합격률 대신 결함 밀도로 관리하는 것과 같은 이유다.
+//
+// 결함 집계 규칙과 그것이 고친 이전 채점의 결함 3개는 defects.ts 주석에 적어 뒀다.
+// 규모(scale)는 여전히 따로 낸다: "작지만 완벽한 마을"과 "크지만 엉망인 마을"은
+// 서로 다른 실패이고, 한 숫자로 합치면 그 둘이 같은 칸에 들어간다.
 
-import { autotileNeighborMask, autotileVariantForMask } from "@/project/defaults/autotileEngine";
-import {
-  DEFAULT_COBBLE_AUTOTILE_GROUP,
-  DEFAULT_ROAD_AUTOTILE_GROUP,
-} from "@/project/defaults/autotileGroups";
-import {
-  FENCE_BOTTOM_LEFT,
-  FENCE_BOTTOM_RIGHT,
-  FENCE_END_LEFT,
-  FENCE_END_RIGHT,
-  FENCE_SIDE_RAIL,
-  FENCE_TOP_LEFT,
-  FENCE_TOP_RIGHT,
-} from "@/editor/tools/village/constants";
-import { clamp01, floodFill, inBounds, isWalkable, mean, ratio } from "@/benchmark/town/gridWalk";
+import { clamp01, mean } from "@/benchmark/town/gridWalk";
 import { EMPTY_CELL, type TownGroundTruth } from "@/benchmark/town/types";
-import {
-  detectVillage,
-  FENCE_FAMILY,
-  ROAD_FAMILY,
-  ROOF_FAMILY,
-  WALL_FAMILY,
-  type Detection,
-  type MapSubmission,
-} from "./detect";
+import { collectDefects, type DefectReport } from "./defects";
+import { detectVillage, type MapSubmission } from "./detect";
 
 /**
  * 규모 1.0 = 하네스가 만든 정본 마을. 손으로 적지 않고 **정본을 실제로 탐지해서**
  * 뽑는다 — 그래야 "하네스 수준 = 1.0"이라는 기준점이 거짓이 되지 않는다.
- * 정본이 바뀌면 기준선도 같이 바뀐다.
  */
 let cachedBaseline: { houses: number; area: number; roadCells: number } | null = null;
 
@@ -61,178 +43,17 @@ export function scaleBaseline(groundTruth: TownGroundTruth): { houses: number; a
 }
 
 export interface AgentScore {
-  /** 감사 통과율 0..1 — 일한 항목 평균 × 감점 배수. "이대로 납품 가능한가". */
+  /** 1000 결정당 결함 수. **낮을수록 좋다.** 상위 비교의 헤드라인. */
+  readonly defectsPerThousand: number;
+  /** 통과율 = 1 - 결함/결정. 정렬에는 편하지만 상위에서 압축된다. */
   readonly quality: number;
-  /**
-   * 감점을 곱하기 **전** 일한 항목의 평균.
-   *
-   * 왜 따로 내는가: 감점 배수(금지 타일·조각난 나무)는 하나만 걸려도 0 이 되고,
-   * 그러면 quality 하나로는 "아무것도 못 한 답"과 "거의 다 잘했는데 치명적 결함이
-   * 하나 있는 답"이 같은 0.000 이 된다. 2026-08-21 실측: sonnet 은 일한 항목
-   * 0.987(오토타일 합법성 1.00 — 하네스를 실제로 찾아 썼다는 증거)인데 금지 타일과
-   * 조각난 나무 때문에 quality 0.000 이었다. 두 사실을 한 숫자에 담을 수 없다.
-   */
-  readonly workMean: number;
+  readonly decisions: number;
+  readonly defects: number;
   /** 규모 — 정본 마을 대비. 1.0 을 넘을 수 있다(더 크게 만들었으면 그대로 보여준다). */
   readonly scale: number;
+  /** 검사별 (결함/결정). 어디서 틀렸는지가 점수보다 중요하다. */
+  readonly report: DefectReport;
   readonly detail: Readonly<Record<string, number>>;
-}
-
-const FENCE_CORNERS_UP: ReadonlySet<number> = new Set([FENCE_BOTTOM_LEFT, FENCE_BOTTOM_RIGHT]);
-const FENCE_CORNERS_DOWN: ReadonlySet<number> = new Set([FENCE_TOP_LEFT, FENCE_TOP_RIGHT]);
-
-/**
- * 울타리 문법 — 픽스처(게이트 위치·바탕 집)에 의존하는 두 항목을 뺀 자유 맵 버전.
- * 런의 양끝이 마감됐는가 · 모서리가 세로 변으로 이어지는가 · 고아 조각이 없는가.
- */
-function fenceGrammar(map: MapSubmission, detection: Detection): { score: number; runs: number } {
-  const isFence = (x: number, y: number): boolean =>
-    inBounds(map, x, y) && detection.fenceCells.has(y * map.width + x);
-  const tileAt = (x: number, y: number): number => map.upper[y * map.width + x] ?? EMPTY_CELL;
-  if (detection.fenceCells.size === 0) return { score: 0, runs: 0 };
-
-  let ends = 0;
-  let finished = 0;
-  let oriented = 0;
-  let runs = 0;
-  for (let y = 0; y < map.height; y += 1) {
-    let x = 0;
-    while (x < map.width) {
-      if (!isFence(x, y)) {
-        x += 1;
-        continue;
-      }
-      const start = x;
-      while (x < map.width && isFence(x, y)) x += 1;
-      const stop = x - 1;
-      if (stop === start) continue; // 1칸은 세로 런의 일부일 수 있다 — 고아 검사가 다룬다
-      runs += 1;
-      for (const [edge, expected] of [
-        [start, FENCE_END_LEFT],
-        [stop, FENCE_END_RIGHT],
-      ] as const) {
-        const tile = tileAt(edge, y);
-        ends += 1;
-        const isEndPiece = tile === FENCE_END_LEFT || tile === FENCE_END_RIGHT;
-        const isCorner = FENCE_CORNERS_UP.has(tile) || FENCE_CORNERS_DOWN.has(tile);
-        const continues = FENCE_CORNERS_UP.has(tile) ? isFence(edge, y - 1) : isFence(edge, y + 1);
-        if (isEndPiece || (isCorner && continues)) finished += 1;
-        if (!isEndPiece || tile === expected) oriented += 1;
-      }
-    }
-  }
-
-  let corners = 0;
-  let cornersLinked = 0;
-  let orphans = 0;
-  let sideRails = 0;
-  let sideRailsLinked = 0;
-  for (const index of detection.fenceCells) {
-    const x = index % map.width;
-    const y = Math.floor(index / map.width);
-    const tile = tileAt(x, y);
-    if (FENCE_CORNERS_UP.has(tile)) {
-      corners += 1;
-      if (isFence(x, y - 1)) cornersLinked += 1;
-    } else if (FENCE_CORNERS_DOWN.has(tile)) {
-      corners += 1;
-      if (isFence(x, y + 1)) cornersLinked += 1;
-    }
-    if (tile === FENCE_SIDE_RAIL) {
-      sideRails += 1;
-      if (isFence(x, y - 1) || isFence(x, y + 1)) sideRailsLinked += 1;
-    }
-    if (!isFence(x - 1, y) && !isFence(x + 1, y) && !isFence(x, y - 1) && !isFence(x, y + 1)) orphans += 1;
-  }
-
-  return {
-    score: mean([
-      ratio(finished, ends),
-      ratio(oriented, ends),
-      ratio(cornersLinked, corners),
-      ratio(sideRails - (sideRails - sideRailsLinked), sideRails),
-      ratio(detection.fenceCells.size - orphans, detection.fenceCells.size),
-    ]),
-    runs,
-  };
-}
-
-/**
- * 길 오토타일 합법성 — 칸마다 제 이웃 관계가 요구하는 변형 타일인가.
- *
- * 흙길과 포석 **두 그룹 다** 채점한다. 한쪽만 보면 "포석 몸통 타일로만 도배"가
- * 검사를 통째로 빠져나간다(2026-08-21 실측). 모래는 물과 연결 규칙이 엮여 있어
- * 자유 맵에서 단독 판정이 불안정하므로 제외하고, 대신 채점 대상 칸 수를 함께 보고한다.
- */
-function roadAutotileLegality(map: MapSubmission, detection: Detection): { score: number; graded: number } {
-  if (detection.roadCells.size === 0) return { score: 0, graded: 0 };
-  const canvas = { width: map.width, height: map.height, lowerTiles: [...map.lower] };
-  let graded = 0;
-  let legal = 0;
-  for (const group of [DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_COBBLE_AUTOTILE_GROUP]) {
-    const members = new Set<number>(group.memberTileIds);
-    const connect = new Set<number>(group.connectTileIds ?? group.memberTileIds);
-    for (const index of detection.roadCells) {
-      const tile = map.lower[index] ?? EMPTY_CELL;
-      if (!members.has(tile)) continue;
-      graded += 1;
-      const x = index % map.width;
-      const y = Math.floor(index / map.width);
-      const mask = autotileNeighborMask(canvas, x, y, (candidate) => connect.has(candidate), group.neighborhood ?? 4);
-      if (autotileVariantForMask(group, mask) === tile) legal += 1;
-    }
-  }
-  // 모래만으로 깐 길은 이 항목의 대상이 아니다 — 벌하지 않고 graded 로 드러낸다.
-  return { score: graded === 0 ? 1 : ratio(legal, graded), graded };
-}
-
-/**
- * 건물 문법 — 지붕이 벽 **위**에 있는가.
- *
- * 왜 필요한가: 자유 맵 트랙은 건물을 "벽·지붕 계열의 연결 성분"으로 탐지하므로,
- * 지붕 타일로만 채운 사각형도 건물로 세어 준다. 2026-08-21 실측: haiku 가 지붕
- * 타일 블록 3개에 문만 달아 0.699 를 받았다 — 감사 항목이 전부 "기계적으로는" 참이었기
- * 때문이다. 집은 벽이 있고 그 위에 지붕이 있는 것이며, 그 판정은 픽스처 없이도 된다.
- *
- * 규칙(키트 무관): 건물에 벽 계열 칸이 하나도 없으면 0. 있으면, 벽과 지붕이 같이
- * 있는 열마다 "가장 아래 지붕 < 가장 위 벽"인 비율.
- */
-function buildingGrammar(map: MapSubmission, detection: Detection): number {
-  if (detection.buildings.length === 0) return 0;
-  // 두 계열은 겹친다 — 404/405 는 라벨이 "지붕-벽 경계"라 벽 파생에도 들어가지만
-  // 집 키트에서는 지붕 몸통·처마다. 겹친 채로 "지붕이 벽 위"를 물으면 정본조차
-  // 실패한다(2026-08-21 실측: 기준선이 0.917 로 떨어졌다). 지붕이 이긴다.
-  const wallOnly = new Set([...WALL_FAMILY].filter((tile) => !ROOF_FAMILY.has(tile)));
-  const scores = detection.buildings.map((building) => {
-    const roofRows = new Map<number, number[]>();
-    const wallRows = new Map<number, number[]>();
-    for (const index of building.cells) {
-      const x = index % map.width;
-      const y = Math.floor(index / map.width);
-      const lower = map.lower[index] ?? EMPTY_CELL;
-      const upper = map.upper[index] ?? EMPTY_CELL;
-      const push = (into: Map<number, number[]>): void => {
-        const rows = into.get(x);
-        if (rows) rows.push(y);
-        else into.set(x, [y]);
-      };
-      if (wallOnly.has(lower)) push(wallRows);
-      if (ROOF_FAMILY.has(lower) || ROOF_FAMILY.has(upper)) push(roofRows);
-    }
-    // 벽만 있고 지붕이 없는 상자도, 지붕만 있고 벽이 없는 덩어리도 집이 아니다.
-    if (wallRows.size === 0 || roofRows.size === 0) return 0;
-    let columns = 0;
-    let ordered = 0;
-    for (const [x, walls] of wallRows) {
-      const roofs = roofRows.get(x);
-      if (!roofs || roofs.length === 0) continue;
-      columns += 1;
-      if (Math.max(...roofs) < Math.min(...walls)) ordered += 1;
-    }
-    // 벽과 지붕이 같은 열에서 만나지 않으면(따로 떨어져 있으면) 집의 단면이 아니다.
-    return columns === 0 ? 0 : ratio(ordered, columns);
-  });
-  return mean(scores);
 }
 
 export function scoreAgentMap(input: {
@@ -241,133 +62,66 @@ export function scoreAgentMap(input: {
 }): AgentScore {
   const { map, groundTruth } = input;
   const detection = detectVillage(map);
+  const placed =
+    map.lower.filter((tile) => tile !== EMPTY_CELL).length + map.upper.filter((tile) => tile !== EMPTY_CELL).length;
 
-  const placed = map.lower.filter((tile) => tile !== EMPTY_CELL).length
-    + map.upper.filter((tile) => tile !== EMPTY_CELL).length;
   if (placed === 0) {
-    return Object.freeze({ quality: 0, workMean: 0, scale: 0, detail: Object.freeze({ placedCells: 0 }) });
+    return Object.freeze({
+      defectsPerThousand: 0,
+      quality: 0,
+      decisions: 0,
+      defects: 0,
+      scale: 0,
+      report: Object.freeze({
+        items: Object.freeze([]),
+        decisions: 0,
+        defects: 0,
+        defectsPerThousand: 0,
+        passRate: 0,
+      }) as DefectReport,
+      detail: Object.freeze({ placedCells: 0 }),
+    });
   }
 
-  // ── 일한 항목 ──
-  // 1) 집에 문이 났는가.
-  const housesWithDoor = ratio(detection.houses.length, Math.max(1, detection.buildings.length));
-  // 2) 문 앞에 길이 있는가(village/audit.ts doorHasRoad 와 같은 규칙: 남쪽 3칸 · 좌우 1칸).
-  let doorsWithRoad = 0;
-  for (const door of detection.doors) {
-    let connected = false;
-    for (let y = door.y + 1; y <= door.y + 3 && !connected; y += 1) {
-      for (let x = door.x - 1; x <= door.x + 1 && !connected; x += 1) {
-        if (!inBounds(map, x, y)) continue;
-        if (detection.roadCells.has(y * map.width + x)) connected = true;
-      }
-    }
-    if (connected) doorsWithRoad += 1;
-  }
-  // 3) 길이 하나의 망인가.
-  const roadOneNetwork = detection.roadCells.size === 0
-    ? 0
-    : ratio(detection.largestRoadComponent, detection.roadCells.size);
-  // 4) 맵 밖에서 걸어 들어가 모든 문 앞에 닿는가.
-  const composite = map.lower.map((tile, index) => {
-    const above = map.upper[index] ?? EMPTY_CELL;
-    return above === EMPTY_CELL ? tile : above;
-  });
-  const edges: { x: number; y: number }[] = [];
-  for (let x = 0; x < map.width; x += 1) {
-    edges.push({ x, y: 0 }, { x, y: map.height - 1 });
-  }
-  for (let y = 0; y < map.height; y += 1) {
-    edges.push({ x: 0, y }, { x: map.width - 1, y });
-  }
-  const reachable = floodFill(map, edges, (x, y) =>
-    isWalkable(groundTruth.passFlags, composite[y * map.width + x] ?? EMPTY_CELL),
-  );
-  const doorsReached = detection.doors.filter((door) => {
-    const front = (door.y + 1) * map.width + door.x;
-    return door.y + 1 < map.height && reachable.has(front);
-  }).length;
-  // 5) 울타리 문법. 울타리가 없으면 마을 요소가 빠진 것이므로 0 이다.
-  const fence = fenceGrammar(map, detection);
-  // 6) 길 오토타일 합법성(흙길 + 포석 두 그룹).
-  const legality = roadAutotileLegality(map, detection);
-  // 7) 문 짝이 섞이지 않았는가.
-  const doorFamilies = ratio(detection.doors.filter((door) => door.sameFamily).length, detection.doors.length);
-
-  // 문이 하나도 없으면 문 관련 항목은 "해당 없음"이 아니라 **0** 이다. 분모 0 을
-  // 만점으로 두면 "문 없는 집 3채"가 0.857 을 받는다(2026-08-21 실측 허점).
-  // 들어갈 수 없는 건물만 세워 놓은 것은 마을이 아니다.
-  const hasDoors = detection.doors.length > 0;
-  const work = {
-    buildingGrammar: buildingGrammar(map, detection),
-    housesWithDoor,
-    doorsWithRoad: hasDoors ? ratio(doorsWithRoad, detection.doors.length) : 0,
-    roadOneNetwork,
-    doorsReachable: hasDoors ? ratio(doorsReached, detection.doors.length) : 0,
-    fenceGrammar: fence.score,
-    roadAutotileLegality: legality.score,
-    doorFamilies: hasDoors ? doorFamilies : 0,
-  };
-
-  // ── 감점 배수(아무것도 안 해도 만점인 항목은 평균에 넣지 않는다) ──
-  let upperCells = 0;
-  let upperCorrect = 0;
-  let banned = 0;
-  for (let index = 0; index < map.upper.length; index += 1) {
-    const upper = map.upper[index] ?? EMPTY_CELL;
-    if (upper !== EMPTY_CELL) {
-      upperCells += 1;
-      if (groundTruth.priority[upper] === "upper") upperCorrect += 1;
-    }
-    if (groundTruth.banned.has(upper)) banned += 1;
-    if (groundTruth.banned.has(map.lower[index] ?? EMPTY_CELL)) banned += 1;
-  }
-  const penalties = {
-    layerDiscipline: upperCells === 0 ? 1 : upperCorrect / upperCells,
-    noBanned: banned === 0 ? 1 : 0,
-    treesIntact: ratio(detection.trees - detection.brokenTrees, detection.trees),
-  };
-
-  const workMean = mean(Object.values(work));
-  const quality = Object.values(penalties).reduce((acc, penalty) => acc * penalty, workMean);
-
-  // ── 규모 — 정본 마을 대비. clamp 하지 않는다(더 크게 만들었으면 그대로 보고한다). ──
-  const area = map.width * map.height;
+  const report = collectDefects({ map, groundTruth });
   const baseline = scaleBaseline(groundTruth);
+  const area = map.width * map.height;
   const scale = mean([
     detection.houses.length / baseline.houses,
     area / baseline.area,
     detection.roadCells.size / baseline.roadCells,
   ]);
 
+  const detail: Record<string, number> = {
+    buildings: detection.buildings.length,
+    houses: detection.houses.length,
+    doors: detection.doors.length,
+    roadCells: detection.roadCells.size,
+    roadComponents: detection.roadComponents,
+    fenceCells: detection.fenceCells.size,
+    trees: detection.trees,
+    brokenTrees: detection.brokenTrees,
+    width: map.width,
+    height: map.height,
+    area,
+    placedCells: placed,
+    distinctTiles: new Set([...map.lower, ...map.upper].filter((tile) => tile !== EMPTY_CELL)).size,
+  };
+  // 검사별 결함·결정 수를 detail 에 펼친다 — 보관본만 보고도 어디서 틀렸는지 안다.
+  for (const item of report.items) {
+    detail[`${item.id}Defects`] = item.defects;
+    detail[`${item.id}Decisions`] = item.decisions;
+  }
+
   return Object.freeze({
-    quality: clamp01(quality),
-    workMean: clamp01(workMean),
+    defectsPerThousand: report.defectsPerThousand,
+    quality: clamp01(report.passRate),
+    decisions: report.decisions,
+    defects: report.defects,
     scale,
-    detail: Object.freeze({
-      ...work,
-      ...penalties,
-      buildings: detection.buildings.length,
-      houses: detection.houses.length,
-      doors: detection.doors.length,
-      roadCells: detection.roadCells.size,
-      roadComponents: detection.roadComponents,
-      fenceCells: detection.fenceCells.size,
-      fenceRuns: fence.runs,
-      autotileGradedCells: legality.graded,
-      trees: detection.trees,
-      brokenTrees: detection.brokenTrees,
-      width: map.width,
-      height: map.height,
-      area,
-      placedCells: placed,
-      distinctTiles: new Set([...map.lower, ...map.upper].filter((tile) => tile !== EMPTY_CELL)).size,
-    }),
+    report,
+    detail: Object.freeze(detail),
   });
 }
 
-/** 제출물이 길·집·울타리 중 무엇도 없으면 "마을"이 아니다 — 리포트에서 따로 표시한다. */
-export function looksLikeVillage(detection: Detection): boolean {
-  return detection.houses.length > 0 && detection.roadCells.size > 0;
-}
-
-export { detectVillage, ROAD_FAMILY, FENCE_FAMILY };
+export { detectVillage };

@@ -52,8 +52,11 @@ interface RunRecord {
   };
   readonly submission: { readonly found: boolean; readonly reason: string | null; readonly bytes: number };
   readonly score: {
+    /** 1000 결정당 결함 수 — 낮을수록 좋다. 상위 비교의 헤드라인. */
+    readonly defectsPerThousand: number;
     readonly quality: number;
-    readonly workMean: number;
+    readonly decisions: number;
+    readonly defects: number;
     readonly scale: number;
     readonly detail: Record<string, number>;
   } | null;
@@ -148,8 +151,10 @@ async function commandRun(flags: Record<string, string>): Promise<number> {
           submission = { found: true, reason: null, bytes: text.length };
           const scored = scoreAgentMap({ map: parsed.map, groundTruth });
           score = {
+            defectsPerThousand: scored.defectsPerThousand,
             quality: scored.quality,
-            workMean: scored.workMean,
+            decisions: scored.decisions,
+            defects: scored.defects,
             scale: scored.scale,
             detail: { ...scored.detail },
           };
@@ -202,8 +207,9 @@ function printRecord(record: RunRecord): void {
   }
   const d = record.score.detail;
   console.log(
-    `  quality=${record.score.quality.toFixed(3)} (일한 항목 ${record.score.workMean.toFixed(3)}) ` +
-      `scale=${record.score.scale.toFixed(2)}${record.cappedTurns ? "  ⚠ 턴 상한에 걸려 잘림" : ""}`,
+    `  결함 ${record.score.defects}/${record.score.decisions} = ${record.score.defectsPerThousand.toFixed(1)}/1k ` +
+      `(통과율 ${record.score.quality.toFixed(4)}) scale=${record.score.scale.toFixed(2)}` +
+      `${record.cappedTurns ? "  ⚠ 턴 상한에 걸려 잘림" : ""}`,
   );
   console.log(
     `  ${d.width}x${d.height} · 집 ${d.houses}/${d.buildings} · 문 ${d.doors} · 길 ${d.roadCells}(성분 ${d.roadComponents}) · ` +
@@ -247,23 +253,28 @@ function commandReport(flags: Record<string, string>): number {
     console.log(`no records in ${dir}`);
     return 0;
   }
-  const header = ["model/run".padEnd(14), "quality".padStart(8), "일한항목".padStart(8), "scale".padStart(7), "houses".padStart(7), "turns".padStart(6), "cost".padStart(8), "min".padStart(6)].join(" ");
+  const header = ["model/run".padEnd(14), "결함/1k".padStart(8), "결함".padStart(6), "결정".padStart(6), "통과율".padStart(8), "scale".padStart(7), "houses".padStart(7), "turns".padStart(6), "cost".padStart(8), "min".padStart(6)].join(" ");
   console.log(header);
   console.log("-".repeat(header.length));
-  for (const record of [...records].sort((a, b) => (b.score?.quality ?? -1) - (a.score?.quality ?? -1))) {
+  // 결함 밀도 오름차순 — 낮을수록 좋다. 제출 실패는 맨 뒤로.
+  for (const record of [...records].sort(
+    (a, b) => (a.score?.defectsPerThousand ?? Number.POSITIVE_INFINITY) - (b.score?.defectsPerThousand ?? Number.POSITIVE_INFINITY),
+  )) {
     const d = record.score?.detail ?? {};
     console.log(
       [
         `${record.model}-${record.run}`.padEnd(14),
         (record.score
-          ? record.score.quality.toFixed(3)
+          ? record.score.defectsPerThousand.toFixed(1)
           : record.process.terminal === "infra-error"
             ? "API오류"
             : record.process.terminal === "budget-exhausted"
               ? "예산소진"
               : "제출X"
         ).padStart(8),
-        (record.score ? record.score.workMean.toFixed(3) : "-").padStart(8),
+        (record.score ? String(record.score.defects) : "-").padStart(6),
+        (record.score ? String(record.score.decisions) : "-").padStart(6),
+        (record.score ? record.score.quality.toFixed(4) : "-").padStart(8),
         (record.score ? record.score.scale.toFixed(2) : "-").padStart(7),
         String(d.houses ?? "-").padStart(7),
         String(record.process.turns ?? "-").padStart(6),
@@ -273,42 +284,36 @@ function commandReport(flags: Record<string, string>): number {
       ].join(" "),
     );
   }
-  // 항목별 비교 — 종합 점수만 보면 "어디서 갈렸는가"를 알 수 없다.
-  const WORK_ITEMS: readonly (readonly [string, string])[] = [
-    ["buildingGrammar", "벽위에지붕"],
-    ["housesWithDoor", "집에 문"],
-    ["doorsWithRoad", "문앞 길"],
-    ["roadOneNetwork", "길 단일망"],
-    ["doorsReachable", "문 도달"],
-    ["fenceGrammar", "울타리 문법"],
-    ["roadAutotileLegality", "오토타일"],
-    ["doorFamilies", "문 짝"],
-  ];
-  const PENALTIES: readonly (readonly [string, string])[] = [
-    ["layerDiscipline", "레이어"],
-    ["noBanned", "밴 없음"],
+  // 검사별 결함/결정 — 점수 하나로는 "어디서 틀렸는가"를 알 수 없다.
+  const DEFECT_ITEMS: readonly (readonly [string, string])[] = [
+    ["buildingSection", "건물 단면"],
+    ["houseDoor", "건물에 문"],
+    ["doorRoad", "문 앞에 길"],
+    ["doorFamily", "문 같은 벌"],
+    ["doorReachable", "문까지 걸어감"],
+    ["roadNetwork", "길 단일망"],
+    ["roadAutotile", "길 오토타일"],
+    ["fenceConnected", "울타리 고아"],
+    ["fenceCorner", "모서리 연결"],
+    ["fenceRail", "세로 변 이어짐"],
+    ["fenceEnd", "런 끝 마감"],
+    ["layerDiscipline", "상위 레이어"],
+    ["bannedTiles", "금지 타일"],
     ["treesIntact", "나무 온전"],
   ];
   const scored = records.filter((record) => record.score !== null);
   if (scored.length > 0) {
-    console.log("\n항목별 (× = 감점 배수)");
-    const nameWidth = 14;
-    const columns = ["정본", ...scored.map((record) => `${record.model}-${record.run}`)];
-    console.log(["항목".padEnd(nameWidth), ...columns.map((c) => c.slice(0, 9).padStart(10))].join(""));
-    for (const [key, label] of WORK_ITEMS) {
-      const cells = scored.map((record) => (record.score!.detail[key] ?? 0).toFixed(2).padStart(10));
-      console.log([label.padEnd(nameWidth), "1.00".padStart(10), ...cells].join(""));
+    console.log("\n검사별 결함/결정 (0 이 목표)");
+    console.log(["검사".padEnd(18), ...scored.map((r) => `${r.model}-${r.run}`.slice(0, 11).padStart(12))].join(""));
+    for (const [id, label] of DEFECT_ITEMS) {
+      const cells = scored.map((r) => {
+        const defects = r.score!.detail[`${id}Defects`];
+        const decisions = r.score!.detail[`${id}Decisions`];
+        if (decisions === undefined || decisions === 0) return "-".padStart(12);
+        return `${defects}/${decisions}`.padStart(12);
+      });
+      console.log([label.padEnd(18), ...cells].join(""));
     }
-    for (const [key, label] of PENALTIES) {
-      const cells = scored.map((record) => (record.score!.detail[key] ?? 0).toFixed(2).padStart(10));
-      console.log([`× ${label}`.padEnd(nameWidth), "1.00".padStart(10), ...cells].join(""));
-    }
-    console.log(
-      ["규모 내역".padEnd(nameWidth), "".padStart(10), ...scored.map((r) => `${r.score!.detail.width}x${r.score!.detail.height}`.padStart(10))].join(""),
-    );
-    console.log(
-      ["실제 모델".padEnd(nameWidth), "".padStart(10), ...scored.map((r) => (r.process.resolvedModels?.[0] ?? "?").replace("claude-", "").slice(0, 9).padStart(10))].join(""),
-    );
   }
 
   // 구성 지표 — quality 가 천장에 닿는 곳에서 상위를 가른다. 점수로 합치지 않는다.
@@ -407,18 +412,21 @@ async function commandEvidence(flags: Record<string, string>): Promise<number> {
   return 0;
 }
 
-const EVIDENCE_ITEMS: readonly (readonly [string, string, boolean])[] = [
-  ["buildingGrammar", "벽 위에 지붕", false],
-  ["housesWithDoor", "집에 문", false],
-  ["doorsWithRoad", "문앞 길", false],
-  ["roadOneNetwork", "길 단일망", false],
-  ["doorsReachable", "문 도달", false],
-  ["fenceGrammar", "울타리 문법", false],
-  ["roadAutotileLegality", "오토타일 합법성", false],
-  ["doorFamilies", "문 짝", false],
-  ["layerDiscipline", "레이어 규율", true],
-  ["noBanned", "금지 타일 없음", true],
-  ["treesIntact", "나무 온전", true],
+const EVIDENCE_ITEMS: readonly (readonly [string, string])[] = [
+  ["buildingSection", "건물 단면(지붕이 벽 위)"],
+  ["houseDoor", "건물에 문"],
+  ["doorRoad", "문 앞에 길"],
+  ["doorFamily", "문 상·하단 같은 벌"],
+  ["doorReachable", "문까지 걸어감"],
+  ["roadNetwork", "길 단일망"],
+  ["roadAutotile", "길 오토타일 성형"],
+  ["fenceConnected", "울타리 고아 조각"],
+  ["fenceCorner", "모서리에 세로 변"],
+  ["fenceRail", "세로 변 이어짐"],
+  ["fenceEnd", "런의 끝 마감"],
+  ["layerDiscipline", "상위 레이어 규율"],
+  ["bannedTiles", "금지 타일"],
+  ["treesIntact", "나무 온전"],
 ];
 
 function evidenceCard(name: string, png: string | null, record: RunRecord | undefined): string {
@@ -432,10 +440,14 @@ function evidenceCard(name: string, png: string | null, record: RunRecord | unde
         ? `<div class="warn">턴 예산 소진 (${process?.turns ?? "?"}턴) — 미완성물이다</div>`
         : "";
   const items = score
-    ? EVIDENCE_ITEMS.map(([key, label, isPenalty]) => {
-        const value = score.detail[key] ?? 0;
-        const cls = value >= 0.999 ? "ok" : value >= 0.7 ? "mid" : "low";
-        return `<tr><td>${isPenalty ? "× " : ""}${esc(label)}</td><td class="n ${cls}">${value.toFixed(2)}</td></tr>`;
+    ? EVIDENCE_ITEMS.map(([id, label]) => {
+        const defects = score.detail[`${id}Defects`];
+        const decisions = score.detail[`${id}Decisions`];
+        if (decisions === undefined || decisions === 0) {
+          return `<tr><td>${esc(label)}</td><td class="n none">해당 없음</td></tr>`;
+        }
+        const cls = defects === 0 ? "ok" : defects / decisions < 0.1 ? "mid" : "low";
+        return `<tr><td>${esc(label)}</td><td class="n ${cls}">${defects} / ${decisions}</td></tr>`;
       }).join("")
     : "";
   const d = score?.detail ?? {};
@@ -443,8 +455,9 @@ function evidenceCard(name: string, png: string | null, record: RunRecord | unde
     <h2>${esc(name)} <small>${esc((process?.resolvedModels ?? []).join(", ") || "?")}</small></h2>
     ${banner}
     <div class="nums">
-      <span><b>${score ? score.quality.toFixed(3) : "—"}</b>quality</span>
-      <span><b>${score ? score.workMean.toFixed(3) : "—"}</b>일한 항목</span>
+      <span><b>${score ? score.defectsPerThousand.toFixed(1) : "—"}</b>결함/1k</span>
+      <span><b>${score ? `${score.defects}/${score.decisions}` : "—"}</b>결함/결정</span>
+      <span><b>${score ? score.quality.toFixed(4) : "—"}</b>통과율</span>
       <span><b>${score ? score.scale.toFixed(2) : "—"}</b>규모</span>
       <span><b>${process?.turns ?? "—"}</b>턴</span>
       <span><b>$${(process?.costUsd ?? 0).toFixed(2)}</b>비용</span>
@@ -483,18 +496,18 @@ function evidenceHtml(cards: readonly string[], records: readonly RunRecord[]): 
  table.items{border-collapse:collapse;margin:12px 0 0;font-size:12px}
  table.items td{border-bottom:1px solid #23272f;padding:3px 10px 3px 0}
  td.n{font-variant-numeric:tabular-nums;text-align:right}
- td.ok{color:#5ddba0} td.mid{color:#ffb454} td.low{color:#ff6b6b}
+ td.ok{color:#5ddba0} td.mid{color:#ffb454} td.low{color:#ff6b6b} td.none{color:#6b7480}
  .bad{background:#ff6b6b18;border-left:3px solid #ff6b6b;color:#ffcbcb;padding:8px 12px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:12.5px}
  .warn{background:#ffb45418;border-left:3px solid #ffb454;color:#ffe2bb;padding:8px 12px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:12.5px}
 </style></head><body>
 <h1>코딩 에이전트 벤치마크 — 증거 시트</h1>
 <p class="lede">같은 생짜 지시("이 칩셋으로 마을을 만들어라")를 모델만 바꿔 <code>claude -p</code> 로 돌린 결과다.
-크기·집 수·도구 이름을 알려주지 않았다. <b>quality</b> 는 감사 통과율(이대로 납품 가능한가),
-<b>일한 항목</b> 은 감점을 곱하기 전 평균, <b>규모</b> 는 하네스가 만든 정본 마을 대비다.
+크기·집 수·도구 이름을 알려주지 않았다. <b>결함/1k</b> 는 1000 결정당 결함 수(낮을수록 좋다 — 통과율은 1.0 근처에서 압축돼 상위를 못 가른다),
+<b>규모</b> 는 하네스가 만든 정본 마을 대비다.
 턴 예산: ${budgets.join(", ")}턴 사용.</p>
 <div class="grid">
 <section class="card"><h2>기준선 — 하네스가 만든 마을 <small>build_village 계열 엔진</small></h2>
-  <div class="nums"><span><b>1.000</b>quality</span><span><b>1.000</b>일한 항목</span><span><b>1.00</b>규모</span></div>
+  <div class="nums"><span><b>0.0</b>결함/1k</span><span><b>0/162</b>결함/결정</span><span><b>1.0000</b>통과율</span><span><b>1.00</b>규모</span></div>
   <img src="baseline-harness.png" alt="">
   <p class="facts">이 그림이 1.000 의 정의다. 에이전트가 저장소의 하네스를 찾아 쓰면 여기에 수렴한다.</p>
 </section>
