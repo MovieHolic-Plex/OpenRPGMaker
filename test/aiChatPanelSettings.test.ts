@@ -91,8 +91,10 @@ describe("설정 자동 저장", () => {
     const panel = renderPanel();
     expect(findByTestId(panel, "ai-settings-command-bar")).not.toBeNull();
     const modal = openSettingsSurface(panel);
-    expect(findByTestId(modal, "ai-config-baseurl")).not.toBeNull();
-    expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
+    // 브라우저 보관 키·엔드포인트 입력은 제거됐다 — 평문 키가 localStorage 에 남던 근원이다.
+    // 부재 자체가 회귀 방지선이므로 단언으로 고정한다(자세한 계약은 aiSettingsModalNoBrowserKey).
+    expect(findByTestId(modal, "ai-config-baseurl")).toBeNull();
+    expect(findByTestId(modal, "ai-config-apikey")).toBeNull();
     expect(findByTestId(modal, "ai-auth-oauth")).not.toBeNull();
     expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
     const providers = findByTestId(modal, "ai-oh-my-pi-provider");
@@ -104,8 +106,6 @@ describe("설정 자동 저장", () => {
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
     expect(modal.textContent).toContain("구독 로그인");
-    const apiKey = findByTestId(modal, "ai-config-apikey");
-    expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(true);
   });
 
   it("API 키 종류로 바꿔도 전송 축은 동반 서비스로 남는다", () => {
@@ -159,17 +159,19 @@ describe("설정 자동 저장", () => {
     expect(stored.model).toBe("claude-opus-4-8");
   });
 
-  it("API 키 입력만으로 즉시 localStorage에 저장된다 (저장 버튼 불필요)", () => {
+  it("동반 서비스 키 입력은 localStorage 에 저장되지 않는다", () => {
+    // 옛 스펙은 "API 키 입력만으로 즉시 localStorage 에 저장된다" 였다 — 그게 평문 키가 남던
+    // 경로다. 키는 이제 동반 서비스로만 가고, 브라우저 저장소에는 흔적이 없어야 한다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    const apiKey = findByTestId(modal, "ai-config-apikey");
-    expect(apiKey).not.toBeNull();
-    if (!apiKey) return;
-    apiKey.value = "sk-or-test-abc";
-    apiKey.dispatchEvent(new Event("input"));
+    findByTestId(modal, "ai-auth-api-key")?.click();
+    const key = findByTestId(modal, "ai-companion-api-key");
+    expect(key).not.toBeNull();
+    if (!key) return;
+    key.value = "sk-or-test-abc";
+    key.dispatchEvent(new Event("input"));
 
-    const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.apiKey).toBe("sk-or-test-abc");
+    expect(storage.get(AI_CONFIG_STORAGE_KEY) ?? "").not.toContain("sk-or-test-abc");
   });
 
   it("감독 모델을 비우고 저장하면 기본값(OAuth 카탈로그)으로 저장된다", () => {
@@ -276,14 +278,16 @@ describe("설정 자동 저장", () => {
   it("설정 저장 버튼도 동일하게 저장한다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    const baseUrl = findByTestId(modal, "ai-config-baseurl");
+    // baseUrl 필드가 사라졌으므로 남아 있는 필드(최대 토큰)로 저장 경로를 확인한다.
+    const maxTokens = findByTestId(modal, "ai-config-maxtokens");
     const save = findByTestId(modal, "ai-config-save");
-    if (!baseUrl || !save) throw new Error("fields missing");
-    baseUrl.value = "https://example.invalid/v1";
+    if (!maxTokens || !save) throw new Error("fields missing");
+    maxTokens.value = "12345";
     save.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.baseUrl).toBe("https://example.invalid/v1");
+    expect(stored.maxTokens).toBe(12345);
+    expect(stored.baseUrl).toBe("");
   });
 });
 
