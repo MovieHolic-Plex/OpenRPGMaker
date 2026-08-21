@@ -47,6 +47,7 @@ interface RunRecord {
     readonly resolvedModels: readonly string[];
     readonly apiErrorStatus: number | null;
     readonly resultMessage: string | null;
+    readonly terminal: "completed" | "infra-error" | "budget-exhausted";
   };
   readonly submission: { readonly found: boolean; readonly reason: string | null; readonly bytes: number };
   readonly score: {
@@ -188,9 +189,11 @@ function printRecord(record: RunRecord): void {
       `${((p.durationMs ?? 0) / 60000).toFixed(1)}min`,
   );
   if (!record.score) {
-    const api = record.process.apiErrorStatus;
-    if (api !== null || record.process.isError) {
-      console.log(`  실행 실패(인프라) — HTTP ${api ?? "?"} ${record.process.resultMessage ?? ""}`);
+    const terminal = record.process.terminal;
+    if (terminal === "infra-error") {
+      console.log(`  실행 실패(인프라) — HTTP ${record.process.apiErrorStatus ?? "?"} ${record.process.resultMessage ?? ""}`);
+    } else if (terminal === "budget-exhausted") {
+      console.log(`  미완성(턴 예산 소진 ${record.process.turns}턴) — 제출물 없음. 예산을 올려야 비교가 성립한다`);
     } else {
       console.log(`  제출 실패(모델) — ${record.submission.reason ?? "이유 미보고"}`);
     }
@@ -251,7 +254,14 @@ function commandReport(flags: Record<string, string>): number {
     console.log(
       [
         `${record.model}-${record.run}`.padEnd(14),
-        (record.score ? record.score.quality.toFixed(3) : record.process.apiErrorStatus !== null ? "API오류" : "제출X").padStart(8),
+        (record.score
+          ? record.score.quality.toFixed(3)
+          : record.process.terminal === "infra-error"
+            ? "API오류"
+            : record.process.terminal === "budget-exhausted"
+              ? "예산소진"
+              : "제출X"
+        ).padStart(8),
         (record.score ? record.score.workMean.toFixed(3) : "-").padStart(8),
         (record.score ? record.score.scale.toFixed(2) : "-").padStart(7),
         String(d.houses ?? "-").padStart(7),

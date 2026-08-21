@@ -24,6 +24,15 @@ export interface AgentProcessMetrics {
    */
   readonly apiErrorStatus: number | null;
   readonly resultMessage: string | null;
+  /**
+   * 왜 끝났는가. 세 실패는 완전히 다른 사실인데 전부 "제출물 없음"으로 나타난다:
+   *   infra-error       게이트웨이·API 장애 → 재시도해야 한다. 점수가 아니다.
+   *   budget-exhausted  턴 예산 소진 → 미완성이다. 모델의 스코핑 판단이 섞여 있다.
+   *   completed         정상 종료 → 제출물이 없으면 그건 모델의 실패다.
+   * 2026-08-21 실측: opus 는 503(infra) 으로 한 번, max_turns(budget) 로 한 번 죽었다.
+   * 둘을 같은 칸에 적으면 리더보드가 거짓말을 한다.
+   */
+  readonly terminal: "completed" | "infra-error" | "budget-exhausted";
 }
 
 /**
@@ -57,6 +66,12 @@ export function processMetrics(stdout: string): AgentProcessMetrics {
   return {
     resolvedModels,
     apiErrorStatus: typeof json?.api_error_status === "number" ? json.api_error_status : null,
+    terminal:
+      typeof json?.api_error_status === "number"
+        ? "infra-error"
+        : json?.subtype === "error_max_turns" || json?.terminal_reason === "max_turns"
+          ? "budget-exhausted"
+          : "completed",
     resultMessage:
       json?.is_error === true && typeof json?.result === "string" ? (json.result as string).slice(0, 300) : null,
     turns: typeof json?.num_turns === "number" ? json.num_turns : null,

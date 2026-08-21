@@ -203,6 +203,15 @@ describe("과정 지표 파싱", () => {
     expect(succeeded.resultMessage).toBeNull();
   });
 
+  it("종료 사유를 인프라·예산·정상 세 갈래로 나눈다", () => {
+    // 2026-08-21 실측: opus 는 503(인프라)으로 한 번, max_turns(예산)로 한 번 죽었다.
+    // 둘을 같은 칸에 적으면 리더보드가 인프라 장애를 모델 실력으로 기록한다.
+    expect(processMetrics('{"api_error_status":503,"is_error":true}').terminal).toBe("infra-error");
+    expect(processMetrics('{"is_error":true,"subtype":"error_max_turns","num_turns":31}').terminal).toBe("budget-exhausted");
+    expect(processMetrics('{"is_error":true,"terminal_reason":"max_turns"}').terminal).toBe("budget-exhausted");
+    expect(processMetrics('{"is_error":false,"num_turns":20}').terminal).toBe("completed");
+  });
+
   it("JSON 이 없으면 전부 null 이고 throw 하지 않는다", () => {
     const metrics = processMetrics("경고만 있고 결과가 없다");
     expect(metrics.turns).toBeNull();
