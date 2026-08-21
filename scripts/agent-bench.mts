@@ -274,6 +274,7 @@ function commandReport(flags: Record<string, string>): number {
   }
   // 항목별 비교 — 종합 점수만 보면 "어디서 갈렸는가"를 알 수 없다.
   const WORK_ITEMS: readonly (readonly [string, string])[] = [
+    ["buildingGrammar", "벽위에지붕"],
     ["housesWithDoor", "집에 문"],
     ["doorsWithRoad", "문앞 길"],
     ["roadOneNetwork", "길 단일망"],
@@ -354,6 +355,7 @@ async function commandEvidence(flags: Record<string, string>): Promise<number> {
 }
 
 const EVIDENCE_ITEMS: readonly (readonly [string, string, boolean])[] = [
+  ["buildingGrammar", "벽 위에 지붕", false],
   ["housesWithDoor", "집에 문", false],
   ["doorsWithRoad", "문앞 길", false],
   ["roadOneNetwork", "길 단일망", false],

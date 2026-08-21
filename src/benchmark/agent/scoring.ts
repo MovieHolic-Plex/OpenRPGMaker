@@ -26,7 +26,15 @@ import {
 } from "@/editor/tools/village/constants";
 import { clamp01, floodFill, inBounds, isWalkable, mean, ratio } from "@/benchmark/town/gridWalk";
 import { EMPTY_CELL, type TownGroundTruth } from "@/benchmark/town/types";
-import { detectVillage, FENCE_FAMILY, ROAD_FAMILY, type Detection, type MapSubmission } from "./detect";
+import {
+  detectVillage,
+  FENCE_FAMILY,
+  ROAD_FAMILY,
+  ROOF_FAMILY,
+  WALL_FAMILY,
+  type Detection,
+  type MapSubmission,
+} from "./detect";
 
 /**
  * 규모 1.0 = 하네스가 만든 정본 마을. 손으로 적지 않고 **정본을 실제로 탐지해서**
@@ -178,6 +186,55 @@ function roadAutotileLegality(map: MapSubmission, detection: Detection): { score
   return { score: graded === 0 ? 1 : ratio(legal, graded), graded };
 }
 
+/**
+ * 건물 문법 — 지붕이 벽 **위**에 있는가.
+ *
+ * 왜 필요한가: 자유 맵 트랙은 건물을 "벽·지붕 계열의 연결 성분"으로 탐지하므로,
+ * 지붕 타일로만 채운 사각형도 건물로 세어 준다. 2026-08-21 실측: haiku 가 지붕
+ * 타일 블록 3개에 문만 달아 0.699 를 받았다 — 감사 항목이 전부 "기계적으로는" 참이었기
+ * 때문이다. 집은 벽이 있고 그 위에 지붕이 있는 것이며, 그 판정은 픽스처 없이도 된다.
+ *
+ * 규칙(키트 무관): 건물에 벽 계열 칸이 하나도 없으면 0. 있으면, 벽과 지붕이 같이
+ * 있는 열마다 "가장 아래 지붕 < 가장 위 벽"인 비율.
+ */
+function buildingGrammar(map: MapSubmission, detection: Detection): number {
+  if (detection.buildings.length === 0) return 0;
+  // 두 계열은 겹친다 — 404/405 는 라벨이 "지붕-벽 경계"라 벽 파생에도 들어가지만
+  // 집 키트에서는 지붕 몸통·처마다. 겹친 채로 "지붕이 벽 위"를 물으면 정본조차
+  // 실패한다(2026-08-21 실측: 기준선이 0.917 로 떨어졌다). 지붕이 이긴다.
+  const wallOnly = new Set([...WALL_FAMILY].filter((tile) => !ROOF_FAMILY.has(tile)));
+  const scores = detection.buildings.map((building) => {
+    const roofRows = new Map<number, number[]>();
+    const wallRows = new Map<number, number[]>();
+    for (const index of building.cells) {
+      const x = index % map.width;
+      const y = Math.floor(index / map.width);
+      const lower = map.lower[index] ?? EMPTY_CELL;
+      const upper = map.upper[index] ?? EMPTY_CELL;
+      const push = (into: Map<number, number[]>): void => {
+        const rows = into.get(x);
+        if (rows) rows.push(y);
+        else into.set(x, [y]);
+      };
+      if (wallOnly.has(lower)) push(wallRows);
+      if (ROOF_FAMILY.has(lower) || ROOF_FAMILY.has(upper)) push(roofRows);
+    }
+    // 벽만 있고 지붕이 없는 상자도, 지붕만 있고 벽이 없는 덩어리도 집이 아니다.
+    if (wallRows.size === 0 || roofRows.size === 0) return 0;
+    let columns = 0;
+    let ordered = 0;
+    for (const [x, walls] of wallRows) {
+      const roofs = roofRows.get(x);
+      if (!roofs || roofs.length === 0) continue;
+      columns += 1;
+      if (Math.max(...roofs) < Math.min(...walls)) ordered += 1;
+    }
+    // 벽과 지붕이 같은 열에서 만나지 않으면(따로 떨어져 있으면) 집의 단면이 아니다.
+    return columns === 0 ? 0 : ratio(ordered, columns);
+  });
+  return mean(scores);
+}
+
 export function scoreAgentMap(input: {
   readonly map: MapSubmission;
   readonly groundTruth: TownGroundTruth;
@@ -241,6 +298,7 @@ export function scoreAgentMap(input: {
   // 들어갈 수 없는 건물만 세워 놓은 것은 마을이 아니다.
   const hasDoors = detection.doors.length > 0;
   const work = {
+    buildingGrammar: buildingGrammar(map, detection),
     housesWithDoor,
     doorsWithRoad: hasDoors ? ratio(doorsWithRoad, detection.doors.length) : 0,
     roadOneNetwork,

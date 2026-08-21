@@ -73,7 +73,28 @@ describe("아무것도 안 한 답과 들어갈 수 없는 마을은 0점", () =
     const noDoors = reference.lower.map((tile) => (tile === 116 || tile === 146 ? EMPTY_CELL : tile));
     const scored = score(noDoors, reference.upper);
     expect(scored.detail.doors).toBe(0);
-    expect(scored.quality).toBeLessThan(0.5);
+    // 문 관련 항목 3개가 0 이 되므로 절반을 넘길 수 없다 — 들어갈 수 없는 마을이다.
+    expect(scored.quality).toBeLessThanOrEqual(0.5);
+  });
+
+  it("지붕 타일로 채운 블록은 집이 아니다 — 벽 위에 지붕 검사", () => {
+    // 2026-08-21 실측: haiku 가 지붕 타일 블록 3개에 문만 달아 0.699 를 받았다.
+    // 감사 항목이 전부 "기계적으로는" 참이었기 때문이다.
+    const lower = blank();
+    const W = reference.width;
+    // 5x4 지붕 타일 덩어리 + 아래에 문 두 칸 (벽은 하나도 없다)
+    for (let y = 1; y <= 4; y += 1) for (let x = 2; x <= 6; x += 1) lower[y * W + x] = 374;
+    lower[5 * W + 4] = 116;
+    lower[6 * W + 4] = 146;
+    const scored = score(lower, blank());
+    expect(scored.detail.buildingGrammar).toBe(0);
+    expect(scored.quality).toBeLessThan(0.6);
+  });
+
+  it("정본은 벽 위에 지붕 검사를 통과한다(계열이 겹쳐도)", () => {
+    // 404/405 는 라벨이 "지붕-벽 경계"라 벽 파생에도 들어간다. 계열을 겹친 채로
+    // 판정하면 정본조차 실패한다(실측: 기준선 0.917).
+    expect(score(reference.lower, reference.upper).detail.buildingGrammar).toBe(1);
   });
 
   it("금지 타일을 쓰면 0 (감점 배수)", () => {
