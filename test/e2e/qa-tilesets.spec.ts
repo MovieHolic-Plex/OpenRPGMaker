@@ -15,7 +15,7 @@ const TERRAIN_TAB = DATABASE_TAB_SPECS.find((tab) => tab.slug === "terrain")!;
 
 const TOWN_ROW = "tileset-db-row-easyrpg_chipset_combined_town";
 const DUNGEON_ROW = "tileset-db-row-easyrpg_chipset_dungeon";
-const DUNGEON_NAME = "EasyRPG RTP Dungeon ChipSet";
+const DUNGEON_NAME = "던전 · EasyRPG (CC0)";
 
 type TabProbe = {
   detailTextLen: number;

@@ -25,7 +25,7 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
     "generated-actor-hero-04-battle",
   ]);
   expect(commandMetrics.actorResourceIds).toHaveLength(new Set(commandMetrics.actorResourceIds).size);
-  expect(commandMetrics.commandIconBackgrounds.every((image) => image.includes("/assets/generated/rm2k3/"))).toBe(true);
+  expect(commandMetrics.commandIconBackgrounds.every((image) => image.includes("/assets/generated/starter/"))).toBe(true);
   expect(commandMetrics.textLeaks).toEqual([]);
   expect(commandMetrics.wrappedCommandLabels).toEqual([]);
 
@@ -41,7 +41,7 @@ test("battle reference scene uses equivalent enemy, party, portrait, and icon as
 
   const resultMetrics = await assetMetrics(page);
   await writeFile(`${evidenceDir}/03-result-assets.json`, `${JSON.stringify(resultMetrics, null, 2)}\n`, "utf8");
-  expect(resultMetrics.resultIconBackgrounds.every((image) => image.includes("/assets/generated/rm2k3/"))).toBe(true);
+  expect(resultMetrics.resultIconBackgrounds.every((image) => image.includes("/assets/generated/starter/"))).toBe(true);
   expect(resultMetrics.text).toContain("승리");
   // 거짓 fallback 아이템("불씨 조각") 제거 검증: 드롭 아이템이 없는 fixture 에서는
   // 가짜 아이템 이름이 결과에 나타나지 않아야 한다.

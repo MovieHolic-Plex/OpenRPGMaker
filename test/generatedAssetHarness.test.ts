@@ -28,7 +28,7 @@ describe("generatedAssetHarness", () => {
     expect(validation.inspection?.width).toBe(288);
     expect(validation.inspection?.height).toBe(256);
     expect(validation.sha256).toMatch(/^[0-9a-f]{64}$/);
-    expect(promotion?.promotedPath).toBe("public/assets/generated/rm2k3/hero-01-charset.png");
+    expect(promotion?.promotedPath).toBe("public/assets/generated/starter/hero-01-charset.png");
     expect(contactSheet.cells).toHaveLength(GENERATED_ASSET_PLAN.assets.length);
   });
 
@@ -36,11 +36,11 @@ describe("generatedAssetHarness", () => {
     const entry = GENERATED_ASSET_PLAN.assets.find((asset) => asset.id === "potion-red-icon");
     expect(entry).toBeDefined();
     if (!entry) return;
-    const missing = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/rm2k3/item-a1b2c3d4.png", bytes: null });
-    const nonPng = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/rm2k3/item-a1b2c3d4.png", bytes: new Uint8Array([1, 2, 3]) });
-    const wrongSize = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/rm2k3/item-a1b2c3d4.png", bytes: createFakePngBytes({ width: 64, height: 64 }) });
-    const blank = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/rm2k3/item-a1b2c3d4.png", bytes: createFakePngBytes({ width: 32, height: 32, blank: true }) });
-    const unsafeName = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/rm2k3/output.png", bytes: createFakePngBytes({ width: 32, height: 32 }) });
+    const missing = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/starter/item-a1b2c3d4.png", bytes: null });
+    const nonPng = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/starter/item-a1b2c3d4.png", bytes: new Uint8Array([1, 2, 3]) });
+    const wrongSize = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/starter/item-a1b2c3d4.png", bytes: createFakePngBytes({ width: 64, height: 64 }) });
+    const blank = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/starter/item-a1b2c3d4.png", bytes: createFakePngBytes({ width: 32, height: 32, blank: true }) });
+    const unsafeName = await validateGeneratedAssetBytes({ entry, path: "public/assets/generated/starter/output.png", bytes: createFakePngBytes({ width: 32, height: 32 }) });
 
     expect(missing.issues).toContain("file is missing");
     expect(nonPng.issues).toContain("file is not a PNG");

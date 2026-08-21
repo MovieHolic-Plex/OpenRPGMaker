@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const SOURCE = "vendor/easyrpg-rtp/ChipSet/Exterior.png";
-const TARGET = "public/assets/rm2k3-original-chipset.png";
+const TARGET = "public/assets/easyrpg-chipset-exterior.png";
 const EXPECTED_WIDTH = 480;
 const EXPECTED_HEIGHT = 256;
 

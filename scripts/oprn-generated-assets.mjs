@@ -95,7 +95,7 @@ async function validateEntry(entry, filePath) {
 }
 
 function promotion(entry, rawPath, sha256) {
-  return { entryId: entry.id, resourceId: entry.resourceId, rawPath: rawPath.replaceAll("\\", "/"), promotedPath: `public/assets/generated/rm2k3/${entry.id}.png`, sha256, status: "promoted" };
+  return { entryId: entry.id, resourceId: entry.resourceId, rawPath: rawPath.replaceAll("\\", "/"), promotedPath: `public/assets/generated/starter/${entry.id}.png`, sha256, status: "promoted" };
 }
 
 function inspectPng(bytes) {

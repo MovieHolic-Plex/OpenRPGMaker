@@ -68,7 +68,7 @@ const DATA_ID_NOTE = "rpg-zzu- 데이터 식별자는 서버·프로젝트 파�
 
 /**
  * 에셋 경로가 있는 줄은 건너뛴다 — 파일을 옮기지 않으면 로드가 깨진다(Phase 5).
- * 예: `/assets/generated/rm2k3/hero-01-battle.png`, `assets/rm2k3-original-chipset.png`
+ * 예: `/assets/generated/starter/hero-01-battle.png`, `assets/easyrpg-chipset-exterior.png`
  */
 const ASSET_PATH_LINE = /\/assets\/|assets\/|\.png|\.jpe?g|\.webp/;
 
@@ -79,13 +79,13 @@ const ASSET_PATH_LINE = /\/assets\/|assets\/|\.png|\.jpe?g|\.webp/;
  * | 패턴                  | 잔여 | 어디에                                          | 켜는 라운드 |
  * |-----------------------|------|------------------------------------------------|-------------|
  * | /RM\s*200[03]/i       | 7+   | 코드 주석(동작 계보 서술), CSS 파일·클래스명,     | Phase 2b·3  |
- * |                       |      | `--runtime-window-skin: windowskin-rm2003.png` | Phase 5     |
+ * |                       |      | `--runtime-window-skin: windowskin-default.png` | Phase 5     |
  * | /rm2k3/i (식별자)      | 1889 | CSS 클래스·testid·파일명                        | Phase 2b    |
  * | /rpgMaker/ (식별자)    | —    | `rpgMakerTileToolbar*.ts` 심볼·파일명            | Phase 2b    |
  * | /rpg-zzu:/ (저장 키)   | 43   | localStorage 키 접두사                          | Phase 2b    |
  * | /__oprn/ (전역)      | ~30  | window 디버그·e2e 훅                            | Phase 2b    |
  *
- * 특히 `windowskin-rm2003.png` 은 **모든 게임의 기본 대사창 스킨**이다 — 이름만 문제가
+ * 특히 `windowskin-default.png` 은 **모든 게임의 기본 대사창 스킨**이다 — 이름만 문제가
  * 아니라 그림 자체가 RM2003 창을 재현하는지 Phase 5 출처 조사에서 함께 확인해야 한다.
  */
 const STAGED_PATTERN_NOTE = "Phase 2b·3·5 에서 활성화";

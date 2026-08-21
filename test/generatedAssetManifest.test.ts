@@ -64,7 +64,7 @@ describe("generatedAssetManifest", () => {
     if (!result.ok) return;
     const magentaAssets = result.manifest.assets.filter((asset) => asset.provenance.promptVersion === "battle-magenta-v2");
     expect(magentaAssets.map((asset) => asset.id).sort()).toEqual(["monster-slime-01", "troop-preview-slime"]);
-    expect(magentaAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/rm2k3/") === true)).toBe(true);
+    expect(magentaAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
     expect(magentaAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
   });
 
@@ -80,7 +80,7 @@ describe("generatedAssetManifest", () => {
       "hero-03-battle",
       "hero-04-battle",
     ]);
-    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/rm2k3/") === true)).toBe(true);
+    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
     expect(extractedAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
   });
 });

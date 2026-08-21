@@ -62,7 +62,7 @@ describe("database image matching", () => {
     const bone = enemies.find((enemy) => enemy.id === "enemy_stone_bone_guard");
     expect(bone?.monsterResourceId).toBe("generated-enemy-skeleton-01");
     expect(resolveAssetResourceUrl("generated-enemy-skeleton-01")).toBe(
-      "/assets/generated/rm2k3/monster-skeleton-01.png",
+      "/assets/generated/starter/monster-skeleton-01.png",
     );
   });
 });

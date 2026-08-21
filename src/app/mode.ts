@@ -217,14 +217,14 @@ function renderDbRequiredScreen(_error: unknown): void {
   hero.dataset.testid = "db-required-hero";
   const heroImg = document.createElement("img");
   heroImg.className = "db-required-hero-image";
-  heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
+  heroImg.src = "/assets/generated/title/oprn-boot-hero.jpg";
   heroImg.alt = PRODUCT_BRAND;
   heroImg.decoding = "async";
   // 생성 히어로 로드 실패 시 기존 타이틀 아트로 폴백
   heroImg.addEventListener("error", () => {
     if (heroImg.dataset.fallback === "1") return;
     heroImg.dataset.fallback = "1";
-    heroImg.src = "/assets/generated/title/bright-rpg-maker-title-v2.png";
+    heroImg.src = "/assets/generated/title/oprn-title-bright-v2.png";
   });
   hero.append(heroImg);
 
@@ -284,13 +284,13 @@ function renderLoadFailureScreen(_error: unknown): void {
   hero.dataset.testid = "db-required-hero";
   const heroImg = document.createElement("img");
   heroImg.className = "db-required-hero-image";
-  heroImg.src = "/assets/generated/title/ai-rpg-maker-boot-hero.jpg";
+  heroImg.src = "/assets/generated/title/oprn-boot-hero.jpg";
   heroImg.alt = PRODUCT_BRAND;
   heroImg.decoding = "async";
   heroImg.addEventListener("error", () => {
     if (heroImg.dataset.fallback === "1") return;
     heroImg.dataset.fallback = "1";
-    heroImg.src = "/assets/generated/title/bright-rpg-maker-title-v2.png";
+    heroImg.src = "/assets/generated/title/oprn-title-bright-v2.png";
   });
   hero.append(heroImg);
 

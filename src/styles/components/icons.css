@@ -184,108 +184,108 @@
 }
 
 .oprn-icon-new {
-  background-image: url("/ui/rm2k3-toolbar/new.png");
+  background-image: url("/ui/toolbar/new.png");
 }
 
 .oprn-icon-open {
-  background-image: url("/ui/rm2k3-toolbar/open.png");
+  background-image: url("/ui/toolbar/open.png");
 }
 
 .oprn-icon-save {
-  background-image: url("/ui/rm2k3-toolbar/save.png");
+  background-image: url("/ui/toolbar/save.png");
 }
 
 .oprn-icon-import {
-  background-image: url("/ui/rm2k3-toolbar/import.png");
+  background-image: url("/ui/toolbar/import.png");
 }
 
 .oprn-icon-export {
-  background-image: url("/ui/rm2k3-toolbar/export.png");
+  background-image: url("/ui/toolbar/export.png");
 }
 
 .oprn-icon-undo {
-  background-image: url("/ui/rm2k3-toolbar/undo.png");
+  background-image: url("/ui/toolbar/undo.png");
 }
 
 .oprn-icon-redo {
-  background-image: url("/ui/rm2k3-toolbar/redo.png");
+  background-image: url("/ui/toolbar/redo.png");
 }
 
 .oprn-icon-database {
-  background-image: url("/ui/rm2k3-toolbar/database.png");
+  background-image: url("/ui/toolbar/database.png");
 }
 
 .oprn-icon-resources {
-  background-image: url("/ui/rm2k3-toolbar/resources.png");
+  background-image: url("/ui/toolbar/resources.png");
 }
 
 .oprn-icon-disabled-diamond {
-  background-image: url("/ui/rm2k3-toolbar/disabled-diamond.png");
+  background-image: url("/ui/toolbar/disabled-diamond.png");
 }
 
 .oprn-icon-disabled-blocks {
-  background-image: url("/ui/rm2k3-toolbar/disabled-blocks.png");
+  background-image: url("/ui/toolbar/disabled-blocks.png");
 }
 
 .oprn-icon-event-test {
-  background-image: url("/ui/rm2k3-toolbar/event-test.png");
+  background-image: url("/ui/toolbar/event-test.png");
 }
 
 .oprn-icon-lower {
-  background-image: url("/ui/rm2k3-toolbar/lower.png");
+  background-image: url("/ui/toolbar/lower.png");
 }
 
 .oprn-icon-upper {
-  background-image: url("/ui/rm2k3-toolbar/upper.png");
+  background-image: url("/ui/toolbar/upper.png");
 }
 
 .oprn-icon-event {
-  background-image: url("/ui/rm2k3-toolbar/event.png");
+  background-image: url("/ui/toolbar/event.png");
 }
 
 .oprn-icon-manual {
-  background-image: url("/ui/rm2k3-toolbar/manual.png");
+  background-image: url("/ui/toolbar/manual.png");
 }
 
 .oprn-icon-sound {
-  background-image: url("/ui/rm2k3-toolbar/sound.png");
+  background-image: url("/ui/toolbar/sound.png");
 }
 
 .oprn-icon-search {
-  background-image: url("/ui/rm2k3-toolbar/search.png");
+  background-image: url("/ui/toolbar/search.png");
 }
 
 .oprn-icon-window {
-  background-image: url("/ui/rm2k3-toolbar/window.png");
+  background-image: url("/ui/toolbar/window.png");
 }
 
 .oprn-icon-title {
-  background-image: url("/ui/rm2k3-toolbar/title.png");
+  background-image: url("/ui/toolbar/title.png");
 }
 
 .oprn-icon-zoom-1 {
-  background-image: url("/ui/rm2k3-toolbar/zoom-1.png");
+  background-image: url("/ui/toolbar/zoom-1.png");
 }
 
 .oprn-icon-zoom-2 {
-  background-image: url("/ui/rm2k3-toolbar/zoom-2.png");
+  background-image: url("/ui/toolbar/zoom-2.png");
 }
 
 .oprn-icon-zoom-4 {
-  background-image: url("/ui/rm2k3-toolbar/zoom-4.png");
+  background-image: url("/ui/toolbar/zoom-4.png");
 }
 
 .oprn-icon-zoom-8 {
-  background-image: url("/ui/rm2k3-toolbar/zoom-8.png");
+  background-image: url("/ui/toolbar/zoom-8.png");
 }
 
 .oprn-icon-pencil {
-  background-image: url("/ui/rm2k3-toolbar/pencil.png");
+  background-image: url("/ui/toolbar/pencil.png");
 }
 
 .oprn-icon-play,
 .oprn-icon-play-window {
-  background-image: url("/ui/rm2k3-toolbar/play.png");
+  background-image: url("/ui/toolbar/play.png");
 }
 
 .oprn-icon-select::before {

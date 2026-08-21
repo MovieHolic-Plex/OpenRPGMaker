@@ -2,7 +2,10 @@ import type { AssetRef } from "../types";
 import { BUILTIN_SPRITE_SLICING, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 
 export const DEFAULT_TILESET_ID = "easyrpg_chipset_combined_town";
-export const DEFAULT_TILESET_NAME = "EasyRPG RTP Combined Town ChipSet";
+// 표시명 규약은 src/assets/bundled.ts 헤더 주석 참고 — 이 값은 새 프로젝트의 타일셋
+// 이름으로 저장되고 UI 에 그대로 보인다. bundled.ts 의 같은 textureKey 항목과 일치해야
+// 한다(test/easyrpgAssets.test.ts 가 두 값을 비교한다).
+export const DEFAULT_TILESET_NAME = "합본 마을 · EasyRPG (CC0)";
 export const DEFAULT_TILESET_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town";
 export const LEGACY_RM_TILESET_ID = "tiles_default";
 export const LEGACY_RM_TILESET_NAME = "RM 기본 샘플 타일 그림판";

@@ -12,13 +12,13 @@ type ImageProbe = {
 };
 
 const BATTLE_ASSETS = [
-  { path: "/assets/generated/rm2k3/hero-01-battle.png", width: 144, height: 384 },
-  { path: "/assets/generated/rm2k3/hero-02-battle.png", width: 144, height: 384 },
-  { path: "/assets/generated/rm2k3/hero-03-battle.png", width: 144, height: 384 },
-  { path: "/assets/generated/rm2k3/hero-04-battle.png", width: 144, height: 384 },
-  { path: "/assets/generated/rm2k3/monster-slime-01.png", width: 96, height: 96 },
-  { path: "/assets/generated/rm2k3/sylph-hornet-transparent.png", width: 64, height: 64 },
-  { path: "/assets/generated/rm2k3/troop-preview-slime.png", width: 96, height: 96 },
+  { path: "/assets/generated/starter/hero-01-battle.png", width: 144, height: 384 },
+  { path: "/assets/generated/starter/hero-02-battle.png", width: 144, height: 384 },
+  { path: "/assets/generated/starter/hero-03-battle.png", width: 144, height: 384 },
+  { path: "/assets/generated/starter/hero-04-battle.png", width: 144, height: 384 },
+  { path: "/assets/generated/starter/monster-slime-01.png", width: 96, height: 96 },
+  { path: "/assets/generated/starter/sylph-hornet-transparent.png", width: 64, height: 64 },
+  { path: "/assets/generated/starter/troop-preview-slime.png", width: 96, height: 96 },
 ] as const;
 
 test("generated battle assets load with magenta-keyed transparent corners", async ({ page }) => {

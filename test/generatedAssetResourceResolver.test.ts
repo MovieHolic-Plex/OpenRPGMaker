@@ -21,7 +21,7 @@ const PROMOTED_MANIFEST = {
       negativePrompt: "watermarks",
       status: "promoted",
       rawPath: ".omo/evidence/oprn-generated-assets-execution/raw/hero-01-face-12345678.png",
-      promotedPath: "public/assets/generated/rm2k3/hero-01-face.png",
+      promotedPath: "public/assets/generated/starter/hero-01-face.png",
       resourceId: "generated-actor-hero-01-face",
       sha256: "a".repeat(64),
       provenance: {
@@ -76,7 +76,7 @@ describe("generatedAssetResourceResolver", () => {
     const url = resolveGeneratedAssetResourceUrl("generated-actor-hero-01-face", PROMOTED_MANIFEST);
 
     // Then: the URL is rooted for the browser and does not include the public/ filesystem prefix.
-    expect(url).toBe("/assets/generated/rm2k3/hero-01-face.png");
+    expect(url).toBe("/assets/generated/starter/hero-01-face.png");
   });
 
   it("resolves the generated dragon monster registered in the runtime manifest", () => {
@@ -85,7 +85,7 @@ describe("generatedAssetResourceResolver", () => {
     const url = resolveGeneratedAssetResourceUrl("generated-enemy-dragon-01", GENERATED_ASSET_PLAN);
 
     // Then: battle previews can load the promoted monster PNG from public assets.
-    expect(url).toBe("/assets/generated/rm2k3/monster-dragon-01.png");
+    expect(url).toBe("/assets/generated/starter/monster-dragon-01.png");
   });
 
   it("resolves uploaded resources from the supplied project before generated manifest lookup", () => {
@@ -182,7 +182,7 @@ describe("generatedAssetResourceResolver", () => {
 
   it("rejects promoted generated paths with traversal segments", () => {
     // Given/When/Then: generated runtime URLs stay inside public/assets/generated.
-    expect(generatedAssetPromotedPathToUrl("public/assets/generated/rm2k3/title.png")).toBe("/assets/generated/rm2k3/title.png");
+    expect(generatedAssetPromotedPathToUrl("public/assets/generated/starter/title.png")).toBe("/assets/generated/starter/title.png");
     expect(generatedAssetPromotedPathToUrl("public/assets/generated/../../x.png")).toBeNull();
     expect(generatedAssetPromotedPathToUrl("public/assets/generated/%2e%2e/x.png")).toBeNull();
   });

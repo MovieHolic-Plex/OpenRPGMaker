@@ -132,7 +132,7 @@ export const SKY_TROOP = {
 
 /**
  * 몬스터 25종. 층마다 4종 + 천공 5종(보스 포함).
- * `sprite` 는 public/assets/generated/rm2k3/monster-<sprite>.png 에 실제로 있는 파일만 골랐고,
+ * `sprite` 는 public/assets/generated/starter/monster-<sprite>.png 에 실제로 있는 파일만 골랐고,
  * **25종이 서로 다른 스프라이트**다 — 이름만 다르고 같아 보이는 적을 만들지 않는다.
  *
  * 스탯 스케일 근거: 주인공 레벨1 이 HP 514 / 공 45 / 방 59 이고 데미지가

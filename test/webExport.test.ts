@@ -31,7 +31,7 @@ describe("web player export", () => {
 
     expect(zipPaths).toContain("assets/uploaded/used_picture.png");
     expect(zipPaths).not.toContain("assets/uploaded/unused_picture.png");
-    expect(zipPaths).toContain("assets/rm2k3-original-chipset.png");
+    expect(zipPaths).toContain("assets/easyrpg-chipset-exterior.png");
   });
 
   it("검증된 배포 manifest가 없으면 불완전 ZIP을 만들지 않는다", async () => {

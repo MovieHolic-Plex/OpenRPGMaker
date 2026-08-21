@@ -103,7 +103,7 @@ describe("title screen", () => {
       );
       expect(screen.style.backgroundImage).toContain("default-title-blue.png");
       expect(screen.style.borderImageSource).toBeUndefined();
-      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-rm2003.png");
+      expect(screen.style["--runtime-window-skin"]).toContain("windowskin-default.png");
     } finally {
       restoreDom();
     }
@@ -175,7 +175,7 @@ describe("title screen", () => {
       if (!(title instanceof FakeElement) || !(menu instanceof FakeElement)) {
         throw new Error("expected title screen children");
       }
-      expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
+      expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
       expect(title.style.left).toBe("50%");
       expect(menu.style.left).toBe("50%");
       expect(findByTestId(screen, "title-input-hint")?.textContent).toBe(TITLE_KEY_PROMPT);
@@ -650,7 +650,7 @@ describe("title screen", () => {
       expect(logo).toBeTruthy();
       expect(logo?.dataset.titleLogoResource).toBe("easyrpg-title-title1");
       // Background stays on the title-screen node; logo uses its own resource.
-      expect(screen.style.backgroundImage).toContain("rm2k3-title-field.png");
+      expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
     } finally {
       restoreDom();
     }

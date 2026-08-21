@@ -108,7 +108,7 @@ export function applyBattleSystemGraphic(node: HTMLElement, project?: Project): 
 
 function applyWindowSkinVariable(node: HTMLElement, resourceId: string | undefined, project?: Project): string {
   const skinId = resolveWindowSkinResourceId(resourceId);
-  const dataUrl = resourceUrl(skinId, project) ?? "/assets/ui/windowskin-rm2003.png";
+  const dataUrl = resourceUrl(skinId, project) ?? "/assets/ui/windowskin-default.png";
   const cssUrl = `url("${dataUrl}")`;
   node.style.setProperty("--runtime-window-skin", cssUrl);
   return cssUrl;

@@ -80,7 +80,7 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
 }
 
 /** Runtime CSS border-image windowskin. EasyRPG System/*.png sheets are not valid 9-slice skins. */
-export const DEFAULT_RUNTIME_WINDOW_SKIN_ID = "windowskin-rm2003";
+export const DEFAULT_RUNTIME_WINDOW_SKIN_ID = "windowskin-default";
 
 const EASYRPG_SYSTEM_SHEET_IDS = new Set([
   "easyrpg-system-system",

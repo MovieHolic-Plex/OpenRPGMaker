@@ -54,7 +54,7 @@ console.log(`package: ${pkgBase64.length} base64 chars, maps=${mapCount}, upload
 
 const charset = await toDataUrl("public/assets/easyrpg-charset-object1.png");
 const chipset = await toDataUrl("public/assets/easyrpg-chipset-interior.png");
-const face = await toDataUrl("public/assets/generated/rm2k3/hero-01-face.png");
+const face = await toDataUrl("public/assets/generated/starter/hero-01-face.png");
 
 const assets = [
   {
