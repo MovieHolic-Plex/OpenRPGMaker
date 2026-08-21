@@ -110,13 +110,29 @@ export function flashCamera(scene: PlaySceneContext, step: FlashScreenStep): Pro
   });
 }
 
-// Shake Screen: 카메라를 지정 시간 동안 흔든다. intensity 는 0~1 범위의 세기.
-// RM2K3 의 흔들림 강도(1~10)를 Phaser 의 0~1 비율로 정규화한다.
+/**
+ * RM2K3 흔들림 강도(1~10)를 Phaser `shake()` 의 0~1 비율로 정규화한다.
+ *
+ * 상한이 0.05 였을 때 에디터 프리셋 6("강하게")과 10("매우 강하게")이 **둘 다 0.05 로 잘려**
+ * 화면상 완전히 같았다. 감독은 다이얼을 올려도 변화가 없어 다시 올리고 다시 재생하는
+ * 왕복을 반복했다. 상한을 강도 10 의 자연값인 0.10 으로 올려 4단계가 실제로 4단계가 되게 한다.
+ * 이제 클램프는 세기를 압축하는 장치가 아니라 **범위 밖 입력만 막는 가드**다.
+ */
+export function shakeIntensityRatio(power: number): number {
+  if (!Number.isFinite(power)) return SHAKE_MIN_RATIO;
+  return Math.min(SHAKE_MAX_RATIO, Math.max(SHAKE_MIN_RATIO, power / 100));
+}
+
+/** 강도 1 의 자연값. 0 을 주면 흔들림이 아예 없어 "명령이 무시됐다" 로 보인다. */
+const SHAKE_MIN_RATIO = 0.01;
+/** 강도 10 의 자연값. 뷰포트의 10% — RM2K3 최대 흔들림에 해당한다. */
+const SHAKE_MAX_RATIO = 0.1;
+
+// Shake Screen: 카메라를 지정 시간 동안 흔든다.
 export function shakeCamera(scene: PlaySceneContext, step: ShakeScreenStep): Promise<void> {
   return new Promise((resolve) => {
     scene.cameras.main.once("camerashakecomplete", () => resolve());
-    const intensity = Math.min(0.05, Math.max(0.001, step.intensity / 100));
-    scene.cameras.main.shake(step.durationMs, intensity);
+    scene.cameras.main.shake(step.durationMs, shakeIntensityRatio(step.intensity));
   });
 }
 

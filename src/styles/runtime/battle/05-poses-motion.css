@@ -144,9 +144,11 @@
   100% { transform: var(--battle-juice-base, translate(-50%, -100%)); }
 }
 
+/* 색과 지속은 애니메이션 타이밍의 flash.color / flash.durationFrames 에서 온다
+   (battleAnimationEffectStyle.ts). 변수가 없으면 종전 고정값으로 떨어진다. */
 .battle-scene.battle-screen-flash::before {
-  animation: battle-screen-flash 0.2s ease-out 2;
-  background: rgba(180, 190, 255, 0.45);
+  animation: battle-screen-flash var(--battle-flash-duration, 0.2s) ease-out 2;
+  background: var(--battle-flash-color, rgba(180, 190, 255, 0.45));
   content: "";
   inset: 0;
   pointer-events: none;

@@ -13,12 +13,15 @@ const MODERN_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "screen", label: "화면" },
 ];
 
-const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
+// 노출: "고를 수 있는 옵션은 전부 렌더 경로가 있다" 를 테스트가 대조한다.
+export const SCREEN_EFFECT_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "fadeIn", label: "페이드 인" },
   { value: "fadeOut", label: "페이드 아웃" },
   { value: "flash", label: "플래시" },
   { value: "tint", label: "색조" },
-  { value: "blur", label: "블러" },
+  // blur 는 렌더러가 없다. 고를 수 있게 두면 감독이 넣고 아무 일도 안 일어나는
+  // 조용한 실패가 난다 — 목록에서 내린다. 기존 프로젝트에 남아 있는 값은
+  // planScreenEffect 가 unsupported 로 돌려 fallbacks 에 기록된다.
   { value: "weather", label: "날씨" },
 ];
 

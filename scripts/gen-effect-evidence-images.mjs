@@ -7,7 +7,7 @@
 // 산출물: output/evidence/effect-report/
 //   sheet-<name>-full.png      시트 원본(투명 처리 + 체커보드 합성)
 //   record-<id>-strip.png      레코드가 실제 재생하는 프레임만 가로로 이어붙인 스트립
-//   flash-swatches.png         저작됐지만 렌더에서 버려지는 flash 색 스와치
+//   record-<id>-flash.png      flash.color 배선 후 화면에 실제로 얹히는 색까지 반영한 스트립
 //
 // 실행: node scripts/gen-effect-evidence-images.mjs
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -47,6 +47,35 @@ function onChecker(image) {
   }
   board.composite(image, 0, 0);
   return board;
+}
+
+/** #rrggbb → {r,g,b}. */
+function hexRgb(hex) {
+  const value = Number.parseInt(hex.replace("#", ""), 16);
+  return { r: (value >> 16) & 255, g: (value >> 8) & 255, b: value & 255 };
+}
+
+/**
+ * 화면 플래시가 얹힌 모습을 재현한다.
+ * 알파는 battleAnimationEffectStyle.ts 의 FLASH_PEAK_ALPHA(0.45) 와 맞춘다 —
+ * 이 값이 어긋나면 보고서가 실제와 다른 그림을 보여주게 된다.
+ */
+const FLASH_PEAK_ALPHA = 0.45;
+function washWithFlash(image, hex) {
+  const { r, g, b } = hexRgb(hex);
+  const { width, height } = image.bitmap;
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const px = image.getPixelColor(x, y);
+      const sr = (px >>> 24) & 255;
+      const sg = (px >>> 16) & 255;
+      const sb = (px >>> 8) & 255;
+      const sa = px & 255;
+      const mix = (src, dst) => Math.round(src * (1 - FLASH_PEAK_ALPHA) + dst * FLASH_PEAK_ALPHA);
+      image.setPixelColor(((mix(sr, r) << 24) | (mix(sg, g) << 16) | (mix(sb, b) << 8) | sa) >>> 0, x, y);
+    }
+  }
+  return image;
 }
 
 /** 시트에서 pattern 번호의 셀을 잘라낸다. */
@@ -120,6 +149,10 @@ for (const record of RECORDS) {
   });
 
   writeFileSync(join(OUT, `record-${record.id}-strip.png`), await strip.getBufferAsync(Jimp.MIME_PNG));
+  if (record.flash) {
+    const flashed = washWithFlash(strip.clone(), record.flash);
+    writeFileSync(join(OUT, `record-${record.id}-flash.png`), await flashed.getBufferAsync(Jimp.MIME_PNG));
+  }
   meta.records.push({
     id: record.id,
     name: record.name,
@@ -136,19 +169,28 @@ for (const record of RECORDS) {
   console.log(`[record] ${record.id.padEnd(26)} ${record.sheet.padEnd(20)} patterns=[${record.patterns}] ${count * 120}ms`);
 }
 
-// shake 클램프는 순수 함수다 — 스크린샷보다 계산표가 정확한 증거다.
-// src/player/playSceneMapCommands.ts:118
+// shake 매핑은 순수 함수라 스크린샷보다 계산표가 정확한 증거다.
+// 수정 전: Math.min(0.05, ...) 상한 때문에 프리셋 6·10 이 둘 다 0.05 로 잘렸다.
+// 수정 후: 상한을 강도 10 의 자연값 0.10 으로 올려 4단계가 실제로 4단계가 된다.
+//          (src/player/playSceneMapCommands.ts 의 shakeIntensityRatio 와 같은 식)
+const SHAKE_LABELS = { 1: "약하게", 3: "보통", 6: "강하게", 10: "매우 강하게" };
 const shakeTable = [1, 3, 6, 10].map((preset) => ({
   preset,
-  label: { 1: "약하게", 3: "보통", 6: "강하게", 10: "매우 강하게" }[preset],
+  label: SHAKE_LABELS[preset],
   raw: preset / 100,
-  clamped: Math.min(0.05, Math.max(0.001, preset / 100)),
+  before: Math.min(0.05, Math.max(0.001, preset / 100)),
+  after: Math.min(0.1, Math.max(0.01, preset / 100)),
 }));
 meta.shakeTable = shakeTable;
-console.log("\n[shake] 프리셋 → 실제 Phaser intensity");
+meta.shakeDistinctBefore = new Set(shakeTable.map((row) => row.before)).size;
+meta.shakeDistinctAfter = new Set(shakeTable.map((row) => row.after)).size;
+console.log("");
+console.log("[shake] 프리셋 → 실제 Phaser intensity (수정 전 → 수정 후)");
 for (const row of shakeTable) {
-  console.log(`  ${String(row.preset).padStart(2)} ${row.label.padEnd(8)} raw=${row.raw.toFixed(2)} → clamped=${row.clamped.toFixed(2)}${row.raw !== row.clamped ? "  ← 잘림" : ""}`);
+  const fixed = row.before !== row.after ? "  ← 고쳐짐" : "";
+  console.log(`  ${String(row.preset).padStart(2)} ${row.label.padEnd(8)} ${row.before.toFixed(2)} → ${row.after.toFixed(2)}${fixed}`);
 }
+console.log(`  구분되는 단계: ${meta.shakeDistinctBefore} → ${meta.shakeDistinctAfter} / 4`);
 
 writeFileSync(join(OUT, "meta.json"), `${JSON.stringify(meta, null, 2)}\n`);
 console.log(`\n산출물: ${OUT}`);

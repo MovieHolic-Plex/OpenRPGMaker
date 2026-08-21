@@ -17,6 +17,7 @@ import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpr
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
@@ -182,6 +183,26 @@ function executeM2Command(
       green: rgb.green,
       blue: rgb.blue,
       durationMs: clampMs(fieldNumber(command.fields, "durationMs", 300)),
+    });
+  }
+
+  // 모던 Screen Effect 의 flash 옵션도 구식 Flash Screen 과 같은 카메라 경로를 탄다.
+  // 지속형(tint/fade)·날씨는 applyScreenEffect 가 runtime.screen 에 반영해 두므로
+  // 여기서는 일회형만 블로킹 pause 로 넘긴다.
+  if (entry.title === "Screen Effect" && executeM2RuntimeCommand(state.session, entry, command, m2Context)) {
+    const plan = planScreenEffect(
+      fieldString(command.fields, "effect", "fadeIn"),
+      fieldString(command.fields, "value", ""),
+      fieldNumber(command.fields, "durationMs", 300)
+    );
+    if (plan.kind !== "flash") return resumeNext(frame);
+    const rgb = screenColorToRgb(plan.color);
+    return pause("flashScreen", {
+      kind: "flashScreen",
+      red: rgb.red,
+      green: rgb.green,
+      blue: rgb.blue,
+      durationMs: clampMs(plan.durationMs),
     });
   }
 

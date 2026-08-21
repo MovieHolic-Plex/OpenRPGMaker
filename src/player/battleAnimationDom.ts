@@ -2,8 +2,13 @@ import type { BattleSnapshot } from "@/battle/runtime";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
-import type { BattleAnimationRecord } from "@/project/types";
+import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
 import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
+import {
+  BATTLE_EFFECT_CSS_VARIABLES,
+  flashCssVariables,
+  screenShakeCssVariables,
+} from "@/player/battleAnimationEffectStyle";
 import { findBattlerNode } from "@/player/battleFieldDom";
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 
@@ -216,10 +221,27 @@ function setActiveAnimationFrame(
   element.classList.toggle("battle-animation-flash-active", Boolean(timing?.flash));
   element.classList.toggle("battle-animation-shake-active", Boolean(timing?.screenShake));
   if (sceneRoot) {
+    // 존재 여부만 보고 클래스를 켜면 감독이 저작한 색·지속·세기가 전부 버려진다.
+    // 값을 CSS 변수로 흘려야 「타격」·「마법 충격」·「회복 빛」이 화면에서 구분된다.
+    applyEffectVariables(sceneRoot, timing?.flash, timing?.screenShake);
     sceneRoot.classList.toggle("battle-screen-shake", Boolean(timing?.screenShake));
     sceneRoot.classList.toggle("battle-screen-flash", Boolean(timing?.flash));
   }
   playTimingSound(timing?.soundResourceId);
+}
+
+function applyEffectVariables(
+  sceneRoot: HTMLElement,
+  flash: BattleAnimationTiming["flash"],
+  screenShake: BattleAnimationTiming["screenShake"]
+): void {
+  // 효과 없는 프레임에서 걷어내지 않으면 다음 효과가 이전 값을 물려받는다.
+  for (const name of BATTLE_EFFECT_CSS_VARIABLES) sceneRoot.style.removeProperty(name);
+  const variables = {
+    ...(flash ? flashCssVariables(flash) : {}),
+    ...(screenShake ? screenShakeCssVariables(screenShake) : {}),
+  };
+  for (const [name, value] of Object.entries(variables)) sceneRoot.style.setProperty(name, value);
 }
 
 function playTimingSound(soundResourceId: string | undefined): void {
