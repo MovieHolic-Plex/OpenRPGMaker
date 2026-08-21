@@ -10,7 +10,6 @@ import {
   getEditorChrome,
   getEditorUiMode,
   setEditorUiMode,
-  type EditorUiMode,
 } from "@/editor/editorUiMode";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
@@ -40,6 +39,7 @@ import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
 import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
+import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
@@ -88,7 +88,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
     menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
   }
-  menuBar.append(renderEditorUiModeToggle());
+  menuBar.append(...renderWorkspaceBar());
   if (uiMode === "standard") menuBar.append(...renderStandardMoreTools());
   // History + identity sit as trailing icon buttons (right end), before window chrome.
   const trailing = el("div", {
@@ -126,45 +126,6 @@ function renderProductBrand(): HTMLElement {
       el("span", { class: "editor-product-brand-text", text: EDITOR_PRODUCT_BRAND }),
     ],
   });
-}
-
-function renderEditorUiModeToggle(): HTMLElement {
-  const current = getEditorUiMode();
-  const group = el("div", {
-    class: "editor-ui-mode-toggle",
-    attrs: { role: "group", "aria-label": "에디터 UI 모드" },
-    dataset: { testid: "editor-ui-mode-toggle" },
-  });
-  const makeButton = (mode: EditorUiMode, label: string, testId: string): HTMLElement =>
-    el("button", {
-      class: `editor-ui-mode-btn${current === mode ? " is-active" : ""}`,
-      text: label,
-      attrs: {
-        type: "button",
-        "aria-pressed": current === mode ? "true" : "false",
-        title:
-          mode === "beginner"
-            ? "초보 — AI와 핵심 도구에 집중"
-            : mode === "standard"
-              ? "표준 — 팔레트와 맵 트리를 함께 사용"
-              : "전문가 — 전체 도구와 고밀도 정보 표시",
-      },
-      dataset: { testid: testId, editorUiMode: mode },
-      on: {
-        click: (event) => {
-          event.stopPropagation();
-          // 구독자가 나머지를 처리한다: editor.ts(applyEditorUiModeLayout) + app/mode.ts(renderTopbar).
-          // 여기서 직접 다시 그리면 전환 1회에 레이아웃/탑바가 2번씩 렌더된다.
-          setEditorUiMode(mode);
-        },
-      },
-    });
-  group.append(
-    makeButton("beginner", "초보", "editor-ui-mode-beginner"),
-    makeButton("standard", "표준", "editor-ui-mode-standard"),
-    makeButton("expert", "전문가", "editor-ui-mode-expert"),
-  );
-  return group;
 }
 
 export function readableTopbarIdentityLabel(label: string): string {

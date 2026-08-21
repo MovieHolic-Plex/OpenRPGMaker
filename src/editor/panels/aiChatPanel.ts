@@ -29,7 +29,7 @@ import { classifyProposalSafety } from "@/editor/proposalSafety";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
-import { openCommandPalette } from "./commandPalette";
+import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
@@ -2546,11 +2546,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
     }
   };
+  // 단축키를 모르는 사용자를 위한 클릭 경로 — 탑바의 ⌘K 칩이 이 이벤트를 쏜다.
+  // 팔레트를 열려면 스킬 실행기(drawer)가 필요하고 그건 이 패널만 갖고 있으므로,
+  // 열기 요청은 이벤트로 받고 실제 열기는 여기서 한다.
+  const onCommandPaletteRequest = (): void => {
+    openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
+  };
   let ownsCommandPaletteHotkey = false;
   if (typeof window !== "undefined" && !(window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey) {
     (window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey = true;
     ownsCommandPaletteHotkey = true;
     document.addEventListener?.("keydown", onCommandPaletteKeyDown);
+    window.addEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
   }
 
   // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
@@ -2722,6 +2729,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (window.__oprnAiHarness === harnessAccessor) delete window.__oprnAiHarness;
       if (ownsCommandPaletteHotkey) {
         document.removeEventListener?.("keydown", onCommandPaletteKeyDown);
+        window.removeEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
         delete (window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey;
       }
     }

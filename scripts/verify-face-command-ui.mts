@@ -45,8 +45,6 @@ async function main(): Promise<void> {
 
   const takeover = page.getByTestId("map-lock-banner-takeover");
   if (await takeover.isVisible().catch(() => false)) await takeover.click();
-  const expert = page.getByTestId("editor-ui-mode-expert");
-  if (await expert.isVisible().catch(() => false)) await expert.click();
 
   await page.getByTestId("layer-event").click();
   // tool-event may be in basic rail; click visible one

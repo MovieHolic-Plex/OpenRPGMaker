@@ -3,7 +3,14 @@
 import { applyLayer } from "@/editor/hotkeys";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
-import { getEditorUiMode, setEditorUiMode } from "@/editor/editorUiMode";
+import { allPanels } from "@/editor/workspace/panelRegistry";
+import { WORKSPACE_PRESETS, type WorkspaceDensity } from "@/editor/workspace/workspaceLayout";
+import {
+  moveWorkspacePanel,
+  setWorkspaceDensity,
+  setWorkspacePreset,
+  toggleWorkspacePanel,
+} from "@/editor/workspace/workspaceStore";
 import { activateLeftDrawerTab } from "@/editor/leftDrawerTab";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
@@ -25,6 +32,17 @@ export interface EditorCommand {
 
 // 라벨은 uiCopy 의 toolLabel 단일 원천. keywords 에는 **구 용어도 남긴다** —
 // 예전 이름(브러시·펜·지우개·스포이트)으로 검색하는 사용자를 막지 않는다.
+/** 밀도 3단 — 예전 모드 이름을 keywords 로 남겨 「초보/전문가」 검색이 계속 닿게 한다. */
+const DENSITY_COMMANDS: readonly {
+  readonly density: WorkspaceDensity;
+  readonly label: string;
+  readonly keywords: readonly string[];
+}[] = [
+  { density: "guided", label: "안내", keywords: ["guided", "beginner", "초보", "안내"] },
+  { density: "comfortable", label: "보통", keywords: ["standard", "표준", "보통"] },
+  { density: "dense", label: "촘촘", keywords: ["expert", "dense", "전문가", "촘촘", "고밀도"] },
+];
+
 const TOOL_COMMANDS: readonly { id: Tool; keywords: readonly string[]; hotkey: string }[] = [
   { id: "select", keywords: ["select", "선택", "영역"], hotkey: "V" },
   { id: "paint", keywords: ["brush", "paint", "칠하기", "펜", "브러시"], hotkey: "B" },
@@ -60,16 +78,39 @@ export function listEditorCommands(): readonly EditorCommand[] {
     { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
     { id: "layer-upper", label: "레이어: 덧그림", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
     { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
-    {
-      id: "mode-toggle",
-      label: "화면: 초보→표준→전문가 모드 전환",
+    // 작업 프리셋 — 예전 「초보/표준/전문가」 모드 명령을 대체한다. keywords 에 구 모드
+    // 이름을 남겨 예전 이름으로 검색하는 사용자를 막지 않는다.
+    ...WORKSPACE_PRESETS.map((preset): EditorCommand => ({
+      id: `workspace-preset-${preset.id}`,
+      label: `화면: 프리셋 — ${preset.label}`,
       category: "화면",
-      keywords: ["mode", "beginner", "standard", "expert", "초보", "표준", "전문가", "모드"],
-      run: () => {
-        const mode = getEditorUiMode();
-        setEditorUiMode(mode === "beginner" ? "standard" : mode === "standard" ? "expert" : "beginner");
+      keywords: ["preset", "workspace", "프리셋", "레이아웃", preset.label, "모드", "초보", "표준", "전문가"],
+      run: () => setWorkspacePreset(preset.id),
+    })),
+    ...DENSITY_COMMANDS.map(({ density, label, keywords }): EditorCommand => ({
+      id: `workspace-density-${density}`,
+      label: `화면: 밀도 — ${label}`,
+      category: "화면",
+      keywords: ["density", "밀도", label, ...keywords],
+      run: () => setWorkspaceDensity(density),
+    })),
+    // 패널 도킹 — ⌘K 에서 좌/우 도크로 바로 보낼 수 있게 한다(탑바 ▤ 메뉴와 같은 동작).
+    ...allPanels().flatMap((panel): readonly EditorCommand[] => [
+      {
+        id: `workspace-panel-${panel.id}`,
+        label: `화면: 패널 — ${panel.title} 열기/닫기`,
+        category: "화면",
+        keywords: ["panel", "dock", "패널", "도크", panel.title],
+        run: () => toggleWorkspacePanel(panel.id),
       },
-    },
+      ...(["left", "right"] as const).map((zone): EditorCommand => ({
+        id: `workspace-panel-${panel.id}-${zone}`,
+        label: `화면: 패널 — ${panel.title}를 ${zone === "left" ? "왼쪽" : "오른쪽"}으로`,
+        category: "화면",
+        keywords: ["panel", "dock", "move", "패널", "도크", "이동", panel.title],
+        run: () => moveWorkspacePanel(panel.id, zone),
+      })),
+    ]),
     {
       id: "test-play",
       label: "화면: 시연 실행 실행",
@@ -134,27 +175,6 @@ export function listEditorCommands(): readonly EditorCommand[] {
       category: "화면",
       keywords: ["drawer", "event", "서랍", "이벤트"],
       run: () => activateLeftDrawerTab("event"),
-    },
-    {
-      id: "mode-beginner",
-      label: "화면: 초보 모드",
-      category: "화면",
-      keywords: ["mode", "beginner", "초보", "모드"],
-      run: () => setEditorUiMode("beginner"),
-    },
-    {
-      id: "mode-standard",
-      label: "화면: 표준 모드",
-      category: "화면",
-      keywords: ["mode", "standard", "표준", "모드"],
-      run: () => setEditorUiMode("standard"),
-    },
-    {
-      id: "mode-expert",
-      label: "화면: 전문가 모드",
-      category: "화면",
-      keywords: ["mode", "expert", "전문가", "모드"],
-      run: () => setEditorUiMode("expert"),
     },
     {
       id: "toggle-chat-dock",
