@@ -32,6 +32,7 @@ export type FarmIgnoreReason =
   | "plot-needs-clearing"
   | "plot-needs-tilling"
   | "wrong-tool-for-plot"
+  | "out-of-season"
   | "nothing-to-harvest";
 
 /**
@@ -53,6 +54,9 @@ const FARM_IGNORE_MESSAGES: Readonly<Record<FarmIgnoreReason, string | null>> = 
   "missing-axe": "도끼가 필요합니다",
   "missing-pickaxe": "곡괭이가 필요합니다",
   "wrong-tool-for-plot": "지금 든 도구로는 할 수 없습니다",
+  // 계절은 농사 게임의 가장 큰 규칙이다. 이걸 도구 탓으로 돌리면 플레이어는 씨앗을 바꿔 보거나
+  // 밭을 다시 갈아 보며 헤맨다 — 손에 든 것도 밭도 옳았기 때문이다.
+  "out-of-season": "이 씨앗은 지금 철이 아닙니다",
   "nothing-to-harvest": "수확할 것이 없습니다",
 });
 
@@ -177,7 +181,7 @@ function interactWithIntent(
       if (!existing?.tilled) return ignored(tileX, tileY, "plot-needs-tilling");
       if (existing.cropId) return ignored(tileX, tileY, "wrong-tool-for-plot");
       const crop = handSeedCrop(project, session);
-      if (crop === "out-of-season") return ignored(tileX, tileY, "wrong-tool-for-plot");
+      if (crop === "out-of-season") return ignored(tileX, tileY, "out-of-season");
       if (!crop) return ignored(tileX, tileY, "missing-seed");
       return plantPlot(session, plots, key, tileX, tileY, crop);
     }

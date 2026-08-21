@@ -294,6 +294,7 @@ describe("손 슬롯 의도 계약", () => {
     "plot-needs-clearing": false,
     "plot-needs-tilling": false,
     "wrong-tool-for-plot": false,
+    "out-of-season": false,
     "nothing-to-harvest": false,
   };
 
@@ -347,7 +348,13 @@ describe("손 슬롯 의도 계약", () => {
     setEquippedTool(session, "item_tomato_seed");
     const result = interactWithFarmPlot(project, session, map, 4, 5, "plant");
     expect(result.kind).toBe("ignored");
-    expect(result.reason).toBe("wrong-tool-for-plot");
+    /**
+     * 사유는 **계절**이어야 한다. 예전에는 `wrong-tool-for-plot` 을 돌려주어
+     * "지금 든 도구로는 할 수 없습니다" 가 떴다 — 손에 든 씨앗도 갈아 둔 밭도 옳은데
+     * 도구를 의심하게 만드는 거짓이었고, 계절이라는 진짜 이유는 화면에 없었다(브라우저 실측).
+     */
+    expect(result.reason, "계절 거절이 도구 사유로 위장돼 있다").toBe("out-of-season");
+    expect(farmIgnoreMessage(result.reason)).toBe("이 씨앗은 지금 철이 아닙니다");
     expect(session.inventory.item_tomato_seed).toBe(2);
     expect(farmPlotAt(session, map.id, 4, 5)?.cropId).toBeUndefined();
   });
