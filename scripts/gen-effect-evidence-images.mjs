@@ -153,6 +153,35 @@ for (const record of RECORDS) {
     const flashed = washWithFlash(strip.clone(), record.flash);
     writeFileSync(join(OUT, `record-${record.id}-flash.png`), await flashed.getBufferAsync(Jimp.MIME_PNG));
   }
+
+  // 재생용 필름 — CSS `steps()` 로 넘기려면 셀 사이 간격이 0 이어야 한다.
+  // 감독에게 "이펙트가 뭐냐" 를 답하는 건 정지 컷이 아니라 실제로 도는 그림이다.
+  const film = new Jimp(cellW * count, source.frameHeight * SCALE, 0x00000000);
+  const filmFlash = record.flash ? new Jimp(cellW * count, source.frameHeight * SCALE, 0x00000000) : null;
+  record.patterns.forEach((pattern, index) => {
+    const crop = cell(source.image, pattern, source.frameWidth, source.frameHeight, source.columns);
+    const zoom = (record.zoom[index] ?? 100) / 100;
+    const alpha = (record.opacity[index] ?? 255) / 255;
+    const scaled = crop.scale(SCALE * zoom, Jimp.RESIZE_NEAREST_NEIGHBOR);
+    if (alpha < 1) scaled.opacity(alpha);
+    const cellCanvas = new Jimp(cellW, source.frameHeight * SCALE, 0x00000000);
+    cellCanvas.composite(
+      scaled,
+      Math.round((cellW - scaled.bitmap.width) / 2),
+      Math.round((source.frameHeight * SCALE - scaled.bitmap.height) / 2)
+    );
+    film.composite(cellCanvas, index * cellW, 0);
+    // 플래시는 프레임 배경까지 덮으므로 체커보드가 아니라 불투명 무대 위에 올려야 실제와 같다.
+    if (filmFlash) {
+      const stage = new Jimp(cellW, source.frameHeight * SCALE, 0x1a1a22ff);
+      stage.composite(cellCanvas, 0, 0);
+      filmFlash.composite(washWithFlash(stage, record.flash), index * cellW, 0);
+    }
+  });
+  writeFileSync(join(OUT, `record-${record.id}-film.png`), await film.getBufferAsync(Jimp.MIME_PNG));
+  if (filmFlash) {
+    writeFileSync(join(OUT, `record-${record.id}-film-flash.png`), await filmFlash.getBufferAsync(Jimp.MIME_PNG));
+  }
   meta.records.push({
     id: record.id,
     name: record.name,
@@ -165,6 +194,9 @@ for (const record of RECORDS) {
     flashLabel: record.flashLabel,
     frames: count,
     durationMs: count * 120,
+    // 재생용 필름 한 칸 크기 — HTML 이 background-size 계산에 쓴다.
+    filmCellPx: cellW,
+    filmHeightPx: source.frameHeight * SCALE,
   });
   console.log(`[record] ${record.id.padEnd(26)} ${record.sheet.padEnd(20)} patterns=[${record.patterns}] ${count * 120}ms`);
 }
