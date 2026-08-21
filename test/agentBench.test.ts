@@ -178,6 +178,14 @@ describe("과정 지표 파싱", () => {
     expect(metrics.stopReason).toBe("end_turn");
   });
 
+  it("별칭이 해석된 실제 모델 id 를 기록한다", () => {
+    // --model opus 같은 별칭은 시간이 지나면 다른 버전을 가리킨다. 별칭만 적어 둔
+    // 기록으로는 "그때 무엇을 쟀는가"에 답할 수 없다.
+    const stdout = '{"num_turns":3,"modelUsage":{"claude-haiku-4-5-20251001":{"outputTokens":10}}}';
+    expect(processMetrics(stdout).resolvedModels).toEqual(["claude-haiku-4-5-20251001"]);
+    expect(processMetrics("{}").resolvedModels).toEqual([]);
+  });
+
   it("JSON 이 없으면 전부 null 이고 throw 하지 않는다", () => {
     const metrics = processMetrics("경고만 있고 결과가 없다");
     expect(metrics.turns).toBeNull();

@@ -10,6 +10,12 @@ export interface AgentProcessMetrics {
   readonly outputTokens: number | null;
   readonly isError: boolean;
   readonly stopReason: string | null;
+  /**
+   * 실제로 응답한 모델 id 들(`modelUsage` 키). `--model opus` 같은 **별칭은 시간이
+   * 지나면 다른 버전을 가리키므로** 별칭만 적어 둔 기록은 벤치마크 기록이 아니다.
+   * 서브에이전트가 다른 모델을 썼으면 여기 둘 이상이 들어온다.
+   */
+  readonly resolvedModels: readonly string[];
 }
 
 /**
@@ -35,7 +41,13 @@ export function readClaudeResult(stdout: string): Record<string, unknown> | null
 export function processMetrics(stdout: string): AgentProcessMetrics {
   const json = readClaudeResult(stdout);
   const usage = (json?.usage ?? {}) as Record<string, unknown>;
+  const modelUsage = json?.modelUsage;
+  const resolvedModels =
+    modelUsage && typeof modelUsage === "object" && !Array.isArray(modelUsage)
+      ? Object.keys(modelUsage as Record<string, unknown>).sort()
+      : [];
   return {
+    resolvedModels,
     turns: typeof json?.num_turns === "number" ? json.num_turns : null,
     costUsd: typeof json?.total_cost_usd === "number" ? json.total_cost_usd : null,
     outputTokens: typeof usage.output_tokens === "number" ? (usage.output_tokens as number) : null,

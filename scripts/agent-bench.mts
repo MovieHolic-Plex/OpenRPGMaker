@@ -43,6 +43,8 @@ interface RunRecord {
     readonly outputTokens: number | null;
     readonly isError: boolean;
     readonly stopReason: string | null;
+    /** 별칭이 실제로 어떤 모델로 해석됐는가 — 별칭은 시간이 지나면 옮겨간다. */
+    readonly resolvedModels: readonly string[];
   };
   readonly submission: { readonly found: boolean; readonly reason: string | null; readonly bytes: number };
   readonly score: { readonly quality: number; readonly scale: number; readonly detail: Record<string, number> } | null;
@@ -164,7 +166,9 @@ async function commandRun(flags: Record<string, string>): Promise<number> {
 function printRecord(record: RunRecord): void {
   const p = record.process;
   console.log(
-    `  ${record.model.padEnd(8)} turns=${p.turns ?? "?"} cost=$${(p.costUsd ?? 0).toFixed(2)} ` +
+    `  ${record.model.padEnd(8)} -> ${(p.resolvedModels ?? []).join(", ") || "?"}
+` +
+      `  turns=${p.turns ?? "?"} cost=$${(p.costUsd ?? 0).toFixed(2)} ` +
       `${((p.durationMs ?? 0) / 60000).toFixed(1)}min`,
   );
   if (!record.score) {
