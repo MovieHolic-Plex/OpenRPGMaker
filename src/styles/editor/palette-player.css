@@ -527,24 +527,37 @@
   line-height: 1.5;
 }
 
-.toast {
+/* 스택 컨테이너가 화면 고정·가운데 정렬을 맡는다. 개별 토스트는 흐름 안에 쌓인다.
+   column-reverse 라 최신 토스트가 항상 아래(눈이 가는 자리)에 온다. */
+.toast-stack {
   position: fixed;
   bottom: var(--space-4);
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  max-width: min(560px, calc(100vw - 32px));
+}
+
+.toast {
+  position: relative;
+  transform: translateY(8px);
   background: var(--bg-elev);
   border: 1px solid var(--border);
   color: var(--text);
   padding: var(--space-2) var(--space-4);
   border-radius: var(--radius);
   font-size: 13px;
-  z-index: 1000;
   opacity: 0;
   transition: opacity 0.2s, transform 0.2s;
   box-shadow: 0 6px 20px rgba(42, 37, 33, 0.10);
   pointer-events: none;
   /* 참조 위치 정보가 붙어 메시지가 길어질 수 있다(fix(db)) — 뷰포트 밖으로 새지 않도록
-     너비를 제한하고 2줄까지만 보여준 뒤 자른다. */
+     너비를 제한하고 2줄까지만 보여준 뒤 자른다. 너비 상한은 스택 컨테이너와 같다. */
   max-width: min(560px, calc(100vw - 32px));
   display: flex;
   align-items: center;
@@ -563,7 +576,17 @@
 }
 .toast.show {
   opacity: 1;
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
+}
+
+/* 밀려난 이전 토스트는 살짝 죽여 최신 것에 눈이 가게 한다. */
+.toast-stack .toast:not(:last-child) {
+  opacity: 0.72;
+  font-size: 12.5px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: none; transform: none; }
 }
 .toast.show.has-action {
   /* 복구 버튼 클릭 가능 */

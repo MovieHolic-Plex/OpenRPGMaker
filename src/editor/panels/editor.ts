@@ -5,6 +5,7 @@ import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/a
 import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
+import { installToolCursor } from "@/editor/toolCursor";
 import {
   applyEditorUiModeClasses,
   getEditorChrome,
@@ -228,6 +229,7 @@ export function renderEditor(main: HTMLElement): void {
     if (!getEditorChrome().coachMarks || !getEditorChrome().standardWelcome) dismissCoachMarks();
   });
   installSelectionChipHint();
+  installToolCursor();
   maybeStartBasicCoachMarks();
   maybeStartStandardWelcomeCard();
   startAiConnectionPolling();
