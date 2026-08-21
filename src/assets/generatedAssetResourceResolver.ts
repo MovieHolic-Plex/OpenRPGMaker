@@ -1,5 +1,6 @@
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
+import { resolveBgmCatalogAssetUrl } from "./bgmCatalogResolver";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
@@ -235,7 +236,9 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveScarloxyAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
-    resolveCc0AudioAssetUrl(resourceId);
+    resolveCc0AudioAssetUrl(resourceId) ??
+    // 281곡 CC0 BGM 카탈로그. 파일이 레포에 없고 CDN 에서 오므로 절대 URL 이 나올 수 있다.
+    resolveBgmCatalogAssetUrl(resourceId);
   if (packagedUrl !== null) return packagedUrl;
   const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;
   if (uploadedUrl !== undefined) return safeUploadedResourceUrl(uploadedUrl);

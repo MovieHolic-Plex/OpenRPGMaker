@@ -1,6 +1,7 @@
 // 리소스 시맨틱 텍스트 검색. Phase 1 `list_resources` 툴(핸드오프 0.4 DoD)이 사용할 조회 함수.
 // 부분 문자열 + 태그 매칭, 한국어 질의 기준.
 
+import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { EASYRPG_BACKDROP_ASSETS, EASYRPG_MUSIC_ASSETS, EASYRPG_RTP_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
@@ -218,11 +219,20 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
         })),
       ];
     case "bgm":
-      return EASYRPG_MUSIC_ASSETS.map((asset) => ({
-        id: `bgm:${asset.id}`,
-        label: asset.name,
-        tags: moodTagsForAsset(asset),
-      }));
+      return [
+        // 281곡 CC0 카탈로그가 기본 BGM 세트다. EasyRPG RTP 보다 앞에 둬서
+        // 동점일 때 카탈로그 곡이 먼저 나오게 한다.
+        ...BGM_CATALOG.map((track) => ({
+          id: `bgm:${track.id}`,
+          label: bgmTrackLabel(track),
+          tags: [...track.tags, track.trackCode, track.titleEn].filter((tag) => tag.length > 0),
+        })),
+        ...EASYRPG_MUSIC_ASSETS.map((asset) => ({
+          id: `bgm:${asset.id}`,
+          label: asset.name,
+          tags: moodTagsForAsset(asset),
+        })),
+      ];
     case "se":
       return EASYRPG_SOUND_ASSETS.map((asset) => ({
         id: `se:${asset.id}`,

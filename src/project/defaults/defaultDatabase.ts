@@ -1,4 +1,5 @@
 import type { ProjectDatabaseRecords, ProjectSession, SystemRecords, Terms, TitleScreenSettings } from "../types";
+import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID, STARTER_TITLE_BGM_ID } from "@/assets/bgmStarterTracks";
 import { defaultBattleRecords } from "./defaultDatabaseBattleRecords";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import {
@@ -72,8 +73,11 @@ export function defaultSystem(): SystemRecords {
     battleSystemResourceId: "easyrpg-system2-system2-c",
     // EasyRPG RTP 음악 30곡은 전부 .mid 다 — 브라우저 HTMLAudioElement 는 MIDI 를 재생하지 못한다.
     // 그래서 easyrpg-music-* 을 기본값으로 두면 게임이 무음으로 돌아간다(실측). CC0 mp3/ogg 를 쓴다.
-    battleBgmResourceId: "cc0-bgm-battle",
-    defaultBgmResourceId: "cc0-bgm-field",
+    //
+    // 기본 BGM 세트는 281곡 CC0 카탈로그(bgmCatalog.ts)에서 고른다. 이 두 슬롯이 쓰는 곡은
+    // CDN 미설정 환경에서도 들려야 하므로 레포에 함께 커밋된 스타터 곡이다(bgmStarterTracks.ts).
+    battleBgmResourceId: STARTER_BATTLE_BGM_ID,
+    defaultBgmResourceId: STARTER_DEFAULT_BGM_ID,
     initialTroopId: DEFAULT_TROOP_ID,
     battleFlow: "gauge",
     typeChart: {
@@ -92,6 +96,8 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
     backgroundResourceId: "rpg-zzu-title-field",
+    // 타이틀 화면도 기본으로 소리가 나야 한다 — 지정이 없으면 첫 화면이 무음이었다.
+    musicResourceId: STARTER_TITLE_BGM_ID,
     layout: {
       titleX: 160,
       titleY: 92,
