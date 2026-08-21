@@ -7,6 +7,7 @@
 //  4. 제출물 파서는 fail-closed 다.
 import { describe, expect, it } from "vitest";
 import { processMetrics } from "@/benchmark/agent/claudeResult";
+import { measureComposition } from "@/benchmark/agent/composition";
 import { detectVillage } from "@/benchmark/agent/detect";
 import { scaleBaseline, scoreAgentMap } from "@/benchmark/agent/scoring";
 import { AGENT_SPEC_VERSION, SUBMISSION_PATH, buildAgentInstruction, parseSubmission } from "@/benchmark/agent/spec";
@@ -238,5 +239,40 @@ describe("과정 지표 파싱", () => {
     expect(metrics.turns).toBeNull();
     expect(metrics.costUsd).toBeNull();
     expect(metrics.isError).toBe(false);
+  });
+});
+
+describe("구성 지표는 quality 와 분리한다", () => {
+  it("정본은 quality 1.000 이지만 구성 지표에서는 만점이 아니다", () => {
+    // 이것이 분리의 이유다: 정본 도로는 맵 폭을 가로지르는 직선 한 줄이라
+    // "최장 직선 런" 에서 최하점(1.00 = 한 변 전체)을 받는다. 이런 항목을 quality 에
+    // 섞으면 "하네스 = 1.000" 앵커가 거짓이 된다.
+    const composition = measureComposition(referenceMap);
+    expect(composition.straightRunRatio).toBe(1);
+    expect(composition.propDensity).toBe(0);
+    expect(score(reference.lower, reference.upper).quality).toBeCloseTo(1, 6);
+  });
+
+  it("한 키트만 복붙하면 키트 다양성이 0 이다", () => {
+    const composition = measureComposition(referenceMap);
+    expect(composition.kitVariety).toBeGreaterThan(0.5); // 정본은 세 키트를 섞는다
+    // 건물이 하나뿐이면 다양성은 정의상 0 이다.
+    const single = blank();
+    const W = reference.width;
+    for (let y = 1; y <= 3; y += 1) for (let x = 1; x <= 3; x += 1) single[y * W + x] = 404;
+    expect(measureComposition({ width: W, height: reference.height, lower: single, upper: blank() }).kitVariety).toBe(0);
+  });
+
+  it("빈 맵의 구성 지표는 전부 0 이고 throw 하지 않는다", () => {
+    const composition = measureComposition({
+      width: reference.width,
+      height: reference.height,
+      lower: blank(),
+      upper: blank(),
+    });
+    expect(composition.kitVariety).toBe(0);
+    expect(composition.deadEndRate).toBe(0);
+    expect(composition.distinctTiles).toBe(0);
+    expect(composition.emptyRatio).toBe(1);
   });
 });

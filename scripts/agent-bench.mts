@@ -22,6 +22,7 @@ import { renderTileGridPng } from "../src/benchmark/town/inputImages.ts";
 import { scoreAgentMap, scaleBaseline } from "../src/benchmark/agent/scoring.ts";
 import { AGENT_SPEC_VERSION, SUBMISSION_PATH, buildAgentInstruction, parseSubmission } from "../src/benchmark/agent/spec.ts";
 import { processMetrics } from "../src/benchmark/agent/claudeResult.ts";
+import { measureComposition } from "../src/benchmark/agent/composition.ts";
 
 const DEFAULT_OUT_DIR = path.join("output", "agent-bench");
 const WORKTREE_ROOT = path.resolve("C:/Users/USER/.herdr/worktrees/rpg-zzu");
@@ -310,7 +311,59 @@ function commandReport(flags: Record<string, string>): number {
     );
   }
 
+  // 구성 지표 — quality 가 천장에 닿는 곳에서 상위를 가른다. 점수로 합치지 않는다.
+  if (scored.length > 0) {
+    const reference = buildTownGroundTruth().placements.villageGrid;
+    const rows: readonly (readonly [string, (composition: Composition) => string])[] = [
+      ["키트 다양성", (c) => c.kitVariety.toFixed(2)],
+      ["집 크기 분산", (c) => c.sizeVariety.toFixed(2)],
+      ["막다른 길", (c) => `${(c.deadEndRate * 100).toFixed(1)}%`],
+      ["최장직선/한변", (c) => c.straightRunRatio.toFixed(2)],
+      ["소품 밀도(‰)", (c) => c.propDensity.toFixed(1)],
+      ["빈 땅", (c) => `${(c.emptyRatio * 100).toFixed(0)}%`],
+      ["타일 종류", (c) => String(c.distinctTiles)],
+    ];
+    const columns = scored.map((record) => {
+      const file = path.join(dir, `${record.model}-${record.run}.submission.json`);
+      if (!fs.existsSync(file)) return null;
+      const parsed = parseSubmission(fs.readFileSync(file, "utf8"));
+      return parsed.ok ? measureComposition(parsed.map) : null;
+    });
+    const referenceComposition = measureComposition({
+      width: reference.width,
+      height: reference.height,
+      lower: reference.lower,
+      upper: reference.upper,
+    });
+    console.log("\n구성 지표 — 감사로는 안 갈리는 것. 점수로 합치지 않는다(정본조차 자기 기준을 못 넘는 항목이 있다)");
+    console.log(["지표".padEnd(16), "정본".padStart(10), ...scored.map((r) => `${r.model}-${r.run}`.slice(0, 9).padStart(10))].join(""));
+    for (const [label, render] of rows) {
+      console.log(
+        [
+          label.padEnd(16),
+          render(referenceComposition).padStart(10),
+          ...columns.map((composition) => (composition ? render(composition) : "-").padStart(10)),
+        ].join(""),
+      );
+    }
+
+    console.log("\n효율 (quality 1점당)");
+    for (const [label, pick] of [
+      ["비용/quality", (r: RunRecord) => `$${((r.process.costUsd ?? 0) / r.score!.quality).toFixed(2)}`],
+      ["분/quality", (r: RunRecord) => ((r.process.durationMs ?? 0) / 60000 / r.score!.quality).toFixed(1)],
+    ] as const) {
+      console.log(
+        [
+          label.padEnd(16),
+          "".padStart(10),
+          ...scored.map((r) => (r.score!.quality <= 0 ? "-" : pick(r)).padStart(10)),
+        ].join(""),
+      );
+    }
+  }
+
   console.log("\n하네스 정본 기준선: quality 1.000 / scale 1.000 (agent-bench baseline 으로 확인)");
+  console.log("quality 는 감사 통과율이라 하네스를 제대로 쓴 모델끼리는 천장에서 만난다 — 상위 비교는 구성 지표와 효율을 함께 본다.");
   return 0;
 }
 
