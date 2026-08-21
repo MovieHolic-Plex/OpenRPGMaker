@@ -96,10 +96,9 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
     backgroundResourceId: "rpg-zzu-title-field",
-    // musicResourceId 는 여기서 지정하지 않는다. 이 함수는 빈 프로젝트와 에디터 폴백
-    // (`system.titleScreen ?? defaultTitleScreenSettings()`)이 공유하는 중립 기본값이라,
-    // 값을 넣으면 "무음 타이틀"을 표현할 수 없고 빈 프로젝트가 빈 상태가 아니게 된다.
-    // 출하 데모의 타이틀 BGM 은 fixtures/dew-village-demo.json 의 titleScreen 이 직접 지정한다.
+    // 타이틀 BGM 은 의도적으로 비워 둔다("silent title" — test/titleScreenMusic.test.ts 가 계약으로 못박음).
+    // 카탈로그에 타이틀·메뉴 곡이 있으므로 저작자는 피커에서 한 번에 고르면 된다.
+    // 후보: cc0-bgm-rtp-ttl-001(새벽의 의뢰서), cc0-bgm-rtp-uix-001..005(UI · 첫 조작).
     layout: {
       titleX: 160,
       titleY: 92,

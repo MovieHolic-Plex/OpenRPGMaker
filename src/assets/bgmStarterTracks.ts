@@ -15,7 +15,13 @@ export const STARTER_DEFAULT_BGM_ID = "cc0-bgm-rtp-fld-003";
 /** 기본 전투 BGM(일반 전투). */
 export const STARTER_BATTLE_BGM_ID = "cc0-bgm-rtp-btl-001";
 
-/** 기본 타이틀 BGM(타이틀 · 메뉴). */
+/**
+ * 타이틀 · 메뉴 곡.
+ *
+ * 기본값으로 **꽂지 않는다** — 이 프로젝트는 타이틀 무음을 의도된 기본값으로 두고 있고
+ * test/titleScreenMusic.test.ts 가 그걸 계약으로 못박았다. 대신 파일을 함께 커밋해 둬서
+ * 저작자가 CDN 설정 없이도 피커에서 골라 바로 들을 수 있게 한다.
+ */
 export const STARTER_TITLE_BGM_ID = "cc0-bgm-rtp-ttl-001";
 
 /** 레포에 파일이 함께 커밋된 카탈로그 곡. CDN 없이도 재생돼야 한다. */
