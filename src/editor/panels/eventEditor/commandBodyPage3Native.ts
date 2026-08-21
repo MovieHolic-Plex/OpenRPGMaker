@@ -773,6 +773,13 @@ export function showPictureBody(
   const resourceId = textInput(cmd.resourceId, "그림 리소스 ID", "show-picture-resource-input");
   const x = numberInput(cmd.x, "X 좌표", "show-picture-x-input");
   const y = numberInput(cmd.y, "Y 좌표", "show-picture-y-input");
+  // 런타임은 확대·투명도·회전·전환시간을 모두 지원하는데(pictures/pictureTween.ts) 폼에는
+  // 칸이 없어서, 감독이 "60% 로 줄여 15도 기울여 페이드인" 을 하려면 AI 툴이나 JSON
+  // 손편집으로 우회해야 했다. 왕복 1회가 폼 입력 1회로 줄어든다.
+  const scale = numberInput(cmd.scale ?? 100, "확대율(%) — 100이 원본", "show-picture-scale-input");
+  const opacity = numberInput(cmd.opacity ?? 255, "투명도 0~255 — 255가 불투명", "show-picture-opacity-input");
+  const rotation = numberInput(cmd.rotation ?? 0, "회전(도)", "show-picture-rotation-input");
+  const durationMs = numberInput(cmd.durationMs ?? 0, "전환 시간(ms) — 0이면 즉시", "show-picture-duration-input");
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "show-picture-preview" },
@@ -782,6 +789,12 @@ export function showPictureBody(
     dataset: { testid: "show-picture-position-presets" },
   });
 
+  /** 범위 밖 입력이 런타임까지 새지 않게 폼에서 접는다. 런타임 클램프와 같은 경계다. */
+  const intInRange = (input: HTMLInputElement, fallback: number, min: number, max: number): number => {
+    const parsed = parseInt(input.value, 10);
+    return Math.min(max, Math.max(min, Number.isFinite(parsed) ? parsed : fallback));
+  };
+
   const commit = () => {
     context.actions.replaceCommand(context.path, {
       kind: "showPicture",
@@ -789,6 +802,11 @@ export function showPictureBody(
       resourceId: resourceId.value.trim(),
       x: parseInt(x.value, 10) || 0,
       y: parseInt(y.value, 10) || 0,
+      scale: intInRange(scale, 100, 1, 2000),
+      opacity: intInRange(opacity, 255, 0, 255),
+      // 회전은 한 바퀴를 넘겨도 뜻이 통하므로 접지 않고 그대로 싣는다.
+      rotation: parseInt(rotation.value, 10) || 0,
+      durationMs: intInRange(durationMs, 0, 0, 60_000),
     });
     renderPreview();
   };
@@ -808,6 +826,12 @@ export function showPictureBody(
     });
     marker.style.left = `${clampPct((px / 320) * 100)}%`;
     marker.style.top = `${clampPct((py / 240) * 100)}%`;
+    // 런타임은 확대·회전을 transform 으로, 투명도를 opacity 로 적용한다(runtimeDom.applyPictureTransform).
+    // 프리뷰가 같은 순서로 걸어야 감독이 폼에서 본 것과 게임에서 보는 것이 일치한다.
+    const previewScale = (parseInt(scale.value, 10) || 100) / 100;
+    const previewRotation = parseInt(rotation.value, 10) || 0;
+    marker.style.transform = `scale(${previewScale}) rotate(${previewRotation}deg)`;
+    marker.style.opacity = String((parseInt(opacity.value, 10) || 0) / 255);
     if (url) {
       marker.append(
         el("img", {
@@ -828,16 +852,23 @@ export function showPictureBody(
       stage,
       el("p", {
         class: "actor-m2-preview-line",
-        text: `그림 ${pictureId.value.trim() || "pic1"} · (${px}, ${py})`,
+        text:
+          `그림 ${pictureId.value.trim() || "pic1"} · (${px}, ${py})` +
+          ` · ${parseInt(scale.value, 10) || 100}%` +
+          ` · 투명도 ${parseInt(opacity.value, 10) || 0}` +
+          (previewRotation ? ` · ${previewRotation}°` : "") +
+          ((parseInt(durationMs.value, 10) || 0) ? ` · ${parseInt(durationMs.value, 10)}ms` : ""),
       }),
       el("p", {
         class: "actor-m2-preview-note",
-        text: rid ? `리소스 ${rid}` : "그림 리소스를 선택하세요 (320×240 좌표계, 중심 앵커).",
+        // 런타임은 left/top = x/y 에 transform-origin: top left 다(runtime/pictures.css).
+        // 예전 문구는 "중심 앵커" 라고 적혀 있었지만 실제와 달랐다.
+        text: rid ? `리소스 ${rid}` : "그림 리소스를 선택하세요 (320×240 좌표계, 좌상단 앵커).",
       })
     );
   };
 
-  for (const control of [pictureId, resourceId, x, y]) {
+  for (const control of [pictureId, resourceId, x, y, scale, opacity, rotation, durationMs]) {
     control.addEventListener("change", commit);
     control.addEventListener("input", renderPreview);
   }
@@ -912,6 +943,14 @@ export function showPictureBody(
               el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] })
             ),
             fieldBlock("위치 프리셋", presets),
+            fieldBlock(
+              "확대율(%) · 투명도(0~255)",
+              el("div", { class: "actor-m2-inline page3-coord-row", children: [scale, opacity] })
+            ),
+            fieldBlock(
+              "회전(°) · 전환 시간(ms)",
+              el("div", { class: "actor-m2-inline page3-coord-row", children: [rotation, durationMs] })
+            ),
           ],
         }),
         preview,

@@ -3,7 +3,8 @@ import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { Command } from "@/project/types";
 
-// RM2003 그림 표시 좌표계(320x240 기준). 그림은 중심 앵커.
+// RM2003 그림 표시 좌표계(320x240 기준).
+// 앵커는 런타임과 같은 좌상단이다(runtime/pictures.css 의 transform-origin: top left).
 const SCREEN_W = 320;
 const SCREEN_H = 240;
 
