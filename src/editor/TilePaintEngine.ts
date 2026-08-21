@@ -148,7 +148,7 @@ export class TilePaintEngine {
       layer: pick.layer,
       tool: "paint",
     });
-    // 전문가 모드: 우클릭 스포이트 후 팔레트 칩셋(하위/상위 레이어 시트)로 이동
+    // 전문가 모드: 우클릭 스포이트 후 팔레트 타일 그림판(하위/상위 레이어 시트)로 이동
     revealPaletteTileFromMap(pick.tile);
   }
 

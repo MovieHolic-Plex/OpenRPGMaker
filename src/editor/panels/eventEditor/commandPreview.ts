@@ -1156,7 +1156,7 @@ function changeTileStage(cmd: Extract<Command, { kind: "changeTile" }>): HTMLEle
   card.append(
     el("div", {
       class: "ecp-tile-meta",
-      text: `${cmd.layer === "upper" ? "상위" : "하위"} · (${cmd.x}, ${cmd.y})`,
+      text: `${cmd.layer === "upper" ? "덧그림" : "바닥"} · (${cmd.x}, ${cmd.y})`,
     })
   );
   stage.append(card);

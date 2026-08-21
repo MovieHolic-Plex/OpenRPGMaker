@@ -2,7 +2,7 @@
 
 import { editorState, type Layer, type Tool } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { uiLabel } from "@/editor/uiCopy";
+import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import {
   defaultAiVisualStartPrompts,
   type AiVisualStartPrompt,
@@ -28,16 +28,7 @@ export type AgentBrief = {
   readonly lookingAt: string;
 };
 
-const TOOL_LABEL: { readonly [K in Tool]: string } = {
-  paint: "펜",
-  fill: "채우기",
-  collision: "통행",
-  event: "이벤트",
-  erase: "지우개",
-  select: "선택",
-  eyedropper: "스포이드",
-  pan: "이동",
-};
+// 도구 이름은 uiCopy 단일 원천(TOOL_LABEL) — 여기서 다시 적지 않는다.
 
 export function layerShortLabel(layer: Layer, termStyle = getEditorChrome().jargonStyle): string {
   switch (layer) {
@@ -55,7 +46,7 @@ export function layerShortLabel(layer: Layer, termStyle = getEditorChrome().jarg
 }
 
 export function toolShortLabel(tool: Tool): string {
-  return TOOL_LABEL[tool];
+  return toolLabel(tool);
 }
 
 function mapHasPath(map: GameMap): boolean {

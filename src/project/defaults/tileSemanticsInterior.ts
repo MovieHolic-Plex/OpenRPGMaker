@@ -1,4 +1,4 @@
-// easyrpg_chipset_interior(tex_easyrpg_chipset_interior) 칩셋의 AI 검색용 큐레이션 시맨틱 테이블.
+// easyrpg_chipset_interior(tex_easyrpg_chipset_interior) 타일 그림판의 AI 검색용 큐레이션 시맨틱 테이블.
 // 2026-07-12 vision 업스케일(8~14x nearest-neighbor) 전수 감사로 480타일을 판독해 작성했다.
 // tileSemanticsCombinedTown.ts와 동일한 계약: tileset.tileMeta[]와 별개로 관리되는 검색 전용 데이터
 // (하네스 팩 tilesetHarness/themePacks.ts가 통행성/레이어 계약을 채우고, 여기는 타일별 정밀 라벨을 제공한다).
@@ -39,7 +39,7 @@ export const INTERIOR_TILE_SEMANTICS: readonly InteriorTileSemanticEntry[] = [
   ...entries([125, 155, 185, 215], "푸른 마법 블록", "decoration", "solid", ["crystal", "magic", "마법", "크리스털", "애니메이션"]),
   one(232, "용암 바닥", "terrain", "solid", ["lava", "용암", "불"]),
 
-  // ── 실외 지형(잔디/흙/모래/자갈) — 이 칩셋은 마을 외곽+실내 겸용 ────────────────
+  // ── 실외 지형(잔디/흙/모래/자갈) — 이 타일 그림판은 마을 외곽+실내 겸용 ────────────────
   ...entries([7, 127, 247, 361, 364, 240, 241, 242, 270, 271, 272, 300, 301, 302, 330, 331, 332], "잔디", "terrain", "passable", ["grass", "풀밭", "야외"]),
   ...entries([243, 244, 245, 273, 274, 275, 303, 304, 305, 333, 334, 335], "짙은 잔디 경계", "terrain", "passable", ["grass", "dark grass", "풀밭", "경계", "월드맵"]),
   ...entries([6, 8, 36, 37, 38, 66, 67, 68, 96, 97, 98], "흙땅", "terrain", "passable", ["dirt", "흙", "맨땅", "월드맵"]),

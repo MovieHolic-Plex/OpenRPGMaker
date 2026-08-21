@@ -1112,7 +1112,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }).catch(() => {
         /* ignore */
       });
-      notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
+      notifyIfObscuredByTestPlay(); // 결함 ④: 시연 실행 창이 패널을 가린 채 턴이 끝나면 알림.
       // 실패 턴은 오류 버블·재시도 버튼이 페이드로 흐려지지 않게 유지한다(적대 평가 P1).
       lastTurnFailed = turnFailed || Boolean(turnCatchError);
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
@@ -1366,13 +1366,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
   };
 
-  // 풀스크린 테스트 플레이 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
+  // 풀스크린 시연 실행 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
   // (도그푸딩 결함 ④ — 모달 뒤에서 턴/프로포절이 조용히 진행되던 문제). 자동으로 창을
   // 닫거나 열지 않는다: 완료 알림 + 기존 수동 버튼(편집으로/닫기)으로 확인하게 한다.
   const notifyIfObscuredByTestPlay = (): void => {
     if (typeof document === "undefined" || typeof document.querySelector !== "function") return;
     if (!document.querySelector('[data-testid="test-play-window"]')) return;
-    toast("AI 응답 완료 — 테스트 플레이 창 뒤에 결과/제안이 있습니다. '편집으로'를 눌러 확인하세요.", "info");
+    toast("AI 응답 완료 — 시연 실행 창 뒤에 결과/제안이 있습니다. '편집으로'를 눌러 확인하세요.", "info");
   };
 
   // 마지막으로 직접 입력한 요청 — "내 스킬로 저장"의 기본 템플릿이 된다.

@@ -22,10 +22,10 @@ import { toast } from "@/util/toast";
 // 예전에는 「칠하기 | 찾기 | 속성」 3탭이었다. 감독 지적("칠하기만 있으면 되는 거
 // 아닌가")대로 3탭 중 2개가 칠하기가 아니었고, 실측 결함이 붙어 있었다:
 //   · 찾기  = 팔레트 2차 구현. 별개 셀·별개 그리드·96개 상한, 오토타일 대표 1칸
-//             규칙 미적용 → 같은 칩셋이 탭에 따라 다르게 보였다. 게다가 고른 타일을
+//             규칙 미적용 → 같은 타일 그림판이 탭에 따라 다르게 보였다. 게다가 고른 타일을
 //             그 자리에서 칠할 수 없었다(그리기 툴바가 칠하기 탭에만 있었다).
-//   · 속성  = 타일셋 저작 표면. 지형 태그 입력이 **두 개**였고(인스펙터 안 + 탭 하단),
-//             `describeChipsetTile` 가드가 없어 기본 칩셋이 아닌 타일셋에서 메타가
+//   · 속성  = 타일셋 저작 표면. 지면 종류 입력이 **두 개**였고(인스펙터 안 + 탭 하단),
+//             `describeChipsetTile` 가드가 없어 기본 타일 그림판이 아닌 타일셋에서 메타가
 //             전부 오답이었다. 빈 상태 안내는 "다른 탭으로 가라"였다.
 //   · 붓의 동작을 바꾸는 연결 Auto/Manual 토글이 칠할 때 보이지 않았다.
 // 이제 한 면이다: 선택칩 → 도구 → 필터 한 줄 → 팔레트 → 붓 보조 → 타일 속성 → 킷.
@@ -54,7 +54,7 @@ let tileSearchQuery = "";
 let showQuickTileNumbers = false;
 /** 붓 보조 펼침 상태 — 팔레트는 붓질마다 재렌더되므로 DOM 에 맡기면 매번 닫힌다. */
 let brushAssistOpen = false;
-/** 맵 우클릭 스포이트 후 팔레트 칩셋 셀로 스크롤 (전문가 모드). */
+/** 맵 우클릭 스포이트 후 팔레트 타일 그림판 셀로 스크롤 (전문가 모드). */
 let pendingRevealSelectedTile = false;
 let resetChipsetScroll = false;
 const recentTiles: number[] = [];
@@ -126,7 +126,7 @@ export function renderTilePalette(container: HTMLElement): void {
 /** 선택 타일 + 타일셋 이름을 한 줄 칩으로 — 구 palette-tileset-badge(별도 줄)를 흡수했다. */
 function makeSelectedTileStatus(selectedTile: number, tileset: TilesetDef): HTMLElement {
   const hasTile = selectedTile >= 0 && selectedTile < tileset.count;
-  // 기본 칩셋 라벨(tileDisplayLabelForIndex)은 이미 "360 흙길 중심"처럼 번호로 시작 — 번호 중복 표기를 막는다.
+  // 기본 타일 그림판 라벨(tileDisplayLabelForIndex)은 이미 "360 흙길 중심"처럼 번호로 시작 — 번호 중복 표기를 막는다.
   const name = hasTile ? quickTileName(tileset, selectedTile) : "";
   const label = !hasTile ? "없음" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
   const chip = el("div", {
@@ -229,7 +229,7 @@ function makePaletteSurface(input: {
 
 /**
  * 검색 + 카테고리 한 줄. 예전 「찾기」 탭의 알맹이지만 별개 그리드를 만들지 않고
- * 위의 팔레트 하나를 필터링한다 — 같은 칩셋을 두 방식으로 보여주지 않는다.
+ * 위의 팔레트 하나를 필터링한다 — 같은 타일 그림판을 두 방식으로 보여주지 않는다.
  */
 function makePaletteFilterBar(tileset: TilesetDef): HTMLElement {
   const bar = el("div", {
@@ -405,7 +405,7 @@ function renderPalettePreservingViewport(): void {
 
 
 // combined_town 전용 정적 테이블(describeChipsetTile)을 다른 칩셋에 쓰면 오답 —
-// 비기본 칩셋(실내 등)은 프로젝트 tileMeta 라벨을 쓴다. (2026-07-12 라벨 통일 라운드)
+// 비기본 타일 그림판(실내 등)은 프로젝트 tileMeta 라벨을 쓴다. (2026-07-12 라벨 통일 라운드)
 function quickTileName(tileset: TilesetDef, index: number): string {
   if (isDefaultTilesetTexture(tileset)) return tileDisplayLabelForIndex(index);
   return tileset.tileMeta?.[index]?.label?.trim() || `타일 ${index}`;

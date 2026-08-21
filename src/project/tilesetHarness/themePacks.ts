@@ -178,7 +178,7 @@ type ThemeMetadataPack = {
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
 
-// 2026-07-13 vision 업스케일 감사 기준으로 재작성 — 이전 던전 4개 그룹은 옛 칩셋 이미지 기준이라
+// 2026-07-13 vision 업스케일 감사 기준으로 재작성 — 이전 던전 4개 그룹은 옛 타일 그림판 이미지 기준이라
 // 현재 PNG와 어긋났다(예: 옛 "던전 석벽" 1~3/31~33은 현재 연못 물 테두리, 옛 "입구/장식" 91/92는 물).
 // 지형 12블록(3×4 표준 배치)의 자동 연결은 dungeonTerrainAutotiles.ts 오토타일 그룹이 담당한다.
 // 정본: fix/pokemon-core 1d8e9ee (host↔overlay connectsTo + red-carpet nineSlice).
@@ -242,7 +242,7 @@ export const DUNGEON_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(DUNGEON_HARNESS_PREFIX, "prop-crystal-vine", "수정/덩굴 소품", "prop", "upper", [118, 119, 149, 177, 178, 179], "passable", "fixed", "푸른 수정 조각과 잎 돋은 덩굴 가지입니다."),
 ];
 
-// 2026-07-12 vision 업스케일 감사 기준으로 재작성 — 이전 그룹은 옛 칩셋 이미지 기준이라
+// 2026-07-12 vision 업스케일 감사 기준으로 재작성 — 이전 그룹은 옛 타일 그림판 이미지 기준이라
 // 현재 PNG와 어긋났다(예: 옛 "실내 바닥" 270/271/300/301은 현재 잔디, 옛 "실내 벽" 1~3/31~33은 연못 물).
 // 타일별 정밀 라벨은 tileSemanticsInterior.ts(검색 전용)가 제공하고, 여기는 통행성/레이어 계약을 시드한다.
 export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
@@ -272,7 +272,7 @@ export const INTERIOR_HARNESS_GROUPS: readonly PackHarnessGroup[] = [
   packGroup(INTERIOR_HARNESS_PREFIX, "transparent-props", "실내 투명 배경 소품", "prop", "upper", INTERIOR_TRANSPARENT_PROP_TILES, "passable", "fixed", "분홍 투명 배경을 가진 실내 가구와 장식입니다. 바닥 위 레이어에 배치해야 배경색이 드러나지 않습니다."),
 ];
 
-// Scarloxy MPWSP01 칩셋 3종 — 그룹 시드는 scripts/import-scarloxy-pack.py 가 기록한
+// Scarloxy MPWSP01 타일 그림판 3종 — 그룹 시드는 scripts/import-scarloxy-pack.py 가 기록한
 // scarloxyPackManifest.json 블록 배치에서 파생된다(scarloxyPack.ts 참조).
 function createScarloxyThemePacks(): readonly ThemeMetadataPack[] {
   return SCARLOXY_CHIPSET_ASSETS.map((asset) => {

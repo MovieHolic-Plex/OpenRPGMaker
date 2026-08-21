@@ -1,5 +1,6 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
+import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { editorState, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
@@ -636,11 +637,11 @@ function renderEditorStatusbar(container: HTMLElement): void {
     }),
     el("span", {
       class: "editor-statusbar-cell sb-detail",
-      children: ["하위: ", el("span", { dataset: { testid: "cursor-lower" }, text: "-" })],
+      children: [`${uiLabel("layerLower")}: `, el("span", { dataset: { testid: "cursor-lower" }, text: "-" })],
     }),
     el("span", {
       class: "editor-statusbar-cell sb-detail",
-      children: ["상위: ", el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
+      children: [`${uiLabel("layerUpper")}: `, el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
     }),
   ];
   if (state.tool === "event" && state.layer === "event") {
@@ -765,38 +766,21 @@ function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): strin
 }
 
 function layerStatusLabel(layer: Layer): string {
-  const plain = getEditorChrome().layerTermStyle === "plain";
+  // 레이어 이름은 모드와 무관하게 하나다(uiCopy 단일 원천) — 전문가라고 下層/上層 직역을
+  // 쓸 이유가 없다. layerTermStyle 플래그는 다른 밀도 분기에 남아 있다.
   switch (layer) {
     case "lower":
-      return plain ? "바닥 레이어" : "하위 레이어";
+      return `${uiLabel("layerLower")} 레이어`;
     case "upper":
-      return plain ? "장식 레이어" : "상위 레이어";
+      return `${uiLabel("layerUpper")} 레이어`;
     case "event":
-      return "이벤트 레이어";
+      return `${uiLabel("layerEvent")} 레이어`;
   }
 }
 
+/** 상태바 도구 칸 — 이름은 uiCopy 의 TOOL_LABEL 단일 원천을 쓴다. */
 function toolStatusLabel(tool: string): string {
-  switch (tool) {
-    case "paint":
-      return "펜";
-    case "fill":
-      return "채우기";
-    case "pan":
-      return "이동";
-    case "event":
-      return "이벤트";
-    case "erase":
-      return "지우개";
-    case "select":
-      return "선택";
-    case "eyedropper":
-      return "스포이드";
-    case "collision":
-      return "통행";
-    default:
-      return tool;
-  }
+  return toolLabel(tool);
 }
 
 function onTestPlayWindowRequest(event: Event): void {

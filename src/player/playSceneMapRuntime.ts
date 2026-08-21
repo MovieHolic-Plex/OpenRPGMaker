@@ -234,7 +234,7 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
 ): void {
   if (tile < 0) return;
   const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
-  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 칩셋도 포함.
+  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함.
   if (supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile)) {
     renderLakeAutotile(scene, tileset, textureKey, x, y, layer);
     return;

@@ -385,8 +385,8 @@ test("검색·분류 필터가 본 팔레트를 직접 걸러낸다 (별개 그�
   // 필터 바는 탭을 누르지 않아도 처음부터 보인다.
   await expect(page.getByTestId("palette-filter-bar")).toBeVisible();
   await expect(page.getByTestId("layer-selector")).toContainText("3단 레이어");
-  await expect(page.getByTestId("layer-lower")).toContainText("하위");
-  await expect(page.getByTestId("layer-upper")).toContainText("상위");
+  await expect(page.getByTestId("layer-lower")).toContainText("바닥");
+  await expect(page.getByTestId("layer-upper")).toContainText("덧그림");
   await expect(page.getByTestId("layer-event")).toContainText("이벤트");
 
   // 그리기 툴바가 팔레트와 같은 면에 있다 — 고른 타일을 탭 전환 없이 칠할 수 있다.
@@ -434,14 +434,14 @@ test("left sidebar tool buttons use visible icons with accessible names", async 
   // 2026-07-18: 구 tool-grid 8버튼 섹션은 통합 툴바(oprn-tile-toolbar)로 흡수됨.
   // testid는 승계, 아이콘은 rm-tool-icon(CSS) → SVG.
   const expectedTools = [
-    { testId: "tool-paint", label: "펜" },
+    { testId: "tool-paint", label: "칠하기" },
     { testId: "tool-fill", label: "채우기" },
-    { testId: "tool-eyedropper", label: "스포이트" },
+    { testId: "tool-eyedropper", label: "타일 집기" },
     { testId: "tool-pan", label: "이동" },
     { testId: "tool-select", label: "영역 선택" },
     { testId: "tool-collision", label: "통행" },
     { testId: "tool-event", label: "이벤트" },
-    { testId: "tool-erase", label: "지우개" },
+    { testId: "tool-erase", label: "지우기" },
   ] as const;
 
   for (const tool of expectedTools) {
@@ -451,7 +451,7 @@ test("left sidebar tool buttons use visible icons with accessible names", async 
     await expect(button.locator("svg")).toBeVisible();
   }
 
-  await expect(page.getByTestId("tool-grid")).not.toContainText("스포이트");
+  await expect(page.getByTestId("tool-grid")).not.toContainText("타일 집기");
 });
 
 test("map tree uses an RM2K3-style tree box with context menu actions", async ({ page }) => {

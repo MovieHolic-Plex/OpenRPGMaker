@@ -95,7 +95,7 @@ const INTRO = [
   "    방금 지은 집을 지우지 마세요. 기존 구조물을 정말 철거하려면 파괴적 변경임을 짧게 설명하고 clear 에셋에 confirmDestroy:true를 명시하세요.",
   "    **호수/물/길 치우기:** get_map_region의 data.water.bounds로 위치를 잡고, set_build_spec clear에 **confirmDestroy:true**를 넣으세요(물도 비잔디라 구조물 보호에 걸림). 전체 맵 52×52를 show/get_map_region으로 반복 스캔하지 마세요.",
   "    스펙 검증기가 구조물을 덮는 clear를 거부하면, 영역을 구조물 바깥으로 좁히거나 confirmDestroy:true로 재제출하세요.",
-  "14. 타일의 규칙(레이어/통행/지형 태그)은 set_tile_rules로 설정합니다. 레이어(auto/lower/upper) 변경은",
+  "14. 타일의 규칙(레이어/통행/지면 종류)은 set_tile_rules로 설정합니다. 레이어(auto/lower/upper) 변경은",
   "    사용자가 명시적으로 요청했을 때만 confirmedByUser=true로 호출하세요.",
   "15. 스펙 게이트(반드시 준수): 공간 쓰기 작업(집/마을/길/청소/NPC·전투 배치/수역·지면 채우기 등 맵에 무언가를 놓는 일)은",
   "    먼저 set_build_spec으로 밑그림(명세)을 제출해 검증을 통과해야 실행됩니다. 명세 체크리스트 —",

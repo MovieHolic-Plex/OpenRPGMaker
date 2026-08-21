@@ -38,7 +38,7 @@ export function listBundledPlayAssetPaths(project?: Project): readonly string[] 
 }
 
 /**
- * 타이틀/테스트 플레이 진입 시 fire-and-forget 으로 호출한다.
+ * 타이틀/시연 실행 진입 시 fire-and-forget 으로 호출한다.
  * 동일 프로젝트 키에 대해 in-flight 를 공유하고, 실패해도 throw 하지 않는다.
  */
 export function warmBundledPlayAssets(project?: Project): Promise<void> {

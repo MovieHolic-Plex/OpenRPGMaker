@@ -114,7 +114,7 @@ async function assertBeginnerContract(page: Page): Promise<void> {
   const labels = rail.locator(".basic-rail-label");
   expect(await labels.count()).toBeGreaterThanOrEqual(11);
   for (const label of await labels.all()) await expect(label).toBeVisible();
-  for (const text of ["선택", "브러시", "지우개", "채우기", "이벤트", "스포이트"]) {
+  for (const text of ["선택", "칠하기", "지우기", "채우기", "장면", "집기"]) {
     await expect(rail.locator(".basic-rail-label", { hasText: text }).first()).toBeVisible();
   }
 

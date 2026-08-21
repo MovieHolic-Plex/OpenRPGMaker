@@ -18,7 +18,7 @@ export type PlayLoadingOverlay = {
 
 const STAGE_LABELS: Record<PlayLoadStage, string> = {
   saving: "프로젝트 저장 중…",
-  preparing: "테스트 플레이 준비 중…",
+  preparing: "시연 실행 준비 중…",
   engine: "플레이 엔진 불러오는 중…",
   assets: "맵·에셋 불러오는 중…",
   map: "맵 구성하는 중…",

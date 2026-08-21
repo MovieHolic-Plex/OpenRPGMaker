@@ -235,7 +235,7 @@ export function terrainQuarterSources(
   return terrainQuarterSourcesForKit(map, kit, x, y);
 }
 
-// 킷 하나에 대한 쿼터 합성 — 던전 등 다른 칩셋 킷(dungeonTerrainQuarter.ts)이 재사용한다.
+// 킷 하나에 대한 쿼터 합성 — 던전 등 다른 타일 그림판 킷(dungeonTerrainQuarter.ts)이 재사용한다.
 export function terrainQuarterSourcesForKit(
   map: TerrainQuarterMap,
   kit: TerrainQuarterKit,

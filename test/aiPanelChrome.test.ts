@@ -146,7 +146,7 @@ describe("AI 패널 크롬", () => {
     const expected = readAgentBrief().line;
     const line = findByTestId(panel, "ai-director-line");
 
-    expect(expected).toBe("빈 맵 20×15 · 바닥 · 펜");
+    expect(expected).toBe("빈 맵 20×15 · 바닥 · 칠하기");
     expect(line?.textContent).toBe(expected);
   });
 
@@ -159,7 +159,7 @@ describe("AI 패널 크롬", () => {
 
     editorState.set({ layer: "upper", tool: "fill" });
 
-    expect(line.textContent).toBe("빈 맵 20×15 · 장식 · 채우기");
+    expect(line.textContent).toBe("빈 맵 20×15 · 덧그림 · 채우기");
     expect(line.textContent).toBe(readAgentBrief().line);
   });
 

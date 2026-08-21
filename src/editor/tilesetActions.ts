@@ -51,7 +51,7 @@ export function setTilePassageBulk(tilesetId: TilesetId, tile: number, passable:
 }
 
 // ── 타일 이식(tile graft) ──────────────────────────────────────────
-// 다른 번들 칩셋의 개별 타일을 이 타일셋 슬롯에 이식한다. 넘버링 보존:
+// 다른 번들 타일 그림판의 개별 타일을 이 타일셋 슬롯에 이식한다. 넘버링 보존:
 // - targetTile < count: 기존 슬롯 덮어쓰기(예: 밴 슬롯 411/412/413/443 재활용).
 // - targetTile >= count: 행 단위 확장 — count 가 tilesPerRow 배수로 늘고
 //   passability/priority/terrain(/tileMeta) 배열도 함께 늘린다(기본 통과/lower/0).
@@ -64,7 +64,7 @@ export function addTileGraft(tilesetId: TilesetId, graft: TileGraft): TileGraftA
     return { ok: false, error: "타일 이식 정보가 잘못되었습니다 (targetTile/sourceTile ≥ 0 정수, sourceChipset 필요)." };
   }
   if (!isKnownGraftSourceChipset(graft.sourceChipset)) {
-    return { ok: false, error: `알 수 없는 소스 칩셋입니다: ${graft.sourceChipset}` };
+    return { ok: false, error: `알 수 없는 소스 타일 그림판입니다: ${graft.sourceChipset}` };
   }
   const current = store.getCurrent().tilesets[tilesetId];
   if (!current) return { ok: false, error: `타일셋을 찾을 수 없습니다: ${tilesetId}` };
@@ -127,7 +127,7 @@ function extendTilesetToRowAlignedCount(tileset: TilesetDef, newCount: number): 
   tileset.count = newCount;
 }
 
-// 확장분에 남은 graft 가 없으면 count 를 다시 줄인다(번들 칩셋 기본 480 밑으로는 안 내려감).
+// 확장분에 남은 graft 가 없으면 count 를 다시 줄인다(번들 타일 그림판 기본 480 밑으로는 안 내려감).
 function shrinkTilesetAfterGraftRemoval(tileset: TilesetDef): void {
   if (tileset.image.type !== "bundled" || tileset.count <= TILE_FRAME_COUNT) return;
   const maxTarget = (tileset.tileGrafts ?? []).reduce((max, entry) => Math.max(max, entry.targetTile), -1);
@@ -255,7 +255,7 @@ export function addAutotileGroupFromTemplate(
 }
 
 // 내장 폴백 승계(rmTypeExpander.ts registerAutotileGroup 과 동일 규약):
-// 자체 정의가 하나도 없는 타일셋이면 현재 유효한 그룹(기본 칩셋 = 내장 4종)을
+// 자체 정의가 하나도 없는 타일셋이면 현재 유효한 그룹(기본 타일 그림판 = 내장 4종)을
 // 편집 가능한 깊은 사본으로 먼저 넣는다. 비기본 타일셋은 빈 배열이라 no-op.
 function inheritBuiltinFallbackGroups(tileset: TilesetDef): void {
   if (tileset.autotileGroups && tileset.autotileGroups.length > 0) return;

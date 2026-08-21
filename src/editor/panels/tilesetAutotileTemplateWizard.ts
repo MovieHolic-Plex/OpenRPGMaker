@@ -33,7 +33,7 @@ export function renderAutotileTemplateWizard(tileset: TilesetDef, rerender: () =
     draftKind = (AUTOTILE_TEMPLATE_KIND_GUIDES.find((guide) => guide.id === kindSelect.value)?.id ?? "oprn-3x4");
   });
 
-  // TODO(후속): 칩셋 미리보기 시트 클릭으로 앵커를 고르는 연동(renderChipsetPreviewPanel
+  // TODO(후속): 그림판 미리보기 시트 클릭으로 앵커를 고르는 연동(renderChipsetPreviewPanel
   // onApplyModeTile + editMode "autotile") — 현재는 숫자 입력만 지원한다.
   const anchorInput = el("input", {
     attrs: { type: "number", min: "0", placeholder: `0 ~ ${tileset.count - 1}` },

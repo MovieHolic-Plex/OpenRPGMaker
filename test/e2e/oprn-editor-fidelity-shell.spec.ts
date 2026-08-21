@@ -16,8 +16,8 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await expect(page.getByTestId("oprn-toolbar")).toBeVisible();
   await expect(page.getByTestId("toolbar-save")).toHaveAttribute("title", "프로젝트 저장 (Ctrl+S)");
   await expect(page.getByTestId("toolbar-database")).toHaveAttribute("title", "데이터베이스");
-  await expect(page.getByTestId("toolbar-resource-manager")).toHaveAttribute("title", "소재 관리자");
-  await expect(page.getByTestId("mode-play")).toHaveAttribute("title", "테스트 플레이");
+  await expect(page.getByTestId("toolbar-resource-manager")).toHaveAttribute("title", "자료 보관함");
+  await expect(page.getByTestId("mode-play")).toHaveAttribute("title", "시연 실행");
 
   // Default edit surface is the event layer — switch to a tile layer so the chipset palette renders.
   await page.getByTestId("layer-lower").click();

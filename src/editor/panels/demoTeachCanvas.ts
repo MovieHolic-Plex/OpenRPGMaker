@@ -186,8 +186,8 @@ export function openDemoTeachModal(options: DemoTeachOptions): HTMLElement {
   };
 
   // ── 레이어/지우개/실행취소 ───────────────────────────────────
-  const lowerButton = el("button", { class: "ai-assistant-action", text: "하위", attrs: { type: "button" }, dataset: { testid: "demo-teach-layer-lower" } });
-  const upperButton = el("button", { class: "ai-assistant-action", text: "상위", attrs: { type: "button" }, dataset: { testid: "demo-teach-layer-upper" } });
+  const lowerButton = el("button", { class: "ai-assistant-action", text: "바닥", attrs: { type: "button" }, dataset: { testid: "demo-teach-layer-lower" } });
+  const upperButton = el("button", { class: "ai-assistant-action", text: "덧그림", attrs: { type: "button" }, dataset: { testid: "demo-teach-layer-upper" } });
   const refreshLayerButtons = (): void => {
     if (currentLayer === "lower") {
       lowerButton.classList.add("is-active");
@@ -210,8 +210,8 @@ export function openDemoTeachModal(options: DemoTeachOptions): HTMLElement {
   });
   const eraserButton = el("button", {
     class: "ai-assistant-action",
-    text: "지우개(상위)",
-    attrs: { type: "button", title: "상위 레이어 타일을 지웁니다" },
+    text: "지우개(덧그림)",
+    attrs: { type: "button", title: "덧그림 레이어 타일을 지웁니다" },
     dataset: { testid: "demo-teach-eraser" },
     on: { click: () => pickTile(-1) },
   });

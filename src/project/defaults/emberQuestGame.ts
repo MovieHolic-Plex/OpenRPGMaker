@@ -127,7 +127,7 @@ const HOUSE_PATTERN = [
 
 type Point = { readonly x: number; readonly y: number };
 
-// 통행 가능 지면 타일(기본 칩셋 passability 기준). TILE.FLOOR(342)/STAIRS(246)는 통행 불가라 지면으로 쓰지 않는다.
+// 통행 가능 지면 타일(기본 타일 그림판 passability 기준). TILE.FLOOR(342)/STAIRS(246)는 통행 불가라 지면으로 쓰지 않는다.
 const GROUND = {
   PLAZA: TILE.SAND, // 423 밝은 모래 — 마을 광장/성소 바닥
   GRAVEL: 421, // 자갈 흙바닥 — 광산 내부

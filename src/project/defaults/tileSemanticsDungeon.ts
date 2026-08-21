@@ -1,4 +1,4 @@
-// easyrpg_chipset_dungeon(tex_easyrpg_chipset_dungeon) 칩셋의 AI 검색용 큐레이션 시맨틱 테이블.
+// easyrpg_chipset_dungeon(tex_easyrpg_chipset_dungeon) 타일 그림판의 AI 검색용 큐레이션 시맨틱 테이블.
 // 2026-07-13 vision 업스케일(8x nearest-neighbor) 전수 감사로 판독해 작성했다.
 // tileSemanticsInterior.ts와 동일한 계약: tileset.tileMeta[]와 별개로 관리되는 검색 전용 데이터
 // (하네스 팩 tilesetHarness/themePacks.ts가 통행성/레이어 계약을 채우고, 여기는 타일별 정밀 라벨을 제공한다).

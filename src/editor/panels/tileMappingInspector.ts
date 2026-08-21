@@ -10,9 +10,9 @@ import { el } from "@/util/dom";
 //
 // ⚠ 2026-08-21 수정: `describeChipsetTile` 은 combined_town 전용 **정적 테이블**이다.
 // 예전에는 타일셋 종류를 안 보고 무조건 호출해서, 실내·던전·Scarloxy·Modern Exteriors
-// 처럼 다른 칩셋을 쓰는 맵에서 키·AI 라벨·열/행·역할·용도·태그가 **전부 다른 타일의
+// 처럼 다른 타일 그림판을 쓰는 맵에서 키·AI 라벨·열/행·역할·용도·태그가 **전부 다른 타일의
 // 값**으로 표시됐다. 같은 파일의 quickTileName 은 isDefaultTilesetTexture 로 가드하고
-// 있었는데 인스펙터만 빠져 있었다. 이제 기본 칩셋이 아니면 프로젝트 tileMeta 를 쓰고,
+// 있었는데 인스펙터만 빠져 있었다. 이제 기본 타일 그림판이 아니면 프로젝트 tileMeta 를 쓰고,
 // 없으면 "정보 없음"을 정직하게 말한다 — 틀린 값을 자신 있게 보여주는 쪽이 더 나쁘다.
 export function renderTileMappingInspector(selectedTile: number, tileset?: TilesetDef): HTMLElement {
   const root = el("div", {
@@ -51,7 +51,7 @@ function staticChipsetMeta(selectedTile: number): HTMLElement {
   return meta;
 }
 
-/** 기본 칩셋이 아닌 타일셋 — 프로젝트에 저장된 tileMeta 만 신뢰한다. */
+/** 기본 타일 그림판이 아닌 타일셋 — 프로젝트에 저장된 tileMeta 만 신뢰한다. */
 function projectTileMeta(tileset: TilesetDef, selectedTile: number): HTMLElement {
   const meta = el("div", { class: "tile-mapping-meta-group", dataset: { testid: "tile-mapping-meta-project" } });
   const entry = tileset.tileMeta?.[selectedTile];
@@ -114,7 +114,7 @@ function passageEditor(tileset: TilesetDef, tileIndex: number): HTMLElement {
 // 지형(terrain) 태그 편집 — 인라인 입력. tilePalette의 makeTerrainEditor와 동일 동작.
 function terrainEditor(tileset: TilesetDef, tileIndex: number): HTMLElement {
   const section = el("div", { class: "tile-mapping-terrain", dataset: { testid: "tile-mapping-terrain" } });
-  section.append(el("div", { class: "tile-mapping-section-title", text: "지형 태그" }));
+  section.append(el("div", { class: "tile-mapping-section-title", text: "지면 종류" }));
   const current = tileset.terrain[tileIndex] ?? 0;
   const input = el("input", {
     attrs: { type: "number", min: "0", max: "99" },

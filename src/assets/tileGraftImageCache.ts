@@ -81,11 +81,11 @@ async function bakeGraftedTilesetImage(
   }
 }
 
-// 소스 칩셋 textureKey → 이미지. 색상키 칩셋(interior 등)은 투명색 처리를 적용한다.
+// 소스 타일 그림판 textureKey → 이미지. 색상키 타일 그림판(interior 등)은 투명색 처리를 적용한다.
 async function loadChipsetSourceImage(textureKey: string): Promise<HTMLImageElement | HTMLCanvasElement | null> {
   const path = bundledChipsetPath(textureKey);
   if (!path) {
-    console.warn(`[tileGrafts] 알 수 없는 소스 칩셋 textureKey: ${textureKey}`);
+    console.warn(`[tileGrafts] 알 수 없는 소스 타일 그림판 textureKey: ${textureKey}`);
     return null;
   }
   const image = await loadImage(`/${path}`);

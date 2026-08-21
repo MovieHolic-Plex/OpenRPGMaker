@@ -1,5 +1,5 @@
 // player/runtimeDebugPanel.ts
-// 테스트 플레이 중 런타임을 조작하는 디버그 패널(Phase 4-1).
+// 시연 실행 중 런타임을 조작하는 디버그 패널(Phase 4-1).
 // window.__oprnDebug(playSceneTestHooks가 설치) 훅을 통해 스위치/변수/아이템/골드/회복/텔레포트를
 // 조작하고 상태를 덤프한다. 상태 프리셋을 localStorage에 저장/적용한다.
 // __oprnDebug는 플레이 시작 시 설치되므로, 조작은 클릭 시점에 지연 조회한다.

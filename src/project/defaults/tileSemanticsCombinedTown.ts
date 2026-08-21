@@ -100,7 +100,7 @@ export const COMBINED_TOWN_TILE_SEMANTICS: readonly CombinedTownTileSemanticEntr
   ...entries([320], "벽보", "decoration", "passable", ["notice", "벽 전용", "퀘스트", "공지", "표지판", "팻말", "게시판"]),
   ...entries([378, 379, 380, 408, 409, 410, 438, 439], "울타리", "fence", "solid", ["fence", "barrier", "장식"]),
 
-  // 2026-07-16 칩셋 재조사 + 사용자 교정 확정본.
+  // 2026-07-16 타일 그림판 재조사 + 사용자 교정 확정본.
   ...entries([177], "술통", "decoration", "solid", ["barrel", "나무통", "마당", "장터", "장식"]),
   ...entries([207], "오크통", "decoration", "solid", ["keg", "barrel", "통", "장식"]),
   ...entries([266], "석상 상단", "decoration", "solid", ["statue", "석상", "광장", "세로2칸"]),

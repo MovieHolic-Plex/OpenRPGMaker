@@ -1,6 +1,6 @@
 // harnessSuggestion/kitRender.ts
 // §④ "그림으로 말한다" — 제안 카드·팔레트 스탬프 아이콘용 2D 캔버스 타일 렌더.
-// 팔레트(tilesetTileBackgroundStyle)와 동일한 칩셋 시트·타일 좌표 규약을 캔버스에 그린다.
+// 팔레트(tilesetTileBackgroundStyle)와 동일한 타일 그림판 시트·타일 좌표 규약을 캔버스에 그린다.
 
 import { TILE_SIZE } from "@/assets/bundled";
 import { structureKitUnitCells } from "@/editor/harnessSuggestion/structureKitModel";
@@ -29,7 +29,7 @@ export type KitRenderInput = {
 const imageCache = new Map<string, HTMLImageElement>();
 
 /**
- * 타일 셀 목록을 캔버스에 렌더한다. 칩셋 이미지는 비동기 로드 — 캔버스는 즉시 반환되고
+ * 타일 셀 목록을 캔버스에 렌더한다. 타일 그림판 이미지는 비동기 로드 — 캔버스는 즉시 반환되고
  * 로드가 끝나는 프레임에 그려진다(제안 카드/팔레트 아이콘 용도로 충분).
  */
 export function renderTileCellsToCanvas(input: KitRenderInput): HTMLCanvasElement {

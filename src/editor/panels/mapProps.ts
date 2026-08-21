@@ -89,9 +89,9 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
     on: { change: (e: Event) => renameMap(map.id, (e.target as HTMLInputElement).value) },
   })));
 
-  // 칩셋
+  // 타일 그림판
   const tilesetSelect = el("select", {
-    attrs: { "aria-label": `${map.name} 칩셋` },
+    attrs: { "aria-label": `${map.name} 타일 그림판` },
     dataset: { testid: "map-props-tileset-select" },
     on: {
       change: (e: Event) => {
@@ -101,7 +101,7 @@ function renderGeneralTab(host: HTMLElement, map: import("@/project/types").Game
   }) as HTMLSelectElement;
   appendGroupedTilesetOptions(tilesetSelect, Object.values(store.getCurrent().tilesets));
   tilesetSelect.value = map.tilesetId;
-  section.append(fieldRow("칩셋", tilesetSelect));
+  section.append(fieldRow("타일 그림판", tilesetSelect));
 
   // 크기
   const wInput = el("input", {

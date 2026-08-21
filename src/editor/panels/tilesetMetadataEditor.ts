@@ -111,7 +111,7 @@ function renderUnlabeledQueuePanel(tileset: TilesetDef, rerender: () => void): H
       }),
       el("p", {
         class: "tileset-rule-note",
-        text: "라벨·설명이 둘 다 비어 있는 칩. 아래 필드로 채운 뒤 다음 → 로 순회합니다. 칩셋 미리보기의「미라벨」필터와 연동.",
+        text: "라벨·설명이 둘 다 비어 있는 칩. 아래 필드로 채운 뒤 다음 → 로 순회합니다. 그림판 미리보기의「미라벨」필터와 연동.",
       }),
       el("div", {
         class: "tileset-unlabeled-queue-actions",
@@ -227,7 +227,7 @@ function renderSelectedTilePanel(tileset: TilesetDef, rerender: () => void): HTM
   });
 }
 
-// ── 타일 규칙 탭: 레이어(자동/하위/상위) + 통행 + 지형 태그 ──────
+// ── 타일 규칙 탭: 레이어(자동/하위/상위) + 통행 + 지면 종류 ──────
 function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElement[] {
   const override = userTileLayerOverride(tileset, selectedTile);
   const choice: TileLayerChoice = override ?? "auto";
@@ -293,7 +293,7 @@ function renderRuleControls(tileset: TilesetDef, rerender: () => void): HTMLElem
         el("div", { class: "tileset-rule-buttons", children: [passageButton(false, "통행"), passageButton(true, "차단")] }),
       ],
     }),
-    numberControl("지형 태그", tileset.terrain[selectedTile] ?? 0, (value) => updateTerrain(tileset.id, value), "tileset-field-terrain-tag"),
+    numberControl("지면 종류", tileset.terrain[selectedTile] ?? 0, (value) => updateTerrain(tileset.id, value), "tileset-field-terrain-tag"),
   ];
 }
 

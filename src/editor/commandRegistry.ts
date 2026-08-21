@@ -1,6 +1,7 @@
 // Ctrl+K 통합 팔레트의 에디터 명령 레지스트리 (스펙 §4 3-A).
 // run()은 기존 단축키/레일과 동일한 상태 전이만 수행한다 — 새 경로를 만들지 않는다.
 import { applyLayer } from "@/editor/hotkeys";
+import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
 import { getEditorUiMode, setEditorUiMode } from "@/editor/editorUiMode";
 import { activateLeftDrawerTab } from "@/editor/leftDrawerTab";
@@ -22,13 +23,15 @@ export interface EditorCommand {
   readonly run: () => void;
 }
 
-const TOOL_COMMANDS: readonly { id: Tool; label: string; keywords: readonly string[]; hotkey: string }[] = [
-  { id: "select", label: "도구: 선택", keywords: ["select", "선택"], hotkey: "V" },
-  { id: "paint", label: "도구: 브러시", keywords: ["brush", "paint", "펜", "브러시"], hotkey: "B" },
-  { id: "erase", label: "도구: 지우개", keywords: ["erase", "eraser", "지우개"], hotkey: "E" },
-  { id: "fill", label: "도구: 채우기", keywords: ["fill", "채우기", "버킷"], hotkey: "G" },
-  { id: "event", label: "도구: 이벤트", keywords: ["event", "이벤트", "npc"], hotkey: "N" },
-  { id: "eyedropper", label: "도구: 스포이트", keywords: ["eyedropper", "picker", "스포이트"], hotkey: "I" },
+// 라벨은 uiCopy 의 toolLabel 단일 원천. keywords 에는 **구 용어도 남긴다** —
+// 예전 이름(브러시·펜·지우개·스포이트)으로 검색하는 사용자를 막지 않는다.
+const TOOL_COMMANDS: readonly { id: Tool; keywords: readonly string[]; hotkey: string }[] = [
+  { id: "select", keywords: ["select", "선택", "영역"], hotkey: "V" },
+  { id: "paint", keywords: ["brush", "paint", "칠하기", "펜", "브러시"], hotkey: "B" },
+  { id: "erase", keywords: ["erase", "eraser", "지우기", "지우개"], hotkey: "E" },
+  { id: "fill", keywords: ["fill", "채우기", "버킷"], hotkey: "G" },
+  { id: "event", keywords: ["event", "이벤트", "장면", "npc"], hotkey: "N" },
+  { id: "eyedropper", keywords: ["eyedropper", "picker", "타일 집기", "스포이트"], hotkey: "I" },
 ];
 
 function runTool(tool: Tool): void {
@@ -47,14 +50,15 @@ export function listEditorCommands(): readonly EditorCommand[] {
   return [
     ...TOOL_COMMANDS.map((tool): EditorCommand => ({
       id: `tool-${tool.id}`,
-      label: tool.label,
+      label: `도구: ${toolLabel(tool.id)}`,
       category: "도구",
       keywords: tool.keywords,
       hotkey: tool.hotkey,
       run: () => runTool(tool.id),
     })),
-    { id: "layer-lower", label: "레이어: 타일(하위)", category: "레이어", keywords: ["lower", "타일", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
-    { id: "layer-upper", label: "레이어: 오브젝트(상위)", category: "레이어", keywords: ["upper", "오브젝트", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
+    // keywords 에 구 용어(하위/상위)를 남긴다 — 예전 용어로 검색하는 사용자를 위해.
+    { id: "layer-lower", label: "레이어: 바닥", category: "레이어", keywords: ["lower", "타일", "바닥", "하위"], hotkey: "F5", run: () => applyLayer("lower") },
+    { id: "layer-upper", label: "레이어: 덧그림", category: "레이어", keywords: ["upper", "오브젝트", "덧그림", "장식", "상위"], hotkey: "F6", run: () => applyLayer("upper") },
     { id: "layer-event", label: "레이어: 이벤트", category: "레이어", keywords: ["event", "이벤트"], hotkey: "F7", run: () => applyLayer("event") },
     {
       id: "mode-toggle",
@@ -68,7 +72,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
     },
     {
       id: "test-play",
-      label: "화면: 테스트 플레이 실행",
+      label: "화면: 시연 실행 실행",
       category: "화면",
       keywords: ["play", "run", "실행", "테스트"],
       run: () => {

@@ -2,7 +2,7 @@ import { animationStripForTile } from "./chipsetAnimation";
 import { CHIPSET_TILE_GROUPS } from "./chipsetMapping";
 
 /**
- * Combined Town 칩셋 물 블록 (col 0–2):
+ * Combined Town 타일 그림판 물 블록 (col 0–2):
  *   row0  0/1/2   → outer corner (통짜 연못 모서리)
  *   row1 30/31/32 → vertical edge (동·서)
  *   row2 60/61/62 → horizontal edge (남·북) — 같은 타일, 소스 쿼터로 구분
@@ -54,7 +54,7 @@ export type LakeAutotileQuarter = "nw" | "ne" | "sw" | "se";
 export type LakeAutotileQuarterSource = {
   /** 맵 셀 안 배치 위치. */
   readonly quarter: LakeAutotileQuarter;
-  /** 칩셋 타일에서 자를 8×8. */
+  /** 타일 그림판 타일에서 자를 8×8. */
   readonly sourceQuarter: LakeAutotileQuarter;
   readonly tile: number;
   readonly offsetX: 0 | 8;
@@ -162,7 +162,7 @@ function verticalEdgeTile(skin: WaterShoreSkin, quarter: LakeAutotileQuarter): n
 }
 
 /**
- * 칩셋 소스 8×8 선택.
+ * 타일 그림판 소스 8×8 선택.
  *
  * Combined Town 물 블록:
  *   0  = outer, 30 = 세로 가장자리, 60 = 가로 가장자리, 90 = inner only, 120 = body

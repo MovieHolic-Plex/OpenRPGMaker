@@ -16,7 +16,7 @@
 //  - defaultAssets.ts             defaultTilesets() 의 시드된 passability/priority
 //
 // 핵심 설계 판단 — wallAny vs houseShellWall:
-// 이 칩셋에는 "벽"으로 보이는 타일이 100칸 있지만 정본 주택 셸은 16칸뿐이다.
+// 이 타일 그림판에는 "벽"으로 보이는 타일이 100칸 있지만 정본 주택 셸은 16칸뿐이다.
 // 생성형 모델은 거의 항상 벽돌/석벽(wall-brick, wall-stone)을 집어 오는데, 그것들은
 // 진짜 벽이지만 주택 셸 문법이 아니다. 두 카테고리를 따로 채점하고 그 격차를
 // 헤드라인 지표로 보고한다 — 이 벤치마크가 측정하려는 바로 그 구분이다.
@@ -174,7 +174,7 @@ function deriveFloor(): InteriorCategoryTruth {
   const { passability } = interiorTileset();
   const canonical = groupTileIds("floor", "floor-stone", "floor-mat", "deck");
   const generous = [...INTERIOR_WALL_FRAME_FLOOR_TILES, ...groupTileIds("carpet-red", "carpet-teal")];
-  // 함정 두 종류: (1) 지형처럼 보이나 실측 통행 불가, (2) 실내 칩셋 안의 실외 지면.
+  // 함정 두 종류: (1) 지형처럼 보이나 실측 통행 불가, (2) 실내 타일 그림판 안의 실외 지면.
   const looksLikeFloorButSolid = semanticsWhere(
     (entry) => (entry.role === "terrain" || entry.role === "floor") && isSolid(passability[entry.index]!),
   );
@@ -257,7 +257,7 @@ function deriveWater(): InteriorCategoryTruth {
 }
 
 /**
- * 실내 칩셋 안에 실려 있는 **실외 지형** — 실내 질문의 정답이 될 수 없다.
+ * 실내 타일 그림판 안에 실려 있는 **실외 지형** — 실내 질문의 정답이 될 수 없다.
  *
  * 처음엔 "시맨틱 passage 와 런타임 passability 가 어긋나는 타일"로 정의했으나
  * 실측(2026-08-20) 결과 480칸 전부 일치했다 — themePacks 가 passability 를 시맨틱에서
@@ -270,7 +270,7 @@ function deriveDistractor(): InteriorCategoryTruth {
     groupTileIds("grass", "outdoor-ground"),
     groupTileIds("water", "hedge"),
     groupTileIds("floor", "floor-stone"),
-    "themePacks 그룹 grass + outdoor-ground (실내 칩셋 안의 실외 지형)",
+    "themePacks 그룹 grass + outdoor-ground (실내 타일 그림판 안의 실외 지형)",
   );
 }
 

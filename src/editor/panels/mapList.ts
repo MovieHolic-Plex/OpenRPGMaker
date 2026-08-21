@@ -832,7 +832,7 @@ function mapContextMenuItems(context: MapActionContext): readonly MapContextMenu
       action: () => void playMapFromTree(context.mapId),
       icon: "map-start",
       id: "test-play",
-      label: "여기서 테스트 플레이",
+      label: "여기서 시연 실행",
       shortcut: "Ctrl+Enter",
       testId: `map-menu-test-play-${context.mapId}`,
     });

@@ -111,7 +111,7 @@ function renderTransparentColorField(tileset: TilesetDef, rerender: () => void):
   const resetButton = el("button", {
     class: "database-footer-button",
     text: "기본값으로",
-    attrs: { type: "button", title: "칩셋 기본 투명색으로 되돌리기" },
+    attrs: { type: "button", title: "그림판 기본 투명색으로 되돌리기" },
     dataset: { testid: "tileset-transparent-reset" },
     on: { click: () => { clearTilesetTransparentColor(tileset.id); rerender(); } },
   });

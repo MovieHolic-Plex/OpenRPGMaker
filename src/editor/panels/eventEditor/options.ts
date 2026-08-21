@@ -190,8 +190,8 @@ export const CONDITION_OP_OPTIONS = [
 ] as const satisfies readonly SelectOption<Extract<Condition, { kind: "variable" }>["op"]>[];
 
 export const LAYER_OPTIONS = [
-  { value: "lower", label: "하위" },
-  { value: "upper", label: "상위" },
+  { value: "lower", label: "바닥" },
+  { value: "upper", label: "덧그림" },
 ] as const satisfies readonly SelectOption<Extract<Command, { kind: "changeTile" }>["layer"]>[];
 
 export function optionValue<T extends string>(

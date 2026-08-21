@@ -38,7 +38,7 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
-import { uiLabel } from "@/editor/uiCopy";
+import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { separator, toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
@@ -476,8 +476,8 @@ function menuCommands(
       ];
     case "game":
       return [
-        item(state.layer === "event" ? "편집 계속" : "테스트 플레이", "menu-game-play", () => void togglePlayMode()),
-        item("테스트 플레이 창", "menu-game-test-window", () => void openTestPlayWindow()),
+        item(state.layer === "event" ? "편집 계속" : "시연 실행", "menu-game-play", () => void togglePlayMode()),
+        item("시연 실행 창", "menu-game-test-window", () => void openTestPlayWindow()),
         item("랜덤 전투 테스트", "menu-game-battle-test", () => void openRandomBattleTestWindow()),
         { kind: "separator" },
         item("내보내기...", "menu-game-export", () => void doExportWebGame()),
@@ -540,17 +540,18 @@ function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HT
     toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 작업 열기", icon: "open", onClick: () => doLoad(topbar) }),
     toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
     separator(),
-    toolbarButton({ testId: "layer-lower", label: "하위", title: "하위 레이어 편집", icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
-    toolbarButton({ testId: "layer-upper", label: "상위", title: "상위 레이어 편집", icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
-    toolbarButton({ testId: "layer-event", label: "이벤트", title: "이벤트 레이어 편집", icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
+    // 레이어 이름은 uiCopy 단일 원천 — 하드코딩하면 용어를 바꿀 때 여기가 빠진다.
+    toolbarButton({ testId: "layer-lower", label: uiLabel("layerLower"), title: `${uiLabel("layerLower")} 레이어 편집`, icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
+    toolbarButton({ testId: "layer-upper", label: uiLabel("layerUpper"), title: `${uiLabel("layerUpper")} 레이어 편집`, icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
+    toolbarButton({ testId: "layer-event", label: uiLabel("layerEvent"), title: `${uiLabel("layerEvent")} 레이어 편집`, icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
     separator(),
     toolbarButton({ testId: "toolbar-database", label: uiLabel("databaseShort", getEditorChrome().jargonStyle), title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
-    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "소재 관리자", icon: "resources", onClick: () => openResourceModal() }),
+    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "자료 보관함", icon: "resources", onClick: () => openResourceModal() }),
     toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
     toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
     toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
     separator(),
-    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "칩셋/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
+    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "타일 그림판/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
     toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말 (단축키·도구 가이드)", icon: "manual", onClick: () => openHelpModal() })
   );
   disposeToolbarOverflows.push(installToolbarOverflow(row));
@@ -595,8 +596,8 @@ function renderTestPlayButton(): HTMLElement {
         class: "topbar-test-play",
         attrs: {
           type: "button",
-          title: "테스트 플레이",
-          "aria-label": "전체 프로젝트 테스트 플레이",
+          title: "시연 실행",
+          "aria-label": "전체 프로젝트 시연 실행",
         },
         dataset: { testid: "mode-play" },
         on: {
@@ -656,7 +657,7 @@ function playModeButton(mode: string): HTMLButtonElement {
   return toolbarButton({
     testId: mode === "edit" ? "mode-play" : "mode-edit",
     label: mode === "edit" ? "실행" : "편집",
-    title: mode === "edit" ? "테스트 플레이" : "편집기로 돌아가기",
+    title: mode === "edit" ? "시연 실행" : "편집기로 돌아가기",
     icon: mode === "edit" ? "play" : "pencil",
     primary: true,
     onClick: () => {
@@ -682,25 +683,9 @@ function layerShortLabel(layer: Layer): string {
   }
 }
 
+/** 도구 이름은 uiCopy 단일 원천 — 여기서 다시 적으면 화면마다 다른 말이 된다. */
 function toolShortLabel(tool: Tool): string {
-  switch (tool) {
-    case "paint":
-      return "펜";
-    case "fill":
-      return "채우기";
-    case "collision":
-      return "통행";
-    case "event":
-      return "이벤트";
-    case "erase":
-      return "지우개";
-    case "select":
-      return "선택";
-    case "eyedropper":
-      return "스포이드";
-    case "pan":
-      return "이동";
-  }
+  return toolLabel(tool);
 }
 
 async function toggleLeftPanel(topbar: HTMLElement): Promise<void> {

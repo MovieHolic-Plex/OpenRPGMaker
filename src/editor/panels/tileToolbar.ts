@@ -24,14 +24,18 @@ type TileToolbarItem = {
   readonly testid: string;
 };
 
+// 라벨은 **행위**를 말한다(2026-08-21 용어 정리 라운드). 예전 "펜 / 사각형 칠하기 / 원형 칠하기 /
+// 채우기" 는 RM2K3 도구 스트립의 어휘를 그대로 옮긴 것이었다. 도형 채우기 자체는 어느
+// 그림 도구에나 있는 일반 기능이므로 **기능은 유지하고 이름만** 바꾼다 — 쓸 수 있는 기능을
+// 지우는 것은 상표 회피의 수단이 아니다.
 const TOOLBAR_ITEMS: readonly TileToolbarItem[] = [
   { id: "undo", label: "되돌리기", icon: "undo", testid: "oprn-tool-undo" },
   { id: "select", label: "영역 선택", icon: "select", testid: "tool-select" },
-  { id: "pen", label: "펜", icon: "pen", testid: "tool-paint" },
-  { id: "erase", label: "지우개", icon: "eraser", testid: "tool-erase" },
-  { id: "rect", label: "사각형 칠하기", icon: "rect", testid: "oprn-tool-rect" },
-  { id: "round", label: "원형 칠하기", icon: "round", testid: "oprn-tool-round" },
-  { id: "fill", label: "채우기", icon: "fill", testid: "tool-fill" },
+  { id: "pen", label: "칠하기", icon: "pen", testid: "tool-paint" },
+  { id: "erase", label: "지우기", icon: "eraser", testid: "tool-erase" },
+  { id: "rect", label: "사각형 채우기", icon: "rect", testid: "oprn-tool-rect" },
+  { id: "round", label: "타원 채우기", icon: "round", testid: "oprn-tool-round" },
+  { id: "fill", label: "이어진 영역 채우기", icon: "fill", testid: "tool-fill" },
 ];
 
 type MapModeItem = {
@@ -43,10 +47,10 @@ type MapModeItem = {
 
 /** 구 "도구" 섹션(tilePaletteToolbar)에서 이관한 맵 모드 도구 — 그리기 도구와 구분선으로 나뉜다. */
 const MODE_ITEMS: readonly MapModeItem[] = [
-  { id: "eyedropper", label: "스포이트", hint: "현재 맵 레이어에서 타일을 집습니다", icon: "eyedropper" },
-  { id: "pan", label: "이동", hint: "드래그로 맵 화면을 움직입니다. Space를 누른 동안에도 이동합니다", icon: "hand" },
-  { id: "collision", label: "통행", hint: "통행 가능 여부를 전환합니다", icon: "collision" },
-  { id: "event", label: "이벤트", hint: "맵 이벤트를 배치하거나 선택합니다", icon: "event" },
+  { id: "eyedropper", label: "타일 집기", hint: "맵에 놓인 타일을 찍어 팔레트 선택으로 가져옵니다", icon: "eyedropper" },
+  { id: "pan", label: "화면 밀기", hint: "드래그로 맵 화면을 움직입니다. Space를 누른 동안에도 움직입니다", icon: "hand" },
+  { id: "collision", label: "통행 표시", hint: "지나갈 수 있는 칸인지 표시하고 바꿉니다", icon: "collision" },
+  { id: "event", label: "장면 놓기", hint: "맵에 이벤트를 놓거나 놓인 이벤트를 고릅니다", icon: "event" },
 ];
 
 let latestToolbarRerender: (() => void) | null = null;

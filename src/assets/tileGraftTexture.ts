@@ -40,7 +40,7 @@ export function bakeTilesetTextureCanvas(
 }
 
 // 베이스 시트: 사용자 투명색이 있으면 raw 원본에 색상키 적용(기존 선례),
-// 없으면 이미 처리된 텍스처(색상키 칩셋 포함)를 그대로 쓴다.
+// 없으면 이미 처리된 텍스처(색상키 타일 그림판 포함)를 그대로 쓴다.
 function resolveBakeBase(scene: Phaser.Scene, tileset: TilesetDef, baseKey: string): BakeSource | null {
   if (normalizeRgbHexColor(tileset.transparentColor ?? "")) {
     const source = sceneSourceImage(scene, preferRawTextureKey(scene, baseKey));
@@ -57,7 +57,7 @@ function resolveBakeBase(scene: Phaser.Scene, tileset: TilesetDef, baseKey: stri
   return raw;
 }
 
-// graft 소스 칩셋 이미지: 처리된 텍스처 우선, 없으면 raw 에 칩셋 색상키를 적용해 사용.
+// graft 소스 타일 그림판 이미지: 처리된 텍스처 우선, 없으면 raw 에 타일 그림판 색상키를 적용해 사용.
 function resolveGraftSourceImage(scene: Phaser.Scene, sourceChipset: string): BakeSource | null {
   const processed = sceneSourceImage(scene, sourceChipset);
   if (processed) return processed;

@@ -91,7 +91,7 @@ export function createSampleAdventureProject(): Project {
   return project;
 }
 
-// Scarloxy MPWSP01 팩 데모 — 팩 칩셋/캐릭셋/몬스터/전투 배경/이펙트를 조합한 예시.
+// Scarloxy MPWSP01 팩 데모 — 팩 타일 그림판/캐릭셋/몬스터/전투 배경/이펙트를 조합한 예시.
 export function createScarloxyDemoProject(): Project {
   const project = createProjectWithMaps(createScarloxyDemoMaps(), 0);
   configureScarloxyDemoProject(project);

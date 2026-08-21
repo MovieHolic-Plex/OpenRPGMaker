@@ -1,7 +1,7 @@
 // Scarloxy MPWSP01 팩 데모 게임 — "몬스터 초원" 예시 프로젝트.
 //
-// 팩 리소스(칩셋/캐릭셋/몬스터/전투 배경/이펙트)를 실제로 조합해 보여주는 샘플.
-// 타일 인덱스는 scripts/import-scarloxy-pack.py 가 만든 칩셋 시트 기준이며
+// 팩 리소스(타일 그림판/캐릭셋/몬스터/전투 배경/이펙트)를 실제로 조합해 보여주는 샘플.
+// 타일 인덱스는 scripts/import-scarloxy-pack.py 가 만든 타일 그림판 시트 기준이며
 // (src/assets/scarloxyPackManifest.json 블록 배치), 인덱스 상수에 블록 이름을 병기한다.
 
 import { PRODUCT_BRAND } from "@/brand";
@@ -20,7 +20,7 @@ export const PEOPLE2_CHARSET_ID = "tex_scarloxy_charset_people2";
 
 const EMPTY = -1;
 
-// --- grassland 칩셋 타일 인덱스 (30열 그리드) --------------------------------
+// --- grassland 타일 그림판 타일 인덱스 (30열 그리드) --------------------------------
 export const G = {
   GRASS: 124, // grass-terrain 평지(시트 우측 열 9/39/69는 빈 투명 타일이므로 사용 금지)
   SAND_PATCH: [
@@ -52,7 +52,7 @@ export const G = {
   HOSPITAL: rectIndices(294, 6, 6), // hospital (24,9)
 } as const;
 
-// --- wilds 칩셋 타일 인덱스 ---------------------------------------------------
+// --- wilds 타일 그림판 타일 인덱스 ---------------------------------------------------
 export const W = {
   SAND: 124, // sand-terrain 평지(시트 우측 열 9/39/69는 빈 투명 타일이므로 사용 금지)
   GRASS_PATCH: [

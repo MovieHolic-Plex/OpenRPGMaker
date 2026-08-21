@@ -242,7 +242,7 @@ function placeWelcomeOnCanvas(card: HTMLElement): void {
   card.style.top = `${Math.max(MARGIN, 72)}px`;
 }
 
-/** 표준 모드 첫 방문 웰컴 카드. 칩셋이 아니라 캔버스 열에 붙인다. */
+/** 표준 모드 첫 방문 웰컴 카드. 타일 그림판이 아니라 캔버스 열에 붙인다. */
 function renderStandardWelcome(storage: Storage | null): void {
   dismiss();
   const card = el("div", {

@@ -18,7 +18,7 @@ import type { GameMap } from "@/project/types";
  * ② **9슬라이스가 아니었다.** 큰 맵의 절벽 테두리는 `index % 3` 으로 타일을 골라
  *    374(우측 끝) 오른쪽에 372(좌측 끝)가 붙는 조합이 195쌍 나왔다.
  *    이 맵은 모든 면 재료를 `blockTile()` 한 곳에서만 깐다 — 마스크의 이웃 4방향을 보고
- *    3×3 블록의 제 조각을 고른다(칩셋 한 행 30타일, body 기준 ±1/±30/±31/±29).
+ *    3×3 블록의 제 조각을 고른다(타일 그림판 한 행 30타일, body 기준 ±1/±30/±31/±29).
  *
  * ③ **계단·부빙·소품이 0개였다.** 결정시트 q7 목록이 통째로 미구현이었고, 고도 변화가
  *    전부 ①의 절벽 관통으로 처리돼 있었다. 이 맵은 계단이 유일한 등반 수단이고,
@@ -55,7 +55,7 @@ import type { GameMap } from "@/project/types";
 export const ICE_PLAIN_WIDTH = 64;
 export const ICE_PLAIN_HEIGHT = 64;
 
-/** 칩셋 한 행의 타일 수. 3×3 블록의 조각 오프셋이 여기서 나온다. */
+/** 타일 그림판 한 행의 타일 수. 3×3 블록의 조각 오프셋이 여기서 나온다. */
 const CHIPSET_ROW = 30;
 
 /**
@@ -146,7 +146,7 @@ export const BANNED_WATER_TILES = [120, 121, 122, 427] as const;
 /**
  * **타일이 아니다 — 폭포 애니메이션 프레임이다. 맵에 한 칸도 놓지 않는다.**
  *
- * 125/155/185/215 는 결정시트 q7 에 "얼음 마법 블록"으로 적혀 있었고, 칩셋 한 행이
+ * 125/155/185/215 는 결정시트 q7 에 "얼음 마법 블록"으로 적혀 있었고, 타일 그림판 한 행이
  * 30타일이라 네 값이 같은 열 연속 네 행이어서 세로 4칸 기둥으로 읽고 세워 렌더했다.
  * 상자 네 개가 포개진 그림이 나왔다(실측 `00-full.png`).
  *
@@ -357,10 +357,10 @@ function noise(a: number, b: number): number {
 
 /**
  * 3×3 블록에서 이 칸이 쓸 조각. **모든 면 재료가 이 함수만 통과한다** — 결함 ②의 재발 방지.
- * 칩셋 한 행이 30타일이라 body 기준 오프셋은 NW -31 · N -30 · NE -29 · W -1 · E +1 ·
+ * 타일 그림판 한 행이 30타일이라 body 기준 오프셋은 NW -31 · N -30 · NE -29 · W -1 · E +1 ·
  * SW +29 · S +30 · SE +31 이다(눈 67 → 36/37/38/66/68/96/97/98 로 실측 확인).
  *
- * 이 칩셋 블록에는 안쪽 코너 조각이 없다(`dungeonTerrainBlockRoles()` 의 corners/inner 가
+ * 이 타일 그림판 블록에는 안쪽 코너 조각이 없다(`dungeonTerrainBlockRoles()` 의 corners/inner 가
  * 비어 있다). 그래서 RM2K3 관례대로 바깥 테두리 여덟 조각 + 중심만 쓴다.
  */
 export function blockTile(body: number, north: boolean, south: boolean, west: boolean, east: boolean): number {

@@ -80,7 +80,7 @@ export const PASSABILITY_PROBE_TILES: readonly number[] = Object.freeze([
 /**
  * A4 레이어 프로브 — 나무 캐노피(상위)와 줄기(하위)를 함께 넣었다.
  * 260~263 캐노피는 upper, 290~293 줄기는 lower 다. 같은 나무의 위아래가 서로 다른
- * 레이어라는 것이 이 칩셋 레이어 규칙의 핵심이고, 지붕(374/375/384/385 upper)과
+ * 레이어라는 것이 이 타일 그림판 레이어 규칙의 핵심이고, 지붕(374/375/384/385 upper)과
  * 지붕-벽 경계(404/405 lower)도 같은 함정 구조다.
  */
 export const LAYER_PROBE_TILES: readonly number[] = Object.freeze([

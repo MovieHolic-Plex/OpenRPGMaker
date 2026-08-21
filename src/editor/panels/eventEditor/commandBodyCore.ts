@@ -554,7 +554,7 @@ function changeFaceBody(context: CommandEditContext, cmd: Extract<Command, { kin
     optionsRow,
     el("p", {
       class: "event-command-face-hint",
-      text: "칩셋 얼굴은 4×4 칸에서 고릅니다. 리소스 id에 -bust 가 있으면 대사 창 위 대형 흉상으로 표시되며 시트 칸 선택은 숨깁니다.",
+      text: "얼굴 시트은 4×4 칸에서 고릅니다. 리소스 id에 -bust 가 있으면 대사 창 위 대형 흉상으로 표시되며 시트 칸 선택은 숨깁니다.",
     })
   );
   return wrap;

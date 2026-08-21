@@ -16,7 +16,7 @@ import { addMarketTownEvents } from "./marketTownEvents";
 
 const TOWN_PATH_TILE_SET = new Set<number>(Object.values(SAND_TILE));
 
-// EasyRPG Combined Town 칩셋(16x16)의 기존 컴포넌트를 이어붙여 만든
+// EasyRPG Combined Town 타일 그림판(16x16)의 기존 컴포넌트를 이어붙여 만든
 // 60x60 시장 중심 도시 마을. 컴포넌트 재사용:
 //  - stampDbHouseVariant : 집(wide/compact/l × wood/plaster/stone) + 문 앞 도로 접근
 //  - paintTownPathNetwork/shapeAllTownPaths : 모래길 자동타일(중심/외곽/모서리)

@@ -28,7 +28,7 @@ import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-/** 호수/강 등 물 지형(레거시 WATER 상수 + 칩셋/오토타일). */
+/** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
 export function isMapWaterTile(tile: number): boolean {
   return tile === TILE.WATER || isWaterChipsetTile(tile) || isLakeAutotileTile(tile);
 }
@@ -98,7 +98,7 @@ function semanticChar(project: Project, map: GameMap, x: number, y: number, hasE
   const i = y * map.width + x;
   const lower = map.lowerTiles[i] ?? TILE.EMPTY;
   const upper = map.upperTiles[i] ?? TILE.EMPTY;
-  // 호수 오토타일·칩셋 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
+  // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
   if (isMapWaterTile(lower) || isMapWaterTile(upper)) return "~";
   if (upper === TILE.TREE || lower === TILE.TREE) return "T";
   if (lower === TILE.WALL) return "#";

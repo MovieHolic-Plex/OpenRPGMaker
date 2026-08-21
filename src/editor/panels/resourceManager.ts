@@ -249,7 +249,7 @@ function addTilesetFromUpload(asset: UploadedAsset): void {
 function applyTilesetToCurrentMap(asset: UploadedAsset): void {
   const result = ensureTilesetFromUpload(asset);
   setMapTileset(currentMapId(), result.id);
-  toast(`현재 맵 칩셋 적용: ${asset.name}`, "ok");
+  toast(`현재 맵 타일 그림판 적용: ${asset.name}`, "ok");
 }
 
 function deleteUploadedAsset(asset: UploadedAsset): void {

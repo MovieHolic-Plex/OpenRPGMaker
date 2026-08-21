@@ -56,7 +56,7 @@ export function buildAiCompletionStrip(options: {
         text: context.summary || "변경을 적용했습니다",
         attrs: { title: context.instruction || context.summary },
       }),
-      action("테스트 플레이", "ai-completion-test", () => {
+      action("시연 실행", "ai-completion-test", () => {
         if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
         const detail = { kind: "map", mapId: context.mapId };
         if (typeof CustomEvent === "function") {

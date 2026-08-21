@@ -322,7 +322,7 @@ function groupForTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, 
 }
 
 // 레이어 분류(tileLayerClassification)가 mixed 그룹과 그룹 미소속을 구분할 수 있도록
-// 그룹의 레이어/스택 속성을 노출한다. 내장 타운 칩셋은 정적 하네스 그룹을 우선한다.
+// 그룹의 레이어/스택 속성을 노출한다. 내장 타운 타일 그림판은 정적 하네스 그룹을 우선한다.
 export function harnessGroupForTile(
   tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">,
   tile: number
