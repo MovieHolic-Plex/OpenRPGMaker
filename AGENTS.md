@@ -25,6 +25,7 @@ Before making code changes, read:
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.
    - LLM tile-placement benchmark (interior chipset as ground truth, reproducibility spine, 6 scoring schemes): `openwiki/interior-tile-benchmark.md`
+   - LLM tile-placement benchmark on the DEFAULT chipset (combined_town, 9 axes matching the art director's questions, engine-derived ground truth, PNG evidence sheet): `openwiki/town-tile-benchmark.md`
    - Parallel agent isolation & verification gates: `openwiki/agent-worktrees.md` (read before running more than one coding agent).
    - `openwiki/cpen-openwiki.md` for refreshing wiki content through CPEN/OpenWiki.
 
