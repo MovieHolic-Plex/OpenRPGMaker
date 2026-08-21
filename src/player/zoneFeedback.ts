@@ -33,6 +33,12 @@ export type ZoneFeedbackInput = {
   readonly nowMs: number;
   readonly prompt: string | null;
   readonly suppressed: boolean;
+  /**
+   * 씬 로컬 임시 토스트. m2Runtime.ui 를 거치지 않는 반복 가능한 안내(농사 실패 사유 등)가
+   * 여기로 들어온다. entries 기반 토스트가 살아 있으면 그 뒤로 밀린다 — 농사 안내는 A 를 다시
+   * 눌러 언제든 되살릴 수 있지만 체크포인트 안내는 한 번뿐이라 가려지면 영구히 사라진다.
+   */
+  readonly transientToast?: string | null;
 };
 
 export type ZoneFeedbackUpdate = {
@@ -139,7 +145,7 @@ function isCheckpointMessage(message: string): boolean {
 
 function resultFrom(
   model: ZoneFeedbackModel,
-  input: Pick<ZoneFeedbackInput, "prompt" | "suppressed">,
+  input: Pick<ZoneFeedbackInput, "prompt" | "suppressed" | "transientToast">,
   effects: readonly ZoneFeedbackEffect[],
 ): ZoneFeedbackUpdate {
   return {
@@ -147,7 +153,8 @@ function resultFrom(
     effects,
     view: {
       banner: model.banner?.message ?? null,
-      toast: model.toast?.message ?? null,
+      // 살아 있는 entries 토스트(체크포인트 등)가 임시 토스트보다 우선한다.
+      toast: model.toast?.message ?? input.transientToast ?? null,
       objective: model.objective,
       prompt: input.prompt,
       suppressed: input.suppressed,

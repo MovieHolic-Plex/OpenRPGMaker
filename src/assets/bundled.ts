@@ -16,6 +16,7 @@ import {
 import { CHIPSET_ANIMATION_FPS, CHIPSET_ANIMATION_STRIPS } from "@/project/defaults/chipsetAnimation";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
+import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import type { Project } from "@/project/types";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -239,8 +240,15 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
+  // 자동 배선된 작물 그래픽은 프로젝트 문자열에 없다(저장하지 않는다) — 그래서 해석해서 더한다.
+  const cropAssetIds = new Set<string>();
+  for (const crop of project.database.crops ?? []) {
+    for (const stage of cropGraphicStages(crop)) {
+      if (stage.resourceId) cropAssetIds.add(stage.resourceId);
+    }
+  }
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
-    if (strings.has(asset.id)) keys.add(asset.id);
+    if (strings.has(asset.id) || cropAssetIds.has(asset.id)) keys.add(asset.id);
   }
   return keys;
 }

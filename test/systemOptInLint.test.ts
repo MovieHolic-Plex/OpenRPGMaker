@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { projectLint } from "@/project/lint/projectLint";
+import { normalizeCropRecord } from "@/project/farmModel";
 import type { Project } from "@/project/types";
 
 /** Helper: opt-in issues from projectLint with the "opt-in:" code prefix. */
@@ -42,6 +43,36 @@ describe("system opt-in consistency lint", () => {
     }
     project.system.typeChart = { entries: [] } as never;
     expect(optInIssues(project).some((i) => i.code === "opt-in:type-chart-no-elements")).toBe(true);
+  });
+
+  it("warns when a crop has more growth stages than its auto-wired sprite has frames", () => {
+    const project = createBlankProject();
+    // 감자 시트는 2 프레임 — 3 단계 작물은 마지막 프레임이 반복된다.
+    project.database.crops = [
+      normalizeCropRecord({ id: "crop_potato", name: "감자", stages: [{ days: 1 }, { days: 1 }, { days: 1 }] }),
+      normalizeCropRecord({ id: "crop_strawberry", name: "딸기", stages: [{ days: 1 }, { days: 1 }] }),
+    ];
+    const issues = optInIssues(project).filter((i) => i.code === "opt-in:crop-stages-exceed-sprite-frames");
+    expect(issues).toHaveLength(1);
+    expect(issues[0]?.message).toContain("crop_potato");
+  });
+
+  it("does not warn about sprite frames when the crop authors its own graphic stages", () => {
+    const project = createBlankProject();
+    // 자동 배선 스프라이트를 쓰지 않는 작물이다 — 감자 시트의 프레임 수는 상관이 없다.
+    project.database.crops = [
+      normalizeCropRecord({
+        id: "crop_potato",
+        name: "감자",
+        stages: [{ days: 1 }, { days: 1 }, { days: 1 }],
+        graphicStages: [
+          { resourceId: "farming-crop-potato", frame: 0 },
+          { resourceId: "farming-crop-potato", frame: 1 },
+          { resourceId: "farming-crop-potato", frame: 1 },
+        ],
+      }),
+    ];
+    expect(optInIssues(project).filter((i) => i.code === "opt-in:crop-stages-exceed-sprite-frames")).toHaveLength(0);
   });
 
   it("warns when season crops exist but time system is off", () => {

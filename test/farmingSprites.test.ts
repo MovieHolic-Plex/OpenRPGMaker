@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { FARMING_CROP_SPRITE_ASSETS, type FarmingCropSpriteAsset } from "@/assets/farmingSprites";
+import { cropGraphicStages, normalizeCropRecord } from "@/project/farmModel";
 
 type BinaryFsReader = {
   readonly readFileSync: (path: URL) => Uint8Array;
@@ -18,6 +19,10 @@ const CROP_SHEETS = [
   { file: "crop_strawberry.png", width: 32, height: 16 },
   { file: "crop_tomato.png", width: 48, height: 16 },
   { file: "crop_corn.png", width: 48, height: 16 },
+  { file: "crop_blueberry.png", width: 32, height: 16 },
+  { file: "crop_melon.png", width: 48, height: 16 },
+  { file: "crop_pumpkin.png", width: 48, height: 16 },
+  { file: "crop_eggplant.png", width: 32, height: 16 },
 ] as const;
 
 const ANIMAL_SHEETS = [
@@ -39,6 +44,21 @@ describe("farming crop sprite sheets", () => {
       expect(hasChunk(bytes, "IDAT")).toBe(true);
     });
   }
+});
+
+describe("registered farming crop sprite assets", () => {
+  it("registers one asset per shipped sheet with a frameCount matching the sheet width", () => {
+    expect(FARMING_CROP_SPRITE_ASSETS).toHaveLength(CROP_SHEETS.length);
+    const sheetByFile = new Map<string, { readonly width: number; readonly height: number }>(
+      CROP_SHEETS.map((sheet) => [sheet.file, sheet]),
+    );
+    for (const asset of FARMING_CROP_SPRITE_ASSETS) {
+      const sheet = sheetByFile.get(asset.path.split("/").pop() ?? "");
+      expect(sheet, asset.id).toBeDefined();
+      expect(asset.frameCount, asset.id).toBe((sheet?.width ?? 0) / asset.frameWidth);
+      expect(asset.frameHeight).toBe(sheet?.height);
+    }
+  });
 });
 
 describe("farming animal charsets", () => {
@@ -72,13 +92,53 @@ describe("farming demo crop graphics wiring", () => {
     }
   });
 
+  it("derives graphic stages for an unauthored crop at read time, clamping frames to the sheet", () => {
+    // 저작 graphicStages 없이 id 만으로 스프라이트가 붙어야 한다(감자 시트 = 2 프레임).
+    const crop = normalizeCropRecord({
+      id: "crop_potato",
+      name: "감자",
+      harvestItemId: "item_potato",
+      stages: [{ days: 1 }, { days: 1 }, { days: 1 }],
+    });
+    const stages = cropGraphicStages(crop);
+    expect(stages.length).toBe(crop.stages.length);
+    expect(stages.map((stage) => stage.frame)).toEqual([0, 1, 1]);
+    for (const stage of stages) expect(stage.resourceId).toBe("farming-crop-potato");
+
+    // 등록된 스프라이트가 없는 작물은 아무 stage 도 만들지 않는다.
+    const unknown = normalizeCropRecord({ id: "crop_durian", name: "두리안", stages: [{ days: 1 }] });
+    expect(cropGraphicStages(unknown)).toEqual([]);
+  });
+
+  it("never writes derived graphic stages into the record, and honors an empty authored list as opt-out", () => {
+    // 저작하지 않은 아트가 레코드에 심기면 직렬화가 그것을 프로젝트에 새기고 작가는 되돌릴 수 없다.
+    const inferred = normalizeCropRecord({ id: "crop_melon", name: "수박", stages: [{ days: 1 }, { days: 1 }] });
+    expect(inferred.graphicStages).toBeUndefined();
+    expect(JSON.parse(JSON.stringify(inferred))).not.toHaveProperty("graphicStages");
+    // 그래도 화면에는 등록 스프라이트가 붙는다.
+    expect(cropGraphicStages(inferred).map((stage) => stage.resourceId)).toEqual([
+      "farming-crop-melon",
+      "farming-crop-melon",
+    ]);
+
+    // 번 배열은 "아트 없음" 선언이다 — 자동 배선이 다시 끊어들면 opt-out 이 불가능해진다.
+    const optedOut = normalizeCropRecord({
+      id: "crop_melon",
+      name: "수박",
+      stages: [{ days: 1 }],
+      graphicStages: [],
+    });
+    expect(optedOut.graphicStages).toEqual([]);
+    expect(cropGraphicStages(optedOut)).toEqual([]);
+  });
+
   it("points every crop graphic stage at a registered farming sprite asset with enough frames", () => {
     const project = createFarmingDemoProject();
     const assetById = new Map<string, FarmingCropSpriteAsset>(
       FARMING_CROP_SPRITE_ASSETS.map((asset) => [asset.id, asset])
     );
     for (const crop of project.database.crops ?? []) {
-      for (const stage of crop.graphicStages ?? []) {
+      for (const stage of cropGraphicStages(crop)) {
         const asset = assetById.get(stage.resourceId ?? "");
         expect(asset, `${crop.id} → ${stage.resourceId}`).toBeDefined();
         expect(typeof stage.frame).toBe("number");

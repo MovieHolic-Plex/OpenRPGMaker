@@ -70,6 +70,25 @@ export function isSpeedKey(key: string): boolean {
   return isDashKey(key);
 }
 
+// ── 손 슬롯(hand slot) ──
+// 숫자키 1-9 = 직접 선택, 0 = 빈 손. `[`/`]` = 이전/다음 순환.
+// 숫자키는 다른 서피스가 쓰지 않으므로 isRuntimeMenuKey 에 넣지 않는다 —
+// 넣으면 필드 밖(대사·모달)에서까지 전역 가로채기 대상이 된다.
+export function handSlotDigit(key: string): number | undefined {
+  const normalized = normalizeKey(key);
+  if (normalized.length !== 1) return undefined;
+  const code = normalized.charCodeAt(0);
+  if (code < 48 || code > 57) return undefined;
+  return code - 48;
+}
+
+export function handSlotCycleDelta(key: string): number | undefined {
+  const normalized = normalizeKey(key);
+  if (normalized === "[") return -1;
+  if (normalized === "]") return 1;
+  return undefined;
+}
+
 export function directionForKey(key: string): Dir | null {
   switch (normalizeKey(key)) {
     case "arrowdown":
@@ -97,6 +116,23 @@ export function isNavKey(key: string): boolean {
 export function isRuntimeMenuKey(key: string): boolean {
   return isNavKey(key) || isConfirmKey(key) || isCancelKey(key);
 }
+
+// 키 입력을 자기가 다 먹는 플레이 스테이지 내부 서피스. 전역 핸들러는 이게 떠 있으면 물러난다.
+// runtime-name-entry 가 반드시 들어있어야 한다: 이름 입력은 숨긴 input 으로 숫자를 받으면서
+// preventDefault 를 하지 않으므로, 가드가 없으면 이름에 숫자를 치는 순간 손 슬롯까지 같이 바뀜다.
+const INPUT_CAPTURING_TEST_IDS = [
+  "dialogue-box",
+  "runtime-choices",
+  "runtime-input-number",
+  "runtime-name-entry",
+] as const;
+
+export const INPUT_CAPTURING_SELECTOR = INPUT_CAPTURING_TEST_IDS.map((id) => `[data-testid='${id}']`).join(", ");
+
+export function isInputCapturingSurfaceActive(root: { querySelector(selector: string): unknown } | null | undefined): boolean {
+  return Boolean(root?.querySelector(INPUT_CAPTURING_SELECTOR));
+}
+  
 
 // ── 화면 안내 문구 ──
 // 타이틀·전투 커맨드·전투 디렉터가 각자 다른 문자열을 띄우던 걸 여기로 모은다.

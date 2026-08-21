@@ -12,7 +12,7 @@ import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { StepResult } from "@/player/interpreter";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
-import { advanceFarmPlotsForDay } from "@/player/farming";
+import { syncFarmPlotsToDate } from "@/player/farming";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { fadeCamera, TRANSFER_FADE_DURATION_MS } from "@/player/playSceneMapCommands";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
@@ -62,6 +62,7 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
     }
     const advanced = advanceGameTime(scene.session.gameTime, wholeMinutes, system);
     scene.session.gameTime = advanced.time;
+    if (advanced.dayEnds > 0) syncFarmPlotsToDate(project, scene.session, system);
   }
 }
 
@@ -118,9 +119,9 @@ export async function sleepUntilMorningScene(
     await fadeCamera(scene, "out", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
     const hook = system.onDayEnd ? project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
     if (hook?.commands.length) await runDayEndCommands(hook.commands);
-    const nextTime = sleepGameTimeUntilMorning(scene.session.gameTime, system).time;
-    advanceFarmPlotsForDay(project, scene.session, 1, nextTime.season);
-    scene.session.gameTime = nextTime;
+    scene.session.gameTime = sleepGameTimeUntilMorning(scene.session.gameTime, system).time;
+    // 커서 산술이 하루치 틱을 만들어 준다. 여기서 advanceFarmPlotsForDay 를 또 부르면 이중 계산이다.
+    syncFarmPlotsToDate(project, scene.session, system);
     scene.timeFixedAccumulatorMs = 0;
     scene.timeMinuteAccumulator = 0;
     scene.refreshRuntimeSurfaces();
@@ -151,6 +152,7 @@ export async function applyAdvanceTimeStep(
     return;
   }
   scene.session.gameTime = advanceGameTime(scene.session.gameTime, minutes, system).time;
+  syncFarmPlotsToDate(project, scene.session, system);
   scene.syncRuntimeState();
 }
 

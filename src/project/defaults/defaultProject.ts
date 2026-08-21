@@ -2,6 +2,7 @@
   CommonEvent,
   GameEvent,
   GameMap,
+  ItemRecord,
   MapId,
   Project,
   SwitchDef,
@@ -258,18 +259,21 @@ export function createFarmingDemoProject(): Project {
       item_corn_seed: 2,
     },
   };
-  project.database.items.push(
-    normalizeItemRecord({ id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" }),
-    normalizeItemRecord({ id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" }),
-    normalizeItemRecord({ id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true }),
-    normalizeItemRecord({ id: "item_potato", name: "감자", scope: "none", price: 40, type: "normalGoods" }),
-    normalizeItemRecord({ id: "item_strawberry_seed", name: "딸기 씨앗", scope: "none", price: 40, type: "seed", consumable: true }),
-    normalizeItemRecord({ id: "item_strawberry", name: "딸기", scope: "none", price: 80, type: "normalGoods" }),
-    normalizeItemRecord({ id: "item_tomato_seed", name: "토마토 씨앗", scope: "none", price: 30, type: "seed", consumable: true }),
-    normalizeItemRecord({ id: "item_tomato", name: "토마토", scope: "none", price: 60, type: "normalGoods" }),
-    normalizeItemRecord({ id: "item_corn_seed", name: "옥수수 씨앗", scope: "none", price: 35, type: "seed", consumable: true }),
-    normalizeItemRecord({ id: "item_corn", name: "옥수수", scope: "none", price: 70, type: "normalGoods" })
-  );
+  // 기본 CC0 카탈로그에 이미 item_hoe / item_watering_can / item_potato / item_tomato 가 있다.
+  // push 로 뒤에 덧붙이면 모든 조회가 쓰는 `items.find` 가 farmTool 없는 옛 레코드를 먼저 집어
+  // 손에 든 괭이가 도구 판정을 통과하지 못한다. 그래서 같은 id 는 교체(upsert)한다.
+  upsertDemoItems(project, [
+    { id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" },
+    { id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" },
+    { id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true },
+    { id: "item_potato", name: "감자", scope: "none", price: 40, type: "normalGoods" },
+    { id: "item_strawberry_seed", name: "딸기 씨앗", scope: "none", price: 40, type: "seed", consumable: true },
+    { id: "item_strawberry", name: "딸기", scope: "none", price: 80, type: "normalGoods" },
+    { id: "item_tomato_seed", name: "토마토 씨앗", scope: "none", price: 30, type: "seed", consumable: true },
+    { id: "item_tomato", name: "토마토", scope: "none", price: 60, type: "normalGoods" },
+    { id: "item_corn_seed", name: "옥수수 씨앗", scope: "none", price: 35, type: "seed", consumable: true },
+    { id: "item_corn", name: "옥수수", scope: "none", price: 70, type: "normalGoods" },
+  ]);
   project.database.crops = [
     normalizeCropRecord({
       id: "crop_potato",
@@ -332,6 +336,24 @@ export function createFarmingDemoProject(): Project {
     createFarmAnimalEvent("ev_farm_cow", "젖소", "tex_farming_charset_cow", 13, 8)
   );
   return project;
+}
+
+/**
+ * 같은 id 가 이미 있으면 패치를 덮어쓰고, 없으면 추가한다.
+ * 통째로 교체하면 CC0 카탈로그가 가진 아이콘·이미지·설명이 날아가 상점과 인벤토리가 빈 칸이 된다
+ * (item_hoe → cc0-jetrel-hoe). 데모가 명시한 필드만 이기고 나머지는 카탈로그에서 상속한다.
+ */
+function upsertDemoItems(
+  project: Project,
+  patches: readonly (Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">)[]
+): void {
+  for (const patch of patches) {
+    const index = project.database.items.findIndex((entry) => entry.id === patch.id);
+    const existing = index < 0 ? undefined : project.database.items[index];
+    const record = normalizeItemRecord(existing ? { ...existing, ...patch } : patch);
+    if (index < 0) project.database.items.push(record);
+    else project.database.items[index] = record;
+  }
 }
 
 // 농장 동물 — 밭 근처를 배회하는 장식 이벤트 (대화 없음).

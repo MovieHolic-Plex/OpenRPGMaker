@@ -68,7 +68,7 @@ import {
   type TimePhase,
 } from "@/project/gameTime";
 import { npcScheduleTargetForEvent } from "@/project/npcSchedule";
-import { advanceFarmPlotsForDay, cropStageAt, interactWithFarmPlot } from "@/player/farming";
+import { cropStageAt, interactWithFarmPlot, syncFarmPlotsToDate } from "@/player/farming";
 import { giveGiftToNpc } from "@/project/friendship";
 import { resolveShopStock } from "@/project/shopStock";
 
@@ -872,9 +872,8 @@ function advanceGameMinutesForRunner(state: RunnerState, minutes: number): strin
     remaining -= untilEnd;
     const hookFailure = runDayEndHookForRunner(state);
     if (hookFailure) return hookFailure;
-    const nextTime: GameTime = sleepGameTimeUntilMorning(currentTime, system).time;
-    advanceFarmPlotsForDay(state.project, state.session, 1, nextTime.season);
-    state.session.gameTime = nextTime;
+    state.session.gameTime = sleepGameTimeUntilMorning(currentTime, system).time;
+    syncFarmPlotsToDate(state.project, state.session, system);
     applyNpcSchedulesForRunner(state);
     if (untilEnd <= 0) remaining = 0;
   }
@@ -897,9 +896,8 @@ function sleepUntilMorningForRunner(state: RunnerState): string | null {
   if (!state.session.gameTime) return null;
   const hookFailure = runDayEndHookForRunner(state);
   if (hookFailure) return hookFailure;
-  const nextTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
-  advanceFarmPlotsForDay(state.project, state.session, 1, nextTime.season);
-  state.session.gameTime = nextTime;
+  state.session.gameTime = sleepGameTimeUntilMorning(state.session.gameTime, system).time;
+  syncFarmPlotsToDate(state.project, state.session, system);
   applyNpcSchedulesForRunner(state);
   state.timeFixedAccumulatorMs = 0;
   state.timeMinuteAccumulator = 0;

@@ -22,7 +22,8 @@ import { applyWalkCareTicks } from "@/project/monsterCare";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { isFieldSpawnEventId } from "@/player/fieldSpawns";
-import { interactWithFarmPlot } from "@/player/farming";
+import { farmIntentForHand, interactWithFarmPlot, farmIgnoreMessage } from "@/player/farming";
+import { showFarmFeedbackMessage } from "@/player/playSceneZoneFeedback";
 import { tryChestInteraction } from "@/player/playSceneChest";
 import { tryActionCombatSwing, tryActionSkillCast } from "@/player/playSceneActionCombat";
 
@@ -281,7 +282,8 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
     return true;
   }
   if (tryChestInteraction(scene as any, tx, ty)) return true;
-  if (tryFarmInteraction(scene, tx, ty)) return true;
+  const facingFarm = attemptFarmInteraction(scene, tx, ty);
+  if (facingFarm.handled) return true;
   // RM2K3 관례: 정면에 없으면 발밑(하위 우선순위) 액션 이벤트를 조사한다.
   // 바닥의 반짝임/문서처럼 플레이어가 올라선 채 조사하는 오브젝트가 여기 해당한다.
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
@@ -293,16 +295,32 @@ export function handleAction(scene: ActionEventSceneContext): boolean {
     return true;
   }
   if (tryChestInteraction(scene as any, scene.tileX, scene.tileY)) return true;
-  return tryFarmInteraction(scene, scene.tileX, scene.tileY);
+  const underfootFarm = attemptFarmInteraction(scene, scene.tileX, scene.tileY);
+  if (underfootFarm.handled) return true;
+  // 한 번의 A 입력에 안내 문구는 최대 하나. 정면과 발밑 두 번 시도하므로 여기서 한 번만 띄운다.
+  // 발밑 사유를 우선하고(플레이어가 서 있는 밭이 더 구체적인 대상), 없으면 정면 사유로 대체한다.
+  const message = underfootFarm.message ?? facingFarm.message;
+  if (message) showFarmFeedbackMessage(scene, message);
+  return false;
 }
 
-function tryFarmInteraction(scene: ActionEventSceneContext, x: number, y: number): boolean {
-  const result = interactWithFarmPlot(store.getCurrent(), scene.session, scene.map, x, y);
-  if (result.kind === "ignored") return false;
+type FarmAttempt = { readonly handled: boolean; readonly message: string | null };
+
+function attemptFarmInteraction(scene: ActionEventSceneContext, x: number, y: number): FarmAttempt {
+  const project = store.getCurrent();
+  const result = interactWithFarmPlot(
+    project,
+    scene.session,
+    scene.map,
+    x,
+    y,
+    farmIntentForHand(project, scene.session),
+  );
+  if (result.kind === "ignored") return { handled: false, message: farmIgnoreMessage(result.reason) };
   scene.lastActionTargetKey = "";
   scene.refreshRuntimeSurfaces?.();
   scene.syncRuntimeState?.();
-  return true;
+  return { handled: true, message: null };
 }
 
 function turnActionEventTowardPlayer(scene: ActionEventSceneContext, event: RuntimeEventView): void {

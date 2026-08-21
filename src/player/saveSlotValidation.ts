@@ -121,7 +121,7 @@ function isFarmPlotState(value: unknown): value is NonNullable<PlaySession["farm
   return true;
 }
 
-function isFarmPlotDate(value: unknown): boolean {
+export function isFarmPlotDate(value: unknown): value is NonNullable<PlaySession["farmPlotsAdvancedThrough"]> {
   if (!isRecord(value)) return false;
   return isFiniteInteger(value.day) && isSeason(value.season) && isFiniteInteger(value.year);
 }

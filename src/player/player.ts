@@ -27,11 +27,15 @@ import {
 } from "@/player/runtimeKeyboardMenu";
 import {
   directionForKey,
+  handSlotCycleDelta,
+  handSlotDigit,
   isCancelKey,
   isConfirmKey,
+  isInputCapturingSurfaceActive,
   isMenuKey,
   isRuntimeMenuKey as isRuntimeMenuKeyBinding,
 } from "@/player/keyBindings";
+import { cycleHandSlot, selectHandSlot } from "@/player/handSlot";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
 import { emitRuntimeJuice, type RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import {
@@ -415,8 +419,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     return true;
   };
 
-  const isDialogueSurfaceActive = (): boolean =>
-    Boolean(playStage?.querySelector("[data-testid='dialogue-box'], [data-testid='runtime-choices'], [data-testid='runtime-input-number']"));
+  // 서피스 목록은 keyBindings 가 정본이다(서피스 로컬 재구현 금지).
+  const isDialogueSurfaceActive = (): boolean => isInputCapturingSurfaceActive(playStage);
 
   // 상점/여관/불러오기 같은 런타임 모달이 떠 있으면 전역 타이틀/메뉴 입력을 양보한다(B2).
   // 각 모달은 자체 커서 메뉴가 키를 처리하므로, 여기서 조기 return 해 이중 처리를 막는다.
@@ -441,9 +445,28 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       emitRuntimeJuice({ event: "menu-invalid", target: menu });
       return;
     }
+    const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();
+    const scene = activeScene();
+    const cutsceneLocked = Boolean(scene && isCutsceneInputLocked(scene.session));
+    // 손 슬롯 전환은 필드 전용이다. isRuntimeMenuKey 가드보다 앞에 둬야 숫자키가 여기까지
+    // 도달하지만(숫자키는 런타임 메뉴 키가 아니다), 대사·모달·상태메뉴·컷신 잠금 중엔 아무 일도 없어야 한다.
+    if (scene && !menu && !overlayActive && !cutsceneLocked) {
+      const cycle = handSlotCycleDelta(key);
+      const digit = handSlotDigit(key);
+      if (cycle !== undefined) {
+        event.preventDefault();
+        cycleHandSlot(store.getCurrent(), scene.session, cycle);
+        return;
+      }
+      if (digit !== undefined) {
+        event.preventDefault();
+        selectHandSlot(store.getCurrent(), scene.session, digit);
+        return;
+      }
+    }
     if (!isRuntimeMenuKey(key)) return;
-    if (isDialogueSurfaceActive() || isModalOverlayActive()) return;
-    if (activeScene() && isCutsceneInputLocked(activeScene()!.session)) {
+    if (overlayActive) return;
+    if (cutsceneLocked) {
       if (isCancelKey(key)) event.preventDefault();
       return;
     }
