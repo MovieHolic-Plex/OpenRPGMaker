@@ -157,7 +157,7 @@ describe("설정 자동 저장", () => {
     expect(stored.apiKey).toBe("sk-or-test-abc");
   });
 
-  it("감독 모델을 비우고 저장하면 기본값(flash-lite)으로 저장된다", () => {
+  it("감독 모델을 비우고 저장하면 기본값(OAuth 카탈로그)으로 저장된다", () => {
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const model = findByTestId(modal, "ai-config-model");
@@ -167,9 +167,10 @@ describe("설정 자동 저장", () => {
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.model).toBe(DEFAULT_MODEL);
-    // 기본 모델은 cpen 게이트웨이 경로(cpen/gpt-5-6-luna) — 예전 chatgpt-codex 기본이 아니다.
-    // 단 chatgpt OAuth 모드에서는 gpt- 프리픽스만 쓸 수 있어 loadAiConfig 가 권장 기본으로 교정한다.
-    expect(DEFAULT_MODEL).toBe("cpen/gpt-5-6-luna");
+    // 기본 모델은 OAuth(Codex) 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
+    // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
+    // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
+    expect(DEFAULT_MODEL).toBe("gpt-5.6-sol");
     expect(loadAiConfig().model).toBe("gpt-5.6-sol");
     expect(loadAiConfig().liteModel).toBe("gpt-5.6-sol");
   });
@@ -197,7 +198,7 @@ describe("설정 자동 저장", () => {
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
     expect(stored.liteModel).toBe(DEFAULT_LITE_MODEL);
     // 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
-    expect(DEFAULT_LITE_MODEL).toBe("cpen/gpt-5-6-luna");
+    expect(DEFAULT_LITE_MODEL).toBe("gpt-5.6-sol");
   });
 
   it("모델 설정 라벨은 감독/실행 역할을 구분한다", () => {

@@ -1,17 +1,18 @@
 // ai/connectionPresets.ts
-// AI 연결 프리셋(내장 4종 + 사용자 저장)과 가용성 자동 검지. 순수 로직/타입 계층이다.
-// UI(src/editor/panels/**)는 다음 단계에서 이 파일의 export 만 보고 붙인다.
+// AI 연결 프리셋(내장 OAuth 1종 + 사용자 저장)과 가용성 자동 검지. 순수 로직/타입 계층이다.
+//
+// ⚠ 아직 어떤 UI 도 이 파일을 import 하지 않는다(2026-08-21 확인: 참조 0건). "다음 단계에서
+// 붙인다" 던 계획이 멈춘 상태다. 붙일 때 apiKey 게이트웨이 프리셋을 되살리지 말 것 —
+// **에디터 AI 의 인증은 무조건 OAuth 다**(감독 지시).
 //
 // 설계 근거(전부 실측):
-// - vite.config.ts 는 서버 전용 키(APITOPIA_API_KEY / QWENCLOUD_API_KEY / CPENROUTER_API_KEY)가
-//   있을 때만 해당 프록시(/api/ai, /api/qwen, /api/cpen)를 등록한다. 키가 없으면 그 경로는 404 다.
-//   → probe 가 404 를 받으면 "프록시 미등록 = .env.local 에 키가 없다"(missing-key) 로 읽는다.
 // - ChatGPT OAuth(/auth/status)는 API 키가 아니라 로그인 상태다. HTTP 2xx 여도 본문의
 //   connected === true 여야 사용 가능(실측 응답 {"connected":true,"planType":"plus"}).
+// - 등록되지 않은 경로는 404 만 주는 게 아니다. vite dev 서버는 GET 에 SPA 폴백으로
+//   200 text/html 을 준다(실측) → 2xx + 비-JSON 도 실패로 읽는다. 이 구멍이 죽은
+//   `/api/cliproxy` 를 "사용 가능" 으로 보이게 만들었다.
 //
 // 보안: 사용자 프리셋에 apiKey 는 절대 저장하지 않는다 — localStorage 에 평문 키가 남기 때문.
-// 상대 baseUrl(/api/...) 프록시는 서버가 키를 주입하므로 클라이언트 키 자체가 불필요하고,
-// 절대 URL 게이트웨이 키는 기존 rpg-zzu:ai-config 의 apiKey 필드가 계속 맡는다(이 파일이 안 건드림).
 
 import type { AiConfig } from "@/ai/llmClient";
 import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
@@ -76,47 +77,12 @@ export const BUILTIN_CONNECTION_PRESETS: readonly ConnectionPreset[] = [
     // OAuth 는 env 키 대상이 아니다(로그인 상태가 곧 자격). 안내용 키 이름 없음.
     keyEnvName: "",
   },
-  {
-    id: "cpenrouter",
-    label: "cpenrouter.space",
-    description: "cpenrouter.space OpenAI 호환 게이트웨이. .env.local 에 CPENROUTER_API_KEY 가 필요합니다.",
-    authMode: "apiKey",
-    baseUrl: "/api/cpen",
-    // 근거: llmClient.DEFAULT_MODEL 이자 modelCatalog.ts cpenrouter 그룹 첫 항목(채팅 완성 실측 성공 모델).
-    model: "cpen/gemini-3-flash",
-    // 근거: modelCatalog.ts cpenrouter 그룹의 lite 변종(이름에 lite 가 들어간 실행용 모델).
-    liteModel: "cpen/gemini-3-1-flash-lite",
-    probe: "/api/cpen/models",
-    keyEnvName: "CPENROUTER_API_KEY",
-  },
-  {
-    id: "qwencloud",
-    label: "qwencloud (알리바바 MaaS)",
-    description: "알리바바 qwencloud OpenAI 호환 엔드포인트. .env.local 에 QWENCLOUD_API_KEY 가 필요합니다.",
-    authMode: "apiKey",
-    baseUrl: "/api/qwen",
-    // 근거: modelCatalog.ts "Qwen · qwencloud" 그룹의 유일 항목.
-    model: "qwen3.8-max-preview",
-    // qwencloud 전용 모델은 카탈로그에 1종뿐이라 이원화할 두 번째 ID 를 모른다 → model 과 동일하게 둔다
-    // (llmClient 관례: liteModel 미설정/동일 = 이원화 비활성). 지어내지 않는다.
-    liteModel: "qwen3.8-max-preview",
-    probe: "/api/qwen/models",
-    keyEnvName: "QWENCLOUD_API_KEY",
-  },
-  {
-    id: "apitopia",
-    label: "apitopia 게이트웨이",
-    description: "apitopia 공용 게이트웨이. .env.local 에 APITOPIA_API_KEY 가 필요합니다.",
-    authMode: "apiKey",
-    baseUrl: "/api/ai",
-    // 근거: modelCatalog.ts API_GATEWAY_MODELS 는 CHATGPT_OAUTH_MODELS 를 스프레드로 포함하므로
-    // 그 첫 항목(gpt-5.6-sol)이 게이트웨이에서도 유효한 첫 모델. 확실하지 않은 전용 ID 는 지어내지 않는다.
-    model: "gpt-5.6-sol",
-    // 근거: 동일 카탈로그에 포함된 mini 변종(실행 단계용 경량).
-    liteModel: "gpt-5.4-mini",
-    probe: "/api/ai/models",
-    keyEnvName: "APITOPIA_API_KEY",
-  },
+  // apiKey 게이트웨이 프리셋 3종(cpenrouter/qwencloud/apitopia)은 제거했다 —
+  // **에디터 AI 의 인증은 무조건 OAuth 다**(감독 지시 2026-08-21). 고를 수 있게 남겨 두면
+  // 감독이 한 번 누르는 것으로 이번 장애(죽은 게이트웨이 경로, 거짓 초록 배지)를 그대로
+  // 재현할 수 있다. 그 프리셋들의 실측 model/probe 값이 다시 필요하면 git 이력에서 꺼낼 것.
+  // 게이트웨이를 실제로 쓰는 소비자는 벤치마크뿐이고, 그쪽은 자기 baseUrl 을 자기가 든다
+  // (`src/benchmark/llmClient.ts` DEFAULT_GATEWAY_BASE_URL).
 ];
 
 /** id 로 내장 프리셋 조회. 없으면 undefined. */
@@ -188,8 +154,9 @@ async function readProbeErrorBody(response: Response): Promise<string | undefine
  * 2. 도달 불가(A) → error("연결할 수 없음")
  * 3. 404 → missing-key (프록시 미등록 = .env.local 에 키 없음. 근거: vite.config.ts)
  * 4. 나머지 !ok(B) → error, detail = 서버가 준 본문 error 필드
- * 5. 2xx + chatgpt → 본문 connected === true 면 ready, 아니면 error("로그인되지 않음")
- * 6. 2xx + apiKey → ready
+ * 5. 2xx 인데 Content-Type 이 JSON 이 아님 → error (vite SPA 폴백 = 경로 미등록)
+ * 6. 2xx + chatgpt → 본문 connected === true 면 ready, 아니면 error("로그인되지 않음")
+ * 7. 2xx + JSON → ready
  */
 export async function probePresetAvailability(
   preset: ConnectionPreset,
@@ -222,6 +189,22 @@ export async function probePresetAvailability(
       const serverMessage = await readProbeErrorBody(response);
       const error = new ChatGptCompanionResponseError(response.status, serverMessage);
       return { presetId: preset.id, status: "error", httpStatus: response.status, detail: error.serverMessage ?? error.message };
+    }
+
+    // 2xx 인데 JSON 이 아니면 그 경로는 등록되지 않은 것이다 — 실패로 읽는다.
+    //
+    // 실측(2026-08-21): 등록되지 않은 프록시 경로로 GET 하면 vite dev 서버의 SPA 폴백이
+    // **200 text/html** (에디터 index.html) 을 준다. 404 만 미등록으로 보던 판정은 이걸
+    // "사용 가능" 으로 읽었다 — `/api/cliproxy` 가 죽어 있는데 설정이 초록으로 보인 이유다.
+    // (POST 는 404 라서 실제 턴은 죽는다. GET 만 200 인 비대칭이 거짓 초록을 만들었다.)
+    const contentType = response.headers?.get("Content-Type") ?? "";
+    if (!contentType.toLowerCase().includes("json")) {
+      return {
+        presetId: preset.id,
+        status: "error",
+        httpStatus: response.status,
+        detail: "엔드포인트가 등록되지 않았습니다(JSON 대신 앱 HTML 이 돌아왔습니다)",
+      };
     }
 
     // 2xx. chatgpt 는 로그인 상태(connected) 까지 봐야 한다 — 200 이어도 미로그인이면 사용 불가.

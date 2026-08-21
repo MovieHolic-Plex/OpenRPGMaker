@@ -7,7 +7,7 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
-import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -62,72 +62,52 @@ export const DEFAULT_BASE_URL = "";
 // 127.0.0.1:17832 companion started via `npm run ai:oauth`.
 export const DEFAULT_CHATGPT_BASE_URL =
   typeof import.meta !== "undefined" && import.meta.env?.DEV ? "/v1" : "http://127.0.0.1:17832/v1";
-// 기본 모델은 **에디터의 실제 요청**(툴 45개)을 통과하는 것으로 고른다.
-// 실측(2026-07-26, 같은 본문을 모델만 바꿔 재생):
-//   cpen/gemini-3-flash        503 upstream_unavailable — 5회 전부 실패
-//   cpen/gemini-3-1-flash-lite 503
-//   cpen/gemini-flash-2-5      503 → 200 → 200 (간헐적, 기본값으로 쓸 수 없음)
-//   cpen/gpt-5-6-luna / terra / gpt-5-4-mini   200 안정
-//
-// 원인은 **페이로드 크기가 아니라 tools 자체**다. 2×2 로 갈라 재측정한 결과:
-//   gemini-3-flash  tools=Y image=Y 152KB → 503 / tools=Y image=N  45KB → 503
-//                   tools=N image=Y 120KB → 200 / tools=N image=N  13KB → 200
-// 즉 tools 가 붙으면 크기와 무관하게 실패하고, 빼면 120KB 도 통과한다. cpen 의 gemini
-// 라우트가 툴 호출을 못 받는 것으로 보인다. 채팅만 하면 gemini 도 200 이라
-// "AI 가 되는데 에디터에서만 안 된다" 로 보였다.
-export const DEFAULT_MODEL = "cpen/gpt-5-6-luna";
+// 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다 — 인증이 무조건 OAuth 이므로.
+// 이전 기본값 `cpen/gpt-5-6-luna` 는 cpenrouter 게이트웨이 ID 였다. OAuth 경로에서 카탈로그
+// 밖 ID 는 오류가 아니라 **조용히 제공자 기본 모델로 강등**되므로(근거: modelCatalog.ts
+// CHATGPT_OAUTH_MODELS 주석의 실측) 감독이 고른 모델이 아닌 것이 답하는 상태였다.
+// 실측(2026-08-21): POST /v1/chat/completions model=gpt-5.6-sol → 200 "OK",
+// model 필드도 gpt-5.6-sol 로 되돌아왔다(강등 없음).
+export const DEFAULT_MODEL = "gpt-5.6-sol";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
-export const DEFAULT_LITE_MODEL = "cpen/gpt-5-6-luna";
+// (카탈로그의 gpt-5.4-mini 로 내리는 선택지가 있지만 툴 루프 통과를 실측하지 않았으므로
+//  기존 관례대로 감독 모델과 같게 두고, 이원화는 감독이 설정에서 켠다.)
+export const DEFAULT_LITE_MODEL = "gpt-5.6-sol";
 // cpenrouter(cpenrouter.space) 모델 함정(실측): 짧은 max_tokens 로 호출하면 추론 토큰만 먼저
 // 소비되고 content 가 빈 문자열로 돌아온다(실측: max_tokens 16 → content "" 이면서 completion
 // 13토큰 소비, 512 → 정상). 추론 토큰을 먼저 쓰는 모델이므로 출력 예산을 넉넉히 잡아야 한다.
 export const DEFAULT_MAX_TOKENS = 32768;
 
-/** Browser-exposed env keys (from .env.local via Vite). Never hardcode secrets in source. */
-// VITE_LLM_API_KEY 는 클라이언트 번들에 키를 인라인하므로 보안 위험이다 — 게이트웨이 키는
-// 서버 전용 APITOPIA_API_KEY (non-VITE) 로 두고 vite 프록시가 Authorization 을 주입한다.
-// VITE_LLM_API_KEY 는 절대 URL(https://...) 게이트웨이를 직접 치는 사용자를 위해서만 남겨둔다.
-function envApiKey(): string {
-  try {
-    const fromLlm = import.meta.env.VITE_LLM_API_KEY?.trim();
-    if (fromLlm) return fromLlm;
-    const fromYunwu = import.meta.env.VITE_YUNWU_API_KEY?.trim();
-    if (fromYunwu) return fromYunwu;
-  } catch {
-    /* non-vite runtime */
-  }
-  return "";
-}
+// envApiKey()/envBaseUrl() 은 제거했다. `VITE_LLM_API_URL` 이 에디터의 authMode·baseUrl 을 정하던
+// 통로였고, 그게 AI 를 반복적으로 죽인 원인이다(근거는 defaultAiConfig 주석). OAuth 는 클라이언트
+// 키를 쓰지 않으므로 `VITE_LLM_API_KEY`/`VITE_YUNWU_API_KEY` 폴백도 함께 없앴다 — 번들에 키를
+// 인라인하던 경로이기도 하다. 게이트웨이가 필요한 소비자는 `src/benchmark/llmClient.ts` 처럼
+// 자기 baseUrl·키를 자기가 들고 간다.
 
-function envBaseUrl(): string {
-  try {
-    const llm = import.meta.env.VITE_LLM_API_URL?.trim();
-    if (llm && /^https?:\/\//i.test(llm)) return llm.replace(/\/$/, "");
-    if (llm && llm.startsWith("/")) return llm.replace(/\/$/, "");
-  } catch {
-    /* non-vite runtime */
-  }
-  return "";
-}
-
+/**
+ * 에디터 AI 의 기본 설정. **인증은 무조건 OAuth 다**(감독 지시 2026-08-21).
+ *
+ * env 는 authMode 를 정하지 못한다. 예전에는 `VITE_LLM_API_URL` 이 있으면 apiKey 모드로
+ * 부팅했는데, 그 추론이 에디터 AI 를 반복적으로 죽인 단일 원인이었다. 실측(2026-08-21):
+ * 커밋된 `.env` 1행 `VITE_LLM_API_URL=/api/ai` 와 `.env.local` 의 `/api/cliproxy` 가
+ * authMode 를 apiKey 로 강제했고, `/api/cliproxy` 는 vite 프록시가 없어 POST 가 404 였다.
+ * 같은 시점 OAuth 경로는 멀쩡했다(`POST /v1/chat/completions` → 200 "OK", gpt-5.6-sol).
+ * 즉 env 한 줄이 에디터의 모든 AI(어시스턴트·이벤트·영역·타일셋)를 동시에 죽일 수 있었다.
+ *
+ * env 값을 지우는 것만으로 끝내지 않는 이유: 다음에 누가 `.env` 에 한 줄 넣으면 또 전부
+ * 죽는다. 그래서 추론 자체를 없앤다. 게이트웨이가 필요한 소비자(벤치마크, 노드 스크립트)는
+ * 자기 baseUrl 을 자기가 들고 간다 — 에디터 설정에 얹혀 가지 않는다.
+ */
 export function defaultAiConfig(): AiConfig {
-  // env VITE_LLM_API_URL 이 있으면 apiKey 모드로 부팅한다 — 게이트웨이(apitopia 등) 경로로
-  // glm 등 비-Codex 모델을 쓰겠다는 의도. 이때 키가 없으면 조용히 chatgpt OAuth 로 넘어가는 대신
-  // apiKey 모드를 유지해 상태바 "AI 연동" 칩과 영역 작업 모달이 "API 키 없음" 을 명시적으로 알리게
-  // 한다. (이전 동작: URL 만 있고 키가 없으면 chatgpt OAuth 로 폴백 → /v1 → codex 인증 실패가
-  // 되어 "영역 AI 가 왜 안 되나" 원인을 알 수 없었다.) env 가 아예 없으면 chatgpt OAuth fallback.
-  const envUrl = envBaseUrl();
-  const envKey = envApiKey();
-  const wantsGateway = !!envUrl;
-  // 상대 baseUrl(/api/ai 등)은 동일 오리진 vite 프록시 → 서버가 Authorization 을 주입하므로
-  // 클라이언트에 키가 없어도 된다(proxyAuth). 절대 URL(https://...)은 클라이언트 키 필요.
   return {
-    authMode: wantsGateway ? "apiKey" : "chatgpt",
-    providerId: wantsGateway ? "openai" : DEFAULT_OH_MY_PI_PROVIDER,
-    baseUrl: envUrl || DEFAULT_BASE_URL,
+    authMode: "chatgpt",
+    providerId: DEFAULT_OH_MY_PI_PROVIDER,
+    baseUrl: DEFAULT_BASE_URL,
     model: DEFAULT_MODEL,
     liteModel: DEFAULT_LITE_MODEL,
-    apiKey: envKey,
+    // OAuth 는 클라이언트 키를 쓰지 않는다. 동반 서비스(pi-ai)가 자기 저장소의 자격 증명으로
+    // 전송하므로 여기서 env 키를 실어 보내면 apiKey 경로가 되살아난다.
+    apiKey: "",
     maxToolCalls: 200,
     maxTokens: DEFAULT_MAX_TOKENS,
     // 장문 reasoning 모델(MiniMax 등)을 감독으로 쓸 때만 low 캡이 의미 있음.
@@ -139,8 +119,24 @@ export function defaultAiConfig(): AiConfig {
 
 export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
 
+/**
+ * 저장된 providerId 를 **OAuth 제공자로만** 확정한다.
+ *
+ * `headers()` 는 `X-Rpgzzu-Provider` 로 이 값을 동반 서비스에 넘긴다. 예전 apiKey 설정에는
+ * providerId 가 `"openai"`(게이트웨이용)로 저장돼 있어서, 그대로 승격하면 OAuth 모드인데
+ * apiKey 제공자를 지목하는 모순된 요청이 나간다. authKind 가 oauth 가 아니면 기본값으로 내린다.
+ */
+function oauthProviderOrDefault(raw: unknown): string {
+  const id = parseOhMyPiProvider(raw);
+  return getOhMyPiProvider(id)?.authKind === "oauth" ? id : DEFAULT_OH_MY_PI_PROVIDER;
+}
+
 // localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
-// apiKey가 빈 문자열로 저장된 경우(미설정) env 폴백을 허용한다.
+//
+// **인증은 무조건 OAuth 다.** 저장값이 authMode 를 apiKey 로 되돌리지 못한다. 예전 판정은
+// 저장된 baseUrl 이나 apiKey 가 있으면 apiKey 모드로 추론했는데, 그러면 감독이 한 번이라도
+// 게이트웨이를 저장한 브라우저는 env 를 고쳐도 계속 죽은 경로를 쳤다 — 이번 장애의 절반이
+// 이것이다(실측: 저장된 baseUrl `/api/cliproxy` 가 POST 404).
 export function loadAiConfig(): AiConfig {
   const base = defaultAiConfig();
   if (typeof localStorage === "undefined") return base;
@@ -148,12 +144,12 @@ export function loadAiConfig(): AiConfig {
     const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
     if (!raw) return base;
     const parsed = JSON.parse(raw) as Partial<AiConfig>;
-    const storedKey = typeof parsed.apiKey === "string" ? parsed.apiKey.trim() : "";
-    const authMode = parsed.authMode === "chatgpt" || parsed.authMode === "apiKey"
-      ? parsed.authMode
-      : storedKey || (typeof parsed.baseUrl === "string" && parsed.baseUrl.trim())
-        ? "apiKey"
-        : "chatgpt";
+    const authMode = "chatgpt" as const;
+    if (parsed.authMode === "apiKey") {
+      console.warn(
+        "[llmClient] 저장된 apiKey 설정을 OAuth 로 승격했습니다 — 에디터 AI 의 인증은 OAuth 하나뿐입니다."
+      );
+    }
     // 저장된 사용자 모델은 존중하되 비었으면 기본값.
     // trim 한 저장값을 먼저 뽑고 || 폴백으로 단순화한다 — 각 표현식이 모두 string 으로 끝나
     // TS 가 string 으로 확정한다(아래 isModelValidForAuthMode 가 string 을 요구). base.liteModel 은
@@ -163,10 +159,7 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    const providerId = parseOhMyPiProvider(
-      parsed.providerId,
-      authMode === "chatgpt" ? DEFAULT_OH_MY_PI_PROVIDER : "openai",
-    );
+    const providerId = oauthProviderOrDefault(parsed.providerId);
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
@@ -182,12 +175,14 @@ export function loadAiConfig(): AiConfig {
     return {
       authMode,
       providerId,
-      baseUrl: typeof parsed.baseUrl === "string" && parsed.baseUrl.trim() ? parsed.baseUrl.trim() : base.baseUrl,
+      // 저장된 baseUrl 은 버린다. OAuth 는 동반 서비스 경로가 고정이고(endpoint() 가
+      // usesOhMyPiCompanion 이면 DEFAULT_CHATGPT_BASE_URL 을 쓴다), 죽은 게이트웨이 URL 을
+      // 남겨 두면 설정 화면·가용성 검지가 그것을 계속 진실처럼 보여 준다.
+      baseUrl: base.baseUrl,
       model,
       liteModel,
-      apiKey: parsed.authMode === "apiKey" && typeof parsed.apiKey === "string"
-        ? storedKey
-        : storedKey || base.apiKey || envApiKey(),
+      // OAuth 는 클라이언트 키를 쓰지 않는다 — 저장된 키도, env 키도 싣지 않는다.
+      apiKey: "",
       maxToolCalls: Number.isFinite(parsed.maxToolCalls) && Number(parsed.maxToolCalls) > 0
         ? Math.floor(Number(parsed.maxToolCalls))
         : base.maxToolCalls,

@@ -102,8 +102,8 @@ beforeEach(() => {
     autoApprove: false,
     baseUrl: "https://example.test",
     maxTokens: 1024,
-    model: "test-model",
-    liteModel: "test-lite-model",
+    model: "gpt-5.6-sol",
+    liteModel: "gpt-5.4-mini",
     reasoningEffort: "medium",
   }));
   Object.defineProperty(globalThis, "localStorage", {
@@ -160,7 +160,7 @@ describe("cluster AI modal", () => {
       expect.stringContaining("클러스터 수정"),
       expect.any(Function)
     );
-    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("test-lite-model");
+    expect((mocks.constructorOptions[0] as { config?: { model?: string } }).config?.model).toBe("gpt-5.4-mini");
   });
 
   it("accepts proposed changes into the store and rebases the session", async () => {

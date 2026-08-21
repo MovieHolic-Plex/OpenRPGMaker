@@ -173,8 +173,11 @@ describe("resolveBenchmarkRequest — api mode resolution + key guard", () => {
       }),
     );
 
+    // baseUrl 은 벤치마크 자기 설정으로 준다. env VITE_LLM_API_URL 은 더 이상 어떤 baseUrl 도
+    // 배선하지 않는다(에디터 AI 가 OAuth 전용이 되면서 그 통로를 없앴다) — 위 stubEnv 는 무력하다.
+    // 검증하려는 보안 속성은 그대로다: 프록시 경로에서는 저장된 키가 요청에 절대 실리지 않는다.
     const client = createBenchmarkLlmClient(
-      { mode: "api", apiKey: "sk-benchmark-secret", model: "cpen/gpt-5-6-luna" },
+      { mode: "api", apiKey: "sk-benchmark-secret", baseUrl: "/api/ai", model: "cpen/gpt-5-6-luna" },
       new MemoryStorage(),
     );
     const result = await client.send({ prompt: "p", imageDataUrls: [STUB_IMAGE] });

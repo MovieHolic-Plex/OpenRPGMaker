@@ -20,7 +20,10 @@ describe("requestCpenTilesetMapping", () => {
     vi.unstubAllGlobals();
   });
 
-  it("Given an API key When requesting a tileset mapping Then it sends the default LLM request", async () => {
+  it("Given OAuth When requesting a tileset mapping Then it goes to the companion with no client key", async () => {
+    // 인증이 무조건 OAuth 이므로 저장된 게이트웨이 baseUrl·키는 승격 과정에서 버려진다.
+    // 이 스펙이 막는 결함: 이 클라이언트는 llmClient 를 우회해 직접 fetch 하므로, OAuth 에서
+    // apiKey·proxyAuth 가 모두 없어 "AI 설정이 아직 연결되지 않았습니다" 로 첫 줄에서 막혔다.
     const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
       new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
     );
@@ -38,14 +41,18 @@ describe("requestCpenTilesetMapping", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0] ?? [];
-    expect(url).toBe("https://example.invalid/v1/chat/completions");
+    expect(url).toBe("/v1/chat/completions");
     expect(typeof init?.body).toBe("string");
-    expect(readHeader(init, "Authorization")).toBe("Bearer test-key");
+    // 동반 서비스가 자격 증명을 들고 있다 — 브라우저는 키를 보내지 않고 제공자만 지목한다.
+    expect(readHeader(init, "Authorization")).toBeNull();
+    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe("openai-codex");
     const body = parseBody(readStringBody(init));
-    expect(body.model).toBe("google/gemini-3.1-flash-lite");
+    // 저장된 게이트웨이 모델(google/gemini-3.1-flash-lite)은 Codex 카탈로그 밖 → 권장 기본으로 교정.
+    expect(body.model).toBe("gpt-5.6-sol");
     expect(body.messages?.[0]?.role).toBe("system");
     expect(body.messages?.[1]?.content).toBe("타일셋을 분석해줘");
-    expect(body.routing?.max_input_per_1m).toBe(0.1);
+    // routing 은 cpenrouter 전용 필드 — 동반 서비스로는 보내지 않는다.
+    expect(body.routing).toBeUndefined();
     expect(body.max_tokens).toBe(8192);
   });
 
@@ -73,8 +80,9 @@ describe("requestCpenTilesetMapping", () => {
     ]);
   });
 
-  it("Given a relative AI proxy When analyzing without a browser key Then the proxy authenticates server-side", async () => {
-    // Given
+  it("Given a stored gateway proxy config When analyzing Then it is promoted to the OAuth companion", async () => {
+    // 저장된 apiKey/프록시 설정은 loadAiConfig 가 OAuth 로 승격한다 — 게이트웨이 경로로 가지 않는다.
+    // ready 판정도 키가 아니라 OAuth 여부로 봐야 한다(옛 판정은 OAuth 에서 버튼을 영구히 잠갔다).
     const fetchMock = vi.fn(async (_url: string, _init: RequestInit) =>
       new Response(JSON.stringify({ choices: [{ message: { content: "{}" } }] }), { status: 200 }),
     );
@@ -90,8 +98,9 @@ describe("requestCpenTilesetMapping", () => {
     // Then
     expect(ready).toBe(true);
     const [url, init] = fetchMock.mock.calls[0] ?? [];
-    expect(url).toBe("/fake-ai/chat/completions");
+    expect(url).toBe("/v1/chat/completions");
     expect(readHeader(init, "Authorization")).toBeNull();
+    expect(readHeader(init, "X-Rpgzzu-Provider")).toBe("openai-codex");
   });
 
   it("Given the LLM rejects the request When requesting a tileset mapping Then it reports the failure body", async () => {
