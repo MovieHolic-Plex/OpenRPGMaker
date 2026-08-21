@@ -7,9 +7,12 @@ import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
 import { store } from "@/project/store";
 import type { DatabaseTerrainRecord, EnemyRecord, TroopMemberRecord, TroopRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { classicEnemyFormation } from "@/battle/battleBattlers";
+import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
+import { simulateBattle } from "@/battle/simulate";
 import { applyMagentaChromaKeyToImageData } from "./chromaKey";
 
-const DEFAULT_MEMBER: TroopMemberRecord = { enemyId: "", x: 160, y: 120, hidden: false };
+const DEFAULT_MEMBER: TroopMemberRecord = { enemyId: "", ...classicEnemyFormation(0), hidden: false };
 const selectedMemberIndexes = new Map<string, number>();
 
 export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, rerender: () => void): void {
@@ -23,6 +26,7 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
       dataset: { testid: "db-troops-classic-workbench" },
       children: [
         topControls(record, rerender),
+        balancePanel(record),
         troopBattlePreview(record, selectedIndex, rerender),
         memberEditor(record, member, selectedIndex, selectedEnemy, rerender),
         terrainPanel(project.database.terrains ?? [], record.previewBackgroundResourceId),
@@ -74,6 +78,67 @@ function topControls(record: TroopRecord, rerender: () => void): HTMLElement {
       configurationPanel(record, rerender),
     ],
   });
+}
+
+const troopSimLevels = new Map<string, number>();
+
+/** 보상 롤업 + 난이도 추정. 숨김 멤버는 보상에서 제외된다(battleRewards.ts). */
+function balancePanel(record: TroopRecord): HTMLElement {
+  const project = store.getCurrent();
+  const members = (record.members ?? []).filter((member) => member.hidden !== true);
+  let exp = 0;
+  let gold = 0;
+  const dropItemIds = new Set<string>();
+  for (const member of members) {
+    const enemy = project.database.enemies.find((entry) => entry.id === member.enemyId);
+    if (!enemy) continue;
+    const rewards = normalizeEnemyRecord(enemy).rewards;
+    exp += rewards.exp;
+    gold += rewards.gold;
+    if (rewards.dropItemId) dropItemIds.add(rewards.dropItemId);
+  }
+  const rollup = el("div", {
+    class: "db-troop-reward-rollup",
+    dataset: { testid: "db-troop-reward-rollup" },
+    text: `총 경험치 ${exp} / 총 돈 ${gold} / 드롭 후보 ${dropItemIds.size}종`,
+  });
+  const result = el("div", { class: "db-troop-sim-result", dataset: { testid: "db-troop-sim-result" }, text: "난이도 미추정" });
+  const heroLevel = troopSimLevels.get(record.id) ?? 5;
+  const levelField = numberField("파티 레벨", "db-troop-sim-level", heroLevel, (value) => troopSimLevels.set(record.id, value), { min: 1, max: 99 });
+  const runButton = el("button", {
+    class: "btn small",
+    attrs: { type: "button" },
+    text: "난이도 추정",
+    dataset: { testid: "db-troop-sim-run" },
+    on: {
+      // 20 샘플은 클릭→결과 561ms(실측)로 UI 를 눈에 띄게 멈춰 세웠다 — 10 샘플로 낮추고
+      // "추정 중…" 이 실제로 그려지도록 한 프레임 양보한 뒤 계산한다(워커로 옮기지 않는다).
+      click: () => {
+        result.textContent = "추정 중…";
+        const run = (): void => {
+          try {
+            const outcome = simulateBattle({
+              project: store.getCurrent(),
+              troopId: record.id,
+              heroLevel: troopSimLevels.get(record.id) ?? 5,
+              n: 10,
+              seed: 12345,
+            });
+            result.textContent = `승률 ${Math.round(outcome.winRate * 100)}% · 평균 ${outcome.avgTurns.toFixed(1)}턴 · 잔여 HP ${Math.round(outcome.avgHpRemaining)}`;
+          } catch (error) {
+            result.textContent = `추정 불가: ${error instanceof Error ? error.message : String(error)}`;
+          }
+        };
+        if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+        else run();
+      },
+    },
+  }) as HTMLButtonElement;
+  if ((record.members ?? []).length === 0) {
+    runButton.disabled = true;
+    runButton.title = "멤버를 추가하면 추정할 수 있습니다";
+  }
+  return classicPanel("밸런스", [rollup, levelField, runButton, result]);
 }
 
 function memberEditor(
@@ -169,7 +234,11 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
     return sprite;
   });
   const children = sprites.length > 0 ? sprites : [el("span", { class: "db-troop-empty-member", text: "(없음)" })];
-  const stage = el("div", { class: "db-troop-battle-preview-stage", dataset: { testid: "db-troop-preview-stage" }, children });
+  const stage = el("div", {
+    class: "db-troop-battle-preview-stage",
+    dataset: { testid: "db-troop-preview-stage" },
+    children: [recenterGuideLine(), ...partyMarkers(), ...children],
+  });
   const backgroundUrl = resolveAssetResourceUrl(record.previewBackgroundResourceId, { project });
   if (backgroundUrl) {
     stage.style.backgroundImage = `linear-gradient(180deg, rgba(128, 184, 232, 0.18), rgba(85, 161, 61, 0.12)), url("${cssUrl(backgroundUrl)}")`;
@@ -180,6 +249,31 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
       stage,
       el("div", { class: "db-troop-preview-caption", text: previewCaption(record) }),
     ],
+  });
+}
+
+const RECENTER_THRESHOLD_X = 150;
+
+/** 런타임 재배치 경계(x>150)를 저작자가 볼 수 있게 표시한다. */
+function recenterGuideLine(): HTMLElement {
+  const line = el("div", { class: "db-troop-preview-recenter-line", dataset: { testid: "db-troop-preview-recenter-line" } });
+  line.style.left = `${(RECENTER_THRESHOLD_X / 320) * 100}%`;
+  line.title = "이 선을 넘는 적은 전투에서 좌측 진형으로 재배치됩니다";
+  return line;
+}
+
+/** 아군 진형(battleX 252, battleY 96+36i) 읽기 전용 마커. 권위: battleBattlers.ts */
+function partyMarkers(): HTMLElement[] {
+  return [0, 1, 2, 3].map((index) => {
+    const marker = el("div", {
+      class: "db-troop-preview-party-marker",
+      dataset: { testid: `db-troop-preview-party-marker-${index + 1}` },
+      text: String(index + 1),
+    });
+    marker.style.left = `${(252 / 320) * 100}%`;
+    marker.style.top = `${((96 + index * 36) / 240) * 100}%`;
+    marker.title = "아군 진형 위치(읽기 전용)";
+    return marker;
   });
 }
 
@@ -200,8 +294,12 @@ function enemySprite(
   }) as HTMLCanvasElement;
   canvas.width = 96;
   canvas.height = 72;
-  canvas.style.left = `${(Math.max(0, Math.min(320, member.x)) / 320) * 100}%`;
-  canvas.style.top = `${(Math.max(0, Math.min(160, member.y)) / 160) * 100}%`;
+  canvas.style.left = `${(Math.max(0, Math.min(320, member.x ?? 0)) / 320) * 100}%`;
+  canvas.style.top = `${(Math.max(0, Math.min(240, member.y ?? 0)) / 240) * 100}%`;
+  if (member.x != null && member.x > RECENTER_THRESHOLD_X) {
+    canvas.classList.add("is-recentered");
+    canvas.title = "x>150 은 전투에서 좌측 진형으로 재배치됩니다";
+  }
   canvas.addEventListener("click", () => {
     selectedMemberIndexes.set(troopId, index);
     rerender();
@@ -237,7 +335,7 @@ function memberRows(record: TroopRecord, selectedIndex: number, rerender: () => 
             class: `db-troop-member-row${index === selectedIndex ? " active" : ""}`,
             attrs: { type: "button" },
             dataset: { testid: `db-troop-member-row-${index + 1}` },
-            text: `${index + 1}. ${enemyName}  X${member.x} Y${member.y}`,
+            text: `${index + 1}. ${enemyName} · enemy-${index + 1} · X${member.x} Y${member.y}`,
             on: {
               click: () => {
                 selectedMemberIndexes.set(record.id, index);
@@ -280,15 +378,27 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
       rerender();
     }),
-    numberField("참전 수", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
-      updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
-      rerender();
-    }),
-    checkboxField("포획 불가", "db-field-troop-uncapturable", record.uncapturable === true, (uncapturable) => {
-      updateDatabaseRecord("troops", record.id, { uncapturable });
-      rerender();
-    }),
+    activeSlotsField(record, rerender),
+    uncapturableField(record, rerender),
   ]);
+}
+
+function activeSlotsField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = numberField("아군 참전 인원", "db-field-troop-active-slots", record.activeSlots ?? 0, (activeSlots) => {
+    updateDatabaseRecord("troops", record.id, { activeSlots: optionalPositiveInteger(activeSlots) });
+    rerender();
+  });
+  field.title = "이 적 그룹과 싸울 때 동시에 참전할 아군 수입니다(적 수가 아닙니다).";
+  return field;
+}
+
+function uncapturableField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = checkboxField("포획 불가", "db-field-troop-uncapturable", record.uncapturable === true, (uncapturable) => {
+    updateDatabaseRecord("troops", record.id, { uncapturable });
+    rerender();
+  });
+  field.title = "이 그룹의 적은 포획 대상에서 제외됩니다.";
+  return field;
 }
 
 function radioField(label: string, value: string, checked: boolean, onChange: () => void): HTMLElement {
@@ -348,11 +458,11 @@ function cssUrl(value: string): string {
 }
 
 function positionedMember(enemyId: string, index: number): TroopMemberRecord {
-  return { enemyId, x: 92 + index * 44, y: 104 + (index % 2) * 28, hidden: false };
+  return { enemyId, ...classicEnemyFormation(index), hidden: false };
 }
 
 function arrangeMembers(members: readonly TroopMemberRecord[]): TroopMemberRecord[] {
-  return members.map((member, index) => ({ ...member, x: 92 + index * 48, y: 92 + (index % 2) * 42 }));
+  return members.map((member, index) => ({ ...member, ...classicEnemyFormation(index) }));
 }
 
 function rm2003ExampleMembers(): TroopMemberRecord[] {
@@ -366,12 +476,8 @@ function rm2003ExampleMembers(): TroopMemberRecord[] {
     enemies.find((enemy) => enemy.id.includes("sylph") || enemy.id.includes("hornet"))?.id ??
     enemies[0]?.id;
   if (!slime || !sylph) return [];
-  return [
-    { enemyId: sylph, x: 58, y: 58, hidden: false },
-    { enemyId: sylph, x: 50, y: 114, hidden: false },
-    { enemyId: slime, x: 130, y: 98, hidden: false },
-    { enemyId: slime, x: 112, y: 136, hidden: false },
-  ];
+  const members = [sylph, sylph, slime, slime];
+  return members.map((enemyId, index) => ({ enemyId, ...classicEnemyFormation(index), hidden: false }));
 }
 
 function generatedTroopName(record: TroopRecord): string {

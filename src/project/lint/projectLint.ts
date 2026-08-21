@@ -789,6 +789,26 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   if (system.monsterCollection === true && monsterSpecies.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:monster-collection-empty", message: "포획이 활성인데 몬스터 종족이 0 — 전투에 포획 명령이 나타나지 않습니다." });
   }
+  // 1b. 역방향: 수집 데이터를 저작했는데 토글이 꺼져 있음 → 포획 명령이 전투에 안 나온다.
+  if (system.monsterCollection !== true && (monsterSpecies.length > 0 || database.items.some((item) => item.captureProfile !== undefined))) {
+    issues.push({
+      severity: "warning",
+      code: "opt-in:monster-collection-off-with-data",
+      message: "몬스터 종족/포획 아이템이 저작됐는데 수집이 꺼져 있어 포획 명령이 전투에 나오지 않습니다.",
+    });
+  }
+  // 1c. 종족 타입이 상성표에 없으면 그 타입의 상성 배율이 항상 1.0 이다(종족 탭 칩 경고와 같은 조건).
+  const speciesChartTypes = new Set(system.typeChart?.types ?? []);
+  if (speciesChartTypes.size > 0) {
+    const offenders = monsterSpecies.filter((record) => (record.types ?? []).some((type) => !speciesChartTypes.has(type)));
+    if (offenders.length > 0) {
+      issues.push({
+        severity: "warning",
+        code: "opt-in:species-type-not-in-chart",
+        message: `상성표에 없는 타입을 쓰는 종족 ${offenders.length}개 — 그 타입의 배율은 항상 1.0 입니다(${offenders.slice(0, 3).map((record) => record.id).join(", ")}).`,
+      });
+    }
+  }
   // 2. monsterBattleParty && no species
   if (system.monsterBattleParty === true && monsterSpecies.length === 0) {
     issues.push({ severity: "warning", code: "opt-in:monster-battle-party-empty", message: "몬스터 파티 전투가 활성인데 종족이 0 — 파티에 몬스터를 넣을 수 없습니다." });

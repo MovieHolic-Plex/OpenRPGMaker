@@ -1,47 +1,59 @@
 import { totalExpForLevel } from "@/project/actorModel";
-import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { store } from "@/project/store";
-import type { ClassRecord } from "@/project/types";
+import type { ActorExperienceCurve } from "@/project/types";
 import { el } from "@/util/dom";
 
-export function renderClassExperiencePanel(record: ClassRecord, host: HTMLElement, refresh: () => void): void {
-  const curve = currentClassExpCurve(record);
+/**
+ * 경험치 곡선 패널. 직업(`expCurve`)과 몬스터 종족(`expCurve`)이 같은 편집기를 공유한다 —
+ * 레코드 타입에 결합하지 않도록 값 읽기/커밋만 주입받는다. testid 접두사는 호출부가 정한다.
+ */
+export type ExperienceCurvePanelOptions = Readonly<{
+  testidPrefix: string;
+  dialogLabel: string;
+  readCurve: () => ActorExperienceCurve;
+  onCommit: (curve: ActorExperienceCurve) => void;
+  refresh: () => void;
+}>;
+
+export function renderExperienceCurvePanel(options: ExperienceCurvePanelOptions, host: HTMLElement): void {
+  const curve = options.readCurve();
+  const samples = previewSampleLevels().map((level) => Math.max(1, totalExpForLevel(curve, level)));
   host.replaceChildren(
     el("div", {
       class: "db-class-exp-summary",
-      dataset: { testid: "db-class-exp-summary" },
+      dataset: { testid: `${options.testidPrefix}-summary` },
       text: `기본=${curve.base}; 추가=${curve.extra}; 가속=${curve.acceleration}`,
     }),
     el("button", {
       class: "db-class-exp-graph",
-      dataset: { testid: "db-class-exp-edit" },
+      dataset: { testid: `${options.testidPrefix}-edit` },
       attrs: { type: "button", title: "경험치 곡선 설정" },
-      on: { click: () => openClassExperienceDialog(record, refresh) },
-      children: curveBars(experienceSamples(record)),
+      on: { click: () => openExperienceCurveDialog(options) },
+      children: curveBars(samples),
     })
   );
 }
 
-function openClassExperienceDialog(record: ClassRecord, refresh: () => void = () => undefined): void {
+function openExperienceCurveDialog(options: ExperienceCurvePanelOptions): void {
   const close = (): void => backdrop.remove();
+  const prefix = options.testidPrefix;
   // 다이얼로그 안의 편집은 draft 에만 쌓는다 — "취소"가 진짜 취소가 되도록(P7).
-  let draft: ClassRecord["expCurve"] = { ...currentClassExpCurve(record) };
+  let draft: ActorExperienceCurve = { ...options.readCurve() };
   let view: "total" | "delta" = "total";
-  const baseInput = dialogNumberInput("db-class-exp-base", draft.base, 0, 999999);
-  const extraInput = dialogNumberInput("db-class-exp-extra", draft.extra, 0, 999999);
-  const accelerationInput = dialogNumberInput("db-class-exp-acceleration", draft.acceleration, 0, 999999);
+  const baseInput = dialogNumberInput(`${prefix}-base`, draft.base, 0, 999999);
+  const extraInput = dialogNumberInput(`${prefix}-extra`, draft.extra, 0, 999999);
+  const accelerationInput = dialogNumberInput(`${prefix}-acceleration`, draft.acceleration, 0, 999999);
   const table = el("div", { class: "db-class-exp-table" });
   const graph = el("div", { class: "db-class-exp-dialog-graph" });
   const totalTab = el("button", {
     class: "active",
     text: "누적 경험치",
-    dataset: { testid: "db-class-exp-tab-total" },
+    dataset: { testid: `${prefix}-tab-total` },
     attrs: { type: "button" },
     on: { click: () => setView("total") },
   });
   const deltaTab = el("button", {
     text: "다음 레벨까지",
-    dataset: { testid: "db-class-exp-tab-delta" },
+    dataset: { testid: `${prefix}-tab-delta` },
     attrs: { type: "button" },
     on: { click: () => setView("delta") },
   });
@@ -76,15 +88,15 @@ function openClassExperienceDialog(record: ClassRecord, refresh: () => void = ()
   };
   const commitDraft = (): void => {
     readDraftFromInputs();
-    updateDatabaseRecord("classes", record.id, { expCurve: { ...draft } });
-    refresh();
+    options.onCommit({ ...draft });
+    options.refresh();
   };
   const backdrop = el("div", {
     class: "db-class-dialog-backdrop",
-    dataset: { testid: "db-class-exp-dialog" },
+    dataset: { testid: `${prefix}-dialog` },
     children: [el("section", {
       class: "db-class-dialog db-class-exp-dialog",
-      attrs: { role: "dialog", "aria-label": "경험치 곡선 설정" },
+      attrs: { role: "dialog", "aria-label": options.dialogLabel },
       children: [
         el("header", { children: [el("strong", { text: "경험치 곡선" }), el("button", { text: "x", attrs: { type: "button" }, on: { click: close } })] }),
         el("div", { class: "db-class-exp-dialog-tabs", children: [totalTab, deltaTab] }),
@@ -95,11 +107,11 @@ function openClassExperienceDialog(record: ClassRecord, refresh: () => void = ()
           dialogNumberLabel("가속", accelerationInput),
         ] }),
         el("footer", { children: [
-          el("button", { class: "btn", text: "OK", dataset: { testid: "db-class-exp-close" }, attrs: { type: "button" }, on: { click: () => {
+          el("button", { class: "btn", text: "OK", dataset: { testid: `${prefix}-close` }, attrs: { type: "button" }, on: { click: () => {
             commitDraft();
             close();
           } } }),
-          el("button", { class: "btn", text: "취소", dataset: { testid: "db-class-exp-cancel" }, attrs: { type: "button" }, on: { click: close } }),
+          el("button", { class: "btn", text: "취소", dataset: { testid: `${prefix}-cancel` }, attrs: { type: "button" }, on: { click: close } }),
         ] }),
       ],
     })],
@@ -110,15 +122,6 @@ function openClassExperienceDialog(record: ClassRecord, refresh: () => void = ()
   }));
   renderExp();
   document.body.append(backdrop);
-}
-
-function currentClassExpCurve(record: ClassRecord): ClassRecord["expCurve"] {
-  return store.getCurrent().database.classes.find((entry) => entry.id === record.id)?.expCurve ?? record.expCurve;
-}
-
-function experienceSamples(record: ClassRecord): readonly number[] {
-  const curve = currentClassExpCurve(record);
-  return previewSampleLevels().map((level) => Math.max(1, totalExpForLevel(curve, level)));
 }
 
 function curveHeight(value: number, values: readonly number[]): number {

@@ -130,6 +130,8 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   const record = { ...database.enemies[index] };
   if ("name" in patch && patch.name !== undefined) record.name = patch.name;
   if ("speciesId" in patch) record.speciesId = patch.speciesId;
+  // level 은 보상 레벨갭(battleRewards)과 포획 몬스터 시작 레벨에 쓰인다 — 패치를 흘리면 안 된다.
+  if ("level" in patch) record.level = patch.level;
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;

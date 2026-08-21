@@ -351,14 +351,21 @@ export function monsterPartyBattlers(project: Project, instances: readonly Monst
 /** Alias kept for tests/docs that still say monsterBattlers. */
 export const monsterBattlers = monsterPartyBattlers;
 
+/**
+ * RM2k3 side-view 적 진형 좌표. 에디터 미리보기·기본 멤버 좌표와 런타임이
+ * 같은 식을 쓰도록 여기서만 정의한다(중복 정의 금지).
+ */
+export function classicEnemyFormation(index: number): { x: number; y: number } {
+  return { x: 84 + (index % 2) * 44, y: 52 + index * 36 };
+}
+
 export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
   const members = troop.members?.length
     ? troop.members
     : (troop.enemyIds ?? []).map((enemyId, index) => ({
         enemyId,
         // RM2k3 side-view: enemies form on the LEFT.
-        x: 84 + (index % 2) * 44,
-        y: 52 + index * 36,
+        ...classicEnemyFormation(index),
         hidden: false,
       }));
   return members.map((member, index) => {
@@ -369,8 +376,7 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
     const stats = normalizedEnemy.stats;
     const authoredX = member.x;
     const authoredY = member.y;
-    const formationX = 84 + (index % 2) * 44;
-    const formationY = 52 + index * 36;
+    const { x: formationX, y: formationY } = classicEnemyFormation(index);
     // SC12 (M4): enemy troop coords that sit too far center (x>150) are
     // recentered into a left-side formation so they don't overlap the party.
     const recenteredX = authoredX != null && authoredX > 150 ? formationX : authoredX;

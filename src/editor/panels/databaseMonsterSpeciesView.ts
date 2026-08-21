@@ -9,7 +9,9 @@ import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDia
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { imageIconOf, recordIconElement } from "@/editor/panels/eventEditor/recordPicker";
 import { applyMagentaChromaKey } from "@/editor/panels/chromaKey";
-import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterEvolutionCycleSpeciesIds, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { capturePreviewLine } from "@/editor/panels/databaseCapturePreview";
+import { renderExperienceCurvePanel } from "@/editor/panels/databaseClassExperienceCurveEditor";
 import { store } from "@/project/store";
 import type { EnemyStats, MonsterEvolutionRecord, MonsterSpeciesRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -231,10 +233,13 @@ function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLEl
     numberField("포획률(0~1)", "db-monster-species-capture-rate", record.captureRate, (value) => {
       updateSpecies(record.id, { captureRate: value });
     }, { min: 0, max: 1 }),
+    capturePreviewLine(record.captureRate, "db-monster-species-capture-preview"),
     ...statFields(record),
     skillsByLevelField(record, rerender),
     evolutionsField(record, rerender),
-    linkedEnemiesField(record)
+    experienceCurveField(record, rerender),
+    linkedEnemiesField(record),
+    evolutionReferrersField(record)
   );
   return form;
 }
@@ -303,19 +308,36 @@ function currentSpecies(id: string, fallback: MonsterSpeciesRecord): MonsterSpec
 }
 
 function statFields(record: MonsterSpeciesRecord): HTMLElement[] {
-  const field = (label: string, key: keyof EnemyStats, testid: string): HTMLElement =>
+  // bounds 는 normalizeSpeciesStats(monsterCollection.ts)의 clamp 범위와 숫자까지 일치해야 한다.
+  const field = (label: string, key: keyof EnemyStats, testid: string, bounds: { min: number; max: number }): HTMLElement =>
     numberField(label, testid, record.baseStats[key], (value) => {
       const current = currentSpecies(record.id, record);
       updateSpecies(record.id, { baseStats: { ...current.baseStats, [key]: value } });
-    });
+    }, bounds);
   return [
-    field("HP", "maxHp", "db-monster-species-hp"),
-    field("MP", "maxMp", "db-monster-species-mp"),
-    field("공격", "attack", "db-monster-species-atk"),
-    field("방어", "defense", "db-monster-species-def"),
-    field("정신", "mind", "db-monster-species-mind"),
-    field("민첩", "agility", "db-monster-species-agi"),
+    field("HP", "maxHp", "db-monster-species-hp", { min: 1, max: 99999 }),
+    field("MP", "maxMp", "db-monster-species-mp", { min: 0, max: 9999 }),
+    field("공격", "attack", "db-monster-species-atk", { min: 1, max: 999 }),
+    field("방어", "defense", "db-monster-species-def", { min: 1, max: 999 }),
+    field("정신", "mind", "db-monster-species-mind", { min: 1, max: 999 }),
+    field("민첩", "agility", "db-monster-species-agi", { min: 1, max: 999 }),
   ];
+}
+
+/**
+ * numberInput 에 min/max 를 붙이고 change 시 클램프된 값을 되쓴다 — 화면값과 저장값이
+ * 어긋나지 않게(normalize 가 조용히 자르는 것을 사용자가 보게) 한다.
+ */
+function boundedNumberInput(testid: string, value: number, min: number, max: number, onInput: (value: number) => void): HTMLInputElement {
+  const input = numberInput(testid, value, (raw) => onInput(Math.min(max, Math.max(min, raw))));
+  input.min = String(min);
+  input.max = String(max);
+  input.addEventListener("change", () => {
+    const clamped = Math.min(max, Math.max(min, Number(input.value) || min));
+    input.value = String(clamped);
+    onInput(clamped);
+  });
+  return input;
 }
 
 // 습득 스킬을 "레벨 숫자 + 스킬 드롭다운" 행으로 편집한다(주인공 탭 learnedSkillsPanel과 동일한
@@ -329,7 +351,7 @@ function skillsByLevelField(record: MonsterSpeciesRecord, rerender: () => void):
     el("div", {
       class: "actor-skill-row db-monster-species-skill-row",
       children: [
-        numberInput(`db-monster-species-skill-level-${index}`, entry.level, (level) => {
+        boundedNumberInput(`db-monster-species-skill-level-${index}`, entry.level, 1, 99, (level) => {
           updateSpecies(record.id, {
             skillsByLevel: (currentSpecies(record.id, record).skillsByLevel ?? []).map((item, i) =>
               i === index ? { ...item, level } : item
@@ -424,7 +446,7 @@ function evolutionsField(record: MonsterSpeciesRecord, rerender: () => void): HT
           class: "db-monster-species-evo-cond",
           children: [
             el("span", { text: "Lv" }),
-            numberInput(`db-monster-species-evo-level-${index}`, evo.requires.level ?? 0, (level) =>
+            boundedNumberInput(`db-monster-species-evo-level-${index}`, evo.requires.level ?? 0, 0, 99, (level) =>
               setEvolution((current) => ({ ...current, requires: { ...current.requires, level: level > 0 ? level : undefined } }))
             ),
           ],
@@ -436,7 +458,7 @@ function evolutionsField(record: MonsterSpeciesRecord, rerender: () => void): HT
           class: "db-monster-species-evo-cond",
           children: [
             el("span", { text: "친밀도" }),
-            numberInput(`db-monster-species-evo-friendship-${index}`, evo.requires.friendshipAtLeast ?? 0, (friendship) =>
+            boundedNumberInput(`db-monster-species-evo-friendship-${index}`, evo.requires.friendshipAtLeast ?? 0, 0, 255, (friendship) =>
               setEvolution((current) => ({
                 ...current,
                 requires: { ...current.requires, friendshipAtLeast: friendship > 0 ? friendship : undefined },
@@ -474,12 +496,22 @@ function evolutionsField(record: MonsterSpeciesRecord, rerender: () => void): HT
           return;
         }
         updateSpecies(record.id, {
-          evolutions: [...(currentSpecies(record.id, record).evolutions ?? []), { toSpeciesId: target, requires: {} }],
+          evolutions: [...(currentSpecies(record.id, record).evolutions ?? []), { toSpeciesId: target, requires: { level: defaultEvolutionLevel(record) } }],
         });
         rerender();
       },
     },
   });
+  const cycleIds = monsterEvolutionCycleSpeciesIds(store.getCurrent().database.monsterSpecies ?? []);
+  const cycleWarn = cycleIds.includes(record.id)
+    ? [
+        el("p", {
+          class: "db-field-hint db-monster-species-evolution-cycle-warn",
+          dataset: { testid: "db-monster-species-evolution-cycle-warn" },
+          text: `진화 그래프에 사이클이 있습니다: ${cycleIds.join(" → ")} — 레벨업마다 종족이 왕복합니다.`,
+        }),
+      ]
+    : [];
   return el("div", {
     class: "db-field db-monster-species-evo-field",
     children: [
@@ -490,13 +522,78 @@ function evolutionsField(record: MonsterSpeciesRecord, rerender: () => void): HT
         children: rows.length ? rows : [el("p", { class: "db-monster-species-empty-row", text: "없음 — [진화 추가]로 대상 종족과 조건을 지정하세요." })],
       }),
       add,
+      ...cycleWarn,
       el("small", { text: "조건(레벨/아이템/친밀도)을 비우면(0/없음) 그 조건은 무시됩니다." }),
+      el("small", { text: "아이템 조건이 있는 진화는 레벨업으로 발동하지 않습니다 — 이벤트 명령 \"몬스터 진화\"로만 발동합니다." }),
     ],
   });
 }
 
-function parseTypes(value: string): string[] {
-  return [...new Set(value.split(",").map((entry) => entry.trim()).filter(Boolean))].slice(0, 2);
+function experienceCurveField(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
+  const host = el("div", { class: "db-class-exp-content", dataset: { testid: "db-monster-species-exp-curve" } });
+  const refresh = (): void =>
+    renderExperienceCurvePanel(
+      {
+        testidPrefix: "db-monster-species-exp",
+        dialogLabel: "종족 경험치 곡선 설정",
+        readCurve: () => currentSpecies(record.id, record).expCurve ?? DEFAULT_MONSTER_EXP_CURVE,
+        onCommit: (expCurve) => updateSpecies(record.id, { expCurve }),
+        refresh: () => {
+          refresh();
+          rerender();
+        },
+      },
+      host
+    );
+  refresh();
+  return el("div", { class: "db-field db-monster-species-exp-field", children: [el("span", { text: "경험치 곡선" }), host] });
+}
+
+// 이 종족을 진화 대상으로 가리키는 다른 종족 — 삭제 가드(monsterSpeciesReferenceMessage)와 같은 소스.
+function evolutionReferrersField(record: MonsterSpeciesRecord): HTMLElement {
+  const referrers = (store.getCurrent().database.monsterSpecies ?? []).filter(
+    (entry) => entry.id !== record.id && (entry.evolutions ?? []).some((evo) => evo.toSpeciesId === record.id)
+  );
+  const rows =
+    referrers.length === 0
+      ? [el("p", { class: "db-monster-species-linked-empty", text: "이 종족으로 진화하는 종족이 없습니다." })]
+      : referrers.map((entry) =>
+          el("div", {
+            class: "db-monster-species-linked-row",
+            children: [
+              el("span", { class: "db-monster-species-linked-name", text: entry.name || "(이름 없음)" }),
+              el("small", { text: entry.id }),
+              el("button", {
+                class: "btn small",
+                text: "종족 열기",
+                attrs: { type: "button" },
+                dataset: { testid: `db-monster-species-open-referrer-${entry.id}` },
+                on: {
+                  click: () => {
+                    setSelectedMonsterSpeciesId(entry.id);
+                    toast(`${entry.name || entry.id} 선택`, "ok");
+                  },
+                },
+              }),
+            ],
+          })
+        );
+  return el("div", {
+    class: "db-monster-species-linked-enemies",
+    dataset: { testid: "db-monster-species-evolution-referrers" },
+    children: [el("h4", { class: "db-monster-species-linked-title", text: "이 종족으로 진화하는 종족" }), ...rows],
+  });
+}
+
+/** 조건 없는 진화(다음 레벨업 즉시 진화)를 기본값으로 만들지 않는다. */
+function defaultEvolutionLevel(record: MonsterSpeciesRecord): number {
+  const highestSkillLevel = (record.skillsByLevel ?? []).reduce((max, entry) => Math.max(max, entry.level), 5);
+  return Math.min(99, highestSkillLevel + 5);
+}
+
+function parseTypes(value: string): { readonly types: string[]; readonly truncated: boolean } {
+  const unique = [...new Set(value.split(",").map((entry) => entry.trim()).filter(Boolean))];
+  return { types: unique.slice(0, 2), truncated: unique.length > 2 };
 }
 
 function typesField(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
@@ -507,7 +604,9 @@ function typesField(record: MonsterSpeciesRecord, rerender: () => void): HTMLEle
       dataset: { testid: "db-monster-species-types-free" },
       children: [
         textControl("타입(최대 2, 쉼표 구분)", (record.types ?? []).join(", "), (value) => {
-          updateSpecies(record.id, { types: parseTypes(value) });
+          const parsed = parseTypes(value);
+          if (parsed.truncated) toast("타입 2개까지만 저장했습니다", "info");
+          updateSpecies(record.id, { types: parsed.types });
         }, "db-monster-species-types"),
         el("div", {
           class: "db-field-hint",
@@ -537,6 +636,7 @@ function typesField(record: MonsterSpeciesRecord, rerender: () => void): HTMLEle
         } else if (live.length >= 2) {
           // 최대 2개 — 세 번째 선택은 저장하지 않고 체크 표시만 되돌린다.
           input.checked = false;
+          toast("타입은 최대 2개입니다", "info");
           return;
         } else {
           next = [...live, type];
