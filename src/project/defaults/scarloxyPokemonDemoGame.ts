@@ -72,6 +72,10 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     ...project.system,
     monsterCollection: true,
     battleUiStyle: "pokemon",
+    // 전투 규칙 엔진도 Gen1 로 켠다. battleUiStyle 은 스킨(코스메틱)만 바꾸므로
+    // 이것이 없으면 포켓몬 스킨을 쓰면서 RM2k3 규칙으로 싸운다 — applyGenrePreset
+    // ("monster-collect") 은 이미 둘을 함께 켜는데, 출하 데모만 빠져 있었다.
+    battleModel: "gen1",
     // 잡은 파티 몬스터가 필드에 나서 싸운다(트레이너 대신). 1:1 대치.
     battleParty: "monsters",
     activeSlots: 1,

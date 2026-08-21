@@ -285,6 +285,47 @@ export function applyMonsterExperienceAndEvolution(
   return results;
 }
 
+export type MonsterLevelUpPreview = {
+  readonly instanceId: string;
+  readonly name: string;
+  readonly fromLevel: number;
+  readonly toLevel: number;
+  readonly learnedSkillIds: readonly SkillId[];
+};
+
+// 승리 exp 를 적용하면 발생할 몬스터 레벨업을 계산만 한다(세션 변경 없음).
+// 결과 화면 표시용이며, 실제 적립은 applyMonsterExperienceAndEvolution 이 담당한다 —
+// 둘이 같은 헬퍼(monsterLevelForExp/newSkillsForLevelRange)를 쓰므로 수치가 일치한다.
+// 액터와 달리 몬스터는 expForRewardActor 보정 없이 획득 exp 를 그대로 받는다(적립 경로와 동일).
+// 진화는 세션 인벤토리를 읽는 selectEvolution 이 필요해 여기서 다루지 않는다.
+export function previewMonsterExperience(
+  project: Project,
+  instances: readonly MonsterInstance[],
+  earnedExp: number,
+  participantInstanceIds?: readonly string[]
+): MonsterLevelUpPreview[] {
+  const exp = Math.max(0, Math.trunc(earnedExp));
+  if (exp <= 0) return [];
+  const eligible = participantInstanceIds && participantInstanceIds.length > 0 ? new Set(participantInstanceIds) : null;
+  const results: MonsterLevelUpPreview[] = [];
+  for (const instance of instances) {
+    if (eligible && !eligible.has(instance.instanceId)) continue;
+    const species = monsterSpeciesById(project, instance.speciesId);
+    if (!species) continue;
+    const fromLevel = instance.level;
+    const toLevel = monsterLevelForExp(species, fromLevel, Math.max(0, Math.trunc(instance.exp ?? 0)) + exp);
+    if (toLevel <= fromLevel) continue;
+    results.push({
+      instanceId: instance.instanceId,
+      name: monsterDisplayName(project, instance),
+      fromLevel,
+      toLevel,
+      learnedSkillIds: newSkillsForLevelRange(species, fromLevel, toLevel, instance.skillIds ?? []),
+    });
+  }
+  return results;
+}
+
 export function evolveMonster(project: Project, session: PlaySession, input: EvolveMonsterInput): EvolveMonsterResult {
   ensureMonsterSessionFields(session);
   const instance = session.monsterInstances[input.instanceId];

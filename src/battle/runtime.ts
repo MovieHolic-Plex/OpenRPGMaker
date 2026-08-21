@@ -14,7 +14,7 @@ import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
-import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
+import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
 import {
   applyStateEffects,
   attackMultiplierForStates,
@@ -223,7 +223,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const roundLogs: BattleRoundLogSnapshot[] = [];
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
   const participatingActorIds = new Set<ActorId>();
-  const rewards: { exp: number; gold: number; items: ItemId[]; enemyLevel?: number; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
+  const rewards: {
+    exp: number;
+    gold: number;
+    items: ItemId[];
+    enemyLevel?: number;
+    levelUps: BattleLevelUpResult[];
+    monsterLevelUps: MonsterLevelUpPreview[];
+  } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
   // sessionState 는 BattleSessionState(런타임) 또는 ProjectSession(에디터 시작 상태).
   // ProjectSession 에는 actorSkillIds 등 런타임 전용 필드가 없으므로 BattleSessionState 로 좁혀 읽는다.
@@ -1657,6 +1664,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.enemyLevel = collected.enemyLevel;
     rewards.items = [...collected.items];
     rewards.levelUps = computeLevelUpPreview(collected.exp, collected.enemyLevel);
+    rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
+  }
+
+  // 파티 몬스터 경로의 레벨업 미리보기. 참전 판정을 battleRewardsToSession 과 맞춘다 —
+  // 거기서는 [...snapshot.actors, ...snapshot.reserveActors] 의 monsterInstanceId 를 쓰고,
+  // 여기 `actors` 가 정확히 그 합집합(activeActors + reserveActors)이다.
+  function computeMonsterLevelUpPreview(earnedExp: number): MonsterLevelUpPreview[] {
+    const instances = options.partyMonsters ?? [];
+    if (instances.length === 0) return [];
+    const participantIds = actors
+      .map((actor) => actor.monsterInstanceId)
+      .filter((id): id is string => typeof id === "string");
+    return previewMonsterExperience(options.project, instances, earnedExp, participantIds);
   }
 
   // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).

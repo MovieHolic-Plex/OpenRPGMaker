@@ -497,10 +497,13 @@ function rewardsLine(snapshot: BattleSnapshot): string {
   if (snapshot.result !== "victory") return "전투가 종료되었습니다.";
   const itemCount = snapshot.rewards.items.length;
   const base = `경험치 ${snapshot.rewards.exp} / 골드 ${snapshot.rewards.gold} / 아이템 ${itemCount}`;
-  const levelUps = snapshot.rewards.levelUps ?? [];
-  if (levelUps.length === 0) return base;
-  const names = levelUps.map((entry) => `${entry.actorName} Lv.${entry.toLevel}`).join(", ");
-  return `${base} · 레벨 업! ${names}`;
+  // 액터·몬스터 양쪽 레벨업을 한 줄에 합친다(몬스터 전투는 액터 쪽이 항상 비어 있다).
+  const names = [
+    ...(snapshot.rewards.levelUps ?? []).map((entry) => `${entry.actorName} Lv.${entry.toLevel}`),
+    ...(snapshot.rewards.monsterLevelUps ?? []).map((entry) => `${entry.name} Lv.${entry.toLevel}`),
+  ];
+  if (names.length === 0) return base;
+  return `${base} · 레벨 업! ${names.join(", ")}`;
 }
 
 export function battleResultRewardRowCount(snapshot: BattleSnapshot): number {
@@ -522,6 +525,14 @@ function rewardRows(snapshot: BattleSnapshot): readonly { readonly kind: string;
   // 레벨업이 발생한 액터별로 "레벨 업!" 행을 추가.
   for (const levelUp of snapshot.rewards.levelUps ?? []) {
     rows.push({ kind: "levelup", label: `${levelUp.actorName} 레벨 업!`, value: `Lv.${levelUp.fromLevel}→${levelUp.toLevel}` });
+  }
+  // 파티 몬스터가 싸운 전투(battleParty: "monsters")는 위 액터 루프가 항상 비어서
+  // 성장 피드백이 하나도 없었다 — 몬스터 레벨업/습득 기술 행을 같은 형식으로 추가한다.
+  for (const levelUp of snapshot.rewards.monsterLevelUps ?? []) {
+    rows.push({ kind: "levelup", label: `${levelUp.name} 레벨 업!`, value: `Lv.${levelUp.fromLevel}→${levelUp.toLevel}` });
+    for (const skillId of levelUp.learnedSkillIds) {
+      rows.push({ kind: "skill", label: `${levelUp.name} 기술 습득`, value: skillName(skillId) });
+    }
   }
   return rows;
 }

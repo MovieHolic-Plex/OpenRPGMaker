@@ -1,5 +1,6 @@
 import { numberField, selectLiteral } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
+import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
 import type { StateRateGrade } from "@/project/ontology/databaseStateOntology";
 import { store } from "@/project/store";
@@ -64,6 +65,7 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           readonlyControl("스킬 제한", ontology.skillLimit, "db-state-skill-limit"),
           readonlyControl("고정 항목", ontology.lockedParameters.join(", ") || "없음", "db-state-locked-params"),
         ]),
+        runtimeEffectsPanel(state, update),
         panel("HP", [
           numberField("전투 중(턴당%)", "db-state-hp-turn", numericRelease(state.hpReleaseTurn, baseOntology.hpTurn), (hpReleaseTurn) =>
             update({ hpReleaseTurn }), { min: -100, max: 100 }
@@ -102,6 +104,46 @@ function panel(title: string, children: readonly HTMLElement[]): HTMLElement {
     class: "db-advanced-panel db-state-panel",
     children: [el("legend", { text: title }), ...children],
   });
+}
+
+// Gen1 규칙 knob 직접 저작. 온톨로지 텍스트 파싱 경로(restrictsActionFrom 등)는 영어
+// 정규식인데 온톨로지 데이터는 한국어라 사실상 죽어 있다 — 그래서 위 "제한: 행동 불가"
+// 드롭다운을 골라도 새 상태는 그대로 행동한다. 이 패널은 runtimeEffects 에 직접 써서
+// 그 경로를 우회하고, 표시값은 stateBehavior() 의 실효값(재정의 없으면 온톨로지 폴백)이다.
+function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRecord>) => void): HTMLElement {
+  const behavior = stateBehavior(state);
+  const patchEffects = (effects: Partial<NonNullable<StateRecord["runtimeEffects"]>>): void =>
+    update({ runtimeEffects: effects });
+  return panel("전투 규칙 (Gen1 knob)", [
+    checkControl("행동 불가", "db-state-rt-restricts", behavior.restrictsAction, (restrictsAction) =>
+      patchEffects({ restrictsAction })
+    ),
+    numberField("턴당 HP 피해(%)", "db-state-rt-hp-percent", behavior.hpDamagePercentPerTurn, (hpDamagePercentPerTurn) =>
+      patchEffects({ hpDamagePercentPerTurn }), { min: 0, max: 100, step: 0.05 }
+    ),
+    numberField("공격 배율", "db-state-rt-attack-mult", behavior.attackMultiplier, (attackMultiplier) =>
+      patchEffects({ attackMultiplier }), { min: 0, max: 10, step: 0.05 }
+    ),
+    numberField("방어 배율", "db-state-rt-defense-mult", behavior.defenseMultiplier, (defenseMultiplier) =>
+      patchEffects({ defenseMultiplier }), { min: 0, max: 10, step: 0.05 }
+    ),
+    checkControl("전투 종료 시 해제", "db-state-rt-remove-on-end", behavior.removeOnBattleEnd, (removeOnBattleEnd) =>
+      patchEffects({ removeOnBattleEnd })
+    ),
+    el("div", {
+      class: "db-state-summary",
+      dataset: { testid: "db-state-runtime-hint" },
+      // 위 "HP > 전투 중(턴당%)" 필드는 정수 파서를 타서 6.25 가 0 으로 뭉개진다. 소수는 여기로.
+      text: "Gen1 화상 = 공격 배율 0.5 + 턴당 HP 6.25%(=1/16). 독도 6.25%. 배율은 런타임에서 0.4~2.5 로 clamp 된다.",
+    }),
+  ]);
+}
+
+function checkControl(label: string, testid: string, checked: boolean, onChange: (value: boolean) => void): HTMLElement {
+  const input = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+  input.checked = checked;
+  input.addEventListener("change", () => onChange(input.checked));
+  return el("label", { class: "db-state-check", children: [input, el("span", { text: label })] });
 }
 
 function readonlyControl(label: string, value: string, testid: string): HTMLElement {
