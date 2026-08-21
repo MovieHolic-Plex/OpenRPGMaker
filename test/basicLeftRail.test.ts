@@ -73,6 +73,9 @@ describe("basic icon rail", () => {
     renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
     click("basic-rail-toggle-tiles");
+    // dispatchFlyout 은 lastContainer.isConnected 여야 자가 재렌더한다. fakeDom 은 isConnected 를
+    // 구현하지 않으니 토글 후 명시적으로 다시 그린다(상태는 모듈에 살아있다).
+    renderBasicLeftRail(container);
     expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
     expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
     click("basic-tile-0");

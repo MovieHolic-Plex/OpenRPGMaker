@@ -100,13 +100,13 @@ describe("editorUiMode", () => {
     expect(beginner.coachMarks).toBe(true);
     expect(beginner.standardWelcome).toBe(false);
     expect(standard.paletteRail).toBe(false);
-    expect(standard.leftPanelMaxWidthPx).toBe(380);
+    expect(standard.leftPanelMaxWidthPx).toBe(300);
     expect(standard.layerTermStyle).toBe("technical");
     expect(standard.prominentTestPlay).toBe(false);
     expect(standard.coachMarks).toBe(false);
     expect(standard.standardWelcome).toBe(true);
     expect(expert.paletteRail).toBe(false);
-    expect(expert.leftPanelMaxWidthPx).toBe(null);
+    expect(expert.leftPanelMaxWidthPx).toBe(320);
     expect(expert.layerTermStyle).toBe("technical");
     expect(expert.prominentTestPlay).toBe(false);
     expect(expert.coachMarks).toBe(false);

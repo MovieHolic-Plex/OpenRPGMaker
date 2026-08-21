@@ -13,7 +13,7 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { AiDocument } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { chatDockHint, cycleChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
+import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
@@ -2295,8 +2295,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI 작업 종료 후 맵 우선으로 접기 (이미 펼쳐 있던 경우 포함).
   scheduleCollapseAfterAiWork = (): void => {
     clearAutoCollapseTimer();
-    // 사이드 워크 로그는 자동 접기로 숨기지 않는다. 플로트 맵 우선만 접는다.
-    if (readChatDock() !== "float") return;
+    // 사이드 워크 로그는 자동 접기로 숨기지 않는다. 맵을 덮는 오버레이 독(플로트·유리)만 접는다.
+    if (!isOverlayChatDock(readChatDock())) return;
     // 상태 기계 불변식: busy/running/큐가 있으면 접기 금지
     if (!collapseAfterAiWork || turnBusy || collapsed || !!runningProgress || pendingSends.length > 0) return;
     // 자율 런 활성 중에는 자동 접기 금지(런 종료 시 재개 — endAutonomousRun 이 먼저 실행된다).
