@@ -137,4 +137,46 @@ describe("renderFarmOverlays", () => {
     expect(scene.calls.filter((call) => call.kind === "text")).toHaveLength(0);
     expect(scene.calls.filter((call) => call.kind === "sprite")).toHaveLength(2);
   });
+
+  /**
+   * 익기 전과 수확기가 **다른 그림**이어야 한다. 감자는 성장 단계 2 · 그림 2 라서 단순
+   * clamp(min(stage, len-1)) 로는 stage 1(수확 불가)과 stage 2(수확 가능)가 같은 프레임이
+   * 된다 — 브라우저 실측에서 1일차와 2일차의 밭 한 칸이 픽셀 단위로 동일했다(0/3120px).
+   * 그러면 플레이어는 다 익어 보이는 작물에 A 를 눌러도 수확이 안 되는 이유를 알 수 없다.
+   */
+  it("keeps the last crop frame for the harvest-ready stage so an unripe crop looks different", () => {
+    const growing = createStubScene({ "3,4": { tilled: true, watered: false, cropId: "crop_potato", stage: 1 } });
+    const ready = createStubScene({ "3,4": { tilled: true, watered: false, cropId: "crop_potato", stage: 2 } });
+    render(growing);
+    render(ready);
+
+    const frameOf = (scene: StubScene): unknown =>
+      scene.calls.find((call) => call.kind === "sprite")?.args[3];
+    const potato = (store.getCurrent().database.crops ?? []).find((crop) => crop.id === "crop_potato");
+    expect(potato?.stages).toHaveLength(2);
+    expect(potato?.graphicStages).toHaveLength(2);
+
+    expect(frameOf(growing), "자라는 중인 감자가 수확기 프레임을 쓰고 있다").toBe(0);
+    expect(frameOf(ready), "수확 가능한 감자가 마지막 프레임을 쓰지 않는다").toBe(1);
+    expect(frameOf(growing)).not.toBe(frameOf(ready));
+  });
+
+  /** 저작자가 단계보다 그림을 더 준 경우(N+1장)는 기존 배선을 그대로 존중해야 한다. */
+  it("honors an authored ready frame when graphic stages outnumber growth stages", () => {
+    const project = createFarmingDemoProject();
+    const crops = project.database.crops ?? [];
+    const potato = crops.find((crop) => crop.id === "crop_potato");
+    if (!potato) throw new Error("감자 작물을 찾지 못했다");
+    // 단계 2 · 그림 3 — 중간 단계에 자기 그림이 있는 배선.
+    (potato as { graphicStages?: unknown }).graphicStages = [
+      { resourceId: "farming-crop-potato", frame: 0 },
+      { resourceId: "farming-crop-potato", frame: 1 },
+      { resourceId: "farming-crop-potato", frame: 1 },
+    ];
+    store.replaceProject(project);
+
+    const mid = createStubScene({ "3,4": { tilled: true, watered: false, cropId: "crop_potato", stage: 1 } });
+    render(mid);
+    expect(mid.calls.find((call) => call.kind === "sprite")?.args[3]).toBe(1);
+  });
 });

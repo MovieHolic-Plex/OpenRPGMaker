@@ -6,7 +6,7 @@ import {
   type AutotileMapView,
 } from "@/project/defaults/autotileEngine";
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
-import { cropGraphicStages } from "@/project/farmModel";
+import { cropGraphicIndexForStage, cropGraphicStages } from "@/project/farmModel";
 import { store } from "@/project/store";
 import type { CropRecord, TilesetDef } from "@/project/types";
 
@@ -167,7 +167,9 @@ function renderCropMarker(
 ): void {
   // 저작된 그래픽이 없으면 cropGraphicStages 가 등록 스프라이트에서 파생한다(프로젝트엔 안 새긴다).
   const stages = crop ? cropGraphicStages(crop) : [];
-  const graphic = stages[Math.max(0, Math.min(stage, stages.length - 1))];
+  // 마지막 그림은 수확 가능 전용이다 — 단순 clamp 로 고르면 익기 전과 익은 뒤가 같은 그림이 된다.
+  const index = cropGraphicIndexForStage(stages.length, crop?.stages.length ?? 0, stage);
+  const graphic = index < 0 ? undefined : stages[index];
   if (graphic?.resourceId && typeof scene.add.sprite === "function") {
     const sprite = scene.add.sprite(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, graphic.resourceId, graphic.frame);
     sprite.setOrigin?.(0.5, 0.5);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { FARMING_CROP_SPRITE_ASSETS, type FarmingCropSpriteAsset } from "@/assets/farmingSprites";
-import { cropGraphicStages, normalizeCropRecord } from "@/project/farmModel";
+import { cropGraphicIndexForStage, cropGraphicStages, normalizeCropRecord } from "@/project/farmModel";
 
 type BinaryFsReader = {
   readonly readFileSync: (path: URL) => Uint8Array;
@@ -154,6 +154,39 @@ describe("farming demo crop graphics wiring", () => {
     const spriteIds = (map?.events ?? []).map((event) => event.pages?.[0]?.graphic.sprite?.id);
     expect(spriteIds).toContain("tex_farming_charset_chicken");
     expect(spriteIds).toContain("tex_farming_charset_cow");
+  });
+});
+
+describe("cropGraphicIndexForStage", () => {
+  // 마지막 그림은 수확 가능 전용이다. 예약하지 않으면 익기 전 마지막 단계와 수확기가
+  // 같은 그림이 되어 플레이어가 익은 것을 구별할 수 없다.
+  it("reserves the last graphic for the ready stage when graphics match growth stages", () => {
+    // 감자: 성장 단계 2 · 그림 2
+    expect(cropGraphicIndexForStage(2, 2, 0)).toBe(0);
+    expect(cropGraphicIndexForStage(2, 2, 1)).toBe(0);
+    expect(cropGraphicIndexForStage(2, 2, 2)).toBe(1); // 수확 가능
+    expect(cropGraphicIndexForStage(2, 2, 9)).toBe(1); // 단계가 넘쳐도 수확기 그림
+  });
+
+  it("maps stages straight through when the author supplied a ready frame", () => {
+    // 그림 3 · 단계 2 — 중간 단계에 자기 그림이 있는 배선은 그대로 존중한다.
+    expect(cropGraphicIndexForStage(3, 2, 0)).toBe(0);
+    expect(cropGraphicIndexForStage(3, 2, 1)).toBe(1);
+    expect(cropGraphicIndexForStage(3, 2, 2)).toBe(2);
+  });
+
+  it("uses the only graphic when there is nothing to reserve", () => {
+    expect(cropGraphicIndexForStage(1, 3, 0)).toBe(0);
+    expect(cropGraphicIndexForStage(1, 3, 3)).toBe(0);
+  });
+
+  it("reports no graphic when the crop has none", () => {
+    expect(cropGraphicIndexForStage(0, 2, 1)).toBe(-1);
+  });
+
+  it("treats a negative or fractional stage as the first growing stage", () => {
+    expect(cropGraphicIndexForStage(3, 3, -2)).toBe(0);
+    expect(cropGraphicIndexForStage(3, 3, 1.9)).toBe(1);
   });
 });
 

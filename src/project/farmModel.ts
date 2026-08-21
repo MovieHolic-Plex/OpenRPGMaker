@@ -44,6 +44,34 @@ export function cropGraphicStages(
   return autoGraphicStages(crop.id, crop.harvestItemId, crop.stages.length);
 }
 
+/**
+ * 성장 단계 → `graphicStages` 인덱스. **마지막 그림은 "수확 가능" 전용으로 예약한다.**
+ *
+ * 예약하지 않으면 그림 수와 성장 단계 수가 같은 작물(감자: 단계 2 · 그림 2)에서
+ * 아직 익지 않은 마지막 단계와 수확기가 같은 그림이 된다 — 실측으로 1일차(수확 불가)와
+ * 2일차(수확 가능)의 밭 한 칸이 픽셀 단위로 동일했다(0/3120px). 그림이 같으면 플레이어는
+ * 익은 것을 구별할 방법이 없고, 눌러도 수확되지 않는 이유를 알 수 없다.
+ *
+ * 저작자가 단계보다 그림을 더 많이 준 경우(N+1장)는 이미 수확기 칸을 따로 그린 것이므로
+ * 그 배선을 그대로 존중한다. 그림이 하나뿐이면 예약할 것이 없어 그것만 쓴다.
+ * 반환 -1 은 "그릴 그림이 없음"(호출자가 폴백).
+ */
+export function cropGraphicIndexForStage(
+  graphicCount: number,
+  growthStageCount: number,
+  stage: number
+): number {
+  if (graphicCount <= 0) return -1;
+  const last = graphicCount - 1;
+  const current = Math.max(0, Math.trunc(stage));
+  // 저작자가 수확기 그림을 따로 줬다 — 단계를 그대로 매핑한다.
+  if (graphicCount > growthStageCount) return Math.min(current, last);
+  const ready = growthStageCount > 0 && current >= growthStageCount;
+  if (ready) return last;
+  // 자라는 중에는 마지막 그림을 쓰지 않는다(그림이 하나뿐이면 어쩔 수 없이 그것을 쓴다).
+  return Math.min(current, Math.max(0, last - 1));
+}
+
 // 저작된 graphicStages 가 없으면 등록된 작물 스프라이트에서 자동 배선한다.
 // 작물 id(`crop_potato`) → 에셋 id(`farming-crop-potato`) 가 실제 규칙이고, 그게 안 맞으면
 // 수확 아이템 id(`item_potato`)로 한 번 더 시도한다(두 접두사만 실제 데이터에 존재).
