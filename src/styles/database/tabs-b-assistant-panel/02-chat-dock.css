@@ -106,15 +106,22 @@
   backdrop-filter: blur(18px) saturate(1.3);
 }
 
+/* 유리·사이드는 헤더(더보기/설정)를 가지고 있고 빈 화면 추천은 ai-next-steps 카드가
+   담당한다 → 컴포저 레일에서 ☰·✨ 를 빼 중복 버튼을 없앤다. float 은 헤더가 숨겨지므로
+   레일이 유일한 진입점이라 그대로 둔다. */
 .ai-chat-panel.chat-dock-glass .ai-chat-toolbar,
 .ai-chat-panel.chat-dock-glass .ai-chat-resize-handle,
 .ai-chat-panel.chat-dock-glass .ai-command-menu-toggle,
 .ai-chat-panel.chat-dock-glass .ai-command-settings-button,
-.ai-chat-panel.chat-dock-glass .ai-composer-chips,
+.ai-chat-panel.chat-dock-glass .ai-composer-suggest-toggle,
+.ai-chat-panel.chat-dock-glass .ai-composer-suggest,
 .ai-chat-panel.chat-dock-glass .ai-context-chips,
 .ai-chat-panel.chat-dock-glass .ai-chat-collapse,
 .ai-chat-panel.chat-dock-glass .ai-new-session,
-.ai-chat-panel.chat-dock-side .ai-composer-chips {
+.ai-chat-panel.chat-dock-side .ai-command-menu-toggle,
+.ai-chat-panel.chat-dock-side .ai-command-settings-button,
+.ai-chat-panel.chat-dock-side .ai-composer-suggest-toggle,
+.ai-chat-panel.chat-dock-side .ai-composer-suggest {
   display: none;
 }
 

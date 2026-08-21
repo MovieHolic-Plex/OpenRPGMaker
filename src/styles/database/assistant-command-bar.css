@@ -1,7 +1,8 @@
 /* ── Command-bar AI IA (2026-07-07): bottom center bar + rising overlay ── */
 body.ai-command-bar-active {
-  /* 컨텍스트 칩 + 감독 칩 + 2줄 입력 실측 높이. */
-  --ai-command-bar-inset: 144px;
+  /* 폴백만. 실제 값은 aiChatPanel 의 syncCommandBarClearance 가 실측해 덮어쓴다
+     (144px 하드코딩은 칩 행이 붙었다 떼질 때마다 실제 바 높이와 어긋났다). */
+  --ai-command-bar-inset: 112px;
 }
 
 body.ai-command-bar-active .editor-layout {
@@ -44,7 +45,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   bottom: 18px;
   display: grid;
   gap: 10px;
-  grid-template-columns: 40px minmax(0, 760px) auto;
+  /* 단일 열 — ☰ 는 컴포저 레일로, 상태줄은 액션 행으로 들어갔다(구 `40px … auto` 3열). */
+  grid-template-columns: minmax(0, 820px);
   /* 좌측 타일 팔레트/맵트리를 수평으로 침범하지 않는다 — 캔버스 영역 안에서 중앙 정렬.
      (뷰포트 ≤1284px에서 뷰포트-중앙 760px 바가 좌패널 하단을 덮던 버그 수정) */
   justify-content: center;
@@ -54,7 +56,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   z-index: 40; /* z-layers: bar 40 < overlay 41 */
 }
 
-.ai-command-bar:has(.ai-command-menu:not([hidden])) {
+/* 팝오버(슬래시·추천·메뉴)가 열리면 rising overlay(41) 위로 올라간다. */
+.ai-command-bar.has-popover {
   z-index: 42;
 }
 
@@ -83,7 +86,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   align-items: stretch;
   bottom: auto;
   flex: 0 0 auto;
-  /* 사이드: 좌측 ☰ 없이 입력 스택만 — 헤더에 더보기/설정이 있음 */
   grid-template-columns: minmax(0, 1fr);
   left: auto;
   position: relative;
@@ -91,19 +93,6 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   z-index: 1;
   gap: 6px;
   padding: 8px 10px 10px;
-}
-
-.ai-chat-panel.chat-dock-side .ai-command-menu-toggle {
-  display: none;
-}
-
-.ai-chat-panel.chat-dock-side .ai-command-settings-button {
-  display: none;
-}
-
-.ai-chat-panel.chat-dock-side .ai-command-bar .ai-status-group {
-  grid-column: 1 / -1;
-  justify-self: stretch;
 }
 
 /* 대기/새 대화 등 idle 상태는 하단 점유를 줄인다 */
@@ -121,23 +110,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   right: 36px;
 }
 
-.ai-command-menu-toggle {
-  align-items: center;
-  background: var(--bg-raised);
-  border: 1.5px solid var(--accent-border);
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(42, 37, 33, 0.08);
-  color: var(--text-1);
-  cursor: pointer;
-  display: grid;
-  font-size: 17px;
-  font-weight: 800;
-  height: 40px;
-  place-items: center;
-  width: 40px;
-  transition: transform 0.12s, box-shadow 0.12s;
-}
-.ai-command-menu-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(42, 37, 33, 0.12); }
+/* ☰ 토글의 40px 독립 버튼 스타일은 폐기 — 레일 버튼(.ai-composer-rail-btn,
+   assistant-composer.css)이 크기·상태를 소유한다. */
 
 .ai-chat-icon-btn,
 .ai-command-settings-button {
@@ -462,35 +436,17 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   margin: 8px 0 12px;
 }
 
-.ai-command-menu-toggle:hover,
-.ai-command-menu-toggle:focus-visible {
-  background: var(--control-bg-hover);
-  outline: none;
-}
-
 .ai-command-menu {
   background: var(--bg-raised);
   border: 1px solid var(--border-strong);
   border-radius: 8px;
-  /* bottom 48px 고정은 칩 행으로 커진 바 안쪽에 걸려 칩·입력 스택이 메뉴 위에
-     그려졌다(라벨 잘림 — C06 실측). 바 전체 위로 앵커하고 형제보다 위에 그린다. */
-  bottom: calc(100% + 8px);
   box-shadow: var(--shadow-modal);
   display: grid;
   gap: 2px;
   left: 0;
   min-width: 170px;
   padding: 6px;
-  position: absolute;
-  z-index: 5;
-}
-
-.ai-command-menu:not([hidden]) {
-  z-index: 2;
-}
-
-.ai-command-menu[hidden] {
-  display: none;
+  /* 위치(bottom/position/z-index)는 .ai-composer-popover 가 소유한다. */
 }
 
 .ai-command-menu-item {
@@ -511,57 +467,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   outline: none;
 }
 
-.ai-command-input-stack {
-  background: color-mix(in srgb, var(--bg-raised) 96%, transparent);
-  backdrop-filter: blur(10px);
-  border: 1.5px solid var(--border-strong);
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(42, 37, 33, 0.08);
-  display: grid;
-  gap: 4px;
-  padding: 8px 10px;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.ai-composer-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-  padding: 0 2px 2px;
-}
-
-.ai-composer-chips:empty,
-.ai-composer-chips[hidden] {
-  display: none;
-}
-
-.ai-composer-chip {
-  background: var(--control-bg);
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  color: var(--text-1);
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 1.2;
-  padding: var(--space-1) var(--space-2);
-}
-
-.ai-composer-chip:hover,
-.ai-composer-chip:focus-visible {
-  background: var(--control-bg-hover);
-  border-color: var(--accent-border);
-  outline: none;
-}
-.ai-command-input-stack:focus-within {
-  border-color: color-mix(in srgb, var(--accent, var(--accent)) 45%, var(--border-strong));
-  box-shadow: 0 8px 28px rgba(42, 37, 33, 0.12), 0 0 0 3px color-mix(in srgb, var(--accent, var(--accent)) 14%, transparent);
-}
-
-.ai-chat-panel.chat-dock-side .ai-command-input-stack {
-  box-shadow: none;
-  border-color: var(--border-subtle);
-}
+/* 구 `.ai-command-input-stack`(입력창 위 4겹 흐름 스택)과 감독 칩 스타일은
+   assistant-composer.css 의 `.ai-composer` / `.ai-composer-suggest` 로 이전했다. */
 
 .ai-command-bar .ai-status-group {
   align-self: center;
@@ -571,7 +478,7 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   box-shadow: none;
   gap: 6px;
   min-height: 0;
-  padding: 0 2px;
+  padding: 0;
 }
 
 .ai-command-bar .ai-assistant-status {
@@ -588,13 +495,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 
   .ai-command-bar {
     bottom: 10px;
-    grid-template-columns: 32px minmax(0, calc(100vw - 56px));
+    grid-template-columns: minmax(0, calc(100vw - 24px));
     width: calc(100vw - 20px);
-  }
-
-  .ai-command-bar .ai-status-group {
-    grid-column: 2;
-    justify-self: start;
   }
 
   .ai-rising-overlay {

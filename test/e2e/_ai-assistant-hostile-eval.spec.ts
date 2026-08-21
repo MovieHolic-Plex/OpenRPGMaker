@@ -204,9 +204,16 @@ test("C 모달·툴바 — 설정/도구/더보기/도킹/글꼴", async ({ page
   collectErrors(page, "C");
   await boot(page);
 
-  // 초보(커맨드바)에서는 설정 진입점이 기어 아이콘(ai-settings-command-bar)이다.
+  // 초보(컴포저)에서는 설정이 레일 ☰ 메뉴 안의 항목이다(구 입력행 ⚙ 아이콘 → 메뉴 흡수).
   let settings = page.getByTestId("ai-settings-toggle");
-  if (!(await settings.isVisible().catch(() => false))) settings = page.getByTestId("ai-settings-command-bar");
+  if (!(await settings.isVisible().catch(() => false))) {
+    const railMenu = page.getByTestId("ai-command-menu-toggle");
+    if (await railMenu.isVisible().catch(() => false)) {
+      await railMenu.click();
+      await page.waitForTimeout(250);
+    }
+    settings = page.getByTestId("ai-settings-command-bar");
+  }
   if (await settings.isVisible().catch(() => false)) {
     await settings.click();
     const modal = page.getByTestId("ai-settings-modal");

@@ -57,13 +57,13 @@
 }
 
 /* 4) AI 패널: 입력 행이 절대 잘리지 않게 */
-.ai-command-input-stack,
-.ai-chat-input-row {
+.ai-composer,
+.ai-composer-main,
+.ai-composer-actions {
   min-width: 0;
 }
 
-.ai-chat-input-row > textarea,
-.ai-chat-input-row > input {
+.ai-composer-main > textarea {
   min-width: 0;
 }
 
