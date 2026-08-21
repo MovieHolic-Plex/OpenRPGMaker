@@ -364,7 +364,7 @@ describe("키 온보딩과 설정 접근성", () => {
     const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(modal).not.toBeNull();
     expect(findByTestId(panel, "ai-config")).toBeNull();
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-chatgpt"));
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-oauth"));
   });
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {

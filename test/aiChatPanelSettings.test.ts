@@ -5,7 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
-import { OH_MY_PI_PROVIDERS } from "@/ai/ohMyPiProviders";
+import { OH_MY_PI_PROVIDERS, ohMyPiAuthKind } from "@/ai/ohMyPiProviders";
+import { providersForKind } from "@/ai/aiConnectionKind";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
@@ -92,20 +93,25 @@ describe("설정 자동 저장", () => {
     const modal = openSettingsSurface(panel);
     expect(findByTestId(modal, "ai-config-baseurl")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-apikey")).not.toBeNull();
-    expect(findByTestId(modal, "ai-auth-chatgpt")).not.toBeNull();
+    expect(findByTestId(modal, "ai-auth-oauth")).not.toBeNull();
     expect(findByTestId(modal, "ai-auth-api-key")).not.toBeNull();
     const providers = findByTestId(modal, "ai-oh-my-pi-provider");
     expect(providers).not.toBeNull();
-    expect(providers?.querySelectorAll("option").length).toBeGreaterThanOrEqual(60);
+    // 기본은 구독 로그인 종류라 OAuth 제공자 14종만 담는다 — 예전에는 68종을 종류 구분 없이
+    // 한 줄로 나열했다(감독이 고를 수 없는 제공자까지 섞여 있었다).
+    expect(providers?.querySelectorAll("option").length).toBe(14);
     expect(findByTestId(modal, "ai-oauth-status")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-model-preset")).not.toBeNull();
     expect(findByTestId(modal, "ai-config-lite-model-preset")).not.toBeNull();
-    expect(modal.textContent).toContain("제공자 로그인 또는 키");
+    expect(modal.textContent).toContain("구독 로그인");
     const apiKey = findByTestId(modal, "ai-config-apikey");
     expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(true);
   });
 
-  it("새 설정은 ChatGPT 로그인이 기본이고 API 키 폴백으로 전환할 수 있다", () => {
+  it("API 키 종류로 바꿔도 전송 축은 동반 서비스로 남는다", () => {
+    // 옛 스펙은 여기서 stored.authMode === "apiKey" 를 기대했다. 그 배선이 장애의 원인이었다 —
+    // authMode 는 전송 축(동반 서비스 vs 직접 게이트웨이)이고, 사용자가 고르는 것은 자격 증명
+    // 종류다. 두 종류 모두 동반 서비스가 자격을 보관하므로 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     expect(loadAiConfig().authMode).toBe("chatgpt");
@@ -115,21 +121,30 @@ describe("설정 자동 저장", () => {
     apiMode.click();
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    expect(stored.authMode).toBe("apiKey");
-    const apiKey = findByTestId(modal, "ai-config-apikey");
-    expect((apiKey?.parentNode as FakeElement | null)?.hidden).toBe(false);
+    expect(stored.authMode).toBe("chatgpt");
+    expect(ohMyPiAuthKind(stored.providerId)).toBe("apiKey");
+    // 브라우저에는 비밀이 남지 않는다.
+    expect(stored.apiKey ?? "").toBe("");
+    expect(stored.baseUrl ?? "").toBe("");
   });
 
-  it("설정 제공자 목록은 oh-my-pi 카탈로그 id 전부를 담는다", () => {
+  it("설정 제공자 목록은 고른 연결 종류의 제공자만 담는다", () => {
+    // optgroup 으로 묶여 있으므로 childNodes 가 아니라 querySelectorAll("option") 으로 관통해 읽는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
     const select = findByTestId(modal, "ai-oh-my-pi-provider");
     if (!select) throw new Error("provider select missing");
-    const values = select.childNodes
-      .filter((node): node is FakeElement => node instanceof FakeElement)
-      .map((node) => node.attrs.value)
-      .filter((value): value is string => Boolean(value));
-    expect(values).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
+    const values = (): readonly string[] =>
+      select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
+
+    expect(values()).toEqual(providersForKind("oauth").map((provider) => provider.id));
+
+    findByTestId(modal, "ai-auth-api-key")?.click();
+
+    expect(values()).toEqual(providersForKind("apiKey").map((provider) => provider.id));
+    // 합치면 카탈로그 전체다 — 필터가 제공자를 잃어버리지 않는다.
+    expect(providersForKind("oauth").length + providersForKind("apiKey").length)
+      .toBe(OH_MY_PI_PROVIDERS.length);
   });
 
   it("oh-my-pi 제공자를 바꾸면 그 기본 모델과 함께 저장된다", () => {

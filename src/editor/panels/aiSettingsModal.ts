@@ -77,6 +77,9 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
   });
 
   const close = (): void => {
+    // 인증 패널은 기기 로그인 폴링 타이머를 들고 있다 — 정리하지 않으면 모달이 닫힌 뒤에도
+    // /auth/status 를 3초마다 계속 때린다.
+    form.dispose();
     backdrop.remove();
     document.removeEventListener?.("keydown", onKeyDown);
   };
@@ -99,7 +102,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
 export function renderAiSettingsForm(options: {
   readonly onSaved?: (config: AiConfig) => void;
   readonly onFontSizeChange?: (size: AiFontSize) => void;
-}): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void } {
+}): { element: HTMLElement; focusFirstInput: () => void; focusApiKey: () => void; dispose: () => void } {
   const onSaved = options.onSaved ?? (() => undefined);
   const onFontSizeChange = options.onFontSizeChange ?? (() => undefined);
   const config = loadAiConfig();
@@ -118,39 +121,25 @@ export function renderAiSettingsForm(options: {
   );
   const apiKey = textField("API 키", config.apiKey, "ai-config-apikey", "password", "sk-or-…");
   let persistAuthMode = (): void => undefined;
-  const authSettings = renderAiAuthSettings(authMode, (next) => {
-    authMode = next;
-    updateAuthVisibility();
-    // 연결 방식을 바꾸면 모델 드롭다운 목록만 갈아끼우고 선택된 값은 그대로 두던 결함이 있었다.
-    // 그래서 ChatGPT(Codex)로 전환해도 게이트웨이 모델 ID 가 남아 400 이 났다. 새 authMode 에서
-    // 현재 값이 무효하면 권장 기본값으로 따라오게 한다. 유효하면 사용자 선택을 존중해 그대로 둔다.
-    // setValue 를 써야 드롭다운 하이라이트 동기화와 경고 재평가가 함께 일어난다.
-    // defaultModelForAuthMode 는 방어적으로 "" 를 줄 수 있어(카탈로그 빈 경우) DEFAULT_* 로 폴백한다.
-    const recommended = defaultModelForAuthMode(authMode, providerId);
-    if (!isModelValidForAuthMode(authMode, model.input.value.trim(), providerId)) {
-      model.setValue(recommended || DEFAULT_MODEL, authMode);
+  // 인증 패널은 연결 종류와 제공자만 돌려준다 — 전송 축(authMode)은 에디터에서 항상
+  // 동반 서비스이므로 UI 가 정할 것이 없다(근거: llmClient.aiTransport).
+  const authSettings = renderAiAuthSettings(config, ({ providerId: next }) => {
+    providerId = next;
+    // 제공자를 바꾸면 **그 제공자의 기본 모델을 채택한다.**
+    //
+    // "유효하면 사용자 선택을 존중" 이 더 친절해 보이지만 여기서는 위험하다.
+    // isModelValidForAuthMode 는 openai-codex 에서만 실제 화이트리스트이고 나머지 제공자에는
+    // 무조건 true 를 준다(modelCatalog.ts). 그래서 옛 모델을 "유효하다"며 남기면 동반 서비스의
+    // resolveModel 이 그것을 오류 없이 다른 모델로 강등한다 — 감독이 고른 것도, 새 제공자의
+    // 기본도 아닌 모델이 답한다. 검증 가능한 라이브 카탈로그가 붙기 전까지는 채택이 정직하다.
+    const recommended = defaultModelForAuthMode(authMode, next);
+    if (recommended) {
+      model.setValue(recommended, authMode);
+      liteModel.setValue(recommended, authMode);
     }
-    if (!isModelValidForAuthMode(authMode, liteModel.input.value.trim(), providerId)) {
-      liteModel.setValue(recommended || DEFAULT_LITE_MODEL, authMode);
-    }
-    model.refresh(authMode, providerId);
-    liteModel.refresh(authMode, providerId);
+    model.refresh(authMode, next);
+    liteModel.refresh(authMode, next);
     persistAuthMode();
-  }, {
-    initialProviderId: providerId,
-    onProviderChange: (next) => {
-      providerId = next;
-      const recommended = defaultModelForAuthMode(authMode, next);
-      if (recommended && !isModelValidForAuthMode(authMode, model.input.value.trim(), next)) {
-        model.setValue(recommended, authMode);
-      } else if (recommended) {
-        model.setValue(recommended, authMode);
-        liteModel.setValue(recommended, authMode);
-      }
-      model.refresh(authMode, next);
-      liteModel.refresh(authMode, next);
-      persistAuthMode();
-    },
   });
   const updateAuthVisibility = (): void => {
     const apiMode = authMode === "apiKey";
@@ -351,6 +340,7 @@ export function renderAiSettingsForm(options: {
 
   return {
     element: form,
+    dispose: () => authSettings.dispose(),
     focusFirstInput: () => authSettings.focus(),
     focusApiKey: () => authMode === "apiKey" ? apiKey.input.focus() : authSettings.focus(),
   };
