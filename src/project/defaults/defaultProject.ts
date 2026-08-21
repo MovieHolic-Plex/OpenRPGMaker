@@ -445,9 +445,250 @@ export function createFarmingDemoProject(): Project {
   ];
   map.events.push(
     createFarmAnimalEvent("ev_farm_chicken", "닭", "tex_farming_charset_chicken", 11, 6),
-    createFarmAnimalEvent("ev_farm_cow", "젖소", "tex_farming_charset_cow", 13, 8)
+    createFarmAnimalEvent("ev_farm_cow", "젖소", "tex_farming_charset_cow", 13, 8),
+    // 침대와 씨앗 상인이 없으면 농사 루프가 닫히지 않는다: 하루를 넘길 방법도(작물은 하루가
+    // 지나야 자란다), 수확물을 골드로 바꿀 방법도 없다. 실측으로 데모에서 감자 하나를 거두려면
+    // 실시간 40분을 걸어다녀야 했다(하루 = 실시간 20분).
+    createFarmBedEvent(3, 3),
+    createSeedShopEvent(12, 3),
+    createFarmMayorEvent(14, 5),
+    createSpringFestivalEvent(8, 2)
   );
+  attachFarmStaminaScaffolding(project);
+  attachFarmSocialProfiles(project);
+  if (!project.switches.some((entry) => entry.id === FARM_FESTIVAL_SPRING_SWITCH_ID)) {
+    project.switches.push({ id: FARM_FESTIVAL_SPRING_SWITCH_ID, name: "봄 축제 관람" });
+  }
   return project;
+}
+
+const FARM_MAYOR_CHARACTER_ID = "char_mayor";
+const FARM_FESTIVAL_SPRING_SWITCH_ID = "sw_festival_spring_done";
+
+/**
+ * 촌장의 선물 취향. **`characterId` 없이는 호감도가 전부 차단된다** —
+ * `resolveSocialKey` 는 `event.id` 로 폴백하지 않고 null 을 돌려준다(의도된 하드 게이트).
+ * 그래서 이벤트에 `characterId` 를 달고 여기에 프로필을 등록한다.
+ */
+function attachFarmSocialProfiles(project: Project): void {
+  project.characters = {
+    ...project.characters,
+    [FARM_MAYOR_CHARACTER_ID]: {
+      displayName: "촌장",
+      birthday: { season: "spring", day: 14 },
+      giftPrefs: {
+        loved: ["item_melon", "item_pumpkin"],
+        liked: ["item_strawberry", "item_blueberry"],
+        disliked: ["item_hoe"],
+      },
+      giftResponses: {
+        loved: "이런 걸 나에게? 올해 최고의 작물이야!",
+        liked: "잘 키웠구먼. 고맙네.",
+        neutral: "음, 받아 두지.",
+        disliked: "…이걸 나더러 어쩌라고?",
+      },
+    },
+  };
+}
+
+/** 촌장 — 말을 걸면 호감이 오르고, 호감이 쌓이면 다른 대사 페이지가 열린다. */
+function createFarmMayorEvent(x: number, y: number): GameEvent {
+  const graphic = { sprite: { type: "bundled" as const, id: DEFAULT_EASYRPG_CHARSET_ID }, direction: "down" as const, pattern: 0 };
+  const movement = { type: "fixed" as const, speed: 3, frequency: 3 };
+  return {
+    id: "ev_npc_mayor",
+    x,
+    y,
+    characterId: FARM_MAYOR_CHARACTER_ID,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_mayor_default",
+        name: "촌장 · 기본",
+        conditions: [],
+        graphic,
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement,
+        commands: [
+          { kind: "text", speaker: "촌장", body: "밭은 잘 돌아가나? 철에 맞는 걸 심는 게 제일 중요하네." },
+          { kind: "changeFriendship", delta: 10 },
+        ],
+      },
+      {
+        // 호감이 쌓이면 열리는 페이지. 엔진에 하트 이벤트 런타임은 없고, 이 조건 페이지가
+        // 그 자리를 대신한다(friendshipAtLeast + 페이지 우선순위).
+        id: "page_mayor_heart",
+        name: "촌장 · 친밀",
+        conditions: [{ kind: "friendshipAtLeast", value: 200 }],
+        graphic,
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement,
+        commands: [
+          { kind: "text", speaker: "촌장", body: "자네라면 이 마을을 맡겨도 되겠어. 멜론이 익으면 하나 가져오게." },
+          { kind: "changeFriendship", delta: 10 },
+        ],
+      },
+    ],
+  };
+}
+
+/** 봄 축제 — 계절 조건 페이지. 한 번 보면 스위치가 켜진다. */
+function createSpringFestivalEvent(x: number, y: number): GameEvent {
+  return {
+    id: "ev_festival_spring",
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_festival_spring",
+        name: "봄 축제 게시판",
+        conditions: [{ kind: "season", season: "spring" }],
+        graphic: { sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID }, direction: "down", pattern: 0 },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "text", body: "봄 축제 안내 — 광장에서 씨앗을 나눠 준다고 적혀 있다." },
+          { kind: "setSwitch", switchId: FARM_FESTIVAL_SPRING_SWITCH_ID, value: true },
+        ],
+      },
+    ],
+  };
+}
+
+/** 기력 변수와 증감 공통 이벤트. 침대가 이 변수를 되돌린다. */
+const FARM_STAMINA_VARIABLE_ID = "var_stamina";
+const FARM_STAMINA_FULL = 100;
+
+/**
+ * 기력 **저작 뼈대**를 붙인다. 엔진은 농사 행동에서 기력을 깎지 않는다 —
+ * `interactWithFarmPlot` 은 어떤 자원도 소모하지 않고 공통 이벤트를 부르는 훅도 없다.
+ * 그래서 이것은 "기력 시스템"이 아니라 저작자가 자기 이벤트에서 호출할 부품이다.
+ * 진짜 기력을 만들려면 농사 행동이 공통 이벤트를 부를 수 있어야 하고, 그건 엔진 작업이다.
+ */
+function attachFarmStaminaScaffolding(project: Project): void {
+  if (!project.variables.some((variable) => variable.id === FARM_STAMINA_VARIABLE_ID)) {
+    project.variables.push({ id: FARM_STAMINA_VARIABLE_ID, name: "기력" });
+  }
+  project.session = {
+    ...project.session,
+    variables: { ...project.session.variables, [FARM_STAMINA_VARIABLE_ID]: FARM_STAMINA_FULL },
+  };
+  project.commonEvents.push(
+    {
+      id: "ce_stamina_decrease",
+      name: "기력 소모",
+      trigger: "none",
+      commands: [
+        { kind: "setVariable", variableId: FARM_STAMINA_VARIABLE_ID, op: "-=", value: 5 },
+        {
+          kind: "fork",
+          condition: { kind: "variable", variableId: FARM_STAMINA_VARIABLE_ID, op: "<=", value: 0 },
+          then: [
+            { kind: "setVariable", variableId: FARM_STAMINA_VARIABLE_ID, op: "=", value: 0 },
+            { kind: "text", body: "너무 지쳤다. 침대에서 쉬어야 한다." },
+          ],
+          else: [],
+        },
+      ],
+    },
+    {
+      id: "ce_stamina_recover",
+      name: "기력 회복",
+      trigger: "none",
+      commands: [
+        { kind: "setVariable", variableId: FARM_STAMINA_VARIABLE_ID, op: "=", value: FARM_STAMINA_FULL },
+      ],
+    }
+  );
+}
+
+/** 잠자리 — 하루를 넘기고 기력을 되돌린다. 작물 성장은 날짜가 바뀔 때만 일어난다. */
+function createFarmBedEvent(x: number, y: number): GameEvent {
+  return {
+    id: "ev_bed",
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_bed",
+        name: "잠자리",
+        conditions: [],
+        graphic: { sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID }, direction: "down", pattern: 0 },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "text", body: "잠자리에 눕는다. 아침까지 잘까?" },
+          { kind: "sleepUntilMorning" },
+          { kind: "setVariable", variableId: FARM_STAMINA_VARIABLE_ID, op: "=", value: FARM_STAMINA_FULL },
+        ],
+      },
+    ],
+  };
+}
+
+/**
+ * 씨앗 상인 — 여덟 작물의 씨앗을 팔고 수확물을 사들인다.
+ *
+ * 수확물을 `itemIds` 에 함께 넣어야 한다. 상점은 **매수 목록과 매도 목록이 같은 배열**이라
+ * (`playSceneShop.ts`), 작물을 넣지 않으면 플레이어가 수확물을 팔 수 없다.
+ * `merchantGold` 도 올린다 — 런타임 기본 100G 는 밭 24칸 한 판(감자만 해도 매도 합 840G)에
+ * 두 자릿수로 못 미치고, 부분 판매가 없어 초과분은 전량 거절된다.
+ */
+function createSeedShopEvent(x: number, y: number): GameEvent {
+  const seeds = [
+    "item_potato_seed", "item_strawberry_seed", "item_tomato_seed", "item_corn_seed",
+    "item_blueberry_seed", "item_melon_seed", "item_pumpkin_seed", "item_eggplant_seed",
+  ];
+  const harvests = [
+    "item_potato", "item_strawberry", "item_tomato", "item_corn",
+    "item_blueberry", "item_melon", "item_pumpkin", "item_eggplant",
+  ];
+  return {
+    id: "ev_seed_shop",
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_seed_shop",
+        name: "씨앗 상인",
+        conditions: [],
+        graphic: { sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID }, direction: "down", pattern: 0 },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "text", speaker: "씨앗 상인", body: "씨앗 팔고 수확물 사들이네. 철에 맞는 걸 심어야 해." },
+          {
+            kind: "shop",
+            itemIds: [...seeds, ...harvests],
+            allowSell: true,
+            quantityMode: "select",
+            shopType: "normal",
+            messageType: "welcome",
+            merchantGold: 5000,
+            branchOnTransaction: false,
+            transactionBranch: [],
+          },
+        ],
+      },
+    ],
+  };
 }
 
 /**
