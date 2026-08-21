@@ -233,3 +233,52 @@ test("도크 3종 컴포저 증거 스샷", async ({ page }) => {
     await expect(page.getByTestId("ai-send")).toBeVisible();
   }
 });
+
+test("헤더 축소 + 두 ☰ 메뉴가 같은 항목 구현을 공유한다", async ({ page }) => {
+  // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
+  test.setTimeout(120_000);
+  await boot(page);
+  await setDock(page, "side"); // 헤더가 보이는 도크(유리는 ＋ 도 숨긴다)
+
+  // 헤더 상시 버튼은 ＋ 와 ☰ 뿐 — ⚙ 는 메뉴 항목으로 흡수했다.
+  const headerButtons = await page.evaluate(() => {
+    const header = document.querySelector(".ai-chat-header .ai-header-actions");
+    if (!header) return ["absent"];
+    return [...header.querySelectorAll(":scope > button, :scope > .ai-more-wrap > button")]
+      .filter((node) => (node as HTMLElement).offsetParent !== null)
+      .map((node) => node.getAttribute("data-testid") ?? (node.textContent || "").trim());
+  });
+  log(`HEADER 상시 버튼: ${headerButtons.join(", ")}`);
+  await shot(page.locator(".ai-chat-header"), "hdr1-side-header");
+  expect(headerButtons).toEqual(["ai-new-session", "ai-more-menu-toggle"]);
+  // ⚙ 아이콘은 사라졌지만 훅(testid)은 메뉴 안에 살아 있어야 한다.
+  await expect(page.getByTestId("ai-settings-toggle")).toHaveCount(1);
+
+  await page.getByTestId("ai-more-menu-toggle").click();
+  await page.waitForTimeout(250);
+  await shot(page, "hdr2-side-header-menu");
+  const headerLabels = await page.getByTestId("ai-more-menu").evaluate((node) =>
+    [...node.querySelectorAll("button")].map((b) => (b.textContent || "").trim()));
+  log(`HEADER 메뉴: ${headerLabels.join(" | ")}`);
+
+  // 컴포저 ☰ 는 float 에서만 산다 — 같은 5개 공유 항목이 같은 순서로 있어야 한다.
+  await page.keyboard.press("Escape");
+  await setDock(page, "float");
+  await page.getByTestId("ai-command-menu-toggle").click();
+  await page.waitForTimeout(250);
+  const composerLabels = await page.getByTestId("ai-command-menu").evaluate((node) =>
+    [...node.querySelectorAll("button")].map((b) => (b.textContent || "").trim()));
+  log(`컴포저 메뉴: ${composerLabels.join(" | ")}`);
+
+  // 공유 항목 = 되돌리기·내보내기·<도크 전환>·전체 기록·툴 브라우저. 도크 라벨은 현재 도크에 따라
+  // 다르므로(사이드 vs float) 그 자리만 빼고 비교한다.
+  const shared = (labels: string[]): string[] => labels.filter((l) => !l.startsWith("스킬") && l !== "설정");
+  const headerShared = shared(headerLabels);
+  const composerShared = shared(composerLabels);
+  expect(headerShared.length).toBe(5);
+  expect(composerShared.length).toBe(5);
+  expect(headerShared.filter((_, i) => i !== 2)).toEqual(composerShared.filter((_, i) => i !== 2));
+  // 도크 항목 라벨은 각 표면이 본 도크를 반영한다(단일 applyDockModeChrome 이 둘 다 갱신).
+  log(`도크 항목: header="${headerShared[2]}" composer="${composerShared[2]}"`);
+  expect(composerShared[2]).toBe("왼쪽 유리"); // float 다음은 유리
+});

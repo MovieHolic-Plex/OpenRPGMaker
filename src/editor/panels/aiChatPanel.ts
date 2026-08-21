@@ -62,6 +62,7 @@ import { listAllSkills, recordSkillUse, type SkillArgValue, type SkillDef, type 
 import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSkillMatches } from "@/editor/panels/aiSkillDrawer";
 import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
 import { createDirectorPlate, createDirectorRestoreButton } from "./aiDirectorChrome";
 import { createVolatileController } from "./aiVolatileController";
@@ -1859,12 +1860,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "ai-harness" },
     on: { click: openHarness },
   });
-  const settingsButton = el("button", {
-    class: "ai-chat-icon-btn",
-    text: "⚙",
-    attrs: { type: "button", title: "설정", "aria-label": "AI 설정 열기" },
+  // 헤더 설정도 ☰ 메뉴 항목이다 — 상시 노출 아이콘을 ＋·☰ 둘로 줄인다(버튼 소음 감소).
+  // testid 는 유지: 여러 테스트가 이 훅으로 설정 모달을 연다.
+  const headerSettingsItem = el("button", {
+    class: "ai-more-menu-item",
+    text: "설정",
+    attrs: { type: "button", role: "menuitem", title: "설정", "aria-label": "AI 설정 열기" },
     dataset: { testid: "ai-settings-toggle" },
-    on: { click: () => openAiSettings("first") },
+    on: {
+      click: () => {
+        closeMoreMenu();
+        openAiSettings("first");
+      },
+    },
   });
   // float 모드(헤더 숨김)의 설정 진입점. 입력행에 떠 있던 ⚙ 아이콘을 ☰ 메뉴 항목으로
   // 흡수했다 — 컴포저에서 버튼 하나를 덜어내고, 설정 진입점을 도크별로 한 곳에 모은다.
@@ -1895,12 +1903,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dataset: { testid: "chat-dock-toggle" },
     on: { click: onDockToggleClick },
   }) as HTMLButtonElement;
-  const commandBarDockButton = el("button", {
-    class: "ai-chat-tools-button ai-command-bar-dock-toggle",
-    attrs: { type: "button", hidden: "", "aria-hidden": "true" },
-    dataset: { testid: "chat-dock-toggle-bar" },
-    on: { click: onDockToggleClick },
-  }) as HTMLButtonElement;
+  // (구 `chat-dock-toggle-bar` 훅 삭제 — src/ test/ 어디에서도 참조가 없었고
+  //  같은 동작을 `chat-dock-toggle` 이 이미 제공한다. 실측: grep 참조 0건.)
   // 도킹은 2모드만(float/side) — studio/collapsed는 별도 상태이며 도크 선택에 노출하지 않는다.
   // z-layers: panel 30 / bar 40 / overlay 41 / palette 80 — 56/50/62 난장 정리
   // 도크 모드 토글: 플로팅 커맨드 바와 더보기 메뉴에만 둔다(헤더 뱃지 제거 = 시각 소음 감소).
@@ -2037,12 +2041,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     attrs: { role: "menu", hidden: "" },
     dataset: { testid: "ai-more-menu" },
   });
-  const moreMenuDockItem = el("button", {
-    class: "ai-more-menu-item",
-    text: "플로팅 바로 전환",
-    attrs: { type: "button", role: "menuitem" },
-    dataset: { testid: "ai-more-dock" },
-  }) as HTMLButtonElement;
+  // 도크 항목은 두 메뉴가 각자 하나씩 갖는다(같은 빌더 산출물). 메뉴 조립 후 대입된다.
+  let moreMenuDockItem: HTMLButtonElement | null = null;
   let commandDockItem: HTMLButtonElement | null = null;
   const applyDockModeChrome = (mode: ChatDock): void => {
     const actionLabel = nextChatDockActionLabel(mode);
@@ -2052,11 +2052,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     dockModeButton.dataset.dockMode = mode;
     dockModeButton.setAttribute("title", nextHint);
     dockModeButton.setAttribute("aria-label", nextHint);
-    moreMenuDockItem.textContent = actionLabel;
-    moreMenuDockItem.setAttribute("title", nextHint);
-    if (commandDockItem) {
-      commandDockItem.textContent = actionLabel;
-      commandDockItem.setAttribute("title", nextHint);
+    for (const item of [moreMenuDockItem, commandDockItem]) {
+      if (!item) continue;
+      item.textContent = actionLabel;
+      item.setAttribute("title", nextHint);
     }
   };
   const refreshMoreMenuDockLabel = (): void => {
@@ -2093,34 +2092,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     document.addEventListener("pointerdown", onMoreMenuPointerDown);
     document.addEventListener("keydown", onMoreMenuKeyDown);
   }
-  const moreMenuItem = (text: string, testId: string, onClick: () => void): HTMLElement =>
-    el("button", {
-      class: "ai-more-menu-item",
-      text,
-      attrs: { type: "button", role: "menuitem" },
-      dataset: { testid: testId },
-      on: {
-        click: () => {
-          closeMoreMenu();
-          onClick();
-        },
-      },
-    });
-  moreMenuDockItem.addEventListener("click", () => {
-    closeMoreMenu();
-    onDockToggleClick();
-  });
-  // 더보기: 일상 액션만. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
-  moreMenu.replaceChildren(
-    moreMenuItem("되돌리기", "ai-more-undo", () => undoLastButton.click()),
-    moreMenuItem("내보내기", "ai-more-export", () => exportButton?.click()),
-    moreMenuDockItem,
-    moreMenuItem("전체 기록", "ai-more-history", () => {
+  // 두 메뉴가 공유하는 5개 항목의 유일한 구현(aiActionMenu.ts). 컨테이너·열림 상태만 표면마다 다르다.
+  const sharedMenuActions: AiActionMenuActions = {
+    undoLast: () => undoLastButton.click(),
+    exportAudit: () => exportButton?.click(),
+    toggleDock: () => onDockToggleClick(),
+    openHistory: () => {
       historyButton.click();
       applyHistoryOpen(true);
-    }),
-    moreMenuItem("툴 브라우저", "ai-more-tools", () => toolsButton.click())
-  );
+    },
+    openTools: () => toolsButton.click(),
+  };
+  // 더보기: 일상 액션 + 설정. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
+  const headerMenu = createAiActionMenuItems({
+    variant: "header",
+    close: closeMoreMenu,
+    actions: sharedMenuActions,
+  });
+  moreMenuDockItem = headerMenu.dockItem;
+  moreMenu.replaceChildren(headerSettingsItem, ...headerMenu.items);
   const moreWrap = el("div", {
     class: "ai-more-wrap",
     children: [moreMenuToggle, moreMenu],
@@ -2133,23 +2123,29 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         class: "ai-header-title-row",
         children: [directorPlate.element],
       }),
+      // 헤더 상시 버튼은 ＋(새 대화)와 ☰ 뿐 — ⚙ 는 ☰ 메뉴 항목으로 흡수했다.
       el("span", {
         class: "ai-header-actions",
-        children: [newSessionButton, settingsButton, moreWrap],
+        children: [newSessionButton, moreWrap],
       }),
       collapseButton,
     ],
   });
-  // 구 툴바 슬롯은 유지하되 비움 — 테스트/레이아웃 훅 호환, 화면 소음 제거.
+  // 숨은 훅 컨테이너(화면에 안 보임: hidden + inert + CSS display:none).
+  // "죽은 버튼" 이 아니다 — 실측(2026-08-22) 결과 여기 담긴 9개 중 8개는 테스트가 직접
+  // 참조하고(ai-tools-browser 3파일 · ai-studio-toggle 3 · ai-dock-toggle 3 ·
+  // chat-dock-toggle 3 · ai-export 2 · ai-undo-last 2 · ai-harness 1 · ai-font-cycle 1),
+  // ☰ 메뉴 항목들도 이 버튼의 click() 을 눌러 동작한다. 참조가 0건이던 것은
+  // chat-dock-toggle-bar 하나뿐이라 그것만 걷었다. 지우려면 테스트 계약부터 옮겨야 한다.
   const toolbar = el("div", {
     class: "ai-chat-toolbar is-empty",
     dataset: { testid: "ai-chat-toolbar" },
     attrs: { hidden: "" },
-    children: [toolsButton, harnessButton, studioButton, historyButton, dockToggleButton, commandBarDockButton, exportButton, undoLastButton, fontButton],
+    children: [toolsButton, harnessButton, studioButton, historyButton, dockToggleButton, exportButton, undoLastButton, fontButton],
   });
   toolbar.inert = true;
 
-  // 하단 컴포저: 좌측 메타 레일(/ · ✨ · ☰) + 입력 + 고정 액션 행.
+  // 하단 컴포저: 입력 + 고정 액션 행 한 줄(세로 레일 없음).
   // 슬래시 목록·추천 칩·액션 메뉴는 흐름 밖 팝오버 — 바 높이는 입력 줄 수만 따른다.
   const composerShell: ComposerElements = createComposerElements({
     input,
@@ -2528,23 +2524,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   studioButton.addEventListener("click", () => applyStudio(!studio));
 
-  // float 컴포저 레일 ☰ — 헤더 햄버거와 동일 항목 + 설정. 열림 상태는 컴포저 셸이 소유하므로
-  // 직접 hidden 을 만지지 않는다(두 곳이 상태를 들면 aria-expanded 가 실제와 갈라진다).
+  // float 컴포저 ☰ — 헤더 햄버거와 **동일한 항목 구현**(aiActionMenu.ts) + 스킬 찾기·설정.
+  // 열림 상태는 컴포저 셸이 소유하므로 직접 hidden 을 만지지 않는다(두 곳이 상태를 들면
+  // aria-expanded 가 실제와 갈라진다).
   const closeCommandMenu = (): void => {
     if (composerPopoverKind() === "menu") openComposerPopover(null);
   };
-  commandDockItem = el("button", {
-    class: "ai-command-menu-item",
-    text: "플로팅 바로 전환",
-    attrs: { type: "button", role: "menuitem" },
-    dataset: { testid: "ai-command-menu-dock" },
-    on: {
-      click: () => {
-        closeCommandMenu();
-        onDockToggleClick();
-      },
-    },
-  }) as HTMLButtonElement;
+  const composerMenu = createAiActionMenuItems({
+    variant: "composer",
+    close: closeCommandMenu,
+    actions: sharedMenuActions,
+  });
+  commandDockItem = composerMenu.dockItem;
   refreshDockLabels = (): void => {
     const mode = currentChatDock();
     panel.dataset.chatDock = mode;
@@ -2560,37 +2551,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!commandMenu.hidden) refreshMoreMenuDockLabel();
   });
   commandMenu.replaceChildren(
-    // 스킬 찾기가 첫 항목 — 레일 `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
+    // 스킬 찾기가 첫 항목 — `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
     skillToggle,
     commandBarSettingsButton,
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "되돌리기",
-      attrs: { type: "button", role: "menuitem", title: "마지막 AI 적용 되돌리기" },
-      dataset: { testid: "ai-command-menu-undo" },
-      on: { click: () => { closeCommandMenu(); undoLastButton.click(); } },
-    }),
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "내보내기",
-      attrs: { type: "button", role: "menuitem", title: "대화 로그 내보내기" },
-      dataset: { testid: "ai-command-menu-export" },
-      on: { click: () => { closeCommandMenu(); exportButton?.click(); } },
-    }),
-    commandDockItem,
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "전체 기록",
-      attrs: { type: "button", role: "menuitem" },
-      on: { click: () => { closeCommandMenu(); applyHistoryOpen(true); } },
-    }),
-    el("button", {
-      class: "ai-command-menu-item",
-      text: "툴 브라우저",
-      attrs: { type: "button", role: "menuitem" },
-      dataset: { testid: "ai-command-menu-tools" },
-      on: { click: () => { closeCommandMenu(); toolsButton.click(); } },
-    })
+    ...composerMenu.items,
   );
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.
