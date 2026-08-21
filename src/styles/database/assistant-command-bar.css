@@ -25,9 +25,14 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   width: 0;
 }
 
-/* float 모드 셸: 위 규칙의 inset/width 를 같은 특이도 + 후순위로 되살린다.
-   0 폭 셸이 containing block 이 되면 absolute 커맨드바 폭이 0 으로 붕괴한다. */
-.ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+/* float 모드 셸: 위 규칙의 inset/width 를 되살린다.
+   0 폭 셸이 containing block 이 되면 absolute 커맨드바가 화면 밖으로 나간다.
+   ⚠️ 특이도를 반드시 위 규칙보다 높게 유지할 것. "같은 특이도 + 후순위" 라고 적혀
+   있었지만 실제로는 위 규칙이 (0,6,0), 이 규칙이 (0,5,0) 이라 **지고 있었다** —
+   실측(2026-08-21, HEAD 7bb7f851): float 에서 panel 0×0, 바 rect x=-322 로 화면 밖.
+   그래서 :not(.chat-dock-side):not(.chat-dock-glass) 를 더해 (0,7,0) 로 올린다
+   (float 에서는 항상 참이므로 선택 대상은 그대로다). */
+.ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.chat-dock-side):not(.chat-dock-glass) {
   inset: 0;
   width: auto;
 }
@@ -113,8 +118,10 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 /* ☰ 토글의 40px 독립 버튼 스타일은 폐기 — 레일 버튼(.ai-composer-rail-btn,
    assistant-composer.css)이 크기·상태를 소유한다. */
 
-.ai-chat-icon-btn,
-.ai-command-settings-button {
+/* 32px 정사각 아이콘 버튼은 이제 헤더 전용이다. `.ai-command-settings-button` 은
+   ☰ 메뉴의 "설정" 항목이 되었으므로 여기서 빼야 한다 — 남겨 두면 width:32px 에 걸려
+   라벨이 "설/정" 으로 세로 줄바꿈됐다(실측 스샷 h4-action-menu). */
+.ai-chat-icon-btn {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
@@ -130,9 +137,7 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 }
 
 .ai-chat-icon-btn:hover,
-.ai-command-settings-button:hover,
-.ai-chat-icon-btn:focus-visible,
-.ai-command-settings-button:focus-visible {
+.ai-chat-icon-btn:focus-visible {
   background: var(--bg-raised);
   border-color: var(--accent-border);
 }
