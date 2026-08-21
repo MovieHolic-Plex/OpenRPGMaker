@@ -177,7 +177,9 @@ function memberEditor(
             updateDatabaseRecord("troops", record.id, { autoAlign: true, members: arrangeMembers(record.members ?? []) });
             rerender();
           }),
-          actionButton("RM2003", "db-troop-member-rm2003-preset", () => {
+          // 라벨은 사용자에게 보인다 — 타사 제품명을 쓰지 않는다(2026-08-21).
+          // testid 는 e2e 계약이라 유지하고, 식별자 개명은 별도 라운드에서 다룬다.
+          actionButton("예시 배치", "db-troop-member-rm2003-preset", () => {
             const members = rm2003ExampleMembers();
             if (members.length === 0) return;
             selectedMemberIndexes.set(record.id, 0);

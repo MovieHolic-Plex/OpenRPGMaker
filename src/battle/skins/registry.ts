@@ -1,3 +1,18 @@
+// battle/skins/registry.ts
+//
+// ⚠ 라벨 작명 규약 (2026-08-21)
+// `label` 은 자료집→시스템의 전투 스킨 드롭다운(databaseSystemView.ts)에 그대로
+// 뿌려진다. 즉 **사용자에게 보이는 문자열**이다. 여기에 다른 회사 제품·프랜차이즈
+// 이름을 쓰지 않는다. 라벨은 그 스킨이 실제로 무엇처럼 보이는지를 서술한다
+// (창 색 · 레이아웃 · HUD 형태). 금지 표현의 권위 있는 목록은 한 곳에만 둔다 —
+// `test/detsukuruBrandStrings.test.ts` 가 이 파일의 라벨을 검사한다.
+//
+// `id` 는 프로젝트 파일에 저장되므로 **바꾸지 않는다** — 바꾸면 사용자가 저장해둔
+// 전투 설정이 깨진다. 그래서 일부 id 에는 옛 계보 이름이 남아 있고, 식별자 개명은
+// 저장 데이터 마이그레이션과 함께 별도 라운드에서 다룬다.
+//
+// 미결(감독 판단 대기): 아래 라벨 8개는 여전히 타사 프랜차이즈 이름이다. 이번
+// 라운드는 변호사가 지적한 계열 4개만 중립 서술어로 바꿨다. 자세한 경위는 위 스펙 주석.
 import type { BattleSkin, BattleSkinId } from "@/battle/skins/types";
 
 export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
@@ -21,7 +36,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   rm2003: {
-    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "RM2003", layout: "sideview", showAllySprites: true,
+    id: "rm2003", defaultBackdropResourceId: "battle-skin-rm2003-backdrop", label: "군청 창 · 사이드뷰", layout: "sideview", showAllySprites: true,
     hudTemplate: "rows", transition: "wipe-blue",
     themeVars: {
       "--battle-window-bg": "#163a9a",
@@ -40,7 +55,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   rm2000: {
-    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2000-backdrop", label: "RM2000", layout: "frontview", showAllySprites: false,
+    id: "rm2000", defaultBackdropResourceId: "battle-skin-rm2000-backdrop", label: "감청 창 · 정면", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "wipe-black",
     themeVars: {
       "--battle-window-bg": "#0d1a3a",
@@ -192,7 +207,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   mv: {
-    id: "mv", defaultBackdropResourceId: "battle-skin-mv-backdrop", label: "RPG Maker MV", layout: "frontview", showAllySprites: false,
+    id: "mv", defaultBackdropResourceId: "battle-skin-mv-backdrop", label: "밝은 창 · 정면", layout: "frontview", showAllySprites: false,
     hudTemplate: "rows", transition: "fade",
     themeVars: {
       "--battle-window-bg": "#f0f0f8",
@@ -211,7 +226,7 @@ export const BATTLE_SKINS: Record<BattleSkinId, BattleSkin> = {
     },
   },
   vxace: {
-    id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "VX Ace", layout: "frontview", showAllySprites: false,
+    id: "vxace", defaultBackdropResourceId: "battle-skin-vxace-backdrop", label: "심야 창 · 박스 HUD", layout: "frontview", showAllySprites: false,
     hudTemplate: "boxes", transition: "fade",
     themeVars: {
       "--battle-window-bg": "#0a0f24",

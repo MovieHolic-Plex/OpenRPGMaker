@@ -25,7 +25,7 @@ export const DEFAULT_GRAMMAR_PROFILE_ID = "rm-type";
 // 오토타일(inner corner 포함) / upper·lower 홈. 1차 구현 대상(설계 축 5).
 export const RM_TYPE_GRAMMAR_PROFILE: GrammarProfile = {
   id: DEFAULT_GRAMMAR_PROFILE_ID,
-  label: "RM2003형 (combined_town 규약)",
+  label: "고전 타일 규약 (combined_town)",
   supportedPatternKinds: [
     "nine_slice_expandable", // 벽/지붕 몸체
     "vertical_expandable", // 기둥

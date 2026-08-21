@@ -60,6 +60,18 @@ const FORBIDDEN_PATTERNS: readonly { readonly label: string; readonly re: RegExp
  */
 const STAGED_PATTERN_NOTE = "Phase 2b·3·5 에서 활성화";
 
+/**
+ * 위 미활성 패턴 중 `RM2000/RM2003` 은 **주석·CSS 파일명**에는 남아 있어도 되지만
+ * **사용자에게 보이는 라벨**에는 안 된다. 실제로 이 구멍으로 두 곳이 빠져나갔다:
+ * 전투 스킨 라벨(`label: "RM2003"`)과 적 그룹 편집의 「RM2003」 버튼.
+ * 그래서 라벨 형태 — 따옴표로 감싼 짧은 UI 문자열 — 만 따로 잡는다.
+ */
+const LABEL_LIKE_FORBIDDEN: readonly { readonly label: string; readonly re: RegExp }[] = [
+  { label: "라벨에 RM2000/RM2003", re: /(?:label|text|title|aria-label)\s*:\s*"[^"]*RM\s*200[03][^"]*"/i },
+  { label: "actionButton 첫 인자에 RM2000/RM2003", re: /actionButton\(\s*"[^"]*RM\s*200[03][^"]*"/i },
+  { label: "라벨에 VX Ace", re: /(?:label|text|title|aria-label)\s*:\s*"[^"]*VX\s*Ace[^"]*"/i },
+];
+
 function walk(dir: string, out: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
@@ -77,18 +89,19 @@ function walk(dir: string, out: string[] = []): string[] {
  *
  * 1. `src/brand.ts` — 금지어 목록 자체를 주석으로 들고 있다. 영구 면제.
  *
- * 2. 전투 스킨 (`src/battle/skins/registry.ts`, `src/styles/runtime/battle-skins/*`)
- *    — **미결 결정 대기, 임시 면제.** 2026-08-21 적대 평가에서 발견: 자료집→시스템의
- *    전투 스킨 드롭다운(`databaseSystemView.ts:234`)이 다른 회사 프랜차이즈 이름 12개를
- *    사용자에게 그대로 노출한다 — 포켓몬 / RM2003 / RM2000 / 옥토패스 / 크로노 트리거 /
- *    브레이블리 / 드퀘 / FF 정통 / 마더·언더 / 골든선 / **RPG Maker MV** / VX Ace.
- *    에디터 셸 trade dress 보다 노출이 크다. 라벨만 바꾸면 저장 데이터(스킨 id)는
- *    안 깨지므로 수정 자체는 싸지만, 12개를 어떤 이름으로 갈지는 감독 판단이다.
- *    **감독 결정 후 이 면제를 지우고 라벨을 중립 서술어로 교체할 것.**
+ * 2. 전투 스킨 CSS (`src/styles/runtime/battle-skins/`) — 파일명·선택자가 `_rm2003.css`,
+ *    `[data-battle-skin="vxace"]` 처럼 **식별자**다. 스킨 id 는 프로젝트 파일에 저장되어
+ *    바꾸면 사용자 설정이 깨지므로 Phase 2b(식별자 개명 + 마이그레이션) 범위다.
+ *    라벨(사용자에게 보이는 문자열)은 이미 중립화됐고 registry.ts 는 면제하지 않는다.
+ *
+ * 미결(감독 판단 대기): 전투 스킨 라벨 8개가 여전히 닌텐도·스퀘어에닉스 계열
+ * 프랜차이즈 이름이다 — 포켓몬·옥토패스·크로노 트리거·브레이블리·드퀘·FF 정통·
+ * 마더/언더·골든선. 변호사 지적은 RPG Maker 계열이었고 그 4개(RM2003·RM2000·
+ * RPG Maker MV·VX Ace)는 2026-08-21 에 중립 서술어로 교체했다. 아래 패턴은 RPG Maker
+ * 계열만 잡으므로 8개는 걸리지 않는다 — 감독이 정하면 패턴을 추가할 자리다.
  */
 const EXEMPT_PREFIXES: readonly string[] = [
   "src/brand.ts",
-  "src/battle/skins/registry.ts",
   "src/styles/runtime/battle-skins/",
 ];
 
@@ -142,6 +155,33 @@ describe("탈-쯔구르: 출하 문자열", () => {
   // 아직 못 잡는 것을 눈에 보이게 남긴다 — 면제 목록이 조용히 늘어나면 그물이 무력해진다.
   it("면제·미활성 목록이 문서화되어 있다", () => {
     expect(STAGED_PATTERN_NOTE).toContain("Phase");
-    expect(EXEMPT_PREFIXES.length).toBeLessThanOrEqual(3);
+    expect(EXEMPT_PREFIXES.length).toBeLessThanOrEqual(2);
+  });
+
+  // 전투 스킨 라벨은 자료집→시스템 드롭다운에 그대로 뿌려진다(databaseSystemView.ts).
+  // id 는 저장 데이터라 못 바꾸지만 라벨은 사용자에게 보이는 문자열이므로 여기서 지킨다.
+  it("전투 스킨 라벨에 RPG Maker 계열 이름이 없다", async () => {
+    const { BATTLE_SKINS } = await import("@/battle/skins/registry");
+    const patterns = [...FORBIDDEN_PATTERNS, { label: "RM2000/RM2003", re: /RM\s*200[03]/i }, { label: "VX Ace", re: /VX\s*Ace/i }];
+    const offenders = Object.values(BATTLE_SKINS)
+      .map((skin) => skin.label)
+      .filter((label) => patterns.some(({ re }) => re.test(label)));
+    expect(offenders, `금지 라벨: ${offenders.join(", ")}`).toEqual([]);
+  });
+
+  // 주석·CSS 파일명의 RM2000/RM2003 은 Phase 2b·3 범위지만, **라벨**에 들어가면 즉시 문제다.
+  it("UI 라벨 형태에 RM2000/RM2003·VX Ace 가 없다", () => {
+    const offenders: string[] = [];
+    for (const file of walk(SRC_ROOT)) {
+      const rel = relative(REPO_ROOT, file).replace(/\\/g, "/");
+      if (isExempt(rel)) continue;
+      const lines = readFileSync(file, "utf8").split(/\r?\n/);
+      lines.forEach((line, index) => {
+        for (const { label, re } of LABEL_LIKE_FORBIDDEN) {
+          if (re.test(line)) offenders.push(`${rel}:${index + 1} [${label}] ${line.trim().slice(0, 120)}`);
+        }
+      });
+    }
+    expect(offenders, `금지 라벨 ${offenders.length}건:\n${offenders.join("\n")}`).toEqual([]);
   });
 });
