@@ -76,6 +76,8 @@ export function scoreAgentMap(input: {
         items: Object.freeze([]),
         decisions: 0,
         defects: 0,
+        failedChecks: 0,
+        checks: 0,
         defectsPerThousand: 0,
         passRate: 0,
       }) as DefectReport,
@@ -93,6 +95,8 @@ export function scoreAgentMap(input: {
   ]);
 
   const detail: Record<string, number> = {
+    failedChecks: report.failedChecks,
+    checks: report.checks,
     buildings: detection.buildings.length,
     houses: detection.houses.length,
     doors: detection.doors.length,

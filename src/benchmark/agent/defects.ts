@@ -56,6 +56,14 @@ export interface DefectReport {
   readonly items: readonly DefectItem[];
   readonly decisions: number;
   readonly defects: number;
+  /**
+   * 결함이 난 **검사 종류** 수. 결함 수와 다른 사실을 말한다: 체계적 실수 하나가
+   * 칸 수만큼 계상되기 때문이다(haiku 는 "지붕을 벽 위가 아니라 벽에 겹쳐 칠했다"는
+   * 실수 하나로 18개 열 전부가 결함이 됐다). "몇 칸이 틀렸나"와 "몇 가지를 틀렸나"는
+   * 함께 봐야 한다.
+   */
+  readonly failedChecks: number;
+  readonly checks: number;
   /** 1000 결정당 결함 수. 상위 비교의 헤드라인 — 통과율은 1.0 근처에서 압축된다. */
   readonly defectsPerThousand: number;
   /** 통과율 = 1 - 결함/결정. 연속성을 위해 함께 낸다. */
@@ -263,10 +271,13 @@ export function collectDefects(input: {
 
   const decisions = items.reduce((sum, item) => sum + item.decisions, 0);
   const defects = items.reduce((sum, item) => sum + item.defects, 0);
+  const graded = items.filter((item) => item.decisions > 0);
   return {
     items: Object.freeze(items),
     decisions,
     defects,
+    failedChecks: graded.filter((item) => item.defects > 0).length,
+    checks: graded.length,
     defectsPerThousand: decisions === 0 ? 0 : (defects / decisions) * 1000,
     passRate: decisions === 0 ? 0 : 1 - defects / decisions,
   };

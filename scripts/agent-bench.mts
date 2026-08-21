@@ -253,7 +253,7 @@ function commandReport(flags: Record<string, string>): number {
     console.log(`no records in ${dir}`);
     return 0;
   }
-  const header = ["model/run".padEnd(14), "결함/1k".padStart(8), "결함".padStart(6), "결정".padStart(6), "통과율".padStart(8), "scale".padStart(7), "houses".padStart(7), "turns".padStart(6), "cost".padStart(8), "min".padStart(6)].join(" ");
+  const header = ["model/run".padEnd(14), "결함/1k".padStart(8), "결함".padStart(6), "결정".padStart(6), "틀린검사".padStart(9), "통과율".padStart(8), "scale".padStart(7), "turns".padStart(6), "cost".padStart(8), "min".padStart(6)].join(" ");
   console.log(header);
   console.log("-".repeat(header.length));
   // 결함 밀도 오름차순 — 낮을수록 좋다. 제출 실패는 맨 뒤로.
@@ -274,9 +274,9 @@ function commandReport(flags: Record<string, string>): number {
         ).padStart(8),
         (record.score ? String(record.score.defects) : "-").padStart(6),
         (record.score ? String(record.score.decisions) : "-").padStart(6),
+        (record.score ? `${d.failedChecks ?? "?"}/${d.checks ?? "?"}` : "-").padStart(9),
         (record.score ? record.score.quality.toFixed(4) : "-").padStart(8),
         (record.score ? record.score.scale.toFixed(2) : "-").padStart(7),
-        String(d.houses ?? "-").padStart(7),
         String(record.process.turns ?? "-").padStart(6),
         `$${(record.process.costUsd ?? 0).toFixed(2)}`.padStart(8),
         ((record.process.durationMs ?? 0) / 60000).toFixed(1).padStart(6),
@@ -303,14 +303,15 @@ function commandReport(flags: Record<string, string>): number {
   ];
   const scored = records.filter((record) => record.score !== null);
   if (scored.length > 0) {
-    console.log("\n검사별 결함/결정 (0 이 목표)");
+    console.log("\n검사별 결함 — 결함수(틀린 비율). 0 이 목표이고 숫자가 크면 나쁘다. 괄호가 판정 수면 결함 0.");
     console.log(["검사".padEnd(18), ...scored.map((r) => `${r.model}-${r.run}`.slice(0, 11).padStart(12))].join(""));
     for (const [id, label] of DEFECT_ITEMS) {
       const cells = scored.map((r) => {
         const defects = r.score!.detail[`${id}Defects`];
         const decisions = r.score!.detail[`${id}Decisions`];
-        if (decisions === undefined || decisions === 0) return "-".padStart(12);
-        return `${defects}/${decisions}`.padStart(12);
+        if (decisions === undefined || decisions === 0) return "해당없음".padStart(14);
+        if (defects === 0) return `0 (${decisions}판정)`.padStart(14);
+        return `${defects} (${((defects / decisions) * 100).toFixed(0)}%)`.padStart(14);
       });
       console.log([label.padEnd(18), ...cells].join(""));
     }
@@ -447,7 +448,10 @@ function evidenceCard(name: string, png: string | null, record: RunRecord | unde
           return `<tr><td>${esc(label)}</td><td class="n none">해당 없음</td></tr>`;
         }
         const cls = defects === 0 ? "ok" : defects / decisions < 0.1 ? "mid" : "low";
-        return `<tr><td>${esc(label)}</td><td class="n ${cls}">${defects} / ${decisions}</td></tr>`;
+        const text = defects === 0
+          ? `0 <span class="dim">(${decisions}판정)</span>`
+          : `<b>${defects}</b> <span class="dim">(${((defects / decisions) * 100).toFixed(0)}%)</span>`;
+        return `<tr><td>${esc(label)}</td><td class="n ${cls}">${text}</td></tr>`;
       }).join("")
     : "";
   const d = score?.detail ?? {};
@@ -456,7 +460,8 @@ function evidenceCard(name: string, png: string | null, record: RunRecord | unde
     ${banner}
     <div class="nums">
       <span><b>${score ? score.defectsPerThousand.toFixed(1) : "—"}</b>결함/1k</span>
-      <span><b>${score ? `${score.defects}/${score.decisions}` : "—"}</b>결함/결정</span>
+      <span><b>${score ? `${score.defects}/${score.decisions}` : "—"}</b>결함/판정</span>
+      <span><b>${score ? `${score.detail.failedChecks ?? "?"}/${score.detail.checks ?? "?"}` : "—"}</b>틀린 검사</span>
       <span><b>${score ? score.quality.toFixed(4) : "—"}</b>통과율</span>
       <span><b>${score ? score.scale.toFixed(2) : "—"}</b>규모</span>
       <span><b>${process?.turns ?? "—"}</b>턴</span>
@@ -497,6 +502,7 @@ function evidenceHtml(cards: readonly string[], records: readonly RunRecord[]): 
  table.items td{border-bottom:1px solid #23272f;padding:3px 10px 3px 0}
  td.n{font-variant-numeric:tabular-nums;text-align:right}
  td.ok{color:#5ddba0} td.mid{color:#ffb454} td.low{color:#ff6b6b} td.none{color:#6b7480}
+ span.dim{color:#6b7480;font-weight:400}
  .bad{background:#ff6b6b18;border-left:3px solid #ff6b6b;color:#ffcbcb;padding:8px 12px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:12.5px}
  .warn{background:#ffb45418;border-left:3px solid #ffb454;color:#ffe2bb;padding:8px 12px;border-radius:0 6px 6px 0;margin:0 0 12px;font-size:12.5px}
 </style></head><body>
