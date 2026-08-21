@@ -1,5 +1,5 @@
 import type { ProjectDatabaseRecords, ProjectSession, SystemRecords, Terms, TitleScreenSettings } from "../types";
-import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID, STARTER_TITLE_BGM_ID } from "@/assets/bgmStarterTracks";
+import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID } from "@/assets/bgmStarterTracks";
 import { defaultBattleRecords } from "./defaultDatabaseBattleRecords";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import {

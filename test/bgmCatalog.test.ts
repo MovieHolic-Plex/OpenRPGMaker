@@ -28,7 +28,8 @@ import { resolveBgmCatalogAssetUrl } from "@/assets/bgmCatalogResolver";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { searchResources } from "@/assets/resourceSearch";
-import { defaultSystem, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { defaultSystem } from "@/project/defaults/defaultDatabase";
+import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { createBlankProject } from "@/project/defaults";
 
 /** 카탈로그 곡의 로컬 폴백 경로(public/ 기준). env 를 비워 CDN 설정에 흔들리지 않게 한다. */
@@ -168,10 +169,13 @@ describe("카탈로그 곡을 프로젝트에서 쓸 수 있다", () => {
 });
 
 describe("스타터 곡 — CDN 없이도 소리가 난다", () => {
-  it("기본 시스템/타이틀 BGM 이 모두 스타터 곡이다", () => {
+  it("기본 시스템 BGM 과 출하 데모 타이틀 BGM 이 모두 스타터 곡이다", () => {
     const system = defaultSystem();
-    const title = defaultTitleScreenSettings();
-    for (const id of [system.defaultBgmResourceId, system.battleBgmResourceId, title.musicResourceId]) {
+    // 타이틀 곡은 defaultTitleScreenSettings() 가 아니라 **출하 데모 픽스처**에서 읽는다.
+    // 그 함수는 빈 프로젝트와 에디터 폴백이 공유하는 중립 기본값이라 음악을 박으면
+    // 무음 타이틀을 표현할 수 없다(titleScreenMusic.test.ts 가 못박는 계약).
+    const demoTitleMusic = createSampleAdventureProject().system.titleScreen?.musicResourceId;
+    for (const id of [system.defaultBgmResourceId, system.battleBgmResourceId, demoTitleMusic]) {
       expect(id, "기본 BGM 슬롯이 비어 있다").toBeTruthy();
       expect(BGM_STARTER_TRACK_IDS, `${id} 는 레포에 파일이 없는 곡이다(CDN 전용)`).toContain(id);
     }
