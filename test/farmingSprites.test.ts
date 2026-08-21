@@ -81,7 +81,14 @@ describe("farming demo crop graphics wiring", () => {
   it("gives every crop record a graphic stage with a non-empty resourceId per stage", () => {
     const project = createFarmingDemoProject();
     const crops = project.database.crops ?? [];
-    expect(crops.length).toBe(4);
+    // 개수를 못 박지 않는다 — 작물을 추가할 때마다 이 계약과 무관한 이유로 빨개진다.
+    // 지켜야 할 계약은 "모든 작물이 단계마다 유효한 그림을 갖는다" 하나다.
+    expect(crops.length, "농사 데모에 작물이 없다").toBeGreaterThan(0);
+    // 네 계절 모두 심을 것이 있어야 한다 — 봄만 있으면 나머지 세 계절에 밭이 죽고 할 일이 없다.
+    const seasons = new Set(crops.flatMap((crop) => crop.seasons));
+    for (const season of ["spring", "summer", "fall"]) {
+      expect(seasons.has(season as "spring"), `${season} 에 심을 작물이 없다`).toBe(true);
+    }
     for (const crop of crops) {
       const graphicStages = crop.graphicStages ?? [];
       expect(graphicStages.length, `${crop.id} graphicStages`).toBe(crop.stages.length);

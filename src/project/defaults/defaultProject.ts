@@ -290,17 +290,41 @@ export function createFarmingDemoProject(): Project {
   // 기본 CC0 카탈로그에 이미 item_hoe / item_watering_can / item_potato / item_tomato 가 있다.
   // push 로 뒤에 덧붙이면 모든 조회가 쓰는 `items.find` 가 farmTool 없는 옛 레코드를 먼저 집어
   // 손에 든 괭이가 도구 판정을 통과하지 못한다. 그래서 같은 id 는 교체(upsert)한다.
+  /**
+   * **수확물 가격은 씨앗값의 2배를 넘어야 한다.** 상점 매도가는 정가의 절반이므로
+   * (`playSceneShopDom.ts` 의 `floor(price/2)`), 정가가 씨앗값의 정확히 2배면 순이익이 0 이다.
+   * 이전 데모가 그 상태였다 — 감자 씨앗 20G → 수확 1개 40G → 매도 20G → 본전. 네 작물 중
+   * 셋이 수학적으로 손익분기라 농사를 지어도 돈이 늘지 않았다.
+   * 여기서는 매도가 ≈ 씨앗값 × 1.7 이 되도록 정가를 씨앗값의 3.4배 근처로 잡는다.
+   * 재수확 작물(딸기·블루베리·가지)은 씨앗값을 한 번만 내고 계속 거두므로 배수를 낮게 둔다.
+   */
   upsertDemoItems(project, [
     { id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" },
     { id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" },
+    // 봄 — 씨앗 20 → 매도 35
     { id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true },
-    { id: "item_potato", name: "감자", scope: "none", price: 40, type: "normalGoods" },
+    { id: "item_potato", name: "감자", scope: "none", price: 70, type: "normalGoods" },
+    // 봄 재수확 — 한 번에 2개, 매도 합 60
     { id: "item_strawberry_seed", name: "딸기 씨앗", scope: "none", price: 40, type: "seed", consumable: true },
-    { id: "item_strawberry", name: "딸기", scope: "none", price: 80, type: "normalGoods" },
+    { id: "item_strawberry", name: "딸기", scope: "none", price: 60, type: "normalGoods" },
+    // 봄 — 씨앗 30 → 매도 50
     { id: "item_tomato_seed", name: "토마토 씨앗", scope: "none", price: 30, type: "seed", consumable: true },
-    { id: "item_tomato", name: "토마토", scope: "none", price: 60, type: "normalGoods" },
+    { id: "item_tomato", name: "토마토", scope: "none", price: 100, type: "normalGoods" },
+    // 봄 3단계 — 씨앗 35 → 매도 60
     { id: "item_corn_seed", name: "옥수수 씨앗", scope: "none", price: 35, type: "seed", consumable: true },
-    { id: "item_corn", name: "옥수수", scope: "none", price: 70, type: "normalGoods" },
+    { id: "item_corn", name: "옥수수", scope: "none", price: 120, type: "normalGoods" },
+    // 여름 재수확 — 한 번에 3개, 매도 합 75
+    { id: "item_blueberry_seed", name: "블루베리 씨앗", scope: "none", price: 50, type: "seed", consumable: true },
+    { id: "item_blueberry", name: "블루베리", scope: "none", price: 50, type: "normalGoods" },
+    // 여름 3단계 고가 작물 — 씨앗 60 → 매도 100
+    { id: "item_melon_seed", name: "멜론 씨앗", scope: "none", price: 60, type: "seed", consumable: true },
+    { id: "item_melon", name: "멜론", scope: "none", price: 200, type: "normalGoods" },
+    // 가을 3단계 고가 작물 — 씨앗 70 → 매도 120
+    { id: "item_pumpkin_seed", name: "호박 씨앗", scope: "none", price: 70, type: "seed", consumable: true },
+    { id: "item_pumpkin", name: "호박", scope: "none", price: 240, type: "normalGoods" },
+    // 가을 재수확 — 씨앗 30 → 매도 40
+    { id: "item_eggplant_seed", name: "가지 씨앗", scope: "none", price: 30, type: "seed", consumable: true },
+    { id: "item_eggplant", name: "가지", scope: "none", price: 80, type: "normalGoods" },
   ]);
   project.database.crops = [
     normalizeCropRecord({
@@ -356,6 +380,66 @@ export function createFarmingDemoProject(): Project {
         { resourceId: "farming-crop-corn", frame: 0, label: "옥수수 새싹" },
         { resourceId: "farming-crop-corn", frame: 1, label: "옥수수 줄기" },
         { resourceId: "farming-crop-corn", frame: 2, label: "옥수수 수확기" },
+      ],
+    }),
+    // 여름 — 봄 작물은 계절이 바뀌면 전부 고사한다(farming.ts 의 제철 외 판정). 여름·가을 작물이
+    // 없으면 봄 28일이 끝나는 순간 밭이 전멸하고 세 계절 동안 심을 것이 없다.
+    // 스프라이트는 이미 출하돼 있었다(farmingSprites.ts) — 저작만 비어 있었다.
+    normalizeCropRecord({
+      id: "crop_blueberry",
+      name: "블루베리",
+      seedItemId: "item_blueberry_seed",
+      harvestItemId: "item_blueberry",
+      harvestCount: 3,
+      stages: [{ days: 1 }, { days: 1 }],
+      seasons: ["summer"],
+      regrow: { days: 1 },
+      graphicStages: [
+        { resourceId: "farming-crop-blueberry", frame: 0, label: "블루베리 새싹" },
+        { resourceId: "farming-crop-blueberry", frame: 1, label: "블루베리 수확기" },
+      ],
+    }),
+    normalizeCropRecord({
+      id: "crop_melon",
+      name: "멜론",
+      seedItemId: "item_melon_seed",
+      harvestItemId: "item_melon",
+      harvestCount: 1,
+      stages: [{ days: 1 }, { days: 1 }, { days: 1 }],
+      seasons: ["summer"],
+      graphicStages: [
+        { resourceId: "farming-crop-melon", frame: 0, label: "멜론 새싹" },
+        { resourceId: "farming-crop-melon", frame: 1, label: "멜론 덩굴" },
+        { resourceId: "farming-crop-melon", frame: 2, label: "멜론 수확기" },
+      ],
+    }),
+    // 가을
+    normalizeCropRecord({
+      id: "crop_pumpkin",
+      name: "호박",
+      seedItemId: "item_pumpkin_seed",
+      harvestItemId: "item_pumpkin",
+      harvestCount: 1,
+      stages: [{ days: 1 }, { days: 1 }, { days: 1 }],
+      seasons: ["fall"],
+      graphicStages: [
+        { resourceId: "farming-crop-pumpkin", frame: 0, label: "호박 새싹" },
+        { resourceId: "farming-crop-pumpkin", frame: 1, label: "호박 덩굴" },
+        { resourceId: "farming-crop-pumpkin", frame: 2, label: "호박 수확기" },
+      ],
+    }),
+    normalizeCropRecord({
+      id: "crop_eggplant",
+      name: "가지",
+      seedItemId: "item_eggplant_seed",
+      harvestItemId: "item_eggplant",
+      harvestCount: 1,
+      stages: [{ days: 1 }, { days: 1 }],
+      seasons: ["fall"],
+      regrow: { days: 1 },
+      graphicStages: [
+        { resourceId: "farming-crop-eggplant", frame: 0, label: "가지 새싹" },
+        { resourceId: "farming-crop-eggplant", frame: 1, label: "가지 수확기" },
       ],
     }),
   ];
