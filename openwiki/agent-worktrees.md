@@ -168,3 +168,21 @@ npm run qwen -- --prompt "..." --cwd ../rpg-zzu-<name> --name <name>
   다른 세션이 도는지 확인한다.
 - **워크트리는 베이스 시점의 스냅샷** — 생성 후 메인에 들어온 변경은 반영되지 않는다.
   장시간 작업이면 주기적으로 rebase 한다.
+- **병합 후 revert 는 가드가 못 잡는다** — `git rev-list main..<branch>` 도 `git cherry` 도
+  ancestry 기반이라, 병합한 뒤 그 머지를 revert 하면 커밋은 여전히 main 의 조상이므로 둘 다 0 을
+  보고한다. 내용은 main 에 없는데 `wt list` 는 `clean` 으로 보인다. 실측(2026-08-21):
+  `agent/db-collection-tabs-hardening` 이 이 상태다. revert 한 브랜치는 **손으로 기록**하고
+  지우지 말 것.
+- **윈도우 정션은 `unlink` 로 안 지워진다** — `node_modules` 정션에 `unlinkSync` 를 쓰면
+  `EPERM`, `rmSync({recursive:false})` 는 `ERR_FS_EISDIR` 이다. `rmdirSync` 가 정답이다
+  (정션이므로 링크 대상은 따라 들어가지 않는다). 이 지점에서 던지면 워크트리가 등록된 채 남아
+  다음 실행이 같은 곳에 계속 걸리므로 `remove` 는 경고만 하고 진행한다.
+- **디렉터리 껍데기는 외부 프로세스가 잡는다** — Herd·파일 워처가 핸들을 쥐고 있으면
+  `git worktree remove` 가 등록은 풀어도 디렉터리 삭제는 `Permission denied` 로 실패한다.
+  `git worktree list` 가 정본이다. 껍데기는 프로세스가 놓은 뒤 지우면 된다.
+- **커밋 이후에 생긴 미추적 파일** — `git add -A` 는 그 시점에 없던 파일을 담지 못한다.
+  워크트리를 지우기 전에 `ls` 로 남은 파일을 직접 확인할 것. 실측: 커밋 후 생성된 831줄 스크립트
+  (`scripts/gen-combined-town-chipset-report.mts`)가 정리 중에 발견돼 회수됐다.
+- **`git branch -d` 는 upstream 기준으로 거절한다** — main 에 병합됐어도 upstream 에 push 되지
+  않았으면 "not yet merged" 로 막는다. 내용이 main 에 있으면 안전하지만, 거절 자체가
+  "아직 push 되지 않았다"는 신호이므로 확인 없이 `-D` 로 밀지 말 것.

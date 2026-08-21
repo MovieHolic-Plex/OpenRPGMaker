@@ -23,7 +23,7 @@
 // remove 는 미커밋 변경이나 미병합 커밋이 있으면 거부한다. 커밋되지 않은 작업은 reflog 로도
 // 회수할 수 없으므로, 정말 버릴 때만 --force-dirty 를 명시한다.
 import { execFileSync } from "node:child_process";
-import { existsSync, copyFileSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, unlinkSync, rmSync } from "node:fs";
+import { existsSync, copyFileSync, readFileSync, writeFileSync, symlinkSync, mkdtempSync, unlinkSync, rmSync, rmdirSync } from "node:fs";
 import { join, dirname, basename, resolve } from "node:path";
 import { tmpdir } from "node:os";
 
@@ -230,6 +230,29 @@ function unmergedForDisplay(branch) {
   }
 }
 
+/**
+ * node_modules 정션 제거. 윈도우 정션은 디렉터리 엔트리라 `unlink` 가 EPERM 을 던지고
+ * `rmdir` 이 필요하다. POSIX symlink 는 반대로 `unlink` 만 먹는다. 둘 다 시도한다.
+ */
+function unlinkJunction(linkPath) {
+  if (!existsSync(linkPath)) return;
+  try {
+    unlinkSync(linkPath);
+    return;
+  } catch {
+    /* 윈도우 정션 — rmdir 로 재시도 */
+  }
+  try {
+    // rmSync({recursive:false}) 는 디렉터리에 EISDIR 을 던진다. 정션은 rmdir 이 정답이며
+    // 대상이 정션이므로 링크 대상(메인의 node_modules)은 따라 들어가지 않는다.
+    rmdirSync(linkPath);
+  } catch (error) {
+    console.warn(
+      `[warn] node_modules 정션을 끊지 못했습니다: ${linkPath} (${error instanceof Error ? error.code ?? error.message : error})`,
+    );
+  }
+}
+
 function remove(name, keepBranch, forceDirty) {
   if (!name) throw new Error("워크트리 이름이 필요합니다: remove <name>");
   const { path, branch } = resolveWorktree(name);
@@ -264,10 +287,23 @@ function remove(name, keepBranch, forceDirty) {
 
   // node_modules 정션을 먼저 끊는다 — git 은 추적 파일만 지우므로 정션이 남아 디렉터리가
   // 비지 않고, 결과적으로 껍데기 디렉터리가 잔존한다.
-  const linkPath = join(path, "node_modules");
-  if (existsSync(linkPath)) unlinkSync(linkPath);
+  //
+  // 윈도우 정션은 `unlink` 로 못 지운다(EPERM: operation not permitted). 디렉터리 엔트리라
+  // `rmdir` 이 필요하다. 둘 다 시도하고, 그래도 남으면 git 에 맡긴다 — 여기서 던지면
+  // 워크트리가 등록된 채로 남아 다음 실행에서 같은 지점에 계속 걸린다.
+  unlinkJunction(join(path, "node_modules"));
   git(["worktree", "remove", "--force", path]);
-  if (existsSync(path)) rmSync(path, { recursive: true, force: true });
+  // 파일 핸들이 잡혀 있으면(에디터·dev 서버) 디렉터리가 남는다. git 등록은 이미 풀렸으므로
+  // 여기서 실패해도 치명적이지 않다 — 경로를 알려주고 계속 진행한다.
+  if (existsSync(path)) {
+    try {
+      rmSync(path, { recursive: true, force: true });
+    } catch (error) {
+      console.warn(
+        `[warn] 디렉터리 잔존: ${path} — 프로세스가 파일을 잡고 있을 수 있습니다(${error instanceof Error ? error.code ?? error.message : error}). 수동 삭제 필요.`,
+      );
+    }
+  }
   if (!keepBranch && branch) {
     try {
       git(["branch", "-D", branch]);
