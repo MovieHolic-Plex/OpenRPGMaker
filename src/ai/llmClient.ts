@@ -7,7 +7,7 @@
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
-import { DEFAULT_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -119,16 +119,46 @@ export function defaultAiConfig(): AiConfig {
 
 export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
 
+/** 저장 blob 스키마 버전. scrubStoredAiCredentials 의 멱등 표식이다. */
+export const AI_CONFIG_VERSION = 2;
+
 /**
- * 저장된 providerId 를 **OAuth 제공자로만** 확정한다.
+ * 저장된 blob 에서 **평문 키와 죽은 게이트웨이 주소를 지운다.** 부팅 시 1회. 멱등.
  *
- * `headers()` 는 `X-Rpgzzu-Provider` 로 이 값을 동반 서비스에 넘긴다. 예전 apiKey 설정에는
- * providerId 가 `"openai"`(게이트웨이용)로 저장돼 있어서, 그대로 승격하면 OAuth 모드인데
- * apiKey 제공자를 지목하는 모순된 요청이 나간다. authKind 가 oauth 가 아니면 기본값으로 내린다.
+ * loadAiConfig 는 이미 그 필드들을 무시하지만, **디스크에는 blob 이 덮어써질 때까지 남는다.**
+ * 인증 패널이 "브라우저에는 두지 않습니다" 라고 약속하는데 그게 미래 키에만 적용되면 약속이
+ * 아니다. 남은 키는 export·디버그 덤프·raw blob 을 읽는 미래 코드에 그대로 실려 나간다.
+ *
+ * **loadAiConfig 안에 넣지 않는다** — `load*` 이름의 함수가 몰래 쓰기를 하면 반드시 누군가를
+ * 물린다(테스트와 상태 칩이 이 함수를 수시로 호출한다). 부팅 시 명시적으로 한 번 부른다.
  */
-function oauthProviderOrDefault(raw: unknown): string {
-  const id = parseOhMyPiProvider(raw);
-  return getOhMyPiProvider(id)?.authKind === "oauth" ? id : DEFAULT_OH_MY_PI_PROVIDER;
+export function scrubStoredAiCredentials(): {
+  scrubbed: boolean;
+  hadApiKey: boolean;
+  hadBaseUrl: boolean;
+} {
+  const untouched = { scrubbed: false, hadApiKey: false, hadBaseUrl: false };
+  if (typeof localStorage === "undefined") return untouched;
+  try {
+    const raw = localStorage.getItem(AI_CONFIG_STORAGE_KEY);
+    if (!raw) return untouched;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    if (Number(parsed.configVersion) >= AI_CONFIG_VERSION) return untouched;
+    const hadApiKey = typeof parsed.apiKey === "string" && parsed.apiKey.trim().length > 0;
+    const hadBaseUrl = typeof parsed.baseUrl === "string" && parsed.baseUrl.trim().length > 0;
+    const next = {
+      ...parsed,
+      authMode: "chatgpt",
+      apiKey: "",
+      baseUrl: DEFAULT_BASE_URL,
+      configVersion: AI_CONFIG_VERSION,
+    };
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(next));
+    return { scrubbed: true, hadApiKey, hadBaseUrl };
+  } catch {
+    // blob 이 깨져 있으면 건드리지 않는다 — loadAiConfig 가 기본값으로 처리한다.
+    return untouched;
+  }
 }
 
 // localStorage 로드. 저장된 값이 없거나 깨졌으면 기본값. 저장값은 기본값 위에 병합.
@@ -159,7 +189,11 @@ export function loadAiConfig(): AiConfig {
     let model: string = storedModel || base.model;
     const storedLiteModel = typeof parsed.liteModel === "string" ? parsed.liteModel.trim() : "";
     let liteModel: string = storedLiteModel || storedModel || (base.liteModel ?? base.model);
-    const providerId = oauthProviderOrDefault(parsed.providerId);
+    // 저장된 제공자는 **그대로 보존한다.** 예전에는 oauthProviderOrDefault 로 비-oauth 제공자를
+    // openai-codex 로 되돌렸는데, 연결 방식이 두 종류가 된 뒤로는 틀린 동작이다 —
+    // providerId:"zai" 인 옛 설정은 *API 키* 종류 + zai 로 살아야 한다(GLM 이 이 경로로 남는다).
+    // 전송 축은 authMode 가 이미 companion 으로 고정하므로 제공자를 강제할 이유가 없다.
+    const providerId = parseOhMyPiProvider(parsed.providerId);
     // openai-codex + chatgpt 만 gpt- 가 아닌 모델을 거부한다. 다른 oh-my-pi 제공자는 카탈로그 모델을 존중한다.
     if (!isModelValidForAuthMode(authMode, model, providerId) || !isModelValidForAuthMode(authMode, liteModel, providerId)) {
       const fallback = defaultModelForAuthMode(authMode, providerId) || base.model;
