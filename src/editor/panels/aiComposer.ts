@@ -1,17 +1,22 @@
 // editor/panels/aiComposer.ts
-// 컴포저 셸 — 좌측 메타 레일(/ · ✨ · ☰) + 텍스트 열 + 고정 액션 행 + 팝오버 3종.
+// 컴포저 셸 — 텍스트 영역 + 고정 액션 행 한 줄 + 팝오버 3종. 세로 버튼 열은 없다.
 //
 // 왜 이 구조인가 (실측 근거):
 //  - 구 `.ai-command-input-stack` 은 슬래시 목록·컨텍스트 칩·감독 칩·대기 큐를 **흐름 안에서**
 //    입력창 위에 쌓았다. 칩이 나타났다 사라질 때마다 바 높이가 바뀌고, ResizeObserver 가
 //    `--ai-command-bar-clearance` 를 다시 재서 rising overlay 하단·맵 여백까지 같이 흔들렸다.
-//    감독 칩은 첫 글자를 타이핑하는 순간 사라져 레이아웃이 점프했다.
+//    실측: 슬래시 목록을 열면 유리 93→377(+284), 사이드 156→401(+245).
 //  - 그래서 규칙 하나: **바 높이 = f(textarea 줄 수)뿐.** 슬래시 목록·액션 메뉴·추천 칩은
 //    전부 absolute 팝오버로 흐름에서 빼고, 컨텍스트·대기 큐·상태는 **항상 존재하는**
 //    고정 높이 액션 행에 한 줄로 넣는다(나타남/사라짐 자체를 없앤다).
 //  - 팝오버는 `.ai-command-bar` 의 직접 자식이고 닫히면 `hidden`(display:none) 이다.
 //    투명한 전면 레이어는 두지 않는다 — 보이지 않는 레이어가 맵 클릭을 삼킨 P0 사고가 있었다
 //    (2026-08-19, 회귀 스펙 `test/e2e/_ai-assistant-hostile-eval.spec.ts` H 히트테스트).
+//
+// 좌측 메타 레일은 폐기했다(2026-08-21, 감독 지시): 유리·사이드에서 레일 한 열이 `/` 버튼
+// **하나**만 담아, 열 자체가 그 버튼 하나를 위한 장식이 되고 하단을 어지럽혔다. 이제 메타
+// 진입점은 액션 행 좌측의 `☰` 하나뿐이고, 스킬 검색(`/`)·설정은 그 메뉴 안의 항목이다.
+// 세로 열이 없어져 바 높이도 레일 3버튼(92px) 하한에서 풀렸다.
 
 import { el } from "@/util/dom";
 
@@ -22,11 +27,9 @@ export interface ComposerElements {
   /** 패널에 마운트되는 바 루트(기존 `.ai-command-bar` testid 유지). */
   readonly commandBar: HTMLElement;
   readonly composer: HTMLElement;
-  readonly rail: HTMLElement;
   readonly actions: HTMLElement;
   readonly commandMenu: HTMLElement;
   readonly commandMenuToggle: HTMLButtonElement;
-  readonly suggestToggle: HTMLButtonElement;
   readonly hint: HTMLElement;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
@@ -39,7 +42,7 @@ export interface ComposerOptions {
   readonly input: HTMLTextAreaElement;
   readonly sendButton: HTMLButtonElement;
   readonly abortButton: HTMLButtonElement;
-  /** 레일 1행 — 슬래시 팝오버 토글(패널이 click 핸들러를 소유). */
+  /** ☰ 메뉴의 "스킬 찾기" 항목 — 슬래시 팝오버를 연다(패널이 click 핸들러를 소유). */
   readonly skillToggle: HTMLElement;
   readonly slashHost: HTMLElement;
   readonly contextChips: HTMLElement;
@@ -49,21 +52,11 @@ export interface ComposerOptions {
   readonly onPopoverChange?: (kind: ComposerPopover | null) => void;
 }
 
-const SUGGEST_LABEL = "추천 지시";
-
 export function createComposerElements(options: ComposerOptions): ComposerElements {
   let openState: ComposerPopover | null = null;
 
-  const suggestToggle = el("button", {
-    class: "ai-composer-rail-btn ai-composer-suggest-toggle",
-    text: "✨",
-    attrs: { type: "button", title: SUGGEST_LABEL, "aria-label": SUGGEST_LABEL, "aria-expanded": "false" },
-    dataset: { testid: "ai-suggest-toggle" },
-    on: { click: () => openPopover(openState === "suggest" ? null : "suggest") },
-  }) as HTMLButtonElement;
-
   const commandMenuToggle = el("button", {
-    class: "ai-composer-rail-btn ai-command-menu-toggle",
+    class: "ai-composer-menu-btn ai-command-menu-toggle",
     text: "☰",
     attrs: { type: "button", title: "더보기", "aria-label": "더보기 메뉴", "aria-expanded": "false", "aria-haspopup": "menu" },
     dataset: { testid: "ai-command-menu-toggle" },
@@ -77,11 +70,11 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   });
   commandMenu.hidden = true;
 
-  // 추천 칩 팝오버 — 빈 입력일 때 자동으로 열리고, 한 글자만 들어와도 닫힌다.
+  // 추천 칩 팝오버 — 입력창 포커스 + 빈 값일 때 자동으로 뜬다(전용 토글 버튼 없음).
   // 흐름 밖이라 열림/닫힘이 바 높이를 건드리지 않는다(구 구조의 점프 원인).
   const suggestPopover = el("div", {
     class: "ai-composer-popover ai-composer-suggest",
-    attrs: { role: "group", "aria-label": SUGGEST_LABEL },
+    attrs: { role: "group", "aria-label": "추천 지시" },
     dataset: { testid: "ai-suggest-popover" },
     children: [options.composerChips],
   });
@@ -89,14 +82,6 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   options.slashHost.classList.add("ai-composer-popover", "ai-composer-slash");
   options.slashHost.hidden = true;
-
-  const railButtons: HTMLElement[] = [options.skillToggle, suggestToggle, commandMenuToggle];
-  for (const button of railButtons) button.classList.add("ai-composer-rail-btn");
-  const rail = el("div", {
-    class: "ai-composer-rail",
-    dataset: { testid: "ai-composer-rail" },
-    children: railButtons,
-  });
 
   // 액션 행: 항상 존재하는 고정 높이 한 줄. 좌측 컨텍스트/대기 큐는 nowrap + 가로 스크롤이라
   // 내용이 길어져도 줄이 늘지 않는다(줄바꿈이 곧 바 높이 변화였다).
@@ -111,7 +96,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     children: [
       el("div", {
         class: "ai-composer-actions-lead",
-        children: [options.contextChips, options.queueIndicator],
+        children: [commandMenuToggle, options.contextChips, options.queueIndicator],
       }),
       el("div", {
         class: "ai-composer-actions-trail",
@@ -123,10 +108,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   const composer = el("div", {
     class: "ai-composer",
     dataset: { testid: "ai-composer" },
-    children: [
-      rail,
-      el("div", { class: "ai-composer-main", children: [options.input, actions] }),
-    ],
+    children: [options.input, actions],
   });
 
   const commandBar = el("div", {
@@ -138,8 +120,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   const popoverOf = (kind: ComposerPopover): HTMLElement =>
     kind === "slash" ? options.slashHost : kind === "suggest" ? suggestPopover : commandMenu;
+  // 슬래시 목록의 열림 표시는 메뉴 안의 "스킬 찾기" 항목이 들고 있다(전용 바 버튼 없음).
   const toggleOf = (kind: ComposerPopover): HTMLElement | null =>
-    kind === "slash" ? options.skillToggle : kind === "suggest" ? suggestToggle : commandMenuToggle;
+    kind === "slash" ? options.skillToggle : kind === "suggest" ? null : commandMenuToggle;
 
   const openPopover = (kind: ComposerPopover | null): void => {
     if (openState === kind) return;
@@ -182,11 +165,9 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   return {
     commandBar,
     composer,
-    rail,
     actions,
     commandMenu,
     commandMenuToggle,
-    suggestToggle,
     hint,
     openPopover,
     openKind: () => openState,

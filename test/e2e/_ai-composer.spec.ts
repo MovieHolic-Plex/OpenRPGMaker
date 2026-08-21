@@ -1,7 +1,7 @@
-// 컴포저(좌측 레일) 회귀 스펙 — 실브라우저 실측 + 증거 스샷.
+// 컴포저 회귀 스펙 — 실브라우저 실측 + 증거 스샷.
 // `_` 접두사라 기본 e2e 실행에서 제외된다(진단용).
 //
-// 실행: DEV_SERVER_PORT=9433 npx playwright test test/e2e/_ai-composer-rail.spec.ts --project=chromium
+// 실행: DEV_SERVER_PORT=9443 npx playwright test test/e2e/_ai-composer.spec.ts --project=chromium
 //
 // 이 스펙이 지키는 계약 3개(모두 구 컴포저에서 실제로 깨져 있던 것):
 //  H) **바 높이 = f(textarea 줄 수)뿐.** 포커스·타이핑 1글자·슬래시 목록·☰ 메뉴를 열어도
@@ -13,7 +13,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { appendFileSync, mkdirSync } from "node:fs";
 
-const OUT = "verify-shots/ai-composer-rail";
+const OUT = "verify-shots/ai-composer";
 mkdirSync(OUT, { recursive: true });
 const LOG = `${OUT}/_probe-log.txt`;
 
@@ -57,7 +57,7 @@ async function cycleDock(page: Page): Promise<string> {
   return (await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) ?? "?";
 }
 
-/** 부팅 기본은 glass 다. 레일 ☰·✨ 는 float 전용(유리·사이드는 헤더가 소유)이라 명시 전환. */
+/** 부팅 기본은 glass 다. 컴포저 ☰ 는 float 전용(유리·사이드는 헤더가 소유)이라 명시 전환. */
 async function setDock(page: Page, target: string): Promise<void> {
   for (let i = 0; i < 4; i += 1) {
     if ((await page.getByTestId("ai-panel").getAttribute("data-chat-dock")) === target) return;
@@ -78,7 +78,7 @@ async function composerBoxes(page: Page): Promise<string> {
     return [
       pick(".ai-command-bar"),
       pick(".ai-composer"),
-      pick(".ai-composer-rail"),
+      pick(".ai-composer-menu-btn"),
       pick(".ai-assistant-input"),
       pick(".ai-composer-actions"),
     ].join(" ");
@@ -89,7 +89,7 @@ test("H) 단일 행 상태에서는 컴포저 바 높이가 상수다", async ({
   // 부팅(freshProject 100×100 마을) + 도크 순환만으로 30초 기본값에 붙는다 — 진단 스펙 관례대로 넉넉히.
   test.setTimeout(120_000);
   await boot(page);
-  // 레일 3버튼이 모두 살아 있는 도크에서 잰다(float — 헤더가 숨겨져 레일이 유일한 진입점).
+  // 컴포저 ☰ 가 살아 있는 도크에서 잰다(float — 헤더가 숨겨져 컴포저가 유일한 진입점).
   await setDock(page, "float");
   const input = page.getByTestId("ai-input");
 
@@ -97,7 +97,7 @@ test("H) 단일 행 상태에서는 컴포저 바 높이가 상수다", async ({
   log(`H idle=${idle} | ${await composerBoxes(page)}`);
   await shot(page.getByTestId("ai-command-bar"), "h1-idle");
 
-  // 포커스 → 추천 칩 팝오버가 열린다(흐름 밖이라 높이에 영향 없어야 한다).
+  // 포커스 → 추천 칩 팝오버가 열린다(전용 토글 버튼 없음, 흐름 밖이라 높이 영향 0).
   await input.click();
   await page.waitForTimeout(250);
   const focused = await barHeight(page);

@@ -1523,10 +1523,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const ensureStartScreen = (): void => {};
   if (autoRestoreConversation) restoreConversationRecord(autoRestoreConversation, "auto");
 
+  // 스킬 검색은 ☰ 메뉴 항목이다. 컴포저 하단에 `/` 단독 버튼으로 서 있던 것을 걷었다
+  // (감독 지시 2026-08-21: 유리·사이드에서 레일 한 열이 이 버튼 하나만 담아 난장판).
+  // 키보드 경로(입력창에 "/" 타이핑)가 주 진입점이고 이 항목은 발견 가능성용이다.
   const skillToggle = el("button", {
-    class: "ai-assistant-action ai-skill-toggle",
-    text: "/",
-    attrs: { type: "button", title: "스킬 검색 (/)", "aria-label": "스킬 검색 열기", "aria-expanded": "false" },
+    class: "ai-command-menu-item ai-skill-toggle",
+    html: '스킬 찾기<span class="ai-command-menu-key">/</span>',
+    attrs: { type: "button", role: "menuitem", title: "스킬 검색 (/)", "aria-label": "스킬 검색 열기", "aria-expanded": "false" },
     dataset: { testid: "ai-skill-slash-toggle" },
     on: {
       click: () => {
@@ -2557,6 +2560,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!commandMenu.hidden) refreshMoreMenuDockLabel();
   });
   commandMenu.replaceChildren(
+    // 스킬 찾기가 첫 항목 — 레일 `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
+    skillToggle,
     commandBarSettingsButton,
     el("button", {
       class: "ai-command-menu-item",

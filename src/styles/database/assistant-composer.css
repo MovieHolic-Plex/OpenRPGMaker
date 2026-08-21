@@ -1,20 +1,19 @@
-/* ── 컴포저: 좌측 메타 레일 + 텍스트 열 + 고정 액션 행 (2026-08-21) ──────────
+/* ── 컴포저: 텍스트 영역 + 고정 액션 행 한 줄 (2026-08-21) ──────────────────
    설계 근거는 src/editor/panels/aiComposer.ts 주석 참조. 한 줄 요약:
    **바 높이 = f(textarea 줄 수)뿐**. 슬래시 목록·액션 메뉴·추천 칩은 absolute 팝오버로
    흐름에서 빼고, 컨텍스트·대기 큐·상태는 항상 존재하는 고정 높이 액션 행에 한 줄로 넣는다.
    구 `.ai-command-input-stack` 은 이 4가지를 흐름 안에 쌓아 칩이 켜질 때마다 바가 커졌다. */
 
 .ai-composer {
-  /* 24px 미만은 적대 평가의 SMALL-HIT-TARGETS 프로브에 걸린다 — 여유를 둔 28px. */
-  --ai-rail-btn: 28px;
   background: color-mix(in srgb, var(--bg-raised) 96%, transparent);
   backdrop-filter: blur(10px);
   border: 1.5px solid var(--border-strong);
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(42, 37, 33, 0.08);
+  /* 세로 버튼 열 없음 — 텍스트 위, 액션 한 줄 아래. 메타 진입점은 액션 행의 ☰ 하나. */
   display: grid;
-  gap: 8px;
-  grid-template-columns: var(--ai-rail-btn) minmax(0, 1fr);
+  gap: 4px;
+  grid-template-rows: minmax(0, 1fr) auto;
   padding: 8px 10px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -24,14 +23,11 @@
   box-shadow: 0 8px 28px rgba(42, 37, 33, 0.12), 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
-/* ── 레일: 메타 액션을 한 열에 격리한다(입력행에 흩어져 있던 / · ⚙ · ☰) ── */
-.ai-composer-rail {
-  align-content: start;
-  display: grid;
-  gap: 4px;
-}
-
-.ai-composer-rail-btn {
+/* ── 유일한 메타 버튼: 액션 행 좌측의 ☰ (스킬 찾기·설정·되돌리기…를 담는다) ──
+   구 좌측 레일(/ · ✨ · ☰)은 폐기했다 — 유리·사이드에서 열 하나가 `/` 버튼 하나만
+   담아 하단이 어지러웠다(감독 지시 2026-08-21). 24px 미만은 적대 평가의
+   SMALL-HIT-TARGETS 프로브에 걸리므로 28px. */
+.ai-composer-menu-btn {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
@@ -39,44 +35,49 @@
   color: var(--text-2);
   cursor: pointer;
   display: grid;
+  flex: 0 0 auto;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
-  height: var(--ai-rail-btn);
+  height: 28px;
   line-height: 1;
-  /* 레거시 .ai-assistant-action(min-height 28) / .ai-skill-toggle(min-width 30) 이
-     레일 정사각형을 밀어내지 못하게 명시적으로 푼다. */
+  /* 레거시 .ai-assistant-action(min-height 28) 등이 정사각형을 밀어내지 않게 푼다. */
   min-height: 0;
   min-width: 0;
   padding: 0;
   place-items: center;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
-  width: var(--ai-rail-btn);
+  width: 28px;
 }
 
-.ai-composer-rail-btn:hover,
-.ai-composer-rail-btn:focus-visible {
+.ai-composer-menu-btn:hover,
+.ai-composer-menu-btn:focus-visible {
   background: var(--control-bg-hover);
   border-color: var(--accent-border);
   color: var(--text-1);
   outline: none;
 }
 
-.ai-composer-rail-btn.is-active {
+.ai-composer-menu-btn.is-active {
   background: var(--accent-muted);
   border-color: var(--accent-border);
   color: var(--text-1);
 }
 
-/* ── 텍스트 열 ── */
-.ai-composer-main {
-  display: grid;
-  gap: 4px;
-  grid-template-rows: minmax(0, 1fr) auto;
-  min-width: 0;
+/* 메뉴 항목 우측의 단축키 배지(예: 스킬 찾기 `/`). */
+.ai-command-menu-key {
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  color: var(--text-3);
+  float: right;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  line-height: 1.4;
+  margin-left: 12px;
+  padding: 0 4px;
 }
 
-.ai-composer-main .ai-assistant-input {
+.ai-composer .ai-assistant-input {
   background: var(--bg-raised);
   border: 1px solid var(--border-subtle);
   border-radius: 10px;
@@ -93,14 +94,14 @@
   width: 100%;
 }
 
-.ai-composer-main .ai-assistant-input:focus,
-.ai-composer-main .ai-assistant-input:focus-visible {
+.ai-composer .ai-assistant-input:focus,
+.ai-composer .ai-assistant-input:focus-visible {
   border-color: var(--accent-border);
   box-shadow: none; /* 포커스 링은 컴포저 셸이 그린다 — 이중 링 방지 */
   outline: none;
 }
 
-.ai-composer-main .ai-assistant-input::placeholder {
+.ai-composer .ai-assistant-input::placeholder {
   color: var(--text-3);
   opacity: 0.9;
 }

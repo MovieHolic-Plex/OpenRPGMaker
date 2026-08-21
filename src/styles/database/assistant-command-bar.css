@@ -50,7 +50,7 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   bottom: 18px;
   display: grid;
   gap: 10px;
-  /* 단일 열 — ☰ 는 컴포저 레일로, 상태줄은 액션 행으로 들어갔다(구 `40px … auto` 3열). */
+  /* 단일 열 — ☰ 와 상태줄이 모두 컴포저 액션 행으로 들어갔다(구 `40px … auto` 3열). */
   grid-template-columns: minmax(0, 820px);
   /* 좌측 타일 팔레트/맵트리를 수평으로 침범하지 않는다 — 캔버스 영역 안에서 중앙 정렬.
      (뷰포트 ≤1284px에서 뷰포트-중앙 760px 바가 좌패널 하단을 덮던 버그 수정) */
@@ -115,8 +115,8 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
   right: 36px;
 }
 
-/* ☰ 토글의 40px 독립 버튼 스타일은 폐기 — 레일 버튼(.ai-composer-rail-btn,
-   assistant-composer.css)이 크기·상태를 소유한다. */
+/* ☰ 토글의 40px 독립 버튼 스타일은 폐기 — 액션 행의 .ai-composer-menu-btn
+   (assistant-composer.css)이 크기·상태를 소유한다. */
 
 /* 32px 정사각 아이콘 버튼은 이제 헤더 전용이다. `.ai-command-settings-button` 은
    ☰ 메뉴의 "설정" 항목이 되었으므로 여기서 빼야 한다 — 남겨 두면 width:32px 에 걸려

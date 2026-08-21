@@ -122,7 +122,7 @@
   padding: 4px 10px;
 }
 /* 입력행(.ai-chat-input-row)·입력창·전송 버튼 스타일은 컴포저로 이전했다 —
-   assistant-composer.css 의 `.ai-composer-main` / `.ai-composer-actions`. */
+   assistant-composer.css 의 `.ai-composer` / `.ai-composer-actions`. */
 .ai-chat-send:active:not(:disabled) {
   transform: translateY(0);
 }
