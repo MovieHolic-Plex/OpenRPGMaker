@@ -18,7 +18,7 @@ import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 // 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
 // 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.
 import type { ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
-import { getAiTransportHealth, isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
+import { getAiModelDemotion, getAiTransportHealth, isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { openAiSettingsModal, type AiSettingsFocus } from "./aiSettingsModal";
 import { el } from "@/util/dom";
 
@@ -159,6 +159,17 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
   if (isStoredCredential(aiOAuthCachedStatus)) {
     const failure = transportFailureStatus("chatgpt");
     if (failure) return failure;
+    // 연결은 됐는데 요청한 모델이 아닌 것이 답하고 있으면 그 사실을 라벨에 올린다 — 예전에는
+    // 아무 신호도 없어서 감독이 고른 모델이 답하는지 알 방법이 없었다.
+    const demotion = getAiModelDemotion();
+    if (demotion) {
+      return {
+        kind: "error",
+        authMode: "chatgpt",
+        label: "AI 다른 모델 응답",
+        title: `요청한 모델 '${demotion.requested}' 대신 '${demotion.served}' 이(가) 답했습니다. 제공자가 모르는 모델 ID 를 조용히 바꿔치기한 것입니다 — 이 칩을 눌러 목록에서 모델을 고르세요.`,
+      };
+    }
     return {
       kind: "ready",
       authMode: "chatgpt",

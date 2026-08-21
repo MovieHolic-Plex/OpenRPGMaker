@@ -640,7 +640,9 @@ async function parseSseStream(
 }
 
 // 비스트리밍 응답 파싱.
-function parseNonStream(json: Record<string, unknown>): ChatResult {
+function parseNonStream(json: Record<string, unknown>, requestedModel?: string): ChatResult {
+  // 응답의 model 은 **해석된** 모델이다 — 요청한 것과 다르면 제공자가 조용히 바꾼 것이다.
+  if (requestedModel && typeof json.model === "string") reportModelDemotion(requestedModel, json.model);
   const choices = json.choices as Array<Record<string, unknown>> | undefined;
   const choice = choices?.[0];
   const msg = (choice?.message ?? {}) as Record<string, unknown>;
@@ -762,6 +764,48 @@ export function reportTransportHealth(ok: boolean, status?: number, message?: st
   }
 }
 
+/** 요청한 모델과 실제로 답한 모델이 다를 때의 기록. */
+export interface AiModelDemotion {
+  readonly requested: string;
+  readonly served: string;
+  readonly at: number;
+}
+
+let aiModelDemotion: AiModelDemotion | null = null;
+
+export function getAiModelDemotion(): AiModelDemotion | null {
+  return aiModelDemotion;
+}
+
+/** 테스트용 — 상태를 초기화한다. */
+export function resetAiModelDemotion(): void {
+  aiModelDemotion = null;
+}
+
+/**
+ * **모델 강등을 조용히 넘기지 않는다.**
+ *
+ * 동반 서비스의 `resolveModel` 은 카탈로그 밖 모델 ID 를 오류가 아니라 제공자 기본 모델로
+ * 바꿔 버린다 — 68종 전부에서. 그래서 감독이 고른 모델이 아닌 것이 답해도 아무 신호가 없었다.
+ * `isModelValidForAuthMode` 화이트리스트는 openai-codex 하나만 막으므로 나머지는 무방비다.
+ *
+ * 다행히 응답 본문의 `model` 은 **해석된** 모델이다(assistantToOpenAI 가 그렇게 채운다).
+ * 서버를 고치지 않고도 요청 모델과 비교하면 강등이 보인다 — 이 함수가 그 비교를 기록한다.
+ * 치명적으로 만들지는 않는다: 강등된 응답도 쓸 수 있는 응답이므로 크게 말하고 넘긴다.
+ */
+export function reportModelDemotion(requested: string, served: string): void {
+  const a = requested.trim();
+  const b = served.trim();
+  if (!a || !b || a.toLowerCase() === b.toLowerCase()) return;
+  const changed = aiModelDemotion?.requested !== a || aiModelDemotion?.served !== b;
+  aiModelDemotion = { requested: a, served: b, at: Date.now() };
+  if (!changed) return;
+  console.warn(`[llmClient] 요청한 모델 '${a}' 대신 '${b}' 이(가) 답했습니다 — 제공자가 조용히 다른 모델로 바꿨습니다.`);
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new CustomEvent(AI_TRANSPORT_HEALTH_EVENT));
+  }
+}
+
 // 단일 Chat Completions 호출. 키가 없으면 즉시 사람이 읽을 오류.
 async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<ChatResult> {
   const companion = usesOhMyPiCompanion(config);
@@ -840,5 +884,6 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest): Promise<C
     return await parseSseStream(response.body, req.onToken, req.onReasoning, req.signal);
   }
   const json = (await response.json()) as Record<string, unknown>;
-  return parseNonStream(json);
+  // 요청 모델을 넘겨 응답의 model 과 비교한다 — 조용한 강등을 눈에 보이게 만든다.
+  return parseNonStream(json, config.model);
 }
