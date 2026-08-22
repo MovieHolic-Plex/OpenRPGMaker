@@ -14,7 +14,7 @@ import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
-import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
+import { captureItemMultiplier, captureStatusMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
 import {
   applyStateEffects,
   attackMultiplierForStates,
@@ -1282,7 +1282,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       kind: "successfulUse",
       itemId: captureItemId,
     }));
-    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item));
+    // gen1 이면 Gen1 계열 공식(만HP 1/3 + 상태 보너스) — "재우고 잡기"가 여기서 성립한다.
+    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item), {
+      model: options.project.system.battleModel === "gen1" ? "gen1" : "rm2k3",
+      statusMultiplier: captureStatusMultiplier(target.stateIds),
+    });
     const roll = rng();
     if (roll >= rate) {
       finish({ targetId: target.id, captureItemId, success: false, rate, roll, speciesId: species.id });
