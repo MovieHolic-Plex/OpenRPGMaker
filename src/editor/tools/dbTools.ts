@@ -342,6 +342,7 @@ const skillRecordSchema = objectSchema({
   effect: objectSchema({ kind: stringSchema(), statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema() }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
+  movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
 }) as RecordSchema;
 
 const equipmentRecordSchema = objectSchema({

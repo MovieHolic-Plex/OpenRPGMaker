@@ -76,6 +76,10 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     // 이것이 없으면 포켓몬 스킨을 쓰면서 RM2k3 규칙으로 싸운다 — applyGenrePreset
     // ("monster-collect") 은 이미 둘을 함께 켜는데, 출하 데모만 빠져 있었다.
     battleModel: "gen1",
+    // Gen1 은 게이지(ATB)가 아니라 속도 기반 단일 턴이다. strict 흐름은 이미 구현돼
+    // 있었고(runtime.ts battleFlow), 기본값(gauge)만 꺼져 있었다. 이 데모의 테스트들도
+    // 처음부터 battleFlow: "strict" 를 명시해 왔다(scarloxyPokemonDemo.test.ts).
+    battleFlow: "strict",
     // 잡은 파티 몬스터가 필드에 나서 싸운다(트레이너 대신). 1:1 대치.
     battleParty: "monsters",
     activeSlots: 1,

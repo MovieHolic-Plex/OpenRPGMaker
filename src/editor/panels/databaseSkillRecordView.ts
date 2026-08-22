@@ -60,6 +60,10 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       numberField("분산", "db-field-skill-variance", record.variance, (variance) =>
         updateDatabaseRecord("skills", record.id, { variance }), { min: 0, max: 100 }
       ),
+      // strict 턴제 전용. 속도보다 먼저 비교한다(퀵어택=+1). 게이지(ATB) 흐름에선 무시.
+      numberField("우선도", "db-field-skill-move-priority", record.movePriority ?? 0, (movePriority) =>
+        updateDatabaseRecord("skills", record.id, { movePriority }), { min: -7, max: 7 }
+      ),
     ]),
     panel("액션 스킬", actionSkillFields(record)),
     effectPanel,

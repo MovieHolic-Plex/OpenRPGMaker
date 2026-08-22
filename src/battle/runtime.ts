@@ -101,9 +101,12 @@ type StrictQueuedActorCommand = {
   readonly command: ActorCommand;
 };
 
+// priority: 기술 우선도(SkillRecord.movePriority, 기본 0) — 속도보다 먼저 비교.
+// tieBreak: gen1 전용 동속 랜덤 롤. rm2k3 은 0 고정이라 기존 결정적 정렬(아군 우선 →
+// index 순)이 그대로 유지된다 — battleStrictRuntime "without RNG" 계약의 근거.
 type StrictQueuedAction =
-  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly actor: MutableBattler; readonly command: ActorCommand }
-  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
+  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly priority: number; readonly tieBreak: number; readonly actor: MutableBattler; readonly command: ActorCommand }
+  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly priority: number; readonly tieBreak: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
@@ -879,11 +882,25 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     finishStrictRoundLog(round);
   }
 
+  // gen1 에서만 동속을 랜덤으로 가른다. rm2k3 기본값(0)은 rng 를 아예 소비하지 않아
+  // 시드 고정 밸런스 테스트(pkmnBalanceB6 등, blank 프로젝트)의 rng 스트림이 안 바뀐다.
+  function strictTieBreakRoll(): number {
+    return options.project.system.battleModel === "gen1" ? rng() : 0;
+  }
+
+  // 기술 우선도 조회. 통상공격/아이템/방어/도주는 0(교체는 정렬 1차 규칙이 이미 최우선).
+  // 적의 기본공격 폴백은 skillId="" 라 find 가 undefined → 0 으로 떨어진다.
+  function strictActionPriority(skillId: SkillId | undefined): number {
+    if (!skillId) return 0;
+    return options.project.database.skills.find((record) => record.id === skillId)?.movePriority ?? 0;
+  }
+
   function strictRoundActions(): StrictQueuedAction[] {
     const actorActions: StrictQueuedAction[] = strictActorCommands.flatMap((entry) => {
       const actor = actors.find((candidate) => candidate.recordId === entry.actorId);
       if (!actor) return [];
-      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, actor, command: entry.command }];
+      const priority = strictActionPriority(entry.command.kind === "skill" ? entry.command.skillId : undefined);
+      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, priority, tieBreak: strictTieBreakRoll(), actor, command: entry.command }];
     });
     const enemyActions: StrictQueuedAction[] = visibleEnemies()
       .flatMap((enemy, index) => {
@@ -892,7 +909,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           recordIncapacitated(enemy);
           return [];
         }
-        return [{ side: "enemy", index, speed: enemy.agility, enemy, action: chooseEnemyAction(enemy) }];
+        const action = chooseEnemyAction(enemy);
+        return [{ side: "enemy", index, speed: enemy.agility, priority: strictActionPriority(action?.skillId), tieBreak: strictTieBreakRoll(), enemy, action }];
       });
     return [...actorActions, ...enemyActions].sort(compareStrictActions);
   }
@@ -901,7 +919,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const leftSwitch = left.side === "actor" && left.command.kind === "switch";
     const rightSwitch = right.side === "actor" && right.command.kind === "switch";
     if (leftSwitch !== rightSwitch) return leftSwitch ? -1 : 1;
+    if (left.priority !== right.priority) return right.priority - left.priority;
     if (left.speed !== right.speed) return right.speed - left.speed;
+    // gen1: 동속 랜덤(사전 롤 비교 — 비교자 안에서 rng 를 굴리면 정렬이 비일관해진다).
+    // 롤까지 같으면(상수 rng 등) 아래 결정적 폴백이 전순서를 보장한다.
+    if (left.tieBreak !== right.tieBreak) return right.tieBreak - left.tieBreak;
     if (left.side !== right.side) return left.side === "actor" ? -1 : 1;
     return left.index - right.index;
   }

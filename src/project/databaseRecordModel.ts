@@ -412,6 +412,10 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
+    // 화이트리스트 정규화라 여기 없으면 왕복 1회에 사라진다(위 defaultBgmResourceId 주석 참조).
+    ...(typeof record.movePriority === "number" && record.movePriority !== 0
+      ? { movePriority: clampInteger(record.movePriority, -7, 7) }
+      : {}),
     ...(() => {
       const actionSkill = normalizeActionSkillProfile(record.actionSkill);
       return actionSkill ? { actionSkill } : {};
