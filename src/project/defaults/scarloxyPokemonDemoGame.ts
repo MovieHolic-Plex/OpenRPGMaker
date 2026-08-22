@@ -161,6 +161,21 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
   const poison = project.database.states.find((record) => record.id === "state_poison");
   if (poison) poison.runtimeEffects = { ...poison.runtimeEffects, hpDamagePercentPerTurn: 6.25 };
 
+  // 타입(속성) 표시 이름 — 기술 타입 배지와 속성 저항 표가 읽는다. 전역 기본 elements 는
+  // RM2K3 이름("Fire"/"Water")을 테스트가 못박고 있어(rm2003DatabaseUtilityRecords) 건드리지
+  // 않고, 이 데모 DB 에서만 한글로 갈아끼운다. typeChart 는 fire/water/grass 3종인데
+  // grass 레코드는 기본 목록에 아예 없었다 — fire 레코드 모양을 복제해 채운다.
+  const elements = project.database.elements ?? [];
+  project.database.elements = elements;
+  const fireElement = elements.find((record) => record.id === "fire");
+  if (fireElement && !elements.some((record) => record.id === "grass")) {
+    elements.push({ ...fireElement, id: "grass", name: "풀" });
+  }
+  for (const [elementId, name] of [["fire", "불꽃"], ["water", "물"]] as const) {
+    const record = elements.find((entry) => entry.id === elementId);
+    if (record) record.name = name;
+  }
+
   project.database.monsterSpecies = [
     ...(project.database.monsterSpecies ?? []),
     ...scarloxySpeciesRecords(),

@@ -48,6 +48,18 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
   };
 }
 
+/** 파티 몬스터를 내보내는 인트로 둘째 비트. 아군 선두가 파티 몬스터여야 생긴다 —
+ *  트레이너(종족 없는 아군)만 있는 전투에서는 만들지 않는다. */
+export function sendOutDirectorState(snapshot: BattleSnapshot): BattleDirectorState | undefined {
+  const lead = snapshot.actors.find((actor) => !actor.defeated && actor.monsterInstanceId);
+  if (!lead) return undefined;
+  return {
+    step: "intro",
+    lines: [`가라, ${lead.name}!`],
+    activeActorRecordId: snapshot.activeActorId,
+  };
+}
+
 /** 행동 로그 엔트리 하나를 이름이 드러나는 메시지로 변환(다중 적 턴 개별 연출용). */
 export function enemyActionDirectorState(entry: BattleActionResultSnapshot, snapshot: BattleSnapshot): BattleDirectorState {
   const user = snapshot.enemies.find((enemy) => enemy.recordId === entry.userRecordId)

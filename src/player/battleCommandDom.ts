@@ -369,11 +369,31 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
     const failure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
     const reason = failure && actor ? battleSkillUseFailureLabel(failure, skill, actor) : failure ? "사용자가 없습니다." : undefined;
     const detail = skill && actor ? skillDetailFor(project, skill, terms, actor) : reason ?? terms.skill;
-    nodes.push(commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", reason ? `${detail} · ${reason}` : detail, () => {
+    const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", reason ? `${detail} · ${reason}` : detail, () => {
       options.beginTargetCommand({ kind: "skill", skillId });
-    }, Boolean(reason), reason));
+    }, Boolean(reason), reason);
+    appendSkillTypeBadge(button, project, skill?.elementId);
+    nodes.push(button);
   }
   return nodes;
+}
+
+/** 기술 타입(속성) 배지. elementId 가 없는 기술에는 아무것도 붙이지 않는다 — 무속성
+ *  기술까지 "타입" 을 지어내면 상성 표시가 거짓이 된다. 표시 이름은 elements 레코드에서
+ *  읽고(데모는 한글 타입명을 저작한다), 레코드가 없으면 id 를 그대로 보여준다. */
+function appendSkillTypeBadge(
+  button: HTMLButtonElement,
+  project: ReturnType<typeof store.getCurrent>,
+  elementId: string | undefined,
+): void {
+  if (!elementId) return;
+  const label = (project.database.elements ?? []).find((record) => record.id === elementId)?.name ?? elementId;
+  const badge = document.createElement("em");
+  badge.className = "battle-command-tag";
+  badge.dataset.skillType = elementId;
+  badge.textContent = label;
+  // 제목(strong) 다음, 상세(small) 앞. 상세 문장 안에 섞으면 배지로 읽히지 않는다.
+  button.querySelector(".battle-command-text")?.querySelector("strong")?.after(badge);
 }
 
 function skillDetailFor(
