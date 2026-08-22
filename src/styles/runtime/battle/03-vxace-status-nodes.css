@@ -210,6 +210,20 @@
   content: "PSN";
 }
 
+.battle-status-icon-burn {
+  --battle-status-icon-bg: #c2543a;
+}
+.battle-status-icon-burn::before {
+  content: "BRN";
+}
+
+.battle-status-icon-freeze {
+  --battle-status-icon-bg: #4aa3c8;
+}
+.battle-status-icon-freeze::before {
+  content: "FRZ";
+}
+
 .battle-status-icon-sleep {
   --battle-status-icon-bg: #5566a8;
 }

@@ -863,6 +863,8 @@ function atbBar(gaugeValue: number): HTMLElement {
 
 function stateIconToken(stateId: string): string {
   if (stateId.includes("poison")) return "poison";
+  if (stateId.includes("burn")) return "burn";
+  if (stateId.includes("freeze") || stateId.includes("frozen")) return "freeze";
   if (stateId.includes("sleep")) return "sleep";
   if (stateId.includes("paraly") || stateId.includes("bind")) return "paralysis";
   if (stateId.includes("blind") || stateId.includes("dark")) return "blind";

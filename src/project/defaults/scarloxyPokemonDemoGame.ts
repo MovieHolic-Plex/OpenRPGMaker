@@ -10,6 +10,7 @@
 
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
 import {
@@ -130,14 +131,35 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
   }
 
   project.database.skills.push(
-    demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"),
+    // Gen1 관례: 불꽃 기본기는 10% 화상. state_burn 은 아래에서 이 데모 DB 에만 저작한다.
+    { ...demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"), stateEffects: [{ stateId: "state_burn", chance: 10, operation: "add" as const }] },
     demoSkill("skill_scarloxy_leaf", "잎날리기", 24, "anim_scarloxy_green", "날카로운 잎을 날립니다.", "grass"),
     demoSkill("skill_scarloxy_splash", "물장구", 24, "anim_scarloxy_splash", "물보라를 일으켜 공격합니다.", "water"),
     demoSkill("skill_scarloxy_scratch", "할퀴기", 18, "anim_scarloxy_scratch", "발톱으로 할큅니다."),
     demoSkill("skill_scarloxy_ice", "얼음 조각", 28, "anim_scarloxy_ice", "얼음 조각을 날립니다.", "water"),
     demoSkill("skill_scarloxy_burst", "대폭발", 36, "anim_scarloxy_explosion", "거대한 폭발을 일으킵니다.", "fire"),
-    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다.")
+    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다."),
+    // 전광석화 — movePriority +1 은 strict 턴제에서 속도보다 먼저 비교된다(느려도 선공).
+    { ...demoSkill("skill_scarloxy_quick", "전광석화", 18, "anim_scarloxy_scratch", "번개처럼 빠르게 몸통박치기합니다. 반드시 선공합니다."), movePriority: 1 }
   );
+
+  // Gen1 상태 저작 — 전역 기본값(defaultDatabaseStarterRecords)은 RM2k3 프로젝트가
+  // 공유하므로 건드리지 않고, 이 데모 DB 에만 얹는다. 화상은 신규 레코드, 독은
+  // runtimeEffects 오버라이드(6% → 6.25% = 1/16; floor(maxHp×6.25/100) ≡ floor(maxHp/16)).
+  project.database.states.push(
+    normalizeStateRecord({
+      id: "state_burn",
+      name: "화상",
+      restriction: "없음",
+      removalCondition: "전투 종료",
+      // Gen1 화상은 자연 회복이 없다 — 치료 아이템/전투 종료로만 풀린다.
+      recoverNaturallyFromTurn: 0,
+      recoverNaturallyChance: 0,
+      runtimeEffects: { attackMultiplier: 0.5, hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: true },
+    })
+  );
+  const poison = project.database.states.find((record) => record.id === "state_poison");
+  if (poison) poison.runtimeEffects = { ...poison.runtimeEffects, hpDamagePercentPerTurn: 6.25 };
 
   project.database.monsterSpecies = [
     ...(project.database.monsterSpecies ?? []),
@@ -190,11 +212,12 @@ type SpeciesSeed = {
   readonly stats: { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number };
   readonly captureRate: number;
   readonly skillId?: string;
+  readonly extraSkills?: readonly { level: number; skillId: string }[];
   readonly evolvesTo?: { key: string; level: number };
 };
 
 const SPECIES_SEEDS: readonly SpeciesSeed[] = [
-  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", evolvesTo: { key: "cindrill", level: 7 } },
+  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", extraSkills: [{ level: 5, skillId: "skill_scarloxy_quick" }], evolvesTo: { key: "cindrill", level: 7 } },
   { key: "cindrill", name: "신드릴", type: "fire", stats: { maxHp: 30, maxMp: 10, attack: 15, defense: 11, mind: 12, agility: 14 }, captureRate: 0.25, skillId: "skill_scarloxy_ember", evolvesTo: { key: "charmadillo", level: 12 } },
   { key: "charmadillo", name: "차마딜로", type: "fire", stats: { maxHp: 46, maxMp: 12, attack: 20, defense: 18, mind: 13, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_burst" },
   { key: "finsta", name: "핀스타", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 9, mind: 11, agility: 11 }, captureRate: 0.5, skillId: "skill_scarloxy_splash", evolvesTo: { key: "gulfin", level: 7 } },
@@ -230,6 +253,7 @@ function scarloxySpeciesRecords() {
       skillsByLevel: [
         { level: 1, skillId: DEFAULT_SKILL_ID },
         ...(seed.skillId ? [{ level: 3, skillId: seed.skillId }] : []),
+        ...(seed.extraSkills ?? []),
       ],
       evolutions: seed.evolvesTo
         ? [{ toSpeciesId: scarloxySpeciesId(seed.evolvesTo.key), requires: { level: seed.evolvesTo.level } }]
