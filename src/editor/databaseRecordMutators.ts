@@ -55,6 +55,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("elementId" in patch) record.elementId = patch.elementId;
   if ("stateEffects" in patch && patch.stateEffects !== undefined) record.stateEffects = patch.stateEffects;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
+  if ("movePriority" in patch) record.movePriority = patch.movePriority;
   database.skills[index] = normalizeSkillRecord(record);
 }
 

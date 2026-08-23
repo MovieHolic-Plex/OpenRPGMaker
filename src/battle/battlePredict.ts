@@ -6,7 +6,13 @@ import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import type { ActorId, EnemyId, Project, SkillId } from "@/project/types";
 import type { ActorRateGrade, EnemyRecord, SkillRecord } from "@/project/types/database";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
-import { usesMagicalDefense } from "@/battle/battleDamage";
+import {
+  computeGen1BaseDamage,
+  GEN1_RANDOM_MAX,
+  GEN1_RANDOM_MEDIAN,
+  usesGen1Damage,
+  usesMagicalDefense,
+} from "@/battle/battleDamage";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 
 export interface PredictedDamage {
@@ -163,28 +169,40 @@ export function predictSkillDamage(
   // damage
   const userStats = battlerStats(project, user);
   const sourceStat = spec.statistic === "mind" ? userStats.mind : userStats.attack;
-  let magnitude = spec.power + Math.floor(sourceStat / 2);
   const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId, target)
     * typeChartMultiplierForTypes(project, spec.elementId, battlerTypes(project, user), battlerTypes(project, target));
-  magnitude = Math.round(magnitude * elementMultiplier);
-  if (elementMultiplier === 0) magnitude = 0;
+  const targetStats = battlerStats(project, target);
+  // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense (runtime 과 동일).
+  const defenseStat = isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense;
+  let magnitude: number;
+  if (usesGen1Damage(project)) {
+    // gen1 기댓값: 코어 공식 → 상성/STAB → 랜덤 중앙값(236/255). 크리티컬·벗나감은
+    // rm2k3 예산과 동일하게 제외한다 — runtime 은 같은 공식에 랜덤만 더한다.
+    const base = computeGen1BaseDamage({ level: user.level ?? 1, power: spec.power, attack: sourceStat, defense: defenseStat });
+    magnitude = elementMultiplier < 0 ? Math.round(base * elementMultiplier) : Math.floor(base * elementMultiplier);
+    if (elementMultiplier > 0) {
+      if (magnitude > 1) magnitude = Math.floor((magnitude * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
+      if (target.defending) magnitude = Math.floor(magnitude / 2);
+      magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
+    }
+  } else {
+    magnitude = Math.round((spec.power + Math.floor(sourceStat / 2)) * elementMultiplier);
+    if (elementMultiplier === 0) magnitude = 0;
+    if (elementMultiplier > 0) {
+      magnitude -= Math.floor(defenseStat / 2);
+      if (target.defending) magnitude = Math.floor(magnitude / 2);
+      magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
+    }
+  }
   if (elementMultiplier < 0) {
-    const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
+    const absorbGrade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
     return {
       amount: magnitude,
       healing: false,
       weak: false,
-      resistant: isResistance(grade),
+      resistant: isResistance(absorbGrade),
       elementName: spec.elementId ? elementNameFor(project, spec.elementId) : undefined,
     };
-  }
-  const targetStats = battlerStats(project, target);
-  if (magnitude > 0) {
-    // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense (runtime 과 동일).
-    const defenseStat = isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense;
-    magnitude -= Math.floor(defenseStat / 2);
-    if (target.defending) magnitude = Math.floor(magnitude / 2);
-    magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
   }
   const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
   return {

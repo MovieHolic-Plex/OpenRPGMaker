@@ -201,6 +201,12 @@ export interface SkillRecord {
   // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
+  /**
+   * 기술 우선도(-7~+7, 기본 0). strict 턴제에서 속도보다 먼저 비교한다 — 퀵어택(+1)류.
+   * 이름이 movePriority 인 이유: EnemyActionPattern.priority(적 AI 행동 선택 가중치),
+   * StateRecord.priority(상태 표시 우선순위)와 전혀 다른 개념이라 혼동을 차단한다.
+   */
+  movePriority?: number;
   /** 실시간 액션 전투에서 캐스트 가능한 액션 스킬. 생략 시 턴제 전용. */
   actionSkill?: ActionSkillProfile;
 }

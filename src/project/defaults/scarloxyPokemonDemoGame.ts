@@ -10,6 +10,7 @@
 
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { normalizeStateRecord } from "@/project/databaseRecordModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_SKILL_ID } from "./constants";
 import { createBlankMap, singleNodeTree } from "./defaultMaps";
 import {
@@ -72,6 +73,14 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
     ...project.system,
     monsterCollection: true,
     battleUiStyle: "pokemon",
+    // 전투 규칙 엔진도 Gen1 로 켠다. battleUiStyle 은 스킨(코스메틱)만 바꾸므로
+    // 이것이 없으면 포켓몬 스킨을 쓰면서 RM2k3 규칙으로 싸운다 — applyGenrePreset
+    // ("monster-collect") 은 이미 둘을 함께 켜는데, 출하 데모만 빠져 있었다.
+    battleModel: "gen1",
+    // Gen1 은 게이지(ATB)가 아니라 속도 기반 단일 턴이다. strict 흐름은 이미 구현돼
+    // 있었고(runtime.ts battleFlow), 기본값(gauge)만 꺼져 있었다. 이 데모의 테스트들도
+    // 처음부터 battleFlow: "strict" 를 명시해 왔다(scarloxyPokemonDemo.test.ts).
+    battleFlow: "strict",
     // 잡은 파티 몬스터가 필드에 나서 싸운다(트레이너 대신). 1:1 대치.
     battleParty: "monsters",
     activeSlots: 1,
@@ -122,14 +131,50 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
   }
 
   project.database.skills.push(
-    demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"),
+    // Gen1 관례: 불꽃 기본기는 10% 화상. state_burn 은 아래에서 이 데모 DB 에만 저작한다.
+    { ...demoSkill("skill_scarloxy_ember", "불씨 뿜기", 26, "anim_scarloxy_fire", "불씨를 뿜어 적을 태웁니다.", "fire"), stateEffects: [{ stateId: "state_burn", chance: 10, operation: "add" as const }] },
     demoSkill("skill_scarloxy_leaf", "잎날리기", 24, "anim_scarloxy_green", "날카로운 잎을 날립니다.", "grass"),
     demoSkill("skill_scarloxy_splash", "물장구", 24, "anim_scarloxy_splash", "물보라를 일으켜 공격합니다.", "water"),
     demoSkill("skill_scarloxy_scratch", "할퀴기", 18, "anim_scarloxy_scratch", "발톱으로 할큅니다."),
     demoSkill("skill_scarloxy_ice", "얼음 조각", 28, "anim_scarloxy_ice", "얼음 조각을 날립니다.", "water"),
     demoSkill("skill_scarloxy_burst", "대폭발", 36, "anim_scarloxy_explosion", "거대한 폭발을 일으킵니다.", "fire"),
-    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다.")
+    demoSkill("skill_pkmn_rock", "돌팔매", 16, "anim_scarloxy_scratch", "트레이너가 돌을 던져 견제합니다."),
+    // 전광석화 — movePriority +1 은 strict 턴제에서 속도보다 먼저 비교된다(느려도 선공).
+    { ...demoSkill("skill_scarloxy_quick", "전광석화", 18, "anim_scarloxy_scratch", "번개처럼 빠르게 몸통박치기합니다. 반드시 선공합니다."), movePriority: 1 }
   );
+
+  // Gen1 상태 저작 — 전역 기본값(defaultDatabaseStarterRecords)은 RM2k3 프로젝트가
+  // 공유하므로 건드리지 않고, 이 데모 DB 에만 얹는다. 화상은 신규 레코드, 독은
+  // runtimeEffects 오버라이드(6% → 6.25% = 1/16; floor(maxHp×6.25/100) ≡ floor(maxHp/16)).
+  project.database.states.push(
+    normalizeStateRecord({
+      id: "state_burn",
+      name: "화상",
+      restriction: "없음",
+      removalCondition: "전투 종료",
+      // Gen1 화상은 자연 회복이 없다 — 치료 아이템/전투 종료로만 풀린다.
+      recoverNaturallyFromTurn: 0,
+      recoverNaturallyChance: 0,
+      runtimeEffects: { attackMultiplier: 0.5, hpDamagePercentPerTurn: 6.25, removeOnBattleEnd: true },
+    })
+  );
+  const poison = project.database.states.find((record) => record.id === "state_poison");
+  if (poison) poison.runtimeEffects = { ...poison.runtimeEffects, hpDamagePercentPerTurn: 6.25 };
+
+  // 타입(속성) 표시 이름 — 기술 타입 배지와 속성 저항 표가 읽는다. 전역 기본 elements 는
+  // RM2K3 이름("Fire"/"Water")을 테스트가 못박고 있어(rm2003DatabaseUtilityRecords) 건드리지
+  // 않고, 이 데모 DB 에서만 한글로 갈아끼운다. typeChart 는 fire/water/grass 3종인데
+  // grass 레코드는 기본 목록에 아예 없었다 — fire 레코드 모양을 복제해 채운다.
+  const elements = project.database.elements ?? [];
+  project.database.elements = elements;
+  const fireElement = elements.find((record) => record.id === "fire");
+  if (fireElement && !elements.some((record) => record.id === "grass")) {
+    elements.push({ ...fireElement, id: "grass", name: "풀" });
+  }
+  for (const [elementId, name] of [["fire", "불꽃"], ["water", "물"]] as const) {
+    const record = elements.find((entry) => entry.id === elementId);
+    if (record) record.name = name;
+  }
 
   project.database.monsterSpecies = [
     ...(project.database.monsterSpecies ?? []),
@@ -182,11 +227,12 @@ type SpeciesSeed = {
   readonly stats: { maxHp: number; maxMp: number; attack: number; defense: number; mind: number; agility: number };
   readonly captureRate: number;
   readonly skillId?: string;
+  readonly extraSkills?: readonly { level: number; skillId: string }[];
   readonly evolvesTo?: { key: string; level: number };
 };
 
 const SPECIES_SEEDS: readonly SpeciesSeed[] = [
-  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", evolvesTo: { key: "cindrill", level: 7 } },
+  { key: "sparchu", name: "스파르츄", type: "fire", stats: { maxHp: 18, maxMp: 8, attack: 11, defense: 7, mind: 10, agility: 13 }, captureRate: 0.45, skillId: "skill_scarloxy_ember", extraSkills: [{ level: 5, skillId: "skill_scarloxy_quick" }], evolvesTo: { key: "cindrill", level: 7 } },
   { key: "cindrill", name: "신드릴", type: "fire", stats: { maxHp: 30, maxMp: 10, attack: 15, defense: 11, mind: 12, agility: 14 }, captureRate: 0.25, skillId: "skill_scarloxy_ember", evolvesTo: { key: "charmadillo", level: 12 } },
   { key: "charmadillo", name: "차마딜로", type: "fire", stats: { maxHp: 46, maxMp: 12, attack: 20, defense: 18, mind: 13, agility: 12 }, captureRate: 0.12, skillId: "skill_scarloxy_burst" },
   { key: "finsta", name: "핀스타", type: "water", stats: { maxHp: 20, maxMp: 8, attack: 9, defense: 9, mind: 11, agility: 11 }, captureRate: 0.5, skillId: "skill_scarloxy_splash", evolvesTo: { key: "gulfin", level: 7 } },
@@ -222,6 +268,7 @@ function scarloxySpeciesRecords() {
       skillsByLevel: [
         { level: 1, skillId: DEFAULT_SKILL_ID },
         ...(seed.skillId ? [{ level: 3, skillId: seed.skillId }] : []),
+        ...(seed.extraSkills ?? []),
       ],
       evolutions: seed.evolvesTo
         ? [{ toSpeciesId: scarloxySpeciesId(seed.evolvesTo.key), requires: { level: seed.evolvesTo.level } }]

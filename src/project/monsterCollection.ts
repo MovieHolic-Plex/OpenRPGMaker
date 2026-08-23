@@ -100,14 +100,49 @@ export function normalizeMonsterSpeciesRecord(
   };
 }
 
+export type CaptureModel = "rm2k3" | "gen1";
+
+export type CaptureRateOptions = {
+  /** 전투 규칙 엔진. 생략/rm2k3 = 기존 공식 그대로(레거시 프로젝트 무변경). */
+  readonly model?: CaptureModel;
+  /** 상태이상 보너스(수면/빙결 ×2, 독/화상/마비 ×1.5). gen1 에서만 곱한다. */
+  readonly statusMultiplier?: number;
+};
+
 export function captureSuccessRate(
   captureRate: number,
   currentHp: number,
   maxHp: number,
-  itemMultiplier = 1
+  itemMultiplier = 1,
+  options?: CaptureRateOptions
 ): number {
   const hpRatio = maxHp > 0 ? clampNumber(currentHp / maxHp, 0, 1) : 1;
+  if (options?.model === "gen1") {
+    // Gen1 계열 HP 항: (3M - 2H) / 3M — 만HP 1/3, 빈사 ≈1. captureRate 는 0~1 저장
+    // 도메인을 유지한다: 원전의 rate255/255 가 곱으로만 쓰여 255 가 약분되므로
+    // 스케일 전환(0~255)은 표기 이득뿐이고, 과거 스케일 사고(repair-capture-rate-
+    // residue.mts)를 반복할 이유가 없다. 원전과의 차이는 문서화한다 — 진짜 Gen1 은
+    // 볼 판정→4회 흔들림의 2단계 롤이고 여기는 단발 확률로 접는다(흔들림 연출은
+    // 별도 단계에서 이 확률을 재해석해 얹는다).
+    const hpTerm = (3 - 2 * hpRatio) / 3;
+    const status = options.statusMultiplier ?? 1;
+    return clampNumber(captureRate * hpTerm * itemMultiplier * status, 0, 1);
+  }
   return clampNumber(captureRate * (1 - hpRatio * 0.7) * itemMultiplier, 0, 1);
+}
+
+/**
+ * 포획 상태 보너스. Gen1 관례: 수면·빙결 ×2, 독·화상·마비 ×1.5, 복수 상태면 최대값
+ * 하나만(곱하지 않는다). 판별자는 stateId 부분 문자열 — StateRecord 에 종류 필드가
+ * 없어 기존 관례(battleStates.ts 의 id 하드코딩, battleFieldDom.stateIconToken)를 따른다.
+ */
+export function captureStatusMultiplier(stateIds: readonly string[]): number {
+  let best = 1;
+  for (const stateId of stateIds) {
+    if (stateId.includes("sleep") || stateId.includes("freeze")) best = Math.max(best, 2);
+    else if (stateId.includes("poison") || stateId.includes("burn") || stateId.includes("paraly")) best = Math.max(best, 1.5);
+  }
+  return best;
 }
 
 export function captureItemMultiplier(item: ItemRecord | undefined): number {
@@ -281,6 +316,47 @@ export function applyMonsterExperienceAndEvolution(
     };
     const evolution = toLevel > fromLevel ? evolveMonster(project, session, { instanceId, allowItemEvolution: false }) : undefined;
     results.push({ instanceId, fromLevel, toLevel, learnedSkillIds: learned, evolution });
+  }
+  return results;
+}
+
+export type MonsterLevelUpPreview = {
+  readonly instanceId: string;
+  readonly name: string;
+  readonly fromLevel: number;
+  readonly toLevel: number;
+  readonly learnedSkillIds: readonly SkillId[];
+};
+
+// 승리 exp 를 적용하면 발생할 몬스터 레벨업을 계산만 한다(세션 변경 없음).
+// 결과 화면 표시용이며, 실제 적립은 applyMonsterExperienceAndEvolution 이 담당한다 —
+// 둘이 같은 헬퍼(monsterLevelForExp/newSkillsForLevelRange)를 쓰므로 수치가 일치한다.
+// 액터와 달리 몬스터는 expForRewardActor 보정 없이 획득 exp 를 그대로 받는다(적립 경로와 동일).
+// 진화는 세션 인벤토리를 읽는 selectEvolution 이 필요해 여기서 다루지 않는다.
+export function previewMonsterExperience(
+  project: Project,
+  instances: readonly MonsterInstance[],
+  earnedExp: number,
+  participantInstanceIds?: readonly string[]
+): MonsterLevelUpPreview[] {
+  const exp = Math.max(0, Math.trunc(earnedExp));
+  if (exp <= 0) return [];
+  const eligible = participantInstanceIds && participantInstanceIds.length > 0 ? new Set(participantInstanceIds) : null;
+  const results: MonsterLevelUpPreview[] = [];
+  for (const instance of instances) {
+    if (eligible && !eligible.has(instance.instanceId)) continue;
+    const species = monsterSpeciesById(project, instance.speciesId);
+    if (!species) continue;
+    const fromLevel = instance.level;
+    const toLevel = monsterLevelForExp(species, fromLevel, Math.max(0, Math.trunc(instance.exp ?? 0)) + exp);
+    if (toLevel <= fromLevel) continue;
+    results.push({
+      instanceId: instance.instanceId,
+      name: monsterDisplayName(project, instance),
+      fromLevel,
+      toLevel,
+      learnedSkillIds: newSkillsForLevelRange(species, fromLevel, toLevel, instance.skillIds ?? []),
+    });
   }
   return results;
 }

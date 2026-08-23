@@ -7,14 +7,14 @@ import { isItemActorEligible } from "@/project/itemEligibility";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
-import { applySkillLike, usesMagicalDefense } from "@/battle/battleDamage";
+import { applySkillLike, computeGen1BaseDamage, usesGen1Damage, usesMagicalDefense } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
 import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
-import { captureItemMultiplier, captureSuccessRate, monsterSpeciesForEnemy, rollMonsterIvs } from "@/project/monsterCollection";
+import { captureItemMultiplier, captureStatusMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
 import {
   applyStateEffects,
   attackMultiplierForStates,
@@ -101,9 +101,12 @@ type StrictQueuedActorCommand = {
   readonly command: ActorCommand;
 };
 
+// priority: 기술 우선도(SkillRecord.movePriority, 기본 0) — 속도보다 먼저 비교.
+// tieBreak: gen1 전용 동속 랜덤 롤. rm2k3 은 0 고정이라 기존 결정적 정렬(아군 우선 →
+// index 순)이 그대로 유지된다 — battleStrictRuntime "without RNG" 계약의 근거.
 type StrictQueuedAction =
-  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly actor: MutableBattler; readonly command: ActorCommand }
-  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
+  | { readonly side: "actor"; readonly index: number; readonly speed: number; readonly priority: number; readonly tieBreak: number; readonly actor: MutableBattler; readonly command: ActorCommand }
+  | { readonly side: "enemy"; readonly index: number; readonly speed: number; readonly priority: number; readonly tieBreak: number; readonly enemy: MutableBattler; readonly action?: EnemyActionChoice };
 
 export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntime {
   const troop = options.project.database.troops.find((record) => record.id === options.troopId);
@@ -223,7 +226,14 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   const roundLogs: BattleRoundLogSnapshot[] = [];
   const capturedMonsters: BattleCapturedMonsterSnapshot[] = [];
   const participatingActorIds = new Set<ActorId>();
-  const rewards: { exp: number; gold: number; items: ItemId[]; enemyLevel?: number; levelUps: BattleLevelUpResult[] } = { exp: 0, gold: 0, items: [], levelUps: [] };
+  const rewards: {
+    exp: number;
+    gold: number;
+    items: ItemId[];
+    enemyLevel?: number;
+    levelUps: BattleLevelUpResult[];
+    monsterLevelUps: MonsterLevelUpPreview[];
+  } = { exp: 0, gold: 0, items: [], levelUps: [], monsterLevelUps: [] };
   // 플레이 중에는 현재 세션 상태를 기준으로 한다(에디터 시작 상태가 아니라).
   // sessionState 는 BattleSessionState(런타임) 또는 ProjectSession(에디터 시작 상태).
   // ProjectSession 에는 actorSkillIds 등 런타임 전용 필드가 없으므로 BattleSessionState 로 좁혀 읽는다.
@@ -581,6 +591,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      gen1AttackerLevel: gen1AttackerLevel(actor),
       rng,
     });
     if (result.hit && result.amount > 0) recoverHitStates(target);
@@ -872,11 +883,25 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     finishStrictRoundLog(round);
   }
 
+  // gen1 에서만 동속을 랜덤으로 가른다. rm2k3 기본값(0)은 rng 를 아예 소비하지 않아
+  // 시드 고정 밸런스 테스트(pkmnBalanceB6 등, blank 프로젝트)의 rng 스트림이 안 바뀐다.
+  function strictTieBreakRoll(): number {
+    return options.project.system.battleModel === "gen1" ? rng() : 0;
+  }
+
+  // 기술 우선도 조회. 통상공격/아이템/방어/도주는 0(교체는 정렬 1차 규칙이 이미 최우선).
+  // 적의 기본공격 폴백은 skillId="" 라 find 가 undefined → 0 으로 떨어진다.
+  function strictActionPriority(skillId: SkillId | undefined): number {
+    if (!skillId) return 0;
+    return options.project.database.skills.find((record) => record.id === skillId)?.movePriority ?? 0;
+  }
+
   function strictRoundActions(): StrictQueuedAction[] {
     const actorActions: StrictQueuedAction[] = strictActorCommands.flatMap((entry) => {
       const actor = actors.find((candidate) => candidate.recordId === entry.actorId);
       if (!actor) return [];
-      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, actor, command: entry.command }];
+      const priority = strictActionPriority(entry.command.kind === "skill" ? entry.command.skillId : undefined);
+      return [{ side: "actor", index: actors.indexOf(actor), speed: actor.agility, priority, tieBreak: strictTieBreakRoll(), actor, command: entry.command }];
     });
     const enemyActions: StrictQueuedAction[] = visibleEnemies()
       .flatMap((enemy, index) => {
@@ -885,7 +910,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           recordIncapacitated(enemy);
           return [];
         }
-        return [{ side: "enemy", index, speed: enemy.agility, enemy, action: chooseEnemyAction(enemy) }];
+        const action = chooseEnemyAction(enemy);
+        return [{ side: "enemy", index, speed: enemy.agility, priority: strictActionPriority(action?.skillId), tieBreak: strictTieBreakRoll(), enemy, action }];
       });
     return [...actorActions, ...enemyActions].sort(compareStrictActions);
   }
@@ -894,7 +920,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const leftSwitch = left.side === "actor" && left.command.kind === "switch";
     const rightSwitch = right.side === "actor" && right.command.kind === "switch";
     if (leftSwitch !== rightSwitch) return leftSwitch ? -1 : 1;
+    if (left.priority !== right.priority) return right.priority - left.priority;
     if (left.speed !== right.speed) return right.speed - left.speed;
+    // gen1: 동속 랜덤(사전 롤 비교 — 비교자 안에서 rng 를 굴리면 정렬이 비일관해진다).
+    // 롤까지 같으면(상수 rng 등) 아래 결정적 폴백이 전순서를 보장한다.
+    if (left.tieBreak !== right.tieBreak) return right.tieBreak - left.tieBreak;
     if (left.side !== right.side) return left.side === "actor" ? -1 : 1;
     return left.index - right.index;
   }
@@ -1079,6 +1109,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      gen1AttackerLevel: gen1AttackerLevel(enemy),
       rng,
     });
     if (result.hit && result.amount > 0) recoverHitStates(target);
@@ -1253,7 +1284,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       kind: "successfulUse",
       itemId: captureItemId,
     }));
-    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item));
+    // gen1 이면 Gen1 계열 공식(만HP 1/3 + 상태 보너스) — "재우고 잡기"가 여기서 성립한다.
+    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item), {
+      model: options.project.system.battleModel === "gen1" ? "gen1" : "rm2k3",
+      statusMultiplier: captureStatusMultiplier(target.stateIds),
+    });
     const roll = rng();
     if (roll >= rate) {
       finish({ targetId: target.id, captureItemId, success: false, rate, roll, speciesId: species.id });
@@ -1337,7 +1372,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function enemyDamageUtility(user: MutableBattler, target: MutableBattler, power = user.attackPower, statistic: "attack" | "mind" = "attack"): number {
     const source = statistic === "mind" ? user.mind : user.attackPower;
-    const expected = Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
+    // gen1 은 코어 공식(랜덤·크리 제외)으로 기댓값을 낸다. 뺄셈식을 남겨두면 방어 높은 대상의
+    // 기댓값이 0 으로 뭉개져 타깃 선택이 실제 피해와 어긋난다.
+    const expected = usesGen1Damage(options.project)
+      ? computeGen1BaseDamage({ level: user.level ?? 1, power, attack: source, defense: target.defense })
+      : Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
     return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
   }
 
@@ -1418,6 +1457,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       useMagicalDefense: isMagicalElement(skill?.elementId),
+      gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
     });
     const timelineKind: BattleTimelineEntrySnapshot["kind"] = !result.hit
@@ -1517,6 +1557,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 권위자에 위임한다(predict 와 동일 규칙 보장). gen1 모델에서만 활성.
   function isMagicalElement(elementId: string | undefined): boolean {
     return usesMagicalDefense(options.project, elementId);
+  }
+
+  // Gen1 코어 공식에 넘길 시전자 레벨. 판정은 battleDamage.usesGen1Damage 단일 권위자에 위임한다.
+  // undefined 를 돌려주면 rm2k3 뺄셈식이 그대로 유지된다(기본 프로젝트 회귀 0).
+  function gen1AttackerLevel(user: MutableBattler): number | undefined {
+    return usesGen1Damage(options.project) ? (user.level ?? 1) : undefined;
   }
 
   function applyTroopEvents(eventTurn: number = turn): void {
@@ -1657,6 +1703,19 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.enemyLevel = collected.enemyLevel;
     rewards.items = [...collected.items];
     rewards.levelUps = computeLevelUpPreview(collected.exp, collected.enemyLevel);
+    rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
+  }
+
+  // 파티 몬스터 경로의 레벨업 미리보기. 참전 판정을 battleRewardsToSession 과 맞춘다 —
+  // 거기서는 [...snapshot.actors, ...snapshot.reserveActors] 의 monsterInstanceId 를 쓰고,
+  // 여기 `actors` 가 정확히 그 합집합(activeActors + reserveActors)이다.
+  function computeMonsterLevelUpPreview(earnedExp: number): MonsterLevelUpPreview[] {
+    const instances = options.partyMonsters ?? [];
+    if (instances.length === 0) return [];
+    const participantIds = actors
+      .map((actor) => actor.monsterInstanceId)
+      .filter((id): id is string => typeof id === "string");
+    return previewMonsterExperience(options.project, instances, earnedExp, participantIds);
   }
 
   // 세션 파티 정보가 주어졌으면 승리 획득 exp 기준 레벨업 미리보기를 계산(결과 화면 표시용).

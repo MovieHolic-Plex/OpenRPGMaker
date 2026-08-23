@@ -15,6 +15,7 @@ import type {
 } from "@/project/types";
 import type { BattleResult, GameTime } from "@/project/gameTime";
 import type { MonsterCaughtAt, MonsterInstance, MonsterInstanceIvs } from "@/project/session";
+import type { MonsterLevelUpPreview } from "@/project/monsterCollection";
 import type { Rng } from "@/util/rng";
 import type { EquipmentRuntimeEffects } from "@/battle/battleBattlers";
 
@@ -339,6 +340,9 @@ export interface BattleRewardsSnapshot {
   readonly enemyLevel?: number;
   // 승리 시 파티 정보가 주어졌다면 산출되는 레벨업 미리보기(결과 화면 연출용).
   readonly levelUps?: readonly BattleLevelUpPreview[];
+  // 파티 몬스터(battleParty: "monsters") 경로의 레벨업 미리보기. levelUps 는 액터 전용이라
+  // 몬스터가 싸운 전투는 성장 피드백이 화면에 전혀 나오지 않았다.
+  readonly monsterLevelUps?: readonly MonsterLevelUpPreview[];
 }
 
 export interface BattleEventStateSnapshot {

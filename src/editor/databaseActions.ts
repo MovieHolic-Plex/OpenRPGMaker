@@ -172,6 +172,14 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("mpReleaseStep" in patch && patch.mpReleaseStep !== undefined) record.mpReleaseStep = patch.mpReleaseStep;
         if ("specialFlags" in patch) record.specialFlags = patch.specialFlags;
         if ("lockedParameters" in patch) record.lockedParameters = patch.lockedParameters;
+        // runtimeEffects(전투 규칙 knob 5개)는 이 줄이 없으면 폼 입력이 조용히 버려졌다 —
+        // normalizeStateRecord 는 이미 보존하므로 구멍은 이 뮤테이터 하나였다.
+        // 부분 패치를 병합한다: 건드리지 않은 knob 은 undefined 로 남겨 온톨로지 폴백을 유지한다.
+        if ("runtimeEffects" in patch) {
+          record.runtimeEffects = patch.runtimeEffects
+            ? { ...record.runtimeEffects, ...patch.runtimeEffects }
+            : undefined;
+        }
         Object.assign(record, normalizeStateRecord(record));
         return;
       }
