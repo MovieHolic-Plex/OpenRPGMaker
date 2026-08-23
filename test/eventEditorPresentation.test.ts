@@ -165,6 +165,13 @@ describe("event editor presentation", () => {
     const preview = renderWithFakeDom(() => renderEventGraphicPreview(graphic, "random"));
 
     expect(preview).toBeInstanceOf(FakeElement);
+    expect(preview.style.boxSizing).toBe("content-box");
+    expect(preview.style.width).toBe(`${RESOURCE_SLICING.charset.cellWidth * 2}px`);
+    expect(preview.style.height).toBe(`${RESOURCE_SLICING.charset.cellHeight * 2}px`);
+    expect(preview.style.backgroundRepeat).toBe("no-repeat");
+    expect(preview.style.backgroundSize).toBe(
+      `${RESOURCE_SLICING.charset.sheetWidth * 2}px ${RESOURCE_SLICING.charset.sheetHeight * 2}px`
+    );
     expect(preview.classList.contains("moving")).toBe(true);
     expect(preview.dataset.movementType).toBe("random");
     expect(preview.style["--event-graphic-frame-a"]).toBeTruthy();

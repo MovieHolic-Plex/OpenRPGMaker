@@ -802,9 +802,9 @@
 }
 
 .event-editor .event-editor-card-sprite {
-  width: 52px;
-  height: 66px;
-  flex: 0 0 52px;
+  width: 54px;
+  height: 70px;
+  flex: 0 0 54px;
   display: grid;
   place-items: center;
   background: var(--mk-inset);
@@ -1007,7 +1007,7 @@
   white-space: nowrap;
 }
 
-/* 그래픽 슬롯 컴팩트 — 썸네일 52×62 + 조작 버튼만 (목업 C). */
+/* 그래픽 슬롯 — 24×32 프레임을 2배로 표시하고 테두리는 크롭 밖에 둔다. */
 .event-editor .event-graphic-control {
   grid-template-columns: 56px minmax(0, 1fr);
   min-height: 0;
@@ -1015,8 +1015,8 @@
 }
 
 .event-editor .event-graphic-control .event-graphic-preview {
-  width: 52px;
-  height: 62px;
+  width: 48px;
+  height: 64px;
 }
 
 .event-editor .event-graphic-control .btn {
@@ -1283,9 +1283,9 @@
 }
 
 .event-editor .event-editor-card-sprite {
-  width: 44px;
-  height: 54px;
-  flex-basis: 44px;
+  width: 54px;
+  height: 70px;
+  flex-basis: 54px;
 }
 
 .event-editor .event-editor-card .event-editor-top-strip {

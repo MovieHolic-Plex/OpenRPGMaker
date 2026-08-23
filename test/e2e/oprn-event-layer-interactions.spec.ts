@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 import type { EventPageGraphic, Project } from "@/project/types";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 import { expandEventMovementSection } from "./eventEditorExpandHelpers";
@@ -448,8 +449,8 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
   await expect(page.getByTestId("event-graphic-resource-tex_easyrpg_charset_actor1")).toHaveAttribute("aria-selected", "true");
   await expect(page.getByTestId("event-graphic-preview-panel")).toHaveCSS("background-color", "rgb(0, 128, 0)");
   await expect(page.getByTestId("npc-character-slot-0")).toHaveCSS("background-image", /data:image\/png/);
-  await expect(page.getByRole("radio", { name: "Down" })).toBeChecked();
-  await expect(page.getByRole("radio", { name: "MIDDLE" })).toBeChecked();
+  await expect(page.getByTestId("npc-direction-down").locator("input")).toBeChecked();
+  await expect(page.getByTestId("npc-pattern-1").locator("input")).toBeChecked();
   await expect(page.getByTestId("event-graphic-dialog-footer")).toBeVisible();
   const previewBox = await page.getByTestId("event-graphic-preview-panel").boundingBox();
   const directionBox = await page.locator(".event-graphic-direction-group").boundingBox();
@@ -487,6 +488,22 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-direction", "up");
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-pattern", "0");
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveCSS("background-image", /data:image\/png/);
+
+  const graphicPreview = page.getByTestId("event-page-graphic-preview");
+  const cardFrame = page.locator(".event-editor-card-sprite");
+  const cardPreview = cardFrame.getByTestId("event-page-graphic-icon-preview");
+  for (const preview of [graphicPreview, cardPreview]) {
+    await expect(preview).toHaveCSS("box-sizing", "content-box");
+    await expect(preview).toHaveCSS("width", `${CHARSET_FRAME_WIDTH * 2}px`);
+    await expect(preview).toHaveCSS("height", `${CHARSET_FRAME_HEIGHT * 2}px`);
+    const box = await preview.boundingBox();
+    expect(box?.width).toBe(CHARSET_FRAME_WIDTH * 2 + 4);
+    expect(box?.height).toBe(CHARSET_FRAME_HEIGHT * 2 + 4);
+  }
+  const cardBox = await cardFrame.boundingBox();
+  expect(cardBox?.width).toBe(CHARSET_FRAME_WIDTH * 2 + 6);
+  expect(cardBox?.height).toBe(CHARSET_FRAME_HEIGHT * 2 + 6);
+
   await page.getByTestId("event-editor-apply").click();
   const savedGraphic = eventGraphic(await debugState(page), "ev_layer");
   expect(savedGraphic.direction).toBe("up");

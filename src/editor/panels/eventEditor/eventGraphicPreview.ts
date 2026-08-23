@@ -100,8 +100,13 @@ function applyCharsetPreviewStyle(style: CharsetPreviewStyle): void {
   target.dataset.direction = selection.direction;
   target.dataset.pattern = String(frameIndex);
   target.dataset.walkPattern = String(selection.pattern);
+  // The app-wide reset uses border-box, but these dimensions describe the
+  // actual 24×32 charset frame. Keep the decorative border outside the crop;
+  // otherwise two pixels per edge are cut from both editor previews.
+  target.style.boxSizing = "content-box";
   target.style.width = `${CHARSET_FRAME_WIDTH * scale}px`;
   target.style.height = `${CHARSET_FRAME_HEIGHT * scale}px`;
+  target.style.backgroundRepeat = "no-repeat";
   applyTransparentColorKeyBackground(target, asset.path);
   target.style.backgroundSize = `${CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH * scale}px ${
     CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT * scale
