@@ -24,6 +24,7 @@ import {
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
+import { SE_CATALOG } from "@/assets/seCatalog";
 import {
   SCARLOXY_BACKDROP_ASSETS,
   SCARLOXY_MONSTER_ASSETS,
@@ -370,6 +371,15 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       for (const asset of EASYRPG_MUSIC_ASSETS) add(asset.id, asset.name);
       break;
     case "sound":
+      // 카탈로그(456개)를 맨 앞에 둔다 — 이게 이 에디터의 기본 효과음 세트다.
+      // EasyRPG RTP 96개는 뒤에 남긴다(CC-BY 이지만 기존 프로젝트가 참조하고 있다).
+      for (const entry of SE_CATALOG) {
+        add(entry.id, `${entry.title} — ${entry.category} (${entry.seconds.toFixed(2)}s)`, [
+          ...entry.tags,
+          entry.category,
+          entry.baseName,
+        ]);
+      }
       for (const asset of CC0_SOUND_ASSETS) add(asset.id, asset.name);
       for (const asset of EASYRPG_SOUND_ASSETS) add(asset.id, asset.name);
       break;
@@ -425,7 +435,16 @@ function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceKind: Re
   if (kind === "music") {
     return resourceKind === "music" || id.startsWith("easyrpg-music-") || id.startsWith("cc0-music-") || id.startsWith("cc0-bgm-");
   }
-  if (kind === "sound") return resourceKind === "sound" || id.startsWith("easyrpg-sound-") || id.startsWith("cc0-sound-");
+  if (kind === "sound") {
+    return (
+      resourceKind === "sound" ||
+      id.startsWith("easyrpg-sound-") ||
+      id.startsWith("cc0-sound-") ||
+      // 456개 효과음 카탈로그. 이게 빠지면 카탈로그 항목을 고른 뒤 피커가 다시 열릴 때
+      // 현재 선택이 "종류 불일치"로 판정돼 (없음) 으로 보인다.
+      id.startsWith("cc0-se-")
+    );
+  }
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";
   if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview");
