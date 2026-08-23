@@ -40,8 +40,8 @@ page.on("requestfailed", (request) => {
   process.stderr.write(`[browser-request-failed] ${request.failure()?.errorText ?? "unknown"} ${request.url()}\n`);
 });
 await page.addInitScript(() => {
-  localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-  localStorage.removeItem("rpg-zzu:supabase-project-config");
+  localStorage.setItem("oprn:editor-ui-mode", "expert");
+  localStorage.removeItem("oprn:supabase-project-config");
 });
 
 async function openMap(mapId: string, focus?: { readonly x: number; readonly y: number }): Promise<void> {
@@ -137,8 +137,8 @@ async function captureEditorRegion(
 async function runtimeState(): Promise<RuntimeState> {
   return page.evaluate(() => {
     const hook = (window as unknown as {
-      __rpgzzuDebug?: { readState: () => RuntimeState };
-    }).__rpgzzuDebug;
+      __oprnDebug?: { readState: () => RuntimeState };
+    }).__oprnDebug;
     return hook?.readState() ?? {};
   });
 }
@@ -165,7 +165,7 @@ try {
 
   await openMap(ADVENTURE_MAP_ID, { x: 22, y: 45 });
   await page.evaluate(({ mapId, eventId }) => {
-    window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+    window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
       detail: { eventId, kind: "selected-event", mapId },
     }));
   }, { eventId: "ev_ice_golem_west", mapId: ADVENTURE_MAP_ID });
@@ -180,8 +180,8 @@ try {
   await page.getByTestId("runtime-state-json").waitFor({ state: "attached", timeout: 15_000 });
   await page.evaluate(({ mapId }) => {
     const hook = (window as unknown as {
-      __rpgzzuDebug?: { teleport: (targetMapId: string, x: number, y: number) => void };
-    }).__rpgzzuDebug;
+      __oprnDebug?: { teleport: (targetMapId: string, x: number, y: number) => void };
+    }).__oprnDebug;
     hook?.teleport(mapId, 18, 27);
   }, { mapId: ADVENTURE_MAP_ID });
   await page.waitForTimeout(1_000);
@@ -209,7 +209,7 @@ try {
     throw new Error(`field encounter is not linked to troop_ice_adventure_golem_guard: ${encounterTroopId}`);
   }
   await page.evaluate(({ troopId }) => {
-    window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+    window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
       detail: { kind: "troop-battle", troopId },
     }));
   }, { troopId: encounterTroopId });
@@ -241,7 +241,7 @@ try {
   const battlePath = path.join(OUTPUT_DIR, "06-golem-battle.png");
   await page.getByTestId("battle-scene").screenshot({ path: battlePath });
   await page.evaluate(() => {
-    window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+    window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
       detail: { kind: "troop-battle", troopId: "troop_ice_adventure_dragon" },
     }));
   });

@@ -187,7 +187,7 @@ afterEach(() => {
 
 describe("AI 연동 칩 상태바 배선", () => {
   it("renderEditor 가 렌더한 상태바에 AI 연동 칩(testid: ai-connection-status)이 나타난다", async () => {
-    storage.setItem("rpg-zzu:ai-config", JSON.stringify(APIKEY_READY));
+    storage.setItem("oprn:ai-config", JSON.stringify(APIKEY_READY));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
 
@@ -207,7 +207,7 @@ describe("AI 연동 칩 상태바 배선", () => {
   it("저장된 설정이 apiKey 여도 칩은 OAuth 상태를 가리킨다", async () => {
     // 키 유무로 칩을 칠하던 판정은 사라졌다 — 인증 경로가 OAuth 하나뿐이므로 "키 없음" 은
     // 더 이상 가능한 상태가 아니다. 이 스펙은 그 문구가 되살아나는 것을 막는다.
-    storage.setItem("rpg-zzu:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
+    storage.setItem("oprn:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
 

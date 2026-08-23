@@ -1,4 +1,4 @@
-// 타일셋 DB 칩셋 셀 우클릭 메뉴 — 의미(라벨·설명) 편집 / 통행 / 레이어 / 번호 복사.
+// 타일셋 DB 타일 그림판 셀 우클릭 메뉴 — 의미(라벨·설명) 편집 / 통행 / 레이어 / 번호 복사.
 
 import { ensureTileMeta, metadataForTile } from "@/editor/panels/tilesetMetadataControls";
 import {
@@ -114,7 +114,7 @@ export function openTilesetTileContextMenu(input: {
 
   const onPointerDown = (event: PointerEvent): void => {
     if (!activeMenu || !(event.target instanceof Node)) return;
-    // 메뉴 안 클릭만 유지. 바깥 클릭 시 닫기(칩셋 스크롤 컨테이너 포함).
+    // 메뉴 안 클릭만 유지. 바깥 클릭 시 닫기(타일 그림판 스크롤 컨테이너 포함).
     if (!activeMenu.contains(event.target)) closeTilesetTileContextMenu();
   };
   const onKey = (event: KeyboardEvent): void => {

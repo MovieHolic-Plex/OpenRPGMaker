@@ -12,7 +12,7 @@ import {
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
 
-export const EDITOR_WELCOME_DISMISSED_KEY = "rpg-zzu:editor-welcome-dismissed";
+export const EDITOR_WELCOME_DISMISSED_KEY = "oprn:editor-welcome-dismissed";
 
 export const EDITOR_WELCOME_TESTIDS = {
   host: "editor-welcome",

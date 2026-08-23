@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 test.setTimeout(300_000);
 test.use({ serviceWorkers: "block" });
@@ -83,7 +83,7 @@ test("DB modal all-tabs sweep: render, no console errors, no stubs", async ({ pa
     consoleErrors.push(`console: ${text}`);
   });
 
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1400, height: 900 });
   await page.goto("/?freshProject=1");
   await openDatabase(page);

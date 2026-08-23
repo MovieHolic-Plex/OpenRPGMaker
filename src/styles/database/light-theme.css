@@ -52,7 +52,7 @@
   /* ==== W1 완성: 전역 토큰 리맵 ==============================================
      본문 컴포넌트(core/tabs-a/tabs-b/actors/enemies/…)는 tokens.css 의 다크 토큰을
      소비한다. 이 스코프에서 같은 이름을 라이트 값으로 재정의해 모달 서브트리
-     전체를 한 번에 라이트로 뒤집는다. 게임 런타임 미리보기 스킨(--rm2k3-* /
+     전체를 한 번에 라이트로 뒤집는다. 게임 런타임 미리보기 스킨(--oprn-* /
      --runtime-window-*)은 의도된 인게임 룩이므로 건드리지 않는다. */
 
   /* 배경 계층 */
@@ -472,7 +472,7 @@
    .db-equipment-summary-chips 클래스/refreshSummaryChips 부분 갱신 경로를 그대로
    유지한 채 헤더 안으로 이동 — 기존 direct-child 규칙은 헤더 컨텍스트로 이식한다. */
 
-.database-modal-backdrop .database-modal-window .rm2k3-detail-equipment > .db-equipment-inspector-header {
+.database-modal-backdrop .database-modal-window .oprn-detail-equipment > .db-equipment-inspector-header {
   align-items: flex-start;
   background: var(--db-light-bg-raised);
   border: 1px solid var(--db-light-border-subtle) var(--db-light-border-default)

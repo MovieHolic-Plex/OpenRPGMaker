@@ -1,31 +1,31 @@
 :root {
-  --rm2k3-troop-modal-width: 1456px;
-  --rm2k3-troop-modal-height: 738px;
-  --rm2k3-troop-list-width: 242px;
-  --rm2k3-troop-preview-width: 482px;
-  --rm2k3-troop-preview-height-classic: 364px;
-  --rm2k3-troop-event-width: 668px;
+  --oprn-troop-modal-width: 1456px;
+  --oprn-troop-modal-height: 738px;
+  --oprn-troop-list-width: 242px;
+  --oprn-troop-preview-width: 482px;
+  --oprn-troop-preview-height-classic: 364px;
+  --oprn-troop-event-width: 668px;
 }
 
-.database-modal-backdrop:has(.rm2k3-record-troops) {
+.database-modal-backdrop:has(.oprn-record-troops) {
   align-items: flex-start;
   background: rgba(42, 37, 33, 0.06);
   justify-content: flex-start;
   padding: 0;
 }
 
-.database-modal-window:has(.rm2k3-record-troops) {
+.database-modal-window:has(.oprn-record-troops) {
   background: var(--bg-raised);
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-style: solid;
   border-width: 2px;
   box-shadow: 1px 1px 0 #303030;
   color: var(--text-1);
-  height: var(--rm2k3-troop-modal-height);
-  width: var(--rm2k3-troop-modal-width);
+  height: var(--oprn-troop-modal-height);
+  width: var(--oprn-troop-modal-width);
 }
 
-.database-modal-window:has(.rm2k3-record-troops) .database-modal-header {
+.database-modal-window:has(.oprn-record-troops) .database-modal-header {
   background: var(--bg-raised);
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-1);
@@ -33,13 +33,13 @@
   padding: 2px 4px 1px;
 }
 
-.database-modal-window:has(.rm2k3-record-troops) .database-modal-header h2 {
+.database-modal-window:has(.oprn-record-troops) .database-modal-header h2 {
   color: var(--text-1);
   font: 400 12px/18px "MS UI Gothic", "Malgun Gothic", "Segoe UI", sans-serif;
   text-shadow: none;
 }
 
-.database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
+.database-modal-window:has(.oprn-record-troops) .database-modal-body {
   background: var(--bg-raised);
   display: grid;
   grid-template-rows: 39px 21px 1fr;
@@ -47,7 +47,7 @@
   padding: 10px 14px 0;
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .db-tab {
+.database-modal-body:has(.oprn-record-troops) .db-tab {
   background: var(--bg-raised);
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
   border-radius: 0;
@@ -58,7 +58,7 @@
   height: 21px;
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .db-tabs {
+.database-modal-body:has(.oprn-record-troops) .db-tabs {
   align-content: start;
   display: flex;
   flex-wrap: wrap;
@@ -70,13 +70,13 @@
   padding: 0;
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .db-tab {
+.database-modal-body:has(.oprn-record-troops) .db-tab {
   flex: 0 0 auto;
   min-width: 46px;
   padding: 0 10px;
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .db-tab.active {
+.database-modal-body:has(.oprn-record-troops) .db-tab.active {
   background: linear-gradient(var(--accent), var(--accent));
   border-bottom-color: var(--accent-border);
   border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
@@ -84,11 +84,11 @@
   color: var(--text-1);
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .rm2k3-record-identity {
+.database-modal-body:has(.oprn-record-troops) .oprn-record-identity {
   display: none;
 }
 
-.database-modal-body:has(.rm2k3-record-troops) .db-body {
+.database-modal-body:has(.oprn-record-troops) .db-body {
   background: var(--bg-raised);
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
@@ -100,7 +100,7 @@
   padding: 10px 10px 8px;
 }
 
-.database-modal-body .rm2k3-record-troops {
+.database-modal-body .oprn-record-troops {
   display: grid;
   gap: 14px;
   grid-template-columns: 242px minmax(0, 1fr);
@@ -108,7 +108,7 @@
   min-height: 0;
 }
 
-.database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane {
+.database-modal-body .oprn-record-troops .oprn-record-list-pane {
   background: var(--bg-raised);
   border: 0;
   box-shadow: none;
@@ -118,7 +118,7 @@
   padding: 0;
 }
 
-.database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane h3 {
+.database-modal-body .oprn-record-troops .oprn-record-list-pane h3 {
   align-items: center;
   background: var(--accent);
   border: 1px solid var(--border-default);
@@ -130,11 +130,11 @@
   margin: 0;
 }
 
-.database-modal-body .rm2k3-record-troops .rm2k3-record-count {
+.database-modal-body .oprn-record-troops .oprn-record-count {
   display: none;
 }
 
-.database-modal-body .rm2k3-record-troops .db-list {
+.database-modal-body .oprn-record-troops .db-list {
   background: var(--bg-raised);
   border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
   border-style: solid;
@@ -146,7 +146,7 @@
   overflow: auto;
 }
 
-.database-modal-body .rm2k3-record-troops .db-list-row {
+.database-modal-body .oprn-record-troops .db-list-row {
   align-items: center;
   background: var(--bg-raised);
   border: 0;
@@ -159,26 +159,26 @@
   width: 100%;
 }
 
-.database-modal-body .rm2k3-record-troops .db-list-row.active {
+.database-modal-body .oprn-record-troops .db-list-row.active {
   background: var(--accent-muted);
   color: var(--text-1);
 }
 
-.database-modal-body .rm2k3-record-troops .db-list-number,
-.database-modal-body .rm2k3-record-troops .db-list-name {
+.database-modal-body .oprn-record-troops .db-list-number,
+.database-modal-body .oprn-record-troops .db-list-name {
   color: inherit;
   font: inherit;
 }
 
-.database-modal-body .rm2k3-record-troops .rm2k3-record-list-footer {
+.database-modal-body .oprn-record-troops .oprn-record-list-footer {
   align-items: end;
   display: grid;
   height: 31px;
   padding: 4px 0 0;
 }
 
-.database-modal-body .rm2k3-record-troops .rm2k3-maximum-button,
-.database-modal-body .rm2k3-record-troops .db-toolbar .btn,
+.database-modal-body .oprn-record-troops .oprn-maximum-button,
+.database-modal-body .oprn-record-troops .db-toolbar .btn,
 .database-modal-body .db-troops-classic-workbench button {
   background: var(--bg-raised);
   border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
@@ -191,7 +191,7 @@
   padding: 0 8px;
 }
 
-.database-modal-body .rm2k3-record-troops .db-toolbar {
+.database-modal-body .oprn-record-troops .db-toolbar {
   align-items: end;
   display: grid;
   gap: 4px;
@@ -200,8 +200,8 @@
   margin: 0;
 }
 
-.database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane,
-.database-modal-body .rm2k3-record-troops .rm2k3-detail-form {
+.database-modal-body .oprn-record-troops .oprn-record-detail-pane,
+.database-modal-body .oprn-record-troops .oprn-detail-form {
   background: var(--bg-raised);
   border: 0;
   box-shadow: none;
@@ -327,7 +327,7 @@
   min-width: 0;
 }
 
-.database-modal-body .rm2k3-detail-troops .db-troop-battle-preview-stage {
+.database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage {
   background:
     linear-gradient(180deg, var(--accent) 0 18%, var(--accent) 19% 25%, #55a13d 26% 100%),
     linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 45%);

@@ -1,6 +1,6 @@
 ---
 name: playable-demo-template
-description: Use this RPG Maker authoring skill when building a complete first playable demo loop that combines a small map, quest giver, object interaction, battle, reward, return, and visual QA target.
+description: Use this authoring skill when building a complete first playable demo loop that combines a small map, quest giver, object interaction, battle, reward, return, and visual QA target.
 ---
 
 # Playable Demo Template

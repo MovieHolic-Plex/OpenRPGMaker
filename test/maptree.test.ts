@@ -1,6 +1,6 @@
 // test/maptree.test.ts
 // Map Tree 조작 로직 검증 (순수 — actions.ts의 트리 로직과 동일).
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §3.3, §11.2.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §3.3, §11.2.
 
 import { describe, it, expect } from "vitest";
 import type { MapTreeNode } from "@/project/types";

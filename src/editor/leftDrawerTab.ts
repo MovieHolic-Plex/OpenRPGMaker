@@ -3,7 +3,7 @@
 import { editorState, type EditorState, type Layer, type Tool } from "@/editor/editorState";
 import { el } from "@/util/dom";
 
-export const LEFT_DRAWER_TAB_KEY = "rpg-zzu:left-drawer-tab";
+export const LEFT_DRAWER_TAB_KEY = "oprn:left-drawer-tab";
 
 export const LEFT_DRAWER_TABS = {
   map: "map",

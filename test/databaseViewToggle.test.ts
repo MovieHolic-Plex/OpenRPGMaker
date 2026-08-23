@@ -4,7 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const VIEW_MODE_STORAGE_KEY = "rpg-zzu.database.viewMode";
+const VIEW_MODE_STORAGE_KEY = "oprn:database.viewMode";
 
 // DatabaseCollection 키 전체 = 아이콘 보유 컬렉션 9종. monsterSpecies는 DatabaseCollection이
 // 아니며 별도 렌더 경로라 갤러리 기본값 대상에서 제외된다.

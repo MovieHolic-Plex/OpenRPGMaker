@@ -330,7 +330,7 @@ export function compileSimplePage(
   const hasText = lines.length > 0
     || (page.choices && page.choices.length > 0)
     || (page.commands && page.commands.length > 0);
-  // NPC 대화에 페이스 칩셋 필수 — graphic charset → faceset 자동 매핑 (명시 face 우선)
+  // NPC 대화에 페이스 타일 그림판 필수 — graphic charset → faceset 자동 매핑 (명시 face 우선)
   const injectFace = options.injectFace !== false;
   if (injectFace && hasText) {
     const face = options.face

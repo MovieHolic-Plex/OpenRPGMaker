@@ -1,14 +1,14 @@
 :root {
-  --rm2k3-battle-blue-hi: #315dc0;
-  --rm2k3-battle-blue: #1742a5;
-  --rm2k3-battle-blue-deep: #071e68;
-  --rm2k3-battle-window-light: #e7f2ff;
-  --rm2k3-battle-window-shadow: #040b28;
-  --rm2k3-battle-text: #f8fbff;
-  --rm2k3-battle-muted: #b9c8f4;
-  --rm2k3-battle-backdrop-top: #84b8e3;
-  --rm2k3-battle-backdrop-mid: #6aa85a;
-  --rm2k3-battle-backdrop-ground: #368b37;
+  --oprn-battle-blue-hi: #315dc0;
+  --oprn-battle-blue: #1742a5;
+  --oprn-battle-blue-deep: #071e68;
+  --oprn-battle-window-light: #e7f2ff;
+  --oprn-battle-window-shadow: #040b28;
+  --oprn-battle-text: #f8fbff;
+  --oprn-battle-muted: #b9c8f4;
+  --oprn-battle-backdrop-top: #84b8e3;
+  --oprn-battle-backdrop-mid: #6aa85a;
+  --oprn-battle-backdrop-ground: #368b37;
 }
 
 .player-layout.system-shell {
@@ -70,7 +70,7 @@
   border: 0;
   border-radius: 0;
   background: #000;
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   font-family: var(--runtime-pixel-font);
   font-size: var(--runtime-font-size-9);
   line-height: 1.25;
@@ -111,15 +111,15 @@
     radial-gradient(ellipse at 78% 28%, rgba(255, 255, 255, 0.42), transparent 22%),
     linear-gradient(
       180deg,
-      var(--rm2k3-battle-backdrop-top) 0%,
+      var(--oprn-battle-backdrop-top) 0%,
       #a7d6f3 32%,
-      var(--rm2k3-battle-backdrop-mid) 33%,
-      var(--rm2k3-battle-backdrop-ground) 100%
+      var(--oprn-battle-backdrop-mid) 33%,
+      var(--oprn-battle-backdrop-ground) 100%
     );
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  color: var(--rm2k3-battle-muted);
+  color: var(--oprn-battle-muted);
   font-family: inherit;
   font-size: 16px;
 }
@@ -141,7 +141,7 @@
   border: 0;
   border-radius: 0;
   background: radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 55%, transparent 85%);
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   font-size: 0;
   font-weight: 400;
   line-height: 1.2;
@@ -210,7 +210,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   font-size: 22px;
   line-height: 1.2;
   padding: 8px 10px;
@@ -252,13 +252,13 @@
 .battle-actor-state,
 .battle-actor-hp,
 .battle-atb-label {
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   text-shadow: 2px 2px 0 #000;
 }
 
 .battle-actor-state,
 .battle-atb-label {
-  color: var(--rm2k3-battle-muted);
+  color: var(--oprn-battle-muted);
 }
 
 .battle-command-panel {

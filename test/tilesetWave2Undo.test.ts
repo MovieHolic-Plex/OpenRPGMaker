@@ -206,7 +206,7 @@ describe("tileset wave2 undo wiring", () => {
     const tileset = store.getCurrent().tilesets[tilesetId];
     if (!tileset) throw new Error("missing tileset");
     const editor = renderTilesetEditor(tileset, rerender) as unknown as FakeElement;
-    const nameInput = findByTestId(editor, "tileset-rm2k3-name-input");
+    const nameInput = findByTestId(editor, "tileset-oprn-name-input");
     if (!nameInput) throw new Error("missing name input");
 
     for (const next of ["Q", "QA", "QA이", "QA이름"]) {

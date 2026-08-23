@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 
-const FORCE_BLOCK_GLOBAL = globalThis as { __rpgzzuForcePointerBlock?: boolean };
+const FORCE_BLOCK_GLOBAL = globalThis as { __oprnForcePointerBlock?: boolean };
 const originalMatchMedia = window.matchMedia.bind(window);
 const originalMaxTouchPoints = Object.getOwnPropertyDescriptor(navigator, "maxTouchPoints");
 
@@ -105,11 +105,11 @@ async function loadTouchPad(env: Record<string, string> = {}) {
 beforeEach(() => {
   document.body.replaceChildren();
   setTouchCapabilities(true, 0);
-  delete FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock;
+  delete FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock;
 });
 
 afterEach(() => {
-  delete FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock;
+  delete FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock;
   vi.unstubAllEnvs();
   vi.restoreAllMocks();
   if (originalMaxTouchPoints) {
@@ -229,7 +229,7 @@ describe("touch pad capability and input parity", () => {
     const stage = document.createElement("div");
     root.append(stage);
     document.body.append(root);
-    FORCE_BLOCK_GLOBAL.__rpgzzuForcePointerBlock = true;
+    FORCE_BLOCK_GLOBAL.__oprnForcePointerBlock = true;
     const cleanupBlocker = installPlayPointerBlocker(root);
     const handle = createTouchPad(stage);
     const base = stage.querySelector<HTMLElement>(".touch-dpad-base");

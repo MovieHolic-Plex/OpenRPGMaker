@@ -104,7 +104,7 @@ export function buildPromotionMetadata(entry: GeneratedAssetManifestEntry, valid
     entryId: entry.id,
     resourceId: entry.resourceId,
     rawPath: validation.path,
-    promotedPath: `public/assets/generated/rm2k3/${entry.id}.png`,
+    promotedPath: `public/assets/generated/starter/${entry.id}.png`,
     sha256: validation.sha256,
     status: "promoted",
   };

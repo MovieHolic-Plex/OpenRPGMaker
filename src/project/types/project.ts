@@ -280,7 +280,7 @@ export interface AiDocument {
 }
 
 // 테스트 상태 프리셋(Phase 4-1). 스위치/변수/인벤토리/골드/시작 좌표를 부분 저장해
-// 테스트 플레이/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
+// 시연 실행/헤드리스 러너에서 특정 진행 상황을 재현한다. optional이라 마이그레이션 불필요.
 export interface TestPreset {
   id: string;
   name: string;

@@ -7,7 +7,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 await page.addInitScript(() => {
-  window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  window.localStorage.setItem("oprn:editor-ui-mode", "expert");
 });
 await page.goto("http://localhost:9999/?project=rpg-zzu-dungeon-example", { waitUntil: "domcontentloaded" });
 await page.getByTestId("edit-canvas").waitFor({ timeout: 30_000 });
@@ -21,7 +21,7 @@ console.log("on demo map");
 const readState = () =>
   page.evaluate(() => {
     const state = JSON.parse(document.querySelector("[data-testid='runtime-state-json']")?.textContent ?? "{}");
-    const chars = window.__rpgzzuCharacterSprites?.();
+    const chars = window.__oprnCharacterSprites?.();
     const enemies = Object.entries(chars?.events ?? {})
       .filter(([id]) => id.includes("__field_spawn__"))
       .map(([id, s]) => ({ id, tx: Math.floor(s.x / 16), ty: Math.floor(s.y / 16) }));
@@ -29,9 +29,9 @@ const readState = () =>
   });
 
 const stepDir = async (dir, ms = 240) => {
-  await page.evaluate((d) => window.__rpgzzuInput?.dir(d), dir);
+  await page.evaluate((d) => window.__oprnInput?.dir(d), dir);
   await page.waitForTimeout(ms);
-  await page.evaluate(() => window.__rpgzzuInput?.dir(null));
+  await page.evaluate(() => window.__oprnInput?.dir(null));
   await page.waitForTimeout(100);
 };
 

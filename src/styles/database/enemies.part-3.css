@@ -198,7 +198,7 @@
     color: var(--accent);
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-footer {
+  .database-modal-window:has(.oprn-record-enemies) .database-modal-footer {
     align-items: center;
     background: var(--bg-raised);
     border-top: 1px solid var(--border-subtle);
@@ -208,12 +208,12 @@
     padding: 18px 20px;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-footer-status {
+  .database-modal-window:has(.oprn-record-enemies) .database-footer-status {
     color: var(--text-1);
     font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-footer-button {
+  .database-modal-window:has(.oprn-record-enemies) .database-footer-button {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
@@ -222,7 +222,7 @@
     height: 44px;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-footer-button.primary {
+  .database-modal-window:has(.oprn-record-enemies) .database-footer-button.primary {
     background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
     border-color: var(--accent-border);
     color: var(--text-1);

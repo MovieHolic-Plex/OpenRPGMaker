@@ -7,7 +7,7 @@
     {
       "category": "battle",
       "id": "easyrpg-battle-arrow",
-      "name": "EasyRPG RTP Arrow Battle",
+      "name": "Arrow · 전투 효과 · EasyRPG",
       "sourcePath": "Battle/Arrow.png",
       "path": "assets/easyrpg/battle/Arrow.png",
       "fileName": "Arrow.png"
@@ -15,7 +15,7 @@
     {
       "category": "battle",
       "id": "easyrpg-battle-blow",
-      "name": "EasyRPG RTP Blow Battle",
+      "name": "Blow · 전투 효과 · EasyRPG",
       "sourcePath": "Battle/Blow.png",
       "path": "assets/easyrpg/battle/Blow.png",
       "fileName": "Blow.png"
@@ -23,7 +23,7 @@
     {
       "category": "battle",
       "id": "easyrpg-battle-sword1",
-      "name": "EasyRPG RTP Sword1 Battle",
+      "name": "Sword1 · 전투 효과 · EasyRPG",
       "sourcePath": "Battle/Sword1.png",
       "path": "assets/easyrpg/battle/Sword1.png",
       "fileName": "Sword1.png"
@@ -31,7 +31,7 @@
     {
       "category": "battleWeapon",
       "id": "easyrpg-battle-weapon-weapon",
-      "name": "EasyRPG RTP Weapon BattleWeapon",
+      "name": "Weapon · 전투 무기 · EasyRPG",
       "sourcePath": "BattleWeapon/Weapon.png",
       "path": "assets/easyrpg/battle-weapon/Weapon.png",
       "fileName": "Weapon.png"
@@ -39,7 +39,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-actor1",
-      "name": "EasyRPG RTP Actor1 CharSet",
+      "name": "Actor1 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Actor1.png",
       "path": "assets/easyrpg/charset/Actor1.png",
       "fileName": "Actor1.png",
@@ -49,7 +49,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-actor2",
-      "name": "EasyRPG RTP Actor2 CharSet",
+      "name": "Actor2 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Actor2.png",
       "path": "assets/easyrpg/charset/Actor2.png",
       "fileName": "Actor2.png",
@@ -59,7 +59,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-actor3",
-      "name": "EasyRPG RTP Actor3 CharSet",
+      "name": "Actor3 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Actor3.png",
       "path": "assets/easyrpg/charset/Actor3.png",
       "fileName": "Actor3.png",
@@ -69,7 +69,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-actor4",
-      "name": "EasyRPG RTP Actor4 CharSet",
+      "name": "Actor4 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Actor4.png",
       "path": "assets/easyrpg/charset/Actor4.png",
       "fileName": "Actor4.png",
@@ -79,7 +79,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-animal",
-      "name": "EasyRPG RTP Animal CharSet",
+      "name": "Animal · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Animal.png",
       "path": "assets/easyrpg/charset/Animal.png",
       "fileName": "Animal.png",
@@ -89,7 +89,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-monster1",
-      "name": "EasyRPG RTP Monster1 CharSet",
+      "name": "Monster1 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Monster1.png",
       "path": "assets/easyrpg/charset/Monster1.png",
       "fileName": "Monster1.png",
@@ -99,7 +99,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-monster2",
-      "name": "EasyRPG RTP Monster2 CharSet",
+      "name": "Monster2 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Monster2.png",
       "path": "assets/easyrpg/charset/Monster2.png",
       "fileName": "Monster2.png",
@@ -109,7 +109,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-monster3",
-      "name": "EasyRPG RTP Monster3 CharSet",
+      "name": "Monster3 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Monster3.png",
       "path": "assets/easyrpg/charset/Monster3.png",
       "fileName": "Monster3.png",
@@ -119,7 +119,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-object1",
-      "name": "EasyRPG RTP Object1 CharSet",
+      "name": "Object1 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Object1.png",
       "path": "assets/easyrpg/charset/Object1.png",
       "fileName": "Object1.png",
@@ -129,7 +129,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-object2",
-      "name": "EasyRPG RTP Object2 CharSet",
+      "name": "Object2 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Object2.png",
       "path": "assets/easyrpg/charset/Object2.png",
       "fileName": "Object2.png",
@@ -139,7 +139,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-people1",
-      "name": "EasyRPG RTP People1 CharSet",
+      "name": "People1 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/People1.png",
       "path": "assets/easyrpg/charset/People1.png",
       "fileName": "People1.png",
@@ -149,7 +149,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-people2",
-      "name": "EasyRPG RTP People2 CharSet",
+      "name": "People2 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/People2.png",
       "path": "assets/easyrpg/charset/People2.png",
       "fileName": "People2.png",
@@ -159,7 +159,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-people3",
-      "name": "EasyRPG RTP People3 CharSet",
+      "name": "People3 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/People3.png",
       "path": "assets/easyrpg/charset/People3.png",
       "fileName": "People3.png",
@@ -169,7 +169,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-people4",
-      "name": "EasyRPG RTP People4 CharSet",
+      "name": "People4 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/People4.png",
       "path": "assets/easyrpg/charset/People4.png",
       "fileName": "People4.png",
@@ -179,7 +179,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-people5",
-      "name": "EasyRPG RTP People5 CharSet",
+      "name": "People5 · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/People5.png",
       "path": "assets/easyrpg/charset/People5.png",
       "fileName": "People5.png",
@@ -189,7 +189,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-template",
-      "name": "EasyRPG RTP Template CharSet",
+      "name": "Template · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Template.png",
       "path": "assets/easyrpg/charset/Template.png",
       "fileName": "Template.png",
@@ -199,7 +199,7 @@
     {
       "category": "charset",
       "id": "easyrpg-charset-vehicles",
-      "name": "EasyRPG RTP Vehicles CharSet",
+      "name": "Vehicles · 캐릭터 그림 · EasyRPG",
       "sourcePath": "CharSet/Vehicles.png",
       "path": "assets/easyrpg/charset/Vehicles.png",
       "fileName": "Vehicles.png",
@@ -209,7 +209,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-dungeon",
-      "name": "EasyRPG RTP Dungeon ChipSet",
+      "name": "Dungeon · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/Dungeon.png",
       "path": "assets/easyrpg/chipset/Dungeon.png",
       "fileName": "Dungeon.png"
@@ -217,7 +217,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-exterior",
-      "name": "EasyRPG RTP Exterior ChipSet",
+      "name": "Exterior · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/Exterior.png",
       "path": "assets/easyrpg/chipset/Exterior.png",
       "fileName": "Exterior.png"
@@ -225,7 +225,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-interior",
-      "name": "EasyRPG RTP Interior ChipSet",
+      "name": "Interior · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/Interior.png",
       "path": "assets/easyrpg/chipset/Interior.png",
       "fileName": "Interior.png"
@@ -233,7 +233,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-retro-dungeon",
-      "name": "EasyRPG RTP retro_Dungeon ChipSet",
+      "name": "retro_Dungeon · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/retro_Dungeon.png",
       "path": "assets/easyrpg/chipset/retro_Dungeon.png",
       "fileName": "retro_Dungeon.png"
@@ -241,7 +241,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-retro-exterior",
-      "name": "EasyRPG RTP retro_Exterior ChipSet",
+      "name": "retro_Exterior · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/retro_Exterior.png",
       "path": "assets/easyrpg/chipset/retro_Exterior.png",
       "fileName": "retro_Exterior.png"
@@ -249,7 +249,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-retro-world",
-      "name": "EasyRPG RTP retro_World ChipSet",
+      "name": "retro_World · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/retro_World.png",
       "path": "assets/easyrpg/chipset/retro_World.png",
       "fileName": "retro_World.png"
@@ -257,7 +257,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-ship",
-      "name": "EasyRPG RTP Ship ChipSet",
+      "name": "Ship · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/Ship.png",
       "path": "assets/easyrpg/chipset/Ship.png",
       "fileName": "Ship.png"
@@ -265,7 +265,7 @@
     {
       "category": "chipset",
       "id": "easyrpg-chipset-world",
-      "name": "EasyRPG RTP World ChipSet",
+      "name": "World · 타일 그림판 · EasyRPG",
       "sourcePath": "ChipSet/World.png",
       "path": "assets/easyrpg/chipset/World.png",
       "fileName": "World.png"
@@ -273,7 +273,7 @@
     {
       "category": "faceset",
       "id": "easyrpg-faceset-actor1",
-      "name": "EasyRPG RTP Actor1 FaceSet",
+      "name": "Actor1 · 얼굴 그림 · EasyRPG",
       "sourcePath": "FaceSet/Actor1.png",
       "path": "assets/easyrpg/faceset/Actor1.png",
       "fileName": "Actor1.png"
@@ -281,7 +281,7 @@
     {
       "category": "faceset",
       "id": "easyrpg-faceset-actor2",
-      "name": "EasyRPG RTP Actor2 FaceSet",
+      "name": "Actor2 · 얼굴 그림 · EasyRPG",
       "sourcePath": "FaceSet/Actor2.png",
       "path": "assets/easyrpg/faceset/Actor2.png",
       "fileName": "Actor2.png"
@@ -289,7 +289,7 @@
     {
       "category": "faceset",
       "id": "easyrpg-faceset-monster",
-      "name": "EasyRPG RTP Monster FaceSet",
+      "name": "Monster · 얼굴 그림 · EasyRPG",
       "sourcePath": "FaceSet/Monster.png",
       "path": "assets/easyrpg/faceset/Monster.png",
       "fileName": "Monster.png"
@@ -297,7 +297,7 @@
     {
       "category": "faceset",
       "id": "easyrpg-faceset-people1",
-      "name": "EasyRPG RTP People1 FaceSet",
+      "name": "People1 · 얼굴 그림 · EasyRPG",
       "sourcePath": "FaceSet/People1.png",
       "path": "assets/easyrpg/faceset/People1.png",
       "fileName": "People1.png"
@@ -305,7 +305,7 @@
     {
       "category": "faceset",
       "id": "easyrpg-faceset-people2",
-      "name": "EasyRPG RTP People2 FaceSet",
+      "name": "People2 · 얼굴 그림 · EasyRPG",
       "sourcePath": "FaceSet/People2.png",
       "path": "assets/easyrpg/faceset/People2.png",
       "fileName": "People2.png"
@@ -313,7 +313,7 @@
     {
       "category": "gameOver",
       "id": "easyrpg-game-over-game-over",
-      "name": "EasyRPG RTP Game Over GameOver",
+      "name": "Game Over · 게임오버 화면 · EasyRPG",
       "sourcePath": "GameOver/Game Over.png",
       "path": "assets/easyrpg/game-over/Game Over.png",
       "fileName": "Game Over.png"
@@ -321,7 +321,7 @@
     {
       "category": "monster",
       "id": "easyrpg-monster-hornet",
-      "name": "EasyRPG RTP Hornet Monster",
+      "name": "Hornet · 몬스터 그림 · EasyRPG",
       "sourcePath": "Monster/Hornet.png",
       "path": "assets/easyrpg/monster/Hornet.png",
       "fileName": "Hornet.png"
@@ -329,7 +329,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-battle-1",
-      "name": "EasyRPG RTP Battle 1 Music",
+      "name": "Battle 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Battle 1.mid",
       "path": "assets/easyrpg/music/Battle 1.mid",
       "fileName": "Battle 1.mid"
@@ -337,7 +337,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-boss-3",
-      "name": "EasyRPG RTP Boss 3 Music",
+      "name": "Boss 3 · 음악 · EasyRPG",
       "sourcePath": "Music/Boss 3.mid",
       "path": "assets/easyrpg/music/Boss 3.mid",
       "fileName": "Boss 3.mid"
@@ -345,7 +345,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-castle-1",
-      "name": "EasyRPG RTP Castle 1 Music",
+      "name": "Castle 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Castle 1.mid",
       "path": "assets/easyrpg/music/Castle 1.mid",
       "fileName": "Castle 1.mid"
@@ -353,7 +353,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-church",
-      "name": "EasyRPG RTP Church Music",
+      "name": "Church · 음악 · EasyRPG",
       "sourcePath": "Music/Church.mid",
       "path": "assets/easyrpg/music/Church.mid",
       "fileName": "Church.mid"
@@ -361,7 +361,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-dungeon-1",
-      "name": "EasyRPG RTP Dungeon 1 Music",
+      "name": "Dungeon 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Dungeon 1.mid",
       "path": "assets/easyrpg/music/Dungeon 1.mid",
       "fileName": "Dungeon 1.mid"
@@ -369,7 +369,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-ending-2",
-      "name": "EasyRPG RTP Ending 2 Music",
+      "name": "Ending 2 · 음악 · EasyRPG",
       "sourcePath": "Music/Ending 2.mid",
       "path": "assets/easyrpg/music/Ending 2.mid",
       "fileName": "Ending 2.mid"
@@ -377,7 +377,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-field-1",
-      "name": "EasyRPG RTP Field 1 Music",
+      "name": "Field 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Field 1.mid",
       "path": "assets/easyrpg/music/Field 1.mid",
       "fileName": "Field 1.mid"
@@ -385,7 +385,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-game-over-1",
-      "name": "EasyRPG RTP Game Over 1 Music",
+      "name": "Game Over 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Game Over 1.mid",
       "path": "assets/easyrpg/music/Game Over 1.mid",
       "fileName": "Game Over 1.mid"
@@ -393,7 +393,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jdoubt",
-      "name": "EasyRPG RTP JDoubt Music",
+      "name": "JDoubt · 음악 · EasyRPG",
       "sourcePath": "Music/JDoubt.mid",
       "path": "assets/easyrpg/music/JDoubt.mid",
       "fileName": "JDoubt.mid"
@@ -401,7 +401,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jend-of-battle-1",
-      "name": "EasyRPG RTP JEnd of Battle 1 Music",
+      "name": "JEnd of Battle 1 · 음악 · EasyRPG",
       "sourcePath": "Music/JEnd of Battle 1.mid",
       "path": "assets/easyrpg/music/JEnd of Battle 1.mid",
       "fileName": "JEnd of Battle 1.mid"
@@ -409,7 +409,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jend-of-battle-2",
-      "name": "EasyRPG RTP JEnd of Battle 2 Music",
+      "name": "JEnd of Battle 2 · 음악 · EasyRPG",
       "sourcePath": "Music/JEnd of Battle 2.mid",
       "path": "assets/easyrpg/music/JEnd of Battle 2.mid",
       "fileName": "JEnd of Battle 2.mid"
@@ -417,7 +417,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jend-of-battle-3",
-      "name": "EasyRPG RTP JEnd of Battle 3 Music",
+      "name": "JEnd of Battle 3 · 음악 · EasyRPG",
       "sourcePath": "Music/JEnd of Battle 3.mid",
       "path": "assets/easyrpg/music/JEnd of Battle 3.mid",
       "fileName": "JEnd of Battle 3.mid"
@@ -425,7 +425,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jend-of-battle-4",
-      "name": "EasyRPG RTP JEnd of Battle 4 Music",
+      "name": "JEnd of Battle 4 · 음악 · EasyRPG",
       "sourcePath": "Music/JEnd of Battle 4.mid",
       "path": "assets/easyrpg/music/JEnd of Battle 4.mid",
       "fileName": "JEnd of Battle 4.mid"
@@ -433,7 +433,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jfanfare-1",
-      "name": "EasyRPG RTP JFanfare 1 Music",
+      "name": "JFanfare 1 · 음악 · EasyRPG",
       "sourcePath": "Music/JFanfare 1.mid",
       "path": "assets/easyrpg/music/JFanfare 1.mid",
       "fileName": "JFanfare 1.mid"
@@ -441,7 +441,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jfanfare-2",
-      "name": "EasyRPG RTP JFanfare 2 Music",
+      "name": "JFanfare 2 · 음악 · EasyRPG",
       "sourcePath": "Music/JFanfare 2.mid",
       "path": "assets/easyrpg/music/JFanfare 2.mid",
       "fileName": "JFanfare 2.mid"
@@ -449,7 +449,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jfanfare-3",
-      "name": "EasyRPG RTP JFanfare 3 Music",
+      "name": "JFanfare 3 · 음악 · EasyRPG",
       "sourcePath": "Music/JFanfare 3.mid",
       "path": "assets/easyrpg/music/JFanfare 3.mid",
       "fileName": "JFanfare 3.mid"
@@ -457,7 +457,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jfanfare-4",
-      "name": "EasyRPG RTP JFanfare 4 Music",
+      "name": "JFanfare 4 · 음악 · EasyRPG",
       "sourcePath": "Music/JFanfare 4.mid",
       "path": "assets/easyrpg/music/JFanfare 4.mid",
       "fileName": "JFanfare 4.mid"
@@ -465,7 +465,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jfanfare-5",
-      "name": "EasyRPG RTP JFanfare 5 Music",
+      "name": "JFanfare 5 · 음악 · EasyRPG",
       "sourcePath": "Music/JFanfare 5.mid",
       "path": "assets/easyrpg/music/JFanfare 5.mid",
       "fileName": "JFanfare 5.mid"
@@ -473,7 +473,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jfanfare-6",
-      "name": "EasyRPG RTP JFanfare 6 Music",
+      "name": "JFanfare 6 · 음악 · EasyRPG",
       "sourcePath": "Music/JFanfare 6.mid",
       "path": "assets/easyrpg/music/JFanfare 6.mid",
       "fileName": "JFanfare 6.mid"
@@ -481,7 +481,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jinn-1",
-      "name": "EasyRPG RTP JInn 1 Music",
+      "name": "JInn 1 · 음악 · EasyRPG",
       "sourcePath": "Music/JInn 1.mid",
       "path": "assets/easyrpg/music/JInn 1.mid",
       "fileName": "JInn 1.mid"
@@ -489,7 +489,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jinn-2",
-      "name": "EasyRPG RTP JInn 2 Music",
+      "name": "JInn 2 · 음악 · EasyRPG",
       "sourcePath": "Music/JInn 2.mid",
       "path": "assets/easyrpg/music/JInn 2.mid",
       "fileName": "JInn 2.mid"
@@ -497,7 +497,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jitem",
-      "name": "EasyRPG RTP JItem Music",
+      "name": "JItem · 음악 · EasyRPG",
       "sourcePath": "Music/JItem.mid",
       "path": "assets/easyrpg/music/JItem.mid",
       "fileName": "JItem.mid"
@@ -505,7 +505,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jjoke-1",
-      "name": "EasyRPG RTP JJoke 1 Music",
+      "name": "JJoke 1 · 음악 · EasyRPG",
       "sourcePath": "Music/JJoke 1.mid",
       "path": "assets/easyrpg/music/JJoke 1.mid",
       "fileName": "JJoke 1.mid"
@@ -513,7 +513,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jjoke-2",
-      "name": "EasyRPG RTP JJoke 2 Music",
+      "name": "JJoke 2 · 음악 · EasyRPG",
       "sourcePath": "Music/JJoke 2.mid",
       "path": "assets/easyrpg/music/JJoke 2.mid",
       "fileName": "JJoke 2.mid"
@@ -521,7 +521,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-jmystery",
-      "name": "EasyRPG RTP JMystery Music",
+      "name": "JMystery · 음악 · EasyRPG",
       "sourcePath": "Music/JMystery.mid",
       "path": "assets/easyrpg/music/JMystery.mid",
       "fileName": "JMystery.mid"
@@ -529,7 +529,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-mystery-1",
-      "name": "EasyRPG RTP Mystery 1 Music",
+      "name": "Mystery 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Mystery 1.mid",
       "path": "assets/easyrpg/music/Mystery 1.mid",
       "fileName": "Mystery 1.mid"
@@ -537,7 +537,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-opening-2",
-      "name": "EasyRPG RTP Opening 2 Music",
+      "name": "Opening 2 · 음악 · EasyRPG",
       "sourcePath": "Music/Opening 2.mid",
       "path": "assets/easyrpg/music/Opening 2.mid",
       "fileName": "Opening 2.mid"
@@ -545,7 +545,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-sorrow",
-      "name": "EasyRPG RTP Sorrow Music",
+      "name": "Sorrow · 음악 · EasyRPG",
       "sourcePath": "Music/Sorrow.mid",
       "path": "assets/easyrpg/music/Sorrow.mid",
       "fileName": "Sorrow.mid"
@@ -553,7 +553,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-town-1",
-      "name": "EasyRPG RTP Town 1 Music",
+      "name": "Town 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Town 1.mid",
       "path": "assets/easyrpg/music/Town 1.mid",
       "fileName": "Town 1.mid"
@@ -561,7 +561,7 @@
     {
       "category": "music",
       "id": "easyrpg-music-vehicle-1",
-      "name": "EasyRPG RTP Vehicle 1 Music",
+      "name": "Vehicle 1 · 음악 · EasyRPG",
       "sourcePath": "Music/Vehicle 1.mid",
       "path": "assets/easyrpg/music/Vehicle 1.mid",
       "fileName": "Vehicle 1.mid"
@@ -569,7 +569,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-cosmos1",
-      "name": "EasyRPG RTP Cosmos1 Panorama",
+      "name": "Cosmos1 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Cosmos1.png",
       "path": "assets/easyrpg/backdrop/Cosmos1.png",
       "fileName": "Cosmos1.png"
@@ -577,7 +577,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-dawn1",
-      "name": "EasyRPG RTP Dawn1 Panorama",
+      "name": "Dawn1 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Dawn1.png",
       "path": "assets/easyrpg/backdrop/Dawn1.png",
       "fileName": "Dawn1.png"
@@ -585,7 +585,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-dawn2",
-      "name": "EasyRPG RTP Dawn2 Panorama",
+      "name": "Dawn2 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Dawn2.png",
       "path": "assets/easyrpg/backdrop/Dawn2.png",
       "fileName": "Dawn2.png"
@@ -593,7 +593,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-dimension-rift",
-      "name": "EasyRPG RTP Dimension Rift Panorama",
+      "name": "Dimension Rift · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Dimension Rift.png",
       "path": "assets/easyrpg/backdrop/Dimension Rift.png",
       "fileName": "Dimension Rift.png"
@@ -601,7 +601,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-night-sky1",
-      "name": "EasyRPG RTP Night Sky1 Panorama",
+      "name": "Night Sky1 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Night Sky1.png",
       "path": "assets/easyrpg/backdrop/Night Sky1.png",
       "fileName": "Night Sky1.png"
@@ -609,7 +609,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-night-sky2",
-      "name": "EasyRPG RTP Night Sky2 Panorama",
+      "name": "Night Sky2 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Night Sky2.png",
       "path": "assets/easyrpg/backdrop/Night Sky2.png",
       "fileName": "Night Sky2.png"
@@ -617,7 +617,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-planet1",
-      "name": "EasyRPG RTP Planet1 Panorama",
+      "name": "Planet1 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Planet1.png",
       "path": "assets/easyrpg/backdrop/Planet1.png",
       "fileName": "Planet1.png"
@@ -625,7 +625,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-planet2",
-      "name": "EasyRPG RTP Planet2 Panorama",
+      "name": "Planet2 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Planet2.png",
       "path": "assets/easyrpg/backdrop/Planet2.png",
       "fileName": "Planet2.png"
@@ -633,7 +633,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-planet3",
-      "name": "EasyRPG RTP Planet3 Panorama",
+      "name": "Planet3 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Planet3.png",
       "path": "assets/easyrpg/backdrop/Planet3.png",
       "fileName": "Planet3.png"
@@ -641,7 +641,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-sky1",
-      "name": "EasyRPG RTP Sky1 Panorama",
+      "name": "Sky1 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Sky1.png",
       "path": "assets/easyrpg/backdrop/Sky1.png",
       "fileName": "Sky1.png"
@@ -649,7 +649,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-sky2",
-      "name": "EasyRPG RTP Sky2 Panorama",
+      "name": "Sky2 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Sky2.png",
       "path": "assets/easyrpg/backdrop/Sky2.png",
       "fileName": "Sky2.png"
@@ -657,7 +657,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-sunset1",
-      "name": "EasyRPG RTP Sunset1 Panorama",
+      "name": "Sunset1 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Sunset1.png",
       "path": "assets/easyrpg/backdrop/Sunset1.png",
       "fileName": "Sunset1.png"
@@ -665,7 +665,7 @@
     {
       "category": "backdrop",
       "id": "easyrpg-backdrop-sunset2",
-      "name": "EasyRPG RTP Sunset2 Panorama",
+      "name": "Sunset2 · 배경 그림 · EasyRPG",
       "sourcePath": "Panorama/Sunset2.png",
       "path": "assets/easyrpg/backdrop/Sunset2.png",
       "fileName": "Sunset2.png"
@@ -673,7 +673,7 @@
     {
       "category": "picture",
       "id": "easyrpg-picture-cloud",
-      "name": "EasyRPG RTP Cloud Picture",
+      "name": "Cloud · 그림 · EasyRPG",
       "sourcePath": "Picture/Cloud.png",
       "path": "assets/easyrpg/picture/Cloud.png",
       "fileName": "Cloud.png"
@@ -681,7 +681,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-absorb1",
-      "name": "EasyRPG RTP Absorb1 Sound",
+      "name": "Absorb1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Absorb1.wav",
       "path": "assets/easyrpg/sound/Absorb1.wav",
       "fileName": "Absorb1.wav"
@@ -689,7 +689,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-absorb2",
-      "name": "EasyRPG RTP Absorb2 Sound",
+      "name": "Absorb2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Absorb2.wav",
       "path": "assets/easyrpg/sound/Absorb2.wav",
       "fileName": "Absorb2.wav"
@@ -697,7 +697,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-attack1",
-      "name": "EasyRPG RTP Attack1 Sound",
+      "name": "Attack1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Attack1.wav",
       "path": "assets/easyrpg/sound/Attack1.wav",
       "fileName": "Attack1.wav"
@@ -705,7 +705,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-attack2",
-      "name": "EasyRPG RTP Attack2 Sound",
+      "name": "Attack2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Attack2.wav",
       "path": "assets/easyrpg/sound/Attack2.wav",
       "fileName": "Attack2.wav"
@@ -713,7 +713,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-barrier",
-      "name": "EasyRPG RTP Barrier Sound",
+      "name": "Barrier · 효과음 · EasyRPG",
       "sourcePath": "Sound/Barrier.wav",
       "path": "assets/easyrpg/sound/Barrier.wav",
       "fileName": "Barrier.wav"
@@ -721,7 +721,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-barrier1",
-      "name": "EasyRPG RTP Barrier1 Sound",
+      "name": "Barrier1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Barrier1.wav",
       "path": "assets/easyrpg/sound/Barrier1.wav",
       "fileName": "Barrier1.wav"
@@ -729,7 +729,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-barrier2",
-      "name": "EasyRPG RTP Barrier2 Sound",
+      "name": "Barrier2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Barrier2.wav",
       "path": "assets/easyrpg/sound/Barrier2.wav",
       "fileName": "Barrier2.wav"
@@ -737,7 +737,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-bell",
-      "name": "EasyRPG RTP Bell Sound",
+      "name": "Bell · 효과음 · EasyRPG",
       "sourcePath": "Sound/Bell.wav",
       "path": "assets/easyrpg/sound/Bell.wav",
       "fileName": "Bell.wav"
@@ -745,7 +745,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-blind",
-      "name": "EasyRPG RTP Blind Sound",
+      "name": "Blind · 효과음 · EasyRPG",
       "sourcePath": "Sound/Blind.wav",
       "path": "assets/easyrpg/sound/Blind.wav",
       "fileName": "Blind.wav"
@@ -753,7 +753,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-blow2",
-      "name": "EasyRPG RTP Blow2 Sound",
+      "name": "Blow2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Blow2.wav",
       "path": "assets/easyrpg/sound/Blow2.wav",
       "fileName": "Blow2.wav"
@@ -761,7 +761,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-blow4",
-      "name": "EasyRPG RTP Blow4 Sound",
+      "name": "Blow4 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Blow4.wav",
       "path": "assets/easyrpg/sound/Blow4.wav",
       "fileName": "Blow4.wav"
@@ -769,7 +769,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-breath",
-      "name": "EasyRPG RTP Breath Sound",
+      "name": "Breath · 효과음 · EasyRPG",
       "sourcePath": "Sound/Breath.wav",
       "path": "assets/easyrpg/sound/Breath.wav",
       "fileName": "Breath.wav"
@@ -777,7 +777,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-buff",
-      "name": "EasyRPG RTP Buff Sound",
+      "name": "Buff · 효과음 · EasyRPG",
       "sourcePath": "Sound/Buff.wav",
       "path": "assets/easyrpg/sound/Buff.wav",
       "fileName": "Buff.wav"
@@ -785,7 +785,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-buzzer1",
-      "name": "EasyRPG RTP Buzzer1 Sound",
+      "name": "Buzzer1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Buzzer1.wav",
       "path": "assets/easyrpg/sound/Buzzer1.wav",
       "fileName": "Buzzer1.wav"
@@ -793,7 +793,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-buzzer2",
-      "name": "EasyRPG RTP Buzzer2 Sound",
+      "name": "Buzzer2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Buzzer2.wav",
       "path": "assets/easyrpg/sound/Buzzer2.wav",
       "fileName": "Buzzer2.wav"
@@ -801,7 +801,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-buzzer3",
-      "name": "EasyRPG RTP Buzzer3 Sound",
+      "name": "Buzzer3 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Buzzer3.wav",
       "path": "assets/easyrpg/sound/Buzzer3.wav",
       "fileName": "Buzzer3.wav"
@@ -809,7 +809,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-buzzer4",
-      "name": "EasyRPG RTP Buzzer4 Sound",
+      "name": "Buzzer4 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Buzzer4.wav",
       "path": "assets/easyrpg/sound/Buzzer4.wav",
       "fileName": "Buzzer4.wav"
@@ -817,7 +817,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-cancel1",
-      "name": "EasyRPG RTP Cancel1 Sound",
+      "name": "Cancel1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Cancel1.wav",
       "path": "assets/easyrpg/sound/Cancel1.wav",
       "fileName": "Cancel1.wav"
@@ -825,7 +825,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-cancel2",
-      "name": "EasyRPG RTP Cancel2 Sound",
+      "name": "Cancel2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Cancel2.wav",
       "path": "assets/easyrpg/sound/Cancel2.wav",
       "fileName": "Cancel2.wav"
@@ -833,7 +833,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-cat",
-      "name": "EasyRPG RTP Cat Sound",
+      "name": "Cat · 효과음 · EasyRPG",
       "sourcePath": "Sound/Cat.wav",
       "path": "assets/easyrpg/sound/Cat.wav",
       "fileName": "Cat.wav"
@@ -841,7 +841,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-chime1",
-      "name": "EasyRPG RTP Chime1 Sound",
+      "name": "Chime1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Chime1.wav",
       "path": "assets/easyrpg/sound/Chime1.wav",
       "fileName": "Chime1.wav"
@@ -849,7 +849,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-chime2",
-      "name": "EasyRPG RTP Chime2 Sound",
+      "name": "Chime2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Chime2.wav",
       "path": "assets/easyrpg/sound/Chime2.wav",
       "fileName": "Chime2.wav"
@@ -857,7 +857,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-clock",
-      "name": "EasyRPG RTP Clock Sound",
+      "name": "Clock · 효과음 · EasyRPG",
       "sourcePath": "Sound/Clock.wav",
       "path": "assets/easyrpg/sound/Clock.wav",
       "fileName": "Clock.wav"
@@ -865,7 +865,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-close1",
-      "name": "EasyRPG RTP Close1 Sound",
+      "name": "Close1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Close1.wav",
       "path": "assets/easyrpg/sound/Close1.wav",
       "fileName": "Close1.wav"
@@ -873,7 +873,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-collapse1",
-      "name": "EasyRPG RTP Collapse1 Sound",
+      "name": "Collapse1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Collapse1.wav",
       "path": "assets/easyrpg/sound/Collapse1.wav",
       "fileName": "Collapse1.wav"
@@ -881,7 +881,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-collapse2",
-      "name": "EasyRPG RTP Collapse2 Sound",
+      "name": "Collapse2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Collapse2.wav",
       "path": "assets/easyrpg/sound/Collapse2.wav",
       "fileName": "Collapse2.wav"
@@ -889,7 +889,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-combat1",
-      "name": "EasyRPG RTP Combat1 Sound",
+      "name": "Combat1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Combat1.wav",
       "path": "assets/easyrpg/sound/Combat1.wav",
       "fileName": "Combat1.wav"
@@ -897,7 +897,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-combat2",
-      "name": "EasyRPG RTP Combat2 Sound",
+      "name": "Combat2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Combat2.wav",
       "path": "assets/easyrpg/sound/Combat2.wav",
       "fileName": "Combat2.wav"
@@ -905,7 +905,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-confusion",
-      "name": "EasyRPG RTP Confusion Sound",
+      "name": "Confusion · 효과음 · EasyRPG",
       "sourcePath": "Sound/Confusion.wav",
       "path": "assets/easyrpg/sound/Confusion.wav",
       "fileName": "Confusion.wav"
@@ -913,7 +913,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-cursor1",
-      "name": "EasyRPG RTP Cursor1 Sound",
+      "name": "Cursor1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Cursor1.wav",
       "path": "assets/easyrpg/sound/Cursor1.wav",
       "fileName": "Cursor1.wav"
@@ -921,7 +921,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-cursor2",
-      "name": "EasyRPG RTP Cursor2 Sound",
+      "name": "Cursor2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Cursor2.wav",
       "path": "assets/easyrpg/sound/Cursor2.wav",
       "fileName": "Cursor2.wav"
@@ -929,7 +929,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-damage2",
-      "name": "EasyRPG RTP Damage2 Sound",
+      "name": "Damage2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Damage2.wav",
       "path": "assets/easyrpg/sound/Damage2.wav",
       "fileName": "Damage2.wav"
@@ -937,7 +937,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-darkness3",
-      "name": "EasyRPG RTP Darkness3 Sound",
+      "name": "Darkness3 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Darkness3.wav",
       "path": "assets/easyrpg/sound/Darkness3.wav",
       "fileName": "Darkness3.wav"
@@ -945,7 +945,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-darkness4",
-      "name": "EasyRPG RTP Darkness4 Sound",
+      "name": "Darkness4 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Darkness4.wav",
       "path": "assets/easyrpg/sound/Darkness4.wav",
       "fileName": "Darkness4.wav"
@@ -953,7 +953,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-darkness5",
-      "name": "EasyRPG RTP Darkness5 Sound",
+      "name": "Darkness5 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Darkness5.wav",
       "path": "assets/easyrpg/sound/Darkness5.wav",
       "fileName": "Darkness5.wav"
@@ -961,7 +961,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-debuff",
-      "name": "EasyRPG RTP Debuff Sound",
+      "name": "Debuff · 효과음 · EasyRPG",
       "sourcePath": "Sound/Debuff.wav",
       "path": "assets/easyrpg/sound/Debuff.wav",
       "fileName": "Debuff.wav"
@@ -969,7 +969,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-decision1",
-      "name": "EasyRPG RTP Decision1 Sound",
+      "name": "Decision1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Decision1.wav",
       "path": "assets/easyrpg/sound/Decision1.wav",
       "fileName": "Decision1.wav"
@@ -977,7 +977,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-decision2",
-      "name": "EasyRPG RTP Decision2 Sound",
+      "name": "Decision2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Decision2.wav",
       "path": "assets/easyrpg/sound/Decision2.wav",
       "fileName": "Decision2.wav"
@@ -985,7 +985,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-dog",
-      "name": "EasyRPG RTP Dog Sound",
+      "name": "Dog · 효과음 · EasyRPG",
       "sourcePath": "Sound/Dog.wav",
       "path": "assets/easyrpg/sound/Dog.wav",
       "fileName": "Dog.wav"
@@ -993,7 +993,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-earth2",
-      "name": "EasyRPG RTP Earth2 Sound",
+      "name": "Earth2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Earth2.wav",
       "path": "assets/easyrpg/sound/Earth2.wav",
       "fileName": "Earth2.wav"
@@ -1001,7 +1001,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-earth6",
-      "name": "EasyRPG RTP Earth6 Sound",
+      "name": "Earth6 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Earth6.wav",
       "path": "assets/easyrpg/sound/Earth6.wav",
       "fileName": "Earth6.wav"
@@ -1009,7 +1009,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-earth7",
-      "name": "EasyRPG RTP Earth7 Sound",
+      "name": "Earth7 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Earth7.wav",
       "path": "assets/easyrpg/sound/Earth7.wav",
       "fileName": "Earth7.wav"
@@ -1017,7 +1017,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-earth8",
-      "name": "EasyRPG RTP Earth8 Sound",
+      "name": "Earth8 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Earth8.wav",
       "path": "assets/easyrpg/sound/Earth8.wav",
       "fileName": "Earth8.wav"
@@ -1025,7 +1025,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-escape",
-      "name": "EasyRPG RTP Escape Sound",
+      "name": "Escape · 효과음 · EasyRPG",
       "sourcePath": "Sound/Escape.wav",
       "path": "assets/easyrpg/sound/Escape.wav",
       "fileName": "Escape.wav"
@@ -1033,7 +1033,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-evade1",
-      "name": "EasyRPG RTP Evade1 Sound",
+      "name": "Evade1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Evade1.wav",
       "path": "assets/easyrpg/sound/Evade1.wav",
       "fileName": "Evade1.wav"
@@ -1041,7 +1041,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-evade2",
-      "name": "EasyRPG RTP Evade2 Sound",
+      "name": "Evade2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Evade2.wav",
       "path": "assets/easyrpg/sound/Evade2.wav",
       "fileName": "Evade2.wav"
@@ -1049,7 +1049,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-explosion1",
-      "name": "EasyRPG RTP Explosion1 Sound",
+      "name": "Explosion1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Explosion1.wav",
       "path": "assets/easyrpg/sound/Explosion1.wav",
       "fileName": "Explosion1.wav"
@@ -1057,7 +1057,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fall1",
-      "name": "EasyRPG RTP Fall1 Sound",
+      "name": "Fall1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fall1.wav",
       "path": "assets/easyrpg/sound/Fall1.wav",
       "fileName": "Fall1.wav"
@@ -1065,7 +1065,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fall2",
-      "name": "EasyRPG RTP Fall2 Sound",
+      "name": "Fall2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fall2.wav",
       "path": "assets/easyrpg/sound/Fall2.wav",
       "fileName": "Fall2.wav"
@@ -1073,7 +1073,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire1",
-      "name": "EasyRPG RTP Fire1 Sound",
+      "name": "Fire1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire1.wav",
       "path": "assets/easyrpg/sound/Fire1.wav",
       "fileName": "Fire1.wav"
@@ -1081,7 +1081,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire2",
-      "name": "EasyRPG RTP Fire2 Sound",
+      "name": "Fire2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire2.wav",
       "path": "assets/easyrpg/sound/Fire2.wav",
       "fileName": "Fire2.wav"
@@ -1089,7 +1089,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire3",
-      "name": "EasyRPG RTP Fire3 Sound",
+      "name": "Fire3 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire3.wav",
       "path": "assets/easyrpg/sound/Fire3.wav",
       "fileName": "Fire3.wav"
@@ -1097,7 +1097,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire4",
-      "name": "EasyRPG RTP Fire4 Sound",
+      "name": "Fire4 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire4.wav",
       "path": "assets/easyrpg/sound/Fire4.wav",
       "fileName": "Fire4.wav"
@@ -1105,7 +1105,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire5",
-      "name": "EasyRPG RTP Fire5 Sound",
+      "name": "Fire5 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire5.wav",
       "path": "assets/easyrpg/sound/Fire5.wav",
       "fileName": "Fire5.wav"
@@ -1113,7 +1113,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire6",
-      "name": "EasyRPG RTP Fire6 Sound",
+      "name": "Fire6 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire6.wav",
       "path": "assets/easyrpg/sound/Fire6.wav",
       "fileName": "Fire6.wav"
@@ -1121,7 +1121,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fire7",
-      "name": "EasyRPG RTP Fire7 Sound",
+      "name": "Fire7 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fire7.wav",
       "path": "assets/easyrpg/sound/Fire7.wav",
       "fileName": "Fire7.wav"
@@ -1129,7 +1129,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-flash1",
-      "name": "EasyRPG RTP Flash1 Sound",
+      "name": "Flash1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Flash1.wav",
       "path": "assets/easyrpg/sound/Flash1.wav",
       "fileName": "Flash1.wav"
@@ -1137,7 +1137,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-flash3",
-      "name": "EasyRPG RTP Flash3 Sound",
+      "name": "Flash3 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Flash3.wav",
       "path": "assets/easyrpg/sound/Flash3.wav",
       "fileName": "Flash3.wav"
@@ -1145,7 +1145,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-fog1",
-      "name": "EasyRPG RTP Fog1 Sound",
+      "name": "Fog1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Fog1.wav",
       "path": "assets/easyrpg/sound/Fog1.wav",
       "fileName": "Fog1.wav"
@@ -1153,7 +1153,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-glare",
-      "name": "EasyRPG RTP Glare Sound",
+      "name": "Glare · 효과음 · EasyRPG",
       "sourcePath": "Sound/Glare.wav",
       "path": "assets/easyrpg/sound/Glare.wav",
       "fileName": "Glare.wav"
@@ -1161,7 +1161,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-holy2",
-      "name": "EasyRPG RTP Holy2 Sound",
+      "name": "Holy2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Holy2.wav",
       "path": "assets/easyrpg/sound/Holy2.wav",
       "fileName": "Holy2.wav"
@@ -1169,7 +1169,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-holy3",
-      "name": "EasyRPG RTP Holy3 Sound",
+      "name": "Holy3 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Holy3.wav",
       "path": "assets/easyrpg/sound/Holy3.wav",
       "fileName": "Holy3.wav"
@@ -1177,7 +1177,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-holy5",
-      "name": "EasyRPG RTP Holy5 Sound",
+      "name": "Holy5 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Holy5.wav",
       "path": "assets/easyrpg/sound/Holy5.wav",
       "fileName": "Holy5.wav"
@@ -1185,7 +1185,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-holy6",
-      "name": "EasyRPG RTP Holy6 Sound",
+      "name": "Holy6 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Holy6.wav",
       "path": "assets/easyrpg/sound/Holy6.wav",
       "fileName": "Holy6.wav"
@@ -1193,7 +1193,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-holy7",
-      "name": "EasyRPG RTP Holy7 Sound",
+      "name": "Holy7 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Holy7.wav",
       "path": "assets/easyrpg/sound/Holy7.wav",
       "fileName": "Holy7.wav"
@@ -1201,7 +1201,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-ice1",
-      "name": "EasyRPG RTP Ice1 Sound",
+      "name": "Ice1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Ice1.wav",
       "path": "assets/easyrpg/sound/Ice1.wav",
       "fileName": "Ice1.wav"
@@ -1209,7 +1209,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-ice2",
-      "name": "EasyRPG RTP Ice2 Sound",
+      "name": "Ice2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Ice2.wav",
       "path": "assets/easyrpg/sound/Ice2.wav",
       "fileName": "Ice2.wav"
@@ -1217,7 +1217,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-ice5",
-      "name": "EasyRPG RTP Ice5 Sound",
+      "name": "Ice5 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Ice5.wav",
       "path": "assets/easyrpg/sound/Ice5.wav",
       "fileName": "Ice5.wav"
@@ -1225,7 +1225,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-ice6",
-      "name": "EasyRPG RTP Ice6 Sound",
+      "name": "Ice6 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Ice6.wav",
       "path": "assets/easyrpg/sound/Ice6.wav",
       "fileName": "Ice6.wav"
@@ -1233,7 +1233,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-ice7",
-      "name": "EasyRPG RTP Ice7 Sound",
+      "name": "Ice7 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Ice7.wav",
       "path": "assets/easyrpg/sound/Ice7.wav",
       "fileName": "Ice7.wav"
@@ -1241,7 +1241,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-ice9",
-      "name": "EasyRPG RTP Ice9 Sound",
+      "name": "Ice9 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Ice9.wav",
       "path": "assets/easyrpg/sound/Ice9.wav",
       "fileName": "Ice9.wav"
@@ -1249,7 +1249,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-item1",
-      "name": "EasyRPG RTP Item1 Sound",
+      "name": "Item1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Item1.wav",
       "path": "assets/easyrpg/sound/Item1.wav",
       "fileName": "Item1.wav"
@@ -1257,7 +1257,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-item2",
-      "name": "EasyRPG RTP Item2 Sound",
+      "name": "Item2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Item2.wav",
       "path": "assets/easyrpg/sound/Item2.wav",
       "fileName": "Item2.wav"
@@ -1265,7 +1265,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-key",
-      "name": "EasyRPG RTP Key Sound",
+      "name": "Key · 효과음 · EasyRPG",
       "sourcePath": "Sound/Key.wav",
       "path": "assets/easyrpg/sound/Key.wav",
       "fileName": "Key.wav"
@@ -1273,7 +1273,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-knock",
-      "name": "EasyRPG RTP Knock Sound",
+      "name": "Knock · 효과음 · EasyRPG",
       "sourcePath": "Sound/Knock.wav",
       "path": "assets/easyrpg/sound/Knock.wav",
       "fileName": "Knock.wav"
@@ -1281,7 +1281,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-magic1",
-      "name": "EasyRPG RTP Magic1 Sound",
+      "name": "Magic1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Magic1.wav",
       "path": "assets/easyrpg/sound/Magic1.wav",
       "fileName": "Magic1.wav"
@@ -1289,7 +1289,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-magic2",
-      "name": "EasyRPG RTP Magic2 Sound",
+      "name": "Magic2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Magic2.wav",
       "path": "assets/easyrpg/sound/Magic2.wav",
       "fileName": "Magic2.wav"
@@ -1297,7 +1297,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-monster1",
-      "name": "EasyRPG RTP Monster1 Sound",
+      "name": "Monster1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Monster1.wav",
       "path": "assets/easyrpg/sound/Monster1.wav",
       "fileName": "Monster1.wav"
@@ -1305,7 +1305,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-move",
-      "name": "EasyRPG RTP Move Sound",
+      "name": "Move · 효과음 · EasyRPG",
       "sourcePath": "Sound/Move.wav",
       "path": "assets/easyrpg/sound/Move.wav",
       "fileName": "Move.wav"
@@ -1313,7 +1313,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-poison",
-      "name": "EasyRPG RTP Poison Sound",
+      "name": "Poison · 효과음 · EasyRPG",
       "sourcePath": "Sound/Poison.wav",
       "path": "assets/easyrpg/sound/Poison.wav",
       "fileName": "Poison.wav"
@@ -1321,7 +1321,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-pollen",
-      "name": "EasyRPG RTP Pollen Sound",
+      "name": "Pollen · 효과음 · EasyRPG",
       "sourcePath": "Sound/Pollen.wav",
       "path": "assets/easyrpg/sound/Pollen.wav",
       "fileName": "Pollen.wav"
@@ -1329,7 +1329,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-raise2",
-      "name": "EasyRPG RTP Raise2 Sound",
+      "name": "Raise2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Raise2.wav",
       "path": "assets/easyrpg/sound/Raise2.wav",
       "fileName": "Raise2.wav"
@@ -1337,7 +1337,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-recovery5",
-      "name": "EasyRPG RTP Recovery5 Sound",
+      "name": "Recovery5 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Recovery5.wav",
       "path": "assets/easyrpg/sound/Recovery5.wav",
       "fileName": "Recovery5.wav"
@@ -1345,7 +1345,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-recovery7",
-      "name": "EasyRPG RTP Recovery7 Sound",
+      "name": "Recovery7 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Recovery7.wav",
       "path": "assets/easyrpg/sound/Recovery7.wav",
       "fileName": "Recovery7.wav"
@@ -1353,7 +1353,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-recovery8",
-      "name": "EasyRPG RTP Recovery8 Sound",
+      "name": "Recovery8 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Recovery8.wav",
       "path": "assets/easyrpg/sound/Recovery8.wav",
       "fileName": "Recovery8.wav"
@@ -1361,7 +1361,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-sandstorm",
-      "name": "EasyRPG RTP Sandstorm Sound",
+      "name": "Sandstorm · 효과음 · EasyRPG",
       "sourcePath": "Sound/Sandstorm.wav",
       "path": "assets/easyrpg/sound/Sandstorm.wav",
       "fileName": "Sandstorm.wav"
@@ -1369,7 +1369,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-shot1",
-      "name": "EasyRPG RTP Shot1 Sound",
+      "name": "Shot1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Shot1.wav",
       "path": "assets/easyrpg/sound/Shot1.wav",
       "fileName": "Shot1.wav"
@@ -1377,7 +1377,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-shot2",
-      "name": "EasyRPG RTP Shot2 Sound",
+      "name": "Shot2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Shot2.wav",
       "path": "assets/easyrpg/sound/Shot2.wav",
       "fileName": "Shot2.wav"
@@ -1385,7 +1385,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-shot3",
-      "name": "EasyRPG RTP Shot3 Sound",
+      "name": "Shot3 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Shot3.wav",
       "path": "assets/easyrpg/sound/Shot3.wav",
       "fileName": "Shot3.wav"
@@ -1393,7 +1393,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-silence",
-      "name": "EasyRPG RTP Silence Sound",
+      "name": "Silence · 효과음 · EasyRPG",
       "sourcePath": "Sound/Silence.wav",
       "path": "assets/easyrpg/sound/Silence.wav",
       "fileName": "Silence.wav"
@@ -1401,7 +1401,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-sleep",
-      "name": "EasyRPG RTP Sleep Sound",
+      "name": "Sleep · 효과음 · EasyRPG",
       "sourcePath": "Sound/Sleep.wav",
       "path": "assets/easyrpg/sound/Sleep.wav",
       "fileName": "Sleep.wav"
@@ -1409,7 +1409,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-song",
-      "name": "EasyRPG RTP Song Sound",
+      "name": "Song · 효과음 · EasyRPG",
       "sourcePath": "Sound/Song.wav",
       "path": "assets/easyrpg/sound/Song.wav",
       "fileName": "Song.wav"
@@ -1417,7 +1417,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-teleport2",
-      "name": "EasyRPG RTP Teleport2 Sound",
+      "name": "Teleport2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Teleport2.wav",
       "path": "assets/easyrpg/sound/Teleport2.wav",
       "fileName": "Teleport2.wav"
@@ -1425,7 +1425,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-wave1",
-      "name": "EasyRPG RTP Wave1 Sound",
+      "name": "Wave1 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Wave1.wav",
       "path": "assets/easyrpg/sound/Wave1.wav",
       "fileName": "Wave1.wav"
@@ -1433,7 +1433,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-wave2",
-      "name": "EasyRPG RTP Wave2 Sound",
+      "name": "Wave2 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Wave2.wav",
       "path": "assets/easyrpg/sound/Wave2.wav",
       "fileName": "Wave2.wav"
@@ -1441,7 +1441,7 @@
     {
       "category": "sound",
       "id": "easyrpg-sound-wind8",
-      "name": "EasyRPG RTP Wind8 Sound",
+      "name": "Wind8 · 효과음 · EasyRPG",
       "sourcePath": "Sound/Wind8.wav",
       "path": "assets/easyrpg/sound/Wind8.wav",
       "fileName": "Wind8.wav"
@@ -1449,7 +1449,7 @@
     {
       "category": "system",
       "id": "easyrpg-system-royal",
-      "name": "EasyRPG RTP Royal System",
+      "name": "Royal · 시스템 그림 · EasyRPG",
       "sourcePath": "System/Royal.png",
       "path": "assets/easyrpg/system/Royal.png",
       "fileName": "Royal.png"
@@ -1457,7 +1457,7 @@
     {
       "category": "system",
       "id": "easyrpg-system-system",
-      "name": "EasyRPG RTP System System",
+      "name": "System · 시스템 그림 · EasyRPG",
       "sourcePath": "System/System.png",
       "path": "assets/easyrpg/system/System.png",
       "fileName": "System.png"
@@ -1465,7 +1465,7 @@
     {
       "category": "system",
       "id": "easyrpg-system-system-a",
-      "name": "EasyRPG RTP SystemA System",
+      "name": "SystemA · 시스템 그림 · EasyRPG",
       "sourcePath": "System/SystemA.png",
       "path": "assets/easyrpg/system/SystemA.png",
       "fileName": "SystemA.png"
@@ -1473,7 +1473,7 @@
     {
       "category": "system",
       "id": "easyrpg-system-system-b",
-      "name": "EasyRPG RTP SystemB System",
+      "name": "SystemB · 시스템 그림 · EasyRPG",
       "sourcePath": "System/SystemB.png",
       "path": "assets/easyrpg/system/SystemB.png",
       "fileName": "SystemB.png"
@@ -1481,7 +1481,7 @@
     {
       "category": "system",
       "id": "easyrpg-system-system-c",
-      "name": "EasyRPG RTP SystemC System",
+      "name": "SystemC · 시스템 그림 · EasyRPG",
       "sourcePath": "System/SystemC.png",
       "path": "assets/easyrpg/system/SystemC.png",
       "fileName": "SystemC.png"
@@ -1489,7 +1489,7 @@
     {
       "category": "system2",
       "id": "easyrpg-system2-system2-a",
-      "name": "EasyRPG RTP System2A System2",
+      "name": "System2A · 시스템 그림 2 · EasyRPG",
       "sourcePath": "System2/System2A.png",
       "path": "assets/easyrpg/system2/System2A.png",
       "fileName": "System2A.png"
@@ -1497,7 +1497,7 @@
     {
       "category": "system2",
       "id": "easyrpg-system2-system2-b",
-      "name": "EasyRPG RTP System2B System2",
+      "name": "System2B · 시스템 그림 2 · EasyRPG",
       "sourcePath": "System2/System2B.png",
       "path": "assets/easyrpg/system2/System2B.png",
       "fileName": "System2B.png"
@@ -1505,7 +1505,7 @@
     {
       "category": "system2",
       "id": "easyrpg-system2-system2-c",
-      "name": "EasyRPG RTP System2C System2",
+      "name": "System2C · 시스템 그림 2 · EasyRPG",
       "sourcePath": "System2/System2C.png",
       "path": "assets/easyrpg/system2/System2C.png",
       "fileName": "System2C.png"
@@ -1513,7 +1513,7 @@
     {
       "category": "title",
       "id": "easyrpg-title-title1",
-      "name": "EasyRPG RTP Title1 Title",
+      "name": "Title1 · 타이틀 화면 · EasyRPG",
       "sourcePath": "Title/Title1.png",
       "path": "assets/easyrpg/title/Title1.png",
       "fileName": "Title1.png"
@@ -1521,7 +1521,7 @@
     {
       "category": "title",
       "id": "easyrpg-title-title2",
-      "name": "EasyRPG RTP Title2 Title",
+      "name": "Title2 · 타이틀 화면 · EasyRPG",
       "sourcePath": "Title/Title2.png",
       "path": "assets/easyrpg/title/Title2.png",
       "fileName": "Title2.png"
@@ -1529,7 +1529,7 @@
     {
       "category": "title",
       "id": "easyrpg-title-title3",
-      "name": "EasyRPG RTP Title3 Title",
+      "name": "Title3 · 타이틀 화면 · EasyRPG",
       "sourcePath": "Title/Title3.png",
       "path": "assets/easyrpg/title/Title3.png",
       "fileName": "Title3.png"
@@ -1537,7 +1537,7 @@
     {
       "category": "title",
       "id": "easyrpg-title-title4",
-      "name": "EasyRPG RTP Title4 Title",
+      "name": "Title4 · 타이틀 화면 · EasyRPG",
       "sourcePath": "Title/Title4.png",
       "path": "assets/easyrpg/title/Title4.png",
       "fileName": "Title4.png"

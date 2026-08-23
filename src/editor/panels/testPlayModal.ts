@@ -1,4 +1,5 @@
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
+import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
 import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
@@ -25,12 +26,12 @@ let battleSceneController: BattleDomController | null = null;
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
-  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — "RPG 쯔꾸르" 고정 문구는
+  // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
   const title = startOverride
     ? `여기서 테스트 - (${startOverride.mapId} ${startOverride.x},${startOverride.y})`
-    : `테스트 플레이 - ${projectTitle || "RPG 쯔꾸르"}`;
+    : `시연 실행 - ${projectTitle || PRODUCT_BRAND}`;
   const body = openTestPlayShell(title);
   const loading = mountPlayLoadingOverlay(body, "saving");
   try {
@@ -52,7 +53,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     console.error("[test-play] failed to open test play:", error);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
-    loading.setStage("error", "테스트 플레이를 열지 못했습니다");
+    loading.setStage("error", "시연 실행를 열지 못했습니다");
     return;
   }
   // renderPlayer clears body children (including this overlay) when it mounts.
@@ -228,13 +229,13 @@ function openTestPlayShell(title: string): HTMLElement {
   const restoreButton = el("button", {
     class: "test-play-close window-control restore",
     text: "창",
-    attrs: { title: "창 모드", "aria-label": "테스트 플레이 창 모드" },
+    attrs: { title: "창 모드", "aria-label": "시연 실행 창 모드" },
     dataset: { testid: "test-play-window-restore" },
   }) as HTMLButtonElement;
   const maximizeButton = el("button", {
     class: "test-play-close window-control maximize",
     text: "전체",
-    attrs: { title: "전체 화면", "aria-label": "테스트 플레이 전체 화면" },
+    attrs: { title: "전체 화면", "aria-label": "시연 실행 전체 화면" },
     dataset: { testid: "test-play-window-maximize" },
   }) as HTMLButtonElement;
   titlebar.append(
@@ -246,7 +247,7 @@ function openTestPlayShell(title: string): HTMLElement {
     el("button", {
       class: "test-play-close",
       text: "편집으로",
-      attrs: { title: "테스트 플레이 닫기" },
+      attrs: { title: "시연 실행 닫기" },
       dataset: { testid: "mode-edit" },
       on: { click: () => closeTestPlayModal() },
     }),

@@ -26,7 +26,7 @@
   }
 
   .database-modal-body .db-body:has(.tileset-db-workspace) > .tileset-db-workspace,
-  .database-modal-body .db-body:has(.tileset-db-workspace) > .rm2k3-tileset-workspace {
+  .database-modal-body .db-body:has(.tileset-db-workspace) > .oprn-tileset-workspace {
     height: 100%;
     min-height: 0;
   }
@@ -36,7 +36,7 @@
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-list-pane {
     display: grid;
     /* h3 / 검색 / 카테고리 필터 칩(아이템·장비만, 없으면 빈 행) / 목록(1fr) / 푸터 / 툴바.
        칩 행은 컬렉션에 따라 렌더되지 않으므로 각 자식을 명시적 행에 배치한다 — 그래야
@@ -46,27 +46,27 @@
     grid-template-rows: auto auto minmax(max-content, auto) minmax(0, 1fr) auto auto;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > h3 {
+  .database-modal-body .oprn-record-list-pane > h3 {
     grid-row: 1;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-search {
+  .database-modal-body .oprn-record-list-pane > .db-search {
     grid-row: 2;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-filter-chips {
+  .database-modal-body .oprn-record-list-pane > .db-filter-chips {
     grid-row: 3;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-list {
+  .database-modal-body .oprn-record-list-pane > .db-list {
     grid-row: 4;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .rm2k3-record-list-footer {
+  .database-modal-body .oprn-record-list-pane > .oprn-record-list-footer {
     grid-row: 5;
   }
 
-  .database-modal-body .rm2k3-record-list-pane > .db-toolbar {
+  .database-modal-body .oprn-record-list-pane > .db-toolbar {
     grid-row: 6;
   }
 
@@ -92,46 +92,46 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-list-pane .db-toolbar .btn {
+  .database-modal-body .oprn-record-list-pane .db-toolbar .btn {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-detail-pane {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     min-height: 0;
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-detail-form {
+  .database-modal-body .oprn-detail-form {
     min-height: 0;
     overflow: auto;
   }
 
-  .database-modal-backdrop:has(.rm2k3-record-enemies),
-  .database-modal-backdrop:has(.rm2k3-record-troops) {
+  .database-modal-backdrop:has(.oprn-record-enemies),
+  .database-modal-backdrop:has(.oprn-record-troops) {
     align-items: center;
     justify-content: center;
     padding: var(--space-3);
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies),
-  .database-modal-window:has(.rm2k3-record-troops) {
+  .database-modal-window:has(.oprn-record-enemies),
+  .database-modal-window:has(.oprn-record-troops) {
     height: min(1024px, calc(100vh - 24px));
     max-width: calc(100vw - 24px);
     width: min(1530px, calc(100vw - 24px));
   }
 
-  .database-modal-backdrop:has(.rm2k3-record-actors) {
+  .database-modal-backdrop:has(.oprn-record-actors) {
     align-items: center;
     justify-content: center;
     padding: var(--space-3);
   }
 
-  .database-modal-window:has(.rm2k3-record-actors) {
+  .database-modal-window:has(.oprn-record-actors) {
     height: min(1024px, calc(100vh - 24px));
     max-width: calc(100vw - 24px);
     width: min(1530px, calc(100vw - 24px));
@@ -147,16 +147,16 @@
     width: min(1040px, calc(100vw - 24px));
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-body,
-  .database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
+  .database-modal-window:has(.oprn-record-enemies) .database-modal-body,
+  .database-modal-window:has(.oprn-record-troops) .database-modal-body {
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr);
     overflow: hidden;
     padding: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tabs,
-  .database-modal-body:has(.rm2k3-record-troops) .db-tabs {
+  .database-modal-body:has(.oprn-record-enemies) .db-tabs,
+  .database-modal-body:has(.oprn-record-troops) .db-tabs {
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-default);
     flex-wrap: nowrap;
@@ -168,8 +168,8 @@
     padding: 8px 8px 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tab,
-  .database-modal-body:has(.rm2k3-record-troops) .db-tab {
+  .database-modal-body:has(.oprn-record-enemies) .db-tab,
+  .database-modal-body:has(.oprn-record-troops) .db-tab {
     background: var(--bg-raised);
     border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     color: var(--text-primary);
@@ -180,8 +180,8 @@
     padding: 0 16px;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tab.active,
-  .database-modal-body:has(.rm2k3-record-troops) .db-tab.active {
+  .database-modal-body:has(.oprn-record-enemies) .db-tab.active,
+  .database-modal-body:has(.oprn-record-troops) .db-tab.active {
     background: linear-gradient(var(--accent), var(--accent));
     border-bottom-color: var(--accent-border);
     border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
@@ -190,14 +190,14 @@
     margin-bottom: -1px;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-body,
-  .database-modal-body:has(.rm2k3-record-troops) .db-body {
+  .database-modal-body:has(.oprn-record-enemies) .db-body,
+  .database-modal-body:has(.oprn-record-troops) .db-body {
     height: auto;
     min-height: 0;
     overflow: hidden;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) {
+  .database-modal-window:has(.oprn-record-enemies) {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 7px;
@@ -206,12 +206,12 @@
     width: min(1584px, calc(100vw - 24px));
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-body {
+  .database-modal-window:has(.oprn-record-enemies) .database-modal-body {
     background: var(--bg-raised);
     grid-template-rows: 56px minmax(0, 1fr);
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tabs {
+  .database-modal-body:has(.oprn-record-enemies) .db-tabs {
     align-items: end;
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-subtle);
@@ -220,7 +220,7 @@
     padding: 0 20px;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tab {
+  .database-modal-body:has(.oprn-record-enemies) .db-tab {
     background: transparent;
     border: 0;
     border-bottom: 3px solid transparent;
@@ -233,7 +233,7 @@
     padding: 0 12px;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tab.active {
+  .database-modal-body:has(.oprn-record-enemies) .db-tab.active {
     background: transparent;
     border-bottom-color: var(--accent-border);
     box-shadow: none;
@@ -241,28 +241,28 @@
     margin: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-body {
+  .database-modal-body:has(.oprn-record-enemies) .db-body {
     background: var(--bg-raised);
     padding: 14px 16px 10px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane,
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane,
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     box-shadow: none;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane {
     padding: 16px 14px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
     padding: 10px;
   }
 
-  .database-modal-body:has(.rm2k3-record-actors) .db-tabs {
+  .database-modal-body:has(.oprn-record-actors) .db-tabs {
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-default);
     flex-wrap: nowrap;
@@ -274,7 +274,7 @@
     padding: 8px 8px 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-actors) .db-tab {
+  .database-modal-body:has(.oprn-record-actors) .db-tab {
     background: var(--bg-raised);
     border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     color: var(--text-primary);
@@ -285,7 +285,7 @@
     padding: 0 16px;
   }
 
-  .database-modal-body:has(.rm2k3-record-actors) .db-tab.active {
+  .database-modal-body:has(.oprn-record-actors) .db-tab.active {
     background: linear-gradient(var(--accent), var(--accent));
     border-bottom-color: var(--accent-border);
     border-color: var(--accent-border) var(--accent-border) var(--accent-border) var(--accent-border);
@@ -293,13 +293,13 @@
     color: var(--text-1);
   }
 
-  .database-modal-body:has(.rm2k3-record-actors) .db-body {
+  .database-modal-body:has(.oprn-record-actors) .db-body {
     height: auto;
     min-height: 0;
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
     grid-template-areas:
       "name graphic actions"
       "stats graphic actions"
@@ -310,7 +310,7 @@
     grid-template-rows: auto auto auto auto minmax(170px, 1fr);
   }
 
-  .database-modal-window:has(.rm2k3-record-troops) {
+  .database-modal-window:has(.oprn-record-troops) {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 7px;
@@ -319,12 +319,12 @@
     width: min(1584px, calc(100vw - 24px));
   }
 
-  .database-modal-window:has(.rm2k3-record-troops) .database-modal-body {
+  .database-modal-window:has(.oprn-record-troops) .database-modal-body {
     background: var(--bg-raised);
     grid-template-rows: 56px minmax(0, 1fr);
   }
 
-  .database-modal-body:has(.rm2k3-record-troops) .db-tabs {
+  .database-modal-body:has(.oprn-record-troops) .db-tabs {
     align-items: end;
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-subtle);
@@ -333,7 +333,7 @@
     padding: 0 20px;
   }
 
-  .database-modal-body:has(.rm2k3-record-troops) .db-tab {
+  .database-modal-body:has(.oprn-record-troops) .db-tab {
     background: transparent;
     border: 0;
     border-bottom: 3px solid transparent;
@@ -346,7 +346,7 @@
     padding: 0 12px;
   }
 
-  .database-modal-body:has(.rm2k3-record-troops) .db-tab.active {
+  .database-modal-body:has(.oprn-record-troops) .db-tab.active {
     background: transparent;
     border-bottom-color: var(--accent-border);
     box-shadow: none;
@@ -354,31 +354,31 @@
     margin: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-troops) .db-body {
+  .database-modal-body:has(.oprn-record-troops) .db-body {
     background: var(--bg-raised);
     border: 0;
     padding: 14px 16px 10px;
   }
 
-  .database-modal-body .rm2k3-record-troops {
+  .database-modal-body .oprn-record-troops {
     gap: 14px;
     grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane,
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-troops .oprn-record-list-pane,
+  .database-modal-body .oprn-record-troops .oprn-record-detail-pane {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
     box-shadow: none;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-troops .oprn-record-list-pane {
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;
     padding: 16px 14px;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-list-pane h3 {
+  .database-modal-body .oprn-record-troops .oprn-record-list-pane h3 {
     background: transparent;
     border: 0;
     color: var(--text-1);
@@ -388,7 +388,7 @@
     margin: 0 0 10px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-list {
+  .database-modal-body .oprn-record-troops .db-list {
     border: 0;
     display: grid;
     gap: 2px;
@@ -397,7 +397,7 @@
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-list-row {
+  .database-modal-body .oprn-record-troops .db-list-row {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
@@ -408,13 +408,13 @@
     position: relative;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-list-row.active {
+  .database-modal-body .oprn-record-troops .db-list-row.active {
     background: var(--accent-muted);
     border-color: var(--accent-border);
     color: var(--text-1);
   }
 
-  .database-modal-body .rm2k3-record-troops .db-list-row.active::before {
+  .database-modal-body .oprn-record-troops .db-list-row.active::before {
     background: var(--bg-raised);
     border-radius: 2px;
     content: "";
@@ -425,15 +425,15 @@
     width: 3px;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-count {
+  .database-modal-body .oprn-record-troops .oprn-record-count {
     color: var(--text-1);
     display: block;
     font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
     margin: 10px 0 8px;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-maximum-button,
-  .database-modal-body .rm2k3-record-troops .db-toolbar .btn,
+  .database-modal-body .oprn-record-troops .oprn-maximum-button,
+  .database-modal-body .oprn-record-troops .db-toolbar .btn,
   .database-modal-body .db-troops-classic-workbench button {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
@@ -443,13 +443,13 @@
     min-height: 36px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-toolbar {
+  .database-modal-body .oprn-record-troops .db-toolbar {
     gap: 8px;
     height: auto;
     margin: 8px 0 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-troops .oprn-record-detail-pane {
     padding: 10px;
   }
 
@@ -568,7 +568,7 @@
     font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
   }
 
-  .database-modal-body .rm2k3-detail-troops .db-troop-battle-preview-stage {
+  .database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage {
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
     height: 300px;

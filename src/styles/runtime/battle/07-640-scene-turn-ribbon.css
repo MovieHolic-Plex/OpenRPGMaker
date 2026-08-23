@@ -15,19 +15,19 @@
   left: 10px;
 }
 
-@keyframes rm2k3-actor-step {
+@keyframes oprn-actor-step {
   50% {
     margin-left: -16px;
   }
 }
 
-@keyframes rm2k3-target-flash {
+@keyframes oprn-target-flash {
   50% {
     filter: brightness(2.2);
   }
 }
 
-@keyframes rm2k3-target-select-pulse {
+@keyframes oprn-target-select-pulse {
   50% {
     filter: brightness(1.45);
   }

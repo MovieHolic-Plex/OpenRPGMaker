@@ -4,8 +4,8 @@ import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 import type { MapEditLockStatus } from "@/editor/mapEditLocks";
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
-const LAYOUT_VERSION_KEY = "rpg-zzu:editor-layout-version";
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
+const LAYOUT_VERSION_KEY = "oprn:editor-layout-version";
 const LAYOUT_VERSION = "2026-07-24-maptree-300";
 
 class MemoryStorage implements Storage {

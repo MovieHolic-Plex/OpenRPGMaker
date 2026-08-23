@@ -57,7 +57,7 @@ async function projectExport(page: Page): Promise<ProjectExport> {
 
 async function playerSpriteDebug(page: Page): Promise<PlayerSpriteDebug> {
   const parsed = await page.evaluate(() => {
-    const sprite = window.__rpgzzuPlayerSprite?.();
+    const sprite = window.__oprnPlayerSprite?.();
     return sprite ?? null;
   });
   if (!isPlayerSpriteDebug(parsed)) throw new Error("invalid player sprite debug state");
@@ -81,7 +81,7 @@ async function playCanvasMetrics(page: Page): Promise<PlayCanvasMetrics> {
 
 async function cameraMetrics(page: Page): Promise<CameraMetrics> {
   const parsed = await page.evaluate(() => {
-    const camera = window.__rpgzzuCamera?.();
+    const camera = window.__oprnCamera?.();
     return camera
       ? { width: camera.width, height: camera.height, zoom: camera.zoom }
       : null;
@@ -92,11 +92,11 @@ async function cameraMetrics(page: Page): Promise<CameraMetrics> {
 
 async function holdDirection(page: Page, direction: string, durationMs: number): Promise<void> {
   await page.evaluate((nextDirection) => {
-    window.__rpgzzuInput?.dir(nextDirection);
+    window.__oprnInput?.dir(nextDirection);
   }, direction);
   await page.waitForTimeout(durationMs);
   await page.evaluate(() => {
-    window.__rpgzzuInput?.dir(null);
+    window.__oprnInput?.dir(null);
   });
 }
 

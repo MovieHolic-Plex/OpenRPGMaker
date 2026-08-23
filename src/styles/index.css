@@ -18,7 +18,7 @@
 @import "./components/app-modal.css";
 @import "./components/empty-state.css";
 @import "./components/grid-4.css";
-@import "./shell/rm2k3.css";
+@import "./shell/shell-density.css";
 @import "./shell/editor-responsive-expert.css";
 @import "./shell/editor-welcome.css";
 @import "./editor/responsive-a.css";

@@ -2,7 +2,7 @@
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
 // v2: 3레이어(lower/upper/event) + tileset.passability 기반.
 // EditScene/패널은 이 액션들만 호출 — 직접 Project를 쓰지 않는다(단일 진실 원천).
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §3.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §3.
 
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";

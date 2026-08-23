@@ -1,7 +1,7 @@
 import type { OntologyEntity } from "./ontologyTypes";
 
 export const ONTOLOGY_ENTITIES = [
-  entity({ id: "Project", label: "Project", description: "The root RPG ZZU project document.", typeFiles: ["src/project/types/project.ts"], ownerCapabilityIds: ["ProjectPersistence"] }),
+  entity({ id: "Project", label: "Project", description: "The root editor project document.", typeFiles: ["src/project/types/project.ts"], ownerCapabilityIds: ["ProjectPersistence"] }),
   entity({ id: "GameMap", label: "Game Map", description: "A tile map with lower/upper layers and events.", typeFiles: ["src/project/types/project.ts"], ownerCapabilityIds: ["MapEditing", "ProjectPersistence"] }),
   entity({ id: "MapTreeNode", label: "Map Tree Node", description: "The hierarchical map tree entry.", typeFiles: ["src/project/types/project.ts"], ownerCapabilityIds: ["MapEditing"] }),
   entity({ id: "TilesetDef", label: "Tileset Definition", description: "Runtime and semantic definition for a tileset.", typeFiles: ["src/project/types/base.ts"], ownerCapabilityIds: ["TilesetSemantics", "MapEditing"] }),

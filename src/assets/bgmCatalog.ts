@@ -9,6 +9,7 @@
 // 에디터 전용 메타데이터. 재생에 필요한 파일명/루프는 bgmCatalogRuntime.ts 에 있다.
 
 import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
+import { PRODUCT_BRAND } from "@/brand";
 
 /** 번들 CC0 BGM 한 곡의 에디터용 메타데이터. */
 export type BgmCatalogTrack = {
@@ -33,7 +34,7 @@ export type BgmCatalogTrack = {
 };
 
 export const BGM_CATALOG_LICENSE = "CC0-1.0" as const;
-export const BGM_CATALOG_SOURCE_NAME = "RPG ZZU 오리지널 CC0 BGM 카탈로그" as const;
+export const BGM_CATALOG_SOURCE_NAME = `${PRODUCT_BRAND} 오리지널 CC0 BGM 카탈로그`;
 
 export const BGM_CATALOG: readonly BgmCatalogTrack[] = [
   {

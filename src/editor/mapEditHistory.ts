@@ -3,7 +3,7 @@ import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eve
 import { store } from "@/project/store";
 
 const MAX_HISTORY = 50;
-export const MAP_EDIT_HISTORY_EVENT = "rpgzzu:map-edit-history-change";
+export const MAP_EDIT_HISTORY_EVENT = "oprn:map-edit-history-change";
 
 type ProjectSnapshot = {
   readonly kind: "project";

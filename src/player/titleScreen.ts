@@ -240,11 +240,11 @@ function round3(value: number): number {
 }
 
 function applyTitleMenuGraphic(node: HTMLElement, project: Project): void {
-  const resourceId = project.system.systemResourceId || "windowskin-rm2003";
+  const resourceId = project.system.systemResourceId || "windowskin-default";
   node.dataset.systemResource = resourceId;
   // CSS keeps the menu's existing border-image contract; set only the variable so
   // the full-screen root cannot paint a 9-slice fill over the key art.
-  const url = resolveAssetResourceUrl(resourceId, { project }) ?? "/assets/ui/windowskin-rm2003.png";
+  const url = resolveAssetResourceUrl(resourceId, { project }) ?? "/assets/ui/windowskin-default.png";
   node.style.setProperty("--runtime-window-skin", `url("${url}")`);
 }
 

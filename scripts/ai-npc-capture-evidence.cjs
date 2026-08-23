@@ -20,8 +20,8 @@ if (events.length === 0) throw new Error("events.json 이 비어 있습니다");
   const ctx = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1680, height: 1000 } });
   const page = await ctx.newPage();
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "seen");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
   });
 
   await page.goto(`${BASE}/?devProject=1&icePlain64=1&map=${MAP_ID}`, { waitUntil: "load", timeout: 60000 });
@@ -31,7 +31,7 @@ if (events.length === 0) throw new Error("events.json 이 비어 있습니다");
 
   const restored = await page.evaluate(
     ({ mapId, list }) => {
-      const hook = window.__rpgzzuEditorTool;
+      const hook = window.__oprnEditorTool;
       if (typeof hook !== "function") return -1;
       let n = 0;
       for (const ev of list) {
@@ -45,7 +45,7 @@ if (events.length === 0) throw new Error("events.json 이 비어 있습니다");
   console.log(`복원: ${restored}/${events.length}`);
   await page.waitForTimeout(1500);
 
-  // 뷰포트 이동: set_editor_viewport 같은 툴은 없고 __rpgzzuEditCamera 는 읽기 전용이다.
+  // 뷰포트 이동: set_editor_viewport 같은 툴은 없고 __oprnEditCamera 는 읽기 전용이다.
   // 캔버스에 마우스 휠을 보내 NPC 가 있는 남쪽(y≈59)으로 스크롤한다.
   const canvas = page.getByTestId("edit-canvas").locator("canvas").first();
   const box = await canvas.boundingBox();
@@ -58,7 +58,7 @@ if (events.length === 0) throw new Error("events.json 이 비어 있습니다");
   }
   await page.waitForTimeout(1200);
   await page.screenshot({ path: `${SHOTS}/04-events-placed.png` });
-  const cam = await page.evaluate(() => (window.__rpgzzuEditCamera ? window.__rpgzzuEditCamera() : null));
+  const cam = await page.evaluate(() => (window.__oprnEditCamera ? window.__oprnEditCamera() : null));
   console.log("카메라:", cam ? `scrollY=${Math.round(cam.scrollY)} zoom=${cam.zoom}` : "(훅 없음)");
 
   // 이벤트 레이어를 켜서 NPC 마커가 보이게 한다(testid 는 layer-event — 단수).

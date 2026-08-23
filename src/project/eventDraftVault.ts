@@ -154,7 +154,7 @@ export function restoreEventFromVaultIntoProject(
 }
 
 export function eventDraftVaultStorageKey(projectId = resolveVaultProjectId()): string {
-  return `rpg-zzu:event-draft-vault:${projectId}`;
+  return `oprn:event-draft-vault:${projectId}`;
 }
 
 export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): void {

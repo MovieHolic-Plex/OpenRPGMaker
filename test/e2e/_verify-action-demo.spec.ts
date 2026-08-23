@@ -10,7 +10,7 @@ test("action demo loads from supabase and spawns field enemies", async ({ page }
   });
 
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/?project=rpg-zzu-action-demo");
@@ -21,8 +21,8 @@ test("action demo loads from supabase and spawns field enemies", async ({ page }
 
   // 어떤 프로젝트가 로드됐는지 런타임에서 직접 확인
   const loaded = await page.evaluate(() => {
-    const w = window as unknown as { __rpgzzuStore?: { getCurrent: () => unknown } };
-    const project = w.__rpgzzuStore?.getCurrent() as
+    const w = window as unknown as { __oprnStore?: { getCurrent: () => unknown } };
+    const project = w.__oprnStore?.getCurrent() as
       | { meta?: { title?: string }; startMapId?: string; maps?: Record<string, { name?: string; actionCombat?: boolean; fieldSpawns?: unknown[]; lowerTiles?: number[] }>; system?: { actionCombat?: { enabled?: boolean } } }
       | undefined;
     if (!project) return { ok: false as const, reason: "store 미노출" };

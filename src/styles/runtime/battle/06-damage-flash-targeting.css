@@ -155,13 +155,13 @@
 }
 
 .battle-acting {
-  animation: rm2k3-actor-step 0.3s ease-out 1;
+  animation: oprn-actor-step 0.3s ease-out 1;
   filter: brightness(1.2);
 }
 
 .battle-targeted {
-  animation: rm2k3-target-flash 0.2s ease-out 2;
-  outline: 4px solid var(--rm2k3-battle-window-light);
+  animation: oprn-target-flash 0.2s ease-out 2;
+  outline: 4px solid var(--oprn-battle-window-light);
   outline-offset: 4px;
 }
 
@@ -184,7 +184,7 @@
 
 .battle-target-selected {
   animation: none;
-  outline: 4px solid var(--rm2k3-battle-window-light);
+  outline: 4px solid var(--oprn-battle-window-light);
   outline-offset: 4px;
 }
 
@@ -205,7 +205,7 @@
   text-decoration: line-through;
 }
 
-@keyframes rm2k3-message-cursor {
+@keyframes oprn-message-cursor {
   50% {
     opacity: 0;
   }

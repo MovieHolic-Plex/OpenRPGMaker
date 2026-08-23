@@ -77,7 +77,7 @@ try {
   await context.addInitScript(({ project }) => {
     window.__RPG_ZZU_E2E_PROJECT__ = project;
     localStorage.clear();
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, { project: local.project });
   const page = await context.newPage();
   const consoleErrors: string[] = [];

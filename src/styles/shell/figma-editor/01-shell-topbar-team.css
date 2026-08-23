@@ -30,7 +30,7 @@
     padding: 0;
   }
 
-  .rm2k3-menu-bar {
+  .oprn-menu-bar {
     align-items: center;
     background: var(--bg-base);
     border-bottom: 1px solid var(--editor-line);
@@ -47,7 +47,7 @@
     margin-left: auto;
   }
 
-  .rm2k3-window-controls {
+  .oprn-window-controls {
     align-items: center;
     display: inline-flex;
     gap: 4px;
@@ -324,7 +324,7 @@
     color: var(--status-error);
   }
 
-  .rm2k3-window-control {
+  .oprn-window-control {
     align-items: center;
     background: transparent;
     border: 1px solid transparent;

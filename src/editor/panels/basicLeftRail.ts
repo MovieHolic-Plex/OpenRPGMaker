@@ -16,7 +16,7 @@ import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
-import { makeSvgIcon, type SvgIconName } from "@/editor/panels/rpgMakerTileToolbarIcons";
+import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { renderMapList } from "@/editor/panels/mapList";
 import {
   basicFlyoutReducer,
@@ -35,13 +35,15 @@ type BasicTool = {
   readonly hotkey: string;
 };
 
+// 아이콘 레일은 폭이 72px 이라 짧은 이름이 필요하다 — 그래도 어휘는 도구막대와 같은
+// 계열을 쓴다(uiCopy TOOL_LABEL). "브러시/지우개/스포이트" 는 RM 도구 스트립 어휘였다.
 const BASIC_TOOLS: readonly BasicTool[] = [
   { id: "select", label: "선택", hint: "영역 선택", icon: "select", hotkey: "V" },
-  { id: "paint", label: "브러시", hint: "타일 칠하기", icon: "brush", hotkey: "B" },
-  { id: "erase", label: "지우개", hint: "현재 레이어 지우기", icon: "eraser", hotkey: "E" },
-  { id: "fill", label: "채우기", hint: "영역 채우기", icon: "fill", hotkey: "G" },
-  { id: "event", label: "이벤트", hint: "이벤트 배치·편집", icon: "event", hotkey: "N" },
-  { id: "eyedropper", label: "스포이트", hint: "맵에서 타일 집기", icon: "eyedropper", hotkey: "I" },
+  { id: "paint", label: "칠하기", hint: "고른 타일로 칠합니다", icon: "brush", hotkey: "B" },
+  { id: "erase", label: "지우기", hint: "이 레이어에서 지웁니다", icon: "eraser", hotkey: "E" },
+  { id: "fill", label: "채우기", hint: "이어진 영역을 채웁니다", icon: "fill", hotkey: "G" },
+  { id: "event", label: "장면", hint: "이벤트를 놓거나 고칩니다", icon: "event", hotkey: "N" },
+  { id: "eyedropper", label: "집기", hint: "맵에 놓인 타일을 집습니다", icon: "eyedropper", hotkey: "I" },
 ] as const;
 
 type BasicLayerRow = {
@@ -55,7 +57,8 @@ type BasicLayerRow = {
  * 기본 모드는 결과 중심 용어를 쓴다 — 초보에게 '하위/상위 레이어'는 개념 장벽이다. */
 const BASIC_LAYERS: readonly BasicLayerRow[] = [
   { id: "lower", label: "바닥", hint: "잔디·길 등 지면을 칠하는 레이어", hotkey: "F5" },
-  { id: "upper", label: "장식", hint: "나무·가구 등 바닥 위에 얹는 레이어", hotkey: "F6" },
+  // "장식"은 타일 **분류** 이름과 겹친다(팔레트 필터 칩 · tileMeta role) → 덧그림.
+  { id: "upper", label: "덧그림", hint: "나무·가구 등 바닥 위에 얹는 레이어", hotkey: "F6" },
   { id: "event", label: "이벤트", hint: "NPC·문·보물상자 등 상호작용 레이어", hotkey: "F7" },
 ] as const;
 

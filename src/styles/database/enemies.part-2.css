@@ -1,12 +1,12 @@
 @media (min-width: 901px) {
-  .database-modal-backdrop:has(.rm2k3-record-enemies) {
+  .database-modal-backdrop:has(.oprn-record-enemies) {
     align-items: center;
     background: rgba(42, 37, 33, 0.06);
     justify-content: center;
     padding: 12px;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) {
+  .database-modal-window:has(.oprn-record-enemies) {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 7px;
@@ -16,7 +16,7 @@
     width: min(1584px, calc(100vw - 24px));
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-header {
+  .database-modal-window:has(.oprn-record-enemies) .database-modal-header {
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-subtle);
     color: var(--text-primary);
@@ -24,13 +24,13 @@
     padding: 0 18px;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-header h2 {
+  .database-modal-window:has(.oprn-record-enemies) .database-modal-header h2 {
     color: var(--text-primary);
     font: 700 19px/48px "Malgun Gothic", "Segoe UI", sans-serif;
     text-shadow: none;
   }
 
-  .database-modal-window:has(.rm2k3-record-enemies) .database-modal-body {
+  .database-modal-window:has(.oprn-record-enemies) .database-modal-body {
     background: var(--bg-raised);
     display: grid;
     grid-template-rows: 56px minmax(0, 1fr);
@@ -38,11 +38,11 @@
     padding: 0;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .rm2k3-record-identity {
+  .database-modal-body:has(.oprn-record-enemies) .oprn-record-identity {
     display: none;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tabs {
+  .database-modal-body:has(.oprn-record-enemies) .db-tabs {
     align-items: end;
     background: var(--bg-raised);
     border-bottom: 1px solid var(--border-subtle);
@@ -57,7 +57,7 @@
     padding: 0 20px;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tab {
+  .database-modal-body:has(.oprn-record-enemies) .db-tab {
     background: transparent;
     border: 0;
     border-bottom: 3px solid transparent;
@@ -71,14 +71,14 @@
     padding: 0 12px;
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-tab.active {
+  .database-modal-body:has(.oprn-record-enemies) .db-tab.active {
     background: transparent;
     border-bottom-color: var(--accent-border);
     box-shadow: none;
     color: var(--accent);
   }
 
-  .database-modal-body:has(.rm2k3-record-enemies) .db-body {
+  .database-modal-body:has(.oprn-record-enemies) .db-body {
     background: var(--bg-raised);
     border: 0;
     display: grid;
@@ -89,7 +89,7 @@
     padding: 14px 16px 10px;
   }
 
-  .database-modal-body .rm2k3-record-enemies {
+  .database-modal-body .oprn-record-enemies {
     display: grid;
     gap: 14px;
     grid-template-columns: minmax(260px, 305px) minmax(0, 1fr);
@@ -97,8 +97,8 @@
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane,
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane,
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 6px;
@@ -106,13 +106,13 @@
     min-width: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane {
     display: grid;
     grid-template-rows: auto auto minmax(0, 1fr) auto auto;
     padding: 16px 14px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane h3 {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane h3 {
     align-items: center;
     background: transparent;
     border: 0;
@@ -124,18 +124,18 @@
     margin: 0 0 10px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-count {
+  .database-modal-body .oprn-record-enemies .oprn-record-count {
     color: var(--text-1);
     display: block;
     font: 400 14px/20px "Malgun Gothic", "Segoe UI", sans-serif;
     margin: 10px 0 8px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-search {
+  .database-modal-body .oprn-record-enemies .oprn-record-search {
     margin: 0 0 10px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-search input {
+  .database-modal-body .oprn-record-enemies .oprn-record-search input {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
@@ -146,7 +146,7 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list {
+  .database-modal-body .oprn-record-enemies .db-list {
     background: var(--bg-raised);
     border: 0;
     display: grid;
@@ -159,7 +159,7 @@
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list-row {
+  .database-modal-body .oprn-record-enemies .db-list-row {
     align-items: center;
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
@@ -174,13 +174,13 @@
     width: 100%;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list-row.active {
+  .database-modal-body .oprn-record-enemies .db-list-row.active {
     background: var(--accent-muted);
     border-color: var(--accent-border);
     color: var(--text-1);
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list-row.active::before {
+  .database-modal-body .oprn-record-enemies .db-list-row.active::before {
     background: var(--bg-raised);
     border-radius: 2px;
     content: "";
@@ -191,14 +191,14 @@
     width: 3px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list-row-visual-filler:disabled {
+  .database-modal-body .oprn-record-enemies .db-list-row-visual-filler:disabled {
     background: var(--bg-raised);
     color: var(--text-1);
     opacity: 1;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list-number,
-  .database-modal-body .rm2k3-record-enemies .db-list-name {
+  .database-modal-body .oprn-record-enemies .db-list-number,
+  .database-modal-body .oprn-record-enemies .db-list-name {
     color: inherit;
     font: inherit;
     overflow: hidden;
@@ -206,12 +206,12 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-footer {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-footer {
     display: grid;
     margin: 12px 0 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-maximum-button {
+  .database-modal-body .oprn-record-enemies .oprn-maximum-button {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
@@ -220,14 +220,14 @@
     height: 36px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-toolbar {
+  .database-modal-body .oprn-record-enemies .db-toolbar {
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(3, 1fr);
     margin: 8px 0 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-toolbar .btn {
+  .database-modal-body .oprn-record-enemies .db-toolbar .btn {
     background: var(--bg-raised);
     border: 1px solid var(--border-subtle);
     border-radius: 4px;
@@ -238,12 +238,12 @@
     padding: 0 8px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-toolbar .btn.danger {
+  .database-modal-body .oprn-record-enemies .db-toolbar .btn.danger {
     color: var(--danger);
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane,
-  .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-enemies .oprn-detail-form {
     background: var(--bg-raised);
     border: 0;
     box-shadow: none;
@@ -254,13 +254,13 @@
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
     padding: 10px;
   }
 
   /* 10개 패널(Species 포함) 전부를 grid-area 클래스로 명시 배치한다 — actions(공격 패턴)는
      3열 전체를 세로로 관통해 항상 충분한 높이를 확보한다(P1 Critical: 0px 붕괴 재발 방지). */
-  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
     display: grid;
     gap: 10px;
     grid-column: 1 / -1;

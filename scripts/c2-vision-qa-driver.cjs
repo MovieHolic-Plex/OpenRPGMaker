@@ -86,7 +86,7 @@ const API_KEY = (() => {
     const ctx3 = await browser.newContext({ viewport: { width: 1720, height: 960 } });
     const p3 = await ctx3.newPage();
     await p3.addInitScript((key) => {
-      localStorage.setItem("rpg-zzu:ai-config", JSON.stringify({
+      localStorage.setItem("oprn:ai-config", JSON.stringify({
         baseUrl: "https://example.invalid/v1", model: "google/gemini-3.1-flash-lite",
         apiKey: key, maxToolCalls: 30, maxTokens: 8192, reasoningEffort: "medium", autoApprove: false,
       }));

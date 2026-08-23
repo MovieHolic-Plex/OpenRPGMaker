@@ -7,8 +7,8 @@ const URL = "https://abcdefghijklmnopqrst.supabase.co";
 const KEY = "aaa.bbb.ccc";
 const PROJECT_ID = "ed0ed8e2-50b6-4a3a-a884-c2f46fcbf431";
 const CAPABILITY = "capability-value-with-more-than-thirty-two-characters";
-const CONFIG_KEY = "rpg-zzu:supabase-project-config";
-const BOOTSTRAP = Symbol.for("rpg-zzu.project-e2e.bootstrap");
+const CONFIG_KEY = "oprn:supabase-project-config";
+const BOOTSTRAP = Symbol.for("oprn:project-e2e.bootstrap");
 
 type TestWindow = Window & { [BOOTSTRAP]?: unknown };
 
@@ -59,7 +59,7 @@ afterEach(async () => {
 describe("mounted project E2E bridge", () => {
   it("installs exactly four frozen methods and returns detached recursively frozen snapshots", async () => {
     const { module, store } = await loadBridgeModule();
-    const bridge = window.__rpgzzuProjectE2E!;
+    const bridge = window.__oprnProjectE2E!;
     expect(Object.keys(bridge).sort()).toEqual(["currentProject", "flush", "initializeRemoteFixture", "reloadRemote"]);
     expect(Object.isFrozen(bridge)).toBe(true);
     const snapshot = bridge.currentProject();
@@ -71,12 +71,12 @@ describe("mounted project E2E bridge", () => {
     expect(store.getCurrent().meta.title).toBe(title);
     const first = bridge;
     module.installEditorToolHook();
-    expect(window.__rpgzzuProjectE2E).toBe(first);
+    expect(window.__oprnProjectE2E).toBe(first);
   });
 
   it("denies missing/wrong capability before invoking either remote store method", async () => {
     const { store } = await loadBridgeModule();
-    const bridge = window.__rpgzzuProjectE2E!;
+    const bridge = window.__oprnProjectE2E!;
     const init = vi.spyOn(store, "loadNewRemoteProjectForE2E");
     const reload = vi.spyOn(store, "reloadFromRemoteForE2E");
     const blankProject = createBlankProject();
@@ -89,7 +89,7 @@ describe("mounted project E2E bridge", () => {
 
   it("maps authorized initialization and reload to the mounted singleton with exact proof", async () => {
     const { store } = await loadBridgeModule();
-    const bridge = window.__rpgzzuProjectE2E!;
+    const bridge = window.__oprnProjectE2E!;
     const blankProject = createBlankProject();
     const init = vi.spyOn(store, "loadNewRemoteProjectForE2E").mockResolvedValue({ projectId: PROJECT_ID });
     const reload = vi.spyOn(store, "reloadFromRemoteForE2E").mockResolvedValue({ kind: "reloaded", projectId: PROJECT_ID, title: "owned" });
@@ -106,12 +106,12 @@ describe("mounted project E2E bridge", () => {
 
   it("cleanup removes only the bridge and remount consumes no stale capability", async () => {
     const { module } = await loadBridgeModule();
-    const first = window.__rpgzzuProjectE2E;
+    const first = window.__oprnProjectE2E;
     expect(first).toBeDefined();
     module.cleanupProjectE2EBridge();
-    expect(window.__rpgzzuProjectE2E).toBeUndefined();
+    expect(window.__oprnProjectE2E).toBeUndefined();
     module.installEditorToolHook();
-    const second = window.__rpgzzuProjectE2E!;
+    const second = window.__oprnProjectE2E!;
     expect(second).toBeDefined();
     expect(second).not.toBe(first);
     const blankProject = createBlankProject();
@@ -129,6 +129,6 @@ describe("mounted project E2E bridge", () => {
     vi.stubGlobal("navigator", { webdriver: false });
     const module = await import("@/editor/editorToolHook");
     module.installEditorToolHook();
-    expect(window.__rpgzzuProjectE2E).toBeUndefined();
+    expect(window.__oprnProjectE2E).toBeUndefined();
   });
 });

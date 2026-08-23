@@ -29,7 +29,7 @@ light from top-left.
   - v1 (2026-06-18): 최초 생성. 9-slice slice=16.
 - **정밀수정 시 참고**: 슬라이스 영역(코너 16px) 보존. 중앙은 텍스트 가독성 위해 충분히 어둡게(~75% 불투명).
 
-## ui/windowskin-rm2003.png
+## ui/windowskin-default.png
 - **치수**: 96×96 (9-slice용, 슬라이스 24px)
 - **용도**: 런타임 게임 표면의 메시지/선택지/메뉴/상점/여관/전투/타이틀 메뉴 창 스킨. CSS `--runtime-window-skin`과 `border-image`로 사용.
 - **출처**: `scripts/generate-window-skin.mjs`가 절차 생성한 원본 프로젝트 에셋.

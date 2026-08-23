@@ -439,7 +439,7 @@
 }
 
 @media (max-width: 520px) {
-  .rm2k3-menu-bar {
+  .oprn-menu-bar {
     display: none;
   }
 
@@ -447,11 +447,11 @@
     min-width: 66px;
   }
 
-  .rm2k3-toolbar {
+  .oprn-toolbar {
     padding-top: 2px;
   }
 
-  .rm2k3-toolbar-status {
+  .oprn-toolbar-status {
     max-width: 82px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -535,7 +535,7 @@
   position: absolute;
 }
 
-.rm-tool-icon-open::before {
+.oprn-icon-open::before {
   background: #d8b35e;
   border: 1px solid var(--border-default);
   box-shadow: inset 0 2px 0 #f0d48c;
@@ -545,7 +545,7 @@
   width: 12px;
 }
 
-.rm-tool-icon-open::after {
+.oprn-icon-open::after {
   background: #c79840;
   border: 1px solid var(--border-default);
   border-bottom: 0;
@@ -555,7 +555,7 @@
   width: 7px;
 }
 
-.rm-tool-icon-save::before {
+.oprn-icon-save::before {
   background: var(--accent);
   border: 1px solid var(--border-strong);
   box-shadow: inset 0 3px 0 var(--accent-border);
@@ -565,7 +565,7 @@
   width: 12px;
 }
 
-.rm-tool-icon-save::after {
+.oprn-icon-save::after {
   background: var(--bg-raised);
   border-top: 1px solid var(--border-strong);
   height: 4px;
@@ -574,8 +574,8 @@
   width: 7px;
 }
 
-.rm-tool-icon-export::before,
-.rm-tool-icon-import::before {
+.oprn-icon-export::before,
+.oprn-icon-import::before {
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   height: 9px;
@@ -584,19 +584,19 @@
   width: 9px;
 }
 
-.rm-tool-icon-export::after,
-.rm-tool-icon-import::after {
+.oprn-icon-export::after,
+.oprn-icon-import::after {
   border-bottom: 4px solid transparent;
   border-top: 4px solid transparent;
   top: 5px;
 }
 
-.rm-tool-icon-export::after {
+.oprn-icon-export::after {
   border-left: 6px solid #d66b1f;
   left: 9px;
 }
 
-.rm-tool-icon-import::after {
+.oprn-icon-import::after {
   border-right: 6px solid #2f8a43;
   left: 8px;
 }

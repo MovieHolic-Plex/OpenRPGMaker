@@ -4,7 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
-const TOOLBAR_COLLAPSED_KEY = "rpg-zzu:toolbar-collapsed";
+const TOOLBAR_COLLAPSED_KEY = "oprn:toolbar-collapsed";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();

@@ -167,7 +167,7 @@ Runtime game surfaces use a separate retro presentation layer from the modern ed
 | `--runtime-font-size-11` | `11px` | Standard Galmuri11 native-size menu/HUD text |
 | `--runtime-font-size-18` | `18px` | 2× Galmuri9 display text and compact runtime headings |
 | `--runtime-font-size-22` | `22px` | 2× Galmuri11 title text |
-| `--runtime-window-skin` | `url("/assets/ui/windowskin-rm2003.png")` | Shared 9-slice skin for runtime game windows |
+| `--runtime-window-skin` | `url("/assets/ui/windowskin-default.png")` | Shared 9-slice skin for runtime game windows |
 | `--runtime-window-slice` | `24 fill` | `border-image-slice` value for the 96×96 default skin |
 | `--runtime-window-border` | `8px` | Standard runtime window border width |
 | `--runtime-window-border-tight` | `6px` | Compact nested runtime window border width |

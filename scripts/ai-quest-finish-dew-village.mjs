@@ -58,10 +58,10 @@ page.on("dialog", (d) => d.accept());
 await page.addInitScript(
   ({ supabaseDraft, aiConfig }) => {
     localStorage.clear();
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
-    localStorage.setItem("rpg-zzu:supabase-project-config", JSON.stringify(supabaseDraft));
-    localStorage.setItem("rpg-zzu:ai-config", JSON.stringify(aiConfig));
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:ai-panel-collapsed", "0");
+    localStorage.setItem("oprn:supabase-project-config", JSON.stringify(supabaseDraft));
+    localStorage.setItem("oprn:ai-config", JSON.stringify(aiConfig));
   },
   { supabaseDraft, aiConfig }
 );
@@ -84,7 +84,7 @@ try {
   /* ok */
 }
 
-await page.waitForFunction(() => typeof window.__rpgzzuAiBridge?.send === "function", null, { timeout: 60_000 });
+await page.waitForFunction(() => typeof window.__oprnAiBridge?.send === "function", null, { timeout: 60_000 });
 await page.evaluate(() => {
   const r = document.querySelector('[data-testid="ai-collapsed-restore"]');
   if (r instanceof HTMLElement) r.click();
@@ -92,7 +92,7 @@ await page.evaluate(() => {
 
 console.log("AI quest turn…");
 const result = await page.evaluate(async (msg) => {
-  const p = window.__rpgzzuAiBridge.send(msg);
+  const p = window.__oprnAiBridge.send(msg);
   const t = new Promise((res) => setTimeout(() => res({ ok: false, error: "timeout" }), 420_000));
   return Promise.race([p, t]);
 }, MSG);

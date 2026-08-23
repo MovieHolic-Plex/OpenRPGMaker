@@ -59,14 +59,14 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
     list.append(row);
   }
 
-  const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
   listPane.append(
     el("h3", { text: "종족" }),
     list,
     el("div", { class: "db-list-footer", text: `${species.length}개` }),
     toolbar(rerender)
   );
-  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
+  const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
   detailPane.append(selected ? speciesForm(selected, rerender) : el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "종족이 없습니다." }));
   // 종족 탭은 dense 고정높이 스크롤 대상이 아니라(자연 흐름) 배너를 워크스페이스 앞 형제로 두면 된다.
   // 인트로-셸(height:100% 그리드)을 쓰면 상세 폼에 확정 높이가 생겨 그래픽 스테이지(height:100%)가
@@ -77,7 +77,7 @@ export function renderMonsterSpeciesTab(host: HTMLElement, rerender: () => void)
       dataset: { testid: "db-monster-species-intro" },
       text: "이 탭은 잡아서 키우는 몬스터(종족)의 종족값·레벨업 스킬·진화를 정의합니다. 전투에 나오는 야생·적 몬스터의 스탯은 [몬스터] 탭에서, 스킬 자체는 [스킬] 탭에서 만듭니다.",
     }),
-    el("div", { class: "db-record-workspace rm2k3-record-workspace rm2k3-record-monster-species", children: [listPane, detailPane] })
+    el("div", { class: "db-record-workspace oprn-record-workspace oprn-record-monster-species", children: [listPane, detailPane] })
   );
 }
 
@@ -185,7 +185,7 @@ function deleteSpeciesButton(rerender: () => void): HTMLElement {
 }
 
 function speciesForm(record: MonsterSpeciesRecord, rerender: () => void): HTMLElement {
-  const form = el("section", { class: "db-detail-form rm2k3-detail-form", dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: "db-detail-form oprn-detail-form", dataset: { testid: "db-detail-form" } });
   const previewUrl = resolveAssetResourceUrl(record.graphic.monsterResourceId, { project: store.getCurrent() });
   const stageImage = previewUrl
     ? el("img", { attrs: { alt: `${record.name} 미리보기`, src: previewUrl } })

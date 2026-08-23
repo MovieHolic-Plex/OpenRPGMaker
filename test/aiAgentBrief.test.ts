@@ -32,8 +32,8 @@ describe("readAgentBrief", () => {
     expect(brief.mapName).toBe("빈 맵");
     expect(brief.mapSize).toBe("20×15");
     expect(brief.layerShort).toBe("바닥");
-    expect(brief.toolLabel).toBe("펜");
-    expect(brief.line).toBe("빈 맵 20×15 · 바닥 · 펜");
+    expect(brief.toolLabel).toBe("칠하기");
+    expect(brief.line).toBe("빈 맵 20×15 · 바닥 · 칠하기");
     expect(brief.lookingAt).toBe("지금 빈 맵 20×15");
     expect(brief.eventCount).toBe(0);
   });

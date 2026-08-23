@@ -1,8 +1,8 @@
 import { resolve } from "node:path";
-import { checkContract, checkMatrix, parseMatrix } from "./rm2k3-parity/checks.mjs";
-import { parseArgs, redactSecrets, usage } from "./rm2k3-parity/cli.mjs";
-import { buildErrorEvidence, buildEvidence, writeEvidence } from "./rm2k3-parity/evidence.mjs";
-import { fileMetadata, readTextFile } from "./rm2k3-parity/io.mjs";
+import { checkContract, checkMatrix, parseMatrix } from "./oprn-parity/checks.mjs";
+import { parseArgs, redactSecrets, usage } from "./oprn-parity/cli.mjs";
+import { buildErrorEvidence, buildEvidence, writeEvidence } from "./oprn-parity/evidence.mjs";
+import { fileMetadata, readTextFile } from "./oprn-parity/io.mjs";
 
 const EXIT_PARITY_FAILED = 1;
 const EXIT_INPUT_ERROR = 2;

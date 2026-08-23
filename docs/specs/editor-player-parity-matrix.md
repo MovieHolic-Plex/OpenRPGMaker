@@ -1,6 +1,6 @@
 # Editor -> Player Parity Matrix
 
-Extends `docs/specs/rm2k3-database-field-matrix.md`. Machine-readable source of truth: `test/parity/parityMatrix.ts` (the resolver test `test/parity/parityMatrix.test.ts` asserts every `playerConsumer` resolves in the source, so this matrix cannot rot silently).
+Extends `docs/specs/oprn-database-field-matrix.md`. Machine-readable source of truth: `test/parity/parityMatrix.ts` (the resolver test `test/parity/parityMatrix.test.ts` asserts every `playerConsumer` resolves in the source, so this matrix cannot rot silently).
 
 Each row maps an authored field to the player module that consumes it, the headless harness that verifies it (`simulateBattle` / `runSceneTest` / `roundTrip`), and parity coverage status (`covered` = editor->player parity test exists; `planned-Tn` = added by this plan; `gap` = not yet parity-tested).
 

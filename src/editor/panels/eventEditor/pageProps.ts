@@ -787,7 +787,7 @@ function collapsibleSection(options: {
   readonly body: HTMLElement;
 }): HTMLElement {
   const details = el("details", {
-    class: "event-rm2k3-fieldset event-collapsible-section",
+    class: "event-oprn-fieldset event-collapsible-section",
     dataset: { testid: options.testId },
   }) as HTMLDetailsElement;
   const summaryChildren: (Node | string)[] = [
@@ -820,7 +820,7 @@ function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
 
 function rm2k3Fieldset(title: string, content: HTMLElement, testId?: string): HTMLElement {
   const fieldset = el("fieldset", {
-    class: "event-rm2k3-fieldset",
+    class: "event-oprn-fieldset",
     dataset: testId ? { testid: testId } : undefined,
   });
   fieldset.append(el("legend", { text: title }), content);

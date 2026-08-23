@@ -14,7 +14,7 @@ import {
   type AuditFinding,
   type EditorLaneMode,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 /**
  * Diagnostic adversarial audit of Database chrome + Overview (todo 13).
@@ -79,8 +79,8 @@ const DECISIONS = ["save", "discard", "keep"] as const;
 const OFFSCREEN_ITEM = { id: "item_gen_lamp_oil", name: "기름 등불" } as const;
 const TOWN_TILESET_ROW = "tileset-db-row-easyrpg_chipset_combined_town";
 const HELP_TOAST = "데이터베이스에서 레코드와 시스템 설정을 조정합니다.";
-const VIEW_MODE_KEY = "rpg-zzu.database.viewMode";
-const ACTIVE_TAB_KEY = "rpg-zzu.database.activeTab";
+const VIEW_MODE_KEY = "oprn:database.viewMode";
+const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const HARDCODED_H2 = "데이터베이스";
 
 type ClosePath = (typeof CLOSE_PATHS)[number];
@@ -740,7 +740,7 @@ async function probeX4(page: Page): Promise<void> {
     `stored viewMode=${restored.viewMode} listActive=${listActive}`,
   ];
   if (listActive && restored.viewMode.includes("list")) {
-    emitClean("X4-list-persists", "X4", ["items"], "X4: items list view restored from rpg-zzu.database.viewMode", repro, [evidence]);
+    emitClean("X4-list-persists", "X4", ["items"], "X4: items list view restored from oprn:database.viewMode", repro, [evidence]);
   } else {
     emitDefect({
       id: "X4-list-not-restored",

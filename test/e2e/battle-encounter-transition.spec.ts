@@ -3,7 +3,7 @@ import { seedReferenceBattleProject } from "./battleReferenceProject";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("battle entry plays an encounter transition and escape cancels targeting without opening the field menu", async ({ page }) => {

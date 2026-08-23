@@ -82,9 +82,9 @@ describe("Project store remote persistence", () => {
     const staleProject = createBlankProject();
     staleProject.meta.title = "stale local override";
     if (staleProject.system.titleScreen) {
-      staleProject.system.titleScreen.backgroundResourceId = "rpg-zzu-title-blue";
+      staleProject.system.titleScreen.backgroundResourceId = "oprn-title-blue";
     }
-    storage.set("rpg-zzu:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
+    storage.set("oprn:dev-project:127.0.0.1/?blankProject=1", serialize(staleProject));
 
     vi.resetModules();
     const { store } = await import("@/project/store");
@@ -96,7 +96,7 @@ describe("Project store remote persistence", () => {
 
     expect(project.meta.title).toBe("새 프로젝트");
     expect(Object.keys(project.maps)).toHaveLength(1);
-    expect(project.system.titleScreen?.backgroundResourceId).toBe("rpg-zzu-title-field");
+    expect(project.system.titleScreen?.backgroundResourceId).toBe("oprn-title-field");
     expect(saveResult).toEqual({ kind: "saved-local" });
     expect(setItem).not.toHaveBeenCalled();
     expect(fetchSpy).not.toHaveBeenCalled();

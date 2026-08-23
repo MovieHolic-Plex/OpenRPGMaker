@@ -29,7 +29,7 @@ test("전투에 들어가면 MIDI 를 틀려 하지 않는다", async ({ page })
       return audio;
     } as unknown as typeof window.Audio;
     window.Audio.prototype = Native.prototype;
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 800 });
 

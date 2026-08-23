@@ -38,7 +38,7 @@ async function dismissLogin(page: Page): Promise<void> {
  * 에디터가 들고 있는 현재 프로젝트의 이벤트 목록을 읽는다.
  *
  * `project-export-json` 은 숨은 <pre> 로 상주하며 store 가 바뀔 때마다 갱신된다
- * (editor.ts updateProjectExport — 150ms 디바운스). 처음 가정했던 window.__rpgzzu
+ * (editor.ts updateProjectExport — 150ms 디바운스). 처음 가정했던 window.__oprn
  * 프로브는 이 앱에 없어 항상 빈 배열을 돌려줬다.
  */
 async function readEvents(page: Page): Promise<RuntimeEvent[]> {
@@ -64,9 +64,9 @@ test.describe("내부 AI NPC 배치", () => {
     });
 
     await page.addInitScript(() => {
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
       // 코치마크가 AI 패널을 덮지 않게 첫 방문 플래그를 미리 소진시킨다.
-      localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "seen");
+      localStorage.setItem("oprn:coachmarks-basic-v1", "seen");
       // ai-config 는 건드리지 않는다 — autoApprove 를 주입해 덮어쓰면 대화 세션이
       // 초기화되어 로그가 시작 화면으로 돌아간다(실측: 242초 대기 후 이벤트 0건).
       // 대신 제안 카드를 명시적으로 수락한다.

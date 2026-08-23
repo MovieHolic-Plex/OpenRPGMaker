@@ -4,7 +4,7 @@
    ========================================================================= */
 
 /* 분할 목차 — 아래 @import 순서가 캐스케이드(규칙 순서)를 결정하므로 재배열 금지. */
-@import "./event-editor-rich-forms/01-ev-rm2k3-ux-tokens.css";
+@import "./event-editor-rich-forms/01-ev-ux-tokens.css";
 @import "./event-editor-rich-forms/02-rich-gold-badge.css";
 @import "./event-editor-rich-forms/03-change-battle-commands-menu.css";
 @import "./event-editor-rich-forms/04-change-equipment-command-body.css";

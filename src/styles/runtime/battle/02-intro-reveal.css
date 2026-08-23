@@ -44,8 +44,8 @@
 }
 
 .battle-message-cursor {
-  animation: rm2k3-message-cursor 0.8s steps(2, end) infinite;
-  color: var(--rm2k3-battle-window-light);
+  animation: oprn-message-cursor 0.8s steps(2, end) infinite;
+  color: var(--oprn-battle-window-light);
 }
 
 .battle-message-lines {
@@ -79,7 +79,7 @@
 }
 
 .battle-result-rewards {
-  color: var(--rm2k3-battle-muted);
+  color: var(--oprn-battle-muted);
   font-size: 16px;
 }
 
@@ -91,7 +91,7 @@
 }
 
 .battle-result-reward-label {
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
 }
 
 .battle-result-reward-value {
@@ -109,7 +109,7 @@
 }
 
 .battle-submenu-header {
-  color: var(--rm2k3-battle-muted);
+  color: var(--oprn-battle-muted);
   font-size: 16px;
   letter-spacing: 0;
   text-align: left;
@@ -123,7 +123,7 @@
   border: 2px solid transparent;
   border-radius: 0;
   background: transparent;
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   font-family: inherit;
   font-size: 16px;
   font-weight: 400;

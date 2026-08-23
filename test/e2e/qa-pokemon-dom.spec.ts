@@ -45,20 +45,20 @@ async function startTitle(page: Page): Promise<void> {
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15_000 });
   await expect
-    .poll(async () => page.evaluate(() => typeof (window as unknown as { __rpgzzuInput?: unknown }).__rpgzzuInput))
+    .poll(async () => page.evaluate(() => typeof (window as unknown as { __oprnInput?: unknown }).__oprnInput))
     .toBe("object");
 }
 
 // 방향 탭(90ms) — 막힌 타일(이벤트)을 향하면 제자리에서 방향만 튼다.
 async function tapDir(page: Page, dir: "left" | "right"): Promise<void> {
-  await page.evaluate((d) => (window as unknown as { __rpgzzuInput: { dir(v: string | null): void } }).__rpgzzuInput.dir(d), dir);
+  await page.evaluate((d) => (window as unknown as { __oprnInput: { dir(v: string | null): void } }).__oprnInput.dir(d), dir);
   await page.waitForTimeout(120);
-  await page.evaluate(() => (window as unknown as { __rpgzzuInput: { dir(v: string | null): void } }).__rpgzzuInput.dir(null));
+  await page.evaluate(() => (window as unknown as { __oprnInput: { dir(v: string | null): void } }).__oprnInput.dir(null));
   await page.waitForTimeout(320);
 }
 
 async function pressAction(page: Page): Promise<void> {
-  await page.evaluate(() => (window as unknown as { __rpgzzuInput: { action(): void } }).__rpgzzuInput.action());
+  await page.evaluate(() => (window as unknown as { __oprnInput: { action(): void } }).__oprnInput.action());
   await page.waitForTimeout(450);
 }
 
@@ -95,7 +95,7 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
   test.setTimeout(45_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   // 기본(basic) UI 모드는 상단 메뉴(mode-play)를 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectFromSupabaseCanonical(page, makePokemonProject());
   await page.getByTestId("mode-play").click();
   await startTitle(page);
@@ -160,7 +160,7 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
 // 모드A 결함인지 헤드리스 렌더 아티팩트인지 시각 비교용.
 test("control: battleParty off이면 영웅이 그대로 출전한다(액터 경로 불변)", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   const project = createBlankProject();
   const sx = project.startPos.x;
   const sy = project.startPos.y;

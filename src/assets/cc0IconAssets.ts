@@ -1,3 +1,5 @@
+import { PRODUCT_BRAND, PRODUCT_SLUG } from "@/brand";
+
 export type Cc0IconAsset = {
   readonly id: string;
   readonly name: string;
@@ -9,8 +11,8 @@ export type Cc0IconAsset = {
 
 const JETREL_SOURCE_URL = "https://opengameart.org/content/16x16-rpg-items";
 const JETREL_SOURCE_NAME = "Jetrel 16x16 RPG items";
-const GENERATED_SOURCE_NAME = "RPG ZZU generated item icons";
-const GENERATED_SOURCE_URL = "https://github.com/local/rpg-zzu";
+const GENERATED_SOURCE_NAME = `${PRODUCT_BRAND} generated item icons`;
+const GENERATED_SOURCE_URL = `https://github.com/local/${PRODUCT_SLUG}`;
 
 function jetrelIcon(id: string, fileName: string, name: string): Cc0IconAsset {
   return { id, name, path: `assets/cc0/jetrel/icons/${fileName}`, sourceName: JETREL_SOURCE_NAME, sourceUrl: JETREL_SOURCE_URL, license: "CC0-1.0" };

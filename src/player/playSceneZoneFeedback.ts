@@ -10,7 +10,7 @@ import {
   type ZoneFeedbackView,
 } from "@/player/zoneFeedback";
 
-const CHECKPOINT_EVENT = "rpgzzu:checkpoint-feedback";
+const CHECKPOINT_EVENT = "oprn:checkpoint-feedback";
 const SUPPRESSING_TEST_IDS = [
   "dialogue-box",
   "battle-scene",

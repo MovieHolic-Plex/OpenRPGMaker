@@ -15,12 +15,20 @@ export type UiCopyKey =
   | "resources"
   | "world";
 
+// 2026-08-21 용어 정리 라운드: technical 쪽 값이 곧 RM 유래 용어였다 — 하위/상위는 下層/上層의
+// 직역이다. **레이어 이름은 두 스타일을 하나로 통일**한다(감독 지시: 초보 용어를 전 모드
+// 표준으로). 밀도 축(jargonStyle)은 남기되, 레이어처럼 "전문가라고 다르게 부를 이유가
+// 없는" 항목은 같은 말을 쓴다.
+//
+// 상위 레이어를 왜 "장식"이 아니라 "덧그림"인가 — `장식`은 이미 **타일 분류** 이름이다
+// (팔레트 필터 칩, tileMeta role "decoration", 타일 의미 태그). 레이어에도 쓰면 같은
+// 화면에서 두 뜻이 겹친다. "덧그림"은 그 레이어가 실제로 하는 일(캐릭터 위에 덧그린다)이다.
 const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
   database: { plain: "자료집", technical: "데이터베이스" },
   databaseShort: { plain: "자료", technical: "DB" },
-  tilesetMissing: { plain: "그림이 없습니다", technical: "타일셋이 없습니다" },
-  layerLower: { plain: "바닥", technical: "하위" },
-  layerUpper: { plain: "장식", technical: "상위" },
+  tilesetMissing: { plain: "그림이 없습니다", technical: "타일 그림판이 없습니다" },
+  layerLower: { plain: "바닥", technical: "바닥" },
+  layerUpper: { plain: "덧그림", technical: "덧그림" },
   layerEvent: { plain: "이벤트", technical: "이벤트" },
   onlineSave: { plain: "온라인 저장", technical: "온라인 저장" },
   resources: { plain: "자료", technical: "리소스" },
@@ -29,6 +37,29 @@ const UI_COPY: Record<UiCopyKey, Record<UiCopyStyle, string>> = {
 
 export function uiLabel(key: UiCopyKey, style: UiCopyStyle = "plain"): string {
   return UI_COPY[key][style];
+}
+
+/**
+ * 도구 이름 단일 원천.
+ *
+ * 2026-08-21 실측: 같은 도구가 네 군데에서 다르게 불렸다 — 도구막대 "펜", 상태바 "펜",
+ * 도움말 "브러시(연필)", 커맨드 팔레트 "브러시", AI 브리핑 "펜". 라벨은 **행위**를
+ * 말하고(칠하기·지우기·집기) 한 곳에서만 정의한다. `TOOL_LABEL[tool]` 을 쓰지 않고
+ * 문자열을 새로 적으면 다시 갈라진다.
+ */
+export const TOOL_LABEL = {
+  paint: "칠하기",
+  erase: "지우기",
+  fill: "채우기",
+  select: "영역 선택",
+  eyedropper: "타일 집기",
+  pan: "화면 밀기",
+  collision: "통행 표시",
+  event: "장면 놓기",
+} as const satisfies Record<string, string>;
+
+export function toolLabel(tool: string): string {
+  return (TOOL_LABEL as Record<string, string | undefined>)[tool] ?? tool;
 }
 
 const USER_FACING_TOOL_NAMES: Readonly<Record<string, string>> = {

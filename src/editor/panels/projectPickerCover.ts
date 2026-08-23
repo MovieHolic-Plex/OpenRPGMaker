@@ -12,7 +12,7 @@ export const COVER_HEIGHT = 200;
 /** 동시 요청 상한 — dbserver를 목록 크기만큼 한꺼번에 때리지 않는다. */
 const MAX_PARALLEL = 3;
 
-const CACHE_PREFIX = "rpg-zzu:project-cover:";
+const CACHE_PREFIX = "oprn:project-cover:";
 const memoryCache = new Map<string, string>();
 
 let active = 0;

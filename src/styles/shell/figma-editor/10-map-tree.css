@@ -260,7 +260,7 @@
   }
 
   @container (max-width: 220px) {
-    .left-panel-stack[data-testid="left-palette-root"] .rpg-maker-tile-toolbar {
+    .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
       min-height: 30px;
     }
 

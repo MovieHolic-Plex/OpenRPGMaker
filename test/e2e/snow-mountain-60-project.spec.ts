@@ -20,7 +20,7 @@ const MAP_ID = "map_snow_mountain_60";
 test("프로젝트 메뉴 항목이 설산 60×60 을 불러온다", async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1600, height: 1000 });
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });
@@ -56,7 +56,7 @@ test("프로젝트 메뉴 항목이 설산 60×60 을 불러온다", async ({ pa
 
 test("편집기 캔버스가 절벽 다섯 겹을 그린다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1600, height: 1000 });
   await seedProjectFromSupabaseCanonical(page, createSnowMountain60Project());
@@ -72,7 +72,7 @@ test("편집기 캔버스가 절벽 다섯 겹을 그린다", async ({ page }) =
 
 test("런타임이 산 발치에서 시작하고 플레이어를 밀어내지 않는다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, createSnowMountain60Project());

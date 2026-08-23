@@ -5,6 +5,18 @@ import { listEditorCommands, listMapCommands, matchEditorCommands, type EditorCo
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
+/**
+ * 팔레트 열기 요청 이벤트. 팔레트는 스킬 실행기(aiChatPanel 의 drawer)를 필요로 하므로
+ * 여는 주체는 늘 그 패널이다 — 탑바 칩처럼 밖에서 열고 싶을 때 이 이벤트를 쏜다.
+ */
+export const COMMAND_PALETTE_OPEN_EVENT = "oprn:open-command-palette";
+
+/** 어디서든 커맨드 팔레트를 요청한다. 수신자(AI 패널)가 없으면 조용히 무시된다. */
+export function requestCommandPalette(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(COMMAND_PALETTE_OPEN_EVENT));
+}
+
 export interface PaletteEntry {
   readonly kind: "command" | "map" | "skill";
   readonly id: string;

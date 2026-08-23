@@ -39,7 +39,7 @@ function buildActionProject() {
 
 async function spawnCount(page: Page): Promise<number> {
   return page.evaluate(() => {
-    const chars = (window as unknown as { __rpgzzuCharacterSprites?: () => CharacterDebug }).__rpgzzuCharacterSprites?.();
+    const chars = (window as unknown as { __oprnCharacterSprites?: () => CharacterDebug }).__oprnCharacterSprites?.();
     return Object.keys(chars?.events ?? {}).filter((id) => id.includes("__field_spawn__")).length;
   });
 }
@@ -53,7 +53,7 @@ async function playerPos(page: Page): Promise<{ x: number; y: number }> {
 
 async function nearestSpawnTile(page: Page): Promise<{ tx: number; ty: number } | null> {
   return page.evaluate(() => {
-    const chars = (window as unknown as { __rpgzzuCharacterSprites?: () => CharacterDebug }).__rpgzzuCharacterSprites?.();
+    const chars = (window as unknown as { __oprnCharacterSprites?: () => CharacterDebug }).__oprnCharacterSprites?.();
     const state = JSON.parse(document.querySelector("[data-testid='runtime-state-json']")?.textContent ?? "{}");
     const spawns = Object.values(chars?.events ?? {})
       .filter((s, i) => Object.keys(chars?.events ?? {})[i]?.includes("__field_spawn__"))
@@ -69,19 +69,19 @@ async function nearestSpawnTile(page: Page): Promise<{ tx: number; ty: number } 
 
 async function stepDir(page: Page, dir: "down" | "left" | "right" | "up"): Promise<void> {
   await page.evaluate((d) => {
-    const h = (window as unknown as { __rpgzzuInput?: { dir: (x: string | null) => void } }).__rpgzzuInput;
+    const h = (window as unknown as { __oprnInput?: { dir: (x: string | null) => void } }).__oprnInput;
     h?.dir(d);
   }, dir);
   await page.waitForTimeout(240);
   await page.evaluate(() => {
-    const h = (window as unknown as { __rpgzzuInput?: { dir: (x: string | null) => void } }).__rpgzzuInput;
+    const h = (window as unknown as { __oprnInput?: { dir: (x: string | null) => void } }).__oprnInput;
     h?.dir(null);
   });
 }
 
 test("action combat: HUD, contact damage, swing kill, EXP grant", async ({ page }, testInfo) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   await seedProjectFromSupabaseCanonical(page, buildActionProject());
@@ -118,16 +118,16 @@ test("action combat: HUD, contact damage, swing kill, EXP grant", async ({ page 
     }
     const face = target.tx > player.x ? "right" : target.tx < player.x ? "left" : target.ty > player.y ? "down" : "up";
     await page.evaluate((d) => {
-      const h = (window as unknown as { __rpgzzuInput?: { dir: (x: string | null) => void } }).__rpgzzuInput;
+      const h = (window as unknown as { __oprnInput?: { dir: (x: string | null) => void } }).__oprnInput;
       h?.dir(d);
     }, face);
     await page.waitForTimeout(140);
     await page.evaluate(() => {
-      const h = (window as unknown as { __rpgzzuInput?: { dir: (x: string | null) => void } }).__rpgzzuInput;
+      const h = (window as unknown as { __oprnInput?: { dir: (x: string | null) => void } }).__oprnInput;
       h?.dir(null);
     });
     await page.evaluate(() => {
-      const h = (window as unknown as { __rpgzzuInput?: { attack: () => void } }).__rpgzzuInput;
+      const h = (window as unknown as { __oprnInput?: { attack: () => void } }).__oprnInput;
       h?.attack();
     });
     const before = await spawnCount(page);
@@ -135,7 +135,7 @@ test("action combat: HUD, contact damage, swing kill, EXP grant", async ({ page 
     if ((await spawnCount(page)) < before) break;
   }
 
-  const debug = await page.evaluate(() => (window as unknown as { __rpgzzuActionCombat?: () => unknown }).__rpgzzuActionCombat?.());
+  const debug = await page.evaluate(() => (window as unknown as { __oprnActionCombat?: () => unknown }).__oprnActionCombat?.());
   console.log("action state after swings:", JSON.stringify(debug));
 
   await expect.poll(() => spawnCount(page), { timeout: 15_000 }).toBe(0);

@@ -1,6 +1,6 @@
 @media (min-width: 800px) {
   .database-modal-backdrop:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -17,7 +17,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -36,7 +36,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -54,7 +54,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -70,7 +70,7 @@
   }
 
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -88,7 +88,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -110,7 +110,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -132,7 +132,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -151,7 +151,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -172,12 +172,12 @@
     padding: 10px;
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) {
     gap: 8px;
     grid-template-columns: 258px minmax(0, 1fr);
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-list-pane {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-record-list-pane {
     background: var(--bg-raised);
     border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     border-style: solid;
@@ -188,7 +188,7 @@
     padding: 10px 10px 8px;
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-list-pane h3 {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-record-list-pane h3 {
     background: transparent;
     border: 0;
     color: var(--text-1);
@@ -199,7 +199,7 @@
     text-align: left;
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-list {
     background: var(--bg-raised);
     border-color: var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default);
     border-style: solid;
@@ -212,7 +212,7 @@
     overflow: auto;
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list-row {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-list-row {
     align-items: center;
     background: var(--bg-raised);
     border: 0;
@@ -228,12 +228,12 @@
     width: 100%;
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-list-row.active {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-list-row.active {
     background: var(--accent-muted);
     color: var(--text-1);
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .db-toolbar {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .db-toolbar {
     align-items: center;
     display: flex;
     gap: 4px;
@@ -241,8 +241,8 @@
     margin: 0;
   }
 
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-record-detail-pane,
-  .database-modal-body :is(.rm2k3-record-enemies, .rm2k3-record-troops) .rm2k3-detail-form {
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-record-detail-pane,
+  .database-modal-body :is(.oprn-record-enemies, .oprn-record-troops) .oprn-detail-form {
     background: var(--bg-raised);
     border-color: var(--border-subtle) var(--border-default) var(--border-default) var(--border-subtle);
     border-style: solid;

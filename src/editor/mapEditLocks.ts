@@ -36,8 +36,8 @@ type Listener = (status: MapEditLockStatus) => void;
 
 const SUPABASE_SCHEMA = "rpg_zzu";
 const LOCK_TABLE = "map_edit_locks";
-const SESSION_KEY = "rpg-zzu-editor-session-id";
-const OWNER_LABEL_KEY = "rpg-zzu-editor-owner-label";
+const SESSION_KEY = "oprn:editor-session-id";
+const OWNER_LABEL_KEY = "oprn:editor-owner-label";
 const LOCK_TTL_MS = 2 * 60 * 1000;
 const HEARTBEAT_MS = 45 * 1000;
 export const MAP_EDIT_LOCK_IMMEDIATE_TAKEOVER_AFTER_MS = 90 * 1000;

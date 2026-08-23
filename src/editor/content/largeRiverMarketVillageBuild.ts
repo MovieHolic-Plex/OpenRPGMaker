@@ -15,7 +15,7 @@ import { isMapWaterTile } from "@/editor/tools/queryTools";
 import { ensureTilesetHarnesses } from "@/project/tilesetHarness";
 import { defaultDatabase, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { DEFAULT_ITEM_ID, TILE } from "@/project/defaults/constants";
-import { RM2K3_WOOD_FLOOR_PASSABILITY, SAND_TILE } from "@/project/defaults/chipsetMapping";
+import { WOOD_FLOOR_PASSABILITY, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { shapeSandAround } from "@/project/defaults/sandAutotile";
 import { LargeVillageBuildLog } from "@/project/defaults/largeVillageBuildLog";
 import {
@@ -72,11 +72,11 @@ const TIMBER_POST = 193;
 const RAIL_L = 468;
 const RAIL_M = 469;
 const RAIL_R = 470;
-const WOOD_FLOOR = RM2K3_WOOD_FLOOR_PASSABILITY.body;
-const WOOD_EDGE_W = RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest;
-const WOOD_EDGE_E = RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast;
-const WOOD_EDGE_N = RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth;
-const WOOD_EDGE_S = RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth;
+const WOOD_FLOOR = WOOD_FLOOR_PASSABILITY.body;
+const WOOD_EDGE_W = WOOD_FLOOR_PASSABILITY.edgeWest;
+const WOOD_EDGE_E = WOOD_FLOOR_PASSABILITY.edgeEast;
+const WOOD_EDGE_N = WOOD_FLOOR_PASSABILITY.edgeNorth;
+const WOOD_EDGE_S = WOOD_FLOOR_PASSABILITY.edgeSouth;
 
 const FENCE_TOP_LEFT = 378;
 const FENCE_TOP_RAIL = 379;
@@ -2777,11 +2777,11 @@ function applyDefaultTitleScreen(project: Project, title: string): void {
   const base = defaultTitleScreenSettings();
   project.system = {
     ...project.system,
-    titleResourceId: "rpg-zzu-title-field",
+    titleResourceId: "oprn-title-field",
     titleScreen: {
       ...base,
       title,
-      backgroundResourceId: "rpg-zzu-title-field",
+      backgroundResourceId: "oprn-title-field",
       layout: { ...base.layout },
       menuLabels: { ...base.menuLabels },
     },

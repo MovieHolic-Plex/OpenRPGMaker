@@ -135,7 +135,7 @@ export interface RegionTaskResult {
   readonly validationSummary?: string;
   /** 승인 전 하네스 체크포인트·구조화 이슈·게임플레이 지표. */
   readonly review?: HarnessReviewReport;
-  /** 개발용 구조화 로그 — UI export / window.__rpgzzuRegionTaskLog */
+  /** 개발용 구조화 로그 — UI export / window.__oprnRegionTaskLog */
   readonly log?: RegionTaskLogExport;
   /** 승인 게이트(gate: "approval") 성공 시 반환 — 적용/버리기 전까지 유효. */
   readonly pending?: PendingRegionApply;
@@ -304,8 +304,8 @@ export function serializeRegionTaskLog(log: RegionTaskLogExport): string {
 /** 마지막 영역 작업 로그 — 콘솔/헤드리스 디버깅용. */
 export function publishRegionTaskLog(log: RegionTaskLogExport | undefined): void {
   if (typeof window === "undefined" || !log) return;
-  window.__rpgzzuRegionTaskLog = log;
-  window.__rpgzzuLastRegionTaskLog = () => log;
+  window.__oprnRegionTaskLog = log;
+  window.__oprnLastRegionTaskLog = () => log;
 }
 
 function pushUiEvent(events: RegionTaskUiEvent[], event: SessionEvent): void {

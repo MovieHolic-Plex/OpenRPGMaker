@@ -39,16 +39,16 @@ export function renderCropTab(host: HTMLElement, rerender: () => void): void {
       ],
     }));
   }
-  const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
   listPane.append(
     el("h3", { text: "작물" }),
     list,
     el("div", { class: "db-list-footer", text: `${crops.length}개` }),
     toolbar(rerender)
   );
-  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
+  const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
   detailPane.append(selected ? cropForm(selected, rerender) : el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "작물이 없습니다." }));
-  host.append(el("div", { class: "db-record-workspace rm2k3-record-workspace rm2k3-record-crops", children: [listPane, detailPane] }));
+  host.append(el("div", { class: "db-record-workspace oprn-record-workspace oprn-record-crops", children: [listPane, detailPane] }));
 }
 
 function toolbar(rerender: () => void): HTMLElement {
@@ -165,7 +165,7 @@ function deleteCropButton(rerender: () => void): HTMLElement {
 
 function cropForm(record: CropRecord, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
-  const form = el("section", { class: "db-detail-form rm2k3-detail-form", dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: "db-detail-form oprn-detail-form", dataset: { testid: "db-detail-form" } });
   form.append(
     el("div", { class: "db-record-id", children: [el("span", { text: "ID" }), el("code", { text: record.id })] }),
     textControl("이름", record.name, (name) => updateCrop(record.id, { name }), "db-crop-name"),

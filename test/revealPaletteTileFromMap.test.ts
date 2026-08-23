@@ -70,28 +70,39 @@ describe("revealPaletteTileFromMap (expert eyedropper → chipset)", () => {
     setEditorUiMode("beginner");
     expect(() => revealPaletteTileFromMap(105)).not.toThrow();
     expect(getEditorUiMode()).toBe("beginner");
-    expect(localStorage.getItem("rpg-zzu:palette-work-tab")).toBeNull();
   });
 
-  it("in standard mode forces the paint tab and re-renders palette root", () => {
+  it("in standard mode re-renders the palette root", () => {
     setEditorUiMode("standard");
     const root = document.createElement("div");
     root.dataset.testid = "left-palette-root";
     document.body.append(root);
     editorState.set({ selectedTile: 105, layer: "lower" });
     revealPaletteTileFromMap(105);
-    expect(localStorage.getItem("rpg-zzu:palette-work-tab")).toBe("paint");
     expect(root.childElementCount).toBeGreaterThan(0);
   });
 
-  it("in expert mode forces the paint tab and re-renders palette root when present", () => {
+  it("in expert mode re-renders the palette root when present", () => {
     setEditorUiMode("expert");
     const root = document.createElement("div");
     root.dataset.testid = "left-palette-root";
     document.body.append(root);
     editorState.set({ selectedTile: 105, layer: "lower" });
     revealPaletteTileFromMap(105);
-    expect(localStorage.getItem("rpg-zzu:palette-work-tab")).toBe("paint");
     expect(root.childElementCount).toBeGreaterThan(0);
+  });
+
+  // 좌패널 1면 통합(2026-08-21) 회귀 방지: 예전에는 스포이트가 작업 탭을 "칠하기"로
+  // 강제하고 localStorage 에 썼다 — 감독이 고른 탭이 조용히 덮였다. 탭 자체가 없어졌으니
+  // 이 함수는 저장소를 건드릴 이유가 없다.
+  it("does not write any palette tab state to storage", () => {
+    setEditorUiMode("expert");
+    const root = document.createElement("div");
+    root.dataset.testid = "left-palette-root";
+    document.body.append(root);
+    editorState.set({ selectedTile: 105, layer: "lower" });
+    revealPaletteTileFromMap(105);
+    expect(localStorage.getItem("oprn:palette-work-tab")).toBeNull();
+    expect([...storage.keys()].filter((key) => key.includes("palette-work-tab"))).toEqual([]);
   });
 });

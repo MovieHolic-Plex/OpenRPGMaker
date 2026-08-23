@@ -11,7 +11,7 @@ import {
   VIRTUALIZER_THRESHOLD,
   type AuditFinding,
 } from "./dbAuditHelpers";
-import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./rm2k3-database-helpers";
+import { DATABASE_TAB_SPECS, exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 /**
  * Diagnostic adversarial audit of Database matrix/grid editors (todo 10).

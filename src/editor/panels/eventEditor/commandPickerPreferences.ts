@@ -1,5 +1,5 @@
-const FAVORITES_KEY = "rpgzzu.eventCommandPicker.favorites";
-const RECENTS_KEY = "rpgzzu.eventCommandPicker.recents";
+const FAVORITES_KEY = "oprn:eventCommandPicker.favorites";
+const RECENTS_KEY = "oprn:eventCommandPicker.recents";
 const RECENT_LIMIT = 8;
 
 export type EventCommandPickerPreferences = {

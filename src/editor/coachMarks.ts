@@ -6,9 +6,9 @@ import { shouldSuppressCoachMarksForWelcomeIntent } from "@/editor/aiBootIntent"
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
-export const COACH_MARKS_SEEN_KEY = "rpg-zzu:coachmarks-basic-v1";
+export const COACH_MARKS_SEEN_KEY = "oprn:coachmarks-basic-v1";
 // 표준 모드 첫 방문 웰컴 카드 전용 키 — 초보 코치마크 키와 분리.
-export const STANDARD_WELCOME_SEEN_KEY = "rpgzzu:standard-welcome-seen";
+export const STANDARD_WELCOME_SEEN_KEY = "oprn:standard-welcome-seen";
 
 export interface CoachMarkStep {
   readonly id: string;
@@ -242,7 +242,7 @@ function placeWelcomeOnCanvas(card: HTMLElement): void {
   card.style.top = `${Math.max(MARGIN, 72)}px`;
 }
 
-/** 표준 모드 첫 방문 웰컴 카드. 칩셋이 아니라 캔버스 열에 붙인다. */
+/** 표준 모드 첫 방문 웰컴 카드. 타일 그림판이 아니라 캔버스 열에 붙인다. */
 function renderStandardWelcome(storage: Storage | null): void {
   dismiss();
   const card = el("div", {

@@ -38,7 +38,7 @@ test("공격 한 번이 히트스톱·데미지 팝업·플래시·효과음을 
       return audio;
     } as unknown as typeof window.Audio;
     window.Audio.prototype = Native.prototype;
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedReferenceBattleProject(page);

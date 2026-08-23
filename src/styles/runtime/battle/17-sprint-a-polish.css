@@ -203,7 +203,7 @@
 
 .battle-flow-status,
 .battle-strict-order {
-  color: var(--rm2k3-battle-muted, #b9c8f4);
+  color: var(--oprn-battle-muted, #b9c8f4);
   font-size: 13px;
   line-height: 1.15;
   overflow-wrap: anywhere;

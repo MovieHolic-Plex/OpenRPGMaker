@@ -2,11 +2,12 @@
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
 // 공급자: 사용자 설정 baseUrl(OpenAI 호환 엔드포인트). 기본 공급자를 하드코딩하지 않는다.
 // - 스트리밍 SSE 파서(data: 라인 / [DONE] / tool_calls delta 조립) 포함.
-// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(rpg-zzu:ai-config).
+// - 설정(baseUrl/model/liteModel/apiKey/maxToolCalls/maxTokens/reasoningEffort)은 localStorage(oprn:ai-config).
 //   **API 키는 소스/프로젝트 JSON/localStorage 기본값에 하드코딩 금지.** 설정 UI로만 입력.
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { defaultModelForAuthMode, isModelValidForAuthMode } from "@/ai/modelCatalog";
+import { PRODUCT_BRAND } from "@/brand";
 import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
@@ -117,7 +118,7 @@ export function defaultAiConfig(): AiConfig {
   };
 }
 
-export const AI_CONFIG_STORAGE_KEY = "rpg-zzu:ai-config";
+export const AI_CONFIG_STORAGE_KEY = "oprn:ai-config";
 
 /** 저장 blob 스키마 버전. scrubStoredAiCredentials 의 멱등 표식이다. */
 export const AI_CONFIG_VERSION = 2;
@@ -393,7 +394,7 @@ function headers(config: AiConfig): Record<string, string> {
   if (config.authMode === "apiKey" && !isProxyAuth(config)) {
     h.Authorization = `Bearer ${config.apiKey}`;
     if (typeof location !== "undefined") h["HTTP-Referer"] = location.origin;
-    h["X-Title"] = "RPG ZZU Editor";
+    h["X-Title"] = `${PRODUCT_BRAND} Editor`;
   }
   return h;
 }
@@ -743,7 +744,7 @@ export interface AiTransportHealth {
   readonly at: number;
 }
 
-export const AI_TRANSPORT_HEALTH_EVENT = "rpgzzu:ai-transport-health";
+export const AI_TRANSPORT_HEALTH_EVENT = "oprn:ai-transport-health";
 
 let aiTransportHealth: AiTransportHealth | null = null;
 

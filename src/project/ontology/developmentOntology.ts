@@ -11,7 +11,7 @@ export const DEVELOPMENT_ONTOLOGY = {
     updatedAt: "2026-06-27",
     projectSchemaVersion: SCHEMA_VERSION,
     notes: [
-      "Source of truth for RPG ZZU feature-development guidance.",
+      "Source of truth for editor feature-development guidance.",
       "Generated docs and JSON exports must be derived from this model.",
     ],
   },

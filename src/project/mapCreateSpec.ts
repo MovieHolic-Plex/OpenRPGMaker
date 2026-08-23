@@ -1,7 +1,7 @@
 import type { MapId, Project } from "@/project/types";
 
 export const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
-/** easyrpg interior 나무 바닥(통행 가능). 잔디 240은 이 칩셋에서 다른 그림이다. */
+/** easyrpg interior 나무 바닥(통행 가능). 잔디 240은 이 타일 그림판에서 다른 그림이다. */
 export const INTERIOR_FLOOR_TILE = 72;
 export const DEFAULT_BLANK_MAP_SIZE = { width: 20, height: 15 } as const;
 export const DEFAULT_INTERIOR_MAP_SIZE = { width: 20, height: 15 } as const;

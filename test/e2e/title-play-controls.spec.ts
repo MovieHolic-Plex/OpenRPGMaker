@@ -14,9 +14,9 @@ for (const viewport of desktopViewports) {
   test(`title controls keep keyboard and trusted-pointer parity at ${viewport.width}x${viewport.height}`, async ({ page }, testInfo) => {
     const fixtureStubs = optionalFixtureDescriptions();
     await page.addInitScript(() => {
-      (globalThis as { __rpgzzuForcePointerBlock?: boolean }).__rpgzzuForcePointerBlock = true;
-      localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-      localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
+      (globalThis as { __oprnForcePointerBlock?: boolean }).__oprnForcePointerBlock = true;
+      localStorage.setItem("oprn:editor-ui-mode", "expert");
+      localStorage.setItem("oprn:coachmarks-basic-v1", "1");
       Object.defineProperty(window, "Audio", {
         configurable: true,
         value: function titlePlayFixtureAudio(): HTMLAudioElement {
@@ -35,7 +35,7 @@ for (const viewport of desktopViewports) {
         if (url === "http://127.0.0.1:17831/v1/browser/hello" || url.startsWith("http://127.0.0.1:17831/v1/browser/next")) {
           return Promise.resolve(new Response("{}", { headers: { "Content-Type": "application/json" }, status: 200 }));
         }
-        if (url === `${window.location.origin}/__rpgzzu/ai-activity`) {
+        if (url === `${window.location.origin}/__oprn/ai-activity`) {
           return Promise.resolve(new Response(null, { status: 204 }));
         }
         if (url.startsWith("http://dbserver:8100/rest/v1/ai_activity_logs") || url.startsWith("http://dbserver:8100/rest/v1/ai_analysis_runs")) {
@@ -62,7 +62,7 @@ for (const viewport of desktopViewports) {
     await page.keyboard.press("Space");
     await expect(page.getByTestId("player-load-window")).toBeVisible();
     await page.getByTestId("save-slot-1").click();
-    await expect(page.locator(".rm2k3-load-message")).toContainText("1");
+    await expect(page.locator(".oprn-load-message")).toContainText("1");
     await page.getByTestId("player-load-back").click();
     await expect(page.getByTestId("title-new-game")).toBeVisible();
     await page.getByTestId("title-load-game").click();
@@ -152,7 +152,7 @@ function optionalFixtureDescriptions(): readonly string[] {
     "Audio constructor: silent HTMLAudioElement without a source",
     "HTMLMediaElement.play: resolved promise",
     "fetch http://127.0.0.1:17831/v1/browser/{hello,next}: 200 {}",
-    "fetch /__rpgzzu/ai-activity: 204",
+    "fetch /__oprn/ai-activity: 204",
     "fetch dbserver ai_activity_logs: 201 []",
     "fetch dbserver ai_analysis_runs: 201 []",
   ] as const;

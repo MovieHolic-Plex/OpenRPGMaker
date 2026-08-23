@@ -1,4 +1,4 @@
-# RPG Maker Skills Catalog
+# Authoring Skills Catalog
 
 This directory separates RPG-making knowledge into two buckets:
 

@@ -13,11 +13,11 @@ import { el } from "@/util/dom";
 export function renderTilesetEditor(tileset: TilesetDef, rerender: () => void): HTMLElement {
   const tab = getTilesetSectionTab();
   return el("section", {
-    class: "tileset-db-editor simplified rm2k3-tileset-editor",
+    class: "tileset-db-editor simplified oprn-tileset-editor",
     children: [
       renderTilesetProperties(tileset, rerender),
       el("div", {
-        class: "rm2k3-tileset-main",
+        class: "oprn-tileset-main",
         children: [renderTilesetMetadataEditor(tileset, rerender), renderTabSidePanel(tileset, tab, rerender)],
       }),
       renderTilesetAiLauncher(tileset, rerender),
@@ -50,13 +50,13 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
   if (tab === "rules") {
     const rows = Math.ceil(tileset.count / tileset.tilesPerRow);
     return el("aside", {
-      class: "rm2k3-tileset-terrain-pane tileset-rules-legend-pane",
+      class: "oprn-tileset-terrain-pane tileset-rules-legend-pane",
       children: [
         el("fieldset", {
-          class: "rm2k3-db-fieldset",
+          class: "oprn-db-fieldset",
           dataset: { testid: "tileset-rules-side" },
           children: [
-            el("legend", { text: "칩셋 범례" }),
+            el("legend", { text: "그림판 범례" }),
             el("div", {
               class: "tileset-legend-sheet-info",
               dataset: { testid: "tileset-sheet-info" },
@@ -96,15 +96,15 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
               ],
             }),
             el("button", {
-              class: "database-footer-button rm2k3-global-terrain-button",
-              text: "전체 칩셋 창 · 통행 (O/X/★)",
-              attrs: { type: "button", title: "칩셋 그래픽 전체 시트를 별도 창에서 보고 통행을 편집" },
+              class: "database-footer-button oprn-global-terrain-button",
+              text: "그림판 전체 창 · 통행 (O/X/★)",
+              attrs: { type: "button", title: "타일 그림판 전체 시트를 별도 창에서 보고 통행을 편집" },
               dataset: { testid: "tileset-settings-open" },
               on: { click: () => openTilesetSettingsModal(tileset.id, rerender) },
             }),
             el("div", {
               class: "tileset-rule-note",
-              text: "가운데 시트가 전체 칩셋입니다(스크롤로 하단 행까지). 우클릭 → 의미/통행/레이어. 필터 전체|하위|상위, 배율 2x(기본)·3x·4x, 휠·←→↑↓·중클릭 드래그. ‘하위’ 필터면 상위 타일이 어두워져 안 보이는 것처럼 느껴질 수 있으니 전체를 쓰세요.",
+              text: "가운데 시트가 그림판 전체입니다(스크롤로 하단 행까지). 우클릭 → 의미/통행/레이어. 필터 전체|하위|상위, 배율 2x(기본)·3x·4x, 휠·←→↑↓·중클릭 드래그. ‘하위’ 필터면 상위 타일이 어두워져 안 보이는 것처럼 느껴질 수 있으니 전체를 쓰세요.",
             }),
           ],
         }),
@@ -113,7 +113,7 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
   }
   if (tab === "knowledge") {
     return el("aside", {
-      class: "rm2k3-tileset-terrain-pane",
+      class: "oprn-tileset-terrain-pane",
       children: [
         renderTilesetCheckerSummary(tileset),
         el("button", {
@@ -128,10 +128,10 @@ function renderTabSidePanel(tileset: TilesetDef, tab: TilesetSectionTab, rerende
     });
   }
   return el("aside", {
-    class: "rm2k3-tileset-terrain-pane",
+    class: "oprn-tileset-terrain-pane",
     children: [
       el("fieldset", {
-        class: "rm2k3-db-fieldset rm2k3-tileset-autotile",
+        class: "oprn-db-fieldset oprn-tileset-autotile",
         children: [
           el("legend", { text: "자동타일 애니메이션" }),
           el("div", { class: "tileset-db-autotile-swatch" }),

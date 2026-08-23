@@ -29,7 +29,7 @@ import { classifyProposalSafety } from "@/editor/proposalSafety";
 import { buildDemonstrationMessage, type DemonstrationPayload } from "@/ai/demonstrationPrompt";
 import { openDemoTeachModal, type DemoTeachSeed } from "@/editor/panels/demoTeachCanvas";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
-import { openCommandPalette } from "./commandPalette";
+import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
 import { openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import { isRegionEscapingIntent } from "@/editor/regionTask/regionIntentRouter";
 import { describeRegionTaskResult, runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
@@ -1330,13 +1330,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
   };
 
-  // 풀스크린 테스트 플레이 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
+  // 풀스크린 시연 실행 창이 AI 패널을 가리고 있으면, 턴 완료를 사용자에게 알린다
   // (도그푸딩 결함 ④ — 모달 뒤에서 턴/프로포절이 조용히 진행되던 문제). 자동으로 창을
   // 닫거나 열지 않는다: 완료 알림 + 기존 수동 버튼(편집으로/닫기)으로 확인하게 한다.
   const notifyIfObscuredByTestPlay = (): void => {
     if (typeof document === "undefined" || typeof document.querySelector !== "function") return;
     if (!document.querySelector('[data-testid="test-play-window"]')) return;
-    toast("AI 응답 완료 — 테스트 플레이 창 뒤에 결과/제안이 있습니다. '편집으로'를 눌러 확인하세요.", "info");
+    toast("AI 응답 완료 — 시연 실행 창 뒤에 결과/제안이 있습니다. '편집으로'를 눌러 확인하세요.", "info");
   };
 
   // 마지막으로 직접 입력한 요청 — "내 스킬로 저장"의 기본 템플릿이 된다.
@@ -2188,10 +2188,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   commandBarClearanceObserver?.observe(commandBar);
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
-  // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__rpgzzuAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
+  // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
   const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {
-    window.__rpgzzuAiHarness = harnessAccessor;
+    window.__oprnAiHarness = harnessAccessor;
   }
 
   // 크기 커스텀: 좌상단 코너 핸들 드래그(오른쪽·아래가 고정이라 왼쪽·위로 끌면 커진다).
@@ -2566,8 +2566,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   if (typeof window !== "undefined") {
     cleanupAiAssistBridge?.();
     const targetWindow = window;
-    targetWindow.addEventListener("rpgzzu:ai-assist", handleAiAssist);
-    cleanupAiAssistBridge = () => targetWindow.removeEventListener("rpgzzu:ai-assist", handleAiAssist);
+    targetWindow.addEventListener("oprn:ai-assist", handleAiAssist);
+    cleanupAiAssistBridge = () => targetWindow.removeEventListener("oprn:ai-assist", handleAiAssist);
   }
 
   // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵+스킬). 패널 수명주기와 함께 등록/해제한다.
@@ -2577,11 +2577,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
     }
   };
+  // 단축키를 모르는 사용자를 위한 클릭 경로 — 탑바의 ⌘K 칩이 이 이벤트를 쏜다.
+  // 팔레트를 열려면 스킬 실행기(drawer)가 필요하고 그건 이 패널만 갖고 있으므로,
+  // 열기 요청은 이벤트로 받고 실제 열기는 여기서 한다.
+  const onCommandPaletteRequest = (): void => {
+    openCommandPalette({ runSkill: (skill) => drawer.run(skill) });
+  };
   let ownsCommandPaletteHotkey = false;
-  if (typeof window !== "undefined" && !(window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey) {
-    (window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey = true;
+  if (typeof window !== "undefined" && !(window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey) {
+    (window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey = true;
     ownsCommandPaletteHotkey = true;
     document.addEventListener?.("keydown", onCommandPaletteKeyDown);
+    window.addEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
   }
 
   // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
@@ -2748,10 +2755,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (typeof window !== "undefined") {
       window.removeEventListener(AI_SELECTION_CONTEXT_EVENT, handleSelectionContextEvent);
       window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
-      if (window.__rpgzzuAiHarness === harnessAccessor) delete window.__rpgzzuAiHarness;
+      if (window.__oprnAiHarness === harnessAccessor) delete window.__oprnAiHarness;
       if (ownsCommandPaletteHotkey) {
         document.removeEventListener?.("keydown", onCommandPaletteKeyDown);
-        delete (window as { __rpgzzuSkillHotkey?: boolean }).__rpgzzuSkillHotkey;
+        window.removeEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
+        delete (window as { __oprnSkillHotkey?: boolean }).__oprnSkillHotkey;
       }
     }
     if (typeof document !== "undefined") {

@@ -27,7 +27,7 @@ test("authors dew-village demo through editor modules and exports fixture", asyn
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.addInitScript(() => {
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1600, height: 1000 });
   await page.goto("/?blankProject=1", { waitUntil: "domcontentloaded" });

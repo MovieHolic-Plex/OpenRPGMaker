@@ -8,11 +8,11 @@
   padding: var(--space-2);
 }
 
-.rpg-maker-history-dropdown {
+.oprn-history-dropdown {
   min-width: 260px;
 }
 
-.rpg-maker-history-dropdown .map-history-panel {
+.oprn-history-dropdown .map-history-panel {
   background: transparent;
   border: 0;
   margin: 0;

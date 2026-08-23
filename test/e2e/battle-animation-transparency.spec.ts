@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { openDatabase, switchDatabaseTab } from "./rm2k3-database-helpers";
+import { openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
 
 test.setTimeout(180_000);
 test.use({ serviceWorkers: "block" });
@@ -9,7 +9,7 @@ type SheetKind = "magenta" | "green" | "black" | "alpha";
 const EVIDENCE_DIR = "output/evidence/battle-animation-transparency";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("DB 전투 애니메이션 미리보기: 마젠타/녹색/검은 배경 자동 키아웃, 투명 PNG 는 no-op", async ({ page }) => {

@@ -33,7 +33,7 @@
 .ecp-pattern-caption-title {
   font-size: 12px;
   font-weight: 700;
-  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent, #4A57D6));
   word-break: break-all;
 }
 .ecp-pattern-caption-meta {
@@ -81,7 +81,7 @@
 }
 .event-command-frame-live-label {
   font: 700 11px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent, #4A57D6));
 }
 .event-command-frame-live {
   display: grid;

@@ -81,9 +81,9 @@
   max-width: 280px;
   -webkit-text-stroke: 0;
   text-shadow:
-    1px 0 0 var(--rm2k3-title-shadow),
-    -1px 0 0 var(--rm2k3-title-shadow),
-    0 1px 0 var(--rm2k3-title-shadow),
+    1px 0 0 var(--oprn-title-shadow),
+    -1px 0 0 var(--oprn-title-shadow),
+    0 1px 0 var(--oprn-title-shadow),
     2px 2px 0 rgba(5, 19, 70, 0.62);
 }
 
@@ -131,8 +131,8 @@
   min-height: 20px;
   padding: 2px 8px 2px 26px;
   text-shadow:
-    1px 0 0 var(--rm2k3-title-window-shadow),
-    0 1px 0 var(--rm2k3-title-window-shadow);
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
   pointer-events: auto;
 }
 
@@ -145,7 +145,7 @@
 
 .player-layout.system-shell .rm-title-menu-button:focus-visible {
   background: var(--runtime-window-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
   outline: none;
 }
 
@@ -164,16 +164,16 @@
   line-height: 1.2;
   min-width: 174px;
   padding: 3px 8px;
-  text-shadow: 1px 1px 0 var(--rm2k3-title-window-shadow);
+  text-shadow: 1px 1px 0 var(--oprn-title-window-shadow);
 }
 
-.player-layout.system-shell .rm2k3-load-panel.system-panel {
+.player-layout.system-shell .oprn-load-panel.system-panel {
   align-items: center;
   background-color: #101820;
   border: 0;
   box-shadow: none;
   box-sizing: border-box;
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   display: flex;
   gap: 0;
   justify-content: center;
@@ -181,7 +181,7 @@
   padding: 0;
 }
 
-.player-layout.system-shell .rm2k3-load-window {
+.player-layout.system-shell .oprn-load-window {
   background: var(--runtime-window-fill-fallback);
   border: var(--runtime-window-border) solid transparent;
   border-image-repeat: stretch;
@@ -197,16 +197,16 @@
   padding: 2px 4px;
   position: relative;
   text-shadow:
-    1px 0 0 var(--rm2k3-title-window-shadow),
-    0 1px 0 var(--rm2k3-title-window-shadow);
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
   /* 세이브 카드 2행(Lv · 플레이타임 · 저장시각)이 잘리지 않는 폭. 320 논리폭 안에서 유지. */
   width: min(264px, calc(100% - 28px));
   z-index: 2;
 }
 
-.player-layout.system-shell .rm2k3-load-title {
+.player-layout.system-shell .oprn-load-title {
   border-bottom: 1px solid rgba(255, 255, 255, 0.45);
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   font: inherit;
   line-height: 1.25;
   margin: 0;
@@ -214,8 +214,8 @@
   text-align: center;
 }
 
-.player-layout.system-shell .rm2k3-load-message,
-.player-layout.system-shell .rm2k3-load-corrupt {
+.player-layout.system-shell .oprn-load-message,
+.player-layout.system-shell .oprn-load-corrupt {
   color: rgba(255, 255, 255, 0.96);
   font-size: 10px;
   line-height: 1.25;
@@ -223,22 +223,22 @@
   overflow-wrap: anywhere;
 }
 
-.player-layout.system-shell .rm2k3-load-corrupt {
+.player-layout.system-shell .oprn-load-corrupt {
   color: #ffd7d0;
 }
 
-.player-layout.system-shell .rm2k3-load-slots {
+.player-layout.system-shell .oprn-load-slots {
   display: grid;
   gap: 3px;
 }
 
-.player-layout.system-shell .rm2k3-load-slot,
-.player-layout.system-shell .rm2k3-load-back {
+.player-layout.system-shell .oprn-load-slot,
+.player-layout.system-shell .oprn-load-back {
   appearance: none;
   background: transparent;
   border: 0;
   border-radius: 0;
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   cursor: pointer;
   font: inherit;
   min-height: 18px;
@@ -247,14 +247,14 @@
   position: relative;
   text-align: left;
   text-shadow:
-    1px 0 0 var(--rm2k3-title-window-shadow),
-    0 1px 0 var(--rm2k3-title-window-shadow);
+    1px 0 0 var(--oprn-title-window-shadow),
+    0 1px 0 var(--oprn-title-window-shadow);
 }
 
 /* 세이브 슬롯 카드 — 중첩 tight 9-slice 윈도우 + 2행 그리드.
    border-image-slice 에 fill 을 쓰지 않는 이유: 중앙 채움이 hover/focus 하이라이트
    배경(var(--runtime-window-selected-bg))을 덮어 커서 상태가 보이지 않게 되기 때문. */
-.player-layout.system-shell .rm2k3-load-slot {
+.player-layout.system-shell .oprn-load-slot {
   border: var(--runtime-window-border-tight) solid transparent;
   border-image-repeat: stretch;
   border-image-slice: 24;
@@ -266,7 +266,7 @@
   padding: 2px 6px 2px 18px;
 }
 
-.player-layout.system-shell .rm2k3-load-slot-row {
+.player-layout.system-shell .oprn-load-slot-row {
   align-items: baseline;
   display: flex;
   gap: 4px;
@@ -275,30 +275,30 @@
   white-space: nowrap;
 }
 
-.player-layout.system-shell .rm2k3-load-slot-title {
+.player-layout.system-shell .oprn-load-slot-title {
   flex: none;
 }
 
 /* 320px 논리폭 스테이지 안에서 긴 맵 이름은 말줄임 처리. */
-.player-layout.system-shell .rm2k3-load-slot-map {
+.player-layout.system-shell .oprn-load-slot-map {
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.player-layout.system-shell .rm2k3-load-slot-meta {
+.player-layout.system-shell .oprn-load-slot-meta {
   color: rgba(255, 255, 255, 0.85);
   font-size: var(--runtime-font-size-9);
 }
 
-.player-layout.system-shell .rm2k3-load-slot-meta > span + span::before {
+.player-layout.system-shell .oprn-load-slot-meta > span + span::before {
   content: "\00b7";
   margin-right: 4px;
   opacity: 0.7;
 }
 
-.player-layout.system-shell .rm2k3-load-back {
+.player-layout.system-shell .oprn-load-back {
   border-top: 1px solid rgba(255, 255, 255, 0.38);
   margin-top: 2px;
   text-align: center;
@@ -306,22 +306,22 @@
   white-space: nowrap;
 }
 
-.player-layout.system-shell .rm2k3-load-slot:hover,
-.player-layout.system-shell .rm2k3-load-slot:focus-visible,
-.player-layout.system-shell .rm2k3-load-back:hover,
-.player-layout.system-shell .rm2k3-load-back:focus-visible {
+.player-layout.system-shell .oprn-load-slot:hover,
+.player-layout.system-shell .oprn-load-slot:focus-visible,
+.player-layout.system-shell .oprn-load-back:hover,
+.player-layout.system-shell .oprn-load-back:focus-visible {
   background: var(--runtime-window-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
   outline: none;
 }
 
-.player-layout.system-shell .rm2k3-load-slot:hover::before,
-.player-layout.system-shell .rm2k3-load-slot:focus-visible::before {
+.player-layout.system-shell .oprn-load-slot:hover::before,
+.player-layout.system-shell .oprn-load-slot:focus-visible::before {
   border-bottom: 5px solid transparent;
-  border-left: 8px solid var(--rm2k3-title-cursor);
+  border-left: 8px solid var(--oprn-title-cursor);
   border-top: 5px solid transparent;
   content: "";
-  filter: drop-shadow(1px 1px 0 var(--rm2k3-title-window-shadow));
+  filter: drop-shadow(1px 1px 0 var(--oprn-title-window-shadow));
   height: 0;
   left: 5px;
   position: absolute;
@@ -330,10 +330,10 @@
   width: 0;
 }
 
-.player-layout.system-shell .rm2k3-load-slot.is-empty {
+.player-layout.system-shell .oprn-load-slot.is-empty {
   color: rgba(255, 255, 255, 0.74);
 }
 
-.player-layout.system-shell .rm2k3-load-slot.is-corrupt {
+.player-layout.system-shell .oprn-load-slot.is-corrupt {
   color: #ffd7d0;
 }

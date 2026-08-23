@@ -11,9 +11,9 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-    window.localStorage.setItem("rpg-zzu-editor-session-id", "task-10-event");
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    window.localStorage.setItem("rpg-zzu:coachmarks-basic-v1", "1");
+    window.localStorage.setItem("oprn:editor-session-id", "task-10-event");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:coachmarks-basic-v1", "1");
   });
 });
 

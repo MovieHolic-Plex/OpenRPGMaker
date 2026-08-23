@@ -10,10 +10,10 @@ import path from "node:path";
 
 const EVIDENCE = path.resolve("verify-shots/first-visit-mockup");
 const LAYOUT_KEYS = [
-  "rpg-zzu:editor-layout",
-  "rpg-zzu:editor-layout:v2",
-  "rpg-zzu:editor-layout:v3",
-  "rpg-zzu:editor-layout:v4",
+  "oprn:editor-layout",
+  "oprn:editor-layout:v2",
+  "oprn:editor-layout:v3",
+  "oprn:editor-layout:v4",
 ] as const;
 
 mkdirSync(EVIDENCE, { recursive: true });
@@ -27,11 +27,11 @@ async function dismissLogin(page: Page): Promise<void> {
 async function bootBriefing(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript((keys) => {
-    localStorage.removeItem("rpg-zzu:editor-ui-mode");
-    localStorage.removeItem("rpg-zzu:ai-panel-collapsed");
-    localStorage.removeItem("rpg-zzu:coachmarks-basic-v1");
-    localStorage.removeItem("rpgzzu:standard-welcome-seen");
-    localStorage.removeItem("rpg-zzu:editor-welcome-dismissed");
+    localStorage.removeItem("oprn:editor-ui-mode");
+    localStorage.removeItem("oprn:ai-panel-collapsed");
+    localStorage.removeItem("oprn:coachmarks-basic-v1");
+    localStorage.removeItem("oprn:standard-welcome-seen");
+    localStorage.removeItem("oprn:editor-welcome-dismissed");
     for (const key of keys) localStorage.removeItem(key);
   }, LAYOUT_KEYS);
   await page.goto("/?forceWelcome=1");

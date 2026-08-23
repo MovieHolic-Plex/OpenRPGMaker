@@ -4,9 +4,9 @@ export async function seedProjectFromSupabaseCanonical(page: Page, project: unkn
   await page.addInitScript((seed) => {
     window.__RPG_ZZU_E2E_PROJECT__ = seed;
     // 시드의 역할은 프로젝트 주입뿐 — 앞선 init 스크립트(beforeEach)가 정한 UI 모드는 보존한다.
-    const uiMode = window.localStorage.getItem("rpg-zzu:editor-ui-mode");
+    const uiMode = window.localStorage.getItem("oprn:editor-ui-mode");
     window.localStorage.clear();
-    if (uiMode !== null) window.localStorage.setItem("rpg-zzu:editor-ui-mode", uiMode);
+    if (uiMode !== null) window.localStorage.setItem("oprn:editor-ui-mode", uiMode);
   }, project);
   await page.goto(path);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15000 });

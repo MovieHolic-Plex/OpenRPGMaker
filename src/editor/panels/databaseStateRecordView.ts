@@ -29,8 +29,8 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
 
   form.append(
     el("div", {
-      class: "db-state-rm2k3-workbench",
-      dataset: { testid: "db-states-rm2k3-workbench" },
+      class: "db-state-oprn-workbench",
+      dataset: { testid: "db-states-oprn-workbench" },
       children: [
         panel("기본 설정", [
           selectLiteral("해제 조건", "db-state-removal-condition", ontology.removalCondition, REMOVAL_OPTIONS, (removalCondition) =>

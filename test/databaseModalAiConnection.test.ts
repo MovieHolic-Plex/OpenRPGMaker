@@ -156,7 +156,7 @@ describe("database modal AI bar (M7-①)", () => {
     expect(openPanel).toHaveBeenCalledTimes(1);
     expect(input.value).toBe("");
     // E2E 훅: 실 LLM 호출 없이 전송 도달을 검증할 수 있게 마지막 요청을 남긴다.
-    expect(window.__rpgzzuDbAiLastRequest?.message).toBe(message);
+    expect(window.__oprnDbAiLastRequest?.message).toBe(message);
 
     // 빈 입력은 전송하지 않는다.
     findByTestId(modal, "database-ai-run")?.click();

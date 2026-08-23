@@ -1,13 +1,13 @@
 {
-  "name": "RPG ZZU",
-  "short_name": "RPG ZZU",
-  "description": "브라우저에서 실행되는 RPG ZZU 게임 제작 워크벤치",
+  "name": "OPRN Studio",
+  "short_name": "OPRN",
+  "description": "브라우저에서 돌아가는 AI 협업 탑다운 RPG 제작 워크벤치",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ece7da",
-  "theme_color": "#0a246a",
+  "background_color": "#0b0d12",
+  "theme_color": "#131722",
   "lang": "ko",
   "orientation": "landscape-primary",
   "icons": [

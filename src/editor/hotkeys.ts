@@ -1,7 +1,7 @@
 // editor/hotkeys.ts
-// RM2K3 스타일 에디터 단축키 매핑.
+// 에디터 단축키 매핑.
 // 도구/레이어/줌/저장/실행취소를 키보드로 조작한다.
-// RPG Maker 계열 에디터의 F키 레이어 전환 관례를 웹 키보드 규칙에 맞게 재구성했다.
+// F키 레이어 전환은 데스크톱 타일 에디터의 일반 관례를 웹 키보드 규칙에 맞게 재구성했다.
 //   - F5/F6/F7: 하위/상위/이벤트 레이어
 //   - 1~7: 도구 순서 (연필/채우기/스포이트/이동/선택/통행/이벤트)
 //   - 숫자/+-: 정수 줌
@@ -29,7 +29,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (target.isContentEditable) return true;
     // 모달/팝업/메뉴가 열려 있으면 충돌 방지를 위해 단축키를 끈다.
     if (target.closest("[data-testid^='menu-popup-']")) return true;
-    if (target.closest(".rm2k3-modal") || target.closest(".modal-backdrop")) return true;
+    if (target.closest(".oprn-modal") || target.closest(".modal-backdrop")) return true;
   }
   // 데이터베이스/리소스/이벤트 명령 모달이 열려 있으면 document 기준으로 가드.
   if (typeof document !== "undefined") {

@@ -16,7 +16,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
 let buildPaletteEnabled = false;
-export const BUILD_PALETTE_VISIBILITY_EVENT = "rpgzzu:build-palette-visibility";
+export const BUILD_PALETTE_VISIBILITY_EVENT = "oprn:build-palette-visibility";
 
 const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly label: string; readonly title: string }[] = [
   { id: "house", label: "🏠집", title: "선택한 집 키트와 형태로 집을 시공" },
@@ -30,19 +30,19 @@ const PRIMITIVES: readonly { readonly id: BuildPalettePrimitive | "ai"; readonly
   { id: "ai", label: "✨AI로 채우기", title: "기존 영역 AI 작업 경로로 보내기" },
 ];
 
-const HOUSE_SHAPE_STORAGE_KEY = "rpg-zzu:build-palette:house-shape";
-const HOUSE_KIT_STORAGE_KEY = "rpg-zzu:build-palette:house-kit";
+const HOUSE_SHAPE_STORAGE_KEY = "oprn:build-palette:house-shape";
+const HOUSE_KIT_STORAGE_KEY = "oprn:build-palette:house-kit";
 const HOUSE_OPTION_STORAGE_KEYS = {
-  doorEvent: "rpg-zzu:build-palette:door-event",
-  interior: "rpg-zzu:build-palette:interior",
-  windows: "rpg-zzu:build-palette:windows",
+  doorEvent: "oprn:build-palette:door-event",
+  interior: "oprn:build-palette:interior",
+  windows: "oprn:build-palette:windows",
 } as const;
 
 export type HouseOptionKey = keyof typeof HOUSE_OPTION_STORAGE_KEYS;
 
 export function renderBuildPaletteToggle(): HTMLElement {
   return el("button", {
-    class: "rm2k3-tool-button build-palette-toggle" + (buildPaletteEnabled ? " active" : ""),
+    class: "oprn-tool-button build-palette-toggle" + (buildPaletteEnabled ? " active" : ""),
     text: "🏗️건축▾",
     attrs: {
       type: "button",

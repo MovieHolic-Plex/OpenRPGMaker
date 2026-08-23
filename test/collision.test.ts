@@ -1,6 +1,6 @@
 // test/collision.test.ts
 // 충돌 판정 로직 단위 테스트 — v2 passability 기반.
-// 스펙 docs/specs/2026-06-18-rm2k3-overhaul-design.md §8.3.
+// 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.3.
 
 import { describe, it, expect } from "vitest";
 import { createBlankMap, createBlankProject, TILE, DEFAULT_SOLID_TILES } from "@/project/defaults";

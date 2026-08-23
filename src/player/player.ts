@@ -595,7 +595,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
 export function teardownPlayer(): void {
   teardownShell?.();
   teardownShell = null;
-  delete window.__rpgzzuInput;
+  delete window.__oprnInput;
 }
 
 function isRuntimeMenuKey(key: string): key is RuntimeMenuKey {

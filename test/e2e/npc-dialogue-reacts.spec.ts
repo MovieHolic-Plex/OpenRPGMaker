@@ -11,7 +11,7 @@ import { startNewGameFromTitle } from "./runtimeInput";
 import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 
 type DebugWindow = {
-  __rpgzzuDebug?: { setSwitch?(id: string, value: boolean): void; readState(): { switches: Record<string, boolean> } };
+  __oprnDebug?: { setSwitch?(id: string, value: boolean): void; readState(): { switches: Record<string, boolean> } };
 };
 
 test.setTimeout(120_000);
@@ -52,7 +52,7 @@ async function talkTo(page: Page, eventId: string): Promise<string> {
 
 test("종을 되살리면 마을 사람 대사가 바뀐다", async ({ page }) => {
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
 
@@ -73,7 +73,7 @@ test("종을 되살리면 마을 사람 대사가 바뀐다", async ({ page }) =
 
   // 종 복원 스위치를 켠다.
   const applied = await page.evaluate(() => {
-    const debug = (window as unknown as DebugWindow).__rpgzzuDebug;
+    const debug = (window as unknown as DebugWindow).__oprnDebug;
     if (!debug?.setSwitch) return false;
     debug.setSwitch("sw_0006", true);
     return debug.readState().switches.sw_0006 === true;

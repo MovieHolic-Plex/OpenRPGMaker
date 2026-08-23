@@ -4,13 +4,13 @@ const fs = require("fs");
 const path = require("path");
 const OUT = path.join(__dirname, "..", "evidence", "playtest-rm2003");
 const PROJECT_JSON = fs.readFileSync(path.join(__dirname, "..", ".playwright-mcp", "ember-quest.json"), "utf8");
-const DEV_KEY = "rpg-zzu:dev-project:127.0.0.1/?devProject=1";
+const DEV_KEY = "oprn:dev-project:127.0.0.1/?devProject=1";
 const URL = "http://127.0.0.1:5199/?devProject=1";
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function freshGame(browser) {
   const page = await (await browser.newContext({ viewport: { width: 1720, height: 960 } })).newPage();
-  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("rpg-zzu:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
+  await page.addInitScript(([k, v]) => { localStorage.setItem(k, v); for (let i = 1; i <= 3; i++) localStorage.removeItem("oprn:save-slot:" + i); }, [DEV_KEY, PROJECT_JSON]);
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await page.waitForSelector('[data-testid="mode-play"]', { timeout: 30000 });
   await sleep(1200);
@@ -21,7 +21,7 @@ async function freshGame(browser) {
     let ok = false;
     for (let j = 0; j < 10; j++) {
       await sleep(500);
-      if (await page.evaluate(() => { const sp = window.__rpgzzuCharacterSprites?.(); return !!(window.__rpgzzuDebug?.readState() && sp && Object.keys(sp.events ?? {}).length > 0); })) { ok = true; break; }
+      if (await page.evaluate(() => { const sp = window.__oprnCharacterSprites?.(); return !!(window.__oprnDebug?.readState() && sp && Object.keys(sp.events ?? {}).length > 0); })) { ok = true; break; }
     }
     if (ok) break;
   }
@@ -32,8 +32,8 @@ async function freshGame(browser) {
 function makeHelpers(page) {
   const shot = async (n) => { await page.screenshot({ path: path.join(OUT, n + ".png") }); console.log("shot:", n); };
   const key = async (k, t = 1, d = 450) => { for (let i = 0; i < t; i++) { await page.keyboard.press(k); await sleep(d); } };
-  const playerTile = () => page.evaluate(() => { const s = window.__rpgzzuPlayerSprite?.(); return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; });
-  const spriteTile = (id) => page.evaluate((e) => { const s = window.__rpgzzuCharacterSprites?.().events?.[e]; return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; }, id);
+  const playerTile = () => page.evaluate(() => { const s = window.__oprnPlayerSprite?.(); return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; });
+  const spriteTile = (id) => page.evaluate((e) => { const s = window.__oprnCharacterSprites?.().events?.[e]; return s ? { x: Math.floor(s.x / 16), y: Math.floor(s.y / 16) - 1 } : null; }, id);
   const realDialogue = () => page.evaluate(() => !!document.querySelector(".dialogue-box"));
   // 세이브 슬롯1 생성 → JSON 조작 → 인게임 로드로 씬 재배치
   const clickTestId = async (tid) => page.evaluate((t) => {
@@ -54,14 +54,14 @@ function makeHelpers(page) {
     await sleep(700);
     if (!(await clickTestId("save-slot-1"))) await key("Enter", 1, 900);
     await sleep(800);
-    const okSave = await page.evaluate(() => !!localStorage.getItem("rpg-zzu:save-slot:1"));
+    const okSave = await page.evaluate(() => !!localStorage.getItem("oprn:save-slot:1"));
     if (!okSave) { console.log("SAVE FAILED"); return false; }
     await page.evaluate(([m, px, py, sw]) => {
-      const raw = JSON.parse(localStorage.getItem("rpg-zzu:save-slot:1"));
+      const raw = JSON.parse(localStorage.getItem("oprn:save-slot:1"));
       const sess = raw.session ?? raw.snapshot?.session ?? raw;
       sess.currentMapId = m; sess.x = px; sess.y = py;
       for (const [k, v] of Object.entries(sw)) sess.switches[k] = v;
-      localStorage.setItem("rpg-zzu:save-slot:1", JSON.stringify(raw));
+      localStorage.setItem("oprn:save-slot:1", JSON.stringify(raw));
     }, [mapId, x, y, switches]);
     await key("Escape", 1, 700);
     if (!(await clickMenuText("로드"))) { await key("Escape", 1, 600); await clickMenuText("로드"); }
@@ -70,7 +70,7 @@ function makeHelpers(page) {
     await sleep(1000);
     await key("Enter", 1, 800);      // 확인(있다면)
     for (let i = 0; i < 15; i++) {
-      const t = await playerTile(); const st = await page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId);
+      const t = await playerTile(); const st = await page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId);
       if (st === mapId && t && Math.abs(t.x - x) <= 1 && Math.abs(t.y - y) <= 1) { console.log("WARP OK", mapId, JSON.stringify(t)); return true; }
       await sleep(500);
     }
@@ -95,9 +95,9 @@ function makeHelpers(page) {
     const ev = await spriteTile(eventId);
     if (!ev) { console.log("NO SPRITE:", eventId); return false; }
     if (!(await walkTo(ev.x, ev.y + 1))) console.log("walk imperfect", eventId);
-    await page.evaluate(() => window.__rpgzzuInput?.dir("up")); await sleep(130);
-    await page.evaluate(() => window.__rpgzzuInput?.dir(null)); await sleep(300);
-    await page.evaluate(() => window.__rpgzzuInput?.action()); await sleep(1000);
+    await page.evaluate(() => window.__oprnInput?.dir("up")); await sleep(130);
+    await page.evaluate(() => window.__oprnInput?.dir(null)); await sleep(300);
+    await page.evaluate(() => window.__oprnInput?.action()); await sleep(1000);
     let ok = await realDialogue();
     if (!ok) { await page.keyboard.press("Space"); await sleep(900); ok = await realDialogue(); }
     console.log("dialogue:", eventId, ok);
@@ -152,7 +152,7 @@ function makeHelpers(page) {
     await page.keyboard.down("ArrowRight"); await sleep(520); await h.shot("103-transfer-fade");
     await sleep(1200); await page.keyboard.up("ArrowRight"); await sleep(1300);
     await h.shot("104-forest-arrival");
-    console.log("map:", await page.evaluate(() => window.__rpgzzuDebug?.readState()?.currentMapId));
+    console.log("map:", await page.evaluate(() => window.__oprnDebug?.readState()?.currentMapId));
     await page.context().close();
   }
 

@@ -205,7 +205,7 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 2px 3px;
 }
-.rm2k3-status-menu .status-menu-detail-title {
+.oprn-status-menu .status-menu-detail-title {
   font-size: 13px;
   line-height: 1.12;
   margin: 0 0 2px;
@@ -214,10 +214,10 @@
 }
 /* 한글은 기본 word-break 로 어절 중간이 잘린다("아이템이 없습니 / 다").
    상세 패널의 안내/설명 문구도 제목처럼 어절 단위로 끊는다. */
-.rm2k3-status-menu .status-menu-detail-empty,
-.rm2k3-status-menu .status-menu-detail-hint,
-.rm2k3-status-menu .status-menu-detail-description,
-.rm2k3-status-menu .status-menu-detail-entry-description {
+.oprn-status-menu .status-menu-detail-empty,
+.oprn-status-menu .status-menu-detail-hint,
+.oprn-status-menu .status-menu-detail-description,
+.oprn-status-menu .status-menu-detail-entry-description {
   overflow-wrap: normal;
   white-space: normal;
   word-break: keep-all;
@@ -242,7 +242,7 @@
   gap: 2px;
   /* label 을 1fr 로 두면 긴 value 가 label 칼럼을 0 까지 밀어내고, label 은 overflow 가 없어 값 위로 삐져나와 겹친다(실측 "주인공"+"공격, 검격, 집중"). label=auto, value=1fr 이 맞다. */
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-  min-height: var(--rm2k3-menu-row-height, 15px);
+  min-height: var(--oprn-menu-row-height, 15px);
   padding: 1px 2px;
   text-shadow: none;
   white-space: normal;
@@ -273,7 +273,7 @@
 /* 조작 가능한 행 — 설명을 푸터로 넘겨 1줄로 압축한다. 리스트에 들어가는 항목 수가 2배가 된다. */
 .status-menu-detail-row-compact {
   align-items: center;
-  min-height: var(--rm2k3-menu-row-height, 15px);
+  min-height: var(--oprn-menu-row-height, 15px);
   white-space: nowrap;
 }
 .status-menu-detail-row-compact .status-menu-detail-label,

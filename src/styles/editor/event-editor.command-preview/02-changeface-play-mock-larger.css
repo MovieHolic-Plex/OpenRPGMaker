@@ -147,7 +147,7 @@
 .event-command-settings-group > legend {
   padding: 0 6px;
   font: 700 12px/1.2 Tahoma, "Malgun Gothic", sans-serif;
-  color: var(--rm2k3-command-blue, var(--accent, #4A57D6));
+  color: var(--oprn-command-blue, var(--accent, #4A57D6));
 }
 .event-command-settings-hint {
   margin: 0;

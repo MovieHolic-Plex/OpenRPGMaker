@@ -62,15 +62,15 @@ describe("패널 접기", () => {
 
     collapse?.click();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
 
     collapse?.click();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
   it("부팅 시 저장된 펼침 선택('0')을 복원한다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "0");
+    storage.set("oprn:ai-panel-collapsed", "0");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });

@@ -1564,7 +1564,7 @@ describe("agentMode 오케스트레이션 게이트", () => {
 });
 
 // 하네스 관측(2026-07-09): 오케스트레이션 주입·토큰 사용이 감사 로그에 남고,
-// getHarnessSnapshot이 뷰어(🔬)/window.__rpgzzuAiHarness에 원본을 제공한다.
+// getHarnessSnapshot이 뷰어(🔬)/window.__oprnAiHarness에 원본을 제공한다.
 describe("하네스 관측", () => {
   it("오케스트레이션 주입 원문이 감사 로그에 남고 턴 종료 라인에 출력 토큰이 붙는다", async () => {
     const { AssistantSession, createBlankProject } = await load();

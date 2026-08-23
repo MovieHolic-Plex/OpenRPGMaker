@@ -32,7 +32,7 @@ const base = process.env.RPGZZU_DEV_URL || "http://127.0.0.1:9999/";
 await page.goto(base, { waitUntil: "domcontentloaded", timeout: 60_000 });
 await page.waitForTimeout(1200);
 
-await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
 await page.waitForSelector('[data-testid="title-screen"]', { timeout: 20_000 });
 await page.keyboard.press("Enter");
 await page.waitForTimeout(1000);

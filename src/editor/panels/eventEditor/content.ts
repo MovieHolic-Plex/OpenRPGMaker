@@ -266,7 +266,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   settingsColumn.append(eventCard, settingsMain);
   commandsColumn.append(
     el("fieldset", {
-      class: "event-rm2k3-fieldset event-contents-fieldset",
+      class: "event-oprn-fieldset event-contents-fieldset",
       dataset: { testid: "event-classic-contents" },
       children: [
         el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),

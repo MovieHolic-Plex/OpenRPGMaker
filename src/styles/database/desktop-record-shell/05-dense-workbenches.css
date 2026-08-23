@@ -1,6 +1,6 @@
 @media (min-width: 800px) {
   .database-modal-window:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -16,7 +16,7 @@
   }
 
   .database-modal-body:has(:is(
-    .rm2k3-record-workspace,
+    .oprn-record-workspace,
     .db-record-workspace,
     .db-elements-classic,
     .db-parity-form,
@@ -31,13 +31,13 @@
     scrollbar-gutter: stable;
   }
 
-  .database-modal-body .rm2k3-record-workspace,
-  .database-modal-body .rm2k3-record-detail-pane,
-  .database-modal-body .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-workspace,
+  .database-modal-body .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-list-pane {
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-detail-form,
+  .database-modal-body .oprn-detail-form,
   .database-modal-body .db-detail-form {
     box-sizing: border-box;
     min-height: 0;
@@ -46,7 +46,7 @@
     scrollbar-gutter: stable;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-classic-sheet {
+  .database-modal-body .oprn-record-actors .actor-classic-sheet {
     box-sizing: border-box;
     height: 100%;
     min-height: 0;
@@ -54,90 +54,90 @@
     padding-bottom: 18px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-editor-grid {
+  .database-modal-body .oprn-record-actors .actor-editor-grid {
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-left-stack,
-  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+  .database-modal-body .oprn-record-actors .actor-left-stack,
+  .database-modal-body .oprn-record-actors .actor-right-stack {
     min-height: 0;
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-options {
+  .database-modal-body .oprn-record-actors .actor-options {
     min-height: 190px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-skill-list {
+  .database-modal-body .oprn-record-actors .actor-skill-list {
     max-height: 190px;
     min-height: 190px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rates {
+  .database-modal-body .oprn-record-actors .actor-rates {
     max-height: 168px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
     grid-template-rows: 76px 168px 100px 76px minmax(56px, auto);
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
     padding: 9px 10px;
   }
 
-  .database-modal-body .rm2k3-record-classes :is(.db-class-command-rows, .db-class-command-list) {
+  .database-modal-body .oprn-record-classes :is(.db-class-command-rows, .db-class-command-list) {
     max-height: 152px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-skill-table {
+  .database-modal-body .oprn-record-classes .db-class-skill-table {
     max-height: 220px;
   }
 
-  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
     grid-template-rows: 64px 140px 84px 84px minmax(56px, 1fr);
   }
 
-  .database-modal-body .rm2k3-detail-skills,
-  .database-modal-body .rm2k3-detail-items,
-  .database-modal-body .rm2k3-detail-equipment {
+  .database-modal-body .oprn-detail-skills,
+  .database-modal-body .oprn-detail-items,
+  .database-modal-body .oprn-detail-equipment {
     padding-bottom: 18px;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .db-advanced-panel:has(.actor-check) {
+  .database-modal-body .oprn-detail-equipment .db-advanced-panel:has(.actor-check) {
     max-height: 196px;
     overflow: auto;
     padding-bottom: 14px;
   }
 
-  .database-modal-body .rm2k3-detail-equipment .actor-check {
+  .database-modal-body .oprn-detail-equipment .actor-check {
     min-height: 30px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 5px;
     box-shadow: none;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-list-pane h3 {
+  .database-modal-body .oprn-record-enemies .oprn-record-list-pane h3 {
     background: transparent;
     color: var(--text-1);
     font: 700 17px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     margin: 0 0 12px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-list {
+  .database-modal-body .oprn-record-enemies .db-list {
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line-soft, var(--border-subtle));
     border-radius: 4px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
+  .database-modal-body .oprn-record-enemies .oprn-detail-form {
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
     grid-template-rows: 60px 128px 76px 76px minmax(112px, 1fr);
   }
 
@@ -170,18 +170,18 @@
     min-height: 28px;
   }
 
-  .database-modal-body .rm2k3-tileset-main {
+  .database-modal-body .oprn-tileset-main {
     grid-template-columns: minmax(520px, 1fr) minmax(220px, 260px);
   }
 
-  .database-modal-body .rm2k3-tileset-terrain-pane,
-  .database-modal-body .rm2k3-tileset-main > :last-child {
+  .database-modal-body .oprn-tileset-terrain-pane,
+  .database-modal-body .oprn-tileset-main > :last-child {
     min-height: 0;
     overflow: auto;
     padding-bottom: 12px;
   }
 
-  .database-modal-body .db-body:has(:is(.db-system-form, .animation-detail-form, .db-state-rm2k3-workbench, .tileset-db-workspace)) {
+  .database-modal-body .db-body:has(:is(.db-system-form, .animation-detail-form, .db-state-oprn-workbench, .tileset-db-workspace)) {
     overflow: hidden;
   }
 
@@ -198,7 +198,7 @@
     grid-auto-rows: max-content;
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) {
     max-height: 286px;
     overflow: auto;
   }
@@ -298,19 +298,19 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-detail-states > .db-state-rm2k3-workbench {
+  .database-modal-body .oprn-detail-states > .db-state-oprn-workbench {
     height: 100%;
     min-height: 0;
     overflow: auto;
     padding-bottom: 20px;
   }
 
-  .database-modal-body .db-state-rm2k3-workbench > .db-state-panel {
+  .database-modal-body .db-state-oprn-workbench > .db-state-panel {
     min-height: 0;
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
     grid-template-rows: 64px 128px 96px 96px minmax(78px, 1fr);
   }
 
@@ -333,7 +333,7 @@
 
   /* 칩셋 전체(예: 480칸 16행): 부모 높이에 맞추고 프리뷰 박스 안에서만 스크롤.
      min-height:0 만 두면 뷰포트가 0에 가까워져 하단 행이 잘려 보이던 문제 방지. */
-  .database-modal-body .rm2k3-tileset-main .tileset-db-preview-wrap {
+  .database-modal-body .oprn-tileset-main .tileset-db-preview-wrap {
     display: grid;
     grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
@@ -342,7 +342,7 @@
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-tileset-main .tileset-db-preview {
+  .database-modal-body .oprn-tileset-main .tileset-db-preview {
     height: 100%;
     max-height: 100%;
     min-height: 0;
@@ -384,7 +384,7 @@
     padding: 16px 16px 28px;
   }
 
-  .database-modal-body .db-parity-form .rm2k3-db-fieldset {
+  .database-modal-body .db-parity-form .oprn-db-fieldset {
     align-content: start;
     background: var(--bg-raised);
     border: 1px solid var(--db-modern-line);
@@ -399,18 +399,18 @@
     padding: 14px;
   }
 
-  .database-modal-body .db-parity-form .rm2k3-db-fieldset:first-child,
-  .database-modal-body .db-parity-form .rm2k3-db-fieldset:nth-child(2) {
+  .database-modal-body .db-parity-form .oprn-db-fieldset:first-child,
+  .database-modal-body .db-parity-form .oprn-db-fieldset:nth-child(2) {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body .db-parity-form .rm2k3-db-fieldset:nth-child(2) {
+  .database-modal-body .db-parity-form .oprn-db-fieldset:nth-child(2) {
     max-height: 420px;
     overflow: auto;
     padding-bottom: 18px;
   }
 
-  .database-modal-body .db-parity-form .rm2k3-db-fieldset legend {
+  .database-modal-body .db-parity-form .oprn-db-fieldset legend {
     background: var(--bg-raised);
     color: var(--text-1);
     font: 700 15px/1.2 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
@@ -665,89 +665,89 @@
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-editor-grid {
+  .database-modal-body .oprn-record-actors .actor-editor-grid {
     grid-template-columns: minmax(340px, 480px) minmax(520px, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-left-stack,
-  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+  .database-modal-body .oprn-record-actors .actor-left-stack,
+  .database-modal-body .oprn-record-actors .actor-right-stack {
     padding-bottom: 18px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-right-stack {
+  .database-modal-body .oprn-record-actors .actor-right-stack {
     grid-template-columns: minmax(250px, 0.95fr) minmax(280px, 1fr);
     grid-template-rows: 226px 112px 44px minmax(0, 136px);
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-battle > .actor-starting-equipment {
+  .database-modal-body .oprn-record-actors .actor-battle > .actor-starting-equipment {
     grid-column: 1;
     grid-row: 1;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-battle > .field {
+  .database-modal-body .oprn-record-actors .actor-battle > .field {
     grid-column: 1;
     grid-row: 3;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-battle > .actor-options {
+  .database-modal-body .oprn-record-actors .actor-battle > .actor-options {
     grid-column: 1;
     grid-row: 2;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-battle > .actor-skills {
+  .database-modal-body .oprn-record-actors .actor-battle > .actor-skills {
     grid-column: 2;
     grid-row: 1 / span 3;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-panel {
+  .database-modal-body .oprn-record-actors .actor-panel {
     padding: 10px 12px 8px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-panel legend {
+  .database-modal-body .oprn-record-actors .actor-panel legend {
     font-size: 15px;
     margin: -1px 0 7px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-options {
+  .database-modal-body .oprn-record-actors .actor-options {
     grid-column: 1;
     grid-row: 2;
     min-height: 0;
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-options-grid {
+  .database-modal-body .oprn-record-actors .actor-options-grid {
     gap: 1px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-check {
+  .database-modal-body .oprn-record-actors .actor-check {
     font-size: 14px;
     min-height: 25px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-skills {
+  .database-modal-body .oprn-record-actors .actor-skills {
     grid-column: 2;
     grid-row: 1 / span 3;
     min-height: 0;
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-skill-header {
+  .database-modal-body .oprn-record-actors .actor-skill-header {
     font-size: 14px;
     min-height: 28px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-skill-list {
+  .database-modal-body .oprn-record-actors .actor-skill-list {
     max-height: 238px;
     min-height: 238px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-skill-row {
+  .database-modal-body .oprn-record-actors .actor-skill-row {
     min-height: 32px;
     padding: 2px 6px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rates {
+  .database-modal-body .oprn-record-actors .actor-rates {
     grid-column: 1 / -1;
     grid-row: 4;
     max-height: 136px;
@@ -756,83 +756,83 @@
     padding-bottom: 12px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rate-columns {
+  .database-modal-body .oprn-record-actors .actor-rate-columns {
     gap: 8px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rate-list {
+  .database-modal-body .oprn-record-actors .actor-rate-list {
     max-height: 84px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rate-list > strong {
+  .database-modal-body .oprn-record-actors .actor-rate-list > strong {
     font-size: 14px;
     min-height: 26px;
   }
 
-  .database-modal-body .rm2k3-record-actors .actor-rate-row {
+  .database-modal-body .oprn-record-actors .actor-rate-row {
     font-size: 13px;
     min-height: 28px;
     padding: 2px 8px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
     grid-template-rows: 92px 248px 122px 88px minmax(64px, auto);
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-animation,
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-commands {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-animation,
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-commands {
     overflow: auto;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench > .db-class-panel-curves {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-class-panel-curves {
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curves-grid {
+  .database-modal-body .oprn-record-classes .db-class-curves-grid {
     gap: 8px 10px;
     grid-auto-rows: minmax(60px, 1fr);
     height: 100%;
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve {
+  .database-modal-body .oprn-record-classes .db-class-curve {
     align-content: center;
     box-sizing: border-box;
     min-height: 60px;
     padding: 8px 10px 7px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve strong,
-  .database-modal-body .rm2k3-record-classes .db-class-curve span {
+  .database-modal-body .oprn-record-classes .db-class-curve strong,
+  .database-modal-body .oprn-record-classes .db-class-curve span {
     line-height: 18px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve-graph {
+  .database-modal-body .oprn-record-classes .db-class-curve-graph {
     height: 9px;
   }
 
-  .database-modal-body .rm2k3-record-classes :is(.db-class-command-rows, .db-class-command-list) {
+  .database-modal-body .oprn-record-classes :is(.db-class-command-rows, .db-class-command-list) {
     max-height: none;
     min-height: 0;
     overflow: auto;
     padding-bottom: 14px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane,
-  .database-modal-body .rm2k3-record-enemies .rm2k3-detail-form {
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane,
+  .database-modal-body .oprn-record-enemies .oprn-detail-form {
     background: var(--bg-raised);
     border: 0;
     box-shadow: none;
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .rm2k3-record-detail-pane {
+  .database-modal-body .oprn-record-enemies .oprn-record-detail-pane {
     border: 1px solid var(--db-modern-line, var(--border-subtle));
     border-radius: 5px;
     padding: 10px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench {
     background: var(--bg-raised);
     border: 0;
     gap: 10px;
@@ -840,28 +840,28 @@
     padding: 0;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-name,
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-rewards {
+  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-name,
+  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-rewards {
     overflow: visible;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench .actor-check {
+  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench .actor-check {
     height: 26px;
     min-height: 26px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-state,
-  .database-modal-body .rm2k3-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-element {
+  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-state,
+  .database-modal-body .oprn-record-enemies .db-enemy-bm101-workbench > .db-enemy-panel-element {
     overflow: auto;
     padding-bottom: 14px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row {
+  .database-modal-body .oprn-record-enemies .db-enemy-rate-row {
     border-bottom: 1px solid var(--border-subtle);
     min-height: 32px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row span {
+  .database-modal-body .oprn-record-enemies .db-enemy-rate-row span {
     color: var(--text-1);
     font: 400 13px/18px "Malgun Gothic", "Segoe UI", sans-serif;
     min-width: 0;
@@ -870,89 +870,89 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-rate-row select {
+  .database-modal-body .oprn-record-enemies .db-enemy-rate-row select {
     height: 28px;
     min-height: 28px;
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-critical-row {
+  .database-modal-body .oprn-record-enemies .db-enemy-critical-row {
     align-items: center;
     display: grid;
     gap: 8px;
     grid-template-columns: auto minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-enemies .db-enemy-critical-row .db-field {
+  .database-modal-body .oprn-record-enemies .db-enemy-critical-row .db-field {
     grid-template-columns: 28px minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troops-classic-workbench {
+  .database-modal-body .oprn-record-troops .db-troops-classic-workbench {
     grid-template-rows: auto minmax(250px, 0.48fr) minmax(224px, 0.52fr);
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-preview-panel {
+  .database-modal-body .oprn-record-troops .db-troop-preview-panel {
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-buttons {
+  .database-modal-body .oprn-record-troops .db-troop-member-buttons {
     max-height: 100%;
     min-height: 0;
     overflow: auto;
     padding-bottom: 4px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-list {
+  .database-modal-body .oprn-record-troops .db-troop-member-list {
     grid-template-rows: auto minmax(72px, 1fr) 94px;
     min-height: 0;
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-list .db-troop-member-position-panel {
+  .database-modal-body .oprn-record-troops .db-troop-member-list .db-troop-member-position-panel {
     box-sizing: border-box;
     max-height: 94px;
     overflow: auto;
     padding: 10px;
   }
 
-  .database-modal-body .rm2k3-record-troops .db-troop-member-rows,
-  .database-modal-body .rm2k3-record-troops .db-troop-enemy-list {
+  .database-modal-body .oprn-record-troops .db-troop-member-rows,
+  .database-modal-body .oprn-record-troops .db-troop-enemy-list {
     min-height: 0;
   }
 
-  .database-modal-body :is(.rm2k3-detail-items, .rm2k3-detail-equipment) {
+  .database-modal-body :is(.oprn-detail-items, .oprn-detail-equipment) {
     box-sizing: border-box;
     max-height: 100%;
     overflow: auto;
     padding-bottom: 28px;
   }
 
-  .database-modal-body .rm2k3-detail-items > .db-items-rm2k3-workbench {
+  .database-modal-body .oprn-detail-items > .db-items-oprn-workbench {
     align-content: start;
     max-height: none;
     overflow: visible;
     padding-bottom: 22px;
   }
 
-  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child {
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child {
     display: grid;
     gap: 8px 12px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child legend {
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child legend {
     grid-column: 1 / -1;
   }
 
-  .database-modal-body .db-items-rm2k3-workbench > .db-advanced-panel:first-child :is(.field, .db-field) {
+  .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child :is(.field, .db-field) {
     grid-template-columns: minmax(74px, 0.24fr) minmax(0, 1fr);
   }
 
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel {
+  .database-modal-body .oprn-detail-equipment > .db-advanced-panel {
     margin-bottom: 0;
   }
 
-  .database-modal-body .rm2k3-detail-equipment > .db-advanced-panel:has(.actor-check) {
+  .database-modal-body .oprn-detail-equipment > .db-advanced-panel:has(.actor-check) {
     max-height: none;
     overflow: visible;
     padding-bottom: 16px;
@@ -962,13 +962,13 @@
     padding-bottom: 96px;
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) {
     display: grid;
     gap: 8px 12px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) legend {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) legend {
     grid-column: 1 / -1;
   }
 
@@ -976,12 +976,12 @@
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(4) {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(4) {
     max-height: none;
     overflow: visible;
   }
 
-  .database-modal-body .db-system-form .rm2k3-db-fieldset:nth-of-type(5) {
+  .database-modal-body .db-system-form .oprn-db-fieldset:nth-of-type(5) {
     gap: 8px;
   }
 

@@ -148,7 +148,7 @@ describe("event editor M2 command body", () => {
     const preview = findByTestId(body, "m2-command-value-resource-preview");
     expect(picker?.tagName).toBe("SELECT");
     expect(picker?.attrs["aria-label"]).toBe("시스템 그래픽 선택");
-    expect(picker?.textContent).toContain("EasyRPG RTP System System");
+    expect(picker?.textContent).toContain("System · 시스템 그림 · EasyRPG");
     expect(preview?.dataset.resourceId).toBe("easyrpg-system-system");
   });
 

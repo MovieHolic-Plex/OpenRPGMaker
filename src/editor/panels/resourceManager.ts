@@ -128,7 +128,7 @@ export function renderResourceManager(container: HTMLElement): void {
   container.append(
     el("div", {
       class: "empty-hint",
-      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG RTP ChipSet/CharSet 이미지.`,
+      text: `기본 포함 리소스: ${DEFAULT_TILESET_ID}, EasyRPG 타일 그림판·캐릭터 그림.`,
     })
   );
 }
@@ -249,7 +249,7 @@ function addTilesetFromUpload(asset: UploadedAsset): void {
 function applyTilesetToCurrentMap(asset: UploadedAsset): void {
   const result = ensureTilesetFromUpload(asset);
   setMapTileset(currentMapId(), result.id);
-  toast(`현재 맵 칩셋 적용: ${asset.name}`, "ok");
+  toast(`현재 맵 타일 그림판 적용: ${asset.name}`, "ok");
 }
 
 function deleteUploadedAsset(asset: UploadedAsset): void {

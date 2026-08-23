@@ -1,11 +1,11 @@
 // Scarloxy 포켓몬풍 데모 — 실내 맵 3종(연구소·주인공 집·회복 센터).
 //
-// 칩셋 선택 근거(2026-08-03 조사):
+// 타일 그림판 선택 근거(2026-08-03 조사):
 //   Scarloxy 팩의 scarloxy-chipset-indoor.png 는 **타일 정렬 아틀라스가 아니다**.
 //   원본 vendor/scarloxy-mpwsp01/graphics/tilesets/indoor.png 는 문·창문·계단을
 //   임의 픽셀 오프셋으로 배치한 샘플 합성본이라(문 프레임이 타일 경계를 가로지름)
 //   벽/바닥 런으로 반복할 수 없다. 게다가 가구가 한 점도 없다.
-//   따라서 실내 셸+가구는 이미 정밀 감사된 EasyRPG RTP Interior 칩셋을 쓴다
+//   따라서 실내 셸+가구는 이미 정밀 감사된 EasyRPG RTP Interior 타일 그림판을 쓴다
 //   (통행/레이어 계약: tilesetHarness/themePacks.ts INTERIOR_HARNESS_GROUPS,
 //    타일 어휘 정본: editor/interiorRoomPipeline.ts 의 VR / HOUSE_WALL_FACE).
 //

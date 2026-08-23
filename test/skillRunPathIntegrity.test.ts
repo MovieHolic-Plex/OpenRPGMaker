@@ -91,7 +91,7 @@ describe("마을 생성 스킬 제출 경로", () => {
     const audit = SYSTEM_SKILLS.find((skill) => skill.id === "map-audit")!; // 인자 없는 스킬 — 즉시 실행.
     drawer.run(audit);
     expect(onRunPrompt).toHaveBeenCalledTimes(1);
-    expect(dispatched).not.toContain("rpgzzu:test-play-window");
+    expect(dispatched).not.toContain("oprn:test-play-window");
     vi.unstubAllGlobals();
   });
 });

@@ -100,7 +100,7 @@ function renderMenuItem(item: MapContextMenuItem): HTMLButtonElement {
       type: "button",
     },
     children: [
-      el("span", { class: `rm-tool-icon rm-tool-icon-${item.icon}`, attrs: { "aria-hidden": "true" } }),
+      el("span", { class: `rm-tool-icon oprn-icon-${item.icon}`, attrs: { "aria-hidden": "true" } }),
       el("span", { class: "map-context-menu-label", text: item.label }),
       el("span", { class: "map-context-menu-shortcut", text: item.shortcut ?? "" }),
     ],

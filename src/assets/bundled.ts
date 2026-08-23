@@ -48,24 +48,34 @@ export const SPRITE_FRAME_WIDTH = BUILTIN_SPRITE_SLICING.cellWidth;
 export const SPRITE_FRAME_HEIGHT = BUILTIN_SPRITE_SLICING.cellHeight;
 export { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 
-export const ASSET_TILESET = "assets/rm2k3-original-chipset.png";
+export const ASSET_TILESET = "assets/easyrpg-chipset-exterior.png";
 const ASSET_DIALOGUE_FRAME = "assets/dialogue-frame.png";
 
+// 표시명 규약 (2026-08-21 출처 정리) —
+// `name` 은 자료 보관함·타일셋 선택 드롭다운에 **사용자에게 그대로 보인다.** 예전 이름은
+// "RM2K3 Original ChipSet" / "EasyRPG RTP … ChipSet" 이었는데 둘 다 문제였다:
+//   · "RM2K3 Original" 은 **거짓이면서 위험한 이름**이었다. public/assets/ATTRIBUTION.md
+//     기준 이 파일의 실제 출처는 EasyRPG RTP 의 `ChipSet/Exterior.png`(JasonPerry, CC0)
+//     이고 Enterbrain 의 독점 RTP 가 아니다. 그런데 이름이 "원본"을 주장해, 파일 목록을
+//     훑는 사람이 침해로 오해할 소지가 있었다. 파일명도 easyrpg-chipset-exterior.png 로 옮겼다.
+//   · "RTP" 는 Enterbrain 의 용어다. EasyRPG 는 그 **대체본**이므로 굳이 쓸 이유가 없다.
+// 이제 이름은 한국어 용도 + 출처 + 라이선스를 말한다. 라이선스 근거는 ATTRIBUTION.md.
 const CORE_BUNDLED_IMAGE_ASSETS = [
-  { textureKey: TEX_TILESET, path: ASSET_TILESET, name: "RM2K3 Original ChipSet" },
-  { textureKey: TEX_DIALOGUE_FRAME, path: ASSET_DIALOGUE_FRAME, name: "Default Dialogue Frame" },
+  { textureKey: TEX_TILESET, path: ASSET_TILESET, name: "바깥 마을 · EasyRPG (CC0)" },
+  { textureKey: TEX_DIALOGUE_FRAME, path: ASSET_DIALOGUE_FRAME, name: "기본 대사창 테두리" },
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
-  { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "EasyRPG RTP Dungeon ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_interior", path: "assets/easyrpg-chipset-interior-transparent.png", name: "EasyRPG RTP Interior ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "EasyRPG RTP Ship ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_world", path: "assets/easyrpg-chipset-world-transparent.png", name: "EasyRPG RTP World ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_retro_dungeon", path: "assets/easyrpg-chipset-retro-dungeon-transparent.png", name: "EasyRPG RTP retro Dungeon ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_retro_exterior", path: "assets/easyrpg-chipset-retro-exterior-transparent.png", name: "EasyRPG RTP retro Exterior ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_retro_house", path: "assets/easyrpg-chipset-retro-house-transparent.png", name: "EasyRPG RTP retro House ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_combined_town", path: "assets/easyrpg-chipset-combined-town-transparent.png", name: "EasyRPG RTP Combined Town ChipSet" },
-  { textureKey: "tex_easyrpg_chipset_retro_world", path: "assets/easyrpg-chipset-retro-world-transparent.png", name: "EasyRPG RTP retro World ChipSet" },
+  { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
+  { textureKey: "tex_easyrpg_chipset_interior", path: "assets/easyrpg-chipset-interior-transparent.png", name: "실내 · EasyRPG (CC0)" },
+  { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "배 · EasyRPG (CC0)" },
+  { textureKey: "tex_easyrpg_chipset_world", path: "assets/easyrpg-chipset-world-transparent.png", name: "월드맵 · EasyRPG (CC0)" },
+  // retro_* 세 장은 출처가 섞여 있다(CC-BY/CC0/WTFPL) — ATTRIBUTION.md 와 vendor AUTHORS.md 참고.
+  { textureKey: "tex_easyrpg_chipset_retro_dungeon", path: "assets/easyrpg-chipset-retro-dungeon-transparent.png", name: "레트로 던전 · EasyRPG (CC0)" },
+  { textureKey: "tex_easyrpg_chipset_retro_exterior", path: "assets/easyrpg-chipset-retro-exterior-transparent.png", name: "레트로 바깥 · EasyRPG (혼합 출처)" },
+  { textureKey: "tex_easyrpg_chipset_retro_house", path: "assets/easyrpg-chipset-retro-house-transparent.png", name: "레트로 집 · EasyRPG (혼합 출처)" },
+  { textureKey: "tex_easyrpg_chipset_combined_town", path: "assets/easyrpg-chipset-combined-town-transparent.png", name: "합본 마을 · EasyRPG (CC0)" },
+  { textureKey: "tex_easyrpg_chipset_retro_world", path: "assets/easyrpg-chipset-retro-world-transparent.png", name: "레트로 월드맵 · EasyRPG (혼합 출처)" },
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];

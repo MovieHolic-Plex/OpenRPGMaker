@@ -94,7 +94,7 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.addInitScript(() => {
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await seedProjectFromSupabaseCanonical(page, evidenceProject());
 

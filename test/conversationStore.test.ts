@@ -137,7 +137,7 @@ describe("conversationStore", () => {
   });
 
   it("Given corrupted storage When listed Then it returns an empty list", () => {
-    localStorage.setItem("rpg-zzu:ai-conversations", "{broken json");
+    localStorage.setItem("oprn:ai-conversations", "{broken json");
 
     expect(listConversations()).toEqual([]);
   });

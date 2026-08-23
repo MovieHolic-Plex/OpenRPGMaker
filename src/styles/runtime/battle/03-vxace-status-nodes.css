@@ -50,8 +50,8 @@
 }
 
 .battle-atb-bar {
-  background: var(--rm2k3-battle-window-shadow);
-  border: 2px solid var(--rm2k3-battle-window-light);
+  background: var(--oprn-battle-window-shadow);
+  border: 2px solid var(--oprn-battle-window-light);
   display: inline-block;
   flex: 1 1 auto;
   height: 12px;
@@ -138,7 +138,7 @@
 }
 
 .battle-enemy-name {
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   display: block;
   font-size: 18px;
   line-height: 1.1;
@@ -147,7 +147,7 @@
 }
 
 .battle-enemy-hp-text {
-  color: var(--rm2k3-battle-text);
+  color: var(--oprn-battle-text);
   display: block;
   font-size: 16px;
   line-height: 1;
@@ -161,7 +161,7 @@
 }
 
 .battle-enemy-list-hp {
-  color: var(--rm2k3-battle-muted);
+  color: var(--oprn-battle-muted);
   font-size: 16px;
 }
 

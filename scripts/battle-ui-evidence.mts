@@ -167,7 +167,7 @@ async function main(): Promise<void> {
   await page.addInitScript((seed) => {
     (window as unknown as { __RPG_ZZU_E2E_PROJECT__: unknown }).__RPG_ZZU_E2E_PROJECT__ = seed;
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   }, project);
   await page.goto(BASE_URL);
   await page.getByTestId("edit-canvas").waitFor({ state: "visible", timeout: 20_000 });
@@ -176,7 +176,7 @@ async function main(): Promise<void> {
   await page.getByTestId("mode-play").click();
   await page.waitForTimeout(300);
   if (!(await page.getByTestId("test-play-window").isVisible())) {
-    await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
   }
   await page.getByTestId("test-play-window").waitFor({ state: "visible", timeout: 15_000 });
   await page.getByTestId("title-screen").waitFor({ state: "visible", timeout: 15_000 });

@@ -53,8 +53,8 @@ test("AI 저작 3맵 RPG — 에디터/런타임 증거 스크린샷", async ({ 
 
   await page.addInitScript(() => {
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
-    window.localStorage.setItem("rpg-zzu:editor-welcome-dismissed", "1");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-welcome-dismissed", "1");
   });
   await page.setViewportSize({ width: 1680, height: 1020 });
   await seedProjectFromSupabaseCanonical(page, project);

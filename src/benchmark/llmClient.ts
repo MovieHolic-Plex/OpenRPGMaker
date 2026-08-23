@@ -3,7 +3,7 @@
 //
 // 설계(계획 todo 9 + src/editor/panels/tilesetAiCpenClient.ts:60-105 미러):
 //  - BenchmarkSettings {mode:"api"|"paste", baseUrl?, apiKey?, model?} 를
-//    localStorage "rpg-zzu:benchmark-settings" 에 저장한다(키가 저장되는 유일한 곳).
+//    localStorage "oprn:benchmark-settings" 에 저장한다(키가 저장되는 유일한 곳).
 //  - api 모드: loadAiConfig()(@/ai/llmClient) 기본값 + settings 오버라이드로
 //    baseUrl/apiKey/model 을 해석하고 POST {baseUrl}/chat/completions 로
 //    [system JSON-only, user(text+image_url)] 본문을 보낸다
@@ -22,7 +22,7 @@
 import { isProxyAuth, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { normalizeCpenResponseText } from "@/editor/panels/tilesetAiCpenClient";
 
-export const BENCHMARK_SETTINGS_STORAGE_KEY = "rpg-zzu:benchmark-settings";
+export const BENCHMARK_SETTINGS_STORAGE_KEY = "oprn:benchmark-settings";
 
 /** 요청/응답 정책 상수 — tilesetAiCpenClient.ts 실측값과 동일. */
 const MAX_OUTPUT_TOKENS = 8192;

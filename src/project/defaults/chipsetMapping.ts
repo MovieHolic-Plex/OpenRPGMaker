@@ -286,7 +286,7 @@ export const CHIPSET_TILE_GROUPS = {
   roofObjects: [374, 375, 376, 377, 384, 385, 386, 387, 404, 405, 406, 407, 436, 437],
   buildingFrontObjects: [414, 415, 416, 444, 445, 446, 474, 475, 476],
   tentObjects: [389, 418, 419, 448, 449, 477, 478, 479],
-  // 칩셋 실사(Combined Town / Exterior) — 사용자 비전 강제 지정:
+  // 타일 그림판 실사(Combined Town / Exterior) — 사용자 비전 강제 지정:
   // - 가로 벤치 327|328 / 세로 의자 358(상)+388(하)
   // - 집 앞 마당: 349장작·350우편함·351화분·352항아리
   // - 묘지(집과 멀리): 323묘지·353묘비·383해골
@@ -330,7 +330,7 @@ export const CHIPSET_TILE_GROUPS = {
   // 2026-07-16 사용자 교정: 382=우물(wellObjects로), 412=돌바닥 하위 지면 타일(소품 아님).
   // 441/442 바위는 412 돌바닥 패치 위에 섞어 쓴다. 이 가방은 해체됨.
   statueObjects: [],
-  // 2026-07-16 칩셋 재조사 + 사용자 교정 반영.
+  // 2026-07-16 타일 그림판 재조사 + 사용자 교정 반영.
   // 술통 177 + 오크통 207. 석상/돌기둥은 세로 2칸 페어: 266(상)+296(하), 267(상)+297(하).
   barrelObjects: [177, 207],
   plazaStatueObjects: [266, 296],
@@ -531,7 +531,7 @@ export function isSolidChipsetTile(index: number): boolean {
  * RM2k3 식 데크/절벽 가장자리 칩 — woodFloorBody 변형의 4방향 통행.
  * 본체 222는 전방향, 가장자리는 바깥 방향만 닫아 “층”을 흉내 낸다.
  */
-export const RM2K3_WOOD_FLOOR_PASSABILITY = {
+export const WOOD_FLOOR_PASSABILITY = {
   body: 222,
   edgeWest: 228, // left 닫힘 — 데크 서측
   edgeEast: 229, // right 닫힘
@@ -541,15 +541,15 @@ export const RM2K3_WOOD_FLOOR_PASSABILITY = {
 
 export function rm2k3WoodFloorPassFlag(tile: number): PassFlag | null {
   switch (tile) {
-    case RM2K3_WOOD_FLOOR_PASSABILITY.body:
+    case WOOD_FLOOR_PASSABILITY.body:
       return { up: true, down: true, left: true, right: true };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest:
+    case WOOD_FLOOR_PASSABILITY.edgeWest:
       return { up: true, down: true, left: false, right: true };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast:
+    case WOOD_FLOOR_PASSABILITY.edgeEast:
       return { up: true, down: true, left: true, right: false };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth:
+    case WOOD_FLOOR_PASSABILITY.edgeNorth:
       return { up: false, down: true, left: true, right: true };
-    case RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth:
+    case WOOD_FLOOR_PASSABILITY.edgeSouth:
       return { up: true, down: false, left: true, right: true };
     default:
       return null;

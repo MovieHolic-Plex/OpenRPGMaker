@@ -39,7 +39,7 @@ function renderProps(): FakeElement {
 describe("tileset graphic picker", () => {
   it("enables browse and writes a bundled chipset id from the picker", () => {
     const host = renderProps();
-    const browse = findByTestId(host, "tileset-rm2k3-graphic-browse");
+    const browse = findByTestId(host, "tileset-oprn-graphic-browse");
     if (!browse) throw new Error("missing browse");
     expect(browse.disabled).toBe(false);
     expect(browse.textContent).toBe("설정...");
@@ -67,7 +67,7 @@ describe("tileset graphic picker", () => {
     });
     const before = structuredClone(store.getCurrent().tilesets[id]);
     const host = renderProps();
-    findByTestId(host, "tileset-rm2k3-graphic-browse")?.dispatchEvent(new Event("click"));
+    findByTestId(host, "tileset-oprn-graphic-browse")?.dispatchEvent(new Event("click"));
     document.body
       .querySelector("[data-testid='tileset-graphic-option-tex_easyrpg_chipset_dungeon']")
       ?.dispatchEvent(new Event("click"));
@@ -89,7 +89,7 @@ describe("tileset graphic picker", () => {
       }
     });
     const host = renderProps();
-    findByTestId(host, "tileset-rm2k3-graphic-browse")?.dispatchEvent(new Event("click"));
+    findByTestId(host, "tileset-oprn-graphic-browse")?.dispatchEvent(new Event("click"));
     expect(document.body.querySelector("[data-testid='tileset-graphic-option-up_picture']")).toBeNull();
     const option = document.body.querySelector("[data-testid='tileset-graphic-option-up_tileset']");
     if (!option) throw new Error("missing uploaded tileset option");
@@ -110,7 +110,7 @@ describe("tileset graphic picker", () => {
       tileset.passability.length = 8;
     });
     const host = renderProps();
-    findByTestId(host, "tileset-rm2k3-graphic-browse")?.dispatchEvent(new Event("click"));
+    findByTestId(host, "tileset-oprn-graphic-browse")?.dispatchEvent(new Event("click"));
     document.body
       .querySelector("[data-testid='tileset-graphic-option-tex_easyrpg_chipset_dungeon']")
       ?.dispatchEvent(new Event("click"));

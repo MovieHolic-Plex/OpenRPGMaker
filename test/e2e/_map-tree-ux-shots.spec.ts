@@ -8,8 +8,8 @@ test("capture map tree UX shots for the result report", async ({ page }) => {
   test.setTimeout(90_000);
   await mkdir(OUT, { recursive: true });
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "standard");
-    localStorage.setItem("rpg-zzu:left-drawer-tab", "map");
+    localStorage.setItem("oprn:editor-ui-mode", "standard");
+    localStorage.setItem("oprn:left-drawer-tab", "map");
   });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/?freshProject=1");

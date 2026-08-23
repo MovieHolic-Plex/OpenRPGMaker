@@ -83,7 +83,7 @@ describe("T12 save slots", () => {
     const project = createBlankProject();
     const session = startSession(project);
     const storage = new MemoryStorage();
-    storage.setItem("rpg-zzu:save-slot:1", "{not-json");
+    storage.setItem("oprn:save-slot:1", "{not-json");
     session.variables.var_score = 2;
     saveToSlot(storage, 2, createSaveSnapshot(project, session));
 
@@ -218,7 +218,7 @@ describe("T12 RM2K3 player status menu", () => {
         },
       }));
 
-      expect(menu.className).toContain("rm2k3-status-menu");
+      expect(menu.className).toContain("oprn-status-menu");
       expect(findByTestId(menu, "status-menu-command-rail")?.textContent).toContain("아이템");
       // 저장은 "시스템 ▸" 그룹으로 접혔다 — 레일에는 그룹 열기 항목만 남는다.
       expect(findByTestId(menu, "status-menu-command-system-menu")?.textContent).toBe("시스템 ▸");

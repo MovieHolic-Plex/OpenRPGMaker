@@ -30,15 +30,15 @@ export function makePaletteStampStatus(stamp: PaletteStamp | null, rerender: () 
     class: "tile-brush-row palette-stamp-status" + (stamp ? "" : " hidden"),
     dataset: { testid: "palette-stamp-status" },
   });
-  row.append(el("span", { class: "tile-brush-label", text: "Drag" }));
+  row.append(el("span", { class: "tile-brush-label", text: "끌어놓기" }));
   if (!stamp) return row;
   row.append(
     el("button", {
       class: "btn palette-stamp-clear",
       text: `${stamp.width}x${stamp.height}`,
       attrs: {
-        title: "Clear dragged palette stamp",
-        "aria-label": "Clear dragged palette stamp",
+        title: "끌어놓은 팔레트 도장 지우기",
+        "aria-label": "끌어놓은 팔레트 도장 지우기",
       },
       dataset: { testid: "palette-stamp-clear" },
       on: {
@@ -65,15 +65,15 @@ export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLEleme
     el("div", {
       class: "tile-brush-row tile-brush-mode-row",
       children: [
-        el("span", { class: "tile-brush-label", text: "연결" }),
+        el("span", { class: "tile-brush-label", text: "이웃 연결" }),
         el("button", {
           class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
-          text: autoOn ? "Auto" : "Manual",
+          text: autoOn ? "자동" : "수동",
           attrs: {
             type: "button",
             title: autoOn
-              ? "자동 연결 ON — 이웃 지형까지 재검사합니다. 클릭하면 Manual."
-              : "수동 배치 ON — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다.",
+              ? "자동 연결 켜짐 — 이웃 지형까지 다시 검사해 이어 붙입니다. 누르면 수동으로."
+              : "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다.",
             "aria-pressed": String(autoOn),
             "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
           },
@@ -93,8 +93,9 @@ export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLEleme
       ],
     })
   );
-  panel.append(makeTileStrip("즐겨", favorites, "favorite-tile-grid", "favorite-tile", model));
-  panel.append(makeTileStrip("유사", similar, "similar-tile-grid", "similar-tile", model));
+  // 2글자 라벨(즐겨/유사/사용/주변)은 뜻이 전달되지 않았다 — 풀어 쓴다.
+  panel.append(makeTileStrip("즐겨찾기", favorites, "favorite-tile-grid", "favorite-tile", model));
+  panel.append(makeTileStrip("닮은 타일", similar, "similar-tile-grid", "similar-tile", model));
   panel.append(makeUsedLocations(model.mapId, used, model.rerender));
   panel.append(makeCurrentNeighborhoodSummary());
   return panel;
@@ -149,7 +150,7 @@ function makeUsedLocations(
     return el("div", { class: "tile-brush-row hidden", dataset: { testid: "used-location-list" } });
   }
   const row = el("div", { class: "tile-brush-row" });
-  row.append(el("span", { class: "tile-brush-label", text: "사용" }));
+  row.append(el("span", { class: "tile-brush-label", text: "이 맵에서 쓴 곳" }));
   const list = el("div", { class: "used-location-list", dataset: { testid: "used-location-list" } });
   if (locations.length === 0) {
     list.append(el("span", { class: "tile-brush-empty", text: "0" }));
@@ -184,7 +185,7 @@ function makeCurrentNeighborhoodSummary(): HTMLElement {
   return el("div", {
     class: "tile-brush-neighborhood",
     children: [
-      el("span", { class: "tile-brush-label", text: "주변" }),
+      el("span", { class: "tile-brush-label", text: "선택 영역" }),
       el("span", { class: "tile-brush-neighborhood-value", text, dataset: { testid: "current-neighborhood-summary" } }),
     ],
   });

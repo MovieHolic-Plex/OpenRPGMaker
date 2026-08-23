@@ -32,9 +32,9 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     waitModeEnabled,
   });
   const panel = el("div", {
-    class: "main-menu rm2k3-status-menu system-panel",
+    class: "main-menu oprn-status-menu system-panel",
     attrs: {
-      "aria-label": "RPG Maker 2003 player status menu",
+      "aria-label": "플레이어 상태 메뉴",
       role: "dialog",
     },
     dataset: { testid: "main-menu", statusMenuScreen: mode },

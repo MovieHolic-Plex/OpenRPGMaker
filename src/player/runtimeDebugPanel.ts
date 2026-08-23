@@ -1,8 +1,8 @@
 // player/runtimeDebugPanel.ts
-// 테스트 플레이 중 런타임을 조작하는 디버그 패널(Phase 4-1).
-// window.__rpgzzuDebug(playSceneTestHooks가 설치) 훅을 통해 스위치/변수/아이템/골드/회복/텔레포트를
+// 시연 실행 중 런타임을 조작하는 디버그 패널(Phase 4-1).
+// window.__oprnDebug(playSceneTestHooks가 설치) 훅을 통해 스위치/변수/아이템/골드/회복/텔레포트를
 // 조작하고 상태를 덤프한다. 상태 프리셋을 localStorage에 저장/적용한다.
-// __rpgzzuDebug는 플레이 시작 시 설치되므로, 조작은 클릭 시점에 지연 조회한다.
+// __oprnDebug는 플레이 시작 시 설치되므로, 조작은 클릭 시점에 지연 조회한다.
 
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -20,7 +20,7 @@ function saveProjectPreset(preset: StatePreset): void {
 }
 
 function debug(): RuntimeDebugHook | undefined {
-  return (window as Window & { __rpgzzuDebug?: RuntimeDebugHook }).__rpgzzuDebug;
+  return (window as Window & { __oprnDebug?: RuntimeDebugHook }).__oprnDebug;
 }
 
 // 패널 스타일을 1회 주입한다(UI-0 팀의 공용 CSS 파일과 충돌하지 않도록 self-contained).

@@ -1,6 +1,7 @@
 // modernNocturneGame.ts — 《네온의 유언》: Modern Exteriors v42.3로 만든 단편 도시 RPG.
 // 구성: 도시 1개 / 옥상 1개 / 고정 전투 2회 / 조사·선택·엔딩 분기.
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { PRODUCT_BRAND } from "@/brand";
 import type { Command, EventPage, GameEvent, GameMap, Project, TilesetDef } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import {
@@ -148,7 +149,7 @@ export function createModernNocturneProject(): Project {
 
   const project: Project = {
     version: SCHEMA_VERSION,
-    meta: { title: MODERN_NOCTURNE_TITLE, author: "RPG ZZU", terms: defaultTerms() },
+    meta: { title: MODERN_NOCTURNE_TITLE, author: PRODUCT_BRAND, terms: defaultTerms() },
     assets: defaultAssetSet(),
     resourceProfiles: defaultResourceProfiles(),
     tilesets: { [TILESET_ID]: modernTileset() },

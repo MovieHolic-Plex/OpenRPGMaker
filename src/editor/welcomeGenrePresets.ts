@@ -183,7 +183,7 @@ export const WELCOME_INSPIRATION_MINIS: readonly WelcomeInspirationMini[] = [
     label: "저택 호러",
     blurb: "고전 저택 탐험",
     thumb: "/assets/generated/welcome/mini-04-mansion.png",
-    intent: "저택을 탐험하는 고전 쯔꾸르 호러. make_horror_loop로 트랩+체크포인트+추격 (기존 작품 고유명/캐릭터 복제 금지)",
+    intent: "저택을 탐험하는 고전 도트 호러. make_horror_loop로 트랩+체크포인트+추격 (기존 작품 고유명/캐릭터 복제 금지)",
   },
   {
     id: "meta-choice",

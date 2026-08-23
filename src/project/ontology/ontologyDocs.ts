@@ -5,7 +5,7 @@ import type { DevelopmentOntology, OntologyCapability, OntologyContract } from "
 export function generatedDevelopmentOntologyMarkdown(ontology: DevelopmentOntology): string {
   const evaluation = evaluateOntologyClassification(ontology, ONTOLOGY_CLASSIFICATION_EXAMPLES);
   return [
-    "# RPG ZZU Development Ontology",
+    "# Editor Development Ontology",
     "",
     `- Ontology schema: ${ontology.metadata.schemaVersion}`,
     `- Project schema: ${ontology.metadata.projectSchemaVersion}`,

@@ -5,7 +5,7 @@ const ARTIFACT_DIR = "C:/Users/USER/.gemini/antigravity-cli/brain/fd8cdbaf-262f-
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
 });
 

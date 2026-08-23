@@ -1,5 +1,5 @@
 // 타일 이식(tile graft) 공용 로직.
-// 다른 번들 칩셋의 개별 타일을 현재 타일셋 아틀라스에 16×16 blit 으로 "부분 로딩"한다.
+// 다른 번들 타일 그림판의 개별 타일을 현재 타일셋 아틀라스에 16×16 blit 으로 "부분 로딩"한다.
 // 넘버링 보존 원칙: 기존 타일 id 는 절대 변하지 않는다 —
 //   (a) targetTile < 원본 count → 기존 슬롯 덮어쓰기,
 //   (b) targetTile >= 원본 count → 행 단위 확장(count 를 tilesPerRow 배수로 확장, 아틀라스가 세로로 자람).
@@ -10,7 +10,7 @@ import type { TileGraft, TilesetDef } from "@/project/types";
 
 type GraftSource = HTMLImageElement | HTMLCanvasElement;
 
-// 소스 칩셋(번들 RM2K 계열)은 항상 표준 칩셋 격자(30열×16px)로 좌표를 계산한다.
+// 소스 타일 그림판(번들 RM2K 계열)은 항상 표준 타일 그림판 격자(30열×16px)로 좌표를 계산한다.
 const SOURCE_CHIPSET_COLUMNS = RESOURCE_SLICING.chipset.columns;
 const SOURCE_CHIPSET_TILE_SIZE = RESOURCE_SLICING.chipset.cellWidth;
 
@@ -83,7 +83,7 @@ export function createGraftedTilesetCanvas(
   for (const graft of grafts) {
     const source = resolveSourceImage(graft.sourceChipset);
     if (!source) {
-      console.warn(`[tileGrafts] 소스 칩셋 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
+      console.warn(`[tileGrafts] 소스 타일 그림판 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
       continue;
     }
     const src = tileXY(graft.sourceTile, SOURCE_CHIPSET_COLUMNS, SOURCE_CHIPSET_TILE_SIZE);

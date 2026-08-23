@@ -186,7 +186,7 @@ describe("titleScreen settings normalize expansion", () => {
     expect(project.system.titleScreen?.sounds).toBeUndefined();
     expect(project.system.titleScreen?.titleGraphic).toEqual({
       mode: "both",
-      resourceId: "rpg-zzu-title-logo-crest",
+      resourceId: "oprn-title-logo-crest",
       x: 160,
       y: 42,
     });
@@ -311,7 +311,7 @@ describe("titleScreen settings normalize expansion", () => {
       ...defaultTitleScreenSettings(),
       backgroundLayers: [
         { resourceId: "easyrpg-title-title1", scrollXPerSec: 16, opacity: 0.6 },
-        { resourceId: "rpg-zzu-title-field", scrollYPerSec: -8, parallax: 0.5 },
+        { resourceId: "oprn-title-field", scrollYPerSec: -8, parallax: 0.5 },
       ],
       particles: { preset: "snow", density: 60 },
       intro: { logo: "riseIn", menu: "slideUp", delayMs: 200, staggerMs: 80 },

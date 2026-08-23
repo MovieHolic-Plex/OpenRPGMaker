@@ -1,9 +1,9 @@
 @media (min-width: 901px) {
-  .database-modal-body .rm2k3-record-classes .db-class-bm88-workbench {
+  .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
     grid-template-rows: 84px 190px 118px 84px minmax(64px, auto);
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve {
+  .database-modal-body .oprn-record-classes .db-class-curve {
     align-content: center;
     display: grid;
     gap: 2px 8px;
@@ -13,8 +13,8 @@
     padding: 4px 8px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve strong,
-  .database-modal-body .rm2k3-record-classes .db-class-curve span {
+  .database-modal-body .oprn-record-classes .db-class-curve strong,
+  .database-modal-body .oprn-record-classes .db-class-curve span {
     color: var(--text-1);
     font: 700 13px/16px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
     min-width: 0;
@@ -23,12 +23,12 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve span {
+  .database-modal-body .oprn-record-classes .db-class-curve span {
     color: var(--text-2);
     font-weight: 600;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve-graph {
+  .database-modal-body .oprn-record-classes .db-class-curve-graph {
     align-items: end;
     display: flex;
     gap: 1px;
@@ -38,19 +38,19 @@
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-curve-graph i {
+  .database-modal-body .oprn-record-classes .db-class-curve-graph i {
     background: var(--accent);
     flex: 1 1 0;
     min-width: 1px;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-exp-content {
+  .database-modal-body .oprn-record-classes .db-class-exp-content {
     display: grid;
     gap: 6px;
     min-height: 0;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-exp-summary {
+  .database-modal-body .oprn-record-classes .db-class-exp-summary {
     color: var(--text-1);
     display: block;
     font: 500 13px/18px "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
@@ -60,7 +60,7 @@
     white-space: nowrap;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-exp-graph {
+  .database-modal-body .oprn-record-classes .db-class-exp-graph {
     align-items: end;
     display: flex;
     gap: 1px;
@@ -69,13 +69,13 @@
     overflow: hidden;
   }
 
-  .database-modal-body .rm2k3-record-classes .db-class-exp-graph i {
+  .database-modal-body .oprn-record-classes .db-class-exp-graph i {
     background: var(--bg-inset);
     flex: 1 1 0;
     min-width: 1px;
   }
 
-  .database-modal-body .rm2k3-detail-enemies > .db-enemy-bm101-workbench {
+  .database-modal-body .oprn-detail-enemies > .db-enemy-bm101-workbench {
     grid-template-columns: minmax(300px, 0.85fr) minmax(300px, 0.82fr) minmax(300px, 1fr);
     grid-template-rows: 72px 160px 96px 96px minmax(72px, 1fr);
     overflow: hidden;

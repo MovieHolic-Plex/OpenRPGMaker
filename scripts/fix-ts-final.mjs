@@ -205,7 +205,7 @@ function writeLines(p, lines) { fs.writeFileSync(p, lines.join("\n")); console.l
 
 // tilePaletteRm2k.ts - remove _RM2K_CELL_SIZE
 {
-  const p = "src/editor/panels/tilePaletteRm2k.ts";
+  const p = "src/editor/panels/tilePaletteGrid.ts";
   let lines = readLines(p);
   lines = lines.filter(l => !l.includes("_RM2K_CELL_SIZE"));
   writeLines(p, lines);

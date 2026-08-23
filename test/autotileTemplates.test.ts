@@ -20,15 +20,15 @@ const R = DEFAULT_TILES_PER_ROW; // 30
 const COUNT = DEFAULT_TILE_COUNT; // 480
 const { N, E, S, W } = AUTOTILE_DIR;
 
-function mustBuild(kind: "rm2k-3x4" | "grid-3x3" | "grid-3x2", anchor: number) {
+function mustBuild(kind: "oprn-3x4" | "grid-3x3" | "grid-3x2", anchor: number) {
   const built = buildTemplateGroup(kind, anchor, R, COUNT);
   if ("error" in built) throw new Error(`템플릿 생성 실패: ${built.error}`);
   return built;
 }
 
 describe("buildTemplateGroup", () => {
-  it("(a) rm2k-3x4 앵커 129 → 내장 포석(COBBLE_TILE) 정본과 완전 일치", () => {
-    const built = mustBuild("rm2k-3x4", 129);
+  it("(a) oprn-3x4 앵커 129 → 내장 포석(COBBLE_TILE) 정본과 완전 일치", () => {
+    const built = mustBuild("oprn-3x4", 129);
     expect(built.neighborhood).toBe(8);
     // 내장 포석 그룹과 memberTileIds·variantMap 완전 일치(순서 포함).
     expect(built.memberTileIds).toEqual(DEFAULT_COBBLE_AUTOTILE_GROUP.memberTileIds);
@@ -90,7 +90,7 @@ describe("buildTemplateGroup", () => {
 
   it("(d) 시트 범위/행 넘침/음수 앵커는 한국어 오류를 반환한다", () => {
     // 마지막 타일(450+3R+2=542)이 count(480)를 초과.
-    const overflow = buildTemplateGroup("rm2k-3x4", 450, R, COUNT);
+    const overflow = buildTemplateGroup("oprn-3x4", 450, R, COUNT);
     expect("error" in overflow && overflow.error).toMatch(/시트 범위/);
     // 앵커 열 28 → 열+2 가 행(30)을 넘침.
     const rowOverflow = buildTemplateGroup("grid-3x3", 28, R, COUNT);
@@ -126,7 +126,7 @@ describe("addAutotileGroupFromTemplate", () => {
   });
 
   it("(e-2) 검증 실패 시 프로젝트를 변경하지 않는다", () => {
-    const outcome = addAutotileGroupFromTemplate(DEFAULT_TILESET_ID, "rm2k-3x4", 450);
+    const outcome = addAutotileGroupFromTemplate(DEFAULT_TILESET_ID, "oprn-3x4", 450);
     expect(outcome.ok).toBe(false);
     expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID].autotileGroups).toBeUndefined();
   });

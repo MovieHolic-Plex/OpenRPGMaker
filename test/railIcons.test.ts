@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SVG_ICON_NAMES } from "@/editor/panels/rpgMakerTileToolbarIcons";
+import { SVG_ICON_NAMES } from "@/editor/panels/tileToolbarIcons";
 
 describe("rail svg icons", () => {
   it("기본 레일에 필요한 아이콘 이름이 모두 등록되어 있다", () => {

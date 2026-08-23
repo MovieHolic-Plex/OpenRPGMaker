@@ -1,6 +1,10 @@
 // 앱 진입점: store 로드 + 에디터 부팅.
 
 import "./styles/index.css";
+// ⚠ 순서 의존: 저장 키 마이그레이션이 editorUiMode 보다 **먼저** 평가돼야 한다.
+// editorUiMode 는 import 시점에 localStorage 를 읽는다(ensureHydrated). 자세한 이유는
+// src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는 안 된다(import 호이스팅).
+import "@/storageBoot";
 import "@/editor/editorUiMode";
 import { bootApp } from "@/app/mode";
 import { editorState } from "@/editor/editorState";
@@ -49,7 +53,7 @@ if (!app) {
 // DEV 전용 검증 훅: e2e/비주얼 QA가 스토어 상태(드래프트 수명주기 등)를 실측할 수 있게 한다.
 // 동적 import는 별도 모듈 인스턴스를 만들어 앱 스토어를 못 보므로(2026-08-18 실측) 여기서 노출한다.
 if (import.meta.env.DEV && typeof window !== "undefined") {
-  (window as unknown as { __rpgzzuEditorStore?: typeof store }).__rpgzzuEditorStore = store;
+  (window as unknown as { __oprnEditorStore?: typeof store }).__oprnEditorStore = store;
 }
 
 void registerPwaIfEnabled();

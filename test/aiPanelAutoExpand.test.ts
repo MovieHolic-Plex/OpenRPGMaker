@@ -145,31 +145,31 @@ afterEach(() => {
 
 describe("AI 패널 자동 펼침/접기", () => {
   it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
   });
 
   it("접힌 채 전송하면 펼치고, 턴 종료 후 자동으로 다시 접는다 — 저장값은 불변", async () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
-    const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+    const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     expect(bridge).toBeTruthy();
     await bridge!.send("안녕");
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     // 자동 펼침은 사용자의 저장된 선택을 덮어쓰지 않는다.
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
     expect(assistantMock.sentMessages).toHaveLength(1);
 
     await vi.advanceTimersByTimeAsync(AUTO_COLLAPSE_AFTER_AI_MS + 50);
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
   });
 
   it("이미 펼친 첫 방문은 턴 종료 후 자동으로 접히지 않는다 — 키를 쓰지 않는다", async () => {
@@ -177,9 +177,9 @@ describe("AI 패널 자동 펼침/접기", () => {
     const panel = renderPanel();
     expandPanel(panel);
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.has("rpg-zzu:ai-panel-collapsed")).toBe(false);
+    expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
 
-    const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+    const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
     await bridge!.send("지도 그려줘");
     await flushAsync();
 
@@ -187,16 +187,16 @@ describe("AI 패널 자동 펼침/접기", () => {
     await flushAsync();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.has("rpg-zzu:ai-panel-collapsed")).toBe(false);
+    expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
   });
 
   it("스킬 어시스트 이벤트도 자동 펼침 경로를 탄다", async () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
     window.dispatchEvent(
-      new CustomEvent("rpgzzu:ai-assist", {
+      new CustomEvent("oprn:ai-assist", {
         detail: { kind: "cluster-edit", tilesetId: "ts_default", groupId: "wall_group" },
       })
     );

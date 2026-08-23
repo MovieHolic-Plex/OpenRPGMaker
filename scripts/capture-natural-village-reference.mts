@@ -31,6 +31,9 @@ page.on("requestfailed", (request) => {
 });
 
 try {
+  // 밀도(예전 전문가 모드)는 탑바 토글이 아니라 저장 키로 지정한다 — 앞면 컨트롤이
+  // 작업 프리셋으로 바뀌었고 밀도는 패널 메뉴 안으로 들어갔다.
+  await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto(`${baseUrl}/?project=${encodeURIComponent(REFERENCE_PROJECT_ID)}`, {
     waitUntil: "domcontentloaded",
     timeout: 60_000,
@@ -39,7 +42,6 @@ try {
   await finalNode.waitFor({ state: "attached", timeout: 30_000 });
   const skipCoach = page.getByRole("button", { name: "건너뛰기" });
   if (await skipCoach.isVisible().catch(() => false)) await skipCoach.click();
-  await page.locator('[data-testid="editor-ui-mode-expert"]').click();
   await page.locator('[data-testid="editor-map-screenshot-button"]').waitFor({ state: "attached", timeout: 15_000 });
 
   const captures: Record<string, unknown>[] = [];

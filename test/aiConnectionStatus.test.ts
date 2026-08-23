@@ -37,7 +37,7 @@ function installLocalStorage(initial: Record<string, string> = {}): Map<string, 
 }
 
 function saveConfig(store: Map<string, string>, config: Record<string, unknown>): void {
-  store.set("rpg-zzu:ai-config", JSON.stringify(config));
+  store.set("oprn:ai-config", JSON.stringify(config));
 }
 
 const APIKEY_READY = {

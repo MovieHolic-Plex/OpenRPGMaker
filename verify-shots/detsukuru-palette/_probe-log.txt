@@ -1,0 +1,12 @@
+탭 잔존: {"paint":0,"find":0,"props":0,"tablist":0,"oldGrid":0}  → 전부 0이어야 함
+한 면 배치(top/height): {"chip":{"top":119,"height":24},"toolbar":{"top":147,"height":30},"filter":{"top":187,"height":57},"palette":{"top":248,"height":301},"brush":{"top":553,"height":32}}
+지형 입력 개수: {"legacy":0,"inspector":1}  → legacy 0, inspector 1
+속성 창 열림 전/후 팔레트 높이: 301 → 301 (같아야 함)
+Esc 로 속성 창 닫힘 확인
+팔레트 칸 수: 필터 전 191 → "132" 검색 후 4 (상태: 3개 일치필터 해제)
+검색 결과 클릭 후 선택칩="132 나무 집벽 중단EasyRPG RTP Combined Town Ch" · 그리기 도구 보임=true
+번호 토글: show-index false → true
+이웃 연결 토글 보임=true (붓 보조 펼침=false — 접혀도 보여야 정상)
+팔레트 높이=301px (하한 260) · 필터 바=57px
+타일셋 훅: 없음(수동 확인 필요)
+콘솔 에러(필터 후): 0건

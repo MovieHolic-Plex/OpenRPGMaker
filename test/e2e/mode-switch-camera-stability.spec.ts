@@ -5,8 +5,8 @@ const EVIDENCE_DIR = path.resolve("evidence");
 
 async function getCamera(page: Page): Promise<{ scrollX: number; scrollY: number; width: number; height: number; zoom: number }> {
   return page.evaluate(() => {
-    const fn = (window as any).__rpgzzuEditCamera;
-    if (typeof fn !== "function") throw new Error("__rpgzzuEditCamera not available");
+    const fn = (window as any).__oprnEditCamera;
+    if (typeof fn !== "function") throw new Error("__oprnEditCamera not available");
     return fn();
   });
 }
@@ -14,12 +14,12 @@ async function getCamera(page: Page): Promise<{ scrollX: number; scrollY: number
 test("mode switch basic↔expert preserves camera center", async ({ page }) => {
   test.setTimeout(90_000);
   await page.setViewportSize({ width: 1601, height: 900 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&m1MapEditor=1");
 
   await page.waitForLoadState("networkidle");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
-  await page.waitForFunction(() => typeof (window as any).__rpgzzuEditCamera === "function", { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as any).__oprnEditCamera === "function", { timeout: 20_000 });
   await page.waitForTimeout(500);
 
   const expertCam = await getCamera(page);
@@ -28,7 +28,7 @@ test("mode switch basic↔expert preserves camera center", async ({ page }) => {
     y: expertCam.scrollY + expertCam.height / 2,
   };
 
-  await page.evaluate(() => { (window as any).__rpgzzuEditorUiMode?.set("basic"); });
+  await page.evaluate(() => { (window as any).__oprnEditorUiMode?.set("basic"); });
   await page.waitForTimeout(1000);
 
   const basicCam = await getCamera(page);
@@ -37,7 +37,7 @@ test("mode switch basic↔expert preserves camera center", async ({ page }) => {
     y: basicCam.scrollY + basicCam.height / 2,
   };
 
-  await page.evaluate(() => { (window as any).__rpgzzuEditorUiMode?.set("expert"); });
+  await page.evaluate(() => { (window as any).__oprnEditorUiMode?.set("expert"); });
   await page.waitForTimeout(1000);
 
   const expertCam2 = await getCamera(page);

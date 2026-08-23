@@ -12,7 +12,7 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
   await page.addInitScript(() => {
     window.localStorage.clear();
     window.sessionStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
 
   await page.goto("/?freshProject=1");

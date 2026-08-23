@@ -29,9 +29,9 @@ import {
   positive,
 } from "./aiProposalSummary";
 
-export const SESSION_BACKUP_KEY = "rpg-zzu:ai-session-backup";
+export const SESSION_BACKUP_KEY = "oprn:ai-session-backup";
 export const VOLATILE_OVERLAY_IDLE_MS = 12000;
-export const STUDIO_MODE_KEY = "rpg-zzu:ai-studio";
+export const STUDIO_MODE_KEY = "oprn:ai-studio";
 
 export const MAP_TILE_TOOLS = new Set([
   "paint_tiles", "paint_road", "scatter_object", "stamp_structure", "build_house", "clear_region", "resize_map",

@@ -9,7 +9,7 @@ fs.mkdirSync(OUT, { recursive: true });
 
 async function openEditor(page: Page): Promise<void> {
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(async () => {

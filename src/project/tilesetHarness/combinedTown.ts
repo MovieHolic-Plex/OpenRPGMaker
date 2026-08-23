@@ -7,7 +7,7 @@ import {
   isTransparentChipsetTile,
   rm2k3StairPassFlag,
   rm2k3WoodFloorPassFlag,
-  RM2K3_WOOD_FLOOR_PASSABILITY,
+  WOOD_FLOOR_PASSABILITY,
 } from "@/project/defaults/chipsetMapping";
 import {
   COMBINED_TOWN_HARNESS_GROUPS,
@@ -245,11 +245,11 @@ function isUserRuntimeMeta(meta: TileAiMetadata | undefined): boolean {
 function applyRm2k3ElevationPassability(tileset: TilesetDef): boolean {
   let changed = false;
   const woodTiles = [
-    RM2K3_WOOD_FLOOR_PASSABILITY.body,
-    RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest,
-    RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast,
-    RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth,
-    RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth,
+    WOOD_FLOOR_PASSABILITY.body,
+    WOOD_FLOOR_PASSABILITY.edgeWest,
+    WOOD_FLOOR_PASSABILITY.edgeEast,
+    WOOD_FLOOR_PASSABILITY.edgeNorth,
+    WOOD_FLOOR_PASSABILITY.edgeSouth,
   ] as const;
   for (const tile of woodTiles) {
     if (isUserRuntimeMeta(tileset.tileMeta?.[tile])) continue;
@@ -322,7 +322,7 @@ function groupForTile(tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">, 
 }
 
 // 레이어 분류(tileLayerClassification)가 mixed 그룹과 그룹 미소속을 구분할 수 있도록
-// 그룹의 레이어/스택 속성을 노출한다. 내장 타운 칩셋은 정적 하네스 그룹을 우선한다.
+// 그룹의 레이어/스택 속성을 노출한다. 내장 타운 타일 그림판은 정적 하네스 그룹을 우선한다.
 export function harnessGroupForTile(
   tileset: Pick<TilesetDef, "id" | "image" | "tileGroups">,
   tile: number
@@ -393,11 +393,11 @@ function labelForTile(group: CombinedTownHarnessGroup, tile: number, fallback: s
   if (group.id.includes("fruit-box")) return tile === 202 ? "과일박스 좌" : "과일박스 우";
   if (group.id.includes("wood-box")) return "나무 상자";
   if (group.id.includes("wood-floor-deck")) {
-    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.body) return "나무 바닥 바디";
-    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeWest) return "나무 바닥 서측(←막힘)";
-    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeEast) return "나무 바닥 동측(→막힘)";
-    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeNorth) return "나무 바닥 북측(↑막힘)";
-    if (tile === RM2K3_WOOD_FLOOR_PASSABILITY.edgeSouth) return "나무 바닥 남측(↓막힘)";
+    if (tile === WOOD_FLOOR_PASSABILITY.body) return "나무 바닥 바디";
+    if (tile === WOOD_FLOOR_PASSABILITY.edgeWest) return "나무 바닥 서측(←막힘)";
+    if (tile === WOOD_FLOOR_PASSABILITY.edgeEast) return "나무 바닥 동측(→막힘)";
+    if (tile === WOOD_FLOOR_PASSABILITY.edgeNorth) return "나무 바닥 북측(↑막힘)";
+    if (tile === WOOD_FLOOR_PASSABILITY.edgeSouth) return "나무 바닥 남측(↓막힘)";
     return "나무 바닥 데크";
   }
   if (group.id.includes("timber-post-rail")) {

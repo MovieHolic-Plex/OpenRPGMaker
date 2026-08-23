@@ -185,7 +185,7 @@ function samplePlan(overrides: Partial<WorkPlan> = {}): WorkPlan {
 }
 
 function bridgeSend(text: string): Promise<unknown> {
-  const bridge = (globalThis.window as unknown as { __rpgzzuAiBridge?: { send: (text: string) => Promise<unknown> } }).__rpgzzuAiBridge;
+  const bridge = (globalThis.window as unknown as { __oprnAiBridge?: { send: (text: string) => Promise<unknown> } }).__oprnAiBridge;
   if (!bridge) throw new Error("bridge missing");
   return bridge.send(text);
 }
@@ -298,7 +298,7 @@ describe("자율 실행 런 표면 (todo 6)", () => {
   });
 
   it("(d) 런 진행 중에는 자동 접기가 비활성화되고, 런 종료 후에는 재개된다", async () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
 
@@ -360,7 +360,7 @@ describe("자율 실행 런 표면 (todo 6)", () => {
   });
 
   it("런 중 중단하면 표면이 정리되고 중단 상태로 끝난다", async () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     assistantMock.setEmitter((onEvent) => {
       onEvent({ type: "work_plan", plan: samplePlan() });

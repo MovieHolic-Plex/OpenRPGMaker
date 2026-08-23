@@ -6,7 +6,7 @@ import {
   requestCpenTilesetMapping,
 } from "@/editor/panels/tilesetAiCpenClient";
 
-const LOCAL_STORAGE_KEY = "rpg-zzu.llmApiKey";
+const LOCAL_STORAGE_KEY = "oprn:llmApiKey";
 
 describe("requestCpenTilesetMapping", () => {
   beforeEach(() => {
@@ -165,7 +165,7 @@ function testWindow(): TestWindow {
     localStorage: {
       getItem: (key: string) => {
         if (key === LOCAL_STORAGE_KEY) return "test-key";
-        if (key === "rpg-zzu:ai-config") {
+        if (key === "oprn:ai-config") {
           return JSON.stringify({
             baseUrl: "https://example.invalid/v1",
             apiKey: "test-key",
@@ -232,7 +232,7 @@ function proxyWindow(): TestWindow {
   return {
     clearTimeout,
     localStorage: {
-      getItem: (key: string) => key === "rpg-zzu:ai-config"
+      getItem: (key: string) => key === "oprn:ai-config"
         ? JSON.stringify({ authMode: "apiKey", baseUrl: "/fake-ai", model: "cpen/gpt-5-6-luna" })
         : null,
     },

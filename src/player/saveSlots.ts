@@ -57,7 +57,7 @@ export {
 } from "@/player/systemShellState";
 
 export const SAVE_SLOT_COUNT = 3;
-const SAVE_SLOT_PREFIX = "rpg-zzu:save-slot:";
+const SAVE_SLOT_PREFIX = "oprn:save-slot:";
 let saveSlotStorageNamespace: string | null = null;
 
 export type SaveSlotIndex = 1 | 2 | 3;

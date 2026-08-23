@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 
 declare global {
   interface Window {
-    __rpgzzuRegionTaskHarness?: {
+    __oprnRegionTaskHarness?: {
       currentMapId: () => string;
       openModal: (
         mapId: string,
@@ -29,14 +29,14 @@ const WRITES = [
 
 test.beforeEach(async ({ page }) => {
   await page.goto("/?freshProject=1");
-  await page.waitForFunction(() => Boolean(window.__rpgzzuRegionTaskHarness));
+  await page.waitForFunction(() => Boolean(window.__oprnRegionTaskHarness));
   await expect(page.getByTestId("edit-canvas").locator("canvas")).toBeVisible();
 });
 
 test("검토 단계: 미리보기·변경칸 하이라이트가 보이고 입력창과 로그는 접힌다", async ({ page }) => {
   await page.evaluate(
     ([region, writes]) => {
-      const harness = window.__rpgzzuRegionTaskHarness!;
+      const harness = window.__oprnRegionTaskHarness!;
       harness.openModal(harness.currentMapId(), region as never, writes as never);
     },
     [REGION, WRITES] as const,
@@ -76,7 +76,7 @@ test("NPC 를 놓으면 변경 목록에 줄로 선다 — 지형 아닌 변경�
   // before/after 그림이 거의 같아 "아무것도 안 했다"로 읽혔다.
   await page.evaluate(
     ([region, writes]) => {
-      const harness = window.__rpgzzuRegionTaskHarness!;
+      const harness = window.__oprnRegionTaskHarness!;
       harness.openModal(harness.currentMapId(), region as never, writes as never, [
         {
           id: "shop_merchant_mock",
@@ -109,7 +109,7 @@ test("NPC 를 놓으면 변경 목록에 줄로 선다 — 지형 아닌 변경�
 test("같은 타일로 된 두 덩어리를 위치와 하이라이트로 구분한다", async ({ page }) => {
   await page.evaluate(
     ([region, writes]) => {
-      const harness = window.__rpgzzuRegionTaskHarness!;
+      const harness = window.__oprnRegionTaskHarness!;
       harness.openModal(harness.currentMapId(), region as never, writes as never);
     },
     [REGION, WRITES] as const,
@@ -172,7 +172,7 @@ test("캔버스 우클릭 드래그는 영역 작업 창을 바로 띄운다", a
 test("지시 수정을 누르면 입력 단계로 돌아간다", async ({ page }) => {
   await page.evaluate(
     ([region, writes]) => {
-      const harness = window.__rpgzzuRegionTaskHarness!;
+      const harness = window.__oprnRegionTaskHarness!;
       harness.openModal(harness.currentMapId(), region as never, writes as never);
     },
     [REGION, WRITES] as const,
@@ -192,7 +192,7 @@ test("이벤트만 놓은 제안도 미리보기에 마커가 뜨고, 목록 hov
   // 않았으므로, 정작 이 기능이 필요한 경우에 마커가 없었다.
   await page.evaluate(
     (region) => {
-      const harness = window.__rpgzzuRegionTaskHarness!;
+      const harness = window.__oprnRegionTaskHarness!;
       harness.openModal(harness.currentMapId(), region as never, [] as never, [
         {
           id: "chest_gold_mock",
@@ -227,7 +227,7 @@ test("이벤트만 놓은 제안도 미리보기에 마커가 뜨고, 목록 hov
 test("추천 칩 카테고리 — 누르면 그 계열 명령으로 바뀌고 다시 누르면 돌아온다", async ({ page }) => {
   await page.evaluate(
     (region) => {
-      const harness = window.__rpgzzuRegionTaskHarness!;
+      const harness = window.__oprnRegionTaskHarness!;
       harness.openModal(harness.currentMapId(), region as never);
     },
     REGION,

@@ -158,7 +158,7 @@ export function registeredKitSignatures(tileset: TilesetDef | undefined): Readon
   return signatures;
 }
 
-/** 자동 이름: 단위에서 가장 흔한 타일의 칩셋 라벨 + "단면". LLM 없이 결정적.
+/** 자동 이름: 단위에서 가장 흔한 타일의 타일 그림판 라벨 + "단면". LLM 없이 결정적.
  * 상위 레이어가 있으면 상위 우선 — 울타리/꽃 같은 장식 패턴은 상위가 정체성이고 하위는 받침 지면이다. */
 function autoKitName(pattern: DetectedSectionPattern): string {
   const counts = new Map<number, number>();

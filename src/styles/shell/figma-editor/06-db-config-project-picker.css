@@ -262,7 +262,7 @@
   }
 
   .map-context-menu-item,
-  .rm2k3-menu-command {
+  .oprn-menu-command {
     border-radius: 6px;
     color: var(--editor-text);
     column-gap: 14px;

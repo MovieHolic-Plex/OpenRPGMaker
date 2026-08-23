@@ -45,9 +45,9 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
   await page.setViewportSize({ width: 1601, height: 769 });
   // Expert density so side AI dock + dense chrome match the reported layout.
   await page.addInitScript(() => {
-    localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+    localStorage.setItem("oprn:editor-ui-mode", "expert");
     // AI dock starts collapsed by design — pin it open so the docked layout is measured.
-    localStorage.setItem("rpg-zzu:ai-panel-collapsed", "0");
+    localStorage.setItem("oprn:ai-panel-collapsed", "0");
   });
   await page.goto("/?freshProject=1&m1MapEditor=1");
 

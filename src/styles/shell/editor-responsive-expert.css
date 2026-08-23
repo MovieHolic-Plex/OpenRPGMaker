@@ -3,12 +3,12 @@
    1024px 미만은 기존 720px 자동 접힘 경로에 맡긴다. */
 
 /* 1) 메뉴바: 라벨 줄바꿈 금지 */
-.rm2k3-menu-bar {
+.oprn-menu-bar {
   flex-wrap: nowrap;
   min-width: 0;
 }
 
-.rm2k3-menu-item,
+.oprn-menu-item,
 .editor-ui-mode-btn {
   white-space: nowrap;
 }
@@ -16,7 +16,7 @@
 @media (max-width: 1280px) {
   .editor-product-brand { margin-right: 8px; }
   .editor-product-brand-text { display: none; } /* 로고(✦)만 남김 */
-  .rm2k3-menu-item { padding-left: 8px; padding-right: 8px; }
+  .oprn-menu-item { padding-left: 8px; padding-right: 8px; }
   .editor-ui-mode-btn { padding: 0 8px; }
   .editor-ui-mode-toggle { margin-left: 6px; }
 }
@@ -95,7 +95,7 @@
 }
 
 /* 8) 클래식 툴바 오버플로우 */
-.classic-toolbar .rm2k3-toolbar-row {
+.classic-toolbar .oprn-toolbar-row {
   flex-wrap: nowrap;
   min-width: 0;
   overflow: hidden;

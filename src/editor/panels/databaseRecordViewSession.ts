@@ -25,8 +25,8 @@ const VIEW_TOGGLE_COLLECTIONS: readonly DatabaseCollection[] = [
   "battleAnimations",
 ];
 
-const VIEW_MODE_STORAGE_KEY = "rpg-zzu.database.viewMode";
-const CATEGORY_FILTER_STORAGE_KEY = "rpg-zzu.database.categoryFilter";
+const VIEW_MODE_STORAGE_KEY = "oprn:database.viewMode";
+const CATEGORY_FILTER_STORAGE_KEY = "oprn:database.categoryFilter";
 
 // 카테고리 필터 칩이 적용되는 컬렉션 — 아이템/장비만. 배우/스킬/스위치 등 나머지
 // 컬렉션은 칩이 없으므로 필터 상태를 갖지 않는다.
@@ -35,12 +35,12 @@ const FILTERABLE_COLLECTIONS: readonly DatabaseCollection[] = ["items", "equipme
 let state = createRecordViewSessionState();
 
 // 컬렉션별 뷰 모드(갤러리/리스트)는 세션 리셋을 가로질러 생존한다 — localStorage
-// (rpg-zzu.database.viewMode)에 JSON 맵으로 지속되며 resetRecordViewSessionState는 이
+// (oprn:database.viewMode)에 JSON 맵으로 지속되며 resetRecordViewSessionState는 이
 // 상태를 건드리지 않는다(플랜: 세션 리셋 계약 불변, 뷰 모드는 사용자 선택이라 리셋 후 유지).
 let viewModes: Partial<Record<DatabaseCollection, RecordViewMode>> = readStoredViewModes();
 
 // 카테고리 필터 칩(아이템 종류/장비 부위) — 뷰 모드와 같은 규칙으로 localStorage
-// (rpg-zzu.database.categoryFilter)에 JSON 맵으로 지속되며, resetRecordViewSessionState는
+// (oprn:database.categoryFilter)에 JSON 맵으로 지속되며, resetRecordViewSessionState는
 // 이 상태를 건드리지 않는다(사용자 선택이라 세션 리셋 후에도 유지).
 // 'all'이 기본값이며 항목이 없으면 'all'로 읽힌다. 아이템/장비 외 컬렉션은 저장하지 않는다.
 let categoryFilters: Partial<Record<DatabaseCollection, string>> = readStoredCategoryFilters();

@@ -2,7 +2,7 @@
 //
 // 원본: https://scarloxy.itch.io/mpwsp01 (CC-BY 4.0, 상업 사용 가능·출처 표기 필수)
 // 변환: scripts/import-scarloxy-pack.py 가 vendor/scarloxy-mpwsp01/ 원본을
-//   RM2K3 규격(칩셋 480x256/16px, 캐릭셋 288x256/24x32)으로 재배치해
+//   RM2K3 규격(타일 그림판 480x256/16px, 캐릭셋 288x256/24x32)으로 재배치해
 //   public/assets/scarloxy/ 에 출력하고, 블록 배치를 scarloxyPackManifest.json 에 기록한다.
 // 출처 표기: public/assets/ATTRIBUTION.md 참조.
 
@@ -178,7 +178,7 @@ export function resolveScarloxyAssetUrl(resourceId: string): string | null {
 }
 
 // ---------------------------------------------------------------------------
-// 칩셋 타일 메타데이터 시드 (tilesetHarness/themePacks.ts 가 소비)
+// 타일 그림판 타일 메타데이터 시드 (tilesetHarness/themePacks.ts 가 소비)
 // ---------------------------------------------------------------------------
 
 export type ScarloxyChipsetGroupSeed = {

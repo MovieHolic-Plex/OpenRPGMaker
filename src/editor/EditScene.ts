@@ -276,16 +276,16 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof window !== "undefined") {
       // e2e/진단 스펙용 후킹 — 카메라 수학을 스펙에 복제하지 않도록 엔진의 실제 값을 노출한다.
       const editWindow = window as unknown as {
-        __rpgzzuEditCamera?: () => { scrollX: number; scrollY: number; width: number; height: number; zoom: number };
-        __rpgzzuEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
+        __oprnEditCamera?: () => { scrollX: number; scrollY: number; width: number; height: number; zoom: number };
+        __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
       };
-      editWindow.__rpgzzuEditCamera = () => {
+      editWindow.__oprnEditCamera = () => {
         const c = this.cameras.main;
         return { scrollX: c.scrollX, scrollY: c.scrollY, width: c.width, height: c.height, zoom: c.zoom };
       };
       // 월드 좌표 → 클라이언트 좌표. scrollX/Y 는 3.60+ 줌 규약 때문에 화면 왼쪽 위와
       // 직접 대응하지 않으므로(실측 2026-08-11), 렌더가 실제로 쓰는 worldView 사각형을 쓴다.
-      editWindow.__rpgzzuEditWorldToClient = (worldX: number, worldY: number) => {
+      editWindow.__oprnEditWorldToClient = (worldX: number, worldY: number) => {
         const c = this.cameras.main;
         const rect = this.game.canvas.getBoundingClientRect();
         return {
@@ -323,9 +323,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     if (typeof window !== "undefined") {
-      const editWindow = window as unknown as { __rpgzzuEditCamera?: unknown; __rpgzzuEditWorldToClient?: unknown };
-      delete editWindow.__rpgzzuEditCamera;
-      delete editWindow.__rpgzzuEditWorldToClient;
+      const editWindow = window as unknown as { __oprnEditCamera?: unknown; __oprnEditWorldToClient?: unknown };
+      delete editWindow.__oprnEditCamera;
+      delete editWindow.__oprnEditWorldToClient;
     }
     this.clearBuildPaletteOverlay();
     this.regionTaskBadge?.remove();

@@ -14,8 +14,8 @@ describe("generated enemy battler files", () => {
       .filter((entry) => !existsSync(`public${entry.url}`))
       .map((entry) => `${entry.id} -> ${entry.url}`);
     expect(missing).toEqual([]);
-    expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe("/assets/generated/rm2k3/monster-slime-01.png");
-    expect(resolveAssetResourceUrl("generated-enemy-dragon-01")).toBe("/assets/generated/rm2k3/monster-dragon-01.png");
+    expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe("/assets/generated/starter/monster-slime-01.png");
+    expect(resolveAssetResourceUrl("generated-enemy-dragon-01")).toBe("/assets/generated/starter/monster-dragon-01.png");
   });
 });
 

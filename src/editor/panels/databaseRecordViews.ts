@@ -91,7 +91,7 @@ const EQUIPMENT_SLOT_CHIPS: readonly { readonly slot: EquipmentRecord["slot"]; r
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
   const selected = selectedRecordForSession(collection, records);
-  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
+  const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
 
   // 디테일 폼만 부분 갱신한다(리스트/스크롤/검색 포커스는 유지).
   const renderDetail = (id: string | undefined): void => {
@@ -104,7 +104,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     const index = liveRecords.findIndex((entry) => entry.id === record.id);
     const onRename = (next: string): void => updateRecordRowLabel(listEl, record.id, next);
     const form = recordForm(collection, record, rerender, onRename);
-    form.classList.add("rm2k3-detail-form", `rm2k3-detail-${collection}`);
+    form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
     detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
   };
 
@@ -116,7 +116,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
   };
 
   const listEl = recordList(collection, records, onSelect);
-  const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
   const chips = categoryFilterChips(collection, rerender);
   listPane.append(
     el("h3", { text: COLLECTION_LABELS[collection] }),
@@ -127,7 +127,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     toolbar(collection, rerender),
   );
   renderDetail(selected?.id);
-  const workspace = el("div", { class: `db-record-workspace rm2k3-record-workspace rm2k3-record-${collection}`, children: [listPane, detailPane] });
+  const workspace = el("div", { class: `db-record-workspace oprn-record-workspace oprn-record-${collection}`, children: [listPane, detailPane] });
   if (collection === "enemies") {
     // 몬스터(적) 탭과 종족 탭의 역할 구분 안내. height:100% 워크스페이스가 배너에 밀리지 않도록
     // 셸(auto + 1fr)로 감싼다.
@@ -550,7 +550,7 @@ function recordForm(
   rerender: () => void,
   onRename?: (name: string) => void
 ): HTMLElement {
-  const form = el("section", { class: `db-detail-form rm2k3-detail-form rm2k3-detail-${collection}`, dataset: { testid: "db-detail-form" } });
+  const form = el("section", { class: `db-detail-form oprn-detail-form oprn-detail-${collection}`, dataset: { testid: "db-detail-form" } });
   // items/equipment 는 모던 인스펙터 헤더가 db-field-name 을 소유한다(T9/T10) — 레거시 이름
   // 필드를 함께 그리면 동일 testid 가 두 개 생겨 Playwright strict-mode 가 깨진다.
   if (
@@ -606,8 +606,8 @@ function recordForm(
 
 function recordListFooter(count: number): HTMLElement {
   return el("div", {
-    class: "rm2k3-record-list-footer",
-    children: [el("span", { class: "rm2k3-record-count", text: `${count}개` })],
+    class: "oprn-record-list-footer",
+    children: [el("span", { class: "oprn-record-count", text: `${count}개` })],
   });
 }
 

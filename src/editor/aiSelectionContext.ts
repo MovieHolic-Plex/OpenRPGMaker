@@ -1,6 +1,6 @@
 import type { TileSelection } from "@/editor/editorState";
 
-export const AI_SELECTION_CONTEXT_EVENT = "rpgzzu:ai-selection-context";
+export const AI_SELECTION_CONTEXT_EVENT = "oprn:ai-selection-context";
 
 export interface AiSelectionContextDetail {
   readonly focus?: boolean;

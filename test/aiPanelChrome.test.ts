@@ -146,7 +146,7 @@ describe("AI 패널 크롬", () => {
     const expected = readAgentBrief().line;
     const line = findByTestId(panel, "ai-director-line");
 
-    expect(expected).toBe("빈 맵 20×15 · 바닥 · 펜");
+    expect(expected).toBe("빈 맵 20×15 · 바닥 · 칠하기");
     expect(line?.textContent).toBe(expected);
   });
 
@@ -159,7 +159,7 @@ describe("AI 패널 크롬", () => {
 
     editorState.set({ layer: "upper", tool: "fill" });
 
-    expect(line.textContent).toBe("빈 맵 20×15 · 장식 · 채우기");
+    expect(line.textContent).toBe("빈 맵 20×15 · 덧그림 · 채우기");
     expect(line.textContent).toBe(readAgentBrief().line);
   });
 
@@ -167,11 +167,11 @@ describe("AI 패널 크롬", () => {
     // Break: loadPanelCollapsed() still returns true when the key is missing.
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.has("rpg-zzu:ai-panel-collapsed")).toBe(false);
+    expect(storage.has("oprn:ai-panel-collapsed")).toBe(false);
   });
 
   it("부팅 시 저장된 접힘 선택('1')을 복원한다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
   });
@@ -204,19 +204,19 @@ describe("AI 패널 크롬", () => {
     expect(restoreFace?.style.height).toBe("48px");
     expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
     expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("1");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("1");
 
     restore?.click();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
     expect(document.body.classList.contains("ai-command-bar-active")).toBe(true);
     expect(document.body.classList.contains("ai-panel-docked")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
   it("떠 있는 말풍선으로 접어도 48px 얼굴 복귀가 남는다", () => {
     // Break: restore is still the 🤖 AI ▸ pill, or aria-label is not AI 어시스턴트.
-    storage.set("rpg-zzu:ai-panel-docked", "0");
+    storage.set("oprn:ai-panel-docked", "0");
     const panel = renderPanel();
     expandPanel(panel);
     const collapse = findByTestId(panel, "ai-collapse");
@@ -311,7 +311,7 @@ describe("AI 패널 크롬", () => {
   });
 
   it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {
-    storage.set("rpg-zzu:ai-panel-collapsed", "1");
+    storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     const restore = findByTestId(panel, "ai-collapsed-restore");
 
@@ -321,7 +321,7 @@ describe("AI 패널 크롬", () => {
     restore?.click();
 
     expect(panel.classList.contains("is-collapsed")).toBe(false);
-    expect(storage.get("rpg-zzu:ai-panel-collapsed")).toBe("0");
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
   it("툴바에 직전 변경 되돌리기 진입점을 제공한다", () => {

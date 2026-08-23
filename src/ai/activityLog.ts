@@ -6,7 +6,7 @@ import { randomUuid } from "@/util/id";
 import type { AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 export type { AiActivityChannel, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
-const STORAGE_KEY = "rpg-zzu:ai-activity-logs";
+const STORAGE_KEY = "oprn:ai-activity-logs";
 const MAX_LOGS = 100;
 const MAX_TEXT = 4000;
 const MAX_ARGS_JSON = 12_000;
@@ -163,7 +163,7 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
  * AI 활동 1건 기록.
  * - 항상 로컬 localStorage 링버퍼에 저장
  * - Supabase 설정이 있으면 원격에도 best-effort (전용 테이블 없으면 ai_analysis_runs 폴백)
- * - DEV: Vite `/__rpgzzu/ai-activity` 로 디스크 미러 (output/ai-activity/)
+ * - DEV: Vite `/__oprn/ai-activity` 로 디스크 미러 (output/ai-activity/)
  */
 export async function recordAiActivity(input: AiActivityLogInput): Promise<AiActivityLogRecord> {
   const base = buildAiActivityLogRecord(input);
@@ -198,7 +198,7 @@ export async function recordAiActivity(input: AiActivityLogInput): Promise<AiAct
 async function mirrorActivityToDisk(record: AiActivityLogRecord): Promise<void> {
   if (typeof fetch === "undefined") return;
   try {
-    await fetch("/__rpgzzu/ai-activity", {
+    await fetch("/__oprn/ai-activity", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
@@ -250,11 +250,11 @@ export async function recordAiActivityFromRegionLog(
 
 function publishActivityLogApi(latest?: AiActivityLogRecord): void {
   if (typeof window === "undefined") return;
-  window.__rpgzzuAiActivityLog = latest ?? getLatestAiActivityLog();
-  window.__rpgzzuListAiActivityLogs = (limit?: number) => listAiActivityLogs(limit);
-  window.__rpgzzuGetAiActivityLog = (id: string) => getAiActivityLog(id);
-  window.__rpgzzuClearAiActivityLogs = () => clearAiActivityLogs();
-  window.__rpgzzuExportAiActivityLogs = (limit?: number) => serializeAiActivityLogs(limit);
+  window.__oprnAiActivityLog = latest ?? getLatestAiActivityLog();
+  window.__oprnListAiActivityLogs = (limit?: number) => listAiActivityLogs(limit);
+  window.__oprnGetAiActivityLog = (id: string) => getAiActivityLog(id);
+  window.__oprnClearAiActivityLogs = () => clearAiActivityLogs();
+  window.__oprnExportAiActivityLogs = (limit?: number) => serializeAiActivityLogs(limit);
 }
 
 // 모듈 로드 시 window API 바인딩 (DEV 콘솔 즉시 사용).

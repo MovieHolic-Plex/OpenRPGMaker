@@ -68,7 +68,7 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
     );
   }
 
-  const listPane = el("div", { class: "db-list-pane rm2k3-record-list-pane" });
+  const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
   listPane.append(
     el("h3", { text: "캐릭터" }),
     list,
@@ -76,7 +76,7 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
     toolbar(entries, rerender),
   );
 
-  const detailPane = el("div", { class: "db-detail-pane rm2k3-record-detail-pane" });
+  const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
   detailPane.append(
     selected
       ? characterDetail(selected, project, rerender)
@@ -94,7 +94,7 @@ export function renderCharactersTab(host: HTMLElement, rerender: () => void): vo
       text: "호감·선물 공유 키(characterId) 카탈로그입니다. 프로필만 삭제할 수 있고 이벤트 참조는 남습니다. 이름 변경(rename)은 지원하지 않습니다.",
     }),
     el("div", {
-      class: "db-record-workspace rm2k3-record-workspace rm2k3-record-characters",
+      class: "db-record-workspace oprn-record-workspace oprn-record-characters",
       dataset: { testid: "db-characters-workspace" },
       children: [listPane, detailPane],
     }),
@@ -198,7 +198,7 @@ function deleteProfileButton(entries: readonly CharacterIdIndexEntry[], rerender
 
 function characterDetail(entry: CharacterIdIndexEntry, project: Project, rerender: () => void): HTMLElement {
   const form = el("section", {
-    class: "db-detail-form rm2k3-detail-form",
+    class: "db-detail-form oprn-detail-form",
     dataset: { testid: "db-detail-form" },
   });
 

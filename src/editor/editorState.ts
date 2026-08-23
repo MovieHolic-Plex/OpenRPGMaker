@@ -1,7 +1,7 @@
 ﻿// editor/editorState.ts
 // 에디터 UI 상태: 현재 편집 중인 맵, 선택 도구/레이어, 선택 이벤트.
 // Project 데이터(store)와 분리된 에디터 세션 전용 UI 상태.
-// 상세 설계: docs/specs/2026-06-18-rm2k3-overhaul-design.md 3.1.
+// 상세 설계: docs/specs/2026-06-18-oprn-overhaul-design.md 3.1.
 
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";

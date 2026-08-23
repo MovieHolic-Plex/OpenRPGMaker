@@ -23,7 +23,7 @@ type ChatCompletionResponse = {
 const DEFAULT_LLM_MODEL = "google/gemini-3.1-flash-lite";
 const MAX_INPUT_PER_1M = 0.1;
 const MAX_OUTPUT_TOKENS = 8192;
-const LOCAL_STORAGE_KEY = "rpg-zzu.llmApiKey";
+const LOCAL_STORAGE_KEY = "oprn:llmApiKey";
 const JSON_ONLY_SYSTEM_PROMPT =
   "Return exactly one JSON object for the requested tileset metadata. Do not quote the schema, do not include markdown, prose, code fences, or hidden reasoning. If uncertain, fill minimumQuestions and keep fields conservative.";
 

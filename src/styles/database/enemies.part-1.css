@@ -1,19 +1,19 @@
 :root {
-  --rm2k3-enemy-preview-bg: var(--accent);
-  --rm2k3-enemy-preview-text: var(--text-1);
-  --rm2k3-enemy-table-bg: var(--bg-raised);
-  --rm2k3-enemy-table-text: var(--text-1);
-  --rm2k3-enemy-table-separator: var(--border-subtle);
-  --rm2k3-enemy-menu-ink: var(--text-primary);
-  --rm2k3-enemy-menu-muted-ink: var(--text-muted);
-  --rm2k3-enemy-menu-danger-ink: var(--danger);
-  --rm2k3-enemy-panel-width: 154px;
-  --rm2k3-enemy-graphic-height: 132px;
-  --rm2k3-enemy-graphic-max: 104px;
-  --rm2k3-enemy-action-height: 206px;
-  --rm2k3-enemy-dialog-width: 420px;
-  --rm2k3-enemy-graphic-list-width: 176px;
-  --rm2k3-enemy-graphic-preview-width: 242px;
+  --oprn-enemy-preview-bg: var(--accent);
+  --oprn-enemy-preview-text: var(--text-1);
+  --oprn-enemy-table-bg: var(--bg-raised);
+  --oprn-enemy-table-text: var(--text-1);
+  --oprn-enemy-table-separator: var(--border-subtle);
+  --oprn-enemy-menu-ink: var(--text-primary);
+  --oprn-enemy-menu-muted-ink: var(--text-muted);
+  --oprn-enemy-menu-danger-ink: var(--danger);
+  --oprn-enemy-panel-width: 154px;
+  --oprn-enemy-graphic-height: 132px;
+  --oprn-enemy-graphic-max: 104px;
+  --oprn-enemy-action-height: 206px;
+  --oprn-enemy-dialog-width: 420px;
+  --oprn-enemy-graphic-list-width: 176px;
+  --oprn-enemy-graphic-preview-width: 242px;
 }
 
 /* 좁은(<901px) 폭에서는 이름 순서대로 세로 1열 스택 — 아래 desktop 오버라이드가
@@ -43,8 +43,8 @@
 }
 
 .database-modal-body .db-enemy-bm101-workbench > .db-advanced-panel {
-  background: var(--rm2k3-field);
-  border-color: var(--rm2k3-shadow) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-shadow);
+  background: var(--oprn-field);
+  border-color: var(--oprn-shadow) var(--oprn-light) var(--oprn-light) var(--oprn-shadow);
   border-style: solid;
   border-width: 1px;
   display: grid;
@@ -67,8 +67,8 @@
 .database-modal-body .db-enemy-bm101-workbench select,
 .db-enemy-dialog input,
 .db-enemy-dialog select {
-  background: var(--rm2k3-enemy-table-bg);
-  border-color: var(--rm2k3-shadow) var(--rm2k3-light) var(--rm2k3-light) var(--rm2k3-shadow);
+  background: var(--oprn-enemy-table-bg);
+  border-color: var(--oprn-shadow) var(--oprn-light) var(--oprn-light) var(--oprn-shadow);
   border-style: solid;
   border-width: 1px;
   color: var(--text-primary);
@@ -111,10 +111,10 @@
 .database-modal-body .db-enemy-graphic-stage,
 .db-enemy-graphic-dialog-preview .db-enemy-graphic-stage {
   align-items: center;
-  background: var(--rm2k3-enemy-preview-bg);
-  border: 1px inset var(--rm2k3-shadow);
+  background: var(--oprn-enemy-preview-bg);
+  border: 1px inset var(--oprn-shadow);
   display: flex;
-  height: var(--rm2k3-enemy-graphic-height);
+  height: var(--oprn-enemy-graphic-height);
   justify-content: center;
   overflow: hidden;
 }
@@ -122,7 +122,7 @@
 .database-modal-body .db-enemy-graphic-stage img,
 .db-enemy-graphic-dialog-preview .db-enemy-graphic-stage img {
   image-rendering: pixelated;
-  max-height: var(--rm2k3-enemy-graphic-max);
+  max-height: var(--oprn-enemy-graphic-max);
   max-width: 132px;
 }
 
@@ -132,7 +132,7 @@
 }
 
 .database-modal-body .db-enemy-empty-graphic {
-  color: var(--rm2k3-enemy-preview-text);
+  color: var(--oprn-enemy-preview-text);
   font: 12px/1.2 var(--font-mono);
 }
 
@@ -153,40 +153,40 @@
 }
 
 .database-modal-body .db-enemy-attack-patterns {
-  background: var(--rm2k3-enemy-table-bg);
-  border: 1px inset var(--rm2k3-shadow);
-  min-height: var(--rm2k3-enemy-action-height);
+  background: var(--oprn-enemy-table-bg);
+  border: 1px inset var(--oprn-shadow);
+  min-height: var(--oprn-enemy-action-height);
   overflow: auto;
 }
 
 .database-modal-body .db-enemy-attack-patterns table {
   border-collapse: collapse;
-  color: var(--rm2k3-enemy-table-text);
+  color: var(--oprn-enemy-table-text);
   font: 12px/1.35 "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
   width: 100%;
 }
 
 .database-modal-body .db-enemy-attack-patterns th {
-  background: var(--rm2k3-chrome);
-  border-bottom: 1px solid var(--rm2k3-shadow);
-  border-right: 1px solid var(--rm2k3-shadow);
+  background: var(--oprn-chrome);
+  border-bottom: 1px solid var(--oprn-shadow);
+  border-right: 1px solid var(--oprn-shadow);
   font-weight: 400;
   text-align: left;
 }
 
 .database-modal-body .db-enemy-attack-patterns td {
-  border-right: 1px solid var(--rm2k3-enemy-table-separator);
+  border-right: 1px solid var(--oprn-enemy-table-separator);
   padding: 2px 4px;
 }
 
 .database-modal-body .db-enemy-attack-patterns tr:hover td {
-  background: var(--rm2k3-highlight);
-  color: var(--rm2k3-light);
+  background: var(--oprn-highlight);
+  color: var(--oprn-light);
 }
 
 .database-modal-body .db-enemy-attack-patterns tr.db-enemy-action-context-target td {
-  background: var(--rm2k3-highlight);
-  color: var(--rm2k3-light);
+  background: var(--oprn-highlight);
+  color: var(--oprn-light);
 }
 
 .db-enemy-dialog-backdrop {
@@ -202,8 +202,8 @@
 }
 
 .db-enemy-dialog {
-  background: var(--rm2k3-chrome);
-  border-color: var(--rm2k3-light) var(--rm2k3-shadow) var(--rm2k3-shadow) var(--rm2k3-light);
+  background: var(--oprn-chrome);
+  border-color: var(--oprn-light) var(--oprn-shadow) var(--oprn-shadow) var(--oprn-light);
   border-style: solid;
   border-width: 2px;
   box-shadow: var(--shadow-popover);
@@ -212,12 +212,12 @@
   flex-direction: column;
   max-height: calc(100vh - 16px);
   max-width: calc(100vw - 16px);
-  min-width: min(var(--rm2k3-enemy-dialog-width), calc(100vw - 16px));
+  min-width: min(var(--oprn-enemy-dialog-width), calc(100vw - 16px));
 }
 
 .db-enemy-dialog header {
-  background: linear-gradient(90deg, var(--rm2k3-title-blue-deep), var(--rm2k3-title-blue-hi));
-  color: var(--rm2k3-light);
+  background: linear-gradient(90deg, var(--oprn-title-blue-deep), var(--oprn-title-blue-hi));
+  color: var(--oprn-light);
   font: 700 12px/20px "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
   padding: 0 6px;
 }
@@ -239,12 +239,12 @@
 .db-enemy-graphic-dialog-grid {
   display: grid;
   gap: 10px;
-  grid-template-columns: var(--rm2k3-enemy-graphic-list-width) var(--rm2k3-enemy-graphic-preview-width);
+  grid-template-columns: var(--oprn-enemy-graphic-list-width) var(--oprn-enemy-graphic-preview-width);
 }
 
 .db-enemy-graphic-list {
-  background: var(--rm2k3-enemy-table-bg);
-  border: 1px inset var(--rm2k3-shadow);
+  background: var(--oprn-enemy-table-bg);
+  border: 1px inset var(--oprn-shadow);
   display: grid;
   max-height: 220px;
   overflow: auto;
@@ -253,15 +253,15 @@
 .db-enemy-graphic-list button {
   background: transparent;
   border: 0;
-  color: var(--rm2k3-enemy-table-text);
+  color: var(--oprn-enemy-table-text);
   font: 12px/18px "MS PGothic", "MS Gothic", "Malgun Gothic", sans-serif;
   text-align: left;
 }
 
 .db-enemy-graphic-list button.active,
 .db-enemy-graphic-list button:hover {
-  background: var(--rm2k3-highlight);
-  color: var(--rm2k3-light);
+  background: var(--oprn-highlight);
+  color: var(--oprn-light);
 }
 
 .db-enemy-hue-field {
@@ -293,7 +293,7 @@
 }
 
 .db-enemy-condition-detail {
-  border: 1px inset var(--rm2k3-shadow);
+  border: 1px inset var(--oprn-shadow);
   display: grid;
   gap: 6px;
   margin-top: 8px;
@@ -320,8 +320,8 @@
 }
 
 .db-enemy-context-menu {
-  background: var(--rm2k3-chrome);
-  border-color: var(--rm2k3-light) var(--rm2k3-shadow) var(--rm2k3-shadow) var(--rm2k3-light);
+  background: var(--oprn-chrome);
+  border-color: var(--oprn-light) var(--oprn-shadow) var(--oprn-shadow) var(--oprn-light);
   border-style: solid;
   border-width: 1px;
   box-shadow: var(--shadow-popover);
@@ -346,8 +346,8 @@
 }
 
 .db-enemy-context-menu button:hover:not(:disabled) {
-  background: var(--rm2k3-highlight);
-  color: var(--rm2k3-light);
+  background: var(--oprn-highlight);
+  color: var(--oprn-light);
 }
 
 .db-enemy-context-menu button:disabled {
@@ -366,11 +366,11 @@
 }
 
 .db-enemy-menu-icon.edit {
-  border: 1px solid var(--rm2k3-enemy-menu-ink);
+  border: 1px solid var(--oprn-enemy-menu-ink);
 }
 
 .db-enemy-menu-icon.edit::after {
-  background: var(--rm2k3-enemy-menu-ink);
+  background: var(--oprn-enemy-menu-ink);
   content: "";
   height: 7px;
   left: 5px;
@@ -382,7 +382,7 @@
 
 .db-enemy-menu-icon.cut::before,
 .db-enemy-menu-icon.cut::after {
-  background: var(--rm2k3-enemy-menu-ink);
+  background: var(--oprn-enemy-menu-ink);
   content: "";
   height: 12px;
   left: 5px;
@@ -397,18 +397,18 @@
 }
 
 .db-enemy-menu-icon.copy {
-  border: 1px solid var(--rm2k3-enemy-menu-ink);
-  box-shadow: -3px -3px 0 -1px var(--rm2k3-chrome), -3px -3px 0 0 var(--rm2k3-enemy-menu-ink);
+  border: 1px solid var(--oprn-enemy-menu-ink);
+  box-shadow: -3px -3px 0 -1px var(--oprn-chrome), -3px -3px 0 0 var(--oprn-enemy-menu-ink);
 }
 
 .db-enemy-menu-icon.paste {
-  border: 1px solid var(--rm2k3-enemy-menu-muted-ink);
+  border: 1px solid var(--oprn-enemy-menu-muted-ink);
   opacity: 0.45;
 }
 
 .db-enemy-menu-icon.delete::before,
 .db-enemy-menu-icon.delete::after {
-  background: var(--rm2k3-enemy-menu-danger-ink);
+  background: var(--oprn-enemy-menu-danger-ink);
   content: "";
   height: 13px;
   left: 5px;

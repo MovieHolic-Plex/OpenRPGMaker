@@ -1,6 +1,6 @@
 ---
 name: reward-and-growth-loop
-description: Use this RPG Maker authoring skill when connecting quests, battles, objects, or exploration to rewards such as gold, items, skills, level changes, stat changes, unlocks, or narrative state changes.
+description: Use this authoring skill when connecting quests, battles, objects, or exploration to rewards such as gold, items, skills, level changes, stat changes, unlocks, or narrative state changes.
 ---
 
 # Reward And Growth Loop

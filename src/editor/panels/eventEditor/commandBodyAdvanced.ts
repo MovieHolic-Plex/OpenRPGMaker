@@ -570,7 +570,7 @@ function waitBody(context: CommandEditContext, cmd: Extract<Command, { kind: "wa
 
   wrap.append(
     el("fieldset", {
-      class: "event-rm2k3-fieldset event-command-wait-mode",
+      class: "event-oprn-fieldset event-command-wait-mode",
       children: [
         el("legend", { text: "대기 방식" }),
         el("label", {
@@ -845,7 +845,7 @@ function setEventGraphicPatternBody(
 
 function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
   const first = assets[0];
-  if (!first) throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
+  if (!first) throw new Error("EasyRPG 캐릭터 그림 목록이 비어 있습니다");
   return first;
 }
 

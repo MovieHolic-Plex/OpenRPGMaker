@@ -7,7 +7,7 @@ const TITLE = `로컬 영속 ${NONCE}`;
 
 test("authoring flushes to local storage, survives reload, and enters test play", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "basic"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "basic"));
   await page.goto(URL, { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
 
@@ -27,17 +27,17 @@ test("authoring flushes to local storage, survives reload, and enters test play"
   await page.getByTestId("event-command-edit-ok").click();
   await page.getByTestId("event-editor-ok").click();
 
-  const flushResult = await page.evaluate(async () => window.__rpgzzuProjectE2E?.flush());
+  const flushResult = await page.evaluate(async () => window.__oprnProjectE2E?.flush());
   expect(flushResult).toEqual({ kind: "saved-local" });
   const storedBeforeReload = await page.evaluate(() => {
-    const key = Object.keys(localStorage).find((candidate) => candidate.startsWith("rpg-zzu:dev-project:"));
+    const key = Object.keys(localStorage).find((candidate) => candidate.startsWith("oprn:dev-project:"));
     return key ? { key, payload: localStorage.getItem(key) } : null;
   });
   expect(storedBeforeReload?.payload).toContain(TITLE);
 
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
-  const snapshot = await page.evaluate(() => window.__rpgzzuProjectE2E?.currentProject());
+  const snapshot = await page.evaluate(() => window.__oprnProjectE2E?.currentProject());
   expect(JSON.stringify(snapshot?.project)).toContain(TITLE);
   expect(await page.title()).toBe(originalTitle);
 
@@ -50,7 +50,7 @@ test("authoring flushes to local storage, survives reload, and enters test play"
 
   await page.getByTestId("layer-event").click();
   const eventPosition = await page.evaluate((title) => {
-    const project = window.__rpgzzuProjectE2E?.currentProject().project;
+    const project = window.__oprnProjectE2E?.currentProject().project;
     if (!project) return null;
     const event = project.maps[project.startMapId]?.events.find((candidate) => candidate.pages.some((eventPage) => eventPage.name === title));
     return event ? { x: event.x, y: event.y, width: project.maps[project.startMapId]!.width, height: project.maps[project.startMapId]!.height } : null;
@@ -69,11 +69,11 @@ test("authoring flushes to local storage, survives reload, and enters test play"
     },
   });
   await page.evaluate((title) => {
-    const project = window.__rpgzzuProjectE2E!.currentProject().project;
+    const project = window.__oprnProjectE2E!.currentProject().project;
     const mapId = project.startMapId;
     const event = project.maps[mapId]!.events.find((candidate) => candidate.pages.some((eventPage) => eventPage.name === title));
     if (!event) throw new Error("reloaded event missing");
-    window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window", {
+    window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
       detail: { kind: "selected-event", mapId, eventId: event.id },
     }));
   }, TITLE);

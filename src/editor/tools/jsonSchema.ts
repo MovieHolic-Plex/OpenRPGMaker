@@ -28,7 +28,7 @@ function schemaHasType(schema: JsonSchema, type: JsonSchemaType): boolean {
   return Array.isArray(schema.type) ? schema.type.includes(type) : schema.type === type;
 }
 
-const SINGLE_OBJECT_ARRAY_MARK = "__rpgzzuSingleObjectArray";
+const SINGLE_OBJECT_ARRAY_MARK = "__oprnSingleObjectArray";
 
 function shouldWrapSingleObjectAsArray(schema: JsonSchema): boolean {
   return schema.type === "array" && schema.items?.type === "object" && schema.description?.includes("단일 Command object") === true;

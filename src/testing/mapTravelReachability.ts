@@ -117,7 +117,7 @@ function activeTransfers(
  * `from` 에서 `toMapId` 까지 걸어서 갈 수 있는가.
  *
  * 목적지는 **맵 id** 다. 층마다 칩셋이 다르므로 "combined_town 층에서 dungeon 층까지"를
- * 묻는 것과 같다 — 칩셋별로 묻고 싶으면 `mapIdsByTileset` 로 목록을 뽑아 쓰면 된다.
+ * 묻는 것과 같다 — 타일 그림판별로 묻고 싶으면 `mapIdsByTileset` 로 목록을 뽑아 쓰면 된다.
  */
 export function canTravelBetweenMaps(
   project: Project,
@@ -214,7 +214,7 @@ export function canTravelBetweenMaps(
   return { reachable: false, hops: [], visitedMapIds: [...visitedMapIds], unreachableGates };
 }
 
-/** 칩셋 id → 그 칩셋을 쓰는 맵 id 목록. "칩셋 A 에서 칩셋 B 까지"를 물을 때 쓴다. */
+/** 타일 그림판 id → 그 타일 그림판을 쓰는 맵 id 목록. "타일 그림판 A 에서 타일 그림판 B 까지"를 물을 때 쓴다. */
 export function mapIdsByTileset(project: Project): Record<string, string[]> {
   const out: Record<string, string[]> = {};
   for (const map of Object.values(project.maps)) {
@@ -224,7 +224,7 @@ export function mapIdsByTileset(project: Project): Record<string, string[]> {
 }
 
 /**
- * 칩셋 A 를 쓰는 아무 맵에서 칩셋 B 를 쓰는 아무 맵까지 갈 수 있는가.
+ * 타일 그림판 A 를 쓰는 아무 맵에서 타일 그림판 B 를 쓰는 아무 맵까지 갈 수 있는가.
  * 시작 칸은 각 맵에서 **통행 가능하고 실제로 나갈 수 있는** 첫 칸을 자동으로 고른다.
  */
 export function canTravelBetweenTilesets(

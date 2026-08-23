@@ -153589,7 +153589,7 @@
     "startActorIds": [
       "actor_hero"
     ],
-    "titleResourceId": "rpg-zzu-title-field",
+    "titleResourceId": "oprn-title-field",
     "systemResourceId": "windowskin-rm2003",
     "battleSystemResourceId": "easyrpg-system2-system2-c",
     "battleBgmResourceId": "cc0-bgm-battle",
@@ -153622,7 +153622,7 @@
     },
     "titleScreen": {
       "title": "이슬 마을",
-      "backgroundResourceId": "rpg-zzu-title-field",
+      "backgroundResourceId": "oprn-title-field",
       "layout": {
         "titleX": 160,
         "titleY": 92,
@@ -153641,7 +153641,7 @@
       },
       "titleGraphic": {
         "mode": "both",
-        "resourceId": "rpg-zzu-title-logo-crest",
+        "resourceId": "oprn-title-logo-crest",
         "x": 160,
         "y": 42
       },

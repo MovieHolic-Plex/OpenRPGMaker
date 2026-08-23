@@ -9,7 +9,7 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
 page.on("pageerror", (err) => console.log("[pageerror]", String(err).slice(0, 300)));
 
 await page.addInitScript(() => {
-  window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+  window.localStorage.setItem("oprn:editor-ui-mode", "expert");
 });
 await page.goto("http://localhost:9999/?project=rpg-zzu-dungeon-example", { waitUntil: "domcontentloaded" });
 await page.getByTestId("edit-canvas").waitFor({ timeout: 30_000 });
@@ -26,7 +26,7 @@ console.log("new game started on demo map");
 const readState = () =>
   page.evaluate(() => {
     const state = JSON.parse(document.querySelector("[data-testid='runtime-state-json']")?.textContent ?? "{}");
-    const chars = window.__rpgzzuCharacterSprites?.();
+    const chars = window.__oprnCharacterSprites?.();
     const slimes = Object.entries(chars?.events ?? {})
       .filter(([id]) => id.includes("__field_spawn__"))
       .map(([id, s]) => ({ id, tx: Math.floor(s.x / 16), ty: Math.floor(s.y / 16) }));
@@ -48,9 +48,9 @@ const nearest = (s) => {
 };
 
 const stepDir = async (dir) => {
-  await page.evaluate((d) => window.__rpgzzuInput?.dir(d), dir);
+  await page.evaluate((d) => window.__oprnInput?.dir(d), dir);
   await page.waitForTimeout(240);
-  await page.evaluate(() => window.__rpgzzuInput?.dir(null));
+  await page.evaluate(() => window.__oprnInput?.dir(null));
   await page.waitForTimeout(120);
 };
 
@@ -67,12 +67,12 @@ console.log("adjacent to:", JSON.stringify(target), "player:", JSON.stringify(st
 const faceDir = target
   ? target.tx > st.player.x ? "right" : target.tx < st.player.x ? "left" : target.ty > st.player.y ? "down" : "up"
   : "down";
-await page.evaluate((d) => window.__rpgzzuInput?.dir(d), faceDir);
+await page.evaluate((d) => window.__oprnInput?.dir(d), faceDir);
 await page.waitForTimeout(300);
-await page.evaluate(() => window.__rpgzzuInput?.dir(null));
+await page.evaluate(() => window.__oprnInput?.dir(null));
 
 const attack = async () => {
-  await page.evaluate(() => window.__rpgzzuInput?.attack());
+  await page.evaluate(() => window.__oprnInput?.attack());
   await page.waitForTimeout(400);
 };
 
@@ -87,9 +87,9 @@ console.log("shot 03: enemy HP bar persists");
 let killed = false;
 const reface = async (t, p) => {
   const d = t.tx > p.x ? "right" : t.tx < p.x ? "left" : t.ty > p.y ? "down" : "up";
-  await page.evaluate((dir) => window.__rpgzzuInput?.dir(dir), d);
+  await page.evaluate((dir) => window.__oprnInput?.dir(dir), d);
   await page.waitForTimeout(300);
-  await page.evaluate(() => window.__rpgzzuInput?.dir(null));
+  await page.evaluate(() => window.__oprnInput?.dir(null));
 };
 for (let round = 0; round < 24 && !killed; round += 1) {
   st = await readState();

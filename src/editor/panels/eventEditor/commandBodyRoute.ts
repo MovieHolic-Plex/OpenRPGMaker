@@ -322,7 +322,7 @@ export function moveEventBody(context: CommandEditContext, cmd: Extract<Command,
     el("p", {
       class: "move-route-help",
       dataset: { testid: "move-route-help" },
-      text: "오른쪽 명령 버튼으로 경로를 쌓습니다. 왼쪽 목록에서 선택·삭제, 아래 격자에 궤적이 그려집니다. (RM2003 이동 경로와 동일한 명령 세트)",
+      text: "오른쪽 명령 버튼으로 경로를 쌓습니다. 왼쪽 목록에서 선택·삭제, 아래 격자에 궤적이 그려집니다.",
     }),
     el("div", {
       class: "move-route-main",

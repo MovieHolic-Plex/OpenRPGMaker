@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { writePng } from "./lib/pixelPng.mjs";
 
-const TARGET = "public/assets/ui/windowskin-rm2003.png";
+const TARGET = "public/assets/ui/windowskin-default.png";
 const WIDTH = 96;
 const HEIGHT = 96;
 

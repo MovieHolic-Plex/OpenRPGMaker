@@ -127,7 +127,7 @@ describe("classic toolbar actions", () => {
     const expand = findByTestId(fake(firstHost), "editor-canvas-toolbar-expand");
 
     expand?.click();
-    expect(localStorage.getItem("rpg-zzu:canvas-toolbar-expanded")).toBe("1");
+    expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("1");
     expect(expand?.getAttribute("aria-expanded")).toBe("true");
 
     const secondHost = document.createElement("div");
@@ -137,18 +137,23 @@ describe("classic toolbar actions", () => {
     expect(secondExpand?.getAttribute("aria-expanded")).toBe("true");
 
     secondExpand?.click();
-    expect(localStorage.getItem("rpg-zzu:canvas-toolbar-expanded")).toBe("0");
+    expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("0");
   });
 
-  it("places the standard-only more-tools menu immediately after the mode toggle", () => {
+  // 3단 모드 토글이 작업 프리셋 세그먼트로 대체되었다 — more-tools 는 그 워크스페이스
+  // 컨트롤 묶음 **뒤에** 붙는다(⌘K 칩이 묶음의 마지막).
+  it("places the standard-only more-tools menu right after the workspace controls", () => {
     resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
-    const menuBar = findByTestId(fake(topbar), "rm2k3-menu-bar");
-    const toggleIndex = menuBar?.children.findIndex((child) => child.dataset.testid === "editor-ui-mode-toggle") ?? -1;
-    expect(menuBar?.children[toggleIndex + 1]?.dataset.testid).toBe("standard-more-tools");
-    expect(menuBar?.children[toggleIndex + 2]?.dataset.testid).toBe("standard-more-tools-menu");
+    const menuBar = findByTestId(fake(topbar), "oprn-menu-bar");
+    const ids = menuBar?.children.map((child) => child.dataset.testid) ?? [];
+    expect(ids).not.toContain("editor-ui-mode-toggle");
+    const chipIndex = ids.indexOf("workspace-command-palette-button");
+    expect(chipIndex).toBeGreaterThan(ids.indexOf("workspace-preset-toggle"));
+    expect(ids[chipIndex + 1]).toBe("standard-more-tools");
+    expect(ids[chipIndex + 2]).toBe("standard-more-tools-menu");
 
     const button = findByTestId(fake(topbar), "standard-more-tools");
     const menu = findByTestId(fake(topbar), "standard-more-tools-menu");

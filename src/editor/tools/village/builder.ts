@@ -122,7 +122,7 @@ export function buildVillageDomain(
   if (!tilesetForMap || !isCombinedTownTileset(tilesetForMap)) {
     throw new ToolError(
       `build_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
-        "다른 칩셋에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
+        "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
       { code: "village-tileset-mismatch", mapId },
     );
   }
@@ -222,7 +222,7 @@ export function buildVillageDomain(
   // 상점 클러스터(2026-07-17, 리서치: 상점=대로 접면+간판): 광장 게이트에 가장 가까운
   // 집 2채를 무기점/잡화점으로, 3순위는 여관으로 지정한다(내부 프로그램 + 간판은 decor).
   assignShopPrograms(houses, plaza, warnings);
-  // 여관 간판: retro House 칩셋의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
+  // 여관 간판: retro House 타일 그림판의 INN 간판(443)을 밴 슬롯 443에 이식 — 번호 그대로 재활용.
   ensureInnSignGraft(draft, map.tilesetId);
 
   // E 지형 패스: 마스크의 water/forest를 fill_region·place_props로 채움 (솔버 교체 포인트)

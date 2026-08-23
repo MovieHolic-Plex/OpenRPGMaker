@@ -78,7 +78,7 @@ test("7개 층이 각각 그려지고 서로 다르게 보인다", async ({ brow
       project.startPos = { x: region.x, y: region.y };
 
       await page.addInitScript(() => {
-        window.localStorage.setItem("rpg-zzu:editor-ui-mode", "expert");
+        window.localStorage.setItem("oprn:editor-ui-mode", "expert");
       });
       await page.setViewportSize({ width: 1280, height: 900 });
       await seedProjectFromSupabaseCanonical(page, project);

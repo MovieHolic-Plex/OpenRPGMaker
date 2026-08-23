@@ -122,7 +122,7 @@ async function runDesktopScenario(
   const browserIssues: string[] = [];
   await context.addInitScript(({ editorMode, seededProject }) => {
     window.localStorage.clear();
-    window.localStorage.setItem("rpg-zzu:editor-ui-mode", editorMode);
+    window.localStorage.setItem("oprn:editor-ui-mode", editorMode);
     window.__RPG_ZZU_E2E_PROJECT__ = seededProject;
     Object.defineProperty(window, "Audio", {
       configurable: true,
@@ -142,7 +142,7 @@ async function runDesktopScenario(
       if (url === "http://127.0.0.1:17831/v1/browser/hello" || url.startsWith("http://127.0.0.1:17831/v1/browser/next")) {
         return Promise.resolve(new Response("{}", { headers: { "Content-Type": "application/json" }, status: 200 }));
       }
-      if (url === `${window.location.origin}/__rpgzzu/ai-activity`) {
+      if (url === `${window.location.origin}/__oprn/ai-activity`) {
         return Promise.resolve(new Response(null, { status: 204 }));
       }
       if (url.startsWith("http://dbserver:8100/rest/v1/ai_activity_logs") || url.startsWith("http://dbserver:8100/rest/v1/ai_analysis_runs")) {
@@ -242,7 +242,7 @@ function optionalFixtureDescriptions(): readonly string[] {
     "Audio constructor: silent HTMLAudioElement without a source",
     "HTMLMediaElement.play: resolved promise",
     "fetch http://127.0.0.1:17831/v1/browser/{hello,next}: 200 {}",
-    "fetch /__rpgzzu/ai-activity: 204",
+    "fetch /__oprn/ai-activity: 204",
     "fetch dbserver ai_activity_logs: 201 []",
     "fetch dbserver ai_analysis_runs: 201 []",
   ] as const;

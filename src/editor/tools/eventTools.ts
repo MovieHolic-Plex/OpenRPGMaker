@@ -302,7 +302,7 @@ const placeNpc: ToolDefinition = {
     }
     const { x, y } = landing;
     // graphic 생략 시 투명 고스트가 되지 않도록 주민 기본 캐릭터를 쓴다(함정/컷신은 별도 툴).
-    // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 칩셋 몰림을 줄인다.
+    // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 타일 그림판 몰림을 줄인다.
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
     const graphic = resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),

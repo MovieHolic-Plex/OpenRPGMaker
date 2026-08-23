@@ -15,7 +15,7 @@ const FORBIDDEN_ARTIFACT_MARKERS = [
   { label: "editor-ai-module", pattern: /(?:@\/|src\/)ai\/activityLog/iu },
   { label: "editor-module-path", pattern: /src\/editor\//iu },
   { label: "remote-provider", pattern: /(?:openrouter|llm-provider)/iu },
-  { label: "remote-activity-endpoint", pattern: /__rpgzzu\/ai-activity/iu },
+  { label: "remote-activity-endpoint", pattern: /__oprn\/ai-activity/iu },
   { label: "editor-public-env", pattern: /VITE_(?:LLM|SUPABASE|YUNWU)/u },
   { label: "remote-api-endpoint", pattern: /api\.(?:anthropic|openai)\.com/iu },
 ] as const;

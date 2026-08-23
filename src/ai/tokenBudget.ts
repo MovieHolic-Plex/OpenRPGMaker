@@ -31,7 +31,7 @@ export const CALIBRATION_CLAMP_MAX_RATIO = 1.5;
 // 최근 N개 관측 윈도우(중앙값 계산·저장 상한).
 export const CALIBRATION_WINDOW = 12;
 
-export const TOKEN_CALIBRATION_STORAGE_KEY = "rpg-zzu:ai-token-calibration";
+export const TOKEN_CALIBRATION_STORAGE_KEY = "oprn:ai-token-calibration";
 
 export function isValidTokenObservation(value: unknown): value is TokenObservation {
   if (typeof value !== "object" || value === null) return false;

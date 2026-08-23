@@ -114,7 +114,7 @@ function messageWindowMock(
 ): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
   // System.png 전체 시트를 border-image fill 로 쓰면 팔레트/숫자 스트립이 창을 덮는다.
-  // 메시지 프리뷰는 windowskin-rm2003 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
+  // 메시지 프리뷰는 기본 창 스킨 CSS 목업만 사용한다 (상점 프리뷰와 동일 정책).
   const faceClass = face ? " with-face" : "";
   const sideClass = faceRight ? " face-right" : "";
   const speakerName = speaker?.trim() ?? "";
@@ -1156,7 +1156,7 @@ function changeTileStage(cmd: Extract<Command, { kind: "changeTile" }>): HTMLEle
   card.append(
     el("div", {
       class: "ecp-tile-meta",
-      text: `${cmd.layer === "upper" ? "상위" : "하위"} · (${cmd.x}, ${cmd.y})`,
+      text: `${cmd.layer === "upper" ? "덧그림" : "바닥"} · (${cmd.x}, ${cmd.y})`,
     })
   );
   stage.append(card);

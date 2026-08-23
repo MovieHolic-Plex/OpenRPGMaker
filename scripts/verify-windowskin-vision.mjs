@@ -26,7 +26,7 @@ await page.waitForSelector('[data-testid="menu-tools"]', { timeout: 30_000 });
 await page.waitForTimeout(800);
 
 // --- Title + field menu (system graphic) ---
-await page.evaluate(() => window.dispatchEvent(new CustomEvent("rpgzzu:test-play-window")));
+await page.evaluate(() => window.dispatchEvent(new CustomEvent("oprn:test-play-window")));
 await page.waitForSelector('[data-testid="title-screen"]', { timeout: 15_000 });
 await page.screenshot({ path: path.join(outDir, "01-title.png") });
 await page.keyboard.press("Enter");

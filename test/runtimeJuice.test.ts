@@ -4,10 +4,10 @@ import { emitRuntimeJuice, runtimeJuiceLog } from "@/player/runtimeJuice";
 describe("emitRuntimeJuice", () => {
   afterEach(() => {
     const host = globalThis as typeof globalThis & {
-      window?: Window & { __rpgzzuRuntimeJuice?: { log: unknown[] } };
+      window?: Window & { __oprnRuntimeJuice?: { log: unknown[] } };
       Audio?: unknown;
     };
-    if (host.window?.__rpgzzuRuntimeJuice) host.window.__rpgzzuRuntimeJuice.log = [];
+    if (host.window?.__oprnRuntimeJuice) host.window.__oprnRuntimeJuice.log = [];
     Reflect.deleteProperty(host, "Audio");
     vi.restoreAllMocks();
   });
@@ -38,10 +38,10 @@ function installJuiceGlobals(): void {
     play = () => Promise.resolve();
   }
   const host = globalThis as typeof globalThis & {
-    window?: Window & { __rpgzzuRuntimeJuice?: { log: unknown[] }; __rpgzzuJuiceLog?: unknown };
+    window?: Window & { __oprnRuntimeJuice?: { log: unknown[] }; __oprnJuiceLog?: unknown };
     Audio?: unknown;
   };
   host.Audio = FakeAudio;
-  host.window = host.window ?? ({} as Window & { __rpgzzuRuntimeJuice?: { log: unknown[] } });
-  (host.window as { __rpgzzuRuntimeJuice?: { log: unknown[] } }).__rpgzzuRuntimeJuice = { log: [] };
+  host.window = host.window ?? ({} as Window & { __oprnRuntimeJuice?: { log: unknown[] } });
+  (host.window as { __oprnRuntimeJuice?: { log: unknown[] } }).__oprnRuntimeJuice = { log: [] };
 }

@@ -34,8 +34,8 @@ const WEATHER_SEGMENTS = [
 ] as const satisfies readonly SegmentOption<WeatherKind>[];
 
 const LAYER_SEGMENTS = [
-  { value: "lower", key: "lower", label: "하위" },
-  { value: "upper", key: "upper", label: "상위" },
+  { value: "lower", key: "lower", label: "바닥" },
+  { value: "upper", key: "upper", label: "덧그림" },
 ] as const satisfies readonly SegmentOption<"lower" | "upper">[];
 
 const LIGHTING_PRESETS = [

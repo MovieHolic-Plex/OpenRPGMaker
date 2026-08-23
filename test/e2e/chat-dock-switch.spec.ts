@@ -1,8 +1,8 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-const EDITOR_LAYOUT_KEY = "rpg-zzu:editor-layout:v4";
-const PANEL_COLLAPSED_KEY = "rpg-zzu:ai-panel-collapsed";
-const MAP_FIRST_KEY = "rpg-zzu:ai-map-first-collapse-v1";
+const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
+const PANEL_COLLAPSED_KEY = "oprn:ai-panel-collapsed";
+const MAP_FIRST_KEY = "oprn:ai-map-first-collapse-v1";
 
 type Box = NonNullable<Awaited<ReturnType<Locator["boundingBox"]>>>;
 

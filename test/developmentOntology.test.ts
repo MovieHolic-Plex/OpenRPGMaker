@@ -78,7 +78,7 @@ describe("development ontology", () => {
   it("generates readable markdown from the ontology source", () => {
     const markdown = generatedDevelopmentOntologyMarkdown(DEVELOPMENT_ONTOLOGY);
 
-    expect(markdown).toContain("# RPG ZZU Development Ontology");
+    expect(markdown).toContain("# Editor Development Ontology");
     expect(markdown).toContain("## Capabilities");
     expect(markdown).toContain("### EventAuthoring");
     expect(markdown).toContain("src/project/types/events.ts");

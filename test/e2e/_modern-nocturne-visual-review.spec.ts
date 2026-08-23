@@ -18,7 +18,7 @@ type RuntimeState = {
 type Direction = "down" | "left" | "right" | "up";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
 });
 
 test("plays the live Modern Exteriors investigation through its ending", async ({ page }) => {
@@ -31,7 +31,7 @@ test("plays the live Modern Exteriors investigation through its ending", async (
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();
   const editorCanvas = page.getByTestId("edit-canvas").locator("canvas").first();
   await expect(editorCanvas).toBeVisible();
-  await page.waitForFunction(() => typeof (window as unknown as { __rpgzzuEditCamera?: unknown }).__rpgzzuEditCamera === "function", undefined, { timeout: 20_000 });
+  await page.waitForFunction(() => typeof (window as unknown as { __oprnEditCamera?: unknown }).__oprnEditCamera === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(500);
   await page.getByTestId("layer-lower").click();
   const customPalette = page.getByTestId("tile-palette");
@@ -66,8 +66,8 @@ test("plays the live Modern Exteriors investigation through its ending", async (
   // origin 을 지나므로 스펙이 카메라 수학을 재구현하지 않는다 (실측 2026-08-11).
   const witnessPos = await page.evaluate(() => {
     const worldToClient = (window as unknown as {
-      __rpgzzuEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
-    }).__rpgzzuEditWorldToClient;
+      __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
+    }).__oprnEditWorldToClient;
     if (!worldToClient) throw new Error("edit world-to-client hook unavailable");
     return worldToClient(10 * 16 + 8, 8 * 16 + 8);
   });
@@ -157,7 +157,7 @@ async function waitForRuntime(page: Page, consoleLines: readonly string[]): Prom
     const stateVisible = await page.getByTestId("runtime-state-json").isVisible().catch(() => false);
     if (stateVisible) return "ready";
     const bootLog = await page.evaluate(() => {
-      const reader = Reflect.get(window, "__rpgzzuPlayBootLog") as undefined | (() => unknown);
+      const reader = Reflect.get(window, "__oprnPlayBootLog") as undefined | (() => unknown);
       return reader?.();
     });
     const errorVisible = await page.getByText("플레이를 시작하지 못했습니다", { exact: true }).isVisible().catch(() => false);
@@ -180,8 +180,8 @@ async function paletteTileIds(grid: ReturnType<Page["getByTestId"]>): Promise<nu
 async function teleport(page: Page, mapId: string, x: number, y: number, facing: Direction): Promise<void> {
   await page.evaluate(([targetMapId, targetX, targetY]) => {
     const debug = (window as unknown as {
-      __rpgzzuDebug?: { teleport: (id: string, px: number, py: number) => void };
-    }).__rpgzzuDebug;
+      __oprnDebug?: { teleport: (id: string, px: number, py: number) => void };
+    }).__oprnDebug;
     if (!debug) throw new Error("runtime debug hook unavailable");
     debug.teleport(targetMapId, targetX, targetY);
   }, [mapId, x, y] as const);
@@ -194,7 +194,7 @@ async function teleport(page: Page, mapId: string, x: number, y: number, facing:
 
 async function face(page: Page, direction: Direction): Promise<void> {
   await page.evaluate((nextDirection) => {
-    const input = (window as unknown as { __rpgzzuInput?: { face: (value: string) => void } }).__rpgzzuInput;
+    const input = (window as unknown as { __oprnInput?: { face: (value: string) => void } }).__oprnInput;
     if (!input) throw new Error("runtime input hook unavailable");
     input.face(nextDirection);
   }, direction);
@@ -277,8 +277,8 @@ async function winBattle(page: Page, troopId: string): Promise<void> {
   await page.getByTestId("battle-scene").screenshot({ path: `${OUT}/${troopId}-battle.png` });
   await page.evaluate(() => {
     const setVitals = (window as unknown as {
-      __rpgzzuSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
-    }).__rpgzzuSetActorVitals;
+      __oprnSetActorVitals?: (actorId: string, hp: number, mp: number) => void;
+    }).__oprnSetActorVitals;
     if (!setVitals) throw new Error("battle vitals hook unavailable");
     setVitals("actor-1", 9999, 999);
   });

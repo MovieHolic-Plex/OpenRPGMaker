@@ -15,8 +15,8 @@ export type EditorIdentity = {
   agentName?: string;
 };
 
-const SESSION_KEY = "rpg-zzu-editor-session-id";
-const OWNER_LABEL_KEY = "rpg-zzu-editor-owner-label";
+const SESSION_KEY = "oprn:editor-session-id";
+const OWNER_LABEL_KEY = "oprn:editor-owner-label";
 
 export function currentHumanEditorIdentity(): EditorIdentity {
   return {

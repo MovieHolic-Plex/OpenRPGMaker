@@ -1,25 +1,25 @@
 .rm-title-screen {
-  --rm2k3-title-sky-glow: rgba(255, 255, 255, 0.12);
-  --rm2k3-title-vignette: rgba(42, 37, 33, 0.14);
-  --rm2k3-title-window-hi: #4a5a8a;
-  --rm2k3-title-window: #243058;
-  --rm2k3-title-window-deep: #121a34;
-  --rm2k3-title-window-edge: #e8eef8;
-  --rm2k3-title-window-shadow: #0a1020;
-  --rm2k3-title-window-mid: #8aa0c8;
-  --rm2k3-title-highlight: #3a5a9a;
-  --rm2k3-title-highlight-deep: #1e3468;
-  --rm2k3-title-highlight-ring: rgba(255, 255, 255, 0.55);
-  --rm2k3-title-cursor: var(--bg-overlay);
-  --rm2k3-title-ornament: rgba(255, 245, 210, 0.9);
-  --rm2k3-title-ornament-shadow: rgba(60, 48, 32, 0.12);
-  --rm2k3-title-text: var(--bg-overlay);
-  --rm2k3-title-shadow: #101828;
+  --oprn-title-sky-glow: rgba(255, 255, 255, 0.12);
+  --oprn-title-vignette: rgba(42, 37, 33, 0.14);
+  --oprn-title-window-hi: #4a5a8a;
+  --oprn-title-window: #243058;
+  --oprn-title-window-deep: #121a34;
+  --oprn-title-window-edge: #e8eef8;
+  --oprn-title-window-shadow: #0a1020;
+  --oprn-title-window-mid: #8aa0c8;
+  --oprn-title-highlight: #3a5a9a;
+  --oprn-title-highlight-deep: #1e3468;
+  --oprn-title-highlight-ring: rgba(255, 255, 255, 0.55);
+  --oprn-title-cursor: var(--bg-overlay);
+  --oprn-title-ornament: rgba(255, 245, 210, 0.9);
+  --oprn-title-ornament-shadow: rgba(60, 48, 32, 0.12);
+  --oprn-title-text: var(--bg-overlay);
+  --oprn-title-shadow: #101828;
   background-color: #101820;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   font-family: var(--runtime-pixel-font);
   image-rendering: pixelated;
   isolation: isolate;
@@ -47,7 +47,7 @@
   opacity: 0.55;
 }
 .rm-title-screen .rm-title-screen-title {
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   font-size: clamp(48px, 8.4dvh, 82px);
   font-weight: 900;
   left: 50%;
@@ -57,12 +57,12 @@
   max-width: 94%;
   position: absolute;
   text-align: center;
-  -webkit-text-stroke: 1px var(--rm2k3-title-shadow);
+  -webkit-text-stroke: 1px var(--oprn-title-shadow);
   text-shadow:
-    3px 0 0 var(--rm2k3-title-shadow),
-    -3px 0 0 var(--rm2k3-title-shadow),
-    0 3px 0 var(--rm2k3-title-shadow),
-    0 -2px 0 var(--rm2k3-title-shadow),
+    3px 0 0 var(--oprn-title-shadow),
+    -3px 0 0 var(--oprn-title-shadow),
+    0 3px 0 var(--oprn-title-shadow),
+    0 -2px 0 var(--oprn-title-shadow),
     4px 5px 0 rgba(5, 19, 70, 0.62),
     0 0 14px rgba(255, 255, 255, 0.36);
   top: 25%;
@@ -74,12 +74,12 @@
 .rm-title-screen .rm-title-screen-title::before,
 .rm-title-screen .rm-title-screen-title::after {
   background:
-    radial-gradient(circle at 50% 50%, var(--rm2k3-title-ornament) 0 4px, transparent 5px),
-    radial-gradient(circle at calc(50% - 17px) 50%, var(--rm2k3-title-ornament) 0 2px, transparent 3px),
-    radial-gradient(circle at calc(50% + 17px) 50%, var(--rm2k3-title-ornament) 0 2px, transparent 3px),
-    linear-gradient(90deg, transparent 0 2%, var(--rm2k3-title-ornament) 22% 44%, transparent 44% 56%, var(--rm2k3-title-ornament) 56% 78%, transparent 98% 100%);
+    radial-gradient(circle at 50% 50%, var(--oprn-title-ornament) 0 4px, transparent 5px),
+    radial-gradient(circle at calc(50% - 17px) 50%, var(--oprn-title-ornament) 0 2px, transparent 3px),
+    radial-gradient(circle at calc(50% + 17px) 50%, var(--oprn-title-ornament) 0 2px, transparent 3px),
+    linear-gradient(90deg, transparent 0 2%, var(--oprn-title-ornament) 22% 44%, transparent 44% 56%, var(--oprn-title-ornament) 56% 78%, transparent 98% 100%);
   box-shadow:
-    0 2px 0 var(--rm2k3-title-ornament-shadow),
+    0 2px 0 var(--oprn-title-ornament-shadow),
     0 0 10px rgba(6, 24, 92, 0.18);
   content: "";
   height: 4px;
@@ -120,7 +120,7 @@
   background: transparent;
   border: 0;
   border-radius: 0;
-  color: var(--rm2k3-title-text);
+  color: var(--oprn-title-text);
   /* RM2003 title is keyboard-only — no mouse cursor affordance. */
   cursor: default;
   font-family: inherit;
@@ -135,9 +135,9 @@
   position: relative;
   text-align: center;
   text-shadow:
-    2px 0 0 var(--rm2k3-title-window-shadow),
-    -2px 0 0 var(--rm2k3-title-window-shadow),
-    0 2px 0 var(--rm2k3-title-window-shadow),
+    2px 0 0 var(--oprn-title-window-shadow),
+    -2px 0 0 var(--oprn-title-window-shadow),
+    0 2px 0 var(--oprn-title-window-shadow),
     2px 3px 0 rgba(0, 0, 0, 0.58);
   user-select: none;
   white-space: normal;
@@ -145,13 +145,13 @@
 /* Selection is keyboard-driven only — do not highlight on hover. */
 .rm-title-menu-button.selected {
   background: var(--runtime-window-selected-bg);
-  box-shadow: inset 0 0 0 1px var(--rm2k3-title-highlight-ring);
+  box-shadow: inset 0 0 0 1px var(--oprn-title-highlight-ring);
 }
 .rm-title-menu-button:focus-visible {
   background: var(--runtime-window-selected-bg);
   box-shadow:
-    inset 0 0 0 1px var(--rm2k3-title-highlight-ring),
-    0 0 0 2px var(--rm2k3-title-window-edge),
+    inset 0 0 0 1px var(--oprn-title-highlight-ring),
+    0 0 0 2px var(--oprn-title-window-edge),
     0 0 0 4px rgba(6, 26, 79, 0.45);
   outline: none;
 }
@@ -160,12 +160,12 @@
 }
 .rm-title-menu-button.selected::before {
   border-bottom: 10px solid transparent;
-  border-left: 17px solid var(--rm2k3-title-cursor);
+  border-left: 17px solid var(--oprn-title-cursor);
   border-top: 10px solid transparent;
   content: "";
   filter:
-    drop-shadow(2px 0 0 var(--rm2k3-title-window-shadow))
-    drop-shadow(0 2px 0 var(--rm2k3-title-window-shadow));
+    drop-shadow(2px 0 0 var(--oprn-title-window-shadow))
+    drop-shadow(0 2px 0 var(--oprn-title-window-shadow));
   height: 0;
   left: 13px;
   position: absolute;
@@ -193,8 +193,8 @@
   position: absolute;
   text-align: center;
   text-shadow:
-    2px 0 0 var(--rm2k3-title-window-shadow),
-    0 2px 0 var(--rm2k3-title-window-shadow);
+    2px 0 0 var(--oprn-title-window-shadow),
+    0 2px 0 var(--oprn-title-window-shadow);
   transform: translateX(-50%);
   white-space: nowrap;
   z-index: 2;
@@ -261,20 +261,20 @@
   top: 16px;
   z-index: 35;
 }
-.rm2k3-status-menu.main-menu {
-  --rm2k3-logical-width: 320px;
-  --rm2k3-logical-height: 240px;
-  --rm2k3-stage-scale: 2;
-  --rm2k3-menu-row-height: 15px;
-  --rm2k3-status-window-hi: var(--rm2k3-title-window-hi, #356fd4);
-  --rm2k3-status-window: var(--rm2k3-title-window, #123c9a);
-  --rm2k3-status-window-deep: var(--rm2k3-title-window-deep, #071e68);
-  --rm2k3-status-edge: var(--rm2k3-title-window-edge, #f5fbff);
-  --rm2k3-status-shadow: var(--rm2k3-title-window-shadow, #061038);
-  --rm2k3-status-mid: var(--rm2k3-title-window-mid, #7da7ff);
-  --rm2k3-status-highlight: var(--rm2k3-title-highlight, #397ddd);
-  --rm2k3-status-highlight-deep: var(--rm2k3-title-highlight-deep, #1b54bd);
-  --rm2k3-status-text: var(--rm2k3-title-text, var(--bg-overlay));
+.oprn-status-menu.main-menu {
+  --oprn-logical-width: 320px;
+  --oprn-logical-height: 240px;
+  --oprn-stage-scale: 2;
+  --oprn-menu-row-height: 15px;
+  --oprn-status-window-hi: var(--oprn-title-window-hi, #356fd4);
+  --oprn-status-window: var(--oprn-title-window, #123c9a);
+  --oprn-status-window-deep: var(--oprn-title-window-deep, #071e68);
+  --oprn-status-edge: var(--oprn-title-window-edge, #f5fbff);
+  --oprn-status-shadow: var(--oprn-title-window-shadow, #061038);
+  --oprn-status-mid: var(--oprn-title-window-mid, #7da7ff);
+  --oprn-status-highlight: var(--oprn-title-highlight, #397ddd);
+  --oprn-status-highlight-deep: var(--oprn-title-highlight-deep, #1b54bd);
+  --oprn-status-text: var(--oprn-title-text, var(--bg-overlay));
   background: var(--runtime-window-fill-fallback);
   border: var(--runtime-window-border) solid transparent;
   border-image-repeat: stretch;
