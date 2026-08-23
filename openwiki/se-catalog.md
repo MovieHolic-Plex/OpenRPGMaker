@@ -45,6 +45,11 @@ This catalog is 456 CC0 sounds across 12 slot categories with Korean titles and 
 | `scripts/se/place-se-assets.py` | Staging → `public/assets/se/`, applies the exclusion rules, writes `placed.json`. |
 | `scripts/se/build-se-labels.py` | `placed.json` → `labels.json` + the audition page. |
 | `scripts/se/build-se-catalog.py` | `labels.json` → the two generated TS files. |
+| `scripts/se/decode-se-pcm.mjs` | Chromium `decodeAudioData` → `dist/se-staging/pcm/*.wav` (mono 22050 PCM16). |
+| `scripts/se/analyze-se-audio.py` | PCM → spectrogram contact sheets + `audio-features.json`. `--blind` renders tile numbers only. |
+| `scripts/se/cross-check-se.py` | My measurements vs two external sheet readings → `cross-check.json` + the audition page's priority list. |
+| `scripts/se/run-reviewers.sh` + `reviewer-prompt.txt` | Sends every blind sheet to codex and agy, caching one file per sheet under `dist/se-staging/review/`. |
+| `scripts/se/accepted-contours.json` | **Generated but tracked.** id → `상승`/`하강` for the 94 sounds whose direction survived the cross-check. `build-se-labels.py` reads it, so jingle titles stay reproducible from the repo alone after `dist/` is wiped. |
 | `test/seCatalog.test.ts` | Guards count, id/path uniqueness, file existence, resolver output, id registration, category order, Korean search. |
 
 Do **not** hand-edit the two generated files. Re-run the scripts.
@@ -94,6 +99,76 @@ If that sort is removed, group headers appear in file order and repeat.
 | 환경 · 폴리 | 84 |
 | 징글 (ME) | 85 |
 
+## Triple cross-check: which sounds actually need human ears
+
+The labels below can be wrong about the real sound, and nobody will audition 456 files for fun. This
+is how the list gets cut to something a human actually listens to.
+
+Three independent readings of the same audio:
+
+1. **My signal processing** — `analyze-se-audio.py` (autocorrelation f0 contour, spectral-flux onset
+   count, spectral flatness).
+2. **codex** (GPT family) reading the spectrogram sheets.
+3. **agy** (Antigravity CLI, Gemini family) reading the same sheets.
+
+The sheets handed to the reviewers are **blind** (`--blind`): each tile carries a two-digit number
+and nothing else. The labeled sheets print my own measurements under every tile, so handing those
+over lets a reviewer transcribe my answer instead of reading the picture — that is not an
+independent check.
+
+```sh
+node scripts/se/decode-se-pcm.mjs
+python scripts/se/analyze-se-audio.py --blind      # blind-sheet-*.png + blind-sheet-map.json
+bash scripts/se/run-reviewers.sh 6                  # review/{codex,agy}-<n>.txt (재실행 가능)
+python scripts/se/cross-check-se.py                # cross-check.json
+python scripts/se/build-se-labels.py               # audition.html 맨 위에 우선 검수 섹션
+```
+
+### What it measured (2026-08-23, all 456, both reviewers covering all 16 sheets)
+
+| Axis | My rule vs a reviewer | Reviewer vs reviewer |
+| --- | --- | --- |
+| Pitch direction | 61% | 82% |
+| Onset count (±1) | 69% | 81% |
+| Tonal vs noisy | 54% | 70% |
+
+The two reviewers agree with each other far more than either agrees with me. That asymmetry is the
+useful signal, and it exposed two real defects in my detector:
+
+- **Onset count missed the first attack.** `np.diff` only sees frame-to-frame change, so a one-shot
+  whose attack sits in frame 0 scored **0 events** — 87 of 456, and both reviewers saw ≥1 in every
+  single one. Fixed by padding the flux with silence at both ends; exact agreement with the reviewer
+  consensus went 24% → 43%.
+- **Direction was claimed far too often.** The old rule called anything past ±1.5 semitones
+  rising/falling, which put a direction on 282 of 456 — most of it invisible to either reviewer. A
+  direction now needs **|drift| ≥ 3 semitones and voiced ratio ≥ 0.8**; smaller measured drifts
+  become `미세상승`/`미세하강`. Agreement 48% → 65%, sign conflicts 36 → 20. The measured semitone
+  value is unchanged — only the word it earns.
+
+Tonal/noisy stayed at 54% and was **not** tuned. Spectral flatness and "does it look harmonic" are
+not the same question, and fitting the threshold to two pairs of eyes would only launder a guess.
+
+### The output
+
+`cross-check.json` holds per-sound records (`mine` / `codex` / `agy`, `hard`, `soft`, `odd`,
+`verdict`, `audition`) plus summary counts. `audition: true` — **75 of 456** — is the only field the
+audition page consumes: the sounds where the direction claim is genuinely contested (sign flip
+against a reviewer, or a large drift both reviewers say isn't there). Onset and timbre mismatches are
+threshold calibration, not listening work, so they stay out of that list and appear as badges only.
+
+`build-se-labels.py` picks the file up when it exists and puts a **우선 검수** section at the top of
+`audition.html` with a "불일치만" filter. Without the file the page renders exactly as before — the
+cross-check is an optional step, not a dependency.
+
+### Traps
+
+- **agy tries to run python on the PNG instead of looking at it.** Headless mode cannot prompt for
+  the command permission, so the run dies with no output (6 of 16 sheets on the first pass). The
+  prompt must forbid tool use outright; `run-reviewers.sh` does.- **codex prints the answer table twice.** Both copies were identical; the parser keeps the last
+  occurrence per tile.
+- Reviewer results are cached per file, so re-running `run-reviewers.sh` only fills gaps. Delete a
+  `review/*.txt` to force that sheet to be re-read.
+
 ## The labels are provisional — and why
 
 Labels were derived from **the original file name, the source pack's own folder taxonomy, and
@@ -103,8 +178,13 @@ cannot hear audio, so no timbre adjectives were invented.
 Two consequences:
 
 - `kenney-jingles` file names are pure numbers (`jingles_NES00`). The folder gives the timbre
-  (8-bit / hit / pizzicato / sax / steel) and that is all the label claims. **Which jingle is
-  victory vs. defeat vs. level-up has to be assigned by ear.**
+  (8-bit / hit / pizzicato / sax / steel), and the **pitch direction** now comes from the cross-check:
+  33 of the 85 jingles carry `(상승)` or `(하강)` in the title plus `상승`/`올라가는` search tags. The
+  other 52 stay bare — 18 because the readers contested the direction, 34 because there is no
+  direction to claim. **Which jingle is victory vs. defeat vs. level-up still has to be assigned by
+  ear**: a rising contour is a fact about the sound, not a decision about what it means in a game.
+  Only jingles take the suffix — elsewhere the file name already carries the meaning (`door_open`,
+  `coin`) and a direction would just lengthen the label.
 - Any label may be wrong about the actual sound.
 
 `build-se-labels.py` therefore also writes `dist/se-staging/audition.html` — all 456 playable in one

@@ -107,4 +107,28 @@ describe("CC0 효과음 카탈로그", () => {
       expect(hits.some((h) => h.id.startsWith("se:cc0-se-"))).toBe(true);
     }
   });
+  // 징글 이름은 원본이 숫자뿐이다(`jingles_NES12`). 음향 방향은 삼중 검산을 통과해
+  // `scripts/se/accepted-contours.json` 에 남은 것만 제목에 달린다 — 그 배선이 사라지면
+  // 징글은 다시 "8비트 징글 04" 가 되어 상승/하강을 구분할 수단이 없어진다.
+  it("징글은 삼중 검산으로 확정된 음향 방향을 제목·태그로 가진다", () => {
+    const jingles = SE_CATALOG.filter((e) => e.category === "징글 (ME)");
+    const directed = jingles.filter((e) => e.tags.includes("상승") || e.tags.includes("하강"));
+    expect(directed.length).toBeGreaterThan(20);
+    for (const e of directed) {
+      const dir = e.tags.includes("상승") ? "상승" : "하강";
+      expect(e.title).toContain(`(${dir})`);
+      expect(e.tags).toContain(dir === "상승" ? "올라가는" : "내려가는");
+    }
+    // 방향이 확정되지 않은 징글에는 방향 어휘를 달지 않는다(추정 금지).
+    for (const e of jingles.filter((x) => !directed.includes(x))) {
+      expect(e.title).not.toMatch(/\((상승|하강)\)/);
+    }
+    for (const dir of ["상승", "하강"]) {
+      const hits = searchResources("se", dir);
+      expect(
+        hits.some((h) => h.id.startsWith("se:cc0-se-kjg-")),
+        `"${dir}" 검색에 징글 없음`,
+      ).toBe(true);
+    }
+  });
 });

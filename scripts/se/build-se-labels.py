@@ -155,6 +155,14 @@ PACK_SOURCE = {
 data = json.load(open(os.path.join(HERE, 'placed.json'), encoding='utf-8'))
 placed = data['placed']
 
+# 삼중 검산을 통과한 음향 방향(상승/하강). 징글 이름은 원본이 숫자뿐이라(`jingles_NES12`)
+# 파일명에서 얻을 것이 없다 — 음이 오르는지 내리는지가 쓸 수 있는 사실상 유일한 정보다.
+# 이 파일은 러포에 추적된다(`cross-check-se.py` 가 생성) — `dist/` 가 버려지도 제목은 같다.
+CONTOURS = {}
+_cp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'accepted-contours.json')
+if os.path.exists(_cp):
+    CONTOURS = json.load(open(_cp, encoding='utf-8'))['contours']
+
 labeled, unmatched = [], []
 for p in placed:
     key = p['path'][len('assets/se/'):]
@@ -166,13 +174,21 @@ for p in placed:
         variant = m.group(1) if m.groups() and m.group(1) else ''
         num = int(variant) if variant.isdigit() else None
         title = base if num is None else '%s %02d' % (base, num)
+        extra = []
+        # 징글만 방향을 제목에 받는다. 다른 범주는 파일명이 이미 의미를 주므로(door_open,
+        # coin) 방향을 달면 제목이 길어지기만 한다. 승리/실패/레벌업 같은 용도 판단은
+        # 여전히 사람 몰이다 — 그림으로 간 것은 음이 오르느냐지 기분이 아니다.
+        if cat == JINGLE and CONTOURS.get(p['id']) in ('상승', '하강'):
+            d = CONTOURS[p['id']]
+            title = '%s (%s)' % (title, d)
+            extra = [d, '올라가는' if d == '상승' else '내려가는']
         labeled.append(dict(
             id=p['id'], path=p['path'], category=cat, title=title, baseName=base,
             variant=num, seconds=p['seconds'], bytes=p['bytes'], sha256=p['sha256'],
             codec=p['codec'], sampleRate=p['sampleRate'], channels=p['channels'],
             peak=p['peak'], rms=p['rms'],
             sourceName=PACK_SOURCE[p['sourcePack']], sourceRel=p['sourceRel'],
-            tags=sorted(set(['se', 'cc0'] + tags + [p['stem'].lower()])),
+            tags=sorted(set(['se', 'cc0'] + tags + extra + [p['stem'].lower()])),
         ))
         break
     else:
@@ -197,24 +213,65 @@ if unmatched:
         print('   ' + u)
 
 # ── 감독 청취용 오디션 페이지 ─────────────────────────────────────────────
+# 삼중 검산 결과가 있으면 불일치 항목을 맨 위 '우선 검수' 로 올린다. 감독이 456개를 전부
+# 들을 필요 없이 셋(내 측정 / codex / agy)이 어긋난 것만 듣게 하는 것이 목적이다.
+# 없으면 페이지는 예전과 동일하게 렌더된다(cross-check-se.py 는 선택 단계다).
+cross = {}
+_cc = os.path.join(HERE, 'cross-check.json')
+if os.path.exists(_cc):
+    _data = json.load(open(_cc, encoding='utf-8'))
+    cross = {r['id']: r for r in _data['rows'] if r['audition']}
+
+FLAG_KO = {'dir-flip': '방향 뒤바뀜', 'dir-weak-big': '방향 큼', 'dir-weak': '방향 작음',
+           'onsets': '음 개수', 'timbre': '음색'}
+
+
+def badge(rid):
+    r = cross.get(rid)
+    if not r:
+        return ''
+    flags = '·'.join(FLAG_KO.get(k, k) for k in r['hard'] + r['soft'])
+    cls = 'bg hard' if r['hard'] else 'bg'
+    return '<span class="%s">%s</span>' % (cls, html.escape(flags))
+
+
+def audio_row(x):
+    return ('<tr data-id="%s"%s>'
+            '<td><button onclick="p(this)" data-src="%s%s">▶</button></td>'
+            '<td class="t">%s%s</td><td class="n">%.2fs</td>'
+            '<td class="f">%s</td><td class="s">%s</td>'
+            '<td><input placeholder="고칠 라벨 / 슬롯"></td></tr>'
+            % (html.escape(x['id']), ' data-flag="1"' if x['id'] in cross else '',
+               AUDIO_PREFIX, html.escape(x['path']),
+               html.escape(x['title']), badge(x['id']), x['seconds'],
+               html.escape(x['sourceRel']), html.escape(x['sourceName'])))
+
+
+HEAD_HTML = '<tr><th></th><th>제안 라벨</th><th>길이</th><th>원본 파일</th><th>출처</th><th>메모</th></tr>'
+
 rows_html = []
+if cross:
+    flagged = sorted([x for x in labeled if x['id'] in cross],
+                     key=lambda x: (-cross[x['id']]['priority'], x['title']))
+    rows_html.append('<h2>우선 검수 — 삼중 검산 불일치 <small>%d개</small></h2>'
+                     '<p class="hint">내 스펙트로그램 측정과 계열이 다른 검토자 둘(codex·agy)의 판독이 '
+                     '<b>방향에서</b> 어긋난 항목만 골랐다 — 징글의 승리/실패가 갈리는 지점이다. '
+                     '배지에 함게 보이는 음색·음 개수는 참고 정보다(그 두 축은 임계값 보정 문제라 '
+                     '침취 사안으로 삼지 않았다 — cross-check.json 집계 항목 참고).</p>'
+                     '<table>' % len(flagged))
+    rows_html.append(HEAD_HTML)
+    for x in flagged:
+        rows_html.append(audio_row(x))
+    rows_html.append('</table>')
 for c in CAT_ORDER:
     rs = sorted([x for x in labeled if x['category'] == c],
                 key=lambda x: (x['baseName'], x['variant'] if x['variant'] is not None else -1))
     if not rs:
         continue
     rows_html.append('<h2>%s <small>%d개</small></h2><table>' % (html.escape(c), len(rs)))
-    rows_html.append('<tr><th></th><th>제안 라벨</th><th>길이</th><th>원본 파일</th><th>출처</th><th>메모</th></tr>')
+    rows_html.append(HEAD_HTML)
     for x in rs:
-        rows_html.append(
-            '<tr data-id="%s">'
-            '<td><button onclick="p(this)" data-src="%s%s">▶</button></td>'
-            '<td class="t">%s</td><td class="n">%.2fs</td>'
-            '<td class="f">%s</td><td class="s">%s</td>'
-            '<td><input placeholder="고칠 라벨 / 슬롯"></td></tr>'
-            % (html.escape(x['id']), AUDIO_PREFIX, html.escape(x['path']),
-               html.escape(x['title']), x['seconds'],
-               html.escape(x['sourceRel']), html.escape(x['sourceName'])))
+        rows_html.append(audio_row(x))
     rows_html.append('</table>')
 
 page = """<!doctype html><meta charset="utf-8"><title>CC0 SE 오디션 — 456개</title>
@@ -232,12 +289,16 @@ page = """<!doctype html><meta charset="utf-8"><title>CC0 SE 오디션 — 456�
  .note{background:#1a1e27;border-left:3px solid #f59e0b;padding:10px 14px;margin:16px 0;color:#d1d5db}
  .bar{position:sticky;top:0;background:#12141a;padding:10px 0;border-bottom:1px solid #2a2f3a;z-index:9}
  #q{width:320px}
+ .bg{margin-left:8px;background:#374151;color:#d1d5db;border-radius:3px;padding:1px 6px;font-size:11px;font-weight:500}
+ .bg.hard{background:#7c2d12;color:#fed7aa}
+ .hint{color:#9aa4b2;margin:4px 0 10px;font-size:13px}
 </style>
 <h1>CC0 효과음 오디션 — 456개</h1>
 <div class="note"><b>라벨은 제안이다.</b> 파일명 의미 + 원본 팩 분류 + 측정한 길이만 근거로 붙였다
  (AI 는 소리를 못 듣는다). 실제 소리와 안 맞는 건 오른쪽 메모 칸에 고쳐 적어라 —
  그 내용으로 카탈로그를 재생성한다. 슬롯 배정(커서/결정/취소/레벨업 등)도 여기 적으면 된다.</div>
 <div class="bar">검색 <input id="q" placeholder="라벨·파일명으로 필터" oninput="flt()">
+ <label style="margin-left:10px"><input type="checkbox" id="only" style="width:auto" onchange="flt()"> 불일치만</label>
  <button onclick="dump()" style="width:auto;padding:0 10px">메모 내보내기</button></div>
 %s
 <script>
@@ -246,11 +307,15 @@ function p(b){ if(cur){cur.pause();} if(curBtn)curBtn.classList.remove('on');
  cur=new Audio(b.dataset.src); curBtn=b; b.classList.add('on');
  cur.onended=()=>b.classList.remove('on'); cur.play().catch(e=>{b.textContent='!';}); }
 function flt(){ const q=document.getElementById('q').value.toLowerCase();
+ const only=document.getElementById('only').checked;
  document.querySelectorAll('tr[data-id]').forEach(tr=>{
-  tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none'; }); }
-function dump(){ const out=[];
+  const hit = tr.textContent.toLowerCase().includes(q) && (!only || tr.dataset.flag==='1');
+  tr.style.display = hit ? '' : 'none'; }); }
+function dump(){ const seen=new Map();
+ // 우선 검수 섹션은 같은 항목을 한 번 더 보여준다 — id 기준으로 접어 내보낸다.
  document.querySelectorAll('tr[data-id]').forEach(tr=>{ const v=tr.querySelector('input').value.trim();
-  if(v) out.push({id:tr.dataset.id, was:tr.querySelector('.t').textContent, fix:v}); });
+  if(v) seen.set(tr.dataset.id, {id:tr.dataset.id, was:tr.querySelector('.t').textContent, fix:v}); });
+ const out=[...seen.values()];
  const t=JSON.stringify(out,null,1); navigator.clipboard.writeText(t);
  alert(out.length+'건 클립보드에 복사했다.\\n\\n'+t.slice(0,600)); }
 </script>

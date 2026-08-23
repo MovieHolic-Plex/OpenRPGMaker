@@ -65,8 +65,16 @@ def frame_f0(frame, rate, fmin=70.0, fmax=1600.0):
 
 
 def onset_count(mag):
-    """스펙트럼 플럭스 피크 = 음 이벤트 개수. 몇 음짜리 징글인지 알려준다."""
+    """스펙트럼 플럭스 피크 = 음 이벤트 개수. 몇 음짜리 징글인지 알려준다.
+
+    첫 프레임은 반드시 포함해야 한다. `diff` 는 프레임 사이 변화만 보므로 '무음에서 첫 어택이
+    솟은' 상승이 아예 들어오지 않았고, 그 때문에 원샷 효과음이 '음 0개'로 집혔다 — 456개 중
+    87개가 그랬고, 계열이 다른 독립 검토자 둘(codex·agy)은 그 87개 전부에 1개 이상을 봤다
+    (2026-08-23 삼중 검산 실측). 고친 뒤 합의값과의 정확일치가 24% → 43% 로 올랐다.
+    """
     flux = np.maximum(0, np.diff(mag, axis=0)).sum(axis=1)
+    # 앞뒤를 무음으로 패딩해 첫 어택과 마지막 어택도 내부 피크로 잡힌다.
+    flux = np.concatenate(([0.0, float(mag[0].sum())], flux, [0.0]))
     if len(flux) < 3 or flux.max() <= 0:
         return 0
     f = flux / flux.max()
@@ -117,6 +125,20 @@ def features(x, rate):
     flatness = float(np.exp(np.log(ref).mean()) / ref.mean())
     env = np.abs(x)
     attack = float(np.argmax(env) / rate) if len(env) else 0.0
+    # 궤적 방향을 단언하는 건 **큰 변화폭 + 거의 전 구간 유성** 일 때만이다. ±1.5반음만 넘으면
+    # 바로 '상승/하강'이라 부르던 예전 기준은 456개 중 282개에 방향을 부여했고, 계열이 다른
+    # 독립 검토자 두 명(codex·agy)이 서로 합의한 367개 기준으로 일치율이 48% 밖에 안 됐다.
+    # 그림으로 보이지 않는 방향은 사람 귀에도 잡힐 리 없다 — 작은 변화폭은 '미세…' 로 낮추고
+    # 잡음성 프레임이 많으면(f0 추적이 믿기 어려우면) 방향을 주장하지 않는다.
+    # 이 기준으로 합의 일치율 65%, 부호 뒤바뀜 36→20개. 부호·변화폭 수치 자체는 그대로 남긴다.
+    if voiced_ratio < 0.25:
+        contour = '무피치'
+    elif abs(semitones) >= 3.0 and voiced_ratio >= 0.8:
+        contour = '상승' if semitones > 0 else '하강'
+    elif abs(semitones) >= 1.5 and voiced_ratio >= 0.5:
+        contour = '미세상승' if semitones > 0 else '미세하강'
+    else:
+        contour = '평탄'
     # 장/단조(조성) 판별은 **의도적으로 넣지 않았다.** Krumhansl-Schmuckler 크로마 상관으로
     # 시도했으나 이 자산에서는 성립하지 않는다(2026-08-21 실측): 징글이 1~6음뿐이라 12음
     # 분포라는 전제가 없고, 사각파 배음이 피치클래스로 접혀 음 1개짜리 클립이 "장조 A" 로
@@ -129,9 +151,7 @@ def features(x, rate):
         centroidHz=round(float(np.median(centroid[idx])), 1),
         startHz=round(start_hz, 1), endHz=round(end_hz, 1),
         contourSemitones=round(semitones, 2),
-        contour=('무피치' if voiced_ratio < 0.25
-                 else '상승' if semitones > 1.5
-                 else '하강' if semitones < -1.5 else '평탄'),
+        contour=contour,
         voicedRatio=round(voiced_ratio, 2),
         flatness=round(flatness, 4),
         tonal=bool(flatness < 0.25),
@@ -183,7 +203,13 @@ def main():
     ap.add_argument('--filter', default='')
     ap.add_argument('--cols', type=int, default=5)
     ap.add_argument('--rows', type=int, default=6)
+    # --blind: 타일 밑에 내 측정값을 찍지 않고 번호만 찍는다. 시트를 외부 검토자(codex/agy)에게
+    # 읽히는 삼중 검산에서 필수다 — 측정값이 보이면 검토자가 그림 대신 글씨를 읽어 독립
+    # 판정이 아니게 된다(2026-08-21 codex 1차 판독에서 실제로 의심된 오염 경로).
+    ap.add_argument('--blind', action='store_true')
+    ap.add_argument('--prefix', default='')
     args = ap.parse_args()
+    prefix = args.prefix or ('blind-sheet' if args.blind else 'audio-sheet')
     staging = os.path.abspath(args.staging)
     pcm_dir = os.path.join(staging, 'pcm')
 
@@ -214,6 +240,7 @@ def main():
 
     per = args.cols * args.rows
     sheets = 0
+    blind_map = {}
     for s in range(0, len(tiles), per):
         chunk = tiles[s:s + per]
         cw, ch = TILE_W + PAD, TILE_H + LABEL_H + PAD
@@ -223,25 +250,38 @@ def main():
         for k, (rid, f, img) in enumerate(chunk):
             cx, cy = PAD + (k % args.cols) * cw, PAD + (k // args.cols) * ch
             sheet.paste(img, (cx, cy))
+            if args.blind:
+                code = '%02d' % (k + 1)
+                blind_map.setdefault('%s-%d.png' % (prefix, sheets + 1), {})[code] = rid
+                dr.text((cx + 2, cy + TILE_H + 4), code, fill=(235, 240, 250))
+                continue
             # PIL 기본 폰트에 한글 글리프가 없다 — 이미지 위 텍스트는 ASCII 로만 쓴다
             # (1차 시도에서 궤적 단어가 빈칸으로 렌더됐다). 한글 제목은 features JSON 에 있다.
             short = rid.replace('cc0-se-', '').replace('-jingles-jingles-', '-')
             dr.text((cx + 2, cy + TILE_H + 2), short[:38], fill=(210, 215, 225))
-            arrow = {'상승': 'UP', '하강': 'DOWN', '평탄': 'FLAT', '무피치': 'unpitched'}[f['contour']]
+            arrow = {'상승': 'UP', '하강': 'DOWN', '미세상승': 'up?', '미세하강': 'down?',
+                     '평탄': 'FLAT', '무피치': 'unpitched'}[f['contour']]
             dr.text((cx + 2, cy + TILE_H + 13),
                     '%-9s %+5.1fst %5.0fHz %.2fs %s' % (arrow, f['contourSemitones'],
                                                         f['centroidHz'], f['seconds'],
                                                         'tonal' if f['tonal'] else 'noisy'),
                     fill=(150, 160, 180))
-        out = os.path.join(staging, 'audio-sheet-%d.png' % (sheets + 1))
+        out = os.path.join(staging, '%s-%d.png' % (prefix, sheets + 1))
         sheet.save(out)
         sheets += 1
         print('  %s  (%d개)' % (os.path.relpath(out, REPO).replace(os.sep, '/'), len(chunk)))
 
+    if args.blind:
+        mp = os.path.join(staging, '%s-map.json' % prefix)
+        json.dump(blind_map, open(mp, 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
+        print('  %s' % os.path.relpath(mp, REPO).replace(os.sep, '/'))
+
     print('\n%d개 분석 / 시트 %d장' % (len(feats), sheets))
     up = sum(1 for f in feats.values() if f['contour'] == '상승')
     dn = sum(1 for f in feats.values() if f['contour'] == '하강')
-    print('  궤적: 상승 %d / 하강 %d / 평탄 %d' % (up, dn, len(feats) - up - dn))
+    weak = sum(1 for f in feats.values() if f['contour'].startswith('미세'))
+    print('  궤적: 상승 %d / 하강 %d / 미세 %d / 나머지 %d'
+          % (up, dn, weak, len(feats) - up - dn - weak))
     print('  악음 %d / 잡음성 %d' % (sum(1 for f in feats.values() if f['tonal']),
                                    sum(1 for f in feats.values() if not f['tonal'])))
 
