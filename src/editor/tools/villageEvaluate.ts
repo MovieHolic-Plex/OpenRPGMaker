@@ -530,23 +530,41 @@ export function countBroadleaf2x2(map: GameMap): number {
   return n;
 }
 
+type VillageCountArea = Readonly<{ x: number; y: number; w: number; h: number }>;
+
+function countBounds(map: GameMap, area?: VillageCountArea): readonly [x0: number, y0: number, x1: number, y1: number] {
+  return [
+    Math.max(0, area?.x ?? 0),
+    Math.max(0, area?.y ?? 0),
+    Math.min(map.width, area ? area.x + area.w : map.width),
+    Math.min(map.height, area ? area.y + area.h : map.height),
+  ];
+}
+
 /** 타일 실측 수역 카운트 — builder 랜드마크 게이트·평가가 공유하는 정본 측정 (자기신고 아님). */
-export function countWaterCells(map: GameMap): number {
+export function countWaterCells(map: GameMap, area?: VillageCountArea): number {
+  const [x0, y0, x1, y1] = countBounds(map, area);
   let count = 0;
-  for (let i = 0; i < map.lowerTiles.length; i += 1) {
-    const lower = map.lowerTiles[i] ?? TILE.EMPTY;
-    if (isWaterChipsetTile(lower) || isLakeAutotileTile(lower) || lower === TILE.WATER) count += 1;
+  for (let y = y0; y < y1; y += 1) {
+    for (let x = x0; x < x1; x += 1) {
+      const lower = map.lowerTiles[y * map.width + x] ?? TILE.EMPTY;
+      if (isWaterChipsetTile(lower) || isLakeAutotileTile(lower) || lower === TILE.WATER) count += 1;
+    }
   }
   return count;
 }
 
 /** 타일 실측 나무 카운트 — collectMetrics의 treeCells와 동일 판정. */
-export function countTreeCells(map: GameMap): number {
+export function countTreeCells(map: GameMap, area?: VillageCountArea): number {
+  const [x0, y0, x1, y1] = countBounds(map, area);
   let count = 0;
-  for (let i = 0; i < map.lowerTiles.length; i += 1) {
-    const lower = map.lowerTiles[i] ?? TILE.EMPTY;
-    const upper = map.upperTiles[i] ?? TILE.EMPTY;
-    if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) count += 1;
+  for (let y = y0; y < y1; y += 1) {
+    for (let x = x0; x < x1; x += 1) {
+      const index = y * map.width + x;
+      const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+      const upper = map.upperTiles[index] ?? TILE.EMPTY;
+      if (TREE_UPPER.has(upper) || TREE_LOWER.has(lower) || TREE_LOWER.has(upper)) count += 1;
+    }
   }
   return count;
 }

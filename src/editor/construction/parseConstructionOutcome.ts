@@ -45,6 +45,7 @@ type OutcomeState =
 export function parseConstructionOutcome(value: unknown): ConstructionOutcome {
   const outcome = requireRecord(value, "constructionOutcome");
   rejectUnknownKeys(outcome, OUTCOME_KEYS, "constructionOutcome");
+  const state = parseOutcomeState(outcome);
   const requestedRoute = constructionRouteEntry(requiredString(outcome, "requestedEntrypoint", "constructionOutcome"));
   if (requestedRoute === undefined) {
     throw new ToolError("constructionOutcome.requestedEntrypoint is not declared.", { code: "undeclared-route-change" });
@@ -54,7 +55,7 @@ export function parseConstructionOutcome(value: unknown): ConstructionOutcome {
   const routeChanges = parseRouteChanges(requiredArray(outcome, "routeChanges", "constructionOutcome"));
   validateRoute(requestedEntrypoint, canonicalRoute, routeChanges);
   return {
-    ...parseOutcomeState(outcome),
+    ...state,
     requestedEntrypoint,
     canonicalRoute,
     selectedImplementation: requiredString(outcome, "selectedImplementation", "constructionOutcome"),
@@ -62,7 +63,7 @@ export function parseConstructionOutcome(value: unknown): ConstructionOutcome {
     activityPersistence: parseActivityPersistence(outcome["activityPersistence"]),
     projectPersistence: parseProjectPersistence(outcome["projectPersistence"]),
     target: parseTarget(outcome["target"]),
-    counts: parseCounts(outcome["counts"]),
+    counts: parseCounts(outcome["counts"], !state.executionOk),
     diff: parseDiff(outcome["diff"]),
     warnings: parseWarnings(outcome["warnings"]),
   };
@@ -151,13 +152,13 @@ function parseTarget(value: unknown): ConstructionTarget {
   return { kind, mapId: requiredString(target, "mapId", "constructionOutcome.target") };
 }
 
-function parseCounts(value: unknown): ConstructionCounts {
+function parseCounts(value: unknown, allowZeroRequested: boolean): ConstructionCounts {
   const counts = requireRecord(value, "constructionOutcome.counts");
   rejectUnknownKeys(counts, ["requested", "actual"], "constructionOutcome.counts");
   const requested = requiredInteger(counts, "requested", "constructionOutcome.counts");
   const actual = requiredInteger(counts, "actual", "constructionOutcome.counts");
-  if (requested < 1 || actual < 0) {
-    throw new ToolError("constructionOutcome counts must be non-negative and requested must be positive.", {
+  if (requested < (allowZeroRequested ? 0 : 1) || actual < 0) {
+    throw new ToolError("constructionOutcome counts must be non-negative; successful outcomes require a positive requested count.", {
       code: "invalid-outcome",
     });
   }

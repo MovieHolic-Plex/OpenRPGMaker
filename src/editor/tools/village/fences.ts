@@ -18,30 +18,31 @@ import {
   FENCE_TOP_RAIL,
   FENCE_TOP_RIGHT,
   pointInMap,
+  pointInRect,
   ROAD_TILES,
   type BuiltHouse,
   type Rect,
 } from "./constants";
 
-export function placeHouseLotFences(map: GameMap, houses: readonly BuiltHouse[], seed: number): void {
+export function placeHouseLotFences(map: GameMap, houses: readonly BuiltHouse[], seed: number, area?: Rect): void {
   for (let index = 0; index < houses.length; index += 1) {
-    placeLotFence(map, houses[index]!, index, seed);
+    placeLotFence(map, houses[index]!, index, seed, area);
   }
 }
 
-function placeLotFence(map: GameMap, house: BuiltHouse, houseIndex: number, seed: number): void {
+function placeLotFence(map: GameMap, house: BuiltHouse, houseIndex: number, seed: number, area?: Rect): void {
   const lot = expandRect(house.bbox, FENCE_LOT_MARGIN);
   if (lot.w < 2 || lot.h < 2) return;
   // estate 필지(본채+헛간)는 둘레 전체를 두른다 — "울타리 안에 헛간 있는 큰 집" (2026-07-17).
   if (house.templateId.startsWith("estate")) {
-    placeEstatePerimeterFence(map, house, lot);
+    placeEstatePerimeterFence(map, house, lot, area);
     return;
   }
   const lastX = lot.x + lot.w - 1;
   const lastY = lot.y + lot.h - 1;
   const hash = Math.abs(Math.imul(seed + 31, 1103515245) ^ Math.imul(houseIndex + 7, 12345));
   const setFence = (x: number, y: number, tile: number): boolean => {
-    if (!pointInMap(map, { x, y })) return false;
+    if (!pointInMap(map, { x, y }) || (area && !pointInRect({ x, y }, area))) return false;
     if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) return false;
     // 이미 뭔가 얹힌 칸(용마루·나무·소품)은 덮지 않는다 — 울타리가 지붕 장식을 지우던 회귀 방지.
     if ((map.upperTiles[y * map.width + x] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
@@ -140,11 +141,11 @@ const HOUSE_LOWER_TILES = (() => {
  * 뒷줄은 바로 아래 칸이 건물(헛간 지붕/벽)이면 치지 않는다 — 헛간이 뒷경계를 대신하고,
  * 파랑 키트처럼 용마루 upper가 없는 지붕 위에 "지붕 위 울타리"가 서는 함정을 피한다.
  */
-function placeEstatePerimeterFence(map: GameMap, house: BuiltHouse, lot: Rect): void {
+function placeEstatePerimeterFence(map: GameMap, house: BuiltHouse, lot: Rect, area?: Rect): void {
   const lastX = lot.x + lot.w - 1;
   const lastY = lot.y + lot.h - 1;
   const setFence = (x: number, y: number, tile: number): boolean => {
-    if (!pointInMap(map, { x, y })) return false;
+    if (!pointInMap(map, { x, y }) || (area && !pointInRect({ x, y }, area))) return false;
     if (ROAD_TILES.has(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) return false;
     if ((map.upperTiles[y * map.width + x] ?? TILE.EMPTY) !== TILE.EMPTY) return false;
     map.upperTiles[y * map.width + x] = tile;

@@ -223,6 +223,31 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+function plannedTargetMismatch(spec: BuildSpec, args: Record<string, unknown>): string | null {
+  const expected = spec.plannedMap;
+  const target = args.target;
+  if (!expected || !isRecord(target) || target.kind !== "new") return null;
+
+  const planned = isRecord(target.plannedMap) ? target.plannedMap : target;
+  const actualMapId = typeof planned.mapId === "string"
+    ? planned.mapId
+    : typeof target.mapId === "string"
+      ? target.mapId
+      : null;
+  const actualWidth = typeof planned.width === "number" ? planned.width : null;
+  const actualHeight = typeof planned.height === "number" ? planned.height : null;
+  if (
+    actualMapId === expected.mapId
+    && actualWidth === expected.width
+    && actualHeight === expected.height
+  ) {
+    return null;
+  }
+
+  return `확정된 plannedMap은 '${expected.mapId}' ${expected.width}×${expected.height}이지만 요청 대상은 `
+    + `'${actualMapId ?? "?"}' ${actualWidth ?? "?"}×${actualHeight ?? "?"}입니다.`;
+}
+
 export function rawToolCallMarkupIndex(text: string): number {
   const lower = text.toLowerCase();
   const indexes = [
@@ -601,10 +626,9 @@ export class AssistantSession {
   private workPlan: WorkPlan | null = null;
   /** 이번 사용자 메시지 안에서 자동으로 진행한 추가 단계 수. */
   private workPlanAutoStepsThisUserMessage = 0;
-  /** 이번 사용자 메시지 동안 성공한 쓰기 툴 이름(WorkPlan complete 가드용). */
-  private turnSuccessfulWriteTools = new Set<string>();
-  /** 이번 사용자 메시지 동안 성공한 **모든** 툴 이름(읽기 포함) — complete_work_item 게이트용. */
+  /** 현재 WorkItem에서 이번 사용자 메시지 동안 성공한 모든 툴 이름(읽기 포함). */
   private turnSuccessfulTools = new Set<string>();
+  private successfulToolsWorkItemId: string | null = null;
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -705,6 +729,16 @@ export class AssistantSession {
 
   // 공간 쓰기 툴 게이트. 통과하면 warning 목록, 차단이면 사유가 담긴 ToolResult.
   private specGate(name: string, args: Record<string, unknown>): ToolResult | SpecGatePass {
+    if (
+      name === "place_npc"
+      && typeof args.mapId === "string"
+      && typeof args.id === "string"
+      && typeof args.x === "number"
+      && typeof args.y === "number"
+    ) {
+      const existing = this.ctx.project.maps[args.mapId]?.events.find((event) => event.id === args.id);
+      if (existing?.x === args.x && existing.y === args.y) return { warnings: [] };
+    }
     const regions = affectedRegions(name, args);
     if (regions.length === 0) return { warnings: [] }; // mapId 없는 인자 형태 — 현 공간 툴셋엔 없음.
     const mapId = regions[0].mapId;
@@ -716,6 +750,15 @@ export class AssistantSession {
         "체크리스트: 대상 맵, 에셋별 영역(x,y,w,h)·종류·스타일, 통로 너비(pathWidth), 밀도(density), 배치 스타일(layoutStyle).",
         "현재 컨텍스트 선택 영역이 있으면 암묵적 명세로 인정됩니다. 없으면 필요한 영역을 직접 산정해 set_build_spec으로 제출하세요.",
       ]);
+    }
+    if (this.activeSpec?.mapId === mapId) {
+      const mismatch = plannedTargetMismatch(this.activeSpec, args);
+      if (mismatch) {
+        return specGateResult(`스펙 게이트: '${name}' 차단 — plannedMap 불일치`, [
+          mismatch,
+          "set_build_spec의 plannedMap과 새 맵 target의 mapId·width·height를 같은 값으로 맞춘 뒤 다시 호출하세요.",
+        ]);
+      }
     }
     // 명시 스펙 + 암묵 선택 영역(같은 맵)의 합집합으로 커버리지를 판정한다.
     const assets = specs.flatMap((spec) => spec.assets);
@@ -922,8 +965,8 @@ export class AssistantSession {
     this.specRejections = 0;
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
-    this.turnSuccessfulWriteTools = new Set();
     this.turnSuccessfulTools = new Set();
+    this.successfulToolsWorkItemId = this.workPlan?.currentItemId ?? null;
     this.eventBaseProposalKeys = new Map();
 
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
@@ -1109,6 +1152,8 @@ export class AssistantSession {
       this.workPlan = plan;
       // 새 계획 — 항목 id 는 위치 기반("L1-1")이라 이전 계획과 겹칠 수 있다. 중복 완료 방지 추적을 초기화한다.
       this.lastMilestoneCompletionItemId = null;
+      this.turnSuccessfulTools.clear();
+      this.successfulToolsWorkItemId = plan.currentItemId;
       // 새 계획 = 새 검증 주기: 이전 플랜의 실패/대기/증명 상태를 리셋한다(툴콜 히스토리는
       // 런 전체 누적 — questId/시나리오 선택이 이전 레이어 저작물을 계속 본다).
       this.verificationFailed = false;
@@ -1143,6 +1188,7 @@ export class AssistantSession {
       const id = typeof args.itemId === "string" && args.itemId.trim() ? args.itemId.trim() : this.workPlan.currentItemId;
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
+      this.syncSuccessfulToolsToCurrentWorkItem();
       const result = completeWorkItemById(this.workPlan, id, note, {
         successfulTools: [...this.turnSuccessfulTools],
       });
@@ -1179,7 +1225,19 @@ export class AssistantSession {
     return { ok: false, summary: `알 수 없는 WorkPlan 툴: ${name}` };
   }
 
-  private async noteSuccessfulWriteTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
+  private syncSuccessfulToolsToCurrentWorkItem(): void {
+    const currentItemId = this.workPlan?.currentItemId ?? null;
+    if (currentItemId === this.successfulToolsWorkItemId) return;
+    this.turnSuccessfulTools.clear();
+    this.successfulToolsWorkItemId = currentItemId;
+  }
+
+  private recordSuccessfulTool(name: string): void {
+    this.syncSuccessfulToolsToCurrentWorkItem();
+    this.turnSuccessfulTools.add(name);
+  }
+
+  private async noteSuccessfulTools(names: readonly string[], onEvent: (event: SessionEvent) => void): Promise<void> {
     if (!this.workPlan || names.length === 0) return;
     const { completed, next } = advanceWorkPlanFromTools(this.workPlan, names);
     if (completed) {
@@ -1194,6 +1252,7 @@ export class AssistantSession {
       await this.maybeAutoApplyMilestone(completed, onEvent);
       // 레이어 검증 게이트(todo 5): 완료 항목이 속한 레이어가 끝났으면 canonical 테이블대로 검증.
       await this.sweepFinishedLayers(onEvent);
+      this.syncSuccessfulToolsToCurrentWorkItem();
     }
   }
 
@@ -1704,8 +1763,7 @@ export class AssistantSession {
         ...(result.issues && result.issues.length > 0 ? { issues: result.issues.map((issue) => issue.message) } : {}),
       });
       if (!result.ok || !result.diff) continue;
-      this.turnSuccessfulWriteTools.add("place_npc");
-      this.turnSuccessfulTools.add("place_npc");
+      this.recordSuccessfulTool("place_npc");
       this.upsertProposal(proposedByKey, {
         name: "place_npc",
         args,
@@ -2047,7 +2105,6 @@ export class AssistantSession {
       const startsWriteThisRound = toolCalls.some((call) => getTool(call.function.name)?.mode === "write");
       // 이번 라운드에 렌더된 비전 이미지(있으면 툴 메시지 뒤에 user 메시지로 주입).
       const roundImages: RenderedToolImage[] = [];
-      const successfulWriteToolsThisRound: string[] = [];
       // Capture before any complete/skip/set tools mutate the cursor.
       const workItemIdAtRoundStart = this.workPlan?.currentItemId ?? null;
       // 각 tool_call 실행 → role:"tool" 메시지로 결과 반환.
@@ -2104,13 +2161,9 @@ export class AssistantSession {
             if (dedupeKey && toolResult.ok) this.turnWriteDedupe.set(dedupeKey, toolResult);
           }
         }
-        if (toolResult.ok && tool?.mode === "write") {
-          successfulWriteToolsThisRound.push(name);
-          this.turnSuccessfulWriteTools.add(name);
-        }
         // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
         // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
-        if (toolResult.ok) this.turnSuccessfulTools.add(name);
+        if (toolResult.ok) this.recordSuccessfulTool(name);
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({
@@ -2192,7 +2245,7 @@ export class AssistantSession {
       }
 
       // WorkPlan advance: successTools auto-complete OR complete/skip tools moved the cursor.
-      await this.noteSuccessfulWriteTools(successfulWriteToolsThisRound, onEvent);
+      await this.noteSuccessfulTools([...this.turnSuccessfulTools], onEvent);
       const afterItemId = this.workPlan?.currentItemId ?? null;
       const advanced =
         Boolean(this.workPlan) &&

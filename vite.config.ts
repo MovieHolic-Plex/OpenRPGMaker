@@ -120,6 +120,7 @@ type AiActivityMirrorRecord = {
   instruction?: string;
   result?: { ok?: boolean; error?: string; stoppedReason?: string };
   toolCalls?: { name?: string; ok?: boolean }[];
+  diagnostics?: { severity?: "ok" | "warning" | "error"; kinds?: string[]; failedTools?: string[] };
 };
 
 function devCorsOrigin(req: { headers: { origin?: string | string[] } }): string | null {
@@ -206,6 +207,7 @@ function aiActivityDiskPlugin(): Plugin {
               ...(record.result?.stoppedReason ? { stoppedReason: record.result.stoppedReason } : {}),
               toolCalls: (record.toolCalls ?? []).length,
               ...(failedTools.length > 0 ? { failedTools } : {}),
+              ...(record.diagnostics ? { diagnostics: record.diagnostics } : {}),
             };
             const next = [summary, ...index.filter((row) => row.id !== id)].slice(0, 50);
             writeFileSync(indexPath, JSON.stringify(next, null, 2), "utf8");

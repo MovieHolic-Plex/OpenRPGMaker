@@ -148,6 +148,26 @@ describe("workPlan progress harness", () => {
     expect(next?.title).toBe("B");
   });
 
+  it("does not auto-complete a compound item until every successTool succeeded", () => {
+    const plan = workPlanFromOrchestratorDecision({
+      action: "new_plan",
+      goal: "실내 방을 연결한다",
+      layers: [{
+        title: "실내",
+        items: [{
+          title: "방과 전송",
+          instruction: "create_map 후 create_transfer_pair",
+          successTools: ["create_map", "create_transfer_pair"],
+        }],
+      }],
+    });
+
+    expect(advanceWorkPlanFromTools(plan, ["create_map"]).completed).toBeNull();
+    expect(plan.layers[0]?.items[0]?.status).toBe("in_progress");
+    expect(advanceWorkPlanFromTools(plan, ["create_map", "create_transfer_pair"]).completed?.title).toBe("방과 전송");
+    expect(isWorkPlanComplete(plan)).toBe(true);
+  });
+
   it("does not auto-complete items without successTools on unrelated writes", () => {
     const plan = workPlanFromOrchestratorDecision({
       action: "new_plan",
@@ -241,6 +261,16 @@ describe("workPlan progress harness", () => {
 
     const ok = completeWorkItemById(plan, id, "done", { successfulTools: ["place_props"] });
     expect(ok.ok).toBe(true);
+    expect(isWorkPlanComplete(plan)).toBe(true);
+  });
+  it("requires write evidence before completing a generic planner-failure fallback", () => {
+    const plan = buildDefaultWorkPlan("세 단계 퀘스트와 보상을 구성해줘", new Date("2026-08-23T00:00:00.000Z"));
+    const item = plan.layers[0]!.items[0]!;
+
+    expect(item.requiresAnyWrite).toBe(true);
+    expect(completeWorkItemById(plan, item.id, undefined, { successfulTools: [] }).ok).toBe(false);
+    expect(completeWorkItemById(plan, item.id, undefined, { successfulTools: ["get_project_summary"] }).ok).toBe(false);
+    expect(advanceWorkPlanFromTools(plan, ["upsert_event"]).completed?.id).toBe(item.id);
     expect(isWorkPlanComplete(plan)).toBe(true);
   });
 });

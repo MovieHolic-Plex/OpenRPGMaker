@@ -49,11 +49,11 @@ export interface VillageIntent {
   readonly housePrograms: readonly (HouseInteriorProgram | undefined)[];
 }
 
-export const MIN_SIZE = 36;
+export const MIN_SIZE = 20;
 export const MAX_SIZE = 256;
 export const DEFAULT_SIZE = 50;
 export const DEFAULT_HOUSES = 8;
-export const MIN_HOUSES = 4;
+export const MIN_HOUSES = 1;
 /** 대형 마을(100×100 등)용 — 예전 12 상한은 대형 시공에 부족 */
 export const MAX_HOUSES = 32;
 export const PLAZA_WIDTH = 8;

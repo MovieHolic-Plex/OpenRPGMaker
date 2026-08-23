@@ -3,6 +3,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { EventPage } from "@/project/types";
 import { createBlankProject } from "@/project/defaults";
+import { TILE } from "@/project/defaults/constants";
 
 function runPlaceNpc(id: string, page: Record<string, unknown>): { context: ToolContext; result: ToolResult; page: EventPage | undefined } {
   const context: ToolContext = { project: createBlankProject() };
@@ -87,6 +88,78 @@ describe("place_npc SimplePage malformed input normalization", () => {
     });
     expect(result.ok, result.summary).toBe(true);
     expect(page?.conditions).toEqual([]);
+  });
+
+  it("normalizes LLM self-switch id aliases and boolean strings in conditions and choice commands", () => {
+    const { result, page } = runPlaceNpc("npc_self_switch_aliases", {
+      conditions: [{ kind: "selfSwitch", id: "A", value: "true" }],
+      choices: [{
+        text: "선택",
+        commands: [{ kind: "setSelfSwitch", id: "A", value: "true" }],
+      }],
+    });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(page?.conditions).toEqual([{ kind: "selfSwitch", key: "A", value: true }]);
+    const choices = page?.commands.find((command) => command.kind === "choices");
+    expect(choices).toMatchObject({
+      options: [{ branch: [{ kind: "setSelfSwitch", key: "A", value: true }] }],
+    });
+    const warnings = result.diff?.warnings.join("\n") ?? "";
+    expect(warnings).toContain("selfSwitch.key");
+    expect(warnings).toContain("boolean");
+  });
+
+  it("registers missing global switches referenced by nested choice commands", () => {
+    const { context, result } = runPlaceNpc("npc_global_switch", {
+      choices: [{
+        text: "진실을 선택한다",
+        commands: [{ kind: "setSwitch", switchId: "ending_flag", value: true }],
+      }],
+    });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(context.project.switches).toContainEqual(expect.objectContaining({ id: "ending_flag" }));
+    expect(context.project.session.switches.ending_flag).toBe(false);
+    expect(result.diff?.warnings.join("\n") ?? "").toContain("미등록 switchId 자동 생성: ending_flag");
+  });
+
+  it("updates an explicit event id in place without treating itself as an occupied cell", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    const mapId = context.project.startMapId;
+    const first = runTool(context, "place_npc", {
+      mapId, x: 2, y: 2, id: "npc_in_place", name: "리나",
+      graphic: { transparent: true }, pages: [{ lines: ["처음 대사"] }],
+    });
+    const second = runTool(context, "place_npc", {
+      mapId, x: 2, y: 2, id: "npc_in_place", name: "리나",
+      graphic: { transparent: true }, pages: [{ lines: ["수정 대사"] }],
+    });
+
+    expect(first.ok).toBe(true);
+    expect(second.ok, JSON.stringify(second.issues)).toBe(true);
+    expect(second.data).toMatchObject({ x: 2, y: 2, adjusted: false });
+    expect(context.project.maps[mapId]?.events.filter((event) => event.id === "npc_in_place")).toHaveLength(1);
+  });
+
+  it("moves a transfer endpoint to a nearby usable cell when the requested doorway has no landing", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    const mapAId = context.project.startMapId;
+    expect(runTool(context, "create_map", { id: "transfer_target", name: "실내", width: 20, height: 15 }).ok).toBe(true);
+    const mapA = context.project.maps[mapAId]!;
+    for (let y = 4; y <= 6; y += 1) {
+      for (let x = 4; x <= 6; x += 1) mapA.lowerTiles[y * mapA.width + x] = TILE.WATER;
+    }
+
+    const result = runTool(context, "create_transfer_pair", {
+      a: { mapId: mapAId, x: 5, y: 5 },
+      b: { mapId: "transfer_target", x: 2, y: 2 },
+      fade: "black",
+    });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(result.data).toMatchObject({ adjustedA: true, adjustedB: false });
+    expect(result.diff?.warnings.join("\n") ?? "").toContain("출입구 A 위치 자동 조정");
   });
 
   it("returns a model-friendly error when command kind is an unrecoverable object", () => {

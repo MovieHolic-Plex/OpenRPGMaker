@@ -8,13 +8,14 @@ import { validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
-import type { Command, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { faceGraphicForCharset, faceGraphicFromEventGraphic } from "@/assets/charsetFaceMap";
+import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
   compileSimplePages,
@@ -23,7 +24,7 @@ import {
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
-import { ensureNamedSwitch } from "./flagHelpers";
+import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
@@ -215,6 +216,57 @@ function assertEventShape(event: GameEvent, warnings?: string[]): void {
   }
 }
 
+function ensureConditionStoryFlags(project: Project, condition: Condition, eventId: string, warnings: string[]): void {
+  if (condition.kind === "switch") {
+    if (!project.switches.some((entry) => entry.id === condition.switchId)) {
+      ensureNamedSwitch(project, condition.switchId, `이벤트 ${eventId}: ${condition.switchId}`);
+      warnings.push(`미등록 switchId 자동 생성: ${condition.switchId}`);
+    }
+  } else if (condition.kind === "variable") {
+    if (!project.variables.some((entry) => entry.id === condition.variableId)) {
+      ensureNamedVariable(project, condition.variableId, `이벤트 ${eventId}: ${condition.variableId}`);
+      warnings.push(`미등록 variableId 자동 생성: ${condition.variableId}`);
+    }
+  } else if (condition.kind === "all" || condition.kind === "any") {
+    for (const child of condition.conditions) ensureConditionStoryFlags(project, child, eventId, warnings);
+  } else if (condition.kind === "not") {
+    ensureConditionStoryFlags(project, condition.condition, eventId, warnings);
+  }
+}
+
+function ensureCommandStoryFlags(project: Project, commands: readonly Command[], eventId: string, warnings: string[]): void {
+  for (const command of commands) {
+    if (command.kind === "setSwitch") {
+      if (!project.switches.some((entry) => entry.id === command.switchId)) {
+        ensureNamedSwitch(project, command.switchId, `이벤트 ${eventId}: ${command.switchId}`);
+        warnings.push(`미등록 switchId 자동 생성: ${command.switchId}`);
+      }
+    } else if (command.kind === "setVariable") {
+      if (!project.variables.some((entry) => entry.id === command.variableId)) {
+        ensureNamedVariable(project, command.variableId, `이벤트 ${eventId}: ${command.variableId}`);
+        warnings.push(`미등록 variableId 자동 생성: ${command.variableId}`);
+      }
+    } else if (command.kind === "choices") {
+      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
+    } else if (command.kind === "fork") {
+      ensureConditionStoryFlags(project, command.condition, eventId, warnings);
+      ensureCommandStoryFlags(project, command.then, eventId, warnings);
+      if (command.else) ensureCommandStoryFlags(project, command.else, eventId, warnings);
+    } else if (command.kind === "loop") {
+      ensureCommandStoryFlags(project, command.body, eventId, warnings);
+    }
+  }
+}
+
+function ensureEventStoryFlags(project: Project, event: GameEvent, warnings: string[]): void {
+  ensureCommandStoryFlags(project, event.commands, event.id, warnings);
+  for (const page of event.pages ?? []) {
+    for (const condition of page.conditions) ensureConditionStoryFlags(project, condition, event.id, warnings);
+    ensureCommandStoryFlags(project, page.commands, event.id, warnings);
+  }
+}
+
 // (x,y) 주변(또는 자신)에서 통행 가능한 첫 칸을 착지 좌표로 고른다.
 export function passableLanding(project: Project, map: GameMap, x: number, y: number): Point | null {
   const candidates: Point[] = [
@@ -335,11 +387,12 @@ const placeNpc: ToolDefinition = {
     const requestedX = args.x as number;
     const requestedY = args.y as number;
     const name = args.name as string;
+    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
     if (!inMapBounds(map, requestedX, requestedY)) {
       throw new ToolError(`NPC 위치가 맵 밖입니다: (${requestedX}, ${requestedY})`, { code: "npc-out-of-bounds", mapId: map.id, x: requestedX, y: requestedY });
     }
     // 에이전틱 편의: 통행 불가 칸을 지정하면 실패 대신 근처(반경 3) 통행 가능 칸으로 자동 착지.
-    const landing = nearestPassableCell(draft, map, requestedX, requestedY, 3);
+    const landing = nearestPassableCell(draft, map, requestedX, requestedY, 3, explicitId);
     if (!landing) {
       throw new ToolError(
         `NPC를 놓을 통행 가능 칸이 없습니다: (${requestedX}, ${requestedY}) 주변 반경 3칸까지 전부 통행 불가입니다. get_map_region으로 지형을 확인하세요.`,
@@ -354,7 +407,6 @@ const placeNpc: ToolDefinition = {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
     });
-    const explicitId = typeof args.id === "string" && args.id.trim() ? args.id.trim() : undefined;
     // 근접 유사 NPC: 상점 역할이면 id가 달라도 기존 이벤트로 합친다(상점 주인+상인 thrash).
     // 일반 NPC는 id 생략일 때만 병합 — 명시 id 2개는 의도적 복수 배치.
     const similar = findNearbySimilarNpc(map, x, y, name, 2);
@@ -384,6 +436,7 @@ const placeNpc: ToolDefinition = {
     } else {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
+    ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const adjusted = finalX !== requestedX || finalY !== requestedY;
@@ -858,8 +911,19 @@ function uniqueStockItemIds(stock: readonly ShopStockEntry[]): string[] {
 }
 
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
-function nearestPassableCell(project: Project, map: GameMap, x: number, y: number, maxRadius: number): Point | null {
-  const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+function nearestPassableCell(
+  project: Project,
+  map: GameMap,
+  x: number,
+  y: number,
+  maxRadius: number,
+  ignoreEventId?: string,
+): Point | null {
+  const occupied = new Set(
+    map.events
+      .filter((event) => event.id !== ignoreEventId)
+      .map((event) => `${event.x},${event.y}`),
+  );
   for (let radius = 0; radius <= maxRadius; radius += 1) {
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
@@ -869,6 +933,29 @@ function nearestPassableCell(project: Project, map: GameMap, x: number, y: numbe
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
         if (isPassable(project, map, cx, cy)) return { x: cx, y: cy };
+      }
+    }
+  }
+  return null;
+}
+
+function transferEndpoint(
+  project: Project,
+  map: GameMap,
+  requestedX: number,
+  requestedY: number,
+  maxRadius = 3,
+): { gate: Point; landing: Point } | null {
+  const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
+  for (let radius = 0; radius <= maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const gate = { x: requestedX + dx, y: requestedY + dy };
+        if (!inMapBounds(map, gate.x, gate.y) || occupied.has(`${gate.x},${gate.y}`)) continue;
+        const landing = passableLanding(project, map, gate.x, gate.y);
+        if (!landing || (landing.x === gate.x && landing.y === gate.y)) continue;
+        return { gate, landing };
       }
     }
   }
@@ -1093,12 +1180,16 @@ const createTransferPair: ToolDefinition = {
     const fade = (args.fade as TransferFade | undefined) ?? "black";
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
-    const landingB = passableLanding(draft, mapB, b.x, b.y);
-    const landingA = passableLanding(draft, mapA, a.x, a.y);
-    if (!landingB || !landingA) throw new ToolError("출입구 인접에 통행 가능한 착지 칸이 없습니다.", { code: "transfer-no-landing" });
-    // 즉시 재전이 방지: 착지 칸이 상대 출입구 좌표와 겹치면 error.
-    if (landingB.x === b.x && landingB.y === b.y) throw new ToolError("A→B 착지가 B 출입구와 겹칩니다.", { code: "transfer-retrigger" });
-    if (landingA.x === a.x && landingA.y === a.y) throw new ToolError("B→A 착지가 A 출입구와 겹칩니다.", { code: "transfer-retrigger" });
+    const endpointA = transferEndpoint(draft, mapA, a.x, a.y);
+    const endpointB = transferEndpoint(draft, mapB, b.x, b.y);
+    if (!endpointA || !endpointB) {
+      throw new ToolError(
+        "출입구 주변 반경 3칸 안에 통행 가능한 착지 칸을 둔 빈 출입구 위치가 없습니다. get_map_region으로 주변 구조물과 통행 지형을 확인하세요.",
+        { code: "transfer-no-landing" },
+      );
+    }
+    const { gate: gateA, landing: landingA } = endpointA;
+    const { gate: gateB, landing: landingB } = endpointB;
 
     const idA = genId("ev_gate");
     const idB = genId("ev_gate");
@@ -1123,11 +1214,18 @@ const createTransferPair: ToolDefinition = {
         },
       ],
     });
-    upsertEventIntoMap(mapA, gate(idA, a.x, a.y, transferTo(b.mapId, landingB.x, landingB.y)));
-    upsertEventIntoMap(mapB, gate(idB, b.x, b.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
+    upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
+    const adjustedB = gateB.x !== b.x || gateB.y !== b.y;
+    const warnings = [
+      ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
+      ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
+    ];
     return {
-      summary: `출입구 쌍 생성: ${mapA.name}(${a.x},${a.y}) ↔ ${mapB.name}(${b.x},${b.y})`,
-      data: { eventIdA: idA, eventIdB: idB, landingA, landingB },
+      summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
+      data: { eventIdA: idA, eventIdB: idB, gateA, gateB, landingA, landingB, adjustedA, adjustedB },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
@@ -1776,6 +1874,24 @@ function cutscenePage(
   };
 }
 
+function resolveCutsceneMusicResources(project: Project, beats: readonly CutsceneBeat[], warnings: string[]): CutsceneBeat[] {
+  const resourceIds = collectResourceIds(project);
+  const visit = (items: readonly CutsceneBeat[], path: string): CutsceneBeat[] => items.map((beat, index) => {
+    const beatPath = `${path}[${index}]`;
+    if (beat.kind === "parallel") return { ...beat, beats: visit(beat.beats, `${beatPath}.beats`) };
+    if (beat.kind !== "music" || beat.action === "fade" || beat.action === "stop" || !beat.resourceId) return beat;
+    if (resourceIds.has(beat.resourceId)) return beat;
+    const kind = beat.action === "bgm" ? "bgm" : "se";
+    const match = searchResources(kind, beat.resourceId)
+      .map((result) => ({ result, resourceId: [result.id, result.id.replace(/^(?:bgm|se):/, "")].find((id) => resourceIds.has(id)) }))
+      .find((candidate) => candidate.resourceId !== undefined);
+    if (!match?.resourceId) return beat;
+    warnings.push(`컷신 리소스 자동 해석: ${beatPath}.resourceId "${beat.resourceId}" → "${match.resourceId}" (${match.result.label})`);
+    return { ...beat, resourceId: match.resourceId };
+  });
+  return visit(beats, "beats");
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
@@ -1811,7 +1927,8 @@ const scriptCutscene: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
-    const beats = args.beats as CutsceneBeat[];
+    const warnings: string[] = [];
+    const beats = resolveCutsceneMusicResources(draft, args.beats as CutsceneBeat[], warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);
@@ -1844,6 +1961,7 @@ const scriptCutscene: ToolDefinition = {
     return {
       summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,
       data: { eventId, pageId: page.id, commandCount: commands.length, unsupportedCommands },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

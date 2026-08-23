@@ -570,15 +570,15 @@ it("interior:false면 내부 맵과 문 이벤트를 만들지 않는다", () =>
     expect(map.upperTiles.some((tile) => tile === 85 || tile === 87)).toBe(true);
   });
 
-  it("기존 40x40 맵에는 시공하고 30x30 맵은 거부한다", () => {
+  it("기존 20x20 맵에는 한 채를 시공하고 최소 크기 미만인 19x19 맵은 거부한다", () => {
     const context: ToolContext = { project: createBlankProject() };
-    expect(runTool(context, "create_map", { id: "map_40", name: "기존 40", width: 40, height: 40 }).ok).toBe(true);
-    const built = runTool(context, "build_village", { mapId: "map_40", seed: 7 });
+    expect(runTool(context, "create_map", { id: "map_20", name: "기존 20", width: 20, height: 20 }).ok).toBe(true);
+    const built = runTool(context, "build_village", { mapId: "map_20", houses: 1, seed: 7, interior: false });
     expect(built.ok, built.summary).toBe(true);
-    expect(villageData(built.data).housesBuilt).toBe(8);
+    expect(villageData(built.data).housesBuilt).toBe(1);
 
-    expect(runTool(context, "create_map", { id: "map_30", name: "기존 30", width: 30, height: 30 }).ok).toBe(true);
-    const rejected = runTool(context, "build_village", { mapId: "map_30", seed: 7 });
+    expect(runTool(context, "create_map", { id: "map_19", name: "기존 19", width: 19, height: 19 }).ok).toBe(true);
+    const rejected = runTool(context, "build_village", { mapId: "map_19", houses: 1, seed: 7, interior: false });
     expect(rejected.ok).toBe(false);
     expect(rejected.issues?.[0]?.code).toBe("map-too-small");
   });

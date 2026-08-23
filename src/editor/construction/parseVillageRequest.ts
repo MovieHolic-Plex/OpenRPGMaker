@@ -29,18 +29,18 @@ const REQUEST_KEYS = ["target", "houseCount", "housePlans", "countPolicy", "grou
 const EXISTING_TARGET_KEYS = ["kind", "mapId", "bounds"] as const;
 const NEW_TARGET_KEYS = ["kind", "mapId", "name", "width", "height", "plannedMap"] as const;
 const HOUSE_PLAN_KEYS = ["kitId", "yard", "ownerName", "templateId", "program"] as const;
-const MIN_HOUSES = 4;
+const MIN_HOUSES = 1;
 const MAX_HOUSES = 32;
-const MIN_MAP_SIZE = 36;
+const MIN_MAP_SIZE = 20;
 const MAX_MAP_SIZE = 256;
 const MAX_NPCS = 512;
 
 export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest {
-  const request = requireRecord(value, "authorVillage");
+  const request = normalizeRequestShape(requireRecord(value, "authorVillage"));
   rejectUnknownKeys(request, REQUEST_KEYS, "authorVillage");
   const houseCount = requiredInteger(request, "houseCount", "authorVillage");
   if (houseCount < MIN_HOUSES || houseCount > MAX_HOUSES) {
-    throw new ToolError("authorVillage.houseCount must be between 4 and 32.", { code: "invalid-args" });
+    throw new ToolError("authorVillage.houseCount must be between 1 and 32.", { code: "invalid-args" });
   }
   const housePlans = parseHousePlans(request["housePlans"]);
   if (housePlans !== undefined && housePlans.length !== houseCount) {
@@ -67,6 +67,20 @@ export function parseAuthorVillageRequest(value: unknown): AuthorVillageRequest 
     ...(seed === undefined ? {} : { seed }),
     ...(interior === undefined ? {} : { interior }),
   };
+}
+
+function normalizeRequestShape(request: BoundaryRecord): BoundaryRecord {
+  const target = request["target"];
+  if (typeof target !== "object" || target === null || Array.isArray(target)) return request;
+  const normalizedTarget = { ...(target as BoundaryRecord) };
+  // JSON Schema cannot express this discriminated union to every function-calling gateway.
+  // Models therefore send fields from both target variants; discard only the known opposite-variant fields.
+  if (normalizedTarget["kind"] === "existing") {
+    for (const key of ["name", "width", "height", "plannedMap"]) delete normalizedTarget[key];
+  } else if (normalizedTarget["kind"] === "new") {
+    delete normalizedTarget["bounds"];
+  }
+  return { ...request, target: normalizedTarget };
 }
 
 function parseOptionalEnum<T extends string>(value: unknown, values: readonly T[], scope: string): T | undefined {
@@ -135,7 +149,7 @@ function parsePlannedMap(value: unknown): PlannedMapDescriptor {
 function parseMapDimension(record: BoundaryRecord, key: string, scope: string): number {
   const value = requiredInteger(record, key, scope);
   if (value < MIN_MAP_SIZE || value > MAX_MAP_SIZE) {
-    throw new ToolError(`${scope}.${key} must be between 36 and 256.`, { code: "invalid-args" });
+    throw new ToolError(`${scope}.${key} must be between 20 and 256.`, { code: "invalid-args" });
   }
   return value;
 }
@@ -148,7 +162,7 @@ function parseRect(value: unknown, scope: string): ConstructionRect {
   const w = requiredInteger(rect, "w", scope);
   const h = requiredInteger(rect, "h", scope);
   if (x < 0 || y < 0 || w < MIN_MAP_SIZE || h < MIN_MAP_SIZE) {
-    throw new ToolError(`${scope} requires x/y >= 0 and w/h >= 36.`, { code: "invalid-args" });
+    throw new ToolError(`${scope} requires x/y >= 0 and w/h >= 20.`, { code: "invalid-args" });
   }
   return { x, y, w, h };
 }

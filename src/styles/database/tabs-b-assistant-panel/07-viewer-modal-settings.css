@@ -271,9 +271,13 @@
   border: none;
   color: var(--text-2);
   cursor: pointer;
+  display: flex;
+  align-items: center;
   font-size: 11px;
+  min-height: 24px;
   padding: 2px 0;
   text-align: left;
+  white-space: nowrap;
   width: 100%;
 }
 

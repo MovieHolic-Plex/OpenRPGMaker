@@ -84,7 +84,7 @@ export function assertVillagePostconditions(
   if (inspection.exteriorMapId !== mapId) {
     throw new ToolError(`Village target changed to ${inspection.exteriorMapId}.`, { code: "village-target-changed", mapId });
   }
-  const minimum = Math.max(4, Math.ceil(request.houseCount * 0.85));
+  const minimum = Math.min(request.houseCount, Math.max(4, Math.ceil(request.houseCount * 0.85)));
   const countOk = request.countPolicy === "exact"
     ? inspection.actualHouseCount === request.houseCount
     : inspection.actualHouseCount >= minimum;

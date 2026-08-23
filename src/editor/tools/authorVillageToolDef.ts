@@ -15,7 +15,8 @@ import {
   type VillageBuildDomainArgs,
   type VillageBuildInspection,
 } from "./villageBuilder";
-import { VILLAGE_HOUSE_PLAN_SCHEMA } from "./schemaShapes";
+import { RECT_SCHEMA } from "./schemaShapes";
+import { HOUSE_TEMPLATES } from "./village/constants";
 
 export type AuthorVillageDependencies = {
   readonly build: (project: Parameters<typeof buildVillageDomain>[0], args: VillageBuildDomainArgs) => ToolExecResult;
@@ -26,6 +27,27 @@ const DEFAULT_DEPENDENCIES: AuthorVillageDependencies = {
   build: buildVillageDomain,
   inspect: inspectVillageBuild,
 };
+
+const KNOWN_VILLAGE_TEMPLATE_IDS = new Set(HOUSE_TEMPLATES.map((template) => template.id));
+
+function normalizeUnknownHouseTemplates(args: Record<string, unknown>): {
+  readonly args: Record<string, unknown>;
+  readonly warnings: readonly string[];
+} {
+  if (!Array.isArray(args.housePlans)) return { args, warnings: [] };
+  const warnings: string[] = [];
+  const housePlans = args.housePlans.map((entry, index) => {
+    if (typeof entry !== "object" || entry === null || Array.isArray(entry)) return entry;
+    const plan = { ...(entry as Record<string, unknown>) };
+    const templateId = plan.templateId;
+    if (typeof templateId === "string" && templateId && !KNOWN_VILLAGE_TEMPLATE_IDS.has(templateId)) {
+      delete plan.templateId;
+      warnings.push("housePlans[" + index + "].templateId=\'" + templateId + "\'는 알려진 템플릿이 아니어서 자동 선택으로 대체했습니다.");
+    }
+    return plan;
+  });
+  return { args: { ...args, housePlans }, warnings };
+}
 
 export function createAuthorVillageTool(dependencies: AuthorVillageDependencies = DEFAULT_DEPENDENCIES): ToolDefinition {
   return {
@@ -42,18 +64,45 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           type: "object",
           description: "Existing map/bounds or exact new map descriptor.",
           properties: {
+            kind: { type: "string", enum: ["existing", "new"] },
             mapId: { type: "string" },
             name: { type: "string" },
-            x: { type: "integer" },
-            y: { type: "integer" },
             width: { type: "integer" },
             height: { type: "integer" },
-            w: { type: "integer" },
-            h: { type: "integer" },
+            bounds: RECT_SCHEMA,
+            plannedMap: {
+              type: "object",
+              properties: {
+                mapId: { type: "string" },
+                width: { type: "integer" },
+                height: { type: "integer" },
+              },
+              required: ["mapId", "width", "height"],
+              additionalProperties: false,
+            },
+          },
+          required: ["kind", "mapId"],
+          additionalProperties: false,
+        },
+        houseCount: { type: "integer", minimum: 1, maximum: 32, description: "Requested exterior houses, 1-32 without clamping." },
+        housePlans: {
+          type: "array",
+          description: "Optional per-house plans. Length must equal houseCount.",
+          items: {
+            type: "object",
+            properties: {
+              kitId: { type: "string" },
+              yard: { type: "array", items: { type: "string" } },
+              ownerName: { type: "string" },
+              templateId: {
+                type: "string",
+                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략: ${HOUSE_TEMPLATES.map((template) => template.id).join(", ")}`,
+              },
+              program: { type: "string", enum: ["dwelling", "shop", "inn", "workshop", "study", "manor"] },
+            },
+            additionalProperties: false,
           },
         },
-        houseCount: { type: "integer", description: "Requested exterior houses, 4-32 without clamping." },
-        housePlans: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
         countPolicy: { type: "string", enum: ["exact", "best-effort"] },
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
@@ -66,13 +115,14 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
     },
     invalidArgsExample: {
       target: { kind: "existing", mapId: "map_town" },
-      houseCount: 8,
+      houseCount: 2,
       countPolicy: "exact",
       seed: 7,
       interior: false,
     },
     run(draft, args): ToolExecResult {
-      const request = parseAuthorVillageRequest(args);
+      const normalized = normalizeUnknownHouseTemplates(args);
+      const request = parseAuthorVillageRequest(normalized.args);
       const baseline = createDraft(draft);
       switch (request.target.kind) {
         case "existing":
@@ -84,7 +134,10 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           createExactVillageMap(draft, request.target);
           break;
       }
-      const result = dependencies.build(draft, villageDomainArgs(request));
+      const built = dependencies.build(draft, villageDomainArgs(request));
+      const result = normalized.warnings.length === 0
+        ? built
+        : { ...built, warnings: [...(built.warnings ?? []), ...normalized.warnings] };
       assertInnerVillageSuccess(result, request.target.mapId);
       const inspection = dependencies.inspect(draft, result);
       assertVillagePostconditions(request, inspection);

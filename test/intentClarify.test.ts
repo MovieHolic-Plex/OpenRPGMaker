@@ -65,4 +65,8 @@ describe("resolveIntentClarification — 집 vs 실내", () => {
   it("맵 크기·다수 채·NPC 마을 맥락은 야외로 보고 되묻지 않는다", () => {
     expect(resolveIntentClarification("40x40 맵에 작은 집 3채 NPC 5명 배치해줘")).toBeNull();
   });
+
+  it("여러 야외 집과 별도 실내 방을 함께 명시하면 둘 다 요청으로 진행한다", () => {
+    expect(resolveIntentClarification("시작 마을에 집 2채와 주민 2명, 실내 방 하나를 만들어줘")).toBeNull();
+  });
 });

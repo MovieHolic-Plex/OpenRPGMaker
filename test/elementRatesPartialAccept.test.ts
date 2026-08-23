@@ -32,4 +32,23 @@ describe("elementRates 부분 수용", () => {
     expect(warnings).toContain("grass");
     expect(warnings).toContain("set_type_chart");
   });
+
+  it("속성 타입을 speciesId로 잘못 보낸 신규 적도 종 참조만 제외하고 생성한다", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_enemy", {
+      enemy: {
+        id: "enemy_fire_qa",
+        name: "불꽃 정령",
+        speciesId: "fire",
+        stats: { maxHp: 80, attack: 30 },
+        rewards: { exp: 4, gold: 2 },
+      },
+    });
+
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    expect(ctx.project.database.enemies.find((enemy) => enemy.id === "enemy_fire_qa")?.speciesId).toBeUndefined();
+    const warnings = [...(result.warnings ?? []), ...(result.diff?.warnings ?? [])].join(" ");
+    expect(warnings).toContain("speciesId");
+    expect(warnings).toContain("set_type_chart");
+  });
 });

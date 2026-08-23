@@ -68,7 +68,7 @@ async function readRuntimeState(page: Page): Promise<RuntimeState> {
 async function startAtExpanseEntry(page: Page): Promise<string> {
   const bootStartedAt = Date.now();
   const local = await createLocalIceGrandExpanseProject();
-  await page.route("**/__oprn/ai-activity", (route) => route.fulfill({ status: 204 }));
+  await page.route("**/__rpgzzu/ai-activity", (route) => route.fulfill({ status: 204 }));
   await page.route("**/rest/v1/ai_analysis_runs?*", (route) => route.fulfill({ status: 204 }));
   await page.addInitScript(({ project }) => {
     window.__RPG_ZZU_E2E_PROJECT__ = project;

@@ -4,13 +4,14 @@ import type { AuditEntry } from "@/ai/assistantSession";
 import { recordSupabaseAiActivityLog } from "@/project/supabaseProjectSync";
 import { randomUuid } from "@/util/id";
 import { AI_ACTIVITY_DISK_ENDPOINT } from "./activityLogEndpoint";
-import type { AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
-export type { AiActivityChannel, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
+import type { AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
+export type { AiActivityChannel, AiActivityDiagnostics, AiActivityDiagnosticKind, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
 const STORAGE_KEY = "oprn:ai-activity-logs";
 const MAX_LOGS = 100;
 const MAX_TEXT = 4000;
 const MAX_ARGS_JSON = 12_000;
+const MAX_KEEPALIVE_BYTES = 60 * 1024;
 
 function getStorage(): Storage | null {
   return typeof localStorage === "undefined" ? null : localStorage;
@@ -60,6 +61,73 @@ function sanitizeToolCalls(calls: readonly AiActivityToolCall[]): AiActivityTool
   }));
 }
 
+export function deriveAiActivityDiagnostics(
+  input: Pick<AiActivityLogInput, "result" | "toolCalls" | "audit">,
+): AiActivityDiagnostics {
+  const kinds = new Set<AiActivityDiagnosticKind>();
+  const messages: string[] = [];
+  const failedTools = new Set<string>();
+
+  if (!input.result.ok) {
+    kinds.add("turn-error");
+    messages.push(
+      clipText(
+        input.result.error ?? `턴 실패: ${input.result.stoppedReason ?? "unknown"}`,
+        500,
+      ),
+    );
+  }
+  for (const call of input.toolCalls ?? []) {
+    if (call.ok !== false) continue;
+    kinds.add("tool-failure");
+    failedTools.add(call.name);
+    if (call.name === "complete_work_item" || call.name === "skip_work_item")
+      kinds.add("work-plan");
+    messages.push(
+      clipText(`${call.name}: ${call.summary ?? "도구 호출 실패"}`, 500),
+    );
+  }
+  for (const entry of input.audit ?? []) {
+    if (entry.kind === "tool" && entry.ok === false) {
+      kinds.add("tool-failure");
+      failedTools.add(entry.name);
+      if (entry.name === "complete_work_item" || entry.name === "skip_work_item")
+        kinds.add("work-plan");
+      if (!messages.some((message) => message.startsWith(`${entry.name}:`))) {
+        messages.push(clipText(`${entry.name}: ${entry.summary}`, 500));
+      }
+      continue;
+    }
+    if (entry.kind !== "status") continue;
+    if (/planner:(?:parse-fail|error)|폴백 계획/u.test(entry.text)) {
+      kinds.add("planner-fallback");
+      messages.push(clipText(entry.text, 500));
+    }
+    if (/의도 확인\(/u.test(entry.text)) {
+      kinds.add("intent-clarification");
+      messages.push(clipText(entry.text, 500));
+    }
+    if (/^(?:WorkPlan|완료 게이트).*?(?:실패|거부)/iu.test(entry.text)) {
+      kinds.add("work-plan");
+      messages.push(clipText(entry.text, 500));
+    }
+  }
+
+  const uniqueMessages = [...new Set(messages)].slice(0, 20);
+  const severity =
+    kinds.has("turn-error") || kinds.has("tool-failure")
+      ? "error"
+      : kinds.size > 0
+        ? "warning"
+        : "ok";
+  return {
+    severity,
+    kinds: [...kinds],
+    messages: uniqueMessages,
+    failedTools: [...failedTools],
+  };
+}
+
 function isActivityRecord(value: unknown): value is AiActivityLogRecord {
   return (
     isObject(value) &&
@@ -81,7 +149,15 @@ function readLocal(): AiActivityLogRecord[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.filter(isActivityRecord) : [];
+    return Array.isArray(parsed)
+      ? parsed
+          .filter(isActivityRecord)
+          .map((record) =>
+            record.diagnostics
+              ? record
+              : { ...record, diagnostics: deriveAiActivityDiagnostics(record) },
+          )
+      : [];
   } catch {
     return [];
   }
@@ -130,6 +206,8 @@ export function serializeAiActivityLogs(limit = 20): string {
 
 /** 입력 → 로컬 저장 레코드 (원격 전송 전 정규화). */
 export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityLogRecord {
+  const toolCalls = sanitizeToolCalls(input.toolCalls ?? []);
+  const audit = sanitizeAudit(input.audit ?? []);
   return {
     id: input.id ?? randomUuid(),
     at: input.at ?? new Date().toISOString(),
@@ -154,8 +232,9 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
         ? { assistantText: clipText(input.result.assistantText, 2000) }
         : {}),
     },
-    toolCalls: sanitizeToolCalls(input.toolCalls ?? []),
-    audit: sanitizeAudit(input.audit ?? []),
+    toolCalls,
+    audit,
+    diagnostics: deriveAiActivityDiagnostics({ result: input.result, toolCalls, audit }),
     ...(input.uiEvents ? { uiEvents: input.uiEvents.slice(-120) } : {}),
   };
 }
@@ -164,14 +243,14 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
  * AI 활동 1건 기록.
  * - 항상 로컬 localStorage 링버퍼에 저장
  * - Supabase 설정이 있으면 원격에도 best-effort (전용 테이블 없으면 ai_analysis_runs 폴백)
- * - DEV: Vite `/__rpgzzu/ai-activity` 로 디스크 미러 (output/ai-activity/)
+ * - DEV: Vite 미러 엔드포인트로 디스크 기록 (output/ai-activity/)
  */
 export async function recordAiActivity(input: AiActivityLogInput): Promise<AiActivityLogRecord> {
   const base = buildAiActivityLogRecord(input);
   const existing = readLocal().filter((row) => row.id !== base.id);
   writeLocal([base, ...existing]);
   publishActivityLogApi(base);
-  void mirrorActivityToDisk(base);
+  await mirrorActivityToDisk(base);
 
   let persisted: AiActivityLogRecord["persisted"] = "local";
   try {
@@ -191,7 +270,7 @@ export async function recordAiActivity(input: AiActivityLogInput): Promise<AiAct
   const finalRecord: AiActivityLogRecord = { ...base, persisted };
   writeLocal([finalRecord, ...readLocal().filter((row) => row.id !== finalRecord.id)]);
   publishActivityLogApi(finalRecord);
-  void mirrorActivityToDisk(finalRecord);
+  await mirrorActivityToDisk(finalRecord);
   return finalRecord;
 }
 
@@ -203,15 +282,26 @@ export async function recordAiActivity(input: AiActivityLogInput): Promise<AiAct
  */
 let mirrorWarned = false;
 
+export function buildAiActivityMirrorRequest(record: AiActivityLogRecord): {
+  readonly body: string;
+  readonly keepalive: boolean;
+} {
+  const body = JSON.stringify(record);
+  // Fetch keepalive payloads are capped at 64 KiB. Hostile turns with many tool calls exceed it,
+  // and Chromium leaves those requests pending until page teardown. Use a normal request for large logs.
+  const bytes = new TextEncoder().encode(body).byteLength;
+  return { body, keepalive: bytes <= MAX_KEEPALIVE_BYTES };
+}
+
 async function mirrorActivityToDisk(record: AiActivityLogRecord): Promise<void> {
-  if (typeof fetch === "undefined") return;
+  if (!import.meta.env.DEV || typeof fetch === "undefined") return;
   try {
+    const request = buildAiActivityMirrorRequest(record);
     const res = await fetch(AI_ACTIVITY_DISK_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(record),
-      // keepalive: 페이지 이탈 시에도 한 번 더 시도.
-      keepalive: true,
+      body: request.body,
+      keepalive: request.keepalive,
     });
     if (!res.ok) warnMirrorFailure(`${res.status} ${res.statusText}`);
   } catch (error) {

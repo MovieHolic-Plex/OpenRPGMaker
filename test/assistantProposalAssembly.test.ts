@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { proposalCompletenessWarningLines, proposalScopeCarryoverWarning } from "@/ai/proposalCompleteness";
 import { runTool } from "@/editor/tools";
-import type { ToolContext } from "@/editor/tools";
+import type { ToolContext, ToolResult } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { TILE } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
@@ -184,5 +184,30 @@ describe("assistant proposal assembly move_event squash", () => {
     const result = await session.sendUserMessage("두 NPC 위치를 옮겨줘");
 
     expect(result.proposedCalls.map((call) => `${call.name}:${call.args.eventId}`)).toEqual(["move_event:ev_a", "move_event:ev_b"]);
+  });
+});
+
+
+describe("assistant WorkPlan evidence isolation", () => {
+  it("clears successful-tool evidence when set_work_plan replaces a same-id item", () => {
+    const session = new AssistantSession(createBlankProject(), { config: CONFIG, chat: scriptedChat([]) });
+    const probe = session as unknown as {
+      applyWorkPlanTool(name: string, args: Record<string, unknown>): ToolResult;
+      turnSuccessfulTools: Set<string>;
+      successfulToolsWorkItemId: string | null;
+    };
+    const planArgs = {
+      goal: "타일 작업",
+      layers: [{ title: "L", items: [{ title: "A", instruction: "paint", successTools: ["paint_tiles"] }] }],
+    };
+
+    expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
+    probe.turnSuccessfulTools.add("paint_tiles");
+    probe.successfulToolsWorkItemId = "L1-1";
+    expect(probe.applyWorkPlanTool("set_work_plan", planArgs).ok).toBe(true);
+
+    const completed = probe.applyWorkPlanTool("complete_work_item", { itemId: "L1-1" });
+    expect(completed.ok).toBe(false);
+    expect(completed.summary).toContain("paint_tiles");
   });
 });
