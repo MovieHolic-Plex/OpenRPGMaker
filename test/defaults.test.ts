@@ -74,7 +74,7 @@ const STARTER_VILLAGE_NPCS = [
     faceResourceId: "easyrpg-faceset-actor2",
     faceIndex: 2,
     speaker: "세라",
-    body: "페이스칩도 함께 표시되니 실제 RPG Maker식 NPC 대화처럼 확인할 수 있어요.",
+    body: "얼굴 그림도 함께 뜨니까 실제 게임에서 보일 대화창을 그대로 확인할 수 있어요.",
   },
 ] as const;
 

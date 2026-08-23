@@ -19,7 +19,7 @@ vi.mock("@/ai/chatgptOAuthClient", async () => {
   };
 });
 
-const AI_CONFIG_KEY = "rpg-zzu:ai-config";
+const AI_CONFIG_KEY = "oprn:ai-config";
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
 

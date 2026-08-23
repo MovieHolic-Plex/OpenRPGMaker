@@ -71,7 +71,7 @@
 
 /* Gen1 knob 패널 — DOM 에서는 맨 뒤(요약 앞)지만 화면에서는 HP/MP 아래 전폭 한 줄이다.
    nth-child 매핑을 쓰지 않는 이유: 중간에 끼우면 이후 패널의 grid-area 가 전부 밀린다. */
-.database-modal-body .db-state-rm2k3-workbench > .db-state-runtime-panel {
+.database-modal-body .db-state-oprn-workbench > .db-state-runtime-panel {
   align-items: end;
   column-gap: 10px;
   display: grid;
