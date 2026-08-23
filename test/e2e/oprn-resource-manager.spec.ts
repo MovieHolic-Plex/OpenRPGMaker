@@ -1,6 +1,9 @@
 import { expect, test } from "@playwright/test";
 
 test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ page }, testInfo) => {
+  // 클래식 3분할 툴바(`toolbar-resource-manager`)는 expert 전용 크롬이다.
+  // 자동화 기본 부팅은 standard 이므로 명시적으로 켠다 (editorUiMode.ts DEFAULT/isLikelyAutomationBoot).
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerClassicLayout=1");
   await page.getByTestId("toolbar-resource-manager").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
@@ -23,6 +26,7 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
 });
 
 test("resource manager imports and protects RM2K3-shaped image profiles", async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerWave=1");
   await page.getByTestId("toolbar-resource-manager").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
@@ -35,7 +39,7 @@ test("resource manager imports and protects RM2K3-shaped image profiles", async 
   await page.locator("[data-testid^='resource-add-tileset-']").last().click();
   await expect(page.getByTestId("toast")).toContainText("타일셋 추가됨");
   await page.locator("[data-testid^='resource-apply-tileset-']").last().click();
-  await expect(page.getByTestId("toast")).toContainText("현재 맵 칩셋 적용");
+  await expect(page.getByTestId("toast")).toContainText("현재 맵 타일 그림판 적용");
   await page.locator("[data-testid^='resource-delete-']").last().click();
   await expect(page.getByTestId("toast")).toContainText("현재 맵 또는 다른 맵이 이 타일셋 리소스를 사용 중입니다.");
 
@@ -49,6 +53,7 @@ test("resource manager imports and protects RM2K3-shaped image profiles", async 
 });
 
 test("resource manager reports invalid image imports in Korean", async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerErrors=1");
   await page.getByTestId("toolbar-resource-manager").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
