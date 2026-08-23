@@ -149,6 +149,10 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
  */
 export const CONDITION_SCHEMA: JsonSchema = {
   type: "object",
+  description:
+    "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
+    "kind=all|any → conditions[]. kind=not → condition. value 는 kind 에 따라 boolean/number 로 갈린다 " +
+    "(스키마가 단일 type 만 허용하므로 properties 에는 선언하지 않는다).",
   properties: {
     kind: {
       type: "string",

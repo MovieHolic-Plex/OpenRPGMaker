@@ -4,6 +4,7 @@ import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { EndingCondition, EndingDef, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
 
 const VARIABLE_OPS = new Set(["==", ">=", "<=", ">", "<", "!="]);
@@ -34,7 +35,8 @@ const defineEnding: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const id = cleanId(args.id);
     const name = cleanName(args.name);
-    const conditions = parseEndingConditions(draft, args.conditions);
+    const flagWarnings: string[] = [];
+    const conditions = parseEndingConditions(draft, args.conditions, flagWarnings);
     const priority = typeof args.priority === "number" ? Math.trunc(args.priority) : 0;
     const epilogue = parseEpilogue(draft, args.epilogue);
     const ending: EndingDef = {
@@ -48,7 +50,7 @@ const defineEnding: ToolDefinition = {
     const index = draft.endings.findIndex((entry) => entry.id === id);
     if (index >= 0) draft.endings[index] = ending;
     else draft.endings.push(ending);
-    const warnings = collectEndingWarnings(draft.endings);
+    const warnings = [...flagWarnings, ...collectEndingWarnings(draft.endings)];
     return {
       summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}`,
       data: { ending, warnings },
@@ -85,12 +87,12 @@ function cleanName(value: unknown): string {
   return value.trim();
 }
 
-function parseEndingConditions(project: Project, value: unknown): EndingCondition[] {
+function parseEndingConditions(project: Project, value: unknown, warnings: string[]): EndingCondition[] {
   if (!Array.isArray(value)) throw new ToolError("conditions는 switch/variable 조건 배열이어야 합니다.", { code: "ending-conditions" });
-  return value.map((entry, index) => parseEndingCondition(project, entry, index));
+  return value.map((entry, index) => parseEndingCondition(project, entry, index, warnings));
 }
 
-function parseEndingCondition(project: Project, value: unknown, index: number): EndingCondition {
+function parseEndingCondition(project: Project, value: unknown, index: number, warnings: string[]): EndingCondition {
   try {
     validateConditionShape(`conditions[${index}]`, value);
   } catch (cause) {
@@ -102,15 +104,23 @@ function parseEndingCondition(project: Project, value: unknown, index: number): 
   if (condition.kind !== "switch" && condition.kind !== "variable") {
     throw new ToolError(`conditions[${index}]는 switch 또는 variable 조건이어야 합니다.`, { code: "ending-condition-kind" });
   }
+  // 아직 없는 플래그를 참조하면 만들어 준다. 엔딩 조건은 보통 "앞으로 켜질" 플래그를 가리키므로
+  // 존재 여부로 막으면 순서 교착이 생긴다(2026-08-23 실측: 존재하지 않는 sw_clear 로 define_ending 거부).
+  // create_quest/compile_puzzle 이 쓰는 ensureNamed* 와 같은 방침이다.
   if (condition.kind === "switch" && !project.switches.some((entry) => entry.id === condition.switchId)) {
-    throw new ToolError(`conditions[${index}].switchId가 존재하지 않습니다: ${condition.switchId}`, { code: "ending-switch" });
+    ensureNamedSwitch(project, condition.switchId, `엔딩 조건: ${condition.switchId}`);
+    warnings.push(`conditions[${index}].switchId '${condition.switchId}' 가 없어 새로 만들었습니다.`);
   }
   if (condition.kind === "variable") {
     if (!project.variables.some((entry) => entry.id === condition.variableId)) {
-      throw new ToolError(`conditions[${index}].variableId가 존재하지 않습니다: ${condition.variableId}`, { code: "ending-variable" });
+      ensureNamedVariable(project, condition.variableId, `엔딩 조건: ${condition.variableId}`);
+      warnings.push(`conditions[${index}].variableId '${condition.variableId}' 가 없어 새로 만들었습니다.`);
     }
     if (!VARIABLE_OPS.has(condition.op)) {
-      throw new ToolError(`conditions[${index}].op가 잘못되었습니다: ${condition.op}`, { code: "ending-variable-op" });
+      throw new ToolError(
+        `conditions[${index}].op가 잘못되었습니다: ${condition.op}. 허용: ${[...VARIABLE_OPS].join(", ")}`,
+        { code: "ending-variable-op" },
+      );
     }
   }
   return structuredClone(condition);

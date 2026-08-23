@@ -498,9 +498,13 @@ const listProjectCommits: ToolDefinition = {
 
 // DB/프로젝트 컬렉션별 {id, name} 목록. LLM이 기존 id를 확인하지 않고 추측해
 // 참조 오류를 내는 문제(evals 실패 패턴)를 막는 조회 툴이다.
+// 2026-08-23 실측: `elements`/`monsterSpecies` 가 목록에 없어서 모델이 `speciesId:"element_fire"`,
+// `elementRates:{element_fire:...}` 처럼 id 를 발명했고 무결성 검증에서 거부된 뒤
+// "속성 id 를 조회할 기능이 없다"며 작업 3건을 건너뛰었다. 참조 대상은 반드시 조회 가능해야 한다.
 const DB_COLLECTIONS = [
   "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "states",
   "battleAnimations", "switches", "variables", "commonEvents", "quests", "maps",
+  "elements", "monsterSpecies",
 ] as const;
 type DbCollection = (typeof DB_COLLECTIONS)[number];
 
@@ -519,7 +523,7 @@ function collectionEntries(project: Project, collection: DbCollection): { id: st
 
 const getDatabaseRecords: ToolDefinition = {
   name: "get_database_records",
-  description: "컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps.",
+  description: "컬렉션의 {id, name} 목록을 반환한다. 레코드를 참조/수정하기 전에 실제 id를 확인하는 용도. collection: actors/classes/skills/items/equipment/enemies/troops/states/battleAnimations/switches/variables/commonEvents/quests/maps/elements/monsterSpecies. enemy.speciesId 는 monsterSpecies, enemy.elementRates 의 키는 elements 에서 확인하라.",
   mode: "read",
   parameters: {
     type: "object",

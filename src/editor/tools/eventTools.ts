@@ -170,6 +170,32 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): voi
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
     (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
+    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings);
+  }
+}
+
+/**
+ * `EventPage` 필수 필드를 채운다.
+ *
+ * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
+ * 필수 필드가 비면 프로젝트 린트가 `page.trigger.kind` / `movement.route` 를 읽다 TypeError 로 죽고,
+ * 사용자에게는 "후처리 실패: Cannot read properties of undefined" 라는 고칠 수 없는 메시지만 남는다
+ * (2026-08-23 실측: upsert_event 3회 연속 같은 실패). 값을 채워 통과시키고 무엇을 채웠는지 경고한다.
+ */
+function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[]): void {
+  const filled: string[] = [];
+  if (page.id === undefined) { page.id = pageId; filled.push("id"); }
+  if (page.name === undefined) { page.name = event.id; filled.push("name"); }
+  if (page.conditions === undefined) { page.conditions = []; filled.push("conditions"); }
+  if (page.graphic === undefined) { page.graphic = {}; filled.push("graphic"); }
+  if (page.trigger === undefined) {
+    page.trigger = event.trigger ?? { kind: "action" };
+    filled.push(`trigger(${page.trigger.kind})`);
+  }
+  if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
+  if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
+  if (filled.length > 0) {
+    warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
   }
 }
 
