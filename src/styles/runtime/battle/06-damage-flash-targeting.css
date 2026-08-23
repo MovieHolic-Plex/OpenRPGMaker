@@ -128,15 +128,20 @@
 /* 씬 루트에 걸리는 셰이크 — 리터럴 translate 만 쓰면 애니메이션 300ms 동안
    scale(var(--battle-stage-scale))(01-scene-base.css)를 덮어써 씬이 640px 로
    붕괴한다(급소 타격 프레임 실측, 8차와 동일 계열). scale 을 항상 곱한다. */
+/* 진폭은 애니메이션 타이밍의 screenShake.power 에서 온다(battleAnimationEffectStyle.ts).
+   변수가 없으면 종전 고정값(6px/4px)으로 떨어져 기존 호출부가 그대로 동작한다. */
 @keyframes battle-screen-shake {
   25% {
-    transform: translate(-6px, 4px) scale(var(--battle-stage-scale, 1));
+    transform: translate(calc(var(--battle-shake-x, 6px) * -1), var(--battle-shake-y, 4px))
+      scale(var(--battle-stage-scale, 1));
   }
   50% {
-    transform: translate(6px, -4px) scale(var(--battle-stage-scale, 1));
+    transform: translate(var(--battle-shake-x, 6px), calc(var(--battle-shake-y, 4px) * -1))
+      scale(var(--battle-stage-scale, 1));
   }
   75% {
-    transform: translate(-4px, -2px) scale(var(--battle-stage-scale, 1));
+    transform: translate(calc(var(--battle-shake-x, 6px) * -0.67), calc(var(--battle-shake-y, 4px) * -0.5))
+      scale(var(--battle-stage-scale, 1));
   }
   100% {
     transform: translate(0, 0) scale(var(--battle-stage-scale, 1));

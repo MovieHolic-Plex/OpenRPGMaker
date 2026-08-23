@@ -31,6 +31,7 @@ import {
   SCARLOXY_UI_ICON_ASSETS,
 } from "@/assets/scarloxyPack";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
@@ -384,6 +385,7 @@ function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project)
       break;
     case "battle":
       for (const asset of EASYRPG_BATTLE_ASSETS) add(asset.id, asset.name);
+      for (const asset of GENERATED_EFFECT_SHEET_ASSETS) add(asset.id, asset.name);
       break;
     case "icon":
     case "image":

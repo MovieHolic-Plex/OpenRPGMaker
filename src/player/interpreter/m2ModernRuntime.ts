@@ -4,6 +4,7 @@ import { nextSessionRandom } from "@/project/session";
 import { evaluateM2Expression } from "./m2Expression";
 import { fieldBoolean, fieldNumber, fieldString } from "./m2RuntimeFields";
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
+import { planScreenEffect } from "./screenEffectPlan";
 
 export function executeModernCommand(
   session: PlaySessionLike,
@@ -23,13 +24,7 @@ export function executeModernCommand(
       session.flags[`camera:${runtime.camera.mode}`] = true;
       return true;
     case "Screen Effect":
-      runtime.screenEffects.push({
-        effect: fieldString(fields, "effect", "fadeIn"),
-        value: fieldString(fields, "value", ""),
-        durationMs: fieldNumber(fields, "durationMs", 300),
-      });
-      session.flags[`screen-effect:${fieldString(fields, "effect", "fadeIn")}`] = true;
-      return true;
+      return applyScreenEffect(session, runtime, fields);
     case "Spawn Event":
       recordSpawnEvent(session, runtime, fields);
       return true;
@@ -156,6 +151,43 @@ function recordUiCommand(session: PlaySessionLike, runtime: M2RuntimeState, fiel
   };
   runtime.ui.push(command);
   session.flags[`ui:${command.surface}`] = command.message.length > 0;
+}
+
+/**
+ * `Screen Effect` 를 실제 렌더 경로에 얹는다.
+ *
+ * 지속형(tint/fade)·날씨는 여기서 `runtime.screen` 에 반영하면 기존 렌더러가 집어간다.
+ * 일회형 flash 는 카메라 API 를 태워야 해서 상태만 기록하고, 블로킹 StepResult 는
+ * commandCatalog 가 발행한다(구식 Flash Screen 과 같은 2단 구조).
+ *
+ * @returns 처리했으면 true. **false 를 돌리면** 호출부 체인이 계속 흘러 recordFallback 에
+ *   닿는다 — 렌더러 없는 옵션(blur)을 조용히 삼키지 않고 기록으로 남기기 위한 경로다.
+ */
+function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): boolean {
+  const effect = fieldString(fields, "effect", "fadeIn");
+  const value = fieldString(fields, "value", "");
+  const durationMs = fieldNumber(fields, "durationMs", 300);
+
+  // 기존 계약 유지: 상태 조회기·증거 스펙이 이 큐와 플래그를 읽는다.
+  runtime.screenEffects.push({ effect, value, durationMs });
+  session.flags[`screen-effect:${effect}`] = true;
+
+  const plan = planScreenEffect(effect, value, durationMs);
+  switch (plan.kind) {
+    case "tint":
+      if (plan.unhide) runtime.screen.hidden = false;
+      runtime.screen.tint = plan.tint;
+      runtime.screen.tintDurationMs = plan.tintDurationMs;
+      return true;
+    case "flash":
+      runtime.screen.flash = plan.color;
+      return true;
+    case "weather":
+      runtime.screen.weather = plan.weather;
+      return true;
+    case "unsupported":
+      return false;
+  }
 }
 
 function recordSpawnEvent(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
