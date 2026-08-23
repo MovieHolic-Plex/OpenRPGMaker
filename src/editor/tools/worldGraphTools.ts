@@ -2,7 +2,7 @@
 
 import { passableLanding, upsertEventIntoMap } from "./eventTools";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
-import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { appendToTree } from "@/project/mapTree";
 import { isPassable } from "@/project/collision";
 import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -49,6 +49,52 @@ const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 }
 const DEFAULT_MAP_SIZE = 20;
 const DUNGEON_AMBIENT = 0.75;
 
+/** 월드 gate — `{side}` 또는 `{x,y,w,h}` 유니온이라 키 합집합을 선택 필드로 둔다. */
+const WORLD_GATE_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: {
+    side: { type: "string", enum: ["north", "south", "east", "west"] },
+    x: { type: "integer" },
+    y: { type: "integer" },
+    w: { type: "integer" },
+    h: { type: "integer" },
+  },
+};
+
+/** 월드 노드 — plan_world/build_world 가 같은 shape 을 받는다. */
+const WORLD_GRAPH_NODE_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: {
+    mapId: { type: "string" },
+    role: { type: "string", enum: ["town", "field", "dungeon", "interior"] },
+    label: { type: "string" },
+    width: { type: "integer" },
+    height: { type: "integer" },
+    size: { type: "string" },
+    concept: { type: "string" },
+  },
+  required: ["mapId", "role"],
+};
+
+/** 월드 edge — `{from:{mapId,exit?},to:{mapId,entry?},kind?}`. */
+const WORLD_GRAPH_EDGE_SCHEMA: JsonSchema = {
+  type: "object",
+  properties: {
+    from: {
+      type: "object",
+      properties: { mapId: { type: "string" }, exit: WORLD_GATE_SCHEMA },
+      required: ["mapId"],
+    },
+    to: {
+      type: "object",
+      properties: { mapId: { type: "string" }, entry: WORLD_GATE_SCHEMA },
+      required: ["mapId"],
+    },
+    kind: { type: "string", description: "기본 transfer" },
+  },
+  required: ["from", "to"],
+};
+
 const planWorld: ToolDefinition = {
   name: "plan_world",
   description: "선언형 worldGraph를 검증해 프로젝트에 등록한다. 맵은 만들지 않으며, edges는 nodes에 선언된 mapId만 참조할 수 있다.",
@@ -59,12 +105,12 @@ const planWorld: ToolDefinition = {
       nodes: {
         type: "array",
         description: "월드 노드 [{mapId,role,label?}], role: town/field/dungeon/interior",
-        items: { type: "object" },
+        items: WORLD_GRAPH_NODE_SCHEMA,
       },
       edges: {
         type: "array",
         description: "월드 edge [{from:{mapId,exit?},to:{mapId,entry?},kind?}], kind 기본 transfer",
-        items: { type: "object" },
+        items: WORLD_GRAPH_EDGE_SCHEMA,
       },
     },
     required: ["nodes", "edges"],
@@ -88,8 +134,28 @@ const linkMaps: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      from: { type: "object", description: "{mapId,x,y} 또는 {mapId,exit:{side|x,y,w,h}}" },
-      to: { type: "object", description: "{mapId,x,y} 또는 {mapId,entry:{x,y|side|x,y,w,h}}" },
+      from: {
+        type: "object",
+        description: "{mapId,x,y} 또는 {mapId,exit:{side|x,y,w,h}}",
+        properties: {
+          mapId: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+          exit: WORLD_GATE_SCHEMA,
+        },
+        required: ["mapId"],
+      },
+      to: {
+        type: "object",
+        description: "{mapId,x,y} 또는 {mapId,entry:{x,y|side|x,y,w,h}}",
+        properties: {
+          mapId: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+          entry: WORLD_GATE_SCHEMA,
+        },
+        required: ["mapId"],
+      },
       bidirectional: { type: "boolean", description: "기본 true. false면 from→to 이벤트만 만든다." },
       fade: { type: "string", enum: ["black", "white", "none"] },
     },
@@ -121,6 +187,11 @@ const buildWorld: ToolDefinition = {
       plan: {
         type: "object",
         description: "{nodes:[{mapId,role,label?,width?,height?,size?,concept?}],edges:[...]}",
+        properties: {
+          nodes: { type: "array", items: WORLD_GRAPH_NODE_SCHEMA },
+          edges: { type: "array", items: WORLD_GRAPH_EDGE_SCHEMA },
+        },
+        required: ["nodes"],
       },
       fade: { type: "string", enum: ["black", "white", "none"] },
     },

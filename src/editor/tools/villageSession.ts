@@ -25,6 +25,7 @@ import { countBroadleaf2x2, evaluateVillageLook, type VillageFix, type VillageLo
 import { checkReachability } from "@/project/lint/reachability";
 import { MAP_TOOLS } from "./mapTools";
 import { buildVillageDomain } from "./villageBuilder";
+import { RECT_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "./schemaShapes";
 
 const CONIFER_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
 const BROADLEAF_2X2_GROUP = `${COMBINED_TOWN_HARNESS_PREFIX}broadleaf-tree-2x2`;
@@ -123,8 +124,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         height: { type: "integer" },
         mapName: { type: "string" },
         budgetTurns: { type: "integer", description: "기본 12" },
-        houses: { type: "array", items: { type: "object" } },
-        npcs: { type: "array", items: { type: "object" } },
+        houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
+        npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
         pathStyle: { type: "string" },
         settlementLayout: { type: "string" },
         roadWidth: { type: "integer" },
@@ -205,7 +206,7 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
       properties: {
         mapId: { type: "string" },
         area: {
-          type: "object",
+          ...RECT_SCHEMA,
           description: "{x,y,w,h}. 생략 시 맵 가장자리 띠 또는 세션 forest 마스크",
         },
         style: { type: "string", enum: ["conifer", "broadleaf-2x2", "mixed"] },
@@ -266,8 +267,8 @@ export const VILLAGE_SESSION_TOOLS: readonly ToolDefinition[] = [
         height: { type: "integer" },
         mapName: { type: "string" },
         budgetTurns: { type: "integer" },
-        houses: { type: "array", items: { type: "object" } },
-        npcs: { type: "array", items: { type: "object" } },
+        houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
+        npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
         pathStyle: { type: "string" },
         settlementLayout: { type: "string" },
         roadWidth: { type: "integer" },

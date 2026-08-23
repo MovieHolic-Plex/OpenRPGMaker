@@ -31,6 +31,7 @@ import type {
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { COMMAND_SCHEMA } from "./schemaShapes";
 
 // id 기준으로 배열에 upsert.
 // Serialize concurrent DB writes to prevent lost update (read-modify-write race).
@@ -812,7 +813,7 @@ const upsertCommonEvent: ToolDefinition = {
       name: { type: "string" },
       trigger: { type: "string", enum: ["none", "auto", "parallel"] },
       conditionSwitchId: { type: "string" },
-      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: { type: "object" } },
+      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: COMMAND_SCHEMA },
     },
     required: ["id", "name", "commands"],
   },
@@ -850,7 +851,11 @@ const setSessionStart: ToolDefinition = {
     type: "object",
     properties: {
       gold: { type: "integer" },
-      inventory: { type: "object", description: "{ itemId: 수량 }" },
+      inventory: {
+        type: "object",
+        description: "{ itemId: 수량 } — 키가 아이템 id 인 동적 맵",
+        additionalProperties: true,
+      },
       partyActorIds: { type: "array", description: "시작 파티 액터 id", items: { type: "string" } },
     },
   },
@@ -874,17 +879,53 @@ const setTitleScreen: ToolDefinition = {
     type: "object",
     properties: {
       title: { type: "string" },
-      menuLabels: { type: "object", description: "{ newGame, continueGame, quit }" },
-      menuVisibility: { type: "object", description: "{ newGame, continueGame, quit } — newGame always true" },
+      menuLabels: {
+        type: "object",
+        description: "{ newGame, continueGame, quit }",
+        properties: {
+          newGame: { type: "string" },
+          continueGame: { type: "string" },
+          quit: { type: "string" },
+        },
+      },
+      menuVisibility: {
+        type: "object",
+        description: "{ newGame, continueGame, quit } — newGame always true",
+        properties: {
+          newGame: { type: "boolean" },
+          continueGame: { type: "boolean" },
+          quit: { type: "boolean" },
+        },
+      },
       sounds: {
         type: "object",
         description: "{ cursorSeResourceId, confirmSeResourceId, cancelSeResourceId } nested merge",
+        properties: {
+          cursorSeResourceId: { type: "string" },
+          confirmSeResourceId: { type: "string" },
+          cancelSeResourceId: { type: "string" },
+        },
       },
       titleGraphic: {
         type: "object",
         description: "{ mode: text|graphic|both, resourceId, x, y } nested merge",
+        properties: {
+          mode: { type: "string", enum: ["text", "graphic", "both"] },
+          resourceId: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+        },
       },
-      layout: { type: "object", description: "{ titleX, titleY, menuX, menuY } nested merge" },
+      layout: {
+        type: "object",
+        description: "{ titleX, titleY, menuX, menuY } nested merge",
+        properties: {
+          titleX: { type: "integer" },
+          titleY: { type: "integer" },
+          menuX: { type: "integer" },
+          menuY: { type: "integer" },
+        },
+      },
       backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
       musicResourceId: { type: "string" },
       showInputHint: { type: "boolean" },

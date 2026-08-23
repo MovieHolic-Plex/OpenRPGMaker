@@ -10,6 +10,7 @@ import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { resolveGraphic, type GraphicSpec } from "./eventCompile";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { COORD_SCHEMA, CUTSCENE_BEAT_SCHEMA, GRAPHIC_SPEC_SCHEMA } from "./schemaShapes";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const TRANSPARENT: EventPageGraphic = { transparent: true };
@@ -174,7 +175,24 @@ const placeExamineHotspots: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      hotspots: { type: "array", items: { type: "object" } },
+      hotspots: {
+        type: "array",
+        description: "{at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}[]",
+        items: {
+          type: "object",
+          properties: {
+            at: COORD_SCHEMA,
+            name: { type: "string" },
+            lines: { type: "array", items: { type: "string" } },
+            beats: { type: "array", items: CUTSCENE_BEAT_SCHEMA },
+            once: { type: "boolean" },
+            itemId: { type: "string" },
+            setSwitch: { type: "string" },
+            graphic: GRAPHIC_SPEC_SCHEMA,
+          },
+          required: ["at"],
+        },
+      },
     },
     required: ["mapId", "hotspots"],
   },
@@ -674,11 +692,27 @@ const compilePuzzle: ToolDefinition = {
       mapId: { type: "string" },
       puzzleId: { type: "string" },
       kind: { type: "string", enum: ["switch-sequence", "password", "item-gate", "push-switches"] },
-      onSolve: { type: "object", description: "{setSwitch?,beats?,message?}" },
+      onSolve: {
+        type: "object",
+        description: "{setSwitch?,beats?,message?}",
+        properties: {
+          setSwitch: { type: "string" },
+          beats: { type: "array", items: CUTSCENE_BEAT_SCHEMA },
+          message: { type: "string" },
+        },
+      },
       reset: { type: "boolean" },
-      nodes: { type: "array", items: { type: "object" } },
+      nodes: {
+        type: "array",
+        description: "{at:{x,y},name?}[] — switch-sequence 노드",
+        items: {
+          type: "object",
+          properties: { at: COORD_SCHEMA, name: { type: "string" } },
+          required: ["at"],
+        },
+      },
       order: { type: "array", items: { type: "integer" } },
-      at: { type: "object", description: "{x,y}" },
+      at: COORD_SCHEMA,
       name: { type: "string" },
       answer: { type: "string" },
       prompt: { type: "string" },
@@ -686,7 +720,15 @@ const compilePuzzle: ToolDefinition = {
       consumeItem: { type: "boolean" },
       lockedMessage: { type: "string" },
       unlockedMessage: { type: "string" },
-      plates: { type: "array", items: { type: "object" } },
+      plates: {
+        type: "array",
+        description: "{at:{x,y},name?}[] — push-switches 발판",
+        items: {
+          type: "object",
+          properties: { at: COORD_SCHEMA, name: { type: "string" } },
+          required: ["at"],
+        },
+      },
       all: { type: "boolean" },
     },
     required: ["mapId", "puzzleId", "kind", "onSolve"],

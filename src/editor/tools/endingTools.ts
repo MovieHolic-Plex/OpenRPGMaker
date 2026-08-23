@@ -4,6 +4,7 @@ import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { EndingCondition, EndingDef, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
 
 const VARIABLE_OPS = new Set(["==", ">=", "<=", ">", "<", "!="]);
 
@@ -17,9 +18,9 @@ const defineEnding: ToolDefinition = {
     properties: {
       id: { type: "string" },
       name: { type: "string" },
-      conditions: { type: "array", items: { type: "object" } },
+      conditions: { type: "array", description: "switch/variable 조건", items: CONDITION_SCHEMA },
       priority: { type: "integer", description: "높을수록 우선. 기본 0" },
-      epilogue: { type: "array", description: "CutsceneBeat[]", items: { type: "object" } },
+      epilogue: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
     },
     required: ["id", "name", "conditions"],
   },

@@ -10,6 +10,7 @@ import { requireMap } from "./mapHelpers";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { Project } from "@/project/types";
+import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
 
 const INNER_TOOLS = new Map<string, ToolDefinition>(
   [...EVENT_TOOLS, ...INVESTIGATION_TOOLS, ...LIGHTING_TOOLS, ...ENDING_TOOLS].map((tool) => [tool.name, tool]),
@@ -197,13 +198,13 @@ const makeHorrorLoop: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 트랩 그리드 시작 (trapCells 없을 때)" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 트랩 그리드 시작 (trapCells 없을 때)" },
       trapCount: { type: "integer", description: "자동 트랩 개수 1–8, 기본 3" },
-      trapCells: { type: "array", items: { type: "object" }, description: "{x,y}[] 명시 트랩 좌표" },
+      trapCells: { type: "array", items: COORD_SCHEMA, description: "{x,y}[] 명시 트랩 좌표" },
       message: { type: "string" },
       includeChase: { type: "boolean" },
-      chaserAt: { type: "object", description: "{x,y}" },
-      safeZone: { type: "object", description: "{x,y,w,h}" },
+      chaserAt: { ...COORD_SCHEMA, description: "{x,y} 추격자 시작" },
+      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
       mood: { type: "boolean", description: "true면 어두운 set_scene_mood 적용" },
       activateSwitch: { type: "string" },
     },
@@ -311,11 +312,11 @@ const makeGalleryRoom: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 핫스팟 배치 시작" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 핫스팟 배치 시작" },
       hotspotCount: { type: "integer", description: "3–16, 기본 6" },
       hotspotNames: { type: "array", items: { type: "string" } },
       puzzleKind: { type: "string", enum: ["item-gate", "switch-sequence", "password", "none"] },
-      puzzleAt: { type: "object", description: "{x,y} 퍼즐/게이트 위치" },
+      puzzleAt: { ...COORD_SCHEMA, description: "{x,y} 퍼즐/게이트 위치" },
       requiredItemId: { type: "string", description: "item-gate용 아이템 (기본 프로젝트 첫 아이템)" },
       solveSwitchId: { type: "string" },
       password: { type: "string" },

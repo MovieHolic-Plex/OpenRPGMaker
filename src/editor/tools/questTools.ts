@@ -15,6 +15,7 @@ import type { Project } from "@/project/types";
 import { questDefId, type QuestDef, type QuestGraphDef } from "@/project/quest/questDef";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { CONDITION_SCHEMA } from "./schemaShapes";
 
 // 호환용 재수출(기존 소비자 대비).
 export { ensureNamedVariable };
@@ -61,7 +62,72 @@ const createQuest: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      def: { type: "object", description: "QuestDef(key/title/summary/giver/steps/rewards?/gates?)" },
+      def: {
+        type: "object",
+        description: "QuestDef(key/title/summary/giver/steps/rewards?/gates?)",
+        properties: {
+          key: { type: "string", description: "영문/숫자/밑줄" },
+          title: { type: "string" },
+          summary: { type: "string" },
+          giver: {
+            type: "object",
+            description: "기존 이벤트 참조 {mapId,eventId} 또는 신규 생성 {create:{...}}",
+            properties: {
+              mapId: { type: "string" },
+              eventId: { type: "string" },
+              create: { type: "object", description: "QuestNpcSpec", additionalProperties: true },
+            },
+          },
+          steps: {
+            type: "array",
+            description: "QuestStep[] — kind: talk|collect|kill|reach",
+            items: {
+              type: "object",
+              properties: {
+                kind: { type: "string", enum: ["talk", "collect", "kill", "reach"] },
+                mapId: { type: "string" },
+                x: { type: "integer" },
+                y: { type: "integer" },
+                itemId: { type: "string" },
+                troopId: { type: "string" },
+                lines: { type: "array", items: { type: "string" } },
+              },
+              required: ["kind"],
+              additionalProperties: true,
+            },
+          },
+          rewards: {
+            type: "object",
+            properties: {
+              gold: { type: "integer" },
+              items: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: { itemId: { type: "string" }, count: { type: "integer" } },
+                  required: ["itemId", "count"],
+                },
+              },
+            },
+          },
+          gates: {
+            type: "array",
+            description: "단계 게이트",
+            items: {
+              type: "object",
+              properties: {
+                mapId: { type: "string" },
+                x: { type: "integer" },
+                y: { type: "integer" },
+                requiresStep: { type: "integer", description: "0-기반 단계 인덱스" },
+                lockedText: { type: "string" },
+              },
+              required: ["mapId", "x", "y", "requiresStep", "lockedText"],
+            },
+          },
+        },
+        required: ["key", "title", "summary", "giver", "steps"],
+      },
     },
     required: ["def"],
   },
@@ -104,7 +170,10 @@ const defineQuest: ToolDefinition = {
           properties: {
             id: { type: "string" },
             description: { type: "string" },
-            completesWhen: { type: "object", description: "조건 객체 또는 {all:[조건...]}" },
+            completesWhen: {
+              ...CONDITION_SCHEMA,
+              description: "조건 객체 또는 {kind:'all', conditions:[...]}",
+            },
             activatesFlags: { type: "array", items: { type: "string" } },
           },
           required: ["id", "description", "completesWhen"],

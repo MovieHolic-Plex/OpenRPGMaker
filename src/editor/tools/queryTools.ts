@@ -27,6 +27,7 @@ import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
 export function isMapWaterTile(tile: number): boolean {
@@ -419,7 +420,21 @@ const runLint: ToolDefinition = {
   mode: "read",
   parameters: {
     type: "object",
-    properties: { reachability: { type: "array", description: "[{mapId,from,targets}]", items: { type: "object" } } },
+    properties: {
+      reachability: {
+        type: "array",
+        description: "[{mapId,from,targets}]",
+        items: {
+          type: "object",
+          properties: {
+            mapId: { type: "string" },
+            from: COORD_SCHEMA,
+            targets: { type: "array", items: COORD_SCHEMA },
+          },
+          required: ["mapId", "from", "targets"],
+        },
+      },
+    },
   },
   run(project, args): ToolExecResult {
     const issues: LintIssue[] = [
@@ -442,8 +457,8 @@ const checkReachabilityTool: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      from: { type: "object", description: "{x,y}" },
-      targets: { type: "array", description: "[{x,y}...]", items: { type: "object" } },
+      from: COORD_SCHEMA,
+      targets: { type: "array", description: "[{x,y}...]", items: COORD_SCHEMA },
     },
     required: ["mapId", "from", "targets"],
   },

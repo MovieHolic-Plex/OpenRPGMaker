@@ -4,6 +4,7 @@
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 import { runWalkthrough, type WalkthroughStep } from "@/testing/walkthroughRunner";
 import type { ToolDefinition, ToolExecResult } from "./types";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 const playWalkthrough: ToolDefinition = {
   name: "play_walkthrough",
@@ -15,7 +16,24 @@ const playWalkthrough: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      scenario: { type: "array", description: "워크스루 스텝 배열", items: { type: "object" } },
+      scenario: {
+        type: "array",
+        description: "워크스루 스텝 배열",
+        items: {
+          type: "object",
+          properties: {
+            kind: { type: "string", description: "스텝 종류(예: move, interact, battle, expect)" },
+            mapId: { type: "string" },
+            x: { type: "integer" },
+            y: { type: "integer" },
+            eventId: { type: "string" },
+            text: { type: "string" },
+          },
+          required: ["kind"],
+          // 스텝 variant 별 전용 필드는 워크스루 실행기가 검증한다.
+          additionalProperties: true,
+        },
+      },
       seed: { type: "integer", description: "전투 판정 시드(선택, 재현용)" },
     },
     required: ["scenario"],
@@ -62,8 +80,24 @@ const runSceneTestTool: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      start: { type: "object", description: "{x,y}" },
-      steps: { type: "array", description: "SceneStep[]", items: { type: "object" } },
+      start: COORD_SCHEMA,
+      steps: {
+        type: "array",
+        description: "SceneStep[]",
+        items: {
+          type: "object",
+          properties: {
+            kind: { type: "string", description: "스텝 종류" },
+            mapId: { type: "string" },
+            x: { type: "integer" },
+            y: { type: "integer" },
+            eventId: { type: "string" },
+            text: { type: "string" },
+          },
+          required: ["kind"],
+          additionalProperties: true,
+        },
+      },
     },
     required: ["mapId", "start", "steps"],
   },

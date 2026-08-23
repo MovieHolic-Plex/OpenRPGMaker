@@ -10,6 +10,7 @@ import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
 import { inMapBounds, lineCells, setLower, type Point } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 type MapTheme = "village" | "forest" | "cave";
 
@@ -92,8 +93,8 @@ const generateMap: ToolDefinition = {
       name: { type: "string" },
       width: { type: "integer", description: "가로 타일 수(최대 256)" },
       height: { type: "integer", description: "세로 타일 수(최대 256)" },
-      entrance: { type: "object", description: "{x,y} 입구(생략 시 좌측 중앙)" },
-      pois: { type: "array", description: "[{x,y}] 관심 지점", items: { type: "object" } },
+      entrance: { ...COORD_SCHEMA, description: "{x,y} 입구(생략 시 좌측 중앙)" },
+      pois: { type: "array", description: "[{x,y}] 관심 지점", items: COORD_SCHEMA },
       chokepoints: { type: "integer", description: "장애물 밀도(0~100, 기본 12)" },
       seed: { type: "integer" },
       id: { type: "string" },

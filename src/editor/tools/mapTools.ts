@@ -33,6 +33,7 @@ import { jitterMaxOffset, naturalnessArg, naturalnessLabel, NATURALNESS_GUIDANCE
 import { paletteTilePickerForTool, type PaletteTilePicker } from "./paletteToolArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
+import { COORD_SCHEMA } from "./schemaShapes";
 
 // 맵 테두리를 벽으로 두른다.
 function borderWalls(map: GameMap): void {
@@ -123,9 +124,9 @@ const paintTiles: ToolDefinition = {
       layer: { type: "string", enum: ["lower", "upper"] },
       mode: { type: "string", enum: ["rect", "line", "fill", "cells"] },
       tile: { type: "integer", description: "타일 인덱스(-1=비움)" },
-      from: { type: "object", description: "{x,y}" },
-      to: { type: "object", description: "{x,y}" },
-      cells: { type: "array", description: "[{x,y}...]", items: { type: "object" } },
+      from: COORD_SCHEMA,
+      to: COORD_SCHEMA,
+      cells: { type: "array", description: "[{x,y}...]", items: COORD_SCHEMA },
     },
     required: ["mapId", "layer", "mode", "tile"],
   },
@@ -259,7 +260,7 @@ const paintRoad: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      points: { type: "array", description: "[{x,y}...] 경로 꼭짓점", items: { type: "object" } },
+      points: { type: "array", description: "[{x,y}...] 경로 꼭짓점", items: COORD_SCHEMA },
       style: { type: "string", enum: ["dirt", "sand"] },
       presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
       paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
@@ -338,7 +339,7 @@ const stampStructure: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       template: { type: "string", enum: STRUCTURE_STYLES as unknown as string[] },
-      origin: { type: "object", description: "{x,y} 좌상단" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
       presetId: { type: "string", description: "팔레트 프리셋 id. 지정 시 paletteRole과 함께 slot tileIds에서 선택" },
       paletteRole: { type: "string", description: "팔레트 role. presetId와 함께 지정" },
       naturalness: { type: "number", description: "0~1 자연도. origin을 최대 2칸 지터(기본 0.5)" },
@@ -560,7 +561,7 @@ const previewHouse: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 좌상단" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
       width: { type: "integer", description: `가로 칸 수(${HOUSE_MIN_WIDTH}~${HOUSE_MAX_WIDTH})` },
       height: { type: "integer", description: `세로 칸 수(${HOUSE_MIN_HEIGHT}~${HOUSE_MAX_HEIGHT}, 지붕 4행 포함)` },
       material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
@@ -589,7 +590,7 @@ const buildHouse: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      origin: { type: "object", description: "{x,y} 좌상단" },
+      origin: { ...COORD_SCHEMA, description: "{x,y} 좌상단" },
       width: { type: "integer", description: `가로 칸 수(${HOUSE_MIN_WIDTH}~${HOUSE_MAX_WIDTH})` },
       height: { type: "integer", description: `세로 칸 수(${HOUSE_MIN_HEIGHT}~${HOUSE_MAX_HEIGHT}, 지붕 4행 포함)` },
       material: { type: "string", enum: HOUSE_MATERIALS as unknown as string[] },
