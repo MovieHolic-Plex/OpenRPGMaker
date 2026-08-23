@@ -13,6 +13,7 @@ import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FARMING_RESOURCE_IDS } from "@/assets/farmingSprites";
+import { GENERATED_EFFECT_RESOURCE_IDS } from "@/assets/generatedEffectSheets";
 import { RM2K3_GENERATED_ASSET_PLAN } from "@/assets/rm2k3GeneratedAssetPlan";
 import { SCARLOXY_RESOURCE_IDS } from "@/assets/scarloxyPack";
 import { assert } from "./guards";
@@ -38,6 +39,8 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of bgmCatalogResourceIds()) ids.add(id);
   for (const id of SCARLOXY_RESOURCE_IDS) ids.add(id);
   for (const id of FARMING_RESOURCE_IDS) ids.add(id);
+  // 절차 생성 전투 이펙트 시트. 기본 DB 가 이 id 를 참조하므로 빠지면 기본 프로젝트조차 역직렬화에서 던진다.
+  for (const id of GENERATED_EFFECT_RESOURCE_IDS) ids.add(id);
   return ids;
 }
 

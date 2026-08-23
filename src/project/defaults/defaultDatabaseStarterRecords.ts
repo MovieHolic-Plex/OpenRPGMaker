@@ -10,6 +10,13 @@ import type {
   StateRecord,
 } from "../types";
 import { SCARLOXY_BATTLE_ANIMATION_SHEET } from "@/assets/scarloxyPack";
+import {
+  GENERATED_EFFECT_SHEET,
+  GENERATED_EFFECT_SHEETS,
+  generatedEffectAnimationId,
+  generatedEffectResourceId,
+  type GeneratedEffectSheetSeed,
+} from "@/assets/generatedEffectSheets";
 import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID, DEFAULT_STATE_ID } from "./constants";
@@ -138,33 +145,6 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
       position: "center",
       timings: [timingShake({ frameIndex: 1, power: 2, speed: 4, durationFrames: 5 })],
     }),
-    effectAnimation({
-      id: "anim_magic",
-      name: "마법 충격",
-      resourceId: "easyrpg-battle-blow",
-      scope: "allTargets",
-      position: "screen",
-      timings: [
-        timingFlash({ frameIndex: 0, target: "screen", red: 120, green: 180, blue: 255, durationFrames: 8, soundResourceId: "easyrpg-sound-magic1" }),
-        timingShake({ frameIndex: 2, power: 3, speed: 5, durationFrames: 8 }),
-      ],
-    }),
-    effectAnimation({
-      id: "anim_heal",
-      name: "회복 빛",
-      resourceId: "easyrpg-battle-blow",
-      scope: "singleTarget",
-      position: "head",
-      timings: [timingFlash({ frameIndex: 0, target: "target", red: 160, green: 255, blue: 180, durationFrames: 6, soundResourceId: "easyrpg-sound-recovery5" })],
-    }),
-    effectAnimation({
-      id: "anim_poison",
-      name: "독침",
-      resourceId: "easyrpg-battle-arrow",
-      scope: "singleTarget",
-      position: "center",
-      timings: [timingFlash({ frameIndex: 1, target: "target", red: 120, green: 255, blue: 120, durationFrames: 5, soundResourceId: "easyrpg-sound-poison" })],
-    }),
     // Scarloxy MPWSP01 팩 이펙트 — 96x96 4프레임 가로 스트립(scripts/import-scarloxy-pack.py 변환).
     scarloxyEffectAnimation("anim_scarloxy_explosion", "폭발 (Scarloxy)", "explosion", [
       timingFlash({ frameIndex: 0, target: "target", red: 255, green: 200, blue: 120, durationFrames: 5 }),
@@ -185,7 +165,38 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
     scarloxyEffectAnimation("anim_scarloxy_splash", "물보라 (Scarloxy)", "splash", [
       timingFlash({ frameIndex: 1, target: "target", red: 120, green: 180, blue: 255, durationFrames: 5 }),
     ]),
+    // 절차 생성 이펙트 — scripts/gen-effect-sheets.mjs 가 카탈로그를 읽어 렌더한 96x96 5프레임 시트.
+    ...GENERATED_EFFECT_SHEETS.map(generatedEffectAnimation),
   ];
+}
+
+// 회복·마법·독은 원래 근접 타격 아트(blow/arrow)를 돌려썼다 — 화면에서 셋이 구분되지 않는
+// 근본 원인이었다. id 는 유지해야 기존 스킬·아이템 참조가 안 깨지므로 아트만 갈아탄다.
+const LEGACY_EFFECT_IDS: Record<string, { readonly id: string; readonly name: string }> = {
+  "arcane-nova": { id: "anim_magic", name: "마법 충격" },
+  "heal-bloom": { id: "anim_heal", name: "회복 빛" },
+  "poison-mist": { id: "anim_poison", name: "독침" },
+};
+
+function generatedEffectAnimation(seed: GeneratedEffectSheetSeed): BattleAnimationRecord {
+  const legacy = LEGACY_EFFECT_IDS[seed.slug];
+  const timings: BattleAnimationTiming[] = [];
+  if (seed.flash !== undefined) timings.push(timingFlash(seed.flash));
+  if (seed.shake !== undefined) timings.push(timingShake(seed.shake));
+  return normalizeBattleAnimationRecord({
+    id: legacy?.id ?? generatedEffectAnimationId(seed.slug),
+    name: legacy?.name ?? seed.name,
+    resourceId: generatedEffectResourceId(seed.slug),
+    sheet: { ...GENERATED_EFFECT_SHEET },
+    scope: seed.scope,
+    position: seed.position,
+    large: seed.scope === "screen" || seed.position === "screen",
+    // 시트의 5프레임을 전부 순서대로 재생한다. 앞 3장만 쓰면 소멸 컷이 잘려 뚝 끊긴다.
+    frames: Array.from({ length: GENERATED_EFFECT_SHEET.columns }, (_unused, pattern) => ({
+      cells: [{ pattern, x: 0, y: -8, zoom: 100, opacity: 255, visible: true }],
+    })),
+    timings,
+  });
 }
 
 function skill(

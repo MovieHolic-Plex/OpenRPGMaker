@@ -34,9 +34,10 @@ describe("default database starter records", () => {
         expect.objectContaining({ id: DEFAULT_ANIMATION_ID, resourceId: "easyrpg-battle-blow" }),
         expect.objectContaining({ id: "anim_sword", resourceId: "easyrpg-battle-sword1" }),
         expect.objectContaining({ id: "anim_arrow", resourceId: "easyrpg-battle-arrow" }),
-        expect.objectContaining({ id: "anim_magic", resourceId: "easyrpg-battle-blow" }),
-        expect.objectContaining({ id: "anim_heal", resourceId: "easyrpg-battle-blow" }),
-        expect.objectContaining({ id: "anim_poison", resourceId: "easyrpg-battle-arrow" }),
+        // 마법·회복·독은 근접 타격 아트(blow/arrow) 대신 절차 생성 이펙트 시트를 쓴다.
+        expect.objectContaining({ id: "anim_magic", resourceId: "generated-battle-anim-arcane-nova" }),
+        expect.objectContaining({ id: "anim_heal", resourceId: "generated-battle-anim-heal-bloom" }),
+        expect.objectContaining({ id: "anim_poison", resourceId: "generated-battle-anim-poison-mist" }),
       ])
     );
     expect(database.items.find((item) => item.id === "item_poison_dart")).toMatchObject({

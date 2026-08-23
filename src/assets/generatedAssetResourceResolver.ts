@@ -2,6 +2,7 @@ import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
 import { resolveBgmCatalogAssetUrl } from "./bgmCatalogResolver";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
+import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
@@ -234,6 +235,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     LEGACY_PACKAGED_RESOURCE_URLS[resourceId] ??
     resolveEasyRpgRuntimeAssetUrl(resourceId) ??
     resolveScarloxyAssetUrl(resourceId) ??
+    resolveGeneratedEffectAssetUrl(resourceId) ??
     resolveFarmingAssetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
     resolveCc0AudioAssetUrl(resourceId) ??
