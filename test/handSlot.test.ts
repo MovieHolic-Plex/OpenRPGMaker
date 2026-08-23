@@ -26,6 +26,8 @@ describe("hand slot model", () => {
 
     expect(entries.map((entry) => entry.itemId)).toEqual([
       "item_hoe",
+      // 광산을 싣면서 곡괭이도 시작 장비가 됐다 — 새 스타파이 아니라 달린 도구다.
+      "item_pickaxe",
       "item_watering_can",
       "item_potato_seed",
       "item_strawberry_seed",

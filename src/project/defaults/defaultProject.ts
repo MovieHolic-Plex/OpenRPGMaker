@@ -13,6 +13,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
+import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import {
   defaultAssetSet,
   defaultResourceProfiles,
@@ -267,13 +268,17 @@ export function createFarmingDemoProject(): Project {
   map.id = "map_farming_demo";
   map.farmableArea = [{ x: 4, y: 5, w: 6, h: 4 }];
   paintFarmableGround(map);
-  const project = createProjectWithMaps([map], 0);
+  const project = createProjectWithMaps([map, createFarmMineMap()], 0);
+  sealFarmMineWalls(project);
   project.meta = { ...project.meta, title: "농사 데모" };
   project.startPos = { x: 4, y: 4 };
   project.system = {
     ...project.system,
     startActorIds: [DEFAULT_ACTOR_ID],
     timeSystem: { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep: false },
+    // 맵 플래그만으로는 필드 접촉이 턴제로 간다 — 시스템 스위치도 같이 켜야 액션으로 라우팅된다
+    // (`projectLint` 의 opt-in:action-combat-map-without-system 규칙과 같은 계약).
+    actionCombat: { enabled: true },
   };
   project.session = {
     ...project.session,
@@ -281,11 +286,13 @@ export function createFarmingDemoProject(): Project {
     inventory: {
       item_hoe: 1,
       item_watering_can: 1,
+      item_pickaxe: 1,
       item_potato_seed: 3,
       item_strawberry_seed: 2,
       item_tomato_seed: 2,
       item_corn_seed: 2,
     },
+    placeables: farmMineRockPlaceables(),
   };
   // 기본 CC0 카탈로그에 이미 item_hoe / item_watering_can / item_potato / item_tomato 가 있다.
   // push 로 뒤에 덧붙이면 모든 조회가 쓰는 `items.find` 가 farmTool 없는 옛 레코드를 먼저 집어
@@ -301,6 +308,11 @@ export function createFarmingDemoProject(): Project {
   upsertDemoItems(project, [
     { id: "item_hoe", name: "괭이", scope: "none", price: 50, type: "normalGoods", farmTool: "hoe" },
     { id: "item_watering_can", name: "물뿌리개", scope: "none", price: 80, type: "normalGoods", farmTool: "wateringCan" },
+    // 카탈로그의 item_pickaxe 는 farmTool 이 비어 있어 도구 판정을 통과하지 못한다 — 여기서 붙인다.
+    { id: "item_pickaxe", name: "곡괭이", scope: "none", price: 100, type: "normalGoods", farmTool: "pickaxe" },
+    // 광산 산출물. 파는 곳이 없으면 채굴이 인벤토리만 채우고 끝나므로 씨앗 상인이 사들인다.
+    { id: "item_stone", name: "돌", scope: "none", price: 30, type: "normalGoods", iconResourceId: "cc0-jetrel-earth-ore", imageResourceId: "cc0-jetrel-earth-ore" },
+    { id: "item_iron_ore", name: "철 광석", scope: "none", price: 120, type: "normalGoods", iconResourceId: "cc0-jetrel-iron-ore", imageResourceId: "cc0-jetrel-iron-ore" },
     // 봄 — 씨앗 20 → 매도 35
     { id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true },
     { id: "item_potato", name: "감자", scope: "none", price: 70, type: "normalGoods" },
@@ -452,7 +464,8 @@ export function createFarmingDemoProject(): Project {
     createFarmBedEvent(3, 3),
     createSeedShopEvent(12, 3),
     createFarmMayorEvent(14, 5),
-    createSpringFestivalEvent(8, 2)
+    createSpringFestivalEvent(8, 2),
+    createMineEntranceEvent(17, 10)
   );
   attachFarmStaminaScaffolding(project);
   attachFarmSocialProfiles(project);
@@ -568,6 +581,156 @@ function createSpringFestivalEvent(x: number, y: number): GameEvent {
 const FARM_STAMINA_VARIABLE_ID = "var_stamina";
 const FARM_STAMINA_FULL = 100;
 
+const FARM_MINE_MAP_ID: MapId = "map_mine_1f";
+/**
+ * 광산은 **던전 칩셋**을 쓴다. 마을 칩셋(combined_town)의 421 은 흙길 오토타일 몸통이라
+ * 렌더 시점 쿼터 합성(`chipsetQuarterComposition`)이 갱도 경계마다 **잔디 프린지**를 깐다 —
+ * 실측(2026-08-23 스크린샷)으로 갱도 테두리에 초록 풀이 돋아 있었다. 던전 칩셋의 같은
+ * 블록(390~452)은 테두리까지 갈색 암반이라 프린지가 없다.
+ */
+const FARM_MINE_GROUND_TILE = 421;
+/**
+ * 52 = 던전 칩셋 동굴 암벽 블록(21~23/51~53) 몸통 — 회색 암반.
+ * 같은 블록의 22 는 평균색이 (89,74,64) 로 흙바닥 421(97,71,57) 과 거의 같아 실측 화면에서
+ * 벽과 바닥이 구분되지 않았다. 52 는 (67,56,50) 으로 확실히 어둡다.
+ * 던전 칩셋은 통행 플래그가 없어 `sealFarmMineWalls` 가 이 타일만 solid 로 못 박는다.
+ */
+const FARM_MINE_WALL_TILE = 52;
+const FARM_MINE_ENTRANCE = { x: 17, y: 10 } as const;
+const FARM_MINE_ARRIVAL = { x: 9, y: 13 } as const;
+
+/**
+ * 광산 1층 — 벽으로 채운 들 갱도를 깎아 낸다(emberQuest 광산과 같은 방식).
+ * `actionCombat` 은 맵 옵트인이고, 시스템 스위치는 `createFarmingDemoProject` 가 켜다.
+ */
+function createFarmMineMap(): GameMap {
+  const mine = createBlankMap("광산 1층", 20, 16, DUNGEON_TILESET_ID);
+  mine.id = FARM_MINE_MAP_ID;
+  fillMapRect(mine, 0, 0, mine.width - 1, mine.height - 1, FARM_MINE_WALL_TILE);
+  fillMapRect(mine, 7, 11, 12, 15, FARM_MINE_GROUND_TILE); // 입구 홀
+  fillMapRect(mine, 9, 5, 10, 10, FARM_MINE_GROUND_TILE); // 중앙 갱도
+  fillMapRect(mine, 3, 5, 8, 8, FARM_MINE_GROUND_TILE); // 서쪽 막장
+  mine.actionCombat = true;
+  mine.fieldSpawns = [
+    {
+      id: "spawn_mine_bats",
+      troopId: "troop_bat_swarm",
+      area: { x: 9, y: 5, w: 2, h: 6 },
+      maxAlive: 2,
+      respawnSec: 30,
+      chase: true,
+      graphic: {
+        // 던전 박쥐 자리 — monster3#0 은 실측 결과 **붉은 머리 하피**였다(잘못된 라벨).
+        // monster2#1 이 동굴 날짐승으로 읽히는 유익 마물이다.
+        sprite: { type: "bundled", id: "tex_easyrpg_charset_monster2" },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
+      },
+    },
+  ];
+  mine.events.push({
+    id: "ev_mine_exit",
+    x: 9,
+    y: 15,
+    trigger: { kind: "playerTouch" },
+    commands: [],
+    pages: [
+      {
+        id: "page_mine_exit",
+        name: "갱도 밖으로",
+        conditions: [],
+        graphic: { transparent: true },
+        trigger: { kind: "playerTouch" },
+        priority: "below",
+        overlapForbidden: false,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "transfer", mapId: "map_farming_demo", x: FARM_MINE_ENTRANCE.x, y: FARM_MINE_ENTRANCE.y + 1 },
+        ],
+      },
+    ],
+  });
+  return mine;
+}
+
+/**
+ * 던전 칩셋은 `defaultAssets` 가 통행 플래그를 저작하지 않아 **모든 타일이 통행 가능**하다
+ * (기본 마을 칩셋만 `isSolidChipsetTile` 기본값을 받는다). 그대로 두면 광산 암벽을
+ * 그대로 걸어 지나가므로, 이 데모가 쓰는 암벽 타일만 solid 로 못 박는다.
+ */
+function sealFarmMineWalls(project: Project): void {
+  const tileset = project.tilesets[DUNGEON_TILESET_ID];
+  if (!tileset || FARM_MINE_WALL_TILE >= tileset.passability.length) return;
+  tileset.passability[FARM_MINE_WALL_TILE] = { up: false, down: false, left: false, right: false };
+}
+
+function fillMapRect(map: GameMap, x0: number, y0: number, x1: number, y1: number, tile: number): void {
+  for (let y = y0; y <= y1; y += 1) {
+    for (let x = x0; x <= x1; x += 1) {
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height) continue;
+      map.lowerTiles[y * map.width + x] = tile;
+    }
+  }
+}
+
+/** 농장 → 광산 입구. */
+function createMineEntranceEvent(x: number, y: number): GameEvent {
+  return {
+    id: "ev_mine_entrance",
+    x,
+    y,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      {
+        id: "page_mine_entrance",
+        name: "광산 입구",
+        conditions: [],
+        graphic: {
+          sprite: { type: "bundled", id: "tex_easyrpg_charset_object1" },
+          direction: "down",
+          pattern: charsetFrameIndex({ characterIndex: 3, direction: "down", pattern: 1 }),
+        },
+        trigger: { kind: "action" },
+        priority: "same",
+        overlapForbidden: true,
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "text", body: "버려진 갱도 입구다. 박쥐 울음이 들린다. 들어갈까?" },
+          { kind: "transfer", mapId: FARM_MINE_MAP_ID, x: FARM_MINE_ARRIVAL.x, y: FARM_MINE_ARRIVAL.y },
+        ],
+      },
+    ],
+  };
+}
+
+/**
+ * 광산의 돌. **맵 타일이 아니라 시작 상태의 설치물**이다 — 캐면 사라지기 때문이다.
+ * 곡괭이 판정은 기본 도구 규칙(`legacy-pick-mine`)이 `kind: "rock"` 을 targetPlaceableKind 로
+ * 잡아 저작만으로 동작하고, 화면에는 `renderPlaceableOverlays` 가 그린다.
+ */
+function farmMineRockPlaceables(): Record<string, PlaceableObjectState> {
+  const rocks: readonly { readonly x: number; readonly y: number; readonly itemId: string }[] = [
+    { x: 4, y: 6, itemId: "item_stone" },
+    { x: 6, y: 7, itemId: "item_stone" },
+    { x: 7, y: 6, itemId: "item_iron_ore" },
+    { x: 9, y: 8, itemId: "item_stone" },
+    { x: 10, y: 9, itemId: "item_iron_ore" },
+  ];
+  const placeables: Record<string, PlaceableObjectState> = {};
+  for (const [index, rock] of rocks.entries()) {
+    placeables[placeableKey(FARM_MINE_MAP_ID, rock.x, rock.y)] = {
+      id: `rock_mine_${index + 1}`,
+      mapId: FARM_MINE_MAP_ID,
+      x: rock.x,
+      y: rock.y,
+      kind: "rock",
+      itemId: rock.itemId,
+    };
+  }
+  return placeables;
+}
+
 /**
  * 기력 **저작 뼈대**를 붙인다. 엔진은 농사 행동에서 기력을 깎지 않는다 —
  * `interactWithFarmPlot` 은 어떤 자원도 소모하지 않고 공통 이벤트를 부르는 훅도 없다.
@@ -656,6 +819,8 @@ function createSeedShopEvent(x: number, y: number): GameEvent {
     "item_potato", "item_strawberry", "item_tomato", "item_corn",
     "item_blueberry", "item_melon", "item_pumpkin", "item_eggplant",
   ];
+  // 광산 산출물도 여기서 현금화한다 — 상인이 하나라 목록에 없으면 캔 돌이 인벤토리에 쌓이기만 한다.
+  const minerals = ["item_stone", "item_iron_ore"];
   return {
     id: "ev_seed_shop",
     x,
@@ -676,7 +841,7 @@ function createSeedShopEvent(x: number, y: number): GameEvent {
           { kind: "text", speaker: "씨앗 상인", body: "씨앗 팔고 수확물 사들이네. 철에 맞는 걸 심어야 해." },
           {
             kind: "shop",
-            itemIds: [...seeds, ...harvests],
+            itemIds: [...seeds, ...harvests, ...minerals],
             allowSell: true,
             quantityMode: "select",
             shopType: "normal",

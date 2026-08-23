@@ -165,6 +165,27 @@ describe("Stardew demo: 광산 맵", () => {
     expect(project.database.items.find((i) => i.id === "item_pickaxe")).toBeTruthy();
     expect(project.session.inventory.item_pickaxe).toBe(1);
   });
+
+  /**
+   * 마을 칩셋(combined_town)의 흙길 421 은 렌더 시점 쿼터 합성이 경계마다 **잔디 프린지**를
+   * 깐다 — 실측으로 갱도 테두리에 풀이 돋았다. 광산은 던전 칩셋이어야 한다.
+   */
+  it("광산은 던전 칩셋을 쓴다(마을 흙길 잔디 프린지 방지)", () => {
+    expect(mineMap?.tilesetId).toBe("easyrpg_chipset_dungeon");
+  });
+
+  it("광산 암벽 타일이 solid 로 저작되어 있다", () => {
+    const tileset = project.tilesets[mineMap!.tilesetId];
+    expect(tileset, "mine tileset should exist in project").toBeTruthy();
+    const wallTile = mineMap!.lowerTiles[0];
+    expect(tileset!.passability[wallTile]).toEqual({ up: false, down: false, left: false, right: false });
+  });
+
+  it("광산 박쥐 스폰은 붉은 머리 하피(monster3#0)를 쓰지 않는다", () => {
+    const spawn = mineMap!.fieldSpawns![0];
+    const sprite = spawn.graphic?.sprite;
+    expect(sprite?.id).not.toBe("tex_easyrpg_charset_monster3");
+  });
 });
 
 describe("Stardew demo: NPC 하트 이벤트", () => {

@@ -53,4 +53,31 @@ describe("저작된 시작 상태 시드", () => {
     expect(session.variables.var_deleted_long_ago).toBeUndefined();
     expect(session.switches.sw_deleted_long_ago).toBeUndefined();
   });
+
+  /**
+   * 광산의 돌은 맵 타일이 아니라 시작 상태의 설치물이다(캐면 사라지므로).
+   * 시드되지 않으면 광산은 생성 직후부터 이미 다 파먹은 방이 된다.
+   */
+  it("저작된 설치물이 새 세션에 놓인다", () => {
+    const project = createFarmingDemoProject();
+    const authored = Object.values(project.session.placeables ?? {}).filter((p) => p.kind === "rock");
+    expect(authored.length, "데모가 돌을 저작하지 않았다").toBeGreaterThanOrEqual(2);
+
+    const session = startSession(project, 1);
+    const seeded = Object.values(session.placeables ?? {}).filter((p) => p.kind === "rock");
+    expect(seeded.length, "저작한 설치물이 버려졌다").toBe(authored.length);
+  });
+
+  /** 캔 돌은 해당 세션에서만 사라진다 — 원본을 공유하면 다음 세션이 벼 방에서 시작한다. */
+  it("세션에서 설치물을 캐도 프로젝트 시작 상태는 그대로다", () => {
+    const project = createFarmingDemoProject();
+    const before = Object.keys(project.session.placeables ?? {}).length;
+
+    const first = startSession(project, 1);
+    for (const key of Object.keys(first.placeables ?? {})) delete first.placeables?.[key];
+
+    expect(Object.keys(project.session.placeables ?? {})).toHaveLength(before);
+    const second = startSession(project, 1);
+    expect(Object.keys(second.placeables ?? {})).toHaveLength(before);
+  });
 });

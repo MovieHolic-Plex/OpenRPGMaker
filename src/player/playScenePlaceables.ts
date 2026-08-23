@@ -1,0 +1,69 @@
+/**
+ * 세션 설치물(바위 등) 오버레이 렌더.
+ *
+ * 설치물은 맵 타일이 아니라 세션 상태다(`session.placeables`) — 캐면 사라져야 하므로
+ * `lowerTiles` 에 새길 수 없다. 그런데 렌더 경로가 없어서 **곡괭이로 캘 수는 있지만 화면에는
+ * 아무것도 없는** 상태였다. 밭 오버레이(`renderFarmOverlays`)는 `farmPlots` 가 있는 맵에서만
+ * 도므로 광산처럼 밭이 없는 맵은 그 경로로 그려지지 않는다.
+ *
+ * 그래픽이 없는 종류는 **그리지 않는다.** 상자(`kind: "chest"`)는 이미 이벤트로 저작하는
+ * 관행이라, 여기서 회색 사각형을 얹으면 기존 프로젝트에 유령 상자가 겹쳐 보인다.
+ */
+import { charsetFrameIndex } from "@/assets/easyrpgRtp";
+import { characterDepth, characterSpriteX, characterSpriteY } from "@/player/characterDepth";
+import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import type { PlaceableObjectState } from "@/project/placeables";
+import { store } from "@/project/store";
+
+type OverlayGameObject = {
+  setOrigin?(x: number, y: number): void;
+  setDepth?(depth: number): void;
+};
+
+// 스텁 씬으로도 돌아가야 하므로 새 멤버는 전부 optional 이고, 없으면 조기 이탈한다.
+type PlaceableOverlayScene = {
+  readonly map: { readonly id: string; readonly width?: number; readonly height?: number };
+  readonly session: { readonly placeables?: Record<string, PlaceableObjectState> };
+  readonly tileLayer: { add(object: unknown): unknown };
+  readonly add: {
+    sprite?: (x: number, y: number, texture: string, frame?: string | number) => OverlayGameObject;
+  };
+};
+
+/** 설치물 종류 → 캐릭셋 프레임. EasyRPG RTP Object2 의 5번이 바위, 6번이 보석이다. */
+const PLACEABLE_CHARSET: Readonly<Record<string, { readonly texture: string; readonly characterIndex: number }>> = {
+  rock: { texture: "tex_easyrpg_charset_object2", characterIndex: 5 },
+  gem: { texture: "tex_easyrpg_charset_object2", characterIndex: 6 },
+};
+
+export function renderPlaceableOverlays(scene: PlaceableOverlayScene): void {
+  const placeables = scene.session.placeables;
+  if (!placeables) return;
+  if (typeof scene.add.sprite !== "function") return;
+  const project = store.getCurrent();
+  for (const placeable of Object.values(placeables)) {
+    if (placeable.mapId !== scene.map.id) continue;
+    if (isOutsideMap(scene.map, placeable.x, placeable.y)) continue;
+    const charset = PLACEABLE_CHARSET[placeable.kind];
+    if (!charset) continue;
+    const frame = charsetFrameIndex({ characterIndex: charset.characterIndex, direction: "down", pattern: 1 });
+    const resolved = resolveEventSpriteTexture(project, charset.texture, frame);
+    const worldY = characterSpriteY(placeable.y);
+    const sprite = scene.add.sprite(
+      characterSpriteX(placeable.x),
+      worldY,
+      resolved?.texture ?? charset.texture,
+      resolved?.frame ?? frame
+    );
+    // 캐릭터와 같은 정렬·깊이 규칙 — 플레이어가 바위 앞뒤로 자연스럽게 지나간다.
+    sprite.setOrigin?.(0.5, 1);
+    sprite.setDepth?.(characterDepth("same", worldY));
+    scene.tileLayer.add(sprite);
+  }
+}
+
+function isOutsideMap(map: PlaceableOverlayScene["map"], x: number, y: number): boolean {
+  if (x < 0 || y < 0) return true;
+  if (map.width !== undefined && x >= map.width) return true;
+  return map.height !== undefined && y >= map.height;
+}
