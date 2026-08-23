@@ -49,6 +49,8 @@ export function listOhMyPiProviders() {
  */
 function adoptCodexCliCredentials(provider: string): boolean {
   if (storeAs(provider) !== "openai-codex") return false;
+  // 사용자가 연결을 끊었다면 다시 주워 오지 않는다 — 그러면 해제가 되살아난다.
+  if (store.adoptionDeclined("openai-codex")) return false;
   const path = join(process.env.CODEX_HOME || join(homedir(), ".codex"), "auth.json");
   try {
     const tokens = JSON.parse(readFileSync(path, "utf8"))?.tokens;
@@ -92,6 +94,16 @@ export function seedOAuthForTests(provider: string, creds: { access: string; ref
 export function saveProviderApiKey(provider: string, apiKey: string) {
   store.setApiKey(storeAs(provider), apiKey);
   return publicProviderStatus(provider);
+}
+
+/**
+ * 저장된 자격을 지운다. 잘못된 키·만료된 토큰을 지울 방법이 없어서 상태는 초록인데 모든 턴이
+ * 401 이 되던 구멍을 막는다. env 자격은 우리 것이 아니므로 그대로 남고, 응답의 `env` 가 그것을
+ * 밝힌다(에디터는 env 만 있는 상태를 "연결됨"으로 세지 않는다).
+ */
+export function logoutProvider(provider: string) {
+  const removed = store.remove(storeAs(provider));
+  return { ...publicProviderStatus(provider), removed };
 }
 
 async function resolveApiKey(provider: string): Promise<string | undefined> {

@@ -265,3 +265,22 @@ export async function saveCompanionApiKey(providerId: string, apiKey: string): P
   }
   return readAuthStatus(await readJsonBody(response));
 }
+
+/**
+ * 연결 해제 — 동반 서비스가 보관하는 자격을 지운다.
+ *
+ * 이 경로가 없던 동안에는 잘못 저장한 키를 지울 방법이 없었다. 화면은 계속 "연결됨"이라 말하는데
+ * 모든 턴이 401 이 되는 상태였다. 서버는 삭제 후의 상태를 `/auth/status` 와 같은 모양으로 준다.
+ */
+export async function disconnectCompanionAuth(providerId?: string): Promise<ChatGptAuthStatus> {
+  const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
+  const response = await companionFetch(companionAuthUrl("/auth/logout", provider), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ provider }),
+  });
+  if (!response.ok) {
+    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  }
+  return readAuthStatus(await readJsonBody(response));
+}

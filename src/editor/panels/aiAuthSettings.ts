@@ -20,6 +20,7 @@
 //  ⑥ 상태 문구만 바꾸고 tone 을 안 바꾸는 분기가 있어 색 점이 이전 상태로 남았다.
 
 import {
+  disconnectCompanionAuth,
   fetchChatGptAuthStatus,
   hasStoredCompanionCredential,
   isChatGptCompanionResponseError,
@@ -205,6 +206,15 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-login" },
   }) as HTMLButtonElement;
 
+  // 저장된 자격이 있을 때만 보인다 — 지울 것이 없을 때 뜨는 해제 버튼은 거짓말이다.
+  // env 자격은 에디터가 지울 수 없으므로 stored 가 false 고, 따라서 이 버튼도 뜨지 않는다.
+  const disconnectButton = el("button", {
+    class: "ai-assistant-action ai-auth-disconnect",
+    text: "연결 해제",
+    attrs: { type: "button", hidden: "" },
+    dataset: { testid: "ai-auth-disconnect" },
+  }) as HTMLButtonElement;
+
   // ── 기기 로그인 블록 ───────────────────────────────────────────────────────
   const deviceUrl = el("a", {
     class: "ai-oauth-device-url",
@@ -284,6 +294,7 @@ export function renderAiAuthSettings(
     loginButton.textContent = stored
       ? "다시 확인"
       : providerKind === "oauth" ? "로그인" : "연결 확인";
+    disconnectButton.hidden = !stored;
   };
 
   const emit = (): void => {
@@ -495,6 +506,26 @@ export function renderAiAuthSettings(
       });
   });
 
+  disconnectButton.addEventListener("click", () => {
+    stopPolling();
+    disconnectButton.disabled = true;
+    setStatus("연결 해제 중…", "checking");
+    void disconnectCompanionAuth(providerId)
+      .then((auth) => {
+        if (disposed) return;
+        companionKey.value = "";
+        applyStatus(auth);
+      })
+      .catch((error: unknown) => {
+        if (disposed) return;
+        if (isChatGptCompanionResponseError(error)) showServerError(error);
+        else showUnreachable(error);
+      })
+      .finally(() => {
+        disconnectButton.disabled = false;
+      });
+  });
+
   saveKeyButton.addEventListener("click", () => {
     const key = companionKey.value.trim();
     if (!key) {
@@ -540,7 +571,7 @@ export function renderAiAuthSettings(
         el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
           el("div", { class: "ai-auth-state", children: [status, kindBadge] }),
           keyRow,
-          el("div", { class: "ai-auth-actions", children: [loginButton] }),
+          el("div", { class: "ai-auth-actions", children: [loginButton, disconnectButton] }),
           deviceBlock,
           hint,
           serverError,

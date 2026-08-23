@@ -46,6 +46,12 @@ describe("oh-my-pi bun worker", () => {
     assert.equal(completion.completion.provider, "groq");
     assert.equal(completion.completion.choices[0].message.content, "stub:groq");
 
+    // 연결 해제는 워커까지 닿아야 한다 — 라우트만 있고 자격이 남으면 해제가 거짓말이 된다.
+    const loggedOut = await adapters.logout("groq");
+    assert.equal(loggedOut.connected, false);
+    assert.equal(loggedOut.removed, true);
+    assert.equal((await adapters.status("groq")).connected, false);
+
     const providers = await adapters.listProviders();
     const oauth = providers.filter((row) => row.authKind === "oauth" && row.id !== "openai-codex");
     assert.ok(oauth.length >= 10);

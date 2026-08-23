@@ -13,6 +13,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(isCompanionPath("/auth/status?provider=anthropic"), true);
     assert.equal(isCompanionPath("/auth/providers"), true);
     assert.equal(isCompanionPath("/auth/key"), true);
+    assert.equal(isCompanionPath("/auth/logout"), true);
     assert.equal(isCompanionPath("/v1/chat/completions"), true);
     assert.equal(isCompanionPath("/other"), false);
   });
@@ -50,6 +51,10 @@ describe("oh-my-pi companion HTTP", () => {
         calls.push(["refresh", provider]);
         return { connected: true, provider, refreshed: true };
       },
+      logout: async (provider) => {
+        calls.push(["logout", provider]);
+        return { connected: false, provider, removed: true };
+      },
       complete: async (provider, body) => {
         calls.push(["complete", provider, body.model]);
         return { stream: false, completion: { id: "ok", provider } };
@@ -81,6 +86,14 @@ describe("oh-my-pi companion HTTP", () => {
     );
     assert.equal(refreshed.body.refreshed, true);
 
+    const loggedOut = await handleCompanionRequest(
+      { method: "POST", url: "/auth/logout?provider=groq" },
+      adapters,
+    );
+    assert.equal(loggedOut.status, 200);
+    assert.equal(loggedOut.body.connected, false);
+    assert.equal(loggedOut.body.removed, true);
+
     const chat = await handleCompanionRequest(
       {
         method: "POST",
@@ -96,6 +109,7 @@ describe("oh-my-pi companion HTTP", () => {
       ["login", "anthropic", ""],
       ["saveKey", "groq", "gsk-x"],
       ["refresh", "anthropic"],
+      ["logout", "groq"],
       ["complete", "openrouter", "openai/gpt-5.5"],
     ]);
   });
