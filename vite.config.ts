@@ -110,7 +110,7 @@ const SAFE_ACTIVITY_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
  * AI 활동 로그 디스크 미러 경로. `src/ai/activityLogEndpoint.ts` 의 AI_ACTIVITY_DISK_ENDPOINT 와
  * 반드시 같아야 한다(값만 복제하고 계약은 test/aiActivityLogEndpoint.test.ts 가 고정한다).
  */
-const AI_ACTIVITY_DISK_ENDPOINT = "/__rpgzzu/ai-activity";
+const AI_ACTIVITY_DISK_ENDPOINT = "/__oprn/ai-activity";
 
 /** 미러가 실제로 읽는 필드만 선언한 JSON 경계 타입(전체 레코드는 src/ai/activityLogTypes.ts). */
 type AiActivityMirrorRecord = {

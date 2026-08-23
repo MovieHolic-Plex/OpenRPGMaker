@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { AI_ACTIVITY_DISK_ENDPOINT } from "../src/ai/activityLogEndpoint";
 
-// 실측(2026-08-23): 리네임 때 미들웨어만 /__rpgzzu 로 바뀌고 클라이언트는 /__oprn 에 POST 하고 있었다.
+// 실측(2026-08-23): 리네임 때 미들웨어와 클라이언트가 서로 다른 접두사를 매칭하고 있었다.
 // 404 는 fetch 가 throw 하지 않으므로 타입도 런타임도 이 드리프트를 못 잡는다 — 테스트가 유일한 방어선이다.
 describe("ai activity disk mirror endpoint", () => {
   const viteConfig = readFileSync(new URL("../vite.config.ts", import.meta.url), "utf8");
@@ -18,9 +18,11 @@ describe("ai activity disk mirror endpoint", () => {
     expect(client).not.toMatch(/fetch\(\s*"\/__/);
   });
 
-  it("어느 쪽에도 옛 /__oprn 미러 경로가 남아 있지 않다", () => {
-    expect(viteConfig).not.toContain("/__oprn/ai-activity");
-    expect(client).not.toContain("/__oprn/ai-activity");
+  it("어느 쪽에도 옛 브랜드 미러 경로가 남아 있지 않다", () => {
+    // 정본 접두사는 __oprn 이다. e2e 라우트(desktop-editor-interactions 등)와 window 훅이 전부 그것을 쓴다.
+    expect(viteConfig).not.toContain("/__rpgzzu/ai-activity");
+    expect(client).not.toContain("/__rpgzzu/ai-activity");
+    expect(AI_ACTIVITY_DISK_ENDPOINT).toBe("/__oprn/ai-activity");
   });
 
   it("미러 실패를 조용히 넘기지 않는다", () => {

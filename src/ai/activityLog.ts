@@ -164,7 +164,7 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
  * AI 활동 1건 기록.
  * - 항상 로컬 localStorage 링버퍼에 저장
  * - Supabase 설정이 있으면 원격에도 best-effort (전용 테이블 없으면 ai_analysis_runs 폴백)
- * - DEV: Vite `/__rpgzzu/ai-activity` 로 디스크 미러 (output/ai-activity/)
+ * - DEV: Vite `/__oprn/ai-activity` 로 디스크 미러 (output/ai-activity/)
  */
 export async function recordAiActivity(input: AiActivityLogInput): Promise<AiActivityLogRecord> {
   const base = buildAiActivityLogRecord(input);

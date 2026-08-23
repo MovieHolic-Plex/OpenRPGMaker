@@ -240,6 +240,10 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     "evaluate_interior_room",
     "fill_region",
     "build_wall",
+    // door-transfer 가이드가 "문 시각 배치는 place_door" 라고 직접 가리키는 대표 도구다. 실내 하네스
+    // 4종이 핀에 들어오며 tile 도메인이 상한(40) 트림에 걸리자 이것이 밀려나, 문을 그리는 경로가
+    // 노출에서 사라졌다(test/regionIntentExposure.test.ts door-transfer 보장 실패).
+    "place_door",
     "paint_road", // 흙길/모래 8방 오토타일 — lay_path만 핀되면 AI가 길을 안 깔거나 비성형 경로로 감
     "lay_path",
     "tile_query",
