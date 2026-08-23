@@ -293,6 +293,9 @@ export function startSession(project: Project, seed?: number): PlaySession {
     y: project.startPos.y,
     mapOverrides: {},
     farmPlots: {},
+    // 저작된 설치물(광산의 돌 등)을 새 세션에 놓는다. 캐면 세션에서 사라지므로
+    // 프로젝트 쪽 원본을 공유하면 두 번째 세션에서 이미 캐진 상태로 시작한다 — 반드시 복제한다.
+    placeables: structuredClone(start.placeables ?? {}),
     farmPlotsAdvancedThrough: gameTime && { day: gameTime.day, season: gameTime.season, year: gameTime.year },
     friendship: {},
     dailyGifts: {},

@@ -47,8 +47,11 @@ export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
   { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 5, label: "드레이크", gender: "none", tags: ["드레이크", "용", "드래곤", "몬스터"] },
   { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 6, label: "악마", gender: "none", tags: ["악마", "몬스터", "무기", "보스"] },
   { textureKey: "tex_easyrpg_charset_monster2", characterIndex: 7, label: "마왕", gender: "none", tags: ["마왕", "악마", "몬스터", "최종보스", "보스"] },
-  // tex_easyrpg_charset_monster3 — 검증됨(핸드오프 0.4)
-  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 0, label: "박쥐형 날짐승", gender: "none", tags: ["박쥐", "몬스터", "비행"] },
+  // tex_easyrpg_charset_monster3
+  // 2026-08-23 픽셀 실측 정정: 0 은 "박쥐형 날짐승"이 아니라 **붉은 머리 하피**다(Monster3.png
+  // 프레임 25 = characterIndex 0/down). 이 라벨을 믿고 광산 박쥐 스폰에 쓴 결과 화면에
+  // 붉은 머리 사람형이 떴다. 동굴 날짐승이 필요하면 monster2#1 을 쓸 것.
+  { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 0, label: "붉은 머리 하피", gender: "none", tags: ["하피", "유익 마인", "몬스터", "비행", "날개"] },
   { textureKey: "tex_easyrpg_charset_monster3", characterIndex: 5, label: "붉은 드래곤", gender: "none", tags: ["붉은 드래곤", "레드 드래곤", "용", "드래곤", "몬스터", "보스"] },
 
   // tex_easyrpg_charset_people1 — 일반 마을 주민.

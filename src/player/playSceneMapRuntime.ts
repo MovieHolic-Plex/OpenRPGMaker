@@ -41,6 +41,7 @@ import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
 import { initializeFieldSpawnsForScene } from "@/player/playSceneFieldSpawns";
 import { renderFarmOverlays } from "@/player/playSceneFarming";
+import { renderPlaceableOverlays } from "@/player/playScenePlaceables";
 import { initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
@@ -151,6 +152,7 @@ export function renderTiles<
     }
   }
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
+  renderPlaceableOverlays(scene);
   renderEvents(scene);
 }
 

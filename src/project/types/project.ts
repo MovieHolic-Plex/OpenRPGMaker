@@ -203,6 +203,12 @@ export interface ProjectSession {
   inventory: Record<string, number>;
   partyActorIds: ActorId[];
   gold?: number;
+  /**
+   * 시작 시 세계에 놓인 설치물(바위·나무 등), `mapId:x,y` 키.
+   * 밭 상태와 달리 저작 표면이 필요하다 — 광산의 돌은 맵 타일이 아니라 세션 상태이고,
+   * 캐면 사라지므로 새 세션마다 다시 놓여야 한다.
+   */
+  placeables?: Record<string, import("@/project/placeables").PlaceableObjectState>;
 }
 
 /**
