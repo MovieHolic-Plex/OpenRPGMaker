@@ -2,7 +2,7 @@
 .event-editor-modal-backdrop.event-editor-modal-backdrop {
   align-content: stretch;
   align-items: stretch;
-  background: var(--bg-surface);
+  background: var(--bg-scrim);
   backdrop-filter: blur(2px);
   display: grid;
   inset: 0;
