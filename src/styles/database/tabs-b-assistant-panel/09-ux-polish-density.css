@@ -217,22 +217,14 @@
   display: none;
 }
 
-/* 誘몃땲 ?ㅽ듃由? ?댁쟾 ??洹몃９ ?꾩껜 ?④?(湲곗〈 is-prior-turn 怨꾩빟 ?좎?). */
-.ai-rising-overlay .ai-chat-log > .ai-turn-group.is-prior-turn,
-.ai-rising-overlay .ai-chat-log > .is-prior-turn {
-  display: none;
-}
-
-/* ?꾩껜 湲곕줉/?ъ씠?? ?댁쟾 ?댁? ?묓엺 ?ㅻ뜑留?蹂댁씠怨??쇱튂硫?蹂몃Ц. */
-.ai-history-log-mount .ai-chat-log > .ai-turn-group.is-prior-turn,
-.ai-chat-panel.is-studio .ai-chat-log > .ai-turn-group.is-prior-turn,
-.ai-chat-panel.chat-dock-side .ai-chat-log > .ai-turn-group.is-prior-turn {
+/* 이전 턴 그룹은 어느 뷰에서도 보인다 — 오버레이에서 숨기던 규칙은 오버레이가 사이드
+   전용이 된 뒤 죽은 규칙이었다(assistant-rising-overlay.css 의 같은 정리 참조).
+   축약은 .ai-turn-group.is-collapsed 가 담당한다. */
+.ai-chat-log > .ai-turn-group.is-prior-turn {
   display: flex;
   opacity: 0.92;
 }
-.ai-history-log-mount .ai-chat-log > .ai-day-divider,
-.ai-chat-panel.is-studio .ai-chat-log > .ai-day-divider,
-.ai-chat-panel.chat-dock-side .ai-chat-log > .ai-day-divider {
+.ai-chat-log > .ai-day-divider {
   display: flex;
 }
 

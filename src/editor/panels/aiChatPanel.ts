@@ -65,7 +65,6 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
 import { createDirectorPlate, createDirectorRestoreButton } from "./aiDirectorChrome";
-import { createVolatileController } from "./aiVolatileController";
 // queueController extracted for future use — reserved (aiQueueController.ts).
 import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
@@ -119,7 +118,6 @@ import {
   shouldShowStatusInChat,
   statusToneOf,
   STUDIO_MODE_KEY,
-  VOLATILE_OVERLAY_IDLE_MS,
   type ChatController,
   type TileGridData,
 } from "./aiChatPanelHelpers";
@@ -277,51 +275,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI 턴/영역 작업이 끝나면 맵 우선으로 다시 접을지. 검토 대기·오류면 유지.
   let collapseAfterAiWork = false;
   let autoCollapseTimer: number | null = null;
-  let volatileFadeTimer: number | null = null;
   let volatileZone: HTMLElement | null = null;
   // 원탭 답변 칩 — 컨트롤러보다 먼저 만들어 질문 대기 중 페이드를 막는다.
   const chipsHost = el("div", { class: "ai-quick-replies", dataset: { testid: "ai-quick-replies" } });
   const hasPendingQuestion = (): boolean => chipsHost.childElementCount > 0;
-  // 실패한 턴의 오류·재시도 버튼이 페이드로 증발하지 않게 유지한다(적대 평가 P1 —
-  // 오류 카드가 0.42 로 흐려져 판독 불가였다). 다음 턴 시작 시 해제.
-  let lastTurnFailed = false;
-  const volatileCtl = createVolatileController(() => turnBusy || !!runningProgress || hasPendingQuestion() || lastTurnFailed);
   // applyCollapsed 정의 전에 턴이 잡혀도 안전한 바인딩(런타임 호출은 패널 마운트 이후).
   let expandForAiWork: () => void = () => {};
   let scheduleCollapseAfterAiWork: () => void = () => {};
   let clearAutoCollapseTimer: () => void = () => {};
   const revealVolatileZone = (): void => {
-    volatileCtl.reveal();
     if (!volatileZone) return;
     volatileZone.hidden = false;
-    volatileZone.classList.remove("is-faded");
-    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
-    volatileFadeTimer = null;
-  };
-  const scheduleVolatileFade = (): void => {
-    if (readChatDock() !== "float") {
-      volatileCtl.clear();
-      if (volatileZone) {
-        volatileZone.hidden = false;
-        volatileZone.classList.remove("is-faded");
-      }
-      return;
-    }
-    // 미답 질문뿐 아니라 실패한 턴도 페이드 금지 — 흐린 오류 카드는 판독 불가(적대 평가 P1).
-    if (hasPendingQuestion() || lastTurnFailed) {
-      volatileCtl.clear();
-      return;
-    }
-    volatileCtl.schedule();
-    if (!volatileZone || turnBusy || runningProgress) return;
-    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
-    if (typeof window === "undefined" || typeof window.setTimeout !== "function") return;
-    volatileFadeTimer = window.setTimeout(() => {
-      volatileFadeTimer = null;
-      if (turnBusy || runningProgress || !volatileZone) return;
-      if (hasPendingQuestion()) return;
-      volatileZone.classList.add("is-faded");
-    }, VOLATILE_OVERLAY_IDLE_MS);
   };
   let exportButton: HTMLButtonElement | null = null;
   const hasExportableConversation = (): boolean =>
@@ -375,12 +339,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 대화가 비어 있고(시작 화면만) 진행 중이 아니면 휘발 존을 접어 맵을 가리지 않는다.
   // (입력창 포커스 시에는 revealVolatileZone으로 다시 펼쳐 웰컴/스킬 카드를 보여준다.)
   const hideVolatileIfIdle = (): void => {
-    if (readChatDock() !== "float") return;
     if (startScreen === null || turnBusy || runningProgress || !volatileZone) return;
     volatileZone.hidden = true;
-    volatileZone.classList.remove("is-faded");
-    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
-    volatileFadeTimer = null;
   };
 
   const conversationLog = createConversationLogHost({
@@ -794,7 +754,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     turnBusy = true;
-    lastTurnFailed = false; // 새 턴 시작 — 직전 실패의 페이드 금지를 해제한다.
     const abortController = new AbortController();
     activeAbortController = abortController;
     abortNoticeShown = false;
@@ -1124,10 +1083,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         /* ignore */
       });
       notifyIfObscuredByTestPlay(); // 결함 ④: 테스트 플레이 창이 패널을 가린 채 턴이 끝나면 알림.
-      // 실패 턴은 오류 버블·재시도 버튼이 페이드로 흐려지지 않게 유지한다(적대 평가 P1).
-      lastTurnFailed = turnFailed || Boolean(turnCatchError);
       drainPendingSends(); // 결함 ⑨: 대기 큐의 다음 메시지를 순서대로 전송.
-      if (pendingSends.length === 0) scheduleVolatileFade();
       // 접혀 시작한 턴만 종료 후 재접기. 이미 열린 패널은 그대로 둔다.
       if (collapseAfterAiWork) {
         if (turnFailed) {
@@ -1222,7 +1178,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       && activeSelectionRegionKey === selectionKey
       && (allowAborted || !abortController.signal.aborted);
     turnBusy = true;
-    lastTurnFailed = false; // 새 턴 시작 — 직전 실패의 페이드 금지를 해제한다.
     sendButton.disabled = true;
     collapseAfterAiWork = collapsed;
     expandForAiWork();
@@ -1367,9 +1322,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (collapsed && !cancelled) panel.classList.add(regionFailed ? "is-turn-error" : "is-turn-attention");
       persistConversation();
       if (!cancelled) notifyIfObscuredByTestPlay();
-      lastTurnFailed = regionFailed; // 실패 시 오류 표면 페이드 금지(적대 평가 P1).
       drainPendingSends();
-      if (pendingSends.length === 0) scheduleVolatileFade();
       if (collapseAfterAiWork) {
         if (regionFailed) collapseAfterAiWork = false;
         else scheduleCollapseAfterAiWork();
@@ -2174,9 +2127,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     children: [log],
   });
   volatileZone = volatileLogMount;
-  volatileCtl.bind(volatileLogMount);
   volatileZone.classList.add("ai-volatile-dashed");
-  volatileZone.setAttribute("title", "휘발 영역 — 대화가 비어 있을 때 접히고, 입력 포커스 시 펼쳐집니다 (idle 6초 후 페이드)");
+  volatileZone.setAttribute("title", "휘발 영역 — 대화가 비어 있을 때 접히고, 입력 포커스 시 펼쳐집니다");
   volatileLogMount.hidden = true;
   const completionHost = el("div", {
     class: "ai-completion-host",
@@ -2188,10 +2140,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 적용 완료 액션과 0건 알림, '검토 대기' pill은 맵 위에서 잃지 않는 고정 영역이다.
     children: [completionHost, proposalNoticeHost, proposalPill],
   });
+  // 오버레이는 **휘발 로그 전용**이다. 제안 pill·완료 스트립(stickyProposalZone)은 여기 두면
+  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로, 기본 도크인 유리와 float 에서는
+  // 스티키 존이 문서에서 통째로 빠져 "나중에" 로 최소화한 pill 과 적용 완료 스트립이 사라졌다
+  // (2026-08-23 실측: glass/float 에서 .ai-proposal-pill 조회 결과 없음). 그래서 스티키 존은
+  // 도크와 무관하게 패널 자식으로 붙이고, 위치는 CSS 가 도크별로 잡는다.
   const risingOverlay = el("div", {
     class: "ai-rising-overlay",
     dataset: { testid: "ai-rising-overlay" },
-    children: [volatileLogMount, stickyProposalZone],
+    children: [volatileLogMount],
   });
   const historyLogMount = el("div", { class: "ai-history-log-mount" });
   // AI 표면은 기본/전문가 공통 — expert-only board 없음. 시작 화면·스킬·기록이 동일.
@@ -2213,7 +2170,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       uiDensity: "shared",
       chatDock: currentChatDock(),
     },
-    children: [header, toolbar, body, collapsedRestore, risingOverlay, pinHost, commandBar, proposalModalRoot],
+    children: [header, toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
   });
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
@@ -2292,8 +2249,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const remountComposerTail = (includeOverlay: boolean): void => {
     const tail: HTMLElement[] = includeOverlay
-      ? [risingOverlay, pinHost, commandBar, proposalModalRoot, resizeHandle]
-      : [pinHost, commandBar, proposalModalRoot, resizeHandle];
+      ? [risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot, resizeHandle]
+      : [pinHost, stickyProposalZone, commandBar, proposalModalRoot, resizeHandle];
     for (const node of tail) node.remove();
     panel.append(...tail);
   };
@@ -2361,7 +2318,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     mountLog();
     if (panel.dataset.logSlot === "volatile" && volatileZone) {
       volatileZone.hidden = false;
-      volatileZone.classList.remove("is-faded");
     }
     if (mode === "glass") {
       syncGlassIdle();
@@ -2777,8 +2733,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     endAutonomousRun(); // 진행 중이던 자율 런 표면 정리.
     endTurnProgress();
     clearAutoCollapseTimer();
-    if (volatileFadeTimer !== null && typeof window !== "undefined") window.clearTimeout(volatileFadeTimer);
-    volatileFadeTimer = null;
     activeResizeCleanup?.();
     activeResizeCleanup = null;
 

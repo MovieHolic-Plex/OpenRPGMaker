@@ -131,4 +131,30 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
     setDock(panel, "glass");
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
+
+  it("제안 pill·완료 스트립은 도크와 무관하게 마운트된다", () => {
+    // Break: stickyProposalZone 을 risingOverlay 자식으로 되돌리면 기반 도크(유리)·float
+    // 에서 pill 과 완료 스트립이 문서에서 통짜로 벅려 "나중에"로 최소화한 제안으로
+    // 되돌아갈 진입점이 사라진다(2026-08-23 발견).
+    const panel = renderPanel();
+
+    for (const dock of ["glass", "side", "float"]) {
+      setDock(panel, dock);
+      expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
+      expect(findByTestId(panel, "ai-completion-host"), dock).toBeTruthy();
+      expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeTruthy();
+    }
+  });
+
+  it("혼발 존은 페이드 클래스를 다시 달지 않는다", () => {
+    // 페이드(is-faded, opacity .42)는 삭제됐다 — 오버레이가 사이드 전용이 된 뒤로는
+    // 사이드 CSS 가 항상 opacity:1 로 덮어 쓰는 죽은 효과었고, 상주하는 패널을 흐리는 것은
+    // 자체로 오답이다. 타이머 둔 것도 둘(컨트롤러 + 로컬)이었다.
+    const panel = renderPanel();
+    setDock(panel, "side");
+    const zone = findByTestId(panel, "ai-rising-volatile-zone");
+
+    expect(zone?.hidden).toBe(false);
+    expect(zone?.className).not.toContain("is-faded");
+  });
 });
