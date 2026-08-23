@@ -1,0 +1,107 @@
+{
+  "sheet": { "frameWidth": 96, "frameHeight": 96, "columns": 5 },
+  "effects": [
+    {
+      "slug": "slash-steel",
+      "name": "강철 베기",
+      "tags": ["전투 이펙트", "베기", "물리", "검"],
+      "scope": "singleTarget",
+      "position": "center",
+      "flash": { "frameIndex": 1, "target": "target", "red": 255, "green": 250, "blue": 235, "durationFrames": 4 },
+      "shake": { "frameIndex": 1, "power": 2, "speed": 5, "durationFrames": 4 }
+    },
+    {
+      "slug": "fire-burst",
+      "name": "화염 폭발",
+      "tags": ["전투 이펙트", "불", "화염", "폭발"],
+      "scope": "singleTarget",
+      "position": "center",
+      "flash": { "frameIndex": 1, "target": "target", "red": 255, "green": 160, "blue": 70, "durationFrames": 5 },
+      "shake": { "frameIndex": 2, "power": 3, "speed": 5, "durationFrames": 6 }
+    },
+    {
+      "slug": "ice-shatter",
+      "name": "얼음 파쇄",
+      "tags": ["전투 이펙트", "얼음", "냉기", "파쇄"],
+      "scope": "singleTarget",
+      "position": "center",
+      "flash": { "frameIndex": 2, "target": "target", "red": 180, "green": 235, "blue": 255, "durationFrames": 5 }
+    },
+    {
+      "slug": "thunder-strike",
+      "name": "번개 강타",
+      "tags": ["전투 이펙트", "번개", "전기"],
+      "scope": "singleTarget",
+      "position": "head",
+      "flash": { "frameIndex": 1, "target": "screen", "red": 255, "green": 250, "blue": 180, "durationFrames": 4 },
+      "shake": { "frameIndex": 1, "power": 4, "speed": 6, "durationFrames": 6 }
+    },
+    {
+      "slug": "water-column",
+      "name": "물기둥",
+      "tags": ["전투 이펙트", "물", "물보라"],
+      "scope": "singleTarget",
+      "position": "feet",
+      "flash": { "frameIndex": 2, "target": "target", "red": 130, "green": 190, "blue": 255, "durationFrames": 5 }
+    },
+    {
+      "slug": "wind-slice",
+      "name": "바람 칼날",
+      "tags": ["전투 이펙트", "바람", "풀", "참격"],
+      "scope": "singleTarget",
+      "position": "center",
+      "flash": { "frameIndex": 1, "target": "target", "red": 190, "green": 255, "blue": 200, "durationFrames": 4 }
+    },
+    {
+      "slug": "earth-spike",
+      "name": "대지 창",
+      "tags": ["전투 이펙트", "대지", "흙", "관통"],
+      "scope": "singleTarget",
+      "position": "feet",
+      "shake": { "frameIndex": 2, "power": 4, "speed": 4, "durationFrames": 7 }
+    },
+    {
+      "slug": "heal-bloom",
+      "name": "회복의 빛",
+      "tags": ["전투 이펙트", "회복", "치유", "빛"],
+      "scope": "singleTarget",
+      "position": "head",
+      "flash": {
+        "frameIndex": 0,
+        "target": "target",
+        "red": 170, "green": 255, "blue": 190,
+        "durationFrames": 6,
+        "soundResourceId": "easyrpg-sound-recovery5"
+      }
+    },
+    {
+      "slug": "poison-mist",
+      "name": "독 안개",
+      "tags": ["전투 이펙트", "독", "상태이상"],
+      "scope": "singleTarget",
+      "position": "center",
+      "flash": {
+        "frameIndex": 1,
+        "target": "target",
+        "red": 170, "green": 120, "blue": 220,
+        "durationFrames": 5,
+        "soundResourceId": "easyrpg-sound-poison"
+      }
+    },
+    {
+      "slug": "arcane-nova",
+      "name": "마법 폭풍",
+      "tags": ["전투 이펙트", "마법", "충격", "전체"],
+      "scope": "allTargets",
+      "position": "screen",
+      "flash": {
+        "frameIndex": 0,
+        "target": "screen",
+        "red": 150, "green": 190, "blue": 255,
+        "durationFrames": 8,
+        "soundResourceId": "easyrpg-sound-magic1"
+      },
+      "shake": { "frameIndex": 2, "power": 3, "speed": 5, "durationFrames": 8 }
+    }
+  ]
+}

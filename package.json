@@ -29,6 +29,7 @@
     "ontology:docs": "node scripts/ontology-query.mjs docs --write docs/ontology/development-ontology.md",
     "ontology:check": "node scripts/ontology-check.mjs",
     "generate:window-skin": "node scripts/generate-window-skin.mjs",
+    "generate:effect-sheets": "node scripts/gen-effect-sheets.mjs",
     "perf:bench": "node scripts/perf-benchmark.mjs",
     "openwiki:cpen": "node scripts/openwiki-cpen.mjs",
     "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",
