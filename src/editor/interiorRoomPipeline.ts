@@ -601,7 +601,24 @@ export function ensureInteriorRoomHarness(project: Project): boolean {
 
 // ── Phased build ────────────────────────────────────────────────────────────
 
+/**
+ * 세션 시작 맵. 계획된 바닥 footprint(rooms/wings)를 기본 바닥 타일로 미리 깔아 둔다.
+ *
+ * 예전에는 전면 VOID(통행 불가)였다. 그래서 이 맵이 **시작 맵을 교체**하면 플레이어 시작 좌표가
+ * 즉시 통행 불가가 되어 커밋이 `시작 위치가 통행 불가 타일입니다` 로 거부됐고, 모델은 원인이
+ * 자기 인자가 아닌 줄 모른 채 좌표만 바꿔 4회 재시도했다(2026-08-23 실측). 바닥 레이어가
+ * 뒤에서 정식으로 다시 칠하므로 이 선칠은 최종 결과를 바꾸지 않는다.
+ */
 export function createEmptyRoomMap(plan: InteriorRoomPlan): GameMap {
+  const lowerTiles = new Array<number>(plan.width * plan.height).fill(VR.VOID);
+  for (const rect of floorFootprintRects(plan)) {
+    for (let y = rect.y; y < rect.y + rect.h; y += 1) {
+      for (let x = rect.x; x < rect.x + rect.w; x += 1) {
+        if (x < 0 || y < 0 || x >= plan.width || y >= plan.height) continue;
+        lowerTiles[y * plan.width + x] = plan.floorTile ?? VR.FLOOR;
+      }
+    }
+  }
   return {
     id: plan.mapId,
     name: plan.name,
@@ -609,10 +626,17 @@ export function createEmptyRoomMap(plan: InteriorRoomPlan): GameMap {
     height: plan.height,
     tilesetId: INTERIOR_ROOM_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
-    lowerTiles: new Array(plan.width * plan.height).fill(VR.VOID),
+    lowerTiles,
     upperTiles: new Array(plan.width * plan.height).fill(TILE.EMPTY),
     events: [],
   };
+}
+
+/** 계획된 바닥 영역 — rooms 우선, 없으면 wings. */
+function floorFootprintRects(plan: InteriorRoomPlan): readonly { x: number; y: number; w: number; h: number }[] {
+  const rooms = plan.rooms ?? [];
+  if (rooms.length > 0) return rooms.map((room) => ({ x: room.x, y: room.y, w: room.w, h: room.h }));
+  return (plan.wings ?? []).map((wing) => ({ x: wing.x, y: wing.y, w: wing.w, h: wing.h }));
 }
 
 /** Validate room bboxes before paint. Returns issues (empty = ok). */

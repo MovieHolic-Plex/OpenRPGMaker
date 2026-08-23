@@ -8,6 +8,7 @@ import { loadSession as loadFromBag, listSessions as listFromBag, saveSession as
 import type { RoomHarnessIssue, RoomSession } from "./types";
 import { ToolError, type ToolExecResult } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
+import { isPassable } from "@/project/collision";
 
 const ROOM_SESSION_BAG = "roomHarnessSessions";
 
@@ -70,6 +71,7 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
   const map = kit.createEmptyMap(plan);
   project.maps[mapId] = map;
   registerMapInTree(project, mapId);
+  const startWarnings = reconcilePlayerStart(project, mapId);
   const session: RoomSession = {
     id: sessionId,
     kitId: kit.kitId,
@@ -91,7 +93,38 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
   return {
     summary: `${kit.kitId} 세션 ${sessionId} 시작 · map=${mapId}`,
     data: { sessionId, kitId: kit.kitId, plan, checklist, buildOrder: kit.buildOrder, nextLayer: kit.buildOrder.find((l) => l !== "plan") ?? null },
+    ...(startWarnings.length > 0 ? { warnings: startWarnings } : {}),
   };
+}
+
+/**
+ * 방 맵이 **시작 맵을 교체**했을 때 플레이어 시작 위치를 방 안 통행 가능한 칸으로 옮긴다.
+ *
+ * 2026-08-23 실측: 빈 시작 맵에 `start_interior_room_session` 을 걸면 새 실내 맵이 시작 맵을
+ * 덮어써 기존 시작 좌표가 벽이 되고, 커밋이 `시작 위치가 통행 불가 타일입니다: (10, 8)` 로
+ * 거부됐다. 모델은 좌표를 4번 바꿔 재시도했지만 원인이 자기 인자가 아니라 시작 좌표라 전부 실패했다.
+ * 빈 시작 맵의 기본 좌표는 저작된 의도가 아니므로, 요청된 시공을 살리고 좌표를 옮긴 뒤 경고한다.
+ */
+function reconcilePlayerStart(project: Project, mapId: string): string[] {
+  if (project.startMapId !== mapId) return [];
+  const map = project.maps[mapId];
+  if (!map) return [];
+  const start = project.startPos;
+  if (isPassable(project, map, start.x, start.y)) return [];
+  for (let y = map.height - 1; y >= 0; y -= 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      if (!isPassable(project, map, x, y)) continue;
+      project.startPos = { x, y };
+      return [
+        `실내 맵이 시작 맵(${mapId})을 교체해 기존 시작 위치 (${start.x}, ${start.y})가 벽이 되었습니다 — ` +
+          `방 안 통행 가능한 칸 (${x}, ${y})로 옮겼습니다. 다른 위치를 원하면 set_start_position을 쓰세요.`,
+      ];
+    }
+  }
+  return [
+    `실내 맵이 시작 맵(${mapId})을 교체했지만 통행 가능한 칸을 찾지 못했습니다 — ` +
+      `바닥(floor) 레이어를 먼저 시공하거나 다른 맵에 방을 만드세요.`,
+  ];
 }
 
 /** 세션 체크리스트의 다음 open 레이어 하나를 시공/검증. */

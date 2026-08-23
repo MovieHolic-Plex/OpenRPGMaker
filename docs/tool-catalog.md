@@ -84,7 +84,7 @@
 | `set_scene_mood` | `mapId: string`, `weather?: object`, `lighting?: object`, `applyMode?: map\|event` | 맵 분위기 프리셋처럼 날씨와 Phase 6a 조명 인자를 한 번에 적용한다. applyMode='map'은 map.defaultLighting과 맵 진입 날씨 이벤트를 설정하고, applyMode='event'는 lighting.area 내부에 playerTouch 분위기 이벤트를 만든다. |
 | `define_ending` | `id: string`, `name: string`, `conditions: array`, `priority?: integer`, `epilogue?: array` | 프로젝트 엔딩을 선언한다. conditions는 switch/variable 조건 배열이며, triggerEnding은 조건을 만족한 엔딩 중 priority가 가장 높은 엔딩을 선택한다. epilogue는 script_cutscene beat 배열이다. |
 | `upsert_item` | `item: object` | 아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
-| `upsert_enemy` | `enemy: object` | 적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
+| `upsert_enemy` | `enemy: object` | 적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. elementRates의 키는 database.elements의 속성 id다(get_database_records collection:"elements"). 몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. |
 | `upsert_troop` | `troop: object` | 적 그룹(트룹) 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. |
 | `define_monster_species` | `species: object` | 몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다. |
 | `define_crop` | `crop: object` | 작물 레코드를 등록/수정한다. seedItemId는 심을 때 1개 소모되고 harvestItemId는 수확 시 지급된다. |
