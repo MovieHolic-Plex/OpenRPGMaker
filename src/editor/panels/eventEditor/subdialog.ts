@@ -1,5 +1,6 @@
 import { clearChildren, el } from "@/util/dom";
 import { registerModal } from "@/editor/ui/modalStack";
+import { installEventEditorCustomSelects } from "./customSelect";
 
 type EventSubdialogOptions = {
   readonly title: string;
@@ -37,7 +38,9 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
     attrs: { role: "dialog", "aria-modal": "true", "aria-label": options.title },
   });
   const body = el("div", { class: "event-subdialog-body" });
+  let disposeCustomSelects = (): void => undefined;
   const close = registerModal(backdrop, () => {
+    disposeCustomSelects();
     backdrop.remove();
     if (returnFocus && document.body.contains(returnFocus) && returnFocus.getAttribute("disabled") === null) {
       returnFocus.focus({ preventScroll: true });
@@ -66,6 +69,9 @@ export function openEventSubdialog(options: EventSubdialogOptions): void {
   document.body.append(backdrop);
   clearChildren(body);
   options.render(body, close);
+  const customSelects = installEventEditorCustomSelects(backdrop);
+  disposeCustomSelects = customSelects.dispose;
+  customSelects.refresh();
   if (!backdrop.contains(document.activeElement)) focusFirstControl(backdrop);
 }
 

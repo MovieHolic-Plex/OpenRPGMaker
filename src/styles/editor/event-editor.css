@@ -14,6 +14,8 @@
 @import "./event-editor.blocks.css";
 /* 목업 셸 — 페이지 탭·레일·검증 스트립·액센트. 반드시 blocks 다음. */
 @import "./event-editor.mockup.css";
+/* Native selects keep their data contract; this layer owns the visible dropdown UI. */
+@import "./event-editor.custom-select.css";
 
 .event-command-text-limit-hint{margin-top:4px;font-size:11px;color:var(--text-2);}
 .event-command-text-limit-hint[data-over="1"]{color:var(--danger,#f0716f);font-weight:600;}

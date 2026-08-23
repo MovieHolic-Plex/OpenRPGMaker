@@ -26,6 +26,7 @@ import {
 } from "./content";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
+import { installEventEditorCustomSelects } from "./customSelect";
 import { attachWindowDrag } from "./modalDrag";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 import { toast } from "@/util/toast";
@@ -106,6 +107,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   const stableBody = el("div", { class: "event-editor-modal-stable" });
   const dynamicBody = el("div", { class: "event-editor-modal-dynamic" });
   body.append(dynamicBody, stableBody);
+  const customSelects = installEventEditorCustomSelects(backdrop);
   // Layered Escape: topmost modal (command subdialog / picker) closes first.
   let closed = false;
   let closeGuardOpen = false;
@@ -181,6 +183,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     }
     clearChildren(dynamicBody);
     renderEventEditorDynamic(dynamicBody, request.mapId, request.eventId);
+    customSelects.refresh();
     restoreEventEditorScroll(dynamicBody, scrollSnapshots);
     restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
     refreshModalFooterStatus(footer, request);
@@ -198,6 +201,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, closeHandler));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
+    customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
     if (!saved) discardEventDraft(request.mapId, request.eventId);
@@ -614,6 +618,7 @@ function readScrollNumber(node: HTMLElement, key: "scrollLeft" | "scrollTop"): n
 type EventEditorInteractionSnapshot = {
   readonly focusTestId?: string;
   readonly focusTestIdIndex?: number;
+  readonly focusCustomSelectFor?: string;
   readonly focusCommandPath?: string;
   readonly selectionEnd?: number;
   readonly selectionStart?: number;
@@ -626,12 +631,14 @@ function captureEventEditorInteraction(root: HTMLElement): EventEditorInteractio
     ? document.activeElement
     : null;
   const focusTestId = active?.dataset.testid;
+  const focusCustomSelectFor = active?.dataset.customSelectFor;
   const matchingFocusNodes = focusTestId
     ? Array.from(root.querySelectorAll<HTMLElement>(`[data-testid="${focusTestId}"]`))
     : [];
   const selection = active as (HTMLInputElement | HTMLTextAreaElement | null);
   return {
     ...(focusTestId ? { focusTestId, focusTestIdIndex: Math.max(0, matchingFocusNodes.indexOf(active!)) } : {}),
+    ...(focusCustomSelectFor ? { focusCustomSelectFor } : {}),
     ...(active?.closest<HTMLElement>(".cmd-item")?.dataset.cmdPath
       ? { focusCommandPath: active.closest<HTMLElement>(".cmd-item")!.dataset.cmdPath }
       : {}),
@@ -654,7 +661,10 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
   if (snapshot.selectedCommandPath) selectRenderedCommand(root, snapshot.selectedCommandPath);
 
   let focusTarget: HTMLElement | null = null;
-  if (snapshot.focusTestId) {
+  if (snapshot.focusCustomSelectFor) {
+    focusTarget = root.querySelector<HTMLElement>(`[data-custom-select-for="${snapshot.focusCustomSelectFor}"]`);
+  }
+  if (!focusTarget && snapshot.focusTestId) {
     focusTarget = Array.from(root.querySelectorAll<HTMLElement>(`[data-testid="${snapshot.focusTestId}"]`))[
       snapshot.focusTestIdIndex ?? 0
     ] ?? null;
