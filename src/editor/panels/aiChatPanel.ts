@@ -2297,6 +2297,44 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     for (const node of tail) node.remove();
     panel.append(...tail);
   };
+  /**
+   * 로그 배치의 **단일 상태 함수**. (도크 × 기록/스튜디오) → 슬롯 하나.
+   *
+   * 예전에는 같은 `log` 엘리먼트를 `applyComposerViewPolicy`·`applyHistoryOpen`·`applyStudio`
+   * 세 곳에서 제각 `remove()` + `append()` 로 재부모화해서, 어떤 상태에서 로그가 어떤
+   * 마운트에 사는지를 코드만 보고는 알 수 없었다 — 기록을 닫으면 혼발 존에 넣었다가
+   * 바로 뒤이어 도크 정책이 다시 유리 마운트로 집어오는 식이었다. 이제 배치는 이 둠만 정한다.
+   *
+   * 슬롯은 `panel.dataset.logSlot` 으로 노출한다 — 부모 체인을 뒤지지 않고 현재 배치를
+   * 읽을 수 있게 하는 단일 지표다.
+   */
+  const logSlotForDock = (mode: ChatDock): "glass" | "volatile" | "none" => {
+    switch (mode) {
+      case "glass":
+        return "glass";
+      case "side":
+        return "volatile";
+      case "float":
+        // float 은 맵 위에 바만 남긴다 — 로그는 아예 마운트하지 않는다(테스트 계약).
+        return "none";
+      default: {
+        const unreachable: never = mode;
+        throw new Error(`unknown chat dock: ${String(unreachable)}`);
+      }
+    }
+  };
+  const mountLog = (): void => {
+    const slot = historyOpen || studio ? "history" : logSlotForDock(readChatDock());
+    const target = slot === "history"
+      ? historyLogMount
+      : slot === "glass"
+        ? glassLogMount
+        : slot === "volatile" ? volatileLogMount : null;
+    panel.dataset.logSlot = slot;
+    if (log.parentElement === target) return;
+    log.remove();
+    target?.append(log);
+  };
   syncGlassIdle = (): void => {
     if (readChatDock() !== "glass") {
       panel.classList.remove("is-glass-idle");
@@ -2311,40 +2349,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const applyComposerViewPolicy = (): void => {
     const mode = readChatDock();
-    switch (mode) {
-      case "float":
-        if (!historyOpen && !studio) removeStartScreen();
-        risingOverlay.remove();
-        panel.classList.remove("is-glass-idle");
-        refreshNextSteps();
-        return;
-      case "glass":
-        if (!historyOpen && !studio) {
-          removeStartScreen();
-          log.remove();
-          glassLogMount.append(log);
-        }
-        risingOverlay.remove();
-        syncGlassIdle();
-        return;
-      case "side":
-        if (!panel.contains(risingOverlay)) remountComposerTail(true);
-        if (!historyOpen && !studio) {
-          log.remove();
-          volatileLogMount.append(log);
-        }
-        if (volatileZone) {
-          volatileZone.hidden = false;
-          volatileZone.classList.remove("is-faded");
-        }
-        panel.classList.remove("is-glass-idle");
-        refreshNextSteps();
-        return;
-      default: {
-        const unreachable: never = mode;
-        throw new Error(`unknown chat dock: ${String(unreachable)}`);
-      }
+    if (!historyOpen && !studio) removeStartScreen();
+    // 오버레이(혼발 존 + 고정 제안 영역)는 사이드 도크만 가진다. 유리는 카드 본밸에
+    // 로그를 단고, float 은 바만 남긴다 — 테스트 계약이다(aiPanelChrome:
+    // "side dock mounts the work log, and switching back to float unmounts it").
+    if (mode === "side") {
+      if (!panel.contains(risingOverlay)) remountComposerTail(true);
+    } else {
+      risingOverlay.remove();
     }
+    mountLog();
+    if (panel.dataset.logSlot === "volatile" && volatileZone) {
+      volatileZone.hidden = false;
+      volatileZone.classList.remove("is-faded");
+    }
+    if (mode === "glass") {
+      syncGlassIdle();
+      return;
+    }
+    panel.classList.remove("is-glass-idle");
+    refreshNextSteps();
   };
 
   const applyCollapsed = (): void => {
@@ -2466,15 +2490,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // side flex 도크에서는 본문이 곧 기록 영역 — fixed is-docked 오버레이를 켜지 않는다.
       if (!panel.classList.contains("chat-dock-side")) panel.classList.add("is-docked");
       else panel.classList.remove("is-docked");
-      log.remove();
-      historyLogMount.append(log);
       historyButton.textContent = "×";
       historyButton.setAttribute("title", "전체 기록 닫기");
       historyButton.setAttribute("aria-label", "전체 기록 닫기");
     } else {
       panel.classList.remove("is-history-open", "is-docked");
-      log.remove();
-      volatileLogMount.append(log);
       historyButton.textContent = "🕒";
       historyButton.setAttribute("title", "전체 기록 열기");
       historyButton.setAttribute("aria-label", "전체 기록 열기");
@@ -2505,8 +2525,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       panel.setAttribute("style", ""); // 커스텀 크기 대신 전체 폭.
       // 스튜디오는 전체 오버레이라 기록 패널을 넓은 워크스페이스로 전환한다.
       historyOpen = true;
-      log.remove();
-      historyLogMount.append(log);
       panel.classList.remove("is-docked");
       if (typeof document !== "undefined" && document.body) document.body.classList.remove("ai-panel-docked");
       drawer.element.hidden = false;

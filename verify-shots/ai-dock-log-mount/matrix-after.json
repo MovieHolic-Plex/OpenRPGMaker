@@ -1,0 +1,101 @@
+[
+  {
+    "view": "default",
+    "dock": "glass",
+    "classes": [
+      "is-glass-idle"
+    ],
+    "parent": "ai-glass-log",
+    "connected": true,
+    "boxH": 0,
+    "boxW": 0
+  },
+  {
+    "view": "history",
+    "dock": "glass",
+    "classes": [
+      "is-history-open",
+      "is-docked",
+      "is-glass-idle"
+    ],
+    "parent": "ai-history-log-mount",
+    "connected": true,
+    "boxH": 787,
+    "boxW": 503
+  },
+  {
+    "view": "studio",
+    "dock": "glass",
+    "classes": [
+      "is-studio",
+      "is-glass-idle"
+    ],
+    "parent": "ai-history-log-mount",
+    "connected": true,
+    "boxH": 603,
+    "boxW": 920
+  },
+  {
+    "view": "default",
+    "dock": "side",
+    "classes": [],
+    "parent": "ai-rising-volatile-zone ai-volatile-dashed",
+    "connected": true,
+    "boxH": 297,
+    "boxW": 470
+  },
+  {
+    "view": "history",
+    "dock": "side",
+    "classes": [
+      "is-history-open"
+    ],
+    "parent": "ai-history-log-mount",
+    "connected": true,
+    "boxH": 120,
+    "boxW": 480
+  },
+  {
+    "view": "studio",
+    "dock": "side",
+    "classes": [
+      "is-studio"
+    ],
+    "parent": "ai-history-log-mount",
+    "connected": true,
+    "boxH": 942,
+    "boxW": 238
+  },
+  {
+    "view": "default",
+    "dock": "float",
+    "classes": [],
+    "parent": "(detached)",
+    "connected": null,
+    "boxH": null,
+    "boxW": null
+  },
+  {
+    "view": "history",
+    "dock": "float",
+    "classes": [
+      "is-history-open",
+      "is-docked"
+    ],
+    "parent": "ai-history-log-mount",
+    "connected": true,
+    "boxH": 903,
+    "boxW": 503
+  },
+  {
+    "view": "studio",
+    "dock": "float",
+    "classes": [
+      "is-studio"
+    ],
+    "parent": "ai-history-log-mount",
+    "connected": true,
+    "boxH": 585,
+    "boxW": 889
+  }
+]
