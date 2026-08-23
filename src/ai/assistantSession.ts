@@ -345,7 +345,8 @@ export const METADATA_ONLY_TOOLS = new Set([
 
 // 세션 전용 툴: 공간 빌드 전 밑그림 제출. 레지스트리 툴이 아니라(프로젝트를 바꾸지 않음)
 // 세션이 직접 처리하며, tools 배열에는 이 스키마를 덧붙여 모델에 노출한다.
-const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
+// 감사(test/toolSchemaProviderCompat.test.ts)가 레지스트리 툴과 함께 검사해야 하므로 export 한다.
+export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
   type: "function",
   function: {
     name: "set_build_spec",
@@ -359,9 +360,25 @@ const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
         assets: {
           type: "array",
           description:
-            "[{id,kind,x,y,w,h,layer?,style?,confirmDestroy?}] — kind: house|road|npc|prop|clear 등, layer: lower(기본)|upper(장식). " +
+            "겹치지 않는 영역을 가진 에셋 목록. kind: house|road|npc|prop|clear|terrain 등, layer: lower(기본)|upper(장식). " +
             "clear 에셋이 기존 구조물(집 등)을 덮으면 confirmDestroy:true가 있어야 통과합니다 — '주변 청소'는 구조물을 피해 영역을 좁히세요.",
-          items: { type: "object" },
+          // properties 를 선언하지 않으면(items:{type:"object"}) strict function-calling 경로에서
+          // 모델이 필드를 표현할 방법이 없어 `assets:[{}]` 만 보낸다 — 2026-08-23 실측: 밑그림 검증 10회 연속 실패.
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "string", description: "에셋 식별자(예: house_1)" },
+              kind: { type: "string", description: "house|road|npc|prop|clear|terrain 등" },
+              x: { type: "integer" },
+              y: { type: "integer" },
+              w: { type: "integer" },
+              h: { type: "integer" },
+              layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower" },
+              style: { type: "string", description: "종류별 스타일 힌트(선택)" },
+              confirmDestroy: { type: "boolean", description: "clear가 기존 구조물을 덮을 때만 true" },
+            },
+            required: ["id", "kind", "x", "y", "w", "h"],
+          },
         },
         buildOrder: {
           type: "array",
@@ -395,7 +412,7 @@ export const AGENT_RUN_MAX_TOTAL_STEPS = 48;
  * Always available so the main model can plan/replan inside the ReAct loop;
  * the pre-turn planner also authors the first plan without tools.
  */
-const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
+export const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
   {
     type: "function",
     function: {
@@ -418,9 +435,35 @@ const WORK_PLAN_TOOLS: readonly OpenAiToolSchema[] = [
           plannerNote: { type: "string", description: "전략 메모(선택)" },
           layers: {
             type: "array",
-            description:
-              "[{title, items:[{title, instruction, doneWhen?, successTools?}]}] — 2~6 레이어, 항목당 구체 instruction",
-            items: { type: "object" },
+            description: "2~6 레이어. 각 레이어는 title 과 items 를 가지며, 항목마다 구체적인 instruction 이 필요하다.",
+            // items:{type:"object"} 로 두면 모델이 `layers:[{}]` 밖에 못 보낸다(2026-08-23 실측: 8회 연속 인자 오류).
+            items: {
+              type: "object",
+              properties: {
+                id: { type: "string", description: "생략 시 L1, L2 … 자동" },
+                title: { type: "string", description: "레이어 제목" },
+                items: {
+                  type: "array",
+                  description: "이 레이어의 작업 항목",
+                  items: {
+                    type: "object",
+                    properties: {
+                      id: { type: "string", description: "생략 시 L1-1 … 자동" },
+                      title: { type: "string", description: "항목 제목" },
+                      instruction: { type: "string", description: "실행 모델이 그대로 수행할 구체 지시" },
+                      doneWhen: { type: "string", description: "완료 판정 기준(선택)" },
+                      successTools: {
+                        type: "array",
+                        description: "이 항목의 성공을 증명하는 툴 이름(선택)",
+                        items: { type: "string" },
+                      },
+                    },
+                    required: ["title", "instruction"],
+                  },
+                },
+              },
+              required: ["title", "items"],
+            },
           },
         },
         required: ["goal", "layers"],
@@ -560,6 +603,8 @@ export class AssistantSession {
   private workPlanAutoStepsThisUserMessage = 0;
   /** 이번 사용자 메시지 동안 성공한 쓰기 툴 이름(WorkPlan complete 가드용). */
   private turnSuccessfulWriteTools = new Set<string>();
+  /** 이번 사용자 메시지 동안 성공한 **모든** 툴 이름(읽기 포함) — complete_work_item 게이트용. */
+  private turnSuccessfulTools = new Set<string>();
 
   constructor(project: Project, options: AssistantSessionOptions = {}) {
     this.config = options.config ?? loadAiConfig();
@@ -878,6 +923,7 @@ export class AssistantSession {
     this.turnProposals = new Map();
     this.turnWriteDedupe = new Map();
     this.turnSuccessfulWriteTools = new Set();
+    this.turnSuccessfulTools = new Set();
     this.eventBaseProposalKeys = new Map();
 
     // 집 vs 실내 등 경로 미확정: LLM·쓰기 툴 전에 선택지로 되묻기(결정론).
@@ -978,9 +1024,10 @@ export class AssistantSession {
       return;
     }
 
-    const decision = parseOrchestratorDecision(raw);
-    if (!decision) {
-      this.pushAudit({ kind: "status", text: `planner:parse-fail raw=${raw.slice(0, 200)}` });
+    const parsed = parseOrchestratorDecision(raw);
+    if (!parsed.decision) {
+      // 실패 사유 + 원문을 함께 남긴다. 사유 없이 잘린 원문만 남기면 원인 규명이 불가능하다(2026-08-23 QA).
+      this.pushAudit({ kind: "status", text: `planner:parse-fail ${parsed.error} raw=${raw.slice(0, 800)}` });
       if (this.workPlan && !isWorkPlanComplete(this.workPlan)) {
         this.injectWorkPlanOrchestration();
         this.emitWorkPlan(onEvent);
@@ -988,9 +1035,12 @@ export class AssistantSession {
         this.workPlan = buildDefaultWorkPlan(text);
         this.emitWorkPlan(onEvent);
         this.injectWorkPlanOrchestration();
+        // 폴백 계획은 사용자 요청을 그대로 담지 못한다 — 조용히 진행하면 축소된 결과를 성공으로 보고하게 된다.
+        onEvent({ type: "status", text: `플래너 응답을 해석하지 못해 폴백 계획으로 진행합니다 (${parsed.error})` });
       }
       return;
     }
+    const decision = parsed.decision;
 
     if (decision.action === "direct") {
       this.pushAudit({ kind: "status", text: `planner:direct ${decision.reason ?? ""}` });
@@ -1071,17 +1121,22 @@ export class AssistantSession {
         data: { plan: structuredClone(plan), progress },
       };
     }
-    if (!this.workPlan) {
-      return {
-        ok: false,
-        summary: "활성 WorkPlan이 없습니다. set_work_plan으로 계획을 세우거나 어려운 요청으로 플래너가 계획을 만들게 하세요.",
-      };
-    }
+    // 조회는 계획이 없어도 실패가 아니다 — "없음"은 정확한 답이다. ok:false 로 돌려주면 정상 상태가
+    // 실패 통계에 섞이고 모델이 교정할 것도 없는 실패를 재시도한다(2026-08-23 실측).
     if (name === "get_work_plan") {
+      if (!this.workPlan) {
+        return { ok: true, summary: "활성 WorkPlan 없음. 다단계 작업이면 set_work_plan으로 계획을 세우세요.", data: { plan: null } };
+      }
       return {
         ok: true,
         summary: formatWorkPlanUserVisible(this.workPlan).slice(0, 500),
         data: { plan: structuredClone(this.workPlan), progress: summarizeWorkPlan(this.workPlan) },
+      };
+    }
+    if (!this.workPlan) {
+      return {
+        ok: false,
+        summary: "활성 WorkPlan이 없습니다. set_work_plan으로 계획을 세우거나 어려운 요청으로 플래너가 계획을 만들게 하세요.",
       };
     }
     if (name === "complete_work_item") {
@@ -1089,7 +1144,7 @@ export class AssistantSession {
       if (!id) return { ok: false, summary: "완료할 항목 id가 없습니다." };
       const note = typeof args.note === "string" ? args.note : undefined;
       const result = completeWorkItemById(this.workPlan, id, note, {
-        successfulWriteTools: [...this.turnSuccessfulWriteTools],
+        successfulTools: [...this.turnSuccessfulTools],
       });
       if (!result.ok) {
         return {
@@ -1650,6 +1705,7 @@ export class AssistantSession {
       });
       if (!result.ok || !result.diff) continue;
       this.turnSuccessfulWriteTools.add("place_npc");
+      this.turnSuccessfulTools.add("place_npc");
       this.upsertProposal(proposedByKey, {
         name: "place_npc",
         args,
@@ -1795,6 +1851,13 @@ export class AssistantSession {
     ];
     // 토큰 보정 관측용: tools 스키마도 prompt_tokens에 포함되므로 문자 수에 더한다(근사).
     const toolsChars = JSON.stringify(tools).length;
+    // 노출된 툴 목록을 감사에 남긴다. 모델이 "그 기능은 없습니다" 라고 할 때(실측 2026-08-23:
+    // set_type_chart/define_ending/script_cutscene 가 있는데도 없다고 보고) 그 주장이 사실인지
+    // 로그로 확인할 방법이 없었다. 도메인 스코핑·40툴 상한의 결과를 관측 가능하게 만든다.
+    this.pushAudit({
+      kind: "status",
+      text: `tools:exposed ${tools.length} — ${tools.map((tool) => tool.function.name).join(",")}`.slice(0, 2000),
+    });
     const proposedByKey = this.turnProposals;
     let assistantText = "";
     const orchestrated = this.orchestrationEnabled() || Boolean(this.workPlan);
@@ -2045,6 +2108,9 @@ export class AssistantSession {
           successfulWriteToolsThisRound.push(name);
           this.turnSuccessfulWriteTools.add(name);
         }
+        // 읽기 툴도 기록한다 — 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 쓰는데
+        // 쓰기만 세면 그 항목은 무슨 짓을 해도 완료할 수 없는 게이트가 된다(2026-08-23 실측: 2회 거부 후 skip).
+        if (toolResult.ok) this.turnSuccessfulTools.add(name);
         if (toolResult.ok && tool) recordAssistantToolDomainUse(tool.domains);
         onEvent({ type: "tool_call", name, args, result: toolResult });
         this.pushAudit({

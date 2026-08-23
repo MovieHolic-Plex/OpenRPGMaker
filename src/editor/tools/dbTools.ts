@@ -31,6 +31,7 @@ import type {
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { COMMAND_SCHEMA } from "./schemaShapes";
 
 // id 기준으로 배열에 upsert.
 // Serialize concurrent DB writes to prevent lost update (read-modify-write race).
@@ -478,15 +479,46 @@ const upsertItem: ToolDefinition = {
   },
 };
 
+/**
+ * 존재하지 않는 `elementRates` 키를 버리고 경고한다.
+ *
+ * 전체 거부는 사용자 의도를 통째로 날린다 — 2026-08-23 실측: `elementRates:{fire:"C",water:"A",grass:"D"}`
+ * 에서 `grass` 만 DB 속성이 아니었는데 커밋이 거부되고, 모델의 재시도는 elementRates 를 아예 빼서
+ * "불에 강하고 물에 약한" 의도가 조용히 사라졌다(전 속성 기본값 C). `fill_region` 이 보호 셀만 건너뛰고
+ * 경고를 돌려주는 것과 같은 방침으로, 유효한 키는 살린다.
+ */
+function dropUnknownElementRates(
+  project: Project,
+  record: { elementRates?: Record<string, unknown> },
+  label: string,
+  warnings: string[],
+): void {
+  const rates = record.elementRates;
+  if (!rates) return;
+  const known = new Set((project.database.elements ?? []).map((element) => element.id));
+  const unknown = Object.keys(rates).filter((id) => !known.has(id));
+  if (unknown.length === 0) return;
+  for (const id of unknown) delete rates[id];
+  const sample = [...known].slice(0, 12).join(", ");
+  warnings.push(
+    `${label}.elementRates에서 DB 속성이 아닌 키를 제외했습니다: ${unknown.join(", ")}. ` +
+      `사용 가능한 속성 id(${known.size}개): ${sample}${known.size > 12 ? " …" : ""} — 몬스터 타입 상성은 set_type_chart를 쓰세요.`,
+  );
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
-  description: "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
+  description:
+    "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
+    "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
+    "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다.",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
     const record = normalizeEnemyRecord(merged as Partial<EnemyRecord> & Pick<EnemyRecord, "id" | "name">);
     const warnings: string[] = [];
+    dropUnknownElementRates(draft, record, "enemy", warnings);
     record.monsterResourceId = resolveMonsterResourceId(draft, record.monsterResourceId, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
     return {
@@ -691,8 +723,14 @@ const upsertActor: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"]);
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
+    const warnings: string[] = [];
+    dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
-    return { summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return {
+      summary: `액터 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      data: record,
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 
@@ -730,8 +768,14 @@ const upsertClass: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const merged = mergeRecord(draft.database.classes, args.class, "class", classRecordSchema, { id: "class_mage", name: "마법사" });
     const record = normalizeClassRecord(merged as Partial<ClassRecord> & Pick<ClassRecord, "id" | "name">);
+    const warnings: string[] = [];
+    dropUnknownElementRates(draft, record, "class", warnings);
     const outcome = upsertById(draft.database.classes, record);
-    return { summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return {
+      summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      data: record,
+      ...(warnings.length > 0 ? { warnings } : {}),
+    };
   },
 };
 
@@ -812,7 +856,7 @@ const upsertCommonEvent: ToolDefinition = {
       name: { type: "string" },
       trigger: { type: "string", enum: ["none", "auto", "parallel"] },
       conditionSwitchId: { type: "string" },
-      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: { type: "object" } },
+      commands: { type: "array", description: "Command[] 또는 단일 Command object", items: COMMAND_SCHEMA },
     },
     required: ["id", "name", "commands"],
   },
@@ -850,7 +894,11 @@ const setSessionStart: ToolDefinition = {
     type: "object",
     properties: {
       gold: { type: "integer" },
-      inventory: { type: "object", description: "{ itemId: 수량 }" },
+      inventory: {
+        type: "object",
+        description: "{ itemId: 수량 } — 키가 아이템 id 인 동적 맵",
+        additionalProperties: true,
+      },
       partyActorIds: { type: "array", description: "시작 파티 액터 id", items: { type: "string" } },
     },
   },
@@ -874,17 +922,53 @@ const setTitleScreen: ToolDefinition = {
     type: "object",
     properties: {
       title: { type: "string" },
-      menuLabels: { type: "object", description: "{ newGame, continueGame, quit }" },
-      menuVisibility: { type: "object", description: "{ newGame, continueGame, quit } — newGame always true" },
+      menuLabels: {
+        type: "object",
+        description: "{ newGame, continueGame, quit }",
+        properties: {
+          newGame: { type: "string" },
+          continueGame: { type: "string" },
+          quit: { type: "string" },
+        },
+      },
+      menuVisibility: {
+        type: "object",
+        description: "{ newGame, continueGame, quit } — newGame always true",
+        properties: {
+          newGame: { type: "boolean" },
+          continueGame: { type: "boolean" },
+          quit: { type: "boolean" },
+        },
+      },
       sounds: {
         type: "object",
         description: "{ cursorSeResourceId, confirmSeResourceId, cancelSeResourceId } nested merge",
+        properties: {
+          cursorSeResourceId: { type: "string" },
+          confirmSeResourceId: { type: "string" },
+          cancelSeResourceId: { type: "string" },
+        },
       },
       titleGraphic: {
         type: "object",
         description: "{ mode: text|graphic|both, resourceId, x, y } nested merge",
+        properties: {
+          mode: { type: "string", enum: ["text", "graphic", "both"] },
+          resourceId: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+        },
       },
-      layout: { type: "object", description: "{ titleX, titleY, menuX, menuY } nested merge" },
+      layout: {
+        type: "object",
+        description: "{ titleX, titleY, menuX, menuY } nested merge",
+        properties: {
+          titleX: { type: "integer" },
+          titleY: { type: "integer" },
+          menuX: { type: "integer" },
+          menuY: { type: "integer" },
+        },
+      },
       backgroundResourceId: { type: "string", description: "titleScreen.background only; does not clear system.titleResourceId" },
       musicResourceId: { type: "string" },
       showInputHint: { type: "boolean" },

@@ -137,7 +137,36 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
           type: "array",
           description:
             "블록 배열. 예: [{kind:'markdown',text:'...'},{kind:'sheetMap',tilesetId:'easyrpg_chipset_interior',zones:[{col:6,row:12,w:3,h:4,label:'다크월'}]},{kind:'tileBlockCard',tilesetId:'...',col:6,row:12,w:3,h:4,title:'다크월 블록'},{kind:'paintDemo',tilesetId:'...',blockCol:0,blockRow:12}]",
-          items: { type: "object" },
+          items: {
+            type: "object",
+            properties: {
+              kind: { type: "string", enum: ["markdown", "sheetMap", "tileBlockCard", "paintDemo"] },
+              text: { type: "string" },
+              title: { type: "string" },
+              tilesetId: { type: "string" },
+              col: { type: "integer" },
+              row: { type: "integer" },
+              w: { type: "integer" },
+              h: { type: "integer" },
+              blockCol: { type: "integer" },
+              blockRow: { type: "integer" },
+              zones: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    col: { type: "integer" },
+                    row: { type: "integer" },
+                    w: { type: "integer" },
+                    h: { type: "integer" },
+                    label: { type: "string" },
+                  },
+                  required: ["col", "row"],
+                },
+              },
+            },
+            required: ["kind"],
+          },
         },
       },
       required: ["title", "blocks"],

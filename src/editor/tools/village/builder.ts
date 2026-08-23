@@ -87,6 +87,7 @@ import {
   villageBoulevard,
   villageRoadAnchors,
 } from "./roads";
+import { COORD_SCHEMA, VILLAGE_HOUSE_PLAN_SCHEMA, VILLAGE_NPC_PLAN_SCHEMA } from "../schemaShapes";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -517,10 +518,10 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         houses: {
           type: "array",
           description: "집 계획 [{kitId?, yard?, ownerName?}]. 개수만 쓰려면 houseCount.",
-          items: { type: "object" },
+          items: VILLAGE_HOUSE_PLAN_SCHEMA,
         },
         houseCount: { type: "integer", description: "집 수(4~32). houses 없을 때 사용." },
-        housePlans: { type: "array", items: { type: "object" }, description: "houses 별칭" },
+        housePlans: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA, description: "houses 별칭" },
         npcs: {
           type: "array",
           items: {
@@ -658,7 +659,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         planId: { type: "string" },
         attempt: { type: "integer" },
         maxAttempts: { type: "integer" },
-        doorFronts: { type: "array", items: { type: "object" } },
+        doorFronts: { type: "array", items: COORD_SCHEMA, description: "[{x,y}] 문 앞 좌표" },
       },
       required: ["mapId"],
     },
@@ -701,7 +702,12 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       type: "object",
       properties: {
         planId: { type: "string" },
-        evaluation: { type: "object", description: "evaluate_village_look의 data 전체" },
+        evaluation: {
+          type: "object",
+          description: "evaluate_village_look의 data 전체",
+          // 평가 payload 는 evaluate_village_look 출력을 그대로 되돌려주는 자리다 — 스키마로 고정하지 않는다.
+          additionalProperties: true,
+        },
       },
       required: ["planId", "evaluation"],
     },
@@ -749,8 +755,8 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         plazaStyle: { type: "string" },
         plazaLayout: { type: "string" },
         edgeTrees: { type: "string" },
-        houses: { type: "array", items: { type: "object" } },
-        npcs: { type: "array", items: { type: "object" } },
+        houses: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
+        npcs: { type: "array", items: VILLAGE_NPC_PLAN_SCHEMA },
       },
     },
     invalidArgsExample: { planId: "vplan_1", maxAttempts: 2 },
@@ -771,7 +777,7 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
         doorFronts: {
           type: "array",
           description: "[{x,y}] 문 앞 좌표. 생략 시 맵 이벤트 중 문 transfer 근처를 추정하지 않고 start만 검사.",
-          items: { type: "object" },
+          items: COORD_SCHEMA,
         },
       },
       required: ["mapId"],
@@ -794,7 +800,12 @@ export const VILLAGE_TOOLS: readonly ToolDefinition[] = [
       type: "object",
       properties: {
         planId: { type: "string", description: "plan_village가 돌려준 계획 id" },
-        plan: { type: "object", description: "VillagePlan 객체(plan_village 결과 plan 필드)" },
+        plan: {
+          type: "object",
+          description: "VillagePlan 객체(plan_village 결과 plan 필드)",
+          // plan_village 가 돌려준 계획을 그대로 되돌려주는 자리다.
+          additionalProperties: true,
+        },
         mapId: { type: "string", description: "기존 맵에 시공한다. 최소 36x36 필요." },
         name: { type: "string", description: "새 맵 이름(기본: 마을 50x50)" },
         width: { type: "integer", description: "새 맵 가로(기본 50, 36~256)" },

@@ -25,6 +25,7 @@ import {
   requiredSuccessToolsForUserText,
   templateToolInstruction,
 } from "./narrativeHorrorWorkPlan";
+import { getTool } from "@/editor/tools/toolRegistry";
 export type WorkItemStatus = "pending" | "in_progress" | "done" | "skipped" | "blocked";
 
 export interface WorkItem {
@@ -114,6 +115,8 @@ Harness contract:
    - successTools (optional write tool names that auto-complete the item)
 8. Typical RPG content layers: meta/wipe → hub map → landmarks → side maps/transfers → quest chain → polish/QA.
 9. Titles/instructions/doneWhen in the **same language as the user** (usually Korean).
+10. **Be terse — a truncated response is worse than a small plan.** 2026-08-23 실측: 장문 goal + 큰 layers 로 응답이 출력 한도에서 잘려 JSON 이 깨졌고, 하니스가 무관한 폴백 템플릿으로 갈아타 사용자 요청의 5/6 이 조용히 누락됐다. reason ≤ 1 short sentence, goal ≤ 200 chars, each instruction ≤ 200 chars, no restating the user request verbatim.
+11. A multi-deliverable request MUST have every deliverable represented by at least one item. Dropping one because the plan is getting long is a contract violation — merge related deliverables into one item instead.
 ${NARRATIVE_HORROR_PLANNER_RULE}
 
 JSON schema:
@@ -172,37 +175,118 @@ export function buildOrchestratorUserPayload(input: {
   return parts.join("\n\n");
 }
 
-export function parseOrchestratorDecision(raw: string): OrchestratorDecision | null {
+/** 파싱 결과 — 실패 시 **어느 검증에서 걸렸는지** 를 문자열로 돌려준다. */
+export type OrchestratorParseResult =
+  | { readonly decision: OrchestratorDecision }
+  | { readonly decision: null; readonly error: string };
+
+/**
+ * 플래너 JSON 응답을 파싱한다.
+ *
+ * 실패를 `null` 하나로 뭉개면 원인을 알 수 없다 — 2026-08-23 실측: 6개 산출물을 요구한 요청에서
+ * 플래너 응답이 출력 토큰 한도에 걸려 JSON 이 중간에서 끊겼고, 파서가 조용히 null 을 돌려주자
+ * 세션이 무관한 장르 템플릿 폴백(moon-cutscene 1항목)으로 갈아치웠다. 그 결과 모델이 스스로
+ * "던전·적·물약·상성표·선택지는 추가되지 않았습니다" 라고 말하면서도 턴은 성공으로 끝났다.
+ * 그래서 (1) 실패 사유를 반환하고 (2) 잘린 JSON 은 괄호를 닫아 복구를 한 번 시도한다.
+ */
+export function parseOrchestratorDecision(raw: string): OrchestratorParseResult {
   const jsonText = extractJsonObject(raw);
-  if (!jsonText) return null;
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(jsonText);
-  } catch {
-    return null;
-  }
-  if (!isRecord(parsed)) return null;
+  if (!jsonText) return { decision: null, error: "응답에서 JSON 객체를 찾지 못했습니다." };
+  const parsed = parseJsonWithTruncationRepair(jsonText);
+  if (parsed === undefined) return { decision: null, error: "JSON 파싱 실패(복구 시도 포함)." };
+  if (!isRecord(parsed)) return { decision: null, error: "최상위가 객체가 아닙니다." };
   const action = parsed.action;
   if (action === "direct" || action === "resume") {
     return {
-      action,
-      reason: typeof parsed.reason === "string" ? parsed.reason : undefined,
+      decision: {
+        action,
+        ...(typeof parsed.reason === "string" ? { reason: parsed.reason } : {}),
+      },
     };
   }
-  if (action !== "new_plan" && action !== "replan") return null;
+  if (action !== "new_plan" && action !== "replan") {
+    return { decision: null, error: `action 이 direct|resume|new_plan|replan 이 아닙니다: ${JSON.stringify(action)}` };
+  }
   const goal = typeof parsed.goal === "string" ? parsed.goal.trim() : "";
+  if (!goal) return { decision: null, error: "new_plan/replan 에 goal 문자열이 없습니다." };
   const layersRaw = parsed.layers;
-  if (!goal || !Array.isArray(layersRaw) || layersRaw.length === 0) return null;
+  if (!Array.isArray(layersRaw)) return { decision: null, error: "layers 가 배열이 아닙니다." };
+  if (layersRaw.length === 0) return { decision: null, error: "layers 가 비어 있습니다." };
+  const rejected: string[] = [];
   const layers = layersRaw
-    .map((layer, li) => normalizeLayer(layer, li))
+    .map((layer, li) => {
+      const normalized = normalizeLayer(layer, li);
+      if (!normalized) rejected.push(`layers[${li}]`);
+      return normalized;
+    })
     .filter((layer): layer is NonNullable<typeof layer> => layer !== null);
-  if (layers.length === 0) return null;
+  if (layers.length === 0) {
+    return { decision: null, error: `모든 layer 가 형식 오류입니다(${rejected.join(", ")}). 필요한 형식: {title, items:[{title, instruction}]}` };
+  }
   return {
-    action,
-    goal,
-    plannerNote: typeof parsed.plannerNote === "string" ? parsed.plannerNote : undefined,
-    layers,
+    decision: {
+      action,
+      goal,
+      ...(typeof parsed.plannerNote === "string" ? { plannerNote: parsed.plannerNote } : {}),
+      layers,
+    },
   };
+}
+
+/**
+ * 잘린 JSON 복구 — 열려 있는 문자열/배열/객체를 닫고 한 번 더 파싱한다.
+ * 출력 토큰 한도에 걸린 플래너 응답에서 **도착한 layer 들만이라도** 살리는 것이 목적이다.
+ * 정상 JSON 은 첫 시도에서 통과하므로 이 경로를 타지 않는다.
+ */
+function parseJsonWithTruncationRepair(jsonText: string): unknown {
+  try {
+    return JSON.parse(jsonText);
+  } catch {
+    /* fall through to repair */
+  }
+  // 뒤에서부터 "구조가 닫힌 지점"(`}` 또는 `]`)으로 후퇴하며, 남은 여는 괄호를 닫아 파싱을 시도한다.
+  // 반쯤 도착한 마지막 원소는 이 후퇴로 자연히 잘려 나가고, 온전히 도착한 앞쪽 원소는 살아남는다.
+  for (let cut = jsonText.length; cut > 0; cut -= 1) {
+    const char = jsonText[cut - 1];
+    if (char !== "}" && char !== "]") continue;
+    const body = stripTrailingComma(jsonText.slice(0, cut));
+    const closers = pendingClosers(body);
+    if (closers === null) continue;
+    try {
+      return JSON.parse(body + closers);
+    } catch {
+      /* keep backtracking */
+    }
+  }
+  return undefined;
+}
+
+function stripTrailingComma(text: string): string {
+  const trimmed = text.trimEnd();
+  return trimmed.endsWith(",") ? trimmed.slice(0, -1) : trimmed;
+}
+
+/** 열린 채 남은 괄호를 닫는 문자열. 문자열 리터럴이 열린 상태로 끝나면 복구 불가(null). */
+function pendingClosers(text: string): string | null {
+  let inString = false;
+  let escaped = false;
+  const stack: string[] = [];
+  for (const char of text) {
+    if (inString) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') inString = false;
+      continue;
+    }
+    if (char === '"') inString = true;
+    else if (char === "{" || char === "[") stack.push(char);
+    else if (char === "}" || char === "]") stack.pop();
+  }
+  if (inString) return null;
+  return stack
+    .reverse()
+    .map((open) => (open === "{" ? "}" : "]"))
+    .join("");
 }
 
 export function workPlanFromOrchestratorDecision(
@@ -289,13 +373,15 @@ function normalizeLayer(
   }[];
 } | null {
   if (!isRecord(layer)) return null;
-  const title = typeof layer.title === "string" ? layer.title.trim() : "";
-  if (!title || !Array.isArray(layer.items) || layer.items.length === 0) return null;
-  const items = layer.items
+  // 플래너가 title/items 대신 name/steps 를 쓰는 드리프트를 흔히 낸다 — 의미가 같은 별칭만 수용한다.
+  const title = firstNonEmptyString(layer.title, layer.name, layer.label);
+  const rawItems = [layer.items, layer.steps, layer.tasks].find((value) => Array.isArray(value));
+  if (!title || !Array.isArray(rawItems) || rawItems.length === 0) return null;
+  const items = rawItems
     .map((it, ii) => {
       if (!isRecord(it)) return null;
-      const itemTitle = typeof it.title === "string" ? it.title.trim() : "";
-      const instruction = typeof it.instruction === "string" ? it.instruction.trim() : "";
+      const itemTitle = firstNonEmptyString(it.title, it.name, it.label);
+      const instruction = firstNonEmptyString(it.instruction, it.detail, it.description, it.task);
       if (!itemTitle || !instruction) return null;
       return {
         id: typeof it.id === "string" ? it.id : `L${li + 1}-${ii + 1}`,
@@ -316,9 +402,24 @@ function normalizeLayer(
   };
 }
 
+/** 별칭 후보 중 처음 나오는 비어 있지 않은 문자열(트림)을 고른다. 없으면 빈 문자열. */
+function firstNonEmptyString(...candidates: readonly unknown[]): string {
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim().length > 0) return candidate.trim();
+  }
+  return "";
+}
+
+/**
+ * successTools 정리 — **실제로 존재하는 툴 이름만** 남긴다.
+ * 플래너가 없는 툴을 적으면(2026-08-23 실측: `configure_element_table`) 그 항목은 어떤 방법으로도
+ * 완료할 수 없는 게이트가 되고 모델은 skip 밖에 할 수 없다.
+ */
 function sanitizeToolNames(tools: readonly string[] | undefined): readonly string[] | undefined {
   if (!tools || tools.length === 0) return undefined;
-  const cleaned = tools.map((t) => t.trim()).filter((t) => t.length > 0 && t.length < 64);
+  const cleaned = tools
+    .map((t) => t.trim())
+    .filter((t) => t.length > 0 && t.length < 64 && getTool(t) !== undefined);
   return cleaned.length > 0 ? cleaned : undefined;
 }
 
@@ -526,17 +627,19 @@ export function advanceWorkPlanFromTools(
 }
 
 /**
- * successTools가 있으면 그중 하나라도 이번 턴 쓰기 성공에 있어야 complete 허용.
- * successTools가 비어 있으면 자유 complete(레거시 항목).
+ * successTools 가 있으면 그중 하나라도 이번 턴에 **성공한 툴**(읽기 포함)에 있어야 complete 허용.
+ * 읽기까지 세는 이유: 플래너가 `successTools:["get_map_region"]` 같은 확인 항목을 자주 만드는데
+ * 쓰기만 세면 그 항목은 어떤 방법으로도 완료할 수 없는 게이트가 된다(2026-08-23 실측).
+ * successTools 가 비어 있으면 자유 complete(레거시 항목).
  * force=true 는 skip 경로 대체용이 아니라 테스트/내부용 — 일반 complete_work_item 에서는 쓰지 않는다.
  */
 export function canCompleteWorkItem(
   item: WorkItem,
-  successfulWriteTools: readonly string[] | undefined,
+  successfulTools: readonly string[] | undefined,
 ): { ok: true } | { ok: false; reason: string } {
   const needed = item.successTools ?? [];
   if (needed.length === 0) return { ok: true };
-  const tools = new Set(successfulWriteTools ?? []);
+  const tools = new Set(successfulTools ?? []);
   if (needed.some((name) => tools.has(name))) return { ok: true };
   return {
     ok: false,
@@ -554,13 +657,13 @@ export function completeWorkItemById(
   plan: WorkPlan,
   itemId: string,
   note?: string,
-  options?: { successfulWriteTools?: readonly string[]; force?: boolean },
+  options?: { successfulTools?: readonly string[]; force?: boolean },
 ): CompleteWorkItemResult {
   for (const layer of plan.layers) {
     const it = layer.items.find((i) => i.id === itemId);
     if (!it) continue;
     if (!options?.force) {
-      const gate = canCompleteWorkItem(it, options?.successfulWriteTools);
+      const gate = canCompleteWorkItem(it, options?.successfulTools);
       if (!gate.ok) return { ok: false, reason: gate.reason, item: it };
     }
     it.status = "done";

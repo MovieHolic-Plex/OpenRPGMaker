@@ -27,6 +27,16 @@ import { ensureNamedSwitch } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
+import {
+  COMMAND_SCHEMA,
+  COORD_SCHEMA,
+  CUTSCENE_BEAT_SCHEMA,
+  FACE_SCHEMA,
+  GRAPHIC_SPEC_SCHEMA,
+  ITEM_AMOUNT_SCHEMA,
+  RECT_SCHEMA,
+  SIMPLE_PAGE_SCHEMA,
+} from "./schemaShapes";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const WANDER: EventPage["movement"] = { type: "random", speed: 2, frequency: 3 };
@@ -160,6 +170,32 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[]): voi
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
     (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
+    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings);
+  }
+}
+
+/**
+ * `EventPage` 필수 필드를 채운다.
+ *
+ * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
+ * 필수 필드가 비면 프로젝트 린트가 `page.trigger.kind` / `movement.route` 를 읽다 TypeError 로 죽고,
+ * 사용자에게는 "후처리 실패: Cannot read properties of undefined" 라는 고칠 수 없는 메시지만 남는다
+ * (2026-08-23 실측: upsert_event 3회 연속 같은 실패). 값을 채워 통과시키고 무엇을 채웠는지 경고한다.
+ */
+function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[]): void {
+  const filled: string[] = [];
+  if (page.id === undefined) { page.id = pageId; filled.push("id"); }
+  if (page.name === undefined) { page.name = event.id; filled.push("name"); }
+  if (page.conditions === undefined) { page.conditions = []; filled.push("conditions"); }
+  if (page.graphic === undefined) { page.graphic = {}; filled.push("graphic"); }
+  if (page.trigger === undefined) {
+    page.trigger = event.trigger ?? { kind: "action" };
+    filled.push(`trigger(${page.trigger.kind})`);
+  }
+  if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
+  if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
+  if (filled.length > 0) {
+    warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
   }
 }
 
@@ -202,7 +238,20 @@ const upsertEvent: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      event: { type: "object", description: "GameEvent(id/x/y/trigger/commands/pages...)" },
+      event: {
+        type: "object",
+        description: "GameEvent(id/x/y/trigger/commands/pages...)",
+        properties: {
+          id: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+          trigger: { type: "object", properties: { kind: { type: "string" } }, additionalProperties: true },
+          commands: { type: "array", items: COMMAND_SCHEMA },
+          pages: { type: "array", items: SIMPLE_PAGE_SCHEMA },
+        },
+        // 나머지 GameEvent 필드는 이벤트 shape 검증기가 본다.
+        additionalProperties: true,
+      },
     },
     required: ["mapId", "event"],
   },
@@ -272,13 +321,10 @@ const placeNpc: ToolDefinition = {
       x: { type: "integer" },
       y: { type: "integer" },
       name: { type: "string" },
-      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
-      face: {
-        type: "object",
-        description: "대화 페이스 {resourceId,faceIndex} 또는 {textureKey,characterIndex}. 생략 시 graphic에서 자동 매핑.",
-      },
+      graphic: GRAPHIC_SPEC_SCHEMA,
+      face: FACE_SCHEMA,
       movement: { type: "string", enum: ["fixed", "random"] },
-      pages: { type: "array", description: "SimplePage[]", items: { type: "object" } },
+      pages: { type: "array", description: "SimplePage[]", items: SIMPLE_PAGE_SCHEMA },
       id: { type: "string" },
     },
     required: ["mapId", "x", "y", "name", "pages"],
@@ -416,11 +462,41 @@ const makeVillager: ToolDefinition = {
     properties: {
       mapId: { type: "string" },
       name: { type: "string" },
-      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
-      home: { type: "object", description: "{x,y}" },
+      graphic: GRAPHIC_SPEC_SCHEMA,
+      home: COORD_SCHEMA,
       schedule: npcScheduleSchema,
-      dailyRoutine: { type: "object", description: "{workAt:{mapId?,x,y},workHours:[start,end]}" },
-      dialogue: { type: "array", description: "{when?,text}[]", items: { type: "object" } },
+      dailyRoutine: {
+        type: "object",
+        description: "{workAt:{mapId?,x,y}, workHours:[start,end]}",
+        properties: {
+          workAt: {
+            type: "object",
+            properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+            required: ["x", "y"],
+          },
+          workHours: { type: "array", description: "[시작시각, 종료시각]", items: { type: "integer" } },
+        },
+      },
+      dialogue: {
+        type: "array",
+        description: "{when?,text}[] — when 조건에 맞는 대사 페이지",
+        items: {
+          type: "object",
+          properties: {
+            text: { type: "string" },
+            when: {
+              type: "object",
+              properties: {
+                npcActivity: { type: "string" },
+                activity: { type: "string" },
+                timePhase: { type: "string", enum: ["morning", "day", "evening", "night"] },
+                season: { type: "string", enum: ["spring", "summer", "fall", "winter"] },
+              },
+            },
+          },
+          required: ["text"],
+        },
+      },
       giftPrefs: giftPrefsSchema,
       giftResponses: giftResponsesSchema,
       shop: {
@@ -995,8 +1071,18 @@ const createTransferPair: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      a: { type: "object", description: "{mapId,x,y} 출입구 A" },
-      b: { type: "object", description: "{mapId,x,y} 출입구 B" },
+      a: {
+        type: "object",
+        description: "{mapId,x,y} 출입구 A",
+        properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+        required: ["mapId", "x", "y"],
+      },
+      b: {
+        type: "object",
+        description: "{mapId,x,y} 출입구 B",
+        properties: { mapId: { type: "string" }, x: { type: "integer" }, y: { type: "integer" } },
+        required: ["mapId", "x", "y"],
+      },
       fade: { type: "string", enum: ["black", "white", "none"] },
     },
     required: ["a", "b"],
@@ -1060,8 +1146,8 @@ const placeBattleBlocker: ToolDefinition = {
       clearSwitchId: { type: "string", description: "생략 시 자동 생성" },
       intro: { type: "array", description: "전투 전 대사", items: { type: "string" } },
       victory: { type: "array", description: "승리 후 대사", items: { type: "string" } },
-      victoryItems: { type: "array", description: "[{itemId,amount}] 승리 보상", items: { type: "object" } },
-      graphic: { type: "object", description: "{query} | {textureKey,characterIndex}" },
+      victoryItems: { type: "array", description: "[{itemId,amount}] 승리 보상", items: ITEM_AMOUNT_SCHEMA },
+      graphic: GRAPHIC_SPEC_SCHEMA,
       id: { type: "string" },
     },
     required: ["mapId", "x", "y", "troopId"],
@@ -1108,12 +1194,12 @@ const placeTrap: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      at: { type: "object", description: "{x,y} 단일 좌표" },
-      cells: { type: "array", description: "{x,y}[] 여러 좌표", items: { type: "object" } },
+      at: { ...COORD_SCHEMA, description: "{x,y} 단일 좌표" },
+      cells: { type: "array", description: "{x,y}[] 여러 좌표", items: COORD_SCHEMA },
       trigger: { type: "string", enum: ["touch", "action"] },
       message: { type: "string" },
       respawnCheckpoint: { type: "boolean" },
-      graphic: { type: "object", description: "선택 그래픽 {query} 또는 {textureKey,characterIndex}. 생략 시 투명." },
+      graphic: { ...GRAPHIC_SPEC_SCHEMA, description: "선택 그래픽. 생략 시 투명." },
       idPrefix: { type: "string" },
     },
     required: ["mapId", "trigger"],
@@ -1156,9 +1242,19 @@ const makeChaseScene: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      chaser: { type: "object", description: "{at:{x,y},graphic,speed?,sightRange?}" },
+      chaser: {
+        type: "object",
+        description: "{at:{x,y},graphic,speed?,sightRange?}",
+        properties: {
+          at: COORD_SCHEMA,
+          graphic: GRAPHIC_SPEC_SCHEMA,
+          speed: { type: "integer" },
+          sightRange: { type: "integer" },
+        },
+        required: ["at"],
+      },
       killOnTouch: { type: "boolean" },
-      safeZone: { type: "object", description: "{x,y,w,h}" },
+      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
     },
@@ -1696,7 +1792,7 @@ const scriptCutscene: ToolDefinition = {
       x: { type: "integer", description: "새 이벤트 생성 시 X. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
       y: { type: "integer", description: "새 이벤트 생성 시 Y. 생략 시 시작 맵은 시작 위치, 그 외는 0." },
       trigger: { type: "string", enum: ["action", "auto", "parallel"], description: "기본 action" },
-      beats: { type: "array", description: "CutsceneBeat[]", items: { type: "object" } },
+      beats: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
     },
     required: ["mapId", "beats"],

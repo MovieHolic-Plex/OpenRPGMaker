@@ -15,7 +15,11 @@ const simulateBattleTool: ToolDefinition = {
     properties: {
       troopId: { type: "string" },
       heroLevel: { type: "integer" },
-      inventory: { type: "object", description: "{ itemId: 수량 }" },
+      inventory: {
+        type: "object",
+        description: "{ itemId: 수량 } — 키가 아이템 id 인 동적 맵",
+        additionalProperties: true,
+      },
       potionItemId: { type: "string", description: "저HP 시 사용할 회복 아이템 id" },
       n: { type: "integer", description: "시뮬 횟수(기본 50)" },
       seed: { type: "integer", description: "PRNG 시드(재현성)" },

@@ -15,6 +15,7 @@ import {
   type VillageBuildDomainArgs,
   type VillageBuildInspection,
 } from "./villageBuilder";
+import { VILLAGE_HOUSE_PLAN_SCHEMA } from "./schemaShapes";
 
 export type AuthorVillageDependencies = {
   readonly build: (project: Parameters<typeof buildVillageDomain>[0], args: VillageBuildDomainArgs) => ToolExecResult;
@@ -37,9 +38,22 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       type: "object",
       additionalProperties: false,
       properties: {
-        target: { type: "object", description: "Existing map/bounds or exact new map descriptor." },
+        target: {
+          type: "object",
+          description: "Existing map/bounds or exact new map descriptor.",
+          properties: {
+            mapId: { type: "string" },
+            name: { type: "string" },
+            x: { type: "integer" },
+            y: { type: "integer" },
+            width: { type: "integer" },
+            height: { type: "integer" },
+            w: { type: "integer" },
+            h: { type: "integer" },
+          },
+        },
         houseCount: { type: "integer", description: "Requested exterior houses, 4-32 without clamping." },
-        housePlans: { type: "array", items: { type: "object" } },
+        housePlans: { type: "array", items: VILLAGE_HOUSE_PLAN_SCHEMA },
         countPolicy: { type: "string", enum: ["exact", "best-effort"] },
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },

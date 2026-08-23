@@ -96,8 +96,11 @@ function tagLegacy(tools: readonly ToolDefinition[]): readonly ToolDefinition[] 
 // ── 컨텍스트 모드 도메인 태깅(§2.2.2) ────────────────────────────────────────
 // 노출 정책의 단일 소스: 패밀리 배열 단위 일괄 태깅 + 이름 단위 오버라이드.
 // "core"는 모든 모드 상시 노출(스펙 §2.2.2의 정확한 5종).
+// 참조 id 조회(get_database_records)는 core 다: speciesId/elementRates/itemId 를 쓰는 모든 쓰기 툴의
+// 전제 조건인데 40툴 트림에서 잘리면 모델이 id 를 발명하고 무결성 검증에서 거부된다
+// (2026-08-23 실측: 발명한 element id 3개 거부 후 "속성 id 조회 기능이 없다"며 작업 3건 포기).
 const CORE_TOOL_NAMES: ReadonlySet<string> = new Set([
-  "create_map", "resize_map", "get_project_summary", "list_resources", "tile_query",
+  "create_map", "resize_map", "get_project_summary", "list_resources", "tile_query", "get_database_records",
 ]);
 
 // 혼합 패밀리(QUERY_TOOLS 등)의 이름 단위 도메인 교정.
@@ -250,6 +253,16 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     // place_chest 등이 노출 안 되던 문제.
     "place_chest", "place_storage_chest", "place_savepoint", "set_scene_mood", "set_lighting_volume", "create_transfer_pair",
     "author_story_arc",
+    // 컷신/선택지 요청의 대표 도구. 트림에서 밀리면 모델이 "선택지를 만드는 입력이 없다"고
+    // 사용자에게 보고한다(2026-08-23 실측) — 있는 기능을 없다고 말하게 만드는 노출 누락이다.
+    "script_cutscene", "script_cutscene_preset",
+    // 엔딩 툴은 event 도메인으로 태깅돼 있다(withDomain(ENDING_TOOLS,"event")). quest 쪽에 핀해도
+    // isPinnedTool 이 tool.domains 를 보므로 효과가 없어 "엔딩 정의 기능이 없다"는 오보가 계속됐다.
+    "define_ending", "list_endings",
+  ])],
+  ["database", new Set([
+    // 상성표/속성 요청의 대표 도구.
+    "set_type_chart", "upsert_item", "upsert_enemy",
   ])],
   ["map", new Set([
     "reset_project",
@@ -259,6 +272,7 @@ export const PINNED_TOOLS_BY_DOMAIN: ReadonlyMap<ToolDomain, ReadonlySet<string>
     // 쿼터 트림이 핀 비용을 전 도메인에 분산하므로, 가이드가 안내하는 대표 도구는 핀으로 보장한다.
     "mirror_region", "set_encounter_table", "make_hunting_ground", "create_farm_plot",
   ])],
+  // define_ending 이 트림되면 "엔딩을 정의하는 기능이 없다"는 잘못된 보고로 이어진다(2026-08-23 실측).
   ["quest", new Set(["author_story_arc"])],
   ["system", new Set(["evaluate_game_quality"])],
 ]);

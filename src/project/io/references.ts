@@ -305,7 +305,9 @@ function validateEnemyRecords(
   issues: string[]
 ): void {
   for (const enemy of project.database.enemies) {
-    if (enemy.speciesId && !speciesIds.has(enemy.speciesId)) issues.push(`enemy ${enemy.id}: speciesId does not exist.`);
+    if (enemy.speciesId && !speciesIds.has(enemy.speciesId)) {
+      issues.push(`enemy ${enemy.id}: speciesId does not exist: ${enemy.speciesId}. ${knownIdsHint(speciesIds)}`);
+    }
     collectExistingIdIssues(
       `enemy ${enemy.id}: skill`,
       enemy.actions.map((entry) => entry.skillId).filter((skillId) => skillId.length > 0),
@@ -519,12 +521,21 @@ function validateElementRates(project: Project, issues: string[]): void {
   const report = (owner: string, rates: Record<string, unknown> | undefined): void => {
     if (!rates) return;
     for (const id of Object.keys(rates)) {
-      if (!ids.has(id)) issues.push(`${owner}: elementRates key does not exist: ${id}`);
+      // 유효한 id 를 알려주지 않으면 모델은 고칠 방법을 못 찾고 작업을 포기한다(2026-08-23 실측:
+      // 발명한 element id 3개가 거부된 뒤 "속성 등록 기능이 없다"며 항목 3건을 건너뜀).
+      if (!ids.has(id)) issues.push(`${owner}: elementRates key does not exist: ${id}. ${knownIdsHint(ids)}`);
     }
   };
   for (const actor of project.database.actors) report(`actor ${actor.id}`, actor.elementRates);
   for (const enemy of project.database.enemies) report(`enemy ${enemy.id}`, enemy.elementRates);
   for (const klass of project.database.classes) report(`class ${klass.id}`, klass.elementRates);
+}
+
+/** 유효 id 목록 힌트 — 길어지지 않게 앞쪽만 보여주고 총 개수를 함께 알린다. */
+function knownIdsHint(ids: ReadonlySet<string>): string {
+  if (ids.size === 0) return "이 프로젝트에는 등록된 id가 없습니다 — 먼저 해당 레코드를 만드세요.";
+  const sample = [...ids].slice(0, 12).join(", ");
+  return `사용 가능한 id(${ids.size}개): ${sample}${ids.size > 12 ? " …" : ""} (get_database_records로 전체 조회)`;
 }
 
 function pruneDanglingCommandRefs(

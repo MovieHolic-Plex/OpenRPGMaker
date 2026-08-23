@@ -3,6 +3,7 @@
 import type { AuditEntry } from "@/ai/assistantSession";
 import { recordSupabaseAiActivityLog } from "@/project/supabaseProjectSync";
 import { randomUuid } from "@/util/id";
+import { AI_ACTIVITY_DISK_ENDPOINT } from "./activityLogEndpoint";
 import type { AiActivityLogInput, AiActivityLogRecord, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 export type { AiActivityChannel, AiActivityLogInput, AiActivityLogRecord, AiActivityResult, AiActivityToolCall, RegionActivityLogLike } from "./activityLogTypes";
 
@@ -163,7 +164,7 @@ export function buildAiActivityLogRecord(input: AiActivityLogInput): AiActivityL
  * AI 활동 1건 기록.
  * - 항상 로컬 localStorage 링버퍼에 저장
  * - Supabase 설정이 있으면 원격에도 best-effort (전용 테이블 없으면 ai_analysis_runs 폴백)
- * - DEV: Vite `/__oprn/ai-activity` 로 디스크 미러 (output/ai-activity/)
+ * - DEV: Vite `/__rpgzzu/ai-activity` 로 디스크 미러 (output/ai-activity/)
  */
 export async function recordAiActivity(input: AiActivityLogInput): Promise<AiActivityLogRecord> {
   const base = buildAiActivityLogRecord(input);
@@ -194,20 +195,38 @@ export async function recordAiActivity(input: AiActivityLogInput): Promise<AiAct
   return finalRecord;
 }
 
-/** 에이전트/디스크 조회용 — Vite dev 미들웨어에 best-effort POST. */
+/**
+ * 에이전트/디스크 조회용 — Vite dev 미들웨어에 best-effort POST.
+ *
+ * 404/500 은 fetch 가 throw 하지 않는다. 예전 코드는 catch 만 두고 응답 상태를 안 봤기 때문에
+ * 경로가 어긋난 뒤에도 "성공한 것처럼" 조용히 지나갔다. DEV 에서는 한 번 경고해서 다시 숨지 못하게 한다.
+ */
+let mirrorWarned = false;
+
 async function mirrorActivityToDisk(record: AiActivityLogRecord): Promise<void> {
   if (typeof fetch === "undefined") return;
   try {
-    await fetch("/__oprn/ai-activity", {
+    const res = await fetch(AI_ACTIVITY_DISK_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(record),
       // keepalive: 페이지 이탈 시에도 한 번 더 시도.
       keepalive: true,
     });
-  } catch {
-    /* ignore — 프로덕션/미들웨어 없음 */
+    if (!res.ok) warnMirrorFailure(`${res.status} ${res.statusText}`);
+  } catch (error) {
+    // 프로덕션/미들웨어 없음은 정상 경로다 — DEV 에서만 알린다.
+    warnMirrorFailure(error instanceof Error ? error.message : String(error));
   }
+}
+
+function warnMirrorFailure(reason: string): void {
+  if (mirrorWarned) return;
+  mirrorWarned = true;
+  if (!import.meta.env.DEV) return;
+  console.warn(
+    `[ai-activity] 디스크 미러 실패 (${AI_ACTIVITY_DISK_ENDPOINT}: ${reason}) — output/ai-activity/ 가 갱신되지 않는다.`,
+  );
 }
 
 export async function recordAiActivityFromRegionLog(

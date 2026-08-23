@@ -65,7 +65,27 @@ const upsertWorldEntities: ToolDefinition = {
       entities: {
         type: "array",
         description: "WorldEntity 부분 배열. 신규는 id 생략 가능(type/name/summary 필요, origin 기본 ai). 기존 id는 부분 수정 가능.",
-        items: { type: "object" },
+        items: {
+          type: "object",
+          properties: {
+            id: { type: "string", description: "신규는 생략 가능" },
+            type: { type: "string", enum: [...WORLD_ENTITY_TYPES] },
+            name: { type: "string" },
+            summary: { type: "string" },
+            body: { type: "string" },
+            tags: { type: "array", items: { type: "string" } },
+            refs: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: { kind: { type: "string", enum: [...WORLD_REF_KINDS] }, id: { type: "string" } },
+                required: ["kind", "id"],
+              },
+            },
+            origin: { type: "string", enum: ["user", "ai", "interview"], description: "기본 ai" },
+            locked: { type: "boolean" },
+          },
+        },
       },
     },
     required: ["entities"],
