@@ -30,7 +30,11 @@ const SCANNED_EXTENSIONS = new Set([".ts", ".tsx", ".css", ".html", ".json", ".w
  * 1,800줄이 상시 빨강이라 그물이 무력해진다. 활성화 시점 실측: 잔여 0건.
  *
  * 그 밖의 의도적 제외:
- * - `RTP` 단독 — EasyRPG RTP 대체본 출처 표기에 쓰인다(Phase 5 에서 표시명 정리 예정).
+ * - `RTP` 단독 — 남은 것은 **식별자·트랙 코드**다: `EASYRPG_RTP_ASSETS` 심볼,
+ *   `rtp-manifest.json` 경로, bgmCatalog 의 `trackCode: "RTP-FLD-001"`(원본 카탈로그 대조용).
+ *   사용자에게 보이던 표시명 205건은 2026-08-23 에 정리했다 — 생성기
+ *   `scripts/sync-easyrpg-rtp-assets.mjs` 의 displayName 이 `"Arrow · 전투 효과 · EasyRPG"`
+ *   형태를 낸다. 재발은 아래 LABEL_LIKE_FORBIDDEN 이 막는다.
  * - 에셋 경로(`/assets/…/rm2k3/…png`) — 파일을 옮겨야 하므로 Phase 5 범위. 아래
  *   isExempt 가 아니라 스캔 시 경로 줄을 건너뛰는 방식으로 처리한다.
  */
@@ -85,8 +89,11 @@ const ASSET_PATH_LINE = /\/assets\/|assets\/|\.png|\.jpe?g|\.webp/;
  * | /rpg-zzu:/ (저장 키)   | 43   | localStorage 키 접두사                          | Phase 2b    |
  * | /__oprn/ (전역)      | ~30  | window 디버그·e2e 훅                            | Phase 2b    |
  *
- * 특히 `windowskin-default.png` 은 **모든 게임의 기본 대사창 스킨**이다 — 이름만 문제가
- * 아니라 그림 자체가 RM2003 창을 재현하는지 Phase 5 출처 조사에서 함께 확인해야 한다.
+ * `windowskin-default.png` 출처는 확인됐다(2026-08-23) — public/assets/ATTRIBUTION.md
+ * 기준 **우리가 생성한 9-slice** 이고 RM2003 창 그림을 옮겨 온 것이 아니다. 기본 타일
+ * 그림판(`easyrpg-chipset-exterior.png`)도 vendor/easyrpg-rtp/ChipSet/Exterior.png 와
+ * IHDR·PLTE·IDAT 가 바이트 동일하고 tRNS(팔레트 0번 투명) 한 청크만 더해진 사본이다 —
+ * 픽셀은 JasonPerry 의 CC0 대체본이며 Enterbrain 자산이 아니다.
  */
 const STAGED_PATTERN_NOTE = "Phase 2b·3·5 에서 활성화";
 
@@ -100,6 +107,14 @@ const LABEL_LIKE_FORBIDDEN: readonly { readonly label: string; readonly re: RegE
   { label: "라벨에 RM2000/RM2003", re: /(?:label|text|title|aria-label)\s*:\s*"[^"]*RM\s*200[03][^"]*"/i },
   { label: "actionButton 첫 인자에 RM2000/RM2003", re: /actionButton\(\s*"[^"]*RM\s*200[03][^"]*"/i },
   { label: "라벨에 VX Ace", re: /(?:label|text|title|aria-label)\s*:\s*"[^"]*VX\s*Ace[^"]*"/i },
+  // `RTP` 는 Enterbrain 의 용어다 — 표시명·라벨에서 2026-08-23 에 뺐고(205건) 다시 못 들어오게
+  // 막는다. 식별자·트랙 코드는 잡지 않는다(위 주석 참조).
+  //
+  // 키에 따옴표가 붙는 **JSON 형태**도 잡는다(`"name": "…"`). 이게 필요한 이유 —
+  // `fixtures/dew-village-demo.json` 이 생성 당시의 표시명을 저장된 리소스 이름으로
+  // 223건 들고 있었다. 같은 날 defaultResourceProfiles() 산출값으로 교정하고 Supabase
+  // 데모 행(rpg-zzu-dew-village)에도 재장해 양쪽을 맞췄다.
+  { label: "표시명·라벨에 RTP", re: /(?:name|label|text|title|aria-label)"?\s*:\s*"[^"]*\bRTP\b/ },
 ];
 
 /**

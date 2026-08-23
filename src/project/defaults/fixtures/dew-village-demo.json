@@ -53841,7 +53841,7 @@
   "tilesets": {
     "easyrpg_chipset_ship": {
       "id": "easyrpg_chipset_ship",
-      "name": "EasyRPG RTP Ship ChipSet",
+      "name": "배 · EasyRPG (CC0)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_ship",
@@ -60101,7 +60101,7 @@
     },
     "easyrpg_chipset_world": {
       "id": "easyrpg_chipset_world",
-      "name": "EasyRPG RTP World ChipSet",
+      "name": "월드맵 · EasyRPG (CC0)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_world",
@@ -75322,7 +75322,7 @@
     },
     "easyrpg_chipset_dungeon": {
       "id": "easyrpg_chipset_dungeon",
-      "name": "EasyRPG RTP Dungeon ChipSet",
+      "name": "던전 · EasyRPG (CC0)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_dungeon",
@@ -88646,7 +88646,7 @@
     },
     "easyrpg_chipset_interior": {
       "id": "easyrpg_chipset_interior",
-      "name": "EasyRPG RTP Interior ChipSet",
+      "name": "실내 · EasyRPG (CC0)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_interior",
@@ -112774,7 +112774,7 @@
     },
     "easyrpg_chipset_retro_house": {
       "id": "easyrpg_chipset_retro_house",
-      "name": "EasyRPG RTP retro House ChipSet",
+      "name": "레트로 집 · EasyRPG (혼합 출처)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_retro_house",
@@ -119034,7 +119034,7 @@
     },
     "easyrpg_chipset_retro_world": {
       "id": "easyrpg_chipset_retro_world",
-      "name": "EasyRPG RTP retro World ChipSet",
+      "name": "레트로 월드맵 · EasyRPG (혼합 출처)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_retro_world",
@@ -125294,7 +125294,7 @@
     },
     "easyrpg_chipset_combined_town": {
       "id": "easyrpg_chipset_combined_town",
-      "name": "EasyRPG RTP Combined Town ChipSet",
+      "name": "합본 마을 · EasyRPG (CC0)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_combined_town",
@@ -134551,7 +134551,7 @@
     },
     "easyrpg_chipset_retro_dungeon": {
       "id": "easyrpg_chipset_retro_dungeon",
-      "name": "EasyRPG RTP retro Dungeon ChipSet",
+      "name": "레트로 던전 · EasyRPG (CC0)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_retro_dungeon",
@@ -140811,7 +140811,7 @@
     },
     "easyrpg_chipset_retro_exterior": {
       "id": "easyrpg_chipset_retro_exterior",
-      "name": "EasyRPG RTP retro Exterior ChipSet",
+      "name": "레트로 바깥 · EasyRPG (혼합 출처)",
       "count": 480,
       "image": {
         "id": "tex_easyrpg_chipset_retro_exterior",
@@ -151078,7 +151078,7 @@
   "resourceProfiles": [
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Combined Town ChipSet",
+      "name": "합본 마을 · EasyRPG (CC0)",
       "assetId": "tex_easyrpg_chipset_combined_town",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151087,7 +151087,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Dungeon ChipSet",
+      "name": "던전 · EasyRPG (CC0)",
       "assetId": "tex_easyrpg_chipset_dungeon",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151096,7 +151096,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Interior ChipSet",
+      "name": "실내 · EasyRPG (CC0)",
       "assetId": "tex_easyrpg_chipset_interior",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151105,7 +151105,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Ship ChipSet",
+      "name": "배 · EasyRPG (CC0)",
       "assetId": "tex_easyrpg_chipset_ship",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151114,7 +151114,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP World ChipSet",
+      "name": "월드맵 · EasyRPG (CC0)",
       "assetId": "tex_easyrpg_chipset_world",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151123,7 +151123,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro Dungeon ChipSet",
+      "name": "레트로 던전 · EasyRPG (CC0)",
       "assetId": "tex_easyrpg_chipset_retro_dungeon",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151132,7 +151132,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro Exterior ChipSet",
+      "name": "레트로 바깥 · EasyRPG (혼합 출처)",
       "assetId": "tex_easyrpg_chipset_retro_exterior",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151141,7 +151141,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro House ChipSet",
+      "name": "레트로 집 · EasyRPG (혼합 출처)",
       "assetId": "tex_easyrpg_chipset_retro_house",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151150,7 +151150,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro World ChipSet",
+      "name": "레트로 월드맵 · EasyRPG (혼합 출처)",
       "assetId": "tex_easyrpg_chipset_retro_world",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151186,7 +151186,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor1 CharSet",
+      "name": "Actor1 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_actor1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151195,7 +151195,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor2 CharSet",
+      "name": "Actor2 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_actor2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151204,7 +151204,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor3 CharSet",
+      "name": "Actor3 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_actor3",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151213,7 +151213,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor4 CharSet",
+      "name": "Actor4 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_actor4",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151222,7 +151222,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Animal CharSet",
+      "name": "Animal · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_animal",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151231,7 +151231,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Monster1 CharSet",
+      "name": "Monster1 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_monster1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151240,7 +151240,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Monster2 CharSet",
+      "name": "Monster2 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_monster2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151249,7 +151249,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Monster3 CharSet",
+      "name": "Monster3 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_monster3",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151258,7 +151258,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Object1 CharSet",
+      "name": "Object1 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_object1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151267,7 +151267,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Object2 CharSet",
+      "name": "Object2 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_object2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151276,7 +151276,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People1 CharSet",
+      "name": "People1 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_people1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151285,7 +151285,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People2 CharSet",
+      "name": "People2 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_people2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151294,7 +151294,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People3 CharSet",
+      "name": "People3 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_people3",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151303,7 +151303,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People4 CharSet",
+      "name": "People4 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_people4",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151312,7 +151312,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People5 CharSet",
+      "name": "People5 · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_people5",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151321,7 +151321,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Template CharSet",
+      "name": "Template · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_template",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151330,7 +151330,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Vehicles CharSet",
+      "name": "Vehicles · 캐릭터 그림 · EasyRPG",
       "assetId": "tex_easyrpg_charset_vehicles",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151455,22 +151455,22 @@
     },
     {
       "kind": "battle",
-      "name": "EasyRPG RTP Arrow Battle",
+      "name": "Arrow · 전투 효과 · EasyRPG",
       "assetId": "easyrpg-battle-arrow"
     },
     {
       "kind": "battle",
-      "name": "EasyRPG RTP Blow Battle",
+      "name": "Blow · 전투 효과 · EasyRPG",
       "assetId": "easyrpg-battle-blow"
     },
     {
       "kind": "battle",
-      "name": "EasyRPG RTP Sword1 Battle",
+      "name": "Sword1 · 전투 효과 · EasyRPG",
       "assetId": "easyrpg-battle-sword1"
     },
     {
       "kind": "battleWeapon",
-      "name": "EasyRPG RTP Weapon BattleWeapon",
+      "name": "Weapon · 전투 무기 · EasyRPG",
       "assetId": "easyrpg-battle-weapon-weapon",
       "tileWidth": 64,
       "imageWidth": 192,
@@ -151479,7 +151479,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor1 CharSet",
+      "name": "Actor1 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-actor1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151488,7 +151488,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor2 CharSet",
+      "name": "Actor2 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-actor2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151497,7 +151497,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor3 CharSet",
+      "name": "Actor3 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-actor3",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151506,7 +151506,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Actor4 CharSet",
+      "name": "Actor4 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-actor4",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151515,7 +151515,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Animal CharSet",
+      "name": "Animal · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-animal",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151524,7 +151524,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Monster1 CharSet",
+      "name": "Monster1 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-monster1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151533,7 +151533,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Monster2 CharSet",
+      "name": "Monster2 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-monster2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151542,7 +151542,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Monster3 CharSet",
+      "name": "Monster3 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-monster3",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151551,7 +151551,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Object1 CharSet",
+      "name": "Object1 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-object1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151560,7 +151560,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Object2 CharSet",
+      "name": "Object2 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-object2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151569,7 +151569,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People1 CharSet",
+      "name": "People1 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-people1",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151578,7 +151578,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People2 CharSet",
+      "name": "People2 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-people2",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151587,7 +151587,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People3 CharSet",
+      "name": "People3 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-people3",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151596,7 +151596,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People4 CharSet",
+      "name": "People4 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-people4",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151605,7 +151605,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP People5 CharSet",
+      "name": "People5 · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-people5",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151614,7 +151614,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Template CharSet",
+      "name": "Template · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-template",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151623,7 +151623,7 @@
     },
     {
       "kind": "charset",
-      "name": "EasyRPG RTP Vehicles CharSet",
+      "name": "Vehicles · 캐릭터 그림 · EasyRPG",
       "assetId": "easyrpg-charset-vehicles",
       "tileWidth": 24,
       "imageWidth": 288,
@@ -151632,7 +151632,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Dungeon ChipSet",
+      "name": "Dungeon · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-dungeon",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151641,7 +151641,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Exterior ChipSet",
+      "name": "Exterior · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-exterior",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151650,7 +151650,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Interior ChipSet",
+      "name": "Interior · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-interior",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151659,7 +151659,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro_Dungeon ChipSet",
+      "name": "retro_Dungeon · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-retro-dungeon",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151668,7 +151668,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro_Exterior ChipSet",
+      "name": "retro_Exterior · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-retro-exterior",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151677,7 +151677,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP retro_World ChipSet",
+      "name": "retro_World · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-retro-world",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151686,7 +151686,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP Ship ChipSet",
+      "name": "Ship · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-ship",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151695,7 +151695,7 @@
     },
     {
       "kind": "chipset",
-      "name": "EasyRPG RTP World ChipSet",
+      "name": "World · 타일 그림판 · EasyRPG",
       "assetId": "easyrpg-chipset-world",
       "tileWidth": 16,
       "imageWidth": 480,
@@ -151704,7 +151704,7 @@
     },
     {
       "kind": "faceset",
-      "name": "EasyRPG RTP Actor1 FaceSet",
+      "name": "Actor1 · 얼굴 그림 · EasyRPG",
       "assetId": "easyrpg-faceset-actor1",
       "tileWidth": 48,
       "imageWidth": 192,
@@ -151713,7 +151713,7 @@
     },
     {
       "kind": "faceset",
-      "name": "EasyRPG RTP Actor2 FaceSet",
+      "name": "Actor2 · 얼굴 그림 · EasyRPG",
       "assetId": "easyrpg-faceset-actor2",
       "tileWidth": 48,
       "imageWidth": 192,
@@ -151722,7 +151722,7 @@
     },
     {
       "kind": "faceset",
-      "name": "EasyRPG RTP Monster FaceSet",
+      "name": "Monster · 얼굴 그림 · EasyRPG",
       "assetId": "easyrpg-faceset-monster",
       "tileWidth": 48,
       "imageWidth": 192,
@@ -151731,7 +151731,7 @@
     },
     {
       "kind": "faceset",
-      "name": "EasyRPG RTP People1 FaceSet",
+      "name": "People1 · 얼굴 그림 · EasyRPG",
       "assetId": "easyrpg-faceset-people1",
       "tileWidth": 48,
       "imageWidth": 192,
@@ -151740,7 +151740,7 @@
     },
     {
       "kind": "faceset",
-      "name": "EasyRPG RTP People2 FaceSet",
+      "name": "People2 · 얼굴 그림 · EasyRPG",
       "assetId": "easyrpg-faceset-people2",
       "tileWidth": 48,
       "imageWidth": 192,
@@ -151749,826 +151749,826 @@
     },
     {
       "kind": "gameOver",
-      "name": "EasyRPG RTP Game Over GameOver",
+      "name": "Game Over · 게임오버 화면 · EasyRPG",
       "assetId": "easyrpg-game-over-game-over",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "monster",
-      "name": "EasyRPG RTP Hornet Monster",
+      "name": "Hornet · 몬스터 그림 · EasyRPG",
       "assetId": "easyrpg-monster-hornet",
       "imageWidth": 64,
       "imageHeight": 64
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Battle 1 Music",
+      "name": "Battle 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-battle-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Boss 3 Music",
+      "name": "Boss 3 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-boss-3"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Castle 1 Music",
+      "name": "Castle 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-castle-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Church Music",
+      "name": "Church · 음악 · EasyRPG",
       "assetId": "easyrpg-music-church"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Dungeon 1 Music",
+      "name": "Dungeon 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-dungeon-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Ending 2 Music",
+      "name": "Ending 2 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-ending-2"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Field 1 Music",
+      "name": "Field 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-field-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Game Over 1 Music",
+      "name": "Game Over 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-game-over-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JDoubt Music",
+      "name": "JDoubt · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jdoubt"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JEnd of Battle 1 Music",
+      "name": "JEnd of Battle 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jend-of-battle-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JEnd of Battle 2 Music",
+      "name": "JEnd of Battle 2 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jend-of-battle-2"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JEnd of Battle 3 Music",
+      "name": "JEnd of Battle 3 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jend-of-battle-3"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JEnd of Battle 4 Music",
+      "name": "JEnd of Battle 4 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jend-of-battle-4"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JFanfare 1 Music",
+      "name": "JFanfare 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jfanfare-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JFanfare 2 Music",
+      "name": "JFanfare 2 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jfanfare-2"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JFanfare 3 Music",
+      "name": "JFanfare 3 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jfanfare-3"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JFanfare 4 Music",
+      "name": "JFanfare 4 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jfanfare-4"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JFanfare 5 Music",
+      "name": "JFanfare 5 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jfanfare-5"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JFanfare 6 Music",
+      "name": "JFanfare 6 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jfanfare-6"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JInn 1 Music",
+      "name": "JInn 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jinn-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JInn 2 Music",
+      "name": "JInn 2 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jinn-2"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JItem Music",
+      "name": "JItem · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jitem"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JJoke 1 Music",
+      "name": "JJoke 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jjoke-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JJoke 2 Music",
+      "name": "JJoke 2 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jjoke-2"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP JMystery Music",
+      "name": "JMystery · 음악 · EasyRPG",
       "assetId": "easyrpg-music-jmystery"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Mystery 1 Music",
+      "name": "Mystery 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-mystery-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Opening 2 Music",
+      "name": "Opening 2 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-opening-2"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Sorrow Music",
+      "name": "Sorrow · 음악 · EasyRPG",
       "assetId": "easyrpg-music-sorrow"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Town 1 Music",
+      "name": "Town 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-town-1"
     },
     {
       "kind": "music",
-      "name": "EasyRPG RTP Vehicle 1 Music",
+      "name": "Vehicle 1 · 음악 · EasyRPG",
       "assetId": "easyrpg-music-vehicle-1"
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Cosmos1 Panorama",
+      "name": "Cosmos1 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-cosmos1",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Dawn1 Panorama",
+      "name": "Dawn1 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-dawn1",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Dawn2 Panorama",
+      "name": "Dawn2 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-dawn2",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Dimension Rift Panorama",
+      "name": "Dimension Rift · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-dimension-rift",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Night Sky1 Panorama",
+      "name": "Night Sky1 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-night-sky1",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Night Sky2 Panorama",
+      "name": "Night Sky2 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-night-sky2",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Planet1 Panorama",
+      "name": "Planet1 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-planet1",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Planet2 Panorama",
+      "name": "Planet2 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-planet2",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Planet3 Panorama",
+      "name": "Planet3 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-planet3",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Sky1 Panorama",
+      "name": "Sky1 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-sky1",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Sky2 Panorama",
+      "name": "Sky2 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-sky2",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Sunset1 Panorama",
+      "name": "Sunset1 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-sunset1",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "backdrop",
-      "name": "EasyRPG RTP Sunset2 Panorama",
+      "name": "Sunset2 · 배경 그림 · EasyRPG",
       "assetId": "easyrpg-backdrop-sunset2",
       "imageWidth": 640,
       "imageHeight": 480
     },
     {
       "kind": "picture",
-      "name": "EasyRPG RTP Cloud Picture",
+      "name": "Cloud · 그림 · EasyRPG",
       "assetId": "easyrpg-picture-cloud",
       "imageWidth": 100,
       "imageHeight": 100
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Absorb1 Sound",
+      "name": "Absorb1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-absorb1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Absorb2 Sound",
+      "name": "Absorb2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-absorb2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Attack1 Sound",
+      "name": "Attack1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-attack1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Attack2 Sound",
+      "name": "Attack2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-attack2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Barrier Sound",
+      "name": "Barrier · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-barrier"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Barrier1 Sound",
+      "name": "Barrier1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-barrier1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Barrier2 Sound",
+      "name": "Barrier2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-barrier2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Bell Sound",
+      "name": "Bell · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-bell"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Blind Sound",
+      "name": "Blind · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-blind"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Blow2 Sound",
+      "name": "Blow2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-blow2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Blow4 Sound",
+      "name": "Blow4 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-blow4"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Breath Sound",
+      "name": "Breath · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-breath"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Buff Sound",
+      "name": "Buff · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-buff"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Buzzer1 Sound",
+      "name": "Buzzer1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-buzzer1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Buzzer2 Sound",
+      "name": "Buzzer2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-buzzer2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Buzzer3 Sound",
+      "name": "Buzzer3 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-buzzer3"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Buzzer4 Sound",
+      "name": "Buzzer4 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-buzzer4"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Cancel1 Sound",
+      "name": "Cancel1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-cancel1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Cancel2 Sound",
+      "name": "Cancel2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-cancel2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Cat Sound",
+      "name": "Cat · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-cat"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Chime1 Sound",
+      "name": "Chime1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-chime1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Chime2 Sound",
+      "name": "Chime2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-chime2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Clock Sound",
+      "name": "Clock · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-clock"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Close1 Sound",
+      "name": "Close1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-close1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Collapse1 Sound",
+      "name": "Collapse1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-collapse1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Collapse2 Sound",
+      "name": "Collapse2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-collapse2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Combat1 Sound",
+      "name": "Combat1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-combat1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Combat2 Sound",
+      "name": "Combat2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-combat2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Confusion Sound",
+      "name": "Confusion · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-confusion"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Cursor1 Sound",
+      "name": "Cursor1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-cursor1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Cursor2 Sound",
+      "name": "Cursor2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-cursor2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Damage2 Sound",
+      "name": "Damage2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-damage2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Darkness3 Sound",
+      "name": "Darkness3 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-darkness3"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Darkness4 Sound",
+      "name": "Darkness4 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-darkness4"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Darkness5 Sound",
+      "name": "Darkness5 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-darkness5"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Debuff Sound",
+      "name": "Debuff · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-debuff"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Decision1 Sound",
+      "name": "Decision1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-decision1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Decision2 Sound",
+      "name": "Decision2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-decision2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Dog Sound",
+      "name": "Dog · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-dog"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Earth2 Sound",
+      "name": "Earth2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-earth2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Earth6 Sound",
+      "name": "Earth6 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-earth6"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Earth7 Sound",
+      "name": "Earth7 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-earth7"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Earth8 Sound",
+      "name": "Earth8 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-earth8"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Escape Sound",
+      "name": "Escape · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-escape"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Evade1 Sound",
+      "name": "Evade1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-evade1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Evade2 Sound",
+      "name": "Evade2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-evade2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Explosion1 Sound",
+      "name": "Explosion1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-explosion1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fall1 Sound",
+      "name": "Fall1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fall1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fall2 Sound",
+      "name": "Fall2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fall2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire1 Sound",
+      "name": "Fire1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire2 Sound",
+      "name": "Fire2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire3 Sound",
+      "name": "Fire3 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire3"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire4 Sound",
+      "name": "Fire4 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire4"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire5 Sound",
+      "name": "Fire5 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire5"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire6 Sound",
+      "name": "Fire6 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire6"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fire7 Sound",
+      "name": "Fire7 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fire7"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Flash1 Sound",
+      "name": "Flash1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-flash1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Flash3 Sound",
+      "name": "Flash3 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-flash3"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Fog1 Sound",
+      "name": "Fog1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-fog1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Glare Sound",
+      "name": "Glare · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-glare"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Holy2 Sound",
+      "name": "Holy2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-holy2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Holy3 Sound",
+      "name": "Holy3 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-holy3"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Holy5 Sound",
+      "name": "Holy5 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-holy5"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Holy6 Sound",
+      "name": "Holy6 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-holy6"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Holy7 Sound",
+      "name": "Holy7 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-holy7"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Ice1 Sound",
+      "name": "Ice1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-ice1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Ice2 Sound",
+      "name": "Ice2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-ice2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Ice5 Sound",
+      "name": "Ice5 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-ice5"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Ice6 Sound",
+      "name": "Ice6 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-ice6"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Ice7 Sound",
+      "name": "Ice7 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-ice7"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Ice9 Sound",
+      "name": "Ice9 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-ice9"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Item1 Sound",
+      "name": "Item1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-item1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Item2 Sound",
+      "name": "Item2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-item2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Key Sound",
+      "name": "Key · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-key"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Knock Sound",
+      "name": "Knock · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-knock"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Magic1 Sound",
+      "name": "Magic1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-magic1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Magic2 Sound",
+      "name": "Magic2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-magic2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Monster1 Sound",
+      "name": "Monster1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-monster1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Move Sound",
+      "name": "Move · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-move"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Poison Sound",
+      "name": "Poison · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-poison"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Pollen Sound",
+      "name": "Pollen · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-pollen"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Raise2 Sound",
+      "name": "Raise2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-raise2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Recovery5 Sound",
+      "name": "Recovery5 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-recovery5"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Recovery7 Sound",
+      "name": "Recovery7 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-recovery7"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Recovery8 Sound",
+      "name": "Recovery8 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-recovery8"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Sandstorm Sound",
+      "name": "Sandstorm · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-sandstorm"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Shot1 Sound",
+      "name": "Shot1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-shot1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Shot2 Sound",
+      "name": "Shot2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-shot2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Shot3 Sound",
+      "name": "Shot3 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-shot3"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Silence Sound",
+      "name": "Silence · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-silence"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Sleep Sound",
+      "name": "Sleep · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-sleep"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Song Sound",
+      "name": "Song · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-song"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Teleport2 Sound",
+      "name": "Teleport2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-teleport2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Wave1 Sound",
+      "name": "Wave1 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-wave1"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Wave2 Sound",
+      "name": "Wave2 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-wave2"
     },
     {
       "kind": "sound",
-      "name": "EasyRPG RTP Wind8 Sound",
+      "name": "Wind8 · 효과음 · EasyRPG",
       "assetId": "easyrpg-sound-wind8"
     },
     {
       "kind": "system",
-      "name": "EasyRPG RTP Royal System",
+      "name": "Royal · 시스템 그림 · EasyRPG",
       "assetId": "easyrpg-system-royal",
       "imageWidth": 160,
       "imageHeight": 80
     },
     {
       "kind": "system",
-      "name": "EasyRPG RTP System System",
+      "name": "System · 시스템 그림 · EasyRPG",
       "assetId": "easyrpg-system-system",
       "imageWidth": 160,
       "imageHeight": 80
     },
     {
       "kind": "system",
-      "name": "EasyRPG RTP SystemA System",
+      "name": "SystemA · 시스템 그림 · EasyRPG",
       "assetId": "easyrpg-system-system-a",
       "imageWidth": 160,
       "imageHeight": 80
     },
     {
       "kind": "system",
-      "name": "EasyRPG RTP SystemB System",
+      "name": "SystemB · 시스템 그림 · EasyRPG",
       "assetId": "easyrpg-system-system-b",
       "imageWidth": 160,
       "imageHeight": 80
     },
     {
       "kind": "system",
-      "name": "EasyRPG RTP SystemC System",
+      "name": "SystemC · 시스템 그림 · EasyRPG",
       "assetId": "easyrpg-system-system-c",
       "imageWidth": 160,
       "imageHeight": 80
     },
     {
       "kind": "system2",
-      "name": "EasyRPG RTP System2A System2",
+      "name": "System2A · 시스템 그림 2 · EasyRPG",
       "assetId": "easyrpg-system2-system2-a",
       "imageWidth": 80,
       "imageHeight": 96
     },
     {
       "kind": "system2",
-      "name": "EasyRPG RTP System2B System2",
+      "name": "System2B · 시스템 그림 2 · EasyRPG",
       "assetId": "easyrpg-system2-system2-b",
       "imageWidth": 80,
       "imageHeight": 96
     },
     {
       "kind": "system2",
-      "name": "EasyRPG RTP System2C System2",
+      "name": "System2C · 시스템 그림 2 · EasyRPG",
       "assetId": "easyrpg-system2-system2-c",
       "imageWidth": 80,
       "imageHeight": 96
     },
     {
       "kind": "title",
-      "name": "EasyRPG RTP Title1 Title",
+      "name": "Title1 · 타이틀 화면 · EasyRPG",
       "assetId": "easyrpg-title-title1",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "title",
-      "name": "EasyRPG RTP Title2 Title",
+      "name": "Title2 · 타이틀 화면 · EasyRPG",
       "assetId": "easyrpg-title-title2",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "title",
-      "name": "EasyRPG RTP Title3 Title",
+      "name": "Title3 · 타이틀 화면 · EasyRPG",
       "assetId": "easyrpg-title-title3",
       "imageWidth": 320,
       "imageHeight": 240
     },
     {
       "kind": "title",
-      "name": "EasyRPG RTP Title4 Title",
+      "name": "Title4 · 타이틀 화면 · EasyRPG",
       "assetId": "easyrpg-title-title4",
       "imageWidth": 320,
       "imageHeight": 240

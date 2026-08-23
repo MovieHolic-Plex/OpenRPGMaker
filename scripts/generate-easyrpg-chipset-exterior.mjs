@@ -62,4 +62,4 @@ if (size.width !== EXPECTED_WIDTH || size.height !== EXPECTED_HEIGHT) {
 }
 
 writeFileSync(TARGET, withIndexedTransparency(sourceBytes));
-console.log(`Copied EasyRPG RTP Exterior chipset to ${TARGET} with palette index 0 transparency`);
+console.log(`Copied EasyRPG Exterior tile sheet to ${TARGET} with palette index 0 transparency`);

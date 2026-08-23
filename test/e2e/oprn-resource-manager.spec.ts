@@ -9,7 +9,7 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   const categories = page.getByTestId("resource-category-list");
   await expect(categories).toBeVisible();
   await expect(categories.getByRole("option", { name: "전투 배경" })).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByTestId("resource-entry-list")).toContainText("EasyRPG RTP Cosmos1 Panorama");
+  await expect(page.getByTestId("resource-entry-list")).toContainText("Cosmos1 · 배경 그림 · EasyRPG");
   await expect(page.getByTestId("resource-command-panel")).toContainText("가져오기...");
   await expect(page.getByTestId("resource-command-panel")).toContainText("내보내기...");
   await expect(page.getByTestId("resource-command-panel")).toContainText("삭제");

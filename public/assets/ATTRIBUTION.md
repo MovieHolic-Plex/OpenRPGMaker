@@ -43,6 +43,11 @@
   - `CharSet/Object1.png` by Tom Lemmens and Blarumyrran, CC0 original chest, https://github.com/lemtom
   - `CharSet/Object2.png` by Verdant_Jack, CC0, https://community.easyrpg.org/t/test-for-new-rtp/1067/8
 - Notes: This is an open replacement RTP material, not the proprietary RPG Maker 2000/2003 RTP.
+- Pixel provenance verified 2026-08-23: `easyrpg-chipset-exterior.png` is produced by
+  `scripts/generate-easyrpg-chipset-exterior.mjs` (renamed from `generate-rm2k3-original-chipset.mjs`)
+  from `vendor/easyrpg-rtp/ChipSet/Exterior.png`. Its `IHDR`, `PLTE`, and `IDAT` chunks are
+  byte-identical to the vendor file; the only difference is an inserted `tRNS` chunk making
+  palette index 0 transparent. The pixels are JasonPerry's CC0 replacement art, not Enterbrain's.
 
 ## Scarloxy — Monster Taming Game Essentials (MyPixelWorld Special Packs #01)
 

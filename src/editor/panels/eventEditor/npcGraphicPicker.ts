@@ -167,7 +167,7 @@ function initialSelection(page: EventPage): NpcGraphicSelection {
 function firstCharsetAsset(assets: readonly CharsetPickerAsset[]): CharsetPickerAsset {
   const first = assets[0];
   if (!first) {
-    throw new Error("EasyRPG RTP 캐릭터칩 목록이 비어 있습니다");
+    throw new Error("EasyRPG 캐릭터 그림 목록이 비어 있습니다");
   }
   return first;
 }
