@@ -7,7 +7,7 @@ import { isItemActorEligible } from "@/project/itemEligibility";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
-import { applySkillLike, usesMagicalDefense } from "@/battle/battleDamage";
+import { applySkillLike, computeGen1BaseDamage, usesGen1Damage, usesMagicalDefense } from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
@@ -591,6 +591,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, actor),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      gen1AttackerLevel: gen1AttackerLevel(actor),
       rng,
     });
     if (result.hit && result.amount > 0) recoverHitStates(target);
@@ -1108,6 +1109,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       variance: 20,
       attackerStatMultiplier: attackMultiplierForStates(options.project, enemy),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
+      gen1AttackerLevel: gen1AttackerLevel(enemy),
       rng,
     });
     if (result.hit && result.amount > 0) recoverHitStates(target);
@@ -1370,7 +1372,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function enemyDamageUtility(user: MutableBattler, target: MutableBattler, power = user.attackPower, statistic: "attack" | "mind" = "attack"): number {
     const source = statistic === "mind" ? user.mind : user.attackPower;
-    const expected = Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
+    // gen1 은 코어 공식(랜덤·크리 제외)으로 기댓값을 낸다. 뺄셈식을 남겨두면 방어 높은 대상의
+    // 기댓값이 0 으로 뭉개져 타깃 선택이 실제 피해와 어긋난다.
+    const expected = usesGen1Damage(options.project)
+      ? computeGen1BaseDamage({ level: user.level ?? 1, power, attack: source, defense: target.defense })
+      : Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
     return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
   }
 
@@ -1451,6 +1457,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       attackerStatMultiplier: attackMultiplierForStates(options.project, user),
       targetDefenseMultiplier: defenseMultiplierForStates(options.project, target),
       useMagicalDefense: isMagicalElement(skill?.elementId),
+      gen1AttackerLevel: gen1AttackerLevel(user),
       rng,
     });
     const timelineKind: BattleTimelineEntrySnapshot["kind"] = !result.hit
@@ -1550,6 +1557,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   // 권위자에 위임한다(predict 와 동일 규칙 보장). gen1 모델에서만 활성.
   function isMagicalElement(elementId: string | undefined): boolean {
     return usesMagicalDefense(options.project, elementId);
+  }
+
+  // Gen1 코어 공식에 넘길 시전자 레벨. 판정은 battleDamage.usesGen1Damage 단일 권위자에 위임한다.
+  // undefined 를 돌려주면 rm2k3 뺄셈식이 그대로 유지된다(기본 프로젝트 회귀 0).
+  function gen1AttackerLevel(user: MutableBattler): number | undefined {
+    return usesGen1Damage(options.project) ? (user.level ?? 1) : undefined;
   }
 
   function applyTroopEvents(eventTurn: number = turn): void {

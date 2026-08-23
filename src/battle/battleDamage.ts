@@ -17,6 +17,40 @@ export function usesMagicalDefense(project: Project, elementId: string | undefin
   return project.database.elements?.find((entry) => entry.id === elementId)?.kind === "magical";
 }
 
+// Gen1 코어 데미지 공식을 쓸지 판정하는 **단일 권위자**. runtime(실제) · battlePredict(예측) ·
+// 적 AI 유틸리티 · tune_enemy 역산이 모두 이 함수를 통해야 네 경로의 산식이 갈라지지 않는다.
+// rm2k3 는 뺄셈식(`power + floor(stat/2) - floor(def/2)`)을 바이트 단위로 유지한다.
+export function usesGen1Damage(project: Project): boolean {
+  return project.system.battleModel === "gen1";
+}
+
+// Gen1 랜덤 계수 범위(217~255)/255. 최대값 대비 최소 85%.
+export const GEN1_RANDOM_MIN = 217;
+export const GEN1_RANDOM_MAX = 255;
+// 예측(기댓값)용 중앙값 — (217+255)/2. battlePredict 가 이 값으로 평균을 낸다.
+export const GEN1_RANDOM_MEDIAN = (GEN1_RANDOM_MIN + GEN1_RANDOM_MAX) / 2;
+
+export interface Gen1BaseDamageInput {
+  readonly level: number;
+  readonly power: number;
+  readonly attack: number;
+  readonly defense: number;
+  // Gen1 크리티컬은 배율이 아니라 **공식 안의 레벨을 2배**로 만든다.
+  readonly critical?: boolean;
+}
+
+// Gen1 코어: floor(floor(floor((2L/5+2) · Power · A / D) / 50)) + 2.
+// 층층이 floor 라 순서를 바꾸면 값이 달라진다 — 원작 순서를 그대로 지킨다.
+// 상성·STAB·랜덤 계수는 이 함수 **밖**에서 곱한다(원작 적용 순서: base → 상성 → 랜덤).
+export function computeGen1BaseDamage(input: Gen1BaseDamageInput): number {
+  const level = Math.max(1, input.critical ? input.level * 2 : input.level);
+  const attack = Math.max(1, input.attack);
+  // D=0 이면 0 나눗셈이 된다. 원작도 최소 1 로 취급한다.
+  const defense = Math.max(1, input.defense);
+  const levelTerm = Math.floor((2 * level) / 5) + 2;
+  return Math.floor(Math.floor((levelTerm * Math.max(0, input.power) * attack) / defense) / 50) + 2;
+}
+
 export const DEFAULT_SKILL_VARIANCE = 10;
 export const DEFAULT_SKILL_CRIT_RATE = 4;
 export const DEFAULT_SKILL_CRIT_MULT = 1.5;
@@ -46,6 +80,10 @@ export interface SkillLikeEffect {
   readonly useMagicalDefense?: boolean;
   // 감쇠식 방어 사용 여부. true면 defense/(def+80) 감쇠, false면 기존 뺄셈 유지.
   readonly useDiminishingDefense?: boolean;
+  // Gen1 코어 공식을 쓸 때의 **시전자 레벨**. 값이 있으면 뺄셈식 대신 Gen1 경로를 탄다
+  // (판정은 usesGen1Damage, 레벨은 battler.level). variance/criticalMultiplier 는 이 경로에서
+  // 무시된다 — Gen1 은 분산이 217~255/255 이고 크리티컬은 레벨 2배다.
+  readonly gen1AttackerLevel?: number;
   readonly rng?: Rng;
 }
 
@@ -95,6 +133,10 @@ function computeMagnitude(
   if (mode === "heal") {
     return { amount: applyVariance(magnitude, spec), critical: false };
   }
+  // Gen1 모델: 레벨 기반 코어 공식으로 갈아탄다. 회복은 원작에 대응물이 없어 rm2k3 식을 공유한다.
+  if (spec.gen1AttackerLevel !== undefined) {
+    return computeGen1Magnitude(power, target, sourceStat, spec, spec.gen1AttackerLevel);
+  }
   // 속성 상성 배율(기본 1.0)
   const elementMultiplier = spec.elementMultiplier ?? 1;
   magnitude = Math.round(magnitude * elementMultiplier);
@@ -119,6 +161,40 @@ function computeMagnitude(
     magnitude = Math.round(magnitude * (1 - reduction));
   } else {
     magnitude -= Math.floor(effectiveDefense / 2);
+  }
+  if (target.defending) magnitude = Math.floor(magnitude / 2);
+  return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };
+}
+
+// Gen1 적용 순서: 크리티컬 판정 → 코어 공식(레벨 2배) → 상성/STAB → 랜덤 217~255/255 → 방어 자세.
+// rng 호출 순서(크리 → 랜덤)가 계약이다. 테스트가 이 순서로 결정론 rng 를 넣는다.
+function computeGen1Magnitude(
+  power: number,
+  target: MutableBattler,
+  sourceStat: number,
+  spec: SkillLikeEffect,
+  level: number
+): { amount: number; critical: boolean } {
+  const elementMultiplier = spec.elementMultiplier ?? 1;
+  if (elementMultiplier === 0) return { amount: 0, critical: false };
+  const rng = spec.rng ?? fallbackRng;
+  const criticalRate = spec.criticalRate ?? DEFAULT_SKILL_CRIT_RATE;
+  const critical = criticalRate > 0 && rng() * 100 < criticalRate;
+  const baseDefense = spec.useMagicalDefense ? target.mind : target.defense;
+  const base = computeGen1BaseDamage({
+    level,
+    power,
+    attack: sourceStat,
+    defense: baseDefense * (spec.targetDefenseMultiplier ?? 1),
+    critical,
+  });
+  // 흡수(음수 배율)는 rm2k3 와 같은 계약으로 음수 amount 를 돌려준다 — applySkillLike 가 회복시킨다.
+  if (elementMultiplier < 0) return { amount: Math.round(base * elementMultiplier), critical: false };
+  let magnitude = Math.floor(base * elementMultiplier);
+  // 랜덤 계수는 원작대로 데미지가 1 이하일 때 건너뛴다(1 이 0 으로 뭉개지는 것을 막는다).
+  if (magnitude > 1) {
+    const roll = GEN1_RANDOM_MIN + Math.floor(rng() * (GEN1_RANDOM_MAX - GEN1_RANDOM_MIN + 1));
+    magnitude = Math.floor((magnitude * Math.min(GEN1_RANDOM_MAX, roll)) / GEN1_RANDOM_MAX);
   }
   if (target.defending) magnitude = Math.floor(magnitude / 2);
   return { amount: magnitude <= 0 ? 0 : Math.max(1, magnitude), critical };

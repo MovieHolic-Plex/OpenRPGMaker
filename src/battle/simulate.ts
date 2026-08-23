@@ -3,6 +3,7 @@
 // 간단 AI: 평타 + HP 30% 이하일 때 회복 아이템 사용. 시드 고정 시 재현 가능.
 //
 import { actorBattlers } from "@/battle/battleBattlers";
+import { computeGen1BaseDamage, usesGen1Damage } from "@/battle/battleDamage";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
 import type { Project, SkillId, ItemId } from "@/project/types";
@@ -254,7 +255,8 @@ export function simulateBattle(input: SimulateBattleInput): SimulateBattleResult
   };
 }
 
-// tune_enemy 근거 계산: 데미지 공식(power + stat/2 - def/2, 최소 1) 역산.
+// tune_enemy 근거 계산: 데미지 공식 역산. rm2k3 는 `power + stat/2 - def/2`(최소 1),
+// gen1 은 battleDamage.computeGen1BaseDamage 의 레벨 기반 코어 공식을 역산한다.
 export interface EnemyTuningInput {
   readonly project: Project;
   readonly heroLevel: number;
@@ -286,12 +288,21 @@ export function computeEnemyTuning(input: EnemyTuningInput): EnemyTuningResult {
   const heroDefense = hero?.defense ?? 59;
 
   // 영웅 평타 1대: attackPower + floor(attackPower/2) - floor(enemyDefense/2), 최소 1.
-  const heroHitDamage = Math.max(1, heroAttack + Math.floor(heroAttack / 2) - Math.floor(input.enemyDefense / 2));
+  // gen1 프로젝트는 코어 공식(레벨 기반)으로 갈아탄다 — 두 산식이 갈리면 tune_enemy 근거가
+  // 실제 전투와 어긋난 숫자를 뱉는다(런타임/예측과 같은 usesGen1Damage 게이트를 쓴다).
+  const gen1 = usesGen1Damage(input.project);
+  const heroHitDamage = gen1
+    ? Math.max(1, computeGen1BaseDamage({ level: input.heroLevel, power: heroAttack, attack: heroAttack, defense: input.enemyDefense }))
+    : Math.max(1, heroAttack + Math.floor(heroAttack / 2) - Math.floor(input.enemyDefense / 2));
   const maxHp = Math.max(1, Math.round(input.targetHitsToKill * heroHitDamage));
 
   // 적 평타가 영웅에게 targetDamageToHeroPerHit를 주려면:
   // A + floor(A/2) - floor(heroDefense/2) = target  →  1.5A ≈ target + heroDefense/2.
-  const attack = Math.max(1, Math.round((input.targetDamageToHeroPerHit + Math.floor(heroDefense / 2)) / 1.5));
+  // gen1 은 power=A 이자 attack=A 라 A 에 대해 2차식이다. 닫힌 해로 시작해 정방향 공식
+  // (computeGen1BaseDamage)으로 단조 보정한다 — 역산과 실제 산식이 절대 갈라지지 않는다.
+  const attack = gen1
+    ? solveGen1Attack(input.heroLevel, heroDefense, input.targetDamageToHeroPerHit)
+    : Math.max(1, Math.round((input.targetDamageToHeroPerHit + Math.floor(heroDefense / 2)) / 1.5));
 
   return {
     maxHp,
@@ -300,7 +311,20 @@ export function computeEnemyTuning(input: EnemyTuningInput): EnemyTuningResult {
       heroAttack,
       heroDefense,
       heroHitDamage,
-      formula: `maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}); attack = round((${input.targetDamageToHeroPerHit} + floor(${heroDefense}/2)) / 1.5)`,
+      formula: gen1
+        ? `gen1: maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}); attack = solve(base(Lv${input.heroLevel}, A, A, ${heroDefense}) ≥ ${input.targetDamageToHeroPerHit})`
+        : `maxHp = round(${input.targetHitsToKill} × ${heroHitDamage}); attack = round((${input.targetDamageToHeroPerHit} + floor(${heroDefense}/2)) / 1.5)`,
     },
   };
+}
+
+// gen1 코어 공식의 A 역산. 닫힌 해 → 단조 보정(최대 64스텝). power=attack=A 가정.
+function solveGen1Attack(level: number, defense: number, targetDamage: number): number {
+  const levelTerm = Math.floor((2 * Math.max(1, level)) / 5) + 2;
+  const seed = Math.sqrt((Math.max(1, targetDamage - 2) * 50 * Math.max(1, defense)) / levelTerm);
+  let attack = Math.max(1, Math.round(seed));
+  const damageAt = (value: number): number => computeGen1BaseDamage({ level, power: value, attack: value, defense });
+  for (let step = 0; step < 64 && damageAt(attack) < targetDamage; step += 1) attack += 1;
+  for (let step = 0; step < 64 && attack > 1 && damageAt(attack - 1) >= targetDamage; step += 1) attack -= 1;
+  return attack;
 }
