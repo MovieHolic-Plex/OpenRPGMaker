@@ -1,9 +1,10 @@
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly PROD: boolean;
-  readonly VITE_YUNWU_API_KEY?: string;
-  readonly VITE_LLM_API_KEY?: string;
-  readonly VITE_LLM_API_URL?: string;
+  // VITE_YUNWU_API_KEY / VITE_LLM_API_KEY / VITE_LLM_API_URL 은 선언을 걷었다.
+  // 앞의 둘은 키를 클라이언트 번들에 인라인하던 통로이고, 마지막 것은 에디터의 인증
+  // 모드를 정해 AI 를 반복적으로 죽인 통로다(llmClient.defaultAiConfig 주석 참고).
+  // 되살리지 말 것 — 게이트웨이가 필요한 소비자는 설정을 직접 주입한다.
   readonly VITE_SUPABASE_ANON_KEY?: string;
   readonly VITE_SUPABASE_PROJECT_ID?: string;
   readonly VITE_SUPABASE_URL?: string;

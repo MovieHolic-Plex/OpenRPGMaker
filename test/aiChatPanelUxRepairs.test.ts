@@ -323,7 +323,10 @@ describe("키 온보딩과 설정 접근성", () => {
     expect((globalThis.document as unknown as { body: FakeElement }).body.classList.contains("ai-command-bar-active")).toBe(true);
   });
 
-  it("키가 없으면 전송 전에 설정을 열고 API 키 입력에 포커스하며 안내를 중복하지 않는다", () => {
+  it("OAuth 는 전송 전에 'API 키' 안내로 막지 않는다 (키 온보딩 개념 자체가 없다)", () => {
+    // 옛 스펙은 apiKey 모드 + 빈 키를 저장해 전송 전 키 안내·apiKey 입력 포커스를 요구했다.
+    // 인증이 무조건 OAuth 가 된 뒤 저장값은 OAuth 로 승격되므로(loadAiConfig) 그 경로가 없다 —
+    // 미로그인은 전송 전 안내가 아니라 요청 시점 401 로 드러난다(아래 401 버블 스펙이 담당).
     storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }));
     const panel = renderPanel();
     const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
@@ -331,15 +334,11 @@ describe("키 온보딩과 설정 접근성", () => {
     input.value = "마을 만들어줘";
 
     send?.click();
-    send?.click();
 
     const logText = findByTestId(panel, "ai-chat-log")?.textContent ?? "";
-    const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
-    expect(input.value).toBe("마을 만들어줘");
-    expect((logText.match(/API 키가 필요합니다/gu) ?? []).length).toBe(1);
-    expect(modal).not.toBeNull();
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-config-apikey"));
-    expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
+    expect(logText).not.toContain("API 키가 필요합니다");
+    // 전송이 실제로 진행됐다(입력창이 비워졌다) — 키 안내로 가로막지 않았다는 뜻.
+    expect(input.value).toBe("");
   });
 
   it("401 오류 버블에도 설정 열기 버튼을 붙인다", async () => {
@@ -353,7 +352,8 @@ describe("키 온보딩과 설정 접근성", () => {
     await flushAsync();
 
     expect(findByTestId(panel, "ai-error-open-settings")).toBeTruthy();
-    expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("인증 실패");
+    // OAuth 경로의 401 문구는 "ChatGPT 로그인 실패(401)" 다 — apiKey 시절의 "인증 실패" 가 아니다.
+    expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).toContain("로그인 실패");
   });
 
   it("설정 아이콘은 전용 모달을 열고 첫 입력에 포커스한다", () => {
@@ -364,7 +364,7 @@ describe("키 온보딩과 설정 접근성", () => {
     const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(modal).not.toBeNull();
     expect(findByTestId(panel, "ai-config")).toBeNull();
-    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-chatgpt"));
+    expect((globalThis.document as unknown as { activeElement: unknown }).activeElement).toBe(findByTestId(modal, "ai-auth-oauth"));
   });
 
   it("AI 패널의 아이콘 버튼에는 aria-label이 있다", () => {

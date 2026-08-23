@@ -16,6 +16,8 @@ export interface OhMyPiAuthStatus {
   planType?: string;
   env?: boolean;
   refreshed?: boolean;
+  /** `/auth/logout` 이 지울 항이 실제로 있었는가. */
+  removed?: boolean;
 }
 
 export interface OhMyPiLoginResult extends OhMyPiAuthStatus {
@@ -45,6 +47,7 @@ export interface OhMyPiAdapters {
   login(provider: string, body?: { apiKey?: string }): Promise<OhMyPiLoginResult>;
   saveKey(provider: string, apiKey: string): Promise<OhMyPiAuthStatus>;
   refresh(provider: string): Promise<OhMyPiAuthStatus>;
+  logout(provider: string): Promise<OhMyPiAuthStatus>;
   seedOAuth(provider: string, creds: OhMyPiOAuthSeed): Promise<OhMyPiAuthStatus>;
   complete(provider: string, body: Record<string, unknown>): Promise<OhMyPiCompletionResult>;
 }

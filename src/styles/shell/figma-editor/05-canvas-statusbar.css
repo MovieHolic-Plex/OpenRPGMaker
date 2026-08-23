@@ -167,12 +167,13 @@
       padding-right: 14px;
     }
 
+    /* AI 연동 칩은 **숨기지 않는다.** 예전에는 이 목록에 > .ai-connection-status 가 들어 있어서,
+       AI 패널을 여는 순간(= 사용자가 AI 를 쓰려는 바로 그 순간) 유일한 인증 상태 표시가 화면에서
+       사라졌다. 좁아지면 사라지는 대신 줄어들게 둔다 — 폭 제한과 말줄임은
+       styles/editor/ai-auth-connection.css 가 맡고, 상태별 이모지가 앞에 와서 잘려도 읽힌다. */
     .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
       .editor-statusbar
-      > .editor-statusbar-cell:not(button):not(.strong),
-    .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
-      .editor-statusbar
-      > .ai-connection-status {
+      > .editor-statusbar-cell:not(button):not(.strong) {
       display: none;
     }
 
@@ -185,7 +186,7 @@
 
     .editor-layout:has(.ai-chat-side-panel .ai-chat-panel:not(.is-collapsed))
       .editor-statusbar
-      > button.editor-statusbar-cell:not(.ai-connection-status) {
+      > button.editor-statusbar-cell {
       flex: 1 1 0;
       font-size: 11px;
       min-width: 0;

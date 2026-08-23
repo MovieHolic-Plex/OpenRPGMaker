@@ -1,0 +1,261 @@
+/* AI 연결 방식(구독 로그인 / API 키) 패널과 연결 상태 칩의 스타일.
+ *
+ * 별도 파일인 이유: 기존 인증 CSS 는 database/assistant-command-bar.css 에 있는데 그 파일은
+ * 다른 작업(조수 컴포저 개편)이 동시에 고치는 중이다. 새 규칙을 그 파일에 넣으면 충돌한다.
+ * 등록 위치는 styles/index.css 의 마지막 @import 바로 뒤 — database/tabs-b.css 보다 뒤라서
+ * 같은 특이도의 옛 규칙을 !important 없이 이긴다.
+ *
+ * 여기서 재사용하는 기존 클래스: .ai-auth-settings(그리드 카드), .ai-auth-panel(패널 본문),
+ * .ai-oauth-status(색 점 + 문구), .ai-config-input, .ai-config-select, .ai-config-label.
+ */
+
+/* [hidden] 이 항상 이긴다.
+ *
+ * 실측(2026-08-21 브라우저 프로브): 아래에서 .ai-auth-key-row 에 display:flex,
+ * .ai-oauth-device 에 display:grid 를 주는 순간 UA 기본 규칙 `[hidden]{display:none}` 이
+ * 특이도에서 밀려, **DOM 은 hidden 인데 화면에는 키 칸과 기기 로그인 블록이 그대로 보였다.**
+ * (스샷 verify-shots/ai-oauth-separation/ 참조 — 구독 로그인 종류에 키 입력칸이 떠 있었다.)
+ * 자손 선택자로 (0,2,0) 을 만들어 이 파일의 단일 클래스 display 규칙 전부를 덮는다. */
+.ai-auth-settings [hidden] {
+  display: none;
+}
+
+/* ── 연결 방식 선택(radiogroup) ─────────────────────────────────────────── */
+
+.ai-auth-kinds {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* 카드형 라디오. 제목 + 한 줄 설명을 함께 담아, 고르기 전에 무엇을 고르는지 읽히게 한다. */
+.ai-auth-kind {
+  align-items: flex-start;
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  text-align: left;
+}
+
+.ai-auth-kind > strong {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ai-auth-kind > small {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ai-auth-kind:hover,
+.ai-auth-kind:focus-visible {
+  border-color: var(--accent-border);
+  outline: none;
+}
+
+.ai-auth-kind[aria-checked="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.ai-auth-kind[aria-checked="true"] > strong::before {
+  content: "● ";
+}
+
+.ai-auth-kind[aria-checked="false"] > strong::before {
+  content: "○ ";
+}
+
+/* ── 제공자 줄 ─────────────────────────────────────────────────────────── */
+
+.ai-auth-provider-row {
+  display: grid;
+  gap: 4px;
+}
+
+.ai-config-help {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ── 연결 상태 ─────────────────────────────────────────────────────────── */
+
+.ai-auth-state {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* 저장된 자격의 종류를 한국어로 보여 준다 — "구독 로그인" / "API 키" / "로컬 서버".
+ * 테두리를 주면 버튼으로 읽힌다(실측 스샷에서 클릭 가능한 칩처럼 보였다) — 라벨로 남긴다. */
+.ai-auth-kind-badge {
+  color: var(--text-3);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+/* 조회 중임을 색으로도 말한다. 기존 파일에는 connected/offline/disconnected 만 있었다. */
+.ai-oauth-status[data-tone="checking"] {
+  color: var(--text-3);
+}
+
+.ai-auth-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── API 키 입력 ───────────────────────────────────────────────────────── */
+
+.ai-auth-key-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* 입력이 남는 폭을 먹는다. 옛 구현은 flex 컨테이너에 flex:1 없이 넣어 칸이 내용 폭으로 쪼그라들었다. */
+.ai-auth-key-row > .ai-companion-key {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 기기 로그인 ───────────────────────────────────────────────────────── */
+
+.ai-oauth-device {
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.ai-oauth-device-steps {
+  color: var(--text-2);
+  display: grid;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.ai-oauth-device-url {
+  color: var(--accent);
+  overflow-wrap: anywhere;
+  text-decoration: underline;
+}
+
+.ai-oauth-device-code-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+/* 코드는 사람이 손으로 옮겨 적는 값이다 — 자간을 벌리고 줄바꿈을 막는다. */
+.ai-oauth-device-usercode {
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  color: var(--text-1);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  padding: 4px 8px;
+  white-space: nowrap;
+}
+
+.ai-oauth-device-foot {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.ai-oauth-device-poll {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+/* ── 안내(A) 와 오류(B) 는 눈으로도 달라야 한다 ────────────────────────── */
+
+.ai-auth-hint {
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-3);
+  font-size: 11px;
+  padding-top: 9px;
+}
+
+/* 옛 구현은 서버 오류를 안내와 똑같은 회색 11px 로 그려서 구분이 되지 않았다. */
+.ai-auth-error {
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  border: 1px solid var(--danger);
+  border-radius: 8px;
+  color: var(--danger);
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  padding: 8px;
+}
+
+/* ── 상태바 AI 연동 칩 ─────────────────────────────────────────────────── */
+
+/* 상태별 색. DB 연동 칩(map/resource-system.part-1.css:232-247)과 같은 패턴이다.
+ * 예전에는 kind 클래스를 방출하면서 **그걸 소비하는 규칙이 어디에도 없었다** — 네 상태가
+ * 모두 같은 색·같은 이모지로 보이고 차이는 hover 툴팁에만 있었다. */
+.editor-statusbar-cell.ai-connection-status.ready {
+  color: var(--status-success);
+}
+
+.editor-statusbar-cell.ai-connection-status.checking {
+  color: var(--status-warning);
+}
+
+.editor-statusbar-cell.ai-connection-status.disconnected {
+  color: var(--status-warning);
+}
+
+.editor-statusbar-cell.ai-connection-status.offline,
+.editor-statusbar-cell.ai-connection-status.error {
+  color: var(--status-error);
+}
+
+/* 좁은 상태바에서도 살아남게 — 칩이 사라지는 대신 줄어든다(아래 05-canvas-statusbar.css 수정 참고).
+ * 상태별 이모지가 앞에 오므로 라벨이 잘려도 무엇이 문제인지는 읽힌다. */
+.editor-statusbar-cell.ai-connection-status {
+  max-width: 22ch;
+  min-width: 0;
+}
+
+.editor-statusbar-cell.ai-connection-status > .ai-connection-label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 모델 경고 — aiSettingsModal 이 인라인 style 로 색을 칠하던 것을 대체한다. */
+.ai-model-warning {
+  color: var(--danger);
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+@media (max-width: 520px) {
+  .ai-auth-kinds {
+    grid-template-columns: 1fr;
+  }
+
+  .ai-auth-key-row,
+  .ai-oauth-device-foot {
+    flex-direction: column;
+  }
+}

@@ -42,6 +42,29 @@ describe("oh-my-pi auth store", () => {
     assert.equal(store.isExpired("anthropic"), false);
   });
 
+  it("자격을 지우면 연결이 끊기고 자동 채용도 막힌다", () => {
+    store.setApiKey("groq", "gsk-wrong");
+
+    assert.equal(store.remove("groq"), true);
+    assert.equal(store.has("groq"), false);
+    assert.equal(store.publicStatus("groq").connected, false);
+    // 사용자가 끊은 연결은 다시 채용하지 않는다 — 이 표시가 없으면 ~/.codex/auth.json
+    // 입양이 해제를 되살린다.
+    assert.equal(store.adoptionDeclined("groq"), true);
+    // 지울 항이 없었다는 사실을 숨기지 않는다.
+    assert.equal(store.remove("openai"), false);
+  });
+
+  it("다시 로그인하면 자동 채용 차단을 거둔다", () => {
+    store.setOAuth("openai-codex", { access: "a", refresh: "r", expires: Date.now() + 60_000 });
+    store.remove("openai-codex");
+    assert.equal(store.adoptionDeclined("openai-codex"), true);
+
+    store.setOAuth("openai-codex", { access: "a2", refresh: "r2", expires: Date.now() + 60_000 });
+    assert.equal(store.adoptionDeclined("openai-codex"), false);
+    assert.equal(store.publicStatus("openai-codex").connected, true);
+  });
+
   it("시크릿을 JSON 그대로 보관하되 브라우저용 상태에는 넣지 않는다", () => {
     store.setApiKey("openai", "sk-secret");
     const publicStatus = store.publicStatus("openai");

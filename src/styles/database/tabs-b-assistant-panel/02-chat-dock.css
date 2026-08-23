@@ -1,4 +1,4 @@
-/* ?? LLM ?댁떆?ㅽ꽩??梨꾪똿 dock (Phase 2) ????????????????????????? */
+/* LLM 어시스턴트 채팅 dock (Phase 2) ─────────────────────────────── */
 .ai-chat-float-host {
   inset: 0;
   pointer-events: none;
@@ -6,8 +6,10 @@
   z-index: 32;
 }
 
-/* ?ъ씠???꾪겕: ?덉씠?꾩썐 ??1/3(--ai-chat-side-width??editor applyLayout??諛쒗뻾).
-   ??transition ?놁쓬 ???좊땲硫붿씠?섏씠 罹붾쾭??fitCanvas ?곗뇙 ?붾뱾由쇱쓣 留뚮뱺?? */
+/* 사이드 도크 폭: --ai-chat-side-width — editor.ts 의 레이아웃 코드가 발행한다
+   (editor.ts:115·209, 부팅 폭 + 리사이즈 시 갱신). 여기서 다시 계산하지 않는다.
+   transition 을 걸지 않는 것은 의도다 — 폭 애니메이션이 캔버스 fitCanvas 재계산과
+   경합해 도크 전환마다 맵이 흔들린다(editor.ts:944 fitCanvas). */
 .editor-layout .ai-chat-side-panel {
   background: var(--bg-panel);
   border-left: none;
@@ -71,8 +73,8 @@
    none + 인터랙티브 자식만 auto 로 복원하므로 float 에서도 그대로 둔다.
    회귀 스펙: test/e2e/_ai-assistant-hostile-eval.spec.ts (H 히트테스트). */
 
-/* ?묓옒 ?곹깭: float ??inset:0 ???묓옒 pill ??罹붾쾭???꾩껜 遺덊닾紐??⑤꼸濡??섎젮
-   留듭쓣 ?듭㎏濡?媛由щ뜕 ?뚭? ?섏젙 ???묓옒? ?고븯??pill 留??④릿?? */
+/* 접힘 상태: float 은 inset:0 이라 그대로 접으면 투명 패널이 캔버스 전체를 덮어
+   맵 클릭을 삼킨다. 접히면 inset 을 우하단으로 되돌리고 복원 pill 만 남긴다. */
 .ai-chat-panel.chat-dock-float.is-collapsed {
   background: transparent;
   border: none;
@@ -106,15 +108,20 @@
   backdrop-filter: blur(18px) saturate(1.3);
 }
 
+/* 유리·사이드는 헤더(더보기/설정)를 가지고 있고 빈 화면 추천은 ai-next-steps 카드가
+   담당한다 → 컴포저의 ☰ 와 추천 팝오버를 빼 중복을 없앤다. float 은 헤더가 숨겨지므로
+   컴포저 ☰ 가 유일한 메타 진입점이라 그대로 둔다. */
 .ai-chat-panel.chat-dock-glass .ai-chat-toolbar,
 .ai-chat-panel.chat-dock-glass .ai-chat-resize-handle,
 .ai-chat-panel.chat-dock-glass .ai-command-menu-toggle,
 .ai-chat-panel.chat-dock-glass .ai-command-settings-button,
-.ai-chat-panel.chat-dock-glass .ai-composer-chips,
+.ai-chat-panel.chat-dock-glass .ai-composer-suggest,
 .ai-chat-panel.chat-dock-glass .ai-context-chips,
 .ai-chat-panel.chat-dock-glass .ai-chat-collapse,
 .ai-chat-panel.chat-dock-glass .ai-new-session,
-.ai-chat-panel.chat-dock-side .ai-composer-chips {
+.ai-chat-panel.chat-dock-side .ai-command-menu-toggle,
+.ai-chat-panel.chat-dock-side .ai-command-settings-button,
+.ai-chat-panel.chat-dock-side .ai-composer-suggest {
   display: none;
 }
 
@@ -213,7 +220,7 @@
   right: auto;
   bottom: auto;
   width: 100%;
-  /* dock ?꾪솚 ??opacity/transform ?좊땲硫붿씠???쒓굅 ???덉씠?꾩썐 ?붾뱾由?諛⑹? */
+  /* dock 전환에 opacity/transform 애니메이션을 걸지 않는다 — 레이아웃 흔들림 방지. */
 }
 
 .ai-chat-panel.chat-dock-side .ai-chat-header,

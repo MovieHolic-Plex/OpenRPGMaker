@@ -2,7 +2,8 @@
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
 import { editorState, type Layer } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
-import { AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
+import { AI_TRANSPORT_HEALTH_EVENT, scrubStoredAiCredentials } from "@/ai/llmClient";
+import { toast } from "@/util/toast";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
 import { installToolCursor } from "@/editor/toolCursor";
@@ -355,6 +356,13 @@ function refreshStatusbar(): void {
 /** AI 연동 칩 폴링 — 부팅 시 1회 즉시 조회하고 이후 주기적으로 캐시를 갱신한다. */
 function startAiConnectionPolling(): void {
   stopAiConnectionPolling();
+  // 부팅 시 1회: 예전 설정에 남아 있던 평문 API 키와 죽은 게이트웨이 주소를 지운다.
+  // loadAiConfig 는 그 값들을 이미 무시하지만 디스크에는 남아 있어서, 인증 패널이 하는
+  // "브라우저에는 두지 않습니다" 약속이 과거 키에는 적용되지 않는 상태였다.
+  const scrub = scrubStoredAiCredentials();
+  if (scrub.hadApiKey) {
+    toast("보안을 위해 브라우저에 저장돼 있던 API 키를 지웠습니다. 필요하면 AI 설정에서 다시 연결해 주세요.", "ok");
+  }
   void refreshAiConnectionStatus(refreshStatusbar);
   aiConnectionPollTimer = setInterval(() => {
     void refreshAiConnectionStatus(refreshStatusbar);

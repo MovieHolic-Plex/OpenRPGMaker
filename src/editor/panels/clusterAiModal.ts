@@ -7,7 +7,8 @@ import {
   type TurnResult,
 } from "@/ai/assistantSession";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
-import { configForLiteModel, isProxyAuth, loadAiConfig } from "@/ai/llmClient";
+import { configForLiteModel, loadAiConfig } from "@/ai/llmClient";
+import { isAiConfigReady } from "@/editor/panels/aiChatPanelHelpers";
 import { SYSTEM_SKILLS, type SkillArgValue, type SkillRunContext } from "@/ai/skills";
 import { focusAcceptedAgentChanges } from "@/editor/agentFocus";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";
@@ -382,14 +383,13 @@ function startKickoff(
   sendText: (text: string, displayText?: string) => Promise<void>
 ): void {
   const config = configForLiteModel(loadAiConfig());
-  // baseUrl/model 은 항상 필요. apiKey 는 동일 오리진 프록시(상대 baseUrl)일 때 면제 —
-  // 서버가 Authorization 을 주입하므로(isProxyAuth) 클라이언트 키가 필요 없다. 이전에는 여기서
-  // 키를 무조건 요구해 프록시 환경에서 킥오프가 막혔다(중복 검사가 면제를 빼먹은 결함).
-  // 올바른 참조 구현: editor/panels/aiConnectionStatus.ts — 판정은 llmClient.isProxyAuth 로 통일.
-  const needsClientKey = !isProxyAuth(config);
-  if (!config.baseUrl.trim() || !config.model.trim() || (needsClientKey && !config.apiKey.trim())) {
+  // 준비 판정은 isAiConfigReady 하나로 통일한다 — 여기서 직접 baseUrl/apiKey 를 보던 중복 검사가
+  // **OAuth 면제를 빼먹어** 클러스터 AI 가 시작조차 못 했다(실측 2026-08-21). OAuth 는 baseUrl 이
+  // 의도적으로 빈 문자열이고(엔드포인트는 동반 서비스가 고정) 클라이언트 키도 없기 때문이다.
+  // 이 파일의 옛 주석이 경고했던 결함("중복 검사가 면제를 빼먹은 결함")을 같은 방식으로 반복한 셈이다.
+  if (!isAiConfigReady(config)) {
     status.textContent = "설정 필요";
-    appendBubble("system", "AI 설정(엔드포인트/키)을 먼저 완료하세요. 오른쪽 AI 패널의 설정을 저장한 뒤 다시 열어 주세요.");
+    appendBubble("system", "AI 연결을 먼저 완료하세요. 오른쪽 AI 패널에서 구독 로그인을 마친 뒤 다시 열어 주세요.");
     return;
   }
   const args = skillArgs(model.detail);

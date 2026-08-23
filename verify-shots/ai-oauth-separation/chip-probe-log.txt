@@ -1,0 +1,8 @@
+[panel] found=true collapsed=false parent="ai-chat-float-host"
+[panel] 옛 숨김 규칙 선택자 적중=false
+[chip] AI 패널 열림=false
+[chip] present=true text="🤖 AI 연결됨" class="editor-statusbar-cell ai-connection-status ready"
+[chip] box=133x53 display=flex color=rgb(24, 118, 79)
+[chip] title="구독 로그인으로 연결됨 · 로그인 정보는 이 PC 의 보조 프로그램이 보관·갱신해요.…"
+[NOTE] 숨김 규칙 조건(side 도크)을 이 레이아웃에서 재현하지 못함 — 규칙 제거는 코드 확인만
+[chip] kind 클래스=["ready"]

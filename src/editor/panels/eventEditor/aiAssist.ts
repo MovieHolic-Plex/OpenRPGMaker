@@ -174,7 +174,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
       setStatus(
         config.authMode === "chatgpt"
           ? "AI 설정에서 ChatGPT 연결과 모델을 확인하세요."
-          : "AI 설정에서 API 키와 baseUrl을 입력하세요.",
+          : "AI 설정에서 연결 방식(구독 로그인 또는 API 키)을 완료하세요.",
         "error"
       );
       return;

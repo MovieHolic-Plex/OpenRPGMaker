@@ -77,9 +77,10 @@ describe("AI assistant UX P0–P2", () => {
     findByTestId(panel, "ai-settings-command-bar")?.click();
     const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
     expect(modal).not.toBeNull();
-    expect(findByTestId(modal!, "ai-config-baseurl")).not.toBeNull();
     expect(findByTestId(modal!, "ai-config-model")).not.toBeNull();
-    expect(findByTestId(modal!, "ai-config-apikey")).not.toBeNull();
+    // 브라우저 보관 키·엔드포인트 입력은 제거됐다(자격은 동반 서비스가 보관한다).
+    expect(findByTestId(modal!, "ai-config-baseurl")).toBeNull();
+    expect(findByTestId(modal!, "ai-config-apikey")).toBeNull();
     // 채팅 본문에 인라인 설정 폼이 기본 렌더되지 않음
     expect(findByTestId(panel, "ai-config")).toBeNull();
   });

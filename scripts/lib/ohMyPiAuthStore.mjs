@@ -11,7 +11,7 @@ export function defaultOhMyPiAuthPath() {
 }
 
 function emptyDoc() {
-  return { version: 1, providers: {} };
+  return { version: 1, providers: {}, declined: {} };
 }
 
 function readDoc(path) {
@@ -19,7 +19,8 @@ function readDoc(path) {
     const raw = JSON.parse(readFileSync(path, "utf8"));
     if (!raw || typeof raw !== "object") return emptyDoc();
     const providers = raw.providers && typeof raw.providers === "object" ? raw.providers : {};
-    return { version: 1, providers };
+    const declined = raw.declined && typeof raw.declined === "object" ? raw.declined : {};
+    return { version: 1, providers, declined };
   } catch {
     return emptyDoc();
   }
@@ -46,10 +47,29 @@ export function createOhMyPiAuthStore(filePath = defaultOhMyPiAuthPath()) {
     setApiKey(provider, apiKey) {
       const doc = load();
       doc.providers[provider] = { kind: "apiKey", apiKey: String(apiKey) };
+      delete doc.declined[provider];
       save(doc);
+    },
+    /**
+     * 자격을 지운다. 로그인이 아니라 **사용자가 연결을 끊은 것**이므로 자동 채용
+     * (`~/.codex/auth.json` 입양)을 함께 막는다 — 그러지 않으면 다음 상태 조회에서
+     * 같은 자격이 되살아나 연결 해제가 눈속임이 된다.
+     */
+    remove(provider) {
+      const doc = load();
+      const existed = Boolean(doc.providers[provider]);
+      delete doc.providers[provider];
+      doc.declined[provider] = true;
+      save(doc);
+      return existed;
+    },
+    /** 사용자가 이 제공자의 연결을 끊었는가 — 디스크 자격 자동 채용을 막는 표시다. */
+    adoptionDeclined(provider) {
+      return Boolean(load().declined[provider]);
     },
     setOAuth(provider, creds) {
       const doc = load();
+      delete doc.declined[provider];
       doc.providers[provider] = {
         kind: "oauth",
         access: String(creds.access ?? ""),

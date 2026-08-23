@@ -29,6 +29,12 @@ const MAX_OUTPUT_TOKENS = 8192;
 const TEMPERATURE = 0.2;
 const REQUEST_TIMEOUT_MS = 120_000;
 const DEFAULT_MODEL = "google/gemini-3.1-flash-lite";
+// ⚠ 벤치마크의 baseUrl 폴백은 의도적으로 없다. 예전에는 `loadAiConfig().baseUrl`(= env
+// VITE_LLM_API_URL)에 얹혀 갔지만, 에디터 AI 가 OAuth 전용이 되면서(감독 지시 2026-08-21)
+// 그 값은 항상 빈 문자열이다. 여기에 기본 게이트웨이를 박으면 감독이 고르지도 않은 유료
+// 경로로 벤치마크 트래픽이 조용히 나간다 — 그래서 박지 않는다. 대신 baseUrl 이 비면
+// resolveBenchmarkRequest 소비자가 config 오류를 내고, 감독이 벤치마크 설정 화면에서
+// baseUrl/apiKey 를 직접 넣는다(BenchmarkSettings 가 키가 저장되는 유일한 곳).
 
 export interface BenchmarkSettings {
   readonly mode: "api" | "paste";

@@ -197,13 +197,16 @@ describe("AI 연동 칩 상태바 배선", () => {
     expect(chip).not.toBeNull();
     // 칩은 클릭 가능한 버튼이어야 한다(설정 모달 진입점).
     expect(chip?.tagName.toLowerCase()).toBe("button");
-    // apiKey ready 설정이므로 라벨에 '연결됨' 이 포함된다.
-    expect(chip?.textContent).toContain("연결됨");
+    // 저장값이 apiKey 여도 OAuth 로 승격되므로, 동반 서비스 조회 전에는 "확인 중" 이 정상이다.
+    // (옛 스펙은 여기서 '연결됨' 을 기대했다 — 설정 모양만 보고 초록을 칠하던 배선이다.)
+    expect(chip?.textContent).toContain("확인 중");
 
     teardownEditor();
   });
 
-  it("API 키가 없으면 상태바 칩이 '키 없음' 상태를 알린다", async () => {
+  it("저장된 설정이 apiKey 여도 칩은 OAuth 상태를 가리킨다", async () => {
+    // 키 유무로 칩을 칠하던 판정은 사라졌다 — 인증 경로가 OAuth 하나뿐이므로 "키 없음" 은
+    // 더 이상 가능한 상태가 아니다. 이 스펙은 그 문구가 되살아나는 것을 막는다.
     storage.setItem("rpg-zzu:ai-config", JSON.stringify({ ...APIKEY_READY, apiKey: "" }));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
@@ -212,7 +215,12 @@ describe("AI 연동 칩 상태바 배선", () => {
 
     const chip = findByTestId(fakeElement(main), "ai-connection-status");
     expect(chip).not.toBeNull();
-    expect(chip?.textContent).toContain("키");
+    expect(chip?.textContent).not.toContain("키 없음");
+    // auth-${authMode} 클래스는 걷었다(소비하는 스타일시트가 없었다). 대신 상태 kind 클래스가
+    // 실제로 색을 입는다 — styles/editor/ai-auth-connection.css 가 그것을 소비한다.
+    expect(chip?.className).not.toContain("auth-");
+    const kinds = ["ready", "checking", "disconnected", "offline", "error"];
+    expect(kinds.filter((kind) => chip?.classList.contains(kind))).toHaveLength(1);
 
     teardownEditor();
   });

@@ -4,6 +4,7 @@
 import {
   completeProvider,
   listOhMyPiProviders,
+  logoutProvider,
   publicProviderStatus,
   refreshProvider,
   saveProviderApiKey,
@@ -48,6 +49,9 @@ const server = Bun.serve({
       }
       if (request.method === "POST" && url.pathname === "/refresh") {
         return json(await refreshProvider(provider));
+      }
+      if (request.method === "POST" && url.pathname === "/logout") {
+        return json(logoutProvider(provider));
       }
       if (request.method === "POST" && url.pathname === "/key") {
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : "";

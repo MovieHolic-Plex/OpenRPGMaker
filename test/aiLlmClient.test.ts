@@ -54,35 +54,32 @@ afterEach(() => {
 
 describe("aiConfig 저장/로드", () => {
   it("기본값을 반환하고 저장값을 병합한다", async () => {
-    // .env.local 의 VITE_LLM_API_URL 이 있으면 defaultAiConfig 가 apiKey 모드로 부팅해
-    // 이 테스트의 전제가 기계마다 달라진다 — 명시적으로 비워 환경 독립으로 만든다.
+    // env 는 더 이상 authMode 를 정하지 못한다(OAuth 전용). stub 은 그 사실을 보이기 위해 남긴다.
     vi.stubEnv("VITE_LLM_API_URL", "");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     installLocalStorage();
     const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL } = await loadClient();
 
     const initial = loadAiConfig();
-    // env(VITE_LLM_API_URL + VITE_LLM_API_KEY)가 있으면 apiKey, 없으면 chatgpt.
-    expect(["chatgpt", "apiKey"]).toContain(initial.authMode);
+    // 인증은 무조건 OAuth — 환경과 무관하게 chatgpt 하나다.
+    expect(initial.authMode).toBe("chatgpt");
     expect(initial.model).toBe(DEFAULT_MODEL);
     expect(initial.liteModel).toBe(DEFAULT_LITE_MODEL);
-    // localStorage 비어 있으면 env(VITE_LLM_API_KEY 등) 폴백 가능 — 빈 문자열만 강제하지 않음.
-    expect(typeof initial.apiKey).toBe("string");
+    // OAuth 는 클라이언트 키를 쓰지 않는다 — env 키 폴백도 없앴다.
+    expect(initial.apiKey).toBe("");
     expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
 
-    // 병합 자체를 보는 테스트이므로 apiKey 모드로 저장한다. chatgpt 모드로 저장하면
-    // 로드 시점 모델 교정(Codex 는 gpt- 만 허용)이 끼어들어 모델 왕복을 볼 수 없다.
-    saveAiConfig({ ...initial, authMode: "apiKey", apiKey: "sk-user", maxTokens: 4000, autoApprove: true });
+    // 병합 자체를 보는 테스트. 모델은 Codex 카탈로그 안의 값이어야 교정에 걸리지 않는다.
+    saveAiConfig({ ...initial, maxTokens: 4000, autoApprove: true });
     const reloaded = loadAiConfig();
-    expect(reloaded.apiKey).toBe("sk-user");
     expect(reloaded.maxTokens).toBe(4000);
     expect(reloaded.autoApprove).toBe(true);
     expect(reloaded.model).toBe(DEFAULT_MODEL);
     expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
-    // 기본 모델은 cpenrouter 경로로 옮겼다 — 에디터의 45개 툴 페이로드를 실제로 통과한
-    // 실측 모델이다(glm 경로는 ChatGPT/Codex 연결에서 400 을 냈다).
-    expect(DEFAULT_MODEL).toBe("cpen/gpt-5-6-luna");
-    expect(DEFAULT_LITE_MODEL).toBe("cpen/gpt-5-6-luna");
+    // 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다. 옛 기본값 cpen/gpt-5-6-luna 는 게이트웨이
+    // ID 라서, OAuth 경로에서 오류 없이 제공자 기본 모델로 강등됐다(감독이 고른 모델이 답하지 않음).
+    expect(DEFAULT_MODEL).toBe("gpt-5.6-sol");
+    expect(DEFAULT_LITE_MODEL).toBe("gpt-5.6-sol");
   });
 
   it("ChatGPT 모드에 저장된 비-gpt 모델은 로드 시점에 권장 기본으로 교정된다", async () => {
@@ -118,31 +115,42 @@ describe("aiConfig 저장/로드", () => {
     expect(loaded.model).toBe("claude-opus-4-8");
   });
 
-  it("apiKey 모드는 카탈로그에 없는 공급자 모델 ID 도 그대로 존중한다", async () => {
-    // 카탈로그는 추천 목록이지 화이트리스트가 아니다 — 직접 입력한 ID 를 교정하면 정상 사용을 깬다.
-    vi.stubEnv("VITE_LLM_API_URL", "");
-    vi.stubEnv("VITE_LLM_API_KEY", "");
-    const store = installLocalStorage();
-    const { loadAiConfig, AI_CONFIG_STORAGE_KEY } = await loadClient();
-    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      authMode: "apiKey", baseUrl: "/api/ai", model: "some-vendor/brand-new-model",
-    }));
-
-    expect(loadAiConfig().model).toBe("some-vendor/brand-new-model");
-  });
-
-  it("env VITE_LLM_API_URL 이 있고 키가 없으면 apiKey 모드로 부팅한다 (조용한 OAuth 폴백 방지)", async () => {
-    vi.stubEnv("VITE_LLM_API_URL", "/api/ai");
-    vi.stubEnv("VITE_LLM_API_KEY", "");
+  it("env VITE_LLM_API_URL 이 있어도 OAuth 로 부팅한다 (env 가 authMode 를 정하지 못한다)", async () => {
+    // 이 스펙이 막는 장애(2026-08-21 실측): env 한 줄이 authMode 를 apiKey 로 강제하고
+    // baseUrl 을 죽은 프록시 경로(/api/cliproxy)로 박아, 에디터의 모든 AI 가 POST 404 로 죽었다.
+    // 반대 방향의 옛 스펙("env 가 있으면 apiKey 로 부팅한다")을 의도적으로 뒤집은 것이다 —
+    // 인증 경로가 하나뿐이므로 '조용한 OAuth 폴백' 이라는 위험 자체가 없어졌다.
+    vi.stubEnv("VITE_LLM_API_URL", "/api/cliproxy");
+    vi.stubEnv("VITE_LLM_API_KEY", "sk-should-be-ignored");
     installLocalStorage();
     const { defaultAiConfig } = await loadClient();
     const cfg = defaultAiConfig();
-    expect(cfg.authMode).toBe("apiKey");
-    expect(cfg.baseUrl).toBe("/api/ai");
+    expect(cfg.authMode).toBe("chatgpt");
+    expect(cfg.baseUrl).toBe("");
     expect(cfg.apiKey).toBe("");
   });
 
-  it("authMode가 없는 기존 API 키 설정은 API 모드로 마이그레이션한다", async () => {
+  it("저장된 apiKey 설정은 OAuth 로 승격하고 죽은 baseUrl·키를 버린다", async () => {
+    // 장애의 절반은 이것이었다: 한 번이라도 게이트웨이를 저장한 브라우저는 env 를 고쳐도
+    // 저장값이 authMode 를 apiKey 로 되돌려 계속 죽은 경로를 쳤다.
+    const store = installLocalStorage();
+    const { AI_CONFIG_STORAGE_KEY, loadAiConfig } = await loadClient();
+    store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      authMode: "apiKey",
+      apiKey: "sk-existing",
+      baseUrl: "/api/cliproxy",
+      model: "cpen/gpt-5-6-luna",
+    }));
+
+    const reloaded = loadAiConfig();
+    expect(reloaded.authMode).toBe("chatgpt");
+    expect(reloaded.baseUrl).toBe("");
+    expect(reloaded.apiKey).toBe("");
+    // 게이트웨이 모델 ID 는 Codex 카탈로그 밖 → 권장 기본으로 교정된다(조용한 강등 방지).
+    expect(reloaded.model).toBe("gpt-5.6-sol");
+  });
+
+  it("authMode 가 없는 옛 설정도 OAuth 로 승격한다", async () => {
     const store = installLocalStorage();
     const { AI_CONFIG_STORAGE_KEY, loadAiConfig } = await loadClient();
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
@@ -152,23 +160,22 @@ describe("aiConfig 저장/로드", () => {
     }));
 
     const reloaded = loadAiConfig();
-    expect(reloaded.authMode).toBe("apiKey");
-    expect(reloaded.baseUrl).toBe("https://example.invalid/v1");
-    expect(reloaded.model).toBe("existing-model");
+    expect(reloaded.authMode).toBe("chatgpt");
+    expect(reloaded.baseUrl).toBe("");
+    expect(reloaded.model).toBe("gpt-5.6-sol");
   });
 
   it("저장된 사용자 model은 존중하고 liteModel 누락은 감독 model로 보강한다 (일원화)", async () => {
     const store = installLocalStorage();
     const { AI_CONFIG_STORAGE_KEY, loadAiConfig } = await loadClient();
+    // Codex 경로는 카탈로그가 실질 화이트리스트다 — 존중 여부는 카탈로그 안의 ID 로 본다.
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      apiKey: "sk-user",
-      baseUrl: "https://example.invalid/v1",
-      model: "user-main-model",
+      model: "gpt-5.6-terra",
     }));
 
     const reloaded = loadAiConfig();
-    expect(reloaded.model).toBe("user-main-model");
-    expect(reloaded.liteModel).toBe("user-main-model");
+    expect(reloaded.model).toBe("gpt-5.6-terra");
+    expect(reloaded.liteModel).toBe("gpt-5.6-terra");
   });
 
   it("configForLiteModel은 보조 모델을 실제 요청 모델로 승격한다", async () => {
@@ -181,15 +188,14 @@ describe("aiConfig 저장/로드", () => {
   it("liteModel 미설정 시 감독 model을 따라간다 (authMode 일원화)", async () => {
     const store = installLocalStorage();
     const { AI_CONFIG_STORAGE_KEY, configForLiteModel, loadAiConfig } = await loadClient();
+    // Codex 가 아닌 OAuth 제공자는 카탈로그 교정을 받지 않는다 — 그 제공자의 모델을 그대로 쓴다.
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
-      authMode: "apiKey",
-      baseUrl: "https://glm-gateway.example/v1",
-      model: "glm-5.2-ultrafast",
-      apiKey: "sk-test",
+      providerId: "anthropic",
+      model: "claude-opus-4-8",
     }));
-    const glm = configForLiteModel(loadAiConfig());
-    expect(glm.model).toBe("glm-5.2-ultrafast");
-    expect(glm.liteModel).toBe("glm-5.2-ultrafast");
+    const claude = configForLiteModel(loadAiConfig());
+    expect(claude.model).toBe("claude-opus-4-8");
+    expect(claude.liteModel).toBe("claude-opus-4-8");
 
     store.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({
       authMode: "chatgpt",
