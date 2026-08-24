@@ -136,9 +136,9 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("맵 집중형 에디터 헤더", () => {
-  it("편집 헤더에서 프로젝트·작업 프리셋·테스트·클래식 툴바를 제거한다", () => {
-    // Break: edit chrome mounts the old menu/preset/test controls or the second toolbar again.
+describe("에디터 헤더 복구", () => {
+  it("기존 메뉴·작업 프리셋·테스트·클래식 툴바를 유지한다", () => {
+    // Break: a bottom-bar cleanup accidentally removes established top/editor chrome again.
     resetEditorUiModeForTests("expert");
     const topbar = document.createElement("div");
 
@@ -155,12 +155,13 @@ describe("맵 집중형 에디터 헤더", () => {
       "workspace-preset-toggle",
       "workspace-panels-button",
       "workspace-command-palette-button",
-      "standard-more-tools",
       "topbar-test-play",
       "topbar-battle-test",
       "oprn-toolbar",
+      "toolbar-new",
+      "toolbar-map-copy",
     ]) {
-      expect(findByTestId(surface, testId), testId).toBeNull();
+      expect(findByTestId(surface, testId), testId).not.toBeNull();
     }
   });
 

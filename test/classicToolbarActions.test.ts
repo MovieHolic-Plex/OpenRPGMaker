@@ -88,14 +88,35 @@ afterEach(() => {
 });
 
 describe("editor chrome and canvas controls", () => {
-  it("does not render legacy project or map toolbar actions in edit mode", () => {
+  it("enables new project without a stub class and runs newProject", async () => {
     resetEditorUiModeForTests("expert");
+    // Break: bottom-bar cleanup removes or disables the existing classic toolbar action.
+    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
-    expect(findByTestId(fake(topbar), "toolbar-new")).toBeNull();
-    expect(findByTestId(fake(topbar), "toolbar-map-copy")).toBeNull();
-    expect(findByTestId(fake(topbar), "oprn-toolbar")).toBeNull();
+    const button = findByTestId(fake(topbar), "toolbar-new");
+    expect(button?.disabled).toBe(false);
+    expect(button?.classList.contains("classic-toolbar-stub")).toBe(false);
+
+    button?.click();
+    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
+    expect(loadNew.mock.calls[0]?.[1]).toMatchObject({ title: "새 프로젝트" });
+  });
+
+  it("duplicates the current-or-start map and selects the copy", () => {
+    resetEditorUiModeForTests("expert");
+    const project = store.getCurrent();
+    const topbar = document.createElement("div");
+
+    renderTopbar(topbar);
+    const button = findByTestId(fake(topbar), "toolbar-map-copy");
+    expect(button?.disabled).toBe(false);
+    expect(button?.classList.contains("classic-toolbar-stub")).toBe(false);
+
+    button?.click();
+    expect(mocks.duplicateMap).toHaveBeenCalledWith(project.startMapId);
+    expect(mocks.selectEditorMap).toHaveBeenCalledWith("map-copy");
   });
 
   it("persists expert canvas toolbar expansion across renders", () => {
@@ -118,17 +139,24 @@ describe("editor chrome and canvas controls", () => {
     expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("0");
   });
 
-  it("keeps standard edit mode on a single focused header row", () => {
+  it("places the standard-only more-tools menu right after the workspace controls", () => {
     resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
     const menuBar = findByTestId(fake(topbar), "oprn-menu-bar");
     const ids = menuBar?.children.map((child) => child.dataset.testid) ?? [];
-    for (const id of ["workspace-preset-toggle", "workspace-command-palette-button", "standard-more-tools", "standard-more-tools-menu"]) {
-      expect(ids).not.toContain(id);
-    }
-    expect(ids).toContain("editor-product-brand");
-    expect(ids).toContain("editor-topbar-trailing");
+    const chipIndex = ids.indexOf("workspace-command-palette-button");
+    expect(chipIndex).toBeGreaterThan(ids.indexOf("workspace-preset-toggle"));
+    expect(ids[chipIndex + 1]).toBe("standard-more-tools");
+    expect(ids[chipIndex + 2]).toBe("standard-more-tools-menu");
+
+    const button = findByTestId(fake(topbar), "standard-more-tools");
+    const menu = findByTestId(fake(topbar), "standard-more-tools-menu");
+    expect(button?.getAttribute("aria-haspopup")).toBe("menu");
+    expect(menu?.hidden).toBe(true);
+    button?.click();
+    expect(button?.getAttribute("aria-expanded")).toBe("true");
+    expect(menu?.hidden).toBe(false);
   });
 });

@@ -100,14 +100,14 @@ describe("build palette toggle → tool switch", () => {
     expect(getBuildPaletteHouseOptions().windows).toBe(true);
   });
 
-  it("건축 팝오버에 중복 AI 채우기 버튼을 렌더하지 않는다", () => {
-    // Break: the redundant AI region-task shortcut is added back to the map chrome.
+  it("기존 건축 팝오버의 AI 채우기 버튼을 유지한다", () => {
+    // Break: bottom-bar cleanup removes an unrelated build-palette action.
     setBuildPaletteEnabled(true);
     editorState.set({ currentMapId: "map_blank_start", selection: { mapId: "map_blank_start", x: 2, y: 2, width: 10, height: 8 } });
 
     const popup = renderBuildPalettePopup();
     const fakePopup = popup as unknown as Parameters<typeof findByTestId>[0] | null;
 
-    expect(fakePopup ? findByTestId(fakePopup, "build-palette-ai") : null).toBeNull();
+    expect(fakePopup ? findByTestId(fakePopup, "build-palette-ai") : null).not.toBeNull();
   });
 });

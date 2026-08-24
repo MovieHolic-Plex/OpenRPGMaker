@@ -189,9 +189,9 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe("맵 집중형 상태바", () => {
-  it("맥락 정보만 남기고 온라인 저장·설계도·AI 연결 액션을 제거한다", async () => {
-    // Break: a global save/blueprint/AI action gets mounted in the canvas statusbar again.
+describe("에디터 하단 상태바 제거", () => {
+  it("맥락 정보와 액션을 포함한 하단 상태바 자체를 렌더하지 않는다", async () => {
+    // Break: any bottom statusbar surface is mounted below the canvas again.
     storage.setItem("oprn:ai-config", JSON.stringify(APIKEY_READY));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
@@ -199,8 +199,7 @@ describe("맵 집중형 상태바", () => {
     renderEditor(main);
 
     const surface = fakeElement(main);
-    const statusbar = findByTestId(surface, "editor-statusbar");
-    expect(statusbar?.textContent).toContain("맵:");
+    expect(findByTestId(surface, "editor-statusbar")).toBeNull();
     expect(findByTestId(surface, "db-connection-status")).toBeNull();
     expect(findByTestId(surface, "toggle-layout-bboxes")).toBeNull();
     expect(findByTestId(surface, "ai-connection-status")).toBeNull();

@@ -2,12 +2,12 @@ import { expect, test } from "@playwright/test";
 
 test("editor copies the first five RM2000 workbench shell affordances", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&rm2kShell=1");
 
   await expect(page.getByTestId("oprn-menu-bar")).toBeVisible();
   await expect(page.getByTestId("oprn-menu-bar")).toContainText("프로젝트");
   await expect(page.getByTestId("oprn-menu-bar")).toContainText("맵");
-  await expect(page.getByTestId("oprn-toolbar-row-primary")).toBeVisible();
   await expect(page.getByTestId("oprn-toolbar-row-edit")).toBeVisible();
   await expect(page.getByTestId("toolbar-save")).toBeVisible();
   await expect(page.getByTestId("mode-play")).toBeVisible();
@@ -16,10 +16,7 @@ test("editor copies the first five RM2000 workbench shell affordances", async ({
   await expect(page.getByTestId("left-map-root")).toBeVisible();
   await expect(page.getByTestId("editor-canvas-scroll-shell")).toBeVisible();
   await expect(page.getByTestId("edit-canvas")).toBeVisible();
-  await expect(page.getByTestId("editor-statusbar")).toContainText("바닥 레이어");
-  await expect(page.getByTestId("editor-statusbar")).toContainText("맵:");
-  await expect(page.getByTestId("editor-statusbar")).toContainText("타일:");
-  await expect(page.getByTestId("editor-statusbar")).toContainText("줌:");
+  await expect(page.getByTestId("editor-statusbar")).toHaveCount(0);
 
   const beforeWindowScroll = await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }));
   const workArea = page.getByTestId("editor-canvas-scroll-shell");

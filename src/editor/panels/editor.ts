@@ -5,8 +5,7 @@ import {
   type AssistantTemperature,
 } from "@/editor/assistantTemperature";
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
-import { toolLabel, uiLabel } from "@/editor/uiCopy";
-import { editorState, type Layer } from "@/editor/editorState";
+import { editorState } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks, maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
@@ -46,7 +45,6 @@ import {
 import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
-import { tileDisplayLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
@@ -85,7 +83,6 @@ let chatFloatRoot: HTMLElement | null = null;
 let chatSideRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
-let statusBarRoot: HTMLElement | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
@@ -142,9 +139,16 @@ export function renderEditor(main: HTMLElement): void {
     class: "map-lock-banner is-hidden",
     dataset: { testid: "map-lock-banner" },
   });
-  const statusBar = el("div", {
-    class: "editor-statusbar",
-    dataset: { testid: "editor-statusbar" },
+  // Pointer diagnostics remain available to automated editor harnesses without
+  // recreating the retired, visible bottom statusbar.
+  const cursorDiagnostics = el("div", {
+    attrs: { hidden: "true", "aria-hidden": "true" },
+    dataset: { testid: "editor-cursor-diagnostics" },
+    children: [
+      el("span", { dataset: { testid: "cursor-position" }, text: "outside" }),
+      el("span", { dataset: { testid: "cursor-lower" }, text: "-" }),
+      el("span", { dataset: { testid: "cursor-upper" }, text: "-" }),
+    ],
   });
   const chatFloatHost = el("div", {
     class: "ai-chat-float-host",
@@ -166,7 +170,7 @@ export function renderEditor(main: HTMLElement): void {
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
-  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar, chatFloatHost);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, cursorDiagnostics, chatFloatHost);
   layout.append(left, leftResizer, canvasArea, chatSidePanel);
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
@@ -183,7 +187,6 @@ export function renderEditor(main: HTMLElement): void {
   chatSideRoot = chatSidePanel;
   aiChatPanelRoot = aiPanel;
   mapLockBannerRoot = mapLockBanner;
-  statusBarRoot = statusBar;
 
   applyChatDockLayout();
   applyLayout();
@@ -319,10 +322,9 @@ export function applyEditorUiModeLayout(): void {
     else mapTreeResizer.classList.add("is-ui-hidden");
   }
   // 좌측 도크는 비어 있을 수 있다(「자료 밸런싱」 프리셋) — 팔레트 호스트 존재를 전제하지 않는다.
-  if (canvasToolbarRoot && statusBarRoot) {
+  if (canvasToolbarRoot) {
     renderLeftDockPanels();
     renderCanvasToolbar(canvasToolbarRoot);
-    refreshStatusbar();
   }
   applyLayout();
   scheduleFitCanvas();
@@ -389,7 +391,6 @@ export function teardownEditor(): void {
   chatSideRoot = null;
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
-  statusBarRoot = null;
   projectExportNode = null;
   document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
@@ -400,11 +401,6 @@ export function toggleLeftPanel(): void {
   applyLayout();
   saveEditorLayout();
   scheduleFitCanvas();
-}
-
-function refreshStatusbar(): void {
-  if (!statusBarRoot) return;
-  renderEditorStatusbar(statusBarRoot);
 }
 
 export function isLeftCollapsed(): boolean {
@@ -625,24 +621,21 @@ function setEditorLeftSafe(px: string): void {
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
-  if (!canvasToolbarRoot || !statusBarRoot || !mapLockBannerRoot) return;
+  if (!canvasToolbarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {
     renderCanvasToolbar(canvasToolbarRoot);
     renderMapEditLockBanner(mapLockBannerRoot);
-    renderEditorStatusbar(statusBarRoot);
     updateProjectExport();
     return;
   }
   if (change?.scope === "database" || change?.scope === "system") {
     renderMapEditLockBanner(mapLockBannerRoot);
-    renderEditorStatusbar(statusBarRoot);
     updateProjectExport();
     return;
   }
   renderLeftDockPanels();
   renderCanvasToolbar(canvasToolbarRoot);
   renderMapEditLockBanner(mapLockBannerRoot);
-  renderEditorStatusbar(statusBarRoot);
   updateProjectExport();
   scheduleFitCanvas();
 }
@@ -673,83 +666,6 @@ function renderMapEditLockBanner(container: HTMLElement): void {
   );
 }
 
-function renderEditorStatusbar(container: HTMLElement): void {
-  clearChildren(container);
-  const project = store.getCurrent();
-  const state = editorState.get();
-  const mapId = state.currentMapId ?? project.startMapId;
-  const map = project.maps[mapId];
-  const lockStatus = getMapEditLockStatus();
-  const cells: HTMLElement[] = [
-    el("span", { class: "editor-statusbar-cell strong", text: layerStatusLabel(state.layer) }),
-    el("span", { class: "editor-statusbar-cell", text: `맵: ${map?.name ?? mapId}` }),
-    el("span", { class: "editor-statusbar-cell sb-secondary", text: `타일: ${tileDisplayLabelForIndex(state.selectedTile)}` }),
-    el("span", { class: "editor-statusbar-cell", text: toolStatusLabel(state.tool) }),
-    el("span", { class: "editor-statusbar-cell sb-secondary", text: `줌: ${state.zoom}x` }),
-    el("span", {
-      class: "editor-statusbar-cell sb-detail",
-      children: [el("span", { dataset: { testid: "cursor-position" }, text: "outside" })],
-    }),
-    el("span", {
-      class: "editor-statusbar-cell sb-detail",
-      children: [`${uiLabel("layerLower")}: `, el("span", { dataset: { testid: "cursor-lower" }, text: "-" })],
-    }),
-    el("span", {
-      class: "editor-statusbar-cell sb-detail",
-      children: [`${uiLabel("layerUpper")}: `, el("span", { dataset: { testid: "cursor-upper" }, text: "-" })],
-    }),
-  ];
-  if (state.tool === "event" && state.layer === "event") {
-    cells.push(
-      el("button", {
-        class: "editor-statusbar-cell editor-statusbar-hint",
-        text: "타일 칠하려면: 바닥/장식으로 전환",
-        attrs: { type: "button", title: "브러시로 전환해 타일을 칠합니다" },
-        dataset: { testid: "paint-hint-switch" },
-        on: { click: () => editorState.set({ tool: "paint", layer: "lower" }) },
-      })
-    );
-  }
-  // "확보/확인 전"은 소음 — 잠김·확인 중·장애일 때만 표시.
-  if (shouldShowMapEditLockStatus(lockStatus, mapId)) {
-    cells.push(renderMapEditLockStatus(lockStatus, mapId));
-  }
-  container.append(...cells);
-}
-
-/** 맵 잠금 칩: 평시(idle/held)는 숨기고 사용자 조치가 필요할 때만 노출. */
-function shouldShowMapEditLockStatus(status: MapEditLockStatus, mapId: string): boolean {
-  if (status.kind === "idle" || status.mapId !== mapId) return false;
-  return status.kind === "checking" || status.kind === "locked" || status.kind === "unavailable";
-}
-
-function renderMapEditLockStatus(status: MapEditLockStatus, mapId: string): HTMLElement {
-  const className = status.kind !== "idle" && status.mapId === mapId ? status.kind : "idle";
-  const cell = el("span", {
-    class: `editor-statusbar-cell map-edit-lock-status ${className}`,
-    text: mapEditLockStatusText(status, mapId),
-    attrs: { title: mapEditLockStatusTitle(status, mapId) },
-    dataset: { testid: "map-edit-lock-status" },
-  });
-  if (status.kind === "locked" && status.mapId === mapId) {
-    cell.append(
-      el("button", {
-        class: "map-lock-takeover-button",
-        text: "편집 권한 가져오기",
-        attrs: { type: "button", title: "맵 편집 권한 가져오기" },
-        dataset: { testid: "map-lock-takeover" },
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            void requestMapLockTakeover(status);
-          },
-        },
-      }),
-    );
-  }
-  return cell;
-}
-
 async function requestMapLockTakeover(status: Extract<MapEditLockStatus, { readonly kind: "locked" }>): Promise<void> {
   const immediate = isMapEditLockTakeoverImmediate(status);
   if (!immediate) {
@@ -778,52 +694,6 @@ export function normalizeAiDockButtonChrome(panel: HTMLElement): void {
   };
   button.addEventListener("click", update);
   update();
-}
-
-function mapEditLockStatusText(status: MapEditLockStatus, mapId: string): string {
-  if (status.kind === "idle" || status.mapId !== mapId) return "맵 편집: 확인 전";
-  switch (status.kind) {
-    case "checking":
-      return "맵 편집: 확인 중";
-    case "held":
-      return "맵 편집: 확보";
-    case "locked":
-      return "맵 편집: 읽기 전용";
-    case "unavailable":
-      return `맵 편집: ${status.message}`;
-  }
-}
-
-function mapEditLockStatusTitle(status: MapEditLockStatus, mapId: string): string {
-  if (status.kind === "idle" || status.mapId !== mapId) return "맵 잠금 상태를 아직 확인하지 않았습니다.";
-  switch (status.kind) {
-    case "checking":
-      return `${status.mapName} 편집 권한을 확인하는 중입니다.`;
-    case "held":
-      return `${status.mapName} 편집 권한을 이 브라우저가 잡고 있습니다.`;
-    case "locked":
-      return `${status.mapName} 맵은 지금 ${lockOwnerPhrase(status.ownerLabel)}입니다. ${mapEditLockLastActivityText(status)}.`;
-    case "unavailable":
-      return `${status.mapName} 잠금 확인 실패: ${status.message}. 편집은 허용하지만 수동 저장 충돌 검사는 유지됩니다.`;
-  }
-}
-
-function layerStatusLabel(layer: Layer): string {
-  // 레이어 이름은 모드와 무관하게 하나다(uiCopy 단일 원천) — 전문가라고 下層/上層 직역을
-  // 쓸 이유가 없다. layerTermStyle 플래그는 다른 밀도 분기에 남아 있다.
-  switch (layer) {
-    case "lower":
-      return `${uiLabel("layerLower")} 레이어`;
-    case "upper":
-      return `${uiLabel("layerUpper")} 레이어`;
-    case "event":
-      return `${uiLabel("layerEvent")} 레이어`;
-  }
-}
-
-/** 상태바 도구 칸 — 이름은 uiCopy 의 TOOL_LABEL 단일 원천을 쓴다. */
-function toolStatusLabel(tool: string): string {
-  return toolLabel(tool);
 }
 
 function onTestPlayWindowRequest(event: Event): void {

@@ -26,7 +26,6 @@ type DesktopInteractionMetric = {
   readonly focusTrace: Readonly<Record<string, Rect>>;
   readonly mode: EditorMode;
   readonly pointerBoxes: readonly { readonly height: number; readonly testId: string | null; readonly width: number }[];
-  readonly statusCells: readonly Rect[];
   readonly toolsPopup: Rect;
   readonly viewport: Viewport;
 };
@@ -70,27 +69,6 @@ async function reachByTab(page: Page, target: Locator, viewport: Viewport, label
     await page.keyboard.press("Tab");
   }
   throw new Error(`${label} was not reached by keyboard Tab traversal`);
-}
-
-async function assertStatusCellsReachable(page: Page, viewport: Viewport): Promise<readonly Rect[]> {
-  const statusbar = page.getByTestId("editor-statusbar");
-  await expect(statusbar).toBeVisible();
-  const cells = statusbar.locator(".editor-statusbar-cell");
-  const count = await cells.count();
-  expect(count).toBeGreaterThanOrEqual(5);
-  const reachable: Rect[] = [];
-  for (const index of [0, 1, 3, count - 2, count - 1]) {
-    const cell = cells.nth(index);
-    await cell.scrollIntoViewIfNeeded();
-    const cellRect = await rect(page, cell);
-    const statusRect = await rect(page, statusbar);
-    expect(cellRect.width, `status cell ${index} has a box`).toBeGreaterThan(0);
-    expect(cellRect.left, `status cell ${index} left`).toBeGreaterThanOrEqual(statusRect.left - 1);
-    expect(cellRect.right, `status cell ${index} right`).toBeLessThanOrEqual(statusRect.right + 1);
-    expectContained(cellRect, viewport, `status cell ${index}`);
-    reachable.push(cellRect);
-  }
-  return reachable;
 }
 
 async function assertEventRowsActivate(page: Page, viewport: Viewport): Promise<void> {
@@ -165,6 +143,7 @@ async function runDesktopScenario(
   try {
     await page.goto(`/?desktopInteraction=${mode}-${viewport.width}`);
     await expect(page.getByTestId("edit-canvas")).toBeVisible();
+    await expect(page.getByTestId("editor-statusbar")).toHaveCount(0);
     const focusTrace: Record<string, Rect> = {};
     for (const testId of REQUIRED_FOCUS_TARGETS) {
       focusTrace[testId] = await reachByTab(page, page.getByTestId(testId), viewport, `${mode}/${viewport.width} ${testId}`);
@@ -187,14 +166,12 @@ async function runDesktopScenario(
     await expect(popup).toHaveCount(0);
     await expect(tools).toBeFocused();
 
-    const statusCells = await assertStatusCellsReachable(page, viewport);
     if (mode === "expert") await assertEventRowsActivate(page, viewport);
     const pointerBoxes = await page.locator([
       "button[data-testid^='menu-']:visible",
       "button[data-testid^='layer-']:visible",
       "button[data-testid^='event-list-row-']:visible",
       ".toolbar-overflow-toggle:visible",
-      ".editor-statusbar button:visible",
     ].join(", ")).evaluateAll((buttons) => buttons.map((button) => {
       const box = button.getBoundingClientRect();
       return { height: box.height, testId: button.getAttribute("data-testid"), width: box.width };
@@ -202,7 +179,7 @@ async function runDesktopScenario(
     for (const box of pointerBoxes) {
       expect(Math.min(box.width, box.height), `${mode}/${viewport.width} ${box.testId ?? "button"} pointer box`).toBeGreaterThanOrEqual(32);
     }
-    const metric = { focusTrace, mode, pointerBoxes, statusCells, toolsPopup: popupRect, viewport };
+    const metric = { focusTrace, mode, pointerBoxes, toolsPopup: popupRect, viewport };
     if (EVIDENCE_DIR) await page.screenshot({ path: join(EVIDENCE_DIR, `${mode}-${viewport.width}x${viewport.height}-settled.png`) });
     return { issues: browserIssues, metric };
   } finally {
