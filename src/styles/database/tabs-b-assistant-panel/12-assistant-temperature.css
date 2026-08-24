@@ -1,0 +1,145 @@
+/* 조수 온도 A Quiet Gold / B Ink Only / C Map First + 승인 크롬 계약. */
+
+.ai-chat-header::before {
+  content: none;
+  display: none;
+}
+
+.ai-command-prefix {
+  color: var(--gold);
+}
+
+.editor-layout .ai-chat-side-panel {
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: none;
+}
+
+.ai-chat-panel.chat-dock-side .ai-chat-header {
+  background: transparent;
+}
+
+.ai-dock-mode-btn[data-dock-mode="side"],
+.ai-dock-mode-btn[data-dock-mode="float"],
+.ai-dock-mode-btn[data-dock-mode="glass"] {
+  background: transparent;
+  border-color: var(--border-default);
+  color: var(--text-2);
+}
+
+.ai-chat-panel.chat-dock-float .ai-command-bar {
+  border-color: var(--border-default);
+}
+
+.ai-chat-header .ai-new-session,
+.ai-chat-header [data-testid="ai-settings-toggle"] {
+  display: none;
+}
+
+.ai-chat-panel.is-assistant-idle .ai-context-chips,
+.ai-chat-panel.is-assistant-idle .ai-status-group {
+  display: none;
+}
+
+.ai-more-menu-label,
+.ai-command-menu-label {
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 8px 10px 2px;
+}
+
+.ai-more-menu-item[aria-checked="true"],
+.ai-command-menu-item[aria-checked="true"] {
+  color: var(--gold-deep, #6E5424);
+  font-weight: 700;
+}
+
+.ai-idle-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ai-idle-hint {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
+  color: var(--gold-deep, #6E5424);
+  cursor: pointer;
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  gap: 8px;
+  padding: 6px 2px;
+  text-align: left;
+}
+
+.ai-idle-hint .ai-command-prefix {
+  color: var(--gold);
+  flex: none;
+  font-weight: 700;
+}
+
+.ai-chat-panel[data-temperature="ink-only"].is-assistant-idle .ai-idle-hint,
+.ai-chat-panel[data-temperature="ink-only"].is-assistant-idle .ai-idle-hint .ai-command-prefix {
+  color: var(--text-2);
+}
+
+.ai-command-bar-face {
+  display: none;
+}
+
+.ai-chat-panel.is-map-first-idle .ai-command-bar-face {
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  display: block;
+  flex: none;
+  height: 32px;
+  width: 32px;
+}
+
+.ai-chat-panel.chat-dock-glass.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed),
+.ai-chat-panel.chat-dock-side.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) {
+  background: transparent;
+  backdrop-filter: none;
+  border: 0;
+  box-shadow: none;
+  inset: auto 16px 16px 16px;
+  max-width: none;
+  padding: 0;
+  pointer-events: none;
+  width: auto;
+}
+
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-header,
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-body,
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-toolbar,
+.ai-chat-panel.is-map-first-idle:not(.is-history-open):not(.is-studio):not(.is-collapsed) > .ai-chat-resize-handle {
+  display: none;
+}
+
+.ai-chat-panel.is-map-first-idle .ai-command-bar {
+  align-items: center;
+  background: rgba(252, 249, 242, 0.8);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  display: flex;
+  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  max-width: 420px;
+  padding: 8px 10px;
+  pointer-events: auto;
+  position: absolute;
+  left: 12px;
+  right: auto;
+  bottom: 12px;
+}
+
+.ai-chat-panel.chat-dock-glass:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle) {
+  background: rgba(252, 249, 242, 0.72);
+  border: 1px solid rgba(42, 37, 33, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 32px rgba(60, 48, 32, 0.12);
+}

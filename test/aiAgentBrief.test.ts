@@ -1,7 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  assistantIdleHints,
   directorStartPrompts,
   formatComposerPlaceholder,
+  idlePresenceLine,
   nextStepHint,
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
@@ -51,8 +53,7 @@ describe("readAgentBrief", () => {
     const brief = readAgentBrief();
     expect(brief.selectionLabel).toBe("선택 4×3 (3,4)");
     expect(brief.line).toContain("선택 4×3 (3,4)");
-    expect(formatComposerPlaceholder(brief)).toMatch(/무엇을 만들까/);
-    expect(formatComposerPlaceholder(brief)).toContain("선택 4×3");
+    expect(formatComposerPlaceholder(brief)).toBe("한 문장으로 지시");
   });
 
   it("선택이 있으면 선택 꾸미기 명령을 앞에 둔다", () => {
@@ -70,6 +71,14 @@ describe("readAgentBrief", () => {
     const prompts = directorStartPrompts(readAgentBrief());
     expect(prompts[0]?.id).toBe("character");
     expect(prompts[0]?.instruction).toContain("빈 맵");
+  });
+
+  it("대기 한 줄과 골드 힌트 둘을 준다", () => {
+    const brief = readAgentBrief();
+    expect(idlePresenceLine(brief)).toBe("이 맵에 무엇을 둘까요");
+    expect(assistantIdleHints(brief)).toHaveLength(2);
+    expect(assistantIdleHints(brief)[0]?.label).toBe("강가를 만들어줘");
+    expect(formatComposerPlaceholder(brief)).toBe("한 문장으로 지시");
   });
 
   it("빈 맵은 버튼을 누르라고 안내한다", () => {

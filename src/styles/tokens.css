@@ -125,7 +125,9 @@
   --brand-blue: #4A57D6;
   --mix-base: #F7F3EA;
   --gold: #8A6B2F;
+  --gold-deep: #6E5424;
   --gold-soft: #E8D9A8;
+  --gold-wash: rgba(138, 107, 47, 0.12);
   --bg-well: #E7E0D0;
   /* ---- 얇은 라운드 스크롤바 (전역 기본은 index.css 하단) ----------------- */
   --scrollbar-thumb: rgba(42, 37, 33, 0.22);

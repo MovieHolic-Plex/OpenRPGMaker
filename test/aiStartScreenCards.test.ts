@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { directorStartPrompts, readAgentBrief } from "@/editor/panels/aiAgentBrief";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { installFakeDom, findByTestId, renderWithFakeDom } from "./fakeDom";
 import {
@@ -125,11 +124,10 @@ describe("buildVisualStartGallery", () => {
     if (panel.classList.contains("is-collapsed")) {
       findByTestId(panel, "ai-collapsed-restore")?.click();
     }
-    const prompts = directorStartPrompts(readAgentBrief());
     const chips = findByTestId(panel, "ai-composer-chips");
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(chips?.querySelectorAll("button").length).toBe(prompts.length);
-    expect(prompts.length).toBeLessThanOrEqual(3);
+    expect(chips?.querySelectorAll("button").length).toBe(0);
+    expect(chips?.hidden).toBe(true);
   });
 });

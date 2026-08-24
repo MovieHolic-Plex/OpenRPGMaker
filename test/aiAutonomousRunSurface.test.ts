@@ -237,6 +237,13 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     // 자율 런 칩 + 예산 표시.
     expect(findByTestId(panel, "ai-autonomous-chip")?.textContent).toContain("자율 실행");
     expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("0/48");
+    expect(findByTestId(panel, "ai-run-status")?.textContent).toBe("집 3채 중");
+    expect(findByTestId(panel, "ai-run-stop")?.textContent).toBe("중지");
+    expect(findByTestId(panel, "ai-run-progress")).not.toBeNull();
+    expect(findByTestId(panel, "ai-run-details-toggle")?.textContent).toContain("자세히");
+    expect(findByTestId(panel, "ai-run-whisper")?.textContent).not.toContain("예산");
+    expect(findByTestId(panel, "ai-run-details")?.contains(findByTestId(panel, "ai-autonomous-budget"))).toBe(true);
+    expect(panel.classList.contains("is-autonomous-run")).toBe(true);
 
     assistantMock.releaseHeldTurn();
     await sending;
@@ -291,6 +298,7 @@ describe("자율 실행 런 표면 (todo 6)", () => {
     const paused = findByTestId(panel, "ai-milestone-feed-paused");
     expect(paused).not.toBeNull();
     expect(paused?.textContent).toContain("파괴적 작업 포함");
+    expect(findByTestId(panel, "ai-run-details")?.contains(applied)).toBe(true);
 
     assistantMock.releaseHeldTurn();
     await sending;

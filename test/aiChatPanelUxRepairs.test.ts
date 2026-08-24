@@ -284,7 +284,7 @@ describe("대화 복원과 내보내기", () => {
     const panel = renderPanel();
     expect(findByTestId(panel, "ai-start-screen")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(findByTestId(panel, "ai-start-visual-gallery")?.parentElement).toBe(findByTestId(panel, "ai-next-steps"));
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-resume-conversation")).toBeNull();
     expect(findByTestId(panel, "ai-composer-chips")).toBeTruthy();
     expect((findByTestId(panel, "ai-chat-log")?.textContent ?? "")).not.toContain("다른 요청");
