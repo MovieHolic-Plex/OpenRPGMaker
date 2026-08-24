@@ -131,6 +131,9 @@ export function createHorrorMysteryQaScenarios(
         mapId: HORROR_MYSTERY_MAP_IDS.chase,
         start: trapStart,
         steps: [
+          // 사망 전 전환·인벤토리를 바꾸면 재시도가 체크포인트 스냅샷(진입 시점)으로
+          // 전부 되돌려야 한다 — 위치만 복구하는 구현이라면 아래 expect 가 실패한다.
+          { kind: "set", switches: { [HORROR_MYSTERY_SWITCH_IDS.keyFound]: true }, inventory: { [HORROR_MYSTERY_ITEM_ID]: 1 } },
           { kind: "move", dir: "right" },
           { kind: "expect", gameOver: true },
           { kind: "retryCheckpoint" },
@@ -139,6 +142,8 @@ export function createHorrorMysteryQaScenarios(
             gameOver: false,
             playerAt: { ...trapStart, mapId: HORROR_MYSTERY_MAP_IDS.chase },
           },
+          { kind: "expect", switchOff: HORROR_MYSTERY_SWITCH_IDS.keyFound },
+          { kind: "expect", inventoryCount: { itemId: HORROR_MYSTERY_ITEM_ID, count: 0 } },
         ],
       },
     },

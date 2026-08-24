@@ -137,6 +137,31 @@ describe("horror mystery playable prototype", () => {
     expect(result.finalState.mapId).toBe(HORROR_MYSTERY_MAP_IDS.chase);
   });
 
+  // NAME THE BREAK: removing checkpoint state (switch/inventory) restore must fail this.
+  // checkpointSave captures the whole session, retryCheckpoint restores it; a change
+  // made AFTER the map-entry checkpoint must be rolled back to the snapshot, not kept.
+  it("체크포인트 재시도로 위치만이 아니라 전환·인벤토리 상태가 복원된다", () => {
+    const { project, manifest } = createHorrorMysteryPrototypeProject();
+    const trap = manifest.chase.trapAt[1] ?? manifest.chase.trapAt[0];
+    const start = { x: trap.x - 1, y: trap.y };
+    const result = runSceneTest(project, {
+      mapId: HORROR_MYSTERY_MAP_IDS.chase,
+      start,
+      steps: [
+        { kind: "set", switches: { [HORROR_MYSTERY_SWITCH_IDS.keyFound]: true }, inventory: { [HORROR_MYSTERY_ITEM_ID]: 1 } },
+        { kind: "move", dir: "right" },
+        { kind: "expect", gameOver: true },
+        { kind: "retryCheckpoint" },
+        { kind: "expect", gameOver: false, playerAt: { ...start, mapId: HORROR_MYSTERY_MAP_IDS.chase } },
+        { kind: "expect", switchOff: HORROR_MYSTERY_SWITCH_IDS.keyFound },
+        { kind: "expect", inventoryCount: { itemId: HORROR_MYSTERY_ITEM_ID, count: 0 } },
+      ],
+    });
+
+    expect(result.ok, result.failureReason ?? result.log.join("\n")).toBe(true);
+    expect(result.finalState.switchesOn).not.toContain(HORROR_MYSTERY_SWITCH_IDS.keyFound);
+  });
+
   it("추격자에게 붙잡힌 뒤 체크포인트 재시도로 같은 위치에서 회복한다", () => {
     const { project, manifest } = createHorrorMysteryPrototypeProject();
     const start = { x: manifest.chase.chaserAt.x - 2, y: manifest.chase.chaserAt.y };

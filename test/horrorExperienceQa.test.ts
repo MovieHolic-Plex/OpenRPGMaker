@@ -107,6 +107,77 @@ describe("automated horror experience QA", () => {
     expect(report.axes.find((axis) => axis.id === "tension")?.score).toBeLessThan(15);
   });
 
+  // NAME THE BREAK: removing the transfer-target reachability scan must fail this.
+  // A transfer command pointing at a map id that does not exist in project.maps must
+  // be reported as a blocker instead of silently tolerated by the QA.
+  it("blocks a build whose transfer targets a map that does not exist", () => {
+    const { project, manifest } = createHorrorMysteryPrototypeProject();
+    const galleryExit = project.maps[HORROR_MYSTERY_MAP_IDS.gallery]!.events.find(
+      (event) => event.id === manifest.gallery.exitEventId,
+    )!;
+    for (const page of galleryExit.pages ?? []) {
+      for (const command of page.commands) {
+        if (command.kind === "transfer" && command.mapId === HORROR_MYSTERY_MAP_IDS.chase) {
+          command.mapId = "map_missing_target";
+        }
+      }
+    }
+
+    const report = evaluateHorrorExperienceQa(
+      project,
+      createHorrorMysteryQaScenarios(project, manifest),
+      browserEvidence,
+    );
+
+    expect(report.blockers).toContainEqual(expect.objectContaining({
+      id: "reachability:missing-transfer-target",
+    }));
+    expect(report.verdict).toBe("fail");
+  });
+
+  // NAME THE BREAK: removing the ending-trigger reachability scan must fail this.
+  // A defined ending whose only trigger lives on a map that is not structurally
+  // reachable from the start map must be reported as a blocker.
+  it("blocks a defined ending whose trigger sits only on a map unreachable from start", () => {
+    const { project, manifest } = createHorrorMysteryPrototypeProject();
+    const chaseExit = project.maps[HORROR_MYSTERY_MAP_IDS.chase]!.events.find(
+      (event) => event.id === manifest.chase.exitEventId,
+    )!;
+    for (const page of chaseExit.pages ?? []) {
+      for (const command of page.commands) {
+        if (command.kind === "transfer" && command.mapId === HORROR_MYSTERY_MAP_IDS.finale) {
+          command.mapId = HORROR_MYSTERY_MAP_IDS.gallery;
+        }
+      }
+    }
+
+    const report = evaluateHorrorExperienceQa(
+      project,
+      createHorrorMysteryQaScenarios(project, manifest),
+      browserEvidence,
+    );
+
+    expect(report.blockers.filter((blocker) => blocker.id === "reachability:unreachable-ending"))
+      .toHaveLength(2);
+    expect(report.verdict).toBe("fail");
+  });
+
+  it("still reaches both endings and stays a strong pass when the graph is fully connected", () => {
+    const { project, manifest } = createHorrorMysteryPrototypeProject();
+
+    const report = evaluateHorrorExperienceQa(
+      project,
+      createHorrorMysteryQaScenarios(project, manifest),
+      browserEvidence,
+    );
+
+    expect(report.blockers).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "reachability:missing-transfer-target" }),
+      expect.objectContaining({ id: "reachability:unreachable-ending" }),
+    ]));
+    expect(report.verdict).toBe("strong-pass");
+  });
+
   it("does not call the game working when one mandatory runtime scenario fails", () => {
     const { project, manifest } = createHorrorMysteryPrototypeProject();
     const scenarios = createHorrorMysteryQaScenarios(project, manifest);

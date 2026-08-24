@@ -164,6 +164,97 @@ function axis(
   return { id, label, score: Math.max(0, Math.min(20, score)), maxScore: 20, evidence };
 }
 
+/**
+ * Deterministic structural map reachability from the project start map over `transfer`
+ * commands. Conservative map graph: every page of every event is scanned, recursing into
+ * choices / forks / loops. Exact conditional solvability is deliberately NOT modeled —
+ * this only proves the authored transfer topology is connected, never that a puzzle is
+ * actually solvable.
+ */
+export interface HorrorReachabilityAnalysis {
+  /** Map ids reachable from the start map over transfer commands (start itself included). */
+  readonly reachableMapIds: readonly string[];
+  /** Transfer target map ids referenced by commands but absent from project.maps. */
+  readonly missingTransferTargets: readonly string[];
+  /** Ending ids that are defined/triggered but have no trigger on any reachable map. */
+  readonly unreachableEndingIds: readonly string[];
+}
+
+function transferTargetsOf(commands: readonly Command[], into: Set<string>): void {
+  for (const command of commands) {
+    if (command.kind === "transfer" && command.mapId) into.add(command.mapId);
+    if (command.kind === "choices") {
+      for (const option of command.options) transferTargetsOf(option.branch, into);
+      if (command.cancelBranch) transferTargetsOf(command.cancelBranch, into);
+    } else if (command.kind === "fork") {
+      transferTargetsOf(command.then, into);
+      if (command.else) transferTargetsOf(command.else, into);
+    } else if (command.kind === "loop") {
+      transferTargetsOf(command.body, into);
+    } else if (command.kind === "shop") {
+      if (command.transactionBranch) transferTargetsOf(command.transactionBranch, into);
+      if (command.failedTransactionBranch) transferTargetsOf(command.failedTransactionBranch, into);
+    } else if (command.kind === "inn") {
+      if (command.notEnoughBranch) transferTargetsOf(command.notEnoughBranch, into);
+    } else if (command.kind === "battleProcessing") {
+      if (command.victoryBranch) transferTargetsOf(command.victoryBranch, into);
+      if (command.defeatBranch) transferTargetsOf(command.defeatBranch, into);
+      if (command.escapeBranch) transferTargetsOf(command.escapeBranch, into);
+    } else if (command.kind === "promoteActor" || command.kind === "evolveMonster") {
+      if (command.successBranch) transferTargetsOf(command.successBranch, into);
+      if (command.failureBranch) transferTargetsOf(command.failureBranch, into);
+    }
+  }
+}
+
+export function analyzeHorrorReachability(project: Project): HorrorReachabilityAnalysis {
+  // Scan every page of every event once, per map, to build a conservative transfer graph
+  // and the set of ending ids each map can trigger.
+  const transferTargetsByMap = new Map<string, Set<string>>();
+  const endingTriggersByMap = new Map<string, Set<string>>();
+  for (const map of Object.values(project.maps)) {
+    const transfers = new Set<string>();
+    const endings = new Set<string>();
+    for (const record of pageRecords(project)) {
+      if (record.mapId !== map.id) continue;
+      transferTargetsOf(record.commands, transfers);
+      for (const command of record.commands) {
+        if (command.kind === "triggerEnding" && command.endingId) endings.add(command.endingId);
+      }
+    }
+    transferTargetsByMap.set(map.id, transfers);
+    endingTriggersByMap.set(map.id, endings);
+  }
+
+  // BFS from the actual start map, following only defined transfer targets.
+  const missingTransferTargets = new Set<string>();
+  const reachableMapIds = new Set<string>();
+  const queue = project.startMapId ? [project.startMapId] : [];
+  while (queue.length > 0) {
+    const mapId = queue.pop()!;
+    if (reachableMapIds.has(mapId)) continue;
+    reachableMapIds.add(mapId);
+    if (!project.maps[mapId]) continue;
+    for (const target of transferTargetsByMap.get(mapId) ?? []) {
+      if (!project.maps[target]) missingTransferTargets.add(target);
+      else queue.push(target);
+    }
+  }
+
+  // A defined ending is a blocker when no reachable map can trigger it.
+  const unreachableEndingIds = (project.endings ?? [])
+    .map((ending) => ending.id)
+    .filter((endingId) =>
+      [...reachableMapIds].every((mapId) => !(endingTriggersByMap.get(mapId)?.has(endingId) ?? false)),
+    );
+
+  return {
+    reachableMapIds: [...reachableMapIds],
+    missingTransferTargets: [...missingTransferTargets],
+    unreachableEndingIds,
+  };
+}
+
 export function evaluateHorrorExperienceQa(
   project: Project,
   scenarios: readonly HorrorQaScenario[],
@@ -171,6 +262,7 @@ export function evaluateHorrorExperienceQa(
 ): HorrorExperienceQaReport {
   const lintIssues = projectLint(project);
   const pages = pageRecords(project);
+  const reachability = analyzeHorrorReachability(project);
   const scenarioResults: HorrorQaScenarioResult[] = scenarios.map((scenario) => {
     const result = runSceneTest(project, scenario.input);
     return {
@@ -303,6 +395,14 @@ export function evaluateHorrorExperienceQa(
   ]);
 
   const blockers: HorrorQaBlocker[] = [];
+  for (const missingTarget of reachability.missingTransferTargets) blockers.push({
+    id: "reachability:missing-transfer-target",
+    message: `전이 대상 맵이 존재하지 않습니다: ${missingTarget}`,
+  });
+  for (const endingId of reachability.unreachableEndingIds) blockers.push({
+    id: "reachability:unreachable-ending",
+    message: `정의된 결말 '${endingId}'의 트리거가 시작 맵에서 도달 가능한 어떤 맵에도 없습니다.`,
+  });
   for (const result of scenarioResults) {
     if (!result.ok) blockers.push({
       id: `scenario:${result.id}`,
