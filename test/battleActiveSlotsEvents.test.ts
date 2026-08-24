@@ -103,27 +103,30 @@ describe("battle active slots, switching, and battle events", () => {
     const project = fourActorProject();
     setActorParam(project, "actor_warrior", "agility", 1);
     setActorParam(project, "actor_mage", "agility", 2);
-    setEnemyStats(project, { maxHp: 999, attack: 1, agility: 80 });
+    setEnemyStats(project, { maxHp: 999, attack: 40, agility: 80 });
     const runtime = createBattleRuntime({
       project,
       troopId: "troop_strict_training",
       canEscape: false,
       canLose: true,
       battleFlow: "strict",
+      activeSlots: 1,
       party: partyProgress(PARTY4),
       rng: () => 0.99,
     });
 
+    const incomingHpBefore = runtime.snapshot().reserveActors.find((actor) => actor.recordId === "actor_rogue")?.hp;
+
     runtime.performActorCommand({ kind: "switch", targetActorId: "actor_rogue" });
-    runtime.performActorCommand({ kind: "defend" });
 
     const snapshot = runtime.snapshot();
     const firstRound = snapshot.roundLogs[0];
     expect(firstRound?.actions[0]).toMatchObject({ userRecordId: "actor_warrior", commandKind: "switch" });
-    expect(firstRound?.actions.map((action) => action.userRecordId)).toEqual(["actor_warrior", "enemy_training_slime", "actor_mage"]);
-    expect(firstRound?.participatingActorIds).toEqual(["actor_warrior", "actor_mage", "actor_rogue"]);
-    expect(snapshot.actors.map((actor) => actor.recordId)).toEqual(["actor_rogue", "actor_mage"]);
-    expect(snapshot.reserveActors.map((actor) => actor.recordId)).toEqual(["actor_warrior", "actor_priest"]);
+    expect(firstRound?.actions.map((action) => action.userRecordId)).toEqual(["actor_warrior", "enemy_training_slime"]);
+    expect(firstRound?.participatingActorIds).toEqual(["actor_warrior", "actor_rogue"]);
+    expect(snapshot.actors.map((actor) => actor.recordId)).toEqual(["actor_rogue"]);
+    expect(snapshot.reserveActors.map((actor) => actor.recordId)).toEqual(["actor_warrior", "actor_mage", "actor_priest"]);
+    expect(snapshot.actors.find((actor) => actor.recordId === "actor_rogue")?.hp).toBeLessThan(incomingHpBefore ?? 0);
   });
 
   it("requires forced switch for defeated active actors and excludes defeated reserves", () => {
