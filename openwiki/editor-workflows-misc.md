@@ -7,6 +7,15 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 ## Other Editor Workflows
 
 
+### Genre-neutral authoring launcher and journey (2026-08-24)
+
+- The topbar's four front actions (`Map | Event | Data | Test`) and the matching Ctrl+K commands share `runAuthoringTask` in `src/editor/authoringTasks.ts`. Map selects the real tile drawer/layer, Event selects the real event drawer/layer, Data opens `openDatabaseModal`, and Test dispatches the established `oprn:test-play-window` request. These actions do not require AI.
+- Workspace presets remain layout data in `workspaceLayout.ts`, but they are exposed only as `레이아웃` choices in the panel menu. `setWorkspacePreset` changes docks while preserving the current `EditorUiMode`/density; do not turn layout presets back into fake work actions.
+- `src/editor/authoringJourney.ts` models `프로젝트 → 맵 → 이벤트 → 데이터 → 테스트`. Evidence is explicit: loaded project, map change, committed (not draft) event, database/system change, and successful player boot. Manual completion is available only for Map/Event/Data and is stored per Supabase project id. Test is never completed by its launch click; `testPlayModal.ts` emits `AUTHORING_TEST_BOOT_SUCCESS_EVENT` only after `renderPlayer` returns successfully.
+- `src/editor/panels/authoringJourneyStrip.ts` is mounted persistently in the editor canvas chrome. Broken aggregate project references are shown in Data and disable the Test journey action until repaired. The strip's task buttons reuse `runAuthoringTask`; reference collection uses `collectProjectReferenceIssues`.
+- Focused coverage: `test/authoringTasks.test.ts`, `test/authoringJourney.test.ts`, `test/commandRegistry.test.ts`, and `test/selectedEventTestModal.test.ts`.
+
+
 - **Map/event search (toolbar-search):** `src/editor/panels/mapEventSearchModal.ts` + pure model `src/editor/panels/mapEventSearchModel.ts`. Styles: `src/styles/editor/map-event-search.css` (imported from `src/styles/index.css`). Centered modal with keyword (variable/switch/event name), range (selected map / common / all), and result tabs. Missing CSS previously left the dialog as raw unstyled fieldsets.
 
 - **Audio test dialog (toolbar-sound-test, 음악/효과음):** `src/editor/panels/audioTestDialog.ts`. Styles: `src/styles/editor/audio-test-dialog.css` (imported from `src/styles/index.css`). Two-pane RM2k3-style window: left 음악/효과음 tabs + resource list (CC0 playable, EasyRPG MIDI marked non-playable), right fade/volume/tempo/balance sliders + 재생/정지 + status. Missing CSS previously left the dialog as raw unstyled HTML. Tests: `test/e2e/oprn-audio-test-dialog.spec.ts` (requires expert-mode init script — classic toolbar is expert-only).

@@ -270,12 +270,13 @@ export function createFarmingDemoProject(): Project {
   paintFarmableGround(map);
   const project = createProjectWithMaps([map, createFarmMineMap()], 0);
   sealFarmMineWalls(project);
-  project.meta = { ...project.meta, title: "농사 데모" };
+  project.meta = { ...project.meta, title: "별빛 농장 마을" };
   project.startPos = { x: 4, y: 4 };
   project.system = {
     ...project.system,
     startActorIds: [DEFAULT_ACTOR_ID],
     timeSystem: { enabled: true, dayStartHour: 6, dayEndHour: 26, forceSleep: false },
+    giftSystem: true,
     // 맵 플래그만으로는 필드 접촉이 턴제로 간다 — 시스템 스위치도 같이 켜야 액션으로 라우팅된다
     // (`projectLint` 의 opt-in:action-combat-map-without-system 규칙과 같은 계약).
     actionCombat: { enabled: true },
@@ -338,6 +339,7 @@ export function createFarmingDemoProject(): Project {
     { id: "item_eggplant_seed", name: "가지 씨앗", scope: "none", price: 30, type: "seed", consumable: true },
     { id: "item_eggplant", name: "가지", scope: "none", price: 80, type: "normalGoods" },
   ]);
+  attachFarmMonsterRewards(project);
   project.database.crops = [
     normalizeCropRecord({
       id: "crop_potato",
@@ -464,6 +466,39 @@ export function createFarmingDemoProject(): Project {
     createFarmBedEvent(3, 3),
     createSeedShopEvent(12, 3),
     createFarmMayorEvent(14, 5),
+    createFarmResidentEvent({
+      id: "ev_npc_miner",
+      characterId: FARM_MINER_CHARACTER_ID,
+      name: "광부 도윤",
+      x: 2,
+      y: 9,
+      spriteId: "tex_easyrpg_charset_people1",
+      characterIndex: 2,
+      dialogue: "광산의 돌빛을 보면 오늘 캘 만한 곳을 알 수 있지.",
+      heartDialogue: "자네 몫으로 좋은 철 광맥 하나를 남겨 뒀어.",
+    }),
+    createFarmResidentEvent({
+      id: "ev_npc_carpenter",
+      characterId: FARM_CARPENTER_CHARACTER_ID,
+      name: "목수 리아",
+      x: 3,
+      y: 14,
+      spriteId: "tex_easyrpg_charset_people2",
+      characterIndex: 3,
+      dialogue: "튼튼한 농장은 좋은 흙과 좋은 손에서 시작해.",
+      heartDialogue: "네 농장이라면 오래 남을 헛간을 지어 보고 싶어.",
+    }),
+    createFarmResidentEvent({
+      id: "ev_npc_herbalist",
+      characterId: FARM_HERBALIST_CHARACTER_ID,
+      name: "약초사 세나",
+      x: 13,
+      y: 14,
+      spriteId: "tex_easyrpg_charset_people3",
+      characterIndex: 1,
+      dialogue: "제철 열매는 향만 맡아도 어느 밭에서 왔는지 알 수 있어.",
+      heartDialogue: "네가 키운 열매로 마을 사람들을 위한 차를 만들었어.",
+    }),
     createSpringFestivalEvent(8, 2),
     createMineEntranceEvent(17, 10)
   );
@@ -476,6 +511,10 @@ export function createFarmingDemoProject(): Project {
 }
 
 const FARM_MAYOR_CHARACTER_ID = "char_mayor";
+const FARM_SEED_MERCHANT_CHARACTER_ID = "char_seed_merchant";
+const FARM_MINER_CHARACTER_ID = "char_miner";
+const FARM_CARPENTER_CHARACTER_ID = "char_carpenter";
+const FARM_HERBALIST_CHARACTER_ID = "char_herbalist";
 const FARM_FESTIVAL_SPRING_SWITCH_ID = "sw_festival_spring_done";
 
 /**
@@ -499,6 +538,66 @@ function attachFarmSocialProfiles(project: Project): void {
         liked: "잘 키웠구먼. 고맙네.",
         neutral: "음, 받아 두지.",
         disliked: "…이걸 나더러 어쩌라고?",
+      },
+    },
+    [FARM_SEED_MERCHANT_CHARACTER_ID]: {
+      displayName: "씨앗 상인 미오",
+      birthday: { season: "summer", day: 8 },
+      giftPrefs: {
+        loved: ["item_blueberry", "item_pumpkin"],
+        liked: ["item_corn", "item_eggplant"],
+        disliked: ["item_stone"],
+      },
+      giftResponses: {
+        loved: "이 품질이면 내 가게 진열대 맨 앞자리야!",
+        liked: "좋은 물건이네. 다음 장날에도 가져와 줘.",
+        neutral: "고마워. 쓸 곳을 찾아볼게.",
+        disliked: "가게 창고에도 이건 넘쳐나는데…",
+      },
+    },
+    [FARM_MINER_CHARACTER_ID]: {
+      displayName: "광부 도윤",
+      birthday: { season: "fall", day: 3 },
+      giftPrefs: {
+        loved: ["item_iron_ore"],
+        liked: ["item_stone", "item_potato"],
+        disliked: ["item_strawberry"],
+      },
+      giftResponses: {
+        loved: "결이 좋은 광석이군. 정말 고마워!",
+        liked: "광산에서 요긴하게 쓰겠어.",
+        neutral: "챙겨 줘서 고맙네.",
+        disliked: "광산 안에서는 금방 상할 텐데.",
+      },
+    },
+    [FARM_CARPENTER_CHARACTER_ID]: {
+      displayName: "목수 리아",
+      birthday: { season: "spring", day: 22 },
+      giftPrefs: {
+        loved: ["item_corn", "item_pumpkin"],
+        liked: ["item_iron_ore", "item_potato"],
+        disliked: ["item_watering_can"],
+      },
+      giftResponses: {
+        loved: "일 끝나고 먹으면 힘이 나겠어. 고마워!",
+        liked: "튼튼하고 쓸모 있는 선물이네.",
+        neutral: "잘 간직할게.",
+        disliked: "도구는 내 손에 맞는 걸 직접 고르는 편이야.",
+      },
+    },
+    [FARM_HERBALIST_CHARACTER_ID]: {
+      displayName: "약초사 세나",
+      birthday: { season: "summer", day: 19 },
+      giftPrefs: {
+        loved: ["item_strawberry", "item_blueberry"],
+        liked: ["item_melon", "item_eggplant"],
+        disliked: ["item_iron_ore"],
+      },
+      giftResponses: {
+        loved: "향이 정말 맑아. 좋은 차가 되겠어!",
+        liked: "제철 기운이 가득하네. 고마워.",
+        neutral: "약방 한쪽에 잘 두어야겠다.",
+        disliked: "이건 약탕기보다 대장간에 어울리겠어.",
       },
     },
   };
@@ -546,6 +645,56 @@ function createFarmMayorEvent(x: number, y: number): GameEvent {
           { kind: "changeFriendship", delta: 10 },
         ],
       },
+    ],
+  };
+}
+
+function createFarmResidentEvent(input: {
+  readonly id: string;
+  readonly characterId: string;
+  readonly name: string;
+  readonly x: number;
+  readonly y: number;
+  readonly spriteId: string;
+  readonly characterIndex: number;
+  readonly dialogue: string;
+  readonly heartDialogue: string;
+}): GameEvent {
+  const graphic = {
+    sprite: { type: "bundled" as const, id: input.spriteId },
+    direction: "down" as const,
+    pattern: charsetFrameIndex({ characterIndex: input.characterIndex, direction: "down", pattern: 1 }),
+  };
+  const movement = { type: "random" as const, speed: 2, frequency: 3 };
+  const page = (
+    id: string,
+    name: string,
+    conditions: NonNullable<GameEvent["pages"]>[number]["conditions"],
+    body: string,
+  ): NonNullable<GameEvent["pages"]>[number] => ({
+    id,
+    name,
+    conditions,
+    graphic,
+    trigger: { kind: "action" },
+    priority: "same",
+    overlapForbidden: true,
+    movement,
+    commands: [
+      { kind: "text", speaker: input.name, body },
+      { kind: "changeFriendship", delta: 10 },
+    ],
+  });
+  return {
+    id: input.id,
+    x: input.x,
+    y: input.y,
+    characterId: input.characterId,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [
+      page(`page_${input.id}_default`, `${input.name} · 기본`, [], input.dialogue),
+      page(`page_${input.id}_heart`, `${input.name} · 친밀`, [{ kind: "friendshipAtLeast", value: 200 }], input.heartDialogue),
     ],
   };
 }
@@ -625,6 +774,19 @@ function createFarmMineMap(): GameMap {
         sprite: { type: "bundled", id: "tex_easyrpg_charset_monster2" },
         direction: "down",
         pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
+      },
+    },
+    {
+      id: "spawn_mine_golems",
+      troopId: "troop_golem_guard",
+      area: { x: 3, y: 5, w: 6, h: 4 },
+      maxAlive: 1,
+      respawnSec: 45,
+      chase: true,
+      graphic: {
+        sprite: { type: "bundled", id: "tex_easyrpg_charset_monster1" },
+        direction: "down",
+        pattern: charsetFrameIndex({ characterIndex: 4, direction: "down", pattern: 1 }),
       },
     },
   ];
@@ -731,6 +893,22 @@ function farmMineRockPlaceables(): Record<string, PlaceableObjectState> {
   return placeables;
 }
 
+function attachFarmMonsterRewards(project: Project): void {
+  const rewards = [
+    { enemyId: "enemy_cave_bat", dropItemId: "item_stone", dropRatePercent: 45 },
+    { enemyId: "enemy_stone_golem", dropItemId: "item_iron_ore", dropRatePercent: 65 },
+  ] as const;
+  for (const reward of rewards) {
+    const enemy = project.database.enemies.find((entry) => entry.id === reward.enemyId);
+    if (!enemy) continue;
+    enemy.rewards = {
+      ...enemy.rewards,
+      dropItemId: reward.dropItemId,
+      dropRatePercent: reward.dropRatePercent,
+    };
+  }
+}
+
 /**
  * 기력 **저작 뼈대**를 붙인다. 엔진은 농사 행동에서 기력을 깎지 않는다 —
  * `interactWithFarmPlot` 은 어떤 자원도 소모하지 않고 공통 이벤트를 부르는 훅도 없다.
@@ -821,37 +999,56 @@ function createSeedShopEvent(x: number, y: number): GameEvent {
   ];
   // 광산 산출물도 여기서 현금화한다 — 상인이 하나라 목록에 없으면 캔 돌이 인벤토리에 쌓이기만 한다.
   const minerals = ["item_stone", "item_iron_ore"];
+  const shopCommand = {
+    kind: "shop" as const,
+    itemIds: [...seeds, ...harvests, ...minerals],
+    allowSell: true,
+    quantityMode: "select" as const,
+    shopType: "normal" as const,
+    messageType: "welcome" as const,
+    merchantGold: 5000,
+    branchOnTransaction: false,
+    transactionBranch: [],
+  };
+  const page = (
+    id: string,
+    name: string,
+    conditions: NonNullable<GameEvent["pages"]>[number]["conditions"],
+    body: string,
+  ): NonNullable<GameEvent["pages"]>[number] => ({
+    id,
+    name,
+    conditions,
+    graphic: {
+      sprite: { type: "bundled", id: "tex_easyrpg_charset_people2" },
+      direction: "down",
+      pattern: charsetFrameIndex({ characterIndex: 1, direction: "down", pattern: 1 }),
+    },
+    trigger: { kind: "action" },
+    priority: "same",
+    overlapForbidden: true,
+    movement: { type: "fixed", speed: 3, frequency: 3 },
+    commands: [
+      { kind: "text", speaker: "씨앗 상인 미오", body },
+      shopCommand,
+      { kind: "changeFriendship", delta: 5 },
+    ],
+  });
   return {
     id: "ev_seed_shop",
     x,
     y,
+    characterId: FARM_SEED_MERCHANT_CHARACTER_ID,
     trigger: { kind: "action" },
     commands: [],
     pages: [
-      {
-        id: "page_seed_shop",
-        name: "씨앗 상인",
-        conditions: [],
-        graphic: { sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID }, direction: "down", pattern: 0 },
-        trigger: { kind: "action" },
-        priority: "same",
-        overlapForbidden: true,
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [
-          { kind: "text", speaker: "씨앗 상인", body: "씨앗 팔고 수확물 사들이네. 철에 맞는 걸 심어야 해." },
-          {
-            kind: "shop",
-            itemIds: [...seeds, ...harvests, ...minerals],
-            allowSell: true,
-            quantityMode: "select",
-            shopType: "normal",
-            messageType: "welcome",
-            merchantGold: 5000,
-            branchOnTransaction: false,
-            transactionBranch: [],
-          },
-        ],
-      },
+      page("page_seed_shop", "씨앗 상인 · 기본", [], "씨앗도 팔고 수확물도 사들여. 철에 맞는 걸 심어야 해."),
+      page(
+        "page_seed_shop_heart",
+        "씨앗 상인 · 친밀",
+        [{ kind: "friendshipAtLeast", value: 200 }],
+        "좋은 농부가 오면 장사가 즐거워져. 오늘은 가장 싱싱한 씨앗을 골라 뒀어.",
+      ),
     ],
   };
 }

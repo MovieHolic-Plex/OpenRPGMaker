@@ -235,3 +235,59 @@ describe("Stardew demo: 봄 축제 이벤트", () => {
     expect(project.switches.find((s) => s.id === "sw_festival_spring_done")).toBeTruthy();
   });
 });
+
+describe("Stardew demo: 생활 콘텐츠 완성", () => {
+  const project = createFarmingDemoProject();
+  const residentIds = [
+    "char_mayor",
+    "char_seed_merchant",
+    "char_miner",
+    "char_carpenter",
+    "char_herbalist",
+  ] as const;
+
+  // Break caught: the demo advertises resident relationships but only authors one mayor profile.
+  it("선물 시스템과 맵 이벤트에 연결된 주민 프로필 5명을 제공한다", () => {
+    expect(project.system.giftSystem).toBe(true);
+    expect(Object.keys(project.characters ?? {})).toEqual(expect.arrayContaining(residentIds));
+
+    const events = Object.values(project.maps).flatMap((map) => map.events);
+    for (const characterId of residentIds) {
+      const profile = project.characters?.[characterId];
+      expect(profile?.birthday, `${characterId} birthday`).toBeTruthy();
+      expect(profile?.giftPrefs?.loved?.length ?? 0, `${characterId} loved gifts`).toBeGreaterThan(0);
+      expect(profile?.giftPrefs?.liked?.length ?? 0, `${characterId} liked gifts`).toBeGreaterThan(0);
+      expect(profile?.giftPrefs?.disliked?.length ?? 0, `${characterId} disliked gifts`).toBeGreaterThan(0);
+      expect(profile?.giftResponses?.loved, `${characterId} loved response`).toBeTruthy();
+
+      const host = events.find((event) => event.characterId === characterId);
+      expect(host, `${characterId} map host`).toBeTruthy();
+      expect(host?.pages?.some((page) => page.conditions.some((condition) => condition.kind === "friendshipAtLeast"))).toBe(true);
+      expect(host?.pages?.some((page) => page.commands.some((command) => command.kind === "changeFriendship"))).toBe(true);
+    }
+  });
+
+  // Break caught: the mine has one anonymous spawn lane and no authored drop/species pipeline.
+  it("광산의 두 출현군이 유효한 전투 그룹·종족·드롭 아이템으로 이어진다", () => {
+    const mine = project.maps.map_mine_1f;
+    expect(mine.fieldSpawns?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(new Set((mine.fieldSpawns ?? []).map((spawn) => spawn.troopId)).size).toBeGreaterThanOrEqual(2);
+
+    const speciesIds = new Set((project.database.monsterSpecies ?? []).map((species) => species.id));
+    const itemIds = new Set(project.database.items.map((item) => item.id));
+    const troopIds = new Set(project.database.troops.map((troop) => troop.id));
+    const spawnedEnemies = (mine.fieldSpawns ?? []).flatMap((spawn) => {
+      expect(troopIds.has(spawn.troopId), `missing troop ${spawn.troopId}`).toBe(true);
+      const troop = project.database.troops.find((entry) => entry.id === spawn.troopId);
+      return (troop?.enemyIds ?? []).map((enemyId) => project.database.enemies.find((enemy) => enemy.id === enemyId));
+    });
+
+    expect(spawnedEnemies.length).toBeGreaterThan(0);
+    for (const enemy of spawnedEnemies) {
+      expect(enemy, "spawned enemy record").toBeTruthy();
+      expect(speciesIds.has(enemy?.speciesId ?? ""), `${enemy?.id} species`).toBe(true);
+      expect(itemIds.has(enemy?.rewards.dropItemId ?? ""), `${enemy?.id} drop`).toBe(true);
+      expect(enemy?.rewards.dropRatePercent ?? 0, `${enemy?.id} drop rate`).toBeGreaterThan(0);
+    }
+  });
+});

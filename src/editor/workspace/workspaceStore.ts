@@ -81,21 +81,12 @@ export function updateWorkspaceLayout(next: WorkspaceLayout): void {
 }
 
 /**
- * 프리셋 적용 = 도크 구성 + 밀도를 함께 바꾼다(프리셋이 3단 모드를 흡수한 지점).
- *
- * 밀도가 바뀌면 `setEditorUiMode` 가 자기 구독자(editor.ts 의 applyEditorUiModeLayout,
- * app/mode.ts 의 renderTopbar)를 깨우므로 여기서 또 notify 하면 2번 그려진다. 대신
- * editor.ts 의 dock 동기화는 멱등(구성 서명 비교)이라 중복 호출이 와도 안전하다.
+ * 프리셋은 도크 구성만 바꾼다. 현재 밀도/EditorUiMode는 사용자의 별도 선택이므로 보존한다.
  */
 export function setWorkspacePreset(id: WorkspacePresetId): void {
   const preset = presetById(id);
-  current = { ...layoutFromPreset(preset.id), density: preset.density };
+  current = { ...layoutFromPreset(preset.id), density: densityForUiMode(getEditorUiMode()) };
   persist(current);
-  const targetMode = uiModeForDensity(preset.density);
-  if (targetMode !== getEditorUiMode()) {
-    setEditorUiMode(targetMode); // 구독자가 재렌더를 담당
-    return;
-  }
   notify();
 }
 

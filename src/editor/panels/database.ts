@@ -54,11 +54,11 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템", testid: "db-tab-items" },
-  { id: "crops", label: "작물", testid: "db-tab-crops" },
-  { id: "characters", label: "캐릭터", testid: "db-tab-characters" },
+  { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
+  { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
-  { id: "monsterSpecies", label: "종족", testid: "db-tab-monster-species" },
+  { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
   { id: "troops", label: "적 그룹", testid: "db-tab-troops" },
   { id: "states", label: "상태", testid: "db-tab-states" },
   { id: "animations", label: "전투 애니메이션", testid: "db-tab-animations" },
@@ -79,6 +79,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "items",
   "equipment",
   "enemies",
+  "monsterSpecies",
   "troops",
   "elements",
   "states",
@@ -86,7 +87,6 @@ const tabOrder: readonly DatabaseTab[] = [
   "battleScreen",
   "battleCommands",
   "terrain",
-  "monsterSpecies",
   "crops",
   "characters",
   "tilesets",
@@ -111,10 +111,10 @@ export type DatabaseTabGroup = {
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "파티", tabs: ["actors", "classes", "skills", "items", "equipment"] },
   {
-    label: "전투",
-    tabs: ["enemies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
+    label: "전투·몬스터",
+    tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
-  { label: "수집", tabs: ["monsterSpecies", "crops", "characters"] },
+  { label: "생활", tabs: ["crops", "characters"] },
   { label: "맵", tabs: ["tilesets", "structureKits", "commonEvents"] },
   { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
 ];
@@ -447,8 +447,8 @@ function tabRenderCacheFor(container: HTMLElement): DatabaseTabRenderCache {
 }
 
 /**
- * 수집 데이터를 저작했는데 시스템 탭에서 몬스터 수집이 꺼져 있으면 포획 명령이 전투에
- * 나오지 않는다 — 세 수집 탭 상단에 경고와 시스템 탭 점프를 준다.
+ * 몬스터 데이터를 저작했는데 시스템 탭에서 몬스터 수집이 꺼져 있으면 포획 명령이 전투에
+ * 나오지 않는다 — 몬스터/종족/적 그룹 탭 상단에 경고와 시스템 탭 점프를 준다.
  */
 function collectionGateBanner(container: HTMLElement): HTMLElement | null {
   const project = store.getCurrent();

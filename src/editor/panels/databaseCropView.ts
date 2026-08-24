@@ -1,7 +1,9 @@
 import { duplicateInto } from "@/editor/databaseCopy";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { cropReferenceMessage } from "@/editor/databaseReferences";
 import { numberField, selectField, textControl } from "@/editor/panels/databaseControls";
+import { clickDatabaseTabFrom, renderLifePanel } from "@/editor/panels/databaseLifeUi";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { SEASONS } from "@/project/gameTime";
 import { store } from "@/project/store";
@@ -41,14 +43,142 @@ export function renderCropTab(host: HTMLElement, rerender: () => void): void {
   }
   const listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
   listPane.append(
-    el("h3", { text: "작물" }),
+    el("h3", { text: "농사·작물" }),
     list,
     el("div", { class: "db-list-footer", text: `${crops.length}개` }),
     toolbar(rerender)
   );
   const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
-  detailPane.append(selected ? cropForm(selected, rerender) : el("section", { class: "db-detail-form", dataset: { testid: "db-detail-form" }, text: "작물이 없습니다." }));
-  host.append(el("div", { class: "db-record-workspace oprn-record-workspace oprn-record-crops", children: [listPane, detailPane] }));
+  detailPane.append(selected ? cropForm(selected, rerender) : cropEmptyState(rerender));
+  host.append(
+    cropLifeHeader(project, rerender),
+    el("div", { class: "db-record-workspace oprn-record-workspace oprn-record-crops", children: [listPane, detailPane] }),
+  );
+}
+
+function cropLifeHeader(project: ReturnType<typeof store.getCurrent>, rerender: () => void): HTMLElement {
+  const timeReady = project.system.timeSystem?.enabled === true;
+  const farmableMaps = Object.values(project.maps).filter((map) => (map.farmableArea ?? []).length > 0);
+  const farmableMapCount = farmableMaps.length;
+  const toolKinds = new Set(project.database.items.map((item) => item.farmTool).filter(Boolean));
+  const toolsReady = toolKinds.has("hoe") && toolKinds.has("wateringCan");
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const crops = project.database.crops ?? [];
+  const invalidCrops = crops.filter((crop) => !itemIds.has(crop.seedItemId) || !itemIds.has(crop.harvestItemId));
+  const openTab = (event: Event, testid: string): void => {
+    if (!clickDatabaseTabFrom(event.currentTarget as HTMLElement | null, testid)) {
+      toast("데이터베이스 창에서 해당 탭을 열어 주세요.", "info");
+    }
+  };
+
+  return el("div", {
+    class: "db-life-header",
+    children: [
+      el("p", {
+        class: "db-record-intro",
+        dataset: { testid: "db-crops-intro" },
+        text: "씨앗을 심고, 날짜가 지나면 자라며, 수확물이 아이템으로 들어오는 농사 규칙입니다.",
+      }),
+      renderLifePanel({
+        testid: "db-crop-readiness",
+        eyebrow: "플레이 연결",
+        title: "농사 루프 준비 상태",
+        description: "작물 레코드만으로는 자라지 않습니다. 시간, 경작 영역, 도구가 함께 준비되어야 합니다.",
+        cards: [
+          {
+            testid: "db-crop-readiness-time",
+            label: "시간·계절",
+            value: timeReady ? "사용 중" : "설정 필요",
+            detail: timeReady ? "날짜가 바뀌면 성장합니다." : "시스템에서 시간 기능을 켜세요.",
+            state: timeReady ? "ready" : "needs-setup",
+            action: {
+              label: "시스템 열기",
+              testid: "db-crop-readiness-time-action",
+              onClick: (event) => openTab(event, "db-tab-system"),
+            },
+          },
+          {
+            testid: "db-crop-readiness-fields",
+            label: "경작 가능한 맵",
+            value: `${farmableMapCount}곳`,
+            detail: farmableMapCount > 0 ? "맵의 경작 영역에서 심을 수 있습니다." : "맵 설정에 경작 영역이 필요합니다.",
+            state: farmableMapCount > 0 ? "ready" : "needs-setup",
+            data: { count: String(farmableMapCount) },
+            action: {
+              label: farmableMapCount > 0 ? "경작 맵 선택" : "시작 맵 선택",
+              testid: "db-crop-readiness-fields-action",
+              onClick: () => {
+                const mapId = farmableMaps[0]?.id ?? project.startMapId;
+                if (selectEditorMap(mapId)) toast(`맵 '${project.maps[mapId]?.name ?? mapId}'을 선택했습니다.`, "ok");
+                else toast("이동할 맵을 찾을 수 없습니다.", "error");
+              },
+            },
+          },
+          {
+            testid: "db-crop-readiness-tools",
+            label: "기본 농사 도구",
+            value: toolsReady ? "준비됨" : "확인 필요",
+            detail: toolsReady ? "괭이와 물뿌리개가 등록되어 있습니다." : "아이템에서 괭이와 물뿌리개를 지정하세요.",
+            state: toolsReady ? "ready" : "needs-setup",
+            action: {
+              label: "아이템 열기",
+              testid: "db-crop-readiness-tools-action",
+              onClick: (event) => openTab(event, "db-tab-items"),
+            },
+          },
+          {
+            testid: "db-crop-readiness-records",
+            label: "작물 연결",
+            value: invalidCrops.length > 0 ? `${invalidCrops.length}개 오류` : `${crops.length}개 사용 가능`,
+            detail: invalidCrops.length > 0 ? "씨앗 또는 수확 아이템 연결을 확인하세요." : "모든 작물의 아이템 연결이 유효합니다.",
+            state: invalidCrops.length > 0 || crops.length === 0 ? "needs-setup" : "ready",
+            data: { invalid: String(invalidCrops.length), total: String(crops.length) },
+            action: {
+              label: invalidCrops.length > 0 ? "첫 오류 열기" : "작물 확인",
+              testid: "db-crop-readiness-records-action",
+              onClick: () => {
+                selectedCropId = invalidCrops[0]?.id ?? crops[0]?.id;
+                rerender();
+              },
+            },
+          },
+        ],
+      }),
+    ],
+  });
+}
+
+function cropEmptyState(rerender: () => void): HTMLElement {
+  return el("section", {
+    class: "db-detail-form",
+    dataset: { testid: "db-detail-form" },
+    children: [
+      el("div", {
+        class: "empty-state empty-state--large empty-state--inset",
+        dataset: { testid: "db-crop-empty" },
+        children: [
+          el("span", { class: "empty-state__icon", text: "芽", attrs: { "aria-hidden": "true" } }),
+          el("h3", { class: "empty-state__title", text: "아직 작물이 없습니다" }),
+          el("p", {
+            class: "empty-state__desc",
+            text: "첫 작물을 만든 뒤 씨앗·수확물·성장일·계절을 연결하면 농사 루프가 시작됩니다.",
+          }),
+          el("div", {
+            class: "empty-state__actions",
+            children: [
+              el("button", {
+                class: "empty-state__action empty-state__action--primary",
+                text: "첫 작물 만들기",
+                attrs: { type: "button" },
+                dataset: { testid: "db-crop-empty-add" },
+                on: { click: () => addCrop(rerender) },
+              }),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
 }
 
 function toolbar(rerender: () => void): HTMLElement {
@@ -58,24 +188,7 @@ function toolbar(rerender: () => void): HTMLElement {
     attrs: { type: "button" },
     dataset: { testid: "db-crop-add" },
     on: {
-      click: () => {
-        const id = genId("crop");
-        recordProjectSnapshot();
-        store.update((project) => {
-          project.database.crops ??= [];
-          const firstItemId = project.database.items[0]?.id ?? "item_seed";
-          project.database.crops.push(normalizeCropRecord({
-            id,
-            name: "새 작물",
-            seedItemId: firstItemId,
-            harvestItemId: firstItemId,
-            stages: [{ days: 1 }],
-            seasons: ["spring"],
-          }));
-        }, { scope: "database", collection: "crops" });
-        selectedCropId = id;
-        rerender();
-      },
+      click: () => addCrop(rerender),
     },
   });
   const duplicate = el("button", {
@@ -100,6 +213,25 @@ function toolbar(rerender: () => void): HTMLElement {
   });
   const remove = deleteCropButton(rerender);
   return el("div", { class: "db-toolbar", children: [add, duplicate, remove] });
+}
+
+function addCrop(rerender: () => void): void {
+  const id = genId("crop");
+  recordProjectSnapshot();
+  store.update((project) => {
+    project.database.crops ??= [];
+    const firstItemId = project.database.items[0]?.id ?? "item_seed";
+    project.database.crops.push(normalizeCropRecord({
+      id,
+      name: "새 작물",
+      seedItemId: firstItemId,
+      harvestItemId: firstItemId,
+      stages: [{ days: 1 }],
+      seasons: ["spring"],
+    }));
+  }, { scope: "database", collection: "crops" });
+  selectedCropId = id;
+  rerender();
 }
 
 // 다른 레코드 탭과 동일한 2단계 확인 패턴(작물은 DatabaseCollection 밖이라 공용
@@ -168,6 +300,7 @@ function cropForm(record: CropRecord, rerender: () => void): HTMLElement {
   const form = el("section", { class: "db-detail-form oprn-detail-form", dataset: { testid: "db-detail-form" } });
   form.append(
     el("div", { class: "db-record-id", children: [el("span", { text: "ID" }), el("code", { text: record.id })] }),
+    cropOverview(record),
     textControl("이름", record.name, (name) => updateCrop(record.id, { name }), "db-crop-name"),
     selectField("씨앗 아이템", "db-crop-seed-item", record.seedItemId, project.database.items, (seedItemId) => updateCrop(record.id, { seedItemId })),
     selectField("수확 아이템", "db-crop-harvest-item", record.harvestItemId, project.database.items, (harvestItemId) => updateCrop(record.id, { harvestItemId })),
@@ -180,6 +313,47 @@ function cropForm(record: CropRecord, rerender: () => void): HTMLElement {
     graphicStagesField(record)
   );
   return form;
+}
+
+function cropOverview(record: CropRecord): HTMLElement {
+  const growthDays = record.stages.reduce((total, stage) => total + stage.days, 0);
+  return renderLifePanel({
+    testid: "db-crop-overview",
+    eyebrow: "플레이 결과",
+    title: record.name || "이름 없는 작물",
+    description: "현재 설정으로 플레이어가 경험하는 재배 흐름입니다.",
+    compact: true,
+    cards: [
+      {
+        testid: "db-crop-overview-growth",
+        label: "첫 수확까지",
+        value: `${growthDays}일`,
+        detail: `${record.stages.length}단계 성장`,
+        data: { days: String(growthDays), stages: String(record.stages.length) },
+      },
+      {
+        testid: "db-crop-overview-yield",
+        label: "한 번 수확",
+        value: `${record.harvestCount}개`,
+        detail: "수확 아이템 지급량",
+        data: { count: String(record.harvestCount) },
+      },
+      {
+        testid: "db-crop-overview-seasons",
+        label: "재배 계절",
+        value: `${record.seasons.length}계절`,
+        detail: record.seasons.join(" · "),
+        data: { count: String(record.seasons.length) },
+      },
+      {
+        testid: "db-crop-overview-regrow",
+        label: "재수확",
+        value: record.regrow ? `${record.regrow.days}일마다` : "한 번만",
+        detail: record.regrow ? "수확 후 다시 열립니다." : "수확하면 밭이 비워집니다.",
+        data: { days: String(record.regrow?.days ?? 0) },
+      },
+    ],
+  });
 }
 
 function stagesField(record: CropRecord): HTMLElement {

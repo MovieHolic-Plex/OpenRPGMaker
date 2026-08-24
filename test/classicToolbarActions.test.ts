@@ -151,7 +151,7 @@ describe("classic toolbar actions", () => {
     const ids = menuBar?.children.map((child) => child.dataset.testid) ?? [];
     expect(ids).not.toContain("editor-ui-mode-toggle");
     const chipIndex = ids.indexOf("workspace-command-palette-button");
-    expect(chipIndex).toBeGreaterThan(ids.indexOf("workspace-preset-toggle"));
+    expect(chipIndex).toBeGreaterThan(ids.indexOf("authoring-task-launcher"));
     expect(ids[chipIndex + 1]).toBe("standard-more-tools");
     expect(ids[chipIndex + 2]).toBe("standard-more-tools-menu");
 
