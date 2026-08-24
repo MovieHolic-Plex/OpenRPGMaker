@@ -21,6 +21,8 @@
 .event-editor-lifecycle-status {
   align-items: center;
   display: flex;
+  flex-direction: row;
+  white-space: nowrap;
   gap: 8px;
   margin-right: 0;
   min-width: 0;
@@ -132,14 +134,16 @@
 
 @media (max-width: 820px) {
   .event-editor-modal-footer {
-    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    grid-template-columns: minmax(80px, 1fr) auto;
   }
 
   .event-editor-footer-leading {
-    display: none;
+    display: flex;
   }
 
   .event-editor-footer-actions {
+    gap: 4px;
     justify-content: flex-end;
   }
 

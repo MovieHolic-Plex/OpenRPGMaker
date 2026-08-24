@@ -94,21 +94,23 @@ test("W4. aux drawer holds follower presets + field monster", async ({ page }) =
   test.setTimeout(240_000);
   await openApp(page);
   await dblclickTile(page, 17, 16);
-  const dock = modal(page).getByText("도구 · AI, 미리보기, 플로우", { exact: false }).first();
-  await dock.click();
+  const dock = modal(page).getByTestId("event-editor-aux-tools");
+  await dock.locator(":scope > summary").click();
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${SHOT_DIR}/W4-aux-drawer.png` });
   const st = await page.evaluate(() => {
     const aux = document.querySelector("[data-testid='event-editor-aux-tools']");
     const contents = document.querySelector("[data-testid='event-classic-contents']");
     return {
+      auxInToolbar: aux?.parentElement?.classList.contains("event-editor-command-toolbar") === true,
       followerInAux: !!aux?.querySelector("[data-testid='follower-preset-bar']"),
       monsterInAux: !!aux?.querySelector("[data-testid='event-command-toolbar-field-monster']"),
       followerInContents: !!contents?.querySelector("[data-testid='follower-preset-bar']"),
     };
   });
   console.log("W4 " + JSON.stringify(st));
+  expect(st.auxInToolbar).toBe(true);
   expect(st.followerInAux).toBe(true);
   expect(st.monsterInAux).toBe(true);
-  expect(st.followerInContents).toBe(false);
+  expect(st.followerInContents).toBe(true);
 });

@@ -354,10 +354,6 @@ function renderModalFooter(
   close: (saved?: boolean) => void,
   requestClose: () => void
 ): HTMLElement {
-  const draftKind = store.getCurrent().maps[request.mapId]?.events.find((event) => event.id === request.eventId)?.draft?.kind;
-  const cancelHint = draftKind === "new"
-    ? "취소하면 이 새 이벤트를 삭제합니다."
-    : "취소하면 열기 전 상태로 되돌립니다.";
   const footer = el("div", {
     class: "event-editor-modal-footer",
     children: [
@@ -366,10 +362,11 @@ function renderModalFooter(
         children: [
           el("div", {
             class: "event-editor-lifecycle-status",
+            attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
             children: [
               el("span", {
                 class: "event-editor-draft-status",
-                text: cancelHint,
+                text: "",
                 dataset: { testid: "event-editor-draft-status" },
               }),
               el("span", {
@@ -398,7 +395,7 @@ function renderModalFooter(
               }),
           ]}),
           // "만들고 바로 눌러본다"가 초보 루프의 핵심 — 테스트는 오버플로 메뉴에 숨기지 않는다(적대 평가 I03).
-          footerButton("이 이벤트 테스트", "event-editor-test", () => {
+          footerButton("테스트", "event-editor-test", () => {
             const validation = validateForModalAction(request, "테스트");
             if (!validation.canCommit) return;
             void openSelectedEventTestModal(request.mapId, request.eventId);
@@ -448,31 +445,41 @@ function commitValidatedEventDraft(request: OpenEventEditorRequest, actionLabel:
 function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorRequest): void {
   const local = footer.querySelector<HTMLElement>('[data-testid="event-editor-draft-status"]');
   const remote = footer.querySelector<HTMLElement>('[data-testid="event-editor-remote-status"]');
-  if (!local || !remote) return;
+  const cancel = footer.querySelector<HTMLButtonElement>('[data-testid="event-editor-cancel"]');
+  if (!local || !remote || !cancel) return;
   const project = store.getCurrent();
   const event = project.maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
+  const cancelDeletesNewEvent = event?.draft?.kind === "new";
+  cancel.textContent = cancelDeletesNewEvent ? "취소(삭제)" : "취소";
+  cancel.setAttribute("aria-label", cancelDeletesNewEvent ? "취소: 새 이벤트 삭제" : footerButtonAccessibleName("취소"));
   // created diff(새 드래프트는 항상 1건)가 아니라 "사용자가 실제로 손댔는가"로 판정 —
   // 갓 만든 이벤트가 손대기 전부터 "변경사항 있음"으로 시작하지 않게 한다.
   const changed = eventDraftHasUserChanges(project, request.mapId, request.eventId);
   if (changed) {
-    local.textContent = "편집 중 · 변경사항 있음 — [적용]을 눌러 프로젝트에 반영하세요 (닫지 않음)";
+    local.textContent = "변경 있음";
+    local.title = "[적용]은 편집기를 닫지 않고 프로젝트에 반영합니다.";
     local.dataset.state = "working";
   } else if (event?.draft?.kind === "new") {
-    // "자동 저장"은 드래프트 볼트(크래시 복구) 사실 고지 — UXC D30 계약.
-    local.textContent = "새 이벤트 · 자동 저장 중 — 편집 없이 닫으면 만들지 않아요";
+    // 자동 저장은 드래프트 볼트(크래시 복구), 취소 시 삭제는 새 이벤트의 close 계약이다.
+    local.textContent = "새 이벤트 · 취소 시 삭제 · 자동 저장";
+    local.title = "편집 없이 닫으면 새 이벤트를 만들지 않습니다.";
     local.dataset.state = "new-pristine";
   } else if (footer.dataset.applied === "true") {
-    local.textContent = "적용됨 — [확인]을 누르면 닫히고, 계속 편집할 수 있습니다";
+    local.textContent = "적용됨";
+    local.title = "[확인]은 남은 변경을 반영하고 편집기를 닫습니다.";
     local.dataset.state = "applied";
   } else if (event?.draft) {
-    local.textContent = "편집 세션 · 변경 없음";
+    local.textContent = "변경 없음";
+    local.title = "현재 이벤트에 미적용 변경이 없습니다.";
     local.dataset.state = "session";
   } else {
-    local.textContent = "저장된 상태";
+    local.textContent = "저장됨";
+    local.title = "프로젝트에 저장된 상태입니다.";
     local.dataset.state = "project";
   }
   const remoteStatus = remotePersistenceLabel(store.getAutoSaveState());
   remote.textContent = remoteStatus.text;
+  remote.title = remoteStatus.text;
   remote.dataset.state = remoteStatus.state;
   // Apply vs Confirm 구분 힌트: 버튼 타이틀에 병기
   const applyBtn = footer.querySelector<HTMLElement>('[data-testid="event-editor-apply"]');
@@ -483,19 +490,19 @@ function refreshModalFooterStatus(footer: HTMLElement, request: OpenEventEditorR
 
 function remotePersistenceLabel(autoSave: AutoSaveState): { readonly text: string; readonly state: string } {
   const db = store.getDbPersistenceStatus();
-  if (db.kind === "not-configured") return { text: "저장소 · 미설정", state: "not-configured" };
+  if (db.kind === "not-configured") return { text: "저장소 미설정", state: "not-configured" };
   if (db.kind === "disabled") {
     return {
-      text: db.reason === "dev-showcase" ? "저장소 · 임시 세션" : "저장소 · 오프라인",
+      text: db.reason === "dev-showcase" ? "임시 세션" : "오프라인",
       state: "disabled",
     };
   }
   switch (autoSave.kind) {
-    case "pending": return { text: "저장 대기 중", state: "pending" };
+    case "pending": return { text: "저장 대기", state: "pending" };
     case "saving": return { text: "저장 중…", state: "saving" };
-    case "saved": return { text: `저장됨 · ${new Date(autoSave.at).toLocaleTimeString()}`, state: "saved" };
-    case "error": return { text: `저장 실패 · ${autoSave.message}`, state: "error" };
-    case "idle": return { text: "저장 준비됨", state: "idle" };
+    case "saved": return { text: `저장됨 ${new Date(autoSave.at).toLocaleTimeString()}`, state: "saved" };
+    case "error": return { text: `저장 실패: ${autoSave.message}`, state: "error" };
+    case "idle": return { text: "저장 준비", state: "idle" };
   }
 }
 
@@ -570,6 +577,8 @@ function footerButtonAccessibleName(text: string): string {
       return "적용 Apply";
     case "도움말":
       return "도움말 Help";
+    case "테스트":
+      return "이 이벤트 테스트";
     default:
       return text;
   }

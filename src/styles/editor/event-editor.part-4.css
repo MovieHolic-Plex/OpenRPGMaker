@@ -876,11 +876,6 @@
     padding: 1px 8px 4px;
   }
 
-  .event-editor-diff {
-    min-height: 12px;
-    padding-bottom: 0;
-  }
-
   .event-page-props {
     gap: 3px;
   }

@@ -1,4 +1,4 @@
-/* 실행 내용: legend + toolbar 한 줄, 리스트가 나머지 채움 */
+/* 실행 내용: 툴바 한 줄, 리스트가 나머지 높이를 채움 */
 .event-contents-fieldset {
   align-content: start;
   display: grid;
@@ -92,8 +92,7 @@
   opacity: 0.55;
 }
 
-/* 하단 보조 도구 — 접힘 시 가로 칩 한 줄.
-   열림 시 flex 성장 금지: 본문은 칩 행 위 absolute 오버레이로 띄워 cmd-list 기하를 유지. */
+/* 툴바 도구 팝오버 안의 기능 칩. 본문도 오버레이로 열어 캔버스 기하를 유지한다. */
 .event-editor-aux-tools {
   align-items: start;
   display: flex;
@@ -220,15 +219,15 @@
   width: auto;
 }
 
-/* open body: 칩 행 위 오버레이 — containing block 은 .event-editor-aux-tools
-   (칩에 position 두지 않음). 인플로우 높이 비점유 → cmd-list min-height 유지. */
+/* 기능 본문은 도구 칩 행 아래 오버레이로 열려 캔버스 높이를 바꾸지 않는다. */
 .event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body,
 .event-editor-aux-tools .event-script-live-preview[open] > .event-script-live-preview-body,
 .event-editor-aux-tools .event-script-flowchart[open] > .event-flowchart-body {
   background: color-mix(in srgb, var(--event-modern-field) 94%, var(--bg-raised, #FFFDF8));
   border: 1px solid color-mix(in srgb, var(--event-modern-accent) 40%, var(--event-modern-border));
   border-radius: 10px;
-  bottom: calc(100% + 6px);
+  top: calc(100% + 6px);
+  bottom: auto;
   box-shadow:
     0 10px 28px var(--bg-surface),
     0 0 0 1px color-mix(in srgb, var(--event-modern-accent) 14%, transparent);

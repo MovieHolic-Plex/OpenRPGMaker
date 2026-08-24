@@ -76,8 +76,9 @@ async function clickMapTile(page: Page, x: number, y: number): Promise<void> {
 async function createEventAtMapCenter(page: Page): Promise<void> {
   await clickMapTile(page, 2, 2);
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
-  await expect(page.getByTestId("event-editor-diff")).toBeVisible();
-  await expect(page.getByTestId("event-editor-diff")).toContainText("생성 예정");
+  await expect(page.getByTestId("event-editor-diff")).toHaveCount(0);
+  await expect(page.getByTestId("event-editor-draft-status")).toContainText("취소 시 삭제");
+  await expect(page.getByTestId("event-editor-draft-status")).toContainText("자동 저장");
   await expect.poll(async () => {
     const state = await debugState(page);
     const map = state.project.maps[state.project.startMapId];

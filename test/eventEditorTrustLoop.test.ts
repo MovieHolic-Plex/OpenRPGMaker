@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
 import { readEventCommandPickerPreferences } from "@/editor/panels/eventEditor/commandPickerPreferences";
@@ -67,6 +67,9 @@ function keyEvent(key: string, options: { ctrlKey?: boolean; metaKey?: boolean }
 }
 
 beforeEach(() => {
+  vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "event-editor-trust-loop");
   _resetEventDraftVaultForTest();
   restoreDom = installFakeDom();
   originalStorage = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
@@ -82,6 +85,7 @@ afterEach(() => {
   if (originalStorage) Object.defineProperty(globalThis, "localStorage", originalStorage);
   else Reflect.deleteProperty(globalThis, "localStorage");
   _resetEventDraftVaultForTest();
+  vi.unstubAllEnvs();
   restoreDom();
 });
 
@@ -167,14 +171,13 @@ describe("event editor trust loop", () => {
     editorState.set({ currentMapId: mapId, selectedEventId: "event-1", selectedEventPageId: "page-1" });
     openEventEditorModal(mapId, "event-1");
 
-    expect(document.querySelector('[data-testid="event-editor-test"]')?.textContent).toBe("이 이벤트 테스트");
+    expect(document.querySelector('[data-testid="event-editor-test"]')?.textContent).toBe("테스트");
     const draftStatus = document.querySelector('[data-testid="event-editor-draft-status"]')?.textContent ?? "";
-    expect(draftStatus.length).toBeGreaterThan(0);
-    // 드래프트 상태는 세션 상태를 표시 — 문구는 리팩토링으로 변경될 수 있음
-    expect(["편집 세션", "로컬 복구", "변경 없음", "초안", "작업 중"].some((s) => draftStatus.includes(s))).toBe(true);
+    expect(draftStatus).toBe("변경 없음");
+    expect(document.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
     const remoteStatus = document.querySelector('[data-testid="event-editor-remote-status"]')?.textContent ?? "";
-    expect(remoteStatus.length).toBeGreaterThan(0);
-    expect(["원격 저장", "저장 준비", "저장소", "저장"].some((s) => remoteStatus.includes(s))).toBe(true);
+    expect(remoteStatus).toBe("저장 준비");
+    expect(remoteStatus).not.toContain("원격 저장");
 
     const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
     modal?.dispatchEvent(keyEvent("k", { ctrlKey: true }));

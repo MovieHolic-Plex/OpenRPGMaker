@@ -112,12 +112,13 @@ it("hides the character-id field behind a connect action until a profile is link
   expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
 });
 
-it("keeps follower presets and the field-monster template out of the command canvas", () => {
+it("keeps follower presets and the field-monster template in the closed toolbar menu", () => {
   render(host);
   const contents = host.querySelector('[data-testid="event-classic-contents"]');
-  expect(contents?.querySelector('[data-testid="follower-preset-bar"]')).toBeNull();
-  expect(contents?.querySelector('[data-testid="event-command-toolbar-field-monster"]')).toBeNull();
-  const aux = host.querySelector('[data-testid="event-editor-aux-tools"]');
+  const toolbar = contents?.querySelector(".event-editor-command-toolbar");
+  const aux = toolbar?.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
+  expect(aux).toBeTruthy();
+  expect(aux?.open).toBe(false);
   expect(aux?.querySelector('[data-testid="follower-preset-bar"]')).toBeTruthy();
   expect(aux?.querySelector('[data-testid="event-command-toolbar-field-monster"]')).toBeTruthy();
 });

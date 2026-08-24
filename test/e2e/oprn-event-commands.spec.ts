@@ -188,7 +188,7 @@ async function applyEventEditor(page: Page): Promise<void> {
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();
   await modal.getByTestId("event-editor-apply").click();
-  await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
+  await expect(page.getByTestId("event-editor-draft-status")).toContainText("적용됨");
 }
 
 async function writeEvidence(name: string, content: string): Promise<string> {

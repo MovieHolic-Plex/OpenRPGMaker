@@ -106,14 +106,6 @@
   background: var(--event-rm-chrome);
 }
 
-.event-editor-diff {
-  background: transparent;
-  border: 0;
-  color: var(--event-rm-disabled);
-  font: 400 11px/14px Tahoma, "MS Sans Serif", "Malgun Gothic", sans-serif;
-  min-height: 14px;
-  padding: 0 2px 1px;
-}
 
 .event-editor-workbench {
   --event-editor-settings-track: 540px;
