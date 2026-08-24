@@ -114,3 +114,12 @@ Evidence expectations:
 - This repository pins `vitest` exactly to `3.2.4` in both `package.json` and `package-lock.json`. In the current Windows/Node toolchain, Vitest 4.x fails before test collection with runner/config initialization errors; do not loosen or upgrade this pin without separately proving the full gate. Focused invocations use `--configLoader runner`.
 - Event draft/editor changes should run `npm run typecheck:app` plus: `npx vitest run test/eventDrafts.test.ts test/eventDraftVault.test.ts test/eventDraftValidator.test.ts test/eventBeginnerTemplates.test.ts test/eventTestSandbox.test.ts test/eventEditorTrustLoop.test.ts test/selectedEventTestModal.test.ts --configLoader runner`.
 - Required assertions are canonical projection while editing, crash/replace recovery, Cancel rollback, Apply/OK/Test fatal blocking, recursive nested validation and navigation, safe record-backed beginner templates, newest-first recents and roving tabs, focus/caret/details/scroll restoration, sandbox-only selected draft injection, deterministic spawn, real `initialEventTestId` player wiring, and zero `store.flush()` calls on the selected-event path. Follow with `npm run gates`, `npm run build`, and a practical browser smoke for merge-ready UI work.
+
+## P2 spatial focused gate (2026-08-25)
+
+- Schema/legacy/roundtrip: `test/p2SpatialSchema.test.ts`.
+- Atomic economy, collision, move/upgrade/rotation/removal: `test/p2SpatialTransactions.test.ts`.
+- Save writer, wire parser, direct checkpoint, explicit-empty and omitted-legacy behavior: `test/p2SpatialPersistence.test.ts`.
+- Definition/placement FK, footprint collision, repair, map cascade and delete guards: `test/p2SpatialReferenceIntegrity.test.ts`.
+- Database CRUD/navigation and runtime visibility: `test/p2SpatialEditorAuthoring.test.ts`, Database sidebar suites, and `test/p2SpatialRuntimeUi.test.ts`.
+- Root integration performs real browser QA at 1024x768 and 1440x900 using `db-tab-farm-spatial`, `db-spatial-workspace`, `db-spatial-hero-image`, CRUD testids, and `life-ledger-tab-spaces`. This isolated implementation does not claim browser evidence.

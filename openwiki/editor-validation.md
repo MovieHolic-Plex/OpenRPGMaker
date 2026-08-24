@@ -51,3 +51,10 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 
 
 - All repository Vitest entry points run through `scripts/run-vitest.mjs` with `--configLoader bundle`. On Windows, the wrapper resolves the Vitest CLI and root to an uppercase drive letter before spawning Node. This avoids Vitest issue [#10692](https://github.com/vitest-dev/vitest/issues/10692), where lowercase `c:` CLI URLs and uppercase `C:` Vite URLs can load two runtime copies and fail before collection with `suite.config`/`current suite` errors. `scripts/verify-gates.mjs` uses the same wrapper and rejects a report with `numTotalTests === 0`; do not replace this with a pool pin, alias, externalization, or cache workaround without proving focused collection and `npm run gates -- --json` from an isolated worktree.
+
+## P2 spatial integrity (2026-08-25)
+
+- `collectProjectReferenceIssues` validates duplicate type/instance IDs; building cost item, decoration placement-item, map, and graphic references; placement type/level/orientation references; rotated footprint bounds/passability; and collisions with earlier P2 placements or authored legacy placeables. Paths identify the exact collection and array index.
+- `repairProjectReferences` keeps the first duplicate, removes definitions with dangling item/graphic references, prunes missing allowed-map IDs, and drops orphaned/out-of-bounds/overlapping starting placements. Repair never chooses a replacement item/type and never creates inventory value.
+- Database item deletion is blocked by building costs and decoration placement items. Building/decor type deletion is blocked while a starting placement uses it. Map deletion impact reports separate P2 building/decor counts and IDs, removes only target-map placements, and prunes the deleted map from type allowlists.
+- Mandatory focused regression: `test/p2SpatialReferenceIntegrity.test.ts` plus `test/mapDeletionIntegrity.test.ts`, `test/p1ReferenceIntegrity.test.ts`, and `test/npcScheduleReferenceIntegrity.test.ts`.
