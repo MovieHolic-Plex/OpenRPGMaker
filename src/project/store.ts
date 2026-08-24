@@ -25,6 +25,7 @@ import {
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { syncProjectToUrl } from "./projectUrl";
 import {
+  saveSupabaseProjectConfigDraft,
   saveSupabaseSelectedProjectId,
   supabaseProjectConfig,
   supabaseProjectConfigDraft,
