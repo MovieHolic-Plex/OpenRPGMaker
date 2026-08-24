@@ -12,6 +12,8 @@ Use this index to find the right topic page before changing editor-facing behavi
 - **[editor-interior-room-harness.md](editor-interior-room-harness.md)** — Interior Room Session Harness (villager-room-v1): start session, advance build per layer, evaluate, and self-repair loop.
 - **[editor-storage-chest.md](editor-storage-chest.md)** — Storage chest authoring tool and its distinction from place_chest treasure reward presets.
 
+- **[editor-genre-packs.md](editor-genre-packs.md)** — Shared-schema genre-pack registry, welcome starter mapping, vocabulary, and readiness contracts.
+
 ## Quick routing
 
 - **map** / tile / canvas: editor-pre-edit-routing.md (map canvas, tile placement, brush, autotile) + editor-workflows-misc.md (dungeons, village)
