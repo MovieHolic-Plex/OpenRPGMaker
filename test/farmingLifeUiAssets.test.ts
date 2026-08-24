@@ -12,7 +12,9 @@ describe("farming life UI assets", () => {
       "animals",
       "buildings",
       "bundles",
+      "decorating",
       "fishing",
+      "foraging",
       "makers",
       "museum",
     ]);

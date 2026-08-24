@@ -517,6 +517,7 @@ export function createFarmingDemoProject(): Project {
   attachFarmSocialProfiles(project);
   attachFarmLifeEconomy(project);
   attachFarmP1WorldLife(project);
+  attachFarmP2ExplorationAndSpaces(project);
   if (!project.switches.some((entry) => entry.id === FARM_FESTIVAL_SPRING_SWITCH_ID)) {
     project.switches.push({ id: FARM_FESTIVAL_SPRING_SWITCH_ID, name: "봄 축제 관람" });
   }
@@ -729,6 +730,188 @@ function attachFarmP1WorldLife(project: Project): void {
       buildingId: "building_sunrise_barn",
     },
   ];
+}
+
+/**
+ * P2의 탐색·수집·공간 확장 콘텐츠. 스키마 예시만 두지 않고 낚시/채집/박물관과
+ * 범용 건물/집 장식을 하나의 저장 가능한 데모 프로젝트 안에서 서로 연결한다.
+ */
+function attachFarmP2ExplorationAndSpaces(project: Project): void {
+  upsertDemoItems(project, [
+    { id: "item_river_carp", name: "강 잉어", scope: "none", price: 90, type: "normalGoods" },
+    { id: "item_moon_trout", name: "달빛 송어", scope: "none", price: 220, type: "normalGoods" },
+    { id: "item_wild_leek", name: "야생 부추", scope: "none", price: 55, type: "normalGoods" },
+    { id: "item_summer_berry", name: "여름 산딸기", scope: "none", price: 75, type: "normalGoods" },
+    { id: "item_fall_mushroom", name: "가을 버섯", scope: "none", price: 130, type: "normalGoods" },
+    { id: "item_winter_root", name: "겨울 뿌리", scope: "none", price: 105, type: "normalGoods" },
+    { id: "item_cave_mushroom", name: "동굴 버섯", scope: "none", price: 145, type: "normalGoods" },
+    { id: "item_museum_token", name: "박물관 기념 주화", scope: "none", price: 300, type: "normalGoods" },
+    { id: "item_sun_rug", name: "해님 러그", scope: "none", price: 180, type: "normalGoods" },
+    { id: "item_wood_table", name: "원목 탁자", scope: "none", price: 240, type: "normalGoods" },
+  ]);
+
+  project.database.fishSpecies = [
+    { id: "fish_river_carp", name: "강 잉어", itemId: "item_river_carp", skillXp: 12 },
+    { id: "fish_moon_trout", name: "달빛 송어", itemId: "item_moon_trout", skillXp: 30 },
+  ];
+  project.system.fishing = {
+    enabled: true,
+    energyCost: 4,
+    spots: [{
+      id: "fishing_spot_farm_pond",
+      name: "농장 연못",
+      mapId: project.startMapId,
+      area: { x: 0, y: 15, w: 4, h: 4 },
+      catches: [
+        { fishId: "fish_river_carp", weight: 75, seasons: ["spring", "summer", "fall"], timePhases: ["morning", "day", "evening"] },
+        { fishId: "fish_moon_trout", weight: 25, seasons: ["fall", "winter"], timePhases: ["evening", "night"], weatherKinds: ["rain", "storm", "snow"], minSkillLevel: 2 },
+      ],
+    }],
+  };
+  project.system.seasonalForage = {
+    enabled: true,
+    areas: [
+      {
+        id: "forage_farm_meadow",
+        name: "농장 남쪽 풀밭",
+        mapId: project.startMapId,
+        area: { x: 10, y: 15, w: 8, h: 4 },
+        dailySpawnCount: 2,
+        maxActive: 4,
+        despawnAfterDays: 2,
+        entries: [{
+          id: "forage_turning_seasons",
+          weight: 3,
+          seasonalDrops: {
+            spring: "item_wild_leek",
+            summer: "item_summer_berry",
+            fall: "item_fall_mushroom",
+            winter: "item_winter_root",
+          },
+        }],
+      },
+      {
+        id: "forage_mine_cavern",
+        name: "광산 버섯 군락",
+        mapId: FARM_MINE_MAP_ID,
+        area: { x: 3, y: 5, w: 6, h: 4 },
+        dailySpawnCount: 1,
+        maxActive: 2,
+        spawnEveryDays: 2,
+        despawnAfterDays: 3,
+        entries: [{ id: "forage_cave_mushroom", weight: 1, itemId: "item_cave_mushroom" }],
+      },
+    ],
+  };
+  const trackedItemIds = [
+    "item_river_carp",
+    "item_moon_trout",
+    "item_wild_leek",
+    "item_summer_berry",
+    "item_fall_mushroom",
+    "item_winter_root",
+    "item_cave_mushroom",
+    "item_stone",
+    "item_iron_ore",
+  ];
+  project.system.collections = { enabled: true, trackedItemIds };
+  project.system.museum = {
+    enabled: true,
+    eligibleItemIds: trackedItemIds,
+    rewards: [
+      {
+        id: "museum_reward_first_find",
+        name: "첫 발견 보상",
+        minDonations: 1,
+        reward: { gold: 150, itemRewards: [{ itemId: "item_museum_token", count: 1 }] },
+      },
+      {
+        id: "museum_reward_field_scholar",
+        name: "들판 연구가 보상",
+        minDonations: 5,
+        requiredItemIds: ["item_river_carp", "item_wild_leek", "item_cave_mushroom"],
+        reward: { gold: 650, itemRewards: [{ itemId: "item_museum_token", count: 2 }] },
+      },
+    ],
+  };
+
+  project.database.farmBuildingTypes = [{
+    id: "farm_building_workshop",
+    name: "농장 작업실",
+    allowedMapIds: [project.startMapId],
+    levels: [
+      {
+        level: 1,
+        name: "작은 작업실",
+        footprint: { width: 2, height: 2 },
+        capacity: 2,
+        cost: { gold: 500, items: [{ itemId: "item_wood", count: 20 }, { itemId: "item_stone", count: 10 }] },
+        graphicResourceId: "tex_easyrpg_charset_object1",
+      },
+      {
+        level: 2,
+        name: "장인 작업실",
+        footprint: { width: 3, height: 2 },
+        capacity: 5,
+        cost: { gold: 1200, items: [{ itemId: "item_wood", count: 40 }, { itemId: "item_iron_bar", count: 4 }] },
+        graphicResourceId: "tex_easyrpg_charset_object1",
+      },
+    ],
+  }];
+  project.database.homeDecorationTypes = [
+    {
+      id: "home_decor_sun_rug",
+      name: "해님 러그",
+      placementItemId: "item_sun_rug",
+      footprint: { width: 2, height: 1 },
+      blocksMovement: false,
+      allowedOrientations: ["down", "left", "right", "up"],
+      graphicResourceId: "tex_easyrpg_charset_object1",
+      allowedMapIds: [project.startMapId],
+    },
+    {
+      id: "home_decor_wood_table",
+      name: "원목 탁자",
+      placementItemId: "item_wood_table",
+      footprint: { width: 1, height: 2 },
+      blocksMovement: true,
+      allowedOrientations: ["down", "right"],
+      graphicResourceId: "tex_easyrpg_charset_object1",
+      allowedMapIds: [project.startMapId],
+    },
+  ];
+  project.session = {
+    ...project.session,
+    inventory: { ...project.session.inventory, item_wild_leek: 1, item_sun_rug: 1, item_wood_table: 1 },
+    farmBuildingPlacements: [{
+      instanceId: "farm_building_workshop_1",
+      typeId: "farm_building_workshop",
+      level: 1,
+      mapId: project.startMapId,
+      x: 14,
+      y: 11,
+      orientation: "down",
+    }],
+    homeDecorationPlacements: [
+      { instanceId: "home_decor_sun_rug_1", typeId: "home_decor_sun_rug", mapId: project.startMapId, x: 0, y: 1, orientation: "down" },
+      { instanceId: "home_decor_wood_table_1", typeId: "home_decor_wood_table", mapId: project.startMapId, x: 10, y: 2, orientation: "right" },
+    ],
+  };
+  const p2SellPrices = [
+    ["item_river_carp", 45], ["item_moon_trout", 110], ["item_wild_leek", 28],
+    ["item_summer_berry", 38], ["item_fall_mushroom", 65], ["item_winter_root", 53],
+    ["item_cave_mushroom", 73],
+  ] as const;
+  project.system.sellPrices = [
+    ...(project.system.sellPrices ?? []),
+    ...p2SellPrices.map(([itemId, price]) => ({ itemId, price })),
+  ];
+  if (project.system.shipping) {
+    project.system.shipping = {
+      ...project.system.shipping,
+      allowedItemIds: [...(project.system.shipping.allowedItemIds ?? []), ...p2SellPrices.map(([itemId]) => itemId)],
+    };
+  }
 }
 
 /**

@@ -35,6 +35,7 @@ const TAB_TESTID: Record<string, string> = {
   lifeCrafting: "db-tab-life-crafting",
   dailyWeather: "db-tab-daily-weather",
   farmAnimals: "db-tab-farm-animals",
+  lifeCollections: "db-tab-life-collections",
   farmSpatial: "db-tab-farm-spatial",
   terrain: "db-tab-terrain",
   tilesets: "db-tab-tilesets",

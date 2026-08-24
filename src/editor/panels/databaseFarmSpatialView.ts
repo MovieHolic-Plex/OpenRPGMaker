@@ -1,3 +1,4 @@
+import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import {
   farmBuildingTypeReferenceMessage,
   homeDecorationTypeReferenceMessage,
@@ -38,7 +39,7 @@ export function renderFarmSpatialTab(host: HTMLElement, rerender: () => void): v
         children: [
           el("img", {
             attrs: {
-              src: "/assets/farming/life-ui/decorating-card.png",
+              src: FARMING_LIFE_UI_ASSETS.decorating,
               alt: "농장 건물과 집 꾸미기",
               loading: "lazy",
             },

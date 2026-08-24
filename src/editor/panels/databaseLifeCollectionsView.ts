@@ -1,3 +1,4 @@
+import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
@@ -10,10 +11,21 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
     class: "db-life-authoring-workspace db-life-collections-workspace",
     dataset: { testid: "db-life-collections-workspace" },
     children: [
-      el("header", { class: "db-life-panel-heading", children: [
-        el("span", { class: "db-life-panel-eyebrow", text: "발견과 기록" }),
-        el("div", { children: [el("h2", { text: "낚시·채집·박물관" }), el("p", { text: "물고기 출현 조건, 계절 채집 구역, 수집 기록과 박물관 보상을 연결합니다." })] }),
-      ] }),
+      el("header", {
+        class: "db-spatial-hero db-life-collections-hero",
+        dataset: { testid: "db-life-collections-hero" },
+        children: [
+        el("img", {
+          attrs: { src: FARMING_LIFE_UI_ASSETS.foraging, alt: "계절 채집과 수집 도감", loading: "lazy" },
+          dataset: { testid: "db-life-collections-hero-image" },
+        }),
+        el("div", { children: [
+          el("span", { class: "db-life-panel-eyebrow", text: "발견과 기록" }),
+          el("h2", { text: "낚시·채집·박물관" }),
+          el("p", { text: "물고기 출현 조건, 계절 채집 구역, 수집 기록과 박물관 보상을 연결합니다." }),
+        ] }),
+        ],
+      }),
       el("div", { class: "db-life-toolbar", children: [
         el("button", { class: "btn", text: "기본 생활 컬렉션 만들기", attrs: { type: "button" }, dataset: { testid: "db-life-collections-seed-defaults" }, on: { click: () => seedDefaults(rerender) } }),
         el("span", { text: `물고기 ${project.database.fishSpecies?.length ?? 0} · 낚시터 ${project.system.fishing?.spots.length ?? 0} · 채집 구역 ${project.system.seasonalForage?.areas.length ?? 0} · 박물관 보상 ${project.system.museum?.rewards.length ?? 0}` }),

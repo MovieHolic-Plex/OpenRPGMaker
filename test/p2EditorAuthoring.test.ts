@@ -34,7 +34,10 @@ describe("P2 database authoring", () => {
     const life = TAB_GROUPS.find((group) => group.label === "생활");
     expect(life?.tabs).toContain("lifeCollections");
     const host = renderPanel();
-    expect(findByTestId(host, "db-tab-life-collections")?.textContent).toBe("낚시·채집·박물관");
+    const tab = findByTestId(host, "db-tab-life-collections");
+    expect(tab?.textContent).toBe("낚시·채집·박물관");
+    tab?.click();
+    expect(findByTestId(host, "db-life-collections-hero-image")?.getAttribute("src")).toMatch(/foraging-card\.png$/);
   });
 
   it("seeds connected definitions and exposes all four authoring sections", () => {

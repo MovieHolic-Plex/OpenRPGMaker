@@ -107,6 +107,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "lifeCrafting",
   "dailyWeather",
   "farmAnimals",
+  "lifeCollections",
   "farmSpatial",
   "lifeCollections",
   "tilesets",
