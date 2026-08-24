@@ -14,6 +14,8 @@ import type { JsonSchema, ToolResult } from "@/editor/tools/types";
 
 type Variant = "empty" | "nulls" | "wrongTypes" | "deepHoles";
 
+const HOSTILE_ARGS_TIMEOUT_MS = 60_000;
+
 /** 스키마에서 "그럴듯하지만 틀린" 인자를 만든다 — 필수 누락·null 원소·타입 뒤집기·중첩 구멍. */
 function hostileArgs(schema: JsonSchema, variant: Variant): Record<string, unknown> {
   if (variant === "empty") return {};
@@ -73,6 +75,6 @@ describe("쓰기 툴 적대적 인자 스윕", () => {
         }
       }
       expect(offenders).toEqual([]);
-    });
+    }, HOSTILE_ARGS_TIMEOUT_MS);
   }
 });

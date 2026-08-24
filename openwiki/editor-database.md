@@ -1,5 +1,16 @@
 # Editor Database
 
+## 생활 기술·제작 저작 표면 (2026-08-24)
+
+- `src/editor/panels/database.ts`의 `lifeCrafting` / `db-tab-life-crafting`은 grouped navigation의 `생활` 그룹에 있다. 탭 count는 `database.lifeSkills`, `system.craftRecipes`, `system.itemUpgrades`, `system.sellPrices`, `system.toolActions`의 합이다.
+- `src/editor/panels/databaseLifeCraftingView.ts`가 다섯 컬렉션의 목록/상세 CRUD를 소유한다. JSON textarea나 단순 count 편집이 아니라 생활 기술의 5종 type·maxLevel·레벨별 switch/recipe 보상, 제작 재료/결과, 강화 전후 아이템·골드·재료, 판매가, 도구 종류/아이템/행동/경작지·대상 조건을 구조화 컨트롤로 편집한다. 구조 변경은 `recordProjectSnapshot`, 필드 변경은 `recordCoalescedSnapshot`을 사용한다.
+- 새 레코드는 기존 optional 필드만 쓴다. `databaseRecordModel.ts`의 `lifeSkills` 정규화와 system 배열 whitelist를 유지하며 별도 migration은 없다. serialize/deserialize 왕복은 `test/databaseLifeCraftingView.test.ts`가 증명한다.
+- System `time` 섹션은 `db-field-system-time-days-per-season`으로 `TimeSystemConfig.daysPerSeason`을 편집한다. 기본값은 28이며 `dayStartHour` / `dayEndHour`와 함께 보존된다. 현재 schema에는 별도 시작 계절·시작 날짜 필드가 없으므로 UI가 임의 필드를 만들지 않는다.
+- 삭제/검증은 `databaseReferences.ts`와 `project/io/references.ts`를 함께 유지한다. 제작/강화/판매/도구 행동의 item 참조, 생활 기술 보상의 switch/recipe 참조가 orphan 검사 대상이며, 사용 중인 item/switch 및 보상에서 사용하는 recipe 삭제는 차단한다.
+- `sellPrices.itemId`와 `toolActions.id`는 각각 해석 키이므로 중복이면 reference/lint issue다. 코어 P0 병합 후 `CraftRecipe.requiresUnlock`과 `ItemUpgradeRule`의 도구 capability(`areaWidth`, `areaHeight`, `energyMultiplier`)가 실제 타입에 들어오면 이 구조화 폼과 참조 검증/왕복 테스트에도 같은 필드를 노출해야 한다. 이 브랜치는 아직 존재하지 않는 필드를 임의로 저장하지 않는다.
+- UI의 ID 입력은 기존 lifeSkill/recipe/upgrade/toolAction id와 중복되는 값을 저장하지 않으며, 새 판매가 행은 아직 가격이 없는 item을 자동 선택한다. `databaseCommandReferences.ts`는 `changeLifeSkillExp`, `craftRecipe`, `applyItemUpgrade`를 map/common/troop nested branch까지 찾으므로 해당 이벤트 명령이 남은 레코드는 UI에서 삭제할 수 없다.
+- CSS는 `src/styles/database/desktop-record-shell/11-life-authoring.css`에 modal-scoped로 있으며 1024px 밀도와 1360px 이상(1440 acceptance) 확장 레이아웃을 따로 둔다. 집중 테스트는 `test/databaseLifeCraftingView.test.ts`, `test/databaseSidebarNav.test.ts`, `test/databaseSidebarKeyboard.test.ts`, `test/databaseSystemView.test.ts`, `test/lifeAuthoringReferences.test.ts`다.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Database tabs, record views, battle database records, utility records, references, common-event command editing, and record mutation.

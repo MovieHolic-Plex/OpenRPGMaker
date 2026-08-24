@@ -1,6 +1,7 @@
 import { SCHEMA_VERSION, type ActorInitialEquipment, type Project } from "@/project/types";
 import {
   clampFriendship,
+  GOLD_MAX,
   startSession,
   type AudioCommandState,
   type PictureState,
@@ -23,14 +24,18 @@ import {
   isActorVitalsRecord,
   isBooleanRecord,
   isLightingState,
+  isLifeSkillsRecord,
+  isMakerInstancesRecord,
   isGameTime,
   isFarmPlotDate,
   isFarmPlotsRecord,
   isLifeSkillsRecord,
   isMonsterInstancesRecord,
   isNestedNumberRecord,
+  isNestedNonNegativeIntegerRecord,
   isNumberRecord,
   isPictureRecord,
+  parsePositiveIntegerRecord,
   isRecord,
   isRuntimeCameraState,
   isRuntimeEventLocationRecord,
@@ -40,6 +45,9 @@ import {
   isRuntimeNpcTravelStateRecord,
   isRuntimeRemovedEventIds,
   isRuntimeSpawnedEventRecord,
+  isShopPawnTicketsRecord,
+  isShopTradeCountsRecord,
+  isShippingSettlementArray,
   isRngState,
   isSaveOrigin,
   isShopPawnTicketsRecord,
@@ -51,6 +59,7 @@ import {
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
+import { shippingHistoryLimit } from "@/project/shipping";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import { normalizeRoguelikeRunState, type RoguelikeRunState } from "@/project/roguelikeRun";
@@ -98,6 +107,16 @@ export type SaveSnapshot = {
     readonly shopMileagePoints?: PlaySession["shopMileagePoints"];
     readonly shopPawnTickets?: PlaySession["shopPawnTickets"];
     readonly shopLastRestockDayKey?: PlaySession["shopLastRestockDayKey"];
+    readonly energy?: PlaySession["energy"];
+    readonly shippingQueue?: PlaySession["shippingQueue"];
+    readonly shippingLastSettledDayKey?: PlaySession["shippingLastSettledDayKey"];
+    readonly shippingHistory?: PlaySession["shippingHistory"];
+    readonly bundleContributions?: PlaySession["bundleContributions"];
+    readonly completedBundleIds?: PlaySession["completedBundleIds"];
+    readonly bundleRewardAppliedIds?: PlaySession["bundleRewardAppliedIds"];
+    readonly unlockedRegionIds?: PlaySession["unlockedRegionIds"];
+    readonly unlockedRecipeIds?: PlaySession["unlockedRecipeIds"];
+    readonly makerInstances?: PlaySession["makerInstances"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
@@ -233,6 +252,16 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       shopMileagePoints: session.shopMileagePoints,
       shopPawnTickets: structuredClone(session.shopPawnTickets),
       shopLastRestockDayKey: structuredClone(session.shopLastRestockDayKey),
+      energy: nonNegativeIntegerOrUndefined(session.energy),
+      shippingQueue: structuredClone(session.shippingQueue ?? {}),
+      shippingLastSettledDayKey: session.shippingLastSettledDayKey,
+      shippingHistory: structuredClone((session.shippingHistory ?? []).slice(-shippingHistoryLimit(project))),
+      bundleContributions: structuredClone(session.bundleContributions ?? {}),
+      completedBundleIds: uniqueStrings(session.completedBundleIds),
+      bundleRewardAppliedIds: uniqueStrings(session.bundleRewardAppliedIds),
+      unlockedRegionIds: uniqueStrings(session.unlockedRegionIds),
+      unlockedRecipeIds: uniqueStrings(session.unlockedRecipeIds),
+      makerInstances: structuredClone(session.makerInstances ?? {}),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
@@ -251,7 +280,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       npcTravelStates: structuredClone(session.npcTravelStates),
       npcActivities: structuredClone(session.npcActivities ?? {}),
       npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
-      lifeSkills: structuredClone(session.lifeSkills),
+      lifeSkills: structuredClone(session.lifeSkills ?? {}),
       farmPlots: structuredClone(session.farmPlots ?? {}),
       farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
@@ -353,9 +382,31 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
   if (snapshot.session.shopLoyaltySpend) session.shopLoyaltySpend = structuredClone(snapshot.session.shopLoyaltySpend);
   if (snapshot.session.shopTradeCounts) session.shopTradeCounts = structuredClone(snapshot.session.shopTradeCounts);
-  if (snapshot.session.shopMileagePoints !== undefined) session.shopMileagePoints = snapshot.session.shopMileagePoints;
+  if (typeof snapshot.session.shopMileagePoints === "number") session.shopMileagePoints = snapshot.session.shopMileagePoints;
   if (snapshot.session.shopPawnTickets) session.shopPawnTickets = structuredClone(snapshot.session.shopPawnTickets);
   if (snapshot.session.shopLastRestockDayKey) session.shopLastRestockDayKey = structuredClone(snapshot.session.shopLastRestockDayKey);
+  if (typeof snapshot.session.energy === "number") session.energy = snapshot.session.energy;
+  const shippingEnabled = project.system.shipping?.enabled === true;
+  session.shippingQueue = shippingEnabled
+    ? restoreShippingQueue(project, snapshot.session.shippingQueue)
+    : {};
+  session.shippingLastSettledDayKey = shippingEnabled ? snapshot.session.shippingLastSettledDayKey : undefined;
+  session.shippingHistory = shippingEnabled
+    ? structuredClone((snapshot.session.shippingHistory ?? []).slice(-shippingHistoryLimit(project)))
+    : [];
+  session.bundleContributions = restoreBundleContributions(project, snapshot.session.bundleContributions);
+  const bundleIds = new Set((project.system.bundles ?? []).map((bundle) => bundle.id));
+  session.completedBundleIds = filterKnownIds(snapshot.session.completedBundleIds, bundleIds);
+  session.bundleRewardAppliedIds = filterKnownIds(snapshot.session.bundleRewardAppliedIds, bundleIds);
+  session.unlockedRegionIds = filterKnownIds(
+    snapshot.session.unlockedRegionIds,
+    new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id)),
+  );
+  session.unlockedRecipeIds = filterKnownIds(
+    snapshot.session.unlockedRecipeIds,
+    new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id)),
+  );
+  session.makerInstances = restoreMakerInstances(project, snapshot.session.makerInstances);
   if (snapshot.session.monsterInstances) {
     session.monsterInstances = {};
     for (const [instanceId, instance] of Object.entries(snapshot.session.monsterInstances)) {
@@ -379,9 +430,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
-  if (snapshot.session.lifeSkills) session.lifeSkills = structuredClone(snapshot.session.lifeSkills);
+  session.lifeSkills = structuredClone(snapshot.session.lifeSkills ?? {});
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
-  session.farmPlotsAdvancedThrough = structuredClone(snapshot.session.farmPlotsAdvancedThrough);
+  session.farmPlotsAdvancedThrough = normalizeFarmPlotDateForProject(project, snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
@@ -418,7 +469,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
-  if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
+  if (snapshot.session.gameTime) {
+    session.gameTime = normalizeGameTime(snapshot.session.gameTime, project.system.timeSystem);
+  }
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   session.roguelikeRun = normalizeRoguelikeRunState(snapshot.session.roguelikeRun);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
@@ -526,11 +579,23 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
       shopLoyaltySpend: isNumberRecord(session.shopLoyaltySpend) ? session.shopLoyaltySpend : undefined,
       shopTradeCounts: isShopTradeCountsRecord(session.shopTradeCounts) ? session.shopTradeCounts : undefined,
-      shopMileagePoints: typeof session.shopMileagePoints === "number" && Number.isFinite(session.shopMileagePoints)
-        ? session.shopMileagePoints
+      shopMileagePoints: typeof session.shopMileagePoints === "number" && Number.isFinite(session.shopMileagePoints) && session.shopMileagePoints >= 0
+        ? Math.trunc(session.shopMileagePoints)
         : undefined,
       shopPawnTickets: isShopPawnTicketsRecord(session.shopPawnTickets) ? session.shopPawnTickets : undefined,
       shopLastRestockDayKey: isStringRecord(session.shopLastRestockDayKey) ? session.shopLastRestockDayKey : undefined,
+      energy: nonNegativeIntegerOrUndefined(session.energy),
+      shippingQueue: parsePositiveIntegerRecord(session.shippingQueue),
+      shippingLastSettledDayKey: typeof session.shippingLastSettledDayKey === "string" && session.shippingLastSettledDayKey.trim()
+        ? session.shippingLastSettledDayKey
+        : undefined,
+      shippingHistory: isShippingSettlementArray(session.shippingHistory) ? session.shippingHistory : undefined,
+      bundleContributions: isNestedNonNegativeIntegerRecord(session.bundleContributions) ? session.bundleContributions : undefined,
+      completedBundleIds: isStringArray(session.completedBundleIds) ? [...session.completedBundleIds] : undefined,
+      bundleRewardAppliedIds: isStringArray(session.bundleRewardAppliedIds) ? [...session.bundleRewardAppliedIds] : undefined,
+      unlockedRegionIds: isStringArray(session.unlockedRegionIds) ? [...session.unlockedRegionIds] : undefined,
+      unlockedRecipeIds: isStringArray(session.unlockedRecipeIds) ? [...session.unlockedRecipeIds] : undefined,
+      makerInstances: isMakerInstancesRecord(session.makerInstances) ? session.makerInstances : undefined,
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
@@ -586,7 +651,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
-      gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
+      gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,
       rng: isRngState(session.rng) ? session.rng : undefined,
       roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
       screen: parseScreenState(session.screen),
@@ -637,6 +702,71 @@ function normalizeFriendshipRecord(value: Record<string, number> | undefined): R
     result[npcKey] = clampFriendship(amount);
   }
   return result;
+}
+
+function nonNegativeIntegerOrUndefined(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value) && value >= 0
+    ? value
+    : undefined;
+}
+
+function uniqueStrings(values: readonly string[] | undefined): string[] {
+  return [...new Set((values ?? []).filter((value) => value.trim().length > 0))];
+}
+
+function normalizeFarmPlotDateForProject(
+  project: Project,
+  value: PlaySession["farmPlotsAdvancedThrough"],
+): PlaySession["farmPlotsAdvancedThrough"] {
+  if (!value) return undefined;
+  const normalized = normalizeGameTime(
+    { ...value, hour: project.system.timeSystem?.dayStartHour ?? 6, minute: 0 },
+    project.system.timeSystem,
+  );
+  return normalized
+    ? { day: normalized.day, season: normalized.season, year: normalized.year }
+    : undefined;
+}
+
+function restoreShippingQueue(
+  project: Project,
+  queue: PlaySession["shippingQueue"],
+): NonNullable<PlaySession["shippingQueue"]> {
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const allowedIds = project.system.shipping?.allowedItemIds;
+  return Object.fromEntries(Object.entries(queue ?? {}).filter(([itemId, count]) =>
+    Number.isInteger(count) && count > 0 && count <= GOLD_MAX &&
+    itemIds.has(itemId) && (allowedIds === undefined || allowedIds.includes(itemId))));
+}
+
+function restoreBundleContributions(
+  project: Project,
+  contributions: PlaySession["bundleContributions"],
+): NonNullable<PlaySession["bundleContributions"]> {
+  const restored: NonNullable<PlaySession["bundleContributions"]> = {};
+  for (const bundle of project.system.bundles ?? []) {
+    const saved = contributions?.[bundle.id];
+    if (!saved) continue;
+    const requirements = new Map(bundle.requirements.map((entry) => [entry.itemId, entry.count] as const));
+    const valid = Object.fromEntries(Object.entries(saved).filter(([itemId, count]) => {
+      const required = requirements.get(itemId);
+      return required !== undefined && count > 0 && count <= required;
+    }));
+    if (Object.keys(valid).length > 0) restored[bundle.id] = valid;
+  }
+  return restored;
+}
+
+function restoreMakerInstances(
+  project: Project,
+  instances: PlaySession["makerInstances"],
+): NonNullable<PlaySession["makerInstances"]> {
+  const makerIds = new Set((project.system.makers ?? []).map((maker) => maker.id));
+  return Object.fromEntries(Object.entries(instances ?? {}).filter(([, instance]) => makerIds.has(instance.makerId)));
+}
+
+function filterKnownIds(values: readonly string[] | undefined, knownIds: ReadonlySet<string>): string[] {
+  return uniqueStrings(values).filter((id) => knownIds.has(id));
 }
 
 function corrupt(slot: SaveSlotIndex, message: string): SaveSlotReadResult {

@@ -22,6 +22,7 @@ import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
   DEFAULT_DAY_END_HOUR,
   DEFAULT_DAY_START_HOUR,
+  DEFAULT_DAYS_PER_SEASON,
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import { store } from "@/project/store";
@@ -618,6 +619,7 @@ function timeSystemFieldset(
           minutesPerRealSecond: draft.system.timeSystem?.minutesPerRealSecond ?? DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
           dayStartHour: draft.system.timeSystem?.dayStartHour ?? DEFAULT_DAY_START_HOUR,
           dayEndHour: draft.system.timeSystem?.dayEndHour ?? DEFAULT_DAY_END_HOUR,
+          daysPerSeason: draft.system.timeSystem?.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON,
           forceSleep: draft.system.timeSystem?.forceSleep === true,
           onDayEnd: draft.system.timeSystem?.onDayEnd,
         });
@@ -653,6 +655,15 @@ function timeSystemFieldset(
             dayEndHour: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAY_END_HOUR,
           });
         }, "system:time:day-end");
+      }),
+      numberField("계절당 일수", "db-field-system-time-days-per-season", timeSystem.daysPerSeason ?? DEFAULT_DAYS_PER_SEASON, (value) => {
+        updateSystem((draft) => {
+          draft.system.timeSystem = normalizeTimeSystemConfig({
+            ...draft.system.timeSystem,
+            enabled: true,
+            daysPerSeason: Number.isFinite(value) ? Math.trunc(value) : DEFAULT_DAYS_PER_SEASON,
+          });
+        }, "system:time:days-per-season");
       }),
       checkboxField("종료 시 강제 취침", "db-field-system-time-force-sleep", timeSystem.forceSleep === true, (checked) => {
         updateSystem((draft) => {

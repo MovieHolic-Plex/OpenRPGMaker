@@ -32,6 +32,7 @@ const EXPECTED_TABS = [
   // 생활
   "db-tab-crops",
   "db-tab-characters",
+  "db-tab-life-crafting",
   // 맵
   "db-tab-tilesets",
   "db-tab-structure-kits",
@@ -107,14 +108,15 @@ describe("database sidebar navigation", () => {
     expect(groups.map((group) => group.textContent)).toEqual(EXPECTED_GROUPS);
   });
 
-  it("keeps all 24 tab testids, exactly once, in group order (overview pinned on top)", () => {
+  // Break caught: life-skill and crafting records remain hidden behind System counts.
+  it("keeps all 25 tab testids, including the discoverable life authoring surface", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(24);
+    expect(EXPECTED_TABS.length).toBe(25);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(24);
+    expect(new Set(EXPECTED_TABS).size).toBe(25);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
@@ -129,6 +131,21 @@ describe("database sidebar navigation", () => {
     expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe("몬스터 종족");
     expect(findTab(panelRoot, "db-tab-crops").textContent).toBe("농사·작물");
     expect(findTab(panelRoot, "db-tab-characters").textContent).toBe("주민 관계");
+  });
+
+  // Break caught: the new navigation entry has no aggregate count or routed view.
+  it("shows the aggregate life-record count and opens its structured workspace", () => {
+    store.update((project) => {
+      project.database.lifeSkills = [{ id: "life", name: "농사", skillType: "farming", maxLevel: 10, levelUpRewards: [] }];
+      project.system.sellPrices = [{ itemId: project.database.items[0]?.id ?? "", price: 10 }];
+    });
+    const panelRoot = renderPanelHost();
+    const tab = findTab(panelRoot, "db-tab-life-crafting");
+    expect(tab.dataset.count).toBe("2");
+
+    tab.click();
+
+    expect(findByTestId(panelRoot, "db-life-workspace")).toBeTruthy();
   });
 
   it("toggles .active on the clicked tab and clears the previous one", () => {

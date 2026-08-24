@@ -75,6 +75,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateElementRates(project, issues);
   validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues);
   validateCropRecords(project, itemIds, resourceIds, issues);
+  validateLifeAuthoringRecords(project, itemIds, issues);
   validateTroopRecords(project, enemyIds, context, issues);
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
   for (const terrain of project.database.terrains ?? []) {
@@ -85,6 +86,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   collectExistingIdIssues("system.startActorIds", project.system.startActorIds, actorIds, issues);
   if (project.system.initialTroopId && !troopIds.has(project.system.initialTroopId)) issues.push("system.initialTroopId does not exist.");
   if (project.system.timeSystem?.enabled && project.system.timeSystem.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) issues.push("system.timeSystem.onDayEnd does not exist.");
+  validateP0SystemReferences(project, itemIds, switchIds, issues);
   check(() => validateSystemResources(project.system, resourceIds));
   collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues);
   validateEndings(project, switchIds, variableIds, issues);
@@ -92,6 +94,60 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateCommonEvents(project, switchIds, context, issues);
   validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
   return issues;
+}
+
+function validateP0SystemReferences(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  switchIds: ReadonlySet<string>,
+  issues: string[],
+): void {
+  collectDuplicateDefinitionIssues("system.worldUnlocks", project.system.worldUnlocks ?? [], issues);
+  collectDuplicateDefinitionIssues("system.bundles", project.system.bundles ?? [], issues);
+  collectDuplicateDefinitionIssues("system.makers", project.system.makers ?? [], issues);
+  const recipeIds = new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id));
+  const worldUnlockIds = new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id));
+  collectExistingIdIssues("system.shipping.allowedItemIds", project.system.shipping?.allowedItemIds ?? [], itemIds, issues);
+  for (const unlock of project.system.worldUnlocks ?? []) {
+    if (unlock.switchId && !switchIds.has(unlock.switchId)) {
+      issues.push(`system.worldUnlocks ${unlock.id}: switchId does not exist: ${unlock.switchId}`);
+    }
+  }
+  for (const bundle of project.system.bundles ?? []) {
+    collectExistingIdIssues(`system.bundles ${bundle.id}: requirement itemId`, bundle.requirements.map((entry) => entry.itemId), itemIds, issues);
+    collectExistingIdIssues(`system.bundles ${bundle.id}: reward itemId`, bundle.reward?.itemRewards?.map((entry) => entry.itemId) ?? [], itemIds, issues);
+    if (bundle.reward?.switchId && !switchIds.has(bundle.reward.switchId)) {
+      issues.push(`system.bundles ${bundle.id}: reward switchId does not exist: ${bundle.reward.switchId}`);
+    }
+    collectExistingIdIssues(`system.bundles ${bundle.id}: reward worldUnlockId`, bundle.reward?.worldUnlockIds ?? [], worldUnlockIds, issues);
+    collectExistingIdIssues(`system.bundles ${bundle.id}: reward recipeId`, bundle.reward?.recipeIds ?? [], recipeIds, issues);
+  }
+  for (const maker of project.system.makers ?? []) {
+    collectExistingIdIssues(`system.makers ${maker.id}: input itemId`, maker.inputs.map((entry) => entry.itemId), itemIds, issues);
+    collectExistingIdIssues(`system.makers ${maker.id}: output itemId`, maker.outputs.map((entry) => entry.itemId), itemIds, issues);
+  }
+  for (const skill of project.database.lifeSkills ?? []) {
+    for (const reward of skill.levelUpRewards) {
+      if (reward.switchId && !switchIds.has(reward.switchId)) {
+        issues.push(`lifeSkill ${skill.id}: reward switchId does not exist: ${reward.switchId}`);
+      }
+      if (reward.recipeId && !recipeIds.has(reward.recipeId)) {
+        issues.push(`lifeSkill ${skill.id}: reward recipeId does not exist: ${reward.recipeId}`);
+      }
+    }
+  }
+}
+
+function collectDuplicateDefinitionIssues(
+  label: string,
+  rows: readonly { readonly id: string }[],
+  issues: string[],
+): void {
+  const seen = new Set<string>();
+  for (const row of rows) {
+    if (seen.has(row.id)) issues.push(`${label}: duplicate id: ${row.id}`);
+    seen.add(row.id);
+  }
 }
 
 function validateEndings(
@@ -363,6 +419,52 @@ function validateCropRecords(
     for (const [index, graphic] of (crop.graphicStages ?? []).entries()) {
       capture(issues, () => validateOptionalResource(`crop ${crop.id}: graphicStages[${index}].resourceId`, graphic.resourceId, resourceIds));
     }
+  }
+}
+
+function validateLifeAuthoringRecords(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  issues: string[],
+): void {
+  const seenSkills = new Set<string>();
+  for (const skill of project.database.lifeSkills ?? []) {
+    if (seenSkills.has(skill.id)) issues.push(`lifeSkill ${skill.id}: duplicate id.`);
+    seenSkills.add(skill.id);
+  }
+
+  const seenRecipes = new Set<string>();
+  for (const recipe of project.system.craftRecipes ?? []) {
+    if (seenRecipes.has(recipe.id)) issues.push(`craftRecipe ${recipe.id}: duplicate id.`);
+    seenRecipes.add(recipe.id);
+    if (!itemIds.has(recipe.outputItemId)) issues.push(`craftRecipe ${recipe.id}: outputItemId does not exist: ${recipe.outputItemId}`);
+    for (const [index, ingredient] of recipe.ingredients.entries()) {
+      if (!itemIds.has(ingredient.itemId)) issues.push(`craftRecipe ${recipe.id}: ingredients[${index}].itemId does not exist: ${ingredient.itemId}`);
+    }
+  }
+
+  const seenUpgrades = new Set<string>();
+  for (const upgrade of project.system.itemUpgrades ?? []) {
+    if (seenUpgrades.has(upgrade.id)) issues.push(`itemUpgrade ${upgrade.id}: duplicate id.`);
+    seenUpgrades.add(upgrade.id);
+    if (!itemIds.has(upgrade.fromItemId)) issues.push(`itemUpgrade ${upgrade.id}: fromItemId does not exist: ${upgrade.fromItemId}`);
+    if (!itemIds.has(upgrade.toItemId)) issues.push(`itemUpgrade ${upgrade.id}: toItemId does not exist: ${upgrade.toItemId}`);
+    for (const [index, ingredient] of (upgrade.ingredients ?? []).entries()) {
+      if (!itemIds.has(ingredient.itemId)) issues.push(`itemUpgrade ${upgrade.id}: ingredients[${index}].itemId does not exist: ${ingredient.itemId}`);
+    }
+  }
+
+  const seenSellItems = new Set<string>();
+  for (const [index, entry] of (project.system.sellPrices ?? []).entries()) {
+    if (seenSellItems.has(entry.itemId)) issues.push(`sellPrices: duplicate itemId: ${entry.itemId}`);
+    seenSellItems.add(entry.itemId);
+    if (!itemIds.has(entry.itemId)) issues.push(`sellPrices[${index}].itemId does not exist: ${entry.itemId}`);
+  }
+  const seenToolActions = new Set<string>();
+  for (const action of project.system.toolActions ?? []) {
+    if (seenToolActions.has(action.id)) issues.push(`toolAction ${action.id}: duplicate id.`);
+    seenToolActions.add(action.id);
+    if (action.itemId && !itemIds.has(action.itemId)) issues.push(`toolAction ${action.id}: itemId does not exist: ${action.itemId}`);
   }
 }
 

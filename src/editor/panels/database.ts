@@ -4,6 +4,7 @@ import { renderCommonEventsTab } from "@/editor/panels/databaseCommonEventViews"
 import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
+import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
@@ -34,6 +35,7 @@ export type DatabaseTab =
   | "commonEvents"
   | "characters"
   | "crops"
+  | "lifeCrafting"
   | "elements"
   | "monsterSpecies"
   | "structureKits"
@@ -56,6 +58,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "items", label: "아이템", testid: "db-tab-items" },
   { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
   { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
+  { id: "lifeCrafting", label: "생활 기술·제작", testid: "db-tab-life-crafting" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
@@ -89,6 +92,7 @@ const tabOrder: readonly DatabaseTab[] = [
   "terrain",
   "crops",
   "characters",
+  "lifeCrafting",
   "tilesets",
   "structureKits",
   "commonEvents",
@@ -114,7 +118,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     label: "전투·몬스터",
     tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
-  { label: "생활", tabs: ["crops", "characters"] },
+  { label: "생활", tabs: ["crops", "characters", "lifeCrafting"] },
   { label: "맵", tabs: ["tilesets", "structureKits", "commonEvents"] },
   { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
 ];
@@ -232,6 +236,12 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return database.crops?.length ?? 0;
     case "characters":
       return Object.keys(project.characters ?? {}).length;
+    case "lifeCrafting":
+      return (database.lifeSkills?.length ?? 0)
+        + (project.system.craftRecipes?.length ?? 0)
+        + (project.system.itemUpgrades?.length ?? 0)
+        + (project.system.sellPrices?.length ?? 0)
+        + (project.system.toolActions?.length ?? 0);
     case "switches":
       return project.switches.length;
     case "variables":
@@ -404,6 +414,9 @@ function renderActiveTab(
       break;
     case "characters":
       renderCharactersTab(body, rerender);
+      break;
+    case "lifeCrafting":
+      renderLifeCraftingTab(body, rerender);
       break;
     case "switches":
       renderSwitchesTab(body, rerender);

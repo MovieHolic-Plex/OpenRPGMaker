@@ -118,6 +118,28 @@ export type FarmPlots = Record<MapId, Record<string, FarmPlotState>>;
 export type DailyGiftLog = Record<string, string>;
 export type DailyTalkLog = Record<string, string>;
 
+export type ShippingSettlementEntry = {
+  readonly itemId: string;
+  readonly count: number;
+  readonly unitPrice: number;
+  readonly subtotal: number;
+};
+
+export type ShippingSettlement = {
+  readonly dayKey: string;
+  readonly entries: readonly ShippingSettlementEntry[];
+  readonly total: number;
+  readonly credited: number;
+};
+
+export type MakerInstanceState = {
+  readonly instanceId: string;
+  readonly makerId: string;
+  readonly status: "idle" | "processing" | "ready";
+  readonly startedAtMinute?: number;
+  readonly readyAtMinute?: number;
+};
+
 export const FRIENDSHIP_MIN = 0;
 export const FRIENDSHIP_MAX = 1000;
 
@@ -149,6 +171,16 @@ export interface PlaySession {
   shopMileagePoints?: number;
   shopPawnTickets?: Record<string, { itemId: string; pawnPrice: number; dueDayKey: string }>;
   shopLastRestockDayKey?: Record<string, string>;
+  energy?: number;
+  shippingQueue?: Record<string, number>;
+  shippingLastSettledDayKey?: string;
+  shippingHistory?: ShippingSettlement[];
+  bundleContributions?: Record<string, Record<string, number>>;
+  completedBundleIds?: string[];
+  bundleRewardAppliedIds?: string[];
+  unlockedRegionIds?: string[];
+  unlockedRecipeIds?: string[];
+  makerInstances?: Record<string, MakerInstanceState>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -277,6 +309,17 @@ export function startSession(project: Project, seed?: number): PlaySession {
     inventory: { ...start.inventory },
     itemUseCharges: {},
     partyActorIds: [...start.partyActorIds],
+    energy: project.system.energy
+      ? Math.min(project.system.energy.max, Math.max(0, project.system.energy.initial ?? project.system.energy.max))
+      : undefined,
+    shippingQueue: {},
+    shippingHistory: [],
+    bundleContributions: {},
+    completedBundleIds: [],
+    bundleRewardAppliedIds: [],
+    unlockedRegionIds: [],
+    unlockedRecipeIds: [],
+    makerInstances: {},
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],

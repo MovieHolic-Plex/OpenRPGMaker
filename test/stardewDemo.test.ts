@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
+import { collectProjectReferenceIssues } from "@/project/io/references";
 
 describe("Stardew demo: 여름/가을 작물 확장", () => {
   const project = createFarmingDemoProject();
@@ -289,5 +290,54 @@ describe("Stardew demo: 생활 콘텐츠 완성", () => {
       expect(itemIds.has(enemy?.rewards.dropItemId ?? ""), `${enemy?.id} drop`).toBe(true);
       expect(enemy?.rewards.dropRatePercent ?? 0, `${enemy?.id} drop rate`).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("Stardew demo: P0 생활 경제 루프", () => {
+  const project = createFarmingDemoProject();
+
+  it("에너지·배송·번들·제작기·5개 생활 기술을 실제 저작한다", () => {
+    expect(project.system.energy).toEqual({ max: 100, initial: 100, restorePerDay: 100 });
+    expect(project.system.shipping?.enabled).toBe(true);
+    expect(project.system.shipping?.allowedItemIds?.length ?? 0).toBeGreaterThanOrEqual(10);
+    expect(project.system.bundles?.map((bundle) => bundle.id)).toEqual([
+      "bundle_spring_harvest",
+      "bundle_mine_starter",
+    ]);
+    expect(project.system.worldUnlocks?.map((unlock) => unlock.id)).toContain("unlock_quarry_path");
+    expect(project.system.makers?.map((maker) => maker.id)).toEqual([
+      "maker_preserves_jar",
+      "maker_furnace",
+    ]);
+    expect(project.database.lifeSkills?.map((skill) => skill.skillType).sort()).toEqual([
+      "combat", "farming", "fishing", "foraging", "mining",
+    ]);
+  });
+
+  it("번들·스킬·제작기·강화 도구의 모든 참조가 실재한다", () => {
+    const itemIds = new Set(project.database.items.map((item) => item.id));
+    const switchIds = new Set(project.switches.map((entry) => entry.id));
+    const recipeIds = new Set((project.system.craftRecipes ?? []).map((entry) => entry.id));
+    const unlockIds = new Set((project.system.worldUnlocks ?? []).map((entry) => entry.id));
+
+    for (const bundle of project.system.bundles ?? []) {
+      for (const row of bundle.requirements) expect(itemIds.has(row.itemId), row.itemId).toBe(true);
+      for (const row of bundle.reward?.itemRewards ?? []) expect(itemIds.has(row.itemId), row.itemId).toBe(true);
+      if (bundle.reward?.switchId) expect(switchIds.has(bundle.reward.switchId)).toBe(true);
+      for (const id of bundle.reward?.recipeIds ?? []) expect(recipeIds.has(id), id).toBe(true);
+      for (const id of bundle.reward?.worldUnlockIds ?? []) expect(unlockIds.has(id), id).toBe(true);
+    }
+    for (const maker of project.system.makers ?? []) {
+      for (const row of [...maker.inputs, ...maker.outputs]) expect(itemIds.has(row.itemId), row.itemId).toBe(true);
+    }
+    expect(project.system.itemUpgrades?.some((upgrade) =>
+      upgrade.toItemId === "item_copper_hoe"
+      && upgrade.capability?.areaWidth === 3
+      && upgrade.capability.energyMultiplier > 1
+    )).toBe(true);
+    expect(project.system.craftRecipes?.some((recipe) =>
+      recipe.id === "recipe_preserves_jar" && recipe.requiresUnlock === true
+    )).toBe(true);
+    expect(collectProjectReferenceIssues(project)).toEqual([]);
   });
 });

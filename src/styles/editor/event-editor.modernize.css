@@ -1354,3 +1354,38 @@
 .event-schedule-row input[type="number"] {
   width: 58px;
 }
+
+.event-schedule-toolbar,
+.event-schedule-condition-grid,
+.event-schedule-target-grid,
+.event-schedule-range {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.event-schedule-toolbar {
+  justify-content: space-between;
+  padding-top: 8px;
+}
+
+.event-schedule-help {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.event-schedule-row {
+  align-items: stretch;
+  border-top: 1px solid var(--border-soft, var(--border-subtle));
+  display: grid;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+@media (min-width: 1360px) {
+  .event-schedule-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+}

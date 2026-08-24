@@ -3,6 +3,12 @@
   "paths": [
     "assets/dialogue-frame.png",
     "assets/easyrpg-chipset-exterior.png",
+    "assets/farming/life-ui/animals-card.png",
+    "assets/farming/life-ui/buildings-card.png",
+    "assets/farming/life-ui/community-bundles-card.png",
+    "assets/farming/life-ui/fishing-card.png",
+    "assets/farming/life-ui/makers-card.png",
+    "assets/farming/life-ui/museum-card.png",
     "assets/fonts/Galmuri11-Bold.woff2",
     "assets/fonts/Galmuri11.woff2",
     "assets/fonts/Galmuri9.woff2",

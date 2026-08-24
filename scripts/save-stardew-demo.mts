@@ -66,6 +66,12 @@ function validateStardewDemo(project: Project) {
     mineTroopCount: new Set(spawns.map((spawn) => spawn.troopId)).size,
     monsterPipelineReady,
     stamina: project.session.variables.var_stamina,
+    lifeSkillCount: project.database.lifeSkills?.length ?? 0,
+    energyMax: project.system.energy?.max ?? 0,
+    shippingItemCount: project.system.shipping?.allowedItemIds?.length ?? 0,
+    bundleCount: project.system.bundles?.length ?? 0,
+    makerCount: project.system.makers?.length ?? 0,
+    upgradeCapabilityCount: (project.system.itemUpgrades ?? []).filter((entry) => entry.capability).length,
   };
   const ok = facts.cropCount === 8
     && facts.giftSystem
@@ -74,7 +80,13 @@ function validateStardewDemo(project: Project) {
     && facts.mineSpawnCount >= 2
     && facts.mineTroopCount >= 2
     && facts.monsterPipelineReady
-    && facts.stamina === 100;
+    && facts.stamina === 100
+    && facts.lifeSkillCount === 5
+    && facts.energyMax === 100
+    && facts.shippingItemCount >= 10
+    && facts.bundleCount >= 2
+    && facts.makerCount >= 2
+    && facts.upgradeCapabilityCount >= 3;
   if (!ok) throw new Error(`Stardew demo contract mismatch: ${JSON.stringify(facts)}`);
   return facts;
 }

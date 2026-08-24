@@ -3,6 +3,7 @@ import type { Command, EndingDef, GameEvent, M2CommandFields, SwitchValue } from
 import { craftRecipe } from "@/project/craftRecipes";
 import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
+import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
 import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
 import { levelForXp, rewardsForLevel } from "@/project/skillModel";
 import type { SocialHost } from "@/project/socialKey";
@@ -620,33 +621,11 @@ export function executeCommand(
       changeActorLevel(state.session, command);
       return resumeNext(frame);
     case "changeLifeSkillExp": {
-      // 옵트인 시스템 — system.skillSystem.enabled 가 켜져 있을 때만 동작한다. 플래그를 무시하면
-      // "opt-in" 이라는 스키마 문서와 실제 동작이 어긋난다(게이트가 선언만 되어 있던 상태).
-      if (state.project?.system.skillSystem?.enabled !== true) return resumeNext(frame);
-      const session = state.session as PlaySession;
-      session.lifeSkills ??= {};
-      const skillId = command.skillId;
-      const current = session.lifeSkills[skillId]?.xp ?? 0;
-      const amount = typeof command.amount === "number" ? command.amount : 0;
-      let nextXp: number;
-      switch (command.op) {
-        case "=": nextXp = amount; break;
-        case "+=": nextXp = current + amount; break;
-        case "-=": nextXp = current - amount; break;
-      }
-      nextXp = Math.max(0, nextXp);
-      const skill = state.project?.database.lifeSkills?.find((s) => s.id === skillId);
-      const maxLevel = skill?.maxLevel ?? 10;
-      const oldLevel = session.lifeSkills[skillId]?.level ?? 1;
-      const newLevel = levelForXp(nextXp, maxLevel);
-      session.lifeSkills[skillId] = { xp: nextXp, level: newLevel };
-      // 레벨업 시 보상 스위치 ON
-      if (skill && newLevel > oldLevel) {
-        for (let lv = oldLevel + 1; lv <= newLevel; lv++) {
-          for (const reward of rewardsForLevel(skill, lv)) {
-            if (reward.switchId) setSwitch(session, reward.switchId, true);
-          }
-        }
+      if (state.project) {
+        const amount = typeof command.amount === "number"
+          ? command.amount
+          : state.session.variables[command.amount.id] ?? 0;
+        changeLifeSkillXp(state.project, state.session as PlaySession, command.skillId, command.op, amount);
       }
       return resumeNext(frame);
     }

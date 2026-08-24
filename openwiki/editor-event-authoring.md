@@ -1,5 +1,14 @@
 # Editor Event Authoring
 
+## NPC 일정 구조화 편집 (2026-08-24)
+
+- `src/editor/panels/eventEditor/eventScheduleEditor.ts`는 `event.schedule`이 비어 있어도 항상 `event-schedule-editor`를 렌더한다. `event-schedule-add`로 현재 이벤트 위치를 기본 목적지로 한 행을 만들고, 각 행은 삭제할 수 있다.
+- 조건 편집은 `NpcScheduleWhen`의 기존 필드만 사용한다: `timePhase`, 정확 시각 범위인 `hourRange`, `season`, `dayRange`. 목적지는 `at.mapId/x/y`, 선택 방향은 `facing`, 활동 분기는 `activity`다. 새 시작 계절/요일 같은 schema 필드를 만들지 않는다.
+- `hourRange`와 `dayRange`는 각각 사용 체크박스를 가진다. 체크를 끄면 필드 자체를 제거해 다시 “항상” 조건으로 돌아가며, 단순히 화면 숫자만 비활성화한 채 stale 범위를 남기지 않는다.
+- UI change handler는 HTML `min`/`max` 우회를 신뢰하지 않는다. hour는 0..47/48, day는 1..99, x/y는 선택한 target map bounds로 clamp한다. `when:{}`인 무조건 행이 뒤 행보다 앞에 있으면 `event-schedule-shadow-warning-N`을 표시해 first-match ordering shadow를 드러낸다.
+- 기존 aggregate draft validator가 찾는 `event-schedule-map-N`, `event-schedule-x-N`, `event-schedule-y-N` testid를 유지하므로 존재하지 않는 map, bounds 밖 좌표, 통과 불가능 좌표의 Apply/Test 차단과 포커스 이동 계약은 그대로다.
+- 표면 CSS는 `src/styles/editor/event-editor.modernize.css`의 schedule block이 소유한다. 행 CRUD 계약은 `test/editorNpcSchedule.test.ts`, 기존 bounds/passability 및 focus 계약은 `test/eventDraftValidator.test.ts`와 `test/eventEditorTrustLoop.test.ts`가 소유한다.
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Event authoring, event pages, event commands, move routes, command dialogs, and cutscene/horror/puzzle tools.

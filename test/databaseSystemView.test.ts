@@ -112,6 +112,22 @@ describe("database system view", () => {
     expect(findByTestId(host, "db-system-nav-display")).not.toBeNull();
   });
 
+  // Break caught: authored calendars always used the hidden 28-day default.
+  it("edits the season length while preserving the existing start and end clock", () => {
+    const host = renderSystem();
+    setCheckbox(host, "db-field-system-time-enabled", true);
+    const days = findByTestId(host, "db-field-system-time-days-per-season");
+    if (!days) throw new Error("missing days-per-season field");
+    days.value = "14";
+    days.dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.timeSystem).toMatchObject({
+      daysPerSeason: 14,
+      dayStartHour: 6,
+      dayEndHour: 26,
+    });
+  });
+
   it("edits title screen fields into system.titleScreen", () => {
     const host = renderSystem();
     const title = findByTestId(host, "db-field-title-screen-title");
