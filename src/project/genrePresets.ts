@@ -7,8 +7,9 @@ import {
   DEFAULT_TIME_MINUTES_PER_REAL_SECOND,
 } from "@/project/gameTime";
 import type { Project } from "@/project/types";
+import type { GenrePackId } from "@/project/genrePackId";
 
-export type GenrePresetId = "monster-collect" | "horror-chase" | "farm-life";
+export type GenrePresetId = GenrePackId;
 
 /**
  * 각 프리셋이 설정하는 값:
@@ -42,6 +43,9 @@ export function applyGenrePreset(project: Project, id: GenrePresetId): void {
       // 공포 장르는 구분되는 엔진 기능(조명·추격·세이브 제한)이 맵/이벤트 수준 저작이므로
       // system.* 토글이 필요 없다. 없는 토글을 발명하지 않는다.
       break;
+    case "adventure-jrpg":
+    case "story-cutscene":
+      break;
   }
 }
 
@@ -50,6 +54,9 @@ const WELCOME_TO_GENRE: Readonly<Record<string, GenrePresetId>> = {
   "farm-life": "farm-life",
   "horror-gallery": "horror-chase",
   "school-horror": "horror-chase",
+  "partner-raise": "monster-collect",
+  "adventure-jrpg": "adventure-jrpg",
+  "story-cutscene": "story-cutscene",
 };
 
 /**

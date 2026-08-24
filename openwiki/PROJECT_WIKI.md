@@ -24,6 +24,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md`, `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
+   - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`

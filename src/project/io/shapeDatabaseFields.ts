@@ -1,4 +1,5 @@
-import { requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import { isGenrePackId } from "@/project/genrePackId";
+import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 
 export function validateDatabase(value: unknown): void {
   const database = requireRecord("database", value);
@@ -28,6 +29,10 @@ export function validateDatabase(value: unknown): void {
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
+  if (system.genre !== undefined) {
+    requireString("system.genre", system.genre);
+    assert(isGenrePackId(system.genre), `system.genre is not a supported genre pack id: ${system.genre}`);
+  }
   if (system.titleScreen !== undefined) {
     const titleScreen = requireRecord("system.titleScreen", system.titleScreen);
     // additive optional 배열 — 있으면 배열이기만 하면 된다. 요소 정합은 normalize 가 관대하게 거른다
