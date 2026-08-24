@@ -2,8 +2,13 @@
 // 타입 안전하게 import 하도록 둔다 — 선언이 없으면 TS7016 으로 타입체크가 시끄러워진다.
 
 export type EffectSheetCatalog = {
-  readonly sheet: { readonly frameWidth: number; readonly frameHeight: number; readonly columns: number };
-  readonly effects: readonly { readonly slug: string; readonly name: string }[];
+  readonly sheet: { readonly frameWidth: number; readonly frameHeight: number; readonly frameDurationMs: number };
+  readonly effects: readonly {
+    readonly slug: string;
+    readonly name: string;
+    readonly frameCount: number;
+    readonly sound: { readonly frameIndex: number; readonly resourceId: string };
+  }[];
 };
 
 export type EffectStrip = {

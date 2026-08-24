@@ -19,6 +19,7 @@ import {
   generatedEffectSheetFileName,
 } from "@/assets/generatedEffectSheets";
 import { defaultBattleAnimationRecords } from "@/project/defaults/defaultDatabaseStarterRecords";
+import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import {
   effectSheetOutputPath,
   loadEffectCatalog,
@@ -29,6 +30,86 @@ import {
 } from "../scripts/lib/effectSheet/render.mjs";
 
 const catalog = loadEffectCatalog();
+
+const EXPECTED_FRAME_COUNTS = {
+  "slash-steel": 8,
+  "fire-burst": 10,
+  "ice-shatter": 10,
+  "thunder-strike": 10,
+  "water-column": 10,
+  "wind-slice": 10,
+  "earth-spike": 10,
+  "heal-bloom": 10,
+  "poison-mist": 10,
+  "arcane-nova": 12,
+  "tackle-impact": 8,
+  "claw-rake": 8,
+  "bite-crunch": 8,
+  "projectile-shot": 8,
+  "leaf-volley": 10,
+  "psychic-wave": 10,
+  "shadow-pulse": 10,
+  "holy-beam": 10,
+  "sleep-dust": 10,
+  "power-aura": 10,
+  "guard-barrier": 10,
+  "capture-seal": 12,
+  "critical-burst": 8,
+  "sonic-wave": 8,
+  "drain-orbs": 10,
+  "revive-rise": 10,
+  "cleanse-sparkle": 10,
+  "paralysis-bind": 10,
+  "blind-veil": 10,
+  "confusion-spiral": 10,
+  "silence-lock": 10,
+  "summon-portal": 12,
+  "smoke-vanish": 8,
+  "meteor-fall": 12,
+} as const;
+
+const EXPECTED_SOUND_TIMINGS = {
+  "slash-steel": { frameIndex: 3, resourceId: "easyrpg-sound-attack2" },
+  "fire-burst": { frameIndex: 4, resourceId: "easyrpg-sound-explosion1" },
+  "ice-shatter": { frameIndex: 5, resourceId: "easyrpg-sound-ice2" },
+  "thunder-strike": { frameIndex: 3, resourceId: "easyrpg-sound-flash1" },
+  "water-column": { frameIndex: 5, resourceId: "easyrpg-sound-wave1" },
+  "wind-slice": { frameIndex: 4, resourceId: "easyrpg-sound-wind8" },
+  "earth-spike": { frameIndex: 5, resourceId: "easyrpg-sound-earth8" },
+  "heal-bloom": { frameIndex: 2, resourceId: "easyrpg-sound-recovery5" },
+  "poison-mist": { frameIndex: 4, resourceId: "easyrpg-sound-poison" },
+  "arcane-nova": { frameIndex: 3, resourceId: "easyrpg-sound-magic1" },
+  "tackle-impact": { frameIndex: 3, resourceId: "easyrpg-sound-blow4" },
+  "claw-rake": { frameIndex: 3, resourceId: "easyrpg-sound-attack1" },
+  "bite-crunch": { frameIndex: 4, resourceId: "easyrpg-sound-damage2" },
+  "projectile-shot": { frameIndex: 5, resourceId: "easyrpg-sound-shot2" },
+  "leaf-volley": { frameIndex: 5, resourceId: "easyrpg-sound-pollen" },
+  "psychic-wave": { frameIndex: 4, resourceId: "easyrpg-sound-confusion" },
+  "shadow-pulse": { frameIndex: 5, resourceId: "easyrpg-sound-darkness4" },
+  "holy-beam": { frameIndex: 5, resourceId: "easyrpg-sound-holy5" },
+  "sleep-dust": { frameIndex: 3, resourceId: "easyrpg-sound-sleep" },
+  "power-aura": { frameIndex: 4, resourceId: "easyrpg-sound-buff" },
+  "guard-barrier": { frameIndex: 4, resourceId: "easyrpg-sound-barrier2" },
+  "capture-seal": { frameIndex: 7, resourceId: "easyrpg-sound-teleport2" },
+  "critical-burst": { frameIndex: 3, resourceId: "easyrpg-sound-combat2" },
+  "sonic-wave": { frameIndex: 4, resourceId: "easyrpg-sound-wave2" },
+  "drain-orbs": { frameIndex: 5, resourceId: "easyrpg-sound-absorb1" },
+  "revive-rise": { frameIndex: 5, resourceId: "easyrpg-sound-raise2" },
+  "cleanse-sparkle": { frameIndex: 4, resourceId: "easyrpg-sound-recovery8" },
+  "paralysis-bind": { frameIndex: 4, resourceId: "easyrpg-sound-flash3" },
+  "blind-veil": { frameIndex: 4, resourceId: "easyrpg-sound-blind" },
+  "confusion-spiral": { frameIndex: 4, resourceId: "easyrpg-sound-debuff" },
+  "silence-lock": { frameIndex: 5, resourceId: "easyrpg-sound-silence" },
+  "summon-portal": { frameIndex: 7, resourceId: "easyrpg-sound-magic2" },
+  "smoke-vanish": { frameIndex: 3, resourceId: "easyrpg-sound-fog1" },
+  "meteor-fall": { frameIndex: 7, resourceId: "easyrpg-sound-fall2" },
+} as const;
+
+function expectedFrameCount(slug: string): number {
+  const count = EXPECTED_FRAME_COUNTS[slug as keyof typeof EXPECTED_FRAME_COUNTS];
+  if (count === undefined) throw new Error(`예상 프레임 수가 없다: ${slug}`);
+  return count;
+}
 
 /** PNG IHDR 에서 실제 이미지 크기를 집는다 — 런타임은 이 크기 안에서 프레임을 자른다. */
 function pngSize(filePath: string): { width: number; height: number } {
@@ -68,9 +149,16 @@ describe("생성 이펙트 카탈로그", () => {
     expect(paintedEffectSlugs().sort()).toEqual(catalogSlugs);
   });
 
-  it("시트 규격은 96x96 프레임 5장이다", () => {
-    expect(GENERATED_EFFECT_SHEET).toEqual({ frameWidth: 96, frameHeight: 96, columns: 5 });
-    expect(catalog.sheet).toEqual(GENERATED_EFFECT_SHEET);
+  it("시트는 96x96 셀과 75ms 재생 간격을 공유하고 종류별로 8~12장을 쓴다", () => {
+    expect(GENERATED_EFFECT_SHEET.frameWidth).toBe(96);
+    expect(GENERATED_EFFECT_SHEET.frameHeight).toBe(96);
+    expect((catalog.sheet as unknown as { frameDurationMs?: number }).frameDurationMs).toBe(75);
+    expect(
+      Object.fromEntries(GENERATED_EFFECT_SHEETS.map((effect) => [
+        effect.slug,
+        (effect as typeof effect & { readonly frameCount?: number }).frameCount,
+      ]))
+    ).toEqual(EXPECTED_FRAME_COUNTS);
   });
 
   it("리소스 id 는 중복 없이 slug 마다 하나씩 나온다", () => {
@@ -85,10 +173,12 @@ describe("생성 이펙트 카탈로그", () => {
   });
 });
 describe.each(GENERATED_EFFECT_SHEETS.map((effect) => effect.slug))("이펙트 시트 %s", (slug) => {
+  const frameCount = expectedFrameCount(slug);
+
   it("출력 PNG 크기가 시트 규경과 정확하게 같다", () => {
     const size = pngSize(effectSheetOutputPath(slug));
     expect(size).toEqual({
-      width: GENERATED_EFFECT_SHEET.frameWidth * GENERATED_EFFECT_SHEET.columns,
+      width: GENERATED_EFFECT_SHEET.frameWidth * frameCount,
       height: GENERATED_EFFECT_SHEET.frameHeight,
     });
   });
@@ -107,22 +197,23 @@ describe.each(GENERATED_EFFECT_SHEETS.map((effect) => effect.slug))("이펙트 �
     expect(first.equals(second)).toBe(true);
   });
 
-  it("프레임 5장이 모두 그려지고 서로 다르다", () => {
+  it("용도별 프레임이 모두 그려지고 서로 다르다", () => {
     const strip = renderEffectStrip(slug, catalog);
-    expect(strip.width).toBe(GENERATED_EFFECT_SHEET.frameWidth * GENERATED_EFFECT_SHEET.columns);
+    expect(strip.width).toBe(GENERATED_EFFECT_SHEET.frameWidth * frameCount);
     expect(strip.height).toBe(GENERATED_EFFECT_SHEET.frameHeight);
     const signatures: string[] = [];
-    for (let index = 0; index < GENERATED_EFFECT_SHEET.columns; index += 1) {
+    for (let index = 0; index < frameCount; index += 1) {
       expect(frameHasPixels(strip, index), `프레임 ${index} 가 완전히 비었다`).toBe(true);
       signatures.push(frameSignature(strip, index));
     }
-    expect(new Set(signatures).size).toBe(GENERATED_EFFECT_SHEET.columns);
+    expect(new Set(signatures).size).toBe(frameCount);
   });
 
   it("자를 프레임 사각이 시트 밖을 넘지 않는다", () => {
     // 런타임(battleAnimationDom.animationCell)은 pattern 을 column/row 로 톴서 자른다.
     // 시트가 짧거나 columns 가 틀리면 마지막 프레임이 바가지를 자려서 화면이 보이지 않는다.
-    const { frameWidth, frameHeight, columns } = GENERATED_EFFECT_SHEET;
+    const { frameWidth, frameHeight } = GENERATED_EFFECT_SHEET;
+    const columns = frameCount;
     const size = pngSize(effectSheetOutputPath(slug));
     const record = defaultBattleAnimationRecords().find(
       (entry) => entry.resourceId === generatedEffectResourceId(slug)
@@ -154,13 +245,84 @@ describe("기본 데이터베이스 배선", () => {
     }
   });
 
-  it("생성 레코드는 5프레임 전부를 순서대로 재생한다", () => {
+  it("생성 레코드는 용도별 8~12프레임 전부를 순서대로 재생한다", () => {
     const generated = records.filter((record) => GENERATED_EFFECT_RESOURCE_IDS.includes(record.resourceId ?? ""));
     expect(generated).toHaveLength(GENERATED_EFFECT_SHEETS.length);
     for (const record of generated) {
-      expect(record.sheet?.columns).toBe(GENERATED_EFFECT_SHEET.columns);
-      expect(record.frames?.map((frame) => frame.cells[0]?.pattern)).toEqual([0, 1, 2, 3, 4]);
+      const slug = record.resourceId!.replace("generated-battle-anim-", "");
+      const frameCount = expectedFrameCount(slug);
+      expect(record.sheet?.columns).toBe(frameCount);
+      expect(record.frames?.map((frame) => frame.cells[0]?.pattern)).toEqual(
+        Array.from({ length: frameCount }, (_unused, index) => index)
+      );
     }
+  });
+
+  it("생성 레코드는 장수가 늘어도 0.6~0.9초 안에서 재생된다", () => {
+    const expectedDurations = {
+      "slash-steel": 600,
+      "fire-burst": 750,
+      "ice-shatter": 750,
+      "thunder-strike": 750,
+      "water-column": 750,
+      "wind-slice": 750,
+      "earth-spike": 750,
+      "heal-bloom": 750,
+      "poison-mist": 750,
+      "arcane-nova": 900,
+      "tackle-impact": 600,
+      "claw-rake": 600,
+      "bite-crunch": 600,
+      "projectile-shot": 600,
+      "leaf-volley": 750,
+      "psychic-wave": 750,
+      "shadow-pulse": 750,
+      "holy-beam": 750,
+      "sleep-dust": 750,
+      "power-aura": 750,
+      "guard-barrier": 750,
+      "capture-seal": 900,
+      "critical-burst": 600,
+      "sonic-wave": 600,
+      "drain-orbs": 750,
+      "revive-rise": 750,
+      "cleanse-sparkle": 750,
+      "paralysis-bind": 750,
+      "blind-veil": 750,
+      "confusion-spiral": 750,
+      "silence-lock": 750,
+      "summon-portal": 900,
+      "smoke-vanish": 600,
+      "meteor-fall": 900,
+    } as const;
+    for (const record of records.filter((entry) => GENERATED_EFFECT_RESOURCE_IDS.includes(entry.resourceId ?? ""))) {
+      const slug = record.resourceId!.replace("generated-battle-anim-", "") as keyof typeof expectedDurations;
+      expect(battleAnimationDurationMs(record), slug).toBe(expectedDurations[slug]);
+    }
+  });
+
+  it("생성 이펙트 34종은 각각 한 개의 기본 효과음을 충격 프레임에 재생한다", () => {
+    const generated = records.filter((record) => GENERATED_EFFECT_RESOURCE_IDS.includes(record.resourceId ?? ""));
+    for (const record of generated) {
+      const slug = record.resourceId!.replace("generated-battle-anim-", "") as keyof typeof EXPECTED_SOUND_TIMINGS;
+      const expected = EXPECTED_SOUND_TIMINGS[slug];
+      const soundTimings = record.timings?.filter((timing) => timing.soundResourceId !== undefined) ?? [];
+
+      expect(soundTimings, slug).toHaveLength(1);
+      expect(soundTimings[0]?.frameIndex, slug).toBe(expected.frameIndex);
+      expect(soundTimings[0]?.soundResourceId, slug).toBe(expected.resourceId);
+      expect(expected.frameIndex, slug).toBeLessThan(record.frames?.length ?? 0);
+    }
+  });
+
+  it("같은 충격 프레임의 플래시·흔들림·효과음은 하나의 타이밍으로 합쳐진다", () => {
+    const slash = records.find((record) => record.resourceId === "generated-battle-anim-slash-steel");
+    const impactTimings = slash?.timings?.filter((timing) => timing.frameIndex === 3) ?? [];
+
+    expect(impactTimings).toHaveLength(1);
+    expect(impactTimings[0]?.flash).toBeDefined();
+    expect(impactTimings[0]?.screenShake).toBeDefined();
+    expect(impactTimings[0]?.soundResourceId).toBe("easyrpg-sound-attack2");
   });
 
   it("회복·마법·독은 근접 타격 아트를 더 이상 돌려쓰지 않는다", () => {

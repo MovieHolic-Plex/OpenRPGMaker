@@ -11,10 +11,10 @@ import type {
 } from "../types";
 import { SCARLOXY_BATTLE_ANIMATION_SHEET } from "@/assets/scarloxyPack";
 import {
-  GENERATED_EFFECT_SHEET,
   GENERATED_EFFECT_SHEETS,
   generatedEffectAnimationId,
   generatedEffectResourceId,
+  generatedEffectSheet,
   type GeneratedEffectSheetSeed,
 } from "@/assets/generatedEffectSheets";
 import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel";
@@ -165,7 +165,7 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
     scarloxyEffectAnimation("anim_scarloxy_splash", "물보라 (Scarloxy)", "splash", [
       timingFlash({ frameIndex: 1, target: "target", red: 120, green: 180, blue: 255, durationFrames: 5 }),
     ]),
-    // 절차 생성 이펙트 — scripts/gen-effect-sheets.mjs 가 카탈로그를 읽어 렌더한 96x96 5프레임 시트.
+    // 절차 생성 이펙트 — 96x96 셀을 용도별 8~12프레임으로 렌더한다.
     ...GENERATED_EFFECT_SHEETS.map(generatedEffectAnimation),
   ];
 }
@@ -180,23 +180,31 @@ const LEGACY_EFFECT_IDS: Record<string, { readonly id: string; readonly name: st
 
 function generatedEffectAnimation(seed: GeneratedEffectSheetSeed): BattleAnimationRecord {
   const legacy = LEGACY_EFFECT_IDS[seed.slug];
-  const timings: BattleAnimationTiming[] = [];
-  if (seed.flash !== undefined) timings.push(timingFlash(seed.flash));
-  if (seed.shake !== undefined) timings.push(timingShake(seed.shake));
   return normalizeBattleAnimationRecord({
     id: legacy?.id ?? generatedEffectAnimationId(seed.slug),
     name: legacy?.name ?? seed.name,
     resourceId: generatedEffectResourceId(seed.slug),
-    sheet: { ...GENERATED_EFFECT_SHEET },
+    sheet: generatedEffectSheet(seed),
     scope: seed.scope,
     position: seed.position,
     large: seed.scope === "screen" || seed.position === "screen",
-    // 시트의 5프레임을 전부 순서대로 재생한다. 앞 3장만 쓰면 소멸 컷이 잘려 뚝 끊긴다.
-    frames: Array.from({ length: GENERATED_EFFECT_SHEET.columns }, (_unused, pattern) => ({
+    // 시트의 모든 프레임을 순서대로 재생한다. 끝부분 감쇠·소멸 컷을 자르면 뚝 끊긴다.
+    frames: Array.from({ length: seed.frameCount }, (_unused, pattern) => ({
       cells: [{ pattern, x: 0, y: -8, zoom: 100, opacity: 255, visible: true }],
     })),
-    timings,
+    timings: generatedEffectTimings(seed),
   });
+}
+
+function generatedEffectTimings(seed: GeneratedEffectSheetSeed): BattleAnimationTiming[] {
+  const byFrame = new Map<number, BattleAnimationTiming>();
+  const merge = (timing: BattleAnimationTiming): void => {
+    byFrame.set(timing.frameIndex, { ...byFrame.get(timing.frameIndex), ...timing });
+  };
+  if (seed.flash !== undefined) merge(timingFlash(seed.flash));
+  if (seed.shake !== undefined) merge(timingShake(seed.shake));
+  merge({ frameIndex: seed.sound.frameIndex, soundResourceId: seed.sound.resourceId });
+  return [...byFrame.values()].sort((left, right) => left.frameIndex - right.frameIndex);
 }
 
 function skill(
@@ -284,7 +292,6 @@ function timingFlash(seed: BattleAnimationFlashSeed): BattleAnimationTiming {
       color: { red: seed.red, green: seed.green, blue: seed.blue, gray: 0 },
       durationFrames: seed.durationFrames,
     },
-    soundResourceId: seed.soundResourceId,
   };
 }
 

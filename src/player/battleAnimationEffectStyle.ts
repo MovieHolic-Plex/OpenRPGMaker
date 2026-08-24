@@ -33,8 +33,8 @@ function unitFromRank(rank: number): number {
 }
 
 /** 프레임 수 → ms. 재생 간격과 같은 상수를 써야 애니메이션과 어긋나지 않는다. */
-export function framesToMs(frames: number): number {
-  return Math.max(1, Math.round(clamp(frames, 1, 999))) * BATTLE_ANIMATION_FRAME_MS;
+export function framesToMs(frames: number, frameDurationMs = BATTLE_ANIMATION_FRAME_MS): number {
+  return Math.max(1, Math.round(clamp(frames, 1, 999))) * Math.max(1, Math.round(frameDurationMs));
 }
 
 export type EffectCssVariables = Readonly<Record<string, string>>;
@@ -43,7 +43,10 @@ export type EffectCssVariables = Readonly<Record<string, string>>;
  * flash 타이밍 → CSS 변수.
  * `gray` 는 RM2K3 의 채도 제거 채널이라 색을 회색으로 끌어당기는 데 쓴다.
  */
-export function flashCssVariables(flash: BattleAnimationFlash): EffectCssVariables {
+export function flashCssVariables(
+  flash: BattleAnimationFlash,
+  frameDurationMs = BATTLE_ANIMATION_FRAME_MS
+): EffectCssVariables {
   const { red, green, blue, gray } = flash.color;
   const grayUnit = clamp(gray, 0, 255) / 255;
   const luma = 0.299 * clamp(red, 0, 255) + 0.587 * clamp(green, 0, 255) + 0.114 * clamp(blue, 0, 255);
@@ -52,7 +55,7 @@ export function flashCssVariables(flash: BattleAnimationFlash): EffectCssVariabl
 
   return {
     "--battle-flash-color": `rgba(${mix(red)}, ${mix(green)}, ${mix(blue)}, ${FLASH_PEAK_ALPHA})`,
-    "--battle-flash-duration": `${framesToMs(flash.durationFrames)}ms`,
+    "--battle-flash-duration": `${framesToMs(flash.durationFrames, frameDurationMs)}ms`,
   };
 }
 
@@ -61,12 +64,15 @@ export function flashCssVariables(flash: BattleAnimationFlash): EffectCssVariabl
  * power 는 진폭, speed 는 1회 진동 주기, durationFrames 는 총 길이를 정한다.
  * CSS 는 `주기 × 반복횟수 = 총 길이` 로 재생하므로 반복 횟수를 여기서 계산해 넘긴다.
  */
-export function screenShakeCssVariables(shake: BattleAnimationScreenShake): EffectCssVariables {
+export function screenShakeCssVariables(
+  shake: BattleAnimationScreenShake,
+  frameDurationMs = BATTLE_ANIMATION_FRAME_MS
+): EffectCssVariables {
   const powerUnit = unitFromRank(shake.power);
   const speedUnit = unitFromRank(shake.speed);
   const amplitude = SHAKE_MIN_AMPLITUDE_PX + powerUnit * (SHAKE_MAX_AMPLITUDE_PX - SHAKE_MIN_AMPLITUDE_PX);
   const period = SHAKE_SLOWEST_PERIOD_MS - speedUnit * (SHAKE_SLOWEST_PERIOD_MS - SHAKE_FASTEST_PERIOD_MS);
-  const totalMs = framesToMs(shake.durationFrames);
+  const totalMs = framesToMs(shake.durationFrames, frameDurationMs);
 
   return {
     "--battle-shake-x": `${amplitude.toFixed(2)}px`,

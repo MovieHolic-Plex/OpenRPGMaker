@@ -29,15 +29,19 @@ function sceneWithTarget(speed?: string): { scene: HTMLElement; target: HTMLElem
 }
 
 /** 3프레임짜리 최소 레코드. 시트가 있어야 재생 경로를 탄다. */
-function seedAnimation(timings: BattleAnimationTiming[]): void {
+function seedAnimation(
+  timings: BattleAnimationTiming[],
+  options: { readonly resourceId?: string; readonly frameCount?: number } = {}
+): void {
+  const frameCount = options.frameCount ?? 3;
   const project = createBlankProject();
   project.database.battleAnimations = [
     normalizeBattleAnimationRecord({
       id: "anim_test",
       name: "테스트",
-      resourceId: "easyrpg-battle-blow",
-      sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
-      frames: [0, 1, 2].map((pattern) => ({
+      resourceId: options.resourceId ?? "easyrpg-battle-blow",
+      sheet: { frameWidth: 96, frameHeight: 96, columns: frameCount },
+      frames: Array.from({ length: frameCount }, (_unused, pattern) => ({
         cells: [{ pattern, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }],
       })),
       timings,
@@ -155,6 +159,29 @@ describe("flash.target 라우팅", () => {
 });
 
 describe("재생 종료", () => {
+  it("생성 이펙트는 75ms마다 다음 프레임으로 넘어간다", () => {
+    vi.useFakeTimers();
+    seedAnimation([], { resourceId: "generated-battle-anim-slash-steel", frameCount: 8 });
+    const { scene } = sceneWithTarget();
+
+    const playback = mountBattleAnimationPlayback(snapshotWith() as never, scene)!;
+    expect(playback.element.dataset.currentFrame).toBe("0");
+    vi.advanceTimersByTime(75);
+    expect(playback.element.dataset.currentFrame).toBe("1");
+  });
+
+  it("생성 이펙트의 플래시 지속시간도 75ms 프레임 단위를 쓴다", () => {
+    seedAnimation([flashTiming("target")], {
+      resourceId: "generated-battle-anim-slash-steel",
+      frameCount: 8,
+    });
+    const { scene, target } = sceneWithTarget();
+
+    mountBattleAnimationPlayback(snapshotWith() as never, scene);
+
+    expect(target.style.getPropertyValue("--battle-flash-duration")).toBe("300ms");
+  });
+
   it("마지막 프레임까지 돌면 그림을 걷는다", () => {
     vi.useFakeTimers();
     seedAnimation([]);
