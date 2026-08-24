@@ -17,7 +17,9 @@ import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestS
 import { toast } from "@/util/toast";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  AUTHORING_TEST_GATE_BLOCKED_EVENT,
   authoringProjectFingerprint,
+  evaluateAuthoringTestGate,
 } from "@/editor/authoringJourney";
 
 let modalRoot: HTMLElement | null = null;
@@ -30,6 +32,7 @@ let battleSceneController: BattleDomController | null = null;
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
   // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
@@ -72,6 +75,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
+  if (!passesAuthoringTestGate()) return false;
   const liveProject = store.getCurrent();
   const validation = validateEventDraft(liveProject, mapId, eventId);
   if (!validation.canCommit) {
@@ -111,6 +115,11 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
 }
 
 export async function openTroopBattleTestModal(troopId: string): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
+  await openTroopBattleTestModalAfterGate(troopId);
+}
+
+async function openTroopBattleTestModalAfterGate(troopId: string): Promise<void> {
   const project = store.getCurrent();
   const troop = project.database.troops.find((record) => record.id === troopId);
   const body = openTestPlayShell(`전투 테스트 - ${troop?.name ?? troopId}`);
@@ -191,6 +200,7 @@ export function pickRandomTroopId(
 export async function openRandomTroopBattleTestModal(
   random: () => number = Math.random
 ): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
   const project = store.getCurrent();
   const troopId = pickRandomTroopId(project, random);
   if (!troopId) {
@@ -199,7 +209,17 @@ export async function openRandomTroopBattleTestModal(
     loading.setStage("error", "적 그룹이 없습니다. 데이터베이스에서 트룹을 추가하세요.");
     return;
   }
-  await openTroopBattleTestModal(troopId);
+  await openTroopBattleTestModalAfterGate(troopId);
+}
+
+function passesAuthoringTestGate(): boolean {
+  const gate = evaluateAuthoringTestGate(store.getCurrent());
+  if (gate.allowed) return true;
+  window.dispatchEvent(new CustomEvent(AUTHORING_TEST_GATE_BLOCKED_EVENT, {
+    detail: { referenceIssues: gate.referenceIssues },
+  }));
+  toast(`참조 문제 ${gate.referenceIssues.length}개를 해결해야 테스트할 수 있습니다. 여정의 문제 목록에서 데이터로 이동하세요.`, "error");
+  return false;
 }
 
 export function closeTestPlayModal(): void {

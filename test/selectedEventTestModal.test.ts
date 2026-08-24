@@ -23,8 +23,17 @@ import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
-import { closeTestPlayModal, openSelectedEventTestModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
-import { AUTHORING_TEST_BOOT_SUCCESS_EVENT } from "@/editor/authoringJourney";
+import {
+  closeTestPlayModal,
+  openRandomTroopBattleTestModal,
+  openSelectedEventTestModal,
+  openTestPlayModal,
+  openTroopBattleTestModal,
+} from "@/editor/panels/testPlayModal";
+import {
+  AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  AUTHORING_TEST_GATE_BLOCKED_EVENT,
+} from "@/editor/authoringJourney";
 import { installFakeDom } from "./fakeDom";
 
 let restoreDom: () => void = () => undefined;
@@ -83,6 +92,36 @@ afterEach(() => {
 });
 
 describe("selected event test modal", () => {
+  // Break caught: map/context-menu/event-editor/troop callers bypass the editor event gate.
+  it("blocks every public test modal boundary when the canonical project has broken references", async () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const event = selectedEvent("canonical");
+    project.maps[mapId].events = [event];
+    project.system.startActorIds = ["missing-actor"];
+    store.replaceProject(project);
+    const flushSpy = vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
+
+    await openTestPlayModal({ mapId, x: 1, y: 1 });
+    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
+
+    await expect(openSelectedEventTestModal(mapId, event.id)).resolves.toBe(false);
+    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
+
+    await openTroopBattleTestModal("missing-troop");
+    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
+
+    await openRandomTroopBattleTestModal(() => 0);
+    expect(document.querySelector("[data-testid='test-play-window']")).toBeNull();
+
+    expect(flushSpy).not.toHaveBeenCalled();
+    expect(playerMocks.renderPlayer).not.toHaveBeenCalled();
+    const blockedEvents = vi.mocked(window.dispatchEvent).mock.calls
+      .map(([dispatched]) => dispatched.type)
+      .filter((type) => type === AUTHORING_TEST_GATE_BLOCKED_EVENT);
+    expect(blockedEvents).toHaveLength(4);
+  });
+
   it("boots the actual selected-event player route without flushing or persisting the draft", async () => {
     const project = createBlankProject();
     const mapId = project.startMapId;
