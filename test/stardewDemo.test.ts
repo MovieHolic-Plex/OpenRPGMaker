@@ -376,3 +376,57 @@ describe("Stardew demo: P1 살아 있는 농장", () => {
     expect(scheduledResidents.flatMap((event) => event.schedule ?? []).every((row) => row.at.mapId === project.startMapId)).toBe(true);
   });
 });
+
+describe("Stardew demo: P2 탐색과 공간 확장", () => {
+  const project = createFarmingDemoProject();
+
+  it("계절·시간·날씨가 다른 물고기와 실제 농장 낚시터를 저작한다", () => {
+    expect(project.database.fishSpecies?.map((fish) => fish.id)).toEqual([
+      "fish_river_carp",
+      "fish_moon_trout",
+    ]);
+    expect(project.system.fishing?.enabled).toBe(true);
+    expect(project.system.fishing?.energyCost).toBeGreaterThan(0);
+    expect(project.system.fishing?.spots).toHaveLength(1);
+    const catches = project.system.fishing?.spots[0]?.catches ?? [];
+    expect(catches.some((rule) => rule.seasons?.includes("spring"))).toBe(true);
+    expect(catches.some((rule) => rule.timePhases?.includes("night"))).toBe(true);
+    expect(catches.some((rule) => rule.weatherKinds?.includes("rain"))).toBe(true);
+  });
+
+  it("농장과 광산에 계절 채집 구역을 제공하고 도감·박물관 보상을 연결한다", () => {
+    expect(project.system.seasonalForage?.enabled).toBe(true);
+    expect(project.system.seasonalForage?.areas.map((area) => area.id)).toEqual([
+      "forage_farm_meadow",
+      "forage_mine_cavern",
+    ]);
+    expect(project.system.seasonalForage?.areas.some((area) =>
+      area.entries.some((entry) => Object.keys(entry.seasonalDrops ?? {}).length >= 3)
+    )).toBe(true);
+    expect(project.system.collections?.trackedItemIds?.length ?? 0).toBeGreaterThanOrEqual(7);
+    expect(project.system.museum?.eligibleItemIds.length ?? 0).toBeGreaterThanOrEqual(5);
+    expect(project.system.museum?.rewards.map((reward) => reward.id)).toEqual([
+      "museum_reward_first_find",
+      "museum_reward_field_scholar",
+    ]);
+  });
+
+  it("2단계 범용 건물과 회전 가능한 집 장식을 시작 배치까지 제공한다", () => {
+    expect(project.database.farmBuildingTypes?.map((type) => type.id)).toEqual(["farm_building_workshop"]);
+    expect(project.database.farmBuildingTypes?.[0]?.levels.map((level) => level.level)).toEqual([1, 2]);
+    expect(project.database.homeDecorationTypes?.map((type) => type.id)).toEqual([
+      "home_decor_sun_rug",
+      "home_decor_wood_table",
+    ]);
+    expect(project.database.homeDecorationTypes?.every((type) => type.allowedOrientations.length >= 2)).toBe(true);
+    expect(project.session.farmBuildingPlacements?.map((placement) => placement.instanceId)).toEqual(["farm_building_workshop_1"]);
+    expect(project.session.homeDecorationPlacements?.map((placement) => placement.instanceId)).toEqual([
+      "home_decor_sun_rug_1",
+      "home_decor_wood_table_1",
+    ]);
+  });
+
+  it("P2 콘텐츠를 포함한 전체 프로젝트 참조가 재로드 가능한 상태다", () => {
+    expect(collectProjectReferenceIssues(project)).toEqual([]);
+  });
+});

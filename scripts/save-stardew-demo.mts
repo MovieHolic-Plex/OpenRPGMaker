@@ -78,6 +78,17 @@ function validateStardewDemo(project: Project) {
     farmAnimalBuildingCount: project.system.farmAnimalBuildings?.length ?? 0,
     farmAnimalStartCount: project.session.farmAnimals?.length ?? 0,
     scheduledResidentCount: events.filter((event) => event.characterId && (event.schedule?.length ?? 0) >= 2).length,
+    fishSpeciesCount: project.database.fishSpecies?.length ?? 0,
+    fishingSpotCount: project.system.fishing?.spots.length ?? 0,
+    forageAreaCount: project.system.seasonalForage?.areas.length ?? 0,
+    collectionTrackedCount: project.system.collections?.trackedItemIds?.length ?? 0,
+    museumEligibleCount: project.system.museum?.eligibleItemIds.length ?? 0,
+    museumRewardCount: project.system.museum?.rewards.length ?? 0,
+    farmBuildingTypeCount: project.database.farmBuildingTypes?.length ?? 0,
+    farmBuildingLevelCount: project.database.farmBuildingTypes?.reduce((sum, type) => sum + type.levels.length, 0) ?? 0,
+    homeDecorationTypeCount: project.database.homeDecorationTypes?.length ?? 0,
+    farmBuildingPlacementCount: project.session.farmBuildingPlacements?.length ?? 0,
+    homeDecorationPlacementCount: project.session.homeDecorationPlacements?.length ?? 0,
   };
   const ok = facts.cropCount === 8
     && facts.giftSystem
@@ -98,7 +109,18 @@ function validateStardewDemo(project: Project) {
     && facts.farmAnimalSpeciesCount >= 2
     && facts.farmAnimalBuildingCount >= 1
     && facts.farmAnimalStartCount >= 2
-    && facts.scheduledResidentCount >= 3;
+    && facts.scheduledResidentCount >= 3
+    && facts.fishSpeciesCount >= 2
+    && facts.fishingSpotCount >= 1
+    && facts.forageAreaCount >= 2
+    && facts.collectionTrackedCount >= 7
+    && facts.museumEligibleCount >= 5
+    && facts.museumRewardCount >= 2
+    && facts.farmBuildingTypeCount >= 1
+    && facts.farmBuildingLevelCount >= 2
+    && facts.homeDecorationTypeCount >= 2
+    && facts.farmBuildingPlacementCount >= 1
+    && facts.homeDecorationPlacementCount >= 2;
   if (!ok) throw new Error(`Stardew demo contract mismatch: ${JSON.stringify(facts)}`);
   return facts;
 }
@@ -121,7 +143,7 @@ if (!reloaded) throw new Error(`Supabase reload failed: ${config.projectId}`);
 const reloadedFacts = validateStardewDemo(reloaded);
 
 const evidence = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   projectId: config.projectId,
   saveKind: saved.kind,
   sha256: saved.sha256 ?? null,
