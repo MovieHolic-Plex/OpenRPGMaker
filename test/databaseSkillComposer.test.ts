@@ -9,6 +9,10 @@ import {
   selectedRecordIdForSession,
   setSelectedRecordId,
 } from "@/editor/panels/databaseRecordViewSession";
+import {
+  getSelectedMonsterSpeciesId,
+  setSelectedMonsterSpeciesId,
+} from "@/editor/panels/databaseMonsterSpeciesView";
 import { deriveSkillComposerModel } from "@/editor/panels/databaseSkillComposerModel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -29,6 +33,7 @@ beforeEach(() => {
     },
   });
   resetRecordViewSessionState();
+  setSelectedMonsterSpeciesId(undefined);
 
   const project = createBlankProject();
   const skill = project.database.skills[0];
@@ -53,6 +58,11 @@ beforeEach(() => {
     entry.skillId = undefined;
     entry.usableAsItemSkillId = undefined;
   }
+  for (const entry of project.database.enemies) {
+    entry.skillIds = [];
+    entry.actions = [];
+  }
+  for (const entry of project.database.monsterSpecies ?? []) entry.skillsByLevel = [];
 
   skill.scope = "allEnemies";
   skill.type = "normal";
@@ -80,6 +90,20 @@ beforeEach(() => {
   item.activateSkillId = skill.id;
   equipment.skillId = undefined;
   equipment.usableAsItemSkillId = skill.id;
+  const enemy = project.database.enemies[1];
+  const species = project.database.monsterSpecies?.[1];
+  if (!enemy || !species) throw new Error("missing non-first skill backlink fixtures");
+  enemy.name = "두 번째 몬스터";
+  enemy.skillIds = [skill.id];
+  enemy.actions = [{
+    skillId: skill.id,
+    priority: 7,
+    condition: { kind: "turn", start: 2, interval: 3 },
+    switchOnAfterAction: { enabled: false },
+    switchOffAfterAction: { enabled: false },
+  }];
+  species.name = "두 번째 종족";
+  species.skillsByLevel = [{ level: 9, skillId: skill.id }];
 
   store.replace(project);
   setSelectedRecordId("skills", skill.id);
@@ -121,6 +145,8 @@ describe("database skill ability composer", () => {
     const klass = project.database.classes[0]!;
     const item = project.database.items[0]!;
     const equipment = project.database.equipment[0]!;
+    const enemy = project.database.enemies[1]!;
+    const species = project.database.monsterSpecies?.[1]!;
 
     klass.battleCommands = [
       { id: "command-skill", name: "전용기", kind: "skill", skillId: skill.id },
@@ -137,6 +163,8 @@ describe("database skill ability composer", () => {
       { collection: "classes", id: klass.id, relationship: "Lv 5 습득 · 전투 명령" },
       { collection: "items", id: item.id, relationship: "스킬 습득 · 스킬 발동" },
       { collection: "equipment", id: equipment.id, relationship: "장비 스킬 · 사용 스킬" },
+      { collection: "enemies", id: enemy.id, relationship: "스킬 목록 · 행동 1" },
+      { collection: "monsterSpecies", id: species.id, relationship: "Lv 9 습득" },
     ]);
   });
 
@@ -199,6 +227,39 @@ describe("database skill ability composer", () => {
     expect(selectedRecordIdForSession("actors")).toBe(actor.id);
     expect(panel.querySelector(".db-body")).toBe(bodyBefore);
     expect(findByTestId(panel, `db-record-row-${actor.id}`)?.classList.contains("active")).toBe(true);
+  });
+
+  it("selects the exact non-first enemy through its rendered backlink", () => {
+    // Break named: omitting enemy skillIds/actions either hides the backlink or falls back to the first enemy on navigation.
+    const panel = renderPanel();
+    const bodyBefore = panel.querySelector(".db-body");
+    const enemy = store.getCurrent().database.enemies[1]!;
+    const backlink = byTestId(panel, `db-skill-backlink-enemies-${enemy.id}`);
+
+    expect(backlink.querySelector(".db-skill-backlink-kind")?.textContent).toBe("몬스터");
+    backlink.click();
+
+    expect(getDatabaseActiveTab()).toBe("enemies");
+    expect(selectedRecordIdForSession("enemies")).toBe(enemy.id);
+    expect(panel.querySelector(".db-body")).toBe(bodyBefore);
+    expect(findByTestId(panel, `db-record-row-${enemy.id}`)?.classList.contains("active")).toBe(true);
+  });
+
+  it("selects the exact non-first monster species through its rendered backlink", () => {
+    // Break named: treating monsterSpecies as a DatabaseCollection cannot set its dedicated selection before switching tabs.
+    const panel = renderPanel();
+    const bodyBefore = panel.querySelector(".db-body");
+    const species = store.getCurrent().database.monsterSpecies?.[1];
+    if (!species) throw new Error("missing non-first monster species fixture");
+    const backlink = byTestId(panel, `db-skill-backlink-monsterSpecies-${species.id}`);
+
+    expect(backlink.querySelector(".db-skill-backlink-kind")?.textContent).toBe("종족");
+    backlink.click();
+
+    expect(getDatabaseActiveTab()).toBe("monsterSpecies");
+    expect(getSelectedMonsterSpeciesId()).toBe(species.id);
+    expect(panel.querySelector(".db-body")).toBe(bodyBefore);
+    expect(findByTestId(panel, `db-monster-species-row-${species.id}`)?.classList.contains("active")).toBe(true);
   });
 });
 

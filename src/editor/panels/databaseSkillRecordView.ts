@@ -1,8 +1,13 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { emptyToUndefined, field, numberField, selectField, selectLiteral, textField } from "@/editor/panels/databaseControls";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
-import { deriveSkillComposerModel, type SkillComposerEffectKind } from "@/editor/panels/databaseSkillComposerModel";
+import {
+  deriveSkillComposerModel,
+  type SkillBacklinkCollection,
+  type SkillComposerEffectKind,
+} from "@/editor/panels/databaseSkillComposerModel";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
@@ -123,7 +128,8 @@ function skillComposer(form: HTMLElement, record: SkillRecord): HTMLElement {
           ],
           on: {
             click: () => {
-              setSelectedRecordId(backlink.collection, backlink.id);
+              if (backlink.collection === "monsterSpecies") setSelectedMonsterSpeciesId(backlink.id);
+              else setSelectedRecordId(backlink.collection, backlink.id);
               const root = databasePanelRootFrom(form);
               if (root) switchDatabaseActiveTab(backlink.collection, root);
             },
@@ -183,12 +189,14 @@ function effectBlockIcon(kind: SkillComposerEffectKind): string {
   }
 }
 
-function backlinkCollectionLabel(collection: "actors" | "classes" | "items" | "equipment"): string {
+function backlinkCollectionLabel(collection: SkillBacklinkCollection): string {
   switch (collection) {
     case "actors": return "주인공";
     case "classes": return "직업";
     case "items": return "아이템";
     case "equipment": return "장비";
+    case "enemies": return "몬스터";
+    case "monsterSpecies": return "종족";
   }
 }
 
