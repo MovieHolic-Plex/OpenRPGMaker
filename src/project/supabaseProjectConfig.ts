@@ -100,7 +100,37 @@ export function resetSupabaseProjectConfigToEnv(env: SupabaseProjectEnv = import
 }
 
 export function saveSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft): void {
-  browserStorage()?.setItem(STORAGE_KEY, JSON.stringify({ ...normalizeSupabaseProjectConfigDraft(draft), source: "custom" }));
+  browserStorage()?.setItem(STORAGE_KEY, serializedStoredConfig(draft));
+}
+
+export type StagedSupabaseProjectConfigDraft = {
+  /** Accept the already-written target config and discard the rollback snapshot. */
+  readonly commit: () => void;
+  /** Restore the exact previous storage value when the surrounding local commit fails. */
+  readonly rollback: () => void;
+};
+
+/**
+ * Writes the target config before any destructive project switch. A quota or
+ * security error therefore aborts with local project/draft/URL state untouched.
+ */
+export function stageSupabaseProjectConfigDraft(
+  draft: SupabaseProjectConfigDraft,
+): StagedSupabaseProjectConfigDraft {
+  const storage = browserStorage();
+  if (!storage) return { commit: () => undefined, rollback: () => undefined };
+  const previous = storage.getItem(STORAGE_KEY);
+  storage.setItem(STORAGE_KEY, serializedStoredConfig(draft));
+  let active = true;
+  return {
+    commit: () => { active = false; },
+    rollback: () => {
+      if (!active) return;
+      if (previous === null) storage.removeItem(STORAGE_KEY);
+      else storage.setItem(STORAGE_KEY, previous);
+      active = false;
+    },
+  };
 }
 
 export function clearSupabaseProjectConfigDraft(): void {
@@ -133,6 +163,10 @@ function normalizeSupabaseProjectConfigDraft(draft: SupabaseProjectConfigDraft):
     projectId: draft.projectId.trim() || DEFAULT_SUPABASE_PROJECT_ID,
     url: draft.url.trim().replace(/\/$/, ""),
   };
+}
+
+function serializedStoredConfig(draft: SupabaseProjectConfigDraft): string {
+  return JSON.stringify({ ...normalizeSupabaseProjectConfigDraft(draft), source: "custom" });
 }
 
 function supabaseProjectConfigDraftFromEnv(env: SupabaseProjectEnv): SupabaseProjectConfigDraft {

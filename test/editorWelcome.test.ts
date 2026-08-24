@@ -10,6 +10,7 @@ import {
   shouldPresentEditorWelcome,
   shouldSuppressEditorWelcomeForAutomation,
 } from "@/editor/editorWelcome";
+import { GENRE_PACK_IDS } from "@/project/genrePackId";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -27,6 +28,20 @@ function clearStorage(): void {
   } catch {
     /* ignore */
   }
+}
+
+function installMemoryStorage(): void {
+  const entries = new Map<string, string>();
+  const storage: Storage = {
+    get length() { return entries.size; },
+    clear: () => entries.clear(),
+    getItem: (key) => entries.get(key) ?? null,
+    key: (index) => Array.from(entries.keys())[index] ?? null,
+    removeItem: (key) => { entries.delete(key); },
+    setItem: (key, value) => { entries.set(key, value); },
+  };
+  Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
+  vi.stubGlobal("localStorage", storage);
 }
 
 function setMatchMedia(matches: boolean): void {
@@ -47,11 +62,7 @@ function setMatchMedia(matches: boolean): void {
 }
 
 beforeEach(() => {
-  Object.defineProperty(globalThis, "localStorage", {
-    configurable: true,
-    writable: true,
-    value: new MemoryStorage(),
-  });
+  installMemoryStorage();
   clearStorage();
   document.body.replaceChildren();
   vi.useRealTimers();
@@ -71,6 +82,7 @@ afterEach(() => {
   document.body.classList.remove("director-briefing-open");
   delete (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__;
   window.history.replaceState({}, "", "/");
+  vi.unstubAllGlobals();
 });
 
 describe("editor welcome dismiss storage", () => {
@@ -136,7 +148,25 @@ describe("automation boot context", () => {
 });
 
 describe("presentEditorWelcome", () => {
-  it("mounts a canvas briefing with one question, one input, and three result cards", () => {
+  // BREAK: the production welcome rendered only three genres and represented variant presets as peer packs.
+  it("renders each canonical pack exactly once and nests variant inspirations", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    void presentEditorWelcome(host);
+
+    const packNodes = Array.from(host.querySelectorAll<HTMLElement>("[data-pack-id]"));
+    expect(packNodes.map((node) => node.dataset.packId).sort()).toEqual([...GENRE_PACK_IDS].sort());
+    for (const packId of GENRE_PACK_IDS) {
+      expect(host.querySelectorAll(`[data-pack-id='${packId}']`)).toHaveLength(1);
+    }
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card-']")).toHaveLength(5);
+    expect(host.querySelector("[data-preset-id='partner-raise']")?.closest("[data-pack-id]")?.getAttribute("data-pack-id"))
+      .toBe("monster-collect");
+    expect(host.querySelector("[data-preset-id='school-horror']")?.closest("[data-pack-id]")?.getAttribute("data-pack-id"))
+      .toBe("horror-chase");
+  });
+
+  it("mounts a canvas briefing with one question, one input, and five canonical result cards", () => {
     const host = document.createElement("div");
     document.body.append(host);
     void presentEditorWelcome(host);
@@ -148,16 +178,13 @@ describe("presentEditorWelcome", () => {
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)).toBeTruthy();
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.textContent).toContain("만들기");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.textContent).toContain("빈 맵으로 시작");
-    expect(host.querySelectorAll("[data-pack-id]")).toHaveLength(3);
-    expect(Array.from(host.querySelectorAll<HTMLElement>("[data-pack-id]"), (node) => node.dataset.packId)).toEqual([
-      "adventure-jrpg",
-      "farm-life",
-      "monster-collect",
-    ]);
+    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(5);
     expect(host.textContent).toContain("모험 마을");
     expect(host.textContent).toContain("농장 하루");
     expect(host.textContent).toContain("몬스터 수집");
-    expect(host.querySelector("[data-testid='editor-welcome-inspiration']")).toBeNull();
+    expect(host.textContent).toContain("호러 추격");
+    expect(host.textContent).toContain("스토리 컷신");
+    expect(host.querySelectorAll("[data-testid='editor-welcome-inspiration']")).toHaveLength(2);
     expect(host.querySelector("[data-testid='editor-welcome-slide']")).toBeNull();
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
   });

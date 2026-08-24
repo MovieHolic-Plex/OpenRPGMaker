@@ -6,11 +6,11 @@ import {
   templateToolInstruction,
   type NarrativeHorrorGenre,
 } from "@/ai/narrativeHorrorWorkPlan";
+import type { GenrePackId } from "@/project/genrePackId";
 import {
   createGenreBlankProjectSystemPresetPlan,
   type GenreBlankProjectSystemPresetPlan,
 } from "@/editor/genrePacks";
-import type { GenrePackId } from "@/project/genrePackId";
 import type { OfficialGenrePackId } from "@/project/officialGenrePackIds";
 
 export type WelcomeGenrePresetId =
@@ -265,32 +265,56 @@ export const WELCOME_QUICK_PICKS: readonly { readonly label: string; readonly in
   { label: "달빛 호수 마을", intent: "달빛 호수 옆 작은 마을 — 고요한 분위기와 호수 던전" },
 ] as const;
 
-/** First-visit canvas briefing — three visual results, not a genre catalog. */
+/** One production card per canonical pack. Variant prompts stay nested as inspirations. */
 export type DirectorBriefingCard = {
   readonly id: WelcomeGenrePresetId;
+  readonly packId: GenrePackId;
   readonly label: string;
   readonly blurb: string;
   readonly thumb: string;
+  readonly inspirationPresetIds: readonly WelcomeGenrePresetId[];
 };
 
 export const DIRECTOR_BRIEFING_CARDS: readonly DirectorBriefingCard[] = [
   {
     id: "adventure-jrpg",
+    packId: "adventure-jrpg",
     label: "모험 마을",
     blurb: "집과 길, 던전 입구",
     thumb: "/assets/generated/welcome/slide-04.png",
-  },
-  {
-    id: "farm-life",
-    label: "농장 하루",
-    blurb: "밭과 주민, 일상",
-    thumb: "/assets/generated/welcome/slide-03.png",
+    inspirationPresetIds: [],
   },
   {
     id: "monster-collect",
+    packId: "monster-collect",
     label: "몬스터 수집",
     blurb: "풀숲 조우와 도감",
     thumb: "/assets/generated/welcome/slide-01.png",
+    inspirationPresetIds: ["partner-raise"],
+  },
+  {
+    id: "horror-gallery",
+    packId: "horror-chase",
+    label: "호러 추격",
+    blurb: "단서와 은신, 추격",
+    thumb: "/assets/generated/welcome/slide-05.png",
+    inspirationPresetIds: ["school-horror"],
+  },
+  {
+    id: "story-cutscene",
+    packId: "story-cutscene",
+    label: "스토리 컷신",
+    blurb: "대화와 선택, 연출",
+    thumb: "/assets/generated/welcome/mini-03-moon.png",
+    inspirationPresetIds: [],
+  },
+  {
+    id: "farm-life",
+    packId: "farm-life",
+    label: "농장 하루",
+    blurb: "밭과 주민, 일상",
+    thumb: "/assets/generated/welcome/slide-03.png",
+    inspirationPresetIds: [],
   },
 ] as const;
 

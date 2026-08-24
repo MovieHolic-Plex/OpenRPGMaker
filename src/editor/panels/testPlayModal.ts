@@ -17,10 +17,9 @@ import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestS
 import { toast } from "@/util/toast";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
-  AUTHORING_TEST_GATE_BLOCKED_EVENT,
   authoringProjectFingerprint,
-  evaluateAuthoringTestGate,
 } from "@/editor/authoringJourney";
+import { passesAuthoringTestGate } from "@/editor/authoringTestGate";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -210,16 +209,6 @@ export async function openRandomTroopBattleTestModal(
     return;
   }
   await openTroopBattleTestModalAfterGate(troopId);
-}
-
-function passesAuthoringTestGate(): boolean {
-  const gate = evaluateAuthoringTestGate(store.getCurrent());
-  if (gate.allowed) return true;
-  window.dispatchEvent(new CustomEvent(AUTHORING_TEST_GATE_BLOCKED_EVENT, {
-    detail: { referenceIssues: gate.referenceIssues },
-  }));
-  toast(`참조 문제 ${gate.referenceIssues.length}개를 해결해야 테스트할 수 있습니다. 여정의 문제 목록에서 데이터로 이동하세요.`, "error");
-  return false;
 }
 
 export function closeTestPlayModal(): void {

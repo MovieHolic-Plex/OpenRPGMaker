@@ -7,8 +7,8 @@ import {
   WELCOME_GENRE_PRESETS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
-  officialGenrePackIdForWelcomePreset,
   type WelcomeGenrePresetId,
+  welcomeGenrePresetById,
   welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
 import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
@@ -370,6 +370,7 @@ export function presentEditorWelcome(
       children: DIRECTOR_BRIEFING_CARDS.map((card, index) =>
         el("div", {
           class: "editor-welcome-template-option",
+          dataset: { packId: card.packId },
           children: [
             el("button", {
               class: "editor-welcome-template-card",
@@ -379,7 +380,6 @@ export function presentEditorWelcome(
               },
               dataset: {
                 testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
-                packId: officialGenrePackIdForWelcomePreset(card.id),
                 templateId: card.id,
               },
               on: {
@@ -394,6 +394,28 @@ export function presentEditorWelcome(
                 el("span", { class: "editor-welcome-template-blurb", text: card.blurb }),
               ],
             }),
+            ...(card.inspirationPresetIds.length > 0
+              ? [
+                  el("div", {
+                    class: "editor-welcome-card-inspirations",
+                    dataset: { testid: EDITOR_WELCOME_TESTIDS.inspirationStrip },
+                    children: card.inspirationPresetIds.map((presetId) => {
+                      const preset = welcomeGenrePresetById(presetId);
+                      if (!preset) throw new Error(`Unknown welcome inspiration preset: ${presetId}`);
+                      return el("button", {
+                        class: "editor-welcome-card-inspiration",
+                        text: preset.label,
+                        attrs: {
+                          type: "button",
+                          "aria-label": `${card.label} 영감: ${preset.label}`,
+                        },
+                        dataset: { presetId: preset.id },
+                        on: { click: () => startPreset(preset.id, preset.label) },
+                      });
+                    }),
+                  }),
+                ]
+              : []),
             el("button", {
               class: "editor-welcome-template-starter",
               text: "빈 프로젝트 시스템 설정",
