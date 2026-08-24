@@ -68,15 +68,17 @@ export function readHorrorBrowserEvidence(filePath, opts) {
 
   const capturedBy = typeof evidence.capturedBy === "string" ? evidence.capturedBy : null;
   assert(
-    capturedBy === captureName || evidence.capturedBy === captureName,
+    capturedBy === captureName,
     `브라우저 QA가 자동 캡처(${captureName}) 산출물이 아닙니다 (capturedBy=${capturedBy ?? "missing"}). 브라우저를 통해 자동 재생성한 증거를 사용하세요.`,
   );
 
   const observedMs = Date.parse(evidence.observedAt);
   const ageMs = now - observedMs;
+  // Allow only 30s of clock skew ahead — anything materially in the future is forged/bogus.
+  const MAX_FUTURE_SKEW_MS = 30_000;
   assert(
-    observedMs > 0 && ageMs <= maxStalenessMs,
-    `브라우저 QA 증거가 만료되었습니다 (age=${Math.floor(ageMs / 1000)}s, 최대 ${Math.floor(maxStalenessMs / 1000)}s). 캡처를 다시 실행하세요.`,
+    observedMs > 0 && ageMs <= maxStalenessMs && ageMs >= -MAX_FUTURE_SKEW_MS,
+    `브라우저 QA 증거가 만료 또는 미래 시각입니다 (age=${Math.floor(ageMs / 1000)}s, 최대 ${Math.floor(maxStalenessMs / 1000)}s, 허용 미래 편차 ${MAX_FUTURE_SKEW_MS / 1000}s). 캡처를 다시 실행하세요.`,
   );
 
   // Return a defensively cloned, credential-free slice (never leak anything unexpected).

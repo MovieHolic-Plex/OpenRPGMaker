@@ -35,6 +35,7 @@ import {
   validateHorrorBrowserEvidenceShape,
   browserEvidenceOutputPath,
 } from "./lib/horror-browser-evidence.mjs";
+import { buildViteInvocation } from "./lib/vite-invocation.mjs";
 
 const VIEWPORT = { width: 1440, height: 900 };
 const DEFAULT_DEV_SERVER_PORT = 9815;
@@ -60,16 +61,6 @@ async function resolvePort(): Promise<number> {
       server.close(() => resolve(port));
     });
   });
-}
-
-function viteBinary(): string {
-  const candidates = [
-    path.join("node_modules", ".bin", "vite"),
-    path.join("node_modules", ".bin", "vite.cmd"),
-  ];
-  const found = candidates.find((candidate) => fs.existsSync(candidate));
-  assert(found, "vite binary를 찾을 수 없습니다 (node_modules/.bin/vite).");
-  return found!;
 }
 
 async function waitForServer(url: string, port: number, timeoutMs = BOOT_MS): Promise<void> {
@@ -119,17 +110,8 @@ async function reserveDevServer(port: number): Promise<DevServerHandle> {
     console.log(`[capture] reusing running worktree dev server on :${port}`);
     return { baseUrl, server: null, reused: true };
   }
-  const child = spawn(viteBinary(), [
-    "--configLoader", "runner",
-    "--host", "127.0.0.1",
-    "--port", String(port),
-    "--strictPort",
-  ], {
-    cwd: process.cwd(),
-    env: { ...process.env, DEV_SERVER_NO_TLS: "1" },
-    stdio: "ignore",
-    shell: process.platform === "win32",
-  });
+  const invocation = buildViteInvocation(port, { cwd: process.cwd() });
+  const child = spawn(invocation.command, invocation.args, invocation.options);
   await new Promise<void>((resolve) => {
     if (child.exitCode !== null) {
       throw new Error(`worktree 포트 ${port}에 이미 다른 서버가 떠 있어 자체 dev 서버를 못 띄웁니다 (strictPort).`);
