@@ -7,8 +7,11 @@ import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommand, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { switchDatabaseActiveTab } from "./database";
 import { classCurveCards } from "./databaseClassCurveEditors";
 import { renderExperienceCurvePanel } from "./databaseClassExperienceCurveEditor";
+import { classBuildSummary, type ClassBuildRole } from "./databasePartyBuildSummary";
+import { setSelectedRecordId } from "./databaseRecordViewSession";
 
 const COMMAND_KINDS: readonly ClassBattleCommandKind[] = ["attack", "skill", "skillSubset", "defend", "guard", "item", "capture", "escape", "switch", "event"];
 const COMMAND_KIND_LABELS: Record<ClassBattleCommandKind, string> = {
@@ -46,9 +49,14 @@ const FALLBACK_CLASS_COMMANDS: ClassRecord["battleCommands"] = [
 ];
 
 export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): void {
+  const buildSummaryHost = el("section", { class: "db-class-build-summary" });
   const curveGrid = el("div", { class: "db-class-curves-grid" });
   const expPanel = el("div", { class: "db-class-exp-content" });
-  const refreshCurves = (): void => curveGrid.replaceChildren(...classCurveCards(record, refreshCurves));
+  const refreshBuildSummary = (): void => renderClassBuildSummary(buildSummaryHost, record);
+  const refreshCurves = (): void => {
+    curveGrid.replaceChildren(...classCurveCards(record, refreshCurves));
+    refreshBuildSummary();
+  };
   const refreshExp = (): void =>
     renderExperienceCurvePanel(
       {
@@ -63,7 +71,7 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
   refreshCurves();
   refreshExp();
 
-  form.append(el("div", {
+  form.append(buildSummaryHost, el("div", {
     class: "db-class-bm88-workbench",
     dataset: { testid: "db-classes-bm88-workbench" },
     children: [
@@ -80,6 +88,99 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
       panel("장비", [equipmentSelect(record)], "db-class-panel-equipment"),
     ],
   }));
+}
+
+const CLASS_ROLE_LABELS: Readonly<Record<ClassBuildRole, string>> = {
+  balanced: "균형형",
+  striker: "공격형",
+  guardian: "수비형",
+  caster: "마력형",
+  agile: "기동형",
+};
+
+function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
+  const project = store.getCurrent();
+  const summary = classBuildSummary(project, record.id);
+  if (!summary) {
+    host.replaceChildren();
+    return;
+  }
+  host.dataset.testid = "db-class-build-summary";
+  host.dataset.role = summary.role;
+  host.dataset.actorCount = String(summary.actorIds.length);
+  host.dataset.skillCount = String(summary.skillCount);
+  host.dataset.commandCount = String(summary.commandCount);
+  host.dataset.equipmentCount = String(summary.equipmentCount);
+  host.replaceChildren(
+    el("div", {
+      class: "db-class-build-heading",
+      children: [
+        el("div", {
+          children: [
+            el("span", { class: "db-class-build-eyebrow", text: "CLASS BLUEPRINT" }),
+            el("h3", { text: "역할·빌드 요약" }),
+            el("p", { text: "Lv 20 성장 곡선과 현재 연결 데이터를 기준으로 보여줍니다." }),
+          ],
+        }),
+        el("strong", { class: `db-class-role db-class-role-${summary.role}`, text: CLASS_ROLE_LABELS[summary.role] }),
+      ],
+    }),
+    el("div", {
+      class: "db-class-build-metrics",
+      children: [
+        classBuildMetric("습득 스킬", summary.skillCount),
+        classBuildMetric("전투 명령", summary.commandCount),
+        classBuildMetric("허용 장비", summary.equipmentCount),
+        classBuildMetric("승급 경로", summary.promotionCount),
+      ],
+    }),
+    el("div", {
+      class: "db-class-build-actors",
+      children: [
+        el("span", { text: "이 직업을 사용하는 주인공" }),
+        summary.actorIds.length > 0
+          ? el("div", {
+              class: "db-class-build-actor-links",
+              children: summary.actorIds.map((actorId) => {
+                const actor = project.database.actors.find((entry) => entry.id === actorId);
+                return el("button", {
+                  class: "db-class-build-actor-link",
+                  text: actor?.name ?? actorId,
+                  attrs: { type: "button" },
+                  dataset: { testid: `db-class-build-open-actor-${actorId}` },
+                  on: {
+                    click: (event) => {
+                      setSelectedRecordId("actors", actorId);
+                      const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+                      if (panelRoot) switchDatabaseActiveTab("actors", panelRoot);
+                    },
+                  },
+                });
+              }),
+            })
+          : el("em", { text: "연결된 주인공 없음" }),
+      ],
+    }),
+  );
+}
+
+function classBuildMetric(label: string, value: number): HTMLElement {
+  return el("div", {
+    class: "db-class-build-metric",
+    children: [el("strong", { text: String(value) }), el("span", { text: label })],
+  });
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }
 
 function nameInput(record: ClassRecord): HTMLElement {

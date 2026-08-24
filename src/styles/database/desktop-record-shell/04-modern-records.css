@@ -654,6 +654,7 @@
   }
 
   .database-modal-body .db-items-oprn-workbench > .db-advanced-panel:first-child,
+  .database-modal-body .db-items-oprn-workbench > .db-item-effect-story,
   .database-modal-body .db-items-oprn-workbench > .db-item-type-panels {
     grid-column: 1 / -1;
   }
