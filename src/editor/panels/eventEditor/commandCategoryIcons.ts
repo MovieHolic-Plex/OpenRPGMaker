@@ -21,22 +21,27 @@ export type CommandCategoryKey =
 type CategoryVisual = {
   readonly key: CommandCategoryKey;
   readonly glyph: string;
+  readonly label: string;
 };
 
 const GROUP_VISUALS: Record<string, CategoryVisual> = {
-  "대화/입력": { key: "dialogue", glyph: "❝" },
-  "조건/흐름": { key: "flow", glyph: "◇" },
-  "맵/이동": { key: "map", glyph: "➤" },
-  "보상/상점": { key: "reward", glyph: "¤" },
-  "소리": { key: "sound", glyph: "♪" },
-  "배우/전투": { key: "actor", glyph: "☗" },
-  "화면/연출": { key: "screen", glyph: "✦" },
-  "시스템/고급": { key: "system", glyph: "⚙" },
-  "전투 전용": { key: "battle", glyph: "⚔" },
-  "모던 명령": { key: "modern", glyph: "◈" },
+  "대화/입력": { key: "dialogue", glyph: "❝", label: "대화" },
+  "조건/흐름": { key: "flow", glyph: "◇", label: "흐름" },
+  "맵/이동": { key: "map", glyph: "➤", label: "맵" },
+  "보상/상점": { key: "reward", glyph: "¤", label: "보상" },
+  "소리": { key: "sound", glyph: "♪", label: "소리" },
+  "배우/전투": { key: "actor", glyph: "☗", label: "배우" },
+  "화면/연출": { key: "screen", glyph: "✦", label: "연출" },
+  "시스템/고급": { key: "system", glyph: "⚙", label: "시스템" },
+  "전투 전용": { key: "battle", glyph: "⚔", label: "전투" },
+  "모던 명령": { key: "modern", glyph: "◈", label: "모던" },
 };
 
-const FALLBACK_VISUAL: CategoryVisual = GROUP_VISUALS["시스템/고급"] ?? { key: "system", glyph: "⚙" };
+const FALLBACK_VISUAL: CategoryVisual = GROUP_VISUALS["시스템/고급"] ?? {
+  key: "system",
+  glyph: "⚙",
+  label: "시스템",
+};
 
 const CATEGORY_BY_KIND: ReadonlyMap<string, CategoryVisual> = buildKindIndex();
 const CATEGORY_BY_COMMAND_ID: ReadonlyMap<string, CategoryVisual> = buildCommandIdIndex();

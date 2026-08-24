@@ -313,6 +313,21 @@ function eventDisplayName(event: GameEvent): string {
 
 function yieldToBrowser(): Promise<void> {
   return new Promise((resolve) => {
-    window.requestAnimationFrame(() => resolve());
+    let settled = false;
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      globalThis.clearTimeout(fallback);
+      resolve();
+    };
+    // Background/minimized editor tabs may throttle requestAnimationFrame
+    // indefinitely. Keep the paint opportunity, but never leave Test stuck on
+    // the preparation overlay just because the document is not foregrounded.
+    const fallback = globalThis.setTimeout(finish, 80);
+    if (typeof window.requestAnimationFrame === "function") {
+      window.requestAnimationFrame(finish);
+      return;
+    }
+    finish();
   });
 }

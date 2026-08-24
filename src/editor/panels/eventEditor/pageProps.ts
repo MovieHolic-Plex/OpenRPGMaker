@@ -401,99 +401,72 @@ function commandLabel(kind: Command["kind"]): string {
 }
 
 const CHARACTER_ID_HELP =
-  "같은 키를 여러 맵 이벤트에 쓰면 호감·선물을 공유합니다. 비우면 일회용 NPC로 취급되어 호감·선물은 동작하지 않습니다. 활동(npcActivity)은 이벤트별입니다.";
+  "NPC 관계를 연결하면 같은 캐릭터가 등장하는 여러 이벤트에서 호감도와 선물 기록을 공유합니다.";
 
-/** Compact optional characterId control for the top identity row (name + characterId). */
+/** One-click relationship status/control for the top identity card. */
 export function renderEventCharacterIdField(mapId: MapId, event: GameEvent): HTMLElement {
-  // 프로필이 연결되기 전에는 빈 텍스트 입력 대신 행동 버튼 하나만 보여준다 —
-  // 초보에게 "여기에 뭘 쳐 넣지?"라는 빈칸 공포를 주지 않기 위함(적대 평가 스펙).
-  if (!event.characterId?.trim()) {
-    return el("div", {
-      class: "event-character-id-field event-character-id-field-inline",
-      dataset: { testid: "event-character-id-field" },
-      children: [
-        el("button", {
-          class: "btn small event-character-id-connect",
-          text: "NPC/호감 연결…",
-          attrs: { type: "button", title: CHARACTER_ID_HELP },
-          dataset: { testid: "event-character-id-connect" },
-          on: {
-            click: () => openCharacterIdPicker({
-              mapId,
-              eventId: event.id,
-              currentId: event.characterId,
-            }),
-          },
-        }),
-      ],
-    });
-  }
-  const input = el("input", {
-    attrs: {
-      type: "text",
-      placeholder: "선택 (일회용 NPC)",
-      title: CHARACTER_ID_HELP,
-    },
-    value: event.characterId ?? "",
-    dataset: { testid: "event-character-id-input" },
-  }) as HTMLInputElement;
-  input.addEventListener("change", () => {
-    // Free-type attaches characterId only. Unknown ids do NOT auto-create a profile.
-    const next = input.value.trim() || undefined;
-    updateEvent(
-      mapId,
-      event.id,
-      next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined },
-    );
-  });
-  const pickerButton = el("button", {
-    class: "btn small event-character-id-picker-open",
-    text: "...",
-    attrs: {
-      type: "button",
-      title: "캐릭터 ID 찾기 / 새로 만들기",
-      "aria-label": "캐릭터 ID 찾기",
-    },
-    dataset: { testid: "event-character-id-picker-open" },
-    on: {
-      click: () => openCharacterIdPicker({
-        mapId,
-        eventId: event.id,
-        currentId: event.characterId,
-      }),
-    },
-  });
-
-  const inputRow = el("span", {
-    class: "event-character-id-input-row",
-    children: [input, pickerButton],
-  });
-
-  attachCharacterIdAutocomplete({
-    input,
-    getProject: () => store.getCurrent(),
-    onSelect: () => {},
+  const characterId = event.characterId?.trim();
+  const profileName = characterId
+    ? store.getCurrent().characters?.[characterId]?.displayName?.trim()
+    : "";
+  const connected = Boolean(characterId);
+  const openPicker = () => openCharacterIdPicker({
+    mapId,
+    eventId: event.id,
+    currentId: characterId,
   });
 
   return el("div", {
-    class: "event-character-id-field event-character-id-field-inline",
+    class: `event-character-id-field event-character-id-field-inline ${connected ? "is-linked" : "is-unlinked"}`,
     dataset: { testid: "event-character-id-field" },
     children: [
-      el("label", {
-        class: "event-character-id-label",
+      el("span", {
+        class: "event-character-id-label-text",
+        text: "NPC 관계",
+        attrs: { title: CHARACTER_ID_HELP },
+      }),
+      el("button", {
+        class: `event-character-link-control ${connected ? "is-linked" : "is-unlinked"}`,
+        attrs: {
+          type: "button",
+          title: connected ? `${CHARACTER_ID_HELP} 클릭하여 연결을 변경합니다.` : CHARACTER_ID_HELP,
+          "aria-label": connected
+            ? `NPC 관계 연결됨: ${profileName || characterId}. 연결 변경`
+            : "NPC 관계 연결 안 됨. 호감도와 선물 기능 연결",
+        },
+        dataset: {
+          testid: connected ? "event-character-id-picker-open" : "event-character-id-connect",
+        },
+        on: { click: openPicker },
         children: [
           el("span", {
-            text: "캐릭터 ID",
-            attrs: { title: CHARACTER_ID_HELP },
+            class: "event-character-link-dot",
+            attrs: { "aria-hidden": "true" },
           }),
-          inputRow,
+          el("span", {
+            class: "event-character-link-copy",
+            children: [
+              el("strong", {
+                text: connected ? (profileName || characterId || "") : "연결 안 됨",
+              }),
+              el("small", {
+                text: connected
+                  ? (profileName ? characterId : "호감도 · 선물 기록 공유 중")
+                  : "현재는 일회용 이벤트",
+              }),
+            ],
+          }),
+          el("span", {
+            class: "event-character-link-action",
+            text: connected ? "변경" : "연결",
+          }),
         ],
       }),
     ],
   });
 }
 
-/** Talk-friendship / profile display name — only when characterId is linked. */
+/** Relationship settings — only when a character profile is linked. */
 export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent): HTMLElement | null {
   const characterId = event.characterId?.trim();
   if (!characterId) return null;
@@ -509,10 +482,38 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
   });
 
   const profileName = store.getCurrent().characters?.[characterId]?.displayName ?? "";
+  const characterIdInput = el("input", {
+    attrs: {
+      type: "text",
+      placeholder: "예: village_herbalist",
+      title: "같은 연결 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
+      spellcheck: "false",
+    },
+    value: characterId,
+    dataset: { testid: "event-character-id-input" },
+  }) as HTMLInputElement;
+  characterIdInput.addEventListener("change", () => {
+    const next = characterIdInput.value.trim() || undefined;
+    updateEvent(
+      mapId,
+      event.id,
+      next ? { characterId: next } : { characterId: undefined, talkFriendship: undefined },
+    );
+  });
+  const characterIdInputRow = el("span", {
+    class: "event-character-id-input-row",
+    children: [characterIdInput],
+  });
+  attachCharacterIdAutocomplete({
+    input: characterIdInput,
+    getProject: () => store.getCurrent(),
+    onSelect: () => {},
+  });
+
   const displayNameInput = el("input", {
     attrs: {
       type: "text",
-      placeholder: "상태 메뉴 표시용 (선택)",
+      placeholder: "게임에 표시할 이름",
     },
     value: profileName,
     dataset: { testid: "event-character-display-name-input" },
@@ -540,20 +541,81 @@ export function renderEventCharacterSocialExtras(mapId: MapId, event: GameEvent)
     class: "event-character-social-extras",
     dataset: { testid: "event-character-social-extras" },
     children: [
+      el("header", {
+        class: "event-character-social-header",
+        children: [
+          el("div", {
+            class: "event-character-social-heading",
+            children: [
+              el("span", { text: "NPC 관계 설정" }),
+              el("strong", { text: profileName.trim() || characterId }),
+            ],
+          }),
+          el("span", {
+            class: "event-character-social-status",
+            text: "연결됨",
+          }),
+        ],
+      }),
       el("label", {
         class: "event-talk-friendship-label",
         dataset: { testid: "event-talk-friendship-field" },
         children: [
           talkCheckbox,
-          el("span", { text: "대화 시 호감도 상승 (하루 1회)" }),
+          el("span", {
+            class: "event-character-social-option-copy",
+            children: [
+              el("strong", { text: "대화 보너스" }),
+              el("small", { text: "하루 첫 대화에 호감도를 올립니다." }),
+            ],
+          }),
         ],
       }),
       el("label", {
         class: "event-character-display-name-label",
         dataset: { testid: "event-character-display-name-field" },
         children: [
-          el("span", { text: "프로필 표시 이름" }),
+          el("span", { text: "표시 이름" }),
           displayNameInput,
+        ],
+      }),
+      el("details", {
+        class: "event-character-social-advanced",
+        dataset: { testid: "event-character-social-advanced" },
+        children: [
+          el("summary", {
+            children: [
+              el("span", { text: "고급 설정" }),
+              el("code", { text: characterId }),
+            ],
+          }),
+          el("div", {
+            class: "event-character-social-advanced-body",
+            children: [
+              el("label", {
+                class: "event-character-id-advanced-label",
+                children: [
+                  el("span", { text: "연결 키" }),
+                  characterIdInputRow,
+                ],
+              }),
+              el("p", {
+                text: "같은 키를 쓰는 이벤트끼리 호감도와 선물 기록을 공유합니다.",
+              }),
+              el("button", {
+                class: "btn small danger event-character-social-unlink",
+                text: "연결 해제",
+                attrs: { type: "button" },
+                dataset: { testid: "event-character-social-unlink" },
+                on: {
+                  click: () => updateEvent(mapId, event.id, {
+                    characterId: undefined,
+                    talkFriendship: undefined,
+                  }),
+                },
+              }),
+            ],
+          }),
         ],
       }),
     ],

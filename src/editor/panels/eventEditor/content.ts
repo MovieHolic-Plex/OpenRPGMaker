@@ -206,6 +206,17 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   }
   storyboardHost.append(storyboardEl);
   applyViewMode();
+  const commandHeader = el("div", {
+    class: "event-editor-command-header",
+    dataset: { testid: "event-command-header" },
+    children: [
+      el("span", {
+        class: "event-contents-legend",
+        text: `실행 내용 · ${countAllCommands(activePage.commands)}개`,
+      }),
+      viewToggle,
+    ],
+  });
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
   // Tool-authored NPC schedules stay compact, but existing rows are editable so
   // aggregate validation can navigate to and repair their map/coordinate errors.
@@ -228,13 +239,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 스프라이트 실물 + 이름/캐릭터 ID + 좌표를 한 덩어리로 묶는다.
   // top-strip 을 카드 안에 넣는 이유: 이름·캐릭터 ID 가 top-strip 안에 있어야 한다는
   // 기존 계약(eventEditorSettingsLayout.test)을 유지하면서 배치만 목업에 맞추기 위함.
-  const characterIdDetails = lazyDetails({
-    className: "event-character-id-details",
-    testId: "event-character-id-details",
-    summary: "NPC/호감 연결",
-    renderBody: () => renderEventCharacterIdField(mapId, ev),
-    lazy: beginnerChrome,
-  });
+  const characterRelationship = renderEventCharacterIdField(mapId, ev);
   const eventCard = el("div", {
     class: "event-editor-card",
     dataset: { testid: "event-editor-card" },
@@ -249,7 +254,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         children: [
           el("div", {
             class: "event-editor-top-strip",
-            children: [renderEventNameControl(mapId, ev.id, activePage, ev, characterIdDetails)],
+            children: [renderEventNameControl(mapId, ev.id, activePage, ev, characterRelationship)],
           }),
           el("div", {
             class: "event-editor-id-row",
@@ -267,10 +272,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   commandsColumn.append(
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
+      attrs: { "aria-label": "실행 내용" },
       dataset: { testid: "event-classic-contents" },
       children: [
-        el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
-        viewToggle,
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id),
         storyboardHost,
         cmdList,
@@ -336,7 +340,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     // 목업: 페이지 탭이 최상단. 이름/ID 행보다 먼저 온다.
     el("div", {
       class: "event-editor-pagebar",
-      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
+      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage), commandHeader],
     }),
     renderEventDiffSummary(mapId, eventId),
     workbench,

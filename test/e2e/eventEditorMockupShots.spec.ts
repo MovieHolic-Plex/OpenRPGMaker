@@ -15,7 +15,8 @@ async function selectFirstStoryboardCommand(modal: Locator): Promise<void> {
 }
 
 async function selectView(modal: Locator, label: "Storyboard" | "List"): Promise<void> {
-  await modal.getByRole("button", { name: label, exact: true }).click();
+  const mode = label === "List" ? "list" : "storyboard";
+  await modal.getByTestId(`event-view-toggle-${mode}`).click();
 }
 
 test.beforeEach(async ({ page }) => {
@@ -81,13 +82,13 @@ test("event editor matches the approved mockup", async ({ page }) => {
 
   await selectFirstStoryboardCommand(modal);
   await expect(inspector).toBeVisible();
-  await expect(inspector.getByTestId("event-inspector-card")).toBeVisible();
+  await expect(inspector.getByTestId("event-inspector-body")).toBeVisible();
   const selectedCanvasWidth = (await modal.locator(".event-editor-commands-column").boundingBox())?.width ?? 0;
   expect(initialCanvasWidth).toBeGreaterThan(selectedCanvasWidth);
   // 모달이 새로 열리지 않아야 한다 — 이게 "모달 3겹 제거"의 핵심.
   await expect(page.locator("[data-testid='event-command-edit-dialog']")).toHaveCount(0);
   // eslint-disable-next-line no-console
-  console.log("[inspector]", (await inspector.getByTestId("event-inspector-title").innerText()).trim());
+  console.log("[inspector]", (await inspector.locator(".event-inspector-kind").innerText()).trim());
   await inspector.screenshot({ path: `${DIR}/05-inspector.png` });
   await modal.screenshot({ path: `${DIR}/1500x1000-selected.png` });
 
@@ -328,9 +329,15 @@ test("mockup parity checklist", async ({ page }) => {
     const okBtn = root.querySelector<HTMLElement>(".btn.event-editor-footer-button.primary");
     const legend = rect(".event-command-legend");
     const list = rect(".cmd-list");
-    const headLegend = rect(".event-contents-fieldset > .event-contents-legend");
+    const pagebar = rect(".event-editor-pagebar");
+    const commandHeader = rect(".event-editor-pagebar > .event-editor-command-header");
     const toolbar = rect(".event-editor-command-toolbar");
-    const headLegendText = root.querySelector(".event-contents-fieldset > .event-contents-legend")?.textContent ?? "";
+    const commandHeaderText = root.querySelector(".event-editor-command-header > .event-contents-legend")?.textContent ?? "";
+    const categoryLabels = new Set(
+      [...root.querySelectorAll<HTMLElement>(".cmd-cat-icon[data-label]")]
+        .map((badge) => badge.dataset.label)
+        .filter(Boolean),
+    );
     return {
       "가로 페이지 탭": !!tabs && tabs.width > 400 && tabs.height < 80,
       "탭 조건 요약": has("[data-testid='event-page-tab-cond-1']"),
@@ -340,16 +347,19 @@ test("mockup parity checklist", async ({ page }) => {
       "초기 인스펙터 숨김": inspector?.hidden === true,
       "설정 열 폭 312": !!rail && Math.abs(rail.width - 312) <= 2,
       "블록 캔버스 거터 다색": gutters.size >= 3,
+      "명령 카테고리 라벨": categoryLabels.size >= 3,
       "인라인 인스펙터": has(".event-editor-inspector-column"),
       "카테고리 범례 접힘": has(".event-command-legend") && root.querySelector<HTMLDetailsElement>(".event-command-legend")?.open === false,
       "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
       "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
       "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
-      "툴바가 헤드 아래": !!headLegend && !!toolbar && toolbar.top >= headLegend.bottom - 2 && toolbar.height <= 34,
+      "명령 헤더가 페이지바 안": !!commandHeader && !!pagebar && commandHeader.top >= pagebar.top && commandHeader.bottom <= pagebar.bottom + 1,
+      "툴바가 캔버스 최상단": !!toolbar && !!list && toolbar.bottom <= list.top + 2 && toolbar.height <= 34,
+      "명령 보드 전폭": !!list && !!canvas && list.width >= canvas.width - 32,
       "편집 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-edit-menu")?.open === false,
       "보조 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-aux-tools-shell")?.open === false,
-      // 목업 범례 문구: "실행 내용 · N개".
-      "범례 명령 수": /실행 내용\s*·\s*\d+개/.test(headLegendText),
+      // 상단 헤더 문구: "실행 내용 · N개".
+      "헤더 명령 수": /실행 내용\s*·\s*\d+개/.test(commandHeaderText),
     };
   });
   const pass = Object.values(result).filter(Boolean).length;
@@ -361,7 +371,7 @@ test("mockup parity checklist", async ({ page }) => {
   await selectView(modal, "Storyboard");
   await selectFirstStoryboardCommand(modal);
   await expect(modal.getByTestId("event-editor-inspector")).toBeVisible();
-  await expect(modal.getByTestId("event-inspector-card")).toBeVisible();
+  await expect(modal.getByTestId("event-inspector-body")).toBeVisible();
   const selectedGeometry = await modal.evaluate((root) => {
     const rail = root.querySelector<HTMLElement>(".event-editor-settings-column")?.getBoundingClientRect();
     const canvas = root.querySelector<HTMLElement>(".event-editor-commands-column")?.getBoundingClientRect();
@@ -449,7 +459,7 @@ for (const vp of VIEWPORTS) {
     await selectFirstStoryboardCommand(modal);
     const inspector = modal.getByTestId("event-editor-inspector");
     await expect(inspector).toBeVisible();
-    await expect(inspector.getByTestId("event-inspector-card")).toBeVisible();
+    await expect(inspector.getByTestId("event-inspector-body")).toBeVisible();
     await expect(page.getByTestId("event-command-edit-dialog")).toHaveCount(0);
 
     const selected = await modal.evaluate((root, desktop) => {

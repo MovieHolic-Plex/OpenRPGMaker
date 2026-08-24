@@ -90,6 +90,12 @@ describe("selected event test modal", () => {
     event.pages![0]!.commands = [{ kind: "text", body: "working draft" }];
     store.replaceProject(project);
     const flushSpy = vi.spyOn(store, "flush");
+    // A background editor tab can throttle rAF completely. The test action must
+    // still advance from its preparation overlay via the timer fallback.
+    Object.defineProperty(window, "requestAnimationFrame", {
+      configurable: true,
+      value: () => 1,
+    });
 
     const opened = await openSelectedEventTestModal(mapId, event.id);
 
