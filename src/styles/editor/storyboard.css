@@ -63,10 +63,6 @@
   .event-inspector-advanced-summary::-webkit-details-marker { display: none; }
   .event-inspector-advanced[open] .event-inspector-advanced-summary { border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
   .event-inspector-advanced-body { padding: 12px; }
-  .event-ai-next-steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 10px; border-radius: 12px; background: var(--accent-muted); border: 1px solid var(--accent-border); }
-  .event-ai-next-steps-label { font: 700 11px var(--font-ui); color: var(--accent); }
-  .event-ai-next-step { appearance: none; padding: 5px 9px; border-radius: 9999px; border: 1px solid var(--border-default); background: var(--bg-surface); color: var(--text-2); font: 600 11px var(--font-ui); cursor: pointer; }
-  .event-ai-next-step:hover { background: var(--bg-raised); color: var(--text-1); border-color: var(--border-strong); }
 
   @media (max-width: 1180px) {
     .event-storyboard-track { padding-inline: 4px; }

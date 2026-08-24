@@ -276,8 +276,8 @@ test("event layer canvas selects on first click and opens the editor on double c
   expect(backgroundContext.visibleMapRatio).toBeGreaterThan(0.05);
   expect(backgroundContext.scrimAlpha).toBeLessThan(0.5);
 
-  await expect(page.getByTestId("event-editor-diff")).toHaveCount(1);
-  await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
+  await expect(page.getByTestId("event-editor-diff")).toHaveCount(0);
+  await expect(page.getByTestId("event-editor-draft-status")).toContainText("변경 없음");
   await expect(page.getByTestId("event-classic-graphic")).toBeVisible();
   await expect(page.getByTestId("event-classic-graphic")).toContainText("그래픽");
   await expect(page.getByTestId("event-page-bottom-left")).toHaveCount(0);
@@ -511,7 +511,7 @@ test("NPC graphic slot selection stays staged until the event editor is applied"
   await page.getByTestId("event-graphic-confirm").click();
 
   expect(eventGraphic(await debugState(page), "ev_layer")).toEqual({});
-  await expect(page.getByTestId("event-editor-diff")).toContainText("변경 예정");
+  await expect(page.getByTestId("event-editor-draft-status")).toContainText("변경 있음");
   await expect(page.getByTestId("event-page-sprite-input")).toHaveValue("tex_easyrpg_charset_actor1");
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-direction", "up");
   await expect(page.getByTestId("event-page-graphic-preview")).toHaveAttribute("data-pattern", "0");

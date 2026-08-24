@@ -1,5 +1,4 @@
 import { editorState } from "@/editor/editorState";
-import { getEditorChrome } from "@/editor/editorUiMode";
 import { moveEvent } from "@/editor/eventActions";
 import {
   buildEventBeginnerTemplate,
@@ -23,7 +22,6 @@ import {
   replaceEventPageCommands,
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
-import { eventDraftDiffById, type EventDiff } from "@/project/eventDrafts";
 import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId } from "@/project/types";
@@ -131,7 +129,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
 
   const validation = validateEventDraftBody(store.getCurrent(), mapId, ev);
   const activePageIssues = eventDraftIssuesForPage(validation, activePage.id);
-  const beginnerChrome = getEditorChrome().eventBeginnerChrome;
   const commandHistory = createCommandToolbarHistory({
     key: `${mapId}:${ev.id}:${activePage.id}`,
     readCommands: () => activePageCommands(mapId, ev.id, activePage.id),
@@ -170,7 +167,6 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   });
   cmdList.querySelector(".empty-hint")?.remove();
   cmdList.append(renderEmptyCommandLine(actions, activePage.commands.length === 0, mapId, ev.id));
-  cmdList.append(renderAiNextSteps(activePage.commands.length));
   cmdList.addEventListener("dblclick", (event) => {
     if (event.target === cmdList) {
       cmdList.querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')?.dispatchEvent(
@@ -209,6 +205,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   }
   storyboardHost.append(storyboardEl);
   applyViewMode();
+  const validationControl = renderEventValidationSummary(validation);
   const commandHeader = el("div", {
     class: "event-editor-command-header",
     dataset: { testid: "event-command-header" },
@@ -217,6 +214,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         class: "event-contents-legend",
         text: `실행 내용 · ${countAllCommands(activePage.commands)}개`,
       }),
+      ...(validationControl ? [validationControl] : []),
       viewToggle,
     ],
   });
@@ -278,58 +276,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       attrs: { "aria-label": "실행 내용" },
       dataset: { testid: "event-classic-contents" },
       children: [
-        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id),
+        renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id, activePage),
         storyboardHost,
         cmdList,
-        lazyDetails({
-          className: "event-command-legend-details",
-          testId: "event-command-legend-details",
-          summary: "색상 범례",
-          renderBody: renderCommandCategoryLegend,
-          lazy: beginnerChrome,
-        }),
       ],
-    }),
-    // 하단 보조 도구: AI / 미리보기 / 플로우 — 접힘 시 한 줄 칩, 실행 내용 높이 우선.
-    // 배타 아코디언: 세 패널 마운트 후 open 상태 재적용(호스트 전부 bind 이후).
-    (() => {
-      const auxTools = el("details", {
-        class: "event-editor-aux-tools-shell",
-        dataset: { testid: "event-editor-aux-tools" },
-        children: [
-          el("summary", {
-            class: "event-editor-disclosure-summary",
-            text: "도구 · AI, 미리보기, 플로우",
-          }),
-          el("div", {
-            class: "event-editor-aux-tools",
-            children: [
-              renderEventAiAssist({ mapId, eventId: ev.id, page: activePage, actions, cmdList }),
-              renderEventScriptModernViews({ mapId, eventId: ev.id, page: activePage }),
-              // 따라오기 프리셋·필드몬스터 템플릿은 특수 저작 도구 — 실행 내용 캔버스가 아니라
-              // 보조 도구 서랍에 속한다(적대 평가 스펙: 캔버스에서 제외).
-              renderFollowerPresetBar({
-                insertCommandsAt: (index, commands) => {
-                  for (let i = 0; i < commands.length; i += 1)
-                    insertEventPageCommandAt(mapId, ev.id, activePage.id, [index + i], commands[i]!);
-                },
-                commandCount: () => activePage.commands.length,
-              }),
-              el("button", {
-                class: "btn event-editor-aux-tool-button",
-                text: "☠ 필드 몬스터 템플릿",
-                attrs: { type: "button", title: "필드 몬스터 템플릿 (전투→승리 소거)" },
-                dataset: { testid: "event-command-toolbar-field-monster" },
-                on: { click: () => openFieldMonsterTemplateDialog(mapId, ev.id, activePage) },
-              }),
-            ],
-          }),
-        ],
-      });
-      const auxKey = auxCompositeKey(mapId, ev.id, activePage.id);
-      syncAuxHosts(auxKey);
-      return auxTools;
-    })()
+    })
   );
 
   const workbench = el("div", {
@@ -340,39 +291,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   attachColumnResize(columnResizer, workbench);
 
   section.append(
-    // 목업: 페이지 탭이 최상단. 이름/ID 행보다 먼저 온다.
+    // 페이지 전환, 상태, 보기 전환은 한 줄에 두고 워크벤치가 남은 높이를 전부 갖는다.
     el("div", {
       class: "event-editor-pagebar",
       children: [pageTabStrip, renderPageTabs(mapId, ev, activePage), commandHeader],
     }),
-    renderEventDiffSummary(mapId, eventId),
-    workbench,
-    // 검증 결과는 목업처럼 하단 스트립으로. 상단에 두면 편집 영역을 밀어낸다.
-    renderEventValidationSummary(validation)
+    workbench
   );
   container.append(section);
-}
-
-function renderEventDiffSummary(mapId: MapId, eventId: string): HTMLElement {
-  const diff = eventDraftDiffById(store.getCurrent(), mapId, eventId);
-  const clean = !diff || diff.changes.length === 0;
-  return el("div", {
-    class: "event-editor-diff" + (clean ? " clean" : ""),
-    text: clean ? "변경 없음" : eventDiffLabel(diff),
-    dataset: { testid: "event-editor-diff" },
-  });
-}
-
-function eventDiffLabel(diff: EventDiff): string {
-  const label = diff.kind === "created" ? "생성 예정" : "변경 예정";
-  const paths = diff.kind === "created" ? ["event"] : diff.changes.map((change) => trimEventPath(change.path));
-  const preview = paths.slice(0, 4).join(", ");
-  const more = paths.length > 4 ? ` +${paths.length - 4}` : "";
-  return `${label}: ${diff.changes.length} diff - ${preview}${more}`;
-}
-
-function trimEventPath(path: string): string {
-  return path.startsWith("event.") ? path.slice("event.".length) : path;
 }
 
 function activePageIdOf(mapId: MapId, eventId: string): string | null {
@@ -390,7 +316,8 @@ function renderCommandToolbar(
   actions: CommandListActions,
   commandHistory: CommandToolbarHistory,
   mapId: MapId,
-  eventId: string
+  eventId: string,
+  page: EventPage
 ): HTMLElement {
   const selectedPath = (): number[] | null => {
     const selected = cmdList.querySelector<HTMLElement>(".selected");
@@ -434,6 +361,7 @@ function renderCommandToolbar(
       }),
     ],
   });
+  const toolsMenu = renderEventToolsMenu(cmdList, actions, mapId, eventId, page);
   return el("div", {
     class: "event-editor-command-toolbar",
     attrs: { "aria-label": "실행 내용 도구" },
@@ -443,8 +371,6 @@ function renderCommandToolbar(
         "명령 추가",
         "event-command-toolbar-add",
         () => {
-          // 기존에는 빈 줄에 dblclick 을 보냈다 — 명령이 하나라도 있으면 빈 줄이 없어
-          // 버튼이 아무 일도 하지 않았다. 팔레트를 직접 연다.
           if (openActiveEventCommandPicker(mapId, eventId)) return;
           cmdList
             .querySelector<HTMLElement>('[data-testid="event-command-empty-line"]')
@@ -454,66 +380,12 @@ function renderCommandToolbar(
         true
       ),
       editTools,
+      toolsMenu,
     ],
   });
 }
 
-const COMMAND_CATEGORY_LEGEND: readonly (readonly [string, string])[] = [
-  ["dialogue", "대사"],
-  ["flow", "흐름"],
-  ["reward", "데이터"],
-  ["map", "맵"],
-  ["screen", "연출"],
-  ["system", "시스템"],
-];
-
-function lazyDetails(options: {
-  className: string;
-  testId: string;
-  summary: string;
-  renderBody: () => HTMLElement;
-  lazy: boolean;
-}): HTMLDetailsElement {
-  const details = el("details", {
-    class: options.className,
-    dataset: { testid: options.testId },
-    children: [el("summary", { text: options.summary })],
-  }) as HTMLDetailsElement;
-  let mounted = false;
-  const mount = (): void => {
-    if (mounted) return;
-    mounted = true;
-    details.append(options.renderBody());
-  };
-  if (options.lazy) details.addEventListener("toggle", () => { if (details.open) mount(); });
-  else mount();
-  return details;
-}
-
-function renderCommandCategoryLegend(): HTMLElement {
-  return el("details", {
-    class: "event-command-legend",
-    dataset: { testid: "event-command-legend" },
-    children: [
-      el("summary", { class: "event-command-legend-summary", text: "색상 범례" }),
-      el("div", {
-        class: "event-command-legend-items",
-        children: COMMAND_CATEGORY_LEGEND.map(([key, label]) =>
-          el("span", {
-            class: "event-command-legend-item",
-            dataset: { category: key },
-            children: [
-              el("i", { class: "event-command-legend-swatch" }),
-              el("span", { class: "event-command-legend-label", text: label }),
-            ],
-          })
-        ),
-      }),
-    ],
-  });
-}
-
-// 목업 범례("실행 내용 · 12개")와 같은 전체 명령 수 — 분기 안까지 센다.
+// 실행 내용 헤더의 전체 명령 수 — 분기 안까지 센다.
 function countAllCommands(commands: readonly Command[]): number {
   let n = 0;
   const walk = (cmd: Command): void => {
@@ -522,6 +394,50 @@ function countAllCommands(commands: readonly Command[]): number {
   };
   commands.forEach(walk);
   return n;
+}
+
+function renderEventToolsMenu(
+  cmdList: HTMLElement,
+  actions: CommandListActions,
+  mapId: MapId,
+  eventId: string,
+  page: EventPage
+): HTMLDetailsElement {
+  const menu = el("details", {
+    class: "event-editor-command-tools-menu",
+    dataset: { testid: "event-editor-aux-tools" },
+    children: [
+      el("summary", {
+        class: "event-editor-command-tools-summary",
+        text: "도구",
+        attrs: { title: "AI, 미리보기, 플로우와 특수 템플릿" },
+      }),
+      el("div", {
+        class: "event-editor-command-tools-popover event-editor-aux-tools",
+        children: [
+          renderEventAiAssist({ mapId, eventId, page, actions, cmdList }),
+          renderEventScriptModernViews({ mapId, eventId, page }),
+          renderFollowerPresetBar({
+            insertCommandsAt: (index, commands) => {
+              for (let i = 0; i < commands.length; i += 1) {
+                insertEventPageCommandAt(mapId, eventId, page.id, [index + i], commands[i]!);
+              }
+            },
+            commandCount: () => page.commands.length,
+          }),
+          el("button", {
+            class: "btn event-editor-aux-tool-button",
+            text: "☠ 필드 몬스터 템플릿",
+            attrs: { type: "button", title: "필드 몬스터 템플릿 (전투→승리 소거)" },
+            dataset: { testid: "event-command-toolbar-field-monster" },
+            on: { click: () => openFieldMonsterTemplateDialog(mapId, eventId, page) },
+          }),
+        ],
+      }),
+    ],
+  }) as HTMLDetailsElement;
+  syncAuxHosts(auxCompositeKey(mapId, eventId, page.id));
+  return menu;
 }
 
 function toolGroup(...buttons: HTMLButtonElement[]): HTMLElement {
@@ -709,76 +625,45 @@ export function openActiveEventCommandPicker(mapId: MapId, eventId: string): boo
   return true;
 }
 
-function renderEventValidationSummary(validation: EventDraftValidation): HTMLElement {
+function renderEventValidationSummary(validation: EventDraftValidation): HTMLDetailsElement | null {
+  if (validation.issues.length === 0) return null;
   const details = el("details", {
-    class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " is-clear"}`,
+    class: `event-draft-validation${validation.errorCount > 0 ? " has-errors" : validation.warningCount > 0 ? " has-warnings" : " has-info"}`,
     dataset: { testid: "event-draft-validation" },
   }) as HTMLDetailsElement;
-  const summaryText = `검사 · 오류 ${validation.errorCount} · 경고 ${validation.warningCount} · 안내 ${validation.infoCount}`;
-  const overflowLine = validation.issues.length > 4 ? ` — 목록 ${validation.issues.length}개 중 4개 미리보기 (펼쳐서 전체 보기)` : "";
-  details.append(el("summary", {
-    class: "event-draft-validation-summary",
-    dataset: { testid: "event-draft-validation-summary" },
-    text: `${summaryText}${overflowLine}`,
-  }));
-  if (validation.issues.length === 0) {
-    details.append(el("div", { class: "event-draft-validation-clear", text: "현재 발견된 문제가 없습니다." }));
-    return details;
-  }
-  details.append(el("div", {
-    class: "event-draft-validation-issues",
-    children: validation.issues.map((issue, index) => el("button", {
-      class: `event-draft-validation-issue ${issue.severity}`,
-      attrs: { type: "button" },
-      dataset: {
-        testid: `event-draft-validation-issue-${index}`,
-        issueCode: issue.code,
-        severity: issue.severity,
-      },
-      children: [
-        el("span", { class: "event-draft-validation-severity", text: validationSeverityLabel(issue.severity) }),
-        el("span", { class: "event-draft-validation-message", text: issue.message }),
-      ],
-      on: { click: () => navigateToEventDraftIssue(issue) },
-    })),
-  }));
+  const counts = [
+    validation.errorCount > 0 ? `!${validation.errorCount}` : "",
+    validation.warningCount > 0 ? `△${validation.warningCount}` : "",
+    validation.infoCount > 0 ? `ⓘ${validation.infoCount}` : "",
+  ].filter(Boolean).join(" ");
+  details.append(
+    el("summary", {
+      class: "event-draft-validation-summary",
+      dataset: { testid: "event-draft-validation-summary" },
+      text: `검사 ${counts}`,
+      attrs: { "aria-label": `검사 결과: 오류 ${validation.errorCount}, 경고 ${validation.warningCount}, 안내 ${validation.infoCount}` },
+    }),
+    el("div", {
+      class: "event-draft-validation-issues",
+      children: validation.issues.map((issue, index) => el("button", {
+        class: `event-draft-validation-issue ${issue.severity}`,
+        attrs: { type: "button" },
+        dataset: {
+          testid: `event-draft-validation-issue-${index}`,
+          issueCode: issue.code,
+          severity: issue.severity,
+        },
+        children: [
+          el("span", { class: "event-draft-validation-severity", text: validationSeverityLabel(issue.severity) }),
+          el("span", { class: "event-draft-validation-message", text: issue.message }),
+        ],
+        on: { click: () => navigateToEventDraftIssue(issue) },
+      })),
+    })
+  );
   return details;
 }
 
-
-function renderAiNextSteps(commandCount: number): HTMLElement {
-  const suggestions: readonly string[] = commandCount === 0
-    ? ["\uBC24\uC774 \uB418\uBA74 \uBB38 \uB2EB\uAE30", "\uB2E8\uACE8 \uB300\uC0AC \uCD94\uAC00", "\uB3C8\uC774 \uBD80\uC871\uD558\uBA74 \uB2E4\uB978 \uB300\uC0AC"]
-    : commandCount < 3
-      ? ["\uB2E4\uC74C \uB300\uC0AC \uC774\uC5B4\uC4F0\uAE30", "\uC120\uD0DD\uC9C0 \uCD94\uAC00", "\uC870\uAC74 \uBD84\uAE30 \uB123\uAE30"]
-      : ["\uB4A4\uC5D0 \uBB50 \uB123\uC744\uAE4C? \u2014 AI\uC5D0\uAC8C \uBB3C\uC5B4\uBCF4\uAE30", "\uC774 \uD750\uB984 \uD14C\uC2A4\uD2B8\uD574\uBCF4\uAE30", "\uC5F0\uCD9C(\uD398\uC774\uB4DC) \uCD94\uAC00"];
-  const row = el("div", {
-    class: "event-ai-next-steps",
-    dataset: { testid: "event-ai-next-steps" },
-    children: [
-      el("span", { class: "event-ai-next-steps-label", text: "\u2728 \uB2E4\uC74C\uC5D0 \uBB50 \uB123\uC744\uAE4C?" }),
-      ...suggestions.slice(0, 3).map((label, i) =>
-        el("button", {
-          class: "event-ai-next-step",
-          text: label,
-          attrs: { type: "button" },
-          dataset: { testid: `event-ai-next-step-${i}` },
-          on: {
-            click: () => {
-              const chat = document.querySelector<HTMLElement>("[data-testid='ai-chat-input']");
-              if (chat) {
-                chat.focus();
-                try { (chat as HTMLInputElement).value = label; } catch { /* ignore */ }
-                chat.dispatchEvent(new Event("input", { bubbles: true }));
-              }
-            },
-          },
-        })
-      ),
-    ],
-  });
-  return row;
-}
 
 export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
   if (issue.pageId) editorState.set({ selectedEventPageId: issue.pageId });

@@ -22,19 +22,28 @@ test("event delete confirmation supports dismiss and accept without manual brows
   await page.setViewportSize({ width: 1280, height: 840 });
   await seedProjectFromSupabaseCanonical(page, createShopShowcaseProject());
   await openSeededEventEditor(page, "ev_shopkeeper");
+  const more = page.locator(".event-editor-footer-more");
+  const openDeleteMenu = async () => {
+    if ((await more.getAttribute("open")) === null) {
+      await more.locator(":scope > summary").click();
+    }
+    await expect(more).toHaveAttribute("open", "");
+  };
 
   page.once("dialog", async (dialog) => {
-    expect(dialog.message()).toContain("이 이벤트를 삭제할까요?");
+    expect(dialog.message()).toContain("「도구 상인」 이벤트를 삭제할까요?");
     await dialog.dismiss();
   });
+  await openDeleteMenu();
   await page.getByTestId("event-delete").click();
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
   await expect(page.getByTestId("event-list-row-ev_shopkeeper")).toBeVisible();
 
   page.once("dialog", async (dialog) => {
-    expect(dialog.message()).toContain("이 이벤트를 삭제할까요?");
+    expect(dialog.message()).toContain("「도구 상인」 이벤트를 삭제할까요?");
     await dialog.accept();
   });
+  await openDeleteMenu();
   await page.getByTestId("event-delete").click();
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
   await expect(page.getByTestId("event-list-row-ev_shopkeeper")).toHaveCount(0);
@@ -56,7 +65,7 @@ test("shop transaction branch survives apply, OK, and editor reopen", async ({ p
   await commandDialog.getByTestId("event-command-edit-ok").click();
   await expect(commandDialog).toHaveCount(0);
   await page.getByTestId("event-editor-apply").click();
-  await expect(page.getByTestId("event-editor-diff")).toContainText("변경 없음");
+  await expect(page.getByTestId("event-editor-draft-status")).toContainText("적용됨");
   expect(shopCommand(await debugState(page))?.transactionBranch?.some((command) => command.kind === "text")).toBe(true);
 
   await page.getByTestId("event-editor-ok").click();

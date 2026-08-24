@@ -127,43 +127,61 @@ describe("event editor UI density", () => {
     expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
     const contents = host.querySelector('[data-testid="event-classic-contents"]');
-    expect(contents?.querySelector(".event-editor-command-toolbar")).toBeTruthy();
+    const toolbar = contents?.querySelector(".event-editor-command-toolbar");
+    const toolsMenu = host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]');
+    expect(toolbar).toBeTruthy();
+    expect(toolbar?.contains(toolsMenu ?? null)).toBe(true);
     expect(host.querySelector(".event-editor-command-tool-group")).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')?.classList.contains("primary")).toBe(true);
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-edit-menu"]')?.open).toBe(false);
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-editor-aux-tools"]')?.open).toBe(false);
+    expect(toolsMenu?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-page-tabs"]')?.open).toBe(false);
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-draft-validation"]')?.closest(".event-editor-command-header")).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-editor-diff"]')).toBeNull();
   });
 
-  it("keeps NPC relationship status one-click in beginner mode while the legend stays lazy", () => {
-    resetEditorUiModeForTests("beginner");
+  it.each(["beginner", "expert"] as const)("keeps core controls direct and removes optional legend chrome in %s mode", (mode) => {
+    resetEditorUiModeForTests(mode);
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
 
-    const legendDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]');
     expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
-    expect(legendDetails?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-command-legend-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
-
-    expandDetails(legendDetails);
-
-    expect(legendDetails?.querySelector('[data-testid="event-command-legend"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-ai-next-steps"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
   });
 
-  it("keeps the expert relationship control direct while optional legend chrome remains lazy", () => {
-    resetEditorUiModeForTests("expert");
-    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+  it("omits validation chrome when the draft has no issues", () => {
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [baseEvent({
+      x: 1,
+      y: 1,
+      pages: [basePage({ priority: "below" })],
+    })];
+    store.replace(project);
 
-    expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]')?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-command-legend"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
+    renderEventEditorDynamic(host, project.startMapId, "ev_herbalist");
+
+    expect(host.querySelector('[data-testid="event-draft-validation"]')).toBeNull();
+  });
+
+  it("shows validation only when the draft has actionable issues", () => {
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [baseEvent({ x: 999, y: 999 })];
+    store.replace(project);
+
+    renderEventEditorDynamic(host, project.startMapId, "ev_herbalist");
+
+    const validation = host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]');
+    expect(validation).toBeTruthy();
+    expect(validation?.open).toBe(false);
+    expect(validation?.closest(".event-editor-command-header")).toBeTruthy();
+    expect(validation?.querySelector('[data-testid^="event-draft-validation-issue-"]')).toBeTruthy();
   });
 
   it("keeps the command inspector hidden until a command is selected", () => {

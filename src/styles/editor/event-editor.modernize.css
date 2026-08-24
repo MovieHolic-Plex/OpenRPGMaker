@@ -484,49 +484,6 @@
   border-color: var(--accent, var(--accent-border));
 }
 
-.event-draft-validation {
-  border: 1px solid var(--border-soft, var(--border-subtle));
-  border-radius: 6px;
-  margin: 0 8px 8px;
-}
-
-.event-draft-validation.has-errors { border-color: color-mix(in srgb, var(--danger, #C6403D) 62%, var(--border-soft)); }
-.event-draft-validation.has-warnings { border-color: color-mix(in srgb, var(--status-warning, #8A5E00) 52%, var(--border-soft)); }
-
-.event-draft-validation-summary {
-  cursor: pointer;
-  font: 700 11px/1.4 var(--font-ui);
-  padding: 7px 10px;
-}
-
-.event-draft-validation-issues {
-  display: grid;
-  gap: 4px;
-  max-height: 142px;
-  overflow: auto;
-  padding: 0 8px 8px;
-}
-
-.event-draft-validation-issue {
-  align-items: start;
-  background: transparent;
-  border: 0;
-  border-radius: 4px;
-  color: var(--text-1);
-  cursor: pointer;
-  display: grid;
-  font: 500 11px/1.4 var(--font-ui);
-  gap: 7px;
-  grid-template-columns: 34px 1fr;
-  padding: 5px 6px;
-  text-align: left;
-}
-
-.event-draft-validation-issue:hover,
-.event-draft-validation-issue:focus-visible { background: var(--bg-hover); }
-.event-draft-validation-issue.error .event-draft-validation-severity { color: var(--danger, #C6403D); }
-.event-draft-validation-issue.warning .event-draft-validation-severity { color: var(--status-warning, #8A5E00); }
-.event-draft-validation-issue.info .event-draft-validation-severity { color: var(--accent, #4A57D6); }
 
 .event-command-issue-badge,
 .event-page-validation-badge {

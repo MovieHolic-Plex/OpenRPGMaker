@@ -145,13 +145,13 @@ test("I. zoomed element shots: xy inputs, footer, dock, page menu", async ({ pag
   const xyBox = modal(page).locator("[data-testid='event-position-x']").locator("xpath=ancestor::*[3]");
   await xyBox.screenshot({ path: `${SHOT_DIR}/I01-xy-inputs-zoom.png` }).catch(() => page.screenshot({ path: `${SHOT_DIR}/I01-xy-fallback.png` }));
 
-  // 하단 독("도구 · AI, 미리보기, 플로우") 클릭
-  const dock = modal(page).getByText("도구 · AI, 미리보기, 플로우", { exact: false }).first();
-  if (await dock.isVisible().catch(() => false)) {
-    await dock.click();
+  // 명령 툴바의 보조 도구 팝오버를 연다.
+  const tools = modal(page).getByTestId("event-editor-aux-tools");
+  if (await tools.isVisible().catch(() => false)) {
+    await tools.locator(":scope > summary").click();
     await page.waitForTimeout(800);
-    await page.screenshot({ path: `${SHOT_DIR}/I02-bottom-dock-open.png` });
-  } else { console.log("DOCK label not found"); }
+    await page.screenshot({ path: `${SHOT_DIR}/I02-toolbar-tools-open.png` });
+  } else { console.log("TOOLS menu not found"); }
 
   // 더보기 메뉴
   const more = modal(page).getByText("더보기", { exact: false }).first();

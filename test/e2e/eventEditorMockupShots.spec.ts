@@ -159,7 +159,7 @@ test("empty event on a wide viewport stays clean", async ({ page }) => {
   // 카드 안 이름/캐릭터 ID 는 312px 레일에서 겹치지 않고 각자 한 줄을 쓴다.
   const card = await modal.locator(".event-editor-card").evaluate((root) => {
     const name = root.querySelector<HTMLElement>('[data-testid="event-page-name-input"]');
-    const charLabel = root.querySelector<HTMLElement>(".event-character-id-label > span");
+    const charLabel = root.querySelector<HTMLElement>(".event-character-id-label-text");
     if (!name || !charLabel) return null;
     const a = name.getBoundingClientRect();
     const b = charLabel.getBoundingClientRect();
@@ -233,6 +233,7 @@ test("secondary controls remain reachable through disclosures", async ({ page })
   await expect(modal.getByTestId("event-page-tab-add")).toBeVisible();
   await expect(modal.getByTestId("event-page-copy")).toBeVisible();
   await modal.getByTestId("event-page-copy").click();
+  await pageActions.locator(":scope > summary").click();
 
   await selectView(modal, "List");
   await modal.locator(".cmd-item .cmd-head").first().click();
@@ -240,14 +241,39 @@ test("secondary controls remain reachable through disclosures", async ({ page })
   await editMenu.locator(":scope > summary").click();
   await expect(modal.getByTestId("event-command-toolbar-undo")).toBeVisible();
   await expect(modal.getByTestId("event-command-toolbar-move-down")).toBeVisible();
-  await expect(modal.getByTestId("event-command-toolbar-field-monster")).toBeVisible();
   await modal.getByTestId("event-command-toolbar-copy").click();
 
   const auxTools = modal.getByTestId("event-editor-aux-tools");
-  await auxTools.locator(":scope > summary").click();
+  await expect(auxTools.locator("xpath=parent::*")).toHaveClass(/event-editor-command-toolbar/);
+  const toolsSummary = auxTools.locator(":scope > summary");
+  await toolsSummary.focus();
+  await toolsSummary.press("Enter");
+  await expect(auxTools).toHaveAttribute("open", "");
+  await expect(modal.getByTestId("event-command-toolbar-field-monster")).toBeVisible();
   await expect(modal.getByTestId("ai-event-assist").locator(":scope > summary")).toBeVisible();
   await expect(modal.getByTestId("event-script-live-preview").locator(":scope > summary")).toBeVisible();
   await expect(modal.getByTestId("event-script-flowchart").locator(":scope > summary")).toBeVisible();
+
+  const commandCountBeforePreset = await modal.locator(".cmd-item[data-cmd-path]").count();
+  const followerPresets = modal.getByTestId("follower-preset-bar");
+  const followerSummary = followerPresets.locator(":scope > summary");
+  await followerSummary.focus();
+  await followerSummary.press("Enter");
+  await expect(followerPresets).toHaveAttribute("open", "");
+  const followerPreset = followerPresets.locator(".follower-preset-chip").first();
+  await followerPreset.focus();
+  await followerPreset.press("Enter");
+  await expect.poll(() => modal.locator(".cmd-item[data-cmd-path]").count()).toBeGreaterThan(commandCountBeforePreset);
+
+  if ((await auxTools.getAttribute("open")) === null) {
+    await auxTools.locator(":scope > summary").click();
+  }
+  await expect(auxTools).toHaveAttribute("open", "");
+  await modal.getByTestId("event-command-toolbar-field-monster").click();
+  const fieldMonsterDialog = page.getByTestId("field-monster-template-dialog");
+  await expect(fieldMonsterDialog).toBeVisible();
+  await fieldMonsterDialog.getByTestId("field-monster-template-cancel").click();
+  await expect(fieldMonsterDialog).toHaveCount(0);
 
   const preview = modal.getByTestId("event-script-live-preview");
   await preview.locator(":scope > summary").click();
@@ -267,17 +293,9 @@ test("secondary controls remain reachable through disclosures", async ({ page })
   await expect(ai.getByTestId("ai-event-input")).toHaveValue("선택지를 하나 추가해 줘");
   await ai.locator(":scope > summary").click();
 
-  const legend = modal.getByTestId("event-command-legend");
-  await legend.locator(":scope > summary").click();
-  await expect(legend.locator(".event-command-legend-item")).toHaveCount(6);
-  await expect(legend.locator(".event-command-legend-label")).toContainText([
-    "대사",
-    "흐름",
-    "데이터",
-    "맵",
-    "연출",
-    "시스템",
-  ]);
+  await expect(modal.getByTestId("event-command-legend")).toHaveCount(0);
+  await expect(modal.getByTestId("event-command-legend-details")).toHaveCount(0);
+  await expect(modal.getByTestId("event-ai-next-steps")).toHaveCount(0);
 
   const validation = modal.getByTestId("event-draft-validation");
   await validation.locator(":scope > summary").click();
@@ -328,11 +346,12 @@ test("mockup parity checklist", async ({ page }) => {
       if (p) gutters.add(getComputedStyle(p).backgroundColor);
     }
     const okBtn = root.querySelector<HTMLElement>(".btn.event-editor-footer-button.primary");
-    const legend = rect(".event-command-legend");
     const list = rect(".cmd-list");
     const pagebar = rect(".event-editor-pagebar");
     const commandHeader = rect(".event-editor-pagebar > .event-editor-command-header");
     const toolbar = rect(".event-editor-command-toolbar");
+    const draftStatus = rect('[data-testid="event-editor-draft-status"]');
+    const remoteStatus = rect('[data-testid="event-editor-remote-status"]');
     const commandHeaderText = root.querySelector(".event-editor-command-header > .event-contents-legend")?.textContent ?? "";
     const categoryLabels = new Set(
       [...root.querySelectorAll<HTMLElement>(".cmd-cat-icon[data-label]")]
@@ -350,15 +369,16 @@ test("mockup parity checklist", async ({ page }) => {
       "블록 캔버스 거터 다색": gutters.size >= 3,
       "명령 카테고리 라벨": categoryLabels.size >= 3,
       "인라인 인스펙터": has(".event-editor-inspector-column"),
-      "카테고리 범례 접힘": has(".event-command-legend") && root.querySelector<HTMLDetailsElement>(".event-command-legend")?.open === false,
-      "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
-      "하단 검증 스트립": !!val && !!canvas && val.top >= canvas.bottom - 8,
+      "색상 범례 제거": !has(".event-command-legend") && !has(".event-command-legend-details"),
+      "정적 AI 추천 제거": !has("[data-testid='event-ai-next-steps']"),
+      "검사 제어가 헤더 안": !!val && !!commandHeader && val.top >= commandHeader.top - 1 && val.bottom <= commandHeader.bottom + 1,
       "황동 확인 버튼": !!okBtn && getComputedStyle(okBtn).backgroundColor === "rgb(217, 164, 65)",
       "명령 헤더가 페이지바 안": !!commandHeader && !!pagebar && commandHeader.top >= pagebar.top && commandHeader.bottom <= pagebar.bottom + 1,
       "툴바가 캔버스 최상단": !!toolbar && !!list && toolbar.bottom <= list.top + 2 && toolbar.height <= 34,
       "명령 보드 전폭": !!list && !!canvas && list.width >= canvas.width - 32,
       "편집 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-edit-menu")?.open === false,
-      "보조 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-aux-tools-shell")?.open === false,
+      "도구 메뉴가 툴바에 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-toolbar > .event-editor-command-tools-menu")?.open === false,
+      "푸터 상태 한 줄": !!draftStatus && !!remoteStatus && Math.abs(draftStatus.top - remoteStatus.top) <= 2,
       // 상단 헤더 문구: "실행 내용 · N개".
       "헤더 명령 수": /실행 내용\s*·\s*\d+개/.test(commandHeaderText),
     };
@@ -420,7 +440,7 @@ test("storyboard targets every displayed command path and remains secondary to t
 });
 
 
-// 뷰포트 매트릭스 — 목업 불변식(3열 312/유연/348, 단일 행 탭, 하단 스트립)이
+// 뷰포트 매트릭스 — 목업 불변식(3열 312/유연/348, 단일 행 탭, 헤더 검사 팝오버)이
 // 실제 사용자가 쓰는 창 크기에서 깨지지 않는지 기계적으로 확인한다.
 const VIEWPORTS = [
   { width: 1586, height: 992 },
@@ -428,6 +448,7 @@ const VIEWPORTS = [
   { width: 1280, height: 900 },
   { width: 1024, height: 768 },
   { width: 960, height: 900 },
+  { width: 800, height: 900 },
 ];
 
 for (const vp of VIEWPORTS) {
@@ -456,8 +477,7 @@ for (const vp of VIEWPORTS) {
       const canvas = rect(".event-editor-commands-column");
       const inspector = root.querySelector<HTMLElement>(".event-editor-inspector-column");
       const val = rect(".event-draft-validation");
-      const list = rect(".cmd-list");
-      const legend = rect(".event-command-legend");
+      const commandHeader = rect(".event-editor-command-header");
       const storyboardHost = rect(".event-storyboard-host");
       const storyboardCard = rect(".event-storyboard-card");
       const bench = root.querySelector<HTMLElement>(".event-editor-workbench");
@@ -466,14 +486,33 @@ for (const vp of VIEWPORTS) {
         inspectorHidden: inspector?.hidden === true,
         twoColumnOrder: !!rail && !!canvas && rail.right <= canvas.left + 24,
         canvasWidth: canvas?.width ?? 0,
-        "탭 단일 행": !!tabs && tabs.height < 80 && tabs.width > 400,
+        "탭 단일 행": !!tabs && tabs.height < 80,
         "열이 모달 안에": inX(rail) && inX(canvas),
-        "검증 스트립 하단": !!val && !!canvas && val.top >= canvas.bottom - 8,
-        "범례가 캔버스 아래": !!legend && !!list && legend.top >= list.bottom - 4,
+        "검사 제어가 헤더 안": !!val && !!commandHeader && val.top >= commandHeader.top - 1 && val.bottom <= commandHeader.bottom + 1,
+        "색상 범례 제거": root.querySelector(".event-command-legend, .event-command-legend-details") === null,
         "이벤트 카드가 레일 안": root.querySelector(".event-editor-settings-column > .event-editor-card") !== null,
         "편집 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-edit-menu")?.open === false,
-        "보조 도구 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-aux-tools-shell")?.open === false,
+        "도구 메뉴가 툴바에 접힘": root.querySelector<HTMLDetailsElement>(".event-editor-command-toolbar > .event-editor-command-tools-menu")?.open === false,
         "검사 상세 접힘": root.querySelector<HTMLDetailsElement>(".event-draft-validation")?.open === false,
+        "푸터 상태 노출": (() => {
+          const leading = root.querySelector<HTMLElement>(".event-editor-footer-leading");
+          const draft = root.querySelector<HTMLElement>('[data-testid="event-editor-draft-status"]');
+          const remote = root.querySelector<HTMLElement>('[data-testid="event-editor-remote-status"]');
+          const tokenIsAvailable = (token: HTMLElement | null) => {
+            if (!token) return false;
+            const bounds = token.getBoundingClientRect();
+            return getComputedStyle(token).display !== "none"
+              && bounds.width > 0
+              && bounds.height > 0
+              && (token.textContent?.trim().length ?? 0) > 0
+              && token.title.trim().length > 0;
+          };
+          return !!leading
+            && getComputedStyle(leading).display !== "none"
+            && leading.getBoundingClientRect().height > 0
+            && tokenIsAvailable(draft)
+            && tokenIsAvailable(remote);
+        })(),
         "스토리보드 카드 잘림 없음": !!storyboardHost && !!storyboardCard && storyboardCard.bottom <= storyboardHost.bottom + 1,
         "가로 스크롤 없음": !bench || bench.scrollWidth <= bench.clientWidth + 1,
         "레일 gfx/trig 겹침 없음": (() => {
@@ -486,6 +525,7 @@ for (const vp of VIEWPORTS) {
     expect(initial.inspectorHidden).toBe(true);
     expect(initial.twoColumnOrder).toBe(true);
     expect(initial.canvasWidth).toBeGreaterThan(300);
+    expect(initial["푸터 상태 노출"]).toBe(true);
     expect(initial["스토리보드 카드 잘림 없음"]).toBe(true);
     await modal.screenshot({ path: `${DIR}/${vp.width}x${vp.height}-initial.png` });
 
@@ -512,10 +552,14 @@ for (const vp of VIEWPORTS) {
       };
     }, vp.width > 1180);
     const checks = { ...initial, ...selected };
-    const pass = Object.entries(checks).filter(([key, value]) => key === "canvasWidth" || Boolean(value)).length;
+    const failedChecks = Object.entries(checks)
+      .filter(([key, value]) => key !== "canvasWidth" && !Boolean(value))
+      .map(([key]) => key);
+    const pass = Object.keys(checks).length - failedChecks.length;
     const total = Object.keys(checks).length;
     // eslint-disable-next-line no-console
     console.log(`[parity ${vp.width}x${vp.height}]`, JSON.stringify(checks), `=> ${pass}/${total}`);
+    expect(failedChecks).toEqual([]);
     expect(selected.inspectorState).toBe(true);
     expect(selected.inspectorWidth).toBeGreaterThanOrEqual(346);
     expect(selected.canvasWidth).toBeGreaterThan(300);
