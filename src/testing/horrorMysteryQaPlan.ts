@@ -67,6 +67,9 @@ export function createHorrorMysteryQaScenarios(
             kind: "expect",
             switchOff: HORROR_MYSTERY_SWITCH_IDS.keyUsed,
             inventoryCount: { itemId: HORROR_MYSTERY_ITEM_ID, count: 0 },
+            // locked-gate-feedback must prove runner-observable feedback, not a silent no-op.
+            // A silent no-op leaves the transcript empty and this expect fails.
+            messageShown: true,
           },
         ],
       },
@@ -80,6 +83,14 @@ export function createHorrorMysteryQaScenarios(
         start: left,
         steps: [
           { kind: "interact" },
+          // Wrong-answer recovery must be observable as an explicit incorrect transition:
+          // the sequence progress variable is reset to 0 AND a wrong-answer message is shown.
+          // A silent-ignore solver (no reset, no feedback) fails this expect.
+          {
+            kind: "expect",
+            messageShown: true,
+            variableEquals: { var_gallery_sequence_step: 0 },
+          },
           { kind: "set", x: center.x, y: center.y },
           { kind: "interact" },
           { kind: "set", x: left.x, y: left.y },
@@ -92,34 +103,38 @@ export function createHorrorMysteryQaScenarios(
     },
     {
       id: "critical-path",
-      label: "열쇠와 액자 순서를 해결하고 추격 구간을 지나 복원실로 이동한다",
+      label: "프로젝트 시작점에서 연속 이동으로 열쇠·순서를 풀고 전이로 복원실까지 도달한다",
       role: "critical-path",
       input: {
-        mapId: HORROR_MYSTERY_MAP_IDS.gallery,
-        start: manifest.gallery.keyAt,
+        mapId: project.startMapId,
+        start: project.startPos,
+        // The critical path uses only contiguous legal `move` steps (reachability-checked)
+        // from the project start; transfers are triggered by walking onto exit tiles, never by
+        // `set`/teleport navigation skips.
         steps: [
+          { kind: "move", to: { x: manifest.gallery.keyAt.x, y: manifest.gallery.keyAt.y } },
           { kind: "interact" },
           { kind: "expect", inventoryCount: { itemId: HORROR_MYSTERY_ITEM_ID, count: 1 } },
-          { kind: "set", x: manifest.gallery.itemGateAt.x, y: manifest.gallery.itemGateAt.y },
+          { kind: "move", to: { x: manifest.gallery.itemGateAt.x, y: manifest.gallery.itemGateAt.y } },
           { kind: "interact" },
           {
             kind: "expect",
             switchOn: HORROR_MYSTERY_SWITCH_IDS.keyUsed,
             inventoryCount: { itemId: HORROR_MYSTERY_ITEM_ID, count: 0 },
           },
-          { kind: "set", x: center.x, y: center.y },
+          { kind: "move", to: { x: center.x, y: center.y } },
           { kind: "interact" },
-          { kind: "set", x: left.x, y: left.y },
+          { kind: "move", to: { x: left.x, y: left.y } },
           { kind: "interact" },
-          { kind: "set", x: right.x, y: right.y },
+          { kind: "move", to: { x: right.x, y: right.y } },
           { kind: "interact" },
           { kind: "expect", switchOn: HORROR_MYSTERY_SWITCH_IDS.sequenceSolved },
-          { kind: "set", x: galleryExit.x, y: galleryExit.y - 1 },
-          { kind: "move", dir: "down" },
-          { kind: "expect", mapId: HORROR_MYSTERY_MAP_IDS.chase },
-          { kind: "set", x: chaseExit.x - 1, y: chaseExit.y },
-          { kind: "move", dir: "right" },
-          { kind: "expect", mapId: HORROR_MYSTERY_MAP_IDS.finale },
+          // Walk onto the gallery exit tile: the actual transfer lands in the corridor.
+          { kind: "move", to: { x: galleryExit.x, y: galleryExit.y } },
+          { kind: "expect", mapId: HORROR_MYSTERY_MAP_IDS.chase, bgmPlaying: "cc0-bgm-battle" },
+          // Walk across the corridor to the corridor exit: actual transfer lands in the finale.
+          { kind: "move", to: { x: chaseExit.x, y: chaseExit.y } },
+          { kind: "expect", mapId: HORROR_MYSTERY_MAP_IDS.finale, bgmPlaying: "cc0-bgm-dungeon" },
         ],
       },
     },

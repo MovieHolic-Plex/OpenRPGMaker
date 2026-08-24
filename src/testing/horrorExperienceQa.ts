@@ -1,6 +1,7 @@
 import { projectLint } from "@/project/lint/projectLint";
 import type { Command, EventPage, Project } from "@/project/types";
 import { runSceneTest, type SceneTestInput } from "@/testing/sceneTestRunner";
+import { resolveAudioSource } from "@/player/audio/audioResources";
 
 export type HorrorQaScenarioRole =
   | "locked-gate-feedback"
@@ -407,6 +408,17 @@ export function evaluateHorrorExperienceQa(
     id: "reachability:unreachable-ending",
     message: `정의된 결말 '${endingId}'의 트리거가 시작 맵에서 도달 가능한 어떤 맵에도 없습니다.`,
   });
+  // Required custom-resource audio: every map that authored bgm.mode="custom" must resolve to a
+  // playable resource. A missing/broken id means the map would be silently silent in play.
+  for (const map of Object.values(project.maps)) {
+    if (map.bgm?.mode !== "custom" || !map.bgm.resourceId) continue;
+    if (resolveAudioSource(map.bgm.resourceId, project) === null) {
+      blockers.push({
+        id: "audio:unresolved-resource",
+        message: `맵 '${map.id}'의 커스텀 BGM 리소스 ID를 해석할 수 없습니다: ${map.bgm.resourceId}`,
+      });
+    }
+  }
   for (const result of scenarioResults) {
     if (!result.ok) blockers.push({
       id: `scenario:${result.id}`,
