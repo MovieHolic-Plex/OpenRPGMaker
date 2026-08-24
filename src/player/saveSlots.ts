@@ -58,6 +58,7 @@ import {
   isSelfSwitchesRecord,
   isStringArray,
   parseAudioState,
+  parseChestsRecord,
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
@@ -285,7 +286,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       monsterCareSteps: session.monsterCareSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
-      chests: structuredClone(session.chests ?? {}),
+      chests: parseChestsRecord(session.chests) ?? {},
       placeables: structuredClone(session.placeables ?? {}),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
@@ -431,7 +432,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
-  if (snapshot.session.chests) session.chests = structuredClone(snapshot.session.chests);
+  session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
   if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
@@ -603,7 +604,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
         : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
-      chests: session.chests && typeof session.chests === "object" ? structuredClone(session.chests) as Record<string, any> : undefined,
+      chests: parseChestsRecord(session.chests),
       placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
