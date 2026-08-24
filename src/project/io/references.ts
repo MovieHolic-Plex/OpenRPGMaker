@@ -242,6 +242,7 @@ export function repairProjectReferences(project: Project): void {
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
   repairFarmAnimalReferences(project);
   repairSpatialReferences(project);
+  repairP2References(project);
   if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
     const { onDayEnd: _removed, ...rest } = project.system.timeSystem;
     project.system.timeSystem = rest;
@@ -282,6 +283,63 @@ export function repairProjectReferences(project: Project): void {
     commonEvent.commands = pruneDanglingCommandRefs(commonEvent.commands, commonEventIds, mapIds, prune);
   }
   prune.warnIfAny();
+}
+
+function repairP2References(project: Project): void {
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const mapIds = new Set(Object.keys(project.maps));
+  const switchIds = new Set(project.switches.map((entry) => entry.id));
+  const recipeIds = new Set((project.system.craftRecipes ?? []).map((entry) => entry.id));
+  const unlockIds = new Set((project.system.worldUnlocks ?? []).map((entry) => entry.id));
+  if (project.database.fishSpecies !== undefined) {
+    project.database.fishSpecies = project.database.fishSpecies.filter((fish) => itemIds.has(fish.itemId));
+  }
+  const fishIds = new Set((project.database.fishSpecies ?? []).map((fish) => fish.id));
+  if (project.system.fishing) {
+    project.system.fishing = {
+      ...project.system.fishing,
+      spots: project.system.fishing.spots.flatMap((spot) => {
+        const map = project.maps[spot.mapId];
+        if (!mapIds.has(spot.mapId) || !map || !rectFitsMap(spot.area, map.width, map.height)) return [];
+        const catches = spot.catches.filter((rule) => fishIds.has(rule.fishId));
+        return catches.length ? [{ ...spot, catches }] : [];
+      }),
+    };
+  }
+  if (project.system.seasonalForage) {
+    project.system.seasonalForage = {
+      ...project.system.seasonalForage,
+      areas: project.system.seasonalForage.areas.flatMap((area) => {
+        const map = project.maps[area.mapId];
+        if (!mapIds.has(area.mapId) || !map || !rectFitsMap(area.area, map.width, map.height)) return [];
+        const entries = area.entries.filter((entry) => {
+          if (entry.itemId && !itemIds.has(entry.itemId)) return false;
+          return Object.values(entry.seasonalDrops ?? {}).every((itemId) => !itemId || itemIds.has(itemId));
+        });
+        return entries.length ? [{ ...area, entries }] : [];
+      }),
+    };
+  }
+  if (project.system.collections?.trackedItemIds) {
+    project.system.collections = {
+      ...project.system.collections,
+      trackedItemIds: project.system.collections.trackedItemIds.filter((itemId) => itemIds.has(itemId)),
+    };
+  }
+  if (project.system.museum) {
+    project.system.museum = {
+      ...project.system.museum,
+      eligibleItemIds: project.system.museum.eligibleItemIds.filter((itemId) => itemIds.has(itemId)),
+      rewards: project.system.museum.rewards.filter((reward) => {
+        if ((reward.requiredItemIds ?? []).some((itemId) => !itemIds.has(itemId))) return false;
+        if ((reward.reward?.itemRewards ?? []).some((entry) => !itemIds.has(entry.itemId))) return false;
+        if (reward.reward?.switchId && !switchIds.has(reward.reward.switchId)) return false;
+        if ((reward.reward?.worldUnlockIds ?? []).some((id) => !unlockIds.has(id))) return false;
+        if ((reward.reward?.recipeIds ?? []).some((id) => !recipeIds.has(id))) return false;
+        return true;
+      }),
+    };
+  }
 }
 
 class PruneStats {

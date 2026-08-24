@@ -42,7 +42,7 @@ function renderPanel(): FakeElement {
 describe("P1 life editor authoring", () => {
   it("exposes honest season/weather and animal/building tabs inside the life group", () => {
     const life = TAB_GROUPS.find((group) => group.label === "생활");
-    expect(life?.tabs).toEqual(["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial"]);
+    expect(life?.tabs).toEqual(["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"]);
 
     const host = renderPanel();
     expect(findByTestId(host, "db-tab-daily-weather")?.textContent).toBe("계절·날씨");

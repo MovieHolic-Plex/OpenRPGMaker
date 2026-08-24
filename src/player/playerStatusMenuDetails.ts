@@ -91,7 +91,7 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
 const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> = {
   quests: "받은 의뢰와 진행 상황을 봅니다.",
   relationships: "동료·주민과의 관계를 봅니다.",
-  "life-ledger": "출하·꾸러미·생활 기술·가공 설비 기록을 관리합니다.",
+  "life-ledger": "출하·꾸러미·생활 기술·가공 설비·수집 도감·박물관 기록을 관리합니다.",
   save: "현재 진행을 슬롯에 저장합니다.",
   load: "저장한 진행을 불러옵니다.",
   wait: "전투 중 명령 입력 시 시간을 멈출지 정합니다.",
