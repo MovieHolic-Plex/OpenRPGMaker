@@ -471,7 +471,7 @@ export function previewMonsterExperience(
 ): MonsterLevelUpPreview[] {
   const exp = Math.max(0, Math.trunc(earnedExp));
   if (exp <= 0) return [];
-  const eligible = participantInstanceIds && participantInstanceIds.length > 0 ? new Set(participantInstanceIds) : null;
+  const eligible = participantInstanceIds ? new Set(participantInstanceIds) : null;
   const results: MonsterLevelUpPreview[] = [];
   for (const instance of instances) {
     if (eligible && !eligible.has(instance.instanceId)) continue;

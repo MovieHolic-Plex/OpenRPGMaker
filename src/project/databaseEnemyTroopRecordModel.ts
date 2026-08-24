@@ -41,7 +41,9 @@ export function normalizeEnemyRecord(
       const actionProfile = normalizeEnemyActionProfile(record.actionProfile);
       return actionProfile ? { actionProfile } : {};
     })(),
-    stateRates: normalizeRates(record.stateRates),
+    stateRates: record.stateRates === undefined
+      ? { state_death: "C" }
+      : normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
   };
 }

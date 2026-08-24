@@ -69,11 +69,17 @@ export function applyBattleRewardsToSession(
   );
   session.inventory = itemState.inventory;
   session.itemUseCharges = itemState.itemUseCharges;
-  // 전투에 나선 파티 몬스터에게만 경험치를 준다(참전 몬스터가 있으면 그들로 한정, 없으면 기존 파티 전원).
-  const participantInstanceIds = (outcome.actors ?? [])
+  // 몬스터 배틀에서는 명시적 참가자만, 일반 액터 배틀에서는 기존대로 동행 몬스터 전원이 EXP를 받는다.
+  // Older callers without participation metadata retain the legacy actor-snapshot fallback.
+  const snapshotInstanceIds = (outcome.actors ?? [])
     .map((actor) => actor.monsterInstanceId)
     .filter((id): id is string => typeof id === "string");
-  applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds.length > 0 ? participantInstanceIds : undefined);
+  const participantInstanceIds = outcome.monsterPartyMode === true && outcome.participatingActorIds !== undefined
+    ? outcome.participatingActorIds.filter((id) => session.monsterInstances[id] !== undefined)
+    : snapshotInstanceIds.length > 0
+      ? snapshotInstanceIds
+      : undefined;
+  applyMonsterExperienceAndEvolution(project, session, earnedExp, participantInstanceIds);
   return levelUps;
 }
 

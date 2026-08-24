@@ -62,6 +62,34 @@ export function isActorSkillPpRecord(value: unknown): value is NonNullable<PlayS
   );
 }
 
+export function isLifeSkillsRecord(value: unknown): value is NonNullable<PlaySession["lifeSkills"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((skill) =>
+    isRecord(skill) &&
+    typeof skill.xp === "number" && Number.isFinite(skill.xp) &&
+    typeof skill.level === "number" && Number.isFinite(skill.level)
+  );
+}
+
+export function isShopTradeCountsRecord(value: unknown): value is NonNullable<PlaySession["shopTradeCounts"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((counts) =>
+    isRecord(counts) &&
+    typeof counts.sold === "number" && Number.isFinite(counts.sold) &&
+    typeof counts.bought === "number" && Number.isFinite(counts.bought)
+  );
+}
+
+export function isShopPawnTicketsRecord(value: unknown): value is NonNullable<PlaySession["shopPawnTickets"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((ticket) =>
+    isRecord(ticket) &&
+    typeof ticket.itemId === "string" &&
+    typeof ticket.pawnPrice === "number" && Number.isFinite(ticket.pawnPrice) &&
+    typeof ticket.dueDayKey === "string"
+  );
+}
+
 export function isActorParamBonusRecord(value: unknown): value is Record<string, Partial<Record<ActorParameterKey, number>>> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((bonuses) => {
