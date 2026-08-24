@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import {
   recoveryItemProject,
   startActualPlay,
-} from "./rm2k3PlayerStatusMenuHelpers";
+} from "./oprnPlayerStatusMenuHelpers";
 
 test.setTimeout(120_000);
 
@@ -87,12 +87,12 @@ test("RM2K3 play menu keyboard tour mutates and restores runtime state", async (
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText("임무");
   await backToRail(page);
 
-  await selectCommand(page, "wait");
-  await page.keyboard.press("Enter");
-  await expect(page.getByTestId("status-menu-command-wait")).toContainText("대기 OFF");
+  await activateCommand(page, "wait");
+  await expect(page.getByTestId("status-menu-message")).toContainText("OFF");
   await backToRail(page);
 
-  await selectCommand(page, "to-title");
+  await activateCommand(page, "to-title");
+  await expect(page.getByTestId("status-menu-confirm-to-title")).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page.getByTestId("title-screen")).toBeVisible();
 });
@@ -119,14 +119,35 @@ async function openMenu(page: Page): Promise<void> {
 }
 
 async function openCommand(page: Page, commandId: string, title: string): Promise<void> {
-  await selectCommand(page, commandId);
-  await page.keyboard.press("Enter");
+  await activateCommand(page, commandId);
   await expect(page.getByTestId("status-menu-detail-title")).toHaveText(title);
 }
 
-async function selectCommand(page: Page, commandId: string): Promise<void> {
+const COMMAND_GROUP: Readonly<Record<string, string>> = {
+  status: "party-menu",
+  row: "party-menu",
+  formation: "party-menu",
+  monsters: "party-menu",
+  quests: "record-menu",
+  relationships: "record-menu",
+  save: "system-menu",
+  load: "system-menu",
+  wait: "system-menu",
+  "to-title": "system-menu",
+};
+
+async function activateCommand(page: Page, commandId: string): Promise<void> {
+  const railCommandId = COMMAND_GROUP[commandId] ?? commandId;
+  await selectRailCommand(page, railCommandId);
+  await page.keyboard.press("Enter");
+  if (!COMMAND_GROUP[commandId]) return;
+  await focusDetailAction(page, `status-menu-group-command-${commandId}`);
+  await page.keyboard.press("Enter");
+}
+
+async function selectRailCommand(page: Page, commandId: string): Promise<void> {
   await openMenu(page);
-  for (let i = 0; i < 12; i += 1) {
+  for (let i = 0; i < 6; i += 1) {
     if ((await menuState(page)).selectedCommand === commandId) return;
     await page.keyboard.press("ArrowDown");
   }

@@ -59,7 +59,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
     case "quests": return questsDetail(options.project, options.session);
     case "relationships": return relationshipsDetail(options.project, options.session);
     case "wait": return waitDetail(options.waitModeEnabled);
-    case "to-title": return { title: "타이틀", entries: [], hint: "타이틀 화면으로 돌아갑니다." };
+    case "to-title": return toTitleDetail(options);
     default: return assertNever(options.selectedCommand);
   }
 }
@@ -69,9 +69,10 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
   const entries = commandIds.map((commandId) => ({
     label: statusMenuCommandLabel(commandId, options.waitModeEnabled),
     value: "",
-    description: GROUP_COMMAND_DESCRIPTIONS[commandId],
+    description: commandId === "to-title" ? "미저장 진행 삭제" : GROUP_COMMAND_DESCRIPTIONS[commandId],
     testId: `status-menu-group-command-${commandId}`,
     onActivate: options.onCommand ? () => options.onCommand?.(commandId) : undefined,
+    destructive: commandId === "to-title",
   }));
   return {
     title: statusMenuGroupEntryLabel(entryId).replace(" ▸", ""),
@@ -88,6 +89,22 @@ const GROUP_COMMAND_DESCRIPTIONS: Partial<Record<StatusMenuCommandId, string>> =
   wait: "전투 중 명령 입력 시 시간을 멈출지 정합니다.",
   "to-title": "타이틀 화면으로 돌아갑니다. 저장하지 않은 진행은 사라집니다.",
 };
+
+function toTitleDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  return {
+    title: "타이틀로 돌아가기",
+    entries: options.confirmToTitle ? [{
+      label: "진행을 버리고 타이틀로",
+      value: "확인",
+      description: "저장하지 않은 진행은 사라집니다.",
+      testId: "status-menu-confirm-to-title",
+      onActivate: options.onCommand ? () => options.onCommand?.("to-title") : undefined,
+      destructive: true,
+    }] : [],
+    emptyLabel: "타이틀 복귀 확인을 준비하지 못했습니다.",
+    hint: "한 번 더 선택해야 타이틀 화면으로 돌아갑니다.",
+  };
+}
 
 function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   const { project, session } = options;

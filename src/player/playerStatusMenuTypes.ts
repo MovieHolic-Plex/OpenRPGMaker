@@ -43,6 +43,7 @@ export type PlayerStatusMenuOptions = {
   readonly formationActorId?: string;
   readonly monsterView?: "party" | "box";
   readonly confirmSaveSlot?: SaveSlotIndex;
+  readonly confirmToTitle?: boolean;
   readonly saveEnabled?: boolean;
   readonly waitModeEnabled?: boolean;
   readonly actions: PlayerStatusMenuActions;
