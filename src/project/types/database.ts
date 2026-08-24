@@ -6,12 +6,13 @@ import type {
   EnemyId,
   EquipmentId,
   ItemId,
+  MapId,
   MonsterSpeciesId,
   SkillId,
   StateId,
   TroopId,
 } from "./base";
-import type { Command, Condition, EventPageGraphic } from "./events";
+import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
 import type { Season, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
 
@@ -693,6 +694,43 @@ export interface LifeSkillRecord {
   readonly levelUpRewards: readonly LifeSkillLevelUpReward[];
 }
 
+/** One weighted authored outcome for a season's deterministic daily weather table. */
+export interface DailyWeatherRule {
+  readonly kind: WeatherKind;
+  readonly weight: number;
+  readonly intensity?: number;
+}
+
+/** Optional life-sim weather package. Forecasts are derived, never persisted as authored rows. */
+export interface DailyWeatherConfig {
+  readonly enabled: boolean;
+  readonly forecastDays?: number;
+  readonly seasons: Partial<Record<Season, readonly DailyWeatherRule[]>>;
+}
+
+/** Authored animal kind. Runtime ownership/progress lives in PlaySession.farmAnimals. */
+export interface FarmAnimalSpeciesRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly graphic?: EventPageGraphic;
+  readonly feedItemId: ItemId;
+  readonly productItemId: ItemId;
+  readonly productCount: number;
+  readonly productEveryDays: number;
+  readonly petFriendship: number;
+}
+
+/** A placed animal home definition, deliberately narrower than future general farm buildings. */
+export interface FarmAnimalBuildingDefinition {
+  readonly id: string;
+  readonly name: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly capacity: number;
+  readonly allowedSpeciesIds: readonly string[];
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
   elements?: DatabaseElementRecord[];
   terrains?: DatabaseTerrainRecord[];
@@ -700,6 +738,7 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   monsterSpecies?: MonsterSpeciesRecord[];
   crops?: CropRecord[];
   lifeSkills?: LifeSkillRecord[];
+  farmAnimalSpecies?: FarmAnimalSpeciesRecord[];
 }
 
 export interface TitleScreenLayout {
@@ -891,6 +930,10 @@ export interface SystemRecords {
   worldUnlocks?: WorldUnlockDefinition[];
   /** Timed input/output processing definitions. */
   makers?: MakerDefinition[];
+  /** Optional authored daily weather tables. Runtime selection is owned by the day transition. */
+  dailyWeather?: DailyWeatherConfig;
+  /** Placed animal homes for the P1 farm-animal loop. */
+  farmAnimalBuildings?: FarmAnimalBuildingDefinition[];
   /** Out-of-battle party monster care (walk ticks + feed/toy items). */
   monsterCare?: MonsterCareConfig;
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */

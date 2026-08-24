@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -22,6 +22,7 @@ import { normalizeLightingState } from "@/project/lightingRules";
 import { transitionItemStates, type ItemTransitionAction } from "@/project/itemTransitions";
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
 import { GOLD_MAX } from "@/project/economyValues";
+import { initialFarmAnimalStates } from "@/project/p1FoundationRecords";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -133,6 +134,21 @@ export type MakerInstanceState = {
   readonly readyAtMinute?: number;
 };
 
+export type DailyWeatherState = {
+  readonly dayKey: string;
+  readonly kind: WeatherKind;
+  readonly intensity: number;
+};
+
+export type FarmAnimalState = FarmAnimalStartInstance & {
+  readonly friendship: number;
+  readonly productionProgress: number;
+  readonly readyProductCount: number;
+  readonly lastFedDayKey?: string;
+  readonly lastPettedDayKey?: string;
+  readonly lastAdvancedDayKey?: string;
+};
+
 export const FRIENDSHIP_MIN = 0;
 export const FRIENDSHIP_MAX = 1000;
 
@@ -176,6 +192,9 @@ export interface PlaySession {
   unlockedRegionIds?: string[];
   unlockedRecipeIds?: string[];
   makerInstances?: Record<string, MakerInstanceState>;
+  /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
+  dailyWeather?: DailyWeatherState;
+  farmAnimals?: Record<string, FarmAnimalState>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -309,6 +328,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     unlockedRegionIds: [],
     unlockedRecipeIds: [],
     makerInstances: {},
+    farmAnimals: initialFarmAnimalStates(start.farmAnimals),
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],
