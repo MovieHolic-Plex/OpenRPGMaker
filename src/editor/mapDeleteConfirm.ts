@@ -26,6 +26,8 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
   }
   if (impact.farmBuildingPlacementCount > 0) lines.push(`· 범용 농장 건물 ${impact.farmBuildingPlacementCount}개가 함께 삭제됩니다.`);
   if (impact.homeDecorationPlacementCount > 0) lines.push(`· 집 장식 ${impact.homeDecorationPlacementCount}개가 함께 삭제됩니다.`);
+  if (impact.fishingSpotCount > 0) lines.push(`· 낚시터 ${impact.fishingSpotCount}개가 함께 삭제됩니다.`);
+  if (impact.forageAreaCount > 0) lines.push(`· 계절 채집 구역 ${impact.forageAreaCount}개가 함께 삭제됩니다.`);
   lines.push("", "삭제 후 Ctrl+Z로 되돌릴 수 있습니다.");
   return lines.join("\n");
 }
@@ -78,6 +80,10 @@ export async function confirmAndDissolveFolder(folderId: MapId): Promise<Confirm
       farmBuildingPlacementIds: [],
       homeDecorationPlacementCount: 0,
       homeDecorationPlacementIds: [],
+      fishingSpotCount: 0,
+      fishingSpotIds: [],
+      forageAreaCount: 0,
+      forageAreaIds: [],
     },
   };
 }
