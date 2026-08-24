@@ -33,8 +33,8 @@ describe("workspace layout", () => {
     expect(WORKSPACE_STORAGE_KEY).toBe("oprn:workspace:v1");
   });
 
-  it("프리셋 3개가 계획서의 작업 이름을 쓴다", () => {
-    expect(WORKSPACE_PRESETS.map((preset) => preset.label)).toEqual(["맵 그리기", "이벤트 연출", "자료 밸런싱"]);
+  it("프리셋 3개가 작업이 아닌 레이아웃 이름을 쓴다", () => {
+    expect(WORKSPACE_PRESETS.map((preset) => preset.label)).toEqual(["맵 중심", "이벤트 중심", "데이터 중심"]);
   });
 
   it("모든 프리셋의 패널이 레지스트리에 등록되어 있다", () => {

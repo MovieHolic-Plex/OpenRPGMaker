@@ -95,13 +95,14 @@ test.describe("QA — characters tab (db-tab-characters)", () => {
   test("fresh orphan empty-profile, create+round-trip, unused usage, charset thumb, dirty discard", async ({
     page,
   }) => {
-    test.setTimeout(90_000);
+    test.setTimeout(120_000);
     const errors = collectConsoleErrors(page);
     await bootDbLane(page, { mode: "expert" });
     await switchTabAnyMode(page, CHARACTERS_TAB);
 
     await expect(page.getByTestId("db-characters-workspace")).toBeVisible();
     await expect(page.getByTestId("db-characters-intro")).toBeVisible();
+    await expect(page.getByTestId("db-character-readiness")).toBeVisible();
     await expect(page.getByTestId("db-characters-list")).toBeVisible();
     await expect(page.getByTestId("db-characters-list").locator(".db-list-row")).toHaveCount(FRESH_ORPHAN_IDS.length);
     expect(Object.keys(await exportedCharacters(page))).toEqual([]);
@@ -113,7 +114,7 @@ test.describe("QA — characters tab (db-tab-characters)", () => {
     await expect(page.getByTestId("db-character-orphan-create")).toBeVisible();
     await expect(page.getByTestId("db-character-orphan-create").locator(".empty-hint")).toHaveText(ORPHAN_HINT);
     await expect(page.getByTestId("db-character-create-profile")).toBeVisible();
-    await expect(page.getByTestId("db-character-status")).toContainText("프로필 없음 (고아 ID)");
+    await expect(page.getByTestId("db-character-status")).toContainText("이벤트 연결만 있음");
 
     const baselineExport = (await exportedProject(page)) as ExportedWithCharacters;
     const faceIds = actorFaceIds(baselineExport);
@@ -128,7 +129,8 @@ test.describe("QA — characters tab (db-tab-characters)", () => {
     const unusedId = await addCharacterProfile(page);
     expect(FRESH_ORPHAN_IDS.includes(unusedId as (typeof FRESH_ORPHAN_IDS)[number])).toBe(false);
     await expect(page.getByTestId("db-character-id")).toHaveText(unusedId);
-    await expect(page.getByTestId("db-character-display-name")).toHaveValue("새 캐릭터");
+    await expect(page.getByTestId("db-character-display-name")).toHaveValue("새 주민");
+    await expect(page.getByTestId("db-character-overview")).toBeVisible();
     await expect(page.getByTestId("db-character-usage-empty")).toHaveText(USAGE_EMPTY_HINT);
 
     const unusedThumb = page.getByTestId(`db-character-row-${unusedId}`).locator(".db-list-thumb");

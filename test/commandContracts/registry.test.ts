@@ -4,6 +4,7 @@ import {
   battleEventCommandRuntimeSupport,
   commandRuntimeSupport,
 } from "@/project/eventCommands/runtimeSupport";
+import { m2CatalogEntryRuntimeSupport, m2CommandByKind } from "@/project/eventCommands/m2Catalog";
 import {
   COMMAND_CONTEXTS,
   COMMAND_GUARANTEES,
@@ -156,6 +157,22 @@ describe("native command guarantee registry", () => {
         expect(actual, `${kind}:${context}`).toBe("runtime-full");
       }
     }
+  });
+
+  it("reports native runtime support from the context guarantee instead of defaulting to full", () => {
+    expect(commandRuntimeSupport(newCommand("giveMonster"), "map")).toBe("runtime-partial");
+    expect(commandRuntimeSupport(newCommand("transfer"), "map")).toBe("runtime-full");
+    expect(commandRuntimeSupport(newCommand("transfer"), "troop")).toBe("runtime-partial");
+    expect(commandRuntimeSupport(newCommand("transfer"))).toBe("runtime-partial");
+  });
+
+  it("grades picker native aliases with the same context guarantee as the inserted command", () => {
+    const transfer = m2CommandByKind("transfer");
+    if (!transfer) throw new Error("missing transfer catalog alias");
+
+    expect(m2CatalogEntryRuntimeSupport(transfer, "map")).toBe("runtime-full");
+    expect(m2CatalogEntryRuntimeSupport(transfer, "troop")).toBe("runtime-partial");
+    expect(m2CatalogEntryRuntimeSupport(transfer)).toBe("runtime-partial");
   });
 
   it("rejects stable full contexts without their context-specific authoring route", () => {

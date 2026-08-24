@@ -16,8 +16,11 @@ test.describe("QA sweep: crops tab", () => {
     await gotoExpert(page);
     await openDatabase(page);
     await switchDatabaseTab(page, CROPS_TAB);
+    await expect(page.getByTestId("db-crop-readiness")).toBeVisible();
+    await expect(page.getByTestId("db-crop-empty-add")).toBeVisible();
 
     await page.getByTestId("db-crop-add").click();
+    await expect(page.getByTestId("db-crop-overview")).toBeVisible();
     await page.getByTestId("db-crop-name").fill("QA작물경계값");
     await page.getByTestId("db-crop-seed-item").selectOption({ index: 1 });
     await page.getByTestId("db-crop-harvest-item").selectOption({ index: 1 });

@@ -100,8 +100,15 @@
 
   .editor-welcome-briefing-cards {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 10px;
+  }
+
+  .editor-welcome-briefing .editor-welcome-template-option {
+    display: grid;
+    grid-template-rows: 1fr auto auto;
+    gap: 6px;
+    min-width: 0;
   }
 
   .editor-welcome-briefing .editor-welcome-template-card {
@@ -113,6 +120,55 @@
     text-align: left;
     color: var(--text-1);
     cursor: pointer;
+  }
+
+  .editor-welcome-briefing .editor-welcome-template-starter {
+    min-height: 36px;
+    border: 1px solid var(--accent-border);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .editor-welcome-briefing .editor-welcome-card-inspirations {
+    display: flex;
+    min-height: 28px;
+    align-items: center;
+  }
+
+  .editor-welcome-briefing .editor-welcome-card-inspiration {
+    width: 100%;
+    min-height: 28px;
+    border: 1px solid var(--border-default);
+    border-radius: 8px;
+    background: var(--bg-surface);
+    color: var(--text-2);
+    font-size: 11px;
+    cursor: pointer;
+  }
+
+  .editor-welcome-briefing .editor-welcome-card-inspiration:hover,
+  .editor-welcome-briefing .editor-welcome-card-inspiration:focus-visible {
+    border-color: var(--accent-border);
+    outline: 2px solid var(--accent-border);
+    outline-offset: 1px;
+  }
+
+  .editor-welcome-briefing .editor-welcome-template-starter:hover,
+  .editor-welcome-briefing .editor-welcome-template-starter:focus-visible {
+    background: var(--accent-soft);
+    outline: 2px solid var(--accent-border);
+    outline-offset: 1px;
+  }
+
+  .editor-welcome-briefing .editor-welcome-system-preset-error {
+    margin: 10px 0 0;
+    color: var(--danger, #9f2f2f);
+    font-size: 12px;
+    line-height: 1.45;
   }
 
   .editor-welcome-briefing .editor-welcome-template-card:hover,

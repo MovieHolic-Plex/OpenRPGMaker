@@ -15,6 +15,11 @@ import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
 import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestSandbox";
 import { toast } from "@/util/toast";
+import {
+  AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  authoringProjectFingerprint,
+} from "@/editor/authoringJourney";
+import { passesAuthoringTestGate } from "@/editor/authoringTestGate";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -26,6 +31,7 @@ let battleSceneController: BattleDomController | null = null;
 type TestPlayWindowMode = "fullscreen" | "windowed";
 
 export async function openTestPlayModal(startOverride?: { mapId: string; x: number; y: number }): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
   // 어떤 프로젝트를 돌리는지 제목에 드러나야 한다 — 제품명 고정 문구를 쓰면
   // 프로젝트를 여러 개 열어두면 어느 창이 무엇인지 구분이 안 된다.
   const projectTitle = store.getCurrent().meta.title?.trim();
@@ -38,6 +44,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     await store.flush();
     loading.setStage("preparing");
     const project = projectWithoutEventDrafts(store.getCurrent());
+    const projectFingerprint = authoringProjectFingerprint(project);
     releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(project);
     // 타이틀/플레이 전에 canonical 번들 에셋을 브라우저 캐시에 데운다.
     void warmBundledPlayAssets(project);
@@ -48,6 +55,11 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
       trackGlobalGame: false,
       startOverride,
       diagnosticSink: editorPlayBootDiagnosticSink,
+      onPlayBootSuccess: () => {
+        window.dispatchEvent(new CustomEvent(AUTHORING_TEST_BOOT_SUCCESS_EVENT, {
+          detail: { projectFingerprint },
+        }));
+      },
     });
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
@@ -62,6 +74,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
 }
 
 export async function openSelectedEventTestModal(mapId: MapId, eventId: string): Promise<boolean> {
+  if (!passesAuthoringTestGate()) return false;
   const liveProject = store.getCurrent();
   const validation = validateEventDraft(liveProject, mapId, eventId);
   if (!validation.canCommit) {
@@ -101,6 +114,11 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
 }
 
 export async function openTroopBattleTestModal(troopId: string): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
+  await openTroopBattleTestModalAfterGate(troopId);
+}
+
+async function openTroopBattleTestModalAfterGate(troopId: string): Promise<void> {
   const project = store.getCurrent();
   const troop = project.database.troops.find((record) => record.id === troopId);
   const body = openTestPlayShell(`전투 테스트 - ${troop?.name ?? troopId}`);
@@ -181,6 +199,7 @@ export function pickRandomTroopId(
 export async function openRandomTroopBattleTestModal(
   random: () => number = Math.random
 ): Promise<void> {
+  if (!passesAuthoringTestGate()) return;
   const project = store.getCurrent();
   const troopId = pickRandomTroopId(project, random);
   if (!troopId) {
@@ -189,7 +208,7 @@ export async function openRandomTroopBattleTestModal(
     loading.setStage("error", "적 그룹이 없습니다. 데이터베이스에서 트룹을 추가하세요.");
     return;
   }
-  await openTroopBattleTestModal(troopId);
+  await openTroopBattleTestModalAfterGate(troopId);
 }
 
 export function closeTestPlayModal(): void {

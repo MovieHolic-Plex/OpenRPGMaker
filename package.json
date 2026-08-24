@@ -42,6 +42,8 @@
     "test:e2e": "playwright test",
     "construction:harness": "node scripts/run-construction-harness.mjs",
     "browser-verify:genre": "tsx scripts/browser-verify-genre-presets.mts",
+    "verify:genre-packs": "vite-node --script scripts/verify-genre-pack-receipts.mts",
+    "content:stardew:save": "vite-node scripts/save-stardew-demo.mts",
     "test:watch": "node scripts/run-vitest.mjs --configLoader bundle"
   },
   "dependencies": {

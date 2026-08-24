@@ -12,6 +12,7 @@
 // 28px 씩 먹으므로, 옮기기·닫기는 탑바 메뉴에서 처리한다.
 
 import { requestCommandPalette } from "@/editor/panels/commandPalette";
+import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { allPanels, type DockZone, type PanelId } from "@/editor/workspace/panelRegistry";
 import {
   dockOf,
@@ -42,29 +43,26 @@ const ZONE_LABEL: Record<DockZone, string> = { left: "왼쪽", right: "오른쪽
  */
 export function renderWorkspaceBar(): readonly HTMLElement[] {
   const [panelsButton, panelsMenu] = renderPanelsMenu();
-  return [renderPresetToggle(), panelsButton, panelsMenu, renderCommandPaletteChip()];
+  return [renderAuthoringTaskLauncher(), panelsButton, panelsMenu, renderCommandPaletteChip()];
 }
 
-function renderPresetToggle(): HTMLElement {
-  const current = getWorkspaceLayout().presetId;
+function renderAuthoringTaskLauncher(): HTMLElement {
   const group = el("div", {
-    class: "workspace-preset-toggle editor-ui-mode-toggle",
-    attrs: { role: "group", "aria-label": "작업 프리셋" },
-    dataset: { testid: "workspace-preset-toggle" },
+    class: "authoring-task-launcher editor-ui-mode-toggle",
+    attrs: { role: "group", "aria-label": "저작 작업 열기" },
+    dataset: { testid: "authoring-task-launcher" },
   });
-  for (const preset of WORKSPACE_PRESETS) {
-    const active = current === preset.id;
+  for (const task of AUTHORING_TASKS) {
     group.append(
       el("button", {
-        class: `workspace-preset-btn editor-ui-mode-btn${active ? " is-active" : ""}`,
-        text: preset.label,
-        attrs: { type: "button", "aria-pressed": active ? "true" : "false", title: preset.hint },
-        dataset: { testid: `workspace-preset-${preset.id}`, workspacePreset: preset.id },
+        class: "authoring-task-btn editor-ui-mode-btn",
+        text: task.label,
+        attrs: { type: "button", title: task.hint },
+        dataset: { testid: `authoring-task-${task.id}` },
         on: {
           click: (event) => {
             event.stopPropagation();
-            // 구독자(editor.ts 의 도크 동기화 + app/mode.ts 의 renderTopbar)가 재렌더를 맡는다.
-            setWorkspacePreset(preset.id);
+            runAuthoringTask(task.id);
           },
         },
       }),
@@ -126,6 +124,25 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
   menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
   for (const panel of allPanels()) {
     menu.append(renderPanelRow(panel.id, panel.title, close));
+  }
+  menu.append(el("div", { class: "workspace-menu-group", text: "레이아웃" }));
+  for (const preset of WORKSPACE_PRESETS) {
+    const active = layout.presetId === preset.id;
+    menu.append(
+      el("button", {
+        class: `oprn-menu-command workspace-layout-item${active ? " is-active" : ""}`,
+        text: `${active ? "● " : "○ "}${preset.label}`,
+        attrs: { type: "button", role: "menuitemradio", "aria-checked": active ? "true" : "false", title: preset.hint },
+        dataset: { testid: `workspace-layout-${preset.id}` },
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            setWorkspacePreset(preset.id);
+            close();
+          },
+        },
+      }),
+    );
   }
   menu.append(el("div", { class: "workspace-menu-group", text: "밀도" }));
   for (const option of DENSITY_OPTIONS) {

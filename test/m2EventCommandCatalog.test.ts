@@ -217,8 +217,10 @@ describe("m2 event command catalog", () => {
       M2_COMMAND_CATALOG.map((entry) => entry.runtimeSupport)
     );
     expect(requireEntry("Comment").supportStatus).toBe("editor-only");
-    // 6A-1 머지로 Key Input Processing이 네이티브 inputWait에 매핑되어 runtime-full로 승격됨.
-    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-full");
+    // inputWait is map-full but troop-partial, so its context-free native alias grade is conservative.
+    expect(requireEntry("Key Input Processing").supportStatus).toBe("runtime-partial");
+    expect(m2CatalogEntryRuntimeSupport(requireEntry("Key Input Processing"), "map")).toBe("runtime-full");
+    expect(m2CatalogEntryRuntimeSupport(requireEntry("Key Input Processing"), "troop")).toBe("runtime-partial");
     expect(requireEntry("Show Text").supportStatus).toBe("runtime-full");
     // 아래 다섯 개는 M2_MAP_COMMON_FULL_IDS 멤버 — map/common 에서는 full 이지만
     // troop 에서는 partial 이므로 컨텍스트 없는 정적 값은 보수적으로 partial 이다.

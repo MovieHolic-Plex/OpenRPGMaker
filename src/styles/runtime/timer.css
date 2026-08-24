@@ -9,7 +9,7 @@
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-s);
   background: var(--bg-glass);
-  color: var(--text-1);
+  color: var(--runtime-window-text, #f2fbff);
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;

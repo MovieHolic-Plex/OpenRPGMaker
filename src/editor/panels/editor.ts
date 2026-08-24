@@ -56,6 +56,18 @@ import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
+import {
+  AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  AUTHORING_TEST_GATE_BLOCKED_EVENT,
+  authoringProjectFingerprint,
+  evaluateAuthoringTestGate,
+  loadAuthoringJourneyProgress,
+  recordAuthoringJourneyChange,
+  recordSuccessfulTestBoot,
+  saveAuthoringJourneyProgress,
+  setManualJourneyStage,
+} from "@/editor/authoringJourney";
+import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
@@ -93,6 +105,8 @@ let chatSideRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let mapLockBannerRoot: HTMLElement | null = null;
 let statusBarRoot: HTMLElement | null = null;
+let authoringJourneyRoot: HTMLElement | null = null;
+let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
 let unsubAutoSave: (() => void) | null = null;
@@ -156,6 +170,7 @@ export function renderEditor(main: HTMLElement): void {
     class: "editor-statusbar",
     dataset: { testid: "editor-statusbar" },
   });
+  const authoringJourney = el("div", { class: "authoring-journey-host" });
   const chatFloatHost = el("div", {
     class: "ai-chat-float-host",
     dataset: { testid: "chat-float-host" },
@@ -176,7 +191,7 @@ export function renderEditor(main: HTMLElement): void {
   // 좌측 열처럼 배치되어 레이아웃이 깨진다.
   const persistenceBanner = renderPersistenceModeBanner();
   if (persistenceBanner) canvasArea.append(persistenceBanner);
-  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, statusBar, chatFloatHost);
+  canvasArea.append(canvasScrollShell, mapLockBanner, canvasToolbar, authoringJourney, statusBar, chatFloatHost);
   layout.append(left, leftResizer, canvasArea, chatSidePanel);
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
@@ -194,6 +209,7 @@ export function renderEditor(main: HTMLElement): void {
   aiChatPanelRoot = aiPanel;
   mapLockBannerRoot = mapLockBanner;
   statusBarRoot = statusBar;
+  authoringJourneyRoot = authoringJourney;
 
   applyChatDockLayout();
   applyLayout();
@@ -218,6 +234,8 @@ export function renderEditor(main: HTMLElement): void {
   }
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
+  window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.addEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
 
@@ -393,6 +411,8 @@ export function teardownEditor(): void {
   ro2?.disconnect?.();
   window.removeEventListener("resize", onWindowResize);
   window.removeEventListener("oprn:test-play-window", onTestPlayWindowRequest);
+  window.removeEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.removeEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   closeTestPlayModal();
   destroyGame();
   leftRoot = null;
@@ -406,6 +426,8 @@ export function teardownEditor(): void {
   aiChatPanelRoot = null;
   mapLockBannerRoot = null;
   statusBarRoot = null;
+  authoringJourneyRoot = null;
+  authoringJourneyReferenceIssues = null;
   projectExportNode = null;
   document.body.classList.remove("ai-chat-dock-float", "ai-chat-dock-glass", "ai-chat-dock-side", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
@@ -668,6 +690,7 @@ function setEditorLeftSafe(px: string): void {
 }
 
 function refreshPanels(change?: ProjectChangeDescriptor): void {
+  refreshAuthoringJourney(change);
   // 좌측 패널 호스트는 프리셋에 따라 없을 수 있다 — 캔버스 크롬만 있으면 갱신을 진행한다.
   if (!canvasToolbarRoot || !statusBarRoot || !mapLockBannerRoot) return;
   if (change?.scope === "map" && change.cells?.length) {
@@ -689,6 +712,70 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
   renderEditorStatusbar(statusBarRoot);
   updateProjectExport();
   scheduleFitCanvas();
+}
+
+function authoringJourneyScope(): string {
+  const identity = store.getProjectIdentity();
+  return `${identity.kind}:${identity.id}`;
+}
+
+function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
+  if (!authoringJourneyRoot) return;
+  const project = store.getCurrent();
+  const scope = authoringJourneyScope();
+  let progress = loadAuthoringJourneyProgress(scope);
+  if (change) {
+    const next = recordAuthoringJourneyChange(progress, change);
+    if (next !== progress) {
+      progress = next;
+      saveAuthoringJourneyProgress(scope, progress);
+    }
+  }
+  if (
+    authoringJourneyReferenceIssues === null ||
+    !change ||
+    change.scope === "database" ||
+    change.scope === "system" ||
+    change.scope === "project" ||
+    (change.scope === "map" && !change.cells?.length)
+  ) {
+    authoringJourneyReferenceIssues = evaluateAuthoringTestGate(project).referenceIssues;
+  }
+  clearChildren(authoringJourneyRoot);
+  authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
+    referenceIssues: authoringJourneyReferenceIssues,
+    onManualToggle: (stage, complete) => {
+      const current = loadAuthoringJourneyProgress(scope);
+      saveAuthoringJourneyProgress(scope, setManualJourneyStage(current, stage, complete));
+      refreshAuthoringJourney();
+    },
+  }));
+}
+
+function onAuthoringTestBootSuccess(event: Event): void {
+  if (!(event instanceof CustomEvent)) return;
+  const detail: unknown = event.detail;
+  if (typeof detail !== "object" || detail === null || !("projectFingerprint" in detail)) return;
+  const projectFingerprint = detail.projectFingerprint;
+  if (typeof projectFingerprint !== "string" || projectFingerprint.length === 0) return;
+  const project = store.getCurrent();
+  const gate = evaluateAuthoringTestGate(project);
+  authoringJourneyReferenceIssues = gate.referenceIssues;
+  const scope = authoringJourneyScope();
+  const progress = loadAuthoringJourneyProgress(scope);
+  const next = recordSuccessfulTestBoot(
+    progress,
+    projectFingerprint,
+    authoringProjectFingerprint(project),
+    gate.referenceIssues,
+  );
+  if (next !== progress) saveAuthoringJourneyProgress(scope, next);
+  refreshAuthoringJourney();
+}
+
+function onAuthoringTestGateBlocked(): void {
+  authoringJourneyReferenceIssues = evaluateAuthoringTestGate(store.getCurrent()).referenceIssues;
+  refreshAuthoringJourney();
 }
 
 function renderMapEditLockBanner(container: HTMLElement): void {

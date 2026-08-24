@@ -165,15 +165,23 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
   await enterMode("edit");
 
   if (showBriefing && elements) {
-    const result = await presentEditorWelcome(elements.root);
+    const { applyWelcomeGenreSystemPresetPlan } = await import("@/editor/welcomeGenreSystemPresetAction");
+    const result = await presentEditorWelcome(elements.root, {
+      applySystemPreset: (plan) => applyWelcomeGenreSystemPresetPlan(plan),
+    });
     if (result.dismiss) setEditorWelcomeDismissed(true);
-    if (result.prompt) {
+    if (result.systemPresetPlan) {
+      clearWelcomeIntentBootFlags();
+      const { maybeStartBasicCoachMarks, maybeStartStandardWelcomeCard } = await import("@/editor/coachMarks");
+      maybeStartBasicCoachMarks();
+      maybeStartStandardWelcomeCard();
+    } else if (result.prompt) {
       setPendingWelcomePipeline({
         prompt: result.prompt,
         autoSend: result.autoSend,
         replaceWithBlank: false,
         presetId: result.presetId,
-        source: result.source ?? "free-text",
+        source: result.source === "chip" ? "chip" : "free-text",
       });
     } else {
       clearWelcomeIntentBootFlags();

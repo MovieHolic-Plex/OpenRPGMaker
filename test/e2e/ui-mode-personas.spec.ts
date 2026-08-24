@@ -88,8 +88,7 @@ async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<v
   const layout = page.getByTestId("editor-layout");
   await expect(layout).toHaveClass(/chat-dock-glass/);
   await expect(page.locator("body")).toHaveClass(new RegExp(`editor-ui-${mode}`));
-  // 3단 모드 토글은 작업 프리셋 세그먼트로 대체됐다 — 밀도는 이제 패널 메뉴 안의 축이고
-  // 탑바 앞면에는 「무슨 일을 하나」만 남는다. 페르소나(밀도)는 body 클래스로 확인한다.
+  // 페르소나(밀도)는 body 클래스로 확인하고, 탑바 앞면은 실제 저작 작업을 실행한다.
   await expect(page.getByTestId("editor-ui-mode-toggle")).toHaveCount(0);
 
   const leftBox = await rect(page.locator(".left-panel"));
@@ -97,14 +96,14 @@ async function assertCommonPersonaContract(page: Page, mode: Persona): Promise<v
   expect(leftBox.x, "left tool chrome must stay at the viewport's left edge allowance").toBeLessThanOrEqual(8);
   expect(leftBox.x, "left tool chrome must begin left of the canvas").toBeLessThan(canvasBox.x);
 
-  for (const preset of ["map", "event", "data"]) {
-    await expect(page.getByTestId(`workspace-preset-${preset}`)).toBeVisible();
+  for (const task of ["map", "event", "data", "test"]) {
+    await expect(page.getByTestId(`authoring-task-${task}`)).toBeVisible();
   }
   await expect(page.getByTestId("workspace-command-palette-button")).toBeVisible();
 
   const commandBox = await rect(page.getByTestId("ai-command-bar"));
-  const presetToggleBox = await rect(page.getByTestId("workspace-preset-toggle"));
-  expect(intersectionArea(commandBox, presetToggleBox), "AI command bar must not intersect the workspace preset toggle").toBe(0);
+  const launcherBox = await rect(page.getByTestId("authoring-task-launcher"));
+  expect(intersectionArea(commandBox, launcherBox), "AI command bar must not intersect the authoring task launcher").toBe(0);
 
   const world = await openPaletteResult(page, "world", "open-world");
   await expect(world).toContainText("세계관");

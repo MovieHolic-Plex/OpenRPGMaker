@@ -2,7 +2,7 @@
 // Play validation tools. They create their own runtime sessions and never mutate the project.
 
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
-import { runWalkthrough, type WalkthroughStep } from "@/testing/walkthroughRunner";
+import { runWalkthrough } from "@/testing/walkthroughRunner";
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 
@@ -22,16 +22,23 @@ const playWalkthrough: ToolDefinition = {
         items: {
           type: "object",
           properties: {
-            kind: { type: "string", description: "스텝 종류(예: move, interact, battle, expect)" },
+            do: { type: "string", enum: ["moveTo", "interact", "choose", "battle"] },
+            expect: { type: "string", enum: ["switch", "item", "variable", "mapId", "gold", "ended", "victory", "defeat"] },
             mapId: { type: "string" },
             x: { type: "integer" },
             y: { type: "integer" },
             eventId: { type: "string" },
-            text: { type: "string" },
+            index: { type: "integer", minimum: 0 },
+            switchId: { type: "string" },
+            value: { description: "switch에는 boolean, variable/gold에는 number" },
+            present: { type: "boolean" },
+            count: { type: "integer", minimum: 0 },
+            variableId: { type: "string" },
+            op: { type: "string", enum: ["=", ">=", "<=", ">", "<"] },
+            itemId: { type: "string" },
           },
-          required: ["kind"],
           // 스텝 variant 별 전용 필드는 워크스루 실행기가 검증한다.
-          additionalProperties: true,
+          additionalProperties: false,
         },
       },
       seed: { type: "integer", description: "전투 판정 시드(선택, 재현용)" },
@@ -39,9 +46,8 @@ const playWalkthrough: ToolDefinition = {
     required: ["scenario"],
   },
   run(project, args): ToolExecResult {
-    const scenario = Array.isArray(args.scenario) ? (args.scenario as WalkthroughStep[]) : [];
     const seed = typeof args.seed === "number" ? args.seed : undefined;
-    const result = runWalkthrough(project, scenario, { seed });
+    const result = runWalkthrough(project, args.scenario, { seed });
     const summary = result.ok
       ? `완주 성공 (${result.stepsRun}/${result.totalSteps} 스텝, 엔딩=${result.reachedEnding})`
       : `스텝 ${result.failedStepIndex}에서 실패: ${result.failureReason}`;

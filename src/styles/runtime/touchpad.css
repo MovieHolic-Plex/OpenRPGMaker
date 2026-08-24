@@ -84,6 +84,13 @@
   .touch-actions [data-testid="touch-action-b"] {
     margin-bottom: 20px;
   }
+
+  /* 대사창과 선택지는 직접 터치할 수 있다. 가상 A/B 버튼이 그 위에 남으면 선택지 클릭을
+     가로채고 글자도 가리므로, 대화가 열린 동안에는 조작 패드를 숨긴다. */
+  .play-stage:has(> .dialogue-overlay:not(:empty)) > .touch-pad {
+    pointer-events: none;
+    visibility: hidden;
+  }
 }
 
   /* 전투 중 이동 패드는 명령 버튼을 가리므로 숨긴다(전투 명령은 직접 탭). */

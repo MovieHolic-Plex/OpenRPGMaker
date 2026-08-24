@@ -1,6 +1,7 @@
 // Ctrl+K 통합 팔레트의 에디터 명령 레지스트리 (스펙 §4 3-A).
 // run()은 기존 단축키/레일과 동일한 상태 전이만 수행한다 — 새 경로를 만들지 않는다.
 import { applyLayer } from "@/editor/hotkeys";
+import { AUTHORING_TASKS, runAuthoringTask } from "@/editor/authoringTasks";
 import { toolLabel } from "@/editor/uiCopy";
 import { editorState, type Tool } from "@/editor/editorState";
 import { allPanels } from "@/editor/workspace/panelRegistry";
@@ -14,7 +15,6 @@ import {
 import { activateLeftDrawerTab } from "@/editor/leftDrawerTab";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { isBuildPaletteEnabled, setBuildPaletteEnabled } from "@/editor/panels/buildPalette";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { downloadCurrentMapScreenshot } from "@/editor/panels/editorZoomToolbar";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
@@ -66,6 +66,13 @@ function runTool(tool: Tool): void {
 
 export function listEditorCommands(): readonly EditorCommand[] {
   return [
+    ...AUTHORING_TASKS.map((task): EditorCommand => ({
+      id: `authoring-task-${task.id}`,
+      label: `작업: ${task.label}`,
+      category: "화면",
+      keywords: ["authoring", "작업", ...task.keywords],
+      run: () => runAuthoringTask(task.id),
+    })),
     ...TOOL_COMMANDS.map((tool): EditorCommand => ({
       id: `tool-${tool.id}`,
       label: `도구: ${toolLabel(tool.id)}`,
@@ -116,16 +123,14 @@ export function listEditorCommands(): readonly EditorCommand[] {
       label: "화면: 시연 실행 실행",
       category: "화면",
       keywords: ["play", "run", "실행", "테스트"],
-      run: () => {
-        if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
-      },
+      run: () => runAuthoringTask("test"),
     },
     {
       id: "open-database",
       label: "화면: 데이터베이스 열기",
       category: "화면",
       keywords: ["database", "db", "데이터베이스", "액터", "스킬"],
-      run: () => openDatabaseModal(),
+      run: () => runAuthoringTask("data"),
     },
     {
       id: "open-world",

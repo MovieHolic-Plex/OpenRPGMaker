@@ -10,6 +10,7 @@ import {
   loadProjectFromSupabase,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
+  type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
@@ -17,17 +18,21 @@ import {
   applyEventDraftVault,
   clearEventDraftVault,
   loadEventDraftVaultFromLocalStorage,
+  listEventDraftVaultEntries,
   persistEventDraftVaultNow,
   preserveEventDraftsOnProject,
+  restoreEventDraftVaultEntries,
   syncEventDraftVaultFromProject,
 } from "./eventDraftVault";
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { syncProjectToUrl } from "./projectUrl";
 import {
   saveSupabaseProjectConfigDraft,
+  stageSupabaseProjectConfigDraft,
   supabaseProjectConfig,
   supabaseProjectConfigDraft,
   supabaseProjectConfigDraftWithSource,
+  type SupabaseProjectConfig,
   type SupabaseProjectConfigSource,
 } from "./supabaseProjectConfig";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
@@ -47,6 +52,11 @@ export type ProjectChangeDescriptor =
   | { readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] }
   | { readonly scope: "database"; readonly collection?: string }
   | { readonly scope: "system" | "assets" | "project" };
+
+/** Identity of the project that is actually loaded in this editor session. */
+export type ProjectIdentity =
+  | { readonly kind: "remote"; readonly id: string }
+  | { readonly kind: "local-session"; readonly id: string };
 
 type Listener = (project: Project, change: ProjectChangeDescriptor) => void;
 type AutoSaveListener = (state: AutoSaveState) => void;
@@ -79,6 +89,22 @@ export type ProjectDbReconnectResult =
 export type LoadNewRemoteProjectResult = {
   readonly projectId: string | null;
 };
+
+export type TransactionalNewRemoteProjectDependencies = {
+  readonly createProjectId: () => string;
+  readonly reloadTarget: (config: SupabaseProjectConfig) => Promise<Project | null>;
+  readonly saveTarget: (project: Project, config: SupabaseProjectConfig) => Promise<SupabaseSaveResult>;
+};
+
+export class NewRemoteProjectTransactionError extends Error {
+  constructor(
+    readonly stage: "flush" | "configuration" | "save" | "reload" | "verify" | "concurrent-edit" | "commit",
+    message: string,
+  ) {
+    super(message);
+    this.name = "NewRemoteProjectTransactionError";
+  }
+}
 
 /** Stable result for an explicit remote reload, including observed target ID only. */
 export type ReloadFromRemoteResult =
@@ -159,6 +185,8 @@ class ProjectStore {
    * commit or remotely flush the snapshot.
    */
   private readOnlyProjectSnapshot: Project | null = null;
+  private loadedRemoteProjectId: string | null = null;
+  private localProjectSessionId = randomUuid();
 
 
   constructor() {
@@ -178,6 +206,7 @@ class ProjectStore {
       const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
         this.adoptProject(loadDevProjectOverride() ?? devShowcaseProject, { restoreVault: true });
+        this.beginLocalProjectSession();
         this.remotePersistenceEnabled = false;
         this.remotePersistenceDisabledReason = "dev-showcase";
       } else {
@@ -196,6 +225,9 @@ class ProjectStore {
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
           }
           this.adoptProject(project, { restoreVault: true });
+          const loadedProjectId = supabaseProjectConfig()?.projectId;
+          if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
+          else this.beginLocalProjectSession();
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -231,6 +263,7 @@ class ProjectStore {
   // 사용자는 이후 DB 연결 설정에서 명시적으로 다시 연결/저장할 수 있다.
   async loadFallbackProject(project: Project): Promise<void> {
     this.adoptProject(project, { restoreVault: true });
+    this.beginLocalProjectSession();
     this.remotePersistenceEnabled = false;
     this.remotePersistenceDisabledReason = "load-failed";
     this.persistedBaseline = null;
@@ -279,8 +312,10 @@ class ProjectStore {
       });
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
+      this.loadedRemoteProjectId = projectId;
       this.syncProjectUrlBar();
     } else {
+      this.beginLocalProjectSession();
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = null;
     }
@@ -291,6 +326,165 @@ class ProjectStore {
     await this.normalizeCurrentProject({ persistIfChanged: false });
     this.emit({ scope: "project" });
     if (this.remotePersistenceEnabled) this.scheduleAutoSave();
+    return { projectId };
+  }
+
+  /**
+   * Welcome/manual preset boundary. It prepares and verifies a new Supabase row
+   * without touching the open project, draft vault, config, or URL. Local state
+   * is committed only after current-project flush + target save + target reload.
+   */
+  async loadNewRemoteProjectTransactionally(
+    project: Project,
+    options: { readonly projectId?: string; readonly title?: string } = {},
+    dependencies: TransactionalNewRemoteProjectDependencies = {
+      createProjectId: () => `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}`,
+      reloadTarget: (config) => loadProjectFromSupabase(config),
+      saveTarget: (candidate, config) => saveProjectToSupabase(candidate, config),
+    },
+  ): Promise<{ readonly projectId: string }> {
+    const flushResult = await this.flush();
+    if (flushResult.kind !== "saved") {
+      throw new NewRemoteProjectTransactionError(
+        flushResult.kind === "not-configured" ? "configuration" : "flush",
+        "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
+      );
+    }
+
+    const baseConfig = supabaseProjectConfig();
+    const draft = supabaseProjectConfigDraft();
+    if (!baseConfig || !draft.url || !draft.anonKey) {
+      throw new NewRemoteProjectTransactionError(
+        "configuration",
+        "Supabase 연결을 확인한 뒤 다시 시도하세요.",
+      );
+    }
+
+    const projectId = options.projectId?.trim() || dependencies.createProjectId();
+    const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
+    const candidate = structuredClone(project);
+    const title = options.title?.trim();
+    if (title) candidate.meta = { ...candidate.meta, title };
+    const generationAfterFlush = this.mutationGeneration;
+
+    let saved: SupabaseSaveResult;
+    try {
+      saved = await dependencies.saveTarget(projectWithoutEventDrafts(candidate), targetConfig);
+    } catch (error) {
+      throw new NewRemoteProjectTransactionError(
+        "save",
+        error instanceof Error ? error.message : "새 Supabase 프로젝트 저장에 실패했습니다.",
+      );
+    }
+    if (saved.kind !== "saved") {
+      throw new NewRemoteProjectTransactionError(
+        "save",
+        "새 Supabase 프로젝트 저장을 확인하지 못했습니다.",
+      );
+    }
+
+    let reloaded: Project | null;
+    try {
+      reloaded = await dependencies.reloadTarget(targetConfig);
+    } catch (error) {
+      throw new NewRemoteProjectTransactionError(
+        "reload",
+        error instanceof Error ? error.message : "새 Supabase 프로젝트 재로드에 실패했습니다.",
+      );
+    }
+    if (!reloaded) {
+      throw new NewRemoteProjectTransactionError(
+        "reload",
+        "저장한 새 Supabase 프로젝트를 다시 읽지 못했습니다.",
+      );
+    }
+
+    const expected = projectWithoutEventDrafts(saved.project ?? candidate);
+    if (serialize(expected) !== serialize(projectWithoutEventDrafts(reloaded))) {
+      throw new NewRemoteProjectTransactionError(
+        "verify",
+        "새 Supabase 프로젝트의 저장본과 재로드 결과가 일치하지 않습니다.",
+      );
+    }
+    if (this.mutationGeneration !== generationAfterFlush || this.dirtySinceLastPersist) {
+      throw new NewRemoteProjectTransactionError(
+        "concurrent-edit",
+        "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 저장한 뒤 다시 시도하세요.",
+      );
+    }
+
+    const localSnapshot = {
+      current: this.current,
+      dirtySinceLastPersist: this.dirtySinceLastPersist,
+      loaded: this.loaded,
+      loadedRemoteProjectId: this.loadedRemoteProjectId,
+      mutationGeneration: this.mutationGeneration,
+      persistedBaseline: this.persistedBaseline,
+      remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
+      remotePersistenceEnabled: this.remotePersistenceEnabled,
+    };
+    const draftVaultSnapshot = listEventDraftVaultEntries();
+    const previousHref = browserHref();
+
+    // Stage the only failure-prone browser write after every rollback snapshot
+    // exists but before deleting drafts or adopting the candidate.
+    let stagedConfig: ReturnType<typeof stageSupabaseProjectConfigDraft>;
+    try {
+      stagedConfig = stageSupabaseProjectConfigDraft({
+        anonKey: draft.anonKey,
+        projectId,
+        url: draft.url,
+      });
+    } catch (error) {
+      throw new NewRemoteProjectTransactionError(
+        "commit",
+        error instanceof Error ? error.message : "새 프로젝트 설정을 브라우저에 저장하지 못했습니다.",
+      );
+    }
+
+    try {
+      clearEventDraftVault();
+      this.adoptProject(structuredClone(reloaded), { restoreVault: false });
+      this.persistedBaseline = structuredClone(projectWithoutEventDrafts(reloaded));
+      this.loaded = true;
+      this.remotePersistenceEnabled = true;
+      this.remotePersistenceDisabledReason = null;
+      this.dirtySinceLastPersist = false;
+      this.mutationGeneration += 1;
+      resetManualProjectCommitBaseline(this.current);
+      syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null });
+      stagedConfig.commit();
+      this.loadedRemoteProjectId = projectId;
+    } catch (error) {
+      this.current = localSnapshot.current;
+      this.persistedBaseline = localSnapshot.persistedBaseline;
+      this.loaded = localSnapshot.loaded;
+      this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
+      this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
+      this.remotePersistenceDisabledReason = localSnapshot.remotePersistenceDisabledReason;
+      this.dirtySinceLastPersist = localSnapshot.dirtySinceLastPersist;
+      this.mutationGeneration = localSnapshot.mutationGeneration;
+      restoreEventDraftVaultEntries(draftVaultSnapshot);
+      try {
+        stagedConfig.rollback();
+      } catch (rollbackError) {
+        console.error("[store] Failed to roll back staged Supabase config:", rollbackError);
+      }
+      restoreBrowserHref(previousHref);
+      throw new NewRemoteProjectTransactionError(
+        "commit",
+        error instanceof Error ? error.message : "새 프로젝트의 로컬 전환을 완료하지 못했습니다.",
+      );
+    }
+
+    // The old draft key is removed only after the switch can no longer reject.
+    persistEventDraftVaultNow(baseConfig.projectId);
+    try {
+      this.emit({ scope: "project" });
+    } catch (error) {
+      console.error("[store] Project listener failed after transactional switch:", error);
+    }
+    this.refreshSupabaseResourceCache();
     return { projectId };
   }
 
@@ -332,6 +526,12 @@ class ProjectStore {
 
   getCurrent(): Project {
     return this.readOnlyProjectSnapshot ?? this.current;
+  }
+
+  getProjectIdentity(): ProjectIdentity {
+    return this.loadedRemoteProjectId
+      ? { kind: "remote", id: this.loadedRemoteProjectId }
+      : { kind: "local-session", id: this.localProjectSessionId };
   }
 
   /**
@@ -394,6 +594,7 @@ class ProjectStore {
         syncEventDraftVaultFromProject(this.current);
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
+        this.loadedRemoteProjectId = status.projectId;
         await this.normalizeCurrentProject();
         this.loaded = true;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -420,7 +621,7 @@ class ProjectStore {
    * 외부 스크립트/다른 세션 저장분을 즉시 반영할 때 사용.
    */
   async reloadFromRemote(options: { readonly force?: boolean } = {}): Promise<ReloadFromRemoteResult> {
-    const projectId = supabaseProjectConfigDraft().projectId || null;
+    const projectId = supabaseProjectConfig()?.projectId ?? null;
     if (!this.remotePersistenceEnabled) {
       return {
         kind: "disabled",
@@ -440,6 +641,7 @@ class ProjectStore {
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
+      if (projectId) this.loadedRemoteProjectId = projectId;
       await this.normalizeCurrentProject();
       this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
       resetManualProjectCommitBaseline(this.current);
@@ -497,6 +699,7 @@ class ProjectStore {
   replaceProject(project: Project): void {
     clearEventDraftVault();
     persistEventDraftVaultNow();
+    if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.replace(project, { preserveEventDrafts: false });
   }
 
@@ -574,6 +777,7 @@ class ProjectStore {
     clearEventDraftVault();
     persistEventDraftVaultNow();
     this.current = createBlankProject();
+    if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation();
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
@@ -599,6 +803,11 @@ class ProjectStore {
   private markLocalMutation(): void {
     this.mutationGeneration += 1;
     this.dirtySinceLastPersist = true;
+  }
+
+  private beginLocalProjectSession(): void {
+    this.loadedRemoteProjectId = null;
+    this.localProjectSessionId = randomUuid();
   }
 
   subscribe(listener: Listener): () => void {
@@ -876,6 +1085,20 @@ class ProjectStore {
 }
 
 export const store = new ProjectStore();
+
+function browserHref(): string | null {
+  if (typeof window === "undefined") return null;
+  return typeof window.location?.href === "string" ? window.location.href : null;
+}
+
+function restoreBrowserHref(href: string | null): void {
+  if (!href || typeof window === "undefined" || !window.history?.replaceState) return;
+  try {
+    window.history.replaceState(window.history.state, "", href);
+  } catch {
+    /* A malformed or cross-origin test location must not hide the original commit failure. */
+  }
+}
 
 function deepFreeze<T>(value: T): DeepReadonly<T> {
   if (value && typeof value === "object" && !Object.isFrozen(value)) {

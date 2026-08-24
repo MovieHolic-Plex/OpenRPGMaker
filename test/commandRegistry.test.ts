@@ -37,18 +37,16 @@ describe("commandRegistry", () => {
     expect(editorState.get().layer).toBe("lower");
   });
 
-  // 3단 모드 순환 명령은 없어졌다 — 프리셋이 흡수했다. 프리셋을 고르면 도크 구성과
-  // 밀도가 함께 바뀌고, 밀도만 만지고 싶으면 밀도 명령을 쓴다.
-  it("프리셋 명령이 도크 구성과 밀도를 함께 바꾼다", () => {
+  it("레이아웃 프리셋은 도크만 바꾸고 현재 밀도를 보존한다", () => {
     const commands = listEditorCommands();
     commands.find((c) => c.id === "workspace-preset-data")!.run();
     expect(getWorkspaceLayout().presetId).toBe("data");
     expect(getWorkspaceLayout().docks.left).toEqual([]);
-    expect(getEditorUiMode()).toBe("expert");
+    expect(getEditorUiMode()).toBe("beginner");
 
     commands.find((c) => c.id === "workspace-preset-map")!.run();
     expect(getWorkspaceLayout().docks.left).toEqual(["tiles", "maps"]);
-    expect(getEditorUiMode()).toBe("standard");
+    expect(getEditorUiMode()).toBe("beginner");
   });
 
   it("밀도 명령이 프리셋 구성을 건드리지 않고 밀도만 바꾼다", () => {
@@ -117,6 +115,13 @@ describe("commandRegistry", () => {
       expect(ids).toContain(`workspace-panel-${panel.id}`);
       expect(ids).toContain(`workspace-panel-${panel.id}-left`);
       expect(ids).toContain(`workspace-panel-${panel.id}-right`);
+    }
+  });
+
+  it("공통 저작 작업 네 개가 명령 팔레트에도 정확히 한 번 등록된다", () => {
+    const ids = listEditorCommands().map((command) => command.id);
+    for (const task of ["map", "event", "data", "test"]) {
+      expect(ids.filter((id) => id === `authoring-task-${task}`)).toHaveLength(1);
     }
   });
 
