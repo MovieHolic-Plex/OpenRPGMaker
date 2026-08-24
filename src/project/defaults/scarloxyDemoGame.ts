@@ -272,12 +272,13 @@ export function demoTroop(
   name: string,
   previewBackgroundResourceId: string,
   members: readonly { enemyId: string; x: number; y: number }[],
-  extra: { uncapturable?: boolean } = {},
+  extra: { uncapturable?: boolean; trainerBattle?: boolean } = {},
 ) {
   return normalizeTroopRecord({
     id,
     name,
     uncapturable: extra.uncapturable,
+    trainerBattle: extra.trainerBattle,
     enemyIds: members.map((member) => member.enemyId),
     members: [...members],
     autoAlign: false,
