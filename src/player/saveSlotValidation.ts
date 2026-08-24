@@ -10,6 +10,7 @@ RuntimeNpcTravelState,
 RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { RNG_STREAMS, type RngState } from "@/util/rng";
+import { isPositiveItemQuantity } from "@/project/itemQuantities";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
   if (!isRecord(value)) return false;
@@ -73,6 +74,35 @@ export function isLifeSkillsRecord(value: unknown): value is NonNullable<PlaySes
     if (!isRecord(progress)) return false;
     return isNonNegativeSafeInteger(progress.xp) && isPositiveSafeInteger(progress.level);
   });
+}
+
+export function parseChestsRecord(value: unknown): NonNullable<PlaySession["chests"]> | undefined {
+  if (!isRecord(value)) return undefined;
+  const parsed: NonNullable<PlaySession["chests"]> = {};
+  for (const [chestId, rawChest] of Object.entries(value)) {
+    if (!isRecord(rawChest)
+      || rawChest.id !== chestId
+      || !chestId.trim()
+      || typeof rawChest.mapId !== "string"
+      || !rawChest.mapId.trim()
+      || typeof rawChest.x !== "number"
+      || !Number.isSafeInteger(rawChest.x)
+      || typeof rawChest.y !== "number"
+      || !Number.isSafeInteger(rawChest.y)
+      || !isRecord(rawChest.inventory)) continue;
+    const inventory: Record<string, number> = {};
+    for (const [itemId, count] of Object.entries(rawChest.inventory)) {
+      if (itemId.trim() && isPositiveItemQuantity(count)) inventory[itemId] = count;
+    }
+    parsed[chestId] = {
+      id: chestId,
+      mapId: rawChest.mapId,
+      x: rawChest.x,
+      y: rawChest.y,
+      inventory,
+    };
+  }
+  return parsed;
 }
 
 export function isShopTradeCountsRecord(value: unknown): value is NonNullable<PlaySession["shopTradeCounts"]> {
