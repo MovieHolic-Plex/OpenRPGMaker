@@ -10,6 +10,7 @@ import {
   loadProjectFromSupabase,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
+  type SupabaseSaveResult,
 } from "./supabaseProjectSync";
 import { projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
@@ -28,6 +29,7 @@ import {
   supabaseProjectConfig,
   supabaseProjectConfigDraft,
   supabaseProjectConfigDraftWithSource,
+  type SupabaseProjectConfig,
   type SupabaseProjectConfigSource,
 } from "./supabaseProjectConfig";
 import { dbPersistenceStatus, type DbPersistenceDisabledReason, type DbPersistenceStatus } from "./persistenceStatus";
@@ -84,6 +86,22 @@ export type ProjectDbReconnectResult =
 export type LoadNewRemoteProjectResult = {
   readonly projectId: string | null;
 };
+
+export type TransactionalNewRemoteProjectDependencies = {
+  readonly createProjectId: () => string;
+  readonly reloadTarget: (config: SupabaseProjectConfig) => Promise<Project | null>;
+  readonly saveTarget: (project: Project, config: SupabaseProjectConfig) => Promise<SupabaseSaveResult>;
+};
+
+export class NewRemoteProjectTransactionError extends Error {
+  constructor(
+    readonly stage: "flush" | "configuration" | "save" | "reload" | "verify" | "concurrent-edit",
+    message: string,
+  ) {
+    super(message);
+    this.name = "NewRemoteProjectTransactionError";
+  }
+}
 
 /** Stable result for an explicit remote reload, including observed target ID only. */
 export type ReloadFromRemoteResult =
@@ -301,6 +319,108 @@ class ProjectStore {
     await this.normalizeCurrentProject({ persistIfChanged: false });
     this.emit({ scope: "project" });
     if (this.remotePersistenceEnabled) this.scheduleAutoSave();
+    return { projectId };
+  }
+
+  /**
+   * Welcome/manual preset boundary. It prepares and verifies a new Supabase row
+   * without touching the open project, draft vault, config, or URL. Local state
+   * is committed only after current-project flush + target save + target reload.
+   */
+  async loadNewRemoteProjectTransactionally(
+    project: Project,
+    options: { readonly projectId?: string; readonly title?: string } = {},
+    dependencies: TransactionalNewRemoteProjectDependencies = {
+      createProjectId: () => `oprn-${randomUuid().replace(/-/g, "").slice(0, 10)}`,
+      reloadTarget: (config) => loadProjectFromSupabase(config),
+      saveTarget: (candidate, config) => saveProjectToSupabase(candidate, config),
+    },
+  ): Promise<{ readonly projectId: string }> {
+    const flushResult = await this.flush();
+    if (flushResult.kind !== "saved") {
+      throw new NewRemoteProjectTransactionError(
+        flushResult.kind === "not-configured" ? "configuration" : "flush",
+        "현재 프로젝트를 Supabase에 저장하지 못해 새 프로젝트를 시작하지 않았습니다.",
+      );
+    }
+
+    const baseConfig = supabaseProjectConfig();
+    const draft = supabaseProjectConfigDraft();
+    if (!baseConfig || !draft.url || !draft.anonKey) {
+      throw new NewRemoteProjectTransactionError(
+        "configuration",
+        "Supabase 연결을 확인한 뒤 다시 시도하세요.",
+      );
+    }
+
+    const projectId = options.projectId?.trim() || dependencies.createProjectId();
+    const targetConfig: SupabaseProjectConfig = { ...baseConfig, projectId };
+    const candidate = structuredClone(project);
+    const title = options.title?.trim();
+    if (title) candidate.meta = { ...candidate.meta, title };
+    const generationAfterFlush = this.mutationGeneration;
+
+    let saved: SupabaseSaveResult;
+    try {
+      saved = await dependencies.saveTarget(projectWithoutEventDrafts(candidate), targetConfig);
+    } catch (error) {
+      throw new NewRemoteProjectTransactionError(
+        "save",
+        error instanceof Error ? error.message : "새 Supabase 프로젝트 저장에 실패했습니다.",
+      );
+    }
+    if (saved.kind !== "saved") {
+      throw new NewRemoteProjectTransactionError(
+        "save",
+        "새 Supabase 프로젝트 저장을 확인하지 못했습니다.",
+      );
+    }
+
+    let reloaded: Project | null;
+    try {
+      reloaded = await dependencies.reloadTarget(targetConfig);
+    } catch (error) {
+      throw new NewRemoteProjectTransactionError(
+        "reload",
+        error instanceof Error ? error.message : "새 Supabase 프로젝트 재로드에 실패했습니다.",
+      );
+    }
+    if (!reloaded) {
+      throw new NewRemoteProjectTransactionError(
+        "reload",
+        "저장한 새 Supabase 프로젝트를 다시 읽지 못했습니다.",
+      );
+    }
+
+    const expected = projectWithoutEventDrafts(saved.project ?? candidate);
+    if (serialize(expected) !== serialize(projectWithoutEventDrafts(reloaded))) {
+      throw new NewRemoteProjectTransactionError(
+        "verify",
+        "새 Supabase 프로젝트의 저장본과 재로드 결과가 일치하지 않습니다.",
+      );
+    }
+    if (this.mutationGeneration !== generationAfterFlush || this.dirtySinceLastPersist) {
+      throw new NewRemoteProjectTransactionError(
+        "concurrent-edit",
+        "준비 중 현재 프로젝트가 변경되어 전환을 취소했습니다. 변경 내용을 저장한 뒤 다시 시도하세요.",
+      );
+    }
+
+    // Commit starts here. No open-project or browser-scoped state changes occur above.
+    clearEventDraftVault();
+    persistEventDraftVaultNow();
+    this.adoptProject(structuredClone(reloaded), { restoreVault: false });
+    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(reloaded));
+    this.loaded = true;
+    this.remotePersistenceEnabled = true;
+    this.remotePersistenceDisabledReason = null;
+    this.dirtySinceLastPersist = false;
+    this.mutationGeneration += 1;
+    saveSupabaseProjectConfigDraft({ anonKey: draft.anonKey, projectId, url: draft.url });
+    syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null });
+    resetManualProjectCommitBaseline(this.current);
+    this.emit({ scope: "project" });
+    this.refreshSupabaseResourceCache();
     return { projectId };
   }
 

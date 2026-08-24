@@ -223,7 +223,11 @@ describe("presentEditorWelcome", () => {
   it("BREAK: exposes a confirmed manual starter action separately from AI", async () => {
     const host = document.createElement("div");
     document.body.append(host);
-    const pending = presentEditorWelcome(host);
+    const applySystemPreset = vi.fn(async () => undefined);
+    const pending = (presentEditorWelcome as unknown as (
+      host: HTMLElement,
+      options: { applySystemPreset: (plan: unknown) => Promise<void> },
+    ) => ReturnType<typeof presentEditorWelcome>)(host, { applySystemPreset });
     const manual = host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-starter-card-0']");
 
     expect(manual).toBeTruthy();
@@ -238,14 +242,39 @@ describe("presentEditorWelcome", () => {
       autoSend: false,
       replaceWithBlank: false,
       presetId: "adventure-jrpg",
-      source: "manual-starter",
-      starterPlan: {
+      source: "manual-system-preset",
+      systemPresetPlan: {
+        kind: "blank-project-system-preset",
         packId: "adventure-jrpg",
-        recipeId: "adventure-village",
-        replaceOpenProject: false,
+        recipeId: "adventure-system",
+        preservesOpenProjectUntilRemoteVerified: true,
         aiRequired: false,
       },
     });
+    expect(applySystemPreset).toHaveBeenCalledOnce();
+  });
+
+  it("BREAK: keeps project welcome state visible and reports remote preparation failure", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const applySystemPreset = vi.fn(async () => {
+      throw new Error("remote reload failed");
+    });
+    const pending = (presentEditorWelcome as unknown as (
+      host: HTMLElement,
+      options: { applySystemPreset: (plan: unknown) => Promise<void> },
+    ) => ReturnType<typeof presentEditorWelcome>)(host, { applySystemPreset });
+
+    host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-starter-card-0']")?.click();
+    document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']")?.click();
+    await vi.waitFor(() => expect(applySystemPreset).toHaveBeenCalledOnce());
+
+    expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.host}']`)).toBeTruthy();
+    expect(host.querySelector("[data-testid='editor-welcome-system-preset-error']")?.getAttribute("role")).toBe("alert");
+    expect(isEditorWelcomeDismissed()).toBe(false);
+
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
+    await expect(pending).resolves.toMatchObject({ action: "skip" });
   });
 
   it("keeps the welcome open when manual starter confirmation is cancelled", async () => {
@@ -260,6 +289,6 @@ describe("presentEditorWelcome", () => {
     host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.click();
     const result = await pending;
     expect(result.action).toBe("skip");
-    expect(result.starterPlan).toBeUndefined();
+    expect(result.systemPresetPlan).toBeUndefined();
   });
 });

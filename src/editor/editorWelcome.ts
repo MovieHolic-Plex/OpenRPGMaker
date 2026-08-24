@@ -9,9 +9,9 @@ import {
   buildWelcomeGenrePresetPrompt,
   officialGenrePackIdForWelcomePreset,
   type WelcomeGenrePresetId,
-  welcomeGenreStarterPlanById,
+  welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
-import type { GenreStarterPlan } from "@/editor/genrePacks";
+import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
 import { showConfirm } from "@/editor/ui/modal";
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
@@ -25,6 +25,7 @@ export const EDITOR_WELCOME_TESTIDS = {
   skip: "editor-welcome-skip",
   dismiss: "editor-welcome-dismiss",
   genreStart: "editor-welcome-genre-start",
+  systemPresetError: "editor-welcome-system-preset-error",
   inspirationStrip: "editor-welcome-inspiration",
   promptInput: "editor-welcome-prompt-input",
   promptSubmit: "editor-welcome-prompt-submit",
@@ -70,10 +71,15 @@ export type EditorWelcomeResult = {
   readonly autoSend: boolean;
   readonly replaceWithBlank: boolean;
   readonly presetId?: WelcomeGenrePresetId;
-  readonly source?: "chip" | "free-text" | "manual-starter";
-  readonly starterPlan?: GenreStarterPlan;
+  readonly source?: "chip" | "free-text" | "manual-system-preset";
+  readonly systemPresetPlan?: GenreBlankProjectSystemPresetPlan;
   readonly dismiss: boolean;
   readonly action: EditorWelcomeAction;
+};
+
+export type EditorWelcomeOptions = {
+  /** Required by production for the remote-verified manual path; AI cards do not use it. */
+  readonly applySystemPreset?: (plan: GenreBlankProjectSystemPresetPlan) => Promise<unknown>;
 };
 
 export type ShouldPresentEditorWelcomeOptions = {
@@ -215,7 +221,10 @@ function syncBriefingPosition(root: HTMLElement): void {
  * Mount the canvas briefing under `host` and resolve when the user starts or skips.
  * Always removes the overlay. Start sends to the current map — it does not mint a blank project.
  */
-export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeResult> {
+export function presentEditorWelcome(
+  host: HTMLElement,
+  options: EditorWelcomeOptions = {},
+): Promise<EditorWelcomeResult> {
   return new Promise((resolve) => {
     let settled = false;
     const reduceMotion = prefersReducedMotion();
@@ -279,25 +288,53 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
       });
     };
 
+    let applyingSystemPreset = false;
+    const systemPresetError = el("p", {
+      class: "editor-welcome-system-preset-error",
+      attrs: { role: "alert", "aria-live": "polite", hidden: "" },
+      dataset: { testid: EDITOR_WELCOME_TESTIDS.systemPresetError },
+    });
+
     const startManualPreset = async (presetId: WelcomeGenrePresetId, label: string): Promise<void> => {
-      const starterPlan = welcomeGenreStarterPlanById(presetId);
+      if (applyingSystemPreset) return;
+      const systemPresetPlan = welcomeGenreSystemPresetPlanById(presetId);
       const confirmed = await showConfirm({
-        title: "새 프로젝트로 시작",
-        message: "선택한 스타터로 별도의 새 프로젝트를 만듭니다. 현재 프로젝트는 덮어쓰지 않습니다.",
-        confirmLabel: "새 프로젝트 만들기",
+        title: "빈 프로젝트에 시스템 프리셋 적용",
+        message: "현재 프로젝트를 먼저 저장한 뒤, 선택한 시스템 설정으로 별도 프로젝트를 만들고 재로드를 확인합니다.",
+        confirmLabel: "저장하고 새 프로젝트 만들기",
       });
       if (!confirmed || settled) return;
-      settle({
-        intent: label,
-        prompt: null,
-        autoSend: false,
-        replaceWithBlank: false,
-        presetId,
-        source: "manual-starter",
-        starterPlan,
-        dismiss: true,
-        action: "start",
-      });
+      if (!options.applySystemPreset) {
+        systemPresetError.hidden = false;
+        systemPresetError.textContent = "원격 저장 경로를 준비하지 못했습니다. 프로젝트 연결을 확인하세요.";
+        return;
+      }
+      applyingSystemPreset = true;
+      systemPresetError.hidden = true;
+      systemPresetError.textContent = "";
+      const controls = Array.from(root.querySelectorAll<HTMLButtonElement>("button"));
+      controls.forEach((button) => { button.disabled = true; });
+      try {
+        await options.applySystemPreset(systemPresetPlan);
+        if (settled) return;
+        settle({
+          intent: label,
+          prompt: null,
+          autoSend: false,
+          replaceWithBlank: false,
+          presetId,
+          source: "manual-system-preset",
+          systemPresetPlan,
+          dismiss: true,
+          action: "start",
+        });
+      } catch {
+        systemPresetError.hidden = false;
+        systemPresetError.textContent = "새 프로젝트 저장과 재확인을 완료하지 못했습니다. 현재 프로젝트는 그대로 유지됩니다.";
+      } finally {
+        applyingSystemPreset = false;
+        if (!settled) controls.forEach((button) => { button.disabled = false; });
+      }
     };
 
     const finishSkip = (): void => {
@@ -359,8 +396,8 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
             }),
             el("button", {
               class: "editor-welcome-template-starter",
-              text: "새 프로젝트로 시작",
-              attrs: { type: "button", "aria-label": `${card.label} 새 프로젝트로 시작` },
+              text: "빈 프로젝트 시스템 설정",
+              attrs: { type: "button", "aria-label": `${card.label} 빈 프로젝트 시스템 프리셋 적용` },
               dataset: {
                 testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
                 templateId: card.id,
@@ -395,6 +432,7 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
           children: [promptInput, submit],
         }),
         cards,
+        systemPresetError,
         el("button", {
           class: "editor-welcome-skip",
           text: "빈 맵으로 시작",

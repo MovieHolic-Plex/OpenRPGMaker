@@ -34,24 +34,13 @@ export type GenrePackRequirement = {
   readonly runtimeCapability: string;
 };
 
-export type GenreStarterAdapterId =
-  | "adventure-village-v1"
-  | "monster-journey-v1"
-  | "partner-raise-v1"
-  | "horror-gallery-v1"
-  | "school-horror-v1"
-  | "memory-story-v1"
-  | "farm-blank-v1";
-
 export type GenrePackNavigationTarget = "canvas" | "database" | "events" | "test";
 
-export type GenrePackRecipe = {
+export type GenrePackSystemPresetRecipe = {
   readonly id: string;
-  readonly adapterId: GenreStarterAdapterId;
   readonly title: string;
-  readonly starterKind: "project-adapter";
-  readonly initialNavigationTarget: GenrePackNavigationTarget;
-  readonly enables: readonly string[];
+  readonly starterKind: "blank-project-system-preset";
+  readonly appliesSystemFields: readonly string[];
 };
 
 export type GenrePackDefinition = {
@@ -59,7 +48,7 @@ export type GenrePackDefinition = {
   readonly starter: { readonly defaultRecipeId: string; readonly projectSchema: "Project" };
   readonly navigation: { readonly sections: readonly { readonly id: string; readonly target: GenrePackNavigationTarget }[] };
   readonly vocabulary: Readonly<Record<string, string>>;
-  readonly recipes: readonly GenrePackRecipe[];
+  readonly recipes: readonly GenrePackSystemPresetRecipe[];
   readonly lint: readonly { readonly id: string; readonly requirementId: string; readonly severity: "warning" | "error" }[];
   readonly journeys: readonly { readonly id: string; readonly steps: readonly { readonly id: string; readonly requirementIds: readonly string[] }[] }[];
   readonly runtimeRequirements: readonly GenrePackRequirement[];
@@ -74,17 +63,15 @@ const sharedNavigation = [
 
 function recipe(options: {
   readonly id: string;
-  readonly adapterId: GenreStarterAdapterId;
   readonly title: string;
-  readonly initialNavigationTarget: GenrePackNavigationTarget;
-  readonly enables: readonly string[];
-}): GenrePackRecipe {
-  return { ...options, starterKind: "project-adapter" };
+  readonly appliesSystemFields: readonly string[];
+}): GenrePackSystemPresetRecipe {
+  return { ...options, starterKind: "blank-project-system-preset" };
 }
 
 function definePack(options: {
   id: GenrePackId;
-  recipes: readonly GenrePackRecipe[];
+  recipes: readonly GenrePackSystemPresetRecipe[];
   vocabulary: Readonly<Record<string, string>>;
   requirements: readonly GenrePackRequirement[];
 }): GenrePackDefinition {
@@ -116,11 +103,9 @@ const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
   "adventure-jrpg": definePack({
     id: "adventure-jrpg",
     recipes: [recipe({
-      id: "adventure-village",
-      adapterId: "adventure-village-v1",
-      title: "모험 마을",
-      initialNavigationTarget: "canvas",
-      enables: ["map-runtime", "event-interpreter"],
+      id: "adventure-system",
+      title: "기본 JRPG 시스템 프리셋",
+      appliesSystemFields: ["system.genre"],
     })],
     vocabulary: { actor: "hero", event: "quest", enemy: "enemy", map: "area" },
     requirements: [
@@ -130,22 +115,18 @@ const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
   }),
   "monster-collect": definePack({
     id: "monster-collect",
-    recipes: [
-      recipe({
-        id: "monster-journey",
-        adapterId: "monster-journey-v1",
-        title: "몬스터 여정",
-        initialNavigationTarget: "canvas",
-        enables: ["monster-collection", "monster-battle-party"],
-      }),
-      recipe({
-        id: "partner-raise",
-        adapterId: "partner-raise-v1",
-        title: "파트너 성장",
-        initialNavigationTarget: "database",
-        enables: ["monster-collection", "monster-care"],
-      }),
-    ],
+    recipes: [recipe({
+      id: "monster-system",
+      title: "몬스터 수집 시스템 프리셋",
+      appliesSystemFields: [
+        "system.genre",
+        "system.monsterCollection",
+        "system.monsterBattleParty",
+        "system.battleUiStyle",
+        "system.battleModel",
+        "system.monsterCare",
+      ],
+    })],
     vocabulary: { actor: "trainer", enemy: "wild monster", party: "partners", item: "care item" },
     requirements: [
       { id: "monster-collection", kind: "system-monster-collection", runtimeCapability: "monster-collection" },
@@ -155,22 +136,11 @@ const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
   }),
   "horror-chase": definePack({
     id: "horror-chase",
-    recipes: [
-      recipe({
-        id: "horror-gallery",
-        adapterId: "horror-gallery-v1",
-        title: "저주받은 갤러리",
-        initialNavigationTarget: "events",
-        enables: ["map-runtime", "event-interpreter"],
-      }),
-      recipe({
-        id: "school-horror",
-        adapterId: "school-horror-v1",
-        title: "학교 괴담",
-        initialNavigationTarget: "canvas",
-        enables: ["map-runtime", "event-interpreter"],
-      }),
-    ],
+    recipes: [recipe({
+      id: "horror-system",
+      title: "공포 추격 시스템 프리셋",
+      appliesSystemFields: ["system.genre"],
+    })],
     vocabulary: { actor: "survivor", enemy: "pursuer", event: "scare", map: "room" },
     requirements: [
       { id: "horror-space", kind: "map", runtimeCapability: "map-runtime" },
@@ -180,11 +150,9 @@ const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
   "story-cutscene": definePack({
     id: "story-cutscene",
     recipes: [recipe({
-      id: "memory-story",
-      adapterId: "memory-story-v1",
-      title: "기억의 장면",
-      initialNavigationTarget: "events",
-      enables: ["map-runtime", "event-interpreter"],
+      id: "story-system",
+      title: "스토리 컷신 시스템 프리셋",
+      appliesSystemFields: ["system.genre"],
     })],
     vocabulary: { actor: "character", event: "scene", map: "stage", item: "story prop" },
     requirements: [
@@ -195,11 +163,9 @@ const PACKS: Readonly<Record<GenrePackId, GenrePackDefinition>> = {
   "farm-life": definePack({
     id: "farm-life",
     recipes: [recipe({
-      id: "farm-blank",
-      adapterId: "farm-blank-v1",
-      title: "농장 생활",
-      initialNavigationTarget: "canvas",
-      enables: ["game-time", "friendship-gifts", "farming", "crop-growth"],
+      id: "farm-system",
+      title: "농장 생활 시스템 프리셋",
+      appliesSystemFields: ["system.genre", "system.timeSystem", "system.giftSystem", "system.skillSystem"],
     })],
     vocabulary: { actor: "resident", enemy: "hazard", event: "daily event", item: "produce", map: "farm" },
     requirements: [
@@ -226,67 +192,68 @@ export function resolveGenreVocabulary(id: GenrePackId, term: string): string {
   return PACKS[id].vocabulary[term] ?? term;
 }
 
-export type GenreStarterPlan = {
+export type GenreBlankProjectSystemPresetPlan = {
+  readonly kind: "blank-project-system-preset";
   readonly packId: GenrePackId;
   readonly recipeId: string;
-  readonly adapterId: GenreStarterAdapterId;
   readonly title: string;
-  readonly initialNavigationTarget: GenrePackNavigationTarget;
   readonly projectSchema: "Project";
-  readonly replaceOpenProject: false;
+  readonly preservesOpenProjectUntilRemoteVerified: true;
   readonly aiRequired: false;
 };
 
-export type GenreStarterAdapterReceipt = {
+export type GenreBlankProjectSystemPresetReceipt = {
+  readonly kind: "blank-project-system-preset";
   readonly packId: GenrePackId;
   readonly recipeId: string;
-  readonly adapterId: GenreStarterAdapterId;
   readonly projectSchema: "Project";
   readonly appliedSystemGenre: GenrePackId;
   readonly authoredContentSeeded: false;
-  readonly initialNavigationTarget: GenrePackNavigationTarget;
 };
 
-export type GenreStarterAdapterResult = {
+export type GenreBlankProjectSystemPresetResult = {
   readonly project: Project;
-  readonly receipt: GenreStarterAdapterReceipt;
+  readonly receipt: GenreBlankProjectSystemPresetReceipt;
 };
 
-function recipeById(packId: GenrePackId, recipeId: string): GenrePackRecipe {
+function recipeById(packId: GenrePackId, recipeId: string): GenrePackSystemPresetRecipe {
   const found = genrePackById(packId).recipes.find((candidate) => candidate.id === recipeId);
   if (!found) throw new Error(`Unknown starter recipe for ${packId}: ${recipeId}`);
   return found;
 }
 
-export function createGenreStarterPlan(packId: GenrePackId, recipeId: string): GenreStarterPlan {
+export function createGenreBlankProjectSystemPresetPlan(
+  packId: GenrePackId,
+  recipeId: string,
+): GenreBlankProjectSystemPresetPlan {
   const selectedRecipe = recipeById(packId, recipeId);
   return {
+    kind: "blank-project-system-preset",
     packId,
     recipeId,
-    adapterId: selectedRecipe.adapterId,
     title: selectedRecipe.title,
-    initialNavigationTarget: selectedRecipe.initialNavigationTarget,
     projectSchema: "Project",
-    replaceOpenProject: false,
+    preservesOpenProjectUntilRemoteVerified: true,
     aiRequired: false,
   };
 }
 
 /**
- * Pure recipe adapter. It creates one detached canonical Project and applies only
- * standard system opt-ins plus recipe identity. It never seeds authored maps/events/records.
+ * Pure blank-project system preset. It creates one detached canonical Project
+ * and applies only shared system fields. It never authors genre maps/events/records.
  */
-export function adaptGenreStarterPlan(plan: GenreStarterPlan): GenreStarterAdapterResult {
-  const canonical = createGenreStarterPlan(plan.packId, plan.recipeId);
+export function materializeGenreBlankProjectSystemPreset(
+  plan: GenreBlankProjectSystemPresetPlan,
+): GenreBlankProjectSystemPresetResult {
+  const canonical = createGenreBlankProjectSystemPresetPlan(plan.packId, plan.recipeId);
   if (
-    plan.adapterId !== canonical.adapterId
+    plan.kind !== "blank-project-system-preset"
     || plan.title !== canonical.title
-    || plan.initialNavigationTarget !== canonical.initialNavigationTarget
     || plan.projectSchema !== "Project"
-    || plan.replaceOpenProject !== false
+    || plan.preservesOpenProjectUntilRemoteVerified !== true
     || plan.aiRequired !== false
   ) {
-    throw new Error(`Starter plan does not match recipe contract: ${plan.packId}/${plan.recipeId}`);
+    throw new Error(`System preset plan does not match registry contract: ${plan.packId}/${plan.recipeId}`);
   }
 
   const project = createBlankProject();
@@ -295,20 +262,20 @@ export function adaptGenreStarterPlan(plan: GenreStarterPlan): GenreStarterAdapt
   return {
     project,
     receipt: {
+      kind: "blank-project-system-preset",
       packId: canonical.packId,
       recipeId: canonical.recipeId,
-      adapterId: canonical.adapterId,
       projectSchema: "Project",
       appliedSystemGenre: canonical.packId,
       authoredContentSeeded: false,
-      initialNavigationTarget: canonical.initialNavigationTarget,
     },
   };
 }
 
-/** Compatibility projection for callers that only need the detached Project. */
-export function createProjectFromGenreStarterPlan(plan: GenreStarterPlan): Project {
-  return adaptGenreStarterPlan(plan).project;
+export function createProjectFromGenreBlankProjectSystemPreset(
+  plan: GenreBlankProjectSystemPresetPlan,
+): Project {
+  return materializeGenreBlankProjectSystemPreset(plan).project;
 }
 
 export type GenrePackConfiguration = {
@@ -414,78 +381,28 @@ export function evaluateGenrePackConfiguration(project: Project, packId: GenrePa
   return { packId, configured: checks.every((check) => check.configured), checks };
 }
 
-export type GenrePackRuntimeReceipt = {
-  readonly contractVersion: 1;
-  readonly packId: GenrePackId;
-  readonly projectSignature: string;
-  readonly source: "runtime" | "headless";
-  readonly booted: boolean;
-  readonly completedJourneyIds: readonly string[];
-  readonly lintErrorCount: number;
-  readonly referenceIssueCount: number;
-};
-
 export type GenrePackPlayableReadiness = {
   readonly packId: GenrePackId;
   readonly configured: boolean;
-  readonly playable: boolean;
-  readonly status: "not-configured" | "runtime-proof-required" | "receipt-rejected" | "playable";
-  readonly receiptAccepted: boolean;
+  readonly playable: false;
+  readonly status: "not-configured" | "unverified";
+  readonly receiptAccepted: false;
   readonly configuration: GenrePackConfiguration;
 };
-
-export function genrePackProjectSignature(project: Project): string {
-  const input = JSON.stringify(project);
-  let hash = 0x811c9dc5;
-  for (let index = 0; index < input.length; index += 1) {
-    hash ^= input.charCodeAt(index);
-    hash = Math.imul(hash, 0x01000193);
-  }
-  return `genre-pack-v1-${(hash >>> 0).toString(16).padStart(8, "0")}`;
-}
-
-/** Adapter for a real runtime/headless runner to bind its evidence to one exact project snapshot. */
-export function createGenrePackRuntimeReceipt(
-  project: Project,
-  evidence: Pick<GenrePackRuntimeReceipt, "packId" | "source" | "booted" | "completedJourneyIds">,
-): GenrePackRuntimeReceipt {
-  return {
-    contractVersion: 1,
-    ...evidence,
-    projectSignature: genrePackProjectSignature(project),
-    lintErrorCount: projectLint(project).filter((issue) => issue.severity === "error").length,
-    referenceIssueCount: collectProjectReferenceIssues(project).length,
-  };
-}
-
-function acceptsRuntimeReceipt(project: Project, packId: GenrePackId, receipt: GenrePackRuntimeReceipt): boolean {
-  const requiredJourneyId = genrePackById(packId).journeys[0]!.id;
-  return receipt.contractVersion === 1
-    && receipt.packId === packId
-    && (receipt.source === "runtime" || receipt.source === "headless")
-    && receipt.booted === true
-    && receipt.projectSignature === genrePackProjectSignature(project)
-    && receipt.completedJourneyIds.includes(requiredJourneyId)
-    && receipt.lintErrorCount === 0
-    && receipt.referenceIssueCount === 0;
-}
 
 export function evaluateGenrePackPlayableReadiness(
   project: Project,
   packId: GenrePackId,
-  receipt?: GenrePackRuntimeReceipt,
 ): GenrePackPlayableReadiness {
   const configuration = evaluateGenrePackConfiguration(project, packId);
-  const receiptAccepted = receipt !== undefined && acceptsRuntimeReceipt(project, packId, receipt);
-  const playable = configuration.configured && receiptAccepted;
-  const status = !configuration.configured
-    ? "not-configured" as const
-    : receipt === undefined
-      ? "runtime-proof-required" as const
-      : receiptAccepted
-        ? "playable" as const
-        : "receipt-rejected" as const;
-  return { packId, configured: configuration.configured, playable, status, receiptAccepted, configuration };
+  return {
+    packId,
+    configured: configuration.configured,
+    playable: false,
+    status: configuration.configured ? "unverified" : "not-configured",
+    receiptAccepted: false,
+    configuration,
+  };
 }
 
 // Compile-time exhaustiveness guard: registry and canonical id list must stay aligned.
