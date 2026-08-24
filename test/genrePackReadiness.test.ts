@@ -37,6 +37,23 @@ describe("genre pack readiness receipts", () => {
     ]);
   });
 
+  it("BREAK: direct receipt verification fails closed when no evidence validator is supplied", () => {
+    const result = verifyGenrePackAssertionReceipts(
+      OFFICIAL_GENRE_PACK_REQUIREMENTS,
+      OFFICIAL_GENRE_PACK_IDS.map(passingAssertions)
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.receiptErrors).toHaveLength(OFFICIAL_GENRE_PACK_IDS.length * 4);
+    expect(result.receiptErrors).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        receiptIndex: 0,
+        assertionId: "headless-journey",
+        code: "evidence-validation-missing",
+      }),
+    ]));
+  });
+
   it.each(OFFICIAL_GENRE_PACK_IDS)("fails the browser identity gate when %s is missing", (packId) => {
     const result = verifyExactOfficialGenrePackIds(OFFICIAL_GENRE_PACK_IDS.filter((id) => id !== packId));
     expect(result.ok).toBe(false);
