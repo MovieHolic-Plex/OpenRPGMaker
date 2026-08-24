@@ -53,7 +53,9 @@ describe("Gen1 runtime regressions", () => {
       { enemyId: "enemy_pkmn_larvea", x: 128, y: 136 },
       { enemyId: "enemy_pkmn_plumette", x: 168, y: 132 },
     ];
-    setActorParam(project, "attack", 999);
+    // 유효 공격력 256+은 원작 1/4 스케일링에서 방어 1도 0으로 만들어 division-by-zero가 된다.
+    // 기본 장비 보너스를 더해도 임계값 아래이면서 1 HP 적을 확실히 쓰러뜨리는 값으로 고정한다.
+    setActorParam(project, "attack", 200);
     setActorParam(project, "agility", 999);
     const actorId = project.system.startActorIds[0]!;
     const runtime = createBattleRuntime({
