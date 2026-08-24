@@ -111,6 +111,13 @@
   z-index: 14;
 }
 
+@media (max-width: 1180px) {
+  .event-editor-workbench:has(.event-editor-aux-tools > .ai-event-assist[open])
+    .event-editor-inspector-column {
+    z-index: 1;
+  }
+}
+
 .event-editor-aux-tools > .ai-event-assist,
 .event-editor-aux-tools .event-script-live-preview,
 .event-editor-aux-tools .event-script-flowchart {
