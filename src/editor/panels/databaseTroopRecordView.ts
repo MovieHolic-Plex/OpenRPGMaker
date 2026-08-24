@@ -381,6 +381,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       rerender();
     }),
     activeSlotsField(record, rerender),
+    trainerBattleField(record, rerender),
     uncapturableField(record, rerender),
   ]);
 }
@@ -400,6 +401,15 @@ function uncapturableField(record: TroopRecord, rerender: () => void): HTMLEleme
     rerender();
   });
   field.title = "이 그룹의 적은 포획 대상에서 제외됩니다.";
+  return field;
+}
+
+function trainerBattleField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const field = checkboxField("트레이너 전투", "db-field-troop-trainer-battle", record.trainerBattle === true, (trainerBattle) => {
+    updateDatabaseRecord("troops", record.id, { trainerBattle });
+    rerender();
+  });
+  field.title = "야생 조우가 아닌 트레이너 전투로 판정합니다.";
   return field;
 }
 

@@ -20,13 +20,27 @@ export function skillFields(form: HTMLElement, id: string): void {
 export function itemFields(form: HTMLElement, id: string): void {
   const item = store.getCurrent().database.items.find((record) => record.id === id);
   if (!item) return;
+  const currentCaptureProfile = () => store.getCurrent().database.items.find((record) => record.id === id)?.captureProfile;
   form.append(numberField("가격", "db-field-price", item.price, (value) => updateDatabaseRecord("items", id, { price: value }), { min: 0, max: 999999 }));
   form.append(selectLiteral("범위", "db-field-scope", item.scope, ["none", "ally", "allAllies", "enemy"], (value) =>
     updateDatabaseRecord("items", id, { scope: value })
   ));
-  form.append(numberField("포획 배율", "db-field-item-capture-multiplier", item.captureProfile?.multiplier ?? 0, (value) =>
-    updateDatabaseRecord("items", id, { captureProfile: value > 0 ? { multiplier: value } : undefined }), { min: 0, max: 100 }
-  ));
+  form.append(numberField("포획 배율", "db-field-item-capture-multiplier", item.captureProfile?.multiplier ?? 0, (value) => {
+    const profile = currentCaptureProfile();
+    updateDatabaseRecord("items", id, {
+      captureProfile: value > 0
+        ? { multiplier: value, ...(profile?.ballClass ? { ballClass: profile.ballClass } : {}) }
+        : undefined,
+    });
+  }, { min: 0, max: 100 }));
+  form.append(selectLiteral("볼 등급", "db-field-item-ball-class", item.captureProfile?.ballClass ?? "none", ["none", "poke", "great", "ultra", "master"], (ballClass) => {
+    const profile = currentCaptureProfile();
+    updateDatabaseRecord("items", id, {
+      captureProfile: ballClass === "none"
+        ? profile ? { multiplier: profile.multiplier } : undefined
+        : { multiplier: profile?.multiplier ?? 1, ballClass },
+    });
+  }));
   skillPicker(form, "items", id);
 }
 

@@ -158,6 +158,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         const record = project.database.states.find((entry) => entry.id === id);
         if (!record) return;
         if ("name" in patch && patch.name !== undefined) record.name = patch.name;
+        if ("gen1MajorStatus" in patch) record.gen1MajorStatus = patch.gen1MajorStatus;
         if ("removalCondition" in patch) record.removalCondition = patch.removalCondition;
         if ("restriction" in patch) record.restriction = patch.restriction;
         if ("priority" in patch && patch.priority !== undefined) record.priority = patch.priority;

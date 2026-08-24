@@ -75,6 +75,14 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
         updateDatabaseRecord("skills", record.id, { movePriority }), { min: -7, max: 7 }
       ),
     ]),
+    panel("Gen1 기술", [
+      numberField("최대 PP (0=무제한)", "db-field-skill-max-pp", record.maxPp ?? 0, (maxPp) =>
+        updateDatabaseRecord("skills", record.id, { maxPp: maxPp > 0 ? maxPp : undefined }), { min: 0, max: 99 }
+      ),
+      selectLiteral("급소율", "db-field-skill-gen1-critical", record.gen1CriticalRate ?? "normal", ["normal", "high"], (gen1CriticalRate) =>
+        updateDatabaseRecord("skills", record.id, { gen1CriticalRate })
+      ),
+    ]),
     panel("액션 스킬", actionSkillFields(record)),
     effectPanel,
     statePanel,

@@ -19,6 +19,7 @@ import { BATTLE_KEY_PROMPT } from "@/player/keyBindings";
 
 export type BattleCommandSubmenu =
   | { readonly kind: "skill"; readonly command: RuntimeBattleCommand }
+  | { readonly kind: "pokemonFight" }
   | { readonly kind: "item" }
   | { readonly kind: "capture" }
   | { readonly kind: "switch" }
@@ -81,6 +82,10 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(...skillSubmenu(snapshot, options, terms));
     return menu;
   }
+  if (options.submenu?.kind === "pokemonFight") {
+    menu.append(...pokemonFightSubmenu(snapshot, options));
+    return menu;
+  }
   if (options.submenu?.kind === "item") {
     menu.append(...itemSubmenu(snapshot, options, terms));
     return menu;
@@ -95,6 +100,10 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
   }
 
   const project = store.getCurrent();
+  if (isPokemonMonsterActor(project, actor) && !snapshot.forcedSwitchActorId) {
+    menu.append(...pokemonRootCommands(snapshot, options, actor, targetMode));
+    return menu;
+  }
   const overrideCommandIds = actor?.recordId
     ? snapshot.eventState.actorBattleCommands?.[actor.recordId]
     : undefined;
@@ -107,6 +116,45 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     menu.append(commandControl(snapshot, options, command, actor, targetMode));
   }
   return menu;
+}
+
+function isPokemonMonsterActor(
+  project: ReturnType<typeof store.getCurrent>,
+  actor: BattleBattlerSnapshot | undefined,
+): actor is BattleBattlerSnapshot & { readonly monsterInstanceId: string } {
+  return project.system.battleUiStyle === "pokemon" && Boolean(actor?.monsterInstanceId);
+}
+
+function pokemonRootCommands(
+  snapshot: BattleSnapshot,
+  options: BattleCommandPanelOptions,
+  actor: BattleBattlerSnapshot,
+  targetMode: boolean,
+): HTMLElement[] {
+  const moves = listedSkillIds(actor).slice(0, 4);
+  const switches = switchCandidates(snapshot);
+  const items = battleItems(snapshot);
+  const balls = captureItems(snapshot);
+  return [
+    commandButton("Fight", "actor-command-fight", "fire", "", () => {
+      if (targetMode || moves.length === 0) return;
+      options.setSubmenu({ kind: "pokemonFight" });
+      options.render();
+    }, targetMode || moves.length === 0, moves.length === 0 ? "사용 가능한 기술이 없습니다." : undefined),
+    commandButton("PKMN", "actor-command-pkmn", "switch", switches.length > 0 ? `${switches.length}명` : "없음", () => {
+      if (targetMode || switches.length === 0) return;
+      options.setSubmenu({ kind: "switch" });
+      options.render();
+    }, targetMode || switches.length === 0),
+    commandButton("Item", "actor-command-item", "bag", items.length + balls.length > 0 ? `${items.length + balls.length}종` : "없음", () => {
+      if (targetMode || items.length + balls.length === 0) return;
+      options.setSubmenu({ kind: "item" });
+      options.render();
+    }, targetMode || items.length + balls.length === 0),
+    commandButton("Run", "actor-command-run", "boot", "", () => {
+      if (!targetMode) options.runActorCommand({ kind: "escape" });
+    }, targetMode || !snapshot.canEscape),
+  ];
 }
 
 function commandControl(
@@ -378,6 +426,33 @@ function skillSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   return nodes;
 }
 
+function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement[] {
+  const header = document.createElement("div");
+  header.className = "battle-submenu-header";
+  header.textContent = "Fight";
+  const nodes: HTMLElement[] = [header];
+  const actor = activeActor(snapshot);
+  const project = store.getCurrent();
+  for (const skillId of listedSkillIds(actor).slice(0, 4)) {
+    const skill = project.database.skills.find((record) => record.id === skillId);
+    const useFailure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
+    const pp = skill?.maxPp === undefined
+      ? undefined
+      : Math.max(0, Math.min(skill.maxPp, Math.trunc(actor?.skillPp?.[skillId] ?? skill.maxPp)));
+    const ppFailure = pp === 0 ? "PP가 없습니다." : undefined;
+    const reason = ppFailure ?? (useFailure && actor
+      ? battleSkillUseFailureLabel(useFailure, skill, actor)
+      : useFailure ? "사용자가 없습니다." : undefined);
+    const detail = skill?.maxPp === undefined ? "" : `PP ${pp}/${skill.maxPp}`;
+    const button = commandButton(skill?.name ?? skillId, `actor-skill-${skillId}`, "fire", detail, () => {
+      options.beginTargetCommand({ kind: "skill", skillId });
+    }, Boolean(reason), reason);
+    appendSkillTypeBadge(button, project, skill?.elementId);
+    nodes.push(button);
+  }
+  return nodes;
+}
+
 /** 기술 타입(속성) 배지. elementId 가 없는 기술에는 아무것도 붙이지 않는다 — 무속성
  *  기술까지 "타입" 을 지어내면 상성 표시가 거짓이 된다. 표시 이름은 elements 레코드에서
  *  읽고(데모는 한글 타입명을 저작한다), 레코드가 없으면 id 를 그대로 보여준다. */
@@ -442,6 +517,14 @@ function itemSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOption
     nodes.push(commandButton(`${item.name} x${item.count}`, `actor-item-${item.itemId}`, "bag", detail || `${terms.item} 사용`, () => {
       options.beginTargetCommand({ kind: "item", itemId: item.itemId });
     }));
+  }
+  if (isPokemonMonsterActor(project, activeActor(snapshot))) {
+    for (const item of captureItems(snapshot)) {
+      const detail = item.multiplier === 1 ? terms.capture : `x${item.multiplier}`;
+      nodes.push(commandButton(`${item.name} x${item.count}`, `actor-capture-${item.itemId}`, "target", detail, () => {
+        options.beginTargetCommand({ kind: "capture", captureItemId: item.itemId });
+      }));
+    }
   }
   return nodes;
 }
