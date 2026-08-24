@@ -292,6 +292,7 @@ export function createFarmingDemoProject(): Project {
       item_strawberry_seed: 2,
       item_tomato_seed: 2,
       item_corn_seed: 2,
+      item_hay: 8,
     },
     placeables: farmMineRockPlaceables(),
   };
@@ -321,6 +322,9 @@ export function createFarmingDemoProject(): Project {
     { id: "item_copper_hoe", name: "구리 괭이", scope: "none", price: 600, type: "normalGoods", farmTool: "hoe" },
     { id: "item_copper_watering_can", name: "구리 물뿌리개", scope: "none", price: 650, type: "normalGoods", farmTool: "wateringCan" },
     { id: "item_copper_pickaxe", name: "구리 곡괭이", scope: "none", price: 700, type: "normalGoods", farmTool: "pickaxe" },
+    { id: "item_hay", name: "건초", scope: "none", price: 20, type: "normalGoods", consumable: true, careProfile: { kind: "feed", friendshipDelta: 0 } },
+    { id: "item_egg", name: "달걀", scope: "none", price: 100, type: "normalGoods" },
+    { id: "item_milk", name: "우유", scope: "none", price: 180, type: "normalGoods" },
     // 봄 — 씨앗 20 → 매도 35
     { id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true },
     { id: "item_potato", name: "감자", scope: "none", price: 70, type: "normalGoods" },
@@ -512,6 +516,7 @@ export function createFarmingDemoProject(): Project {
   attachFarmStaminaScaffolding(project);
   attachFarmSocialProfiles(project);
   attachFarmLifeEconomy(project);
+  attachFarmP1WorldLife(project);
   if (!project.switches.some((entry) => entry.id === FARM_FESTIVAL_SPRING_SWITCH_ID)) {
     project.switches.push({ id: FARM_FESTIVAL_SPRING_SWITCH_ID, name: "봄 축제 관람" });
   }
@@ -545,6 +550,8 @@ function attachFarmLifeEconomy(project: Project): void {
     { itemId: "item_iron_ore", price: 60 },
     { itemId: "item_iron_bar", price: 180 },
     { itemId: "item_pickled_potato", price: 120 },
+    { itemId: "item_egg", price: 50 },
+    { itemId: "item_milk", price: 90 },
   ];
   project.system.shipping = {
     enabled: true,
@@ -648,6 +655,82 @@ function attachFarmLifeEconomy(project: Project): void {
   ];
 }
 
+function attachFarmP1WorldLife(project: Project): void {
+  project.system.dailyWeather = {
+    enabled: true,
+    forecastDays: 3,
+    seasons: {
+      spring: [
+        { kind: "none", weight: 70, intensity: 0 },
+        { kind: "rain", weight: 25, intensity: 0.65 },
+        { kind: "storm", weight: 5, intensity: 0.9 },
+      ],
+      summer: [
+        { kind: "none", weight: 74, intensity: 0 },
+        { kind: "rain", weight: 18, intensity: 0.6 },
+        { kind: "storm", weight: 8, intensity: 0.95 },
+      ],
+      fall: [
+        { kind: "none", weight: 63, intensity: 0 },
+        { kind: "rain", weight: 30, intensity: 0.7 },
+        { kind: "fog", weight: 7, intensity: 0.45 },
+      ],
+      winter: [
+        { kind: "none", weight: 60, intensity: 0 },
+        { kind: "snow", weight: 34, intensity: 0.7 },
+        { kind: "fog", weight: 6, intensity: 0.45 },
+      ],
+    },
+  };
+  project.database.farmAnimalSpecies = [
+    {
+      id: "animal_chicken",
+      name: "닭",
+      graphic: { sprite: { type: "bundled", id: "tex_farming_charset_chicken" }, direction: "down", pattern: 0 },
+      feedItemId: "item_hay",
+      productItemId: "item_egg",
+      productCount: 1,
+      productEveryDays: 1,
+      petFriendship: 15,
+    },
+    {
+      id: "animal_cow",
+      name: "소",
+      graphic: { sprite: { type: "bundled", id: "tex_farming_charset_cow" }, direction: "down", pattern: 0 },
+      feedItemId: "item_hay",
+      productItemId: "item_milk",
+      productCount: 1,
+      productEveryDays: 2,
+      petFriendship: 18,
+    },
+  ];
+  project.system.farmAnimalBuildings = [{
+    id: "building_sunrise_barn",
+    name: "햇살 축사",
+    mapId: project.startMapId,
+    x: 12,
+    y: 10,
+    capacity: 4,
+    allowedSpeciesIds: ["animal_chicken", "animal_cow"],
+  }];
+  project.session.farmAnimals = [
+    {
+      instanceId: "farm_animal_bori",
+      speciesId: "animal_chicken",
+      name: "보리",
+      eventId: "ev_farm_chicken",
+      buildingId: "building_sunrise_barn",
+    },
+    {
+      instanceId: "farm_animal_dubu",
+      speciesId: "animal_cow",
+      name: "두부",
+      eventId: "ev_farm_cow",
+      buildingId: "building_sunrise_barn",
+    },
+  ];
+}
+
 /**
  * 촌장의 선물 취향. **`characterId` 없이는 호감도가 전부 차단된다** —
  * `resolveSocialKey` 는 `event.id` 로 폴백하지 않고 null 을 돌려준다(의도된 하드 게이트).
@@ -745,6 +828,7 @@ function createFarmMayorEvent(x: number, y: number): GameEvent {
     characterId: FARM_MAYOR_CHARACTER_ID,
     trigger: { kind: "action" },
     commands: [],
+    schedule: farmResidentSchedule(x, y, "마을 순찰"),
     pages: [
       {
         id: "page_mayor_default",
@@ -823,6 +907,7 @@ function createFarmResidentEvent(input: {
     characterId: input.characterId,
     trigger: { kind: "action" },
     commands: [],
+    schedule: farmResidentSchedule(input.x, input.y, `${input.name}의 일과`),
     pages: [
       page(`page_${input.id}_default`, `${input.name} · 기본`, [], input.dialogue),
       page(`page_${input.id}_heart`, `${input.name} · 친밀`, [{ kind: "friendshipAtLeast", value: 200 }], input.heartDialogue),
@@ -1172,6 +1257,7 @@ function createSeedShopEvent(x: number, y: number): GameEvent {
     characterId: FARM_SEED_MERCHANT_CHARACTER_ID,
     trigger: { kind: "action" },
     commands: [],
+    schedule: farmResidentSchedule(x, y, "씨앗 가게 영업"),
     pages: [
       page("page_seed_shop", "씨앗 상인 · 기본", [], "씨앗도 팔고 수확물도 사들여. 철에 맞는 걸 심어야 해."),
       page(
@@ -1182,6 +1268,14 @@ function createSeedShopEvent(x: number, y: number): GameEvent {
       ),
     ],
   };
+}
+
+function farmResidentSchedule(x: number, y: number, activity: string): NonNullable<GameEvent["schedule"]> {
+  return [
+    { when: { timePhase: "morning" }, at: { mapId: "map_farming_demo", x, y }, facing: "down", activity },
+    { when: { timePhase: "evening" }, at: { mapId: "map_farming_demo", x: Math.min(18, x + 1), y }, facing: "left", activity: "저녁 장터" },
+    { when: { timePhase: "night" }, at: { mapId: "map_farming_demo", x, y }, facing: "up", activity: "귀가" },
+  ];
 }
 
 /**

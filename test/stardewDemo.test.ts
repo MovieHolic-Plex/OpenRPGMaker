@@ -341,3 +341,38 @@ describe("Stardew demo: P0 생활 경제 루프", () => {
     expect(collectProjectReferenceIssues(project)).toEqual([]);
   });
 });
+
+describe("Stardew demo: P1 살아 있는 농장", () => {
+  const project = createFarmingDemoProject();
+
+  it("4계절 날씨, 3일 예보, 비·폭풍·눈 규칙을 저작한다", () => {
+    expect(project.system.dailyWeather?.enabled).toBe(true);
+    expect(project.system.dailyWeather?.forecastDays).toBe(3);
+    expect(Object.keys(project.system.dailyWeather?.seasons ?? {})).toEqual(["spring", "summer", "fall", "winter"]);
+    expect(project.system.dailyWeather?.seasons.spring?.map((rule) => rule.kind)).toEqual(["none", "rain", "storm"]);
+    expect(project.system.dailyWeather?.seasons.winter?.map((rule) => rule.kind)).toEqual(["none", "snow", "fog"]);
+  });
+
+  it("먹이·달걀·우유와 닭·소, 축사, 시작 개체를 완전히 연결한다", () => {
+    const itemIds = new Set(project.database.items.map((item) => item.id));
+    expect(itemIds.has("item_hay")).toBe(true);
+    expect(itemIds.has("item_egg")).toBe(true);
+    expect(itemIds.has("item_milk")).toBe(true);
+    expect(project.session.inventory.item_hay).toBeGreaterThanOrEqual(6);
+    expect(project.database.farmAnimalSpecies?.map((entry) => entry.id)).toEqual(["animal_chicken", "animal_cow"]);
+    expect(project.system.farmAnimalBuildings?.map((entry) => entry.id)).toEqual(["building_sunrise_barn"]);
+    expect(project.session.farmAnimals?.map((entry) => entry.instanceId)).toEqual(["farm_animal_bori", "farm_animal_dubu"]);
+    expect(project.session.farmAnimals?.every((entry) => entry.buildingId === "building_sunrise_barn")).toBe(true);
+  });
+
+  it("동물 개체의 표시 이벤트와 주민의 시간대 일정이 실제 맵에 존재한다", () => {
+    const farm = project.maps[project.startMapId];
+    const eventIds = new Set(farm?.events.map((event) => event.id));
+    for (const animal of project.session.farmAnimals ?? []) {
+      expect(eventIds.has(animal.eventId ?? ""), `${animal.instanceId} visual event`).toBe(true);
+    }
+    const scheduledResidents = farm?.events.filter((event) => event.characterId && (event.schedule?.length ?? 0) >= 2) ?? [];
+    expect(scheduledResidents.length).toBeGreaterThanOrEqual(3);
+    expect(scheduledResidents.flatMap((event) => event.schedule ?? []).every((row) => row.at.mapId === project.startMapId)).toBe(true);
+  });
+});

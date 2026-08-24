@@ -90,6 +90,8 @@ The next expansion should keep stable internal tab ids while using these player-
 3. Farm animal species, compatible buildings/capacity, feed/pet/produce, save/load, and runtime UI.
 4. Authored starter content rich enough to exercise the loop, followed by Supabase save and project-id reload proof.
 
+Implementation note (2026-08-25): `createFarmingDemoProject` now authors four seasonal weather tables with a three-day forecast, scheduled resident routines, feed/egg/milk items, chicken/cow species, one compatible farm-animal building, and two event-bound starting animals. `scripts/save-stardew-demo.mts` treats all of these counts as mandatory save/reload facts rather than optional showcase fields.
+
 ### P2: make daily choices converge on goals
 
 1. Deterministic fishing availability and catch resolution.
@@ -132,4 +134,3 @@ Mining/combat remain a core pillar, but this repository already has a battle/run
 - [Skills](https://stardewvalleywiki.com/Skills)
 - [Carpenter's Shop and farm buildings](https://stardewvalleywiki.com/Carpenter%27s_Shop)
 - [Farmhouse customization](https://stardewvalleywiki.com/Farmhouse)
-
