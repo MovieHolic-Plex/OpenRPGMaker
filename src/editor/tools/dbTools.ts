@@ -180,7 +180,10 @@ const itemEquipmentProfileSchema = objectSchema({
   stateDefenseMode: { type: "string", enum: ["resist", "inflict"] },
   stateResistanceChance: integerSchema(),
 });
-const captureProfileSchema = objectSchema({ multiplier: numberSchema("포획 확률 배율. 생략 시 1") });
+const captureProfileSchema = objectSchema({
+  multiplier: numberSchema("포획 확률 배율. 생략 시 1"),
+  ballClass: { type: "string", enum: ["poke", "great", "ultra", "master"] },
+});
 const enemyStatsSchema = objectSchema({ maxHp: integerSchema(), maxMp: integerSchema(), attack: integerSchema(), defense: integerSchema(), mind: integerSchema(), agility: integerSchema() });
 const enemyRewardsSchema = objectSchema({ exp: integerSchema(), gold: integerSchema(), dropItemId: stringSchema(), dropRatePercent: integerSchema() });
 const enemyActionSwitchSchema = objectSchema({ enabled: booleanSchema(), switchId: stringSchema() });
@@ -260,6 +263,7 @@ const troopRecordSchema = objectSchema({
   members: arrayOf(troopMemberSchema),
   autoAlign: booleanSchema(),
   uncapturable: booleanSchema(),
+  trainerBattle: booleanSchema(),
   previewBackgroundResourceId: stringSchema(),
   battleFlow: { type: "string", enum: ["gauge", "strict"] },
   activeSlots: integerSchema(),
@@ -342,6 +346,8 @@ const skillRecordSchema = objectSchema({
   effect: objectSchema({ kind: stringSchema(), statistic: stringSchema(), affects: stringSchema(), switchId: stringSchema() }),
   elementId: stringSchema(),
   stateEffects: arrayOf(stateEffectSchema),
+  maxPp: integerSchema("Gen1 기술별 최대 PP. 1~99"),
+  gen1CriticalRate: { type: "string", enum: ["normal", "high"] },
   movePriority: numberSchema("기술 우선도 -7~7 (strict 턴제에서 속도보다 먼저 비교, 퀵어택=+1)"),
 }) as RecordSchema;
 
@@ -399,6 +405,7 @@ const classRecordSchema = objectSchema({
 const stateRecordSchema = objectSchema({
   id: stringSchema(),
   name: stringSchema(),
+  gen1MajorStatus: { type: "string", enum: ["poison", "burn", "sleep", "freeze", "paralysis"] },
   removalCondition: stringSchema(),
   restriction: stringSchema(),
   priority: integerSchema(),
@@ -471,7 +478,17 @@ const upsertItem: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("item", itemRecordSchema, { id: "item_potion", name: "회복약", price: 120, hpRecovery: { flat: 80, percentMax: 0 } }),
   run(draft, args): ToolExecResult {
-    const merged = mergeRecord(draft.database.items, args.item, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
+    const itemPatch: Record<string, unknown> | undefined = args.item && typeof args.item === "object" && !Array.isArray(args.item)
+      ? args.item as Record<string, unknown>
+      : undefined;
+    const existing = typeof itemPatch?.id === "string"
+      ? draft.database.items.find((item) => item.id === itemPatch.id)
+      : undefined;
+    const capturePatch = itemPatch?.captureProfile;
+    const nestedPatch = existing?.captureProfile && capturePatch && typeof capturePatch === "object" && !Array.isArray(capturePatch)
+      ? { ...itemPatch, captureProfile: { ...existing.captureProfile, ...capturePatch as Record<string, unknown> } }
+      : args.item;
+    const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
