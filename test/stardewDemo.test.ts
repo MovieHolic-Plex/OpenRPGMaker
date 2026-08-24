@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
+import { collectProjectReferenceIssues } from "@/project/io/references";
 
 describe("Stardew demo: 여름/가을 작물 확장", () => {
   const project = createFarmingDemoProject();
@@ -337,5 +338,6 @@ describe("Stardew demo: P0 생활 경제 루프", () => {
     expect(project.system.craftRecipes?.some((recipe) =>
       recipe.id === "recipe_preserves_jar" && recipe.requiresUnlock === true
     )).toBe(true);
+    expect(collectProjectReferenceIssues(project)).toEqual([]);
   });
 });
