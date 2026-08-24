@@ -85,7 +85,9 @@ export function saveConversation(record: ConversationRecord): void {
     projectContextKey: record.projectContextKey,
     entries: record.entries,
     savedAt: record.savedAt,
-  }).catch(() => undefined);
+  }).catch((error: unknown) => {
+    console.error("[ai-conversation] Supabase mirror failed:", error);
+  });
 }
 
 /** 제목 부분일치 검색(대소문자 무시) — 시작 화면 대화 목록용. */

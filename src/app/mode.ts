@@ -23,7 +23,7 @@ import {
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { editorState } from "@/editor/editorState";
 import { hasDeepLinkedProject, isAutomationBootContext, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
-import { supabaseProjectConfig, supabaseProjectConfigDraftWithSource } from "@/project/supabaseProjectConfig";
+import { hasStoredSupabaseProjectSelection, supabaseProjectConfig } from "@/project/supabaseProjectConfig";
 
 export type Mode = "edit" | "play";
 
@@ -83,16 +83,16 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     setAiActivityRecorder(recordAiActivity as (input: unknown) => Promise<unknown>);
     deepLinkedProjectAtBoot = hasDeepLinkedProject();
     // 첫 방문 게이트(2026-08-18 UX 리뷰 P0-1): URL에 ?project= 없고, 이 기기에 저장된
-    // 연결 설정도 없는 진짜 첫 방문은 env 기본(공유) 프로젝트 행을 편집 대상으로 열지
-    // 않는다 — 새 project id를 발급받은 빈 프로젝트로 시작한다(이후 부팅은 custom
-    // 설정으로 본인 행에 복귀). 자동화/테스트 부팅과 데모 파라미터 부팅은 제외.
+    // 선택한 작업도 없는 진짜 첫 방문은 배포 기본(공유) 프로젝트 행을 편집 대상으로 열지
+    // 않는다 — 새 project id를 발급받은 빈 프로젝트로 시작한다. 연결 자격 증명은 배포가
+    // 소유하고 브라우저에는 선택한 project id만 기억한다. 자동화/데모 부팅은 제외.
     const mintFirstVisitProject =
       typeof window !== "undefined"
       && !deepLinkedProjectAtBoot
       && !isAutomationBootContext()
       && createDevShowcaseProjectForLocation() === null
       && supabaseProjectConfig() !== null
-      && supabaseProjectConfigDraftWithSource().source !== "custom";
+      && !hasStoredSupabaseProjectSelection();
     if (mintFirstVisitProject) {
       const { createBlankProject } = await import("@/project/defaults");
       try {

@@ -123,4 +123,64 @@ describe("Supabase project runtime config", () => {
     expect(reset.source).toBe("env");
     expect(reset.url).toBe("http://dbserver:8100");
   });
+
+  it("keeps deployment credentials authoritative while preserving the returning user's selected work", async () => {
+    const storage = new Map<string, string>();
+    storage.set(
+      "oprn:supabase-project-config",
+      JSON.stringify({
+        source: "custom",
+        url: "http://stale-server:8100",
+        anonKey: "stale-key",
+        projectId: "returning-project",
+      }),
+    );
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: (key: string) => storage.get(key) ?? null,
+        removeItem: (key: string) => storage.delete(key),
+        setItem: (key: string, value: string) => storage.set(key, value),
+      },
+    });
+    vi.resetModules();
+
+    const { supabaseProjectConfigDraftWithSource } = await import("@/project/supabaseProjectConfig");
+
+    expect(supabaseProjectConfigDraftWithSource({
+      VITE_SUPABASE_ANON_KEY: "deployment-key",
+      VITE_SUPABASE_PROJECT_ID: "deployment-default",
+      VITE_SUPABASE_URL: "https://deployment.example",
+    })).toEqual({
+      anonKey: "deployment-key",
+      projectId: "returning-project",
+      source: "env",
+      url: "https://deployment.example",
+    });
+  });
+
+  it("stores only the selected work id and never copies deployment credentials into browser storage", async () => {
+    const storage = new Map<string, string>();
+    vi.stubGlobal("window", {
+      localStorage: {
+        getItem: (key: string) => storage.get(key) ?? null,
+        removeItem: (key: string) => storage.delete(key),
+        setItem: (key: string, value: string) => storage.set(key, value),
+      },
+    });
+    vi.resetModules();
+
+    const { hasStoredSupabaseProjectSelection, saveSupabaseSelectedProjectId, supabaseProjectConfig } = await import(
+      "@/project/supabaseProjectConfig"
+    );
+    saveSupabaseSelectedProjectId("  next-project  ");
+
+    expect(storage.get("oprn:supabase-selected-project")).toBe("next-project");
+    expect(storage.has("oprn:supabase-project-config")).toBe(false);
+    expect(hasStoredSupabaseProjectSelection()).toBe(true);
+    expect(supabaseProjectConfig({
+      VITE_SUPABASE_ANON_KEY: "deployment-key",
+      VITE_SUPABASE_PROJECT_ID: "deployment-default",
+      VITE_SUPABASE_URL: "https://deployment.example",
+    })?.projectId).toBe("next-project");
+  });
 });

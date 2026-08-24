@@ -58,12 +58,14 @@ test("toolbar load shows beginner project cards and opens the selected work", as
   await page.getByTestId("menu-project").click();
   await page.getByTestId("menu-project-load").click();
 
-  // Then: work cards lead the flow and technical connection inputs stay collapsed.
+  // Then: work cards and a new-work action lead the flow; technical credentials do not exist in the UI.
   await expect(page.getByTestId("db-config-modal")).toBeVisible();
   await expect(page.getByTestId("db-config-title")).toContainText("작업 열기");
-  await expect(page.getByTestId("db-config-advanced")).not.toHaveAttribute("open", "");
-  await expect(page.getByTestId("db-config-url")).toBeHidden();
-  await expect(page.getByTestId("db-config-anon-key")).toBeHidden();
+  await expect(page.getByTestId("db-config-create-project")).toBeVisible();
+  await expect(page.getByTestId("db-config-advanced")).toHaveCount(0);
+  await expect(page.getByTestId("db-config-url")).toHaveCount(0);
+  await expect(page.getByTestId("db-config-anon-key")).toHaveCount(0);
+  await expect(page.getByTestId("db-config-project-id")).toHaveCount(0);
   await expect(page.getByTestId("db-config-project-list")).toContainText("안개 항구와 등대의 밤");
   await expect(page.getByTestId("db-config-project-list")).toContainText("별등 마을");
   await page.getByTestId("db-config-modal").screenshot({ path: testInfo.outputPath("work-picker.png") });
@@ -74,10 +76,8 @@ test("toolbar load shows beginner project cards and opens the selected work", as
   expect(compactColumns).toBe(1);
   showEmptyList = true;
   await page.getByTestId("db-config-load-projects").click();
-  await expect(page.getByTestId("db-config-project-list")).toContainText("관리자에게 작업을 요청하세요");
+  await expect(page.getByTestId("db-config-project-list")).toContainText("새 작업 만들기");
   await page.getByTestId("db-config-modal").screenshot({ path: testInfo.outputPath("work-picker-empty.png") });
-  await page.getByTestId("db-config-empty-help").click();
-  await expect(page.getByTestId("db-config-advanced")).toHaveAttribute("open", "");
   showEmptyList = false;
   await page.getByTestId("db-config-load-projects").click();
   await expect(page.getByTestId("db-config-project-list")).toContainText("안개 항구와 등대의 밤");
@@ -124,12 +124,13 @@ test("first boot asks for a work choice without exposing connection jargon", asy
   // When: the editor reaches its first required screen.
   await page.goto("/?rm2k3Shell=1");
 
-  // Then: the user sees a work choice, while server and key fields remain hidden.
+  // Then: the user sees work choices, while server and key fields are never rendered.
   await expect(page.getByTestId("db-required-panel")).toBeVisible();
   await expect(page.getByTestId("db-config-modal")).toBeVisible();
   await expect(page.getByTestId("db-config-project-list")).toContainText("안개 항구와 등대의 밤");
-  await expect(page.getByTestId("db-config-url")).toBeHidden();
-  await expect(page.getByTestId("db-config-anon-key")).toBeHidden();
+  await expect(page.getByTestId("db-config-create-project")).toBeVisible();
+  await expect(page.getByTestId("db-config-url")).toHaveCount(0);
+  await expect(page.getByTestId("db-config-anon-key")).toHaveCount(0);
   await page.getByTestId("db-config-modal").screenshot({ path: testInfo.outputPath("first-work-choice.png") });
   await page.getByTestId("db-config-project-option").click();
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });

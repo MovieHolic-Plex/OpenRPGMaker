@@ -24,7 +24,7 @@ import {
 import { cacheSupabaseRootResources } from "@/assets/supabaseResourceCache";
 import { syncProjectToUrl } from "./projectUrl";
 import {
-  saveSupabaseProjectConfigDraft,
+  saveSupabaseSelectedProjectId,
   supabaseProjectConfig,
   supabaseProjectConfigDraft,
   supabaseProjectConfigDraftWithSource,
@@ -272,11 +272,7 @@ class ProjectStore {
       // URL projectId wins over stored custom draft — update URL first so
       // subsequent supabaseProjectConfig() / autosave target the new row.
       syncProjectToUrl({ projectId, projectName: project.meta?.title ?? null });
-      saveSupabaseProjectConfigDraft({
-        anonKey: draft.anonKey,
-        projectId,
-        url: draft.url,
-      });
+      saveSupabaseSelectedProjectId(projectId);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
       this.syncProjectUrlBar();

@@ -56,6 +56,8 @@ describe("store.loadNewRemoteProject — welcome genre remote branch", () => {
 
     const config = supabaseProjectConfig();
     expect(config?.projectId).toBe(result.projectId);
+    expect(storage.get("oprn:supabase-selected-project")).toBe(result.projectId);
+    expect(storage.has("oprn:supabase-project-config")).toBe(false);
     expect(store.getDbPersistenceStatus().kind).toBe("ready");
 
     // Remote path stays open — flush is not disabled by the welcome blank branch.

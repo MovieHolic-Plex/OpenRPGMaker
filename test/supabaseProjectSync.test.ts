@@ -8,6 +8,8 @@ import {
   peekLastRemoteCommitTip,
   recordSupabaseAiActivityLog,
   recordSupabaseAiAnalysisRun,
+  recordSupabaseConversation,
+  recordSupabaseUserSkill,
   saveProjectMapPatchToSupabase,
   saveProjectToSupabase,
   seedLastRemoteCommitTip,
@@ -826,7 +828,7 @@ describe("Supabase project sync", () => {
     expect(payload.map_id).toBe("map_1");
   });
 
-  it("falls back to ai_analysis_runs when activity table is missing", async () => {
+  it("fails with the required migration when the activity table is missing", async () => {
     const calls: FetchCall[] = [];
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
@@ -843,21 +845,58 @@ describe("Supabase project sync", () => {
       return new Response(null, { status: 201 });
     }) satisfies typeof fetch);
 
-    const result = await recordSupabaseAiActivityLog({
+    await expect(recordSupabaseAiActivityLog({
       logId: "22222222-2222-4222-8222-222222222222",
       channel: "chat",
       instruction: "나무 1개",
       payload: { toolCalls: [] },
-    }, TEST_CONFIG);
+    }, TEST_CONFIG)).rejects.toMatchObject({
+      migration: "20260709000000_ai_activity_logs.sql",
+      table: "rpg_zzu.ai_activity_logs",
+    });
 
-    expect(result.kind).toBe("saved");
-    expect(calls.some((c) => String(c.input).includes("ai_activity_logs"))).toBe(true);
-    expect(calls.some((c) => String(c.input).includes("ai_analysis_runs"))).toBe(true);
-    const fallbackBody = calls.find((c) => String(c.input).includes("ai_analysis_runs"))?.init?.body;
-    if (typeof fallbackBody !== "string") throw new Error("expected fallback body");
-    const row = parseRecords(fallbackBody)[0];
-    expect(row?.tileset_id).toBe("__ai_activity__");
-    expect(row?.run_id).toBe("22222222-2222-4222-8222-222222222222");
+    expect(calls).toHaveLength(1);
+    expect(String(calls[0]?.input)).toContain("ai_activity_logs");
+  });
+
+  it("fails with the required migration when the conversation table is missing", async () => {
+    vi.stubGlobal("fetch", (async () => new Response(
+      JSON.stringify({
+        code: "PGRST205",
+        message: "Could not find the table 'rpg_zzu.ai_conversations' in the schema cache",
+      }),
+      { status: 404 },
+    )) satisfies typeof fetch);
+
+    await expect(recordSupabaseConversation({
+      conversationId: "conversation-1",
+      title: "마을 만들기",
+      model: "test-model",
+      entries: [],
+      savedAt: Date.UTC(2026, 7, 24),
+    }, TEST_CONFIG)).rejects.toMatchObject({
+      migration: "20260713000000_ai_conversations_user_skills.sql",
+      table: "rpg_zzu.ai_conversations",
+    });
+  });
+
+  it("fails with the required migration when the user skills table is missing", async () => {
+    vi.stubGlobal("fetch", (async () => new Response(
+      JSON.stringify({ code: "PGRST205", message: "missing user_skills" }),
+      { status: 404 },
+    )) satisfies typeof fetch);
+
+    await expect(recordSupabaseUserSkill({
+      id: "skill-one",
+      icon: "⭐",
+      name: "검증 스킬",
+      description: "migration check",
+      template: "verify",
+      skill: {},
+    }, TEST_CONFIG)).rejects.toMatchObject({
+      migration: "20260713000000_ai_conversations_user_skills.sql",
+      table: "rpg_zzu.user_skills",
+    });
   });
 
   it("lists AI activity scoped to project and merges primary with fallback", async () => {

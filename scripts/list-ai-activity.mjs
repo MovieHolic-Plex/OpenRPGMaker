@@ -9,25 +9,16 @@
 //     --remote  Supabase 도 함께 조회 (기본은 디스크만 — 로컬 QA 가 대부분)
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { buildAiActivityUrls, loadSupabaseEnvironment } from "./lib/supabase-database-ops.mjs";
 
 const DIR = join(process.cwd(), "output", "ai-activity");
-
-function loadEnvLocal() {
-  const path = join(process.cwd(), ".env.local");
-  if (!existsSync(path)) return {};
-  const out = {};
-  for (const line of readFileSync(path, "utf8").split(/\r?\n/)) {
-    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-    if (!m) continue;
-    out[m[1]] = m[2].replace(/^["']|["']$/g, "");
-  }
-  return out;
-}
 
 async function listRemote(env, limit) {
   const url = (env.VITE_SUPABASE_URL || "").replace(/\/$/, "");
   const key = env.VITE_SUPABASE_ANON_KEY || "";
-  if (!url || !key) return { error: "no supabase env" };
+  const projectId = env.VITE_SUPABASE_PROJECT_ID || "";
+  if (!url || !key || !projectId) return { error: "no supabase env or project id" };
+  const urls = buildAiActivityUrls({ url, projectId }, limit);
   const headers = {
     apikey: key,
     Authorization: `Bearer ${key}`,
@@ -37,7 +28,7 @@ async function listRemote(env, limit) {
   let primary = [];
   try {
     const r = await fetch(
-      `${url}/rest/v1/ai_activity_logs?select=log_id,channel,instruction,map_id,created_at&order=created_at.desc&limit=${limit}`,
+      urls.primary,
       { headers },
     );
     if (r.ok) primary = await r.json();
@@ -48,7 +39,7 @@ async function listRemote(env, limit) {
   let fallback = [];
   try {
     const r = await fetch(
-      `${url}/rest/v1/ai_analysis_runs?tileset_id=eq.__ai_activity__&select=run_id,prompt_context_json,created_at&order=created_at.desc&limit=${limit}`,
+      urls.fallback,
       { headers },
     );
     if (r.ok) {
@@ -196,5 +187,5 @@ if (withTools) rows = rows.map((row) => ({ ...row, failures: failedToolDetail(ro
 const out = {
   disk: { dir: DIR, count: rows.length, ...(disk.error ? { error: disk.error } : {}), rows },
 };
-if (withRemote) out.remote = await listRemote(loadEnvLocal(), limit);
+if (withRemote) out.remote = await listRemote(loadSupabaseEnvironment(), limit);
 console.log(JSON.stringify(out, null, 2));
