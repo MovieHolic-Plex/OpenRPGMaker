@@ -3,7 +3,9 @@ import type { Project, SkillRecord } from "@/project/types";
 
 export type SkillComposerChipKind = "activation" | "target" | "cost";
 export type SkillComposerEffectKind = "primary" | "element" | "states" | "animation";
-export type SkillBacklinkCollection = Extract<DatabaseCollection, "actors" | "classes" | "items" | "equipment">;
+export type SkillBacklinkCollection =
+  | Extract<DatabaseCollection, "actors" | "classes" | "items" | "equipment" | "enemies">
+  | "monsterSpecies";
 
 export type SkillComposerChip = {
   readonly kind: SkillComposerChipKind;
@@ -152,6 +154,19 @@ function deriveBacklinks(project: Project, skillId: string): SkillBacklink[] {
     if (equipment.usableAsItemSkillId === skillId) relationships.push("사용 스킬");
     if (relationships.length === 0) continue;
     backlinks.push({ collection: "equipment", id: equipment.id, name: equipment.name, relationship: relationships.join(" · ") });
+  }
+  for (const enemy of project.database.enemies) {
+    const relationships: string[] = [];
+    if (enemy.skillIds.includes(skillId)) relationships.push("스킬 목록");
+    const actionNumbers = enemy.actions.flatMap((action, index) => action.skillId === skillId ? [index + 1] : []);
+    if (actionNumbers.length > 0) relationships.push(`행동 ${actionNumbers.join("/")}`);
+    if (relationships.length === 0) continue;
+    backlinks.push({ collection: "enemies", id: enemy.id, name: enemy.name, relationship: relationships.join(" · ") });
+  }
+  for (const species of project.database.monsterSpecies ?? []) {
+    const levels = matchingLevels(species.skillsByLevel ?? [], skillId);
+    if (levels.length === 0) continue;
+    backlinks.push({ collection: "monsterSpecies", id: species.id, name: species.name, relationship: learnedAtLabel(levels) });
   }
   return backlinks;
 }

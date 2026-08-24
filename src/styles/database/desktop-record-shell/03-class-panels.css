@@ -468,3 +468,57 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+@media (max-width: 1100px) {
+  .database-modal-body .oprn-record-classes .db-class-build-heading {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .database-modal-body .oprn-record-classes .db-class-build-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-workspace.oprn-record-classes {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .oprn-record-list-pane {
+  max-height: 180px;
+  min-width: 0;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes :is(
+  .oprn-record-detail-pane,
+  .oprn-detail-form,
+  .db-class-build-summary,
+  .db-class-bm88-workbench
+) {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-build-summary {
+  margin-inline: 0;
+  padding: 14px;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-build-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-bm88-workbench {
+  grid-template-areas: none;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-body .oprn-record-classes .db-class-bm88-workbench > .db-advanced-panel {
+  grid-area: auto;
+  min-width: 0;
+}
