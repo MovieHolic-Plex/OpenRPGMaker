@@ -180,6 +180,20 @@ describe("Gen1 monster lifecycle", () => {
     expect(nextBattle.skillPp).toEqual({ move_1: 0, move_2: 2, move_3: 3, move_4: 4 });
   });
 
+  it("roundtrips legacy actor Gen1 PP through save parsing", () => {
+    const project = lifecycleProject();
+    const session = startSession(project, 19);
+    const actorId = session.partyActorIds[0]!;
+    session.actorSkillPp = { [actorId]: { move_1: 3 } };
+    const storage = new MemoryStorage();
+    storage.setItem(saveSlotKey(1), JSON.stringify(createSaveSnapshot(project, session)));
+
+    const read = readSaveSlot(storage, 1);
+    expect(read.kind).toBe("present");
+    if (read.kind !== "present") return;
+    expect(applySaveSnapshot(project, read.snapshot).actorSkillPp).toEqual({ [actorId]: { move_1: 3 } });
+  });
+
   it("hydrates a legacy instance with the latest four level moves and their authored PP", () => {
     // Break: legacy fallback returned every species move and never persisted initialized PP.
     const project = lifecycleProject();

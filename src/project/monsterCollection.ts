@@ -31,6 +31,11 @@ export type GiveMonsterInput = {
   readonly ivs?: MonsterInstanceIvs;
   readonly friendship?: number;
   readonly caughtAt?: MonsterCaughtAt;
+  readonly currentHp?: number;
+  readonly stateIds?: readonly string[];
+  readonly stateTurns?: Readonly<Record<string, number>>;
+  readonly skillIds?: readonly SkillId[];
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
 };
 
 export type GiveMonsterResult =
@@ -193,11 +198,16 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
     ivs: input.ivs ?? deterministicMonsterIvs(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
     friendship: clampInteger(input.friendship ?? 70, 0, 255),
     caughtAt: input.caughtAt ?? { mapId: session.currentMapId, x: session.x, y: session.y },
+    currentHp: input.currentHp,
+    stateIds: input.stateIds ? [...input.stateIds] : undefined,
+    stateTurns: input.stateTurns ? { ...input.stateTurns } : undefined,
+    skillIds: input.skillIds ? [...input.skillIds] : undefined,
+    skillPp: input.skillPp ? { ...input.skillPp } : undefined,
   };
   const maxHp = monsterMaxHpFor(project, species, instance);
   const hydrated = normalizeMonsterInstanceBattleState(project, {
     ...instance,
-    currentHp: maxHp,
+    currentHp: input.currentHp ?? maxHp,
   });
   session.monsterInstances[instanceId] = hydrated;
   if (session.monsterParty.length < MONSTER_PARTY_MAX) {
@@ -267,6 +277,7 @@ export function normalizeMonsterInstanceBattleState(project: Project, instance: 
   const skillPp = normalizedMonsterSkillPp(project, skillIds, instance.skillPp);
   return {
     ...instance,
+    currentHp: instance.currentHp === undefined ? undefined : monsterCurrentHp(project, instance),
     skillIds: instance.skillIds !== undefined || skillIds.length > 0 ? skillIds : undefined,
     skillPp: Object.keys(skillPp).length > 0 ? skillPp : undefined,
     pendingSkillIds: pendingSkillIds.length > 0 ? pendingSkillIds : undefined,

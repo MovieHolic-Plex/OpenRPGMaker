@@ -13,9 +13,9 @@ import {
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
 import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
-import type { ActorInitialEquipment } from "@/project/types";
+import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
-import { moveMonster } from "@/project/monsterCollection";
+import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { currentStatusMenu, statusMenuDetailActionButtons, wrapStatusMenuIndex } from "@/player/playerStatusMenuControllerDom";
 import type { PlayerStatusMenuController, PlayerStatusMenuControllerOptions } from "@/player/playerStatusMenuControllerTypes";
 import {
@@ -142,6 +142,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onMoveFormationActor: moveFormationActor,
         onToggleMonsterView: toggleMonsterView,
         onMoveMonster: moveMonsterFromMenu,
+        onReplacePendingMonsterSkill: replaceMonsterSkillFromMenu,
+        onRejectPendingMonsterSkill: rejectMonsterSkillFromMenu,
         onToggleWait: toggleWaitMode,
         onToTitle: confirmToTitle,
       },
@@ -294,6 +296,45 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       ? to === "party" ? "몬스터를 파티로 이동했습니다" : "몬스터를 보관함으로 이동했습니다"
       : result.reason === "partyFull" ? "파티가 가득 찼습니다" : "몬스터를 찾을 수 없습니다";
     options.emitMenuJuice(result.ok ? "menu-confirm" : "menu-invalid", renderMenu(message, "monsters"));
+  }
+
+  function replaceMonsterSkillFromMenu(instanceId: string, pendingSkillId: string, replacedSkillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const session = scene.getSession();
+    const instance = session.monsterInstances[instanceId];
+    if (!instance) {
+      rejectInput("몬스터를 찾을 수 없습니다");
+      return;
+    }
+    const result = replacePendingMonsterSkill(
+      store.getCurrent(),
+      instance,
+      pendingSkillId as SkillId,
+      replacedSkillId as SkillId,
+    );
+    if (result.ok) session.monsterInstances[instanceId] = result.instance;
+    options.emitMenuJuice(
+      result.ok ? "menu-confirm" : "menu-invalid",
+      renderMenu(result.ok ? "새 기술을 배웠습니다" : "기술 교체에 실패했습니다", "monsters"),
+    );
+  }
+
+  function rejectMonsterSkillFromMenu(instanceId: string, pendingSkillId: string): void {
+    const scene = options.getActiveScene();
+    if (!scene) return;
+    const session = scene.getSession();
+    const instance = session.monsterInstances[instanceId];
+    if (!instance) {
+      rejectInput("몬스터를 찾을 수 없습니다");
+      return;
+    }
+    const result = rejectPendingMonsterSkill(instance, pendingSkillId as SkillId);
+    if (result.ok) session.monsterInstances[instanceId] = result.instance;
+    options.emitMenuJuice(
+      result.ok ? "menu-confirm" : "menu-invalid",
+      renderMenu(result.ok ? "새 기술을 포기했습니다" : "기술 선택에 실패했습니다", "monsters"),
+    );
   }
 
   function openGroup(entryId: StatusMenuGroupEntryId): void {

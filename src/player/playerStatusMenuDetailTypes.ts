@@ -64,6 +64,8 @@ export type StatusMenuDetailOptions = {
   readonly onMoveFormationActor?: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView?: () => void;
   readonly onMoveMonster?: (instanceId: string, to: "party" | "box") => void;
+  readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;
+  readonly onRejectPendingMonsterSkill?: (instanceId: string, pendingSkillId: string) => void;
   /** 접힌 그룹 목록에서 실제 명령으로 들어갈 때 쓴다. */
   readonly onCommand?: (commandId: StatusMenuCommandId) => void;
 };

@@ -7,6 +7,56 @@ export interface Gen1TypeModifiers {
   readonly typeFactors: readonly number[];
 }
 
+export type Gen1CanonicalType =
+  | "normal" | "fighting" | "flying" | "poison" | "ground" | "rock" | "bug" | "ghost"
+  | "fire" | "water" | "grass" | "electric" | "psychic" | "ice" | "dragon";
+
+const GEN1_CANONICAL_TYPES: readonly Gen1CanonicalType[] = [
+  "normal", "fighting", "flying", "poison", "ground", "rock", "bug", "ghost",
+  "fire", "water", "grass", "electric", "psychic", "ice", "dragon",
+];
+
+const GEN1_LOCALIZED_TYPE_ALIASES: Readonly<Record<string, Gen1CanonicalType>> = {
+  노말: "normal",
+  격투: "fighting",
+  비행: "flying",
+  독: "poison",
+  땅: "ground",
+  바위: "rock",
+  벌레: "bug",
+  고스트: "ghost",
+  불꽃: "fire",
+  불: "fire",
+  물: "water",
+  풀: "grass",
+  전기: "electric",
+  에스퍼: "psychic",
+  얼음: "ice",
+  드래곤: "dragon",
+};
+
+/** Resolves cartridge type meaning without requiring the authored chart id itself to be English. */
+export function gen1CanonicalTypeForId(project: Project, typeId: string | undefined): Gen1CanonicalType | undefined {
+  if (!typeId) return undefined;
+  const elementName = project.database.elements?.find((element) => element.id === typeId)?.name;
+  for (const source of [typeId, elementName]) {
+    if (!source) continue;
+    const token = source.normalize("NFKC").trim().toLowerCase().replace(/[\s-]+/g, "_");
+    const localized = GEN1_LOCALIZED_TYPE_ALIASES[token];
+    if (localized) return localized;
+    for (const canonical of GEN1_CANONICAL_TYPES) {
+      if (token === canonical || token.endsWith(`_${canonical}`)) return canonical;
+    }
+  }
+  return undefined;
+}
+
+/** Finds the authored chart id that represents a cartridge type. */
+export function gen1ElementIdForCanonical(project: Project, canonical: Gen1CanonicalType): string | undefined {
+  return project.system.typeChart?.types.find((typeId) => gen1CanonicalTypeForId(project, typeId) === canonical)
+    ?? project.database.elements?.find((element) => gen1CanonicalTypeForId(project, element.id) === canonical)?.id;
+}
+
 /**
  * Keeps STAB and each defending type separate so Gen1's floor-after-each-step
  * arithmetic can be applied by the damage helper.

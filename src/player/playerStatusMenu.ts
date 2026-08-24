@@ -72,6 +72,8 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
     onMoveFormationActor: options.actions.onMoveFormationActor,
     onToggleMonsterView: options.actions.onToggleMonsterView,
     onMoveMonster: options.actions.onMoveMonster,
+    onReplacePendingMonsterSkill: options.actions.onReplacePendingMonsterSkill,
+    onRejectPendingMonsterSkill: options.actions.onRejectPendingMonsterSkill,
     onCommand: options.actions.onCommand,
   });
   panel.append(

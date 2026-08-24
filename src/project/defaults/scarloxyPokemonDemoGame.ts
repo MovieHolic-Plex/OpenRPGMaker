@@ -58,21 +58,21 @@ const CAPTURE_ORB_ITEM_ID = "item_capture_orb";
 const EMPTY = -1;
 
 const GEN1_TYPE_DEFINITIONS = [
-  ["normal", "Normal", "physical"],
-  ["fighting", "Fighting", "physical"],
-  ["flying", "Flying", "physical"],
-  ["poison", "Poison", "physical"],
-  ["ground", "Ground", "physical"],
-  ["rock", "Rock", "physical"],
-  ["bug", "Bug", "physical"],
-  ["ghost", "Ghost", "physical"],
-  ["fire", "Fire", "magical"],
-  ["water", "Water", "magical"],
-  ["grass", "Grass", "magical"],
-  ["electric", "Electric", "magical"],
-  ["psychic", "Psychic", "magical"],
-  ["ice", "Ice", "magical"],
-  ["dragon", "Dragon", "magical"],
+  ["normal", "노말", "physical"],
+  ["fighting", "격투", "physical"],
+  ["flying", "비행", "physical"],
+  ["poison", "독", "physical"],
+  ["ground", "땅", "physical"],
+  ["rock", "바위", "physical"],
+  ["bug", "벌레", "physical"],
+  ["ghost", "고스트", "physical"],
+  ["fire", "불꽃", "magical"],
+  ["water", "물", "magical"],
+  ["grass", "풀", "magical"],
+  ["electric", "전기", "magical"],
+  ["psychic", "에스퍼", "magical"],
+  ["ice", "얼음", "magical"],
+  ["dragon", "드래곤", "magical"],
 ] as const;
 
 type Gen1Type = typeof GEN1_TYPE_DEFINITIONS[number][0];

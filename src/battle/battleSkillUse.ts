@@ -30,7 +30,7 @@ export function battleSkillUseFailure(
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill) return "missingSkill";
   if (options.requireLearned !== false && !user.skillIds.includes(skillId)) return "notLearned";
-  if (usesMonsterSkillPp(user, skill)) {
+  if (usesSkillPp(project, user, skill)) {
     const currentPp = user.skillPp?.[skillId] ?? Math.max(1, Math.trunc(skill.maxPp ?? 1));
     if (currentPp <= 0) return "noPp";
     return undefined;
@@ -47,7 +47,7 @@ export function consumeBattleSkillResource(
 ): BattleSkillResourceConsumption {
   const skill = project.database.skills.find((record) => record.id === skillId);
   if (!skill) return { kind: "none" };
-  if (usesMonsterSkillPp(user, skill)) {
+  if (usesSkillPp(project, user, skill)) {
     const maxPp = Math.max(1, Math.trunc(skill.maxPp ?? 1));
     const currentPp = user.skillPp?.[skillId] ?? maxPp;
     const remaining = Math.max(0, Math.trunc(currentPp) - 1);
@@ -60,11 +60,13 @@ export function consumeBattleSkillResource(
   return { kind: "mp", remaining };
 }
 
-function usesMonsterSkillPp(
+function usesSkillPp(
+  project: Pick<Project, "system">,
   user: Pick<BattleSkillUser, "monsterInstanceId">,
   skill: Pick<SkillRecord, "maxPp">,
 ): boolean {
-  return typeof user.monsterInstanceId === "string" && skill.maxPp !== undefined;
+  return skill.maxPp !== undefined
+    && (typeof user.monsterInstanceId === "string" || project.system.battleModel === "gen1");
 }
 
 export function battleSkillUseFailureLabel(

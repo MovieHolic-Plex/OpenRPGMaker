@@ -83,6 +83,22 @@ describe("Red/Blue two-stage capture attempt and byte consumption", () => {
     expect(rng.consumed()).toBe(3);
   });
 
+  it.each(["great", "ultra"] as const)("terminates pathological constant-255 rejection for a %s ball", (ballClass) => {
+    let consumed = 0;
+    const result = attemptGen1Capture(
+      { ...fullHp, ballClass },
+      () => {
+        consumed += 1;
+        if (consumed > 64) throw new Error("capture rejection sampling did not terminate");
+        return 255;
+      },
+    );
+
+    expect(consumed).toBeLessThanOrEqual(64);
+    expect(result.trace.rand1).toBeLessThanOrEqual(ballClass === "great" ? 200 : 150);
+    expect(result.trace.rejectedRand1Bytes).toHaveLength(consumed);
+  });
+
   it("break: Master Ball consumes Rand1, while status-underflow succeeds without Rand2", () => {
     const masterRng = bytes([211]);
     expect(attemptGen1Capture({ ...fullHp, ballClass: "master" }, masterRng.next))

@@ -46,15 +46,12 @@ describe("Gen1 runtime regressions", () => {
 
   it("fields multi-member wild troops one enemy at a time", () => {
     const project = createScarloxyPokemonDemoProject();
-    makeWildEnemiesFragile(project);
     const troop = project.database.troops.find((record) => record.id === "troop_pkmn_grass_b");
-    if (!troop) throw new Error("missing multi-member grass troop fixture");
-    troop.members = [
-      { enemyId: "enemy_pkmn_larvea", x: 128, y: 136 },
-      { enemyId: "enemy_pkmn_plumette", x: 168, y: 132 },
-    ];
-    // 유효 공격력 256+은 원작 1/4 스케일링에서 방어 1도 0으로 만들어 division-by-zero가 된다.
-    // 기본 장비 보너스를 더해도 임계값 아래이면서 1 HP 적을 확실히 쓰러뜨리는 값으로 고정한다.
+    if (!troop?.members[0]) throw new Error("missing grass troop member");
+    troop.members.push({ ...troop.members[0], x: troop.members[0].x + 32 });
+    makeWildEnemiesFragile(project);
+    // Staying at or below 255 avoids Gen1's paired quarter-scaling producing
+    // a zero defense divisor against this intentionally 1-DEF fixture.
     setActorParam(project, "attack", 200);
     setActorParam(project, "agility", 999);
     const actorId = project.system.startActorIds[0]!;
@@ -69,11 +66,11 @@ describe("Gen1 runtime regressions", () => {
     });
 
     expect(runtime.snapshot().enemies.map((enemy) => enemy.id)).toEqual(["enemy-1"]);
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_attack", targetEnemyId: "enemy-1" });
     expect(runtime.snapshot().result).toBeUndefined();
     expect(runtime.snapshot().enemies.map((enemy) => enemy.id)).toEqual(["enemy-2"]);
 
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-2" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_attack", targetEnemyId: "enemy-2" });
     expect(runtime.snapshot().result).toBe("victory");
   });
 
@@ -103,7 +100,7 @@ describe("Gen1 runtime regressions", () => {
       rng: () => 0,
     });
 
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_scarloxy_quick", targetEnemyId: "enemy-1" });
     const snapshot = runtime.snapshot();
     expect(snapshot.result).toBe("victory");
     expect(snapshot.rewards.levelUps).toEqual([]);

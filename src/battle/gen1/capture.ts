@@ -46,6 +46,11 @@ const BALL_RULES: Readonly<Record<Exclude<Gen1BallClass, "master">, BallRules>> 
   ultra: { rand1Max: 150, rand1Domain: 151, hpFactor: 12, shakeFactor: 150 },
 };
 
+// Cartridge rejection sampling is unbounded because its hardware RNG advances.
+// Injected deterministic RNGs can be pathological (for example, always 255), so
+// cap only that impossible-to-progress seam and fold the last byte into-domain.
+const MAX_RAND1_REJECTIONS = 32;
+
 export function gen1CaptureProbability(input: Gen1CaptureInput): Gen1CaptureProbability {
   if (input.trainerBattle === true) return rational(0, 1, 255, 255);
   if (input.ballClass === "master") return rational(1, 1, 255, 255);
@@ -91,9 +96,17 @@ export function attemptGen1Capture(input: Gen1CaptureInput, nextByte: Gen1NextBy
 
   const rules = BALL_RULES[input.ballClass];
   let rand1: number;
+  let rejections = 0;
   do {
     rand1 = normalizeByte(nextByte());
-    if (rand1 > rules.rand1Max) rejectedRand1Bytes.push(rand1);
+    if (rand1 > rules.rand1Max) {
+      rejectedRand1Bytes.push(rand1);
+      rejections += 1;
+      if (rejections >= MAX_RAND1_REJECTIONS) {
+        rand1 %= rules.rand1Domain;
+        break;
+      }
+    }
   } while (rand1 > rules.rand1Max);
 
   const status = statusBonus(input.majorStatus);

@@ -50,7 +50,7 @@ describe("captureSuccessRate — gen1 게이트", () => {
     expect(captureStatusMultiplier(["state_attack_up"])).toBe(1);
   });
 
-  it("런타임 통합: gen1 데모에서 '재우고 잡기'가 성립한다 (같은 roll, 각성 실패 / 수면 성공)", () => {
+  it("런타임 통합: 정확한 2단계 바이트 판정에서도 '재우고 잡기'가 성립한다", () => {
     // 상태 부여는 정석 경로(battleRuntimeStates.test.ts 패턴)를 쓴다: support 스킬 +
     // stateEffects 100%. support 는 hit:true 에 데미지 0 이라 — 데미지 스킬로 재우면
     // HP 가 깎여 (3M-2H)/3M 항이 같이 올라가 수면 효과와 구분이 안 된다.
@@ -80,7 +80,11 @@ describe("captureSuccessRate — gen1 게이트", () => {
       friendship: 70,
       caughtAt: { mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y },
     });
-    const makeRuntime = (roll: number): { runtime: BattleRuntime; project: Project } => {
+    const byteSequence = (bytes: readonly number[]): (() => number) => {
+      let index = 0;
+      return () => (bytes[index++] ?? 255) / 256;
+    };
+    const makeRuntime = (rng: () => number): { runtime: BattleRuntime; project: Project } => {
       const project = createScarloxyPokemonDemoProject();
       withSleepSkill(project);
       const runtime = createBattleRuntime({
@@ -92,13 +96,12 @@ describe("captureSuccessRate — gen1 게이트", () => {
         sessionState: { switches: {}, variables: {}, inventory: { item_capture_orb: 3 } },
         captureLocation: { mapId: "map_pkmn_route", x: 1, y: 1 },
         partyMonsters: [starter(project)],
-        // 상수 rng — 포획 판정(runtime.ts applyCapture 의 roll)도 이 값이다.
-        rng: () => roll,
+        rng,
       });
       return { runtime, project };
     };
 
-    // 데모 야생종 captureRate 에서 경계 roll 을 계산: awakeRate ≤ roll < sleepRate.
+    // 데모 야생종에서도 수면 확률이 더 높다는 공개 확률 계약을 함께 보존한다.
     const probe = createScarloxyPokemonDemoProject();
     const wildSpeciesId = (() => {
       const troop = probe.database.troops.find((record) => record.id === "troop_pkmn_grass_a");
@@ -111,17 +114,14 @@ describe("captureSuccessRate — gen1 게이트", () => {
     const awakeRate = captureSuccessRate(species.captureRate, 100, 100, 1, { model: "gen1" });
     const sleepRate = captureSuccessRate(species.captureRate, 100, 100, 1, { model: "gen1", statusMultiplier: 2 });
     expect(sleepRate).toBeGreaterThan(awakeRate);
-    const roll = (awakeRate + sleepRate) / 2;
-
-    // 대조군: 재우지 않고 1라운드에 바로 던진다 → roll ≥ awakeRate 라 실패.
-    const awake = makeRuntime(roll);
+    // 대조군: Rand1=20 은 catch-rate gate 를 지나지만 Rand2=255 에서 실패한다.
+    const awake = makeRuntime(byteSequence([20, 255]));
     awake.runtime.performActorCommand({ kind: "capture", captureItemId: "item_capture_orb", targetEnemyId: "enemy-1" });
     expect(awake.runtime.snapshot().capturedMonsters).toHaveLength(0);
 
-    // 실험군: 1라운드 수면 가루(데미지 0, HP 불변) → 2라운드 같은 roll 로 성공.
-    // 수면 자연회복(2턴째부터 35%)은 2라운드 upkeep 시점에 stateTurns 가 1이라 아직
-    // 굴리지 않는다 — rng 소비 없음, 잠든 채 포획 판정에 도달한다.
-    const sleep = makeRuntime(roll);
+    // 실험군: hit/sleep-turn 바이트 0,2 뒤 같은 Rand1=20 을 쓴다.
+    // 수면/빙결은 Rand1<25 즉시 성공이므로 Rand2 를 소비하지 않고 포획된다.
+    const sleep = makeRuntime(byteSequence([0, 2, 20]));
     sleep.runtime.performActorCommand({ kind: "skill", skillId: SLEEP_SKILL, targetEnemyId: "enemy-1" });
     const enemyAfterSleep = sleep.runtime.snapshot().enemies[0];
     expect(enemyAfterSleep?.stateIds).toContain("state_sleep");

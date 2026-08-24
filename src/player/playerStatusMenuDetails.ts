@@ -327,14 +327,42 @@ function monsterDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
       if (!instance) return [];
       const maxHp = monsterMaxHp(options.project, instance);
       const hp = monsterCurrentHp(options.project, instance);
-      return [{
-        label: monsterDisplayName(options.project, instance),
-        value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
-        description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
-        testId: `status-menu-monster-${instanceId}`,
-        onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
-        disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
-      }];
+      return [
+        {
+          label: monsterDisplayName(options.project, instance),
+          value: `Lv.${instance.level}  HP ${hp}/${maxHp}`,
+          description: view === "party" ? "선택하면 보관함으로 이동합니다" : "선택하면 파티로 이동합니다",
+          testId: `status-menu-monster-${instanceId}`,
+          onActivate: options.onMoveMonster ? () => options.onMoveMonster?.(instanceId, target) : undefined,
+          disabled: target === "party" && options.session.monsterParty.length >= MONSTER_PARTY_MAX,
+        },
+        ...(instance.pendingSkillIds ?? []).flatMap((pendingSkillId) => {
+          const pending = options.project.database.skills.find((skill) => skill.id === pendingSkillId);
+          return [
+            ...(instance.skillIds ?? []).map((replacedSkillId) => {
+              const replaced = options.project.database.skills.find((skill) => skill.id === replacedSkillId);
+              return {
+                label: `${replaced?.name ?? replacedSkillId} → ${pending?.name ?? pendingSkillId}`,
+                value: "기술 교체",
+                description: "기존 기술을 잊고 새 기술을 배웁니다",
+                testId: `status-menu-monster-skill-replace-${instanceId}-${pendingSkillId}-${replacedSkillId}`,
+                onActivate: options.onReplacePendingMonsterSkill
+                  ? () => options.onReplacePendingMonsterSkill?.(instanceId, pendingSkillId, replacedSkillId)
+                  : undefined,
+              };
+            }),
+            {
+              label: `${pending?.name ?? pendingSkillId} 포기`,
+              value: "배우지 않음",
+              description: "대기 중인 새 기술을 포기합니다",
+              testId: `status-menu-monster-skill-reject-${instanceId}-${pendingSkillId}`,
+              onActivate: options.onRejectPendingMonsterSkill
+                ? () => options.onRejectPendingMonsterSkill?.(instanceId, pendingSkillId)
+                : undefined,
+            },
+          ];
+        }),
+      ];
     }),
   ];
   return {

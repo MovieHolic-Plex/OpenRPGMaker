@@ -205,8 +205,44 @@ describe("battlePredict — gen1 기댓값 미러", () => {
   });
 
   it("방어 자세는 두 모델 모두 절반이다", () => {
-    expect(predictSkillDamage(createScarloxyPokemonDemoProject(), snapshot(), spec, snapshot({ id: "s2", defending: true })).amount).toBe(8);
+    // Gen1 has no defend command; a stale legacy flag must not alter cartridge damage.
+    expect(predictSkillDamage(createScarloxyPokemonDemoProject(), snapshot(), spec, snapshot({ id: "s2", defending: true })).amount).toBe(17);
     expect(predictSkillDamage(rm2k3Project(), snapshot(), spec, snapshot({ id: "s2", defending: true })).amount).toBe(20);
+  });
+
+  it("gen1 은 저작된 statistic 대신 타입의 물리/특수 분류를 쓴다", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const user = snapshot({
+      speciesId: "species_scarloxy_draem",
+      effectiveStats: { attack: 5, defense: 100, mind: 200, agility: 50 },
+    });
+    const target = snapshot({
+      id: "s2",
+      speciesId: "species_scarloxy_pouch",
+      effectiveStats: { attack: 100, defense: 999, mind: 20, agility: 50 },
+    });
+
+    const predicted = predictSkillDamage(project, user, {
+      power: 40,
+      statistic: "attack",
+      effect: "damage",
+      elementId: "psychic",
+    }, target);
+
+    expect(predicted.amount).toBeGreaterThan(100);
+  });
+
+  it("mirrors authored physical attack and defense state multipliers", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const base = predictSkillDamage(project, snapshot(), spec, snapshot({ id: "s2" }));
+    const boosted = predictSkillDamage(
+      project,
+      snapshot({ stateIds: ["state_attack_up"] }),
+      spec,
+      snapshot({ id: "s2", stateIds: ["state_defense_down"] }),
+    );
+
+    expect(boosted.amount).toBeGreaterThan(base.amount);
   });
 });
 

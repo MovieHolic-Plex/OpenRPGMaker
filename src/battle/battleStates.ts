@@ -225,12 +225,12 @@ function clampStateMultiplier(value: number): number {
   return Math.max(STATE_MULTIPLIER_MIN, Math.min(STATE_MULTIPLIER_MAX, value));
 }
 
-export function attackMultiplierForStates(project: Project, battler: MutableBattler): number {
+export function attackMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.attackMultiplier ?? 1), 1);
   return clampStateMultiplier(raw);
 }
 
-export function defenseMultiplierForStates(project: Project, battler: MutableBattler): number {
+export function defenseMultiplierForStates(project: Project, battler: { readonly stateIds: readonly string[] }): number {
   const raw = battler.stateIds.reduce((factor, stateId) => factor * (behaviorFor(project, stateId)?.defenseMultiplier ?? 1), 1);
   return clampStateMultiplier(raw);
 }

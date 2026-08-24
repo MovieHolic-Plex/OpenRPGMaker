@@ -54,6 +54,14 @@ export function isActorSkillIdsRecord(value: unknown): value is PlaySession["act
   return Object.values(value).every(isStringArray);
 }
 
+export function isActorSkillPpRecord(value: unknown): value is NonNullable<PlaySession["actorSkillPp"]> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((skillPp) =>
+    isRecord(skillPp)
+    && Object.values(skillPp).every((pp) => typeof pp === "number" && Number.isFinite(pp) && pp >= 0),
+  );
+}
+
 export function isActorParamBonusRecord(value: unknown): value is Record<string, Partial<Record<ActorParameterKey, number>>> {
   if (!isRecord(value)) return false;
   return Object.values(value).every((bonuses) => {

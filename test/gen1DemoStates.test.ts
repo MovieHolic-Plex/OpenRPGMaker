@@ -48,11 +48,11 @@ function battler(maxHp: number, stateIds: readonly string[]): MutableBattler {
 }
 
 describe("Gen1 데모 상태 — 화상/독", () => {
-  it("화상은 공격 반감 + 턴당 6.25% + 전투 종료 해제 + 자연 회복 없음으로 해석된다", () => {
+  it("화상은 공격 반감 + 턴당 6.25% + 전투 후 지속 + 자연 회복 없음으로 해석된다", () => {
     const behavior = stateBehavior(stateRecord(createScarloxyPokemonDemoProject(), "state_burn"));
     expect(behavior.attackMultiplier).toBe(0.5);
     expect(behavior.hpDamagePercentPerTurn).toBe(6.25);
-    expect(behavior.removeOnBattleEnd).toBe(true);
+    expect(behavior.removeOnBattleEnd).toBe(false);
     expect(behavior.restrictsAction).toBe(false);
     // Gen1 화상은 스스로 낫지 않는다 — 확률 0 이라 rng 가 아무리 좋아도 안 풀린다.
     expect(behavior.recoverNaturallyChance).toBe(0);
@@ -81,11 +81,11 @@ describe("Gen1 데모 상태 — 화상/독", () => {
     expect(stateBehavior(stateRecord(createScarloxyPokemonDemoProject(), "state_poison")).removeOnBattleEnd).toBe(false);
   });
 
-  it("전투 종료 시 화상만 풀리고 독은 남는다", () => {
+  it("전투 종료 시 화상과 독이 모두 남는다", () => {
     const project = createScarloxyPokemonDemoProject();
     const target = battler(100, ["state_burn", "state_poison"]);
     clearBattleEndStates(project, target);
-    expect(target.stateIds).toEqual(["state_poison"]);
+    expect(target.stateIds).toEqual(["state_burn", "state_poison"]);
   });
 
   it("화상 중 공격력이 절반이 된다", () => {
