@@ -438,7 +438,7 @@ function validateLifeAuthoringRecords(
     if (seenRecipes.has(recipe.id)) issues.push(`craftRecipe ${recipe.id}: duplicate id.`);
     seenRecipes.add(recipe.id);
     if (!itemIds.has(recipe.outputItemId)) issues.push(`craftRecipe ${recipe.id}: outputItemId does not exist: ${recipe.outputItemId}`);
-    for (const [index, ingredient] of recipe.ingredients.entries()) {
+    for (const [index, ingredient] of (recipe.ingredients ?? []).entries()) {
       if (!itemIds.has(ingredient.itemId)) issues.push(`craftRecipe ${recipe.id}: ingredients[${index}].itemId does not exist: ${ingredient.itemId}`);
     }
   }

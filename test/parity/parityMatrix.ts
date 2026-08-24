@@ -105,7 +105,7 @@ export const PARITY_MATRIX: readonly ParityRow[] = [
   { contentType: "system", field: "titleScreen.backgroundLayers", playerConsumer: "src/player/titleScreen.ts#renderTitleBackgroundLayers", harness: "roundTrip", status: "covered" },
   { contentType: "system", field: "titleScreen.particles", playerConsumer: "src/player/titleParticles.ts#titleParticlePositions", harness: "roundTrip", status: "covered" },
   { contentType: "system", field: "titleScreen.intro", playerConsumer: "src/player/titleScreen.ts#titleIntroClass", harness: "roundTrip", status: "covered" },
-  { contentType: "system", field: "timeSystem", playerConsumer: "src/player/playSceneTime.ts#advanceGameTime", harness: "runSceneTest", status: "gap" },
+  { contentType: "system", field: "timeSystem", playerConsumer: "src/player/playSceneTime.ts#updateGameTime", harness: "runSceneTest", status: "gap" },
   { contentType: "system", field: "giftSystem", playerConsumer: "src/player#giftSystem", harness: "runSceneTest", status: "gap" },
   { contentType: "system", field: "monsterCollection", playerConsumer: "src/player#monsterCollection", harness: "simulateBattle", status: "gap" },
   { contentType: "system", field: "actionCombat", playerConsumer: "src/project/actionCombat.ts#isActionCombatMap", harness: "runSceneTest", status: "gap" },
