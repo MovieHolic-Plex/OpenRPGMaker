@@ -13,8 +13,11 @@ import {
   textControl,
 } from "@/editor/panels/actorRecordControls";
 import { openActorResourceDialog } from "@/editor/panels/databaseActorResourceDialog";
+import { switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
+import { actorBuildPreview, type ActorBuildPreview } from "@/editor/panels/databasePartyBuildSummary";
+import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
-import type { ActorRecord } from "@/project/types";
+import type { ActorParameterKey, ActorRecord } from "@/project/types";
 import { el } from "@/util/dom";
 
 export function renderActorRecordForm(actor: ActorRecord, rerender: () => void): HTMLElement {
@@ -24,6 +27,7 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
   });
   form.append(
     actorHeroHeader(actor),
+    actorBuildPreviewPanel(actor),
     el("div", {
       class: "actor-classic-sheet",
       dataset: { testid: "actor-classic-sheet" },
@@ -40,6 +44,191 @@ export function renderActorRecordForm(actor: ActorRecord, rerender: () => void):
     })
   );
   return form;
+}
+
+const BUILD_STAT_LABELS: Readonly<Record<ActorParameterKey, string>> = {
+  maxHp: "최대 HP",
+  maxMp: "최대 MP",
+  attack: "공격력",
+  defense: "방어력",
+  mind: "마력",
+  agility: "민첩성",
+};
+
+function actorBuildPreviewPanel(actor: ActorRecord): HTMLElement {
+  const result = el("div", { class: "actor-build-preview-result" });
+  const level = el("input", {
+    value: actor.initialLevel,
+    attrs: {
+      type: "number",
+      min: "1",
+      max: String(actor.maxLevel),
+      inputmode: "numeric",
+      "aria-label": "빌드 미리보기 레벨",
+    },
+    dataset: { testid: "db-actor-build-level" },
+  }) as HTMLInputElement;
+  const refresh = (): void => {
+    const current = store.getCurrent().database.actors.find((entry) => entry.id === actor.id) ?? actor;
+    const parsed = Number.parseInt(level.value, 10);
+    const preview = actorBuildPreview(store.getCurrent(), actor.id, Number.isFinite(parsed) ? parsed : current.initialLevel);
+    result.replaceChildren(...(preview ? actorBuildPreviewContents(preview) : []));
+  };
+  level.addEventListener("input", refresh);
+  level.addEventListener("change", () => {
+    const preview = actorBuildPreview(store.getCurrent(), actor.id, Number.parseInt(level.value, 10));
+    if (preview) level.value = String(preview.level);
+  });
+  refresh();
+  return el("section", {
+    class: "actor-build-preview",
+    dataset: { testid: "db-actor-build-preview" },
+    children: [
+      el("div", {
+        class: "actor-build-preview-heading",
+        children: [
+          el("div", {
+            children: [
+              el("span", { class: "actor-build-preview-eyebrow", text: "PARTY STUDIO" }),
+              el("h3", { text: "빌드 미리보기" }),
+              el("p", { text: "실제 전투 계산 기준으로 성장·장비·스킬을 함께 확인합니다." }),
+            ],
+          }),
+          el("label", {
+            class: "actor-build-level-control",
+            children: [el("span", { text: "레벨" }), level],
+          }),
+        ],
+      }),
+      result,
+    ],
+  });
+}
+
+function actorBuildPreviewContents(preview: ActorBuildPreview): HTMLElement[] {
+  return [
+    el("div", {
+      class: "actor-build-growth-line",
+      children: [
+        el("div", {
+          class: "actor-build-growth-source",
+          dataset: { source: preview.growth.source, testid: "db-actor-build-growth-source" },
+          children: [
+            el("span", { text: "성장 출처" }),
+            el("strong", { text: preview.growth.source === "actor-base" ? `${preview.growth.name} 기본 곡선` : `${preview.growth.name} 직업 곡선` }),
+          ],
+        }),
+        ...(preview.assignedClass ? [linkedRecordButton({
+          collection: "classes",
+          id: preview.assignedClass.id,
+          label: `${preview.assignedClass.name} 열기`,
+          tab: "classes",
+          testid: "db-actor-build-open-class",
+        })] : []),
+      ],
+    }),
+    el("p", {
+      class: "actor-build-semantics-note",
+      text: preview.growth.source === "actor-base"
+        ? "현재 시작 직업은 스킬·명령·장비 허용에 연결됩니다. 런타임 전직·승급 뒤에는 새 직업 곡선으로 전환됩니다."
+        : "런타임 직업 오버라이드가 적용되어 해당 직업의 성장 곡선을 사용합니다.",
+    }),
+    el("div", {
+      class: "actor-build-preview-grid",
+      children: [
+        el("div", {
+          class: "actor-build-stat-card",
+          children: [
+            el("h4", { text: `Lv ${preview.level} 유효 능력치` }),
+            el("div", {
+              class: "actor-build-stat-grid",
+              children: ACTOR_PARAMETER_KEYS.map((key) => {
+                const stat = preview.stats[key];
+                return el("div", {
+                  class: "actor-build-stat",
+                  children: [
+                    el("span", { text: BUILD_STAT_LABELS[key] }),
+                    el("strong", { text: String(stat.value), dataset: { testid: `db-actor-build-stat-${key}` } }),
+                    ...(stat.equipmentBonus !== 0
+                      ? [el("small", { text: `장비 ${stat.equipmentBonus > 0 ? "+" : ""}${stat.equipmentBonus}` })]
+                      : []),
+                  ],
+                });
+              }),
+            }),
+          ],
+        }),
+        buildLinkCollection(
+          "시작 장비",
+          preview.equipment.map((equipment) => linkedRecordButton({
+            collection: "equipment",
+            id: equipment.id,
+            label: equipment.name,
+            tab: "equipment",
+            testid: `db-actor-build-open-equipment-${equipment.id}`,
+          })),
+          "설정된 시작 장비가 없습니다.",
+        ),
+        buildLinkCollection(
+          `Lv ${preview.level} 사용 가능 스킬`,
+          preview.skills.map((skill) => linkedRecordButton({
+            collection: "skills",
+            id: skill.id,
+            label: skill.name,
+            tab: "skills",
+            testid: `db-actor-build-open-skill-${skill.id}`,
+          })),
+          "이 레벨에서 사용할 스킬이 없습니다.",
+        ),
+      ],
+    }),
+  ];
+}
+
+function buildLinkCollection(title: string, links: HTMLElement[], emptyMessage: string): HTMLElement {
+  return el("div", {
+    class: "actor-build-link-card",
+    children: [
+      el("h4", { text: title }),
+      links.length > 0
+        ? el("div", { class: "actor-build-link-list", children: links })
+        : el("p", { class: "actor-build-empty", text: emptyMessage }),
+    ],
+  });
+}
+
+function linkedRecordButton(options: {
+  readonly collection: "classes" | "equipment" | "skills";
+  readonly id: string;
+  readonly label: string;
+  readonly tab: DatabaseTab;
+  readonly testid: string;
+}): HTMLElement {
+  return el("button", {
+    class: "actor-build-record-link",
+    text: options.label,
+    attrs: { type: "button" },
+    dataset: { testid: options.testid },
+    on: {
+      click: (event) => {
+        setSelectedRecordId(options.collection, options.id);
+        const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+        if (panelRoot) switchDatabaseActiveTab(options.tab, panelRoot);
+      },
+    },
+  });
+}
+
+function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
+  if (!node) return null;
+  const modalBody = node.closest(".database-modal-body");
+  if (modalBody instanceof HTMLElement) return modalBody;
+  let current: HTMLElement | null = node;
+  while (current) {
+    if (current.querySelector(".db-body") && !current.classList.contains("db-body")) return current;
+    current = current.parentElement;
+  }
+  return null;
 }
 
 // 히어로 헤더 — 얼굴 + 이름 인라인 편집 + 직업/레벨 태그. 이름 편집은 identityPanel 에서
