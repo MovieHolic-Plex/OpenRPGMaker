@@ -107,4 +107,67 @@ describe("database crop view", () => {
     expect(undone).toBe(true);
     expect(store.getCurrent().database.crops).toHaveLength(1);
   });
+
+  // Break caught: an empty crop catalog falls back to a blank detail pane with no first action.
+  it("offers a first-crop action in the empty state and opens the created record", () => {
+    const host = renderUtility(renderCropTab);
+    expect(findByTestId(host, "db-crop-empty")).toBeTruthy();
+
+    findByTestId(host, "db-crop-empty-add")?.click();
+
+    expect(store.getCurrent().database.crops).toHaveLength(1);
+    expect(findByTestId(host, "db-crop-name")).toBeTruthy();
+  });
+
+  // Break caught: the crop tab exposes raw fields but not whether time/farmable-map wiring is ready.
+  it("shows farming readiness and a derived crop loop summary", () => {
+    const host = renderUtility(renderCropTab);
+    expect(findByTestId(host, "db-crop-readiness-time")?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-crop-readiness-fields")?.dataset.state).toBe("needs-setup");
+
+    findByTestId(host, "db-crop-add")?.click();
+    const cropId = store.getCurrent().database.crops?.[0]?.id;
+    if (!cropId) throw new Error("missing added crop");
+    store.update((project) => {
+      project.system.timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26 };
+      project.maps[project.startMapId].farmableArea = [{ x: 1, y: 1, w: 3, h: 2 }];
+      const crop = project.database.crops?.find((entry) => entry.id === cropId);
+      if (!crop) return;
+      crop.stages = [{ days: 2 }, { days: 3 }];
+      crop.harvestCount = 4;
+      crop.seasons = ["spring", "summer"];
+      crop.regrow = { days: 2 };
+    });
+
+    const readyHost = renderUtility(renderCropTab);
+    expect(findByTestId(readyHost, "db-crop-readiness-time")?.dataset.state).toBe("ready");
+    expect(findByTestId(readyHost, "db-crop-readiness-fields")?.dataset.state).toBe("ready");
+    expect(findByTestId(readyHost, "db-crop-overview-growth")?.dataset.days).toBe("5");
+    expect(findByTestId(readyHost, "db-crop-overview-yield")?.dataset.count).toBe("4");
+    expect(findByTestId(readyHost, "db-crop-overview-seasons")?.dataset.count).toBe("2");
+    expect(findByTestId(readyHost, "db-crop-overview-regrow")?.dataset.days).toBe("2");
+  });
+
+  // Break caught: broken seed/harvest links are only visible after opening each record by hand.
+  it("reports unusable crop records and exposes direct repair actions", () => {
+    store.update((project) => {
+      project.database.crops = [{
+        id: "crop_broken",
+        name: "끊긴 작물",
+        seedItemId: "missing_seed",
+        harvestItemId: "missing_harvest",
+        harvestCount: 1,
+        stages: [{ days: 1 }],
+        seasons: ["spring"],
+      }];
+    });
+
+    const host = renderUtility(renderCropTab);
+    expect(findByTestId(host, "db-crop-readiness-records")?.dataset.invalid).toBe("1");
+    expect(findByTestId(host, "db-crop-readiness-records")?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-crop-readiness-time-action")).toBeTruthy();
+    expect(findByTestId(host, "db-crop-readiness-fields-action")).toBeTruthy();
+    expect(findByTestId(host, "db-crop-readiness-tools-action")).toBeTruthy();
+    expect(findByTestId(host, "db-crop-readiness-records-action")).toBeTruthy();
+  });
 });

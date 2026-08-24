@@ -16,7 +16,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
 
-const OUT = "C:/Users/USER/AppData/Local/Temp/farm-inspect/";
+const OUT = "output/evidence/stardew/runtime/";
 const MAP_ID = "map_farming_demo";
 const log: string[] = [];
 
@@ -134,4 +134,7 @@ test("침대로 하루를 넘기고 씨앗 상인에게 수확물을 판다", as
   writeFileSync(`${OUT}loop-notes.txt`, log.join("\n"));
   console.log(log.join("\n"));
   console.log(`>>> 잠들기 전="${dayBefore}" 후="${dayAfter}" 상점열림=${shopOpen}`);
+  expect(dayAfter, "침대에서 잤는데 날짜가 바뀌지 않았다").not.toBe(dayBefore);
+  expect(afterSleep.variables.var_stamina, "수면 뒤 기력이 회복되지 않았다").toBe(100);
+  expect(shopOpen, "씨앗 상인과 대화했는데 상점이 열리지 않았다").toBe(true);
 });
