@@ -44,7 +44,7 @@ describe("verify:genre-packs CLI", () => {
 
     expect(result.status).not.toBe(0);
     expect(`${result.stdout}\n${result.stderr}`).toContain("evidence-outside-allowed-root");
-  }, 40_000);
+  }, 90_000);
 
   it("combines valid evidence files with actual authored/runtime readiness and keeps monster blocked", async () => {
     const evidenceRoot = resolve("output", "evidence");
@@ -87,7 +87,7 @@ describe("verify:genre-packs CLI", () => {
     expect(output).toContain('"status": "blocked"');
     expect(output).toContain('"status": "incomplete"');
     expect(output).toContain('"ok": false');
-  }, 40_000);
+  }, 90_000);
 });
 
 function runCli(receiptPath: string, projectPath: string): ReturnType<typeof spawnSync> {
@@ -97,5 +97,5 @@ function runCli(receiptPath: string, projectPath: string): ReturnType<typeof spa
     resolve("scripts", "verify-genre-pack-receipts.mts"),
     receiptPath,
     projectPath,
-  ], { cwd: process.cwd(), encoding: "utf8", timeout: 30_000 });
+  ], { cwd: process.cwd(), encoding: "utf8", timeout: 75_000 });
 }

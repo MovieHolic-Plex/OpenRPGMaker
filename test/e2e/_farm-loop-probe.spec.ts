@@ -23,8 +23,8 @@ const log: string[] = [];
 async function waitForHooks(page: Page): Promise<void> {
   await page.waitForFunction(
     () => {
-      const w = window as never as { __rpgzzuDebug?: { teleport?: unknown }; __rpgzzuInput?: unknown };
-      return typeof w.__rpgzzuDebug?.teleport === "function" && !!w.__rpgzzuInput;
+      const w = window as never as { __oprnDebug?: { teleport?: unknown }; __oprnInput?: unknown };
+      return typeof w.__oprnDebug?.teleport === "function" && !!w.__oprnInput;
     },
     undefined,
     { timeout: 30_000 },
@@ -35,8 +35,8 @@ async function teleport(page: Page, x: number, y: number): Promise<void> {
   await waitForHooks(page);
   await page.evaluate(
     ([m, tx, ty]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (a: string, b: number, c: number) => void } })
-        .__rpgzzuDebug.teleport(m as string, tx as number, ty as number),
+      (window as never as { __oprnDebug: { teleport: (a: string, b: number, c: number) => void } })
+        .__oprnDebug.teleport(m as string, tx as number, ty as number),
     [MAP_ID, x, y] as const,
   );
   await page.waitForTimeout(240);
@@ -44,7 +44,7 @@ async function teleport(page: Page, x: number, y: number): Promise<void> {
 
 async function face(page: Page, dir: string): Promise<void> {
   await page.evaluate(
-    (d) => (window as never as { __rpgzzuInput: { face: (v: string) => void } }).__rpgzzuInput.face(d),
+    (d) => (window as never as { __oprnInput: { face: (v: string) => void } }).__oprnInput.face(d),
     dir,
   );
   await page.waitForTimeout(120);
@@ -59,8 +59,8 @@ async function clock(page: Page): Promise<string> {
 async function state(page: Page): Promise<{ gold: number; variables: Record<string, number>; inventory: Record<string, number> }> {
   await waitForHooks(page);
   return page.evaluate(() => {
-    const s = (window as never as { __rpgzzuDebug: { readState: () => { gold: number; variables: Record<string, number>; inventory: Record<string, number> } } })
-      .__rpgzzuDebug.readState();
+    const s = (window as never as { __oprnDebug: { readState: () => { gold: number; variables: Record<string, number>; inventory: Record<string, number> } } })
+      .__oprnDebug.readState();
     return { gold: s.gold, variables: s.variables, inventory: s.inventory };
   });
 }
@@ -95,9 +95,10 @@ test("침대로 하루를 넘기고 씨앗 상인에게 수확물을 판다", as
   const dayBefore = await clock(page);
   await talkTo(page, 3, 2, "down", "침대");
   // 대사창을 넘겨 sleepUntilMorning 까지 진행시킨다.
-  // 대사창은 **실제 keydown** 을 듣는다 — __rpgzzuInput.action() 훅은 Phaser 쪽이라 대사를
+  // 대사창은 **실제 keydown** 을 듣는다 — __oprnInput.action() 훅은 Phaser 쪽이라 대사를
   // 넘기지 못한다(실측: 대사창이 그대로 떠 있고 하루가 넘어가지 않았다).
   for (let i = 0; i < 6; i += 1) {
+    if ((await page.getByTestId("dialogue-box").count()) === 0) break;
     await page.keyboard.press("Enter");
     await page.waitForTimeout(700);
   }
@@ -109,8 +110,8 @@ test("침대로 하루를 넘기고 씨앗 상인에게 수확물을 판다", as
 
   // 2) 수확물을 손에 넣고 씨앗 상인(12,3)에게 간다 — 왼 칸(11,3)에서 오른쪽을 본다.
   await page.evaluate(() =>
-    (window as never as { __rpgzzuDebug: { giveItem: (id: string, n: number) => void } })
-      .__rpgzzuDebug.giveItem("item_potato", 6),
+    (window as never as { __oprnDebug: { giveItem: (id: string, n: number) => void } })
+      .__oprnDebug.giveItem("item_potato", 6),
   );
   await page.waitForTimeout(300);
   // 침대 대사창이 열려 있으면 이후 조작을 전부 삼킨다 — 먼저 닫는다.

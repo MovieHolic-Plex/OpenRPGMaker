@@ -11,7 +11,6 @@ import {
   createGenreBlankProjectSystemPresetPlan,
   type GenreBlankProjectSystemPresetPlan,
 } from "@/editor/genrePacks";
-import type { OfficialGenrePackId } from "@/project/officialGenrePackIds";
 
 export type WelcomeGenrePresetId =
   | "monster-collect"
@@ -123,27 +122,18 @@ export function welcomeGenrePresetById(id: string | undefined): WelcomeGenrePres
   return WELCOME_GENRE_PRESETS.find((preset) => preset.id === id);
 }
 
+/** Resolve a visual welcome variant to the canonical pack id persisted in project.system.genre. */
+export function officialGenrePackIdForWelcomePreset(id: WelcomeGenrePresetId): GenrePackId {
+  const preset = welcomeGenrePresetById(id);
+  if (!preset) throw new Error(`Unknown welcome genre preset: ${id}`);
+  return preset.packId;
+}
+
 /** Pure, non-destructive card selection path. Applying the returned plan is an explicit separate action. */
 export function welcomeGenreSystemPresetPlanById(id: WelcomeGenrePresetId): GenreBlankProjectSystemPresetPlan {
   const preset = welcomeGenrePresetById(id);
   if (!preset) throw new Error(`Unknown welcome genre preset: ${id}`);
   return createGenreBlankProjectSystemPresetPlan(preset.packId, preset.systemPresetRecipeId);
-}
-
-/** UI variants collapse onto the exact five persisted Phase 4 pack identities. */
-export function officialGenrePackIdForWelcomePreset(id: WelcomeGenrePresetId): OfficialGenrePackId {
-  switch (id) {
-    case "partner-raise":
-    case "monster-collect":
-      return "monster-collect";
-    case "horror-gallery":
-    case "school-horror":
-      return "horror-chase";
-    case "farm-life":
-    case "adventure-jrpg":
-    case "story-cutscene":
-      return id;
-  }
 }
 
 export function welcomeGenrePresetByLabel(label: string): WelcomeGenrePreset | undefined {

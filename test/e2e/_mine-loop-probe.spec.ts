@@ -28,8 +28,8 @@ type RuntimeState = { currentMapId: string; x: number; y: number; inventory: Rec
 async function waitForHooks(page: Page): Promise<void> {
   await page.waitForFunction(
     () => {
-      const w = window as never as { __rpgzzuDebug?: { teleport?: unknown }; __rpgzzuInput?: unknown };
-      return typeof w.__rpgzzuDebug?.teleport === "function" && !!w.__rpgzzuInput;
+      const w = window as never as { __oprnDebug?: { teleport?: unknown }; __oprnInput?: unknown };
+      return typeof w.__oprnDebug?.teleport === "function" && !!w.__oprnInput;
     },
     undefined,
     { timeout: 30_000 },
@@ -39,7 +39,7 @@ async function waitForHooks(page: Page): Promise<void> {
 async function state(page: Page): Promise<RuntimeState> {
   await waitForHooks(page);
   return page.evaluate(() => {
-    const s = (window as never as { __rpgzzuDebug: { readState: () => RuntimeState } }).__rpgzzuDebug.readState();
+    const s = (window as never as { __oprnDebug: { readState: () => RuntimeState } }).__oprnDebug.readState();
     return { currentMapId: s.currentMapId, x: s.x, y: s.y, inventory: s.inventory };
   });
 }
@@ -48,8 +48,8 @@ async function teleport(page: Page, mapId: string, x: number, y: number): Promis
   await waitForHooks(page);
   await page.evaluate(
     ([m, tx, ty]) =>
-      (window as never as { __rpgzzuDebug: { teleport: (a: string, b: number, c: number) => void } })
-        .__rpgzzuDebug.teleport(m as string, tx as number, ty as number),
+      (window as never as { __oprnDebug: { teleport: (a: string, b: number, c: number) => void } })
+        .__oprnDebug.teleport(m as string, tx as number, ty as number),
     [mapId, x, y] as const,
   );
   await page.waitForTimeout(400);
@@ -57,7 +57,7 @@ async function teleport(page: Page, mapId: string, x: number, y: number): Promis
 
 async function face(page: Page, dir: string): Promise<void> {
   await page.evaluate(
-    (d) => (window as never as { __rpgzzuInput: { face: (v: string) => void } }).__rpgzzuInput.face(d),
+    (d) => (window as never as { __oprnInput: { face: (v: string) => void } }).__oprnInput.face(d),
     dir,
   );
   await page.waitForTimeout(160);
@@ -66,12 +66,12 @@ async function face(page: Page, dir: string): Promise<void> {
 /** 방향키를 holdMs 동안 누른다(런타임 입력 훅). */
 async function walk(page: Page, dir: string, holdMs: number): Promise<void> {
   await page.evaluate(
-    (d) => (window as never as { __rpgzzuInput: { dir: (v: string | null) => void } }).__rpgzzuInput.dir(d),
+    (d) => (window as never as { __oprnInput: { dir: (v: string | null) => void } }).__oprnInput.dir(d),
     dir,
   );
   await page.waitForTimeout(holdMs);
   await page.evaluate(() =>
-    (window as never as { __rpgzzuInput: { dir: (v: string | null) => void } }).__rpgzzuInput.dir(null),
+    (window as never as { __oprnInput: { dir: (v: string | null) => void } }).__oprnInput.dir(null),
   );
   await page.waitForTimeout(500);
 }
@@ -115,8 +115,8 @@ test("광산에 들어가 보이는 돌을 곡괭이로 캐고 밖으로 나온�
 
   // 스폰 스프라이트가 엉뚱한 캐릭셋으로 폴백되면 박쥐가 사람으로 보인다 — 실제 키를 찍는다.
   const sprites = await page.evaluate(() => {
-    const hook = (window as never as { __rpgzzuCharacterSprites?: () => { events: Record<string, { textureKey: string; frame: string | number }> } | null })
-      .__rpgzzuCharacterSprites;
+    const hook = (window as never as { __oprnCharacterSprites?: () => { events: Record<string, { textureKey: string; frame: string | number }> } | null })
+      .__oprnCharacterSprites;
     const dump = hook?.();
     return Object.entries(dump?.events ?? {}).map(([id, s]) => `${id}=${s.textureKey}#${s.frame}`);
   });
