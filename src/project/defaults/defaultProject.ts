@@ -314,6 +314,13 @@ export function createFarmingDemoProject(): Project {
     // 광산 산출물. 파는 곳이 없으면 채굴이 인벤토리만 채우고 끝나므로 씨앗 상인이 사들인다.
     { id: "item_stone", name: "돌", scope: "none", price: 30, type: "normalGoods", iconResourceId: "cc0-jetrel-earth-ore", imageResourceId: "cc0-jetrel-earth-ore" },
     { id: "item_iron_ore", name: "철 광석", scope: "none", price: 120, type: "normalGoods", iconResourceId: "cc0-jetrel-iron-ore", imageResourceId: "cc0-jetrel-iron-ore" },
+    { id: "item_iron_bar", name: "철 주괴", scope: "none", price: 360, type: "normalGoods", iconResourceId: "cc0-jetrel-iron-ore", imageResourceId: "cc0-jetrel-iron-ore" },
+    { id: "item_pickled_potato", name: "감자 피클", scope: "none", price: 240, type: "normalGoods" },
+    { id: "item_preserves_jar", name: "절임통", scope: "none", price: 300, type: "normalGoods" },
+    { id: "item_furnace", name: "용광로", scope: "none", price: 450, type: "normalGoods" },
+    { id: "item_copper_hoe", name: "구리 괭이", scope: "none", price: 600, type: "normalGoods", farmTool: "hoe" },
+    { id: "item_copper_watering_can", name: "구리 물뿌리개", scope: "none", price: 650, type: "normalGoods", farmTool: "wateringCan" },
+    { id: "item_copper_pickaxe", name: "구리 곡괭이", scope: "none", price: 700, type: "normalGoods", farmTool: "pickaxe" },
     // 봄 — 씨앗 20 → 매도 35
     { id: "item_potato_seed", name: "감자 씨앗", scope: "none", price: 20, type: "seed", consumable: true },
     { id: "item_potato", name: "감자", scope: "none", price: 70, type: "normalGoods" },
@@ -504,6 +511,7 @@ export function createFarmingDemoProject(): Project {
   );
   attachFarmStaminaScaffolding(project);
   attachFarmSocialProfiles(project);
+  attachFarmLifeEconomy(project);
   if (!project.switches.some((entry) => entry.id === FARM_FESTIVAL_SPRING_SWITCH_ID)) {
     project.switches.push({ id: FARM_FESTIVAL_SPRING_SWITCH_ID, name: "봄 축제 관람" });
   }
@@ -516,6 +524,129 @@ const FARM_MINER_CHARACTER_ID = "char_miner";
 const FARM_CARPENTER_CHARACTER_ID = "char_carpenter";
 const FARM_HERBALIST_CHARACTER_ID = "char_herbalist";
 const FARM_FESTIVAL_SPRING_SWITCH_ID = "sw_festival_spring_done";
+const FARM_QUARRY_UNLOCK_SWITCH_ID = "sw_quarry_path_unlocked";
+
+function attachFarmLifeEconomy(project: Project): void {
+  if (!project.switches.some((entry) => entry.id === FARM_QUARRY_UNLOCK_SWITCH_ID)) {
+    project.switches.push({ id: FARM_QUARRY_UNLOCK_SWITCH_ID, name: "채석장 길 복구" });
+  }
+  project.system.energy = { max: 100, initial: 100, restorePerDay: 100 };
+  project.system.skillSystem = { enabled: true };
+  project.system.sellPrices = [
+    { itemId: "item_potato", price: 35 },
+    { itemId: "item_strawberry", price: 30 },
+    { itemId: "item_tomato", price: 50 },
+    { itemId: "item_corn", price: 60 },
+    { itemId: "item_blueberry", price: 25 },
+    { itemId: "item_melon", price: 100 },
+    { itemId: "item_pumpkin", price: 120 },
+    { itemId: "item_eggplant", price: 40 },
+    { itemId: "item_stone", price: 15 },
+    { itemId: "item_iron_ore", price: 60 },
+    { itemId: "item_iron_bar", price: 180 },
+    { itemId: "item_pickled_potato", price: 120 },
+  ];
+  project.system.shipping = {
+    enabled: true,
+    historyLimit: 14,
+    allowedItemIds: project.system.sellPrices.map((entry) => entry.itemId),
+  };
+  project.system.worldUnlocks = [{
+    id: "unlock_quarry_path",
+    name: "채석장 길",
+    switchId: FARM_QUARRY_UNLOCK_SWITCH_ID,
+  }];
+  project.system.craftRecipes = [
+    {
+      id: "recipe_preserves_jar",
+      name: "절임통",
+      ingredients: [{ itemId: "item_wood", count: 20 }, { itemId: "item_stone", count: 10 }],
+      outputItemId: "item_preserves_jar",
+      outputCount: 1,
+      requiresUnlock: true,
+    },
+    {
+      id: "recipe_furnace",
+      name: "용광로",
+      ingredients: [{ itemId: "item_stone", count: 20 }, { itemId: "item_iron_ore", count: 5 }],
+      outputItemId: "item_furnace",
+      outputCount: 1,
+      requiresUnlock: true,
+    },
+  ];
+  project.system.itemUpgrades = [
+    {
+      id: "upgrade_copper_hoe",
+      fromItemId: "item_hoe",
+      toItemId: "item_copper_hoe",
+      goldCost: 500,
+      ingredients: [{ itemId: "item_iron_bar", count: 2 }],
+      capability: { areaWidth: 3, areaHeight: 1, energyMultiplier: 1.5 },
+    },
+    {
+      id: "upgrade_copper_watering_can",
+      fromItemId: "item_watering_can",
+      toItemId: "item_copper_watering_can",
+      goldCost: 500,
+      ingredients: [{ itemId: "item_iron_bar", count: 2 }],
+      capability: { areaWidth: 3, areaHeight: 1, energyMultiplier: 1.5 },
+    },
+    {
+      id: "upgrade_copper_pickaxe",
+      fromItemId: "item_pickaxe",
+      toItemId: "item_copper_pickaxe",
+      goldCost: 500,
+      ingredients: [{ itemId: "item_iron_bar", count: 2 }],
+      capability: { areaWidth: 1, areaHeight: 1, energyMultiplier: 0.75 },
+    },
+  ];
+  project.system.makers = [
+    {
+      id: "maker_preserves_jar",
+      name: "절임통",
+      inputs: [{ itemId: "item_potato", count: 1 }],
+      outputs: [{ itemId: "item_pickled_potato", count: 1 }],
+      durationMinutes: 120,
+    },
+    {
+      id: "maker_furnace",
+      name: "용광로",
+      inputs: [{ itemId: "item_iron_ore", count: 2 }],
+      outputs: [{ itemId: "item_iron_bar", count: 1 }],
+      durationMinutes: 180,
+    },
+  ];
+  project.system.bundles = [
+    {
+      id: "bundle_spring_harvest",
+      name: "봄 수확 꾸러미",
+      requirements: [
+        { itemId: "item_potato", count: 1 },
+        { itemId: "item_strawberry", count: 1 },
+        { itemId: "item_tomato", count: 1 },
+      ],
+      reward: { gold: 250, recipeIds: ["recipe_preserves_jar"] },
+    },
+    {
+      id: "bundle_mine_starter",
+      name: "광산 입문 꾸러미",
+      requirements: [{ itemId: "item_stone", count: 5 }, { itemId: "item_iron_ore", count: 2 }],
+      reward: {
+        gold: 400,
+        switchId: FARM_QUARRY_UNLOCK_SWITCH_ID,
+        worldUnlockIds: ["unlock_quarry_path"],
+        recipeIds: ["recipe_furnace"],
+      },
+    },
+  ];
+  project.database.lifeSkills = [
+    { id: "life_farming", name: "농사", skillType: "farming", maxLevel: 5, levelUpRewards: [{ level: 2, recipeId: "recipe_preserves_jar" }] },
+    { id: "life_mining", name: "채광", skillType: "mining", maxLevel: 5, levelUpRewards: [{ level: 2, recipeId: "recipe_furnace" }] },
+    { id: "life_foraging", name: "채집", skillType: "foraging", maxLevel: 5, levelUpRewards: [] },
+    { id: "life_fishing", name: "낚시", skillType: "fishing", maxLevel: 5, levelUpRewards: [] },
+    { id: "life_combat", name: "전투", skillType: "combat", maxLevel: 5, levelUpRewards: [] },
+  ];
+}
 
 /**
  * 촌장의 선물 취향. **`characterId` 없이는 호감도가 전부 차단된다** —

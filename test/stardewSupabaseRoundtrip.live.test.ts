@@ -30,6 +30,11 @@ describeLive("Stardew demo: Supabase 저장·재로드", () => {
     expect(restored!.database.crops).toHaveLength(8);
     expect(restored!.system.giftSystem).toBe(true);
     expect(restored!.session.variables.var_stamina).toBe(100);
+    expect(restored!.system.energy?.max).toBe(100);
+    expect(restored!.system.shipping?.allowedItemIds?.length ?? 0).toBeGreaterThanOrEqual(10);
+    expect(restored!.system.bundles?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(restored!.system.makers?.length ?? 0).toBeGreaterThanOrEqual(2);
+    expect(restored!.database.lifeSkills).toHaveLength(5);
 
     const events = Object.values(restored!.maps).flatMap((map) => map.events);
     for (const residentId of RESIDENT_IDS) {
