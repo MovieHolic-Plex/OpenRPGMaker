@@ -12,6 +12,7 @@ import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 type FakeBrowserGlobals = {
+  readonly Image: typeof globalThis.Image | undefined;
   readonly window: typeof globalThis.window | undefined;
   readonly requestAnimationFrame: typeof globalThis.requestAnimationFrame | undefined;
 };
@@ -22,9 +23,17 @@ let previousBrowserGlobals: FakeBrowserGlobals;
 beforeEach(() => {
   restoreDom = installFakeDom();
   previousBrowserGlobals = {
+    Image: globalThis.Image,
     requestAnimationFrame: globalThis.requestAnimationFrame,
     window: globalThis.window,
   };
+  Object.defineProperty(globalThis, "Image", {
+    configurable: true,
+    value: class {
+      addEventListener(): void {}
+      set src(_value: string) {}
+    },
+  });
   Object.defineProperty(globalThis, "window", {
     configurable: true,
     value: {
@@ -54,6 +63,7 @@ afterEach(() => {
   restoreDom?.();
   restoreDom = undefined;
   restoreBrowserGlobal("window", previousBrowserGlobals.window);
+  restoreBrowserGlobal("Image", previousBrowserGlobals.Image);
   restoreBrowserGlobal("requestAnimationFrame", previousBrowserGlobals.requestAnimationFrame);
 });
 
