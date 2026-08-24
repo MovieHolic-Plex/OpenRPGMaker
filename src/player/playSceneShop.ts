@@ -1,4 +1,9 @@
-import { changeGold, changeItem, changeItemsAtomically, GOLD_MAX } from "@/project/session";
+import { changeGold, changeItemsAtomically, GOLD_MAX } from "@/project/session";
+import {
+  isSafeEconomyRecord,
+  isSafeEconomyValue,
+  isSafeShopTradeCountsRecord,
+} from "@/project/economyValues";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
@@ -192,16 +197,36 @@ export function handleShopTransaction(
       return { ok: false, status: "You do not have enough." };
     }
     const payout = sellPrice(item) * qty;
+    const economy = scene.session as typeof scene.session & {
+      shopLoyaltySpend?: Record<string, number>;
+      shopTradeCounts?: Record<string, { sold: number; bought: number }>;
+      shopMileagePoints?: number;
+    };
+    const tc = economy.shopTradeCounts ?? {};
+    const currentTrade = tc[item.id] ?? { sold: 0, bought: 0 };
+    if (!isSafeEconomyValue(payout)
+      || !isSafeEconomyValue(scene.session.gold)
+      || scene.session.gold + payout > GOLD_MAX
+      || !isSafeEconomyValue(merchantGold)
+      || (economy.shopLoyaltySpend !== undefined && !isSafeEconomyRecord(economy.shopLoyaltySpend))
+      || (economy.shopTradeCounts !== undefined && !isSafeShopTradeCountsRecord(economy.shopTradeCounts))
+      || (economy.shopMileagePoints !== undefined && !isSafeEconomyValue(economy.shopMileagePoints))
+      || currentTrade.sold + qty > GOLD_MAX) {
+      scene.syncRuntimeState();
+      return { ok: false, status: "Invalid shop state." };
+    }
     if (merchantGold < payout) {
       scene.syncRuntimeState();
       return { ok: false, status: "상인의 돈이 부족합니다." };
     }
-    changeItem(scene.session, item.id, "-=", qty);
+    if (!changeItemsAtomically(scene.session, [{ itemId: item.id, op: "-=", amount: qty }])) {
+      scene.syncRuntimeState();
+      return { ok: false, status: "Invalid shop state." };
+    }
     changeGold(scene.session, "+=", payout);
     {
-      const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
-      (scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts = tc;
-      tc[item.id] = { sold: (tc[item.id]?.sold ?? 0) + qty, bought: tc[item.id]?.bought ?? 0 };
+      economy.shopTradeCounts = tc;
+      tc[item.id] = { sold: currentTrade.sold + qty, bought: currentTrade.bought };
       // 환불 시 마일리지 차감(성공 시에만 적립했으므로 판매 시 차감 대상 아님 — 구매 환불 경로에서만 차감)
       // 판매(sell)는 “되팔기”이므로 마일리지 차감 없음. 구매 환불은 handleShopTransaction 밖에서 처리.
     }
@@ -209,7 +234,7 @@ export function handleShopTransaction(
     return { ok: true, status: `${item.name} sold.`, merchantGold: merchantGold - payout };
   }
   const cost = item.price * qty;
-  if (!isSafeGold(cost) || !isSafeGold(scene.session.gold) || !isSafeGold(merchantGold) || merchantGold + cost > GOLD_MAX) {
+  if (!isSafeEconomyValue(cost) || !isSafeEconomyValue(scene.session.gold) || !isSafeEconomyValue(merchantGold) || merchantGold + cost > GOLD_MAX) {
     scene.syncRuntimeState();
     return { ok: false, status: "Invalid shop state." };
   }
@@ -219,7 +244,7 @@ export function handleShopTransaction(
   }
   const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
   const currentTrade = tc[item.id] ?? { sold: 0, bought: 0 };
-  if (!isSafeTradeCount(currentTrade.sold) || !isSafeTradeCount(currentTrade.bought) || currentTrade.bought + qty > GOLD_MAX) {
+  if (!isSafeEconomyValue(currentTrade.sold) || !isSafeEconomyValue(currentTrade.bought) || currentTrade.bought + qty > GOLD_MAX) {
     scene.syncRuntimeState();
     return { ok: false, status: "Invalid shop state." };
   }
@@ -235,14 +260,6 @@ export function handleShopTransaction(
   scene.syncRuntimeState();
   // 플레이어 구매금은 상인 소지금으로 들어간다(이후 매입 여력 증가).
   return { ok: true, status: `${item.name} purchased.`, merchantGold: merchantGold + cost };
-}
-
-function isSafeGold(value: unknown): value is number {
-  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= GOLD_MAX;
-}
-
-function isSafeTradeCount(value: unknown): value is number {
-  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= GOLD_MAX;
 }
 
 function mountCommerceOverlay(scene: PlaySceneContext, overlay: HTMLElement): void {
