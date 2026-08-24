@@ -89,6 +89,13 @@ test("all event-editor button families keep visible background context", async (
   // Generated command buttons share this picker/subdialog path; one representative guards the family.
   await assertSubdialogButton(modal, modal.getByTestId("event-command-toolbar-add").first(), page, "event-command-picker");
   await assertSubdialogButton(modal, modal.getByTestId("event-page-graphic-set"), page, "event-graphic-dialog");
+  await assertSubdialogButton(modal, modal.getByTestId("event-character-id-connect"), page, "event-character-id-picker");
+
+  const movementSection = modal.getByTestId("event-classic-movement-section");
+  await movementSection.locator(":scope > summary").click();
+  await modal.getByTestId("event-page-movement-type").selectOption("custom");
+  await expectOriginalEditorBackdrop(modal);
+  await assertSubdialogButton(modal, modal.getByTestId("event-page-custom-route"), page, "event-page-move-route-dialog");
 
   const auxTools = modal.getByTestId("event-editor-aux-tools");
   await auxTools.locator(":scope > summary").click();
