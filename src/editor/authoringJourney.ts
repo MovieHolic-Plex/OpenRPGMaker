@@ -34,6 +34,7 @@ export type AuthoringJourneyStage = {
 
 const STORAGE_KEY = `${STORAGE_PREFIX}authoring-journey:v1`;
 export const AUTHORING_TEST_BOOT_SUCCESS_EVENT = "oprn:authoring-test-boot-success";
+export const AUTHORING_TEST_GATE_BLOCKED_EVENT = "oprn:authoring-test-gate-blocked";
 
 export function emptyAuthoringJourneyProgress(): AuthoringJourneyProgress {
   return {

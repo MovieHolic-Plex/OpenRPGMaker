@@ -58,6 +58,7 @@ import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  AUTHORING_TEST_GATE_BLOCKED_EVENT,
   authoringProjectFingerprint,
   evaluateAuthoringTestGate,
   loadAuthoringJourneyProgress,
@@ -234,6 +235,7 @@ export function renderEditor(main: HTMLElement): void {
   window.addEventListener("resize", onWindowResize);
   window.addEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.addEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.addEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   void startEditGame(phaserContainer).then(() => scheduleFitCanvas());
   unsubLayoutBbox = installLayoutBboxOverlay();
 
@@ -410,6 +412,7 @@ export function teardownEditor(): void {
   window.removeEventListener("resize", onWindowResize);
   window.removeEventListener("oprn:test-play-window", onTestPlayWindowRequest);
   window.removeEventListener(AUTHORING_TEST_BOOT_SUCCESS_EVENT, onAuthoringTestBootSuccess);
+  window.removeEventListener(AUTHORING_TEST_GATE_BLOCKED_EVENT, onAuthoringTestGateBlocked);
   closeTestPlayModal();
   destroyGame();
   leftRoot = null;
@@ -770,6 +773,11 @@ function onAuthoringTestBootSuccess(event: Event): void {
   refreshAuthoringJourney();
 }
 
+function onAuthoringTestGateBlocked(): void {
+  authoringJourneyReferenceIssues = evaluateAuthoringTestGate(store.getCurrent()).referenceIssues;
+  refreshAuthoringJourney();
+}
+
 function renderMapEditLockBanner(container: HTMLElement): void {
   clearChildren(container);
   const status = getMapEditLockStatus();
@@ -962,13 +970,6 @@ function toolStatusLabel(tool: string): string {
 }
 
 function onTestPlayWindowRequest(event: Event): void {
-  const gate = evaluateAuthoringTestGate(store.getCurrent());
-  if (!gate.allowed) {
-    authoringJourneyReferenceIssues = gate.referenceIssues;
-    refreshAuthoringJourney();
-    toast(`참조 문제 ${gate.referenceIssues.length}개를 해결해야 테스트할 수 있습니다. 여정의 문제 목록에서 데이터로 이동하세요.`, "error");
-    return;
-  }
   const detail = event instanceof CustomEvent ? event.detail : undefined;
   if (isMapTestRequest(detail)) {
     selectEditorMap(detail.mapId);
