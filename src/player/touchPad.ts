@@ -47,10 +47,15 @@ function touchControlsOverride(): boolean | null {
 // 터치/coarse 포인터 기기 감지.
 export function isTouchDevice(): boolean {
   if (typeof window === "undefined") return false;
-  const coarse =
-    typeof window.matchMedia === "function" && window.matchMedia("(pointer: coarse)").matches;
+  const hasPointerQueries = typeof window.matchMedia === "function";
+  const coarse = hasPointerQueries && window.matchMedia("(pointer: coarse)").matches;
+  const fine = hasPointerQueries && window.matchMedia("(pointer: fine)").matches;
+  if (coarse) return true;
+  // Hybrid laptops and desktop browsers can expose touch APIs while their primary
+  // interaction remains a mouse. Avoid covering the 320x240 play surface there.
+  if (fine) return false;
   const touchPoints = typeof navigator !== "undefined" ? navigator.maxTouchPoints ?? 0 : 0;
-  return coarse || "ontouchstart" in window || touchPoints > 0;
+  return "ontouchstart" in window || touchPoints > 0;
 }
 
 function dispatchKey(type: "keydown" | "keyup", key: string): void {
