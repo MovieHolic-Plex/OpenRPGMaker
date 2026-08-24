@@ -30,12 +30,23 @@ import {
 } from "../src/project/examples/horrorMysteryPrototype.ts";
 import type { GameMap, Project } from "../src/project/types.ts";
 import { isPassable } from "../src/project/collision.ts";
+import { resolveAudioSource } from "../src/player/audio/audioResources.ts";
 import {
   CAPTURE_HORROR_BROWSER_EVIDENCE_NAME,
   validateHorrorBrowserEvidenceShape,
   browserEvidenceOutputPath,
 } from "./lib/horror-browser-evidence.mjs";
 import { buildViteInvocation } from "./lib/vite-invocation.mjs";
+import {
+  planServerOwnership,
+  assertExpectedStart,
+  assertObservedDigest,
+  deriveRequiredStartBgm,
+  assertRequiredBgmObserved,
+  browserScreenshotNames,
+  assertScreenshotOrder,
+} from "./lib/horror-capture-rules.mjs";
+import { canonicalProjectDigest, browserCanonicalDigestSource } from "./lib/canonical-project-digest.mjs";
 
 const VIEWPORT = { width: 1440, height: 900 };
 const DEFAULT_DEV_SERVER_PORT = 9815;
@@ -99,17 +110,16 @@ interface DevServerHandle {
 
 /**
  * Reserve a Vite dev server on the worktree port.
- * - free      → spawn OUR OWN, own the lifecycle.
- * - already this app → reuse the running worktree dev server explicitly (not silently).
- * - another app on that port → FAIL; never attach to an unrelated server.
+ * - free → spawn OUR OWN, own the lifecycle.
+ * - already-listening (any app) → REJECT; never reuse an occupied port (contract).
  */
 async function reserveDevServer(port: number): Promise<DevServerHandle> {
   const baseUrl = `http://127.0.0.1:${port}`;
-  await waitForServer(baseUrl, port, 8000).catch(() => undefined);
-  if (await servesThisApp(baseUrl)) {
-    console.log(`[capture] reusing running worktree dev server on :${port}`);
-    return { baseUrl, server: null, reused: true };
-  }
+  // Contract: browser QA must NEVER reuse an already-listening arbitrary Vite server. Every capture
+  // owns a freshly verified-free port and an exact spawned process from this worktree. If the port is
+  // already occupied (by this app or a foreign one), planServerOwnership rejects it.
+  const free = await waitForServer(baseUrl, port, 8000).then(() => false).catch(() => true);
+  planServerOwnership({ kind: free ? "free" : "already-listening", servesThisApp: await servesThisApp(baseUrl).catch(() => false) });
   const invocation = buildViteInvocation(port, { cwd: process.cwd() });
   const child = spawn(invocation.command, invocation.args, invocation.options);
   await new Promise<void>((resolve) => {
@@ -261,10 +271,12 @@ async function observePlaySession(page: Page): Promise<{
   return { currentMapId: record.currentMapId!, x: record.x!, y: record.y!, touchPadVisible };
 }
 
-export async function runCapture(): Promise<void> {
+export async function runCapture(opts: { expectedDigest?: string } = {}): Promise<void> {
+  const { expectedDigest: authorDigest } = opts;
   const outputPath = browserEvidenceOutputPath();
   const evidenceDir = path.dirname(outputPath);
   fs.mkdirSync(evidenceDir, { recursive: true });
+  const { title: titleName, playStart: playStartName } = browserScreenshotNames();
 
   const port = await resolvePort();
   const { baseUrl, server: reservedServer, reused } = await reserveDevServer(port);
@@ -274,14 +286,19 @@ export async function runCapture(): Promise<void> {
   let server: ChildProcess | null = reservedServer;
   let browser: Browser | null = null;
   try {
-    // 1) Via reserveDevServer: either OUR OWN dev server (strictPort) or an explicit
-    //    reuse of the running worktree dev server — never a silent attach to an unrelated one.
+    // 1) Via reserveDevServer: we ALWAYS own a fresh spawned process on a verified-free port.
+    //    The old reuse path is removed — an occupied port (any app) is a hard failure.
     void reused;
 
     // 2) Headless browser against the real editor URL.
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage({ viewport: VIEWPORT });
     const errors = attachErrorListeners(page);
+    const requestedUrls: string[] = [];
+    page.on("response", (response) => {
+      const url = response.url();
+      if (url.endsWith(".ogg") || url.endsWith(".mp3") || url.endsWith(".wav") || url.endsWith(".m4a")) requestedUrls.push(url);
+    });
 
     await page.goto(entryUrl, { waitUntil: "domcontentloaded", timeout: BOOT_MS });
 
@@ -298,12 +315,28 @@ export async function runCapture(): Promise<void> {
       `브라우저가 대상 프로젝트가 아닌 것을 로드했습니다: ${snapshot.projectId ?? "(없음)"} (기대: ${HORROR_MYSTERY_PROJECT_ID})`,
     );
 
+    // Content-digest binding: compute observed digest IN-BROWSER from actual project data.
+    // The expected digest is the authoritative one: when the QA orchestrator passes the
+    // Supabase-reloaded project's digest we compare against it (cross-side binding); standalone
+    // capture falls back to the in-page Node-side digest of the same project (determinism proof).
+    const observedDigest = await page.evaluate(
+      async (project: unknown) => {
+        const fn = new Function(`return (${browserCanonicalDigestSource})`)() as (p: unknown) => Promise<string>;
+        return await fn(project);
+      },
+      snapshot.project as unknown,
+    );
+    const expectedDigest = authorDigest ?? canonicalProjectDigest(snapshot.project as unknown);
+    assertObservedDigest(observedDigest, expectedDigest);
+
     // 4) Real UI observation: open Test Play → title screen.
+    const titleStartedAtMs = Date.now();
     await page.evaluate(() => {
       window.dispatchEvent(new CustomEvent("oprn:test-play-window"));
     });
-    // waitForSelector happens inside observeTitleScreen.
     const title = await observeTitleScreen(page);
+    const titlePath = path.join(evidenceDir, titleName);
+    await page.screenshot({ path: titlePath });
 
     // 5) Touch pad absence on the desktop title surface.
     const titleTouchPadVisible = await page.locator('[data-testid="touch-pad"]').count() > 0;
@@ -311,10 +344,17 @@ export async function runCapture(): Promise<void> {
     // 6) Start a new game and observe the live start map/position.
     await startNewGame(page);
     const play = await observePlaySession(page);
+    const playStartAtMs = Date.now();
+    assertScreenshotOrder({ titleAtMs: titleStartedAtMs, playStartAtMs });
+    // Contract: assert live session exact expected startMapId/startPos x/y.
+    assertExpectedStart(play, {
+      mapId: snapshot.project.startMapId,
+      x: snapshot.project.startPos.x,
+      y: snapshot.project.startPos.y,
+    });
 
     // 7) map start passability — computed on the browser-loaded project (not a constant)
     //    at the actual live start position.
-    // Live session is authoritative for the map start the player actually spawns on.
     const liveMap = snapshot.project.maps[play.currentMapId];
     const mapStart = {
       mapId: play.currentMapId,
@@ -323,8 +363,23 @@ export async function runCapture(): Promise<void> {
       passable: liveMap ? isPassable(snapshot.project, liveMap as GameMap, play.x, play.y) : false,
     };
 
-    // Screenshots: full editor boot + title screen.
-    await page.screenshot({ path: path.join(evidenceDir, "browser-title.png") });
+    // Screenshots: browser-title.png = title before play; browser-play-start.png = after play.
+    const playStartPath = path.join(evidenceDir, playStartName);
+    await page.screenshot({ path: playStartPath });
+
+    // Required start-map BGM observation (gallery custom BGM cc0-bgm-dungeon → cave-theme.ogg).
+    const requiredBgm = deriveRequiredStartBgm({
+      startMap: liveMap ?? snapshot.project.maps[snapshot.project.startMapId],
+      resolveUrl: (resourceId) => {
+        const map = snapshot.project.maps[play.currentMapId] ?? snapshot.project.maps[snapshot.project.startMapId];
+        return resolveAudioSource(resourceId, snapshot.project as never);
+      },
+    });
+    const playedAudio = await page.evaluate(() => {
+      const observed = (window as unknown as { __oprnAudioObserved?: string[] }).__oprnAudioObserved;
+      return Array.isArray(observed) ? observed : [];
+    });
+    assertRequiredBgmObserved(requiredBgm, { requestedUrls, played: playedAudio });
 
     const evidence = {
       projectId: HORROR_MYSTERY_PROJECT_ID,
@@ -334,6 +389,9 @@ export async function runCapture(): Promise<void> {
       title,
       desktopTouchPadVisible: titleTouchPadVisible || play.touchPadVisible,
       mapStart,
+      expectedStart: { mapId: snapshot.project.startMapId, x: snapshot.project.startPos.x, y: snapshot.project.startPos.y },
+      contentDigest: { observed: observedDigest, expected: expectedDigest },
+      bgm: { requested: requestedUrls.includes(requiredBgm.url), played: playedAudio.includes(requiredBgm.resourceId) },
       consoleErrorCount: errors.relevantErrorCount(),
       errors: {
         console: errors.consoleErrors.slice(0, 50),
@@ -345,18 +403,8 @@ export async function runCapture(): Promise<void> {
 
     // Never persist credentials: output only the sanctioned fields.
     validateHorrorBrowserEvidenceShape(evidence);
-    fs.writeFileSync(outputPath, `${JSON.stringify({
-      projectId: HORROR_MYSTERY_PROJECT_ID,
-      observedAt: evidence.observedAt,
-      route,
-      capturedBy: evidence.capturedBy,
-      title: evidence.title,
-      desktopTouchPadVisible: evidence.desktopTouchPadVisible,
-      mapStart: evidence.mapStart,
-      consoleErrorCount: evidence.consoleErrorCount,
-    }, null, 2)}\n`, "utf8");
+    fs.writeFileSync(outputPath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
 
-    assert(snapshot.projectId === HORROR_MYSTERY_PROJECT_ID, "identity check failed");
     console.log(JSON.stringify({
       ok: true,
       projectId: HORROR_MYSTERY_PROJECT_ID,
@@ -364,7 +412,11 @@ export async function runCapture(): Promise<void> {
       title,
       desktopTouchPadVisible: evidence.desktopTouchPadVisible,
       mapStart,
+      expectedStart: evidence.expectedStart,
+      contentDigest: evidence.contentDigest,
+      bgm: evidence.bgm,
       consoleErrorCount: evidence.consoleErrorCount,
+      screenshots: { title: titleName, playStart: playStartName },
       reportedOn: "browser-qa.json",
     }, null, 2));
   } finally {

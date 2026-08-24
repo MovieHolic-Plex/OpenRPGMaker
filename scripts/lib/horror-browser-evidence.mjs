@@ -17,7 +17,7 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-/** Human-owned, stable shape (mirrors HorrorBrowserEvidence in src/testing/horrorExperienceQa.ts). */
+/** Human-owned, stable shape (superset of HorrorBrowserEvidence in src/testing/horrorExperienceQa.ts). */
 export const HORROR_BROWSER_EVIDENCE_FIELDS = [
   "projectId",
   "observedAt",
@@ -26,6 +26,9 @@ export const HORROR_BROWSER_EVIDENCE_FIELDS = [
   "desktopTouchPadVisible",
   "mapStart",
   "consoleErrorCount",
+  "expectedStart",
+  "contentDigest",
+  "bgm",
 ];
 
 export function validateHorrorBrowserEvidenceShape(parsed) {
@@ -43,6 +46,17 @@ export function validateHorrorBrowserEvidenceShape(parsed) {
   assert(typeof parsed.mapStart.y === "number", "browser-qa mapStart.y가 없습니다.");
   assert(typeof parsed.mapStart.passable === "boolean", "browser-qa mapStart.passable이 없습니다.");
   assert(typeof parsed.consoleErrorCount === "number", "browser-qa console error 수가 없습니다.");
+  // Slice-b indent binding fields.
+  assert(typeof parsed.expectedStart === "object" && parsed.expectedStart !== null, "browser-qa expectedStart가 없습니다.");
+  assert(typeof parsed.expectedStart.mapId === "string", "browser-qa expectedStart.mapId가 없습니다.");
+  assert(typeof parsed.expectedStart.x === "number", "browser-qa expectedStart.x가 없습니다.");
+  assert(typeof parsed.expectedStart.y === "number", "browser-qa expectedStart.y가 없습니다.");
+  assert(typeof parsed.contentDigest === "object" && parsed.contentDigest !== null, "browser-qa contentDigest가 없습니다.");
+  assert(typeof parsed.contentDigest.observed === "string", "browser-qa contentDigest.observed가 없습니다.");
+  assert(typeof parsed.contentDigest.expected === "string", "browser-qa contentDigest.expected가 없습니다.");
+  assert(typeof parsed.bgm === "object" && parsed.bgm !== null, "browser-qa bgm 관찰이 없습니다.");
+  assert(typeof parsed.bgm.requested === "boolean", "browser-qa bgm.requested가 없습니다.");
+  assert(typeof parsed.bgm.played === "boolean", "browser-qa bgm.played가 없습니다.");
   return parsed;
 }
 
@@ -94,6 +108,15 @@ export function readHorrorBrowserEvidence(filePath, opts) {
       x: evidence.mapStart.x,
       y: evidence.mapStart.y,
       passable: evidence.mapStart.passable,
+    },
+    expectedStart: evidence.expectedStart,
+    contentDigest: {
+      observed: evidence.contentDigest.observed,
+      expected: evidence.contentDigest.expected,
+    },
+    bgm: {
+      requested: evidence.bgm.requested,
+      played: evidence.bgm.played,
     },
     consoleErrorCount: evidence.consoleErrorCount,
   };
