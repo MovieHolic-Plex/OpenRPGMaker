@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -198,6 +198,8 @@ export interface PlaySession {
   /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
   dailyWeather?: DailyWeatherState;
   farmAnimals?: Record<string, FarmAnimalState>;
+  farmBuildingPlacements?: Record<string, FarmBuildingPlacement>;
+  homeDecorationPlacements?: Record<string, HomeDecorationPlacement>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -332,6 +334,8 @@ export function startSession(project: Project, seed?: number): PlaySession {
     unlockedRecipeIds: [],
     makerInstances: {},
     farmAnimals: initialFarmAnimalStates(start.farmAnimals),
+    farmBuildingPlacements: initialSpatialPlacementRecord(start.farmBuildingPlacements),
+    homeDecorationPlacements: initialSpatialPlacementRecord(start.homeDecorationPlacements),
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],
@@ -383,6 +387,15 @@ export function startSession(project: Project, seed?: number): PlaySession {
     ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
   }
   return session;
+}
+
+function initialSpatialPlacementRecord<T extends FarmBuildingPlacement | HomeDecorationPlacement>(
+  placements: readonly T[] | undefined,
+): Record<string, T> | undefined {
+  if (placements === undefined) return undefined;
+  return Object.fromEntries(
+    placements.map((placement) => [placement.instanceId, structuredClone(placement)]),
+  );
 }
 
 export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {

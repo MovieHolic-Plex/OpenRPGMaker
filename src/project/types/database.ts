@@ -3,6 +3,7 @@ import type {
   BattleAnimationId,
   ClassId,
   CropId,
+  Dir,
   EnemyId,
   EquipmentId,
   ItemId,
@@ -804,6 +805,50 @@ export interface MuseumSystemConfig {
   readonly rewards: readonly MuseumRewardDefinition[];
 }
 
+export interface SpatialFootprint {
+  readonly width: number;
+  readonly height: number;
+}
+
+export interface SpatialPlacementCost {
+  readonly gold?: number;
+  readonly items?: ItemAmount[];
+}
+
+export interface FarmBuildingLevelDefinition {
+  readonly level: number;
+  readonly name?: string;
+  readonly footprint: SpatialFootprint;
+  /** Generic facility slots, never P1 farm-animal housing capacity. */
+  readonly capacity: number;
+  /** Level 1 builds the structure; later levels upgrade into that level. */
+  readonly cost?: SpatialPlacementCost;
+  readonly graphicResourceId: string;
+  readonly orientationGraphicResourceIds?: Partial<Record<Dir, string>>;
+}
+
+/** General farm structure catalog, deliberately independent from farmAnimalBuildings. */
+export interface FarmBuildingTypeRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly levels: FarmBuildingLevelDefinition[];
+  /** Omitted/empty permits every map. */
+  readonly allowedMapIds?: MapId[];
+}
+
+export interface HomeDecorationTypeRecord {
+  readonly id: string;
+  readonly name: string;
+  readonly placementItemId: ItemId;
+  readonly footprint: SpatialFootprint;
+  readonly blocksMovement: boolean;
+  readonly allowedOrientations: Dir[];
+  readonly graphicResourceId: string;
+  readonly orientationGraphicResourceIds?: Partial<Record<Dir, string>>;
+  /** Omitted/empty permits every map. */
+  readonly allowedMapIds?: MapId[];
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
   elements?: DatabaseElementRecord[];
   terrains?: DatabaseTerrainRecord[];
@@ -813,6 +858,8 @@ export interface ProjectDatabaseRecords extends DatabaseRecords {
   lifeSkills?: LifeSkillRecord[];
   farmAnimalSpecies?: FarmAnimalSpeciesRecord[];
   fishSpecies?: FishSpeciesRecord[];
+  farmBuildingTypes?: FarmBuildingTypeRecord[];
+  homeDecorationTypes?: HomeDecorationTypeRecord[];
 }
 
 export interface TitleScreenLayout {

@@ -43,6 +43,10 @@ import {
   normalizeMuseumSystem,
   normalizeSeasonalForage,
 } from "@/project/p2FoundationRecords";
+import {
+  normalizeFarmBuildingTypes,
+  normalizeHomeDecorationTypes,
+} from "@/project/spatialPlacements";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -76,7 +80,10 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
   };
 }
 
-type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords, "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills" | "farmAnimalSpecies" | "fishSpecies">>;
+type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
+  "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes"
+>>;
 
 export function normalizeDatabaseRecords(database: ProjectDatabaseInput): ProjectDatabaseRecords {
   return {
@@ -100,6 +107,12 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
       : {}),
     ...(database.fishSpecies !== undefined
       ? { fishSpecies: normalizeFishSpeciesRecords(database.fishSpecies) ?? [] }
+      : {}),
+    ...(database.farmBuildingTypes !== undefined
+      ? { farmBuildingTypes: normalizeFarmBuildingTypes(database.farmBuildingTypes) ?? [] }
+      : {}),
+    ...(database.homeDecorationTypes !== undefined
+      ? { homeDecorationTypes: normalizeHomeDecorationTypes(database.homeDecorationTypes) ?? [] }
       : {}),
   };
 }
