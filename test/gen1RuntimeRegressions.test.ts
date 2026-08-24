@@ -47,6 +47,12 @@ describe("Gen1 runtime regressions", () => {
   it("fields multi-member wild troops one enemy at a time", () => {
     const project = createScarloxyPokemonDemoProject();
     makeWildEnemiesFragile(project);
+    const troop = project.database.troops.find((record) => record.id === "troop_pkmn_grass_b");
+    if (!troop) throw new Error("missing multi-member grass troop fixture");
+    troop.members = [
+      { enemyId: "enemy_pkmn_larvea", x: 128, y: 136 },
+      { enemyId: "enemy_pkmn_plumette", x: 168, y: 132 },
+    ];
     setActorParam(project, "attack", 999);
     setActorParam(project, "agility", 999);
     const actorId = project.system.startActorIds[0]!;
