@@ -1,7 +1,7 @@
 import type { ActorInitialEquipment, ActorParameterKey, LightSource, LightingState } from "@/project/types";
 import { GOLD_MAX, type AudioCommandState, type PictureState, type PlaySession } from "@/project/session";
 import type { ActorVitals } from "@/project/sessionVitals";
-import { isSeason, normalizeGameTime } from "@/project/gameTime";
+import { isSeason, MAX_DAYS_PER_SEASON } from "@/project/gameTime";
 import type { RuntimeCameraSessionState,
 RuntimeCameraTarget,
 RuntimeEventLocation,
@@ -245,7 +245,11 @@ export function isLightingState(value: unknown): value is LightingState {
 }
 
 export function isGameTime(value: unknown): value is PlaySession["gameTime"] {
-  return normalizeGameTime(value) !== undefined;
+  if (!isRecord(value)) return false;
+  return isFiniteInteger(value.minute) && value.minute >= 0 && value.minute <= 59 &&
+    isFiniteInteger(value.hour) && value.hour >= 0 && value.hour <= 48 &&
+    isFiniteInteger(value.day) && value.day >= 1 && value.day <= MAX_DAYS_PER_SEASON &&
+    isSeason(value.season) && isFiniteInteger(value.year) && value.year >= 1;
 }
 
 function isLightSource(value: unknown): value is LightSource {

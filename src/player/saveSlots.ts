@@ -405,7 +405,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
   session.lifeSkills = structuredClone(snapshot.session.lifeSkills ?? {});
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
-  session.farmPlotsAdvancedThrough = structuredClone(snapshot.session.farmPlotsAdvancedThrough);
+  session.farmPlotsAdvancedThrough = normalizeFarmPlotDateForProject(project, snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
@@ -436,7 +436,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
-  if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
+  if (snapshot.session.gameTime) {
+    session.gameTime = normalizeGameTime(snapshot.session.gameTime, project.system.timeSystem);
+  }
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   if (snapshot.session.access) {
@@ -596,7 +598,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
       actorStateIds: isActorStateIdsRecord(session.actorStateIds) ? session.actorStateIds : undefined,
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
-      gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
+      gameTime: isGameTime(session.gameTime) ? structuredClone(session.gameTime) : undefined,
       rng: isRngState(session.rng) ? session.rng : undefined,
       screen: parseScreenState(session.screen),
     },
@@ -646,6 +648,20 @@ function nonNegativeIntegerOrUndefined(value: unknown): number | undefined {
 
 function uniqueStrings(values: readonly string[] | undefined): string[] {
   return [...new Set((values ?? []).filter((value) => value.trim().length > 0))];
+}
+
+function normalizeFarmPlotDateForProject(
+  project: Project,
+  value: PlaySession["farmPlotsAdvancedThrough"],
+): PlaySession["farmPlotsAdvancedThrough"] {
+  if (!value) return undefined;
+  const normalized = normalizeGameTime(
+    { ...value, hour: project.system.timeSystem?.dayStartHour ?? 6, minute: 0 },
+    project.system.timeSystem,
+  );
+  return normalized
+    ? { day: normalized.day, season: normalized.season, year: normalized.year }
+    : undefined;
 }
 
 function restoreShippingQueue(
