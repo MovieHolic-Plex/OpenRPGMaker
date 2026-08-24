@@ -16,6 +16,7 @@ import { clearChildren, el } from "@/util/dom";
 import { commandKindLabel } from "./options";
 import { groupVisual, pickerPageGlyph } from "./commandCategoryIcons";
 import { renderRuntimeSupportBadge } from "./commandRuntimeBadge";
+import { nativeCommandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import {
   readEventCommandPickerPreferences,
   recordRecentEventCommand,
@@ -485,8 +486,11 @@ function renderCommandGrid(
  * 배지에 쓸 컨텍스트 반영 런타임 지원. 네이티브 kind 항목은 카탈로그/디스크립터 판정을
  * 그대로 쓰고(컨텍스트 무관), 순수 m2 항목만 편집 컨텍스트로 재판정한다.
  */
+// Native rows and aliases are context-sensitive through COMMAND_GUARANTEES; only pure M2 rows use M2 classification.
 function entryRuntimeSupport(entry: CommandEntry, context: M2RuntimeContext | undefined): CommandRuntimeSupport {
-  if (entry.kind !== undefined) return entry.runtimeSupport;
+  if (entry.kind !== undefined && entry.kind !== "m2Command") {
+    return nativeCommandRuntimeSupport(entry.kind, context);
+  }
   const catalogEntry = m2CommandById(entry.commandId);
   return catalogEntry ? m2CatalogEntryRuntimeSupport(catalogEntry, context) : entry.runtimeSupport;
 }

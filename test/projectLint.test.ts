@@ -49,6 +49,27 @@ function withFirstTransfer(project: Project, mutate: (command: Extract<Command, 
 }
 
 describe("projectLint", () => {
+  it("reports a native partial map command from the guarantee registry", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("start map missing");
+    map.events.push({
+      id: "ev_partial_native",
+      x: 2,
+      y: 2,
+      trigger: { kind: "action" },
+      commands: [{ kind: "giveMonster", speciesId: "monster_missing", level: 1 }],
+    });
+
+    const issues = projectLint(project);
+
+    expect(issues).toContainEqual(expect.objectContaining({
+      severity: "warning",
+      code: "runtime-support:giveMonster",
+      mapId: map.id,
+    }));
+  });
+
   it("(a) 잿불의 유산 프로젝트는 error가 0건이다", () => {
     const issues = projectLint(createEmberQuestProject());
     expect(errorsOf(issues), JSON.stringify(errorsOf(issues), null, 2)).toHaveLength(0);

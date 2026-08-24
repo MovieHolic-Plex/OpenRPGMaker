@@ -11,6 +11,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import type { Command, EventPage, EventPageGraphic } from "@/project/types";
+import { commandRuntimeSupport } from "@/project/eventCommands/runtimeSupport";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 
 describe("event editor presentation", () => {
@@ -225,6 +226,29 @@ describe("event editor presentation", () => {
     const badge = findByTestId(host, "command-runtime-badge-list-0");
     expect(badge?.dataset.runtimeSupport).toBe("editor-only");
     expect(badge?.attrs.title).toContain("런타임에서 실행되지 않습니다");
+  });
+
+  it("renders the inserted native row with the same map support grade as lint and draft validation", () => {
+    const host = renderWithFakeDom(() => {
+      const node = el("div");
+      renderCommandList(
+        node,
+        [{ kind: "giveMonster", speciesId: "monster_missing", level: 1 }],
+        [],
+        {
+          addCommand: () => undefined,
+          deleteCommand: () => undefined,
+          insertCommand: () => undefined,
+          moveCommand: () => undefined,
+          moveCommandTo: () => undefined,
+          replaceCommand: () => undefined,
+        },
+        { runtimeSupport: (command) => commandRuntimeSupport(command, "map") }
+      );
+      return node;
+    });
+
+    expect(findByTestId(host, "command-runtime-badge-list-0")?.dataset.runtimeSupport).toBe("runtime-partial");
   });
 
   it("renders M2 image resource fields with a picker, selected name, and preview", () => {

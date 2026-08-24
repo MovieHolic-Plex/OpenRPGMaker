@@ -62,13 +62,25 @@ const NATIVE_SUPPORT_TO_RUNTIME_SUPPORT: Readonly<Record<CommandSupport, Command
 };
 
 export function commandRuntimeSupport(command: Command, context?: M2RuntimeContext): CommandRuntimeSupport {
-  if (command.kind !== "m2Command") return "runtime-full";
+  if (command.kind !== "m2Command") return nativeCommandRuntimeSupport(command.kind, context);
   return m2CommandRuntimeSupport(command.commandId, context);
 }
 
 export function battleEventCommandRuntimeSupport(command: Command): CommandRuntimeSupport {
-  if (command.kind === "m2Command") return m2CommandRuntimeSupport(command.commandId, "troop");
-  return NATIVE_SUPPORT_TO_RUNTIME_SUPPORT[COMMAND_GUARANTEES[command.kind].supportByContext.troop];
+  return commandRuntimeSupport(command, "troop");
+}
+
+export function nativeCommandRuntimeSupport(
+  kind: Exclude<Command["kind"], "m2Command">,
+  context?: M2RuntimeContext
+): CommandRuntimeSupport {
+  const supportByContext = COMMAND_GUARANTEES[kind].supportByContext;
+  if (context) return NATIVE_SUPPORT_TO_RUNTIME_SUPPORT[supportByContext[context]];
+  return conservativeRuntimeSupport(
+    NATIVE_SUPPORT_TO_RUNTIME_SUPPORT[supportByContext.map],
+    NATIVE_SUPPORT_TO_RUNTIME_SUPPORT[supportByContext.common],
+    NATIVE_SUPPORT_TO_RUNTIME_SUPPORT[supportByContext.troop]
+  );
 }
 
 export function m2CommandRuntimeClassification(commandId: string): M2RuntimeClassification {
@@ -114,6 +126,14 @@ const RUNTIME_SUPPORT_RANK: Readonly<Record<CommandRuntimeSupport, number>> = {
 
 function conservativeM2CommandRuntimeSupport(classification: M2RuntimeClassification): CommandRuntimeSupport {
   const { map, common, troop } = classification.supportByContext;
+  return conservativeRuntimeSupport(map, common, troop);
+}
+
+function conservativeRuntimeSupport(
+  map: CommandRuntimeSupport,
+  common: CommandRuntimeSupport,
+  troop: CommandRuntimeSupport
+): CommandRuntimeSupport {
   return [common, troop].reduce(
     (worst, candidate) => (RUNTIME_SUPPORT_RANK[candidate] < RUNTIME_SUPPORT_RANK[worst] ? candidate : worst),
     map
@@ -126,7 +146,7 @@ export function catalogRowRuntimeSupport(
   context?: M2RuntimeContext
 ): CommandRuntimeSupport {
   // 네이티브 kind 로 변환되어 삽입되는 행은 실제 실행이 네이티브 인터프리터 경로다.
-  if (existingKind) return "runtime-full";
+  if (existingKind && existingKind !== "m2Command") return nativeCommandRuntimeSupport(existingKind, context);
   return m2CommandRuntimeSupport(commandId, context);
 }
 

@@ -74,6 +74,9 @@ Pick validation based on the touched boundary:
 - Editor command bodies must never spread the render-time `cmd` in a commit handler; that loses a prior field edit in the same form session. Patch from `context.getCurrentCommand?.()` instead, via the shared `replaceFields(context, cmd, fields, removeKeys?)` exported from `src/editor/panels/eventEditor/commandBodyM2Page3.ts` (or the local `latestShop`/`latestChoices`/`latestFork`/`updateField` equivalents). One-time seeds are the only legitimate `...cmd` spread. Any new command body needs a consecutive-two-field-edit case proving both survive.
 
 Evidence expectations:
+- Official cross-genre readiness is machine-computed by `evaluateOfficialGenrePackReadiness` from the five contracts in `src/project/officialGenrePackRequirements.ts`, native command guarantees, real `projectLint` output, and semantic assertion receipts. Status is only `blocked`, `incomplete`, or `ready`; there is no caller-supplied certification flag. Current partial monster/farm/horror/story command guarantees therefore cannot produce a ready receipt.
+- Screenshot counts are never a genre pass condition. `verifyGenrePackAssertionReceipts` requires all declared assertions for every official pack, rejects failed/duplicate/missing assertions and passed assertions without an evidence path, and ignores screenshot volume. Run the file-backed CLI with `npm run verify:genre-packs -- <assertion-receipts.json>`. The legacy `browser-verify:genre` capture script also fails when a genre selection is missing/cancelled or any screenshot capture fails.
+- `play_walkthrough` tool schema uses the runner's actual `do` / `expect` discriminants. A `kind`-shaped step is not the walkthrough contract.
 - Record the exact command run.
 - Capture pass/fail output or a short log excerpt.
 - For UI/e2e work, include the tested route and scenario.
