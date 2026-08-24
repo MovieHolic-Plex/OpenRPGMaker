@@ -8,9 +8,10 @@
 //   4. 메뉴/전투 토글 스위치 → 기존 boolean 필드명 그대로 저장.
 //   5. 종류(type) 변경 → updateItemType + 전체 재렌더 계약 유지(패널 스왑).
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { renderItemRecordForm } from "@/editor/panels/databaseItemRecordView";
+import { itemEffectStory, renderItemRecordForm } from "@/editor/panels/databaseItemRecordView";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { createBlankProject } from "@/project/defaults";
+import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { FARM_TOOLS } from "@/project/farmModel";
 import { store } from "@/project/store";
 import type { ItemRecord } from "@/project/types";
@@ -44,6 +45,68 @@ afterEach(() => {
 });
 
 describe("database item inspector form", () => {
+  // Break caught: removing the effect-story model would return the author to reading raw
+  // scope/occasion/charge/recovery fields one by one.
+  it("summarizes a finite-use party medicine from live item fields", () => {
+    const project = store.getCurrent();
+    const item = normalizeItemRecord({
+      ...currentItem(),
+      scope: "allAllies",
+      occasion: "always",
+      occasionField: true,
+      occasionBattle: true,
+      consumable: true,
+      consumptionLimit: 3,
+      hpRecovery: { flat: 30, percentMax: 40 },
+      mpRecovery: { flat: 0, percentMax: 20 },
+      healStateIds: [project.database.states[0]!.id],
+    });
+
+    const story = itemEffectStory(project, item);
+
+    expect(story.target).toBe("아군 전체");
+    expect(story.occasion).toBe("필드 · 전투");
+    expect(story.consumption).toBe("1개당 3회 사용");
+    expect(story.effects).toContain("HP 최대치 40% + 30 회복");
+    expect(story.effects).toContain("MP 최대치 20% 회복");
+    expect(story.effects.some((effect) => effect.startsWith("상태 회복:"))).toBe(true);
+  });
+
+  // Break caught: a special item with a live activateSkillId must name the triggered
+  // skill instead of showing a generic "special" ledger row.
+  it("resolves a special item's triggered skill name", () => {
+    const project = store.getCurrent();
+    const skill = project.database.skills[0];
+    if (!skill) throw new Error("fixture needs a skill");
+    const item = normalizeItemRecord({
+      ...currentItem(),
+      type: "special",
+      activateSkillId: skill.id,
+      skillId: undefined,
+      hpRecovery: { flat: 0, percentMax: 0 },
+      mpRecovery: { flat: 0, percentMax: 0 },
+    });
+
+    expect(itemEffectStory(project, item).effects).toContain(`스킬 발동: ${skill.name}`);
+  });
+
+  // Break caught: editing a recovery value without refreshing the story would leave a
+  // polished but stale summary that contradicts the saved record.
+  it("renders the effect story and refreshes it in place after recovery edits", () => {
+    const form = renderForm();
+    const storyHost = byTestId(form, "db-item-effect-story");
+    expect(byTestId(form, "db-item-story-target").textContent).toContain("아군 1명");
+    expect(storyHost.textContent).toContain("HP 최대치 40% + 30 회복");
+
+    const hpStepper = byTestId(form, "db-field-item-hp-percent-stepper");
+    hpStepper.value = "65";
+    hpStepper.dispatchEvent(new Event("input"));
+
+    expect(findByTestId(form, "db-item-effect-story")).toBe(storyHost);
+    expect(storyHost.textContent).toContain("HP 최대치 65% + 30 회복");
+    expect(storyHost.textContent).not.toContain("HP 최대치 40% + 30 회복");
+  });
+
   it("renders the inspector header with 96px icon, name edit (db-field-name), and type tag", () => {
     const form = renderForm();
     expect(byTestId(form, "db-item-inspector-header")).toBeTruthy();

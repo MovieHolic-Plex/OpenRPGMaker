@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
+  equipmentActorComparison,
+  equipmentEffectStory,
   equipmentEffectSummaryChips,
   renderEquipmentRecordForm,
 } from "@/editor/panels/databaseEquipmentRecordView";
@@ -109,6 +111,102 @@ describe("equipmentEffectSummaryChips (pure)", () => {
       }),
     );
     expect(summary.badges).toEqual(["양손 장비", "저주"]);
+  });
+});
+
+describe("equipmentEffectStory and actor comparison (pure)", () => {
+  // Break caught: effect chips that only report counts hide which live element/state/skill
+  // an equipment record actually contributes.
+  it("turns named runtime effects into a concise equipment story", () => {
+    const project = store.getCurrent();
+    const element = project.database.elements[0];
+    const state = project.database.states[0];
+    const skill = project.database.skills[0];
+    if (!element || !state || !skill) throw new Error("fixture needs element, state, and skill records");
+    const equipment = normalizeEquipmentRecord({
+      id: "equip_story",
+      name: "별빛 검",
+      statBonuses: { attack: 12, defense: 0, mind: 3, agility: 0 },
+      attackElementIds: [element.id],
+      stateDefenseIds: [state.id],
+      stateDefenseMode: "resist",
+      stateResistanceChance: 60,
+      usableAsItemSkillId: skill.id,
+      effectFlags: { ...allFlagsFalse(), doubleAttack: true },
+    });
+
+    const story = equipmentEffectStory(project, equipment);
+
+    expect(story.statChanges).toEqual(["공격력 +12", "정신력 +3"]);
+    expect(story.effects).toContain("2회 공격");
+    expect(story.effects).toContain(`공격 속성: ${element.name}`);
+    expect(story.effects).toContain(`상태 저항 60%: ${state.name}`);
+    expect(story.effects).toContain(`사용 시 스킬: ${skill.name}`);
+  });
+
+  // Break caught: hand-written editor math can disagree with runtime two-handed replacement.
+  // The comparison must use the runtime transition/derived-stat authorities and include the
+  // shield that a two-handed candidate removes.
+  it("compares a two-handed candidate against an actor's initial loadout", () => {
+    const project = store.getCurrent();
+    const actor = project.database.actors[0]!;
+    const currentWeapon = normalizeEquipmentRecord({
+      id: "equip_current_weapon",
+      name: "현재 검",
+      slot: "weapon",
+      statBonuses: { attack: 8, defense: 0, mind: 0, agility: 0 },
+      equippableActorIds: [actor.id],
+    });
+    const currentShield = normalizeEquipmentRecord({
+      id: "equip_current_shield",
+      name: "현재 방패",
+      slot: "shield",
+      statBonuses: { attack: 0, defense: 5, mind: 0, agility: 0 },
+      equippableActorIds: [actor.id],
+    });
+    const candidate = normalizeEquipmentRecord({
+      id: "equip_candidate",
+      name: "대검",
+      slot: "weapon",
+      twoHanded: true,
+      statBonuses: { attack: 20, defense: 0, mind: 0, agility: 0 },
+      equippableActorIds: [actor.id],
+    });
+    actor.initialEquipment = { weapon: currentWeapon.id, shield: currentShield.id };
+    project.database.equipment = [currentWeapon, currentShield, candidate];
+
+    const comparison = equipmentActorComparison(project, candidate, actor.id);
+
+    expect(comparison?.eligible).toBe(true);
+    expect(comparison?.level).toBe(actor.initialLevel);
+    expect(comparison?.replacedEquipmentNames).toEqual(["현재 검", "현재 방패"]);
+    expect(comparison?.deltas).toEqual({ attack: 12, defense: -5, mind: 0, agility: 0 });
+  });
+
+  // Break caught: a stat preview must not imply that a disallowed actor can equip the item.
+  it("reports the runtime not-equippable reason without invented deltas", () => {
+    const project = store.getCurrent();
+    const actor = project.database.actors[0]!;
+    const otherActor = project.database.actors[1]!;
+    const actorClass = project.database.classes.find((entry) => entry.id === actor.classId);
+    if (!actorClass) throw new Error("fixture needs the actor class");
+    actorClass.equipmentPermissions = { actorIds: [], classIds: [], equipmentIds: [] };
+    const candidate = normalizeEquipmentRecord({
+      id: "equip_denied",
+      name: "전용 검",
+      slot: "weapon",
+      statBonuses: { attack: 99, defense: 0, mind: 0, agility: 0 },
+      equippableActorIds: [otherActor.id],
+      equippableClassIds: [],
+    });
+    project.database.equipment = [candidate];
+    actor.initialEquipment = {};
+
+    const comparison = equipmentActorComparison(project, candidate, actor.id);
+
+    expect(comparison?.eligible).toBe(false);
+    expect(comparison?.reason).toBe("notEquippable");
+    expect(comparison?.deltas).toBeUndefined();
   });
 });
 

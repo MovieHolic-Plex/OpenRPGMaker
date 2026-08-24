@@ -574,6 +574,177 @@
   font-weight: 500;
 }
 
+/* ── 아이템·장비 효과 이야기 / 초기 빌드 비교 ─────────────────────────────
+   저장 스키마를 늘리지 않고 기존 런타임 필드를 한눈에 읽는 결과 카드로 투영한다. */
+.database-modal-backdrop .database-modal-window :is(
+  .db-item-effect-story,
+  .db-equipment-effect-story,
+  .db-equipment-comparison
+) {
+  background: linear-gradient(135deg, var(--db-light-bg-raised), var(--db-light-bg-surface));
+  border: 1px solid var(--db-light-border-default);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(63, 53, 39, 0.06);
+  box-sizing: border-box;
+  color: var(--db-light-text-1);
+  min-width: 0;
+  padding: 13px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-kicker {
+  color: var(--db-light-accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-facts {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-fact {
+  background: var(--db-light-bg-inset);
+  border-radius: 6px;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  padding: 7px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-fact small {
+  color: var(--db-light-text-3);
+  font-size: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-fact strong {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-lines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-line {
+  background: var(--db-light-accent-muted);
+  border: 1px solid var(--db-light-accent-border);
+  border-radius: 999px;
+  color: var(--db-light-text-1);
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 4px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .db-effect-story-note,
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-note {
+  color: var(--db-light-text-3);
+  font-size: 11px;
+  line-height: 1.45;
+  margin: 8px 0 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-story-stats {
+  font-size: 15px;
+  font-weight: 750;
+  margin-bottom: 9px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-heading {
+  align-items: start;
+  display: grid;
+  gap: 8px 12px;
+  grid-template-columns: minmax(100px, auto) minmax(180px, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-heading .db-effect-story-kicker {
+  margin: 8px 0 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-heading .db-field {
+  grid-template-columns: 58px minmax(0, 1fr);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-result {
+  align-items: center;
+  display: grid;
+  gap: 7px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin-top: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-status {
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-status.is-eligible {
+  background: var(--db-light-success-muted);
+  color: var(--db-light-success);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-status.is-ineligible {
+  background: var(--db-light-danger-muted);
+  color: var(--db-light-danger);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-replaced {
+  color: var(--db-light-text-2);
+  font-size: 11px;
+  grid-column: 1 / -1;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-stats {
+  display: grid;
+  gap: 5px;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-stat {
+  align-items: baseline;
+  background: var(--db-light-bg-inset);
+  border-radius: 5px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(50px, 1fr) auto auto;
+  padding: 6px 8px;
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-stat small {
+  color: var(--db-light-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-stat strong.gain {
+  color: var(--db-light-success);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-stat strong.loss {
+  color: var(--db-light-danger);
+}
+
+.database-modal-backdrop .database-modal-window .db-equipment-comparison-stat strong.neutral {
+  color: var(--db-light-text-3);
+}
+
+@media (max-width: 1100px) {
+  .database-modal-backdrop .database-modal-window .db-effect-story-facts,
+  .database-modal-backdrop .database-modal-window .db-equipment-comparison-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* ── 시스템 탭 섹션 내비 (W4.5, todo 11) ────────────────────────────────────
    시스템 탭을 좌측 섹션 내비(7개) + 우측 섹션 콘텐츠로 분할. 섹션 전환은
    [hidden] 토글(로컬 상태)이라 store/undo 이력에 영향을 주지 않는다. */
