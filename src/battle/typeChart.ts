@@ -1,6 +1,40 @@
 import type { Project } from "@/project/types";
 import { monsterSpeciesById } from "@/project/monsterCollection";
 
+export interface Gen1TypeModifiers {
+  readonly stab: boolean;
+  /** Cartridge-style effectiveness factors expressed in tenths (5 = 1/2, 20 = 2x). */
+  readonly typeFactors: readonly number[];
+}
+
+/**
+ * Keeps STAB and each defending type separate so Gen1's floor-after-each-step
+ * arithmetic can be applied by the damage helper.
+ */
+export function gen1TypeModifiersForTypes(
+  project: Project,
+  attackType: string | undefined,
+  attackerTypes: readonly string[],
+  defenderTypes: readonly string[],
+): Gen1TypeModifiers {
+  const chart = project.system.typeChart;
+  if (!chart || !attackType || !chart.types.includes(attackType)) {
+    return { stab: false, typeFactors: [] };
+  }
+  const row = chart.multipliers[attackType] ?? {};
+  const defenderTypeSet = new Set(defenderTypes);
+  const knownDefenderTypes = chart.types.filter((type) => defenderTypeSet.has(type));
+  return {
+    stab: attackerTypes.includes(attackType),
+    typeFactors: knownDefenderTypes.map((defenderType) => {
+      const multiplier = row[defenderType];
+      return typeof multiplier === "number" && Number.isFinite(multiplier)
+        ? Math.max(0, Math.round(multiplier * 10))
+        : 10;
+    }),
+  };
+}
+
 // 배틀러의 타입(속성)을 직접 받아 상성·STAB 배율을 계산한다(recordId 우회 없이).
 // 플레이어 몬스터는 recordId=instanceId 라 record 역조회가 실패하므로 이 경로가 필수.
 export function typeChartMultiplierForTypes(

@@ -82,8 +82,8 @@ describe("computeGen1BaseDamage — 원작 코어 공식", () => {
     expect(computeGen1BaseDamage({ level: 50, power: 40, attack: 100, defense: 100, critical: true })).toBe(35);
   });
 
-  it("방어 0 은 1 로 취급해 0 나눗셈을 막는다", () => {
-    expect(computeGen1BaseDamage({ level: 50, power: 40, attack: 100, defense: 0 })).toBe(1762);
+  it("직접 입력된 방어 0 은 1 로 정규화하되 중립 피해 상한 999를 지킨다", () => {
+    expect(computeGen1BaseDamage({ level: 50, power: 40, attack: 100, defense: 0 })).toBe(999);
   });
 
   it("레벨이 오르면 단조 증가한다", () => {
@@ -158,7 +158,8 @@ describe("applySkillLike — gen1 경로", () => {
     const defending = applySkillLike(battler(), battler({ id: "t1", defending: true }), { ...gen1Spec, rng: rngOf(RNG_MAX_ROLL) });
     expect(defending.amount).toBe(Math.floor(BASE_L50_P40 / 2));
     const wall = applySkillLike(battler(), battler({ id: "t2", defense: 10_000 }), { ...gen1Spec, rng: rngOf(0) });
-    expect(wall.amount).toBe(1);
+    // Authored stats cap at 999, then Gen1's >255 paired quarter-scaling applies.
+    expect(wall.amount).toBe(2);
   });
 
   it("마법 속성은 mind 로, 물리는 defense 로 나눈다", () => {
