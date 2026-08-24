@@ -85,7 +85,7 @@ function animalEntries(
 ): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
   const entries: StatusMenuDetailEntry[] = [];
   const dayKey = session.gameTime ? calendarDayKey(session.gameTime) : undefined;
-  for (const animal of Object.values(session.farmAnimals ?? {}).sort((left, right) => left.name.localeCompare(right.name, "ko"))) {
+  for (const animal of Object.values(session.farmAnimals ?? {})) {
     const species = project.database.farmAnimalSpecies?.find((candidate) => candidate.id === animal.speciesId);
     const building = project.system.farmAnimalBuildings?.find((candidate) => candidate.id === animal.buildingId);
     const progressTarget = species?.productEveryDays ?? "?";

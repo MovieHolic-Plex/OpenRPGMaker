@@ -32,7 +32,16 @@ describe("P1 animal life-ledger runtime UI", () => {
       const session = startSession(project, 801);
 
       expect(listStatusMenuCommandIds(project, session)).toContain("life-ledger");
-      const panel = renderAnimals(project, session);
+      const detail = createStatusMenuDetail({
+        project,
+        session,
+        selectedCommand: "life-ledger",
+        lifeLedgerTab: "animals",
+        slots: [],
+        waitModeEnabled: true,
+      });
+      expect(detail.entries[0]?.testId).toBe("life-ledger-animal-summary-farm_animal_bori");
+      const panel = renderWithFakeDom(() => renderStatusMenuDetailPanel(project, detail));
       expect(findByTestId(panel, "life-ledger-tab-animals")?.getAttribute("aria-selected")).toBe("true");
       expect(findByTestId(panel, "life-ledger-artwork")?.getAttribute("src")).toContain("animals-card.png");
       expect(panel.textContent).toContain("보리");
