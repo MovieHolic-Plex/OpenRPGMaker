@@ -192,6 +192,44 @@ describe("maybeAutosave (PlayScene hook wrapper)", () => {
 });
 
 describe("schemaVersion 3 manual slot compatibility (regression)", () => {
+  it("preserves persistent runtime progression through the real storage loader", () => {
+    // Break caught: adding a PlaySession field without wiring the save type, writer,
+    // known-field parser, and restorer silently resets player progress after reload.
+    const { project, session } = projectAndSession();
+    session.actorBattleCommands = { actor_hero: ["cmd_item"] };
+    session.lifeSkills = { skill_farming: { xp: 100, level: 2 } };
+    session.actorNicknames = { actor_hero: "별명" };
+    session.actorFaceResourceIds = { actor_hero: "face_custom" };
+    session.actorFaceIndices = { actor_hero: 3 };
+    session.shopLoyaltySpend = { shop_1: 500 };
+    session.shopTradeCounts = { shop_1: { sold: 2, bought: 1 } };
+    session.shopMileagePoints = 42;
+    session.shopPawnTickets = {
+      ticket_1: { itemId: "item_bomb", pawnPrice: 25, dueDayKey: "1:spring:3" },
+    };
+    session.shopLastRestockDayKey = { shop_1: "1:spring:3" };
+    ensureM2Runtime(session).access.save = false;
+    const storage = new MemoryStorage();
+
+    saveToSlot(storage, 1, createSaveSnapshot(project, session));
+    const loaded = readSaveSlot(storage, 1);
+
+    expect(loaded.kind).toBe("present");
+    if (loaded.kind !== "present") throw new Error("expected present slot");
+    const restored = applySaveSnapshot(project, loaded.snapshot);
+    expect(restored.actorBattleCommands).toEqual(session.actorBattleCommands);
+    expect(restored.lifeSkills).toEqual(session.lifeSkills);
+    expect(restored.actorNicknames).toEqual(session.actorNicknames);
+    expect(restored.actorFaceResourceIds).toEqual(session.actorFaceResourceIds);
+    expect(restored.actorFaceIndices).toEqual(session.actorFaceIndices);
+    expect(restored.shopLoyaltySpend).toEqual(session.shopLoyaltySpend);
+    expect(restored.shopTradeCounts).toEqual(session.shopTradeCounts);
+    expect(restored.shopMileagePoints).toBe(42);
+    expect(restored.shopPawnTickets).toEqual(session.shopPawnTickets);
+    expect(restored.shopLastRestockDayKey).toEqual(session.shopLastRestockDayKey);
+    expect(restored.m2Runtime?.access?.save).toBe(false);
+  });
+
   it("parses a pre-autosave manual snapshot JSON (no savedBy/autosaveTrigger) as present", () => {
     const { project, session } = projectAndSession();
     const snapshot = createSaveSnapshot(project, session);

@@ -25,6 +25,7 @@ import {
   isGameTime,
   isFarmPlotDate,
   isFarmPlotsRecord,
+  isLifeSkillsRecord,
   isMonsterInstancesRecord,
   isNestedNumberRecord,
   isNumberRecord,
@@ -40,6 +41,8 @@ import {
   isRuntimeSpawnedEventRecord,
   isRngState,
   isSaveOrigin,
+  isShopPawnTicketsRecord,
+  isShopTradeCountsRecord,
   isAutosaveTrigger,
   isSelfSwitchesRecord,
   isStringArray,
@@ -88,10 +91,16 @@ export type SaveSnapshot = {
     readonly itemUseCharges?: Record<string, number>;
     readonly killedFieldSpawns?: Record<string, Record<string, number>>;
     readonly partyActorIds?: readonly string[];
+    readonly shopLoyaltySpend?: PlaySession["shopLoyaltySpend"];
+    readonly shopTradeCounts?: PlaySession["shopTradeCounts"];
+    readonly shopMileagePoints?: PlaySession["shopMileagePoints"];
+    readonly shopPawnTickets?: PlaySession["shopPawnTickets"];
+    readonly shopLastRestockDayKey?: PlaySession["shopLastRestockDayKey"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
+    readonly actorBattleCommands?: PlaySession["actorBattleCommands"];
     readonly actorExperience?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
@@ -104,6 +113,7 @@ export type SaveSnapshot = {
     readonly npcTravelStates?: PlaySession["npcTravelStates"];
     readonly npcActivities?: PlaySession["npcActivities"];
     readonly npcScheduleStates?: PlaySession["npcScheduleStates"];
+    readonly lifeSkills?: PlaySession["lifeSkills"];
     readonly farmPlots?: PlaySession["farmPlots"];
     readonly farmPlotsAdvancedThrough?: PlaySession["farmPlotsAdvancedThrough"];
     readonly friendship?: PlaySession["friendship"];
@@ -128,6 +138,9 @@ export type SaveSnapshot = {
     readonly actorEquipment?: Record<string, ActorInitialEquipment>;
     readonly actorRows?: Record<string, "front" | "back">;
     readonly actorNames?: Record<string, string>;
+    readonly actorNicknames?: PlaySession["actorNicknames"];
+    readonly actorFaceResourceIds?: PlaySession["actorFaceResourceIds"];
+    readonly actorFaceIndices?: PlaySession["actorFaceIndices"];
     readonly actorCharacterResourceIds?: Record<string, string>;
     readonly classOverrides?: Record<string, string>;
     readonly actorParamBonuses?: PlaySession["actorParamBonuses"];
@@ -211,10 +224,16 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
       killedFieldSpawns: structuredClone(session.killedFieldSpawns ?? {}),
       partyActorIds: structuredClone(session.partyActorIds),
+      shopLoyaltySpend: structuredClone(session.shopLoyaltySpend),
+      shopTradeCounts: structuredClone(session.shopTradeCounts),
+      shopMileagePoints: session.shopMileagePoints,
+      shopPawnTickets: structuredClone(session.shopPawnTickets),
+      shopLastRestockDayKey: structuredClone(session.shopLastRestockDayKey),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
+      actorBattleCommands: structuredClone(session.actorBattleCommands),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
@@ -227,6 +246,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       npcTravelStates: structuredClone(session.npcTravelStates),
       npcActivities: structuredClone(session.npcActivities ?? {}),
       npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
+      lifeSkills: structuredClone(session.lifeSkills),
       farmPlots: structuredClone(session.farmPlots ?? {}),
       farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
@@ -251,6 +271,9 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorEquipment: structuredClone(session.actorEquipment),
       actorRows: structuredClone(session.actorRows),
       actorNames: structuredClone(session.actorNames),
+      actorNicknames: structuredClone(session.actorNicknames),
+      actorFaceResourceIds: structuredClone(session.actorFaceResourceIds),
+      actorFaceIndices: structuredClone(session.actorFaceIndices),
       actorCharacterResourceIds: structuredClone(session.actorCharacterResourceIds),
       classOverrides: structuredClone(session.classOverrides),
       actorParamBonuses: structuredClone(session.actorParamBonuses),
@@ -322,6 +345,11 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
+  if (snapshot.session.shopLoyaltySpend) session.shopLoyaltySpend = structuredClone(snapshot.session.shopLoyaltySpend);
+  if (snapshot.session.shopTradeCounts) session.shopTradeCounts = structuredClone(snapshot.session.shopTradeCounts);
+  if (snapshot.session.shopMileagePoints !== undefined) session.shopMileagePoints = snapshot.session.shopMileagePoints;
+  if (snapshot.session.shopPawnTickets) session.shopPawnTickets = structuredClone(snapshot.session.shopPawnTickets);
+  if (snapshot.session.shopLastRestockDayKey) session.shopLastRestockDayKey = structuredClone(snapshot.session.shopLastRestockDayKey);
   if (snapshot.session.monsterInstances) {
     session.monsterInstances = {};
     for (const [instanceId, instance] of Object.entries(snapshot.session.monsterInstances)) {
@@ -331,6 +359,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
+  if (snapshot.session.actorBattleCommands) session.actorBattleCommands = structuredClone(snapshot.session.actorBattleCommands);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
@@ -343,6 +372,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
+  if (snapshot.session.lifeSkills) session.lifeSkills = structuredClone(snapshot.session.lifeSkills);
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
   session.farmPlotsAdvancedThrough = structuredClone(snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
@@ -373,6 +403,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorEquipment) session.actorEquipment = structuredClone(snapshot.session.actorEquipment);
   if (snapshot.session.actorRows) session.actorRows = structuredClone(snapshot.session.actorRows);
   if (snapshot.session.actorNames) session.actorNames = structuredClone(snapshot.session.actorNames);
+  if (snapshot.session.actorNicknames) session.actorNicknames = structuredClone(snapshot.session.actorNicknames);
+  if (snapshot.session.actorFaceResourceIds) session.actorFaceResourceIds = structuredClone(snapshot.session.actorFaceResourceIds);
+  if (snapshot.session.actorFaceIndices) session.actorFaceIndices = structuredClone(snapshot.session.actorFaceIndices);
   if (snapshot.session.actorCharacterResourceIds) session.actorCharacterResourceIds = structuredClone(snapshot.session.actorCharacterResourceIds);
   if (snapshot.session.classOverrides) session.classOverrides = structuredClone(snapshot.session.classOverrides);
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
@@ -483,10 +516,18 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),
       killedFieldSpawns: isNestedNumberRecord(session.killedFieldSpawns) ? session.killedFieldSpawns : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
+      shopLoyaltySpend: isNumberRecord(session.shopLoyaltySpend) ? session.shopLoyaltySpend : undefined,
+      shopTradeCounts: isShopTradeCountsRecord(session.shopTradeCounts) ? session.shopTradeCounts : undefined,
+      shopMileagePoints: typeof session.shopMileagePoints === "number" && Number.isFinite(session.shopMileagePoints)
+        ? session.shopMileagePoints
+        : undefined,
+      shopPawnTickets: isShopPawnTicketsRecord(session.shopPawnTickets) ? session.shopPawnTickets : undefined,
+      shopLastRestockDayKey: isStringRecord(session.shopLastRestockDayKey) ? session.shopLastRestockDayKey : undefined,
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
+      actorBattleCommands: isActorSkillIdsRecord(session.actorBattleCommands) ? session.actorBattleCommands : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,
@@ -499,6 +540,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       npcTravelStates: isRuntimeNpcTravelStateRecord(session.npcTravelStates) ? session.npcTravelStates : undefined,
       npcActivities: isStringRecord(session.npcActivities) ? session.npcActivities : undefined,
       npcScheduleStates: isRuntimeNpcScheduleStateRecord(session.npcScheduleStates) ? session.npcScheduleStates : undefined,
+      lifeSkills: isLifeSkillsRecord(session.lifeSkills) ? session.lifeSkills : undefined,
       farmPlots: isFarmPlotsRecord(session.farmPlots) ? session.farmPlots : undefined,
       farmPlotsAdvancedThrough: isFarmPlotDate(session.farmPlotsAdvancedThrough) ? session.farmPlotsAdvancedThrough : undefined,
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
@@ -527,6 +569,9 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       actorEquipment: isActorEquipmentRecord(session.actorEquipment) ? session.actorEquipment : undefined,
       actorRows: isActorRowsRecord(session.actorRows) ? session.actorRows : undefined,
       actorNames: isStringRecord(session.actorNames) ? session.actorNames : undefined,
+      actorNicknames: isStringRecord(session.actorNicknames) ? session.actorNicknames : undefined,
+      actorFaceResourceIds: isStringRecord(session.actorFaceResourceIds) ? session.actorFaceResourceIds : undefined,
+      actorFaceIndices: isNumberRecord(session.actorFaceIndices) ? session.actorFaceIndices : undefined,
       actorCharacterResourceIds: isStringRecord(session.actorCharacterResourceIds) ? session.actorCharacterResourceIds : undefined,
       classOverrides: isStringRecord(session.classOverrides) ? session.classOverrides : undefined,
       actorParamBonuses: isActorParamBonusRecord(session.actorParamBonuses) ? session.actorParamBonuses : undefined,
@@ -535,6 +580,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
       rng: isRngState(session.rng) ? session.rng : undefined,
       screen: parseScreenState(session.screen),
+      access: parseAccessState(session.access),
     },
   };
 }
@@ -556,6 +602,15 @@ function parseScreenState(value: unknown): SaveScreenState | undefined {
   if (typeof value.weather === "string") result.weather = value.weather;
   if (typeof value.hidden === "boolean") result.hidden = value.hidden;
   if (typeof value.tintDurationMs === "number") result.tintDurationMs = value.tintDurationMs;
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function parseAccessState(value: unknown): SaveSnapshot["session"]["access"] {
+  if (!isRecord(value)) return undefined;
+  const result: NonNullable<SaveSnapshot["session"]["access"]> = {};
+  for (const key of ["escape", "menu", "save", "teleportation"] as const) {
+    if (typeof value[key] === "boolean") result[key] = value[key];
+  }
   return Object.keys(result).length > 0 ? result : undefined;
 }
 

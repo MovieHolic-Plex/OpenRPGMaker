@@ -390,7 +390,9 @@ export function normalizeClassRecord(record: Partial<ClassRecord> & Pick<ClassRe
     },
     parameterCurves: normalizeParameterCurves(record.parameterCurves),
     expCurve: normalizeExpCurve(record.expCurve),
-    stateRates: normalizeRates(record.stateRates),
+    stateRates: record.stateRates === undefined
+      ? { state_death: "C" }
+      : normalizeRates(record.stateRates),
     elementRates: defaultElementRates(record.elementRates),
   };
 }

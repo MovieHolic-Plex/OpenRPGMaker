@@ -109,4 +109,91 @@ describe("Gen1 runtime regressions", () => {
     expect(snapshot.rewards.levelUps).toEqual([]);
     expect(snapshot.rewards.monsterLevelUps).not.toEqual([]);
   });
+
+  it("does not preview level-ups for reserve monsters that never participated", () => {
+    const project = createScarloxyPokemonDemoProject();
+    makeWildEnemiesFragile(project);
+    const defeatedEnemy = project.database.enemies.find((record) => record.id === "enemy_pkmn_larvea");
+    if (!defeatedEnemy) throw new Error("missing reward enemy");
+    defeatedEnemy.rewards = { ...defeatedEnemy.rewards, exp: 999_999 };
+    const caughtAt = { mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y };
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "strict",
+      activeSlots: 1,
+      partyMonsters: [
+        {
+          instanceId: "monster-active",
+          speciesId: scarloxySpeciesId("sparchu"),
+          level: 1,
+          exp: 0,
+          skillIds: ["skill_scarloxy_quick"],
+          friendship: 70,
+          caughtAt,
+        },
+        {
+          instanceId: "monster-reserve",
+          speciesId: scarloxySpeciesId("larvea"),
+          level: 1,
+          exp: 0,
+          skillIds: ["skill_scarloxy_quick"],
+          friendship: 70,
+          caughtAt,
+        },
+      ],
+      rng: () => 0,
+    });
+
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+
+    expect(runtime.snapshot().rewards.monsterLevelUps.map((preview) => preview.instanceId)).toEqual(["monster-active"]);
+  });
+
+  it("keeps full live-monster-party previews when regular actors fought", () => {
+    const project = createScarloxyPokemonDemoProject();
+    project.system.battleParty = undefined;
+    project.system.monsterBattleParty = false;
+    project.system.battleModel = "rm2k3";
+    makeWildEnemiesFragile(project);
+    const defeatedEnemy = project.database.enemies.find((record) => record.id === "enemy_pkmn_larvea");
+    if (!defeatedEnemy) throw new Error("missing reward enemy");
+    defeatedEnemy.rewards = { ...defeatedEnemy.rewards, exp: 999_999 };
+    setActorParam(project, "attack", 999);
+    const actorId = project.system.startActorIds[0]!;
+    const caughtAt = { mapId: project.startMapId, x: project.startPos.x, y: project.startPos.y };
+    const partyMonsters = ["monster-companion-a", "monster-companion-b"].map((instanceId) => ({
+      instanceId,
+      speciesId: scarloxySpeciesId("sparchu"),
+      level: 1,
+      exp: 0,
+      skillIds: ["skill_scarloxy_quick"],
+      friendship: 70,
+      caughtAt,
+    }));
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: true,
+      battleFlow: "strict",
+      party: { levels: { [actorId]: 50 }, experience: {}, partyActorIds: [actorId] },
+      partyMonsters,
+      rng: () => 0,
+    });
+
+    expect(runtime.snapshot().actors.map((actor) => actor.recordId)).toEqual([actorId]);
+    expect(runtime.snapshot().phase).toBe("actorCommand");
+    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+
+    const snapshot = runtime.snapshot();
+    expect(snapshot.result).toBe("victory");
+    expect(snapshot.rewards.exp).toBeGreaterThan(0);
+    expect(snapshot.rewards.monsterLevelUps.map((preview) => preview.instanceId)).toEqual([
+      "monster-companion-a",
+      "monster-companion-b",
+    ]);
+  });
 });

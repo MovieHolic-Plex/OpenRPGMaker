@@ -1781,15 +1781,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     rewards.monsterLevelUps = computeMonsterLevelUpPreview(collected.exp);
   }
 
-  // 파티 몬스터 경로의 레벨업 미리보기. 참전 판정을 battleRewardsToSession 과 맞춘다 —
-  // 거기서는 [...snapshot.actors, ...snapshot.reserveActors] 의 monsterInstanceId 를 쓰고,
-  // 여기 `actors` 가 정확히 그 합집합(activeActors + reserveActors)이다.
+  // 몬스터 배틀은 실제 보상과 같은 참가자 원장을 쓰고, 일반 액터 배틀은 동행 몬스터 전원을 미리 본다.
+  // reserveActors는 몬스터 배틀의 결과/교대 표시용 스냅샷일 뿐, 참전 전에는 보상 대상이 아니다.
   function computeMonsterLevelUpPreview(earnedExp: number): MonsterLevelUpPreview[] {
     const instances = options.partyMonsters ?? [];
     if (instances.length === 0) return [];
-    const participantIds = actors
-      .map((actor) => actor.monsterInstanceId)
-      .filter((id): id is string => typeof id === "string");
+    const participantIds = usePartyMonsters ? [...participatingActorIds] : undefined;
     return previewMonsterExperience(options.project, instances, earnedExp, participantIds);
   }
 

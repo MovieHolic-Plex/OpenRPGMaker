@@ -3,6 +3,8 @@ import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import { startSession } from "@/project/session";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
+import { giveMonster } from "@/project/monsterCollection";
+import { battlerSnapshot, monsterPartyBattlers } from "@/battle/battleBattlers";
 
 describe("battle rewards to play session", () => {
   it("adds victory rewards to actor experience, gold, and inventory", () => {
@@ -148,5 +150,46 @@ describe("battle rewards to play session", () => {
     }, project);
 
     expect(session.actorStateIds?.[actorId]).toEqual(["state_poison"]);
+  });
+
+  it("pays monster EXP only to battlers recorded as participants", () => {
+    // Break caught: deriving participants from active + reserve snapshots grants
+    // victory EXP to a monster that never entered the battle.
+    const project = createBlankProject();
+    const session = startSession(project);
+    const active = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3 });
+    const reserve = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3 });
+    if (!active.ok || !reserve.ok) throw new Error("expected two party monsters");
+    const [activeSnapshot, reserveSnapshot] = monsterPartyBattlers(
+      project,
+      [active.instance, reserve.instance],
+    ).map((battler) => battlerSnapshot(battler));
+
+    applyBattleRewardsToSession(session, {
+      result: "victory",
+      rewards: { exp: 100, gold: 0, items: [] },
+      actors: [activeSnapshot, reserveSnapshot],
+      participatingActorIds: [active.instance.instanceId],
+      monsterPartyMode: true,
+    }, project);
+
+    expect(session.monsterInstances[active.instance.instanceId]?.exp).toBe(100);
+    expect(session.monsterInstances[reserve.instance.instanceId]?.exp).toBe(0);
+  });
+
+  it("keeps full live-monster-party EXP when regular actors fought", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const companion = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3 });
+    if (!companion.ok) throw new Error("expected a companion monster");
+
+    applyBattleRewardsToSession(session, {
+      result: "victory",
+      rewards: { exp: 100, gold: 0, items: [] },
+      participatingActorIds: [session.partyActorIds[0]!],
+      monsterPartyMode: false,
+    }, project);
+
+    expect(session.monsterInstances[companion.instance.instanceId]?.exp).toBe(100);
   });
 });

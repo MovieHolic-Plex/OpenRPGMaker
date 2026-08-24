@@ -104,7 +104,7 @@ function behaviorFor(project: Project, stateId: string): StateBehavior | undefin
   return record ? stateBehavior(record) : undefined;
 }
 
-// 대상의 상태 저항(%)을 stateRates 등급에서 계산. 등급 없으면 100(저항 없음).
+// 대상의 상태 저항(%)을 stateRates 등급에서 계산. 미지정 등급은 100(추가 저항 없음).
 export function stateResistancePercent(project: Project, battler: MutableBattler, stateId: string): number {
   const actor = project.database.actors.find((entry) => entry.id === battler.recordId);
   const enemy = project.database.enemies.find((entry) => entry.id === battler.recordId);
