@@ -51,6 +51,125 @@ export interface WalkthroughResult {
   session: PlaySession;
 }
 
+type WalkthroughScenarioValidation =
+  | Readonly<{ ok: true; steps: readonly WalkthroughStep[] }>
+  | Readonly<{ ok: false; index: number; reason: string; totalSteps: number }>;
+
+const COMPARISON_OPS = new Set(["=", ">=", "<=", ">", "<"]);
+
+/** Strict boundary parser shared by headless and editor callers before any step executes. */
+export function validateWalkthroughScenario(input: unknown): WalkthroughScenarioValidation {
+  if (!Array.isArray(input)) return invalidScenario(0, "scenario must be an array", 0);
+  if (input.length === 0) return invalidScenario(0, "scenario must contain at least one step", 0);
+  for (let index = 0; index < input.length; index += 1) {
+    const step = input[index];
+    const reason = validateWalkthroughStep(step);
+    if (reason) return invalidScenario(index, reason, input.length);
+  }
+  return { ok: true, steps: input as readonly WalkthroughStep[] };
+}
+
+function invalidScenario(index: number, reason: string, totalSteps: number): WalkthroughScenarioValidation {
+  return { ok: false, index, reason: `scenario[${index}]: ${reason}`, totalSteps };
+}
+
+function validateWalkthroughStep(value: unknown): string | null {
+  if (!isRecord(value)) return "step must be an object";
+  if (typeof value.do === "string") {
+    switch (value.do) {
+      case "moveTo":
+        return exactStep(value, ["do", "mapId", "x", "y"])
+          ?? requireString(value, "mapId")
+          ?? requireInteger(value, "x")
+          ?? requireInteger(value, "y");
+      case "interact": {
+        const shapeError = exactStep(value, ["do", "eventId", "x", "y"]);
+        if (shapeError) return shapeError;
+        const hasEventId = typeof value.eventId === "string" && value.eventId.trim().length > 0;
+        const hasX = Number.isInteger(value.x);
+        const hasY = Number.isInteger(value.y);
+        if (hasX !== hasY) return "interact coordinates require both x and y integers";
+        return hasEventId || (hasX && hasY) ? null : "interact requires eventId or x/y";
+      }
+      case "choose":
+        return exactStep(value, ["do", "index"])
+          ?? requireNonNegativeInteger(value, "index");
+      case "battle":
+        return exactStep(value, ["do", "expect"])
+          ?? (value.expect === "victory" || value.expect === "defeat"
+            ? null
+            : "battle expect must be victory or defeat");
+      default:
+        return `unknown do variant: ${value.do}`;
+    }
+  }
+  if (hasOwn(value, "do")) return "do must be a string";
+  if (typeof value.expect !== "string") return "step requires a do or expect discriminator";
+  switch (value.expect) {
+    case "switch":
+      return exactStep(value, ["expect", "switchId", "value"])
+        ?? requireString(value, "switchId")
+        ?? (value.value === undefined || typeof value.value === "boolean" ? null : "switch value must be boolean");
+    case "item":
+      return exactStep(value, ["expect", "itemId", "present", "count"])
+        ?? requireString(value, "itemId")
+        ?? (value.present === undefined || typeof value.present === "boolean" ? null : "item present must be boolean")
+        ?? (value.count === undefined ? null : requireNonNegativeInteger(value, "count"));
+    case "variable":
+      return exactStep(value, ["expect", "variableId", "op", "value"])
+        ?? requireString(value, "variableId")
+        ?? validateOptionalOp(value.op)
+        ?? requireFiniteNumber(value, "value");
+    case "mapId":
+      return exactStep(value, ["expect", "mapId"])
+        ?? requireString(value, "mapId");
+    case "gold":
+      return exactStep(value, ["expect", "op", "value"])
+        ?? validateOptionalOp(value.op)
+        ?? requireFiniteNumber(value, "value");
+    case "ended":
+      return exactStep(value, ["expect"]);
+    default:
+      return `unknown expect variant: ${value.expect}`;
+  }
+}
+
+function exactStep(value: Readonly<Record<string, unknown>>, allowed: readonly string[]): string | null {
+  const allowedKeys = new Set(allowed);
+  const extras = Object.keys(value).filter((key) => !allowedKeys.has(key));
+  return extras.length > 0 ? `unexpected field(s): ${extras.join(", ")}` : null;
+}
+
+function requireString(value: Readonly<Record<string, unknown>>, key: string): string | null {
+  return typeof value[key] === "string" && value[key].trim().length > 0 ? null : `${key} must be a non-empty string`;
+}
+
+function requireInteger(value: Readonly<Record<string, unknown>>, key: string): string | null {
+  return Number.isInteger(value[key]) ? null : `${key} must be an integer`;
+}
+
+function requireNonNegativeInteger(value: Readonly<Record<string, unknown>>, key: string): string | null {
+  return Number.isInteger(value[key]) && Number(value[key]) >= 0 ? null : `${key} must be a non-negative integer`;
+}
+
+function requireFiniteNumber(value: Readonly<Record<string, unknown>>, key: string): string | null {
+  return typeof value[key] === "number" && Number.isFinite(value[key]) ? null : `${key} must be a finite number`;
+}
+
+function validateOptionalOp(value: unknown): string | null {
+  return value === undefined || (typeof value === "string" && COMPARISON_OPS.has(value))
+    ? null
+    : "op must be one of =, >=, <=, >, <";
+}
+
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasOwn(value: Readonly<Record<string, unknown>>, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(value, key);
+}
+
 // 인터프리터 pump 결과.
 type PumpStop =
   | { stop: "done" }
@@ -299,10 +418,24 @@ function runStep(state: RunnerState, step: WalkthroughStep): string | null {
 // ── 진입점 ───────────────────────────────────────────────────────
 export function runWalkthrough(
   project: Project,
-  scenario: readonly WalkthroughStep[],
+  scenarioInput: unknown,
   options: WalkthroughOptions = {}
 ): WalkthroughResult {
   const session = startSession(project);
+  const validation = validateWalkthroughScenario(scenarioInput);
+  if (!validation.ok) {
+    return {
+      ok: false,
+      stepsRun: 0,
+      totalSteps: validation.totalSteps,
+      failedStepIndex: validation.index,
+      failureReason: validation.reason,
+      reachedEnding: false,
+      log: [],
+      session,
+    };
+  }
+  const scenario = validation.steps;
   const state: RunnerState = {
     project,
     session,

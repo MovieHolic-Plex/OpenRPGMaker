@@ -6,6 +6,7 @@ import {
   templateToolInstruction,
   type NarrativeHorrorGenre,
 } from "@/ai/narrativeHorrorWorkPlan";
+import type { OfficialGenrePackId } from "@/project/officialGenrePackIds";
 
 export type WelcomeGenrePresetId =
   | "monster-collect"
@@ -98,6 +99,22 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
 
 export function welcomeGenrePresetById(id: string | undefined): WelcomeGenrePreset | undefined {
   return WELCOME_GENRE_PRESETS.find((preset) => preset.id === id);
+}
+
+/** UI variants collapse onto the exact five persisted Phase 4 pack identities. */
+export function officialGenrePackIdForWelcomePreset(id: WelcomeGenrePresetId): OfficialGenrePackId {
+  switch (id) {
+    case "partner-raise":
+    case "monster-collect":
+      return "monster-collect";
+    case "horror-gallery":
+    case "school-horror":
+      return "horror-chase";
+    case "farm-life":
+    case "adventure-jrpg":
+    case "story-cutscene":
+      return id;
+  }
 }
 
 export function welcomeGenrePresetByLabel(label: string): WelcomeGenrePreset | undefined {

@@ -6,6 +6,7 @@ import {
   WELCOME_INSPIRATION_MINIS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
+  officialGenrePackIdForWelcomePreset,
   welcomeGenrePresetById,
 } from "@/editor/welcomeGenrePresets";
 
@@ -17,6 +18,21 @@ describe("welcomeGenrePresets", () => {
     expect(welcomeGenrePresetById("horror-gallery")?.label).toContain("갤러리");
     expect(welcomeGenrePresetById("school-horror")?.label).toContain("학교");
     expect(welcomeGenrePresetById("story-cutscene")?.label).toContain("회상");
+  });
+
+  it("maps seven UI variants onto only the exact five persisted packs", () => {
+    expect(Object.fromEntries(WELCOME_GENRE_PRESETS.map((preset) => [
+      preset.id,
+      officialGenrePackIdForWelcomePreset(preset.id),
+    ]))).toEqual({
+      "monster-collect": "monster-collect",
+      "partner-raise": "monster-collect",
+      "farm-life": "farm-life",
+      "adventure-jrpg": "adventure-jrpg",
+      "story-cutscene": "story-cutscene",
+      "horror-gallery": "horror-chase",
+      "school-horror": "horror-chase",
+    });
   });
 
   it("horror and story chips force template tools in prompts", () => {

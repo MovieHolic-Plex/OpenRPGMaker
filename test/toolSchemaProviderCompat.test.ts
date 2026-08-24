@@ -19,6 +19,8 @@ type SchemaNode = {
   readonly properties?: Record<string, SchemaNode>;
   readonly items?: SchemaNode;
   readonly additionalProperties?: unknown;
+  readonly oneOf?: readonly SchemaNode[];
+  readonly anyOf?: readonly SchemaNode[];
 };
 
 /** 모델에 노출되는 전체 파라미터 스키마 — 레지스트리 툴 + 세션 전용 툴. */
@@ -32,6 +34,9 @@ function exposedSchemas(): { name: string; parameters: SchemaNode }[] {
 }
 
 function walk(node: SchemaNode, path: string, violations: string[], isRoot: boolean): void {
+  if (node.oneOf !== undefined || node.anyOf !== undefined) {
+    violations.push(`${path}: oneOf/anyOf 는 strict provider tool schema 에서 금지됩니다`);
+  }
   if (node.type !== undefined && typeof node.type !== "string") {
     violations.push(`${path}: type 은 단일 문자열이어야 합니다 (${JSON.stringify(node.type)})`);
   }
@@ -53,6 +58,8 @@ function walk(node: SchemaNode, path: string, violations: string[], isRoot: bool
   }
   for (const [key, child] of Object.entries(node.properties ?? {})) walk(child, `${path}.${key}`, violations, false);
   if (node.items) walk(node.items, `${path}[]`, violations, false);
+  for (const [index, child] of (node.oneOf ?? []).entries()) walk(child, `${path}.oneOf[${index}]`, violations, false);
+  for (const [index, child] of (node.anyOf ?? []).entries()) walk(child, `${path}.anyOf[${index}]`, violations, false);
 }
 
 describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
@@ -66,6 +73,12 @@ describe("툴 스키마 프로바이더 호환(Gemini 엄격 검증)", () => {
     const violations: string[] = [];
     for (const { name, parameters } of exposedSchemas()) walk(parameters, name, violations, true);
     expect(violations.filter((v) => v.includes("properties 가 없습니다"))).toEqual([]);
+  });
+
+  it("노출 스키마 어디에도 provider 금지 oneOf/anyOf 가 없다", () => {
+    const violations: string[] = [];
+    for (const { name, parameters } of exposedSchemas()) walk(parameters, name, violations, true);
+    expect(violations.filter((v) => v.includes("oneOf/anyOf"))).toEqual([]);
   });
 
   it("실측 회귀: set_work_plan.layers 와 set_build_spec.assets 가 항목 필드를 노출한다", () => {

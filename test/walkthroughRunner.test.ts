@@ -10,6 +10,21 @@ async function load() {
 }
 
 describe("walkthroughRunner — 잿불의 유산 완주", () => {
+  it("kind 모양과 do/expect 혼합 오류를 한 스텝도 실행하기 전에 거부한다", async () => {
+    const { runWalkthrough, createEmberQuestProject } = await load();
+    const project = createEmberQuestProject();
+
+    const kindResult = runWalkthrough(project, [{ kind: "interact", eventId: "ev_any" }] as never);
+    const mixedResult = runWalkthrough(project, [{ do: "choose", index: 0, mapId: project.startMapId }] as never);
+
+    expect(kindResult.ok).toBe(false);
+    expect(kindResult.stepsRun).toBe(0);
+    expect(kindResult.failureReason).toContain("scenario[0]");
+    expect(mixedResult.ok).toBe(false);
+    expect(mixedResult.stepsRun).toBe(0);
+    expect(mixedResult.failureReason).toContain("scenario[0]");
+  });
+
   it("3퀘스트 + 엔딩을 헤드리스로 완주한다", async () => {
     const { runWalkthrough, EMBER_WALKTHROUGH, createEmberQuestProject, EMBER_SWITCH } = await load();
     const project = createEmberQuestProject();
