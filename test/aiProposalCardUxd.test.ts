@@ -172,7 +172,7 @@ describe("UXD proposal summary helpers", () => {
       proposed("upsert_world_entities", {}, { worldEntitiesAdded: 1 }, "세계관 추가 1"),
     ];
 
-    expect(proposalHumanSummaryLine(calls)).toBe("집 2 · 길 33 · 나무 16 · 세계관 1건");
+    expect(proposalHumanSummaryLine(calls)).toBe("집 2 · 길 33 · 나무 16 · 세계관 1");
   });
 
   it("샷 08/10처럼 결정 요약은 짧은 명사 목록이다", () => {
@@ -190,13 +190,25 @@ describe("UXD proposal summary helpers", () => {
     ];
 
     expect(proposalHumanSummaryLine(calls)).toBe("집 3 · 강 · 앞마당");
-    expect(proposalHumanSummaryLine(calls)).not.toMatch(/채|칸|그루|fill_region|author_house|build_/u);
+    expect(proposalHumanSummaryLine(calls)).not.toMatch(/채|칸|그루|건|fill_region|author_house|build_/u);
     expect(proposalHumanSummaryLine([
       proposed("paint_tiles", { mapId: "m1", tile: TILE.WATER }, { tilesChanged: 48 }, "수역"),
     ])).toBe("강");
     expect(proposalHumanSummaryLine([
       proposed("build_house_kit", { mapId: "m1", fence: true }, { tilesChanged: 40 }, "집"),
     ])).toBe("집 1 · 앞마당");
+    expect(proposalHumanSummaryLine([
+      proposed("paint_tiles", { mapId: "m1" }, { tilesChanged: 4 }, "타일 4칸"),
+    ])).toBe("타일 4");
+    expect(proposalHumanSummaryLine([
+      proposed("upsert_world_entities", {}, { worldEntitiesAdded: 1 }, "세계관 1건"),
+    ])).toBe("세계관 1");
+    expect(proposalHumanSummaryLine([
+      proposed("upsert_palette_preset", {}, { palettePresetsAdded: 2 }, "프리셋 2건"),
+    ])).toBe("프리셋 2");
+    expect(proposalHumanSummaryLine([
+      proposed("paint_tiles", { mapId: "m1" }, { tilesChanged: 4 }, "타일 4칸"),
+    ])).not.toMatch(/칸|건|채|그루/u);
   });
 
   it("세계관 추가와 수정이 함께 있으면 추가/수정 수를 보존한다", () => {
@@ -360,7 +372,8 @@ describe("UXD proposal panel integration", () => {
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
-    expect(findByTestId(panel, "ai-proposal-summary")?.textContent).toContain("타일 1칸");
+    expect(findByTestId(panel, "ai-proposal-summary")?.textContent).toContain("타일 1");
+    expect(findByTestId(panel, "ai-proposal-summary")?.textContent).not.toMatch(/칸|건/u);
     expect(findByTestId(panel, "ai-proposal-thumb-before")).toBeTruthy();
     expect(findByTestId(panel, "ai-proposal-thumb-after")).toBeTruthy();
     expect(findByTestId(panel, "ai-proposal-item-1")).toBeTruthy();
@@ -509,8 +522,11 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("2건");
     expect(findByTestId(panel, "ai-proposal-accept")).toBeTruthy();
     // testid는 체크박스에 붙으므로 본문 문구는 host 텍스트로 확인한다.
+    const summary = findByTestId(panel, "ai-proposal-summary")?.textContent ?? "";
+    expect(summary).toContain("타일 2");
+    expect(summary).toContain("NPC 1");
+    expect(summary).not.toMatch(/칸|건|명/u);
     const hostText = findByTestId(panel, "ai-proposal-host")?.textContent ?? "";
-    expect(hostText).toContain("타일 2칸");
     expect(hostText).toContain("NPC 1명");
     expect(findByTestId(panel, "ai-proposal-item-1")).toBeTruthy();
     expect(findByTestId(panel, "ai-proposal-item-2")).toBeTruthy();
