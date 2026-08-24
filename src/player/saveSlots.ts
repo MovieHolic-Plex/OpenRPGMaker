@@ -819,6 +819,7 @@ function restoreFarmAnimalsForProject(
     project.session.farmAnimals,
     animals,
     new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id)),
+    project.system.farmAnimalBuildings,
   );
 }
 
