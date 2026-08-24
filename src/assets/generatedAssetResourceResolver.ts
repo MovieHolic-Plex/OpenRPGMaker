@@ -272,15 +272,15 @@ export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: 
   if (manifest === undefined) {
     const direct = BUILTIN_GENERATED_RESOURCE_URLS[resourceId];
     if (direct) return direct;
+    const numberedDefaultEnemy = resourceId.match(/(?:^|-)enemy_extra_(\d+)$/);
+    if (numberedDefaultEnemy) {
+      return `/assets/generated/monsters/enemy-art-${numberedDefaultEnemy[1]}.png`;
+    }
     if (resourceId.includes("meadow")) return "/assets/generated/monsters/meadow_green_slime.jpg";
     if (resourceId.includes("slime")) return "/assets/generated/monsters/classic_blue_slime.jpg";
     if (resourceId.includes("minotaur")) return "/assets/generated/monsters/monster_minotaur.jpg";
     if (resourceId.includes("medusa")) return "/assets/generated/monsters/monster_medusa.jpg";
     if (resourceId.startsWith("generated-enemy-")) {
-      const match = resourceId.match(/enemy_extra_(\d+)/);
-      if (match) {
-        return `/assets/generated/monsters/enemy-art-${match[1]}.png`;
-      }
       for (const [key, url] of Object.entries(BUILTIN_GENERATED_RESOURCE_URLS)) {
         if (key.startsWith("generated-enemy-")) {
           const stem = key.replace("generated-enemy-", "").replace("-01", "");
