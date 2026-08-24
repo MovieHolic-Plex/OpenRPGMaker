@@ -211,6 +211,10 @@ export interface ProjectSession {
   placeables?: Record<string, import("@/project/placeables").PlaceableObjectState>;
   /** Editor-authored farm animals instantiated by startSession; runtime progress is not written here. */
   farmAnimals?: FarmAnimalStartInstance[];
+  /** Editor-authored general structures, independent from P1 animal homes. */
+  farmBuildingPlacements?: FarmBuildingPlacement[];
+  /** Editor-authored home objects. */
+  homeDecorationPlacements?: HomeDecorationPlacement[];
 }
 
 export interface FarmAnimalStartInstance {
@@ -219,6 +223,25 @@ export interface FarmAnimalStartInstance {
   readonly name: string;
   readonly eventId?: string;
   readonly buildingId?: string;
+}
+
+export interface FarmBuildingPlacement {
+  readonly instanceId: string;
+  readonly typeId: string;
+  readonly level: number;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly orientation: Dir;
+}
+
+export interface HomeDecorationPlacement {
+  readonly instanceId: string;
+  readonly typeId: string;
+  readonly mapId: MapId;
+  readonly x: number;
+  readonly y: number;
+  readonly orientation: Dir;
 }
 
 /**
