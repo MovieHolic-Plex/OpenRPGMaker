@@ -126,8 +126,8 @@ function recordPickerShell(options: {
               options.hosts.blocks,
               el("button", {
                 class: "btn event-record-picker-max",
-                text: "최대 수",
-                attrs: { type: "button" },
+                text: "+ 새 항목",
+                attrs: { type: "button", title: "필요한 만큼 자동으로 늘어납니다 (고정 상한 없음)" },
                 dataset: { testid: "event-record-picker-add" },
                 on: {
                   click: () => {

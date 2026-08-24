@@ -35,7 +35,9 @@ function clickNav(host: FakeElement, slug: string): void {
 
 /** 각 섹션을 대표하는 testid — 섹션 상태와 무관하게 DOM 에 존재해야 한다. */
 const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: string }[] = [
+  { slug: "overview", testid: "db-system-studio" },
   { slug: "party", testid: "db-picker-system-start-actor" },
+  { slug: "display", testid: "db-field-system-resolution-preset" },
   { slug: "resources", testid: "db-field-title-resource" },
   { slug: "startup", testid: "db-field-system-battle-flow" },
   { slug: "optin", testid: "db-field-system-skill-system" },
@@ -58,11 +60,13 @@ describe("database system section navigation", () => {
     cleanupDom = undefined;
   });
 
-  it("renders exactly 7 section nav buttons in order", () => {
+  it("renders exactly 9 section nav buttons in order", () => {
     const host = renderSystem();
     const buttons = sectionNavButtons(host);
     expect(buttons.map((button) => button.dataset.testid)).toEqual([
+      "db-system-nav-overview",
       "db-system-nav-party",
+      "db-system-nav-display",
       "db-system-nav-resources",
       "db-system-nav-startup",
       "db-system-nav-optin",
@@ -71,25 +75,28 @@ describe("database system section navigation", () => {
       "db-system-nav-title",
     ]);
     expect(buttons.map((button) => button.textContent)).toEqual([
-      "초기 파티",
+      "개요",
+      "플레이어",
+      "화면과 사운드",
       "리소스",
-      "시작 설정",
-      "옵트인 시스템",
-      "시간 시스템",
-      "타입 상성",
-      "타이틀 화면",
+      "시작과 세이브",
+      "기능 확장",
+      "시간과 생활",
+      "전투 규칙",
+      "타이틀",
     ]);
   });
 
-  it("defaults to the party section active and visible", () => {
+  it("defaults to the overview section active and keeps the party editor hidden", () => {
     const host = renderSystem();
     const buttons = sectionNavButtons(host);
     expect(buttons[0]?.classList.contains("active")).toBe(true);
     expect(buttons.every((button, index) => button.classList.contains("active") === (index === 0))).toBe(true);
-    expect(sectionNode(host, "party").hidden).toBe(false);
+    expect(sectionNode(host, "overview").hidden).toBe(false);
+    expect(sectionNode(host, "party").hidden).toBe(true);
     // 비활성 섹션은 [hidden] 처리 — 여전히 DOM 에 존재하지만 숨겨진다.
     for (const { slug } of SECTION_KEY_TESTIDS) {
-      if (slug === "party") continue;
+      if (slug === "overview") continue;
       expect(sectionNode(host, slug).hidden).toBe(true);
     }
   });

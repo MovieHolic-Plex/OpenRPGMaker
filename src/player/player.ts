@@ -59,6 +59,7 @@ import {
   type PlayBootDiagnosticSink,
 } from "@/player/playBootDiagnostics";
 import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
+import { resolvePlayResolution } from "@/project/playResolution";
 
 let teardownShell: (() => void) | null = null;
 
@@ -159,7 +160,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const startedAt = performance.now();
     playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface();
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system));
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -510,7 +511,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
     void warmBundledPlayAssets(project);
-    const surface = createPlaySurface();
+    const surface = createPlaySurface(resolvePlayResolution(project.system));
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;

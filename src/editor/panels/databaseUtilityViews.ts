@@ -118,7 +118,7 @@ export function renderSwitchesTab(host: HTMLElement, rerender: () => void): void
     switchSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ kind: "switch", emptyMessage: "아직 스위치가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteSwitchWithCleanup, records, query: switchSearch, rerender, selectedId: selectedSwitchId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "switch", emptyMessage: "아직 스위치가 없습니다 — 상한 없이 + 추가 또는 범위 적용으로 만드세요", onDelete: deleteSwitchWithCleanup, records, query: switchSearch, rerender, selectedId: selectedSwitchId, setSelectedId: (id) => {
     selectedSwitchId = id;
     rerender();
   } }));
@@ -139,7 +139,7 @@ export function renderVariablesTab(host: HTMLElement, rerender: () => void): voi
     variableSearch = value;
     rerender();
   }));
-  form.append(numberedRows({ kind: "variable", emptyMessage: "아직 변수가 없습니다 — + 추가 또는 범위 적용으로 만드세요", onDelete: deleteVariableWithCleanup, records, query: variableSearch, rerender, selectedId: selectedVariableId, setSelectedId: (id) => {
+  form.append(numberedRows({ kind: "variable", emptyMessage: "아직 변수가 없습니다 — 상한 없이 + 추가 또는 범위 적용으로 만드세요", onDelete: deleteVariableWithCleanup, records, query: variableSearch, rerender, selectedId: selectedVariableId, setSelectedId: (id) => {
     selectedVariableId = id;
     rerender();
   } }));
@@ -203,7 +203,7 @@ function addUtilityButton(kind: "switch" | "variable", rerender: () => void): HT
     children: [el("button", {
       class: "btn small",
       text: "+ 추가",
-      attrs: { type: "button" },
+      attrs: { type: "button", title: "필요한 만큼 자동으로 늘어납니다 (고정 상한 없음)" },
       dataset: { testid: kind === "switch" ? "db-add-switch" : "db-add-variable" },
       on: {
         click: () => {

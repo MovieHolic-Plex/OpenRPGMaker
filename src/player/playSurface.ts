@@ -1,5 +1,7 @@
 import { el } from "@/util/dom";
 import { calculatePlaySurfaceCropMetrics, calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
+import { PLAY_RESOLUTION } from "@/player/playResolution";
+import type { PlayResolution } from "@/project/types";
 
 export type PlaySurface = {
   readonly viewport: HTMLElement;
@@ -9,7 +11,7 @@ export type PlaySurface = {
   readonly cleanup: () => void;
 };
 
-export function createPlaySurface(): PlaySurface {
+export function createPlaySurface(resolution: Readonly<PlayResolution> = PLAY_RESOLUTION): PlaySurface {
   const viewport = el("div", {
     class: "play-viewport",
     dataset: { testid: "play-viewport" },
@@ -22,18 +24,19 @@ export function createPlaySurface(): PlaySurface {
     class: "phaser-container",
     dataset: { testid: "play-canvas" },
   });
+  applyPlaySurfaceResolution(viewport, stage, phaserContainer, resolution);
   stage.append(phaserContainer);
   viewport.append(stage);
 
-  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport));
+  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution));
   resizeObserver.observe(viewport);
-  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport));
+  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport, resolution));
 
   return {
     viewport,
     stage,
     phaserContainer,
-    sync: () => syncPlaySurfaceMetrics(viewport),
+    sync: () => syncPlaySurfaceMetrics(viewport, resolution),
     cleanup: () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
@@ -41,10 +44,28 @@ export function createPlaySurface(): PlaySurface {
   };
 }
 
-function syncPlaySurfaceMetrics(viewport: HTMLElement): void {
+function applyPlaySurfaceResolution(
+  viewport: HTMLElement,
+  stage: HTMLElement,
+  phaserContainer: HTMLElement,
+  resolution: Readonly<PlayResolution>,
+): void {
+  const width = `${resolution.width}px`;
+  const height = `${resolution.height}px`;
+  viewport.style.setProperty("--play-logical-width", width);
+  viewport.style.setProperty("--play-logical-height", height);
+  viewport.style.setProperty("--play-logical-half-width", `${resolution.width / 2}px`);
+  viewport.style.setProperty("--play-logical-half-height", `${resolution.height / 2}px`);
+  stage.style.width = width;
+  stage.style.height = height;
+  phaserContainer.style.width = width;
+  phaserContainer.style.height = height;
+}
+
+function syncPlaySurfaceMetrics(viewport: HTMLElement, resolution: Readonly<PlayResolution>): void {
   const bounds = viewport.getBoundingClientRect();
-  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height);
-  const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale);
+  const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height);
+  const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
   viewport.style.setProperty("--play-scale", String(scale));
   viewport.style.setProperty("--play-scale-x", String(scale));
   viewport.style.setProperty("--play-scale-y", String(scale));

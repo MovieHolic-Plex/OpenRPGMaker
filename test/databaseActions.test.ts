@@ -296,13 +296,35 @@ describe("Database actions", () => {
     bulkRenameVariables(1, 2, "Puzzle");
 
     const project = store.getCurrent();
-    // 프로젝트는 RM2K3 관례대로 사전 시드된 1000개 슬롯을 가진다.
-    // bulkRename은 지정한 범위(1~3 / 1~2)만 이름을 바꾼다.
+    // 필요한 슬롯만 범위 끝까지 만들고 지정한 범위의 이름을 바꾼다.
     expect(project.switches.slice(0, 3).map((entry) => entry.name)).toEqual(["Gate 0001", "Gate 0002", "Gate 0003"]);
     expect(project.variables.slice(0, 2).map((entry) => entry.name)).toEqual(["Puzzle 0001", "Puzzle 0002"]);
-    // 시드된 슬롯 전체의 id는 고유해야 한다.
+    // 동적으로 만들어진 슬롯 전체의 id는 고유해야 한다.
     expect(new Set(project.switches.map((entry) => entry.id)).size).toBe(project.switches.length);
     expect(new Set(project.variables.map((entry) => entry.id)).size).toBe(project.variables.length);
+  });
+
+  // Break caught: treating 1,000 as a maximum leaves range authoring unable to
+  // address the first slots beyond the old preallocated block.
+  it("grows switch and variable ranges beyond the legacy 1000-slot boundary", () => {
+    bulkRenameSwitches(1001, 1, "Late Switch");
+    bulkRenameVariables(1001, 2, "Late Game");
+
+    const project = store.getCurrent();
+    const variables = project.variables;
+    expect(project.switches).toHaveLength(1001);
+    expect(project.switches[1000]).toEqual({ id: "sw_1001", name: "Late Switch 1001" });
+    expect(variables).toHaveLength(1002);
+    expect(variables[1000]).toEqual({ id: "var_1001", name: "Late Game 1001" });
+    expect(variables[1001]).toEqual({ id: "var_1002", name: "Late Game 1002" });
+    expect(project.session.switches.sw_1001).toBe(false);
+    expect(project.session.variables.var_1002).toBe(0);
+
+    const restored = deserialize(serialize(project));
+    expect(restored.switches[1000]).toEqual({ id: "sw_1001", name: "Late Switch 1001" });
+    expect(restored.variables[1001]).toEqual({ id: "var_1002", name: "Late Game 1002" });
+    expect(restored.session.switches.sw_1001).toBe(false);
+    expect(restored.session.variables.var_1002).toBe(0);
   });
 
   // fix(db): bulkRename이 개수만큼 루프를 돌며 renameSwitch/addSwitch(각각 자체
@@ -326,7 +348,8 @@ describe("Database actions", () => {
     const undone = undoMapEdit();
     expect(undone).toBe(true);
     expect(getMapEditHistoryState().canUndo).toBe(false);
-    expect(store.getCurrent().switches.slice(499, 504).every((entry) => entry.name.trim().length === 0)).toBe(true);
+    expect(store.getCurrent().switches).toHaveLength(20);
+    expect(store.getCurrent().switches.every((entry) => entry.name === "")).toBe(true);
   });
 
   it("rejects malformed v3 database references with an actionable message", () => {

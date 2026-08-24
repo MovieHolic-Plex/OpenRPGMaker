@@ -25,6 +25,7 @@ import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
+import { normalizePlayResolution } from "@/project/playResolution";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 
@@ -108,6 +109,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const actionCombat = normalizeActionCombatConfig(system.actionCombat);
   return {
     startActorIds: cleanIds(system.startActorIds),
+    ...(() => {
+      const playResolution = normalizePlayResolution(system.playResolution);
+      return playResolution ? { playResolution } : {};
+    })(),
     ...(isGenrePackId(system.genre) ? { genre: system.genre } : {}),
     titleResourceId,
     systemResourceId: normalizeSystemWindowSkinId(system.systemResourceId),

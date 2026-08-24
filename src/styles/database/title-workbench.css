@@ -52,9 +52,13 @@
 }
 
 .db-title-workbench-preview {
+  align-content: start;
+  align-self: start;
   display: grid;
   gap: 8px;
   min-width: 0;
+  position: sticky;
+  top: 0;
 }
 
 .db-title-workbench-preview-label {

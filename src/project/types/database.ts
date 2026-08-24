@@ -804,8 +804,16 @@ export interface TitleScreenSettings {
   intro?: TitleIntroSettings;
 }
 
+/** Project-authored logical viewport used by the map runtime and its DOM stage. */
+export interface PlayResolution {
+  width: number;
+  height: number;
+}
+
 export interface SystemRecords {
   startActorIds: ActorId[];
+  /** Omitted means the legacy 320x240 viewport. */
+  playResolution?: PlayResolution;
   titleResourceId?: string;
   systemResourceId?: string;
   battleSystemResourceId?: string;

@@ -115,7 +115,7 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
       continueGame: true,
       quit: true,
     },
-    // Crest logo over night-field title art (scripts/generate-system-title-art.mts when available).
+    // Crest logo over night-field title art; alpha cleanup is reproducible via `npm run clean:title-logo`.
     titleGraphic: {
       mode: "both",
       resourceId: "oprn-title-logo-crest",

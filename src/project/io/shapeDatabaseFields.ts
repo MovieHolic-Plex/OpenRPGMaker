@@ -29,6 +29,11 @@ export function validateDatabase(value: unknown): void {
 export function validateSystem(value: unknown): void {
   const system = requireRecord("system", value);
   requireArray("system.startActorIds", system.startActorIds);
+  if (system.playResolution !== undefined) {
+    const playResolution = requireRecord("system.playResolution", system.playResolution);
+    requireNumber("system.playResolution.width", playResolution.width);
+    requireNumber("system.playResolution.height", playResolution.height);
+  }
   if (system.genre !== undefined) {
     requireString("system.genre", system.genre);
     assert(isGenrePackId(system.genre), `system.genre is not a supported genre pack id: ${system.genre}`);

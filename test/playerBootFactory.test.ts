@@ -5,6 +5,10 @@ import { startSession } from "@/project/session";
 
 const fakePlayScene = vi.hoisted(() => class FakePlayScene {});
 
+const fakeProjectStore = vi.hoisted(() => ({
+  current: undefined as ReturnType<typeof createBlankProject> | undefined,
+}));
+
 const fakePhaser = vi.hoisted(() => {
   type BootConfig = {
     readonly type: number;
@@ -81,7 +85,7 @@ vi.mock("@/player/PlayScene", () => ({ PlayScene: fakePlayScene }));
 vi.mock("@/project/store", () => ({
   DbConnectionRequiredError: class DbConnectionRequiredError extends Error {},
   store: {
-    getCurrent: vi.fn(() => createBlankProject()),
+    getCurrent: vi.fn(() => fakeProjectStore.current ?? createBlankProject()),
     load: vi.fn(async () => undefined),
   },
 }));
@@ -111,6 +115,7 @@ async function loadAdapters(): Promise<readonly StartPlayGame[]> {
 describe("player Phaser boot contract", () => {
   beforeEach(() => {
     fakePhaser.reset();
+    fakeProjectStore.current = undefined;
   });
 
   afterEach(() => {
@@ -163,6 +168,22 @@ describe("player Phaser boot contract", () => {
         ["onPlayLoadStage", onPlayLoadStage],
         ["onPlaySceneReady", onPlaySceneReady],
       ]);
+    }
+  });
+
+  it("boots Phaser with the current project's authored play resolution", async () => {
+    // Break named: the shared player factory currently ignores project.system.playResolution.
+    const project = createBlankProject();
+    project.system.playResolution = { width: 640, height: 360 };
+    fakeProjectStore.current = project;
+    const parent = document.createElement("div");
+    const adapters = await loadAdapters();
+
+    for (const startPlayGame of adapters) await startPlayGame(parent);
+
+    expect(fakePhaser.games).toHaveLength(2);
+    for (const game of fakePhaser.games) {
+      expect(game.config.scale).toMatchObject({ width: 640, height: 360 });
     }
   });
 

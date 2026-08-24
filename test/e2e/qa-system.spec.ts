@@ -179,14 +179,16 @@ test("Switches tab: add/rename/search/range-apply/delete roundtrip", async ({ pa
 
   // 범위 이름 변경 적용
   const rangeInputs = page.locator(".db-range input");
-  await rangeInputs.nth(0).fill("700");
+  // Legacy projects can already carry 1,000 blank slots; the UI must grow past
+  // that old seed instead of treating it as a maximum.
+  await rangeInputs.nth(0).fill("1001");
   await rangeInputs.nth(1).fill("2");
   await rangeInputs.nth(2).fill("범위QA");
   await page.getByText("범위 적용").click();
   await page.waitForTimeout(300);
   project = await exportedProject(page);
-  expect(project.switches.find((s) => s.id === "sw_0700")?.name).toBe("범위QA 0700");
-  expect(project.switches.find((s) => s.id === "sw_0701")?.name).toBe("범위QA 0701");
+  expect(project.switches.find((s) => s.id === "sw_1001")?.name).toBe("범위QA 1001");
+  expect(project.switches.find((s) => s.id === "sw_1002")?.name).toBe("범위QA 1002");
 
   // 삭제 — 2단계 확인(wave2 fix) 후 행이 목록에서 사라짐
   const deleteRowButton = page.getByTestId(`db-delete-${newId}`);
@@ -218,12 +220,22 @@ test("Variables tab: add/rename/range-apply roundtrip and story-flag section", a
   await nameInput.blur();
   await page.waitForTimeout(250);
 
-  const project = await exportedProject(page);
+  let project = await exportedProject(page);
   expect(project.variables.find((v) => v.id === newId)?.name).toBe("QA변수");
 
   await switchDatabaseTab(page, SWITCHES_TAB);
   await switchDatabaseTab(page, VARIABLES_TAB);
   await expect(page.locator(".db-list-name", { hasText: "QA변수" })).toBeVisible();
+
+  const rangeInputs = page.locator(".db-range input");
+  await rangeInputs.nth(0).fill("1001");
+  await rangeInputs.nth(1).fill("2");
+  await rangeInputs.nth(2).fill("범위변수");
+  await page.getByText("범위 적용").click();
+  await page.waitForTimeout(300);
+  project = await exportedProject(page);
+  expect(project.variables.find((v) => v.id === "var_1001")?.name).toBe("범위변수 1001");
+  expect(project.variables.find((v) => v.id === "var_1002")?.name).toBe("범위변수 1002");
 
   await page.screenshot({ path: ".superpowers/sdd/qa-shots/variables-after-crud.png", fullPage: true });
 });
