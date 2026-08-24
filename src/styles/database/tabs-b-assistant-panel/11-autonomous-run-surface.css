@@ -1,18 +1,85 @@
-/* 자율 실행 런 표면(todo 6) — 활성 런 동안만 사는 체크리스트/예산/마일스톤 피드 영역.
-   기존 채팅 레이아웃은 건드리지 않고 mainColumn 상단에 얹는 전용 서피스다. */
+/* 자율 실행 — 다크 #1a1d27 박스 금지. 앞면은 2px 골드 바 + 한 줄 + 중지. */
 .ai-autonomous-run-surface {
-  background: var(--bg-raised, #1a1d27);
-  border: 1px solid var(--accent-border, #4c6ef5);
-  border-radius: 12px;
-  color: var(--text-1, #e8eaf0);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--text-1);
   display: flex;
   flex-direction: column;
   font-size: 12px;
+  gap: 4px;
+  margin: 4px 8px 2px;
+  max-height: none;
+  overflow: visible;
+  padding: 0;
+}
+
+.ai-chat-panel.is-autonomous-run .ai-status-group {
+  display: none;
+}
+
+.ai-run-whisper {
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  margin: 6px 8px 2px;
-  max-height: 40%;
-  overflow: auto;
-  padding: 8px 10px;
+}
+
+.ai-run-line {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-run-status {
+  color: var(--text-2);
+  font-size: 12px;
+  line-height: 1.4;
+  min-width: 0;
+}
+
+.ai-run-stop {
+  background: none;
+  border: 0;
+  color: var(--danger);
+  cursor: pointer;
+  flex: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0;
+}
+
+.ai-run-progress {
+  background: var(--bg-inset);
+  border-radius: 99px;
+  height: 2px;
+  overflow: hidden;
+}
+
+.ai-run-progress-fill {
+  background: var(--gold);
+  display: block;
+  height: 100%;
+}
+
+.ai-run-details {
+  color: var(--text-3);
+  font-size: 11px;
+}
+
+.ai-run-details-toggle {
+  color: var(--text-3);
+  cursor: pointer;
+  list-style: none;
+}
+
+.ai-run-details-toggle::-webkit-details-marker {
+  display: none;
+}
+
+.ai-run-details[open] {
+  color: var(--text-2);
+  margin-top: 4px;
 }
 
 .ai-autonomous-head {
@@ -21,55 +88,56 @@
   flex-wrap: wrap;
   gap: 6px;
   justify-content: space-between;
+  margin-top: 6px;
 }
 
 .ai-autonomous-chip {
-  background: var(--accent-muted, #2a3a6e);
-  border: 1px solid var(--accent-border, #4c6ef5);
+  background: var(--gold-wash);
+  border: 1px solid var(--gold-soft);
   border-radius: 999px;
-  color: var(--accent, #4c6ef5);
+  color: var(--gold-deep);
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
 }
 
 .ai-autonomous-budget {
-  color: var(--text-2, #b8bfcc);
+  color: var(--text-2);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
 
 .ai-autonomous-goal {
-  color: var(--text-1, #e8eaf0);
+  color: var(--text-1);
   font-weight: 600;
   line-height: 1.4;
 }
 
 .ai-autonomous-progress-row {
   align-items: center;
-  color: var(--text-3, #8b93a5);
+  color: var(--text-3);
   display: flex;
   font-size: 11px;
   gap: 6px;
 }
 
 .ai-autonomous-progress {
-  background: var(--bg-inset, #12151d);
+  background: var(--bg-inset);
   border-radius: 999px;
-  color: var(--accent, #4c6ef5);
+  color: var(--gold-deep);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   padding: 0 8px;
 }
 
 .ai-autonomous-layer {
-  border-top: 1px solid var(--border-subtle, #262b38);
+  border-top: 1px solid var(--border-subtle);
   padding-top: 6px;
 }
 
 .ai-autonomous-layer-title {
-  color: var(--text-2, #b8bfcc);
+  color: var(--text-2);
   font-size: 11px;
   font-weight: 700;
   margin-bottom: 2px;
@@ -86,42 +154,43 @@
 
 .ai-autonomous-item {
   align-items: center;
-  color: var(--text-2, #b8bfcc);
+  color: var(--text-2);
   display: flex;
   gap: 6px;
   line-height: 1.5;
 }
 
 .ai-autonomous-item-mark {
-  color: var(--text-3, #8b93a5);
+  color: var(--text-3);
   font-size: 10px;
   text-align: center;
   width: 14px;
 }
 
 .ai-autonomous-item.is-done {
-  color: var(--success, #58c472);
+  color: var(--success);
   text-decoration: line-through;
 }
 
 .ai-autonomous-item.is-in_progress {
-  color: var(--text-1, #e8eaf0);
+  color: var(--text-1);
   font-weight: 600;
 }
 
 .ai-autonomous-item.is-blocked {
-  color: var(--danger, #d85c5c);
+  color: var(--danger);
 }
 
 .ai-autonomous-feed {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-top: 6px;
 }
 
 .ai-autonomous-feed-line {
   align-items: center;
-  color: var(--text-2, #b8bfcc);
+  color: var(--text-2);
   display: flex;
   font-size: 11px;
   gap: 6px;
@@ -129,11 +198,11 @@
 }
 
 .ai-autonomous-feed-line.is-applied {
-  color: var(--success, #58c472);
+  color: var(--success);
 }
 
 .ai-autonomous-feed-line.is-paused {
-  color: var(--warning, #e0a83c);
+  color: var(--warning);
 }
 
 .ai-autonomous-feed-mark {

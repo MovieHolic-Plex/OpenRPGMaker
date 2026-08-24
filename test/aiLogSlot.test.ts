@@ -132,17 +132,15 @@ describe("로그 슬롯은 한 곳에서 정해진다", () => {
     expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
   });
 
-  it("제안 pill·완료 스트립은 도크와 무관하게 마운트된다", () => {
-    // Break: stickyProposalZone 을 risingOverlay 자식으로 되돌리면 기반 도크(유리)·float
-    // 에서 pill 과 완료 스트립이 문서에서 통짜로 벅려 "나중에"로 최소화한 제안으로
-    // 되돌아갈 진입점이 사라진다(2026-08-23 발견).
+  it("완료 스트립은 모든 도크에 남고 제안 reopen pill은 인라인 결정 카드로 대체된다", () => {
     const panel = renderPanel();
 
     for (const dock of ["glass", "side", "float"]) {
       setDock(panel, dock);
       expect(findByTestId(panel, "ai-rising-sticky-zone"), dock).toBeTruthy();
       expect(findByTestId(panel, "ai-completion-host"), dock).toBeTruthy();
-      expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeTruthy();
+      expect(findByTestId(panel, "ai-proposal-reopen"), dock).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-pin-host"), dock).toBeTruthy();
     }
   });
 

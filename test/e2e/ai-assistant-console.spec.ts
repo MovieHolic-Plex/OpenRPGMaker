@@ -113,7 +113,7 @@ test.describe("AI 감독 console contract", () => {
       const sidePanel = page.getByTestId("chat-side-panel");
       await expect(sidePanel.getByTestId("ai-panel")).toBeVisible();
       await expect(sidePanel.getByTestId("ai-director-plate")).toBeVisible();
-      await expect(sidePanel.getByTestId("ai-director-plate").locator("h2")).toHaveText("감독");
+      await expect(sidePanel.getByTestId("ai-director-plate").locator("h2")).toHaveText("조수");
       await expect(sidePanel.getByTestId("ai-director-plate")).not.toContainText("🤖");
       await assertEmptyQueueHidden(page);
       await shot(page, `side-plate-${viewport.name}`);

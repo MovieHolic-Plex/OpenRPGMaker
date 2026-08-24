@@ -299,6 +299,27 @@ describe("에디터 레이아웃 크기 저장", () => {
     expect(panel?.parentElement).toBe(sideHost);
     expect(editorState.get().chatDock).toBe("side");
   });
+
+  it("저장된 조수 온도를 레이아웃과 함께 복원한다", async () => {
+    storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
+    storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
+      leftWidth: 526,
+      mapTreeHeight: 154,
+      leftCollapsed: false,
+      chatDock: "glass",
+      assistantTemperature: "ink-only",
+    }));
+    vi.resetModules();
+    mockEditorDependencies();
+    const { renderEditor } = await import("@/editor/panels/editor");
+    const { editorState } = await import("@/editor/editorState");
+    const main = document.createElement("main");
+
+    renderEditor(main);
+
+    expect(editorState.get().assistantTemperature).toBe("ink-only");
+    expect(findByTestId(fakeElement(main), "ai-panel")?.dataset.temperature).toBe("ink-only");
+  });
 });
 
 describe("맵 잠금 상태바", () => {

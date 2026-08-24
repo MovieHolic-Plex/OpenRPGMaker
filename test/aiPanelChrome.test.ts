@@ -1,11 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { getMapEditHistoryState, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
 import {
-  directorStartPrompts,
+  assistantIdleHints,
   formatComposerPlaceholder,
-  nextStepHint,
   readAgentBrief,
 } from "@/editor/panels/aiAgentBrief";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
@@ -42,6 +40,7 @@ beforeEach(() => {
     tool: "paint",
     selection: null,
     chatDock: "float",
+    assistantTemperature: "quiet-gold",
   });
 });
 
@@ -121,46 +120,41 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
-  it("헤더 플레이트는 접근 이름이 감독이고 제목이 AI 어시스턴트가 아니다", () => {
-    // Break: header h2 is still "AI 어시스턴트", or the faceset crop lacks aria-label 감독.
+  it("헤더 플레이트는 접근 이름이 조수이고 제목이 AI 어시스턴트가 아니다", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const header = panel.querySelector(".ai-chat-header");
     if (!header) throw new Error("AI header missing");
     const title = findByTag(header, "h2");
-    const face = findByAttr(header, "aria-label", "감독");
+    const face = findByAttr(header, "aria-label", "조수");
     const plate = findByTestId(panel, "ai-director-plate");
 
-    expect(title?.textContent).toBe("감독");
+    expect(title?.textContent).toBe("조수");
     expect(title?.textContent).not.toContain("AI 어시스턴트");
     expect(face?.getAttribute("role")).toBe("img");
-    expect(face?.getAttribute("aria-label")).toBe("감독");
+    expect(face?.getAttribute("aria-label")).toBe("조수");
     expect(plate?.textContent ?? "").not.toContain("🤖");
     expect(plate?.textContent ?? "").not.toMatch(/지시|질문|계획/u);
   });
 
-  it("헤더 존재 줄은 빈 프로젝트 readAgentBrief().line 이다", () => {
-    // Break: plate is missing or the line is not readAgentBrief().line.
+  it("헤더 존재 줄은 대기 한 줄이다", () => {
     const panel = renderPanel();
     expandPanel(panel);
-    const expected = readAgentBrief().line;
     const line = findByTestId(panel, "ai-director-line");
 
-    expect(expected).toBe("빈 맵 20×15 · 바닥 · 칠하기");
-    expect(line?.textContent).toBe(expected);
+    expect(line?.textContent).toBe("이 맵에 무엇을 둘까요");
   });
 
-  it("레이어·도구가 바뀌면 존재 줄이 따라간다", () => {
-    // Break: plate does not subscribe to editorState, so the line stays at boot.
+  it("선택이 있으면 존재 줄이 그 칸을 묻는다", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const line = findByTestId(panel, "ai-director-line");
     if (!line) throw new Error("director line missing");
+    const mapId = store.getCurrent().startMapId;
 
-    editorState.set({ layer: "upper", tool: "fill" });
+    editorState.set({ selection: { mapId, x: 1, y: 2, width: 3, height: 4 } });
 
-    expect(line.textContent).toBe("빈 맵 20×15 · 덧그림 · 채우기");
-    expect(line.textContent).toBe(readAgentBrief().line);
+    expect(line.textContent).toBe("선택한 칸에 무엇을 둘까요");
   });
 
   it("첫 방문(저장값 없음)은 펼친 채 부팅한다", () => {
@@ -251,63 +245,59 @@ describe("AI 패널 크롬", () => {
     expect(restore).toBeTruthy();
   });
 
-  it("빈 플로트 부팅은 오버레이 빈 키트 없이 감독 칩만 둔다", () => {
-    // Break: boot still appends ai-start-visual-gallery / ai-empty-cta, or skips ai-composer-chips.
+  it("빈 플로트 부팅은 오버레이 빈 키트와 중복 칩이 없다", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const chips = findByTestId(panel, "ai-composer-chips");
-    const chipButtons = chips?.querySelectorAll("button") ?? [];
-    const expected = directorStartPrompts(readAgentBrief());
     const input = findByTestId(panel, "ai-input");
 
     expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
     expect(findByTestId(panel, "ai-empty-cta")).toBeNull();
-    expect(chips).toBeTruthy();
-    expect(chipButtons.length).toBeGreaterThanOrEqual(0);
-    expect(chipButtons.length).toBeLessThanOrEqual(3);
-    expect(chipButtons.length).toBe(expected.length);
+    expect(chips?.hidden).toBe(true);
+    expect(chips?.querySelectorAll("button").length ?? 0).toBe(0);
     expect(input?.getAttribute("placeholder")).toBe(formatComposerPlaceholder(readAgentBrief()));
     expect(findByTestId(panel, "ai-next-steps")?.hidden).toBe(true);
   });
 
-  it("유리·사이드 빈 화면은 다음 할 일을 큰 버튼으로 보여 준다", () => {
+  it("유리 대기는 Quiet Gold 힌트 둘이고 갤러리는 없다", () => {
     editorState.set({ chatDock: "glass" });
     const panel = renderPanel();
     expandPanel(panel);
     const steps = findByTestId(panel, "ai-next-steps");
-    const buttons = steps?.querySelectorAll("button") ?? [];
-    const expected = directorStartPrompts(readAgentBrief());
+    const expected = assistantIdleHints(readAgentBrief());
 
+    expect(panel.dataset.temperature).toBe("quiet-gold");
     expect(steps?.hidden).toBe(false);
-    expect(findByTestId(panel, "ai-next-steps-hint")?.textContent).toBe(nextStepHint(readAgentBrief()));
-    expect(buttons.length).toBe(expected.length);
-    expect(buttons[0]?.textContent).toBe(expected[0]?.label);
-    expect(findByTestId(panel, `ai-start-visual-stage-${expected[0]?.id ?? "place"}`)).toBeTruthy();
+    expect(findByTestId(panel, "ai-start-visual-gallery")).toBeNull();
+    expect(findByTestId(panel, "ai-next-steps-hint")).toBeNull();
+    expect(findByTestId(panel, "ai-idle-hints")).toBeTruthy();
+    expect(steps?.querySelectorAll("button").length).toBe(2);
+    expect(findByTestId(panel, `ai-idle-hint-${expected[0]?.id ?? "river"}`)?.textContent).toContain("@>");
+    expect(findByTestId(panel, `ai-idle-hint-${expected[0]?.id ?? "river"}`)?.textContent).toContain(expected[0]?.label);
   });
 
-  it("감독 칩 클릭은 입력만 채우고 전송하지 않는다", () => {
-    // Break: chip click calls sendText (user row or settings modal) instead of filling the input.
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", apiKey: "" }),
-    );
+  it("⋯ 메뉴에서 온도 B/C를 고르면 대기 크롬이 바뀌고 레이아웃에 저장된다", () => {
+    editorState.set({ chatDock: "glass" });
     const panel = renderPanel();
     expandPanel(panel);
-    const expected = directorStartPrompts(readAgentBrief());
-    const first = expected[0];
-    if (!first) throw new Error("directorStartPrompts returned no chips");
-    const chips = findByTestId(panel, "ai-composer-chips");
-    const chip = chips?.querySelectorAll("button")[0];
-    const input = findByTestId(panel, "ai-input") as unknown as { value: string } | null;
-    if (!chip || !input) throw new Error("composer chip or input missing");
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
 
-    chip.click();
+    expect(findByTestId(panel, "ai-temperature-quiet-gold")).toBeTruthy();
+    expect(findByTestId(panel, "ai-temperature-ink-only")).toBeTruthy();
+    expect(findByTestId(panel, "ai-temperature-map-first")).toBeTruthy();
+    expect(findByTestId(panel, "ai-temperature-quiet-gold")?.getAttribute("aria-checked")).toBe("true");
 
-    expect(input.value).toBe(first.instruction);
-    expect(document.activeElement).toBe(input);
-    expect(findByTestId(panel, "ai-command-row-user")).toBeNull();
-    expect(findByTestId(panel, "ai-command-row")).toBeNull();
-    expect(findByTestId(panel, "ai-settings-modal")).toBeNull();
+    findByTestId(panel, "ai-temperature-ink-only")?.click();
+    expect(panel.dataset.temperature).toBe("ink-only");
+    expect(editorState.get().assistantTemperature).toBe("ink-only");
+    expect(findByTestId(panel, "ai-next-steps")?.hidden).toBe(true);
+    expect(JSON.parse(storage.get("oprn:editor-layout:v4") ?? "{}")).toMatchObject({ assistantTemperature: "ink-only" });
+
+    findByTestId(panel, "ai-more-menu-toggle")?.click();
+    findByTestId(panel, "ai-temperature-map-first")?.click();
+    expect(panel.dataset.temperature).toBe("map-first");
+    expect(panel.classList.contains("is-map-first-idle")).toBe(true);
+    expect(findByTestId(panel, "ai-command-bar-face")).toBeTruthy();
   });
 
   it("복귀 타깃으로 펼치면 저장값이 0이 된다", () => {

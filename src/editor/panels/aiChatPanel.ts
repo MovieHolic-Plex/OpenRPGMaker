@@ -13,6 +13,12 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { AiDocument } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
+import {
+  ASSISTANT_TEMPERATURES,
+  parseAssistantTemperature,
+  persistAssistantTemperature,
+  type AssistantTemperature,
+} from "@/editor/assistantTemperature";
 import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -64,17 +70,15 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
-import { createDirectorPlate, createDirectorRestoreButton } from "./aiDirectorChrome";
+import { createAssistantFace, createDirectorPlate, createDirectorRestoreButton } from "./aiDirectorChrome";
 // queueController extracted for future use — reserved (aiQueueController.ts).
 import { buildAiCompletionStrip, type AiCompletionStripHandle } from "./aiCompletionStrip";
 import { openAiSettingsModal } from "./aiSettingsModal";
 import {
-  directorStartPrompts,
+  assistantIdleHints,
   formatComposerPlaceholder,
-  nextStepHint,
   readAgentBrief,
 } from "./aiAgentBrief";
-import { buildVisualStartGallery } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
@@ -142,6 +146,8 @@ export {
 } from "./aiPanelLayout";
 export {
   fallbackDiffParts,
+  proposalDecisionTitle,
+  proposalDetailsToggleLabel,
   proposalDependencyIndexes,
   proposalHumanSummaryLine,
   proposalSummaryLines,
@@ -193,6 +199,8 @@ export interface AiChatPanelOptions {
   readonly clock?: () => number;
   readonly getChatDock?: () => ChatDock;
   readonly onChatDockToggle?: () => void;
+  readonly getAssistantTemperature?: () => AssistantTemperature;
+  readonly onAssistantTemperatureChange?: (next: AssistantTemperature) => void;
   readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
 }
 
@@ -215,6 +223,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const now = options.clock ?? (() => Date.now());
   const runRegion = options.regionTaskRunner ?? runRegionTask;
   const readChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
+  const readTemperature = (): AssistantTemperature =>
+    parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
+  let refreshTemperatureChrome = (): void => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   let disposed = false;
   const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
@@ -239,6 +250,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
   };
 
+  let syncPresenceLine = (): void => {};
   const status = el("span", {
     class: "ai-assistant-status",
     text: "대기",
@@ -250,6 +262,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
+    syncPresenceLine();
   };
   const log = el("div", { class: "ai-chat-log", dataset: { testid: "ai-chat-log" } });
   const pinHost = el("div", {
@@ -259,9 +272,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 비면 숨김(CSS :empty).
   const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
 
-  // ── 변경 제안 몰입 모달: 제안 카드는 중앙 모달에서 검토한다(채팅 오버레이에 얹으면 답답하다는 UX 피드백).
-  // proposalHost가 모달 본문에 상주하므로 카드 렌더/승인/융합 로직은 그대로다.
-  // '나중에'(Esc/백드롭 포함)는 최소화 — 커맨드 바 위 pill로 남아 승인 대기를 잃지 않는다. 폐기는 오직 [거부] 버튼.
+  // 결정 카드: glass/side/float는 도크 안 인라인. 몰입 모달·오버레이 pill은 캔버스 우선(사이드)만.
+  // 플로트는 커맨드 캡슐 위 pinHost. 폐기는 오직 [취소].
   const proposalModal = createProposalModalElements(proposalHost);
   const proposalNoticeHost = proposalModal.noticeHost;
   const proposalPill = proposalModal.pill;
@@ -391,6 +403,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalNoticeHost,
     proposalModalCount,
     proposalPill,
+    proposalModalBody: proposalModal.body,
+    getChatDock: readChatDock,
     openProposalModal,
     closeProposalModal,
     controller,
@@ -551,6 +565,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     autonomousRunSurface?.remove();
     autonomousRunSurface = null;
     autonomousFeedHost = null;
+    panel.classList.remove("is-autonomous-run");
   };
   const beginAutonomousRun = (): void => {
     // 새 런: 이전 런의 계획/예산/피드를 전부 버리고 0부터 시작한다.
@@ -576,16 +591,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     return autonomousRunSurface;
   };
-  // 계획 도착 시마다 체크리스트를 갱신한다(진행 요약/현재 레이어가 이벤트마다 재계산된다).
+  // 앞면은 한 줄+골드 바+중지. 계획/예산/마일스톤은 자세히 서랍.
   const refreshAutonomousRunSurface = (): void => {
     if (!autonomousRunState || !autonomousRunState.plan) return;
-    ensureAutonomousRunSurface().replaceChildren(
-      renderWorkPlanChecklist(autonomousRunState.plan, {
-        active: autonomousRunState.active,
-        budget: autonomousRunState.budget,
-      }),
-      autonomousFeedHost!,
-    );
+    const checklist = renderWorkPlanChecklist(autonomousRunState.plan, {
+      active: autonomousRunState.active,
+      budget: autonomousRunState.budget,
+      onStop: () => abortActiveTurn(),
+    });
+    const details = checklist.querySelector("[data-testid=ai-run-details]");
+    if (details && autonomousFeedHost) details.append(autonomousFeedHost);
+    ensureAutonomousRunSurface().replaceChildren(checklist);
+    panel.classList.add("is-autonomous-run");
   };
   // 마일스톤 자동 적용/승인 대기 — 런 표면의 피드에 한 줄씩 쌓는다(피드는 표면과 함께 정리된다).
   const appendMilestoneFeedLine = (kind: "applied" | "paused", title: string, detail: string): void => {
@@ -1475,8 +1492,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // Overlay empty kit dropped — idle prompts live in the composer as director chips.
   const ensureStartScreen = (): void => {};
-  if (autoRestoreConversation) restoreConversationRecord(autoRestoreConversation, "auto");
-
   // 스킬 검색은 ☰ 메뉴 항목이다. 컴포저 하단에 `/` 단독 버튼으로 서 있던 것을 걷었다
   // (감독 지시 2026-08-21: 유리·사이드에서 레일 한 열이 이 버튼 하나만 담아 난장판).
   // 키보드 경로(입력창에 "/" 타이핑)가 주 진입점이고 이 항목은 발견 가능성용이다.
@@ -1607,35 +1622,38 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       || Boolean(log.querySelector("[data-testid=ai-command-row]"));
     const busy = hasLog || Boolean(turnBusy || runningProgress);
     const dock = readChatDock();
-    const show = (dock === "glass" || dock === "side") && !busy && input.value.trim() === "";
+    const temperature = readTemperature();
+    const show = (dock === "glass" || dock === "side")
+      && temperature === "quiet-gold"
+      && !busy
+      && input.value.trim() === "";
     nextSteps.hidden = !show;
     if (!show) {
       nextSteps.replaceChildren();
       return;
     }
-    const prompts = directorStartPrompts(brief).slice(0, 3);
-    const project = store.getCurrent();
-    const mapId = editorState.get().currentMapId ?? project.startMapId;
-    const map = mapId ? project.maps[mapId] : undefined;
-    const tileset = map ? project.tilesets[map.tilesetId] ?? null : null;
-    const gallery = buildVisualStartGallery({
-      tileset,
-      prompts,
-      tileSize: 28,
-      charsetHeight: 64,
-      onPick: (instruction, id) => {
-        const picked = prompts.find((prompt) => prompt.id === id);
-        void sendText(instruction, picked?.label ?? instruction);
-      },
-    });
-    gallery.classList.add("ai-next-steps-list");
+    const hints = assistantIdleHints(brief);
     nextSteps.replaceChildren(
-      el("p", {
-        class: "ai-next-steps-hint",
-        dataset: { testid: "ai-next-steps-hint" },
-        text: nextStepHint(brief),
+      el("div", {
+        class: "ai-idle-hints",
+        dataset: { testid: "ai-idle-hints" },
+        children: hints.map((hint) =>
+          el("button", {
+            class: "ai-idle-hint",
+            attrs: { type: "button" },
+            dataset: { testid: `ai-idle-hint-${hint.id}` },
+            children: [
+              el("span", { class: "ai-command-prefix", text: "@>" }),
+              el("span", { class: "ai-idle-hint-label", text: hint.label }),
+            ],
+            on: {
+              click: () => {
+                void sendText(hint.instruction, hint.label);
+              },
+            },
+          }),
+        ),
       }),
-      gallery,
     );
   };
   // 추천 칩 팝오버는 입력창이 비어 있고 포커스가 있을 때만 뜬다(float 전용 —
@@ -1653,39 +1671,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (wantOpen && kind === null) openComposerPopover("suggest");
     else if (!wantOpen && kind === "suggest") openComposerPopover(null);
   };
-  // 칩 집합이 실제로 바뀔 때만 다시 그린다 — 매 키스트로크 replaceChildren 은
-  // 흐름 안 칩 행을 껐다 켜며 바 높이를 점프시킨 원인이었다.
-  let composerChipsKey = "";
   const refreshComposerChips = (): void => {
     if (typeof document === "undefined") return;
     const brief = readAgentBrief();
-    const placeholder = formatComposerPlaceholder(brief);
-    if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
-    const prompts = directorStartPrompts(brief).slice(0, 3);
-    const chipsKey = prompts.map((prompt) => `${prompt.id}:${prompt.label}`).join("|");
-    if (chipsKey !== composerChipsKey) {
-      composerChipsKey = chipsKey;
-      composerChips.replaceChildren(
-        ...prompts.map((prompt) =>
-          el("button", {
-            class: "ai-composer-chip",
-            text: prompt.label,
-            attrs: { type: "button", title: prompt.instruction },
-            dataset: { testid: `ai-composer-chip-${prompt.id}` },
-            on: {
-              click: () => {
-                input.value = prompt.instruction;
-                input.focus();
-                syncInputHeight();
-                refreshComposerChips();
-              },
-            },
-          }),
-        ),
-      );
-    }
-    composerChips.hidden = prompts.length === 0;
-    syncSuggestPopover();
+    input.setAttribute("placeholder", formatComposerPlaceholder(brief));
+    composerChips.replaceChildren();
+    composerChips.hidden = true;
     refreshNextSteps();
   };
   const clearSelectionTaskContext = (): void => {
@@ -1754,6 +1745,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const unsubscribeContextEditor = editorState.subscribe(() => {
     refreshContextChips();
     refreshComposerChips();
+    refreshTemperatureChrome();
   });
   const unsubscribeContextStore = store.subscribe(() => {
     refreshContextChips();
@@ -1844,6 +1836,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const currentChatDock = (): ChatDock => readChatDock();
   let refreshDockLabels: () => void = () => {};
   let syncGlassIdle: () => void = () => {};
+  const applyTemperature = (next: AssistantTemperature): void => {
+    const parsed = parseAssistantTemperature(next);
+    if (options.onAssistantTemperatureChange) options.onAssistantTemperatureChange(parsed);
+    else {
+      editorState.set({ assistantTemperature: parsed });
+      persistAssistantTemperature(parsed);
+    }
+    refreshTemperatureChrome();
+  };
   const onDockToggleClick = (): void => {
     if (options.onChatDockToggle) options.onChatDockToggle();
     else editorState.set({ chatDock: cycleChatDock(currentChatDock()) });
@@ -2000,7 +2001,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applyDockModeChrome = (mode: ChatDock): void => {
     const actionLabel = nextChatDockActionLabel(mode);
     const nextHint = chatDockHint(mode);
-    directorPlate.setName(mode === "glass" ? "조수" : "감독");
+    directorPlate.setName("조수");
     dockModeButton.textContent = actionLabel;
     dockModeButton.dataset.dockMode = mode;
     dockModeButton.setAttribute("title", nextHint);
@@ -2021,7 +2022,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const moreMenuToggle = el("button", {
     class: "ai-chat-icon-btn",
-    text: "☰",
+    text: "⋯",
     attrs: { type: "button", title: "더보기", "aria-label": "더보기 메뉴", "aria-expanded": "false", "aria-haspopup": "menu" },
     dataset: { testid: "ai-more-menu-toggle" },
     on: {
@@ -2029,7 +2030,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const open = moreMenu.hidden;
         moreMenu.hidden = !open;
         moreMenuToggle.setAttribute("aria-expanded", String(open));
-        if (open) refreshMoreMenuDockLabel();
+        if (open) {
+          refreshMoreMenuDockLabel();
+          refreshTemperatureChrome();
+        }
       },
     },
   }) as HTMLButtonElement;
@@ -2056,14 +2060,34 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     openTools: () => toolsButton.click(),
   };
-  // 더보기: 일상 액션 + 설정. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
+  const temperatureMenuButtons = (itemClass: string, testidPrefix: string, close: () => void): HTMLElement[] =>
+    ASSISTANT_TEMPERATURES.map((row) =>
+      el("button", {
+        class: itemClass,
+        text: `${row.code} ${row.label}`,
+        attrs: { type: "button", role: "menuitemradio", "aria-checked": "false" },
+        dataset: { testid: `${testidPrefix}-${row.id}`, temperature: row.id },
+        on: {
+          click: () => {
+            close();
+            applyTemperature(row.id);
+          },
+        },
+      }),
+    );
+  // 더보기: 온도 + 일상 액션 + 설정. 스튜디오·하네스·글자 크기는 숨은 툴바 훅으로 유지(고급).
   const headerMenu = createAiActionMenuItems({
     variant: "header",
     close: closeMoreMenu,
     actions: sharedMenuActions,
   });
   moreMenuDockItem = headerMenu.dockItem;
-  moreMenu.replaceChildren(headerSettingsItem, ...headerMenu.items);
+  moreMenu.replaceChildren(
+    el("div", { class: "ai-more-menu-label", text: "온도", attrs: { role: "presentation" } }),
+    ...temperatureMenuButtons("ai-more-menu-item", "ai-temperature", closeMoreMenu),
+    headerSettingsItem,
+    ...headerMenu.items,
+  );
   const moreWrap = el("div", {
     class: "ai-more-wrap",
     children: [moreMenuToggle, moreMenu],
@@ -2117,6 +2141,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const commandMenuToggle = composerShell.commandMenuToggle;
   openComposerPopover = composerShell.openPopover;
   composerPopoverKind = composerShell.openKind;
+  const commandBarFace = createAssistantFace({
+    ariaLabel: "조수",
+    testid: "ai-command-bar-face",
+  });
+  commandBarFace.classList.add("ai-command-bar-face");
+  commandBar.prepend(commandBarFace);
+  // float: 헤더가 숨겨지므로 하단 ⋯ 유지. 사이드는 헤더 더보기로 충분.
+  commandMenuToggle.textContent = "⋯";
+  commandMenuToggle.setAttribute("title", "더보기");
+  commandMenuToggle.setAttribute("aria-label", "더보기 메뉴");
   // dockModeButton 은 메뉴 항목으로만 노출(하단 칩 제거). 테스트 훅용으로 툴바에 남겨 둔다.
   toolbar.append(dockModeButton);
   dockModeButton.hidden = true;
@@ -2137,14 +2171,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const stickyProposalZone = el("div", {
     class: "ai-rising-sticky-zone",
     dataset: { testid: "ai-rising-sticky-zone" },
-    // 적용 완료 액션과 0건 알림, '검토 대기' pill은 맵 위에서 잃지 않는 고정 영역이다.
-    children: [completionHost, proposalNoticeHost, proposalPill],
+    // 적용 완료 액션과 0건 알림은 도크와 무관하게 유지한다. 제안 결정은 pinHost의 인라인 카드가 맡는다.
+    children: [completionHost, proposalNoticeHost],
   });
-  // 오버레이는 **휘발 로그 전용**이다. 제안 pill·완료 스트립(stickyProposalZone)은 여기 두면
-  // 안 된다 — 오버레이는 사이드 도크에서만 마운트되므로, 기본 도크인 유리와 float 에서는
-  // 스티키 존이 문서에서 통째로 빠져 "나중에" 로 최소화한 pill 과 적용 완료 스트립이 사라졌다
-  // (2026-08-23 실측: glass/float 에서 .ai-proposal-pill 조회 결과 없음). 그래서 스티키 존은
-  // 도크와 무관하게 패널 자식으로 붙이고, 위치는 CSS 가 도크별로 잡는다.
+  // 오버레이는 **휘발 로그 전용**이다. 완료 스트립(stickyProposalZone)은 도크와 무관한 패널
+  // 자식으로 두고, 제안 수락/취소는 glass/side/float 모두 pinHost 안의 결정 카드에서 처리한다.
   const risingOverlay = el("div", {
     class: "ai-rising-overlay",
     dataset: { testid: "ai-rising-overlay" },
@@ -2169,9 +2200,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       testid: "ai-panel",
       uiDensity: "shared",
       chatDock: currentChatDock(),
+      temperature: readTemperature(),
     },
     children: [header, toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
   });
+  // 자율 런 정리는 panel 크롬을 갱신하므로 패널 생성 뒤에 대화를 복원한다.
+  if (autoRestoreConversation) restoreConversationRecord(autoRestoreConversation, "auto");
   // 오버레이가 컴포저를 덮지 않도록 "바 + 열린 팝오버"의 최상단까지를 실측해 CSS 변수로 흘린다.
   // (bottom 76px 고정은 칩 행 + 여러 줄 입력으로 커진 바를 덮었다 — H01 실측.)
   // 하단 여백(--ai-command-bar-inset)도 같은 실측에서 나온다 — 144px 하드코딩은 실제
@@ -2182,6 +2216,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const clearance = Math.max(60, Math.ceil(window.innerHeight - composerShell.measuredTop()) + 12);
     panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
     document.body?.style.setProperty("--ai-command-bar-inset", `${Math.max(72, Math.ceil(rect.height) + 24)}px`);
+    panel.style.setProperty("--ai-command-bar-height", `${Math.ceil(rect.height)}px`);
   };
   const commandBarClearanceObserver =
     typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;
@@ -2293,17 +2328,38 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     target?.append(log);
   };
   syncGlassIdle = (): void => {
-    if (readChatDock() !== "glass") {
-      panel.classList.remove("is-glass-idle");
-      refreshNextSteps();
-      return;
-    }
     const busy = panel.classList.contains("is-turn-running")
       || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
-      || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"));
-    panel.classList.toggle("is-glass-idle", !busy);
+      || Boolean(panel.querySelector("[data-testid=ai-proposal-card]"))
+      || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
+      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
+      || Boolean(turnBusy || runningProgress);
+    const idle = !busy;
+    const temperature = readTemperature();
+    panel.classList.toggle("is-assistant-idle", idle);
+    panel.classList.toggle("is-glass-idle", idle && readChatDock() === "glass");
+    panel.classList.toggle("is-map-first-idle", idle && temperature === "map-first");
+    if (readChatDock() !== "glass") panel.classList.remove("is-glass-idle");
     refreshNextSteps();
   };
+  refreshTemperatureChrome = (): void => {
+    const current = readTemperature();
+    panel.dataset.temperature = current;
+    for (const row of ASSISTANT_TEMPERATURES) {
+      const checked = row.id === current ? "true" : "false";
+      const more = panel.querySelector(`[data-testid="ai-temperature-${row.id}"]`);
+      const command = panel.querySelector(`[data-testid="ai-command-temperature-${row.id}"]`);
+      more?.setAttribute("aria-checked", checked);
+      command?.setAttribute("aria-checked", checked);
+    }
+    syncGlassIdle();
+  };
+  syncPresenceLine = (): void => {
+    const text = status.textContent ?? "";
+    const idle = text === "대기" || text === "새 대화" || text === "";
+    directorPlate.setLine(idle ? null : text);
+  };
+  syncPresenceLine();
   const applyComposerViewPolicy = (): void => {
     const mode = readChatDock();
     if (!historyOpen && !studio) removeStartScreen();
@@ -2525,11 +2581,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!commandMenu.hidden) refreshMoreMenuDockLabel();
   });
   commandMenu.replaceChildren(
+    el("div", { class: "ai-command-menu-label", text: "온도", attrs: { role: "presentation" } }),
+    ...temperatureMenuButtons("ai-command-menu-item", "ai-command-temperature", closeCommandMenu),
     // 스킬 찾기가 첫 항목 — `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
     skillToggle,
     commandBarSettingsButton,
     ...composerMenu.items,
   );
+  refreshTemperatureChrome();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.
   if (studio) applyStudio(true);

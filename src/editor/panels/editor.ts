@@ -1,4 +1,9 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import {
+  DEFAULT_ASSISTANT_TEMPERATURE,
+  parseAssistantTemperature,
+  type AssistantTemperature,
+} from "@/editor/assistantTemperature";
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
 import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { editorState, type Layer } from "@/editor/editorState";
@@ -70,6 +75,7 @@ type LoadedEditorLayout = {
   readonly leftCollapsed: boolean;
   readonly leftCollapsedStored: boolean;
   readonly chatDock: ChatDock;
+  readonly assistantTemperature: AssistantTemperature;
 };
 
 const initialLayout = loadEditorLayout();
@@ -94,6 +100,7 @@ let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
+let assistantTemperature = initialLayout.assistantTemperature;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
@@ -174,6 +181,8 @@ export function renderEditor(main: HTMLElement): void {
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
     onChatDockToggle: toggleChatDock,
+    getAssistantTemperature: () => assistantTemperature,
+    onAssistantTemperatureChange: setAssistantTemperature,
   });
   main.append(layout, projectExportNodeElement());
 
@@ -454,6 +463,13 @@ export function toggleChatDock(): void {
   scheduleFitCanvas();
 }
 
+export function setAssistantTemperature(next: AssistantTemperature): void {
+  assistantTemperature = parseAssistantTemperature(next);
+  editorState.set({ assistantTemperature });
+  if (aiChatPanelRoot) aiChatPanelRoot.dataset.temperature = assistantTemperature;
+  saveEditorLayout();
+}
+
 function layoutDockClass(dock: ChatDock): string {
   if (dock === "side") return "chat-dock-side";
   if (dock === "glass") return "chat-dock-glass";
@@ -462,7 +478,8 @@ function layoutDockClass(dock: ChatDock): string {
 
 function applyChatDockLayout(): void {
   if (!chatFloatRoot || !chatSideRoot || !aiChatPanelRoot) return;
-  editorState.set({ chatDock });
+  editorState.set({ chatDock, assistantTemperature });
+  aiChatPanelRoot.dataset.temperature = assistantTemperature;
   const layoutEl = chatFloatRoot.parentElement?.parentElement ?? null;
   layoutEl?.classList.toggle("chat-dock-side", chatDock === "side");
   layoutEl?.classList.toggle("chat-dock-float", chatDock === "float");
@@ -1078,6 +1095,7 @@ function loadEditorLayout(): LoadedEditorLayout {
       leftCollapsed: leftCollapsedStored ? parsed.leftCollapsed === true : fallback.leftCollapsed,
       leftCollapsedStored,
       chatDock: parseChatDock(parsed.chatDock, fallback.chatDock),
+      assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
     };
   } catch (error) {
     if (error instanceof SyntaxError) return fallback;
@@ -1092,11 +1110,18 @@ function defaultEditorLayout(): LoadedEditorLayout {
     leftCollapsed: false,
     leftCollapsedStored: false,
     chatDock: "glass",
+    assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
 }
 
 function saveEditorLayout(): void {
-  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth, mapTreeHeight, leftCollapsed, chatDock }));
+  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
+    leftWidth,
+    mapTreeHeight,
+    leftCollapsed,
+    chatDock,
+    assistantTemperature,
+  }));
 }
 
 function browserLocalStorage(): Storage | null {

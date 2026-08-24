@@ -116,6 +116,11 @@ describe("작업 계획 체크리스트 렌더 (todo 6)", () => {
       const layer = node.querySelector("[data-testid='ai-autonomous-layer']");
       expect(layer?.dataset.current).toBe("true");
       expect(node.querySelector("[data-testid='ai-autonomous-progress']")?.textContent).toBe("0/2");
+      expect(node.querySelector("[data-testid='ai-run-status']")?.textContent).toBe("마을 광장 중");
+      expect(node.querySelector("[data-testid='ai-run-stop']")?.textContent).toBe("중지");
+      expect(node.querySelector("[data-testid='ai-run-details-toggle']")?.textContent).toContain("자세히");
+      expect(node.querySelector("[data-testid='ai-run-whisper']")?.textContent).not.toContain("예산");
+      expect(node.querySelector("[data-testid='ai-run-details']")?.getAttribute("open")).toBeNull();
     } finally {
       restore();
     }

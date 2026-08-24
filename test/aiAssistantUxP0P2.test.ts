@@ -64,7 +64,7 @@ describe("AI assistant UX P0–P2", () => {
     expect(barSettings?.getAttribute("aria-label")).toContain("설정");
     expect(headerSettings?.getAttribute("aria-label")).toContain("설정");
     expect(newChat?.getAttribute("aria-label")).toContain("새 대화");
-    expect(more?.textContent).toContain("☰");
+    expect(more?.textContent).toContain("⋯");
     // 내보내기·도크는 햄버거 안
     findByTestId(panel, "ai-more-menu-toggle")?.click();
     const moreMenu = findByTestId(panel, "ai-more-menu");
