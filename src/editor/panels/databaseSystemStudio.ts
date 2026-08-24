@@ -1,5 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { BATTLE_SKINS, resolveSkinId } from "@/battle/skins/registry";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
+import { resolvePlayResolution } from "@/project/playResolution";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import type { Project, StoryFlagKind, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
@@ -19,8 +21,7 @@ type StudioCard = {
 
 type StudioCardDetail = {
   readonly label: string;
-  readonly status: string;
-  readonly statusKind: "ok" | "warn";
+  readonly value: string;
 };
 
 type StateRow = {
@@ -39,8 +40,8 @@ export function renderSystemStudioOverview(project: Project): HTMLElement {
     class: "db-system-studio-search-input",
     attrs: {
       type: "search",
-      placeholder: "명령 검색 (예: 세이브, 시간 정지)",
-      "aria-label": "시스템 명령 검색",
+      placeholder: "설정 요약 검색",
+      "aria-label": "시스템 설정 요약 검색",
     },
     dataset: { testid: "db-system-studio-command-search" },
   }) as HTMLInputElement;
@@ -61,7 +62,7 @@ export function renderSystemStudioOverview(project: Project): HTMLElement {
               ruleCardGrid(project),
             ],
           }),
-          livePreview(project, titleScreen, stateRows),
+          livePreview(project, titleScreen),
         ],
       }),
     ],
@@ -125,7 +126,7 @@ function studioHeader(project: Project, warnings: number, search: HTMLInputEleme
             class: "db-system-studio-health",
             attrs: { "aria-label": "프로젝트 시스템 상태" },
             children: [
-              statusDot("프로젝트 상태: 양호", "ok"),
+              statusDot(`초기 파티 ${project.system.startActorIds.length}명`, project.system.startActorIds.length > 0 ? "ok" : "warn"),
               statusDot(warnings > 0 ? `경고 ${warnings}개` : "경고 없음", warnings > 0 ? "warn" : "ok"),
               statusDot(`상태 정의 ${namedStateCount(project)}개`, "neutral"),
             ],
@@ -139,7 +140,7 @@ function studioHeader(project: Project, warnings: number, search: HTMLInputEleme
             class: "db-system-studio-search",
             children: [el("span", { text: "⌕", attrs: { "aria-hidden": "true" } }), search],
           }),
-          el("span", { class: "db-system-studio-autosave", text: "● 자동 저장" }),
+          el("span", { class: "db-system-studio-readonly", text: "읽기 전용 요약" }),
           el("button", {
             class: "db-system-studio-play",
             text: "▷  플레이 테스트",
@@ -154,13 +155,14 @@ function studioHeader(project: Project, warnings: number, search: HTMLInputEleme
 
 function primaryCardGrid(project: Project): HTMLElement {
   const timeEnabled = project.system.timeSystem?.enabled === true;
+  const resolution = resolvePlayResolution(project.system);
   const cards: readonly StudioCard[] = [
     {
       id: "startup",
       icon: "↗",
       title: "시작 설정",
       description: "게임 시작 흐름과 초기 전투",
-      status: project.system.initialTroopId ? "구성 완료" : "검토 필요",
+      status: project.system.initialTroopId ? "초기 전투 설정됨" : "초기 적 그룹 없음",
       statusKind: project.system.initialTroopId ? "ok" : "warn",
       target: "startup",
     },
@@ -174,20 +176,20 @@ function primaryCardGrid(project: Project): HTMLElement {
       target: "party",
     },
     {
-      id: "save",
+      id: "display",
       icon: "▣",
-      title: "세이브",
-      description: "저장 슬롯과 자동 저장 정책",
-      status: "자동 저장 사용",
-      statusKind: "ok",
-      target: "title",
+      title: "화면",
+      description: "플레이 화면의 논리 해상도",
+      status: `${resolution.width}×${resolution.height}`,
+      statusKind: "neutral",
+      target: "display",
     },
     {
       id: "time",
       icon: "◷",
       title: "시간",
       description: "시간 흐름, 달력, 타임스케일",
-      status: timeEnabled ? "구성 완료" : "선택 기능",
+      status: timeEnabled ? "사용 중" : "사용 안 함",
       statusKind: timeEnabled ? "ok" : "neutral",
       target: "time",
     },
@@ -224,10 +226,10 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
           el("div", {
             class: "db-system-studio-state-actions",
             children: [
-              el("button", {
+              el("span", {
                 class: "db-system-studio-filter active",
                 text: "전체",
-                attrs: { type: "button", "aria-pressed": "true" },
+                attrs: { "aria-current": "true" },
               }),
               el("button", {
                 class: "db-system-studio-filter",
@@ -277,50 +279,57 @@ function stateRegistry(rows: readonly StateRow[]): HTMLElement {
 
 function ruleCardGrid(project: Project): HTMLElement {
   const combatFlow = project.system.battleFlow === "strict" ? "라운드 전투" : "게이지 전투";
+  const activeSlots = project.system.activeSlots ? `${project.system.activeSlots}명` : "자동";
+  const battleSkin = BATTLE_SKINS[resolveSkinId(project.system.battleUiStyle)].label;
+  const battleModel = project.system.battleModel === "gen1" ? "Gen1 · 구현 중" : "기본";
+  const enabledFeatureCount = [project.system.skillSystem?.enabled, project.system.actionCombat?.enabled]
+    .filter((value) => value === true).length;
+  const titleScreen = resolvedTitleScreen(project);
+  const titleMenuCount = visibleTitleMenuLabels(titleScreen).length;
   const cards: readonly StudioCard[] = [
     {
       id: "combat",
       icon: "⚔",
       title: "전투 규칙",
-      description: `${combatFlow} · 참전 ${project.system.activeSlots ?? "자동"}`,
-      status: "구성 완료",
-      statusKind: "ok",
+      description: `${combatFlow} · 참전 ${activeSlots}`,
+      status: `${combatFlow} · ${activeSlots}`,
+      statusKind: "neutral",
       target: "startup",
       details: [
-        { label: "턴 구조", status: "구성 완료", statusKind: "ok" },
-        { label: "행동 및 자원", status: "구성 완료", statusKind: "ok" },
-        { label: "데미지 계산", status: "주의 1개", statusKind: "warn" },
-        { label: "상태 이상", status: "구성 완료", statusKind: "ok" },
+        { label: "전투 흐름", value: combatFlow },
+        { label: "참전 인원", value: activeSlots },
+        { label: "전투 UI", value: battleSkin },
+        { label: "규칙 모델", value: battleModel },
       ],
     },
     {
-      id: "economy",
-      icon: "◉",
-      title: "경제",
-      description: "화폐, 상점, 가격, 보상",
-      status: project.system.rewardPolicy ? "정책 적용" : "기본 정책",
-      statusKind: "ok",
+      id: "features",
+      icon: "✧",
+      title: "기능 확장",
+      description: "실제로 켠 선택 기능과 데이터 수",
+      status: `활성 기능 ${enabledFeatureCount}개`,
+      statusKind: enabledFeatureCount > 0 ? "ok" : "neutral",
       target: "optin",
       details: [
-        { label: "화폐 및 수급", status: "구성 완료", statusKind: "ok" },
-        { label: "상점 규칙", status: "구성 완료", statusKind: "ok" },
-        { label: "가격 정책", status: "주의 1개", statusKind: "warn" },
-        { label: "보상 테이블", status: "구성 완료", statusKind: "ok" },
+        { label: "생활 스킬", value: project.system.skillSystem?.enabled === true ? "사용" : "사용 안 함" },
+        { label: "액션 전투", value: project.system.actionCombat?.enabled === true ? "사용" : "사용 안 함" },
+        { label: "제작 레시피", value: `${project.system.craftRecipes?.length ?? 0}개` },
+        { label: "판매가 재정의", value: `${project.system.sellPrices?.length ?? 0}개` },
       ],
     },
     {
-      id: "input",
-      icon: "⌘",
-      title: "입력",
-      description: "컨트롤러, 키보드, UI 이동",
-      status: "구성 완료",
-      statusKind: "ok",
-      target: "display",
+      id: "title",
+      icon: "▤",
+      title: "타이틀",
+      description: "시작 화면의 표시·메뉴·오디오",
+      status: `메뉴 ${titleMenuCount}개`,
+      statusKind: "neutral",
+      target: "title",
       details: [
-        { label: "컨트롤러 매핑", status: "구성 완료", statusKind: "ok" },
-        { label: "키보드 단축키", status: "구성 완료", statusKind: "ok" },
-        { label: "UI 포커스 규칙", status: "구성 완료", statusKind: "ok" },
-        { label: "입력 버퍼", status: "구성 완료", statusKind: "ok" },
+        { label: "표시 방식", value: titlePresentationLabel(titleScreen) },
+        { label: "메뉴 항목", value: `${titleMenuCount}개` },
+        { label: "배경", value: titleScreen.backgroundResourceId || project.system.titleResourceId ? "설정됨" : "기본" },
+        { label: "음악", value: titleScreen.musicResourceId ? "설정됨" : "없음" },
       ],
     },
   ];
@@ -342,8 +351,8 @@ function studioCard(card: StudioCard, variant: "primary" | "rule"): HTMLElement 
             children: [
               el("span", { text: detail.label }),
               el("strong", {
-                class: `is-${detail.statusKind}`,
-                text: `${detail.statusKind === "warn" ? "△" : "✓"} ${detail.status}`,
+                class: "is-value",
+                text: detail.value,
               }),
             ],
           }),
@@ -365,7 +374,7 @@ function studioCard(card: StudioCard, variant: "primary" | "rule"): HTMLElement 
         children: [
           el("strong", { text: card.title }),
           el("small", { text: card.description }),
-          el("em", { class: `is-${card.statusKind}`, text: `${card.statusKind === "warn" ? "△" : "✓"} ${card.status}` }),
+          el("em", { class: `is-${card.statusKind}`, text: card.status }),
         ],
       }),
       el("span", { class: "db-system-studio-card-arrow", text: "›", attrs: { "aria-hidden": "true" } }),
@@ -403,14 +412,10 @@ function stateTableRow(row: StateRow): HTMLElement {
   });
 }
 
-function livePreview(project: Project, titleScreen: TitleScreenSettings, rows: readonly StateRow[]): HTMLElement {
+function livePreview(project: Project, titleScreen: TitleScreenSettings): HTMLElement {
   const backgroundResourceId = titleScreen.backgroundResourceId ?? project.system.titleResourceId;
   const backgroundUrl = resolveAssetResourceUrl(backgroundResourceId, { project });
-  const menuLabels = [
-    titleScreen.menuLabels.newGame,
-    ...(titleScreen.menuVisibility.continueGame === false ? [] : [titleScreen.menuLabels.continueGame]),
-    ...(titleScreen.menuVisibility.quit === false ? [] : [titleScreen.menuLabels.quit]),
-  ];
+  const menuLabels = visibleTitleMenuLabels(titleScreen);
   const previewStage = el("div", {
     class: "db-system-studio-preview-stage",
     attrs: {
@@ -422,16 +427,14 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings, rows: r
         class: "db-system-studio-preview-menu",
         children: menuLabels.map((label, index) => el("span", { class: index === 0 ? "active" : "", text: label })),
       }),
-      el("small", { text: "Ver. 0.1.0" }),
     ],
   });
-  const resolution = project.system.playResolution;
+  const resolution = resolvePlayResolution(project.system);
   const impacts = [
     ["▣", "타이틀 메뉴", `${menuLabels.length}개 항목`],
-    ["▤", "저장/불러오기", "자동 저장"],
-    ["⌗", "인게임 HUD", resolution ? `${resolution.width}×${resolution.height}` : "320×240"],
-    ["⚔", "전투 화면", project.system.battleFlow === "strict" ? "라운드" : "게이지"],
-    ["⚑", "퀘스트 로그", `${rows.length}개 상태`],
+    ["⌗", "플레이 화면", `${resolution.width}×${resolution.height}`],
+    ["⚔", "전투 흐름", project.system.battleFlow === "strict" ? "라운드" : "게이지"],
+    ["⚑", "진행 상태", `${namedStateCount(project)}개 정의`],
   ];
   return el("aside", {
     class: "db-system-studio-preview",
@@ -445,23 +448,36 @@ function livePreview(project: Project, titleScreen: TitleScreenSettings, rows: r
         class: "db-system-studio-impact",
         dataset: { testid: "db-system-studio-impact-list" },
         children: [
-          el("h4", { text: "영향 받는 화면" }),
+          el("h4", { text: "현재 프로젝트 값" }),
           ...impacts.map(([icon, title, detail]) =>
-            el("button", {
+            el("div", {
               class: "db-system-studio-impact-row",
-              attrs: { type: "button" },
               children: [
                 el("span", { text: icon, attrs: { "aria-hidden": "true" } }),
                 el("span", { children: [el("strong", { text: title }), el("small", { text: detail })] }),
-                el("i", { text: "›", attrs: { "aria-hidden": "true" } }),
               ],
             }),
           ),
-          el("button", { class: "db-system-studio-all-screens", text: "모든 화면 보기  ›", attrs: { type: "button" } }),
         ],
       }),
     ],
   });
+}
+
+function visibleTitleMenuLabels(titleScreen: TitleScreenSettings): string[] {
+  return [
+    titleScreen.menuLabels.newGame,
+    ...(titleScreen.menuVisibility.continueGame === false ? [] : [titleScreen.menuLabels.continueGame]),
+    ...(titleScreen.menuVisibility.quit === false ? [] : [titleScreen.menuLabels.quit]),
+  ];
+}
+
+function titlePresentationLabel(titleScreen: TitleScreenSettings): string {
+  switch (titleScreen.titleGraphic?.mode) {
+    case "graphic": return "그래픽";
+    case "both": return "텍스트 + 그래픽";
+    default: return "텍스트";
+  }
 }
 
 function semanticStateRows(project: Project): readonly StateRow[] {

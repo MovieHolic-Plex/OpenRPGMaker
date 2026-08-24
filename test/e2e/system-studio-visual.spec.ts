@@ -58,7 +58,7 @@ test("cream system-studio keeps at least 95% structural parity", async ({ page }
       ruleCardsShareRow: rules.length === 3 && Math.max(...rules.map((item) => item.top)) - Math.min(...rules.map((item) => item.top)) <= 2,
       twelveRuleDetails: count(".db-system-studio-card-detail") === 12,
       previewOnRight: primary.length === 4 && preview.left > Math.max(...primary.map((item) => item.right)),
-      fivePreviewImpacts: count(".db-system-studio-impact-row") === 5,
+      fourPreviewFacts: count(".db-system-studio-impact-row") === 4,
       noHorizontalOverflow: sectionHost.scrollWidth <= sectionHost.clientWidth + 2 && footer.bottom <= innerHeight + 1,
     };
     const passed = Object.values(checks).filter(Boolean).length;

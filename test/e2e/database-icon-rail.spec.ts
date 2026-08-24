@@ -113,3 +113,22 @@ test("System uses the database cream palette and compact widths", async ({ page 
   expect(metrics.textColor).toBe("rgb(42, 37, 33)");
   expect(metrics.activeSubnavText).toBe("rgb(74, 87, 214)");
 });
+
+test("System overview exposes only settings backed by project data", async ({ page }) => {
+  // Break named: placeholder Save, Economy, and Input cards appear complete and inert preview rows look clickable.
+  await switchDatabaseTab(page, SYSTEM_TAB);
+  const studio = page.getByTestId("db-system-studio");
+  await expect(studio).toBeVisible();
+
+  for (const id of ["startup", "party", "display", "time", "combat", "features", "title"]) {
+    await expect(page.getByTestId(`db-system-studio-card-${id}`)).toBeVisible();
+  }
+  for (const id of ["save", "economy", "input"]) {
+    await expect(page.getByTestId(`db-system-studio-card-${id}`)).toHaveCount(0);
+  }
+  await expect(studio).not.toContainText("구성 완료");
+  await expect(studio).not.toContainText("자동 저장 사용");
+  await expect(page.locator("button.db-system-studio-impact-row")).toHaveCount(0);
+  await expect(page.locator(".db-system-studio-impact-row")).toHaveCount(4);
+  await expect(page.locator(".db-system-studio-all-screens")).toHaveCount(0);
+});

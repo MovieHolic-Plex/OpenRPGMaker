@@ -408,13 +408,11 @@
 
   .db-system-studio-search-input::placeholder { color: var(--studio-dim) !important; }
 
-  .db-system-studio-autosave {
+  .db-system-studio-readonly {
     color: var(--studio-muted);
     font-size: 11px;
     white-space: nowrap;
   }
-
-  .db-system-studio-autosave::first-letter { color: var(--studio-mint); }
 
   .db-system-studio-play {
     background: linear-gradient(135deg, var(--studio-violet), var(--studio-violet-strong)) !important;
@@ -738,8 +736,7 @@
     font-weight: 650;
   }
 
-  .db-system-studio-card-detail strong.is-ok { color: var(--studio-mint); }
-  .db-system-studio-card-detail strong.is-warn { color: var(--studio-amber); }
+  .db-system-studio-card-detail strong.is-value { color: var(--studio-text); }
 
   .db-system-studio-card-open {
     align-items: center;
@@ -857,7 +854,7 @@
     color: var(--studio-muted) !important;
     display: grid;
     gap: 8px;
-    grid-template-columns: 26px minmax(0, 1fr) auto;
+    grid-template-columns: 26px minmax(0, 1fr);
     margin-top: 6px;
     min-height: 43px;
     padding: 6px 8px !important;
@@ -891,20 +888,6 @@
     color: var(--studio-dim);
     font-size: 8px;
     margin-top: 2px;
-  }
-
-  .db-system-studio-impact-row i {
-    color: var(--studio-dim);
-    font-style: normal;
-  }
-
-  .db-system-studio-all-screens {
-    background: transparent !important;
-    border: 0 !important;
-    color: var(--studio-violet) !important;
-    display: block;
-    font: 650 10px/1 Pretendard, "Segoe UI", sans-serif !important;
-    margin: 12px auto 0;
   }
 
   /* Existing authoring controls inherit the studio language after a task card
