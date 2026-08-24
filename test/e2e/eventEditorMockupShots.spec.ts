@@ -541,6 +541,30 @@ for (const vp of VIEWPORTS) {
       const canvas = rect(".event-editor-commands-column");
       const inspectorRect = rect(".event-editor-inspector-column");
       const bench = root.querySelector<HTMLElement>(".event-editor-workbench");
+      const title = root.querySelector<HTMLElement>('[data-testid="event-inspector-title"]');
+      const add = root.querySelector<HTMLElement>('[data-testid="event-page-tab-add"]');
+      const pageMenu = root.querySelector<HTMLElement>('[data-testid="event-page-tabs"]');
+      const addBox = add?.getBoundingClientRect();
+      const pageBox = pageMenu?.getBoundingClientRect();
+      const chips = [...root.querySelectorAll<HTMLElement>(".event-storyboard-branch")]
+        .filter((chip) => {
+          const style = getComputedStyle(chip);
+          const row = chip.closest(".event-storyboard-card-branches");
+          const rowStyle = row ? getComputedStyle(row) : null;
+          return style.display !== "none" && style.visibility !== "hidden" && rowStyle?.display !== "none";
+        })
+        .map((chip) => {
+        const chipBox = chip.getBoundingClientRect();
+        const card = chip.closest(".event-storyboard-card");
+        const cardBox = card?.getBoundingClientRect();
+        const overflowX = cardBox ? Math.max(0, cardBox.left - chipBox.left, chipBox.right - cardBox.right) : Number.POSITIVE_INFINITY;
+        const overflowY = cardBox ? Math.max(0, cardBox.top - chipBox.top, chipBox.bottom - cardBox.bottom) : Number.POSITIVE_INFINITY;
+        return {
+          overflowX,
+          overflowY,
+          insideCard: overflowX <= 2 && overflowY <= 2,
+        };
+      });
       return {
         inspectorState: bench?.classList.contains("has-command-inspector") === true,
         inspectorWidth: inspectorRect?.width ?? 0,
@@ -549,6 +573,14 @@ for (const vp of VIEWPORTS) {
         compactOverlay: desktop || (!!canvas && !!inspectorRect && inspectorRect.left < canvas.right),
         inspectorInsideModal: !!inspectorRect && inspectorRect.left >= modalRect.left - 1 && inspectorRect.right <= modalRect.right + 1,
         noHorizontalOverflow: !bench || bench.scrollWidth <= bench.clientWidth + 1,
+        trackSiblingBranches: root.querySelectorAll(".event-storyboard-track > .event-storyboard-branch").length,
+        chips,
+        chipsInsideCards: chips.every((chip) => chip.insideCard),
+        inspectorTitleFits: !title || title.scrollWidth <= title.clientWidth + 1,
+        inspectorTitleLines: title ? title.getClientRects().length : 0,
+        inspectorTitleHasOptionDump: /\d+\.맡는다/.test(title?.textContent ?? ""),
+        pagebarGap: addBox && pageBox ? pageBox.left - addBox.right : Number.POSITIVE_INFINITY,
+        pageMenuInPagebar: !!pageMenu?.closest(".event-editor-pagebar") && !pageMenu?.closest(".event-editor-inspector-column"),
       };
     }, vp.width > 1180);
     const checks = { ...initial, ...selected };
@@ -567,6 +599,15 @@ for (const vp of VIEWPORTS) {
     expect(selected.compactOverlay).toBe(true);
     expect(selected.inspectorInsideModal).toBe(true);
     expect(selected.noHorizontalOverflow).toBe(true);
+    expect(selected.trackSiblingBranches).toBe(0);
+    expect(selected.chipsInsideCards, JSON.stringify(selected.chips ?? selected)).toBe(true);
+    expect(selected.inspectorTitleFits).toBe(true);
+    expect(selected.inspectorTitleLines).toBeLessThanOrEqual(2);
+    expect(selected.inspectorTitleHasOptionDump).toBe(false);
+    expect(selected.pageMenuInPagebar).toBe(true);
+    if (vp.width === 1280) {
+      expect(selected.pagebarGap).toBeLessThan(24);
+    }
 
     await modal.screenshot({ path: `${DIR}/${vp.width}x${vp.height}-selected.png` });
     await writeFile(
@@ -579,5 +620,47 @@ for (const vp of VIEWPORTS) {
       `${JSON.stringify(browserIssues, null, 2)}\n`,
       "utf8"
     );
+  });
+}
+
+for (const vp of [
+  { width: 1500, height: 1000, maxCard: 120 },
+  { width: 1500, height: 700, maxCard: 60 },
+]) {
+  test(`storyboard cards stay content-sized at ${vp.width}x${vp.height}`, async ({ page }) => {
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+    const { project, eventId } = mockupProject();
+    await seedProjectFromSupabaseCanonical(page, project);
+    await openEventEditor(page, eventId);
+    const modal = page.getByTestId("event-editor-modal");
+    await expect(modal).toBeVisible();
+    await selectView(modal, "Storyboard");
+    const card = modal.locator("[data-testid^='event-storyboard-card-']").first();
+    await expect(card).toBeVisible();
+    const height = (await card.boundingBox())?.height ?? Number.POSITIVE_INFINITY;
+    expect(height).toBeLessThanOrEqual(vp.maxCard);
+  });
+}
+
+for (const vp of [
+  { width: 1950, height: 1200 },
+  { width: 1280, height: 900 },
+]) {
+  test(`page menu sits beside the add tab at ${vp.width}x${vp.height}`, async ({ page }) => {
+    await page.setViewportSize(vp);
+    const { project, eventId } = mockupProject();
+    await seedProjectFromSupabaseCanonical(page, project);
+    await openEventEditor(page, eventId);
+    const modal = page.getByTestId("event-editor-modal");
+    await expect(modal).toBeVisible();
+    const add = modal.getByTestId("event-page-tab-add");
+    const menu = modal.getByTestId("event-page-tabs");
+    await expect(add).toBeVisible();
+    await expect(menu).toBeVisible();
+    const addBox = await add.boundingBox();
+    const menuBox = await menu.boundingBox();
+    expect(addBox && menuBox).toBeTruthy();
+    expect((menuBox?.x ?? 0) - ((addBox?.x ?? 0) + (addBox?.width ?? 0))).toBeLessThan(24);
+    expect(await menu.evaluate((node) => !!node.closest(".event-editor-pagebar") && !node.closest(".event-editor-inspector-column"))).toBe(true);
   });
 }

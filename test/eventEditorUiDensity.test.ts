@@ -7,7 +7,7 @@ import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspec
 import { openEventConditions, openEventMovement } from "@/editor/panels/eventEditor/eventEditorOpenState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import type { EventPage, GameEvent } from "@/project/types";
+import type { Command, EventPage, GameEvent } from "@/project/types";
 
 function basePage(overrides: Partial<EventPage> = {}): EventPage {
   return {
@@ -252,6 +252,56 @@ describe("event editor UI density", () => {
     // Still outside the movement section after expand.
     expect(movement?.querySelector('[data-testid="event-classic-trigger"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-classic-trigger"]')).toBeTruthy();
+  });
+
+  it("shows a compact choices inspector title: prompt only, no options/cancel", () => {
+    const choicesCmd: Command = {
+      kind: "choices",
+      prompt: "두 길목을 정리해 줄래?",
+      options: [
+        { text: "맡는다", branch: [] },
+        { text: "나중에", branch: [] },
+      ],
+      cancelBehavior: "choice2",
+    };
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [
+      baseEvent({ pages: [basePage({ commands: [choicesCmd] })] }),
+    ];
+    store.replace(project);
+
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
+
+    const title = host.querySelector('[data-testid="event-inspector-title"]');
+    expect(title?.textContent).toBe("두 길목을 정리해 줄래?");
+    expect(title?.textContent).not.toContain("1.맡는다");
+    expect(title?.textContent).not.toContain("나중에");
+    expect(title?.textContent).not.toContain("취소");
+    // The same helper feeds the card hint.
+    expect(host.querySelector(".event-inspector-card-hint")?.textContent).toBe("두 길목을 정리해 줄래?");
+  });
+
+  it("falls back to `선택지 N개` when the choices prompt is empty", () => {
+    const choicesCmd: Command = {
+      kind: "choices",
+      prompt: "   ",
+      options: [
+        { text: "맡는다", branch: [] },
+        { text: "나중에", branch: [] },
+      ],
+    };
+    const project = store.getCurrent();
+    project.maps[project.startMapId]!.events = [
+      baseEvent({ pages: [basePage({ commands: [choicesCmd] })] }),
+    ];
+    store.replace(project);
+
+    renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
+    host.querySelector<HTMLElement>(".cmd-item .cmd-head")?.click();
+
+    expect(host.querySelector('[data-testid="event-inspector-title"]')?.textContent).toBe("선택지 2개");
+    expect(host.querySelector(".event-inspector-card-hint")?.textContent).toBe("선택지 2개");
   });
 
   it("keeps inactive condition rows visible but faded (RM-style, no collapsing)", () => {
