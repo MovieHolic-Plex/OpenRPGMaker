@@ -64,6 +64,8 @@ let teardownShell: (() => void) | null = null;
 
 export type RenderPlayerOptions = {
   readonly onExit?: () => void;
+  /** Fires only after the current run has reached a ready PlayScene. */
+  readonly onPlayBootSuccess?: () => void;
   readonly trackGlobalGame?: boolean;
   readonly initialSession?: PlaySession;
   readonly initialEventTestId?: string;
@@ -264,6 +266,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       }
       if (!ready.ok) {
         bootDiag("timeout", false, { detail: ready.reason });
+        loading.setStage("error", "플레이 씬을 시작하지 못했습니다.");
+        return;
       }
       // ready 이후 무거운 refresh 가 오버레이를 가두지 않도록 이미 remove 한 뒤 실행.
       try {
@@ -279,6 +283,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       markPlayRender(startedAt);
       loading.remove();
       bootDiag("ready", true, { detail: "boot complete" });
+      try {
+        options.onPlayBootSuccess?.();
+      } catch (callbackError) {
+        console.error("[player] onPlayBootSuccess callback failed:", callbackError);
+      }
     } catch (error) {
       console.error("[player] failed to start play game:", error);
       bootDiag("error", false, { error, detail: "bootPlayGame catch" });

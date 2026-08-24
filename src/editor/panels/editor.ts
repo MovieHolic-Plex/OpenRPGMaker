@@ -58,6 +58,8 @@ import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import {
   AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  authoringProjectFingerprint,
+  evaluateAuthoringTestGate,
   loadAuthoringJourneyProgress,
   recordAuthoringJourneyChange,
   recordSuccessfulTestBoot,
@@ -65,8 +67,6 @@ import {
   setManualJourneyStage,
 } from "@/editor/authoringJourney";
 import { renderAuthoringJourney } from "@/editor/panels/authoringJourneyStrip";
-import { collectProjectReferenceIssues } from "@/project/io/references";
-import { supabaseProjectConfigDraft } from "@/project/supabaseProjectConfig";
 
 const LEFT_PANEL_DEFAULT_WIDTH = 526;
 const LEFT_PANEL_MIN_WIDTH = 184;
@@ -712,8 +712,8 @@ function refreshPanels(change?: ProjectChangeDescriptor): void {
 }
 
 function authoringJourneyScope(): string {
-  const project = store.getCurrent();
-  return supabaseProjectConfigDraft().projectId || `${project.meta.title}:${project.startMapId}`;
+  const identity = store.getProjectIdentity();
+  return `${identity.kind}:${identity.id}`;
 }
 
 function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
@@ -736,7 +736,7 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
     change.scope === "project" ||
     (change.scope === "map" && !change.cells?.length)
   ) {
-    authoringJourneyReferenceIssues = collectProjectReferenceIssues(project);
+    authoringJourneyReferenceIssues = evaluateAuthoringTestGate(project).referenceIssues;
   }
   clearChildren(authoringJourneyRoot);
   authoringJourneyRoot.append(renderAuthoringJourney(project, progress, {
@@ -749,10 +749,24 @@ function refreshAuthoringJourney(change?: ProjectChangeDescriptor): void {
   }));
 }
 
-function onAuthoringTestBootSuccess(): void {
+function onAuthoringTestBootSuccess(event: Event): void {
+  if (!(event instanceof CustomEvent)) return;
+  const detail: unknown = event.detail;
+  if (typeof detail !== "object" || detail === null || !("projectFingerprint" in detail)) return;
+  const projectFingerprint = detail.projectFingerprint;
+  if (typeof projectFingerprint !== "string" || projectFingerprint.length === 0) return;
+  const project = store.getCurrent();
+  const gate = evaluateAuthoringTestGate(project);
+  authoringJourneyReferenceIssues = gate.referenceIssues;
   const scope = authoringJourneyScope();
   const progress = loadAuthoringJourneyProgress(scope);
-  saveAuthoringJourneyProgress(scope, recordSuccessfulTestBoot(progress));
+  const next = recordSuccessfulTestBoot(
+    progress,
+    projectFingerprint,
+    authoringProjectFingerprint(project),
+    gate.referenceIssues,
+  );
+  if (next !== progress) saveAuthoringJourneyProgress(scope, next);
   refreshAuthoringJourney();
 }
 
@@ -948,6 +962,13 @@ function toolStatusLabel(tool: string): string {
 }
 
 function onTestPlayWindowRequest(event: Event): void {
+  const gate = evaluateAuthoringTestGate(store.getCurrent());
+  if (!gate.allowed) {
+    authoringJourneyReferenceIssues = gate.referenceIssues;
+    refreshAuthoringJourney();
+    toast(`참조 문제 ${gate.referenceIssues.length}개를 해결해야 테스트할 수 있습니다. 여정의 문제 목록에서 데이터로 이동하세요.`, "error");
+    return;
+  }
   const detail = event instanceof CustomEvent ? event.detail : undefined;
   if (isMapTestRequest(detail)) {
     selectEditorMap(detail.mapId);
