@@ -7,7 +7,10 @@ import {
   type NarrativeHorrorGenre,
 } from "@/ai/narrativeHorrorWorkPlan";
 import type { GenrePackId } from "@/project/genrePackId";
-import { createGenreStarterPlan, type GenreStarterPlan } from "@/editor/genrePacks";
+import {
+  createGenreBlankProjectSystemPresetPlan,
+  type GenreBlankProjectSystemPresetPlan,
+} from "@/editor/genrePacks";
 
 export type WelcomeGenrePresetId =
   | "monster-collect"
@@ -22,7 +25,7 @@ export type WelcomeGenrePreset = {
   readonly id: WelcomeGenrePresetId;
   /** Deterministic authoring contract. AI may enhance it, but is not required to select it. */
   readonly packId: GenrePackId;
-  readonly starterRecipeId: string;
+  readonly systemPresetRecipeId: string;
   readonly label: string;
   /** Short tone line injected into the shared checklist template. */
   readonly tone: string;
@@ -50,7 +53,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "monster-collect",
     packId: "monster-collect",
-    starterRecipeId: "monster-journey",
+    systemPresetRecipeId: "monster-system",
     label: "몬스터 수집",
     tone: "포획·도감·야생 조우 중심. 스타터 몬스터와 간단한 풀숲 인카운트 흐름을 우선한다.",
     thumb: "/assets/generated/welcome/slide-01.png",
@@ -59,7 +62,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "partner-raise",
     packId: "monster-collect",
-    starterRecipeId: "partner-raise",
+    systemPresetRecipeId: "monster-system",
     label: "파트너 육성",
     tone: "파트너 몬스터 육성·진화·유대 중심. 파트너 NPC/이벤트와 성장 아이템을 우선한다.",
     thumb: "/assets/generated/welcome/slide-02.png",
@@ -68,7 +71,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "farm-life",
     packId: "farm-life",
-    starterRecipeId: "farm-blank",
+    systemPresetRecipeId: "farm-system",
     label: "농장 생활",
     tone: "농장·일상·마을 NPC 중심. 밭/도구 아이템과 주민 대사를 우선한다.",
     thumb: "/assets/generated/welcome/slide-03.png",
@@ -77,7 +80,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "adventure-jrpg",
     packId: "adventure-jrpg",
-    starterRecipeId: "adventure-village",
+    systemPresetRecipeId: "adventure-system",
     label: "모험 JRPG",
     tone: "파티 모험·던전 탐험 중심. 시작 마을과 던전 입구, 기본 전투 적을 우선한다.",
     thumb: "/assets/generated/welcome/slide-04.png",
@@ -86,7 +89,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "story-cutscene",
     packId: "story-cutscene",
-    starterRecipeId: "memory-story",
+    systemPresetRecipeId: "story-system",
     label: "회상 스토리",
     tone: "투더문식 회상·감정 연출 중심. 전투보다 컷신 호흡과 엔딩 분기를 우선한다. 기존 작품 고유명/캐릭터 복제 금지.",
     thumb: "/assets/generated/welcome/mini-03-moon.png",
@@ -96,7 +99,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "horror-gallery",
     packId: "horror-chase",
-    starterRecipeId: "horror-gallery",
+    systemPresetRecipeId: "horror-system",
     label: "이브 같은 갤러리 호러",
     tone: "미술관·회랑 탐험 호러 중심. 이상 회화/오브젝트 상호작용, 단서 아이템, 긴장감 있는 짧은 이벤트 루프를 우선한다. 기존 작품 캐릭터/고유명은 쓰지 않는다.",
     thumb: "/assets/generated/welcome/slide-05.png",
@@ -106,7 +109,7 @@ export const WELCOME_GENRE_PRESETS: readonly WelcomeGenrePreset[] = [
   {
     id: "school-horror",
     packId: "horror-chase",
-    starterRecipeId: "school-horror",
+    systemPresetRecipeId: "horror-system",
     label: "아오오니 같은 학교 호러",
     tone: "야간 학교 회랑 추적 호러 중심. 숨기/도주 이벤트, 단서 아이템, 위협 실루엣 조우를 우선한다. 기존 작품 캐릭터/고유명은 쓰지 않는다.",
     thumb: "/assets/generated/welcome/slide-06.png",
@@ -120,10 +123,10 @@ export function welcomeGenrePresetById(id: string | undefined): WelcomeGenrePres
 }
 
 /** Pure, non-destructive card selection path. Applying the returned plan is an explicit separate action. */
-export function welcomeGenreStarterPlanById(id: WelcomeGenrePresetId): GenreStarterPlan {
+export function welcomeGenreSystemPresetPlanById(id: WelcomeGenrePresetId): GenreBlankProjectSystemPresetPlan {
   const preset = welcomeGenrePresetById(id);
   if (!preset) throw new Error(`Unknown welcome genre preset: ${id}`);
-  return createGenreStarterPlan(preset.packId, preset.starterRecipeId);
+  return createGenreBlankProjectSystemPresetPlan(preset.packId, preset.systemPresetRecipeId);
 }
 
 export function welcomeGenrePresetByLabel(label: string): WelcomeGenrePreset | undefined {

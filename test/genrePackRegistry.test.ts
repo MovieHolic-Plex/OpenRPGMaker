@@ -1,20 +1,23 @@
 import { describe, expect, it } from "vitest";
 import {
   GENRE_PACK_IDS,
-  adaptGenreStarterPlan,
-  createGenreStarterPlan,
-  createGenrePackRuntimeReceipt,
-  createProjectFromGenreStarterPlan,
+  createGenreBlankProjectSystemPresetPlan,
+  createProjectFromGenreBlankProjectSystemPreset,
   evaluateGenrePackConfiguration,
   evaluateGenrePackPlayableReadiness,
   genrePackById,
+  materializeGenreBlankProjectSystemPreset,
 } from "@/editor/genrePacks";
-import { WELCOME_GENRE_PRESETS, welcomeGenrePresetById, welcomeGenreStarterPlanById } from "@/editor/welcomeGenrePresets";
+import {
+  WELCOME_GENRE_PRESETS,
+  welcomeGenrePresetById,
+  welcomeGenreSystemPresetPlanById,
+} from "@/editor/welcomeGenrePresets";
 import { createBlankProject, createFarmingDemoProject } from "@/project/defaults";
 import { isGenrePackId } from "@/project/genrePackId";
 
 describe("genre pack registry contract", () => {
-  it("BREAK: all five official packs expose executable authoring metadata", () => {
+  it("BREAK: all five official packs expose complete machine-readable guidance", () => {
     expect(GENRE_PACK_IDS).toEqual([
       "adventure-jrpg",
       "monster-collect",
@@ -30,6 +33,7 @@ describe("genre pack registry contract", () => {
       expect(pack.navigation.sections.length).toBeGreaterThan(0);
       expect(Object.keys(pack.vocabulary).length).toBeGreaterThan(0);
       expect(pack.recipes.length).toBeGreaterThan(0);
+      expect(pack.recipes.every((recipe) => recipe.appliesSystemFields.length > 0)).toBe(true);
       expect(pack.lint.length).toBeGreaterThan(0);
       expect(pack.journeys.length).toBeGreaterThan(0);
       expect(pack.runtimeRequirements.length).toBeGreaterThan(0);
@@ -41,12 +45,13 @@ describe("genre pack registry contract", () => {
     expect(WELCOME_GENRE_PRESETS).toHaveLength(7);
     for (const preset of WELCOME_GENRE_PRESETS) {
       const pack = genrePackById(preset.packId);
-      expect(pack.recipes.some((recipe) => recipe.id === preset.starterRecipeId)).toBe(true);
-      expect(welcomeGenreStarterPlanById(preset.id)).toMatchObject({
+      expect(pack.recipes.some((recipe) => recipe.id === preset.systemPresetRecipeId)).toBe(true);
+      expect(welcomeGenreSystemPresetPlanById(preset.id)).toMatchObject({
+        kind: "blank-project-system-preset",
         packId: preset.packId,
-        recipeId: preset.starterRecipeId,
+        recipeId: preset.systemPresetRecipeId,
         projectSchema: "Project",
-        replaceOpenProject: false,
+        preservesOpenProjectUntilRemoteVerified: true,
         aiRequired: false,
       });
     }
@@ -57,8 +62,8 @@ describe("genre pack registry contract", () => {
     openProject.meta.title = "keep me";
     const before = structuredClone(openProject);
 
-    const plan = createGenreStarterPlan("farm-life", "farm-blank");
-    const starter = createProjectFromGenreStarterPlan(plan);
+    const plan = createGenreBlankProjectSystemPresetPlan("farm-life", "farm-system");
+    const starter = createProjectFromGenreBlankProjectSystemPreset(plan);
 
     expect(openProject).toEqual(before);
     expect(starter).not.toBe(openProject);
@@ -68,14 +73,18 @@ describe("genre pack registry contract", () => {
     expect(starter.maps).toEqual(createBlankProject().maps);
   });
 
-  it("BREAK: seven recipes expose distinct pure adapter results without authored seeds", () => {
+  it("BREAK: welcome choices are honestly blank-project system presets, not authored starters", () => {
     const results = WELCOME_GENRE_PRESETS.map((preset) =>
-      adaptGenreStarterPlan(welcomeGenreStarterPlanById(preset.id)),
+      materializeGenreBlankProjectSystemPreset(welcomeGenreSystemPresetPlanById(preset.id)),
     );
     const blank = createBlankProject();
 
-    expect(new Set(results.map(({ receipt }) => receipt.adapterId)).size).toBe(WELCOME_GENRE_PRESETS.length);
-    expect(new Set(results.map(({ project }) => project.meta.title)).size).toBe(WELCOME_GENRE_PRESETS.length);
+    for (const packId of GENRE_PACK_IDS) {
+      for (const recipe of genrePackById(packId).recipes) {
+        expect(recipe.starterKind).toBe("blank-project-system-preset");
+        expect(recipe).not.toHaveProperty("adapterId");
+      }
+    }
     for (const { project, receipt } of results) {
       expect(receipt.authoredContentSeeded).toBe(false);
       expect(receipt.appliedSystemGenre).toBe(project.system.genre);
@@ -84,7 +93,7 @@ describe("genre pack registry contract", () => {
     }
   });
 
-  it("BREAK: farm configured and playable are separate; runtime/headless proof is mandatory", () => {
+  it("BREAK: farm configured remains unverified until the Phase 4 runner-backed adapter exists", () => {
     const pilot = createFarmingDemoProject();
     const configuration = evaluateGenrePackConfiguration(pilot, "farm-life");
     expect(configuration.packId).toBe("farm-life");
@@ -96,39 +105,31 @@ describe("genre pack registry contract", () => {
     expect(evaluateGenrePackPlayableReadiness(pilot, "farm-life")).toMatchObject({
       configured: true,
       playable: false,
-      status: "runtime-proof-required",
+      status: "unverified",
       receiptAccepted: false,
     });
 
-    const journeyId = genrePackById("farm-life").journeys[0]!.id;
-    const receipt = createGenrePackRuntimeReceipt(pilot, {
+    const forgedReceipt = {
+      contractVersion: 1,
       packId: "farm-life",
       source: "headless",
       booted: true,
-      completedJourneyIds: [journeyId],
-    });
-    expect(evaluateGenrePackPlayableReadiness(pilot, "farm-life", receipt)).toMatchObject({
+      completedJourneyIds: [genrePackById("farm-life").journeys[0]!.id],
+      lintErrorCount: 0,
+      referenceIssueCount: 0,
+      projectSignature: "caller-controlled",
+    };
+    const evaluateWithForgedThirdArgument = evaluateGenrePackPlayableReadiness as unknown as (
+      project: typeof pilot,
+      packId: "farm-life",
+      receipt: unknown,
+    ) => ReturnType<typeof evaluateGenrePackPlayableReadiness>;
+    expect(evaluateWithForgedThirdArgument(pilot, "farm-life", forgedReceipt)).toMatchObject({
       configured: true,
-      playable: true,
-      status: "playable",
-      receiptAccepted: true,
+      playable: false,
+      status: "unverified",
+      receiptAccepted: false,
     });
-
-    const unbooted = createGenrePackRuntimeReceipt(pilot, {
-      packId: "farm-life",
-      source: "runtime",
-      booted: false,
-      completedJourneyIds: [journeyId],
-    });
-    expect(evaluateGenrePackPlayableReadiness(pilot, "farm-life", unbooted).playable).toBe(false);
-
-    const missingJourney = createGenrePackRuntimeReceipt(pilot, {
-      packId: "farm-life",
-      source: "headless",
-      booted: true,
-      completedJourneyIds: [],
-    });
-    expect(evaluateGenrePackPlayableReadiness(pilot, "farm-life", missingJourney).playable).toBe(false);
   });
 
   it("BREAK: farm configuration rejects missing tools/seeds, invalid crop refs/bounds/routes, and lint/reference errors", () => {
@@ -159,18 +160,26 @@ describe("genre pack registry contract", () => {
     expect(evaluateGenrePackConfiguration(invalidRoute, "farm-life").checks.find((check) => check.id === "farm-start-route")?.configured).toBe(false);
   });
 
-  it("BREAK: a receipt is rejected after the evaluated project changes", () => {
+  it("BREAK: caller-shaped evidence cannot make readiness playable", () => {
     const pilot = createFarmingDemoProject();
-    const receipt = createGenrePackRuntimeReceipt(pilot, {
+    const forgedReceipt = {
+      contractVersion: 1,
       packId: "farm-life",
       source: "runtime",
       booted: true,
       completedJourneyIds: [genrePackById("farm-life").journeys[0]!.id],
+    };
+    const evaluateWithForgedThirdArgument = evaluateGenrePackPlayableReadiness as unknown as (
+      project: typeof pilot,
+      packId: "farm-life",
+      receipt: unknown,
+    ) => ReturnType<typeof evaluateGenrePackPlayableReadiness>;
+    expect(evaluateWithForgedThirdArgument(pilot, "farm-life", forgedReceipt)).toMatchObject({
+      configured: true,
+      playable: false,
+      status: "unverified",
+      receiptAccepted: false,
     });
-    const firstSeedId = pilot.database.crops![0]!.seedItemId;
-    delete pilot.session.inventory[firstSeedId];
-
-    expect(evaluateGenrePackPlayableReadiness(pilot, "farm-life", receipt).receiptAccepted).toBe(false);
   });
 
   it("BREAK: Phase 4 imports the five canonical ids; welcome recipe ids are not genre aliases", () => {

@@ -140,6 +140,13 @@
     outline-offset: 1px;
   }
 
+  .editor-welcome-briefing .editor-welcome-system-preset-error {
+    margin: 10px 0 0;
+    color: var(--danger, #9f2f2f);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
   .editor-welcome-briefing .editor-welcome-template-card:hover,
   .editor-welcome-briefing .editor-welcome-template-card:focus-visible {
     border-color: var(--accent-border);
