@@ -259,9 +259,12 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 }
 
 .database-modal-window.ai-settings-window {
-  height: auto;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: min(780px, calc(100vh - 24px));
   max-height: min(780px, calc(100vh - 24px));
   max-width: min(580px, 94vw);
+  overflow: hidden;
   width: 540px;
 }
 
@@ -273,9 +276,27 @@ body.ai-chat-dock-side.ai-command-bar-active .editor-layout {
 }
 
 .ai-settings-body {
-  max-height: min(72vh, 660px);
-  overflow: auto;
+  max-height: none;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
   padding: 16px 18px 20px;
+  scrollbar-gutter: stable;
+}
+
+/* sidebar.css의 범용 `.database-modal-backdrop .database-modal-window .database-modal-body`
+   규칙보다 구체적으로 설정 모달의 독립 세로 스크롤을 고정한다. 이 우선순위가 없으면
+   overflow:hidden이 다시 이겨 고급 설정 아래쪽에 도달할 수 없다. */
+.database-modal-backdrop.ai-settings-modal-backdrop
+  .database-modal-window.ai-settings-window
+  .database-modal-body.ai-settings-body {
+  display: block;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .ai-settings-form .ai-config-row {

@@ -82,7 +82,6 @@ const MAP_TREE_MIN_HEIGHT = 80;
 const MAP_TREE_MAX_HEIGHT = 480;
 const RESPONSIVE_BREAKPOINT = 720;
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
-// AI 연동 칩 주기 재조회 — chatgpt OAuth 토큰 만료·companion 장애를 감지해 칩을 다시 그린다.
 const AI_CONNECTION_POLL_MS = 60_000;
 
 type LoadedEditorLayout = {
@@ -113,7 +112,6 @@ let authoringJourneyRoot: HTMLElement | null = null;
 let authoringJourneyReferenceIssues: readonly string[] | null = null;
 let projectExportNode: HTMLElement | null = null;
 let unsubStore: (() => void) | null = null;
-let unsubAutoSave: (() => void) | null = null;
 let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
@@ -124,7 +122,7 @@ let unsubLayoutBbox: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
-// AI 연동 칩 폴링 타이머 — teardownEditor 에서 정리한다.
+// AI 연동 칩 폴링 타이머 — teardownEditor 에서 해제한다.
 let aiConnectionPollTimer: ReturnType<typeof setInterval> | null = null;
 
 export function renderEditor(main: HTMLElement): void {
@@ -245,7 +243,6 @@ export function renderEditor(main: HTMLElement): void {
   unsubLayoutBbox = installLayoutBboxOverlay();
 
   unsubStore = store.subscribe((_project, change) => refreshPanels(change));
-  unsubAutoSave = store.subscribeAutoSave(() => refreshStatusbar());
   unsubEditor = editorState.subscribe(() => refreshPanels());
   unsubMapLocks = subscribeMapEditLocks(() => refreshPanels());
   unsubUiMode = subscribeEditorUiMode(() => {
@@ -398,14 +395,12 @@ export function teardownEditor(): void {
   cleanupProjectE2EBridge();
 
   unsubStore?.();
-  unsubAutoSave?.();
   unsubEditor?.();
   unsubMapLocks?.();
   unsubUiMode?.();
   unsubLayoutBbox?.();
   unsubWorkspace?.();
   unsubStore = null;
-  unsubAutoSave = null;
   unsubEditor = null;
   unsubMapLocks = null;
   unsubUiMode = null;
@@ -477,6 +472,7 @@ function stopAiConnectionPolling(): void {
   clearInterval(aiConnectionPollTimer);
   aiConnectionPollTimer = null;
 }
+
 
 export function isLeftCollapsed(): boolean {
   return leftCollapsed;
@@ -582,7 +578,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
   return el("div", {
     class: "persistence-mode-banner is-recovery",
     dataset: { testid: "save-skip-banner" },
-    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.",
+    text: "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.",
   });
 }
 
@@ -591,7 +587,7 @@ export function persistenceModeBannerText(reason: string, saveSkipped: boolean):
     return "임시 세션 — 작업이 이 탭에만 있습니다. 보존하려면 내보내기를 누르세요.";
   }
   if (reason === "dev-showcase") return "개발 모드 — 이 브라우저에만 저장됩니다.";
-  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 상태바의 '온라인 저장'에서 다시 연결하거나 '내보내기'로 백업하세요.";
+  return "복구 모드 — 온라인 저장을 잠시 사용할 수 없습니다. 작업을 다시 열어 연결을 복구하거나 '내보내기'로 백업하세요.";
 }
 
 function projectExportNodeElement(): HTMLElement {
@@ -866,6 +862,7 @@ function renderEditorStatusbar(container: HTMLElement): void {
     })
   );
   cells.push(renderAiAuthoringEntry(), renderAiConnectionStatus(refreshStatusbar));
+
   container.append(...cells);
 }
 

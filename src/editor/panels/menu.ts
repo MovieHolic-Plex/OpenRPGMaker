@@ -1,10 +1,9 @@
 import { getMode, toggleMode } from "@/app/mode";
 import { PRODUCT_TAGLINE } from "@/brand";
-import { addMap, duplicateMap, setStartMap } from "@/editor/actions";
+import { addMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap } from "@/editor/mapDeleteConfirm";
-import { selectEditorMap } from "@/editor/mapSelection";
 import { showConfirm, showPromptInput } from "@/editor/ui/modal";
-import { editorState, type Layer, type Tool } from "@/editor/editorState";
+import { editorState, type Layer } from "@/editor/editorState";
 import {
   EDITOR_PRODUCT_BRAND,
   getEditorChrome,
@@ -12,12 +11,10 @@ import {
   setEditorUiMode,
 } from "@/editor/editorUiMode";
 import { getMapEditHistoryState, redoMapEdit, undoMapEdit } from "@/editor/mapEditHistory";
-import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { openHelpModal } from "@/editor/panels/helpModal";
 import { openDatabaseModal } from "@/editor/panels/databaseModal";
 import { openDbConnectionSettings } from "@/editor/panels/dbConnectionSettings";
-import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldPanel } from "@/editor/panels/worldPanel";
 import { deserialize, ProjectFormatError } from "@/project/io";
@@ -37,10 +34,10 @@ import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { reloadProjectFromDbNow, saveProjectNow } from "@/editor/saveActions";
-import { toolLabel, uiLabel } from "@/editor/uiCopy";
+import { uiLabel } from "@/editor/uiCopy";
 import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
-import { separator, toolbarButton } from "./menuToolbar";
+import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
 
 const MENU_ITEMS = [
@@ -63,7 +60,7 @@ let activeMenuPopup: HTMLElement | null = null;
 let popupOutsideListener: (() => void) | null = null;
 let popupPositionCleanup: (() => void) | null = null;
 let activeMenuTrigger: HTMLElement | null = null;
-// renderTopbar가 재실행될 때마다 classicToolbarRow/classicPlayToolbarRow가 새 row에
+// renderTopbar가 재실행될 때마다 classicPlayToolbarRow가 새 row에
 // installToolbarOverflow를 걸므로, 이전 호출이 남긴 document 리스너/ResizeObserver를
 // 재구축 직전에 반드시 해제해야 세션 내 리스너 누적을 막을 수 있다.
 let disposeToolbarOverflows: (() => void)[] = [];
@@ -83,35 +80,39 @@ export function renderTopbar(topbar: HTMLElement): void {
     dataset: { testid: "oprn-menu-bar", editorUiMode: uiMode },
   });
   menuBar.append(renderProductBrand());
-  for (const item of MENU_ITEMS) {
-    if (item.id === "help" && !chrome.helpMenu) continue;
-    const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
-    menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
+  // 편집 화면에서는 맵 작업 자체가 주인공이다. 프로젝트/맵/도구 메뉴, 작업 프리셋,
+  // 테스트 진입점과 클래식 툴바가 같은 기능을 여러 층에 반복해 캔버스를 밀어내던 구성을
+  // 제거한다. 플레이 화면의 기존 메뉴는 그대로 둔다.
+  if (mode !== "edit") {
+    for (const item of MENU_ITEMS) {
+      if (item.id === "help" && !chrome.helpMenu) continue;
+      const label = item.id === "game" ? chrome.gameMenuLabel : item.label;
+      menuBar.append(renderMenu(item.id, label, menuCommands(item.id, state, history, topbar)));
+    }
+    menuBar.append(...renderWorkspaceBar());
+    if (uiMode === "standard") menuBar.append(...renderStandardMoreTools());
   }
-  menuBar.append(...renderWorkspaceBar());
-  if (uiMode === "standard") menuBar.append(...renderStandardMoreTools());
   // History + identity sit as trailing icon buttons (right end), before window chrome.
   const trailing = el("div", {
     class: "editor-topbar-trailing",
     dataset: { testid: "editor-topbar-trailing" },
   });
   trailing.append(
-    ...(mode === "edit" ? [renderTestPlayButton()] : []),
-    renderQuickBattleTestButton(),
+    ...(mode === "edit" ? [renderTopbarAiSettingsButton()] : [renderQuickBattleTestButton()]),
     renderCommitHistoryButton(),
     renderTopbarIdentityControl(topbar),
     renderWindowControls()
   );
   menuBar.append(trailing);
 
-  const showClassic = mode !== "edit" || chrome.classicToolbar;
+  const showClassic = mode !== "edit";
   topbar.append(menuBar);
   if (showClassic) {
     const toolbar = el("div", {
       class: "oprn-toolbar classic-toolbar is-legacy-surface",
       dataset: { testid: "oprn-toolbar", uiDensity: chrome.classicToolbar ? "expert" : "play" },
     });
-    toolbar.append(mode === "edit" ? classicToolbarRow(state, topbar) : classicPlayToolbarRow(mode));
+    toolbar.append(classicPlayToolbarRow(mode));
     topbar.append(toolbar);
   }
 }
@@ -125,6 +126,19 @@ function renderProductBrand(): HTMLElement {
       el("span", { class: "editor-product-brand-mark", attrs: { "aria-hidden": "true" }, text: "✦" }),
       el("span", { class: "editor-product-brand-text", text: EDITOR_PRODUCT_BRAND }),
     ],
+  });
+}
+
+function renderTopbarAiSettingsButton(): HTMLElement {
+  return el("button", {
+    class: "topbar-ai-settings-button",
+    attrs: { type: "button", title: "AI 설정", "aria-label": "AI 설정 열기" },
+    dataset: { testid: "topbar-ai-settings" },
+    children: [
+      el("span", { class: "topbar-ai-settings-glyph", attrs: { "aria-hidden": "true" }, text: "⚙" }),
+      el("span", { text: "AI 설정" }),
+    ],
+    on: { click: () => openAiSettingsModal() },
   });
 }
 
@@ -455,126 +469,6 @@ function item(label: string, testId: string, onClick: () => void, disabled = fal
   return { kind: "item", label, testId, onClick, disabled };
 }
 
-function classicToolbarRow(state: ReturnType<typeof editorState.get>, topbar: HTMLElement): HTMLElement {
-  const row = el("div", { class: "oprn-toolbar-row classic-row", dataset: { testid: "oprn-toolbar-row-edit" } });
-  const selectedEvent = selectedEventForState(state);
-  const mapId = state.currentMapId ?? store.getCurrent().startMapId;
-  row.append(
-    el("span", { class: "visually-hidden", text: `3단 레이어: ${layerShortLabel(state.layer)} / ${toolShortLabel(state.tool)}`, dataset: { testid: "layer-selector" } }),
-    toolbarButton({ testId: "toolbar-new", label: "새 프로젝트", title: "새 프로젝트", icon: "new", onClick: () => void newProject() }),
-    toolbarButton({
-      testId: "toolbar-map-copy",
-      label: "맵 복사",
-      title: "맵 복사",
-      disabled: !mapId,
-      onClick: () => {
-        const copyId = duplicateMap(mapId);
-        if (copyId) selectEditorMap(copyId);
-      },
-    }),
-    toolbarButton({
-      testId: "toolbar-event-test",
-      label: "이벤트 테스트",
-      title: selectedEvent ? "선택 이벤트 테스트" : "이벤트를 선택하면 테스트할 수 있습니다.",
-      icon: "event-test",
-      disabled: !selectedEvent,
-      onClick: () => void openSelectedEventTestWindow(),
-    }),
-    separator(),
-    toolbarButton({
-      testId: "toolbar-battle-test",
-      label: "전투",
-      title: "랜덤 적 그룹과 바로 전투 테스트",
-      icon: "play",
-      onClick: () => void openRandomBattleTestWindow(),
-    }),
-    separator(),
-    toolbarButton({ testId: "toolbar-save", label: "저장", title: "프로젝트 저장 (Ctrl+S)", icon: "save", onClick: () => void saveProjectNow() }),
-    toolbarButton({
-      testId: "toolbar-reload-db",
-      label: "저장본",
-      title: "온라인 저장본을 다시 불러와 맵과 이벤트를 반영",
-      icon: "open",
-      onClick: () => void reloadProjectFromDb(topbar),
-    }),
-    separator(),
-    toolbarButton({ testId: "toolbar-load", label: "열기", title: "저장된 작업 열기", icon: "open", onClick: () => doLoad(topbar) }),
-    toolbarButton({ testId: "toolbar-import", label: "가져오기", title: "RPGZZU/JSON 가져오기", icon: "import", onClick: () => doImport() }),
-    separator(),
-    // 레이어 이름은 uiCopy 단일 원천 — 하드코딩하면 용어를 바꿀 때 여기가 빠진다.
-    toolbarButton({ testId: "layer-lower", label: uiLabel("layerLower"), title: `${uiLabel("layerLower")} 레이어 편집`, icon: "lower", active: state.layer === "lower", onClick: () => setEditorLayer("lower", topbar) }),
-    toolbarButton({ testId: "layer-upper", label: uiLabel("layerUpper"), title: `${uiLabel("layerUpper")} 레이어 편집`, icon: "upper", active: state.layer === "upper", onClick: () => setEditorLayer("upper", topbar) }),
-    toolbarButton({ testId: "layer-event", label: uiLabel("layerEvent"), title: `${uiLabel("layerEvent")} 레이어 편집`, icon: "event", active: state.layer === "event", onClick: () => setEditorLayer("event", topbar) }),
-    separator(),
-    toolbarButton({ testId: "toolbar-database", label: uiLabel("databaseShort", getEditorChrome().jargonStyle), title: "데이터베이스", icon: "database", onClick: () => openDatabaseModal() }),
-    toolbarButton({ testId: "toolbar-resource-manager", label: "소재", title: "자료 보관함", icon: "resources", onClick: () => openResourceModal() }),
-    toolbarButton({ testId: "toolbar-world", label: "세계관", title: "세계관", icon: "grid", onClick: () => openWorldPanel() }),
-    toolbarButton({ testId: "toolbar-sound-test", label: "음악", title: "음악/효과음", icon: "sound", onClick: () => openAudioTestDialog() }),
-    toolbarButton({ testId: "toolbar-search", label: "찾기", title: "맵/이벤트 찾기", icon: "search", onClick: () => openMapEventSearchModal() }),
-    separator(),
-    toolbarButton({ testId: "toolbar-left-panel", label: "왼쪽 패널", title: "타일 그림판/맵 트리 패널 접기", icon: "window", active: isVisiblePanel(".left-panel"), onClick: () => void toggleLeftPanel(topbar) }),
-    toolbarButton({ testId: "toolbar-help", label: "도움말", title: "도움말 (단축키·도구 가이드)", icon: "manual", onClick: () => openHelpModal() })
-  );
-  disposeToolbarOverflows.push(installToolbarOverflow(row));
-  return row;
-}
-
-function selectedEventForState(state: ReturnType<typeof editorState.get>): { readonly mapId: string; readonly eventId: string } | null {
-  const project = store.getCurrent();
-  const mapId = state.currentMapId ?? project.startMapId;
-  const eventId = state.selectedEventId;
-  if (!eventId) return null;
-  const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
-  return event ? { mapId, eventId } : null;
-}
-
-function openSelectedEventTestWindow(): void {
-  const selectedEvent = selectedEventForState(editorState.get());
-  if (!selectedEvent) {
-    toast("이벤트를 선택하면 테스트할 수 있습니다.", "ok");
-    return;
-  }
-  window.dispatchEvent(new CustomEvent("oprn:test-play-window", {
-    detail: { kind: "selected-event", ...selectedEvent },
-  }));
-}
-
-function renderTestPlayButton(): HTMLElement {
-  const play = (): void => {
-    void openTestPlayWindow();
-  };
-  return el("div", {
-    class: "topbar-test-play-wrap",
-    dataset: { testid: "topbar-test-play" },
-    on: {
-      click: (event) => {
-        event.stopPropagation();
-        play();
-      },
-    },
-    children: [
-      el("button", {
-        class: "topbar-test-play",
-        attrs: {
-          type: "button",
-          title: "시연 실행",
-          "aria-label": "전체 프로젝트 시연 실행",
-        },
-        dataset: { testid: "mode-play" },
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            play();
-          },
-        },
-        children: [
-          el("span", { class: "topbar-test-play-glyph", text: "▶", attrs: { "aria-hidden": "true" } }),
-          el("span", { class: "topbar-test-play-label", text: "테스트" }),
-        ],
-      }),
-    ],
-  });
-}
 function renderQuickBattleTestButton(): HTMLElement {
   return el("button", {
     class: "team-history-button is-icon-only quick-battle-test-button",
@@ -626,33 +520,6 @@ function playModeButton(mode: string): HTMLButtonElement {
       else toggleMode();
     },
   });
-}
-
-function isVisiblePanel(selector: string): boolean {
-  const panel = document.querySelector<HTMLElement>(selector);
-  return panel !== null && panel.getBoundingClientRect().width > 0;
-}
-
-function layerShortLabel(layer: Layer): string {
-  switch (layer) {
-    case "lower":
-      return "하위";
-    case "upper":
-      return "상위";
-    case "event":
-      return "이벤트";
-  }
-}
-
-/** 도구 이름은 uiCopy 단일 원천 — 여기서 다시 적으면 화면마다 다른 말이 된다. */
-function toolShortLabel(tool: Tool): string {
-  return toolLabel(tool);
-}
-
-async function toggleLeftPanel(topbar: HTMLElement): Promise<void> {
-  const editor = await import("@/editor/panels/editor");
-  editor.toggleLeftPanel();
-  renderTopbar(topbar);
 }
 
 function setEditorLayer(layer: Layer, topbar: HTMLElement): void {

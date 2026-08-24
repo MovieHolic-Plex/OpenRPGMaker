@@ -272,8 +272,9 @@ describe("스킬 UI(fakeDom)", () => {
     expect(findByTestId(panel, "ai-learn-structure")).toBeTruthy();
     expect(findByTestId(panel, "ai-demo-teach")).toBeTruthy();
     expect(findByTestId(panel, "ai-export")).toBeTruthy();
-    // 설정은 모달 — 헤더 ⚙ 만 상시 노출.
-    expect(findByTestId(panel, "ai-settings-toggle")).toBeTruthy();
+    // 설정은 앱 헤더가 단독 소유하며 AI 패널 안에는 중복 진입점이 없다.
+    expect(findByTestId(panel, "ai-settings-toggle")).toBeNull();
+    expect(findByTestId(panel, "ai-settings-command-bar")).toBeNull();
     expect(findByTestId(panel, "ai-config-save")).toBeNull();
     // 컨텍스트 칩에 현재 맵 이름이 뜬다.
     const chips = findByTestId(panel, "ai-context-chips");

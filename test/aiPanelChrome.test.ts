@@ -84,7 +84,6 @@ const IDLE_FLOAT_TAB_STOPS = [
   "ai-skill-slash-toggle",
   "ai-input",
   "ai-send",
-  "ai-settings-command-bar",
 ] as const;
 
 function collectTabOrderableControls(root: FakeElement): FakeElement[] {

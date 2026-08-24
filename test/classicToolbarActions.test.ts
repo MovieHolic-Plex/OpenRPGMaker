@@ -87,37 +87,15 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe("classic toolbar actions", () => {
-  it("enables new project without a stub class and runs newProject", async () => {
+describe("editor chrome and canvas controls", () => {
+  it("does not render legacy project or map toolbar actions in edit mode", () => {
     resetEditorUiModeForTests("expert");
-    // 2026-08-18 UX 리뷰 P0: 새 프로젝트는 clearAll(같은 원격 id 재사용)이 아니라
-    // 새 project id를 발급하는 loadNewRemoteProject 경로를 탄다.
-    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
-    const button = findByTestId(fake(topbar), "toolbar-new");
-    expect(button?.disabled).toBe(false);
-    expect(button?.classList.contains("classic-toolbar-stub")).toBe(false);
-
-    button?.click();
-    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
-    expect(loadNew.mock.calls[0]?.[1]).toMatchObject({ title: "새 프로젝트" });
-  });
-
-  it("duplicates the current-or-start map and selects the copy", () => {
-    resetEditorUiModeForTests("expert");
-    const project = store.getCurrent();
-    const topbar = document.createElement("div");
-
-    renderTopbar(topbar);
-    const button = findByTestId(fake(topbar), "toolbar-map-copy");
-    expect(button?.disabled).toBe(false);
-    expect(button?.classList.contains("classic-toolbar-stub")).toBe(false);
-
-    button?.click();
-    expect(mocks.duplicateMap).toHaveBeenCalledWith(project.startMapId);
-    expect(mocks.selectEditorMap).toHaveBeenCalledWith("map-copy");
+    expect(findByTestId(fake(topbar), "toolbar-new")).toBeNull();
+    expect(findByTestId(fake(topbar), "toolbar-map-copy")).toBeNull();
+    expect(findByTestId(fake(topbar), "oprn-toolbar")).toBeNull();
   });
 
   it("persists expert canvas toolbar expansion across renders", () => {
@@ -140,31 +118,18 @@ describe("classic toolbar actions", () => {
     expect(localStorage.getItem("oprn:canvas-toolbar-expanded")).toBe("0");
   });
 
-  // 3단 모드 토글이 작업 프리셋 세그먼트로 대체되었다 — more-tools 는 그 워크스페이스
-  // 컨트롤 묶음 **뒤에** 붙는다(⌘K 칩이 묶음의 마지막).
-  it("places the standard-only more-tools menu right after the workspace controls", () => {
+  it("keeps standard edit mode on a single focused header row", () => {
     resetEditorUiModeForTests("standard");
     const topbar = document.createElement("div");
 
     renderTopbar(topbar);
     const menuBar = findByTestId(fake(topbar), "oprn-menu-bar");
     const ids = menuBar?.children.map((child) => child.dataset.testid) ?? [];
-    expect(ids).not.toContain("editor-ui-mode-toggle");
-    const chipIndex = ids.indexOf("workspace-command-palette-button");
-    expect(chipIndex).toBeGreaterThan(ids.indexOf("authoring-task-launcher"));
-    expect(ids[chipIndex + 1]).toBe("standard-more-tools");
-    expect(ids[chipIndex + 2]).toBe("standard-more-tools-menu");
+    for (const id of ["workspace-preset-toggle", "workspace-command-palette-button", "standard-more-tools", "standard-more-tools-menu"]) {
+      expect(ids).not.toContain(id);
 
-    const button = findByTestId(fake(topbar), "standard-more-tools");
-    const menu = findByTestId(fake(topbar), "standard-more-tools-menu");
-    expect(button?.getAttribute("aria-haspopup")).toBe("menu");
-    expect(button?.getAttribute("aria-expanded")).toBe("false");
-    expect(menu?.hidden).toBe(true);
-    button?.click();
-    expect(button?.getAttribute("aria-expanded")).toBe("true");
-    expect(menu?.hidden).toBe(false);
-    for (const id of ["standard-more-world", "standard-more-resources", "standard-more-database", "standard-more-switch-expert"]) {
-      expect(findByTestId(fake(topbar), id)?.getAttribute("role")).toBe("menuitem");
     }
+    expect(ids).toContain("editor-product-brand");
+    expect(ids).toContain("editor-topbar-trailing");
   });
 });

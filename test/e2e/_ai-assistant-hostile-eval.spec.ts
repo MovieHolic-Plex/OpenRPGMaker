@@ -210,15 +210,18 @@ test("C 모달·툴바 — 설정/도구/더보기/도킹/글꼴", async ({ page
   collectErrors(page, "C");
   await boot(page);
 
-  // 초보(컴포저)에서는 설정이 레일 ☰ 메뉴 안의 항목이다(구 입력행 ⚙ 아이콘 → 메뉴 흡수).
-  let settings = page.getByTestId("ai-settings-toggle");
+  // 설정 진입점: 맵 집중 헤더의 AI 설정, 없으면 패널 ☰ 메뉴 항목.
+  let settings = page.getByTestId("topbar-ai-settings");
   if (!(await settings.isVisible().catch(() => false))) {
-    const railMenu = page.getByTestId("ai-command-menu-toggle");
-    if (await railMenu.isVisible().catch(() => false)) {
-      await railMenu.click();
-      await page.waitForTimeout(250);
+    settings = page.getByTestId("ai-settings-toggle");
+    if (!(await settings.isVisible().catch(() => false))) {
+      const railMenu = page.getByTestId("ai-command-menu-toggle");
+      if (await railMenu.isVisible().catch(() => false)) {
+        await railMenu.click();
+        await page.waitForTimeout(250);
+      }
+      settings = page.getByTestId("ai-settings-command-bar");
     }
-    settings = page.getByTestId("ai-settings-command-bar");
   }
   if (await settings.isVisible().catch(() => false)) {
     await settings.click();
@@ -228,12 +231,12 @@ test("C 모달·툴바 — 설정/도구/더보기/도킹/글꼴", async ({ page
     await shot(modal, "C02-settings-modal");
     const adv = page.getByTestId("ai-settings-advanced");
     if (await adv.isVisible().catch(() => false)) {
-      await adv.click();
+      if ((await adv.getAttribute("open")) === null) await adv.click();
       await page.waitForTimeout(400);
       await shot(modal, "C03-settings-advanced");
     }
     await page.getByTestId("ai-settings-close").click();
-  } else log("ABSENT ai-settings-toggle");
+  } else log("ABSENT topbar-ai-settings");
 
   const tools = page.getByTestId("ai-tools-browser");
   if (await tools.isVisible().catch(() => false)) {

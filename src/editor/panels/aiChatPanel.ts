@@ -1817,7 +1817,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const collapsedRestore = createDirectorRestoreButton();
 
   const directorPlate = createDirectorPlate();
-  // 1차 크롬: ＋ 새 대화 · ⚙ 설정 · ☰ 더보기 · 접기. 2차 액션은 햄버거로만.
+  // 1차 크롬: ＋ 새 대화 · ☰ 더보기 · 접기. AI 설정은 앱 헤더가 단독 소유한다.
   const openToolsBrowser = (): void => {
     void openToolBrowserModal();
   };

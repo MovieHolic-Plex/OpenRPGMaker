@@ -138,7 +138,11 @@ function mockEditorDependencies(): void {
     },
   }));
   vi.doMock("@/editor/panels/dbConnectionSettings", () => ({
-    renderDbConnectionStatus: () => document.createElement("button"),
+    renderDbConnectionStatus: () => {
+      const button = document.createElement("button");
+      button.dataset.testid = "db-connection-status";
+      return button;
+    },
   }));
   vi.doMock("@/editor/panels/mapList", () => ({
     renderMapList: (node: HTMLElement) => {
@@ -185,8 +189,9 @@ afterEach(() => {
   vi.resetModules();
 });
 
-describe("AI 연동 칩 상태바 배선", () => {
-  it("renderEditor 가 렌더한 상태바에 AI 연동 칩(testid: ai-connection-status)이 나타난다", async () => {
+describe("맵 집중형 상태바", () => {
+  it("맥락 정보만 남기고 온라인 저장·설계도·AI 연결 액션을 제거한다", async () => {
+    // Break: a global save/blueprint/AI action gets mounted in the canvas statusbar again.
     storage.setItem("oprn:ai-config", JSON.stringify(APIKEY_READY));
     const { renderEditor, teardownEditor } = await import("@/editor/panels/editor");
     const main = document.createElement("main");
@@ -225,6 +230,7 @@ describe("AI 연동 칩 상태바 배선", () => {
     expect(chip?.className).not.toContain("auth-");
     const kinds = ["ready", "checking", "disconnected", "offline", "error"];
     expect(kinds.filter((kind) => chip?.classList.contains(kind))).toHaveLength(1);
+
 
     teardownEditor();
   });
