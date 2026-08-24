@@ -12,6 +12,7 @@ import {
 import { createHorrorMysteryQaScenarios } from "../src/testing/horrorMysteryQaPlan.ts";
 import { loadSupabaseEnvironment } from "./lib/supabase-database-ops.mjs";
 import { readHorrorBrowserEvidence, browserEvidenceOutputPath } from "./lib/horror-browser-evidence.mjs";
+import { canonicalProjectDigest } from "./lib/canonical-project-digest.mjs";
 import { runCapture } from "./capture-horror-browser-evidence.mts";
 
 const EVIDENCE_DIR = path.join("output", "evidence", "horror-mystery-prototype");
@@ -78,8 +79,9 @@ const { manifest } = createHorrorMysteryPrototypeProject();
 
 // Slice A: generate FRESH browser evidence automatically before evaluation. This closes
 // the stale/manual-JSON gap — evidence is re-captured from a real headless browser
-// against the real Supabase-backed project on every run.
-await runCapture();
+// against the real Supabase-backed project on every run. The expected content digest comes from
+// the Supabase-reloaded project and is bound to the in-browser observed digest.
+await runCapture({ expectedDigest: canonicalProjectDigest(project) });
 
 const browserEvidence = readHorrorBrowserEvidence(BROWSER_EVIDENCE_PATH, {
   targetProjectId: HORROR_MYSTERY_PROJECT_ID,

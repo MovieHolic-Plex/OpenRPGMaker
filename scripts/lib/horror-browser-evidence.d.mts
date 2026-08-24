@@ -15,6 +15,9 @@ export interface HorrorBrowserEvidenceRead {
     readonly y: number;
     readonly passable: boolean;
   };
+  readonly expectedStart: { readonly mapId: string; readonly x: number; readonly y: number };
+  readonly contentDigest: { readonly observed: string; readonly expected: string };
+  readonly bgm: { readonly requested: boolean; readonly played: boolean };
   readonly consoleErrorCount: number;
 }
 

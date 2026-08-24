@@ -30,6 +30,9 @@ describe("horror browser evidence freshness & provenance", () => {
       title: { resourceId: "oprn-title-horror", imageLoaded: true },
       desktopTouchPadVisible: false,
       mapStart: { mapId: "map_gallery_17x17", x: 13, y: 13, passable: true },
+      expectedStart: { mapId: "map_gallery_17x17", x: 13, y: 13 },
+      contentDigest: { observed: "a".repeat(64), expected: "a".repeat(64) },
+      bgm: { requested: true, played: true },
       consoleErrorCount: 0,
       ...extra,
     }), "utf8");
