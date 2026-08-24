@@ -46,7 +46,7 @@ Authored project schema, defaults, validation, migration, references, and persis
 
 ## Variable arithmetic & loop runtime (2026-08-07)
 - 변수 연산: `session.setVariable`는 `/=`에서 `Math.trunc`(0 방향) + `-9,999,999..9,999,999` 클램프, `0` 나누기는 기존값 유지+경고. `previewSimulation.applyVariableOp` 동일 규격. 프리뷰 값 소스는 시뮬 상태 기준.
-- 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고 반환. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
+- 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고를 반환한 뒤 현재 `breakLoop` 명령을 한 칸 넘긴다. 같은 명령을 재실행해 instruction budget을 소진하지 않는다. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
 
 ## Canonical event-draft projection (2026-07-30)
 - Open editor drafts may live inside the in-memory `Project`, but they are never canonical authored output. `committedEvents()` excludes `draft.kind:"new"` and projects `draft.original` for edit drafts; `projectWithoutEventDrafts()` applies this to every map. Autosave, Supabase writes, package/web export, edit-history project snapshots, and any canonical serialization boundary must use that projection.

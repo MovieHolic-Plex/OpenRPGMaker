@@ -436,7 +436,10 @@ export function executeCommand(
       return { kind: "continue" };
     }
     case "breakLoop":
-      breakLoop(state);
+      // A malformed break outside a loop is a warned no-op. Advancing the
+      // current frame is essential: otherwise the interpreter executes this
+      // same command until the global instruction budget is exhausted.
+      if (!breakLoop(state)) return resumeNext(frame);
       return { kind: "continue" };
     case "transfer":
       return pause("transfer", { kind: "transfer", mapId: command.mapId, x: command.x, y: command.y, direction: command.direction, fade: command.fade, transition: command.transition });

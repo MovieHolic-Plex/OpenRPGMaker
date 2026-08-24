@@ -1,3 +1,5 @@
+import { mulberry32 } from "@/util/rng";
+
 /**
  * 합성 전투 효과음 — 오디오 에셋 없이 WebAudio 오실레이터/노이즈로 만든다.
  * 프로젝트에 효과음 리소스가 없어도 전투가 무음이 되지 않게 하는 최소 레이어.
@@ -67,7 +69,7 @@ function tone(spec: ToneSpec): void {
   osc.stop(t0 + duration + 0.02);
 }
 
-function noise(options: { readonly at?: number; readonly duration?: number; readonly gain?: number; readonly filterFrom?: number; readonly filterTo?: number }): void {
+function noise(options: { readonly at?: number; readonly duration?: number; readonly gain?: number; readonly filterFrom?: number; readonly filterTo?: number; readonly seed: number }): void {
   const ac = ensureContext();
   if (!ac || !master) return;
   const t0 = ac.currentTime + (options.at ?? 0);
@@ -75,7 +77,10 @@ function noise(options: { readonly at?: number; readonly duration?: number; read
   const frames = Math.max(1, Math.floor(ac.sampleRate * duration));
   const buffer = ac.createBuffer(1, frames, ac.sampleRate);
   const data = buffer.getChannelData(0);
-  for (let i = 0; i < frames; i += 1) data[i] = Math.random() * 2 - 1;
+  // SFX must not consume gameplay RNG or bypass the deterministic runtime.
+  // A stable seed makes each procedural effect replay the same waveform.
+  const rng = mulberry32(options.seed);
+  for (let i = 0; i < frames; i += 1) data[i] = rng() * 2 - 1;
   const source = ac.createBufferSource();
   source.buffer = buffer;
   const filter = ac.createBiquadFilter();
@@ -107,16 +112,16 @@ export function playBattleSfx(kind: BattleSfxKind): void {
       tone({ freq: 520, duration: 0.09, gain: 0.26, slideTo: 330 });
       return;
     case "hit":
-      noise({ duration: 0.11, gain: 0.55, filterFrom: 1100, filterTo: 220 });
+      noise({ duration: 0.11, gain: 0.55, filterFrom: 1100, filterTo: 220, seed: 0x484954 });
       tone({ freq: 170, type: "triangle", duration: 0.1, gain: 0.5, slideTo: 60 });
       return;
     case "critical":
-      noise({ duration: 0.16, gain: 0.7, filterFrom: 2400, filterTo: 200 });
+      noise({ duration: 0.16, gain: 0.7, filterFrom: 2400, filterTo: 200, seed: 0x43524954 });
       tone({ freq: 240, type: "sawtooth", duration: 0.14, gain: 0.5, slideTo: 55 });
       tone({ freq: 1500, at: 0.02, duration: 0.05, gain: 0.3 });
       return;
     case "miss":
-      noise({ duration: 0.18, gain: 0.2, filterFrom: 2600, filterTo: 500 });
+      noise({ duration: 0.18, gain: 0.2, filterFrom: 2600, filterTo: 500, seed: 0x4d495353 });
       return;
     case "heal":
       tone({ freq: 523, type: "sine", duration: 0.09, gain: 0.3 });
@@ -136,7 +141,7 @@ export function playBattleSfx(kind: BattleSfxKind): void {
       return;
     }
     case "escape":
-      noise({ duration: 0.14, gain: 0.25, filterFrom: 800, filterTo: 2400 });
+      noise({ duration: 0.14, gain: 0.25, filterFrom: 800, filterTo: 2400, seed: 0x455343 });
       tone({ freq: 420, at: 0.05, duration: 0.12, gain: 0.2, slideTo: 760 });
       return;
     case "defeat":
