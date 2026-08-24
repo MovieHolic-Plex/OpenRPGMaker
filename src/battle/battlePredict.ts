@@ -7,13 +7,16 @@ import type { ActorId, EnemyId, Project, SkillId } from "@/project/types";
 import type { ActorRateGrade, EnemyRecord, SkillRecord } from "@/project/types/database";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import {
+  applyGen1StabAndType,
   computeGen1BaseDamage,
   GEN1_RANDOM_MAX,
   GEN1_RANDOM_MEDIAN,
   usesGen1Damage,
   usesMagicalDefense,
 } from "@/battle/battleDamage";
-import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { battlerTypes, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { readGen1MajorStatus } from "@/battle/gen1/status";
+import { attackMultiplierForStates, defenseMultiplierForStates } from "@/battle/battleStates";
 
 export interface PredictedDamage {
   /** 분산/크리티컬/빗나감을 배제한 평균 기대 피해(또는 회복). 음수 = 흡수. */
@@ -165,6 +168,47 @@ export function predictSkillDamage(
   }
   if (spec.effect === "support" || spec.effect === "switch") {
     return { amount: 0, healing: false, weak: false, resistant: false };
+  }
+  if (usesGen1Damage(project)) {
+    const userStats = battlerStats(project, user);
+    const targetStats = battlerStats(project, target);
+    const magical = isMagicalElement(project, spec.elementId);
+    let sourceStat = magical ? userStats.mind : userStats.attack;
+    const majorStatus = readGen1MajorStatus(
+      user.stateIds,
+      user.stateTurns ?? {},
+      project.database.states.map((state) => ({ id: state.id, gen1MajorStatus: state.gen1MajorStatus })),
+    );
+    if (!magical) {
+      const nonBurnStateIds = majorStatus?.kind === "burn"
+        ? user.stateIds.filter((stateId) => stateId !== majorStatus.stateId)
+        : user.stateIds;
+      sourceStat = Math.max(1, Math.trunc(sourceStat * attackMultiplierForStates(project, { stateIds: nonBurnStateIds })));
+      if (majorStatus?.kind === "burn") sourceStat = Math.max(1, Math.floor(sourceStat / 2));
+    }
+    const defenseStat = magical
+      ? targetStats.mind
+      : Math.max(1, Math.trunc(targetStats.defense * defenseMultiplierForStates(project, target)));
+    const modifiers = gen1TypeModifiersForTypes(
+      project,
+      spec.elementId,
+      battlerTypes(project, user),
+      battlerTypes(project, target),
+    );
+    let amount = applyGen1StabAndType(
+      computeGen1BaseDamage({ level: user.level ?? 1, power: spec.power, attack: sourceStat, defense: defenseStat }),
+      modifiers.stab,
+      modifiers.typeFactors,
+    );
+    if (amount > 1) amount = Math.floor((amount * GEN1_RANDOM_MEDIAN) / GEN1_RANDOM_MAX);
+    const typeProduct = modifiers.typeFactors.reduce((product, factor) => product * factor / 10, 1);
+    return {
+      amount,
+      healing: false,
+      weak: typeProduct > 1,
+      resistant: typeProduct < 1,
+      elementName: spec.elementId ? elementNameFor(project, spec.elementId) : undefined,
+    };
   }
   // damage
   const userStats = battlerStats(project, user);

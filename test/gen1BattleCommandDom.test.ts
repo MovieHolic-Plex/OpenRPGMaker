@@ -53,11 +53,54 @@ describe("Gen1 monster battle command DOM", () => {
 
     const fight = commandPanel(snapshot, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
     expect(fight.querySelectorAll(".battle-command").filter((node) => node.dataset.testid?.startsWith("actor-skill-"))).toHaveLength(4);
-    expect(fight.textContent).toContain("PP 12/35");
     expect(fight.textContent).toContain("PP 0/20");
-    expect(fight.querySelector("[data-testid='actor-skill-skill_move_5']")).toBeNull();
+    expect(fight.textContent).toContain("PP 5/5");
+    expect(fight.querySelector("[data-testid='actor-skill-skill_move_1']")).toBeNull();
     expect(button(fight, "actor-skill-skill_move_2").disabled).toBe(true);
     expect(button(fight, "actor-skill-skill_move_4").disabled).toBe(false);
+  });
+
+  it("offers Struggle when every finite move is out of PP", () => {
+    const { runtime, snapshot } = gen1Harness();
+    const exhausted: BattleSnapshot = {
+      ...snapshot,
+      actors: snapshot.actors.map((actor) => ({
+        ...actor,
+        skillIds: actor.skillIds.filter((skillId) => skillId !== "skill_move_4"),
+        skillPp: Object.fromEntries(actor.skillIds.map((skillId) => [skillId, 0])),
+      })),
+    };
+    const state = panelOptions(runtime);
+    const root = commandPanel(exhausted, state.options) as unknown as FakeElement;
+
+    button(root, "actor-command-fight").click();
+    const fight = commandPanel(exhausted, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
+
+    expect(button(fight, "actor-command-struggle").textContent).toContain("Struggle");
+    expect(button(root, "actor-command-fight").disabled).toBe(false);
+  });
+
+  it("offers Struggle when the only PP-less legacy move cannot afford its MP cost", () => {
+    const { project, runtime, snapshot } = gen1Harness();
+    const legacy = project.database.skills.find((skill) => skill.id === "skill_move_4")!;
+    legacy.mpCost = { flat: 99, percentMax: 0 };
+    store.replace(project);
+    const exhausted: BattleSnapshot = {
+      ...snapshot,
+      actors: snapshot.actors.map((actor) => ({
+        ...actor,
+        mp: 0,
+        skillIds: ["skill_move_1", "skill_move_2", "skill_move_3", "skill_move_4"],
+        skillPp: { skill_move_1: 0, skill_move_2: 0, skill_move_3: 0 },
+      })),
+    };
+    const state = panelOptions(runtime);
+    const root = commandPanel(exhausted, state.options) as unknown as FakeElement;
+
+    button(root, "actor-command-fight").click();
+    const fight = commandPanel(exhausted, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
+
+    expect(button(fight, "actor-command-struggle").textContent).toContain("Struggle");
   });
 
   it("puts normal items and balls in Item and routes a ball through canonical capture targeting", () => {

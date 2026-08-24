@@ -100,9 +100,11 @@ function applyBattleMonsterVitalsToSession(session: PlaySession, actors: readonl
 
 function applyBattleStatesToSession(session: PlaySession, actors: readonly BattleBattlerSnapshot[]): void {
   session.actorStateIds ??= {};
+  session.actorSkillPp ??= {};
   for (const actor of actors) {
     if (actor.monsterInstanceId) continue;
     session.actorStateIds[actor.recordId] = [...actor.stateIds];
+    if (actor.skillPp) session.actorSkillPp[actor.recordId] = { ...actor.skillPp };
   }
 }
 

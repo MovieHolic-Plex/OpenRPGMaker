@@ -32,6 +32,7 @@ export interface ActorBattlerOverrides {
   readonly paramBonuses?: Readonly<Record<string, Partial<Record<ActorParameterKey, number>>>>;
   readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   readonly classOverrides?: Readonly<Record<string, string>>;
   // 필드에서 이어지는 런타임 상태 이상(Change State).
   readonly stateIds?: Readonly<Record<string, readonly string[]>>;
@@ -131,6 +132,7 @@ export function actorBattlers(
       stateTurns: {},
       defending: false,
       skillIds: learnedSkillIds(project, normalizedActor, level, overrides?.skillIds?.[actorId], derived.effectiveClassId, derived.usesOverrideCurves),
+      skillPp: overrides?.skillPp?.[actorId] ? { ...overrides.skillPp[actorId] } : undefined,
       hidden: false,
     };
   });

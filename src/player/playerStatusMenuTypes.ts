@@ -22,6 +22,8 @@ export type PlayerStatusMenuActions = {
   readonly onMoveFormationActor: (actorId: string, targetIndex: number) => void;
   readonly onToggleMonsterView: () => void;
   readonly onMoveMonster: (instanceId: string, to: "party" | "box") => void;
+  readonly onReplacePendingMonsterSkill?: (instanceId: string, pendingSkillId: string, replacedSkillId: string) => void;
+  readonly onRejectPendingMonsterSkill?: (instanceId: string, pendingSkillId: string) => void;
   readonly onToggleWait: () => void;
   readonly onToTitle: () => void;
 };

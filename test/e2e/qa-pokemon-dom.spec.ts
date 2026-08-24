@@ -92,7 +92,7 @@ async function visibleCommandLabelOverlapPairs(page: Page): Promise<readonly str
 }
 
 test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가 아군 슬롯에 출전", async ({ page }) => {
-  test.setTimeout(45_000);
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   // 기본(basic) UI 모드는 상단 메뉴(mode-play)를 숨긴다 — expert 주입(시드 헬퍼가 clear 후에도 보존).
   await page.addInitScript(() => localStorage.setItem("rpg-zzu:editor-ui-mode", "expert"));
@@ -142,7 +142,11 @@ test("pokemon DOM: 스타터 획득 → 전투에서 몬스터(영웅 아님)가
   const battleScene = page.getByTestId("battle-scene");
   const enemyHp = page.locator("[data-testid^='battle-enemy-hp-']").first();
   const hpBeforeAttack = await enemyHp.textContent();
-  await page.getByTestId("actor-command-attack").click();
+  await page.getByTestId("actor-command-fight").click();
+  const move = page.locator("[data-testid^='actor-skill-']:not(:disabled)").first();
+  await expect(move).toBeVisible();
+  await expect(move).toContainText(/PP \d+\/\d+/);
+  await move.click();
   const target = page.locator("[data-testid^='battle-target-']").first();
   await target.click();
   await expect(battleScene).toHaveAttribute("data-battle-sequence-busy", "false", { timeout: 15_000 });

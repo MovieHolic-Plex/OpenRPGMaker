@@ -134,6 +134,9 @@ describe("Gen1 authored project contracts", () => {
 describe("Gen1 monster persistence contracts", () => {
   it("roundtrips statuses, PP, and pending fifth moves through the save-slot loader", () => {
     const project = createBlankProject();
+    const attack = project.database.skills.find((record) => record.id === "skill_attack");
+    if (!attack) throw new Error("missing skill_attack");
+    attack.maxPp = 35;
     const session = startSession(project, 17);
     const result = giveMonster(project, session, { speciesId: "species_wild_slime", level: 5 });
     if (!result.ok) throw new Error(`giveMonster failed: ${result.reason}`);

@@ -7,11 +7,18 @@ import { isItemActorEligible } from "@/project/itemEligibility";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
-import { applySkillLike, computeGen1BaseDamage, usesGen1Damage, usesMagicalDefense } from "@/battle/battleDamage";
+import {
+  accuracyByteFromPercent,
+  applySkillLike,
+  createGen1ByteRng,
+  resolveGen1DamagingMove,
+  usesGen1Damage,
+  usesMagicalDefense,
+} from "@/battle/battleDamage";
 import { createBattleEventRuntime, type BattleEventRuntimeState } from "@/battle/battleEvents";
 import { collectBattleRewards } from "@/battle/battleRewards";
 import { computeActorLevelUp } from "@/battle/battleLevelUp";
-import { battlerTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { battlerTypes, gen1CanonicalTypeForId, gen1ElementIdForCanonical, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import type { BattleLevelUpResult } from "@/battle/battleLevelUp";
 import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { captureItemMultiplier, captureStatusMultiplier, captureSuccessRate, monsterSpeciesForEnemy, previewMonsterExperience, rollMonsterIvs, type MonsterLevelUpPreview } from "@/project/monsterCollection";
@@ -23,6 +30,7 @@ import {
   defenseMultiplierForStates,
   recoverStatesWhenHit,
   runStateUpkeep,
+  stateBehavior,
 } from "@/battle/battleStates";
 import { chargeBattlers, nextReadyBattler } from "@/battle/battleTurnGauge";
 import { resolveSkinId } from "@/battle/skins/registry";
@@ -56,7 +64,7 @@ import {
   normalizeBattleFieldBackgroundId,
 } from "@/project/databaseEnemyTroopRecordModel";
 import { mulberry32, type Rng } from "@/util/rng";
-import { battleSkillMpCost, battleSkillUseFailure } from "@/battle/battleSkillUse";
+import { battleSkillMpCost, battleSkillUseFailure, consumeBattleSkillResource } from "@/battle/battleSkillUse";
 import {
   requestedTargetId,
   resolveBattleTargets,
@@ -65,8 +73,19 @@ import {
   type BattleTargetScope,
 } from "@/battle/battleTargetResolver";
 import { chooseAutoBattleCommand } from "@/battle/battleAuto";
+import { predictSkillDamage } from "@/battle/battlePredict";
 import { effectiveActorEquipment } from "@/project/equipmentRules";
 import { orderGen1TurnActions, type Gen1TurnOrderEntry } from "@/battle/battleStrictOrder";
+import { attemptGen1Capture } from "@/battle/gen1/capture";
+import {
+  applyGen1MajorStatus,
+  applyGen1PostActionResidual,
+  gen1EffectChanceSucceeds,
+  gen1MajorStatusBlockedByType,
+  gen1ParalyzedSpeed,
+  readGen1MajorStatus,
+  stepGen1MajorStatus,
+} from "@/battle/gen1/status";
 
 export type {
   ActorCommand,
@@ -120,6 +139,24 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     console.warn("[battle] createBattleRuntime called without rng; using deterministic fallback. Pass nextSessionRandom(session, \"battle\") for save/load determinism.");
   }
   const rng: Rng = options.rng ?? mulberry32(0);
+  const gen1 = options.project.system.battleModel === "gen1";
+  const rawGen1Byte = createGen1ByteRng(rng);
+  let repeatedGen1Byte: number | undefined;
+  let repeatedGen1ByteCount = 0;
+  const nextGen1Byte = (): number => {
+    const value = rawGen1Byte();
+    repeatedGen1ByteCount = value === repeatedGen1Byte ? repeatedGen1ByteCount + 1 : 1;
+    repeatedGen1Byte = value;
+    // Rejection sampling is exact for a real RNG, but a deliberately constant
+    // injected test RNG must not hang the battle forever. Eight identical
+    // rejected bytes are astronomically unlikely in a uniform byte stream.
+    if (value !== 255 && repeatedGen1ByteCount >= 8) {
+      repeatedGen1ByteCount = 0;
+      repeatedGen1Byte = 255;
+      return 255;
+    }
+    return value;
+  };
   const battleFlow: BattleFlow = options.battleFlow ?? troopRecord.battleFlow ?? options.project.system.battleFlow ?? "gauge";
   // B: skin-driven ATB haste — chrono fast, dq/mother slow, octopath subtle
   const skinHasteMultiplier = (() => {
@@ -157,6 +194,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         paramBonuses: options.party?.paramBonuses,
         equipment: Object.fromEntries(actorEquipment),
         skillIds: options.party?.skillIds,
+        skillPp: options.party?.skillPp,
         classOverrides: options.party?.classOverrides,
         stateIds: options.party?.stateIds,
         partyActorIds: options.party?.partyActorIds,
@@ -166,7 +204,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ? enemies.filter((enemy) => !enemy.hidden).map((enemy) => enemy.id)
     : [];
   let activeGen1EnemyId = gen1EnemyOrderIds[0];
-  const activeSlots = normalizeActiveSlots(options.activeSlots ?? troopRecord.activeSlots ?? options.project.system.activeSlots, actors.length);
+  const requestedActiveSlots = options.activeSlots
+    ?? troopRecord.activeSlots
+    ?? options.project.system.activeSlots
+    ?? (gen1 ? 1 : undefined);
+  const activeSlots = normalizeActiveSlots(requestedActiveSlots, actors.length);
   let activeActorIds: ActorId[] = actors.slice(0, activeSlots).map((actor) => actor.recordId);
   // override → troop → terrain(at location) → forest. Never System2 gauge sheets.
   let backdropResourceId = resolveBattleBackdrop({
@@ -369,7 +411,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
   }
 
-  function applyStates(user: MutableBattler, target: MutableBattler, effects: Parameters<typeof applyStateEffects>[2]): void {
+  function applyStates(
+    user: MutableBattler,
+    target: MutableBattler,
+    effects: Parameters<typeof applyStateEffects>[2],
+    gen1Move?: { readonly type?: string; readonly kind: "damage" | "status" },
+  ): void {
+    if (gen1) {
+      applyGen1States(user, target, effects ?? [], gen1Move);
+      return;
+    }
     const result = applyStateEffects(options.project, target, effects, rng);
     for (const stateId of result.added) {
       recordTimeline({ kind: "stateAdded", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
@@ -377,6 +428,200 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const stateId of result.removed) {
       recordTimeline({ kind: "stateRemoved", side: battlerSide(user), userRecordId: user.recordId, targetId: target.id, stateId, reason: "effect" });
     }
+  }
+
+  function gen1StateRecords() {
+    return options.project.database.states.map((state) => ({
+      id: state.id,
+      gen1MajorStatus: state.gen1MajorStatus,
+    }));
+  }
+
+  function applyGen1States(
+    user: MutableBattler,
+    target: MutableBattler,
+    effects: readonly { readonly stateId: string; readonly chance: number; readonly operation: "add" | "remove" }[],
+    move: { readonly type?: string; readonly kind: "damage" | "status" } | undefined,
+  ): void {
+    const stateRecords = gen1StateRecords();
+    for (const effect of effects) {
+      const stateRecord = stateRecords.find((state) => state.id === effect.stateId);
+      if (
+        effect.operation === "add"
+        && stateRecord?.gen1MajorStatus
+        && move
+        && gen1MajorStatusBlockedByType(
+          stateRecord.gen1MajorStatus,
+          gen1CanonicalTypeForId(options.project, move.type),
+          battlerTypes(options.project, target).flatMap((typeId) => {
+            const canonical = gen1CanonicalTypeForId(options.project, typeId);
+            return canonical ? [canonical] : [];
+          }),
+          move.kind,
+        )
+      ) continue;
+      if (!gen1EffectChanceSucceeds(effect.chance, nextGen1Byte)) continue;
+      if (effect.operation === "remove") {
+        if (!target.stateIds.includes(effect.stateId)) continue;
+        target.stateIds = target.stateIds.filter((stateId) => stateId !== effect.stateId);
+        delete target.stateTurns[effect.stateId];
+        recordTimeline({
+          kind: "stateRemoved",
+          side: battlerSide(user),
+          userRecordId: user.recordId,
+          targetId: target.id,
+          stateId: effect.stateId,
+          reason: "effect",
+        });
+        continue;
+      }
+
+      if (stateRecord?.gen1MajorStatus) {
+        const applied = applyGen1MajorStatus({
+          stateIds: target.stateIds,
+          stateTurns: target.stateTurns,
+          stateRecords,
+          incomingStateId: effect.stateId,
+        }, nextGen1Byte);
+        target.stateIds = [...applied.stateIds];
+        target.stateTurns = { ...applied.stateTurns };
+        if (!applied.applied) continue;
+      } else {
+        if (target.stateIds.includes(effect.stateId)) continue;
+        target.stateIds = [...target.stateIds, effect.stateId];
+        target.stateTurns[effect.stateId] = 0;
+      }
+      recordTimeline({
+        kind: "stateAdded",
+        side: battlerSide(user),
+        userRecordId: user.recordId,
+        targetId: target.id,
+        stateId: effect.stateId,
+        reason: "effect",
+      });
+    }
+  }
+
+  function gen1MajorStatusOf(battler: MutableBattler) {
+    return readGen1MajorStatus(battler.stateIds, battler.stateTurns, gen1StateRecords());
+  }
+
+  function prepareGen1CombatAction(battler: MutableBattler): boolean {
+    if (!gen1) return true;
+    const beforeStatus = gen1MajorStatusOf(battler);
+    const stepped = stepGen1MajorStatus({
+      stateIds: battler.stateIds,
+      stateTurns: battler.stateTurns,
+      stateRecords: gen1StateRecords(),
+    }, nextGen1Byte);
+    battler.stateIds = [...stepped.stateIds];
+    battler.stateTurns = { ...stepped.stateTurns };
+    if (beforeStatus && !battler.stateIds.includes(beforeStatus.stateId)) {
+      recordTimeline({
+        kind: "stateRemoved",
+        side: battlerSide(battler),
+        targetId: battler.id,
+        stateId: beforeStatus.stateId,
+        reason: "natural",
+      });
+    }
+    if (stepped.canAct) return true;
+    recordIncapacitated(battler);
+    applyGen1Residual(battler);
+    return false;
+  }
+
+  function applyGen1Residual(battler: MutableBattler): void {
+    if (!gen1 || battler.hp <= 0) return;
+    const status = gen1MajorStatusOf(battler);
+    const residual = applyGen1PostActionResidual({
+      kind: status?.kind,
+      maxHp: battler.maxHp,
+      currentHp: battler.hp,
+    });
+    battler.hp = residual.currentHp;
+    if (residual.damage > 0) {
+      recordTimeline({
+        kind: "stateUpkeep",
+        side: battlerSide(battler),
+        targetId: battler.id,
+        amount: residual.damage,
+        stateId: status?.stateId,
+      });
+    }
+  }
+
+  function gen1ModifiedStat(
+    battler: MutableBattler,
+    kind: "attack" | "defense",
+    value: number,
+  ): number {
+    const withoutBurn = {
+      ...battler,
+      stateIds: battler.stateIds.filter((stateId) => {
+        const state = options.project.database.states.find((record) => record.id === stateId);
+        return state?.gen1MajorStatus !== "burn";
+      }),
+    };
+    const multiplier = kind === "attack"
+      ? attackMultiplierForStates(options.project, withoutBurn)
+      : defenseMultiplierForStates(options.project, battler);
+    return Math.max(1, Math.trunc(value * multiplier));
+  }
+
+  function gen1BaseSpeed(battler: MutableBattler): number {
+    const species = battler.speciesId
+      ? options.project.database.monsterSpecies?.find((record) => record.id === battler.speciesId)
+      : undefined;
+    return species?.baseStats.agility ?? battler.agility;
+  }
+
+  function applyExactGen1Damage(
+    user: MutableBattler,
+    target: MutableBattler,
+    move: {
+      readonly power: number;
+      readonly elementId?: string;
+      readonly hitRate?: number;
+      readonly criticalRate?: "normal" | "high";
+    },
+  ): { readonly hit: boolean; readonly amount: number; readonly critical: boolean } {
+    const magical = usesMagicalDefense(options.project, move.elementId);
+    const unmodifiedOffense = magical ? user.mind : user.attackPower;
+    const unmodifiedDefense = magical ? target.mind : target.defense;
+    const types = gen1TypeModifiersForTypes(
+      options.project,
+      move.elementId,
+      battlerTypes(options.project, user),
+      battlerTypes(options.project, target),
+    );
+    const resolved = resolveGen1DamagingMove({
+      level: user.level ?? 1,
+      power: move.power,
+      damageClass: magical ? "special" : "physical",
+      baseSpeed: gen1BaseSpeed(user),
+      criticalRate: move.criticalRate ?? "normal",
+      offense: {
+        unmodified: unmodifiedOffense,
+        modified: magical
+          ? unmodifiedOffense
+          : gen1ModifiedStat(user, "attack", unmodifiedOffense),
+      },
+      defense: {
+        unmodified: unmodifiedDefense,
+        modified: magical
+          ? unmodifiedDefense
+          : gen1ModifiedStat(target, "defense", unmodifiedDefense),
+      },
+      burned: gen1MajorStatusOf(user)?.kind === "burn",
+      stab: types.stab,
+      typeFactors: types.typeFactors,
+      baseAccuracyByte: accuracyByteFromPercent(move.hitRate ?? 100),
+    }, nextGen1Byte);
+    if (!resolved.hit) return { hit: false, amount: 0, critical: resolved.critical };
+    const beforeHp = target.hp;
+    target.hp = Math.max(0, target.hp - resolved.damage);
+    return { hit: true, amount: beforeHp - target.hp, critical: resolved.critical };
   }
 
   function recordIncapacitated(battler: MutableBattler): void {
@@ -402,14 +647,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
-      applyUpkeep(ready.battler);
-      resolveOutcome();
-      if (result) return;
-      if (!canBattlerAct(options.project, ready.battler)) {
-        recordIncapacitated(ready.battler);
-        ready.battler.gauge = 0;
-        phase = "charging";
-        return;
+      if (!gen1) {
+        applyUpkeep(ready.battler);
+        resolveOutcome();
+        if (result) return;
+        if (!canBattlerAct(options.project, ready.battler)) {
+          recordIncapacitated(ready.battler);
+          ready.battler.gauge = 0;
+          phase = "charging";
+          return;
+        }
       }
       phase = "actorCommand";
       activeActorId = ready.battler.recordId;
@@ -508,6 +755,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function isValidActorCommand(actor: MutableBattler, command: ActorCommand): boolean {
     switch (command.kind) {
+      case "attack":
+        if (gen1 && actor.skillIds.some((skillId) => battleSkillUseFailure(options.project, actor, skillId) === undefined)) return false;
+        break;
       case "defend":
         return true;
       case "escape":
@@ -539,12 +789,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     lastCaptureResult = undefined;
     switch (command.kind) {
       case "attack":
+        if (!prepareGen1CombatAction(actor)) break;
         applyActorAttack(actor, command);
+        applyGen1Residual(actor);
         break;
       case "skill": {
+        if (!prepareGen1CombatAction(actor)) break;
         const targets = resolvedCommandTargets(actor, command).targets;
-        consumeSkillMp(actor, command.skillId);
+        consumeBattleSkillResource(options.project, actor, command.skillId);
         for (const target of targets) applySkill(actor, target, command.skillId, "skill");
+        applyGen1Residual(actor);
         break;
       }
       case "item": {
@@ -586,6 +840,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function applySingleActorAttack(actor: MutableBattler, target: MutableBattler): void {
+    if (gen1) {
+      applyGen1Struggle(actor, target, "attack");
+      return;
+    }
     const result = applySkillLike(actor, target, {
       power: actor.attackPower,
       statistic: "attack",
@@ -606,6 +864,46 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       result.hit ? "damage" : "miss",
       "attack",
     );
+  }
+
+  function applyGen1Struggle(
+    user: MutableBattler,
+    target: MutableBattler,
+    commandKind: "attack" | "enemyAttack",
+  ): void {
+    const result = applyExactGen1Damage(user, target, {
+      power: 50,
+      elementId: gen1ElementIdForCanonical(options.project, "normal"),
+      hitRate: 100,
+      criticalRate: "normal",
+    });
+    recordAction(
+      {
+        userRecordId: user.recordId,
+        targetId: target.id,
+        hit: result.hit,
+        amount: result.amount,
+        critical: result.critical,
+        skillName: "Struggle",
+      },
+      result.hit ? "damage" : "miss",
+      commandKind,
+    );
+    if (!result.hit || result.amount <= 0 || user.hp <= 0) return;
+    const recoil = Math.max(1, Math.floor(result.amount / 2));
+    const beforeHp = user.hp;
+    user.hp = Math.max(0, user.hp - recoil);
+    recordTimeline({
+      kind: "damage",
+      side: battlerSide(user),
+      userRecordId: user.recordId,
+      targetId: user.id,
+      commandKind,
+      hit: true,
+      amount: beforeHp - user.hp,
+      critical: false,
+      skillName: "Struggle recoil",
+    });
   }
 
   function applyNormalAttackEquipmentStates(actor: MutableBattler, target: MutableBattler): void {
@@ -775,8 +1073,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     strictRoundTimelineStart = timeline.length;
     markActiveParticipants();
 
-    for (const battler of [...activeActors(), ...visibleEnemies()]) {
-      if (battler.hp > 0) applyUpkeep(battler);
+    if (!gen1) {
+      for (const battler of [...activeActors(), ...visibleEnemies()]) {
+        if (battler.hp > 0) applyUpkeep(battler);
+      }
     }
     resolveOutcome();
     if (result) {
@@ -787,11 +1087,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     if (beginForcedSwitchIfNeeded()) return;
 
-    for (const actor of activeActors()) {
-      if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
-    }
     strictPendingActorIds = activeActors()
-      .filter((actor) => actor.hp > 0 && canBattlerAct(options.project, actor))
+      .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
     if (strictPendingActorIds.length > 0) {
@@ -806,11 +1103,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function prepareStrictActorCommands(): void {
-    for (const actor of activeActors()) {
-      if (actor.hp > 0 && !canBattlerAct(options.project, actor)) recordIncapacitated(actor);
-    }
     strictPendingActorIds = activeActors()
-      .filter((actor) => actor.hp > 0 && canBattlerAct(options.project, actor))
+      .filter((actor) => actor.hp > 0 && (gen1 || canBattlerAct(options.project, actor)))
       .map((actor) => actor.recordId);
     for (const actor of actors) actor.gauge = strictPendingActorIds.includes(actor.recordId) ? 100 : 0;
     if (strictPendingActorIds.length > 0) {
@@ -905,7 +1199,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return [{
         side: "actor",
         index: actors.indexOf(actor),
-        speed: actor.agility,
+        speed: gen1
+          ? gen1ParalyzedSpeed(actor.agility, gen1MajorStatusOf(actor)?.kind === "paralysis")
+          : actor.agility,
         priority,
         commandClass: strictCommandClass(entry.command),
         actor,
@@ -915,12 +1211,22 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const enemyActions: StrictQueuedAction[] = visibleEnemies()
       .flatMap((enemy, index) => {
         if (enemy.hp <= 0) return [];
-        if (!canBattlerAct(options.project, enemy)) {
+        if (!gen1 && !canBattlerAct(options.project, enemy)) {
           recordIncapacitated(enemy);
           return [];
         }
         const action = chooseEnemyAction(enemy);
-        return [{ side: "enemy", index, speed: enemy.agility, priority: strictActionPriority(action?.skillId), commandClass: "combat", enemy, action }];
+        return [{
+          side: "enemy",
+          index,
+          speed: gen1
+            ? gen1ParalyzedSpeed(enemy.agility, gen1MajorStatusOf(enemy)?.kind === "paralysis")
+            : enemy.agility,
+          priority: strictActionPriority(action?.skillId),
+          commandClass: "combat",
+          enemy,
+          action,
+        }];
       });
     const actions = [...actorActions, ...enemyActions];
     return options.project.system.battleModel === "gen1"
@@ -1061,7 +1367,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function performEnemyTurn(enemy: MutableBattler): void {
     // 턴 시작 상태 처리(지속 피해/자연 회복).
-    applyUpkeep(enemy);
+    if (!gen1) {
+      applyUpkeep(enemy);
     resolveOutcome();
     if (result) {
       phase = "resolved";
@@ -1079,6 +1386,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       phase = result ? "resolved" : "charging";
       return;
     }
+    }
     executeEnemyAction(enemy, chooseEnemyAction(enemy));
     enemy.gauge = 0;
     // 적 턴이 끝나면 아군의 방어(defending) 상태를 해제한다.
@@ -1095,7 +1403,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const skillId = action?.skillId;
     if (skillId) {
       const skill = lookupSkill(skillId);
-      if (!skill || battleSkillUseFailure(options.project, enemy, skillId, { requireLearned: false })) return;
+      if (!skill || (!gen1 && battleSkillUseFailure(options.project, enemy, skillId, { requireLearned: false }))) return;
+      if (!prepareGen1CombatAction(enemy)) return;
       const requestedTargetId = refreshedEnemyTargetId(enemy, action.targetIds?.[0]);
       const resolution = resolveBattleTargets({
         scope: skill.scope,
@@ -1108,9 +1417,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         ? resolution.targets
         : resolution.targets;
       if (targets.length === 0) return;
-      consumeSkillMp(enemy, skillId);
+      // Red/Blue non-link opponents do not decrement PP. Player-controlled
+      // battlers still use the normal finite-PP path above.
+      if (!gen1) consumeBattleSkillResource(options.project, enemy, skillId);
       for (const target of targets) applySkill(enemy, target, skillId, "enemySkill");
       applyEnemyActionSwitchEffects(action);
+      applyGen1Residual(enemy);
       return;
     }
     const refreshedTargetId = refreshedEnemyTargetId(enemy, action?.targetIds?.[0]);
@@ -1118,6 +1430,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       ? activeActors().find((actor) => actor.id === refreshedTargetId)
       : chooseBasicEnemyTarget(enemy);
     if (!target) return;
+    if (!prepareGen1CombatAction(enemy)) return;
+    if (gen1) {
+      applyGen1Struggle(enemy, target, "enemyAttack");
+      applyGen1Residual(enemy);
+      return;
+    }
     const result = applySkillLike(enemy, target, {
       power: enemy.attackPower,
       statistic: "attack",
@@ -1316,16 +1634,46 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       itemId: captureItemId,
     }));
     // gen1 이면 Gen1 계열 공식(만HP 1/3 + 상태 보너스) — "재우고 잡기"가 여기서 성립한다.
-    const rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item), {
-      model: options.project.system.battleModel === "gen1" ? "gen1" : "rm2k3",
-      statusMultiplier: captureStatusMultiplier(target.stateIds),
-    });
-    const roll = rng();
-    if (roll >= rate) {
-      finish({ targetId: target.id, captureItemId, success: false, rate, roll, speciesId: species.id });
-      return;
+    let rate: number;
+    let roll: number | undefined;
+    let shakes: 0 | 1 | 2 | 3 | undefined;
+    if (gen1) {
+      const attempt = attemptGen1Capture({
+        ballClass: item.captureProfile.ballClass ?? "poke",
+        maxHp: target.maxHp,
+        currentHp: target.hp,
+        catchRate: Math.round(species.captureRate * 255),
+        majorStatus: gen1MajorStatusOf(target)?.kind,
+      }, nextGen1Byte);
+      rate = attempt.probability.value;
+      roll = attempt.trace.rand1 === undefined ? undefined : attempt.trace.rand1 / 256;
+      shakes = attempt.shakes;
+      if (!attempt.caught) {
+        finish({ targetId: target.id, captureItemId, success: false, rate, roll, shakes, speciesId: species.id });
+        return;
+      }
+    } else {
+      rate = captureSuccessRate(species.captureRate, target.hp, target.maxHp, captureItemMultiplier(item), {
+        model: "rm2k3",
+        statusMultiplier: captureStatusMultiplier(target.stateIds),
+      });
+      roll = rng();
+      if (roll >= rate) {
+        finish({ targetId: target.id, captureItemId, success: false, rate, roll, speciesId: species.id });
+        return;
+      }
     }
     const caughtAt = options.captureLocation ?? { mapId: options.project.startMapId, x: options.project.startPos.x, y: options.project.startPos.y };
+    const persistentStateIds = target.stateIds.filter((stateId) => {
+      const record = options.project.database.states.find((state) => state.id === stateId);
+      return record !== undefined && !stateBehavior(record).removeOnBattleEnd;
+    });
+    const persistentStateTurns = Object.fromEntries(
+      persistentStateIds.flatMap((stateId) => {
+        const turns = target.stateTurns[stateId];
+        return typeof turns === "number" ? [[stateId, turns]] : [];
+      }),
+    );
     const capture: BattleCapturedMonsterSnapshot = {
       targetId: target.id,
       enemyId: target.recordId as EnemyId,
@@ -1334,6 +1682,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       caughtAt,
       ivs: rollMonsterIvs(rng),
       captureItemId,
+      currentHp: target.hp,
+      stateIds: persistentStateIds,
+      stateTurns: persistentStateTurns,
+      skillIds: [...target.skillIds],
+      skillPp: target.skillPp ? { ...target.skillPp } : undefined,
     };
     target.captured = true;
     target.hidden = true;
@@ -1343,7 +1696,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     actionLog.push({ userRecordId: user.recordId, targetId: target.id, hit: true, amount: 0, critical: false });
     lastActionResult = actionLog[actionLog.length - 1];
     options.onMonsterCaptured?.(capture);
-    finish({ targetId: target.id, captureItemId, success: true, rate, roll, speciesId: species.id });
+    finish({ targetId: target.id, captureItemId, success: true, rate, roll, shakes, speciesId: species.id });
   }
 
   function consumeSkillMp(user: MutableBattler, skillId: SkillId): void {
@@ -1363,7 +1716,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
           return target ? [{ action: { ...action, targetIds: [target.id] }, score: Math.max(1, action.priority) * 10 + enemyDamageUtility(enemy, target) }] : [];
         }
         const skill = lookupSkill(action.skillId);
-        if (!skill || battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false })) return [];
+        if (!skill || (!gen1 && battleSkillUseFailure(options.project, enemy, action.skillId, { requireLearned: false }))) return [];
         const resolution = resolveBattleTargets({
           scope: skill.scope,
           user: enemy,
@@ -1388,6 +1741,37 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         return [{ action: { ...action, targetIds: [target.id] }, score }];
       });
     if (plans.length === 0) {
+      if (gen1) {
+        const learnedPlans = enemy.skillIds.flatMap((skillId) => {
+          const skill = lookupSkill(skillId);
+          if (!skill) return [];
+          const resolution = resolveBattleTargets({
+            scope: skill.scope,
+            user: enemy,
+            actors: activeActors(),
+            enemies: visibleEnemies(),
+          });
+          if (resolution.candidates.length === 0) return [];
+          const targets = resolution.requiresSelection
+            ? [pickBestByUtility(resolution.candidates, (candidate) => enemySkillUtility(enemy, candidate, skill))].filter((target): target is MutableBattler => target !== undefined)
+            : resolution.targets;
+          if (targets.length === 0) return [];
+          const utility = targets.reduce((sum, target) => sum + enemySkillUtility(enemy, target, skill), 0);
+          return [{
+            action: {
+              skillId,
+              switchOnAfterAction: { enabled: false },
+              switchOffAfterAction: { enabled: false },
+              targetIds: targets.map(targetIdFor),
+            },
+            score: utility,
+          }];
+        });
+        if (learnedPlans.length > 0) {
+          const bestScore = Math.max(...learnedPlans.map((plan) => plan.score));
+          return learnedPlans.find((plan) => plan.score === bestScore)?.action;
+        }
+      }
       const target = chooseBasicEnemyTarget(enemy);
       return target ? { skillId: "" as SkillId, switchOnAfterAction: { enabled: false }, switchOffAfterAction: { enabled: false }, targetIds: [target.id] } : undefined;
     }
@@ -1401,18 +1785,31 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     return pickBestByUtility(activeActors().filter((actor) => actor.hp > 0), (target) => enemyDamageUtility(enemy, target));
   }
 
-  function enemyDamageUtility(user: MutableBattler, target: MutableBattler, power = user.attackPower, statistic: "attack" | "mind" = "attack"): number {
+  function enemyDamageUtility(
+    user: MutableBattler,
+    target: MutableBattler,
+    power = gen1 ? 50 : user.attackPower,
+    statistic: "attack" | "mind" = "attack",
+    elementId?: string,
+  ): number {
     const source = statistic === "mind" ? user.mind : user.attackPower;
     // gen1 은 코어 공식(랜덤·크리 제외)으로 기댓값을 낸다. 뺄셈식을 남겨두면 방어 높은 대상의
     // 기댓값이 0 으로 뭉개져 타깃 선택이 실제 피해와 어긋난다.
     const expected = usesGen1Damage(options.project)
-      ? computeGen1BaseDamage({ level: user.level ?? 1, power, attack: source, defense: target.defense })
+      ? predictSkillDamage(
+          options.project,
+          battlerSnapshot(user),
+          { power, statistic, effect: "damage", elementId },
+          battlerSnapshot(target),
+        ).amount
       : Math.max(0, power + Math.floor(source / 2) - Math.floor(target.defense / 2));
     return expected + (expected >= target.hp ? 1000 : 0) + (1 - target.hp / Math.max(1, target.maxHp)) * 20;
   }
 
   function enemySkillUtility(user: MutableBattler, target: MutableBattler, skill: NonNullable<ReturnType<typeof lookupSkill>>): number {
-    if (skill.effect.kind === "damage") return enemyDamageUtility(user, target, skill.id === DEFAULT_SKILL_ID ? user.attackPower : skill.power, skill.effect.statistic);
+    if (skill.effect.kind === "damage") {
+      return enemyDamageUtility(user, target, skill.power, skill.effect.statistic, skill.elementId);
+    }
     if (skill.effect.kind === "healing") {
       const missing = skill.effect.affects === "mp" ? target.maxMp - target.mp : target.maxHp - target.hp;
       return missing > 0 ? missing + (target.hp / Math.max(1, target.maxHp) < 0.35 ? 500 : 0) : 0;
@@ -1457,6 +1854,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     commandKind: BattleTimelineEntrySnapshot["commandKind"] = "skill",
   ): void {
     const skill = lookupSkill(skillId);
+    if (gen1) {
+      applyGen1Skill(user, target, skill, commandKind);
+      return;
+    }
     // 기본 "공격" 스킬(skill_attack)은 통상공격을 표현하는 스킬이다. 그 위력은 고정 10 이 아니라
     // 시전자의 공격력에서 나와야 한다 — 플레이어 통상공격 명령은 이미 attackPower 를 쓴다.
     //
@@ -1523,6 +1924,106 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   // 스킬 명중률(hitRate)과 성공률(successRate)을 곱해 0~100 판정 확률로 합성한다.
   // successRate 는 감사 A12 에서 "편집만 되고 전투에 미반영"으로 확인된 필드다.
+  function applyGen1Skill(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+    commandKind: BattleTimelineEntrySnapshot["commandKind"],
+  ): void {
+    const effect = skill?.effect;
+    const effectKind = effect?.kind ?? "damage";
+    const power = skill?.power ?? 50;
+    const accuracyHit = effectKind === "damage"
+      || nextGen1Byte() < accuracyByteFromPercent(skill?.hitRate ?? 100);
+    const statistic: "attack" | "mind" = effect && (effect.kind === "damage" || effect.kind === "healing")
+      ? effect.statistic
+      : "attack";
+    const affects = effect && (effect.kind === "damage" || effect.kind === "healing")
+      ? effect.affects
+      : "hp";
+    const applied = effectKind === "damage"
+      ? applyExactGen1Damage(user, target, {
+          power,
+          elementId: skill?.elementId,
+          hitRate: skill?.hitRate,
+          criticalRate: skill?.gen1CriticalRate,
+        })
+      : !accuracyHit
+        ? { hit: false, amount: 0, critical: false }
+        : applySkillLike(user, target, {
+            power,
+            statistic,
+            effect: effectKind,
+            affects,
+            hitRate: 100,
+            variance: skill?.variance,
+            rng,
+          });
+    const timelineKind: BattleTimelineEntrySnapshot["kind"] = !applied.hit
+      ? "miss"
+      : effectKind === "healing" || applied.amount < 0
+        ? "healing"
+        : effectKind === "damage"
+          ? "damage"
+          : "action";
+    recordAction({
+      userRecordId: user.recordId,
+      targetId: target.id,
+      hit: applied.hit,
+      amount: applied.amount,
+      critical: applied.critical,
+      skillName: skill?.name,
+    }, timelineKind, commandKind);
+    if (skill?.animationId) {
+      lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, skill.animationId, target.id);
+      attachAnimationToLatestTimeline(lastAnimation);
+    }
+    const defrosted = applied.hit
+      && effectKind === "damage"
+      && applied.amount > 0
+      && defrostTargetWithGen1FireMove(user, target, skill);
+    if (applied.hit && (effectKind !== "damage" || applied.amount > 0)) {
+      const stateEffects = defrosted
+        ? skill?.stateEffects?.filter((stateEffect) => {
+            const state = options.project.database.states.find((record) => record.id === stateEffect.stateId);
+            return state?.gen1MajorStatus !== "burn";
+          })
+        : skill?.stateEffects;
+      applyStates(user, target, stateEffects, {
+        type: skill?.elementId,
+        kind: effectKind === "damage" ? "damage" : "status",
+      });
+    }
+    if (applied.hit && skill?.effect?.kind === "switch" && skill.effect.switchId) {
+      battleEventState.switches[skill.effect.switchId] = true;
+    }
+  }
+
+  function defrostTargetWithGen1FireMove(
+    user: MutableBattler,
+    target: MutableBattler,
+    skill: ReturnType<typeof lookupSkill>,
+  ): boolean {
+    if (!skill || gen1CanonicalTypeForId(options.project, skill.elementId) !== "fire") return false;
+    const canBurn = skill.stateEffects?.some((effect) => {
+      if (effect.operation !== "add") return false;
+      return options.project.database.states.find((state) => state.id === effect.stateId)?.gen1MajorStatus === "burn";
+    }) === true;
+    const frozen = gen1MajorStatusOf(target);
+    if (!canBurn || frozen?.kind !== "freeze") return false;
+    target.stateIds = target.stateIds.filter((stateId) => stateId !== frozen.stateId);
+    delete target.stateTurns[frozen.stateId];
+    recordTimeline({
+      kind: "stateRemoved",
+      side: battlerSide(user),
+      userRecordId: user.recordId,
+      targetId: target.id,
+      stateId: frozen.stateId,
+      reason: "effect",
+    });
+    return true;
+  }
+
   function combinedSkillHitRate(skill: { hitRate?: number; successRate?: number } | undefined): number | undefined {
     if (!skill) return undefined;
     const hitRate = skill.hitRate ?? 100;

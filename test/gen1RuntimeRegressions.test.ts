@@ -46,8 +46,13 @@ describe("Gen1 runtime regressions", () => {
 
   it("fields multi-member wild troops one enemy at a time", () => {
     const project = createScarloxyPokemonDemoProject();
+    const troop = project.database.troops.find((record) => record.id === "troop_pkmn_grass_b");
+    if (!troop?.members[0]) throw new Error("missing grass troop member");
+    troop.members.push({ ...troop.members[0], x: troop.members[0].x + 32 });
     makeWildEnemiesFragile(project);
-    setActorParam(project, "attack", 999);
+    // Staying at or below 255 avoids Gen1's paired quarter-scaling producing
+    // a zero defense divisor against this intentionally 1-DEF fixture.
+    setActorParam(project, "attack", 200);
     setActorParam(project, "agility", 999);
     const actorId = project.system.startActorIds[0]!;
     const runtime = createBattleRuntime({
@@ -61,11 +66,11 @@ describe("Gen1 runtime regressions", () => {
     });
 
     expect(runtime.snapshot().enemies.map((enemy) => enemy.id)).toEqual(["enemy-1"]);
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_attack", targetEnemyId: "enemy-1" });
     expect(runtime.snapshot().result).toBeUndefined();
     expect(runtime.snapshot().enemies.map((enemy) => enemy.id)).toEqual(["enemy-2"]);
 
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-2" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_attack", targetEnemyId: "enemy-2" });
     expect(runtime.snapshot().result).toBe("victory");
   });
 
@@ -95,7 +100,7 @@ describe("Gen1 runtime regressions", () => {
       rng: () => 0,
     });
 
-    runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_scarloxy_quick", targetEnemyId: "enemy-1" });
     const snapshot = runtime.snapshot();
     expect(snapshot.result).toBe("victory");
     expect(snapshot.rewards.levelUps).toEqual([]);

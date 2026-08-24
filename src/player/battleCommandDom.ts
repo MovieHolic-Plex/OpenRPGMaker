@@ -101,7 +101,7 @@ function commandGrid(snapshot: BattleSnapshot, options: BattleCommandPanelOption
 
   const project = store.getCurrent();
   if (isPokemonMonsterActor(project, actor) && !snapshot.forcedSwitchActorId) {
-    menu.append(...pokemonRootCommands(snapshot, options, actor, targetMode));
+    menu.append(...pokemonRootCommands(snapshot, options, targetMode));
     return menu;
   }
   const overrideCommandIds = actor?.recordId
@@ -128,19 +128,17 @@ function isPokemonMonsterActor(
 function pokemonRootCommands(
   snapshot: BattleSnapshot,
   options: BattleCommandPanelOptions,
-  actor: BattleBattlerSnapshot,
   targetMode: boolean,
 ): HTMLElement[] {
-  const moves = listedSkillIds(actor).slice(0, 4);
   const switches = switchCandidates(snapshot);
   const items = battleItems(snapshot);
   const balls = captureItems(snapshot);
   return [
     commandButton("Fight", "actor-command-fight", "fire", "", () => {
-      if (targetMode || moves.length === 0) return;
+      if (targetMode) return;
       options.setSubmenu({ kind: "pokemonFight" });
       options.render();
-    }, targetMode || moves.length === 0, moves.length === 0 ? "사용 가능한 기술이 없습니다." : undefined),
+    }, targetMode),
     commandButton("PKMN", "actor-command-pkmn", "switch", switches.length > 0 ? `${switches.length}명` : "없음", () => {
       if (targetMode || switches.length === 0) return;
       options.setSubmenu({ kind: "switch" });
@@ -433,7 +431,16 @@ function pokemonFightSubmenu(snapshot: BattleSnapshot, options: BattleCommandPan
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = store.getCurrent();
-  for (const skillId of listedSkillIds(actor).slice(0, 4)) {
+  const moves = listedSkillIds(actor).slice(0, 4);
+  const hasUsableMove = actor !== undefined
+    && moves.some((skillId) => battleSkillUseFailure(project, actor, skillId) === undefined);
+  if (!hasUsableMove) {
+    nodes.push(commandButton("Struggle", "actor-command-struggle", "fire", "PP --", () => {
+      options.beginTargetCommand({ kind: "attack" });
+    }));
+    return nodes;
+  }
+  for (const skillId of moves) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const useFailure = actor ? battleSkillUseFailure(project, actor, skillId) : "notLearned";
     const pp = skill?.maxPp === undefined

@@ -3,6 +3,7 @@
 // 간단 AI: 평타 + HP 30% 이하일 때 회복 아이템 사용. 시드 고정 시 재현 가능.
 //
 import { actorBattlers } from "@/battle/battleBattlers";
+import { chooseAutoBattleCommand } from "@/battle/battleAuto";
 import { computeGen1BaseDamage, usesGen1Damage } from "@/battle/battleDamage";
 import { createBattleRuntime } from "@/battle/runtime";
 import type { ActorCommand, BattleCapturedMonsterSnapshot, BattleEventLogSnapshot, BattleFlow, BattleRewardsSnapshot, BattleRoundLogSnapshot, BattleRuntimeOptions, BattleSnapshot } from "@/battle/types";
@@ -144,7 +145,10 @@ function runSingleBattle(input: SimulateBattleInput, rng: Rng): SingleRunResult 
         rt.performActorCommand({ kind: "item", itemId: input.potionItemId, targetEnemyId: enemy.id });
         potionsUsed += 1;
       } else {
-        rt.performActorCommand({ kind: "attack", targetEnemyId: enemy.id });
+        const command = input.project.system.battleModel === "gen1"
+          ? chooseAutoBattleCommand(input.project, snap, rng)
+          : undefined;
+        rt.performActorCommand(command ?? { kind: "attack", targetEnemyId: enemy.id });
       }
     } else {
       rt.tick(1000);

@@ -1,6 +1,7 @@
 import type { Gen1DamageClass } from "@/battle/gen1/damage";
 import type { Gen1NextByte } from "@/battle/gen1/rng";
 import type { Gen1MajorStatus } from "@/battle/gen1/capture";
+import type { Gen1CanonicalType } from "@/battle/typeChart";
 
 export type { Gen1MajorStatus } from "@/battle/gen1/capture";
 
@@ -42,6 +43,39 @@ export interface Gen1PreActionResult {
   readonly stateIds: readonly string[];
   readonly stateTurns: Readonly<Record<string, number>>;
   readonly trace: { readonly paralysisByte?: number };
+}
+
+/**
+ * Converts authored post-hit percentages to the cartridge comparison boundary.
+ * Red/Blue side effects generally compare against `N percent + 1`, where the
+ * percent macro is floor(N * 255 / 100). A guaranteed effect is not rolled.
+ */
+export function gen1EffectChanceThreshold(percent: number): number {
+  const normalized = Math.min(100, Math.max(0, Number.isFinite(percent) ? percent : 0));
+  if (normalized <= 0) return 0;
+  return Math.min(256, Math.floor((normalized * 255) / 100) + 1);
+}
+
+export function gen1EffectChanceSucceeds(percent: number, nextByte: Gen1NextByte): boolean {
+  const threshold = gen1EffectChanceThreshold(percent);
+  if (threshold <= 0) return false;
+  if (threshold >= 256) return true;
+  return normalizeByte(nextByte()) < threshold;
+}
+
+export function gen1MajorStatusBlockedByType(
+  status: Gen1MajorStatus,
+  moveType: Gen1CanonicalType | undefined,
+  targetTypes: readonly Gen1CanonicalType[],
+  moveKind: "damage" | "status",
+): boolean {
+  if (status === "poison" && targetTypes.includes("poison")) return true;
+  if (!moveType) return false;
+  if (moveKind === "damage" && status !== "sleep") return targetTypes.includes(moveType);
+  return moveKind === "status"
+    && status === "paralysis"
+    && moveType === "electric"
+    && targetTypes.includes("ground");
 }
 
 export function readGen1MajorStatus(

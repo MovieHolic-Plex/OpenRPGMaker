@@ -70,7 +70,7 @@ describe("Gen1 인트로 — 내보내기 비트", () => {
       vi.advanceTimersByTime(BATTLE_INTRO_MS);
       expect(message(controller.root)).not.toContain("가라");
       expect(runtime.snapshot().phase).toBe("actorCommand");
-      expect(controller.root.querySelector("[data-testid='actor-command-attack']")).toBeTruthy();
+      expect(controller.root.querySelector("[data-testid='actor-command-fight']")).toBeTruthy();
     } finally {
       controller.destroy();
       vi.useRealTimers();
@@ -99,7 +99,7 @@ describe("기술 타입 배지", () => {
     try {
       for (let i = 0; i < 200 && runtime.snapshot().phase !== "actorCommand"; i += 1) runtime.tick(1000);
       vi.advanceTimersByTime(300);
-      controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-skill']")?.click();
+      controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-fight']")?.click();
 
       // 불씨 뿜기(elementId: "fire") → 데모가 저작한 한글 타입명.
       const ember = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${EMBER}']`);
@@ -110,10 +110,12 @@ describe("기술 타입 배지", () => {
       // 기술명(strong) 뒤, 상세(small) 앞에 놓여야 배지로 읽힌다.
       expect(badge?.previousElementSibling?.tagName.toLowerCase()).toBe("strong");
 
-      // 할퀴기(무속성) → 배지를 지어내지 않는다.
+      // 할퀴기 역시 Gen1 에서는 노말 타입 기술이다.
       const scratch = controller.root.querySelector<HTMLElement>(`[data-testid='actor-skill-${SCRATCH}']`);
       expect(scratch, "할퀴기 항목이 서브메뉴에 없다").toBeTruthy();
-      expect(scratch!.querySelector(".battle-command-tag")).toBeNull();
+      const scratchBadge = scratch!.querySelector<HTMLElement>(".battle-command-tag");
+      expect(scratchBadge?.textContent).toBe("노말");
+      expect(scratchBadge?.dataset.skillType).toBe("normal");
     } finally {
       controller.destroy();
       vi.useRealTimers();

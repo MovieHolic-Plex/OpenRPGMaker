@@ -18,6 +18,7 @@ import {
   isActorRowsRecord,
   isStringRecord,
   isActorSkillIdsRecord,
+  isActorSkillPpRecord,
   isActorStateIdsRecord,
   isActorVitalsRecord,
   isBooleanRecord,
@@ -92,6 +93,7 @@ export type SaveSnapshot = {
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
     readonly actorSkillIds?: PlaySession["actorSkillIds"];
+    readonly actorSkillPp?: PlaySession["actorSkillPp"];
     readonly actorExperience?: Record<string, number>;
     readonly actorLevels?: Record<string, number>;
     readonly actorVitals?: Record<string, ActorVitals>;
@@ -215,6 +217,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
       actorSkillIds: structuredClone(session.actorSkillIds),
+      actorSkillPp: structuredClone(session.actorSkillPp),
       actorExperience: structuredClone(session.actorExperience),
       actorLevels: structuredClone(session.actorLevels),
       actorVitals: structuredClone(session.actorVitals),
@@ -331,6 +334,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
   if (snapshot.session.monsterBox) session.monsterBox = [...snapshot.session.monsterBox];
   if (snapshot.session.actorSkillIds) session.actorSkillIds = structuredClone(snapshot.session.actorSkillIds);
+  if (snapshot.session.actorSkillPp) session.actorSkillPp = structuredClone(snapshot.session.actorSkillPp);
   if (snapshot.session.actorExperience) session.actorExperience = structuredClone(snapshot.session.actorExperience);
   if (snapshot.session.actorLevels) session.actorLevels = structuredClone(snapshot.session.actorLevels);
   if (snapshot.session.actorVitals) session.actorVitals = structuredClone(snapshot.session.actorVitals);
@@ -487,6 +491,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
       actorSkillIds: isActorSkillIdsRecord(session.actorSkillIds) ? session.actorSkillIds : undefined,
+      actorSkillPp: isActorSkillPpRecord(session.actorSkillPp) ? session.actorSkillPp : undefined,
       actorExperience: isNumberRecord(session.actorExperience) ? session.actorExperience : undefined,
       actorLevels: isNumberRecord(session.actorLevels) ? session.actorLevels : undefined,
       actorVitals: isActorVitalsRecord(session.actorVitals) ? session.actorVitals : undefined,

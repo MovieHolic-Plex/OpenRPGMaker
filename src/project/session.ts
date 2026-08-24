@@ -152,6 +152,8 @@ export interface PlaySession {
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
   actorSkillIds: Record<ActorId, SkillId[]>;
+  /** Remaining Gen1 PP for the legacy actor-party fallback path. */
+  actorSkillPp?: Record<ActorId, Record<SkillId, number>>;
   // 런타임 전투 메뉴 오버라이드(Change Battle Commands). actorId → battleCommand ids.
   actorBattleCommands?: Record<ActorId, string[]>;
   actorExperience: Record<string, number>;
@@ -269,6 +271,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     monsterParty: [],
     monsterBox: [],
     actorSkillIds: {},
+    actorSkillPp: {},
     actorExperience: initialActorExperience(project),
     actorLevels: initialActorLevels(project),
     actorVitals: initialActorVitals(project),

@@ -152,6 +152,8 @@ export interface BattlePartyProgress {
   readonly equipment?: Readonly<Record<string, ActorInitialEquipment>>;
   // 이벤트/레벨업으로 세션에 직접 습득된 스킬.
   readonly skillIds?: Readonly<Record<string, readonly SkillId[]>>;
+  /** Persisted Gen1 PP for non-monster actor fallback battles. */
+  readonly skillPp?: Readonly<Record<string, Readonly<Record<SkillId, number>>>>;
   // 런타임 직업 오버라이드(Change Actor Class/승급).
   readonly classOverrides?: Readonly<Record<string, string>>;
   // 세션 상태 이상(Change State). 전투 진입 시 초기 stateIds 로 반영.
@@ -277,6 +279,11 @@ export interface BattleCapturedMonsterSnapshot {
   readonly caughtAt: MonsterCaughtAt;
   readonly ivs: MonsterInstanceIvs;
   readonly captureItemId: ItemId;
+  readonly currentHp?: number;
+  readonly stateIds?: readonly string[];
+  readonly stateTurns?: Readonly<Record<string, number>>;
+  readonly skillIds?: readonly SkillId[];
+  readonly skillPp?: Readonly<Record<SkillId, number>>;
 }
 
 export type BattleCaptureBlockedReason = "uncapturable" | "trainerBattle" | "missingTarget" | "missingItem" | "missingSpecies";
@@ -289,6 +296,7 @@ export interface BattleCaptureResultSnapshot {
   readonly roll?: number;
   readonly speciesId?: MonsterSpeciesId;
   readonly blockedReason?: BattleCaptureBlockedReason;
+  readonly shakes?: 0 | 1 | 2 | 3;
 }
 
 export interface BattleRoundActionLogSnapshot {
