@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
 import {
   HORROR_MYSTERY_PROJECT_ID,
 } from "../src/project/examples/horrorMysteryPrototype";
@@ -47,7 +47,18 @@ describe("horror browser evidence freshness & provenance", () => {
     expect(() =>
       readHorrorBrowserEvidence(stale, { targetProjectId: HORROR_MYSTERY_PROJECT_ID, maxStalenessMs, now, captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME }),
     ).toThrow(/만료|fresh|expired/i);
-    rmSync(stale, { force: true });
+    rmSync(dirname(stale), { recursive: true, force: true });
+  });
+
+  it("REJECTS evidence observed materially in the future (clock-skew bound)", () => {
+    const future = writeStaleEvidence(
+      { capturedBy: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME },
+      new Date(now + 2 * 60 * 1000).toISOString(),
+    );
+    expect(() =>
+      readHorrorBrowserEvidence(future, { targetProjectId: HORROR_MYSTERY_PROJECT_ID, maxStalenessMs, now, captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME }),
+    ).toThrow(/미래|만료|fresh|expired/i);
+    rmSync(dirname(future), { recursive: true, force: true });
   });
 
   it("REJECTS evidence that lacks the automated-capture provenance", () => {
@@ -55,7 +66,7 @@ describe("horror browser evidence freshness & provenance", () => {
     expect(() =>
       readHorrorBrowserEvidence(manual, { targetProjectId: HORROR_MYSTERY_PROJECT_ID, maxStalenessMs, now, captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME }),
     ).toThrow(/capturedBy|capture/i);
-    rmSync(manual, { force: true });
+    rmSync(dirname(manual), { recursive: true, force: true });
   });
 
   it("ACCEPTS fresh evidence produced by the automated capture", () => {
@@ -70,6 +81,6 @@ describe("horror browser evidence freshness & provenance", () => {
       captureName: CAPTURE_HORROR_BROWSER_EVIDENCE_NAME,
     });
     expect(evidence.projectId).toBe(HORROR_MYSTERY_PROJECT_ID);
-    rmSync(fresh, { force: true });
+    rmSync(dirname(fresh), { recursive: true, force: true });
   });
 });
