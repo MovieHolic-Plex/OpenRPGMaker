@@ -7,10 +7,9 @@ import {
   type GameTime,
   type TimeSystemConfig,
 } from "@/project/gameTime";
-import { changeItem, type MakerInstanceState, type PlaySession } from "@/project/session";
+import { changeItemsAtomically, type MakerInstanceState, type PlaySession } from "@/project/session";
+import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import type { MakerDefinition, Project } from "@/project/types";
-
-const MAKER_QUANTITY_MAX = 9_999_999;
 
 type MakerFailureReason =
   | "disabled"
@@ -82,12 +81,14 @@ export function startMaker(
   if (!isNonNegativeSafeInteger(readyAtMinute)) return { ok: false, reason: "invalid-time", instanceId, makerId };
   for (const input of maker.inputs) {
     const current = session.inventory[input.itemId] ?? 0;
-    if (!isNonNegativeSafeInteger(current) || current < input.count) {
+    if (!isItemQuantity(current) || current < input.count) {
       return { ok: false, reason: "insufficient-input", instanceId, makerId };
     }
   }
 
-  for (const input of maker.inputs) changeItem(session, input.itemId, "-=", input.count);
+  if (!changeItemsAtomically(session, maker.inputs.map((input) => ({ itemId: input.itemId, op: "-=", amount: input.count })))) {
+    return { ok: false, reason: "invalid-state", instanceId, makerId };
+  }
   session.makerInstances ??= {};
   session.makerInstances[instanceId] = {
     instanceId,
@@ -126,12 +127,14 @@ export function collectMaker(project: Project, session: PlaySession, instanceId:
   if (!maker || !validMakerDefinition(project, maker)) return { ok: false, reason: "invalid-definition", instanceId };
   for (const output of maker.outputs) {
     const current = session.inventory[output.itemId] ?? 0;
-    if (!isNonNegativeSafeInteger(current) || current + output.count > MAKER_QUANTITY_MAX) {
+    if (!isItemQuantity(current) || current + output.count > ITEM_QUANTITY_MAX) {
       return { ok: false, reason: "inventory-overflow", instanceId };
     }
   }
 
-  for (const output of maker.outputs) changeItem(session, output.itemId, "+=", output.count);
+  if (!changeItemsAtomically(session, maker.outputs.map((output) => ({ itemId: output.itemId, op: "+=", amount: output.count })))) {
+    return { ok: false, reason: "inventory-overflow", instanceId };
+  }
   session.makerInstances![instanceId] = {
     instanceId,
     makerId: instance.makerId,
@@ -146,7 +149,7 @@ function validMakerDefinition(project: Project, maker: MakerDefinition): boolean
   const validAmounts = (values: readonly { readonly itemId: string; readonly count: number }[]) => {
     const seen = new Set<string>();
     return values.every((entry) => {
-      if (!itemIds.has(entry.itemId) || seen.has(entry.itemId) || !isPositiveSafeInteger(entry.count) || entry.count > MAKER_QUANTITY_MAX) return false;
+      if (!itemIds.has(entry.itemId) || seen.has(entry.itemId) || !isPositiveItemQuantity(entry.count)) return false;
       seen.add(entry.itemId);
       return true;
     });

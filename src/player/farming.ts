@@ -37,6 +37,7 @@ export type FarmIgnoreReason =
   | "wrong-tool-for-plot"
   | "out-of-season"
   | "nothing-to-harvest"
+  | "inventory-full"
   | "insufficient-energy"
   | "invalid-life-skill";
 
@@ -63,6 +64,7 @@ const FARM_IGNORE_MESSAGES: Readonly<Record<FarmIgnoreReason, string | null>> = 
   // 밭을 다시 갈아 보며 헤맨다 — 손에 든 것도 밭도 옳았기 때문이다.
   "out-of-season": "이 씨앗은 지금 철이 아닙니다",
   "nothing-to-harvest": "수확할 것이 없습니다",
+  "inventory-full": "가방이 가득 찼습니다",
   "insufficient-energy": "기력이 부족합니다",
   "invalid-life-skill": "생활 기술 기록을 확인할 수 없습니다",
 });
@@ -142,7 +144,7 @@ export function interactWithFarmPlot(
     ? resolveToolCapability(project, heldItemId)
     : { areaWidth: 1, areaHeight: 1, energyMultiplier: 1 };
   const draft = structuredClone(session);
-  const results = capabilityTiles(tileX, tileY, capability.areaWidth, capability.areaHeight)
+  const results = capabilityTiles(map, tileX, tileY, capability.areaWidth, capability.areaHeight)
     .map(({ x: targetX, y: targetY }) => interactWithFarmPlotSingle(project, draft, map, targetX, targetY, intent));
   const successful = results.filter(
     (result): result is FarmInteractionResult & { kind: Exclude<FarmInteractionKind, "ignored"> } => result.kind !== "ignored",
@@ -208,16 +210,21 @@ function interactWithFarmPlotSingle(
 }
 
 function capabilityTiles(
+  map: GameMap,
   x: number,
   y: number,
   width: number,
   height: number,
 ): readonly { readonly x: number; readonly y: number }[] {
-  const startX = x - Math.floor(width / 2);
-  const startY = y - Math.floor(height / 2);
-  return Array.from({ length: height }, (_, row) =>
-    Array.from({ length: width }, (__, column) => ({ x: startX + column, y: startY + row })),
-  ).flat();
+  const startX = Math.max(0, x - Math.floor(width / 2));
+  const startY = Math.max(0, y - Math.floor(height / 2));
+  const endX = Math.min(map.width, x - Math.floor(width / 2) + width);
+  const endY = Math.min(map.height, y - Math.floor(height / 2) + height);
+  const tiles: { x: number; y: number }[] = [];
+  for (let targetY = startY; targetY < endY; targetY += 1) {
+    for (let targetX = startX; targetX < endX; targetX += 1) tiles.push({ x: targetX, y: targetY });
+  }
+  return tiles;
 }
 
 function awardInteractionXp(
@@ -315,7 +322,7 @@ function tryHarvestPlot(
   const crop = cropById(project, existing.cropId);
   if (!crop || existing.dead || !isCropReady(crop, existing)) return undefined;
   const count = Math.max(1, Math.trunc(crop.harvestCount || 1));
-  changeItem(session, crop.harvestItemId, "+=", count);
+  if (!changeItem(session, crop.harvestItemId, "+=", count)) return ignored(tileX, tileY, "inventory-full");
   plots[key] = harvestNextPlotState(crop, existing);
   return { kind: "harvested", x: tileX, y: tileY, cropId: crop.id, itemId: crop.harvestItemId, count, source: "crop" };
 }
@@ -343,7 +350,7 @@ function plantPlot(
   tileY: number,
   crop: CropRecord
 ): FarmInteractionResult {
-  changeItem(session, crop.seedItemId, "-=", 1);
+  if (!changeItem(session, crop.seedItemId, "-=", 1)) return ignored(tileX, tileY, "missing-seed");
   plots[key] = {
     tilled: true,
     watered: false,
@@ -379,6 +386,7 @@ function tryPlaceableToolHarvest(
   tileX: number,
   tileY: number
 ): FarmInteractionResult | undefined {
+  if (tileX < 0 || tileY < 0 || tileX >= map.width || tileY >= map.height) return undefined;
   const key = placeableKey(map.id, tileX, tileY);
   const placeable = session.placeables?.[key];
   if (!placeable) return undefined;
@@ -389,9 +397,9 @@ function tryPlaceableToolHarvest(
   if (!use) return ignored(tileX, tileY, preferred === "chop" ? "missing-axe" : "missing-pickaxe");
   // 계절별 채집물(seasonalDrops)이 저작돼 있으면 현재 계절의 산출을 우선한다.
   const dropId = placeableDropItemId(placeable, currentSeason(session));
+  if (dropId && !changeItem(session, dropId, "+=", 1)) return ignored(tileX, tileY, "inventory-full");
   const removed = removeObjectAt(session, map.id, tileX, tileY);
   if (!removed) return ignored(tileX, tileY, "missing-placeable");
-  if (dropId) changeItem(session, dropId, "+=", 1);
   return {
     kind: "harvested",
     x: tileX,

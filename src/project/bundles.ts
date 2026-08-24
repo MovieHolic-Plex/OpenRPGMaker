@@ -1,7 +1,6 @@
-import { changeGold, changeItem, GOLD_MAX, setSwitch, type PlaySession } from "@/project/session";
+import { changeGold, changeItemsAtomically, GOLD_MAX, setSwitch, type PlaySession } from "@/project/session";
+import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX, type ItemQuantityOperation } from "@/project/itemQuantities";
 import type { BundleDefinition, BundleRewardDefinition, Project } from "@/project/types";
-
-const BUNDLE_AMOUNT_MAX = 9_999_999;
 
 type BundleFailureReason =
   | "disabled"
@@ -40,7 +39,7 @@ export function contributeBundle(
   if ((session.completedBundleIds ?? []).includes(bundleId)) {
     return { ok: false, reason: "already-complete", bundleId, itemId };
   }
-  if (!isPositiveInteger(count) || count > BUNDLE_AMOUNT_MAX) {
+  if (!isPositiveItemQuantity(count)) {
     return { ok: false, reason: "invalid-count", bundleId, itemId };
   }
   if (!validBundleRequirements(project, bundle)) {
@@ -50,14 +49,14 @@ export function contributeBundle(
   if (!requirement) return { ok: false, reason: "item-not-required", bundleId, itemId };
 
   const contribution = session.bundleContributions?.[bundleId]?.[itemId] ?? 0;
-  if (!isNonNegativeInteger(contribution) || contribution > requirement.count) {
+  if (!isItemQuantity(contribution) || contribution > requirement.count) {
     return { ok: false, reason: "invalid-definition", bundleId, itemId };
   }
   const nextContribution = contribution + count;
   if (nextContribution > requirement.count) {
     return { ok: false, reason: "exceeds-requirement", bundleId, itemId };
   }
-  if (!isNonNegativeInteger(session.inventory[itemId]) || (session.inventory[itemId] ?? 0) < count) {
+  if (!isItemQuantity(session.inventory[itemId] ?? 0) || (session.inventory[itemId] ?? 0) < count) {
     return { ok: false, reason: "insufficient-inventory", bundleId, itemId };
   }
 
@@ -70,7 +69,15 @@ export function contributeBundle(
     return { ok: false, reason: "invalid-reward", bundleId, itemId };
   }
 
-  changeItem(session, itemId, "-=", count);
+  const itemOperations: ItemQuantityOperation[] = [{ itemId, op: "-=", amount: count }];
+  if (completed && !(session.bundleRewardAppliedIds ?? []).includes(bundleId)) {
+    for (const entry of bundle.reward?.itemRewards ?? []) {
+      itemOperations.push({ itemId: entry.itemId, op: "+=", amount: entry.count });
+    }
+  }
+  if (!changeItemsAtomically(session, itemOperations)) {
+    return { ok: false, reason: completed ? "invalid-reward" : "insufficient-inventory", bundleId, itemId };
+  }
   session.bundleContributions ??= {};
   session.bundleContributions[bundleId] = nextProgress;
 
@@ -100,9 +107,9 @@ function validBundleRequirements(project: Project, bundle: BundleDefinition): bo
   const itemIds = new Set(project.database.items.map((item) => item.id));
   const seen = new Set<string>();
   return bundle.requirements.every((entry) => {
-    if (!itemIds.has(entry.itemId) || seen.has(entry.itemId) || !isPositiveInteger(entry.count)) return false;
+    if (!itemIds.has(entry.itemId) || seen.has(entry.itemId) || !isPositiveItemQuantity(entry.count)) return false;
     seen.add(entry.itemId);
-    return entry.count <= BUNDLE_AMOUNT_MAX;
+    return true;
   });
 }
 
@@ -112,10 +119,10 @@ function validBundleReward(project: Project, session: PlaySession, reward: Bundl
   const itemIds = new Set(project.database.items.map((item) => item.id));
   const rewardedItemIds = new Set<string>();
   for (const entry of reward.itemRewards ?? []) {
-    if (rewardedItemIds.has(entry.itemId) || !itemIds.has(entry.itemId) || !isPositiveInteger(entry.count) || entry.count > BUNDLE_AMOUNT_MAX) return false;
+    if (rewardedItemIds.has(entry.itemId) || !itemIds.has(entry.itemId) || !isPositiveItemQuantity(entry.count)) return false;
     rewardedItemIds.add(entry.itemId);
     const current = session.inventory[entry.itemId] ?? 0;
-    if (!isNonNegativeInteger(current) || current + entry.count > BUNDLE_AMOUNT_MAX) return false;
+    if (!isItemQuantity(current) || current + entry.count > ITEM_QUANTITY_MAX) return false;
   }
   const switchIds = new Set(project.switches.map((entry) => entry.id));
   if (reward.switchId && !switchIds.has(reward.switchId)) return false;
@@ -132,7 +139,6 @@ function validBundleReward(project: Project, session: PlaySession, reward: Bundl
 function applyBundleReward(project: Project, session: PlaySession, reward: BundleRewardDefinition | undefined): void {
   if (!reward) return;
   if (reward.gold) changeGold(session, "+=", reward.gold);
-  for (const entry of reward.itemRewards ?? []) changeItem(session, entry.itemId, "+=", entry.count);
   if (reward.switchId) setSwitch(session, reward.switchId, true);
   const unlocks = new Map((project.system.worldUnlocks ?? []).map((unlock) => [unlock.id, unlock] as const));
   for (const unlockId of reward.worldUnlockIds ?? []) {
@@ -148,10 +154,6 @@ function applyBundleReward(project: Project, session: PlaySession, reward: Bundl
 function appendUnique(values: readonly string[] | undefined, value: string): string[] {
   const current = values ?? [];
   return current.includes(value) ? [...current] : [...current, value];
-}
-
-function isPositiveInteger(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value) && Number.isInteger(value) && value > 0;
 }
 
 function isNonNegativeInteger(value: unknown): value is number {

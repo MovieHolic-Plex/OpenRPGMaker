@@ -210,6 +210,18 @@ describe("database life skill and crafting view", () => {
     expect(restored.system.itemUpgrades?.[0]?.capability?.areaWidth).toBe(3);
   });
 
+  it("clamps authored tool capability axes to the runtime-safe 9x9 limit", () => {
+    const host = renderTab();
+    findByTestId(host, "db-life-section-upgrades")?.click();
+    findByTestId(host, "db-life-add")?.click();
+    setChecked(host, "db-life-upgrade-capability-enabled", true);
+
+    setValue(host, "db-life-upgrade-area-width", "99");
+    setValue(host, "db-life-upgrade-area-height", "999999");
+
+    expect(store.getCurrent().system.itemUpgrades?.[0]?.capability).toMatchObject({ areaWidth: 9, areaHeight: 9 });
+  });
+
   // Break caught: energy and shipping are schema-only packages and shipping's
   // enabled toggle must not erase history/item policy while it is off.
   it("creates energy and shipping settings and preserves disabled shipping values", () => {
@@ -346,5 +358,50 @@ describe("database life skill and crafting view", () => {
     findByTestId(host, "db-life-row-recipe_gate")?.click();
     findByTestId(host, "db-life-delete")?.click();
     expect(store.getCurrent().system.craftRecipes).toHaveLength(1);
+  });
+
+  it("blocks renaming referenced skill, recipe, upgrade, and world-unlock ids", () => {
+    // Break caught: delete guards protect references, but editing the same ID
+    // field immediately leaves event and bundle references dangling.
+    const project = createBlankProject();
+    const itemId = project.database.items[0]?.id ?? "";
+    project.database.lifeSkills = [{ id: "life_ref", name: "농사", skillType: "farming", maxLevel: 5, levelUpRewards: [] }];
+    project.system.craftRecipes = [{ id: "recipe_ref", ingredients: [], outputItemId: itemId }];
+    project.system.itemUpgrades = [{ id: "upgrade_ref", fromItemId: itemId, toItemId: itemId }];
+    project.system.worldUnlocks = [{ id: "unlock_ref", name: "다리" }];
+    project.system.bundles = [{
+      id: "bundle_ref",
+      requirements: [{ itemId, count: 1 }],
+      reward: { recipeIds: ["recipe_ref"], worldUnlockIds: ["unlock_ref"] },
+    }];
+    project.maps[project.startMapId]?.events.push({
+      id: "rename_refs",
+      x: 0,
+      y: 0,
+      trigger: { kind: "action" },
+      commands: [
+        { kind: "changeLifeSkillExp", skillId: "life_ref", op: "+=", amount: 1 },
+        { kind: "craftRecipe", recipeId: "recipe_ref" },
+        { kind: "applyItemUpgrade", upgradeId: "upgrade_ref" },
+      ],
+    });
+    store.replace(project);
+    const host = renderTab();
+
+    for (const [section, row, field, original] of [
+      ["skills", "life_ref", "skill", "life_ref"],
+      ["recipes", "recipe_ref", "recipe", "recipe_ref"],
+      ["upgrades", "upgrade_ref", "upgrade", "upgrade_ref"],
+      ["world-unlocks", "unlock_ref", "world-unlock", "unlock_ref"],
+    ] as const) {
+      findByTestId(host, `db-life-section-${section}`)?.click();
+      findByTestId(host, `db-life-row-${row}`)?.click();
+      setValue(host, `db-life-${field}-id`, `${original}_renamed`);
+    }
+
+    expect(store.getCurrent().database.lifeSkills?.[0]?.id).toBe("life_ref");
+    expect(store.getCurrent().system.craftRecipes?.[0]?.id).toBe("recipe_ref");
+    expect(store.getCurrent().system.itemUpgrades?.[0]?.id).toBe("upgrade_ref");
+    expect(store.getCurrent().system.worldUnlocks?.[0]?.id).toBe("unlock_ref");
   });
 });

@@ -42,6 +42,11 @@ function configureP0PersistenceProject(project: ReturnType<typeof createBlankPro
     outputs: [{ itemId: "item_turnip", count: 1 }],
     durationMinutes: 1_440,
   }];
+  project.system.skillSystem = { enabled: true };
+  project.database.lifeSkills = [
+    { id: "skill_farming", name: "Farming", skillType: "farming", maxLevel: 5, levelUpRewards: [] },
+    { id: "skill_mining", name: "Mining", skillType: "mining", maxLevel: 5, levelUpRewards: [] },
+  ];
 }
 
 describe("P0 save snapshot regression", () => {
@@ -161,7 +166,7 @@ describe("P0 save snapshot regression", () => {
     const project = createBlankProject();
     configureP0PersistenceProject(project);
     const session = startSession(project, 19);
-    session.lifeSkills = { skill_farming: { xp: 420, level: 4 } };
+    session.lifeSkills = { skill_farming: { xp: 500, level: 4 } };
     session.energy = 48;
     session.shippingQueue = { item_turnip: 3 };
     session.dayTransitionLastDayKey = "1:spring:4";
@@ -202,7 +207,7 @@ describe("P0 save snapshot regression", () => {
     session.makerInstances = {};
     const checkpointRestored = restoreSessionCheckpoint(project, session);
     expect(checkpointRestored).toMatchObject({
-      lifeSkills: { skill_farming: { xp: 420, level: 4 } },
+      lifeSkills: { skill_farming: { xp: 500, level: 4 } },
       energy: 48,
       shippingQueue: { item_turnip: 3 },
       dayTransitionLastDayKey: "1:spring:4",
@@ -283,5 +288,38 @@ describe("P0 save snapshot regression", () => {
     expect(restored.unlockedRegionIds).toEqual([]);
     expect(restored.unlockedRecipeIds).toEqual([]);
     expect(restored.makerInstances).toEqual({});
+  });
+
+  it("normalizes hostile skill, maker, and bundle receipt state against the current project", () => {
+    // Break caught: direct snapshot apply trusts stale skill ids, inconsistent
+    // levels, unsafe maker deadlines, and one-sided completion receipts.
+    const project = createBlankProject();
+    configureP0PersistenceProject(project);
+    const snapshot = createSaveSnapshot(project, startSession(project, 22));
+    const hostile = snapshot.session as unknown as Record<string, unknown>;
+    hostile.lifeSkills = {
+      skill_farming: { xp: 275, level: 99 },
+      skill_mining: { xp: 1e300, level: 2 },
+      skill_deleted: { xp: 100, level: 2 },
+    };
+    hostile.bundleContributions = { bundle_spring: { item_turnip: 2 } };
+    hostile.completedBundleIds = ["bundle_spring"];
+    hostile.bundleRewardAppliedIds = [];
+    hostile.makerInstances = {
+      "farm:unsafe": {
+        instanceId: "farm:unsafe",
+        makerId: "maker_preserves",
+        status: "processing",
+        startedAtMinute: 100,
+        readyAtMinute: 1e300,
+      },
+    };
+
+    const restored = applySaveSnapshot(project, snapshot);
+
+    expect(restored.lifeSkills).toEqual({ skill_farming: { xp: 275, level: 3 } });
+    expect(restored.makerInstances).toEqual({});
+    expect(restored.completedBundleIds).toEqual(["bundle_spring"]);
+    expect(restored.bundleRewardAppliedIds).toEqual(["bundle_spring"]);
   });
 });

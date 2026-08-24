@@ -1,8 +1,8 @@
 import { changeItem, GOLD_MAX, type PlaySession, type ShippingSettlement, type ShippingSettlementEntry } from "@/project/session";
+import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import type { Project } from "@/project/types";
 import { resolveSellPrice } from "@/project/upgrades";
 
-const SHIPPING_QUANTITY_MAX = 9_999_999;
 const DEFAULT_HISTORY_LIMIT = 28;
 const MAX_HISTORY_LIMIT = 365;
 
@@ -35,19 +35,19 @@ export function depositShipping(
 ): ShippingQueueResult {
   const enabled = shippingEnabled(project);
   if (!enabled) return { ok: false, reason: "disabled" };
-  if (!isPositiveInteger(count) || count > SHIPPING_QUANTITY_MAX) return { ok: false, reason: "invalid-count", itemId };
+  if (!isPositiveItemQuantity(count)) return { ok: false, reason: "invalid-count", itemId };
   const eligibility = validateItemEligibility(project, itemId);
   if (eligibility) return { ok: false, reason: eligibility, itemId };
   const inventoryCount = session.inventory[itemId] ?? 0;
-  if (!isNonNegativeInteger(inventoryCount) || inventoryCount < count) {
+  if (!isItemQuantity(inventoryCount) || inventoryCount < count) {
     return { ok: false, reason: "insufficient-inventory", itemId };
   }
   const queued = session.shippingQueue?.[itemId] ?? 0;
-  if (!isNonNegativeInteger(queued) || queued + count > SHIPPING_QUANTITY_MAX) {
+  if (!isItemQuantity(queued) || queued + count > ITEM_QUANTITY_MAX) {
     return { ok: false, reason: "overflow", itemId };
   }
 
-  changeItem(session, itemId, "-=", count);
+  if (!changeItem(session, itemId, "-=", count)) return { ok: false, reason: "overflow", itemId };
   session.shippingQueue ??= {};
   session.shippingQueue[itemId] = queued + count;
   return { ok: true, itemId, queued: queued + count };
@@ -60,19 +60,19 @@ export function withdrawShipping(
   count: number,
 ): ShippingQueueResult {
   if (!shippingEnabled(project)) return { ok: false, reason: "disabled" };
-  if (!isPositiveInteger(count) || count > SHIPPING_QUANTITY_MAX) return { ok: false, reason: "invalid-count", itemId };
+  if (!isPositiveItemQuantity(count)) return { ok: false, reason: "invalid-count", itemId };
   const eligibility = validateItemEligibility(project, itemId);
   if (eligibility) return { ok: false, reason: eligibility, itemId };
   const queued = session.shippingQueue?.[itemId] ?? 0;
-  if (!isNonNegativeInteger(queued) || queued < count) {
+  if (!isItemQuantity(queued) || queued < count) {
     return { ok: false, reason: "insufficient-queue", itemId };
   }
   const inventoryCount = session.inventory[itemId] ?? 0;
-  if (!isNonNegativeInteger(inventoryCount) || inventoryCount + count > SHIPPING_QUANTITY_MAX) {
+  if (!isItemQuantity(inventoryCount) || inventoryCount + count > ITEM_QUANTITY_MAX) {
     return { ok: false, reason: "overflow", itemId };
   }
 
-  changeItem(session, itemId, "+=", count);
+  if (!changeItem(session, itemId, "+=", count)) return { ok: false, reason: "overflow", itemId };
   session.shippingQueue ??= {};
   const remaining = queued - count;
   if (remaining === 0) delete session.shippingQueue[itemId];
@@ -92,7 +92,7 @@ export function settleShipping(project: Project, session: PlaySession, dayKey: s
   const entries: ShippingSettlementEntry[] = [];
   let total = 0;
   for (const [itemId, count] of Object.entries(session.shippingQueue ?? {}).sort(([a], [b]) => a.localeCompare(b))) {
-    if (!isPositiveInteger(count) || count > SHIPPING_QUANTITY_MAX) {
+    if (!isPositiveItemQuantity(count)) {
       return { ok: false, reason: "invalid-queue", itemId };
     }
     const eligibility = validateItemEligibility(project, itemId);

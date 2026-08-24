@@ -1,4 +1,5 @@
 import type { ItemRecord } from "@/project/types";
+import { isItemQuantity, resolveItemQuantity } from "@/project/itemQuantities";
 
 export type ItemTransitionState = {
   readonly inventory: Readonly<Record<string, number>>;
@@ -55,21 +56,25 @@ function applyItemTransition(
   const current = state.inventory[action.itemId] ?? 0;
 
   if (action.kind === "grant") {
-    setInventoryCount(state.inventory, action.itemId, current + positiveInteger(action.amount));
+    const next = resolveItemQuantity(current, "+=", action.amount);
+    if (next !== undefined) setInventoryCount(state.inventory, action.itemId, next);
     return;
   }
 
   if (action.kind === "remove") {
-    const removed = Math.min(current, positiveInteger(action.amount));
+    const next = resolveItemQuantity(current, "-=", action.amount);
+    if (next === undefined) return;
+    const removed = current - next;
     const unchargedTail = Math.max(0, current - (state.itemUseCharges[action.itemId] === undefined ? 0 : 1));
     const removedChargedCopy = removed > unchargedTail;
-    setInventoryCount(state.inventory, action.itemId, current - removed);
+    setInventoryCount(state.inventory, action.itemId, next);
     if (removedChargedCopy) delete state.itemUseCharges[action.itemId];
     return;
   }
 
   if (action.kind === "assign") {
-    const next = nonnegativeInteger(action.count);
+    const next = resolveItemQuantity(current, "=", action.count);
+    if (next === undefined) return;
     setInventoryCount(state.inventory, action.itemId, next);
     if (next === 0) delete state.itemUseCharges[action.itemId];
     return;
@@ -147,8 +152,8 @@ function finiteLimit(item: ItemRecord): number | undefined {
 }
 
 function positiveInteger(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  return Math.max(0, Math.trunc(value));
+  if (!isItemQuantity(value)) return 0;
+  return value;
 }
 
 function nonnegativeInteger(value: number): number {
