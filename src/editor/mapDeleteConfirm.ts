@@ -60,6 +60,7 @@ export async function confirmAndDissolveFolder(folderId: MapId): Promise<Confirm
       isTreeRoot: false,
       treeChildCount: node.children.length,
       incomingCommandCount: 0,
+      incomingScheduleRows: [],
       connectionCount: 0,
       worldRefCount: 0,
       worldGraphEdgeCount: 0,
