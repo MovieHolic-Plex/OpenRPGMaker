@@ -11,6 +11,7 @@ RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
 import { RNG_STREAMS, type RngState } from "@/util/rng";
 import { isPositiveItemQuantity } from "@/project/itemQuantities";
+import { isSafeShopTradeCountsRecord } from "@/project/economyValues";
 
 export function isActorEquipmentRecord(value: unknown): value is Record<string, ActorInitialEquipment> {
   if (!isRecord(value)) return false;
@@ -114,11 +115,7 @@ export function parseChestsRecord(value: unknown): NonNullable<PlaySession["ches
 }
 
 export function isShopTradeCountsRecord(value: unknown): value is NonNullable<PlaySession["shopTradeCounts"]> {
-  if (!isRecord(value)) return false;
-  return Object.values(value).every((counts) => {
-    if (!isRecord(counts)) return false;
-    return isNonNegativeInteger(counts.sold) && isNonNegativeInteger(counts.bought);
-  });
+  return isSafeShopTradeCountsRecord(value);
 }
 
 export function isShopPawnTicketsRecord(value: unknown): value is NonNullable<PlaySession["shopPawnTickets"]> {

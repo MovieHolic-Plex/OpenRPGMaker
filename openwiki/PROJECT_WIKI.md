@@ -37,6 +37,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
    - Runtime index: `openwiki/runtime-and-data.md` (slim TOC linking to the above)
    - State system (authored definition, ontology, runtime application, editor surface): `openwiki/state-system.md`
+   - Stardew-like product model and P1/P2 scope: `openwiki/stardew-core-elements-research.md`
    - Boot flow, mode switching, module boundaries: `openwiki/architecture.md`
    - CC0 BGM catalog (281 tracks, CDN wiring, audio defaults): `openwiki/bgm-catalog.md`
    - CC0 SE catalog (635 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`

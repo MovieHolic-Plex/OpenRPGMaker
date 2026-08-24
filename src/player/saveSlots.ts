@@ -8,6 +8,12 @@ import {
   type PlaySession,
 } from "@/project/session";
 import { normalizeItemTransitionState } from "@/project/itemTransitions";
+import {
+  economyValueOrUndefined,
+  normalizeEconomyValue,
+  sanitizeEconomyRecord,
+  sanitizeShopTradeCounts,
+} from "@/project/economyValues";
 import { syncMonsterPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import type { ActorVitals } from "@/project/sessionVitals";
@@ -52,7 +58,6 @@ import {
   isRuntimeRemovedEventIds,
   isRuntimeSpawnedEventRecord,
   isShopPawnTicketsRecord,
-  isShopTradeCountsRecord,
   isShippingSettlementArray,
   isRngState,
   isSaveOrigin,
@@ -70,6 +75,11 @@ import { normalizeLightingState } from "@/project/lightingRules";
 import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import { normalizeRoguelikeRunState, type RoguelikeRunState } from "@/project/roguelikeRun";
+import {
+  normalizeDailyWeatherState,
+  parseFarmAnimalStateRecord,
+  restoreFarmAnimalStates,
+} from "@/project/p1FoundationRecords";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -125,6 +135,8 @@ export type SaveSnapshot = {
     readonly unlockedRegionIds?: PlaySession["unlockedRegionIds"];
     readonly unlockedRecipeIds?: PlaySession["unlockedRecipeIds"];
     readonly makerInstances?: PlaySession["makerInstances"];
+    readonly dailyWeather?: PlaySession["dailyWeather"];
+    readonly farmAnimals?: PlaySession["farmAnimals"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
@@ -251,14 +263,14 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       selfSwitches: structuredClone(session.selfSwitches),
       variables: structuredClone(session.variables),
       timers: structuredClone(session.timers),
-      gold: session.gold,
+      gold: normalizeEconomyValue(session.gold),
       inventory: structuredClone(normalizedItems.inventory),
       itemUseCharges: structuredClone(normalizedItems.itemUseCharges),
       killedFieldSpawns: structuredClone(session.killedFieldSpawns ?? {}),
       partyActorIds: structuredClone(session.partyActorIds),
-      shopLoyaltySpend: structuredClone(session.shopLoyaltySpend),
-      shopTradeCounts: structuredClone(session.shopTradeCounts),
-      shopMileagePoints: session.shopMileagePoints,
+      shopLoyaltySpend: sanitizeEconomyRecord(session.shopLoyaltySpend),
+      shopTradeCounts: sanitizeShopTradeCounts(session.shopTradeCounts),
+      shopMileagePoints: economyValueOrUndefined(session.shopMileagePoints),
       shopPawnTickets: structuredClone(session.shopPawnTickets),
       shopLastRestockDayKey: structuredClone(session.shopLastRestockDayKey),
       energy: nonNegativeIntegerOrUndefined(session.energy),
@@ -272,6 +284,10 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       unlockedRegionIds: uniqueStrings(session.unlockedRegionIds),
       unlockedRecipeIds: uniqueStrings(session.unlockedRecipeIds),
       makerInstances: structuredClone(restoreMakerInstances(project, session.makerInstances)),
+      dailyWeather: project.system.dailyWeather?.enabled === true
+        ? structuredClone(normalizeDailyWeatherState(session.dailyWeather))
+        : undefined,
+      farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
@@ -380,7 +396,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.selfSwitches = structuredClone(snapshot.session.selfSwitches ?? {});
   session.variables = structuredClone(snapshot.session.variables);
   session.timers = structuredClone(snapshot.session.timers);
-  session.gold = snapshot.session.gold;
+  session.gold = normalizeEconomyValue(snapshot.session.gold);
   if (snapshot.session.inventory) session.inventory = structuredClone(snapshot.session.inventory);
   const normalizedItems = normalizeItemTransitionState({
     inventory: session.inventory,
@@ -390,9 +406,9 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   session.itemUseCharges = normalizedItems.itemUseCharges;
   if (snapshot.session.killedFieldSpawns) session.killedFieldSpawns = structuredClone(snapshot.session.killedFieldSpawns);
   if (snapshot.session.partyActorIds) session.partyActorIds = [...snapshot.session.partyActorIds];
-  if (snapshot.session.shopLoyaltySpend) session.shopLoyaltySpend = structuredClone(snapshot.session.shopLoyaltySpend);
-  if (snapshot.session.shopTradeCounts) session.shopTradeCounts = structuredClone(snapshot.session.shopTradeCounts);
-  if (typeof snapshot.session.shopMileagePoints === "number") session.shopMileagePoints = snapshot.session.shopMileagePoints;
+  session.shopLoyaltySpend = sanitizeEconomyRecord(snapshot.session.shopLoyaltySpend);
+  session.shopTradeCounts = sanitizeShopTradeCounts(snapshot.session.shopTradeCounts);
+  session.shopMileagePoints = economyValueOrUndefined(snapshot.session.shopMileagePoints);
   if (snapshot.session.shopPawnTickets) session.shopPawnTickets = structuredClone(snapshot.session.shopPawnTickets);
   if (snapshot.session.shopLastRestockDayKey) session.shopLastRestockDayKey = structuredClone(snapshot.session.shopLastRestockDayKey);
   if (typeof snapshot.session.energy === "number") session.energy = snapshot.session.energy;
@@ -421,6 +437,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id)),
   );
   session.makerInstances = restoreMakerInstances(project, snapshot.session.makerInstances);
+  session.dailyWeather = project.system.dailyWeather?.enabled === true
+    ? normalizeDailyWeatherState(snapshot.session.dailyWeather)
+    : undefined;
+  session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
   if (snapshot.session.monsterInstances) {
     session.monsterInstances = {};
     for (const [instanceId, instance] of Object.entries(snapshot.session.monsterInstances)) {
@@ -562,7 +582,6 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
   if (!isBooleanRecord(session.switches)) return { ok: false, message: "Invalid switches" };
   if (!isNumberRecord(session.variables)) return { ok: false, message: "Invalid variables" };
   if (!isNumberRecord(session.timers)) return { ok: false, message: "Invalid timers" };
-  if (typeof session.gold !== "number" || !Number.isFinite(session.gold)) return { ok: false, message: "Invalid gold" };
   if (typeof session.currentMapId !== "string") return { ok: false, message: "Invalid map" };
   if (typeof session.x !== "number") return { ok: false, message: "Invalid x" };
   if (typeof session.y !== "number") return { ok: false, message: "Invalid y" };
@@ -592,16 +611,14 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       selfSwitches: isSelfSwitchesRecord(session.selfSwitches) ? session.selfSwitches : undefined,
       variables: session.variables,
       timers: session.timers,
-      gold: session.gold,
+      gold: normalizeEconomyValue(session.gold),
       inventory: isNumberRecord(session.inventory) ? session.inventory : undefined,
       itemUseCharges: parseItemUseCharges(session.itemUseCharges),
       killedFieldSpawns: isNestedNumberRecord(session.killedFieldSpawns) ? session.killedFieldSpawns : undefined,
       partyActorIds: isStringArray(session.partyActorIds) ? session.partyActorIds : undefined,
-      shopLoyaltySpend: isNumberRecord(session.shopLoyaltySpend) ? session.shopLoyaltySpend : undefined,
-      shopTradeCounts: isShopTradeCountsRecord(session.shopTradeCounts) ? session.shopTradeCounts : undefined,
-      shopMileagePoints: typeof session.shopMileagePoints === "number" && Number.isFinite(session.shopMileagePoints) && session.shopMileagePoints >= 0
-        ? Math.trunc(session.shopMileagePoints)
-        : undefined,
+      shopLoyaltySpend: sanitizeEconomyRecord(session.shopLoyaltySpend),
+      shopTradeCounts: sanitizeShopTradeCounts(session.shopTradeCounts),
+      shopMileagePoints: economyValueOrUndefined(session.shopMileagePoints),
       shopPawnTickets: isShopPawnTicketsRecord(session.shopPawnTickets) ? session.shopPawnTickets : undefined,
       shopLastRestockDayKey: isStringRecord(session.shopLastRestockDayKey) ? session.shopLastRestockDayKey : undefined,
       energy: nonNegativeIntegerOrUndefined(session.energy),
@@ -619,6 +636,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       unlockedRegionIds: isStringArray(session.unlockedRegionIds) ? [...session.unlockedRegionIds] : undefined,
       unlockedRecipeIds: isStringArray(session.unlockedRecipeIds) ? [...session.unlockedRecipeIds] : undefined,
       makerInstances: isMakerInstancesRecord(session.makerInstances) ? session.makerInstances : undefined,
+      dailyWeather: normalizeDailyWeatherState(session.dailyWeather),
+      farmAnimals: parseFarmAnimalStateRecord(session.farmAnimals),
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
@@ -851,6 +870,17 @@ function restoreLifeSkills(
     restored[skill.id] = { xp, level: levelForXp(xp, skill.maxLevel) };
   }
   return restored;
+}
+
+function restoreFarmAnimalsForProject(
+  project: Project,
+  animals: PlaySession["farmAnimals"],
+): PlaySession["farmAnimals"] {
+  return restoreFarmAnimalStates(
+    project.session.farmAnimals,
+    animals,
+    new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id)),
+  );
 }
 
 function normalizedBundleReceiptIds(

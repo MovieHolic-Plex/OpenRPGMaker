@@ -232,6 +232,16 @@ export interface ProjectSession {
    * 캐면 사라지므로 새 세션마다 다시 놓여야 한다.
    */
   placeables?: Record<string, import("@/project/placeables").PlaceableObjectState>;
+  /** Editor-authored farm animals instantiated by startSession; runtime progress is not written here. */
+  farmAnimals?: FarmAnimalStartInstance[];
+}
+
+export interface FarmAnimalStartInstance {
+  readonly instanceId: string;
+  readonly speciesId: string;
+  readonly name: string;
+  readonly eventId?: string;
+  readonly buildingId?: string;
 }
 
 /**

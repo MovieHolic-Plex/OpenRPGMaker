@@ -1,5 +1,16 @@
 import { isGenrePackId } from "@/project/genrePackId";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
+import {
+  FARM_ANIMAL_BUILDING_CAPACITY_MAX,
+  FARM_ANIMAL_FRIENDSHIP_MAX,
+  FARM_ANIMAL_PRODUCT_EVERY_DAYS_MAX,
+  FARM_ANIMAL_RECORD_LIMIT,
+  WEATHER_FORECAST_DAYS_MAX,
+  WEATHER_RULES_PER_SEASON_LIMIT,
+  WEATHER_WEIGHT_MAX,
+  isWeatherKind,
+} from "@/project/p1FoundationRecords";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 
 export function validateDatabase(value: unknown): void {
@@ -25,6 +36,7 @@ export function validateDatabase(value: unknown): void {
   // 가드가 없으면 normalizeDatabaseRecords 의 .map 이 TypeError 로 터져 프로젝트 전체가 열리지 않는다
   // (손상·수작업 편집된 JSON 에서 실제로 재현됨). 다른 옵셔널 컬렉션과 동일 계약으로 맞춘다.
   if (database.lifeSkills !== undefined) requireArray("database.lifeSkills", database.lifeSkills);
+  if (database.farmAnimalSpecies !== undefined) validateFarmAnimalSpecies(database.farmAnimalSpecies);
 }
 
 export function validateSystem(value: unknown): void {
@@ -56,6 +68,8 @@ export function validateSystem(value: unknown): void {
   if (system.worldUnlocks !== undefined) validateWorldUnlocks(system.worldUnlocks);
   if (system.bundles !== undefined) validateBundles(system.bundles);
   if (system.makers !== undefined) validateMakers(system.makers);
+  if (system.dailyWeather !== undefined) validateDailyWeather(system.dailyWeather);
+  if (system.farmAnimalBuildings !== undefined) validateFarmAnimalBuildings(system.farmAnimalBuildings);
   if (system.craftRecipes !== undefined) validateCraftRecipes(system.craftRecipes);
   if (system.itemUpgrades !== undefined) validateItemUpgrades(system.itemUpgrades);
   if (system.sellPrices !== undefined) validateSellPrices(system.sellPrices);
@@ -237,4 +251,132 @@ export function validateSession(value: unknown): void {
   requireRecord("session.variables", session.variables);
   requireRecord("session.inventory", session.inventory);
   requireArray("session.partyActorIds", session.partyActorIds);
+  if (session.farmAnimals !== undefined) validateFarmAnimalStarts(session.farmAnimals);
+}
+
+function validateDailyWeather(value: unknown): void {
+  const weather = requireRecord("system.dailyWeather", value);
+  requireBoolean("system.dailyWeather.enabled", weather.enabled);
+  if (weather.forecastDays !== undefined) {
+    assertSafeIntegerInRange("system.dailyWeather.forecastDays", weather.forecastDays, 1, WEATHER_FORECAST_DAYS_MAX);
+  }
+  const seasons = requireRecord("system.dailyWeather.seasons", weather.seasons);
+  for (const [season, rawRules] of Object.entries(seasons)) {
+    assert(season === "spring" || season === "summer" || season === "fall" || season === "winter",
+      `system.dailyWeather.seasons contains an unknown season: ${season}`);
+    const label = `system.dailyWeather.seasons.${season}`;
+    const rules = requireArray(label, rawRules);
+    assert(rules.length <= WEATHER_RULES_PER_SEASON_LIMIT,
+      `${label} must contain at most ${WEATHER_RULES_PER_SEASON_LIMIT} rules.`);
+    for (const [index, raw] of rules.entries()) {
+      const ruleLabel = `${label}[${index}]`;
+      const rule = requireRecord(ruleLabel, raw);
+      requireString(`${ruleLabel}.kind`, rule.kind);
+      assert(isWeatherKind(rule.kind), `${ruleLabel}.kind is not a supported weather kind: ${String(rule.kind)}`);
+      assertSafeIntegerInRange(`${ruleLabel}.weight`, rule.weight, 1, WEATHER_WEIGHT_MAX);
+      if (rule.intensity !== undefined) assertFiniteNumberInRange(`${ruleLabel}.intensity`, rule.intensity, 0, 1);
+    }
+  }
+}
+
+function validateFarmAnimalSpecies(value: unknown): void {
+  const rows = requireArray("database.farmAnimalSpecies", value);
+  assert(rows.length <= FARM_ANIMAL_RECORD_LIMIT,
+    `database.farmAnimalSpecies must contain at most ${FARM_ANIMAL_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `database.farmAnimalSpecies[${index}]`;
+    const species = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, species.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireNonBlankString(`${label}.name`, species.name);
+    if (species.graphic !== undefined) validateFarmAnimalGraphic(`${label}.graphic`, species.graphic);
+    requireNonBlankString(`${label}.feedItemId`, species.feedItemId);
+    requireNonBlankString(`${label}.productItemId`, species.productItemId);
+    assertSafeIntegerInRange(`${label}.productCount`, species.productCount, 1, ITEM_QUANTITY_MAX);
+    assertSafeIntegerInRange(`${label}.productEveryDays`, species.productEveryDays, 1, FARM_ANIMAL_PRODUCT_EVERY_DAYS_MAX);
+    assertSafeIntegerInRange(`${label}.petFriendship`, species.petFriendship, 0, FARM_ANIMAL_FRIENDSHIP_MAX);
+  }
+}
+
+function validateFarmAnimalBuildings(value: unknown): void {
+  const rows = requireArray("system.farmAnimalBuildings", value);
+  assert(rows.length <= FARM_ANIMAL_RECORD_LIMIT,
+    `system.farmAnimalBuildings must contain at most ${FARM_ANIMAL_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `system.farmAnimalBuildings[${index}]`;
+    const building = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.id`, building.id);
+    assert(!seen.has(id), `${label}.id is duplicated: ${id}`);
+    seen.add(id);
+    requireNonBlankString(`${label}.name`, building.name);
+    requireNonBlankString(`${label}.mapId`, building.mapId);
+    assertSafeInteger(`${label}.x`, building.x);
+    assertSafeInteger(`${label}.y`, building.y);
+    assertSafeIntegerInRange(`${label}.capacity`, building.capacity, 1, FARM_ANIMAL_BUILDING_CAPACITY_MAX);
+    validateUniqueStringArray(`${label}.allowedSpeciesIds`, building.allowedSpeciesIds, FARM_ANIMAL_RECORD_LIMIT);
+  }
+}
+
+function validateFarmAnimalStarts(value: unknown): void {
+  const rows = requireArray("session.farmAnimals", value);
+  assert(rows.length <= FARM_ANIMAL_RECORD_LIMIT,
+    `session.farmAnimals must contain at most ${FARM_ANIMAL_RECORD_LIMIT} records.`);
+  const seen = new Set<string>();
+  for (const [index, raw] of rows.entries()) {
+    const label = `session.farmAnimals[${index}]`;
+    const animal = requireRecord(label, raw);
+    const id = requireNonBlankString(`${label}.instanceId`, animal.instanceId);
+    assert(!seen.has(id), `${label}.instanceId is duplicated: ${id}`);
+    seen.add(id);
+    requireNonBlankString(`${label}.speciesId`, animal.speciesId);
+    requireNonBlankString(`${label}.name`, animal.name);
+    if (animal.eventId !== undefined) requireNonBlankString(`${label}.eventId`, animal.eventId);
+    if (animal.buildingId !== undefined) requireNonBlankString(`${label}.buildingId`, animal.buildingId);
+  }
+}
+
+function validateFarmAnimalGraphic(label: string, value: unknown): void {
+  const graphic = requireRecord(label, value);
+  if (graphic.sprite !== undefined) {
+    const sprite = requireRecord(`${label}.sprite`, graphic.sprite);
+    const type = requireString(`${label}.sprite.type`, sprite.type);
+    assert(type === "bundled" || type === "uploaded", `${label}.sprite.type is invalid.`);
+    requireNonBlankString(`${label}.sprite.id`, sprite.id);
+  }
+  if (graphic.direction !== undefined) {
+    const direction = requireString(`${label}.direction`, graphic.direction);
+    assert(direction === "left" || direction === "right" || direction === "up" || direction === "down",
+      `${label}.direction is invalid.`);
+  }
+  if (graphic.pattern !== undefined) assertSafeInteger(`${label}.pattern`, graphic.pattern);
+  if (graphic.transparent !== undefined) requireBoolean(`${label}.transparent`, graphic.transparent);
+}
+
+function validateUniqueStringArray(label: string, value: unknown, limit: number): void {
+  const rows = requireArray(label, value);
+  assert(rows.length <= limit, `${label} must contain at most ${limit} ids.`);
+  const seen = new Set<string>();
+  for (const [index, entry] of rows.entries()) {
+    const id = requireNonBlankString(`${label}[${index}]`, entry);
+    assert(!seen.has(id), `${label}[${index}] is duplicated: ${id}`);
+    seen.add(id);
+  }
+}
+
+function assertSafeInteger(label: string, value: unknown): asserts value is number {
+  const result = requireNumber(label, value);
+  assert(Number.isSafeInteger(result), `${label} must be a safe integer.`);
+}
+
+function assertSafeIntegerInRange(label: string, value: unknown, min: number, max: number): void {
+  assertSafeInteger(label, value);
+  assert(value >= min && value <= max, `${label} must be an integer from ${min} to ${max}.`);
+}
+
+function assertFiniteNumberInRange(label: string, value: unknown, min: number, max: number): void {
+  const result = requireNumber(label, value);
+  assert(result >= min && result <= max, `${label} must be between ${min} and ${max}.`);
 }

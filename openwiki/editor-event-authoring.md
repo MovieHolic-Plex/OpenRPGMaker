@@ -8,6 +8,9 @@
 - UI change handler는 HTML `min`/`max` 우회를 신뢰하지 않는다. hour는 0..47/48, day는 1..99, x/y는 선택한 target map bounds로 clamp한다. `when:{}`인 무조건 행이 뒤 행보다 앞에 있으면 `event-schedule-shadow-warning-N`을 표시해 first-match ordering shadow를 드러낸다.
 - 기존 aggregate draft validator가 찾는 `event-schedule-map-N`, `event-schedule-x-N`, `event-schedule-y-N` testid를 유지하므로 존재하지 않는 map, bounds 밖 좌표, 통과 불가능 좌표의 Apply/Test 차단과 포커스 이동 계약은 그대로다.
 - 표면 CSS는 `src/styles/editor/event-editor.modernize.css`의 schedule block이 소유한다. 행 CRUD 계약은 `test/editorNpcSchedule.test.ts`, 기존 bounds/passability 및 focus 계약은 `test/eventDraftValidator.test.ts`와 `test/eventEditorTrustLoop.test.ts`가 소유한다.
+- 프로젝트 전역 참조 검증도 모든 맵(맵 트리에 연결되지 않은 orphan host 포함)의 `event.schedule[].at`을 검사한다. blank/missing/unknown `mapId`, 정수가 아닌 좌표, 맵 bounds 밖 좌표는 `hostMapId + eventId + eventIndex + scheduleIndex`로 보고하며 load repair는 해당 행만 제거한다. 유효한 중복 행은 first-match authoring 순서이므로 deduplicate하지 않는다.
+- 런타임 일정 상태는 `event.id`를 전역 key로 사용한다. 따라서 프로젝트 내 같은 이벤트 ID가 둘 이상이고 그중 하나라도 일정 행을 가지면 hard reference error다. 기존 프로젝트 호환을 위해 모두 unscheduled인 중복 이벤트 ID는 이 규칙이 차단하지 않는다.
+- 맵 삭제 영향(`MapDeletionImpact.incomingScheduleRows`)은 삭제되는 맵 자신이 아니라 살아남는 attached/orphan host의 정확한 일정 행을 열거한다. cascade는 대상 맵을 가리키는 일정 행만 제거하고 이벤트 page/command와 다른 일정 행을 보존한다.
 
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 

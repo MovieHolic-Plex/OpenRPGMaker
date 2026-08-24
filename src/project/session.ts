@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -22,6 +22,8 @@ import { normalizeLightingState } from "@/project/lightingRules";
 import { transitionItemStates, type ItemTransitionAction } from "@/project/itemTransitions";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
+import { GOLD_MAX } from "@/project/economyValues";
+import { initialFarmAnimalStates } from "@/project/p1FoundationRecords";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -141,6 +143,21 @@ export type MakerInstanceState = {
   readonly readyAtMinute?: number;
 };
 
+export type DailyWeatherState = {
+  readonly dayKey: string;
+  readonly kind: WeatherKind;
+  readonly intensity: number;
+};
+
+export type FarmAnimalState = FarmAnimalStartInstance & {
+  readonly friendship: number;
+  readonly productionProgress: number;
+  readonly readyProductCount: number;
+  readonly lastFedDayKey?: string;
+  readonly lastPettedDayKey?: string;
+  readonly lastAdvancedDayKey?: string;
+};
+
 export const FRIENDSHIP_MIN = 0;
 export const FRIENDSHIP_MAX = 1000;
 
@@ -184,6 +201,9 @@ export interface PlaySession {
   unlockedRegionIds?: string[];
   unlockedRecipeIds?: string[];
   makerInstances?: Record<string, MakerInstanceState>;
+  /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
+  dailyWeather?: DailyWeatherState;
+  farmAnimals?: Record<string, FarmAnimalState>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -272,7 +292,7 @@ export interface PlaySession {
 // 명시적으로 읽는 헬퍼. 런타임 상태(PlaySession = scene.session)와 혼동하지 않도록,
 // "이 값은 플레이 중 상태가 아니라 시작 상태다"라는 의도를 코드로 표시한다.
 // 직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
-export const GOLD_MAX = 9_999_999;
+export { GOLD_MAX } from "@/project/economyValues";
 
 export function startStateOf(project: Project): ProjectStartState {
   return project.session;
@@ -323,6 +343,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     unlockedRegionIds: [],
     unlockedRecipeIds: [],
     makerInstances: {},
+    farmAnimals: initialFarmAnimalStates(start.farmAnimals),
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],
