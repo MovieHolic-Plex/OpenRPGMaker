@@ -11,9 +11,17 @@ import {
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { panel } from "@/editor/panels/databaseEnemyRecordSupport";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { actorDerivedStats } from "@/battle/battleBattlers";
+import { normalizeActorRecord } from "@/project/actorModel";
+import {
+  effectiveActorEquipment,
+  logicalEquipmentIds,
+  transitionActorEquipment,
+  type EquipmentTransitionFailureReason,
+} from "@/project/equipmentRules";
 import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
-import type { EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags } from "@/project/types";
+import type { ActorInitialEquipment, EquipmentRecord, EquipmentStatBonuses, ItemEquipmentEffectFlags, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
 type CheckboxFieldInput = {
@@ -35,6 +43,24 @@ export type EquipmentEffectSummaryChips = {
   readonly flags: readonly string[];
   readonly badges: readonly string[];
   readonly counts: readonly string[];
+};
+
+export type EquipmentEffectStory = {
+  readonly statChanges: readonly string[];
+  readonly effects: readonly string[];
+};
+
+export type EquipmentActorComparison = {
+  readonly actorId: string;
+  readonly actorName: string;
+  readonly className: string;
+  readonly level: number;
+  readonly eligible: boolean;
+  readonly reason?: EquipmentTransitionFailureReason;
+  readonly replacedEquipmentNames: readonly string[];
+  readonly current: EquipmentStatBonuses;
+  readonly next?: EquipmentStatBonuses;
+  readonly deltas?: EquipmentStatBonuses;
 };
 
 // 아이템 탭 equipmentEffectFields(databaseItemRecordView.ts)와 동일한 9종 플래그.
@@ -66,6 +92,87 @@ const STATE_DEFENSE_MODE_OPTIONS: readonly { readonly id: EquipmentRecord["state
   { id: "inflict", name: "공격 시 부여" },
 ];
 
+const STAT_FIELDS = [
+  ["attack", "공격력"],
+  ["defense", "방어력"],
+  ["mind", "정신력"],
+  ["agility", "민첩성"],
+] as const satisfies readonly (readonly [keyof EquipmentStatBonuses, string])[];
+
+export function equipmentEffectStory(project: Project, record: EquipmentRecord): EquipmentEffectStory {
+  const statChanges = STAT_FIELDS.flatMap(([key, label]) =>
+    record.statBonuses[key] === 0 ? [] : [`${label} ${signed(record.statBonuses[key])}`]
+  );
+  const effects = EFFECT_FLAG_FIELDS.filter(({ key }) => record.effectFlags[key]).map(({ label }) => label);
+  if (record.twoHanded) effects.push("양손 장비 · 방패 해제");
+  if (record.cursed) effects.push("저주 · 장착 후 해제 제한");
+  if (record.attackElementIds.length > 0) effects.push(`공격 속성: ${namedIds(record.attackElementIds, project.database.elements ?? [])}`);
+  if (record.elementalDefenseIds.length > 0) effects.push(`속성 방어: ${namedIds(record.elementalDefenseIds, project.database.elements ?? [])}`);
+  if (record.stateInflictIds.length > 0) {
+    effects.push(`상태 부여 ${record.stateInflictionChance}%: ${namedIds(record.stateInflictIds, project.database.states)}`);
+  }
+  if (record.stateDefenseIds.length > 0) {
+    const label = record.stateDefenseMode === "resist" ? "상태 저항" : "공격 시 상태";
+    effects.push(`${label} ${record.stateResistanceChance}%: ${namedIds(record.stateDefenseIds, project.database.states)}`);
+  }
+  if (record.usableAsItemSkillId) {
+    effects.push(`사용 시 스킬: ${namedId(record.usableAsItemSkillId, project.database.skills)}`);
+  }
+  return {
+    statChanges,
+    effects: effects.length > 0 ? effects : ["고유 효과 없음"],
+  };
+}
+
+/** Uses the same equip transition and derived-stat authorities as the live runtime. */
+export function equipmentActorComparison(
+  project: Project,
+  record: EquipmentRecord,
+  actorId: string,
+): EquipmentActorComparison | undefined {
+  const actor = project.database.actors.find((entry) => entry.id === actorId);
+  if (!actor) return undefined;
+  const normalizedActor = normalizeActorRecord(actor);
+  const level = normalizedActor.initialLevel;
+  const className = project.database.classes.find((entry) => entry.id === actor.classId)?.name ?? "직업 없음";
+  const currentEquipment = effectiveActorEquipment(project, actor, actor.initialEquipment, actor.classId);
+  const current = equipmentComparisonStats(project, normalizedActor, level, currentEquipment);
+  const transition = transitionActorEquipment({
+    project,
+    actorId,
+    classId: actor.classId,
+    equipment: actor.initialEquipment,
+    inventory: { [record.id]: 1 },
+    slot: record.slot,
+    equipmentId: record.id,
+  });
+  if (transition.kind === "rejected") {
+    return {
+      actorId,
+      actorName: actor.name,
+      className,
+      level,
+      eligible: false,
+      reason: transition.reason,
+      replacedEquipmentNames: [],
+      current,
+    };
+  }
+  const nextEquipment = effectiveActorEquipment(project, actor, transition.equipment, actor.classId);
+  const next = equipmentComparisonStats(project, normalizedActor, level, nextEquipment);
+  return {
+    actorId,
+    actorName: actor.name,
+    className,
+    level,
+    eligible: true,
+    replacedEquipmentNames: removedEquipmentNames(project, currentEquipment, nextEquipment),
+    current,
+    next,
+    deltas: statDifference(next, current),
+  };
+}
+
 export function equipmentEffectSummaryChips(record: EquipmentRecord): EquipmentEffectSummaryChips {
   const flags = EFFECT_FLAG_FIELDS
     .filter(({ key }) => record.effectFlags[key])
@@ -88,56 +195,82 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
     class: "db-equipment-summary-chips",
     dataset: { testid: "db-equipment-summary-chips" },
   });
-  const refreshSummaryChips = (): void => {
-    fillEquipmentSummaryChips(summaryHost, currentEquipment(record));
+  const storyHost = el("section", {
+    class: "db-equipment-effect-story",
+    attrs: { "aria-label": "장비 효과 요약" },
+    dataset: { testid: "db-equipment-effect-story" },
+  });
+  const comparisonResultHost = el("div", {
+    class: "db-equipment-comparison-result",
+    dataset: { testid: "db-equipment-comparison-result" },
+  });
+  let selectedActorId = store.getCurrent().database.actors[0]?.id ?? "";
+  const refreshOverview = (): void => {
+    const project = store.getCurrent();
+    const current = currentEquipment(record);
+    fillEquipmentSummaryChips(summaryHost, current);
+    fillEquipmentEffectStory(storyHost, project, current);
+    fillEquipmentComparison(comparisonResultHost, equipmentActorComparison(project, current, selectedActorId));
   };
-  refreshSummaryChips();
+  const comparisonPanel = equipmentComparisonPanel(
+    selectedActorId,
+    comparisonResultHost,
+    (actorId) => {
+      selectedActorId = actorId;
+      refreshOverview();
+    },
+  );
+  refreshOverview();
 
   form.append(
-    equipmentHeader(record, summaryHost, refreshSummaryChips),
+    equipmentHeader(record, summaryHost, refreshOverview),
+    storyHost,
+    comparisonPanel,
     resourcePanel(record, rerender),
     databaseFieldSupportNotice("imageResourceId", "iconResourceId", "twoHanded", "usableAsItemSkillId", "stateInflictIds", "stateInflictionChance", "stateResistanceChance"),
     textField("설명", "db-field-equipment-description", record.description, (description) =>
       updateDatabaseRecord("equipment", record.id, { description })
     ),
     panel("능력치", [
-      statField({ equipment: record, key: "attack", label: "공격력", testid: "db-field-equipment-attack" }),
-      statField({ equipment: record, key: "defense", label: "방어력", testid: "db-field-equipment-defense" }),
-      statField({ equipment: record, key: "mind", label: "정신력", testid: "db-field-equipment-mind" }),
-      statField({ equipment: record, key: "agility", label: "민첩성", testid: "db-field-equipment-agility" }),
+      statField({ equipment: record, key: "attack", label: "공격력", testid: "db-field-equipment-attack" }, refreshOverview),
+      statField({ equipment: record, key: "defense", label: "방어력", testid: "db-field-equipment-defense" }, refreshOverview),
+      statField({ equipment: record, key: "mind", label: "정신력", testid: "db-field-equipment-mind" }, refreshOverview),
+      statField({ equipment: record, key: "agility", label: "민첩성", testid: "db-field-equipment-agility" }, refreshOverview),
     ]),
     panel("장착 허용", [
       toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
         updateDatabaseRecord("equipment", record.id, { twoHanded });
-        refreshSummaryChips();
+        refreshOverview();
       }),
       // 기본 데이터에서 배우명=직업명이라 어느 쪽인지 구분 불가했다(P10) — 소제목으로 구분.
-      choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record)),
-      choiceGroup("직업별 허용", "db-equipment-class-permission-group", classChoices(record)),
+      choiceGroup("주인공별 허용", "db-equipment-actor-permission-group", actorChoices(record, refreshOverview)),
+      choiceGroup("직업별 허용", "db-equipment-class-permission-group", classChoices(record, refreshOverview)),
     ]),
     // 아이템 탭 equipmentProfile 블록과 동일한 효과 필드군 이식(P10 — 스키마·런타임은
     // 이미 지원하는데 UI 만 없어 AI 도구로만 편집 가능했다).
-    panel("효과", equipmentEffectFields(record, refreshSummaryChips)),
+    panel("효과", equipmentEffectFields(record, refreshOverview)),
     panel("공격/방어 속성", [
-      choiceGroup("공격 속성", "db-equipment-attack-element-group", elementChoices(record, "attackElementIds", refreshSummaryChips)),
-      choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds", refreshSummaryChips)),
+      choiceGroup("공격 속성", "db-equipment-attack-element-group", elementChoices(record, "attackElementIds", refreshOverview)),
+      choiceGroup("속성 방어", "db-equipment-defense-element-group", elementChoices(record, "elementalDefenseIds", refreshOverview)),
     ]),
     panel("상태", [
-      choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds", refreshSummaryChips)),
-      statePercentField(record, "stateInflictionChance", "db-field-equipment-state-infliction", "상태 부여율(%)"),
-      choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshSummaryChips)),
-      segmentedControl("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, STATE_DEFENSE_MODE_OPTIONS, (stateDefenseMode) =>
-        updateDatabaseRecord("equipment", record.id, { stateDefenseMode: stateDefenseMode as EquipmentRecord["stateDefenseMode"] })
-      ),
-      statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)"),
+      choiceGroup("상태 부여", "db-equipment-state-inflict-group", stateChoices(record, "stateInflictIds", refreshOverview)),
+      statePercentField(record, "stateInflictionChance", "db-field-equipment-state-infliction", "상태 부여율(%)", refreshOverview),
+      choiceGroup("상태 방어", "db-equipment-state-defense-group", stateChoices(record, "stateDefenseIds", refreshOverview)),
+      segmentedControl("방어 방식", "db-field-equipment-state-defense-mode", record.stateDefenseMode, STATE_DEFENSE_MODE_OPTIONS, (stateDefenseMode) => {
+        updateDatabaseRecord("equipment", record.id, { stateDefenseMode: stateDefenseMode as EquipmentRecord["stateDefenseMode"] });
+        refreshOverview();
+      }),
+      statePercentField(record, "stateResistanceChance", "db-field-equipment-state-resistance", "상태 저항률(%)", refreshOverview),
     ]),
     panel("사용 효과", [
-      selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) =>
-        updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) })
-      ),
+      selectField("사용 스킬", "db-picker-equipment-use-skill", record.usableAsItemSkillId ?? "", store.getCurrent().database.skills, (usableAsItemSkillId) => {
+        updateDatabaseRecord("equipment", record.id, { usableAsItemSkillId: emptyToUndefined(usableAsItemSkillId) });
+        refreshOverview();
+      }),
       toggleSwitch("저주", "db-field-equipment-cursed", record.cursed, (cursed) => {
         updateDatabaseRecord("equipment", record.id, { cursed });
-        refreshSummaryChips();
+        refreshOverview();
       }),
     ])
   );
@@ -203,6 +336,113 @@ function summaryChip(label: string, kind: "flag" | "badge" | "count" | "empty"):
   });
 }
 
+function fillEquipmentEffectStory(host: HTMLElement, project: Project, record: EquipmentRecord): void {
+  const story = equipmentEffectStory(project, record);
+  host.replaceChildren(
+    el("div", { class: "db-effect-story-kicker", text: "착용하면" }),
+    el("div", {
+      class: "db-equipment-story-stats",
+      text: story.statChanges.length > 0 ? story.statChanges.join(" · ") : "능력치 보정 없음",
+      dataset: { testid: "db-equipment-story-stats" },
+    }),
+    el("div", {
+      class: "db-effect-story-lines",
+      children: story.effects.map((effect) => el("span", {
+        class: "db-effect-story-line",
+        text: effect,
+        dataset: { testid: "db-equipment-story-effect" },
+      })),
+    }),
+  );
+}
+
+function equipmentComparisonPanel(
+  selectedActorId: string,
+  resultHost: HTMLElement,
+  onActorChange: (actorId: string) => void,
+): HTMLElement {
+  return el("section", {
+    class: "db-equipment-comparison",
+    dataset: { testid: "db-equipment-comparison" },
+    children: [
+      el("div", {
+        class: "db-equipment-comparison-heading",
+        children: [
+          el("div", { class: "db-effect-story-kicker", text: "초기 빌드 비교" }),
+          selectField("캐릭터", "db-equipment-comparison-actor", selectedActorId, store.getCurrent().database.actors, onActorChange),
+        ],
+      }),
+      resultHost,
+      el("p", {
+        class: "db-equipment-comparison-note",
+        text: "DB의 초기 레벨·초기 장비 기준입니다. 플레이 중 전직, 영구 보정, 인벤토리 수량은 포함하지 않습니다.",
+      }),
+    ],
+  });
+}
+
+function fillEquipmentComparison(host: HTMLElement, comparison: EquipmentActorComparison | undefined): void {
+  if (!comparison) {
+    host.dataset.state = "empty";
+    host.replaceChildren(el("p", { class: "db-effect-story-note", text: "비교할 캐릭터를 선택하세요." }));
+    return;
+  }
+  if (!comparison.eligible || !comparison.next || !comparison.deltas) {
+    host.dataset.state = "ineligible";
+    host.replaceChildren(
+      comparisonStatus("장착 불가", "ineligible"),
+      el("strong", { text: `${comparison.actorName} · ${comparison.className} · Lv.${comparison.level}` }),
+      el("p", { class: "db-effect-story-note", text: equipmentFailureLabel(comparison.reason) }),
+    );
+    return;
+  }
+  host.dataset.state = "eligible";
+  const replaced = comparison.replacedEquipmentNames.length > 0
+    ? `교체: ${comparison.replacedEquipmentNames.join(", ")}`
+    : "빈 부위에 장착";
+  host.replaceChildren(
+    comparisonStatus("장착 가능", "eligible"),
+    el("strong", { text: `${comparison.actorName} · ${comparison.className} · Lv.${comparison.level}` }),
+    el("span", { class: "db-equipment-comparison-replaced", text: replaced }),
+    el("div", {
+      class: "db-equipment-comparison-stats",
+      children: STAT_FIELDS.map(([key, label]) => comparisonStatRow(
+        key,
+        label,
+        comparison.current[key],
+        comparison.next?.[key] ?? comparison.current[key],
+        comparison.deltas?.[key] ?? 0,
+      )),
+    }),
+  );
+}
+
+function comparisonStatus(label: string, state: "eligible" | "ineligible"): HTMLElement {
+  return el("span", {
+    class: `db-equipment-comparison-status is-${state}`,
+    text: label,
+    dataset: { testid: "db-equipment-comparison-status" },
+  });
+}
+
+function comparisonStatRow(
+  key: keyof EquipmentStatBonuses,
+  label: string,
+  current: number,
+  next: number,
+  delta: number,
+): HTMLElement {
+  return el("div", {
+    class: "db-equipment-comparison-stat",
+    dataset: { testid: `db-equipment-comparison-delta-${key}`, delta: String(delta) },
+    children: [
+      el("span", { text: label }),
+      el("small", { text: `${current} → ${next}` }),
+      el("strong", { class: delta > 0 ? "gain" : delta < 0 ? "loss" : "neutral", text: signed(delta) }),
+    ],
+  });
+}
+
 function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLElement {
   const graphicPanel = panel("장비 그래픽", [
     resourcePickerControl({
@@ -232,34 +472,41 @@ function resourcePanel(record: EquipmentRecord, rerender: () => void): HTMLEleme
   return graphicPanel;
 }
 
-function statField(input: StatFieldInput): HTMLElement {
+function statField(input: StatFieldInput, onChange?: () => void): HTMLElement {
   return numberField(input.label, input.testid, input.equipment.statBonuses[input.key], (value) => {
     const statBonuses = { ...currentEquipment(input.equipment).statBonuses, [input.key]: value };
     updateDatabaseRecord("equipment", input.equipment.id, { statBonuses });
+    onChange?.();
   }, { min: 0, max: 9999 });
 }
 
-function actorChoices(record: EquipmentRecord): HTMLElement[] {
+function actorChoices(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {
   return store.getCurrent().database.actors.map((actor) =>
     checkboxField({
       checked: record.equippableActorIds.includes(actor.id),
       label: actor.name,
-      onInput: (checked) => updateDatabaseRecord("equipment", record.id, {
-        equippableActorIds: toggleId(currentEquipment(record).equippableActorIds, actor.id, checked),
-      }),
+      onInput: (checked) => {
+        updateDatabaseRecord("equipment", record.id, {
+          equippableActorIds: toggleId(currentEquipment(record).equippableActorIds, actor.id, checked),
+        });
+        onChange?.();
+      },
       testid: `db-field-equipment-actor-${actor.id}`,
     })
   );
 }
 
-function classChoices(record: EquipmentRecord): HTMLElement[] {
+function classChoices(record: EquipmentRecord, onChange?: () => void): HTMLElement[] {
   return store.getCurrent().database.classes.map((klass) =>
     checkboxField({
       checked: record.equippableClassIds.includes(klass.id),
       label: klass.name,
-      onInput: (checked) => updateDatabaseRecord("equipment", record.id, {
-        equippableClassIds: toggleId(currentEquipment(record).equippableClassIds, klass.id, checked),
-      }),
+      onInput: (checked) => {
+        updateDatabaseRecord("equipment", record.id, {
+          equippableClassIds: toggleId(currentEquipment(record).equippableClassIds, klass.id, checked),
+        });
+        onChange?.();
+      },
       testid: `db-field-equipment-class-${klass.id}`,
     })
   );
@@ -326,9 +573,12 @@ function statePercentField(
   key: "stateInflictionChance" | "stateResistanceChance",
   testid: string,
   label: string,
+  onChange?: () => void,
 ): HTMLElement {
-  const fieldNode = sliderStepperField(label, testid, record[key], (value) =>
-    updateDatabaseRecord("equipment", record.id, { [key]: value }),
+  const fieldNode = sliderStepperField(label, testid, record[key], (value) => {
+    updateDatabaseRecord("equipment", record.id, { [key]: value });
+    onChange?.();
+  },
     { min: 0, max: 100, step: 1, unit: "%" }
   );
   const stepper = fieldNode.querySelector<HTMLElement>(`[data-testid="${testid}-stepper"]`);
@@ -351,6 +601,74 @@ function checkboxField(input: CheckboxFieldInput): HTMLElement {
     if (control instanceof HTMLInputElement) input.onInput(control.checked);
   });
   return el("label", { class: "actor-check", children: [control, el("span", { text: input.label })] });
+}
+
+function equipmentComparisonStats(
+  project: Project,
+  actor: ReturnType<typeof normalizeActorRecord>,
+  level: number,
+  equipment: ActorInitialEquipment,
+): EquipmentStatBonuses {
+  const derived = actorDerivedStats(project, actor, { level, equipment });
+  return {
+    attack: derived.attack,
+    defense: derived.defense,
+    mind: derived.mind,
+    agility: derived.agility,
+  };
+}
+
+function removedEquipmentNames(
+  project: Project,
+  current: ActorInitialEquipment,
+  next: ActorInitialEquipment,
+): string[] {
+  const remaining = new Map<string, number>();
+  for (const id of logicalEquipmentIds(project, next)) remaining.set(id, (remaining.get(id) ?? 0) + 1);
+  const removed: string[] = [];
+  for (const id of logicalEquipmentIds(project, current)) {
+    const count = remaining.get(id) ?? 0;
+    if (count > 0) {
+      remaining.set(id, count - 1);
+      continue;
+    }
+    removed.push(namedId(id, project.database.equipment));
+  }
+  return removed;
+}
+
+function statDifference(next: EquipmentStatBonuses, current: EquipmentStatBonuses): EquipmentStatBonuses {
+  return {
+    attack: next.attack - current.attack,
+    defense: next.defense - current.defense,
+    mind: next.mind - current.mind,
+    agility: next.agility - current.agility,
+  };
+}
+
+function equipmentFailureLabel(reason: EquipmentTransitionFailureReason | undefined): string {
+  switch (reason) {
+    case "notEquippable": return "이 캐릭터나 직업의 장착 허용 목록에 없습니다.";
+    case "fixedEquipment": return "캐릭터·직업 또는 현재 장비가 교체를 막고 있습니다.";
+    case "cursedEquipment": return "현재 부위의 저주 장비를 해제할 수 없습니다.";
+    case "invalidSlot": return "현재 부위 규칙과 맞지 않습니다.";
+    case "missingEquipment": return "장비 레코드를 찾을 수 없습니다.";
+    case "missingActor": return "캐릭터 레코드를 찾을 수 없습니다.";
+    case "insufficientInventory": return "실제 플레이에서는 소지 수량이 필요합니다.";
+    default: return "현재 초기 빌드에는 장착할 수 없습니다.";
+  }
+}
+
+function namedIds(ids: readonly string[], records: readonly { readonly id: string; readonly name: string }[]): string {
+  return ids.map((id) => namedId(id, records)).join(", ");
+}
+
+function namedId(id: string, records: readonly { readonly id: string; readonly name: string }[]): string {
+  return records.find((record) => record.id === id)?.name ?? `삭제된 항목(${id})`;
+}
+
+function signed(value: number): string {
+  return `${value >= 0 ? "+" : ""}${value}`;
 }
 
 function currentEquipment(record: EquipmentRecord): EquipmentRecord {
