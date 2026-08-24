@@ -14,7 +14,8 @@ import {
 } from "@/player/fieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
-import { roguelikeRoomId } from "@/project/roguelikeRooms";
+import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
+import { initialRuntimeEventPositions } from "@/project/runtimeEventState";
 
 // 처치 결과를 세션에 영속(persistKill)하고 킬 스위치를 켠다.
 export function recordFieldSpawnKill(scene: PlaySceneContext, spawn: NormalizedFieldSpawn | null): void {
@@ -30,6 +31,9 @@ export function recordFieldSpawnKill(scene: PlaySceneContext, spawn: NormalizedF
 export function initializeFieldSpawnsForScene(scene: PlaySceneContext): void {
   const project = store.getCurrent();
   enterRoguelikeRunRoom(scene.session, roguelikeRoomId(scene.map));
+  if (syncRoguelikeRoomEventGeneration(scene.map, scene.session)) {
+    resetRoguelikeRoomEventRuntime(scene);
+  }
   scene.fieldSpawnState = createFieldSpawnRuntime(
     project,
     scene.map,
@@ -55,6 +59,9 @@ export function refreshRoguelikeRoomForScene(scene: PlaySceneContext): boolean {
   if (!fieldSpawnRuntimeNeedsRefresh(scene.fieldSpawnState, scene.map, scene.session.roguelikeRun)) return false;
   const project = store.getCurrent();
   enterRoguelikeRunRoom(scene.session, roguelikeRoomId(scene.map));
+  if (syncRoguelikeRoomEventGeneration(scene.map, scene.session)) {
+    resetRoguelikeRoomEventRuntime(scene);
+  }
   scene.fieldSpawnState = createFieldSpawnRuntime(
     project,
     scene.map,
@@ -66,6 +73,18 @@ export function refreshRoguelikeRoomForScene(scene: PlaySceneContext): boolean {
   scene.renderTiles();
   scene.registerPageMoveRoutes();
   return true;
+}
+
+function resetRoguelikeRoomEventRuntime(scene: PlaySceneContext): void {
+  syncFieldSpawnEventsIntoMap(scene.map, null, scene.eventPositions);
+  scene.eventPositions = initialRuntimeEventPositions(scene.map.events);
+  scene.parallelProcesses.clear();
+  scene.autoStartedKeys.clear();
+  scene.pageMoveRouteKeys.clear();
+  scene.pageMoveRouteEventIds.clear();
+  scene.commandMoveRouteEventIds.clear();
+  scene.eventGraphicPatternOverrides.clear();
+  scene.autonomousNPCs.clear();
 }
 
 export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId: string): Promise<boolean> {

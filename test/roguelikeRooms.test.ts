@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
+import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { deserialize, serialize } from "@/project/io";
 import {
@@ -10,6 +11,7 @@ import {
 import {
   resolveRoguelikeRoomFieldSpawns,
   roguelikeRoomGenerationKey,
+  syncRoguelikeRoomEventGeneration,
 } from "@/project/roguelikeRooms";
 import {
   createFieldSpawnRuntime,
@@ -17,6 +19,8 @@ import {
   resolveFieldSpawnVictory,
 } from "@/player/fieldSpawns";
 import { syncActionEnemiesForScene } from "@/player/playSceneActionCombat";
+import { refreshRoguelikeRoomForScene } from "@/player/playSceneFieldSpawns";
+import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import { runTool } from "@/editor/tools/toolRunner";
 import { toOpenAiTools } from "@/editor/tools";
@@ -106,6 +110,166 @@ describe("roguelike room encounter resolution", () => {
 });
 
 describe("roguelike room runtime and authoring integration", () => {
+  it("restores one-shot loot events and their self switches for a new room generation", () => {
+    // Break named: resetRoom rebuilds field enemies but leaves Erase Event/self-switch state behind, so room loot cannot respawn.
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    const itemId = project.database.items[0]?.id;
+    if (!map || !itemId) throw new Error("fixture missing");
+    map.roguelikeRoom = { roomId: "room-a" };
+    map.events.push(
+      {
+        id: "run_console",
+        x: 1,
+        y: 2,
+        trigger: { kind: "action" },
+        commands: [{
+          kind: "fork",
+          condition: { kind: "run", query: "active", value: true },
+          then: [{ kind: "runControl", action: "resetRoom" }],
+          else: [{ kind: "runControl", action: "start", seed: 123 }],
+        }],
+      },
+      {
+        id: "room_loot",
+        x: 2,
+        y: 1,
+        trigger: { kind: "action" },
+        commands: [],
+        pages: [{
+          id: "room_loot_available",
+          name: "available",
+          conditions: [],
+          graphic: {},
+          trigger: { kind: "action" },
+          priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [
+            { kind: "changeItem", itemId, op: "+=", amount: 1 },
+            { kind: "setSelfSwitch", key: "A", value: true },
+            { kind: "eraseEvent" },
+          ],
+        }, {
+          id: "room_loot_taken",
+          name: "taken",
+          conditions: [{ kind: "selfSwitch", key: "A", value: true }],
+          graphic: { transparent: true },
+          trigger: { kind: "action" },
+          priority: "below",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [],
+        }],
+      },
+    );
+
+    const result = runSceneTest(project, {
+      mapId: map.id,
+      start: { x: 1, y: 1 },
+      steps: [
+        { kind: "face", dir: "down" },
+        { kind: "interact" },
+        { kind: "face", dir: "right" },
+        { kind: "interact" },
+        { kind: "expect", inventoryCount: { itemId, count: 1 } },
+        { kind: "face", dir: "down" },
+        { kind: "interact" },
+        { kind: "face", dir: "right" },
+        { kind: "interact" },
+        { kind: "expect", inventoryCount: { itemId, count: 2 } },
+      ],
+    });
+
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.log.filter((line) => line === "event room_loot start")).toHaveLength(2);
+    expect(result.session.selfSwitches?.room_loot?.A).toBe(true);
+  });
+
+  it("persists the current event generation so loading mid-room keeps consumed loot consumed", () => {
+    // Break named: if the generation marker is runtime-only, loading a save clears the room's one-shot state a second time.
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("map missing");
+    map.roguelikeRoom = { roomId: "room-a" };
+    map.events.push({ id: "room_loot", x: 2, y: 1, trigger: { kind: "action" }, commands: [] });
+    const session = startSession(project);
+    startRoguelikeRun(session, { seed: 123 });
+
+    expect(syncRoguelikeRoomEventGeneration(map, session)).toBe(true);
+    session.selfSwitches.room_loot = { A: true };
+    session.erasedEventIds.push("room_loot");
+
+    const restored = applySaveSnapshot(project, createSaveSnapshot(project, session));
+
+    expect(syncRoguelikeRoomEventGeneration(map, restored)).toBe(false);
+    expect(restored.selfSwitches.room_loot?.A).toBe(true);
+    expect(restored.erasedEventIds).toContain("room_loot");
+
+    resetRoguelikeRunRoom(restored, "room-a");
+    expect(syncRoguelikeRoomEventGeneration(map, restored)).toBe(true);
+    expect(restored.selfSwitches.room_loot).toBeUndefined();
+    expect(restored.erasedEventIds).not.toContain("room_loot");
+  });
+
+  it("allows authored rooms to retain event state across generations", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("map missing");
+    map.roguelikeRoom = { roomId: "room-a", resetEventState: false };
+    map.events.push({ id: "story_event", x: 2, y: 1, trigger: { kind: "action" }, commands: [] });
+    const session = startSession(project);
+    session.selfSwitches.story_event = { A: true };
+    session.erasedEventIds.push("story_event");
+    startRoguelikeRun(session, { seed: 123 });
+
+    expect(syncRoguelikeRoomEventGeneration(map, session)).toBe(false);
+    expect(session.selfSwitches.story_event?.A).toBe(true);
+    expect(session.erasedEventIds).toContain("story_event");
+    expect(session.roguelikeRun?.roomEventGenerationKeys).toEqual({});
+  });
+
+  it("rebuilds live event runtime surfaces when the room generation changes", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    if (!map) throw new Error("map missing");
+    map.roguelikeRoom = { roomId: "room-a" };
+    map.events.push({ id: "room_loot", x: 2, y: 1, trigger: { kind: "action" }, commands: [] });
+    const session = startSession(project);
+    startRoguelikeRun(session, { seed: 123 });
+    syncRoguelikeRoomEventGeneration(map, session);
+    session.selfSwitches.room_loot = { A: true };
+    session.erasedEventIds.push("room_loot");
+    const fieldSpawnState = createFieldSpawnRuntime(project, map, { x: 1, y: 1 }, undefined, session.roguelikeRun);
+    resetRoguelikeRunRoom(session, "room-a");
+    store.replace(project);
+    const scene = {
+      session,
+      map,
+      fieldSpawnState,
+      tileX: 1,
+      tileY: 1,
+      eventPositions: { room_loot: { x: 7, y: 7 } },
+      parallelProcesses: new Map([["room_loot:page", {}]]),
+      autoStartedKeys: new Set([`${map.id}:room_loot:page`]),
+      pageMoveRouteKeys: new Set(["room_loot:page"]),
+      pageMoveRouteEventIds: new Set(["room_loot"]),
+      commandMoveRouteEventIds: new Set(["room_loot"]),
+      eventGraphicPatternOverrides: new Map([["room_loot", 3]]),
+      autonomousNPCs: new Map([["room_loot", {}]]),
+      renderTiles: vi.fn(),
+      registerPageMoveRoutes: vi.fn(),
+    };
+
+    expect(refreshRoguelikeRoomForScene(scene as never)).toBe(true);
+    expect(scene.eventPositions.room_loot).toEqual({ x: 2, y: 1 });
+    expect(session.selfSwitches.room_loot).toBeUndefined();
+    expect(session.erasedEventIds).not.toContain("room_loot");
+    expect(scene.parallelProcesses.size).toBe(0);
+    expect(scene.autoStartedKeys.size).toBe(0);
+    expect(scene.eventGraphicPatternOverrides.size).toBe(0);
+    expect(scene.renderTiles).toHaveBeenCalledOnce();
+    expect(scene.registerPageMoveRoutes).toHaveBeenCalledOnce();
+  });
+
   it("run_scene_test consumes resetRoom and respawns a defeated field encounter", () => {
     // Break named: the headless/real field loops do not observe room generations after an event mutates the run.
     const project = createBlankProject();
@@ -214,6 +378,7 @@ describe("roguelike room runtime and authoring integration", () => {
     const configured = runTool(context, "configure_roguelike_room", {
       mapId,
       roomId: "room-a",
+      resetEventState: false,
       slots: [{
         id: "front",
         choices: [
@@ -226,6 +391,7 @@ describe("roguelike room runtime and authoring integration", () => {
     expect(configured.ok, configured.summary).toBe(true);
     expect(context.project.maps[mapId]?.roguelikeRoom).toEqual({
       roomId: "room-a",
+      resetEventState: false,
       encounterSlots: [{
         id: "front",
         choices: [
@@ -235,6 +401,15 @@ describe("roguelike room runtime and authoring integration", () => {
       }],
     });
     expect(deserialize(serialize(context.project)).maps[mapId]?.roguelikeRoom).toEqual(context.project.maps[mapId]?.roguelikeRoom);
+
+    const policyOnly = runTool(context, "configure_roguelike_room", {
+      mapId,
+      resetEventState: true,
+    });
+    expect(policyOnly.ok, policyOnly.summary).toBe(true);
+    expect(context.project.maps[mapId]?.roguelikeRoom?.roomId).toBe("room-a");
+    expect(context.project.maps[mapId]?.roguelikeRoom?.encounterSlots).toHaveLength(1);
+    expect(context.project.maps[mapId]?.roguelikeRoom?.resetEventState).toBe(true);
 
     const invalid = runTool(context, "configure_roguelike_room", {
       mapId,

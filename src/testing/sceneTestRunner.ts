@@ -58,7 +58,7 @@ import {
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
 import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
-import { roguelikeRoomId } from "@/project/roguelikeRooms";
+import { roguelikeRoomId, syncRoguelikeRoomEventGeneration } from "@/project/roguelikeRooms";
 import {
   advanceGameTime,
   initialGameTime,
@@ -1464,6 +1464,11 @@ function initializeFieldSpawnsForRunner(state: RunnerState): void {
     return;
   }
   enterRoguelikeRunRoom(state.session, roguelikeRoomId(map));
+  if (syncRoguelikeRoomEventGeneration(map, state.session)) {
+    syncFieldSpawnEventsIntoMap(map, null, state.eventPositions);
+    Object.assign(state.eventPositions, initialRuntimeEventPositions(map.events));
+    state.autoStartedKeys.clear();
+  }
   state.fieldSpawnState = createFieldSpawnRuntime(
     state.project,
     map,

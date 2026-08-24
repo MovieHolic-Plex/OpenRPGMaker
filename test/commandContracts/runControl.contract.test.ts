@@ -23,6 +23,7 @@ describe("runControl contract", () => {
       status: "completed",
       flags: { bossDoor: true },
       roomResetCounts: { [result.session.currentMapId]: 1, "room-a": 1 },
+      roomEventGenerationKeys: {},
     });
     expect(result.pauses).toEqual([]);
     expect(result.warnings).toEqual([]);

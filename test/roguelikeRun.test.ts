@@ -15,6 +15,7 @@ type ExpectedRunState = {
   readonly status: "active" | "completed" | "failed" | "abandoned";
   readonly flags: Record<string, boolean>;
   readonly roomResetCounts: Record<string, number>;
+  readonly roomEventGenerationKeys: Record<string, string>;
 };
 
 type SessionWithRun = PlaySession & { roguelikeRun?: ExpectedRunState };
@@ -49,6 +50,7 @@ describe("roguelike run lifecycle", () => {
       status: "completed",
       flags: { bossDoor: true },
       roomResetCounts: {},
+      roomEventGenerationKeys: {},
     });
     expect(session.switches[project.switches[0]!.id]).toBe(true);
   });
@@ -65,11 +67,23 @@ describe("roguelike run lifecycle", () => {
       status: "active",
       flags: { treasureTaken: true },
       roomResetCounts: { room_a: 2 },
+      roomEventGenerationKeys: { map_blank_start: "run-save:4294967295:7:room_a:2" },
     };
 
     const restored = applySaveSnapshot(project, createSaveSnapshot(project, session)) as SessionWithRun;
 
     expect(restored.roguelikeRun).toEqual(session.roguelikeRun);
+  });
+
+  it("loads legacy version-one run saves without event generation markers", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    startRoguelikeRun(session, { seed: 5 });
+    const snapshot = createSaveSnapshot(project, session);
+    const legacyRun = snapshot.session.roguelikeRun as unknown as Record<string, unknown>;
+    delete legacyRun.roomEventGenerationKeys;
+
+    expect(applySaveSnapshot(project, snapshot).roguelikeRun?.roomEventGenerationKeys).toEqual({});
   });
 
   it("treats advance as forward-only and records the current room id on reset", () => {
