@@ -28,6 +28,7 @@ BTL_MAG   = '전투 · 마법'
 MON       = '몬스터 · 음성'
 ITEM      = '아이템 · 인벤토리'
 DOOR      = '문 · 자물쇠 · 상자'
+FOOT      = '환경 · 발소리'
 FOLEY     = '환경 · 폴리'
 JINGLE    = '징글 (ME)'
 
@@ -139,6 +140,61 @@ RULES = [
     (r'^oga-sfx/machine_(\d+)$',             FOLEY, '기계',            ['기계', 'machine']),
     (r'^oga-sfx/wooden_(\d+)$',              FOLEY, '나무',            ['나무', 'wooden']),
 ]
+
+# Kenney의 두 보강 팩. 원본 파일명이 용도와 재질을 명시하므로 그 정보만 번역해 쓴다.
+RULES += [
+    # RPG Audio: 장비·책·무기·문·발소리.
+    (r'^kenney-rpg/belthandle(\d+)$',          ITEM,    '벨트 다루기',      ['벨트', '장비', '가죽', 'belt']),
+    (r'^kenney-rpg/bookclose$',                 FOLEY,   '책 닫기',          ['책', '닫기', '종이', 'book']),
+    (r'^kenney-rpg/bookflip(\d+)$',            FOLEY,   '책장 넘기기',      ['책', '책장', '종이', 'book']),
+    (r'^kenney-rpg/bookopen$',                  FOLEY,   '책 열기',          ['책', '열기', '종이', 'book']),
+    (r'^kenney-rpg/bookplace(\d+)$',           FOLEY,   '책 놓기',          ['책', '놓기', '종이', 'book']),
+    (r'^kenney-rpg/chop$',                      BTL_HIT, '베기',             ['베기', '무기', '공격', 'chop']),
+    (r'^kenney-rpg/cloth(\d+)$',               ITEM,    '천 장비 다루기',   ['천', '장비', '옷', 'cloth']),
+    (r'^kenney-rpg/clothbelt(\d*)$',           ITEM,    '천 벨트 다루기',   ['천', '벨트', '장비', 'cloth']),
+    (r'^kenney-rpg/creak(\d+)$',               DOOR,    '삐걱임',           ['문', '바닥', '삐걱', 'creak']),
+    (r'^kenney-rpg/doorclose_(\d+)$',          DOOR,    '문 닫기',          ['문', '닫기', 'door']),
+    (r'^kenney-rpg/dooropen_(\d+)$',           DOOR,    '문 열기',          ['문', '열기', 'door']),
+    (r'^kenney-rpg/drawknife(\d+)$',           BTL_HIT, '단검 뽑기',        ['단검', '칼', '발도', 'knife']),
+    (r'^kenney-rpg/dropleather$',               ITEM,    '가죽 놓기',        ['가죽', '놓기', '장비', 'leather']),
+    (r'^kenney-rpg/footstep(\d+)$',            FOOT,    'RPG 발소리',       ['발소리', '걷기', '이동', 'footstep']),
+    (r'^kenney-rpg/handlecoins(\d*)$',         ITEM,    '동전 다루기',      ['동전', '골드', '구매', 'coin']),
+    (r'^kenney-rpg/handlesmallleather(\d*)$',  ITEM,    '작은 가죽 다루기', ['가죽', '장비', '아이템', 'leather']),
+    (r'^kenney-rpg/knifeslice(\d*)$',          BTL_HIT, '단검 베기',        ['단검', '칼', '베기', 'knife']),
+    (r'^kenney-rpg/metalclick$',                ITEM,    '금속 클릭',        ['금속', '장비', '클릭', 'metal']),
+    (r'^kenney-rpg/metallatch$',                ITEM,    '금속 걸쇠',        ['금속', '걸쇠', '잠금', 'latch']),
+    (r'^kenney-rpg/metalpot(\d+)$',            FOLEY,   '금속 냄비',        ['금속', '냄비', '그릇', 'pot']),
+    # Impact Sounds: 표면별 발소리와 전투 타격.
+    (r'^kenney-impact/footstep_carpet_(\d+)$',   FOOT,    '카펫 발소리',      ['발소리', '걷기', '카펫', 'carpet']),
+    (r'^kenney-impact/footstep_concrete_(\d+)$', FOOT,    '콘크리트 발소리',  ['발소리', '걷기', '콘크리트', 'concrete']),
+    (r'^kenney-impact/footstep_grass_(\d+)$',    FOOT,    '잔디 발소리',      ['발소리', '걷기', '잔디', '풀', 'grass']),
+    (r'^kenney-impact/footstep_snow_(\d+)$',     FOOT,    '눈밭 발소리',      ['발소리', '걷기', '눈', '설원', 'snow']),
+    (r'^kenney-impact/footstep_wood_(\d+)$',     FOOT,    '나무 발소리',      ['발소리', '걷기', '나무', 'wood']),
+    (r'^kenney-impact/impactgeneric_light_(\d+)$', BTL_HIT, '가벼운 일반 타격', ['타격', '공격', '가벼운', 'impact']),
+    (r'^kenney-impact/impactpunch_heavy_(\d+)$',   BTL_HIT, '강한 주먹 타격',   ['주먹', '타격', '공격', '강한', 'punch']),
+    (r'^kenney-impact/impactpunch_medium_(\d+)$',  BTL_HIT, '보통 주먹 타격',   ['주먹', '타격', '공격', '보통', 'punch']),
+    (r'^kenney-impact/impactmining_(\d+)$',      FOLEY,   '채굴 충격',        ['채굴', '광산', '곡괭이', '작업', 'mining']),
+]
+
+# 나머지 Impact Sounds는 재질과 강도를 조합해 같은 규칙으로 라벨링한다.
+for source, korean, tags in [
+    ('bell', '종', ['종', '벨']),
+    ('glass', '유리', ['유리']),
+    ('metal', '금속', ['금속']),
+    ('plank', '판자', ['판자', '나무']),
+    ('plate', '접시', ['접시', '그릇']),
+    ('soft', '부드러운 재질', ['천', '부드러운']),
+    ('tin', '양철', ['양철', '금속']),
+    ('wood', '나무', ['나무']),
+]:
+    for strength, strength_ko in [('heavy', '강한'), ('medium', '보통'), ('light', '가벼운')]:
+        RULES.append((
+            r'^kenney-impact/impact%s_%s_(\d+)$' % (source, strength),
+            FOLEY,
+            '%s %s 충격' % (strength_ko, korean),
+            ['충격', '환경', strength, source] + tags,
+        ))
+
 # place.py 가 파일명을 슬러그화해 '_' 를 '-' 로 바꾼다. 규칙은 '_' 로 쓰여 있으니
 # 매칭 직전에 양쪽을 '_' 한 표기로 정규화한다(패턴에 문자 클래스용 '-' 는 없다).
 COMPILED = [(re.compile(p.replace('-', '_')), c, n, t) for p, c, n, t in RULES]
@@ -147,6 +203,8 @@ PACK_SOURCE = {
     'kenney_interface-sounds': 'Kenney — Interface Sounds (CC0)',
     'kenney_ui-audio':         'Kenney — UI Audio (CC0)',
     'kenney_music-jingles':    'Kenney — Music Jingles (CC0)',
+    'kenney_rpg-audio':        'Kenney — RPG Audio (CC0)',
+    'kenney_impact-sounds':    'Kenney — Impact Sounds (CC0)',
     'rpg_sound_pack':          'artisticdude — RPG Sound Pack (OpenGameArt, CC0)',
     '80-CC0-RPG-SFX':          'rubberduck — 80 CC0 RPG SFX (OpenGameArt, CC0)',
     '100-CC0-SFX':             'rubberduck — 100 CC0 SFX (OpenGameArt, CC0)',
@@ -173,7 +231,11 @@ for p in placed:
             continue
         variant = m.group(1) if m.groups() and m.group(1) else ''
         num = int(variant) if variant.isdigit() else None
-        title = base if num is None else '%s %02d' % (base, num)
+        display_num = num
+        if (num is not None and variant.startswith('0') and
+                p['sourcePack'] in ('kenney_rpg-audio', 'kenney_impact-sounds')):
+            display_num += 1
+        title = base if display_num is None else '%s %02d' % (base, display_num)
         extra = []
         # 징글만 방향을 제목에 받는다. 다른 범주는 파일명이 이미 의미를 주므로(door_open,
         # coin) 방향을 달면 제목이 길어지기만 한다. 승리/실패/레벌업 같은 용도 판단은
@@ -194,7 +256,7 @@ for p in placed:
     else:
         unmatched.append(key)
 
-CAT_ORDER = [CUR_SEL, CUR_OK, CUR_WIN, CUR_WARN, CUR_TEX, BTL_HIT, BTL_MAG, MON, ITEM, DOOR, FOLEY, JINGLE]
+CAT_ORDER = [CUR_SEL, CUR_OK, CUR_WIN, CUR_WARN, CUR_TEX, BTL_HIT, BTL_MAG, MON, ITEM, DOOR, FOOT, FOLEY, JINGLE]
 
 # 카탈로그 순서 = 피커 그룹 순서. build-se-catalog.py 가 등장 순서를 그대로 쓰므로
 # 여기서 정렬해 두지 않으면 그룹 헤더가 파일 순서대로 뒤섞인다.
@@ -213,7 +275,7 @@ if unmatched:
         print('   ' + u)
 
 # ── 감독 청취용 오디션 페이지 ─────────────────────────────────────────────
-# 삼중 검산 결과가 있으면 불일치 항목을 맨 위 '우선 검수' 로 올린다. 감독이 456개를 전부
+# 삼중 검산 결과가 있으면 불일치 항목을 맨 위 '우선 검수' 로 올린다. 감독이 카탈로그 전체를
 # 들을 필요 없이 셋(내 측정 / codex / agy)이 어긋난 것만 듣게 하는 것이 목적이다.
 # 없으면 페이지는 예전과 동일하게 렌더된다(cross-check-se.py 는 선택 단계다).
 cross = {}
@@ -274,7 +336,7 @@ for c in CAT_ORDER:
         rows_html.append(audio_row(x))
     rows_html.append('</table>')
 
-page = """<!doctype html><meta charset="utf-8"><title>CC0 SE 오디션 — 456개</title>
+page = """<!doctype html><meta charset="utf-8"><title>CC0 SE 오디션 — %d개</title>
 <style>
  body{font:14px/1.5 system-ui,sans-serif;margin:0;padding:24px;background:#12141a;color:#e6e8ee}
  h1{font-size:20px} h2{margin:28px 0 8px;font-size:15px;color:#8ab4f8;border-bottom:1px solid #2a2f3a;padding-bottom:6px}
@@ -293,7 +355,7 @@ page = """<!doctype html><meta charset="utf-8"><title>CC0 SE 오디션 — 456�
  .bg.hard{background:#7c2d12;color:#fed7aa}
  .hint{color:#9aa4b2;margin:4px 0 10px;font-size:13px}
 </style>
-<h1>CC0 효과음 오디션 — 456개</h1>
+<h1>CC0 효과음 오디션 — %d개</h1>
 <div class="note"><b>라벨은 제안이다.</b> 파일명 의미 + 원본 팩 분류 + 측정한 길이만 근거로 붙였다
  (AI 는 소리를 못 듣는다). 실제 소리와 안 맞는 건 오른쪽 메모 칸에 고쳐 적어라 —
  그 내용으로 카탈로그를 재생성한다. 슬롯 배정(커서/결정/취소/레벨업 등)도 여기 적으면 된다.</div>
@@ -319,7 +381,7 @@ function dump(){ const seen=new Map();
  const t=JSON.stringify(out,null,1); navigator.clipboard.writeText(t);
  alert(out.length+'건 클립보드에 복사했다.\\n\\n'+t.slice(0,600)); }
 </script>
-""" % ('\n'.join(rows_html))
+""" % (len(labeled), len(labeled), '\n'.join(rows_html))
 
 open(os.path.join(HERE, 'audition.html'), 'w', encoding='utf-8').write(page)
 print('\n오디션 페이지: dist/se-staging/audition.html')

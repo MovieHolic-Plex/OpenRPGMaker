@@ -1,4 +1,4 @@
-# CC0 SE Catalog (456 sounds)
+# CC0 SE Catalog (635 sounds)
 
 The editor's **default sound-effect set**. Read this before touching SE defaults, the sound resource
 picker, or anything that resolves a `cc0-se-*` resource id.
@@ -17,19 +17,19 @@ wav files, not `.mid`. Three other things were wrong:
   catalog had already established that an author needs to search in Korean by scene; SE had none of
   that.
 
-This catalog is 456 CC0 sounds across 12 slot categories with Korean titles and search tags.
+This catalog is 635 CC0 sounds across 13 slot categories with Korean titles and search tags.
 
 ## Facts an agent needs
 
-- **License: CC0-1.0** for all 456. Attribution is not required; provenance is recorded in
+- **License: CC0-1.0** for all 635. Attribution is not required; provenance is recorded in
   `public/assets/ATTRIBUTION.md` so it stays re-verifiable.
-- **The files ARE in this repo** (`public/assets/se/`, 21.7MB). This is the opposite of the BGM
+- **The files ARE in this repo** (`public/assets/se/`, 23.35MB). This is the opposite of the BGM
   catalog and it removes a whole class of problems: no CDN module, no starter-track exception, no
   `legacyAudioRepair` equivalent, no "silent without CDN" failure mode.
 - **Files sit in per-pack subdirectories, not flat.** `metal_01` exists in *two* source packs; a flat
   layout would silently overwrite one. `test/seCatalog.test.ts` guards path uniqueness.
-- 5 packs are Ogg Vorbis; the artisticdude pack is WAV PCM16/24 and accounts for 15.3MB of the
-  21.7MB. There is no ffmpeg in this environment, so originals were committed byte-for-byte rather
+- 7 packs are Ogg Vorbis; the artisticdude pack is WAV PCM16/24 and accounts for 15.3MB of the
+  23.35MB. There is no ffmpeg in this environment, so originals were committed byte-for-byte rather
   than transcoded — same call as the BGM wav loop masters.
 - **EasyRPG RTP SE stays.** The picker lists the catalog first, RTP after (same ordering as BGM), so
   existing `easyrpg-sound-*` references keep resolving and no migration is needed.
@@ -41,7 +41,7 @@ This catalog is 456 CC0 sounds across 12 slot categories with Korean titles and 
 | `src/assets/seCatalogRuntime.ts` | **Generated.** id → `assets/se/...` path. Runtime-only, so editor metadata does not leak into the player bundle. |
 | `src/assets/seCatalog.ts` | **Generated.** Editor metadata: Korean title, category, base name, variant, duration, sha256, source, search tags. |
 | `src/assets/seCatalogResolver.ts` | Hand-written. id → URL glue for the shared resource resolver. No CDN — always a same-origin absolute path. |
-| `scripts/se/fetch-se-packs.py` | Downloads the 6 source zips, extracts, writes `inventory.json` (duration/channels/peak/RMS/sha256). |
+| `scripts/se/fetch-se-packs.py` | Downloads the 8 source zips, extracts, writes `inventory.json` (duration/channels/peak/RMS/sha256). |
 | `scripts/se/place-se-assets.py` | Staging → `public/assets/se/`, applies the exclusion rules, writes `placed.json`. |
 | `scripts/se/build-se-labels.py` | `placed.json` → `labels.json` + the audition page. |
 | `scripts/se/build-se-catalog.py` | `labels.json` → the two generated TS files. |
@@ -91,18 +91,21 @@ If that sort is removed, group headers appear in file order and repeat.
 | UI · 창 · 토글 | 44 |
 | UI · 경고 · 알림 | 18 |
 | UI · 질감 | 21 |
-| 전투 · 타격 | 21 |
+| 전투 · 타격 | 42 |
 | 전투 · 마법 | 11 |
 | 몬스터 · 음성 | 76 |
-| 아이템 · 인벤토리 | 39 |
-| 문 · 자물쇠 · 상자 | 14 |
-| 환경 · 폴리 | 84 |
+| 아이템 · 인벤토리 | 54 |
+| 문 · 자물쇠 · 상자 | 23 |
+| 환경 · 발소리 | 33 |
+| 환경 · 폴리 | 185 |
 | 징글 (ME) | 85 |
 
 ## Triple cross-check: which sounds actually need human ears
 
-The labels below can be wrong about the real sound, and nobody will audition 456 files for fun. This
-is how the list gets cut to something a human actually listens to.
+The labels below can be wrong about the real sound, and nobody will audition 635 files for fun. This
+is how the list gets cut to something a human actually listens to. The 2026-08-23 reviewer pass
+covers the original 456-sound corpus only; the 179 sounds added on 2026-08-24 have filename-grounded
+labels and remain available in the audition page, but are not included in the historical ratios below.
 
 Three independent readings of the same audio:
 
@@ -124,7 +127,7 @@ python scripts/se/cross-check-se.py                # cross-check.json
 python scripts/se/build-se-labels.py               # audition.html 맨 위에 우선 검수 섹션
 ```
 
-### What it measured (2026-08-23, all 456, both reviewers covering all 16 sheets)
+### What it measured (2026-08-23, original 456 only, both reviewers covering all 16 sheets)
 
 | Axis | My rule vs a reviewer | Reviewer vs reviewer |
 | --- | --- | --- |
@@ -187,7 +190,7 @@ Two consequences:
   `coin`) and a direction would just lengthen the label.
 - Any label may be wrong about the actual sound.
 
-`build-se-labels.py` therefore also writes `dist/se-staging/audition.html` — all 456 playable in one
+`build-se-labels.py` therefore also writes `dist/se-staging/audition.html` — all 635 playable in one
 page grouped by proposed category, with a per-row memo field and a "copy corrections as JSON"
 button. It uses relative paths so it opens over `file://` with no server. Corrections go back into
 the `RULES` table in `build-se-labels.py`, then re-run the last two scripts.
@@ -198,7 +201,7 @@ the `RULES` table in `build-se-labels.py`, then re-run the last two scripts.
   EasyRPG RTP. Labels are `title — category (s)`. Options carry `searchTerms` (tags + category +
   base name) so "결정", "동전", or "포효" all hit.
 - **Event `playAudio` form** consumes that same `listDatabaseResourceOptions()` result instead of
-  maintaining a second audio list. Its inline select therefore exposes all 456 CC0 sounds in the
+  maintaining a second audio list. Its inline select therefore exposes all 635 CC0 sounds in the
   same order, accepts the same scene/action tags (for example "구매"), shows the filtered count,
   and keeps generated/uploaded sound resources reachable. The command palette's separate
   **BGM 재생** and **SE 재생** entries must preserve the selected channel when the edit form opens.
@@ -219,6 +222,6 @@ the `RULES` table in `build-se-labels.py`, then re-run the last two scripts.
 - **Deployment needs nothing extra.** `app/assets/[...path]/route.ts` on the community site serves
   the editor's `public/` directly and `lib/staticFile.ts` already maps `.ogg`/`.wav`/`.mp3`.
   `src/player/runtimeAssets.json` is a release **integrity contract**, not a serving allowlist —
-  audio has never been in it (nor have the CC0 BGM five or the RTP 96). Adding 456 paths there would
-  grow it 18→474 and make every release rehash them, with `runtime-assets-stale` failing the release
+  audio has never been in it (nor have the CC0 BGM five or the RTP 96). Adding 635 paths there would
+  grow it 18→653 and make every release rehash them, with `runtime-assets-stale` failing the release
   on any drift.

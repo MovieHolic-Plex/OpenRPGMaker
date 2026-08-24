@@ -141,7 +141,7 @@
 - 배선 문서: `openwiki/bgm-catalog.md`
 
 
-## CC0 효과음 카탈로그 (456개) — 2026-08-21 추가
+## CC0 효과음 카탈로그 (635개) — 2026-08-21 추가, 2026-08-24 보강
 
 **왜 추가했는가:** 기존 효과음은 EasyRPG RTP 96개(`public/assets/easyrpg/sound/*.wav`)뿐이었다.
 그건 재생은 되지만 **CC-BY 4.0 이라 표기 의무가 있고**, RM2K 전투 표준 세트라 UI·문·발소리·폴리가
@@ -149,7 +149,7 @@
 찾을 수 없었다. 이 카탈로그는 **전량 CC0** 이고 장면·슬롯별로 한국어 라벨이 붙는다.
 
 - License: **CC0 1.0 Universal** (public domain dedication). 표기 의무는 없으나 출처 재검증을 위해 남긴다.
-- 규모: 456개 / 21.7MB. 원본 6개 팩에서 514개를 받아 58개를 제외했다.
+- 규모: 635개 / 23.35MB. 원본 8개 팩에서 696개를 받아 61개를 제외했다.
 - 로컬 경로 `public/assets/se/` 하위 (팩별 디렉터리로 분리 — `metal_01` 처럼 팩 간 파일명이
   충돌하는 사례가 있어 평면 배치가 불가능하다):
 
@@ -158,15 +158,17 @@
 | `kenney-interface/` | 100 | Kenney — Interface Sounds | https://kenney.nl/assets/interface-sounds |
 | `kenney-ui/` | 13 | Kenney — UI Audio | https://kenney.nl/assets/ui-audio |
 | `kenney-jingles/` | 85 | Kenney — Music Jingles | https://kenney.nl/assets/music-jingles |
+| `kenney-rpg/` | 51 | Kenney — RPG Audio | https://kenney.nl/assets/rpg-audio |
+| `kenney-impact/` | 128 | Kenney — Impact Sounds | https://kenney.nl/assets/impact-sounds |
 | `oga-rpg-pack/` | 96 | **artisticdude** — RPG Sound Pack | https://opengameart.org/content/rpg-sound-pack |
 | `oga-rpg-sfx/` | 80 | **rubberduck** — 80 CC0 RPG SFX | https://opengameart.org/content/80-cc0-rpg-sfx |
 | `oga-sfx/` | 82 | **rubberduck** — 100 CC0 SFX | https://opengameart.org/content/100-cc0-sfx |
 
-- 포맷: Kenney/OGA 5팩은 Ogg Vorbis(44.1/48kHz), artisticdude 팩만 WAV PCM16/24(15.3MB 중 대부분).
+- 포맷: Kenney/OGA 7팩은 Ogg Vorbis(44.1/48kHz), artisticdude 팩만 WAV PCM16/24(15.3MB 중 대부분).
   이 환경에 ffmpeg 가 없어 **트랜스코딩하지 않고 원본 바이트를 그대로 커밋했다** — BGM 의 wav
   루프 마스터와 같은 판단이다(sha256 재검증이 가능한 쪽을 택함).
 
-**제외한 58개와 그 근거** (되돌릴 수 있게 이유를 남긴다):
+**제외한 61개와 그 근거** (되돌릴 수 있게 이유를 남긴다):
 
 | 개수 | 대상 | 근거 |
 | --- | --- | --- |
@@ -174,12 +176,13 @@
 | 14 | `100-CC0-SFX` 의 `other_*`(7) `weird_*`(5) `noise_*`(2) | 의미 불명 — 라벨 근거 없음 |
 | 2 | `toilet_01` `toilet_02` | RPG 에디터 기본 세트에 부적절 |
 | 2 | `microwave_door_open/close` | 현대 가전 — RPG 무관 |
-| 2 | `Preview.ogg` (ui-audio, music-jingles) | 팩 전체를 이어붙인 13~14초 프리뷰. 개별 SE 가 아니다 |
+| 3 | `Preview.ogg` (ui-audio, music-jingles, rpg-audio) | 팩 전체를 이어붙인 13~26초 프리뷰. 개별 SE 가 아니다 |
+| 2 | `kenney_impact-sounds`의 `footstep_carpet_002`, `004` | 각각 `001`, `003`과 sha256이 같은 완전 중복. 피커에 같은 소리를 두 번 노출하지 않는다 |
 
 - 라벨링 근거의 한계: 라벨은 **원본 파일명 의미 + 원본 팩의 폴더 분류 + 측정값(길이/피크/RMS)**
   으로만 붙였다. AI 는 소리를 들을 수 없으므로 음색 형용사를 지어내지 않았다. `kenney-jingles` 는
   파일명이 `jingles_NES00` 처럼 번호뿐이어서 폴더가 주는 음색(8비트/히트/피치카토/색소폰/스틸드럼)
   까지만 라벨에 반영했다 — 어느 징글이 승리·실패·레벨업인지는 감독이 듣고 배정해야 한다.
-  청취·수정용 페이지를 함께 생성한다(`dist/se-staging/audition.html`, 456개 전곡 재생).
+  청취·수정용 페이지를 함께 생성한다(`dist/se-staging/audition.html`, 635개 전곡 재생).
 - EasyRPG RTP SE 96개는 **유지한다.** 피커에서 CC0 카탈로그가 앞에 오고 RTP 가 뒤에 온다
   (BGM 과 같은 서열) — 기존 프로젝트의 `easyrpg-sound-*` 참조가 깨지지 않는다.

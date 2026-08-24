@@ -19,6 +19,8 @@ GROUPS = {
     'kenney_interface-sounds': ('kenney-interface', 'kif'),
     'kenney_ui-audio':         ('kenney-ui',        'kui'),
     'kenney_music-jingles':    ('kenney-jingles',   'kjg'),
+    'kenney_rpg-audio':        ('kenney-rpg',       'kra'),
+    'kenney_impact-sounds':    ('kenney-impact',    'kis'),
     'rpg_sound_pack':          ('oga-rpg-pack',     'orp'),
     '80-CC0-RPG-SFX':          ('oga-rpg-sfx',      'ors'),
     '100-CC0-SFX':             ('oga-sfx',          'osx'),
@@ -33,6 +35,7 @@ EXCLUDE = [
 ]
 # ui-audio 의 switch1~38: 이름에 정보가 0이고 kenney-interface 와 기능 중복. 보류.
 EXCLUDE_UI_SWITCH = re.compile(r'^Audio/switch\d+\.ogg$')
+EXCLUDE_IMPACT_DUPLICATE = re.compile(r'^Audio/footstep_carpet_(002|004)\.ogg$')
 
 
 def excuse(pack, rel):
@@ -41,6 +44,8 @@ def excuse(pack, rel):
             return why
     if pack == 'kenney_ui-audio' and EXCLUDE_UI_SWITCH.match(rel):
         return 'switch1~38: 이름에 의미 정보가 없고 kenney-interface 와 기능 중복 - 보류'
+    if pack == 'kenney_impact-sounds' and EXCLUDE_IMPACT_DUPLICATE.match(rel):
+        return '카펫 발소리 002/004: 각각 001/003과 sha256이 같은 완전 중복 - 제외'
     return None
 
 
