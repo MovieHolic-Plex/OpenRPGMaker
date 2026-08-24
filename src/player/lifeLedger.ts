@@ -7,9 +7,11 @@ import { depositShipping, withdrawShipping } from "@/project/shipping";
 import { resolveSellPrice } from "@/project/upgrades";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
+import { orientedFootprint } from "@/project/spatialPlacements";
+import { rotateHomeDecoration, upgradeFarmBuilding } from "@/project/spatialPlacementTransactions";
 import type { StatusMenuDetail, StatusMenuDetailEntry } from "@/player/playerStatusMenuDetailTypes";
 
-export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals"] as const;
+export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals", "spaces"] as const;
 export type LifeLedgerTabId = (typeof LIFE_LEDGER_TAB_IDS)[number];
 
 const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
@@ -18,6 +20,7 @@ const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
   skills: "기술",
   makers: "가공 설비",
   animals: "동물 돌봄",
+  spaces: "건물·꾸미기",
 };
 
 const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
@@ -26,6 +29,7 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   skills: FARMING_LIFE_UI_ASSETS.fishing,
   makers: FARMING_LIFE_UI_ASSETS.makers,
   animals: FARMING_LIFE_UI_ASSETS.animals,
+  spaces: "/assets/farming/life-ui/decorating-card.png",
 };
 
 export function hasLifeLedgerData(project: Project): boolean {
@@ -35,7 +39,11 @@ export function hasLifeLedgerData(project: Project): boolean {
     || (project.system.makers?.length ?? 0) > 0
     || (project.database.farmAnimalSpecies?.length ?? 0) > 0
     || (project.system.farmAnimalBuildings?.length ?? 0) > 0
-    || (project.session.farmAnimals?.length ?? 0) > 0;
+    || (project.session.farmAnimals?.length ?? 0) > 0
+    || (project.database.farmBuildingTypes?.length ?? 0) > 0
+    || (project.database.homeDecorationTypes?.length ?? 0) > 0
+    || (project.session.farmBuildingPlacements?.length ?? 0) > 0
+    || (project.session.homeDecorationPlacements?.length ?? 0) > 0;
 }
 
 export function createLifeLedgerDetail(options: {
@@ -75,7 +83,84 @@ function tabContent(
     case "skills": return skillEntries(project, session);
     case "makers": return makerEntries(project, session, onMutation);
     case "animals": return animalEntries(project, session, onMutation);
+    case "spaces": return spatialEntries(project, session, onMutation);
   }
+}
+
+function spatialEntries(
+  project: Project,
+  session: PlaySession,
+  onMutation?: (ok: boolean, message: string) => void,
+): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
+  const entries: StatusMenuDetailEntry[] = [];
+  for (const placement of Object.values(session.farmBuildingPlacements ?? {})) {
+    const type = project.database.farmBuildingTypes?.find((candidate) => candidate.id === placement.typeId);
+    const level = type?.levels.find((candidate) => candidate.level === placement.level);
+    const map = project.maps[placement.mapId];
+    entries.push({
+      label: type?.name ?? `${placement.typeId} (삭제된 유형)`,
+      value: level ? `Lv.${placement.level} · 수용량 ${level.capacity}` : `Lv.${placement.level}`,
+      description: `${map?.name ?? placement.mapId} (${placement.x}, ${placement.y}) · ${orientationLabel(placement.orientation)}`,
+      testId: `life-ledger-space-building-${placement.instanceId}`,
+      disabled: true,
+    });
+    const nextLevel = type?.levels.find((candidate) => candidate.level === placement.level + 1);
+    if (nextLevel) {
+      entries.push({
+        label: `${type?.name ?? placement.typeId} 업그레이드`,
+        value: `Lv.${nextLevel.level} · 수용량 ${nextLevel.capacity}`,
+        description: spatialCostLabel(project, nextLevel.cost),
+        testId: `life-ledger-space-building-upgrade-${placement.instanceId}`,
+        disabled: false,
+        onActivate: () => notify(
+          onMutation,
+          upgradeFarmBuilding(project, session, placement.instanceId),
+          `${type?.name ?? placement.typeId}을(를) 업그레이드했습니다`,
+        ),
+      });
+    }
+  }
+  for (const placement of Object.values(session.homeDecorationPlacements ?? {})) {
+    const type = project.database.homeDecorationTypes?.find((candidate) => candidate.id === placement.typeId);
+    const map = project.maps[placement.mapId];
+    const footprint = type ? orientedFootprint(type.footprint, placement.orientation) : undefined;
+    entries.push({
+      label: type?.name ?? `${placement.typeId} (삭제된 유형)`,
+      value: `${orientationLabel(placement.orientation)}${footprint ? ` · ${footprint.width}×${footprint.height}` : ""}`,
+      description: `${map?.name ?? placement.mapId} (${placement.x}, ${placement.y})`,
+      testId: `life-ledger-space-decoration-${placement.instanceId}`,
+      disabled: true,
+    });
+    if (type && type.allowedOrientations.length > 1) {
+      const currentIndex = type.allowedOrientations.indexOf(placement.orientation);
+      const nextOrientation = type.allowedOrientations[(currentIndex + 1) % type.allowedOrientations.length] ?? type.allowedOrientations[0]!;
+      entries.push({
+        label: `${type.name} 회전`,
+        value: `${orientationLabel(nextOrientation)}으로 돌리기`,
+        testId: `life-ledger-space-decoration-rotate-${placement.instanceId}`,
+        disabled: false,
+        onActivate: () => notify(
+          onMutation,
+          rotateHomeDecoration(project, session, placement.instanceId, nextOrientation),
+          `${type.name}을(를) 회전했습니다`,
+        ),
+      });
+    }
+  }
+  return { entries, emptyLabel: "배치된 범용 건물이나 집 장식이 없습니다" };
+}
+
+function spatialCostLabel(project: Project, cost: import("@/project/types").SpatialPlacementCost | undefined): string {
+  if (!cost) return "추가 비용 없음";
+  const parts = [
+    ...(cost.gold ? [`${cost.gold}G`] : []),
+    ...(cost.items ?? []).map((item) => `${itemName(project, item.itemId)} ${item.count}개`),
+  ];
+  return parts.join(" · ") || "추가 비용 없음";
+}
+
+function orientationLabel(value: import("@/project/types").Dir): string {
+  return ({ down: "아래", left: "왼쪽", right: "오른쪽", up: "위" } as const)[value];
 }
 
 function animalEntries(
