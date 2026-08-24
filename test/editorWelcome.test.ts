@@ -20,6 +20,20 @@ function clearStorage(): void {
   }
 }
 
+function installMemoryStorage(): void {
+  const entries = new Map<string, string>();
+  const storage: Storage = {
+    get length() { return entries.size; },
+    clear: () => entries.clear(),
+    getItem: (key) => entries.get(key) ?? null,
+    key: (index) => Array.from(entries.keys())[index] ?? null,
+    removeItem: (key) => { entries.delete(key); },
+    setItem: (key, value) => { entries.set(key, value); },
+  };
+  Object.defineProperty(window, "localStorage", { configurable: true, value: storage });
+  vi.stubGlobal("localStorage", storage);
+}
+
 function setMatchMedia(matches: boolean): void {
   Object.defineProperty(window, "matchMedia", {
     configurable: true,
@@ -38,6 +52,7 @@ function setMatchMedia(matches: boolean): void {
 }
 
 beforeEach(() => {
+  installMemoryStorage();
   clearStorage();
   document.body.replaceChildren();
   vi.useRealTimers();
@@ -57,6 +72,7 @@ afterEach(() => {
   document.body.classList.remove("director-briefing-open");
   delete (window as Window & { __RPG_ZZU_E2E_PROJECT__?: unknown }).__RPG_ZZU_E2E_PROJECT__;
   window.history.replaceState({}, "", "/");
+  vi.unstubAllGlobals();
 });
 
 describe("editor welcome dismiss storage", () => {

@@ -417,6 +417,7 @@ class ProjectStore {
       current: this.current,
       dirtySinceLastPersist: this.dirtySinceLastPersist,
       loaded: this.loaded,
+      loadedRemoteProjectId: this.loadedRemoteProjectId,
       mutationGeneration: this.mutationGeneration,
       persistedBaseline: this.persistedBaseline,
       remotePersistenceDisabledReason: this.remotePersistenceDisabledReason,
@@ -453,10 +454,12 @@ class ProjectStore {
       resetManualProjectCommitBaseline(this.current);
       syncProjectToUrl({ projectId, projectName: reloaded.meta?.title ?? null });
       stagedConfig.commit();
+      this.loadedRemoteProjectId = projectId;
     } catch (error) {
       this.current = localSnapshot.current;
       this.persistedBaseline = localSnapshot.persistedBaseline;
       this.loaded = localSnapshot.loaded;
+      this.loadedRemoteProjectId = localSnapshot.loadedRemoteProjectId;
       this.remotePersistenceEnabled = localSnapshot.remotePersistenceEnabled;
       this.remotePersistenceDisabledReason = localSnapshot.remotePersistenceDisabledReason;
       this.dirtySinceLastPersist = localSnapshot.dirtySinceLastPersist;

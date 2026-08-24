@@ -13,6 +13,7 @@ type TransactionDependencies = {
 };
 
 type TransactionalStore = {
+  getProjectIdentity(): { readonly kind: "remote" | "local-session"; readonly id: string };
   loadNewRemoteProjectTransactionally(
     project: Project,
     options: { readonly title?: string },
@@ -180,6 +181,7 @@ describe("transactional new remote project switch", () => {
     });
     expect(order).toEqual(["flush", "save", "reload"]);
     expect((store as unknown as { getCurrent(): Project }).getCurrent().meta.title).toBe("Candidate");
+    expect(store.getProjectIdentity()).toEqual({ kind: "remote", id: "oprn-new-target" });
     expect(location.search).toContain("project=oprn-new-target");
   });
 

@@ -1,13 +1,9 @@
-/** Persisted Phase 4 pack identifiers. Keep this leaf module easy to replace with the Phase 2 registry adapter. */
-export const OFFICIAL_GENRE_PACK_IDS = [
-  "adventure-jrpg",
-  "monster-collect",
-  "horror-chase",
-  "story-cutscene",
-  "farm-life",
-] as const;
+/** Phase 4 adapter over the shared persisted pack-id SSOT. */
+import { GENRE_PACK_IDS, type GenrePackId } from "@/project/genrePackId";
 
-export type OfficialGenrePackId = (typeof OFFICIAL_GENRE_PACK_IDS)[number];
+export const OFFICIAL_GENRE_PACK_IDS = GENRE_PACK_IDS;
+
+export type OfficialGenrePackId = GenrePackId;
 
 export function isOfficialGenrePackId(value: string): value is OfficialGenrePackId {
   return (OFFICIAL_GENRE_PACK_IDS as readonly string[]).includes(value);
