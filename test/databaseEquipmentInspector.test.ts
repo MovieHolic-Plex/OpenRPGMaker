@@ -110,6 +110,7 @@ describe("equipment inspector header", () => {
 
     const form = renderForm();
     const resultHost = byTestId(form, "db-equipment-comparison-result");
+    expect(resultHost.textContent).toContain("빈 부위에 장착");
     expect(byTestId(form, "db-equipment-comparison-delta-attack").textContent).toContain("+8");
 
     const attack = byTestId(form, "db-field-equipment-attack");
@@ -118,6 +119,21 @@ describe("equipment inspector header", () => {
 
     expect(findByTestId(form, "db-equipment-comparison-result")).toBe(resultHost);
     expect(byTestId(form, "db-equipment-comparison-delta-attack").textContent).toContain("+20");
+  });
+
+  // Break caught: an already-equipped candidate must not reuse the empty-slot fallback copy.
+  it("labels an already-equipped candidate instead of claiming the slot is empty", () => {
+    const project = store.getCurrent();
+    const equipment = project.database.equipment[0]!;
+    const actor = project.database.actors[0]!;
+    equipment.equippableActorIds = [actor.id];
+    equipment.equippableClassIds = [];
+    actor.initialEquipment = { weapon: equipment.id };
+
+    const resultHost = byTestId(renderForm(), "db-equipment-comparison-result");
+
+    expect(resultHost.textContent).toContain("이미 착용 중");
+    expect(resultHost.textContent).not.toContain("빈 부위에 장착");
   });
 
   it("renders a named effect story beside the existing summary chips", () => {

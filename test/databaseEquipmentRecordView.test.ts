@@ -183,6 +183,28 @@ describe("equipmentEffectStory and actor comparison (pure)", () => {
     expect(comparison?.deltas).toEqual({ attack: 12, defense: -5, mind: 0, agility: 0 });
   });
 
+  // Break caught: no removed equipment does not imply an empty slot when the candidate is
+  // already present in the actor's effective initial loadout.
+  it("marks a candidate already equipped in the actor's effective initial loadout", () => {
+    const project = store.getCurrent();
+    const actor = project.database.actors[0]!;
+    const candidate = normalizeEquipmentRecord({
+      id: "equip_already_worn",
+      name: "착용 중인 검",
+      slot: "weapon",
+      statBonuses: { attack: 9, defense: 0, mind: 0, agility: 0 },
+      equippableActorIds: [actor.id],
+    });
+    actor.initialEquipment = { weapon: candidate.id };
+    project.database.equipment = [candidate];
+
+    const comparison = equipmentActorComparison(project, candidate, actor.id);
+
+    expect(comparison?.alreadyEquipped).toBe(true);
+    expect(comparison?.replacedEquipmentNames).toEqual([]);
+    expect(comparison?.deltas).toEqual({ attack: 0, defense: 0, mind: 0, agility: 0 });
+  });
+
   // Break caught: a stat preview must not imply that a disallowed actor can equip the item.
   it("reports the runtime not-equippable reason without invented deltas", () => {
     const project = store.getCurrent();
