@@ -29,6 +29,7 @@ afterEach(() => {
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe("온라인 저장 상태 칩", () => {
@@ -49,23 +50,52 @@ describe("온라인 저장 상태 칩", () => {
     expect(findByTestId(body, "db-config-modal")).toBeTruthy();
   });
 
-  it("첫 진입에서는 작업 선택을 먼저 보여주고 연결 정보는 고급 설정에 숨긴다", () => {
+  it("첫 진입에서는 작업 선택과 새 작업만 보여주고 연결 자격 증명 입력은 만들지 않는다", () => {
     // Given: 프로젝트를 열기 위해 반드시 온보딩을 거쳐야 하는 상태.
     const body = document.body as unknown as FakeElement;
 
     // When: 필수 작업 선택 화면을 연다.
     openDbConnectionSettings(() => undefined, { required: true });
 
-    // Then: 작업 목록이 기본이고 기술 입력은 닫힌 고급 설정 안에 있다.
+    // Then: 작업 선택과 새 작업만 있고 URL·키·project ID 입력은 DOM에도 만들지 않는다.
     const title = findByTestId(body, "db-config-title");
     expect(title).toBeTruthy();
     expect(title?.textContent ?? "").toContain("작업");
     expect(findByTestId(body, "db-config-project-picker")).toBeTruthy();
-    const advanced = findByTestId(body, "db-config-advanced");
-    expect(advanced?.tagName.toLowerCase()).toBe("details");
-    expect(advanced?.getAttribute("open")).toBeNull();
-    expect(findByTestId(body, "db-config-url")).toBeTruthy();
-    expect(findByTestId(body, "db-config-anon-key")).toBeTruthy();
+    expect(findByTestId(body, "db-config-create-project")).toBeTruthy();
+    expect(findByTestId(body, "db-config-advanced")).toBeNull();
+    expect(findByTestId(body, "db-config-url")).toBeNull();
+    expect(findByTestId(body, "db-config-anon-key")).toBeNull();
+    expect(findByTestId(body, "db-config-project-id")).toBeNull();
+  });
+
+  it("새 작업은 원격 저장까지 성공해야 열린 것으로 처리한다", async () => {
+    vi.stubEnv("VITE_SUPABASE_URL", "https://deployment.example");
+    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "deployment-key");
+    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "deployment-default");
+    const create = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "new-project" });
+    const flush = vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
+    const body = document.body as unknown as FakeElement;
+
+    openDbConnectionSettings(() => undefined, { autoLoadProjects: false, required: true });
+    findByTestId(body, "db-config-create-project")?.click();
+
+    await vi.waitFor(() => expect(create).toHaveBeenCalledTimes(1));
+    await vi.waitFor(() => expect(flush).toHaveBeenCalledTimes(1));
+    expect(findByTestId(body, "db-config-modal")).toBeTruthy();
+    expect(findByTestId(body, "db-config-status-line")?.textContent ?? "").toContain("저장하지 못했습니다");
+  });
+
+  it("온라인 저장이 준비되지 않아도 서버 주소나 접속 키를 사용자에게 요구하지 않는다", () => {
+    const chip = renderWithFakeDom(() => renderDbConnectionStatus({
+      kind: "not-configured",
+      missing: ["url", "anonKey"],
+      projectId: "deployment-default",
+      source: "env",
+    }, () => undefined));
+
+    expect(chip.textContent).toContain("준비 안 됨");
+    expect(chip.getAttribute("title") ?? "").not.toMatch(/서버 주소|접속 키|Anon|URL/ui);
   });
 
   it("저장 오류 원문을 숨기고 다시 저장을 별도 버튼으로 제공한다", () => {

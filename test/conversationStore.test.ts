@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AuditEntry } from "@/ai/assistantSession";
+import { recordSupabaseConversation } from "@/project/supabaseProjectSync";
 import {
   clearConversations,
   deleteConversation,
@@ -10,6 +11,12 @@ import {
   searchConversations,
   type ConversationRecord,
 } from "@/ai/conversationStore";
+
+vi.mock("@/project/supabaseProjectSync", () => ({
+  recordSupabaseConversation: vi.fn(),
+}));
+
+const recordSupabaseConversationMock = vi.mocked(recordSupabaseConversation);
 
 const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(globalThis, "localStorage");
 
@@ -50,6 +57,8 @@ function record(id: string, savedAt: number, entries: readonly AuditEntry[] = [u
 }
 
 beforeEach(() => {
+  recordSupabaseConversationMock.mockReset();
+  recordSupabaseConversationMock.mockResolvedValue({ kind: "not-configured" });
   Object.defineProperty(globalThis, "localStorage", {
     configurable: true,
     writable: true,
@@ -58,6 +67,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  vi.restoreAllMocks();
   if (originalLocalStorageDescriptor) {
     Object.defineProperty(globalThis, "localStorage", originalLocalStorageDescriptor);
     return;
@@ -159,5 +169,18 @@ describe("conversationStore", () => {
 
     expect(listConversations()).toEqual([]);
     expect(loadConversation("missing-storage")).toBeNull();
+  });
+
+  it("Given a remote mirror failure When saving Then the failure is visible without losing the local record", async () => {
+    const failure = new Error("missing ai_conversations migration");
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+    recordSupabaseConversationMock.mockRejectedValueOnce(failure);
+
+    saveConversation(record("remote-failure", 400));
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(loadConversation("remote-failure")?.id).toBe("remote-failure");
+    expect(consoleError).toHaveBeenCalledWith("[ai-conversation] Supabase mirror failed:", failure);
   });
 });

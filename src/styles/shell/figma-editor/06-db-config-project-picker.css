@@ -61,29 +61,6 @@
     letter-spacing: 0.08em;
   }
 
-  .db-config-field {
-    color: var(--editor-text-muted);
-    display: grid;
-    font-size: 12px;
-    font-weight: 700;
-    gap: 5px;
-  }
-
-  .db-config-field input {
-    background: var(--bg-inset);
-    border: 1px solid var(--editor-line-strong);
-    border-radius: 6px;
-    color: var(--editor-text);
-    font: 13px var(--font-mono);
-    height: 32px;
-    padding: 0 10px;
-  }
-
-  .db-config-field input:focus-visible {
-    border-color: var(--editor-blue);
-    outline: 2px solid var(--accent-muted);
-  }
-
   .db-config-status-line {
     color: var(--editor-text-muted);
     font-size: 12px;
@@ -110,9 +87,14 @@
     justify-content: space-between;
   }
 
-  .db-config-project-picker-header > div {
+  .db-config-project-picker-header > div:first-child {
     display: grid;
     gap: 2px;
+  }
+
+  .db-config-project-picker-actions {
+    display: flex;
+    gap: 8px;
   }
 
   .db-config-project-picker-header strong {
@@ -259,6 +241,54 @@
 
   .db-config-project-when {
     margin-left: auto;
+  }
+
+  .db-config-actions {
+    align-items: center;
+    color: var(--editor-text-muted);
+    display: flex;
+    font-size: 11px;
+    gap: 8px;
+    justify-content: space-between;
+    margin-top: 2px;
+  }
+
+  .db-config-actions .btn {
+    height: 30px;
+    min-width: 72px;
+    padding: 0 12px;
+  }
+
+  @media (max-width: 640px) {
+    .db-config-window {
+      max-height: calc(100dvh - 16px);
+      max-width: calc(100vw - 16px);
+    }
+
+    .db-config-body {
+      padding: 12px;
+    }
+
+    .db-config-project-list {
+      grid-template-columns: 1fr;
+    }
+
+    .db-config-project-picker-header,
+    .db-config-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .db-config-project-picker-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .db-config-project-picker-header .btn,
+    .db-config-actions .btn {
+      min-height: 36px;
+      width: 100%;
+    }
   }
 
   .map-context-menu-item,
