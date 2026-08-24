@@ -14,7 +14,7 @@ import type {
   Project,
   WorldUnlockDefinition,
 } from "@/project/types";
-import type { ItemUpgradeRule, SellPriceEntry } from "@/project/upgrades";
+import { TOOL_CAPABILITY_AXIS_MAX, type ItemUpgradeRule, type SellPriceEntry } from "@/project/upgrades";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -218,8 +218,8 @@ function upgradeForm(record: ItemUpgradeRule, index: number, rerender: () => voi
       rerender();
     }),
     ...(record.capability ? [
-      numberControl("효과 가로 칸", "db-life-upgrade-area-width", record.capability.areaWidth, (value) => updateUpgradeCapability(index, { areaWidth: positiveInteger(value) })),
-      numberControl("효과 세로 칸", "db-life-upgrade-area-height", record.capability.areaHeight, (value) => updateUpgradeCapability(index, { areaHeight: positiveInteger(value) })),
+      numberControl("효과 가로 칸", "db-life-upgrade-area-width", record.capability.areaWidth, (value) => updateUpgradeCapability(index, { areaWidth: boundedInteger(value, 1, TOOL_CAPABILITY_AXIS_MAX) })),
+      numberControl("효과 세로 칸", "db-life-upgrade-area-height", record.capability.areaHeight, (value) => updateUpgradeCapability(index, { areaHeight: boundedInteger(value, 1, TOOL_CAPABILITY_AXIS_MAX) })),
       decimalControl("에너지 배율", "db-life-upgrade-energy-multiplier", record.capability.energyMultiplier, (value) => updateUpgradeCapability(index, { energyMultiplier: positiveNumber(value) })),
     ] : []),
     ingredientEditor("강화 재료", "db-life-upgrade", record.ingredients ?? [], (ingredients, shouldRender = false) => {
@@ -600,7 +600,33 @@ function updateUniqueId(section: Exclude<RecordSection, "sellPrices">, index: nu
     toast(`이미 사용 중인 ID입니다: ${id}`);
     return;
   }
+  if (id !== fallback) {
+    const referenceMessage = idRenameReferenceMessage(store.getCurrent(), section, fallback);
+    if (referenceMessage) {
+      toast(referenceMessage);
+      return;
+    }
+  }
   updateRecord(section, index, { id } as Partial<LifeRecord>);
+}
+
+function idRenameReferenceMessage(project: Project, section: Exclude<RecordSection, "sellPrices">, id: string): string | undefined {
+  const commandCollection = section === "skills" ? "lifeSkills" : section === "recipes" ? "craftRecipes" : section === "upgrades" ? "itemUpgrades" : undefined;
+  if (commandCollection) {
+    const locations = commandsReferenceLocations(project, commandCollection, id);
+    if (locations.length > 0) return `이벤트 명령 ${locations.length}곳에서 이 ID를 사용 중입니다.`;
+  }
+  if (section === "recipes") {
+    const skill = (project.database.lifeSkills ?? []).find((entry) => entry.levelUpRewards.some((reward) => reward.recipeId === id));
+    if (skill) return `생활 기술 '${skill.name}'의 레벨 보상에서 이 ID를 사용 중입니다.`;
+    const bundle = (project.system.bundles ?? []).find((entry) => entry.reward?.recipeIds?.includes(id));
+    if (bundle) return `꾸러미 '${bundle.name ?? bundle.id}'의 보상에서 이 ID를 사용 중입니다.`;
+  }
+  if (section === "worldUnlocks") {
+    const bundle = (project.system.bundles ?? []).find((entry) => entry.reward?.worldUnlockIds?.includes(id));
+    if (bundle) return `꾸러미 '${bundle.name ?? bundle.id}'의 보상에서 이 ID를 사용 중입니다.`;
+  }
+  return undefined;
 }
 
 function updateRecord(section: RecordSection, index: number, patch: Partial<LifeRecord>, coalesce = true): void {

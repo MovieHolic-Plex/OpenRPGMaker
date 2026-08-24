@@ -56,6 +56,7 @@ import {
 } from "@/player/saveSlotValidation";
 import { shippingHistoryLimit } from "@/project/shipping";
 import { normalizeLightingState } from "@/project/lightingRules";
+import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 export {
   createSystemShellState,
@@ -218,6 +219,7 @@ export function setSaveSlotStorageNamespace(namespace: string | null): void {
 
 export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
+  const bundleReceiptIds = normalizedBundleReceiptIds(project, session.completedBundleIds, session.bundleRewardAppliedIds);
   return {
     schemaVersion: SCHEMA_VERSION,
     projectTitle: project.meta.title,
@@ -246,11 +248,11 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       dayTransitionLastDayKey: session.dayTransitionLastDayKey,
       shippingHistory: structuredClone((session.shippingHistory ?? []).slice(-shippingHistoryLimit(project))),
       bundleContributions: structuredClone(session.bundleContributions ?? {}),
-      completedBundleIds: uniqueStrings(session.completedBundleIds),
-      bundleRewardAppliedIds: uniqueStrings(session.bundleRewardAppliedIds),
+      completedBundleIds: bundleReceiptIds,
+      bundleRewardAppliedIds: [...bundleReceiptIds],
       unlockedRegionIds: uniqueStrings(session.unlockedRegionIds),
       unlockedRecipeIds: uniqueStrings(session.unlockedRecipeIds),
-      makerInstances: structuredClone(session.makerInstances ?? {}),
+      makerInstances: structuredClone(restoreMakerInstances(project, session.makerInstances)),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
@@ -267,7 +269,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       npcTravelStates: structuredClone(session.npcTravelStates),
       npcActivities: structuredClone(session.npcActivities ?? {}),
       npcScheduleStates: structuredClone(session.npcScheduleStates ?? {}),
-      lifeSkills: structuredClone(session.lifeSkills ?? {}),
+      lifeSkills: structuredClone(restoreLifeSkills(project, session.lifeSkills)),
       farmPlots: structuredClone(session.farmPlots ?? {}),
       farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
@@ -378,9 +380,13 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     ? structuredClone((snapshot.session.shippingHistory ?? []).slice(-shippingHistoryLimit(project)))
     : [];
   session.bundleContributions = restoreBundleContributions(project, snapshot.session.bundleContributions);
-  const bundleIds = new Set((project.system.bundles ?? []).map((bundle) => bundle.id));
-  session.completedBundleIds = filterKnownIds(snapshot.session.completedBundleIds, bundleIds);
-  session.bundleRewardAppliedIds = filterKnownIds(snapshot.session.bundleRewardAppliedIds, bundleIds);
+  const bundleReceiptIds = normalizedBundleReceiptIds(
+    project,
+    snapshot.session.completedBundleIds,
+    snapshot.session.bundleRewardAppliedIds,
+  );
+  session.completedBundleIds = bundleReceiptIds;
+  session.bundleRewardAppliedIds = [...bundleReceiptIds];
   session.unlockedRegionIds = filterKnownIds(
     snapshot.session.unlockedRegionIds,
     new Set((project.system.worldUnlocks ?? []).map((unlock) => unlock.id)),
@@ -406,7 +412,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.npcTravelStates) session.npcTravelStates = structuredClone(snapshot.session.npcTravelStates);
   if (snapshot.session.npcActivities) session.npcActivities = structuredClone(snapshot.session.npcActivities);
   if (snapshot.session.npcScheduleStates) session.npcScheduleStates = structuredClone(snapshot.session.npcScheduleStates);
-  session.lifeSkills = structuredClone(snapshot.session.lifeSkills ?? {});
+  session.lifeSkills = restoreLifeSkills(project, snapshot.session.lifeSkills);
   session.farmPlots = structuredClone(snapshot.session.farmPlots ?? {});
   session.farmPlotsAdvancedThrough = normalizeFarmPlotDateForProject(project, snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
@@ -704,7 +710,39 @@ function restoreMakerInstances(
   instances: PlaySession["makerInstances"],
 ): NonNullable<PlaySession["makerInstances"]> {
   const makerIds = new Set((project.system.makers ?? []).map((maker) => maker.id));
-  return Object.fromEntries(Object.entries(instances ?? {}).filter(([, instance]) => makerIds.has(instance.makerId)));
+  return Object.fromEntries(Object.entries(instances ?? {}).filter(([instanceId, instance]) => {
+    if (instance.instanceId !== instanceId || !makerIds.has(instance.makerId)) return false;
+    if (instance.status === "idle") {
+      return instance.startedAtMinute === undefined && instance.readyAtMinute === undefined;
+    }
+    return Number.isSafeInteger(instance.startedAtMinute)
+      && instance.startedAtMinute! >= 0
+      && Number.isSafeInteger(instance.readyAtMinute)
+      && instance.readyAtMinute! >= instance.startedAtMinute!;
+  }));
+}
+
+function restoreLifeSkills(
+  project: Project,
+  progress: PlaySession["lifeSkills"],
+): NonNullable<PlaySession["lifeSkills"]> {
+  const restored: NonNullable<PlaySession["lifeSkills"]> = {};
+  for (const skill of project.database.lifeSkills ?? []) {
+    const saved = progress?.[skill.id];
+    if (!saved || !Number.isSafeInteger(saved.xp) || saved.xp < 0) continue;
+    const xp = Math.min(saved.xp, xpForLevel(skill.maxLevel));
+    restored[skill.id] = { xp, level: levelForXp(xp, skill.maxLevel) };
+  }
+  return restored;
+}
+
+function normalizedBundleReceiptIds(
+  project: Project,
+  completed: readonly string[] | undefined,
+  rewardApplied: readonly string[] | undefined,
+): string[] {
+  const knownIds = new Set((project.system.bundles ?? []).map((bundle) => bundle.id));
+  return filterKnownIds([...(completed ?? []), ...(rewardApplied ?? [])], knownIds);
 }
 
 function filterKnownIds(values: readonly string[] | undefined, knownIds: ReadonlySet<string>): string[] {
