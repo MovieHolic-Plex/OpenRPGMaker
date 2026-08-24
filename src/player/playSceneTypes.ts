@@ -25,6 +25,8 @@ export type ParallelProcess = {
   interpreter: Interpreter;
   waitMs: number;
   started: boolean;
+  pendingTimeTransition?: Promise<boolean>;
+  stopped?: boolean;
 };
 
 export type AutonomousMover = {

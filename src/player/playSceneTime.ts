@@ -195,12 +195,17 @@ export function observeScheduledTimeTransition(
   scene: Pick<PlaySceneContext, "showRuntimeOverlay">,
   task: Promise<boolean | void>,
   reason: "forced-sleep" | "scheduled-sleep" | "scheduled-advance",
-): void {
-  void task.then((result) => {
-    if (result === false) showDayTransitionFailure(scene, reason);
+): Promise<boolean> {
+  return task.then((result) => {
+    if (result === false) {
+      showDayTransitionFailure(scene, reason);
+      return false;
+    }
+    return true;
   }).catch((cause: unknown) => {
     const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
     showDayTransitionFailure(scene, `${reason}${detail}`);
+    return false;
   });
 }
 

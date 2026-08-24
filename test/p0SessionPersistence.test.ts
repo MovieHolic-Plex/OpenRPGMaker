@@ -11,6 +11,8 @@ import {
   readSaveSlot,
   saveToSlot,
 } from "@/player/saveSlots";
+import { calendarDayKey } from "@/project/gameTime";
+import { transitionToNextDay } from "@/player/dayTransition";
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -178,6 +180,51 @@ describe("P0 save snapshot regression", () => {
     expect(read.kind).toBe("present");
     if (read.kind !== "present") throw new Error("expected a parsed save slot");
     expect(read.snapshot.session.dayTransitionLastDayKey).toBeUndefined();
+  });
+
+  it("drops a non-safe saved year before it can poison a loaded day transition", () => {
+    // Break caught: 1e300 passes finite-integer validation, loads verbatim, then absoluteGameMinutes throws.
+    const project = createBlankProject();
+    configureP0PersistenceProject(project);
+    project.system.timeSystem = { enabled: true };
+    const snapshot = createSaveSnapshot(project, startSession(project, 182));
+    const wireSession = snapshot.session as unknown as Record<string, unknown>;
+    wireSession.gameTime = { year: 1e300, season: "spring", day: 1, hour: 6, minute: 0 };
+    const storage = new MemoryStorage();
+    saveToSlot(storage, 2, snapshot);
+
+    const read = readSaveSlot(storage, 2);
+    expect(read.kind).toBe("present");
+    if (read.kind !== "present") throw new Error("expected a parsed save slot");
+    expect(read.snapshot.session.gameTime).toBeUndefined();
+    const restored = applySaveSnapshot(project, read.snapshot);
+    expect(restored.gameTime).toEqual({ year: 1, season: "spring", day: 1, hour: 6, minute: 0 });
+    expect(() => transitionToNextDay(project, restored, calendarDayKey(restored.gameTime))).not.toThrow();
+  });
+
+  it("normalizes a safe-integer year that still exceeds the absolute-minute range", () => {
+    // Break caught: Number.MAX_SAFE_INTEGER is field-safe but maker absolute-minute arithmetic is not.
+    const project = createBlankProject();
+    configureP0PersistenceProject(project);
+    project.system.timeSystem = { enabled: true };
+    const snapshot = createSaveSnapshot(project, startSession(project, 183));
+    const poisoned = {
+      ...snapshot,
+      session: {
+        ...snapshot.session,
+        gameTime: {
+          year: Number.MAX_SAFE_INTEGER,
+          season: "spring" as const,
+          day: 1,
+          hour: 6,
+          minute: 0,
+        },
+      },
+    };
+
+    const restored = applySaveSnapshot(project, poisoned);
+
+    expect(restored.gameTime).toEqual({ year: 1, season: "spring", day: 1, hour: 6, minute: 0 });
   });
 
   it("uses the same P0 snapshot state for autosave and checkpoints", () => {

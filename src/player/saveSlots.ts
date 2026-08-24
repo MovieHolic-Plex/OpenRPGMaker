@@ -62,6 +62,7 @@ import {
   parsePictures,
 } from "@/player/saveSlotValidation";
 import { shippingHistoryLimit } from "@/project/shipping";
+import { absoluteGameMinutes } from "@/project/makers";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
@@ -305,7 +306,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
-      gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
+      gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
       rng: cloneRngState(normalizeRngState(session.rng)),
       screen: pickScreenState(session),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
@@ -451,12 +452,11 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
-  if (snapshot.session.gameTime) {
-    session.gameTime = normalizeGameTime(snapshot.session.gameTime, project.system.timeSystem);
-  }
-  session.dayTransitionLastDayKey = snapshot.session.gameTime && isPreviousCalendarDayKey(
+  const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
+  if (restoredGameTime) session.gameTime = restoredGameTime;
+  session.dayTransitionLastDayKey = restoredGameTime && isPreviousCalendarDayKey(
     project,
-    session.gameTime,
+    restoredGameTime,
     snapshot.session.dayTransitionLastDayKey,
   )
     ? snapshot.session.dayTransitionLastDayKey
@@ -697,6 +697,20 @@ function isPreviousCalendarDayKey(
     minute: 0,
   } satisfies GameTime;
   return calendarDayKey(advanceGameDays(previous, 1, system).time) === calendarDayKey(currentTime);
+}
+
+function normalizeRestorableGameTime(project: Project, value: unknown): GameTime | undefined {
+  const normalized = normalizeGameTime(value, project.system.timeSystem);
+  if (!normalized) return undefined;
+  if (![normalized.year, normalized.day, normalized.hour, normalized.minute].every(Number.isSafeInteger)) {
+    return undefined;
+  }
+  try {
+    absoluteGameMinutes(normalized, project.system.timeSystem);
+    return normalized;
+  } catch {
+    return undefined;
+  }
 }
 
 function uniqueStrings(values: readonly string[] | undefined): string[] {
