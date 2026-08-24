@@ -1,3 +1,23 @@
+.ai-proposal-pin-host:empty,
+.ai-proposal-host:empty {
+  display: none;
+}
+
+.ai-proposal-pin-host {
+  display: grid;
+  min-width: 0;
+}
+
+.ai-chat-panel.chat-dock-glass .ai-proposal-pin-host,
+.ai-chat-panel.chat-dock-side .ai-proposal-pin-host {
+  padding: 4px 2px 8px;
+}
+
+.ai-chat-panel.chat-dock-glass .ai-proposal-card,
+.ai-chat-panel.chat-dock-side .ai-proposal-pin-host .ai-proposal-card {
+  box-shadow: none;
+}
+
 .ai-proposal-card {
   background: var(--bg-raised);
   border: 1.5px solid var(--border-default);

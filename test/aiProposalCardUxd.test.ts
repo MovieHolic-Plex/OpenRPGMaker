@@ -14,6 +14,8 @@ import {
   reassembleSelectedProposalProject,
   renderAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
+import { resolveProposalPresentation } from "@/editor/panels/aiProposalModal";
+import type { ChatDock } from "@/editor/chatDock";
 import { readableTopbarIdentityLabel, renderTopbar } from "@/editor/panels/menu";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
@@ -107,9 +109,9 @@ function fakeElement(node: HTMLElement | null): FakeElement {
   throw new Error("Expected fake element");
 }
 
-function renderPanel(): FakeElement {
+function renderPanel(dock: ChatDock = "side"): FakeElement {
   storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({ ...defaultAiConfig(), apiKey: "sk-test", baseUrl: "x", model: "m" }));
-  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => "side" }) as unknown as FakeElement;
+  return renderAiChatPanel({ clock: () => 1_000, getChatDock: () => dock }) as unknown as FakeElement;
 }
 
 async function flushAsync(): Promise<void> {
@@ -180,6 +182,14 @@ describe("UXD proposal summary helpers", () => {
 
     expect(proposalHumanSummaryLine(calls)).not.toContain("paint_road");
     expect(proposalTechnicalDetailLines(calls)[0]).toContain("paint_road — 도로 3칸");
+  });
+
+  it("결정 카드는 도크 인라인이고 캔버스 우선만 모달을 연다", () => {
+    expect(resolveProposalPresentation("modal", "glass")).toBe("inline");
+    expect(resolveProposalPresentation("modal", "side")).toBe("inline");
+    expect(resolveProposalPresentation("modal", "float")).toBe("inline");
+    expect(resolveProposalPresentation("canvas", "glass")).toBe("canvas");
+    expect(resolveProposalPresentation("inline", "float")).toBe("inline");
   });
 
   it("결정 제목은 짧은 명사구를 쓰고 채팅체·툴 id는 버린다", () => {
@@ -342,42 +352,44 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("자세히");
   });
 
-  it("제안이 오면 몰입 모달이 열리고, '나중에'는 pill로 최소화, 수락하면 닫힌다", async () => {
+  it("사이드 도크는 몰입 모달 없이 결정 카드를 패널에 붙인다", async () => {
     const mapId = store.getCurrent().startMapId;
     const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
     vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
     vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
-    const panel = renderPanel();
+    const panel = renderPanel("side");
     const input = findByTestId(panel, "ai-input") as FakeElement;
     input.value = "초안";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
-    // 제안 렌더 → 모달 자동 오픈(+건수), pill 숨김
     const modal = findByTestId(panel, "ai-proposal-modal") as FakeElement;
-    const pill = findByTestId(panel, "ai-proposal-reopen") as FakeElement;
-    expect(modal.hidden).toBe(false);
-    expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("1건");
-    expect(pill.hidden).toBe(true);
-    // 카드 본체(수락 버튼)는 모달 안에 있다
-    expect(findByTestId(modal, "ai-proposal-accept")).toBeTruthy();
-
-    // '나중에' → 최소화: 모달 숨고 pill 등장(승인 대기 유지)
-    findByTestId(panel, "ai-proposal-modal-later")?.click();
+    const card = findByTestId(panel, "ai-proposal-card") as FakeElement;
+    const pinHost = findByTestId(panel, "ai-proposal-pin-host") as FakeElement;
     expect(modal.hidden).toBe(true);
-    expect(pill.hidden).toBe(false);
-    expect(pill.textContent).toContain("변경 제안 1건");
+    expect(findByTestId(panel, "ai-proposal-pin")).toBeNull();
+    expect(pinHost.contains(card)).toBe(true);
+    expect(findByTestId(card, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
+    expect(findByTestId(card, "ai-proposal-details")?.getAttribute("open")).toBeNull();
+  });
 
-    // pill 클릭 → 재오픈
-    pill.click();
-    expect(modal.hidden).toBe(false);
-    expect(pill.hidden).toBe(true);
-
-    // 수락 → 모달/pill 모두 정리
-    findByTestId(panel, "ai-proposal-accept")?.click();
+  it("플로트 도크도 몰입 모달 없이 결정 카드를 패널에 붙인다", async () => {
+    const mapId = store.getCurrent().startMapId;
+    const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "초안입니다.", proposedCalls: calls }));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const panel = renderPanel("float");
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "초안";
+    findByTestId(panel, "ai-send")?.click();
     await flushAsync();
+
+    const modal = findByTestId(panel, "ai-proposal-modal") as FakeElement;
+    const card = findByTestId(panel, "ai-proposal-card") as FakeElement;
     expect(modal.hidden).toBe(true);
-    expect(pill.hidden).toBe(true);
+    expect(findByTestId(panel, "ai-proposal-pin")).toBeNull();
+    expect(findByTestId(panel, "ai-proposal-pin-host")?.contains(card)).toBe(true);
+    expect(findByTestId(card, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
   });
 
   it("후속 채팅 턴(제안 0건)이 와도 대기 중인 변경 제안 카드 본문을 지우지 않는다", async () => {
@@ -399,26 +411,27 @@ describe("UXD proposal panel integration", () => {
     await flushAsync();
 
     const modal = findByTestId(panel, "ai-proposal-modal") as FakeElement;
-    expect(modal.hidden).toBe(false);
+    const card = findByTestId(panel, "ai-proposal-card") as FakeElement;
+    expect(modal.hidden).toBe(true);
     expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("2건");
-    expect(findByTestId(modal, "ai-proposal-accept")).toBeTruthy();
-    expect(findByTestId(modal, "ai-proposal-item-1")).toBeTruthy();
-    expect(findByTestId(modal, "ai-proposal-item-2")).toBeTruthy();
+    expect(findByTestId(card, "ai-proposal-accept")).toBeTruthy();
+    expect(findByTestId(card, "ai-proposal-item-1")).toBeTruthy();
+    expect(findByTestId(card, "ai-proposal-item-2")).toBeTruthy();
 
     // 제안 대기 중 후속 질문(쓰기 툴 없음) — 예전 버그는 host를 비우고 헤더(2건)만 남김.
     input.value = "왜 이렇게 했어?";
     findByTestId(panel, "ai-send")?.click();
     await flushAsync();
 
-    expect(modal.hidden).toBe(false);
+    expect(modal.hidden).toBe(true);
     expect(findByTestId(panel, "ai-proposal-modal-count")?.textContent).toBe("2건");
-    expect(findByTestId(modal, "ai-proposal-accept")).toBeTruthy();
+    expect(findByTestId(panel, "ai-proposal-accept")).toBeTruthy();
     // testid는 체크박스에 붙으므로 본문 문구는 host 텍스트로 확인한다.
     const hostText = findByTestId(panel, "ai-proposal-host")?.textContent ?? "";
     expect(hostText).toContain("타일 2칸");
     expect(hostText).toContain("NPC 1명");
-    expect(findByTestId(modal, "ai-proposal-item-1")).toBeTruthy();
-    expect(findByTestId(modal, "ai-proposal-item-2")).toBeTruthy();
+    expect(findByTestId(panel, "ai-proposal-item-1")).toBeTruthy();
+    expect(findByTestId(panel, "ai-proposal-item-2")).toBeTruthy();
   });
 
   it("미니 스트림: 새 턴이 시작되면 이전 턴을 접이식 그룹으로 묶는다", async () => {

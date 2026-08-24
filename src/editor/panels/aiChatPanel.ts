@@ -273,9 +273,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 비면 숨김(CSS :empty).
   const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
 
-  // ── 변경 제안 몰입 모달: 제안 카드는 중앙 모달에서 검토한다(채팅 오버레이에 얹으면 답답하다는 UX 피드백).
-  // proposalHost가 모달 본문에 상주하므로 카드 렌더/승인/융합 로직은 그대로다.
-  // '나중에'(Esc/백드롭 포함)는 최소화 — 커맨드 바 위 pill로 남아 승인 대기를 잃지 않는다. 폐기는 오직 [거부] 버튼.
+  // 결정 카드: glass/side는 도크 안 인라인, float만 몰입 모달. proposalHost는 모드에 따라 pinHost/모달 본문으로 옮긴다.
+  // '나중에'(Esc/백드롭, float)는 최소화 — 커맨드 바 위 pill로 승인 대기를 잃지 않는다. 폐기는 오직 [취소].
   const proposalModal = createProposalModalElements(proposalHost);
   const proposalNoticeHost = proposalModal.noticeHost;
   const proposalPill = proposalModal.pill;
@@ -436,6 +435,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalNoticeHost,
     proposalModalCount,
     proposalPill,
+    proposalModalBody: proposalModal.body,
+    getChatDock: readChatDock,
     openProposalModal,
     closeProposalModal,
     controller,
@@ -2253,6 +2254,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   syncGlassIdle = (): void => {
     const busy = panel.classList.contains("is-turn-running")
       || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
+      || Boolean(panel.querySelector("[data-testid=ai-proposal-card]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
       || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
       || Boolean(turnBusy || runningProgress);

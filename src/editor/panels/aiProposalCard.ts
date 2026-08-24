@@ -31,7 +31,8 @@ import {
   renderVocabularyCardList,
   type VocabularyCardEdit,
 } from "./aiChatRenderers";
-import type { ProposalPresentationMode } from "./aiProposalModal";
+import { resolveProposalPresentation, type ProposalPresentationMode } from "./aiProposalModal";
+import type { ChatDock } from "@/editor/chatDock";
 import {
   collectVocabSoftConfirms,
   markSoftVocabApprovalsOnProject,
@@ -213,6 +214,8 @@ export function createProposalHost(options: {
   readonly proposalNoticeHost: HTMLElement;
   readonly proposalModalCount: HTMLElement;
   readonly proposalPill: HTMLButtonElement;
+  readonly proposalModalBody: HTMLElement;
+  readonly getChatDock: () => ChatDock;
   readonly openProposalModal: (mode?: ProposalPresentationMode) => void;
   readonly closeProposalModal: () => void;
   readonly controller: ChatController;
@@ -228,6 +231,8 @@ export function createProposalHost(options: {
     proposalNoticeHost,
     proposalModalCount,
     proposalPill,
+    proposalModalBody,
+    getChatDock,
     openProposalModal,
     closeProposalModal,
     controller,
@@ -236,6 +241,20 @@ export function createProposalHost(options: {
     onApplied,
     onProposalSettled,
   } = options;
+
+  const mountProposalHost = (target: HTMLElement): void => {
+    if (proposalHost.parentElement === target) return;
+    proposalHost.remove();
+    target.append(proposalHost);
+  };
+
+  const clearDecisionSurface = (): void => {
+    proposalHost.replaceChildren();
+    proposalHost.classList.remove("is-sticky-empty");
+    clearProposalPin(pinHost);
+    mountProposalHost(proposalModalBody);
+    closeProposalModal();
+  };
 
   let pendingProposalMessage: ProposalMessageState | null = null;
   let lastAppliedProposalMessage: ProposalMessageState | null = null;
@@ -316,9 +335,7 @@ export function createProposalHost(options: {
       toast(`적용 실패: ${applied.issue ?? "무결성 오류"}`, "error");
       return;
     }
-    proposalHost.replaceChildren();
-    clearProposalPin(pinHost);
-    closeProposalModal();
+    clearDecisionSurface();
     setStatus("적용됨");
     const messageState = pendingProposalMessage;
     setAssistantMessageBadge(messageState?.assistantBubble ?? null, "applied");
@@ -384,9 +401,7 @@ export function createProposalHost(options: {
 
   const rejectProposal = (): void => {
     clearInlineActionsIfMine();
-    proposalHost.replaceChildren();
-    clearProposalPin(pinHost);
-    closeProposalModal();
+    clearDecisionSurface();
     clearAgentGhostPreview();
     setStatus("제안 거부됨");
     setAssistantMessageBadge(pendingProposalMessage?.assistantBubble ?? null, "discarded");
@@ -400,8 +415,9 @@ export function createProposalHost(options: {
     result: TurnResult,
     extraWarnings: readonly string[] = [],
     assistantBubble: HTMLElement | null = null,
-    presentation: ProposalPresentationMode = "modal",
+    requestedPresentation: ProposalPresentationMode = "modal",
   ): void => {
+    const presentation = resolveProposalPresentation(requestedPresentation, getChatDock());
     const plainToolNames = getEditorChrome().jargonStyle === "plain";
     const userFacingToolText = (text: string): string =>
       plainToolNames ? sanitizeUserFacingToolId(text) : text;
@@ -411,11 +427,9 @@ export function createProposalHost(options: {
     // 본문이 빈 껍데기로 남는 버그가 있었다(큐 연속 전송·후속 질문 시 재현).
     if (result.proposedCalls.length === 0 && lines.length === 0) return;
 
-    proposalHost.replaceChildren();
-    proposalHost.classList.remove("is-sticky-empty");
+    clearDecisionSurface();
 
     if (result.proposedCalls.length === 0) {
-      closeProposalModal();
       appendBubble("system", ["변경 제안 없음(0건) — 완성도 린트:", ...lines].join("\n"));
       const notice = renderEmptyProposalNotice(lines, () => notice.remove());
       proposalNoticeHost.append(notice);
@@ -634,23 +648,25 @@ export function createProposalHost(options: {
     if (modalTitle) modalTitle.textContent = decisionTitle;
     pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: humanSummary };
     setAssistantMessageBadge(assistantBubble, "proposal");
-    replaceProposalPin(
-      pinHost,
-      {
-        summary: humanSummary,
-        selectedCount: result.proposedCalls.length,
-        total: result.proposedCalls.length,
-      },
-      {
-        onAccept: () => acceptProposal(
-          callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
-          selected,
-          hasVocabularyEdits(vocabEditsByCall),
-          false,
-        ),
-        onReject: () => rejectProposal(),
-      },
-    );
+    if (presentation !== "inline") {
+      replaceProposalPin(
+        pinHost,
+        {
+          summary: humanSummary,
+          selectedCount: result.proposedCalls.length,
+          total: result.proposedCalls.length,
+        },
+        {
+          onAccept: () => acceptProposal(
+            callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
+            selected,
+            hasVocabularyEdits(vocabEditsByCall),
+            false,
+          ),
+          onReject: () => rejectProposal(),
+        },
+      );
+    }
     refreshSelectionUi();
     // 인라인 승인(캔버스 고스트 마커) — 카드의 실제 버튼 경로를 그대로 태운다.
     myInlineActions = {
@@ -659,6 +675,13 @@ export function createProposalHost(options: {
       presentation: presentation === "canvas" ? "canvas-first" : "default",
       summary: humanSummary,
       focusCard: () => {
+        if (presentation === "inline") {
+          const focusInline = (): void => proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+          if (typeof requestAnimationFrame === "function") requestAnimationFrame(focusInline);
+          else focusInline();
+          return;
+        }
+        mountProposalHost(proposalModalBody);
         openProposalModal("modal");
         const focus = (): void => proposalCardEl?.scrollIntoView?.({ behavior: "smooth", block: "center" });
         if (typeof requestAnimationFrame === "function") requestAnimationFrame(focus);
@@ -666,12 +689,15 @@ export function createProposalHost(options: {
       },
     };
     setInlineProposalActions(myInlineActions);
+    if (presentation === "inline") mountProposalHost(pinHost);
+    else mountProposalHost(proposalModalBody);
     proposalHost.append(card);
     proposalModalCount.textContent = `${result.proposedCalls.length}건`;
     proposalPill.textContent = presentation === "canvas"
       ? `맵에서 변경 ${result.proposedCalls.length}건 검토 중 — 전체 보기`
       : `변경 제안 ${result.proposedCalls.length}건 대기 — 검토`;
-    openProposalModal(presentation);
+    if (presentation === "inline") closeProposalModal();
+    else openProposalModal(presentation);
   };
 
   return {
