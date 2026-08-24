@@ -9,17 +9,38 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
+const PROJECT_SCOPED_OAUTH_PROVIDERS = new Set(["google-antigravity", "google-gemini-cli"]);
 
 function storeAs(provider: string): string {
   return getProviderDefinition(provider)?.storeCredentialsAs || provider;
 }
 
-function oauthCreds(row: { access?: string; refresh?: string; expires?: number } | undefined) {
+function oauthCreds(row: {
+  access?: string;
+  refresh?: string;
+  expires?: number;
+  enterpriseUrl?: string;
+  projectId?: string;
+  email?: string;
+  accountId?: string;
+  apiEndpoint?: string;
+  orgId?: string;
+  orgName?: string;
+  authorizedAt?: number;
+} | undefined) {
   if (!row?.access && !row?.refresh) return undefined;
   return {
     access: String(row.access ?? ""),
     refresh: String(row.refresh ?? ""),
     expires: Number(row.expires) || 0,
+    enterpriseUrl: row.enterpriseUrl,
+    projectId: row.projectId,
+    email: row.email,
+    accountId: row.accountId,
+    apiEndpoint: row.apiEndpoint,
+    orgId: row.orgId,
+    orgName: row.orgName,
+    authorizedAt: row.authorizedAt,
   };
 }
 
@@ -79,15 +100,26 @@ function jwtExpiryMs(token: string): number {
 export function publicProviderStatus(provider: string) {
   const envVars = getOhMyPiProvider(provider)?.envVars ?? [];
   const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
-  if (!store.has(storeAs(provider))) adoptCodexCliCredentials(provider);
+  const credentialProvider = storeAs(provider);
+  if (!store.has(credentialProvider)) adoptCodexCliCredentials(provider);
   const disk = store.publicStatus(provider);
+  const row = store.get(credentialProvider);
+  const hasRequiredMetadata = !PROJECT_SCOPED_OAUTH_PROVIDERS.has(provider)
+    || row?.kind !== "oauth"
+    || Boolean(row.projectId);
+  if (disk.connected && !hasRequiredMetadata) {
+    return { ...disk, connected: false, provider, env: false };
+  }
   if (disk.connected || envHit) {
     return { ...disk, connected: true, provider, env: envHit };
   }
   return { connected: false, provider };
 }
 
-export function seedOAuthForTests(provider: string, creds: { access: string; refresh: string; expires: number }) {
+export function seedOAuthForTests(
+  provider: string,
+  creds: { access: string; refresh: string; expires: number; projectId?: string },
+) {
   store.setOAuth(storeAs(provider), creds);
 }
 
