@@ -75,6 +75,16 @@ const KIND_COPY: Record<AiConnectionKindId, { label: string; hint: string }> = {
   },
 };
 
+/**
+ * OAuth 모드의 빠른 선택 카드. ChatGPT 는 OpenAI 구독 계정으로 로그인할 수 있고,
+ * Gemini 는 **구독을 암시하지 않고** Google 계정으로 로그인한다(CLI 장르 용어도 쓰지 않는다).
+ * 이 카드는 보기 좋은 경로일 뿐 — 동일 제공자 id 는 아래 14종 드롭다운과 공유한다.
+ */
+const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; hint: string }>[] = [
+  { id: "openai-codex", label: "ChatGPT", hint: "OpenAI 구독 계정으로 로그인합니다." },
+  { id: "google-antigravity", label: "Google Gemini", hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다." },
+];
+
 export function renderAiAuthSettings(
   config: AiConfig,
   onChange: (next: AiAuthSettingsChange) => void,
@@ -85,6 +95,12 @@ export function renderAiAuthSettings(
   let pollTimer: ReturnType<typeof setTimeout> | undefined;
   let pollAttempt = 0;
   let disposed = false;
+  /**
+   * 인증 연산 세대 카운터. 제공자/종류 변경과 명시적 취소가 이 값을 올린다 — 진행 중(나 비동기 대기)인
+   * 연산은 시작 시점의 세대·제공자를 붙들고, 그게 현재와 다르면 UI 를 건드리지 않는다.
+   * pi-ai 프로미스 자체를 강제로 abort 하지 않아도 된다 — 늦게 온 결과를 무시하기만 하면 된다.
+   */
+  let opGeneration = 0;
 
   // ── 상태 표시 ──────────────────────────────────────────────────────────────
   const status = el("span", {
@@ -137,6 +153,50 @@ export function renderAiAuthSettings(
     selectKind(kind === "oauth" ? "apiKey" : "oauth");
   });
 
+  // ── OAuth 빠른 선택(radiogroup) ──────────────────────────────────────────
+  // ChatGPT / Google Gemini 두 카드. 구독 로그인 종류일 때만 보이고, 아래 14종 드롭다운과 같은
+  // providerId 를 공유한다 — 선택하면 select 값·aria·onChange·상태 조회·로그인 라우팅까지 동기화된다.
+  const quickHeading = el("h3", {
+    class: "ai-config-label",
+    text: "빠른 선택",
+    attrs: { id: "ai-auth-quick-heading" },
+  });
+  const quickButtons = new Map<string, HTMLButtonElement>();
+  const quickBlock = el("div", {
+    class: "ai-auth-quick-block",
+    attrs: { hidden: "" },
+    dataset: { testid: "ai-auth-quick-block" },
+    children: [quickHeading],
+  });
+  const quickGroup = el("div", {
+    class: "ai-auth-quick",
+    attrs: { role: "radiogroup", "aria-labelledby": "ai-auth-quick-heading", hidden: "" },
+    dataset: { testid: "ai-auth-quick" },
+    children: QUICK_PROVIDERS.map((provider) => {
+      const button = el("button", {
+        class: "ai-auth-quick-card",
+        attrs: { type: "button", role: "radio", "aria-checked": "false", tabindex: "-1" },
+        dataset: { testid: `ai-auth-quick-${provider.id}` },
+        children: [
+          el("strong", { text: provider.label }),
+          el("small", { text: provider.hint }),
+        ],
+      }) as HTMLButtonElement;
+      button.addEventListener("click", () => selectQuickProvider(provider.id));
+      quickButtons.set(provider.id, button);
+      return button;
+    }),
+  });
+  quickBlock.append(quickGroup);
+  // 라디오 그룹 키보드 관례: 화살표가 옆(끝에서는 처음으로) 선택지를 고르고 **포커스도 이동한다**.
+  // 현재 제공자가 퀵 카드에 없으면(드롭다운으로 다른 OAuth 제공자를 골랐다면) 결정적으로 첫 카드로 간다.
+  quickGroup.addEventListener("keydown", (event) => {
+    const key = (event as KeyboardEvent).key;
+    if (key !== "ArrowLeft" && key !== "ArrowRight" && key !== "ArrowUp" && key !== "ArrowDown") return;
+    event.preventDefault();
+    selectQuickProvider(nextQuickProvider(key));
+  });
+
   // ── 제공자 선택 ───────────────────────────────────────────────────────────
   const providerSelect = el("select", {
     class: "ai-config-select ai-oh-my-pi-provider",
@@ -148,7 +208,12 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-auth-provider-help" },
   });
   providerSelect.addEventListener("change", () => {
-    providerId = parseOhMyPiProvider(providerSelect.value);
+    const next = parseOhMyPiProvider(providerSelect.value);
+    if (next === providerId) return;
+    // 선택 변경 = 새 인증 연산 세대. 실행 중 폴링을 멈추고 저장된 자격 상태·연결 해제 크롬을
+    // 지운 뒤 "연결 확인 중…"으로 초기화한 다음 새 제공자의 상태를 조회한다.
+    beginSelectionChange();
+    providerId = next;
     applyChrome();
     emit();
     void refreshStatus();
@@ -295,7 +360,73 @@ export function renderAiAuthSettings(
       ? "다시 확인"
       : providerKind === "oauth" ? "로그인" : "연결 확인";
     disconnectButton.hidden = !stored;
+    // 퀵 카드의 보이기/체크·탭 순서도 같은 크롬 갱신 경로에서 맞춘다.
+    applyQuickChrome();
   };
+
+  /**
+   * 퀵 카드의 `aria-checked` 와 roving tabindex 를 쓴다 — 종류 변경까지 포함해 일반 크롬
+   * 적용 경로에서 호출된다. 활성 퀵 제공자가 없으면(다른 OAuth 제공자를 드롭다운으로 골랐을 때)
+   * 키보드 사용자가 돌아올 수 있도록 첫 카드만 `tabindex=0` 으로 남기고 둘 다 체크 해제로 둔다.
+   */
+  function applyQuickChrome(): void {
+    const inOAuth = kind === "oauth";
+    quickBlock.hidden = !inOAuth;
+    quickGroup.hidden = !inOAuth;
+    for (const [id, button] of quickButtons) {
+      const active = inOAuth && providerId === id;
+      button.setAttribute("aria-checked", String(active));
+      button.setAttribute("tabindex", active ? "0" : "-1");
+    }
+    if (inOAuth && !quickButtons.has(providerId) && QUICK_PROVIDERS.length > 0) {
+      quickButtons.get(QUICK_PROVIDERS[0].id)?.setAttribute("tabindex", "0");
+    }
+  }
+
+  /** 화살표 방향에 대해 다음/첫 퀵 제공자. 현재 제공자가 퀵 카드에 없으면 결정적으로 첫 카드. */
+  function nextQuickProvider(key: string): string {
+    const ids = QUICK_PROVIDERS.map((provider) => provider.id);
+    const currentIndex = ids.indexOf(providerId);
+    if (currentIndex < 0) return ids[0];
+    const delta = key === "ArrowUp" || key === "ArrowLeft" ? -1 : 1;
+    return ids[(currentIndex + delta + ids.length) % ids.length];
+  }
+
+  /** 퀵 카드 선택 — 같은 제공자면 포커스만 옮기고, 아니면 일반 선택 경로(startChatGptLogin 라우팅 포함)를 태운다. */
+  function selectQuickProvider(id: string): void {
+    const target = parseOhMyPiProvider(id);
+    if (target === providerId) {
+      quickButtons.get(target)?.focus();
+      return;
+    }
+    beginSelectionChange();
+    providerId = target;
+    providerSelect.value = providerId;
+    applyChrome();
+    quickButtons.get(target)?.focus();
+    emit();
+    void refreshStatus();
+  }
+
+  /**
+   * 새 선택/명시적 취소의 공통 서막 — 인증 연산 세대를 올리고, 폴링을 멈추고, 기기 코드 블록을
+   * 숨기고, 저장된 자격·연결 해제 크롬을 비우고, "연결 확인 중…"으로 초기화한다.
+   * 이전 연산의 늦은 결과가 새 선택의 UI 를 덮어쓰지 못하게 하는 지점이 여기 하나다.
+   */
+  function beginSelectionChange(): void {
+    opGeneration += 1;
+    stopPolling();
+    stored = false;
+    setStatus("연결 확인 중…", "checking");
+    // 옛 제공자/종류의 안내·오류 메시지를 새 선택 아래 남기지 않는다 — 새 상태가 올 때까지 숨겨 둔다
+    // (결함 B). (A) 안내와 (B) 서버 오류 둘 다 숨기지 않으면 옛 제공자 문구가 새 제공자 곁에 남는다.
+    hint.hidden = true;
+    serverError.hidden = true;
+    // 이전 연산이 버튼을 비활성화한 채로 남았어도(대기 중 로그인/연결 해제) 새 선택에서
+    // 되살린다 — 오래된 finally 는 세대 가드 때문에 이걸 덮지 못한다.
+    loginButton.disabled = false;
+    disconnectButton.disabled = false;
+  }
 
   const emit = (): void => {
     onChange({ kind, providerId });
@@ -306,7 +437,8 @@ export function renderAiAuthSettings(
       kindButtons.get(next)?.focus();
       return;
     }
-    stopPolling();
+    // 종류 변경도 선택 변경이다 — 실행 중 폴링을 멈추고, 연산 세대를 올리고, 저장된 자격을 비운다.
+    beginSelectionChange();
     kind = next;
     // 종류를 바꾸면 제공자도 그 종류 안으로 스냅한다 — 모순 상태(oauth 종류 + apiKey 제공자)를
     // 만들지 않는다. configForConnectionKind 가 그 규칙의 단일 출처다.
@@ -370,12 +502,15 @@ export function renderAiAuthSettings(
     applyChrome();
   };
 
-  const refreshStatus = async (): Promise<void> => {
+  const refreshStatus = async (gen = opGeneration, provider = providerId): Promise<void> => {
     if (disposed) return;
     try {
-      applyStatus(await fetchChatGptAuthStatus(providerId));
+      const auth = await fetchChatGptAuthStatus(provider);
+      // 늦은 응답은 무시한다 — 새 선택(세대·제공자)이 이 조회를 이미 대체했다면 UI 를 건드리지 않는다.
+      if (disposed || gen !== opGeneration || provider !== providerId) return;
+      applyStatus(auth);
     } catch (error) {
-      if (disposed) return;
+      if (disposed || gen !== opGeneration || provider !== providerId) return;
       if (isChatGptCompanionResponseError(error)) showServerError(error);
       else showUnreachable(error);
     }
@@ -398,11 +533,13 @@ export function renderAiAuthSettings(
    */
   function pollForLogin(): void {
     if (disposed || typeof setTimeout !== "function") return;
+    const gen = opGeneration;
+    const provider = providerId;
     pollTimer = setTimeout(() => {
       pollAttempt += 1;
-      void fetchChatGptAuthStatus(providerId)
+      void fetchChatGptAuthStatus(provider)
         .then((auth) => {
-          if (disposed) return;
+          if (disposed || gen !== opGeneration || provider !== providerId) return;
           if (hasStoredCompanionCredential(auth)) {
             stopPolling();
             applyStatus(auth);
@@ -418,7 +555,7 @@ export function renderAiAuthSettings(
         })
         .catch(() => {
           // 폴링 중 일시적 실패는 흐름을 끊지 않는다 — 다음 시도에서 회복될 수 있다.
-          if (disposed) return;
+          if (disposed || gen !== opGeneration || provider !== providerId) return;
           if (pollAttempt >= DEVICE_POLL_MAX_ATTEMPTS) {
             stopPolling();
             setStatus("로그인이 확인되지 않았습니다", "disconnected");
@@ -430,6 +567,7 @@ export function renderAiAuthSettings(
   }
 
   cancelButton.addEventListener("click", () => {
+    opGeneration += 1;
     stopPolling();
     setStatus("로그인을 취소했습니다", "disconnected");
   });
@@ -448,30 +586,57 @@ export function renderAiAuthSettings(
   });
 
   loginButton.addEventListener("click", () => {
+    // 실 브라우저는 비활성 버튼의 click 을 발화하지 않는다 — fakeDom 이 발화할 수 있으므로
+    // 핸들러가 자체 비활성을 다시 확인해 생성 경계를 세우기 전에 이중 연산을 배제한다.
+    if (loginButton.disabled) return;
+    // 새 로그인/재확인은 진행 중이던 기기 흐름(폴링 + 보이는 기기 블록 + 그 취소)을 즉시
+    // 멈추고 숨긴다 — 그렇지 않으면 옛 취소가 세대를 올려 재시도를 무효화하고 버튼을 영구히
+    // 잠글 수 있다. 세대 전진 전에 동기로 호출해 옛 폴링 결과가 새 경계를 건드리지 못하게 한다.
+    stopPolling();
+    // OAuth 액션 시작 = 새 연산 경계. 이전에 달려있던 상태 조회를 모두 무효화한다(같은 제공자라도).
+    // 그래야 로그인/재확인이 사작되기 전에 달려있던 상태 응답이 기기 크롬을 덮지 않는다(결함 A).
+    opGeneration += 1;
+    const gen = opGeneration;
+    const provider = providerId;
+    const isCurrent = (): boolean => !disposed && gen === opGeneration && provider === providerId;
+    // OAuth 액션 상호 배타 — 이 연산이 도는 동안 다른 OAuth 액션(재확인/로그인/연결 해제)을 모두 막는다.
+    loginButton.disabled = true;
+    disconnectButton.disabled = true;
+    const restore = (): void => {
+      if (isCurrent()) {
+        loginButton.disabled = false;
+        disconnectButton.disabled = false;
+      }
+    };
     if (stored) {
       // apiKey 자격에는 refresh 가 의미 없다 — 서버가 조용히 성공을 돌려주므로(no-op)
       // "새로 고쳤다"는 거짓 인상을 준다. oauth 일 때만 refresh 를 태운다.
-      const check = ohMyPiAuthKind(providerId) === "oauth"
-        ? refreshCompanionAuth(providerId).then(() => undefined, () => undefined)
+      const check = ohMyPiAuthKind(provider) === "oauth"
+        ? refreshCompanionAuth(provider).then(() => undefined, () => undefined)
         : Promise.resolve();
       setStatus("확인 중…", "checking");
-      void check.then(() => refreshStatus());
+      // 재확인은 refreshCompanionAuth 가 끝나도 그 follow-up refreshStatus 가 끝날 때까지
+      // 버튼을 잠근다 — 그 사이 연결 해제가 끼어들지(supersede) 못하게(결함 A 재발).
+      void check
+        .then(() => (isCurrent() ? refreshStatus(gen, provider) : undefined))
+        .finally(restore);
       return;
     }
-    if (ohMyPiAuthKind(providerId) !== "oauth") {
+    if (ohMyPiAuthKind(provider) !== "oauth") {
       // API 키 종류는 "연결 확인"이 곧 상태 재조회다. 키 저장이 연결 행위다.
       setStatus("확인 중…", "checking");
-      void refreshStatus();
+      void refreshStatus(gen, provider).finally(restore);
       return;
     }
-    loginButton.disabled = true;
     setStatus("로그인 준비 중…", "checking");
-    void startChatGptLogin(providerId)
+    void startChatGptLogin(provider)
       .then((login) => {
-        if (disposed) return;
+        if (!isCurrent()) return;
         if (login.connected) {
-          void refreshStatus();
-          return;
+          // 잘못하면 finally(restore) 가 follow-up refreshStatus 보다 먼저 버튼을 되살린다
+          // (연결 성공 직후 해제가 끼어드는 supersede 버그). refreshStatus 를 체인에
+          // return 해서 finally 가 **그 follow-up 까지** 기다리게 한다 — 재확인 경로와 동일 결정.
+          return refreshStatus(gen, provider);
         }
         if (login.needsApiKey) {
           // 이 제공자는 기기 흐름이 없다 — 키 종류로 안내한다.
@@ -495,34 +660,47 @@ export function renderAiAuthSettings(
         }
         pollAttempt = 0;
         pollForLogin();
+        return undefined;
       })
       .catch((error: unknown) => {
-        if (disposed) return;
+        if (!isCurrent()) return;
         if (isChatGptCompanionResponseError(error)) showServerError(error);
         else showUnreachable(error);
       })
-      .finally(() => {
-        loginButton.disabled = false;
-      });
+      .finally(restore);
   });
 
   disconnectButton.addEventListener("click", () => {
+    // 실 브라우저는 비활성 버튼의 click 을 발화하지 않는다 — fakeDom 이 발화할 수 있으므로
+    // 핸들러가 자체 비활성을 확인해 이중 연산(재확인 중 끼어드는 해제)을 배제한다.
+    if (disconnectButton.disabled) return;
+    // 해제도 OAuth 액션 경계다 — 진행 중이던 상태 조회를 무효화하고, 이후 폴링/갱신이 새 토큰을 쓴다.
+    opGeneration += 1;
+    const gen = opGeneration;
+    const provider = providerId;
+    const isCurrent = (): boolean => !disposed && gen === opGeneration && provider === providerId;
     stopPolling();
+    loginButton.disabled = true;
     disconnectButton.disabled = true;
     setStatus("연결 해제 중…", "checking");
-    void disconnectCompanionAuth(providerId)
+    void disconnectCompanionAuth(provider)
       .then((auth) => {
-        if (disposed) return;
+        if (!isCurrent()) return;
         companionKey.value = "";
         applyStatus(auth);
       })
       .catch((error: unknown) => {
-        if (disposed) return;
+        if (!isCurrent()) return;
         if (isChatGptCompanionResponseError(error)) showServerError(error);
         else showUnreachable(error);
       })
       .finally(() => {
-        disconnectButton.disabled = false;
+        // 오래된 연산의 finally 가 새 연산의 버튼을 되살리지 못하도록 세대 가드를 건다.
+        // 해제가 도는 동안 잠갔던 재확인도 같은 세대·제공자에서만 되살린다.
+        if (!disposed && gen === opGeneration) {
+          loginButton.disabled = false;
+          disconnectButton.disabled = false;
+        }
       });
   });
 
@@ -563,6 +741,7 @@ export function renderAiAuthSettings(
       children: [
         heading,
         kindGroup,
+        quickBlock,
         el("div", { class: "ai-auth-provider-row", children: [
           el("label", { class: "ai-config-label", text: "제공자", attrs: { for: "ai-auth-provider" } }),
           providerSelect,

@@ -76,6 +76,69 @@
 
 /* ── 제공자 줄 ─────────────────────────────────────────────────────────── */
 
+.ai-auth-quick-block {
+  display: grid;
+  gap: 6px;
+}
+
+/* OAuth 빠른 선택 카드 — 같은 카드형 라디오 문법을 퀵 제공자에도 쓴다. */
+.ai-auth-quick {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.ai-auth-quick-card {
+  align-items: flex-start;
+  background: var(--control-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  text-align: left;
+}
+
+.ai-auth-quick-card > strong {
+  color: var(--text-1);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ai-auth-quick-card > small {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.ai-auth-quick-card:hover {
+  border-color: var(--accent-border);
+}
+
+.ai-auth-quick-card:focus-visible {
+  border-color: var(--accent-border);
+  box-shadow: var(--focus-ring, 0 0 0 2px var(--accent-border));
+  outline: none;
+}
+
+.ai-auth-quick-card[aria-checked="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+}
+
+.ai-auth-quick-card[aria-checked="true"] > strong::before {
+  content: "● ";
+}
+
+.ai-auth-quick-card[aria-checked="false"] > strong::before {
+  content: "○ ";
+}
+
+/* ── 제공자 줄 ─────────────────────────────────────────────────────────── */
+
 .ai-auth-provider-row {
   display: grid;
   gap: 4px;
@@ -250,7 +313,8 @@
 }
 
 @media (max-width: 520px) {
-  .ai-auth-kinds {
+  .ai-auth-kinds,
+  .ai-auth-quick {
     grid-template-columns: 1fr;
   }
 

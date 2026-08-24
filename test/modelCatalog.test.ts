@@ -35,6 +35,18 @@ describe("modelCatalog", () => {
     expect(modelCatalogForAuthMode("chatgpt", "groq")[0]?.models[0]).toBe("openai/gpt-oss-120b");
   });
 
+  it("Antigravity 신규 선택은 Gemini 3.7 Flash를 우선하고 Pro도 선택지로 둔다", async () => {
+    // Break caught: changing the provider default or dropping its curated model list
+    // would send ordinary editor turns to the slower Pro path or hide the quality option.
+    const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
+    const groups = modelCatalogForAuthMode("chatgpt", "google-antigravity");
+    const recommended = groups[0]?.models;
+
+    expect(defaultModelForAuthMode("chatgpt", "google-antigravity")).toBe("gemini-3.7-flash");
+    expect(recommended?.slice(0, 2)).toEqual(["gemini-3.7-flash", "gemini-3.1-pro"]);
+    expect(groups.flatMap((group) => group.models)).not.toContain("gpt-5.6-sol");
+  });
+
   it("codex 목록은 pi-catalog 와 일치하고, 조용히 강등되는 ID 는 거부한다", async () => {
     const { defaultModelForAuthMode, isModelValidForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     // pi-catalog 의 getBundledModels("openai-codex") 집합. 여기 없는 ID 는 Codex 경로에서

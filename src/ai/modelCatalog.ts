@@ -105,6 +105,17 @@ const API_GATEWAY_MODELS: readonly AiModelCatalogGroup[] = [
   },
 ];
 
+/**
+ * Provider-native choices that the editor intentionally recommends ahead of the broad
+ * gateway catalog. Keep the first item equal to the provider default.
+ */
+const OH_MY_PI_PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
+  "google-antigravity": [
+    "gemini-3.7-flash",
+    "gemini-3.1-pro",
+  ],
+};
+
 export function modelCatalogForAuthMode(
   authMode: "chatgpt" | "apiKey",
   providerId?: string,
@@ -114,6 +125,10 @@ export function modelCatalogForAuthMode(
     return CHATGPT_OAUTH_MODELS;
   }
   if (provider && provider.id !== "openai-codex") {
+    const providerModels = OH_MY_PI_PROVIDER_MODELS[provider.id];
+    if (providerModels) {
+      return [{ label: `${provider.label} · oh-my-pi`, models: providerModels }];
+    }
     return [
       { label: `${provider.label} · oh-my-pi`, models: [provider.defaultModel] },
       ...API_GATEWAY_MODELS,
