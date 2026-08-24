@@ -3,7 +3,9 @@ import { AssistantSession, type ProposedCall, type TurnResult } from "@/ai/assis
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import {
   enforceProposalDependencies,
+  proposalDecisionTitle,
   proposalDependencyIndexes,
+  proposalDetailsToggleLabel,
   proposalHasMapTileChanges,
   proposalHumanSummaryLine,
   proposalPreviewMapId,
@@ -180,6 +182,19 @@ describe("UXD proposal summary helpers", () => {
     expect(proposalTechnicalDetailLines(calls)[0]).toContain("paint_road — 도로 3칸");
   });
 
+  it("결정 제목은 짧은 명사구를 쓰고 채팅체·툴 id는 버린다", () => {
+    const calls = [
+      proposed("build_house_kit", { mapId: "m1" }, { tilesChanged: 40 }, "집 A"),
+      proposed("build_house_kit", { mapId: "m1" }, { tilesChanged: 40 }, "집 B"),
+      proposed("build_house_kit", { mapId: "m1" }, { tilesChanged: 40 }, "집 C"),
+    ];
+
+    expect(proposalDecisionTitle(calls, "강가 오두막 3채")).toBe("강가 오두막 3채");
+    expect(proposalDecisionTitle(calls, "길 초안을 제안합니다.")).toBe("집 3채");
+    expect(proposalDecisionTitle(calls, "build_house_kit 3")).toBe("집 3채");
+    expect(proposalDetailsToggleLabel(3)).toBe("3개 항목 · 자세히");
+  });
+
   it("타일 변경이 있는 제안만 미니맵 후보를 가진다", () => {
     const before = createBlankProject();
     const after = structuredClone(before);
@@ -240,6 +255,51 @@ describe("UXD proposal summary helpers", () => {
 });
 
 describe("UXD proposal panel integration", () => {
+  it("결정 카드 앞면은 한 문장·전후·넣기/취소이고 체크·경고·툴 이름은 자세히에 접힌다", async () => {
+    const mapId = store.getCurrent().startMapId;
+    const calls = [
+      proposed("build_house_kit", { mapId }, { tilesChanged: 40 }, "오두막 A"),
+      proposed("paint_road", { mapId }, { tilesChanged: 12 }, "길 12칸"),
+      { ...proposed("place_npc", { mapId, x: 1, y: 1 }, { eventsAdded: 1 }, "NPC 1명"), approvalWarning: "🔒 재료 합의 제안" },
+    ];
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(turn({ assistantText: "강가 오두막 3채", proposedCalls: calls }));
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => store.getCurrent());
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input") as FakeElement;
+    input.value = "강가에 오두막 세 채";
+    findByTestId(panel, "ai-send")?.click();
+    await flushAsync();
+
+    const card = findByTestId(panel, "ai-proposal-card") as FakeElement;
+    const details = findByTestId(card, "ai-proposal-details") as FakeElement;
+    const frontText = card.children
+      .filter((child) => !child.classList.contains("ai-proposal-details"))
+      .map((child) => child.textContent)
+      .join("");
+
+    expect(findByTestId(card, "ai-proposal-title")?.textContent).toBe("강가 오두막 3채");
+    expect(findByTestId(card, "ai-proposal-summary")?.textContent).toContain("집");
+    expect(findByTestId(card, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
+    expect(findByTestId(card, "ai-proposal-reject")?.textContent).toBe("취소");
+    expect(findByTestId(card, "ai-proposal-details-toggle")?.textContent).toBe("3개 항목 · 자세히");
+    expect(details.getAttribute("open")).toBeNull();
+    expect(details.contains(findByTestId(card, "ai-proposal-item-1"))).toBe(true);
+    expect(details.contains(findByTestId(card, "ai-proposal-item-2"))).toBe(true);
+    expect(details.contains(findByTestId(card, "ai-proposal-item-3"))).toBe(true);
+    expect(details.contains(findByTestId(card, "ai-proposal-warning"))).toBe(true);
+    expect(details.contains(findByTestId(card, "ai-proposal-technical-lines"))).toBe(true);
+    expect(details.textContent).toContain("오두막 A");
+    expect(details.textContent).toMatch(/paint_road|작업/);
+    expect(frontText).not.toContain("paint_road");
+    expect(frontText).not.toContain("build_house_kit");
+    expect(frontText).not.toContain("place_npc");
+    expect(frontText).not.toContain("오두막 A");
+    expect(frontText).not.toContain("길 그리기");
+    expect(frontText).not.toContain("🔒");
+    expect(frontText).not.toContain("기술 상세");
+    expect(findByTestId(card, "ai-proposal-accept-materials")).toBeNull();
+  });
+
   it("제안 카드에 요약, 미니맵, 항목 체크박스, 제안 배지를 렌더한다", async () => {
     const baseline = store.getCurrent();
     const mapId = baseline.startMapId;
@@ -259,6 +319,7 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-proposal-thumb-after")).toBeTruthy();
     expect(findByTestId(panel, "ai-proposal-item-1")).toBeTruthy();
     expect(findByTestId(panel, "ai-msg-badge-proposal")?.textContent).toBe("제안");
+    expect(findByTestId(panel, "ai-proposal-details")?.contains(findByTestId(panel, "ai-proposal-item-1"))).toBe(true);
   });
 
   it("사이드 워크 로그는 idle 페이드로 숨기지 않고 제안 카드는 남는다", async () => {
@@ -277,7 +338,8 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-rising-volatile-zone")?.className).not.toContain("is-faded");
     expect(findByTestId(panel, "ai-rising-volatile-zone")?.hidden).toBe(false);
     expect(findByTestId(panel, "ai-proposal-accept")).toBeTruthy();
-    expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("변경 제안");
+    expect(findByTestId(panel, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
+    expect(findByTestId(panel, "ai-proposal-host")?.textContent).toContain("자세히");
   });
 
   it("제안이 오면 몰입 모달이 열리고, '나중에'는 pill로 최소화, 수락하면 닫힌다", async () => {

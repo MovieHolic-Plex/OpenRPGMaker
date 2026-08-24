@@ -41,6 +41,8 @@ import {
 import { clearProposalPin, refreshProposalPinAccept, replaceProposalPin } from "./aiProposalPin";
 import {
   enforceProposalDependencies,
+  proposalDecisionTitle,
+  proposalDetailsToggleLabel,
   proposalDependencyIndexes,
   proposalHumanSummaryLine,
   proposalSummaryLines,
@@ -122,10 +124,10 @@ export function renderProposalMapThumbnail(
   canvas.className = "ai-proposal-thumb-canvas";
   const wrap = el("div", {
     class: "ai-proposal-thumb",
-    attrs: { role: "img", "aria-label": `${kind === "before" ? "현재" : "초안"} 미니맵` },
+    attrs: { role: "img", "aria-label": `${kind === "before" ? "지금" : "초안"} 미니맵` },
     dataset: { testid: `ai-proposal-thumb-${kind}` },
     children: [
-      el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "현재" : "초안" }),
+      el("span", { class: "ai-proposal-thumb-label", text: kind === "before" ? "지금" : "초안" }),
       canvas,
     ],
   });
@@ -506,20 +508,76 @@ export function createProposalHost(options: {
       }
     });
 
+    const humanSummary = proposalHumanSummaryLine(result.proposedCalls);
+    const decisionTitle = proposalDecisionTitle(result.proposedCalls, result.assistantText);
+    const dumpLines = lines.filter((line) => line !== humanSummary);
+    const technicalLines = plainToolNames
+      ? result.proposedCalls.map((call) => {
+          const flag = call.destructive ? "⚠️ 파괴적 " : "";
+          return `${flag}${sanitizeUserFacingToolId(call.name)} — ${userFacingToolText(call.summary)}`;
+        })
+      : proposalTechnicalDetailLines(result.proposedCalls);
+    const dumpChildren: HTMLElement[] = [
+      ...warnings.map((warning) => el("div", {
+        class: "ai-proposal-warning",
+        text: warning,
+        dataset: { testid: "ai-proposal-warning" },
+      })),
+      ...dumpLines.map((line) => el("div", {
+        class: "ai-proposal-warning",
+        text: line,
+        dataset: { testid: "ai-proposal-warning" },
+      })),
+      el("div", { class: "ai-proposal-items", children: itemElements }),
+      ...(softConfirms.length > 0
+        ? [el("div", {
+            class: "ai-proposal-soft-vocab",
+            dataset: { testid: "ai-proposal-soft-vocab" },
+            children: [
+              el("div", { class: "ai-proposal-soft-vocab-title", text: "배치 초안 + 미합의 재료" }),
+              ...softConfirms.map((soft) => el("div", {
+                class: "ai-proposal-soft-vocab-row",
+                text: `${soft.name} (${soft.role}) · 타일 ${soft.tileIds.slice(0, 4).join(",")}${soft.tileIds.length > 4 ? "…" : ""}`,
+              })),
+              el("div", {
+                class: "ai-proposal-soft-vocab-hint",
+                text: "[이 맵에 넣기]는 배치만 반영합니다. [맵 적용 + 재료 합의]를 눌러야 재료가 origin:user로 영구 합의됩니다.",
+              }),
+            ],
+          })]
+        : []),
+      ...(softConfirms.length > 0
+        ? [el("button", {
+            class: "ai-assistant-action ai-proposal-accept-materials",
+            text: proposalAcceptWithMaterialButtonLabel(result.proposedCalls.length, result.proposedCalls.length),
+            attrs: { type: "button" },
+            dataset: { testid: "ai-proposal-accept-materials" },
+            on: {
+              click: () =>
+                acceptProposal(
+                  callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
+                  selected,
+                  hasVocabularyEdits(vocabEditsByCall),
+                  true,
+                ),
+            },
+          })]
+        : []),
+      el("div", {
+        class: "ai-proposal-lines",
+        dataset: { testid: "ai-proposal-technical-lines" },
+        children: technicalLines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
+      }),
+    ];
     const card = el("div", {
       class: `ai-proposal-card${hasDestructiveCall(result.proposedCalls) ? " is-destructive" : ""}`,
       dataset: { testid: "ai-proposal-card" },
       children: [
-        el("div", { class: "ai-proposal-title", text: `변경 제안 (${result.proposedCalls.length}건)` }),
-        ...warnings.map((warning) => el("div", {
-          class: "ai-proposal-warning",
-          text: warning,
-          dataset: { testid: "ai-proposal-warning" },
-        })),
+        el("div", { class: "ai-proposal-title", dataset: { testid: "ai-proposal-title" }, text: decisionTitle }),
         el("div", {
           class: "ai-proposal-summary",
           dataset: { testid: "ai-proposal-summary" },
-          children: lines.map((line) => el("div", { class: "ai-proposal-line", text: line })),
+          text: humanSummary,
         }),
         ...(previewMapId
           ? [el("div", {
@@ -530,40 +588,6 @@ export function createProposalHost(options: {
               ],
             })]
           : []),
-        ...(softConfirms.length > 0
-          ? [el("div", {
-              class: "ai-proposal-soft-vocab",
-              dataset: { testid: "ai-proposal-soft-vocab" },
-              children: [
-                el("div", { class: "ai-proposal-soft-vocab-title", text: "배치 초안 + 미합의 재료" }),
-                ...softConfirms.map((soft) => el("div", {
-                  class: "ai-proposal-soft-vocab-row",
-                  text: `${soft.name} (${soft.role}) · 타일 ${soft.tileIds.slice(0, 4).join(",")}${soft.tileIds.length > 4 ? "…" : ""}`,
-                })),
-                el("div", {
-                  class: "ai-proposal-soft-vocab-hint",
-                  text: "[이 맵에 넣기]는 배치만 반영합니다. [맵 적용 + 재료 합의]를 눌러야 재료가 origin:user로 영구 합의됩니다.",
-                }),
-              ],
-            })]
-          : []),
-        el("div", { class: "ai-proposal-items", children: itemElements }),
-        el("details", {
-          class: "ai-proposal-technical",
-          children: [
-            el("summary", { text: "기술 상세" }),
-            el("div", {
-              class: "ai-proposal-lines",
-              children: (plainToolNames
-                ? result.proposedCalls.map((call) => {
-                    const flag = call.destructive ? "⚠️ 파괴적 " : "";
-                    return `${flag}${sanitizeUserFacingToolId(call.name)} — ${userFacingToolText(call.summary)}`;
-                  })
-                : proposalTechnicalDetailLines(result.proposedCalls)
-              ).map((line) => el("div", { class: "ai-proposal-line", text: line })),
-            }),
-          ],
-        }),
         el("div", {
           class: "ai-proposal-actions",
           children: [
@@ -582,23 +606,6 @@ export function createProposalHost(options: {
                   ),
               },
             }) as HTMLButtonElement),
-            ...(softConfirms.length > 0
-              ? [el("button", {
-                  class: "ai-assistant-action ai-proposal-accept-materials",
-                  text: proposalAcceptWithMaterialButtonLabel(result.proposedCalls.length, result.proposedCalls.length),
-                  attrs: { type: "button" },
-                  dataset: { testid: "ai-proposal-accept-materials" },
-                  on: {
-                    click: () =>
-                      acceptProposal(
-                        callsWithVocabularyEdits(result.proposedCalls, vocabEditsByCall),
-                        selected,
-                        hasVocabularyEdits(vocabEditsByCall),
-                        true,
-                      ),
-                  },
-                })]
-              : []),
             (rejectButton = el("button", {
               class: "ai-assistant-action ai-proposal-reject",
               text: "취소",
@@ -608,10 +615,23 @@ export function createProposalHost(options: {
             }) as HTMLButtonElement),
           ],
         }),
+        el("details", {
+          class: "ai-proposal-details",
+          dataset: { testid: "ai-proposal-details" },
+          children: [
+            el("summary", {
+              class: "ai-proposal-details-toggle",
+              dataset: { testid: "ai-proposal-details-toggle" },
+              text: proposalDetailsToggleLabel(result.proposedCalls.length),
+            }),
+            ...dumpChildren,
+          ],
+        }),
       ],
     });
     proposalCardEl = card;
-    const humanSummary = proposalHumanSummaryLine(result.proposedCalls);
+    const modalTitle = proposalModalCount.parentElement?.querySelector(".ai-proposal-modal-title");
+    if (modalTitle) modalTitle.textContent = decisionTitle;
     pendingProposalMessage = { calls: result.proposedCalls, assistantBubble, summary: humanSummary };
     setAssistantMessageBadge(assistantBubble, "proposal");
     replaceProposalPin(

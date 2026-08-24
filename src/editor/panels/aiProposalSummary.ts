@@ -131,6 +131,27 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
   return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}건`;
 }
 
+const TOOLISH_HEADLINE = /[_]|paint_|build_|upsert_|place_|scatter_|create_|set_|query_|run_/u;
+const CHATTY_HEADLINE = /습니다|입니다|해요|할게요|주세요|제안합니다/u;
+
+function firstAssistantHeadline(text: string): string | null {
+  const raw = text.trim().split(/\n+/u)[0]?.trim() ?? "";
+  if (!raw) return null;
+  const line = raw.replace(/[.。!！?？]+$/u, "").trim();
+  if (line.length < 2 || line.length > 28) return null;
+  if (TOOLISH_HEADLINE.test(line) || CHATTY_HEADLINE.test(line)) return null;
+  return line;
+}
+
+/** 결정 카드 한 문장. 채팅체·툴 id는 버리고, 없으면 사람 요약. */
+export function proposalDecisionTitle(calls: readonly ProposedCall[], assistantText = ""): string {
+  return firstAssistantHeadline(assistantText) ?? proposalHumanSummaryLine(calls);
+}
+
+export function proposalDetailsToggleLabel(itemCount: number): string {
+  return `${itemCount}개 항목 · 자세히`;
+}
+
 export function proposalSummaryLines(calls: readonly ProposedCall[], extraWarnings: readonly string[] = []): string[] {
   const summary = calls.length > 0 ? [proposalHumanSummaryLine(calls)] : [];
   return [...summary, ...proposalCompletenessWarningLines(calls, extraWarnings)];

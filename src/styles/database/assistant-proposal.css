@@ -28,21 +28,21 @@
 }
 .ai-proposal-title {
   color: var(--text-1);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
 }
 .ai-proposal-summary {
-  background: var(--bg-inset);
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  color: var(--text-1);
-  display: grid;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-2);
+  display: block;
   font-size: 12px;
-  font-weight: 700;
-  gap: 4px;
-  padding: 10px 12px;
-  line-height: 1.5;
+  font-weight: 500;
+  line-height: 1.45;
+  padding: 0;
 }
 .ai-proposal-thumbs {
   display: grid;
@@ -226,6 +226,29 @@
   color: var(--warning);
   font-size: 10px;
 }
+.ai-proposal-warning {
+  color: var(--warning, var(--gold-deep, #6E5424));
+  font-size: 11px;
+  line-height: 1.4;
+}
+.ai-proposal-details {
+  color: var(--text-3);
+  font-size: 11px;
+}
+.ai-proposal-details-toggle {
+  color: var(--text-3);
+  cursor: pointer;
+  font-weight: 500;
+  list-style: none;
+}
+.ai-proposal-details-toggle::-webkit-details-marker {
+  display: none;
+}
+.ai-proposal-details[open] {
+  color: var(--text-2);
+  display: grid;
+  gap: 8px;
+}
 .ai-proposal-technical {
   color: var(--text-2);
   font-size: 11px;
@@ -243,19 +266,33 @@
   overflow-y: auto;
 }
 .ai-proposal-actions {
+  align-items: stretch;
   display: flex;
-  gap: var(--space-2);
+  gap: 8px;
 }
-/* 수락 = primary */
+/* 수락 = 골드 하나. 인디고 금지. */
 .ai-proposal-accept {
-  background: var(--accent);
-  border-color: var(--accent-border);
-  color: var(--on-accent);
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+  flex: 1;
   font-weight: 700;
+  justify-content: center;
+  min-height: 36px;
+  text-align: center;
 }
 .ai-proposal-accept:hover:not(:disabled) {
-  background: var(--accent-hover);
-  border-color: var(--accent-border);
+  background: var(--gold-deep, #6E5424);
+  border-color: var(--gold-deep, #6E5424);
+  color: #fff;
+}
+.ai-proposal-reject {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  color: var(--text-1);
+  flex: none;
+  min-width: 64px;
+  text-align: center;
 }
 /* 거부 = ghost(파괴적이지 않은 취소) */
 .ai-proposal-reject:hover:not(:disabled) {
@@ -314,9 +351,9 @@
 }
 
 .ai-proposal-modal-count {
-  background: color-mix(in srgb, var(--accent, var(--accent)) 22%, transparent);
+  background: var(--gold-wash, rgba(138, 107, 47, 0.12));
   border-radius: 999px;
-  color: var(--accent, #4A57D6);
+  color: var(--gold-deep, #6E5424);
   font-size: 12px;
   font-weight: 700;
   padding: 2px 10px;
@@ -373,16 +410,17 @@
 }
 
 .ai-proposal-modal .ai-proposal-accept {
-  background: var(--accent, #4A57D6);
+  background: var(--gold);
   border-color: transparent;
-  color: var(--bg-overlay);
+  color: #fff;
   font-weight: 700;
   min-width: 148px;
   padding: 10px 18px;
 }
 
 .ai-proposal-modal .ai-proposal-accept:not(:disabled):hover {
-  filter: brightness(1.12);
+  background: var(--gold-deep, #6E5424);
+  filter: none;
 }
 
 .ai-proposal-modal .ai-proposal-reject {

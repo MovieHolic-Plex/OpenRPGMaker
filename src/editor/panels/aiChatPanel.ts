@@ -147,6 +147,8 @@ export {
 } from "./aiPanelLayout";
 export {
   fallbackDiffParts,
+  proposalDecisionTitle,
+  proposalDetailsToggleLabel,
   proposalDependencyIndexes,
   proposalHumanSummaryLine,
   proposalSummaryLines,
