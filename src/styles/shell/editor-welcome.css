@@ -104,6 +104,13 @@
     gap: 10px;
   }
 
+  .editor-welcome-briefing .editor-welcome-template-option {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    gap: 6px;
+    min-width: 0;
+  }
+
   .editor-welcome-briefing .editor-welcome-template-card {
     overflow: hidden;
     border-radius: var(--radius-m);
@@ -113,6 +120,24 @@
     text-align: left;
     color: var(--text-1);
     cursor: pointer;
+  }
+
+  .editor-welcome-briefing .editor-welcome-template-starter {
+    min-height: 36px;
+    border: 1px solid var(--accent-border);
+    border-radius: 9px;
+    background: transparent;
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .editor-welcome-briefing .editor-welcome-template-starter:hover,
+  .editor-welcome-briefing .editor-welcome-template-starter:focus-visible {
+    background: var(--accent-soft);
+    outline: 2px solid var(--accent-border);
+    outline-offset: 1px;
   }
 
   .editor-welcome-briefing .editor-welcome-template-card:hover,

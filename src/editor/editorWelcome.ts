@@ -8,7 +8,10 @@ import {
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   type WelcomeGenrePresetId,
+  welcomeGenreStarterPlanById,
 } from "@/editor/welcomeGenrePresets";
+import type { GenreStarterPlan } from "@/editor/genrePacks";
+import { showConfirm } from "@/editor/ui/modal";
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
 
@@ -26,6 +29,7 @@ export const EDITOR_WELCOME_TESTIDS = {
   promptSubmit: "editor-welcome-prompt-submit",
   quickPick: "editor-welcome-quick-pick",
   templateCard: "editor-welcome-template-card",
+  starterCard: "editor-welcome-starter-card",
   chips: [
     "editor-welcome-chip-0",
     "editor-welcome-chip-1",
@@ -65,7 +69,8 @@ export type EditorWelcomeResult = {
   readonly autoSend: boolean;
   readonly replaceWithBlank: boolean;
   readonly presetId?: WelcomeGenrePresetId;
-  readonly source?: "chip" | "free-text";
+  readonly source?: "chip" | "free-text" | "manual-starter";
+  readonly starterPlan?: GenreStarterPlan;
   readonly dismiss: boolean;
   readonly action: EditorWelcomeAction;
 };
@@ -273,6 +278,27 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
       });
     };
 
+    const startManualPreset = async (presetId: WelcomeGenrePresetId, label: string): Promise<void> => {
+      const starterPlan = welcomeGenreStarterPlanById(presetId);
+      const confirmed = await showConfirm({
+        title: "새 프로젝트로 시작",
+        message: "선택한 스타터로 별도의 새 프로젝트를 만듭니다. 현재 프로젝트는 덮어쓰지 않습니다.",
+        confirmLabel: "새 프로젝트 만들기",
+      });
+      if (!confirmed || settled) return;
+      settle({
+        intent: label,
+        prompt: null,
+        autoSend: false,
+        replaceWithBlank: false,
+        presetId,
+        source: "manual-starter",
+        starterPlan,
+        dismiss: true,
+        action: "start",
+      });
+    };
+
     const finishSkip = (): void => {
       settle({
         intent: null,
@@ -304,26 +330,41 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
     const cards = el("div", {
       class: "editor-welcome-briefing-cards",
       children: DIRECTOR_BRIEFING_CARDS.map((card, index) =>
-        el("button", {
-          class: "editor-welcome-template-card",
-          attrs: {
-            type: "button",
-            "aria-label": `${card.label} — ${card.blurb}`,
-          },
-          dataset: {
-            testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
-            templateId: card.id,
-          },
-          on: {
-            click: () => startPreset(card.id, card.label),
-          },
+        el("div", {
+          class: "editor-welcome-template-option",
           children: [
-            el("span", {
-              class: "editor-welcome-template-thumb",
-              attrs: { style: `background-image:url('${card.thumb}')` },
+            el("button", {
+              class: "editor-welcome-template-card",
+              attrs: {
+                type: "button",
+                "aria-label": `${card.label} — ${card.blurb}`,
+              },
+              dataset: {
+                testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
+                templateId: card.id,
+              },
+              on: {
+                click: () => startPreset(card.id, card.label),
+              },
+              children: [
+                el("span", {
+                  class: "editor-welcome-template-thumb",
+                  attrs: { style: `background-image:url('${card.thumb}')` },
+                }),
+                el("span", { class: "editor-welcome-template-label", text: card.label }),
+                el("span", { class: "editor-welcome-template-blurb", text: card.blurb }),
+              ],
             }),
-            el("span", { class: "editor-welcome-template-label", text: card.label }),
-            el("span", { class: "editor-welcome-template-blurb", text: card.blurb }),
+            el("button", {
+              class: "editor-welcome-template-starter",
+              text: "새 프로젝트로 시작",
+              attrs: { type: "button", "aria-label": `${card.label} 새 프로젝트로 시작` },
+              dataset: {
+                testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
+                templateId: card.id,
+              },
+              on: { click: () => void startManualPreset(card.id, card.label) },
+            }),
           ],
         }),
       ),
