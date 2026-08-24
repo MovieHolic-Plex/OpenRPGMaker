@@ -69,36 +69,33 @@
 }
 .ai-dock-mode-btn:hover,
 .ai-dock-mode-btn:focus-visible {
-  border-color: var(--accent-border);
+  border-color: var(--border-strong);
   color: var(--text-1);
   outline: none;
 }
-.ai-dock-mode-btn[data-dock-mode="side"] {
-  background: var(--accent-muted);
-  border-color: var(--accent-border);
-  color: var(--accent-hover);
-}
-.ai-dock-mode-btn[data-dock-mode="float"] {
-  background: var(--warning-muted);
-  border-color: color-mix(in srgb, var(--warning) 50%, transparent);
-  color: var(--warning);
+.ai-dock-mode-btn[data-dock-mode="side"],
+.ai-dock-mode-btn[data-dock-mode="float"],
+.ai-dock-mode-btn[data-dock-mode="glass"] {
+  background: transparent;
+  border-color: var(--border-default);
+  color: var(--text-2);
 }
 /* 사이드 패널: 도크 뱃지는 더보기 메뉴로만 — 입력줄 뱃지 소음 제거 */
 .ai-chat-panel.chat-dock-side .ai-dock-mode-btn {
   display: none;
 }
 
-/* Side: full-height column with left accent */
+/* Side: cream column, 1px line. No indigo stripe. */
 .editor-layout .ai-chat-side-panel {
   background: var(--bg-surface);
-  border-left: 3px solid var(--accent);
-  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.22);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: none;
 }
 .ai-chat-panel.chat-dock-side {
   background: var(--bg-surface);
 }
 .ai-chat-panel.chat-dock-side .ai-chat-header {
-  background: color-mix(in srgb, var(--bg-raised) 88%, var(--accent-muted));
+  background: transparent;
   border-bottom: 1px solid var(--border-subtle);
   margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) 0;
   padding: 10px var(--space-2) 10px;
@@ -119,7 +116,7 @@
 /* Float: capsule over the map (not a side column) */
 .ai-chat-panel.chat-dock-float .ai-command-bar {
   background: color-mix(in srgb, var(--bg-raised) 94%, transparent);
-  border: 1px solid color-mix(in srgb, var(--warning) 35%, var(--border-strong));
+  border: 1px solid var(--border-default);
   border-radius: 16px;
   box-shadow: var(--shadow-modal);
   padding: 10px 12px;

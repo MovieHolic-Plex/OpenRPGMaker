@@ -2235,7 +2235,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const panel = el("aside", {
     class: "ai-chat-panel",
-    attrs: { "aria-label": "AI 어시스턴트 채팅" },
+    attrs: { "aria-label": "조수" },
     dataset: {
       testid: "ai-panel",
       uiDensity: "shared",

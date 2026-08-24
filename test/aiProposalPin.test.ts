@@ -145,7 +145,7 @@ describe("proposalAcceptButtonLabel", () => {
 
   it("uses 선택 N건 이 맵에 넣기 when the selection is partial", () => {
     // Break: partial string still ends with 맵만 적용.
-    expect(proposalAcceptButtonLabel(1, 3)).toBe("선택 1건 이 맵에 넣기");
+    expect(proposalAcceptButtonLabel(1, 3)).toBe("선택 1개 이 맵에 넣기");
   });
 });
 

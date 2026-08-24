@@ -205,7 +205,7 @@ describe("AI 패널 크롬", () => {
     const restoreFace = restore?.querySelector(".ai-director-face");
     expect(restore).toBeTruthy();
     expect(restore?.getAttribute("type")).toBe("button");
-    expect(restore?.getAttribute("aria-label")).toBe("AI 어시스턴트");
+    expect(restore?.getAttribute("aria-label")).toBe("조수");
     expect(restore?.style.width).toBe("48px");
     expect(restore?.style.height).toBe("48px");
     expect(restore?.textContent ?? "").not.toContain("🤖");
@@ -228,7 +228,7 @@ describe("AI 패널 크롬", () => {
   });
 
   it("떠 있는 말풍선으로 접어도 48px 얼굴 복귀가 남는다", () => {
-    // Break: restore is still the 🤖 AI ▸ pill, or aria-label is not AI 어시스턴트.
+    // Break: restore is still the 🤖 AI ▸ pill, or aria-label is not 조수.
     storage.set("oprn:ai-panel-docked", "0");
     const panel = renderPanel();
     expandPanel(panel);
@@ -240,7 +240,7 @@ describe("AI 패널 크롬", () => {
     const restore = findByTestId(panel, "ai-collapsed-restore");
     expect(panel.classList.contains("is-docked")).toBe(false);
     expect(panel.classList.contains("is-collapsed")).toBe(true);
-    expect(restore?.getAttribute("aria-label")).toBe("AI 어시스턴트");
+    expect(restore?.getAttribute("aria-label")).toBe("조수");
     expect(restore?.style.width).toBe("48px");
     expect(restore?.style.height).toBe("48px");
     expect(restore?.textContent ?? "").not.toContain("🤖");

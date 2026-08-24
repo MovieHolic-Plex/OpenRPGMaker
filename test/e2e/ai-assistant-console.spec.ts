@@ -121,7 +121,7 @@ test.describe("AI 감독 console contract", () => {
       await page.getByTestId("ai-collapse").click();
       const restore = page.getByTestId("ai-collapsed-restore");
       await expect(restore).toBeVisible();
-      await expect(restore).toHaveAttribute("aria-label", "AI 어시스턴트");
+      await expect(restore).toHaveAttribute("aria-label", "조수");
       await expect(restore).not.toContainText("🤖");
       const restoreBox = await restore.boundingBox();
       expect(restoreBox?.width ?? 0).toBeGreaterThanOrEqual(48);
