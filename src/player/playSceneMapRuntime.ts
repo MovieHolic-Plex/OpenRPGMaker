@@ -35,6 +35,7 @@ import {
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { syncScreenEffects } from "@/player/playSceneScreenEffects";
 import { runtimeMoverSnapshots } from "@/player/runtimeMoverSnapshots";
+import { lifeCalendarHudLines } from "@/player/lifeCalendarHud";
 import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
 import { runtimeTimerActivity } from "@/player/playSceneTimers";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
@@ -384,6 +385,7 @@ export function activeRuntimeEvents(
 }
 
 export function syncRuntimeState(scene: PlaySceneContext): void {
+  const project = store.getCurrent();
   const events: Record<string, RuntimeEventSnapshot> = {};
   for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
     events[view.event.id] = {
@@ -429,8 +431,9 @@ export function syncRuntimeState(scene: PlaySceneContext): void {
     events,
     movers: runtimeMoverSnapshots(scene.autonomousNPCs),
     battleResult: scene.session.battleResult,
-    gameTime: resolveTimeSystem(store.getCurrent()) ? scene.session.gameTime : undefined,
-    timePhase: resolveTimeSystem(store.getCurrent()) ? timePhaseFor(scene.session.gameTime) : undefined,
+    gameTime: resolveTimeSystem(project) ? scene.session.gameTime : undefined,
+    timePhase: resolveTimeSystem(project) ? timePhaseFor(scene.session.gameTime) : undefined,
+    lifeCalendarHudLines: resolveTimeSystem(project) ? lifeCalendarHudLines(project, scene.session) : undefined,
   });
   scene.runtimeDom.syncAudioState(scene.session.audio);
   scene.runtimeDom.syncPictureLayer(scene.session.pictures);

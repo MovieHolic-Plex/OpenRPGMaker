@@ -92,6 +92,7 @@ export interface RuntimeStateSnapshot {
   readonly battleResult?: BattleResult;
   readonly gameTime?: GameTime;
   readonly timePhase?: TimePhase;
+  readonly lifeCalendarHudLines?: readonly string[];
 }
 
 export class RuntimeDomOverlay {
@@ -228,7 +229,7 @@ export class RuntimeDomOverlay {
     }
     node.textContent = JSON.stringify(snapshot);
     this.syncTimerHud(snapshot.timers, snapshot.timerActive);
-    this.syncTimeHud(snapshot.gameTime, snapshot.timePhase);
+    this.syncTimeHud(snapshot.gameTime, snapshot.timePhase, snapshot.lifeCalendarHudLines);
   }
 
   syncAudioState(audio: AudioCommandState): void {
@@ -411,7 +412,7 @@ export class RuntimeDomOverlay {
     node.textContent = entries.map(([id, seconds]) => `${id}: ${formatTimer(seconds)}${active[id] ? "" : " paused"}`).join("  ");
   }
 
-  private syncTimeHud(gameTime: GameTime | undefined, phase: TimePhase | undefined): void {
+  private syncTimeHud(gameTime: GameTime | undefined, phase: TimePhase | undefined, lines?: readonly string[]): void {
     const host = this.host();
     if (!host) return;
     const existing = host.querySelector("[data-testid='runtime-time-hud']");
@@ -426,7 +427,7 @@ export class RuntimeDomOverlay {
       host.append(node);
     }
     node.dataset.phase = phase ?? "";
-    node.textContent = formatGameTime(gameTime);
+    node.textContent = lines?.length ? lines.join("\n") : formatGameTime(gameTime);
   }
 }
 
