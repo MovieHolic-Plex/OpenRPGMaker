@@ -1,6 +1,7 @@
-import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
-import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
-import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
+import {
+  listDatabaseResourceOptions,
+  openDatabaseResourcePickerDialog,
+} from "@/editor/panels/databaseResourcePickerDialog";
 import { getAudioEngine, playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { resolveAudioSource } from "@/player/audio/audioResources";
 import { store } from "@/project/store";
@@ -73,7 +74,7 @@ import {
   setClass,
 } from "./npcGraphicPickerControls";
 import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
-import type { Command, EventPageGraphic, GameEvent, GameMap } from "@/project/types";
+import type { Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import type { CommandEditContext } from "./types";
 
 export function renderAdvancedCommandBody(
@@ -1184,6 +1185,10 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     class: "play-audio-status",
     dataset: { testid: "play-audio-status" },
   });
+  const resultCount = el("div", {
+    class: "play-audio-result-count",
+    dataset: { testid: "play-audio-result-count" },
+  });
   const meta = el("div", {
     class: "play-audio-meta",
     dataset: { testid: "play-audio-meta" },
@@ -1239,10 +1244,11 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
             click: () => {
               channel = option.value;
               // Prefer a sensible default when switching channel with empty/wrong-kind id.
-              if (!resourceId || !catalogFor(channel).some((entry) => entry.id === resourceId)) {
-                resourceId = catalogFor(channel)[0]?.id ?? "";
+              if (!resourceId || !catalogFor(channel, project).some((entry) => entry.id === resourceId)) {
+                resourceId = catalogFor(channel, project)[0]?.id ?? "";
               }
               rebuildChannelButtons();
+              refreshChannelCopy();
               fillList();
               apply();
             },
@@ -1254,10 +1260,15 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
 
   const fillList = (): void => {
     const query = search.value.trim().toLowerCase();
-    const catalog = catalogFor(channel).filter((entry) => {
+    const fullCatalog = catalogFor(channel, project);
+    const catalog = fullCatalog.filter((entry) => {
       if (!query) return true;
-      return entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query);
+      if (entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query)) return true;
+      return entry.searchTerms?.some((term) => term.toLowerCase().includes(query)) ?? false;
     });
+    resultCount.textContent = query
+      ? `전체 ${fullCatalog.length}개 중 ${catalog.length}개`
+      : `${channel === "bgm" ? "BGM" : "효과음"} ${catalog.length}개`;
     list.replaceChildren();
     list.append(el("option", { text: "(선택 없음)", attrs: { value: "" } }));
     if (resourceId && !catalog.some((entry) => entry.id === resourceId) && !query) {
@@ -1344,7 +1355,15 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     },
   });
 
+  const refreshChannelCopy = (): void => {
+    search.placeholder = channel === "bgm"
+      ? "장면·분위기 검색 (예: 마을, 보스, 비)"
+      : "장면·행동 검색 (예: 문, 구매, 마법)";
+    browseBtn.textContent = channel === "bgm" ? "BGM 라이브러리 열기…" : "효과음 라이브러리 열기…";
+  };
+
   rebuildChannelButtons();
+  refreshChannelCopy();
   fillList();
   refreshMeta();
 
@@ -1353,6 +1372,7 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
     channelRow,
     el("div", { class: "play-audio-label", text: "리소스" }),
     search,
+    resultCount,
     list,
     meta,
     el("div", {
@@ -1369,27 +1389,18 @@ function playAudioBody(context: CommandEditContext, cmd: Extract<Command, { kind
   return wrap;
 }
 
-type AudioCatalogEntry = { readonly id: string; readonly name: string; readonly playable: boolean };
+type AudioCatalogEntry = {
+  readonly id: string;
+  readonly name: string;
+  readonly playable: boolean;
+  readonly searchTerms?: readonly string[];
+};
 
-function catalogFor(channel: "bgm" | "se"): readonly AudioCatalogEntry[] {
-  if (channel === "bgm") {
-    return [
-      ...CC0_MUSIC_ASSETS.map((asset) => ({ id: asset.id, name: `${asset.name} <CC0>`, playable: true })),
-      ...EASYRPG_MUSIC_ASSETS.map((asset) => ({
-        id: asset.id,
-        name: `${asset.name} <RTP>`,
-        playable: asset.path.toLowerCase().endsWith(".wav") || asset.path.toLowerCase().endsWith(".ogg") || asset.path.toLowerCase().endsWith(".mp3"),
-      })),
-    ];
-  }
-  return [
-    ...CC0_SOUND_ASSETS.map((asset) => ({ id: asset.id, name: `${asset.name} <CC0>`, playable: true })),
-    ...EASYRPG_SOUND_ASSETS.map((asset) => ({
-      id: asset.id,
-      name: `${asset.name} <RTP>`,
-      playable: true,
-    })),
-  ];
+function catalogFor(channel: "bgm" | "se", project: Project): readonly AudioCatalogEntry[] {
+  return listDatabaseResourceOptions(channel === "bgm" ? "music" : "sound", project).map((entry) => ({
+    ...entry,
+    playable: isBrowserPlayableAudioUrl(resolveAudioSource(entry.id, project)),
+  }));
 }
 
 function isBrowserPlayableAudioUrl(url: string | null): boolean {

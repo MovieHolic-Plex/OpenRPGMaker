@@ -619,6 +619,13 @@ function groupOrder(group: M2CommandPickerGroup): number {
 }
 
 function createCommandFromEntry(entry: CommandEntry): Command {
+  if (entry.kind === "playAudio") {
+    return {
+      kind: "playAudio",
+      resourceId: "",
+      loop: m2CommandById(entry.commandId)?.title === "Play BGM",
+    };
+  }
   return entry.kind ? newCommand(entry.kind) : newM2Command(entry.commandId);
 }
 
@@ -671,5 +678,6 @@ function persistViewMode(mode: PickerViewMode): void {
 }
 
 export function commandLabel(kind: CommandKind): string {
+  if (kind === "playAudio") return commandKindLabel(kind);
   return M2_COMMAND_CATALOG.find((entry) => entry.existingKind === kind)?.label ?? commandKindLabel(kind);
 }
