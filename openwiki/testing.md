@@ -1,5 +1,10 @@
 # Testing
 
+## P2 낚시·채집·도감·박물관 focused gate (2026-08-25)
+
+- `npx vitest run test/p2ProjectSchema.test.ts test/p2LifeRuntime.test.ts test/p2DayTransition.test.ts test/p2SessionPersistence.test.ts test/p2ReferenceLifecycle.test.ts test/p2EditorAuthoring.test.ts test/p2LifeLedgerUi.test.ts --configLoader runner`를 실행하고, matching P0/P1 persistence/transition/editor/life-ledger regressions와 `npm run typecheck:app`를 뒤따르게 한다.
+- hostile cases는 failed-catch RNG rollback, no energy, unavailable season/time/weather, deterministic daily forage placement/cleanup, placeable/inventory overflow, duplicate day advance, collection counter overflow, duplicate donation/reward, aggregate reward overflow, malformed/stale save row, legacy omitted field, exact map/item deletion impact, structured editor roundtrip, long name, empty tab, pointer/keyboard tab semantics를 포함한다. Merged-root browser evidence에서는 root-owned `foraging-card.png`가 실제로 해석되는지도 확인한다.
+
 Use the lightest command that proves the change.
 
 ## Agent validation rule

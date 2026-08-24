@@ -94,10 +94,10 @@ Implementation note (2026-08-25): `createFarmingDemoProject` now authors four se
 
 ### P2: make daily choices converge on goals
 
-1. Deterministic fishing availability and catch resolution.
-2. Seasonal forage spawning and respawn/cleanup rules.
-3. Unified discovered/shipped/caught/donated collection state.
-4. Museum exact-once donations and rewards.
+1. Deterministic fishing availability and catch resolution. **Implemented in the P2 foundation (2026-08-25).**
+2. Seasonal forage spawning and respawn/cleanup rules. **Implemented in the P2 foundation (2026-08-25).**
+3. Unified discovered/shipped/caught/donated collection state. **Implemented in the P2 foundation (2026-08-25).**
+4. Museum exact-once donations and rewards. **Implemented in the P2 foundation (2026-08-25).**
 5. Farm-building footprint/capacity/upgrade placement.
 6. Home decoration placement, rotation, move/remove, and persistence.
 

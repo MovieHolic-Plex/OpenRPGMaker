@@ -1,5 +1,10 @@
 # Editor Validation Expectations
 
+## P2 생활 시스템 무결성 (2026-08-25)
+
+- P2 wire shape는 unsafe number, blank/duplicate definition ID, invalid rectangle, 빈 weighted catch/forage set, malformed museum reward를 normalization 전에 거부한다. 전역 reference validation은 fish→item, catch→fish, spot/area→map+bounds, forage→item, collection/museum item, museum reward item/switch/world-unlock/recipe를 검사한다.
+- Repair는 dangling fish와 dependent catch, invalid forage row, stale condition/reward가 있는 museum reward 전체를 제거한다. stale required item 하나만 잘라 AND 보상을 더 쉽게 만들면 안 된다. Editor 삭제 가드는 UX 계층이며 이 권위를 대체하지 않는다.
+
 ## 생활 저작 표면 집중 검증 (2026-08-24)
 
 - 생활 기술·제작 UI 변경은 `test/databaseLifeCraftingView.test.ts`, `test/databaseSidebarNav.test.ts`, `test/databaseSidebarKeyboard.test.ts`, `test/databaseSystemView.test.ts`, `test/p0ProjectSchema.test.ts`를 실행한다. 테스트는 nav/count/view 연결, 기존 5개 레코드군과 energy/shipping/worldUnlock/bundle/maker의 구조화 CRUD, empty state, add/duplicate/delete, undo/dirty-state, 중복 ID 방어, complete nested serialize/deserialize 왕복, 28일 기본 계절 길이 편집을 검증해야 한다.
