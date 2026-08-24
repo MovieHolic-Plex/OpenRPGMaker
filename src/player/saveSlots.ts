@@ -48,6 +48,7 @@ import {
 } from "@/player/saveSlotValidation";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
+import { normalizeRoguelikeRunState, type RoguelikeRunState } from "@/project/roguelikeRun";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -133,6 +134,7 @@ export type SaveSnapshot = {
     readonly playTimeSeconds?: number;
     readonly gameTime?: PlaySession["gameTime"];
     readonly rng?: RngState;
+    readonly roguelikeRun?: RoguelikeRunState;
     // 화면 색조/날씨/숨김 상태(m2Runtime.screen 의 지속형 효과). 세이브 복원 대상.
     readonly screen?: SaveScreenState;
     // Change Save Access 등 접근 플래그(m2Runtime.access). 세이브 복원 대상.
@@ -255,6 +257,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
       gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
       rng: cloneRngState(normalizeRngState(session.rng)),
+      roguelikeRun: structuredClone(session.roguelikeRun),
       screen: pickScreenState(session),
       access: session.m2Runtime?.access && Object.keys(session.m2Runtime.access).length > 0 ? { ...session.m2Runtime.access } : undefined,
     },
@@ -369,6 +372,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
   if (snapshot.session.gameTime) session.gameTime = structuredClone(snapshot.session.gameTime);
   session.rng = normalizeRngState(snapshot.session.rng, session.rng?.seed);
+  session.roguelikeRun = normalizeRoguelikeRunState(snapshot.session.roguelikeRun);
   if (snapshot.session.screen) applyScreenState(session, snapshot.session.screen);
   if (snapshot.session.access) {
     const runtime = ensureM2Runtime(session);
@@ -509,6 +513,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       playTimeSeconds: typeof session.playTimeSeconds === "number" ? Math.floor(session.playTimeSeconds) : undefined,
       gameTime: isGameTime(session.gameTime) ? normalizeGameTime(session.gameTime) : undefined,
       rng: isRngState(session.rng) ? session.rng : undefined,
+      roguelikeRun: normalizeRoguelikeRunState(session.roguelikeRun),
       screen: parseScreenState(session.screen),
     },
   };

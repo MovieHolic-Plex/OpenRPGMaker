@@ -2,6 +2,11 @@
 
 Battle rules, turn flow, damage, rewards, battle events, snapshots, monster collection, and action combat.
 
+## Roguelike run boundary (2026-08-24)
+
+- Battle entry copies `session.roguelikeRun` into the battle-event read snapshot, so troop forks/pages may evaluate `run` conditions consistently with map events.
+- `runControl` is intentionally unsupported in troop command execution in Phase 1 and is classified runtime-partial there. Run lifecycle mutations belong to map/common events until an explicit battle-result bridge is designed.
+
 ## Battle rules & runtime
 - Battle rules belong in `src/battle`; scene or DOM code should render/bridge them rather than becoming the source of truth.
 - Battle DOM is intentionally presentation-only and compact: render the field, message window, command / tool list, party status, target prompt/brackets, and result rewards without duplicating runtime predictions into extra analysis panels.

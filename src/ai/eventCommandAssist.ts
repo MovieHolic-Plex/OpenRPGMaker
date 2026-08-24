@@ -102,6 +102,8 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       "중첩 규칙:",
       '- fork: {"kind":"fork","condition":<Condition>,"then":[<Command>...],"else":[<Command>...]} (else는 선택).',
       '- Condition 종류: {"kind":"switch","switchId","value"} / {"kind":"variable","variableId","op","value"} / {"kind":"selfSwitch","key":"A"~"D","value"} / {"kind":"item","itemId","present"} / {"kind":"actor","actorId","present"} / {"kind":"gold","op","amount"} / {"kind":"timer","timerId","seconds"}.',
+      '- runControl action variants: start, advance, end, setFlag, resetRoom. 필드: start(seed?,runId?,startFloor?), advance(amount?), end(result), setFlag(flag,value), resetRoom(roomId?).',
+      '- run condition queries: active, floor, flag, result. 필드: active(value?), floor(op,value), flag(flag,value), result(result).',
       "- choices: options[].branch, cancelBranch에 커맨드 배열 중첩 가능.",
       "- loop: body에 커맨드 배열 중첩 가능. breakLoop로 탈출.",
       "- 셀프 스위치 분기는 fork의 selfSwitch 조건을 사용한다(페이지 분리는 이번 범위 밖).",

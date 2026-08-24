@@ -20,6 +20,7 @@ import type { ActorVitals } from "@/project/sessionVitals";
 import { createRngState, nextRngFloat, type RngState, type RngStreamName } from "@/util/rng";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { transitionItemState } from "@/project/itemTransitions";
+import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -224,6 +225,8 @@ export interface PlaySession {
   playTimeSeconds: number;
   rng?: RngState;
   gameTime?: GameTime;
+  /** Optional roguelike run lifecycle. Authored project data never lives here. */
+  roguelikeRun?: RoguelikeRunState;
 }
 
 // 프로젝트 "시작 상태"(에디터가 정의하는 초기 스위치/변수/골드/인벤토리/파티)를
@@ -628,6 +631,8 @@ export function evalCondition(
       return getFriendship(session, condition.npcKey, hostSocial(host)) >= clampFriendship(condition.value);
     case "battleResult":
       return session.battleResult === condition.result;
+    case "run":
+      return evalRoguelikeRunCondition(session, condition);
     case "all":
       return condition.conditions.every((child) => evalCondition(session, child, host));
     case "any":

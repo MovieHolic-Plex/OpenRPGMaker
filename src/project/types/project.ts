@@ -50,6 +50,8 @@ export interface GameMap {
   encounterTable?: EncounterTableEntry[];
   // 필드 몬스터 스폰 정의. 런타임 생존/리스폰 상태는 세이브하지 않고 맵 로드 때 초기화한다.
   fieldSpawns?: FieldSpawnDef[];
+  // 활성 로그라이크 런에서 fieldSpawns 후보를 방/층/리셋 세대별로 결정적으로 선택한다.
+  roguelikeRoom?: RoguelikeRoomDef;
   // 실시간 추격자가 진입하지 않는 안전지대. 좌표/크기는 타일 단위다.
   safeZones?: Rect[];
   // system.actionCombat.enabled 일 때 이 맵의 필드 스폰 접촉을 턴제 대신 실시간 액션으로 라우팅.
@@ -177,6 +179,25 @@ export interface FieldSpawnDef {
   persistKill?: boolean;
   /** 인스턴스 처치 시 켜는 스위치(킬 리액션 이벤트용). */
   onKillSwitchId?: string;
+}
+
+export interface RoguelikeRoomDef {
+  /** 런 상태에서 방을 식별하는 안정 ID. 생략하면 map.id를 쓴다. */
+  roomId?: string;
+  /** 슬롯마다 eligible choice 하나를 뽑는다. 어떤 슬롯에도 언급되지 않은 fieldSpawn은 항상 활성이다. */
+  encounterSlots?: RoguelikeEncounterSlot[];
+}
+
+export interface RoguelikeEncounterSlot {
+  id: string;
+  choices: RoguelikeEncounterChoice[];
+}
+
+export interface RoguelikeEncounterChoice {
+  fieldSpawnId: string;
+  weight?: number;
+  minFloor?: number;
+  maxFloor?: number;
 }
 
 export interface Rect {

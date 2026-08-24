@@ -80,6 +80,8 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt).not.toContain('"kind":"m2Command"');
     // newCommand 기본값 자동 직렬화 예시.
     expect(prompt).toContain('{"kind":"changeItem","itemId":"","op":"+=","amount":1}');
+    expect(prompt).toContain('runControl action variants: start, advance, end, setFlag, resetRoom');
+    expect(prompt).toContain('run condition queries: active, floor, flag, result');
     // 참조 가능한 리소스 id:이름.
     expect(prompt).toContain("item_potion: 회복약");
     expect(prompt).toContain("sw_0001: 보물상자 열림");

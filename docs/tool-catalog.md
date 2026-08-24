@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 168개 툴 — 쓰기 118, 읽기 50.
+> 총 169개 툴 — 쓰기 119, 읽기 50.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -53,6 +53,7 @@
 | `set_map_properties` | `mapId: string`, `name?: string`, `encounterRate?: integer`, `troopIds?: array` | 맵 속성을 설정한다: name(이름), encounterRate(랜덤 인카운트율, 0=없음), troopIds(인카운트 적 그룹 — 실제 트룹 id여야 함). |
 | `set_encounter_table` | `mapId: string`, `entries: array` | 맵의 조건부/가중 랜덤 인카운터 테이블을 교체한다. encounterTable이 있으면 기존 troopIds 균등 선택보다 우선한다. |
 | `make_hunting_ground` | `mapId: string`, `area: object`, `troopId: string`, `maxAlive?: integer`, `respawnSec?: integer`, `chase?: boolean`, `graphic?: object`, `encounterEntries?: array` | 사냥터 구획을 만든다. fieldSpawns 항목을 추가하고, encounterEntries가 있으면 encounterTable로 설정한다(없으면 area region의 단일 인카운터를 설정). |
+| `configure_roguelike_room` | `mapId: string`, `roomId?: string`, `slots?: array`, `clear?: boolean` | 맵의 로그라이크 방 조우 슬롯을 설정한다. 각 슬롯은 fieldSpawns 후보 중 하나를 런 seed·층·방·리셋 횟수로 결정적으로 선택한다. 슬롯에 없는 스폰은 항상 유지된다. |
 | `create_farm_plot` | `mapId: string`, `area: object` | 맵의 경작 가능 영역(farmableArea)을 선언한다. 타일/울타리/흙 연출은 변경하지 않는다. |
 | `resize_map` | `mapId: string`, `width: integer`, `height: integer` | 맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 256×256). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라. |
 | `remove_map` | `mapId: string` | 맵을 삭제한다(파괴적 — 꼭 필요할 때만, 이유를 먼저 설명). 시작 맵은 삭제 불가. 맵 트리/연결/이동(transfer) 참조는 함께 정리되며, 무결성 검증에 실패하면 거부된다. |

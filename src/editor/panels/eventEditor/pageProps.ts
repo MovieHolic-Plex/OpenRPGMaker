@@ -186,6 +186,7 @@ const PAGE_TAB_BADGE_LETTERS: Record<EventPageCondition["kind"], string> = {
   npcActivity: "A",
   friendshipAtLeast: "F",
   battleResult: "B",
+  run: "R",
   all: "&",
   any: "|",
   not: "!",
@@ -258,6 +259,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `호감도 ${condition.npcKey || "이 이벤트"} >= ${condition.value}`;
     case "battleResult":
       return `전투 ${condition.result === "victory" ? "승리" : condition.result === "defeat" ? "패배" : "도망"}`;
+    case "run":
+      return runConditionText(condition);
     case "all":
       return condition.conditions.length ? `모두(${condition.conditions.length})` : "모두(비어있음)";
     case "any":
@@ -773,12 +776,27 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       return `호감≥${condition.value}`;
     case "battleResult":
       return `전투${condition.result === "victory" ? "승" : condition.result === "defeat" ? "패" : "도"}`;
+    case "run":
+      return runConditionText(condition);
     case "all":
       return `AND(${condition.conditions.length})`;
     case "any":
       return `OR(${condition.conditions.length})`;
     case "not":
       return `NOT`;
+  }
+}
+
+function runConditionText(condition: Extract<EventPageCondition, { kind: "run" }>): string {
+  switch (condition.query) {
+    case "active":
+      return `런 ${condition.value === false ? "비활성" : "진행 중"}`;
+    case "floor":
+      return `런 층 ${condition.op} ${condition.value}`;
+    case "flag":
+      return `런 ${condition.flag || "플래그"} ${condition.value ? "ON" : "OFF"}`;
+    case "result":
+      return `런 결과 ${condition.result}`;
   }
 }
 

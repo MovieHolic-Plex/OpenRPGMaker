@@ -153,6 +153,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "spawnFieldEnemy", spawn: { id: "spawn_new", troopId: "", area: { x: 0, y: 0, w: 3, h: 3 }, chase: true } };
     case "despawnFieldEnemy":
       return { kind: "despawnFieldEnemy", spawnId: "" };
+    case "runControl":
+      return { kind: "runControl", action: "start" };
     case "killPlayer":
       return { kind: "killPlayer", message: "" };
     case "triggerEnding":

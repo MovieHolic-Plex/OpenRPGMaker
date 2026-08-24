@@ -6,17 +6,20 @@ import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
   fieldSpawnTroopId,
+  fieldSpawnRuntimeNeedsRefresh,
   removeFieldSpawnEntry,
   resolveFieldSpawnVictory,
   syncFieldSpawnEventsIntoMap,
   type NormalizedFieldSpawn,
 } from "@/player/fieldSpawns";
 import { syncActorVitals } from "@/project/sessionVitals";
+import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
+import { roguelikeRoomId } from "@/project/roguelikeRooms";
 
 // 처치 결과를 세션에 영속(persistKill)하고 킬 스위치를 켠다.
 export function recordFieldSpawnKill(scene: PlaySceneContext, spawn: NormalizedFieldSpawn | null): void {
   if (!spawn) return;
-  if (spawn.persistKill) {
+  if (spawn.persistKill && scene.session.roguelikeRun?.status !== "active") {
     scene.session.killedFieldSpawns ??= {};
     const mapKills = (scene.session.killedFieldSpawns[scene.map.id] ??= {});
     mapKills[spawn.id] = (mapKills[spawn.id] ?? 0) + 1;
@@ -26,11 +29,13 @@ export function recordFieldSpawnKill(scene: PlaySceneContext, spawn: NormalizedF
 
 export function initializeFieldSpawnsForScene(scene: PlaySceneContext): void {
   const project = store.getCurrent();
+  enterRoguelikeRunRoom(scene.session, roguelikeRoomId(scene.map));
   scene.fieldSpawnState = createFieldSpawnRuntime(
     project,
     scene.map,
     { x: scene.session.x, y: scene.session.y },
-    scene.session.killedFieldSpawns?.[scene.map.id]
+    scene.session.killedFieldSpawns?.[scene.map.id],
+    scene.session.roguelikeRun
   );
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
 }
@@ -38,11 +43,29 @@ export function initializeFieldSpawnsForScene(scene: PlaySceneContext): void {
 export function updateFieldSpawnsForScene(scene: PlaySceneContext, deltaMs: number): void {
   if (scene.running) return;
   const project = store.getCurrent();
+  if (refreshRoguelikeRoomForScene(scene)) return;
   const changed = advanceFieldSpawns(scene.fieldSpawnState, project, scene.map, { x: scene.tileX, y: scene.tileY }, deltaMs);
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();
   scene.registerPageMoveRoutes();
+}
+
+export function refreshRoguelikeRoomForScene(scene: PlaySceneContext): boolean {
+  if (!fieldSpawnRuntimeNeedsRefresh(scene.fieldSpawnState, scene.map, scene.session.roguelikeRun)) return false;
+  const project = store.getCurrent();
+  enterRoguelikeRunRoom(scene.session, roguelikeRoomId(scene.map));
+  scene.fieldSpawnState = createFieldSpawnRuntime(
+    project,
+    scene.map,
+    { x: scene.tileX, y: scene.tileY },
+    scene.session.killedFieldSpawns?.[scene.map.id],
+    scene.session.roguelikeRun
+  );
+  syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
+  scene.renderTiles();
+  scene.registerPageMoveRoutes();
+  return true;
 }
 
 export async function runFieldSpawnEventBattle(scene: PlaySceneContext, eventId: string): Promise<boolean> {
@@ -80,7 +103,8 @@ export function spawnFieldEnemyForScene(scene: PlaySceneContext, spawn: FieldSpa
       project,
       scene.map,
       { x: scene.session.x, y: scene.session.y },
-      scene.session.killedFieldSpawns?.[scene.map.id]
+      scene.session.killedFieldSpawns?.[scene.map.id],
+      scene.session.roguelikeRun
     );
   }
   addFieldSpawnEntry(
@@ -89,7 +113,9 @@ export function spawnFieldEnemyForScene(scene: PlaySceneContext, spawn: FieldSpa
     scene.map,
     spawn,
     { x: scene.tileX, y: scene.tileY },
-    scene.session.killedFieldSpawns?.[scene.map.id]?.[spawn.id] ?? 0
+    scene.session.roguelikeRun?.status === "active"
+      ? 0
+      : scene.session.killedFieldSpawns?.[scene.map.id]?.[spawn.id] ?? 0
   );
   syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
   scene.renderTiles();

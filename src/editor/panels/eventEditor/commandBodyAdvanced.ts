@@ -130,6 +130,8 @@ export function renderAdvancedCommandBody(
       return innBody(context, cmd);
     case "checkpointSave":
       return optionalTextCommandBody(context, cmd, "checkpoint-save-editor", "체크포인트 라벨", "event-command-checkpoint-label", "label");
+    case "runControl":
+      return runControlBody(context, cmd);
     case "killPlayer":
       return optionalTextCommandBody(context, cmd, "kill-player-editor", "패배 메시지", "event-command-kill-player-message", "message");
     case "triggerEnding":
@@ -185,6 +187,130 @@ export function renderAdvancedCommandBody(
     default:
       return undefined;
   }
+}
+
+function runControlBody(
+  context: CommandEditContext,
+  cmd: Extract<Command, { kind: "runControl" }>
+): HTMLElement {
+  const wrap = el("div", {
+    class: "rich-command-form",
+    dataset: { testid: "event-command-run-control" },
+  });
+  const action = simpleSelect([
+    ["start", "런 시작"],
+    ["advance", "다음 층"],
+    ["end", "런 종료"],
+    ["setFlag", "런 플래그"],
+    ["resetRoom", "방 초기화"],
+  ], cmd.action, "event-command-run-action");
+  action.addEventListener("change", () => {
+    const next = action.value;
+    if (next === "advance") context.actions.replaceCommand(context.path, { kind: "runControl", action: "advance", amount: 1 });
+    else if (next === "end") context.actions.replaceCommand(context.path, { kind: "runControl", action: "end", result: "completed" });
+    else if (next === "setFlag") context.actions.replaceCommand(context.path, { kind: "runControl", action: "setFlag", flag: "flag1", value: true });
+    else if (next === "resetRoom") context.actions.replaceCommand(context.path, { kind: "runControl", action: "resetRoom" });
+    else context.actions.replaceCommand(context.path, { kind: "runControl", action: "start" });
+  });
+  wrap.append(inlineField("동작", action));
+
+  switch (cmd.action) {
+    case "start": {
+      const seed = numberInput(cmd.seed ?? 0, "시드", "event-command-run-seed");
+      const autoSeed = el("input", {
+        attrs: { type: "checkbox" },
+        dataset: { testid: "event-command-run-seed-auto" },
+      }) as HTMLInputElement;
+      autoSeed.checked = cmd.seed === undefined;
+      seed.disabled = autoSeed.checked;
+      const runId = textInput(cmd.runId ?? "", "자동 생성", "event-command-run-id");
+      const floor = numberInput(cmd.startFloor ?? 1, "시작 층", "event-command-run-start-floor");
+      floor.min = "1";
+      floor.max = "9999";
+      const apply = (): void => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "start",
+        ...(!autoSeed.checked ? { seed: Math.trunc(Number(seed.value) || 0) } : {}),
+        ...(runId.value.trim() ? { runId: runId.value.trim() } : {}),
+        startFloor: Math.max(1, Math.min(9_999, Math.trunc(Number(floor.value) || 1))),
+      });
+      autoSeed.addEventListener("change", () => { seed.disabled = autoSeed.checked; apply(); });
+      seed.addEventListener("change", apply);
+      runId.addEventListener("change", apply);
+      floor.addEventListener("change", apply);
+      wrap.append(inlineField("자동 시드", autoSeed), inlineField("시드", seed), inlineField("런 ID", runId), inlineField("시작 층", floor));
+      break;
+    }
+    case "advance": {
+      const amount = numberInput(cmd.amount ?? 1, "증가 층", "event-command-run-advance-amount");
+      amount.min = "1";
+      amount.addEventListener("change", () => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "advance",
+        amount: Math.max(1, Math.trunc(Number(amount.value) || 1)),
+      }));
+      wrap.append(inlineField("증가", amount));
+      break;
+    }
+    case "end": {
+      const result = simpleSelect([
+        ["completed", "완료"],
+        ["failed", "실패"],
+        ["abandoned", "포기"],
+      ], cmd.result, "event-command-run-result");
+      result.addEventListener("change", () => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "end",
+        result: result.value === "failed" ? "failed" : result.value === "abandoned" ? "abandoned" : "completed",
+      }));
+      wrap.append(inlineField("결과", result));
+      break;
+    }
+    case "setFlag": {
+      let currentFlag = cmd.flag;
+      let currentValue = cmd.value;
+      const flag = textInput(currentFlag, "플래그 이름", "event-command-run-flag");
+      const value = simpleSelect([["true", "ON"], ["false", "OFF"]], String(currentValue), "event-command-run-flag-value");
+      const apply = (): void => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "setFlag",
+        flag: currentFlag,
+        value: currentValue,
+      });
+      flag.addEventListener("change", () => { currentFlag = flag.value.trim(); apply(); });
+      value.addEventListener("change", () => { currentValue = value.value === "true"; apply(); });
+      wrap.append(inlineField("플래그", flag), inlineField("값", value));
+      break;
+    }
+    case "resetRoom": {
+      const roomId = textInput(cmd.roomId ?? "", "비우면 현재 방", "event-command-run-room-id");
+      roomId.addEventListener("change", () => context.actions.replaceCommand(context.path, {
+        kind: "runControl",
+        action: "resetRoom",
+        ...(roomId.value.trim() ? { roomId: roomId.value.trim() } : {}),
+      }));
+      wrap.append(inlineField("방 ID", roomId));
+      break;
+    }
+  }
+  return wrap;
+}
+
+function simpleSelect(
+  options: readonly (readonly [string, string])[],
+  value: string,
+  testId: string
+): HTMLSelectElement {
+  const select = el("select", { dataset: { testid: testId } }) as HTMLSelectElement;
+  for (const [optionValue, label] of options) {
+    select.append(el("option", { text: label, attrs: { value: optionValue } }));
+  }
+  select.value = value;
+  return select;
+}
+
+function inlineField(label: string, control: HTMLElement): HTMLElement {
+  return el("label", { class: "inline-field", children: [el("span", { text: label }), control] });
 }
 
 function optionalTextCommandBody(

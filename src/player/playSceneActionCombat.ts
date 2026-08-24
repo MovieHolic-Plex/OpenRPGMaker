@@ -75,7 +75,7 @@ export function initializeActionCombatForScene(scene: PlaySceneContext): void {
   };
   scene.actionCombatState = state;
   scene.input_.setAttackMode(true);
-  syncActionEnemies(scene);
+  syncActionEnemiesForScene(scene);
   if (config.hearts || config.stamina) {
     const host = scene.game.canvas.closest(".play-stage");
     state.hud = mountActionHud(host instanceof HTMLElement ? host : null) ?? undefined;
@@ -107,7 +107,7 @@ export function updateActionCombatForScene(scene: PlaySceneContext, deltaMs: num
   const hitstop = consumeHitstop(state.hitstopMs, deltaMs);
   state.hitstopMs = hitstop.nextRemainingMs;
   if (hitstop.skipUpdate) return;
-  syncActionEnemies(scene);
+  syncActionEnemiesForScene(scene);
   tickActionTimers(scene, state, deltaMs);
   updateEnemyModes(scene, state, deltaMs);
   updateProjectiles(scene, state, deltaMs);
@@ -134,9 +134,16 @@ function tickActionTimers(scene: PlaySceneContext, state: ActionCombatSceneState
   }
 }
 
-function syncActionEnemies(scene: PlaySceneContext): void {
+export function syncActionEnemiesForScene(scene: PlaySceneContext): void {
   const state = scene.actionCombatState;
   if (!state || !scene.fieldSpawnState) return;
+  if (state.fieldSpawnRuntime !== scene.fieldSpawnState) {
+    for (const enemy of state.enemies.values()) cleanupEnemyVisuals(scene, enemy);
+    state.enemies.clear();
+    for (const projectile of state.projectiles) projectile.object.destroy();
+    state.projectiles.length = 0;
+    state.fieldSpawnRuntime = scene.fieldSpawnState;
+  }
   const project = store.getCurrent();
   const aliveIds = new Set<string>();
   for (const entry of scene.fieldSpawnState.entries) {

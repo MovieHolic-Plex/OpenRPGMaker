@@ -21,6 +21,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "npcActivity", label: "활동" },
   { value: "friendshipAtLeast", label: "호감도" },
   { value: "battleResult", label: "전투 결과" },
+  { value: "run", label: "로그라이크 런" },
   { value: "all", label: "모두(AND)" },
   { value: "any", label: "하나(OR)" },
   { value: "not", label: "아님(NOT)" },
@@ -99,6 +100,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "battleResult":
         onChange({ kind: "battleResult", result: "victory" });
         return;
+      case "run":
+        onChange({ kind: "run", query: "active", value: true });
+        return;
       case "all":
         onChange({ kind: "all", conditions: [{ kind: "switch", switchId: "", value: true }] });
         return;
@@ -149,6 +153,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       break;
     case "battleResult":
       wrap.append(labeledBattleResult(cond, onChange));
+      break;
+    case "run":
+      wrap.append(labeledRun(cond, onChange));
       break;
     case "all":
     case "any":
@@ -406,6 +413,94 @@ function labeledBattleResult(
   return box;
 }
 
+function labeledRun(
+  cond: Extract<Condition, { kind: "run" }>,
+  onChange: (condition: Condition) => void
+): HTMLElement {
+  const box = el("div", { class: "event-condition-detail" });
+  const queryOptions = [
+    { value: "active", label: "런 진행 여부" },
+    { value: "floor", label: "현재 층" },
+    { value: "flag", label: "런 플래그" },
+    { value: "result", label: "런 결과" },
+  ] as const;
+  const query = selectWithOptions(queryOptions, cond.query, "event-condition-run-query");
+  query.addEventListener("change", () => {
+    switch (selectedOptionValue(query, queryOptions, cond.query)) {
+      case "active": onChange({ kind: "run", query: "active", value: true }); return;
+      case "floor": onChange({ kind: "run", query: "floor", op: ">=", value: 1 }); return;
+      case "flag": onChange({ kind: "run", query: "flag", flag: "flag1", value: true }); return;
+      case "result": onChange({ kind: "run", query: "result", result: "completed" }); return;
+    }
+  });
+  box.append(field("조회", query));
+
+  switch (cond.query) {
+    case "active": {
+      const select = selectWithOptions(BOOLEAN_OPTIONS, String(cond.value ?? true), "event-condition-run-active-value");
+      select.addEventListener("change", () => onChange({ kind: "run", query: "active", value: select.value === "true" }));
+      box.append(field("상태", select));
+      break;
+    }
+    case "floor": {
+      let opValue = cond.op;
+      let floorValue = cond.value;
+      const op = selectWithOptions(CONDITION_OP_OPTIONS, opValue, "event-condition-run-floor-op");
+      const value = el("input", {
+        attrs: { type: "number", min: "1", max: "9999", step: "1" },
+        value: String(floorValue),
+        dataset: { testid: "event-condition-run-floor-value" },
+      }) as HTMLInputElement;
+      const apply = (): void => onChange({ kind: "run", query: "floor", op: opValue, value: floorValue });
+      op.addEventListener("change", () => { opValue = selectedOptionValue(op, CONDITION_OP_OPTIONS, opValue); apply(); });
+      value.addEventListener("change", () => {
+        floorValue = Math.max(1, Math.min(9_999, Math.trunc(Number(value.value) || 1)));
+        apply();
+      });
+      box.append(field("비교", op), field("층", value));
+      break;
+    }
+    case "flag": {
+      let flagValue = cond.flag;
+      let boolValue = cond.value;
+      const flag = el("input", {
+        attrs: { type: "text", placeholder: "플래그 이름" },
+        value: flagValue,
+        dataset: { testid: "event-condition-run-flag" },
+      }) as HTMLInputElement;
+      const value = selectWithOptions(BOOLEAN_OPTIONS, String(boolValue), "event-condition-run-flag-value");
+      const apply = (): void => onChange({ kind: "run", query: "flag", flag: flagValue, value: boolValue });
+      flag.addEventListener("change", () => { flagValue = flag.value.trim(); apply(); });
+      value.addEventListener("change", () => { boolValue = value.value === "true"; apply(); });
+      box.append(field("플래그", flag), field("값", value));
+      break;
+    }
+    case "result": {
+      const options = [
+        { value: "completed", label: "완료" },
+        { value: "failed", label: "실패" },
+        { value: "abandoned", label: "포기" },
+      ] as const;
+      const result = selectWithOptions(options, cond.result, "event-condition-run-result");
+      result.addEventListener("change", () => onChange({
+        kind: "run",
+        query: "result",
+        result: selectedOptionValue(result, options, cond.result),
+      }));
+      box.append(field("결과", result));
+      break;
+    }
+  }
+  return box;
+}
+
+export function renderRunCondition(
+  cond: Extract<Condition, { kind: "run" }>,
+  onChange: (condition: Condition) => void
+): HTMLElement {
+  return labeledRun(cond, onChange);
+}
+
 function labeledGroup(
   cond: Extract<Condition, { kind: "all" | "any" }>,
   onChange: (condition: Condition) => void
@@ -527,6 +622,8 @@ function conditionHint(kind: Condition["kind"]): string {
       return "호감도가 지정 값 이상인지 검사합니다. NPC 키를 비우면 이 이벤트 기준입니다.";
     case "battleResult":
       return "직전 전투 처리(battleProcessing) 결과에 따라 분기합니다. 필드 몬스터 처치 후 이벤트 소거에 씁니다.";
+    case "run":
+      return "현재 로그라이크 런의 진행 여부, 층, 플래그, 종료 결과를 검사합니다.";
     case "all":
       return "하위 조건을 모두 만족해야 참입니다 (AND).";
     case "any":

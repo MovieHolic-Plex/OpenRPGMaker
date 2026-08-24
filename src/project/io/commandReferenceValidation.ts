@@ -78,6 +78,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "cutsceneControl":
     case "inn":
     case "checkpointSave":
+    case "runControl":
     case "killPlayer":
     case "removeFollower":
     case "setLighting":
@@ -251,6 +252,7 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "npcActivity":
     case "friendshipAtLeast":
     case "battleResult":
+    case "run":
       return;
     case "all":
     case "any":
@@ -280,6 +282,7 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "npcActivity":
     case "friendshipAtLeast":
     case "battleResult":
+    case "run":
       return;
     case "all":
     case "any":

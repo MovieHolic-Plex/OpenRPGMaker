@@ -403,6 +403,14 @@ function validateMapRecords(
       if (!context.troopIds.has(spawn.troopId)) issues.push(`map ${map.id}: fieldSpawns[${index}].troopId does not exist: ${spawn.troopId}`);
       capture(issues, () => validateOptionalResource(`map ${map.id}: fieldSpawns[${index}].graphic.sprite`, spawn.graphic?.sprite?.id, resourceIds));
     }
+    const fieldSpawnIds = new Set((map.fieldSpawns ?? []).map((spawn) => spawn.id));
+    for (const [slotIndex, slot] of (map.roguelikeRoom?.encounterSlots ?? []).entries()) {
+      for (const [choiceIndex, choice] of slot.choices.entries()) {
+        if (!fieldSpawnIds.has(choice.fieldSpawnId)) {
+          issues.push(`map ${map.id}: roguelikeRoom.encounterSlots[${slotIndex}].choices[${choiceIndex}].fieldSpawnId does not exist: ${choice.fieldSpawnId}`);
+        }
+      }
+    }
     for (const event of map.events) {
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
       validateGiftPreferenceReferences(`event ${event.id}`, event.giftPrefs, context.itemIds, issues);

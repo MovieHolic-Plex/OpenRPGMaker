@@ -254,6 +254,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     ),
     // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
     battleResult: sessionState.battleResult,
+    roguelikeRun: sessionState.roguelikeRun ? structuredClone(sessionState.roguelikeRun) : undefined,
     inventory: { ...sessionState.inventory },
     itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,

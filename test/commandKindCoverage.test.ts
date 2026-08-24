@@ -61,6 +61,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   openSaveMenu: { kind: "openSaveMenu" },
   spawnFieldEnemy: { kind: "spawnFieldEnemy", spawn: { id: "spawn1", troopId: "troop1", area: { x: 0, y: 0, width: 4, height: 4 } } },
   despawnFieldEnemy: { kind: "despawnFieldEnemy", spawnId: "spawn1" },
+  runControl: { kind: "runControl", action: "start", seed: 1 },
   promoteActor: { kind: "promoteActor", actorId: "actor1", toClassId: "class1", successBranch: [], failureBranch: [] },
   evolveMonster: { kind: "evolveMonster", instanceId: "monster_1", toSpeciesId: "species1", successBranch: [], failureBranch: [] },
   changeEquipment: { kind: "changeEquipment", actorId: "actor1", slot: "weapon", equipmentId: "eq1" },
@@ -132,6 +133,7 @@ function buildMinimalConditions(ids: {
     npcActivity: { kind: "npcActivity", activity: "work" },
     friendshipAtLeast: { kind: "friendshipAtLeast", value: 10 },
     battleResult: { kind: "battleResult", result: "victory" },
+    run: { kind: "run", query: "active", value: true },
     all: {
       kind: "all",
       conditions: [

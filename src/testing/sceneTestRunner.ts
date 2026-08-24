@@ -50,12 +50,15 @@ import {
   advanceFieldSpawns,
   createFieldSpawnRuntime,
   fieldSpawnAliveCount,
+  fieldSpawnRuntimeNeedsRefresh,
   fieldSpawnTroopId,
   isFieldSpawnEventId,
   resolveFieldSpawnVictory,
   syncFieldSpawnEventsIntoMap,
   type FieldSpawnRuntimeState,
 } from "@/player/fieldSpawns";
+import { enterRoguelikeRunRoom } from "@/project/roguelikeRun";
+import { roguelikeRoomId } from "@/project/roguelikeRooms";
 import {
   advanceGameTime,
   initialGameTime,
@@ -463,6 +466,7 @@ function runChooseStep(state: RunnerState, index: number): string | null {
   if (!state.held || state.held.mode !== "choices") return "choose를 처리할 대기 중 선택지가 없습니다.";
   const interp = state.held.interp;
   const stop = pump(state, interp, interp.resume(index));
+  refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, state.held.currentEventId);
   return stop.stop === "failed" ? stop.reason : null;
 }
@@ -478,6 +482,7 @@ function runEventView(state: RunnerState, view: RuntimeEventView): string | null
   const interp = createInterpreter([...commands], state.session, state.project, { currentEventId: view.event.id });
   state.log.push(`event ${view.event.id} start`);
   const stop = pump(state, interp, interp.start());
+  refreshRoguelikeRoomForRunner(state);
   updateHeldInterpreter(state, interp, stop, view.event.id);
   return stop.stop === "failed" ? stop.reason : null;
 }
@@ -501,6 +506,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
   for (let guard = 0; guard < 100000; guard += 1) {
     switch (step.kind) {
       case "done":
+        refreshRoguelikeRoomForRunner(state);
         return { stop: "done" };
       case "choices":
         return { stop: "choices" };
@@ -1457,14 +1463,30 @@ function initializeFieldSpawnsForRunner(state: RunnerState): void {
     state.fieldSpawnState = null;
     return;
   }
-  state.fieldSpawnState = createFieldSpawnRuntime(state.project, map, { x: state.session.x, y: state.session.y });
+  enterRoguelikeRunRoom(state.session, roguelikeRoomId(map));
+  state.fieldSpawnState = createFieldSpawnRuntime(
+    state.project,
+    map,
+    { x: state.session.x, y: state.session.y },
+    state.session.killedFieldSpawns?.[map.id],
+    state.session.roguelikeRun
+  );
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
+}
+
+function refreshRoguelikeRoomForRunner(state: RunnerState): boolean {
+  const map = currentMap(state);
+  if (!map || !fieldSpawnRuntimeNeedsRefresh(state.fieldSpawnState, map, state.session.roguelikeRun)) return false;
+  initializeFieldSpawnsForRunner(state);
+  refreshChasers(state);
+  return true;
 }
 
 function advanceFieldSpawnsForRunner(state: RunnerState, deltaMs: number): void {
   if (state.gameOver || state.runtimeFailure) return;
   const map = currentMap(state);
   if (!map) return;
+  if (refreshRoguelikeRoomForRunner(state)) return;
   const changed = advanceFieldSpawns(state.fieldSpawnState, state.project, map, { x: state.session.x, y: state.session.y }, deltaMs);
   if (!changed) return;
   syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
@@ -1478,7 +1500,13 @@ function runFieldSpawnBattleForRunner(state: RunnerState, eventId: string): stri
   state.session.battleResult = result;
   state.log.push(`field spawn ${eventId}: ${result}`);
   if (result === "victory") {
-    resolveFieldSpawnVictory(state.fieldSpawnState, eventId);
+    const spawn = resolveFieldSpawnVictory(state.fieldSpawnState, eventId);
+    if (spawn?.persistKill && state.session.roguelikeRun?.status !== "active") {
+      state.session.killedFieldSpawns ??= {};
+      const mapKills = (state.session.killedFieldSpawns[state.session.currentMapId] ??= {});
+      mapKills[spawn.id] = (mapKills[spawn.id] ?? 0) + 1;
+    }
+    if (spawn?.onKillSwitchId) state.session.switches[spawn.onKillSwitchId] = true;
     const map = currentMap(state);
     if (map) syncFieldSpawnEventsIntoMap(map, state.fieldSpawnState, state.eventPositions);
     refreshChasers(state);
