@@ -273,6 +273,21 @@ function textOf(content: unknown): string {
     .join("");
 }
 
+function toolArgumentsOf(value: unknown): Record<string, unknown> {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (typeof value !== "string") return {};
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 function openaiToContext(provider: string, body: Record<string, unknown>) {
   const messages = Array.isArray(body.messages) ? body.messages : [];
   const systemPrompt: string[] = [];
@@ -301,7 +316,7 @@ function openaiToContext(provider: string, body: Record<string, unknown>) {
             type: "toolCall",
             id: rec.id ?? "call",
             name: rec.function?.name ?? "tool",
-            arguments: rec.function?.arguments ?? {},
+            arguments: toolArgumentsOf(rec.function?.arguments),
           });
         }
       }
