@@ -5,9 +5,10 @@
 - grouped Database navigation의 `생활` 그룹은 `농사·작물`, `주민 관계`, `생활 기술·제작`, `계절·날씨`, `동물·축사` 순서다. 새 탭의 stable ids는 `dailyWeather` / `farmAnimals`, testids는 `db-tab-daily-weather` / `db-tab-farm-animals`다.
 - `databaseDailyWeatherView.ts`는 `system.dailyWeather`를 구조화 편집한다. 빈 프로젝트는 `4계절 기본 날씨 만들기`로 봄·여름·가을·겨울 확률표와 3일 예보를 채울 수 있고, 이후 enabled/forecastDays와 각 rule의 kind/weight/intensity를 편집한다. 예보 결과 자체는 저작하거나 저장하지 않는다.
 - `databaseFarmAnimalsView.ts`는 `database.farmAnimalSpecies`, `system.farmAnimalBuildings`, `session.farmAnimals`를 한 화면에서 연결한다. 기본값은 기존 아이템과 시작 맵을 재사용해 닭·소, 축사, 두 시작 개체를 만들며 새 아이템·맵 fixture를 몰래 추가하지 않는다. 종은 feed/product/cadence/friendship, 축사는 map/position/capacity/allowed species, 개체는 species/building/event binding을 편집한다.
+- 동물 종의 먹이·생산물로 사용 중인 아이템은 Database 공통 삭제 가드가 차단한다. 종 삭제는 시작 동물과 축사의 허용 종 참조를, 축사 삭제는 시작 동물의 배정을 먼저 확인한다. 참조가 있으면 구조화 UI는 snapshot이나 project mutation 없이 오류 toast만 표시한다.
 - 구조 변경은 `recordProjectSnapshot`, 필드 변경은 `recordCoalescedSnapshot`을 사용하므로 modal dirty/undo 계약을 따른다. 탭 count는 weather rule 수, 또는 species/building/start instance 합계다.
 - 레이아웃은 `styles/database/desktop-record-shell/11-life-authoring.css`에 modal-scoped로 있다. 1180px 이하에서는 세 개의 동물 저작 열이 한 열로 접히고, 799px 이하에서는 계절 카드와 rule grid도 한 열/두 열로 축소된다.
-- 집중 테스트는 `test/p1LifeEditorAuthoring.test.ts`, `test/databaseSidebarNav.test.ts`, `test/databaseSidebarKeyboard.test.ts`다.
+- 집중 테스트는 `test/p1LifeEditorAuthoring.test.ts`, `test/p1ReferenceIntegrity.test.ts`, `test/databaseSidebarNav.test.ts`, `test/databaseSidebarKeyboard.test.ts`다.
 
 ## 생활 기술·제작 저작 표면 (2026-08-24)
 

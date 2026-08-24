@@ -76,6 +76,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateMonsterSpeciesRecords(project, skillIds, resourceIds, issues);
   validateCropRecords(project, itemIds, resourceIds, issues);
   validateLifeAuthoringRecords(project, itemIds, issues);
+  validateFarmAnimalReferences(project, itemIds, issues);
   validateTroopRecords(project, enemyIds, context, issues);
   for (const animation of project.database.battleAnimations) check(() => validateAnimationResource(animation, resourceIds));
   for (const terrain of project.database.terrains ?? []) {
@@ -171,6 +172,7 @@ export function repairProjectReferences(project: Project): void {
   const mapIds = new Set(Object.keys(project.maps));
   const animationIds = new Set(project.database.battleAnimations.map((record) => record.id));
   const commonEventIds = new Set(project.commonEvents.map((record) => record.id));
+  repairFarmAnimalReferences(project);
   if (project.system.timeSystem?.onDayEnd && !commonEventIds.has(project.system.timeSystem.onDayEnd)) {
     const { onDayEnd: _removed, ...rest } = project.system.timeSystem;
     project.system.timeSystem = rest;
@@ -473,6 +475,163 @@ function validateLifeAuthoringRecords(
     seenToolActions.add(action.id);
     if (action.itemId && !itemIds.has(action.itemId)) issues.push(`toolAction ${action.id}: itemId does not exist: ${action.itemId}`);
   }
+}
+
+function validateFarmAnimalReferences(
+  project: Project,
+  itemIds: ReadonlySet<string>,
+  issues: string[],
+): void {
+  const authoredSpecies = project.database.farmAnimalSpecies ?? [];
+  collectDuplicateValuePathIssues(
+    "database.farmAnimalSpecies",
+    "id",
+    authoredSpecies.map((row) => row.id),
+    issues,
+  );
+  const farmSpeciesIds = new Set(authoredSpecies.map((row) => row.id));
+  for (const [index, species] of authoredSpecies.entries()) {
+    if (!itemIds.has(species.feedItemId)) {
+      issues.push(`database.farmAnimalSpecies[${index}].feedItemId does not exist: ${species.feedItemId}`);
+    }
+    if (!itemIds.has(species.productItemId)) {
+      issues.push(`database.farmAnimalSpecies[${index}].productItemId does not exist: ${species.productItemId}`);
+    }
+  }
+
+  const buildings = project.system.farmAnimalBuildings ?? [];
+  collectDuplicateValuePathIssues(
+    "system.farmAnimalBuildings",
+    "id",
+    buildings.map((row) => row.id),
+    issues,
+  );
+  const firstBuildingById = new Map<string, { readonly index: number; readonly row: (typeof buildings)[number] }>();
+  for (const [index, building] of buildings.entries()) {
+    if (!firstBuildingById.has(building.id)) firstBuildingById.set(building.id, { index, row: building });
+    const map = project.maps[building.mapId];
+    if (!map) {
+      issues.push(`system.farmAnimalBuildings[${index}].mapId does not exist: ${building.mapId}`);
+    } else if (!isMapPositionInBounds(building.x, building.y, map.width, map.height)) {
+      issues.push(
+        `system.farmAnimalBuildings[${index}].position (${building.x}, ${building.y}) is out of bounds for map ${building.mapId}`,
+      );
+    }
+    for (const [speciesIndex, speciesId] of building.allowedSpeciesIds.entries()) {
+      if (!farmSpeciesIds.has(speciesId)) {
+        issues.push(`system.farmAnimalBuildings[${index}].allowedSpeciesIds[${speciesIndex}] does not exist: ${speciesId}`);
+      }
+    }
+  }
+
+  const animals = project.session.farmAnimals ?? [];
+  collectDuplicateValuePathIssues(
+    "session.farmAnimals",
+    "instanceId",
+    animals.map((row) => row.instanceId),
+    issues,
+  );
+  const eventIds = new Set(Object.values(project.maps).flatMap((map) => map.events.map((event) => event.id)));
+  const occupancy = new Map<string, number>();
+  for (const [index, animal] of animals.entries()) {
+    const speciesExists = farmSpeciesIds.has(animal.speciesId);
+    if (!speciesExists) {
+      issues.push(`session.farmAnimals[${index}].speciesId does not exist: ${animal.speciesId}`);
+    }
+    if (animal.eventId && !eventIds.has(animal.eventId)) {
+      issues.push(`session.farmAnimals[${index}].eventId does not exist: ${animal.eventId}`);
+    }
+    if (!animal.buildingId) continue;
+    const building = firstBuildingById.get(animal.buildingId);
+    if (!building) {
+      issues.push(`session.farmAnimals[${index}].buildingId does not exist: ${animal.buildingId}`);
+      continue;
+    }
+    if (!speciesExists) continue;
+    if (!building.row.allowedSpeciesIds.includes(animal.speciesId)) {
+      issues.push(
+        `session.farmAnimals[${index}].buildingId ${animal.buildingId} does not allow speciesId ${animal.speciesId}`,
+      );
+      continue;
+    }
+    const count = (occupancy.get(animal.buildingId) ?? 0) + 1;
+    occupancy.set(animal.buildingId, count);
+    if (count > building.row.capacity) {
+      issues.push(
+        `session.farmAnimals[${index}].buildingId exceeds system.farmAnimalBuildings[${building.index}].capacity: ${animal.buildingId} (${building.row.capacity})`,
+      );
+    }
+  }
+}
+
+function repairFarmAnimalReferences(project: Project): void {
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  if (project.database.farmAnimalSpecies !== undefined) {
+    project.database.farmAnimalSpecies = project.database.farmAnimalSpecies.filter(
+      (species) => itemIds.has(species.feedItemId) && itemIds.has(species.productItemId),
+    );
+  }
+  const speciesIds = new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id));
+  if (project.system.farmAnimalBuildings !== undefined) {
+    project.system.farmAnimalBuildings = project.system.farmAnimalBuildings
+      .filter((building) => {
+        const map = project.maps[building.mapId];
+        return Boolean(map && isMapPositionInBounds(building.x, building.y, map.width, map.height));
+      })
+      .map((building) => ({
+        ...building,
+        allowedSpeciesIds: building.allowedSpeciesIds.filter((speciesId) => speciesIds.has(speciesId)),
+      }));
+  }
+  if (project.session.farmAnimals === undefined) return;
+  const buildingById = new Map(
+    (project.system.farmAnimalBuildings ?? []).map((building) => [building.id, building] as const),
+  );
+  const occupancy = new Map<string, number>();
+  project.session.farmAnimals = project.session.farmAnimals
+    .filter((animal) => speciesIds.has(animal.speciesId))
+    .map((animal) => {
+      if (!animal.buildingId) return animal;
+      const building = buildingById.get(animal.buildingId);
+      if (!building || !building.allowedSpeciesIds.includes(animal.speciesId)) {
+        return withoutFarmAnimalBuilding(animal);
+      }
+      const count = (occupancy.get(building.id) ?? 0) + 1;
+      if (count > building.capacity) return withoutFarmAnimalBuilding(animal);
+      occupancy.set(building.id, count);
+      return animal;
+    });
+}
+
+function withoutFarmAnimalBuilding<T extends { readonly buildingId?: string }>(animal: T): Omit<T, "buildingId"> {
+  const { buildingId: _removed, ...rest } = animal;
+  return rest;
+}
+
+function collectDuplicateValuePathIssues(
+  collectionPath: string,
+  field: string,
+  values: readonly string[],
+  issues: string[],
+): void {
+  const firstIndexByValue = new Map<string, number>();
+  for (const [index, value] of values.entries()) {
+    const firstIndex = firstIndexByValue.get(value);
+    if (firstIndex !== undefined) {
+      issues.push(`${collectionPath}[${index}].${field} duplicates ${collectionPath}[${firstIndex}].${field}: ${value}`);
+      continue;
+    }
+    firstIndexByValue.set(value, index);
+  }
+}
+
+function isMapPositionInBounds(x: number, y: number, width: number, height: number): boolean {
+  return Number.isInteger(x)
+    && Number.isInteger(y)
+    && x >= 0
+    && y >= 0
+    && x < width
+    && y < height;
 }
 
 function validateTroopRecords(project: Project, enemyIds: ReadonlySet<string>, context: ReferenceContext, issues: string[]): void {

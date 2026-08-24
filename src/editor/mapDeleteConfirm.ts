@@ -21,6 +21,9 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
   if (impact.villageInfoCount > 0) lines.push(`· 세계관 문서 ${impact.villageInfoCount}개가 제거됩니다.`);
   if (impact.questCount > 0) lines.push(`· 이 맵을 참조하는 퀘스트 ${impact.questCount}개가 제거됩니다.`);
   if (impact.testPresetCount > 0) lines.push(`· 테스트 프리셋 ${impact.testPresetCount}개의 시작 위치가 해제됩니다.`);
+  if (impact.farmAnimalBuildingCount > 0) {
+    lines.push(`· 동물 축사 ${impact.farmAnimalBuildingCount}개가 삭제되고 배정된 시작 동물은 미배정 상태가 됩니다.`);
+  }
   lines.push("", "삭제 후 Ctrl+Z로 되돌릴 수 있습니다.");
   return lines.join("\n");
 }
@@ -67,6 +70,8 @@ export async function confirmAndDissolveFolder(folderId: MapId): Promise<Confirm
       villageInfoCount: 0,
       questCount: 0,
       testPresetCount: 0,
+      farmAnimalBuildingCount: 0,
+      farmAnimalBuildingIds: [],
     },
   };
 }
