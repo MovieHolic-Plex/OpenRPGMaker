@@ -9,7 +9,7 @@ RuntimeNpcScheduleState,
 RuntimeNpcTravelState,
 RuntimeRemovedEventIds,
 RuntimeSpawnedEventState, } from "@/project/sessionRuntimeTypes"
-import { RNG_STREAMS, type RngState } from "@/util/rng";
+import { normalizeRngState, RNG_STREAMS, type RngState } from "@/util/rng";
 import { isPositiveItemQuantity } from "@/project/itemQuantities";
 import { isSafeShopTradeCountsRecord } from "@/project/economyValues";
 
@@ -245,6 +245,19 @@ export function isRngState(value: unknown): value is RngState {
       typeof state.state === "number" &&
       Number.isFinite(state.state);
   });
+}
+
+/** Accepts additive RNG streams while preserving every well-shaped legacy stream. */
+export function parseRngState(value: unknown): RngState | undefined {
+  if (!isRecord(value) || typeof value.seed !== "number" || !Number.isFinite(value.seed) || !isRecord(value.streams)) return undefined;
+  for (const stream of RNG_STREAMS) {
+    const state = value.streams[stream];
+    if (state === undefined) continue;
+    if (!isRecord(state)
+      || typeof state.seed !== "number" || !Number.isFinite(state.seed)
+      || typeof state.state !== "number" || !Number.isFinite(state.state)) return undefined;
+  }
+  return normalizeRngState(value, value.seed);
 }
 
 export function isRuntimeEventLocationRecord(value: unknown): value is Record<string, RuntimeEventLocation> {

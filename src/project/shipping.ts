@@ -2,6 +2,7 @@ import { changeItem, GOLD_MAX, type PlaySession, type ShippingSettlement, type S
 import { isItemQuantity, isPositiveItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import type { Project } from "@/project/types";
 import { resolveSellPrice } from "@/project/upgrades";
+import { canIncrementCollection, incrementCollection } from "@/project/collections";
 
 const DEFAULT_HISTORY_LIMIT = 28;
 const MAX_HISTORY_LIMIT = 365;
@@ -17,7 +18,8 @@ type ShippingFailureReason =
   | "invalid-day-key"
   | "already-settled"
   | "invalid-queue"
-  | "invalid-price";
+  | "invalid-price"
+  | "invalid-collection";
 
 export type ShippingQueueResult =
   | { readonly ok: true; readonly itemId: string; readonly queued: number }
@@ -97,6 +99,9 @@ export function settleShipping(project: Project, session: PlaySession, dayKey: s
     }
     const eligibility = validateItemEligibility(project, itemId);
     if (eligibility) return { ok: false, reason: eligibility, itemId };
+    if (!canIncrementCollection(session, itemId, "shippedCount", count)) {
+      return { ok: false, reason: "invalid-collection", itemId };
+    }
     const unitPrice = resolveSellPrice(project, itemId);
     if (!isNonNegativeInteger(unitPrice) || unitPrice > GOLD_MAX) {
       return { ok: false, reason: "invalid-price", itemId };
@@ -115,6 +120,7 @@ export function settleShipping(project: Project, session: PlaySession, dayKey: s
   session.shippingQueue = {};
   session.shippingLastSettledDayKey = normalizedDayKey;
   session.shippingHistory = [...(session.shippingHistory ?? []), settlement].slice(-limit);
+  for (const entry of entries) incrementCollection(session, entry.itemId, "shippedCount", entry.count);
   return { ok: true, dayKey: normalizedDayKey, entries, total, credited };
 }
 
