@@ -14,11 +14,13 @@ export type CraftRecipe = {
   readonly outputItemId: ItemId;
   readonly outputCount?: number;
   readonly goldCost?: number;
+  /** Omitted/false keeps legacy recipes immediately available. */
+  readonly requiresUnlock?: boolean;
 };
 
 export type CraftResult =
   | { readonly ok: true; readonly recipeId: string; readonly outputItemId: ItemId; readonly outputCount: number }
-  | { readonly ok: false; readonly reason: "disabled" | "missing-recipe" | "missing-ingredients" | "missing-gold" };
+  | { readonly ok: false; readonly reason: "disabled" | "missing-recipe" | "locked" | "missing-ingredients" | "missing-gold" };
 
 export function craftRecipesOf(project: Project): readonly CraftRecipe[] {
   return project.system.craftRecipes ?? [];
@@ -33,6 +35,9 @@ export function canCraft(project: Project, session: PlaySession, recipeId: strin
   if (recipes.length === 0) return { ok: false, reason: "disabled" };
   const recipe = craftRecipeById(project, recipeId);
   if (!recipe) return { ok: false, reason: "missing-recipe" };
+  if (recipe.requiresUnlock === true && !(session.unlockedRecipeIds ?? []).includes(recipe.id)) {
+    return { ok: false, reason: "locked" };
+  }
   if ((recipe.goldCost ?? 0) > 0 && session.gold < (recipe.goldCost ?? 0)) {
     return { ok: false, reason: "missing-gold" };
   }

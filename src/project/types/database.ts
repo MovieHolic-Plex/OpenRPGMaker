@@ -794,6 +794,59 @@ export interface TitleScreenSettings {
   intro?: TitleIntroSettings;
 }
 
+export interface EnergySystemConfig {
+  /** Maximum energy available to a fully-rested player. */
+  readonly max: number;
+  /** New-session energy. Omitted means max. */
+  readonly initial?: number;
+  /** Day/sleep restore amount. Omitted means a full restore. */
+  readonly restorePerDay?: number;
+}
+
+export interface ShippingSystemConfig {
+  readonly enabled: boolean;
+  /** Number of immutable settlement summaries retained in a save. */
+  readonly historyLimit?: number;
+  /** Omitted means every item with a resolvable sell price is accepted. */
+  readonly allowedItemIds?: ItemId[];
+}
+
+export interface ItemAmount {
+  readonly itemId: ItemId;
+  readonly count: number;
+}
+
+export interface BundleRewardDefinition {
+  readonly gold?: number;
+  readonly itemRewards?: ItemAmount[];
+  readonly switchId?: string;
+  readonly worldUnlockIds?: string[];
+  readonly recipeIds?: string[];
+}
+
+export interface BundleDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly requirements: ItemAmount[];
+  readonly reward?: BundleRewardDefinition;
+}
+
+export interface WorldUnlockDefinition {
+  readonly id: string;
+  readonly name?: string;
+  /** Optional switch mirrored on when this region is unlocked. */
+  readonly switchId?: string;
+}
+
+export interface MakerDefinition {
+  readonly id: string;
+  readonly name?: string;
+  readonly inputs: ItemAmount[];
+  readonly outputs: ItemAmount[];
+  /** Processing duration on a monotonic absolute game-minute clock. */
+  readonly durationMinutes: number;
+}
+
 export interface SystemRecords {
   startActorIds: ActorId[];
   titleResourceId?: string;
@@ -828,6 +881,16 @@ export interface SystemRecords {
   itemUpgrades?: import("@/project/upgrades").ItemUpgradeRule[];
   /** Opt-in sell price overrides. */
   sellPrices?: import("@/project/upgrades").SellPriceEntry[];
+  /** Opt-in life-sim energy pool. */
+  energy?: EnergySystemConfig;
+  /** Opt-in shipping queue and nightly settlement policy. */
+  shipping?: ShippingSystemConfig;
+  /** Community-style contribution definitions. */
+  bundles?: BundleDefinition[];
+  /** Stable world/region unlock definitions referenced by bundle rewards. */
+  worldUnlocks?: WorldUnlockDefinition[];
+  /** Timed input/output processing definitions. */
+  makers?: MakerDefinition[];
   /** Out-of-battle party monster care (walk ticks + feed/toy items). */
   monsterCare?: MonsterCareConfig;
   /** Opt-in life skill leveling system (farming/mining/foraging/fishing/combat). */

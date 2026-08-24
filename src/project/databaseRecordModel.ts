@@ -24,6 +24,13 @@ import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { isFarmTool, normalizeCropRecord } from "@/project/farmModel";
 import { normalizeLifeSkillRecord } from "@/project/skillModel";
 import { isGenrePackId } from "@/project/genrePackId";
+import {
+  normalizeBundleDefinitions,
+  normalizeEnergySystemConfig,
+  normalizeMakerDefinitions,
+  normalizeShippingSystemConfig,
+  normalizeWorldUnlockDefinitions,
+} from "@/project/p0SystemRecords";
 import type { ActorExperienceCurve, ActorLearnedSkill, ActorParameterCurves, ActorRateGrade, BattleFlow, ClassBattleCommand, ClassPromotion, ClassPromotionRequirement, ClassRecord, CropRecord, DatabaseRecords, DatabaseStateEffect, EquipmentRecord, EquipmentStatBonuses, ItemCaptureProfile, ItemCareProfile, ItemConsumptionLimit, ItemEquipmentEffectFlags, ItemEquipmentProfile, ItemRecord, LifeSkillRecord, MonsterCareConfig, ProjectDatabaseRecords, RewardPolicy, SkillEffect, SkillMpCost, SkillRecord, StateRecord, SystemRecords, TitleBackgroundLayer, TitleIntroSettings, TitleParticleSettings, TitleScreenGraphic, TitleScreenMenuVisibility, TitleScreenSettings, TitleScreenSounds, TitleScreenTitleMode, TypeChartRecord } from "@/project/types";
 
 export { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
@@ -141,6 +148,11 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(Array.isArray(system.craftRecipes) ? { craftRecipes: system.craftRecipes } : {}),
     ...(Array.isArray(system.itemUpgrades) ? { itemUpgrades: system.itemUpgrades } : {}),
     ...(Array.isArray(system.sellPrices) ? { sellPrices: system.sellPrices } : {}),
+    ...(system.energy ? { energy: normalizeEnergySystemConfig(system.energy) } : {}),
+    ...(system.shipping ? { shipping: normalizeShippingSystemConfig(system.shipping) } : {}),
+    ...(Array.isArray(system.bundles) ? { bundles: normalizeBundleDefinitions(system.bundles) } : {}),
+    ...(Array.isArray(system.worldUnlocks) ? { worldUnlocks: normalizeWorldUnlockDefinitions(system.worldUnlocks) } : {}),
+    ...(Array.isArray(system.makers) ? { makers: normalizeMakerDefinitions(system.makers) } : {}),
     ...(() => {
       const monsterCare = normalizeMonsterCare(system.monsterCare);
       return monsterCare ? { monsterCare } : {};
