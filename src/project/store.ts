@@ -48,6 +48,11 @@ export type ProjectChangeDescriptor =
   | { readonly scope: "database"; readonly collection?: string }
   | { readonly scope: "system" | "assets" | "project" };
 
+/** Identity of the project that is actually loaded in this editor session. */
+export type ProjectIdentity =
+  | { readonly kind: "remote"; readonly id: string }
+  | { readonly kind: "local-session"; readonly id: string };
+
 type Listener = (project: Project, change: ProjectChangeDescriptor) => void;
 type AutoSaveListener = (state: AutoSaveState) => void;
 
@@ -159,6 +164,8 @@ class ProjectStore {
    * commit or remotely flush the snapshot.
    */
   private readOnlyProjectSnapshot: Project | null = null;
+  private loadedRemoteProjectId: string | null = null;
+  private localProjectSessionId = randomUuid();
 
 
   constructor() {
@@ -178,6 +185,7 @@ class ProjectStore {
       const devShowcaseProject = devProjectFactory?.() ?? null;
       if (devShowcaseProject) {
         this.adoptProject(loadDevProjectOverride() ?? devShowcaseProject, { restoreVault: true });
+        this.beginLocalProjectSession();
         this.remotePersistenceEnabled = false;
         this.remotePersistenceDisabledReason = "dev-showcase";
       } else {
@@ -196,6 +204,9 @@ class ProjectStore {
             throw new DbConnectionRequiredError("선택한 작업을 찾지 못했습니다.");
           }
           this.adoptProject(project, { restoreVault: true });
+          const loadedProjectId = supabaseProjectConfig()?.projectId;
+          if (loadedProjectId) this.loadedRemoteProjectId = loadedProjectId;
+          else this.beginLocalProjectSession();
           this.remotePersistenceEnabled = true;
           this.remotePersistenceDisabledReason = null;
           this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -231,6 +242,7 @@ class ProjectStore {
   // 사용자는 이후 DB 연결 설정에서 명시적으로 다시 연결/저장할 수 있다.
   async loadFallbackProject(project: Project): Promise<void> {
     this.adoptProject(project, { restoreVault: true });
+    this.beginLocalProjectSession();
     this.remotePersistenceEnabled = false;
     this.remotePersistenceDisabledReason = "load-failed";
     this.persistedBaseline = null;
@@ -275,8 +287,10 @@ class ProjectStore {
       saveSupabaseSelectedProjectId(projectId);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
+      this.loadedRemoteProjectId = projectId;
       this.syncProjectUrlBar();
     } else {
+      this.beginLocalProjectSession();
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = null;
     }
@@ -328,6 +342,12 @@ class ProjectStore {
 
   getCurrent(): Project {
     return this.readOnlyProjectSnapshot ?? this.current;
+  }
+
+  getProjectIdentity(): ProjectIdentity {
+    return this.loadedRemoteProjectId
+      ? { kind: "remote", id: this.loadedRemoteProjectId }
+      : { kind: "local-session", id: this.localProjectSessionId };
   }
 
   /**
@@ -390,6 +410,7 @@ class ProjectStore {
         syncEventDraftVaultFromProject(this.current);
         this.remotePersistenceEnabled = true;
         this.remotePersistenceDisabledReason = null;
+        this.loadedRemoteProjectId = status.projectId;
         await this.normalizeCurrentProject();
         this.loaded = true;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
@@ -416,7 +437,7 @@ class ProjectStore {
    * 외부 스크립트/다른 세션 저장분을 즉시 반영할 때 사용.
    */
   async reloadFromRemote(options: { readonly force?: boolean } = {}): Promise<ReloadFromRemoteResult> {
-    const projectId = supabaseProjectConfigDraft().projectId || null;
+    const projectId = supabaseProjectConfig()?.projectId ?? null;
     if (!this.remotePersistenceEnabled) {
       return {
         kind: "disabled",
@@ -436,6 +457,7 @@ class ProjectStore {
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
       this.remotePersistenceDisabledReason = null;
+      if (projectId) this.loadedRemoteProjectId = projectId;
       await this.normalizeCurrentProject();
       this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
       resetManualProjectCommitBaseline(this.current);
@@ -493,6 +515,7 @@ class ProjectStore {
   replaceProject(project: Project): void {
     clearEventDraftVault();
     persistEventDraftVaultNow();
+    if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.replace(project, { preserveEventDrafts: false });
   }
 
@@ -570,6 +593,7 @@ class ProjectStore {
     clearEventDraftVault();
     persistEventDraftVaultNow();
     this.current = createBlankProject();
+    if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
     this.markLocalMutation();
     this.emit({ scope: "project" });
     this.scheduleAutoSave();
@@ -595,6 +619,11 @@ class ProjectStore {
   private markLocalMutation(): void {
     this.mutationGeneration += 1;
     this.dirtySinceLastPersist = true;
+  }
+
+  private beginLocalProjectSession(): void {
+    this.loadedRemoteProjectId = null;
+    this.localProjectSessionId = randomUuid();
   }
 
   subscribe(listener: Listener): () => void {

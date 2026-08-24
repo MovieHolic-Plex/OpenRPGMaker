@@ -15,7 +15,10 @@ import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
 import { prepareEventTest, type EventTestPreparation } from "@/editor/eventTestSandbox";
 import { toast } from "@/util/toast";
-import { AUTHORING_TEST_BOOT_SUCCESS_EVENT } from "@/editor/authoringJourney";
+import {
+  AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+  authoringProjectFingerprint,
+} from "@/editor/authoringJourney";
 
 let modalRoot: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
@@ -39,6 +42,7 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
     await store.flush();
     loading.setStage("preparing");
     const project = projectWithoutEventDrafts(store.getCurrent());
+    const projectFingerprint = authoringProjectFingerprint(project);
     releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(project);
     // 타이틀/플레이 전에 canonical 번들 에셋을 브라우저 캐시에 데운다.
     void warmBundledPlayAssets(project);
@@ -49,8 +53,12 @@ export async function openTestPlayModal(startOverride?: { mapId: string; x: numb
       trackGlobalGame: false,
       startOverride,
       diagnosticSink: editorPlayBootDiagnosticSink,
+      onPlayBootSuccess: () => {
+        window.dispatchEvent(new CustomEvent(AUTHORING_TEST_BOOT_SUCCESS_EVENT, {
+          detail: { projectFingerprint },
+        }));
+      },
     });
-    window.dispatchEvent(new CustomEvent(AUTHORING_TEST_BOOT_SUCCESS_EVENT));
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
     releaseEventTestSnapshot?.();

@@ -42,10 +42,35 @@ test("1024px launcher reaches real surfaces and journey needs player boot eviden
   await expect(page.getByTestId("authoring-journey-stage-test")).toHaveAttribute("data-completion", "pending");
   await page.getByTestId("authoring-task-test").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByTestId("title-new-game")).toBeVisible();
+  await expect(page.getByTestId("authoring-journey-stage-test")).toHaveAttribute("data-completion", "pending");
+  await page.getByTestId("title-new-game").click();
   await expect(page.getByTestId("authoring-journey-stage-test")).toHaveAttribute("data-completion", "test-boot");
 
   const box = await journey.boundingBox();
   expect(box).not.toBeNull();
   expect(box!.x).toBeGreaterThanOrEqual(0);
   expect(box!.x + box!.width).toBeLessThanOrEqual(1024);
+
+  const metrics = await journey.evaluate((root) => ({
+    evidenceFontSizes: [...root.querySelectorAll<HTMLElement>(".authoring-journey-evidence")]
+      .map((node) => Number.parseFloat(getComputedStyle(node).fontSize)),
+    targets: [...root.querySelectorAll<HTMLElement>("button")].map((node) => {
+      const rect = node.getBoundingClientRect();
+      const rootRect = root.getBoundingClientRect();
+      return {
+        clipped: rect.left < rootRect.left || rect.right > rootRect.right || rect.top < rootRect.top || rect.bottom > rootRect.bottom,
+        height: rect.height,
+        testid: node.dataset.testid,
+        width: rect.width,
+      };
+    }),
+  }));
+  expect(Math.min(...metrics.evidenceFontSizes)).toBeGreaterThanOrEqual(11);
+  expect(metrics.targets).not.toEqual([]);
+  for (const target of metrics.targets) {
+    expect(target.clipped, target.testid).toBe(false);
+    expect(target.width, target.testid).toBeGreaterThanOrEqual(24);
+    expect(target.height, target.testid).toBeGreaterThanOrEqual(24);
+  }
 });

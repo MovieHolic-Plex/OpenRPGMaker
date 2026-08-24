@@ -133,6 +133,27 @@ describe("selected event test modal", () => {
     const dispatchedTypes = vi.mocked(window.dispatchEvent).mock.calls.map(([event]) => event.type);
     expect(dispatchedTypes).not.toContain(AUTHORING_TEST_BOOT_SUCCESS_EVENT);
   });
+
+  // Break caught: renderPlayer returns synchronously before PlayScene.create succeeds.
+  it("records journey completion only after the player reports PlayScene boot success", async () => {
+    store.replaceProject(createBlankProject());
+    vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
+
+    await openTestPlayModal();
+
+    const dispatch = vi.mocked(window.dispatchEvent);
+    expect(dispatch.mock.calls.map(([event]) => event.type)).not.toContain(AUTHORING_TEST_BOOT_SUCCESS_EVENT);
+    const [, options] = playerMocks.renderPlayer.mock.calls[0] as [HTMLElement, {
+      onPlayBootSuccess?: () => void;
+    }];
+    expect(options.onPlayBootSuccess).toBeTypeOf("function");
+
+    options.onPlayBootSuccess?.();
+
+    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: AUTHORING_TEST_BOOT_SUCCESS_EVENT,
+    }));
+  });
 });
 
 
@@ -154,7 +175,7 @@ describe("ordinary test play canonical snapshot", () => {
 
     expect(flushSpy).toHaveBeenCalledTimes(1);
     expect(playerMocks.renderPlayer).toHaveBeenCalledTimes(1);
-    expect(window.dispatchEvent).toHaveBeenCalledWith(expect.objectContaining({ type: AUTHORING_TEST_BOOT_SUCCESS_EVENT }));
+    expect(window.dispatchEvent).not.toHaveBeenCalledWith(expect.objectContaining({ type: AUTHORING_TEST_BOOT_SUCCESS_EVENT }));
     const runtimeEvents = store.getCurrent().maps[mapId].events;
     expect(runtimeEvents.find((entry) => entry.id === event.id)?.pages?.[0]?.commands)
       .toEqual([{ kind: "text", body: "canonical" }]);
