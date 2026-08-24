@@ -227,3 +227,136 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Structured life-skill / crafting authoring (desktop floor: 1024px). */
+.database-modal-backdrop .db-life-crafting-header {
+  background: var(--db-light-bg-raised, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.database-modal-backdrop .db-life-crafting-header h2,
+.database-modal-backdrop .db-life-crafting-header p,
+.database-modal-backdrop .db-life-detail-form h3,
+.database-modal-backdrop .db-life-nested-heading h4 {
+  margin: 0;
+}
+
+.database-modal-backdrop .db-life-crafting-header p {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.database-modal-backdrop .db-life-section-tabs,
+.database-modal-backdrop .db-life-list-actions,
+.database-modal-backdrop .db-life-nested-heading {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .db-life-section-tab {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 999px;
+  color: var(--text-muted);
+  min-height: 28px;
+  padding: 4px 10px;
+}
+
+.database-modal-backdrop .db-life-section-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.database-modal-backdrop .db-body:has(.db-life-crafting-workspace) {
+  display: grid;
+  gap: 8px;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.database-modal-backdrop .db-life-crafting-workspace {
+  min-height: 0;
+}
+
+.database-modal-backdrop .db-life-list-heading,
+.database-modal-backdrop .db-life-nested-heading {
+  justify-content: space-between;
+}
+
+.database-modal-backdrop .db-life-list-actions {
+  border-top: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  padding: 8px;
+}
+
+.database-modal-backdrop .db-life-detail-form {
+  display: grid;
+  gap: 10px;
+  max-width: 920px;
+}
+
+.database-modal-backdrop .db-life-field {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(100px, 160px) minmax(0, 1fr);
+}
+
+.database-modal-backdrop .db-life-field.is-checkbox {
+  grid-template-columns: minmax(100px, 160px) auto;
+  justify-content: start;
+}
+
+.database-modal-backdrop .db-life-nested-section {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 7px;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.database-modal-backdrop .db-life-nested-row {
+  align-items: end;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(140px, 1fr)) auto;
+}
+
+@media (min-width: 1360px) {
+  .database-modal-backdrop .db-life-crafting-header {
+    grid-template-columns: minmax(260px, 1fr) auto;
+  }
+
+  .database-modal-backdrop .db-life-section-tabs {
+    justify-content: flex-end;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1199px) {
+  .database-modal-backdrop .db-life-crafting-header {
+    padding: 9px 10px;
+  }
+
+  .database-modal-backdrop .db-life-section-tab {
+    font-size: 11px;
+    padding-inline: 8px;
+  }
+
+  .database-modal-backdrop .db-life-crafting-workspace {
+    grid-template-columns: minmax(190px, 28%) minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-nested-row {
+    grid-template-columns: minmax(0, 1fr) minmax(100px, .55fr) auto;
+  }
+}

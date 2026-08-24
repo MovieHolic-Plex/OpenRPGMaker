@@ -16,6 +16,8 @@ import { eligibleEncounterEntries } from "@/player/encounters";
 import { createTimeDemoProject } from "./fixtures/timeDemo";
 import { isGameTimePausedForRuntime, timeTintVisualForPhase } from "@/player/playSceneTime";
 import { beginCutsceneControl } from "@/player/cutsceneControl";
+import { validateSystem } from "@/project/io/shapeDatabaseFields";
+import { TIME_TOOLS } from "@/editor/tools/timeTools";
 
 
 describe("GameTime phase visuals", () => {
@@ -102,6 +104,23 @@ describe("GameTime tools and scene integration", () => {
     const disabled = runTool(ctx, "configure_time_system", { enabled: false });
     expect(disabled.ok).toBe(true);
     expect(ctx.project.system.timeSystem).toBeUndefined();
+  });
+
+  // Break caught: configure_time_system silently drops the authored season length.
+  it("configure_time_system forwards daysPerSeason", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "configure_time_system", { enabled: true, daysPerSeason: 14 });
+    expect(result.ok).toBe(true);
+    expect(ctx.project.system.timeSystem?.daysPerSeason).toBe(14);
+    const configure = TIME_TOOLS.find((tool) => tool.name === "configure_time_system");
+    expect(configure?.parameters.properties?.daysPerSeason).toMatchObject({ type: "integer" });
+  });
+
+  // Break caught: malformed season lengths pass shape validation and normalize as 28.
+  it("rejects a non-number daysPerSeason at the project shape boundary", () => {
+    const system = createBlankProject().system as unknown as Record<string, unknown>;
+    system.timeSystem = { enabled: true, daysPerSeason: "28" };
+    expect(() => validateSystem(system)).toThrow(/daysPerSeason/);
   });
 
   it("run_scene_test handles sleepUntilMorning, onDayEnd order, and timePhase page branches", () => {
