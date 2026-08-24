@@ -279,6 +279,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const proposalNoticeHost = proposalModal.noticeHost;
   const proposalPill = proposalModal.pill;
   const proposalModalCount = proposalModal.count;
+  const proposalModalBody = proposalModal.body;
   const proposalModalRoot = proposalModal.root;
   const openProposalModal = proposalModal.open;
   const closeProposalModal = proposalModal.close;
@@ -404,6 +405,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     proposalNoticeHost,
     proposalModalCount,
     proposalPill,
+    proposalModalBody,
+    getChatDock: readChatDock,
     openProposalModal,
     closeProposalModal,
     controller,
