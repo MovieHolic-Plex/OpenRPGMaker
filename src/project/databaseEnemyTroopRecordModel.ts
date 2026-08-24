@@ -68,6 +68,7 @@ export function normalizeTroopRecord(record: Partial<TroopRecord> & Pick<TroopRe
     members,
     autoAlign: record.autoAlign ?? true,
     uncapturable: record.uncapturable === true,
+    ...(record.trainerBattle === true ? { trainerBattle: true } : {}),
     previewBackgroundResourceId: normalizeBattleFieldBackgroundId(record.previewBackgroundResourceId),
     battleFlow: normalizeBattleFlow(record.battleFlow),
     activeSlots: normalizeOptionalPositiveInteger(record.activeSlots),
