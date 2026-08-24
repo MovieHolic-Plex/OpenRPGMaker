@@ -6,6 +6,7 @@
 // - transfer 통행성 배지
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAdvancedCommandBody } from "@/editor/panels/eventEditor/commandBodyAdvanced";
+import { renderCommandPreview } from "@/editor/panels/eventEditor/commandPreview";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, Project } from "@/project/types";
@@ -112,6 +113,48 @@ describe("event editor rich forms", () => {
 
     findByTestId(body, "change-item-amount-minus")?.click();
     expect(findByTestId(body, "change-item-amount-input")?.value).toBe("2");
+  });
+
+  it("explains storage chest scope without exposing runtime implementation jargon", () => {
+    const replaceCommand = vi.fn<CommandEditContext["actions"]["replaceCommand"]>();
+    const body = renderBody(contextWithReplaceSpy(replaceCommand), {
+      kind: "openChest",
+      chestId: "farm_shared_storage",
+    });
+
+    expect(findByTestId(body, "open-chest-purpose-card")?.textContent).toContain("넣고 다시 꺼낼");
+    expect(findByTestId(body, "open-chest-scope-select")?.value).toBe("shared");
+    expect(findByTestId(body, "open-chest-id-input")?.value).toBe("farm_shared_storage");
+    expect(body.textContent).not.toContain("session.chests");
+
+    findByTestId(body, "open-chest-scope-select-segment-local")?.click();
+    expect(replaceCommand).toHaveBeenLastCalledWith([2], { kind: "openChest" });
+    expect(findByTestId(body, "open-chest-shared-settings")?.dataset.active).toBe("false");
+
+    findByTestId(body, "open-chest-scope-select-segment-shared")?.click();
+    const sharedId = findByTestId(body, "open-chest-id-input");
+    if (!sharedId) throw new Error("missing open-chest-id-input");
+    sharedId.value = "village_warehouse";
+    sharedId.dispatchEvent(new Event("input"));
+    expect(replaceCommand).toHaveBeenLastCalledWith([2], {
+      kind: "openChest",
+      chestId: "village_warehouse",
+    });
+  });
+
+  it("previews storage as a two-way bag and chest interaction", () => {
+    const preview = renderWithFakeDom(() => renderCommandPreview({
+      kind: "openChest",
+      chestId: "farm_shared_storage",
+    })) as FakeElement;
+
+    const stage = findByTestId(preview, "open-chest-preview");
+    expect(stage?.textContent).toContain("가방");
+    expect(stage?.textContent).toContain("보관 상자");
+    expect(stage?.textContent).toContain("넣기");
+    expect(stage?.textContent).toContain("꺼내기");
+    expect(stage?.textContent).toContain("여러 상자 공유");
+    expect(stage?.textContent).not.toContain("session.chests");
   });
 
   it("previews Change Gold against the project's starting gold with a clamped result", () => {

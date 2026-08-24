@@ -47,6 +47,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           path: [],
           actions,
           lockKind: request.lockKind ?? true,
+          previewFace: request.previewFace,
           getCurrentCommand: () => stagedCommand,
         }, stagedCommand));
         renderPreview();

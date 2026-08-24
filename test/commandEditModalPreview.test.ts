@@ -119,7 +119,7 @@ describe("command edit modal — image-rich preview", () => {
     expect(findByTestId(preview, "ecp-message-control-badges")).toBeNull();
   });
 
-  it("text editor keeps body primary and speaker optional with labeled control palette", () => {
+  it("text editor keeps preview and easy tools primary while raw controls stay advanced", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
         { path: [], actions: noopActions, lockKind: true },
@@ -127,8 +127,13 @@ describe("command edit modal — image-rich preview", () => {
       )
     );
     expect(findByTestId(body, "event-command-text-editor")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-live-preview")).toBeTruthy();
     expect(findByTestId(body, "event-command-text-body")).toBeTruthy();
-    expect(findByTestId(body, "event-command-text-speaker-details")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-speaker")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-easy-tools")).toBeTruthy();
+    expect(findByTestId(body, "event-command-text-tool-emphasis")).toBeTruthy();
+    const controlDetails = findByTestId(body, "event-command-text-control-details") as HTMLDetailsElement | null;
+    expect(controlDetails?.open).toBe(false);
     expect(findByTestId(body, "event-command-text-palette")).toBeTruthy();
     expect(findByTestId(body, "event-command-text-insert-variable")?.textContent).toContain("변수");
   });

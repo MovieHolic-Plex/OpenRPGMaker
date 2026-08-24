@@ -11,11 +11,14 @@ function commandFor(templateId: Parameters<typeof buildEventBeginnerTemplate>[3]
 }
 
 describe("event beginner templates", () => {
-  it("builds immediately usable dialogue and unique chest starters", () => {
+  it("builds immediately usable dialogue and item-reward treasure chest starters", () => {
     expect(commandFor("talking-npc").command).toEqual({ kind: "text", body: "안녕하세요." });
-    expect(commandFor("treasure-chest").command).toEqual({
-      kind: "openChest",
-      chestId: "storage_event-template",
+    const treasure = commandFor("treasure-chest");
+    expect(treasure.command).toEqual({
+      kind: "changeItem",
+      itemId: treasure.project.database.items[0]?.id,
+      op: "+=",
+      amount: 1,
     });
   });
 
@@ -54,9 +57,12 @@ describe("event beginner templates", () => {
     project.database.troops = [];
     delete project.system.initialTroopId;
 
+    const treasure = buildEventBeginnerTemplate(project, project.startMapId, "event-template", "treasure-chest");
     const shop = buildEventBeginnerTemplate(project, project.startMapId, "event-template", "shop");
     const battle = buildEventBeginnerTemplate(project, project.startMapId, "event-template", "battle");
 
+    expect(treasure.command).toBeUndefined();
+    expect(treasure.unavailableReason).toContain("아이템");
     expect(shop.command).toBeUndefined();
     expect(shop.unavailableReason).toContain("아이템");
     expect(battle.command).toBeUndefined();
