@@ -77,6 +77,8 @@ import {
   parseFarmAnimalStateRecord,
   restoreFarmAnimalStates,
 } from "@/project/p1FoundationRecords";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -420,9 +422,10 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     new Set((project.system.craftRecipes ?? []).map((recipe) => recipe.id)),
   );
   session.makerInstances = restoreMakerInstances(project, snapshot.session.makerInstances);
-  session.dailyWeather = project.system.dailyWeather?.enabled === true
+  const savedDailyWeather = project.system.dailyWeather?.enabled === true
     ? normalizeDailyWeatherState(snapshot.session.dailyWeather)
     : undefined;
+  session.dailyWeather = savedDailyWeather;
   session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
   if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
@@ -488,6 +491,11 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     const runtime = ensureM2Runtime(session);
     runtime.access = { ...snapshot.session.access };
   }
+  const weather = session.gameTime || project.system.dailyWeather?.enabled !== true
+    ? applyDailyWeatherForDate(project, session, session.gameTime)
+    : savedDailyWeather;
+  if (weather) ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
+  else if (session.m2Runtime) session.m2Runtime.screen.weather = "none";
   syncMonsterPartyFollowers(project, session);
   return session;
 }
