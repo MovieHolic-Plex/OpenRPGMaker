@@ -24,6 +24,7 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
 import { closeTestPlayModal, openSelectedEventTestModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
+import { AUTHORING_TEST_BOOT_SUCCESS_EVENT } from "@/editor/authoringJourney";
 import { installFakeDom } from "./fakeDom";
 
 let restoreDom: () => void = () => undefined;
@@ -65,6 +66,7 @@ beforeEach(() => {
         callback(0);
         return 1;
       },
+      dispatchEvent: vi.fn(() => true),
     },
   });
   playerMocks.renderPlayer.mockClear();
@@ -120,6 +122,17 @@ describe("selected event test modal", () => {
       .toEqual([{ kind: "text", body: "working draft" }]);
     expect(flushSpy).not.toHaveBeenCalled();
   });
+
+  it("does not record journey test completion when player boot throws", async () => {
+    store.replaceProject(createBlankProject());
+    vi.spyOn(store, "flush").mockResolvedValue({ kind: "not-configured" });
+    playerMocks.renderPlayer.mockImplementationOnce(() => { throw new Error("boot failed"); });
+
+    await openTestPlayModal();
+
+    const dispatchedTypes = vi.mocked(window.dispatchEvent).mock.calls.map(([event]) => event.type);
+    expect(dispatchedTypes).not.toContain(AUTHORING_TEST_BOOT_SUCCESS_EVENT);
+  });
 });
 
 
@@ -141,6 +154,7 @@ describe("ordinary test play canonical snapshot", () => {
 
     expect(flushSpy).toHaveBeenCalledTimes(1);
     expect(playerMocks.renderPlayer).toHaveBeenCalledTimes(1);
+    expect(window.dispatchEvent).toHaveBeenCalledWith(expect.objectContaining({ type: AUTHORING_TEST_BOOT_SUCCESS_EVENT }));
     const runtimeEvents = store.getCurrent().maps[mapId].events;
     expect(runtimeEvents.find((entry) => entry.id === event.id)?.pages?.[0]?.commands)
       .toEqual([{ kind: "text", body: "canonical" }]);

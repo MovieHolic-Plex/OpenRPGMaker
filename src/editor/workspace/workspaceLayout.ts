@@ -1,12 +1,8 @@
 // editor/workspace/workspaceLayout.ts
 // 워크스페이스 레이아웃 — 어떤 패널이 어느 도크에 있고 얼마나 넓은지. 데이터다.
 //
-// ── 왜 프리셋이 3단 모드를 대체하나 ─────────────────────────────────────────────
-// 초보/표준/전문가는 **밀도** 축 하나를 세 칸으로 쪼갠 것이었다. 그런데 실제로 감독이
-// 하는 일은 세 종류다 — 맵을 그리거나, 이벤트를 연출하거나, 자료(밸런스)를 만진다.
-// 일마다 필요한 패널이 다르므로 "얼마나 빽빽하게 보여줄까"보다 "지금 무슨 일을 하나"가
-// 더 쓸모 있는 축이다. 그래서 사용자에게 보이는 컨트롤은 **작업 프리셋**이 되고,
-// 밀도는 프리셋에 딸린 값이 된다.
+// 프리셋은 작업 자체가 아니라 패널 배치다. 실제 작업 시작은 authoringTasks가 담당하며,
+// 배치를 바꿔도 사용자가 고른 EditorUiMode/밀도는 유지한다.
 //
 // ⚠ 단계적 이행: `EditorUiMode`(beginner/standard/expert)와 `EditorChromeVisibility`
 // 18개 플래그는 **아직 살아 있다.** 프리셋이 그 모드를 파생시키므로 기존 플래그와
@@ -60,21 +56,21 @@ export type WorkspacePreset = {
 export const WORKSPACE_PRESETS: readonly WorkspacePreset[] = [
   {
     id: "map",
-    label: "맵 그리기",
+    label: "맵 중심",
     hint: "타일 팔레트와 맵 트리를 왼쪽에 둔다",
     docks: { left: ["tiles", "maps"], right: ["assistant"], bottom: [] },
     density: "comfortable",
   },
   {
     id: "event",
-    label: "이벤트 연출",
+    label: "이벤트 중심",
     hint: "팔레트를 접고 맵 트리와 조수에 집중한다",
     docks: { left: ["maps"], right: ["assistant"], bottom: [] },
     density: "comfortable",
   },
   {
     id: "data",
-    label: "자료 밸런싱",
+    label: "데이터 중심",
     hint: "자료집을 넓게 쓰고 조수만 곁에 둔다",
     docks: { left: [], right: ["assistant"], bottom: [] },
     density: "dense",
