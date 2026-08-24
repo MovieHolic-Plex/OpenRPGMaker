@@ -1,5 +1,7 @@
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { contributeBundle } from "@/project/bundles";
+import { collectFarmAnimalProduct, feedFarmAnimal, petFarmAnimal } from "@/project/farmAnimals";
+import { calendarDayKey } from "@/project/gameTime";
 import { absoluteGameMinutes, collectMaker, startMaker } from "@/project/makers";
 import { depositShipping, withdrawShipping } from "@/project/shipping";
 import { resolveSellPrice } from "@/project/upgrades";
@@ -7,7 +9,7 @@ import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import type { StatusMenuDetail, StatusMenuDetailEntry } from "@/player/playerStatusMenuDetailTypes";
 
-export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers"] as const;
+export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals"] as const;
 export type LifeLedgerTabId = (typeof LIFE_LEDGER_TAB_IDS)[number];
 
 const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
@@ -15,6 +17,7 @@ const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
   bundles: "꾸러미",
   skills: "기술",
   makers: "가공 설비",
+  animals: "동물 돌봄",
 };
 
 const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
@@ -22,13 +25,17 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   bundles: FARMING_LIFE_UI_ASSETS.bundles,
   skills: FARMING_LIFE_UI_ASSETS.fishing,
   makers: FARMING_LIFE_UI_ASSETS.makers,
+  animals: FARMING_LIFE_UI_ASSETS.animals,
 };
 
 export function hasLifeLedgerData(project: Project): boolean {
   return project.system.shipping?.enabled === true
     || (project.system.bundles?.length ?? 0) > 0
     || (project.system.skillSystem?.enabled === true && (project.database.lifeSkills?.length ?? 0) > 0)
-    || (project.system.makers?.length ?? 0) > 0;
+    || (project.system.makers?.length ?? 0) > 0
+    || (project.database.farmAnimalSpecies?.length ?? 0) > 0
+    || (project.system.farmAnimalBuildings?.length ?? 0) > 0
+    || (project.session.farmAnimals?.length ?? 0) > 0;
 }
 
 export function createLifeLedgerDetail(options: {
@@ -67,7 +74,65 @@ function tabContent(
     case "bundles": return bundleEntries(project, session, onMutation);
     case "skills": return skillEntries(project, session);
     case "makers": return makerEntries(project, session, onMutation);
+    case "animals": return animalEntries(project, session, onMutation);
   }
+}
+
+function animalEntries(
+  project: Project,
+  session: PlaySession,
+  onMutation?: (ok: boolean, message: string) => void,
+): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
+  const entries: StatusMenuDetailEntry[] = [];
+  const dayKey = session.gameTime ? calendarDayKey(session.gameTime) : undefined;
+  for (const animal of Object.values(session.farmAnimals ?? {}).sort((left, right) => left.name.localeCompare(right.name, "ko"))) {
+    const species = project.database.farmAnimalSpecies?.find((candidate) => candidate.id === animal.speciesId);
+    const building = project.system.farmAnimalBuildings?.find((candidate) => candidate.id === animal.buildingId);
+    const progressTarget = species?.productEveryDays ?? "?";
+    entries.push({
+      label: animal.name,
+      value: `${species?.name ?? `${animal.speciesId} (삭제된 종)`} · ${building?.name ?? "집 미배정"}`,
+      description: `친밀도 ${animal.friendship}/1000 · 생산 ${animal.productionProgress}/${progressTarget} · 받을 물품 ${animal.readyProductCount}`,
+      testId: `life-ledger-animal-summary-${animal.instanceId}`,
+      disabled: true,
+    });
+    entries.push({
+      label: `${animal.name} 먹이 주기`,
+      value: animal.lastFedDayKey === dayKey ? "오늘 완료" : species ? `${itemName(project, species.feedItemId)} 1개` : "종 정보 없음",
+      testId: `life-ledger-animal-feed-${animal.instanceId}`,
+      disabled: !dayKey || !species || animal.lastFedDayKey === dayKey,
+      onActivate: !dayKey || !species ? undefined : () => notify(
+        onMutation,
+        feedFarmAnimal(project, session, animal.instanceId, dayKey),
+        `${animal.name}에게 먹이를 주었습니다`,
+      ),
+    });
+    entries.push({
+      label: `${animal.name} 쓰다듬기`,
+      value: animal.lastPettedDayKey === dayKey ? "오늘 완료" : `친밀도 +${species?.petFriendship ?? 0}`,
+      testId: `life-ledger-animal-pet-${animal.instanceId}`,
+      disabled: !dayKey || !species || animal.lastPettedDayKey === dayKey,
+      onActivate: !dayKey || !species ? undefined : () => notify(
+        onMutation,
+        petFarmAnimal(project, session, animal.instanceId, dayKey),
+        `${animal.name}을(를) 쓰다듬었습니다`,
+      ),
+    });
+    entries.push({
+      label: `${animal.name} 생산물 받기`,
+      value: animal.readyProductCount > 0 && species
+        ? `${itemName(project, species.productItemId)} ${animal.readyProductCount}개`
+        : "아직 준비되지 않음",
+      testId: `life-ledger-animal-collect-${animal.instanceId}`,
+      disabled: !species || animal.readyProductCount <= 0,
+      onActivate: !species ? undefined : () => notify(
+        onMutation,
+        collectFarmAnimalProduct(project, session, animal.instanceId),
+        `${animal.name}의 생산물을 받았습니다`,
+      ),
+    });
+  }
+  return { entries, emptyLabel: "돌볼 수 있는 동물이 없습니다" };
 }
 
 function shippingEntries(
