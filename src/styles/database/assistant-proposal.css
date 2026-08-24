@@ -18,6 +18,18 @@
   box-shadow: none;
 }
 
+/* Float is composer-only: the card sits on the capsule, not the rising overlay. */
+.ai-chat-panel.chat-dock-float:not(.is-history-open):not(.is-studio):not(.is-collapsed) .ai-proposal-pin-host:not(:empty) {
+  bottom: calc(14px + 34px + var(--ai-command-bar-height, 56px) + 8px);
+  max-height: min(48vh, 420px);
+  overflow: auto;
+  pointer-events: auto;
+  position: absolute;
+  right: 12px;
+  width: min(640px, calc(100vw - 24px));
+  z-index: 40;
+}
+
 .ai-proposal-card {
   background: var(--bg-raised);
   border: 1.5px solid var(--border-default);

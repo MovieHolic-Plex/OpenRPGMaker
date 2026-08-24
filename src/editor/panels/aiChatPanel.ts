@@ -273,8 +273,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // ③ 액션 존(§2.3): 지금 결정이 필요한 제안 카드만 — 비면 숨김(CSS :empty).
   const proposalHost = el("div", { class: "ai-proposal-host ai-action-zone", dataset: { testid: "ai-proposal-host" } });
 
-  // 결정 카드: glass/side는 도크 안 인라인, float만 몰입 모달. proposalHost는 모드에 따라 pinHost/모달 본문으로 옮긴다.
-  // '나중에'(Esc/백드롭, float)는 최소화 — 커맨드 바 위 pill로 승인 대기를 잃지 않는다. 폐기는 오직 [취소].
+  // 결정 카드: glass/side/float는 도크 안 인라인. 몰입 모달·오버레이 pill은 캔버스 우선(사이드)만.
+  // 플로트는 커맨드 캡슐 위 pinHost. 폐기는 오직 [취소].
   const proposalModal = createProposalModalElements(proposalHost);
   const proposalNoticeHost = proposalModal.noticeHost;
   const proposalPill = proposalModal.pill;
@@ -2179,6 +2179,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (rect.height <= 0 || typeof window === "undefined") return;
     const clearance = Math.max(60, Math.ceil(window.innerHeight - rect.top) + 12);
     panel.style.setProperty("--ai-command-bar-clearance", `${clearance}px`);
+    panel.style.setProperty("--ai-command-bar-height", `${Math.ceil(rect.height)}px`);
   };
   const commandBarClearanceObserver =
     typeof ResizeObserver !== "undefined" ? new ResizeObserver(syncCommandBarClearance) : null;

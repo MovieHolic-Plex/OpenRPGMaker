@@ -3,13 +3,14 @@ import { el } from "@/util/dom";
 
 export type ProposalPresentationMode = "modal" | "canvas" | "inline";
 
-/** Decision cards stay in the dock. The immersive modal is canvas-first full review only. */
+/** Decision cards stay in the dock. Float is composer-only — never the overlay pill. */
 export function resolveProposalPresentation(
   requested: ProposalPresentationMode,
   dock: ChatDock,
 ): ProposalPresentationMode {
+  if (dock === "float") return "inline";
   if (requested === "canvas") return "canvas";
-  if (dock === "glass" || dock === "side" || dock === "float") return "inline";
+  if (dock === "glass" || dock === "side") return "inline";
   return "inline";
 }
 

@@ -15,6 +15,15 @@ import {
   renderAiChatPanel,
 } from "@/editor/panels/aiChatPanel";
 import { resolveProposalPresentation } from "@/editor/panels/aiProposalModal";
+import {
+  agentGhostPreviewsForMap,
+  clearAgentGhostPreview,
+  getAgentGhostPreviewState,
+  hasAgentGhostPreviewSubscribers,
+  replaceAgentGhostPreviewFromProjectDiff,
+  subscribeAgentGhostPreview,
+} from "@/editor/agentGhostPreview";
+import { classifyProposalSafety } from "@/editor/proposalSafety";
 import type { ChatDock } from "@/editor/chatDock";
 import { readableTopbarIdentityLabel, renderTopbar } from "@/editor/panels/menu";
 import { editorState } from "@/editor/editorState";
@@ -145,6 +154,7 @@ beforeEach(() => {
 afterEach(() => {
   restoreDom?.();
   restoreDom = null;
+  clearAgentGhostPreview();
   Reflect.deleteProperty(globalThis, "localStorage");
   Reflect.deleteProperty(globalThis, "window");
   vi.restoreAllMocks();
@@ -189,6 +199,8 @@ describe("UXD proposal summary helpers", () => {
     expect(resolveProposalPresentation("modal", "side")).toBe("inline");
     expect(resolveProposalPresentation("modal", "float")).toBe("inline");
     expect(resolveProposalPresentation("canvas", "glass")).toBe("canvas");
+    expect(resolveProposalPresentation("canvas", "side")).toBe("canvas");
+    expect(resolveProposalPresentation("canvas", "float")).toBe("inline");
     expect(resolveProposalPresentation("inline", "float")).toBe("inline");
   });
 
@@ -390,6 +402,52 @@ describe("UXD proposal panel integration", () => {
     expect(findByTestId(panel, "ai-proposal-pin")).toBeNull();
     expect(findByTestId(panel, "ai-proposal-pin-host")?.contains(card)).toBe(true);
     expect(findByTestId(card, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
+  });
+
+  it("플로트는 캔버스 우선이어도 오버레이 pill 없이 결정 카드를 붙인다", async () => {
+    const before = store.getCurrent();
+    const mapId = before.startMapId;
+    const after = structuredClone(before);
+    after.maps[mapId].lowerTiles[2 * after.maps[mapId].width + 2] = TILE.PATH;
+    const calls = [proposed("paint_tiles", { mapId }, { tilesChanged: 1 }, "타일 1칸")];
+    expect(classifyProposalSafety({ calls, before, after, currentMapId: mapId }).safe).toBe(true);
+
+    const unsub = subscribeAgentGhostPreview(() => undefined);
+    replaceAgentGhostPreviewFromProjectDiff(before, after);
+    expect(hasAgentGhostPreviewSubscribers()).toBe(true);
+    expect(agentGhostPreviewsForMap(getAgentGhostPreviewState(), mapId).length).toBeGreaterThan(0);
+
+    vi.spyOn(AssistantSession.prototype, "sendUserMessage").mockResolvedValue(
+      turn({ assistantText: "초안입니다.", proposedCalls: calls, stoppedReason: "error" }),
+    );
+    vi.spyOn(AssistantSession.prototype, "getProposedProject").mockImplementation(() => after);
+    editorState.set({ currentMapId: mapId, selection: null });
+    try {
+      const panel = renderPanel("float");
+      storage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+        ...defaultAiConfig(),
+        apiKey: "sk-test",
+        baseUrl: "x",
+        model: "m",
+        autoApprove: true,
+      }));
+      const input = findByTestId(panel, "ai-input") as FakeElement;
+      input.value = "초안";
+      findByTestId(panel, "ai-send")?.click();
+      await flushAsync();
+
+      const card = findByTestId(panel, "ai-proposal-card") as FakeElement;
+      expect(findByTestId(panel, "ai-rising-overlay")).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-reopen")).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-modal")?.hidden).toBe(true);
+      expect(findByTestId(panel, "ai-proposal-pin")).toBeNull();
+      expect(findByTestId(panel, "ai-proposal-pin-host")?.contains(card)).toBe(true);
+      expect(findByTestId(card, "ai-proposal-accept")?.textContent).toBe("이 맵에 넣기");
+      expect(panel.textContent ?? "").not.toContain("전체 검토");
+    } finally {
+      unsub();
+      clearAgentGhostPreview();
+    }
   });
 
   it("후속 채팅 턴(제안 0건)이 와도 대기 중인 변경 제안 카드 본문을 지우지 않는다", async () => {
