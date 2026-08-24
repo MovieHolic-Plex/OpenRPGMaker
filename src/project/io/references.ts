@@ -1,4 +1,4 @@
-import type { Command, Project } from "../types";
+import type { Command, GameEvent, NpcScheduleEntry, Project } from "../types";
 import { assert } from "./guards";
 import {
   validateBattleEventPages,
@@ -93,6 +93,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   validateMapConnections(project, mapIds, issues);
   validateCommonEvents(project, switchIds, context, issues);
   validateMapRecords(project, switchIds, variableIds, resourceIds, context, issues);
+  validateScheduledEventIds(project, issues);
   return issues;
 }
 
@@ -195,6 +196,7 @@ export function repairProjectReferences(project: Project): void {
   const prune = new PruneStats();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
+      repairNpcScheduleReferences(event, project.maps, prune);
       event.commands = pruneDanglingCommandRefs(event.commands, commonEventIds, mapIds, prune);
       for (const page of event.pages ?? []) {
         page.commands = pruneDanglingCommandRefs(page.commands, commonEventIds, mapIds, prune);
@@ -215,15 +217,20 @@ class PruneStats {
   removedMapCommands = 0;
   removedLivingDestinations = 0;
   removedCommonEventCalls = 0;
+  removedScheduleDestinations = 0;
 
   warnIfAny(): void {
-    const total = this.removedMapCommands + this.removedLivingDestinations + this.removedCommonEventCalls;
+    const total = this.removedMapCommands
+      + this.removedLivingDestinations
+      + this.removedCommonEventCalls
+      + this.removedScheduleDestinations;
     if (total === 0 || typeof console === "undefined") return;
     console.warn(
       `[project] 깨진 참조 ${total}건을 정리하고 로드했습니다 — ` +
         `존재하지 않는 맵으로의 이동/타일변경 ${this.removedMapCommands}건, ` +
         `생활 이동 목적지 ${this.removedLivingDestinations}건, ` +
-        `공통 이벤트 호출 ${this.removedCommonEventCalls}건`
+        `공통 이벤트 호출 ${this.removedCommonEventCalls}건, ` +
+        `NPC 일정 목적지 ${this.removedScheduleDestinations}건`
     );
   }
 }
@@ -493,7 +500,7 @@ function validateMapRecords(
   context: ReferenceContext,
   issues: string[]
 ): void {
-  for (const map of Object.values(project.maps)) {
+  for (const [hostMapId, map] of Object.entries(project.maps)) {
     if (project.tilesets[map.tilesetId] === undefined) issues.push(`map ${map.id}: tilesetId does not exist.`);
     collectExistingIdIssues(`map ${map.id}: troopIds`, map.troopIds ?? [], context.troopIds, issues);
     for (const [index, entry] of (map.encounterTable ?? []).entries()) {
@@ -505,7 +512,8 @@ function validateMapRecords(
       if (!context.troopIds.has(spawn.troopId)) issues.push(`map ${map.id}: fieldSpawns[${index}].troopId does not exist: ${spawn.troopId}`);
       capture(issues, () => validateOptionalResource(`map ${map.id}: fieldSpawns[${index}].graphic.sprite`, spawn.graphic?.sprite?.id, resourceIds));
     }
-    for (const event of map.events) {
+    for (const [eventIndex, event] of map.events.entries()) {
+      validateNpcScheduleReferences(project, hostMapId, event, eventIndex, issues);
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
       validateGiftPreferenceReferences(`event ${event.id}`, event.giftPrefs, context.itemIds, issues);
       const condition = event.condition;
@@ -515,6 +523,82 @@ function validateMapRecords(
     }
   }
   validateCharacterGiftPreferenceReferences(project, context.itemIds, issues);
+}
+
+function validateNpcScheduleReferences(
+  project: Project,
+  hostMapId: string,
+  event: GameEvent,
+  eventIndex: number,
+  issues: string[],
+): void {
+  for (const [scheduleIndex, entry] of (event.schedule ?? []).entries()) {
+    const label = `map ${hostMapId} event ${event.id} events[${eventIndex}] schedule[${scheduleIndex}]`;
+    const mapId: unknown = entry.at.mapId;
+    const target = typeof mapId === "string" ? project.maps[mapId] : undefined;
+    if (typeof mapId !== "string" || !mapId.trim() || !target) {
+      const displayId = typeof mapId !== "string" ? "<missing>" : mapId.trim() ? mapId : "<blank>";
+      issues.push(`${label}.at.mapId does not exist: ${displayId}`);
+      continue;
+    }
+    if (!isSchedulePositionInBounds(entry, target.width, target.height)) {
+      issues.push(
+        `${label}.at (${entry.at.x}, ${entry.at.y}) is out of bounds for map ${entry.at.mapId} (${target.width}x${target.height}).`,
+      );
+    }
+  }
+}
+
+function validateScheduledEventIds(project: Project, issues: string[]): void {
+  const hostsById = new Map<string, Array<{ hostMapId: string; eventIndex: number; scheduled: boolean }>>();
+  for (const [hostMapId, map] of Object.entries(project.maps)) {
+    for (const [eventIndex, event] of map.events.entries()) {
+      const hosts = hostsById.get(event.id) ?? [];
+      hosts.push({ hostMapId, eventIndex, scheduled: (event.schedule?.length ?? 0) > 0 });
+      hostsById.set(event.id, hosts);
+    }
+  }
+  for (const [eventId, hosts] of hostsById) {
+    if (hosts.length < 2 || !hosts.some((host) => host.scheduled)) continue;
+    issues.push(
+      `scheduled event id must be unique across the project: ${eventId}; hosts: ${hosts
+        .map((host) => `${host.hostMapId}.events[${host.eventIndex}]`)
+        .join(", ")}`,
+    );
+  }
+}
+
+function repairNpcScheduleReferences(
+  event: GameEvent,
+  maps: Project["maps"],
+  stats: PruneStats,
+): void {
+  if (event.schedule === undefined) return;
+  const kept = event.schedule.filter((entry) => {
+    const mapId: unknown = entry.at.mapId;
+    const target = typeof mapId === "string" ? maps[mapId] : undefined;
+    return Boolean(
+      typeof mapId === "string"
+      && mapId.trim()
+      && target
+      && isSchedulePositionInBounds(entry, target.width, target.height),
+    );
+  });
+  stats.removedScheduleDestinations += event.schedule.length - kept.length;
+  event.schedule = kept;
+}
+
+function isSchedulePositionInBounds(
+  entry: NpcScheduleEntry,
+  width: number,
+  height: number,
+): boolean {
+  return Number.isInteger(entry.at.x)
+    && Number.isInteger(entry.at.y)
+    && entry.at.x >= 0
+    && entry.at.y >= 0
+    && entry.at.x < width
+    && entry.at.y < height;
 }
 
 function validateCharacterGiftPreferenceReferences(

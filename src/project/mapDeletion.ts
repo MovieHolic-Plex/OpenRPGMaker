@@ -12,8 +12,15 @@
 //   통과하지 못하면 삭제를 커밋하지 않는다(벽돌 원천 차단).
 
 import { deserialize, serialize } from "./io";
-import type { Command, EventPage, MapId, MapTreeNode, Project } from "./types";
+import type { Command, EventPage, GameEvent, MapId, MapTreeNode, Project } from "./types";
 import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
+
+export interface MapScheduleRowReference {
+  readonly hostMapId: MapId;
+  readonly eventId: string;
+  readonly eventIndex: number;
+  readonly scheduleIndex: number;
+}
 
 export interface MapDeletionImpact {
   readonly mapId: MapId;
@@ -30,6 +37,7 @@ export interface MapDeletionImpact {
   readonly treeChildCount: number;
   /** 다른 맵/공통 이벤트에서 이 맵으로 이동(transfer/changeTile)하는 명령 수(함께 제거됨). */
   readonly incomingCommandCount: number;
+  readonly incomingScheduleRows: readonly MapScheduleRowReference[];
   /** 이 맵과 연결된 mapConnections 수(함께 제거됨). */
   readonly connectionCount: number;
   /** 이 맵의 legacy worldview source document 수(함께 제거됨). */
@@ -64,6 +72,7 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
     isTreeRoot: project.mapTree.mapId === mapId,
     treeChildCount: treeNode?.children.length ?? 0,
     incomingCommandCount: countIncomingCommands(project, mapId),
+    incomingScheduleRows: collectIncomingScheduleRows(project, mapId),
     connectionCount: (project.mapConnections ?? []).filter(
       (connection) => connection.from.mapId === mapId || connection.to.mapId === mapId
     ).length,
@@ -151,9 +160,10 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
     };
   }
 
-  // 이벤트 명령(transfer/changeTile)과 생활 이동 목적지에서 삭제 맵 참조 제거.
+  // 이벤트 일정, 명령(transfer/changeTile), 생활 이동 목적지에서 삭제 맵 참조 제거.
   for (const map of Object.values(draft.maps)) {
     for (const event of map.events) {
+      stripEventScheduleMapReferences(event, mapId);
       event.commands = stripMapCommands(event.commands, mapId);
       for (const page of event.pages ?? []) stripPageMapReferences(page, mapId);
     }
@@ -166,6 +176,11 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
       page.commands = stripMapCommands(page.commands, mapId);
     }
   }
+}
+
+function stripEventScheduleMapReferences(event: GameEvent, mapId: MapId): void {
+  if (event.schedule === undefined) return;
+  event.schedule = event.schedule.filter((entry) => entry.at.mapId !== mapId);
 }
 
 function stripPageMapReferences(page: EventPage, mapId: MapId): void {
@@ -244,6 +259,23 @@ function countIncomingCommands(project: Project, mapId: MapId): number {
     for (const page of troop.battleEventPages ?? []) countIn(page.commands);
   }
   return count;
+}
+
+function collectIncomingScheduleRows(
+  project: Project,
+  mapId: MapId,
+): MapScheduleRowReference[] {
+  const references: MapScheduleRowReference[] = [];
+  for (const [hostMapId, map] of Object.entries(project.maps)) {
+    if (hostMapId === mapId) continue;
+    for (const [eventIndex, event] of map.events.entries()) {
+      for (const [scheduleIndex, entry] of (event.schedule ?? []).entries()) {
+        if (entry.at.mapId !== mapId) continue;
+        references.push({ hostMapId, eventId: event.id, eventIndex, scheduleIndex });
+      }
+    }
+  }
+  return references;
 }
 
 function questReferencesMap(quest: AnyQuestDef, mapId: MapId): boolean {
