@@ -209,4 +209,16 @@ describe("database monster species view", () => {
     ]);
     expect(store.getCurrent().system.typeChart).toBeUndefined();
   });
+
+  // Break caught: species fields do not show whether enemies, field spawns, and drops form a playable pipeline.
+  it("shows the monster pipeline summary and direct navigation actions", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    expect(findByTestId(host, "db-monster-pipeline")).toBeTruthy();
+    expect(findByTestId(host, "db-monster-pipeline-links")?.dataset.state).toBe("ready");
+    expect(findByTestId(host, "db-monster-pipeline-spawns")?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-monster-pipeline-drops")?.dataset.state).toBe("needs-setup");
+    expect(findByTestId(host, "db-monster-pipeline-links-action")).toBeTruthy();
+    expect(findByTestId(host, "db-monster-pipeline-spawns-action")).toBeTruthy();
+    expect(findByTestId(host, "db-monster-pipeline-drops-action")).toBeTruthy();
+  });
 });

@@ -19,7 +19,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
 
-const OUT = "C:/Users/USER/AppData/Local/Temp/farm-inspect/";
+const OUT = "output/evidence/stardew/runtime/";
 const MAP_ID = "map_farming_demo";
 const shot = (name: string): string => `${OUT}${name}.png`;
 const log: string[] = [];

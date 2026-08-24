@@ -19,8 +19,9 @@ const EXPECTED_TABS = [
   "db-tab-skills",
   "db-tab-items",
   "db-tab-equipment",
-  // 전투 — 배틀러는 수집이 아님
+  // 전투·몬스터 — 포획 종족도 이 도메인에 둔다
   "db-tab-enemies",
+  "db-tab-monster-species",
   "db-tab-troops",
   "db-tab-elements",
   "db-tab-states",
@@ -28,8 +29,7 @@ const EXPECTED_TABS = [
   "db-tab-battle-screen",
   "db-tab-battle-commands",
   "db-tab-terrain",
-  // 수집
-  "db-tab-monster-species",
+  // 생활
   "db-tab-crops",
   "db-tab-characters",
   // 맵
@@ -43,7 +43,7 @@ const EXPECTED_TABS = [
   "db-tab-variables",
 ];
 
-const EXPECTED_GROUPS = ["파티", "전투", "수집", "맵", "시스템"];
+const EXPECTED_GROUPS = ["파티", "전투·몬스터", "생활", "맵", "시스템"];
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
@@ -122,6 +122,13 @@ describe("database sidebar navigation", () => {
       expect(button.getAttribute("aria-label"), `${button.dataset.testid} aria-label`).toBe(label);
       expect(button.dataset.short, `${button.dataset.testid} data-short`).toBe(label.slice(0, 1));
     }
+  });
+
+  it("uses domain-specific labels for monster, farming, and resident authoring", () => {
+    const panelRoot = renderPanelHost();
+    expect(findTab(panelRoot, "db-tab-monster-species").textContent).toBe("몬스터 종족");
+    expect(findTab(panelRoot, "db-tab-crops").textContent).toBe("농사·작물");
+    expect(findTab(panelRoot, "db-tab-characters").textContent).toBe("주민 관계");
   });
 
   it("toggles .active on the clicked tab and clears the previous one", () => {
