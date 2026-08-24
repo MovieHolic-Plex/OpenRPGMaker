@@ -120,9 +120,9 @@ describe("event editor UI density", () => {
     expect(movement?.contains(classicTrigger)).toBe(false);
     expect(host.querySelector('[data-testid="event-page-trigger-priority-stack"]')).toBeTruthy();
 
-    // Beginner chrome does not mount optional identity controls before disclosure.
-    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
+    // NPC relationship status is always actionable; only technical fields stay hidden until linked.
+    expect(host.querySelector('[data-testid="event-character-id-field"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
     expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-page-friendship-requires-character-id"]')).toBeNull();
 
@@ -137,34 +137,31 @@ describe("event editor UI density", () => {
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-draft-validation"]')?.open).toBe(false);
   });
 
-  it("lazy-mounts beginner-only optional chrome when its parent details open", () => {
+  it("keeps NPC relationship status one-click in beginner mode while the legend stays lazy", () => {
     resetEditorUiModeForTests("beginner");
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
 
-    const characterDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-character-id-details"]');
     const legendDetails = host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]');
-    expect(characterDetails?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
     expect(legendDetails?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-command-legend"]')).toBeNull();
 
-    expandDetails(characterDetails);
     expandDetails(legendDetails);
 
-    expect(characterDetails?.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
     expect(legendDetails?.querySelector('[data-testid="event-command-legend"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
   });
 
-  it("mounts expert optional chrome inside closed details", () => {
+  it("keeps the expert relationship control direct while optional legend chrome remains lazy", () => {
     resetEditorUiModeForTests("expert");
     renderEventEditorDynamic(host, store.getCurrent().startMapId, "ev_herbalist");
 
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-character-id-details"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
     expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend-details"]')?.open).toBe(false);
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeTruthy();
-    expect(host.querySelector<HTMLDetailsElement>('[data-testid="event-command-legend"]')?.open).toBe(false);
+    expect(host.querySelector('[data-testid="event-command-legend"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-page-trigger-select"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-command-toolbar-add"]')).toBeTruthy();
   });

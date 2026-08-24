@@ -6,7 +6,7 @@ import {
   listCharacterIdIndex,
 } from "@/project/characterIdIndex";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
-import { renderEventCharacterIdField } from "@/editor/panels/eventEditor/pageProps";
+import { renderEventCharacterSocialExtras } from "@/editor/panels/eventEditor/pageProps";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { GameEvent } from "@/project/types";
@@ -123,7 +123,7 @@ describe("characterIdAutocomplete", () => {
       extraEvents: [baseEvent({ id: "ev_orphan", characterId: "char_orphan" })],
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     focusCharacterIdInput(field);
@@ -147,7 +147,7 @@ describe("characterIdAutocomplete", () => {
       },
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     const input = focusCharacterIdInput(field);
@@ -166,7 +166,7 @@ describe("characterIdAutocomplete", () => {
       characters: { alice: { displayName: "Alice" } },
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     const input = focusCharacterIdInput(field);
@@ -182,7 +182,7 @@ describe("characterIdAutocomplete", () => {
       characters: { alice: { displayName: "Alice" } },
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     const input = focusCharacterIdInput(field);
@@ -200,7 +200,7 @@ describe("characterIdAutocomplete", () => {
       characters: { alice: { displayName: "Alice" } },
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     const input = focusCharacterIdInput(field);
@@ -220,7 +220,7 @@ describe("characterIdAutocomplete", () => {
       },
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     const input = focusCharacterIdInput(field);
@@ -244,7 +244,7 @@ describe("characterIdAutocomplete", () => {
       characters: { alice: { displayName: "Alice" } },
     });
 
-    const field = renderEventCharacterIdField(mapId, event);
+    const field = renderEventCharacterSocialExtras(mapId, event)!;
     document.body.append(field);
 
     focusCharacterIdInput(field);

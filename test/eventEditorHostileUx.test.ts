@@ -101,12 +101,15 @@ describe("event editor chest-path UX", () => {
     render(host);
     const field = host.querySelector('[data-testid="event-character-id-field"]');
     expect(field).toBeTruthy();
-    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("NPC/호감 연결");
+    expect(host.querySelector('[data-testid="event-character-id-connect"]')?.textContent).toContain("연결 안 됨");
+    expect(host.querySelector('[data-testid="event-character-id-details"]')).toBeNull();
     expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeNull();
 
     host.replaceChildren();
     render(host, event({ characterId: "npc_chest" }));
+    expect(host.querySelector('[data-testid="event-character-id-picker-open"]')?.textContent).toContain("npc_chest");
     expect(host.querySelector('[data-testid="event-character-id-input"]')).toBeTruthy();
+    expect(host.querySelector('[data-testid="event-character-social-extras"]')).toBeTruthy();
     expect(host.querySelector('[data-testid="event-character-id-connect"]')).toBeNull();
   });
 
