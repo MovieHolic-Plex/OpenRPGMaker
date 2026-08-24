@@ -26,14 +26,19 @@ function newCommandOfKind<K extends Command["kind"]>(kind: K): Extract<Command, 
 export function buildEventBeginnerTemplate(
   project: Project,
   mapId: MapId,
-  eventId: string,
+  _eventId: string,
   templateId: EventBeginnerTemplateId,
 ): EventBeginnerTemplateResult {
   switch (templateId) {
     case "talking-npc":
       return { command: { kind: "text", body: "안녕하세요." } };
-    case "treasure-chest":
-      return { command: { kind: "openChest", chestId: `storage_${eventId}` } };
+    case "treasure-chest": {
+      const itemId = project.database.items.find((item) => item.id.trim())?.id;
+      if (!itemId) {
+        return { unavailableReason: "보물상자에서 줄 아이템이 없습니다. 데이터베이스에서 아이템을 먼저 추가하세요." };
+      }
+      return { command: { kind: "changeItem", itemId, op: "+=", amount: 1 } };
+    }
     case "transfer": {
       const destination = transferDestination(project, mapId);
       if (!destination) {

@@ -90,6 +90,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   changeTile: changeTileStage,
   inputWait: inputWaitStage,
   changeGold: (cmd, ctx) => goldStage(cmd, ctx),
+  openChest: storageChestStage,
   changeExp: (cmd, ctx) => expStage(cmd, ctx),
   learnSkill: skillStage,
   battleProcessing: battleStage,
@@ -568,6 +569,56 @@ function itemStage(cmd: Extract<Command, { kind: "changeItem" }>, context?: Comm
     stage.append(el("div", { class: "ecp-current-state", text: `현재 보유: ${curCount}개` }));
   }
   return stage;
+}
+
+function storageChestStage(cmd: Extract<Command, { kind: "openChest" }>): HTMLElement {
+  const shared = Boolean(cmd.chestId?.trim());
+  const stage = el("div", {
+    class: "ecp-storage-chest-stage",
+    dataset: { testid: "open-chest-preview" },
+  });
+  stage.append(
+    el("div", {
+      class: "ecp-storage-chest-heading",
+      children: [
+        el("strong", { text: "플레이 화면 예시" }),
+        el("span", { text: shared ? "여러 상자 공유" : "이 상자 전용" }),
+      ],
+    }),
+    el("div", {
+      class: "ecp-storage-chest-columns",
+      children: [
+        storagePreviewPane("가방 · 소지품", ["회복약 ×3", "해독초 ×1"]),
+        el("div", {
+          class: "ecp-storage-chest-transfer",
+          attrs: { "aria-hidden": "true" },
+          children: [
+            el("span", { text: "넣기 →" }),
+            el("span", { text: "← 꺼내기" }),
+          ],
+        }),
+        storagePreviewPane("보관 상자", ["철광석 ×5", "빈 칸"]),
+      ],
+    }),
+    el("div", {
+      class: "ecp-storage-chest-note",
+      text: "선택한 아이템을 한 개씩 넣거나 꺼냅니다.",
+    }),
+  );
+  return stage;
+}
+
+function storagePreviewPane(title: string, rows: readonly string[]): HTMLElement {
+  return el("div", {
+    class: "ecp-storage-chest-pane",
+    children: [
+      el("strong", { text: title }),
+      ...rows.map((row, index) => el("span", {
+        class: `ecp-storage-chest-item${row === "빈 칸" ? " empty" : ""}${index === 0 ? " selected" : ""}`,
+        text: row,
+      })),
+    ],
+  });
 }
 
 
