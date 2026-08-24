@@ -229,8 +229,11 @@ export function verifyGenrePackAssertionReceipts<
         receiptErrors.push({ receiptIndex: index, code: "project-revision-mismatch" });
       }
       for (const assertion of receipt.assertions) {
-        const validation = options.validateEvidence?.(assertion, receipt, index);
-        if (validation && !validation.ok) {
+        const validation = options.validateEvidence?.(assertion, receipt, index) ?? {
+          ok: false,
+          code: "evidence-validation-missing",
+        };
+        if (!validation.ok) {
           receiptErrors.push({
             receiptIndex: index,
             assertionId: assertion.assertionId,
