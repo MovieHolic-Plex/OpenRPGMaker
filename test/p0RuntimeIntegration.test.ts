@@ -259,6 +259,34 @@ describe("P0 day transition integration", () => {
     expect(result.session.energy).toBe(35);
     expect(result.session.dayTransitionLastDayKey).toBe("1:spring:1");
   });
+
+  it("does not calculate absolute maker time when the maker package is disabled", () => {
+    // Break caught: a disabled maker package still evaluates absoluteGameMinutes and throws on overflow.
+    const project = runtimeProject();
+    delete project.system.makers;
+    const session = startSession(project, 110);
+    session.gameTime = { year: 1e300, season: "spring", day: 2, hour: 6, minute: 0 };
+    const sourceDayKey = calendarDayKey(session.gameTime);
+
+    expect(() => transitionToNextDay(project, session, sourceDayKey)).not.toThrow();
+    expect(session.gameTime?.day).toBe(3);
+  });
+
+  it("fails the maker stage atomically when absolute game time still overflows", () => {
+    // Break caught: a hostile live session escapes save validation and throws midway through the draft receipt.
+    const project = runtimeProject();
+    const session = startSession(project, 111);
+    session.gameTime = { year: 1e300, season: "spring", day: 2, hour: 6, minute: 0 };
+    const sourceDayKey = calendarDayKey(session.gameTime);
+    const frozen = structuredClone(session);
+
+    expect(transitionToNextDay(project, session, sourceDayKey)).toEqual({
+      ok: false,
+      reason: "makers",
+      stage: "makers",
+    });
+    expect(session).toEqual(frozen);
+  });
 });
 
 describe("P0 farm action integration", () => {

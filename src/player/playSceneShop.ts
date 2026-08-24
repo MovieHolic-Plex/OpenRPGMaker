@@ -1,4 +1,4 @@
-import { changeGold, changeItem } from "@/project/session";
+import { changeGold, changeItem, changeItemsAtomically, GOLD_MAX } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
@@ -209,20 +209,40 @@ export function handleShopTransaction(
     return { ok: true, status: `${item.name} sold.`, merchantGold: merchantGold - payout };
   }
   const cost = item.price * qty;
+  if (!isSafeGold(cost) || !isSafeGold(scene.session.gold) || !isSafeGold(merchantGold) || merchantGold + cost > GOLD_MAX) {
+    scene.syncRuntimeState();
+    return { ok: false, status: "Invalid shop state." };
+  }
   if (scene.session.gold < cost) {
     scene.syncRuntimeState();
     return { ok: false, status: "Not enough money." };
   }
+  const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
+  const currentTrade = tc[item.id] ?? { sold: 0, bought: 0 };
+  if (!isSafeTradeCount(currentTrade.sold) || !isSafeTradeCount(currentTrade.bought) || currentTrade.bought + qty > GOLD_MAX) {
+    scene.syncRuntimeState();
+    return { ok: false, status: "Invalid shop state." };
+  }
+  if (!changeItemsAtomically(scene.session, [{ itemId: item.id, op: "+=", amount: qty }])) {
+    scene.syncRuntimeState();
+    return { ok: false, status: "Inventory is full." };
+  }
   changeGold(scene.session, "-=", cost);
-  changeItem(scene.session, item.id, "+=", qty);
   {
-    const tc = ((scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts ?? {}) as Record<string, { sold: number; bought: number }>;
     (scene.session as unknown as { shopTradeCounts?: Record<string, { sold: number; bought: number }> }).shopTradeCounts = tc;
-    tc[item.id] = { sold: tc[item.id]?.sold ?? 0, bought: (tc[item.id]?.bought ?? 0) + qty };
+    tc[item.id] = { sold: currentTrade.sold, bought: currentTrade.bought + qty };
   }
   scene.syncRuntimeState();
   // 플레이어 구매금은 상인 소지금으로 들어간다(이후 매입 여력 증가).
   return { ok: true, status: `${item.name} purchased.`, merchantGold: merchantGold + cost };
+}
+
+function isSafeGold(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= GOLD_MAX;
+}
+
+function isSafeTradeCount(value: unknown): value is number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= GOLD_MAX;
 }
 
 function mountCommerceOverlay(scene: PlaySceneContext, overlay: HTMLElement): void {

@@ -4,7 +4,7 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import { runCommands } from "@/player/playSceneInterpreter";
-import { applyNonBlockingStep } from "@/player/playSceneSchedulers";
+import { applyNonBlockingStep, updateParallelEvents } from "@/player/playSceneSchedulers";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 function commandScene(sleepUntilMorning: () => Promise<boolean>) {
@@ -35,6 +35,29 @@ function commandScene(sleepUntilMorning: () => Promise<boolean>) {
     clearRuntimeOverlay: vi.fn(),
   } as unknown as PlaySceneContext;
   return { project, session, scene, overlays };
+}
+
+function deferred<T>() {
+  let resolve!: (value: T) => void;
+  let reject!: (cause: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
+function parallelScene(commands: Command[], sleepUntilMorning: () => Promise<boolean>) {
+  const fixture = commandScene(sleepUntilMorning);
+  fixture.project.commonEvents = [{
+    id: "common_parallel_time",
+    name: "Parallel time",
+    trigger: "parallel",
+    commands,
+  }];
+  fixture.scene.parallelProcesses = new Map();
+  fixture.scene.activeRuntimeEvents = vi.fn(() => []);
+  return fixture;
 }
 
 describe("P0 transition control flow", () => {
@@ -90,6 +113,101 @@ describe("P0 transition control flow", () => {
         expect(scheduled.overlays.at(-1)).toContain("scheduled-advance");
         expect(scheduled.overlays.at(-1)).toContain("advance rejection");
       });
+    } finally {
+      store.replaceProject(previous);
+    }
+  });
+
+  it("keeps a parallel sleep pending and resumes the interpreter only after success", async () => {
+    // Break caught: consumeParallelSteps resumes setSwitch immediately after starting an unresolved sleep.
+    const previous = store.getCurrent();
+    const sleep = deferred<boolean>();
+    try {
+      const scheduled = parallelScene([
+        { kind: "sleepUntilMorning" },
+        { kind: "setSwitch", switchId: "after_parallel_sleep", value: true },
+      ], () => sleep.promise);
+      store.replaceProject(scheduled.project);
+
+      updateParallelEvents(scheduled.scene, 16);
+      updateParallelEvents(scheduled.scene, 16);
+      expect(scheduled.session.switches.after_parallel_sleep).not.toBe(true);
+      expect(scheduled.scene.parallelProcesses.size).toBe(1);
+
+      sleep.resolve(true);
+      await vi.waitFor(() => expect(scheduled.session.switches.after_parallel_sleep).toBe(true));
+      expect(scheduled.scene.parallelProcesses.size).toBe(0);
+    } finally {
+      store.replaceProject(previous);
+    }
+  });
+
+  it.each([
+    ["false", (pending: ReturnType<typeof deferred<boolean>>) => pending.resolve(false)],
+    ["reject", (pending: ReturnType<typeof deferred<boolean>>) => pending.reject(new Error("parallel sleep rejection"))],
+  ] as const)("stops a failed parallel sleep (%s) without running later commands", async (_kind, finish) => {
+    // Break caught: failed parallel sleeps only paint an overlay after their interpreter already completed.
+    const previous = store.getCurrent();
+    const sleep = deferred<boolean>();
+    try {
+      const scheduled = parallelScene([
+        { kind: "sleepUntilMorning" },
+        { kind: "setSwitch", switchId: "after_failed_parallel_sleep", value: true },
+      ], () => sleep.promise);
+      store.replaceProject(scheduled.project);
+
+      updateParallelEvents(scheduled.scene, 16);
+      finish(sleep);
+      await vi.waitFor(() => expect(scheduled.overlays.at(-1)).toContain("scheduled-sleep"));
+      updateParallelEvents(scheduled.scene, 16);
+
+      expect(scheduled.session.switches.after_failed_parallel_sleep).not.toBe(true);
+      expect(scheduled.scene.parallelProcesses.size).toBe(1);
+      expect(scheduled.overlays.at(-1)).toContain("scheduled-sleep");
+    } finally {
+      store.replaceProject(previous);
+    }
+  });
+
+  it("waits for a parallel advance before running its following command", async () => {
+    // Break caught: advanceTime is treated as synchronous inside parallel processes even when it sleeps.
+    const previous = store.getCurrent();
+    const sleep = deferred<boolean>();
+    try {
+      const scheduled = parallelScene([
+        { kind: "advanceTime", days: 1 },
+        { kind: "setSwitch", switchId: "after_parallel_advance", value: true },
+      ], () => sleep.promise);
+      store.replaceProject(scheduled.project);
+
+      updateParallelEvents(scheduled.scene, 16);
+      expect(scheduled.session.switches.after_parallel_advance).not.toBe(true);
+      sleep.resolve(true);
+      await vi.waitFor(() => expect(scheduled.session.switches.after_parallel_advance).toBe(true));
+    } finally {
+      store.replaceProject(previous);
+    }
+  });
+
+  it.each([
+    ["false", async () => false],
+    ["reject", async () => { throw new Error("parallel advance rejection"); }],
+  ] as const)("stops a failed parallel advance (%s) without running later commands", async (_kind, sleepUntilMorning) => {
+    // Break caught: advanceTime failure is observed but its parallel interpreter still resumes setSwitch.
+    const previous = store.getCurrent();
+    try {
+      const scheduled = parallelScene([
+        { kind: "advanceTime", days: 1 },
+        { kind: "setSwitch", switchId: "after_failed_parallel_advance", value: true },
+      ], sleepUntilMorning);
+      store.replaceProject(scheduled.project);
+
+      updateParallelEvents(scheduled.scene, 16);
+      await vi.waitFor(() => expect(scheduled.overlays.at(-1)).toContain("scheduled-advance"));
+      updateParallelEvents(scheduled.scene, 16);
+
+      expect(scheduled.session.switches.after_failed_parallel_advance).not.toBe(true);
+      expect(scheduled.scene.parallelProcesses.size).toBe(1);
     } finally {
       store.replaceProject(previous);
     }

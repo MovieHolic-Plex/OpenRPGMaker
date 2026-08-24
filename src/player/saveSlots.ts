@@ -60,10 +60,12 @@ import {
   isSelfSwitchesRecord,
   isStringArray,
   parseAudioState,
+  parseChestsRecord,
   parseMapOverrides,
   parsePictures,
 } from "@/player/saveSlotValidation";
 import { shippingHistoryLimit } from "@/project/shipping";
+import { absoluteGameMinutes } from "@/project/makers";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { levelForXp, xpForLevel } from "@/project/skillModel";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
@@ -298,7 +300,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       monsterFieldPoisonSteps: session.monsterFieldPoisonSteps,
       monsterCareDaily: structuredClone(session.monsterCareDaily ?? {}),
       equippedToolItemId: session.equippedToolItemId,
-      chests: structuredClone(session.chests ?? {}),
+      chests: parseChestsRecord(session.chests) ?? {},
       placeables: structuredClone(session.placeables ?? {}),
       followers: structuredClone(session.followers),
       followerTrail: structuredClone(session.followerTrail),
@@ -321,7 +323,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       actorParamBonuses: structuredClone(session.actorParamBonuses),
       actorStateIds: structuredClone(session.actorStateIds),
       playTimeSeconds: Math.floor(session.playTimeSeconds ?? 0),
-      gameTime: session.gameTime ? structuredClone(session.gameTime) : undefined,
+      gameTime: structuredClone(normalizeRestorableGameTime(project, session.gameTime)),
       rng: cloneRngState(normalizeRngState(session.rng)),
       roguelikeRun: structuredClone(session.roguelikeRun),
       screen: pickScreenState(session),
@@ -458,7 +460,7 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     session.monsterCareDaily = structuredClone(snapshot.session.monsterCareDaily);
   }
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
-  if (snapshot.session.chests) session.chests = structuredClone(snapshot.session.chests);
+  session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
   if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
@@ -481,12 +483,11 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.actorParamBonuses) session.actorParamBonuses = structuredClone(snapshot.session.actorParamBonuses);
   if (snapshot.session.actorStateIds) session.actorStateIds = structuredClone(snapshot.session.actorStateIds);
   if (typeof snapshot.session.playTimeSeconds === "number") session.playTimeSeconds = snapshot.session.playTimeSeconds;
-  if (snapshot.session.gameTime) {
-    session.gameTime = normalizeGameTime(snapshot.session.gameTime, project.system.timeSystem);
-  }
-  session.dayTransitionLastDayKey = snapshot.session.gameTime && isPreviousCalendarDayKey(
+  const restoredGameTime = normalizeRestorableGameTime(project, snapshot.session.gameTime);
+  if (restoredGameTime) session.gameTime = restoredGameTime;
+  session.dayTransitionLastDayKey = restoredGameTime && isPreviousCalendarDayKey(
     project,
-    session.gameTime,
+    restoredGameTime,
     snapshot.session.dayTransitionLastDayKey,
   )
     ? snapshot.session.dayTransitionLastDayKey
@@ -650,7 +651,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
         : undefined,
       monsterCareDaily: isNumberRecord(session.monsterCareDaily) ? session.monsterCareDaily : undefined,
       equippedToolItemId: typeof session.equippedToolItemId === "string" ? session.equippedToolItemId : undefined,
-      chests: session.chests && typeof session.chests === "object" ? structuredClone(session.chests) as Record<string, any> : undefined,
+      chests: parseChestsRecord(session.chests),
       placeables: session.placeables && typeof session.placeables === "object" ? structuredClone(session.placeables) as Record<string, any> : undefined,
       followers: isRuntimeFollowerArray(session.followers) ? session.followers : undefined,
       followerTrail: isRuntimeFollowerTrail(session.followerTrail) ? session.followerTrail : undefined,
@@ -758,6 +759,20 @@ function isPreviousCalendarDayKey(
     minute: 0,
   } satisfies GameTime;
   return calendarDayKey(advanceGameDays(previous, 1, system).time) === calendarDayKey(currentTime);
+}
+
+function normalizeRestorableGameTime(project: Project, value: unknown): GameTime | undefined {
+  const normalized = normalizeGameTime(value, project.system.timeSystem);
+  if (!normalized) return undefined;
+  if (![normalized.year, normalized.day, normalized.hour, normalized.minute].every(Number.isSafeInteger)) {
+    return undefined;
+  }
+  try {
+    absoluteGameMinutes(normalized, project.system.timeSystem);
+    return normalized;
+  } catch {
+    return undefined;
+  }
 }
 
 function uniqueStrings(values: readonly string[] | undefined): string[] {
