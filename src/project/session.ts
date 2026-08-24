@@ -21,6 +21,7 @@ import { createRngState, nextRngFloat, type RngState, type RngStreamName } from 
 import { normalizeLightingState } from "@/project/lightingRules";
 import { transitionItemStates, type ItemTransitionAction } from "@/project/itemTransitions";
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
+import { GOLD_MAX } from "@/project/economyValues";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -257,7 +258,7 @@ export interface PlaySession {
 // 명시적으로 읽는 헬퍼. 런타임 상태(PlaySession = scene.session)와 혼동하지 않도록,
 // "이 값은 플레이 중 상태가 아니라 시작 상태다"라는 의도를 코드로 표시한다.
 // 직렬화 키는 마이그레이션 없이 `session` 그대로 유지한다.
-export const GOLD_MAX = 9_999_999;
+export { GOLD_MAX } from "@/project/economyValues";
 
 export function startStateOf(project: Project): ProjectStartState {
   return project.session;
