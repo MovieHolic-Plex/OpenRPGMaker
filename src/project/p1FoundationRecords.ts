@@ -201,7 +201,27 @@ export function restoreFarmAnimalStates(
       ...(state.lastAdvancedDayKey ? { lastAdvancedDayKey: state.lastAdvancedDayKey } : {}),
     };
   }
-  return restored;
+  return normalizeFarmAnimalBuildingCapacity(restored, startById, buildingById);
+}
+
+function normalizeFarmAnimalBuildingCapacity(
+  restored: Record<string, FarmAnimalState>,
+  starts: ReadonlyMap<string, FarmAnimalStartInstance>,
+  buildings: ReadonlyMap<string, FarmAnimalBuildingDefinition>,
+): Record<string, FarmAnimalState> {
+  const occupancy = new Map<string, number>();
+  return Object.fromEntries(Object.entries(restored).map(([instanceId, state]) => {
+    const candidates = [state.buildingId, starts.get(instanceId)?.buildingId]
+      .filter((candidate, index, values): candidate is string => Boolean(candidate) && values.indexOf(candidate) === index);
+    const buildingId = candidates.find((candidate) => {
+      const building = buildings.get(candidate);
+      if (!building?.allowedSpeciesIds.includes(state.speciesId)) return false;
+      return (occupancy.get(candidate) ?? 0) < building.capacity;
+    });
+    if (buildingId) occupancy.set(buildingId, (occupancy.get(buildingId) ?? 0) + 1);
+    const { buildingId: _discardedBuildingId, ...unassigned } = state;
+    return [instanceId, buildingId ? { ...unassigned, buildingId } : unassigned];
+  }));
 }
 
 function compatibleBuildingId(

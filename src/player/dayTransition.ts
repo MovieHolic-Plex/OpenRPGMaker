@@ -106,6 +106,7 @@ export function transitionToNextDay(
   draft.gameTime = sleepGameTimeUntilMorning(draft.gameTime!, system).time;
   const weather = applyDailyWeatherForDate(project, draft, draft.gameTime);
   if (weather) ensureM2Runtime(draft).screen.weather = weatherToRuntimeString(weather);
+  else if (draft.m2Runtime) draft.m2Runtime.screen.weather = "none";
   const wateredPlots = waterFarmPlotsForDailyWeather(draft, draft.gameTime);
   syncFarmPlotsToDate(project, draft, system);
 
