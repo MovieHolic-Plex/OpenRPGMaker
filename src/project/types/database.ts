@@ -201,6 +201,10 @@ export interface SkillRecord {
   // 상태이상 부여/해제 효과. 명중 시(데미지 효과) 또는 즉시(서포트/힐) 적용.
   // 각 항목의 chance(0~100)로 부여 확률을 굴리고, operation 으로 부여/해제를 결정한다.
   stateEffects?: DatabaseStateEffect[];
+  /** Gen1 move PP cap. Omitted for legacy projects that have not opted into per-move PP yet. */
+  maxPp?: number;
+  /** Gen1's high-critical move class. Omission is the legacy-compatible normal class. */
+  gen1CriticalRate?: "normal" | "high";
   /**
    * 기술 우선도(-7~+7, 기본 0). strict 턴제에서 속도보다 먼저 비교한다 — 퀵어택(+1)류.
    * 이름이 movePriority 인 이유: EnemyActionPattern.priority(적 AI 행동 선택 가중치),
@@ -277,6 +281,8 @@ export interface ItemRecord {
 
 export interface ItemCaptureProfile {
   multiplier: number;
+  /** Optional Gen1 capture algorithm class; multiplier remains the compatibility contract. */
+  ballClass?: "poke" | "great" | "ultra" | "master";
 }
 
 export interface ItemCareProfile {
@@ -563,6 +569,8 @@ export interface TroopRecord {
   members?: TroopMemberRecord[];
   autoAlign: boolean;
   uncapturable?: boolean;
+  /** Distinguishes trainer battles from wild encounters without guessing from troop ids. */
+  trainerBattle?: boolean;
   previewBackgroundResourceId?: string;
   battleFlow?: BattleFlow;
   activeSlots?: number;
@@ -572,6 +580,8 @@ export interface TroopRecord {
 export interface StateRecord {
   id: StateId;
   name: string;
+  /** Gen1 persistent major status semantics, independent of authored state id/name. */
+  gen1MajorStatus?: "poison" | "burn" | "sleep" | "freeze" | "paralysis";
   // RM2K3 상태(State) 편집 가능 필드 — 사용자가 DB 탭에서 재정의한 값.
   // 값을 설정하지 않으면 ontology 기본값(stateOntologyFor)이 사용된다.
   removalCondition?: string;
