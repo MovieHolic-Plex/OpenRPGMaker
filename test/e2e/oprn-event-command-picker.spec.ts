@@ -25,7 +25,13 @@ async function dblclickMapCenter(page: Page): Promise<void> {
 }
 
 async function openEventEditor(page: Page): Promise<Locator> {
-  await page.getByTestId("layer-event").click();
+  const eventLayerButton = page.getByTestId("layer-event");
+  if (await eventLayerButton.isVisible().catch(() => false)) {
+    await eventLayerButton.click();
+  } else {
+    await page.getByRole("button", { name: "도구", exact: true }).click();
+    await page.getByTestId("menu-tools-layer-event").click();
+  }
   const visibleEventTool = page.locator('[data-testid="tool-event"]:visible').first();
   if ((await visibleEventTool.count()) > 0) await visibleEventTool.click();
   await clickMapCenter(page);
@@ -289,7 +295,30 @@ test("event editor supports resizing the split columns and modal window", async 
   expect(resizedWindowBox.width).toBeLessThan(initialWindowBox.width - 20);
   expect(resizedWindowBox.height).toBeLessThan(initialWindowBox.height - 40);
 
+  await page.setViewportSize({ width: 1024, height: 926 });
+  const restorableWindowBox = await windowNode.boundingBox();
+  if (restorableWindowBox === null) throw new Error("missing window geometry before full view");
+  const fullscreenButton = editor.getByTestId("event-editor-window-fullscreen");
+  await fullscreenButton.click();
+  await expect(windowNode).toHaveClass(/is-fullscreen/);
+  await expect(fullscreenButton).toHaveAttribute("aria-pressed", "true");
+  const fullscreenBox = await windowNode.boundingBox();
+  expect(fullscreenBox).toMatchObject({ x: 6, y: 6, width: 1012, height: 914 });
+
+  await page.screenshot({ path: testInfo.outputPath("event-editor-fullscreen.png") });
+
+  await page.keyboard.press("Escape");
+  await expect(editor).toBeVisible();
+  await expect(windowNode).not.toHaveClass(/is-fullscreen/);
+  await expect(fullscreenButton).toHaveAttribute("aria-pressed", "false");
+  const restoredWindowBox = await windowNode.boundingBox();
+  expect(restoredWindowBox?.width).toBeCloseTo(restorableWindowBox.width, 0);
+  expect(restoredWindowBox?.height).toBeCloseTo(restorableWindowBox.height, 0);
+
   await page.screenshot({ path: testInfo.outputPath("event-editor-resizable-window-and-columns.png"), fullPage: true });
+
+  await page.keyboard.press("Escape");
+  await expect(editor).toBeHidden();
 });
 
 test("event command context menu, switch picker, and trigger safety warning work in the editor", async ({ page }, testInfo) => {

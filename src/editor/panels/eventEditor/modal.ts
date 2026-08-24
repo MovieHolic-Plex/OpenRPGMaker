@@ -28,6 +28,7 @@ import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost } from "./commandInspector";
 import { installEventEditorCustomSelects } from "./customSelect";
 import { attachWindowDrag } from "./modalDrag";
+import { attachWindowFullscreen } from "./modalFullscreen";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 import { toast } from "@/util/toast";
 
@@ -111,6 +112,8 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   // Layered Escape: topmost modal (command subdialog / picker) closes first.
   let closed = false;
   let closeGuardOpen = false;
+  let disposeWindowFullscreen = (): void => {};
+  let exitWindowFullscreen = (): boolean => false;
   const closeHandler = (saved = false): void => {
     if (closed) return;
     closed = true;
@@ -153,12 +156,32 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       }
       // ESC 경로는 modalStack 에서 이미 pop 됐으므로 계속 편집하려면 재등록해야 한다.
       unregisterModal(backdrop);
-      registerModal(backdrop, requestClose);
+      registerModal(backdrop, requestModalEscape);
     });
   };
-  registerModal(backdrop, requestClose);
+  const requestModalEscape = (): void => {
+      if (exitWindowFullscreen()) {
+        // modalStack removes an entry before invoking its Escape callback. Full view
+        // handles that Escape without closing, so restore routing for the next Escape.
+        unregisterModal(backdrop);
+        registerModal(backdrop, requestModalEscape);
+        return;
+      }
+      requestClose();
+    };
+  registerModal(backdrop, requestModalEscape);
   const header = renderModalHeader(request.mapId, request.eventId, requestClose);
   attachWindowDrag(header, windowEl);
+  const fullscreenButton = header.querySelector<HTMLButtonElement>("[data-testid='event-editor-window-fullscreen']");
+  if (fullscreenButton) {
+    const fullscreen = attachWindowFullscreen(fullscreenButton, header, backdrop, windowEl);
+    disposeWindowFullscreen = fullscreen.dispose;
+    exitWindowFullscreen = () => {
+      if (!fullscreen.isFullscreen()) return false;
+      fullscreen.toggle(false);
+      return true;
+    };
+  }
   const resizeHandle = renderModalResizeHandle();
   attachWindowResize(resizeHandle, windowEl);
   const footer = renderModalFooter(request, closeHandler, requestClose);
@@ -201,6 +224,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   backdrop.addEventListener("keydown", (event) => handleModalKeyDown(event, request, closeHandler));
   backdrop.addEventListener(EVENT_EDITOR_CLOSE_EVENT, (event) => {
     const saved = event instanceof CustomEvent && event.detail?.saved === true;
+    disposeWindowFullscreen();
     customSelects.dispose();
     globalThis.clearInterval(checkpointTimer);
     clearCommandToolbarHistories(`${request.mapId}:${request.eventId}:`);
@@ -263,12 +287,29 @@ function renderModalHeader(mapId: MapId, eventId: string, close: () => void): HT
           el("h2", { text: title }),
         ],
       }),
-      el("button", {
-        class: "event-editor-window-control event-editor-modal-close",
-        text: "×",
-        attrs: { type: "button", title: "닫기" },
-        dataset: { testid: "event-editor-modal-close" },
-        on: { click: () => close() },
+      el("div", {
+        class: "event-editor-window-controls",
+        children: [
+          el("button", {
+            class: "event-editor-window-control event-editor-window-fullscreen",
+            text: "□",
+            attrs: {
+              type: "button",
+              title: "전체 보기 (Alt+Enter)",
+              "aria-label": "전체 보기",
+              "aria-keyshortcuts": "Alt+Enter",
+              "aria-pressed": "false",
+            },
+            dataset: { testid: "event-editor-window-fullscreen" },
+          }),
+          el("button", {
+            class: "event-editor-window-control event-editor-modal-close",
+            text: "×",
+            attrs: { type: "button", title: "닫기", "aria-label": "닫기" },
+            dataset: { testid: "event-editor-modal-close" },
+            on: { click: () => close() },
+          }),
+        ],
       }),
     ],
   });

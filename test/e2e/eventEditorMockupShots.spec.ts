@@ -9,6 +9,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 const DIR = "output/evidence/event-editor-simplified-hierarchy";
 
 async function selectFirstStoryboardCommand(modal: Locator): Promise<void> {
+  await selectView(modal, "Storyboard");
   const card = modal.locator("[data-testid^='event-storyboard-card-']").first();
   await expect(card).toBeVisible();
   await card.click();
@@ -229,7 +230,7 @@ test("secondary controls remain reachable through disclosures", async ({ page })
 
   const pageActions = modal.getByTestId("event-page-tabs");
   await pageActions.locator(":scope > summary").click();
-  await expect(modal.getByTestId("event-page-add")).toBeVisible();
+  await expect(modal.getByTestId("event-page-tab-add")).toBeVisible();
   await expect(modal.getByTestId("event-page-copy")).toBeVisible();
   await modal.getByTestId("event-page-copy").click();
 
@@ -388,10 +389,42 @@ test("mockup parity checklist", async ({ page }) => {
 });
 
 
+test("storyboard targets every displayed command path and remains secondary to the full list", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const { project, eventId } = mockupProject();
+  await seedProjectFromSupabaseCanonical(page, project);
+  await openEventEditor(page, eventId);
+  const modal = page.getByTestId("event-editor-modal");
+
+  await expect(modal.locator(".cmd-list")).toBeVisible();
+  await expect(modal.getByTestId("event-storyboard")).toBeHidden();
+  await selectView(modal, "Storyboard");
+
+  const targets = modal.locator(
+    ".event-storyboard-card[data-cmd-path], .event-storyboard-branch-command[data-cmd-path]",
+  );
+  const topLevelCount = await modal.locator(".event-storyboard-card[data-cmd-path]").count();
+  const nestedCount = await modal.locator(".event-storyboard-branch-command[data-cmd-path]").count();
+  expect(topLevelCount).toBeGreaterThan(0);
+  expect(nestedCount).toBeGreaterThan(0);
+
+  for (let index = 0; index < await targets.count(); index += 1) {
+    const target = targets.nth(index);
+    const commandPath = await target.getAttribute("data-cmd-path");
+    expect(commandPath).toBeTruthy();
+    await target.scrollIntoViewIfNeeded();
+    await target.click();
+    await expect(modal.getByTestId("event-editor-inspector")).toHaveAttribute("data-command-path", commandPath!);
+    await expect(target).toHaveAttribute("aria-current", "step");
+  }
+});
+
+
 // 뷰포트 매트릭스 — 목업 불변식(3열 312/유연/348, 단일 행 탭, 하단 스트립)이
 // 실제 사용자가 쓰는 창 크기에서 깨지지 않는지 기계적으로 확인한다.
 const VIEWPORTS = [
   { width: 1586, height: 992 },
+  { width: 1440, height: 900 },
   { width: 1280, height: 900 },
   { width: 1024, height: 768 },
   { width: 960, height: 900 },

@@ -54,6 +54,7 @@ import {
 import type { CommandListActions } from "./types";
 import { openFieldMonsterTemplateDialog } from "./fieldMonsterTemplateDialog";
 import { renderFollowerPresetBar } from "./followerPresetPicker";
+import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 
 export function renderEventEditorContent(container: HTMLElement, mapId: MapId, eventId: string): void {
   renderEventEditorDynamic(container, mapId, eventId);
@@ -146,6 +147,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       "aria-label": "설정과 실행 내용 사이즈 조절",
       "aria-orientation": "vertical",
       tabindex: "0",
+      title: "드래그 또는 ←/→ 키로 폭 조절 · 더블클릭으로 초기화",
     },
     dataset: { testid: "event-editor-column-resizer" },
   });
@@ -181,12 +183,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const makeStoryboard = () =>
     renderStoryboard(activePage.commands, {
       onSelect: (path) => {
-        const cmd = activePage.commands[path[0]!];
+        const cmd = resolveCommandAtPath(activePage.commands, path);
         if (!cmd) return;
         showCommandInspector({ command: cmd, path, actions });
       },
       // 장면 추가는 뷰를 갈아타지 않고 그 자리에서 명령 피커를 연다 (적대 평가 스펙).
       onAddNext: () => openCommandPickerForActions(actions),
+      onShowList: () => { currentMode = "list"; applyViewMode(); },
     });
   let storyboardEl = makeStoryboard();
   let viewToggle = renderViewToggle(currentMode, (next) => { currentMode = next; applyViewMode(); });

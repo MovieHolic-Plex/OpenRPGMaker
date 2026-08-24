@@ -64,6 +64,7 @@ export function saveInspectorDensity(d: InspectorDensity): void { try { localSto
 export function showCommandInspector(target: InspectorTarget): void {
   selectedPath = [...target.path];
   if (!host) return;
+  host.dataset.commandPath = JSON.stringify(target.path);
   showInspector(host);
   const density = loadInspectorDensity();
   const formBody = el("div", {
@@ -116,6 +117,7 @@ export function showCommandInspector(target: InspectorTarget): void {
 }
 
 function hideInspector(target: HTMLElement): void {
+  delete target.dataset.commandPath;
   target.replaceChildren();
   target.hidden = true;
   target.closest(".event-editor-workbench")?.classList.remove("has-command-inspector");
