@@ -603,7 +603,7 @@
 .database-modal-backdrop .database-modal-window .db-effect-story-facts {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
   margin-bottom: 10px;
 }
 
@@ -709,7 +709,7 @@
   display: grid;
   gap: 5px;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
 
 .database-modal-backdrop .database-modal-window .db-equipment-comparison-stat {
@@ -736,13 +736,6 @@
 
 .database-modal-backdrop .database-modal-window .db-equipment-comparison-stat strong.neutral {
   color: var(--db-light-text-3);
-}
-
-@media (max-width: 1100px) {
-  .database-modal-backdrop .database-modal-window .db-effect-story-facts,
-  .database-modal-backdrop .database-modal-window .db-equipment-comparison-stats {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 /* ── 시스템 탭 섹션 내비 (W4.5, todo 11) ────────────────────────────────────
