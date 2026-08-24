@@ -78,7 +78,7 @@ test("P0 생활 시스템을 좁은 에디터에서도 완전하게 저작하고
   await page.screenshot({ path: `${EVIDENCE_DIR}/editor-life-crafting-1024.png`, fullPage: true });
 });
 
-test("P0 생활 장부 4개 탭과 실제 출하 동작을 터치 화면에서도 검증한다", async ({ page }) => {
+test("생활 장부 5개 탭과 실제 출하 동작을 터치 화면에서도 검증한다", async ({ page }) => {
   mkdirSync(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1024, height: 768 });
   await seedFarmingDemo(page);
@@ -100,7 +100,7 @@ test("P0 생활 장부 4개 탭과 실제 출하 동작을 터치 화면에서�
   if (await touchPad.count()) await expect(touchPad).toHaveCSS("visibility", "hidden");
   await expect(page.getByTestId("main-menu")).toHaveCSS("color", "rgb(255, 255, 255)");
 
-  for (const tab of ["shipping", "bundles", "skills", "makers"] as const) {
+  for (const tab of ["shipping", "bundles", "skills", "makers", "animals"] as const) {
     const button = page.getByTestId(`life-ledger-tab-${tab}`);
     await expect(button).toBeVisible();
     await expectNotClipped(button, `life ledger tab ${tab}`);

@@ -45,7 +45,7 @@ describe("P0 life ledger status menu", () => {
     expect(listStatusMenuCommandIds(project, startSession(project))).not.toContain("life-ledger");
   });
 
-  it("renders four pointer/keyboard reachable tabs, generated artwork, and long names without truncating the text node", () => {
+  it("renders five pointer/keyboard reachable tabs, generated artwork, and long names without truncating the text node", () => {
     const restoreDom = installFakeDom();
     try {
       const { project, session, longName } = ledgerRuntime();
@@ -61,7 +61,7 @@ describe("P0 life ledger status menu", () => {
       });
       const panel = renderWithFakeDom(() => renderStatusMenuDetailPanel(project, detail));
 
-      for (const tab of ["shipping", "bundles", "skills", "makers"]) {
+      for (const tab of ["shipping", "bundles", "skills", "makers", "animals"]) {
         const button = findByTestId(panel, `life-ledger-tab-${tab}`);
         expect(button?.tagName).toBe("BUTTON");
         expect(button?.getAttribute("role")).toBe("tab");

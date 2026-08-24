@@ -228,6 +228,139 @@
   }
 }
 
+/* P1 season/weather and farm-animal authoring surfaces. */
+.database-modal-backdrop .db-life-authoring-workspace {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 42%),
+    var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 10px;
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+  padding: 14px;
+}
+
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading h2,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading p,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-card h3,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-card p {
+  margin: 0;
+}
+
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading h2 {
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.database-modal-backdrop .db-life-authoring-workspace .db-life-panel-heading p,
+.database-modal-backdrop .db-life-authoring-workspace .db-life-card p {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+.database-modal-backdrop .db-life-toolbar {
+  align-items: center;
+  background: color-mix(in srgb, var(--db-light-bg-raised, var(--bg-raised)) 88%, transparent);
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  padding: 9px 10px;
+}
+
+.database-modal-backdrop .db-life-toolbar > span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.database-modal-backdrop .db-life-toolbar .field {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+}
+
+.database-modal-backdrop .db-weather-season-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-weather-season {
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-life-rule-row {
+  align-items: end;
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: minmax(88px, 1.4fr) minmax(62px, .8fr) minmax(62px, .8fr) auto;
+  padding: 7px;
+}
+
+.database-modal-backdrop .db-life-rule-row .field,
+.database-modal-backdrop .db-life-record-card .field {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-life-rule-row .field > span,
+.database-modal-backdrop .db-life-record-card .field > span {
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.database-modal-backdrop .db-life-rule-row :is(input, select),
+.database-modal-backdrop .db-life-record-card :is(input, select) {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-farm-animal-grid {
+  align-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.database-modal-backdrop .db-farm-authoring-panel {
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-life-record-card {
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-left: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+}
+
+@media (max-width: 1180px) {
+  .database-modal-backdrop .db-farm-animal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 799px) {
+  .database-modal-backdrop .db-weather-season-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-rule-row {
+    grid-template-columns: minmax(0, 1fr) minmax(70px, .7fr);
+  }
+}
+
 /* Structured life-skill / crafting authoring (desktop floor: 1024px). */
 .database-modal-backdrop .db-life-crafting-header {
   background: var(--db-light-bg-raised, var(--bg-surface));

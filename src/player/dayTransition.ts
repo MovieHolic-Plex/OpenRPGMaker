@@ -10,10 +10,16 @@ import {
 import { absoluteGameMinutes, advanceMakers, type MakerAdvanceResult } from "@/project/makers";
 import type { PlaySession } from "@/project/session";
 import { settleShipping, type ShippingSettlementResult } from "@/project/shipping";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import { advanceFarmAnimalProduction, type FarmAnimalAdvanceResult } from "@/project/farmAnimals";
+import type { DailyWeatherState } from "@/project/session";
 import type { Project } from "@/project/types";
 import { syncFarmPlotsToDate } from "@/player/farming";
+import { waterFarmPlotsForDailyWeather } from "@/player/farmingWeather";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "farm", "energy", "makers"] as const;
+export const DAY_TRANSITION_STAGES = ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"] as const;
 export type DayTransitionStage = (typeof DAY_TRANSITION_STAGES)[number];
 
 export type DayTransitionReceipt = {
@@ -21,15 +27,18 @@ export type DayTransitionReceipt = {
   readonly destinationDayKey: string;
   readonly stages: readonly DayTransitionStage[];
   readonly shipping: ShippingSettlementResult;
+  readonly weather?: DailyWeatherState;
+  readonly wateredPlots: number;
   readonly energy: EnergyChangeResult;
   readonly makers: MakerAdvanceResult;
+  readonly animals: FarmAnimalAdvanceResult;
 };
 
 export type DayTransitionResult =
   | { readonly ok: true; readonly receipt: DayTransitionReceipt }
   | {
       readonly ok: false;
-      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "shipping" | "energy" | "makers";
+      readonly reason: "disabled" | "missing-time" | "stale-day-key" | "already-transitioned" | "shipping" | "energy" | "makers" | "animals";
       readonly stage?: DayTransitionStage;
     };
 
@@ -95,6 +104,10 @@ export function transitionToNextDay(
   }
 
   draft.gameTime = sleepGameTimeUntilMorning(draft.gameTime!, system).time;
+  const weather = applyDailyWeatherForDate(project, draft, draft.gameTime);
+  if (weather) ensureM2Runtime(draft).screen.weather = weatherToRuntimeString(weather);
+  else if (draft.m2Runtime) draft.m2Runtime.screen.weather = "none";
+  const wateredPlots = waterFarmPlotsForDailyWeather(draft, draft.gameTime);
   syncFarmPlotsToDate(project, draft, system);
 
   const energy = restoreEnergy(project, draft, project.system.energy?.restorePerDay);
@@ -118,6 +131,11 @@ export function transitionToNextDay(
     return { ok: false, reason: "makers", stage: "makers" };
   }
 
+  const animals = advanceFarmAnimalProduction(project, draft, normalizedSource);
+  if (!animals.ok && animals.reason !== "disabled") {
+    return { ok: false, reason: "animals", stage: "animals" };
+  }
+
   draft.dayTransitionLastDayKey = normalizedSource;
   replaceSession(session, draft);
   return {
@@ -127,8 +145,11 @@ export function transitionToNextDay(
       destinationDayKey: calendarDayKey(draft.gameTime),
       stages: DAY_TRANSITION_STAGES,
       shipping,
+      ...(weather ? { weather } : {}),
+      wateredPlots,
       energy,
       makers,
+      animals,
     },
   };
 }

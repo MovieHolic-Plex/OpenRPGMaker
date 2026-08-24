@@ -79,7 +79,7 @@ describe("P0 day transition integration", () => {
       receipt: {
         sourceDayKey,
         destinationDayKey: "1:summer:1",
-        stages: ["shipping", "calendar", "farm", "energy", "makers"],
+        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"],
       },
     });
     expect(session.shippingQueue).toEqual({});
@@ -264,6 +264,9 @@ describe("P0 day transition integration", () => {
     // Break caught: a disabled maker package still evaluates absoluteGameMinutes and throws on overflow.
     const project = runtimeProject();
     delete project.system.makers;
+    delete project.database.farmAnimalSpecies;
+    delete project.system.farmAnimalBuildings;
+    delete project.session.farmAnimals;
     const session = startSession(project, 110);
     session.gameTime = { year: 1e300, season: "spring", day: 2, hour: 6, minute: 0 };
     const sourceDayKey = calendarDayKey(session.gameTime);

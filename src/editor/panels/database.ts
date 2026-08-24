@@ -5,6 +5,8 @@ import { renderCropTab } from "@/editor/panels/databaseCropView";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
 import { renderCharactersTab } from "@/editor/panels/databaseCharacterView";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
+import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
+import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
 import { renderSystemTab } from "@/editor/panels/databaseSystemView";
 import {
@@ -36,6 +38,8 @@ export type DatabaseTab =
   | "characters"
   | "crops"
   | "lifeCrafting"
+  | "dailyWeather"
+  | "farmAnimals"
   | "elements"
   | "monsterSpecies"
   | "structureKits"
@@ -59,6 +63,8 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
   { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
   { id: "lifeCrafting", label: "생활 기술·제작", testid: "db-tab-life-crafting" },
+  { id: "dailyWeather", label: "계절·날씨", testid: "db-tab-daily-weather" },
+  { id: "farmAnimals", label: "동물·축사", testid: "db-tab-farm-animals" },
   { id: "equipment", label: "장비", testid: "db-tab-equipment" },
   { id: "enemies", label: "몬스터", testid: "db-tab-enemies" },
   { id: "monsterSpecies", label: "몬스터 종족", testid: "db-tab-monster-species" },
@@ -93,6 +99,8 @@ const tabOrder: readonly DatabaseTab[] = [
   "crops",
   "characters",
   "lifeCrafting",
+  "dailyWeather",
+  "farmAnimals",
   "tilesets",
   "structureKits",
   "commonEvents",
@@ -118,7 +126,7 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
     label: "전투·몬스터",
     tabs: ["enemies", "monsterSpecies", "troops", "elements", "states", "animations", "battleScreen", "battleCommands", "terrain"],
   },
-  { label: "생활", tabs: ["crops", "characters", "lifeCrafting"] },
+  { label: "생활", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals"] },
   { label: "맵", tabs: ["tilesets", "structureKits", "commonEvents"] },
   { label: "시스템", tabs: ["system", "terms", "switches", "variables"] },
 ];
@@ -247,6 +255,12 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         + (project.system.worldUnlocks?.length ?? 0)
         + (project.system.bundles?.length ?? 0)
         + (project.system.makers?.length ?? 0);
+    case "dailyWeather":
+      return Object.values(project.system.dailyWeather?.seasons ?? {}).reduce((sum, rules) => sum + (rules?.length ?? 0), 0);
+    case "farmAnimals":
+      return (database.farmAnimalSpecies?.length ?? 0)
+        + (project.system.farmAnimalBuildings?.length ?? 0)
+        + (project.session.farmAnimals?.length ?? 0);
     case "switches":
       return project.switches.length;
     case "variables":
@@ -422,6 +436,12 @@ function renderActiveTab(
       break;
     case "lifeCrafting":
       renderLifeCraftingTab(body, rerender);
+      break;
+    case "dailyWeather":
+      renderDailyWeatherTab(body, rerender);
+      break;
+    case "farmAnimals":
+      renderFarmAnimalsTab(body, rerender);
       break;
     case "switches":
       renderSwitchesTab(body, rerender);

@@ -62,6 +62,13 @@ function configureP1Project(project: ReturnType<typeof createBlankProject>): voi
     capacity: 4,
     allowedSpeciesIds: ["animal_chicken"],
   }];
+  project.maps[project.startMapId]!.events.push({
+    id: "event_chicken_1",
+    x: 4,
+    y: 5,
+    trigger: { kind: "action" },
+    commands: [],
+  });
   project.session.farmAnimals = [{
     instanceId: "farm_animal_1",
     speciesId: "animal_chicken",

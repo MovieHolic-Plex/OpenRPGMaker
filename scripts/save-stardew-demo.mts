@@ -72,6 +72,12 @@ function validateStardewDemo(project: Project) {
     bundleCount: project.system.bundles?.length ?? 0,
     makerCount: project.system.makers?.length ?? 0,
     upgradeCapabilityCount: (project.system.itemUpgrades ?? []).filter((entry) => entry.capability).length,
+    weatherSeasonCount: Object.keys(project.system.dailyWeather?.seasons ?? {}).length,
+    weatherForecastDays: project.system.dailyWeather?.forecastDays ?? 0,
+    farmAnimalSpeciesCount: project.database.farmAnimalSpecies?.length ?? 0,
+    farmAnimalBuildingCount: project.system.farmAnimalBuildings?.length ?? 0,
+    farmAnimalStartCount: project.session.farmAnimals?.length ?? 0,
+    scheduledResidentCount: events.filter((event) => event.characterId && (event.schedule?.length ?? 0) >= 2).length,
   };
   const ok = facts.cropCount === 8
     && facts.giftSystem
@@ -86,7 +92,13 @@ function validateStardewDemo(project: Project) {
     && facts.shippingItemCount >= 10
     && facts.bundleCount >= 2
     && facts.makerCount >= 2
-    && facts.upgradeCapabilityCount >= 3;
+    && facts.upgradeCapabilityCount >= 3
+    && facts.weatherSeasonCount === 4
+    && facts.weatherForecastDays === 3
+    && facts.farmAnimalSpeciesCount >= 2
+    && facts.farmAnimalBuildingCount >= 1
+    && facts.farmAnimalStartCount >= 2
+    && facts.scheduledResidentCount >= 3;
   if (!ok) throw new Error(`Stardew demo contract mismatch: ${JSON.stringify(facts)}`);
   return facts;
 }

@@ -170,10 +170,13 @@ export function restoreFarmAnimalStates(
   starts: readonly FarmAnimalStartInstance[] | undefined,
   saved: Record<string, FarmAnimalState> | undefined,
   knownSpeciesIds: ReadonlySet<string>,
+  buildings: readonly FarmAnimalBuildingDefinition[] | undefined,
 ): Record<string, FarmAnimalState> | undefined {
   if (starts === undefined && saved === undefined) return undefined;
   const normalizedStarts = normalizeFarmAnimalStartInstances(starts) ?? [];
   const startById = new Map(normalizedStarts.map((animal) => [animal.instanceId, animal] as const));
+  const buildingById = new Map((normalizeFarmAnimalBuildingDefinitions(buildings) ?? [])
+    .map((building) => [building.id, building] as const));
   const restored: Record<string, FarmAnimalState> = {};
 
   for (const start of normalizedStarts) restored[start.instanceId] = initialFarmAnimalState(start);
@@ -182,12 +185,14 @@ export function restoreFarmAnimalStates(
     const start = startById.get(instanceId);
     if (start && state.speciesId !== start.speciesId) continue;
     const identity = start ?? state;
+    const buildingId = compatibleBuildingId(state.buildingId, state.speciesId, buildingById)
+      ?? compatibleBuildingId(start?.buildingId, state.speciesId, buildingById);
     restored[instanceId] = {
       instanceId,
       speciesId: identity.speciesId,
       name: identity.name,
       ...(identity.eventId ? { eventId: identity.eventId } : {}),
-      ...(identity.buildingId ? { buildingId: identity.buildingId } : {}),
+      ...(buildingId ? { buildingId } : {}),
       friendship: state.friendship,
       productionProgress: state.productionProgress,
       readyProductCount: state.readyProductCount,
@@ -196,7 +201,37 @@ export function restoreFarmAnimalStates(
       ...(state.lastAdvancedDayKey ? { lastAdvancedDayKey: state.lastAdvancedDayKey } : {}),
     };
   }
-  return restored;
+  return normalizeFarmAnimalBuildingCapacity(restored, startById, buildingById);
+}
+
+function normalizeFarmAnimalBuildingCapacity(
+  restored: Record<string, FarmAnimalState>,
+  starts: ReadonlyMap<string, FarmAnimalStartInstance>,
+  buildings: ReadonlyMap<string, FarmAnimalBuildingDefinition>,
+): Record<string, FarmAnimalState> {
+  const occupancy = new Map<string, number>();
+  return Object.fromEntries(Object.entries(restored).map(([instanceId, state]) => {
+    const candidates = [state.buildingId, starts.get(instanceId)?.buildingId]
+      .filter((candidate, index, values): candidate is string => Boolean(candidate) && values.indexOf(candidate) === index);
+    const buildingId = candidates.find((candidate) => {
+      const building = buildings.get(candidate);
+      if (!building?.allowedSpeciesIds.includes(state.speciesId)) return false;
+      return (occupancy.get(candidate) ?? 0) < building.capacity;
+    });
+    if (buildingId) occupancy.set(buildingId, (occupancy.get(buildingId) ?? 0) + 1);
+    const { buildingId: _discardedBuildingId, ...unassigned } = state;
+    return [instanceId, buildingId ? { ...unassigned, buildingId } : unassigned];
+  }));
+}
+
+function compatibleBuildingId(
+  buildingId: string | undefined,
+  speciesId: string,
+  buildings: ReadonlyMap<string, FarmAnimalBuildingDefinition>,
+): string | undefined {
+  if (!buildingId) return undefined;
+  const building = buildings.get(buildingId);
+  return building?.allowedSpeciesIds.includes(speciesId) ? buildingId : undefined;
 }
 
 export function isCalendarDayKey(value: unknown): value is string {

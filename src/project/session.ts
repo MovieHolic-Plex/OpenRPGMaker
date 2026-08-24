@@ -3,7 +3,7 @@
 // v2: switches/variables/timers/mapOverrides 포함.
 // 스펙 docs/specs/2026-06-18-oprn-overhaul-design.md §8.2.
 
-import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
+import type { ActorId, ActorInitialEquipment, ActorParameterKey, Command, CropId, EventPageGraphic, FarmAnimalStartInstance, FarmBuildingPlacement, HomeDecorationPlacement, LightingState, MapId, MonsterInstanceId, MonsterSpeciesId, Project, ProjectStartState, SkillId, StateId, Condition, MessageWindowSettings, WeatherKind } from "./types";
 import type { M2RuntimeState,
 PlaySessionLike,
 RuntimeCameraSessionState,
@@ -24,6 +24,9 @@ import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/rog
 import { resolveItemQuantity, type ItemQuantityOperation } from "@/project/itemQuantities";
 import { GOLD_MAX } from "@/project/economyValues";
 import { initialFarmAnimalStates } from "@/project/p1FoundationRecords";
+import { applyDailyWeatherForDate } from "@/project/dailyWeather";
+import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
+import { weatherToRuntimeString } from "@/player/weather/weatherModel";
 
 export type AudioChannel = "bgm" | "bgs" | "me" | "se";
 
@@ -204,6 +207,8 @@ export interface PlaySession {
   /** Current resolved day only. Forecasts are recomputed and never stored in saves. */
   dailyWeather?: DailyWeatherState;
   farmAnimals?: Record<string, FarmAnimalState>;
+  farmBuildingPlacements?: Record<string, FarmBuildingPlacement>;
+  homeDecorationPlacements?: Record<string, HomeDecorationPlacement>;
   monsterInstances: Record<MonsterInstanceId, MonsterInstance>;
   monsterParty: MonsterInstanceId[];
   monsterBox: MonsterInstanceId[];
@@ -322,7 +327,7 @@ export function startSession(project: Project, seed?: number): PlaySession {
     variables[v.id] = start.variables?.[v.id] ?? 0;
   }
   const gameTime = initialGameTime(project.system.timeSystem);
-  return {
+  const session: PlaySession = {
     switches,
     selfSwitches: {},
     variables,
@@ -344,6 +349,8 @@ export function startSession(project: Project, seed?: number): PlaySession {
     unlockedRecipeIds: [],
     makerInstances: {},
     farmAnimals: initialFarmAnimalStates(start.farmAnimals),
+    farmBuildingPlacements: initialSpatialPlacementRecord(start.farmBuildingPlacements),
+    homeDecorationPlacements: initialSpatialPlacementRecord(start.homeDecorationPlacements),
     monsterInstances: {},
     monsterParty: [],
     monsterBox: [],
@@ -391,6 +398,20 @@ export function startSession(project: Project, seed?: number): PlaySession {
     rng: createRngState(seed),
     gameTime,
   };
+  const weather = applyDailyWeatherForDate(project, session, gameTime);
+  if (weather) {
+    ensureM2Runtime(session).screen.weather = weatherToRuntimeString(weather);
+  }
+  return session;
+}
+
+function initialSpatialPlacementRecord<T extends FarmBuildingPlacement | HomeDecorationPlacement>(
+  placements: readonly T[] | undefined,
+): Record<string, T> | undefined {
+  if (placements === undefined) return undefined;
+  return Object.fromEntries(
+    placements.map((placement) => [placement.instanceId, structuredClone(placement)]),
+  );
 }
 
 export function reseedSessionRng(session: PlaySessionLike, seed?: number): void {
