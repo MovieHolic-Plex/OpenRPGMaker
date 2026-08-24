@@ -17,6 +17,7 @@ import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
+import { isItemActorEligible } from "@/project/itemEligibility";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
 import { databaseFieldSupportNotice } from "@/editor/databaseFieldSupport";
@@ -126,7 +127,8 @@ export function itemEffectStory(project: Project, record: ItemRecord): ItemEffec
   if (record.farmTool) effects.push(`농사 도구: ${FARM_TOOL_LABELS[record.farmTool]}`);
   if (isEquipmentItemType(record.type)) notes.push("전투 효과는 장비 탭의 장비 레코드에서 설정합니다.");
   if (record.onlyEffectiveOnDeadActors) notes.push("전투불능 대상에게만 유효");
-  if (record.usableActorIds.length > 0 || record.usableClassIds.length > 0) {
+  const runtimeAppliesActorRestrictions = !isItemActorEligible(project, record, undefined);
+  if (runtimeAppliesActorRestrictions && (record.usableActorIds.length > 0 || record.usableClassIds.length > 0)) {
     const actorCount = record.usableActorIds.length;
     const classCount = record.usableClassIds.length;
     notes.push(`사용 허용: 주인공 ${actorCount}명 · 직업 ${classCount}개`);
@@ -554,15 +556,27 @@ function itemTargetLabel(record: ItemRecord): string {
 }
 
 function itemOccasionLabel(record: ItemRecord): string {
-  if (record.onlyUsableInMenu) return "메뉴 전용";
-  const field = record.occasion !== "never" && record.occasion !== "battle"
-    && (record.occasionField || record.occasion === "field" || record.occasion === "always");
-  const battle = record.occasion !== "never" && record.occasion !== "field"
-    && (record.occasionBattle || record.occasion === "battle" || record.occasion === "always");
+  const field = itemIsFieldUsable(record);
+  const battle = itemIsBattleUsable(record);
   if (field && battle) return "필드 · 전투";
   if (field) return "필드";
   if (battle) return "전투";
   return "사용 불가";
+}
+
+/** Mirrors playerItemUse.canUseItemInMenu, including its occasion-first precedence. */
+function itemIsFieldUsable(record: ItemRecord): boolean {
+  if (record.occasion === "never" || record.occasion === "battle") return false;
+  if (record.onlyUsableInMenu) return true;
+  if (record.occasionField === false && record.occasion !== "field" && record.occasion !== "always") return false;
+  return record.occasion === "always" || record.occasion === "field" || record.occasionField === true;
+}
+
+/** Mirrors battle/runtime.itemIsBattleUsable's occasion gate (before effect checks). */
+function itemIsBattleUsable(record: ItemRecord): boolean {
+  if (record.occasion === "never" || record.occasion === "field") return false;
+  if (record.occasionBattle === false && record.occasion !== "battle" && record.occasion !== "always") return false;
+  return true;
 }
 
 function statStory(bonuses: EquipmentStatBonuses): string[] {
