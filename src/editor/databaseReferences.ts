@@ -114,6 +114,16 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (project.system.sellPrices?.some((record) => record.itemId === id)) return "판매 가격 규칙이 이 아이템을 사용 중입니다.";
       const toolActions = project.system.toolActions?.filter((record) => record.itemId === id) ?? [];
       if (toolActions.length) return namedReferenceMessage("도구 행동", toolActions.map((record) => ({ name: record.id })), "이 아이템을 사용 중입니다.");
+      if (project.system.shipping?.allowedItemIds?.includes(id)) return "출하 허용 목록이 이 아이템을 사용 중입니다.";
+      const bundles = (project.system.bundles ?? []).filter((record) =>
+        record.requirements.some((entry) => entry.itemId === id)
+        || record.reward?.itemRewards?.some((entry) => entry.itemId === id)
+      );
+      if (bundles.length) return namedReferenceMessage("꾸러미", bundles.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 요구하거나 보상으로 사용 중입니다.");
+      const makers = (project.system.makers ?? []).filter((record) =>
+        record.inputs.some((entry) => entry.itemId === id) || record.outputs.some((entry) => entry.itemId === id)
+      );
+      if (makers.length) return namedReferenceMessage("가공 설비", makers.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 투입하거나 생산합니다.");
       const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id);
       if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 아이템을 보상으로 사용 중입니다.");
       return commandLocationMessage(project, "items", id, "아이템");
@@ -217,6 +227,12 @@ export function switchVariableReferenceMessage(kind: "switch" | "variable", id: 
   if (kind === "switch" && (project.database.lifeSkills ?? []).some((skill) =>
     skill.levelUpRewards.some((reward) => reward.switchId === id)
   )) return "생활 기술의 레벨 보상이 이 스위치를 사용 중입니다.";
+  if (kind === "switch" && (project.system.worldUnlocks ?? []).some((unlock) => unlock.switchId === id)) {
+    return "지역 해금 규칙이 이 스위치를 사용 중입니다.";
+  }
+  if (kind === "switch" && (project.system.bundles ?? []).some((bundle) => bundle.reward?.switchId === id)) {
+    return "꾸러미 완료 보상이 이 스위치를 사용 중입니다.";
+  }
   if (!switchVariableReferencedInProject(project, kind, id)) return null;
   return kind === "switch" ? "이벤트/조건이 이 스위치를 사용 중입니다." : "이벤트/조건이 이 변수를 사용 중입니다.";
 }

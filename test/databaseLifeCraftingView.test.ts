@@ -23,6 +23,13 @@ function setValue(host: FakeElement, testid: string, value: string): void {
   control.dispatchEvent(new Event("change"));
 }
 
+function setChecked(host: FakeElement, testid: string, checked: boolean): void {
+  const control = findByTestId(host, testid);
+  if (!control) throw new Error(`missing ${testid}`);
+  control.checked = checked;
+  control.dispatchEvent(new Event("change"));
+}
+
 describe("database life skill and crafting view", () => {
   let cleanupDom: (() => void) | undefined;
 
@@ -174,5 +181,170 @@ describe("database life skill and crafting view", () => {
     expect(store.getCurrent().database.lifeSkills).toHaveLength(1);
     expect(store.getCurrent().system.craftRecipes).toHaveLength(1);
     expect(store.getCurrent().system.itemUpgrades).toHaveLength(1);
+  });
+
+  // Break caught: the runtime understands locked recipes and upgraded tool reach,
+  // but the structured editor drops those fields because it has no controls for them.
+  it("authors recipe unlock requirements and tool capability fields", () => {
+    const host = renderTab();
+
+    findByTestId(host, "db-life-section-recipes")?.click();
+    findByTestId(host, "db-life-add")?.click();
+    setChecked(host, "db-life-recipe-requires-unlock", true);
+
+    findByTestId(host, "db-life-section-upgrades")?.click();
+    findByTestId(host, "db-life-add")?.click();
+    setChecked(host, "db-life-upgrade-capability-enabled", true);
+    setValue(host, "db-life-upgrade-area-width", "3");
+    setValue(host, "db-life-upgrade-area-height", "2");
+    setValue(host, "db-life-upgrade-energy-multiplier", "0.75");
+
+    expect(store.getCurrent().system.craftRecipes?.[0]?.requiresUnlock).toBe(true);
+    expect(store.getCurrent().system.itemUpgrades?.[0]?.capability).toEqual({
+      areaWidth: 3,
+      areaHeight: 2,
+      energyMultiplier: 0.75,
+    });
+    const restored = deserialize(serialize(store.getCurrent()));
+    expect(restored.system.craftRecipes?.[0]?.requiresUnlock).toBe(true);
+    expect(restored.system.itemUpgrades?.[0]?.capability?.areaWidth).toBe(3);
+  });
+
+  // Break caught: energy and shipping are schema-only packages and shipping's
+  // enabled toggle must not erase history/item policy while it is off.
+  it("creates energy and shipping settings and preserves disabled shipping values", () => {
+    const host = renderTab();
+
+    findByTestId(host, "db-life-section-energy")?.click();
+    expect(findByTestId(host, "db-life-package-create")).not.toBeNull();
+    findByTestId(host, "db-life-package-create")?.click();
+    setValue(host, "db-life-energy-max", "180");
+    setValue(host, "db-life-energy-initial", "120");
+    setValue(host, "db-life-energy-restore", "90");
+
+    findByTestId(host, "db-life-section-shipping")?.click();
+    findByTestId(host, "db-life-package-create")?.click();
+    setValue(host, "db-life-shipping-history-limit", "14");
+    const itemId = store.getCurrent().database.items[0]?.id;
+    if (!itemId) throw new Error("missing default item");
+    setChecked(host, "db-life-shipping-all-items", false);
+    setChecked(host, `db-life-shipping-item-${itemId}`, true);
+    setChecked(host, "db-life-shipping-enabled", false);
+
+    expect(store.hasUnsavedChanges()).toBe(true);
+    expect(store.getCurrent().system.energy).toEqual({ max: 180, initial: 120, restorePerDay: 90 });
+    expect(store.getCurrent().system.shipping).toEqual({
+      enabled: false,
+      historyLimit: 14,
+      allowedItemIds: [itemId],
+    });
+    expect(findByTestId(host, "db-life-shipping-history-limit")?.value).toBe("14");
+  });
+
+  // Break caught: world unlock, bundle, and maker records have no discoverable
+  // add/detail/duplicate/delete workflow even though they are persisted by ProjectIO.
+  it("authors world unlock, bundle rewards, and maker processing without raw JSON", () => {
+    const project = createBlankProject();
+    project.switches.push({ id: "sw_unlock", name: "해금" });
+    store.replace(project);
+    const host = renderTab();
+    const itemId = store.getCurrent().database.items[0]?.id;
+    if (!itemId) throw new Error("missing default item");
+
+    findByTestId(host, "db-life-section-world-unlocks")?.click();
+    findByTestId(host, "db-life-empty-add")?.click();
+    setValue(host, "db-life-world-unlock-id", "unlock_bridge");
+    setValue(host, "db-life-world-unlock-name", "다리 수리");
+    setValue(host, "db-life-world-unlock-switch", "sw_unlock");
+    findByTestId(host, "db-life-duplicate")?.click();
+    expect(store.getCurrent().system.worldUnlocks).toHaveLength(2);
+    expect(store.getCurrent().system.worldUnlocks?.[1]?.id).not.toBe("unlock_bridge");
+
+    findByTestId(host, "db-life-section-recipes")?.click();
+    findByTestId(host, "db-life-add")?.click();
+    const recipeId = store.getCurrent().system.craftRecipes?.[0]?.id;
+    if (!recipeId) throw new Error("missing recipe");
+
+    findByTestId(host, "db-life-section-bundles")?.click();
+    findByTestId(host, "db-life-empty-add")?.click();
+    setValue(host, "db-life-bundle-name", "봄 채집 꾸러미");
+    findByTestId(host, "db-life-bundle-requirement-add")?.click();
+    setValue(host, "db-life-bundle-requirement-item-0", itemId);
+    setValue(host, "db-life-bundle-requirement-count-0", "5");
+    setValue(host, "db-life-bundle-reward-gold", "500");
+    findByTestId(host, "db-life-bundle-reward-item-add")?.click();
+    setValue(host, "db-life-bundle-reward-item-item-0", itemId);
+    setValue(host, "db-life-bundle-reward-item-count-0", "2");
+    setValue(host, "db-life-bundle-reward-switch", "sw_unlock");
+    setChecked(host, "db-life-bundle-unlock-unlock_bridge", true);
+    setChecked(host, `db-life-bundle-recipe-${recipeId}`, true);
+
+    findByTestId(host, "db-life-section-makers")?.click();
+    findByTestId(host, "db-life-empty-add")?.click();
+    setValue(host, "db-life-maker-name", "치즈 프레스");
+    setValue(host, "db-life-maker-duration", "120");
+    findByTestId(host, "db-life-maker-input-add")?.click();
+    setValue(host, "db-life-maker-input-item-0", itemId);
+    setValue(host, "db-life-maker-input-count-0", "1");
+    findByTestId(host, "db-life-maker-output-add")?.click();
+    setValue(host, "db-life-maker-output-item-0", itemId);
+    setValue(host, "db-life-maker-output-count-0", "1");
+
+    expect(store.getCurrent().system.bundles?.[0]).toMatchObject({
+      name: "봄 채집 꾸러미",
+      requirements: [{ itemId, count: 5 }],
+      reward: {
+        gold: 500,
+        itemRewards: [{ itemId, count: 2 }],
+        switchId: "sw_unlock",
+        worldUnlockIds: ["unlock_bridge"],
+        recipeIds: [recipeId],
+      },
+    });
+    expect(store.getCurrent().system.makers?.[0]).toMatchObject({
+      name: "치즈 프레스",
+      durationMinutes: 120,
+      inputs: [{ itemId, count: 1 }],
+      outputs: [{ itemId, count: 1 }],
+    });
+    expect(deserialize(serialize(store.getCurrent())).system.bundles?.[0]?.reward?.recipeIds).toEqual([recipeId]);
+  });
+
+  // Break caught: duplicate ids and deleting a reward target can make package
+  // references ambiguous or dangling; undo must also cover collection actions.
+  it("rejects duplicate package ids, guards reward targets, and records undo", () => {
+    const project = createBlankProject();
+    const itemId = project.database.items[0]?.id ?? "";
+    project.system.worldUnlocks = [{ id: "unlock_mine", name: "광산" }];
+    project.system.craftRecipes = [{ id: "recipe_gate", ingredients: [], outputItemId: itemId }];
+    project.system.bundles = [{
+      id: "bundle_gate",
+      requirements: [{ itemId, count: 1 }],
+      reward: { worldUnlockIds: ["unlock_mine"], recipeIds: ["recipe_gate"] },
+    }];
+    store.replace(project);
+    const host = renderTab();
+
+    findByTestId(host, "db-life-section-world-unlocks")?.click();
+    findByTestId(host, "db-life-add")?.click();
+    const secondId = store.getCurrent().system.worldUnlocks?.[1]?.id;
+    if (!secondId) throw new Error("missing second unlock");
+    setValue(host, "db-life-world-unlock-id", "unlock_mine");
+    expect(store.getCurrent().system.worldUnlocks?.[1]?.id).toBe(secondId);
+
+    findByTestId(host, "db-life-delete")?.click();
+    expect(store.getCurrent().system.worldUnlocks).toHaveLength(1);
+    expect(undoMapEdit()).toBe(true);
+    expect(store.getCurrent().system.worldUnlocks).toHaveLength(2);
+
+    findByTestId(host, "db-life-section-world-unlocks")?.click();
+    findByTestId(host, "db-life-row-unlock_mine")?.click();
+    findByTestId(host, "db-life-delete")?.click();
+    expect(store.getCurrent().system.worldUnlocks?.some((entry) => entry.id === "unlock_mine")).toBe(true);
+
+    findByTestId(host, "db-life-section-recipes")?.click();
+    findByTestId(host, "db-life-row-recipe_gate")?.click();
+    findByTestId(host, "db-life-delete")?.click();
+    expect(store.getCurrent().system.craftRecipes).toHaveLength(1);
   });
 });

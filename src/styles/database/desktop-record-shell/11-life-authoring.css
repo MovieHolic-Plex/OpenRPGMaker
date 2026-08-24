@@ -304,6 +304,18 @@
   max-width: 920px;
 }
 
+.database-modal-backdrop .db-life-package-pane {
+  min-height: 0;
+  overflow: auto;
+}
+
+.database-modal-backdrop .db-life-help,
+.database-modal-backdrop .db-life-explicit-remove p {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin: 0;
+}
+
 .database-modal-backdrop .db-life-field {
   align-items: center;
   display: grid;
@@ -332,6 +344,39 @@
   grid-template-columns: repeat(2, minmax(140px, 1fr)) auto;
 }
 
+.database-modal-backdrop .db-life-checkbox-list {
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 6px;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  min-width: 0;
+  padding: 8px 10px 10px;
+}
+
+.database-modal-backdrop .db-life-checkbox-list legend {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding-inline: 4px;
+}
+
+.database-modal-backdrop .db-life-checkbox-list .db-life-field {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.database-modal-backdrop .db-life-explicit-remove {
+  align-items: center;
+  background: var(--db-light-bg-surface, var(--bg-surface));
+  border: 1px solid var(--db-light-border-subtle, var(--border-subtle));
+  border-radius: 7px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 9px 10px;
+}
+
 @media (min-width: 1360px) {
   .database-modal-backdrop .db-life-crafting-header {
     grid-template-columns: minmax(260px, 1fr) auto;
@@ -339,6 +384,12 @@
 
   .database-modal-backdrop .db-life-section-tabs {
     justify-content: flex-end;
+    max-width: 760px;
+  }
+
+
+  .database-modal-backdrop .db-life-checkbox-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -352,11 +403,28 @@
     padding-inline: 8px;
   }
 
+  .database-modal-backdrop .db-life-section-tabs {
+    gap: 4px;
+  }
+
   .database-modal-backdrop .db-life-crafting-workspace {
     grid-template-columns: minmax(190px, 28%) minmax(0, 1fr);
   }
 
   .database-modal-backdrop .db-life-nested-row {
     grid-template-columns: minmax(0, 1fr) minmax(100px, .55fr) auto;
+  }
+
+  .database-modal-backdrop .db-life-field {
+    grid-template-columns: minmax(92px, 126px) minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-checkbox-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-backdrop .db-life-explicit-remove {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
