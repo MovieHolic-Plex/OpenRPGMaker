@@ -206,6 +206,17 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   }
   storyboardHost.append(storyboardEl);
   applyViewMode();
+  const commandHeader = el("div", {
+    class: "event-editor-command-header",
+    dataset: { testid: "event-command-header" },
+    children: [
+      el("span", {
+        class: "event-contents-legend",
+        text: `실행 내용 · ${countAllCommands(activePage.commands)}개`,
+      }),
+      viewToggle,
+    ],
+  });
   // settings-column 그리드는 [페이지탭 54px | 본문 1fr] 2칸.
   // Tool-authored NPC schedules stay compact, but existing rows are editable so
   // aggregate validation can navigate to and repair their map/coordinate errors.
@@ -261,10 +272,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   commandsColumn.append(
     el("fieldset", {
       class: "event-oprn-fieldset event-contents-fieldset",
+      attrs: { "aria-label": "실행 내용" },
       dataset: { testid: "event-classic-contents" },
       children: [
-        el("legend", { class: "event-contents-legend", text: `실행 내용 · ${countAllCommands(activePage.commands)}개` }),
-        viewToggle,
         renderCommandToolbar(cmdList, actions, commandHistory, mapId, ev.id),
         storyboardHost,
         cmdList,
@@ -330,7 +340,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     // 목업: 페이지 탭이 최상단. 이름/ID 행보다 먼저 온다.
     el("div", {
       class: "event-editor-pagebar",
-      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage)],
+      children: [pageTabStrip, renderPageTabs(mapId, ev, activePage), commandHeader],
     }),
     renderEventDiffSummary(mapId, eventId),
     workbench,

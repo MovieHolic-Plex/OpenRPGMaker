@@ -7,16 +7,18 @@
    ========================================================================= */
 
 :root {
-  --cmdcat-dialogue: var(--bg-surface);
-  --cmdcat-flow: var(--bg-surface);
-  --cmdcat-map: var(--bg-surface);
-  --cmdcat-reward: var(--bg-surface);
-  --cmdcat-sound: var(--bg-surface);
-  --cmdcat-actor: var(--bg-surface);
-  --cmdcat-screen: var(--bg-surface);
-  --cmdcat-system: var(--bg-surface);
-  --cmdcat-battle: var(--bg-surface);
-  --cmdcat-modern: var(--bg-surface);
+  /* Six coordinated families keep related commands together while category badges
+     provide the second, non-color cue. Values stay dark enough on the cream UI. */
+  --cmdcat-dialogue: #2f70c8;
+  --cmdcat-flow: #bd4d24;
+  --cmdcat-map: #6657c2;
+  --cmdcat-reward: #17805d;
+  --cmdcat-sound: #b63f70;
+  --cmdcat-actor: #6657c2;
+  --cmdcat-screen: #b63f70;
+  --cmdcat-system: #956600;
+  --cmdcat-battle: #956600;
+  --cmdcat-modern: #956600;
 }
 
 /* ---- [중간-1] 커맨드 리스트: 카테고리 색 레일 + kind 아이콘 ---- */

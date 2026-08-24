@@ -1300,6 +1300,31 @@
   font-weight: 400;
 }
 
+/* 실행 내용의 제목과 보기 전환은 페이지바의 우측 헤더로 승격한다.
+ * 캔버스 안에서 별도 행을 쓰지 않아 같은 모달 높이에서 명령 보드가 더 커진다. */
+.event-editor > .event-editor-pagebar > .event-editor-command-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 0 0 auto;
+  align-self: stretch;
+  min-width: 238px;
+  padding: 0 4px 5px 12px;
+  margin-left: 2px;
+  border-left: 1px solid var(--mk-line-soft, var(--mk-line));
+}
+
+.event-editor .event-editor-command-header > .event-contents-legend {
+  margin: 0;
+  color: var(--mk-t1);
+  white-space: nowrap;
+}
+
+.event-editor .event-editor-command-header > .event-view-toggle {
+  flex: 0 0 auto;
+}
+
 /* ── D: 블록 캔버스 값 맞추기 ──────────────────────────────────── */
 /* 목업 .canvas: padding 9px 11px · gap 3px */
 .event-editor .cmd-list {
@@ -1330,47 +1355,25 @@
   padding: 0;
 }
 
-/* 행 구조: 1 토글 · 2 툴바 · 3 콘텐츠(목록/스토리보드 중 하나, 1fr) · 4 색상 범례.
- * 따라오기 프리셋은 보조 도구 서랍으로 이사해 행이 줄었다(2026-08-19).
- * 예전 6행 정의는 범례 details 가 자동 배치로 3행에 끼며 목록 위 ~160px 죽은
- * 공백을 만들었다(적대 평가 G01 실측). */
+/* 행 구조: 1 툴바 · 2 콘텐츠(목록/스토리보드 중 하나, 1fr) · 3 색상 범례.
+ * 제목/보기 전환은 위 페이지바로 올리고, 좌우 인셋도 줄여 명령 보드를 확장한다. */
 .event-editor .event-contents-fieldset {
   position: relative;
-  padding: 10px 12px 12px;
-  gap: 8px;
+  padding: 8px 8px 10px;
+  gap: 6px;
   min-height: 0;
-  grid-template-rows: 32px 32px minmax(0, 1fr) auto;
-}
-
-.event-editor .event-contents-fieldset > .event-contents-legend {
-  position: absolute;
-  top: 0;
-  left: 12px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-  float: none;
-}
-
-.event-editor .event-contents-fieldset > .event-view-toggle {
-  align-self: center;
-  grid-column: 1 / -1;
-  grid-row: 1;
-  justify-self: end;
-  max-width: calc(100% - 132px);
+  grid-template-rows: 32px minmax(0, 1fr) auto;
 }
 
 .event-editor .event-contents-fieldset > .event-editor-command-toolbar {
   grid-column: 1 / -1;
-  grid-row: 2;
+  grid-row: 1;
   min-height: 32px;
 }
 
 .event-editor .event-contents-fieldset > .event-storyboard-host {
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: 2;
   min-height: 0;
   overflow: auto;
 }
@@ -1387,12 +1390,12 @@
 
 .event-editor .event-contents-fieldset > .cmd-list {
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: 2;
 }
 
 .event-editor .event-contents-fieldset > .event-command-legend-details {
   grid-column: 1 / -1;
-  grid-row: 4;
+  grid-row: 3;
 }
 
 .event-editor .event-contents-fieldset > .event-storyboard-host > [hidden],
@@ -1624,8 +1627,8 @@
 }
 
 .event-editor .event-contents-fieldset {
-  /* 위(1093행 부근)의 4행 정의와 반드시 일치시킬 것 — 여기가 나중이라 항상 이긴다. */
-  grid-template-rows: 32px 32px minmax(0, 1fr) auto;
+  /* 위 실행 내용 3행 정의와 반드시 일치시킬 것 — 여기가 나중이라 항상 이긴다. */
+  grid-template-rows: 32px minmax(0, 1fr) auto;
 }
 
 .event-editor .event-contents-fieldset > .event-editor-command-toolbar {
