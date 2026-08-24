@@ -113,10 +113,6 @@ function countProposalTrees(calls: readonly ProposedCall[]): number {
   }, 0);
 }
 
-function formatCount(label: string, count: number, unit: string): string | null {
-  return count > 0 ? `${label} ${count}${unit}` : null;
-}
-
 function nounCount(label: string, count: number): string | null {
   return count > 0 ? `${label} ${count}` : null;
 }
@@ -127,37 +123,38 @@ function nounPresence(label: string, present: boolean): string | null {
 
 function worldSummaryPart(added: number, modified: number): string | null {
   if (added > 0 && modified > 0) return `세계관 추가 ${added}/수정 ${modified}`;
-  if (added > 0) return `세계관 ${added}건`;
-  if (modified > 0) return `세계관 수정 ${modified}건`;
+  if (added > 0) return `세계관 ${added}`;
+  if (modified > 0) return `세계관 수정 ${modified}`;
   return null;
 }
 
 function palettePresetSummaryPart(added: number, modified: number): string | null {
   if (added > 0 && modified > 0) return `프리셋 추가 ${added}/수정 ${modified}`;
-  if (added > 0) return `프리셋 ${added}건`;
-  if (modified > 0) return `프리셋 수정 ${modified}건`;
+  if (added > 0) return `프리셋 ${added}`;
+  if (modified > 0) return `프리셋 수정 ${modified}`;
   return null;
 }
 
 export function fallbackDiffParts(calls: readonly ProposedCall[]): string[] {
   const diff = combineDiffs(calls.map((call) => call.result.diff));
+  const npcCount = calls.filter((call) => call.name === "place_npc").length;
   return [
-    formatCount("타일", diff.tilesChanged, "칸"),
-    formatCount("맵", diff.mapsAdded, "개"),
-    diff.mapsRemoved > 0 ? `맵 삭제 ${diff.mapsRemoved}개` : null,
-    formatCount("NPC", calls.filter((call) => call.name === "place_npc").length, "명"),
-    formatCount("이벤트", Math.max(0, diff.eventsAdded - calls.filter((call) => call.name === "place_npc").length), "개"),
-    diff.eventsModified > 0 ? `이벤트 수정 ${diff.eventsModified}개` : null,
-    diff.eventsRemoved > 0 ? `이벤트 삭제 ${diff.eventsRemoved}개` : null,
-    diff.dbRecordsChanged > 0 ? `DB ${diff.dbRecordsChanged}건` : null,
-    diff.tilesetsChanged > 0 ? `타일셋 ${diff.tilesetsChanged}건` : null,
-    diff.switchesAdded > 0 ? `스위치 ${diff.switchesAdded}개` : null,
-    diff.variablesAdded > 0 ? `변수 ${diff.variablesAdded}개` : null,
+    nounCount("타일", diff.tilesChanged),
+    nounCount("맵", diff.mapsAdded),
+    nounCount("맵 삭제", diff.mapsRemoved),
+    nounCount("NPC", npcCount),
+    nounCount("이벤트", Math.max(0, diff.eventsAdded - npcCount)),
+    nounCount("이벤트 수정", diff.eventsModified),
+    nounCount("이벤트 삭제", diff.eventsRemoved),
+    nounCount("DB", diff.dbRecordsChanged),
+    nounCount("타일셋", diff.tilesetsChanged),
+    nounCount("스위치", diff.switchesAdded),
+    nounCount("변수", diff.variablesAdded),
     worldSummaryPart(diff.worldEntitiesAdded, diff.worldEntitiesModified),
     palettePresetSummaryPart(diff.palettePresetsAdded, diff.palettePresetsModified),
-    diff.endingsChanged > 0 ? `엔딩 ${diff.endingsChanged}건` : null,
-    diff.sessionChanged ? "세션 1건" : null,
-    diff.systemChanged ? "시스템 1건" : null,
+    nounCount("엔딩", diff.endingsChanged),
+    nounPresence("세션", diff.sessionChanged),
+    nounPresence("시스템", diff.systemChanged),
   ].filter((part): part is string => part !== null);
 }
 
@@ -184,10 +181,10 @@ export function proposalHumanSummaryLine(calls: readonly ProposedCall[]): string
     ...semanticParts,
     ...(semanticParts.length === 0 ? fallbackDiffParts(calls) : []),
     semanticParts.length > 0 && remainingTileChanges > 0 && houses === 0 && trees === 0 && !river && !yard
-      ? `타일 ${remainingTileChanges}칸`
+      ? `타일 ${remainingTileChanges}`
       : null,
   ].filter((part): part is string => part !== null);
-  return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}건`;
+  return parts.length > 0 ? parts.join(" · ") : `변경 ${calls.length}`;
 }
 
 const TOOLISH_HEADLINE = /[_]|paint_|build_|upsert_|place_|scatter_|create_|set_|query_|run_/u;
