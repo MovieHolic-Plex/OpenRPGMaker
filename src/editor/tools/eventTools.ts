@@ -640,7 +640,7 @@ const makeVillager: ToolDefinition = {
     const giftPrefs = parseGiftPrefs(draft, args.giftPrefs, "giftPrefs");
     const giftResponses = parseGiftResponses(args.giftResponses, "giftResponses");
     const shopStock = parseOptionalShopStock(draft, (args.shop as Record<string, unknown> | undefined)?.stock, "shop.stock");
-    if (shopStock) appendShopCommandToFirstPage(pages, shopStock);
+    if (shopStock) appendShopCommandToPages(pages, shopStock);
     const characterId = reusedEvent
       ? (requestedCharacterId ?? reusedEvent.characterId ?? allocateCharacterId(draft, undefined, name, warnings))
       : allocateCharacterId(draft, args.characterId, name, warnings);
@@ -903,21 +903,32 @@ function shopCommandFromStock(stock: readonly ShopStockEntry[]): Extract<Command
   };
 }
 
-function appendShopCommandToFirstPage(pages: EventPage[], stock: readonly ShopStockEntry[]): void {
-  const page = pages[0];
-  if (page) page.commands.push(shopCommandFromStock(stock));
+function appendShopCommandToPages(pages: EventPage[], stock: readonly ShopStockEntry[]): void {
+  for (const page of pages) page.commands.push(shopCommandFromStock(stock));
 }
 
 function setShopStockOnEvent(event: GameEvent, stock: readonly ShopStockEntry[]): "added" | "modified" {
-  const existing = findFirstShopCommand(event.pages?.flatMap((page) => page.commands) ?? []) ?? findFirstShopCommand(event.commands);
+  if ((event.pages?.length ?? 0) > 0) {
+    let modified = false;
+    for (const page of event.pages ?? []) {
+      const existing = findFirstShopCommand(page.commands);
+      if (existing) {
+        existing.itemIds = uniqueStockItemIds(stock);
+        existing.stock = [...stock];
+        modified = true;
+      } else {
+        page.commands.push(shopCommandFromStock(stock));
+      }
+    }
+    return modified ? "modified" : "added";
+  }
+  const existing = findFirstShopCommand(event.commands);
   if (existing) {
     existing.itemIds = uniqueStockItemIds(stock);
     existing.stock = [...stock];
     return "modified";
   }
-  const command = shopCommandFromStock(stock);
-  if (event.pages?.[0]) event.pages[0].commands.push(command);
-  else event.commands.push(command);
+  event.commands.push(shopCommandFromStock(stock));
   return "added";
 }
 

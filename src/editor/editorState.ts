@@ -5,9 +5,13 @@
 
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import {
+  DEFAULT_ASSISTANT_TEMPERATURE,
+  type AssistantTemperature,
+} from "@/editor/assistantTemperature";
 import { DEFAULT_CHAT_DOCK, type ChatDock } from "@/editor/chatDock";
 
-export type { ChatDock };
+export type { AssistantTemperature, ChatDock };
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
 export type PaintShape = "pen" | "rect" | "round";
@@ -65,6 +69,7 @@ export interface EditorState {
   pastePreview: { x: number; y: number } | null;
   showGrid: boolean;
   chatDock: ChatDock;
+  assistantTemperature: AssistantTemperature;
   showLayoutBboxes: boolean;
   // 배틀 애니메이션 에디터 — 현재 편집 중인 애니메이션의 선택 프레임/셀 인덱스.
   selectedAnimationFrameIndex: number;
@@ -95,6 +100,7 @@ class EditorStateStore {
     pastePreview: null,
     showGrid: true,
     chatDock: DEFAULT_CHAT_DOCK,
+    assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
     showLayoutBboxes: false,
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,

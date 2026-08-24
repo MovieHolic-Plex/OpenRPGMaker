@@ -85,8 +85,11 @@ describe("getAiConnectionStatus — apiKey 모드 동기 평가", () => {
 
   it("절대 URL + 키와 baseUrl 이 모두 있으면 ready", async () => {
     const { getAiConnectionStatus } = await loadModule();
-    const status = getAiConnectionStatus(APIKEY_READY);
+    const status = getAiConnectionStatus({ ...APIKEY_READY, providerId: "zai" });
     expect(status.kind).toBe("ready");
+    expect(status.providerId).toBe("zai");
+    expect(status.providerLabel).toBe("zAI");
+    expect(status.label).toContain("zAI");
     expect(status.label).toContain("연결됨");
     expect(status.title).toContain("API 키로 연결됨");
   });
@@ -129,18 +132,87 @@ describe("getAiConnectionStatus — apiKey 모드 동기 평가", () => {
 describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
   it("chatgpt 모드에서 companion 연결됨을 캐시하고 onChange 를 부른다", async () => {
     const store = installLocalStorage();
-    saveConfig(store, { authMode: "chatgpt", model: "z-ai/glm-5.2-ultrafast", maxTokens: 32768 });
+    saveConfig(store, {
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.1-pro-preview",
+      maxTokens: 32768,
+    });
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, planType: "plus" });
 
     const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
     let changed = 0;
     await refreshAiConnectionStatus(() => { changed += 1; });
 
-    expect(fetchChatGptAuthStatus).toHaveBeenCalledTimes(1);
+    expect(fetchChatGptAuthStatus).toHaveBeenCalledWith("google-antigravity");
     expect(changed).toBe(1);
     const status = getAiConnectionStatus();
     expect(status.kind).toBe("ready");
+    expect(status.providerLabel).toBe("Google Antigravity");
+    expect(status.label).toContain("Google Antigravity");
     expect(status.label).toContain("PLUS");
+  });
+
+  it("제공자를 바꾸면 이전 제공자의 ready 캐시를 재사용하지 않는다", async () => {
+    const storage = installLocalStorage();
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      maxTokens: 32768,
+    });
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true });
+
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    await refreshAiConnectionStatus(() => undefined);
+    expect(getAiConnectionStatus().kind).toBe("ready");
+
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.1-pro-preview",
+      maxTokens: 32768,
+    });
+
+    const switched = getAiConnectionStatus();
+    expect(switched.kind).toBe("checking");
+    expect(switched.providerLabel).toBe("Google Antigravity");
+  });
+
+  it("이전 제공자 조회가 진행 중이어도 새 제공자를 즉시 조회하고 늦은 응답은 버린다", async () => {
+    const storage = installLocalStorage();
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "openai-codex",
+      model: "gpt-5.6-sol",
+      maxTokens: 32768,
+    });
+    let resolveOpenAi!: (value: { connected: boolean }) => void;
+    let resolveGoogle!: (value: { connected: boolean }) => void;
+    fetchChatGptAuthStatus.mockImplementation((providerId: string) => new Promise((resolve) => {
+      if (providerId === "google-antigravity") resolveGoogle = resolve;
+      else resolveOpenAi = resolve;
+    }));
+
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    const oldRefresh = refreshAiConnectionStatus(() => undefined);
+    saveConfig(storage, {
+      authMode: "chatgpt",
+      providerId: "google-antigravity",
+      model: "gemini-3.1-pro-preview",
+      maxTokens: 32768,
+    });
+    const newRefresh = refreshAiConnectionStatus(() => undefined);
+
+    resolveGoogle({ connected: true });
+    await newRefresh;
+    expect(getAiConnectionStatus().kind).toBe("ready");
+    expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
+
+    resolveOpenAi({ connected: false });
+    await oldRefresh;
+    expect(getAiConnectionStatus().kind).toBe("ready");
+    expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
   });
 
   it("companion 이 응답하지 않으면 offline 으로 캐시하고 onChange 를 부른다", async () => {
@@ -198,6 +270,7 @@ describe("renderAiConnectionStatus — 상태바 칩", () => {
     const chip = renderWithFakeDom(() => renderAiConnectionStatus(() => undefined));
     expect(chip.tagName.toLowerCase()).toBe("button");
     expect(chip.dataset.testid).toBe("ai-connection-status");
+    expect(chip.textContent).toContain("OpenAI Codex");
     expect(chip.textContent).toContain("연결됨");
   });
 

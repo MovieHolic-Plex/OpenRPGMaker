@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { getMapEditHistoryState, recordProjectSnapshot, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
 import {
   directorStartPrompts,
   formatComposerPlaceholder,
@@ -121,20 +122,20 @@ describe("AI 패널 크롬", () => {
     expect(panel.classList.contains("is-collapsed")).toBe(false);
   });
 
-  it("헤더 플레이트는 접근 이름이 감독이고 제목이 AI 어시스턴트가 아니다", () => {
+  it("헤더 플레이트는 접근 이름이 조수이고 제목이 AI 어시스턴트가 아니다", () => {
     // Break: header h2 is still "AI 어시스턴트", or the faceset crop lacks aria-label 감독.
     const panel = renderPanel();
     expandPanel(panel);
     const header = panel.querySelector(".ai-chat-header");
     if (!header) throw new Error("AI header missing");
     const title = findByTag(header, "h2");
-    const face = findByAttr(header, "aria-label", "감독");
+    const face = findByAttr(header, "aria-label", "조수");
     const plate = findByTestId(panel, "ai-director-plate");
 
-    expect(title?.textContent).toBe("감독");
+    expect(title?.textContent).toBe("조수");
     expect(title?.textContent).not.toContain("AI 어시스턴트");
     expect(face?.getAttribute("role")).toBe("img");
-    expect(face?.getAttribute("aria-label")).toBe("감독");
+    expect(face?.getAttribute("aria-label")).toBe("조수");
     expect(plate?.textContent ?? "").not.toContain("🤖");
     expect(plate?.textContent ?? "").not.toMatch(/지시|질문|계획/u);
   });
@@ -174,6 +175,18 @@ describe("AI 패널 크롬", () => {
     storage.set("oprn:ai-panel-collapsed", "1");
     const panel = renderPanel();
     expect(panel.classList.contains("is-collapsed")).toBe(true);
+  });
+
+  it("공개 AI 진입점은 접힌 패널을 펼치고 입력창에 포커스한다", () => {
+    storage.set("oprn:ai-panel-collapsed", "1");
+    const panel = renderPanel();
+    const input = findByTestId(panel, "ai-input");
+
+    expect(panel.classList.contains("is-collapsed")).toBe(true);
+    expect(openAiAssistantPanel()).toBe(true);
+    expect(panel.classList.contains("is-collapsed")).toBe(false);
+    expect(document.activeElement).toBe(input);
+    expect(storage.get("oprn:ai-panel-collapsed")).toBe("0");
   });
 
   it("접기 버튼은 커맨드 바 인셋을 유지하고, 복귀 타깃 클릭으로 펼친다", () => {
@@ -275,7 +288,7 @@ describe("AI 패널 크롬", () => {
     const panel = renderPanel();
     expandPanel(panel);
     const steps = findByTestId(panel, "ai-next-steps");
-    const buttons = steps?.querySelectorAll("button") ?? [];
+    const buttons = steps?.querySelectorAll(".ai-start-visual-card") ?? [];
     const expected = directorStartPrompts(readAgentBrief());
 
     expect(steps?.hidden).toBe(false);
@@ -283,6 +296,7 @@ describe("AI 패널 크롬", () => {
     expect(buttons.length).toBe(expected.length);
     expect(buttons[0]?.textContent).toBe(expected[0]?.label);
     expect(findByTestId(panel, `ai-start-visual-stage-${expected[0]?.id ?? "place"}`)).toBeTruthy();
+    expect(findByTestId(panel, "ai-authoring-examples")).toBeTruthy();
   });
 
   it("감독 칩 클릭은 입력만 채우고 전송하지 않는다", () => {

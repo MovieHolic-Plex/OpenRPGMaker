@@ -13,6 +13,11 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { AiDocument } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
+import {
+  parseAssistantTemperature,
+  persistAssistantTemperature,
+  type AssistantTemperature,
+} from "@/editor/assistantTemperature";
 import { chatDockHint, cycleChatDock, isOverlayChatDock, nextChatDockActionLabel, type ChatDock } from "@/editor/chatDock";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -63,6 +68,7 @@ import { currentTilesetSkillContext, renderSkillDrawer, renderSlashList, slashSk
 import { loadAiConfig } from "@/ai/llmClient";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
+import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerPopover } from "./aiComposer";
 import { createDirectorPlate, createDirectorRestoreButton } from "./aiDirectorChrome";
 // queueController extracted for future use — reserved (aiQueueController.ts).
@@ -74,7 +80,7 @@ import {
   nextStepHint,
   readAgentBrief,
 } from "./aiAgentBrief";
-import { buildVisualStartGallery } from "./aiStartScreenCards";
+import { buildAiAuthoringExamples, buildVisualStartGallery } from "./aiStartScreenCards";
 import {
   isAiAssistantBridgeConnected,
   registerAiAssistantBridge,
@@ -103,6 +109,7 @@ import {
   renderStreamedMarkdown,
 } from "./aiConversationLog";
 import { createProposalModalElements } from "./aiProposalModal";
+import { anchoredPopupPosition } from "./popupPosition";
 import { createProposalHost, setAssistantMessageBadge } from "./aiProposalCard";
 import {
   attachCompletenessWarnings,
@@ -193,6 +200,9 @@ export interface AiChatPanelOptions {
   readonly clock?: () => number;
   readonly getChatDock?: () => ChatDock;
   readonly onChatDockToggle?: () => void;
+  readonly onChatDockChange?: (next: ChatDock) => void;
+  readonly getAssistantTemperature?: () => AssistantTemperature;
+  readonly onAssistantTemperatureChange?: (next: AssistantTemperature) => void;
   readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
 }
 
@@ -215,6 +225,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const now = options.clock ?? (() => Date.now());
   const runRegion = options.regionTaskRunner ?? runRegionTask;
   const readChatDock = (): ChatDock => options.getChatDock?.() ?? editorState.get().chatDock;
+  const readTemperature = (): AssistantTemperature =>
+    parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
+  let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   let disposed = false;
   const currentProjectContextKey = projectConversationContextKey(store.getCurrent());
@@ -1607,7 +1620,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       || Boolean(log.querySelector("[data-testid=ai-command-row]"));
     const busy = hasLog || Boolean(turnBusy || runningProgress);
     const dock = readChatDock();
-    const show = (dock === "glass" || dock === "side") && !busy && input.value.trim() === "";
+    const show = (dock === "glass" || dock === "side")
+      && readTemperature() === "quiet-gold"
+      && !busy
+      && input.value.trim() === "";
     nextSteps.hidden = !show;
     if (!show) {
       nextSteps.replaceChildren();
@@ -1629,12 +1645,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     });
     gallery.classList.add("ai-next-steps-list");
+    const examples = buildAiAuthoringExamples({
+      onPick: (instruction) => {
+        input.value = instruction;
+        input.focus();
+        syncInputHeight();
+        refreshComposerChips();
+      },
+    });
     nextSteps.replaceChildren(
       el("p", {
         class: "ai-next-steps-hint",
         dataset: { testid: "ai-next-steps-hint" },
         text: nextStepHint(brief),
       }),
+      examples,
       gallery,
     );
   };
@@ -1754,6 +1779,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const unsubscribeContextEditor = editorState.subscribe(() => {
     refreshContextChips();
     refreshComposerChips();
+    refreshDockLabels();
+    refreshTemperatureChrome();
   });
   const unsubscribeContextStore = store.subscribe(() => {
     refreshContextChips();
@@ -1844,9 +1871,23 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const currentChatDock = (): ChatDock => readChatDock();
   let refreshDockLabels: () => void = () => {};
   let syncGlassIdle: () => void = () => {};
+  const applyTemperature = (next: AssistantTemperature): void => {
+    const parsed = parseAssistantTemperature(next);
+    if (options.onAssistantTemperatureChange) options.onAssistantTemperatureChange(parsed);
+    else {
+      editorState.set({ assistantTemperature: parsed });
+      persistAssistantTemperature(parsed);
+    }
+    refreshTemperatureChrome();
+  };
+  const changeDock = (next: ChatDock): void => {
+    if (options.onChatDockChange) options.onChatDockChange(next);
+    else editorState.set({ chatDock: next });
+    refreshDockLabels();
+  };
   const onDockToggleClick = (): void => {
     if (options.onChatDockToggle) options.onChatDockToggle();
-    else editorState.set({ chatDock: cycleChatDock(currentChatDock()) });
+    else changeDock(cycleChatDock(currentChatDock()));
     refreshDockLabels();
   };
   // testid 호환용 숨은 토글(레이아웃 테스트·E2E).
@@ -2000,7 +2041,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const applyDockModeChrome = (mode: ChatDock): void => {
     const actionLabel = nextChatDockActionLabel(mode);
     const nextHint = chatDockHint(mode);
-    directorPlate.setName(mode === "glass" ? "조수" : "감독");
+    directorPlate.setName("조수");
     dockModeButton.textContent = actionLabel;
     dockModeButton.dataset.dockMode = mode;
     dockModeButton.setAttribute("title", nextHint);
@@ -2019,6 +2060,19 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     moreMenu.hidden = true;
     moreMenuToggle.setAttribute("aria-expanded", "false");
   };
+  const positionMoreMenu = (): void => {
+    const anchor = moreMenuToggle.getBoundingClientRect();
+    const width = moreMenu.offsetWidth || 184;
+    const height = moreMenu.offsetHeight || 360;
+    const viewport = {
+      width: typeof window === "undefined" ? 1280 : window.innerWidth,
+      height: typeof window === "undefined" ? 800 : window.innerHeight,
+    };
+    const position = anchoredPopupPosition(anchor, { width, height }, viewport);
+    moreMenu.classList.add("is-viewport-anchored");
+    moreMenu.style.left = `${position.left}px`;
+    moreMenu.style.top = `${position.top}px`;
+  };
   const moreMenuToggle = el("button", {
     class: "ai-chat-icon-btn",
     text: "☰",
@@ -2029,7 +2083,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const open = moreMenu.hidden;
         moreMenu.hidden = !open;
         moreMenuToggle.setAttribute("aria-expanded", String(open));
-        if (open) refreshMoreMenuDockLabel();
+        if (open) {
+          refreshMoreMenuDockLabel();
+          refreshTemperatureChrome();
+          positionMoreMenu();
+        }
       },
     },
   }) as HTMLButtonElement;
@@ -2063,7 +2121,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     actions: sharedMenuActions,
   });
   moreMenuDockItem = headerMenu.dockItem;
-  moreMenu.replaceChildren(headerSettingsItem, ...headerMenu.items);
+  const headerTemperatureSection = createAssistantTemperatureMenuSection({
+    variant: "header",
+    current: readTemperature,
+    close: closeMoreMenu,
+    onChange: applyTemperature,
+  });
+  moreMenu.replaceChildren(headerTemperatureSection, headerSettingsItem, ...headerMenu.items);
+  const detachButton = el("button", {
+    class: "ai-chat-icon-btn ai-chat-detach-btn",
+    text: "↗",
+    attrs: { type: "button", title: "조수 패널 떼기", "aria-label": "조수 패널 떼기" },
+    dataset: { testid: "ai-chat-detach" },
+    on: { click: () => changeDock("float") },
+  });
   const moreWrap = el("div", {
     class: "ai-more-wrap",
     children: [moreMenuToggle, moreMenu],
@@ -2079,7 +2150,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 헤더 상시 버튼은 ＋(새 대화)와 ☰ 뿐 — ⚙ 는 ☰ 메뉴 항목으로 흡수했다.
       el("span", {
         class: "ai-header-actions",
-        children: [newSessionButton, moreWrap],
+        children: [newSessionButton, detachButton, moreWrap],
       }),
       collapseButton,
     ],
@@ -2169,6 +2240,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       testid: "ai-panel",
       uiDensity: "shared",
       chatDock: currentChatDock(),
+      temperature: readTemperature(),
     },
     children: [header, toolbar, body, collapsedRestore, risingOverlay, pinHost, stickyProposalZone, commandBar, proposalModalRoot],
   });
@@ -2293,16 +2365,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     target?.append(log);
   };
   syncGlassIdle = (): void => {
-    if (readChatDock() !== "glass") {
-      panel.classList.remove("is-glass-idle");
-      refreshNextSteps();
-      return;
-    }
     const busy = panel.classList.contains("is-turn-running")
       || Boolean(panel.querySelector("[data-testid=ai-proposal-pin]"))
-      || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"));
-    panel.classList.toggle("is-glass-idle", !busy);
+      || Boolean(log.querySelector("[data-testid=ai-command-row-assistant]"))
+      || Boolean(log.querySelector("[data-testid=ai-command-row-user]"))
+      || Boolean(turnBusy || runningProgress);
+    const idle = !busy;
+    const dock = readChatDock();
+    panel.classList.toggle("is-assistant-idle", idle);
+    panel.classList.toggle("is-glass-idle", idle && dock === "glass");
+    panel.classList.toggle("is-map-first-idle", idle && dock !== "float" && readTemperature() === "map-first");
     refreshNextSteps();
+  };
+  refreshTemperatureChrome = (): void => {
+    const current = readTemperature();
+    panel.dataset.temperature = current;
+    for (const button of panel.querySelectorAll<HTMLElement>(".ai-temperature-option")) {
+      button.setAttribute("aria-checked", button.dataset.temperature === current ? "true" : "false");
+    }
+    syncGlassIdle();
   };
   const applyComposerViewPolicy = (): void => {
     const mode = readChatDock();
@@ -2509,6 +2590,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeCommandMenu,
     actions: sharedMenuActions,
   });
+  const composerTemperatureSection = createAssistantTemperatureMenuSection({
+    variant: "composer",
+    current: readTemperature,
+    close: closeCommandMenu,
+    onChange: applyTemperature,
+  });
   commandDockItem = composerMenu.dockItem;
   refreshDockLabels = (): void => {
     const mode = currentChatDock();
@@ -2525,11 +2612,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (!commandMenu.hidden) refreshMoreMenuDockLabel();
   });
   commandMenu.replaceChildren(
+    composerTemperatureSection,
     // 스킬 찾기가 첫 항목 — `/` 단독 버튼을 걷은 뒤 이 메뉴가 유일한 마우스 진입점이다.
     skillToggle,
     commandBarSettingsButton,
     ...composerMenu.items,
   );
+  refreshTemperatureChrome();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.
   if (studio) applyStudio(true);
@@ -2699,7 +2788,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     getHarness: () => controller.session?.getHarnessSnapshot() ?? null,
     abort: () => abortActiveTurn(),
     // DB 모달 AI 바 등 외부 진입점이 "채팅 도크 열기"를 요청할 때 — 접힘만 해제한다.
-    openPanel: () => restoreCollapsed(),
+    openPanel: () => {
+      restoreCollapsed();
+      revealVolatileZone();
+      try {
+        input.focus();
+      } catch {
+        // headless DOM 에서 focus 미지원은 펼침 자체를 막지 않는다.
+      }
+    },
   });
 
   // Welcome boot target — prefill and optional auto-send (writes still proposal-gated).

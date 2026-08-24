@@ -3,6 +3,8 @@ import { directorStartPrompts, readAgentBrief } from "@/editor/panels/aiAgentBri
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { installFakeDom, findByTestId, renderWithFakeDom } from "./fakeDom";
 import {
+  AI_AUTHORING_EXAMPLES,
+  buildAiAuthoringExamples,
   buildRecentAiWorkCard,
   buildTryRegionCard,
   buildVisualStartGallery,
@@ -92,6 +94,30 @@ describe("buildTryRegionCard", () => {
     expect(findByTestId(card, "ai-start-try-region")).not.toBeNull();
     findByTestId(card, "ai-start-try-c1")!.dispatchEvent(new Event("click"));
     expect(picked).toEqual(["둥근 호수를 만들어줘"]);
+  });
+});
+
+describe("buildAiAuthoringExamples", () => {
+  it("길·NPC·상점·상자·집·퀘스트 예제를 빠짐없이 제공하고 클릭한 문장을 넘긴다", () => {
+    expect(new Set(AI_AUTHORING_EXAMPLES.map((example) => example.kind))).toEqual(
+      new Set(["road", "npc", "shop", "chest", "house", "quest"]),
+    );
+    const picked: Array<{ instruction: string; id: string }> = [];
+    const examples = renderWithFakeDom(() =>
+      buildAiAuthoringExamples({
+        onPick: (instruction, id) => picked.push({ instruction, id }),
+      }),
+    );
+
+    expect(findByTestId(examples, "ai-authoring-examples")).not.toBeNull();
+    expect(examples.querySelectorAll("button")).toHaveLength(6);
+    findByTestId(examples, "ai-authoring-example-shop")!.click();
+    expect(picked).toEqual([
+      {
+        id: "shop",
+        instruction: AI_AUTHORING_EXAMPLES.find((example) => example.id === "shop")!.instruction,
+      },
+    ]);
   });
 });
 

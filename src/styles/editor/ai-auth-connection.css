@@ -305,6 +305,11 @@
   white-space: nowrap;
 }
 
+.editor-statusbar-cell.ai-authoring-entry {
+  color: var(--accent);
+  font-weight: 800;
+}
+
 /* 모델 경고 — aiSettingsModal 이 인라인 style 로 색을 칠하던 것을 대체한다. */
 .ai-model-warning {
   color: var(--danger);

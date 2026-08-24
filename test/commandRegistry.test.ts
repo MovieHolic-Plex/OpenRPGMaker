@@ -113,11 +113,17 @@ describe("commandRegistry", () => {
     for (const density of ["guided", "comfortable", "dense"]) {
       expect(ids.filter((id) => id === `workspace-density-${density}`)).toHaveLength(1);
     }
-    for (const panel of allPanels()) {
+    for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {
       expect(ids).toContain(`workspace-panel-${panel.id}`);
       expect(ids).toContain(`workspace-panel-${panel.id}-left`);
       expect(ids).toContain(`workspace-panel-${panel.id}-right`);
     }
+    expect(ids).not.toContain("workspace-panel-assistant-left");
+    expect(ids).toEqual(expect.arrayContaining([
+      "assistant-dock-glass",
+      "assistant-dock-side",
+      "assistant-dock-float",
+    ]));
   });
 
   it("도움말: 단축키 명령이 등록되어 '단축키' 검색으로 찾을 수 있다", () => {

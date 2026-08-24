@@ -1,4 +1,9 @@
 ﻿import { destroyGame, getGame, startEditGame } from "@/app/mode";
+import {
+  DEFAULT_ASSISTANT_TEMPERATURE,
+  parseAssistantTemperature,
+  type AssistantTemperature,
+} from "@/editor/assistantTemperature";
 import { cycleChatDock, parseChatDock, type ChatDock } from "@/editor/chatDock";
 import { toolLabel, uiLabel } from "@/editor/uiCopy";
 import { editorState, type Layer } from "@/editor/editorState";
@@ -30,7 +35,11 @@ import { installEditorToolHook } from "@/editor/editorToolHook";
 import { cleanupProjectE2EBridge } from "@/editor/editorToolHook";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { refreshAiConnectionStatus, renderAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import {
+  refreshAiConnectionStatus,
+  renderAiAuthoringEntry,
+  renderAiConnectionStatus,
+} from "@/editor/panels/aiConnectionStatus";
 import { computeSideChatWidth } from "@/editor/panels/aiPanelLayout";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
@@ -70,6 +79,7 @@ type LoadedEditorLayout = {
   readonly leftCollapsed: boolean;
   readonly leftCollapsedStored: boolean;
   readonly chatDock: ChatDock;
+  readonly assistantTemperature: AssistantTemperature;
 };
 
 const initialLayout = loadEditorLayout();
@@ -94,6 +104,7 @@ let unsubEditor: (() => void) | null = null;
 let unsubMapLocks: (() => void) | null = null;
 let mapTreeHeight = initialLayout.mapTreeHeight;
 let chatDock = initialLayout.chatDock;
+let assistantTemperature = initialLayout.assistantTemperature;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubWorkspace: (() => void) | null = null;
@@ -174,6 +185,9 @@ export function renderEditor(main: HTMLElement): void {
   const aiPanel = renderAiChatPanel({
     getChatDock: () => chatDock,
     onChatDockToggle: toggleChatDock,
+    onChatDockChange: setChatDock,
+    getAssistantTemperature: () => assistantTemperature,
+    onAssistantTemperatureChange: setAssistantTemperature,
   });
   main.append(layout, projectExportNodeElement());
 
@@ -447,11 +461,21 @@ export function isLeftCollapsed(): boolean {
 }
 
 export function toggleChatDock(): void {
-  chatDock = cycleChatDock(chatDock);
+  setChatDock(cycleChatDock(chatDock));
+}
+
+export function setChatDock(next: ChatDock): void {
+  chatDock = parseChatDock(next, chatDock);
   applyChatDockLayout();
   applyLayout();
   saveEditorLayout();
   scheduleFitCanvas();
+}
+
+function setAssistantTemperature(next: AssistantTemperature): void {
+  assistantTemperature = parseAssistantTemperature(next, assistantTemperature);
+  editorState.set({ assistantTemperature });
+  saveEditorLayout();
 }
 
 function layoutDockClass(dock: ChatDock): string {
@@ -462,7 +486,7 @@ function layoutDockClass(dock: ChatDock): string {
 
 function applyChatDockLayout(): void {
   if (!chatFloatRoot || !chatSideRoot || !aiChatPanelRoot) return;
-  editorState.set({ chatDock });
+  editorState.set({ chatDock, assistantTemperature });
   const layoutEl = chatFloatRoot.parentElement?.parentElement ?? null;
   layoutEl?.classList.toggle("chat-dock-side", chatDock === "side");
   layoutEl?.classList.toggle("chat-dock-float", chatDock === "float");
@@ -752,7 +776,7 @@ function renderEditorStatusbar(container: HTMLElement): void {
       on: { click: () => toggleLayoutBboxes() },
     })
   );
-  cells.push(renderAiConnectionStatus(refreshStatusbar));
+  cells.push(renderAiAuthoringEntry(), renderAiConnectionStatus(refreshStatusbar));
   container.append(...cells);
 }
 
@@ -1078,6 +1102,7 @@ function loadEditorLayout(): LoadedEditorLayout {
       leftCollapsed: leftCollapsedStored ? parsed.leftCollapsed === true : fallback.leftCollapsed,
       leftCollapsedStored,
       chatDock: parseChatDock(parsed.chatDock, fallback.chatDock),
+      assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
     };
   } catch (error) {
     if (error instanceof SyntaxError) return fallback;
@@ -1092,11 +1117,18 @@ function defaultEditorLayout(): LoadedEditorLayout {
     leftCollapsed: false,
     leftCollapsedStored: false,
     chatDock: "glass",
+    assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
 }
 
 function saveEditorLayout(): void {
-  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({ leftWidth, mapTreeHeight, leftCollapsed, chatDock }));
+  browserLocalStorage()?.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
+    leftWidth,
+    mapTreeHeight,
+    leftCollapsed,
+    chatDock,
+    assistantTemperature,
+  }));
 }
 
 function browserLocalStorage(): Storage | null {

@@ -14,6 +14,7 @@
 
 import { createServer } from "node:http";
 import { randomUUID } from "node:crypto";
+import { createMcpStdioDecoder, encodeMcpStdioMessage } from "./lib/mcpStdioFraming.mjs";
 
 const PROTOCOL_VERSION = "2024-11-05";
 const DEFAULT_PORT = Number(process.env.AI_ASSISTANT_BRIDGE_PORT || 17831);
@@ -27,11 +28,10 @@ const commandQueue = [];
 const longPollWaiters = [];
 let browserLastHelloAt = 0;
 let browserSeen = false;
+let activeStdioFraming = "content-length";
 
 function send(message) {
-  const body = JSON.stringify(message);
-  const bytes = Buffer.byteLength(body, "utf8");
-  process.stdout.write(`Content-Length: ${bytes}\r\n\r\n${body}`);
+  process.stdout.write(encodeMcpStdioMessage(message, activeStdioFraming));
 }
 
 function success(id, result) {
@@ -358,7 +358,6 @@ function startHttpBridge(port) {
 }
 
 function startFramedJsonRpc() {
-  let buffer = Buffer.alloc(0);
   let handler = undefined;
   const pending = [];
   function dispatch(message) {
@@ -373,33 +372,17 @@ function startFramedJsonRpc() {
       },
     };
   }
+  const decoder = createMcpStdioDecoder((message) => {
+    activeStdioFraming = decoder.framing();
+    dispatch(message);
+  });
   process.stdin.on("data", (chunk) => {
     try {
-      buffer = Buffer.concat([buffer, chunk]);
-      while (true) {
-        const headerEnd = buffer.indexOf("\r\n\r\n");
-        if (headerEnd < 0) return;
-        const header = buffer.slice(0, headerEnd).toString("utf8");
-        const lengthMatch = /^Content-Length:\s*(\d+)$/im.exec(header);
-        if (!lengthMatch) {
-          // Drop garbage so detached HTTP-only starts don't crash the bridge.
-          process.stderr.write(`[rpgzzu-assistant-mcp] bad MCP frame, resetting stdin buffer\n`);
-          buffer = Buffer.alloc(0);
-          return;
-        }
-        const length = Number(lengthMatch[1]);
-        const bodyStart = headerEnd + 4;
-        const bodyEnd = bodyStart + length;
-        if (buffer.length < bodyEnd) return;
-        const body = buffer.slice(bodyStart, bodyEnd).toString("utf8");
-        buffer = buffer.slice(bodyEnd);
-        dispatch(JSON.parse(body));
-      }
+      decoder.push(chunk);
     } catch (error) {
       process.stderr.write(
         `[rpgzzu-assistant-mcp] stdin parse error: ${error instanceof Error ? error.message : String(error)}\n`,
       );
-      buffer = Buffer.alloc(0);
     }
   });
   process.stdin.on("error", (error) => {
