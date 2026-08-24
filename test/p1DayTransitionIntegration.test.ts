@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { dailyWeatherForecast } from "@/project/dailyWeather";
 import { createFarmingDemoProject } from "@/project/defaults";
 import { calendarDayKey } from "@/project/gameTime";
+import { feedFarmAnimal, petFarmAnimal } from "@/project/farmAnimals";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { startSession } from "@/project/session";
 import { transitionToNextDay } from "@/player/dayTransition";
 
@@ -42,7 +44,7 @@ describe("P1 daily weather transition integration", () => {
       ok: true,
       receipt: {
         destinationDayKey: "1:spring:2",
-        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers"],
+        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"],
         weather: forecast,
         wateredPlots: 1,
       },
@@ -70,5 +72,51 @@ describe("P1 daily weather transition integration", () => {
     expect(result).toMatchObject({ ok: true, receipt: { wateredPlots: 0 } });
     expect(session.m2Runtime?.screen.weather).toBe("snow,0.6");
     expect(session.farmPlots?.[project.startMapId]?.["4,5"]?.growthDays).toBe(0);
+  });
+
+  it("advances cared animals for the source day after every other successful stage", () => {
+    const project = createFarmingDemoProject();
+    const session = startSession(project, 704);
+    const sourceDayKey = calendarDayKey(session.gameTime!);
+    session.inventory.item_hay = 1;
+
+    expect(feedFarmAnimal(project, session, "farm_animal_bori", sourceDayKey)).toMatchObject({ ok: true });
+    expect(petFarmAnimal(project, session, "farm_animal_bori", sourceDayKey)).toMatchObject({ ok: true });
+
+    const result = transitionToNextDay(project, session, sourceDayKey);
+
+    expect(result).toMatchObject({
+      ok: true,
+      receipt: {
+        stages: ["shipping", "calendar", "dailyWeather", "rainWatering", "farm", "energy", "makers", "animals"],
+        animals: {
+          ok: true,
+          dayKey: sourceDayKey,
+          advancedInstanceIds: ["farm_animal_bori", "farm_animal_dubu"],
+          products: [{ instanceId: "farm_animal_bori", itemId: "item_egg", count: 1 }],
+        },
+      },
+    });
+    expect(session.farmAnimals?.farm_animal_bori).toMatchObject({
+      lastAdvancedDayKey: sourceDayKey,
+      productionProgress: 0,
+      readyProductCount: 1,
+    });
+  });
+
+  it("rolls back the complete day when animal production overflows", () => {
+    const project = createFarmingDemoProject();
+    const session = startSession(project, 705);
+    const sourceDayKey = calendarDayKey(session.gameTime!);
+    session.inventory.item_hay = 1;
+    expect(feedFarmAnimal(project, session, "farm_animal_bori", sourceDayKey)).toMatchObject({ ok: true });
+    expect(petFarmAnimal(project, session, "farm_animal_bori", sourceDayKey)).toMatchObject({ ok: true });
+    session.farmAnimals!.farm_animal_bori!.readyProductCount = ITEM_QUANTITY_MAX;
+    const before = structuredClone(session);
+
+    const result = transitionToNextDay(project, session, sourceDayKey);
+
+    expect(result).toEqual({ ok: false, reason: "animals", stage: "animals" });
+    expect(session).toEqual(before);
   });
 });
