@@ -28,9 +28,9 @@ const OPTION_LABELS: readonly { readonly key: keyof ActorOptions; readonly label
   { key: "mightyGuard", label: "강력 방어" },
 ] as const;
 
-export function battlePanel(actor: ActorRecord, rerender: () => void): HTMLElement {
+export function battlePanel(actor: ActorRecord, rerender: () => void, refreshBuildPreview: () => void): HTMLElement {
   return actorPanel("전투", "actor-battle", [
-    equipmentPanel(actor),
+    equipmentPanel(actor, refreshBuildPreview),
     selectRecord("맨손 애니메이션", "db-picker-unarmed-animation", actor.unarmedAnimationId ?? "", store.getCurrent().database.battleAnimations, (unarmedAnimationId) =>
       updateDatabaseRecord("actors", actor.id, { unarmedAnimationId: emptyToUndefined(unarmedAnimationId) })
     ),
@@ -65,15 +65,16 @@ export function ratesPanel(actor: ActorRecord): HTMLElement {
   ]);
 }
 
-function equipmentPanel(actor: ActorRecord): HTMLElement {
+function equipmentPanel(actor: ActorRecord, refreshBuildPreview: () => void): HTMLElement {
   const equipment = store.getCurrent().database.equipment;
   return actorPanel("초기 장비", "actor-starting-equipment", EQUIPMENT_SLOTS.map((slot) => {
     const options = equipment.filter((entry) => entry.slot === slot.slot);
-    return selectRecord(slot.label, `db-picker-actor-equipment-${slot.key}`, actor.initialEquipment[slot.key] ?? "", options, (id) =>
+    return selectRecord(slot.label, `db-picker-actor-equipment-${slot.key}`, actor.initialEquipment[slot.key] ?? "", options, (id) => {
       updateDatabaseRecord("actors", actor.id, {
         initialEquipment: { ...currentActor(actor).initialEquipment, [slot.key]: emptyToUndefined(id) },
-      })
-    );
+      });
+      refreshBuildPreview();
+    });
   }));
 }
 
