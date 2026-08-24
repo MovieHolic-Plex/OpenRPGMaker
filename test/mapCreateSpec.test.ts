@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createMapFromSpec } from "@/editor/actions";
-import { addParentChildTransfers, firstFreeCell } from "@/editor/mapParentLink";
+import { addParentChildTransfers, bestTestStartCell, firstFreeCell } from "@/editor/mapParentLink";
 import { INTERIOR_FLOOR_TILE, resolveMapCreateDefaults } from "@/project/mapCreateSpec";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { createBlankProject } from "@/project/defaults";
@@ -72,5 +72,40 @@ describe("parent-child transfer pair", () => {
     expect(collectMapLinkStats(project, parentId).outgoingTransfers).toBe(beforeParentOut + 1);
     expect(collectMapLinkStats(project, childId).outgoingTransfers).toBe(1);
     expect(collectMapLinkStats(project, childId).incomingTransfers).toBe(1);
+  });
+});
+
+describe("map test-play start", () => {
+  it("chooses a passable event-free interior cell instead of an empty outer wall", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const tileset = project.tilesets[map.tilesetId]!;
+    const passableTile = tileset.passability.findIndex(
+      (passage) => passage.up && passage.down && passage.left && passage.right,
+    );
+    const solidTile = tileset.passability.findIndex(
+      (passage) => !passage.up && !passage.down && !passage.left && !passage.right,
+    );
+    expect(passableTile).toBeGreaterThanOrEqual(0);
+    expect(solidTile).toBeGreaterThanOrEqual(0);
+    map.width = 7;
+    map.height = 7;
+    map.lowerTiles = Array.from({ length: 49 }, (_, index) => {
+      const x = index % map.width;
+      const y = Math.floor(index / map.width);
+      return x >= 2 && x <= 4 && y >= 2 && y <= 4 ? passableTile : solidTile;
+    });
+    map.upperTiles = Array.from({ length: 49 }, () => -1);
+    map.events = [{
+      id: "ev_center",
+      name: "center",
+      x: 3,
+      y: 3,
+      trigger: { kind: "action" },
+      commands: [],
+    }];
+
+    expect(firstFreeCell(map)).toEqual({ x: 0, y: 0 });
+    expect(bestTestStartCell(project, map)).toEqual({ x: 3, y: 2 });
   });
 });

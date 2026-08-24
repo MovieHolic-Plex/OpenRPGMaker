@@ -1,7 +1,7 @@
 import { addMapFolder, duplicateMap, moveMapInTree, moveMapsInTree, renameMap, setStartMap } from "@/editor/actions";
 import { confirmAndDeleteMap, confirmAndDeleteMapRecursive, confirmAndDeleteMaps, confirmAndDissolveFolder } from "@/editor/mapDeleteConfirm";
 import { editorState } from "@/editor/editorState";
-import { addParentChildTransfers, firstFreeCell } from "@/editor/mapParentLink";
+import { addParentChildTransfers, bestTestStartCell } from "@/editor/mapParentLink";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { mapTreeDropRelation, type MapTreeDropRelation } from "@/editor/mapTreeDrop";
 import { openMapCreateDialog, openMapCreateUnder } from "@/editor/panels/mapCreateDialog";
@@ -1055,10 +1055,11 @@ function applyTreeSelection(mapId: MapId, event: Event, isFolder: boolean): void
 }
 
 function playMapFromTree(mapId: MapId): Promise<void> {
-  const map = store.getCurrent().maps[mapId];
+  const project = store.getCurrent();
+  const map = project.maps[mapId];
   if (!map) return Promise.resolve();
   selectEditorMap(mapId);
-  const cell = firstFreeCell(map) ?? { x: 1, y: 1 };
+  const cell = bestTestStartCell(project, map);
   return openTestPlayModal({ mapId, x: cell.x, y: cell.y });
 }
 
