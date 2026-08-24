@@ -276,6 +276,7 @@
   --oprn-status-highlight-deep: var(--oprn-title-highlight-deep, #1b54bd);
   --oprn-status-text: var(--oprn-title-text, var(--bg-overlay));
   background: var(--runtime-window-fill-fallback);
+  color: var(--oprn-status-text);
   border: var(--runtime-window-border) solid transparent;
   border-image-repeat: stretch;
   border-image-slice: var(--runtime-window-slice);

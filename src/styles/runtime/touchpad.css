@@ -91,6 +91,13 @@
     pointer-events: none;
     visibility: hidden;
   }
+
+  /* 상태 메뉴 자체가 방향·결정·취소 입력을 제공한다. 터치 패드를 함께 노출하면
+     스케일된 플레이 표면에서 메뉴를 가리고 포인터 입력까지 가로챈다. */
+  .play-stage:has([data-testid="main-menu"]) > .touch-pad {
+    pointer-events: none;
+    visibility: hidden;
+  }
 }
 
   /* 전투 중 이동 패드는 명령 버튼을 가리므로 숨긴다(전투 명령은 직접 탭). */
