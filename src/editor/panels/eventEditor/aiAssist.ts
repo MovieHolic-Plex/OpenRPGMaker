@@ -40,6 +40,7 @@ type PanelState = {
 };
 
 const panelStates = new Map<string, PanelState>();
+let panelInstanceId = 0;
 
 function stateOf(key: string): PanelState {
   const existing = panelStates.get(key);
@@ -64,6 +65,11 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
   const { mapId, eventId, page, actions, cmdList } = options;
   const key = auxCompositeKey(mapId, eventId, page.id);
   const state = stateOf(key);
+  const instanceId = ++panelInstanceId;
+  const headingId = `event-ai-heading-${instanceId}`;
+  const inputId = `event-ai-input-${instanceId}`;
+  const promptHelpId = `event-ai-prompt-help-${instanceId}`;
+  const resultTitleId = `event-ai-result-title-${instanceId}`;
 
   // 소스 오브 트루스: auxOpenController. panelStates.open 은 레거시 복원용으로만 이관.
   if (getAuxOpen(key) === null && state.open) {
@@ -89,14 +95,21 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
   const input = el("textarea", {
     class: "ai-event-input",
     attrs: {
-      rows: "3",
+      id: inputId,
+      rows: "4",
+      "aria-describedby": promptHelpId,
       placeholder: "예) 보물상자: 열면 회복약 2개 주고 셀프스위치 A ON, 이미 열었으면 '비어 있다' 표시",
     },
     dataset: { testid: "ai-event-input" },
   });
   input.value = state.draft;
 
-  const status = el("div", { class: "ai-event-status", text: state.status });
+  const status = el("div", {
+    class: "ai-event-status",
+    text: state.status,
+    attrs: { role: "status", "aria-live": "polite" },
+    dataset: { testid: "ai-event-status" },
+  });
   const chip = chipStatusOf(state);
   const chipStatus = el("span", {
     class: "event-aux-chip-status",
@@ -139,18 +152,39 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
   const insertBtn = button("선택 위치에 삽입", "ai-event-insert", "primary");
   const discardBtn = button("버리기", "ai-event-discard");
   const previewFooter = el("div", { class: "ai-event-preview-actions", children: [insertBtn, discardBtn] });
+  const resultTitle = el("h4", {
+    class: "ai-event-result-title",
+    text: "생성 결과",
+    attrs: { id: resultTitleId },
+    dataset: { testid: "ai-event-result-title" },
+  });
+  const resultMeta = el("span", { class: "ai-event-result-meta" });
+  const resultSection = el("section", {
+    class: "ai-event-result",
+    attrs: { role: "region", "aria-labelledby": resultTitleId },
+    dataset: { testid: "ai-event-result" },
+    children: [
+      el("div", { class: "ai-event-result-header", children: [resultTitle, resultMeta] }),
+      previewHost,
+      previewFooter,
+    ],
+  });
 
   const renderPreview = (): void => {
     previewHost.textContent = "";
     const commands = state.preview;
     if (!commands) {
+      resultSection.hidden = true;
       previewHost.hidden = true;
       previewFooter.hidden = true;
+      resultMeta.textContent = "";
       refreshChip();
       return;
     }
+    resultSection.hidden = false;
     previewHost.hidden = false;
     previewFooter.hidden = false;
+    resultMeta.textContent = `커맨드 ${commands.length}개 · 검토 후 삽입`;
     for (const line of previewLines(commands, 0)) {
       const row = el("div", { class: "ai-event-preview-line" });
       row.style.setProperty("--cmd-depth", String(line.depth));
@@ -162,7 +196,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
     refreshChip();
   };
 
-  const generateBtn = button("생성", "ai-event-generate", "primary");
+  const generateBtn = button("초안 생성", "ai-event-generate", "primary");
   generateBtn.addEventListener("click", async () => {
     const prompt = input.value.trim();
     if (!prompt) {
@@ -240,10 +274,45 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLElement 
     el("div", {
       class: "ai-event-assist-body",
       children: [
-        input,
-        el("div", { class: "ai-event-generate-row", children: [generateBtn, status] }),
-        previewHost,
-        previewFooter,
+        el("header", {
+          class: "ai-event-intro",
+          children: [
+            el("div", {
+              class: "ai-event-heading-row",
+              children: [
+                el("h3", {
+                  class: "ai-event-heading",
+                  text: "이 페이지에 명령 초안 만들기",
+                  attrs: { id: headingId },
+                }),
+                el("span", { class: "ai-event-draft-badge", text: "AI 초안" }),
+              ],
+            }),
+            el("p", {
+              class: "ai-event-help",
+              text: "현재 페이지와 선택한 명령 위치를 참고합니다. 생성만으로는 이벤트가 바뀌지 않습니다.",
+            }),
+          ],
+        }),
+        el("div", {
+          class: "ai-event-compose",
+          children: [
+            el("label", {
+              class: "ai-event-prompt-label",
+              text: "원하는 이벤트 흐름",
+              attrs: { for: inputId },
+              dataset: { testid: "ai-event-prompt-label" },
+            }),
+            input,
+            el("p", {
+              class: "ai-event-prompt-help",
+              text: "대사, 조건, 보상과 실행 순서를 한 문장으로 적어도 됩니다.",
+              attrs: { id: promptHelpId },
+            }),
+            el("div", { class: "ai-event-generate-row", children: [status, generateBtn] }),
+          ],
+        }),
+        resultSection,
       ],
     })
   );

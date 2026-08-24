@@ -225,6 +225,25 @@ describe("AI Assist 패널 UI (fakeDom)", () => {
     }) as unknown as FakeElement;
   }
 
+  it("프롬프트 입력과 생성 상태, 결과 영역을 보이는 레이블로 연결한다", () => {
+    const { actions } = recordingActions();
+    const panel = renderPanel(actions);
+
+    const input = findByTestId(panel, "ai-event-input")!;
+    const promptLabel = findByTestId(panel, "ai-event-prompt-label")!;
+    const status = findByTestId(panel, "ai-event-status")!;
+    const result = findByTestId(panel, "ai-event-result")!;
+    const resultTitle = findByTestId(panel, "ai-event-result-title")!;
+
+    expect(promptLabel.tagName).toBe("LABEL");
+    expect(promptLabel.getAttribute("for")).toBe(input.getAttribute("id"));
+    expect(status.getAttribute("role")).toBe("status");
+    expect(status.getAttribute("aria-live")).toBe("polite");
+    expect(result.getAttribute("role")).toBe("region");
+    expect(result.getAttribute("aria-labelledby")).toBe(resultTitle.getAttribute("id"));
+    expect(result.hidden).toBe(true);
+  });
+
   it("생성 → 프리뷰 → 삽입 → 프리뷰 정리 흐름이 동작한다", async () => {
     mockFetchSequence(JSON.stringify(CHEST_COMMANDS));
     const { actions, added } = recordingActions();

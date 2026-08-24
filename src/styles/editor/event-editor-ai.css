@@ -27,48 +27,107 @@
 .ai-event-assist-body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
+  overflow: hidden;
+  padding: 0;
 }
 
-.ai-event-input {
+.ai-event-intro {
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 15px 18px 13px;
+}
+
+.ai-event-heading-row {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.ai-event-assist-body .ai-event-heading {
+  color: var(--text-1);
+  font: 700 14px/1.4 var(--font-ui);
+  margin: 0;
+  padding: 0;
+}
+
+.ai-event-draft-badge {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  color: var(--accent);
+  flex: 0 0 auto;
+  font: 700 10px/1 var(--font-ui);
+  letter-spacing: 0.04em;
+  padding: 4px 7px;
+}
+
+.ai-event-help {
+  color: var(--text-2);
+  font: 400 12px/1.6 var(--font-ui);
+  margin: 5px 0 0;
+  max-width: 62ch;
+}
+
+.ai-event-compose {
+  padding: 14px 18px 16px;
+}
+
+.ai-event-prompt-label {
+  color: var(--text-1);
+  display: block;
+  font: 700 12px/1.4 var(--font-ui);
+  margin-bottom: 7px;
+}
+
+.event-editor-modal-body .ai-event-input {
   width: 100%;
   box-sizing: border-box;
   resize: vertical;
-  min-height: 56px;
-  padding: var(--space-2);
+  min-height: 96px;
+  max-height: 180px;
+  padding: 10px 12px;
   background: var(--bg-inset);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
+  border-radius: var(--radius-m);
   color: var(--text-1);
-  font-family: var(--font-ui);
-  font-size: 12px;
-  line-height: 1.5;
+  font: 500 13px/1.65 var(--font-ui);
 }
 
-.ai-event-input:focus {
+.event-editor-modal-body .ai-event-input:focus {
   border-color: var(--accent);
   outline: 2px solid var(--accent-muted);
 }
 
-.ai-event-input::placeholder {
+.event-editor-modal-body .ai-event-input::placeholder {
   color: var(--text-3);
+}
+
+.ai-event-prompt-help {
+  color: var(--text-3);
+  font: 400 11px/1.55 var(--font-ui);
+  margin: 6px 0 0;
 }
 
 .ai-event-generate-row {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  justify-content: flex-end;
+  margin-top: 12px;
 }
 
 .ai-event-btn {
-  padding: 4px 12px;
+  align-items: center;
   background: var(--control-bg);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
+  border-radius: var(--radius-m);
   color: var(--text-1);
-  font-size: 12px;
   cursor: pointer;
+  display: inline-flex;
+  font: 700 12px/1 var(--font-ui);
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 14px;
   transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
@@ -93,9 +152,10 @@
 }
 
 .ai-event-status {
-  font-size: 11px;
   color: var(--text-2);
-  min-height: 1em;
+  flex: 1 1 auto;
+  font: 400 12px/1.5 var(--font-ui);
+  min-width: 0;
 }
 
 .ai-event-status.error {
@@ -106,18 +166,45 @@
   color: var(--accent);
 }
 
+.ai-event-result {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ai-event-result[hidden] {
+  display: none;
+}
+
+.ai-event-result-header {
+  align-items: baseline;
+  display: flex;
+  gap: var(--space-2);
+  justify-content: space-between;
+  padding: 12px 18px 9px;
+}
+
+.ai-event-result-title {
+  color: var(--text-1);
+  font: 700 12px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+.ai-event-result-meta {
+  color: var(--text-3);
+  font: 400 11px/1.4 var(--font-ui);
+}
+
 .ai-event-preview {
   display: flex;
   flex-direction: column;
-  gap: 2px;
   max-height: 220px;
   overflow-y: auto;
-  padding: var(--space-2);
+  margin: 0 18px;
+  padding: 4px;
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
+  border-radius: var(--radius-m);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .ai-event-preview[hidden],
@@ -126,10 +213,17 @@
 }
 
 .ai-event-preview-line {
-  padding-left: calc(var(--cmd-depth, 0) * 14px);
+  border-radius: var(--radius-s);
   color: var(--text-2);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  padding: 5px 7px 5px calc(7px + var(--cmd-depth, 0) * 16px);
   white-space: pre-wrap;
-  word-break: break-all;
+  word-break: normal;
+}
+
+.ai-event-preview-line + .ai-event-preview-line {
+  border-top: 1px solid var(--border-subtle);
 }
 
 .ai-event-preview-line .cmd-summary-token.command {
@@ -144,4 +238,5 @@
   display: flex;
   gap: var(--space-2);
   justify-content: flex-end;
+  padding: 10px 18px 14px;
 }

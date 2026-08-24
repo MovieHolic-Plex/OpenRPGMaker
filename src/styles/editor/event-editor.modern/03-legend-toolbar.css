@@ -105,6 +105,12 @@
   z-index: 2;
 }
 
+/* 1180px 이하에서는 명령 인스펙터가 z-index:12 오버레이가 된다.
+   사용자가 AI 칩을 연 동안에는 활성 작업 카드가 그 위에 보여야 한다. */
+.event-editor-aux-tools:has(> .ai-event-assist[open]) {
+  z-index: 14;
+}
+
 .event-editor-aux-tools > .ai-event-assist,
 .event-editor-aux-tools .event-script-live-preview,
 .event-editor-aux-tools .event-script-flowchart {
@@ -226,6 +232,14 @@
   right: 0;
   width: auto;
   z-index: 8;
+}
+
+/* AI 입력은 긴 한 줄보다 읽기 쉬운 작업 카드 폭을 유지한다.
+   작은 모달에서는 가용 폭으로 줄고, command list 기하는 계속 점유하지 않는다. */
+.event-editor-aux-tools > .ai-event-assist[open] > .ai-event-assist-body {
+  max-height: min(500px, 58vh);
+  right: auto;
+  width: min(680px, calc(100% - 8px));
 }
 
 .event-contents-fieldset .cmd-list {
