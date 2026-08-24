@@ -241,7 +241,12 @@ function databaseTabCount(tab: DatabaseTab): number | null {
         + (project.system.craftRecipes?.length ?? 0)
         + (project.system.itemUpgrades?.length ?? 0)
         + (project.system.sellPrices?.length ?? 0)
-        + (project.system.toolActions?.length ?? 0);
+        + (project.system.toolActions?.length ?? 0)
+        + (project.system.energy ? 1 : 0)
+        + (project.system.shipping ? 1 : 0)
+        + (project.system.worldUnlocks?.length ?? 0)
+        + (project.system.bundles?.length ?? 0)
+        + (project.system.makers?.length ?? 0);
     case "switches":
       return project.switches.length;
     case "variables":

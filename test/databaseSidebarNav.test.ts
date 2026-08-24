@@ -138,10 +138,15 @@ describe("database sidebar navigation", () => {
     store.update((project) => {
       project.database.lifeSkills = [{ id: "life", name: "농사", skillType: "farming", maxLevel: 10, levelUpRewards: [] }];
       project.system.sellPrices = [{ itemId: project.database.items[0]?.id ?? "", price: 10 }];
+      project.system.energy = { max: 100 };
+      project.system.shipping = { enabled: false };
+      project.system.worldUnlocks = [{ id: "unlock" }];
+      project.system.bundles = [];
+      project.system.makers = [{ id: "maker", inputs: [], outputs: [], durationMinutes: 60 }];
     });
     const panelRoot = renderPanelHost();
     const tab = findTab(panelRoot, "db-tab-life-crafting");
-    expect(tab.dataset.count).toBe("2");
+    expect(tab.dataset.count).toBe("6");
 
     tab.click();
 
