@@ -19,6 +19,7 @@ type InspectorTarget = {
   readonly command: Command;
   readonly path: number[];
   readonly actions: CommandListActions;
+  readonly previewFace?: { readonly resourceId: string; readonly faceIndex: number };
 };
 
 let host: HTMLElement | undefined;
@@ -76,6 +77,7 @@ export function showCommandInspector(target: InspectorTarget): void {
           path: target.path,
           actions: target.actions,
           lockKind: true,
+          previewFace: target.previewFace,
         },
         target.command
       ),
