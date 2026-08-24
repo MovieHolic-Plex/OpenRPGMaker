@@ -339,7 +339,7 @@ async function consumeBlockingStep(
       applySetTimeStep(scene, step);
       return resumeAfterSurface(scene, interpreter);
     case "sleepUntilMorning":
-      await scene.sleepUntilMorning();
+      if (!await scene.sleepUntilMorning()) return { kind: "done" };
       return resumeAfterSurface(scene, interpreter);
     case "transfer":
       dialogue.hide();

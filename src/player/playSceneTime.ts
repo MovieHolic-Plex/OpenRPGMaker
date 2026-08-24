@@ -56,7 +56,7 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
     if (wholeMinutes <= 0) continue;
     scene.timeMinuteAccumulator -= wholeMinutes;
     if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= wholeMinutes) {
-      void scene.sleepUntilMorning();
+      observeScheduledTimeTransition(scene, scene.sleepUntilMorning(), "forced-sleep");
       return;
     }
     const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, wholeMinutes);
@@ -129,12 +129,16 @@ export async function sleepUntilMorningScene(
     await fadeCamera(scene, "out", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
     const beforeHook = structuredClone(scene.session);
     const hook = system.onDayEnd ? project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
-    if (hook?.commands.length) await runDayEndCommands(hook.commands);
-    const transition = transitionToNextDay(project, scene.session, sourceDayKey);
-    if (!transition.ok) {
-      restoreSession(scene.session, beforeHook);
-      showDayTransitionFailure(scene, transition.reason);
-      await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
+    try {
+      if (hook?.commands.length) await runDayEndCommands(hook.commands);
+      const transition = transitionToNextDay(project, scene.session, sourceDayKey);
+      if (!transition.ok) {
+        await recoverFailedSleep(scene, beforeHook, transition.reason);
+        return false;
+      }
+    } catch (cause) {
+      const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
+      await recoverFailedSleep(scene, beforeHook, `day-end-hook${detail}`);
       return false;
     }
     scene.clearRuntimeOverlay("day-transition-error");
@@ -185,6 +189,19 @@ export function applySetTimeStep(scene: PlaySceneContext, step: Extract<StepResu
   if (!scene.session.gameTime) return;
   scene.session.gameTime = setGameTimeClock(scene.session.gameTime, step.hour, step.minute, system);
   scene.syncRuntimeState();
+}
+
+export function observeScheduledTimeTransition(
+  scene: Pick<PlaySceneContext, "showRuntimeOverlay">,
+  task: Promise<boolean | void>,
+  reason: "forced-sleep" | "scheduled-sleep" | "scheduled-advance",
+): void {
+  void task.then((result) => {
+    if (result === false) showDayTransitionFailure(scene, reason);
+  }).catch((cause: unknown) => {
+    const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
+    showDayTransitionFailure(scene, `${reason}${detail}`);
+  });
 }
 
 export function isGameTimePausedForRuntime(scene: Pick<PlaySceneContext, "game" | "session" | "timeSleepInProgress">): boolean {
@@ -250,8 +267,20 @@ function interpolateColor(from: number, to: number, progress: number): number {
   return (r << 16) | (g << 8) | b;
 }
 
-function showDayTransitionFailure(scene: PlaySceneContext, reason: string): void {
+function showDayTransitionFailure(scene: Pick<PlaySceneContext, "showRuntimeOverlay">, reason: string): void {
   scene.showRuntimeOverlay("day-transition-error", `새날 처리를 완료하지 못했습니다 (${reason})`);
+}
+
+async function recoverFailedSleep(
+  scene: PlaySceneContext,
+  beforeHook: PlaySceneContext["session"],
+  reason: string,
+): Promise<void> {
+  restoreSession(scene.session, beforeHook);
+  showDayTransitionFailure(scene, reason);
+  scene.refreshRuntimeSurfaces();
+  scene.syncRuntimeState();
+  await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
 }
 
 function restoreSession(target: PlaySceneContext["session"], source: PlaySceneContext["session"]): void {

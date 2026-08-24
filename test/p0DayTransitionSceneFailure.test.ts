@@ -94,4 +94,66 @@ describe("P0 day-transition scene failure handling", () => {
       store.replaceProject(previous);
     }
   });
+
+  it("rolls back a partially mutating day-end hook, fades in, and refreshes error surfaces", async () => {
+    const previous = store.getCurrent();
+    fade.mockClear();
+    try {
+      const project = createFarmingDemoProject();
+      project.system.timeSystem = {
+        enabled: true,
+        dayStartHour: 6,
+        dayEndHour: 26,
+        daysPerSeason: 28,
+        onDayEnd: "common_day_end",
+      };
+      project.commonEvents.push({ id: "common_day_end", name: "Day end", trigger: "none", commands: [{ kind: "wait", ms: 1 }] });
+      const session = startSession(project, 402);
+      session.gameTime = { year: 1, season: "spring", day: 4, hour: 25, minute: 50 };
+      session.gold = 25;
+      store.replaceProject(project);
+      const { scene, overlays, refreshRuntimeSurfaces, syncRuntimeState } = sceneStub(session);
+      const beforeHook = structuredClone(session);
+      const hook = vi.fn(async () => {
+        session.gold = 9_999;
+        session.switches.partial_hook = true;
+        throw new Error("malicious hook failure");
+      });
+
+      await expect(sleepUntilMorningScene(scene, hook)).resolves.toBe(false);
+
+      expect(session).toEqual(beforeHook);
+      expect(fade.mock.calls.map((call) => call[1])).toEqual(["out", "in"]);
+      expect(overlays.at(-1)).toContain("day-end-hook");
+      expect(refreshRuntimeSurfaces).toHaveBeenCalled();
+      expect(syncRuntimeState).toHaveBeenCalled();
+      expect(scene.timeSleepInProgress).toBe(false);
+    } finally {
+      store.replaceProject(previous);
+    }
+  });
+
+  it("surfaces a forced-sleep false result instead of dropping the scheduler failure", async () => {
+    const previous = store.getCurrent();
+    try {
+      const project = createFarmingDemoProject();
+      project.system.timeSystem = {
+        enabled: true,
+        dayStartHour: 6,
+        dayEndHour: 26,
+        minutesPerRealSecond: 10,
+        forceSleep: true,
+      };
+      const session = startSession(project, 403);
+      session.gameTime = { year: 1, season: "spring", day: 2, hour: 25, minute: 50 };
+      store.replaceProject(project);
+      const { scene, overlays } = sceneStub(session);
+      scene.sleepUntilMorning = vi.fn(async () => false);
+
+      updateGameTime(scene, 1_000);
+      await vi.waitFor(() => expect(overlays.at(-1)).toContain("forced-sleep"));
+    } finally {
+      store.replaceProject(previous);
+    }
+  });
 });
