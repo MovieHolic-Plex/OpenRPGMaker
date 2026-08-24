@@ -27,12 +27,17 @@ export function resolveFishingAvailability(project: Project, session: PlaySessio
 export function attemptFishingCatch(project: Project, session: PlaySession, location: FishingLocation): FishingCatchResult {
   const availability = resolveFishingAvailability(project, session, location);
   if (!availability.ok) return availability;
+  if (!session.collections) return { ok: false, reason: "invalid-state" };
   const spot = project.system.fishing!.spots.find((entry) => entry.id === availability.spotId)!;
   const rules = availableRules(project, session, spot.catches);
   const total = rules.reduce((sum, rule) => sum + rule.weight, 0);
   if (!Number.isSafeInteger(total) || total <= 0) return { ok: false, reason: "invalid-state" };
   const fishById = new Map((project.database.fishSpecies ?? []).map((fish) => [fish.id, fish] as const));
-  if (rules.some((rule) => !fishById.has(rule.fishId) || !Number.isSafeInteger(rule.weight) || rule.weight <= 0)) {
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  if (rules.some((rule) => {
+    const fish = fishById.get(rule.fishId);
+    return !fish || !itemIds.has(fish.itemId) || !Number.isSafeInteger(rule.weight) || rule.weight <= 0;
+  })) {
     return { ok: false, reason: "invalid-state" };
   }
   const draft = structuredClone(session);

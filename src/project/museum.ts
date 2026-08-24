@@ -10,6 +10,11 @@ export type MuseumDonationResult =
 export function donateMuseumItem(project: Project, session: PlaySession, itemId: string): MuseumDonationResult {
   const museum = project.system.museum;
   if (!museum?.enabled) return { ok: false, reason: "disabled" };
+  if (!session.collections) return { ok: false, reason: "invalid-state" };
+  const rewardIds = museum.rewards.map((reward) => reward.id);
+  if (rewardIds.some((id) => !id.trim()) || new Set(rewardIds).size !== rewardIds.length) {
+    return { ok: false, reason: "invalid-state" };
+  }
   if (!project.database.items.some((item) => item.id === itemId) || !museum.eligibleItemIds.includes(itemId)) return { ok: false, reason: "ineligible" };
   const progress = collectionProgress(session, itemId);
   if (progress?.donated) return { ok: false, reason: "already-donated" };
@@ -19,7 +24,10 @@ export function donateMuseumItem(project: Project, session: PlaySession, itemId:
   if (!Array.isArray(session.museumRewardAppliedIds) || new Set(session.museumRewardAppliedIds).size !== session.museumRewardAppliedIds.length) {
     return { ok: false, reason: "invalid-state" };
   }
-  const donatedIds = new Set(Object.entries(session.collections ?? {}).filter(([, row]) => row.donated).map(([id]) => id));
+  const eligibleIds = new Set(museum.eligibleItemIds.filter((id) => project.database.items.some((item) => item.id === id)));
+  const donatedIds = new Set(Object.entries(session.collections)
+    .filter(([id, row]) => eligibleIds.has(id) && row.donated)
+    .map(([id]) => id));
   donatedIds.add(itemId);
   const newlyQualified = museum.rewards.filter((reward) => !session.museumRewardAppliedIds!.includes(reward.id) && qualifies(reward, donatedIds));
   if (newlyQualified.some((reward) => !validReward(project, session, reward.reward))) return { ok: false, reason: "invalid-reward" };

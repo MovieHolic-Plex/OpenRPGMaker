@@ -1,9 +1,9 @@
-import { isPassable } from "@/project/collision";
 import { calendarDayKey, daysPerSeasonOf, SEASONS, type GameTime } from "@/project/gameTime";
 import { isItemQuantity, ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import { awardLifeSkillXp } from "@/project/lifeSkillProgress";
 import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import { changeItemsAtomically, type PlaySession } from "@/project/session";
+import { canOccupySpatialFootprint } from "@/project/spatialOccupancy";
 import type { ForageAreaDefinition, ForageEntryDefinition, Project } from "@/project/types";
 import { deterministicRng } from "@/util/rng";
 
@@ -17,7 +17,7 @@ export type ForageCollectResult =
 export function advanceSeasonalForage(project: Project, session: PlaySession, date: GameTime): ForageAdvanceResult {
   const config = project.system.seasonalForage;
   if (!config?.enabled) return { ok: false, reason: "disabled" };
-  if (!validDate(date)) return { ok: false, reason: "invalid-date" };
+  if (!validDate(project, date)) return { ok: false, reason: "invalid-date" };
   const dayKey = calendarDayKey(date);
   if (session.forageLastAdvancedDayKey === dayKey) return { ok: false, reason: "already-advanced" };
   if (session.forageLastAdvancedDayKey && dayOrdinal(project, session.forageLastAdvancedDayKey) >= dayOrdinal(project, dayKey)) {
@@ -31,7 +31,7 @@ export function advanceSeasonalForage(project: Project, session: PlaySession, da
     if (!placeable.forageSpawn) continue;
     const area = config.areas.find((entry) => entry.id === placeable.forageSpawn!.areaId);
     const entry = area?.entries.find((candidate) => candidate.id === placeable.forageSpawn!.entryId);
-    const spawned = parseDayKey(placeable.forageSpawn.spawnedDayKey);
+    const spawned = parseDayKey(project, placeable.forageSpawn.spawnedDayKey);
     const expired = !spawned || date.season !== spawned.season
       || dayOrdinal(project, dayKey) - dayOrdinal(project, placeable.forageSpawn.spawnedDayKey) >= (area?.despawnAfterDays ?? 0);
     if (!area || !entry || expired) { delete draft.placeables[key]; removed += 1; }
@@ -43,9 +43,13 @@ export function advanceSeasonalForage(project: Project, session: PlaySession, da
     const active = Object.values(draft.placeables).filter((entry) => entry.forageSpawn?.areaId === area.id).length;
     let remaining = Math.min(area.dailySpawnCount, Math.max(0, area.maxActive - active));
     const candidates: Array<{ x: number; y: number; score: number }> = [];
-    const map = project.maps[area.mapId]!;
     for (let y = area.area.y; y < area.area.y + area.area.h; y += 1) for (let x = area.area.x; x < area.area.x + area.area.w; x += 1) {
-      if (draft.placeables[placeableKey(area.mapId, x, y)] || !isPassable(project, map, x, y)) continue;
+      if (!canOccupySpatialFootprint(project, draft, {
+        mapId: area.mapId,
+        x,
+        y,
+        orientation: "down",
+      }, { width: 1, height: 1 })) continue;
       candidates.push({ x, y, score: deterministicRng(draft.rng?.seed ?? 1, "forage-cell", dayKey, area.id, x, y)() });
     }
     candidates.sort((a, b) => a.score - b.score || a.y - b.y || a.x - b.x);
@@ -80,7 +84,12 @@ export function collectForageAt(project: Project, session: PlaySession, mapId: s
   const area = project.system.seasonalForage.areas.find((entry) => entry.id === object.forageSpawn!.areaId);
   const entry = area?.entries.find((candidate) => candidate.id === object.forageSpawn!.entryId);
   const itemId = object.itemId;
-  if (!area || !entry || area.mapId !== mapId || !itemId || !project.database.items.some((item) => item.id === itemId)) return { ok: false, reason: "stale" };
+  const spawned = parseDayKey(project, object.forageSpawn.spawnedDayKey);
+  const expectedItemId = entry && spawned ? placeableDropItemId(entry, spawned.season) : undefined;
+  if (!area || !entry || area.mapId !== mapId || !pointInArea(area, x, y) || !itemId
+    || itemId !== expectedItemId || !project.database.items.some((item) => item.id === itemId)) {
+    return { ok: false, reason: "stale" };
+  }
   const current = session.inventory[itemId] ?? 0;
   if (!isItemQuantity(current) || current >= ITEM_QUANTITY_MAX) return { ok: false, reason: "inventory" };
   const draft = structuredClone(session);
@@ -100,20 +109,39 @@ function selectEntry(entries: readonly ForageEntryDefinition[], seed: number, da
 }
 function validArea(project: Project, area: ForageAreaDefinition): boolean {
   const map = project.maps[area.mapId];
+  const itemIds = new Set(project.database.items.map((item) => item.id));
+  const seenEntryIds = new Set<string>();
   return Boolean(map && area.area.x >= 0 && area.area.y >= 0 && area.area.w > 0 && area.area.h > 0
     && area.area.x + area.area.w <= map.width && area.area.y + area.area.h <= map.height
-    && Number.isSafeInteger(area.dailySpawnCount) && Number.isSafeInteger(area.maxActive));
+    && Number.isSafeInteger(area.dailySpawnCount) && area.dailySpawnCount >= 0
+    && Number.isSafeInteger(area.maxActive) && area.maxActive >= 0
+    && (area.spawnEveryDays === undefined || (Number.isSafeInteger(area.spawnEveryDays) && area.spawnEveryDays > 0))
+    && Number.isSafeInteger(area.despawnAfterDays) && area.despawnAfterDays > 0
+    && Array.isArray(area.entries) && area.entries.length > 0
+    && area.entries.every((entry) => {
+      if (!entry.id.trim() || seenEntryIds.has(entry.id) || !Number.isSafeInteger(entry.weight) || entry.weight <= 0) return false;
+      seenEntryIds.add(entry.id);
+      const drops = [entry.itemId, ...Object.values(entry.seasonalDrops ?? {})].filter((id): id is string => typeof id === "string");
+      return drops.length > 0 && drops.every((id) => itemIds.has(id));
+    }));
 }
-function validDate(date: GameTime): boolean { return Number.isSafeInteger(date.year) && date.year > 0 && Number.isSafeInteger(date.day) && date.day > 0 && SEASONS.includes(date.season); }
-function parseDayKey(value: string): { year: number; season: (typeof SEASONS)[number]; day: number } | undefined {
+function validDate(project: Project, date: GameTime): boolean {
+  return Number.isSafeInteger(date.year) && date.year > 0 && Number.isSafeInteger(date.day)
+    && date.day > 0 && date.day <= daysPerSeasonOf(project) && SEASONS.includes(date.season);
+}
+function parseDayKey(project: Project, value: string): { year: number; season: (typeof SEASONS)[number]; day: number } | undefined {
   const match = /^(\d+):(spring|summer|fall|winter):(\d+)$/.exec(value);
   if (!match) return undefined;
   const year = Number(match[1]); const day = Number(match[3]); const season = match[2] as (typeof SEASONS)[number];
-  return Number.isSafeInteger(year) && year > 0 && Number.isSafeInteger(day) && day > 0 ? { year, season, day } : undefined;
+  return Number.isSafeInteger(year) && year > 0 && Number.isSafeInteger(day)
+    && day > 0 && day <= daysPerSeasonOf(project) ? { year, season, day } : undefined;
 }
 function dayOrdinal(project: Project, value: string): number {
-  const date = parseDayKey(value); if (!date) return Number.POSITIVE_INFINITY;
+  const date = parseDayKey(project, value); if (!date) return Number.POSITIVE_INFINITY;
   const length = daysPerSeasonOf(project);
   return ((date.year - 1) * 4 + SEASONS.indexOf(date.season)) * length + date.day;
+}
+function pointInArea(area: ForageAreaDefinition, x: number, y: number): boolean {
+  return x >= area.area.x && y >= area.area.y && x < area.area.x + area.area.w && y < area.area.y + area.area.h;
 }
 function replace(target: PlaySession, source: PlaySession): void { Object.assign(target, source); }

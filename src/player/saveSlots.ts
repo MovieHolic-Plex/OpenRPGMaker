@@ -85,7 +85,7 @@ import {
 } from "@/player/saveSlotSpatialValidation";
 import { restoreSpatialPlacementRecords } from "@/project/spatialPlacementRestore";
 import { validProgress, type CollectionProgress } from "@/project/collections";
-import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
+import { placeableDropItemId, placeableKey, type PlaceableObjectState } from "@/project/placeables";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -298,7 +298,7 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
       farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
       farmBuildingPlacements: structuredClone(spatial.farmBuildingPlacements),
       homeDecorationPlacements: structuredClone(spatial.homeDecorationPlacements),
-      collections: sanitizeCollections(session.collections),
+      collections: sanitizeCollections(session.collections, new Set(project.database.items.map((item) => item.id))),
       museumRewardAppliedIds: sanitizeReceiptIds(session.museumRewardAppliedIds),
       forageLastAdvancedDayKey: parseCalendarDayKey(session.forageLastAdvancedDayKey)
         ? session.forageLastAdvancedDayKey
@@ -450,7 +450,12 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
     : undefined;
   session.dailyWeather = savedDailyWeather;
   session.farmAnimals = restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(snapshot.session.farmAnimals));
-  if (session.collections !== undefined) session.collections = sanitizeCollections(snapshot.session.collections) ?? {};
+  if (session.collections !== undefined) {
+    session.collections = sanitizeCollections(
+      snapshot.session.collections,
+      new Set(project.database.items.map((item) => item.id)),
+    ) ?? {};
+  }
   if (session.museumRewardAppliedIds !== undefined) session.museumRewardAppliedIds = sanitizeReceiptIds(snapshot.session.museumRewardAppliedIds) ?? [];
   if (snapshot.session.monsterInstances) session.monsterInstances = structuredClone(snapshot.session.monsterInstances);
   if (snapshot.session.monsterParty) session.monsterParty = [...snapshot.session.monsterParty];
@@ -537,14 +542,17 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
 
 const P2_SESSION_RECORD_LIMIT = 2_000;
 
-function sanitizeCollections(value: PlaySession["collections"] | unknown): Record<string, CollectionProgress> | undefined {
+function sanitizeCollections(
+  value: PlaySession["collections"] | unknown,
+  knownItemIds?: ReadonlySet<string>,
+): Record<string, CollectionProgress> | undefined {
   if (value === undefined) return undefined;
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
   const result: Record<string, CollectionProgress> = {};
   for (const [rawItemId, raw] of Object.entries(value).slice(0, P2_SESSION_RECORD_LIMIT)) {
     const itemId = rawItemId.trim();
     const progress = validProgress(raw);
-    if (!itemId || !progress) continue;
+    if (!itemId || !progress || (knownItemIds && !knownItemIds.has(itemId))) continue;
     if (!progress.discovered && progress.shippedCount === 0 && progress.caughtCount === 0 && !progress.donated) continue;
     result[itemId] = progress;
   }
@@ -586,7 +594,14 @@ function restorePlaceables(project: Project, value: PlaySession["placeables"] | 
       const entryId = typeof provenance.entryId === "string" ? provenance.entryId.trim() : "";
       const spawnedDayKey = parseCalendarDayKey(provenance.spawnedDayKey) ? provenance.spawnedDayKey as string : "";
       const area = project.system.seasonalForage?.areas.find((entry) => entry.id === areaId && entry.mapId === mapId);
-      if (kind !== "forage" || !itemId || !area || !area.entries.some((entry) => entry.id === entryId) || !spawnedDayKey) continue;
+      const entry = area?.entries.find((candidate) => candidate.id === entryId);
+      const spawnedDate = parseCalendarDayKey(spawnedDayKey);
+      const expectedItemId = entry && spawnedDate ? placeableDropItemId(entry, spawnedDate.season) : undefined;
+      const inArea = Boolean(area && x >= area.area.x && y >= area.area.y
+        && x < area.area.x + area.area.w && y < area.area.y + area.area.h);
+      if (kind !== "forage" || !itemId || !area || !entry || !spawnedDate
+        || spawnedDate.day > (resolveTimeSystem(project)?.daysPerSeason ?? 28)
+        || itemId !== expectedItemId || !inArea) continue;
       result[key] = { ...base, forageSpawn: { areaId, entryId, spawnedDayKey } };
       continue;
     }
