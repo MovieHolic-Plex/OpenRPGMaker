@@ -14,6 +14,7 @@ export function attachWindowDrag(handle: HTMLElement, windowEl: HTMLElement): vo
   let drag: DragState | null = null;
 
   handle.addEventListener("pointerdown", (event) => {
+    if (windowEl.classList.contains("is-fullscreen")) return;
     const target = event.target;
     if (target instanceof HTMLElement && target.closest("button, input, select, textarea, a")) return;
     const rect = windowEl.getBoundingClientRect();

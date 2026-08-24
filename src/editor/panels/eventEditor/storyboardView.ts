@@ -1,7 +1,16 @@
+import {
+  BATTLE_DEFEAT_BRANCH_INDEX,
+  BATTLE_ESCAPE_BRANCH_INDEX,
+  BATTLE_VICTORY_BRANCH_INDEX,
+  CHOICE_CANCEL_BRANCH_INDEX,
+  FORK_ELSE_BRANCH_INDEX,
+  FORK_THEN_BRANCH_INDEX,
+  LOOP_BODY_BRANCH_INDEX,
+} from "@/editor/eventCommandPaths";
+import type { Command } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandSummary } from "./commandSummary";
 import { commandKindLabel } from "./options";
-import type { Command } from "@/project/types";
 
 // "graph"는 Phase 2 플레이스홀더였다 — 동작하지 않는 토글이 3뷰의 1/3을 차지해
 // 초보 모드에까지 노출됐다(2026-08-18 적대 평가). 기능이 생길 때 다시 추가한다.
@@ -23,13 +32,16 @@ export function saveStoryboardMode(mode: StoryboardMode): void {
 }
 
 function summarizeCommand(cmd: Command): { title: string; detail: string; color: string } {
-  const s = (() => { try { return commandSummary(cmd); } catch { return cmd.kind; } })();
+  const compactSummary = (() => { try { return commandSummary(cmd); } catch { return cmd.kind; } })();
+  const detail = cmd.kind === "text"
+    ? `문장 표시: ${cmd.body.replace(/\s+/g, " ").trim()}`
+    : compactSummary;
   const cat = categoryOf(cmd.kind);
   const colorMap: Record<string,string> = {
-    dialogue: "#3987e5", flow: "#d95926", reward: "#199e70",
-    map: "#9085e9", screen: "#d55181", system: "#c98500",
+    dialogue: "#246fcb", flow: "#b74416", reward: "#087b52",
+    map: "#6e63c5", screen: "#b53866", system: "#8a5a00",
   };
-  return { title: kindLabel(cmd.kind), detail: s.slice(0, 80), color: colorMap[cat] ?? "#626b7d" };
+  return { title: kindLabel(cmd.kind), detail, color: colorMap[cat] ?? "#4a5260" };
 }
 
 function categoryOf(kind: string): string {
@@ -55,89 +67,186 @@ function kindLabel(kind: string): string {
 
 export function renderStoryboard(
   commands: readonly Command[],
-  opts?: { onSelect?: (path: number[]) => void; onAddNext?: () => void }
+  opts?: { onSelect?: (path: number[]) => void; onAddNext?: () => void; onShowList?: () => void }
 ): HTMLElement {
   const host = el("div", { class: "event-storyboard", dataset: { testid: "event-storyboard" } });
   const track = el("div", { class: "event-storyboard-track" });
+  const selectPath = (path: number[], control: HTMLElement) => {
+    for (const candidate of host.querySelectorAll<HTMLElement>("[data-cmd-path]")) {
+      candidate.classList.toggle("is-selected", candidate === control);
+      if (candidate === control) candidate.setAttribute("aria-current", "step");
+      else candidate.removeAttribute("aria-current");
+    }
+    opts?.onSelect?.(path);
+  };
+
   if (commands.length === 0) {
-    track.append(el("div", { class: "event-storyboard-empty", text: "아직 장면이 없습니다 \u2014 [장면 추가]를 눌러 시작하세요." }));
+    track.append(el("div", {
+      class: "event-storyboard-empty",
+      children: [
+        el("strong", { text: "아직 실행할 내용이 없습니다" }),
+        el("span", { text: "아래의 [첫 명령 추가]를 눌러 시작하세요." }),
+      ],
+    }));
   } else {
     commands.forEach((cmd, idx) => {
       const info = summarizeCommand(cmd);
       const branches = branchesOf(cmd);
       const card = el("button", {
         class: "event-storyboard-card",
-        attrs: { type: "button" },
+        attrs: {
+          type: "button",
+          style: `--storyboard-accent:${info.color}`,
+          "aria-label": `${idx + 1}번째 명령, ${info.title}: ${info.detail}`,
+        },
         dataset: { testid: `event-storyboard-card-${idx}`, cmdPath: JSON.stringify([idx]) },
-        on: { click: () => opts?.onSelect?.([idx]) },
+        on: { click: (event) => selectPath([idx], event.currentTarget as HTMLElement) },
         children: [
-          el("span", { class: "event-storyboard-card-thumb", attrs: { style: `background:${info.color}` }, text: String(idx + 1) }),
-          el("span", { class: "event-storyboard-card-title", text: info.title }),
-          el("span", { class: "event-storyboard-card-detail", text: info.detail }),
+          el("span", { class: "event-storyboard-card-thumb", text: String(idx + 1) }),
+          el("span", {
+            class: "event-storyboard-card-copy",
+            children: [
+              el("span", { class: "event-storyboard-card-title", text: info.title }),
+              el("span", { class: "event-storyboard-card-detail", text: info.detail }),
+            ],
+          }),
+          el("span", { class: "event-storyboard-card-action", text: "편집" }),
         ],
       });
-      // 분기 pill 은 소속 카드 "아래" 같은 컬럼에 붙인다 — 트랙에 나란히 흘리면
-      // 허공에 떠서 소속을 읽을 수 없고 인스펙터/좁은 뷰포트에서 잘렸다(2026-08-18 A01/O01).
       const scene = el("div", { class: "event-storyboard-scene", children: [card] });
       if (branches.length > 0) {
-        const shown = branches.slice(0, 2);
-        const rest = branches.length - shown.length;
         scene.append(el("div", {
           class: "event-storyboard-branches",
-          children: [
-            ...shown.map((br) => el("button", {
+          children: branches.map((br, branchIdx) => {
+            const visibleCommands = br.commands.slice(0, 4);
+            const hiddenCount = br.commands.length - visibleCommands.length;
+            return el("div", {
               class: "event-storyboard-branch",
-              attrs: { type: "button", title: "분기 내용을 열어 편집" },
-              on: { click: () => opts?.onSelect?.([idx]) },
+              attrs: { role: "group", "aria-label": `${br.label} 분기, 명령 ${br.commands.length}개` },
               children: [
-                el("span", { class: "event-storyboard-branch-label", text: br.label }),
-                el("span", { class: "event-storyboard-branch-count", text: `${br.commands.length}개` }),
+                el("div", {
+                  class: "event-storyboard-branch-head",
+                  children: [
+                    el("span", { class: "event-storyboard-branch-label", text: br.label || "이름 없는 분기" }),
+                    el("span", { class: "event-storyboard-branch-count", text: `명령 ${br.commands.length}개` }),
+                  ],
+                }),
+                ...(visibleCommands.length > 0
+                  ? visibleCommands.map((branchCommand, commandIdx) => {
+                      const branchInfo = summarizeCommand(branchCommand);
+                      const path = [idx, br.pathSegment, commandIdx];
+                      return el("button", {
+                        class: "event-storyboard-branch-command",
+                        attrs: {
+                          type: "button",
+                          style: `--storyboard-accent:${branchInfo.color}`,
+                          "aria-label": `${br.label} 분기 ${commandIdx + 1}번째 명령, ${branchInfo.title}: ${branchInfo.detail}`,
+                        },
+                        dataset: {
+                          testid: `event-storyboard-branch-command-${idx}-${branchIdx}-${commandIdx}`,
+                          cmdPath: JSON.stringify(path),
+                        },
+                        on: { click: (event) => selectPath(path, event.currentTarget as HTMLElement) },
+                        children: [
+                          el("span", { class: "event-storyboard-branch-command-mark" }),
+                          el("span", {
+                            class: "event-storyboard-branch-command-copy",
+                            children: [
+                              el("strong", { text: branchInfo.title }),
+                              el("span", { text: branchInfo.detail }),
+                            ],
+                          }),
+                          el("span", { class: "event-storyboard-branch-command-index", text: String(commandIdx + 1) }),
+                        ],
+                      });
+                    })
+                  : [el("span", { class: "event-storyboard-branch-empty", text: "이 분기는 비어 있습니다" })]),
+                ...(hiddenCount > 0
+                  ? [el(opts?.onShowList ? "button" : "span", {
+                      class: "event-storyboard-branch-overflow",
+                      text: `외 ${hiddenCount}개 · 목록에서 모두 보기`,
+                      attrs: opts?.onShowList ? { type: "button" } : undefined,
+                      on: opts?.onShowList ? { click: () => opts.onShowList?.() } : undefined,
+                    })]
+                  : []),
               ],
-            })),
-            ...(rest > 0 ? [el("span", { class: "event-storyboard-branch event-storyboard-branch-more", text: `+${rest}개 분기` })] : []),
-          ],
+            });
+          }),
         }));
       }
       track.append(scene);
     });
   }
+
   const addCard = el("button", {
     class: "event-storyboard-add",
-    attrs: { type: "button", "aria-label": "장면 추가" },
+    attrs: { type: "button", "aria-label": commands.length === 0 ? "첫 명령 추가" : "다음 명령 추가" },
     dataset: { testid: "event-storyboard-add" },
     on: { click: () => opts?.onAddNext?.() },
     children: [
-      el("span", { class: "event-storyboard-add-plus", text: "\uFF0B" }),
-      el("span", { class: "event-storyboard-add-label", text: "장면 추가" }),
-      el("span", { class: "event-storyboard-add-hint", text: "AI에게 \u201C다음에 뭐 넣을까?\u201D 물어보기" }),
+      el("span", { class: "event-storyboard-add-plus", text: "＋" }),
+      el("span", {
+        class: "event-storyboard-add-copy",
+        children: [
+          el("span", { class: "event-storyboard-add-label", text: commands.length === 0 ? "첫 명령 추가" : "다음 명령 추가" }),
+          el("span", { class: "event-storyboard-add-hint", text: "명령 팔레트 열기" }),
+        ],
+      }),
+      el("span", { class: "event-storyboard-add-action", text: "추가" }),
     ],
   });
   track.append(addCard);
   host.append(track);
-  host.append(el("div", { class: "event-storyboard-hint", text: "만화처럼 왼쪽→오른쪽으로 읽습니다 · 카드를 눌러 편집" }));
+  host.append(el("div", { class: "event-storyboard-hint", text: "위에서 아래로 실행됩니다 · 카드와 분기 명령을 눌러 바로 편집" }));
   return host;
 }
 
-function branchesOf(cmd: Command): { label: string; commands: readonly Command[] }[] {
+type StoryboardBranch = {
+  label: string;
+  commands: readonly Command[];
+  pathSegment: number;
+};
+
+function branchesOf(cmd: Command): StoryboardBranch[] {
   if (cmd.kind === "choices") {
     return [
-      ...cmd.options.map(o => ({ label: o.text.slice(0, 12), commands: o.branch })),
-      ...(cmd.cancelBranch ? [{ label: "취소", commands: cmd.cancelBranch }] : []),
+      ...cmd.options.map((option, optionIdx) => ({
+        label: option.text,
+        commands: option.branch,
+        pathSegment: optionIdx,
+      })),
+      ...(cmd.cancelBranch
+        ? [{ label: "취소", commands: cmd.cancelBranch, pathSegment: CHOICE_CANCEL_BRANCH_INDEX }]
+        : []),
     ];
   }
   if (cmd.kind === "fork") {
     return [
-      { label: "참", commands: cmd.then },
-      ...(cmd.else ? [{ label: "거짓", commands: cmd.else }] : []),
+      { label: "조건을 만족함", commands: cmd.then, pathSegment: FORK_THEN_BRANCH_INDEX },
+      ...(cmd.else
+        ? [{ label: "조건을 만족하지 않음", commands: cmd.else, pathSegment: FORK_ELSE_BRANCH_INDEX }]
+        : []),
     ];
   }
-  if (cmd.kind === "loop") return [{ label: "반복", commands: cmd.body }];
-  const b = cmd as unknown as { victoryBranch?: Command[]; defeatBranch?: Command[]; escapeBranch?: Command[] };
-  if (cmd.kind === "battleProcessing" && b.victoryBranch) {
+  if (cmd.kind === "loop") {
+    return [{ label: "반복할 내용", commands: cmd.body, pathSegment: LOOP_BODY_BRANCH_INDEX }];
+  }
+  const branches = cmd as unknown as {
+    victoryBranch?: Command[];
+    defeatBranch?: Command[];
+    escapeBranch?: Command[];
+  };
+  if (cmd.kind === "battleProcessing" && branches.victoryBranch) {
     return [
-      ...(b.victoryBranch ? [{ label: "승리", commands: b.victoryBranch }] : []),
-      ...(b.defeatBranch ? [{ label: "패배", commands: b.defeatBranch }] : []),
-      ...(b.escapeBranch ? [{ label: "도주", commands: b.escapeBranch }] : []),
+      ...(branches.victoryBranch
+        ? [{ label: "승리", commands: branches.victoryBranch, pathSegment: BATTLE_VICTORY_BRANCH_INDEX }]
+        : []),
+      ...(branches.defeatBranch
+        ? [{ label: "패배", commands: branches.defeatBranch, pathSegment: BATTLE_DEFEAT_BRANCH_INDEX }]
+        : []),
+      ...(branches.escapeBranch
+        ? [{ label: "도주", commands: branches.escapeBranch, pathSegment: BATTLE_ESCAPE_BRANCH_INDEX }]
+        : []),
     ];
   }
   return [];
@@ -149,14 +258,18 @@ export function renderViewToggle(
 ): HTMLElement {
   const modes: readonly StoryboardMode[] = ["list","storyboard"];
   const labels: Record<StoryboardMode,string> = { list:"목록", storyboard:"스토리보드" };
-  const bar = el("div", { class: "event-view-toggle", dataset: { testid: "event-view-toggle" } });
-  for (const m of modes) {
+  const bar = el("div", {
+    class: "event-view-toggle",
+    attrs: { role: "group", "aria-label": "실행 내용 보기 방식" },
+    dataset: { testid: "event-view-toggle" },
+  });
+  for (const mode of modes) {
     const btn = el("button", {
-      class: `event-view-toggle-btn${m === current ? " is-active" : ""}`,
-      text: labels[m],
-      attrs: { type: "button", "aria-pressed": m === current ? "true" : "false" },
-      dataset: { testid: `event-view-toggle-${m}` },
-      on: { click: () => { if (m !== current) { saveStoryboardMode(m); onChange(m); } } },
+      class: `event-view-toggle-btn${mode === current ? " is-active" : ""}`,
+      text: labels[mode],
+      attrs: { type: "button", "aria-pressed": mode === current ? "true" : "false" },
+      dataset: { testid: `event-view-toggle-${mode}` },
+      on: { click: () => { if (mode !== current) { saveStoryboardMode(mode); onChange(mode); } } },
     });
     bar.append(btn);
   }

@@ -118,9 +118,7 @@
 
 .event-subdialog-backdrop {
   align-items: center;
-  background:
-    linear-gradient(135deg, var(--bg-surface), var(--bg-surface)),
-    var(--bg-surface);
+  background: var(--bg-scrim);
   backdrop-filter: blur(10px) saturate(1.08);
   display: grid;
   justify-content: center;
