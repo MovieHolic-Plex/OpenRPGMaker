@@ -79,6 +79,11 @@ import {
 } from "@/project/p1FoundationRecords";
 import { applyDailyWeatherForDate } from "@/project/dailyWeather";
 import { weatherToRuntimeString } from "@/player/weather/weatherModel";
+import {
+  parseFarmBuildingPlacementRecord,
+  parseHomeDecorationPlacementRecord,
+} from "@/player/saveSlotSpatialValidation";
+import { restoreSpatialPlacementRecords } from "@/project/spatialPlacementRestore";
 export {
   createSystemShellState,
   reduceSystemShell,
@@ -136,6 +141,8 @@ export type SaveSnapshot = {
     readonly makerInstances?: PlaySession["makerInstances"];
     readonly dailyWeather?: PlaySession["dailyWeather"];
     readonly farmAnimals?: PlaySession["farmAnimals"];
+    readonly farmBuildingPlacements?: PlaySession["farmBuildingPlacements"];
+    readonly homeDecorationPlacements?: PlaySession["homeDecorationPlacements"];
     readonly monsterInstances?: PlaySession["monsterInstances"];
     readonly monsterParty?: readonly string[];
     readonly monsterBox?: readonly string[];
@@ -243,6 +250,10 @@ export function setSaveSlotStorageNamespace(namespace: string | null): void {
 export function createSaveSnapshot(project: Project, session: PlaySession): SaveSnapshot {
   const normalizedItems = normalizeItemTransitionState(session, project.database.items);
   const bundleReceiptIds = normalizedBundleReceiptIds(project, session.completedBundleIds, session.bundleRewardAppliedIds);
+  const spatial = restoreSpatialPlacementRecords(project, session, {
+    farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
+    homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
+  });
   return {
     schemaVersion: SCHEMA_VERSION,
     projectTitle: project.meta.title,
@@ -280,6 +291,8 @@ export function createSaveSnapshot(project: Project, session: PlaySession): Save
         ? structuredClone(normalizeDailyWeatherState(session.dailyWeather))
         : undefined,
       farmAnimals: structuredClone(restoreFarmAnimalsForProject(project, parseFarmAnimalStateRecord(session.farmAnimals))),
+      farmBuildingPlacements: structuredClone(spatial.farmBuildingPlacements),
+      homeDecorationPlacements: structuredClone(spatial.homeDecorationPlacements),
       monsterInstances: structuredClone(session.monsterInstances),
       monsterParty: structuredClone(session.monsterParty),
       monsterBox: structuredClone(session.monsterBox),
@@ -458,6 +471,12 @@ export function applySaveSnapshot(project: Project, snapshot: SaveSnapshot): Pla
   if (snapshot.session.equippedToolItemId) session.equippedToolItemId = snapshot.session.equippedToolItemId;
   session.chests = parseChestsRecord(snapshot.session.chests) ?? {};
   if (snapshot.session.placeables) session.placeables = structuredClone(snapshot.session.placeables);
+  const spatial = restoreSpatialPlacementRecords(project, session, {
+    farmBuildingPlacements: parseFarmBuildingPlacementRecord(snapshot.session.farmBuildingPlacements),
+    homeDecorationPlacements: parseHomeDecorationPlacementRecord(snapshot.session.homeDecorationPlacements),
+  });
+  if (spatial.farmBuildingPlacements !== undefined) session.farmBuildingPlacements = spatial.farmBuildingPlacements;
+  if (spatial.homeDecorationPlacements !== undefined) session.homeDecorationPlacements = spatial.homeDecorationPlacements;
   if (snapshot.session.followers) session.followers = structuredClone(snapshot.session.followers);
   if (snapshot.session.followerTrail) session.followerTrail = structuredClone(snapshot.session.followerTrail);
   session.currentMapId = snapshot.session.currentMapId;
@@ -604,6 +623,8 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       makerInstances: isMakerInstancesRecord(session.makerInstances) ? session.makerInstances : undefined,
       dailyWeather: normalizeDailyWeatherState(session.dailyWeather),
       farmAnimals: parseFarmAnimalStateRecord(session.farmAnimals),
+      farmBuildingPlacements: parseFarmBuildingPlacementRecord(session.farmBuildingPlacements),
+      homeDecorationPlacements: parseHomeDecorationPlacementRecord(session.homeDecorationPlacements),
       monsterInstances: isMonsterInstancesRecord(session.monsterInstances) ? session.monsterInstances : undefined,
       monsterParty: isStringArray(session.monsterParty) ? session.monsterParty : undefined,
       monsterBox: isStringArray(session.monsterBox) ? session.monsterBox : undefined,
