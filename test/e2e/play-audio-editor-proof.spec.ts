@@ -49,21 +49,16 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
 
   // The event editor opens in Storyboard view by default, which hides the command list.
   await editor.getByTestId("event-view-toggle-list").click();
-  // stable catalog button is often hidden; open picker from empty command line
+  // Open the command palette from the empty command line and choose the explicit BGM intent.
   await editor.getByTestId("event-command-empty-line").dblclick();
-  const search = page.locator("[data-testid='event-command-picker-search'], input[placeholder*='검색']").first();
-  if (await search.count()) await search.fill("BGM 재생");
-  const pickerAdd = page.getByTestId("command-picker-add-playAudio");
-  if (await pickerAdd.count()) {
-    await pickerAdd.click();
-  } else {
-    await page.getByRole("button", { name: /소리 재생|BGM 재생|SE 재생/ }).first().click();
-  }
+  const picker = page.getByTestId("event-command-picker");
+  await expect(picker).toBeVisible();
+  await picker.getByTestId("event-command-picker-search").fill("BGM 재생");
+  await picker.getByRole("button", { name: "BGM 재생...", exact: true }).click();
 
   const form = page.getByTestId("play-audio-command-body");
   await expect(form).toBeVisible({ timeout: 20_000 });
-  // New play-audio commands default to the SE channel — switch to BGM for music resources.
-  await page.getByTestId("play-audio-channel-bgm").click();
+  await expect(page.getByTestId("play-audio-channel-bgm")).toHaveAttribute("aria-pressed", "true");
   await page.getByTestId("play-audio-resource-select").selectOption("cc0-music-field-loop");
   await page.getByTestId("play-audio-preview").click();
   await expect(page.getByTestId("play-audio-status")).toContainText("재생 중");
@@ -72,9 +67,13 @@ test("editor BGM/SE list + preview has screenshot evidence", async ({ page }, te
   await testInfo.attach("play-audio-form", { path: formShot, contentType: "image/png" });
 
   await page.getByTestId("play-audio-channel-se").click();
-  await page.getByTestId("play-audio-resource-select").selectOption("easyrpg-sound-decision1");
+  await expect(page.getByTestId("play-audio-resource-picker")).toContainText("효과음 라이브러리");
+  await page.getByTestId("play-audio-search").fill("구매");
+  await expect(page.getByTestId("play-audio-result-count")).toContainText(/전체 \d+개 중 \d+개/);
+  await page.getByTestId("play-audio-resource-select").selectOption("cc0-se-orp-inventory-coin");
   await page.getByTestId("play-audio-preview").click();
   await expect(page.getByTestId("play-audio-status")).toContainText("재생 중");
+  await expect(page.getByTestId("play-audio-meta")).toContainText("/assets/se/oga-rpg-pack/inventory/coin.wav");
   const formSeShot = join(EVIDENCE_DIR, "04-event-play-audio-form-se.png");
   await page.screenshot({ path: formSeShot, fullPage: true });
   await testInfo.attach("play-audio-form-se", { path: formSeShot, contentType: "image/png" });

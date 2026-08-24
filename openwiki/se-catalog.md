@@ -197,6 +197,11 @@ the `RULES` table in `build-se-labels.py`, then re-run the last two scripts.
 - **Resource picker (`kind: "sound"`)** lists the catalog first, then the old single CC0 tone, then
   EasyRPG RTP. Labels are `title — category (s)`. Options carry `searchTerms` (tags + category +
   base name) so "결정", "동전", or "포효" all hit.
+- **Event `playAudio` form** consumes that same `listDatabaseResourceOptions()` result instead of
+  maintaining a second audio list. Its inline select therefore exposes all 456 CC0 sounds in the
+  same order, accepts the same scene/action tags (for example "구매"), shows the filtered count,
+  and keeps generated/uploaded sound resources reachable. The command palette's separate
+  **BGM 재생** and **SE 재생** entries must preserve the selected channel when the edit form opens.
 - **Preview playback** in the picker calls the same `playAudioCommand()` the runtime uses — there is
   no separate editor preview path, so if it plays in the dialog it plays in the game.
 - **`searchResources("se", query)`** exposes the catalog to AI tools (`list_resources`), catalog

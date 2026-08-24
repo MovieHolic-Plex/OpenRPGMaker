@@ -216,6 +216,86 @@
   object-fit: contain;
 }
 
+/* playAudio — 456개 효과음을 검색→선택→미리듣기 하는 하나의 저작 흐름. */
+.event-command-edit-body .play-audio-command-body {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  width: 100%;
+}
+
+.play-audio-channel-row {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.play-audio-channel-btn {
+  background: var(--control-bg, var(--bg-raised));
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s, 4px);
+  color: var(--text-2, var(--text-1));
+  cursor: pointer;
+  font: 700 12px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  min-height: 34px;
+}
+
+.play-audio-channel-btn.active {
+  background: var(--accent-muted, color-mix(in srgb, var(--accent) 16%, transparent));
+  border-color: var(--accent);
+  color: var(--text-1);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.play-audio-search,
+.play-audio-resource-select {
+  min-width: 0;
+  width: 100%;
+}
+
+.play-audio-resource-select {
+  min-height: 34px;
+}
+
+.play-audio-result-count {
+  color: var(--text-dim, var(--text-2));
+  font: 600 11px/1.3 "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+  text-align: right;
+}
+
+.play-audio-meta {
+  background: var(--surface-recessed, var(--bg-raised));
+  border: 1px solid var(--border-soft, var(--border-default));
+  border-radius: var(--radius-s, 4px);
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 10px;
+}
+
+.play-audio-meta-name {
+  font-weight: 700;
+}
+
+.play-audio-meta-id,
+.play-audio-meta-url {
+  color: var(--text-dim, var(--text-2));
+  font: 500 10px/1.35 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  overflow-wrap: anywhere;
+}
+
+.play-audio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.play-audio-status {
+  color: var(--text-dim, var(--text-2));
+  font-size: 11px;
+  min-height: 1.35em;
+}
+
 .event-command-edit-body .m2-resource-preview-label {
   height: 1px;
   overflow: hidden;

@@ -75,7 +75,7 @@ export type OpenDatabaseResourcePickerOptions = {
   readonly onConfirm: (result: DatabaseResourcePickerResult) => void;
 };
 
-type ResourceOption = {
+export type DatabaseResourceOption = {
   readonly id: string;
   readonly name: string;
   /**
@@ -94,7 +94,7 @@ const GENERATED_BATTLE_CHARSET_PREVIEW_SCALE = 0.75;
 export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePickerOptions): void {
   const project = store.getCurrent();
   const prefix = options.testidPrefix ?? "db-resource-picker";
-  const catalog = listResourceOptions(options.kind, project);
+  const catalog = listDatabaseResourceOptions(options.kind, project);
   let selectedId = options.currentId && catalog.some((entry) => entry.id === options.currentId)
     ? options.currentId
     : catalog[0]?.id ?? options.currentId ?? "";
@@ -247,7 +247,7 @@ export function resourcePickerControl(input: {
       hue: input.allowHue ? input.currentHue : undefined,
     }
   );
-  const optionName = listResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
+  const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const displayName = input.resourceId ? optionName ?? prettyId(input.resourceId) : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
@@ -319,7 +319,7 @@ export function resourcePickerControl(input: {
 }
 
 function resourceButton(
-  option: ResourceOption,
+  option: DatabaseResourceOption,
   selectedId: string,
   kind: DatabaseResourcePickerKind,
   project: Project,
@@ -340,8 +340,15 @@ function resourceButton(
   });
 }
 
-function listResourceOptions(kind: DatabaseResourcePickerKind, project: Project): ResourceOption[] {
-  const options = new Map<string, ResourceOption>();
+/**
+ * 데이터베이스 피커와 이벤트 명령 폼이 함께 쓰는 리소스 목록의 단일 정본이다.
+ * 표시 순서와 장면어 검색 태그가 두 저작 표면에서 어긋나지 않게 한다.
+ */
+export function listDatabaseResourceOptions(
+  kind: DatabaseResourcePickerKind,
+  project: Project
+): readonly DatabaseResourceOption[] {
+  const options = new Map<string, DatabaseResourceOption>();
   const add = (id: string, name: string, searchTerms?: readonly string[]): void => {
     if (!id || options.has(id)) return;
     options.set(id, { id, name, searchTerms });
@@ -654,6 +661,9 @@ function clampHue(value: number): number {
 }
 
 /** Exported for unit tests and list thumbnail reuse. */
-export function listDatabaseResourceOptionsForTest(kind: DatabaseResourcePickerKind, project: Project): readonly ResourceOption[] {
-  return listResourceOptions(kind, project);
+export function listDatabaseResourceOptionsForTest(
+  kind: DatabaseResourcePickerKind,
+  project: Project
+): readonly DatabaseResourceOption[] {
+  return listDatabaseResourceOptions(kind, project);
 }
