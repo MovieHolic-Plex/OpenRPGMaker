@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeItemRecord, normalizeSystemRecords } from "@/project/databaseRecordModel";
+import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";
 import {
   applyCareItem,
   applyWalkCareTicks,
@@ -100,6 +101,32 @@ describe("monster out-of-battle care", () => {
     expect(menu.kind).toBe("used");
     expect(session.monsterInstances[gift.instance.instanceId]?.friendship).toBe(110);
     expect(session.inventory.item_monster_berry ?? 0).toBe(0);
+  });
+
+  it.each([
+    ["astronomical", 1e300],
+    ["over cap", ITEM_QUANTITY_MAX + 1],
+    ["infinite", Number.POSITIVE_INFINITY],
+    ["zero", 0],
+    ["missing", undefined],
+  ])("rejects %s care-item inventory without mutating any session state", (_label, quantity) => {
+    const project = careProject();
+    const careItem = project.database.items.find((item) => item.id === "item_monster_berry");
+    if (!careItem) throw new Error("missing care item");
+    careItem.careProfile = { kind: "feed", friendshipDelta: 20, expDelta: 500 };
+    const session = startSession(project, 11);
+    const gift = giveMonster(project, session, { speciesId: "species_wild_slime", level: 3, friendship: 70 });
+    expect(gift.ok).toBe(true);
+    if (!gift.ok) return;
+    if (quantity === undefined) delete session.inventory.item_monster_berry;
+    else session.inventory.item_monster_berry = quantity;
+    const before = structuredClone(session);
+
+    expect(applyCareItem(project, session, {
+      itemId: "item_monster_berry",
+      instanceId: gift.instance.instanceId,
+    })).toEqual({ ok: false, reason: "noInventory" });
+    expect(session).toEqual(before);
   });
 
   it("care item on box monster fails", () => {
