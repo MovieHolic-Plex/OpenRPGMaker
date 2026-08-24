@@ -64,7 +64,10 @@ export function createZoneFeedbackModel(
 
 export function updateZoneFeedback(model: ZoneFeedbackModel, input: ZoneFeedbackInput): ZoneFeedbackUpdate {
   if (model.source !== input.entries || input.entries.length < model.cursor) {
-    return resultFrom(createZoneFeedbackModel(input.entries), input, []);
+    const mode = model.source.length === 0 && model.cursor === 0 && input.entries.length > 0
+      ? "consumeExisting"
+      : "skipExisting";
+    return updateZoneFeedback(createZoneFeedbackModel(input.entries, mode), input);
   }
 
   const seen = new Set(model.seen);
