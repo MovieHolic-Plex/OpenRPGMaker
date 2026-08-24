@@ -12,9 +12,13 @@ import {
   type OfficialGenrePackId,
 } from "@/project/officialGenrePackRequirements";
 import { createBlankProject } from "@/project/defaults";
+import { verifyExactOfficialGenrePackIds } from "@/project/officialGenrePackIds";
 
+const PROJECT_REVISION = "a".repeat(64);
 const passingAssertions = (packId: OfficialGenrePackId): GenrePackAssertionReceipt<OfficialGenrePackId> => ({
+  schemaVersion: 1,
   packId,
+  projectRevision: PROJECT_REVISION,
   assertions: OFFICIAL_GENRE_PACK_REQUIREMENTS[packId].requiredAssertions.map((assertionId) => ({
     assertionId,
     status: "passed" as const,
@@ -23,6 +27,29 @@ const passingAssertions = (packId: OfficialGenrePackId): GenrePackAssertionRecei
 });
 
 describe("genre pack readiness receipts", () => {
+  it("uses the persisted Phase 4 horror-chase id in the exact five-pack matrix", () => {
+    expect(OFFICIAL_GENRE_PACK_IDS).toEqual([
+      "adventure-jrpg",
+      "monster-collect",
+      "horror-chase",
+      "story-cutscene",
+      "farm-life",
+    ]);
+  });
+
+  it.each(OFFICIAL_GENRE_PACK_IDS)("fails the browser identity gate when %s is missing", (packId) => {
+    const result = verifyExactOfficialGenrePackIds(OFFICIAL_GENRE_PACK_IDS.filter((id) => id !== packId));
+    expect(result.ok).toBe(false);
+    expect(result.missing).toContain(packId);
+  });
+
+  it("fails the browser identity gate on extra and duplicate variant ids", () => {
+    const result = verifyExactOfficialGenrePackIds([...OFFICIAL_GENRE_PACK_IDS, "partner-raise", "farm-life"]);
+    expect(result.ok).toBe(false);
+    expect(result.extra).toContain("partner-raise");
+    expect(result.duplicate).toContain("farm-life");
+  });
+
   it.each(OFFICIAL_GENRE_PACK_IDS)("rejects screenshot-only evidence for %s", (packId) => {
     const receipts: GenrePackAssertionReceipt<OfficialGenrePackId>[] = OFFICIAL_GENRE_PACK_IDS.map(passingAssertions);
     const target = receipts.find((receipt) => receipt.packId === packId)!;
@@ -57,6 +84,7 @@ describe("genre pack readiness receipts", () => {
     const receipt = evaluateGenrePackReadiness({
       requirement,
       resolveCommandSupport: () => "full",
+      resolveAuthoredCommand: () => true,
       lintIssues: [],
       assertionReceipt: {
         ...passingAssertions("adventure-jrpg"),
@@ -65,8 +93,8 @@ describe("genre pack readiness receipts", () => {
       } as GenrePackAssertionReceipt<OfficialGenrePackId> & { certified: boolean },
     });
 
-    expect(receipt.status).toBe("incomplete");
-    expect(receipt.missingAssertions).toEqual(requirement.requiredAssertions);
+    expect(receipt.status).toBe("blocked");
+    expect(receipt.invalidReceiptReasons).toContain("invalid-receipt-schema");
   });
 
   it("keeps the broken monster pack blocked by actual command support even with passing assertions", () => {
@@ -74,6 +102,7 @@ describe("genre pack readiness receipts", () => {
     const receipt = evaluateGenrePackReadiness({
       requirement,
       resolveCommandSupport: (commandId) => commandId === "giveMonster" ? "partial" : "full",
+      resolveAuthoredCommand: () => true,
       lintIssues: [],
       assertionReceipt: passingAssertions("monster-collect"),
     });
@@ -98,6 +127,16 @@ describe("genre pack readiness receipts", () => {
       expect.objectContaining({ commandId: "giveMonster", actual: "partial", passed: false }),
       expect.objectContaining({ commandId: "evolveMonster", actual: "partial", passed: false }),
     ]));
+  });
+
+  it("does not call a blank project ready from global command capability alone", () => {
+    const receipt = evaluateOfficialGenrePackReadiness(
+      createBlankProject(),
+      "adventure-jrpg",
+      passingAssertions("adventure-jrpg")
+    );
+
+    expect(receipt.status).not.toBe("ready");
   });
 
   it("blocks readiness when the real project lint reports broken references", () => {
@@ -126,11 +165,25 @@ describe("genre pack readiness receipts", () => {
     const receipt = evaluateGenrePackReadiness({
       requirement: OFFICIAL_GENRE_PACK_REQUIREMENTS["adventure-jrpg"],
       resolveCommandSupport: () => "full",
+      resolveAuthoredCommand: () => true,
       lintIssues: [],
       assertionReceipt: passingAssertions("adventure-jrpg"),
     });
 
     expect(receipt.status).toBe("ready");
+  });
+
+  it("binds a semantic receipt to the expected canonical project revision", () => {
+    const result = verifyGenrePackAssertionReceipts(
+      OFFICIAL_GENRE_PACK_REQUIREMENTS,
+      OFFICIAL_GENRE_PACK_IDS.map(passingAssertions),
+      { expectedProjectRevision: "b".repeat(64) }
+    );
+
+    expect(result.ok).toBe(false);
+    expect(result.receiptErrors).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: "project-revision-mismatch" }),
+    ]));
   });
 
   it("evaluates all five official packs as one matrix and keeps monster blocked", () => {
@@ -148,7 +201,7 @@ describe("genre pack readiness receipts", () => {
   it("fails closed for malformed or unknown file-backed receipts", () => {
     const result = verifyGenrePackAssertionReceipts(OFFICIAL_GENRE_PACK_REQUIREMENTS, [
       ...OFFICIAL_GENRE_PACK_IDS.map(passingAssertions),
-      { packId: "unknown-pack", assertions: [] },
+      { schemaVersion: 1, packId: "unknown-pack", projectRevision: PROJECT_REVISION, assertions: [] },
       { packId: "farm-life" },
     ]);
 
