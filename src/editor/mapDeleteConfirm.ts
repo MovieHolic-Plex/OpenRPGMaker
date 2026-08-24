@@ -24,6 +24,8 @@ export function mapDeletionConfirmMessage(impact: MapDeletionImpact): string {
   if (impact.farmAnimalBuildingCount > 0) {
     lines.push(`· 동물 축사 ${impact.farmAnimalBuildingCount}개가 삭제되고 배정된 시작 동물은 미배정 상태가 됩니다.`);
   }
+  if (impact.fishingSpotCount > 0) lines.push(`· 낚시터 ${impact.fishingSpotCount}개가 함께 삭제됩니다.`);
+  if (impact.forageAreaCount > 0) lines.push(`· 계절 채집 구역 ${impact.forageAreaCount}개가 함께 삭제됩니다.`);
   lines.push("", "삭제 후 Ctrl+Z로 되돌릴 수 있습니다.");
   return lines.join("\n");
 }
@@ -72,6 +74,10 @@ export async function confirmAndDissolveFolder(folderId: MapId): Promise<Confirm
       testPresetCount: 0,
       farmAnimalBuildingCount: 0,
       farmAnimalBuildingIds: [],
+      fishingSpotCount: 0,
+      fishingSpotIds: [],
+      forageAreaCount: 0,
+      forageAreaIds: [],
     },
   };
 }

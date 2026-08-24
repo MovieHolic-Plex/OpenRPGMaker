@@ -9,6 +9,7 @@ export const FARMING_LIFE_UI_ASSETS = Object.freeze({
   buildings: "/assets/farming/life-ui/buildings-card.png",
   bundles: "/assets/farming/life-ui/community-bundles-card.png",
   fishing: "/assets/farming/life-ui/fishing-card.png",
+  foraging: "/assets/farming/life-ui/foraging-card.png",
   makers: "/assets/farming/life-ui/makers-card.png",
   museum: "/assets/farming/life-ui/museum-card.png",
 });

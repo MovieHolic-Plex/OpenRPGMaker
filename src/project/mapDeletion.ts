@@ -49,6 +49,10 @@ export interface MapDeletionImpact {
   /** Animal-home definitions placed on this map and removed with it. */
   readonly farmAnimalBuildingCount: number;
   readonly farmAnimalBuildingIds: readonly string[];
+  readonly fishingSpotCount: number;
+  readonly fishingSpotIds: readonly string[];
+  readonly forageAreaCount: number;
+  readonly forageAreaIds: readonly string[];
 }
 
 export type MapDeletionBlock = {
@@ -68,6 +72,8 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
   const farmAnimalBuildingIds = (project.system.farmAnimalBuildings ?? [])
     .filter((building) => building.mapId === mapId)
     .map((building) => building.id);
+  const fishingSpotIds = (project.system.fishing?.spots ?? []).filter((spot) => spot.mapId === mapId).map((spot) => spot.id);
+  const forageAreaIds = (project.system.seasonalForage?.areas ?? []).filter((area) => area.mapId === mapId).map((area) => area.id);
   return {
     mapId,
     mapName: map.name,
@@ -87,6 +93,10 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
     testPresetCount: (project.testPresets ?? []).filter((preset) => preset.startMapId === mapId).length,
     farmAnimalBuildingCount: farmAnimalBuildingIds.length,
     farmAnimalBuildingIds,
+    fishingSpotCount: fishingSpotIds.length,
+    fishingSpotIds,
+    forageAreaCount: forageAreaIds.length,
+    forageAreaIds,
   };
 }
 
@@ -128,6 +138,15 @@ export function applyMapDeletion(draft: Project, mapId: MapId): void {
     draft.system.farmAnimalBuildings = draft.system.farmAnimalBuildings.filter(
       (building) => building.mapId !== mapId,
     );
+  }
+  if (draft.system.fishing) {
+    draft.system.fishing = { ...draft.system.fishing, spots: draft.system.fishing.spots.filter((spot) => spot.mapId !== mapId) };
+  }
+  if (draft.system.seasonalForage) {
+    draft.system.seasonalForage = {
+      ...draft.system.seasonalForage,
+      areas: draft.system.seasonalForage.areas.filter((area) => area.mapId !== mapId),
+    };
   }
   const remainingFarmAnimalEventIds = new Set(
     Object.values(draft.maps).flatMap((map) => map.events.map((event) => event.id)),

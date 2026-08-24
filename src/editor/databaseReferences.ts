@@ -132,6 +132,18 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
         record.inputs.some((entry) => entry.itemId === id) || record.outputs.some((entry) => entry.itemId === id)
       );
       if (makers.length) return namedReferenceMessage("가공 설비", makers.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 투입하거나 생산합니다.");
+      const fishSpecies = (project.database.fishSpecies ?? []).filter((record) => record.itemId === id);
+      if (fishSpecies.length) return namedReferenceMessage("물고기 종", fishSpecies, "이 아이템으로 포획됩니다.");
+      const forageAreas = (project.system.seasonalForage?.areas ?? []).filter((area) => area.entries.some((entry) =>
+        entry.itemId === id || Object.values(entry.seasonalDrops ?? {}).includes(id)
+      ));
+      if (forageAreas.length) return namedReferenceMessage("채집 구역", forageAreas.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 채집물로 사용 중입니다.");
+      if (project.system.collections?.trackedItemIds?.includes(id)) return "수집 도감이 이 아이템을 추적 중입니다.";
+      if (project.system.museum?.eligibleItemIds.includes(id)) return "박물관 기부 목록이 이 아이템을 사용 중입니다.";
+      const museumRewards = (project.system.museum?.rewards ?? []).filter((record) =>
+        record.requiredItemIds?.includes(id) || record.reward?.itemRewards?.some((entry) => entry.itemId === id)
+      );
+      if (museumRewards.length) return namedReferenceMessage("박물관 보상", museumRewards.map((record) => ({ name: record.name ?? record.id })), "이 아이템을 조건이나 보상으로 사용 중입니다.");
       const enemies = project.database.enemies.filter((record) => record.rewards.dropItemId === id);
       if (enemies.length) return namedReferenceMessage("몬스터", enemies, "이 아이템을 보상으로 사용 중입니다.");
       return commandLocationMessage(project, "items", id, "아이템");

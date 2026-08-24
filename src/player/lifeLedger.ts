@@ -1,16 +1,19 @@
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { contributeBundle } from "@/project/bundles";
+import { collectionProgress } from "@/project/collections";
 import { collectFarmAnimalProduct, feedFarmAnimal, petFarmAnimal } from "@/project/farmAnimals";
 import { calendarDayKey } from "@/project/gameTime";
 import { absoluteGameMinutes, collectMaker, startMaker } from "@/project/makers";
+import { donateMuseumItem } from "@/project/museum";
 import { depositShipping, withdrawShipping } from "@/project/shipping";
 import { resolveSellPrice } from "@/project/upgrades";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 import type { StatusMenuDetail, StatusMenuDetailEntry } from "@/player/playerStatusMenuDetailTypes";
 
-export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals"] as const;
+export const LIFE_LEDGER_TAB_IDS = ["shipping", "bundles", "skills", "makers", "animals", "collections", "museum"] as const;
 export type LifeLedgerTabId = (typeof LIFE_LEDGER_TAB_IDS)[number];
+const BASE_LIFE_LEDGER_TAB_IDS: readonly LifeLedgerTabId[] = ["shipping", "bundles", "skills", "makers", "animals"];
 
 const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
   shipping: "출하",
@@ -18,6 +21,8 @@ const TAB_LABELS: Readonly<Record<LifeLedgerTabId, string>> = {
   skills: "기술",
   makers: "가공 설비",
   animals: "동물 돌봄",
+  collections: "수집 도감",
+  museum: "박물관",
 };
 
 const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
@@ -26,6 +31,8 @@ const TAB_ART: Readonly<Record<LifeLedgerTabId, string>> = {
   skills: FARMING_LIFE_UI_ASSETS.fishing,
   makers: FARMING_LIFE_UI_ASSETS.makers,
   animals: FARMING_LIFE_UI_ASSETS.animals,
+  collections: FARMING_LIFE_UI_ASSETS.foraging,
+  museum: FARMING_LIFE_UI_ASSETS.museum,
 };
 
 export function hasLifeLedgerData(project: Project): boolean {
@@ -35,7 +42,11 @@ export function hasLifeLedgerData(project: Project): boolean {
     || (project.system.makers?.length ?? 0) > 0
     || (project.database.farmAnimalSpecies?.length ?? 0) > 0
     || (project.system.farmAnimalBuildings?.length ?? 0) > 0
-    || (project.session.farmAnimals?.length ?? 0) > 0;
+    || (project.session.farmAnimals?.length ?? 0) > 0
+    || project.system.fishing?.enabled === true
+    || project.system.seasonalForage?.enabled === true
+    || project.system.collections?.enabled === true
+    || project.system.museum?.enabled === true;
 }
 
 export function createLifeLedgerDetail(options: {
@@ -47,10 +58,11 @@ export function createLifeLedgerDetail(options: {
 }): StatusMenuDetail {
   const tab = options.tab ?? "shipping";
   const content = tabContent(options.project, options.session, tab, options.onMutation);
+  const availableTabs = availableLifeLedgerTabs(options.project);
   return {
     title: "생활 장부",
     artwork: { src: TAB_ART[tab], alt: `${TAB_LABELS[tab]} 생활 장부 삽화` },
-    tabs: LIFE_LEDGER_TAB_IDS.map((id) => ({
+    tabs: availableTabs.map((id) => ({
       id,
       label: TAB_LABELS[id],
       selected: id === tab,
@@ -75,7 +87,74 @@ function tabContent(
     case "skills": return skillEntries(project, session);
     case "makers": return makerEntries(project, session, onMutation);
     case "animals": return animalEntries(project, session, onMutation);
+    case "collections": return collectionEntries(project, session);
+    case "museum": return museumEntries(project, session, onMutation);
   }
+}
+
+function availableLifeLedgerTabs(project: Project): readonly LifeLedgerTabId[] {
+  const tabs = [...BASE_LIFE_LEDGER_TAB_IDS];
+  if (project.system.collections?.enabled || project.system.fishing?.enabled || project.system.seasonalForage?.enabled) tabs.push("collections");
+  if (project.system.museum?.enabled) tabs.push("museum");
+  return tabs;
+}
+
+function collectionEntries(
+  project: Project,
+  session: PlaySession,
+): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
+  const entries = collectionItemIds(project, session).map((itemId): StatusMenuDetailEntry => {
+    const item = project.database.items.find((candidate) => candidate.id === itemId);
+    const progress = collectionProgress(session, itemId);
+    return {
+      label: item?.name ?? `${itemId} (삭제된 항목)`,
+      value: progress?.discovered ? "발견" : "미발견",
+      description: `출하 ${progress?.shippedCount ?? 0} · 낚시 ${progress?.caughtCount ?? 0} · 기부 ${progress?.donated ? "완료" : "미완료"}`,
+      testId: `life-ledger-collection-${itemId}`,
+      disabled: true,
+    };
+  });
+  return { entries, emptyLabel: "수집 도감에 등록된 항목이 없습니다" };
+}
+
+function museumEntries(
+  project: Project,
+  session: PlaySession,
+  onMutation?: (ok: boolean, message: string) => void,
+): { entries: StatusMenuDetailEntry[]; emptyLabel: string } {
+  const entries = (project.system.museum?.eligibleItemIds ?? []).map((itemId): StatusMenuDetailEntry => {
+    const item = project.database.items.find((candidate) => candidate.id === itemId);
+    const progress = collectionProgress(session, itemId);
+    const donated = progress?.donated === true;
+    const inventory = session.inventory[itemId] ?? 0;
+    return {
+      label: item?.name ?? `${itemId} (삭제된 항목)`,
+      value: donated ? "기부 완료" : `보유 ${inventory} · 1개 기부`,
+      description: donated ? "박물관 수집에 등록됨" : "새로운 보상 조건이 충족되면 즉시 지급됩니다",
+      testId: `life-ledger-museum-donate-${itemId}`,
+      disabled: !item || donated || inventory < 1,
+      onActivate: item ? () => notify(
+        onMutation,
+        donateMuseumItem(project, session, itemId),
+        `${item.name}을(를) 박물관에 기부했습니다`,
+      ) : undefined,
+    };
+  });
+  return { entries, emptyLabel: "박물관에 기부할 항목이 없습니다" };
+}
+
+function collectionItemIds(project: Project, session: PlaySession): readonly string[] {
+  const ids = new Set(project.system.collections?.trackedItemIds ?? []);
+  for (const fish of project.database.fishSpecies ?? []) ids.add(fish.itemId);
+  for (const area of project.system.seasonalForage?.areas ?? []) {
+    for (const entry of area.entries) {
+      if (entry.itemId) ids.add(entry.itemId);
+      for (const itemId of Object.values(entry.seasonalDrops ?? {})) if (itemId) ids.add(itemId);
+    }
+  }
+  for (const itemId of project.system.museum?.eligibleItemIds ?? []) ids.add(itemId);
+  for (const itemId of Object.keys(session.collections ?? {})) ids.add(itemId);
+  return [...ids].sort();
 }
 
 function animalEntries(
