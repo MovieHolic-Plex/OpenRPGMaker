@@ -142,10 +142,21 @@ export function classBuildSummary(project: Project, classId: ClassId): ClassBuil
     skillCount: record.learnedSkills.length,
     commandCount: record.battleCommands.length,
     equipmentCount: project.database.equipment.filter((equipment) =>
-      actors.some((actor) => canEquip(project, actor, equipment, classId))
+      classAllowsEquipment(record, equipment, classId)
+      || actors.some((actor) => canEquip(project, actor, equipment, classId))
     ).length,
     promotionCount: record.promotions?.length ?? 0,
   };
+}
+
+function classAllowsEquipment(
+  record: Project["database"]["classes"][number],
+  equipment: EquipmentRecord,
+  classId: ClassId,
+): boolean {
+  return equipment.equippableClassIds.includes(classId)
+    || record.equipmentPermissions.classIds.includes(classId)
+    || record.equipmentPermissions.equipmentIds.includes(equipment.id);
 }
 
 function statPreview(
