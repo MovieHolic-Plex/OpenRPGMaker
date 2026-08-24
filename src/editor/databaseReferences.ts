@@ -103,6 +103,14 @@ export function databaseReferenceMessage(collection: DatabaseCollection, id: str
       if (project.system.initialTroopId === id) return "시스템 기본 전투가 이 적 그룹을 사용 중입니다.";
       return commandLocationMessage(project, "troops", id, "적 그룹");
     case "items": {
+      const feedSpecies = (project.database.farmAnimalSpecies ?? []).filter((record) => record.feedItemId === id);
+      if (feedSpecies.length) {
+        return namedReferenceMessage("동물 종", feedSpecies, "이 아이템을 먹이로 사용 중입니다.");
+      }
+      const productSpecies = (project.database.farmAnimalSpecies ?? []).filter((record) => record.productItemId === id);
+      if (productSpecies.length) {
+        return namedReferenceMessage("동물 종", productSpecies, "이 아이템을 생산물로 사용 중입니다.");
+      }
       const recipes = project.system.craftRecipes?.filter((record) =>
         record.outputItemId === id || record.ingredients.some((ingredient) => ingredient.itemId === id)
       ) ?? [];
@@ -159,6 +167,32 @@ export function monsterSpeciesReferenceMessage(speciesId: string): string | null
   if (referrers.length) return namedReferenceMessage("종족", referrers, "이 종족으로 진화합니다.");
   // giveMonster/evolveMonster 이벤트 명령도 종족 id 를 들고 있다.
   return commandLocationMessage(project, "monsterSpecies", speciesId, "종족");
+}
+
+/** Farm-animal species are authored outside DatabaseCollection, so their delete route calls this guard directly. */
+export function farmAnimalSpeciesReferenceMessage(speciesId: string): string | null {
+  const project = store.getCurrent();
+  const animals = (project.session.farmAnimals ?? []).filter((animal) => animal.speciesId === speciesId);
+  if (animals.length) {
+    return namedReferenceMessage("시작 동물", animals, "이 동물 종을 사용 중입니다.");
+  }
+  const buildings = (project.system.farmAnimalBuildings ?? []).filter((building) =>
+    building.allowedSpeciesIds.includes(speciesId)
+  );
+  if (buildings.length) {
+    return namedReferenceMessage("동물 축사", buildings, "이 동물 종을 허용하고 있습니다.");
+  }
+  return null;
+}
+
+/** Farm-animal buildings are system records, so their delete route calls this guard directly. */
+export function farmAnimalBuildingReferenceMessage(buildingId: string): string | null {
+  const project = store.getCurrent();
+  const animals = (project.session.farmAnimals ?? []).filter((animal) => animal.buildingId === buildingId);
+  if (animals.length) {
+    return namedReferenceMessage("시작 동물", animals, "이 동물 축사에 배정되어 있습니다.");
+  }
+  return null;
 }
 
 // 작물(CropRecord) 참조 검사. 농사 플롯(FarmPlotState.cropId)은 PlaySession(런타임 세이브)

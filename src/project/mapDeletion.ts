@@ -46,6 +46,9 @@ export interface MapDeletionImpact {
   readonly questCount: number;
   /** 이 맵을 시작 위치로 쓰는 테스트 프리셋 수(시작 위치가 해제됨). */
   readonly testPresetCount: number;
+  /** Animal-home definitions placed on this map and removed with it. */
+  readonly farmAnimalBuildingCount: number;
+  readonly farmAnimalBuildingIds: readonly string[];
 }
 
 export type MapDeletionBlock = {
@@ -62,6 +65,9 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
   const map = project.maps[mapId];
   if (!map) return null;
   const treeNode = findTreeNode(project.mapTree, mapId);
+  const farmAnimalBuildingIds = (project.system.farmAnimalBuildings ?? [])
+    .filter((building) => building.mapId === mapId)
+    .map((building) => building.id);
   return {
     mapId,
     mapName: map.name,
@@ -79,6 +85,8 @@ export function collectMapDeletionImpact(project: Project, mapId: MapId): MapDel
     villageInfoCount: (project.villageInfoDocuments ?? []).filter((doc) => doc.mapId === mapId).length,
     questCount: (project.quests ?? []).filter((quest) => questReferencesMap(quest, mapId)).length,
     testPresetCount: (project.testPresets ?? []).filter((preset) => preset.startMapId === mapId).length,
+    farmAnimalBuildingCount: farmAnimalBuildingIds.length,
+    farmAnimalBuildingIds,
   };
 }
 
@@ -108,7 +116,45 @@ export function planMapDeletion(project: Project, mapId: MapId): MapDeletionPlan
 // 맵 삭제 + 모든 참조 재배선/정리. draft를 직접 변경한다(호출 전 planMapDeletion으로 검증 권장).
 export function applyMapDeletion(draft: Project, mapId: MapId): void {
   if (!draft.maps[mapId] || Object.keys(draft.maps).length <= 1) return;
+  const removedFarmAnimalBuildingIds = new Set(
+    (draft.system.farmAnimalBuildings ?? [])
+      .filter((building) => building.mapId === mapId)
+      .map((building) => building.id),
+  );
+  const removedFarmAnimalEventIds = new Set(draft.maps[mapId].events.map((event) => event.id));
   delete draft.maps[mapId];
+
+  if (draft.system.farmAnimalBuildings) {
+    draft.system.farmAnimalBuildings = draft.system.farmAnimalBuildings.filter(
+      (building) => building.mapId !== mapId,
+    );
+  }
+  const remainingFarmAnimalEventIds = new Set(
+    Object.values(draft.maps).flatMap((map) => map.events.map((event) => event.id)),
+  );
+  if ((removedFarmAnimalBuildingIds.size > 0 || removedFarmAnimalEventIds.size > 0) && draft.session.farmAnimals) {
+    draft.session.farmAnimals = draft.session.farmAnimals.map((animal) => {
+      const clearBuilding = Boolean(animal.buildingId && removedFarmAnimalBuildingIds.has(animal.buildingId));
+      const clearEvent = Boolean(
+        animal.eventId
+        && removedFarmAnimalEventIds.has(animal.eventId)
+        && !remainingFarmAnimalEventIds.has(animal.eventId),
+      );
+      if (clearBuilding && clearEvent) {
+        const { buildingId: _removedBuildingId, eventId: _removedEventId, ...unassignedAnimal } = animal;
+        return unassignedAnimal;
+      }
+      if (clearBuilding) {
+        const { buildingId: _removedBuildingId, ...unassignedAnimal } = animal;
+        return unassignedAnimal;
+      }
+      if (clearEvent) {
+        const { eventId: _removedEventId, ...unboundAnimal } = animal;
+        return unboundAnimal;
+      }
+      return animal;
+    });
+  }
 
   // 맵 트리: 삭제 노드의 자식은 부모로 승격해 보존. 루트가 삭제되면 첫 자식(없으면 남은 맵)을 루트로.
   draft.mapTree = rebuildTreeWithoutMap(draft.mapTree, mapId, Object.keys(draft.maps));

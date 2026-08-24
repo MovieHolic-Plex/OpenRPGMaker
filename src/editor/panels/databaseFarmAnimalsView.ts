@@ -1,4 +1,8 @@
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
+import {
+  farmAnimalBuildingReferenceMessage,
+  farmAnimalSpeciesReferenceMessage,
+} from "@/editor/databaseReferences";
 import { store } from "@/project/store";
 import type { FarmAnimalBuildingDefinition, FarmAnimalSpeciesRecord, FarmAnimalStartInstance } from "@/project/types";
 import { el } from "@/util/dom";
@@ -204,8 +208,30 @@ function patchAnimal(index: number, patch: Partial<FarmAnimalStartInstance>, rer
   store.update((project) => { const row = project.session.farmAnimals?.[index]; if (row) project.session.farmAnimals![index] = { ...row, ...patch }; });
   rerender();
 }
-function removeSpecies(index: number, rerender: () => void): void { recordProjectSnapshot("동물 종 삭제"); store.update((project) => { project.database.farmAnimalSpecies?.splice(index, 1); }); rerender(); }
-function removeBuilding(index: number, rerender: () => void): void { recordProjectSnapshot("축사 삭제"); store.update((project) => { project.system.farmAnimalBuildings?.splice(index, 1); }); rerender(); }
+function removeSpecies(index: number, rerender: () => void): void {
+  const species = store.getCurrent().database.farmAnimalSpecies?.[index];
+  if (!species) return;
+  const blockedMessage = farmAnimalSpeciesReferenceMessage(species.id);
+  if (blockedMessage) {
+    toast(blockedMessage, "error");
+    return;
+  }
+  recordProjectSnapshot("동물 종 삭제");
+  store.update((project) => { project.database.farmAnimalSpecies?.splice(index, 1); });
+  rerender();
+}
+function removeBuilding(index: number, rerender: () => void): void {
+  const building = store.getCurrent().system.farmAnimalBuildings?.[index];
+  if (!building) return;
+  const blockedMessage = farmAnimalBuildingReferenceMessage(building.id);
+  if (blockedMessage) {
+    toast(blockedMessage, "error");
+    return;
+  }
+  recordProjectSnapshot("동물 축사 삭제");
+  store.update((project) => { project.system.farmAnimalBuildings?.splice(index, 1); });
+  rerender();
+}
 function removeAnimal(index: number, rerender: () => void): void { recordProjectSnapshot("시작 동물 삭제"); store.update((project) => { project.session.farmAnimals?.splice(index, 1); }); rerender(); }
 
 function itemSelect(label: string, value: string, onChange: (value: string) => void): HTMLElement {
