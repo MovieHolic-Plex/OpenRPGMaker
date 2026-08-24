@@ -88,6 +88,12 @@ describe("generatedAssetResourceResolver", () => {
     expect(url).toBe("/assets/generated/starter/monster-dragon-01.png");
   });
 
+  it("resolves the horror mystery title art shipped with the prototype", () => {
+    expect(resolveGeneratedAssetResourceUrl("horror-mystery-blue-gallery")).toBe(
+      "/assets/generated/title/horror-mystery-blue-gallery.png",
+    );
+  });
+
   it("resolves uploaded resources from the supplied project before generated manifest lookup", () => {
     // Given: a project upload using the same resource id as a promoted generated asset.
     const project = createBlankProject();

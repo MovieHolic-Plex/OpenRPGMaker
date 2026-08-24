@@ -6,12 +6,14 @@ const FORCE_BLOCK_GLOBAL = globalThis as { __oprnForcePointerBlock?: boolean };
 const originalMatchMedia = window.matchMedia.bind(window);
 const originalMaxTouchPoints = Object.getOwnPropertyDescriptor(navigator, "maxTouchPoints");
 
-function setTouchCapabilities(coarse: boolean, maxTouchPoints: number): void {
+function setTouchCapabilities(coarse: boolean, maxTouchPoints: number, fine = false): void {
   vi.spyOn(window, "matchMedia").mockImplementation((query) => {
     const result = originalMatchMedia(query);
     Object.defineProperty(result, "matches", {
       configurable: true,
-      value: coarse && query === "(pointer: coarse)",
+      value:
+        (coarse && query === "(pointer: coarse)") ||
+        (fine && query === "(pointer: fine)"),
     });
     return result;
   });
@@ -140,6 +142,17 @@ describe("touch pad capability and input parity", () => {
     const handle = createTouchPad(host);
 
     expect(host.querySelector("[data-testid='touch-pad']")).toBeTruthy();
+    handle.cleanup();
+  });
+
+  it("does not cover a fine-pointer desktop just because the browser reports touch points", async () => {
+    setTouchCapabilities(false, 1, true);
+    const { createTouchPad } = await loadTouchPad();
+    const host = document.createElement("div");
+
+    const handle = createTouchPad(host);
+
+    expect(host.querySelector("[data-testid='touch-pad']")).toBeNull();
     handle.cleanup();
   });
 
