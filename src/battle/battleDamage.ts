@@ -1,6 +1,20 @@
 import type { MutableBattler } from "@/battle/battleBattlers";
+import { computeGen1BaseDamage as computeExactGen1BaseDamage } from "@/battle/gen1/damage";
 import type { Project } from "@/project/types";
 import type { Rng } from "@/util/rng";
+
+export {
+  accuracyByteFromPercent,
+  applyGen1StabAndType,
+  computeGen1BaseDamageResult,
+  gen1CriticalThreshold,
+  isGen1CriticalHit,
+  resolveGen1DamagingMove,
+  scaleGen1DamageStats,
+  scaledGen1Accuracy,
+} from "@/battle/gen1/damage";
+export { createGen1ByteRng } from "@/battle/gen1/rng";
+export type { Gen1MoveInput, Gen1MoveResolution } from "@/battle/gen1/damage";
 
 // magical 속성의 데미지 감소를 mind(마법 방어력) 로 라우팅할지 판정하는 **단일 권위자**.
 // runtime 과 predict 가 반드시 같은 판정을 써야 예측/실제 데미지 parity 가 유지된다.
@@ -43,12 +57,7 @@ export interface Gen1BaseDamageInput {
 // 층층이 floor 라 순서를 바꾸면 값이 달라진다 — 원작 순서를 그대로 지킨다.
 // 상성·STAB·랜덤 계수는 이 함수 **밖**에서 곱한다(원작 적용 순서: base → 상성 → 랜덤).
 export function computeGen1BaseDamage(input: Gen1BaseDamageInput): number {
-  const level = Math.max(1, input.critical ? input.level * 2 : input.level);
-  const attack = Math.max(1, input.attack);
-  // D=0 이면 0 나눗셈이 된다. 원작도 최소 1 로 취급한다.
-  const defense = Math.max(1, input.defense);
-  const levelTerm = Math.floor((2 * level) / 5) + 2;
-  return Math.floor(Math.floor((levelTerm * Math.max(0, input.power) * attack) / defense) / 50) + 2;
+  return computeExactGen1BaseDamage(input);
 }
 
 export const DEFAULT_SKILL_VARIANCE = 10;
