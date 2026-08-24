@@ -19,6 +19,11 @@ export type PlaceableObjectState = {
   readonly kind: string;
   readonly itemId?: ItemId;
   readonly seasonalDrops?: Partial<Record<string, string>>;
+  readonly forageSpawn?: {
+    readonly areaId: string;
+    readonly entryId: string;
+    readonly spawnedDayKey: string;
+  };
 };
 
 export function placeableKey(mapId: string, x: number, y: number): string {
