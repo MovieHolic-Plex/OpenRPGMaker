@@ -1,5 +1,10 @@
 # Editor Database
 
+## P2 낚시·채집·박물관 저작 표면 (2026-08-25)
+
+- `생활` 그룹의 `낚시·채집·박물관` (`lifeCollections`) 탭은 fish species, fishing spots, seasonal forage areas, museum rewards를 구조화해서 목록·추가·이름 변경·삭제한다. 기본값 동작은 collection tracking까지 서로 참조가 맞는 최소 패키지를 만든다. 물고기 삭제는 해당 catch만 제거하고, catch가 하나도 남지 않은 낚시터만 함께 제거한다.
+- item 삭제는 물고기 지급, 채집 drop, 도감 추적, 박물관 eligibility/condition/item reward 참조가 남아 있으면 차단된다. map 삭제 확인은 낚시터/채집 구역 수를 표시하고 해당 맵의 행만 제거한다. UI가 참조 권위자가 되어서는 안 된다. 전역 lint/repair는 `src/project/io/references.ts`, map lifecycle은 `src/project/mapDeletion.ts`가 소유한다.
+
 ## 계절·날씨 / 동물·축사 저작 표면 (2026-08-25)
 
 - grouped Database navigation의 `생활` 그룹은 `농사·작물`, `주민 관계`, `생활 기술·제작`, `계절·날씨`, `동물·축사` 순서다. 새 탭의 stable ids는 `dailyWeather` / `farmAnimals`, testids는 `db-tab-daily-weather` / `db-tab-farm-animals`다.
