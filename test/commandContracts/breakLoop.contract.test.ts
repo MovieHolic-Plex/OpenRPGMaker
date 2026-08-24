@@ -73,18 +73,20 @@ describe("breakLoop 계약", () => {
     expect(result.finished).toBe(true);
   });
 
-  it("경계(루프 밖 breakLoop): 경고 없이 이벤트 실행이 그 자리에서 종료된다 — ⚠ 판정 보류(§5 표 초안은 warn+no-op)", () => {
+  it("경계(루프 밖 breakLoop): 한 번 경고하고 다음 명령으로 진행한다", () => {
     const result = runCommandContract([
       { kind: "setVariable", variableId: "before", op: "=", value: 1 },
       { kind: "breakLoop" },
       { kind: "setVariable", variableId: "after", op: "=", value: 2 },
     ]);
 
-    // 실측: breakLoop 가 루프 프레임을 못 찾으면 스택을 전부 pop → 이후 명령 미실행.
+    // Malformed authored data must not destroy the event stack or stall on the
+    // same instruction. Warn once, skip the invalid command, and keep going.
     expect(result.session.variables.before).toBe(1);
-    expect(result.session.variables.after).toBeUndefined();
-    expect(result.warnings).toEqual([]);
-    expect(result.finished).toBe(false);
+    expect(result.session.variables.after).toBe(2);
+    expect(result.warnings).toHaveLength(1);
+    expect(result.warnings[0]).toContain("breakLoop");
+    expect(result.finished).toBe(true);
   });
 
   it("무한루프 방지: breakLoop 없는 루프는 하네스 maxSteps 안전핀이 실패시킨다", () => {
