@@ -18,7 +18,7 @@ import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
 
-const OUT = "C:/Users/USER/AppData/Local/Temp/farm-inspect/";
+const OUT = "output/evidence/stardew/runtime/";
 const FARM_MAP_ID = "map_farming_demo";
 const MINE_MAP_ID = "map_mine_1f";
 const log: string[] = [];

@@ -6,7 +6,7 @@
    구조(database.ts renderDatabasePanel):
      .database-modal-body            ← flex row 로 배선 (이 파일)
        .db-tabs                      ← 세로 사이드바
-         .db-tab-group               ← 그룹 라벨 (전투/수집/세계/시스템)
+         .db-tab-group               ← 그룹 라벨 (파티/전투·몬스터/생활/맵/시스템)
          button.db-tab[data-testid]  ← 탭 행 (.active 토글, G006 계약 유지)
        .db-body                      ← 세부 패널 (기존 렌더 경로 그대로)
 
