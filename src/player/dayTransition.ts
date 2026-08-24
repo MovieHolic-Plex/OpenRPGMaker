@@ -102,7 +102,18 @@ export function transitionToNextDay(
     return { ok: false, reason: "energy", stage: "energy" };
   }
 
-  const makers = advanceMakers(project, draft, absoluteGameMinutes(draft.gameTime, system));
+  let makers: MakerAdvanceResult;
+  if (!project.system.makers?.length) {
+    makers = advanceMakers(project, draft, 0);
+  } else {
+    let absoluteMinute: number;
+    try {
+      absoluteMinute = absoluteGameMinutes(draft.gameTime, system);
+    } catch {
+      return { ok: false, reason: "makers", stage: "makers" };
+    }
+    makers = advanceMakers(project, draft, absoluteMinute);
+  }
   if (!makers.ok && makers.reason !== "disabled") {
     return { ok: false, reason: "makers", stage: "makers" };
   }
