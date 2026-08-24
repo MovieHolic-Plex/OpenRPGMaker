@@ -56,13 +56,14 @@ export function renderAuthoringJourney(
       attrs: { "aria-label": `${stage.label}: ${complete ? "완료" : "진행 전"}, ${stage.detail}` },
     }));
     if (stage.id === "map" || stage.id === "event" || stage.id === "data") {
+      const manualStage = stage.id;
       const manuallyComplete = stage.completion === "manual";
       item.append(el("button", {
         class: "authoring-journey-manual",
         text: manuallyComplete ? "취소" : "확인",
         attrs: { type: "button", "aria-pressed": String(manuallyComplete), "aria-label": manuallyComplete ? `${stage.label} 수동 완료 취소` : `${stage.label} 수동 완료`, title: `${stage.label} 단계를 직접 확인했음으로 표시` },
         dataset: { testid: `authoring-journey-manual-${stage.id}` },
-        on: { click: () => options.onManualToggle?.(stage.id, !manuallyComplete) },
+        on: { click: () => options.onManualToggle?.(manualStage, !manuallyComplete) },
       }));
     }
     list.append(item);
