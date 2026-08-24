@@ -56,6 +56,7 @@ export type EquipmentActorComparison = {
   readonly className: string;
   readonly level: number;
   readonly eligible: boolean;
+  readonly alreadyEquipped: boolean;
   readonly reason?: EquipmentTransitionFailureReason;
   readonly replacedEquipmentNames: readonly string[];
   readonly current: EquipmentStatBonuses;
@@ -137,6 +138,21 @@ export function equipmentActorComparison(
   const className = project.database.classes.find((entry) => entry.id === actor.classId)?.name ?? "직업 없음";
   const currentEquipment = effectiveActorEquipment(project, actor, actor.initialEquipment, actor.classId);
   const current = equipmentComparisonStats(project, normalizedActor, level, currentEquipment);
+  const alreadyEquipped = logicalEquipmentIds(project, currentEquipment).includes(record.id);
+  if (alreadyEquipped) {
+    return {
+      actorId,
+      actorName: actor.name,
+      className,
+      level,
+      eligible: true,
+      alreadyEquipped: true,
+      replacedEquipmentNames: [],
+      current,
+      next: current,
+      deltas: statDifference(current, current),
+    };
+  }
   const transition = transitionActorEquipment({
     project,
     actorId,
@@ -153,6 +169,7 @@ export function equipmentActorComparison(
       className,
       level,
       eligible: false,
+      alreadyEquipped: false,
       reason: transition.reason,
       replacedEquipmentNames: [],
       current,
@@ -166,6 +183,7 @@ export function equipmentActorComparison(
     className,
     level,
     eligible: true,
+    alreadyEquipped: false,
     replacedEquipmentNames: removedEquipmentNames(project, currentEquipment, nextEquipment),
     current,
     next,
@@ -397,9 +415,11 @@ function fillEquipmentComparison(host: HTMLElement, comparison: EquipmentActorCo
     return;
   }
   host.dataset.state = "eligible";
-  const replaced = comparison.replacedEquipmentNames.length > 0
-    ? `교체: ${comparison.replacedEquipmentNames.join(", ")}`
-    : "빈 부위에 장착";
+  const replaced = comparison.alreadyEquipped
+    ? "이미 착용 중"
+    : comparison.replacedEquipmentNames.length > 0
+      ? `교체: ${comparison.replacedEquipmentNames.join(", ")}`
+      : "빈 부위에 장착";
   host.replaceChildren(
     comparisonStatus("장착 가능", "eligible"),
     el("strong", { text: `${comparison.actorName} · ${comparison.className} · Lv.${comparison.level}` }),
