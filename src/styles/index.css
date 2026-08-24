@@ -44,6 +44,7 @@
 @import "./database/modern-controls.css";
 @import "./database/overview-dashboard.css";
 @import "./database/title-workbench.css";
+@import "./database/play-resolution.css";
 @import "./database/system-studio.css";
 @import "./resources/resource-manager.css";
 @import "./editor/event-editor.css";

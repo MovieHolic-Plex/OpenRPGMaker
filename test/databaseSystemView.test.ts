@@ -128,6 +128,48 @@ describe("database system view", () => {
     });
   });
 
+  it("shows map compatibility and tile-grid diagnostics for a custom resolution", () => {
+    // Break named: authors can choose 640x360 without seeing its half-tile edge or undersized maps.
+    store.update((draft) => {
+      draft.system.playResolution = { width: 640, height: 360 };
+    });
+
+    const host = renderSystem();
+    const diagnostics = findByTestId(host, "db-system-resolution-diagnostics");
+
+    expect(diagnostics?.dataset.minMapWidth).toBe("40");
+    expect(diagnostics?.dataset.minMapHeight).toBe("23");
+    expect(diagnostics?.dataset.partialTileX).toBe("false");
+    expect(diagnostics?.dataset.partialTileY).toBe("true");
+    expect(diagnostics?.dataset.incompatibleMapCount).toBe("1");
+  });
+
+  it("keeps a non-preset custom resolution editable", () => {
+    // Characterization: advanced custom values remain available alongside the recommended presets.
+    store.update((draft) => {
+      draft.system.playResolution = { width: 633, height: 355 };
+    });
+
+    const host = renderSystem();
+
+    expect(findByTestId(host, "db-field-system-resolution-preset")?.value).toBe("custom");
+    expect(findByTestId(host, "db-field-system-resolution-width")?.value).toBe("633");
+    expect(findByTestId(host, "db-field-system-resolution-height")?.value).toBe("355");
+  });
+
+  it("previews the title screen at the authored play aspect ratio", () => {
+    // Break named: the title workbench stays at its fixed editor shape after resolution changes.
+    store.update((draft) => {
+      draft.system.playResolution = { width: 640, height: 360 };
+    });
+
+    const host = renderSystem();
+    const stage = findByTestId(host, "db-title-workbench-stage");
+
+    expect(stage?.style.aspectRatio).toBe("16 / 9");
+    expect(stage?.dataset.playResolution).toBe("640x360");
+  });
+
   it("edits title screen fields into system.titleScreen", () => {
     const host = renderSystem();
     const title = findByTestId(host, "db-field-title-screen-title");

@@ -9,6 +9,11 @@ export type PlaySurfaceCropMetrics = {
   readonly visibleHeight: number;
 };
 
+export type PlaySurfacePlacement = {
+  readonly left: number;
+  readonly top: number;
+};
+
 export function calculatePlaySurfaceScale(
   viewportW: number,
   viewportH: number,
@@ -19,7 +24,9 @@ export function calculatePlaySurfaceScale(
   const safeViewportH = nonNegativeFinite(viewportH);
   const safeLogicalW = positiveFiniteOr(logicalW, PLAY_RESOLUTION.width);
   const safeLogicalH = positiveFiniteOr(logicalH, PLAY_RESOLUTION.height);
-  return Math.max(1, Math.floor(Math.min(safeViewportW / safeLogicalW, safeViewportH / safeLogicalH)));
+  if (safeViewportW === 0 || safeViewportH === 0) return 1;
+  const containScale = Math.min(safeViewportW / safeLogicalW, safeViewportH / safeLogicalH);
+  return containScale < 1 ? containScale : Math.max(1, Math.floor(containScale));
 }
 
 export function calculatePlaySurfaceCropMetrics(
@@ -33,7 +40,7 @@ export function calculatePlaySurfaceCropMetrics(
   const safeViewportH = nonNegativeFinite(viewportH);
   const safeLogicalW = positiveFiniteOr(logicalW, PLAY_RESOLUTION.width);
   const safeLogicalH = positiveFiniteOr(logicalH, PLAY_RESOLUTION.height);
-  const safeScale = Math.max(1, Math.floor(nonNegativeFinite(scale)));
+  const safeScale = positiveFiniteOr(scale, 1);
   const scaledW = safeLogicalW * safeScale;
   const scaledH = safeLogicalH * safeScale;
   const horizontalCrop = Math.max(0, (scaledW - safeViewportW) / (2 * safeScale));
@@ -45,6 +52,24 @@ export function calculatePlaySurfaceCropMetrics(
     left: horizontalCrop,
     visibleWidth: Math.max(0, safeLogicalW - horizontalCrop * 2),
     visibleHeight: Math.max(0, safeLogicalH - verticalCrop * 2),
+  };
+}
+
+export function calculatePlaySurfacePlacement(
+  viewportW: number,
+  viewportH: number,
+  scale: number,
+  logicalW: number = PLAY_RESOLUTION.width,
+  logicalH: number = PLAY_RESOLUTION.height,
+): PlaySurfacePlacement {
+  const safeViewportW = nonNegativeFinite(viewportW);
+  const safeViewportH = nonNegativeFinite(viewportH);
+  const safeLogicalW = positiveFiniteOr(logicalW, PLAY_RESOLUTION.width);
+  const safeLogicalH = positiveFiniteOr(logicalH, PLAY_RESOLUTION.height);
+  const safeScale = positiveFiniteOr(scale, 1);
+  return {
+    left: Math.max(0, (safeViewportW - safeLogicalW * safeScale) / 2),
+    top: Math.max(0, (safeViewportH - safeLogicalH * safeScale) / 2),
   };
 }
 

@@ -12,6 +12,8 @@
   --play-crop-left: 0px;
   --play-visible-width: 320px;
   --play-visible-height: 240px;
+  --play-stage-left: 0px;
+  --play-stage-top: 0px;
   display: grid;
   height: 100%;
   min-height: 100%;
@@ -51,10 +53,12 @@
 .play-stage {
   background: #000;
   height: var(--play-logical-height);
+  left: var(--play-stage-left);
   overflow: hidden;
-  position: relative;
+  position: absolute;
+  top: var(--play-stage-top);
   transform: scale(var(--play-scale));
-  transform-origin: center;
+  transform-origin: top left;
   width: var(--play-logical-width);
 }
 .player-layout .play-stage > .dialogue-overlay,

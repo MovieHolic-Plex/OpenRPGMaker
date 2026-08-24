@@ -67,11 +67,12 @@
 }
 
 .db-title-workbench-stage {
+  aspect-ratio: 4 / 3;
   background: #0b1220;
   border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.16));
   border-radius: 6px;
   box-sizing: border-box;
-  height: 180px;
+  height: auto;
   overflow: hidden;
   position: relative;
   width: 100%;

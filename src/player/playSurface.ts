@@ -1,5 +1,9 @@
 import { el } from "@/util/dom";
-import { calculatePlaySurfaceCropMetrics, calculatePlaySurfaceScale } from "@/player/playSurfaceScale";
+import {
+  calculatePlaySurfaceCropMetrics,
+  calculatePlaySurfacePlacement,
+  calculatePlaySurfaceScale,
+} from "@/player/playSurfaceScale";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlayResolution } from "@/project/types";
 
@@ -66,6 +70,7 @@ function syncPlaySurfaceMetrics(viewport: HTMLElement, resolution: Readonly<Play
   const bounds = viewport.getBoundingClientRect();
   const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height);
   const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
+  const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height);
   viewport.style.setProperty("--play-scale", String(scale));
   viewport.style.setProperty("--play-scale-x", String(scale));
   viewport.style.setProperty("--play-scale-y", String(scale));
@@ -75,6 +80,8 @@ function syncPlaySurfaceMetrics(viewport: HTMLElement, resolution: Readonly<Play
   viewport.style.setProperty("--play-crop-left", cssPx(crop.left));
   viewport.style.setProperty("--play-visible-width", cssPx(crop.visibleWidth));
   viewport.style.setProperty("--play-visible-height", cssPx(crop.visibleHeight));
+  viewport.style.setProperty("--play-stage-left", cssPx(placement.left));
+  viewport.style.setProperty("--play-stage-top", cssPx(placement.top));
   viewport.dataset.scale = scale.toFixed(3);
 }
 

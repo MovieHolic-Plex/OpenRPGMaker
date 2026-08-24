@@ -26,19 +26,19 @@
   overflow: hidden;
 }
 
-/* ---- 사이드바 컨테이너 (폭 210px — 200-220px 요구사항) -------------------- */
+/* ---- 전역 아이콘 레일 (56px) --------------------------------------------- */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
-  align-items: stretch; /* 레거시 탭 스트립의 align-items:end 를 무력화 — 행이 전체 폭을 채운다 */
+  align-items: center;
   background: var(--db-light-bg-surface);
   border-bottom: none;
   border-right: 1px solid var(--db-light-border-default);
   box-shadow: none;
   box-sizing: border-box;
   display: flex;
-  flex: 0 0 210px;
+  flex: 0 0 56px;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   height: auto;
   margin: 0;
   max-height: none;
@@ -46,18 +46,15 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 8px 8px 12px;
-  width: 210px;
+  padding: 8px 6px 12px;
+  position: relative;
+  width: 56px;
 }
 
 /* ---- 그룹 헤더: 소문자 라벨, 흐린 톤 ------------------------------------- */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group {
-  color: var(--db-light-text-3);
-  font: 700 10px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  letter-spacing: 0.08em;
-  padding: 14px 8px 4px;
-  text-transform: uppercase;
+  display: none;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group:first-of-type {
@@ -71,16 +68,36 @@
   border: 1px solid var(--db-light-border-default);
   border-radius: 6px;
   box-sizing: border-box;
-  color: var(--db-light-text-1);
+  color: transparent;
   flex: 0 0 auto;
-  font: 500 12.5px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  margin: 0 0 6px;
-  padding: 6px 10px;
-  width: 100%;
+  font: 500 0/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
+  height: 36px;
+  margin: 0 0 4px;
+  padding: 0 8px;
+  text-align: center;
+  width: 40px;
+  z-index: 4;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
   color: var(--db-light-text-3);
+  font-size: 17px;
+  opacity: 1;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus {
+  box-shadow: 0 10px 28px rgba(42, 37, 33, 0.18);
+  color: var(--db-light-text-1);
+  font-size: 12.5px;
+  left: 50px;
+  position: absolute;
+  text-align: left;
+  top: 8px;
+  width: 200px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus::placeholder {
+  font-size: 12.5px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search:focus-visible {
@@ -98,38 +115,29 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab {
   align-items: center;
   background: transparent;
-  border: 0;
-  border-left: 3px solid transparent;
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   color: var(--db-light-text-2);
   cursor: pointer;
   display: flex;
   flex: 0 0 auto;
-  font: 600 13px/1.4 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  gap: 8px;
-  height: auto;
-  justify-content: space-between;
+  font-size: 0;
+  height: 40px;
+  justify-content: center;
   margin: 0;
-  max-width: none;
+  max-width: 40px;
   min-width: 0;
-  padding: 6px 12px;
-  text-align: left;
+  padding: 0;
+  text-align: center;
+  width: 40px;
   white-space: nowrap;
 }
 
 /* ---- 레코드 카운트 뱃지 — data-count 어트리뷰트만 소비(라벨 textContent 불변) */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab[data-count]::after {
-  background: var(--bg-hover);
-  border: 1px solid var(--db-light-border-subtle);
-  border-radius: 999px;
-  color: var(--db-light-text-3);
-  content: attr(data-count);
-  flex: 0 0 auto;
-  font: 600 10.5px/1.5 "Malgun Gothic", "Segoe UI", system-ui, sans-serif;
-  min-width: 14px;
-  padding: 0 7px;
-  text-align: center;
+  content: none;
+  display: none;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active[data-count]::after {
@@ -151,11 +159,42 @@
 /* 활성: 좌측 액센트 바 + 틴트 배경 + 액센트 텍스트 */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active {
   background: var(--db-light-accent-muted);
-  border-left-color: var(--db-light-accent);
-  box-shadow: none;
+  border-color: var(--db-light-accent-border);
+  box-shadow: inset 3px 0 0 var(--db-light-accent);
   color: var(--db-light-accent);
   margin: 0;
 }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab::before {
+  color: inherit;
+  content: attr(data-short);
+  font: 700 18px/1 Inter, "Segoe UI Symbol", "Malgun Gothic", sans-serif;
+}
+
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-overview"]::before { content: "▦" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-actors"]::before { content: "♙" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-classes"]::before { content: "♜" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-skills"]::before { content: "✧" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-items"]::before { content: "▤" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-equipment"]::before { content: "◈" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-enemies"]::before { content: "⚑" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-monster-species"]::before { content: "♞" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-troops"]::before { content: "♟" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-elements"]::before { content: "◇" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-states"]::before { content: "⊕" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-animations"]::before { content: "✺" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-battle-screen"]::before { content: "▣" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-battle-commands"]::before { content: "⌘" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-terrain"]::before { content: "△" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-crops"]::before { content: "♧" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-characters"]::before { content: "◎" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-tilesets"]::before { content: "▧" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-structure-kits"]::before { content: "⧉" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-common-events"]::before { content: "↯" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-system"]::before { content: "⌁" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-terms"]::before { content: "Aa" !important; font-size: 12px; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-switches"]::before { content: "◉" !important; }
+.database-modal-backdrop .database-modal-window [data-testid="db-tab-variables"]::before { content: "⚙" !important; }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab.active:hover {
   background: var(--db-light-accent-muted);
