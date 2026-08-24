@@ -146,6 +146,42 @@ describe("P5 make_villager friendship wizard", () => {
     expect(kinds).toContain("friendshipAtLeast");
     expect(kinds).toContain("selfSwitch");
   });
+
+  it("같은 characterId 재요청은 새 id를 받아도 기존 주민을 재사용하고 대사를 보존한다", () => {
+    const ctx = { project: createBlankProject() };
+    const map = ctx.project.maps[ctx.project.startMapId];
+    const first = runTool(ctx, "make_villager", {
+      mapId: map.id,
+      id: "ev_hana_guide",
+      characterId: "hana_guide",
+      name: "안내인 하나",
+      home: { x: 2, y: 2 },
+      dialogue: [{ text: "광장은 동쪽이에요." }],
+    });
+    expect(first.ok, first.summary).toBe(true);
+
+    // Regression: explicit new id disabled nearby merging and allocateCharacterId
+    // produced hana_guide_2, leaving two bodies for one authored character.
+    const second = runTool(ctx, "make_villager", {
+      mapId: map.id,
+      id: "ev_hana_schedule_copy",
+      characterId: "hana_guide",
+      name: "안내인 하나",
+      home: { x: 8, y: 8 },
+      schedule: [
+        { when: { hourRange: [8, 20] }, at: { mapId: map.id, x: 4, y: 2 }, activity: "guide" },
+      ],
+    });
+
+    expect(second.ok, second.summary).toBe(true);
+    expect(second.data).toMatchObject({ eventId: "ev_hana_guide", characterId: "hana_guide", reused: true });
+    const updatedMap = ctx.project.maps[map.id];
+    expect(updatedMap.events.filter((event) => event.characterId === "hana_guide")).toHaveLength(1);
+    const hana = updatedMap.events.find((event) => event.id === "ev_hana_guide");
+    expect(hana).toMatchObject({ x: 2, y: 2 });
+    expect(JSON.stringify(hana?.pages)).toContain("광장은 동쪽이에요.");
+    expect(hana?.schedule).toHaveLength(1);
+  });
 });
 
 describe("P6 upgrades and sell prices", () => {

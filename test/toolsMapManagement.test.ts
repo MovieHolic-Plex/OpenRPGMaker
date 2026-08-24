@@ -104,6 +104,65 @@ describe("get_event", () => {
     expect(event?.pages?.[0]?.commands).toEqual([{ kind: "text", body: "단수 커맨드" }]);
   });
 
+  it("upsert_event 부분 수정은 기존 NPC의 대사·그래픽·위치를 보존한다", () => {
+    const { context, mapId } = ctxWithMap();
+    const created = runTool(context, "make_villager", {
+      mapId,
+      id: "ev_guard_luke",
+      characterId: "luke_guard",
+      name: "경비병 루크",
+      home: { x: 3, y: 4 },
+      dialogue: [{ text: "북문은 제가 지키겠습니다." }],
+    });
+    expect(created.ok, created.summary).toBe(true);
+    const originalPageCount = context.project.maps[mapId].events.find((entry) => entry.id === "ev_guard_luke")?.pages?.length;
+
+    // Regression: a schedule-only AI patch used to replace the entire GameEvent,
+    // deleting pages, graphic and characterId.
+    const patched = runTool(context, "upsert_event", {
+      mapId,
+      event: {
+        id: "ev_guard_luke",
+        schedule: [
+          { when: { hourRange: [6, 18] }, at: { mapId, x: 7, y: 4 }, activity: "patrol" },
+        ],
+      },
+    });
+
+    expect(patched.ok, patched.summary).toBe(true);
+    const event = context.project.maps[mapId].events.find((entry) => entry.id === "ev_guard_luke");
+    expect(event).toMatchObject({ x: 3, y: 4, characterId: "luke_guard" });
+    expect(event?.pages).toHaveLength(originalPageCount);
+    expect(JSON.stringify(event?.pages)).toContain("북문은 제가 지키겠습니다.");
+    expect(event?.pages?.[0]?.graphic).toBeDefined();
+    expect(event?.schedule).toHaveLength(1);
+  });
+
+  it("upsert_event 후속 수정은 place_chest의 50G 보상 페이지를 보존한다", () => {
+    const { context, mapId } = ctxWithMap();
+    const created = runTool(context, "place_chest", {
+      mapId,
+      id: "ev_south_chest",
+      x: 6,
+      y: 8,
+      contents: { gold: 50 },
+    });
+    expect(created.ok, created.summary).toBe(true);
+
+    // Regression: a later low-level edit used to turn this into a hollow event.
+    const patched = runTool(context, "upsert_event", {
+      mapId,
+      event: { id: "ev_south_chest", trigger: { kind: "action" }, commands: [] },
+    });
+
+    expect(patched.ok, patched.summary).toBe(true);
+    const event = context.project.maps[mapId].events.find((entry) => entry.id === "ev_south_chest");
+    expect(event).toMatchObject({ x: 6, y: 8 });
+    expect(event?.pages).toHaveLength(2);
+    expect(event?.pages?.[0]?.commands).toContainEqual({ kind: "changeGold", op: "+=", amount: 50 });
+    expect(event?.pages?.[0]?.commands).toContainEqual({ kind: "setSelfSwitch", key: "A", value: true });
+  });
+
   it("upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다", () => {
     const { context, mapId } = ctxWithMap();
     const result = runTool(context, "upsert_event", {
