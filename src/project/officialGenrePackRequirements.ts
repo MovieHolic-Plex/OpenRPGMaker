@@ -2,6 +2,8 @@ import type { CommandKind } from "@/project/commandKindRegistry";
 import { COMMAND_GUARANTEES, type CommandContext } from "@/project/commandGuaranteeRegistry";
 import type { Project } from "@/project/types";
 import { projectLint } from "@/project/lint/projectLint";
+import { indexAuthoredCommands } from "@/project/authoredCommandIndex";
+import type { OfficialGenrePackId } from "@/project/officialGenrePackIds";
 import {
   evaluateGenrePackReadiness,
   evaluateGenrePackReadinessMatrix,
@@ -11,15 +13,8 @@ import {
   type GenrePackRequirement,
 } from "@/project/genrePackReadiness";
 
-export const OFFICIAL_GENRE_PACK_IDS = [
-  "adventure-jrpg",
-  "monster-collect",
-  "horror",
-  "story-cutscene",
-  "farm-life",
-] as const;
-
-export type OfficialGenrePackId = (typeof OFFICIAL_GENRE_PACK_IDS)[number];
+export { OFFICIAL_GENRE_PACK_IDS } from "@/project/officialGenrePackIds";
+export type { OfficialGenrePackId } from "@/project/officialGenrePackIds";
 export type OfficialGenrePackRequirement = GenrePackRequirement<OfficialGenrePackId, CommandKind, CommandContext>;
 
 const REQUIRED_ASSERTIONS = [
@@ -43,8 +38,8 @@ export const OFFICIAL_GENRE_PACK_REQUIREMENTS: Readonly<Record<OfficialGenrePack
     requiredAssertions: REQUIRED_ASSERTIONS,
     blockingLintCodePrefixes: ["opt-in:monster", "opt-in:genre-monster"],
   },
-  horror: {
-    packId: "horror",
+  "horror-chase": {
+    packId: "horror-chase",
     label: "Horror",
     requiredCommands: commands("map", ["setLighting", "checkpointSave", "killPlayer", "triggerEnding"]),
     requiredAssertions: REQUIRED_ASSERTIONS,
@@ -74,24 +69,32 @@ function commands(
 export function evaluateOfficialGenrePackReadiness(
   project: Project,
   packId: OfficialGenrePackId,
-  assertionReceipt?: GenrePackAssertionReceipt<OfficialGenrePackId>
+  assertionReceipt?: GenrePackAssertionReceipt<OfficialGenrePackId>,
+  expectedProjectRevision?: string
 ): GenrePackReadinessReceipt<OfficialGenrePackId, CommandKind, CommandContext> {
+  const authoredCommands = indexAuthoredCommands(project);
   return evaluateGenrePackReadiness({
     requirement: OFFICIAL_GENRE_PACK_REQUIREMENTS[packId],
     resolveCommandSupport: (commandId, context) => COMMAND_GUARANTEES[commandId].supportByContext[context],
+    resolveAuthoredCommand: (commandId, context) => authoredCommands[context].has(commandId),
     lintIssues: projectLint(project),
     assertionReceipt,
+    expectedProjectRevision,
   });
 }
 
 export function evaluateOfficialGenrePackReadinessMatrix(
   project: Project,
-  assertionReceipts?: Readonly<Partial<Record<OfficialGenrePackId, GenrePackAssertionReceipt<OfficialGenrePackId>>>>
+  assertionReceipts?: Readonly<Partial<Record<OfficialGenrePackId, GenrePackAssertionReceipt<OfficialGenrePackId>>>>,
+  expectedProjectRevision?: string
 ): GenrePackReadinessMatrix<OfficialGenrePackId, CommandKind, CommandContext> {
+  const authoredCommands = indexAuthoredCommands(project);
   return evaluateGenrePackReadinessMatrix({
     requirements: OFFICIAL_GENRE_PACK_REQUIREMENTS,
     resolveCommandSupport: (commandId, context) => COMMAND_GUARANTEES[commandId].supportByContext[context],
+    resolveAuthoredCommand: (commandId, context) => authoredCommands[context].has(commandId),
     lintIssues: projectLint(project),
     assertionReceipts,
+    expectedProjectRevision,
   });
 }

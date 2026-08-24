@@ -7,6 +7,7 @@ import {
   WELCOME_GENRE_PRESETS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
+  officialGenrePackIdForWelcomePreset,
   type WelcomeGenrePresetId,
   welcomeGenreStarterPlanById,
 } from "@/editor/welcomeGenrePresets";
@@ -341,6 +342,7 @@ export function presentEditorWelcome(host: HTMLElement): Promise<EditorWelcomeRe
               },
               dataset: {
                 testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
+                packId: officialGenrePackIdForWelcomePreset(card.id),
                 templateId: card.id,
               },
               on: {

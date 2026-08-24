@@ -36,16 +36,17 @@ describe("testPresets 직렬화 왕복", () => {
 });
 
 describe("play_walkthrough schema contract", () => {
-  it("publishes the do/expect step discriminants that the walkthrough runner actually accepts", async () => {
+  it("publishes one provider-safe do/expect object shape with every runner field", async () => {
     const { getTool } = await import("@/editor/tools");
     const scenarioItems = getTool("play_walkthrough")?.parameters.properties?.scenario?.items;
 
     expect(scenarioItems?.required ?? []).not.toContain("kind");
-    expect(scenarioItems?.oneOf).toEqual(expect.arrayContaining([
-      expect.objectContaining({ required: ["do"] }),
-      expect.objectContaining({ required: ["expect"] }),
-      expect.objectContaining({ required: ["do", "expect"] }),
-    ]));
+    expect(scenarioItems?.oneOf).toBeUndefined();
+    expect(Object.keys(scenarioItems?.properties ?? {}).sort()).toEqual([
+      "count", "do", "eventId", "expect", "index", "itemId", "mapId", "op",
+      "present", "switchId", "value", "variableId", "x", "y",
+    ].sort());
+    expect(scenarioItems?.additionalProperties).toBe(false);
   });
 });
 

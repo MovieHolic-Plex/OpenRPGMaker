@@ -148,7 +148,12 @@ describe("presentEditorWelcome", () => {
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)).toBeTruthy();
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)?.textContent).toContain("만들기");
     expect(host.querySelector(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)?.textContent).toContain("빈 맵으로 시작");
-    expect(host.querySelectorAll("[data-testid^='editor-welcome-template-card']")).toHaveLength(3);
+    expect(host.querySelectorAll("[data-pack-id]")).toHaveLength(3);
+    expect(Array.from(host.querySelectorAll<HTMLElement>("[data-pack-id]"), (node) => node.dataset.packId)).toEqual([
+      "adventure-jrpg",
+      "farm-life",
+      "monster-collect",
+    ]);
     expect(host.textContent).toContain("모험 마을");
     expect(host.textContent).toContain("농장 하루");
     expect(host.textContent).toContain("몬스터 수집");
