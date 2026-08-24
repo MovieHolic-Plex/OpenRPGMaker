@@ -97,6 +97,21 @@ describe("database system view", () => {
     expect(findByTestId(host, "db-field-system-time-day-start")).not.toBeNull();
   });
 
+  it("edits the project play resolution from the display section", () => {
+    // Break named: the System database view has no project-resolution controls.
+    const host = renderSystem();
+    const preset = findByTestId(host, "db-field-system-resolution-preset");
+    if (!preset) throw new Error("missing play-resolution preset");
+
+    preset.value = "640x360";
+    preset.dispatchEvent(new Event("change"));
+
+    expect(store.getCurrent().system.playResolution).toEqual({ width: 640, height: 360 });
+    expect(findByTestId(host, "db-field-system-resolution-width")?.value).toBe("640");
+    expect(findByTestId(host, "db-field-system-resolution-height")?.value).toBe("360");
+    expect(findByTestId(host, "db-system-nav-display")).not.toBeNull();
+  });
+
   it("edits title screen fields into system.titleScreen", () => {
     const host = renderSystem();
     const title = findByTestId(host, "db-field-title-screen-title");

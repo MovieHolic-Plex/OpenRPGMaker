@@ -433,45 +433,54 @@ export function bulkRenameVariables(start: number, count: number, prefix: string
 // 눌러야 되돌려졌다(qa-system-report.md). 여기서는 루프 전체를 감싸는 스냅샷 1개만
 // 남기고, 실제 이름 변경/슬롯 추가는 actions.ts의 헬퍼를 거치지 않고 직접 수행한다.
 function bulkRename(start: number, count: number, prefix: string, kind: "switch" | "variable"): void {
+  const firstNumber = positiveInteger(start);
+  const rangeCount = positiveInteger(count);
+  const requiredSlotCount = firstNumber + rangeCount - 1;
+  if (firstNumber === 0 || rangeCount === 0 || !Number.isSafeInteger(requiredSlotCount)) return;
+
   recordProjectSnapshot();
   if (kind === "switch") {
     store.update((project) => {
-      for (let offset = 0; offset < count; offset++) {
-        const number = start + offset;
+      ensureNumberedSlotCount(project.switches, requiredSlotCount, "sw");
+      for (let offset = 0; offset < rangeCount; offset++) {
+        const number = firstNumber + offset;
         const label = `${prefix} ${number.toString().padStart(4, "0")}`;
-        const existing = project.switches[number - 1];
-        if (existing) {
-          existing.name = label;
-          continue;
-        }
-        project.switches.push({ id: nextNumberedSlotId("sw", project.switches), name: label });
+        project.switches[number - 1]!.name = label;
       }
     }, { scope: "database", collection: "switches" });
     return;
   }
   store.update((project) => {
-    for (let offset = 0; offset < count; offset++) {
-      const number = start + offset;
+    ensureNumberedSlotCount(project.variables, requiredSlotCount, "var");
+    for (let offset = 0; offset < rangeCount; offset++) {
+      const number = firstNumber + offset;
       const label = `${prefix} ${number.toString().padStart(4, "0")}`;
-      const existing = project.variables[number - 1];
-      if (existing) {
-        existing.name = label;
-        continue;
-      }
-      project.variables.push({ id: nextNumberedSlotId("var", project.variables), name: label });
+      project.variables[number - 1]!.name = label;
     }
   }, { scope: "database", collection: "variables" });
 }
 
-// editor/actions.ts의 nextNumberedId와 동일한 규칙(빈 순번 탐색, 다 차면 genId로 폴백).
-// 그쪽 함수는 export되어 있지 않아 재사용할 수 없으므로 동일 로직을 여기 재현한다.
-function nextNumberedSlotId(prefix: "sw" | "var", records: readonly { readonly id: string }[]): string {
+function positiveInteger(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Math.max(0, Math.trunc(value));
+}
+
+// 범위 편집이 실제로 요청한 마지막 번호까지만 동적으로 확장한다. 고정 상한이나
+// 1,000개 선할당은 없으며, 이미 존재하는 사용자/레거시 id는 그대로 보존한다.
+function ensureNumberedSlotCount(
+  records: { id: string; name: string }[],
+  requiredCount: number,
+  prefix: "sw" | "var",
+): void {
   const existingIds = new Set(records.map((record) => record.id));
-  for (let index = 1; index < records.length + 10000; index += 1) {
+  let index = 1;
+  while (records.length < requiredCount) {
     const id = `${prefix}_${String(index).padStart(4, "0")}`;
-    if (!existingIds.has(id)) return id;
+    index += 1;
+    if (existingIds.has(id)) continue;
+    records.push({ id, name: "" });
+    existingIds.add(id);
   }
-  return genId(prefix);
 }
 
 function isBattleAnimationScope(value: unknown): value is BattleAnimationScope {

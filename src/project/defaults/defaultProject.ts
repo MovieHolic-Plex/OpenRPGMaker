@@ -1176,8 +1176,8 @@ function createProjectWithStarterMap(starter: GameMap): Project {
 function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: number): Project {
   const starter = starters[Math.max(0, Math.min(selectedIndex, starters.length - 1))] ?? createStarterMap();
   const startMapId: MapId = starter.id;
-  const switches: SwitchDef[] = [];
-  const variables: VariableDef[] = [];
+  const switches: SwitchDef[] = initialDefinitionSlots("sw");
+  const variables: VariableDef[] = initialDefinitionSlots("var");
   const commonEvents: CommonEvent[] = [];
   const maps = Object.fromEntries(starters.map((map) => [map.id, map])) as Record<MapId, GameMap>;
   const project: Project = {
@@ -1214,19 +1214,26 @@ function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: numb
   return project;
 }
 
-const DEFAULT_SWITCH_VARIABLE_SLOT_COUNT = 1000;
+// One classic picker block keeps first-use command forms immediately usable. This is
+// starter capacity, not a maximum: add/range actions grow the arrays on demand.
+const INITIAL_SWITCH_VARIABLE_SLOT_COUNT = 20;
+
+function initialDefinitionSlots(prefix: "sw" | "var"): { id: string; name: string }[] {
+  return Array.from({ length: INITIAL_SWITCH_VARIABLE_SLOT_COUNT }, (_, index) => ({
+    id: `${prefix}_${String(index + 1).padStart(4, "0")}`,
+    name: "",
+  }));
+}
 
 export function ensureSwitchVariableSlots(project: Project): boolean {
   const switchesChanged = ensureDefinitionSlots({
     defs: project.switches,
     session: project.session.switches,
-    prefix: "sw",
     defaultValue: false,
   });
   const variablesChanged = ensureDefinitionSlots({
     defs: project.variables,
     session: project.session.variables,
-    prefix: "var",
     defaultValue: 0,
   });
   return switchesChanged || variablesChanged;
@@ -1235,23 +1242,12 @@ export function ensureSwitchVariableSlots(project: Project): boolean {
 function ensureDefinitionSlots<TValue>(options: {
   readonly defs: { id: string; name: string }[];
   readonly session: Record<string, TValue>;
-  readonly prefix: "sw" | "var";
   readonly defaultValue: TValue;
 }): boolean {
-  const { defs, session, prefix, defaultValue } = options;
+  const { defs, session, defaultValue } = options;
   let changed = false;
   const ids = new Set(defs.map((entry) => entry.id));
   for (const id of Object.keys(session).sort()) {
-    if (ids.has(id)) continue;
-    defs.push({ id, name: "" });
-    ids.add(id);
-    changed = true;
-  }
-
-  let slot = 1;
-  while (defs.length < DEFAULT_SWITCH_VARIABLE_SLOT_COUNT) {
-    const id = `${prefix}_${String(slot).padStart(4, "0")}`;
-    slot += 1;
     if (ids.has(id)) continue;
     defs.push({ id, name: "" });
     ids.add(id);

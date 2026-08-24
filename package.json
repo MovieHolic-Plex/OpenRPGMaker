@@ -35,6 +35,7 @@
     "generate:window-skin": "node scripts/generate-window-skin.mjs",
     "generate:effect-sheets": "node scripts/gen-effect-sheets.mjs",
     "generate:effect-showcase": "node scripts/gen-generated-effect-showcase.mjs",
+    "clean:title-logo": "node scripts/clean-title-logo-transparency.mjs",
     "perf:bench": "node scripts/perf-benchmark.mjs",
     "openwiki:cpen": "node scripts/openwiki-cpen.mjs",
     "openwiki:verify": "node scripts/verify-openwiki-editor-wiki.mjs",

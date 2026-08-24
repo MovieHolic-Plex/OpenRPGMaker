@@ -161,20 +161,24 @@ describe("createBlankProject", () => {
     expect(p.tilesets[DEFAULT_TILESET_ID]).toBeDefined();
   });
 
-  it("ships stable numbered switch and variable slots alongside referenced game ids", () => {
+  // Break caught: reintroducing the fixed 1,000-slot seed makes a new project
+  // look capped and bloats every project/session beyond the first-use picker block.
+  it("starts with one small picker block instead of 1000 preallocated slots", () => {
     const p = createBlankProject();
 
-    expect(p.switches.length).toBeGreaterThanOrEqual(1000);
-    expect(p.variables.length).toBeGreaterThanOrEqual(1000);
+    expect(p.switches).toHaveLength(20);
+    expect(p.variables).toHaveLength(20);
     expect(p.switches[0]).toEqual({ id: "sw_0001", name: "" });
     expect(p.variables[0]).toEqual({ id: "var_0001", name: "" });
-    expect(p.switches.some((entry) => entry.id === "sw_1000")).toBe(true);
-    expect(p.variables.some((entry) => entry.id === "var_1000")).toBe(true);
-    expect(p.session.switches.sw_0001).toBe(false);
-    expect(p.session.variables.var_0001).toBe(0);
+    expect(p.switches.some((entry) => entry.id === "sw_1000")).toBe(false);
+    expect(p.variables.some((entry) => entry.id === "var_1000")).toBe(false);
+    expect(p.session.switches.sw_0020).toBe(false);
+    expect(p.session.variables.var_0020).toBe(0);
   });
 
-  it("keeps referenced switch and variable ids in the editable database before filling blank slots", () => {
+  // Break caught: removing fixed-slot allocation must not discard legacy/authored
+  // start-state ids that still need editable definitions.
+  it("keeps start-state switch and variable ids without filling artificial blank slots", () => {
     const p = createBlankProject();
     p.switches = [];
     p.variables = [];
@@ -184,12 +188,10 @@ describe("createBlankProject", () => {
     const changed = ensureSwitchVariableSlots(p);
 
     expect(changed).toBe(true);
-    expect(p.switches).toHaveLength(1000);
-    expect(p.variables).toHaveLength(1000);
-    expect(p.switches[0]).toEqual({ id: "sw_legacy_gate", name: "" });
-    expect(p.variables[0]).toEqual({ id: "var_legacy_score", name: "" });
-    expect(p.session.switches.sw_0002).toBe(false);
-    expect(p.session.variables.var_0002).toBe(0);
+    expect(p.switches).toEqual([{ id: "sw_legacy_gate", name: "" }]);
+    expect(p.variables).toEqual([{ id: "var_legacy_score", name: "" }]);
+    expect(p.session.switches).toEqual({ sw_legacy_gate: true });
+    expect(p.session.variables).toEqual({ var_legacy_score: 5 });
   });
 
   it("uses EasyRPG RTP Combined Town as the project-wide default chipset", () => {

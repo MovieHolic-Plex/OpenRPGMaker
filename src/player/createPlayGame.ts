@@ -1,7 +1,8 @@
 import type Phaser from "phaser";
 import { ensurePhaser } from "@/app/phaserRuntime";
-import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySession } from "@/project/session";
+import { resolvePlayResolution } from "@/project/playResolution";
+import { store } from "@/project/store";
 
 export type PlayGameBootOptions = {
   readonly initialEventTestId?: string;
@@ -20,6 +21,7 @@ export async function createPlayGame(
 ): Promise<Phaser.Game> {
   const PhaserRuntime = await ensurePhaser();
   const { PlayScene } = await import("@/player/PlayScene");
+  const resolution = resolvePlayResolution(store.getCurrent().system);
   return new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,
     parent,
@@ -29,8 +31,8 @@ export async function createPlayGame(
     pixelArt: true,
     scale: {
       mode: PhaserRuntime.Scale.NONE,
-      width: PLAY_RESOLUTION.width,
-      height: PLAY_RESOLUTION.height,
+      width: resolution.width,
+      height: resolution.height,
       parent,
     },
     scene: [PlayScene],

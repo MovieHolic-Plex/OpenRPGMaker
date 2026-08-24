@@ -16,6 +16,7 @@ import {
 } from "@/editor/panels/databaseControls";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeTimeSystemConfig, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
@@ -39,6 +40,12 @@ import type {
 import { el } from "@/util/dom";
 import { playAudioCommand, stopAudioCommand } from "@/player/audio";
 import { listTitleMenuOptions, renderTitleFxStack, titleIntroClass } from "@/player/titleScreen";
+import {
+  normalizePlayResolution,
+  PLAY_RESOLUTION_LIMITS,
+  resolvePlayResolution,
+} from "@/project/playResolution";
+import type { PlayResolution, SystemRecords } from "@/project/types";
 
 const START_PARTY_SLOTS = 4;
 const BATTLE_FLOW_OPTIONS = ["gauge", "strict"] as const satisfies readonly BattleFlow[];
@@ -47,18 +54,22 @@ const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies 
 const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies"] as const satisfies readonly ("none" | TitleParticlePreset)[];
 const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
 const TITLE_INTRO_MENU_OPTIONS = ["none", "fadeIn", "slideUp"] as const satisfies readonly TitleIntroMenuAnimation[];
+const PLAY_RESOLUTION_PRESETS = ["320x240", "426x240", "640x360", "640x480", "custom"] as const;
+type PlayResolutionPreset = (typeof PLAY_RESOLUTION_PRESETS)[number];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
-type SystemSectionSlug = "party" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemSectionSlug = "overview" | "party" | "display" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
 
 const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonly label: string }[] = [
-  { slug: "party", label: "초기 파티" },
+  { slug: "overview", label: "개요" },
+  { slug: "party", label: "플레이어" },
+  { slug: "display", label: "화면과 사운드" },
   { slug: "resources", label: "리소스" },
-  { slug: "startup", label: "시작 설정" },
-  { slug: "optin", label: "옵트인 시스템" },
-  { slug: "time", label: "시간 시스템" },
-  { slug: "typechart", label: "타입 상성" },
-  { slug: "title", label: "타이틀 화면" },
+  { slug: "startup", label: "시작과 세이브" },
+  { slug: "optin", label: "기능 확장" },
+  { slug: "time", label: "시간과 생활" },
+  { slug: "typechart", label: "전투 규칙" },
+  { slug: "title", label: "타이틀" },
 ];
 
 export function renderSystemTab(host: HTMLElement, rerender: () => void = () => undefined): void {
@@ -77,12 +88,13 @@ export function renderSystemTab(host: HTMLElement, rerender: () => void = () => 
   const nav = systemSectionNav(activeSlug, host, sectionHost);
 
   form.append(nav, sectionHost);
+  wireSystemStudioOverview(form);
   host.append(el("h3", { text: "시스템" }), form);
 }
 
 function readActiveSystemSection(host: HTMLElement): SystemSectionSlug {
   const stored = host.dataset.dbSystemSection;
-  return SYSTEM_SECTION_ORDER.some((section) => section.slug === stored) ? (stored as SystemSectionSlug) : "party";
+  return SYSTEM_SECTION_ORDER.some((section) => section.slug === stored) ? (stored as SystemSectionSlug) : "overview";
 }
 
 function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sectionHost: HTMLElement): HTMLElement {
@@ -142,12 +154,14 @@ function systemSectionNodes(
     return node;
   };
   return {
+    overview: section("overview", [renderSystemStudioOverview(project)]),
     party: section("party", [
       rm2k3Fieldset("초기 파티", [
         startPartyFaceStrip(project.system.startActorIds, project.database.actors),
         ...startPartySlots(project.system.startActorIds, project.database.actors, rerender),
       ]),
     ]),
+    display: section("display", [playResolutionFieldset(project.system, rerender)]),
     resources: section("resources", [
       rm2k3Fieldset("리소스", [
         resourcePickerControl({
@@ -345,6 +359,80 @@ function systemSectionNodes(
  * 옵트인 시스템 토글 + 배열 개수 표시. 편집이 아닌 "켰는데 비어 있다"를 보이게 하는 것이 목적.
  * 배열 편집은 각자의 전용 DB 탭/도구가 담당한다.
  */
+function playResolutionFieldset(system: SystemRecords, rerender: () => void): HTMLElement {
+  const resolution = resolvePlayResolution(system);
+  const preset = playResolutionPreset(resolution);
+  const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
+  const labels: Record<PlayResolutionPreset, string> = {
+    "320x240": "320 × 240 · 클래식 4:3",
+    "426x240": "426 × 240 · 와이드 16:9",
+    "640x360": "640 × 360 · 와이드",
+    "640x480": "640 × 480 · 확장 4:3",
+    custom: "직접 입력",
+  };
+  for (const value of PLAY_RESOLUTION_PRESETS) {
+    presetSelect.append(el("option", { text: labels[value], attrs: { value } }));
+  }
+  presetSelect.value = preset;
+  presetSelect.addEventListener("change", () => {
+    const next = presetResolution(presetSelect.value as PlayResolutionPreset);
+    if (!next) return;
+    updateSystem((draft) => storePlayResolution(draft.system, next));
+    rerender();
+  });
+
+  return rm2k3Fieldset("게임 화면 해상도", [
+    el("p", {
+      class: "db-system-resolution-help",
+      text: "플레이 화면이 보여 주는 논리 영역입니다. 값이 커질수록 한 화면에 더 넓은 맵이 보이며, 다음 테스트 플레이부터 적용됩니다.",
+      dataset: { testid: "db-system-resolution-help" },
+    }),
+    field("빠른 선택", presetSelect),
+    numberField("가로", "db-field-system-resolution-width", resolution.width, (value) => {
+      updateSystem((draft) => {
+        const current = resolvePlayResolution(draft.system);
+        storePlayResolution(draft.system, { width: value, height: current.height });
+      }, "system:play-resolution:width");
+      rerender();
+    }),
+    numberField("세로", "db-field-system-resolution-height", resolution.height, (value) => {
+      updateSystem((draft) => {
+        const current = resolvePlayResolution(draft.system);
+        storePlayResolution(draft.system, { width: current.width, height: value });
+      }, "system:play-resolution:height");
+      rerender();
+    }),
+    el("div", {
+      class: "db-field db-field-readonly",
+      children: [
+        el("span", { text: "허용 범위" }),
+        el("code", {
+          text: `${PLAY_RESOLUTION_LIMITS.minWidth}–${PLAY_RESOLUTION_LIMITS.maxWidth} × ${PLAY_RESOLUTION_LIMITS.minHeight}–${PLAY_RESOLUTION_LIMITS.maxHeight}`,
+        }),
+      ],
+    }),
+  ]);
+}
+
+function playResolutionPreset(resolution: Readonly<PlayResolution>): PlayResolutionPreset {
+  const value = `${resolution.width}x${resolution.height}`;
+  return PLAY_RESOLUTION_PRESETS.includes(value as PlayResolutionPreset)
+    ? value as PlayResolutionPreset
+    : "custom";
+}
+
+function presetResolution(preset: PlayResolutionPreset): PlayResolution | undefined {
+  if (preset === "custom") return undefined;
+  const [width, height] = preset.split("x").map(Number);
+  return { width, height };
+}
+
+function storePlayResolution(system: SystemRecords, value: PlayResolution): void {
+  const normalized = normalizePlayResolution(value);
+  if (normalized) system.playResolution = normalized;
+  else delete system.playResolution;
+}
+
 function optInSystemFields(project: Project, rerender: () => void): readonly HTMLElement[] {
   const { system } = project;
   const fields: HTMLElement[] = [
