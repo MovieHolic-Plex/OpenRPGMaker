@@ -77,10 +77,21 @@ export function isMonsterInstancesRecord(value: unknown): value is PlaySession["
     if (typeof instance.exp !== "number" || !Number.isFinite(instance.exp)) return false;
     if (instance.currentHp !== undefined && (typeof instance.currentHp !== "number" || !Number.isFinite(instance.currentHp))) return false;
     if (instance.skillIds !== undefined && !isStringArray(instance.skillIds)) return false;
+    if (instance.stateIds !== undefined && !isStringArray(instance.stateIds)) return false;
+    if (instance.stateTurns !== undefined && !isNonNegativeIntegerRecord(instance.stateTurns)) return false;
+    if (instance.skillPp !== undefined && !isNonNegativeIntegerRecord(instance.skillPp)) return false;
+    if (instance.pendingSkillIds !== undefined && !isStringArray(instance.pendingSkillIds)) return false;
     if (typeof instance.friendship !== "number" || !Number.isFinite(instance.friendship)) return false;
     if (!isMonsterCaughtAt(instance.caughtAt)) return false;
     return instance.ivs === undefined || isMonsterIvs(instance.ivs);
   });
+}
+
+function isNonNegativeIntegerRecord(value: unknown): value is Record<string, number> {
+  if (!isRecord(value)) return false;
+  return Object.values(value).every((amount) =>
+    typeof amount === "number" && Number.isInteger(amount) && amount >= 0
+  );
 }
 
 export function isFarmPlotsRecord(value: unknown): value is PlaySession["farmPlots"] {
