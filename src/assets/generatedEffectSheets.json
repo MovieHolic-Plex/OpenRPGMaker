@@ -1,107 +1,369 @@
 {
-  "sheet": { "frameWidth": 96, "frameHeight": 96, "columns": 5 },
+  "sheet": { "frameWidth": 96, "frameHeight": 96, "frameDurationMs": 75 },
   "effects": [
     {
       "slug": "slash-steel",
       "name": "강철 베기",
+      "frameCount": 8,
       "tags": ["전투 이펙트", "베기", "물리", "검"],
       "scope": "singleTarget",
       "position": "center",
-      "flash": { "frameIndex": 1, "target": "target", "red": 255, "green": 250, "blue": 235, "durationFrames": 4 },
-      "shake": { "frameIndex": 1, "power": 2, "speed": 5, "durationFrames": 4 }
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-attack2" },
+      "flash": { "frameIndex": 3, "target": "target", "red": 255, "green": 250, "blue": 235, "durationFrames": 4 },
+      "shake": { "frameIndex": 3, "power": 2, "speed": 5, "durationFrames": 4 }
     },
     {
       "slug": "fire-burst",
       "name": "화염 폭발",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "불", "화염", "폭발"],
       "scope": "singleTarget",
       "position": "center",
-      "flash": { "frameIndex": 1, "target": "target", "red": 255, "green": 160, "blue": 70, "durationFrames": 5 },
-      "shake": { "frameIndex": 2, "power": 3, "speed": 5, "durationFrames": 6 }
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-explosion1" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 255, "green": 160, "blue": 70, "durationFrames": 5 },
+      "shake": { "frameIndex": 5, "power": 3, "speed": 5, "durationFrames": 6 }
     },
     {
       "slug": "ice-shatter",
       "name": "얼음 파쇄",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "얼음", "냉기", "파쇄"],
       "scope": "singleTarget",
       "position": "center",
-      "flash": { "frameIndex": 2, "target": "target", "red": 180, "green": 235, "blue": 255, "durationFrames": 5 }
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-ice2" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 180, "green": 235, "blue": 255, "durationFrames": 5 }
     },
     {
       "slug": "thunder-strike",
       "name": "번개 강타",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "번개", "전기"],
       "scope": "singleTarget",
       "position": "head",
-      "flash": { "frameIndex": 1, "target": "screen", "red": 255, "green": 250, "blue": 180, "durationFrames": 4 },
-      "shake": { "frameIndex": 1, "power": 4, "speed": 6, "durationFrames": 6 }
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-flash1" },
+      "flash": { "frameIndex": 3, "target": "screen", "red": 255, "green": 250, "blue": 180, "durationFrames": 4 },
+      "shake": { "frameIndex": 4, "power": 4, "speed": 6, "durationFrames": 6 }
     },
     {
       "slug": "water-column",
       "name": "물기둥",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "물", "물보라"],
       "scope": "singleTarget",
       "position": "feet",
-      "flash": { "frameIndex": 2, "target": "target", "red": 130, "green": 190, "blue": 255, "durationFrames": 5 }
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-wave1" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 130, "green": 190, "blue": 255, "durationFrames": 5 }
     },
     {
       "slug": "wind-slice",
       "name": "바람 칼날",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "바람", "풀", "참격"],
       "scope": "singleTarget",
       "position": "center",
-      "flash": { "frameIndex": 1, "target": "target", "red": 190, "green": 255, "blue": 200, "durationFrames": 4 }
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-wind8" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 190, "green": 255, "blue": 200, "durationFrames": 4 }
     },
     {
       "slug": "earth-spike",
       "name": "대지 창",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "대지", "흙", "관통"],
       "scope": "singleTarget",
       "position": "feet",
-      "shake": { "frameIndex": 2, "power": 4, "speed": 4, "durationFrames": 7 }
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-earth8" },
+      "shake": { "frameIndex": 5, "power": 4, "speed": 4, "durationFrames": 7 }
     },
     {
       "slug": "heal-bloom",
       "name": "회복의 빛",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "회복", "치유", "빛"],
       "scope": "singleTarget",
       "position": "head",
+      "sound": { "frameIndex": 2, "resourceId": "easyrpg-sound-recovery5" },
       "flash": {
-        "frameIndex": 0,
+        "frameIndex": 2,
         "target": "target",
         "red": 170, "green": 255, "blue": 190,
-        "durationFrames": 6,
-        "soundResourceId": "easyrpg-sound-recovery5"
+        "durationFrames": 6
       }
     },
     {
       "slug": "poison-mist",
       "name": "독 안개",
+      "frameCount": 10,
       "tags": ["전투 이펙트", "독", "상태이상"],
       "scope": "singleTarget",
       "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-poison" },
       "flash": {
-        "frameIndex": 1,
+        "frameIndex": 4,
         "target": "target",
         "red": 170, "green": 120, "blue": 220,
-        "durationFrames": 5,
-        "soundResourceId": "easyrpg-sound-poison"
+        "durationFrames": 5
       }
     },
     {
       "slug": "arcane-nova",
       "name": "마법 폭풍",
+      "frameCount": 12,
       "tags": ["전투 이펙트", "마법", "충격", "전체"],
       "scope": "allTargets",
       "position": "screen",
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-magic1" },
       "flash": {
-        "frameIndex": 0,
+        "frameIndex": 3,
         "target": "screen",
         "red": 150, "green": 190, "blue": 255,
-        "durationFrames": 8,
-        "soundResourceId": "easyrpg-sound-magic1"
+        "durationFrames": 8
       },
-      "shake": { "frameIndex": 2, "power": 3, "speed": 5, "durationFrames": 8 }
+      "shake": { "frameIndex": 6, "power": 3, "speed": 5, "durationFrames": 8 }
+    },
+    {
+      "slug": "tackle-impact",
+      "name": "몸통박치기 충격",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "물리", "충돌", "몬스터 배틀"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-blow4" },
+      "flash": { "frameIndex": 3, "target": "target", "red": 220, "green": 232, "blue": 245, "durationFrames": 4 },
+      "shake": { "frameIndex": 3, "power": 3, "speed": 5, "durationFrames": 4 }
+    },
+    {
+      "slug": "claw-rake",
+      "name": "발톱 할퀴기",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "물리", "발톱", "야수"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-attack1" },
+      "flash": { "frameIndex": 3, "target": "target", "red": 255, "green": 150, "blue": 125, "durationFrames": 4 }
+    },
+    {
+      "slug": "bite-crunch",
+      "name": "물어뜯기",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "물리", "물기", "야수"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-damage2" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 255, "green": 220, "blue": 180, "durationFrames": 4 },
+      "shake": { "frameIndex": 4, "power": 2, "speed": 6, "durationFrames": 4 }
+    },
+    {
+      "slug": "projectile-shot",
+      "name": "에너지 투사체",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "투사체", "원거리", "에너지"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-shot2" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 145, "green": 205, "blue": 255, "durationFrames": 4 }
+    },
+    {
+      "slug": "leaf-volley",
+      "name": "잎날 난사",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "자연", "풀", "잎", "투사체"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-pollen" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 170, "green": 245, "blue": 135, "durationFrames": 5 }
+    },
+    {
+      "slug": "psychic-wave",
+      "name": "염동 파동",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "염동", "정신", "파동"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-confusion" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 220, "green": 150, "blue": 255, "durationFrames": 6 }
+    },
+    {
+      "slug": "shadow-pulse",
+      "name": "암흑 파동",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "암흑", "그림자", "파동"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-darkness4" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 120, "green": 70, "blue": 170, "durationFrames": 6 }
+    },
+    {
+      "slug": "holy-beam",
+      "name": "성광",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "빛", "성스러움", "광선"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-holy5" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 255, "green": 245, "blue": 190, "durationFrames": 6 }
+    },
+    {
+      "slug": "sleep-dust",
+      "name": "수면 가루",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "수면", "상태이상", "가루"],
+      "scope": "singleTarget",
+      "position": "head",
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-sleep" },
+      "flash": { "frameIndex": 3, "target": "target", "red": 205, "green": 185, "blue": 245, "durationFrames": 5 }
+    },
+    {
+      "slug": "power-aura",
+      "name": "강화 오라",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "강화", "버프", "오라"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-buff" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 255, "green": 205, "blue": 105, "durationFrames": 6 }
+    },
+    {
+      "slug": "guard-barrier",
+      "name": "방어 장벽",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "방어", "보호막", "버프"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-barrier2" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 150, "green": 225, "blue": 255, "durationFrames": 6 }
+    },
+    {
+      "slug": "capture-seal",
+      "name": "포획 봉인",
+      "frameCount": 12,
+      "tags": ["전투 이펙트", "포획", "봉인", "몬스터 배틀"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 7, "resourceId": "easyrpg-sound-teleport2" },
+      "flash": { "frameIndex": 7, "target": "target", "red": 255, "green": 240, "blue": 165, "durationFrames": 7 },
+      "shake": { "frameIndex": 7, "power": 2, "speed": 4, "durationFrames": 5 }
+    },
+    {
+      "slug": "critical-burst",
+      "name": "치명타 폭발",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "물리", "치명타", "폭발"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-combat2" },
+      "flash": { "frameIndex": 3, "target": "target", "red": 255, "green": 215, "blue": 120, "durationFrames": 4 },
+      "shake": { "frameIndex": 3, "power": 4, "speed": 6, "durationFrames": 5 }
+    },
+    {
+      "slug": "sonic-wave",
+      "name": "음파 충격",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "음파", "파동", "전체"],
+      "scope": "allTargets",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-wave2" },
+      "flash": { "frameIndex": 4, "target": "screen", "red": 155, "green": 225, "blue": 255, "durationFrames": 4 }
+    },
+    {
+      "slug": "drain-orbs",
+      "name": "생명력 흡수",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "흡수", "암흑", "회복"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-absorb1" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 210, "green": 90, "blue": 150, "durationFrames": 5 }
+    },
+    {
+      "slug": "revive-rise",
+      "name": "부활의 빛",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "부활", "회복", "빛"],
+      "scope": "singleTarget",
+      "position": "feet",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-raise2" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 205, "green": 255, "blue": 185, "durationFrames": 7 }
+    },
+    {
+      "slug": "cleanse-sparkle",
+      "name": "정화의 반짝임",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "정화", "상태 회복", "빛"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-recovery8" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 210, "green": 255, "blue": 245, "durationFrames": 6 }
+    },
+    {
+      "slug": "paralysis-bind",
+      "name": "마비 속박",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "마비", "전기", "상태이상"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-flash3" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 255, "green": 235, "blue": 105, "durationFrames": 5 }
+    },
+    {
+      "slug": "blind-veil",
+      "name": "암흑 장막",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "암흑", "실명", "상태이상"],
+      "scope": "singleTarget",
+      "position": "head",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-blind" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 70, "green": 55, "blue": 90, "durationFrames": 6 }
+    },
+    {
+      "slug": "confusion-spiral",
+      "name": "혼란 나선",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "혼란", "정신", "상태이상"],
+      "scope": "singleTarget",
+      "position": "head",
+      "sound": { "frameIndex": 4, "resourceId": "easyrpg-sound-debuff" },
+      "flash": { "frameIndex": 4, "target": "target", "red": 220, "green": 155, "blue": 245, "durationFrames": 5 }
+    },
+    {
+      "slug": "silence-lock",
+      "name": "침묵 봉인",
+      "frameCount": 10,
+      "tags": ["전투 이펙트", "침묵", "봉인", "상태이상"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 5, "resourceId": "easyrpg-sound-silence" },
+      "flash": { "frameIndex": 5, "target": "target", "red": 145, "green": 175, "blue": 210, "durationFrames": 5 }
+    },
+    {
+      "slug": "summon-portal",
+      "name": "소환 차원문",
+      "frameCount": 12,
+      "tags": ["전투 이펙트", "소환", "차원문", "마법"],
+      "scope": "allTargets",
+      "position": "screen",
+      "sound": { "frameIndex": 7, "resourceId": "easyrpg-sound-magic2" },
+      "flash": { "frameIndex": 7, "target": "screen", "red": 170, "green": 125, "blue": 245, "durationFrames": 7 },
+      "shake": { "frameIndex": 7, "power": 2, "speed": 4, "durationFrames": 6 }
+    },
+    {
+      "slug": "smoke-vanish",
+      "name": "연막 소멸",
+      "frameCount": 8,
+      "tags": ["전투 이펙트", "연막", "회피", "도주"],
+      "scope": "singleTarget",
+      "position": "center",
+      "sound": { "frameIndex": 3, "resourceId": "easyrpg-sound-fog1" }
+    },
+    {
+      "slug": "meteor-fall",
+      "name": "운석 낙하",
+      "frameCount": 12,
+      "tags": ["전투 이펙트", "운석", "불", "전체"],
+      "scope": "allTargets",
+      "position": "screen",
+      "sound": { "frameIndex": 7, "resourceId": "easyrpg-sound-fall2" },
+      "flash": { "frameIndex": 7, "target": "screen", "red": 255, "green": 150, "blue": 70, "durationFrames": 7 },
+      "shake": { "frameIndex": 7, "power": 5, "speed": 6, "durationFrames": 9 }
     }
   ]
 }

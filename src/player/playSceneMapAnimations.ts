@@ -4,7 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { playAudioCommand } from "@/player/audio";
 import {
   battleAnimationDurationMs,
-  BATTLE_ANIMATION_FRAME_MS,
+  battleAnimationFrameDurationMs,
 } from "@/player/battleAnimationPlayback";
 import { characterSpriteX, characterSpriteY } from "@/player/characterDepth";
 import type { StepResult } from "@/player/interpreter";
@@ -98,7 +98,7 @@ async function renderBattleAnimationFrames(
   renderFrame(scene, container, record, textureKey, frameIndex);
   if (record.frames.length <= 1) return;
   scene.time.addEvent({
-    delay: BATTLE_ANIMATION_FRAME_MS,
+    delay: battleAnimationFrameDurationMs(record),
     repeat: record.frames.length - 2,
     callback: () => {
       if (!container.active) return;

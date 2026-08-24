@@ -1,13 +1,13 @@
 // 절차적으로 생성한 전투 이펙트 시트 등록.
 //
-// 아트는 `scripts/gen-effect-sheets.mjs` 가 이 카탈로그를 읽어 렌더한다(96x96 프레임 5장
-// 가로 스트립 = 480x96). 카탈로그가 유일한 정본이라 생성기·리소스 해석·기본 DB 레코드가
+// 아트는 `scripts/gen-effect-sheets.mjs` 가 이 카탈로그를 읽어 렌더한다(96x96 프레임을
+// 이펙트 용도에 따라 8~12장 가로 스트립으로 구성). 카탈로그가 유일한 정본이라 생성기·리소스 해석·기본 DB 레코드가
 // 같은 slug 목록을 본다 — 한쪽만 늘어나면 test/generatedEffectSheets.test.ts 가 깨진다.
 //
 // 왜 절차 생성인가: 프레임 간 연속성이 이펙트의 전부다. 이미지 생성 모델은 프레임마다
 // 실루엣을 다시 상상해서 스트립이 튄다. 여기서는 프레임 진행도 p 를 수식에 넣어 그린다.
 
-import type { BattleAnimationPosition, BattleAnimationScope } from "@/project/types/database";
+import type { BattleAnimationPosition, BattleAnimationScope, BattleAnimationSheet } from "@/project/types/database";
 import catalogInput from "./generatedEffectSheets.json" with { type: "json" };
 
 export type GeneratedEffectFlashSeed = {
@@ -17,7 +17,11 @@ export type GeneratedEffectFlashSeed = {
   readonly green: number;
   readonly blue: number;
   readonly durationFrames: number;
-  readonly soundResourceId?: string;
+};
+
+export type GeneratedEffectSoundSeed = {
+  readonly frameIndex: number;
+  readonly resourceId: string;
 };
 
 export type GeneratedEffectShakeSeed = {
@@ -30,21 +34,23 @@ export type GeneratedEffectShakeSeed = {
 export type GeneratedEffectSheetSeed = {
   readonly slug: string;
   readonly name: string;
+  readonly frameCount: number;
   readonly tags: readonly string[];
   readonly scope: BattleAnimationScope;
   readonly position: BattleAnimationPosition;
+  readonly sound: GeneratedEffectSoundSeed;
   readonly flash?: GeneratedEffectFlashSeed;
   readonly shake?: GeneratedEffectShakeSeed;
 };
 
 export type GeneratedEffectSheetCatalog = {
-  readonly sheet: { readonly frameWidth: number; readonly frameHeight: number; readonly columns: number };
+  readonly sheet: { readonly frameWidth: number; readonly frameHeight: number; readonly frameDurationMs: number };
   readonly effects: readonly GeneratedEffectSheetSeed[];
 };
 
 const catalog = catalogInput as GeneratedEffectSheetCatalog;
 
-/** 시트 규격: 96x96 프레임 5장 가로 스트립. */
+/** 모든 생성 이펙트가 공유하는 셀 크기와 재생 간격. 열 수는 각 seed.frameCount 가 소유한다. */
 export const GENERATED_EFFECT_SHEET = catalog.sheet;
 
 export const GENERATED_EFFECT_SHEETS: readonly GeneratedEffectSheetSeed[] = catalog.effects;
@@ -53,6 +59,23 @@ const ASSET_DIR = "assets/generated/effects";
 
 export function generatedEffectResourceId(slug: string): string {
   return `generated-battle-anim-${slug}`;
+}
+
+export function generatedEffectSheet(seed: GeneratedEffectSheetSeed): BattleAnimationSheet {
+  return {
+    frameWidth: GENERATED_EFFECT_SHEET.frameWidth,
+    frameHeight: GENERATED_EFFECT_SHEET.frameHeight,
+    columns: seed.frameCount,
+  };
+}
+
+/** 번들 생성 이펙트만 전용 75ms 프레임 간격을 쓴다. 다른 저작 애니메이션은 기존 120ms다. */
+export function generatedEffectFrameDurationMs(resourceId: string | undefined): number | undefined {
+  if (!resourceId?.startsWith("generated-battle-anim-")) return undefined;
+  const slug = resourceId.slice("generated-battle-anim-".length);
+  return GENERATED_EFFECT_SHEETS.some((effect) => effect.slug === slug)
+    ? GENERATED_EFFECT_SHEET.frameDurationMs
+    : undefined;
 }
 
 export function generatedEffectAnimationId(slug: string): string {

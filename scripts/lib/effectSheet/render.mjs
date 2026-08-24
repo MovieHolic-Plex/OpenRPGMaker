@@ -7,6 +7,34 @@ import { writePng } from "../pixelPng.mjs";
 import { createFrame, mulberry32, slugSeed, toStrip } from "./canvas.mjs";
 import { fireBurst, iceShatter, slashSteel, thunderStrike, waterColumn } from "./paintersImpact.mjs";
 import { arcaneNova, earthSpike, healBloom, poisonMist, windSlice } from "./paintersArcane.mjs";
+import {
+  biteCrunch,
+  captureSeal,
+  clawRake,
+  guardBarrier,
+  holyBeam,
+  leafVolley,
+  powerAura,
+  projectileShot,
+  psychicWave,
+  shadowPulse,
+  sleepDust,
+  tackleImpact,
+} from "./paintersMonster.mjs";
+import {
+  blindVeil,
+  cleanseSparkle,
+  confusionSpiral,
+  criticalBurst,
+  drainOrbs,
+  meteorFall,
+  paralysisBind,
+  reviveRise,
+  silenceLock,
+  smokeVanish,
+  sonicWave,
+  summonPortal,
+} from "./paintersUtility.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = path.resolve(HERE, "..", "..", "..");
@@ -24,6 +52,30 @@ const PAINTERS = {
   "heal-bloom": healBloom,
   "poison-mist": poisonMist,
   "arcane-nova": arcaneNova,
+  "tackle-impact": tackleImpact,
+  "claw-rake": clawRake,
+  "bite-crunch": biteCrunch,
+  "projectile-shot": projectileShot,
+  "leaf-volley": leafVolley,
+  "psychic-wave": psychicWave,
+  "shadow-pulse": shadowPulse,
+  "holy-beam": holyBeam,
+  "sleep-dust": sleepDust,
+  "power-aura": powerAura,
+  "guard-barrier": guardBarrier,
+  "capture-seal": captureSeal,
+  "critical-burst": criticalBurst,
+  "sonic-wave": sonicWave,
+  "drain-orbs": drainOrbs,
+  "revive-rise": reviveRise,
+  "cleanse-sparkle": cleanseSparkle,
+  "paralysis-bind": paralysisBind,
+  "blind-veil": blindVeil,
+  "confusion-spiral": confusionSpiral,
+  "silence-lock": silenceLock,
+  "summon-portal": summonPortal,
+  "smoke-vanish": smokeVanish,
+  "meteor-fall": meteorFall,
 };
 
 export function loadEffectCatalog() {
@@ -38,13 +90,16 @@ export function effectSheetOutputPath(slug) {
   return path.join(OUTPUT_DIR, effectSheetFileName(slug));
 }
 
-/** slug 하나를 480x96 RGBA 스트립으로 렌더한다. 같은 입력이면 항상 같은 픽셀이 나온다. */
+/** slug 하나를 용도별 8~12프레임 RGBA 스트립으로 렌더한다. 같은 입력이면 항상 같은 픽셀이 나온다. */
 export function renderEffectStrip(slug, catalog = loadEffectCatalog()) {
   const painter = PAINTERS[slug];
   if (painter === undefined) {
     throw new Error(`이펙트 페인터가 없다: ${slug} (scripts/lib/effectSheet/render.mjs 의 PAINTERS 에 등록하라)`);
   }
-  const { columns, frameWidth, frameHeight } = catalog.sheet;
+  const effect = catalog.effects.find((entry) => entry.slug === slug);
+  if (effect === undefined) throw new Error(`이펙트 카탈로그 항목이 없다: ${slug}`);
+  const { frameWidth, frameHeight } = catalog.sheet;
+  const columns = effect.frameCount;
   const seed = slugSeed(slug);
   const frames = [];
   for (let index = 0; index < columns; index += 1) {

@@ -3,7 +3,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
 import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
-import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
+import { battleAnimationFrameDurationMs } from "@/player/battleAnimationPlayback";
 import {
   BATTLE_EFFECT_CSS_VARIABLES,
   flashCssVariables,
@@ -87,6 +87,7 @@ export function mountBattleAnimationPlayback(
   const context: AnimationRenderContext = {
     sceneRoot,
     targetNode: findBattlerNode(sceneRoot ?? document, lastAnimation.targetId),
+    frameDurationMs: battleAnimationFrameDurationMs(record),
   };
 
   const timers = new Set<number>();
@@ -134,11 +135,14 @@ function battleAnimationRecord(animationId: string): BattleAnimationRecord | und
  * 대사·모션은 빨라지는데 **이펙트만 원속도로 남아** 다음 행동 위로 겹쳤고, 배속을 연출
  * 검수용으로 쓸 수 없었다.
  */
-export function battleAnimationFrameMs(sceneRoot: HTMLElement | null): number {
+export function battleAnimationFrameMs(
+  sceneRoot: HTMLElement | null,
+  record?: BattleAnimationRecord
+): number {
   const raw = Number(sceneRoot?.dataset.battleSpeed);
   // 시퀀서와 같은 하한(0.2)을 쓴다 — 여기만 다르면 배속을 올릴수록 서로 어긋난다.
   const speed = Number.isFinite(raw) && raw > 0 ? Math.max(0.2, raw) : 1;
-  return Math.max(10, Math.round(BATTLE_ANIMATION_FRAME_MS / speed));
+  return Math.max(10, Math.round(battleAnimationFrameDurationMs(record) / speed));
 }
 
 function startPlayback(
@@ -159,7 +163,7 @@ function startPlayback(
       return;
     }
     setActiveAnimationFrame(element, record, index, context);
-  }, battleAnimationFrameMs(context.sceneRoot));
+  }, battleAnimationFrameMs(context.sceneRoot, record));
   timers.add(timer);
 }
 
@@ -249,6 +253,7 @@ function animationCell(
 type AnimationRenderContext = {
   readonly sceneRoot: HTMLElement | null;
   readonly targetNode: HTMLElement | null;
+  readonly frameDurationMs: number;
 };
 
 function setActiveAnimationFrame(
@@ -286,11 +291,11 @@ function applyTimingEffects(context: AnimationRenderContext, timing: BattleAnima
   const flashOnTarget = Boolean(flash) && flash!.target === "target" && targetNode !== null;
 
   if (targetNode) {
-    setEffectVariables(targetNode, flashOnTarget ? flash : undefined, undefined);
+    setEffectVariables(targetNode, flashOnTarget ? flash : undefined, undefined, context.frameDurationMs);
     targetNode.classList.toggle("battle-animation-target-flash", flashOnTarget);
   }
   if (!sceneRoot) return;
-  setEffectVariables(sceneRoot, flashOnTarget ? undefined : flash, screenShake);
+  setEffectVariables(sceneRoot, flashOnTarget ? undefined : flash, screenShake, context.frameDurationMs);
   sceneRoot.classList.toggle("battle-screen-shake", Boolean(screenShake));
   sceneRoot.classList.toggle("battle-screen-flash", Boolean(flash) && !flashOnTarget);
 }
@@ -304,13 +309,14 @@ function clearEffectClasses(context: AnimationRenderContext): void {
 function setEffectVariables(
   host: HTMLElement,
   flash: BattleAnimationTiming["flash"],
-  screenShake: BattleAnimationTiming["screenShake"]
+  screenShake: BattleAnimationTiming["screenShake"],
+  frameDurationMs: number
 ): void {
   // 효과 없는 프레임에서 걷어내지 않으면 다음 효과가 이전 값을 물려받는다.
   for (const name of BATTLE_EFFECT_CSS_VARIABLES) host.style.removeProperty(name);
   const variables = {
-    ...(flash ? flashCssVariables(flash) : {}),
-    ...(screenShake ? screenShakeCssVariables(screenShake) : {}),
+    ...(flash ? flashCssVariables(flash, frameDurationMs) : {}),
+    ...(screenShake ? screenShakeCssVariables(screenShake, frameDurationMs) : {}),
   };
   for (const [name, value] of Object.entries(variables)) host.style.setProperty(name, value);
 }
