@@ -5,7 +5,6 @@ import { applyItemUpgrade } from "@/project/upgrades";
 import { setEquippedTool } from "@/project/toolActions";
 import { changeLifeSkillXp } from "@/project/lifeSkillProgress";
 import { changeFriendship, changeGold, changeItem, changeParty, DEFAULT_MESSAGE_WINDOW_SETTINGS, evalCondition, getFriendship, getSwitch, changeActorSkill, nextSessionRandom, setSwitch, setTimer, setVariable, type PlaySession } from "@/project/session";
-import { levelForXp, rewardsForLevel } from "@/project/skillModel";
 import type { SocialHost } from "@/project/socialKey";
 import { promoteActor } from "@/project/sessionClass";
 import { changeActorEquipment, changeActorExperience, changeActorLevel, changeActorVital, recoverAll } from "@/project/sessionActorCommands";
